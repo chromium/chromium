@@ -49,14 +49,18 @@ export class AmbientSubpage extends WithPersonalizationStore {
         type: Boolean,
         computed:
             'computeLoadingSettings_(albums_, temperatureUnit_, topicSource_)',
-      }
+      },
+      disabled_: {
+        type: Boolean,
+        computed: 'computeDisabled_(ambientModeEnabled_)',
+      },
     };
   }
 
   path: Paths;
   queryParams: Record<string, string>;
   private albums_: AmbientModeAlbum[]|null = null;
-  private ambientModeEnabled_: boolean;
+  private ambientModeEnabled_: boolean|null = null;
   private temperatureUnit_: TemperatureUnit|null = null;
   private topicSource_: TopicSource|null = null;
 
@@ -128,13 +132,17 @@ export class AmbientSubpage extends WithPersonalizationStore {
     return path === Paths.Ambient;
   }
 
-  private shouldShowAlbums_(path: Paths, ambientModeEnabled: boolean): boolean {
-    return path === Paths.AmbientAlbums && ambientModeEnabled;
+  private shouldShowAlbums_(path: Paths): boolean {
+    return path === Paths.AmbientAlbums;
   }
 
   private computeLoadingSettings_(): boolean {
     return this.albums_ === null || this.topicSource_ === null ||
         this.temperatureUnit_ === null;
+  }
+
+  private computeDisabled_(): boolean {
+    return this.ambientModeEnabled_ !== null && !this.ambientModeEnabled_;
   }
 }
 

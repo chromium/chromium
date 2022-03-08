@@ -34,32 +34,34 @@
   }
 </style>
 <div id="container">
-  <div id="mainSettings" hidden="[[!shouldShowMainSettings_(path)]]">
-    <toggle-row checked="[[ambientModeEnabled_]]"
-        on-click="onClickAmbientModeButton_" on-change="onToggleStateChanged_">
-    </toggle-row>
+  <template is="dom-if" if="[[shouldShowMainSettings_(path)]]">
+    <div id="mainSettings">
+      <toggle-row checked="[[ambientModeEnabled_]]"
+          on-click="onClickAmbientModeButton_" on-change="onToggleStateChanged_">
+      </toggle-row>
 
-    <template is="dom-if" if="[[loadingSettings_]]">
-      <!-- TODO(b/217311018): Add loading state -->
-      <paper-spinner-lite active></paper-spinner-lite>
-    </template>
+      <template is="dom-if" if="[[loadingSettings_]]">
+        <!-- TODO(b/217311018): Add loading state -->
+        <paper-spinner-lite active></paper-spinner-lite>
+      </template>
 
-    <template is="dom-if" if="[[!loadingSettings_]]">
-      <ambient-preview></ambient-preview>
-      <topic-source-list hidden="[[!shouldShowMainSettings_(path)]]"
-          selected-topic-source="[[topicSource_]]"
-          has-google-photos-albums="[[hasGooglePhotosAlbums_(albums_)]]"
-          disabled="[[!ambientModeEnabled_]]">
-      </topic-source-list>
-      <ambient-weather-unit
-          selected-temperature-unit="[[temperatureUnitToString_(temperatureUnit_)]]"
-          disabled="[[!ambientModeEnabled_]]">
-      </ambient-weather-unit>
-    </template>
-  </div>
-  <albums-subpage hidden="[[!shouldShowAlbums_(path, ambientModeEnabled_)]]"
-      disabled="[[!ambientModeEnabled_]]" path="[[path]]"
-      topic-source="[[getTopicSource_(queryParams)]]"
-      albums="[[getAlbums_(albums_, queryParams)]]">
-  </albums-subpage>
+      <template is="dom-if" if="[[!loadingSettings_]]">
+        <ambient-preview></ambient-preview>
+        <topic-source-list selected-topic-source="[[topicSource_]]"
+            has-google-photos-albums="[[hasGooglePhotosAlbums_(albums_)]]"
+            disabled="[[disabled_]]">
+        </topic-source-list>
+        <ambient-weather-unit
+            selected-temperature-unit="[[temperatureUnitToString_(temperatureUnit_)]]"
+            disabled="[[disabled_]]">
+        </ambient-weather-unit>
+      </template>
+    </div>
+  </template>
+  <template is="dom-if" if="[[shouldShowAlbums_(path, ambientModeEnabled_)]]">
+    <albums-subpage disabled="[[disabled_]]" path="[[path]]"
+        topic-source="[[getTopicSource_(queryParams)]]"
+        albums="[[getAlbums_(albums_, queryParams)]]">
+    </albums-subpage>
+  </template>
 </div>

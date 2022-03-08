@@ -43,7 +43,10 @@ export class AlbumsSubpage extends WithPersonalizationStore {
         // Set to null to differentiate from an empty album.
         value: null,
       },
-      disabled: Boolean,
+      disabled: {
+        type: Boolean,
+        observer: 'onDisabledChanged_',
+      },
       path: Paths,
       showArtAlbumDialog_: {
         type: Boolean,
@@ -58,13 +61,6 @@ export class AlbumsSubpage extends WithPersonalizationStore {
   path: Paths;
 
   private showArtAlbumDialog_: boolean;
-
-  connectedCallback() {
-    super.connectedCallback();
-    if (this.disabled && this.path === Paths.AmbientAlbums) {
-      PersonalizationRouter.reloadAtAmbient();
-    }
-  }
 
   ready() {
     super.ready();
@@ -111,6 +107,12 @@ export class AlbumsSubpage extends WithPersonalizationStore {
 
   private onArtAlbumDialogClose_() {
     this.showArtAlbumDialog_ = false;
+  }
+
+  private onDisabledChanged_(disabled: boolean) {
+    if (disabled) {
+      PersonalizationRouter.reloadAtAmbient();
+    }
   }
 }
 

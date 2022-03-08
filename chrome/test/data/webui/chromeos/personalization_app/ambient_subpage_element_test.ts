@@ -45,7 +45,9 @@ export function AmbientSubpageTest() {
   async function displayMainSettings(
       topicSource: TopicSource,
       temperatureUnit: TemperatureUnit): Promise<AmbientSubpage> {
-    const ambientSubpage = initElement(AmbientSubpage);
+    const ambientSubpage =
+        initElement(AmbientSubpage, {path: Paths.Ambient, queryParams: {}});
+    personalizationStore.data.ambient.ambientModeEnabled = false;
     personalizationStore.data.ambient.albums = ambientProvider.albums;
     personalizationStore.data.ambient.topicSource = topicSource;
     personalizationStore.data.ambient.temperatureUnit = temperatureUnit;
@@ -55,8 +57,8 @@ export function AmbientSubpageTest() {
   }
 
   test('displays content', async () => {
-    ambientSubpageElement = initElement(AmbientSubpage);
-    await waitAfterNextRender(ambientSubpageElement);
+    ambientSubpageElement = await displayMainSettings(
+        TopicSource.kArtGallery, TemperatureUnit.kFahrenheit);
 
     const toggleRow =
         ambientSubpageElement.shadowRoot!.querySelector('toggle-row');
@@ -94,7 +96,8 @@ export function AmbientSubpageTest() {
   test('sets ambient mode enabled in store on first load', async () => {
     personalizationStore.expectAction(
         AmbientActionName.SET_AMBIENT_MODE_ENABLED);
-    ambientSubpageElement = initElement(AmbientSubpage);
+    ambientSubpageElement = await displayMainSettings(
+        TopicSource.kArtGallery, TemperatureUnit.kFahrenheit);
     const action = await personalizationStore.waitForAction(
                        AmbientActionName.SET_AMBIENT_MODE_ENABLED) as
         SetAmbientModeEnabledAction;
@@ -119,7 +122,8 @@ export function AmbientSubpageTest() {
   });
 
   test('sets ambient mode enabled when toggle row clicked', async () => {
-    ambientSubpageElement = initElement(AmbientSubpage);
+    ambientSubpageElement = await displayMainSettings(
+        TopicSource.kArtGallery, TemperatureUnit.kFahrenheit);
     personalizationStore.data.ambient.ambientModeEnabled = true;
     personalizationStore.notifyObservers();
     await waitAfterNextRender(ambientSubpageElement);
@@ -154,7 +158,8 @@ export function AmbientSubpageTest() {
   });
 
   test('sets ambient mode enabled when toggle button clicked', async () => {
-    ambientSubpageElement = initElement(AmbientSubpage);
+    ambientSubpageElement = await displayMainSettings(
+        TopicSource.kArtGallery, TemperatureUnit.kFahrenheit);
     personalizationStore.data.ambient.ambientModeEnabled = true;
     personalizationStore.notifyObservers();
     await waitAfterNextRender(ambientSubpageElement);
@@ -283,8 +288,7 @@ export function AmbientSubpageTest() {
 
     const albumsSubpage =
         ambientSubpageElement.shadowRoot!.querySelector('albums-subpage');
-    assertTrue(!!albumsSubpage);
-    assertTrue(albumsSubpage.hidden);
+    assertFalse(!!albumsSubpage);
   });
 
   test('has albums subpage visible with path ambient albums', async () => {
@@ -299,8 +303,7 @@ export function AmbientSubpageTest() {
     const mainSettings =
         ambientSubpageElement.shadowRoot!.querySelector<HTMLElement>(
             '#mainSettings');
-    assertTrue(!!mainSettings);
-    assertTrue(mainSettings.hidden);
+    assertFalse(!!mainSettings);
 
     const albumsSubpage =
         ambientSubpageElement.shadowRoot!.querySelector('albums-subpage');
@@ -496,10 +499,8 @@ export function AmbientSubpageTest() {
   });
 
   test('has correct album preview information', async () => {
-    ambientSubpageElement = initElement(AmbientSubpage, {
-      path: Paths.AmbientAlbums,
-      queryParams: {topicSource: TopicSource.kArtGallery}
-    });
+    ambientSubpageElement = await displayMainSettings(
+        TopicSource.kArtGallery, TemperatureUnit.kFahrenheit);
     personalizationStore.setReducersEnabled(true);
     personalizationStore.expectAction(AmbientActionName.SET_ALBUMS);
     const action = await personalizationStore.waitForAction(

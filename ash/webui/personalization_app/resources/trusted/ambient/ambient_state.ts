@@ -9,7 +9,7 @@ import {AmbientModeAlbum, TemperatureUnit, TopicSource} from '../personalization
  */
 export interface AmbientState {
   albums: AmbientModeAlbum[]|null;
-  ambientModeEnabled: boolean;
+  ambientModeEnabled: boolean|null;
   temperatureUnit: TemperatureUnit|null;
   topicSource: TopicSource|null;
 }
@@ -17,7 +17,7 @@ export interface AmbientState {
 export function emptyState(): AmbientState {
   return {
     albums: null,
-    ambientModeEnabled: false,
+    ambientModeEnabled: null,
     temperatureUnit: null,
     topicSource: null,
   };

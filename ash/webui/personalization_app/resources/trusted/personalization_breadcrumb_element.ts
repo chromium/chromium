@@ -15,7 +15,6 @@ import 'chrome://resources/cr_elements/icons.m.js';
 import 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
 import '../common/styles.js';
 
-import {assertNotReached} from 'chrome://resources/js/assert_ts.js';
 import {html} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {isNonEmptyArray} from '../common/utils.js';
@@ -156,7 +155,7 @@ export class PersonalizationBreadcrumb extends WithPersonalizationStore {
         } else if (topicSourceVal === TopicSource.kArtGallery) {
           breadcrumbs.push(this.i18n('ambientModeTopicSourceArtGallery'));
         } else {
-          assertNotReached(`Invalid TopicSource value: ${topicSourceVal}`);
+          console.warn('Invalid TopicSource value.', topicSourceVal);
         }
         break;
     }
