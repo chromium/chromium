@@ -16,6 +16,7 @@
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
+#include "build/chromeos_buildflags.h"
 #include "ui/base/clipboard/clipboard_constants.h"
 #include "ui/base/clipboard/clipboard_format_type.h"
 #include "ui/base/clipboard/file_info.h"
@@ -26,6 +27,10 @@
 #include "url/gurl.h"
 #include "url/url_canon.h"
 #include "url/url_util.h"
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+#include "ui/base/data_transfer_policy/data_transfer_endpoint_serializer.h"
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
 namespace ui {
 
@@ -49,6 +54,10 @@ int MimeTypeToFormat(const std::string& mime_type) {
     return OSExchangeData::FILE_CONTENTS;
   if (mime_type == ui::kMimeTypeWebCustomData)
     return OSExchangeData::PICKLED_DATA;
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  if (mime_type == ui::kMimeTypeDataTransferEndpoint)
+    return OSExchangeData::DATA_TRANSFER_ENDPOINT;
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
   return 0;
 }
 
@@ -154,6 +163,20 @@ void AddUrl(PlatformClipboard::Data data, OSExchangeDataProvider* provider) {
   provider->SetURL(url, lines[1]);
 }
 
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+// Parses |data| as if it was an encoded custom mime type DataTransferEndpoint.
+// Used to synchronize the drag source metadata between Ash and Lacros.
+void AddSource(PlatformClipboard::Data data, OSExchangeDataProvider* provider) {
+  DCHECK(provider);
+
+  if (data->data().empty())
+    return;
+
+  std::string source_dte = BytesTo<std::string>(data);
+  provider->SetSource(ConvertJsonToDataTransferEndpoint(source_dte));
+}
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
+
 }  // namespace
 
 WaylandExchangeDataProvider::WaylandExchangeDataProvider() = default;
@@ -187,6 +210,7 @@ std::vector<std::string> WaylandExchangeDataProvider::BuildMimeTypesList()
     mime_types.push_back(ui::kMimeTypeTextUtf8);
     mime_types.push_back(ui::kMimeTypeText);
   }
+
   if (HasFileContents()) {
     base::FilePath file_contents_filename;
     std::string file_contents;
@@ -199,6 +223,12 @@ std::vector<std::string> WaylandExchangeDataProvider::BuildMimeTypesList()
         base::StrCat({ui::kMimeTypeOctetStream, ";name=\"", filename, "\""});
     mime_types.push_back(mime_type);
   }
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  if (GetSource() != nullptr) {
+    mime_types.push_back(ui::kMimeTypeDataTransferEndpoint);
+  }
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
   for (auto item : pickle_data())
     mime_types.push_back(item.first.GetName());
@@ -225,6 +255,11 @@ void WaylandExchangeDataProvider::AddData(PlatformClipboard::Data data,
     case OSExchangeData::FILE_NAME:
       AddFiles(data, this);
       break;
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+    case OSExchangeData::DATA_TRANSFER_ENDPOINT:
+      AddSource(data, this);
+      break;
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
   }
 }
 
@@ -262,6 +297,14 @@ bool WaylandExchangeDataProvider::ExtractData(const std::string& mime_type,
                                pickle.size());
     return true;
   }
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  if (mime_type == ui::kMimeTypeDataTransferEndpoint &&
+      GetSource() != nullptr) {
+    DataTransferEndpoint* data_src = GetSource();
+    out_content->append(ConvertDataTransferEndpointToJson(*data_src));
+    return true;
+  }
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
   // Lastly, attempt to extract string data. Note: Keep this as the last
   // condition otherwise, for data maps that contain both string and custom
   // data, for example, it may result in subtle issues, such as,

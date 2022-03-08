@@ -48,13 +48,16 @@ class COMPONENT_EXPORT(UI_BASE) OSExchangeData {
  public:
   // Enumeration of the known formats.
   enum Format {
-    STRING         = 1 << 0,
-    URL            = 1 << 1,
-    FILE_NAME      = 1 << 2,
-    PICKLED_DATA   = 1 << 3,
-    FILE_CONTENTS  = 1 << 4,
+    STRING = 1 << 0,
+    URL = 1 << 1,
+    FILE_NAME = 1 << 2,
+    PICKLED_DATA = 1 << 3,
+    FILE_CONTENTS = 1 << 4,
 #if defined(USE_AURA)
-    HTML           = 1 << 5,
+    HTML = 1 << 5,
+#endif
+#if BUILDFLAG(IS_CHROMEOS)
+    DATA_TRANSFER_ENDPOINT = 1 << 6,
 #endif
   };
 
