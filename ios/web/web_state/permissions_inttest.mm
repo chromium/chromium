@@ -6,6 +6,8 @@
 #include "base/test/scoped_feature_list.h"
 #include "ios/testing/scoped_block_swizzler.h"
 #include "ios/web/common/features.h"
+#import "ios/web/public/navigation/navigation_manager.h"
+#include "ios/web/public/navigation/reload_type.h"
 #import "ios/web/public/permissions/permissions.h"
 #import "ios/web/public/test/navigation_test_util.h"
 #import "ios/web/public/web_state.h"
@@ -282,6 +284,120 @@ TEST_F(PermissionsInttest,
   }
 }
 
-// TODO(crbug.com/1284709): Navigation, refresh, and iframe handling.
+// Tests that page reload resets permission states.
+TEST_F(PermissionsInttest, TestsThatPageReloadResetsPermissionState) {
+  if (@available(iOS 15.0, *)) {
+    // Initial load should allow permission.
+    handler_.decision = WKPermissionDecisionGrant;
+    test::LoadUrl(web_state(), test_server_->GetURL("/camera_only.html"));
+    EXPECT_TRUE(WaitUntilConditionOrTimeout(kWaitForPageLoadTimeout, ^bool {
+      return web_state()->GetStateForPermission(PermissionCamera) ==
+             PermissionStateAllowed;
+    }));
 
+    // Reload should reset permission. Handler should be called again, and
+    // permission state should be NotAccessible.
+    handler_.decisionMade = NO;
+    handler_.decision = WKPermissionDecisionDeny;
+    web_state()->GetNavigationManager()->Reload(ReloadType::NORMAL,
+                                                /*check_for_repost=*/false);
+    EXPECT_TRUE(WaitUntilConditionOrTimeout(kWaitForPageLoadTimeout, ^bool {
+      return web_state()->GetStateForPermission(PermissionCamera) ==
+             PermissionStateNotAccessible;
+    }));
+    EXPECT_EQ([web_controller() ensureWebViewCreated].cameraCaptureState,
+              WKMediaCaptureStateNone);
+  }
+}
+
+// Tests that the web state does not preserve permission states between
+// navigations.
+TEST_F(PermissionsInttest, TestsThatWebStateDoesNotPreservePermissionState) {
+  if (@available(iOS 15.0, *)) {
+    // Initial load should allow permission.
+    handler_.decision = WKPermissionDecisionGrant;
+    test::LoadUrl(web_state(), test_server_->GetURL("/camera_only.html"));
+    EXPECT_TRUE(WaitUntilConditionOrTimeout(kWaitForPageLoadTimeout, ^bool {
+      return web_state()->GetStateForPermission(PermissionCamera) ==
+             PermissionStateAllowed;
+    }));
+
+    // Navigating to another page should reset permission. Handler should be
+    // called again, permission state should be NotAccessible and the observer
+    // should NOT be invoked.
+    handler_.decisionMade = NO;
+    handler_.decision = WKPermissionDecisionDeny;
+    test::LoadUrl(web_state(),
+                  test_server_->GetURL("/camera_and_microphone.html"));
+    EXPECT_TRUE(WaitUntilConditionOrTimeout(kWaitForPageLoadTimeout, ^bool {
+      return handler_.decisionMade &&
+             web_state()->GetStateForPermission(PermissionCamera) ==
+                 PermissionStateNotAccessible;
+    }));
+    EXPECT_EQ([web_controller() ensureWebViewCreated].cameraCaptureState,
+              WKMediaCaptureStateNone);
+    EXPECT_EQ([web_controller() ensureWebViewCreated].microphoneCaptureState,
+              WKMediaCaptureStateNone);
+  }
+}
+
+// Tests that hitting "go back" and "go forward" resets permission states for
+// pages with existing accessible permission states.
+TEST_F(PermissionsInttest,
+       TestsThatMovingBackwardOrForwardResetsPermissionState) {
+  if (@available(iOS 15.0, *)) {
+    // Initial load for both pages should allow permission.
+    handler_.decision = WKPermissionDecisionGrant;
+    test::LoadUrl(web_state(), test_server_->GetURL("/microphone_only.html"));
+    EXPECT_TRUE(WaitUntilConditionOrTimeout(kWaitForPageLoadTimeout, ^bool {
+      return web_state()->GetStateForPermission(PermissionMicrophone) ==
+             PermissionStateAllowed;
+    }));
+    test::LoadUrl(web_state(),
+                  test_server_->GetURL("/camera_and_microphone.html"));
+    EXPECT_TRUE(WaitUntilConditionOrTimeout(kWaitForPageLoadTimeout, ^bool {
+      return web_state()->GetStateForPermission(PermissionCamera) ==
+                 PermissionStateAllowed &&
+             web_state()->GetStateForPermission(PermissionMicrophone) ==
+                 PermissionStateAllowed;
+    }));
+    // To cover more cases, block microphone on the second page.
+    web_state()->SetStateForPermission(PermissionStateBlocked,
+                                       PermissionMicrophone);
+    EXPECT_TRUE(WaitUntilConditionOrTimeout(kWaitForPageLoadTimeout, ^bool {
+      return [web_controller() ensureWebViewCreated].microphoneCaptureState ==
+             WKMediaCaptureStateMuted;
+    }));
+
+    // Permissions should be reset when you go backward or forward.
+
+    // Note: There's currently an existing WebKit bug that WKUIDelegate method
+    // |requestMediaCapturePermissionForOrigin:| would not be invoked when the
+    // user hits backward/forward; instead, iOS sets them automatically to
+    // WKMediaCaptureStateNone. The two following lines of code should be
+    // uncommented when this is fixed.
+
+    // handler_.decisionMade = NO;
+    // handler_.decision = WKPermissionDecisionDeny;
+    web_state()->GetNavigationManager()->GoBack();
+    EXPECT_TRUE(WaitUntilConditionOrTimeout(kWaitForPageLoadTimeout, ^bool {
+      return web_state()->GetStateForPermission(PermissionMicrophone) ==
+             PermissionStateNotAccessible;
+    }));
+    EXPECT_EQ([web_controller() ensureWebViewCreated].microphoneCaptureState,
+              WKMediaCaptureStateNone);
+
+    web_state()->GetNavigationManager()->GoForward();
+    EXPECT_TRUE(WaitUntilConditionOrTimeout(kWaitForPageLoadTimeout, ^bool {
+      return web_state()->GetStateForPermission(PermissionCamera) ==
+                 PermissionStateNotAccessible &&
+             web_state()->GetStateForPermission(PermissionMicrophone) ==
+                 PermissionStateNotAccessible;
+    }));
+    EXPECT_EQ([web_controller() ensureWebViewCreated].cameraCaptureState,
+              WKMediaCaptureStateNone);
+    EXPECT_EQ([web_controller() ensureWebViewCreated].microphoneCaptureState,
+              WKMediaCaptureStateNone);
+  }
+}
 }  // namespace web
