@@ -396,9 +396,8 @@ TEST_F(MediaStreamVideoTrackUnderlyingSourceTest, FrameLimiter) {
   };
 
   Vector<scoped_refptr<media::VideoFrame>> frames;
-  auto create_video_frame = [&](const base::TimeDelta timestamp) {
+  auto create_video_frame = [&]() {
     auto frame = media::VideoFrame::CreateBlackFrame(gfx::Size(10, 10));
-    frame->set_timestamp(timestamp);
     frames.push_back(frame);
     return frame;
   };
@@ -407,7 +406,7 @@ TEST_F(MediaStreamVideoTrackUnderlyingSourceTest, FrameLimiter) {
   EXPECT_TRUE(monitor.IsEmpty());
   // These frames are queued, pending to be read.
   for (size_t i = 0; i < max_frame_count; ++i) {
-    auto video_frame = create_video_frame(base::Seconds(i));
+    auto video_frame = create_video_frame();
     int frame_id = video_frame->unique_id();
     push_frame_sync(std::move(video_frame));
     EXPECT_EQ(monitor.NumFrames(device_id), i + 1);
@@ -415,7 +414,7 @@ TEST_F(MediaStreamVideoTrackUnderlyingSourceTest, FrameLimiter) {
   }
   {
     // Push another video frame with the limit reached.
-    auto video_frame = create_video_frame(base::Seconds(max_frame_count));
+    auto video_frame = create_video_frame();
     int frame_id = video_frame->unique_id();
     push_frame_sync(std::move(video_frame));
     EXPECT_EQ(monitor.NumFrames(device_id), max_frame_count);
@@ -442,7 +441,7 @@ TEST_F(MediaStreamVideoTrackUnderlyingSourceTest, FrameLimiter) {
   // A new frame arrives, but the limit has been reached and there is nothing
   // that can be replaced.
   {
-    auto video_frame = create_video_frame(base::Seconds(max_frame_count + 1));
+    auto video_frame = create_video_frame();
     int frame_id = video_frame->unique_id();
     push_frame_sync(std::move(video_frame));
     EXPECT_EQ(monitor.NumFrames(device_id), max_frame_count);
@@ -533,66 +532,6 @@ TEST_F(MediaStreamVideoTrackUnderlyingSourceTest, FrameLimiter) {
   // Context 2 closes its source, which should clear everything in the monitor.
   source2->Close();
   EXPECT_TRUE(monitor.IsEmpty());
-}
-
-TEST_F(MediaStreamVideoTrackUnderlyingSourceTest, DropDuplicateFrames) {
-  V8TestingScope v8_scope;
-  ScriptState* script_state = v8_scope.GetScriptState();
-  auto* track = CreateTrack(v8_scope.GetExecutionContext());
-  auto* source = CreateSource(script_state, track, /*buffer_size=*/2);
-  auto* stream =
-      ReadableStream::CreateWithCountQueueingStrategy(script_state, source, 0);
-
-  // Push a frame at timestamp 1 multiple times, followed by one at timestamp 2.
-  base::TimeDelta timestamp1 = base::Seconds(1);
-  PushFrame(timestamp1);
-  PushFrame(timestamp1);
-  PushFrame(timestamp1);
-  PushFrame(base::Seconds(2));
-
-  NonThrowableExceptionState exception_state;
-  auto* reader =
-      stream->GetDefaultReaderForTesting(script_state, exception_state);
-
-  // The duplicate timestamp frames should have been discarded, leaving only
-  // those with distinct times.
-  for (wtf_size_t i = 1; i <= 2; ++i) {
-    VideoFrame* video_frame =
-        ReadObjectFromStream<VideoFrame>(v8_scope, reader);
-    EXPECT_EQ(base::Microseconds(*video_frame->timestamp()), base::Seconds(i));
-  }
-
-  source->Close();
-  track->stopTrack(v8_scope.GetExecutionContext());
-}
-
-TEST_F(MediaStreamVideoTrackUnderlyingSourceTest, DropOutOfOrderFrames) {
-  V8TestingScope v8_scope;
-  ScriptState* script_state = v8_scope.GetScriptState();
-  auto* track = CreateTrack(v8_scope.GetExecutionContext());
-  auto* source = CreateSource(script_state, track, /*buffer_size=*/2);
-  auto* stream =
-      ReadableStream::CreateWithCountQueueingStrategy(script_state, source, 0);
-
-  // Push an out of order frame between timestamps 2 and 3.
-  PushFrame(base::Seconds(2));
-  PushFrame(base::Seconds(1));
-  PushFrame(base::Seconds(3));
-
-  NonThrowableExceptionState exception_state;
-  auto* reader =
-      stream->GetDefaultReaderForTesting(script_state, exception_state);
-
-  // The out of order frame should have been discarded, leaving timestamps 2
-  // and 3.
-  for (wtf_size_t i = 2; i <= 3; ++i) {
-    VideoFrame* video_frame =
-        ReadObjectFromStream<VideoFrame>(v8_scope, reader);
-    EXPECT_EQ(base::Microseconds(*video_frame->timestamp()), base::Seconds(i));
-  }
-
-  source->Close();
-  track->stopTrack(v8_scope.GetExecutionContext());
 }
 
 }  // namespace blink
