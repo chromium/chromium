@@ -419,8 +419,8 @@ std::vector<ui::FileInfo> ChromeDataExchangeDelegate::ParseFileSystemSources(
   std::vector<ui::FileInfo> file_info;
   // We only promote 'fs/sources' custom data pickle to be filenames which can
   // be shared and read by clients if it came from the trusted FilesApp.
-  if (!source || !source->IsSameURLWith(ui::DataTransferEndpoint(
-                     file_manager::util::GetFileManagerURL()))) {
+  if (!source || !source->GetURL() ||
+      !file_manager::util::IsFileManagerURL(*source->GetURL())) {
     return file_info;
   }
 

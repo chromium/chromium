@@ -495,7 +495,7 @@ TEST_F(ChromeDataExchangeDelegateTest, ParseFileSystemSources) {
           {{u"fs/tag", u"exo"}, {u"fs/sources", urls}}),
       &pickle);
 
-  ui::DataTransferEndpoint files_app(file_manager_url);
+  ui::DataTransferEndpoint files_app(file_manager_url.Resolve("main.html"));
   std::vector<ui::FileInfo> file_info =
       data_exchange_delegate.ParseFileSystemSources(&files_app, pickle);
   EXPECT_EQ(2u, file_info.size());
