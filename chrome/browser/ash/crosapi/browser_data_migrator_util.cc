@@ -17,9 +17,9 @@
 #include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
 #include "base/system/sys_info.h"
+#include "third_party/leveldatabase/src/include/leveldb/write_batch.h"
 
-namespace ash {
-namespace browser_data_migrator_util {
+namespace ash::browser_data_migrator_util {
 namespace {
 
 struct PathNamePair {
@@ -133,6 +133,10 @@ static_assert(base::ranges::is_sorted(kPathNamePairs, PathNameComparator()),
               "so that binary_search can be used on it.");
 
 absl::optional<uint64_t> g_extra_bytes_required_to_be_freed_for_testing;
+
+// Key prefixes in LocalStorage's LevelDB.
+constexpr char kMetaPrefix[] = "META:chrome-extension://";
+constexpr char kKeyPrefix[] = "_chrome-extension://";
 
 }  // namespace
 
@@ -525,5 +529,118 @@ void DryRunToCollectUMA(const base::FilePath& profile_data_dir) {
   }
 }
 
-}  // namespace browser_data_migrator_util
-}  // namespace ash
+leveldb::Status GetExtensionKeys(leveldb::DB* db,
+                                 LevelDBType leveldb_type,
+                                 ExtensionKeys* result) {
+  std::unique_ptr<leveldb::Iterator> it(
+      db->NewIterator(leveldb::ReadOptions()));
+
+  // Iterate through all the elements of the leveldb database.
+  for (it->SeekToFirst(); it->Valid(); it->Next()) {
+    std::string extension_id;
+    const std::string key = it->key().ToString();
+
+    switch (leveldb_type) {
+      // LocalStorage format.
+      // Refer to: components/services/storage/dom_storage/local_storage_impl.cc
+      case LevelDBType::kLocalStorage:
+        if (base::StartsWith(key, kMetaPrefix)) {
+          extension_id = key.substr(std::size(kMetaPrefix) - 1);
+        } else if (base::StartsWith(key, kKeyPrefix)) {
+          size_t pos = std::size(kKeyPrefix) - 1;
+          size_t end = key.find('\x00', pos);
+          if (end != std::string::npos)
+            extension_id = key.substr(pos, end - pos);
+        }
+        break;
+
+      // StateStore format (e.g. `Extension State/Rules`).
+      // Refer to: extensions/browser/state_store.cc
+      case LevelDBType::kStateStore:
+        size_t separator = key.find('.');
+        if (separator != std::string::npos)
+          extension_id = key.substr(0, separator);
+        break;
+    }
+
+    // Collect keys associated with each extension id.
+    if (!extension_id.empty())
+      (*result)[extension_id].push_back(key);
+  }
+
+  return it->status();
+}
+
+bool MigrateLevelDB(const base::FilePath& original_path,
+                    const base::FilePath& target_path,
+                    const LevelDBType leveldb_type) {
+  // LevelDB options.
+  leveldb_env::Options options;
+  options.create_if_missing = false;
+
+  // Open the original LevelDB database.
+  std::unique_ptr<leveldb::DB> original_db;
+  leveldb::Status status =
+      leveldb_env::OpenDB(options, original_path.value(), &original_db);
+  if (!status.ok()) {
+    PLOG(ERROR) << "Failure while opening original leveldb: " << original_path;
+    return false;
+  }
+
+  // Retrieve all extensions' keys, indexed by extension id.
+  ExtensionKeys original_keys;
+  status = GetExtensionKeys(original_db.get(), leveldb_type, &original_keys);
+  if (!status.ok()) {
+    PLOG(ERROR) << "Failure while reading keys from original leveldb: "
+                << original_path;
+    return false;
+  }
+
+  // Create a new LevelDB database to store entries that will stay in Ash.
+  std::unique_ptr<leveldb::DB> target_db;
+  options.create_if_missing = true;
+  options.error_if_exists = true;
+  status = leveldb_env::OpenDB(options, target_path.value(), &target_db);
+  if (!status.ok()) {
+    PLOG(ERROR) << "Failure while opening new leveldb: " << target_path;
+    return false;
+  }
+
+  // Prepare new LevelDB database according to schema.
+  // Refer to:
+  // - components/services/storage/dom_storage/local_storage_impl.cc
+  // - extensions/browser/state_store.cc
+  leveldb::WriteBatch write_batch;
+  if (leveldb_type == LevelDBType::kLocalStorage) {
+    write_batch.Put("VERSION", "1");
+  }
+
+  // Copy all the key-value pairs that need to be kept in Ash.
+  for (const auto& [extension_id, keys] : original_keys) {
+    if (base::Contains(kExtensionKeepList, extension_id)) {
+      for (const std::string& key : keys) {
+        std::string value;
+        status = original_db->Get(leveldb::ReadOptions(), key, &value);
+        if (!status.ok()) {
+          PLOG(ERROR) << "Failure while reading from original leveldb: "
+                      << original_path;
+          return false;
+        }
+        write_batch.Put(key, value);
+      }
+    }
+  }
+
+  // Write everything in bulk.
+  leveldb::WriteOptions write_options;
+  write_options.sync = true;
+  status = target_db->Write(write_options, &write_batch);
+  if (!status.ok()) {
+    PLOG(ERROR) << "Failure while writing into new leveldb: " << target_path;
+    return false;
+  }
+
+  return true;
+}
+
+}  // namespace ash::browser_data_migrator_util

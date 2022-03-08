@@ -6,19 +6,20 @@
 #define CHROME_BROWSER_ASH_CROSAPI_BROWSER_DATA_MIGRATOR_UTIL_H_
 
 #include <atomic>
+#include <map>
 #include <string>
 
 #include "base/files/file_path.h"
 #include "base/synchronization/atomic_flag.h"
 #include "chrome/browser/ash/crosapi/migration_progress_tracker.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/leveldatabase/env_chromium.h"
 
 namespace base {
 class FilePath;
 }
 
-namespace ash {
-namespace browser_data_migrator_util {
+namespace ash::browser_data_migrator_util {
 
 // User data directory name for lacros.
 constexpr char kLacrosDir[] = "lacros";
@@ -34,6 +35,10 @@ constexpr char kTmpDir[] = "browser_data_migrator";
 // `MoveMigrator` migrates user data to this directory first then moves it to
 // the correct location as its final step.
 constexpr char kMoveTmpDir[] = "move_migrator";
+
+// `MoveMigrator` splits user data that needs to remain Ash into this directory
+// first, then moves it to the correct location as its final step.
+constexpr char kSplitTmpDir[] = "move_migrator_split";
 
 // Directory for `MoveMigrator` to move hard links for lacros file/dirs in ash
 // directory so that they become inaccessible from ash. This directory should be
@@ -134,6 +139,7 @@ constexpr const char* const kLacrosDataPaths[]{"AutofillStrikeDatabase",
                                                "DNR Extension Rules",
                                                "Extension Cookies",
                                                "Extension Rules",
+                                               "Extension Scripts",
                                                "Extension State",
                                                "Extensions",
                                                "Favicons",
@@ -142,6 +148,7 @@ constexpr const char* const kLacrosDataPaths[]{"AutofillStrikeDatabase",
                                                "IndexedDB",
                                                "Local App Settings",
                                                "Local Extension Settings",
+                                               "Local Storage",
                                                "Managed Extension Settings",
                                                "QuotaManager",
                                                "Service Worker",
@@ -163,6 +170,36 @@ constexpr const char* const kNeedCopyDataPaths[]{"Affiliation Database",
                                                  "Policy",
                                                  "Preferences",
                                                  "shared_proto_db"};
+
+// List of extension ids to be kept in Ash.
+// TODO(crbug.com/1302613): fill this in with the complete list.
+constexpr const char* const kExtensionKeepList[] = {
+    "honijodknafkokifofgiaalefdiedpko",  // Help App
+    "lfboplenmmjcmpbkeemecobbadnmpfhi",  // gnubbyd-v3
+};
+
+// Extensions path.
+constexpr char kExtensionsFilePath[] = "Extensions";
+
+// `Local Storage` paths.
+constexpr char kLocalStorageFilePath[] = "Local Storage";
+constexpr char kLocalStorageLeveldbName[] = "leveldb";
+
+// State Store paths.
+constexpr const char* const kStateStorePaths[] = {
+    "Extension Rules",
+    "Extension Scripts",
+    "Extension State",
+};
+
+// The type of LevelDB schema.
+enum class LevelDBType {
+  kLocalStorage = 0,
+  kStateStore = 1,
+};
+
+// Map from ExtensionID -> { leveldb keys..}.
+using ExtensionKeys = std::map<std::string, std::vector<std::string>>;
 
 constexpr char kTotalSize[] = "Ash.UserDataStatsRecorder.DataSize.TotalSize";
 
@@ -309,6 +346,12 @@ void RecordUserDataSize(const base::FilePath& path, int64_t size);
 // does not check if lacros is enabled.
 void DryRunToCollectUMA(const base::FilePath& profile_data_dir);
 
+// Given a leveldb instance and its type, output a map from
+// ExtensionID -> { keys associated with the extension... }.
+leveldb::Status GetExtensionKeys(leveldb::DB* db,
+                                 LevelDBType leveldb_type,
+                                 ExtensionKeys* result);
+
 // Returns UMA name for `path`. Returns `kUnknownUMAName` if `path` is not in
 // `kPathNamePairs`.
 std::string GetUMAItemName(const base::FilePath& path);
@@ -320,7 +363,13 @@ int64_t ComputeDirectorySizeWithoutLinks(const base::FilePath& dir_path);
 // Record the total size of the user's profile data directory in MB.
 void RecordTotalSize(int64_t size);
 
-}  // namespace browser_data_migrator_util
-}  // namespace ash
+// Migrate the LevelDB instance at `original_path` to `target_path`,
+// Filter out all the extensions that are not in `kExtensionKeepList`.
+// `leveldb_type` determines the schema type.
+bool MigrateLevelDB(const base::FilePath& original_path,
+                    const base::FilePath& target_path,
+                    const LevelDBType leveldb_type);
+
+}  // namespace ash::browser_data_migrator_util
 
 #endif  // CHROME_BROWSER_ASH_CROSAPI_BROWSER_DATA_MIGRATOR_UTIL_H_

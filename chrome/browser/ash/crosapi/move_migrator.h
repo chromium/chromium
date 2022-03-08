@@ -107,6 +107,7 @@ class MoveMigrator : public BrowserDataMigratorImpl::MigratorDelegate {
   FRIEND_TEST_ALL_PREFIXES(MoveMigratorTest, ResumeRequired);
   FRIEND_TEST_ALL_PREFIXES(MoveMigratorTest, PreMigrationCleanUp);
   FRIEND_TEST_ALL_PREFIXES(MoveMigratorTest, SetupLacrosDir);
+  FRIEND_TEST_ALL_PREFIXES(MoveMigratorTest, SetupAshSplitDir);
   FRIEND_TEST_ALL_PREFIXES(
       MoveMigratorTest,
       MoveLacrosItemsToNewDirFailIfNoWritePermForLacrosItem);
@@ -162,8 +163,16 @@ class MoveMigrator : public BrowserDataMigratorImpl::MigratorDelegate {
       scoped_refptr<browser_data_migrator_util::CancelFlag> cancel_flag);
 
   // Called as a reply to `SetupLacrosDir()`. Posts
-  // `SetupLacrosRemoveHardLinksFromAshDir()` as the next step.
+  // `SetupAshSplitDir()` as the next step.
   void OnSetupLacrosDir(bool success);
+
+  // Set up a temporary directory to hold items that need to be split between
+  // ash and lacros. This folder will hold ash's version of the items.
+  static bool SetupAshSplitDir(const base::FilePath& original_profile_dir);
+
+  // Called as a reply to `SetupAshSplitDir()`. Posts `MoveLacrosItemsToNewDir`
+  // as the next step.
+  void OnSetupAshSplitDir(bool success);
 
   // Move `ItemType::kLacros` in the original profile
   // directory to the temp dir.
@@ -173,12 +182,19 @@ class MoveMigrator : public BrowserDataMigratorImpl::MigratorDelegate {
   // Called as a reply to `MoveLacrosItemsToNewDir()`.
   void OnMoveLacrosItemsToNewDir(bool success);
 
-  // Moves newly created `kMoveTmpDir` to `kLacrosDir` to complete the
-  // migration.
+  // Moves newly created `kMoveTmpDir` to `kLacrosDir`.
   static bool MoveTmpDirToLacrosDir(const base::FilePath& original_profile_dir);
 
   // Called as a reply to `MoveTmpDirToLacrosDir()`.
   void OnMoveTmpDirToLacrosDir(bool success);
+
+  // Moves newly created split items to the original profile directory.
+  // Completes the migration.
+  static bool MoveSplitItemsToOriginalDir(
+      const base::FilePath& original_profile_dir);
+
+  // Called as a reply to `MoveSplitItemsToOriginalDir`.
+  void OnMoveSplitItemsToOriginalDir(bool success);
 
   // Path to the original profile data directory, which is directly under the
   // user data directory.

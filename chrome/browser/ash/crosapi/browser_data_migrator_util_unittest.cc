@@ -15,9 +15,10 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "chrome/browser/ash/crosapi/fake_migration_progress_tracker.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/leveldatabase/env_chromium.h"
+#include "third_party/leveldatabase/src/include/leveldb/write_batch.h"
 
-namespace ash {
-namespace browser_data_migrator_util {
+namespace ash::browser_data_migrator_util {
 
 namespace {
 
@@ -30,6 +31,7 @@ constexpr char kCodeCachePath[] = "Code Cache";
 constexpr char kCodeCacheUMAName[] = "CodeCache";
 constexpr char kTextFileContent[] = "Hello, World!";
 constexpr int kTextFileSize = sizeof(kTextFileContent);
+constexpr char kMoveExtensionId[] = "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx";
 
 struct TargetItemComparator {
   bool operator()(const TargetItem& t1, const TargetItem& t2) const {
@@ -53,6 +55,56 @@ bool IsSameFile(const base::FilePath& file1, const base::FilePath& file2) {
 
   // Make sure that they are indeed the same file.
   return (st_1.st_ino == st_2.st_ino);
+}
+
+// Prepare LocalStorage-like LevelDB.
+void SetUpLocalStorage(const base::FilePath& path,
+                       std::unique_ptr<leveldb::DB>& db) {
+  using std::string_literals::operator""s;
+
+  leveldb_env::Options options;
+  options.create_if_missing = true;
+  leveldb::Status status = leveldb_env::OpenDB(options, path.value(), &db);
+  ASSERT_TRUE(status.ok());
+
+  leveldb::WriteBatch batch;
+  batch.Put("VERSION", "1");
+
+  std::string keep_extension_id =
+      browser_data_migrator_util::kExtensionKeepList[0];
+  batch.Put("META:chrome-extension://" + keep_extension_id, "meta");
+  batch.Put("_chrome-extension://" + keep_extension_id + "\x00key1"s, "value1");
+
+  std::string move_extension_id = kMoveExtensionId;
+  batch.Put("META:chrome-extension://" + move_extension_id, "meta");
+  batch.Put("_chrome-extension://" + move_extension_id + "\x00key1"s, "value1");
+
+  leveldb::WriteOptions write_options;
+  write_options.sync = true;
+  status = db->Write(write_options, &batch);
+  ASSERT_TRUE(status.ok());
+}
+
+// Prepare StateStore-like LevelDB.
+void SetUpStateStore(const base::FilePath& path,
+                     std::unique_ptr<leveldb::DB>& db) {
+  leveldb_env::Options options;
+  options.create_if_missing = true;
+  leveldb::Status status = leveldb_env::OpenDB(options, path.value(), &db);
+  ASSERT_TRUE(status.ok());
+
+  leveldb::WriteBatch batch;
+  std::string keep_extension_id =
+      browser_data_migrator_util::kExtensionKeepList[0];
+  batch.Put(keep_extension_id + ".key1", "value1");
+  batch.Put(keep_extension_id + ".key2", "value2");
+  batch.Put(std::string(kMoveExtensionId) + ".key1", "value1");
+  batch.Put(std::string(kMoveExtensionId) + ".key2", "value2");
+
+  leveldb::WriteOptions write_options;
+  write_options.sync = true;
+  status = db->Write(write_options, &batch);
+  ASSERT_TRUE(status.ok());
 }
 
 }  // namespace
@@ -139,6 +191,130 @@ TEST(BrowserDataMigratorUtilTest, GetUMAItemName) {
       GetUMAItemName(profile_data_dir.Append(FILE_PATH_LITERAL("abcd")))
           .c_str(),
       kUnknownUMAName);
+}
+
+TEST(BrowserDataMigratorUtilTest, GetExtensionKeys) {
+  using std::string_literals::operator""s;
+
+  base::ScopedTempDir scoped_temp_dir;
+  ASSERT_TRUE(scoped_temp_dir.CreateUniqueTempDir());
+
+  // Prepare LocalStorage-like LevelDB.
+  std::unique_ptr<leveldb::DB> db;
+  SetUpLocalStorage(
+      scoped_temp_dir.GetPath().Append(FILE_PATH_LITERAL("localstorage")), db);
+
+  ExtensionKeys keys;
+  leveldb::Status status =
+      GetExtensionKeys(db.get(), LevelDBType::kLocalStorage, &keys);
+  EXPECT_TRUE(status.ok());
+  db.reset();
+
+  std::string keep_extension_id =
+      browser_data_migrator_util::kExtensionKeepList[0];
+  ExtensionKeys expected_keys = {
+      {keep_extension_id,
+       {
+           "META:chrome-extension://" + keep_extension_id,
+           "_chrome-extension://" + keep_extension_id + "\x00key1"s,
+       }},
+      {kMoveExtensionId,
+       {
+           "META:chrome-extension://" + std::string(kMoveExtensionId),
+           "_chrome-extension://" + std::string(kMoveExtensionId) + "\x00key1"s,
+       }},
+  };
+  EXPECT_EQ(expected_keys, keys);
+  keys.clear();
+
+  // Prepare StateStore-like LevelDB.
+  SetUpStateStore(
+      scoped_temp_dir.GetPath().Append(FILE_PATH_LITERAL("statestore")), db);
+
+  status = GetExtensionKeys(db.get(), LevelDBType::kStateStore, &keys);
+  EXPECT_TRUE(status.ok());
+
+  expected_keys = {
+      {keep_extension_id,
+       {
+           keep_extension_id + ".key1",
+           keep_extension_id + ".key2",
+       }},
+      {kMoveExtensionId,
+       {
+           std::string(kMoveExtensionId) + ".key1",
+           std::string(kMoveExtensionId) + ".key2",
+       }},
+  };
+  EXPECT_EQ(expected_keys, keys);
+}
+
+TEST(BrowserDataMigratorUtilTest, MigrateLevelDB) {
+  using std::string_literals::operator""s;
+
+  base::ScopedTempDir scoped_temp_dir;
+  ASSERT_TRUE(scoped_temp_dir.CreateUniqueTempDir());
+
+  // Prepare LocalStorage-like LevelDB.
+  std::unique_ptr<leveldb::DB> db;
+  const base::FilePath localstorage_db_path =
+      scoped_temp_dir.GetPath().Append(FILE_PATH_LITERAL("localstorage"));
+  const base::FilePath localstorage_new_db_path =
+      localstorage_db_path.AddExtension(".new");
+  SetUpLocalStorage(localstorage_db_path, db);
+  db.reset();
+
+  EXPECT_TRUE(MigrateLevelDB(localstorage_db_path, localstorage_new_db_path,
+                             LevelDBType::kLocalStorage));
+
+  leveldb_env::Options options;
+  options.create_if_missing = false;
+  leveldb::Status status =
+      leveldb_env::OpenDB(options, localstorage_new_db_path.value(), &db);
+  EXPECT_TRUE(status.ok());
+
+  ExtensionKeys keys;
+  status = GetExtensionKeys(db.get(), LevelDBType::kLocalStorage, &keys);
+  EXPECT_TRUE(status.ok());
+  db.reset();
+
+  std::string keep_extension_id =
+      browser_data_migrator_util::kExtensionKeepList[0];
+  ExtensionKeys expected_keys = {
+      {keep_extension_id,
+       {
+           "META:chrome-extension://" + keep_extension_id,
+           "_chrome-extension://" + keep_extension_id + "\x00key1"s,
+       }},
+  };
+  EXPECT_EQ(expected_keys, keys);
+  keys.clear();
+
+  // Prepare StateStore-like LevelDB.
+  const base::FilePath statestore_db_path =
+      scoped_temp_dir.GetPath().Append(FILE_PATH_LITERAL("statestore"));
+  const base::FilePath statestore_new_db_path =
+      statestore_db_path.AddExtension(".new");
+  SetUpStateStore(statestore_db_path, db);
+  db.reset();
+
+  EXPECT_TRUE(MigrateLevelDB(statestore_db_path, statestore_new_db_path,
+                             LevelDBType::kStateStore));
+
+  status = leveldb_env::OpenDB(options, statestore_new_db_path.value(), &db);
+  EXPECT_TRUE(status.ok());
+
+  status = GetExtensionKeys(db.get(), LevelDBType::kStateStore, &keys);
+  EXPECT_TRUE(status.ok());
+
+  expected_keys = {
+      {keep_extension_id,
+       {
+           keep_extension_id + ".key1",
+           keep_extension_id + ".key2",
+       }},
+  };
+  EXPECT_EQ(expected_keys, keys);
 }
 
 TEST(BrowserDataMigratorUtilTest, RecordUserDataSize) {
@@ -468,5 +644,4 @@ TEST_F(BrowserDataMigratorUtilWithTargetsTest, DryRunToCollectUMA) {
       kDryRunDeleteAndCopyMigrationHasEnoughDiskSpace, 1);
 }
 
-}  // namespace browser_data_migrator_util
-}  // namespace ash
+}  // namespace ash::browser_data_migrator_util
