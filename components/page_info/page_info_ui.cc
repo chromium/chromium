@@ -388,6 +388,13 @@ PageInfoUI::IdentityInfo::~IdentityInfo() = default;
 PageInfoUI::PageFeatureInfo::PageFeatureInfo()
     : is_vr_presentation_in_headset(false) {}
 
+bool PageInfoUI::AdPersonalizationInfo::is_empty() const {
+  return !has_joined_user_to_interest_group && accessed_topics.empty();
+}
+
+PageInfoUI::AdPersonalizationInfo::AdPersonalizationInfo() = default;
+PageInfoUI::AdPersonalizationInfo::~AdPersonalizationInfo() = default;
+
 std::unique_ptr<PageInfoUI::SecurityDescription>
 PageInfoUI::GetSecurityDescription(const IdentityInfo& identity_info) const {
   switch (identity_info.safe_browsing_status) {

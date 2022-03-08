@@ -887,7 +887,7 @@ bool PageSpecificContentSettings::HasAccessedTopics() const {
   return !GetAccessedTopics().empty();
 }
 
-base::flat_set<privacy_sandbox::CanonicalTopic>
+std::vector<privacy_sandbox::CanonicalTopic>
 PageSpecificContentSettings::GetAccessedTopics() const {
   if (accessed_topics_.empty() &&
       page().GetMainDocument().GetLastCommittedURL().host() == "example.com") {
@@ -896,7 +896,7 @@ PageSpecificContentSettings::GetAccessedTopics() const {
         browsing_topics::Topic(1),
         privacy_sandbox::CanonicalTopic::AVAILABLE_TAXONOMY)};
   }
-  return accessed_topics_;
+  return {accessed_topics_.begin(), accessed_topics_.end()};
 }
 
 bool PageSpecificContentSettings::HasJoinedUserToInterestGroup() const {

@@ -1055,10 +1055,6 @@ void PageInfo::PresentSiteData(base::OnceClosure done) {
   if (!settings) {
     PresentSiteDataInternal(std::move(done));
   } else {
-    // Ensure the cookie button is displayed immediately, even before the cookie
-    // counts are known.
-    ui_->EnsureCookieInfo();
-
     settings->allowed_local_shared_objects().UpdateIgnoredEmptyStorageKeys(
         base::BindOnce(&PageInfo::PresentSiteDataInternal,
                        weak_factory_.GetWeakPtr(), std::move(done)));
@@ -1108,6 +1104,7 @@ void PageInfo::PresentAdPersonalizationData() {
 
   info.has_joined_user_to_interest_group =
       settings->HasJoinedUserToInterestGroup();
+  info.accessed_topics = settings->GetAccessedTopics();
   ui_->SetAdPersonalizationInfo(info);
 }
 

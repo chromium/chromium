@@ -25,6 +25,7 @@ static_library("page_info") {
     "//components/password_manager/core/browser",
     "//components/permissions",
     "//components/prefs",
+    "//components/privacy_sandbox",
     "//components/safe_browsing:buildflags",
     "//components/safe_browsing/content/browser/password_protection",
     "//components/safe_browsing/core/browser/password_protection:password_protection_metrics_util",

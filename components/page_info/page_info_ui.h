@@ -14,6 +14,7 @@
 #include "components/content_settings/core/common/content_settings_types.h"
 #include "components/page_info/page_info.h"
 #include "components/permissions/object_permission_context_base.h"
+#include "components/privacy_sandbox/canonical_topic.h"
 #include "components/safe_browsing/buildflags.h"
 #include "ui/base/models/image_model.h"
 #include "ui/gfx/native_widget_types.h"
@@ -159,7 +160,12 @@ class PageInfoUI {
   };
 
   struct AdPersonalizationInfo {
+    AdPersonalizationInfo();
+    ~AdPersonalizationInfo();
+    bool is_empty() const;
+
     bool has_joined_user_to_interest_group;
+    std::vector<privacy_sandbox::CanonicalTopic> accessed_topics;
   };
 
   using CookieInfoList = std::vector<CookieInfo>;

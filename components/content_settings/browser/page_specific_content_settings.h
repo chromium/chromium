@@ -416,7 +416,7 @@ class PageSpecificContentSettings
   bool HasAccessedTopics() const;
 
   // Returns the topics that were accessed by this page.
-  base::flat_set<privacy_sandbox::CanonicalTopic> GetAccessedTopics() const;
+  std::vector<privacy_sandbox::CanonicalTopic> GetAccessedTopics() const;
 
  private:
   friend class content::PageUserData<PageSpecificContentSettings>;

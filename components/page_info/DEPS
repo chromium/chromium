@@ -8,6 +8,7 @@ include_rules = [
   "+components/optimization_guide/proto",
   "+components/password_manager",
   "+components/permissions",
+  "+components/privacy_sandbox",
   "+components/prefs",
   "+components/resources",
   "+components/safe_browsing/buildflags.h",

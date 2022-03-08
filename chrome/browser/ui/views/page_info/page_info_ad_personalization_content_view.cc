@@ -6,6 +6,7 @@
 
 #include <vector>
 
+#include "base/strings/string_util.h"
 #include "chrome/browser/ui/page_info/chrome_page_info_ui_delegate.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
@@ -18,6 +19,7 @@
 #include "ui/views/controls/styled_label.h"
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/layout/flex_layout.h"
+#include "ui/views/style/typography.h"
 
 PageInfoAdPersonalizationContentView::PageInfoAdPersonalizationContentView(
     PageInfo* presenter,
@@ -54,22 +56,43 @@ PageInfoAdPersonalizationContentView::~PageInfoAdPersonalizationContentView() =
 
 void PageInfoAdPersonalizationContentView::SetAdPersonalizationInfo(
     const AdPersonalizationInfo& info) {
-  if (!info.has_joined_user_to_interest_group)
-    return;
+  // The whole section shouldn't be visible when info is empty.
+  DCHECK(!info.is_empty());
 
   ChromeLayoutProvider* layout_provider = ChromeLayoutProvider::Get();
   const auto button_insets =
       layout_provider->GetInsetsMetric(INSETS_PAGE_INFO_HOVER_BUTTON);
 
-  // TODO(olesiamarukhno): Show different strings based on info.
+  int message_id;
+  if (info.has_joined_user_to_interest_group && !info.accessed_topics.empty()) {
+    message_id =
+        IDS_PAGE_INFO_AD_PERSONALIZATION_TOPICS_AND_INTEREST_GROUP_DESCRIPTION;
+  } else if (info.has_joined_user_to_interest_group) {
+    message_id = IDS_PAGE_INFO_AD_PERSONALIZATION_INTEREST_GROUP_DESCRIPTION;
+  } else {
+    message_id = IDS_PAGE_INFO_AD_PERSONALIZATION_TOPICS_DESCRIPTION;
+  }
   auto* description_label =
       info_container_->AddChildView(std::make_unique<views::Label>(
-          l10n_util::GetStringUTF16(
-              IDS_PAGE_INFO_AD_PERSONALIZATION_INTEREST_GROUP_DESCRIPTION),
-          views::style::CONTEXT_LABEL, views::style::STYLE_SECONDARY));
+          l10n_util::GetStringUTF16(message_id), views::style::CONTEXT_LABEL,
+          views::style::STYLE_SECONDARY));
   description_label->SetMultiLine(true);
   description_label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
   description_label->SetProperty(views::kMarginsKey, button_insets);
+
+  if (!info.accessed_topics.empty()) {
+    std::vector<std::u16string> topic_names;
+    for (const auto& topic : info.accessed_topics) {
+      topic_names.push_back(topic.GetLocalizedRepresentation());
+    }
+    auto* topic_label =
+        info_container_->AddChildView(std::make_unique<views::Label>(
+            base::JoinString(topic_names, u"\n"), views::style::CONTEXT_LABEL,
+            views::style::STYLE_PRIMARY));
+    topic_label->SetMultiLine(true);
+    topic_label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
+    topic_label->SetProperty(views::kMarginsKey, button_insets);
+  }
 
   PreferredSizeChanged();
 }

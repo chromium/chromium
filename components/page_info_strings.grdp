@@ -721,7 +721,13 @@
   <message name="IDS_PAGE_INFO_AD_PERSONALIZATION_HEADER" translateable="false" desc="The header label of the 'Ad personalization' subpage in Page Info bubble.">
     Ad personalization
   </message>
-  <message name="IDS_PAGE_INFO_AD_PERSONALIZATION_INTEREST_GROUP_DESCRIPTION" translateable="false" desc="The description label that explains to the user that the current site has joined the user to an interest group. The label is located in 'Ad personalization' subpage in page info bubble.">
+  <message name="IDS_PAGE_INFO_AD_PERSONALIZATION_TOPICS_AND_INTEREST_GROUP_DESCRIPTION" translateable="false" desc="The description label that explains to the user that the current site has accessed the Topics API and joined the user to an interest group. The label is located in 'Ad personalization' subpage in page info bubble.">
+    This site defines interests other sites can use to show you ads. This site also gets your interests from Chrome to show you more relevant ads.
+  </message>
+  <message name="IDS_PAGE_INFO_AD_PERSONALIZATION_TOPICS_DESCRIPTION" translateable="false" desc="The description label that explains to the user that the current site has accessed the Topics API. The label is located in 'Ad personalization' subpage in page info bubble.">
+  This site gets your interests from Chrome to show you more relevant ads
+</message>
+    <message name="IDS_PAGE_INFO_AD_PERSONALIZATION_INTEREST_GROUP_DESCRIPTION" translateable="false" desc="The description label that explains to the user that the current site has joined the user to an interest group. The label is located in 'Ad personalization' subpage in page info bubble.">
     This site defines interests other sites can use to show you ads
   </message>
   <message name="IDS_PAGE_INFO_AD_PERSONALIZATION_SUBPAGE_MANAGE_BUTTON" translateable="false" desc="The text on the button, that opens privacy sandbox settings page, in 'Ad personalization' subpage in page info bubble. ">
