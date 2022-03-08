@@ -10,6 +10,7 @@
 
 #include "base/time/clock.h"
 #include "components/optimization_guide/proto/models.pb.h"
+#include "components/segmentation_platform/internal/database/ukm_types.h"
 #include "components/segmentation_platform/internal/execution/feature_list_query_processor.h"
 #include "components/segmentation_platform/internal/proto/model_metadata.pb.h"
 
@@ -38,10 +39,14 @@ class FeatureProcessorState {
 
   OptimizationTarget segment_id() const { return segment_id_; }
 
+  bool error() const { return error_; }
+
   // Returns and pops the next input feature in the feature list.
   proto::InputFeature PopNextInputFeature();
 
   // Sets an error to the current feature processor state.
+  // TODO(haileywang): Pass in a reason for error enum here and record an enum
+  // histogram of feature failure reasons.
   void SetError();
 
   // Returns whether the input feature list is empty.
@@ -52,7 +57,7 @@ class FeatureProcessorState {
 
   // Update the input tensor vector.
   void AppendInputTensor(const std::vector<float>& data);
-  void AppendInputTensor(float data);
+  void AppendInputTensor(const std::vector<ProcessedValue>& data);
 
  private:
   const base::Time prediction_time_;

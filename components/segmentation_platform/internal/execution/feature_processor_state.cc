@@ -4,6 +4,8 @@
 
 #include "components/segmentation_platform/internal/execution/feature_processor_state.h"
 
+#include "components/segmentation_platform/internal/database/ukm_types.h"
+
 namespace segmentation_platform {
 
 FeatureProcessorState::FeatureProcessorState(
@@ -42,6 +44,22 @@ void FeatureProcessorState::RunCallback() {
 
 void FeatureProcessorState::AppendInputTensor(const std::vector<float>& data) {
   input_tensor_.insert(input_tensor_.end(), data.begin(), data.end());
+}
+
+void FeatureProcessorState::AppendInputTensor(
+    const std::vector<ProcessedValue>& data) {
+  std::vector<float> tensor_result;
+  for (auto& value : data) {
+    if (value.type == ProcessedValue::Type::FLOAT) {
+      tensor_result.push_back(value.float_val);
+    } else {
+      SetError();
+      return;
+    }
+  }
+
+  input_tensor_.insert(input_tensor_.end(), tensor_result.begin(),
+                       tensor_result.end());
 }
 
 }  // namespace segmentation_platform

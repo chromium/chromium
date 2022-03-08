@@ -42,17 +42,7 @@ void CustomInputProcessor::OnFinishProcessing(
     std::unique_ptr<FeatureProcessorState> feature_processor_state,
     IndexedTensors result) {
   custom_inputs_.clear();
-  std::vector<float> tensor_result;
-  for (const auto& value : result[kIndexNotUsed]) {
-    if (value.type == ProcessedValue::Type::FLOAT) {
-      tensor_result.push_back(value.float_val);
-    } else {
-      feature_processor_state->SetError();
-      feature_processor_state->RunCallback();
-      return;
-    }
-  }
-  feature_processor_state->AppendInputTensor(tensor_result);
+  feature_processor_state->AppendInputTensor(result[kIndexNotUsed]);
   base::SequencedTaskRunnerHandle::Get()->PostTask(
       FROM_HERE,
       base::BindOnce(std::move(callback), std::move(feature_processor_state)));
@@ -81,15 +71,14 @@ void CustomInputProcessor::Process(
 
   // Processing of the feature list has completed.
   custom_inputs_.clear();
-  if (success) {
-    base::SequencedTaskRunnerHandle::Get()->PostTask(
-        FROM_HERE,
-        base::BindOnce(std::move(callback), std::move(feature_processor_state),
-                       std::move(result_)));
-  } else {
+  if (!success) {
+    custom_inputs_.clear();
     feature_processor_state->SetError();
-    feature_processor_state->RunCallback();
   }
+  base::SequencedTaskRunnerHandle::Get()->PostTask(
+      FROM_HERE,
+      base::BindOnce(std::move(callback), std::move(feature_processor_state),
+                     std::move(result_)));
 }
 
 void CustomInputProcessor::ProcessSingleCustomInput(

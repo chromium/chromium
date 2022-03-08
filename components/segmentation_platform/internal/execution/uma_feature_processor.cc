@@ -40,7 +40,9 @@ void UmaFeatureProcessor::ProcessUmaFeature(
   if (metadata_utils::ValidateMetadataUmaFeature(feature) !=
       metadata_utils::ValidationResult::kValidationSuccess) {
     feature_processor_state->SetError();
-    feature_processor_state->RunCallback();
+    base::SequencedTaskRunnerHandle::Get()->PostTask(
+        FROM_HERE, base::BindOnce(std::move(callback),
+                                  std::move(feature_processor_state)));
     return;
   }
 

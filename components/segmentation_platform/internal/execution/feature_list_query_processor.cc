@@ -64,8 +64,9 @@ void FeatureListQueryProcessor::ProcessFeatureList(
 
 void FeatureListQueryProcessor::ProcessNextInputFeature(
     std::unique_ptr<FeatureProcessorState> feature_processor_state) {
-  // Finished processing all input features.
-  if (feature_processor_state->IsFeatureListEmpty()) {
+  // Finished processing all input features or an error occurred.
+  if (feature_processor_state->IsFeatureListEmpty() ||
+      feature_processor_state->error()) {
     feature_processor_state->RunCallback();
     return;
   }
@@ -102,17 +103,7 @@ void FeatureListQueryProcessor::OnSqlQueryProcessed(
     std::unique_ptr<SqlFeatureProcessor> sql_feature_processor,
     std::unique_ptr<FeatureProcessorState> feature_processor_state,
     QueryProcessor::IndexedTensors result) {
-  std::vector<float> tensor_result;
-  for (auto& value : result[kIndexNotUsed]) {
-    if (value.type == ProcessedValue::Type::FLOAT) {
-      tensor_result.push_back(value.float_val);
-    } else {
-      feature_processor_state->SetError();
-      feature_processor_state->RunCallback();
-      return;
-    }
-  }
-  feature_processor_state->AppendInputTensor(tensor_result);
+  feature_processor_state->AppendInputTensor(result[kIndexNotUsed]);
   ProcessNextInputFeature(std::move(feature_processor_state));
 }
 
