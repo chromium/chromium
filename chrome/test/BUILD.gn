@@ -3193,6 +3193,9 @@ if (!is_android) {
         # TaskManagerView is not used or built on Mac.
         sources += [ "../browser/ui/views/task_manager_view_browsertest.cc" ]
       }
+      if (is_win || is_mac || is_linux || is_fuchsia) {
+        sources += [ "../browser/ui/views/web_apps/deprecated_apps_dialog_view_browsertest.cc" ]
+      }
       if (is_chromeos_ash) {
         sources += [
           "../browser/ui/views/select_file_dialog_extension_browsertest.cc",

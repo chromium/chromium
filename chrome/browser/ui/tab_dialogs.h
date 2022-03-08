@@ -5,8 +5,11 @@
 #ifndef CHROME_BROWSER_UI_TAB_DIALOGS_H_
 #define CHROME_BROWSER_UI_TAB_DIALOGS_H_
 
+#include <set>
+
 #include "base/callback_forward.h"
 #include "base/supports_user_data.h"
+#include "extensions/common/extension_id.h"
 #include "ui/gfx/native_widget_types.h"
 
 class Browser;
@@ -46,6 +49,11 @@ class TabDialogs : public base::SupportsUserData::Data {
   virtual void HideHungRendererDialog(
       content::RenderWidgetHost* render_widget_host) = 0;
   virtual bool IsShowingHungRendererDialog() = 0;
+
+  // Shows the deprecated app dialog.
+  virtual void ShowDeprecatedAppsDialog(
+      const std::set<extensions::ExtensionId>& deprecated_app_ids,
+      content::WebContents* web_contents) = 0;
 
   // Shows or hides the ManagePasswords bubble.
   // Pass true for |user_action| if this is a user initiated action.

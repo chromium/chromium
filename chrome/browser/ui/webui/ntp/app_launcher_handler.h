@@ -272,6 +272,9 @@ class AppLauncherHandler
   // The ids of apps to show on the NTP.
   std::set<std::string> visible_apps_;
 
+  // Set of deprecated app ids for showing on dialog.
+  std::set<extensions::ExtensionId> deprecated_app_ids_;
+
   // The id of the extension we are prompting the user about (either enable or
   // uninstall).
   std::string extension_id_prompting_;
