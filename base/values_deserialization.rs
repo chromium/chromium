@@ -225,12 +225,12 @@ impl<'de, 'elem, 'container> DeserializeSeed<'de> for ValueVisitor<'elem, 'conta
 #[cfg(test)]
 mod test {
     use super::ValueVisitor;
-    use crate::rs_glue::ffi::NewValueSlot;
+    use crate::rs_glue::ffi::NewValueSlotForTesting;
     use crate::values::ValueSlotRef;
 
     #[test]
     fn test_create() {
-        let mut value_slot = NewValueSlot();
+        let mut value_slot = NewValueSlotForTesting();
         let value_slot = ValueSlotRef::from(&mut value_slot);
         let _ = ValueVisitor::new(value_slot, 12);
         // Without introducing extra dependencies such as serde_test,

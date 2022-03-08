@@ -18,14 +18,27 @@ const UTF8_BOM: [u8; 3] = [0xef, 0xbb, 0xbf];
 
 #[cxx::bridge(namespace=base::rs_glue)]
 mod ffi {
+    /// Options for parsing JSON inputs. Largely a mirror of the C++ `base::JSONParserOptions`
+    /// bitflags, represented as a friendlier struct-of-bools instead.
     #[namespace=base::ffi::json::json_parser]
     struct JsonOptions {
+        /// Allows commas to exist after the last element in structures.
         allow_trailing_commas: bool,
+        /// If set the parser replaces invalid code points (i.e. lone surrogates) with the Unicode
+        /// replacement character (U+FFFD). If not set, invalid code points trigger a hard error and
+        /// parsing fails.
         replace_invalid_characters: bool,
+        /// Allows both C (/* */) and C++ (//) style comments.
         allow_comments: bool,
+        /// Permits unescaped ASCII control characters (such as unescaped \r and \n) in the range
+        /// [0x00,0x1F].
         allow_control_chars: bool,
+        /// Permits \\v vertical tab escapes.
         allow_vert_tab: bool,
+        /// Permits \\xNN escapes as described above.
         allow_x_escapes: bool,
+        /// The maximum recursion depth to walk while parsing nested JSON objects. JSON beyond the
+        /// specified depth will be ignored.
         max_depth: usize,
     }
 
@@ -44,6 +57,28 @@ mod ffi {
             error_column: &mut i32,
             error_message: Pin<&mut CxxString>,
         ) -> bool;
+    }
+}
+
+pub type JsonOptions = ffi::JsonOptions;
+impl JsonOptions {
+    /// Construct a JsonOptions with common Chromium extensions.
+    ///
+    /// Per base::JSONParserOptions::JSON_PARSE_CHROMIUM_EXTENSIONS:
+    ///
+    /// This parser historically accepted, without configuration flags,
+    /// non-standard JSON extensions. This enables that traditional parsing
+    /// behavior.
+    pub fn with_chromium_extensions(max_depth: usize) -> JsonOptions {
+        JsonOptions {
+            allow_trailing_commas: false,
+            replace_invalid_characters: false,
+            allow_comments: true,
+            allow_control_chars: true,
+            allow_vert_tab: true,
+            allow_x_escapes: true,
+            max_depth,
+        }
     }
 }
 
@@ -67,9 +102,9 @@ mod ffi {
 /// It is be desirable in future to expose this API to other Rust code inside
 /// and outside //base. TODO(crbug/1287209): work out API norms and then add
 /// 'pub' to do this.
-fn decode_json(
+pub fn decode_json(
     json: &[u8],
-    options: ffi::JsonOptions,
+    options: JsonOptions,
     value_slot: ValueSlotRef,
 ) -> Result<(), serde_jsonrc::Error> {
     let mut to_parse = json;
@@ -142,14 +177,27 @@ fn decode_json_from_cpp(
 
 #[cfg(test)]
 mod tests {
-    use crate::{rs_glue::ffi::*, values::ValueSlotRef};
+    use crate::rs_glue::ffi::NewValueSlotForTesting;
+    use crate::values::ValueSlotRef;
+
+    #[test]
+    fn test_chromium_extensions() {
+        let opts = super::JsonOptions::with_chromium_extensions(101);
+        assert_eq!(opts.allow_trailing_commas, false);
+        assert_eq!(opts.replace_invalid_characters, false);
+        assert_eq!(opts.allow_comments, true);
+        assert_eq!(opts.allow_control_chars, true);
+        assert_eq!(opts.allow_vert_tab, true);
+        assert_eq!(opts.allow_x_escapes, true);
+        assert_eq!(opts.max_depth, 101);
+    }
 
     #[test]
     fn test_decode_json() {
         // Exhaustively tested by existing C++ JSON tests.
         // This test is almost pointless but it seems wise to have a single
         // Rust-side test for the basics.
-        let options = super::ffi::JsonOptions {
+        let options = super::JsonOptions {
             max_depth: 128,
             allow_trailing_commas: false,
             replace_invalid_characters: false,
@@ -158,7 +206,7 @@ mod tests {
             allow_vert_tab: false,
             allow_x_escapes: false,
         };
-        let mut value_slot = NewValueSlot();
+        let mut value_slot = NewValueSlotForTesting();
         super::decode_json(b"{ \"a\": 4 }", options, ValueSlotRef::from(&mut value_slot)).unwrap();
         assert_eq!(format!("{:?}", ValueSlotRef::from(&mut value_slot)), "{\n   \"a\": 4\n}\n");
     }

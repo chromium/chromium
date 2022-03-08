@@ -35,7 +35,7 @@ void ValueAppendString(base::Value& v, rust::Str value);
 base::Value& ValueAppendDict(base::Value& v);
 base::Value& ValueAppendList(base::Value& v);
 void ValueReserveSize(base::Value& v, size_t len);
-std::unique_ptr<ValueSlot> NewValueSlot();
+std::unique_ptr<ValueSlot> NewValueSlotForTesting();
 rust::String DumpValueSlot(const ValueSlot& v);
 void ConstructNoneValue(ValueSlot& v);
 void ConstructBoolValue(ValueSlot& v, bool value);

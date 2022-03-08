@@ -212,19 +212,19 @@ mod tests {
 
     #[test]
     fn test_alloc_dealloc() {
-        rs_glue::ffi::NewValueSlot();
+        rs_glue::ffi::NewValueSlotForTesting();
     }
 
     #[test]
     fn test_starts_none() {
-        let mut v = rs_glue::ffi::NewValueSlot();
+        let mut v = rs_glue::ffi::NewValueSlotForTesting();
         let v = ValueSlotRef::from(v.pin_mut());
         assert_eq!(format!("{:?}", v), "(empty)");
     }
 
     #[test]
     fn test_set_dict() {
-        let mut v = rs_glue::ffi::NewValueSlot();
+        let mut v = rs_glue::ffi::NewValueSlotForTesting();
         let mut v = ValueSlotRef::from(&mut v);
         let mut d = v.construct_dict();
         d.set_string_key("fish", "skate");
@@ -246,7 +246,7 @@ mod tests {
 
     #[test]
     fn test_set_list() {
-        let mut v = rs_glue::ffi::NewValueSlot();
+        let mut v = rs_glue::ffi::NewValueSlotForTesting();
         let mut v = ValueSlotRef::from(&mut v);
         let mut l = v.construct_list();
         l.reserve_size(5);
@@ -269,7 +269,7 @@ mod tests {
     where
         F: FnOnce(&mut ValueSlotRef),
     {
-        let mut v = rs_glue::ffi::NewValueSlot();
+        let mut v = rs_glue::ffi::NewValueSlotForTesting();
         let mut v = ValueSlotRef::from(&mut v);
         f(&mut v);
         assert_eq!(format!("{:?}", v).trim_end(), expected);
@@ -286,7 +286,7 @@ mod tests {
 
     #[test]
     fn test_reuse_slot() {
-        let mut v = rs_glue::ffi::NewValueSlot();
+        let mut v = rs_glue::ffi::NewValueSlotForTesting();
         let mut v = ValueSlotRef::from(&mut v);
         v.construct_none();
         let mut d = v.construct_dict();

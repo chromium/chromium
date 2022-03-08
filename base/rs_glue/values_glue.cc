@@ -15,7 +15,7 @@ namespace rs_glue {
 // without these intermediate layer. With future inprovements in interop,
 // they may disappear.
 
-std::unique_ptr<ValueSlot> NewValueSlot() {
+std::unique_ptr<ValueSlot> NewValueSlotForTesting() {
   return std::make_unique<ValueSlot>();
 }
 

@@ -84,12 +84,9 @@ pub(crate) mod ffi {
         fn ConstructListValue(v: Pin<&mut ValueSlot>) -> Pin<&mut Value>;
 
         fn DumpValueSlot(v: &ValueSlot) -> String;
-        // The following is enabled in Rust unit tests only. cxx does
-        // not allow us to use #[cfg(test)] attributes here. We could make a
-        // separate ffi_test mod, but (unless we put it in a different file)
-        // we would have to call the type something other than OptionalValue
-        // to avoid conflicts, and that seems a worse solution.
-        #[allow(unused)]
-        fn NewValueSlot() -> UniquePtr<ValueSlot>;
+
+        // Defined for Rust tests to crate a ValueSlot, because it requires C++ to do the creation
+        // at this time.
+        fn NewValueSlotForTesting() -> UniquePtr<ValueSlot>;
     }
 }
