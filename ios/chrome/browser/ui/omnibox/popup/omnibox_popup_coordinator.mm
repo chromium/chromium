@@ -89,6 +89,9 @@
                                             delegate:self.mediator];
     self.popupViewController =
         [OmniboxPopupViewProvider makeViewControllerWithModel:self.model];
+    [self.browser->GetCommandDispatcher()
+        startDispatchingToTarget:self.model
+                     forProtocol:@protocol(OmniboxSuggestionCommands)];
     self.mediator.consumer = self.model;
   } else {
     OmniboxPopupViewController* popupViewController =

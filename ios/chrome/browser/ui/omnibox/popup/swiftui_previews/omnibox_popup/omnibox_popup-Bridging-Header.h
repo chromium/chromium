@@ -12,6 +12,7 @@
 #import "autocomplete_result_consumer.h"
 #import "autocomplete_suggestion.h"
 #import "omnibox_icon.h"
+#import "omnibox_suggestion_commands.h"
 #import "popup_mediator.h"
 
 #endif  // IOS_CHROME_BROWSER_UI_OMNIBOX_POPUP_SWIFTUI_PREVIEWS_OMNIBOX_POPUP_OMNIBOX_POPUP_BRIDGING_HEADER_H_

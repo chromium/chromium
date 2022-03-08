@@ -5,6 +5,13 @@
 import SwiftUI
 import ios_chrome_common_ui_colors_swift
 
+struct SizePreferenceKey: PreferenceKey {
+  static var defaultValue = CGSize.zero
+  static func reduce(value: inout CGSize, nextValue: () -> CGSize) {
+    value = nextValue()
+  }
+}
+
 struct PopupMatchRowView: View {
   enum Dimensions {
     static let actionButtonOffset = CGSize(width: -5, height: 0)
@@ -17,14 +24,16 @@ struct PopupMatchRowView: View {
   }
 
   let match: PopupMatch
+  let isHighlighted: Bool
   let selectionHandler: () -> Void
   let trailingButtonHandler: () -> Void
 
   @State var isPressed = false
+  @State var childView = CGSize.zero
 
   var body: some View {
     ZStack {
-      if self.isPressed { Color.cr_tableRowViewHighlight }
+      if self.isPressed || self.isHighlighted { Color.cr_tableRowViewHighlight }
 
       Button(action: selectionHandler) { Rectangle().fill(.clear).contentShape(Rectangle()) }
         .buttonStyle(PressedPreferenceKeyButtonStyle())

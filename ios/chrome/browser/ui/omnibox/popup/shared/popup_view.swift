@@ -17,6 +17,7 @@ struct PopupView: View {
           (index, match) in
           PopupMatchRowView(
             match: match,
+            isHighlighted: index == self.model.highlightedMatchIndex,
             selectionHandler: {
               model.delegate?.autocompleteResultConsumer(model, didSelectRow: UInt(index))
             },
@@ -37,6 +38,7 @@ struct PopupView: View {
       }
     }
   }
+
 }
 
 struct PopupView_Previews: PreviewProvider {

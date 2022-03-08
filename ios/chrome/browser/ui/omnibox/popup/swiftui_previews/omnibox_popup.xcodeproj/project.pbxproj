@@ -91,6 +91,7 @@
 		59C4A9BE27BFF04F0080C045 /* popup_model.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = popup_model.swift; path = ../../shared/popup_model.swift; sourceTree = "<group>"; };
 		8701451B27D24A8800C2D66F /* pressed_preference_key_button_style.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = pressed_preference_key_button_style.swift; path = ../../shared/pressed_preference_key_button_style.swift; sourceTree = "<group>"; };
 		876011EA27D287A6004EB60B /* popup_match_trailing_button.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = popup_match_trailing_button.swift; path = ../../shared/popup_match_trailing_button.swift; sourceTree = "<group>"; };
+		876011E927D26E28004EB60B /* omnibox_suggestion_commands.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = omnibox_suggestion_commands.h; path = ../../../../commands/omnibox_suggestion_commands.h; sourceTree = "<group>"; };
 		879F655827CD142E005B650F /* ios_chrome_common_ui_colors_swift.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = ios_chrome_common_ui_colors_swift.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		879F655A27CD142E005B650F /* ios_chrome_common_ui_colors_swift.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ios_chrome_common_ui_colors_swift.h; sourceTree = "<group>"; };
 		879F656627CD14E5005B650F /* Color+Chrome.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = "Color+Chrome.swift"; path = "../../../../../../common/ui/colors/Color+Chrome.swift"; sourceTree = "<group>"; };
@@ -146,6 +147,7 @@
 		59C4A9B927BFF0450080C045 /* shared */ = {
 			isa = PBXGroup;
 			children = (
+				876011E927D26E28004EB60B /* omnibox_suggestion_commands.h */,
 				593C4C1027C5638000FBE617 /* autocomplete_result_consumer.h */,
 				593C4C1127C5638000FBE617 /* autocomplete_suggestion.h */,
 				593C4C1227C5638000FBE617 /* omnibox_icon.h */,
