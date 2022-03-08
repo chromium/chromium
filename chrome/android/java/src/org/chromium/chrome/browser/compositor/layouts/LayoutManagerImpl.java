@@ -967,6 +967,9 @@ public class LayoutManagerImpl implements ManagedLayoutManager, LayoutUpdateHost
     protected void startShowing(Layout layout, boolean animate) {
         assert layout != null : "Can't show a null layout.";
 
+        // This can happen in some cases where the start surface may not have been created yet.
+        if (layout == null) return;
+
         // Set the new layout
         setNextLayout(null, true);
         Layout oldLayout = getActiveLayout();
