@@ -43,7 +43,6 @@
 #include "components/services/storage/public/mojom/storage_service.mojom.h"
 #include "components/services/storage/storage_service_impl.h"
 #include "content/browser/aggregation_service/aggregation_service_impl.h"
-#include "content/browser/aggregation_service/aggregation_service_test_utils.h"
 #include "content/browser/attribution_reporting/attribution_manager_impl.h"
 #include "content/browser/attribution_reporting/attribution_test_utils.h"
 #include "content/browser/attribution_reporting/attribution_trigger.h"
@@ -923,10 +922,8 @@ class StoragePartitionImplTest : public testing::Test {
     // Configures the Conversion API to run in memory to speed up its
     // initialization and avoid timeouts. See https://crbug.com/1080764.
     AttributionManagerImpl::RunInMemoryForTesting();
-    feature_list_.InitWithFeatures(
-        {blink::features::kInterestGroupStorage,
-         features::kPrivacySandboxAggregationService},
-        {});
+    feature_list_.InitWithFeatures({blink::features::kInterestGroupStorage},
+                                   {});
   }
 
   StoragePartitionImplTest(const StoragePartitionImplTest&) = delete;

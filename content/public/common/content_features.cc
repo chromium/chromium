@@ -670,15 +670,6 @@ const base::Feature kProcessSharingWithStrictSiteInstances{
 const base::Feature kHighPriorityBeforeUnload{
     "HighPriorityBeforeUnload", base::FEATURE_DISABLED_BY_DEFAULT};
 
-// Enables the Aggregation Service. See crbug.com/1207974.
-const base::Feature kPrivacySandboxAggregationService = {
-    "PrivacySandboxAggregationService", base::FEATURE_DISABLED_BY_DEFAULT};
-
-const base::FeatureParam<std::string>
-    kPrivacySandboxAggregationServiceTrustedServerUrlParam{
-        &kPrivacySandboxAggregationService, "trusted_server_url",
-        "https://server.example.com/.well-known/aggregation-service/keys.json"};
-
 // Enables Private Network Access checks for all types of web workers.
 //
 // This affects initial worker script fetches, fetches initiated by workers

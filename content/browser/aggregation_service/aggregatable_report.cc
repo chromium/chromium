@@ -24,8 +24,8 @@
 #include "base/values.h"
 #include "components/cbor/values.h"
 #include "components/cbor/writer.h"
+#include "content/browser/aggregation_service/aggregation_service_features.h"
 #include "content/browser/aggregation_service/public_key.h"
-#include "content/public/common/content_features.h"
 #include "services/network/public/cpp/is_potentially_trustworthy.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/boringssl/src/include/openssl/hpke.h"
@@ -55,8 +55,7 @@ std::vector<GURL> GetDefaultProcessingUrls(
               GURL("https://server2.example.com")};
     case AggregationServicePayloadContents::ProcessingType::kSingleServer:
       return {
-          GURL(features::kPrivacySandboxAggregationServiceTrustedServerUrlParam
-                   .Get())};
+          GURL(kPrivacySandboxAggregationServiceTrustedServerUrlParam.Get())};
   }
 }
 
