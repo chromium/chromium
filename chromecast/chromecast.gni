@@ -96,11 +96,8 @@ declare_args() {
   # within cast_shell.
   enable_external_mojo_services = is_linux || is_chromeos
 
-  # Support Perfetto tracing of processes that depend on entry points in
-  # //chromecast/external_mojo/external_service_support
-  #
-  # Note: This flag will be deprecated in favor of enable_perfetto_tracing.
-  enable_external_mojo_tracing = false
+  # Support using system perfetto tracing
+  enable_perfetto_tracing = false
 
   # Support using system perfetto tracing
   enable_perfetto_tracing = false
@@ -141,10 +138,6 @@ declare_args() {
 declare_args() {
   # Use Playready CDMs for internal non-desktop builds.
   enable_playready = !is_cast_desktop_build && chromecast_branding != "public"
-
-  assert(!(enable_external_mojo_tracing && enable_perfetto_tracing),
-         "Only one of enable_external_mojo_tracing or " +
-             "enable_perfetto_tracing can be enabled")
 }
 
 # This is the release version, which takes the form <major>.<minor>. Internal
