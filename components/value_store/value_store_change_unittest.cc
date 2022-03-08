@@ -20,7 +20,7 @@ TEST(ValueStoreChangeTest, NullOldValue) {
   EXPECT_EQ(nullptr, change.old_value());
   {
     base::Value expected("value");
-    EXPECT_TRUE(change.new_value()->Equals(&expected));
+    EXPECT_EQ(*change.new_value(), expected);
   }
 }
 
@@ -30,7 +30,7 @@ TEST(ValueStoreChangeTest, NullNewValue) {
   EXPECT_EQ("key", change.key());
   {
     base::Value expected("value");
-    EXPECT_TRUE(change.old_value()->Equals(&expected));
+    EXPECT_EQ(*change.old_value(), expected);
   }
   EXPECT_EQ(nullptr, change.new_value());
 }
@@ -42,11 +42,11 @@ TEST(ValueStoreChangeTest, NonNullValues) {
   EXPECT_EQ("key", change.key());
   {
     base::Value expected("old_value");
-    EXPECT_TRUE(change.old_value()->Equals(&expected));
+    EXPECT_EQ(*change.old_value(), expected);
   }
   {
     base::Value expected("new_value");
-    EXPECT_TRUE(change.new_value()->Equals(&expected));
+    EXPECT_EQ(*change.new_value(), expected);
   }
 }
 

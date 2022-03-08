@@ -148,7 +148,7 @@ TEST(JsonSchemaCompilerChoicesTest, ChoiceTypeToValue) {
   choices::ChoiceType out;
   ASSERT_TRUE(choices::ChoiceType::Populate(value, &out));
 
-  EXPECT_TRUE(value.Equals(out.ToValue().get()));
+  EXPECT_EQ(value, *out.ToValue());
 }
 
 TEST(JsonSchemaCompilerChoicesTest, ReturnChoices) {
@@ -163,7 +163,7 @@ TEST(JsonSchemaCompilerChoicesTest, ReturnChoices) {
     expected.Append(1);
     expected.Append(2);
 
-    EXPECT_TRUE(expected.Equals(results_value.get()));
+    EXPECT_EQ(expected, *results_value);
   }
   {
     choices::ReturnChoices::Results::Result results;
@@ -174,7 +174,7 @@ TEST(JsonSchemaCompilerChoicesTest, ReturnChoices) {
 
     base::Value expected(5);
 
-    EXPECT_TRUE(expected.Equals(results_value.get()));
+    EXPECT_EQ(expected, *results_value);
   }
 }
 

@@ -49,7 +49,7 @@ TEST(SyncChangeTest, LocalUpdate) {
       EntitySpecificsToValue(specifics));
   std::unique_ptr<base::DictionaryValue> e_spec(
       EntitySpecificsToValue(e.sync_data().GetSpecifics()));
-  EXPECT_TRUE(ref_spec->Equals(e_spec.get()));
+  EXPECT_EQ(*ref_spec, *e_spec);
 }
 
 TEST(SyncChangeTest, LocalAdd) {
@@ -70,7 +70,7 @@ TEST(SyncChangeTest, LocalAdd) {
       EntitySpecificsToValue(specifics));
   std::unique_ptr<base::DictionaryValue> e_spec(
       EntitySpecificsToValue(e.sync_data().GetSpecifics()));
-  EXPECT_TRUE(ref_spec->Equals(e_spec.get()));
+  EXPECT_EQ(*ref_spec, *e_spec);
 }
 
 TEST(SyncChangeTest, SyncerChanges) {
@@ -114,7 +114,7 @@ TEST(SyncChangeTest, SyncerChanges) {
       EntitySpecificsToValue(update_specifics));
   std::unique_ptr<base::DictionaryValue> e_spec(
       EntitySpecificsToValue(e.sync_data().GetSpecifics()));
-  EXPECT_TRUE(ref_spec->Equals(e_spec.get()));
+  EXPECT_EQ(*ref_spec, *e_spec);
 
   // Verify add.
   e = change_list[1];
@@ -122,7 +122,7 @@ TEST(SyncChangeTest, SyncerChanges) {
   EXPECT_EQ(PREFERENCES, e.sync_data().GetDataType());
   ref_spec = EntitySpecificsToValue(add_specifics);
   e_spec = EntitySpecificsToValue(e.sync_data().GetSpecifics());
-  EXPECT_TRUE(ref_spec->Equals(e_spec.get()));
+  EXPECT_EQ(*ref_spec, *e_spec);
 
   // Verify delete.
   e = change_list[2];
@@ -130,7 +130,7 @@ TEST(SyncChangeTest, SyncerChanges) {
   EXPECT_EQ(PREFERENCES, e.sync_data().GetDataType());
   ref_spec = EntitySpecificsToValue(delete_specifics);
   e_spec = EntitySpecificsToValue(e.sync_data().GetSpecifics());
-  EXPECT_TRUE(ref_spec->Equals(e_spec.get()));
+  EXPECT_EQ(*ref_spec, *e_spec);
 }
 
 }  // namespace

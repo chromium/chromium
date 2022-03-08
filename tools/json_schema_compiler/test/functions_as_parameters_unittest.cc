@@ -40,7 +40,7 @@ TEST(JsonSchemaCompilerFunctionsAsParametersTest, RequiredFunctionToValue) {
 
     FunctionType out;
     ASSERT_TRUE(FunctionType::Populate(value, &out));
-    EXPECT_TRUE(value.Equals(out.ToValue().get()));
+    EXPECT_EQ(value, *out.ToValue());
   }
   {
     base::DictionaryValue value;
@@ -51,7 +51,7 @@ TEST(JsonSchemaCompilerFunctionsAsParametersTest, RequiredFunctionToValue) {
 
     FunctionType out;
     ASSERT_TRUE(FunctionType::Populate(value, &out));
-    EXPECT_TRUE(expected_value.Equals(out.ToValue().get()));
+    EXPECT_EQ(expected_value, *out.ToValue());
   }
 }
 
@@ -86,7 +86,7 @@ TEST(JsonSchemaCompilerFunctionsAsParametersTest, OptionalFunctionToValue) {
     OptionalFunctionType out;
     ASSERT_TRUE(OptionalFunctionType::Populate(empty_value, &out));
     // event_callback should not be set in the return from ToValue.
-    EXPECT_TRUE(empty_value.Equals(out.ToValue().get()));
+    EXPECT_EQ(empty_value, *out.ToValue());
   }
   {
     base::DictionaryValue value;
@@ -95,7 +95,7 @@ TEST(JsonSchemaCompilerFunctionsAsParametersTest, OptionalFunctionToValue) {
 
     OptionalFunctionType out;
     ASSERT_TRUE(OptionalFunctionType::Populate(value, &out));
-    EXPECT_TRUE(value.Equals(out.ToValue().get()));
+    EXPECT_EQ(value, *out.ToValue());
   }
 }
 
