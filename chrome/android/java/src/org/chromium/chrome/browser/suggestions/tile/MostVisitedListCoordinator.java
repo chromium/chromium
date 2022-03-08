@@ -5,209 +5,139 @@
 package org.chromium.chrome.browser.suggestions.tile;
 
 import android.app.Activity;
+import android.content.res.Configuration;
 import android.view.ViewGroup;
 
-import org.chromium.base.Log;
+import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
+import org.chromium.chrome.browser.lifecycle.ConfigurationChangedObserver;
 import org.chromium.chrome.browser.native_page.ContextMenuManager;
 import org.chromium.chrome.browser.offlinepages.OfflinePageBridge;
 import org.chromium.chrome.browser.profiles.Profile;
-import org.chromium.chrome.browser.suggestions.ImageFetcher;
 import org.chromium.chrome.browser.suggestions.SuggestionsConfig;
 import org.chromium.chrome.browser.suggestions.SuggestionsDependencyFactory;
-import org.chromium.chrome.browser.suggestions.SuggestionsNavigationDelegate;
 import org.chromium.chrome.browser.suggestions.SuggestionsUiDelegate;
-import org.chromium.chrome.browser.suggestions.SuggestionsUiDelegateImpl;
-import org.chromium.chrome.browser.suggestions.mostvisited.MostVisitedSitesMetadataUtils;
+import org.chromium.chrome.browser.tasks.ReturnToChromeExperimentsUtil;
 import org.chromium.chrome.browser.tasks.tab_management.TabUiFeatureUtilities;
-import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
+import org.chromium.chrome.browser.ui.native_page.TouchEnabledDelegate;
+import org.chromium.components.browser_ui.widget.displaystyle.UiConfig;
 import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 
-import java.io.IOException;
-import java.util.List;
-
 /**
  * Coordinator for displaying a list of {@link SuggestionsTileView} in a {@link ViewGroup}.
- *
- * TODO(mattsimmons): Move logic and view manipulation into the mediator/viewbinder. (and add tests)
  */
-public class MostVisitedListCoordinator implements TileGroup.Observer {
-    private static final String TAG = "TopSites";
-    public static final String CONTEXT_MENU_USER_ACTION_PREFIX = "Suggestions";
-    private static final String NEW_TAB_URL_HELP = "https://support.google.com/chrome/?p=new_tab";
+public class MostVisitedListCoordinator implements ConfigurationChangedObserver {
     private static final int TITLE_LINES = 1;
+    public static final String CONTEXT_MENU_USER_ACTION_PREFIX = "Suggestions";
 
-    // There's a limit of 12 in {@link MostVisitedSitesBridge#setObserver}.
-    private static final int MAX_RESULTS = 12;
     private final Activity mActivity;
+    private final ActivityLifecycleDispatcher mActivityLifecycleDispatcher;
+    private final MostVisitedListMediator mMediator;
     private final WindowAndroid mWindowAndroid;
     private final MvTilesLayout mMvTilesLayout;
+    private final UiConfig mUiConfig;
     private final PropertyModelChangeProcessor mModelChangeProcessor;
-    private final SnackbarManager mSnackbarManager;
-    private TileGroup mTileGroup;
-    private TileGroup.Delegate mTileGroupDelegate;
     private TileRenderer mRenderer;
-    private SuggestionsUiDelegate mSuggestionsUiDelegate;
     private ContextMenuManager mContextMenuManager;
     private OfflinePageBridge mOfflinePageBridge;
-    private SuggestionsNavigationDelegate mNavigationDelegate;
-    private boolean mInitializationComplete;
-    private ImageFetcher mImageFetcher;
 
-    public MostVisitedListCoordinator(Activity activity, MvTilesLayout mvTilesLayout,
-            PropertyModel propertyModel, SnackbarManager snackbarManager,
-            WindowAndroid windowAndroid) {
+    /**
+     * @param activity The app activity.
+     * @param activityLifecycleDispatcher Dispatcher for activity lifecycle events,
+     *                                    e.g.configuration changes. We need this to adjust the
+     *                                    paddings and margins of the tile views.
+     * @param mvTilesLayout The view of most visisted tiles layout.
+     * @param windowAndroid The current {@link WindowAndroid}
+     * @param parentViewLeftAndRightPaddings The margins of the parent view. We need this to adjust
+     *                                       the paddings and margins of the tile views.
+     */
+    public MostVisitedListCoordinator(Activity activity,
+            ActivityLifecycleDispatcher activityLifecycleDispatcher, MvTilesLayout mvTilesLayout,
+            WindowAndroid windowAndroid, int parentViewLeftAndRightPaddings) {
         mActivity = activity;
+        mActivityLifecycleDispatcher = activityLifecycleDispatcher;
         mWindowAndroid = windowAndroid;
         mMvTilesLayout = mvTilesLayout;
+        mUiConfig = new UiConfig(mMvTilesLayout);
+
+        PropertyModel propertyModel = new PropertyModel(MostVisitedListProperties.ALL_KEYS);
         mModelChangeProcessor = PropertyModelChangeProcessor.create(
                 propertyModel, mMvTilesLayout, MostVisitedListViewBinder::bind);
-        mSnackbarManager = snackbarManager;
-    }
 
-    public void initialize() {
         mRenderer =
                 new TileRenderer(mActivity, SuggestionsConfig.TileStyle.MODERN, TITLE_LINES, null);
 
-        // If it's a cold start and Instant Start is turned on, we render MV tiles placeholder here
-        // pre-native.
-        if (!mInitializationComplete
+        boolean shouldShowPlaceholderPreNative =
+                ReturnToChromeExperimentsUtil.isStartSurfaceEnabled(mActivity)
                 && TabUiFeatureUtilities.supportInstantStart(
-                        DeviceFormFactor.isNonMultiDisplayContextOnTablet(mActivity), mActivity)) {
-            try {
-                List<Tile> tiles =
-                        MostVisitedSitesMetadataUtils.restoreFileToSuggestionListsOnUiThread();
-                if (tiles != null) {
-                    mRenderer.renderTileSection(tiles, mMvTilesLayout, null);
-                    mMvTilesLayout.updateTilesViewLayout(
-                            mActivity.getResources().getConfiguration().orientation);
-                }
-            } catch (IOException e) {
-                Log.i(TAG, "No cached MV tiles file.");
-            }
-        }
+                        DeviceFormFactor.isNonMultiDisplayContextOnTablet(mActivity), mActivity);
+        boolean isTablet = DeviceFormFactor.isNonMultiDisplayContextOnTablet(mActivity);
+        ;
+        mMediator = new MostVisitedListMediator(activity.getResources(), mvTilesLayout, mRenderer,
+                propertyModel, shouldShowPlaceholderPreNative, parentViewLeftAndRightPaddings,
+                isTablet);
     }
 
     /**
      * Called before the TasksSurface is showing to initialize MV tiles.
      * {@link MostVisitedListCoordinator#destroyMVTiles()} is called after the TasksSurface hides.
+     *
+     * @param suggestionsUiDelegate The UI delegate of suggestion surface.
+     * @param tileGroupDelegate The delegate of tile group.
+     * @param touchEnabledDelegate The {@link TouchEnabledDelegate} for handling whether touch
+     *                             events are allowed.
      */
-    public void initWithNative(SuggestionsNavigationDelegate navigationDelegate) {
+    public void initWithNative(SuggestionsUiDelegate suggestionsUiDelegate,
+            TileGroup.Delegate tileGroupDelegate, TouchEnabledDelegate touchEnabledDelegate) {
+        mActivityLifecycleDispatcher.register(this);
         Profile profile = Profile.getLastUsedRegularProfile();
-        mNavigationDelegate = navigationDelegate;
-        mImageFetcher = new ImageFetcher(profile);
         if (mRenderer == null) {
-            // This function is never called in incognito mode.
-            mRenderer = new TileRenderer(
-                    mActivity, SuggestionsConfig.TileStyle.MODERN, TITLE_LINES, mImageFetcher);
+            mRenderer = new TileRenderer(mActivity, SuggestionsConfig.getTileStyle(mUiConfig),
+                    TITLE_LINES, suggestionsUiDelegate.getImageFetcher());
         } else {
-            mRenderer.setImageFetcher(mImageFetcher);
+            mRenderer.setImageFetcher(suggestionsUiDelegate.getImageFetcher());
         }
-        mSuggestionsUiDelegate = new MostVisitedSuggestionsUiDelegate(
-                mNavigationDelegate, profile, mSnackbarManager);
-        Runnable closeContextMenuCallback = mActivity::closeContextMenu;
-        mContextMenuManager = new ContextMenuManager(mSuggestionsUiDelegate.getNavigationDelegate(),
-                (enabled) -> {}, closeContextMenuCallback, CONTEXT_MENU_USER_ACTION_PREFIX);
+
+        mContextMenuManager = new ContextMenuManager(suggestionsUiDelegate.getNavigationDelegate(),
+                touchEnabledDelegate, mActivity::closeContextMenu, CONTEXT_MENU_USER_ACTION_PREFIX);
         mWindowAndroid.addContextMenuCloseListener(mContextMenuManager);
         mOfflinePageBridge =
                 SuggestionsDependencyFactory.getInstance().getOfflinePageBridge(profile);
-        mTileGroupDelegate = new TileGroupDelegateImpl(
-                mActivity, profile, mNavigationDelegate, mSnackbarManager);
-        mTileGroup = new TileGroup(mRenderer, mSuggestionsUiDelegate, mContextMenuManager,
-                mTileGroupDelegate, this, mOfflinePageBridge);
-        mTileGroup.startObserving(MAX_RESULTS);
-        mInitializationComplete = true;
+        mMediator.initWithNative(suggestionsUiDelegate, mContextMenuManager, tileGroupDelegate,
+                mOfflinePageBridge, mRenderer);
     }
 
-    private void updateTileIcon(Tile tile) {
-        SuggestionsTileView tileView = findTileView(tile);
-        if (tileView != null) {
-            tileView.renderIcon(tile);
-        }
-    }
-
-    private void updateOfflineBadge(Tile tile) {
-        SuggestionsTileView tileView = findTileView(tile);
-        if (tileView != null) tileView.renderOfflineBadge(tile);
-    }
-
-    private SuggestionsTileView findTileView(Tile tile) {
-        return mMvTilesLayout.findTileView(tile);
-    }
-
-    /** TileGroup.Observer implementation. */
-    @Override
-    public void onTileDataChanged() {
-        if (mTileGroup.getTileSections().size() < 1) return;
-
-        mRenderer.renderTileSection(mTileGroup.getTileSections().get(TileSectionType.PERSONALIZED),
-                mMvTilesLayout, mTileGroup.getTileSetupDelegate());
-        mMvTilesLayout.updateTilesViewLayout(
-                mActivity.getResources().getConfiguration().orientation);
-
-        MostVisitedSitesMetadataUtils.getInstance().saveSuggestionListsToFile(
-                mTileGroup.getTileSections().get(TileSectionType.PERSONALIZED));
-    }
-
-    @Override
-    public void onTileCountChanged() {}
-
-    @Override
-    public void onTileIconChanged(Tile tile) {
-        updateTileIcon(tile);
-    }
-
-    @Override
-    public void onTileOfflineBadgeVisibilityChanged(Tile tile) {
-        updateOfflineBadge(tile);
-    }
-
-    /** Called when the TasksSurface is hidden. */
+    /** Called when the TasksSurface is hidden or NewTabPageLayout is destroyed. */
     public void destroyMVTiles() {
-        mMvTilesLayout.destroy();
+        if (mMvTilesLayout != null) mMvTilesLayout.destroy();
+        mActivityLifecycleDispatcher.unregister(this);
 
-        if (mTileGroup != null) {
-            mTileGroup.destroy();
-            mTileGroup = null;
-        }
-        if (mTileGroupDelegate != null) {
-            mTileGroupDelegate.destroy();
-            mTileGroupDelegate = null;
-        }
-        mOfflinePageBridge = null;
+        if (mOfflinePageBridge != null) mOfflinePageBridge = null;
+        if (mRenderer != null) mRenderer = null;
 
         if (mWindowAndroid != null) {
             mWindowAndroid.removeContextMenuCloseListener(mContextMenuManager);
             mContextMenuManager = null;
         }
-        if (mSuggestionsUiDelegate != null) {
-            ((SuggestionsUiDelegateImpl) mSuggestionsUiDelegate).onDestroy();
-            mSuggestionsUiDelegate = null;
-        }
 
-        mRenderer = null;
-
-        if (mImageFetcher != null) {
-            mImageFetcher.onDestroy();
-        }
+        if (mMediator != null) mMediator.destroy();
     }
 
     public boolean isMVTilesCleanedUp() {
-        return mTileGroupDelegate == null && mTileGroup == null;
+        return mMediator.isMVTilesCleanedUp();
     }
 
-    /** Suggestions UI Delegate for constructing the TileGroup. */
-    private static class MostVisitedSuggestionsUiDelegate extends SuggestionsUiDelegateImpl {
-        public MostVisitedSuggestionsUiDelegate(SuggestionsNavigationDelegate navigationDelegate,
-                Profile profile, SnackbarManager snackbarManager) {
-            super(navigationDelegate, profile, null, snackbarManager);
-        }
+    public void onSwitchToForeground() {
+        assert !isMVTilesCleanedUp();
+        mMediator.onSwitchToForeground();
+    }
 
-        @Override
-        public boolean isVisible() {
-            return false;
-        }
+    /* ConfigurationChangedObserver implementation. */
+    @Override
+    public void onConfigurationChanged(Configuration newConfig) {
+        mMediator.onConfigurationChanged();
+        mUiConfig.updateDisplayStyle();
     }
 }

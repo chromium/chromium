@@ -270,6 +270,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kServiceManagerForDownload,
     &kShareButtonInTopToolbar,
     &kSharedClipboardUI,
+    &kShowScrollableMVTOnNTP,
     &kSpannableInlineAutocomplete,
     &kSpecialLocaleWrapper,
     &kSpecialUserDecision,
@@ -745,6 +746,9 @@ const base::Feature kServiceManagerForDownload{
 
 const base::Feature kShareButtonInTopToolbar{"ShareButtonInTopToolbar",
                                              base::FEATURE_DISABLED_BY_DEFAULT};
+
+const base::Feature kShowScrollableMVTOnNTP{"ShowScrollableMVTOnNTP",
+                                            base::FEATURE_DISABLED_BY_DEFAULT};
 
 const base::Feature kSpannableInlineAutocomplete{
     "SpannableInlineAutocomplete", base::FEATURE_ENABLED_BY_DEFAULT};

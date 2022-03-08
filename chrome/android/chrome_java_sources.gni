@@ -1057,6 +1057,7 @@ chrome_java_sources = [
   "java/src/org/chromium/chrome/browser/suggestions/mostvisited/MostVisitedSitesBridge.java",
   "java/src/org/chromium/chrome/browser/suggestions/mostvisited/MostVisitedSitesMetadataUtils.java",
   "java/src/org/chromium/chrome/browser/suggestions/tile/MostVisitedListCoordinator.java",
+  "java/src/org/chromium/chrome/browser/suggestions/tile/MostVisitedListMediator.java",
   "java/src/org/chromium/chrome/browser/suggestions/tile/MostVisitedListProperties.java",
   "java/src/org/chromium/chrome/browser/suggestions/tile/MostVisitedListViewBinder.java",
   "java/src/org/chromium/chrome/browser/suggestions/tile/MvTilesLayout.java",

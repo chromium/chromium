@@ -105,6 +105,7 @@ public class CachedFeatureFlags {
                     .put(ChromeFeatureList.GRID_TAB_SWITCHER_FOR_TABLETS, false)
                     .put(ChromeFeatureList.TAB_GROUPS_FOR_TABLETS, false)
                     .put(ChromeFeatureList.TAB_STRIP_IMPROVEMENTS, false)
+                    .put(ChromeFeatureList.SHOW_SCROLLABLE_MVT_ON_NTP, false)
                     .build();
 
     /**

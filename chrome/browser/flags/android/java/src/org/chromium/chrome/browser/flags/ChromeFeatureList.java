@@ -483,6 +483,7 @@ public abstract class ChromeFeatureList {
     public static final String SHARED_HIGHLIGHTING_AMP = "SharedHighlightingAmp";
     public static final String SHOPPING_LIST = "ShoppingList";
     public static final String SHOW_EXTENDED_PRELOADING_SETTING = "ShowExtendedPreloadingSetting";
+    public static final String SHOW_SCROLLABLE_MVT_ON_NTP = "ShowScrollableMVTOnNTP";
     public static final String SHOW_TRUSTED_PUBLISHER_URL = "ShowTrustedPublisherURL";
     public static final String SMART_SUGGESTION_FOR_LARGE_DOWNLOADS =
             "SmartSuggestionForLargeDownloads";

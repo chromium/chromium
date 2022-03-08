@@ -8,5 +8,5 @@
     android:id="@+id/tile_grid_layout"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_marginBottom="16dp"
+    android:layout_marginBottom="@dimen/tile_grid_layout_bottom_margin"
     android:layout_gravity="center_horizontal" />

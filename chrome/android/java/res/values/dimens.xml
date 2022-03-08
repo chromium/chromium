@@ -162,6 +162,7 @@
     <dimen name="tile_grid_layout_bleed">8dp</dimen>
     <dimen name="tile_grid_layout_vertical_spacing">6dp</dimen>
     <dimen name="tile_grid_layout_min_horizontal_spacing">4dp</dimen>
+    <dimen name="tile_grid_layout_bottom_margin">16dp</dimen>
     <dimen name="ntp_logo_height">100dp</dimen>
     <dimen name="ntp_logo_margin_top">26dp</dimen>
     <dimen name="duet_ntp_logo_top_margin">-16dp</dimen>

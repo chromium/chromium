@@ -25,6 +25,7 @@ import android.view.KeyEvent;
 import android.view.View;
 import android.view.ViewGroup;
 
+import androidx.annotation.Nullable;
 import androidx.test.espresso.contrib.RecyclerViewActions;
 import androidx.test.filters.LargeTest;
 import androidx.test.filters.MediumTest;
@@ -132,7 +133,10 @@ public class NewTabPageTest {
     private Tab mTab;
     private NewTabPage mNtp;
     private View mFakebox;
+    @Nullable
     private ViewGroup mTileGridLayout;
+    @Nullable
+    private ViewGroup mMVTCarouselLayout;
     private FakeMostVisitedSites mMostVisitedSites;
     private EmbeddedTestServer mTestServer;
     private List<SiteSuggestion> mSiteSuggestions;
@@ -159,7 +163,14 @@ public class NewTabPageTest {
         mNtp = (NewTabPage) mTab.getNativePage();
         mFakebox = mNtp.getView().findViewById(R.id.search_box);
         mTileGridLayout = mNtp.getView().findViewById(R.id.tile_grid_layout);
-        Assert.assertEquals(mSiteSuggestions.size(), mTileGridLayout.getChildCount());
+        if (mTileGridLayout != null) {
+            Assert.assertEquals(mSiteSuggestions.size(), mTileGridLayout.getChildCount());
+        }
+
+        mMVTCarouselLayout = mNtp.getView().findViewById(R.id.mv_tiles_layout);
+        if (mMVTCarouselLayout != null) {
+            Assert.assertEquals(mSiteSuggestions.size(), mMVTCarouselLayout.getChildCount());
+        }
     }
 
     @After
@@ -285,6 +296,7 @@ public class NewTabPageTest {
     @SmallTest
     @Feature({"NewTabPage", "FeedNewTabPage"})
     public void testClickMostVisitedItem() {
+        Assert.assertNotNull(mTileGridLayout);
         ChromeTabUtils.waitForTabPageLoaded(
                 mTab, mSiteSuggestions.get(0).url.getSpec(), new Runnable() {
                     @Override
@@ -304,6 +316,7 @@ public class NewTabPageTest {
     @SmallTest
     @Feature({"NewTabPage", "FeedNewTabPage"})
     public void testOpenMostVisitedItemInNewTab() throws ExecutionException {
+        Assert.assertNotNull(mTileGridLayout);
         ChromeTabUtils.invokeContextMenuAndOpenInANewTab(mActivityTestRule,
                 mTileGridLayout.getChildAt(0), ContextMenuManager.ContextMenuItemId.OPEN_IN_NEW_TAB,
                 false, mSiteSuggestions.get(0).url.getSpec());
@@ -316,6 +329,7 @@ public class NewTabPageTest {
     @SmallTest
     @Feature({"NewTabPage", "FeedNewTabPage"})
     public void testOpenMostVisitedItemInIncognitoTab() throws ExecutionException {
+        Assert.assertNotNull(mTileGridLayout);
         ChromeTabUtils.invokeContextMenuAndOpenInANewTab(mActivityTestRule,
                 mTileGridLayout.getChildAt(0),
                 ContextMenuManager.ContextMenuItemId.OPEN_IN_INCOGNITO_TAB, true,
@@ -330,10 +344,85 @@ public class NewTabPageTest {
     @Feature({"NewTabPage", "FeedNewTabPage"})
     @FlakyTest(message = "crbug.com/1075804")
     public void testRemoveMostVisitedItem() throws ExecutionException {
+        Assert.assertNotNull(mTileGridLayout);
         SiteSuggestion testSite = mSiteSuggestions.get(0);
         View mostVisitedItem = mTileGridLayout.getChildAt(0);
         ArrayList<View> views = new ArrayList<>();
         mTileGridLayout.findViewsWithText(views, testSite.title, View.FIND_VIEWS_WITH_TEXT);
+        Assert.assertEquals(1, views.size());
+
+        TestTouchUtils.performLongClickOnMainSync(
+                InstrumentationRegistry.getInstrumentation(), mostVisitedItem);
+        Assert.assertTrue(InstrumentationRegistry.getInstrumentation().invokeContextMenuAction(
+                mActivityTestRule.getActivity(), ContextMenuManager.ContextMenuItemId.REMOVE, 0));
+
+        Assert.assertTrue(mMostVisitedSites.isUrlBlocklisted(testSite.url));
+    }
+
+    /**
+     * Tests clicking on a most visited item.
+     */
+    @Test
+    @SmallTest
+    @Feature({"NewTabPage", "FeedNewTabPage"})
+    @Features.EnableFeatures({ChromeFeatureList.SHOW_SCROLLABLE_MVT_ON_NTP})
+    public void testClickMostVisitedItemOnMVTCarousel() {
+        Assert.assertNotNull(mMVTCarouselLayout);
+        ChromeTabUtils.waitForTabPageLoaded(
+                mTab, mSiteSuggestions.get(0).url.getSpec(), new Runnable() {
+                    @Override
+                    public void run() {
+                        View mostVisitedItem = mMVTCarouselLayout.getChildAt(0);
+                        TouchCommon.singleClickView(mostVisitedItem);
+                    }
+                });
+        Assert.assertEquals(mSiteSuggestions.get(0).url, ChromeTabUtils.getUrlOnUiThread(mTab));
+    }
+
+    /**
+     * Tests opening a most visited item in a new tab.
+     */
+    @Test
+    @SmallTest
+    @Feature({"NewTabPage", "FeedNewTabPage"})
+    @Features.EnableFeatures({ChromeFeatureList.SHOW_SCROLLABLE_MVT_ON_NTP})
+    public void testOpenMostVisitedItemInNewTabOnMVTCarousel() throws ExecutionException {
+        Assert.assertNotNull(mMVTCarouselLayout);
+        ChromeTabUtils.invokeContextMenuAndOpenInANewTab(mActivityTestRule,
+                mMVTCarouselLayout.getChildAt(0),
+                ContextMenuManager.ContextMenuItemId.OPEN_IN_NEW_TAB, false,
+                mSiteSuggestions.get(0).url.getSpec());
+    }
+
+    /**
+     * Tests opening a most visited item in a new incognito tab.
+     */
+    @Test
+    @SmallTest
+    @Feature({"NewTabPage", "FeedNewTabPage"})
+    @Features.EnableFeatures({ChromeFeatureList.SHOW_SCROLLABLE_MVT_ON_NTP})
+    public void testOpenMostVisitedItemInIncognitoTabOnMVTCarousel() throws ExecutionException {
+        Assert.assertNotNull(mMVTCarouselLayout);
+        ChromeTabUtils.invokeContextMenuAndOpenInANewTab(mActivityTestRule,
+                mMVTCarouselLayout.getChildAt(0),
+                ContextMenuManager.ContextMenuItemId.OPEN_IN_INCOGNITO_TAB, true,
+                mSiteSuggestions.get(0).url.getSpec());
+    }
+
+    /**
+     * Tests deleting a most visited item.
+     */
+    @Test
+    @SmallTest
+    @Feature({"NewTabPage", "FeedNewTabPage"})
+    @FlakyTest(message = "crbug.com/1075804")
+    @Features.EnableFeatures({ChromeFeatureList.SHOW_SCROLLABLE_MVT_ON_NTP})
+    public void testRemoveMostVisitedItemOnMVTCarousel() throws ExecutionException {
+        Assert.assertNotNull(mMVTCarouselLayout);
+        SiteSuggestion testSite = mSiteSuggestions.get(0);
+        View mostVisitedItem = mMVTCarouselLayout.getChildAt(0);
+        ArrayList<View> views = new ArrayList<>();
+        mMVTCarouselLayout.findViewsWithText(views, testSite.title, View.FIND_VIEWS_WITH_TEXT);
         Assert.assertEquals(1, views.size());
 
         TestTouchUtils.performLongClickOnMainSync(

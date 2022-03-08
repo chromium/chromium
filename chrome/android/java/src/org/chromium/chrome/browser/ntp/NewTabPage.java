@@ -358,8 +358,7 @@ public class NewTabPage implements NativePage, InvalidationAwareThumbnailProvide
             public void onShown(Tab tab, @TabSelectionType int type) {
                 // Showing the NTP is only meaningful when the page has been loaded already.
                 if (mIsLoaded) recordNTPShown();
-
-                mNewTabPageLayout.getTileGroup().onSwitchToForeground(/* trackLoadTask = */ false);
+                mNewTabPageLayout.onSwitchToForeground();
             }
 
             @Override
@@ -437,8 +436,8 @@ public class NewTabPage implements NativePage, InvalidationAwareThumbnailProvide
                 mSearchProviderHasLogo,
                 TemplateUrlServiceFactory.get().isDefaultSearchEngineGoogle(),
                 mFeedSurfaceProvider.getScrollDelegate(), mContextMenuManager,
-                mFeedSurfaceProvider.getUiConfig(), activityTabProvider, lifecycleDispatcher, uma,
-                mTab.isIncognito(), windowAndroid);
+                mFeedSurfaceProvider.getTouchEnabledDelegate(), mFeedSurfaceProvider.getUiConfig(),
+                activityTabProvider, lifecycleDispatcher, uma, mTab.isIncognito(), windowAndroid);
         TraceEvent.end(TAG);
     }
 

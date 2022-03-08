@@ -135,6 +135,7 @@ extern const base::Feature kServiceManagerForBackgroundPrefetch;
 extern const base::Feature kServiceManagerForDownload;
 extern const base::Feature kShareButtonInTopToolbar;
 extern const base::Feature kSharingHubLinkToggle;
+extern const base::Feature kShowScrollableMVTOnNTP;
 extern const base::Feature kSpannableInlineAutocomplete;
 extern const base::Feature kSpecialLocaleWrapper;
 extern const base::Feature kSpecialUserDecision;
