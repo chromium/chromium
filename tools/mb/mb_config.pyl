@@ -155,6 +155,7 @@
       'chromeos-amd64-generic-rel': 'chromeos_amd64-generic_use_fake_dbus_clients_vm_optimized',
       'chromeos-arm-generic-dbg': 'chromeos_arm-generic_dbg',
       'chromeos-arm-generic-rel': 'chromeos_arm-generic',
+      'chromeos-arm64-generic-rel': 'chromeos_arm64-generic',
       'chromeos-kevin-rel': 'chromeos_kevin_dchecks',
       'lacros-amd64-generic-binary-size-rel': 'chromeos_amd64-generic_lacros_rel',
       'lacros-amd64-generic-rel': 'chromeos_amd64-generic_lacros_rel',
@@ -1955,6 +1956,10 @@
       'chromeos_device', 'arm-generic',
     ],
 
+    'chromeos_arm64-generic': [
+      'chromeos_device', 'arm64-generic',
+    ],
+
     'chromeos_arm-generic_cfi_thin_lto_official': [
       'chromeos_device', 'arm-generic', 'cfi_full', 'thin_lto', 'official', 'full_symbols',
     ],
@@ -3364,6 +3369,10 @@
 
     'arm-generic': {
       'args_file': '//build/args/chromeos/arm-generic.gni',
+    },
+
+    'arm64-generic': {
+      'args_file': '//build/args/chromeos/arm64-generic.gni',
     },
 
     'arm-generic-crostoolchain': {

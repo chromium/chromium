@@ -194,6 +194,32 @@ ci.builder(
 )
 
 ci.builder(
+    name = "chromeos-arm64-generic-rel",
+    builder_spec = builder_config.builder_spec(
+        chromium_config = builder_config.chromium_config(
+            config = "chromium",
+            apply_configs = ["mb"],
+            build_config = builder_config.build_config.RELEASE,
+            target_arch = builder_config.target_arch.ARM,
+            target_bits = 64,
+            target_platform = builder_config.target_platform.CHROMEOS,
+            target_cros_boards = ["arm64-generic"],
+        ),
+        gclient_config = builder_config.gclient_config(
+            config = "chromium",
+            apply_configs = ["chromeos"],
+        ),
+    ),
+    branch_selector = branches.CROS_LTS_MILESTONE,
+    console_view_entry = consoles.console_view_entry(
+        category = "simple|release",
+        short_name = "a64",
+    ),
+    os = os.LINUX_BIONIC_REMOVE,
+    main_console_view = "main",
+)
+
+ci.builder(
     name = "chromeos-kevin-rel",
     branch_selector = branches.CROS_LTS_MILESTONE,
     console_view_entry = consoles.console_view_entry(
