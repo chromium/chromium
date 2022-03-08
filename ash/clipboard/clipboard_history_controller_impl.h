@@ -98,6 +98,11 @@ class ASH_EXPORT ClipboardHistoryControllerImpl
     return context_menu_.get();
   }
 
+  void set_buffer_restoration_delay_for_test(
+      absl::optional<base::TimeDelta> delay) {
+    buffer_restoration_delay_for_test_ = delay;
+  }
+
   void set_initial_item_selected_callback_for_test(
       base::RepeatingClosure new_callback) {
     initial_item_selected_callback_for_test_ = new_callback;
@@ -213,6 +218,10 @@ class ASH_EXPORT ClipboardHistoryControllerImpl
   // Indicates the count of pastes which are triggered through the clipboard
   // history menu and are waiting for the confirmations from `ClipboardHistory`.
   int pastes_to_be_confirmed_ = 0;
+
+  // The delay interval for restoring the clipboard buffer to its original
+  // state following a paste event.
+  absl::optional<base::TimeDelta> buffer_restoration_delay_for_test_;
 
   // Called when the first item view is selected after the clipboard history
   // menu opens.

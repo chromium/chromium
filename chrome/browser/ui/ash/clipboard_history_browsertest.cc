@@ -17,6 +17,7 @@
 #include "ash/shell.h"
 #include "base/bind.h"
 #include "base/path_service.h"
+#include "base/scoped_observation.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
@@ -36,6 +37,8 @@
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "net/dns/mock_host_resolver.h"
+#include "ui/base/clipboard/clipboard_monitor.h"
+#include "ui/base/clipboard/clipboard_non_backed.h"
 #include "ui/base/clipboard/scoped_clipboard_writer.h"
 #include "ui/base/data_transfer_policy/data_transfer_endpoint.h"
 #include "ui/base/data_transfer_policy/data_transfer_policy_controller.h"
@@ -52,6 +55,49 @@ namespace {
 using ImageModelRequestTestParams = ClipboardImageModelRequest::TestParams;
 
 constexpr char kUrlString[] = "https://www.example.com";
+
+// A class which can wait until a matching `ui::ClipboardData` is in the buffer.
+class ClipboardDataWaiter : public ui::ClipboardObserver {
+ public:
+  ClipboardDataWaiter() = default;
+  ClipboardDataWaiter(const ClipboardDataWaiter&) = delete;
+  ClipboardDataWaiter& operator=(const ClipboardDataWaiter&) = delete;
+  ~ClipboardDataWaiter() override = default;
+
+  void WaitFor(const ui::ClipboardData* clipboard_data) {
+    base::AutoReset scoped_data(&clipboard_data_, clipboard_data);
+    if (BufferMatchesClipboardData())
+      return;
+
+    base::ScopedObservation<ui::ClipboardMonitor, ui::ClipboardObserver>
+        clipboard_observer_{this};
+    clipboard_observer_.Observe(ui::ClipboardMonitor::GetInstance());
+
+    base::AutoReset scoped_loop(&run_loop_, std::make_unique<base::RunLoop>());
+    run_loop_->Run();
+  }
+
+ private:
+  // ui::ClipboardObserver:
+  void OnClipboardDataChanged() override {
+    if (BufferMatchesClipboardData())
+      run_loop_->Quit();
+  }
+
+  bool BufferMatchesClipboardData() const {
+    auto* clipboard = ui::ClipboardNonBacked::GetForCurrentThread();
+    ui::DataTransferEndpoint data_dst(ui::EndpointType::kClipboardHistory);
+    const auto* clipboard_data = clipboard->GetClipboardData(&data_dst);
+
+    if ((clipboard_data == nullptr) != (clipboard_data_ == nullptr))
+      return false;
+
+    return clipboard_data == nullptr || *clipboard_data == *clipboard_data_;
+  }
+
+  const ui::ClipboardData* clipboard_data_ = nullptr;
+  std::unique_ptr<base::RunLoop> run_loop_;
+};
 
 // The helper class to wait for the update in the clipboard history item list.
 class ClipboardHistoryItemUpdateWaiter
@@ -732,10 +778,16 @@ IN_PROC_BROWSER_TEST_F(ClipboardHistoryWithMultiProfileBrowserTest,
   EXPECT_FALSE(GetClipboardHistoryController()->IsMenuShowing());
 }
 
-// Flaky: crbug.com/1123542
 IN_PROC_BROWSER_TEST_F(ClipboardHistoryWithMultiProfileBrowserTest,
-                       DISABLED_ShouldPasteHistoryAsPlainText) {
+                       ShouldPasteHistoryAsPlainText) {
   LoginUser(account_id1_);
+
+  // Increase delay interval before restoring the clipboard buffer following
+  // a paste event as this test has exhibited flakiness due to the amount of
+  // time it takes a paste event to reach the web contents under test. Remove
+  // this code when possible (https://crbug.com/1303131).
+  GetClipboardHistoryController()->set_buffer_restoration_delay_for_test(
+      base::Milliseconds(500));
 
   // Create a browser and cache its active web contents.
   auto* browser = CreateBrowser(
@@ -794,6 +846,12 @@ IN_PROC_BROWSER_TEST_F(ClipboardHistoryWithMultiProfileBrowserTest,
   SetClipboardTextAndHtml("B", "<span>B</span>");
   SetClipboardTextAndHtml("C", "<span>C</span>");
 
+  // Pasting can result in temporary modification of the clipboard buffer. Cache
+  // the buffer's current `clipboard_data` so state can be verified later.
+  auto* clipboard = ui::ClipboardNonBacked::GetForCurrentThread();
+  ui::DataTransferEndpoint data_dst(ui::EndpointType::kClipboardHistory);
+  ui::ClipboardData clipboard_data(*clipboard->GetClipboardData(&data_dst));
+
   // Open clipboard history and paste the last history item.
   PressAndRelease(ui::KeyboardCode::VKEY_V, ui::EF_COMMAND_DOWN);
   EXPECT_TRUE(GetClipboardHistoryController()->IsMenuShowing());
@@ -815,6 +873,11 @@ IN_PROC_BROWSER_TEST_F(ClipboardHistoryWithMultiProfileBrowserTest,
   EXPECT_EQ(last_paste.GetListDeprecated()[1].GetString(),
             "text/html: <span>A</span>");
 
+  // Wait for the clipboard buffer to be restored before performing another
+  // paste. In production, this should happen faster than a user is able to
+  // relaunch clipboard history UI (knock on wood).
+  ClipboardDataWaiter().WaitFor(&clipboard_data);
+
   // Open clipboard history and paste the middle history item as plain text.
   PressAndRelease(ui::KeyboardCode::VKEY_V, ui::EF_COMMAND_DOWN);
   EXPECT_TRUE(GetClipboardHistoryController()->IsMenuShowing());
@@ -833,6 +896,9 @@ IN_PROC_BROWSER_TEST_F(ClipboardHistoryWithMultiProfileBrowserTest,
   last_paste = GetLastPaste();
   ASSERT_EQ(last_paste.GetListDeprecated().size(), 1u);
   EXPECT_EQ(last_paste.GetListDeprecated()[0].GetString(), "text/plain: A");
+
+  // Verify the clipboard buffer is restored to initial state.
+  ClipboardDataWaiter().WaitFor(&clipboard_data);
 }
 
 class ClipboardHistoryBrowserTest : public InProcessBrowserTest {

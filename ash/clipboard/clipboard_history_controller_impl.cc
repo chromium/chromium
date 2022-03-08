@@ -709,23 +709,21 @@ void ClipboardHistoryControllerImpl::PasteClipboardHistoryItem(
     original_data = clipboard->WriteClipboardData(std::move(temp_data));
   }
 
-  ui::KeyEvent control_press(/*type=*/ui::ET_KEY_PRESSED, ui::VKEY_CONTROL,
-                             ui::EF_NONE);
   auto* host = GetWindowTreeHostForDisplay(
       display::Screen::GetScreen()->GetDisplayForNewWindows().id());
   DCHECK(host);
-  host->DeliverEventToSink(&control_press);
+
+  ui::KeyEvent ctrl_press(ui::ET_KEY_PRESSED, ui::VKEY_CONTROL, ui::EF_NONE);
+  host->DeliverEventToSink(&ctrl_press);
 
   ui::KeyEvent v_press(ui::ET_KEY_PRESSED, ui::VKEY_V, ui::EF_CONTROL_DOWN);
   host->DeliverEventToSink(&v_press);
 
-  ui::KeyEvent v_release(/*type=*/ui::ET_KEY_RELEASED, ui::VKEY_V,
-                         ui::EF_CONTROL_DOWN);
+  ui::KeyEvent v_release(ui::ET_KEY_RELEASED, ui::VKEY_V, ui::EF_CONTROL_DOWN);
   host->DeliverEventToSink(&v_release);
 
-  ui::KeyEvent control_release(/*type=*/ui::ET_KEY_RELEASED, ui::VKEY_CONTROL,
-                               ui::EF_NONE);
-  host->DeliverEventToSink(&control_release);
+  ui::KeyEvent ctrl_release(ui::ET_KEY_RELEASED, ui::VKEY_CONTROL, ui::EF_NONE);
+  host->DeliverEventToSink(&ctrl_release);
 
   ++pastes_to_be_confirmed_;
 
@@ -760,7 +758,7 @@ void ClipboardHistoryControllerImpl::PasteClipboardHistoryItem(
             GetClipboard()->WriteClipboardData(std::move(original_data));
           },
           weak_ptr_factory_.GetWeakPtr(), std::move(original_data)),
-      base::Milliseconds(200));
+      buffer_restoration_delay_for_test_.value_or(base::Milliseconds(200)));
 }
 
 void ClipboardHistoryControllerImpl::DeleteSelectedMenuItemIfAny() {
