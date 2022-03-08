@@ -1,22 +1,24 @@
-<style>
+<style include="cr-hidden-style cr-icons">
   :host {
+    display: inline-flex;
+    margin: 0 4px;
+    vertical-align: top;
+  }
+
+  #consentCardContainer {
     border: 1px solid var(--ntp-border-color);
     border-radius: 4px;
     display: inline-flex;
     flex-direction: column;
     height: 140px;
-    vertical-align: top;
+    position: relative;
     width: 244px;
-  }
-
-  #consentCardContainer {
-    height: 100%;
   }
 
   :host([color-consent-container_]) #consentCardContainer {
     background-color: var(--google-blue-100);
   }
-  
+
   .favicon-container {
     text-align: center;
     width: auto;
@@ -60,12 +62,23 @@
 
   .button-container {
     display: inline-block;
+    margin-block-end: 16px;
+    margin-inline-end: 16px;
     margin-inline-start: 16px;
     margin-top: 8px;
   }
 
   .wide-button {
     width: 212px;
+  }
+
+  #close {
+    --cr-icon-button-icon-size: 16px;
+    --cr-icon-button-size: 24px;
+    margin: 4px 4px;
+    position: absolute;
+    right: 0;
+    top: 2px;
   }
 </style>
 
@@ -93,14 +106,14 @@
           </div>
           <div class="button-container">
             <template id="oneButtonElement" is="dom-if"
-                if="[[step.hasOneButton]]">
+                if="[[step.hasOneButton]]" restamp>
               <cr-button class="action-button wide-button"
                   onClick="[[step.actionButton.onClickHandler]]">
                 [[step.actionButton.text]]
               </cr-button>
             </template>
             <template id="TwoButtonElement" is="dom-if"
-                if="[[step.hasTwoButtons]]">
+                if="[[step.hasTwoButtons]]" restamp>
               <cr-button id="cancelButton" class="cancel-button"
                   onClick="[[step.cancelButton.onClickHandler]]">
                 [[step.cancelButton.text]]
@@ -115,4 +128,8 @@
       </template>
     </iron-pages>
   </div>
+  <template is="dom-if" if="[[showCloseButton_]]" restamp>
+    <cr-icon-button id="close" class="icon-clear"
+        on-click="onCloseClick_"></cr-icon-button>
+  </template>
 </div>

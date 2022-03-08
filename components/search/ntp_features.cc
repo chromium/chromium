@@ -192,6 +192,13 @@ const base::FeatureParam<std::string>
         &commerce::kDiscountConsentV2,
         kNtpChromeCartModuleDiscountConsentStringChangeContentParam, ""};
 
+const char kNtpChromeCartModuleDiscountConsentInlineShowCloseButtonParam[] =
+    "inline-card-show-button";
+const base::FeatureParam<bool>
+    kNtpChromeCartModuleDiscountConsentInlineShowCloseButton{
+        &commerce::kDiscountConsentV2,
+        kNtpChromeCartModuleDiscountConsentStringChangeContentParam, true};
+
 // Discount consent v2 step 1 params.
 const char
     kNtpChromeCartModuleDiscountConsentNtpStepOneUseStaticContentParam[] =
