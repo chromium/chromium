@@ -9,7 +9,7 @@
 
 // #import {Router, Route, routes} from 'chrome://os-settings/chromeos/os_settings.js';
 // #import {flush, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-// #import {waitAfterNextRender, eventToPromise} from 'chrome://test/test_util.js';
+// #import {waitBeforeNextRender, waitAfterNextRender, eventToPromise} from 'chrome://test/test_util.js';
 // #import {assertTrue, assertEquals, assertFalse, assertNotEquals} from '../../../chai_assert.js';
 // #import {createDefaultBluetoothDevice, FakeBluetoothConfig} from 'chrome://test/cr_components/chromeos/bluetooth/fake_bluetooth_config.js';
 // #import {setBluetoothConfigForTesting} from 'chrome://resources/cr_components/chromeos/bluetooth/cros_bluetooth_config.js';
@@ -296,6 +296,7 @@ suite('OsBluetoothDeviceDetailPageTest', function() {
     let windowPopstatePromise = test_util.eventToPromise('popstate', window);
     settings.Router.getInstance().navigateToPreviousRoute();
     await windowPopstatePromise;
+    await waitBeforeNextRender(bluetoothDeviceDetailPage);
 
     assertTrue(bluetoothDeviceDetailPage.getIsDeviceConnectedForTest());
     // Check that |#changeMouseSettings| has been focused.
@@ -336,6 +337,7 @@ suite('OsBluetoothDeviceDetailPageTest', function() {
     windowPopstatePromise = test_util.eventToPromise('popstate', window);
     settings.Router.getInstance().navigateToPreviousRoute();
     await windowPopstatePromise;
+    await waitBeforeNextRender(bluetoothDeviceDetailPage);
 
     assertTrue(bluetoothDeviceDetailPage.getIsDeviceConnectedForTest());
     // Check that |#changeKeyboardSettings| has been focused.

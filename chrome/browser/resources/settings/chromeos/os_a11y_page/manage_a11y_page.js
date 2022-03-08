@@ -10,7 +10,7 @@ const DEFAULT_BLACK_CURSOR_COLOR = 0;
  * 'settings-manage-a11y-page' is the subpage with the accessibility
  * settings.
  */
-import {afterNextRender, Polymer, html, flush, Templatizer, TemplateInstanceBase} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {Polymer, html, flush, Templatizer, TemplateInstanceBase} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import '//resources/cr_elements/cr_icon_button/cr_icon_button.m.js';
 import '//resources/cr_elements/cr_link_row/cr_link_row.js';
@@ -24,10 +24,10 @@ import '../../controls/settings_toggle_button.js';
 import {DeepLinkingBehavior} from '../deep_linking_behavior.js';
 import {routes} from '../os_route.m.js';
 import {Router, Route} from '../../router.js';
-import {RouteObserverBehavior} from '../route_observer_behavior.js';
 import '../../settings_shared_css.js';
 import {BatteryStatus, DevicePageBrowserProxy, DevicePageBrowserProxyImpl, ExternalStorage, IdleBehavior, LidClosedBehavior, NoteAppInfo, NoteAppLockScreenSupport, PowerManagementSettings, PowerSource, getDisplayApi, StorageSpaceState} from '../device_page/device_page_browser_proxy.js';
 import '//resources/cr_components/localized_link/localized_link.js';
+import {RouteObserverBehavior} from '../route_observer_behavior.js';
 import {RouteOriginBehaviorImpl, RouteOriginBehavior} from '../route_origin_behavior.m.js';
 import {ManageA11yPageBrowserProxyImpl, ManageA11yPageBrowserProxy} from './manage_a11y_page_browser_proxy.js';
 
@@ -441,12 +441,16 @@ Polymer({
   },
 
   /**
-   * @param {!Route} route
-   * @param {!Route} oldRoute
+   * Note: Overrides RouteOriginBehavior implementation
+   * @param {!Route} newRoute
+   * @param {!Route=} prevRoute
+   * @protected
    */
-  currentRouteChanged(route, oldRoute) {
+  currentRouteChanged(newRoute, prevRoute) {
+    RouteOriginBehaviorImpl.currentRouteChanged.call(this, newRoute, prevRoute);
+
     // Does not apply to this page.
-    if (route !== routes.MANAGE_ACCESSIBILITY) {
+    if (newRoute !== routes.MANAGE_ACCESSIBILITY) {
       return;
     }
 

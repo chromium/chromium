@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {focusWithoutInk} from '//resources/js/cr/ui/focus_without_ink.m.js';
+import {beforeNextRender} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {assert} from 'chrome://resources/js/assert.m.js';
 
 import {Route, Router} from '../router.js';
@@ -12,9 +14,11 @@ import {RouteObserverBehavior} from './route_observer_behavior.js';
 export const RouteOriginBehaviorImpl = {
   properties: {
     /**
-     * A map whose values are query selectors of subpage buttons on the page
-     *     keyed by the route path they lead to.
-     * @protected {!Map<string, string>}
+     * A Map specifying which element should be focused when exiting a
+     * subpage. The key of the map holds a Route path, and the value holds
+     * either a query selector that identifies the associated element to focus
+     * or a function to be run when a neon-animation-finish event is handled.
+     * @protected {!Map<string, string|Function>}
      */
     focusConfig_: {
       type: Object,
@@ -34,6 +38,7 @@ export const RouteOriginBehaviorImpl = {
    * @param {!Route|undefined} route
    * @param {string} value A query selector leading to a button that routes
    *     the user to |route| if it is defined.
+   * @protected
    */
   addFocusConfig(route, value) {
     if (route) {
@@ -50,23 +55,45 @@ export const RouteOriginBehaviorImpl = {
   /**
    * RouteObserverBehavior
    * @param {!Route} newRoute
-   * @param {!Route|undefined} oldRoute
+   * @param {!Route=} prevRoute
    * @protected
    */
-  currentRouteChanged(newRoute, oldRoute) {
-    // Don't attempt to focus any anchor element, unless last navigation was a
-    // 'pop' (backwards) navigation.
+  currentRouteChanged(newRoute, prevRoute) {
+    // Only attempt to focus an anchor element if the most recent navigation
+    // was a 'pop' (backwards) navigation.
     if (!Router.getInstance().lastRouteChangeWasPopstate()) {
       return;
     }
 
-    if (this.route_ !== newRoute || !oldRoute) {
+    // Route change does not apply to this page.
+    if (this.route_ !== newRoute) {
       return;
     }
 
-    const focusSelector = this.focusConfig_.get(oldRoute.path);
-    if (focusSelector) {
-      this.$$(focusSelector).focus();
+    this.triggerFocus_(prevRoute);
+  },
+
+  /**
+   * Focuses the element for a given route by finding the associated
+   * query selector or calling the configured function.
+   * @param {Route=} route
+   * @private
+   */
+  triggerFocus_(route) {
+    if (!route) {
+      return;
+    }
+
+    const pathConfig = this.focusConfig_.get(route.path);
+    if (pathConfig) {
+      if (typeof pathConfig === 'function') {
+        pathConfig();
+      } else if (typeof pathConfig === 'string') {
+        const element = assert(this.$$(String(pathConfig)));
+        beforeNextRender(this, () => {
+          focusWithoutInk(element);
+        });
+      }
     }
   },
 };

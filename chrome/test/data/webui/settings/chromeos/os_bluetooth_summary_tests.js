@@ -13,7 +13,7 @@
 // #import {createDefaultBluetoothDevice, FakeBluetoothConfig,} from 'chrome://test/cr_components/chromeos/bluetooth/fake_bluetooth_config.js';
 // #import {setBluetoothConfigForTesting} from 'chrome://resources/cr_components/chromeos/bluetooth/cros_bluetooth_config.js';
 // #import {mojoString16ToString} from 'chrome://resources/cr_components/chromeos/bluetooth/bluetooth_utils.js';
-// #import {eventToPromise, waitAfterNextRender} from 'chrome://test/test_util.js';
+// #import {eventToPromise, waitBeforeNextRender, waitAfterNextRender} from 'chrome://test/test_util.js';
 // clang-format on
 
 suite('OsBluetoothSummaryTest', function() {
@@ -67,21 +67,25 @@ suite('OsBluetoothSummaryTest', function() {
     await flushAsync();
     const iconButton = bluetoothSummary.$$('#arrowIconButton');
     assertTrue(!!iconButton);
-    iconButton.click();
 
-    await flushAsync();
+    iconButton.click();
     assertEquals(
         settings.Router.getInstance().getCurrentRoute(),
         settings.routes.BLUETOOTH_DEVICES);
+    assertNotEquals(
+        iconButton, bluetoothSummary.shadowRoot.activeElement,
+        'subpage icon should not be focused');
 
     // Navigate back to the top-level page.
-    assertNotEquals(iconButton, bluetoothSummary.shadowRoot.activeElement);
-    const windowPopstatePromise = test_util.eventToPromise('popstate', window);
+    const windowPopstatePromise = eventToPromise('popstate', window);
     settings.Router.getInstance().navigateToPreviousRoute();
     await windowPopstatePromise;
+    await waitBeforeNextRender(bluetoothSummary);
 
     // Check that |iconButton| has been focused.
-    assertEquals(iconButton, bluetoothSummary.shadowRoot.activeElement);
+    assertEquals(
+        iconButton, bluetoothSummary.shadowRoot.activeElement,
+        'subpage icon should be focused');
   });
 
   test('Toggle button creation and a11y', async function() {
