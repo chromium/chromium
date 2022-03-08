@@ -31,10 +31,15 @@ class DesksTemplatesNameView : public DesksTextfield {
   // grid widget.
   static void CommitChanges(views::Widget* widget);
 
+  const absl::optional<std::u16string> temporary_name() const {
+    return temporary_name_;
+  }
+
   void SetViewName(const std::u16string& name);
   void SetTemporaryName(const std::u16string& new_name) {
     temporary_name_ = new_name;
   }
+  void ResetTemporaryName() { temporary_name_.reset(); }
 
   // Called when the contents in the textfield change. Updates the preferred
   // size of `this`, which invalidates the layout.

@@ -2944,6 +2944,21 @@ TEST_F(DesksTemplatesTest, NoDuplicateDisplayedName) {
   // The new template name still have name nudge to maintain it's uniqueness.
   EXPECT_EQ(u"Desk 1 (1)",
             GetItemViewFromTemplatesGrid(1)->desk_template()->template_name());
+
+  // Set template 1 under new name.
+  GetItemViewFromTemplatesGrid(0)->desk_template()->set_template_name(
+      u"Desk 2");
+  // Save template 2 under new name, this will trigger replace dialog.
+  name_view->SetText(u"Desk 2");
+  GetEventGenerator()->PressAndReleaseKey(ui::VKEY_RETURN);
+
+  auto* dialog_controller = DesksTemplatesDialogController::Get();
+  // Cancel on replace dialog will revert view name to template name.
+  dialog_controller->dialog_widget()
+      ->widget_delegate()
+      ->AsDialogDelegate()
+      ->CancelDialog();
+  EXPECT_EQ(u"Desk 1", name_view->GetText());
 }
 
 }  // namespace ash

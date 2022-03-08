@@ -78,7 +78,6 @@ void DesksTemplatesNameView::CommitChanges(views::Widget* widget) {
 
 void DesksTemplatesNameView::OnContentsChanged() {
   PreferredSizeChanged();
-  temporary_name_.reset();
 }
 
 gfx::Size DesksTemplatesNameView::CalculatePreferredSize() const {
