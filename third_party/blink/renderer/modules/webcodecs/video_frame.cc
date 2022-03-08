@@ -644,8 +644,14 @@ VideoFrame* VideoFrame::Create(ScriptState* script_state,
                                         "Failed to create video frame");
       return nullptr;
     }
-    if (sk_image->isLazyGenerated())
+    if (sk_image->isLazyGenerated()) {
       sk_image = sk_image->makeRasterImage();
+      if (!sk_image) {
+        exception_state.ThrowDOMException(DOMExceptionCode::kOperationError,
+                                          "Failed to create video frame");
+        return nullptr;
+      }
+    }
 
     const bool force_opaque =
         init && init->alpha() == kAlphaDiscard && !sk_image->isOpaque();
