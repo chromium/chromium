@@ -14,7 +14,7 @@ import '../../settings_page/settings_section.js';
 import '../../settings_page/settings_subpage.js';
 import '../../settings_page_css.js';
 import '../../settings_shared_css.js';
-import '../os_icons.m.js';
+import '../os_icons.js';
 import '../os_reset_page/os_powerwash_dialog.js';
 import '//resources/cr_components/localized_link/localized_link.js';
 import './detailed_build_info.js';

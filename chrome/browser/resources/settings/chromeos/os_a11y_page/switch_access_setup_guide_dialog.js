@@ -11,7 +11,7 @@ import '//resources/cr_elements/cr_button/cr_button.m.js';
 import '//resources/cr_elements/cr_dialog/cr_dialog.m.js';
 import '//resources/cr_elements/shared_style_css.m.js';
 import '../../controls/settings_slider.js';
-import '../os_icons.m.js';
+import '../os_icons.js';
 
 import {SliderTick} from '//resources/cr_elements/cr_slider/cr_slider.js';
 import {I18nBehavior} from '//resources/js/i18n_behavior.m.js';

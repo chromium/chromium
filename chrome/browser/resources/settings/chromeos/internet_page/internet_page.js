@@ -10,7 +10,7 @@ import '//resources/cr_elements/cr_toast/cr_toast.js';
 import '//resources/cr_elements/icons.m.js';
 import '//resources/cr_elements/policy/cr_policy_indicator.m.js';
 import '//resources/polymer/v3_0/iron-icon/iron-icon.js';
-import '../os_settings_icons_css.m.js';
+import '../os_settings_icons_css.js';
 import '../../prefs/prefs.js';
 import '../../settings_page/settings_animated_pages.js';
 import '../../settings_page/settings_subpage.js';

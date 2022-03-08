@@ -29,7 +29,7 @@ import '//resources/cr_elements/cr_toggle/cr_toggle.m.js';
 import '//resources/cr_elements/icons.m.js';
 import '//resources/cr_elements/policy/cr_policy_pref_indicator.m.js';
 import {I18nBehavior} from '//resources/js/i18n_behavior.m.js';
-import '../os_icons.m.js';
+import '../os_icons.js';
 import {loadTimeData} from '../../i18n_setup.js';
 import '../../prefs/prefs.js';
 import {PrefsBehavior} from '../prefs_behavior.js';

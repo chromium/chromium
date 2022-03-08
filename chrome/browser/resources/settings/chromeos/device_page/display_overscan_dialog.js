@@ -13,7 +13,7 @@ import '//resources/cr_elements/cr_dialog/cr_dialog.m.js';
 import '//resources/cr_elements/icons.m.js';
 import '//resources/polymer/v3_0/iron-flex-layout/iron-flex-layout-classes.js';
 import '//resources/polymer/v3_0/iron-icon/iron-icon.js';
-import '../os_icons.m.js';
+import '../os_icons.js';
 import '../../settings_shared_css.js';
 
 import {afterNextRender, flush, html, Polymer, TemplateInstanceBase, Templatizer} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';

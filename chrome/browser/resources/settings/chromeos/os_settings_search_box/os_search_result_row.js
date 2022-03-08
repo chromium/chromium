@@ -6,7 +6,7 @@
  * @fileoverview 'os-search-result-row' is the container for one search result.
  */
 import '//resources/cr_elements/icons.m.js';
-import '../os_icons.m.js';
+import '../os_icons.js';
 import '../../settings_shared_css.js';
 
 import {assert, assertNotReached} from '//resources/js/assert.m.js';

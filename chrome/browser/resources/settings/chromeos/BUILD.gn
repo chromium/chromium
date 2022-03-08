@@ -6,6 +6,7 @@ import("//chrome/common/features.gni")
 import("//third_party/closure_compiler/compile_js.gni")
 import("//tools/grit/grit_rule.gni")
 import("//tools/grit/preprocess_if_expr.gni")
+import("//tools/polymer/html_to_js.gni")
 import("//ui/webui/resources/tools/generate_grd.gni")
 import("//ui/webui/resources/tools/js_modulizer.gni")
 import("//ui/webui/webui_features.gni")
@@ -548,7 +549,7 @@ preprocess_if_expr("preprocess_gen_v3") {
     "chromeos/os_apps_page/os_apps_page.js",
     "chromeos/os_files_page/os_files_page.js",
     "chromeos/os_files_page/smb_shares_page.js",
-    "chromeos/os_icons.m.js",
+    "chromeos/os_icons.js",
     "chromeos/os_languages_page/add_input_methods_dialog.js",
     "chromeos/os_languages_page/add_spellcheck_languages_dialog.js",
     "chromeos/os_languages_page/change_device_language_dialog.js",
@@ -600,7 +601,7 @@ preprocess_if_expr("preprocess_gen_v3") {
     "chromeos/os_search_page/os_search_selection_dialog.js",
     "chromeos/os_search_page/search_subpage.js",
     "chromeos/os_search_page/search_engine.js",
-    "chromeos/os_settings_icons_css.m.js",
+    "chromeos/os_settings_icons_css.js",
     "chromeos/os_settings_menu/os_settings_menu.js",
     "chromeos/os_settings_main/os_settings_main.js",
     "chromeos/os_settings_page/settings_idle_load.js",
@@ -665,11 +666,11 @@ js_type_check("closure_compile_local_module") {
     ":global_scroll_target_behavior",
     ":lazy_load",
     ":metrics_recorder",
-    ":os_icons.m",
+    ":os_icons",
     ":os_page_visibility",
     ":os_route",
     ":os_settings",
-    ":os_settings_icons_css.m",
+    ":os_settings_icons_css",
     ":os_settings_routes",
     ":pref_to_setting_metric_converter",
     ":prefs_behavior",
@@ -708,14 +709,10 @@ js_library("metrics_recorder") {
   deps = [ "//chrome/browser/ui/webui/settings/chromeos/search:mojo_bindings_js_library_for_compile" ]
 }
 
-js_library("os_icons.m") {
-  sources = [
-    "$root_gen_dir/chrome/browser/resources/settings/chromeos/os_icons.m.js",
-  ]
+js_library("os_icons") {
   deps = [
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
   ]
-  extra_deps = [ ":os_icons_module" ]
 }
 
 js_library("os_page_visibility") {
@@ -733,9 +730,7 @@ js_library("os_route") {
   ]
 }
 
-js_library("os_settings_icons_css.m") {
-  sources = [ "$root_gen_dir/chrome/browser/resources/settings/chromeos/os_settings_icons_css.m.js" ]
-  extra_deps = [ ":os_settings_icons_css_module" ]
+js_library("os_settings_icons_css") {
 }
 
 js_library("os_settings_routes") {
@@ -779,8 +774,17 @@ js_library("search_handler") {
 
 import("//tools/polymer/polymer.gni")
 
+html_to_js("web_components") {
+  js_files = [
+    "os_icons.js",
+    "os_settings_icons_css.js",
+  ]
+}
+
 group("polymer3_elements") {
   public_deps = [
+    ":web_components",
+
     # Sub-folder targets
     "ambient_mode_page:web_components",
     "bluetooth_page:web_components",
@@ -820,28 +824,8 @@ group("polymer3_elements") {
     "personalization_page:web_components",
     "settings_scheduler_slider:web_components",
 
-    # Local targets
-    ":os_icons_module",
-    ":os_settings_icons_css_module",
-
     # Shared with browser settings
     "..:css_wrapper_files",
     "..:html_wrapper_files",
   ]
-}
-
-polymer_modulizer("os_icons") {
-  js_file = "os_icons.m.js"
-  html_file = "os_icons.html"
-  html_type = "iron-iconset"
-  auto_imports = os_settings_auto_imports
-  namespace_rewrites = os_settings_namespace_rewrites
-}
-
-polymer_modulizer("os_settings_icons_css") {
-  js_file = "os_settings_icons_css.m.js"
-  html_file = "os_settings_icons_css.html"
-  html_type = "style-module"
-  auto_imports = os_settings_auto_imports
-  namespace_rewrites = os_settings_namespace_rewrites
 }

@@ -36,7 +36,7 @@ import '//resources/polymer/v3_0/iron-flex-layout/iron-flex-layout-classes.js';
 import '//resources/polymer/v3_0/iron-icon/iron-icon.js';
 import {I18nBehavior} from '//resources/js/i18n_behavior.m.js';
 import {HTMLEscape, listenOnce} from '//resources/js/util.m.js';
-import '../os_icons.m.js';
+import '../os_icons.js';
 import '../../settings_shared_css.js';
 import {routes} from '../os_route.m.js';
 
