@@ -36,7 +36,7 @@ class SharingServiceOperationBrowserTest : public InProcessBrowserTest {
 IN_PROC_BROWSER_TEST_F(SharingServiceOperationBrowserTest,
                        ShareIllegalFilename) {
   const std::string script =
-      "share_multiple_custom_files_url('../sample.csv', '..sample.csv')";
+      "share_multiple_custom_files_url('sample.csv', '..sample.csv')";
   ASSERT_TRUE(embedded_test_server()->Start());
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GetAppUrl()));
   content::WebContents* const contents =
@@ -50,7 +50,7 @@ IN_PROC_BROWSER_TEST_F(SharingServiceOperationBrowserTest,
              const std::vector<base::FilePath>& file_paths,
              const std::string& text, const std::string& title, const GURL& url,
              blink::mojom::ShareService::ShareCallback close_callback) {
-            EXPECT_EQ(file_paths[0].BaseName().value(), "_._sample.csv");
+            EXPECT_EQ(file_paths[0].BaseName().value(), "sample.csv");
             EXPECT_EQ(file_paths[1].BaseName().value(), "_.sample.csv");
             std::move(close_callback).Run(blink::mojom::ShareError::OK);
           }));
