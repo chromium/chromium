@@ -68,9 +68,12 @@ export class DiscountConsentCard extends I18nMixin
 
   static get properties() {
     return {
-      merchants: {type: Array, observer: 'onMerchantsChanged_'},
+      merchants: Array,
       currentStep: {type: Number, value: 0},
-      steps_: {type: Array, computed: 'computeSteps_(showCloseButton_)'},
+      steps_: {
+        type: Array,
+        computed: 'computeSteps_(showCloseButton_, stepOneContent_)'
+      },
       colorConsentContainer_: {
         type: Boolean,
         computed: 'computeColorConsentContainer_(currentStep)',
@@ -80,7 +83,9 @@ export class DiscountConsentCard extends I18nMixin
         type: Boolean,
         value: () => loadTimeData.getBoolean(
             'modulesCartDiscountInlineCardShowCloseButton')
-      }
+      },
+      stepOneContent_:
+          {type: String, computed: 'computeStepOneContent_(merchants)'}
     };
   }
 
@@ -95,21 +100,20 @@ export class DiscountConsentCard extends I18nMixin
   // This is a Finch parameter that decides whether we should change container
   // background color.
   private colorConsentContainer_: boolean;
+  private stepOneContent_: string;
+
 
   private getTotalStep_(): number {
-    // TODO(crbug.com/1298116): Return number based on finch flags. If
-    // inline-variation return 2, otherwise return 1.
-    return 2;
-  }
-
-  private getStepOneContent_(): string {
-    // TODO(crbug.com/1298116): Return strings based on finch flags.
-    return loadTimeData.getString('modulesCartDiscountConsentContent');
+    // Inline-variation is 2, see ntp_feature::DiscountConsentNtpVariation.
+    if (loadTimeData.getInteger('modulesCartDiscountConsentVariation') ===
+        DiscountConsentVariation.Inline) {
+      return 2;
+    }
+    return 1;
   }
 
   private getStepTwoContent_(): string {
-    // TODO(crbug.com/1298116): Return strings based on finch flags.
-    return loadTimeData.getString('modulesCartDiscountConsentContent');
+    return loadTimeData.getString('modulesCartConsentStepTwoContent');
   }
 
   private computeColorConsentContainer_(currentStep: number) {
@@ -117,15 +121,15 @@ export class DiscountConsentCard extends I18nMixin
         currentStep === 1;
   }
 
-  private computeSteps_(showCloseButton: boolean): Array<Step> {
+  private computeSteps_(
+      showCloseButton: boolean, stepOneContent: string): Array<Step> {
     const steps = [];
     steps.push({
       id: 'step1',
-      content: this.getStepOneContent_(),
+      content: stepOneContent,
       hasOneButton: true,
       actionButton: {
-        // TODO(crbug.com/1298116): Load string from resource.
-        text: 'continue',
+        text: loadTimeData.getString('modulesCartConsentStepOneButton'),
         onClickHandler: () => {
           if (this.currentStep < this.getTotalStep_()) {
             this.currentStep++;
@@ -137,7 +141,10 @@ export class DiscountConsentCard extends I18nMixin
       }
     });
 
-    // TODO(crbug.com/1298116): Gate second step with a finch flag.
+    if (this.getTotalStep_() === 1) {
+      return steps;
+    }
+
     const step2: Step = {
       id: 'step2',
       content: this.getStepTwoContent_(),
@@ -165,14 +172,27 @@ export class DiscountConsentCard extends I18nMixin
     return steps;
   }
 
-  private onMerchantsChanged_() {
-    if (this.currentStep === 0 && this.steps_.length > 0) {
-      // TODO(crbug.com/1298116): Build strings with merchant names and string
-      // template from resource. We should also handle the case where the string
-      // gets too long here.
-      this.steps_[0].content = this.merchants[0].merchant + ', ' +
-          this.merchants[1].merchant + ' and more';
+  private computeStepOneContent_(merchants: MerchantCart[]): string {
+    const stepOneUseStaticContent =
+        loadTimeData.getBoolean('modulesCartStepOneUseStaticContent');
+    if (!stepOneUseStaticContent) {
+      // TODO(crbug.com/1298116): We should also handle the case where the
+      // string gets too long here.
+      if (merchants.length === 1) {
+        return loadTimeData.getStringF(
+            'modulesCartConsentStepOneOneMerchantContent',
+            merchants[0].merchant);
+      } else if (merchants.length === 2) {
+        return loadTimeData.getStringF(
+            'modulesCartConsentStepOneTwoMerchantsContent',
+            merchants[0].merchant, merchants[1].merchant);
+      } else if (merchants.length >= 3) {
+        return loadTimeData.getStringF(
+            'modulesCartConsentStepOneThreeMerchantsContent',
+            merchants[0].merchant, merchants[1].merchant);
+      }
     }
+    return loadTimeData.getString('modulesCartStepOneStaticContent');
   }
 
   private getFaviconUrl_(url: string): string {

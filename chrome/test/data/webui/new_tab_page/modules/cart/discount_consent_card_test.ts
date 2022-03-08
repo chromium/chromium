@@ -14,7 +14,12 @@ suite('NewTabPageDiscountConsentCartTest', () => {
   suiteSetup(() => {
     loadTimeData.overrideValues({
       modulesCartConsentStepTwoDifferentColor: false,
-      modulesCartDiscountInlineCardShowCloseButton: false
+      modulesCartDiscountInlineCardShowCloseButton: false,
+      modulesCartDiscountConsentVariation: 2,
+      modulesCartStepOneUseStaticContent: true,
+      modulesCartConsentStepOneButton: 'Continue',
+      modulesCartStepOneStaticContent: 'Step one content',
+      modulesCartConsentStepTwoContent: 'Step two content',
     });
   });
 
@@ -27,7 +32,20 @@ suite('NewTabPageDiscountConsentCartTest', () => {
     return flushTasks();
   });
 
-  test('Verify DOM has two steps', () => {
+  test('Verify DOM has two steps', async () => {
+    const cart = [{
+      merchant: 'Amazon',
+      cartUrl: {url: 'https://amazon.com'},
+      productImageUrls: [
+        {url: 'https://image1.com'}, {url: 'https://image2.com'},
+        {url: 'https://image3.com'}
+      ],
+      discountText: ''
+    }];
+
+    discountConsentCard.merchants = cart;
+    await flushTasks();
+
     var contentSteps = discountConsentCard.shadowRoot!.querySelectorAll(
         '#contentSteps .step-container');
     assertEquals(contentSteps.length, 2);
@@ -35,8 +53,14 @@ suite('NewTabPageDiscountConsentCartTest', () => {
         'step1', contentSteps[0]!.getAttribute('id'),
         'First content step should have id as step1');
     assertEquals(
+        'Step one content',
+        contentSteps[0]!.querySelector('.content')!.textContent!.trim());
+    assertEquals(
         'step2', contentSteps[1]!.getAttribute('id'),
         'Second content step should have id as step2');
+    assertEquals(
+        'Step two content',
+        contentSteps[1]!.querySelector('.content')!.textContent!.trim());
   });
 
   test('Verify clicking continue button shows step 2 inline', () => {
@@ -243,13 +267,214 @@ suite('NewTabPageDiscountConsentCartTest', () => {
       });
     });
 
-    test('Verfiy step 2 has background color', () => {
+    test('Verify step 2 has background color', () => {
       discountConsentCard.currentStep = 1;
       const consentCardContainer =
           discountConsentCard.shadowRoot!.querySelector(
               '#consentCardContainer');
       const goolgeBlue100 = 'rgb(210, 227, 252)';
       assertStyle(consentCardContainer!, 'background-color', goolgeBlue100);
+    });
+  });
+
+  suite('Static content disabled for step one of cart module', () => {
+    suiteSetup(() => {
+      loadTimeData.overrideValues({
+        modulesCartStepOneUseStaticContent: false,
+        modulesCartConsentStepOneOneMerchantContent: 'One merchant: $1',
+        modulesCartConsentStepOneTwoMerchantsContent:
+            'Two merchants: $1 and $2',
+        modulesCartConsentStepOneThreeMerchantsContent:
+            'Three merchants: $1, $2, and more'
+      });
+    });
+
+    test('Verify step one content when one merchant cart shown', async () => {
+      const cart = [{
+        merchant: 'Amazon',
+        cartUrl: {url: 'https://amazon.com'},
+        productImageUrls: [
+          {url: 'https://image1.com'}, {url: 'https://image2.com'},
+          {url: 'https://image3.com'}
+        ],
+        discountText: ''
+      }];
+
+      discountConsentCard.merchants = cart;
+      await flushTasks();
+
+      var contentSteps = discountConsentCard.shadowRoot!.querySelectorAll(
+          '#contentSteps .step-container');
+
+      assertEquals(
+          'step1', contentSteps[0]!.getAttribute('id'),
+          'First content step should have id as step1');
+      assertEquals(
+          'One merchant: Amazon',
+          contentSteps[0]!.querySelector('.content')!.textContent!.trim());
+    });
+
+    test('Verify step one content when two merchant carts shown', async () => {
+      const carts = [
+        {
+          merchant: 'Amazon',
+          cartUrl: {url: 'https://amazon.com'},
+          productImageUrls: [
+            {url: 'https://image1.com'}, {url: 'https://image2.com'},
+            {url: 'https://image3.com'}
+          ],
+          discountText: ''
+        },
+        {
+          merchant: 'eBay',
+          cartUrl: {url: 'https://ebay.com'},
+          productImageUrls:
+              [{url: 'https://image4.com'}, {url: 'https://image5.com'}],
+          discountText: ''
+        }
+      ];
+
+      discountConsentCard.merchants = carts;
+      await flushTasks();
+
+      var contentSteps = discountConsentCard.shadowRoot!.querySelectorAll(
+          '#contentSteps .step-container');
+
+      assertEquals(
+          'step1', contentSteps[0]!.getAttribute('id'),
+          'First content step should have id as step1');
+      assertEquals(
+          'Two merchants: Amazon and eBay',
+          contentSteps[0]!.querySelector('.content')!.textContent!.trim());
+    });
+
+    test(
+        'Verify step one content when three or more merchant carts shown',
+        async () => {
+          const carts = [
+            {
+              merchant: 'Amazon',
+              cartUrl: {url: 'https://amazon.com'},
+              productImageUrls: [
+                {url: 'https://image1.com'}, {url: 'https://image2.com'},
+                {url: 'https://image3.com'}
+              ],
+              discountText: ''
+            },
+            {
+              merchant: 'eBay',
+              cartUrl: {url: 'https://ebay.com'},
+              productImageUrls:
+                  [{url: 'https://image4.com'}, {url: 'https://image5.com'}],
+              discountText: ''
+            },
+            {
+              merchant: 'BestBuy',
+              cartUrl: {url: 'https://bestbuy.com'},
+              productImageUrls: [],
+              discountText: ''
+            }
+          ];
+
+          discountConsentCard.merchants = carts;
+          await flushTasks();
+
+          var contentSteps = discountConsentCard.shadowRoot!.querySelectorAll(
+              '#contentSteps .step-container');
+
+          assertEquals(
+              'step1', contentSteps[0]!.getAttribute('id'),
+              'First content step should have id as step1');
+          assertEquals(
+              'Three merchants: Amazon, eBay, and more',
+              contentSteps[0]!.querySelector('.content')!.textContent!.trim());
+        });
+
+    test(
+        'Verify step one content updated when merchant cart changed',
+        async () => {
+          var carts = [{
+            merchant: 'Amazon',
+            cartUrl: {url: 'https://amazon.com'},
+            productImageUrls: [
+              {url: 'https://image1.com'}, {url: 'https://image2.com'},
+              {url: 'https://image3.com'}
+            ],
+            discountText: ''
+          }];
+
+          discountConsentCard.merchants = carts;
+          await flushTasks();
+
+          var contentSteps = discountConsentCard.shadowRoot!.querySelectorAll(
+              '#contentSteps .step-container');
+
+          assertEquals(
+              'step1', contentSteps[0]!.getAttribute('id'),
+              'First content step should have id as step1');
+          assertEquals(
+              'One merchant: Amazon',
+              contentSteps[0]!.querySelector('.content')!.textContent!.trim());
+
+          discountConsentCard.merchants = [
+            {
+              merchant: 'Amazon',
+              cartUrl: {url: 'https://amazon.com'},
+              productImageUrls: [
+                {url: 'https://image1.com'}, {url: 'https://image2.com'},
+                {url: 'https://image3.com'}
+              ],
+              discountText: ''
+            },
+            {
+              merchant: 'eBay',
+              cartUrl: {url: 'https://ebay.com'},
+              productImageUrls:
+                  [{url: 'https://image4.com'}, {url: 'https://image5.com'}],
+              discountText: ''
+            }
+          ];
+
+          await flushTasks();
+
+          contentSteps = discountConsentCard.shadowRoot!.querySelectorAll(
+              '#contentSteps .step-container');
+
+          assertEquals(
+              'step1', contentSteps[0]!.getAttribute('id'),
+              'First content step should have id as step1');
+          assertEquals(
+              'Two merchants: Amazon and eBay',
+              contentSteps[0]!.querySelector('.content')!.textContent!.trim());
+        });
+  });
+
+  suite('Enable the Dialog Variation', () => {
+    suiteSetup(() => {
+      loadTimeData.overrideValues({modulesCartDiscountConsentVariation: 3});
+    });
+
+    test('Verify DOM has one step', async () => {
+      const cart = [{
+        merchant: 'Amazon',
+        cartUrl: {url: 'https://amazon.com'},
+        productImageUrls: [
+          {url: 'https://image1.com'}, {url: 'https://image2.com'},
+          {url: 'https://image3.com'}
+        ],
+        discountText: ''
+      }];
+
+      discountConsentCard.merchants = cart;
+      await flushTasks();
+
+      var contentSteps = discountConsentCard.shadowRoot!.querySelectorAll(
+          '#contentSteps .step-container');
+      assertEquals(contentSteps.length, 1);
+
+      assertEquals(
+          'step1', contentSteps[0]!.getAttribute('id'),
+          'First content step should have id as step1');
     });
   });
 });
