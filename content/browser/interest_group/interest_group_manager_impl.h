@@ -83,6 +83,9 @@ class CONTENT_EXPORT InterestGroupManagerImpl : public InterestGroupManager {
   void UpdateInterestGroupsOfOwner(
       const url::Origin& owner,
       network::mojom::ClientSecurityStatePtr client_security_state);
+  // For testing *only*; changes the maximum amount of time that the update
+  // process can run before it gets cancelled for taking too long.
+  void set_max_update_round_duration_for_testing(base::TimeDelta delta);
   // Adds an entry to the bidding history for this interest group.
   void RecordInterestGroupBid(const url::Origin& owner,
                               const std::string& name);

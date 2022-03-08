@@ -16,6 +16,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/time/time.h"
 #include "content/browser/interest_group/storage_interest_group.h"
 #include "content/common/content_export.h"
 #include "services/data_decoder/public/cpp/data_decoder.h"
@@ -57,6 +58,10 @@ class CONTENT_EXPORT InterestGroupUpdateManager {
   void UpdateInterestGroupsOfOwner(
       const url::Origin& owner,
       network::mojom::ClientSecurityStatePtr client_security_state);
+
+  // For testing *only*; changes the maximum amount of time that the update
+  // process can run before it gets cancelled for taking too long.
+  void set_max_update_round_duration_for_testing(base::TimeDelta delta);
 
  private:
   using UrlLoadersList = std::list<std::unique_ptr<network::SimpleURLLoader>>;
@@ -210,6 +215,16 @@ class CONTENT_EXPORT InterestGroupUpdateManager {
   // occur in-order, so the next read should reflect the results of the previous
   // write.
   bool waiting_on_db_read_ = false;
+
+  // The maximum amount of time that the update process can run before it gets
+  // cancelled for taking too long.
+  //
+  // Should *only* be changed by tests.
+  base::TimeDelta max_update_round_duration_;
+
+  // The last time we started a round of updating; used to cancel long-running
+  // updates.
+  base::TimeTicks last_update_started_ = base::TimeTicks::Min();
 
   // Used for fetching interest group update JSON over the network.
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;

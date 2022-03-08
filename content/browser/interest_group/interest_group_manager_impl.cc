@@ -67,6 +67,11 @@ void InterestGroupManagerImpl::UpdateInterestGroupsOfOwner(
                                               std::move(client_security_state));
 }
 
+void InterestGroupManagerImpl::set_max_update_round_duration_for_testing(
+    base::TimeDelta delta) {
+  update_manager_.set_max_update_round_duration_for_testing(delta);  // IN-TEST
+}
+
 void InterestGroupManagerImpl::RecordInterestGroupBid(
     const ::url::Origin& owner,
     const std::string& name) {

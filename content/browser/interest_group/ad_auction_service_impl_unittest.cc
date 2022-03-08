@@ -70,6 +70,10 @@ constexpr char kDailyUpdateUrlPath[] =
     "/interest_group/daily_update_partial.json";
 constexpr char kDailyUpdateUrlPath2[] =
     "/interest_group/daily_update_partial_2.json";
+constexpr char kDailyUpdateUrlPath3[] =
+    "/interest_group/daily_update_partial_3.json";
+constexpr char kDailyUpdateUrlPath4[] =
+    "/interest_group/daily_update_partial_4.json";
 constexpr char kDailyUpdateUrlPathB[] =
     "/interest_group/daily_update_partial_b.json";
 constexpr char kDailyUpdateUrlPathC[] =
@@ -156,10 +160,30 @@ class NetworkResponder {
   // performed later in DoDeferredWrite() using a "stolen" Mojo pipe to the
   // URLLoaderClient.
   //
-  // Only one request / response can be handled with this method at a time.
+  // It is valid to have a "deferred" response that never completes before the
+  // test exits.
   void RegisterDeferredUpdateResponse(const std::string& url_path) {
     base::AutoLock auto_lock(lock_);
-    deferred_response_url_path_ = url_path;
+    CHECK(
+        deferred_update_responses_map_
+            .emplace(url_path, mojo::Remote<network::mojom::URLLoaderClient>())
+            .second);
+  }
+
+  // Perform the deferred response for `url_path` -- the test fails if the
+  // client isn't waiting on `url_path` registered with
+  // RegisterDeferredUpdateResponse().
+  void DoDeferredUpdateResponse(const std::string& url_path,
+                                const std::string& response) {
+    base::AutoLock auto_lock(lock_);
+    auto it = deferred_update_responses_map_.find(url_path);
+    CHECK(it != deferred_update_responses_map_.end());
+    mojo::Remote<network::mojom::URLLoaderClient>& url_loader_client =
+        it->second;
+    CHECK(url_loader_client.is_bound());
+    URLLoaderInterceptor::WriteResponse(kFledgeUpdateHeaders, response,
+                                        url_loader_client.get());
+    deferred_update_responses_map_.erase(it);
   }
 
   // Registers a URL that, when seen, will have its URLLoaderClient stored in
@@ -169,18 +193,6 @@ class NetworkResponder {
   void RegisterStoreUrlLoaderClient(const std::string& url_path) {
     base::AutoLock auto_lock(lock_);
     store_url_loader_client_url_path_ = url_path;
-  }
-
-  // Perform the deferred response -- the test fails if the client isn't waiting
-  // on `url_path` registered with RegisterDeferredUpdateResponse().
-  void DoDeferredUpdateResponse(const std::string& response) {
-    base::AutoLock auto_lock(lock_);
-    ASSERT_TRUE(deferred_response_url_loader_client_.is_bound());
-    URLLoaderInterceptor::WriteResponse(
-        kFledgeUpdateHeaders, response,
-        deferred_response_url_loader_client_.get());
-    deferred_response_url_loader_client_.reset();
-    deferred_response_url_path_ = "";
   }
 
   // Make the next request fail with `error` -- subsequent requests will succeed
@@ -259,9 +271,11 @@ class NetworkResponder {
       return true;
     }
 
-    if (params->url_request.url.path() == deferred_response_url_path_) {
-      CHECK(!deferred_response_url_loader_client_);
-      deferred_response_url_loader_client_ = std::move(params->client);
+    const auto deferred_update_it =
+        deferred_update_responses_map_.find(params->url_request.url.path());
+    if (deferred_update_it != deferred_update_responses_map_.end()) {
+      CHECK(!deferred_update_it->second);
+      deferred_update_it->second = std::move(params->client);
       return true;
     }
 
@@ -300,20 +314,26 @@ class NetworkResponder {
 
   base::flat_map<std::string, std::string> report_map_ GUARDED_BY(lock_);
 
-  // Stores the last URL path that was registered with
-  // RegisterDeferredUpdateResponse(). Empty initially and after
-  // DoDeferredUpdateResponse() -- when empty, no deferred response can occur.
-  std::string deferred_response_url_path_ GUARDED_BY(lock_);
+  // Stores the set of URL paths that will receive deferred updates.
+  //
+  // First, a URL path is registered to receive an update, but the mapped value
+  // will not be bound.
+  //
+  // Next, once a request is made for that URL path, the
+  // URLLoaderClient used for the request is stored as the value for that URL
+  // path.
+  //
+  // Finally, after the deferred response is made, the key-value pair for that
+  // response is removed from the map.
+  //
+  // It is valid to have a "deferred" response that never completes before the
+  // test exits.
+  base::flat_map<std::string, mojo::Remote<network::mojom::URLLoaderClient>>
+      deferred_update_responses_map_ GUARDED_BY(lock_);
 
   // Stores the last URL path that was registered with
   // RegisterStoreUrlLoaderClient().
   std::string store_url_loader_client_url_path_ GUARDED_BY(lock_);
-
-  // Stores the Mojo URLLoaderClient remote "stolen" from RequestHandler() for
-  // use with deferred responses -- unbound if no remote has been "stolen" yet,
-  // or if the last deferred response completed.
-  mojo::Remote<network::mojom::URLLoaderClient>
-      deferred_response_url_loader_client_ GUARDED_BY(lock_);
 
   // Stores the Mojo URLLoaderClient remote "stolen" from
   // RequestHandlerForUpdates() for use with no responses -- unbound if no
@@ -583,6 +603,8 @@ class AdAuctionServiceImplTest : public RenderViewHostTestHarness {
       kUrlA.Resolve(kTrustedBiddingSignalsUrlPath);
   const GURL kUpdateUrlA = kUrlA.Resolve(kDailyUpdateUrlPath);
   const GURL kUpdateUrlA2 = kUrlA.Resolve(kDailyUpdateUrlPath2);
+  const GURL kUpdateUrlA3 = kUrlA.Resolve(kDailyUpdateUrlPath3);
+  const GURL kUpdateUrlA4 = kUrlA.Resolve(kDailyUpdateUrlPath4);
   const GURL kUpdateUrlB = kUrlB.Resolve(kDailyUpdateUrlPathB);
   const GURL kUpdateUrlC = kUrlC.Resolve(kDailyUpdateUrlPathC);
 
@@ -1633,7 +1655,8 @@ TEST_F(AdAuctionServiceImplTest,
 
   // Now return the server response. The interest group shouldn't change as it's
   // expired.
-  network_responder_->DoDeferredUpdateResponse(kServerResponse);
+  network_responder_->DoDeferredUpdateResponse(kDailyUpdateUrlPath,
+                                               kServerResponse);
   task_environment()->RunUntilIdle();
   EXPECT_EQ(0, GetJoinCount(kOriginA, kInterestGroupName));
   EXPECT_EQ(0u, GetInterestGroupsForOwner(kOriginA).size());
@@ -1715,7 +1738,8 @@ TEST_F(AdAuctionServiceImplTest,
 
   // Now return the server response. The interest group shouldn't change as it's
   // expired.
-  network_responder_->DoDeferredUpdateResponse(kServerResponse);
+  network_responder_->DoDeferredUpdateResponse(kDailyUpdateUrlPath,
+                                               kServerResponse);
   task_environment()->RunUntilIdle();
   EXPECT_EQ(0, GetJoinCount(kOriginA, kInterestGroupName));
   EXPECT_EQ(0u, GetInterestGroupsForOwner(kOriginA).size());
@@ -2306,7 +2330,8 @@ TEST_F(AdAuctionServiceImplTest, DisconnectedAndSuccessInFlightTogether) {
   task_environment()->RunUntilIdle();
 
   // Now, let the first group's update response be sent.
-  network_responder_->DoDeferredUpdateResponse(kServerResponse1);
+  network_responder_->DoDeferredUpdateResponse(kDailyUpdateUrlPath,
+                                               kServerResponse1);
   task_environment()->RunUntilIdle();
 
   // The second update fails (internet disconnected), so that interest group
@@ -2538,7 +2563,8 @@ TEST_F(AdAuctionServiceImplTest, OnlyOneOriginUpdatesAtATime) {
   // Now, the server finishes sending the kOriginA response. Both interest
   // groups should now update, since kOriginA's update completion unblocks
   // kOriginB's update.
-  network_responder_->DoDeferredUpdateResponse(kServerResponseA);
+  network_responder_->DoDeferredUpdateResponse(kDailyUpdateUrlPath,
+                                               kServerResponseA);
   task_environment()->RunUntilIdle();
   EXPECT_EQ(network_responder_->UpdateCount(), 3u);
 
@@ -2571,6 +2597,662 @@ TEST_F(AdAuctionServiceImplTest, OnlyOneOriginUpdatesAtATime) {
   EXPECT_EQ(b_group.ads.value()[0].render_url.spec(),
             base::StringPrintf("%s/new_ad_render_url", kOriginStringC));
   EXPECT_EQ(b_group.ads.value()[0].metadata, "{\"new_a\":\"b\"}");
+}
+
+// Create an interest group in a.test, and in b.test. Defer the update response
+// for a.test, and update a.test and b.test.
+//
+// Wait the max update round duration, then respond to the a.test update
+// request. The a.test interest group should update, but the b.test update
+// should be cancelled.
+//
+// Then, try updating b.test normally, without deferral. The update should
+// complete successfully.
+TEST_F(AdAuctionServiceImplTest, CancelsLongstandingUpdates) {
+  // Lower the max update round duration so that it is smaller than the network
+  // timeout.
+  //
+  // The production value is much longer than the interest group
+  // network timeout, so to exceed the production max update round duration,
+  // we'd need to do delayed updates for a large number of interest groups. The
+  // test override avoids this awkwardness while still exercising the same
+  // scenario.
+  constexpr base::TimeDelta kMaxUpdateRoundDuration = base::Seconds(5);
+  manager_->set_max_update_round_duration_for_testing(kMaxUpdateRoundDuration);
+
+  // kOriginA's update will be deferred, whereas kOriginB's
+  // update will be allowed to proceed immediately.
+  const std::string kServerResponseA = base::StringPrintf(R"({
+"ads": [{"renderUrl": "%s/new_ad_render_url",
+         "metadata": {"new_a": "b"}}]
+})",
+                                                          kOriginStringA);
+  network_responder_->RegisterDeferredUpdateResponse(kDailyUpdateUrlPath);
+
+  network_responder_->RegisterUpdateResponse(
+      kDailyUpdateUrlPathB, base::StringPrintf(R"({
+"ads": [{"renderUrl": "%s/new_ad_render_url",
+         "metadata": {"new_a": "b"}
+        }]
+})",
+                                               kOriginStringB));
+
+  // Create interest group for kOriginA.
+  blink::InterestGroup interest_group = CreateInterestGroup();
+  // Set a long expiration delta so that we can advance to update cancellation
+  // without the interest group expiring.
+  interest_group.expiry = base::Time::Now() + base::Days(30);
+  interest_group.update_url = kUpdateUrlA;
+  interest_group.ads.emplace();
+  blink::InterestGroup::Ad ad(
+      /*render_url=*/GURL("https://example.com/render"),
+      /*metadata=*/"{\"ad\":\"metadata\",\"here\":[1,2,3]}");
+  interest_group.ads->emplace_back(std::move(ad));
+  JoinInterestGroupAndFlush(interest_group);
+  EXPECT_EQ(1, GetJoinCount(kOriginA, kInterestGroupName));
+
+  // Create interest group for kOriginB.
+  NavigateAndCommit(kUrlB);
+  interest_group = CreateInterestGroup();
+  // Set a long expiration delta so that we can advance to update cancellation
+  // without the interest group expiring.
+  interest_group.owner = kOriginB;
+  interest_group.expiry = base::Time::Now() + base::Days(30);
+  interest_group.update_url = kUpdateUrlB;
+  interest_group.ads.emplace();
+  ad = blink::InterestGroup::Ad(
+      /*render_url=*/GURL("https://example.com/render"),
+      /*metadata=*/"{\"ad\":\"metadata\",\"here\":[1,2,3]}");
+  interest_group.ads->emplace_back(std::move(ad));
+  JoinInterestGroupAndFlush(interest_group);
+  EXPECT_EQ(1, GetJoinCount(kOriginB, kInterestGroupName));
+
+  EXPECT_EQ(network_responder_->UpdateCount(), 0u);
+
+  // Attempt to update kOriginA's interest groups. The update doesn't happen
+  // yet, because the server delays its response.
+  NavigateAndCommit(kUrlA);
+  UpdateInterestGroupNoFlush();
+  task_environment()->RunUntilIdle();
+  std::vector<StorageInterestGroup> a_groups =
+      GetInterestGroupsForOwner(kOriginA);
+  ASSERT_EQ(a_groups.size(), 1u);
+  auto a_group = a_groups[0].interest_group;
+  ASSERT_TRUE(a_group.ads.has_value());
+  ASSERT_EQ(a_group.ads->size(), 1u);
+  EXPECT_EQ(a_group.ads.value()[0].render_url.spec(),
+            "https://example.com/render");
+  EXPECT_EQ(a_group.ads.value()[0].metadata,
+            "{\"ad\":\"metadata\",\"here\":[1,2,3]}");
+
+  // Now, try to update kOriginB's interest groups. The update shouldn't happen
+  // yet, because we're still updating kOriginA's interest groups.
+  NavigateAndCommit(kUrlB);
+  UpdateInterestGroupNoFlush();
+  task_environment()->RunUntilIdle();
+  std::vector<StorageInterestGroup> b_groups =
+      GetInterestGroupsForOwner(kOriginB);
+  ASSERT_EQ(b_groups.size(), 1u);
+  auto b_group = b_groups[0].interest_group;
+  ASSERT_TRUE(b_group.ads.has_value());
+  ASSERT_EQ(b_group.ads->size(), 1u);
+  EXPECT_EQ(b_group.ads.value()[0].render_url.spec(),
+            "https://example.com/render");
+  EXPECT_EQ(b_group.ads.value()[0].metadata,
+            "{\"ad\":\"metadata\",\"here\":[1,2,3]}");
+
+  // Only one network request should have been made (for the kOriginA update).
+  EXPECT_EQ(network_responder_->UpdateCount(), 1u);
+
+  // Advance time beyond the max update round duration. This will result in
+  // kOriginB's update getting cancelled, but kOriginA's update will still be
+  // able to proceed because it's in-progress.
+  task_environment()->FastForwardBy(kMaxUpdateRoundDuration + base::Seconds(1));
+
+  // Now, the server finishes sending the kOriginA response. Both interest
+  // groups should now update, since kOriginA's update completion unblocks
+  // kOriginB's update. However, kOriginB's update never happens, because it
+  // gets cancelled.
+  network_responder_->DoDeferredUpdateResponse(kDailyUpdateUrlPath,
+                                               kServerResponseA);
+  task_environment()->RunUntilIdle();
+  EXPECT_EQ(network_responder_->UpdateCount(), 1u);
+
+  // kOriginA's groups have updated.
+  a_groups = GetInterestGroupsForOwner(kOriginA);
+  ASSERT_EQ(a_groups.size(), 1u);
+  a_group = a_groups[0].interest_group;
+  ASSERT_TRUE(a_group.ads.has_value());
+  ASSERT_EQ(a_group.ads->size(), 1u);
+  EXPECT_EQ(a_group.ads.value()[0].render_url.spec(),
+            base::StringPrintf("%s/new_ad_render_url", kOriginStringA));
+  EXPECT_EQ(a_group.ads.value()[0].metadata, "{\"new_a\":\"b\"}");
+
+  // But kOriginB's groups have not updated, because they got cancelled.
+  b_groups = GetInterestGroupsForOwner(kOriginB);
+  ASSERT_EQ(b_groups.size(), 1u);
+  b_group = b_groups[0].interest_group;
+  ASSERT_TRUE(b_group.ads.has_value());
+  ASSERT_EQ(b_group.ads->size(), 1u);
+  EXPECT_EQ(b_group.ads.value()[0].render_url.spec(),
+            "https://example.com/render");
+  EXPECT_EQ(b_group.ads.value()[0].metadata,
+            "{\"ad\":\"metadata\",\"here\":[1,2,3]}");
+
+  // Now, try updating kOriginB. The update should complete successfully.
+  network_responder_->RegisterUpdateResponse(
+      kDailyUpdateUrlPathB, base::StringPrintf(R"({
+"ads": [{"renderUrl": "%s/newer_ad_render_url",
+         "metadata": {"newer_a": "b"}
+        }]
+})",
+                                               kOriginStringB));
+
+  NavigateAndCommit(kUrlB);
+  UpdateInterestGroupNoFlush();
+  task_environment()->RunUntilIdle();
+
+  // kOriginB's groups have updated.
+  b_groups = GetInterestGroupsForOwner(kOriginB);
+  ASSERT_EQ(b_groups.size(), 1u);
+  b_group = b_groups[0].interest_group;
+  ASSERT_TRUE(b_group.ads.has_value());
+  ASSERT_EQ(b_group.ads->size(), 1u);
+  EXPECT_EQ(b_group.ads.value()[0].render_url.spec(),
+            base::StringPrintf("%s/newer_ad_render_url", kOriginStringB));
+  EXPECT_EQ(b_group.ads.value()[0].metadata, "{\"newer_a\":\"b\"}");
+}
+
+// Like CancelsLongstandingUpdates, but after the cancellation, tries to update
+// a different origin, c.test, that succeeds.
+//
+// NOTE that a.test won't qualify for update until the next day due to rate
+// limiting, since it successfully updated.
+TEST_F(AdAuctionServiceImplTest, CancelsLongstandingUpdates2) {
+  // Lower the max update round duration so that it is smaller than the network
+  // timeout.
+  //
+  // The production value is much longer than the interest group
+  // network timeout, so to exceed the production max update round duration,
+  // we'd need to do delayed updates for a large number of interest groups. The
+  // test override avoids this awkwardness while still exercising the same
+  // scenario.
+  constexpr base::TimeDelta kMaxUpdateRoundDuration = base::Seconds(5);
+  manager_->set_max_update_round_duration_for_testing(kMaxUpdateRoundDuration);
+
+  // kOriginA's update will be deferred, whereas kOriginB's
+  // update will be allowed to proceed immediately.
+  const std::string kServerResponseA = base::StringPrintf(R"({
+"ads": [{"renderUrl": "%s/new_ad_render_url",
+         "metadata": {"new_a": "b"}}]
+})",
+                                                          kOriginStringA);
+  network_responder_->RegisterDeferredUpdateResponse(kDailyUpdateUrlPath);
+
+  network_responder_->RegisterUpdateResponse(
+      kDailyUpdateUrlPathB, base::StringPrintf(R"({
+"ads": [{"renderUrl": "%s/new_ad_render_url",
+         "metadata": {"new_a": "b"}
+        }]
+})",
+                                               kOriginStringB));
+
+  // Create interest group for kOriginA.
+  blink::InterestGroup interest_group = CreateInterestGroup();
+  // Set a long expiration delta so that we can advance to update cancellation
+  // without the interest group expiring.
+  interest_group.expiry = base::Time::Now() + base::Days(30);
+  interest_group.update_url = kUpdateUrlA;
+  interest_group.ads.emplace();
+  blink::InterestGroup::Ad ad(
+      /*render_url=*/GURL("https://example.com/render"),
+      /*metadata=*/"{\"ad\":\"metadata\",\"here\":[1,2,3]}");
+  interest_group.ads->emplace_back(std::move(ad));
+  JoinInterestGroupAndFlush(interest_group);
+  EXPECT_EQ(1, GetJoinCount(kOriginA, kInterestGroupName));
+
+  // Create interest group for kOriginB.
+  NavigateAndCommit(kUrlB);
+  interest_group = CreateInterestGroup();
+  // Set a long expiration delta so that we can advance to update cancellation
+  // without the interest group expiring.
+  interest_group.owner = kOriginB;
+  interest_group.expiry = base::Time::Now() + base::Days(30);
+  interest_group.update_url = kUpdateUrlB;
+  interest_group.ads.emplace();
+  ad = blink::InterestGroup::Ad(
+      /*render_url=*/GURL("https://example.com/render"),
+      /*metadata=*/"{\"ad\":\"metadata\",\"here\":[1,2,3]}");
+  interest_group.ads->emplace_back(std::move(ad));
+  JoinInterestGroupAndFlush(interest_group);
+  EXPECT_EQ(1, GetJoinCount(kOriginB, kInterestGroupName));
+
+  EXPECT_EQ(network_responder_->UpdateCount(), 0u);
+
+  // Attempt to update kOriginA's interest groups. The update doesn't happen
+  // yet, because the server delays its response.
+  NavigateAndCommit(kUrlA);
+  UpdateInterestGroupNoFlush();
+  task_environment()->RunUntilIdle();
+  std::vector<StorageInterestGroup> a_groups =
+      GetInterestGroupsForOwner(kOriginA);
+  ASSERT_EQ(a_groups.size(), 1u);
+  auto a_group = a_groups[0].interest_group;
+  ASSERT_TRUE(a_group.ads.has_value());
+  ASSERT_EQ(a_group.ads->size(), 1u);
+  EXPECT_EQ(a_group.ads.value()[0].render_url.spec(),
+            "https://example.com/render");
+  EXPECT_EQ(a_group.ads.value()[0].metadata,
+            "{\"ad\":\"metadata\",\"here\":[1,2,3]}");
+
+  // Now, try to update kOriginB's interest groups. The update shouldn't happen
+  // yet, because we're still updating kOriginA's interest groups.
+  NavigateAndCommit(kUrlB);
+  UpdateInterestGroupNoFlush();
+  task_environment()->RunUntilIdle();
+  std::vector<StorageInterestGroup> b_groups =
+      GetInterestGroupsForOwner(kOriginB);
+  ASSERT_EQ(b_groups.size(), 1u);
+  auto b_group = b_groups[0].interest_group;
+  ASSERT_TRUE(b_group.ads.has_value());
+  ASSERT_EQ(b_group.ads->size(), 1u);
+  EXPECT_EQ(b_group.ads.value()[0].render_url.spec(),
+            "https://example.com/render");
+  EXPECT_EQ(b_group.ads.value()[0].metadata,
+            "{\"ad\":\"metadata\",\"here\":[1,2,3]}");
+
+  // Only one network request should have been made (for the kOriginA update).
+  EXPECT_EQ(network_responder_->UpdateCount(), 1u);
+
+  // Advance time beyond the max update round duration. This will result in
+  // kOriginB's update getting cancelled, but kOriginA's update will still be
+  // able to proceed because it's in-progress.
+  task_environment()->FastForwardBy(kMaxUpdateRoundDuration + base::Seconds(1));
+
+  // Now, the server finishes sending the kOriginA response. Both interest
+  // groups should now update, since kOriginA's update completion unblocks
+  // kOriginB's update. However, kOriginB's update never happens, because it
+  // gets cancelled.
+  network_responder_->DoDeferredUpdateResponse(kDailyUpdateUrlPath,
+                                               kServerResponseA);
+  task_environment()->RunUntilIdle();
+  EXPECT_EQ(network_responder_->UpdateCount(), 1u);
+
+  // kOriginA's groups have updated.
+  a_groups = GetInterestGroupsForOwner(kOriginA);
+  ASSERT_EQ(a_groups.size(), 1u);
+  a_group = a_groups[0].interest_group;
+  ASSERT_TRUE(a_group.ads.has_value());
+  ASSERT_EQ(a_group.ads->size(), 1u);
+  EXPECT_EQ(a_group.ads.value()[0].render_url.spec(),
+            base::StringPrintf("%s/new_ad_render_url", kOriginStringA));
+  EXPECT_EQ(a_group.ads.value()[0].metadata, "{\"new_a\":\"b\"}");
+
+  // But kOriginB's groups have not updated, because they got cancelled.
+  b_groups = GetInterestGroupsForOwner(kOriginB);
+  ASSERT_EQ(b_groups.size(), 1u);
+  b_group = b_groups[0].interest_group;
+  ASSERT_TRUE(b_group.ads.has_value());
+  ASSERT_EQ(b_group.ads->size(), 1u);
+  EXPECT_EQ(b_group.ads.value()[0].render_url.spec(),
+            "https://example.com/render");
+  EXPECT_EQ(b_group.ads.value()[0].metadata,
+            "{\"ad\":\"metadata\",\"here\":[1,2,3]}");
+
+  // Now, try updating a new origin, kOriginC. The update should complete
+  // successfully.
+
+  // Create interest group for kOriginC.
+  NavigateAndCommit(kUrlC);
+  interest_group = CreateInterestGroup();
+  interest_group.owner = kOriginC;
+  interest_group.expiry = base::Time::Now() + base::Days(30);
+  interest_group.update_url = kUpdateUrlC;
+  interest_group.ads.emplace();
+  ad = blink::InterestGroup::Ad(
+      /*render_url=*/GURL("https://example.com/render"),
+      /*metadata=*/"{\"ad\":\"metadata\",\"here\":[1,2,3]}");
+  interest_group.ads->emplace_back(std::move(ad));
+  ASSERT_TRUE(interest_group.IsValid());
+  JoinInterestGroupAndFlush(interest_group);
+  EXPECT_EQ(1, GetJoinCount(kOriginC, kInterestGroupName));
+
+  network_responder_->RegisterUpdateResponse(
+      kDailyUpdateUrlPathC, base::StringPrintf(R"({
+"ads": [{"renderUrl": "%s/newer_ad_render_url",
+         "metadata": {"newer_a": "b"}
+        }]
+})",
+                                               kOriginStringC));
+  UpdateInterestGroupNoFlush();
+  task_environment()->RunUntilIdle();
+
+  // kOriginC's groups have updated.
+  auto c_groups = GetInterestGroupsForOwner(kOriginC);
+  ASSERT_EQ(c_groups.size(), 1u);
+  auto c_group = c_groups[0].interest_group;
+  ASSERT_TRUE(c_group.ads.has_value());
+  ASSERT_EQ(c_group.ads->size(), 1u);
+  EXPECT_EQ(c_group.ads.value()[0].render_url.spec(),
+            base::StringPrintf("%s/newer_ad_render_url", kOriginStringC));
+  EXPECT_EQ(c_group.ads.value()[0].metadata, "{\"newer_a\":\"b\"}");
+
+  // But kOriginB's groups have not updated.
+  b_groups = GetInterestGroupsForOwner(kOriginB);
+  ASSERT_EQ(b_groups.size(), 1u);
+  b_group = b_groups[0].interest_group;
+  ASSERT_TRUE(b_group.ads.has_value());
+  ASSERT_EQ(b_group.ads->size(), 1u);
+  EXPECT_EQ(b_group.ads.value()[0].render_url.spec(),
+            "https://example.com/render");
+  EXPECT_EQ(b_group.ads.value()[0].metadata,
+            "{\"ad\":\"metadata\",\"here\":[1,2,3]}");
+}
+
+// After a round of updates completes, the round cancellation timer should reset
+// so that future updates can proceed.
+//
+// Create 2 interest groups in different origins. Update the first, then wait
+// for more than the max update round duration, then update the second.
+//
+// Both interest groups should update correctly.
+TEST_F(AdAuctionServiceImplTest, UpdateCancellationTimerClearedOnCompletion) {
+  // Set the max update duration to a known value.
+  constexpr base::TimeDelta kMaxUpdateRoundDuration = base::Seconds(5);
+  manager_->set_max_update_round_duration_for_testing(kMaxUpdateRoundDuration);
+
+  network_responder_->RegisterUpdateResponse(
+      kDailyUpdateUrlPath, base::StringPrintf(R"({
+"ads": [{"renderUrl": "%s/new_ad_render_url",
+         "metadata": {"new_a": "b"}
+        }]
+})",
+                                              kOriginStringA));
+  network_responder_->RegisterUpdateResponse(
+      kDailyUpdateUrlPathB, base::StringPrintf(R"({
+"ads": [{"renderUrl": "%s/new_ad_render_url",
+         "metadata": {"new_a": "b"}
+        }]
+})",
+                                               kOriginStringB));
+
+  // Create interest group for kOriginA.
+  blink::InterestGroup interest_group = CreateInterestGroup();
+  // Set a long expiration delta so that we can advance to update cancellation
+  // without the interest group expiring.
+  interest_group.expiry = base::Time::Now() + base::Days(30);
+  interest_group.update_url = kUpdateUrlA;
+  interest_group.ads.emplace();
+  blink::InterestGroup::Ad ad(
+      /*render_url=*/GURL("https://example.com/render"),
+      /*metadata=*/"{\"ad\":\"metadata\",\"here\":[1,2,3]}");
+  interest_group.ads->emplace_back(std::move(ad));
+  JoinInterestGroupAndFlush(interest_group);
+  EXPECT_EQ(1, GetJoinCount(kOriginA, kInterestGroupName));
+
+  // Create interest group for kOriginB.
+  NavigateAndCommit(kUrlB);
+  interest_group = CreateInterestGroup();
+  // Set a long expiration delta so that we can advance to update cancellation
+  // without the interest group expiring.
+  interest_group.owner = kOriginB;
+  interest_group.expiry = base::Time::Now() + base::Days(30);
+  interest_group.update_url = kUpdateUrlB;
+  interest_group.ads.emplace();
+  ad = blink::InterestGroup::Ad(
+      /*render_url=*/GURL("https://example.com/render"),
+      /*metadata=*/"{\"ad\":\"metadata\",\"here\":[1,2,3]}");
+  interest_group.ads->emplace_back(std::move(ad));
+  JoinInterestGroupAndFlush(interest_group);
+  EXPECT_EQ(1, GetJoinCount(kOriginB, kInterestGroupName));
+
+  EXPECT_EQ(network_responder_->UpdateCount(), 0u);
+
+  // Attempt to update kOriginA's interest groups. The update completes
+  // successfully.
+  NavigateAndCommit(kUrlA);
+  UpdateInterestGroupNoFlush();
+  task_environment()->RunUntilIdle();
+
+  std::vector<StorageInterestGroup> a_groups =
+      GetInterestGroupsForOwner(kOriginA);
+  ASSERT_EQ(a_groups.size(), 1u);
+  auto a_group = a_groups[0].interest_group;
+  ASSERT_TRUE(a_group.ads.has_value());
+  ASSERT_EQ(a_group.ads->size(), 1u);
+  EXPECT_EQ(a_group.ads.value()[0].render_url.spec(),
+            base::StringPrintf("%s/new_ad_render_url", kOriginStringA));
+  EXPECT_EQ(a_group.ads.value()[0].metadata, "{\"new_a\":\"b\"}");
+
+  // Only one network request should have been made (for the kOriginA update).
+  EXPECT_EQ(network_responder_->UpdateCount(), 1u);
+
+  // Advance time beyond the max update round duration.
+  task_environment()->FastForwardBy(kMaxUpdateRoundDuration + base::Seconds(1));
+
+  // Now, try to update kOriginB's interest groups. The update completes
+  // successfully.
+  NavigateAndCommit(kUrlB);
+  UpdateInterestGroupNoFlush();
+  task_environment()->RunUntilIdle();
+
+  std::vector<StorageInterestGroup> b_groups =
+      GetInterestGroupsForOwner(kOriginB);
+  ASSERT_EQ(b_groups.size(), 1u);
+  auto b_group = b_groups[0].interest_group;
+  ASSERT_TRUE(b_group.ads.has_value());
+  ASSERT_EQ(b_group.ads->size(), 1u);
+  EXPECT_EQ(b_group.ads.value()[0].render_url.spec(),
+            base::StringPrintf("%s/new_ad_render_url", kOriginStringB));
+  EXPECT_EQ(b_group.ads.value()[0].metadata, "{\"new_a\":\"b\"}");
+
+  // Two network requests should have been made (for the kOriginA and kOriginB
+  // updates).
+  EXPECT_EQ(network_responder_->UpdateCount(), 2u);
+}
+
+// Create 4 interest groups in a.test, and one in b.test.
+//
+// For the a.test groups, have one succeed immediately, one fail immediately
+// (invalid JSON), one be delayed a duration shorter than the max update round
+// duration (and succeed), and one delayed a duration more than the max update
+// round duration (and succeed).
+//
+// For the b.test group, let it succeed immediately.
+//
+// Update all groups, advancing time twice to issue the 2 a.test delayed
+// responses.
+//
+// All a.test updates except the failed update should succeed. The b.test update
+// should be cancelled.
+//
+// Then, try updating b.test normally, without deferral. The update should
+// complete successfully.
+TEST_F(AdAuctionServiceImplTest, CancelsLongstandingUpdatesComplex) {
+  // Lower the max update round duration so that it is smaller than the network
+  // timeout.
+  //
+  // The production value is much longer than the interest group
+  // network timeout, so to exceed the production max update round duration,
+  // we'd need to do delayed updates for a large number of interest groups. The
+  // test override avoids this awkwardness while still exercising the same
+  // scenario.
+  constexpr base::TimeDelta kMaxUpdateRoundDuration = base::Seconds(5);
+  manager_->set_max_update_round_duration_for_testing(kMaxUpdateRoundDuration);
+
+  // 2 of kOriginA's updates will be deferred (each by different amounts of
+  // time) and one will be allowed to proceed immediately, whereas kOriginB's 1
+  // update will be allowed to proceed immediately. The last group's update will
+  // fail.
+  constexpr char kServerResponse[] = R"({
+"ads": [{"renderUrl": "https://example.com/render2"}]
+})";
+  network_responder_->RegisterUpdateResponse(kDailyUpdateUrlPath,
+                                             kServerResponse);
+  network_responder_->FailUpdateRequestWithError(kDailyUpdateUrlPath2,
+                                                 net::ERR_CONNECTION_RESET);
+  network_responder_->RegisterDeferredUpdateResponse(kDailyUpdateUrlPath3);
+  network_responder_->RegisterDeferredUpdateResponse(kDailyUpdateUrlPath4);
+
+  network_responder_->RegisterUpdateResponse(kDailyUpdateUrlPathB,
+                                             kServerResponse);
+
+  // Create interest groups for kOriginA.
+  for (const GURL& update_url :
+       {kUpdateUrlA, kUpdateUrlA2, kUpdateUrlA3, kUpdateUrlA4}) {
+    blink::InterestGroup interest_group = CreateInterestGroup();
+    // Set a long expiration delta so that we can advance to update cancellation
+    // without the interest group expiring.
+    interest_group.expiry = base::Time::Now() + base::Days(30);
+    interest_group.name = update_url.path();
+    interest_group.update_url = update_url;
+    interest_group.ads.emplace();
+    blink::InterestGroup::Ad ad(
+        /*render_url=*/GURL("https://example.com/render"),
+        /*metadata=*/absl::nullopt);
+    interest_group.ads->emplace_back(std::move(ad));
+    JoinInterestGroupAndFlush(interest_group);
+    EXPECT_EQ(1, GetJoinCount(kOriginA, /*name=*/update_url.path()));
+  }
+
+  // Create interest group for kOriginB.
+  NavigateAndCommit(kUrlB);
+  blink::InterestGroup interest_group = CreateInterestGroup();
+  // Set a long expiration delta so that we can advance to update cancellation
+  // without the interest group expiring.
+  interest_group.owner = kOriginB;
+  interest_group.expiry = base::Time::Now() + base::Days(30);
+  interest_group.update_url = kUpdateUrlB;
+  interest_group.ads.emplace();
+  blink::InterestGroup::Ad ad(
+      /*render_url=*/GURL("https://example.com/render"),
+      /*metadata=*/absl::nullopt);
+  interest_group.ads->emplace_back(std::move(ad));
+  JoinInterestGroupAndFlush(interest_group);
+  EXPECT_EQ(1, GetJoinCount(kOriginB, kInterestGroupName));
+
+  EXPECT_EQ(network_responder_->UpdateCount(), 0u);
+
+  // Attempt to update kOriginA's interest groups. The first 2 interest group
+  // updates complete (success and failure). The remaining updates don't
+  // happen yet, because the server delays its response.
+  NavigateAndCommit(kUrlA);
+  UpdateInterestGroupNoFlush();
+  task_environment()->RunUntilIdle();
+  std::vector<StorageInterestGroup> a_groups =
+      GetInterestGroupsForOwner(kOriginA);
+  ASSERT_EQ(a_groups.size(), 4u);
+  bool seen_succeeded = false, seen_failed = false;
+  for (const auto& a_group : a_groups) {
+    const blink::InterestGroup& group = a_group.interest_group;
+    ASSERT_TRUE(group.ads.has_value());
+    ASSERT_EQ(group.ads->size(), 1u);
+    if (group.name == kUpdateUrlA.path()) {
+      EXPECT_EQ(group.ads.value()[0].render_url.spec(),
+                "https://example.com/render2");
+      seen_succeeded = true;
+      continue;
+    } else if (group.name == kUpdateUrlA2.path()) {
+      seen_failed = true;
+    }
+    // Failed and deferred interest groups shouldn't have updated.
+    EXPECT_EQ(group.ads.value()[0].render_url.spec(),
+              "https://example.com/render");
+  }
+  EXPECT_TRUE(seen_succeeded);
+  EXPECT_TRUE(seen_failed);
+
+  // Now, try to update kOriginB's interest groups. The update shouldn't happen
+  // yet, because we're still updating kOriginA's interest groups.
+  NavigateAndCommit(kUrlB);
+  UpdateInterestGroupNoFlush();
+  task_environment()->RunUntilIdle();
+  std::vector<StorageInterestGroup> b_groups =
+      GetInterestGroupsForOwner(kOriginB);
+  ASSERT_EQ(b_groups.size(), 1u);
+  auto b_group = b_groups[0].interest_group;
+  ASSERT_TRUE(b_group.ads.has_value());
+  ASSERT_EQ(b_group.ads->size(), 1u);
+  EXPECT_EQ(b_group.ads.value()[0].render_url.spec(),
+            "https://example.com/render");
+
+  // Only 4 network requests should have been made (for the kOriginA updates).
+  EXPECT_EQ(network_responder_->UpdateCount(), 4u);
+
+  // Advance time to just before the max update round duration, then issue the
+  // server response for one of the interest group updates. It should update
+  // immediately.
+  task_environment()->FastForwardBy(kMaxUpdateRoundDuration - base::Seconds(1));
+  network_responder_->DoDeferredUpdateResponse(kDailyUpdateUrlPath3,
+                                               kServerResponse);
+  task_environment()->RunUntilIdle();
+  a_groups = GetInterestGroupsForOwner(kOriginA);
+  ASSERT_EQ(a_groups.size(), 4u);
+  for (const auto& a_group : a_groups) {
+    const blink::InterestGroup& group = a_group.interest_group;
+    ASSERT_TRUE(group.ads.has_value());
+    ASSERT_EQ(group.ads->size(), 1u);
+    if (group.name == kUpdateUrlA3.path()) {
+      EXPECT_EQ(group.ads.value()[0].render_url.spec(),
+                "https://example.com/render2");
+      break;
+    }
+  }
+  EXPECT_EQ(network_responder_->UpdateCount(), 4u);
+
+  // Advance time beyond the max update round duration. This will result in
+  // kOriginB's update getting cancelled, but kOriginA's last update will still
+  // be able to proceed because it's in-progress.
+  task_environment()->FastForwardBy(base::Seconds(2));
+
+  // Now, the server finishes sending the last kOriginA response. Both it and
+  // kOriginB's interest groups should now update, since the completion of
+  // kOriginA's last update unblocks kOriginB's update. However, kOriginB's
+  // update never happens, because it gets cancelled.
+  network_responder_->DoDeferredUpdateResponse(kDailyUpdateUrlPath4,
+                                               kServerResponse);
+  task_environment()->RunUntilIdle();
+  a_groups = GetInterestGroupsForOwner(kOriginA);
+  ASSERT_EQ(a_groups.size(), 4u);
+  for (const auto& a_group : a_groups) {
+    const blink::InterestGroup& group = a_group.interest_group;
+    ASSERT_TRUE(group.ads.has_value());
+    ASSERT_EQ(group.ads->size(), 1u);
+    if (group.name == kUpdateUrlA4.path()) {
+      EXPECT_EQ(group.ads.value()[0].render_url.spec(),
+                "https://example.com/render2");
+      break;
+    }
+  }
+  EXPECT_EQ(network_responder_->UpdateCount(), 4u);
+
+  // kOriginB's group hasn't been updated, because the update got cancelled.
+  b_groups = GetInterestGroupsForOwner(kOriginB);
+  ASSERT_EQ(b_groups.size(), 1u);
+  b_group = b_groups[0].interest_group;
+  ASSERT_TRUE(b_group.ads.has_value());
+  ASSERT_EQ(b_group.ads->size(), 1u);
+  EXPECT_EQ(b_group.ads.value()[0].render_url.spec(),
+            "https://example.com/render");
+
+  // Now, try updating kOriginB. The update should complete successfully.
+  network_responder_->RegisterUpdateResponse(kDailyUpdateUrlPathB, R"({
+"ads": [{"renderUrl": "https://example.com/render3"
+        }]
+})");
+
+  NavigateAndCommit(kUrlB);
+  UpdateInterestGroupNoFlush();
+  task_environment()->RunUntilIdle();
+
+  // kOriginB's groups have updated.
+  b_groups = GetInterestGroupsForOwner(kOriginB);
+  ASSERT_EQ(b_groups.size(), 1u);
+  b_group = b_groups[0].interest_group;
+  ASSERT_TRUE(b_group.ads.has_value());
+  ASSERT_EQ(b_group.ads->size(), 1u);
+  EXPECT_EQ(b_group.ads.value()[0].render_url.spec(),
+            "https://example.com/render3");
 }
 
 // Add an interest group, and run an ad auction.
