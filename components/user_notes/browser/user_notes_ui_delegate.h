@@ -19,14 +19,14 @@ class UserNotesUIDelegate {
   virtual ~UserNotesUIDelegate() = default;
 
   // Called when a note in the UI is focused.
-  virtual void OnNoteFocused(std::string guid) = 0;
+  virtual void OnNoteFocused(const std::string& guid) = 0;
 
   // Called when the user successfully creates a new note in the UI.
-  virtual void OnNoteCreationDone(std::string guid,
-                                  std::string note_content) = 0;
+  virtual void OnNoteCreationDone(const std::string& guid,
+                                  const std::string& note_content) = 0;
 
   // Called when the user aborts the note creation process in the UI.
-  virtual void OnNoteCreationCancelled(std::string guid) = 0;
+  virtual void OnNoteCreationCancelled(const std::string& guid) = 0;
 };
 
 }  // namespace user_notes

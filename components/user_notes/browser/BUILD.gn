@@ -4,13 +4,18 @@
 
 static_library("browser") {
   sources = [
+    "user_note_instance.cc",
+    "user_note_instance.h",
     "user_note_service.cc",
     "user_note_service.h",
+    "user_notes_manager.cc",
+    "user_notes_manager.h",
     "user_notes_ui_delegate.h",
   ]
 
   deps = [
     "//components/keyed_service/core",
     "//components/user_notes:features",
+    "//content/public/browser",
   ]
 }

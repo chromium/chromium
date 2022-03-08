@@ -13,18 +13,18 @@ UserNoteService::UserNoteService() = default;
 
 UserNoteService::~UserNoteService() = default;
 
-void UserNoteService::OnNoteFocused(std::string guid) {
+void UserNoteService::OnNoteFocused(const std::string& guid) {
   DCHECK(IsUserNotesEnabled());
   NOTIMPLEMENTED();
 }
 
-void UserNoteService::OnNoteCreationDone(std::string guid,
-                                         std::string note_content) {
+void UserNoteService::OnNoteCreationDone(const std::string& guid,
+                                         const std::string& note_content) {
   DCHECK(IsUserNotesEnabled());
   NOTIMPLEMENTED();
 }
 
-void UserNoteService::OnNoteCreationCancelled(std::string guid) {
+void UserNoteService::OnNoteCreationCancelled(const std::string& guid) {
   DCHECK(IsUserNotesEnabled());
   NOTIMPLEMENTED();
 }

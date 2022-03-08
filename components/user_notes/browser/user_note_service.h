@@ -23,9 +23,10 @@ class UserNoteService : public KeyedService, public UserNotesUIDelegate {
   UserNoteService& operator=(const UserNoteService&) = delete;
 
   // UserNotesUIDelegate implementation.
-  void OnNoteFocused(std::string guid) override;
-  void OnNoteCreationDone(std::string guid, std::string note_content) override;
-  void OnNoteCreationCancelled(std::string guid) override;
+  void OnNoteFocused(const std::string& guid) override;
+  void OnNoteCreationDone(const std::string& guid,
+                          const std::string& note_content) override;
+  void OnNoteCreationCancelled(const std::string& guid) override;
 };
 
 }  // namespace user_notes
