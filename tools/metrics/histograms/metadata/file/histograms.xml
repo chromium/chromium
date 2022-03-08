@@ -763,7 +763,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="FileBrowser.ViewingTaskType" enum="FileManagerTaskType"
-    expires_after="2022-04-03">
+    expires_after="2023-04-03">
   <owner>simmonsjosh@google.com</owner>
   <owner>src/ui/file_manager/OWNERS</owner>
   <summary>
@@ -773,7 +773,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="FileBrowser.ViewingTaskType.Offline"
-    enum="FileManagerTaskType" expires_after="2022-04-10">
+    enum="FileManagerTaskType" expires_after="2023-04-10">
   <owner>simmonsjosh@google.com</owner>
   <owner>src/ui/file_manager/OWNERS</owner>
   <summary>
@@ -784,7 +784,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="FileBrowser.ViewingTaskType.Online" enum="FileManagerTaskType"
-    expires_after="2022-04-10">
+    expires_after="2023-04-10">
   <owner>simmonsjosh@google.com</owner>
   <owner>src/ui/file_manager/OWNERS</owner>
   <summary>
