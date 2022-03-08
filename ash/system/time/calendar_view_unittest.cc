@@ -25,6 +25,7 @@
 #include "ui/compositor/scoped_animation_duration_scale_mode.h"
 #include "ui/views/controls/button/label_button.h"
 #include "ui/views/controls/label.h"
+#include "ui/views/focus/focus_manager.h"
 
 namespace ash {
 
@@ -488,6 +489,102 @@ TEST_F(CalendarViewTest, FocusingToDateCell) {
   EXPECT_EQ(u"7",
             static_cast<views::LabelButton*>(focus_manager->GetFocusedView())
                 ->GetText());
+}
+
+// Used to determine whether focus goes directly to the proper CalendarDateCell
+// prior to moving on to the EventListView.
+class DateCellFocusChangeListener : public views::FocusChangeListener {
+ public:
+  DateCellFocusChangeListener(views::FocusManager* focus_manager,
+                              std::u16string looking_for,
+                              int steps_to_find)
+      : focus_manager_(focus_manager),
+        looking_for_(looking_for),
+        steps_to_find_(steps_to_find) {
+    focus_manager_->AddFocusChangeListener(this);
+  }
+  DateCellFocusChangeListener(const DateCellFocusChangeListener& other) =
+      delete;
+  DateCellFocusChangeListener& operator=(
+      const DateCellFocusChangeListener& other) = delete;
+  ~DateCellFocusChangeListener() override {
+    focus_manager_->RemoveFocusChangeListener(this);
+    EXPECT_EQ(steps_taken_, steps_to_find_);
+  }
+
+  bool found() const { return found_; }
+
+  // views::FocusChangeListener:
+  void OnWillChangeFocus(views::View* focused_before,
+                         views::View* focused_now) override {}
+  void OnDidChangeFocus(views::View* focused_before,
+                        views::View* focused_now) override {
+    if (found_)
+      return;
+
+    steps_taken_++;
+    found_ = static_cast<const views::LabelButton*>(focused_now)->GetText() ==
+             looking_for_;
+    DCHECK_LE(steps_taken_, steps_to_find_);
+  }
+
+ private:
+  // Whether a `views::Labelbutton` matching `looking_for_` was focused.
+  bool found_ = false;
+  // How many focus changes have occurred so far.
+  int steps_taken_ = 0;
+
+  // Unowned.
+  views::FocusManager* const focus_manager_;
+  // The string being looked for.
+  const std::u16string looking_for_;
+  // The number of steps it is acceptable to have made before finding the
+  // appropriate view.
+  const int steps_to_find_;
+};
+
+// Tests that keyboard focus movement mixed with non-keyboard date cell
+// activation results in proper focus directly to the date cell.
+TEST_F(CalendarViewTest, MixedInput) {
+  base::Time date;
+  // Create a monthview based on Jun,7th 2021.
+  ASSERT_TRUE(base::Time::FromString("7 Jun 2021 10:00 GMT", &date));
+
+  // Set time override.
+  SetFakeNow(date);
+  base::subtle::ScopedTimeClockOverrides time_override(
+      &CalendarViewTest::FakeTimeNow, /*time_ticks_override=*/nullptr,
+      /*thread_ticks_override=*/nullptr);
+
+  CreateCalendarView();
+
+  auto* focus_manager = calendar_view()->GetFocusManager();
+
+  // Generates a tab key press. Should focus on today's cell.
+  PressTab();
+  ASSERT_EQ(u"7",
+            static_cast<views::LabelButton*>(focus_manager->GetFocusedView())
+                ->GetText());
+
+  const views::LabelButton* non_focused_date_cell_view = nullptr;
+  for (const auto* child_view : current_month()->children()) {
+    auto* date_cell_view = static_cast<const views::LabelButton*>(child_view);
+    if (u"9" != date_cell_view->GetText())
+      continue;
+
+    non_focused_date_cell_view = date_cell_view;
+    break;
+  }
+
+  {
+    auto focus_change_listener = DateCellFocusChangeListener(
+        focus_manager, /*looking_for=*/u"9", /*steps_to_find=*/1);
+    auto* event_generator = GetEventGenerator();
+    event_generator->MoveMouseTo(
+        non_focused_date_cell_view->GetBoundsInScreen().CenterPoint());
+    event_generator->ClickLeftButton();
+    EXPECT_TRUE(focus_change_listener.found());
+  }
 }
 
 TEST_F(CalendarViewTest, MonthViewFocusing) {

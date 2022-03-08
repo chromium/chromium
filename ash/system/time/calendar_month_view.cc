@@ -292,6 +292,9 @@ void CalendarDateCellView::OnDateCellActivated(const ui::Event& event) {
   if (grayed_out_ || !calendar_utils::IsActiveUser())
     return;
 
+  // Explicitly request focus after being activated to ensure focus moves away
+  // from any CalendarDateCellView which was focused prior.
+  RequestFocus();
   calendar_metrics::RecordCalendarDateCellActivated(event);
   calendar_view_controller_->ShowEventListView(date_, row_index_);
 }
