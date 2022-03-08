@@ -14,7 +14,7 @@
 
 namespace {
 
-// Max size set to 2MB.  This is well over the expected maximum for our
+// Max size set to 2MB. This is well over the expected maximum for our
 // expected responses, however it can be increased if needed in the future.
 constexpr int kMaxDownloadBytes = 2 * 1024 * 1024;
 

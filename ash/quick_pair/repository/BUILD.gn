@@ -110,6 +110,8 @@ source_set("unit_tests") {
     "fast_pair/pending_write_store_unittest.cc",
     "fast_pair/saved_device_registry_unittest.cc",
     "fast_pair_repository_impl_unittest.cc",
+    "oauth_http_fetcher_unittest.cc",
+    "unauthenticated_http_fetcher_unittest.cc",
   ]
 
   deps = [
@@ -124,8 +126,10 @@ source_set("unit_tests") {
     "//base/test:test_support",
     "//chromeos/services/bluetooth_config/public/cpp",
     "//components/prefs:test_support",
+    "//components/signin/public/identity_manager:test_support",
     "//device/bluetooth:mocks",
     "//net",
+    "//net/traffic_annotation:test_support",
     "//services/data_decoder/public/cpp:test_support",
     "//services/network:test_support",
     "//services/network/public/cpp",
