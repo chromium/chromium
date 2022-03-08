@@ -1054,7 +1054,7 @@ void LaunchURL(base::WeakPtr<ChromeContentBrowserClient> client,
                const GURL& url,
                content::WebContents::Getter web_contents_getter,
                ui::PageTransition page_transition,
-               bool is_main_frame,
+               bool is_primary_main_frame,
                network::mojom::WebSandboxFlags sandbox_flags,
                bool has_user_gesture,
                const absl::optional<url::Origin>& initiating_origin,
@@ -1100,7 +1100,7 @@ void LaunchURL(base::WeakPtr<ChromeContentBrowserClient> client,
   // - 'allow-top-navigation-by-user-navigation' + user-activation
   //
   // See https://crbug.com/1148777
-  if (!is_main_frame) {
+  if (!is_primary_main_frame) {
     using SandboxFlags = network::mojom::WebSandboxFlags;
     auto allow = [&](SandboxFlags flag) {
       return (sandbox_flags & flag) == SandboxFlags::kNone;
@@ -5516,10 +5516,9 @@ ChromeContentBrowserClient::CreateLoginDelegate(
 bool ChromeContentBrowserClient::HandleExternalProtocol(
     const GURL& url,
     content::WebContents::Getter web_contents_getter,
-    int child_id,
     int frame_tree_node_id,
     content::NavigationUIData* navigation_data,
-    bool is_main_frame,
+    bool is_primary_main_frame,
     network::mojom::WebSandboxFlags sandbox_flags,
     ui::PageTransition page_transition,
     bool has_user_gesture,
@@ -5532,9 +5531,8 @@ bool ChromeContentBrowserClient::HandleExternalProtocol(
   // WebView.
   ChromeNavigationUIData* chrome_data =
       static_cast<ChromeNavigationUIData*>(navigation_data);
-  if ((extensions::WebViewRendererState::GetInstance()->IsGuest(child_id) ||
-       (chrome_data &&
-        chrome_data->GetExtensionNavigationUIData()->is_web_view())) &&
+  if ((chrome_data &&
+       chrome_data->GetExtensionNavigationUIData()->is_web_view()) &&
       !url.SchemeIs(url::kMailToScheme)) {
     return false;
   }
@@ -5543,7 +5541,7 @@ bool ChromeContentBrowserClient::HandleExternalProtocol(
 #if BUILDFLAG(IS_ANDROID)
   // Main frame external protocols are handled by
   // InterceptNavigationResourceThrottle.
-  if (is_main_frame)
+  if (is_primary_main_frame)
     return false;
 #endif  // defined(ANDROID)
 
@@ -5555,7 +5553,7 @@ bool ChromeContentBrowserClient::HandleExternalProtocol(
       FROM_HERE,
       base::BindOnce(&LaunchURL, weak_factory_.GetWeakPtr(), url,
                      std::move(web_contents_getter), page_transition,
-                     is_main_frame, sandbox_flags, has_user_gesture,
+                     is_primary_main_frame, sandbox_flags, has_user_gesture,
                      initiating_origin, std::move(weak_initiator_document)));
   return true;
 }

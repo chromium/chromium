@@ -220,7 +220,8 @@ class NavigationURLLoaderImplTest : public testing::Test {
             net::IsolationInfo::Create(
                 net::IsolationInfo::RequestType::kMainFrame, origin, origin,
                 net::SiteForCookies::FromUrl(url)),
-            is_main_frame, false /* are_ancestors_secure */,
+            true /* is_primary_main_frame */, is_main_frame,
+            false /* are_ancestors_secure */,
             FrameTreeNode::kFrameTreeNodeInvalidId /* frame_tree_node_id */,
             false /* report_raw_headers */,
             upgrade_if_insecure /* upgrade_if_insecure */,

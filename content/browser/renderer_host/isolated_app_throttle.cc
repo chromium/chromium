@@ -140,9 +140,9 @@ bool IsolatedAppThrottle::OpenUrlExternal(const GURL& url) {
             return WebContents::FromFrameTreeNodeId(frame_tree_node_id);
           },
           frame_tree_node->frame_tree_node_id()),
-      ChildProcessHost::kInvalidUniqueID, frame_tree_node->frame_tree_node_id(),
+      frame_tree_node->frame_tree_node_id(),
       navigation_request->GetNavigationUIData(),
-      /*is_main_frame=*/true, network::mojom::WebSandboxFlags::kNone,
+      /*is_primary_main_frame=*/true, network::mojom::WebSandboxFlags::kNone,
       (navigation_handle()->GetRedirectChain().size() > 1)
           ? ui::PageTransition::PAGE_TRANSITION_SERVER_REDIRECT
           : ui::PageTransition::PAGE_TRANSITION_LINK,

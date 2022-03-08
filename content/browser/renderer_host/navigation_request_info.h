@@ -31,6 +31,7 @@ struct CONTENT_EXPORT NavigationRequestInfo {
       blink::mojom::BeginNavigationParamsPtr begin_params,
       network::mojom::WebSandboxFlags sandbox_flags,
       const net::IsolationInfo& isolation_info,
+      bool is_primary_main_frame,
       bool is_main_frame,
       bool are_ancestors_secure,
       int frame_tree_node_id,
@@ -70,6 +71,8 @@ struct CONTENT_EXPORT NavigationRequestInfo {
   // resources, and how to update them across redirects, which is different for
   // main frames and subresources.
   const net::IsolationInfo isolation_info;
+
+  const bool is_primary_main_frame;
 
   const bool is_main_frame;
 

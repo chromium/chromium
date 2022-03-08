@@ -654,12 +654,10 @@ NavigationURLLoaderImpl::PrepareForNonInterceptedRequest(
       } else {
         initiating_origin = resource_request_->request_initiator;
       }
+
       bool handled = GetContentClient()->browser()->HandleExternalProtocol(
-          resource_request_->url, web_contents_getter_,
-          ChildProcessHost::kInvalidUniqueID, frame_tree_node_id_,
-          navigation_ui_data_.get(),
-          resource_request_->resource_type ==
-              static_cast<int>(blink::mojom::ResourceType::kMainFrame),
+          resource_request_->url, web_contents_getter_, frame_tree_node_id_,
+          navigation_ui_data_.get(), request_info_->is_primary_main_frame,
           request_info_->sandbox_flags,
           static_cast<ui::PageTransition>(resource_request_->transition_type),
           resource_request_->has_user_gesture, initiating_origin,

@@ -17,61 +17,13 @@
 #include "content/public/browser/browser_context.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
+#include "content/public/test/fenced_frame_test_util.h"
 #include "content/public/test/navigation_handle_observer.h"
 #include "content/public/test/test_navigation_observer.h"
 
 #if BUILDFLAG(IS_WIN)
 #include "base/win/windows_version.h"
 #endif
-
-namespace {
-
-// Navigate to an external protocol from an iframe. Returns whether the
-// navigation was allowed by sandbox. `iframe_sandbox` is used to define the
-// iframe's sandbox flag.
-bool AllowedBySandbox(content::WebContents* web_content,
-                      std::string iframe_sandbox,
-                      bool has_user_gesture = false) {
-  EXPECT_TRUE(content::ExecJs(
-      web_content, "const iframe = document.createElement('iframe');" +
-                       iframe_sandbox +
-                       "iframe.src = '/empty.html';"
-                       "document.body.appendChild(iframe)"));
-  EXPECT_TRUE(content::WaitForLoadStop(web_content));
-
-  content::RenderFrameHost* child_document =
-      ChildFrameAt(web_content->GetMainFrame(), 0);
-  EXPECT_TRUE(child_document);
-
-  // When not blocked by sandbox, Linux displays |allowed_msg_1| and Windows/Mac
-  // |allowed_msg_2|. That's because Linux do not provide API to query for the
-  // supported protocols before launching the external application.
-  const char allowed_msg_1[] = "Launched external handler for 'custom:custom'.";
-  const char allowed_msg_2[] =
-      "Failed to launch 'custom:custom' because the scheme does not have a "
-      "registered handler.";
-  const char blocked_msg[] =
-      "Navigation to external protocol blocked by sandbox.";
-  content::WebContentsConsoleObserver observer(web_content);
-  observer.SetFilter(base::BindLambdaForTesting(
-      [&](const content::WebContentsConsoleObserver::Message& message) {
-        std::string value = base::UTF16ToUTF8(message.message);
-        return value == allowed_msg_1 || value == allowed_msg_2 ||
-               value == blocked_msg;
-      }));
-
-  EXPECT_TRUE(content::ExecJs(
-      child_document, "location.href = 'custom:custom';",
-      has_user_gesture ? content::EXECUTE_SCRIPT_DEFAULT_OPTIONS
-                       : content::EXECUTE_SCRIPT_NO_USER_GESTURE));
-
-  observer.Wait();
-  std::string message = observer.GetMessageAt(0u);
-
-  return message == allowed_msg_1 || message == allowed_msg_2;
-}
-
-}  // namespace
 
 class ExternalProtocolHandlerBrowserTest : public InProcessBrowserTest {
  public:
@@ -101,6 +53,55 @@ class ExternalProtocolHandlerSandboxBrowserTest
     allow_list.Append("custom:*");
     browser()->profile()->GetPrefs()->Set(policy::policy_prefs::kUrlAllowlist,
                                           allow_list);
+  }
+
+  content::RenderFrameHost* CreateIFrame(content::RenderFrameHost* document,
+                                         std::string iframe_sandbox) {
+    EXPECT_TRUE(content::ExecJs(
+        document, "const iframe = document.createElement('iframe');" +
+                      iframe_sandbox +
+                      "iframe.src = '/empty.html';"
+                      "document.body.appendChild(iframe)"));
+
+    EXPECT_TRUE(content::WaitForLoadStop(web_content()));
+    return ChildFrameAt(document, 0);
+  }
+
+  // Navigate to an external protocol from an iframe or fenced frame. Returns
+  // whether the navigation was allowed by sandbox. `sandbox` is used to define
+  // the sub frame's sandbox flag.
+  bool AllowedBySandbox(content::RenderFrameHost* child_document,
+                        bool has_user_gesture = false) {
+    EXPECT_TRUE(child_document);
+
+    // When not blocked by sandbox, Linux displays |allowed_msg_1| and
+    // Windows/Mac |allowed_msg_2|. That's because Linux do not provide API to
+    // query for the supported protocols before launching the external
+    // application.
+    const char allowed_msg_1[] =
+        "Launched external handler for 'custom:custom'.";
+    const char allowed_msg_2[] =
+        "Failed to launch 'custom:custom' because the scheme does not have a "
+        "registered handler.";
+    const char blocked_msg[] =
+        "Navigation to external protocol blocked by sandbox.";
+    content::WebContentsConsoleObserver observer(web_content());
+    observer.SetFilter(base::BindLambdaForTesting(
+        [&](const content::WebContentsConsoleObserver::Message& message) {
+          std::string value = base::UTF16ToUTF8(message.message);
+          return value == allowed_msg_1 || value == allowed_msg_2 ||
+                 value == blocked_msg;
+        }));
+
+    EXPECT_TRUE(content::ExecJs(
+        child_document, "location.href = 'custom:custom';",
+        has_user_gesture ? content::EXECUTE_SCRIPT_DEFAULT_OPTIONS
+                         : content::EXECUTE_SCRIPT_NO_USER_GESTURE));
+
+    observer.Wait();
+    std::string message = observer.GetMessageAt(0u);
+
+    return message == allowed_msg_1 || message == allowed_msg_2;
   }
 
   base::test::ScopedFeatureList features_;
@@ -214,40 +215,45 @@ IN_PROC_BROWSER_TEST_F(ExternalProtocolHandlerBrowserTest,
 // - allow-top-navigation
 // - allow-top-navigation-by-user-activation + UserGesture
 IN_PROC_BROWSER_TEST_F(ExternalProtocolHandlerSandboxBrowserTest, Sandbox) {
-  EXPECT_TRUE(AllowedBySandbox(web_content(), ""));
+  EXPECT_TRUE(
+      AllowedBySandbox(CreateIFrame(web_content()->GetMainFrame(), "")));
 }
 
 IN_PROC_BROWSER_TEST_F(ExternalProtocolHandlerSandboxBrowserTest, SandboxAll) {
-  EXPECT_FALSE(
-      AllowedBySandbox(web_content(), "iframe.sandbox = 'allow-scripts';"));
+  EXPECT_FALSE(AllowedBySandbox(CreateIFrame(
+      web_content()->GetMainFrame(), "iframe.sandbox = 'allow-scripts';")));
 }
 
 IN_PROC_BROWSER_TEST_F(ExternalProtocolHandlerSandboxBrowserTest,
                        SandboxAllowPopups) {
   EXPECT_TRUE(AllowedBySandbox(
-      web_content(), "iframe.sandbox = 'allow-scripts allow-popups';"));
+      CreateIFrame(web_content()->GetMainFrame(),
+                   "iframe.sandbox = 'allow-scripts allow-popups';")));
 }
 
 IN_PROC_BROWSER_TEST_F(ExternalProtocolHandlerSandboxBrowserTest,
                        SandboxAllowTopNavigation) {
   EXPECT_TRUE(AllowedBySandbox(
-      web_content(), "iframe.sandbox = 'allow-scripts allow-top-navigation';"));
+      CreateIFrame(web_content()->GetMainFrame(),
+                   "iframe.sandbox = 'allow-scripts allow-top-navigation';")));
 }
 
 IN_PROC_BROWSER_TEST_F(ExternalProtocolHandlerSandboxBrowserTest,
                        SandboxAllowTopNavigationByUserActivation) {
-  EXPECT_FALSE(AllowedBySandbox(web_content(),
-                                "iframe.sandbox = 'allow-scripts "
-                                "allow-top-navigation-by-user-activation';",
-                                /*user-gesture=*/false));
+  EXPECT_FALSE(AllowedBySandbox(
+      CreateIFrame(web_content()->GetMainFrame(),
+                   "iframe.sandbox = 'allow-scripts "
+                   "allow-top-navigation-by-user-activation';"),
+      /*user-gesture=*/false));
 }
 
 IN_PROC_BROWSER_TEST_F(ExternalProtocolHandlerSandboxBrowserTest,
                        SandboxAllowTopNavigationByUserActivationWithGesture) {
-  EXPECT_TRUE(AllowedBySandbox(web_content(),
-                               "iframe.sandbox = 'allow-scripts "
-                               "allow-top-navigation-by-user-activation';",
-                               /*user-gesture=*/true));
+  EXPECT_TRUE(AllowedBySandbox(
+      CreateIFrame(web_content()->GetMainFrame(),
+                   "iframe.sandbox = 'allow-scripts "
+                   "allow-top-navigation-by-user-activation';"),
+      /*user-gesture=*/true));
 }
 
 namespace {
@@ -316,4 +322,78 @@ IN_PROC_BROWSER_TEST_F(ExternalProtocolHandlerBrowserTest,
   ASSERT_EQ(1u, observer.messages().size());
   EXPECT_EQ("Not allowed to launch 'willfailtolaunch://foo'.",
             observer.GetMessageAt(0u));
+}
+
+class ExternalProtocolHandlerSandboxFencedFrameBrowserTest
+    : public ExternalProtocolHandlerSandboxBrowserTest {
+ public:
+  void SetUpOnMainThread() override {
+    ExternalProtocolHandlerSandboxBrowserTest::SetUpOnMainThread();
+    ASSERT_TRUE(embedded_test_server()->Start());
+  }
+
+  content::RenderFrameHost* CreateFencedFrame() {
+    return fenced_frame_test_helper().CreateFencedFrame(
+        web_content()->GetMainFrame(),
+        embedded_test_server()->GetURL("/fenced_frames/title1.html"));
+  }
+
+  content::test::FencedFrameTestHelper& fenced_frame_test_helper() {
+    return fenced_frame_test_helper_;
+  }
+
+  content::test::FencedFrameTestHelper fenced_frame_test_helper_;
+};
+
+IN_PROC_BROWSER_TEST_F(ExternalProtocolHandlerSandboxFencedFrameBrowserTest,
+                       SandboxAllWithoutGesture) {
+  EXPECT_TRUE(AllowedBySandbox(CreateFencedFrame(), /*user-gesture=*/false));
+}
+
+IN_PROC_BROWSER_TEST_F(ExternalProtocolHandlerSandboxFencedFrameBrowserTest,
+                       SandboxAllWithGesture) {
+  EXPECT_TRUE(AllowedBySandbox(CreateFencedFrame(), /*user-gesture=*/true));
+}
+
+IN_PROC_BROWSER_TEST_F(ExternalProtocolHandlerSandboxFencedFrameBrowserTest,
+                       SandboxInFencedFrame) {
+  EXPECT_TRUE(AllowedBySandbox(CreateIFrame(CreateFencedFrame(), "")));
+}
+
+IN_PROC_BROWSER_TEST_F(ExternalProtocolHandlerSandboxFencedFrameBrowserTest,
+                       SandboxAllInFencedFrame) {
+  EXPECT_FALSE(AllowedBySandbox(
+      CreateIFrame(CreateFencedFrame(), "iframe.sandbox = 'allow-scripts';")));
+}
+
+IN_PROC_BROWSER_TEST_F(ExternalProtocolHandlerSandboxFencedFrameBrowserTest,
+                       SandboxAllowPopupsInFencedFrame) {
+  EXPECT_TRUE(AllowedBySandbox(CreateIFrame(
+      CreateFencedFrame(), "iframe.sandbox = 'allow-scripts allow-popups';")));
+}
+
+IN_PROC_BROWSER_TEST_F(ExternalProtocolHandlerSandboxFencedFrameBrowserTest,
+                       SandboxAllowTopNavigationInFencedFrame) {
+  EXPECT_FALSE(AllowedBySandbox(
+      CreateIFrame(CreateFencedFrame(),
+                   "iframe.sandbox = 'allow-scripts allow-top-navigation';")));
+}
+
+IN_PROC_BROWSER_TEST_F(ExternalProtocolHandlerSandboxFencedFrameBrowserTest,
+                       SandboxAllowTopNavigationByUserActivationInFencedFrame) {
+  EXPECT_FALSE(AllowedBySandbox(
+      CreateIFrame(CreateFencedFrame(),
+                   "iframe.sandbox = 'allow-scripts "
+                   "allow-top-navigation-by-user-activation';"),
+      /*user-gesture=*/false));
+}
+
+IN_PROC_BROWSER_TEST_F(
+    ExternalProtocolHandlerSandboxFencedFrameBrowserTest,
+    SandboxAllowTopNavigationByUserActivationWithGestureInFencedFrame) {
+  EXPECT_TRUE(AllowedBySandbox(
+      CreateIFrame(web_content()->GetMainFrame(),
+                   "iframe.sandbox = 'allow-scripts "
+                   "allow-top-navigation-by-user-activation';"),
+      /*user-gesture=*/true));
 }
