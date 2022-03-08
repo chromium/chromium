@@ -212,9 +212,7 @@ void WaitForLoadStart(WebContents* web_contents) {
 
 class PDFExtensionTest : public extensions::ExtensionApiTest {
  public:
-  void SetUpCommandLine(base::CommandLine* command_line) override {
-    content::IsolateAllSitesForTesting(command_line);
-
+  void SetUpCommandLine(base::CommandLine* /*command_line*/) override {
     feature_list_.InitWithFeatures(GetEnabledFeatures(), GetDisabledFeatures());
   }
 
