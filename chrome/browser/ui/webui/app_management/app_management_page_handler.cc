@@ -393,8 +393,7 @@ app_management::mojom::AppPtr AppManagementPageHandler::CreateUIAppPtr(
           update.AppId());
   app->hide_more_settings = ShouldHideMoreSettings(app->id);
   app->hide_pin_to_shelf =
-      update.ShowInShelf() == apps::mojom::OptionalBool::kFalse ||
-      ShouldHidePinToShelf(app->id);
+      !update.ShowInShelf().value_or(true) || ShouldHidePinToShelf(app->id);
   app->window_mode = update.WindowMode();
   app->supported_links = GetSupportedLinks(profile_, app->id);
   auto run_on_os_login = update.RunOnOsLogin();

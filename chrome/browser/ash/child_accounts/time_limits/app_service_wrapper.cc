@@ -133,8 +133,7 @@ bool AppServiceWrapper::IsHiddenArcApp(const AppId& app_id) const {
         if (!apps_util::IsInstalled(update.Readiness()))
           return;
 
-        is_hidden =
-            update.ShowInLauncher() == apps::mojom::OptionalBool::kFalse;
+        is_hidden = !update.ShowInLauncher().value_or(true);
       });
 
   return is_hidden;
@@ -148,7 +147,7 @@ std::vector<AppId> AppServiceWrapper::GetHiddenArcApps() const {
 
     const AppId app_id = AppIdFromAppUpdate(update);
     if (app_id.app_type() != apps::mojom::AppType::kArc ||
-        update.ShowInLauncher() != apps::mojom::OptionalBool::kFalse) {
+        update.ShowInLauncher().value_or(true)) {
       return;
     }
 

@@ -714,19 +714,12 @@ bool AppUpdate::SearchableChanged() const {
           (mojom_delta_->searchable != mojom_state_->searchable));
 }
 
-apps::mojom::OptionalBool AppUpdate::ShowInLauncher() const {
-  if (mojom_delta_ &&
-      (mojom_delta_->show_in_launcher != apps::mojom::OptionalBool::kUnknown)) {
-    return mojom_delta_->show_in_launcher;
+absl::optional<bool> AppUpdate::ShowInLauncher() const {
+  if (ShouldUseNonMojom()) {
+    GET_VALUE_WITH_FALLBACK(show_in_launcher, absl::nullopt)
   }
-  if (mojom_state_) {
-    return mojom_state_->show_in_launcher;
-  }
-  return apps::mojom::OptionalBool::kUnknown;
-}
 
-absl::optional<bool> AppUpdate::GetShowInLauncher() const {
-  GET_VALUE_WITH_FALLBACK(show_in_launcher, absl::nullopt)
+  CONVERT_MOJOM_OPTIONALBOOL_TO_OPTIONAL_VALUE(show_in_launcher)
 }
 
 bool AppUpdate::ShowInLauncherChanged() const {
@@ -739,19 +732,12 @@ bool AppUpdate::ShowInLauncherChanged() const {
           (mojom_delta_->show_in_launcher != mojom_state_->show_in_launcher));
 }
 
-apps::mojom::OptionalBool AppUpdate::ShowInShelf() const {
-  if (mojom_delta_ &&
-      (mojom_delta_->show_in_shelf != apps::mojom::OptionalBool::kUnknown)) {
-    return mojom_delta_->show_in_shelf;
+absl::optional<bool> AppUpdate::ShowInShelf() const {
+  if (ShouldUseNonMojom()) {
+    GET_VALUE_WITH_FALLBACK(show_in_shelf, absl::nullopt)
   }
-  if (mojom_state_) {
-    return mojom_state_->show_in_shelf;
-  }
-  return apps::mojom::OptionalBool::kUnknown;
-}
 
-absl::optional<bool> AppUpdate::GetShowInShelf() const {
-  GET_VALUE_WITH_FALLBACK(show_in_shelf, absl::nullopt)
+  CONVERT_MOJOM_OPTIONALBOOL_TO_OPTIONAL_VALUE(show_in_shelf)
 }
 
 bool AppUpdate::ShowInShelfChanged() const {
@@ -763,19 +749,12 @@ bool AppUpdate::ShowInShelfChanged() const {
           (mojom_delta_->show_in_shelf != mojom_state_->show_in_shelf));
 }
 
-apps::mojom::OptionalBool AppUpdate::ShowInSearch() const {
-  if (mojom_delta_ &&
-      (mojom_delta_->show_in_search != apps::mojom::OptionalBool::kUnknown)) {
-    return mojom_delta_->show_in_search;
+absl::optional<bool> AppUpdate::ShowInSearch() const {
+  if (ShouldUseNonMojom()) {
+    GET_VALUE_WITH_FALLBACK(show_in_search, absl::nullopt)
   }
-  if (mojom_state_) {
-    return mojom_state_->show_in_search;
-  }
-  return apps::mojom::OptionalBool::kUnknown;
-}
 
-absl::optional<bool> AppUpdate::GetShowInSearch() const {
-  GET_VALUE_WITH_FALLBACK(show_in_search, absl::nullopt)
+  CONVERT_MOJOM_OPTIONALBOOL_TO_OPTIONAL_VALUE(show_in_search)
 }
 
 bool AppUpdate::ShowInSearchChanged() const {
@@ -1037,9 +1016,10 @@ std::ostream& operator<<(std::ostream& out, const AppUpdate& app) {
   out << "IsPlatformApp: " << PRINT_OPTIONAL_VALUE(IsPlatformApp) << std::endl;
   out << "Recommendable: " << PRINT_OPTIONAL_VALUE(Recommendable) << std::endl;
   out << "Searchable: " << PRINT_OPTIONAL_VALUE(Searchable) << std::endl;
-  out << "ShowInLauncher: " << app.ShowInLauncher() << std::endl;
-  out << "ShowInShelf: " << app.ShowInShelf() << std::endl;
-  out << "ShowInSearch: " << app.ShowInSearch() << std::endl;
+  out << "ShowInLauncher: " << PRINT_OPTIONAL_VALUE(ShowInLauncher)
+      << std::endl;
+  out << "ShowInShelf: " << PRINT_OPTIONAL_VALUE(ShowInShelf) << std::endl;
+  out << "ShowInSearch: " << PRINT_OPTIONAL_VALUE(ShowInSearch) << std::endl;
   out << "ShowInManagement: " << PRINT_OPTIONAL_VALUE(ShowInManagement)
       << std::endl;
   out << "HandlesIntents: " << PRINT_OPTIONAL_VALUE(HandlesIntents)

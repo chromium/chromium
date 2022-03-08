@@ -58,7 +58,7 @@ void ShelfAppServiceAppUpdater::OnAppUpdate(const apps::AppUpdate& update) {
       case apps::Readiness::kDisabledByPolicy:
         if (update.ShowInShelfChanged()) {
           OnShowInShelfChangedForAppDisabledByPolicy(
-              app_id, update.ShowInShelf() == apps::mojom::OptionalBool::kTrue);
+              app_id, update.ShowInShelf().value_or(false));
         } else {
           delegate()->OnAppUpdated(browser_context(), app_id,
                                    /*reload_icon=*/true);
@@ -77,11 +77,10 @@ void ShelfAppServiceAppUpdater::OnAppUpdate(const apps::AppUpdate& update) {
   if (update.ShowInShelfChanged()) {
     if (update.Readiness() == apps::Readiness::kDisabledByPolicy) {
       OnShowInShelfChangedForAppDisabledByPolicy(
-          app_id, update.ShowInShelf() == apps::mojom::OptionalBool::kTrue);
+          app_id, update.ShowInShelf().value_or(false));
     } else {
-      delegate()->OnAppShowInShelfChanged(
-          browser_context(), app_id,
-          update.ShowInShelf() != apps::mojom::OptionalBool::kFalse);
+      delegate()->OnAppShowInShelfChanged(browser_context(), app_id,
+                                          update.ShowInShelf().value_or(true));
     }
   }
 

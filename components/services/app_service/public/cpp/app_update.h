@@ -141,16 +141,13 @@ class COMPONENT_EXPORT(APP_UPDATE) AppUpdate {
   absl::optional<bool> Searchable() const;
   bool SearchableChanged() const;
 
-  apps::mojom::OptionalBool ShowInLauncher() const;
-  absl::optional<bool> GetShowInLauncher() const;
+  absl::optional<bool> ShowInLauncher() const;
   bool ShowInLauncherChanged() const;
 
-  apps::mojom::OptionalBool ShowInShelf() const;
-  absl::optional<bool> GetShowInShelf() const;
+  absl::optional<bool> ShowInShelf() const;
   bool ShowInShelfChanged() const;
 
-  apps::mojom::OptionalBool ShowInSearch() const;
-  absl::optional<bool> GetShowInSearch() const;
+  absl::optional<bool> ShowInSearch() const;
   bool ShowInSearchChanged() const;
 
   absl::optional<bool> ShowInManagement() const;

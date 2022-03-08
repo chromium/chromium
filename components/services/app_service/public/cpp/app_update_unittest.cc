@@ -221,13 +221,13 @@ class AppUpdateTest : public testing::Test {
     EXPECT_EQ(expect_searchable_, u.Searchable());
     EXPECT_EQ(expect_searchable_changed_, u.SearchableChanged());
 
-    EXPECT_EQ(expect_show_in_launcher_, u.GetShowInLauncher());
+    EXPECT_EQ(expect_show_in_launcher_, u.ShowInLauncher());
     EXPECT_EQ(expect_show_in_launcher_changed_, u.ShowInLauncherChanged());
 
-    EXPECT_EQ(expect_show_in_shelf_, u.GetShowInShelf());
+    EXPECT_EQ(expect_show_in_shelf_, u.ShowInShelf());
     EXPECT_EQ(expect_show_in_shelf_changed_, u.ShowInShelfChanged());
 
-    EXPECT_EQ(expect_show_in_search_, u.GetShowInSearch());
+    EXPECT_EQ(expect_show_in_search_, u.ShowInSearch());
     EXPECT_EQ(expect_show_in_search_changed_, u.ShowInSearchChanged());
 
     EXPECT_EQ(expect_show_in_management_, u.ShowInManagement());

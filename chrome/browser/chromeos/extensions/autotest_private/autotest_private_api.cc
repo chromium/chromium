@@ -469,18 +469,9 @@ api::autotest_private::HotseatState GetHotseatState(
   NOTREACHED();
 }
 
-std::unique_ptr<bool> ConvertMojomOptionalBool(
-    apps::mojom::OptionalBool optional) {
-  switch (optional) {
-    case apps::mojom::OptionalBool::kTrue:
-      return std::make_unique<bool>(true);
-    case apps::mojom::OptionalBool::kFalse:
-      return std::make_unique<bool>(false);
-    case apps::mojom::OptionalBool::kUnknown:
-      return nullptr;
-  }
-  NOTREACHED();
-  return nullptr;
+std::unique_ptr<bool> ConvertOptionalBool(absl::optional<bool> optional) {
+  return optional.has_value() ? std::make_unique<bool>(optional.value())
+                              : nullptr;
 }
 
 // Helper function to set whitelisted user pref based on |pref_name| with any
@@ -3493,8 +3484,8 @@ AutotestPrivateGetAllInstalledAppsFunction::Run() {
     app.type = GetAppType(update.AppType());
     app.install_source = GetAppInstallSource(update.InstallReason());
     app.readiness = GetAppReadiness(update.Readiness());
-    app.show_in_launcher = ConvertMojomOptionalBool(update.ShowInLauncher());
-    app.show_in_search = ConvertMojomOptionalBool(update.ShowInSearch());
+    app.show_in_launcher = ConvertOptionalBool(update.ShowInLauncher());
+    app.show_in_search = ConvertOptionalBool(update.ShowInSearch());
     installed_apps.emplace_back(std::move(app));
   });
 

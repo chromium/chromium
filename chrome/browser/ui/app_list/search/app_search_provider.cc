@@ -323,7 +323,7 @@ class AppServiceDataSource : public AppSearchProvider::DataSource,
     proxy_->AppRegistryCache().ForEachApp([this, apps_vector](
                                               const apps::AppUpdate& update) {
       if (!apps_util::IsInstalled(update.Readiness()) ||
-          (update.ShowInSearch() != apps::mojom::OptionalBool::kTrue &&
+          (!update.ShowInSearch().value_or(false) &&
            !(update.Recommendable().value_or(false) &&
              update.AppType() == apps::mojom::AppType::kBuiltIn))) {
         return;

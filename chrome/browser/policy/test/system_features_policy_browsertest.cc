@@ -43,9 +43,9 @@ const char kWebStoreExtensionURL[] = "https://chrome.google.com/webstore/";
 const char kWebStoreExtensionTitle[] = "chrome.google.com";
 
 struct VisibilityFlags {
-  apps::mojom::OptionalBool show_in_search;
-  apps::mojom::OptionalBool show_in_launcher;
-  apps::mojom::OptionalBool show_in_shelf;
+  bool show_in_search;
+  bool show_in_launcher;
+  bool show_in_shelf;
 };
 
 }  // namespace
@@ -159,14 +159,14 @@ class SystemFeaturesPolicyTest : public PolicyTest {
   VisibilityFlags GetVisibilityFlags(bool is_hidden) {
     VisibilityFlags flags;
     if (is_hidden) {
-      flags.show_in_launcher = apps::mojom::OptionalBool::kFalse;
-      flags.show_in_search = apps::mojom::OptionalBool::kFalse;
-      flags.show_in_shelf = apps::mojom::OptionalBool::kFalse;
+      flags.show_in_launcher = false;
+      flags.show_in_search = false;
+      flags.show_in_shelf = false;
       return flags;
     }
-    flags.show_in_launcher = apps::mojom::OptionalBool::kTrue;
-    flags.show_in_search = apps::mojom::OptionalBool::kTrue;
-    flags.show_in_shelf = apps::mojom::OptionalBool::kTrue;
+    flags.show_in_launcher = true;
+    flags.show_in_search = true;
+    flags.show_in_shelf = true;
     return flags;
   }
 
@@ -359,8 +359,7 @@ IN_PROC_BROWSER_TEST_F(SystemFeaturesPolicyTest,
   // We never show scanning in the launcher.
   VisibilityFlags scanning_expected_visibility =
       GetVisibilityFlags(false /* is_hidden */);
-  scanning_expected_visibility.show_in_launcher =
-      apps::mojom::OptionalBool::kFalse;
+  scanning_expected_visibility.show_in_launcher = false;
   // Crosh is never shown.
   VisibilityFlags crosh_expected_visibility =
       GetVisibilityFlags(true /* is_hidden */);

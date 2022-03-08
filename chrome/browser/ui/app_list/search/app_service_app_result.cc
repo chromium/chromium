@@ -54,8 +54,7 @@ AppServiceAppResult::AppServiceAppResult(Profile* profile,
       .ForOneApp(app_id, [this](const apps::AppUpdate& update) {
         app_type_ = update.AppType();
         is_platform_app_ = update.IsPlatformApp().value_or(false);
-        show_in_launcher_ =
-            update.ShowInLauncher() == apps::mojom::OptionalBool::kTrue;
+        show_in_launcher_ = update.ShowInLauncher().value_or(false);
 
         if (update.Readiness() == apps::Readiness::kDisabledByPolicy) {
           SetAccessibleName(l10n_util::GetStringFUTF16(

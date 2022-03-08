@@ -78,13 +78,13 @@ class AppUpdateMojomTest : public testing::Test {
   absl::optional<bool> expect_searchable_;
   bool expect_searchable_changed_;
 
-  apps::mojom::OptionalBool expect_show_in_launcher_;
+  absl::optional<bool> expect_show_in_launcher_;
   bool expect_show_in_launcher_changed_;
 
-  apps::mojom::OptionalBool expect_show_in_shelf_;
+  absl::optional<bool> expect_show_in_shelf_;
   bool expect_show_in_shelf_changed_;
 
-  apps::mojom::OptionalBool expect_show_in_search_;
+  absl::optional<bool> expect_show_in_search_;
   bool expect_show_in_search_changed_;
 
   absl::optional<bool> expect_show_in_management_;
@@ -276,9 +276,9 @@ class AppUpdateMojomTest : public testing::Test {
     expect_is_platform_app_ = absl::nullopt;
     expect_recommendable_ = absl::nullopt;
     expect_searchable_ = absl::nullopt;
-    expect_show_in_launcher_ = apps::mojom::OptionalBool::kUnknown;
-    expect_show_in_shelf_ = apps::mojom::OptionalBool::kUnknown;
-    expect_show_in_search_ = apps::mojom::OptionalBool::kUnknown;
+    expect_show_in_launcher_ = absl::nullopt;
+    expect_show_in_shelf_ = absl::nullopt;
+    expect_show_in_search_ = absl::nullopt;
     expect_show_in_management_ = absl::nullopt;
     expect_handles_intents_ = absl::nullopt;
     expect_allow_uninstall_ = absl::nullopt;
@@ -647,14 +647,14 @@ class AppUpdateMojomTest : public testing::Test {
 
     if (state) {
       state->show_in_launcher = apps::mojom::OptionalBool::kFalse;
-      expect_show_in_launcher_ = apps::mojom::OptionalBool::kFalse;
+      expect_show_in_launcher_ = false;
       expect_show_in_launcher_changed_ = false;
       CheckExpects(u);
     }
 
     if (delta) {
       delta->show_in_launcher = apps::mojom::OptionalBool::kTrue;
-      expect_show_in_launcher_ = apps::mojom::OptionalBool::kTrue;
+      expect_show_in_launcher_ = true;
       expect_show_in_launcher_changed_ = true;
       CheckExpects(u);
     }
@@ -669,14 +669,14 @@ class AppUpdateMojomTest : public testing::Test {
 
     if (state) {
       state->show_in_shelf = apps::mojom::OptionalBool::kFalse;
-      expect_show_in_shelf_ = apps::mojom::OptionalBool::kFalse;
+      expect_show_in_shelf_ = false;
       expect_show_in_shelf_changed_ = false;
       CheckExpects(u);
     }
 
     if (delta) {
       delta->show_in_shelf = apps::mojom::OptionalBool::kTrue;
-      expect_show_in_shelf_ = apps::mojom::OptionalBool::kTrue;
+      expect_show_in_shelf_ = true;
       expect_show_in_shelf_changed_ = true;
       CheckExpects(u);
     }
@@ -691,14 +691,14 @@ class AppUpdateMojomTest : public testing::Test {
 
     if (state) {
       state->show_in_search = apps::mojom::OptionalBool::kFalse;
-      expect_show_in_search_ = apps::mojom::OptionalBool::kFalse;
+      expect_show_in_search_ = false;
       expect_show_in_search_changed_ = false;
       CheckExpects(u);
     }
 
     if (delta) {
       delta->show_in_search = apps::mojom::OptionalBool::kTrue;
-      expect_show_in_search_ = apps::mojom::OptionalBool::kTrue;
+      expect_show_in_search_ = true;
       expect_show_in_search_changed_ = true;
       CheckExpects(u);
     }

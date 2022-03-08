@@ -130,7 +130,7 @@ bool ShelfControllerHelper::IsAppHiddenFromShelf(Profile* profile,
   apps::AppServiceProxyFactory::GetForProfile(profile)
       ->AppRegistryCache()
       .ForOneApp(app_id, [&hidden](const apps::AppUpdate& update) {
-        hidden = update.ShowInShelf() == apps::mojom::OptionalBool::kFalse;
+        hidden = !update.ShowInShelf().value_or(true);
       });
 
   return hidden;

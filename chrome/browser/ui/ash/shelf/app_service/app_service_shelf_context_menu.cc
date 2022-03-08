@@ -566,11 +566,11 @@ bool AppServiceShelfContextMenu::ShouldAddPinMenu() {
       bool show_in_launcher = false;
       apps::AppServiceProxyFactory::GetForProfile(controller()->profile())
           ->AppRegistryCache()
-          .ForOneApp(item().id.app_id, [&show_in_launcher](
-                                           const apps::AppUpdate& update) {
-            if (update.ShowInLauncher() == apps::mojom::OptionalBool::kTrue)
-              show_in_launcher = true;
-          });
+          .ForOneApp(item().id.app_id,
+                     [&show_in_launcher](const apps::AppUpdate& update) {
+                       show_in_launcher =
+                           update.ShowInLauncher().value_or(false);
+                     });
       return show_in_launcher;
     }
     case apps::AppType::kCrostini:

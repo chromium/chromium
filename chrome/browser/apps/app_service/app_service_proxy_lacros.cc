@@ -476,7 +476,7 @@ std::vector<IntentLaunchInfo> AppServiceProxyLacros::GetAppsForIntent(
         [&intent_launch_info, &intent, &exclude_browsers,
          &exclude_browser_tab_apps](const apps::AppUpdate& update) {
           if (!apps_util::IsInstalled(update.Readiness()) ||
-              update.ShowInLauncher() != apps::mojom::OptionalBool::kTrue) {
+              !update.ShowInLauncher().value_or(false)) {
             return;
           }
           if (exclude_browser_tab_apps &&

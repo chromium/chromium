@@ -130,10 +130,9 @@ IN_PROC_BROWSER_TEST_P(SystemWebAppManagerBrowserTest, Install) {
   GetAppServiceProxy(browser()->profile())
       ->AppRegistryCache()
       .ForOneApp(app_id, [](const apps::AppUpdate& update) {
-        EXPECT_EQ(apps::mojom::OptionalBool::kTrue, update.ShowInLauncher());
-        EXPECT_EQ(apps::mojom::OptionalBool::kTrue, update.ShowInSearch());
-        ASSERT_TRUE(update.ShowInManagement().has_value());
-        EXPECT_FALSE(update.ShowInManagement().value());
+        EXPECT_TRUE(update.ShowInLauncher().value_or(false));
+        EXPECT_TRUE(update.ShowInSearch().value_or(false));
+        EXPECT_FALSE(update.ShowInManagement().value_or(true));
         EXPECT_EQ(apps::Readiness::kReady, update.Readiness());
       });
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
@@ -903,7 +902,7 @@ IN_PROC_BROWSER_TEST_P(SystemWebAppManagerNotShownInLauncherTest,
   GetAppServiceProxy(browser()->profile())
       ->AppRegistryCache()
       .ForOneApp(app_id, [](const apps::AppUpdate& update) {
-        EXPECT_EQ(apps::mojom::OptionalBool::kFalse, update.ShowInLauncher());
+        EXPECT_FALSE(update.ShowInLauncher().value_or(true));
       });
   // The |AppList| should have all apps visible in the launcher, apps get
   // removed from the |AppList| when they are hidden.
@@ -939,7 +938,7 @@ IN_PROC_BROWSER_TEST_P(SystemWebAppManagerNotShownInSearchTest,
   GetAppServiceProxy(browser()->profile())
       ->AppRegistryCache()
       .ForOneApp(app_id, [](const apps::AppUpdate& update) {
-        EXPECT_EQ(apps::mojom::OptionalBool::kFalse, update.ShowInSearch());
+        EXPECT_FALSE(update.ShowInSearch().value_or(true));
       });
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 }
