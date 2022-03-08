@@ -37,7 +37,14 @@ MinMaxSizesResult NGReplacedLayoutAlgorithm::ComputeMinMaxSizes(
   sizes = ComputeReplacedSize(Node(), ConstraintSpace(), BorderPadding(),
                               ReplacedSizeMode::kIgnoreInlineLengths)
               .inline_size;
-  return {sizes, /* depends_on_block_constraints */ false};
+
+  const bool depends_on_block_constraints =
+      Style().LogicalHeight().IsPercentOrCalc() ||
+      Style().LogicalMinHeight().IsPercentOrCalc() ||
+      Style().LogicalMaxHeight().IsPercentOrCalc() ||
+      (Style().LogicalHeight().IsAuto() &&
+       ConstraintSpace().IsBlockAutoBehaviorStretch());
+  return {sizes, depends_on_block_constraints};
 }
 
 }  // namespace blink

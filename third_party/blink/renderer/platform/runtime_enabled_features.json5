@@ -1587,6 +1587,9 @@
       name: "NeverSlowMode",
     },
     {
+      name: "NewFlexboxSizing",
+    },
+    {
       name: "NoIdleEncodingForWebTests",
       status: "test",
     },

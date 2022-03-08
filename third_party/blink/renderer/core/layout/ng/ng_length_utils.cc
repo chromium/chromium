@@ -120,7 +120,8 @@ LayoutUnit ResolveInlineLengthInternal(
     case Length::kCalculated: {
       const LayoutUnit percentage_resolution_size =
           constraint_space.PercentageResolutionInlineSize();
-      DCHECK(length.IsFixed() || percentage_resolution_size != kIndefiniteSize);
+      DCHECK(length.IsFixed() || percentage_resolution_size != kIndefiniteSize)
+          << length.ToString();
       LayoutUnit value =
           MinimumValueForLength(length, percentage_resolution_size);
 

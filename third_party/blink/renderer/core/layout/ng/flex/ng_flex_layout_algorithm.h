@@ -71,7 +71,7 @@ class CORE_EXPORT NGFlexLayoutAlgorithm
       absl::optional<LayoutUnit> line_cross_size_for_stretch = absl::nullopt,
       absl::optional<LayoutUnit> block_offset_for_fragmentation = absl::nullopt,
       bool min_block_size_should_encompass_intrinsic_size = false) const;
-  void ConstructAndAppendFlexItems();
+  void ConstructAndAppendFlexItems(bool is_computing_intrinsic_size = false);
   void ApplyFinalAlignmentAndReversals(
       HeapVector<NGFlexLine>* flex_line_outputs);
   NGLayoutResult::EStatus GiveItemsFinalPositionAndSize(
@@ -102,6 +102,17 @@ class CORE_EXPORT NGFlexLayoutAlgorithm
       const NGBoxFragment&,
       LayoutUnit block_offset,
       absl::optional<LayoutUnit>* fallback_baseline);
+
+  class FlexFractionParts;
+  std::tuple<NGFlexLayoutAlgorithm::FlexFractionParts,
+             NGFlexLayoutAlgorithm::FlexFractionParts,
+             bool>
+  FindLargestFractions() const;
+  MinMaxSizesResult ComputeMinMaxSizeOfSingleLineRowContainer();
+  // This implements 9.9.3. Flex Item Intrinsic Size Contributions, from
+  // https://drafts.csswg.org/css-flexbox/#intrinsic-item-contributions.
+  MinMaxSizesResult ComputeItemContributions(const NGConstraintSpace& space,
+                                             const FlexItem& item) const;
 
   // Return the amount of block space available in the current fragmentainer
   // for the node being laid out by this algorithm.

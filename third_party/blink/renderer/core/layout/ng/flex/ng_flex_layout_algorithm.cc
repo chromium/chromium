@@ -32,8 +32,11 @@
 #include "third_party/blink/renderer/core/layout/ng/ng_space_utils.h"
 #include "third_party/blink/renderer/core/layout/ng/table/ng_table_node.h"
 #include "third_party/blink/renderer/core/paint/paint_layer_scrollable_area.h"
+#include "third_party/blink/renderer/core/style/computed_style.h"
 #include "third_party/blink/renderer/core/style/computed_style_base_constants.h"
 #include "third_party/blink/renderer/core/style/computed_style_constants.h"
+#include "third_party/blink/renderer/platform/geometry/layout_unit.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/text/writing_mode.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 
@@ -449,7 +452,8 @@ NGConstraintSpace NGFlexLayoutAlgorithm::BuildSpaceForLayout(
   return space_builder.ToConstraintSpace();
 }
 
-void NGFlexLayoutAlgorithm::ConstructAndAppendFlexItems() {
+void NGFlexLayoutAlgorithm::ConstructAndAppendFlexItems(
+    bool is_computing_intrinsic_size) {
   NGFlexChildIterator iterator(Node());
 
   // This block sets up data collection for
@@ -475,13 +479,14 @@ void NGFlexLayoutAlgorithm::ConstructAndAppendFlexItems() {
       // static position may get adjusted once the final container block-size is
       // known. However, we would want to use the total block-size rather than
       // the block-size of the first fragment.
-      HandleOutOfFlowPositioned(child);
+      if (!is_computing_intrinsic_size)
+        HandleOutOfFlowPositioned(child);
       continue;
     }
 
     const ComputedStyle& child_style = child.Style();
     if (is_alignment_behavior_change_possible &&
-        all_items_match_container_alignment) {
+        all_items_match_container_alignment && !is_computing_intrinsic_size) {
       LayoutUnit item_offset = FlexItem::AlignmentOffset(
           kAvailableFreeSpace,
           FlexLayoutAlgorithm::AlignmentForChild(Style(), child_style),
@@ -685,7 +690,9 @@ void NGFlexLayoutAlgorithm::ConstructAndAppendFlexItems() {
       // If the item’s computed main size property is definite, then the
       // specified size suggestion is that size.
       if (MainAxisIsInlineAxis(child)) {
-        if (!specified_length_in_main_axis.IsAuto()) {
+        if (!specified_length_in_main_axis.IsAuto() &&
+            !InlineLengthUnresolvable(flex_basis_space,
+                                      specified_length_in_main_axis)) {
           // Note: we may have already resolved specified_length_in_main_axis
           // when calculating flex basis. Reusing that in the current code
           // structure is a lot of work, so just recalculate here.
@@ -756,7 +763,7 @@ void NGFlexLayoutAlgorithm::ConstructAndAppendFlexItems() {
     }
   }
 
-  if (is_alignment_behavior_change_possible &&
+  if (!is_computing_intrinsic_size && is_alignment_behavior_change_possible &&
       algorithm_.all_items_.size() > 0 &&
       !all_items_match_container_alignment) {
     if (algorithm_.IsColumnFlow()) {
@@ -1623,11 +1630,269 @@ void NGFlexLayoutAlgorithm::PropagateBaselineFromChild(
   *fallback_baseline = fallback_baseline->value_or(baseline_offset);
 }
 
+MinMaxSizesResult NGFlexLayoutAlgorithm::ComputeItemContributions(
+    const NGConstraintSpace& space,
+    const FlexItem& item) const {
+  const NGBlockNode& child = item.ng_input_node_;
+  const ComputedStyle& child_style = child.Style();
+  MinMaxSizesResult item_contributions = child.ComputeMinMaxSizes(
+      ConstraintSpace().GetWritingMode(), MinMaxSizesType::kContent, space);
+
+  // This calculates the "preferred size" part of 9.9.3:
+  // "... outer preferred size (its width/height as appropriate) if that is not
+  // auto ..."
+  const Length& preferred_main_axis_length =
+      is_horizontal_flow_ ? child_style.Width() : child_style.Height();
+  bool is_preferred_main_axis_length_auto = preferred_main_axis_length.IsAuto();
+  // This block of if-statements that computes
+  // |is_preferred_main_axis_length_auto| is fragile.
+  // TODO(dgrogan/ikilpatrick): Figure out how to modify
+  // CalculateInitialFragmentGeometry so that we can call it unconditionally and
+  // it returns something usable here when the preferred main axis length is
+  // auto. Any of these would be usable: -1, 0, or the child's min-content size.
+  if (is_preferred_main_axis_length_auto) {
+    if (AspectRatioProvidesMainSize(child))
+      is_preferred_main_axis_length_auto = false;
+  } else if (MainAxisIsInlineAxis(child)) {
+    if (InlineLengthUnresolvable(space, preferred_main_axis_length))
+      is_preferred_main_axis_length_auto = true;
+  } else {
+    if (BlockLengthUnresolvable(space, preferred_main_axis_length))
+      is_preferred_main_axis_length_auto = true;
+  }
+  if (!is_preferred_main_axis_length_auto) {
+    NGFragmentGeometry child_initial_geometry =
+        CalculateInitialFragmentGeometry(space, child,
+                                         /* is_intrinsic */ false);
+    const LayoutUnit preferred_size =
+        MainAxisIsInlineAxis(child)
+            ? child_initial_geometry.border_box_size.inline_size
+            : child_initial_geometry.border_box_size.block_size;
+
+    item_contributions.sizes.Encompass(preferred_size);
+  }
+
+  // This block implements the "clamped" part of the 9.9.3:
+  // "the contribution is the larger of [stuff], clamped by its flex base size
+  // as a maximum (if it is not growable) and/or as a minimum (if it is not
+  // shrinkable)"
+  const LayoutUnit flex_base_size_border_box =
+      item.flex_base_content_size_ + item.main_axis_border_padding_;
+  const ComputedStyle& parent_style = Style();
+  if (child_style.ResolvedFlexGrow(parent_style) == 0.f)
+    item_contributions.sizes.Constrain(flex_base_size_border_box);
+  if (child_style.ResolvedFlexShrink(parent_style) == 0.f)
+    item_contributions.sizes.Encompass(flex_base_size_border_box);
+
+  item_contributions.sizes.Constrain(item.min_max_main_sizes_.max_size);
+  item_contributions.sizes.Encompass(item.min_max_main_sizes_.min_size);
+  return item_contributions;
+}
+
+class NGFlexLayoutAlgorithm::FlexFractionParts {
+ public:
+  explicit FlexFractionParts(const ComputedStyle& parent_style)
+      : parent_style_(parent_style) {}
+  // After we find the largest flex fraction, this function calculates the
+  // product from https://drafts.csswg.org/css-flexbox/#intrinsic-main-sizes,
+  // step 3:
+  // "Add each item’s flex base size to the product of its flex grow factor (or
+  // scaled flex shrink factor, if the chosen max-content flex fraction was
+  // negative) and the chosen max-content flex fraction"
+  LayoutUnit ApplyLargestFlexFractionToItem(const ComputedStyle& child_style,
+                                            LayoutUnit flex_base_content_size) {
+    if (flex_fraction_ > 0.f) {
+      DCHECK(!denominator_pixels_part_.has_value());
+      return LayoutUnit((child_style.ResolvedFlexGrow(parent_style_) /
+                         denominator_float_part_) *
+                        numerator_);
+    }
+    if (flex_fraction_ < 0.f) {
+      return LayoutUnit(
+          (child_style.ResolvedFlexShrink(parent_style_) /
+           denominator_float_part_) *
+          flex_base_content_size.MulDiv(numerator_, *denominator_pixels_part_));
+    }
+    DCHECK_EQ(numerator_, LayoutUnit());
+    DCHECK_EQ(denominator_float_part_, 1.f);
+    DCHECK(!denominator_pixels_part_.has_value());
+    return LayoutUnit();
+  }
+
+  void UpdateLargestFlexFraction(const FlexItem& item,
+                                 LayoutUnit item_contribution) {
+    const ComputedStyle& child_style = item.style_;
+    // |difference| is contribution - flex_basis, which can be negative because
+    // item contributions can be smaller than the item's flex base size.
+    LayoutUnit difference = item_contribution - item.flex_base_content_size_ -
+                            item.main_axis_border_padding_;
+    if (difference > LayoutUnit()) {
+      // This item's contribution is greater than its flex basis.
+      // If control flow ever reaches here for _any_ item, the largest flex
+      // fraction will be positive and the container's max-content size (or
+      // min-content size, whichever this object is associated with) will be
+      // greater than the sum of the items' flex bases.
+      const float floored_flex_grow_factor =
+          std::max(1.0f, child_style.ResolvedFlexGrow(parent_style_));
+      const float item_flex_fraction = difference / floored_flex_grow_factor;
+      if (item_flex_fraction > flex_fraction_) {
+        flex_fraction_ = item_flex_fraction;
+        numerator_ = difference;
+        denominator_float_part_ = floored_flex_grow_factor;
+        denominator_pixels_part_.reset();
+      }
+    } else if (difference < LayoutUnit()) {
+      // If we end up here for _every_ item, the final largest flex fraction
+      // will be negative and the container's max-content (or min-content) size
+      // will be less than the sum of the items' flex bases, but still most
+      // likely greater than the sum of each item's contribution.
+      const float floored_flex_shrink_factor =
+          std::max(1.0f, child_style.ResolvedFlexShrink(parent_style_));
+      const float item_flex_fraction =
+          difference /
+          (item.flex_base_content_size_ * floored_flex_shrink_factor);
+      if (item_flex_fraction > flex_fraction_) {
+        flex_fraction_ = item_flex_fraction;
+        numerator_ = difference;
+        denominator_float_part_ = floored_flex_shrink_factor;
+        denominator_pixels_part_ = item.flex_base_content_size_;
+      }
+    } else {
+      // This item's flex basis was exactly equal to its contribution size. If
+      // we end up in either this block or the previous block for every item,
+      // then whichever intrinsic size is represented by this object (min or
+      // max) will be equal to the sum of the items' flex bases.
+      DCHECK_EQ(difference, LayoutUnit());
+      if (difference > flex_fraction_) {
+        flex_fraction_ = 0.f;
+        numerator_ = difference;
+        denominator_float_part_ = 1.f;
+        denominator_pixels_part_.reset();
+      }
+    }
+  }
+
+ private:
+  float flex_fraction_ = std::numeric_limits<float>::lowest();
+
+  // We have to store the individual components of the flex fraction so that we
+  // can multiply them in an order that doesn't have precision issues.
+  LayoutUnit numerator_;
+  float denominator_float_part_;
+  // This optional field is filled when we use scaled flex shrink factor as
+  // dictated in step 1 from
+  // https://drafts.csswg.org/css-flexbox/#intrinsic-main-sizes.
+  absl::optional<LayoutUnit> denominator_pixels_part_;
+
+  const ComputedStyle& parent_style_;
+};
+
+std::tuple<NGFlexLayoutAlgorithm::FlexFractionParts,
+           NGFlexLayoutAlgorithm::FlexFractionParts,
+           bool>
+NGFlexLayoutAlgorithm::FindLargestFractions() const {
+  bool depends_on_block_constraints = false;
+  FlexFractionParts min_content_largest_fraction(Style());
+  FlexFractionParts max_content_largest_fraction(Style());
+  for (const FlexItem& item : algorithm_.all_items_) {
+    const NGBlockNode& child = item.ng_input_node_;
+    NGMinMaxConstraintSpaceBuilder builder(ConstraintSpace(), Style(), child,
+                                           /* is_new_fc */ true);
+    builder.SetAvailableBlockSize(ChildAvailableSize().block_size);
+    builder.SetPercentageResolutionBlockSize(child_percentage_size_.block_size);
+    builder.SetReplacedPercentageResolutionBlockSize(
+        child_percentage_size_.block_size);
+    if (!is_column_ && WillChildCrossSizeBeContainerCrossSize(child))
+      builder.SetBlockAutoBehavior(NGAutoBehavior::kStretchExplicit);
+    const NGConstraintSpace space = builder.ToConstraintSpace();
+
+    const MinMaxSizesResult min_max_content_contributions =
+        ComputeItemContributions(space, item);
+    depends_on_block_constraints |=
+        min_max_content_contributions.depends_on_block_constraints;
+
+    min_content_largest_fraction.UpdateLargestFlexFraction(
+        item, min_max_content_contributions.sizes.min_size);
+    max_content_largest_fraction.UpdateLargestFlexFraction(
+        item, min_max_content_contributions.sizes.max_size);
+  }
+
+  return std::tuple(min_content_largest_fraction, max_content_largest_fraction,
+                    depends_on_block_constraints);
+}
+
+MinMaxSizesResult
+NGFlexLayoutAlgorithm::ComputeMinMaxSizeOfSingleLineRowContainer() {
+  ConstructAndAppendFlexItems(/*is_computing_intrinsic_size*/ true);
+  MinMaxSizes container_sizes;
+  // The goal of this algorithm is to find a container inline size such that
+  // after running the flex algorithm, each item's final size will be at least
+  // as large as its contribution. This is similar to regular non-flex
+  // min/max-content sizing except we can't make everything exactly its
+  // contribution size, just due to the inherent nature of the flex algorithm.
+  // So the intrinsic size algorithm is designed to make the container larger
+  // than the sum of the contributions in cases where not every item is going to
+  // be at its exact contribution size after the main flex algorithm runs.
+
+  auto [min_content_largest_fraction, max_content_largest_fraction,
+        depends_on_block_constraints] = FindLargestFractions();
+
+  for (const FlexItem& item : algorithm_.all_items_) {
+    const ComputedStyle& child_style = item.style_;
+    const LayoutUnit flex_base_size_border_box =
+        item.flex_base_content_size_ + item.main_axis_border_padding_;
+    MinMaxSizes item_final_contribution{flex_base_size_border_box,
+                                        flex_base_size_border_box};
+    item_final_contribution.min_size +=
+        min_content_largest_fraction.ApplyLargestFlexFractionToItem(
+            child_style, item.flex_base_content_size_);
+    item_final_contribution.max_size +=
+        max_content_largest_fraction.ApplyLargestFlexFractionToItem(
+            child_style, item.flex_base_content_size_);
+
+    item_final_contribution.Constrain(item.min_max_main_sizes_.max_size);
+    item_final_contribution.Encompass(item.min_max_main_sizes_.min_size);
+
+    container_sizes += item_final_contribution;
+
+    const LayoutUnit main_axis_margins =
+        is_horizontal_flow_ ? item.physical_margins_.HorizontalSum()
+                            : item.physical_margins_.VerticalSum();
+    container_sizes += main_axis_margins;
+  }
+
+  const LayoutUnit gap_inline_size =
+      (algorithm_.NumItems() - 1) * algorithm_.gap_between_items_;
+  container_sizes += gap_inline_size;
+
+  // Due to negative margins, it is possible that we calculated a negative
+  // intrinsic width. Make sure that we never return a negative width.
+  container_sizes.Encompass(LayoutUnit());
+  container_sizes += BorderScrollbarPadding().InlineSum();
+  DCHECK_GE(container_sizes.max_size, container_sizes.min_size);
+  return MinMaxSizesResult(container_sizes, depends_on_block_constraints);
+}
+
 MinMaxSizesResult NGFlexLayoutAlgorithm::ComputeMinMaxSizes(
     const MinMaxSizesFloatInput&) {
   if (auto result = CalculateMinMaxSizesIgnoringChildren(
           Node(), BorderScrollbarPadding()))
     return *result;
+
+  if (RuntimeEnabledFeatures::NewFlexboxSizingEnabled()) {
+    // TODO(crbug.com/240765): Implement all the cases here.
+    if (is_column_) {
+      if (algorithm_.IsMultiline()) {
+        // multiline column flexbox
+      } else {
+        // singleline column flexbox
+      }
+    } else if (algorithm_.IsMultiline()) {
+      // multiline row flexbox
+    } else {
+      return ComputeMinMaxSizeOfSingleLineRowContainer();
+    }
+  }
 
   MinMaxSizes sizes;
   bool depends_on_block_constraints = false;
