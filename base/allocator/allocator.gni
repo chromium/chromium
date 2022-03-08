@@ -105,7 +105,7 @@ declare_args() {
   # Registers the binary for a fake binary A/B experiment. The binaries built
   # with this flag have no behavior difference, except for setting a synthetic
   # Finch.
-  use_fake_binary_experiment = false
+  use_fake_binary_experiment = true
 
   use_asan_backup_ref_ptr = false
 }
