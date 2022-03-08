@@ -71,8 +71,8 @@ FakePrivateMembershipRlweClient::CreateQueryRequest(
   return request;
 }
 
-::rlwe::StatusOr<psm_rlwe::MembershipResponseMap>
-FakePrivateMembershipRlweClient::ProcessResponse(
+::rlwe::StatusOr<psm_rlwe::RlweMembershipResponses>
+FakePrivateMembershipRlweClient::ProcessQueryResponse(
     const psm_rlwe::PrivateMembershipRlweQueryResponse& query_response) {
   // Validate that we have an existing response.
   if (!query_response.pir_responses_size()) {
@@ -102,19 +102,19 @@ FakePrivateMembershipRlweClient::ProcessResponse(
         "encrypted ID.");
   }
 
-  // Include the first entry of |plaintext_ids_|'s membership response in the
-  // membership map.
+  // Include one membership response in RlweMembershipResponses. Its
+  // plaintext_id field will be the first entry of |plaintext_ids_|.
 
-  psm_rlwe::MembershipResponseMap membership_response_map;
-  private_membership::MembershipResponse membership_response;
+  psm_rlwe::RlweMembershipResponses rlwe_membership_responses;
+  auto* entry = rlwe_membership_responses.add_membership_responses();
 
-  membership_response.set_value(encrypted_id);
-  membership_response.set_is_member(server_membership_response ==
-                                    kHasMembership);
+  entry->mutable_plaintext_id()->set_sensitive_id(
+      plaintext_ids_[0].sensitive_id());
+  entry->mutable_membership_response()->set_is_member(
+      server_membership_response == kHasMembership);
+  entry->mutable_membership_response()->set_value(encrypted_id);
 
-  membership_response_map.Update(plaintext_ids_[0], membership_response);
-
-  return membership_response_map;
+  return rlwe_membership_responses;
 }
 
 FakePrivateMembershipRlweClient::FakePrivateMembershipRlweClient(

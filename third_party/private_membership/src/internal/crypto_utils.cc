@@ -75,19 +75,20 @@ std::string HashEncryptedId(absl::string_view encrypted_id,
   // Salt used in SHA256 hash function for creating sensitive matching
   // identifier. Randomly generated salt forcing adversaries to re-compute
   // rainbow tables.
-  static constexpr char kSensitiveIdHashSalt[] = {
+  static constexpr unsigned char kSensitiveIdHashSalt[] = {
       0x3C, 0xD1, 0xF3, 0x69, 0x2B, 0x57, 0x40, 0xEA, 0xD8, 0xE4, 0xF4,
       0x4A, 0xB2, 0x5F, 0x7B, 0xAD, 0xC8, 0x10, 0xAA, 0x3D, 0x4C, 0x6E,
       0xCA, 0x57, 0x78, 0x5C, 0x5A, 0xED, 0x06, 0x81, 0x14, 0x7C};
-  return ctx->Sha256String(
-      absl::StrCat(std::string(kSensitiveIdHashSalt, 32), encrypted_id));
+  return ctx->Sha256String(absl::StrCat(
+      std::string(reinterpret_cast<const char*>(kSensitiveIdHashSalt), 32),
+      encrypted_id));
 }
 
 ::rlwe::StatusOr<std::string> GetValueEncryptionKey(
     absl::string_view encrypted_id, private_join_and_compute::Context* ctx) {
   // Salt user in SHA256 hash function to generate value encryption key.
   // Randomly generated salt forcing adversaries to re-compute rainbow tables.
-  static constexpr char kValueEncryptionKeyHashSalt[] = {
+  static constexpr unsigned char kValueEncryptionKeyHashSalt[] = {
       0x89, 0xC3, 0x67, 0xA7, 0x8A, 0x68, 0x2B, 0xE8, 0xC6, 0xB2, 0x22,
       0xB7, 0xE0, 0xB7, 0x4A, 0x37, 0x63, 0x8F, 0x10, 0x79, 0x98, 0x91,
       0x31, 0x94, 0x44, 0x03, 0xB6, 0x76, 0x8F, 0x70, 0xEB, 0xBF};
@@ -95,7 +96,9 @@ std::string HashEncryptedId(absl::string_view encrypted_id,
   static constexpr int kRequiredAesKeyLength = 32;
   return PadOrTruncate(
       ctx->Sha256String(absl::StrCat(
-          std::string(kValueEncryptionKeyHashSalt, 32), encrypted_id)),
+          std::string(
+              reinterpret_cast<const char*>(kValueEncryptionKeyHashSalt), 32),
+          encrypted_id)),
       kRequiredAesKeyLength);
 }
 

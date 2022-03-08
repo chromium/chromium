@@ -29,5 +29,19 @@ void MembershipResponseMap::Update(
   map_[HashRlwePlaintextId(id)] = response;
 }
 
+bool MembershipResponseMap::Contains(RlwePlaintextId id) {
+  return map_.contains(HashRlwePlaintextId(id));
+}
+
+void MembershipResponseMap::Merge(const MembershipResponseMap& other_map) {
+  // Check for duplicate IDs.
+  for (auto it = other_map.GetMap().begin(); it != other_map.GetMap().end();
+       ++it) {
+    if (!map_.contains(it->first)) {
+      map_[it->first] = it->second;
+    }
+  }
+}
+
 }  // namespace rlwe
 }  // namespace private_membership

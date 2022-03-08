@@ -6,6 +6,7 @@
 
 #include "ash/components/device_activity/device_active_use_case.h"
 #include "ash/components/device_activity/fresnel_service.pb.h"
+#include "base/check.h"
 // TODO(https://crbug.com/1269900): Migrate to use SFUL library.
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/strcat.h"
@@ -495,17 +496,30 @@ void DeviceActivityClient::OnCheckMembershipQueryDone(
       psm_query_response.rlwe_query_response();
 
   auto status_or_response =
-      current_use_case->GetPsmRlweClient()->ProcessResponse(query_response);
+      current_use_case->GetPsmRlweClient()->ProcessQueryResponse(
+          query_response);
   if (!status_or_response.ok()) {
     RecordDurationStateMetric(state_, state_timer_.Elapsed());
     TransitionToIdle(current_use_case);
     return;
   }
 
-  psm_rlwe::MembershipResponseMap membership_response_map =
+  // Ensure the existence of one membership response. Then, verify that it is
+  // regarding the current PSM ID.
+  psm_rlwe::RlweMembershipResponses rlwe_membership_responses =
       status_or_response.value();
+  if (rlwe_membership_responses.membership_responses_size() != 1 ||
+      rlwe_membership_responses.membership_responses(0)
+              .plaintext_id()
+              .sensitive_id() !=
+          current_use_case->GetPsmIdentifier().value().sensitive_id()) {
+    RecordDurationStateMetric(state_, state_timer_.Elapsed());
+    TransitionToIdle(current_use_case);
+    return;
+  }
+
   private_membership::MembershipResponse membership_response =
-      membership_response_map.Get(current_use_case->GetPsmIdentifier().value());
+      rlwe_membership_responses.membership_responses(0).membership_response();
 
   bool is_psm_id_member = membership_response.is_member();
 

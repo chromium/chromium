@@ -96,13 +96,13 @@ message RlwePlaintextId {
 }
 
 // Different use cases of the RLWE-based PSM protocol.
+//
+// NEXT ID: 16
 enum RlweUseCase {
   RLWE_USE_CASE_UNDEFINED = 0;
   TEST_USE_CASE = 1;
   TEST_USE_CASE2 = 2;
   TEST_USE_CASE3 = 3;
-
-  reserved 4;
 
   // The device state of Chrome OS device, used for Zero Touch, License
   // Packaging.
@@ -112,10 +112,11 @@ enum RlweUseCase {
   CROS_DEVICE_SECONDARY_STATE = 12;
 
   // Use-cases for ChromeOS Device Active Reporting to Fresnel.
-  // See: go/cros-device-actives-overview.
   CROS_FRESNEL_DAILY = 13;
   CROS_FRESNEL_MONTHLY = 14;
   CROS_FRESNEL_ALL_TIME = 15;
+
+  reserved 4, 6, 7, 8, 9, 10, 11;
 }
 
 // Parameters for the hashed buckets (first level).
@@ -266,4 +267,17 @@ message EncryptedBucket {
     // of the identifier encrypted using the Elliptic curve commutative cipher.
     bytes encrypted_value = 2;
   }
+}
+
+// A collection of plaintext ids and associated membership responses.
+message RlweMembershipResponses {
+  // A pair of queried plaintext id and its associated membership response.
+  message MembershipResponseEntry {
+    // Plaintext id that was queried.
+    RlwePlaintextId plaintext_id = 1;
+
+    // Membership response of the queried plaintext id.
+    MembershipResponse membership_response = 2;
+  }
+  repeated MembershipResponseEntry membership_responses = 1;
 }

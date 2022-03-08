@@ -27,8 +27,8 @@ namespace {
 constexpr int kCurveId = NID_X9_62_prime256v1;
 
 using ::rlwe::testing::StatusIs;
-using testing::Eq;
-using testing::HasSubstr;
+using ::testing::Eq;
+using ::testing::HasSubstr;
 
 class CryptoUtilsTest : public ::testing::Test {
  protected:
@@ -144,6 +144,34 @@ TEST_F(CryptoUtilsTest, DecryptInvalidCiphertextWithIncorrectLength) {
   EXPECT_THAT(DecryptValue(encrypted_id, encrypted_value, &ctx_),
               StatusIs(absl::StatusCode::kInvalidArgument,
                        HasSubstr("Incorrect bytes length")));
+}
+
+TEST_F(CryptoUtilsTest, HashEncryptedIdRegression) {
+  private_join_and_compute::Context ctx;
+  std::string id = "id";
+  std::string hash = HashEncryptedId(id, &ctx);
+
+  constexpr unsigned char expected_hash[] = {
+      0xd0, 0xd5, 0x50, 0xc1, 0x88, 0xa8, 0xcd, 0x8a, 0x4,  0x97, 0x26,
+      0x86, 0x90, 0x4,  0xe1, 0xbc, 0xbd, 0x9d, 0xba, 0x19, 0x3f, 0x2d,
+      0x36, 0xa8, 0xb5, 0x87, 0x95, 0xe8, 0xe2, 0x57, 0x1,  0x76,
+  };
+  EXPECT_EQ(hash, std::string(reinterpret_cast<const char*>(expected_hash),
+                              hash.length()));
+}
+
+TEST_F(CryptoUtilsTest, GetValueEncryptionKeyRegression) {
+  private_join_and_compute::Context ctx;
+  std::string id = "id";
+  ASSERT_OK_AND_ASSIGN(std::string hash, GetValueEncryptionKey(id, &ctx));
+
+  constexpr unsigned char expected_hash[] = {
+      0x2a, 0x3b, 0xe5, 0xe4, 0x33, 0xd0, 0x85, 0x73, 0xdd, 0x76, 0xad,
+      0xd1, 0x86, 0x33, 0x30, 0xac, 0x5b, 0x7f, 0x81, 0xbd, 0x4e, 0xdd,
+      0xdb, 0x80, 0xc3, 0x51, 0xb5, 0xad, 0x0,  0x38, 0xca, 0xbd,
+  };
+  EXPECT_EQ(hash, std::string(reinterpret_cast<const char*>(expected_hash),
+                              hash.length()));
 }
 
 }  // namespace

@@ -17,10 +17,10 @@
 
 #include <memory>
 
+#include "third_party/private_membership/base/private_membership_export.h"
 #include "absl/strings/string_view.h"
 #include <openssl/evp.h>
 #include "third_party/shell-encryption/src/statusor.h"
-#include "third_party/private_membership/base/private_membership_export.h"
 
 namespace private_membership {
 

@@ -5012,7 +5012,7 @@ source_set("unit_tests") {
 
   data = [
     "//chromeos/test/data/",
-    "//third_party/private_membership/src/internal/testing/regression_test_data/cros_test_data.binarypb",
+    "//third_party/private_membership/src/internal/testing/regression_test_data/test_data.binarypb",
   ]
 }
 

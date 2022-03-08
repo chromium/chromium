@@ -6,7 +6,4 @@ include_rules = [
   # The lib will be able to use abseil, but without being
   # imported directly in chromium.
     '+absl',
-  # Added to retrieve the regression tests file.
-    '+base/files',
 ]
-

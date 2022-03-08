@@ -14,16 +14,20 @@
 
 #include "third_party/private_membership/src/internal/encrypted_bucket_id.h"
 
+#include <string>
+#include <utility>
+
 #include "third_party/private_membership/src/internal/crypto_utils.h"
 #include "third_party/private_membership/src/internal/rlwe_id_utils.h"
 #include "third_party/private_membership/src/internal/utils.h"
+#include "absl/strings/string_view.h"
 #include "third_party/shell-encryption/src/status_macros.h"
 
 namespace private_membership {
 namespace rlwe {
 
 ::rlwe::StatusOr<EncryptedBucketId> EncryptedBucketId::Create(
-    const std::string& encrypted_bucket_id, int bit_length) {
+    absl::string_view encrypted_bucket_id, int bit_length) {
   if (!IsValid(encrypted_bucket_id, bit_length)) {
     return absl::InvalidArgumentError("Invalid bit_length.");
   }
@@ -38,16 +42,17 @@ namespace rlwe {
         "ECCipher and Context must both be non-null.");
   }
   std::string full_id = HashRlwePlaintextId(id);
-  auto status_or_encrypted_id = ec_cipher->Encrypt(full_id);
-  if(!status_or_encrypted_id.ok()){
-      return absl::InvalidArgumentError(status_or_encrypted_id.status().message());
+  auto encrypted_id = ec_cipher->Encrypt(full_id);
+  if (!encrypted_id.ok()) {
+    return absl::InvalidArgumentError(encrypted_id.status().message());
   }
-  std::string encrypted_id = std::move(status_or_encrypted_id).value();
-  return EncryptedBucketId::Create(encrypted_id, params, ctx);
+
+  return EncryptedBucketId::Create(std::move(encrypted_id).value(), params,
+                                   ctx);
 }
 
 ::rlwe::StatusOr<EncryptedBucketId> EncryptedBucketId::Create(
-    const std::string& encrypted_id, const EncryptedBucketsParameters& params,
+    absl::string_view encrypted_id, const EncryptedBucketsParameters& params,
     private_join_and_compute::Context* ctx) {
   if (ctx == nullptr) {
     return absl::InvalidArgumentError("Context must be non-null.");

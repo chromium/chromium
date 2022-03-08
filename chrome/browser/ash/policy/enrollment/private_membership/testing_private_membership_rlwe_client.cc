@@ -61,10 +61,10 @@ TestingPrivateMembershipRlweClient::CreateQueryRequest(
   return psm_rlwe_client_->CreateQueryRequest(oprf_response);
 }
 
-::rlwe::StatusOr<psm_rlwe::MembershipResponseMap>
-TestingPrivateMembershipRlweClient::ProcessResponse(
+::rlwe::StatusOr<psm_rlwe::RlweMembershipResponses>
+TestingPrivateMembershipRlweClient::ProcessQueryResponse(
     const psm_rlwe::PrivateMembershipRlweQueryResponse& query_response) {
-  return psm_rlwe_client_->ProcessResponse(query_response);
+  return psm_rlwe_client_->ProcessQueryResponse(query_response);
 }
 
 TestingPrivateMembershipRlweClient::TestingPrivateMembershipRlweClient(

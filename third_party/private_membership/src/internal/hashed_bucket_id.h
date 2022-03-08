@@ -20,13 +20,12 @@
 #include "absl/hash/hash.h"
 #include "absl/strings/string_view.h"
 #include "third_party/shell-encryption/src/statusor.h"
-#include "third_party/private_membership/base/private_membership_export.h"
 
 namespace private_membership {
 namespace rlwe {
 
 // Concrete data type representing the hashed bucket id.
-class PRIVATE_MEMBERSHIP_EXPORT HashedBucketId {
+class HashedBucketId {
  public:
   // Creates the object from raw data.
   //
@@ -35,7 +34,7 @@ class PRIVATE_MEMBERSHIP_EXPORT HashedBucketId {
   // bytes, at most ceil(bit_length/8) bytes, and all bits after the
   // bit_length'th must be set to 0.
   static ::rlwe::StatusOr<HashedBucketId> Create(
-      const std::string& hashed_bucket_id, int bit_length);
+      absl::string_view hashed_bucket_id, int bit_length);
 
   // Creates the object from the plaintet ID and parameters.
   static ::rlwe::StatusOr<HashedBucketId> Create(
@@ -73,10 +72,6 @@ class PRIVATE_MEMBERSHIP_EXPORT HashedBucketId {
     return H::combine(std::move(hash_state),
                       hashed_bucket_id.hashed_bucket_id_bytes_,
                       hashed_bucket_id.bit_length_);
-  }
-
-  inline std::string hashed_bucket_id_bytes() const {
-    return hashed_bucket_id_bytes_;
   }
 
   inline int bit_length() const { return bit_length_; }

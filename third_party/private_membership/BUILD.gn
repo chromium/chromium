@@ -1,17 +1,41 @@
-# Copyright 2020 The Chromium Authors. All rights reserved.
-# Use of this source code is governed by a BSD-style license that can be
-# found in the LICENSE file.
+# Copyright 2021 Google LLC
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#    https://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
 
-import("//build/config/chromeos/ui_mode.gni")
 import("//testing/test.gni")
 import("//third_party/protobuf/proto_library.gni")
 
+config("library_impl_config") {
+  # Build targets that contain private_membership implementation need this
+  # macro to be defined in order to correctly export symbols when is_component_build
+  # is true.
+  # For more info see: base/private_membership_export.h.
+  defines = [ "IS_PRIVATE_MEMBERSHIP_LIBRARY_IMPL" ]
+}
+
 config("private_membership_config") {
   # TODO(crbug.com/1072732) Reenable the deprecated warning, after updating the upstream.
-  cflags = [ "-Wno-deprecated-declarations" ]
+  cflags = [
+    "-Wno-deprecated-declarations",
+    "-Wno-defaulted-function-deleted",
+  ]
   defines = []
+  if (is_win) {
+    # TODO(crbug.com/1302848): Re-enable after solving other linking issues.
+    # defines += [ "PRIVATE_MEMBERSHIP_WIN_EXPORT" ]
+  }
   if (is_component_build) {
-    defines = [
+    defines += [
       # Build targets inside private_membership will need this macro to
       # be defined in order to correctly export symbols when is_component_build
       # is true.
@@ -20,7 +44,7 @@ config("private_membership_config") {
     ]
   }
   include_dirs = [
-    # Allow includes to be prefixed with shell-encryption/src/ in case it is not an
+    # Allow includes to be prefixed with private_membership/src/ in case it is not an
     # immediate subdirectory of the top-level.
     "src",
 
@@ -41,7 +65,10 @@ proto_library("private_membership_proto") {
     "src/private_membership_rlwe.proto",
   ]
   import_dirs = [ "//third_party/shell-encryption/src" ]
-  extra_configs = [ ":private_membership_config" ]
+  extra_configs = [
+    ":private_membership_config",
+    ":library_impl_config",
+  ]
 
   proto_in_dir = "src/"
   cc_generator_options = "dllexport_decl=PRIVATE_MEMBERSHIP_EXPORT:"
@@ -55,7 +82,10 @@ if (is_chromeos_ash) {
   component("private_membership") {
     public_configs = [ ":private_membership_config" ]
     configs -= [ "//build/config/compiler:chromium_code" ]
-    configs += [ "//build/config/compiler:no_chromium_code" ]
+    configs += [
+      "//build/config/compiler:no_chromium_code",
+      ":library_impl_config",
+    ]
 
     public = [
       "base/private_membership_export.h",
@@ -101,13 +131,20 @@ if (is_chromeos_ash) {
     testonly = true
     public_configs = [ ":private_membership_config" ]
     configs -= [ "//build/config/compiler:chromium_code" ]
-    configs += [ "//build/config/compiler:no_chromium_code" ]
+    configs += [
+      "//build/config/compiler:no_chromium_code",
+      ":library_impl_config",
+    ]
     public = [ "src/internal/testing/constants.h" ]
     sources = [
       "src/internal/aes_ctr_256_with_fixed_iv_test.cc",
       "src/internal/crypto_utils_test.cc",
       "src/internal/encrypted_bucket_id_test.cc",
-      "src/internal/hashed_bucket_id_test.cc",
+
+      # TODO(crbug.com/1298087): Re-enable these test files to comply with
+      # Chromium.
+      #"src/internal/hashed_bucket_id_test.cc",
+
       "src/internal/id_utils_test.cc",
       "src/internal/oprf_utils_test.cc",
       "src/internal/rlwe_id_utils_test.cc",

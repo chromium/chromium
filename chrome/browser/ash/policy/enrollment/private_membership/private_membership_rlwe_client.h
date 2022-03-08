@@ -13,7 +13,7 @@
 
 namespace private_membership {
 namespace rlwe {
-class MembershipResponseMap;
+class RlweMembershipResponses;
 }  // namespace rlwe
 }  // namespace private_membership
 
@@ -51,10 +51,10 @@ class PrivateMembershipRlweClient {
   // Processes the query response from the server and returns the membership
   // response map.
   //
-  // Keys of the returned map corresponds to the original plaintext ids supplied
-  // to the client when it was created.
-  virtual ::rlwe::StatusOr<private_membership::rlwe::MembershipResponseMap>
-  ProcessResponse(
+  // Keys of the returned map match the original plaintext ids supplied to the
+  // client when it was created.
+  virtual ::rlwe::StatusOr<private_membership::rlwe::RlweMembershipResponses>
+  ProcessQueryResponse(
       const private_membership::rlwe::PrivateMembershipRlweQueryResponse&
           query_response) = 0;
 };

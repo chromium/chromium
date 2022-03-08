@@ -14,6 +14,8 @@
 
 #include "third_party/private_membership/src/internal/encrypted_bucket_id.h"
 
+#include <cstdint>
+
 #include "third_party/private_membership/src/private_membership_rlwe.pb.h"
 #include "third_party/private_membership/src/internal/rlwe_id_utils.h"
 #include "third_party/private_membership/src/internal/testing/constants.h"

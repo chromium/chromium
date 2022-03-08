@@ -494,7 +494,7 @@ class PsmHelper {
                 .query_response();
 
         auto status_or_responses =
-            psm_rlwe_client_->ProcessResponse(query_response);
+            psm_rlwe_client_->ProcessQueryResponse(query_response);
 
         if (!status_or_responses.ok()) {
           // If the RLWE query response hasn't processed successfully, then
@@ -515,12 +515,29 @@ class PsmHelper {
 
         // The RLWE query response has been processed successfully. Extract
         // the membership response, and report the result.
-        psm_rlwe::MembershipResponseMap membership_responses_map =
-            std::move(status_or_responses).value();
-        private_membership::MembershipResponse membership_response =
-            membership_responses_map.Get(psm_rlwe_id_);
 
-        const bool membership_result = membership_response.is_member();
+        psm_rlwe::RlweMembershipResponses rlwe_membership_responses =
+            std::move(status_or_responses).value();
+
+        // Ensure the existence of one membership response. Then, verify that it
+        // is regarding the current PSM ID.
+        if (rlwe_membership_responses.membership_responses_size() != 1 ||
+            rlwe_membership_responses.membership_responses(0)
+                    .plaintext_id()
+                    .sensitive_id() != psm_rlwe_id_.sensitive_id()) {
+          LOG(ERROR)
+              << "PSM error: RLWE membership responses are either empty or its "
+                 "first response's ID is not the same as the current PSM ID.";
+          // TODO(crbug.com/1302982): Record that error separately and merge it
+          // with PsmResult.
+          StoreErrorAndStop(PsmResult::kEmptyQueryResponseError);
+          return;
+        }
+
+        const bool membership_result =
+            rlwe_membership_responses.membership_responses(0)
+                .membership_response()
+                .is_member();
 
         LOG(WARNING) << "PSM determination successful. Identifier "
                      << (membership_result ? "" : "not ")

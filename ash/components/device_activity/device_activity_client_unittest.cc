@@ -182,7 +182,7 @@ class DeviceActivityClientTest : public testing::Test {
             .AppendASCII("internal")
             .AppendASCII("testing")
             .AppendASCII("regression_test_data")
-            .AppendASCII("cros_test_data.binarypb");
+            .AppendASCII("test_data.binarypb");
     ASSERT_TRUE(base::PathExists(kPsmTestDataPath));
     psm_rlwe::PrivateMembershipRlweClientRegressionTestData test_data;
     ASSERT_TRUE(ParseProtoFromFile(kPsmTestDataPath, &test_data));

@@ -25,16 +25,24 @@ enum HashType {
   HASH_TYPE_UNDEFINED = 0;
   TEST_HASH_TYPE = 1;
   SHA256 = 2;
+
+  reserved 3;
+
   // Add more hash types if necessary.
 }
 
 // An enum describing how to hash IDs to encrypted buckets.
 enum EncryptedBucketHashType {
   ENCRYPTED_BUCKET_HASH_TYPE_UNDEFINED = 0;
+
+  ENCRYPTED_BUCKET_TEST_HASH_TYPE = 3;
+
   // Use SHA256 of injective concatenation of non-sensitive and sensitive IDs.
   // For backwards compatibility, this hash type should be used if this proto
   // field is not specified.
   SHA256_NON_SENSITIVE_AND_SENSITIVE_ID = 1;
+
+  reserved 2;
 }
 
 // A proto message that holds the doubly encrypted identifier.

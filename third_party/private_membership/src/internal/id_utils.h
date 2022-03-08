@@ -15,8 +15,10 @@
 #ifndef THIRD_PARTY_PRIVATE_MEMBERSHIP_SRC_INTERNAL_ID_UTILS_H_
 #define THIRD_PARTY_PRIVATE_MEMBERSHIP_SRC_INTERNAL_ID_UTILS_H_
 
-#include "absl/strings/string_view.h"
+#include <string>
+
 #include "third_party/private_membership/base/private_membership_export.h"
+#include "absl/strings/string_view.h"
 
 namespace private_membership {
 

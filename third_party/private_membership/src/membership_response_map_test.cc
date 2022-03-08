@@ -28,8 +28,10 @@ using ::rlwe::testing::EqualsProto;
 RlwePlaintextId CreateRlwePlaintextId(absl::string_view non_sensitive_id,
                                       absl::string_view sensitive_id) {
   RlwePlaintextId id;
-  id.set_non_sensitive_id(std::string(non_sensitive_id));
-  id.set_sensitive_id(std::string(sensitive_id));
+  id.set_non_sensitive_id(std::string(
+      non_sensitive_id));
+  id.set_sensitive_id(
+      std::string(sensitive_id));
   return id;
 }
 
@@ -51,6 +53,17 @@ TEST(MembershipResponseMapTest, UpdateAndGet) {
   EXPECT_THAT(map.Get(id), EqualsProto(resp));
 }
 
+TEST(MembershipResponseMapTest, Contains) {
+  MembershipResponseMap map;
+  RlwePlaintextId id = CreateRlwePlaintextId("a", "b");
+  EXPECT_FALSE(map.Contains(id));
+
+  private_membership::MembershipResponse resp;
+  resp.set_is_member(true);
+  map.Update(id, resp);
+  EXPECT_TRUE(map.Contains(id));
+}
+
 TEST(MembershipResponseMapTest, MultipleUpdateAndGet) {
   const int num_rounds = 1000;
   std::vector<RlwePlaintextId> ids(num_rounds);
@@ -66,6 +79,45 @@ TEST(MembershipResponseMapTest, MultipleUpdateAndGet) {
   for (int i = 0; i < num_rounds; ++i) {
     EXPECT_THAT(map.Get(ids[i]), EqualsProto(resps[i]));
   }
+}
+
+TEST(MembershipResponseMapTest, Merge) {
+  const int num_items = 50;
+  std::vector<RlwePlaintextId> ids(num_items);
+  std::vector<private_membership::MembershipResponse> resps(num_items);
+
+  MembershipResponseMap map1;
+  MembershipResponseMap map2;
+  for (int i = 0; i < num_items; ++i) {
+    ids[i] =
+        CreateRlwePlaintextId(absl::StrCat("nsid", i), absl::StrCat("sid", i));
+    resps[i].set_value(absl::StrCat("value", i));
+    if (i % 2 == 0) {
+      map1.Update(ids[i], resps[i]);
+    } else {
+      map2.Update(ids[i], resps[i]);
+    }
+  }
+  map1.Merge(map2);
+  for (int i = 0; i < num_items; ++i) {
+    EXPECT_THAT(map1.Get(ids[i]), EqualsProto(resps[i]));
+  }
+}
+
+TEST(MembershipResponseMapTest, MergeWithDuplicateIds) {
+  RlwePlaintextId id = CreateRlwePlaintextId("nsid", "sid");
+  private_membership::MembershipResponse resp1;
+  resp1.set_value("value1");
+  private_membership::MembershipResponse resp2;
+  resp2.set_value("value2");
+
+  MembershipResponseMap map1;
+  map1.Update(id, resp1);
+  MembershipResponseMap map2;
+  map2.Update(id, resp2);
+  map1.Merge(map2);
+
+  EXPECT_THAT(map1.Get(id), EqualsProto(resp1));
 }
 
 }  // namespace

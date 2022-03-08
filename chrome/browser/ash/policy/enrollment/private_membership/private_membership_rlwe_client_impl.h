@@ -17,7 +17,7 @@
 namespace private_membership {
 namespace rlwe {
 class PrivateMembershipRlweClient;
-class MembershipResponseMap;
+class RlweMembershipResponses;
 }  // namespace rlwe
 }  // namespace private_membership
 
@@ -61,8 +61,8 @@ class PrivateMembershipRlweClientImpl : public PrivateMembershipRlweClient {
   CreateQueryRequest(
       const private_membership::rlwe::PrivateMembershipRlweOprfResponse&
           oprf_response) override;
-  ::rlwe::StatusOr<private_membership::rlwe::MembershipResponseMap>
-  ProcessResponse(
+  ::rlwe::StatusOr<private_membership::rlwe::RlweMembershipResponses>
+  ProcessQueryResponse(
       const private_membership::rlwe::PrivateMembershipRlweQueryResponse&
           query_response) override;
 

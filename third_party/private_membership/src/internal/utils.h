@@ -15,9 +15,11 @@
 #ifndef THIRD_PARTY_PRIVATE_MEMBERSHIP_SRC_INTERNAL_UTILS_H_
 #define THIRD_PARTY_PRIVATE_MEMBERSHIP_SRC_INTERNAL_UTILS_H_
 
+#include <string>
+
+#include "third_party/private_membership/base/private_membership_export.h"
 #include "absl/strings/string_view.h"
 #include "third_party/shell-encryption/src/statusor.h"
-#include "third_party/private_membership/base/private_membership_export.h"
 
 namespace private_membership {
 namespace rlwe {
@@ -34,8 +36,7 @@ namespace rlwe {
 // Returns InvalidArgumentError if the truncation bit length is larger than the
 // bit length of the input string.
 PRIVATE_MEMBERSHIP_EXPORT ::rlwe::StatusOr<std::string> Truncate(
-    absl::string_view in,
-    int bit_length);
+    absl::string_view in, int bit_length);
 
 // Returns the first `bit_length` leftmost bits of `in` as an unsigned 32 bit
 // integer.
@@ -48,8 +49,7 @@ PRIVATE_MEMBERSHIP_EXPORT ::rlwe::StatusOr<std::string> Truncate(
 // Returns InvalidArgumentError if `bit_length` is larger than the bit length of
 // the input string or larger than 32.
 PRIVATE_MEMBERSHIP_EXPORT ::rlwe::StatusOr<uint32_t> TruncateAsUint32(
-    absl::string_view in,
-    int bit_length);
+    absl::string_view in, int bit_length);
 
 // Returns true if `in` is a valid byte representation of a value truncated to
 // `bit_length`.

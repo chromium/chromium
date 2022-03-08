@@ -37,10 +37,10 @@ CreateContexts<ModularInt64>(const RlweParameters& rlwe_params) {
     RLWE_ASSIGN_OR_RETURN(
         auto context,
         ::rlwe::RlweContext<ModularInt64>::Create(
-            {.modulus = rlwe_params.modulus(i).lo(),
-             .log_n = static_cast<size_t>(rlwe_params.log_degree()),
-             .log_t = static_cast<size_t>(rlwe_params.log_t()),
-             .variance = static_cast<size_t>(rlwe_params.variance())}));
+            {/*.modulus =*/rlwe_params.modulus(i).lo(),
+             /*.log_n =*/static_cast<size_t>(rlwe_params.log_degree()),
+             /*.log_t =*/static_cast<size_t>(rlwe_params.log_t()),
+             /*.variance =*/static_cast<size_t>(rlwe_params.variance())}));
     contexts.push_back(std::move(context));
   }
   return contexts;
@@ -60,10 +60,10 @@ CreateContexts<ModularInt128>(const RlweParameters& rlwe_params) {
     RLWE_ASSIGN_OR_RETURN(
         auto context,
         ::rlwe::RlweContext<ModularInt128>::Create(
-            {.modulus = modulus128,
-             .log_n = static_cast<size_t>(rlwe_params.log_degree()),
-             .log_t = static_cast<size_t>(rlwe_params.log_t()),
-             .variance = static_cast<size_t>(rlwe_params.variance())}));
+            {/*.modulus =*/modulus128,
+             /*.log_n =*/static_cast<size_t>(rlwe_params.log_degree()),
+             /*.log_t =*/static_cast<size_t>(rlwe_params.log_t()),
+             /*.variance =*/static_cast<size_t>(rlwe_params.variance())}));
     contexts.push_back(std::move(context));
   }
   return contexts;

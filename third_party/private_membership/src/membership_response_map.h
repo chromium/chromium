@@ -15,8 +15,8 @@
 #ifndef THIRD_PARTY_PRIVATE_MEMBERSHIP_SRC_MEMBERSHIP_RESPONSE_MAP_H_
 #define THIRD_PARTY_PRIVATE_MEMBERSHIP_SRC_MEMBERSHIP_RESPONSE_MAP_H_
 
-#include "third_party/private_membership/base/private_membership_export.h"
 #include "third_party/private_membership/src/private_membership.pb.h"
+#include "third_party/private_membership/base/private_membership_export.h"
 #include "third_party/private_membership/src/private_membership_rlwe.pb.h"
 #include "absl/container/flat_hash_map.h"
 
@@ -33,6 +33,19 @@ class PRIVATE_MEMBERSHIP_EXPORT MembershipResponseMap {
   // Update the Membership Response associated with id.
   void Update(RlwePlaintextId id,
               private_membership::MembershipResponse response);
+
+  // Merges current map with argument map. Duplicate IDs that appear in
+  // other_map will not be reflected in the newly merged map.
+  void Merge(const MembershipResponseMap& other_map);
+
+  const absl::flat_hash_map<std::string,
+                            private_membership::MembershipResponse>&
+  GetMap() const {
+    return map_;
+  }
+
+  // Returns whether map contains passed id.
+  bool Contains(RlwePlaintextId id);
 
  private:
   // Map storing hashes of RlwePlaintextId to responses.

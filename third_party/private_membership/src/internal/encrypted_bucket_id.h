@@ -16,11 +16,11 @@
 #define THIRD_PARTY_PRIVATE_MEMBERSHIP_SRC_INTERNAL_ENCRYPTED_BUCKET_ID_H_
 
 #include "third_party/private-join-and-compute/src/crypto/ec_commutative_cipher.h"
+#include "third_party/private_membership/base/private_membership_export.h"
 #include "third_party/private_membership/src/private_membership_rlwe.pb.h"
 #include "absl/hash/hash.h"
 #include "absl/strings/string_view.h"
 #include "third_party/shell-encryption/src/statusor.h"
-#include "third_party/private_membership/base/private_membership_export.h"
 
 namespace private_membership {
 namespace rlwe {
@@ -35,7 +35,7 @@ class PRIVATE_MEMBERSHIP_EXPORT EncryptedBucketId {
   // floor(bit_length/8) bytes, at most ceil(bit_length/8) bytes, and all bits
   // after the bit_length'th must be set to 0.
   static ::rlwe::StatusOr<EncryptedBucketId> Create(
-      const std::string& encrypted_bucket_id, int bit_length);
+      absl::string_view encrypted_bucket_id, int bit_length);
 
   // Creates encrypted bucket ID from plaintext ID and parameters.
   //
@@ -48,7 +48,7 @@ class PRIVATE_MEMBERSHIP_EXPORT EncryptedBucketId {
   //
   // Returns an error if parameters are invalid.
   static ::rlwe::StatusOr<EncryptedBucketId> Create(
-      const std::string& encrypted_id, const EncryptedBucketsParameters& params,
+      absl::string_view encrypted_id, const EncryptedBucketsParameters& params,
       private_join_and_compute::Context* ctx);
 
   // Converts the bucket id to an unsigned 32 bit integer representation.
@@ -72,10 +72,6 @@ class PRIVATE_MEMBERSHIP_EXPORT EncryptedBucketId {
     return H::combine(std::move(hash_state),
                       encrypted_bucket_id.encrypted_bucket_id_bytes_,
                       encrypted_bucket_id.bit_length_);
-  }
-
-  inline std::string encrypted_bucket_id_bytes() const {
-    return encrypted_bucket_id_bytes_;
   }
 
   inline int bit_length() const { return bit_length_; }

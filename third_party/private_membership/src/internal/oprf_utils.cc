@@ -14,6 +14,9 @@
 
 #include "third_party/private_membership/src/internal/oprf_utils.h"
 
+#include <string>
+#include <utility>
+
 #include "third_party/shell-encryption/src/status_macros.h"
 
 namespace private_membership {
@@ -25,14 +28,14 @@ namespace private_membership {
 
   doubly_encrypted_id.set_queried_encrypted_id(std::string(encrypted_id));
 
-  auto status_or_reencrypted_id =
+  auto reencrypted_id =
       ec_cipher->ReEncrypt(std::string(encrypted_id));
-  if (!status_or_reencrypted_id.ok()) {
-    return absl::InvalidArgumentError(
-        status_or_reencrypted_id.status().message());
+  if (!reencrypted_id.ok()) {
+    return reencrypted_id.status();
   }
-  auto reencrypted_id = std::move(status_or_reencrypted_id).value();
-  doubly_encrypted_id.set_doubly_encrypted_id(std::string(reencrypted_id));
+
+  doubly_encrypted_id.set_doubly_encrypted_id(
+      std::string(std::move(reencrypted_id).value()));
 
   return doubly_encrypted_id;
 }

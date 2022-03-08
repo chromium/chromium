@@ -162,6 +162,21 @@ TEST(RlweIdUtils, HashNonsensitiveIdWithSalt) {
   EXPECT_NE(hash1a, hash2a);
 }
 
+TEST(RlweIdUtils, HashNonsensitiveIdWithSaltRegression) {
+  private_join_and_compute::Context ctx;
+  std::string nsid("nsid");
+
+  ASSERT_OK_AND_ASSIGN(std::string hash, HashNonsensitiveIdWithSalt(
+                                             nsid, HashType::SHA256, &ctx));
+
+  constexpr unsigned char expected_hash[] = {
+      0x7f, 0xfb, 0xbd, 0x26, 0x8d, 0x1b, 0xd4, 0xc1, 0x7c, 0xa0, 0x3d,
+      0xf2, 0x1c, 0x5c, 0x6b, 0x45, 0x72, 0xe5, 0x2a, 0x99, 0x9b, 0x4a,
+      0x4b, 0x51, 0xfe, 0x6d, 0x67, 0x68, 0xf0, 0xa6, 0xe7, 0x0};
+  EXPECT_EQ(hash, std::string(reinterpret_cast<const char*>(expected_hash),
+                              hash.length()));
+}
+
 }  // namespace
 }  // namespace rlwe
 }  // namespace private_membership
