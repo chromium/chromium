@@ -37,10 +37,11 @@ function CountryChanged() {
   new_form.elements[0].addEventListener('change', function(){
     RemoveForm("form1")
     var new_form2 = AddNewFormAndFields("form2", "addr1.2");
-    document.getElementsByTagName('body')[0].appendChild(new_form2);
+    document.body.appendChild(new_form2);
     window['refill'] = true;
+    console.log('An event happened that should not trigger a second refill.');
   });
 
-  document.getElementsByTagName('body')[0].appendChild(new_form);
+  document.body.appendChild(new_form);
 }
 </script>

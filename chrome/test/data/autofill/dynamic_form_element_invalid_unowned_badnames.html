@@ -26,6 +26,7 @@ function CountryChanged() {
   var address1 = document.getElementById('address1_7');
   address1.value = '';
   window['refill'] = true;
+  console.log('An event happened that should trigger a refill.');
 
   // Change the element that triggered the autofill. Remove it, and make another
   // field visible. This is to test if the autofill can handle the case where

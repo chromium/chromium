@@ -991,10 +991,10 @@ bool AutofillTable::RemoveFormElementsAddedBetween(
 
 bool AutofillTable::RemoveExpiredFormElements(
     std::vector<AutofillChange>* changes) {
-  const int64_t period = kAutocompleteRetentionPolicyPeriodInDays;
   const auto change_type = AutofillChange::EXPIRE;
 
-  base::Time expiration_time = AutofillClock::Now() - base::Days(period);
+  base::Time expiration_time =
+      AutofillClock::Now() - kAutocompleteRetentionPolicyPeriod;
 
   // Query for the name and value of all form elements that were last used
   // before the |expiration_time|.

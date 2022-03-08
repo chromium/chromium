@@ -133,9 +133,10 @@ class AutofillUiTest : public InProcessBrowserTest,
   content::RenderWidgetHost::KeyPressEventCallback key_press_GetEventSink();
 
  private:
-  // WebContentsObserver override:
+  // WebContentsObserver:
   void RenderFrameHostChanged(content::RenderFrameHost* old_host,
                               content::RenderFrameHost* new_host) override;
+
   raw_ptr<content::RenderFrameHost> current_main_rfh_ = nullptr;
   BrowserAutofillManagerTestDelegateImpl test_delegate_;
 

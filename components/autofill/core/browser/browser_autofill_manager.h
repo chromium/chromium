@@ -61,7 +61,7 @@ struct FormData;
 struct FormFieldData;
 
 // We show the credit card signin promo only a certain number of times.
-extern const int kCreditCardSigninPromoImpressionLimit;
+constexpr int kCreditCardSigninPromoImpressionLimit = 3;
 
 // Enum for the value patterns metric. Don't renumerate existing value. They are
 // used for metrics.

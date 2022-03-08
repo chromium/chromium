@@ -284,8 +284,7 @@ IN_PROC_BROWSER_TEST_F(AutofillAutocompleteTest,
                        RetentionPolicy_RemovesExpiredEntry) {
   // Go back in time, far enough so that we'll expire the entry.
   TestAutofillClock test_clock;
-  base::TimeDelta days_delta =
-      base::Days(2 * kAutocompleteRetentionPolicyPeriodInDays);
+  base::TimeDelta days_delta = 2 * kAutocompleteRetentionPolicyPeriod;
   test_clock.SetNow(AutofillClock::Now() - days_delta);
 
   // Add an entry.
@@ -319,7 +318,7 @@ IN_PROC_BROWSER_TEST_F(AutofillAutocompleteTest,
   // Go back in time, but not far enough so that we'd expire the entry.
   TestAutofillClock test_clock;
   base::TimeDelta days_delta =
-      base::Days(kAutocompleteRetentionPolicyPeriodInDays - 2);
+      kAutocompleteRetentionPolicyPeriod - base::Days(2);
   test_clock.SetNow(AutofillClock::Now() - days_delta);
 
   // Add an entry.

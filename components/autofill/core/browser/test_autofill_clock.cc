@@ -11,8 +11,9 @@
 
 namespace autofill {
 
-TestAutofillClock::TestAutofillClock() {
+TestAutofillClock::TestAutofillClock(base::Time now) {
   AutofillClock::SetTestClock(&test_clock_);
+  SetNow(now);
 }
 
 TestAutofillClock::~TestAutofillClock() {

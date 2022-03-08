@@ -35,6 +35,7 @@ function CountryChanged() {
 
   var first_name_input = new_form.elements[0];
   window['refill'] = true;
+  console.log('An event happened that should trigger a refill.');
 
   document.getElementsByTagName('body')[0].appendChild(new_form);
 }

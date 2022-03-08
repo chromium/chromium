@@ -111,18 +111,13 @@ using base::StartsWith;
 using base::TimeTicks;
 using mojom::SubmissionSource;
 
-constexpr int kCreditCardSigninPromoImpressionLimit = 3;
-
 namespace {
 
-const size_t kMaxRecentFormSignaturesToRemember = 3;
+constexpr size_t kMaxRecentFormSignaturesToRemember = 3;
 
-// Time to wait, in ms, after a dynamic form change before triggering a refill.
+// Time to wait after a dynamic form change before triggering a refill.
 // This is used for sites that change multiple things consecutively.
-const size_t kWaitTimeForDynamicFormsMs = 200;
-
-// The time limit, in ms, between a fill and when a refill can happen.
-const int kLimitBeforeRefillMs = 1000;
+constexpr base::TimeDelta kWaitTimeForDynamicForms = base::Milliseconds(200);
 
 // Returns whether the |field| is predicted as being any kind of name.
 bool IsNameType(const AutofillField& field) {
@@ -2106,7 +2101,7 @@ void BrowserAutofillManager::OnFormProcessed(
 
     // Start a new timer to trigger refill.
     filling_context->on_refill_timer.Start(
-        FROM_HERE, base::Milliseconds(kWaitTimeForDynamicFormsMs),
+        FROM_HERE, kWaitTimeForDynamicForms,
         base::BindRepeating(&BrowserAutofillManager::TriggerRefill,
                             weak_ptr_factory_.GetWeakPtr(), form));
   }
@@ -2492,14 +2487,12 @@ bool BrowserAutofillManager::ShouldTriggerRefill(
   base::TimeTicks now = AutofillTickClock::NowTicks();
   base::TimeDelta delta = now - filling_context->original_fill_time;
 
-  if (filling_context->attempted_refill &&
-      delta.InMilliseconds() < kLimitBeforeRefillMs) {
+  if (filling_context->attempted_refill && delta < kLimitBeforeRefill) {
     address_form_event_logger_->OnSubsequentRefillAttempt(sync_state_,
                                                           form_structure);
   }
 
-  return !filling_context->attempted_refill &&
-         delta.InMilliseconds() < kLimitBeforeRefillMs;
+  return !filling_context->attempted_refill && delta < kLimitBeforeRefill;
 }
 
 void BrowserAutofillManager::TriggerRefill(const FormData& form) {

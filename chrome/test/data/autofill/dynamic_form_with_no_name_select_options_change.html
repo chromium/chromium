@@ -27,7 +27,6 @@ function CountryChanged() {
   var first_name_input = document.getElementById("firstname");
   // Reset the value of the first name field.
   first_name_input.value = '';
-  window['refill'] = true;
 
   // Reset the value of the address field.
   document.getElementById("address1").value = '';
@@ -44,5 +43,8 @@ function CountryChanged() {
   state_select.options[0] = new Option('WA', 'WA');
   state_select.options[1] = new Option('MA', 'MA');
   state_select.options[2] = new Option('TX', 'TX');
+
+  window['refill'] = true;
+  console.log('An event happened that should trigger a refill.');
 }
 </script>

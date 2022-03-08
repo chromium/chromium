@@ -19,7 +19,7 @@ namespace autofill {
 // destroyed.
 class TestAutofillClock {
  public:
-  TestAutofillClock();
+  explicit TestAutofillClock(base::Time now = {});
 
   TestAutofillClock(const TestAutofillClock&) = delete;
   TestAutofillClock& operator=(const TestAutofillClock&) = delete;

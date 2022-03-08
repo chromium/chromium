@@ -39,6 +39,7 @@ function CountryChanged() {
     var new_form = AddNewFormAndFields('form1', 'addr1.1');
     document.getElementsByTagName('body')[0].appendChild(new_form);
     window['refill'] = true;
+    console.log('An event happened that should not trigger a refill.');
   });
 }
 </script>

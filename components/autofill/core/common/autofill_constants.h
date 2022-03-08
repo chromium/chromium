@@ -66,6 +66,9 @@ enum ShowPasswordSuggestionsOptions {
       1 << 2 /* input field is marked to accept webauthn credentials */,
 };
 
+// A refill happens only within `kLimitBeforeRefill` of the original fill.
+constexpr base::TimeDelta kLimitBeforeRefill = base::Seconds(1);
+
 // Constants for the soft/hard deletion of Autofill data.
 constexpr base::TimeDelta kDisusedDataModelTimeDelta = base::Days(180);
 constexpr base::TimeDelta kDisusedDataModelDeletionTimeDelta = base::Days(395);
@@ -76,7 +79,8 @@ bool IsAutofillEntryWithUseDateDeletable(const base::Time& use_date);
 
 // The period after which autocomplete entries should be cleaned-up in days.
 // Equivalent to roughly 14 months.
-const int64_t kAutocompleteRetentionPolicyPeriodInDays = 14 * 31;
+constexpr base::TimeDelta kAutocompleteRetentionPolicyPeriod =
+    base::Days(14 * 31);
 
 // Limits the number of times the value of a specific type can be filled into a
 // form.

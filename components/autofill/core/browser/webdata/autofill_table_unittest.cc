@@ -783,8 +783,7 @@ TEST_F(AutofillTableTest,
 // delete an old entry.
 TEST_F(AutofillTableTest, RemoveExpiredFormElements_Expires_DeleteEntry) {
   auto kNow = AutofillClock::Now();
-  auto k2YearsOld =
-      kNow - base::Days(2 * kAutocompleteRetentionPolicyPeriodInDays);
+  auto k2YearsOld = kNow - 2 * kAutocompleteRetentionPolicyPeriod;
 
   AutofillChangeList changes;
   FormFieldData field;

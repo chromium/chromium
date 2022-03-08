@@ -26,6 +26,7 @@ function StateFirstChanged() {
   // Reset the value of the first name field.
   first_name_input.value = '';
   window['refill'] = true;
+  console.log('An event happened that should trigger a refill.');
   // Hide the first, display the second.
   var state_first = document.getElementById("state_first");
   state_first.setAttribute('style', "display: none;");
