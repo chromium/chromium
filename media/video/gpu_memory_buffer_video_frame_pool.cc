@@ -667,28 +667,28 @@ gfx::Size CodedSize(const VideoFrame* video_frame,
                     GpuVideoAcceleratorFactories::OutputFormat output_format) {
   DCHECK(gfx::Rect(video_frame->coded_size())
              .Contains(video_frame->visible_rect()));
-
-  size_t width = video_frame->visible_rect().width();
-  size_t height = video_frame->visible_rect().height();
+  DCHECK_EQ(video_frame->visible_rect().x() % 2, 0);
   gfx::Size output;
   switch (output_format) {
     case GpuVideoAcceleratorFactories::OutputFormat::I420:
     case GpuVideoAcceleratorFactories::OutputFormat::P010:
     case GpuVideoAcceleratorFactories::OutputFormat::NV12_SINGLE_GMB:
     case GpuVideoAcceleratorFactories::OutputFormat::NV12_DUAL_GMB:
-      DCHECK_EQ(video_frame->visible_rect().x() % 2, 0);
-      DCHECK_EQ(video_frame->visible_rect().y() % 2, 0);
-      if (!gfx::AllowOddWidthMultiPlanarBuffers())
-        width = (width + 1) & ~1;
-      if (!gfx::AllowOddHeightMultiPlanarBuffers())
-        height = (height + 1) & ~1;
-      output = gfx::Size(width, height);
+      if (gfx::AllowOddHeightMultiPlanarBuffers()) {
+        output = gfx::Size((video_frame->visible_rect().width() + 1) & ~1,
+                           video_frame->visible_rect().height());
+      } else {
+        DCHECK((video_frame->visible_rect().y() & 1) == 0);
+        output = gfx::Size((video_frame->visible_rect().width() + 1) & ~1,
+                           (video_frame->visible_rect().height() + 1) & ~1);
+      }
       break;
     case GpuVideoAcceleratorFactories::OutputFormat::XR30:
     case GpuVideoAcceleratorFactories::OutputFormat::XB30:
     case GpuVideoAcceleratorFactories::OutputFormat::RGBA:
     case GpuVideoAcceleratorFactories::OutputFormat::BGRA:
-      output = gfx::Size((width + 1) & ~1, height);
+      output = gfx::Size((video_frame->visible_rect().width() + 1) & ~1,
+                         video_frame->visible_rect().height());
       break;
     case GpuVideoAcceleratorFactories::OutputFormat::UNDEFINED:
       NOTREACHED();
@@ -737,7 +737,6 @@ void GpuMemoryBufferVideoFramePool::PoolImpl::CreateHardwareFrame(
 
   if (output_format_ == GpuVideoAcceleratorFactories::OutputFormat::UNDEFINED)
     passthrough = true;
-
   switch (pixel_format) {
     // Supported cases.
     case PIXEL_FORMAT_YV12:
@@ -784,14 +783,14 @@ void GpuMemoryBufferVideoFramePool::PoolImpl::CreateHardwareFrame(
   // TODO(https://crbug.com/638906): Handle odd positioned video frame input.
   if (video_frame->visible_rect().x() % 2)
     passthrough = true;
-  if (video_frame->visible_rect().y() % 2) {
+  if (video_frame->visible_rect().y() % 2 &&
+      !gfx::AllowOddHeightMultiPlanarBuffers()) {
     passthrough = true;
   }
 
   // TODO(https://crbug.com/webrtc/9033): Eliminate odd size video frame input
   // cases as they are not valid.
-  if (video_frame->coded_size().width() % 2 &&
-      !gfx::AllowOddWidthMultiPlanarBuffers())
+  if (video_frame->coded_size().width() % 2)
     passthrough = true;
   if (video_frame->coded_size().height() % 2 &&
       !gfx::AllowOddHeightMultiPlanarBuffers()) {

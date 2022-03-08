@@ -54,7 +54,7 @@ bool IsImageSizeValidForGpuMemoryBufferFormat(const gfx::Size& size,
       return true;
 #else
       // U and V planes are subsampled by a factor of 2.
-      if (size.width() % 2 && !gfx::AllowOddWidthMultiPlanarBuffers())
+      if (size.width() % 2)
         return false;
       if (size.height() % 2 && !gfx::AllowOddHeightMultiPlanarBuffers())
         return false;

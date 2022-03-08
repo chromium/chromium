@@ -105,14 +105,14 @@ size_t SubsamplingFactorForBufferFormat(BufferFormat format, size_t plane) {
     case BufferFormat::RGBA_F16:
       return 1;
     case BufferFormat::YVU_420: {
-      constexpr size_t factor[] = {1, 2, 2};
-      DCHECK_LT(plane, std::size(factor));
+      static size_t factor[] = {1, 2, 2};
+      DCHECK_LT(static_cast<size_t>(plane), std::size(factor));
       return factor[plane];
     }
     case BufferFormat::YUV_420_BIPLANAR:
     case BufferFormat::P010: {
-      constexpr size_t factor[] = {1, 2};
-      DCHECK_LT(plane, std::size(factor));
+      static size_t factor[] = {1, 2};
+      DCHECK_LT(static_cast<size_t>(plane), std::size(factor));
       return factor[plane];
     }
   }
@@ -168,15 +168,15 @@ bool RowSizeForBufferFormatChecked(size_t width,
       *size_in_bytes = checked_size.ValueOrDie();
       return true;
     case BufferFormat::YVU_420:
-      DCHECK(gfx::AllowOddWidthMultiPlanarBuffers() || (width % 2 == 0));
+      DCHECK_EQ(width % 2, 0u);
       *size_in_bytes = width / SubsamplingFactorForBufferFormat(format, plane);
       return true;
     case BufferFormat::YUV_420_BIPLANAR:
-      DCHECK(gfx::AllowOddWidthMultiPlanarBuffers() || (width % 2 == 0));
+      DCHECK_EQ(width % 2, 0u);
       *size_in_bytes = width;
       return true;
     case BufferFormat::P010:
-      DCHECK(gfx::AllowOddWidthMultiPlanarBuffers() || (width % 2 == 0));
+      DCHECK_EQ(width % 2, 0u);
       *size_in_bytes = 2 * width;
       return true;
   }
@@ -217,9 +217,6 @@ size_t BufferOffsetForBufferFormat(const Size& size,
                                    BufferFormat format,
                                    size_t plane) {
   DCHECK_LT(plane, gfx::NumberOfPlanesForLinearBufferFormat(format));
-  size_t width_rounded = (size.width() + 1) & ~1;
-  size_t height_rounded = (size.height() + 1) & ~1;
-
   switch (format) {
     case BufferFormat::R_8:
     case BufferFormat::R_16:
@@ -236,22 +233,22 @@ size_t BufferOffsetForBufferFormat(const Size& size,
     case BufferFormat::RGBA_F16:
       return 0;
     case BufferFormat::YVU_420: {
-      constexpr size_t offset_in_2x2_sub_sampling_sizes[] = {0, 4, 5};
+      static size_t offset_in_2x2_sub_sampling_sizes[] = {0, 4, 5};
       DCHECK_LT(plane, std::size(offset_in_2x2_sub_sampling_sizes));
-      return offset_in_2x2_sub_sampling_sizes[plane] * (width_rounded / 2) *
-             (height_rounded / 2);
+      return offset_in_2x2_sub_sampling_sizes[plane] * (size.width() / 2) *
+             (size.height() / 2);
     }
     case gfx::BufferFormat::YUV_420_BIPLANAR: {
-      constexpr size_t offset_in_2x2_sub_sampling_sizes[] = {0, 4};
+      static size_t offset_in_2x2_sub_sampling_sizes[] = {0, 4};
       DCHECK_LT(plane, std::size(offset_in_2x2_sub_sampling_sizes));
-      return offset_in_2x2_sub_sampling_sizes[plane] * (width_rounded / 2) *
-             (height_rounded / 2);
+      return offset_in_2x2_sub_sampling_sizes[plane] * (size.width() / 2) *
+             (size.height() / 2);
     }
     case BufferFormat::P010: {
-      constexpr size_t offset_in_2x2_sub_sampling_sizes[] = {0, 4};
+      static size_t offset_in_2x2_sub_sampling_sizes[] = {0, 4};
       DCHECK_LT(plane, std::size(offset_in_2x2_sub_sampling_sizes));
       return 2 * offset_in_2x2_sub_sampling_sizes[plane] *
-             (width_rounded / 2 + height_rounded / 2);
+             (size.width() / 2 + size.height() / 2);
     }
   }
   NOTREACHED();
@@ -320,10 +317,6 @@ const char* BufferPlaneToString(BufferPlane format) {
 
 bool AllowOddHeightMultiPlanarBuffers() {
   return base::FeatureList::IsEnabled(features::kOddHeightMultiPlanarBuffers);
-}
-
-bool AllowOddWidthMultiPlanarBuffers() {
-  return base::FeatureList::IsEnabled(features::kOddWidthMultiPlanarBuffers);
 }
 
 }  // namespace gfx
