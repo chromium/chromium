@@ -70,7 +70,7 @@
 #include "third_party/blink/renderer/core/fragment_directive/fragment_directive.h"
 #include "third_party/blink/renderer/core/html/forms/listed_element.h"
 #include "third_party/blink/renderer/core/html/parser/parser_synchronization_policy.h"
-#include "third_party/blink/renderer/core/loader/font_preload_manager.h"
+#include "third_party/blink/renderer/core/loader/render_blocking_resource_manager.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_map.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_set.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_linked_hash_set.h"
@@ -1753,7 +1753,9 @@ class CORE_EXPORT Document : public ContainerNode,
                               const AtomicString& old_value,
                               const AtomicString& new_value);
 
-  FontPreloadManager* GetFontPreloadManager() { return font_preload_manager_; }
+  RenderBlockingResourceManager* GetRenderBlockingResourceManager() {
+    return render_blocking_resource_manager_;
+  }
 
   // Called when a previously render-blocking resource is no longer render-
   // blocking, due to it has finished loading or has given up render-blocking.
@@ -2412,7 +2414,7 @@ class CORE_EXPORT Document : public ContainerNode,
   // the site has support for reduced motion.
   bool supports_reduced_motion_ = false;
 
-  Member<FontPreloadManager> font_preload_manager_;
+  Member<RenderBlockingResourceManager> render_blocking_resource_manager_;
 
   bool rendering_has_begun_ = false;
 

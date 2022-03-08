@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef THIRD_PARTY_BLINK_RENDERER_CORE_LOADER_FONT_PRELOAD_MANAGER_H_
-#define THIRD_PARTY_BLINK_RENDERER_CORE_LOADER_FONT_PRELOAD_MANAGER_H_
+#ifndef THIRD_PARTY_BLINK_RENDERER_CORE_LOADER_RENDER_BLOCKING_RESOURCE_MANAGER_H_
+#define THIRD_PARTY_BLINK_RENDERER_CORE_LOADER_RENDER_BLOCKING_RESOURCE_MANAGER_H_
 
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_set.h"
@@ -18,15 +18,15 @@ class FontFace;
 class ResourceFinishObserver;
 
 // https://html.spec.whatwg.org/#render-blocking-mechanism with some extensions.
-// TODO(crbug.com/1271296): Rename this class to RenderBlockingResourceManager.
-class CORE_EXPORT FontPreloadManager final
-    : public GarbageCollected<FontPreloadManager> {
+class CORE_EXPORT RenderBlockingResourceManager final
+    : public GarbageCollected<RenderBlockingResourceManager> {
  public:
-  explicit FontPreloadManager(Document&);
-  ~FontPreloadManager() = default;
+  explicit RenderBlockingResourceManager(Document&);
+  ~RenderBlockingResourceManager() = default;
 
-  FontPreloadManager(const FontPreloadManager&) = delete;
-  FontPreloadManager& operator=(const FontPreloadManager&) = delete;
+  RenderBlockingResourceManager(const RenderBlockingResourceManager&) = delete;
+  RenderBlockingResourceManager& operator=(
+      const RenderBlockingResourceManager&) = delete;
 
   void WillInsertBody() { awaiting_parser_inserted_body_ = false; }
 
@@ -44,40 +44,42 @@ class CORE_EXPORT FontPreloadManager final
   // Design doc: https://bit.ly/36E8UKB
   void FontPreloadingStarted(FontResource*);
   void FontPreloadingFinished(FontResource*, ResourceFinishObserver*);
-  void FontPreloadingDelaysRenderingTimerFired(TimerBase*);
+  void FontPreloadingTimerFired(TimerBase*);
   void ImperativeFontLoadingStarted(FontFace*);
   void ImperativeFontLoadingFinished();
 
   void Trace(Visitor* visitor) const;
 
  private:
-  friend class FontPreloadManagerTest;
+  friend class RenderBlockingResourceManagerTest;
 
   bool HasRenderBlockingResources() const {
-    return finish_observers_.size() || imperative_font_loading_count_;
+    return font_preload_finish_observers_.size() ||
+           imperative_font_loading_count_;
   }
 
   // Exposed to unit tests only.
-  void SetRenderDelayTimeoutForTest(base::TimeDelta timeout);
-  void DisableTimeoutForTest();
+  void SetFontPreloadTimeoutForTest(base::TimeDelta timeout);
+  void DisableFontPreloadTimeoutForTest();
 
   Member<Document> document_;
 
   // Need to hold strong references here, otherwise they'll be GC-ed immediately
   // as Resource only holds weak references.
-  HeapHashSet<Member<ResourceFinishObserver>> finish_observers_;
+  HeapHashSet<Member<ResourceFinishObserver>> font_preload_finish_observers_;
 
   unsigned imperative_font_loading_count_ = 0;
 
-  HeapTaskRunnerTimer<FontPreloadManager> render_delay_timer_;
-  base::TimeDelta render_delay_timeout_;
-  bool render_delay_timer_has_fired_ = false;
+  HeapTaskRunnerTimer<RenderBlockingResourceManager> font_preload_timer_;
+  base::TimeDelta font_preload_timeout_;
+  bool font_preload_timer_has_fired_ = false;
 
   // https://html.spec.whatwg.org/#awaiting-parser-inserted-body-flag
-  // Initialized to true as FontPreloadManager is created only on HTML documents
+  // Initialized to true as RenderBlockingResourceManager is created only on
+  // HTML documents
   bool awaiting_parser_inserted_body_ = true;
 };
 
 }  // namespace blink
 
-#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_LOADER_FONT_PRELOAD_MANAGER_H_
+#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_LOADER_RENDER_BLOCKING_RESOURCE_MANAGER_H_

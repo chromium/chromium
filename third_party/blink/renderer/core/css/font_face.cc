@@ -943,11 +943,12 @@ FontDisplay FontFace::GetFontDisplay() const {
 }
 
 void FontFace::DidBeginImperativeLoad() {
-  if (!DomWindow() || !DomWindow()->document()->GetFontPreloadManager())
+  if (!DomWindow() ||
+      !DomWindow()->document()->GetRenderBlockingResourceManager())
     return;
   DomWindow()
       ->document()
-      ->GetFontPreloadManager()
+      ->GetRenderBlockingResourceManager()
       ->ImperativeFontLoadingStarted(this);
 }
 

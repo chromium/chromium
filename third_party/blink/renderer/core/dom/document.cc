@@ -770,9 +770,9 @@ Document::Document(const DocumentInit& initializer,
       fragment_directive_(MakeGarbageCollected<FragmentDirective>(*this)),
       display_lock_document_state_(
           MakeGarbageCollected<DisplayLockDocumentState>(this)),
-      font_preload_manager_(
+      render_blocking_resource_manager_(
           initializer.GetType() == DocumentInit::Type::kHTML
-              ? MakeGarbageCollected<FontPreloadManager>(*this)
+              ? MakeGarbageCollected<RenderBlockingResourceManager>(*this)
               : nullptr),
       data_(MakeGarbageCollected<DocumentData>(GetExecutionContext())) {
   if (GetFrame()) {
@@ -3319,8 +3319,8 @@ void Document::setBody(HTMLElement* prp_new_body,
 void Document::WillInsertBody() {
   if (Loader())
     fetcher_->LoosenLoadThrottlingPolicy();
-  if (font_preload_manager_)
-    font_preload_manager_->WillInsertBody();
+  if (render_blocking_resource_manager_)
+    render_blocking_resource_manager_->WillInsertBody();
 
   // If we get to the <body> try to resume commits since we should have content
   // to paint now.
@@ -7410,7 +7410,8 @@ bool Document::HaveRenderBlockingResourcesLoaded() const {
   // TODO(crbug.com/1271296): Unify the management of render-blocking
   // stylesheets and other render-blocking resources.
   return style_engine_->HaveRenderBlockingStylesheetsLoaded() &&
-         (!font_preload_manager_ || !font_preload_manager_->IsRenderBlocked());
+         (!render_blocking_resource_manager_ ||
+          !render_blocking_resource_manager_->IsRenderBlocked());
 }
 
 Locale& Document::GetCachedLocale(const AtomicString& locale) {
@@ -7903,7 +7904,7 @@ void Document::Trace(Visitor* visitor) const {
   visitor->Trace(fragment_directive_);
   visitor->Trace(element_explicitly_set_attr_elements_map_);
   visitor->Trace(display_lock_document_state_);
-  visitor->Trace(font_preload_manager_);
+  visitor->Trace(render_blocking_resource_manager_);
   visitor->Trace(find_in_page_active_match_node_);
   visitor->Trace(data_);
   visitor->Trace(meta_theme_color_elements_);
