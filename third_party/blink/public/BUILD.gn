@@ -507,6 +507,7 @@ grit("resources") {
     "grit/blink_resources.h",
     "blink_resources.pak",
   ]
+  use_brotli = true
 }
 
 grit("devtools_inspector_resources") {

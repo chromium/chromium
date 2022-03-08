@@ -64,4 +64,15 @@ base::StringPiece TestContentClient::GetDataResource(
       resource_id, scale_factor);
 }
 
+base::RefCountedMemory* TestContentClient::GetDataResourceBytes(
+    int resource_id) {
+  return ui::ResourceBundle::GetSharedInstance().LoadDataResourceBytes(
+      resource_id);
+}
+
+std::string TestContentClient::GetDataResourceString(int resource_id) {
+  return ui::ResourceBundle::GetSharedInstance().LoadDataResourceString(
+      resource_id);
+}
+
 }  // namespace content

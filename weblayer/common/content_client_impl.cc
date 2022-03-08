@@ -46,6 +46,11 @@ base::RefCountedMemory* ContentClientImpl::GetDataResourceBytes(
       resource_id);
 }
 
+std::string ContentClientImpl::GetDataResourceString(int resource_id) {
+  return ui::ResourceBundle::GetSharedInstance().LoadDataResourceString(
+      resource_id);
+}
+
 void ContentClientImpl::SetGpuInfo(const gpu::GPUInfo& gpu_info) {
   gpu::SetKeysForCrashLogging(gpu_info);
 }

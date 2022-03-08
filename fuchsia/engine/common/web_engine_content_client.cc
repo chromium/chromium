@@ -35,6 +35,11 @@ base::RefCountedMemory* WebEngineContentClient::GetDataResourceBytes(
       resource_id);
 }
 
+std::string WebEngineContentClient::GetDataResourceString(int resource_id) {
+  return ui::ResourceBundle::GetSharedInstance().LoadDataResourceString(
+      resource_id);
+}
+
 gfx::Image& WebEngineContentClient::GetNativeImageNamed(int resource_id) {
   return ui::ResourceBundle::GetSharedInstance().GetNativeImageNamed(
       resource_id);

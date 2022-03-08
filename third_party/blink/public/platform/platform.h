@@ -449,10 +449,11 @@ class BLINK_PLATFORM_EXPORT Platform {
     return WebData();
   }
 
-  // Gets a blob of data resource corresponding to |resource_id|, then
-  // uncompresses it. This should be used for resources which have
-  // compress="gzip" in *.grd.
-  virtual WebData UncompressDataResource(int resource_id) { return WebData(); }
+  // Returns string data from a data resource. compress="gzip" and "brotli" are
+  // detected automatically.
+  virtual std::string GetDataResourceString(int resource_id) {
+    return std::string();
+  }
 
   // Decodes the in-memory audio file data and returns the linear PCM audio data
   // in the |destination_bus|.

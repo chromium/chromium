@@ -31,6 +31,11 @@ base::RefCountedMemory* HeadlessContentClient::GetDataResourceBytes(
       resource_id);
 }
 
+std::string HeadlessContentClient::GetDataResourceString(int resource_id) {
+  return ui::ResourceBundle::GetSharedInstance().LoadDataResourceString(
+      resource_id);
+}
+
 gfx::Image& HeadlessContentClient::GetNativeImageNamed(int resource_id) {
   return ui::ResourceBundle::GetSharedInstance().GetNativeImageNamed(
       resource_id);

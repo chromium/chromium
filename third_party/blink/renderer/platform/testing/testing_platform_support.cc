@@ -118,9 +118,9 @@ WebData TestingPlatformSupport::GetDataResource(
              : WebData();
 }
 
-WebData TestingPlatformSupport::UncompressDataResource(int resource_id) {
-  return old_platform_ ? old_platform_->UncompressDataResource(resource_id)
-                       : WebData();
+std::string TestingPlatformSupport::GetDataResourceString(int resource_id) {
+  return old_platform_ ? old_platform_->GetDataResourceString(resource_id)
+                       : std::string();
 }
 
 ThreadSafeBrowserInterfaceBrokerProxy*

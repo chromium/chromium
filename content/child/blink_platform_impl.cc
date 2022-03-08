@@ -50,7 +50,6 @@
 #include "third_party/blink/public/resources/grit/blink_image_resources.h"
 #include "third_party/blink/public/resources/grit/blink_resources.h"
 #include "third_party/blink/public/strings/grit/blink_strings.h"
-#include "third_party/zlib/google/compression_utils.h"
 #include "ui/base/layout.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/events/gestures/blink/web_gesture_curve_impl.h"
@@ -160,14 +159,8 @@ WebData BlinkPlatformImpl::GetDataResource(
   return WebData(resource.data(), resource.size());
 }
 
-WebData BlinkPlatformImpl::UncompressDataResource(int resource_id) {
-  base::StringPiece resource =
-      GetContentClient()->GetDataResource(resource_id, ui::kScaleFactorNone);
-  if (resource.empty())
-    return WebData(resource.data(), resource.size());
-  std::string uncompressed;
-  CHECK(compression::GzipUncompress(std::string(resource), &uncompressed));
-  return WebData(uncompressed.data(), uncompressed.size());
+std::string BlinkPlatformImpl::GetDataResourceString(int resource_id) {
+  return GetContentClient()->GetDataResourceString(resource_id);
 }
 
 WebString BlinkPlatformImpl::QueryLocalizedString(int resource_id) {

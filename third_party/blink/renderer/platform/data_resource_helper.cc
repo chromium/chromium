@@ -6,31 +6,27 @@
 
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/renderer/platform/wtf/shared_buffer.h"
+#include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
 namespace blink {
 
 String UncompressResourceAsString(int resource_id) {
-  Vector<char> blob = UncompressResourceAsBinary(resource_id);
-  // Vector::data() may return nullptr. We'd like to return an empty string,
-  // not a null string.
-  if (blob.size() > 0u)
-    return String::FromUTF8(blob.data(), blob.size());
-  return g_empty_string;
+  std::string data = Platform::Current()->GetDataResourceString(resource_id);
+  return String::FromUTF8(data);
 }
 
 String UncompressResourceAsASCIIString(int resource_id) {
-  Vector<char> blob = UncompressResourceAsBinary(resource_id);
-  // Vector::data() may return nullptr. We'd like to return an empty string,
-  // not a null string.
-  if (blob.size() > 0u)
-    return String(blob.data(), blob.size());
-  return g_empty_string;
+  std::string data = Platform::Current()->GetDataResourceString(resource_id);
+  String result(data.data(), data.size());
+  DCHECK(result.ContainsOnlyASCIIOrEmpty());
+  return result;
 }
 
 Vector<char> UncompressResourceAsBinary(int resource_id) {
-  WebData data = Platform::Current()->UncompressDataResource(resource_id);
-  const SharedBuffer& shared_buffer = data;
-  return shared_buffer.CopyAs<Vector<char>>();
+  std::string data = Platform::Current()->GetDataResourceString(resource_id);
+  Vector<char> result;
+  result.Append(data.data(), static_cast<wtf_size_t>(data.size()));
+  return result;
 }
 
 }  // namespace blink

@@ -58,6 +58,11 @@ base::RefCountedMemory* AwContentClient::GetDataResourceBytes(int resource_id) {
       resource_id);
 }
 
+std::string AwContentClient::GetDataResourceString(int resource_id) {
+  return ui::ResourceBundle::GetSharedInstance().LoadDataResourceString(
+      resource_id);
+}
+
 void AwContentClient::SetGpuInfo(const gpu::GPUInfo& gpu_info) {
   gpu::SetKeysForCrashLogging(gpu_info);
 }

@@ -339,6 +339,11 @@ base::RefCountedMemory* ChromeContentClient::GetDataResourceBytes(
       resource_id);
 }
 
+std::string ChromeContentClient::GetDataResourceString(int resource_id) {
+  return ui::ResourceBundle::GetSharedInstance().LoadDataResourceString(
+      resource_id);
+}
+
 gfx::Image& ChromeContentClient::GetNativeImageNamed(int resource_id) {
   return ui::ResourceBundle::GetSharedInstance().GetNativeImageNamed(
       resource_id);

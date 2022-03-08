@@ -64,7 +64,7 @@ class TestingPlatformSupport : public Platform {
   WebString DefaultLocale() override;
   WebData GetDataResource(int resource_id,
                           ui::ResourceScaleFactor scale_factor) override;
-  WebData UncompressDataResource(int resource_id) override;
+  std::string GetDataResourceString(int resource_id) override;
   ThreadSafeBrowserInterfaceBrokerProxy* GetBrowserInterfaceBroker() override;
   bool IsThreadedAnimationEnabled() override;
   bool IsUseZoomForDSFEnabled() override;

@@ -5,6 +5,7 @@
 #include "content/public/common/content_client.h"
 
 #include "base/files/file_path.h"
+#include "base/memory/ref_counted_memory.h"
 #include "base/no_destructor.h"
 #include "base/notreached.h"
 #include "base/strings/string_piece.h"
@@ -88,6 +89,15 @@ base::StringPiece ContentClient::GetDataResource(
 
 base::RefCountedMemory* ContentClient::GetDataResourceBytes(int resource_id) {
   return nullptr;
+}
+
+std::string ContentClient::GetDataResourceString(int resource_id) {
+  // Default implementation in terms of GetDataResourceBytes.
+  scoped_refptr<base::RefCountedMemory> memory =
+      GetDataResourceBytes(resource_id);
+  if (!memory)
+    return std::string();
+  return std::string(memory->front_as<char>(), memory->size());
 }
 
 gfx::Image& ContentClient::GetNativeImageNamed(int resource_id) {

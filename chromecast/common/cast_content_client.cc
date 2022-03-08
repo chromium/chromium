@@ -164,6 +164,11 @@ base::RefCountedMemory* CastContentClient::GetDataResourceBytes(
       resource_id);
 }
 
+std::string CastContentClient::GetDataResourceString(int resource_id) {
+  return ui::ResourceBundle::GetSharedInstance().LoadDataResourceString(
+      resource_id);
+}
+
 gfx::Image& CastContentClient::GetNativeImageNamed(int resource_id) {
   return ui::ResourceBundle::GetSharedInstance().GetNativeImageNamed(
       resource_id);

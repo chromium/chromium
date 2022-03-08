@@ -167,6 +167,9 @@ class CONTENT_EXPORT ContentClient {
   // Returns the raw bytes of a scale independent data resource.
   virtual base::RefCountedMemory* GetDataResourceBytes(int resource_id);
 
+  // Returns the string contents of a resource given the resource id.
+  virtual std::string GetDataResourceString(int resource_id);
+
   // Returns a native image given its id.
   virtual gfx::Image& GetNativeImageNamed(int resource_id);
 
