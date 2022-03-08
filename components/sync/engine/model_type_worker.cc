@@ -195,10 +195,6 @@ ModelTypeWorker::ModelTypeWorker(ModelType type,
 }
 
 ModelTypeWorker::~ModelTypeWorker() {
-  base::UmaHistogramCounts1000(
-      std::string("Sync.UndecryptedEntitiesOnDataTypeDisabled.") +
-          ModelTypeToHistogramSuffix(type_),
-      entries_pending_decryption_.size());
   if (model_type_processor_) {
     // This will always be the case in production today.
     model_type_processor_->DisconnectSync();

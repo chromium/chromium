@@ -1237,18 +1237,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Sync.UndecryptedEntitiesOnDataTypeDisabled{SyncModelType}"
-    units="sync entities" expires_after="2022-04-17">
-  <owner>victorvianna@google.com</owner>
-  <owner>treib@chromium.org</owner>
-  <component>Services&gt;Sync</component>
-  <summary>
-    This records the number of sync entities that were still undecrypted by the
-    time the data type was disabled (typically during browser shutdown).
-  </summary>
-  <token key="SyncModelType" variants="SyncModelType"/>
-</histogram>
-
 <histogram name="Sync.URLFetchResponse"
     enum="CombinedHttpResponseAndNetErrorCode" expires_after="2022-07-31">
   <owner>mastiz@chromium.org</owner>
