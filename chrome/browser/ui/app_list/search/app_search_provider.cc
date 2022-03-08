@@ -343,8 +343,7 @@ class AppServiceDataSource : public AppSearchProvider::DataSource,
                                    : update.ShortName();
       apps_vector->emplace_back(std::make_unique<AppSearchProvider::App>(
           this, update.AppId(), name, update.LastLaunchTime(),
-          update.InstallTime(),
-          update.InstalledInternally() == apps::mojom::OptionalBool::kTrue));
+          update.InstallTime(), update.InstalledInternally()));
       apps_vector->back()->set_recommendable(
           update.Recommendable().value_or(false) &&
           !update.Paused().value_or(false) &&

@@ -42,7 +42,7 @@ constexpr int kTimeMetricsBucketCount = 100;
 // Returns true if `app_update` should be considered a new app install.
 bool IsNewInstall(const apps::AppUpdate& app_update) {
   // Ignore internally-installed apps.
-  if (app_update.InstalledInternally() == apps::mojom::OptionalBool::kTrue)
+  if (app_update.InstalledInternally())
     return false;
 
   switch (app_update.AppType()) {

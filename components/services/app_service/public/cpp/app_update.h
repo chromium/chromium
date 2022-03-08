@@ -130,7 +130,7 @@ class COMPONENT_EXPORT(APP_UPDATE) AppUpdate {
   const std::string& PolicyId() const;
   bool PolicyIdChanged() const;
 
-  apps::mojom::OptionalBool InstalledInternally() const;
+  bool InstalledInternally() const;
 
   absl::optional<bool> IsPlatformApp() const;
   bool IsPlatformAppChanged() const;

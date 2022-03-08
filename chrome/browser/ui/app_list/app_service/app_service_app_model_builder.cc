@@ -74,7 +74,7 @@ void AppServiceAppModelBuilder::OnAppUpdate(const apps::AppUpdate& update) {
         unsynced_change = !arc::IsArcPlayStoreEnabledForProfile(profile());
       }
 
-      if (update.InstalledInternally() == apps::mojom::OptionalBool::kTrue) {
+      if (update.InstalledInternally()) {
         // Don't sync default app removal as default installed apps are not
         // synced.
         unsynced_change = true;

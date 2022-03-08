@@ -647,17 +647,18 @@ bool AppUpdate::PolicyIdChanged() const {
           (mojom_delta_->policy_id != mojom_state_->policy_id));
 }
 
-apps::mojom::OptionalBool AppUpdate::InstalledInternally() const {
+bool AppUpdate::InstalledInternally() const {
   switch (InstallReason()) {
-    case apps::InstallReason::kUnknown:
-      return apps::mojom::OptionalBool::kUnknown;
     case apps::InstallReason::kSystem:
     case apps::InstallReason::kPolicy:
     case apps::InstallReason::kOem:
     case apps::InstallReason::kDefault:
-      return apps::mojom::OptionalBool::kTrue;
-    default:
-      return apps::mojom::OptionalBool::kFalse;
+      return true;
+    case apps::InstallReason::kUnknown:
+    case apps::InstallReason::kSync:
+    case apps::InstallReason::kUser:
+    case apps::InstallReason::kSubApp:
+      return false;
   }
 }
 
