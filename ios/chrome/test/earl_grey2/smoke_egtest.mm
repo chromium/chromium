@@ -284,16 +284,9 @@
 }
 
 // Tests backgrounding app and moving app back through AppLaunchManager.
-// TODO:(crbug.com/1164446): Re-enable this test on simulators.
-#if TARGET_OS_SIMULATOR
-#define MAYBE_testAppLaunchManagerBackgroundAndForegroundApp \
-  FLAKY_testAppLaunchManagerBackgroundAndForegroundApp
-#else
-#define MAYBE_testAppLaunchManagerBackgroundAndForegroundApp \
-  testAppLaunchManagerBackgroundAndForegroundApp
-#endif
-- (void)FLAKY_testAppLaunchManagerBackgroundAndForegroundApp {
+- (void)testAppLaunchManagerBackgroundAndForegroundApp {
   [ChromeEarlGrey openNewTab];
+  [ChromeEarlGrey loadURL:GURL("chrome://version")];
   [[AppLaunchManager sharedManager] backgroundAndForegroundApp];
   [ChromeEarlGrey waitForMainTabCount:2];
 }
