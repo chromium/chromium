@@ -1877,7 +1877,12 @@ CommandHandler.COMMANDS_['toggle-holding-space'] =
     // Update the command to add or remove holding space items depending on the
     // current holding space state - the command will remove items only if all
     // currently selected items are already in the holding space.
-    const state = await getHoldingSpaceState();
+    let state;
+    try {
+      state = await getHoldingSpaceState();
+    } catch (e) {
+      console.warn('Error getting holding space state', e);
+    }
     if (!state) {
       command.setHidden(true);
       return;
