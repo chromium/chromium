@@ -109,9 +109,9 @@ class CONTENT_EXPORT CommitDeferringConditionRunner {
   void AddConditionForTesting(
       std::unique_ptr<CommitDeferringCondition> condition);
 
-  // Used in tests to check if CommitDeferringConditionRunner is currently
-  // deferred for the navigation or not.
-  bool is_deferred_for_testing() const;
+  // Returns the condition that's currently causing the navigation commit to be
+  // deferred. If no condition is currently deferred, returns nullptr.
+  CommitDeferringCondition* GetDeferringConditionForTesting() const;
 
  private:
   friend class CommitDeferringConditionRunnerTest;

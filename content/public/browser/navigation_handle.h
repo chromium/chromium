@@ -47,6 +47,7 @@ class ProxyServer;
 }  // namespace net
 
 namespace content {
+class CommitDeferringCondition;
 struct GlobalRenderFrameHostId;
 struct GlobalRequestID;
 class NavigationEntry;
@@ -560,6 +561,11 @@ class CONTENT_EXPORT NavigationHandle : public base::SupportsUserData {
   // Returns a reference to NavigationHandle Java counterpart.
   virtual const base::android::JavaRef<jobject>& GetJavaNavigationHandle() = 0;
 #endif
+
+  // Returns the CommitDeferringCondition that is currently preventing this
+  // navigation from committing, or nullptr if the navigation isn't currently
+  // blocked on a CommitDeferringCondition.
+  virtual CommitDeferringCondition* GetCommitDeferringConditionForTesting() = 0;
 };
 
 }  // namespace content
