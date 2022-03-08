@@ -28,7 +28,6 @@ import androidx.annotation.IntDef;
 import androidx.annotation.Px;
 import androidx.annotation.VisibleForTesting;
 import androidx.core.view.MotionEventCompat;
-import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowCompat;
 import androidx.core.view.WindowInsetsCompat;
 import androidx.core.view.WindowInsetsControllerCompat;
@@ -345,13 +344,12 @@ public class PartialCustomTabHeightStrategy extends CustomTabHeightStrategy
         mActivity.getWindow().setAttributes(attributes);
 
         View decorView = mActivity.getWindow().getDecorView();
-        // Workaround for sometimes we get a null WindowInsetsControllerCompat.
-        decorView.getRootView().setLayoutParams(attributes);
         // Hide the navigation bar to reduce flickering at the bottom. Because FLAG_LAYOUT_NO_LIMITS
         // flag we used in onMoveStart() will make the navigation bar background color to be
         // transparent, so there is a transient stage.
         WindowCompat.setDecorFitsSystemWindows(mActivity.getWindow(), true);
-        WindowInsetsControllerCompat controller = ViewCompat.getWindowInsetsController(decorView);
+        WindowInsetsControllerCompat controller =
+                WindowCompat.getInsetsController(mActivity.getWindow(), decorView);
         controller.hide(WindowInsetsCompat.Type.navigationBars());
         controller.setSystemBarsBehavior(
                 WindowInsetsControllerCompat.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE);
