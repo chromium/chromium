@@ -21,15 +21,18 @@ public class AccountInfo extends CoreAccountInfo {
     private final String mFullName;
     private final String mGivenName;
     private final @Nullable Bitmap mAccountImage;
+    private final AccountCapabilities mAccountCapabilities;
 
     @VisibleForTesting
     @CalledByNative
     public AccountInfo(CoreAccountId id, String email, String gaiaId, String fullName,
-            String givenName, @Nullable Bitmap accountImage) {
+            String givenName, @Nullable Bitmap accountImage,
+            AccountCapabilities accountCapabilities) {
         super(id, email, gaiaId);
         mFullName = fullName;
         mGivenName = givenName;
         mAccountImage = accountImage;
+        mAccountCapabilities = accountCapabilities;
     }
 
     /**
@@ -52,6 +55,13 @@ public class AccountInfo extends CoreAccountInfo {
      */
     public @Nullable Bitmap getAccountImage() {
         return mAccountImage;
+    }
+
+    /**
+     * @return the capability values associated with the account.
+     */
+    public AccountCapabilities getAccountCapabilities() {
+        return mAccountCapabilities;
     }
 
     /**

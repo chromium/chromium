@@ -6,6 +6,7 @@ package org.chromium.components.signin.base;
 
 import androidx.annotation.NonNull;
 
+import org.chromium.base.annotations.CalledByNative;
 import org.chromium.components.signin.AccountCapabilitiesConstants;
 import org.chromium.components.signin.AccountManagerDelegate;
 import org.chromium.components.signin.Tribool;
@@ -27,6 +28,18 @@ public class AccountCapabilities {
     };
 
     private final Map<String, Boolean> mAccountCapabilities = new HashMap<>();
+
+    @CalledByNative
+    public AccountCapabilities(String[] capabilityNames, boolean[] capabilityValues) {
+        assert capabilityNames.length == capabilityValues.length;
+        for (int i = 0; i < capabilityNames.length; i += 1) {
+            final String capabilityName = capabilityNames[i];
+            assert SUPPORTED_ACCOUNT_CAPABILITY_NAMES.contains(capabilityName)
+                : "Capability name not supported in Chrome: "
+                    + capabilityName;
+            mAccountCapabilities.put(capabilityName, capabilityValues[i]);
+        }
+    }
 
     public AccountCapabilities() {}
 
@@ -85,6 +98,7 @@ public class AccountCapabilities {
      * @param capabilityName the name of the capability to lookup.
      * @return the capability value associated to the name.
      */
+    @CalledByNative
     private @Tribool int getCapabilityByName(@NonNull String capabilityName) {
         if (!mAccountCapabilities.containsKey(capabilityName)) {
             return Tribool.UNKNOWN;

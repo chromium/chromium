@@ -11,6 +11,7 @@ import androidx.annotation.Nullable;
 import org.chromium.base.ObserverList;
 import org.chromium.base.Promise;
 import org.chromium.base.ThreadUtils;
+import org.chromium.components.signin.base.AccountCapabilities;
 import org.chromium.components.signin.base.AccountInfo;
 import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.signin.identitymanager.AccountInfoService;
@@ -70,9 +71,9 @@ public class FakeAccountInfoService implements IdentityManager.Observer, Account
             String email, String fullName, String givenName, @Nullable Bitmap avatar) {
         final CoreAccountInfo coreAccountInfo = CoreAccountInfo.createFromEmailAndGaiaId(
                 email, FakeAccountManagerFacade.toGaiaId(email));
-        final AccountInfo accountInfo =
-                new AccountInfo(coreAccountInfo.getId(), coreAccountInfo.getEmail(),
-                        coreAccountInfo.getGaiaId(), fullName, givenName, avatar);
+        final AccountInfo accountInfo = new AccountInfo(coreAccountInfo.getId(),
+                coreAccountInfo.getEmail(), coreAccountInfo.getGaiaId(), fullName, givenName,
+                avatar, new AccountCapabilities());
         mAccountInfos.put(email, accountInfo);
 
         ThreadUtils.runOnUiThreadBlocking(() -> {

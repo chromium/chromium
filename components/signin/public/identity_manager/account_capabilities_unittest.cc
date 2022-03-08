@@ -7,6 +7,10 @@
 
 #include "testing/gtest/include/gtest/gtest.h"
 
+#if BUILDFLAG(IS_ANDROID)
+#include "base/android/jni_android.h"
+#endif
+
 class AccountCapabilitiesTest : public testing::Test {};
 
 TEST_F(AccountCapabilitiesTest, CanOfferExtendedChromeSyncPromos) {
@@ -89,3 +93,50 @@ TEST_F(AccountCapabilitiesTest, UpdateWith_OverwriteKnown) {
   EXPECT_EQ(signin::Tribool::kFalse,
             capabilities.can_offer_extended_chrome_sync_promos());
 }
+
+#if BUILDFLAG(IS_ANDROID)
+
+TEST_F(AccountCapabilitiesTest, ConversionWithJNI_TriboolTrue) {
+  AccountCapabilities capabilities;
+  AccountCapabilitiesTestMutator mutator(&capabilities);
+  mutator.set_can_offer_extended_chrome_sync_promos(true);
+
+  JNIEnv* env = base::android::AttachCurrentThread();
+  base::android::ScopedJavaLocalRef<jobject> java_capabilities =
+      capabilities.ConvertToJavaAccountCapabilities(env);
+  AccountCapabilities converted_back =
+      AccountCapabilities::ConvertFromJavaAccountCapabilities(
+          env, java_capabilities);
+
+  EXPECT_EQ(capabilities, converted_back);
+}
+
+TEST_F(AccountCapabilitiesTest, ConversionWithJNI_TriboolFalse) {
+  AccountCapabilities capabilities;
+  AccountCapabilitiesTestMutator mutator(&capabilities);
+  mutator.set_can_offer_extended_chrome_sync_promos(false);
+
+  JNIEnv* env = base::android::AttachCurrentThread();
+  base::android::ScopedJavaLocalRef<jobject> java_capabilities =
+      capabilities.ConvertToJavaAccountCapabilities(env);
+  AccountCapabilities converted_back =
+      AccountCapabilities::ConvertFromJavaAccountCapabilities(
+          env, java_capabilities);
+
+  EXPECT_EQ(capabilities, converted_back);
+}
+
+TEST_F(AccountCapabilitiesTest, ConversionWithJNI_TriboolUnknown) {
+  AccountCapabilities capabilities;
+
+  JNIEnv* env = base::android::AttachCurrentThread();
+  base::android::ScopedJavaLocalRef<jobject> java_capabilities =
+      capabilities.ConvertToJavaAccountCapabilities(env);
+  AccountCapabilities converted_back =
+      AccountCapabilities::ConvertFromJavaAccountCapabilities(
+          env, java_capabilities);
+
+  EXPECT_EQ(capabilities, converted_back);
+}
+
+#endif

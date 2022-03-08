@@ -49,6 +49,7 @@ import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.test.ChromeJUnit4RunnerDelegate;
 import org.chromium.chrome.test.util.ChromeRenderTestRule;
 import org.chromium.chrome.test.util.browser.signin.AccountManagerTestRule;
+import org.chromium.components.signin.base.AccountCapabilities;
 import org.chromium.components.signin.base.AccountInfo;
 import org.chromium.components.signin.base.CoreAccountId;
 import org.chromium.components.signin.identitymanager.AccountInfoServiceProvider;
@@ -106,7 +107,7 @@ public class ProfileDataCacheRenderTest extends BlankUiTestActivityTestCase {
 
     private final AccountInfo mAccountInfoWithAvatar =
             new AccountInfo(new CoreAccountId("gaia-id-test"), ACCOUNT_EMAIL, "gaia-id-test",
-                    "full name", "given name", createAvatar());
+                    "full name", "given name", createAvatar(), new AccountCapabilities());
 
     private FrameLayout mContentView;
     private ImageView mImageView;
@@ -190,7 +191,7 @@ public class ProfileDataCacheRenderTest extends BlankUiTestActivityTestCase {
             mIdentityManager.onExtendedAccountInfoUpdated(mAccountInfoWithAvatar);
             final AccountInfo emptyAccountInfo = new AccountInfo(mAccountInfoWithAvatar.getId(),
                     mAccountInfoWithAvatar.getEmail(), mAccountInfoWithAvatar.getGaiaId(), null,
-                    null, null);
+                    null, null, new AccountCapabilities());
             mIdentityManager.onExtendedAccountInfoUpdated(emptyAccountInfo);
             checkImageIsScaled(mAccountInfoWithAvatar.getEmail());
         });

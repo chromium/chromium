@@ -174,7 +174,8 @@ base::android::ScopedJavaLocalRef<jobject> ConvertToJavaAccountInfo(
       base::android::ConvertUTF8ToJavaString(env, account_info.given_name),
       avatar_image.IsEmpty()
           ? nullptr
-          : gfx::ConvertToJavaBitmap(*avatar_image.AsImageSkia().bitmap()));
+          : gfx::ConvertToJavaBitmap(*avatar_image.AsImageSkia().bitmap()),
+      account_info.capabilities.ConvertToJavaAccountCapabilities(env));
 }
 
 base::android::ScopedJavaLocalRef<jobject> ConvertToJavaCoreAccountId(

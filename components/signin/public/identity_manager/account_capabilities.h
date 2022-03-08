@@ -9,8 +9,13 @@
 #include <string>
 #include <vector>
 
+#include "build/build_config.h"
 #include "components/signin/public/identity_manager/tribool.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+
+#if BUILDFLAG(IS_ANDROID)
+#include "base/android/scoped_java_ref.h"
+#endif
 
 namespace base {
 class Value;
@@ -26,6 +31,15 @@ class AccountCapabilities {
   AccountCapabilities(AccountCapabilities&& other) noexcept;
   AccountCapabilities& operator=(const AccountCapabilities& other);
   AccountCapabilities& operator=(AccountCapabilities&& other) noexcept;
+
+#if BUILDFLAG(IS_ANDROID)
+  static AccountCapabilities ConvertFromJavaAccountCapabilities(
+      JNIEnv* env,
+      const base::android::JavaRef<jobject>& accountCapabilities);
+
+  base::android::ScopedJavaLocalRef<jobject> ConvertToJavaAccountCapabilities(
+      JNIEnv* env) const;
+#endif
 
   // Chrome can offer extended promos for turning on Sync to accounts with this
   // capability.

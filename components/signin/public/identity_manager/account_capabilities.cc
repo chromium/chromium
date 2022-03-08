@@ -12,6 +12,12 @@
 #include "components/signin/internal/identity_manager/account_capabilities_constants.h"
 #include "components/signin/public/identity_manager/tribool.h"
 
+#if BUILDFLAG(IS_ANDROID)
+#include "base/android/jni_array.h"
+#include "base/android/jni_string.h"
+#include "components/signin/public/android/jni_headers/AccountCapabilities_jni.h"
+#endif
+
 AccountCapabilities::AccountCapabilities() = default;
 AccountCapabilities::~AccountCapabilities() = default;
 AccountCapabilities::AccountCapabilities(const AccountCapabilities& other) =
@@ -76,3 +82,40 @@ bool AccountCapabilities::operator==(const AccountCapabilities& other) const {
 bool AccountCapabilities::operator!=(const AccountCapabilities& other) const {
   return !(*this == other);
 }
+
+#if BUILDFLAG(IS_ANDROID)
+// static
+AccountCapabilities AccountCapabilities::ConvertFromJavaAccountCapabilities(
+    JNIEnv* env,
+    const base::android::JavaRef<jobject>& account_capabilities) {
+  AccountCapabilities capabilities;
+  for (const std::string& name : GetSupportedAccountCapabilityNames()) {
+    signin::Tribool capability_state = static_cast<signin::Tribool>(
+        signin::Java_AccountCapabilities_getCapabilityByName(
+            env, account_capabilities,
+            base::android::ConvertUTF8ToJavaString(env, name)));
+    if (capability_state != signin::Tribool::kUnknown) {
+      capabilities.capabilities_map_[name] =
+          capability_state == signin::Tribool::kTrue;
+    }
+  }
+  return capabilities;
+}
+
+base::android::ScopedJavaLocalRef<jobject>
+AccountCapabilities::ConvertToJavaAccountCapabilities(JNIEnv* env) const {
+  int capabilities_size = capabilities_map_.size();
+  std::vector<std::string> capability_names;
+  auto capability_values = std::make_unique<bool[]>(capabilities_size);
+  int value_iterator = 0;
+  for (const auto& kv : capabilities_map_) {
+    capability_names.push_back(kv.first);
+    capability_values[value_iterator] = kv.second;
+    value_iterator++;
+  }
+  return signin::Java_AccountCapabilities_Constructor(
+      env, base::android::ToJavaArrayOfStrings(env, capability_names),
+      base::android::ToJavaBooleanArray(env, capability_values.get(),
+                                        capabilities_size));
+}
+#endif

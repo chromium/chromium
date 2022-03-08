@@ -22,6 +22,7 @@ import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.Promise;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.components.signin.base.AccountCapabilities;
 import org.chromium.components.signin.base.AccountInfo;
 import org.chromium.components.signin.base.CoreAccountId;
 
@@ -46,7 +47,7 @@ public class AccountInfoServiceImplTest {
 
     private final AccountInfo mAccountInfoWithAvatar =
             new AccountInfo(new CoreAccountId("gaia-id-test"), ACCOUNT_EMAIL, "gaia-id-test",
-                    "full name", "given name", mock(Bitmap.class));
+                    "full name", "given name", mock(Bitmap.class), new AccountCapabilities());
 
     private AccountInfoServiceImpl mService;
 
