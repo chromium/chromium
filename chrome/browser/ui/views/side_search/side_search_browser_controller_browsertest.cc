@@ -633,8 +633,16 @@ IN_PROC_BROWSER_TEST_F(SideSearchBrowserControllerTest,
   EXPECT_TRUE(GetSidePanelFor(browser())->GetVisible());
 }
 
+// TODO(crbug.com/1303946): Fix flakiness on Lacros then reenable.
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+#define MAYBE_SwitchingTabsHandlesFocusCorrectly \
+  DISABLED_SwitchingTabsHandlesFocusCorrectly
+#else
+#define MAYBE_SwitchingTabsHandlesFocusCorrectly \
+  SwitchingTabsHandlesFocusCorrectly
+#endif
 IN_PROC_BROWSER_TEST_F(SideSearchBrowserControllerTest,
-                       SwitchingTabsHandlesFocusCorrectly) {
+                       MAYBE_SwitchingTabsHandlesFocusCorrectly) {
   auto* browser_view = BrowserViewFor(browser());
   auto* side_panel = GetSidePanelFor(browser());
   auto* contents_view = browser_view->contents_web_view();
