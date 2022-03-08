@@ -39,12 +39,24 @@ class TabsSearchService : public IOSBrowsingHistoryDriverDelegate,
   TabsSearchService(ChromeBrowserState* browser_state);
   ~TabsSearchService() override;
 
-  // Searches through all the tabs in Browsers associated with the current
-  // |browser_state| and provides the WebStates which match |term| to
-  // |completion|. |term| will be matched against WebState's current title and
-  // URL.
+  // A container to store matched WebStates with a reference to their associated
+  // |browser|.
+  struct TabsSearchBrowserResults {
+    TabsSearchBrowserResults(const Browser*, const std::vector<web::WebState*>);
+    ~TabsSearchBrowserResults();
+
+    TabsSearchBrowserResults(const TabsSearchBrowserResults&);
+
+    const Browser* browser;
+    const std::vector<web::WebState*> web_states;
+  };
+  // Searches through tabs in all the Browsers associated with |browser_state|
+  // for WebStates with current titles or URLs matching |term|. The matching
+  // WebStates are returned to the |completion| callback in instances of
+  // TabsSearchBrowserResults along with their associated Browser.
   void Search(const std::u16string& term,
-              base::OnceCallback<void(std::vector<web::WebState*>)> completion);
+              base::OnceCallback<void(std::vector<TabsSearchBrowserResults>)>
+                  completion);
 
   // A pair representing a recently closed item. The |SessionID| can be used to
   // restore the item and is safe to store without lifetime concerns. The
@@ -81,11 +93,13 @@ class TabsSearchService : public IOSBrowsingHistoryDriverDelegate,
 
  private:
   // Performs a search for |term| within |browsers|, returning the matching
-  // WebStates to |completion|.
+  // WebStates and associated Browser to |completion|. Results are passed back
+  // in instances of TabsSearchBrowserResults.
   void SearchWithinBrowsers(
       const std::set<Browser*>& browsers,
       const std::u16string& term,
-      base::OnceCallback<void(std::vector<web::WebState*>)> completion);
+      base::OnceCallback<void(std::vector<TabsSearchBrowserResults>)>
+          completion);
 
   // IOSBrowsingHistoryDriverDelegate
   void HistoryQueryCompleted(

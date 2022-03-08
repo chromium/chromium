@@ -42,11 +42,23 @@ TabsSearchService::TabsSearchService(ChromeBrowserState* browser_state)
   DCHECK(browser_state_);
 }
 
+TabsSearchService::TabsSearchBrowserResults::TabsSearchBrowserResults(
+    const Browser* browser,
+    const std::vector<web::WebState*> web_states)
+    : browser(browser), web_states(web_states) {}
+
+TabsSearchService::TabsSearchBrowserResults::~TabsSearchBrowserResults() =
+    default;
+
+TabsSearchService::TabsSearchBrowserResults::TabsSearchBrowserResults(
+    const TabsSearchBrowserResults&) = default;
+
 TabsSearchService::~TabsSearchService() = default;
 
 void TabsSearchService::Search(
     const std::u16string& term,
-    base::OnceCallback<void(std::vector<web::WebState*>)> completion) {
+    base::OnceCallback<void(std::vector<TabsSearchBrowserResults>)>
+        completion) {
   BrowserList* browser_list =
       BrowserListFactory::GetForBrowserState(browser_state_);
   std::set<Browser*> browsers = browser_state_->IsOffTheRecord()
@@ -169,12 +181,14 @@ void TabsSearchService::SearchHistory(
 void TabsSearchService::SearchWithinBrowsers(
     const std::set<Browser*>& browsers,
     const std::u16string& term,
-    base::OnceCallback<void(std::vector<web::WebState*>)> completion) {
+    base::OnceCallback<void(std::vector<TabsSearchBrowserResults>)>
+        completion) {
   FixedPatternStringSearchIgnoringCaseAndAccents query_search(term);
 
-  std::vector<web::WebState*> results;
+  std::vector<TabsSearchBrowserResults> results;
 
   for (Browser* browser : browsers) {
+    std::vector<web::WebState*> matching_web_states;
     WebStateList* webStateList = browser->GetWebStateList();
     for (int index = 0; index < webStateList->count(); ++index) {
       web::WebState* web_state = webStateList->GetWebStateAt(index);
@@ -182,9 +196,15 @@ void TabsSearchService::SearchWithinBrowsers(
       auto url_string = base::UTF8ToUTF16(web_state->GetVisibleURL().spec());
       if (query_search.Search(title, /*match_index=*/nullptr,
                               /*match_length=*/nullptr) ||
-          query_search.Search(url_string, /*match_index=*/nullptr, nullptr)) {
-        results.push_back(web_state);
+          query_search.Search(url_string, /*match_index=*/nullptr,
+                              /*match_length=*/nullptr)) {
+        matching_web_states.push_back(web_state);
       }
+    }
+
+    if (!matching_web_states.empty()) {
+      TabsSearchBrowserResults browser_results(browser, matching_web_states);
+      results.push_back(browser_results);
     }
   }
 

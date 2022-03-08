@@ -617,12 +617,33 @@ Browser* GetBrowserForTabWithId(BrowserList* browser_list,
       TabsSearchServiceFactory::GetForBrowserState(self.browserState);
   const std::u16string& searchTerm = base::SysNSStringToUTF16(searchText);
   searchService->Search(
-      searchTerm, base::BindOnce(^(std::vector<web::WebState*> results) {
-        NSMutableArray* items = [[NSMutableArray alloc] init];
-        for (web::WebState* webState : results) {
-          [items addObject:CreateItem(webState)];
+      searchTerm,
+      base::BindOnce(^(
+          std::vector<TabsSearchService::TabsSearchBrowserResults> results) {
+        NSMutableArray* currentBrowserItems = [[NSMutableArray alloc] init];
+        NSMutableArray* remainingItems = [[NSMutableArray alloc] init];
+        for (const TabsSearchService::TabsSearchBrowserResults& browserResults :
+             results) {
+          for (web::WebState* webState : browserResults.web_states) {
+            TabSwitcherItem* item = CreateItem(webState);
+            if (browserResults.browser == self.browser) {
+              [currentBrowserItems addObject:item];
+            } else {
+              [remainingItems addObject:item];
+            }
+          }
         }
-        [self.consumer populateItems:items selectedItemID:nil];
+
+        NSArray* allItems = nil;
+        // If there are results from Browsers other than the current one,
+        // append those results to the end.
+        if (remainingItems.count) {
+          allItems = [currentBrowserItems
+              arrayByAddingObjectsFromArray:remainingItems];
+        } else {
+          allItems = currentBrowserItems;
+        }
+        [self.consumer populateItems:allItems selectedItemID:nil];
       }));
 }
 
