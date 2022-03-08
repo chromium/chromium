@@ -8,6 +8,7 @@
 #include <vector>
 
 #include "base/callback.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
@@ -19,25 +20,27 @@
 #include "content/public/test/test_browser_context.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
+#include "storage/browser/test/mock_special_storage_policy.h"
 #include "third_party/blink/public/common/user_agent/user_agent_metadata.h"
 
 namespace content {
 
 EmbeddedWorkerTestHelper::EmbeddedWorkerTestHelper(
     const base::FilePath& user_data_directory)
-    : EmbeddedWorkerTestHelper(user_data_directory,
-                               /*special_storage_policy=*/nullptr) {}
+    : EmbeddedWorkerTestHelper(
+          user_data_directory,
+          base::MakeRefCounted<storage::MockSpecialStoragePolicy>()) {}
 
 EmbeddedWorkerTestHelper::EmbeddedWorkerTestHelper(
     const base::FilePath& user_data_directory,
-    storage::SpecialStoragePolicy* special_storage_policy)
+    scoped_refptr<storage::SpecialStoragePolicy> special_storage_policy)
     : browser_context_(std::make_unique<TestBrowserContext>()),
       render_process_host_(
           std::make_unique<MockRenderProcessHost>(browser_context_.get())),
       new_render_process_host_(
           std::make_unique<MockRenderProcessHost>(browser_context_.get())),
       quota_manager_(base::MakeRefCounted<storage::MockQuotaManager>(
-          /*is_cognito=*/false,
+          /*is_incognito=*/false,
           user_data_directory,
           base::ThreadTaskRunnerHandle::Get(),
           special_storage_policy)),
@@ -59,9 +62,9 @@ EmbeddedWorkerTestHelper::EmbeddedWorkerTestHelper(
           base::MakeRefCounted<URLLoaderFactoryGetter>()) {
   wrapper_->SetStorageControlBinderForTest(base::BindRepeating(
       &EmbeddedWorkerTestHelper::BindStorageControl, base::Unretained(this)));
-  wrapper_->InitInternal(quota_manager_proxy_.get(), special_storage_policy,
-                         /*blob_context=*/nullptr,
-                         browser_context_.get());
+  wrapper_->InitInternal(quota_manager_proxy_.get(),
+                         special_storage_policy.get(),
+                         /*blob_context=*/nullptr, browser_context_.get());
   wrapper_->process_manager()->SetProcessIdForTest(mock_render_process_id());
   wrapper_->process_manager()->SetNewProcessIdForTest(new_render_process_id());
   fake_loader_factory_wrapper_ =

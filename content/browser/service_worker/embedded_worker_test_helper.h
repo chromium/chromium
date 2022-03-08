@@ -11,6 +11,7 @@
 #include "base/callback_forward.h"
 #include "base/containers/flat_set.h"
 #include "base/containers/unique_ptr_adapters.h"
+#include "base/memory/scoped_refptr.h"
 #include "components/services/storage/public/mojom/service_worker_storage_control.mojom.h"
 #include "content/browser/service_worker/fake_embedded_worker_instance_client.h"
 #include "content/browser/service_worker/fake_service_worker.h"
@@ -86,7 +87,7 @@ class EmbeddedWorkerTestHelper {
   explicit EmbeddedWorkerTestHelper(const base::FilePath& user_data_directory);
   EmbeddedWorkerTestHelper(
       const base::FilePath& user_data_directory,
-      storage::SpecialStoragePolicy* special_storage_policy);
+      scoped_refptr<storage::SpecialStoragePolicy> special_storage_policy);
 
   EmbeddedWorkerTestHelper(const EmbeddedWorkerTestHelper&) = delete;
   EmbeddedWorkerTestHelper& operator=(const EmbeddedWorkerTestHelper&) = delete;
