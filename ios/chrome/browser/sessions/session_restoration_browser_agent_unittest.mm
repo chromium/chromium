@@ -305,6 +305,35 @@ TEST_F(SessionRestorationBrowserAgentTest, SaveAndRestoreSession) {
             browser_->GetWebStateList()->GetActiveWebState());
 }
 
+// Tests that saving a session with web states that are being restored, then
+// clearing the WebStatelist and restoring the session will restore the web
+// states correctly.
+TEST_F(SessionRestorationBrowserAgentTest, SaveInProgressAndRestoreSession) {
+  SessionWindowIOS* window(
+      CreateSessionWindow(/*sessions_count=*/5, /*selected_index=*/1));
+  [test_session_service_ setPerformIO:YES];
+  session_restoration_agent_->RestoreSessionWindow(window);
+  [test_session_service_ setPerformIO:NO];
+
+  ASSERT_EQ(5, browser_->GetWebStateList()->count());
+  EXPECT_EQ(browser_->GetWebStateList()->GetWebStateAt(1),
+            browser_->GetWebStateList()->GetActiveWebState());
+
+  // Close all the webStates
+  browser_->GetWebStateList()->CloseAllWebStates(WebStateList::CLOSE_NO_FLAGS);
+
+  const base::FilePath& state_path = chrome_browser_state_->GetStatePath();
+  SessionIOS* session =
+      [test_session_service_ loadSessionWithSessionID:session_id()
+                                            directory:state_path];
+  ASSERT_EQ(1u, session.sessionWindows.count);
+  SessionWindowIOS* session_window = session.sessionWindows[0];
+  session_restoration_agent_->RestoreSessionWindow(session_window);
+  ASSERT_EQ(5, browser_->GetWebStateList()->count());
+  EXPECT_EQ(browser_->GetWebStateList()->GetWebStateAt(1),
+            browser_->GetWebStateList()->GetActiveWebState());
+}
+
 // Tests that SessionRestorationObserver methods are called when sessions is
 // restored.
 TEST_F(SessionRestorationBrowserAgentTest, ObserverCalledWithRestore) {

@@ -20,6 +20,7 @@
 #import "ios/chrome/browser/web_state_list/web_state_list_order_controller.h"
 #import "ios/chrome/browser/web_state_list/web_state_list_removing_indexes.h"
 #import "ios/chrome/browser/web_state_list/web_state_opener.h"
+#import "ios/web/public/navigation/navigation_manager.h"
 #import "ios/web/public/session/serializable_user_data_manager.h"
 #import "ios/web/public/web_state.h"
 #include "net/base/mac/url_conversions.h"
@@ -45,7 +46,10 @@ WebStateListRemovingIndexes GetIndexOfWebStatesToDrop(
   std::vector<int> web_state_to_skip_indexes;
   for (int index = 0; index < web_state_list->count(); ++index) {
     web::WebState* web_state = web_state_list->GetWebStateAt(index);
-    if (web_state->GetNavigationItemCount() == 0) {
+    bool in_restore =
+        web_state->IsRealized() && web_state->GetNavigationManager() &&
+        web_state->GetNavigationManager()->IsRestoreSessionInProgress();
+    if (!in_restore && web_state->GetNavigationItemCount() == 0) {
       web_state_to_skip_indexes.push_back(index);
     }
   }

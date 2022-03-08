@@ -57,6 +57,7 @@ class StartSurfaceSceneAgentTest : public PlatformTest {
   void InsertNewWebState(int index, WebStateOpener opener, GURL url) {
     auto test_web_state = std::make_unique<web::FakeWebState>();
     test_web_state->SetCurrentURL(url);
+    test_web_state->SetNavigationItemCount(1);
     Browser* browser = scene_state_.interfaceProvider.mainInterface.browser;
     WebStateList* web_state_list = browser->GetWebStateList();
     web_state_list->InsertWebState(index, std::move(test_web_state),
