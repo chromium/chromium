@@ -14,15 +14,10 @@ class FakeNearbyConnectionBroker : public NearbyConnectionBroker {
  public:
   FakeNearbyConnectionBroker(
       const std::vector<uint8_t>& bluetooth_public_address,
-      mojo::PendingReceiver<
-          chromeos::secure_channel::mojom::NearbyMessageSender>
-          message_sender_receiver,
-      mojo::PendingReceiver<
-          chromeos::secure_channel::mojom::NearbyFilePayloadHandler>
+      mojo::PendingReceiver<mojom::NearbyMessageSender> message_sender_receiver,
+      mojo::PendingReceiver<mojom::NearbyFilePayloadHandler>
           file_payload_handler_receiver,
-      mojo::PendingRemote<
-          chromeos::secure_channel::mojom::NearbyMessageReceiver>
-          message_receiver_remote,
+      mojo::PendingRemote<mojom::NearbyMessageReceiver> message_receiver_remote,
       base::OnceClosure on_connected_callback,
       base::OnceClosure on_disconnected_callback);
   ~FakeNearbyConnectionBroker() override;
@@ -48,9 +43,8 @@ class FakeNearbyConnectionBroker : public NearbyConnectionBroker {
   // mojom::NearbyFilePayloadHandler:
   void RegisterPayloadFile(
       int64_t payload_id,
-      chromeos::secure_channel::mojom::PayloadFilesPtr payload_files,
-      mojo::PendingRemote<chromeos::secure_channel::mojom::FilePayloadListener>
-          listener,
+      mojom::PayloadFilesPtr payload_files,
+      mojo::PendingRemote<mojom::FilePayloadListener> listener,
       RegisterPayloadFileCallback callback) override {}
 
   std::vector<std::string> sent_messages_;

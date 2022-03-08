@@ -26,8 +26,7 @@ class ConnectionAttempt {
    public:
     virtual ~Delegate();
     virtual void OnConnectionAttemptFailure(
-        chromeos::secure_channel::mojom::ConnectionAttemptFailureReason
-            reason) = 0;
+        mojom::ConnectionAttemptFailureReason reason) = 0;
     virtual void OnConnection(std::unique_ptr<ClientChannel> channel) = 0;
   };
 
@@ -42,7 +41,7 @@ class ConnectionAttempt {
 
  protected:
   void NotifyConnectionAttemptFailure(
-      chromeos::secure_channel::mojom::ConnectionAttemptFailureReason reason);
+      mojom::ConnectionAttemptFailureReason reason);
   void NotifyConnection(std::unique_ptr<ClientChannel> channel);
 
  private:

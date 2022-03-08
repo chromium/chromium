@@ -26,9 +26,6 @@
 
 namespace ash::secure_channel {
 
-// TODO(https://crbug.com/1164001): remove after the migration is finished.
-namespace mojom = ::chromeos::secure_channel::mojom;
-
 const mojom::ConnectionCreationDetail kTestConnectionCreationDetails[] = {
     mojom::ConnectionCreationDetail::
         REMOTE_DEVICE_USED_BACKGROUND_BLE_ADVERTISING};

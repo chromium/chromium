@@ -27,9 +27,6 @@ namespace ash::secure_channel::weave {
 
 namespace {
 
-// TODO(https://crbug.com/1164001): remove after the migration is finished.
-namespace mojom = ::chromeos::secure_channel::mojom;
-
 typedef BluetoothLowEnergyWeavePacketReceiver::State ReceiverState;
 
 // The UUID of the TX characteristic used to transmit data to the server.

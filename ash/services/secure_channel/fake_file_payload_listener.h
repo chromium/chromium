@@ -14,26 +14,20 @@
 namespace ash::secure_channel {
 
 // Test FilePayloadListener implementation.
-class FakeFilePayloadListener
-    : public chromeos::secure_channel::mojom::FilePayloadListener {
+class FakeFilePayloadListener : public mojom::FilePayloadListener {
  public:
   FakeFilePayloadListener();
   FakeFilePayloadListener(const FakeFilePayloadListener&) = delete;
   FakeFilePayloadListener& operator=(const FakeFilePayloadListener&) = delete;
   ~FakeFilePayloadListener() override;
 
-  mojo::PendingRemote<chromeos::secure_channel::mojom::FilePayloadListener>
-  GenerateRemote();
+  mojo::PendingRemote<mojom::FilePayloadListener> GenerateRemote();
 
   void OnDisconnect();
 
-  mojo::Receiver<chromeos::secure_channel::mojom::FilePayloadListener>&
-  receiver() {
-    return receiver_;
-  }
+  mojo::Receiver<mojom::FilePayloadListener>& receiver() { return receiver_; }
 
-  const std::vector<chromeos::secure_channel::mojom::FileTransferUpdatePtr>&
-  received_updates() const {
+  const std::vector<mojom::FileTransferUpdatePtr>& received_updates() const {
     return received_updates_;
   }
 
@@ -41,14 +35,11 @@ class FakeFilePayloadListener
 
  private:
   // mojom::MessageReceiver:
-  void OnFileTransferUpdate(
-      chromeos::secure_channel::mojom::FileTransferUpdatePtr update) override;
+  void OnFileTransferUpdate(mojom::FileTransferUpdatePtr update) override;
 
-  mojo::Receiver<chromeos::secure_channel::mojom::FilePayloadListener>
-      receiver_{this};
+  mojo::Receiver<mojom::FilePayloadListener> receiver_{this};
 
-  std::vector<chromeos::secure_channel::mojom::FileTransferUpdatePtr>
-      received_updates_;
+  std::vector<mojom::FileTransferUpdatePtr> received_updates_;
   bool is_connected_ = false;
 };
 

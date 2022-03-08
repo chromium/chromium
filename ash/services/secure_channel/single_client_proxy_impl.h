@@ -66,22 +66,19 @@ class SingleClientProxyImpl : public SingleClientProxy,
                               base::OnceClosure on_sent_callback) override;
   void RegisterPayloadFile(
       int64_t payload_id,
-      chromeos::secure_channel::mojom::PayloadFilesPtr payload_files,
+      mojom::PayloadFilesPtr payload_files,
       FileTransferUpdateCallback file_transfer_update_callback,
       base::OnceCallback<void(bool)> registration_result_callback) override;
 
   void GetConnectionMetadata(
-      base::OnceCallback<void(
-          chromeos::secure_channel::mojom::ConnectionMetadataPtr)> callback)
-      override;
+      base::OnceCallback<void(mojom::ConnectionMetadataPtr)> callback) override;
   void OnClientDisconnected() override;
 
   void FlushForTesting();
 
   std::unique_ptr<ClientConnectionParameters> client_connection_parameters_;
   std::unique_ptr<ChannelImpl> channel_;
-  mojo::Remote<chromeos::secure_channel::mojom::MessageReceiver>
-      message_receiver_remote_;
+  mojo::Remote<mojom::MessageReceiver> message_receiver_remote_;
 };
 
 }  // namespace ash::secure_channel

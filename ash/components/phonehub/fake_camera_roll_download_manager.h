@@ -26,7 +26,7 @@ class FakeCameraRollDownloadManager : public CameraRollDownloadManager {
       const phonehub::proto::CameraRollItemMetadata& item_metadata,
       CreatePayloadFilesCallback payload_files_callback) override;
   void UpdateDownloadProgress(
-      chromeos::secure_channel::mojom::FileTransferUpdatePtr update) override;
+      secure_channel::mojom::FileTransferUpdatePtr update) override;
   void DeleteFile(int64_t payload_id) override;
 
   void set_expected_create_payload_files_result(
@@ -35,7 +35,7 @@ class FakeCameraRollDownloadManager : public CameraRollDownloadManager {
         expected_create_payload_files_result;
   }
 
-  const std::vector<chromeos::secure_channel::mojom::FileTransferUpdatePtr>&
+  const std::vector<secure_channel::mojom::FileTransferUpdatePtr>&
   GetFileTransferUpdates(int64_t payload_id) const;
 
  private:
@@ -44,9 +44,8 @@ class FakeCameraRollDownloadManager : public CameraRollDownloadManager {
 
   // A map from payload IDs to the list of FileTransferUpdate received for each
   // payload.
-  base::flat_map<
-      int64_t,
-      std::vector<chromeos::secure_channel::mojom::FileTransferUpdatePtr>>
+  base::flat_map<int64_t,
+                 std::vector<secure_channel::mojom::FileTransferUpdatePtr>>
       payload_update_map_;
 };
 

@@ -24,10 +24,6 @@ namespace ash {
 namespace secure_channel {
 namespace {
 
-// TODO(https://crbug.com/1164001): remove after
-// ash/services/secure_channel is moved to namespace ash.
-namespace mojom = ::chromeos::secure_channel::mojom;
-
 int g_next_message_receiver_id = 0;
 
 const std::vector<uint8_t> GetEid() {

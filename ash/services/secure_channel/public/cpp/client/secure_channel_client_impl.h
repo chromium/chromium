@@ -23,8 +23,7 @@ class SecureChannelClientImpl : public SecureChannelClient {
   class Factory {
    public:
     static std::unique_ptr<SecureChannelClient> Create(
-        mojo::PendingRemote<chromeos::secure_channel::mojom::SecureChannel>
-            channel,
+        mojo::PendingRemote<mojom::SecureChannel> channel,
         scoped_refptr<base::TaskRunner> task_runner =
             base::ThreadTaskRunnerHandle::Get());
     static void SetFactoryForTesting(Factory* test_factory);
@@ -32,8 +31,7 @@ class SecureChannelClientImpl : public SecureChannelClient {
    protected:
     virtual ~Factory();
     virtual std::unique_ptr<SecureChannelClient> CreateInstance(
-        mojo::PendingRemote<chromeos::secure_channel::mojom::SecureChannel>
-            channel,
+        mojo::PendingRemote<mojom::SecureChannel> channel,
         scoped_refptr<base::TaskRunner> task_runner) = 0;
 
    private:
@@ -48,10 +46,8 @@ class SecureChannelClientImpl : public SecureChannelClient {
  private:
   friend class SecureChannelClientImplTest;
 
-  SecureChannelClientImpl(
-      mojo::PendingRemote<chromeos::secure_channel::mojom::SecureChannel>
-          channel,
-      scoped_refptr<base::TaskRunner> task_runner);
+  SecureChannelClientImpl(mojo::PendingRemote<mojom::SecureChannel> channel,
+                          scoped_refptr<base::TaskRunner> task_runner);
 
   // SecureChannelClient:
   std::unique_ptr<ConnectionAttempt> InitiateConnectionToDevice(
@@ -74,7 +70,7 @@ class SecureChannelClientImpl : public SecureChannelClient {
       const std::string& feature,
       ConnectionMedium connection_medium,
       ConnectionPriority connection_priority,
-      mojo::PendingRemote<chromeos::secure_channel::mojom::ConnectionDelegate>
+      mojo::PendingRemote<mojom::ConnectionDelegate>
           connection_delegate_remote);
   void PerformListenForConnectionFromDevice(
       multidevice::RemoteDeviceRef device_to_connect,
@@ -82,13 +78,12 @@ class SecureChannelClientImpl : public SecureChannelClient {
       const std::string& feature,
       ConnectionMedium connection_medium,
       ConnectionPriority connection_priority,
-      mojo::PendingRemote<chromeos::secure_channel::mojom::ConnectionDelegate>
+      mojo::PendingRemote<mojom::ConnectionDelegate>
           connection_delegate_remote);
 
   void FlushForTesting();
 
-  mojo::Remote<chromeos::secure_channel::mojom::SecureChannel>
-      secure_channel_remote_;
+  mojo::Remote<mojom::SecureChannel> secure_channel_remote_;
 
   scoped_refptr<base::TaskRunner> task_runner_;
 

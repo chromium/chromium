@@ -30,10 +30,6 @@ namespace ash {
 namespace secure_channel {
 namespace {
 
-// TODO(https://crbug.com/1164001): remove after
-// ash/services/secure_channel is moved to namespace ash.
-namespace mojom = ::chromeos::secure_channel::mojom;
-
 using ::location::nearby::connections::mojom::BytesPayload;
 using ::location::nearby::connections::mojom::ConnectionInfoPtr;
 using ::location::nearby::connections::mojom::ConnectionOptions;
@@ -443,8 +439,8 @@ void NearbyConnectionBrokerImpl::OnPayloadFileRegistered(
     Status status) {
   bool success = status == Status::kSuccess;
   if (success) {
-    mojo::Remote<chromeos::secure_channel::mojom::FilePayloadListener>
-        listener_remote(std::move(listener));
+    mojo::Remote<mojom::FilePayloadListener> listener_remote(
+        std::move(listener));
     // Safe to use Unretained because the Remote and its disconnect handler does
     // not out live NearbyConnectionBrokerImpl.
     listener_remote.set_disconnect_handler(base::BindOnce(

@@ -7,9 +7,7 @@
 
 #include <ostream>
 
-namespace chromeos {
-
-namespace secure_channel {
+namespace ash::secure_channel {
 
 // Determines the order in which connections are attempted when system resources
 // must be shared. For example, a device can only register a limited number of
@@ -37,15 +35,6 @@ enum class ConnectionPriority {
 std::ostream& operator<<(std::ostream& stream,
                          const ConnectionPriority& connection_priority);
 
-}  // namespace secure_channel
-
-}  // namespace chromeos
-
-// TODO(https://crbug.com/1164001): remove when this file is moved to ash.
-namespace ash {
-namespace secure_channel {
-using ::chromeos::secure_channel::ConnectionPriority;
-}  // namespace secure_channel
-}  // namespace ash
+}  // namespace ash::secure_channel
 
 #endif  // ASH_SERVICES_SECURE_CHANNEL_PUBLIC_CPP_SHARED_CONNECTION_PRIORITY_H_

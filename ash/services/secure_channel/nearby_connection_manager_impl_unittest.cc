@@ -23,9 +23,6 @@ namespace ash::secure_channel {
 
 namespace {
 
-// TODO(https://crbug.com/1164001): remove after the migration is finished.
-namespace mojom = ::chromeos::secure_channel::mojom;
-
 const size_t kNumTestDevices = 3;
 
 class FakeNearbyConnectionFactory : public NearbyConnection::Factory {

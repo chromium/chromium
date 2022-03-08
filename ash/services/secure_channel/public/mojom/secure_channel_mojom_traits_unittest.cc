@@ -10,22 +10,22 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 TEST(SecureChannelMojomEnumTraitsTest, ConnectionPriority) {
-  static constexpr chromeos::secure_channel::ConnectionPriority
+  static constexpr ash::secure_channel::ConnectionPriority
       kTestConnectionPriorities[] = {
-          chromeos::secure_channel::ConnectionPriority::kLow,
-          chromeos::secure_channel::ConnectionPriority::kMedium,
-          chromeos::secure_channel::ConnectionPriority::kHigh};
+          ash::secure_channel::ConnectionPriority::kLow,
+          ash::secure_channel::ConnectionPriority::kMedium,
+          ash::secure_channel::ConnectionPriority::kHigh};
 
   for (const auto& priority_in : kTestConnectionPriorities) {
-    chromeos::secure_channel::ConnectionPriority priority_out;
+    ash::secure_channel::ConnectionPriority priority_out;
 
-    chromeos::secure_channel::mojom::ConnectionPriority serialized_priority =
+    ash::secure_channel::mojom::ConnectionPriority serialized_priority =
         mojo::EnumTraits<
-            chromeos::secure_channel::mojom::ConnectionPriority,
-            chromeos::secure_channel::ConnectionPriority>::ToMojom(priority_in);
+            ash::secure_channel::mojom::ConnectionPriority,
+            ash::secure_channel::ConnectionPriority>::ToMojom(priority_in);
     ASSERT_TRUE(
-        (mojo::EnumTraits<chromeos::secure_channel::mojom::ConnectionPriority,
-                          chromeos::secure_channel::ConnectionPriority>::
+        (mojo::EnumTraits<ash::secure_channel::mojom::ConnectionPriority,
+                          ash::secure_channel::ConnectionPriority>::
              FromMojom(serialized_priority, &priority_out)));
     EXPECT_EQ(priority_in, priority_out);
   }

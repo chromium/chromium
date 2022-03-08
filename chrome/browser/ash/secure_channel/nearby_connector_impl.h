@@ -45,10 +45,8 @@ class NearbyConnectorImpl : public NearbyConnector, public KeyedService {
     ConnectionRequestMetadata(
         const std::vector<uint8_t>& bluetooth_public_address,
         const std::vector<uint8_t>& eid,
-        mojo::PendingRemote<
-            chromeos::secure_channel::mojom::NearbyMessageReceiver>
-            message_receiver,
-        secure_channel::NearbyConnector::ConnectCallback callback);
+        mojo::PendingRemote<mojom::NearbyMessageReceiver> message_receiver,
+        NearbyConnector::ConnectCallback callback);
     ConnectionRequestMetadata(const ConnectionRequestMetadata&) = delete;
     ConnectionRequestMetadata& operator=(const ConnectionRequestMetadata&) =
         delete;
@@ -56,31 +54,28 @@ class NearbyConnectorImpl : public NearbyConnector, public KeyedService {
 
     std::vector<uint8_t> bluetooth_public_address;
     std::vector<uint8_t> eid;
-    mojo::PendingRemote<chromeos::secure_channel::mojom::NearbyMessageReceiver>
-        message_receiver;
-    secure_channel::NearbyConnector::ConnectCallback callback;
+    mojo::PendingRemote<mojom::NearbyMessageReceiver> message_receiver;
+    NearbyConnector::ConnectCallback callback;
   };
 
   struct ActiveConnectionAttempt {
     ActiveConnectionAttempt(
         const base::UnguessableToken& attempt_id,
         std::unique_ptr<NearbyEndpointFinder> endpoint_finder,
-        secure_channel::NearbyConnector::ConnectCallback callback);
+        NearbyConnector::ConnectCallback callback);
     ~ActiveConnectionAttempt();
 
     base::UnguessableToken attempt_id;
     std::unique_ptr<NearbyEndpointFinder> endpoint_finder;
-    secure_channel::NearbyConnector::ConnectCallback callback;
+    NearbyConnector::ConnectCallback callback;
   };
 
   /// mojom::NearbyConnector:
   void Connect(
       const std::vector<uint8_t>& bluetooth_public_address,
       const std::vector<uint8_t>& eid,
-      mojo::PendingRemote<
-          chromeos::secure_channel::mojom::NearbyMessageReceiver>
-          message_receiver,
-      secure_channel::NearbyConnector::ConnectCallback callback) override;
+      mojo::PendingRemote<mojom::NearbyMessageReceiver> message_receiver,
+      NearbyConnector::ConnectCallback callback) override;
 
   // KeyedService:
   void Shutdown() override;
@@ -94,19 +89,16 @@ class NearbyConnectorImpl : public NearbyConnector, public KeyedService {
   void RecordNearbyDisconnectionForActiveBrokers(
       nearby::NearbyProcessManager::NearbyProcessShutdownReason
           shutdown_reason);
-  void OnConnected(
-      const base::UnguessableToken& id,
-      mojo::PendingRemote<chromeos::secure_channel::mojom::NearbyMessageSender>
-          message_sender_pending_remote,
-      mojo::PendingRemote<
-          chromeos::secure_channel::mojom::NearbyFilePayloadHandler>
-          file_payload_handler_remote);
+  void OnConnected(const base::UnguessableToken& id,
+                   mojo::PendingRemote<mojom::NearbyMessageSender>
+                       message_sender_pending_remote,
+                   mojo::PendingRemote<mojom::NearbyFilePayloadHandler>
+                       file_payload_handler_remote);
   void OnDisconnected(const base::UnguessableToken& id);
   void InvokeActiveConnectionAttemptCallback(
-      mojo::PendingRemote<chromeos::secure_channel::mojom::NearbyMessageSender>
+      mojo::PendingRemote<mojom::NearbyMessageSender>
           message_sender_pending_remote,
-      mojo::PendingRemote<
-          chromeos::secure_channel::mojom::NearbyFilePayloadHandler>
+      mojo::PendingRemote<mojom::NearbyFilePayloadHandler>
           file_payload_handler_remote);
 
   nearby::NearbyProcessManager* nearby_process_manager_;

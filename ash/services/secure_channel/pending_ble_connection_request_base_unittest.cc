@@ -20,9 +20,6 @@ namespace ash::secure_channel {
 
 namespace {
 
-// TODO(https://crbug.com/1164001): remove after the migration is finished.
-namespace mojom = ::chromeos::secure_channel::mojom;
-
 const char kTestReadableRequestTypeForLogging[] = "Test Request Type";
 const char kTestFeature[] = "testFeature";
 enum class TestFailureDetail { kTestFailureReason };

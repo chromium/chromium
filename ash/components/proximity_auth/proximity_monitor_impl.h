@@ -66,8 +66,7 @@ class ProximityMonitorImpl : public ProximityMonitor {
   void Poll();
 
   void OnGetConnectionMetadata(
-      chromeos::secure_channel::mojom::ConnectionMetadataPtr
-          connection_metadata);
+      ash::secure_channel::mojom::ConnectionMetadataPtr connection_metadata);
   void OnGetRssi(const absl::optional<int32_t>& rssi);
 
   // Resets the proximity state to |false|, and clears all member variables

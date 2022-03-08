@@ -45,7 +45,7 @@ class CameraRollDownloadManager {
   // error.
   using CreatePayloadFilesCallback = base::OnceCallback<void(
       CreatePayloadFilesResult,
-      absl::optional<chromeos::secure_channel::mojom::PayloadFilesPtr>)>;
+      absl::optional<secure_channel::mojom::PayloadFilesPtr>)>;
   virtual void CreatePayloadFiles(
       int64_t payload_id,
       const proto::CameraRollItemMetadata& item_metadata,
@@ -55,7 +55,7 @@ class CameraRollDownloadManager {
   // |update| in the Holding Space tray. The backfile file will be deleted if
   // the transfer was canceled or has failed.
   virtual void UpdateDownloadProgress(
-      chromeos::secure_channel::mojom::FileTransferUpdatePtr update) = 0;
+      secure_channel::mojom::FileTransferUpdatePtr update) = 0;
 
   // Deletes the file created for the given |payload_id|.
   virtual void DeleteFile(int64_t payload_id) = 0;

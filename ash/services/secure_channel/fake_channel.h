@@ -20,7 +20,7 @@
 namespace ash::secure_channel {
 
 // Test mojom::Channel implementation.
-class FakeChannel : public chromeos::secure_channel::mojom::Channel {
+class FakeChannel : public mojom::Channel {
  public:
   FakeChannel();
 
@@ -29,13 +29,11 @@ class FakeChannel : public chromeos::secure_channel::mojom::Channel {
 
   ~FakeChannel() override;
 
-  mojo::PendingRemote<chromeos::secure_channel::mojom::Channel>
-  GenerateRemote();
+  mojo::PendingRemote<mojom::Channel> GenerateRemote();
   void DisconnectGeneratedRemote();
 
   void set_connection_metadata_for_next_call(
-      chromeos::secure_channel::mojom::ConnectionMetadataPtr
-          connection_metadata_for_next_call) {
+      mojom::ConnectionMetadataPtr connection_metadata_for_next_call) {
     connection_metadata_for_next_call_ =
         std::move(connection_metadata_for_next_call);
   }
@@ -44,15 +42,12 @@ class FakeChannel : public chromeos::secure_channel::mojom::Channel {
     return sent_messages_;
   }
 
-  void SendFileTransferUpdate(
-      int64_t payload_id,
-      chromeos::secure_channel::mojom::FileTransferStatus status,
-      uint64_t total_bytes,
-      uint64_t bytes_transferred);
+  void SendFileTransferUpdate(int64_t payload_id,
+                              mojom::FileTransferStatus status,
+                              uint64_t total_bytes,
+                              uint64_t bytes_transferred);
 
-  base::flat_map<
-      int64_t,
-      mojo::Remote<chromeos::secure_channel::mojom::FilePayloadListener>>&
+  base::flat_map<int64_t, mojo::Remote<mojom::FilePayloadListener>>&
   file_payload_listeners() {
     return file_payload_listeners_;
   }
@@ -63,20 +58,16 @@ class FakeChannel : public chromeos::secure_channel::mojom::Channel {
                    SendMessageCallback callback) override;
   void RegisterPayloadFile(
       int64_t payload_id,
-      chromeos::secure_channel::mojom::PayloadFilesPtr payload_files,
-      mojo::PendingRemote<chromeos::secure_channel::mojom::FilePayloadListener>
-          listener,
+      mojom::PayloadFilesPtr payload_files,
+      mojo::PendingRemote<mojom::FilePayloadListener> listener,
       RegisterPayloadFileCallback callback) override;
   void GetConnectionMetadata(GetConnectionMetadataCallback callback) override;
 
-  mojo::Receiver<chromeos::secure_channel::mojom::Channel> receiver_{this};
+  mojo::Receiver<mojom::Channel> receiver_{this};
 
   std::vector<std::pair<std::string, SendMessageCallback>> sent_messages_;
-  chromeos::secure_channel::mojom::ConnectionMetadataPtr
-      connection_metadata_for_next_call_;
-  base::flat_map<
-      int64_t,
-      mojo::Remote<chromeos::secure_channel::mojom::FilePayloadListener>>
+  mojom::ConnectionMetadataPtr connection_metadata_for_next_call_;
+  base::flat_map<int64_t, mojo::Remote<mojom::FilePayloadListener>>
       file_payload_listeners_;
 };
 

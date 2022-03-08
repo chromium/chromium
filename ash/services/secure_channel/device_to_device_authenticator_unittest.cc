@@ -31,9 +31,6 @@ namespace ash::secure_channel {
 
 namespace {
 
-// TODO(https://crbug.com/1164001): remove after the migration is finished.
-namespace mojom = ::chromeos::secure_channel::mojom;
-
 // The initiator's session public key in base64url form. Note that this is
 // actually a serialized proto.
 const char kInitiatorSessionPublicKeyBase64[] =

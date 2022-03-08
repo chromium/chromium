@@ -62,8 +62,7 @@ class PendingConnectionRequestBase
   // Derived classes should invoke this function if they would like to give up
   // on the request due to connection failures.
   void StopRequestDueToConnectionFailures(
-      chromeos::secure_channel::mojom::ConnectionAttemptFailureReason
-          failure_reason) {
+      mojom::ConnectionAttemptFailureReason failure_reason) {
     if (has_finished_without_connection_) {
       PA_LOG(WARNING) << "PendingConnectionRequest::"
                       << "StopRequestDueToConnectionFailures() invoked after "

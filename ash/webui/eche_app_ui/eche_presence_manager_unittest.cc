@@ -34,9 +34,9 @@ class FakePresenceMonitorClient : public secure_channel::PresenceMonitorClient {
  private:
   // secure_channel::PresenceMonitorClient:
   void SetPresenceMonitorCallbacks(
-      chromeos::secure_channel::PresenceMonitor::ReadyCallback ready_callback,
-      chromeos::secure_channel::PresenceMonitor::DeviceSeenCallback
-          device_seen_callback) override {}
+      secure_channel::PresenceMonitor::ReadyCallback ready_callback,
+      secure_channel::PresenceMonitor::DeviceSeenCallback device_seen_callback)
+      override {}
   void StartMonitoring(
       const multidevice::RemoteDeviceRef& remote_device_ref,
       const multidevice::RemoteDeviceRef& local_device_ref) override {

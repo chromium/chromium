@@ -14,7 +14,7 @@
 
 namespace ash::secure_channel {
 
-class FakeConnectionManager : public secure_channel::ConnectionManager {
+class FakeConnectionManager : public ConnectionManager {
  public:
   FakeConnectionManager();
   ~FakeConnectionManager() override;
@@ -30,8 +30,7 @@ class FakeConnectionManager : public secure_channel::ConnectionManager {
     register_payload_file_result_ = result;
   }
 
-  void SendFileTransferUpdate(
-      chromeos::secure_channel::mojom::FileTransferUpdatePtr update);
+  void SendFileTransferUpdate(mojom::FileTransferUpdatePtr update);
 
   size_t num_attempt_connection_calls() const {
     return num_attempt_connection_calls_;
@@ -47,9 +46,8 @@ class FakeConnectionManager : public secure_channel::ConnectionManager {
   void SendMessage(const std::string& payload) override;
   void RegisterPayloadFile(
       int64_t payload_id,
-      chromeos::secure_channel::mojom::PayloadFilesPtr payload_files,
-      base::RepeatingCallback<
-          void(chromeos::secure_channel::mojom::FileTransferUpdatePtr)>
+      mojom::PayloadFilesPtr payload_files,
+      base::RepeatingCallback<void(mojom::FileTransferUpdatePtr)>
           file_transfer_update_callback,
       base::OnceCallback<void(bool)> registration_result_callback) override;
 
@@ -57,8 +55,7 @@ class FakeConnectionManager : public secure_channel::ConnectionManager {
   std::vector<std::string> sent_messages_;
   bool register_payload_file_result_ = true;
   base::flat_map<int64_t,
-                 base::RepeatingCallback<void(
-                     chromeos::secure_channel::mojom::FileTransferUpdatePtr)>>
+                 base::RepeatingCallback<void(mojom::FileTransferUpdatePtr)>>
       file_transfer_update_callbacks_;
   size_t num_attempt_connection_calls_ = 0;
   size_t num_disconnect_calls_ = 0;

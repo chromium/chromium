@@ -12,8 +12,7 @@
 namespace ash::secure_channel {
 
 // Base SecureChannel implementation.
-class SecureChannelBase
-    : public chromeos::secure_channel::mojom::SecureChannel {
+class SecureChannelBase : public mojom::SecureChannel {
  public:
   SecureChannelBase(const SecureChannelBase&) = delete;
   SecureChannelBase& operator=(const SecureChannelBase&) = delete;
@@ -22,15 +21,13 @@ class SecureChannelBase
 
   // Binds a receiver to this implementation. Should be called each time that
   // the service receives a receiver.
-  void BindReceiver(
-      mojo::PendingReceiver<chromeos::secure_channel::mojom::SecureChannel>
-          receiver);
+  void BindReceiver(mojo::PendingReceiver<mojom::SecureChannel> receiver);
 
  protected:
   SecureChannelBase();
 
  private:
-  mojo::ReceiverSet<chromeos::secure_channel::mojom::SecureChannel> receivers_;
+  mojo::ReceiverSet<mojom::SecureChannel> receivers_;
 };
 
 }  // namespace ash::secure_channel

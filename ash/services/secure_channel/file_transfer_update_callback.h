@@ -12,8 +12,8 @@ namespace ash::secure_channel {
 
 // Syntactic sugar to make it easier to declare callbacks to the
 // RegisterPayloadFile APIs.
-using FileTransferUpdateCallback = base::RepeatingCallback<void(
-    chromeos::secure_channel::mojom::FileTransferUpdatePtr)>;
+using FileTransferUpdateCallback =
+    base::RepeatingCallback<void(mojom::FileTransferUpdatePtr)>;
 
 }  // namespace ash::secure_channel
 

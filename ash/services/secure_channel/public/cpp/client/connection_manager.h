@@ -66,9 +66,8 @@ class ConnectionManager {
   // |file_transfer_update_callback| if the registration was successful.
   virtual void RegisterPayloadFile(
       int64_t payload_id,
-      chromeos::secure_channel::mojom::PayloadFilesPtr payload_files,
-      base::RepeatingCallback<
-          void(chromeos::secure_channel::mojom::FileTransferUpdatePtr)>
+      mojom::PayloadFilesPtr payload_files,
+      base::RepeatingCallback<void(mojom::FileTransferUpdatePtr)>
           file_transfer_update_callback,
       base::OnceCallback<void(bool)> registration_result_callback) = 0;
 

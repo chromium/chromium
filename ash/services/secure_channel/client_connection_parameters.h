@@ -49,17 +49,15 @@ class ClientConnectionParameters {
   // Alerts the client that the connection attempt has failed due to |reason|.
   // This function can only be called if IsActive() is true and
   // SetConnectionSucceeded() has not been invoked.
-  void SetConnectionAttemptFailed(
-      chromeos::secure_channel::mojom::ConnectionAttemptFailureReason reason);
+  void SetConnectionAttemptFailed(mojom::ConnectionAttemptFailureReason reason);
 
   // Alerts the client that the connection has succeeded, providing the client
   // with a Channel and a receiver to bind a MessageReceiver. This function can
   // only be called if IsActive() is true and SetConnectionAttemptFailed() has
   // not been invoked.
   void SetConnectionSucceeded(
-      mojo::PendingRemote<chromeos::secure_channel::mojom::Channel> channel,
-      mojo::PendingReceiver<chromeos::secure_channel::mojom::MessageReceiver>
-          message_receiver_receiver);
+      mojo::PendingRemote<mojom::Channel> channel,
+      mojo::PendingReceiver<mojom::MessageReceiver> message_receiver_receiver);
 
   bool operator==(const ClientConnectionParameters& other) const;
   bool operator<(const ClientConnectionParameters& other) const;
@@ -67,11 +65,10 @@ class ClientConnectionParameters {
  protected:
   virtual bool HasClientCanceledRequest() = 0;
   virtual void PerformSetConnectionAttemptFailed(
-      chromeos::secure_channel::mojom::ConnectionAttemptFailureReason
-          reason) = 0;
+      mojom::ConnectionAttemptFailureReason reason) = 0;
   virtual void PerformSetConnectionSucceeded(
-      mojo::PendingRemote<chromeos::secure_channel::mojom::Channel> channel,
-      mojo::PendingReceiver<chromeos::secure_channel::mojom::MessageReceiver>
+      mojo::PendingRemote<mojom::Channel> channel,
+      mojo::PendingReceiver<mojom::MessageReceiver>
           message_receiver_receiver) = 0;
 
   void NotifyConnectionRequestCanceled();

@@ -16,10 +16,6 @@
 namespace ash {
 namespace secure_channel {
 
-// TODO(https://crbug.com/1164001): remove after
-// ash/services/secure_channel is moved to namespace ash.
-namespace mojom = ::chromeos::secure_channel::mojom;
-
 using NearbyProcessShutdownReason =
     nearby::NearbyProcessManager::NearbyProcessShutdownReason;
 

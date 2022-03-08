@@ -83,13 +83,11 @@ class MultiplexedChannelImpl : public MultiplexedChannel,
                               base::OnceClosure on_sent_callback) override;
   void RegisterPayloadFile(
       int64_t payload_id,
-      chromeos::secure_channel::mojom::PayloadFilesPtr payload_files,
+      mojom::PayloadFilesPtr payload_files,
       FileTransferUpdateCallback file_transfer_update_callback,
       base::OnceCallback<void(bool)> registration_result_callback) override;
   void GetConnectionMetadata(
-      base::OnceCallback<void(
-          chromeos::secure_channel::mojom::ConnectionMetadataPtr)> callback)
-      override;
+      base::OnceCallback<void(mojom::ConnectionMetadataPtr)> callback) override;
   void OnClientDisconnected(const base::UnguessableToken& proxy_id) override;
 
   std::unique_ptr<AuthenticatedChannel> authenticated_channel_;

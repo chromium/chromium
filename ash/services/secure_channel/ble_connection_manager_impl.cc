@@ -26,9 +26,6 @@ namespace ash::secure_channel {
 
 namespace {
 
-// TODO(https://crbug.com/1164001): remove after the migration is finished.
-namespace mojom = ::chromeos::secure_channel::mojom;
-
 std::vector<mojom::ConnectionCreationDetail> CreateConnectionDetails(
     ConnectionRole connection_role) {
   std::vector<mojom::ConnectionCreationDetail> creation_details;

@@ -81,8 +81,7 @@ void CameraRollManagerImpl::OnFetchCameraRollItemDataResponseReceived(
 void CameraRollManagerImpl::OnPayloadFilesCreated(
     const proto::FetchCameraRollItemDataResponse& response,
     CameraRollDownloadManager::CreatePayloadFilesResult result,
-    absl::optional<chromeos::secure_channel::mojom::PayloadFilesPtr>
-        payload_files) {
+    absl::optional<secure_channel::mojom::PayloadFilesPtr> payload_files) {
   switch (result) {
     case CameraRollDownloadManager::CreatePayloadFilesResult::kSuccess:
       connection_manager_->RegisterPayloadFile(
@@ -132,11 +131,9 @@ void CameraRollManagerImpl::OnPayloadFileRegistered(
 
 void CameraRollManagerImpl::OnFileTransferUpdate(
     const proto::CameraRollItemMetadata& metadata,
-    chromeos::secure_channel::mojom::FileTransferUpdatePtr update) {
-  if (update->status ==
-          chromeos::secure_channel::mojom::FileTransferStatus::kFailure ||
-      update->status ==
-          chromeos::secure_channel::mojom::FileTransferStatus::kCanceled) {
+    secure_channel::mojom::FileTransferUpdatePtr update) {
+  if (update->status == secure_channel::mojom::FileTransferStatus::kFailure ||
+      update->status == secure_channel::mojom::FileTransferStatus::kCanceled) {
     NotifyCameraRollDownloadError(
         CameraRollManager::Observer::DownloadErrorType::kNetworkConnection,
         metadata);

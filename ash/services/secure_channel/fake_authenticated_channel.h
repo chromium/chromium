@@ -43,23 +43,20 @@ class FakeAuthenticatedChannel : public AuthenticatedChannel {
   }
 
   void set_connection_metadata_for_next_call(
-      chromeos::secure_channel::mojom::ConnectionMetadataPtr
-          connection_metadata_for_next_call) {
+      mojom::ConnectionMetadataPtr connection_metadata_for_next_call) {
     connection_metadata_for_next_call_ =
         std::move(connection_metadata_for_next_call);
   }
 
   // AuthenticatedChannel:
   void GetConnectionMetadata(
-      base::OnceCallback<void(
-          chromeos::secure_channel::mojom::ConnectionMetadataPtr)> callback)
-      override;
+      base::OnceCallback<void(mojom::ConnectionMetadataPtr)> callback) override;
   void PerformSendMessage(const std::string& feature,
                           const std::string& payload,
                           base::OnceClosure on_sent_callback) override;
   void PerformRegisterPayloadFile(
       int64_t payload_id,
-      chromeos::secure_channel::mojom::PayloadFilesPtr payload_files,
+      mojom::PayloadFilesPtr payload_files,
       FileTransferUpdateCallback file_transfer_update_callback,
       base::OnceCallback<void(bool)> registration_result_callback) override;
   void PerformDisconnection() override;
@@ -69,8 +66,7 @@ class FakeAuthenticatedChannel : public AuthenticatedChannel {
   using AuthenticatedChannel::NotifyMessageReceived;
 
  private:
-  chromeos::secure_channel::mojom::ConnectionMetadataPtr
-      connection_metadata_for_next_call_;
+  mojom::ConnectionMetadataPtr connection_metadata_for_next_call_;
   bool has_disconnection_been_requested_ = false;
   std::vector<std::tuple<std::string, std::string, base::OnceClosure>>
       sent_messages_;

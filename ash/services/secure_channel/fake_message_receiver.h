@@ -13,8 +13,7 @@
 namespace ash::secure_channel {
 
 // Test MessageReceiver implementation.
-class FakeMessageReceiver
-    : public chromeos::secure_channel::mojom::MessageReceiver {
+class FakeMessageReceiver : public mojom::MessageReceiver {
  public:
   FakeMessageReceiver();
 

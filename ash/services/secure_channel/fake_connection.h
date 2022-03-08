@@ -73,7 +73,7 @@ class FakeConnection : public Connection {
   void SendMessageImpl(std::unique_ptr<WireMessage> message) override;
   void RegisterPayloadFileImpl(
       int64_t payload_id,
-      chromeos::secure_channel::mojom::PayloadFilesPtr payload_files,
+      mojom::PayloadFilesPtr payload_files,
       FileTransferUpdateCallback file_transfer_update_callback,
       base::OnceCallback<void(bool)> registration_result_callback) override;
   std::unique_ptr<WireMessage> DeserializeWireMessage(

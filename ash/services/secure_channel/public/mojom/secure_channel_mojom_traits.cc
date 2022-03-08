@@ -8,33 +8,31 @@
 
 namespace mojo {
 
-chromeos::secure_channel::mojom::ConnectionMedium
-EnumTraits<chromeos::secure_channel::mojom::ConnectionMedium,
-           chromeos::secure_channel::ConnectionMedium>::
-    ToMojom(chromeos::secure_channel::ConnectionMedium input) {
+ash::secure_channel::mojom::ConnectionMedium
+EnumTraits<ash::secure_channel::mojom::ConnectionMedium,
+           ash::secure_channel::ConnectionMedium>::
+    ToMojom(ash::secure_channel::ConnectionMedium input) {
   switch (input) {
-    case chromeos::secure_channel::ConnectionMedium::kBluetoothLowEnergy:
-      return chromeos::secure_channel::mojom::ConnectionMedium::
-          kBluetoothLowEnergy;
-    case chromeos::secure_channel::ConnectionMedium::kNearbyConnections:
-      return chromeos::secure_channel::mojom::ConnectionMedium::
-          kNearbyConnections;
+    case ash::secure_channel::ConnectionMedium::kBluetoothLowEnergy:
+      return ash::secure_channel::mojom::ConnectionMedium::kBluetoothLowEnergy;
+    case ash::secure_channel::ConnectionMedium::kNearbyConnections:
+      return ash::secure_channel::mojom::ConnectionMedium::kNearbyConnections;
   }
 
   NOTREACHED();
-  return chromeos::secure_channel::mojom::ConnectionMedium::kBluetoothLowEnergy;
+  return ash::secure_channel::mojom::ConnectionMedium::kBluetoothLowEnergy;
 }
 
-bool EnumTraits<chromeos::secure_channel::mojom::ConnectionMedium,
-                chromeos::secure_channel::ConnectionMedium>::
-    FromMojom(chromeos::secure_channel::mojom::ConnectionMedium input,
-              chromeos::secure_channel::ConnectionMedium* out) {
+bool EnumTraits<ash::secure_channel::mojom::ConnectionMedium,
+                ash::secure_channel::ConnectionMedium>::
+    FromMojom(ash::secure_channel::mojom::ConnectionMedium input,
+              ash::secure_channel::ConnectionMedium* out) {
   switch (input) {
-    case chromeos::secure_channel::mojom::ConnectionMedium::kBluetoothLowEnergy:
-      *out = chromeos::secure_channel::ConnectionMedium::kBluetoothLowEnergy;
+    case ash::secure_channel::mojom::ConnectionMedium::kBluetoothLowEnergy:
+      *out = ash::secure_channel::ConnectionMedium::kBluetoothLowEnergy;
       return true;
-    case chromeos::secure_channel::mojom::ConnectionMedium::kNearbyConnections:
-      *out = chromeos::secure_channel::ConnectionMedium::kNearbyConnections;
+    case ash::secure_channel::mojom::ConnectionMedium::kNearbyConnections:
+      *out = ash::secure_channel::ConnectionMedium::kNearbyConnections;
       return true;
   }
 
@@ -42,36 +40,36 @@ bool EnumTraits<chromeos::secure_channel::mojom::ConnectionMedium,
   return false;
 }
 
-chromeos::secure_channel::mojom::ConnectionPriority
-EnumTraits<chromeos::secure_channel::mojom::ConnectionPriority,
-           chromeos::secure_channel::ConnectionPriority>::
-    ToMojom(chromeos::secure_channel::ConnectionPriority input) {
+ash::secure_channel::mojom::ConnectionPriority
+EnumTraits<ash::secure_channel::mojom::ConnectionPriority,
+           ash::secure_channel::ConnectionPriority>::
+    ToMojom(ash::secure_channel::ConnectionPriority input) {
   switch (input) {
-    case chromeos::secure_channel::ConnectionPriority::kLow:
-      return chromeos::secure_channel::mojom::ConnectionPriority::LOW;
-    case chromeos::secure_channel::ConnectionPriority::kMedium:
-      return chromeos::secure_channel::mojom::ConnectionPriority::MEDIUM;
-    case chromeos::secure_channel::ConnectionPriority::kHigh:
-      return chromeos::secure_channel::mojom::ConnectionPriority::HIGH;
+    case ash::secure_channel::ConnectionPriority::kLow:
+      return ash::secure_channel::mojom::ConnectionPriority::LOW;
+    case ash::secure_channel::ConnectionPriority::kMedium:
+      return ash::secure_channel::mojom::ConnectionPriority::MEDIUM;
+    case ash::secure_channel::ConnectionPriority::kHigh:
+      return ash::secure_channel::mojom::ConnectionPriority::HIGH;
   }
 
   NOTREACHED();
-  return chromeos::secure_channel::mojom::ConnectionPriority::LOW;
+  return ash::secure_channel::mojom::ConnectionPriority::LOW;
 }
 
-bool EnumTraits<chromeos::secure_channel::mojom::ConnectionPriority,
-                chromeos::secure_channel::ConnectionPriority>::
-    FromMojom(chromeos::secure_channel::mojom::ConnectionPriority input,
-              chromeos::secure_channel::ConnectionPriority* out) {
+bool EnumTraits<ash::secure_channel::mojom::ConnectionPriority,
+                ash::secure_channel::ConnectionPriority>::
+    FromMojom(ash::secure_channel::mojom::ConnectionPriority input,
+              ash::secure_channel::ConnectionPriority* out) {
   switch (input) {
-    case chromeos::secure_channel::mojom::ConnectionPriority::LOW:
-      *out = chromeos::secure_channel::ConnectionPriority::kLow;
+    case ash::secure_channel::mojom::ConnectionPriority::LOW:
+      *out = ash::secure_channel::ConnectionPriority::kLow;
       return true;
-    case chromeos::secure_channel::mojom::ConnectionPriority::MEDIUM:
-      *out = chromeos::secure_channel::ConnectionPriority::kMedium;
+    case ash::secure_channel::mojom::ConnectionPriority::MEDIUM:
+      *out = ash::secure_channel::ConnectionPriority::kMedium;
       return true;
-    case chromeos::secure_channel::mojom::ConnectionPriority::HIGH:
-      *out = chromeos::secure_channel::ConnectionPriority::kHigh;
+    case ash::secure_channel::mojom::ConnectionPriority::HIGH:
+      *out = ash::secure_channel::ConnectionPriority::kHigh;
       return true;
   }
 

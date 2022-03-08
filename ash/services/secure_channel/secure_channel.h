@@ -101,7 +101,7 @@ class SecureChannel : public ConnectionObserver {
   // |file_transfer_update_callback| if the registration was successful.
   virtual void RegisterPayloadFile(
       int64_t payload_id,
-      chromeos::secure_channel::mojom::PayloadFilesPtr payload_files,
+      mojom::PayloadFilesPtr payload_files,
       FileTransferUpdateCallback file_transfer_update_callback,
       base::OnceCallback<void(bool)> registration_result_callback);
 

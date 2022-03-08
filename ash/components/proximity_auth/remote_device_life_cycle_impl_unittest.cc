@@ -135,8 +135,7 @@ class ProximityAuthRemoteDeviceLifeCycleImplTest
   }
 
   void SimulateFailureToAuthenticateConnection(
-      chromeos::secure_channel::mojom::ConnectionAttemptFailureReason
-          failure_reason,
+      ash::secure_channel::mojom::ConnectionAttemptFailureReason failure_reason,
       RemoteDeviceLifeCycle::State expected_life_cycle_state) {
     EXPECT_EQ(RemoteDeviceLifeCycle::State::FINDING_CONNECTION,
               life_cycle_.GetState());
@@ -184,7 +183,7 @@ TEST_F(ProximityAuthRemoteDeviceLifeCycleImplTest,
 
   StartLifeCycle();
   SimulateFailureToAuthenticateConnection(
-      chromeos::secure_channel::mojom::ConnectionAttemptFailureReason::
+      ash::secure_channel::mojom::ConnectionAttemptFailureReason::
           AUTHENTICATION_ERROR /* failure_reason */,
       RemoteDeviceLifeCycle::State::
           AUTHENTICATION_FAILED /* expected_life_cycle_state */);
@@ -196,7 +195,7 @@ TEST_F(ProximityAuthRemoteDeviceLifeCycleImplTest,
 
   StartLifeCycle();
   SimulateFailureToAuthenticateConnection(
-      chromeos::secure_channel::mojom::ConnectionAttemptFailureReason::
+      ash::secure_channel::mojom::ConnectionAttemptFailureReason::
           ADAPTER_NOT_PRESENT /* failure_reason */,
       RemoteDeviceLifeCycle::State::STOPPED /* expected_life_cycle_state */);
 }
@@ -207,7 +206,7 @@ TEST_F(ProximityAuthRemoteDeviceLifeCycleImplTest,
 
   StartLifeCycle();
   SimulateFailureToAuthenticateConnection(
-      chromeos::secure_channel::mojom::ConnectionAttemptFailureReason::
+      ash::secure_channel::mojom::ConnectionAttemptFailureReason::
           ADAPTER_DISABLED /* failure_reason */,
       RemoteDeviceLifeCycle::State::STOPPED /* expected_life_cycle_state */);
 }

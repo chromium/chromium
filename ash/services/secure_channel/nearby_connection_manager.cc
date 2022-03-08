@@ -10,9 +10,6 @@
 
 namespace ash::secure_channel {
 
-// TODO(https://crbug.com/1164001): remove after the migration is finished.
-namespace mojom = ::chromeos::secure_channel::mojom;
-
 NearbyConnectionManager::InitiatorConnectionAttemptMetadata::
     InitiatorConnectionAttemptMetadata(
         ConnectionSuccessCallback success_callback,

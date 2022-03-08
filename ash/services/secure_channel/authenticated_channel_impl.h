@@ -24,8 +24,7 @@ class AuthenticatedChannelImpl : public AuthenticatedChannel,
   class Factory {
    public:
     static std::unique_ptr<AuthenticatedChannel> Create(
-        const std::vector<
-            chromeos::secure_channel::mojom::ConnectionCreationDetail>&
+        const std::vector<mojom::ConnectionCreationDetail>&
             connection_creation_details,
         std::unique_ptr<SecureChannel> secure_channel);
     static void SetFactoryForTesting(Factory* test_factory);
@@ -33,8 +32,7 @@ class AuthenticatedChannelImpl : public AuthenticatedChannel,
    protected:
     virtual ~Factory();
     virtual std::unique_ptr<AuthenticatedChannel> CreateInstance(
-        const std::vector<
-            chromeos::secure_channel::mojom::ConnectionCreationDetail>&
+        const std::vector<mojom::ConnectionCreationDetail>&
             connection_creation_details,
         std::unique_ptr<SecureChannel> secure_channel) = 0;
 
@@ -48,23 +46,19 @@ class AuthenticatedChannelImpl : public AuthenticatedChannel,
   ~AuthenticatedChannelImpl() override;
 
  private:
-  AuthenticatedChannelImpl(
-      const std::vector<
-          chromeos::secure_channel::mojom::ConnectionCreationDetail>&
-          connection_creation_details,
-      std::unique_ptr<SecureChannel> secure_channel);
+  AuthenticatedChannelImpl(const std::vector<mojom::ConnectionCreationDetail>&
+                               connection_creation_details,
+                           std::unique_ptr<SecureChannel> secure_channel);
 
   // AuthenticatedChannel:
   void GetConnectionMetadata(
-      base::OnceCallback<void(
-          chromeos::secure_channel::mojom::ConnectionMetadataPtr)> callback)
-      override;
+      base::OnceCallback<void(mojom::ConnectionMetadataPtr)> callback) override;
   void PerformSendMessage(const std::string& feature,
                           const std::string& payload,
                           base::OnceClosure on_sent_callback) final;
   void PerformRegisterPayloadFile(
       int64_t payload_id,
-      chromeos::secure_channel::mojom::PayloadFilesPtr payload_files,
+      mojom::PayloadFilesPtr payload_files,
       FileTransferUpdateCallback file_transfer_update_callback,
       base::OnceCallback<void(bool)> registration_result_callback) final;
   void PerformDisconnection() override;
@@ -81,11 +75,10 @@ class AuthenticatedChannelImpl : public AuthenticatedChannel,
                      int sequence_number) override;
 
   void OnRssiFetched(
-      base::OnceCallback<void(
-          chromeos::secure_channel::mojom::ConnectionMetadataPtr)> callback,
+      base::OnceCallback<void(mojom::ConnectionMetadataPtr)> callback,
       absl::optional<int32_t> current_rssi);
 
-  const std::vector<chromeos::secure_channel::mojom::ConnectionCreationDetail>
+  const std::vector<mojom::ConnectionCreationDetail>
       connection_creation_details_;
   std::unique_ptr<SecureChannel> secure_channel_;
   std::unordered_map<int, base::OnceClosure> sequence_number_to_callback_map_;

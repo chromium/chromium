@@ -69,7 +69,7 @@ class FakeSecureChannelConnection : public SecureChannel {
                   const std::string& payload) override;
   void RegisterPayloadFile(
       int64_t payload_id,
-      chromeos::secure_channel::mojom::PayloadFilesPtr payload_files,
+      mojom::PayloadFilesPtr payload_files,
       FileTransferUpdateCallback file_transfer_update_callback,
       base::OnceCallback<void(bool)> registration_result_callback) override;
   void Disconnect() override;

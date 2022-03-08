@@ -23,12 +23,12 @@ mojom("mojom") {
     {
       types = [
         {
-          mojom = "chromeos.secure_channel.mojom.ConnectionMedium"
-          cpp = "::chromeos::secure_channel::ConnectionMedium"
+          mojom = "ash.secure_channel.mojom.ConnectionMedium"
+          cpp = "::ash::secure_channel::ConnectionMedium"
         },
         {
-          mojom = "chromeos.secure_channel.mojom.ConnectionPriority"
-          cpp = "::chromeos::secure_channel::ConnectionPriority"
+          mojom = "ash.secure_channel.mojom.ConnectionPriority"
+          cpp = "::ash::secure_channel::ConnectionPriority"
         },
       ]
 

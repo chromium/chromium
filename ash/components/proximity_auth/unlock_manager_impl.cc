@@ -255,8 +255,8 @@ void UnlockManagerImpl::OnLifeCycleStateChanged(
 
   // Note: though the name is AUTHENTICATION_FAILED, this state actually
   // encompasses any connection failure in
-  // |secure_channel::mojom::ConnectionAttemptFailureReason| beside Bluetooth
-  // becoming disabled. See https://crbug.com/991644 for more.
+  // `ash::secure_channel::mojom::ConnectionAttemptFailureReason` beside
+  // Bluetooth becoming disabled. See https://crbug.com/991644 for more.
   if (new_state == RemoteDeviceLifeCycle::State::AUTHENTICATION_FAILED) {
     PA_LOG(ERROR) << "Connection attempt to host failed.";
 
@@ -575,8 +575,7 @@ void UnlockManagerImpl::SendSignInChallenge() {
 }
 
 void UnlockManagerImpl::OnGetConnectionMetadata(
-    chromeos::secure_channel::mojom::ConnectionMetadataPtr
-        connection_metadata_ptr) {
+    ash::secure_channel::mojom::ConnectionMetadataPtr connection_metadata_ptr) {
   chromeos::multidevice::RemoteDeviceRef remote_device =
       life_cycle_->GetRemoteDevice();
   proximity_auth_client_->GetChallengeForUserAndDevice(

@@ -33,13 +33,11 @@ class SingleClientProxy {
                                         base::OnceClosure on_sent_callback) = 0;
     virtual void RegisterPayloadFile(
         int64_t payload_id,
-        chromeos::secure_channel::mojom::PayloadFilesPtr payload_files,
+        mojom::PayloadFilesPtr payload_files,
         FileTransferUpdateCallback file_transfer_update_callback,
         base::OnceCallback<void(bool)> registration_result_callback) = 0;
     virtual void GetConnectionMetadata(
-        base::OnceCallback<
-            void(chromeos::secure_channel::mojom::ConnectionMetadataPtr)>
-            callback) = 0;
+        base::OnceCallback<void(mojom::ConnectionMetadataPtr)> callback) = 0;
     virtual void OnClientDisconnected(
         const base::UnguessableToken& proxy_id) = 0;
   };
@@ -69,12 +67,11 @@ class SingleClientProxy {
   void NotifyClientDisconnected();
   void RegisterPayloadFileWithDelegate(
       int64_t payload_id,
-      chromeos::secure_channel::mojom::PayloadFilesPtr payload_files,
+      mojom::PayloadFilesPtr payload_files,
       FileTransferUpdateCallback file_transfer_update_callback,
       base::OnceCallback<void(bool)> registration_result_callback);
   void GetConnectionMetadataFromDelegate(
-      base::OnceCallback<void(
-          chromeos::secure_channel::mojom::ConnectionMetadataPtr)> callback);
+      base::OnceCallback<void(mojom::ConnectionMetadataPtr)> callback);
 
  private:
   Delegate* delegate_;

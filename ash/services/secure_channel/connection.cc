@@ -17,9 +17,6 @@
 
 namespace ash::secure_channel {
 
-// TODO(https://crbug.com/1164001): remove after the migration is finished.
-namespace mojom = ::chromeos::secure_channel::mojom;
-
 Connection::Connection(multidevice::RemoteDeviceRef remote_device)
     : remote_device_(remote_device),
       status_(Status::DISCONNECTED),

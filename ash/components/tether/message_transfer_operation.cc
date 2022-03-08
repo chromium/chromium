@@ -53,8 +53,7 @@ MessageTransferOperation::ConnectionAttemptDelegate::
 
 void MessageTransferOperation::ConnectionAttemptDelegate::
     OnConnectionAttemptFailure(
-        chromeos::secure_channel::mojom::ConnectionAttemptFailureReason
-            reason) {
+        secure_channel::mojom::ConnectionAttemptFailureReason reason) {
   operation_->OnConnectionAttemptFailure(remote_device_, reason);
 }
 
@@ -88,7 +87,7 @@ void MessageTransferOperation::ClientChannelObserver::OnMessageReceived(
 
 MessageTransferOperation::MessageTransferOperation(
     const multidevice::RemoteDeviceRefList& devices_to_connect,
-    chromeos::secure_channel::ConnectionPriority connection_priority,
+    secure_channel::ConnectionPriority connection_priority,
     device_sync::DeviceSyncClient* device_sync_client,
     secure_channel::SecureChannelClient* secure_channel_client)
     : remote_devices_(RemoveDuplicatesFromVector(devices_to_connect)),
@@ -214,7 +213,7 @@ uint32_t MessageTransferOperation::GetMessageTimeoutSeconds() {
 
 void MessageTransferOperation::OnConnectionAttemptFailure(
     multidevice::RemoteDeviceRef remote_device,
-    chromeos::secure_channel::mojom::ConnectionAttemptFailureReason reason) {
+    secure_channel::mojom::ConnectionAttemptFailureReason reason) {
   PA_LOG(WARNING) << "Failed to connect to device "
                   << remote_device.GetTruncatedDeviceIdForLogs()
                   << ", error: " << reason;

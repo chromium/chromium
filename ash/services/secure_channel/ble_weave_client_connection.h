@@ -158,7 +158,7 @@ class BluetoothLowEnergyWeaveClientConnection
   void OnDidSendMessage(const WireMessage& message, bool success) override;
   void RegisterPayloadFileImpl(
       int64_t payload_id,
-      chromeos::secure_channel::mojom::PayloadFilesPtr payload_files,
+      mojom::PayloadFilesPtr payload_files,
       FileTransferUpdateCallback file_transfer_update_callback,
       base::OnceCallback<void(bool)> registration_result_callback) override;
 

@@ -24,7 +24,7 @@ namespace ash::secure_channel {
 // disconnected, clients should use set_connection_error_with_reason_handler()
 // and wait for a connection error with reason
 // mojom::Channel::kConnectionDroppedReason.
-class ChannelImpl : public chromeos::secure_channel::mojom::Channel {
+class ChannelImpl : public mojom::Channel {
  public:
   class Delegate {
    public:
@@ -33,13 +33,11 @@ class ChannelImpl : public chromeos::secure_channel::mojom::Channel {
                                         base::OnceClosure on_sent_callback) = 0;
     virtual void RegisterPayloadFile(
         int64_t payload_id,
-        chromeos::secure_channel::mojom::PayloadFilesPtr payload_files,
+        mojom::PayloadFilesPtr payload_files,
         FileTransferUpdateCallback file_transfer_update_callback,
         base::OnceCallback<void(bool)> registration_result_callback) = 0;
     virtual void GetConnectionMetadata(
-        base::OnceCallback<
-            void(chromeos::secure_channel::mojom::ConnectionMetadataPtr)>
-            callback) = 0;
+        base::OnceCallback<void(mojom::ConnectionMetadataPtr)> callback) = 0;
     virtual void OnClientDisconnected() = 0;
   };
 
@@ -52,8 +50,7 @@ class ChannelImpl : public chromeos::secure_channel::mojom::Channel {
 
   // Generates a mojo::PendingRemote<Channel> for this instance; can only be
   // called once.
-  mojo::PendingRemote<chromeos::secure_channel::mojom::Channel>
-  GenerateRemote();
+  mojo::PendingRemote<mojom::Channel> GenerateRemote();
 
   // Should be called when the underlying connection to the remote device has
   // been disconnected (e.g., because the other device closed the connection or
@@ -66,36 +63,32 @@ class ChannelImpl : public chromeos::secure_channel::mojom::Channel {
                    SendMessageCallback callback) override;
   void RegisterPayloadFile(
       int64_t payload_id,
-      chromeos::secure_channel::mojom::PayloadFilesPtr payload_files,
-      mojo::PendingRemote<chromeos::secure_channel::mojom::FilePayloadListener>
-          listener,
+      mojom::PayloadFilesPtr payload_files,
+      mojo::PendingRemote<mojom::FilePayloadListener> listener,
       RegisterPayloadFileCallback callback) override;
   void GetConnectionMetadata(GetConnectionMetadataCallback callback) override;
 
   void OnConnectionMetadataFetchedFromDelegate(
       GetConnectionMetadataCallback callback,
-      chromeos::secure_channel::mojom::ConnectionMetadataPtr
-          connection_metadata_from_delegate);
+      mojom::ConnectionMetadataPtr connection_metadata_from_delegate);
 
   void OnBindingDisconnected();
 
   void OnRegisterPayloadFileResult(RegisterPayloadFileCallback callback,
                                    mojo::RemoteSetElementId listener_remote_id,
                                    bool success);
-  void NotifyFileTransferUpdate(
-      mojo::RemoteSetElementId listener_remote_id,
-      chromeos::secure_channel::mojom::FileTransferUpdatePtr update);
+  void NotifyFileTransferUpdate(mojo::RemoteSetElementId listener_remote_id,
+                                mojom::FileTransferUpdatePtr update);
 
   Delegate* delegate_;
-  mojo::Receiver<chromeos::secure_channel::mojom::Channel> receiver_{this};
+  mojo::Receiver<mojom::Channel> receiver_{this};
 
   // Set of FilePayloadListener remote endpoints passed from
   // RegisterPayloadFile(). These remotes will be removed when their
   // corresponding file transfer has been completed. They will also be
   // automatically removed from the set when their corresponding pipe
   // is disconnected.
-  mojo::RemoteSet<chromeos::secure_channel::mojom::FilePayloadListener>
-      file_payload_listener_remotes_;
+  mojo::RemoteSet<mojom::FilePayloadListener> file_payload_listener_remotes_;
 
   base::WeakPtrFactory<ChannelImpl> weak_ptr_factory_{this};
 };

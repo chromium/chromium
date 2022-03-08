@@ -20,10 +20,6 @@ namespace ash {
 namespace secure_channel {
 namespace {
 
-// TODO(https://crbug.com/1164001): remove after
-// ash/services/secure_channel is moved to namespace ash.
-namespace mojom = ::chromeos::secure_channel::mojom;
-
 using ::location::nearby::connections::mojom::DiscoveredEndpointInfo;
 using ::location::nearby::connections::mojom::DiscoveredEndpointInfoPtr;
 using ::location::nearby::connections::mojom::EndpointDiscoveryListener;

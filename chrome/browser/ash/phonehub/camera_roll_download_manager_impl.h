@@ -37,7 +37,7 @@ class CameraRollDownloadManagerImpl
       const proto::CameraRollItemMetadata& item_metadata,
       CreatePayloadFilesCallback payload_files_callback) override;
   void UpdateDownloadProgress(
-      chromeos::secure_channel::mojom::FileTransferUpdatePtr update) override;
+      secure_channel::mojom::FileTransferUpdatePtr update) override;
   void DeleteFile(int64_t payload_id) override;
 
  private:
@@ -73,7 +73,7 @@ class CameraRollDownloadManagerImpl
       const base::FilePath& file_path,
       int64_t file_size_bytes,
       CreatePayloadFilesCallback payload_files_callback,
-      chromeos::secure_channel::mojom::PayloadFilesPtr payload_files);
+      secure_channel::mojom::PayloadFilesPtr payload_files);
   int CalculateItemTransferRate(const DownloadItem& download_item) const;
 
   const base::FilePath download_path_;

@@ -15,9 +15,8 @@
 namespace ash::secure_channel {
 
 // Concrete implementation of ConnectionAttempt.
-class ConnectionAttemptImpl
-    : public ConnectionAttempt,
-      public chromeos::secure_channel::mojom::ConnectionDelegate {
+class ConnectionAttemptImpl : public ConnectionAttempt,
+                              public mojom::ConnectionDelegate {
  public:
   class Factory {
    public:
@@ -37,24 +36,20 @@ class ConnectionAttemptImpl
 
   ~ConnectionAttemptImpl() override;
 
-  mojo::PendingRemote<chromeos::secure_channel::mojom::ConnectionDelegate>
-  GenerateRemote();
+  mojo::PendingRemote<mojom::ConnectionDelegate> GenerateRemote();
 
  protected:
   ConnectionAttemptImpl();
 
   // mojom::ConnectionDelegate:
   void OnConnectionAttemptFailure(
-      chromeos::secure_channel::mojom::ConnectionAttemptFailureReason reason)
-      override;
-  void OnConnection(
-      mojo::PendingRemote<chromeos::secure_channel::mojom::Channel> channel,
-      mojo::PendingReceiver<chromeos::secure_channel::mojom::MessageReceiver>
-          message_receiver_receiver) override;
+      mojom::ConnectionAttemptFailureReason reason) override;
+  void OnConnection(mojo::PendingRemote<mojom::Channel> channel,
+                    mojo::PendingReceiver<mojom::MessageReceiver>
+                        message_receiver_receiver) override;
 
  private:
-  mojo::Receiver<chromeos::secure_channel::mojom::ConnectionDelegate> receiver_{
-      this};
+  mojo::Receiver<mojom::ConnectionDelegate> receiver_{this};
 
   base::WeakPtrFactory<ConnectionAttemptImpl> weak_ptr_factory_{this};
 };

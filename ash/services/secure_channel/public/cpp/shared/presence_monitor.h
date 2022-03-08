@@ -7,13 +7,10 @@
 
 #include "base/callback.h"
 
-namespace chromeos {
+// TODO(https://crbug.com/1164001): move to forward declaration.
+#include "chromeos/components/multidevice/remote_device.h"
 
-namespace multidevice {
-struct RemoteDevice;
-}  // namespace multidevice
-
-namespace secure_channel {
+namespace ash::secure_channel {
 
 // Monitors device proximity while a secure channel is active.
 class PresenceMonitor {
@@ -38,12 +35,6 @@ class PresenceMonitor {
   PresenceMonitor() = default;
 };
 
-}  // namespace secure_channel
-}  // namespace chromeos
-
-// TODO(https://crbug.com/1164001): remove after the migration is finished.
-namespace ash::secure_channel {
-using ::chromeos::secure_channel::PresenceMonitor;
-}
+}  // namespace ash::secure_channel
 
 #endif  // ASH_SERVICES_SECURE_CHANNEL_PUBLIC_CPP_SHARED_PRESENCE_MONITOR_H_

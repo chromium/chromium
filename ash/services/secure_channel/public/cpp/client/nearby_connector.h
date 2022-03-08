@@ -11,18 +11,15 @@
 namespace ash::secure_channel {
 
 // Provides Nearby Connections functionality to the SecureChannel service.
-class NearbyConnector
-    : public chromeos::secure_channel::mojom::NearbyConnector {
+class NearbyConnector : public mojom::NearbyConnector {
  public:
   NearbyConnector();
   ~NearbyConnector() override;
 
-  mojo::PendingRemote<chromeos::secure_channel::mojom::NearbyConnector>
-  GeneratePendingRemote();
+  mojo::PendingRemote<mojom::NearbyConnector> GeneratePendingRemote();
 
  private:
-  mojo::ReceiverSet<chromeos::secure_channel::mojom::NearbyConnector>
-      receiver_set_;
+  mojo::ReceiverSet<mojom::NearbyConnector> receiver_set_;
 };
 
 }  // namespace ash::secure_channel

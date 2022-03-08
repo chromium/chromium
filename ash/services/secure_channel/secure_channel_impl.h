@@ -40,20 +40,19 @@ class TimerFactory;
 // (2) ActiveConnectionManager: Maintains connections to remote devices, sharing
 //     a single connection with multiple clients when appropriate.
 // (3) RemoteDeviceCache: Caches devices within this service.
-class SecureChannelImpl : public chromeos::secure_channel::mojom::SecureChannel,
+class SecureChannelImpl : public mojom::SecureChannel,
                           public ActiveConnectionManager::Delegate,
                           public PendingConnectionManager::Delegate {
  public:
   class Factory {
    public:
-    static std::unique_ptr<chromeos::secure_channel::mojom::SecureChannel>
-    Create(scoped_refptr<device::BluetoothAdapter> bluetooth_adapter);
+    static std::unique_ptr<mojom::SecureChannel> Create(
+        scoped_refptr<device::BluetoothAdapter> bluetooth_adapter);
     static void SetFactoryForTesting(Factory* test_factory);
 
    protected:
     virtual ~Factory();
-    virtual std::unique_ptr<chromeos::secure_channel::mojom::SecureChannel>
-    CreateInstance(
+    virtual std::unique_ptr<mojom::SecureChannel> CreateInstance(
         scoped_refptr<device::BluetoothAdapter> bluetooth_adapter) = 0;
 
    private:
@@ -108,19 +107,16 @@ class SecureChannelImpl : public chromeos::secure_channel::mojom::SecureChannel,
       const std::string& feature,
       ConnectionMedium connection_medium,
       ConnectionPriority connection_priority,
-      mojo::PendingRemote<chromeos::secure_channel::mojom::ConnectionDelegate>
-          delegate) override;
+      mojo::PendingRemote<mojom::ConnectionDelegate> delegate) override;
   void InitiateConnectionToDevice(
       const multidevice::RemoteDevice& device_to_connect,
       const multidevice::RemoteDevice& local_device,
       const std::string& feature,
       ConnectionMedium connection_medium,
       ConnectionPriority connection_priority,
-      mojo::PendingRemote<chromeos::secure_channel::mojom::ConnectionDelegate>
-          delegate) override;
+      mojo::PendingRemote<mojom::ConnectionDelegate> delegate) override;
   void SetNearbyConnector(
-      mojo::PendingRemote<chromeos::secure_channel::mojom::NearbyConnector>
-          nearby_connector) override;
+      mojo::PendingRemote<mojom::NearbyConnector> nearby_connector) override;
 
   // ActiveConnectionManager::Delegate:
   void OnDisconnected(const ConnectionDetails& connection_details) override;
@@ -141,7 +137,7 @@ class SecureChannelImpl : public chromeos::secure_channel::mojom::SecureChannel,
       ConnectionMedium connection_medium);
   void RejectRequestForReason(
       ApiFunctionName api_fn_name,
-      chromeos::secure_channel::mojom::ConnectionAttemptFailureReason reason,
+      mojom::ConnectionAttemptFailureReason reason,
       ClientConnectionParameters* client_connection_parameters);
 
   // Checks if |client_connection_parameters| is invalid. Returns whether

@@ -63,8 +63,7 @@ class SecureChannelInitializer : public SecureChannelBase {
         const std::string& feature,
         ConnectionMedium connection_medium,
         ConnectionPriority connection_priority,
-        mojo::PendingRemote<chromeos::secure_channel::mojom::ConnectionDelegate>
-            delegate,
+        mojo::PendingRemote<mojom::ConnectionDelegate> delegate,
         bool is_listen_request);
     ~ConnectionRequestArgs();
 
@@ -73,8 +72,7 @@ class SecureChannelInitializer : public SecureChannelBase {
     std::string feature;
     ConnectionMedium connection_medium;
     ConnectionPriority connection_priority;
-    mojo::PendingRemote<chromeos::secure_channel::mojom::ConnectionDelegate>
-        delegate;
+    mojo::PendingRemote<mojom::ConnectionDelegate> delegate;
     bool is_listen_request;
   };
 
@@ -85,28 +83,23 @@ class SecureChannelInitializer : public SecureChannelBase {
       const std::string& feature,
       ConnectionMedium connection_medium,
       ConnectionPriority connection_priority,
-      mojo::PendingRemote<chromeos::secure_channel::mojom::ConnectionDelegate>
-          delegate) override;
+      mojo::PendingRemote<mojom::ConnectionDelegate> delegate) override;
   void InitiateConnectionToDevice(
       const multidevice::RemoteDevice& device_to_connect,
       const multidevice::RemoteDevice& local_device,
       const std::string& feature,
       ConnectionMedium connection_medium,
       ConnectionPriority connection_priority,
-      mojo::PendingRemote<chromeos::secure_channel::mojom::ConnectionDelegate>
-          delegate) override;
+      mojo::PendingRemote<mojom::ConnectionDelegate> delegate) override;
   void SetNearbyConnector(
-      mojo::PendingRemote<chromeos::secure_channel::mojom::NearbyConnector>
-          nearby_connector) override;
+      mojo::PendingRemote<mojom::NearbyConnector> nearby_connector) override;
 
   void OnBluetoothAdapterReceived(
       scoped_refptr<device::BluetoothAdapter> bluetooth_adapter);
 
-  mojo::PendingRemote<chromeos::secure_channel::mojom::NearbyConnector>
-      nearby_connector_;
+  mojo::PendingRemote<mojom::NearbyConnector> nearby_connector_;
   std::queue<std::unique_ptr<ConnectionRequestArgs>> pending_args_;
-  std::unique_ptr<chromeos::secure_channel::mojom::SecureChannel>
-      secure_channel_impl_;
+  std::unique_ptr<mojom::SecureChannel> secure_channel_impl_;
 
   base::WeakPtrFactory<SecureChannelInitializer> weak_ptr_factory_{this};
 };

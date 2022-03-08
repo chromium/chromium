@@ -28,8 +28,7 @@ class FakeClientChannel : public ClientChannel {
   using ClientChannel::NotifyMessageReceived;
 
   void InvokePendingGetConnectionMetadataCallback(
-      chromeos::secure_channel::mojom::ConnectionMetadataPtr
-          connection_metadata);
+      mojom::ConnectionMetadataPtr connection_metadata);
 
   std::vector<std::pair<std::string, base::OnceClosure>>& sent_messages() {
     return sent_messages_;
@@ -48,23 +47,19 @@ class FakeClientChannel : public ClientChannel {
 
   // ClientChannel:
   void PerformGetConnectionMetadata(
-      base::OnceCallback<void(
-          chromeos::secure_channel::mojom::ConnectionMetadataPtr)> callback)
-      override;
+      base::OnceCallback<void(mojom::ConnectionMetadataPtr)> callback) override;
   void PerformSendMessage(const std::string& payload,
                           base::OnceClosure on_sent_callback) override;
   void PerformRegisterPayloadFile(
       int64_t payload_id,
-      chromeos::secure_channel::mojom::PayloadFilesPtr payload_files,
-      base::RepeatingCallback<
-          void(chromeos::secure_channel::mojom::FileTransferUpdatePtr)>
+      mojom::PayloadFilesPtr payload_files,
+      base::RepeatingCallback<void(mojom::FileTransferUpdatePtr)>
           file_transfer_update_callback,
       base::OnceCallback<void(bool)> registration_result_callback) override;
 
   // Queues up callbacks passed into PerformGetConnectionMetadata(), to be
   // invoked later.
-  std::queue<base::OnceCallback<void(
-      chromeos::secure_channel::mojom::ConnectionMetadataPtr)>>
+  std::queue<base::OnceCallback<void(mojom::ConnectionMetadataPtr)>>
       get_connection_metadata_callback_queue_;
   std::vector<std::pair<std::string, base::OnceClosure>> sent_messages_;
   std::vector<int64_t> registered_file_payloads_;

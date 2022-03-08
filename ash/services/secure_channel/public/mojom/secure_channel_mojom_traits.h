@@ -13,24 +13,23 @@
 namespace mojo {
 
 template <>
-class EnumTraits<chromeos::secure_channel::mojom::ConnectionMedium,
-                 chromeos::secure_channel::ConnectionMedium> {
+class EnumTraits<ash::secure_channel::mojom::ConnectionMedium,
+                 ash::secure_channel::ConnectionMedium> {
  public:
-  static chromeos::secure_channel::mojom::ConnectionMedium ToMojom(
-      chromeos::secure_channel::ConnectionMedium input);
-  static bool FromMojom(chromeos::secure_channel::mojom::ConnectionMedium input,
-                        chromeos::secure_channel::ConnectionMedium* out);
+  static ash::secure_channel::mojom::ConnectionMedium ToMojom(
+      ash::secure_channel::ConnectionMedium input);
+  static bool FromMojom(ash::secure_channel::mojom::ConnectionMedium input,
+                        ash::secure_channel::ConnectionMedium* out);
 };
 
 template <>
-class EnumTraits<chromeos::secure_channel::mojom::ConnectionPriority,
-                 chromeos::secure_channel::ConnectionPriority> {
+class EnumTraits<ash::secure_channel::mojom::ConnectionPriority,
+                 ash::secure_channel::ConnectionPriority> {
  public:
-  static chromeos::secure_channel::mojom::ConnectionPriority ToMojom(
-      chromeos::secure_channel::ConnectionPriority input);
-  static bool FromMojom(
-      chromeos::secure_channel::mojom::ConnectionPriority input,
-      chromeos::secure_channel::ConnectionPriority* out);
+  static ash::secure_channel::mojom::ConnectionPriority ToMojom(
+      ash::secure_channel::ConnectionPriority input);
+  static bool FromMojom(ash::secure_channel::mojom::ConnectionPriority input,
+                        ash::secure_channel::ConnectionPriority* out);
 };
 
 }  // namespace mojo

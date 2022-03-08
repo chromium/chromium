@@ -21,7 +21,7 @@ class ClientConnectionParametersImpl : public ClientConnectionParameters {
    public:
     static std::unique_ptr<ClientConnectionParameters> Create(
         const std::string& feature,
-        mojo::PendingRemote<chromeos::secure_channel::mojom::ConnectionDelegate>
+        mojo::PendingRemote<mojom::ConnectionDelegate>
             connection_delegate_remote);
     static void SetFactoryForTesting(Factory* test_factory);
 
@@ -29,7 +29,7 @@ class ClientConnectionParametersImpl : public ClientConnectionParameters {
     virtual ~Factory();
     virtual std::unique_ptr<ClientConnectionParameters> CreateInstance(
         const std::string& feature,
-        mojo::PendingRemote<chromeos::secure_channel::mojom::ConnectionDelegate>
+        mojo::PendingRemote<mojom::ConnectionDelegate>
             connection_delegate_remote) = 0;
 
    private:
@@ -44,25 +44,22 @@ class ClientConnectionParametersImpl : public ClientConnectionParameters {
   ~ClientConnectionParametersImpl() override;
 
  private:
-  ClientConnectionParametersImpl(
-      const std::string& feature,
-      mojo::PendingRemote<chromeos::secure_channel::mojom::ConnectionDelegate>
-          connection_delegate_remote);
+  ClientConnectionParametersImpl(const std::string& feature,
+                                 mojo::PendingRemote<mojom::ConnectionDelegate>
+                                     connection_delegate_remote);
 
   // ClientConnectionParameters:
   bool HasClientCanceledRequest() override;
   void PerformSetConnectionAttemptFailed(
-      chromeos::secure_channel::mojom::ConnectionAttemptFailureReason reason)
-      override;
+      mojom::ConnectionAttemptFailureReason reason) override;
   void PerformSetConnectionSucceeded(
-      mojo::PendingRemote<chromeos::secure_channel::mojom::Channel> channel,
-      mojo::PendingReceiver<chromeos::secure_channel::mojom::MessageReceiver>
-          message_receiver_receiver) override;
+      mojo::PendingRemote<mojom::Channel> channel,
+      mojo::PendingReceiver<mojom::MessageReceiver> message_receiver_receiver)
+      override;
 
   void OnConnectionDelegateRemoteDisconnected();
 
-  mojo::Remote<chromeos::secure_channel::mojom::ConnectionDelegate>
-      connection_delegate_remote_;
+  mojo::Remote<mojom::ConnectionDelegate> connection_delegate_remote_;
 };
 
 }  // namespace ash::secure_channel

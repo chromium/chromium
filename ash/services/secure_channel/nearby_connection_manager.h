@@ -29,8 +29,7 @@ class NearbyConnectionManager {
 
   // Note: NearbyConnector must be set before connections can be requested.
   void SetNearbyConnector(
-      mojo::PendingRemote<chromeos::secure_channel::mojom::NearbyConnector>
-          nearby_connector);
+      mojo::PendingRemote<mojom::NearbyConnector> nearby_connector);
   bool IsNearbyConnectorSet() const;
 
   using ConnectionSuccessCallback =
@@ -58,7 +57,7 @@ class NearbyConnectionManager {
   virtual void PerformCancelNearbyInitiatorConnectionAttempt(
       const DeviceIdPair& device_id_pair) = 0;
 
-  chromeos::secure_channel::mojom::NearbyConnector* GetNearbyConnector();
+  mojom::NearbyConnector* GetNearbyConnector();
 
   const base::flat_set<DeviceIdPair>& GetDeviceIdPairsForRemoteDevice(
       const std::string& remote_device_id) const;
@@ -85,8 +84,7 @@ class NearbyConnectionManager {
       const DeviceIdPair& device_id_pair);
   void RemoveRequestMetadata(const DeviceIdPair& device_id_pair);
 
-  mojo::Remote<chromeos::secure_channel::mojom::NearbyConnector>
-      nearby_connector_;
+  mojo::Remote<mojom::NearbyConnector> nearby_connector_;
   base::flat_map<std::string, base::flat_set<DeviceIdPair>>
       remote_device_id_to_id_pair_map_;
   base::flat_map<DeviceIdPair,

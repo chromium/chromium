@@ -29,24 +29,18 @@ namespace secure_channel {
 //
 // An instance of this class is only meant to be used for one connection
 // request to a single device. To make a new request, create a new object.
-class NearbyConnectionBroker
-    : public chromeos::secure_channel::mojom::NearbyMessageSender,
-      public chromeos::secure_channel::mojom::NearbyFilePayloadHandler {
+class NearbyConnectionBroker : public mojom::NearbyMessageSender,
+                               public mojom::NearbyFilePayloadHandler {
  public:
   ~NearbyConnectionBroker() override;
 
  protected:
   NearbyConnectionBroker(
       const std::vector<uint8_t>& bluetooth_public_address,
-      mojo::PendingReceiver<
-          chromeos::secure_channel::mojom::NearbyMessageSender>
-          message_sender_receiver,
-      mojo::PendingReceiver<
-          chromeos::secure_channel::mojom::NearbyFilePayloadHandler>
+      mojo::PendingReceiver<mojom::NearbyMessageSender> message_sender_receiver,
+      mojo::PendingReceiver<mojom::NearbyFilePayloadHandler>
           file_payload_handler_receiver,
-      mojo::PendingRemote<
-          chromeos::secure_channel::mojom::NearbyMessageReceiver>
-          message_receiver_remote,
+      mojo::PendingRemote<mojom::NearbyMessageReceiver> message_receiver_remote,
       base::OnceClosure on_connected_callback,
       base::OnceClosure on_disconnected_callback);
 
@@ -64,12 +58,10 @@ class NearbyConnectionBroker
 
  private:
   std::vector<uint8_t> bluetooth_public_address_;
-  mojo::Receiver<chromeos::secure_channel::mojom::NearbyMessageSender>
-      message_sender_receiver_;
-  mojo::Receiver<chromeos::secure_channel::mojom::NearbyFilePayloadHandler>
+  mojo::Receiver<mojom::NearbyMessageSender> message_sender_receiver_;
+  mojo::Receiver<mojom::NearbyFilePayloadHandler>
       file_payload_handler_receiver_;
-  mojo::Remote<chromeos::secure_channel::mojom::NearbyMessageReceiver>
-      message_receiver_remote_;
+  mojo::Remote<mojom::NearbyMessageReceiver> message_receiver_remote_;
   base::OnceClosure on_connected_callback_;
   base::OnceClosure on_disconnected_callback_;
 };

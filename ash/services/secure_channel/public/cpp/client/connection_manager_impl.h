@@ -25,15 +25,14 @@ class SecureChannelClient;
 
 // ConnectionManager implementation which utilizes SecureChannelClient to
 // establish a connection to a multidevice host.
-class ConnectionManagerImpl
-    : public ConnectionManager,
-      public secure_channel::ConnectionAttempt::Delegate,
-      public secure_channel::ClientChannel::Observer {
+class ConnectionManagerImpl : public ConnectionManager,
+                              public ConnectionAttempt::Delegate,
+                              public ClientChannel::Observer {
  public:
   ConnectionManagerImpl(
       multidevice_setup::MultiDeviceSetupClient* multidevice_setup_client,
       device_sync::DeviceSyncClient* device_sync_client,
-      secure_channel::SecureChannelClient* secure_channel_client,
+      SecureChannelClient* secure_channel_client,
       const std::string& feature_name,
       const std::string& metric_name_result,
       const std::string& metric_name_latency,
@@ -47,9 +46,8 @@ class ConnectionManagerImpl
   void SendMessage(const std::string& payload) override;
   void RegisterPayloadFile(
       int64_t payload_id,
-      chromeos::secure_channel::mojom::PayloadFilesPtr payload_files,
-      base::RepeatingCallback<
-          void(chromeos::secure_channel::mojom::FileTransferUpdatePtr)>
+      mojom::PayloadFilesPtr payload_files,
+      base::RepeatingCallback<void(mojom::FileTransferUpdatePtr)>
           file_transfer_update_callback,
       base::OnceCallback<void(bool)> registration_result_callback) override;
 
@@ -83,7 +81,7 @@ class ConnectionManagerImpl
   ConnectionManagerImpl(
       multidevice_setup::MultiDeviceSetupClient* multidevice_setup_client,
       device_sync::DeviceSyncClient* device_sync_client,
-      secure_channel::SecureChannelClient* secure_channel_client,
+      SecureChannelClient* secure_channel_client,
       std::unique_ptr<base::OneShotTimer> timer,
       const std::string& feature_name,
       const std::string& metrics_name_result,
@@ -91,14 +89,12 @@ class ConnectionManagerImpl
       const std::string& metrics_name_duration,
       base::Clock* clock);
 
-  // secure_channel::ConnectionAttempt::Delegate:
+  // ConnectionAttempt::Delegate:
   void OnConnectionAttemptFailure(
-      chromeos::secure_channel::mojom::ConnectionAttemptFailureReason reason)
-      override;
-  void OnConnection(
-      std::unique_ptr<secure_channel::ClientChannel> channel) override;
+      mojom::ConnectionAttemptFailureReason reason) override;
+  void OnConnection(std::unique_ptr<ClientChannel> channel) override;
 
-  // secure_channel::ClientChannel::Observer:
+  // ClientChannel::Observer:
   void OnDisconnected() override;
   void OnMessageReceived(const std::string& payload) override;
 
@@ -107,7 +103,7 @@ class ConnectionManagerImpl
 
   multidevice_setup::MultiDeviceSetupClient* multidevice_setup_client_;
   device_sync::DeviceSyncClient* device_sync_client_;
-  secure_channel::SecureChannelClient* secure_channel_client_;
+  SecureChannelClient* secure_channel_client_;
   std::unique_ptr<ConnectionAttempt> connection_attempt_;
   std::unique_ptr<ClientChannel> channel_;
   std::unique_ptr<base::OneShotTimer> timer_;

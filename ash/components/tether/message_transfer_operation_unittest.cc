@@ -271,7 +271,7 @@ TEST_F(MessageTransferOperationTest, TestFailedConnection) {
 
   remote_device_to_fake_connection_attempt_map_[test_devices_[0]]
       ->NotifyConnectionAttemptFailure(
-          chromeos::secure_channel::mojom::ConnectionAttemptFailureReason::
+          secure_channel::mojom::ConnectionAttemptFailureReason::
               AUTHENTICATION_ERROR);
 
   VerifyOperationStartedAndFinished(true /* has_started */,
@@ -382,7 +382,7 @@ TEST_F(MessageTransferOperationTest, MultipleDevices) {
       test_devices_[1].GetDeviceId());
   remote_device_to_fake_connection_attempt_map_[test_devices_[1]]
       ->NotifyConnectionAttemptFailure(
-          chromeos::secure_channel::mojom::ConnectionAttemptFailureReason::
+          secure_channel::mojom::ConnectionAttemptFailureReason::
               GATT_CONNECTION_ERROR);
   EXPECT_FALSE(operation_->HasDeviceAuthenticated(test_devices_[1]));
   EXPECT_FALSE(GetTimerForDevice(test_devices_[1]));
@@ -397,7 +397,7 @@ TEST_F(MessageTransferOperationTest, MultipleDevices) {
       test_devices_[3].GetDeviceId());
   remote_device_to_fake_connection_attempt_map_[test_devices_[3]]
       ->NotifyConnectionAttemptFailure(
-          chromeos::secure_channel::mojom::ConnectionAttemptFailureReason::
+          secure_channel::mojom::ConnectionAttemptFailureReason::
               GATT_CONNECTION_ERROR);
   EXPECT_FALSE(operation_->HasDeviceAuthenticated(test_devices_[3]));
   EXPECT_FALSE(GetTimerForDevice(test_devices_[3]));

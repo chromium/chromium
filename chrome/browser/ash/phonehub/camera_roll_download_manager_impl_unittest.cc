@@ -82,16 +82,16 @@ class CameraRollDownloadManagerImplTest : public testing::Test {
       const CameraRollDownloadManagerImplTest&) = delete;
   ~CameraRollDownloadManagerImplTest() override = default;
 
-  chromeos::secure_channel::mojom::PayloadFilesPtr CreatePayloadFiles(
+  secure_channel::mojom::PayloadFilesPtr CreatePayloadFiles(
       int64_t payload_id,
       const proto::CameraRollItemMetadata& item_metadata) {
-    chromeos::secure_channel::mojom::PayloadFilesPtr files_created;
+    secure_channel::mojom::PayloadFilesPtr files_created;
     base::RunLoop run_loop;
     camera_roll_download_manager()->CreatePayloadFiles(
         payload_id, item_metadata,
         base::BindLambdaForTesting(
             [&](CreatePayloadFilesResult result,
-                absl::optional<chromeos::secure_channel::mojom::PayloadFilesPtr>
+                absl::optional<secure_channel::mojom::PayloadFilesPtr>
                     payload_files) {
               EXPECT_EQ(CreatePayloadFilesResult::kSuccess, result);
               EXPECT_TRUE(payload_files.has_value());
@@ -111,7 +111,7 @@ class CameraRollDownloadManagerImplTest : public testing::Test {
         payload_id, item_metadata,
         base::BindLambdaForTesting(
             [&](CreatePayloadFilesResult result,
-                absl::optional<chromeos::secure_channel::mojom::PayloadFilesPtr>
+                absl::optional<secure_channel::mojom::PayloadFilesPtr>
                     payload_files) {
               EXPECT_NE(CreatePayloadFilesResult::kSuccess, result);
               EXPECT_FALSE(payload_files.has_value());
@@ -154,7 +154,7 @@ TEST_F(CameraRollDownloadManagerImplTest, CreatePayloadFiles) {
   item_metadata.set_file_name("IMG_0001.jpeg");
   item_metadata.set_file_size_bytes(1000);
 
-  chromeos::secure_channel::mojom::PayloadFilesPtr payload_files =
+  secure_channel::mojom::PayloadFilesPtr payload_files =
       CreatePayloadFiles(/*payload_id=*/1234, item_metadata);
 
   EXPECT_TRUE(payload_files->input_file.IsValid());
@@ -246,9 +246,9 @@ TEST_F(CameraRollDownloadManagerImplTest, UpdateDownloadProgress) {
 
   task_environment_.FastForwardBy(base::Seconds(10));
   camera_roll_download_manager()->UpdateDownloadProgress(
-      chromeos::secure_channel::mojom::FileTransferUpdate::New(
+      secure_channel::mojom::FileTransferUpdate::New(
           /*payload_id=*/1234,
-          chromeos::secure_channel::mojom::FileTransferStatus::kInProgress,
+          secure_channel::mojom::FileTransferStatus::kInProgress,
           /*total_bytes=*/file_size_bytes,
           /*bytes_transferred=*/file_size_bytes / 2));
 
@@ -262,9 +262,9 @@ TEST_F(CameraRollDownloadManagerImplTest, UpdateDownloadProgress) {
 
   task_environment_.FastForwardBy(base::Seconds(5));
   camera_roll_download_manager()->UpdateDownloadProgress(
-      chromeos::secure_channel::mojom::FileTransferUpdate::New(
+      secure_channel::mojom::FileTransferUpdate::New(
           /*payload_id=*/1234,
-          chromeos::secure_channel::mojom::FileTransferStatus::kSuccess,
+          secure_channel::mojom::FileTransferStatus::kSuccess,
           /*total_bytes=*/file_size_bytes,
           /*bytes_transferred=*/file_size_bytes));
   EXPECT_TRUE(holding_space_item->progress().IsComplete());
@@ -287,15 +287,15 @@ TEST_F(CameraRollDownloadManagerImplTest,
   CreatePayloadFiles(/*payload_id=*/-5678, item_metadata_2);
 
   camera_roll_download_manager()->UpdateDownloadProgress(
-      chromeos::secure_channel::mojom::FileTransferUpdate::New(
+      secure_channel::mojom::FileTransferUpdate::New(
           /*payload_id=*/1234,
-          chromeos::secure_channel::mojom::FileTransferStatus::kSuccess,
+          secure_channel::mojom::FileTransferStatus::kSuccess,
           /*total_bytes=*/1000,
           /*bytes_transferred=*/1000));
   camera_roll_download_manager()->UpdateDownloadProgress(
-      chromeos::secure_channel::mojom::FileTransferUpdate::New(
+      secure_channel::mojom::FileTransferUpdate::New(
           /*payload_id=*/-5678,
-          chromeos::secure_channel::mojom::FileTransferStatus::kInProgress,
+          secure_channel::mojom::FileTransferStatus::kInProgress,
           /*total_bytes=*/2000,
           /*bytes_transferred=*/200));
 
@@ -321,16 +321,16 @@ TEST_F(CameraRollDownloadManagerImplTest,
   CreatePayloadFiles(/*payload_id=*/1234, item_metadata);
 
   camera_roll_download_manager()->UpdateDownloadProgress(
-      chromeos::secure_channel::mojom::FileTransferUpdate::New(
+      secure_channel::mojom::FileTransferUpdate::New(
           /*payload_id=*/1234,
-          chromeos::secure_channel::mojom::FileTransferStatus::kSuccess,
+          secure_channel::mojom::FileTransferStatus::kSuccess,
           /*total_bytes=*/1000,
           /*bytes_transferred=*/1000));
   // Subsequent updates should be ignored once a download is complete.
   camera_roll_download_manager()->UpdateDownloadProgress(
-      chromeos::secure_channel::mojom::FileTransferUpdate::New(
+      secure_channel::mojom::FileTransferUpdate::New(
           /*payload_id=*/1234,
-          chromeos::secure_channel::mojom::FileTransferStatus::kInProgress,
+          secure_channel::mojom::FileTransferStatus::kInProgress,
           /*total_bytes=*/2000,
           /*bytes_transferred=*/1000));
 
@@ -358,9 +358,9 @@ TEST_F(CameraRollDownloadManagerImplTest, CleanupFailedItem) {
                     }));
 
   camera_roll_download_manager()->UpdateDownloadProgress(
-      chromeos::secure_channel::mojom::FileTransferUpdate::New(
+      secure_channel::mojom::FileTransferUpdate::New(
           /*payload_id=*/1234,
-          chromeos::secure_channel::mojom::FileTransferStatus::kFailure,
+          secure_channel::mojom::FileTransferStatus::kFailure,
           /*total_bytes=*/1000,
           /*bytes_transferred=*/200));
   delete_file_run_loop.Run();

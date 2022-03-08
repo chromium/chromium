@@ -78,14 +78,13 @@ class CameraRollManagerImpl
   void OnPayloadFilesCreated(
       const proto::FetchCameraRollItemDataResponse& response,
       CameraRollDownloadManager::CreatePayloadFilesResult result,
-      absl::optional<chromeos::secure_channel::mojom::PayloadFilesPtr>
-          payload_files);
+      absl::optional<secure_channel::mojom::PayloadFilesPtr> payload_files);
   void OnPayloadFileRegistered(const proto::CameraRollItemMetadata& metadata,
                                int64_t payload_id,
                                bool success);
   void OnFileTransferUpdate(
       const proto::CameraRollItemMetadata& metadata,
-      chromeos::secure_channel::mojom::FileTransferUpdatePtr update);
+      secure_channel::mojom::FileTransferUpdatePtr update);
 
   bool IsCameraRollSettingEnabled();
   void UpdateCameraRollAccessStateAndNotifyIfNeeded(

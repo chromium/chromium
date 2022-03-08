@@ -70,7 +70,7 @@ class RemoteDeviceLifeCycleImpl
 
   // ash::secure_channel::ConnectionAttempt::Delegate:
   void OnConnectionAttemptFailure(
-      chromeos::secure_channel::mojom::ConnectionAttemptFailureReason reason)
+      ash::secure_channel::mojom::ConnectionAttemptFailureReason reason)
       override;
   void OnConnection(
       std::unique_ptr<ash::secure_channel::ClientChannel> channel) override;

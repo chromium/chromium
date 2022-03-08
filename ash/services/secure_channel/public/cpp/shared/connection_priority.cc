@@ -4,9 +4,7 @@
 
 #include "ash/services/secure_channel/public/cpp/shared/connection_priority.h"
 
-namespace chromeos {
-
-namespace secure_channel {
+namespace ash::secure_channel {
 
 std::ostream& operator<<(std::ostream& stream,
                          const ConnectionPriority& connection_priority) {
@@ -24,6 +22,4 @@ std::ostream& operator<<(std::ostream& stream,
   return stream;
 }
 
-}  // namespace secure_channel
-
-}  // namespace chromeos
+}  // namespace ash::secure_channel

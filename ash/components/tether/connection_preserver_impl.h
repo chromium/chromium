@@ -59,8 +59,7 @@ class ConnectionPreserverImpl
  protected:
   // secure_channel::ConnectionAttempt::Delegate:
   void OnConnectionAttemptFailure(
-      chromeos::secure_channel::mojom::ConnectionAttemptFailureReason reason)
-      override;
+      secure_channel::mojom::ConnectionAttemptFailureReason reason) override;
   void OnConnection(
       std::unique_ptr<secure_channel::ClientChannel> channel) override;
 

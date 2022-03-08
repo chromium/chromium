@@ -24,15 +24,14 @@ void FakeCameraRollDownloadManager::CreatePayloadFiles(
     int64_t payload_id,
     const phonehub::proto::CameraRollItemMetadata& item_metadata,
     CreatePayloadFilesCallback payload_files_callback) {
-  absl::optional<chromeos::secure_channel::mojom::PayloadFilesPtr>
-      payload_files;
+  absl::optional<secure_channel::mojom::PayloadFilesPtr> payload_files;
   if (expected_create_payload_files_result_ ==
       CreatePayloadFilesResult::kSuccess) {
-    payload_files = absl::make_optional(
-        chromeos::secure_channel::mojom::PayloadFiles::New());
+    payload_files =
+        absl::make_optional(secure_channel::mojom::PayloadFiles::New());
     payload_update_map_.emplace(
         payload_id,
-        std::vector<chromeos::secure_channel::mojom::FileTransferUpdatePtr>());
+        std::vector<secure_channel::mojom::FileTransferUpdatePtr>());
   } else {
     payload_files = absl::nullopt;
   }
@@ -41,7 +40,7 @@ void FakeCameraRollDownloadManager::CreatePayloadFiles(
 }
 
 void FakeCameraRollDownloadManager::UpdateDownloadProgress(
-    chromeos::secure_channel::mojom::FileTransferUpdatePtr update) {
+    secure_channel::mojom::FileTransferUpdatePtr update) {
   payload_update_map_.at(update->payload_id).push_back(std::move(update));
 }
 
@@ -49,7 +48,7 @@ void FakeCameraRollDownloadManager::DeleteFile(int64_t payload_id) {
   payload_update_map_.erase(payload_id);
 }
 
-const std::vector<chromeos::secure_channel::mojom::FileTransferUpdatePtr>&
+const std::vector<secure_channel::mojom::FileTransferUpdatePtr>&
 FakeCameraRollDownloadManager::GetFileTransferUpdates(
     int64_t payload_id) const {
   return payload_update_map_.at(payload_id);

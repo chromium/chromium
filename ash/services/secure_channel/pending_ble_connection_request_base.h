@@ -56,8 +56,7 @@ class PendingBleConnectionRequestBase
       return;
 
     this->StopRequestDueToConnectionFailures(
-        chromeos::secure_channel::mojom::ConnectionAttemptFailureReason::
-            ADAPTER_DISABLED);
+        mojom::ConnectionAttemptFailureReason::ADAPTER_DISABLED);
   }
 
   void AdapterPresentChanged(device::BluetoothAdapter* adapter,
@@ -67,8 +66,7 @@ class PendingBleConnectionRequestBase
       return;
 
     this->StopRequestDueToConnectionFailures(
-        chromeos::secure_channel::mojom::ConnectionAttemptFailureReason::
-            ADAPTER_NOT_PRESENT);
+        mojom::ConnectionAttemptFailureReason::ADAPTER_NOT_PRESENT);
   }
 
   scoped_refptr<device::BluetoothAdapter> bluetooth_adapter_;

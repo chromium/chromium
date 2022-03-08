@@ -59,7 +59,7 @@ class Connection {
   // |file_transfer_update_callback| if the registration was successful.
   void RegisterPayloadFile(
       int64_t payload_id,
-      chromeos::secure_channel::mojom::PayloadFilesPtr payload_files,
+      mojom::PayloadFilesPtr payload_files,
       FileTransferUpdateCallback file_transfer_update_callback,
       base::OnceCallback<void(bool)> registration_result_callback);
 
@@ -113,7 +113,7 @@ class Connection {
   // or false if the operation is not supported.
   virtual void RegisterPayloadFileImpl(
       int64_t payload_id,
-      chromeos::secure_channel::mojom::PayloadFilesPtr payload_files,
+      mojom::PayloadFilesPtr payload_files,
       FileTransferUpdateCallback file_transfer_update_callback,
       base::OnceCallback<void(bool)> registration_result_callback) = 0;
 

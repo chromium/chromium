@@ -7,10 +7,6 @@
 namespace ash {
 namespace secure_channel {
 
-// TODO(https://crbug.com/1164001): remove after
-// ash/services/secure_channel is moved to namespace ash.
-namespace mojom = ::chromeos::secure_channel::mojom;
-
 FakeNearbyConnectionBroker::FakeNearbyConnectionBroker(
     const std::vector<uint8_t>& bluetooth_public_address,
     mojo::PendingReceiver<mojom::NearbyMessageSender> message_sender_receiver,

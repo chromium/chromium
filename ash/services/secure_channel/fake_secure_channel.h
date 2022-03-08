@@ -28,13 +28,11 @@ class FakeSecureChannel : public SecureChannelBase {
 
   ~FakeSecureChannel() override;
 
-  mojo::Remote<chromeos::secure_channel::mojom::ConnectionDelegate>
-  delegate_from_last_listen_call() {
+  mojo::Remote<mojom::ConnectionDelegate> delegate_from_last_listen_call() {
     return std::move(delegate_from_last_listen_call_);
   }
 
-  mojo::Remote<chromeos::secure_channel::mojom::ConnectionDelegate>
-  delegate_from_last_initiate_call() {
+  mojo::Remote<mojom::ConnectionDelegate> delegate_from_last_initiate_call() {
     return std::move(delegate_from_last_initiate_call_);
   }
 
@@ -46,24 +44,19 @@ class FakeSecureChannel : public SecureChannelBase {
       const std::string& feature,
       ConnectionMedium connection_medium,
       ConnectionPriority connection_priority,
-      mojo::PendingRemote<chromeos::secure_channel::mojom::ConnectionDelegate>
-          delegate) override;
+      mojo::PendingRemote<mojom::ConnectionDelegate> delegate) override;
   void InitiateConnectionToDevice(
       const multidevice::RemoteDevice& device_to_connect,
       const multidevice::RemoteDevice& local_device,
       const std::string& feature,
       ConnectionMedium connection_medium,
       ConnectionPriority connection_priority,
-      mojo::PendingRemote<chromeos::secure_channel::mojom::ConnectionDelegate>
-          delegate) override;
+      mojo::PendingRemote<mojom::ConnectionDelegate> delegate) override;
   void SetNearbyConnector(
-      mojo::PendingRemote<chromeos::secure_channel::mojom::NearbyConnector>
-          nearby_connector) override {}
+      mojo::PendingRemote<mojom::NearbyConnector> nearby_connector) override {}
 
-  mojo::Remote<chromeos::secure_channel::mojom::ConnectionDelegate>
-      delegate_from_last_listen_call_;
-  mojo::Remote<chromeos::secure_channel::mojom::ConnectionDelegate>
-      delegate_from_last_initiate_call_;
+  mojo::Remote<mojom::ConnectionDelegate> delegate_from_last_listen_call_;
+  mojo::Remote<mojom::ConnectionDelegate> delegate_from_last_initiate_call_;
 };
 
 }  // namespace ash::secure_channel

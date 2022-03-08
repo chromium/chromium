@@ -9,9 +9,6 @@
 
 namespace ash::secure_channel {
 
-// TODO(https://crbug.com/1164001): remove after the migration is finished.
-namespace mojom = ::chromeos::secure_channel::mojom;
-
 FakeConnectionManager::FakeConnectionManager()
     : status_(Status::kDisconnected) {}
 
@@ -25,8 +22,7 @@ void FakeConnectionManager::SetStatus(Status status) {
   NotifyStatusChanged();
 }
 
-secure_channel::ConnectionManager::Status FakeConnectionManager::GetStatus()
-    const {
+ConnectionManager::Status FakeConnectionManager::GetStatus() const {
   return status_;
 }
 

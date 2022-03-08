@@ -74,7 +74,7 @@ class MockMessenger : public Messenger {
   MOCK_METHOD0(DispatchUnlockEvent, void());
   MOCK_METHOD1(RequestDecryption, void(const std::string& challenge));
   MOCK_METHOD0(RequestUnlock, void());
-  MOCK_CONST_METHOD0(GetConnection, chromeos::secure_channel::Connection*());
+  MOCK_CONST_METHOD0(GetConnection, ash::secure_channel::Connection*());
   MOCK_CONST_METHOD0(GetChannel, ash::secure_channel::ClientChannel*());
 };
 
@@ -839,15 +839,13 @@ TEST_F(ProximityAuthUnlockManagerImplTest, OnAuthAttempted_SignIn_Success) {
   EXPECT_CALL(messenger_, RequestDecryption(kChallenge));
   unlock_manager_->OnAuthAttempted(mojom::AuthType::USER_CLICK);
 
-  std::vector<chromeos::secure_channel::mojom::ConnectionCreationDetail>
-      creation_details{
-          chromeos::secure_channel::mojom::ConnectionCreationDetail::
-              REMOTE_DEVICE_USED_BACKGROUND_BLE_ADVERTISING};
-  chromeos::secure_channel::mojom::ConnectionMetadataPtr
-      connection_metadata_ptr =
-          chromeos::secure_channel::mojom::ConnectionMetadata::New(
-              creation_details, nullptr /* bluetooth_connection_metadata */,
-              channel_binding_data);
+  std::vector<ash::secure_channel::mojom::ConnectionCreationDetail>
+      creation_details{ash::secure_channel::mojom::ConnectionCreationDetail::
+                           REMOTE_DEVICE_USED_BACKGROUND_BLE_ADVERTISING};
+  ash::secure_channel::mojom::ConnectionMetadataPtr connection_metadata_ptr =
+      ash::secure_channel::mojom::ConnectionMetadata::New(
+          creation_details, nullptr /* bluetooth_connection_metadata */,
+          channel_binding_data);
   fake_client_channel_->InvokePendingGetConnectionMetadataCallback(
       std::move(connection_metadata_ptr));
 

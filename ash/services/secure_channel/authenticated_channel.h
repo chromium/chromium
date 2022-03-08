@@ -34,9 +34,7 @@ class AuthenticatedChannel {
   virtual ~AuthenticatedChannel();
 
   virtual void GetConnectionMetadata(
-      base::OnceCallback<
-          void(chromeos::secure_channel::mojom::ConnectionMetadataPtr)>
-          callback) = 0;
+      base::OnceCallback<void(mojom::ConnectionMetadataPtr)> callback) = 0;
 
   // Sends a message with the specified |feature| and |payload|. Once the
   // message has been sent, |on_sent_callback| will be invoked. Returns whether
@@ -54,7 +52,7 @@ class AuthenticatedChannel {
   // |file_transfer_update_callback| if the registration was successful.
   void RegisterPayloadFile(
       int64_t payload_id,
-      chromeos::secure_channel::mojom::PayloadFilesPtr payload_files,
+      mojom::PayloadFilesPtr payload_files,
       FileTransferUpdateCallback file_transfer_update_callback,
       base::OnceCallback<void(bool)> registration_result_callback);
 
@@ -83,7 +81,7 @@ class AuthenticatedChannel {
   // been disconnected.
   virtual void PerformRegisterPayloadFile(
       int64_t payload_id,
-      chromeos::secure_channel::mojom::PayloadFilesPtr payload_files,
+      mojom::PayloadFilesPtr payload_files,
       FileTransferUpdateCallback file_transfer_update_callback,
       base::OnceCallback<void(bool)> registration_result_callback) = 0;
 

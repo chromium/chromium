@@ -115,8 +115,7 @@ class MessageTransferOperation {
 
     // secure_channel::ConnectionAttempt::Delegate:
     void OnConnectionAttemptFailure(
-        chromeos::secure_channel::mojom::ConnectionAttemptFailureReason reason)
-        override;
+        secure_channel::mojom::ConnectionAttemptFailureReason reason) override;
     void OnConnection(
         std::unique_ptr<secure_channel::ClientChannel> channel) override;
 
@@ -159,7 +158,7 @@ class MessageTransferOperation {
 
   void OnConnectionAttemptFailure(
       multidevice::RemoteDeviceRef remote_device,
-      chromeos::secure_channel::mojom::ConnectionAttemptFailureReason reason);
+      secure_channel::mojom::ConnectionAttemptFailureReason reason);
   void OnConnection(multidevice::RemoteDeviceRef remote_device,
                     std::unique_ptr<secure_channel::ClientChannel> channel);
   void OnDisconnected(multidevice::RemoteDeviceRef remote_device);

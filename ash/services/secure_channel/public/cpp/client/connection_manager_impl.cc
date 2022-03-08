@@ -20,9 +20,6 @@ namespace ash::secure_channel {
 
 namespace {
 
-// TODO(https://crbug.com/1164001): remove after the migration is finished.
-namespace mojom = ::chromeos::secure_channel::mojom;
-
 constexpr base::TimeDelta kConnectionTimeoutSeconds(base::Seconds(15u));
 
 void RecordConnectionSuccessMetric(const std::string& metric_name_result,
@@ -168,8 +165,7 @@ void ConnectionManagerImpl::AttemptNearbyConnection() {
 
   connection_attempt_ = secure_channel_client_->InitiateConnectionToDevice(
       *remote_device, *local_device, feature_name_,
-      secure_channel::ConnectionMedium::kNearbyConnections,
-      secure_channel::ConnectionPriority::kMedium);
+      ConnectionMedium::kNearbyConnections, ConnectionPriority::kMedium);
   connection_attempt_->SetDelegate(this);
 
   PA_LOG(INFO) << "ConnectionManager status updated to: " << GetStatus();
@@ -212,7 +208,7 @@ void ConnectionManagerImpl::RegisterPayloadFile(
 }
 
 void ConnectionManagerImpl::OnConnectionAttemptFailure(
-    chromeos::secure_channel::mojom::ConnectionAttemptFailureReason reason) {
+    mojom::ConnectionAttemptFailureReason reason) {
   PA_LOG(WARNING) << "AttemptConnection() failed to establish connection with "
                   << "error: " << reason << ".";
   timer_->Stop();

@@ -129,8 +129,7 @@ void ProximityMonitorImpl::Poll() {
 }
 
 void ProximityMonitorImpl::OnGetConnectionMetadata(
-    chromeos::secure_channel::mojom::ConnectionMetadataPtr
-        connection_metadata) {
+    ash::secure_channel::mojom::ConnectionMetadataPtr connection_metadata) {
   if (connection_metadata->bluetooth_connection_metadata)
     OnGetRssi(connection_metadata->bluetooth_connection_metadata->current_rssi);
   else

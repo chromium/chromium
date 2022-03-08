@@ -7,9 +7,7 @@
 
 #include <ostream>
 
-namespace chromeos {
-
-namespace secure_channel {
+namespace ash::secure_channel {
 
 // Enumeration of all mediums through which connections can be created.
 enum class ConnectionMedium {
@@ -23,13 +21,6 @@ enum class ConnectionMedium {
 
 std::ostream& operator<<(std::ostream& stream, const ConnectionMedium& medium);
 
-}  // namespace secure_channel
-
-}  // namespace chromeos
-
-// TODO(https://crbug.com/1164001): remove after the migration is finished.
-namespace ash::secure_channel {
-using ::chromeos::secure_channel::ConnectionMedium;
-}
+}  // namespace ash::secure_channel
 
 #endif  // ASH_SERVICES_SECURE_CHANNEL_PUBLIC_CPP_SHARED_CONNECTION_MEDIUM_H_

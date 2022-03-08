@@ -35,7 +35,7 @@ using BatchDecodeCallback =
     base::OnceCallback<void(BatchDecodeResult,
                             const std::vector<CameraRollItem>&)>;
 using FeatureState = multidevice_setup::mojom::FeatureState;
-using FileTransferStatus = chromeos::secure_channel::mojom::FileTransferStatus;
+using FileTransferStatus = secure_channel::mojom::FileTransferStatus;
 
 class FakeObserver : public CameraRollManager::Observer {
  public:
@@ -268,7 +268,7 @@ class CameraRollManagerImplTest : public testing::Test {
                               uint64_t total_bytes,
                               uint64_t bytes_transferred) {
     fake_connection_manager_->SendFileTransferUpdate(
-        chromeos::secure_channel::mojom::FileTransferUpdate::New(
+        secure_channel::mojom::FileTransferUpdate::New(
             payload_id, status, total_bytes, bytes_transferred));
   }
 
@@ -276,10 +276,9 @@ class CameraRollManagerImplTest : public testing::Test {
                                   FileTransferStatus status,
                                   uint64_t total_bytes,
                                   uint64_t bytes_transferred) {
-    const chromeos::secure_channel::mojom::FileTransferUpdatePtr&
-        latest_update = fake_camera_roll_download_manager_
-                            ->GetFileTransferUpdates(payload_id)
-                            .back();
+    const secure_channel::mojom::FileTransferUpdatePtr& latest_update =
+        fake_camera_roll_download_manager_->GetFileTransferUpdates(payload_id)
+            .back();
     EXPECT_EQ(payload_id, latest_update->payload_id);
     EXPECT_EQ(status, latest_update->status);
     EXPECT_EQ(total_bytes, latest_update->total_bytes);

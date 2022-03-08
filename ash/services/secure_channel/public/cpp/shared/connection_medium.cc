@@ -4,11 +4,7 @@
 
 #include "ash/services/secure_channel/public/cpp/shared/connection_medium.h"
 
-#include "base/check.h"
-
-namespace chromeos {
-
-namespace secure_channel {
+namespace ash::secure_channel {
 
 std::ostream& operator<<(std::ostream& stream, const ConnectionMedium& medium) {
   switch (medium) {
@@ -22,6 +18,4 @@ std::ostream& operator<<(std::ostream& stream, const ConnectionMedium& medium) {
   return stream;
 }
 
-}  // namespace secure_channel
-
-}  // namespace chromeos
+}  // namespace ash::secure_channel
