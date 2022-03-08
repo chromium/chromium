@@ -150,6 +150,7 @@ try_.builder(
 try_.builder(
     name = "android-cronet-x86-dbg-10-tests",
     branch_selector = branches.STANDARD_MILESTONE,
+    check_for_flakiness = True,
     main_list_view = "try",
     tryjob = try_.job(
         location_regexp = [
