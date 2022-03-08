@@ -127,7 +127,7 @@ AttributionStorageDelegateImpl::GetDeleteExpiredRateLimitsFrequency() const {
   return base::Minutes(5);
 }
 
-base::Time AttributionStorageDelegateImpl::GetReportTime(
+base::Time AttributionStorageDelegateImpl::GetEventLevelReportTime(
     const CommonSourceInfo& source,
     base::Time trigger_time) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);

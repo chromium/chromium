@@ -114,7 +114,7 @@ void ConfigurableStorageDelegate::DetachFromSequence() {
   DETACH_FROM_SEQUENCE(sequence_checker_);
 }
 
-base::Time ConfigurableStorageDelegate::GetReportTime(
+base::Time ConfigurableStorageDelegate::GetEventLevelReportTime(
     const CommonSourceInfo& source,
     base::Time trigger_time) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);

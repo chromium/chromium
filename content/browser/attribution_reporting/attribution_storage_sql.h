@@ -16,7 +16,9 @@
 #include "base/sequence_checker.h"
 #include "base/thread_annotations.h"
 #include "content/browser/attribution_reporting/aggregatable_attribution.h"
+#include "content/browser/attribution_reporting/attribution_observer_types.h"
 #include "content/browser/attribution_reporting/attribution_storage.h"
+#include "content/browser/attribution_reporting/attribution_trigger.h"
 #include "content/browser/attribution_reporting/rate_limit_table.h"
 #include "content/browser/attribution_reporting/stored_source.h"
 #include "content/common/content_export.h"
@@ -195,13 +197,14 @@ class CONTENT_EXPORT AttributionStorageSql : public AttributionStorage {
   [[nodiscard]] bool HasCapacityForUniqueDestinationLimitForPendingSource(
       const StorableSource& source) VALID_CONTEXT_REQUIRED(sequence_checker_);
 
-  [[nodiscard]] bool StoreReport(StoredSource::Id source_id,
-                                 uint64_t trigger_data,
-                                 base::Time trigger_time,
-                                 base::Time report_time,
-                                 int64_t priority,
-                                 const base::GUID& external_report_id,
-                                 absl::optional<uint64_t> trigger_debug_key)
+  [[nodiscard]] bool StoreEventLevelReport(
+      StoredSource::Id source_id,
+      uint64_t trigger_data,
+      base::Time trigger_time,
+      base::Time report_time,
+      int64_t priority,
+      const base::GUID& external_report_id,
+      absl::optional<uint64_t> trigger_debug_key)
       VALID_CONTEXT_REQUIRED(sequence_checker_);
 
   absl::optional<AttributionReport> ReadReportFromStatement(sql::Statement&)
@@ -236,6 +239,30 @@ class CONTENT_EXPORT AttributionStorageSql : public AttributionStorage {
       base::TimeDelta min_delay,
       base::TimeDelta max_delay,
       base::Time now) VALID_CONTEXT_REQUIRED(sequence_checker_);
+
+  // Returns whether the database execution was successful.
+  // `source_id_to_attribute` and `source_ids_to_delete` would be populated if
+  // matching sources were found.
+  bool FindMatchingSourceForTrigger(
+      const AttributionTrigger& trigger,
+      absl::optional<StoredSource::Id>& source_id_to_attribute,
+      std::vector<StoredSource::Id>& source_ids_to_delete)
+      VALID_CONTEXT_REQUIRED(sequence_checker_);
+
+  AttributionTrigger::EventLevelResult MaybeCreateEventLevelReport(
+      StoredSource source,
+      const AttributionTrigger& trigger,
+      absl::optional<AttributionReport>& report,
+      absl::optional<uint64_t>& dedup_key)
+      VALID_CONTEXT_REQUIRED(sequence_checker_);
+
+  AttributionTrigger::EventLevelResult MaybeStoreEventLevelReport(
+      const AttributionReport& report,
+      absl::optional<uint64_t> dedup_key,
+      int num_conversions,
+      absl::optional<AttributionReport>& replaced_report,
+      absl::optional<DeactivatedSource::Reason>& source_deactivation_reason)
+      VALID_CONTEXT_REQUIRED(sequence_checker_);
 
   // Initializes the database if necessary, and returns whether the database is
   // open. |should_create| indicates whether the database should be created if

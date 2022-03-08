@@ -59,10 +59,10 @@ class AttributionStorageDelegate {
 
   virtual ~AttributionStorageDelegate() = default;
 
-  // Returns the time a report should be sent for a given trigger time and
-  // its corresponding source.
-  virtual base::Time GetReportTime(const CommonSourceInfo& source,
-                                   base::Time trigger_time) const = 0;
+  // Returns the time an event-level report should be sent for a given trigger
+  // time and its corresponding source.
+  virtual base::Time GetEventLevelReportTime(const CommonSourceInfo& source,
+                                             base::Time trigger_time) const = 0;
 
   // This limit is used to determine if a source is allowed to schedule
   // a new report. When a source reaches this limit it is

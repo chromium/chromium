@@ -159,8 +159,8 @@ class ConfigurableStorageDelegate : public AttributionStorageDelegate {
   ~ConfigurableStorageDelegate() override;
 
   // AttributionStorageDelegate
-  base::Time GetReportTime(const CommonSourceInfo& source,
-                           base::Time trigger_time) const override;
+  base::Time GetEventLevelReportTime(const CommonSourceInfo& source,
+                                     base::Time trigger_time) const override;
   int GetMaxAttributionsPerSource(
       CommonSourceInfo::SourceType source_type) const override;
   int GetMaxSourcesPerOrigin() const override;
