@@ -263,42 +263,42 @@ def CheckConditionalElements(grd_node, str):
     return grd_node is None or grd_node.EvaluateCondition(expr1 + expr2)
 
   """Helper function to conditionally inline inner elements"""
+  begin_if = _BEGIN_IF_BLOCK.search(str)
+  if begin_if is None:
+    if _END_IF_BLOCK.search(str) is not None:
+      raise Exception('Unmatched </if>')
+    return str
+
+  condition_satisfied = IsConditionSatisfied(begin_if)
+  leading = str[0:begin_if.start()]
+  content_start = begin_if.end()
+
+  # Find matching "if" block end.
+  count = 1
+  pos = begin_if.end()
   while True:
-    begin_if = _BEGIN_IF_BLOCK.search(str)
-    if begin_if is None:
-      if _END_IF_BLOCK.search(str) is not None:
-        raise Exception('Unmatched </if>')
-      return str
+    end_if = _END_IF_BLOCK.search(str, pos)
+    if end_if is None:
+      raise Exception('Unmatched <if>')
 
-    condition_satisfied = IsConditionSatisfied(begin_if)
-    leading = str[0:begin_if.start()]
-    content_start = begin_if.end()
-
-    # Find matching "if" block end.
-    count = 1
-    pos = begin_if.end()
-    while True:
-      end_if = _END_IF_BLOCK.search(str, pos)
-      if end_if is None:
-        raise Exception('Unmatched <if>')
-
-      next_if = _BEGIN_IF_BLOCK.search(str, pos)
-      if next_if is None or next_if.start() >= end_if.end():
-        count = count - 1
-        if count == 0:
-          break
-        pos = end_if.end()
-      else:
-        count = count + 1
-        pos = next_if.end()
-
-    content = str[content_start:end_if.start()]
-    trailing = str[end_if.end():]
-
-    if condition_satisfied:
-      str = leading + CheckConditionalElements(grd_node, content) + trailing
+    next_if = _BEGIN_IF_BLOCK.search(str, pos)
+    if next_if is None or next_if.start() >= end_if.end():
+      count = count - 1
+      if count == 0:
+        break
+      pos = end_if.end()
     else:
-      str = leading + trailing
+      count = count + 1
+      pos = next_if.end()
+
+  trailing = str[end_if.end():]
+  trailing = CheckConditionalElements(grd_node, trailing)
+
+  if condition_satisfied:
+    content = str[content_start:end_if.start()]
+    return leading + CheckConditionalElements(grd_node, content) + trailing
+
+  return leading + trailing
 
 
 def DoInline(
