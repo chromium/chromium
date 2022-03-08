@@ -156,7 +156,7 @@ export class CrosImageCapture {
     const cameraMetadataTagInverseLookup: Record<number, string> = {};
     for (const [key, value] of Object.entries(CameraMetadataTag)) {
       if (key === 'MIN_VALUE' || key === 'MAX_VALUE') {
-        return;
+        continue;
       }
       cameraMetadataTagInverseLookup[value] = key;
     }
