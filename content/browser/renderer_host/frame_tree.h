@@ -361,12 +361,13 @@ class CONTENT_EXPORT FrameTree {
   // Returns the focused frame.
   FrameTreeNode* GetFocusedFrame();
 
-  // Sets the focused frame to |node|.  |source| identifies the SiteInstance
-  // that initiated this focus change.  If this FrameTree has SiteInstances
-  // other than |source|, those SiteInstances will be notified about the new
-  // focused frame.   Note that |source| may differ from |node|'s current
-  // SiteInstance (e.g., this happens for cross-process window.focus() calls).
-  void SetFocusedFrame(FrameTreeNode* node, SiteInstance* source);
+  // Sets the focused frame to |node|.  |source| identifies the
+  // SiteInstanceGroup that initiated this focus change.  If this FrameTree has
+  // SiteInstanceGroups other than |source|, those SiteInstanceGroups will be
+  // notified about the new focused frame.   Note that |source| may differ from
+  // |node|'s current SiteInstanceGroup (e.g., this happens for cross-process
+  // window.focus() calls).
+  void SetFocusedFrame(FrameTreeNode* node, SiteInstanceGroup* source);
 
   // Creates a RenderViewHostImpl for a given |site_instance| in the tree.
   //
@@ -436,8 +437,8 @@ class CONTENT_EXPORT FrameTree {
   void ReplicatePageFocus(bool is_focused);
 
   // Updates page-level focus for this FrameTree in the subframe renderer
-  // identified by |instance|.
-  void SetPageFocus(SiteInstance* instance, bool is_focused);
+  // identified by |group|.
+  void SetPageFocus(SiteInstanceGroup* group, bool is_focused);
 
   // Walks the current frame tree and registers any origins matching |origin|,
   // either the last committed origin of a RenderFrameHost or the origin

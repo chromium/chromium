@@ -217,7 +217,7 @@ IN_PROC_BROWSER_TEST_F(RenderWidgetHostViewAuraBrowserMockIMETest,
       static_cast<WebContentsImpl*>(shell()->web_contents());
   auto* root = web_contents->GetPrimaryFrameTree().root();
   web_contents->GetPrimaryFrameTree().SetFocusedFrame(
-      root, root->current_frame_host()->GetSiteInstance());
+      root, root->current_frame_host()->GetSiteInstance()->group());
 
   AccessibilityNotificationWaiter waiter2(
       shell()->web_contents(), ui::kAXModeComplete, ax::mojom::Event::kFocus);
@@ -243,7 +243,7 @@ IN_PROC_BROWSER_TEST_F(RenderWidgetHostViewAuraBrowserMockIMETest,
       static_cast<WebContentsImpl*>(shell()->web_contents());
   auto* root = web_contents->GetPrimaryFrameTree().root();
   web_contents->GetPrimaryFrameTree().SetFocusedFrame(
-      root, root->current_frame_host()->GetSiteInstance());
+      root, root->current_frame_host()->GetSiteInstance()->group());
 
   // Send a touch event so that RenderWidgetHostViewAura will create the
   // keyboard observer (requires last_pointer_type_ to be TOUCH).
@@ -309,7 +309,7 @@ IN_PROC_BROWSER_TEST_F(RenderWidgetHostViewAuraBrowserMockIMETest,
       static_cast<WebContentsImpl*>(shell()->web_contents());
   auto* root = web_contents->GetPrimaryFrameTree().root();
   web_contents->GetPrimaryFrameTree().SetFocusedFrame(
-      root, root->current_frame_host()->GetSiteInstance());
+      root, root->current_frame_host()->GetSiteInstance()->group());
 
   // Send a touch event so that RenderWidgetHostViewAura will create the
   // keyboard observer (requires last_pointer_type_ to be TOUCH).
@@ -347,7 +347,7 @@ IN_PROC_BROWSER_TEST_F(RenderWidgetHostViewAuraBrowserMockIMETest,
       static_cast<WebContentsImpl*>(shell()->web_contents());
   auto* root = web_contents->GetPrimaryFrameTree().root();
   web_contents->GetPrimaryFrameTree().SetFocusedFrame(
-      root, root->current_frame_host()->GetSiteInstance());
+      root, root->current_frame_host()->GetSiteInstance()->group());
 
   // Send a touch event so that RenderWidgetHostViewAura will create the
   // keyboard observer (requires last_pointer_type_ to be TOUCH).
@@ -407,7 +407,7 @@ IN_PROC_BROWSER_TEST_F(RenderWidgetHostViewAuraBrowserMockIMETest,
       static_cast<WebContentsImpl*>(shell()->web_contents());
   auto* root = web_contents->GetPrimaryFrameTree().root();
   web_contents->GetPrimaryFrameTree().SetFocusedFrame(
-      root, root->current_frame_host()->GetSiteInstance());
+      root, root->current_frame_host()->GetSiteInstance()->group());
 
   // Send a touch event so that RenderWidgetHostViewAura will create the
   // keyboard observer (requires last_pointer_type_ to be TOUCH).

@@ -452,7 +452,7 @@ void RenderFrameProxyHost::DidFocusFrame() {
   if (!render_frame_host->IsActive())
     return;
   render_frame_host->delegate()->SetFocusedFrame(frame_tree_node_,
-                                                 GetSiteInstance());
+                                                 site_instance_group());
 }
 
 void RenderFrameProxyHost::CapturePaintPreviewOfCrossProcessSubframe(

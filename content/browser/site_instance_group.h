@@ -112,6 +112,8 @@ class CONTENT_EXPORT SiteInstanceGroup
     return agent_scheduling_group_ != nullptr;
   }
 
+  void WriteIntoTrace(perfetto::TracedValue context);
+
  private:
   friend class RefCounted<SiteInstanceGroup>;
   ~SiteInstanceGroup() override;

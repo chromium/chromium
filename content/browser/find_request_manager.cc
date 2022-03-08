@@ -465,7 +465,7 @@ void FindRequestManager::SetActiveMatchOrdinal(RenderFrameHostImpl* rfh,
     if (!rfh->IsActive())
       return;
     web_contents->SetFocusedFrame(rfh->frame_tree_node(),
-                                  rfh->GetSiteInstance());
+                                  rfh->GetSiteInstance()->group());
   }
   if (rfh == active_frame_) {
     active_match_ordinal_ +=

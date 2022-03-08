@@ -4028,7 +4028,7 @@ void RenderFrameHostImpl::DidFocusFrame() {
   if (!IsActive())
     return;
 
-  delegate_->SetFocusedFrame(frame_tree_node_, GetSiteInstance());
+  delegate_->SetFocusedFrame(frame_tree_node_, GetSiteInstance()->group());
 }
 
 void RenderFrameHostImpl::DidCallFocus() {

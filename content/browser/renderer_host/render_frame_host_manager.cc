@@ -3480,7 +3480,7 @@ void RenderFrameHostManager::CommitPending(
             ->SetFocusedFrame();
       }
       frame_tree_node_->frame_tree()->SetPageFocus(
-          render_frame_host_->GetSiteInstance(), true);
+          render_frame_host_->GetSiteInstance()->group(), true);
     }
   }
 
@@ -3878,11 +3878,12 @@ void RenderFrameHostManager::EnsureRenderFrameHostVisibilityConsistent() {
 
 void RenderFrameHostManager::EnsureRenderFrameHostPageFocusConsistent() {
   frame_tree_node_->frame_tree()->SetPageFocus(
-      render_frame_host_->GetSiteInstance(), frame_tree_node_->frame_tree()
-                                                 ->root()
-                                                 ->current_frame_host()
-                                                 ->GetRenderWidgetHost()
-                                                 ->is_focused());
+      render_frame_host_->GetSiteInstance()->group(),
+      frame_tree_node_->frame_tree()
+          ->root()
+          ->current_frame_host()
+          ->GetRenderWidgetHost()
+          ->is_focused());
 }
 
 void RenderFrameHostManager::CreateNewFrameForInnerDelegateAttachIfNecessary() {

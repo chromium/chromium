@@ -96,7 +96,7 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessMacBrowserTest,
   EXPECT_TRUE(NavigateToURLFromRenderer(
       child, embedded_test_server()->GetURL("b.com", "/title1.html")));
   web_contents()->GetPrimaryFrameTree().SetFocusedFrame(
-      child, web_contents()->GetSiteInstance());
+      child, web_contents()->GetSiteInstance()->group());
 
   RenderWidgetHost* child_widget_host =
       child->current_frame_host()->GetRenderWidgetHost();
@@ -125,7 +125,7 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessMacBrowserTest,
   RenderWidgetHost* widget_host =
       root->current_frame_host()->GetRenderWidgetHost();
   web_contents()->GetPrimaryFrameTree().SetFocusedFrame(
-      root, web_contents()->GetSiteInstance());
+      root, web_contents()->GetSiteInstance()->group());
   TextInputClientMacHelper helper;
 
   // Get string from range.

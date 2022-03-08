@@ -125,7 +125,7 @@ class RenderWidgetHostInputEventRouter;
 class SavePackage;
 class ScreenChangeMonitor;
 class ScreenOrientationProvider;
-class SiteInstance;
+class SiteInstanceGroup;
 // For web_contents_impl_browsertest.cc
 class TestWCDelegateForDialogsAndFullscreen;
 class TestWebContents;
@@ -665,7 +665,7 @@ class CONTENT_EXPORT WebContentsImpl : public WebContents,
   std::unique_ptr<WebUIImpl> CreateWebUIForRenderFrameHost(
       RenderFrameHostImpl* frame_host,
       const GURL& url) override;
-  void SetFocusedFrame(FrameTreeNode* node, SiteInstance* source) override;
+  void SetFocusedFrame(FrameTreeNode* node, SiteInstanceGroup* source) override;
   void DidCallFocus() override;
   RenderFrameHostImpl* GetFocusedFrameIncludingInnerWebContents() override;
   void OnFocusedElementChangedInFrame(

@@ -1317,7 +1317,7 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest, RemoveFocusFromKilledFrame) {
   EXPECT_EQ(site_b_url, node2->current_url());
 
   web_contents()->SetFocusedFrame(
-      node2, node2->current_frame_host()->GetSiteInstance());
+      node2, node2->current_frame_host()->GetSiteInstance()->group());
 
   // Kill that cross-site renderer.
   RenderProcessHost* child_process = node2->current_frame_host()->GetProcess();

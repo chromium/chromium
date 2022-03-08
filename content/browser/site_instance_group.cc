@@ -83,4 +83,10 @@ void SiteInstanceGroup::RenderProcessExited(
     observer.RenderProcessGone(this, info);
 }
 
+void SiteInstanceGroup::WriteIntoTrace(perfetto::TracedValue context) {
+  auto dict = std::move(context).WriteDictionary();
+  dict.Add("id", GetId().value());
+  dict.Add("active_frame_count", active_frame_count_);
+}
+
 }  // namespace content
