@@ -54,12 +54,6 @@ bool HasAppTypeBrowser(const base::FilePath& profile_path);
 COMPONENT_EXPORT(APP_RESTORE)
 bool HasBrowser(const base::FilePath& profile_path);
 
-// Returns true if there is a window info for |restore_window_id| from the full
-// restore file. Otherwise, returns false. This interface can't be used for Arc
-// app windows.
-COMPONENT_EXPORT(APP_RESTORE)
-bool HasWindowInfo(int32_t restore_window_id);
-
 COMPONENT_EXPORT(APP_RESTORE)
 void AddChromeBrowserLaunchInfoForTesting(const base::FilePath& profile_path);
 

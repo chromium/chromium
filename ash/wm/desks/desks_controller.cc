@@ -1078,20 +1078,91 @@ bool DesksController::OnSingleInstanceAppLaunchingFromTemplate(
   // function, then we are dealing with a single instance app and there should
   // be at most one entry in the launch list.
   DCHECK_LE(launch_list.size(), 1u);
-  if (!launch_list.empty()) {
-    if (const auto& app_restore_data = launch_list.begin()->second) {
-      if (app_restore_data->current_bounds) {
-        existing_app_instance_window->SetBounds(
-            *app_restore_data->current_bounds);
-      }
-      if (app_restore_data->activation_index) {
-        existing_app_instance_window->SetProperty(
-            app_restore::kActivationIndexKey,
-            *app_restore_data->activation_index);
+  if (launch_list.empty())
+    return false;
+
+  if (const auto& app_restore_data = launch_list.begin()->second) {
+    if (app_restore_data->current_bounds) {
+      existing_app_instance_window->SetBounds(
+          *app_restore_data->current_bounds);
+    }
+    // Handle window state and window bounds.
+    if (app_restore_data->window_state_type) {
+      chromeos::WindowStateType target_state =
+          *app_restore_data->window_state_type;
+
+      // Not all window states are supported.
+      const bool restoreable_state =
+          chromeos::IsNormalWindowStateType(target_state) ||
+          target_state == chromeos::WindowStateType::kMinimized ||
+          target_state == chromeos::WindowStateType::kMaximized ||
+          target_state == chromeos::WindowStateType::kPrimarySnapped ||
+          target_state == chromeos::WindowStateType::kSecondarySnapped;
+
+      if (restoreable_state) {
+        WindowState* window_state =
+            WindowState::Get(existing_app_instance_window);
+        DCHECK(window_state);
+
+        if (target_state != window_state->GetStateType()) {
+          switch (target_state) {
+            case chromeos::WindowStateType::kDefault:
+            case chromeos::WindowStateType::kNormal: {
+              const WMEvent event(WM_EVENT_NORMAL);
+              window_state->OnWMEvent(&event);
+              break;
+            }
+            case chromeos::WindowStateType::kMinimized:
+              if (window_state->CanMinimize()) {
+                window_state->Minimize();
+                window_state->set_unminimize_to_restore_bounds(true);
+              }
+              break;
+            case chromeos::WindowStateType::kMaximized:
+              if (window_state->CanMaximize())
+                window_state->Maximize();
+              break;
+            case chromeos::WindowStateType::kPrimarySnapped:
+            case chromeos::WindowStateType::kSecondarySnapped:
+              if (window_state->CanSnap()) {
+                window_state->set_snap_action_source(
+                    WindowSnapActionSource::kOthers);
+
+                const WMEvent event(
+                    target_state == chromeos::WindowStateType::kPrimarySnapped
+                        ? WM_EVENT_SNAP_PRIMARY
+                        : WM_EVENT_SNAP_SECONDARY);
+                window_state->OnWMEvent(&event);
+              }
+              break;
+            case chromeos::WindowStateType::kInactive:
+            case chromeos::WindowStateType::kFullscreen:
+            case chromeos::WindowStateType::kAutoPositioned:
+            case chromeos::WindowStateType::kPinned:
+            case chromeos::WindowStateType::kTrustedPinned:
+            case chromeos::WindowStateType::kPip:
+              NOTREACHED();
+              break;
+          }
+        }
+
+        // For states with restore bounds (maximized, snapped, minimized), the
+        // restore bounds are stored in `current_bounds`.
+        const gfx::Rect restore_bounds =
+            app_restore_data->current_bounds.value_or(gfx::Rect());
+        if (!restore_bounds.IsEmpty())
+          window_state->SetRestoreBoundsInScreen(restore_bounds);
       }
     }
-    WindowRestoreController::Get()->StackWindow(existing_app_instance_window);
+
+    if (app_restore_data->activation_index) {
+      existing_app_instance_window->SetProperty(
+          app_restore::kActivationIndexKey,
+          *app_restore_data->activation_index);
+    }
   }
+
+  WindowRestoreController::Get()->StackWindow(existing_app_instance_window);
 
   // TODO(sammiequon): Read something for chromevox, either here or when the
   // whole template launches.

@@ -45,6 +45,14 @@ bool IsLacrosWindow(aura::Window* window) {
          static_cast<int>(ash::AppType::LACROS);
 }
 
+bool HasWindowInfo(int32_t restore_window_id) {
+  auto* full_restore_instance =
+      full_restore::FullRestoreReadHandler::GetInstance();
+  if (full_restore_instance->IsFullRestoreRunning())
+    return full_restore_instance->HasWindowInfo(restore_window_id);
+  return !!DeskTemplateReadHandler::Get()->GetWindowInfo(restore_window_id);
+}
+
 void ApplyProperties(app_restore::WindowInfo* window_info,
                      ui::PropertyHandler* property_handler) {
   DCHECK(window_info);

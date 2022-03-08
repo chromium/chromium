@@ -47,11 +47,6 @@ bool HasBrowser(const base::FilePath& profile_path) {
   return FullRestoreReadHandler::GetInstance()->HasBrowser(profile_path);
 }
 
-bool HasWindowInfo(int32_t restore_window_id) {
-  return FullRestoreReadHandler::GetInstance()->HasWindowInfo(
-      restore_window_id);
-}
-
 void AddChromeBrowserLaunchInfoForTesting(const base::FilePath& profile_path) {
   FullRestoreReadHandler::GetInstance()
       ->AddChromeBrowserLaunchInfoForTesting(  // IN-TEST

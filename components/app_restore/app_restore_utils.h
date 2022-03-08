@@ -30,6 +30,13 @@ bool IsArcWindow(aura::Window* window);
 // Returns true if `window` is a Lacros window. Otherwise, returns false.
 bool IsLacrosWindow(aura::Window* window);
 
+// Returns true if there is a window info for `restore_window_id` from desk
+// templates or full restore, depending on which one is thought to be launching
+// apps currently. Otherwise, returns false. This interface can't be used for
+// ARC app windows.
+COMPONENT_EXPORT(APP_RESTORE)
+bool HasWindowInfo(int32_t restore_window_id);
+
 // Applies properties from `window_info` to the given `property_handler`.
 // This is called from `GetWindowInfo()` when window is
 // created, or from the ArcReadHandler when a task is ready for a full
