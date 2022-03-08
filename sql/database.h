@@ -16,6 +16,7 @@
 #include "base/callback.h"
 #include "base/component_export.h"
 #include "base/containers/flat_map.h"
+#include "base/dcheck_is_on.h"
 #include "base/feature_list.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
@@ -42,6 +43,7 @@ class ProcessMemoryDump;
 namespace sql {
 
 class DatabaseMemoryDumpProvider;
+class Recovery;
 class Statement;
 
 namespace test {
@@ -228,11 +230,18 @@ class COMPONENT_EXPORT(SQL) Database {
   // The callback will be called on the sequence used for database operations.
   // The callback will never be called after the Database instance is destroyed.
   using ErrorCallback = base::RepeatingCallback<void(int, Statement*)>;
-  void set_error_callback(const ErrorCallback& callback) {
-    error_callback_ = callback;
+  void set_error_callback(ErrorCallback callback) {
+    DCHECK(error_callback_.is_null() || callback.is_null())
+        << "Overwriting previously set error callback";
+    error_callback_ = std::move(callback);
   }
-  bool has_error_callback() const { return !error_callback_.is_null(); }
   void reset_error_callback() { error_callback_.Reset(); }
+
+#if DCHECK_IS_ON()
+  bool HasErrorCallback(base::PassKey<Recovery>) const {
+    return !error_callback_.is_null();
+  }
+#endif  // DCHECK_IS_ON()
 
   // Developer-friendly database ID used in logging output and memory dumps.
   void set_histogram_tag(const std::string& tag);
