@@ -271,7 +271,7 @@ public class PaymentRequestTestRule extends ChromeTabbedActivityTestRule
                     PaymentRequestTestRule.this);
             CardUnmaskPrompt.setObserverForTest(PaymentRequestTestRule.this);
         });
-        assertWaitForPageScaleFactorMatch(1);
+        assertWaitForPageScaleFactorMatch(0.5f);
     }
 
     public PaymentsCallbackHelper<PaymentRequestUI> getReadyForInput() {
