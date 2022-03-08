@@ -117,7 +117,7 @@ function isObjectAsExpected(report, expectedReport) {
 
 async function checkForExpectedReport(expectedReport) {
   return new Promise( async (resolve, reject) => {
-    const polls = 5;
+    const polls = 20;
     const waitTime = 200;
     for (var i=0; i < polls; ++i) {
       pollReports(expectedReport.endpoint);
