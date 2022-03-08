@@ -11,7 +11,9 @@
 namespace blink {
 
 // Creates a DOMException using the given PresentationError.
-DOMException* CreatePresentationError(const mojom::blink::PresentationError&);
+v8::Local<v8::Value> CreatePresentationError(
+    v8::Isolate*,
+    const mojom::blink::PresentationError&);
 
 }  // namespace blink
 

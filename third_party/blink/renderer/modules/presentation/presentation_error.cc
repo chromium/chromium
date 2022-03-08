@@ -5,11 +5,13 @@
 #include "third_party/blink/renderer/modules/presentation/presentation_error.h"
 
 #include "third_party/blink/public/mojom/presentation/presentation.mojom-blink.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_throw_dom_exception.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 
 namespace blink {
 
-DOMException* CreatePresentationError(
+v8::Local<v8::Value> CreatePresentationError(
+    v8::Isolate* isolate,
     const mojom::blink::PresentationError& error) {
   DOMExceptionCode code = DOMExceptionCode::kUnknownError;
   switch (error.error_type) {
@@ -28,7 +30,7 @@ DOMException* CreatePresentationError(
       break;
   }
 
-  return MakeGarbageCollected<DOMException>(code, error.message);
+  return V8ThrowDOMException::CreateOrDie(isolate, code, error.message);
 }
 
 }  // namespace blink
