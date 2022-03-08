@@ -129,6 +129,7 @@ class ASH_EXPORT SearchResultView : public SearchResultBaseView,
   int PreferredHeight() const;
   int PrimaryTextHeight() const;
   int SecondaryTextHeight() const;
+  int ActionButtonRightMargin() const;
 
   std::vector<LabelAndTag> SetupContainerViewForTextVector(
       views::FlexLayoutView* parent,

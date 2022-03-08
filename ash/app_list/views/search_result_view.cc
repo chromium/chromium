@@ -64,7 +64,9 @@ constexpr int kKeyboardShortcutViewHeight = 64;
 constexpr int kPreferredIconViewWidth = 56;
 constexpr int kTextTrailPadding = 16;
 // Extra margin at the right of the rightmost action icon.
-constexpr int kActionButtonRightMargin = 8;
+constexpr int kClassicActionButtonRightMargin = 8;
+// Extra margin at the right of the rightmost action icon.
+constexpr int kDefaultActionButtonRightMargin = 12;
 // Text line height in the search result.
 constexpr int kPrimaryTextHeight = 20;
 constexpr int kAnswerCardDetailsLineHeight = 18;
@@ -391,6 +393,16 @@ int SearchResultView::SecondaryTextHeight() const {
       return kAnswerCardDetailsLineHeight;
     case SearchResultViewType::kDefault:
       return kPrimaryTextHeight;
+  }
+}
+
+int SearchResultView::ActionButtonRightMargin() const {
+  switch (view_type_) {
+    case SearchResultViewType::kClassic:
+      return kClassicActionButtonRightMargin;
+    case SearchResultViewType::kAnswerCard:
+    case SearchResultViewType::kDefault:
+      return kDefaultActionButtonRightMargin;
   }
 }
 
@@ -741,12 +753,13 @@ void SearchResultView::Layout() {
   badge_icon_->SetBoundsRect(badge_icon_bounds);
 
   const int max_actions_width =
-      (rect.right() - kActionButtonRightMargin - icon_bounds.right()) / 2;
+      (rect.right() - ActionButtonRightMargin() - icon_bounds.right()) / 2;
   int actions_width =
       std::min(max_actions_width, actions_view()->GetPreferredSize().width());
 
   gfx::Rect actions_bounds(rect);
-  actions_bounds.set_x(rect.right() - kActionButtonRightMargin - actions_width);
+  actions_bounds.set_x(rect.right() - ActionButtonRightMargin() -
+                       actions_width);
   actions_bounds.set_width(actions_width);
   actions_view()->SetBoundsRect(actions_bounds);
 
@@ -761,10 +774,10 @@ void SearchResultView::Layout() {
     text_bounds.set_width(
         rect.width() - kPreferredIconViewWidth - kTextTrailPadding -
         actions_view()->bounds().width() -
-        (actions_view()->children().empty() ? 0 : kActionButtonRightMargin));
+        (actions_view()->children().empty() ? 0 : ActionButtonRightMargin()));
   } else {
     text_bounds.set_width(rect.width() - kPreferredIconViewWidth -
-                          kTextTrailPadding - kActionButtonRightMargin);
+                          kTextTrailPadding - ActionButtonRightMargin());
   }
 
   if (!title_label_tags_.empty() && !details_label_tags_.empty()) {
