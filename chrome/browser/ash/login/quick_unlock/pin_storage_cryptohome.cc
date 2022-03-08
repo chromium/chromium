@@ -313,6 +313,9 @@ void PinStorageCryptohome::TryAuthenticate(const AccountId& account_id,
       cryptohome::Identification(account_id));
   *request.mutable_authorization_request() =
       cryptohome::CreateAuthorizationRequest(kCryptohomePinLabel, secret);
+  if (purpose == Purpose::kWebAuthn) {
+    request.set_unlock_webauthn_secret(true);
+  }
 
   chromeos::UserDataAuthClient::Get()->CheckKey(
       request,
