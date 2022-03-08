@@ -187,7 +187,8 @@ FederatedCredential::FederatedCredential(
     const KURL& provider_url,
     const String& client_id,
     const CredentialRequestOptions* options)
-    : Credential(/* id = */ "", kFederatedCredentialType),
+    : Credential(/* id = */ options->federated()->getHintOr(""),
+                 kFederatedCredentialType),
       provider_origin_(SecurityOrigin::Create(provider_url)),
       provider_url_(provider_url),
       client_id_(client_id),
@@ -217,6 +218,7 @@ ScriptPromise FederatedCredential::login(
         DOMExceptionCode::kInvalidStateError,
         "FederatedCredential object must be created by "
         "navigator.credentials.get for login"));
+    return promise;
   }
 
   ContentSecurityPolicy* policy =
@@ -294,36 +296,41 @@ ScriptPromise FederatedCredential::logoutRps(
 }
 
 ScriptPromise FederatedCredential::revoke(ScriptState* script_state,
-                                          const String& account_id,
-                                          FederatedIdentityProvider* provider,
                                           ExceptionState& exception_state) {
   ExecutionContext* context = ExecutionContext::From(script_state);
+  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
+  ScriptPromise promise = resolver->Promise();
+
+  // An empty provider_url_ means this credential wasn't created by
+  // CredentialsContainer::get, skipping various checks. So we reject the
+  // promise here.
+  if (provider_url_.IsEmpty()) {
+    resolver->Reject(MakeGarbageCollected<DOMException>(
+        DOMExceptionCode::kInvalidStateError,
+        "FederatedCredential object must be created by "
+        "navigator.credentials.get for revocation"));
+    return promise;
+  }
+
+  if (id().IsEmpty()) {
+    resolver->Reject(MakeGarbageCollected<DOMException>(
+        DOMExceptionCode::kInvalidStateError,
+        "No account hint was provided to navigator.credentials.get"));
+    return promise;
+  }
 
   HeapMojoRemote<mojom::blink::FederatedAuthRequest> auth_request(context);
   context->GetBrowserInterfaceBroker().GetInterface(
       auth_request.BindNewPipeAndPassReceiver(
           context->GetTaskRunner(TaskType::kUserInteraction)));
 
-  const String& url = provider->url();
-  KURL provider_url(url);
-  if (!provider_url.IsValid()) {
-    exception_state.ThrowDOMException(
-        DOMExceptionCode::kSyntaxError,
-        "Provided provider information is incomplete.");
-    return ScriptPromise();
-  }
-  const String& client_id = provider->clientId();
-
-  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
-  ScriptPromise promise = resolver->Promise();
-
   ContentSecurityPolicy* policy =
       resolver->GetExecutionContext()
           ->GetContentSecurityPolicyForCurrentWorld();
-  if (!MaybeRejectDueToCSP(policy, resolver, provider_url))
+  if (!MaybeRejectDueToCSP(policy, resolver, provider_url_))
     return promise;
 
-  auth_request->Revoke(provider_url, client_id, account_id,
+  auth_request->Revoke(provider_url_, client_id_, id(),
                        WTF::Bind(&OnRevoke, WrapPersistent(resolver)));
   return promise;
 }

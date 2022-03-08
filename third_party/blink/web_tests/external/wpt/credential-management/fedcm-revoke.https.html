@@ -9,30 +9,32 @@
 <script type="module">
   import {fedcm_test} from './support/fedcm-helper.js';
 
-  const provider = {
-    url: "https://idp.example/",
-    clientId: "1234",
-    nonce: "5678"
-  };
+  async function getCredential(provider_url) {
+    const provider = {
+      url: provider_url || "https://idp.example/",
+      clientId: "1234",
+    };
+    return await navigator.credentials.get({
+      federated:  {
+        providers: [provider],
+        hint: "foo@bar.com",
+      },
+    });
+  }
 
   fedcm_test(async (t, mock) => {
     mock.revokeReturn("kSuccess");
-    await FederatedCredential.revoke("foo@bar.com", provider);
+    await (await getCredential()).revoke();
   }, "Successfully revoking a token should resolve the promise.");
 
   fedcm_test(async (t, mock) => {
     mock.revokeReturn("kError");
-    const result = FederatedCredential.revoke("foo@bar.com", provider);
+    const result = (await getCredential()).revoke();
     return promise_rejects_dom(t, "NetworkError", result);
   }, "Error should reject the promise.");
 
   fedcm_test(async (t, mock) => {
-    var provider = {
-      url: "https://other-idp.example/",
-      clientId: "1",
-      nonce: "1",
-    };
-    const result = FederatedCredential.revoke("foo@bar.com", provider);
+    const result = getCredential("https://other-idp.example/").then((c) => c.revoke());
     return promise_rejects_dom(t, "NetworkError", result);
   }, "Provider URL should honor Content-Security-Policy.");
 </script>
