@@ -8,8 +8,6 @@
 #include <utility>
 
 #include "base/memory/scoped_refptr.h"
-#include "base/task/current_thread.h"
-#include "base/threading/thread_checker.h"
 #include "base/time/time.h"
 #include "base/trace_event/trace_event.h"
 #include "build/chromeos_buildflags.h"
@@ -30,12 +28,12 @@ using mojom::CursorType;
 
 class NullProxy : public DrmCursorProxy {
  public:
-  NullProxy() = default;
+  NullProxy() {}
 
   NullProxy(const NullProxy&) = delete;
   NullProxy& operator=(const NullProxy&) = delete;
 
-  ~NullProxy() override = default;
+  ~NullProxy() override {}
 
   void CursorSet(gfx::AcceleratedWidget window,
                  const std::vector<SkBitmap>& bitmaps,
@@ -48,18 +46,17 @@ class NullProxy : public DrmCursorProxy {
 }  // namespace
 
 DrmCursor::DrmCursor(DrmWindowHostManager* window_manager)
-    : ui_thread_(base::ThreadTaskRunnerHandle::Get()),
-      window_(gfx::kNullAcceleratedWidget),
+    : window_(gfx::kNullAcceleratedWidget),
       window_manager_(window_manager),
       proxy_(new NullProxy()) {
-  DETACH_FROM_THREAD(evdev_thread_checker_);
+  evdev_thread_checker_.DetachFromThread();
 }
 
-DrmCursor::~DrmCursor() = default;
+DrmCursor::~DrmCursor() {}
 
 void DrmCursor::SetDrmCursorProxy(std::unique_ptr<DrmCursorProxy> proxy) {
   TRACE_EVENT0("drmcursor", "DrmCursor::SetDrmCursorProxy");
-  DCHECK_CALLED_ON_VALID_THREAD(ui_thread_checker_);
+  DCHECK(thread_checker_.CalledOnValidThread());
   base::AutoLock lock(lock_);
   proxy_ = std::move(proxy);
   if (window_ != gfx::kNullAcceleratedWidget)
@@ -68,22 +65,21 @@ void DrmCursor::SetDrmCursorProxy(std::unique_ptr<DrmCursorProxy> proxy) {
 
 void DrmCursor::ResetDrmCursorProxy() {
   TRACE_EVENT0("drmcursor", "DrmCursor::ResetDrmCursorProxy");
-  DCHECK_CALLED_ON_VALID_THREAD(ui_thread_checker_);
+  DCHECK(thread_checker_.CalledOnValidThread());
 
   NullProxy* np = new NullProxy();
   base::AutoLock lock(lock_);
   proxy_.reset(np);
 }
 
-gfx::Point DrmCursor::GetBitmapLocationLocked()
-    EXCLUSIVE_LOCKS_REQUIRED(lock_) {
+gfx::Point DrmCursor::GetBitmapLocationLocked() {
   return gfx::ToFlooredPoint(location_) - cursor_->hotspot().OffsetFromOrigin();
 }
 
 void DrmCursor::SetCursor(gfx::AcceleratedWidget window,
                           scoped_refptr<BitmapCursor> platform_cursor) {
   TRACE_EVENT0("drmcursor", "DrmCursor::SetCursor");
-  DCHECK_CALLED_ON_VALID_THREAD(ui_thread_checker_);
+  DCHECK(thread_checker_.CalledOnValidThread());
   DCHECK_NE(window, gfx::kNullAcceleratedWidget);
   DCHECK(platform_cursor);
 
@@ -101,7 +97,7 @@ void DrmCursor::OnWindowAdded(gfx::AcceleratedWidget window,
                               const gfx::Rect& bounds_in_screen,
                               const gfx::Rect& cursor_confined_bounds) {
   TRACE_EVENT0("drmcursor", "DrmCursor::OnWindowAdded");
-  DCHECK_CALLED_ON_VALID_THREAD(ui_thread_checker_);
+  DCHECK(thread_checker_.CalledOnValidThread());
   base::AutoLock lock(lock_);
 
   if (window_ == gfx::kNullAcceleratedWidget) {
@@ -115,7 +111,7 @@ void DrmCursor::OnWindowAdded(gfx::AcceleratedWidget window,
 
 void DrmCursor::OnWindowRemoved(gfx::AcceleratedWidget window) {
   TRACE_EVENT0("drmcursor", "DrmCursor::OnWindowRemoved");
-  DCHECK_CALLED_ON_VALID_THREAD(ui_thread_checker_);
+  DCHECK(thread_checker_.CalledOnValidThread());
   base::AutoLock lock(lock_);
 
   if (window_ == window) {
@@ -142,7 +138,7 @@ void DrmCursor::CommitBoundsChange(
     const gfx::Rect& new_display_bounds_in_screen,
     const gfx::Rect& new_confined_bounds) {
   TRACE_EVENT0("drmcursor", "DrmCursor::CommitBoundsChange");
-  DCHECK_CALLED_ON_VALID_THREAD(ui_thread_checker_);
+  DCHECK(thread_checker_.CalledOnValidThread());
   base::AutoLock lock(lock_);
 
   if (window_ == window) {
@@ -156,7 +152,7 @@ void DrmCursor::CommitBoundsChange(
 void DrmCursor::MoveCursorTo(gfx::AcceleratedWidget window,
                              const gfx::PointF& location) {
   TRACE_EVENT0("drmcursor", "DrmCursor::MoveCursorTo (window)");
-  DCHECK_CALLED_ON_VALID_THREAD(ui_thread_checker_);
+  DCHECK(thread_checker_.CalledOnValidThread());
   base::AutoLock lock(lock_);
   gfx::AcceleratedWidget old_window = window_;
 
@@ -182,27 +178,7 @@ void DrmCursor::MoveCursorTo(gfx::AcceleratedWidget window,
 
 void DrmCursor::MoveCursorTo(const gfx::PointF& screen_location) {
   TRACE_EVENT0("drmcursor", "DrmCursor::MoveCursorTo");
-  if (ui_thread_->BelongsToCurrentThread())
-    MoveCursorToOnUiThread(screen_location);
-  else
-    MoveCursorToOnEvdevThread(screen_location);
-}
-
-void DrmCursor::MoveCursorToOnUiThread(const gfx::PointF& screen_location) {
-  DCHECK_CALLED_ON_VALID_THREAD(ui_thread_checker_);
-
-  const auto* window =
-      window_manager_->GetWindowAt(gfx::ToRoundedPoint(screen_location));
-  DCHECK(window);
-
-  auto location_in_window =
-      screen_location - window->GetBounds().OffsetFromOrigin();
-  MoveCursorTo(window->GetAcceleratedWidget(), location_in_window);
-}
-
-void DrmCursor::MoveCursorToOnEvdevThread(const gfx::PointF& screen_location) {
-  DCHECK_CALLED_ON_VALID_THREAD(evdev_thread_checker_);
-
+  DCHECK(thread_checker_.CalledOnValidThread());
   base::AutoLock lock(lock_);
 
   // TODO(spang): Moving between windows doesn't work here, but
@@ -214,8 +190,7 @@ void DrmCursor::MoveCursorToOnEvdevThread(const gfx::PointF& screen_location) {
 }
 
 void DrmCursor::MoveCursor(const gfx::Vector2dF& delta) {
-  DCHECK(evdev_thread_checker_.CalledOnValidThread() ||
-         ui_thread_checker_.CalledOnValidThread());
+  DCHECK(evdev_thread_checker_.CalledOnValidThread());
   TRACE_EVENT0("drmcursor", "DrmCursor::MoveCursor");
   base::AutoLock lock(lock_);
 
@@ -249,13 +224,12 @@ gfx::Rect DrmCursor::GetCursorConfinedBounds() {
 }
 
 void DrmCursor::InitializeOnEvdev() {
-  DCHECK_CALLED_ON_VALID_THREAD(evdev_thread_checker_);
+  DCHECK(evdev_thread_checker_.CalledOnValidThread());
   base::AutoLock lock(lock_);
   proxy_->InitializeOnEvdevIfNecessary();
 }
 
-void DrmCursor::SetCursorLocationLocked(const gfx::PointF& location)
-    EXCLUSIVE_LOCKS_REQUIRED(lock_) {
+void DrmCursor::SetCursorLocationLocked(const gfx::PointF& location) {
   gfx::PointF clamped_location = location;
   clamped_location.SetToMax(gfx::PointF(confined_bounds_.origin()));
   // Right and bottom edges are exclusive.
@@ -268,7 +242,7 @@ void DrmCursor::SetCursorLocationLocked(const gfx::PointF& location)
 #endif
 }
 
-void DrmCursor::SendCursorShowLocked() EXCLUSIVE_LOCKS_REQUIRED(lock_) {
+void DrmCursor::SendCursorShowLocked() {
   if (!cursor_ || cursor_->type() == CursorType::kNone) {
     SendCursorHideLocked();
     return;
@@ -278,12 +252,12 @@ void DrmCursor::SendCursorShowLocked() EXCLUSIVE_LOCKS_REQUIRED(lock_) {
                       cursor_->frame_delay());
 }
 
-void DrmCursor::SendCursorHideLocked() EXCLUSIVE_LOCKS_REQUIRED(lock_) {
+void DrmCursor::SendCursorHideLocked() {
   CursorSetLockTested(window_, std::vector<SkBitmap>(), gfx::Point(),
                       base::TimeDelta());
 }
 
-void DrmCursor::SendCursorMoveLocked() EXCLUSIVE_LOCKS_REQUIRED(lock_) {
+void DrmCursor::SendCursorMoveLocked() {
   if (!cursor_ || cursor_->type() == CursorType::kNone)
     return;
 
@@ -304,5 +278,6 @@ void DrmCursor::MoveLockTested(gfx::AcceleratedWidget window,
   lock_.AssertAcquired();
   proxy_->Move(window, point);
 }
+
 
 }  // namespace ui
