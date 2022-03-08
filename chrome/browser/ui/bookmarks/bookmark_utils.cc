@@ -149,7 +149,7 @@ std::u16string FormatBookmarkURLForDisplay(const GURL& url) {
 }
 
 bool IsAppsShortcutEnabled(Profile* profile) {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   // Chrome OS uses the app list / app launcher.
   return false;
 #else

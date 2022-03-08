@@ -19,6 +19,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "chrome/browser/ui/app_list/app_list_util.h"
+#include "chrome/browser/ui/bookmarks/bookmark_utils.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/views/bookmarks/bookmark_bar_view_test_helper.h"
 #include "chrome/browser/ui/views/native_widget_factory.h"
@@ -220,13 +221,13 @@ TEST_F(BookmarkBarViewTest, AppsShortcutVisibility) {
   EXPECT_FALSE(test_helper_->apps_page_shortcut()->GetVisible());
 
   // Try to make the Apps shortcut visible. Its visibility depends on whether
-  // the app launcher is enabled.
+  // the Apps shortcut is enabled.
   browser()->profile()->GetPrefs()->SetBoolean(
       bookmarks::prefs::kShowAppsShortcutInBookmarkBar, true);
-  if (IsAppLauncherEnabled()) {
-    EXPECT_FALSE(test_helper_->apps_page_shortcut()->GetVisible());
-  } else {
+  if (chrome::IsAppsShortcutEnabled(browser()->profile())) {
     EXPECT_TRUE(test_helper_->apps_page_shortcut()->GetVisible());
+  } else {
+    EXPECT_FALSE(test_helper_->apps_page_shortcut()->GetVisible());
   }
 
   // Make sure we can also properly transition from true to false.
@@ -493,7 +494,7 @@ TEST_F(BookmarkBarViewTest, DropCallback_InvalidatePtrTest) {
   EXPECT_EQ(output_drag_op, ui::mojom::DragOperation::kNone);
 }
 
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_CHROMEOS)
 // Verifies that the apps shortcut is shown or hidden following the policy
 // value. This policy (and the apps shortcut) isn't present on ChromeOS.
 TEST_F(BookmarkBarViewTest, ManagedShowAppsShortcutInBookmarksBar) {
