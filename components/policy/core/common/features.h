@@ -43,6 +43,10 @@ POLICY_EXPORT extern const base::Feature kPasswordBreachEventReporting;
 POLICY_EXPORT extern const base::Feature
     kEnableUserCloudSigninRestrictionPolicyFetcher;
 
+// The OAuth2 scope required to fetch the policy.
+POLICY_EXPORT extern const base::FeatureParam<std::string>
+    kUserCloudSigninRestrictionPolicyFetcherScope;
+
 // Enable MetricsReportingEnabled policy to alter MetricsReportingState on
 // Android.
 POLICY_EXPORT extern const base::Feature
