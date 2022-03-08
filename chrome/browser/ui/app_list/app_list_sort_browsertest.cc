@@ -287,6 +287,44 @@ class AppListSortBrowserTest : public extensions::ExtensionBrowserTest {
     }
   }
 
+  // Verifies that app list fade out animation is in progress then runs a
+  // closure to interrupt reorder.
+  void VerifyFadeOutInProgressAndRunInterruptClosure(
+      const std::vector<std::string>& expected_ids_in_order,
+      base::OnceClosure interrupt_closure) {
+    // Verify that there is active reorder animations.
+    EXPECT_TRUE(app_list_test_api_.HasAnyWaitingReorderDoneCallback());
+
+    // The app order does not change because the fade out animation is running.
+    EXPECT_EQ(GetAppIdsInOrdinalOrder(), expected_ids_in_order);
+
+    // Run the closure to interrupt the fade out animation.
+    std::move(interrupt_closure).Run();
+  }
+
+  // Registers a closure that turns on/off the tablet mode at the start of the
+  // fade out animation to interrupt app list reorder. `tablet_mode_enabled` is
+  // true when switching to the tablet mode; `tablet_mode_enabled` is false when
+  // switching to the clamshell mode. The tablet mode changes synchronously on
+  // animation start to avoid the race condition between the fade out animation
+  // completion and the task to change the tablet mode state.
+  // See https://crbug.com/1302924
+  void RegisterModeSwitchClosureOnFadeOutStarted(bool tablet_mode_enabled) {
+    auto switch_mode_closure = base::BindOnce(
+        [](bool tablet_mode_enabled) {
+          ash::ShellTestApi().SetTabletModeEnabledForTest(tablet_mode_enabled);
+        },
+        tablet_mode_enabled);
+
+    // NOTE: When the fade out animation is interrupted, the app order should
+    // not change.
+    app_list_test_api_.AddFadeOutAnimationStartClosure(base::BindOnce(
+        &AppListSortBrowserTest::VerifyFadeOutInProgressAndRunInterruptClosure,
+        weak_factory_.GetWeakPtr(),
+        /*expected_ids_in_order=*/GetAppIdsInOrdinalOrder(),
+        std::move(switch_mode_closure)));
+  }
+
   void SetUp() override {
     feature_list_.InitWithFeatures(
         {ash::features::kProductivityLauncher, ash::features::kLauncherAppSort},
@@ -934,18 +972,11 @@ IN_PROC_BROWSER_TEST_F(AppListSortBrowserTest,
   EXPECT_EQ(GetAppIdsInOrdinalOrder(),
             std::vector<std::string>({app3_id_, app2_id_, app1_id_}));
 
+  RegisterModeSwitchClosureOnFadeOutStarted(/*tablet_mode_enabled=*/true);
   ReorderByMouseClickAtContextMenu(ash::AppListSortOrder::kNameAlphabetical,
                                    MenuType::kAppListPageMenu,
                                    AnimationTargetStatus::kFadeOutAborted);
 
-  // Verify that there is active reorder animations.
-  EXPECT_TRUE(app_list_test_api_.HasAnyWaitingReorderDoneCallback());
-
-  // The app order does not change because the fade out animation is running.
-  EXPECT_EQ(GetAppIdsInOrdinalOrder(),
-            std::vector<std::string>({app3_id_, app2_id_, app1_id_}));
-
-  ash::ShellTestApi().SetTabletModeEnabledForTest(true);
   ash::AcceleratorController::Get()->PerformActionIfEnabled(
       ash::TOGGLE_APP_LIST_FULLSCREEN, {});
   app_list_test_api_.WaitForAppListShowAnimation(/*is_bubble_window=*/false);
@@ -969,9 +1000,8 @@ IN_PROC_BROWSER_TEST_F(AppListSortBrowserTest,
 // Verify that switching to clamshell mode when the fade out animation in tablet
 // mode is running works as expected.
 // TODO(crbug.com/1302924): Flaky.
-IN_PROC_BROWSER_TEST_F(
-    AppListSortBrowserTest,
-    DISABLED_TransitionToClamshellModeDuringFadeOutAnimation) {
+IN_PROC_BROWSER_TEST_F(AppListSortBrowserTest,
+                       TransitionToClamshellModeDuringFadeOutAnimation) {
   ash::ShellTestApi().SetTabletModeEnabledForTest(true);
 
   ash::AcceleratorController::Get()->PerformActionIfEnabled(
@@ -982,18 +1012,11 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_EQ(GetAppIdsInOrdinalOrder(),
             std::vector<std::string>({app3_id_, app2_id_, app1_id_}));
 
+  RegisterModeSwitchClosureOnFadeOutStarted(/*tablet_mode_enabled=*/false);
   ReorderByMouseClickAtContextMenu(ash::AppListSortOrder::kNameAlphabetical,
                                    MenuType::kAppListNonFolderItemMenu,
                                    AnimationTargetStatus::kFadeOutAborted);
 
-  // Verify that there is active reorder animations.
-  EXPECT_TRUE(app_list_test_api_.HasAnyWaitingReorderDoneCallback());
-
-  // The app order does not change because the fade out animation is running.
-  EXPECT_EQ(GetAppIdsInOrdinalOrder(),
-            std::vector<std::string>({app3_id_, app2_id_, app1_id_}));
-
-  ash::ShellTestApi().SetTabletModeEnabledForTest(false);
   ash::AcceleratorController::Get()->PerformActionIfEnabled(
       ash::TOGGLE_APP_LIST_FULLSCREEN, {});
   app_list_test_api_.WaitForBubbleWindow(/*wait_for_opening_animation=*/true);

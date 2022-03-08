@@ -1922,19 +1922,25 @@ void AppsGridView::FadeOutVisibleItemsForReorder(
   gfx::Transform translate_offset;
   translate_offset.Translate(0, offset);
 
-  views::AnimationBuilder animation_builder;
-  reorder_animation_abort_handle_ = animation_builder.GetAbortHandle();
-  animation_builder
-      .OnEnded(base::BindOnce(&AppsGridView::OnFadeOutAnimationEnded,
-                              weak_factory_.GetWeakPtr(), done_callback,
-                              /*abort=*/false))
-      .OnAborted(base::BindOnce(&AppsGridView::OnFadeOutAnimationEnded,
+  {
+    views::AnimationBuilder animation_builder;
+    reorder_animation_abort_handle_ = animation_builder.GetAbortHandle();
+    animation_builder
+        .OnEnded(base::BindOnce(&AppsGridView::OnFadeOutAnimationEnded,
                                 weak_factory_.GetWeakPtr(), done_callback,
-                                /*abort=*/true))
-      .Once()
-      .SetDuration(kFadeOutAnimationDuration)
-      .SetOpacity(layer(), 0.f, gfx::Tween::LINEAR)
-      .SetTransform(layer(), translate_offset, gfx::Tween::LINEAR_OUT_SLOW_IN);
+                                /*abort=*/false))
+        .OnAborted(base::BindOnce(&AppsGridView::OnFadeOutAnimationEnded,
+                                  weak_factory_.GetWeakPtr(), done_callback,
+                                  /*abort=*/true))
+        .Once()
+        .SetDuration(kFadeOutAnimationDuration)
+        .SetOpacity(layer(), 0.f, gfx::Tween::LINEAR)
+        .SetTransform(layer(), translate_offset,
+                      gfx::Tween::LINEAR_OUT_SLOW_IN);
+  }
+
+  if (fade_out_start_closure_for_test_)
+    std::move(fade_out_start_closure_for_test_).Run();
 }
 
 void AppsGridView::FadeInVisibleItemsForReorder(
@@ -2044,6 +2050,14 @@ void AppsGridView::AddReorderCallbackForTest(
   DCHECK(done_callback);
 
   reorder_animation_callback_queue_for_test_.push(std::move(done_callback));
+}
+
+void AppsGridView::AddFadeOutAnimationStartClosureForTest(
+    base::OnceClosure start_closure) {
+  DCHECK(start_closure);
+  DCHECK(!fade_out_done_closure_for_test_);
+
+  fade_out_start_closure_for_test_ = std::move(start_closure);
 }
 
 void AppsGridView::AddFadeOutAnimationDoneClosureForTest(

@@ -427,6 +427,13 @@ void AppListTestApi::AddReorderAnimationCallback(
   GetTopLevelAppsGridView()->AddReorderCallbackForTest(std::move(callback));
 }
 
+void AppListTestApi::AddFadeOutAnimationStartClosure(
+    base::OnceClosure closure) {
+  DCHECK(features::IsLauncherAppSortEnabled());
+  GetTopLevelAppsGridView()->AddFadeOutAnimationStartClosureForTest(
+      std::move(closure));
+}
+
 bool AppListTestApi::HasAnyWaitingReorderDoneCallback() const {
   DCHECK(features::IsLauncherAppSortEnabled());
   return GetTopLevelAppsGridView()->HasAnyWaitingReorderDoneCallbackForTest();

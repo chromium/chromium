@@ -124,6 +124,10 @@ class ASH_EXPORT AppListTestApi {
       base::RepeatingCallback<void(bool, AppListReorderAnimationStatus)>
           callback);
 
+  // Adds a callback that runs right after the app list fade out animation
+  // triggered by reorder starts.
+  void AddFadeOutAnimationStartClosure(base::OnceClosure closure);
+
   // Returns true if there is any waiting reorder animation test callback.
   bool HasAnyWaitingReorderDoneCallback() const;
 
