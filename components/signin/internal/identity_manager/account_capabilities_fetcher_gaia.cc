@@ -10,6 +10,7 @@
 #include "components/signin/internal/identity_manager/account_capabilities_constants.h"
 #include "components/signin/internal/identity_manager/account_info_util.h"
 #include "components/signin/internal/identity_manager/profile_oauth2_token_service.h"
+#include "components/signin/public/identity_manager/account_capabilities.h"
 #include "google_apis/gaia/gaia_constants.h"
 #include "google_apis/gaia/google_service_auth_error.h"
 #include "google_apis/gaia/oauth2_access_token_consumer.h"

@@ -13,6 +13,9 @@ source_set("identity_manager") {
     "account_capabilities_constants.h",
     "account_capabilities_fetcher.cc",
     "account_capabilities_fetcher.h",
+    "account_capabilities_fetcher_factory.h",
+    "account_capabilities_fetcher_factory_gaia.cc",
+    "account_capabilities_fetcher_factory_gaia.h",
     "account_capabilities_fetcher_gaia.cc",
     "account_capabilities_fetcher_gaia.h",
     "account_fetcher_service.cc",
@@ -140,6 +143,7 @@ source_set("unit_tests") {
   testonly = true
 
   sources = [
+    "account_capabilities_fetcher_unittest.cc",
     "account_info_util_unittest.cc",
     "account_tracker_service_unittest.cc",
     "gaia_cookie_manager_service_unittest.cc",
@@ -213,6 +217,10 @@ static_library("test_support") {
   testonly = true
 
   sources = [
+    "fake_account_capabilities_fetcher.cc",
+    "fake_account_capabilities_fetcher.h",
+    "fake_account_capabilities_fetcher_factory.cc",
+    "fake_account_capabilities_fetcher_factory.h",
     "fake_profile_oauth2_token_service.cc",
     "fake_profile_oauth2_token_service.h",
     "fake_profile_oauth2_token_service_delegate.cc",

@@ -46,6 +46,9 @@ class AccountCapabilities {
   // be updated in order to avoid overriding known values.
   bool UpdateWith(const AccountCapabilities& other);
 
+  bool operator==(const AccountCapabilities& other) const;
+  bool operator!=(const AccountCapabilities& other) const;
+
  private:
   friend absl::optional<AccountCapabilities> AccountCapabilitiesFromValue(
       const base::Value& account_capabilities);

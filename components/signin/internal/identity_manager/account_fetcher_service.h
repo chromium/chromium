@@ -24,6 +24,7 @@
 
 class AccountCapabilities;
 class AccountCapabilitiesFetcher;
+class AccountCapabilitiesFetcherFactory;
 class AccountInfoFetcher;
 class AccountTrackerService;
 class ProfileOAuth2TokenService;
@@ -71,7 +72,9 @@ class AccountFetcherService : public ProfileOAuth2TokenServiceObserver {
   void Initialize(SigninClient* signin_client,
                   ProfileOAuth2TokenService* token_service,
                   AccountTrackerService* account_tracker_service,
-                  std::unique_ptr<image_fetcher::ImageDecoder> image_decoder);
+                  std::unique_ptr<image_fetcher::ImageDecoder> image_decoder,
+                  std::unique_ptr<AccountCapabilitiesFetcherFactory>
+                      account_capabilities_fetcher_factory);
 
   // Indicates if all user information has been fetched. If the result is false,
   // there are still unfininshed fetchers.
@@ -188,6 +191,8 @@ class AccountFetcherService : public ProfileOAuth2TokenServiceObserver {
   std::unordered_map<CoreAccountId, std::unique_ptr<AccountInfoFetcher>>
       user_info_requests_;
 
+  std::unique_ptr<AccountCapabilitiesFetcherFactory>
+      account_capabilities_fetcher_factory_;
   std::map<CoreAccountId, std::unique_ptr<AccountCapabilitiesFetcher>>
       account_capabilities_requests_;
 

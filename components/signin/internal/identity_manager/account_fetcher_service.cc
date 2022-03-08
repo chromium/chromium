@@ -20,7 +20,7 @@
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 #include "components/signin/internal/identity_manager/account_capabilities_fetcher.h"
-#include "components/signin/internal/identity_manager/account_capabilities_fetcher_gaia.h"
+#include "components/signin/internal/identity_manager/account_capabilities_fetcher_factory.h"
 #include "components/signin/internal/identity_manager/account_info_fetcher.h"
 #include "components/signin/internal/identity_manager/account_tracker_service.h"
 #include "components/signin/internal/identity_manager/profile_oauth2_token_service.h"
@@ -75,7 +75,9 @@ void AccountFetcherService::Initialize(
     SigninClient* signin_client,
     ProfileOAuth2TokenService* token_service,
     AccountTrackerService* account_tracker_service,
-    std::unique_ptr<image_fetcher::ImageDecoder> image_decoder) {
+    std::unique_ptr<image_fetcher::ImageDecoder> image_decoder,
+    std::unique_ptr<AccountCapabilitiesFetcherFactory>
+        account_capabilities_fetcher_factory) {
   DCHECK(signin_client);
   DCHECK(!signin_client_);
   signin_client_ = signin_client;
@@ -89,6 +91,11 @@ void AccountFetcherService::Initialize(
   DCHECK(image_decoder);
   DCHECK(!image_decoder_);
   image_decoder_ = std::move(image_decoder);
+  DCHECK(!account_capabilities_fetcher_factory_);
+  DCHECK(account_capabilities_fetcher_factory);
+  account_capabilities_fetcher_factory_ =
+      std::move(account_capabilities_fetcher_factory);
+
   repeating_timer_ = std::make_unique<signin::PersistentRepeatingTimer>(
       signin_client_->GetPrefs(), AccountFetcherService::kLastUpdatePref,
       kRefreshFromTokenServiceDelay,
@@ -260,11 +267,12 @@ void AccountFetcherService::StartFetchingAccountCapabilities(
   std::unique_ptr<AccountCapabilitiesFetcher>& request =
       account_capabilities_requests_[account_id];
   if (!request) {
-    request = std::make_unique<AccountCapabilitiesFetcherGaia>(
-        token_service_, signin_client_->GetURLLoaderFactory(), account_id,
-        base::BindOnce(
-            &AccountFetcherService::OnAccountCapabilitiesFetchComplete,
-            base::Unretained(this)));
+    request =
+        account_capabilities_fetcher_factory_->CreateAccountCapabilitiesFetcher(
+            account_id,
+            base::BindOnce(
+                &AccountFetcherService::OnAccountCapabilitiesFetchComplete,
+                base::Unretained(this)));
     request->Start();
   }
 }

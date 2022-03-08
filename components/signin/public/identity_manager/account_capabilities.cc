@@ -64,3 +64,15 @@ bool AccountCapabilities::UpdateWith(const AccountCapabilities& other) {
 
   return modified;
 }
+
+bool AccountCapabilities::operator==(const AccountCapabilities& other) const {
+  for (const std::string& name : GetSupportedAccountCapabilityNames()) {
+    if (GetCapabilityByName(name) != other.GetCapabilityByName(name))
+      return false;
+  }
+  return true;
+}
+
+bool AccountCapabilities::operator!=(const AccountCapabilities& other) const {
+  return !(*this == other);
+}

@@ -11,6 +11,8 @@
 #include "build/chromeos_buildflags.h"
 #include "components/image_fetcher/core/image_decoder.h"
 #include "components/prefs/pref_service.h"
+#include "components/signin/internal/identity_manager/account_capabilities_fetcher_factory.h"
+#include "components/signin/internal/identity_manager/account_capabilities_fetcher_factory_gaia.h"
 #include "components/signin/internal/identity_manager/account_fetcher_service.h"
 #include "components/signin/internal/identity_manager/account_tracker_service.h"
 #include "components/signin/internal/identity_manager/accounts_cookie_mutator_impl.h"
@@ -92,11 +94,14 @@ std::unique_ptr<AccountFetcherService> BuildAccountFetcherService(
     SigninClient* signin_client,
     ProfileOAuth2TokenService* token_service,
     AccountTrackerService* account_tracker_service,
-    std::unique_ptr<image_fetcher::ImageDecoder> image_decoder) {
+    std::unique_ptr<image_fetcher::ImageDecoder> image_decoder,
+    std::unique_ptr<AccountCapabilitiesFetcherFactory>
+        account_capabilities_fetcher_factory) {
   auto account_fetcher_service = std::make_unique<AccountFetcherService>();
-  account_fetcher_service->Initialize(signin_client, token_service,
-                                      account_tracker_service,
-                                      std::move(image_decoder));
+  account_fetcher_service->Initialize(
+      signin_client, token_service, account_tracker_service,
+      std::move(image_decoder),
+      std::move(account_capabilities_fetcher_factory));
   return account_fetcher_service;
 }
 
@@ -157,9 +162,14 @@ IdentityManager::InitParameters BuildIdentityManagerInitParameters(
   init_params.diagnostics_provider = std::make_unique<DiagnosticsProviderImpl>(
       token_service.get(), gaia_cookie_manager_service.get());
 
+  auto account_capabilities_fetcher_factory =
+      std::make_unique<AccountCapabilitiesFetcherFactoryGaia>(
+          token_service.get(), params->signin_client);
+
   init_params.account_fetcher_service = BuildAccountFetcherService(
       params->signin_client, token_service.get(), account_tracker_service.get(),
-      std::move(params->image_decoder));
+      std::move(params->image_decoder),
+      std::move(account_capabilities_fetcher_factory));
 
 #if BUILDFLAG(IS_IOS) || BUILDFLAG(IS_ANDROID)
   init_params.device_accounts_synchronizer =

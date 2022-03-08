@@ -22,6 +22,7 @@
 #include "components/signin/internal/identity_manager/account_tracker_service.h"
 #include "components/signin/internal/identity_manager/accounts_cookie_mutator_impl.h"
 #include "components/signin/internal/identity_manager/diagnostics_provider_impl.h"
+#include "components/signin/internal/identity_manager/fake_account_capabilities_fetcher_factory.h"
 #include "components/signin/internal/identity_manager/fake_profile_oauth2_token_service.h"
 #include "components/signin/internal/identity_manager/gaia_cookie_manager_service.h"
 #include "components/signin/internal/identity_manager/primary_account_manager.h"
@@ -335,7 +336,8 @@ IdentityTestEnvironment::FinishBuildIdentityManagerForTests(
   auto account_fetcher_service = std::make_unique<AccountFetcherService>();
   account_fetcher_service->Initialize(
       signin_client, token_service.get(), account_tracker_service.get(),
-      std::make_unique<image_fetcher::FakeImageDecoder>());
+      std::make_unique<image_fetcher::FakeImageDecoder>(),
+      std::make_unique<FakeAccountCapabilitiesFetcherFactory>());
 
   std::unique_ptr<PrimaryAccountPolicyManager> policy_manager;
 #if !BUILDFLAG(IS_CHROMEOS_ASH)

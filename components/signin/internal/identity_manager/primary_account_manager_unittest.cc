@@ -22,6 +22,7 @@
 #include "components/prefs/testing_pref_service.h"
 #include "components/signin/internal/identity_manager/account_fetcher_service.h"
 #include "components/signin/internal/identity_manager/account_tracker_service.h"
+#include "components/signin/internal/identity_manager/fake_account_capabilities_fetcher_factory.h"
 #include "components/signin/internal/identity_manager/fake_profile_oauth2_token_service_delegate.h"
 #include "components/signin/internal/identity_manager/primary_account_policy_manager.h"
 #include "components/signin/internal/identity_manager/profile_oauth2_token_service.h"
@@ -53,7 +54,8 @@ class PrimaryAccountManagerTest : public testing::Test,
     account_tracker_.Initialize(&user_prefs_, base::FilePath());
     account_fetcher_.Initialize(
         &test_signin_client_, &token_service_, &account_tracker_,
-        std::make_unique<image_fetcher::FakeImageDecoder>());
+        std::make_unique<image_fetcher::FakeImageDecoder>(),
+        std::make_unique<FakeAccountCapabilitiesFetcherFactory>());
   }
 
   ~PrimaryAccountManagerTest() override {
