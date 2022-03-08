@@ -174,6 +174,12 @@ public class CustomTabActivityNavigationController implements StartStopWithNativ
             return;
         }
 
+        if (tab.isDestroyed()) {
+            // This code path may be called asynchronously, assume that if the tab has been
+            // destroyed there is no point in continuing.
+            return;
+        }
+
         // TODO(pkotwicz): Figure out whether we want to record these metrics for WebAPKs.
         if (mIntentDataProvider.getWebappExtras() == null) {
             mCustomTabObserver.get().trackNextPageLoadFromTimestamp(tab, timeStamp);

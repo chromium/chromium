@@ -105,6 +105,11 @@ public class WebSigninAccountPickerDelegate implements AccountPickerDelegate {
             @Override
             public void onSigninSucceeded() {
                 ThreadUtils.assertOnUiThread();
+                if (tab.isDestroyed()) {
+                    // This code path may be called asynchronously, assume that if the tab has been
+                    // destroyed there is no point in continuing.
+                    return;
+                }
                 tab.loadUrl(new LoadUrlParams(continueUrl));
             }
         };
