@@ -5,6 +5,8 @@
 #ifndef CONTENT_BROWSER_ATTRIBUTION_REPORTING_ATTRIBUTION_OBSERVER_TYPES_H_
 #define CONTENT_BROWSER_ATTRIBUTION_REPORTING_ATTRIBUTION_OBSERVER_TYPES_H_
 
+#include <vector>
+
 #include "content/browser/attribution_reporting/attribution_report.h"
 #include "content/browser/attribution_reporting/attribution_trigger.h"
 #include "content/browser/attribution_reporting/stored_source.h"
@@ -35,11 +37,11 @@ struct CONTENT_EXPORT DeactivatedSource {
 class CONTENT_EXPORT CreateReportResult {
  public:
   explicit CreateReportResult(
-      AttributionTrigger::EventLevelResult status,
-      absl::optional<AttributionReport> dropped_report = absl::nullopt,
+      AttributionTrigger::EventLevelResult event_level_status,
+      std::vector<AttributionReport> dropped_reports = {},
       absl::optional<DeactivatedSource::Reason>
           dropped_report_source_deactivation_reason = absl::nullopt,
-      absl::optional<AttributionReport> new_report = absl::nullopt);
+      std::vector<AttributionReport> new_reports = {});
   ~CreateReportResult();
 
   CreateReportResult(const CreateReportResult&);
@@ -48,34 +50,37 @@ class CONTENT_EXPORT CreateReportResult {
   CreateReportResult& operator=(const CreateReportResult&);
   CreateReportResult& operator=(CreateReportResult&&);
 
-  AttributionTrigger::EventLevelResult status() const { return status_; }
-
-  const absl::optional<AttributionReport>& dropped_report() const {
-    return dropped_report_;
+  AttributionTrigger::EventLevelResult event_level_status() const {
+    return event_level_status_;
   }
 
-  const absl::optional<AttributionReport>& new_report() const {
-    return new_report_;
+  const std::vector<AttributionReport>& dropped_reports() const {
+    return dropped_reports_;
   }
 
-  absl::optional<AttributionReport>& new_report() { return new_report_; }
+  const std::vector<AttributionReport>& new_reports() const {
+    return new_reports_;
+  }
+
+  std::vector<AttributionReport>& new_reports() { return new_reports_; }
 
   absl::optional<DeactivatedSource> GetDeactivatedSource() const;
 
  private:
-  AttributionTrigger::EventLevelResult status_;
+  AttributionTrigger::EventLevelResult event_level_status_;
 
   // `AttributionTrigger::EventLevelResult::kInternalError` is only associated
   // with a dropped report if the browser succeeded in running the
   // source-to-attribute logic.
-  absl::optional<AttributionReport> dropped_report_;
+  std::vector<AttributionReport> dropped_reports_;
 
   // Null unless `dropped_report_`'s source was deactivated.
   absl::optional<DeactivatedSource::Reason>
       dropped_report_source_deactivation_reason_;
 
-  // Null unless `status` is `kSuccess` or `kSuccessDroppedLowerPriority`.
-  absl::optional<AttributionReport> new_report_;
+  // Empty unless `event_level_status` is `kSuccess` or
+  // `kSuccessDroppedLowerPriority`.
+  std::vector<AttributionReport> new_reports_;
 };
 
 }  // namespace content

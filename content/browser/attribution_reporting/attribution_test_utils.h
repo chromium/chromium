@@ -755,12 +755,12 @@ MATCHER_P(ReportURLIs, matcher, "") {
 
 // `CreateReportResult` matchers
 
-MATCHER_P(CreateReportStatusIs, matcher, "") {
-  return ExplainMatchResult(matcher, arg.status(), result_listener);
+MATCHER_P(CreateReportEventLevelStatusIs, matcher, "") {
+  return ExplainMatchResult(matcher, arg.event_level_status(), result_listener);
 }
 
-MATCHER_P(DroppedReportIs, matcher, "") {
-  return ExplainMatchResult(matcher, arg.dropped_report(), result_listener);
+MATCHER_P(DroppedReportsAre, matcher, "") {
+  return ExplainMatchResult(matcher, arg.dropped_reports(), result_listener);
 }
 
 MATCHER_P(DeactivatedSourceIs, matcher, "") {
@@ -768,8 +768,8 @@ MATCHER_P(DeactivatedSourceIs, matcher, "") {
                             result_listener);
 }
 
-MATCHER_P(NewReportIs, matcher, "") {
-  return ExplainMatchResult(matcher, arg.new_report(), result_listener);
+MATCHER_P(NewReportsAre, matcher, "") {
+  return ExplainMatchResult(matcher, arg.new_reports(), result_listener);
 }
 
 struct AttributionFilterSizeTestCase {

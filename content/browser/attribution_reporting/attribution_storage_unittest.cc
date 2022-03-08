@@ -109,7 +109,7 @@ class AttributionStorageTest : public testing::Test {
 
   AttributionTrigger::EventLevelResult MaybeCreateAndStoreEventLevelReport(
       const AttributionTrigger& conversion) {
-    return storage_->MaybeCreateAndStoreReport(conversion).status();
+    return storage_->MaybeCreateAndStoreReport(conversion).event_level_status();
   }
 
   void DeleteReports(const std::vector<AttributionReport>& reports) {
@@ -148,7 +148,8 @@ TEST_F(AttributionStorageTest,
   // Test all public methods on AttributionStorage.
   EXPECT_NO_FATAL_FAILURE(storage->StoreSource(SourceBuilder().Build()));
   EXPECT_EQ(AttributionTrigger::EventLevelResult::kNoMatchingImpressions,
-            storage->MaybeCreateAndStoreReport(DefaultTrigger()).status());
+            storage->MaybeCreateAndStoreReport(DefaultTrigger())
+                .event_level_status());
   EXPECT_THAT(storage->GetAttributionReports(base::Time::Now()), IsEmpty());
   EXPECT_THAT(storage->GetActiveSources(), IsEmpty());
   EXPECT_TRUE(storage->DeleteReport(AttributionReport::EventLevelData::Id(0)));
@@ -185,9 +186,9 @@ TEST_F(AttributionStorageTest,
        GetWithNoMatchingImpressions_NoImpressionsReturned) {
   EXPECT_THAT(
       storage()->MaybeCreateAndStoreReport(DefaultTrigger()),
-      AllOf(CreateReportStatusIs(
+      AllOf(CreateReportEventLevelStatusIs(
                 AttributionTrigger::EventLevelResult::kNoMatchingImpressions),
-            NewReportIs(absl::nullopt)));
+            NewReportsAre(IsEmpty())));
   EXPECT_THAT(storage()->GetAttributionReports(base::Time::Now()), IsEmpty());
 }
 
@@ -272,9 +273,9 @@ TEST_F(AttributionStorageTest,
   // No additional conversion reports should be created.
   EXPECT_THAT(
       storage()->MaybeCreateAndStoreReport(DefaultTrigger()),
-      AllOf(CreateReportStatusIs(
+      AllOf(CreateReportEventLevelStatusIs(
                 AttributionTrigger::EventLevelResult::kPriorityTooLow),
-            DroppedReportIs(IsTrue()), DeactivatedSourceIs(absl::nullopt)));
+            DroppedReportsAre(SizeIs(1)), DeactivatedSourceIs(absl::nullopt)));
 }
 
 TEST_F(AttributionStorageTest, OneConversion_OneReportScheduled) {
@@ -578,9 +579,9 @@ TEST_F(AttributionStorageTest, MaxConversionsPerOrigin) {
       TriggerBuilder().SetTriggerData(5).Build());
   EXPECT_EQ(
       AttributionTrigger::EventLevelResult::kNoCapacityForConversionDestination,
-      result.status());
-  EXPECT_THAT(result.dropped_report(),
-              Optional(EventLevelDataIs(TriggerDataIs(5))));
+      result.event_level_status());
+  EXPECT_THAT(result.dropped_reports(),
+              ElementsAre(EventLevelDataIs(TriggerDataIs(5))));
 }
 
 TEST_F(AttributionStorageTest, ClearDataWithNoMatch_NoDelete) {
@@ -809,9 +810,9 @@ TEST_F(AttributionStorageTest, MaxAttributionReportsBetweenSites) {
             MaybeCreateAndStoreEventLevelReport(conversion));
   EXPECT_THAT(
       storage()->MaybeCreateAndStoreReport(conversion),
-      AllOf(CreateReportStatusIs(
+      AllOf(CreateReportEventLevelStatusIs(
                 AttributionTrigger::EventLevelResult::kExcessiveAttributions),
-            DroppedReportIs(IsTrue())));
+            DroppedReportsAre(SizeIs(1))));
 
   const AttributionReport expected_report =
       GetExpectedEventLevelReport(SourceBuilder().BuildStored(), conversion);
@@ -1197,18 +1198,19 @@ TEST_F(AttributionStorageTest, TriggerPriority) {
 
   EXPECT_THAT(storage()->MaybeCreateAndStoreReport(
                   TriggerBuilder().SetPriority(0).SetTriggerData(20).Build()),
-              AllOf(CreateReportStatusIs(
+              AllOf(CreateReportEventLevelStatusIs(
                         AttributionTrigger::EventLevelResult::kSuccess),
-                    DroppedReportIs(absl::nullopt)));
+                    DroppedReportsAre(IsEmpty())));
 
   // This conversion should replace the one above because it has a higher
   // priority.
-  EXPECT_THAT(
-      storage()->MaybeCreateAndStoreReport(
-          TriggerBuilder().SetPriority(2).SetTriggerData(21).Build()),
-      AllOf(CreateReportStatusIs(AttributionTrigger::EventLevelResult::
-                                     kSuccessDroppedLowerPriority),
-            DroppedReportIs(Optional(EventLevelDataIs(TriggerDataIs(20u))))));
+  EXPECT_THAT(storage()->MaybeCreateAndStoreReport(
+                  TriggerBuilder().SetPriority(2).SetTriggerData(21).Build()),
+              AllOf(CreateReportEventLevelStatusIs(
+                        AttributionTrigger::EventLevelResult::
+                            kSuccessDroppedLowerPriority),
+                    DroppedReportsAre(
+                        ElementsAre(EventLevelDataIs(TriggerDataIs(20u))))));
 
   storage()->StoreSource(
       SourceBuilder().SetSourceEventId(7).SetPriority(2).Build());
@@ -1218,12 +1220,12 @@ TEST_F(AttributionStorageTest, TriggerPriority) {
                 TriggerBuilder().SetPriority(1).SetTriggerData(22).Build()));
   // This conversion should be dropped because it has a lower priority than the
   // one above.
-  EXPECT_THAT(
-      storage()->MaybeCreateAndStoreReport(
-          TriggerBuilder().SetPriority(0).SetTriggerData(23).Build()),
-      AllOf(CreateReportStatusIs(
-                AttributionTrigger::EventLevelResult::kPriorityTooLow),
-            DroppedReportIs(Optional(EventLevelDataIs(TriggerDataIs(23u))))));
+  EXPECT_THAT(storage()->MaybeCreateAndStoreReport(
+                  TriggerBuilder().SetPriority(0).SetTriggerData(23).Build()),
+              AllOf(CreateReportEventLevelStatusIs(
+                        AttributionTrigger::EventLevelResult::kPriorityTooLow),
+                    DroppedReportsAre(
+                        ElementsAre(EventLevelDataIs(TriggerDataIs(23u))))));
 
   task_environment_.FastForwardBy(kReportDelay);
 
@@ -1375,9 +1377,9 @@ TEST_F(AttributionStorageTest, DedupKey_Dedups) {
           .SetTriggerData(74)
           .Build());
   EXPECT_EQ(AttributionTrigger::EventLevelResult::kDeduplicated,
-            result.status());
-  EXPECT_THAT(result.dropped_report(),
-              Optional(EventLevelDataIs(TriggerDataIs(74))));
+            result.event_level_status());
+  EXPECT_THAT(result.dropped_reports(),
+              ElementsAre(EventLevelDataIs(TriggerDataIs(74))));
 
   // Shouldn't be stored because conversion destination and dedup key match.
   EXPECT_EQ(AttributionTrigger::EventLevelResult::kDeduplicated,
@@ -1610,14 +1612,14 @@ TEST_F(AttributionStorageTest,
   // The next report should cause the source to be deactivated; the report
   // itself shouldn't be stored as we've already reached the maximum number of
   // conversions per source.
-  EXPECT_THAT(
-      storage()->MaybeCreateAndStoreReport(DefaultTrigger()),
-      AllOf(CreateReportStatusIs(
-                AttributionTrigger::EventLevelResult::kPriorityTooLow),
-            DroppedReportIs(Optional(ReportSourceIs(builder.BuildStored()))),
-            DeactivatedSourceIs(DeactivatedSource(
-                builder.BuildStored(),
-                DeactivatedSource::Reason::kReachedAttributionLimit))));
+  EXPECT_THAT(storage()->MaybeCreateAndStoreReport(DefaultTrigger()),
+              AllOf(CreateReportEventLevelStatusIs(
+                        AttributionTrigger::EventLevelResult::kPriorityTooLow),
+                    DroppedReportsAre(
+                        ElementsAre(ReportSourceIs(builder.BuildStored()))),
+                    DeactivatedSourceIs(DeactivatedSource(
+                        builder.BuildStored(),
+                        DeactivatedSource::Reason::kReachedAttributionLimit))));
 }
 
 TEST_F(AttributionStorageTest, ReportID_RoundTrips) {
@@ -1820,9 +1822,9 @@ TEST_F(AttributionStorageTest, MaybeCreateAndStoreReport_ReturnsNewReport) {
   EXPECT_THAT(
       storage()->MaybeCreateAndStoreReport(
           TriggerBuilder().SetTriggerData(123).Build()),
-      AllOf(
-          CreateReportStatusIs(AttributionTrigger::EventLevelResult::kSuccess),
-          NewReportIs(Optional(EventLevelDataIs(TriggerDataIs(123))))));
+      AllOf(CreateReportEventLevelStatusIs(
+                AttributionTrigger::EventLevelResult::kSuccess),
+            NewReportsAre(ElementsAre(EventLevelDataIs(TriggerDataIs(123))))));
 }
 
 // This is tested more thoroughly by the `RateLimitTable` unit tests. Here just

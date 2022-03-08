@@ -291,7 +291,7 @@ void AttributionInternalsHandlerImpl::OnReportSent(
 void AttributionInternalsHandlerImpl::OnTriggerHandled(
     const CreateReportResult& result) {
   mojom::WebUIAttributionReport::Status status;
-  switch (result.status()) {
+  switch (result.event_level_status()) {
     case AttributionTrigger::EventLevelResult::kSuccessDroppedLowerPriority:
     case AttributionTrigger::EventLevelResult::kPriorityTooLow:
       status = mojom::WebUIAttributionReport::Status::kDroppedDueToLowPriority;
@@ -320,7 +320,7 @@ void AttributionInternalsHandlerImpl::OnTriggerHandled(
       break;
     case AttributionTrigger::EventLevelResult::kInternalError:
       // `kInternalError` doesn't always have a dropped report.
-      if (!result.dropped_report().has_value())
+      if (result.dropped_reports().empty())
         return;
 
       status = mojom::WebUIAttributionReport::Status::kInternalError;
@@ -331,8 +331,8 @@ void AttributionInternalsHandlerImpl::OnTriggerHandled(
       return;
   }
 
-  DCHECK(result.dropped_report().has_value());
-  auto report = WebUIAttributionReport(*result.dropped_report(),
+  DCHECK_EQ(result.dropped_reports().size(), 1u);
+  auto report = WebUIAttributionReport(result.dropped_reports().front(),
                                        /*http_response_code=*/0, status);
 
   for (auto& observer : observers_) {

@@ -664,7 +664,11 @@ CreateReportResult AttributionStorageSql::MaybeCreateAndStoreReport(
   AttributionTrigger::EventLevelResult result = MaybeCreateEventLevelReport(
       std::move(source_to_attribute->source), trigger, report, dedup_key);
   if (result != AttributionTrigger::EventLevelResult::kSuccess)
-    return CreateReportResult(result, std::move(report));
+    return CreateReportResult(
+        result,
+        /*dropped_reports=*/report.has_value()
+            ? std::vector<AttributionReport>{std::move(*report)}
+            : std::vector<AttributionReport>());
 
   DCHECK(report.has_value());
 
@@ -675,11 +679,11 @@ CreateReportResult AttributionStorageSql::MaybeCreateAndStoreReport(
     case ConversionCapacityStatus::kNoCapacity:
       return CreateReportResult(AttributionTrigger::EventLevelResult::
                                     kNoCapacityForConversionDestination,
-                                std::move(report));
+                                /*dropped_reports=*/{std::move(*report)});
     case ConversionCapacityStatus::kError:
       return CreateReportResult(
           AttributionTrigger::EventLevelResult::kInternalError,
-          std::move(report));
+          /*dropped_reports=*/{std::move(*report)});
   }
 
   const AttributionInfo& attribution_info = report->attribution_info();
@@ -691,11 +695,11 @@ CreateReportResult AttributionStorageSql::MaybeCreateAndStoreReport(
     case RateLimitResult::kNotAllowed:
       return CreateReportResult(
           AttributionTrigger::EventLevelResult::kExcessiveAttributions,
-          std::move(report));
+          /*dropped_reports=*/{std::move(*report)});
     case RateLimitResult::kError:
       return CreateReportResult(
           AttributionTrigger::EventLevelResult::kInternalError,
-          std::move(report));
+          /*dropped_reports=*/{std::move(*report)});
   }
 
   switch (rate_limit_table_.AttributionAllowedForReportingOriginLimit(
@@ -705,18 +709,18 @@ CreateReportResult AttributionStorageSql::MaybeCreateAndStoreReport(
     case RateLimitResult::kNotAllowed:
       return CreateReportResult(
           AttributionTrigger::EventLevelResult::kExcessiveReportingOrigins,
-          std::move(report));
+          /*dropped_reports=*/{std::move(*report)});
     case RateLimitResult::kError:
       return CreateReportResult(
           AttributionTrigger::EventLevelResult::kInternalError,
-          std::move(report));
+          /*dropped_reports=*/{std::move(*report)});
   }
 
   sql::Transaction transaction(db_.get());
   if (!transaction.Begin()) {
     return CreateReportResult(
         AttributionTrigger::EventLevelResult::kInternalError,
-        std::move(report));
+        /*dropped_reports=*/{std::move(*report)});
   }
 
   absl::optional<AttributionReport> replaced_report;
@@ -726,7 +730,8 @@ CreateReportResult AttributionStorageSql::MaybeCreateAndStoreReport(
       source_deactivation_reason);
 
   if (result == AttributionTrigger::EventLevelResult::kInternalError)
-    return CreateReportResult(result, std::move(report));
+    return CreateReportResult(result,
+                              /*dropped_reports=*/{std::move(*report)});
 
   // Early exit if done modifying the storage. Dropped reports still need to
   // clean sources.
@@ -737,9 +742,9 @@ CreateReportResult AttributionStorageSql::MaybeCreateAndStoreReport(
     if (!transaction.Commit()) {
       return CreateReportResult(
           AttributionTrigger::EventLevelResult::kInternalError,
-          std::move(report));
+          /*dropped_reports=*/{std::move(*report)});
     }
-    return CreateReportResult(result, std::move(report),
+    return CreateReportResult(result, /*dropped_reports=*/{std::move(*report)},
                               std::move(source_deactivation_reason));
   }
 
@@ -747,7 +752,7 @@ CreateReportResult AttributionStorageSql::MaybeCreateAndStoreReport(
   if (!DeleteSources(source_ids_to_delete)) {
     return CreateReportResult(
         AttributionTrigger::EventLevelResult::kInternalError,
-        std::move(report));
+        /*dropped_reports=*/{std::move(*report)});
   }
 
   // Based on the deletion logic here and the fact that we delete sources
@@ -762,28 +767,30 @@ CreateReportResult AttributionStorageSql::MaybeCreateAndStoreReport(
     if (!transaction.Commit()) {
       return CreateReportResult(
           AttributionTrigger::EventLevelResult::kInternalError,
-          std::move(report));
+          /*dropped_reports=*/{std::move(*report)});
     }
-    return CreateReportResult(result, std::move(report));
+    return CreateReportResult(result, /*dropped_reports=*/{std::move(*report)});
   }
 
   if (!rate_limit_table_.AddRateLimitForAttribution(db_.get(),
                                                     attribution_info)) {
     return CreateReportResult(
         AttributionTrigger::EventLevelResult::kInternalError,
-        std::move(report));
+        /*dropped_reports=*/{std::move(*report)});
   }
 
   if (!transaction.Commit()) {
     return CreateReportResult(
         AttributionTrigger::EventLevelResult::kInternalError,
-        std::move(report));
+        /*dropped_reports=*/{std::move(*report)});
   }
 
   return CreateReportResult(
-      result, std::move(replaced_report),
+      result, /*dropped_reports=*/replaced_report.has_value()
+                  ? std::vector<AttributionReport>{std::move(*replaced_report)}
+                  : std::vector<AttributionReport>(),
       /*dropped_report_source_deactivation_reason=*/absl::nullopt,
-      std::move(report));
+      /*new_reports=*/{std::move(*report)});
 }
 
 bool AttributionStorageSql::FindMatchingSourceForTrigger(

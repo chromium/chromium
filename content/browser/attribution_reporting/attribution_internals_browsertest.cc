@@ -403,63 +403,70 @@ IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,
                .Build()}));
   manager_.NotifyTriggerHandled(CreateReportResult(
       AttributionTrigger::EventLevelResult::kPriorityTooLow,
-      ReportBuilder(
-          AttributionInfoBuilder(SourceBuilder(now).BuildStored()).Build())
-          .SetReportTime(now + base::Hours(1))
-          .SetPriority(11)
-          .Build()));
+      /*dropped_reports=*/{
+          ReportBuilder(
+              AttributionInfoBuilder(SourceBuilder(now).BuildStored()).Build())
+              .SetReportTime(now + base::Hours(1))
+              .SetPriority(11)
+              .Build()}));
   manager_.NotifyTriggerHandled(CreateReportResult(
       AttributionTrigger::EventLevelResult::kDroppedForNoise,
-      ReportBuilder(
-          AttributionInfoBuilder(SourceBuilder(now).BuildStored()).Build())
-          .SetReportTime(now + base::Hours(2))
-          .SetPriority(12)
-          .Build()));
+      /*dropped_reports=*/{
+          ReportBuilder(
+              AttributionInfoBuilder(SourceBuilder(now).BuildStored()).Build())
+              .SetReportTime(now + base::Hours(2))
+              .SetPriority(12)
+              .Build()}));
   manager_.NotifyTriggerHandled(CreateReportResult(
       AttributionTrigger::EventLevelResult::kExcessiveAttributions,
-      ReportBuilder(
-          AttributionInfoBuilder(SourceBuilder(now).BuildStored()).Build())
-          .SetReportTime(now + base::Hours(6))
-          .SetPriority(-3)
-          .Build()));
+      /*dropped_reports=*/{
+          ReportBuilder(
+              AttributionInfoBuilder(SourceBuilder(now).BuildStored()).Build())
+              .SetReportTime(now + base::Hours(6))
+              .SetPriority(-3)
+              .Build()}));
   manager_.NotifyTriggerHandled(CreateReportResult(
       AttributionTrigger::EventLevelResult::kExcessiveReportingOrigins,
-      ReportBuilder(
-          AttributionInfoBuilder(SourceBuilder(now).BuildStored()).Build())
-          .SetReportTime(now + base::Hours(7))
-          .SetPriority(-4)
-          .Build()));
+      /*dropped_reports=*/{
+          ReportBuilder(
+              AttributionInfoBuilder(SourceBuilder(now).BuildStored()).Build())
+              .SetReportTime(now + base::Hours(7))
+              .SetPriority(-4)
+              .Build()}));
   manager_.NotifyTriggerHandled(CreateReportResult(
       AttributionTrigger::EventLevelResult::kDeduplicated,
-      ReportBuilder(
-          AttributionInfoBuilder(SourceBuilder(now).BuildStored()).Build())
-          .SetReportTime(now + base::Hours(8))
-          .SetPriority(-5)
-          .Build()));
+      /*dropped_reports=*/{
+          ReportBuilder(
+              AttributionInfoBuilder(SourceBuilder(now).BuildStored()).Build())
+              .SetReportTime(now + base::Hours(8))
+              .SetPriority(-5)
+              .Build()}));
   manager_.NotifyTriggerHandled(CreateReportResult(
       AttributionTrigger::EventLevelResult::kNoCapacityForConversionDestination,
-      ReportBuilder(
-          AttributionInfoBuilder(SourceBuilder(now).BuildStored()).Build())
-          .SetReportTime(now + base::Hours(9))
-          .SetPriority(-6)
-          .Build()));
+      /*dropped_reports=*/{
+          ReportBuilder(
+              AttributionInfoBuilder(SourceBuilder(now).BuildStored()).Build())
+              .SetReportTime(now + base::Hours(9))
+              .SetPriority(-6)
+              .Build()}));
   manager_.NotifyTriggerHandled(CreateReportResult(
       AttributionTrigger::EventLevelResult::kInternalError,
-      ReportBuilder(
-          AttributionInfoBuilder(SourceBuilder(now).BuildStored()).Build())
-          .SetReportTime(now + base::Hours(10))
-          .SetPriority(-7)
-          .Build()));
+      /*dropped_reports=*/{
+          ReportBuilder(
+              AttributionInfoBuilder(SourceBuilder(now).BuildStored()).Build())
+              .SetReportTime(now + base::Hours(10))
+              .SetPriority(-7)
+              .Build()}));
 
   // This shouldn't result in a row, as registration succeeded.
   manager_.NotifyTriggerHandled(CreateReportResult(
       AttributionTrigger::EventLevelResult::kSuccess,
-      /*dropped_report=*/absl::nullopt,
+      /*dropped_reports=*/{},
       /*dropped_report_source_deactivation_reason=*/absl::nullopt,
-      /*new_report=*/
-      ReportBuilder(
-          AttributionInfoBuilder(SourceBuilder().BuildStored()).Build())
-          .Build()));
+      /*new_reports=*/
+      {ReportBuilder(
+           AttributionInfoBuilder(SourceBuilder().BuildStored()).Build())
+           .Build()}));
 
   // These shouldn't result in a row, as `CreateReportResult::dropped_report()`
   // is null.

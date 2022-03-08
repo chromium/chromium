@@ -65,7 +65,6 @@ using ::testing::Ge;
 using ::testing::InSequence;
 using ::testing::IsEmpty;
 using ::testing::Le;
-using ::testing::Optional;
 using ::testing::Pointee;
 using ::testing::Return;
 using ::testing::SizeIs;
@@ -749,42 +748,43 @@ TEST_F(AttributionManagerImplTest, TriggerHandled_ObserversNotified) {
   {
     InSequence seq;
 
-    EXPECT_CALL(observer, OnTriggerHandled(CreateReportStatusIs(
+    EXPECT_CALL(observer, OnTriggerHandled(CreateReportEventLevelStatusIs(
                               AttributionTrigger::EventLevelResult::kSuccess)))
         .Times(3);
 
     EXPECT_CALL(checkpoint, Call(1));
 
-    EXPECT_CALL(
-        observer,
-        OnTriggerHandled(AllOf(
-            DroppedReportIs(Optional(EventLevelDataIs(TriggerPriorityIs(1)))),
-            CreateReportStatusIs(AttributionTrigger::EventLevelResult::
-                                     kSuccessDroppedLowerPriority))));
+    EXPECT_CALL(observer, OnTriggerHandled(AllOf(
+                              DroppedReportsAre(ElementsAre(
+                                  EventLevelDataIs(TriggerPriorityIs(1)))),
+                              CreateReportEventLevelStatusIs(
+                                  AttributionTrigger::EventLevelResult::
+                                      kSuccessDroppedLowerPriority))));
 
     EXPECT_CALL(checkpoint, Call(2));
 
     EXPECT_CALL(
         observer,
-        OnTriggerHandled(AllOf(
-            DroppedReportIs(Optional(EventLevelDataIs(TriggerPriorityIs(-5)))),
-            CreateReportStatusIs(
-                AttributionTrigger::EventLevelResult::kPriorityTooLow))));
+        OnTriggerHandled(
+            AllOf(DroppedReportsAre(
+                      ElementsAre(EventLevelDataIs(TriggerPriorityIs(-5)))),
+                  CreateReportEventLevelStatusIs(
+                      AttributionTrigger::EventLevelResult::kPriorityTooLow))));
 
     EXPECT_CALL(checkpoint, Call(3));
 
-    EXPECT_CALL(
-        observer,
-        OnTriggerHandled(AllOf(
-            DroppedReportIs(Optional(EventLevelDataIs(TriggerPriorityIs(2)))),
-            CreateReportStatusIs(AttributionTrigger::EventLevelResult::
-                                     kSuccessDroppedLowerPriority))));
-    EXPECT_CALL(
-        observer,
-        OnTriggerHandled(AllOf(
-            DroppedReportIs(Optional(EventLevelDataIs(TriggerPriorityIs(3)))),
-            CreateReportStatusIs(AttributionTrigger::EventLevelResult::
-                                     kSuccessDroppedLowerPriority))));
+    EXPECT_CALL(observer, OnTriggerHandled(AllOf(
+                              DroppedReportsAre(ElementsAre(
+                                  EventLevelDataIs(TriggerPriorityIs(2)))),
+                              CreateReportEventLevelStatusIs(
+                                  AttributionTrigger::EventLevelResult::
+                                      kSuccessDroppedLowerPriority))));
+    EXPECT_CALL(observer, OnTriggerHandled(AllOf(
+                              DroppedReportsAre(ElementsAre(
+                                  EventLevelDataIs(TriggerPriorityIs(3)))),
+                              CreateReportEventLevelStatusIs(
+                                  AttributionTrigger::EventLevelResult::
+                                      kSuccessDroppedLowerPriority))));
   }
 
   attribution_manager_->HandleSource(

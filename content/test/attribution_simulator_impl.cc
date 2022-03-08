@@ -223,7 +223,7 @@ class AttributionEventHandler : public AttributionObserver {
     input_values_.pop_front();
 
     std::stringstream reason;
-    switch (result.status()) {
+    switch (result.event_level_status()) {
       case AttributionTrigger::EventLevelResult::kSuccess:
       case AttributionTrigger::EventLevelResult::kSuccessDroppedLowerPriority:
         // TODO(apaseltiner): Consider surfacing reports dropped due to
@@ -239,7 +239,7 @@ class AttributionEventHandler : public AttributionObserver {
       case AttributionTrigger::EventLevelResult::kDroppedForNoise:
       case AttributionTrigger::EventLevelResult::kExcessiveReportingOrigins:
       case AttributionTrigger::EventLevelResult::kNoMatchingEventTriggers:
-        reason << result.status();
+        reason << result.event_level_status();
         break;
     }
 

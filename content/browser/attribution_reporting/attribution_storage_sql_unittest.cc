@@ -101,7 +101,7 @@ class AttributionStorageSqlTest : public testing::Test {
 
   AttributionTrigger::EventLevelResult MaybeCreateAndStoreEventLevelReport(
       const AttributionTrigger& conversion) {
-    return storage_->MaybeCreateAndStoreReport(conversion).status();
+    return storage_->MaybeCreateAndStoreReport(conversion).event_level_status();
   }
 
  protected:
@@ -736,7 +736,8 @@ TEST_F(AttributionStorageSqlTest, CantOpenDb_FailsSilentlyInRelease) {
   // These calls should be no-ops.
   storage->StoreSource(SourceBuilder().Build());
   EXPECT_EQ(AttributionTrigger::EventLevelResult::kNoMatchingImpressions,
-            storage->MaybeCreateAndStoreReport(DefaultTrigger()).status());
+            storage->MaybeCreateAndStoreReport(DefaultTrigger())
+                .event_level_status());
 }
 
 TEST_F(AttributionStorageSqlTest, DatabaseDirDoesExist_CreateDirAndOpenDB) {
@@ -750,7 +751,8 @@ TEST_F(AttributionStorageSqlTest, DatabaseDirDoesExist_CreateDirAndOpenDB) {
   // The directory should be created, and the database opened.
   storage->StoreSource(SourceBuilder().Build());
   EXPECT_EQ(AttributionTrigger::EventLevelResult::kSuccess,
-            storage->MaybeCreateAndStoreReport(DefaultTrigger()).status());
+            storage->MaybeCreateAndStoreReport(DefaultTrigger())
+                .event_level_status());
 }
 
 TEST_F(AttributionStorageSqlTest, DBinitializationSucceeds_HistogramRecorded) {

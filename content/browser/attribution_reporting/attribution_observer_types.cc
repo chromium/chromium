@@ -12,30 +12,36 @@
 namespace content {
 
 CreateReportResult::CreateReportResult(
-    AttributionTrigger::EventLevelResult status,
-    absl::optional<AttributionReport> dropped_report,
+    AttributionTrigger::EventLevelResult event_level_status,
+    std::vector<AttributionReport> dropped_reports,
     absl::optional<DeactivatedSource::Reason>
         dropped_report_source_deactivation_reason,
-    absl::optional<AttributionReport> new_report)
-    : status_(status),
-      dropped_report_(std::move(dropped_report)),
+    std::vector<AttributionReport> new_reports)
+    : event_level_status_(event_level_status),
+      dropped_reports_(std::move(dropped_reports)),
       dropped_report_source_deactivation_reason_(
           dropped_report_source_deactivation_reason),
-      new_report_(std::move(new_report)) {
-  DCHECK((status_ == AttributionTrigger::EventLevelResult::kSuccess &&
-          !dropped_report_.has_value()) ||
-         status_ ==
-             AttributionTrigger::EventLevelResult::kNoMatchingImpressions ||
-         status_ == AttributionTrigger::EventLevelResult::kInternalError ||
-         dropped_report_.has_value());
+      new_reports_(std::move(new_reports)) {
+  DCHECK(
+      (event_level_status_ == AttributionTrigger::EventLevelResult::kSuccess &&
+       dropped_reports_.empty()) ||
+      event_level_status_ ==
+          AttributionTrigger::EventLevelResult::kNoMatchingImpressions ||
+      event_level_status_ ==
+          AttributionTrigger::EventLevelResult::kInternalError ||
+      !dropped_reports_.empty());
 
-  DCHECK(dropped_report_.has_value() ||
+  DCHECK(!dropped_reports_.empty() ||
          !dropped_report_source_deactivation_reason_);
 
-  DCHECK_EQ(status_ == AttributionTrigger::EventLevelResult::kSuccess ||
-                status_ == AttributionTrigger::EventLevelResult::
-                               kSuccessDroppedLowerPriority,
-            new_report_.has_value());
+  DCHECK_EQ(
+      event_level_status_ == AttributionTrigger::EventLevelResult::kSuccess ||
+          event_level_status_ == AttributionTrigger::EventLevelResult::
+                                     kSuccessDroppedLowerPriority,
+      !new_reports_.empty());
+
+  DCHECK_LE(dropped_reports_.size(), 1u);
+  DCHECK_LE(new_reports_.size(), 1u);
 }
 
 CreateReportResult::~CreateReportResult() = default;
@@ -51,7 +57,7 @@ CreateReportResult& CreateReportResult::operator=(CreateReportResult&&) =
 absl::optional<DeactivatedSource> CreateReportResult::GetDeactivatedSource()
     const {
   if (dropped_report_source_deactivation_reason_) {
-    return DeactivatedSource(dropped_report_->attribution_info().source,
+    return DeactivatedSource(dropped_reports_.front().attribution_info().source,
                              *dropped_report_source_deactivation_reason_);
   }
   return absl::nullopt;

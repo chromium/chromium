@@ -430,14 +430,17 @@ void AttributionManagerImpl::ProcessNextEvent(bool is_debug_cookie_set) {
 }
 
 void AttributionManagerImpl::OnReportStored(CreateReportResult result) {
-  RecordCreateReportStatus(result.status());
+  RecordCreateReportStatus(result.event_level_status());
 
-  if (absl::optional<AttributionReport>& new_report = result.new_report()) {
-    scheduler_.ScheduleSend(new_report->report_time());
-    MaybeSendDebugReport(std::move(*new_report));
+  if (std::vector<AttributionReport>& new_reports = result.new_reports();
+      !new_reports.empty()) {
+    DCHECK_EQ(new_reports.size(), 1u);
+    scheduler_.ScheduleSend(new_reports.front().report_time());
+    MaybeSendDebugReport(std::move(new_reports.front()));
   }
 
-  if (result.status() != AttributionTrigger::EventLevelResult::kInternalError) {
+  if (result.event_level_status() !=
+      AttributionTrigger::EventLevelResult::kInternalError) {
     // Sources are changed here because storing a report can cause sources to be
     // deleted or become associated with a dedup key.
     NotifySourcesChanged();
