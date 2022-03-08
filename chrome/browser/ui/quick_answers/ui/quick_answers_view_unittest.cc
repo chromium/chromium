@@ -4,7 +4,6 @@
 
 #include "chrome/browser/ui/quick_answers/ui/quick_answers_view.h"
 
-#include "chrome/browser/ui/quick_answers/quick_answers_controller_impl.h"
 #include "chrome/browser/ui/quick_answers/test/chrome_quick_answers_test_base.h"
 #include "ui/views/controls/menu/menu_controller.h"
 
@@ -54,11 +53,10 @@ class QuickAnswersViewsTest : public ChromeQuickAnswersTestBase {
     CreateAndShowBasicMenu();
 
     anchor_bounds_ = anchor_bounds;
-    auto* ui_controller =
-        static_cast<QuickAnswersControllerImpl*>(QuickAnswersController::Get())
-            ->quick_answers_ui_controller();
+
+    // TODO(b/222422130): Rewrite QuickAnswersViewsTest to expand coverage.
     quick_answers_view_ = std::make_unique<QuickAnswersView>(
-        anchor_bounds_, title, /*is_internal=*/false, ui_controller);
+        anchor_bounds_, title, /*is_internal=*/false, /*controller=*/nullptr);
   }
 
  private:

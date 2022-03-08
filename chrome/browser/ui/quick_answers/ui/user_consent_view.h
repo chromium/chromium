@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "base/memory/weak_ptr.h"
 #include "chrome/browser/ui/quick_answers/ui/quick_answers_focus_search.h"
 #include "chrome/browser/ui/quick_answers/ui/quick_answers_pre_target_handler.h"
 #include "ui/views/view.h"
@@ -27,7 +28,7 @@ class UserConsentView : public views::View {
   UserConsentView(const gfx::Rect& anchor_view_bounds,
                   const std::u16string& intent_type,
                   const std::u16string& intent_text,
-                  QuickAnswersUiController* ui_controller);
+                  base::WeakPtr<QuickAnswersUiController> controller);
 
   // Disallow copy and assign.
   UserConsentView(const UserConsentView&) = delete;
@@ -61,7 +62,7 @@ class UserConsentView : public views::View {
   std::u16string title_;
 
   QuickAnswersPreTargetHandler event_handler_;
-  QuickAnswersUiController* const ui_controller_;
+  base::WeakPtr<QuickAnswersUiController> controller_;
   QuickAnswersFocusSearch focus_search_;
 
   // Owned by view hierarchy.
