@@ -171,6 +171,7 @@ class WPTMetadataBuilderTest(unittest.TestCase):
                 self.assertNotEqual(SKIP_TEST, status_item)
         self.assertTrue(found)
 
+    @unittest.skip("Skipped due to crbug/1304036")
     def test_same_metadata_file_for_variants(self):
         """Variants of a test all go in the same metadata file."""
         test_name1 = "external/wpt/variant.html?foo=bar/abc"
@@ -613,6 +614,7 @@ class WPTMetadataBuilderTest(unittest.TestCase):
         self.assertEqual(USE_CHECKED_IN_METADATA,
                          test_and_status_dict[test_name])
 
+    @unittest.skip("Skipped due to crbug/1304036")
     def test_expectation_overwrites_checked_in_metadata(self):
         """Test an entry in an expectation overwriting checked-in metadata.
 

@@ -184,7 +184,7 @@ class WPTMetadataBuilder(object):
                 test_name, test_status_bitmap)
             if not filename or not file_contents:
                 continue
-            self._write_translated_metadata_to_file(filename, file_contents.encode("utf-8"))
+            self._write_translated_metadata_to_file(filename, file_contents)
 
         # Finally, output a stamp file with the same name as the output
         # directory. The stamp file is empty, it's only used for its mtime.
