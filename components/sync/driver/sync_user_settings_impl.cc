@@ -107,8 +107,9 @@ UserSelectableTypeSet SyncUserSettingsImpl::GetRegisteredSelectableTypes()
     const {
   UserSelectableTypeSet registered_types;
   for (UserSelectableType type : UserSelectableTypeSet::All()) {
-    if (registered_model_types_.Has(
-            UserSelectableTypeToCanonicalModelType(type))) {
+    if (!base::Intersection(registered_model_types_,
+                            UserSelectableTypeToAllModelTypes(type))
+             .Empty()) {
       registered_types.Put(type);
     }
   }
@@ -141,8 +142,9 @@ UserSelectableOsTypeSet SyncUserSettingsImpl::GetRegisteredSelectableOsTypes()
   DCHECK(chromeos::features::IsSyncSettingsCategorizationEnabled());
   UserSelectableOsTypeSet registered_types;
   for (UserSelectableOsType type : UserSelectableOsTypeSet::All()) {
-    if (registered_model_types_.Has(
-            UserSelectableOsTypeToCanonicalModelType(type))) {
+    if (!base::Intersection(registered_model_types_,
+                            UserSelectableOsTypeToAllModelTypes(type))
+             .Empty()) {
       registered_types.Put(type);
     }
   }
