@@ -8,6 +8,7 @@
 #include <string>
 #include <utility>
 
+#include "base/callback_helpers.h"
 #include "base/memory/weak_ptr.h"
 #include "base/strings/string_piece.h"
 #include "base/test/task_environment.h"
@@ -52,11 +53,12 @@ class TestHelper : public UserEventReporterHelper {
 
   bool IsCurrentUserNew() const override { return is_user_new_; }
 
-  void ReportEvent(const google::protobuf::MessageLite* record,
-                   Priority priority) override {
+  void ReportEvent(
+      const google::protobuf::MessageLite* record,
+      Priority priority,
+      ReportQueue::EnqueueCallback enqueue_cb = base::DoNothing()) override {
     event_reported_ = true;
-    mock_queue_->Enqueue(record, priority,
-                         base::BindOnce([](::reporting::Status status) {}));
+    mock_queue_->Enqueue(record, priority, std::move(enqueue_cb));
   }
 
   base::WeakPtr<testing::StrictMock<::reporting::MockReportQueue>> mock_queue_;

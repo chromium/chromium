@@ -6,12 +6,25 @@
 #define CHROME_BROWSER_ASH_POLICY_REPORTING_USER_EVENT_REPORTER_HELPER_H_
 
 #include <memory>
+#include <string>
 
+#include "base/bind.h"
 #include "base/task/sequenced_task_runner.h"
 #include "components/reporting/client/report_queue.h"
 #include "components/reporting/client/report_queue_configuration.h"
+#include "components/reporting/proto/synced/record_constants.pb.h"
+
+namespace google {
+namespace protobuf {
+
+class MessageLite;
+
+}  // namespace protobuf
+}  // namespace google
 
 namespace reporting {
+
+class Status;
 
 class UserEventReporterHelper {
  public:
@@ -38,8 +51,11 @@ class UserEventReporterHelper {
 
   // Reports an event to the queue.
   // Thread safe, can be called on any thread.
-  virtual void ReportEvent(const google::protobuf::MessageLite* record,
-                           Priority priority);
+  virtual void ReportEvent(
+      const google::protobuf::MessageLite* record,
+      Priority priority,
+      ReportQueue::EnqueueCallback enqueue_cb =
+          base::BindOnce(&UserEventReporterHelper::OnEnqueueDefault));
 
   virtual bool IsCurrentUserNew() const;
 
@@ -48,6 +64,8 @@ class UserEventReporterHelper {
   static scoped_refptr<base::SequencedTaskRunner> valid_task_runner();
 
  private:
+  static void OnEnqueueDefault(Status status);
+
   const std::unique_ptr<ReportQueue, base::OnTaskRunnerDeleter> report_queue_;
 };
 }  // namespace reporting
