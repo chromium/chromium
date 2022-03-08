@@ -46,7 +46,10 @@ export class TopicSourceItem extends WithPersonalizationStore {
 
       topicSource: TopicSource,
 
-      hasGooglePhotosAlbums: Boolean,
+      hasGooglePhotosAlbums: {
+        type: Boolean,
+        value: null,
+      },
 
       ariaLabel: {
         type: String,
@@ -58,7 +61,7 @@ export class TopicSourceItem extends WithPersonalizationStore {
 
   checked: boolean;
   topicSource: TopicSource;
-  hasGooglePhotosAlbums: boolean;
+  hasGooglePhotosAlbums: boolean|null;
   ariaLabel: string;
 
   ready() {
@@ -85,6 +88,9 @@ export class TopicSourceItem extends WithPersonalizationStore {
 
   private getItemDescription_(): string {
     if (this.topicSource === TopicSource.kGooglePhotos) {
+      if (!this.hasGooglePhotosAlbums) {
+        return '';
+      }
       if (this.hasGooglePhotosAlbums) {
         return this.i18n('ambientModeTopicSourceGooglePhotosDescription');
       } else {

@@ -6,6 +6,7 @@
     display: grid;
     grid-template-areas:
       '. . toggles . .'
+      '. . spinner . .'
       '. . preview . .'
       '. . sources . .'
       '. . weather . .';
@@ -14,6 +15,12 @@
   }
   toggle-row {
     grid-area: toggles;
+  }
+  paper-spinner-lite {
+    grid-area: spinner;
+    height: 28px;
+    margin: 100px auto;
+    width: 28px;
   }
   ambient-preview {
     grid-area: preview;
@@ -31,16 +38,24 @@
     <toggle-row checked="[[ambientModeEnabled_]]"
         on-click="onClickAmbientModeButton_" on-change="onToggleStateChanged_">
     </toggle-row>
-    <ambient-preview></ambient-preview>
-    <topic-source-list hidden="[[!shouldShowMainSettings_(path)]]"
-        selected-topic-source="[[topicSource_]]"
-        has-google-photos-albums="[[hasGooglePhotosAlbums_(albums_)]]"
-        disabled="[[!ambientModeEnabled_]]">
-    </topic-source-list>
-    <ambient-weather-unit
-        selected-temperature-unit="[[temperatureUnitToString_(temperatureUnit_)]]"
-        disabled="[[!ambientModeEnabled_]]">
-    </ambient-weather-unit>
+
+    <template is="dom-if" if="[[loadingSettings_]]">
+      <!-- TODO(b/217311018): Add loading state -->
+      <paper-spinner-lite active></paper-spinner-lite>
+    </template>
+
+    <template is="dom-if" if="[[!loadingSettings_]]">
+      <ambient-preview></ambient-preview>
+      <topic-source-list hidden="[[!shouldShowMainSettings_(path)]]"
+          selected-topic-source="[[topicSource_]]"
+          has-google-photos-albums="[[hasGooglePhotosAlbums_(albums_)]]"
+          disabled="[[!ambientModeEnabled_]]">
+      </topic-source-list>
+      <ambient-weather-unit
+          selected-temperature-unit="[[temperatureUnitToString_(temperatureUnit_)]]"
+          disabled="[[!ambientModeEnabled_]]">
+      </ambient-weather-unit>
+    </template>
   </div>
   <albums-subpage hidden="[[!shouldShowAlbums_(path, ambientModeEnabled_)]]"
       disabled="[[!ambientModeEnabled_]]" path="[[path]]"

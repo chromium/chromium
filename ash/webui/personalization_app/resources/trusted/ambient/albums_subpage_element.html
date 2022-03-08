@@ -4,6 +4,12 @@
     min-height: 32px;
     padding: 0 var(--cr-section-padding);
   }
+  paper-spinner-lite {
+    display: block;
+    height: 28px;
+    margin: 150px auto;
+    width: 28px;
+  }
 </style>
 
 <localized-link id="pageDescription"
@@ -12,7 +18,9 @@
 
 <template is="dom-if" if="[[loadingAlbums_(albums)]]">
   <!-- TODO(b/217311018): Add loading state -->
+  <paper-spinner-lite active></paper-spinner-lite>
 </template>
+
 <template is="dom-if" if="[[!loadingAlbums_(albums)]]">
   <!-- Only Google Photos may not have albums -->
   <template is="dom-if" if="[[showNoGoogleAlbums_(topicSource, albums)]]">

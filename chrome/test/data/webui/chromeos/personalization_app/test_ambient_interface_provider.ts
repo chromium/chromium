@@ -76,9 +76,6 @@ export class TestAmbientProvider extends TestBrowserProxy implements
     window.setTimeout(() => {
       this.ambientObserverRemote!.onAlbumsChanged(this.albums);
       this.ambientObserverRemote!.onTopicSourceChanged(TopicSource.kArtGallery);
-    }, 10);
-
-    window.setTimeout(() => {
       this.ambientObserverRemote!.onTemperatureUnitChanged(
           TemperatureUnit.kFahrenheit);
     }, 10);

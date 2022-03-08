@@ -42,14 +42,45 @@ export function AmbientSubpageTest() {
     PersonalizationRouter.instance = routerOriginal;
   });
 
+  async function displayMainSettings(
+      topicSource: TopicSource,
+      temperatureUnit: TemperatureUnit): Promise<AmbientSubpage> {
+    const ambientSubpage = initElement(AmbientSubpage);
+    personalizationStore.data.ambient.albums = ambientProvider.albums;
+    personalizationStore.data.ambient.topicSource = topicSource;
+    personalizationStore.data.ambient.temperatureUnit = temperatureUnit;
+    personalizationStore.notifyObservers();
+    await waitAfterNextRender(ambientSubpage);
+    return Promise.resolve(ambientSubpage);
+  }
+
   test('displays content', async () => {
     ambientSubpageElement = initElement(AmbientSubpage);
+    await waitAfterNextRender(ambientSubpageElement);
+
     const toggleRow =
         ambientSubpageElement.shadowRoot!.querySelector('toggle-row');
     assertTrue(!!toggleRow);
     const toggleButton = toggleRow!.shadowRoot!.querySelector('cr-toggle');
     assertTrue(!!toggleButton);
     assertFalse(toggleButton!.checked);
+
+    let spinner =
+        ambientSubpageElement.shadowRoot!.querySelector('paper-spinner-lite');
+    assertTrue(!!spinner);
+    assertTrue(spinner.active);
+
+    personalizationStore.data.ambient.albums = ambientProvider.albums;
+    personalizationStore.data.ambient.topicSource = TopicSource.kGooglePhotos;
+    personalizationStore.data.ambient.temperatureUnit =
+        TemperatureUnit.kFahrenheit;
+    personalizationStore.notifyObservers();
+    await waitAfterNextRender(ambientSubpageElement);
+
+    spinner =
+        ambientSubpageElement.shadowRoot!.querySelector('paper-spinner-lite');
+    assertTrue(!!spinner);
+    assertEquals(getComputedStyle(spinner).display, 'none');
 
     const topicSource =
         ambientSubpageElement.shadowRoot!.querySelector('topic-source-list');
@@ -161,6 +192,11 @@ export function AmbientSubpageTest() {
         await personalizationStore.waitForAction(
             AmbientActionName.SET_TOPIC_SOURCE) as SetTopicSourceAction;
     assertEquals(TopicSource.kArtGallery, action.topicSource);
+  });
+
+  test('sets topic source when topic source item clicked', async () => {
+    ambientSubpageElement = await displayMainSettings(
+        TopicSource.kArtGallery, TemperatureUnit.kFahrenheit);
 
     const topicSourceList =
         ambientSubpageElement.shadowRoot!.querySelector('topic-source-list');
@@ -175,21 +211,6 @@ export function AmbientSubpageTest() {
 
     assertFalse(googlePhotos.checked);
     assertTrue(art.checked);
-  });
-
-  test('sets topic source when topic source item clicked', async () => {
-    ambientSubpageElement = initElement(AmbientSubpage);
-    personalizationStore.data.ambient.topicSource = TopicSource.kArtGallery;
-    personalizationStore.notifyObservers();
-    await waitAfterNextRender(ambientSubpageElement);
-
-    const topicSourceList =
-        ambientSubpageElement.shadowRoot!.querySelector('topic-source-list');
-    assertTrue(!!topicSourceList);
-    const topicSourceItems =
-        topicSourceList!.shadowRoot!.querySelectorAll('topic-source-item');
-    const googlePhotos = topicSourceItems[0] as TopicSourceItem;
-    const art = topicSourceItems[1] as TopicSourceItem;
 
     personalizationStore.expectAction(AmbientActionName.SET_TOPIC_SOURCE);
     googlePhotos!.click();
@@ -217,11 +238,8 @@ export function AmbientSubpageTest() {
   });
 
   test('sets temperature unit when temperature unit item clicked', async () => {
-    ambientSubpageElement = initElement(AmbientSubpage);
-    personalizationStore.data.ambient.temperatureUnit =
-        TemperatureUnit.kCelsius;
-    personalizationStore.notifyObservers();
-    await waitAfterNextRender(ambientSubpageElement);
+    ambientSubpageElement = await displayMainSettings(
+        TopicSource.kArtGallery, TemperatureUnit.kFahrenheit);
 
     const weatherUnit =
         ambientSubpageElement.shadowRoot!.querySelector('ambient-weather-unit');
@@ -303,6 +321,37 @@ export function AmbientSubpageTest() {
 
         await reloadCalledPromise;
       });
+
+  test('has spinner when no albums on albums subpage', async () => {
+    ambientSubpageElement = initElement(AmbientSubpage, {
+      path: Paths.AmbientAlbums,
+      queryParams: {topicSource: TopicSource.kGooglePhotos}
+    });
+    personalizationStore.data.ambient.ambientModeEnabled = true;
+    personalizationStore.notifyObservers();
+    await waitAfterNextRender(ambientSubpageElement);
+
+    const albumsSubpage =
+        ambientSubpageElement.shadowRoot!.querySelector('albums-subpage');
+    assertTrue(!!albumsSubpage);
+    assertFalse(albumsSubpage.hidden);
+    await waitAfterNextRender(albumsSubpage);
+
+    let spinner = albumsSubpage.shadowRoot!.querySelector('paper-spinner-lite');
+    assertTrue(!!spinner);
+    assertTrue(spinner.active);
+
+    personalizationStore.data.ambient.albums = ambientProvider.albums;
+    personalizationStore.data.ambient.topicSource = TopicSource.kGooglePhotos;
+    personalizationStore.data.ambient.temperatureUnit =
+        TemperatureUnit.kFahrenheit;
+    personalizationStore.notifyObservers();
+    await waitAfterNextRender(albumsSubpage);
+
+    spinner = albumsSubpage.shadowRoot!.querySelector('paper-spinner-lite');
+    assertTrue(!!spinner);
+    assertEquals(getComputedStyle(spinner).display, 'none');
+  });
 
   test('has correct albums on Google Photos albums subpage', async () => {
     ambientSubpageElement = initElement(AmbientSubpage, {
