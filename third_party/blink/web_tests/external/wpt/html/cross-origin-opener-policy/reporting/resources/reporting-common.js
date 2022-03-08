@@ -239,7 +239,7 @@ function navigationReportingTest(testName, host, coop, coep, coopRo, coepRo,
   promise_test(async t => {
     await reportingTest(async resolve => {
       const openee_headers = [
-        getReportToHeader(host.origin),
+        getReportingEndpointsHeader(host.origin),
         ...getPolicyHeaders(coop, coep, coopRo, coepRo)
       ].map(convertToWPTHeaderPipe);
       const openee_url = host.origin + executor_path +
