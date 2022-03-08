@@ -4876,20 +4876,21 @@
                 {
                     "name": "PageContentAnnotationsWithVisibility_JourneysWithOmniboxAction_20211202",
                     "params": {
+                        "JourneysAlternateOmniboxActionText": "false",
                         "annotate_title_instead_of_page_content": "true",
                         "bag_of_words_entities": "false",
+                        "content_clustering_enabled": "false",
                         "extract_related_searches": "true",
                         "min_page_topics_model_version_for_visibility": "2110051800",
-                        "models_to_execute_v2": "OPTIMIZATION_TARGET_PAGE_TOPICS:en,OPTIMIZATION_TARGET_PAGE_ENTITIES:en",
+                        "models_to_execute_v2": "OPTIMIZATION_TARGET_PAGE_TOPICS:en",
                         "write_to_history_service": "true"
                     },
                     "enable_features": [
+                        "HistoryClustersOnDeviceClustering",
                         "Journeys",
                         "JourneysOmniboxAction",
-                        "LoadModelFileForEachExecution",
                         "PageContentAnnotations",
-                        "PageEntitiesPageContentAnnotations",
-                        "PageVisibilityPageContentAnnotations"
+                        "PageEntitiesPageContentAnnotations"
                     ]
                 }
             ]
