@@ -134,15 +134,11 @@ void DOMTask::InvokeInternal(ScriptState* script_state) {
   probe::AsyncTask async_task(context, &async_task_context_);
   probe::UserCallback probe(context, "postTask", AtomicString(), true);
 
-  v8::Local<v8::Context> v8_context = script_state->GetContext();
-  v8_context->SetContinuationPreservedEmbedderData(
-      ToV8(signal_.Get(), v8_context->Global(), isolate));
   ScriptValue result;
   if (callback_->Invoke(nullptr).To(&result))
     resolver_->Resolve(result.V8Value());
   else if (try_catch.HasCaught())
     resolver_->Reject(try_catch.Exception());
-  v8_context->SetContinuationPreservedEmbedderData(v8::Local<v8::Object>());
 }
 
 void DOMTask::OnAbort() {
