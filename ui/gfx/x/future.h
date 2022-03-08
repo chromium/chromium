@@ -5,32 +5,57 @@
 #ifndef UI_GFX_X_FUTURE_H_
 #define UI_GFX_X_FUTURE_H_
 
+#include "base/component_export.h"
 #include "ui/gfx/x/connection.h"
 #include "ui/gfx/x/xproto_types.h"
 
 namespace x11 {
 
+class COMPONENT_EXPORT(X11) FutureBase {
+ public:
+  FutureBase();
+  explicit FutureBase(std::unique_ptr<Connection::FutureImpl> impl);
+  FutureBase(FutureBase&&);
+  FutureBase& operator=(FutureBase&&);
+  ~FutureBase();
+
+  // Block until this request is handled by the server.  Unlike Sync(), this
+  // method doesn't return the response.  Rather, it calls the response
+  // handler installed for this request out-of-order.
+  void Wait();
+
+ protected:
+  Connection::FutureImpl* impl() { return impl_.get(); }
+
+ private:
+  std::unique_ptr<Connection::FutureImpl> impl_;
+};
+
 // An Future wraps an asynchronous response from the X11 server.  The
 // response may be waited-for with Sync(), or asynchronously handled by
 // installing a response handler using OnResponse().
 template <typename Reply>
-class Future {
+class Future : public FutureBase {
  public:
   using Callback = base::OnceCallback<void(Response<Reply> response)>;
 
   Future() = default;
 
   explicit Future(std::unique_ptr<Connection::FutureImpl> impl)
-      : impl_(std::move(impl)) {}
+      : FutureBase(std::move(impl)) {
+    static_assert(sizeof(Future<Reply>) == sizeof(FutureBase),
+                  "Future must not have any members so that it can be sliced "
+                  "to FutureBase");
+  }
 
   // Blocks until we receive the response from the server. Returns the response.
   Response<Reply> Sync() {
-    if (!impl_)
+    if (!impl())
       return {nullptr, nullptr};
 
     Connection::RawReply raw_reply;
     std::unique_ptr<Error> error;
-    impl_->Sync(&raw_reply, &error);
+    impl()->Sync(&raw_reply, &error);
 
     std::unique_ptr<Reply> reply;
     if (raw_reply) {
@@ -41,17 +66,9 @@ class Future {
     return {std::move(reply), std::move(error)};
   }
 
-  // Block until this request is handled by the server.  Unlike Sync(), this
-  // method doesn't return the response.  Rather, it calls the response
-  // handler installed for this request out-of-order.
-  void Wait() {
-    if (impl_)
-      impl_->Wait();
-  }
-
   // Installs |callback| to be run when the response is received.
   void OnResponse(Callback callback) {
-    if (!impl_)
+    if (!impl())
       return;
 
     // This intermediate callback handles the conversion from |raw_reply| to a
@@ -67,27 +84,24 @@ class Future {
       }
       std::move(callback).Run({std::move(reply), std::move(error)});
     };
-    impl_->OnResponse(base::BindOnce(wrapper, std::move(callback)));
+    impl()->OnResponse(base::BindOnce(wrapper, std::move(callback)));
   }
 
   void IgnoreError() {
     OnResponse(base::BindOnce([](Response<Reply>) {}));
   }
-
- private:
-  std::unique_ptr<Connection::FutureImpl> impl_;
 };
 
 // Sync() specialization for requests that don't generate replies.  The returned
 // response will only contain an error if there was one.
 template <>
 inline Response<void> Future<void>::Sync() {
-  if (!impl_)
+  if (!impl())
     return Response<void>{nullptr};
 
   Connection::RawReply raw_reply;
   std::unique_ptr<Error> error;
-  impl_->Sync(&raw_reply, &error);
+  impl()->Sync(&raw_reply, &error);
   DCHECK(!raw_reply);
   return Response<void>(std::move(error));
 }
@@ -96,7 +110,7 @@ inline Response<void> Future<void>::Sync() {
 // response argument to |callback| will only contain an error if there was one.
 template <>
 inline void Future<void>::OnResponse(Callback callback) {
-  if (!impl_)
+  if (!impl())
     return;
 
   // See Future<Reply>::OnResponse() for an explanation of why
@@ -106,7 +120,7 @@ inline void Future<void>::OnResponse(Callback callback) {
     DCHECK(!reply);
     std::move(callback).Run(Response<void>{std::move(error)});
   };
-  impl_->OnResponse(base::BindOnce(wrapper, std::move(callback)));
+  impl()->OnResponse(base::BindOnce(wrapper, std::move(callback)));
 }
 
 }  // namespace x11

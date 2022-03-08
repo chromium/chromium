@@ -158,6 +158,7 @@ source_set("xproto") {
     "error.h",
     "event.cc",
     "event.h",
+    "future.cc",
     "future.h",
     "keyboard_state.cc",
     "keyboard_state.h",

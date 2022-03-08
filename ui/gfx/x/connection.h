@@ -204,6 +204,7 @@ class COMPONENT_EXPORT(X11) Connection : public XProto,
   std::unique_ptr<ui::PlatformEventSource> platform_event_source;
 
  private:
+  friend class FutureBase;
   template <typename Reply>
   friend class Future;
 
