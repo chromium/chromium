@@ -76,23 +76,23 @@ std::set<apps::AppTypeName>& GetAppTypeNameSet() {
   return *app_type_name_map;
 }
 
-std::string GetInstallReason(apps::mojom::InstallReason install_reason) {
+std::string GetInstallReason(apps::InstallReason install_reason) {
   switch (install_reason) {
-    case apps::mojom::InstallReason::kUnknown:
+    case apps::InstallReason::kUnknown:
       return kInstallReasonUnknownHistogram;
-    case apps::mojom::InstallReason::kSystem:
+    case apps::InstallReason::kSystem:
       return kInstallReasonSystemHistogram;
-    case apps::mojom::InstallReason::kPolicy:
+    case apps::InstallReason::kPolicy:
       return kInstallReasonPolicyHistogram;
-    case apps::mojom::InstallReason::kOem:
+    case apps::InstallReason::kOem:
       return kInstallReasonOemHistogram;
-    case apps::mojom::InstallReason::kDefault:
+    case apps::InstallReason::kDefault:
       return kInstallReasonPreloadHistogram;
-    case apps::mojom::InstallReason::kSync:
+    case apps::InstallReason::kSync:
       return kInstallReasonSyncHistogram;
-    case apps::mojom::InstallReason::kUser:
+    case apps::InstallReason::kUser:
       return kInstallReasonUserHistogram;
-    case apps::mojom::InstallReason::kSubApp:
+    case apps::InstallReason::kSubApp:
       return kInstallReasonSubAppHistogram;
   }
 }
@@ -392,7 +392,7 @@ ukm::SourceId AppPlatformMetrics::GetSourceId(Profile* profile,
     case AppType::kWeb:
     case AppType::kSystemWeb: {
       std::string publisher_id;
-      apps::mojom::InstallReason install_reason;
+      apps::InstallReason install_reason;
       apps::AppServiceProxyFactory::GetForProfile(profile)
           ->AppRegistryCache()
           .ForOneApp(app_id, [&publisher_id,
@@ -409,7 +409,7 @@ ukm::SourceId AppPlatformMetrics::GetSourceId(Profile* profile,
         break;
       }
       if (app_type == AppType::kSystemWeb ||
-          install_reason == apps::mojom::InstallReason::kSystem) {
+          install_reason == apps::InstallReason::kSystem) {
         // For system web apps, call GetSourceIdForChromeApp to record the app
         // id because the url could be filtered by the server side.
         source_id = ukm::AppSourceUrlRecorder::GetSourceIdForChromeApp(app_id);
@@ -514,7 +514,7 @@ std::string AppPlatformMetrics::GetAppsCountHistogramNameForTest(
 std::string
 AppPlatformMetrics::GetAppsCountPerInstallReasonHistogramNameForTest(
     AppTypeName app_type_name,
-    apps::mojom::InstallReason install_reason) {
+    apps::InstallReason install_reason) {
   return kAppsCountPerInstallReasonHistogramPrefix +
          GetAppTypeHistogramName(app_type_name) + "." +
          GetInstallReason(install_reason);
@@ -897,7 +897,7 @@ void AppPlatformMetrics::ClearRunningDuration() {
 
 void AppPlatformMetrics::RecordAppsCount(AppType app_type) {
   std::map<AppTypeName, int> app_count;
-  std::map<AppTypeName, std::map<apps::mojom::InstallReason, int>>
+  std::map<AppTypeName, std::map<apps::InstallReason, int>>
       app_count_per_install_reason;
 
   apps::mojom::AppType mojom_app_type = ConvertAppTypeToMojomAppType(app_type);

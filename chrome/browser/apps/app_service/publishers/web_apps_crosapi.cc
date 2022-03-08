@@ -212,7 +212,7 @@ void WebAppsCrosapi::GetMenuModel(const std::string& app_id,
       app_id, [&is_system_web_app, &can_use_uninstall,
                &display_mode](const apps::AppUpdate& update) {
         is_system_web_app =
-            update.InstallReason() == apps::mojom::InstallReason::kSystem;
+            update.InstallReason() == apps::InstallReason::kSystem;
         can_use_uninstall = update.AllowUninstall().value_or(false);
         display_mode = update.WindowMode();
       });

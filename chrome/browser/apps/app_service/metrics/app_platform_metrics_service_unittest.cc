@@ -341,7 +341,7 @@ class AppPlatformMetricsServiceTest : public testing::Test {
         /*expected_count=*/1);
     histogram_tester_.ExpectTotalCount(
         AppPlatformMetrics::GetAppsCountPerInstallReasonHistogramNameForTest(
-            AppTypeName::kArc, apps::mojom::InstallReason::kUser),
+            AppTypeName::kArc, apps::InstallReason::kUser),
         /*expected_count=*/1);
     histogram_tester_.ExpectTotalCount(
         AppPlatformMetrics::GetAppsCountHistogramNameForTest(
@@ -349,7 +349,7 @@ class AppPlatformMetricsServiceTest : public testing::Test {
         /*expected_count=*/1);
     histogram_tester_.ExpectTotalCount(
         AppPlatformMetrics::GetAppsCountPerInstallReasonHistogramNameForTest(
-            AppTypeName::kBuiltIn, apps::mojom::InstallReason::kSystem),
+            AppTypeName::kBuiltIn, apps::InstallReason::kSystem),
         /*expected_count=*/1);
 
     // Should be 3 Borealis apps: The installer/launcher created by the
@@ -364,12 +364,12 @@ class AppPlatformMetricsServiceTest : public testing::Test {
     // The installer/launcher is preinstalled, the others are user-installed.
     histogram_tester_.ExpectUniqueSample(
         AppPlatformMetrics::GetAppsCountPerInstallReasonHistogramNameForTest(
-            AppTypeName::kBorealis, apps::mojom::InstallReason::kDefault),
+            AppTypeName::kBorealis, apps::InstallReason::kDefault),
         /*sample=*/1,
         /*bucket_count=*/1);
     histogram_tester_.ExpectUniqueSample(
         AppPlatformMetrics::GetAppsCountPerInstallReasonHistogramNameForTest(
-            AppTypeName::kBorealis, apps::mojom::InstallReason::kUser),
+            AppTypeName::kBorealis, apps::InstallReason::kUser),
         /*sample=*/borealis_apps_count - 1,
         /*bucket_count=*/1);
 
@@ -379,7 +379,7 @@ class AppPlatformMetricsServiceTest : public testing::Test {
         /*expected_count=*/1);
     histogram_tester_.ExpectTotalCount(
         AppPlatformMetrics::GetAppsCountPerInstallReasonHistogramNameForTest(
-            AppTypeName::kCrostini, apps::mojom::InstallReason::kUser),
+            AppTypeName::kCrostini, apps::InstallReason::kUser),
         /*expected_count=*/1);
     histogram_tester_.ExpectTotalCount(
         AppPlatformMetrics::GetAppsCountHistogramNameForTest(
@@ -390,7 +390,7 @@ class AppPlatformMetricsServiceTest : public testing::Test {
         /*expected_count=*/1);
     histogram_tester_.ExpectTotalCount(
         AppPlatformMetrics::GetAppsCountPerInstallReasonHistogramNameForTest(
-            AppTypeName::kWeb, apps::mojom::InstallReason::kSync),
+            AppTypeName::kWeb, apps::InstallReason::kSync),
         /*expected_count=*/1);
     histogram_tester_.ExpectTotalCount(
         AppPlatformMetrics::GetAppsCountHistogramNameForTest(
@@ -398,7 +398,7 @@ class AppPlatformMetricsServiceTest : public testing::Test {
         /*expected_count=*/1);
     histogram_tester_.ExpectTotalCount(
         AppPlatformMetrics::GetAppsCountPerInstallReasonHistogramNameForTest(
-            AppTypeName::kMacOs, apps::mojom::InstallReason::kUnknown),
+            AppTypeName::kMacOs, apps::InstallReason::kUnknown),
         /*expected_count=*/1);
     histogram_tester_.ExpectTotalCount(
         AppPlatformMetrics::GetAppsCountHistogramNameForTest(
@@ -406,7 +406,7 @@ class AppPlatformMetricsServiceTest : public testing::Test {
         /*expected_count=*/1);
     histogram_tester_.ExpectTotalCount(
         AppPlatformMetrics::GetAppsCountPerInstallReasonHistogramNameForTest(
-            AppTypeName::kPluginVm, apps::mojom::InstallReason::kUser),
+            AppTypeName::kPluginVm, apps::InstallReason::kUser),
         /*expected_count=*/1);
     histogram_tester_.ExpectTotalCount(
         AppPlatformMetrics::GetAppsCountHistogramNameForTest(
@@ -414,8 +414,7 @@ class AppPlatformMetricsServiceTest : public testing::Test {
         /*expected_count=*/1);
     histogram_tester_.ExpectTotalCount(
         AppPlatformMetrics::GetAppsCountPerInstallReasonHistogramNameForTest(
-            AppTypeName::kStandaloneBrowser,
-            apps::mojom::InstallReason::kSystem),
+            AppTypeName::kStandaloneBrowser, apps::InstallReason::kSystem),
         /*expected_count=*/1);
     histogram_tester_.ExpectTotalCount(
         AppPlatformMetrics::GetAppsCountHistogramNameForTest(
@@ -424,7 +423,7 @@ class AppPlatformMetricsServiceTest : public testing::Test {
     histogram_tester_.ExpectTotalCount(
         AppPlatformMetrics::GetAppsCountPerInstallReasonHistogramNameForTest(
             AppTypeName::kStandaloneBrowserChromeApp,
-            apps::mojom::InstallReason::kUser),
+            apps::InstallReason::kUser),
         /*expected_count=*/1);
     histogram_tester_.ExpectTotalCount(
         AppPlatformMetrics::GetAppsCountHistogramNameForTest(
@@ -433,7 +432,7 @@ class AppPlatformMetricsServiceTest : public testing::Test {
     histogram_tester_.ExpectTotalCount(
         AppPlatformMetrics::GetAppsCountPerInstallReasonHistogramNameForTest(
             AppTypeName::kStandaloneBrowserChromeApp,
-            apps::mojom::InstallReason::kUser),
+            apps::InstallReason::kUser),
         /*expected_count=*/1);
     histogram_tester_.ExpectTotalCount(
         AppPlatformMetrics::GetAppsCountHistogramNameForTest(
@@ -441,7 +440,7 @@ class AppPlatformMetricsServiceTest : public testing::Test {
         /*expected_count=*/1);
     histogram_tester_.ExpectTotalCount(
         AppPlatformMetrics::GetAppsCountPerInstallReasonHistogramNameForTest(
-            AppTypeName::kRemote, apps::mojom::InstallReason::kPolicy),
+            AppTypeName::kRemote, apps::InstallReason::kPolicy),
         /*expected_count=*/1);
     histogram_tester_.ExpectTotalCount(
         AppPlatformMetrics::GetAppsCountHistogramNameForTest(
@@ -449,14 +448,14 @@ class AppPlatformMetricsServiceTest : public testing::Test {
         /*expected_count=*/1);
     histogram_tester_.ExpectTotalCount(
         AppPlatformMetrics::GetAppsCountPerInstallReasonHistogramNameForTest(
-            AppTypeName::kSystemWeb, apps::mojom::InstallReason::kSystem),
+            AppTypeName::kSystemWeb, apps::InstallReason::kSystem),
         /*expected_count=*/1);
     histogram_tester_.ExpectTotalCount(
         AppPlatformMetrics::GetAppsCountHistogramNameForTest(AppTypeName::kWeb),
         /*expected_count=*/1);
     histogram_tester_.ExpectTotalCount(
         AppPlatformMetrics::GetAppsCountPerInstallReasonHistogramNameForTest(
-            AppTypeName::kWeb, apps::mojom::InstallReason::kSubApp),
+            AppTypeName::kWeb, apps::InstallReason::kSubApp),
         /*expected_count=*/1);
   }
 

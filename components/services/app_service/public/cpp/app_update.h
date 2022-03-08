@@ -119,8 +119,7 @@ class COMPONENT_EXPORT(APP_UPDATE) AppUpdate {
   apps::Permissions GetPermissions() const;
   bool PermissionsChanged() const;
 
-  apps::mojom::InstallReason InstallReason() const;
-  apps::InstallReason GetInstallReason() const;
+  apps::InstallReason InstallReason() const;
   bool InstallReasonChanged() const;
 
   apps::InstallSource InstallSource() const;

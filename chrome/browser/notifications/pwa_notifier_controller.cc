@@ -50,7 +50,7 @@ std::vector<ash::NotifierMetadata> PwaNotifierController::GetNotifierList(
           }
           DCHECK(permission->value->is_tristate_value());
           // Do not include notifier metadata for system apps.
-          if (update.InstallReason() == apps::mojom::InstallReason::kSystem) {
+          if (update.InstallReason() == apps::InstallReason::kSystem) {
             return;
           }
           notifier_dataset.push_back(NotifierDataset{

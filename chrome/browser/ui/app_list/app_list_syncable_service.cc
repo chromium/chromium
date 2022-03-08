@@ -118,7 +118,7 @@ bool AppIsDefault(Profile* profile, const std::string& id) {
   apps::AppServiceProxyFactory::GetForProfile(profile)
       ->AppRegistryCache()
       .ForOneApp(id, [&result](const apps::AppUpdate& update) {
-        result = update.InstallReason() == apps::mojom::InstallReason::kDefault;
+        result = update.InstallReason() == apps::InstallReason::kDefault;
       });
   return result;
 }
@@ -1570,14 +1570,13 @@ void AppListSyncableService::DeleteSyncItemSpecifics(
 
 bool AppListSyncableService::AppIsOem(const std::string& id) {
   // For Arc and web apps, it is sufficient to check the install reason.
-  apps::mojom::InstallReason install_reason =
-      apps::mojom::InstallReason::kUnknown;
+  apps::InstallReason install_reason = apps::InstallReason::kUnknown;
   apps::AppServiceProxyFactory::GetForProfile(profile_)
       ->AppRegistryCache()
       .ForOneApp(id, [&install_reason](const apps::AppUpdate& update) {
         install_reason = update.InstallReason();
       });
-  if (install_reason == apps::mojom::InstallReason::kOem)
+  if (install_reason == apps::InstallReason::kOem)
     return true;
 
   if (!extension_system_->extension_service())

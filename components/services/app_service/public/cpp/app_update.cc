@@ -567,19 +567,21 @@ bool AppUpdate::PermissionsChanged() const {
           (mojom_delta_->permissions != mojom_state_->permissions));
 }
 
-apps::mojom::InstallReason AppUpdate::InstallReason() const {
+apps::InstallReason AppUpdate::InstallReason() const {
+  if (ShouldUseNonMojom()) {
+    GET_VALUE_WITH_DEFAULT_VALUE(install_reason, InstallReason::kUnknown)
+  }
+
   if (mojom_delta_ &&
       (mojom_delta_->install_reason != apps::mojom::InstallReason::kUnknown)) {
-    return mojom_delta_->install_reason;
+    return ConvertMojomInstallReasonToInstallReason(
+        mojom_delta_->install_reason);
   }
   if (mojom_state_) {
-    return mojom_state_->install_reason;
+    return ConvertMojomInstallReasonToInstallReason(
+        mojom_state_->install_reason);
   }
-  return apps::mojom::InstallReason::kUnknown;
-}
-
-apps::InstallReason AppUpdate::GetInstallReason() const {
-  GET_VALUE_WITH_DEFAULT_VALUE(install_reason, InstallReason::kUnknown)
+  return apps::InstallReason::kUnknown;
 }
 
 bool AppUpdate::InstallReasonChanged() const {
@@ -647,12 +649,12 @@ bool AppUpdate::PolicyIdChanged() const {
 
 apps::mojom::OptionalBool AppUpdate::InstalledInternally() const {
   switch (InstallReason()) {
-    case apps::mojom::InstallReason::kUnknown:
+    case apps::InstallReason::kUnknown:
       return apps::mojom::OptionalBool::kUnknown;
-    case apps::mojom::InstallReason::kSystem:
-    case apps::mojom::InstallReason::kPolicy:
-    case apps::mojom::InstallReason::kOem:
-    case apps::mojom::InstallReason::kDefault:
+    case apps::InstallReason::kSystem:
+    case apps::InstallReason::kPolicy:
+    case apps::InstallReason::kOem:
+    case apps::InstallReason::kDefault:
       return apps::mojom::OptionalBool::kTrue;
     default:
       return apps::mojom::OptionalBool::kFalse;
@@ -1025,7 +1027,10 @@ std::ostream& operator<<(std::ostream& out, const AppUpdate& app) {
     out << " is_managed: " << permission->is_managed << std::endl;
   }
 
-  out << "InstallReason: " << app.InstallReason() << std::endl;
+  out << "InstallReason: " << static_cast<int>(app.InstallReason())
+      << std::endl;
+  out << "InstallSource: " << static_cast<int>(app.InstallSource())
+      << std::endl;
   out << "PolicyId: " << app.PolicyId() << std::endl;
   out << "InstalledInternally: " << app.InstalledInternally() << std::endl;
   out << "IsPlatformApp: " << PRINT_OPTIONAL_VALUE(IsPlatformApp) << std::endl;

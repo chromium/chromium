@@ -124,10 +124,9 @@ AppTypeName GetAppTypeNameForWebApp(Profile* profile,
             // For system web apps, the install source is |kSystem|.
             // The app type may be kSystemWeb (system web apps in Ash when
             // Lacros web apps are enabled), or kWeb (all other cases).
-            type_name =
-                (update.InstallReason() == apps::mojom::InstallReason::kSystem)
-                    ? apps::AppTypeName::kSystemWeb
-                    : apps::AppTypeName::kWeb;
+            type_name = (update.InstallReason() == apps::InstallReason::kSystem)
+                            ? apps::AppTypeName::kSystemWeb
+                            : apps::AppTypeName::kWeb;
             window_mode = update.WindowMode();
           });
 

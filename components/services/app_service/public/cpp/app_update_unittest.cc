@@ -203,7 +203,7 @@ class AppUpdateTest : public testing::Test {
     EXPECT_TRUE(IsEqual(expect_permissions_, u.GetPermissions()));
     EXPECT_EQ(expect_permissions_changed_, u.PermissionsChanged());
 
-    EXPECT_EQ(expect_install_reason_, u.GetInstallReason());
+    EXPECT_EQ(expect_install_reason_, u.InstallReason());
     EXPECT_EQ(expect_install_reason_changed_, u.InstallReasonChanged());
 
     EXPECT_EQ(expect_install_source_, u.InstallSource());

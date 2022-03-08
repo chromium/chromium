@@ -950,14 +950,13 @@ IN_PROC_BROWSER_TEST_F(PreinstalledWebAppManagerBrowserTest, OemInstalled) {
   auto* proxy = apps::AppServiceProxyFactory::GetForProfile(profile());
   proxy->FlushMojoCallsForTesting();
 
-  apps::mojom::InstallReason install_reason =
-      apps::mojom::InstallReason::kUnknown;
+  apps::InstallReason install_reason = apps::InstallReason::kUnknown;
   proxy->AppRegistryCache().ForOneApp(app_id,
                                       [&](const apps::AppUpdate& update) {
                                         install_reason = update.InstallReason();
                                       });
 
-  EXPECT_EQ(install_reason, apps::mojom::InstallReason::kOem);
+  EXPECT_EQ(install_reason, apps::InstallReason::kOem);
 }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
