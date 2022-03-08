@@ -301,8 +301,6 @@ class FastPairPairerImplTest : public AshTestBase {
         std::make_unique<FakeBluetoothDevice>(adapter_.get());
     fake_bluetooth_device_ptr_ = fake_bluetooth_device_.get();
     adapter_->AddMockDevice(std::move(fake_bluetooth_device_));
-
-    data_encryptor_ = new FakeFastPairDataEncryptor();
   }
 
   void EraseHandshake() {
@@ -436,8 +434,7 @@ class FastPairPairerImplTest : public AshTestBase {
   base::WeakPtrFactory<FastPairPairerImplTest> weak_ptr_factory_{this};
 };
 
-// TODO(1304014): Fix and re-enable the test.
-TEST_F(FastPairPairerImplTest, DISABLED_NoPairingIfHandshakeLost) {
+TEST_F(FastPairPairerImplTest, NoPairingIfHandshakeLost) {
   Login(user_manager::UserType::USER_TYPE_REGULAR);
   base::RunLoop().RunUntilIdle();
   FailedHandshakeSetUp(Protocol::kFastPairInitial);
