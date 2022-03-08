@@ -6,6 +6,7 @@
 
 #include "base/check.h"
 #include "base/i18n/rtl.h"
+#include "base/mac/foundation_util.h"
 #include "components/autofill/core/browser/ui/popup_item_ids.h"
 #import "components/autofill/ios/browser/form_suggestion.h"
 #import "ios/chrome/browser/autofill/form_suggestion_client.h"
@@ -86,6 +87,13 @@ const CGFloat kSuggestionHorizontalMargin = 6;
       completion:^(BOOL finished) {
         self.delegate = self;
       }];
+}
+
+- (void)animateSuggestionLabel {
+  FormSuggestionLabel* firstSuggestionLabel =
+      base::mac::ObjCCast<FormSuggestionLabel>(
+          self.stackView.arrangedSubviews.firstObject);
+  [firstSuggestionLabel animateWithHighlight];
 }
 
 #pragma mark - UIView

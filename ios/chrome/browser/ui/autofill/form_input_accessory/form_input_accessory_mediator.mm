@@ -22,6 +22,7 @@
 #import "ios/chrome/browser/autofill/form_suggestion_view.h"
 #import "ios/chrome/browser/autofill/manual_fill/passwords_fetcher.h"
 #import "ios/chrome/browser/passwords/password_generation_utils.h"
+#import "ios/chrome/browser/ui/autofill/features.h"
 #import "ios/chrome/browser/ui/autofill/form_input_accessory/form_input_accessory_chromium_text_data.h"
 #import "ios/chrome/browser/ui/autofill/form_input_accessory/form_input_accessory_consumer.h"
 #import "ios/chrome/browser/ui/commands/security_alert_commands.h"
@@ -534,7 +535,21 @@ const base::Feature kFormInputKeyboardReloadInputViews{
         LogLikelyInterestedDefaultBrowserUserActivity(
             DefaultPromoTypeMadeForIOS);
       }
+      if (base::FeatureList::IsEnabled(kAutofillPasswordRichIPH)) {
+        [self highlightFirstSuggestion:suggestions.firstObject];
+      }
     }
+  }
+}
+
+// Highlights first suggestion.
+- (void)highlightFirstSuggestion:(FormSuggestion*)suggestion {
+  if (!suggestion)
+    return;
+  // Show only if it's a password suggestion. (cf. FormSuggestion's header file)
+  const BOOL isCreditCardOrProfile = suggestion.identifier > 0;
+  if (!isCreditCardOrProfile) {
+    [self.consumer animateSuggestionLabel];
   }
 }
 

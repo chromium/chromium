@@ -9,6 +9,7 @@
 
 #include "base/mac/foundation_util.h"
 #include "base/path_service.h"
+#include "base/test/scoped_feature_list.h"
 #import "components/autofill/ios/browser/form_suggestion.h"
 #import "components/autofill/ios/browser/form_suggestion_provider.h"
 #import "components/autofill/ios/form_util/form_activity_observer_bridge.h"
@@ -16,6 +17,7 @@
 #include "components/autofill/ios/form_util/test_form_activity_tab_helper.h"
 #import "ios/chrome/app/application_delegate/app_state.h"
 #import "ios/chrome/browser/autofill/form_suggestion_view.h"
+#import "ios/chrome/browser/ui/autofill/features.h"
 #import "ios/chrome/browser/ui/autofill/form_input_accessory/form_input_accessory_consumer.h"
 #import "ios/chrome/browser/ui/autofill/form_input_accessory/form_input_accessory_mediator.h"
 #include "ios/chrome/browser/ui/util/ui_util.h"
@@ -155,7 +157,8 @@ namespace {
 class FormSuggestionControllerTest : public PlatformTest {
  public:
   FormSuggestionControllerTest()
-      : test_form_activity_tab_helper_(&fake_web_state_) {}
+      : test_form_activity_tab_helper_(&fake_web_state_),
+        call_to_animate_suggestion_label_counter_(0) {}
 
   FormSuggestionControllerTest(const FormSuggestionControllerTest&) = delete;
   FormSuggestionControllerTest& operator=(const FormSuggestionControllerTest&) =
@@ -192,6 +195,11 @@ class FormSuggestionControllerTest : public PlatformTest {
     [[[mock_consumer stub] andDo:mockShow]
         showAccessorySuggestions:[OCMArg any]];
 
+    // Mock the consumer to check call on |animateSuggestionLabel|.
+    void (^mockCallAnimate)(NSInvocation*) = ^(NSInvocation* invocation) {
+      call_to_animate_suggestion_label_counter_ += 1;
+    };
+    [[[mock_consumer stub] andDo:mockCallAnimate] animateSuggestionLabel];
     id mock_window = OCMClassMock([UIWindow class]);
 
     id mock_web_state_view = OCMClassMock([UIView class]);
@@ -232,6 +240,9 @@ class FormSuggestionControllerTest : public PlatformTest {
 
   // The fake form tracker to simulate form events.
   autofill::TestFormActivityTabHelper test_form_activity_tab_helper_;
+
+  // Counter to track consumer call on |animateSuggestionLabel|.
+  NSInteger call_to_animate_suggestion_label_counter_;
 };
 
 // Tests that pages whose URLs don't have a web scheme aren't processed.
@@ -448,6 +459,103 @@ TEST_F(FormSuggestionControllerTest, SelectingSuggestionShouldNotifyDelegate) {
   EXPECT_NSEQ(@"field_id", [provider fieldIdentifier]);
   EXPECT_NSEQ(@"frame_id", [provider frameID]);
   EXPECT_NSEQ(suggestions[0], [provider suggestion]);
+}
+
+// Tests that the password suggestion highlight is disabled if the flag is
+// disabled.
+TEST_F(FormSuggestionControllerTest, SuggestionHighlightNoFlag) {
+  NSArray* suggestions = @[
+    [FormSuggestion suggestionWithValue:@"foo"
+                     displayDescription:nil
+                                   icon:@""
+                             identifier:0
+                         requiresReauth:NO],
+  ];
+  TestSuggestionProvider* provider =
+      [[TestSuggestionProvider alloc] initWithSuggestions:suggestions];
+  SetUpController(@[ provider ]);
+  GURL url("http://foo.com");
+  fake_web_state_.SetCurrentURL(url);
+  auto main_frame = web::FakeWebFrame::CreateMainWebFrame(url);
+
+  autofill::FormActivityParams params;
+  params.form_name = "form";
+  params.field_identifier = "field_id";
+  params.field_type = "password";
+  params.type = "type";
+  params.value = "value";
+  params.frame_id = "frame_id";
+  params.input_missing = false;
+  test_form_activity_tab_helper_.FormActivityRegistered(main_frame.get(),
+                                                        params);
+  EXPECT_EQ(call_to_animate_suggestion_label_counter_, 0);
+}
+
+// Tests that the suggestion highlight is enabled when suggesting a password.
+TEST_F(FormSuggestionControllerTest, PasswordSuggestionHighlight) {
+  // Enable the feature flag for password suggestion highlight.
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(kAutofillPasswordRichIPH);
+
+  NSArray* suggestions = @[
+    [FormSuggestion suggestionWithValue:@"foo"
+                     displayDescription:nil
+                                   icon:@""
+                             identifier:0
+                         requiresReauth:NO],
+  ];
+  TestSuggestionProvider* provider =
+      [[TestSuggestionProvider alloc] initWithSuggestions:suggestions];
+  SetUpController(@[ provider ]);
+  GURL url("http://foo.com");
+  fake_web_state_.SetCurrentURL(url);
+  auto main_frame = web::FakeWebFrame::CreateMainWebFrame(url);
+
+  autofill::FormActivityParams params;
+  params.form_name = "form";
+  params.field_identifier = "field_id";
+  params.field_type = "password";
+  params.type = "type";
+  params.value = "value";
+  params.frame_id = "frame_id";
+  params.input_missing = false;
+  test_form_activity_tab_helper_.FormActivityRegistered(main_frame.get(),
+                                                        params);
+  EXPECT_EQ(call_to_animate_suggestion_label_counter_, 1);
+}
+
+// Tests that the suggestion highlight is disabled when suggesting something
+// else than a password.
+TEST_F(FormSuggestionControllerTest, NonPasswordSuggestionNoHighlight) {
+  // Enable the feature flag for password suggestion highlight.
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(kAutofillPasswordRichIPH);
+
+  NSArray* suggestions = @[
+    [FormSuggestion suggestionWithValue:@"foo"
+                     displayDescription:nil
+                                   icon:@""
+                             identifier:1
+                         requiresReauth:NO],
+  ];
+  TestSuggestionProvider* provider =
+      [[TestSuggestionProvider alloc] initWithSuggestions:suggestions];
+  SetUpController(@[ provider ]);
+  GURL url("http://foo.com");
+  fake_web_state_.SetCurrentURL(url);
+  auto main_frame = web::FakeWebFrame::CreateMainWebFrame(url);
+
+  autofill::FormActivityParams params;
+  params.form_name = "form";
+  params.field_identifier = "field_id";
+  params.field_type = "text";
+  params.type = "type";
+  params.value = "value";
+  params.frame_id = "frame_id";
+  params.input_missing = false;
+  test_form_activity_tab_helper_.FormActivityRegistered(main_frame.get(),
+                                                        params);
+  EXPECT_EQ(call_to_animate_suggestion_label_counter_, 0);
 }
 
 }  // namespace

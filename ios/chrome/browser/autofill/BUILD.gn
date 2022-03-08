@@ -551,6 +551,7 @@ source_set("unit_tests") {
     "//ios/chrome/browser/passwords",
     "//ios/chrome/browser/ssl",
     "//ios/chrome/browser/ui/autofill",
+    "//ios/chrome/browser/ui/autofill:features",
     "//ios/chrome/browser/ui/autofill/form_input_accessory",
     "//ios/chrome/browser/ui/coordinators:chrome_coordinators",
     "//ios/chrome/browser/ui/settings:test_support",

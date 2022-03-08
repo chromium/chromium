@@ -15,6 +15,7 @@
 #include "components/autofill/core/browser/data_model/credit_card.h"
 #import "components/autofill/ios/browser/form_suggestion.h"
 #import "ios/chrome/browser/autofill/form_suggestion_constants.h"
+#import "ios/chrome/browser/procedural_block_types.h"
 #import "ios/chrome/browser/ui/util/uikit_ui_util.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #include "ios/chrome/common/ui/util/constraints_ui_util.h"
@@ -36,6 +37,11 @@ const CGFloat kIphoneFontSize = 14.0f;
 const CGFloat kBorderWidth = 14.0f;
 // The space between items in the label.
 const CGFloat kSpacing = 4.0f;
+
+// Duration of animation transition.
+const NSTimeInterval animationTransitionDuration = 0.5;
+// Duration of animation effect.
+const NSTimeInterval animationOnScreenDuration = 3.0;
 
 // Structure that record the image for each icon.
 struct IconImageMap {
@@ -62,11 +68,21 @@ UILabel* TextLabel(NSString* text, UIColor* textColor, BOOL bold) {
 
 }  // namespace
 
+@interface FormSuggestionLabel ()
+
+@property(strong, nonatomic) UILabel* suggestionLabel;
+@property(strong, nonatomic) UILabel* descriptionLabel;
+@property(nonatomic, getter=isHighlighted) BOOL highlighted;
+
+@end
+
 @implementation FormSuggestionLabel {
   // Client of this view.
   __weak id<FormSuggestionLabelDelegate> _delegate;
   FormSuggestion* _suggestion;
 }
+
+#pragma mark - Public
 
 - (id)initWithSuggestion:(FormSuggestion*)suggestion
                    index:(NSUInteger)index
@@ -99,16 +115,19 @@ UILabel* TextLabel(NSString* text, UIColor* textColor, BOOL bold) {
 
     UILabel* label = TextLabel(suggestion.value,
                                [UIColor colorNamed:kTextPrimaryColor], YES);
+    // TODO(crbug.com/1286669): change label highlight color.
+    [label setHighlightedTextColor:UIColor.systemBackgroundColor];
     [stackView addArrangedSubview:label];
-
     if ([suggestion.displayDescription length] > 0) {
       UILabel* description =
           TextLabel(suggestion.displayDescription,
                     [UIColor colorNamed:kTextSecondaryColor], NO);
       [stackView addArrangedSubview:description];
+      self.descriptionLabel = description;
     }
+    self.suggestionLabel = label;
 
-    [self setBackgroundColor:[UIColor colorNamed:kGrey100Color]];
+    [self setHighlighted:NO];
 
     [self setClipsToBounds:YES];
     [self setUserInteractionEnabled:YES];
@@ -132,9 +151,59 @@ UILabel* TextLabel(NSString* text, UIColor* textColor, BOOL bold) {
   self.layer.cornerRadius = self.bounds.size.height / 2.0;
 }
 
+// Animates |highlight| property to YES for a duration of
+// |animationOnScreenDuration|.
+- (void)animateWithHighlight {
+  __weak __typeof(self) weakSelf = self;
+  [self animateWithHighlight:YES
+                  completion:^(BOOL finished) {
+                    if (finished) {
+                      dispatch_after(
+                          dispatch_time(DISPATCH_TIME_NOW,
+                                        (int64_t)(animationOnScreenDuration *
+                                                  NSEC_PER_SEC)),
+                          dispatch_get_main_queue(), ^{
+                            [weakSelf animateWithHighlight:NO completion:nil];
+                          });
+                    } else {
+                      weakSelf.highlighted = NO;
+                    }
+                  }];
+}
+
+#pragma mark - Private
+
+// Animates |highlight| property from current state to |highlighted|.
+- (void)animateWithHighlight:(BOOL)highlighted
+                  completion:(ProceduralBlockWithBool)completion {
+  if (self.highlighted == highlighted) {
+    return;
+  }
+  __weak __typeof(self) weakSelf = self;
+  [UIView transitionWithView:weakSelf
+                    duration:animationTransitionDuration
+                     options:UIViewAnimationOptionTransitionCrossDissolve
+                  animations:^{
+                    weakSelf.highlighted = highlighted;
+                  }
+                  completion:completion];
+}
+
+#pragma mark - Property
+
+- (void)setHighlighted:(BOOL)highlighted {
+  _highlighted = highlighted;
+  self.suggestionLabel.highlighted = highlighted;
+  self.descriptionLabel.highlighted = highlighted;
+  // TODO(crbug.com/1286669): change background highlight color.
+  self.backgroundColor = highlighted ? [UIColor colorNamed:kBlueColor]
+                                     : [UIColor colorNamed:kGrey100Color];
+}
+
 #pragma mark - UIResponder
 
 - (void)touchesBegan:(NSSet<UITouch*>*)touches withEvent:(UIEvent*)event {
+  self.highlighted = NO;
   [self setBackgroundColor:[UIColor colorNamed:kGrey300Color]];
 }
 
@@ -143,11 +212,11 @@ UILabel* TextLabel(NSString* text, UIColor* textColor, BOOL bold) {
 }
 
 - (void)touchesCancelled:(NSSet<UITouch*>*)touches withEvent:(UIEvent*)event {
-  [self setBackgroundColor:[UIColor colorNamed:kGrey100Color]];
+  self.highlighted = NO;
 }
 
 - (void)touchesEnded:(NSSet<UITouch*>*)touches withEvent:(UIEvent*)event {
-  [self setBackgroundColor:[UIColor colorNamed:kGrey100Color]];
+  self.highlighted = NO;
 
   // Don't count touches ending outside the view as as taps.
   CGPoint locationInView = [touches.anyObject locationInView:self];
