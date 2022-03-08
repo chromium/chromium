@@ -31,10 +31,10 @@ typedef std::unordered_map<
     std::unique_ptr<ClientSafeBrowsingReportRequest::Resource>>
     ResourceMap;
 
-class ThreatDetailsCacheCollector
-    : public base::RefCounted<ThreatDetailsCacheCollector> {
+class ThreatDetailsCacheCollector {
  public:
   ThreatDetailsCacheCollector();
+  ~ThreatDetailsCacheCollector();
 
   // We use |request_context_getter|, we modify |resources| and
   // |result|, and we call |callback|, so they must all remain alive
@@ -54,8 +54,6 @@ class ThreatDetailsCacheCollector
 
  private:
   friend class base::RefCounted<ThreatDetailsCacheCollector>;
-
-  ~ThreatDetailsCacheCollector();
 
   // Points to the url for which we are fetching the HTTP cache entry or
   // redirect chain.
@@ -79,6 +77,8 @@ class ThreatDetailsCacheCollector
 
   // The current SimpleURLLoader.
   std::unique_ptr<network::SimpleURLLoader> current_load_;
+
+  base::WeakPtrFactory<ThreatDetailsCacheCollector> weak_factory_{this};
 
   // Returns the resource from resources_ that corresponds to |url|
   ClientSafeBrowsingReportRequest::Resource* GetResource(const GURL& url);
