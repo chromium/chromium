@@ -64,6 +64,7 @@ GFX_EXPORT const char* BufferPlaneToString(BufferPlane plane);
 // This indicates that odd height multiplanar formats are supported.
 GFX_EXPORT bool AllowOddHeightMultiPlanarBuffers();
 
+GFX_EXPORT bool AllowOddWidthMultiPlanarBuffers();
 }  // namespace gfx
 
 #endif  // UI_GFX_BUFFER_FORMAT_UTIL_H_
