@@ -123,6 +123,7 @@ class PLATFORM_EXPORT WebRtcVideoFrameAdapter
 
     std::unique_ptr<media::RenderableGpuMemoryBufferVideoFramePool>
         accelerated_frame_pool_;
+    bool disable_gmb_frames_ = false;
 
     base::Lock context_provider_lock_;
     scoped_refptr<viz::RasterContextProvider> raster_context_provider_

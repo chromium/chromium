@@ -170,7 +170,9 @@ bool FrameResources::Initialize() {
   gpu_memory_buffer_ = context->CreateGpuMemoryBuffer(
       coded_size_, gfx::BufferFormat::YUV_420_BIPLANAR, kBufferUsage);
   if (!gpu_memory_buffer_) {
-    DLOG(ERROR) << "Failed to allocate GpuMemoryBuffer for frame.";
+    DLOG(ERROR) << "Failed to allocate GpuMemoryBuffer for frame: coded_size="
+                << coded_size_.ToString()
+                << ", usage=" << static_cast<int>(kBufferUsage);
     return false;
   }
 
