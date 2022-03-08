@@ -742,20 +742,20 @@
         }
       },
       'android-cronet-arm-dbg': {
-        'mixins': [
-          'has_native_resultdb_integration',
-          'lollipop',
-          'hammerhead',
-        ],
         'additional_compile_targets': [
           'cronet_package',
           'cronet_perf_test_apk',
+          'cronet_sample_test_apk',
+          'cronet_smoketests_missing_native_library_instrumentation_apk',
+          'cronet_smoketests_platform_only_instrumentation_apk',
+          'cronet_test_instrumentation_apk',
+          'cronet_tests_android',
+          'cronet_unittests_android',
+          'net_unittests',
         ],
         'test_suites': {
-          'gtest_tests': 'cronet_gtests',
           'isolated_scripts': 'cronet_dbg_isolated_scripts',
         },
-        'os_type': 'android',
       },
       'android-cronet-arm-rel': {
         'additional_compile_targets': [
@@ -769,17 +769,6 @@
         'mixins': [
           'has_native_resultdb_integration',
           'kitkat',
-          'hammerhead',
-        ],
-        'test_suites': {
-          'gtest_tests': 'cronet_gtests',
-        },
-        'os_type': 'android',
-      },
-      'android-cronet-arm-rel-lollipop-tests': {
-        'mixins': [
-          'has_native_resultdb_integration',
-          'lollipop',
           'hammerhead',
         ],
         'test_suites': {
@@ -819,17 +808,6 @@
           'isolated_scripts': 'cronet_rel_isolated_scripts',
         },
       },
-      'android-cronet-arm64-rel-marshmallow-tests': {
-        'mixins': [
-          'has_native_resultdb_integration',
-          'marshmallow',
-          'bullhead',
-        ],
-        'test_suites': {
-          'gtest_tests': 'cronet_gtests',
-        },
-        'os_type': 'android',
-      },
       'android-cronet-asan-arm-rel': {
         'mixins': [
           'has_native_resultdb_integration',
@@ -839,17 +817,6 @@
         'additional_compile_targets': [
           'cronet_package',
           'cronet_perf_test_apk',
-        ],
-        'test_suites': {
-          'gtest_tests': 'cronet_gtests',
-        },
-        'os_type': 'android',
-      },
-      'android-cronet-marshmallow-arm64-rel': {
-        'mixins': [
-          'has_native_resultdb_integration',
-          'marshmallow',
-          'bullhead',
         ],
         'test_suites': {
           'gtest_tests': 'cronet_gtests',

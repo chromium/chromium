@@ -61,7 +61,7 @@ Once you've uploaded a Chromium change list using `git cl upload`, you can
 launch a bot to build and test your change list:
 
 ```shell
-$ git cl try -b android-cronet-arm-dbg
+$ git cl try -B luci.chromium.try -b android-cronet-x86-dbg-10-tests
 ```
 
 This will run both the Cronet Java unit tests and net_unittests.

@@ -91,7 +91,7 @@ builder.
   Path regular expressions:
   * [`//.+/3pp/.+`](https://cs.chromium.org/search?q=+file:.+/3pp/)
 
-* [android-cronet-arm-dbg](https://ci.chromium.org/p/chromium/builders/try/android-cronet-arm-dbg) ([definition](https://cs.chromium.org/search?q=+file:/try.star$+""android-cronet-arm-dbg"")) ([matching builders](https://cs.chromium.org/search?q=+file:trybots.py+""android-cronet-arm-dbg""))
+* [android-cronet-x86-dbg-10-tests](https://ci.chromium.org/p/chromium/builders/try/android-cronet-x86-dbg-10-tests) ([definition](https://cs.chromium.org/search?q=+file:/try.star$+""android-cronet-x86-dbg-10-tests"")) ([matching builders](https://cs.chromium.org/search?q=+file:trybots.py+""android-cronet-x86-dbg-10-tests""))
 
   Path regular expressions:
   * [`//components/cronet/.+`](https://cs.chromium.org/chromium/src/components/cronet/)

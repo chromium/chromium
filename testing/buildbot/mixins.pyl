@@ -656,13 +656,6 @@
       },
     },
   },
-  'lollipop': {
-    'swarming': {
-      'dimensions': {
-        'device_os': 'LMY48M',
-      },
-    },
-  },
   'lollipop-x86-emulator': {
     '$mixin_append': {
       'args': [
