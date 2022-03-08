@@ -10,10 +10,12 @@
 #include <vector>
 
 #include "base/component_export.h"
+#include "base/containers/circular_deque.h"
 #include "base/memory/weak_ptr.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/x/connection.h"
+#include "ui/gfx/x/future.h"
 #include "ui/gfx/x/shape.h"
 #include "ui/gfx/x/xproto.h"
 
@@ -82,6 +84,14 @@ class COMPONENT_EXPORT(X11) WindowCache : public EventObserver {
   }
 
  private:
+  // This helper reduces boilerplate when adding requests.
+  template <typename Future, typename Callback, typename... Args>
+  void AddRequest(Future&& future, Callback&& callback, Args&&... args) {
+    future.OnResponse(base::BindOnce(callback, weak_factory_.GetWeakPtr(),
+                                     std::forward<Args>(args)...));
+    pending_requests_.push_back(std::move(future));
+  }
+
   // EventObserver:
   void OnEvent(const Event& event) override;
 
@@ -127,7 +137,7 @@ class COMPONENT_EXPORT(X11) WindowCache : public EventObserver {
 
   std::unordered_map<Window, WindowInfo> windows_;
 
-  unsigned int pending_requests_ = 0;
+  base::circular_deque<FutureBase> pending_requests_;
 
   // Although only one instance of WindowCache may be created at a time, the
   // instance will be created and destroyed as needed, so WeakPtrs are still

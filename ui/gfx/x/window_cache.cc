@@ -16,7 +16,6 @@
 #include "ui/gfx/geometry/vector2d.h"
 #include "ui/gfx/x/connection.h"
 #include "ui/gfx/x/event.h"
-#include "ui/gfx/x/future.h"
 #include "ui/gfx/x/x11_atom_cache.h"
 #include "ui/gfx/x/x11_window_event_manager.h"
 #include "ui/gfx/x/xproto.h"
@@ -72,7 +71,7 @@ void WindowCache::SyncForTest() {
     // Perform a blocking sync to prevent spinning while waiting for replies.
     connection_->Sync();
     connection_->DispatchAll();
-  } while (pending_requests_);
+  } while (!pending_requests_.empty());
 }
 
 Window WindowCache::GetWindowAtPoint(gfx::Point point_px, Window window) {
@@ -193,11 +192,8 @@ void WindowCache::OnEvent(const Event& event) {
     Window window = shape->affected_window;
     Shape::Sk kind = shape->shape_kind;
     if (base::Contains(windows_, window)) {
-      connection_->shape()
-          .GetRectangles(window, kind)
-          .OnResponse(base::BindOnce(&WindowCache::OnGetRectanglesResponse,
-                                     weak_factory_.GetWeakPtr(), window, kind));
-      pending_requests_++;
+      AddRequest(connection_->shape().GetRectangles(window, kind),
+                 &WindowCache::OnGetRectanglesResponse, window, kind);
     }
   }
 }
@@ -212,14 +208,12 @@ void WindowCache::AddWindow(Window window, Window parent) {
   info.events = std::make_unique<XScopedEventSelector>(
       window, EventMask::SubstructureNotify | EventMask::PropertyChange);
 
-  connection_->GetWindowAttributes(window).OnResponse(
-      base::BindOnce(&WindowCache::OnGetWindowAttributesResponse,
-                     weak_factory_.GetWeakPtr(), window));
-  connection_->GetGeometry(window).OnResponse(base::BindOnce(
-      &WindowCache::OnGetGeometryResponse, weak_factory_.GetWeakPtr(), window));
-  connection_->QueryTree(window).OnResponse(base::BindOnce(
-      &WindowCache::OnQueryTreeResponse, weak_factory_.GetWeakPtr(), window));
-  pending_requests_ += 3;
+  AddRequest(connection_->GetWindowAttributes(window),
+             &WindowCache::OnGetWindowAttributesResponse, window);
+  AddRequest(connection_->GetGeometry(window),
+             &WindowCache::OnGetGeometryResponse, window);
+  AddRequest(connection_->QueryTree(window), &WindowCache::OnQueryTreeResponse,
+             window);
 
   GetProperty(window, Atom::WM_NAME, 1);
   GetProperty(window, gtk_frame_extents_, 4);
@@ -230,10 +224,8 @@ void WindowCache::AddWindow(Window window, Window parent) {
         std::make_unique<ScopedShapeEventSelector>(connection_, window);
 
     for (auto kind : {Shape::Sk::Bounding, Shape::Sk::Input}) {
-      shape.GetRectangles(window, kind)
-          .OnResponse(base::BindOnce(&WindowCache::OnGetRectanglesResponse,
-                                     weak_factory_.GetWeakPtr(), window, kind));
-      pending_requests_++;
+      AddRequest(shape.GetRectangles(window, kind),
+                 &WindowCache::OnGetRectanglesResponse, window, kind);
     }
   }
 }
@@ -252,17 +244,15 @@ std::vector<Window>* WindowCache::GetChildren(Window window) {
 }
 
 void WindowCache::GetProperty(Window window, Atom property, uint32_t length) {
-  connection_
-      ->GetProperty(
-          {.window = window, .property = property, .long_length = length})
-      .OnResponse(base::BindOnce(&WindowCache::OnGetPropertyResponse,
-                                 weak_factory_.GetWeakPtr(), window, property));
-  pending_requests_++;
+  AddRequest(
+      connection_->GetProperty(
+          {.window = window, .property = property, .long_length = length}),
+      &WindowCache::OnGetPropertyResponse, window, property);
 }
 
 WindowCache::WindowInfo* WindowCache::OnResponse(Window window,
                                                  bool has_reply) {
-  pending_requests_--;
+  pending_requests_.pop_front();
   if (!has_reply) {
     windows_.erase(window);
     return nullptr;
