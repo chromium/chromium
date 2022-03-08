@@ -51,6 +51,17 @@ class IntentFilterUtilTest : public testing::Test {
 
     return intent_filter;
   }
+
+  apps::mojom::IntentFilterPtr MakeHostOnlyFilter(
+      std::string host,
+      apps::mojom::PatternMatchType pattern) {
+    auto intent_filter = apps::mojom::IntentFilter::New();
+
+    apps_util::AddSingleValueCondition(apps::mojom::ConditionType::kHost, host,
+                                       pattern, intent_filter);
+
+    return intent_filter;
+  }
 };
 
 TEST_F(IntentFilterUtilTest, EmptyConditionList) {
@@ -315,7 +326,7 @@ TEST_F(IntentFilterUtilTest, NotSupportedLink) {
   ASSERT_FALSE(apps_util::IsSupportedLinkForApp(kAppId, browser_filter));
 }
 
-TEST_F(IntentFilterUtilTest, HostMatchOverlap) {
+TEST_F(IntentFilterUtilTest, HostMatchOverlapLiteralAndNone) {
   auto google_domain_filter = MakeFilter(
       "https", "www.google.com", "/", apps::mojom::PatternMatchType::kLiteral);
 
@@ -331,6 +342,46 @@ TEST_F(IntentFilterUtilTest, HostMatchOverlap) {
 
   ASSERT_TRUE(
       apps_util::FiltersHaveOverlap(maps_domain_filter, google_domain_filter));
+}
+
+TEST_F(IntentFilterUtilTest, HostMatchOverlapSuffix) {
+  // Wildcard host filter
+  auto wikipedia_wildcard_filter = MakeHostOnlyFilter(
+      ".wikipedia.org", apps::mojom::PatternMatchType::kSuffix);
+
+  // Filters that shouldn't overlap
+  auto wikipedia_com_filter = MakeHostOnlyFilter(
+      ".wikipedia.com", apps::mojom::PatternMatchType::kNone);
+  auto wikipedia_no_subdomain_filter =
+      MakeHostOnlyFilter("wikipedia.org", apps::mojom::PatternMatchType::kNone);
+
+  ASSERT_FALSE(apps_util::FiltersHaveOverlap(wikipedia_wildcard_filter,
+                                             wikipedia_com_filter));
+  ASSERT_FALSE(apps_util::FiltersHaveOverlap(wikipedia_wildcard_filter,
+                                             wikipedia_no_subdomain_filter));
+
+  // Filters that should overlap
+  auto wikipedia_subdomain_filter = MakeHostOnlyFilter(
+      "es.wikipedia.org", apps::mojom::PatternMatchType::kNone);
+  auto wikipedia_empty_subdomain_filter = MakeHostOnlyFilter(
+      ".wikipedia.org", apps::mojom::PatternMatchType::kNone);
+  auto wikipedia_literal_filter = MakeHostOnlyFilter(
+      "fr.wikipedia.org", apps::mojom::PatternMatchType::kLiteral);
+  auto wikipedia_other_wildcard_filter = MakeHostOnlyFilter(
+      ".wikipedia.org", apps::mojom::PatternMatchType::kSuffix);
+  auto wikipedia_subsubdomain_filter = MakeHostOnlyFilter(
+      ".es.wikipedia.org", apps::mojom::PatternMatchType::kSuffix);
+
+  ASSERT_TRUE(apps_util::FiltersHaveOverlap(wikipedia_wildcard_filter,
+                                            wikipedia_subdomain_filter));
+  ASSERT_TRUE(apps_util::FiltersHaveOverlap(wikipedia_wildcard_filter,
+                                            wikipedia_empty_subdomain_filter));
+  ASSERT_TRUE(apps_util::FiltersHaveOverlap(wikipedia_wildcard_filter,
+                                            wikipedia_literal_filter));
+  ASSERT_TRUE(apps_util::FiltersHaveOverlap(wikipedia_wildcard_filter,
+                                            wikipedia_other_wildcard_filter));
+  ASSERT_TRUE(apps_util::FiltersHaveOverlap(wikipedia_wildcard_filter,
+                                            wikipedia_subsubdomain_filter));
 }
 
 TEST_F(IntentFilterUtilTest, PatternMatchOverlap) {

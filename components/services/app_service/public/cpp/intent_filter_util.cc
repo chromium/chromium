@@ -21,7 +21,15 @@ bool ConditionValuesHaveOverlap(const apps::mojom::ConditionValuePtr& value1,
     return true;
   }
 
-  if (value1->match_type == apps::mojom::PatternMatchType::kLiteral) {
+  if (value1->match_type == apps::mojom::PatternMatchType::kSuffix &&
+      (value2->match_type == apps::mojom::PatternMatchType::kNone ||
+       value2->match_type == apps::mojom::PatternMatchType::kLiteral ||
+       value2->match_type == apps::mojom::PatternMatchType::kSuffix)) {
+    return base::EndsWith(/*str=*/value2->value,
+                          /*search_for=*/value1->value);
+  }
+
+  else if (value1->match_type == apps::mojom::PatternMatchType::kLiteral) {
     if (value2->match_type == apps::mojom::PatternMatchType::kPrefix) {
       return base::StartsWith(/*str=*/value1->value,
                               /*search_for=*/value2->value);
