@@ -83,6 +83,7 @@
 #include "third_party/blink/renderer/platform/wtf/casting.h"
 #include "third_party/blink/renderer/platform/wtf/gc_plugin_ignore.h"
 #include "third_party/blink/renderer/platform/wtf/hash_set.h"
+#include "third_party/perfetto/include/perfetto/tracing/traced_value_forward.h"
 
 namespace base {
 class SingleThreadTaskRunner;
@@ -1811,6 +1812,8 @@ class CORE_EXPORT Document : public ContainerNode,
   // For more details and explanation, see
   // https://github.com/flackr/reduce-motion/blob/main/explainer.md
   bool ShouldForceReduceMotion() const;
+
+  void WriteIntoTrace(perfetto::TracedValue ctx) const;
 
  protected:
   void ClearXMLVersion() { xml_version_ = String(); }

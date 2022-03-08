@@ -8234,6 +8234,11 @@ void Document::UnblockLoadEventAfterLayoutTreeUpdate() {
   }
 }
 
+void Document::WriteIntoTrace(perfetto::TracedValue ctx) const {
+  perfetto::TracedDictionary dict = std::move(ctx).WriteDictionary();
+  dict.Add("url", Url());
+}
+
 Document::PaintPreviewScope::PaintPreviewScope(Document& document,
                                                PaintPreviewState state)
     : document_(document) {

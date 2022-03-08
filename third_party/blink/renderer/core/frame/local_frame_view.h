@@ -469,7 +469,8 @@ class CORE_EXPORT LocalFrameView final
 
   void ServiceScriptedAnimations(base::TimeTicks);
 
-  void ScheduleAnimation(base::TimeDelta = base::TimeDelta());
+  void ScheduleAnimation(base::TimeDelta = base::TimeDelta(),
+                         base::Location location = base::Location::Current());
 
   // FIXME: This should probably be renamed as the 'inSubtreeLayout' parameter
   // passed around the LocalFrameView layout methods can be true while this

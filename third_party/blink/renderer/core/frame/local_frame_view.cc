@@ -37,6 +37,7 @@
 #include "base/metrics/field_trial_params.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/timer/lap_timer.h"
+#include "base/trace_event/typed_macros.h"
 #include "cc/animation/animation_host.h"
 #include "cc/document_transition/document_transition_request.h"
 #include "cc/input/main_thread_scrolling_reason.h"
@@ -3649,7 +3650,10 @@ void LocalFrameView::ServiceScriptedAnimations(base::TimeTicks start_time) {
   document->ServiceScriptedAnimations(start_time, can_throttle);
 }
 
-void LocalFrameView::ScheduleAnimation(base::TimeDelta delay) {
+void LocalFrameView::ScheduleAnimation(base::TimeDelta delay,
+                                       base::Location location) {
+  TRACE_EVENT("cc", "LocalFrameView::ScheduleAnimation", "frame", GetFrame(),
+              "delay", delay, "location", location);
   if (auto* client = GetChromeClient())
     client->ScheduleAnimation(this, delay);
 }

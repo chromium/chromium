@@ -3159,4 +3159,12 @@ TextSuggestionController& LocalFrame::GetTextSuggestionController() const {
   return DomWindow()->GetTextSuggestionController();
 }
 
+void LocalFrame::WriteIntoTrace(perfetto::TracedValue ctx) const {
+  perfetto::TracedDictionary dict = std::move(ctx).WriteDictionary();
+  dict.Add("document", GetDocument());
+  dict.Add("is_main_frame", IsMainFrame());
+  dict.Add("is_cross_origin_to_parent", IsCrossOriginToParentFrame());
+  dict.Add("is_cross_origin_to_main_frame", IsCrossOriginToMainFrame());
+}
+
 }  // namespace blink

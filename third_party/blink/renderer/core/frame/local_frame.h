@@ -82,6 +82,7 @@
 #include "third_party/blink/renderer/platform/scheduler/public/frame_scheduler.h"
 #include "third_party/blink/renderer/platform/supplementable.h"
 #include "third_party/blink/renderer/platform/wtf/hash_set.h"
+#include "third_party/perfetto/include/perfetto/tracing/traced_value_forward.h"
 #include "ui/gfx/geometry/transform.h"
 
 namespace base {
@@ -734,6 +735,8 @@ class CORE_EXPORT LocalFrame final
   void ResetTextInputHostForTesting();
   void RebindTextInputHostForTesting();
 #endif
+
+  void WriteIntoTrace(perfetto::TracedValue ctx) const;
 
  private:
   friend class FrameNavigationDisabler;
