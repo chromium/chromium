@@ -7595,7 +7595,6 @@ crbug.com/1293714 external/wpt/css/selectors/invalidation/has-complexity.html [ 
 crbug.com/1243128 http/tests/devtools/extensions/extensions-useragent.js [ Failure Pass ]
 
 # Sheriff 2022-02-15
-crbug.com/1297553 external/wpt/fetch/api/basic/response-null-body.any.sharedworker.html [ Failure Pass ]
 crbug.com/1297587 [ Mac10.12 ] external/wpt/webrtc-encoded-transform/RTCPeerConnection-insertable-streams-simulcast.https.html [ Failure Pass ]
 
 # Sheriff 2022-02-16
@@ -7646,3 +7645,6 @@ crbug.com/1297587 [ Mac10.14 ] external/wpt/webrtc-encoded-transform/RTCPeerConn
 crbug.com/1297587 [ Mac10.15 ] external/wpt/webrtc-encoded-transform/RTCPeerConnection-insertable-streams-simulcast.https.html [ Failure Pass ]
 
 crbug.com/1300352 http/tests/inspector-protocol/network/blocked-cookie-not-on-path.js [ Pass Timeout ]
+
+crbug.com/1298836 external/wpt/fetch/api/basic/response-null-body.any.* [ Failure Pass ]
+crbug.com/1298836 virtual/plz-dedicated-worker/external/wpt/fetch/api/basic/response-null-body.any.* [ Failure Pass ]
