@@ -6,8 +6,8 @@ import("//build/config/features.gni")
 
 source_set("bluetooth_system") {
   visibility = [
+    ":bluetooth_system_tests",
     "//services/device:lib",
-    "//services/device/bluetooth:bluetooth_system_tests",
   ]
 
   sources = [
