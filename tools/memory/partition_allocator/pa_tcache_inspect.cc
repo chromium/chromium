@@ -29,6 +29,7 @@
 #include "base/files/scoped_file.h"
 #include "base/json/json_writer.h"
 #include "base/logging.h"
+#include "base/memory/page_size.h"
 #include "base/posix/eintr_wrapper.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
@@ -482,24 +483,39 @@ void DisplayRootData(PartitionRootInspector& root_inspector,
 }
 
 base::Value Dump(PartitionRootInspector& root_inspector) {
-  auto slot_span_to_value =
-      [](const SlotSpanMetadata<ThreadSafe>& slot_span) -> base::Value {
+  auto slot_span_to_value = [](const SlotSpanMetadata<ThreadSafe>& slot_span,
+                               size_t slots_per_span) -> base::Value {
     auto result = base::Value(base::Value::Type::DICTIONARY);
 
     result.SetKey("num_allocated_slots",
                   base::Value{slot_span.num_allocated_slots});
     result.SetKey("num_unprovisioned_slots",
                   base::Value{slot_span.num_unprovisioned_slots});
+    result.SetKey("freelist_is_sorted",
+                  base::Value{slot_span.freelist_is_sorted()});
+    result.SetKey("freelist_is_sorted",
+                  base::Value{slot_span.freelist_is_sorted()});
+    size_t freelist_size = slots_per_span - slot_span.num_allocated_slots -
+                           slot_span.num_unprovisioned_slots;
+    result.SetKey("freelist_size",
+                  base::Value{static_cast<int>(freelist_size)});
+    result.SetKey("marked_full", base::Value{slot_span.marked_full});
     return result;
   };
 
   auto bucket_to_value =
       [&](const PartitionRootInspector::BucketStats& stats) -> base::Value {
     auto result = base::Value(base::Value::Type::DICTIONARY);
+    const size_t kPageSize = base::GetPageSize();
+    size_t slots_per_span =
+        (stats.bucket.num_system_pages_per_slot_span * kPageSize) /
+        stats.slot_size;
 
     result.SetKey("slot_size", base::Value{static_cast<int>(stats.slot_size)});
     result.SetKey("num_system_pages_per_slot_span",
                   base::Value{stats.bucket.num_system_pages_per_slot_span});
+    result.SetKey("num_slots_per_span",
+                  base::Value{static_cast<int>(slots_per_span)});
     result.SetKey("num_full_slot_spans",
                   base::Value{stats.bucket.num_full_slot_spans});
     result.SetKey("allocated_slots",
@@ -509,19 +525,19 @@ base::Value Dump(PartitionRootInspector& root_inspector) {
 
     auto active_list = base::Value(base::Value::Type::LIST);
     for (auto& slot_span : stats.active_slot_spans) {
-      active_list.Append(slot_span_to_value(slot_span));
+      active_list.Append(slot_span_to_value(slot_span, slots_per_span));
     }
     result.SetKey("active_slot_spans", std::move(active_list));
 
     auto empty_list = base::Value(base::Value::Type::LIST);
     for (auto& slot_span : stats.empty_slot_spans) {
-      empty_list.Append(slot_span_to_value(slot_span));
+      empty_list.Append(slot_span_to_value(slot_span, slots_per_span));
     }
     result.SetKey("empty_slot_spans", std::move(empty_list));
 
     auto decommitted_list = base::Value(base::Value::Type::LIST);
     for (auto& slot_span : stats.decommitted_slot_spans) {
-      decommitted_list.Append(slot_span_to_value(slot_span));
+      decommitted_list.Append(slot_span_to_value(slot_span, slots_per_span));
     }
     result.SetKey("decommitted_slot_spans", std::move(decommitted_list));
 
