@@ -128,6 +128,21 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="ChromeOS.FamilyUser.ChildUserTypeMismatchError"
+    enum="ChildUserTypeMismatchError" expires_after="2023-01-20">
+  <owner>agawronska@chromium.org</owner>
+  <owner>galenemco@chromium.org</owner>
+  <owner>cros-families-eng@google.com</owner>
+  <summary>
+    Reports errors that occur when there is a mismatch between child account
+    status detected during online sign-in from the device login screen and the
+    child status read from the ID token. This error results in ChromeOS crashing
+    to prevent an unsupervised experience. Errors can occur when we receive (1)
+    a non-child token for a signed-in child user or (2) a child token for a
+    signed-in non-child user.
+  </summary>
+</histogram>
+
 <histogram name="ChromeOS.FamilyUser.LogSegment2" enum="FamilyUserLogSegment"
     expires_after="never">
 <!-- expires-never: used internally for filtering -->

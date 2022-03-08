@@ -12800,6 +12800,11 @@ Called by update_protocol_commands_enum.py.-->
   <int value="10" label="Image was not required for activation."/>
 </enum>
 
+<enum name="ChildUserTypeMismatchError">
+  <int value="0" label="Recieved a non-child ID token for a child user"/>
+  <int value="1" label="Recieved a child ID token for a non-child user"/>
+</enum>
+
 <enum name="ChimeEvent">
   <int value="0" label="Register"/>
   <int value="1" label="UnRegister"/>
