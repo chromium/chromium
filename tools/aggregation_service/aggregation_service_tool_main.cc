@@ -12,9 +12,11 @@
 #include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
+#include "base/strings/stringprintf.h"
 #include "base/task/single_thread_task_executor.h"
 #include "base/task/thread_pool/thread_pool_instance.h"
 #include "base/values.h"
+#include "services/network/public/cpp/is_potentially_trustworthy.h"
 #include "tools/aggregation_service/aggregation_service_tool.h"
 #include "url/gurl.h"
 #include "url/origin.h"
@@ -32,7 +34,8 @@ constexpr char kSwitchValue[] = "value";
 constexpr char kSwitchProcessingType[] = "processing-type";
 constexpr char kSwitchReportingOrigin[] = "reporting-origin";
 constexpr char kSwitchPrivacyBudgetKey[] = "privacy-budget-key";
-constexpr char kSwitchHelperKeys[] = "helper-keys";
+constexpr char kSwitchHelperKeyUrls[] = "helper-key-urls";
+constexpr char kSwitchHelperKeyFiles[] = "helper-key-files";
 constexpr char kSwitchOutputFile[] = "output-file";
 constexpr char kSwitchOutputUrl[] = "output-url";
 constexpr char kSwitchDisablePayloadEncryption[] = "disable-payload-encryption";
@@ -52,7 +55,7 @@ constexpr char kHelpMsg[] = R"(
   aggregation_service_tool --operation="histogram" --bucket=1234 --value=5
   --processing-type="two-party" --reporting-origin="https://example.com"
   --privacy-budget-key="test_privacy_budget_key"
-  --helper-keys="https://a.com=keys1.json,https://b.com=keys2.json"
+  --helper-key-urls="https://a.com/keys.json https://b.com/path/to/keys.json"
   --output-file="output.json" --enable-debug-mode
   --additional-fields=
   "source_site=https://publisher.example,attribution_destination=https://advertiser.example"
@@ -60,7 +63,7 @@ constexpr char kHelpMsg[] = R"(
   aggregation_service_tool --bucket=1234 --value=5
   --processing-type="single-server" --reporting-origin="https://example.com"
   --privacy-budget-key="test_privacy_budget_key"
-  --helper-keys="https://a.com=keys.json"
+  --helper-key-files="keys.json"
   --output-url="https://c.com/reports"
 
   aggregation_service_tool is a command-line tool that accepts report contents
@@ -80,9 +83,16 @@ constexpr char kHelpMsg[] = R"(
                       "two-party".
   --reporting-origin = The reporting origin endpoint.
   --privacy-budget-key = The privacy budgeting key.
-  --helper-keys = List of mapping of origins to public key json files.
-  --output-file = Optional switch to specify the output file path.
-  --output-url = Optional switch to specify the output url.
+  --helper-key-urls = Optional switch to specify the URL(s) to fetch the public
+                      key json file(s) from. Spaces are used as separators.
+                      Either this or "--helper-key-files" must be specified.
+  --helper-key-files = Optional switch to specify the local public key json
+                       file(s) to use. Spaces are used as separators. Either
+                       this or "--helper-key-urls" must be specified.
+  --output-file = Optional switch to specify the output file path. Eiter this or
+                  "--output-url" must be specified.
+  --output-url = Optional switch to specify the output url. Eiter this or
+                  "--output-file" must be specified.
   --additional-fields = List of key-value pairs of additional fields to be
                         included in the aggregatable report. Only supports
                         string valued fields.
@@ -125,7 +135,8 @@ int main(int argc, char* argv[]) {
       kSwitchProcessingType,
       kSwitchReportingOrigin,
       kSwitchPrivacyBudgetKey,
-      kSwitchHelperKeys,
+      kSwitchHelperKeyUrls,
+      kSwitchHelperKeyFiles,
       kSwitchOutputFile,
       kSwitchOutputUrl,
       kSwitchDisablePayloadEncryption,
@@ -148,9 +159,8 @@ int main(int argc, char* argv[]) {
   }
 
   const std::vector<std::string> kRequiredSwitches = {
-      kSwitchBucket,           kSwitchValue,
-      kSwitchProcessingType,   kSwitchReportingOrigin,
-      kSwitchPrivacyBudgetKey, kSwitchHelperKeys};
+      kSwitchBucket, kSwitchValue, kSwitchProcessingType,
+      kSwitchReportingOrigin, kSwitchPrivacyBudgetKey};
   for (const std::string& required_switch : kRequiredSwitches) {
     if (!command_line.HasSwitch(required_switch.c_str())) {
       LOG(ERROR) << "aggregation_service_tool expects " << required_switch
@@ -170,37 +180,68 @@ int main(int argc, char* argv[]) {
     return 1;
   }
 
+  // Either helper key URL or file should be specified, but not both.
+  if (!(command_line.HasSwitch(kSwitchHelperKeyUrls) ^
+        command_line.HasSwitch(kSwitchHelperKeyFiles))) {
+    LOG(ERROR) << "aggregation_service_tool expects either "
+               << kSwitchHelperKeyUrls << " or " << kSwitchHelperKeyFiles
+               << " to be specified, but not both.";
+    PrintHelp();
+    return 1;
+  }
+
   aggregation_service::AggregationServiceTool tool;
 
   tool.SetDisablePayloadEncryption(
       /*should_disable=*/command_line.HasSwitch(
           kSwitchDisablePayloadEncryption));
 
-  std::string helper_keys = command_line.GetSwitchValueASCII(kSwitchHelperKeys);
-
-  // `helper_keys` is formatted like
-  // "https://a.com=keys1.json,https://b.com=keys2.json".
-  base::StringPairs kv_pairs;
-  base::SplitStringIntoKeyValuePairs(helper_keys, /*key_value_delimiter=*/'=',
-                                     /*key_value_pair_delimiter=*/',',
-                                     &kv_pairs);
-
-  std::vector<aggregation_service::UrlKeyFile> key_files;
   std::vector<GURL> processing_urls;
-  static constexpr char kDefaultEndpointPath[] = "keys.json";
-  for (auto& kv : kv_pairs) {
-    GURL::Replacements replacements;
-    replacements.SetPathStr(kDefaultEndpointPath);
-    GURL url = url::Origin::Create(GURL(kv.first))
-                   .GetURL()
-                   .ReplaceComponents(replacements);
-    key_files.emplace_back(url, std::move(kv.second));
-    processing_urls.push_back(std::move(url));
-  }
 
-  if (!tool.SetPublicKeys(key_files)) {
-    LOG(ERROR) << "aggregation_service_tool failed to set public keys.";
-    return 1;
+  if (command_line.HasSwitch(kSwitchHelperKeyUrls)) {
+    std::string switch_value =
+        command_line.GetSwitchValueASCII(kSwitchHelperKeyUrls);
+    std::vector<std::string> helper_key_url_strings =
+        base::SplitString(switch_value, /*separators=*/" ",
+                          base::KEEP_WHITESPACE, base::SPLIT_WANT_ALL);
+
+    for (const std::string& url_string : helper_key_url_strings) {
+      GURL helper_key_url(url_string);
+      if (!network::IsUrlPotentiallyTrustworthy(helper_key_url)) {
+        LOG(ERROR) << "Helper key URL " << url_string
+                   << " is not potentially trustworthy.";
+        return 1;
+      }
+      processing_urls.emplace_back(std::move(helper_key_url));
+    }
+  } else {
+    std::string switch_value =
+        command_line.GetSwitchValueASCII(kSwitchHelperKeyFiles);
+
+    std::vector<std::string> helper_key_file_strings =
+        base::SplitString(switch_value, /*separators=*/" ",
+                          base::KEEP_WHITESPACE, base::SPLIT_WANT_ALL);
+
+    if (helper_key_file_strings.empty() || helper_key_file_strings.size() > 2) {
+      LOG(ERROR) << kSwitchHelperKeyFiles
+                 << " specified an invalid number of files: "
+                 << helper_key_file_strings.size();
+      return 1;
+    }
+
+    std::vector<aggregation_service::UrlKeyFile> key_files;
+    for (size_t i = 0; i < helper_key_file_strings.size(); ++i) {
+      // We need to choose some URL to store each set of public keys under.
+      std::string fake_helper_url =
+          base::StringPrintf("https://fake_%zu.example/keys.json", i);
+      key_files.emplace_back(GURL(fake_helper_url), helper_key_file_strings[i]);
+      processing_urls.emplace_back(std::move(fake_helper_url));
+    }
+
+    if (!tool.SetPublicKeys(key_files)) {
+      LOG(ERROR) << "aggregation_service_tool failed to set public keys.";
+      return 1;
+    }
   }
 
   std::string operation =

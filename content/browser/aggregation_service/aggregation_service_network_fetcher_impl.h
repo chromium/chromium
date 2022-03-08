@@ -51,7 +51,8 @@ class CONTENT_EXPORT AggregationServiceNetworkFetcherImpl
   // `url_loader_factory` if one is provided.
   static std::unique_ptr<AggregationServiceNetworkFetcherImpl> CreateForTesting(
       const base::Clock* clock,
-      scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory);
+      scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
+      bool enable_debug_logging = false);
 
  private:
   // These values are persisted to logs. Entries should not be renumbered and
@@ -78,7 +79,8 @@ class CONTENT_EXPORT AggregationServiceNetworkFetcherImpl
   // For testing only.
   AggregationServiceNetworkFetcherImpl(
       const base::Clock* clock,
-      scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory);
+      scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
+      bool enable_debug_logging);
 
   // Invoked from SimpleURLLoader after download is complete.
   void OnSimpleLoaderComplete(UrlLoaderList::iterator it,
@@ -111,6 +113,9 @@ class CONTENT_EXPORT AggregationServiceNetworkFetcherImpl
 
   // Lazily accessed URLLoaderFactory used for network requests.
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
+
+  // Whether to enable debug logging. Should be false in production.
+  bool enable_debug_logging_ = false;
 
   base::WeakPtrFactory<AggregationServiceNetworkFetcherImpl> weak_factory_{
       this};

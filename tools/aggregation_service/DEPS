@@ -4,5 +4,6 @@ include_rules = [
   "+mojo/core/embedder",
   "+mojo/public/cpp",
   "+services/cert_verifier/public/mojom",
+  "+services/data_decoder/public/cpp",
   "+services/network",
 ]

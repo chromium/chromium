@@ -9,6 +9,7 @@
 
 #include "base/memory/scoped_refptr.h"
 #include "mojo/public/cpp/bindings/remote.h"
+#include "services/data_decoder/public/cpp/test_support/in_process_data_decoder.h"
 #include "services/network/network_context.h"
 #include "services/network/network_service.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
@@ -16,8 +17,9 @@
 
 namespace aggregation_service {
 
-// This class is responsible for initializing network states. The object should
-// be kept alive for the duration of network usage.
+// This class is responsible for initializing network states, including state
+// for processing network responses. The object should be kept alive for the
+// duration of network usage.
 class ToolNetworkInitializer {
  public:
   ToolNetworkInitializer();
@@ -35,6 +37,10 @@ class ToolNetworkInitializer {
   std::unique_ptr<network::NetworkContext> network_context_;
   mojo::Remote<network::mojom::URLLoaderFactory> url_loader_factory_;
   scoped_refptr<network::SharedURLLoaderFactory> shared_url_loader_factory_;
+
+  // Used to process JSON network responses.
+  std::unique_ptr<data_decoder::test::InProcessDataDecoder>
+      in_process_data_decoder_;
 };
 
 }  // namespace aggregation_service

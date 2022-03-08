@@ -50,14 +50,16 @@ AggregatableReportAssembler::AggregatableReportAssembler(
 
 AggregatableReportAssembler::AggregatableReportAssembler(
     AggregationServiceStorageContext* storage_context,
-    scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory)
+    scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
+    bool enable_debug_logging)
     : AggregatableReportAssembler(
           std::make_unique<AggregationServiceKeyFetcher>(
               storage_context,
               AggregationServiceNetworkFetcherImpl::
                   CreateForTesting(  // IN-TEST
                       base::DefaultClock::GetInstance(),
-                      std::move(url_loader_factory))),
+                      std::move(url_loader_factory),
+                      enable_debug_logging)),
           std::make_unique<AggregatableReport::Provider>()) {}
 
 AggregatableReportAssembler::AggregatableReportAssembler(
@@ -100,9 +102,10 @@ AggregatableReportAssembler::CreateForTesting(
 std::unique_ptr<AggregatableReportAssembler>
 AggregatableReportAssembler::CreateForTesting(
     AggregationServiceStorageContext* storage_context,
-    scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory) {
+    scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
+    bool enable_debug_logging) {
   return base::WrapUnique(new AggregatableReportAssembler(
-      storage_context, std::move(url_loader_factory)));
+      storage_context, std::move(url_loader_factory), enable_debug_logging));
 }
 
 void AggregatableReportAssembler::AssembleReport(

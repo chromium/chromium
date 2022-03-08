@@ -41,8 +41,11 @@ AggregationServiceNetworkFetcherImpl::AggregationServiceNetworkFetcherImpl(
 
 AggregationServiceNetworkFetcherImpl::AggregationServiceNetworkFetcherImpl(
     const base::Clock* clock,
-    scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory)
-    : clock_(*clock), url_loader_factory_(std::move(url_loader_factory)) {
+    scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
+    bool enable_debug_logging)
+    : clock_(*clock),
+      url_loader_factory_(std::move(url_loader_factory)),
+      enable_debug_logging_(enable_debug_logging) {
   DCHECK(clock);
   DCHECK(url_loader_factory_);
 }
@@ -54,9 +57,10 @@ AggregationServiceNetworkFetcherImpl::~AggregationServiceNetworkFetcherImpl() =
 std::unique_ptr<AggregationServiceNetworkFetcherImpl>
 AggregationServiceNetworkFetcherImpl::CreateForTesting(
     const base::Clock* clock,
-    scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory) {
+    scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
+    bool enable_debug_logging) {
   return base::WrapUnique(new AggregationServiceNetworkFetcherImpl(
-      clock, std::move(url_loader_factory)));
+      clock, std::move(url_loader_factory), enable_debug_logging));
 }
 
 void AggregationServiceNetworkFetcherImpl::FetchPublicKeys(
@@ -144,10 +148,9 @@ void AggregationServiceNetworkFetcherImpl::OnSimpleLoaderComplete(
   std::unique_ptr<network::SimpleURLLoader> loader = std::move(*it);
   loaders_in_progress_.erase(it);
 
-  int http_response_code =
-      loader->ResponseInfo() && loader->ResponseInfo()->headers
-          ? loader->ResponseInfo()->headers->response_code()
-          : 1;
+  absl::optional<int> http_response_code;
+  if (loader->ResponseInfo() && loader->ResponseInfo()->headers)
+    http_response_code = loader->ResponseInfo()->headers->response_code();
 
   // Since net errors are always negative and HTTP errors are always positive,
   // it is fine to combine these in a single histogram.
@@ -155,9 +158,18 @@ void AggregationServiceNetworkFetcherImpl::OnSimpleLoaderComplete(
                 loader->NetError() == net::ERR_HTTP_RESPONSE_CODE_FAILURE;
   base::UmaHistogramSparse(
       "PrivacySandbox.AggregationService.KeyFetcher.HttpResponseOrNetErrorCode",
-      net_ok ? http_response_code : loader->NetError());
+      net_ok ? http_response_code.value_or(1) : loader->NetError());
 
   if (!response_body) {
+    if (enable_debug_logging_) {
+      LOG(ERROR) << "Key fetching failed, net error: "
+                 << net::ErrorToShortString(loader->NetError())
+                 << ", HTTP response code: "
+                 << (http_response_code
+                         ? base::NumberToString(*http_response_code)
+                         : "N/A");
+    }
+
     OnError(url, std::move(callback), FetchStatus::kDownloadError,
             /*error_msg=*/"Public key network request failed.");
     return;
@@ -230,6 +242,10 @@ void AggregationServiceNetworkFetcherImpl::OnError(
 
   // TODO(crbug.com/1232601): Look into better backoff logic for fetching and
   // parsing error.
+
+  if (enable_debug_logging_) {
+    LOG(ERROR) << error_msg;
+  }
 
   std::move(callback).Run(absl::nullopt);
 }

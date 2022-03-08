@@ -79,9 +79,10 @@ TestAggregationServiceImpl::TestAggregationServiceImpl(
       sender_(AggregatableReportSender::CreateForTesting(
           url_loader_factory,
           /*enable_debug_logging=*/true)),
-      assembler_(
-          AggregatableReportAssembler::CreateForTesting(/*manager=*/this,
-                                                        url_loader_factory)) {
+      assembler_(AggregatableReportAssembler::CreateForTesting(
+          /*storage_context=*/this,
+          url_loader_factory,
+          /*enable_debug_logging=*/true)) {
   DCHECK(clock);
 }
 

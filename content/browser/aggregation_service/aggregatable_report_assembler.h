@@ -78,7 +78,8 @@ class CONTENT_EXPORT AggregatableReportAssembler {
   // AggregationServiceNetworkFetcherImpl if one is provided.
   static std::unique_ptr<AggregatableReportAssembler> CreateForTesting(
       AggregationServiceStorageContext* storage_context,
-      scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory);
+      scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
+      bool enable_debug_logging);
 
   // Fetches the necessary public keys and uses it to construct an
   // AggregatableReport from the information in `report_request`. See the
@@ -90,7 +91,8 @@ class CONTENT_EXPORT AggregatableReportAssembler {
   // For testing only.
   AggregatableReportAssembler(
       AggregationServiceStorageContext* storage_context,
-      scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory);
+      scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
+      bool enable_debug_logging = false);
 
  private:
   // Represents a request to assemble a report that has not completed.
