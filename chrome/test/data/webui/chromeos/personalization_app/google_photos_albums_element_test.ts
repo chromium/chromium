@@ -89,6 +89,9 @@ export function GooglePhotosAlbumsTest() {
     await initializeGooglePhotosData(wallpaperProvider, personalizationStore);
     await waitAfterNextRender(googlePhotosAlbumsElement);
 
+    // The wallpaper controller is expected to impose max resolution.
+    albums.forEach(album => album.preview.url += '=s512');
+
     // Verify that the expected |albums| are rendered.
     const albumEls = querySelectorAll(albumSelector) as WallpaperGridItem[];
     assertEquals(albumEls.length, albums.length);

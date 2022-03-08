@@ -8,6 +8,7 @@
 
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {FilePath} from 'chrome://resources/mojo/mojo/public/mojom/base/file_path.mojom-webui.js';
+import {Url} from 'chrome://resources/mojo/url/mojom/url.mojom-webui.js';
 
 import {AmbientModeAlbum, GooglePhotosPhoto, TopicSource, WallpaperImage, WallpaperLayout} from '../trusted/personalization_app.mojom-webui.js';
 
@@ -51,6 +52,15 @@ export function isNonEmptyString(maybeString: unknown): maybeString is string {
 export function inBetween(
     num: number, minVal: number, maxVal: number): boolean {
   return minVal <= num && num <= maxVal;
+}
+
+/**
+ * Appends a suffix to request wallpaper images with the longest of width or
+ * height being 512 pixels. This should ensure that the wallpaper image is
+ * large enough to cover a grid item but not significantly more so.
+ */
+export function appendMaxResolutionSuffix(value: Url): Url {
+  return {...value, url: value.url + '=s512'};
 }
 
 /**

@@ -9,7 +9,7 @@ import {initializeGooglePhotosData} from 'chrome://personalization/trusted/wallp
 import {WallpaperGridItem} from 'chrome://personalization/trusted/wallpaper/wallpaper_grid_item_element.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {String16} from 'chrome://resources/mojo/mojo/public/mojom/base/string16.mojom-webui.js';
-import {assertEquals, assertNotEquals} from 'chrome://webui-test/chai_assert.js';
+import {assertDeepEquals, assertEquals, assertNotEquals} from 'chrome://webui-test/chai_assert.js';
 import {waitAfterNextRender} from 'chrome://webui-test/test_util.js';
 
 import {baseSetup, initElement, teardownElement} from './personalization_app_test_utils.js';
@@ -143,6 +143,9 @@ export function GooglePhotosPhotosTest() {
     await initializeGooglePhotosData(wallpaperProvider, personalizationStore);
     await waitAfterNextRender(googlePhotosPhotosElement);
 
+    // The wallpaper controller is expected to impose max resolution.
+    photos.forEach(photo => photo.url.url += '=s512');
+
     // Verify that the number of rendered titles and |photos| is as expected.
     assertEquals(querySelectorAll(titleSelector)!.length, sections.length);
     assertEquals(querySelectorAll(photoSelector)!.length, photos.length);
@@ -202,6 +205,10 @@ export function GooglePhotosPhotosTest() {
 
     // Initialize Google Photos data in the |personalizationStore|.
     await initializeGooglePhotosData(wallpaperProvider, personalizationStore);
+
+    // The wallpaper controller is expected to impose max resolution.
+    photo.url.url += '=s512';
+    anotherPhoto.url.url += '=s512';
 
     // Initialize |googlePhotosPhotosElement|.
     googlePhotosPhotosElement =
@@ -308,6 +315,9 @@ export function GooglePhotosPhotosTest() {
     // Initialize Google Photos data in the |personalizationStore|.
     await initializeGooglePhotosData(wallpaperProvider, personalizationStore);
 
+    // The wallpaper controller is expected to impose max resolution.
+    photo.url.url += '=s512';
+
     // Initialize |googlePhotosPhotosElement|.
     googlePhotosPhotosElement =
         initElement(GooglePhotosPhotos, {hidden: false});
@@ -325,7 +335,8 @@ export function GooglePhotosPhotosTest() {
     photoEls[0]!.click();
     assertEquals(personalizationStore.data.wallpaper.loading.setImage, 1);
     assertEquals(personalizationStore.data.wallpaper.loading.selected, true);
-    assertEquals(personalizationStore.data.wallpaper.pendingSelected, photo);
+    assertDeepEquals(
+        personalizationStore.data.wallpaper.pendingSelected, photo);
 
     // Wait for and verify hard-coded selection failure.
     const methodName = 'selectGooglePhotosPhoto';

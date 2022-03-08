@@ -215,6 +215,9 @@ suite('Personalization app controller', () => {
     await fetchGooglePhotosAlbum(
         wallpaperProvider, personalizationStore, album.id);
 
+    // The wallpaper controller is expected to impose max resolution.
+    photos.forEach(photo => photo.url.url += '=s512');
+
     assertDeepEquals(
         [
           {

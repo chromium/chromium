@@ -9,7 +9,7 @@ import {FilePath} from 'chrome://resources/mojo/mojo/public/mojom/base/file_path
 import {isNonEmptyArray} from '../../common/utils.js';
 import {FetchGooglePhotosAlbumsResponse, FetchGooglePhotosPhotosResponse, GooglePhotosAlbum, GooglePhotosPhoto, WallpaperCollection, WallpaperImage, WallpaperLayout, WallpaperProviderInterface, WallpaperType} from '../personalization_app.mojom-webui.js';
 import {PersonalizationStore} from '../personalization_store.js';
-import {isFilePath, isGooglePhotosPhoto, isWallpaperImage} from '../utils.js';
+import {appendMaxResolutionSuffix, isFilePath, isGooglePhotosPhoto, isWallpaperImage} from '../utils.js';
 
 import * as action from './wallpaper_actions.js';
 
@@ -88,6 +88,12 @@ export async function fetchGooglePhotosAlbum(
     resumeToken = response.resumeToken;
   } while (resumeToken);
 
+  // Impose max resolution.
+  if (photos !== null) {
+    photos = photos.map(
+        photo => ({...photo, url: appendMaxResolutionSuffix(photo.url)}));
+  }
+
   store.dispatch(action.setGooglePhotosAlbumAction(albumId, photos));
 }
 
@@ -113,6 +119,13 @@ async function fetchGooglePhotosAlbums(
     albums.push(...response.albums);
     resumeToken = response.resumeToken;
   } while (resumeToken);
+
+  // Impose max resolution.
+  if (albums !== null) {
+    albums = albums.map(
+        album =>
+            ({...album, preview: appendMaxResolutionSuffix(album.preview)}));
+  }
 
   store.dispatch(action.setGooglePhotosAlbumsAction(albums));
 }
@@ -149,6 +162,12 @@ async function fetchGooglePhotosPhotos(
     photos.push(...response.photos);
     resumeToken = response.resumeToken;
   } while (resumeToken);
+
+  // Impose max resolution.
+  if (photos !== null) {
+    photos = photos.map(
+        photo => ({...photo, url: appendMaxResolutionSuffix(photo.url)}));
+  }
 
   store.dispatch(action.setGooglePhotosPhotosAction(photos));
 }

@@ -175,6 +175,11 @@ export function GooglePhotosPhotosByAlbumIdTest() {
     // Initialize Google Photos data in the |personalizationStore|.
     await initializeGooglePhotosData(wallpaperProvider, personalizationStore);
 
+    // The wallpaper controller is expected to impose max resolution.
+    album.preview.url += '=s512';
+    photo.url.url += '=s512';
+    anotherPhoto.url.url += '=s512';
+
     // Initialize |googlePhotosPhotosByAlbumIdElement|.
     googlePhotosPhotosByAlbumIdElement =
         initElement(GooglePhotosPhotosByAlbumId, {hidden: false});
