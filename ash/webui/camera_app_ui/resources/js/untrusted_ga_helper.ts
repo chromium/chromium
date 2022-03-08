@@ -19,6 +19,10 @@ declare global {
     // https://developers.google.com/analytics/devguides/collection/analyticsjs/tracking-snippet-reference#tracking-unminified
     // eslint-disable-next-line @typescript-eslint/naming-convention
     GoogleAnalyticsObject: 'ga';
+    // GA use global `ga-disable-GA_MEASUREMENT_ID` to disable a particular
+    // measurement. See
+    // https://developers.google.com/analytics/devguides/collection/gtagjs/user-opt-out
+    [key: `ga-disable-${string}`]: boolean;
   }
 }
 
@@ -85,13 +89,7 @@ function sendGAEvent(event: UniversalAnalytics.FieldsObject): void {
  * @param enabled True if the metrics is enabled.
  */
 function setMetricsEnabled(id: string, enabled: boolean): void {
-  // GA use global `ga-disable-GA_MEASUREMENT_ID` to disable a particular
-  // measurement. See
-  // https://developers.google.com/analytics/devguides/collection/gtagjs/user-opt-out
-  // TODO(pihsun): Use `ga-disable-${string}` as index and move into the
-  // declare global block when we have newer TypeScript compiler to support
-  // that.
-  (window as unknown as Record<string, boolean>)[`ga-disable-${id}`] = !enabled;
+  window[`ga-disable-${id}`] = !enabled;
 }
 
 export interface GAHelper {
