@@ -348,7 +348,8 @@ class NET_EXPORT CanonicalCookie {
       const CookieOptions& options,
       const CookieAccessParams& params,
       const std::vector<std::string>& cookieable_schemes,
-      const CookieAccessResult* cookie_access_result = nullptr) const;
+      const absl::optional<CookieAccessResult>& cookie_access_result =
+          absl::nullopt) const;
 
   std::string DebugString() const;
 

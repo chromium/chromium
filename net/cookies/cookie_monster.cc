@@ -78,6 +78,7 @@
 #include "net/http/http_util.h"
 #include "net/log/net_log.h"
 #include "net/log/net_log_values.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/origin.h"
 #include "url/third_party/mozilla/url_parse.h"
 #include "url/url_canon.h"
@@ -419,7 +420,7 @@ void CookieMonster::SetCanonicalCookieAsync(
     const GURL& source_url,
     const CookieOptions& options,
     SetCookiesCallback callback,
-    const CookieAccessResult* cookie_access_result) {
+    absl::optional<CookieAccessResult> cookie_access_result) {
   DCHECK(cookie->IsCanonical());
 
   std::string domain = cookie->Domain();
@@ -430,7 +431,7 @@ void CookieMonster::SetCanonicalCookieAsync(
           // the object.
           &CookieMonster::SetCanonicalCookie, base::Unretained(this),
           std::move(cookie), source_url, options, std::move(callback),
-          cookie_access_result),
+          std::move(cookie_access_result)),
       domain);
 }
 
@@ -1477,7 +1478,7 @@ void CookieMonster::SetCanonicalCookie(
     const GURL& source_url,
     const CookieOptions& options,
     SetCookiesCallback callback,
-    const CookieAccessResult* cookie_access_result) {
+    absl::optional<CookieAccessResult> cookie_access_result) {
   DCHECK(thread_checker_.CalledOnValidThread());
 
   bool delegate_treats_url_as_trustworthy =
@@ -2511,7 +2512,7 @@ void CookieMonster::ConvertPartitionedCookie(const net::CanonicalCookie& cookie,
                          delegate_treats_url_as_trustworthy,
                          cookie_util::GetSamePartyStatus(
                              *new_cookie, options, first_party_sets_enabled_)),
-      cookieable_schemes_, nullptr);
+      cookieable_schemes_);
   auto key = GetKey(new_cookie->Domain());
   InternalInsertCookie(key, std::move(new_cookie), /*sync_to_store=*/true,
                        access_result);

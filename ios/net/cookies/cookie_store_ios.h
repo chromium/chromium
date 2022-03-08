@@ -24,6 +24,7 @@
 #include "net/cookies/cookie_change_dispatcher.h"
 #include "net/cookies/cookie_monster.h"
 #include "net/cookies/cookie_store.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 @class NSHTTPCookie;
@@ -91,7 +92,8 @@ class CookieStoreIOS : public net::CookieStore,
       const GURL& source_url,
       const net::CookieOptions& options,
       SetCookiesCallback callback,
-      const net::CookieAccessResult* cookie_access_result = nullptr) override;
+      absl::optional<net::CookieAccessResult> cookie_access_result =
+          absl::nullopt) override;
   void GetCookieListWithOptionsAsync(
       const GURL& url,
       const net::CookieOptions& options,

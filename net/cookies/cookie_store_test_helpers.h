@@ -16,6 +16,7 @@
 #include "net/cookies/cookie_change_dispatcher.h"
 #include "net/log/net_log_with_source.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class GURL;
 
@@ -64,7 +65,8 @@ class DelayedCookieMonster : public CookieStore {
       const GURL& source_url,
       const CookieOptions& options,
       SetCookiesCallback callback,
-      const CookieAccessResult* cookie_access_result = nullptr) override;
+      const absl::optional<CookieAccessResult> cookie_access_result =
+          absl::nullopt) override;
 
   void GetCookieListWithOptionsAsync(
       const GURL& url,

@@ -14,6 +14,7 @@
 #include "net/base/registry_controlled_domains/registry_controlled_domain.h"
 #include "net/cookies/cookie_store.h"
 #include "net/cookies/cookie_util.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 using net::registry_controlled_domains::GetDomainAndRegistry;
@@ -97,13 +98,13 @@ void DelayedCookieMonster::SetCanonicalCookieAsync(
     const GURL& source_url,
     const CookieOptions& options,
     SetCookiesCallback callback,
-    const CookieAccessResult* cookie_access_result) {
+    absl::optional<CookieAccessResult> cookie_access_result) {
   did_run_ = false;
   cookie_monster_->SetCanonicalCookieAsync(
       std::move(cookie), source_url, options,
       base::BindOnce(&DelayedCookieMonster::SetCookiesInternalCallback,
                      base::Unretained(this)),
-      cookie_access_result);
+      std::move(cookie_access_result));
   DCHECK_EQ(did_run_, true);
   base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
       FROM_HERE,

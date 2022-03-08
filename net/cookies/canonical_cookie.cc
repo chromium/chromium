@@ -65,6 +65,7 @@
 #include "net/cookies/cookie_options.h"
 #include "net/cookies/cookie_util.h"
 #include "net/cookies/parsed_cookie.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 #include "url/url_canon.h"
 #include "url/url_util.h"
@@ -1118,7 +1119,7 @@ CookieAccessResult CanonicalCookie::IsSetPermittedInContext(
     const CookieOptions& options,
     const CookieAccessParams& params,
     const std::vector<std::string>& cookieable_schemes,
-    const CookieAccessResult* cookie_access_result) const {
+    const absl::optional<CookieAccessResult>& cookie_access_result) const {
   CookieAccessResult access_result;
   if (cookie_access_result) {
     access_result = *cookie_access_result;

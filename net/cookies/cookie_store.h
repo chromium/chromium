@@ -21,6 +21,7 @@
 #include "net/cookies/cookie_deletion_info.h"
 #include "net/cookies/cookie_options.h"
 #include "net/cookies/cookie_partition_key_collection.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class GURL;
 
@@ -73,7 +74,8 @@ class NET_EXPORT CookieStore {
       const GURL& source_url,
       const CookieOptions& options,
       SetCookiesCallback callback,
-      const CookieAccessResult* cookie_access_result = nullptr) = 0;
+      absl::optional<CookieAccessResult> cookie_access_result =
+          absl::nullopt) = 0;
 
   // Obtains a CookieList for the given |url| and |options|. The returned
   // cookies are passed into |callback|, ordered by longest path, then earliest

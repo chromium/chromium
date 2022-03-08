@@ -4355,7 +4355,7 @@ TEST(CanonicalCookieTest, IsSetPermittedInContext) {
           CookieAccessParams(CookieAccessSemantics::UNKNOWN,
                              false /* delegate_treats_url_as_trustworthy */,
                              CookieSamePartyStatus::kNoSamePartyEnforcement),
-          kCookieableSchemes, &cookie_access_result),
+          kCookieableSchemes, cookie_access_result),
       MatchesCookieAccessResult(
           HasWarningReason(
               CookieInclusionStatus::WARN_ATTRIBUTE_VALUE_EXCEEDS_MAX_SIZE),
