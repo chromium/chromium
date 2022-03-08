@@ -6,7 +6,6 @@
 
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
-#include "build/build_config.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/extensions/extension_browsertest.h"
 #include "chrome/browser/renderer_context_menu/mock_render_view_context_menu.h"
@@ -226,15 +225,7 @@ IN_PROC_BROWSER_TEST_F(LinkToTextMenuObserverTest, ReplacesRefInURL) {
   EXPECT_EQ(u"http://foo.com/#:~:text=hello", text);
 }
 
-// crbug.com/1139864
-// TODO(crbug.com/1227242): Test is flaky on Mac and Windows.
-#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
-#define MAYBE_InvalidSelectorForIframe DISABLED_InvalidSelectorForIframe
-#else
-#define MAYBE_InvalidSelectorForIframe InvalidSelectorForIframe
-#endif
-IN_PROC_BROWSER_TEST_F(LinkToTextMenuObserverTest,
-                       MAYBE_InvalidSelectorForIframe) {
+IN_PROC_BROWSER_TEST_F(LinkToTextMenuObserverTest, InvalidSelectorForIframe) {
   GURL main_url(
       embedded_test_server()->GetURL("a.com", "/page_with_iframe.html"));
 
