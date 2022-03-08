@@ -108,11 +108,17 @@ namespace qr {
 struct COMPONENT_EXPORT(DEVICE_FIDO) Components {
   std::array<uint8_t, device::kP256X962Length> peer_identity;
   std::array<uint8_t, 16> secret;
+
   // num_known_domains is the number of registered tunnel server domains known
   // to the device showing the QR code. Authenticators can use this to fallback
   // to a hashed domain if their registered domain isn't going to work with this
   // client.
-  int64_t num_known_domains;
+  int64_t num_known_domains = 0;
+
+  // supports_linking is true if the device showing the QR code supports storing
+  // and later using linking information. If this is false, an authenticator
+  // may wish to avoid bothering the user about linking.
+  bool supports_linking = false;
 };
 
 COMPONENT_EXPORT(DEVICE_FIDO)
