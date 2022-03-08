@@ -77,7 +77,6 @@ try_.builder(
     name = "chromeos-arm64-generic-rel",
     branch_selector = branches.CROS_LTS_MILESTONE,
     mirrors = ["ci/chromeos-arm64-generic-rel"],
-    builderless = not settings.is_main,
     os = os.LINUX_BIONIC_REMOVE,
 )
 
