@@ -13,32 +13,39 @@
 
 namespace blink {
 
-struct GridItemOffsets {
-  GridItemOffsets(const LogicalOffset offset,
-                  const LogicalOffset relative_offset)
-      : offset(offset), relative_offset(relative_offset) {}
+struct GridItemPlacementData {
+  GridItemPlacementData(
+      const LogicalOffset offset,
+      const LogicalOffset relative_offset,
+      bool has_descendant_that_depends_on_percentage_block_size)
+      : offset(offset),
+        relative_offset(relative_offset),
+        has_descendant_that_depends_on_percentage_block_size(
+            has_descendant_that_depends_on_percentage_block_size) {}
 
   LogicalOffset offset;
   LogicalOffset relative_offset;
+  bool has_descendant_that_depends_on_percentage_block_size;
 };
 
 struct NGGridBreakTokenData final : NGBlockBreakTokenData {
  public:
-  NGGridBreakTokenData(const NGBlockBreakTokenData* break_token_data,
-                       const NGGridGeometry& grid_geometry,
-                       const Vector<GridItemOffsets>& offsets,
-                       const Vector<LayoutUnit>& row_offset_adjustments,
-                       const Vector<EBreakBetween>& row_break_between,
-                       LayoutUnit intrinsic_block_size)
+  NGGridBreakTokenData(
+      const NGBlockBreakTokenData* break_token_data,
+      const NGGridGeometry& grid_geometry,
+      const Vector<GridItemPlacementData>& grid_items_placement_data,
+      const Vector<LayoutUnit>& row_offset_adjustments,
+      const Vector<EBreakBetween>& row_break_between,
+      LayoutUnit intrinsic_block_size)
       : NGBlockBreakTokenData(kGridBreakTokenData, break_token_data),
         grid_geometry(grid_geometry),
-        offsets(offsets),
+        grid_items_placement_data(grid_items_placement_data),
         row_offset_adjustments(row_offset_adjustments),
         row_break_between(row_break_between),
         intrinsic_block_size(intrinsic_block_size) {}
 
   NGGridGeometry grid_geometry;
-  Vector<GridItemOffsets> offsets;
+  Vector<GridItemPlacementData> grid_items_placement_data;
   Vector<LayoutUnit> row_offset_adjustments;
   Vector<EBreakBetween> row_break_between;
   LayoutUnit intrinsic_block_size;

@@ -385,28 +385,31 @@ const NGLayoutResult* NGGridLayoutAlgorithm::LayoutInternal() {
   if (UNLIKELY(InvolvedInBlockFragmentation(container_builder_))) {
     // Either retrieve all items offsets, or generate them using the
     // non-fragmented |PlaceGridItems| pass.
-    Vector<GridItemOffsets> offsets;
+    Vector<GridItemPlacementData> grid_items_placement_data;
     Vector<LayoutUnit> row_offset_adjustments;
     if (IsResumingLayout(BreakToken())) {
       const auto* grid_data =
           To<NGGridBreakTokenData>(BreakToken()->TokenData());
-      offsets = grid_data->offsets;
+      grid_items_placement_data = grid_data->grid_items_placement_data;
       row_offset_adjustments = grid_data->row_offset_adjustments;
       row_break_between = grid_data->row_break_between;
     } else {
       row_offset_adjustments =
           Vector<LayoutUnit>(grid_geometry.row_geometry.sets.size());
-      PlaceGridItems(grid_items, grid_geometry, &row_break_between, &offsets);
+      PlaceGridItems(grid_items, grid_geometry, &row_break_between,
+                     &grid_items_placement_data);
     }
 
-    PlaceGridItemsForFragmentation(
-        grid_items, row_break_between, &grid_geometry, &offsets,
-        &row_offset_adjustments, &intrinsic_block_size);
+    PlaceGridItemsForFragmentation(grid_items, row_break_between,
+                                   &grid_geometry, &grid_items_placement_data,
+                                   &row_offset_adjustments,
+                                   &intrinsic_block_size);
 
     container_builder_.SetBreakTokenData(
         MakeGarbageCollected<NGGridBreakTokenData>(
-            container_builder_.GetBreakTokenData(), grid_geometry, offsets,
-            row_offset_adjustments, row_break_between, intrinsic_block_size));
+            container_builder_.GetBreakTokenData(), grid_geometry,
+            grid_items_placement_data, row_offset_adjustments,
+            row_break_between, intrinsic_block_size));
   } else {
     PlaceGridItems(grid_items, grid_geometry, &row_break_between);
   }
@@ -2979,7 +2982,7 @@ void NGGridLayoutAlgorithm::PlaceGridItems(
     const GridItems& grid_items,
     const NGGridGeometry& grid_geometry,
     Vector<EBreakBetween>* out_row_break_between,
-    Vector<GridItemOffsets>* out_offsets) {
+    Vector<GridItemPlacementData>* out_grid_items_placement_data) {
   DCHECK(out_row_break_between);
   const auto& container_space = ConstraintSpace();
   const auto container_writing_direction =
@@ -3056,11 +3059,13 @@ void NGGridLayoutAlgorithm::PlaceGridItems(
 
     NGBlockNode(grid_item.node).StoreMargins(container_space, margins);
 
-    // If |out_offsets| is present we just want to record the initial position
-    // of all the children for the purposes of fragmentation. Don't add these
-    // to the builder.
-    if (out_offsets) {
-      out_offsets->emplace_back(containing_grid_area.offset, *relative_offset);
+    // If |out_grid_items_placement_data| is present we just want to record the
+    // initial position of all the children for the purposes of fragmentation.
+    // Don't add these to the builder.
+    if (out_grid_items_placement_data) {
+      out_grid_items_placement_data->emplace_back(
+          containing_grid_area.offset, *relative_offset,
+          result->HasDescendantThatDependsOnPercentageBlockSize());
     } else {
       container_builder_.AddResult(*result, containing_grid_area.offset,
                                    relative_offset);
@@ -3110,10 +3115,10 @@ void NGGridLayoutAlgorithm::PlaceGridItemsForFragmentation(
     const GridItems& grid_items,
     const Vector<EBreakBetween>& row_break_between,
     NGGridGeometry* grid_geometry,
-    Vector<GridItemOffsets>* offsets,
+    Vector<GridItemPlacementData>* grid_items_placement_data,
     Vector<LayoutUnit>* row_offset_adjustments,
     LayoutUnit* intrinsic_block_size) {
-  DCHECK(grid_geometry && offsets && row_offset_adjustments &&
+  DCHECK(grid_geometry && grid_items_placement_data && row_offset_adjustments &&
          intrinsic_block_size);
 
   // TODO(ikilpatrick): Update SetHasSeenAllChildren and early exit if true.
@@ -3126,7 +3131,18 @@ void NGGridLayoutAlgorithm::PlaceGridItemsForFragmentation(
   // We are interested in cases where the grid-item *may* expand due to
   // fragmentation (lines pushed down by a fragmentation line, etc).
   auto MinBlockSizeShouldEncompassIntrinsicSize =
-      [&](const GridItemData& grid_item) -> bool {
+      [&](const GridItemData& grid_item,
+          bool has_descendant_that_depends_on_percentage_block_size) -> bool {
+    // If this item has (any) descendant that is percentage based, we can end
+    // up in a situation where we'll constantly try and expand the row. E.g.
+    // <div style="display: grid;">
+    //   <div style="min-height: 100px;">
+    //     <div style="height: 200%;"></div>
+    //   </div>
+    // </div>
+    if (has_descendant_that_depends_on_percentage_block_size)
+      return false;
+
     if (grid_item.node.IsMonolithic())
       return false;
 
@@ -3187,11 +3203,11 @@ void NGGridLayoutAlgorithm::PlaceGridItemsForFragmentation(
     has_subsequent_children = false;
 
     auto child_break_token_it = child_break_tokens.begin();
-    auto* offsets_it = offsets->begin();
+    auto* placement_data_it = grid_items_placement_data->begin();
 
     for (const auto& grid_item : grid_items.item_data) {
       // Grab the offsets and break-token (if present) for this child.
-      const GridItemOffsets item_offsets = *(offsets_it++);
+      const auto& item_placement_data = *(placement_data_it++);
       const NGBlockBreakToken* break_token = nullptr;
       if (child_break_token_it != child_break_tokens.end()) {
         if ((*child_break_token_it)->InputNode() == grid_item.node)
@@ -3199,11 +3215,14 @@ void NGGridLayoutAlgorithm::PlaceGridItemsForFragmentation(
       }
 
       const LayoutUnit fragment_relative_block_offset =
-          break_token
-              ? LayoutUnit()
-              : item_offsets.offset.block_offset - previous_consumed_block_size;
+          break_token ? LayoutUnit()
+                      : item_placement_data.offset.block_offset -
+                            previous_consumed_block_size;
       const bool min_block_size_should_encompass_intrinsic_size =
-          MinBlockSizeShouldEncompassIntrinsicSize(grid_item);
+          MinBlockSizeShouldEncompassIntrinsicSize(
+              grid_item,
+              item_placement_data
+                  .has_descendant_that_depends_on_percentage_block_size);
       LogicalRect grid_area;
       const auto space = CreateConstraintSpaceForLayout(
           *grid_geometry, grid_item, &grid_area, fragment_relative_block_offset,
@@ -3236,9 +3255,9 @@ void NGGridLayoutAlgorithm::PlaceGridItemsForFragmentation(
       auto* result = grid_item.node.Layout(space, break_token);
       result_and_offsets.emplace_back(
           result,
-          LogicalOffset(item_offsets.offset.inline_offset,
+          LogicalOffset(item_placement_data.offset.inline_offset,
                         fragment_relative_block_offset),
-          item_offsets.relative_offset);
+          item_placement_data.relative_offset);
 
       // We may have failed to generate a fragment (due to running out of
       // fragmentainer space). Force a breakpoint at the row, so we shift the
@@ -3354,10 +3373,10 @@ void NGGridLayoutAlgorithm::PlaceGridItemsForFragmentation(
   // |row_index| and below) by |delta|.
   auto AdjustItemOffsets = [&](wtf_size_t row_index, LayoutUnit delta) {
     auto* items_it = grid_items.item_data.begin();
-    for (auto& offset : *offsets) {
+    for (auto& item_placement_data : *grid_items_placement_data) {
       if ((items_it++)->SetIndices(kForRows).begin < row_index)
         continue;
-      offset.offset.block_offset += delta;
+      item_placement_data.offset.block_offset += delta;
     }
   };
 

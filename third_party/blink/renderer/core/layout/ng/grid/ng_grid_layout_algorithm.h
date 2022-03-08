@@ -178,15 +178,17 @@ class CORE_EXPORT NGGridLayoutAlgorithm
 
   // Layout the |grid_items|, and add them to the builder.
   //
-  // If |out_offsets| is present determine the offset for each of the
-  // |grid_items| but *don't* add the resulting fragment to the builder.
+  // If |out_grid_items_placement_data| is present determine the offset for
+  // each of the |grid_items| but *don't* add the resulting fragment to the
+  // builder.
   //
   // This is used for fragmentation which requires us to know the final offset
   // of each item before fragmentation occurs.
-  void PlaceGridItems(const GridItems& grid_items,
-                      const NGGridGeometry& grid_geometry,
-                      Vector<EBreakBetween>* out_row_break_between,
-                      Vector<GridItemOffsets>* out_offsets = nullptr);
+  void PlaceGridItems(
+      const GridItems& grid_items,
+      const NGGridGeometry& grid_geometry,
+      Vector<EBreakBetween>* out_row_break_between,
+      Vector<GridItemPlacementData>* out_grid_items_placement_data = nullptr);
 
   // Layout the |grid_items| for fragmentation (when there is a known
   // fragmentainer size).
@@ -197,7 +199,7 @@ class CORE_EXPORT NGGridLayoutAlgorithm
       const GridItems& grid_items,
       const Vector<EBreakBetween>& row_break_between,
       NGGridGeometry* grid_geometry,
-      Vector<GridItemOffsets>* offsets,
+      Vector<GridItemPlacementData>* grid_item_placement_data,
       Vector<LayoutUnit>* row_offset_adjustments,
       LayoutUnit* intrinsic_block_size);
 
