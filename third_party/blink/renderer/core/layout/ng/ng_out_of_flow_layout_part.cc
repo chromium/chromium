@@ -970,12 +970,12 @@ void NGOutOfFlowLayoutPart::LayoutOOFsInMulticol(
       limited_multicol_container_builder.Children().size();
 
   // Layout the OOF positioned elements inside the inner multicol.
-  NGOutOfFlowLayoutPart(multicol, limited_multicol_constraint_space,
-                        &limited_multicol_container_builder)
-      .LayoutFragmentainerDescendants(
-          &oof_nodes_to_layout, column_inline_progression,
-          multicol_info->fixedpos_containing_block.fragment,
-          &multicol_children);
+  NGOutOfFlowLayoutPart inner_part(multicol, limited_multicol_constraint_space,
+                                   &limited_multicol_container_builder);
+  inner_part.allow_first_tier_oof_cache_ = false;
+  inner_part.LayoutFragmentainerDescendants(
+      &oof_nodes_to_layout, column_inline_progression,
+      multicol_info->fixedpos_containing_block.fragment, &multicol_children);
 
   wtf_size_t new_fragment_count =
       limited_multicol_container_builder.Children().size();
