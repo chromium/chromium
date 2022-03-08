@@ -29,6 +29,7 @@ import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.base.ContextUtils;
 import org.chromium.components.browser_ui.widget.animation.Interpolators;
 import org.chromium.ui.UiUtils;
+import org.chromium.ui.util.AccessibilityUtil;
 import org.chromium.ui.util.ColorUtils;
 import org.chromium.ui.widget.AnchoredPopupWindow;
 import org.chromium.ui.widget.RectProvider;
@@ -68,6 +69,10 @@ public class ContextMenuDialog extends AlwaysDismissedDialog {
      * view will be used to dispatch touch events other than ACTION_DOWN.
      */
     private @Nullable View mTouchEventDelegateView;
+    /**
+     * A11y information that is used for popup setup (e.g. whether popup can be focused).
+     */
+    private @Nullable AccessibilityUtil mAccessibilityUtil;
 
     /**
      * Creates an instance of the ContextMenuDialog.
@@ -90,11 +95,13 @@ public class ContextMenuDialog extends AlwaysDismissedDialog {
      *         dispatch touch events other than ACTION_DOWN.
      * @param rect Rect location where context menu is triggered. If this menu is a popup, the
      *         coordinates are expected to be screen coordinates.
+     * @param accessibilityUtil Class that used to provider a11y information used for popup setup.
      */
     public ContextMenuDialog(Activity ownerActivity, int theme, int topMarginPx, int bottomMarginPx,
             View layout, View contentView, boolean isPopup, boolean shouldRemoveScrim,
             @Nullable Integer popupMargin, @Nullable Integer desiredPopupContentWidth,
-            @Nullable View touchEventDelegateView, Rect rect) {
+            @Nullable View touchEventDelegateView, Rect rect,
+            @Nullable AccessibilityUtil accessibilityUtil) {
         super(ownerActivity, theme);
         mActivity = ownerActivity;
         mTopMarginPx = topMarginPx;
@@ -107,6 +114,7 @@ public class ContextMenuDialog extends AlwaysDismissedDialog {
         mDesiredPopupContentWidth = desiredPopupContentWidth;
         mTouchEventDelegateView = touchEventDelegateView;
         mRect = rect;
+        mAccessibilityUtil = accessibilityUtil;
     }
 
     @Override
@@ -180,7 +188,10 @@ public class ContextMenuDialog extends AlwaysDismissedDialog {
                     mPopupWindow.setVerticalOverlapAnchor(true);
                     mPopupWindow.setOutsideTouchable(false);
                     // Set popup focusable so the screen reader can announce the popup properly.
-                    mPopupWindow.setFocusable(true);
+                    if (mAccessibilityUtil != null
+                            && mAccessibilityUtil.isTouchExplorationEnabled()) {
+                        mPopupWindow.setFocusable(true);
+                    }
                     // If the popup is dismissed, dismiss this dialog as well. This is required when
                     // the popup is dismissed through backpress / hardware accessiries where the
                     // #dismiss is not triggered by #onTouchEvent.

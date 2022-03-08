@@ -26,6 +26,7 @@ import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.performance_hints.PerformanceHintsObserver;
 import org.chromium.chrome.browser.performance_hints.PerformanceHintsObserver.PerformanceClass;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.util.ChromeAccessibilityUtil;
 import org.chromium.components.browser_ui.widget.ContextMenuDialog;
 import org.chromium.components.embedder_support.contextmenu.ContextMenuParams;
 import org.chromium.content_public.browser.ContentFeatureList;
@@ -307,10 +308,10 @@ public class ContextMenuCoordinator implements ContextMenuUi {
         // TODO(sinansahin): Refactor ContextMenuDialog as well.
         boolean shouldRemoveScrim =
                 isPopup && ChromeFeatureList.isEnabled(ChromeFeatureList.CONTEXT_MENU_POPUP_STYLE);
-        final ContextMenuDialog dialog =
-                new ContextMenuDialog(activity, R.style.Theme_Chromium_AlertDialog, topMarginPx,
-                        bottomMarginPx, layout, view, isPopup, shouldRemoveScrim, popupMargin,
-                        desiredPopupContentWidth, webContentView, rect);
+        final ContextMenuDialog dialog = new ContextMenuDialog(activity,
+                R.style.Theme_Chromium_AlertDialog, topMarginPx, bottomMarginPx, layout, view,
+                isPopup, shouldRemoveScrim, popupMargin, desiredPopupContentWidth, webContentView,
+                rect, ChromeAccessibilityUtil.get());
         dialog.setContentView(layout);
 
         return dialog;
