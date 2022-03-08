@@ -742,19 +742,29 @@ void ShellSurfaceBase::RebindRootSurface(Surface* root_surface,
   container_ = container;
   this->root_surface()->RemoveSurfaceObserver(this);
   root_surface->AddSurfaceObserver(this);
-  // Reset throttle status of the old root surface and apply the status to the
-  // new root surface.
-  if (widget_ && widget_->GetNativeWindow()) {
-    if (widget_->GetNativeWindow()->GetProperty(ash::kFrameRateThrottleKey)) {
-      this->root_surface()->ThrottleFrameRate(false);
-      root_surface->ThrottleFrameRate(true);
-    }
-  }
   SetRootSurface(root_surface);
   host_window()->Show();
-  if (widget_ && widget_->GetNativeWindow() &&
-      widget_->GetNativeWindow()->HasFocus()) {
-    host_window()->Focus();
+
+  // Re-apply window properties to the new root surface.
+  auto* window = widget_ ? widget_->GetNativeWindow() : nullptr;
+  if (window) {
+    // Int properties.
+    for (auto* const key :
+         {aura::client::kSkipImeProcessing, chromeos::kFrameRestoreLookKey,
+          ash::kFrameRateThrottleKey}) {
+      if (base::Contains(window->GetAllPropertyKeys(), key)) {
+        OnWindowPropertyChanged(window, key,
+                                /*old_value(unused)=*/0);
+      }
+    }
+    // Boolean property.
+    if (base::Contains(window->GetAllPropertyKeys(),
+                       aura::client::kWindowWorkspaceKey)) {
+      OnWindowPropertyChanged(window, aura::client::kWindowWorkspaceKey,
+                              /*old_value(unused)=*/0);
+    }
+    if (window->HasFocus())
+      host_window()->Focus();
   }
 
   SetCanMinimize(can_minimize_);
