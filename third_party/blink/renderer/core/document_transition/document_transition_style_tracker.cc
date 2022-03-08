@@ -306,15 +306,19 @@ bool DocumentTransitionStyleTracker::Start() {
   new_root_snapshot_id_ = viz::SharedElementResourceId::Generate();
   HeapHashMap<Member<Element>, viz::SharedElementResourceId>
       element_snapshot_ids;
+  bool found_new_tags = false;
+  int next_index = root_index + element_data_map_.size() + 1;
   for (wtf_size_t i = 0; i < elements.size(); ++i) {
     const auto& tag = transition_tags[i];
     const auto& element = elements[i];
 
-    // TODO(vmpstr): Support new elements during start. It requires us to figure
-    // out what the new document tag set is as well as creating new element
-    // data.
-    if (element_data_map_.find(tag) == element_data_map_.end())
-      continue;
+    // Insert a new tag data if there is no data for this tag yet.
+    if (element_data_map_.find(tag) == element_data_map_.end()) {
+      found_new_tags = true;
+      auto* data = MakeGarbageCollected<ElementData>();
+      data->element_index = next_index++;
+      element_data_map_.insert(tag, data);
+    }
 
     // Reuse any previously generated snapshot_id for this element. If there was
     // none yet, then generate the resource id.
@@ -327,6 +331,16 @@ bool DocumentTransitionStyleTracker::Start() {
     auto& element_data = element_data_map_.find(tag)->value;
     element_data->target_element = element;
     element_data->new_snapshot_id = snapshot_id;
+    DCHECK_LT(element_data->element_index, next_index);
+  }
+
+  if (found_new_tags) {
+    VectorOf<AtomicString> new_tags;
+    new_tags.push_back(RootTag());
+    for (auto& [tag, data] : element_data_map_)
+      new_tags.push_back(tag);
+
+    document_->GetStyleEngine().SetDocumentTransitionTags(new_tags);
   }
 
   // We need a style invalidation to generate new content pseudo elements for
