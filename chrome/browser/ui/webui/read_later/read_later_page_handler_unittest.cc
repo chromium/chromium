@@ -21,6 +21,7 @@
 #include "components/reading_list/core/reading_list_model.h"
 #include "content/public/test/test_web_ui.h"
 #include "testing/gmock/include/gmock/gmock.h"
+#include "ui/base/mojom/window_open_disposition.mojom.h"
 #include "url/gurl.h"
 
 namespace {
@@ -154,6 +155,16 @@ class TestReadLaterPageHandlerTest : public BrowserWithTestWindowTest {
     handler()->GetReadLaterEntries(std::move(callback));
   }
 
+  ui::mojom::ClickModifiersPtr GetClickModifiers() {
+    ui::mojom::ClickModifiersPtr info = ui::mojom::ClickModifiers::New();
+    info->middle_button = false;
+    info->alt_key = false;
+    info->ctrl_key = false;
+    info->meta_key = false;
+    info->shift_key = false;
+    return info;
+  }
+
   testing::StrictMock<MockPage> page_;
 
  private:
@@ -185,43 +196,43 @@ TEST_F(TestReadLaterPageHandlerTest, OpenURLOnNTP) {
 
   // Check that OpenURL from the NTP does not open a new tab.
   EXPECT_EQ(browser()->tab_strip_model()->count(), 5);
-  handler()->OpenURL(GURL(kTabUrl3), true, {});
+  handler()->OpenURL(GURL(kTabUrl3), true, GetClickModifiers());
   EXPECT_EQ(browser()->tab_strip_model()->count(), 5);
 
   // Expect ItemsChanged to be called 5 times.
   // Four times for the two AddEntry calls in SetUp().
-  // Once for the OpenURL call above.
-  EXPECT_CALL(page_, ItemsChanged(testing::_)).Times(5);
+  EXPECT_CALL(page_, ItemsChanged(testing::_)).Times(4);
   // Expect CurrentPageActionButtonStateChanged to be called once.
   EXPECT_CALL(page_, CurrentPageActionButtonStateChanged(testing::_)).Times(1);
 
   // Get Read later entries.
   GetAndVerifyReadLaterEntries(
-      /* unread_size= */ 1u, /* read_size= */ 1u,
+      /* unread_size= */ 2u, /* read_size= */ 0u,
       /* expected_unread_data= */
-      {std::make_pair(GURL(kTabUrl1), kTabName1)},
-      /* expected_read_data= */ {std::make_pair(GURL(kTabUrl3), kTabName3)});
+      {std::make_pair(GURL(kTabUrl3), kTabName3),
+       std::make_pair(GURL(kTabUrl1), kTabName1)},
+      /* expected_read_data= */ {});
 }
 
 TEST_F(TestReadLaterPageHandlerTest, OpenURLNotOnNTP) {
-  // Check that OpenURL opens a new tab when not on the NTP.
+  // Check that OpenURL opens in the same tab when not on the NTP.
   EXPECT_EQ(browser()->tab_strip_model()->count(), 4);
-  handler()->OpenURL(GURL(kTabUrl3), true, {});
-  EXPECT_EQ(browser()->tab_strip_model()->count(), 5);
+  handler()->OpenURL(GURL(kTabUrl3), true, GetClickModifiers());
+  EXPECT_EQ(browser()->tab_strip_model()->count(), 4);
 
   // Expect ItemsChanged to be called 5 times.
   // Four times for the two AddEntry calls in SetUp().
-  // Once for the OpenURL call above.
-  EXPECT_CALL(page_, ItemsChanged(testing::_)).Times(5);
+  EXPECT_CALL(page_, ItemsChanged(testing::_)).Times(4);
   // Expect CurrentPageActionButtonStateChanged to be called once.
   EXPECT_CALL(page_, CurrentPageActionButtonStateChanged(testing::_)).Times(1);
 
   // Get Read later entries.
   GetAndVerifyReadLaterEntries(
-      /* unread_size= */ 1u, /* read_size= */ 1u,
+      /* unread_size= */ 2u, /* read_size= */ 0u,
       /* expected_unread_data= */
-      {std::make_pair(GURL(kTabUrl1), kTabName1)},
-      /* expected_read_data= */ {std::make_pair(GURL(kTabUrl3), kTabName3)});
+      {std::make_pair(GURL(kTabUrl3), kTabName3),
+       std::make_pair(GURL(kTabUrl1), kTabName1)},
+      /* expected_read_data= */ {});
 }
 
 TEST_F(TestReadLaterPageHandlerTest, UpdateReadStatus) {
@@ -262,15 +273,14 @@ TEST_F(TestReadLaterPageHandlerTest, RemoveEntry) {
 
 TEST_F(TestReadLaterPageHandlerTest, UpdateAndRemoveEntry) {
   EXPECT_FALSE(model()->IsPerformingBatchUpdates());
-  handler()->OpenURL(GURL(kTabUrl3), true, {});
+  handler()->OpenURL(GURL(kTabUrl3), true, GetClickModifiers());
   handler()->RemoveEntry(GURL(kTabUrl3));
   EXPECT_FALSE(model()->IsPerformingBatchUpdates());
 
   // Expect ItemsChanged to be called 6 times.
   // Four times for the two AddEntry calls in SetUp().
-  // Once for the OpenURL call above.
   // Once for the RemoveEntry call above.
-  EXPECT_CALL(page_, ItemsChanged(testing::_)).Times(6);
+  EXPECT_CALL(page_, ItemsChanged(testing::_)).Times(5);
   // Expect CurrentPageActionButtonStateChanged to be called once.
   EXPECT_CALL(page_, CurrentPageActionButtonStateChanged(testing::_)).Times(1);
 
@@ -285,7 +295,7 @@ TEST_F(TestReadLaterPageHandlerTest, UpdateAndRemoveEntry) {
 TEST_F(TestReadLaterPageHandlerTest, PostBatchUpdate) {
   auto token = model()->BeginBatchUpdates();
   EXPECT_TRUE(model()->IsPerformingBatchUpdates());
-  handler()->OpenURL(GURL(kTabUrl3), true, {});
+  handler()->OpenURL(GURL(kTabUrl3), true, GetClickModifiers());
   handler()->RemoveEntry(GURL(kTabUrl3));
   token.reset();
   EXPECT_FALSE(model()->IsPerformingBatchUpdates());
@@ -314,7 +324,7 @@ TEST_F(TestReadLaterPageHandlerTest, NoUpdateWhenHidden) {
       content::WebContents::Create(params);
   handler()->set_web_contents_for_testing(web_contents.get());
 
-  handler()->OpenURL(GURL(kTabUrl3), true, {});
+  handler()->OpenURL(GURL(kTabUrl3), true, GetClickModifiers());
   handler()->RemoveEntry(GURL(kTabUrl3));
 
   // Expect ItemsChanged to be called four times from the two AddEntry calls in
@@ -333,17 +343,16 @@ TEST_F(TestReadLaterPageHandlerTest, NoUpdateWhenHidden) {
 }
 
 TEST_F(TestReadLaterPageHandlerTest, OpenURLAndReadd) {
-  // Check that OpenURL opens a new tab when not on the NTP.
   EXPECT_EQ(browser()->tab_strip_model()->count(), 4);
-  handler()->OpenURL(GURL(kTabUrl3), true, {});
-  EXPECT_EQ(browser()->tab_strip_model()->count(), 5);
+  handler()->OpenURL(GURL(kTabUrl3), true, GetClickModifiers());
+  EXPECT_EQ(browser()->tab_strip_model()->count(), 4);
   model()->AddEntry(GURL(kTabUrl3), kTabName3,
                     reading_list::EntrySource::ADDED_VIA_CURRENT_APP);
 
   // Expect ItemsChanged to be called 6 times.
   // Four times for the two AddEntry calls in SetUp().
-  // Once for the OpenURL call above, and twice for the AddEntry call above.
-  EXPECT_CALL(page_, ItemsChanged(testing::_)).Times(7);
+  // Twice for the AddEntry call above.
+  EXPECT_CALL(page_, ItemsChanged(testing::_)).Times(6);
   // Expect CurrentPageActionButtonStateChanged to be called once when the
   // current page is added while on that page.
   EXPECT_CALL(page_, CurrentPageActionButtonStateChanged(testing::_)).Times(2);

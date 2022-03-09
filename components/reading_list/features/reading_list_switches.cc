@@ -12,7 +12,7 @@
 #if !BUILDFLAG(IS_IOS)
 namespace features {
 // Hosts some content in a side panel. https://crbug.com/1149995
-const base::Feature kSidePanel{"SidePanel", base::FEATURE_DISABLED_BY_DEFAULT};
+const base::Feature kSidePanel{"SidePanel", base::FEATURE_ENABLED_BY_DEFAULT};
 }  // namespace features
 #endif  // !BUILDFLAG(IS_IOS)
 
