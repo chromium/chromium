@@ -1777,12 +1777,6 @@ void ChromeDownloadManagerDelegate::CheckSavePackageAllowed(
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || \
     BUILDFLAG(IS_MAC)
-  if (!base::FeatureList::IsEnabled(
-          download::features::kAllowSavePackageScanning)) {
-    std::move(callback).Run(true);
-    return;
-  }
-
   absl::optional<enterprise_connectors::AnalysisSettings> settings =
       safe_browsing::DeepScanningRequest::ShouldUploadBinary(download_item);
 

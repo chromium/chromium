@@ -71,9 +71,6 @@ COMPONENTS_DOWNLOAD_EXPORT extern const base::Feature
 COMPONENTS_DOWNLOAD_EXPORT extern const base::Feature
     kAllowFileBufferSizeControl;
 
-// Whether to allow scanning save packages before saving them to disk.
-COMPONENTS_DOWNLOAD_EXPORT extern const base::Feature kAllowSavePackageScanning;
-
 // Whether to show warning when downloading in incognito.
 COMPONENTS_DOWNLOAD_EXPORT extern const base::Feature
     kIncognitoDownloadsWarning;

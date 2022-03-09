@@ -1497,10 +1497,7 @@ class SavePackageDeepScanningBrowserTest
  public:
   SavePackageDeepScanningBrowserTest()
       : DownloadDeepScanningBrowserTestBase(/*connectors_machine_scope=*/true,
-                                            /*is_consumer=*/false) {
-    scoped_feature_list_.InitAndEnableFeature(
-        download::features::kAllowSavePackageScanning);
-  }
+                                            /*is_consumer=*/false) {}
 
   base::FilePath GetSaveDir() {
     return DownloadPrefs(browser()->profile()).DownloadPath();
@@ -1509,9 +1506,6 @@ class SavePackageDeepScanningBrowserTest
   base::FilePath GetTestFilePath() {
     return GetTestDataDirectory().AppendASCII("save_page/text.txt");
   }
-
- protected:
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 IN_PROC_BROWSER_TEST_F(SavePackageDeepScanningBrowserTest, Allowed) {
