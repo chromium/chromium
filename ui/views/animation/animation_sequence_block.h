@@ -47,8 +47,8 @@ class VIEWS_EXPORT AnimationSequenceBlock {
   AnimationSequenceBlock(base::PassKey<AnimationBuilder> builder_key,
                          AnimationBuilder* owner,
                          base::TimeDelta start);
-  AnimationSequenceBlock(AnimationSequenceBlock&& other);
-  AnimationSequenceBlock& operator=(AnimationSequenceBlock&& other);
+  AnimationSequenceBlock(AnimationSequenceBlock&& other) = delete;
+  AnimationSequenceBlock& operator=(AnimationSequenceBlock&& other) = delete;
   ~AnimationSequenceBlock();
 
   // Sets the duration of this block.  The duration may be set at most once and
@@ -131,9 +131,9 @@ class VIEWS_EXPORT AnimationSequenceBlock {
       gfx::Tween::Type tween_type = gfx::Tween::LINEAR);
 
   // Creates a new block.
-  AnimationSequenceBlock At(base::TimeDelta since_sequence_start);
-  AnimationSequenceBlock Offset(base::TimeDelta since_last_block_start);
-  AnimationSequenceBlock Then();
+  AnimationSequenceBlock& At(base::TimeDelta since_sequence_start);
+  AnimationSequenceBlock& Offset(base::TimeDelta since_last_block_start);
+  AnimationSequenceBlock& Then();
 
  private:
   using AnimationValue = absl::variant<gfx::Rect,

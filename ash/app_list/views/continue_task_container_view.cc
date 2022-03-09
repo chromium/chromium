@@ -338,12 +338,11 @@ void ContinueTaskContainerView::ScheduleContainerUpdateAnimation(
   animation_builder.OnAborted(base::BindOnce(
       &ContinueTaskContainerView::ClearAnimatingViews, base::Unretained(this)));
 
-  views::AnimationSequenceBlock last_sequence = animation_builder.Once();
-  last_sequence.SetDuration(base::Milliseconds(100));
+  animation_builder.Once().SetDuration(base::Milliseconds(100));
 
   // Fade out views for results that got removed.
   for (auto* view : views_to_fade_out)
-    ScheduleFadeOutAnimation(view, &last_sequence);
+    ScheduleFadeOutAnimation(view, &animation_builder.GetCurrentSequence());
 
   // Immediately hide views that remained in place, and for which the new result
   // views will not be animated in.
@@ -355,18 +354,18 @@ void ContinueTaskContainerView::ScheduleContainerUpdateAnimation(
   // Slide out old result views for results whose position changed.
   base::TimeDelta delay =
       views_to_fade_out.empty() ? base::TimeDelta() : base::Milliseconds(200);
-  last_sequence = last_sequence.At(delay);
-  last_sequence.SetDuration(base::Milliseconds(100));
+  animation_builder.GetCurrentSequence().At(delay).SetDuration(
+      base::Milliseconds(100));
   for (auto& view : views_to_slide_out) {
     ScheduleSlideOutAnimation(view.second, tablet_mode_ ? 0 : -34, is_rtl,
-                              &last_sequence);
+                              &animation_builder.GetCurrentSequence());
   }
 
   // Animate new views in.
   delay = views_to_fade_out.empty() ? base::Milliseconds(100)
                                     : base::Milliseconds(300);
-  last_sequence = last_sequence.At(delay);
-  last_sequence.SetDuration(base::Milliseconds(300));
+  animation_builder.GetCurrentSequence().At(delay).SetDuration(
+      base::Milliseconds(300));
 
   for (auto* view : suggestion_tasks_views_) {
     const std::string& result_id = view->result()->id();
@@ -387,7 +386,8 @@ void ContinueTaskContainerView::ScheduleContainerUpdateAnimation(
         initial_offset = -initial_offset;
       }
     }
-    ScheduleSlideInAnimation(view, initial_offset, is_rtl, &last_sequence);
+    ScheduleSlideInAnimation(view, initial_offset, is_rtl,
+                             &animation_builder.GetCurrentSequence());
   }
 }
 
@@ -454,11 +454,11 @@ void ContinueTaskContainerView::AnimateSlideInSuggestions(
     view->layer()->SetTransform(translation);
   }
   views::AnimationBuilder animation_builder;
-  views::AnimationSequenceBlock sequence = animation_builder.Once();
-  sequence.SetDuration(duration);
+  animation_builder.Once().SetDuration(duration);
 
   for (auto* view : suggestion_tasks_views_) {
-    sequence.SetTransform(view, gfx::Transform(), tween)
+    animation_builder.GetCurrentSequence()
+        .SetTransform(view, gfx::Transform(), tween)
         .SetOpacity(view, 1.0f, tween);
   }
 }

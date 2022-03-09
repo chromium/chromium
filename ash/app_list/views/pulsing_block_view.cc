@@ -37,16 +37,17 @@ void SchedulePulsingAnimation(ui::Layer* layer) {
 
   const gfx::Rect local_bounds(layer->bounds().size());
   views::AnimationBuilder builder;
-  views::AnimationSequenceBlock block = builder.Repeatedly();
+  builder.Repeatedly();
   for (size_t i = 0; i < std::size(kAnimationOpacity); ++i) {
-    block = block.SetDuration(base::Milliseconds(kAnimationDurationInMs))
-                .SetOpacity(layer, kAnimationOpacity[i])
-                .SetTransform(layer,
-                              gfx::GetScaleTransform(local_bounds.CenterPoint(),
-                                                     kAnimationScale[i]))
-                .Then();
+    builder.GetCurrentSequence()
+        .SetDuration(base::Milliseconds(kAnimationDurationInMs))
+        .SetOpacity(layer, kAnimationOpacity[i])
+        .SetTransform(layer, gfx::GetScaleTransform(local_bounds.CenterPoint(),
+                                                    kAnimationScale[i]))
+        .Then();
   }
-  block.SetDuration(base::Milliseconds(kAnimationDurationInMs));
+  builder.GetCurrentSequence().SetDuration(
+      base::Milliseconds(kAnimationDurationInMs));
 }
 
 }  // namespace

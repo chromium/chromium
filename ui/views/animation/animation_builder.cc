@@ -167,7 +167,14 @@ struct AnimationBuilder::Value {
 
 AnimationBuilder::AnimationBuilder() = default;
 
+AnimationBuilder::AnimationBuilder(AnimationBuilder&& rhs) = default;
+
+AnimationBuilder& AnimationBuilder::operator=(AnimationBuilder&& rhs) = default;
+
 AnimationBuilder::~AnimationBuilder() {
+  // Terminate `current_sequence_` to complete layer animation configuration.
+  current_sequence_.reset();
+
   DCHECK(!next_animation_observer_)
       << "Callbacks were scheduled without creating a sequence block "
          "afterwards. There are no animations to run these callbacks on.";
@@ -228,12 +235,12 @@ AnimationBuilder& AnimationBuilder::OnScheduled(base::OnceClosure callback) {
   return *this;
 }
 
-AnimationSequenceBlock AnimationBuilder::Once() {
+AnimationSequenceBlock& AnimationBuilder::Once() {
   repeating_ = false;
   return NewSequence();
 }
 
-AnimationSequenceBlock AnimationBuilder::Repeatedly() {
+AnimationSequenceBlock& AnimationBuilder::Repeatedly() {
   repeating_ = true;
   return NewSequence();
 }
@@ -248,6 +255,14 @@ void AnimationBuilder::AddLayerAnimationElement(
   Value value = {start, original_duration, std::move(element)};
   auto it = base::ranges::upper_bound(values, value);
   values.insert(it, std::move(value));
+}
+
+std::unique_ptr<AnimationSequenceBlock> AnimationBuilder::SwapCurrentSequence(
+    base::PassKey<AnimationSequenceBlock>,
+    std::unique_ptr<AnimationSequenceBlock> new_sequence) {
+  auto old_sequence = std::move(current_sequence_);
+  current_sequence_ = std::move(new_sequence);
+  return old_sequence;
 }
 
 void AnimationBuilder::BlockEndedAt(base::PassKey<AnimationSequenceBlock>,
@@ -290,6 +305,11 @@ void AnimationBuilder::TerminateSequence(
   values_.clear();
 }
 
+AnimationSequenceBlock& AnimationBuilder::GetCurrentSequence() {
+  DCHECK(current_sequence_);
+  return *current_sequence_;
+}
+
 std::unique_ptr<AnimationAbortHandle> AnimationBuilder::GetAbortHandle() {
   DCHECK(!abort_handle_) << "An abort handle is already created.";
   abort_handle_ = new AnimationAbortHandle(GetObserver());
@@ -308,8 +328,17 @@ void AnimationBuilder::SetObserverDeletedCallbackForTesting(
   GetObserverDeletedCallback() = std::move(deleted_closure);
 }
 
-AnimationSequenceBlock AnimationBuilder::NewSequence() {
+AnimationSequenceBlock& AnimationBuilder::NewSequence() {
   // Each sequence should have its own observer.
+
+  // `current_sequence_` is set only when `repeating_` is true.
+  DCHECK(!current_sequence_ || repeating_);
+
+  // Ensure to terminate the current sequence block before touching the
+  // animation sequence observer so that the sequence observer is attached to
+  // the layer animation sequence.
+  if (current_sequence_)
+    current_sequence_.reset();
 
   // The observer needs to outlive the AnimationBuilder and will manage its own
   // lifetime. GetAttachedToSequence should not return false here. This is
@@ -322,8 +351,9 @@ AnimationSequenceBlock AnimationBuilder::NewSequence() {
   }
 
   end_ = base::TimeDelta();
-  return AnimationSequenceBlock(base::PassKey<AnimationBuilder>(), this,
-                                base::TimeDelta());
+  current_sequence_ = std::make_unique<AnimationSequenceBlock>(
+      base::PassKey<AnimationBuilder>(), this, base::TimeDelta());
+  return *current_sequence_;
 }
 
 // static

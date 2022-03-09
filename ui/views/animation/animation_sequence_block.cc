@@ -32,31 +32,6 @@ AnimationSequenceBlock::AnimationSequenceBlock(
     base::TimeDelta start)
     : builder_key_(builder_key), owner_(owner), start_(start) {}
 
-AnimationSequenceBlock::AnimationSequenceBlock(AnimationSequenceBlock&& other)
-    : builder_key_(std::move(other.builder_key_)),
-      owner_(other.owner_),
-      start_(std::move(other.start_)),
-      duration_(std::move(other.duration_)),
-      elements_(std::move(other.elements_)) {
-  DCHECK(!other.finalized_)
-      << "Do not access old blocks after creating new ones.";
-  other.finalized_ = true;
-}
-
-AnimationSequenceBlock& AnimationSequenceBlock::operator=(
-    AnimationSequenceBlock&& other) {
-  DCHECK(!other.finalized_)
-      << "Do not access old blocks after creating new ones.";
-  builder_key_ = std::move(other.builder_key_);
-  owner_ = other.owner_;
-  start_ = std::move(other.start_);
-  duration_ = std::move(other.duration_);
-  elements_ = std::move(other.elements_);
-  finalized_ = false;
-  other.finalized_ = true;
-  return *this;
-}
-
 AnimationSequenceBlock::~AnimationSequenceBlock() {
   if (!finalized_) {
     TerminateBlock();
@@ -207,20 +182,29 @@ AnimationSequenceBlock& AnimationSequenceBlock::SetVisibility(
   return SetVisibility(target->layer(), visible, tween_type);
 }
 
-AnimationSequenceBlock AnimationSequenceBlock::At(
+AnimationSequenceBlock& AnimationSequenceBlock::At(
     base::TimeDelta since_sequence_start) {
+  // NOTE: at the end of this function, this object is destroyed.
+
   DCHECK(!finalized_) << "Do not access old blocks after creating new ones.";
   TerminateBlock();
   finalized_ = true;
-  return AnimationSequenceBlock(builder_key_, owner_, since_sequence_start);
+
+  // NOTE: `old_sequence` is actually the sequence block itself. Do not destruct
+  // this object until the function end.
+  auto old_sequence = owner_->SwapCurrentSequence(
+      PassKey(), std::make_unique<AnimationSequenceBlock>(
+                     builder_key_, owner_, since_sequence_start));
+
+  return owner_->GetCurrentSequence();
 }
 
-AnimationSequenceBlock AnimationSequenceBlock::Offset(
+AnimationSequenceBlock& AnimationSequenceBlock::Offset(
     base::TimeDelta since_last_block_start) {
   return At(start_ + since_last_block_start);
 }
 
-AnimationSequenceBlock AnimationSequenceBlock::Then() {
+AnimationSequenceBlock& AnimationSequenceBlock::Then() {
   return Offset(duration_.value_or(base::TimeDelta()));
 }
 

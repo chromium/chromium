@@ -1969,18 +1969,15 @@ void AppsGridView::FadeInVisibleItemsForReorder(
 
   views::AnimationBuilder animation_builder;
   reorder_animation_abort_handle_ = animation_builder.GetAbortHandle();
-  auto sequence_block =
-      animation_builder
-          .OnEnded(base::BindOnce(&AppsGridView::OnFadeInAnimationEnded,
-                                  weak_factory_.GetWeakPtr(), done_callback,
-                                  /*abort=*/false))
-          .OnAborted(base::BindOnce(&AppsGridView::OnFadeInAnimationEnded,
-                                    weak_factory_.GetWeakPtr(), done_callback,
-                                    /*abort=*/true))
-          .Once();
-
-  // Animate to show the apps grid.
-  sequence_block.SetDuration(kFadeInAnimationDuration)
+  animation_builder
+      .OnEnded(base::BindOnce(&AppsGridView::OnFadeInAnimationEnded,
+                              weak_factory_.GetWeakPtr(), done_callback,
+                              /*abort=*/false))
+      .OnAborted(base::BindOnce(&AppsGridView::OnFadeInAnimationEnded,
+                                weak_factory_.GetWeakPtr(), done_callback,
+                                /*abort=*/true))
+      .Once()
+      .SetDuration(kFadeInAnimationDuration)
       .SetOpacity(layer(), 1.f, gfx::Tween::LINEAR);
 
   // Assume all the items matched by the indices in `range` are
@@ -2006,9 +2003,10 @@ void AppsGridView::FadeInVisibleItemsForReorder(
 
     // Create a slide animation on `animted_view` using `sequence_block`'s
     // existing time duration.
-    SlideViewIntoPositionWithSequenceBlock(animated_view, offset,
-                                           /*time_delta=*/absl::nullopt,
-                                           gfx::Tween::LINEAR, &sequence_block);
+    SlideViewIntoPositionWithSequenceBlock(
+        animated_view, offset,
+        /*time_delta=*/absl::nullopt, gfx::Tween::LINEAR,
+        &animation_builder.GetCurrentSequence());
   }
 }
 

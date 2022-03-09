@@ -1513,24 +1513,24 @@ void AppsContainerView::OnAppsGridViewFadeOutAnimationEneded(
 
   views::AnimationBuilder animation_builder;
   fade_in_abort_handle_ = animation_builder.GetAbortHandle();
-  views::AnimationSequenceBlock sequence_block =
-      animation_builder
-          .OnEnded(
-              base::BindOnce(&AppsContainerView::OnFadeInChildrenAnimationEnded,
-                             weak_ptr_factory_.GetWeakPtr(),
-                             /*aborted=*/false))
-          .OnAborted(
-              base::BindOnce(&AppsContainerView::OnFadeInChildrenAnimationEnded,
-                             weak_ptr_factory_.GetWeakPtr(),
-                             /*aborted=*/true))
-          .Once();
-  sequence_block.SetDuration(kChildrenFadeInAnimationDuration)
+  animation_builder
+      .OnEnded(
+          base::BindOnce(&AppsContainerView::OnFadeInChildrenAnimationEnded,
+                         weak_ptr_factory_.GetWeakPtr(),
+                         /*aborted=*/false))
+      .OnAborted(
+          base::BindOnce(&AppsContainerView::OnFadeInChildrenAnimationEnded,
+                         weak_ptr_factory_.GetWeakPtr(),
+                         /*aborted=*/true))
+      .Once()
+      .SetDuration(kChildrenFadeInAnimationDuration)
       .SetOpacity(toast_container_->layer(), 1.f);
 
   // Continue section should be faded in only when the page changes.
   if (page_change) {
     continue_container_->layer()->SetOpacity(0.f);
-    sequence_block.SetOpacity(continue_container_->layer(), 1.f);
+    animation_builder.GetCurrentSequence().SetOpacity(
+        continue_container_->layer(), 1.f);
   }
 }
 

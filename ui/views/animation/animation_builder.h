@@ -28,6 +28,7 @@ namespace views {
 
 class AnimationAbortHandle;
 
+// Provides an unfinalized animation sequence block if any to build animations.
 class VIEWS_EXPORT AnimationBuilder {
  public:
   class Observer : public ui::LayerAnimationObserver {
@@ -81,6 +82,8 @@ class VIEWS_EXPORT AnimationBuilder {
   };
 
   AnimationBuilder();
+  AnimationBuilder(AnimationBuilder&& rhs);
+  AnimationBuilder& operator=(AnimationBuilder&& rhs);
   ~AnimationBuilder();
 
   // Options for the whole animation
@@ -112,8 +115,8 @@ class VIEWS_EXPORT AnimationBuilder {
   std::unique_ptr<AnimationAbortHandle> GetAbortHandle();
 
   // Creates a new sequence (that optionally repeats).
-  AnimationSequenceBlock Once();
-  AnimationSequenceBlock Repeatedly();
+  AnimationSequenceBlock& Once();
+  AnimationSequenceBlock& Repeatedly();
 
   // Adds an animation element `element` for `key` at `start` to `values`.
   void AddLayerAnimationElement(
@@ -123,6 +126,11 @@ class VIEWS_EXPORT AnimationBuilder {
       base::TimeDelta original_duration,
       std::unique_ptr<ui::LayerAnimationElement> element);
 
+  // Swaps `current_sequence_` with `new_sequence` and returns the old one.
+  [[nodiscard]] std::unique_ptr<AnimationSequenceBlock> SwapCurrentSequence(
+      base::PassKey<AnimationSequenceBlock>,
+      std::unique_ptr<AnimationSequenceBlock> new_sequence);
+
   // Called when a block ends.  Ensures all animations in the sequence will run
   // until at least `end`.
   void BlockEndedAt(base::PassKey<AnimationSequenceBlock>, base::TimeDelta end);
@@ -130,6 +138,13 @@ class VIEWS_EXPORT AnimationBuilder {
   // Called when the sequence is ended. Converts `values_` to
   // `layer_animation_sequences_`.
   void TerminateSequence(base::PassKey<AnimationSequenceBlock>);
+
+  // Returns a left value reference to the object held by `current_sequence_`.
+  // Assumes that `current_sequence_` is set.
+  // NOTE: be wary when keeping this method's return value because the current
+  // sequence held by an `AnimationBuilder` instance could be destroyed during
+  // `AnimationBuilder` instance's life cycle.
+  AnimationSequenceBlock& GetCurrentSequence();
 
   static void SetObserverDeletedCallbackForTesting(
       base::RepeatingClosure deleted_closure);
@@ -139,9 +154,9 @@ class VIEWS_EXPORT AnimationBuilder {
 
   Observer* GetObserver();
 
-  // Resets data for the current sequence as necessary, creates and returns the
-  // initial block.
-  AnimationSequenceBlock NewSequence();
+  // Resets data for the current sequence as necessary, creates a new sequence
+  // block and returns the new block's left value reference.
+  AnimationSequenceBlock& NewSequence();
 
   // Returns a reference to the observer deleted callback used for testing.
   static base::RepeatingClosure& GetObserverDeletedCallback();
@@ -163,6 +178,15 @@ class VIEWS_EXPORT AnimationBuilder {
   std::map<AnimationKey, std::vector<Value>> values_;
 
   raw_ptr<AnimationAbortHandle> abort_handle_ = nullptr;
+
+  // An unfinalized sequence block currently used to build animations. NOTE: the
+  // animation effects carried by `current_sequence_` attach to a layer only
+  // after `current_sequence_` is destroyed.
+  // The life cycle of `current_sequence_`:
+  // (1) The old sequence is replaced by a new one. When being replaced, the
+  // old sequence is destroyed.
+  // (2) Gets destroyed when the host `AnimationBuilder` is destroyed.
+  std::unique_ptr<AnimationSequenceBlock> current_sequence_;
 };
 
 }  // namespace views

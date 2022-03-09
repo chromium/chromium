@@ -20,6 +20,8 @@
 
 namespace views {
 
+namespace {
+
 class TestAnimatibleLayerOwner : public ui::LayerOwner {
  public:
   TestAnimatibleLayerOwner() : ui::LayerOwner(std::make_unique<ui::Layer>()) {
@@ -32,6 +34,18 @@ class TestAnimatibleLayerOwner : public ui::LayerOwner {
  private:
   ui::TestLayerAnimationDelegate delegate_;
 };
+
+// Configures the layer animation on `layer_owner` and returns the builder.
+AnimationBuilder BuildLayerOpacityAnimationAndReturnBuilder(
+    ui::LayerOwner* layer_owner,
+    const base::TimeDelta& duration) {
+  EXPECT_NE(0.f, layer_owner->layer()->opacity());
+  AnimationBuilder builder;
+  builder.Once().SetDuration(duration).SetOpacity(layer_owner, 0.f);
+  return builder;
+}
+
+}  // namespace
 
 class AnimationBuilderTest : public testing::Test {
  public:
@@ -946,9 +960,12 @@ TEST_F(AnimationBuilderTest, RepeatedBlocks) {
 
   {
     AnimationBuilder builder;
-    auto block = builder.Repeatedly();
+    builder.Repeatedly();
     for (const auto& opacity : kOpacity) {
-      block = block.SetDuration(kDuration).SetOpacity(view, opacity).Then();
+      builder.GetCurrentSequence()
+          .SetDuration(kDuration)
+          .SetOpacity(view, opacity)
+          .Then();
     }
   }
 
@@ -1128,6 +1145,37 @@ TEST_F(AnimationBuilderTest, AbortHandle) {
     EXPECT_FLOAT_EQ(delegate->GetBrightnessForAnimation(), 0.8f);
     EXPECT_FLOAT_EQ(delegate->GetOpacityForAnimation(), 0.8f);
   }
+}
+
+// Verifies that configuring layer animations with an animation builder returned
+// from a function works as expected.
+TEST_F(AnimationBuilderTest, BuildAnimationWithBuilderFromScope) {
+  TestAnimatibleLayerOwner* first_animating_view = CreateTestLayerOwner();
+  TestAnimatibleLayerOwner* second_animating_view = CreateTestLayerOwner();
+  EXPECT_EQ(1.f, first_animating_view->layer()->opacity());
+  EXPECT_EQ(1.f, second_animating_view->layer()->opacity());
+
+  constexpr auto kDuration = base::Seconds(3);
+  {
+    // Build a layer animation on `second_animating_view` with a builder
+    // returned from a function.
+    AnimationBuilder builder = BuildLayerOpacityAnimationAndReturnBuilder(
+        first_animating_view, kDuration);
+    builder.GetCurrentSequence().SetOpacity(second_animating_view, 0.f);
+  }
+
+  // Verify that both views are under animation.
+  EXPECT_TRUE(first_animating_view->layer()->GetAnimator()->is_animating());
+  EXPECT_TRUE(second_animating_view->layer()->GetAnimator()->is_animating());
+
+  Step(kDuration);
+
+  // Verify that after `kDuration` time, both layer animations end. In addition,
+  // both layers are set with the target opacity.
+  EXPECT_FALSE(first_animating_view->layer()->GetAnimator()->is_animating());
+  EXPECT_FALSE(second_animating_view->layer()->GetAnimator()->is_animating());
+  EXPECT_EQ(0.f, first_animating_view->delegate()->GetOpacityForAnimation());
+  EXPECT_EQ(0.f, second_animating_view->delegate()->GetOpacityForAnimation());
 }
 
 }  // namespace views
