@@ -521,7 +521,7 @@ class SingleTestRunner(object):
 
         def remove_ng_text(results):
             processed = re.sub(
-                r'LayoutNG(BlockFlow|ListItem|TableCell|FlexibleBox)',
+                r'LayoutNG(BlockFlow|ListItem|TableCell|FlexibleBox|View)',
                 r'Layout\1', results)
             # LayoutTableCaption doesn't override LayoutBlockFlow::GetName, so
             # render tree dumps have "LayoutBlockFlow" for captions.
@@ -531,7 +531,7 @@ class SingleTestRunner(object):
 
         def is_ng_name_mismatch(expected, actual):
             if not re.search(
-                    "LayoutNG(BlockFlow|ListItem|TableCaption|TableCell|FlexibleBox)",
+                    "LayoutNG(BlockFlow|ListItem|TableCaption|TableCell|FlexibleBox|View)",
                     actual):
                 return False
             if (not self._is_render_tree(actual)
