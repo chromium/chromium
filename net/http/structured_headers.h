@@ -19,14 +19,19 @@ namespace net {
 namespace structured_headers {
 
 // This file implements parsing of HTTP structured headers, as defined in
-// https://httpwg.org/http-extensions/draft-ietf-httpbis-header-structure.html.
+// RFC8941 (https://www.rfc-editor.org/rfc/rfc8941.html). For compatibility with
+// the shipped implementation of Web Packaging, this file also supports a
+// previous revision of the standard, referred to here as "Draft 9".
+// (https://datatracker.ietf.org/doc/draft-ietf-httpbis-header-structure/09/)
 //
-// Both drafts 9 and 15 are currently supported. The major difference
-// between the two drafts is in the various list formats: Draft 9 describes
-// Parameterised lists and lists-of-lists, while draft 15 uses a single List
-// syntax, whose members may be inner lists. There should be no ambiguity,
-// however, as the code which calls this parser should be expecting only a
-// single type for a given header.
+// The major difference between the two revisions is in the various list
+// formats: Draft 9 describes "parameterised lists" and "lists-of-lists", while
+// the final RFC uses a single "list" syntax, whose members may be inner lists.
+// There should be no ambiguity, however, as the code which calls this parser
+// should be expecting only a single type for a given header.
+//
+// References within the code are tagged with either [SH09] or [RFC8941],
+// depending on which revision they refer to.
 //
 // Currently supported data types are:
 //  Item:
