@@ -192,7 +192,7 @@ class PlatformInfo(object):
                 minor_release=minor_release,
             )
         else:
-            assert 11 <= major_release <= 11, 'Unsupported mac OS version: %s' % mac_version_string
+            assert 11 <= major_release <= 12, 'Unsupported mac OS version: %s' % mac_version_string
             return 'mac{major_release}'.format(major_release=major_release, )
 
     def _determine_linux_version(self, _):
