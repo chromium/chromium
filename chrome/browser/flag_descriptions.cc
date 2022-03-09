@@ -3820,6 +3820,11 @@ const char kNtpModulesDragAndDropDescription[] =
     "Enables modules to be reordered via dragging and dropping on the "
     "New Tab Page.";
 
+const char kNtpModulesFirstRunExperienceName[] =
+    "NTP Modules First Run Experience";
+const char kNtpModulesFirstRunExperienceDescription[] =
+    "Shows first run experience for Modular NTP Desktop v1.";
+
 const char kNtpModulesRedesignedName[] = "NTP Modules Redesigned";
 const char kNtpModulesRedesignedDescription[] =
     "Shows the redesigned modules on the New Tab Page.";

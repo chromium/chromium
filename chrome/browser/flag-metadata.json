@@ -4314,6 +4314,11 @@
     "expiry_milestone": 105
   },
   {
+    "name": "ntp-modules-first-run-experience",
+    "owners": [ "mahmadi", "pauladedeji", "tiborg" ],
+    "expiry_milestone": 105
+  },
+  {
     "name": "ntp-modules-redesigned",
     "owners": [ "doei", "mahmadi", "tiborg" ],
     "expiry_milestone": 105

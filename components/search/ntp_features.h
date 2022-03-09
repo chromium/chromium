@@ -51,6 +51,7 @@ extern const base::Feature kNtpPhotosModuleCustomizedOptInTitle;
 extern const base::Feature kNtpPhotosModuleCustomizedOptInArtWork;
 extern const base::Feature kNtpSafeBrowsingModule;
 extern const base::Feature kNtpModulesDragAndDrop;
+extern const base::Feature kNtpModulesFirstRunExperience;
 
 extern const base::Feature kNtpHandleMostVisitedNavigationExplicitly;
 

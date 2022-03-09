@@ -135,6 +135,10 @@ const base::Feature kNtpSafeBrowsingModule{"NtpSafeBrowsingModule",
 const base::Feature kNtpModulesDragAndDrop{"NtpModulesDragAndDrop",
                                            base::FEATURE_DISABLED_BY_DEFAULT};
 
+// If enabled, the first run experience for Modular NTP Desktop v1 will show.
+const base::Feature kNtpModulesFirstRunExperience{
+    "NtpModulesFirstRunExperience", base::FEATURE_DISABLED_BY_DEFAULT};
+
 const char kNtpModulesLoadTimeoutMillisecondsParam[] =
     "NtpModulesLoadTimeoutMillisecondsParam";
 const char kNtpModulesOrderParam[] = "NtpModulesOrderParam";

@@ -55611,6 +55611,7 @@ from previous Chrome versions.
   <int value="728064595" label="RevampedContextMenu:disabled"/>
   <int value="728656094" label="PasswordForceSaving:disabled"/>
   <int value="728937354" label="ShutdownSupportForKeepalive:disabled"/>
+  <int value="729726508" label="NtpModulesFirstRunExperience:disabled"/>
   <int value="730024226" label="enable-out-of-process-pdf"/>
   <int value="730750097" label="PermissionsBlacklist:disabled"/>
   <int value="731318054" label="WebAssemblySimd:enabled"/>
@@ -56982,6 +56983,7 @@ from previous Chrome versions.
       label="IncognitoClearBrowsingDataDialogForDesktop:enabled"/>
   <int value="1703206814" label="CloseAllTabsModalDialog:disabled"/>
   <int value="1703927420" label="PiexWasm:enabled"/>
+  <int value="1705542171" label="NtpModulesFirstRunExperience:enabled"/>
   <int value="1705724232" label="use-android-midi-api"/>
   <int value="1705822740"
       label="ThrottleDisplayNoneAndVisibilityHiddenCrossOriginIframes:enabled"/>

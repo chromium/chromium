@@ -2191,6 +2191,9 @@ extern const char kNtpSafeBrowsingModuleDescription[];
 extern const char kNtpModulesDragAndDropName[];
 extern const char kNtpModulesDragAndDropDescription[];
 
+extern const char kNtpModulesFirstRunExperienceName[];
+extern const char kNtpModulesFirstRunExperienceDescription[];
+
 extern const char kNtpModulesRedesignedName[];
 extern const char kNtpModulesRedesignedDescription[];
 

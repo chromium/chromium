@@ -187,6 +187,9 @@ content::WebUIDataSource* CreateNewTabPageUiHtmlSource(Profile* profile) {
   source->AddBoolean(
       "modulesDragAndDropEnabled",
       base::FeatureList::IsEnabled(ntp_features::kNtpModulesDragAndDrop));
+  source->AddBoolean("modulesFirstRunExperienceEnabled",
+                     base::FeatureList::IsEnabled(
+                         ntp_features::kNtpModulesFirstRunExperience));
   source->AddBoolean("modulesLoadEnabled", base::FeatureList::IsEnabled(
                                                ntp_features::kNtpModulesLoad));
   source->AddInteger("modulesLoadTimeout",
