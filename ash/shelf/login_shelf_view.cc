@@ -509,6 +509,7 @@ void LoginShelfView::OnRequestShutdownCancelled() {
 }
 
 void LoginShelfView::RequestShutdown() {
+  base::RecordAction(base::UserMetricsAction("Shelf_ShutDown"));
   if (base::FeatureList::IsEnabled(features::kShutdownConfirmationBubble)) {
     Shelf* shelf = Shelf::ForWindow(GetWidget()->GetNativeWindow());
     // When the created ShelfShutdownConfirmationBubble is destroyed, it would

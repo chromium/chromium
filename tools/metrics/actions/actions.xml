@@ -26962,6 +26962,12 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="Shelf_ShutDown">
+  <owner>sherrilin@google.com</owner>
+  <owner>cros-lurs@google.com</owner>
+  <description>User shut down from the shelf shutdown button.</description>
+</action>
+
 <action name="ShowAccessibilitySettings">
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <description>Please enter the description of this user action.</description>
