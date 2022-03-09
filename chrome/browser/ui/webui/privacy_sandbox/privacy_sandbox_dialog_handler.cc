@@ -10,6 +10,23 @@
 #include "chrome/browser/ui/hats/trust_safety_sentiment_service.h"
 #include "chrome/browser/ui/hats/trust_safety_sentiment_service_factory.h"
 
+namespace {
+
+// Informs the TrustSafetySentimentService, if it exists for |profile|, that a
+// Privacy Sandbox 3 interaction for |area| has occurred.
+void InformSentimentService(Profile* profile,
+                            TrustSafetySentimentService::FeatureArea area) {
+  auto* sentiment_service =
+      TrustSafetySentimentServiceFactory::GetForProfile(profile);
+
+  if (!sentiment_service)
+    return;
+
+  sentiment_service->InteractedWithPrivacySandbox3(area);
+}
+
+}  // namespace
+
 PrivacySandboxDialogHandler::PrivacySandboxDialogHandler(
     base::OnceClosure close_callback,
     base::OnceCallback<void(int)> resize_callback,
@@ -70,36 +87,35 @@ void PrivacySandboxDialogHandler::HandleDialogActionOccurred(
   }
 
   bool covered_action = true;
-  auto* sentiment_service = TrustSafetySentimentServiceFactory::GetForProfile(
-      Profile::FromWebUI(web_ui()));
   switch (action) {
     case PrivacySandboxService::DialogAction::kNoticeAcknowledge: {
-      sentiment_service->InteractedWithPrivacySandbox3(
+      InformSentimentService(
+          Profile::FromWebUI(web_ui()),
           TrustSafetySentimentService::FeatureArea::kPrivacySandbox3NoticeOk);
       break;
     }
     case PrivacySandboxService::DialogAction::kNoticeDismiss: {
-      sentiment_service->InteractedWithPrivacySandbox3(
-          TrustSafetySentimentService::FeatureArea::
-              kPrivacySandbox3NoticeDismiss);
+      InformSentimentService(Profile::FromWebUI(web_ui()),
+                             TrustSafetySentimentService::FeatureArea::
+                                 kPrivacySandbox3NoticeDismiss);
       break;
     }
     case PrivacySandboxService::DialogAction::kNoticeOpenSettings: {
-      sentiment_service->InteractedWithPrivacySandbox3(
-          TrustSafetySentimentService::FeatureArea::
-              kPrivacySandbox3NoticeSettings);
+      InformSentimentService(Profile::FromWebUI(web_ui()),
+                             TrustSafetySentimentService::FeatureArea::
+                                 kPrivacySandbox3NoticeSettings);
       break;
     }
     case PrivacySandboxService::DialogAction::kConsentAccepted: {
-      sentiment_service->InteractedWithPrivacySandbox3(
-          TrustSafetySentimentService::FeatureArea::
-              kPrivacySandbox3ConsentAccept);
+      InformSentimentService(Profile::FromWebUI(web_ui()),
+                             TrustSafetySentimentService::FeatureArea::
+                                 kPrivacySandbox3ConsentAccept);
       break;
     }
     case PrivacySandboxService::DialogAction::kConsentDeclined: {
-      sentiment_service->InteractedWithPrivacySandbox3(
-          TrustSafetySentimentService::FeatureArea::
-              kPrivacySandbox3ConsentDecline);
+      InformSentimentService(Profile::FromWebUI(web_ui()),
+                             TrustSafetySentimentService::FeatureArea::
+                                 kPrivacySandbox3ConsentDecline);
       break;
     }
     default:
