@@ -69,6 +69,18 @@ class POLICY_EXPORT PolicyMap {
     // Returns a copy of |this|.
     Entry DeepCopy() const;
 
+    // Retrieves the stored value if its type matches the desired type,
+    // otherwise returns |nullptr|.
+    const base::Value* value(base::Value::Type value_type) const;
+    base::Value* value(base::Value::Type value_type);
+
+    // Retrieves the stored value without performing type checking. Use the
+    // type-checking versions above where possible.
+    const base::Value* value_unsafe() const;
+    base::Value* value_unsafe();
+
+    // DEPRECATED - do not use in new code. Use either the type-checking or
+    // unsafe versions above.
     base::Value* value();
     const base::Value* value() const;
 
@@ -180,9 +192,24 @@ class POLICY_EXPORT PolicyMap {
   const Entry* Get(const std::string& policy) const;
   Entry* GetMutable(const std::string& policy);
 
-  // Returns a weak reference to the value currently stored for key
-  // |policy|, or NULL if not found. Ownership is retained by the PolicyMap.
-  // This is equivalent to Get(policy)->value, when it doesn't return NULL.
+  // Returns a weak reference to the value currently stored for key |policy| if
+  // the value type matches the requested type, otherwise returns |nullptr| if
+  // not found or there is a type mismatch. Ownership is retained by the
+  // |PolicyMap|.
+  const base::Value* GetValue(const std::string& policy,
+                              base::Value::Type value_type) const;
+  base::Value* GetMutableValue(const std::string& policy,
+                               base::Value::Type value_type);
+
+  // Returns a weak reference to the value currently stored for key |policy|
+  // without performing type checking, otherwise returns |nullptr| if not found.
+  // Ownership is retained by the |PolicyMap|. Use the type-checking versions
+  // above where possible.
+  const base::Value* GetValueUnsafe(const std::string& policy) const;
+  base::Value* GetMutableValueUnsafe(const std::string& policy);
+
+  // DEPRECATED - do not use in new code. Use either the type-checking or unsafe
+  // versions above.
   const base::Value* GetValue(const std::string& policy) const;
   base::Value* GetMutableValue(const std::string& policy);
 

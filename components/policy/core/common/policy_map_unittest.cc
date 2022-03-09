@@ -79,17 +79,34 @@ class PolicyMapTest : public PolicyMapTestBase, public testing::Test {};
 TEST_F(PolicyMapTest, SetAndGet) {
   PolicyMap map;
   SetPolicy(&map, kTestPolicyName1, base::Value("aaa"));
-  base::Value expected("aaa");
-  EXPECT_TRUE(expected == *map.GetValue(kTestPolicyName1));
+  const base::Value kExpectedStringA("aaa");
+  EXPECT_EQ(kExpectedStringA, *map.GetValueUnsafe(kTestPolicyName1));
+  EXPECT_EQ(kExpectedStringA,
+            *map.GetValue(kTestPolicyName1, base::Value::Type::STRING));
+  EXPECT_EQ(nullptr,
+            map.GetValue(kTestPolicyName1, base::Value::Type::BOOLEAN));
+
   SetPolicy(&map, kTestPolicyName1, base::Value("bbb"));
-  base::Value expected_b("bbb");
-  EXPECT_TRUE(expected_b == *map.GetValue(kTestPolicyName1));
+  const base::Value kExpectedStringB("bbb");
+  EXPECT_EQ(kExpectedStringB, *map.GetValueUnsafe(kTestPolicyName1));
+  EXPECT_EQ(kExpectedStringB,
+            *map.GetValue(kTestPolicyName1, base::Value::Type::STRING));
+  EXPECT_EQ(nullptr,
+            map.GetValue(kTestPolicyName1, base::Value::Type::BOOLEAN));
+
+  SetPolicy(&map, kTestPolicyName1, base::Value(true));
+  const base::Value kExpectedBool(true);
+  EXPECT_EQ(kExpectedBool, *map.GetValueUnsafe(kTestPolicyName1));
+  EXPECT_EQ(nullptr, map.GetValue(kTestPolicyName1, base::Value::Type::STRING));
+  EXPECT_EQ(kExpectedBool,
+            *map.GetValue(kTestPolicyName1, base::Value::Type::BOOLEAN));
+
   SetPolicy(&map, kTestPolicyName1, CreateExternalDataFetcher("dummy"));
   map.AddMessage(kTestPolicyName1, PolicyMap::MessageType::kError,
                  IDS_POLICY_STORE_STATUS_VALIDATION_ERROR, {kTestError});
-  EXPECT_FALSE(map.GetValue(kTestPolicyName1));
+  EXPECT_EQ(nullptr, map.GetValueUnsafe(kTestPolicyName1));
   const PolicyMap::Entry* entry = map.Get(kTestPolicyName1);
-  ASSERT_TRUE(entry != nullptr);
+  ASSERT_NE(nullptr, entry);
   EXPECT_EQ(POLICY_LEVEL_MANDATORY, entry->level);
   EXPECT_EQ(POLICY_SCOPE_USER, entry->scope);
   EXPECT_EQ(POLICY_SOURCE_CLOUD, entry->source);
@@ -104,9 +121,9 @@ TEST_F(PolicyMapTest, SetAndGet) {
                                   CreateExternalDataFetcher("dummy").get()));
   map.Set(kTestPolicyName1, POLICY_LEVEL_RECOMMENDED, POLICY_SCOPE_MACHINE,
           POLICY_SOURCE_ENTERPRISE_DEFAULT, absl::nullopt, nullptr);
-  EXPECT_FALSE(map.GetValue(kTestPolicyName1));
+  EXPECT_EQ(nullptr, map.GetValueUnsafe(kTestPolicyName1));
   entry = map.Get(kTestPolicyName1);
-  ASSERT_TRUE(entry != nullptr);
+  ASSERT_NE(nullptr, entry);
   EXPECT_EQ(POLICY_LEVEL_RECOMMENDED, entry->level);
   EXPECT_EQ(POLICY_SCOPE_MACHINE, entry->scope);
   EXPECT_EQ(POLICY_SOURCE_ENTERPRISE_DEFAULT, entry->source);
@@ -334,16 +351,19 @@ TEST_F(PolicyMapTest, Swap) {
   SetPolicy(&b, kTestPolicyName3, base::Value(true));
 
   a.Swap(&b);
-  base::Value expected("bbb");
-  EXPECT_TRUE(expected == *a.GetValue(kTestPolicyName1));
-  base::Value expected_bool(true);
-  EXPECT_TRUE(expected_bool == *a.GetValue(kTestPolicyName3));
-  EXPECT_FALSE(a.GetValue(kTestPolicyName2));
-  EXPECT_FALSE(a.Get(kTestPolicyName2));
-  base::Value expected_a("aaa");
-  EXPECT_TRUE(expected_a == *b.GetValue(kTestPolicyName1));
-  EXPECT_FALSE(b.GetValue(kTestPolicyName3));
-  EXPECT_FALSE(a.GetValue(kTestPolicyName2));
+  const base::Value kExpectedStringB("bbb");
+  EXPECT_EQ(kExpectedStringB,
+            *a.GetValue(kTestPolicyName1, base::Value::Type::STRING));
+  const base::Value kExpectedBool(true);
+  EXPECT_EQ(kExpectedBool,
+            *a.GetValue(kTestPolicyName3, base::Value::Type::BOOLEAN));
+  EXPECT_EQ(nullptr, a.GetValueUnsafe(kTestPolicyName2));
+  EXPECT_EQ(nullptr, a.Get(kTestPolicyName2));
+  const base::Value kExpectedStringA("aaa");
+  EXPECT_EQ(kExpectedStringA,
+            *b.GetValue(kTestPolicyName1, base::Value::Type::STRING));
+  EXPECT_EQ(nullptr, b.GetValueUnsafe(kTestPolicyName3));
+  EXPECT_EQ(nullptr, a.GetValueUnsafe(kTestPolicyName2));
   const PolicyMap::Entry* entry = b.Get(kTestPolicyName2);
   ASSERT_TRUE(entry);
   EXPECT_TRUE(
@@ -1110,23 +1130,35 @@ TEST_F(PolicyMapTest, BlockedEntry) {
   policies.Set("c", entry_c_blocked.DeepCopy());
 
   const size_t expected_size = 3;
-  EXPECT_TRUE(policies.size() == expected_size);
+  EXPECT_EQ(policies.size(), expected_size);
 
   EXPECT_TRUE(policies.Get("a")->Equals(entry_a));
   EXPECT_TRUE(policies.Get("b")->Equals(entry_b));
-  EXPECT_TRUE(policies.Get("c") == nullptr);
+  EXPECT_EQ(policies.Get("c"), nullptr);
 
   EXPECT_TRUE(policies.GetMutable("a")->Equals(entry_a));
   EXPECT_TRUE(policies.GetMutable("b")->Equals(entry_b));
-  EXPECT_TRUE(policies.GetMutable("c") == nullptr);
+  EXPECT_EQ(policies.GetMutable("c"), nullptr);
 
-  EXPECT_TRUE(*policies.GetValue("a") == *entry_a.value());
-  EXPECT_TRUE(*policies.GetValue("b") == *entry_b.value());
-  EXPECT_TRUE(policies.GetValue("c") == nullptr);
+  EXPECT_EQ(*policies.GetValue("a", base::Value::Type::STRING),
+            *entry_a.value(base::Value::Type::STRING));
+  EXPECT_EQ(*policies.GetValue("b", base::Value::Type::STRING),
+            *entry_b.value(base::Value::Type::STRING));
+  EXPECT_EQ(policies.GetValue("c", base::Value::Type::STRING), nullptr);
 
-  EXPECT_TRUE(*policies.GetMutableValue("a") == *entry_a.value());
-  EXPECT_TRUE(*policies.GetMutableValue("b") == *entry_b.value());
-  EXPECT_TRUE(policies.GetMutableValue("c") == nullptr);
+  EXPECT_EQ(*policies.GetValueUnsafe("a"), *entry_a.value_unsafe());
+  EXPECT_EQ(*policies.GetValueUnsafe("b"), *entry_b.value_unsafe());
+  EXPECT_EQ(policies.GetValueUnsafe("c"), nullptr);
+
+  EXPECT_EQ(*policies.GetMutableValue("a", base::Value::Type::STRING),
+            *entry_a.value(base::Value::Type::STRING));
+  EXPECT_EQ(*policies.GetMutableValue("b", base::Value::Type::STRING),
+            *entry_b.value(base::Value::Type::STRING));
+  EXPECT_EQ(policies.GetMutableValue("c", base::Value::Type::STRING), nullptr);
+
+  EXPECT_EQ(*policies.GetMutableValueUnsafe("a"), *entry_a.value_unsafe());
+  EXPECT_EQ(*policies.GetMutableValueUnsafe("b"), *entry_b.value_unsafe());
+  EXPECT_EQ(policies.GetMutableValueUnsafe("c"), nullptr);
 
   EXPECT_TRUE(policies.GetUntrusted("a")->Equals(entry_a));
   EXPECT_TRUE(policies.GetUntrusted("b")->Equals(entry_b));
@@ -1162,16 +1194,24 @@ TEST_F(PolicyMapTest, InvalidEntry) {
   EXPECT_EQ(policies.size(), expected_size);
 
   EXPECT_TRUE(policies.Get("a")->Equals(entry_a));
-  EXPECT_TRUE(policies.Get("b") == nullptr);
+  EXPECT_EQ(policies.Get("b"), nullptr);
 
   EXPECT_TRUE(policies.GetMutable("a")->Equals(entry_a));
-  EXPECT_TRUE(policies.GetMutable("b") == nullptr);
+  EXPECT_EQ(policies.GetMutable("b"), nullptr);
 
-  EXPECT_TRUE(*policies.GetValue("a") == *entry_a.value());
-  EXPECT_TRUE(policies.GetValue("b") == nullptr);
+  EXPECT_EQ(*policies.GetValue("a", base::Value::Type::STRING),
+            *entry_a.value(base::Value::Type::STRING));
+  EXPECT_EQ(policies.GetValue("b", base::Value::Type::STRING), nullptr);
 
-  EXPECT_TRUE(*policies.GetMutableValue("a") == *entry_a.value());
-  EXPECT_TRUE(policies.GetMutableValue("b") == nullptr);
+  EXPECT_EQ(*policies.GetValueUnsafe("a"), *entry_a.value_unsafe());
+  EXPECT_EQ(policies.GetValueUnsafe("b"), nullptr);
+
+  EXPECT_EQ(*policies.GetMutableValue("a", base::Value::Type::STRING),
+            *entry_a.value(base::Value::Type::STRING));
+  EXPECT_EQ(policies.GetMutableValue("b", base::Value::Type::STRING), nullptr);
+
+  EXPECT_EQ(*policies.GetMutableValueUnsafe("a"), *entry_a.value_unsafe());
+  EXPECT_EQ(policies.GetMutableValueUnsafe("b"), nullptr);
 
   EXPECT_TRUE(policies.GetUntrusted("a")->Equals(entry_a));
   EXPECT_TRUE(policies.GetUntrusted("b")->Equals(entry_b_invalid));

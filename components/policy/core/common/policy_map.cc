@@ -140,6 +140,24 @@ PolicyMap::Entry PolicyMap::Entry::DeepCopy() const {
   return copy;
 }
 
+const base::Value* PolicyMap::Entry::value(base::Value::Type value_type) const {
+  const base::Value* value = value_unsafe();
+  return value && value->type() == value_type ? value : nullptr;
+}
+
+base::Value* PolicyMap::Entry::value(base::Value::Type value_type) {
+  base::Value* value = value_unsafe();
+  return value && value->type() == value_type ? value : nullptr;
+}
+
+const base::Value* PolicyMap::Entry::value_unsafe() const {
+  return base::OptionalOrNullptr(value_);
+}
+
+base::Value* PolicyMap::Entry::value_unsafe() {
+  return base::OptionalOrNullptr(value_);
+}
+
 base::Value* PolicyMap::Entry::value() {
   return base::OptionalOrNullptr(value_);
 }
@@ -307,6 +325,28 @@ PolicyMap::Entry* PolicyMap::GetMutable(const std::string& policy) {
   auto entry = map_.find(policy);
   return entry != map_.end() && !entry->second.ignored() ? &entry->second
                                                          : nullptr;
+}
+
+const base::Value* PolicyMap::GetValue(const std::string& policy,
+                                       base::Value::Type value_type) const {
+  auto* entry = Get(policy);
+  return entry ? entry->value(value_type) : nullptr;
+}
+
+base::Value* PolicyMap::GetMutableValue(const std::string& policy,
+                                        base::Value::Type value_type) {
+  auto* entry = GetMutable(policy);
+  return entry ? entry->value(value_type) : nullptr;
+}
+
+const base::Value* PolicyMap::GetValueUnsafe(const std::string& policy) const {
+  auto* entry = Get(policy);
+  return entry ? entry->value_unsafe() : nullptr;
+}
+
+base::Value* PolicyMap::GetMutableValueUnsafe(const std::string& policy) {
+  auto* entry = GetMutable(policy);
+  return entry ? entry->value_unsafe() : nullptr;
 }
 
 const base::Value* PolicyMap::GetValue(const std::string& policy) const {
