@@ -139,6 +139,27 @@
     margin-top: 8px;
     padding-inline-start: 0;
   }
+
+  paper-tooltip {
+    --paper-tooltip-background: white;
+    --paper-tooltip-delay-in: 300;
+    --paper-tooltip-duration-in: 300;
+    --paper-tooltip-opacity: 1;
+    /* CSS mixin goes against style guide, but this is the only way to style
+     * the paper tooltip without changing the source code (which is in
+     * third_party)
+     */
+    --paper-tooltip: {
+      border: 4px solid white;
+      border-radius: 4px;
+      box-shadow: 0 0 4px rgba(0, 0, 0, 0.3);
+      font-family: inherit;
+      font-size: 0.875rem; /* 14px */
+      font-weight: 400;
+      line-height: normal;
+      margin: 0 4px;
+    };
+  }
 </style>
 
 <settings-prefs id="prefs" prefs="{{prefs}}"></settings-prefs>
@@ -262,6 +283,23 @@
             </div>
             <div class="ad-personalization-section-title">
               $i18n{privacySandboxAdPersonalizationDialogTopicsTitle}
+              <iron-icon id="topicsTooltipIcon" tabindex="0"
+                  aria-describedby="topicsTooltip" icon="cr:info-outline"
+                  on-focus="onShowTooltip_" on-mouseenter="onShowTooltip_">
+              </iron-icon>
+              <paper-tooltip id="topicsTooltip" for="topicsTooltipIcon"
+                  hidden="[[!showTopicsTooltip_]]" position="bottom" manual-mode
+                  fit-to-visible-bounds>
+                <div class="dialog-description">
+                  $i18n{privacySandboxAdPersonalizationDialogTopicsLearnMore1}
+                </div>
+                <div class="dialog-description">
+                  $i18n{privacySandboxAdPersonalizationDialogTopicsLearnMore2}
+                </div>
+                <div class="dialog-description">
+                  $i18n{privacySandboxAdPersonalizationDialogTopicsLearnMore3}
+                </div>
+              </paper-tooltip>
             </div>
             <div id="topTopicsSection" class="ad-personalization-section">
               <span id="topTopicsEmpty"
@@ -283,6 +321,23 @@
             </div>
             <div class="ad-personalization-section-title">
               $i18n{privacySandboxAdPersonalizationDialogFledgeTitle}
+              <iron-icon id="fledgeTooltipIcon" tabindex="0"
+                  aria-describedby="fledgeTooltip" icon="cr:info-outline"
+                  on-focus="onShowTooltip_" on-mouseenter="onShowTooltip_">
+              </iron-icon>
+              <paper-tooltip id="fledgeTooltip" for="fledgeTooltipIcon"
+                  hidden="[[!showFledgeTooltip_]]" position="top" manual-mode
+                  fit-to-visible-bounds>
+                <div class="dialog-description">
+                  $i18n{privacySandboxAdPersonalizationDialogFledgeLearnMore1}
+                </div>
+                <div class="dialog-description">
+                  $i18n{privacySandboxAdPersonalizationDialogFledgeLearnMore2}
+                </div>
+                <div class="dialog-description">
+                  $i18n{privacySandboxAdPersonalizationDialogFledgeLearnMore3}
+                </div>
+              </paper-tooltip>
             </div>
             <div id="joiningSitesSection" class="ad-personalization-section">
               <span id="joiningSitesEmpty"

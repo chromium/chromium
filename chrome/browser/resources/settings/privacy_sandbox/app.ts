@@ -10,6 +10,7 @@ import '../settings.js';
 
 import {assert} from 'chrome://resources/js/assert_ts.js';
 import {addWebUIListener} from 'chrome://resources/js/cr.m.js';
+import {PaperTooltipElement} from 'chrome://resources/polymer/v3_0/paper-tooltip/paper-tooltip.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 // Those resources are loaded through settings.js as the privacy sandbox page
@@ -94,6 +95,16 @@ export class PrivacySandboxAppElement extends PrivacySandboxAppElementBase {
           return [];
         },
       },
+
+      showTopicsTooltip_: {
+        type: Boolean,
+        value: false,
+      },
+
+      showFledgeTooltip_: {
+        type: Boolean,
+        value: false,
+      },
     };
   }
 
@@ -112,6 +123,8 @@ export class PrivacySandboxAppElement extends PrivacySandboxAppElementBase {
   private blockedTopics_: Array<PrivacySandboxInterest>;
   private joiningSites_: Array<PrivacySandboxInterest>;
   private blockedSites_: Array<PrivacySandboxInterest>;
+  private showTopicsTooltip_: boolean;
+  private showFledgeTooltip_: boolean;
 
   ready() {
     super.ready();
@@ -307,6 +320,36 @@ export class PrivacySandboxAppElement extends PrivacySandboxAppElementBase {
     } else {
       this.onSiteInteracted_(interest);
     }
+  }
+
+  private onShowTooltip_(e: Event) {
+    assert(e.target instanceof HTMLElement);
+    const target = e.target! as HTMLElement;
+    let tooltip: PaperTooltipElement;
+    if (target.id === 'topicsTooltipIcon') {
+      tooltip = this.shadowRoot!.querySelector<PaperTooltipElement>(
+          '#topicsTooltip')!;
+      this.showTopicsTooltip_ = true;
+    } else {
+      tooltip = this.shadowRoot!.querySelector<PaperTooltipElement>(
+          '#fledgeTooltip')!;
+      this.showFledgeTooltip_ = true;
+    }
+
+    const hide = () => {
+      tooltip.hide();
+      target.removeEventListener('mouseleave', hide);
+      target.removeEventListener('blur', hide);
+      target.removeEventListener('click', hide);
+      tooltip.removeEventListener('mouseenter', hide);
+      this.showTopicsTooltip_ = false;
+      this.showFledgeTooltip_ = false;
+    };
+    target.addEventListener('mouseleave', hide);
+    target.addEventListener('blur', hide);
+    target.addEventListener('click', hide);
+    tooltip.addEventListener('mouseenter', hide);
+    tooltip.show();
   }
 }
 
