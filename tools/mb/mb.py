@@ -807,22 +807,31 @@ class MetaBuildWrapper(object):
         config = self.builder_groups[builder_group][builder]
         if not config:
           continue
+
+        def flatten(config):
+          flattened_config = FlattenConfig(self.configs, self.mixins, config)
+          if flattened_config['gn_args'] == 'error':
+            return None
+          args = {'gn_args': gn_helpers.FromGNArgs(flattened_config['gn_args'])}
+          if flattened_config.get('args_file'):
+            args['args_file'] = flattened_config['args_file']
+          return args
+
         if isinstance(config, dict):
           # This is a 'phased' builder. Each key in the config is a different
           # phase of the builder.
           args = {}
           for k, v in config.items():
-            args[k] = gn_helpers.FromGNArgs(
-                FlattenConfig(self.configs, self.mixins, v)['gn_args'])
+            flattened = flatten(v)
+            if flattened is None:
+              continue
+            args[k] = flattened
         elif config.startswith('//'):
           args = config
         else:
-          flattened_config = FlattenConfig(self.configs, self.mixins, config)
-          if flattened_config['gn_args'] == 'error':
+          args = flatten(config)
+          if args is None:
             continue
-          args = {'gn_args': gn_helpers.FromGNArgs(flattened_config['gn_args'])}
-          if flattened_config.get('args_file'):
-            args['args_file'] = flattened_config['args_file']
         obj[builder_group][builder] = args
 
     return obj

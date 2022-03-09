@@ -64,15 +64,19 @@
   },
   "Deterministic Linux (dbg)": {
     "goma": {
-      "is_component_build": true,
-      "is_debug": true,
-      "symbol_level": 1,
-      "use_goma": true
+      "gn_args": {
+        "is_component_build": true,
+        "is_debug": true,
+        "symbol_level": 1,
+        "use_goma": true
+      }
     },
     "local": {
-      "is_component_build": true,
-      "is_debug": true,
-      "symbol_level": 1
+      "gn_args": {
+        "is_component_build": true,
+        "is_debug": true,
+        "symbol_level": 1
+      }
     }
   },
   "Fuchsia ARM64": {
