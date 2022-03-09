@@ -434,6 +434,13 @@
        ]
       ]
      },
+     "float-after-self-collapsing-block-in-inline-crash.html": [
+      "1ab512748cab6d010bea00361af3344834dc9771",
+      [
+       null,
+       {}
+      ]
+     ],
      "fragmentainer-1px-clamping-000-crash.html": [
       "78bf7a3f799aa9e712abbdbb4ba2745ae4964a93",
       [
@@ -231728,7 +231735,7 @@
    },
    "app-history": {
     "META.yml": [
-     "ec4e3701cc73038246b0daaa9bb398c6c066d32e",
+     "de4f6c9a335bd4b7d5e99d14d37b904fe5d54182",
      []
     ],
     "OWNERS": [
@@ -233008,7 +233015,7 @@
        []
       ],
       "clear-site-data.html.headers": [
-       "a0077c0577fc31220a63d0424f3fd4d1ab2de2bc",
+       "955424f246f15b518ca13479ca0efe36f7471061",
        []
       ],
       "do-expect-received.py": [
@@ -233166,6 +233173,54 @@
       "bdf7253c840ddcfdfbc1afa9f7d88cf133b8392b",
       []
      ]
+    },
+    "sandbox": {
+     "iframe-csp-same-origin.https.html.headers": [
+      "cf57761d12098eddb0de207e4f5be75d7b33e7f1",
+      []
+     ],
+     "iframe-csp.https.html.headers": [
+      "e0deb770b48e6095b7caf78e991ee92dd047edbd",
+      []
+     ],
+     "iframe-iframe-popups.https.html.headers": [
+      "53fe8f542386a677413e39772545308e9faa4911",
+      []
+     ],
+     "iframe-popups-escape-sandbox.https.html.headers": [
+      "53fe8f542386a677413e39772545308e9faa4911",
+      []
+     ],
+     "iframe-popups.https.html.headers": [
+      "53fe8f542386a677413e39772545308e9faa4911",
+      []
+     ],
+     "iframe-same-origin.https.html.headers": [
+      "53fe8f542386a677413e39772545308e9faa4911",
+      []
+     ],
+     "iframe.https.html.headers": [
+      "53fe8f542386a677413e39772545308e9faa4911",
+      []
+     ],
+     "resources": {
+      "embedded-popup-expect-hints.html": [
+       "6cd5f0a29ee1237d1531258db55a38a9d32c3c0a",
+       []
+      ],
+      "embedded-popup-expect-no-hints.html": [
+       "46dbb7f23655e200f350931ce4934bf26c6f2288",
+       []
+      ],
+      "iframe-with-embedded-popup-expect-no-hints.html": [
+       "21efd76180c1542d6d06b2c67b5c57ffe8b9676b",
+       []
+      ],
+      "util.js": [
+       "79e9a87bc043dff8b6fb026bd14611652d58fc0c",
+       []
+      ]
+     }
     },
     "sec-ch-quotes.https.html.headers": [
      "abec79a3582a6de1cba0601332e4abb76618a265",
@@ -240435,6 +240490,10 @@
       ],
       "block-in-inline-remove-002-ref.xht": [
        "cda68a773462467bbcf8e0911c5dbfc85a52f295",
+       []
+      ],
+      "block-in-inline-vertical-align-001-ref.html": [
+       "20a8ae08c0e56f6a5fc7f2b244b51134aa97c864",
        []
       ],
       "block-in-inline-whitespace-001-ref.xht": [
@@ -315653,7 +315712,7 @@
       []
      ],
      "partitioned-service-worker-getRegistrations.tentative.https-expected.txt": [
-      "318c2cbf9e749e08dc509baf58046f5b9ba33921",
+      "ccc4e1befa0bf852ecbc18f4e6c90fca46d65841",
       []
      ],
      "partitioned-service-worker-matchAll.tentative.https-expected.txt": [
@@ -316650,23 +316709,23 @@
        []
       ],
       "partitioned-service-worker-iframe-claim.html": [
-       "c0f8d76901a2a7a7ef552da13571505af9699c1d",
+       "8135d2751a968527983a59968117097e5477070a",
        []
       ],
       "partitioned-service-worker-third-party-iframe-getRegistrations.html": [
-       "f7b99cb358a2343758fcb9d359778eb02aaf1f69",
+       "4aceb56b315c2fd6cc9333df2af907fb0177c998",
        []
       ],
       "partitioned-service-worker-third-party-iframe-matchAll.html": [
-       "ba17b4ddce13dbd2bac59d7e6150129661cb2fb1",
+       "8be121036fa5af70fed37288503c3ff702ab56ca",
        []
       ],
       "partitioned-service-worker-third-party-iframe.html": [
-       "b7bb3514acfaef7c55450f3db0af1bdf281740d9",
+       "624a8e25eef661b9129bdcda01b96aeccdc5bff4",
        []
       ],
       "partitioned-service-worker-third-party-window.html": [
-       "65ac002bd5389061996ba99b1db88b96457b3116",
+       "86384ce28087422a46bcc6eef2dbda9771859508",
        []
       ],
       "partitioned-storage-sw.js": [
@@ -351126,6 +351185,57 @@
       {}
      ]
     ],
+    "sandbox": {
+     "iframe-csp-same-origin.https.html": [
+      "f96e642fa238b41cfe8946667148f9fd2d49fff0",
+      [
+       null,
+       {}
+      ]
+     ],
+     "iframe-csp.https.html": [
+      "6412eb67a2cc0d2ff8a96fd0b8b1fca0fc4187a1",
+      [
+       null,
+       {}
+      ]
+     ],
+     "iframe-iframe-popups.https.html": [
+      "e8852c9fc255553504124c6bf7a1793ec7b02c2a",
+      [
+       null,
+       {}
+      ]
+     ],
+     "iframe-popups-escape-sandbox.https.html": [
+      "fbe723bee85d95552fc6d989fb745ec149e125e8",
+      [
+       null,
+       {}
+      ]
+     ],
+     "iframe-popups.https.html": [
+      "9cb0713ad26967a74d5e5259eb63cea310d8444d",
+      [
+       null,
+       {}
+      ]
+     ],
+     "iframe-same-origin.https.html": [
+      "e9a01f53f9625df675e46b9261bd8768b0029741",
+      [
+       null,
+       {}
+      ]
+     ],
+     "iframe.https.html": [
+      "2d3e63ccdfaf517060173fa0d723a5c2fb09e39b",
+      [
+       null,
+       {}
+      ]
+     ]
+    },
     "sec-ch-quotes.https.html": [
      "9d822df2d80110a1c150764d4cd44127dcd9d155",
      [
@@ -351633,6 +351743,15 @@
     }
    },
    "close-watcher": {
+    "abortsignal.html": [
+     "eb70ffed1b05e58fe4d5f31d49840ce4422846d0",
+     [
+      null,
+      {
+       "testdriver": true
+      }
+     ]
+    ],
     "basic.html": [
      "cb8bdaaa6ff238d2b992a57c41abd475b27992c6",
      [
@@ -477372,7 +477491,7 @@
      ]
     ],
     "VideoTrackGenerator.https.html": [
-     "afcc1a04e91f77859fb0c700e5d2f28e29f62689",
+     "2c81c7604ab4362e5f2eeb018ece5f0147818dba",
      [
       null,
       {}
@@ -506553,7 +506672,7 @@
       ]
      ],
      "partitioned-service-worker-getRegistrations.tentative.https.html": [
-      "81d275194ef61ea9cff192b5d07913c32bdba8af",
+      "7c4d4f1e028b3966afdcfef10c060aefee54e344",
       [
        null,
        {}
@@ -561646,6 +561765,13 @@
       ],
       "block-in-inline-insert-020.html": [
        "3fbed1b3c05c4d2e055129b32c44fafdc1339483",
+       [
+        null,
+        {}
+       ]
+      ],
+      "block-in-inline-vertical-align-001.html": [
+       "406774c453729b6fe149fe75ee777de24fcd28d2",
        [
         null,
         {}
