@@ -8,6 +8,7 @@
 #include "components/shared_highlighting/core/common/shared_highlighting_metrics.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/renderer/core/editing/forward.h"
+#include "third_party/blink/renderer/core/fragment_directive/same_block_word_iterator.h"
 #include "third_party/blink/renderer/core/fragment_directive/text_fragment_finder.h"
 #include "third_party/blink/renderer/platform/mojo/heap_mojo_receiver.h"
 
@@ -50,13 +51,6 @@ class CORE_EXPORT TextFragmentSelectorGenerator final
   // tasks.
   void Reset();
 
-  // Wrappers for tests.
-  String GetPreviousTextBlockForTesting(const Position& position) {
-    return GetPreviousTextBlock(position);
-  }
-  String GetNextTextBlockForTesting(const Position& position) {
-    return GetNextTextBlock(position);
-  }
   void SetCallbackForTesting(GenerateCallback callback) {
     pending_generate_selector_callback_ = std::move(callback);
   }
@@ -70,6 +64,36 @@ class CORE_EXPORT TextFragmentSelectorGenerator final
   LocalFrame* GetFrame() { return frame_; }
 
  private:
+  FRIEND_TEST_ALL_PREFIXES(TextFragmentSelectorGeneratorTest,
+                           GetPreviousTextEndPosition_PrevNode);
+  FRIEND_TEST_ALL_PREFIXES(TextFragmentSelectorGeneratorTest,
+                           GetPreviousTextEndPosition_PrevTextNode);
+  FRIEND_TEST_ALL_PREFIXES(TextFragmentSelectorGeneratorTest,
+                           GetPreviousTextEndPosition_ParentNode);
+  FRIEND_TEST_ALL_PREFIXES(TextFragmentSelectorGeneratorTest,
+                           GetPreviousTextEndPosition_SpacesBeforeSelection);
+  FRIEND_TEST_ALL_PREFIXES(TextFragmentSelectorGeneratorTest,
+                           GetPreviousTextEndPosition_InvisibleBeforeSelection);
+  FRIEND_TEST_ALL_PREFIXES(TextFragmentSelectorGeneratorTest,
+                           GetPreviousTextEndPosition_NoPrevious);
+  FRIEND_TEST_ALL_PREFIXES(TextFragmentSelectorGeneratorTest,
+                           GetNextTextStartPosition_NextNode);
+  FRIEND_TEST_ALL_PREFIXES(TextFragmentSelectorGeneratorTest,
+                           GetNextTextStartPosition_NextNode_WithComment);
+  FRIEND_TEST_ALL_PREFIXES(TextFragmentSelectorGeneratorTest,
+                           GetNextTextStartPosition_NextTextNode);
+  FRIEND_TEST_ALL_PREFIXES(TextFragmentSelectorGeneratorTest,
+                           GetNextTextStartPosition_ParentNode);
+  FRIEND_TEST_ALL_PREFIXES(TextFragmentSelectorGeneratorTest,
+                           GetNextTextStartPosition_SpacesAfterSelection);
+  FRIEND_TEST_ALL_PREFIXES(TextFragmentSelectorGeneratorTest,
+                           GetNextTextStartPosition_InvisibleAfterSelection);
+  FRIEND_TEST_ALL_PREFIXES(TextFragmentSelectorGeneratorTest,
+                           GetNextTextStartPosition_NoNextNode);
+  FRIEND_TEST_ALL_PREFIXES(
+      TextFragmentSelectorGeneratorTest,
+      GetPreviousTextEndPosition_ShouldSkipNodesWithNoLayoutObject);
+
   // Used for determining the next step of selector generation.
   enum GenerationStep { kExact, kRange, kContext };
 
@@ -114,13 +138,13 @@ class CORE_EXPORT TextFragmentSelectorGenerator final
   void ResolveSelectorState();
   void RunTextFinder();
 
-  // Returns max text preceding given position that doesn't cross block
-  // boundaries.
-  String GetPreviousTextBlock(const Position& position);
+  // Returns first position for the text following given position.
+  PositionInFlatTree GetNextTextStartPosition(
+      const PositionInFlatTree& position);
 
-  // Returns max text following given position that doesn't cross block
-  // boundaries.
-  String GetNextTextBlock(const Position& position);
+  // Returns last position for the text preceding given position.
+  PositionInFlatTree GetPreviousTextEndPosition(
+      const PositionInFlatTree& position);
 
   void GenerateExactSelector();
   void ExtendRangeSelector();
@@ -148,14 +172,11 @@ class CORE_EXPORT TextFragmentSelectorGenerator final
 
   shared_highlighting::LinkGenerationError error_;
 
-  // Fields used for keeping track of context.
-
-  // Strings available for gradually forming prefix and suffix.
-  String max_available_prefix_;
-  String max_available_suffix_;
-
-  String max_available_range_start_;
-  String max_available_range_end_;
+  // Iterators for gradually forming prefix, suffix and range
+  Member<ForwardSameBlockWordIterator> suffix_iterator_;
+  Member<BackwardSameBlockWordIterator> prefix_iterator_;
+  Member<ForwardSameBlockWordIterator> range_start_iterator_;
+  Member<BackwardSameBlockWordIterator> range_end_iterator_;
 
   // Indicates a number of words used from |max_available_prefix_| and
   // |max_available_suffix_| for the current |selector_|.

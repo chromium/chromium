@@ -7,6 +7,8 @@ blink_core_sources_fragment_directive = [
   "css_selector_directive.h",
   "css_selector_fragment_anchor.cc",
   "css_selector_fragment_anchor.h",
+  "same_block_word_iterator.cc",
+  "same_block_word_iterator.h",
   "fragment_directive.cc",
   "fragment_directive.h",
   "fragment_directive_utils.cc",
