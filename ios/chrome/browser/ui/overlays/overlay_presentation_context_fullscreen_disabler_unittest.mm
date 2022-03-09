@@ -47,9 +47,10 @@ class OverlayPresentationContextFullscreenDisablerTest : public PlatformTest {
     web_view_ =
         [[WKWebView alloc] initWithFrame:scoped_window_.Get().bounds
                            configuration:[[WKWebViewConfiguration alloc] init]];
-    content_view_ =
-        [[CRWWebViewContentView alloc] initWithWebView:web_view_
-                                            scrollView:web_view_.scrollView];
+    content_view_ = [[CRWWebViewContentView alloc]
+        initWithWebView:web_view_
+             scrollView:web_view_.scrollView
+        fullscreenState:CrFullscreenState::kNotInFullScreen];
     // Set up the fake presentation context so OverlayPresenterObserver
     // callbacks are sent.
     overlay_presenter()->SetPresentationContext(&presentation_context_);

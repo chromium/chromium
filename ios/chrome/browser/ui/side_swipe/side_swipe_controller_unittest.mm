@@ -46,7 +46,8 @@ class SideSwipeControllerTest : public PlatformTest {
             configuration:[[WKWebViewConfiguration alloc] init]]),
         content_view_([[CRWWebViewContentView alloc]
             initWithWebView:web_view_
-                 scrollView:web_view_.scrollView]) {
+                 scrollView:web_view_.scrollView
+            fullscreenState:CrFullscreenState::kNotInFullScreen]) {
     auto original_web_state(std::make_unique<web::FakeWebState>());
     original_web_state->SetView(content_view_);
     CRWWebViewScrollViewProxy* scroll_view_proxy =

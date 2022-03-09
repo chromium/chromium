@@ -7,6 +7,17 @@
 
 #import <UIKit/UIKit.h>
 
+// For devices running on a version >= iOS 15.4, WKFullScreenState is converted
+// into CrFullscreenState. Once min version supported is iOS 15.4,
+// uses of this enum should be be replaced with WKFullScreenState and this enum
+// declaration should be removed.
+enum class CrFullscreenState {
+  kEnteringFullscreen,
+  kExitingFullscreen,
+  kInFullscreen,
+  kNotInFullScreen,
+};
+
 // UIViews conforming to CRWScrollableContent (i.e. CRWContentViews) are used
 // to display content within a WebState.
 @protocol CRWScrollableContent <NSObject>
