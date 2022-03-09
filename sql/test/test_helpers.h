@@ -73,10 +73,8 @@ bool CountTableRows(sql::Database* db, const char* table, size_t* count);
 [[nodiscard]] bool CreateDatabaseFromSQL(const base::FilePath& db_path,
                                          const base::FilePath& sql_path);
 
-// Return the results of running "PRAGMA integrity_check" on |db|.
-// TODO(shess): sql::Database::IntegrityCheck() is basically the
-// same, but not as convenient for testing.  Maybe combine.
-[[nodiscard]] std::string IntegrityCheck(sql::Database* db);
+// Test-friendly wrapper around sql::Database::IntegrityCheck().
+[[nodiscard]] std::string IntegrityCheck(sql::Database& db);
 
 // ExecuteWithResult() executes |sql| and returns the first column of the first
 // row as a string.  The empty string is returned for no rows.  This makes it

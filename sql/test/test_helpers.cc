@@ -19,6 +19,7 @@
 #include "base/files/file_util.h"
 #include "base/files/scoped_file.h"
 #include "base/strings/string_piece.h"
+#include "base/strings/string_util.h"
 #include "base/threading/thread_restrictions.h"
 #include "sql/database.h"
 #include "sql/statement.h"
@@ -297,13 +298,11 @@ bool CreateDatabaseFromSQL(const base::FilePath& db_path,
   return db.Execute(sql.c_str());
 }
 
-std::string IntegrityCheck(sql::Database* db) {
-  sql::Statement statement(db->GetUniqueStatement("PRAGMA integrity_check"));
+std::string IntegrityCheck(sql::Database& db) {
+  std::vector<std::string> messages;
+  EXPECT_TRUE(db.FullIntegrityCheck(&messages));
 
-  // SQLite should always return a row of data.
-  EXPECT_TRUE(statement.Step());
-
-  return statement.ColumnString(0);
+  return base::JoinString(messages, "\n");
 }
 
 std::string ExecuteWithResult(sql::Database* db, const char* sql) {

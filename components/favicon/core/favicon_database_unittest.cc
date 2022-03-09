@@ -1034,7 +1034,7 @@ TEST_F(FaviconDatabaseTest, Recovery) {
   {
     sql::Database raw_db;
     EXPECT_TRUE(raw_db.Open(file_name_));
-    ASSERT_EQ("ok", sql::test::IntegrityCheck(&raw_db));
+    ASSERT_EQ("ok", sql::test::IntegrityCheck(raw_db));
   }
   static const char kIndexName[] = "icon_mapping_page_url_idx";
   ASSERT_TRUE(sql::test::CorruptIndexRootPage(file_name_, kIndexName));
@@ -1043,7 +1043,7 @@ TEST_F(FaviconDatabaseTest, Recovery) {
   {
     sql::Database raw_db;
     EXPECT_TRUE(raw_db.Open(file_name_));
-    ASSERT_NE("ok", sql::test::IntegrityCheck(&raw_db));
+    EXPECT_NE("ok", sql::test::IntegrityCheck(raw_db));
   }
 
   // Open the database and access the corrupt index.
@@ -1066,7 +1066,7 @@ TEST_F(FaviconDatabaseTest, Recovery) {
   {
     sql::Database raw_db;
     EXPECT_TRUE(raw_db.Open(file_name_));
-    ASSERT_EQ("ok", sql::test::IntegrityCheck(&raw_db));
+    ASSERT_EQ("ok", sql::test::IntegrityCheck(raw_db));
 
     // Check that the expected tables exist.
     VerifyTablesAndColumns(&raw_db);
@@ -1091,12 +1091,14 @@ TEST_F(FaviconDatabaseTest, Recovery) {
 
   // Database is unusable at the SQLite level.
   {
-    sql::test::ScopedErrorExpecter expecter;
-    expecter.ExpectError(SQLITE_CORRUPT);
     sql::Database raw_db;
-    EXPECT_TRUE(raw_db.Open(file_name_));
-    EXPECT_FALSE(raw_db.IsSQLValid("PRAGMA integrity_check"));
-    ASSERT_TRUE(expecter.SawExpectedErrors());
+    {
+      sql::test::ScopedErrorExpecter expecter;
+      expecter.ExpectError(SQLITE_CORRUPT);
+      EXPECT_TRUE(raw_db.Open(file_name_));
+      EXPECT_TRUE(expecter.SawExpectedErrors());
+    }
+    EXPECT_EQ("ok", sql::test::IntegrityCheck(raw_db));
   }
 
   // Database should be recovered during open.
@@ -1127,7 +1129,7 @@ TEST_F(FaviconDatabaseTest, Recovery7) {
   {
     sql::Database raw_db;
     EXPECT_TRUE(raw_db.Open(file_name_));
-    ASSERT_EQ("ok", sql::test::IntegrityCheck(&raw_db));
+    ASSERT_EQ("ok", sql::test::IntegrityCheck(raw_db));
   }
   static const char kIndexName[] = "icon_mapping_page_url_idx";
   ASSERT_TRUE(sql::test::CorruptIndexRootPage(file_name_, kIndexName));
@@ -1136,7 +1138,7 @@ TEST_F(FaviconDatabaseTest, Recovery7) {
   {
     sql::Database raw_db;
     EXPECT_TRUE(raw_db.Open(file_name_));
-    ASSERT_NE("ok", sql::test::IntegrityCheck(&raw_db));
+    EXPECT_NE("ok", sql::test::IntegrityCheck(raw_db));
   }
 
   // Open the database and access the corrupt index. Note that this upgrades
@@ -1151,7 +1153,7 @@ TEST_F(FaviconDatabaseTest, Recovery7) {
       // will recover the database and poison the handle, so the outer call
       // fails.
       EXPECT_FALSE(db.GetIconMappingsForPageURL(kPageUrl2, nullptr));
-      ASSERT_TRUE(expecter.SawExpectedErrors());
+      EXPECT_TRUE(expecter.SawExpectedErrors());
     }
   }
 
@@ -1159,7 +1161,7 @@ TEST_F(FaviconDatabaseTest, Recovery7) {
   {
     sql::Database raw_db;
     EXPECT_TRUE(raw_db.Open(file_name_));
-    ASSERT_EQ("ok", sql::test::IntegrityCheck(&raw_db));
+    ASSERT_EQ("ok", sql::test::IntegrityCheck(raw_db));
 
     // Check that the expected tables exist.
     VerifyTablesAndColumns(&raw_db);
@@ -1184,12 +1186,14 @@ TEST_F(FaviconDatabaseTest, Recovery7) {
 
   // Database is unusable at the SQLite level.
   {
-    sql::test::ScopedErrorExpecter expecter;
-    expecter.ExpectError(SQLITE_CORRUPT);
     sql::Database raw_db;
-    EXPECT_TRUE(raw_db.Open(file_name_));
-    EXPECT_FALSE(raw_db.IsSQLValid("PRAGMA integrity_check"));
-    ASSERT_TRUE(expecter.SawExpectedErrors());
+    {
+      sql::test::ScopedErrorExpecter expecter;
+      expecter.ExpectError(SQLITE_CORRUPT);
+      ASSERT_TRUE(raw_db.Open(file_name_));
+      EXPECT_TRUE(expecter.SawExpectedErrors());
+    }
+    EXPECT_EQ("ok", sql::test::IntegrityCheck(raw_db));
   }
 
   // Database should be recovered during open.
@@ -1199,7 +1203,7 @@ TEST_F(FaviconDatabaseTest, Recovery7) {
       sql::test::ScopedErrorExpecter expecter;
       expecter.ExpectError(SQLITE_CORRUPT);
       ASSERT_EQ(sql::INIT_OK, db.Init(file_name_));
-      ASSERT_TRUE(expecter.SawExpectedErrors());
+      EXPECT_TRUE(expecter.SawExpectedErrors());
     }
 
     EXPECT_TRUE(CheckPageHasIcon(&db, kPageUrl1,
@@ -1223,21 +1227,23 @@ TEST_F(FaviconDatabaseTest, Recovery6) {
 
   // Database is unusable at the SQLite level.
   {
-    sql::test::ScopedErrorExpecter expecter;
-    expecter.ExpectError(SQLITE_CORRUPT);
     sql::Database raw_db;
-    EXPECT_TRUE(raw_db.Open(file_name_));
-    EXPECT_FALSE(raw_db.IsSQLValid("PRAGMA integrity_check"));
-    ASSERT_TRUE(expecter.SawExpectedErrors());
+    {
+      sql::test::ScopedErrorExpecter expecter;
+      expecter.ExpectError(SQLITE_CORRUPT);
+      EXPECT_TRUE(raw_db.Open(file_name_));
+      EXPECT_TRUE(expecter.SawExpectedErrors());
+    }
+    EXPECT_EQ("ok", sql::test::IntegrityCheck(raw_db));
   }
 
   // Database open should succeed.
   {
+    FaviconDatabase db;
     sql::test::ScopedErrorExpecter expecter;
     expecter.ExpectError(SQLITE_CORRUPT);
-    FaviconDatabase db;
     ASSERT_EQ(sql::INIT_OK, db.Init(file_name_));
-    ASSERT_TRUE(expecter.SawExpectedErrors());
+    EXPECT_TRUE(expecter.SawExpectedErrors());
   }
 
   // The database should be usable at the SQLite level, with a current schema
@@ -1245,7 +1251,7 @@ TEST_F(FaviconDatabaseTest, Recovery6) {
   {
     sql::Database raw_db;
     EXPECT_TRUE(raw_db.Open(file_name_));
-    ASSERT_EQ("ok", sql::test::IntegrityCheck(&raw_db));
+    ASSERT_EQ("ok", sql::test::IntegrityCheck(raw_db));
 
     // Check that the expected tables exist.
     VerifyTablesAndColumns(&raw_db);
@@ -1267,12 +1273,14 @@ TEST_F(FaviconDatabaseTest, Recovery5) {
 
   // Database is unusable at the SQLite level.
   {
-    sql::test::ScopedErrorExpecter expecter;
-    expecter.ExpectError(SQLITE_CORRUPT);
     sql::Database raw_db;
-    EXPECT_TRUE(raw_db.Open(file_name_));
-    EXPECT_FALSE(raw_db.IsSQLValid("PRAGMA integrity_check"));
-    ASSERT_TRUE(expecter.SawExpectedErrors());
+    {
+      sql::test::ScopedErrorExpecter expecter;
+      expecter.ExpectError(SQLITE_CORRUPT);
+      EXPECT_TRUE(raw_db.Open(file_name_));
+      EXPECT_TRUE(expecter.SawExpectedErrors());
+    }
+    EXPECT_EQ("ok", sql::test::IntegrityCheck(raw_db));
   }
 
   // Database open should succeed.
@@ -1289,7 +1297,7 @@ TEST_F(FaviconDatabaseTest, Recovery5) {
   {
     sql::Database raw_db;
     EXPECT_TRUE(raw_db.Open(file_name_));
-    ASSERT_EQ("ok", sql::test::IntegrityCheck(&raw_db));
+    ASSERT_EQ("ok", sql::test::IntegrityCheck(raw_db));
 
     // Check that the expected tables exist.
     VerifyTablesAndColumns(&raw_db);
