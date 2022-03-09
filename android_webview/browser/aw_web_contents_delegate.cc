@@ -46,15 +46,6 @@ using content::WebContents;
 
 namespace android_webview {
 
-namespace {
-
-// WARNING: these constants are exposed in the public interface Java side, so
-// must remain in sync with what clients are expecting.
-const int kFileChooserModeOpenMultiple = 1 << 0;
-const int kFileChooserModeOpenFolder = 1 << 1;
-
-}
-
 AwWebContentsDelegate::AwWebContentsDelegate(JNIEnv* env, jobject obj)
     : WebContentsDelegateAndroid(env, obj), is_fullscreen_(false) {}
 
@@ -123,11 +114,10 @@ void AwWebContentsDelegate::RunFileChooser(
   }
 
   int mode_flags = 0;
-  if (params.mode == FileChooserParams::Mode::kOpenMultiple) {
-    mode_flags |= kFileChooserModeOpenMultiple;
-  } else if (params.mode == FileChooserParams::Mode::kUploadFolder) {
+  if (params.mode == FileChooserParams::Mode::kUploadFolder ||
+      params.mode == FileChooserParams::Mode::kOpenMultiple) {
     // Folder implies multiple in Chrome.
-    mode_flags |= kFileChooserModeOpenMultiple | kFileChooserModeOpenFolder;
+    mode_flags = static_cast<int>(FileChooserParams::Mode::kOpenMultiple);
   } else if (params.mode == FileChooserParams::Mode::kSave) {
     // Save not supported, so cancel it.
     listener->FileSelectionCanceled();
@@ -357,11 +347,9 @@ static void JNI_AwWebContentsDelegate_FilesSelectedInChooser(
   }
   base::FilePath base_dir;
   FileChooserParams::Mode mode;
-  if (mode_flags & kFileChooserModeOpenFolder) {
-    mode = FileChooserParams::Mode::kUploadFolder;
-    // We'd like to set |base_dir| to a folder which a user selected. But it's
-    // impossible with WebChromeClient API in the current Android.
-  } else if (mode_flags & kFileChooserModeOpenMultiple) {
+  // We'd like to set |base_dir| to a folder which a user selected. But it's
+  // impossible with WebChromeClient API in the current Android.
+  if (mode_flags == static_cast<int>(FileChooserParams::Mode::kOpenMultiple)) {
     mode = FileChooserParams::Mode::kOpenMultiple;
   } else {
     mode = FileChooserParams::Mode::kOpen;

@@ -594,6 +594,7 @@ android_library("browser_java") {
     "java/src/org/chromium/android_webview/DarkModeHelper.java",
     "java/src/org/chromium/android_webview/DefaultVideoPosterRequestHandler.java",
     "java/src/org/chromium/android_webview/ErrorCodeConversionHelper.java",
+    "java/src/org/chromium/android_webview/FileModeConversionHelper.java",
     "java/src/org/chromium/android_webview/FindAddress.java",
     "java/src/org/chromium/android_webview/FullScreenView.java",
     "java/src/org/chromium/android_webview/HttpAuthDatabase.java",

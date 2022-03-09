@@ -5,6 +5,7 @@
 package org.chromium.android_webview.test;
 
 import android.net.Uri;
+import android.webkit.WebChromeClient;
 
 import androidx.test.filters.SmallTest;
 
@@ -48,11 +49,7 @@ public class AwFileChooserTest {
     private File mTestFile2;
     private File mTestDirectory;
     private static final String TEST_DIRECTORY_PATH = PathUtils.getDataDirectory() + "/test";
-
     private static final String EMPTY_STRING = "";
-    private static final int SINGLE_FILE_CHOICE = 0;
-    private static final int MULTIPLE_FILE_CHOICE = 1;
-    private static final int DIRECTORY_FILE_CHOICE = 2;
 
     @Before
     public void setUp() throws Exception {
@@ -102,7 +99,7 @@ public class AwFileChooserTest {
 
         clickSelectFileButtonAndWaitForCallback("1");
         final FileChooserParamsImpl params = mShowFileChooserHelper.getFileParams();
-        Assert.assertEquals(SINGLE_FILE_CHOICE, params.getMode());
+        Assert.assertEquals(WebChromeClient.FileChooserParams.MODE_OPEN, params.getMode());
     }
 
     @Test
@@ -120,16 +117,37 @@ public class AwFileChooserTest {
 
         clickSelectFileButtonAndWaitForCallback("2");
         final FileChooserParamsImpl params = mShowFileChooserHelper.getFileParams();
-        Assert.assertEquals(MULTIPLE_FILE_CHOICE, params.getMode());
+        Assert.assertEquals(WebChromeClient.FileChooserParams.MODE_OPEN_MULTIPLE, params.getMode());
+    }
+
+    @Test
+    @SmallTest
+    public void testShowDirectoryChoice() throws Throwable {
+        final String multipleFileUploadPageHtml = CommonResources.makeHtmlPageFrom(/*headers=*/"",
+                /*body=*/"<input type='file' accept='.txt' id='" + FILE_CHOICE_BUTTON_ID
+                        + "' webkitdirectory ><br><br>");
+        final String url =
+                mWebServer.setResponse(INDEX_HTML_ROUTE, multipleFileUploadPageHtml, null);
+
+        mShowFileChooserHelper.setChosenFilesToUpload(new String[] {
+                Uri.fromFile(mTestFile1).toString(), Uri.fromFile(mTestFile2).toString()});
+        mActivityTestRule.loadUrlSync(mAwContents, mContentsClient.getOnPageFinishedHelper(), url);
+
+        clickSelectFileButtonAndWaitForCallback("2");
+        final FileChooserParamsImpl params = mShowFileChooserHelper.getFileParams();
+        // Upload folder is not currently supported in webview
+        // As a workaround, it is treated as OPEN_MULTIPLE_MODE
+        Assert.assertEquals(WebChromeClient.FileChooserParams.MODE_OPEN_MULTIPLE, params.getMode());
     }
 
     @Test
     @SmallTest
     public void testAcceptTypes() throws Throwable {
+        final String expectedAcceptTypesString = ".txt,.png,.pdf";
         final String singleFileUploadPageHtml = CommonResources.makeHtmlPageFrom(
                 /*headers=*/"",
-                /*body=*/"<input type='file' accept='.txt,.png,.pdf' id='" + FILE_CHOICE_BUTTON_ID
-                        + "' /><br><br>");
+                /*body=*/"<input type='file' accept='" + expectedAcceptTypesString + "' id='"
+                        + FILE_CHOICE_BUTTON_ID + "' /><br><br>");
         final String url = mWebServer.setResponse(INDEX_HTML_ROUTE, singleFileUploadPageHtml, null);
 
         mShowFileChooserHelper.setChosenFilesToUpload(
@@ -138,15 +156,13 @@ public class AwFileChooserTest {
 
         clickSelectFileButtonAndWaitForCallback("1");
         final FileChooserParamsImpl params = mShowFileChooserHelper.getFileParams();
-        Assert.assertEquals(".txt,.png,.pdf", params.getAcceptTypesString());
+        Assert.assertEquals(expectedAcceptTypesString, params.getAcceptTypesString());
     }
 
     @Test
     @SmallTest
     public void testIsCaptureEnabled() throws Throwable {
-        final FileChooserParamsImpl expectedBasicFileParams = new FileChooserParamsImpl(
-                /*mode=*/SINGLE_FILE_CHOICE, /*acceptTypes=*/".txt", /*title=*/null,
-                /*defaultFilename=*/null, /*capture=*/true);
+        final boolean captureEnabled = true;
         final String singleFileUploadPageHtml = CommonResources.makeHtmlPageFrom(
                 /*headers=*/"",
                 /*body=*/"<input type='file' accept='.txt' id='" + FILE_CHOICE_BUTTON_ID
@@ -159,15 +175,13 @@ public class AwFileChooserTest {
 
         clickSelectFileButtonAndWaitForCallback("1");
         final FileChooserParamsImpl params = mShowFileChooserHelper.getFileParams();
-        Assert.assertEquals(expectedBasicFileParams.isCaptureEnabled(), params.isCaptureEnabled());
+        Assert.assertEquals(captureEnabled, params.isCaptureEnabled());
     }
 
     @Test
     @SmallTest
     public void testIsCaptureDisabled() throws Throwable {
-        final FileChooserParamsImpl expectedBasicFileParams = new FileChooserParamsImpl(
-                /*mode=*/SINGLE_FILE_CHOICE, /*acceptTypes=*/".txt", /*title=*/null,
-                /*defaultFilename=*/null, /*capture=*/false);
+        final boolean captureEnabled = false;
         final String singleFileUploadPageHtml = CommonResources.makeHtmlPageFrom(
                 /*headers=*/"",
                 /*body=*/"<input type='file' accept='.txt' id='" + FILE_CHOICE_BUTTON_ID
@@ -180,7 +194,7 @@ public class AwFileChooserTest {
 
         clickSelectFileButtonAndWaitForCallback("1");
         final FileChooserParamsImpl params = mShowFileChooserHelper.getFileParams();
-        Assert.assertEquals(expectedBasicFileParams.isCaptureEnabled(), params.isCaptureEnabled());
+        Assert.assertEquals(captureEnabled, params.isCaptureEnabled());
     }
 
     /**

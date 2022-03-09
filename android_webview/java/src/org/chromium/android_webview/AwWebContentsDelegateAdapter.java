@@ -213,8 +213,9 @@ class AwWebContentsDelegateAdapter extends AwWebContentsDelegate {
     @Override
     public void runFileChooser(final int processId, final int renderId, final int modeFlags,
             String acceptTypes, String title, String defaultFilename, boolean capture) {
+        int correctedModeFlags = FileModeConversionHelper.convertFileChooserMode(modeFlags);
         AwContentsClient.FileChooserParamsImpl params = new AwContentsClient.FileChooserParamsImpl(
-                modeFlags, acceptTypes, title, defaultFilename, capture);
+                correctedModeFlags, acceptTypes, title, defaultFilename, capture);
 
         mContentsClient.showFileChooser(new Callback<String[]>() {
             boolean mCompleted;
@@ -226,11 +227,11 @@ class AwWebContentsDelegateAdapter extends AwWebContentsDelegate {
                 mCompleted = true;
                 if (results == null) {
                     AwWebContentsDelegateJni.get().filesSelectedInChooser(
-                            processId, renderId, modeFlags, null, null);
+                            processId, renderId, correctedModeFlags, null, null);
                     return;
                 }
-                GetDisplayNameTask task =
-                        new GetDisplayNameTask(mContext, processId, renderId, modeFlags, results);
+                GetDisplayNameTask task = new GetDisplayNameTask(
+                        mContext, processId, renderId, correctedModeFlags, results);
                 task.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
             }
         }, params);
