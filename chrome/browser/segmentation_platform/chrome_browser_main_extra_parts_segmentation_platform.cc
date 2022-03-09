@@ -20,23 +20,23 @@ void ChromeBrowserMainExtraPartsSegmentationPlatform::PreProfileInit() {
 void ChromeBrowserMainExtraPartsSegmentationPlatform::PostProfileInit(
     Profile* profile,
     bool is_initial_profile) {
-  // The setup below is intended to run for only the initial profile.
-  if (!is_initial_profile)
+  if (!profile || profile->IsOffTheRecord())
     return;
 
-  Profile* last_used_profile =
-      g_browser_process->profile_manager()->GetLastUsedProfileIfLoaded();
-  if (!last_used_profile || last_used_profile->IsOffTheRecord())
-    return;
-  if (!base::FeatureList::IsEnabled(
-          segmentation_platform::features::kSegmentationPlatformDummyFeature)) {
-    return;
-  }
+  // Always create SegmentationPlatformService when a new Profile is
+  // initialized. This will trigger model downloads and feature storage, so when
+  // the client requests segment the platform is ready with results.
   auto* service =
       segmentation_platform::SegmentationPlatformServiceFactory::GetForProfile(
-          last_used_profile);
-  service->GetSelectedSegment(segmentation_platform::kDummySegmentationKey,
-                              base::DoNothing());
+          profile);
+
+  // If dummy feature is enabled, make sure the platform triggers all selection
+  // code paths and computes results.
+  if (base::FeatureList::IsEnabled(
+          segmentation_platform::features::kSegmentationPlatformDummyFeature)) {
+    service->GetSelectedSegment(segmentation_platform::kDummySegmentationKey,
+                                base::DoNothing());
+  }
 }
 
 void ChromeBrowserMainExtraPartsSegmentationPlatform::PostMainMessageLoopRun() {
