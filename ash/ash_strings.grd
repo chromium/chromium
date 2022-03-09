@@ -4888,7 +4888,7 @@ New install
         Cable may not support displays
       </message>
       <message name="IDS_ASH_USB_NOTIFICATION_V2_CABLE_WARNING_DISPLAY_BODY" desc="Notification body text for when a user connects a display to a Chromebook's USB-C port with a cable that cannot support driving display signals.">
-        Your USB-C cable may not connect to diplays properly
+        Your USB-C cable may not connect to displays properly
       </message>
       <message name="IDS_ASH_USB_NOTIFICATION_V2_CABLE_WARNING_PERFORMANCE_TITLE" desc="Notification title text for when a user connects something to the USB-C port on their Chromebook and performance is in some way limited by the cable.">
         Cable may impact performance
