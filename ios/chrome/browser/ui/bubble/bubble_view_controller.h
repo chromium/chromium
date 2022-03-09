@@ -24,10 +24,15 @@
 
 - (instancetype)initWithCoder:(NSCoder*)aDecoder NS_UNAVAILABLE;
 
-// Animate the bubble view in with a fade-in and sink-down animation.
+// Animates the bubble view in with a fade-in and sink-down animation.
+//
+// The caller is responsible for adding the bubble view controller to the
+// view hierarchy.
 - (void)animateContentIn;
 
-// Dismiss the bubble. If |animated| is true, the bubble fades out.
+// Dismisses the bubble. If |animated| is true, the bubble fades out.
+//
+// The bubble view controller is automatically removed from the view hierarchy.
 - (void)dismissAnimated:(BOOL)animated;
 
 @end
