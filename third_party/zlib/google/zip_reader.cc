@@ -495,10 +495,14 @@ void ZipReader::ExtractChunk(base::File output_file,
 
 // FileWriterDelegate ----------------------------------------------------------
 
-FileWriterDelegate::FileWriterDelegate(base::File* file) : file_(file) {}
+FileWriterDelegate::FileWriterDelegate(base::File* file) : file_(file) {
+  DCHECK(file_);
+}
 
-FileWriterDelegate::FileWriterDelegate(std::unique_ptr<base::File> file)
-    : file_(file.get()), owned_file_(std::move(file)) {}
+FileWriterDelegate::FileWriterDelegate(base::File owned_file)
+    : owned_file_(std::move(owned_file)) {
+  DCHECK_EQ(file_, &owned_file_);
+}
 
 FileWriterDelegate::~FileWriterDelegate() {
   if (!file_->SetLength(file_length_)) {

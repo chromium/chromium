@@ -283,7 +283,7 @@ class FileWriterDelegate : public WriterDelegate {
   explicit FileWriterDelegate(base::File* file);
 
   // Constructs a FileWriterDelegate that takes ownership of |file|.
-  explicit FileWriterDelegate(std::unique_ptr<base::File> file);
+  explicit FileWriterDelegate(base::File owned_file);
 
   FileWriterDelegate(const FileWriterDelegate&) = delete;
   FileWriterDelegate& operator=(const FileWriterDelegate&) = delete;
@@ -311,12 +311,12 @@ class FileWriterDelegate : public WriterDelegate {
   int64_t file_length() { return file_length_; }
 
  private:
-  // The file the delegate modifies.
-  base::File* file_;
-
   // The delegate can optionally own the file it modifies, in which case
   // owned_file_ is set and file_ is an alias for owned_file_.
-  std::unique_ptr<base::File> owned_file_;
+  base::File owned_file_;
+
+  // The file the delegate modifies.
+  base::File* const file_ = &owned_file_;
 
   int64_t file_length_ = 0;
 };

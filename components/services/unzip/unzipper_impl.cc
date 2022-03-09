@@ -43,13 +43,13 @@ bool CreateDirectory(filesystem::mojom::Directory* output_dir,
 std::unique_ptr<zip::WriterDelegate> MakeFileWriterDelegateNoParent(
     filesystem::mojom::Directory* output_dir,
     const base::FilePath& path) {
-  auto file = std::make_unique<base::File>();
+  base::File file;
   base::File::Error err;
   if (!output_dir->OpenFileHandle(PathToMojoString(path),
                                   filesystem::mojom::kFlagCreate |
                                       filesystem::mojom::kFlagWrite |
                                       filesystem::mojom::kFlagWriteAttributes,
-                                  &err, file.get()) ||
+                                  &err, &file) ||
       err != base::File::Error::FILE_OK) {
     return nullptr;
   }
