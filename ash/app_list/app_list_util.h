@@ -83,6 +83,9 @@ ASH_EXPORT void PaintFocusRing(gfx::Canvas* canvas,
 // ignored by ChromeVox.
 ASH_EXPORT void SetViewIgnoredForAccessibility(views::View* view, bool ignored);
 
+// Get the scale factor for the cardified apps grid and app icons.
+ASH_EXPORT float GetAppsGridCardifiedScale();
+
 }  // namespace ash
 
 #endif  // ASH_APP_LIST_APP_LIST_UTIL_H_

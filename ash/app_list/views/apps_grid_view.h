@@ -385,9 +385,6 @@ class ASH_EXPORT AppsGridView : public views::View,
     int last_index = 0;
   };
 
-  // The cardified apps grid should be scaled down by this factor.
-  static constexpr float kCardifiedScale = 0.84f;
-
   // The duration in ms for most of the apps grid view animations.
   static constexpr int kDefaultAnimationDuration = 200;
 

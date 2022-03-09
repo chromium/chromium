@@ -7,6 +7,7 @@
 #include "ash/app_list/model/app_list_folder_item.h"
 #include "ash/app_list/model/app_list_item.h"
 #include "ash/constants/ash_constants.h"
+#include "ash/constants/ash_features.h"
 #include "ash/public/cpp/app_list/app_list_color_provider.h"
 #include "ui/events/event.h"
 #include "ui/gfx/canvas.h"
@@ -21,6 +22,14 @@
 #include "ui/views/view.h"
 
 namespace ash {
+
+namespace {
+
+// The cardified apps grid and app icons should scale down by this factor.
+constexpr float kAppsGridCardifiedScale = 0.84f;
+constexpr float kAppsGridCardifiedScaleProdLauncher = 0.9f;
+
+}  // namespace
 
 bool IsUnhandledUnmodifiedEvent(const ui::KeyEvent& event) {
   if (event.handled() || event.type() != ui::ET_KEY_PRESSED)
@@ -165,6 +174,12 @@ void SetViewIgnoredForAccessibility(views::View* view, bool ignored) {
   view_accessibility.OverrideIsLeaf(ignored);
   view_accessibility.OverrideIsIgnored(ignored);
   view->NotifyAccessibilityEvent(ax::mojom::Event::kTreeChanged, true);
+}
+
+float GetAppsGridCardifiedScale() {
+  return ash::features::IsProductivityLauncherEnabled()
+             ? kAppsGridCardifiedScaleProdLauncher
+             : kAppsGridCardifiedScale;
 }
 
 }  // namespace ash

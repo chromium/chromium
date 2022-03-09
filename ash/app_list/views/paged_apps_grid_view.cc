@@ -580,7 +580,7 @@ gfx::Size PagedAppsGridView::GetTileViewSize() const {
   const AppListConfig* config = app_list_config();
   return gfx::ScaleToRoundedSize(
       gfx::Size(config->grid_tile_width(), config->grid_tile_height()),
-      (cardified_state_ ? kCardifiedScale : 1.0f));
+      (cardified_state_ ? GetAppsGridCardifiedScale() : 1.0f));
 }
 
 gfx::Insets PagedAppsGridView::GetTilePadding(int page) const {
@@ -1397,8 +1397,9 @@ void PagedAppsGridView::UpdateTilePadding() {
   gfx::Size content_size = GetContentsBounds().size();
   const gfx::Size tile_size = GetTileViewSize();
   if (cardified_state_) {
-    content_size = gfx::ScaleToRoundedSize(content_size, kCardifiedScale) -
-                   gfx::Size(2 * kCardifiedHorizontalPadding, 0);
+    content_size =
+        gfx::ScaleToRoundedSize(content_size, GetAppsGridCardifiedScale()) -
+        gfx::Size(2 * kCardifiedHorizontalPadding, 0);
     content_size.set_width(
         std::max(content_size.width(), cols() * tile_size.width()));
     content_size.set_height(
