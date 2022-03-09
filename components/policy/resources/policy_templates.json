@@ -21974,7 +21974,7 @@
     },
     {
       'name': 'UrlKeyedAnonymizedDataCollectionEnabled',
-      'owners': ['file://base/metrics/OWNERS', 'bcwhite@chromium.org'],
+      'owners': ['file://base/metrics/OWNERS'],
       'type': 'main',
       'schema': { 'type': 'boolean' },
       'supported_on': ['chrome.*:69-', 'chrome_os:69-', 'android:70-', 'ios:90-'],
