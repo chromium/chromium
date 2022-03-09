@@ -270,6 +270,9 @@
       <message name="IDS_SEARCH" desc="The label for a search button.">
         Search
       </message>
+      <message name="IDS_SETTINGS" desc="Title for Chrome's Settings.">
+        Settings
+      </message>
       <message name="IDS_SHOW_INFO" desc="The label for a info button to show info.">
         Show Info
       </message>

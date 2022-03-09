@@ -204,9 +204,6 @@ CHAR_LIMIT guidelines:
       <!-- NOTE: Generic strings used across multiple features belong in //components/browser_ui/strings/android. -->
 
       <!-- Main Preferences -->
-      <message name="IDS_SETTINGS" desc="Title for Chrome's Settings.">
-        Settings
-      </message>
       <message name="IDS_PREFS_SECTION_BASICS" desc='Title of "Basics" section of preferences. [CHAR_LIMIT=32]'>
         Basics
       </message>
