@@ -188,22 +188,45 @@ bool WaylandDataDragController::IsDragSource() const {
 }
 
 void WaylandDataDragController::DrawIcon() {
-  if (!icon_bitmap_)
+  if (!icon_surface_ || !icon_bitmap_)
+    return;
+
+  static const wl_callback_listener kFrameListener{
+      .done = WaylandDataDragController::OnDragSurfaceFrame};
+
+  wl_surface* const surface = icon_surface_->surface();
+  icon_frame_callback_.reset(wl_surface_frame(surface));
+  wl_callback_add_listener(icon_frame_callback_.get(), &kFrameListener, this);
+  wl_surface_commit(surface);
+}
+
+void WaylandDataDragController::OnDragSurfaceFrame(void* data,
+                                                   struct wl_callback* callback,
+                                                   uint32_t time) {
+  auto* self = static_cast<WaylandDataDragController*>(data);
+  DCHECK(self);
+  self->DrawIconInternal();
+  self->icon_frame_callback_.reset();
+  self->connection_->ScheduleFlush();
+}
+
+void WaylandDataDragController::DrawIconInternal() {
+  if (!icon_surface_ || !icon_bitmap_)
     return;
 
   DCHECK(!icon_bitmap_->empty());
   gfx::Size size(icon_bitmap_->width(), icon_bitmap_->height());
 
-  if (!shm_buffer_ || shm_buffer_->size() != size) {
-    shm_buffer_ = std::make_unique<WaylandShmBuffer>(connection_->shm(), size);
-    if (!shm_buffer_->IsValid()) {
-      LOG(ERROR) << "Failed to create drag icon buffer.";
-      return;
-    }
+  icon_buffer_ = std::make_unique<WaylandShmBuffer>(connection_->shm(), size);
+  if (!icon_buffer_->IsValid()) {
+    LOG(ERROR) << "Failed to create drag icon buffer.";
+    return;
   }
-  wl::DrawBitmap(*icon_bitmap_, shm_buffer_.get());
+
+  DVLOG(3) << "Drawing drag icon. size=" << size.ToString();
+  wl::DrawBitmap(*icon_bitmap_, icon_buffer_.get());
   auto* const surface = icon_surface_->surface();
-  wl_surface_attach(surface, shm_buffer_->get(), icon_offset_.x(),
+  wl_surface_attach(surface, icon_buffer_->get(), icon_offset_.x(),
                     icon_offset_.y());
   wl_surface_damage(surface, 0, 0, size.width(), size.height());
   wl_surface_commit(surface);
@@ -332,6 +355,8 @@ void WaylandDataDragController::OnDataSourceFinish(bool completed) {
   window_manager_->RemoveObserver(this);
   data_source_.reset();
   data_offer_.reset();
+  icon_buffer_.reset();
+  icon_frame_callback_.reset();
   offered_exchange_data_provider_.reset();
   data_device_->ResetDragDelegate();
   state_ = State::kIdle;

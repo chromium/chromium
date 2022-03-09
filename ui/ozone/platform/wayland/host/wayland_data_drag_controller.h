@@ -171,6 +171,11 @@ class WaylandDataDragController : public WaylandDataDevice::DragDelegate,
   bool CanDispatchEvent(const PlatformEvent& event) override;
   uint32_t DispatchEvent(const PlatformEvent& event) override;
 
+  void DrawIconInternal();
+  static void OnDragSurfaceFrame(void* data,
+                                 struct wl_callback* callback,
+                                 uint32_t time);
+
   WaylandConnection* const connection_;
   WaylandDataDeviceManager* const data_device_manager_;
   WaylandDataDevice* const data_device_;
@@ -217,9 +222,10 @@ class WaylandDataDragController : public WaylandDataDevice::DragDelegate,
 
   // Drag icon related variables.
   std::unique_ptr<WaylandSurface> icon_surface_;
-  std::unique_ptr<WaylandShmBuffer> shm_buffer_;
+  std::unique_ptr<WaylandShmBuffer> icon_buffer_;
   const SkBitmap* icon_bitmap_ = nullptr;
   gfx::Point icon_offset_;
+  wl::Object<wl_callback> icon_frame_callback_;
 
   // Keeps track of the window that holds the pointer grab, i.e. the window that
   // will receive the mouse release event from DispatchPointerRelease().
