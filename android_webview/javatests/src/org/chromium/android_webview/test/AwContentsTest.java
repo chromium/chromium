@@ -1144,7 +1144,7 @@ public class AwContentsTest {
     @SmallTest
     public void testLoadUrlRecordsScheme_http() {
         // No need to spin up a web server, since we don't care if the load ever succeeds.
-        final String httpUrlWithNoRealPage = "http://some.origin/some/path.html";
+        final String httpUrlWithNoRealPage = "http://some.origin.test/some/path.html";
         loadUrlAndCheckScheme(httpUrlWithNoRealPage, AwContents.UrlScheme.HTTP_SCHEME);
     }
 

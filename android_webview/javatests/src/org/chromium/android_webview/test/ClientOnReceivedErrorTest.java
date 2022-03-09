@@ -34,6 +34,9 @@ public class ClientOnReceivedErrorTest {
     private TestAwContentsClient mContentsClient;
     private AwContents mAwContents;
 
+    // URLs which do not exist on the public internet (because they use the ".test" TLD).
+    private static final String BAD_HTML_URL = "http://fake.domain.test/a.html";
+
     @Before
     public void setUp() {
         mContentsClient = new TestAwContentsClient();
@@ -49,9 +52,8 @@ public class ClientOnReceivedErrorTest {
         TestCallbackHelperContainer.OnReceivedErrorHelper onReceivedErrorHelper =
                 mContentsClient.getOnReceivedErrorHelper();
 
-        String url = "http://id.be.really.surprised.if.this.address.existed.blah/";
         int onReceivedErrorCallCount = onReceivedErrorHelper.getCallCount();
-        mActivityTestRule.loadUrlAsync(mAwContents, url);
+        mActivityTestRule.loadUrlAsync(mAwContents, BAD_HTML_URL);
 
         // Verify that onReceivedError is called. The particular error code
         // that is returned depends on the configuration of the device (such as
@@ -60,7 +62,7 @@ public class ClientOnReceivedErrorTest {
                                               1 /* numberOfCallsToWaitFor */,
                                               WAIT_TIMEOUT_MS,
                                               TimeUnit.MILLISECONDS);
-        Assert.assertEquals(url, onReceivedErrorHelper.getFailingUrl());
+        Assert.assertEquals(BAD_HTML_URL, onReceivedErrorHelper.getFailingUrl());
         Assert.assertNotNull(onReceivedErrorHelper.getDescription());
     }
 

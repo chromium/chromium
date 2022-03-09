@@ -47,8 +47,9 @@ public class ClientOnReceivedError2Test {
     private AwContents mAwContents;
     private TestWebServer mWebServer;
 
-    private static final String BAD_HTML_URL =
-            "http://id.be.really.surprised.if.this.address.existed/a.html";
+    // URLs which do not exist on the public internet (because they use the ".test" TLD).
+    private static final String BAD_HTML_URL = "http://fake.domain.test/a.html";
+    private static final String BAD_IMAGE_URL = "http://fake.domain.test/a.png";
 
     @Before
     public void setUp() {
@@ -231,9 +232,8 @@ public class ClientOnReceivedError2Test {
     @SmallTest
     @Feature({"AndroidWebView"})
     public void testImageSubresource() throws Throwable {
-        final String imageUrl = "http://man.id.be.really.surprised.if.this.address.existed/a.png";
-        final String pageHtml = CommonResources.makeHtmlPageFrom(
-                "", "<img src='" + imageUrl + "' />");
+        final String pageHtml =
+                CommonResources.makeHtmlPageFrom("", "<img src='" + BAD_IMAGE_URL + "' />");
         mActivityTestRule.loadDataSync(mAwContents, mContentsClient.getOnPageFinishedHelper(),
                 pageHtml, "text/html", false);
 
@@ -241,7 +241,7 @@ public class ClientOnReceivedError2Test {
                 mContentsClient.getOnReceivedError2Helper();
         AwWebResourceRequest request = onReceivedError2Helper.getRequest();
         Assert.assertNotNull(request);
-        Assert.assertEquals(imageUrl, request.url);
+        Assert.assertEquals(BAD_IMAGE_URL, request.url);
         Assert.assertEquals("GET", request.method);
         Assert.assertNotNull(request.requestHeaders);
         // request headers may or may not be empty, this is an implementation detail,
