@@ -35,6 +35,7 @@
 
 #include "base/bits.h"
 #include "build/build_config.h"
+#include "cc/trees/target_property.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_optional_effect_timing.h"
@@ -62,8 +63,6 @@
 #include "third_party/blink/renderer/core/paint/paint_layer_scrollable_area.h"
 #include "third_party/blink/renderer/core/testing/core_unit_test_helper.h"
 #include "third_party/blink/renderer/platform/animation/compositor_animation.h"
-#include "third_party/blink/renderer/platform/animation/compositor_keyframe_model.h"
-#include "third_party/blink/renderer/platform/animation/compositor_target_property.h"
 #include "third_party/blink/renderer/platform/bindings/microtask.h"
 #include "third_party/blink/renderer/platform/bindings/v8_per_isolate_data.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
@@ -1819,7 +1818,7 @@ TEST_P(AnimationAnimationTestCompositing,
       keyframe_effect->GetAnimationForTesting()
           ->GetCompositorAnimation()
           ->CcAnimation()
-          ->GetKeyframeModel(compositor_target_property::OPACITY);
+          ->GetKeyframeModel(cc::TargetProperty::OPACITY);
   EXPECT_EQ(keyframe_model->start_time() - base::TimeTicks(),
             base::Seconds(TEST_START_PERCENT));
   EXPECT_EQ(keyframe_model->time_offset(), base::TimeDelta());

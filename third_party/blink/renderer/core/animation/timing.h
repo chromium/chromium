@@ -33,11 +33,11 @@
 
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/values_equivalent.h"
+#include "cc/animation/keyframe_model.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/renderer/core/animation/animation_time_delta.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/css/cssom/css_numeric_value.h"
-#include "third_party/blink/renderer/platform/animation/compositor_keyframe_model.h"
 #include "third_party/blink/renderer/platform/animation/timing_function.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/math_extras.h"
@@ -81,8 +81,8 @@ struct CORE_EXPORT Timing {
     kOverrideAll = (1 << 8) - 1
   };
 
-  using FillMode = CompositorKeyframeModel::FillMode;
-  using PlaybackDirection = CompositorKeyframeModel::Direction;
+  using FillMode = cc::KeyframeModel::FillMode;
+  using PlaybackDirection = cc::KeyframeModel::Direction;
 
   static double NullValue() { return std::numeric_limits<double>::quiet_NaN(); }
 

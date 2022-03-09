@@ -7,7 +7,6 @@
 #include "cc/animation/animation_id_provider.h"
 #include "cc/animation/animation_timeline.h"
 #include "third_party/blink/renderer/platform/animation/compositor_animation_delegate.h"
-#include "third_party/blink/renderer/platform/animation/compositor_keyframe_model.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
 namespace blink {
@@ -67,8 +66,9 @@ bool CompositorAnimation::IsElementAttached() const {
 }
 
 void CompositorAnimation::AddKeyframeModel(
-    std::unique_ptr<CompositorKeyframeModel> keyframe_model) {
-  animation_->AddKeyframeModel(keyframe_model->ReleaseCcKeyframeModel());
+    std::unique_ptr<cc::KeyframeModel> keyframe_model) {
+  keyframe_model->set_needs_synchronized_start_time(true);
+  animation_->AddKeyframeModel(std::move(keyframe_model));
 }
 
 void CompositorAnimation::RemoveKeyframeModel(int keyframe_model_id) {

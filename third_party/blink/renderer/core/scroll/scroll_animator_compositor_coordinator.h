@@ -7,6 +7,7 @@
 
 #include <memory>
 #include "base/gtest_prod_util.h"
+#include "cc/animation/keyframe_model.h"
 #include "cc/animation/scroll_offset_animations.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/scroll/scroll_types.h"
@@ -23,7 +24,6 @@ namespace blink {
 class ScrollableArea;
 class CompositorAnimation;
 class CompositorAnimationTimeline;
-class CompositorKeyframeModel;
 
 // ScrollAnimatorCompositorCoordinator is the common base class of user scroll
 // animators and programmatic scroll animators, and holds logic related to
@@ -124,7 +124,7 @@ class CORE_EXPORT ScrollAnimatorCompositorCoordinator
     return impl_only_animation_adjustment_;
   }
 
-  bool AddAnimation(std::unique_ptr<CompositorKeyframeModel>);
+  bool AddAnimation(std::unique_ptr<cc::KeyframeModel>);
   void RemoveAnimation();
   virtual void AbortAnimation();
 

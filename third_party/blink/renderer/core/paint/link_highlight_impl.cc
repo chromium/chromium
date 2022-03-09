@@ -30,8 +30,11 @@
 
 #include "base/debug/stack_trace.h"
 #include "base/memory/ptr_util.h"
+#include "cc/animation/animation_id_provider.h"
+#include "cc/animation/keyframe_model.h"
 #include "cc/layers/picture_layer.h"
 #include "cc/paint/display_item_list.h"
+#include "cc/trees/target_property.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/public/web/blink.h"
 #include "third_party/blink/renderer/core/dom/layout_tree_builder_traversal.h"
@@ -49,10 +52,6 @@
 #include "third_party/blink/renderer/core/paint/fragment_data_iterator.h"
 #include "third_party/blink/renderer/core/paint/paint_layer.h"
 #include "third_party/blink/renderer/core/paint/paint_layer_scrollable_area.h"
-#include "third_party/blink/renderer/platform/animation/compositor_animation_curve.h"
-#include "third_party/blink/renderer/platform/animation/compositor_float_animation_curve.h"
-#include "third_party/blink/renderer/platform/animation/compositor_keyframe_model.h"
-#include "third_party/blink/renderer/platform/animation/compositor_target_property.h"
 #include "third_party/blink/renderer/platform/animation/timing_function.h"
 #include "third_party/blink/renderer/platform/graphics/paint/foreign_layer_display_item.h"
 #include "third_party/blink/renderer/platform/graphics/paint/paint_canvas.h"
@@ -61,6 +60,7 @@
 #include "third_party/blink/renderer/platform/graphics/paint/transform_paint_property_node.h"
 #include "third_party/blink/renderer/platform/web_test_support.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
+#include "ui/gfx/animation/keyframe/keyframed_animation_curve.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/rect_conversions.h"
 #include "ui/gfx/geometry/size_f.h"
@@ -191,7 +191,7 @@ void LinkHighlightImpl::StartHighlightAnimationIfNeeded() {
   constexpr auto kFadeDuration = base::Milliseconds(100);
   constexpr auto kMinPreFadeDuration = base::Milliseconds(100);
 
-  auto curve = std::make_unique<CompositorFloatAnimationCurve>();
+  auto curve = gfx::KeyframedFloatAnimationCurve::Create();
 
   const auto& timing_function = *CubicBezierTimingFunction::Preset(
       CubicBezierTimingFunction::EaseType::EASE);
@@ -204,27 +204,27 @@ void LinkHighlightImpl::StartHighlightAnimationIfNeeded() {
   // initial opacity. https://crbug.com/974160
   UpdateOpacity(target_opacity);
 
-  curve->AddKeyframe(
-      CompositorFloatKeyframe(0, kStartOpacity, timing_function));
+  curve->AddKeyframe(gfx::FloatKeyframe::Create(base::Seconds(0), kStartOpacity,
+                                                timing_function.CloneToCC()));
   // Make sure we have displayed for at least minPreFadeDuration before starting
   // to fade out.
   base::TimeDelta extra_duration_required =
       std::max(base::TimeDelta(),
                kMinPreFadeDuration - (base::TimeTicks::Now() - start_time_));
   if (!extra_duration_required.is_zero()) {
-    curve->AddKeyframe(CompositorFloatKeyframe(
-        extra_duration_required.InSecondsF(), kStartOpacity, timing_function));
+    curve->AddKeyframe(gfx::FloatKeyframe::Create(
+        extra_duration_required, kStartOpacity, timing_function.CloneToCC()));
   }
-  curve->AddKeyframe(CompositorFloatKeyframe(
-      (kFadeDuration + extra_duration_required).InSecondsF(), target_opacity,
-      timing_function));
+  curve->AddKeyframe(
+      gfx::FloatKeyframe::Create(kFadeDuration + extra_duration_required,
+                                 target_opacity, timing_function.CloneToCC()));
 
-  auto keyframe_model = std::make_unique<CompositorKeyframeModel>(
-      *curve, 0, 0,
-      CompositorKeyframeModel::TargetPropertyId(
-          compositor_target_property::OPACITY));
+  auto keyframe_model = cc::KeyframeModel::Create(
+      std::move(curve), cc::AnimationIdProvider::NextKeyframeModelId(),
+      cc::AnimationIdProvider::NextGroupId(),
+      cc::KeyframeModel::TargetPropertyId(cc::TargetProperty::OPACITY));
 
-  compositor_keyframe_model_id_ = keyframe_model->Id();
+  compositor_keyframe_model_id_ = keyframe_model->id();
   compositor_animation_->AddKeyframeModel(std::move(keyframe_model));
 }
 

@@ -26,7 +26,6 @@
 
 #include <memory>
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/blink/renderer/platform/animation/compositor_transform_operations.h"
 #include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
 #include "third_party/blink/renderer/platform/transforms/matrix_3d_transform_operation.h"
 #include "third_party/blink/renderer/platform/transforms/rotate_transform_operation.h"
@@ -34,12 +33,13 @@
 #include "third_party/blink/renderer/platform/transforms/transform_operations.h"
 #include "third_party/blink/renderer/platform/transforms/translate_transform_operation.h"
 #include "ui/gfx/geometry/test/geometry_util.h"
+#include "ui/gfx/geometry/transform_operations.h"
 
 namespace blink {
 
 TEST(AnimationTranslationUtilTest, transformsWork) {
   TransformOperations ops;
-  CompositorTransformOperations out_ops;
+  gfx::TransformOperations out_ops;
 
   ops.Operations().push_back(TranslateTransformOperation::Create(
       Length::Fixed(2), Length::Fixed(0), TransformOperation::kTranslateX));
@@ -47,25 +47,25 @@ TEST(AnimationTranslationUtilTest, transformsWork) {
       0.1, 0.2, 0.3, 200000.4, TransformOperation::kRotate3D));
   ops.Operations().push_back(ScaleTransformOperation::Create(
       50.2, 100, -4, TransformOperation::kScale3D));
-  ToCompositorTransformOperations(ops, &out_ops, gfx::SizeF());
+  ToGfxTransformOperations(ops, &out_ops, gfx::SizeF());
 
-  EXPECT_EQ(3UL, out_ops.AsGfxTransformOperations().size());
+  EXPECT_EQ(3UL, out_ops.size());
   const float kErr = 0.0001;
 
-  auto& op0 = out_ops.AsGfxTransformOperations().at(0);
+  auto& op0 = out_ops.at(0);
   EXPECT_EQ(gfx::TransformOperation::TRANSFORM_OPERATION_TRANSLATE, op0.type);
   EXPECT_NEAR(op0.translate.x, 2.0f, kErr);
   EXPECT_NEAR(op0.translate.y, 0.0f, kErr);
   EXPECT_NEAR(op0.translate.z, 0.0f, kErr);
 
-  auto& op1 = out_ops.AsGfxTransformOperations().at(1);
+  auto& op1 = out_ops.at(1);
   EXPECT_EQ(gfx::TransformOperation::TRANSFORM_OPERATION_ROTATE, op1.type);
   EXPECT_NEAR(op1.rotate.axis.x, 0.1f, kErr);
   EXPECT_NEAR(op1.rotate.axis.y, 0.2f, kErr);
   EXPECT_NEAR(op1.rotate.axis.z, 0.3f, kErr);
   EXPECT_NEAR(op1.rotate.angle, 200000.4f, 0.01f);
 
-  auto& op2 = out_ops.AsGfxTransformOperations().at(2);
+  auto& op2 = out_ops.at(2);
   EXPECT_EQ(gfx::TransformOperation::TRANSFORM_OPERATION_SCALE, op2.type);
   EXPECT_NEAR(op2.scale.x, 50.2f, kErr);
   EXPECT_NEAR(op2.scale.y, 100.0f, kErr);
@@ -80,11 +80,11 @@ TEST(AnimationTranslationUtilTest, RelativeTranslate) {
       Length::Percent(50), Length::Percent(50),
       TransformOperation::kTranslate));
 
-  CompositorTransformOperations out_ops;
-  ToCompositorTransformOperations(ops, &out_ops, gfx::SizeF(200, 100));
-  ASSERT_EQ(out_ops.AsGfxTransformOperations().size(), 1u);
+  gfx::TransformOperations out_ops;
+  ToGfxTransformOperations(ops, &out_ops, gfx::SizeF(200, 100));
+  ASSERT_EQ(out_ops.size(), 1u);
 
-  auto& op0 = out_ops.AsGfxTransformOperations().at(0);
+  auto& op0 = out_ops.at(0);
   EXPECT_EQ(gfx::TransformOperation::TRANSFORM_OPERATION_TRANSLATE, op0.type);
   EXPECT_EQ(op0.translate.x, 100.0f);
   EXPECT_EQ(op0.translate.y, 50.0f);
@@ -102,11 +102,11 @@ TEST(AnimationTranslationUtilTest, RelativeInterpolated) {
 
   TransformOperations ops_c = ops_b.Blend(ops_a, 0.5);
 
-  CompositorTransformOperations out_ops;
-  ToCompositorTransformOperations(ops_c, &out_ops, gfx::SizeF(100, 100));
-  ASSERT_EQ(out_ops.AsGfxTransformOperations().size(), 1u);
+  gfx::TransformOperations out_ops;
+  ToGfxTransformOperations(ops_c, &out_ops, gfx::SizeF(100, 100));
+  ASSERT_EQ(out_ops.size(), 1u);
 
-  auto& op0 = out_ops.AsGfxTransformOperations().at(0);
+  auto& op0 = out_ops.at(0);
   gfx::TransformOperations ops_expected;
   ops_expected.AppendTranslate(25, 0, 0);
   EXPECT_EQ(gfx::TransformOperation::TRANSFORM_OPERATION_MATRIX, op0.type);

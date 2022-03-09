@@ -35,10 +35,10 @@
 #include "base/time/default_tick_clock.h"
 
 #include "build/build_config.h"
+#include "cc/animation/scroll_offset_animation_curve.h"
 #include "third_party/blink/renderer/core/scroll/scroll_animator_base.h"
 #include "third_party/blink/renderer/platform/animation/compositor_animation_client.h"
 #include "third_party/blink/renderer/platform/animation/compositor_animation_delegate.h"
-#include "third_party/blink/renderer/platform/animation/compositor_scroll_offset_animation_curve.h"
 #include "third_party/blink/renderer/platform/timer.h"
 
 namespace blink {
@@ -151,7 +151,7 @@ class CORE_EXPORT ScrollAnimator : public ScrollAnimatorBase {
   // because we are already at targetPos.
   bool WillAnimateToOffset(const ScrollOffset& target_pos);
 
-  std::unique_ptr<CompositorScrollOffsetAnimationCurve> animation_curve_;
+  std::unique_ptr<cc::ScrollOffsetAnimationCurve> animation_curve_;
   const base::TickClock* const tick_clock_;
   base::TimeTicks start_time_;
 

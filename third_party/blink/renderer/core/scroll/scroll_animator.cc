@@ -35,11 +35,11 @@
 #include "base/callback_helpers.h"
 #include "base/memory/scoped_refptr.h"
 #include "build/build_config.h"
-#include "cc/animation/scroll_offset_animation_curve.h"
+#include "cc/animation/animation_id_provider.h"
+#include "cc/animation/scroll_offset_animation_curve_factory.h"
 #include "cc/layers/picture_layer.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/renderer/core/scroll/scrollable_area.h"
-#include "third_party/blink/renderer/platform/animation/compositor_keyframe_model.h"
 #include "third_party/blink/renderer/platform/instrumentation/tracing/trace_event.h"
 
 // This should be after all other #includes.
@@ -251,8 +251,8 @@ void ScrollAnimator::TickAnimation(base::TimeTicks monotonic_time) {
 
   bool is_finished = (elapsed_time > animation_curve_->Duration());
   ScrollOffset offset = BlinkOffsetFromCompositorOffset(
-      is_finished ? animation_curve_->TargetValue()
-                  : animation_curve_->GetValue(elapsed_time.InSecondsF()));
+      is_finished ? animation_curve_->target_value()
+                  : animation_curve_->GetValue(elapsed_time));
 
   offset = scrollable_area_->ClampScrollOffset(offset);
 
@@ -274,17 +274,18 @@ bool ScrollAnimator::SendAnimationToCompositor() {
   if (scrollable_area_->ShouldScrollOnMainThread())
     return false;
 
-  auto animation = std::make_unique<CompositorKeyframeModel>(
-      *animation_curve_, 0, 0,
-      CompositorKeyframeModel::TargetPropertyId(
-          compositor_target_property::SCROLL_OFFSET));
+  auto animation = cc::KeyframeModel::Create(
+      animation_curve_->Clone(), cc::AnimationIdProvider::NextKeyframeModelId(),
+      cc::AnimationIdProvider::NextGroupId(),
+      cc::KeyframeModel::TargetPropertyId(cc::TargetProperty::SCROLL_OFFSET));
+
   // Being here means that either there is an animation that needs
   // to be sent to the compositor, or an animation that needs to
   // be updated (a new scroll event before the previous animation
   // is finished). In either case, the start time is when the
   // first animation was initiated. This re-targets the animation
   // using the current time on main thread.
-  animation->SetStartTime(start_time_);
+  animation->set_start_time(start_time_);
 
   bool sent_to_compositor = AddAnimation(std::move(animation));
   if (sent_to_compositor)
@@ -297,11 +298,11 @@ void ScrollAnimator::CreateAnimationCurve() {
   DCHECK(!animation_curve_);
   // It is not correct to assume the input type from the granularity, but we've
   // historically determined animation parameters from granularity.
-  CompositorScrollOffsetAnimationCurve::ScrollType scroll_type =
+  cc::ScrollOffsetAnimationCurveFactory::ScrollType scroll_type =
       (last_granularity_ == ui::ScrollGranularity::kScrollByPixel)
-          ? CompositorScrollOffsetAnimationCurve::ScrollType::kMouseWheel
-          : CompositorScrollOffsetAnimationCurve::ScrollType::kKeyboard;
-  animation_curve_ = std::make_unique<CompositorScrollOffsetAnimationCurve>(
+          ? cc::ScrollOffsetAnimationCurveFactory::ScrollType::kMouseWheel
+          : cc::ScrollOffsetAnimationCurveFactory::ScrollType::kKeyboard;
+  animation_curve_ = cc::ScrollOffsetAnimationCurveFactory::CreateAnimation(
       CompositorOffsetFromBlinkOffset(target_offset_), scroll_type);
   animation_curve_->SetInitialValue(
       CompositorOffsetFromBlinkOffset(CurrentOffset()));

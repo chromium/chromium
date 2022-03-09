@@ -34,6 +34,8 @@
 #include <cmath>
 #include <memory>
 
+#include "cc/animation/animation_id_provider.h"
+#include "cc/animation/filter_animation_curve.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/renderer/core/animation/animation_effect.h"
 #include "third_party/blink/renderer/core/animation/css/compositor_keyframe_color.h"
@@ -59,17 +61,11 @@
 #include "third_party/blink/renderer/core/paint/object_paint_properties.h"
 #include "third_party/blink/renderer/platform/animation/animation_translation_util.h"
 #include "third_party/blink/renderer/platform/animation/compositor_animation.h"
-#include "third_party/blink/renderer/platform/animation/compositor_color_animation_curve.h"
-#include "third_party/blink/renderer/platform/animation/compositor_filter_animation_curve.h"
-#include "third_party/blink/renderer/platform/animation/compositor_filter_keyframe.h"
-#include "third_party/blink/renderer/platform/animation/compositor_float_animation_curve.h"
-#include "third_party/blink/renderer/platform/animation/compositor_float_keyframe.h"
-#include "third_party/blink/renderer/platform/animation/compositor_keyframe_model.h"
-#include "third_party/blink/renderer/platform/animation/compositor_transform_animation_curve.h"
-#include "third_party/blink/renderer/platform/animation/compositor_transform_keyframe.h"
 #include "third_party/blink/renderer/platform/graphics/compositing/paint_artifact_compositor.h"
 #include "third_party/blink/renderer/platform/graphics/platform_paint_worklet_layer_painter.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
+#include "ui/gfx/animation/keyframe/animation_curve.h"
+#include "ui/gfx/animation/keyframe/keyframed_animation_curve.h"
 
 namespace blink {
 
@@ -645,14 +641,14 @@ void CompositorAnimations::StartAnimationOnCompositor(
 
   const auto& keyframe_effect = To<KeyframeEffectModelBase>(effect);
 
-  Vector<std::unique_ptr<CompositorKeyframeModel>> keyframe_models;
+  Vector<std::unique_ptr<cc::KeyframeModel>> keyframe_models;
   GetAnimationOnCompositor(element, timing, normalized_timing, group,
                            start_time, time_offset, keyframe_effect,
                            keyframe_models, animation_playback_rate);
   DCHECK(!keyframe_models.IsEmpty());
-  for (auto& compositor_keyframe_model : keyframe_models) {
-    int id = compositor_keyframe_model->Id();
-    compositor_animation.AddKeyframeModel(std::move(compositor_keyframe_model));
+  for (auto& keyframe_model : keyframe_models) {
+    int id = keyframe_model->id();
+    compositor_animation.AddKeyframeModel(std::move(keyframe_model));
     started_keyframe_model_ids.push_back(id);
   }
   DCHECK(!started_keyframe_model_ids.IsEmpty());
@@ -772,52 +768,57 @@ bool CompositorAnimations::ConvertTimingForCompositor(
 
 namespace {
 
-void AddKeyframeToCurve(CompositorFilterAnimationCurve& curve,
+void AddKeyframeToCurve(cc::KeyframedFilterAnimationCurve& curve,
                         Keyframe::PropertySpecificKeyframe* keyframe,
                         const CompositorKeyframeValue* value,
                         const TimingFunction& keyframe_timing_function) {
   FilterEffectBuilder builder(gfx::RectF(), 1);
-  CompositorFilterKeyframe filter_keyframe(
-      keyframe->Offset(),
-      builder.BuildFilterOperations(
-          To<CompositorKeyframeFilterOperations>(value)->Operations()),
-      keyframe_timing_function);
-  curve.AddKeyframe(filter_keyframe);
+  CompositorFilterOperations operations = builder.BuildFilterOperations(
+      To<CompositorKeyframeFilterOperations>(value)->Operations());
+  std::unique_ptr<cc::FilterKeyframe> filter_keyframe =
+      cc::FilterKeyframe::Create(base::Seconds(keyframe->Offset()),
+                                 operations.ReleaseCcFilterOperations(),
+                                 keyframe_timing_function.CloneToCC());
+  curve.AddKeyframe(std::move(filter_keyframe));
 }
 
-void AddKeyframeToCurve(CompositorFloatAnimationCurve& curve,
+void AddKeyframeToCurve(gfx::KeyframedFloatAnimationCurve& curve,
                         Keyframe::PropertySpecificKeyframe* keyframe,
                         const CompositorKeyframeValue* value,
                         const TimingFunction& keyframe_timing_function) {
-  CompositorFloatKeyframe float_keyframe(
-      keyframe->Offset(), To<CompositorKeyframeDouble>(value)->ToDouble(),
-      keyframe_timing_function);
-  curve.AddKeyframe(float_keyframe);
+  std::unique_ptr<gfx::FloatKeyframe> float_keyframe =
+      gfx::FloatKeyframe::Create(
+          base::Seconds(keyframe->Offset()),
+          To<CompositorKeyframeDouble>(value)->ToDouble(),
+          keyframe_timing_function.CloneToCC());
+  curve.AddKeyframe(std::move(float_keyframe));
 }
 
-void AddKeyframeToCurve(CompositorColorAnimationCurve& curve,
+void AddKeyframeToCurve(gfx::KeyframedColorAnimationCurve& curve,
                         Keyframe::PropertySpecificKeyframe* keyframe,
                         const CompositorKeyframeValue* value,
                         const TimingFunction& keyframe_timing_function) {
-  CompositorColorKeyframe color_keyframe(
-      keyframe->Offset(), To<CompositorKeyframeColor>(value)->ToColor(),
-      keyframe_timing_function);
-  curve.AddKeyframe(color_keyframe);
+  std::unique_ptr<gfx::ColorKeyframe> color_keyframe =
+      gfx::ColorKeyframe::Create(base::Seconds(keyframe->Offset()),
+                                 To<CompositorKeyframeColor>(value)->ToColor(),
+                                 keyframe_timing_function.CloneToCC());
+  curve.AddKeyframe(std::move(color_keyframe));
 }
 
-void AddKeyframeToCurve(CompositorTransformAnimationCurve& curve,
+void AddKeyframeToCurve(gfx::KeyframedTransformAnimationCurve& curve,
                         Keyframe::PropertySpecificKeyframe* keyframe,
                         const CompositorKeyframeValue* value,
                         const TimingFunction& keyframe_timing_function,
                         const gfx::SizeF& box_size) {
-  CompositorTransformOperations ops;
-  ToCompositorTransformOperations(
+  gfx::TransformOperations ops;
+  ToGfxTransformOperations(
       To<CompositorKeyframeTransform>(value)->GetTransformOperations(), &ops,
       box_size);
 
-  CompositorTransformKeyframe transform_keyframe(
-      keyframe->Offset(), std::move(ops), keyframe_timing_function);
-  curve.AddKeyframe(transform_keyframe);
+  std::unique_ptr<gfx::TransformKeyframe> transform_keyframe =
+      gfx::TransformKeyframe::Create(base::Seconds(keyframe->Offset()), ops,
+                                     keyframe_timing_function.CloneToCC());
+  curve.AddKeyframe(std::move(transform_keyframe));
 }
 
 template <typename PlatformAnimationCurveType, typename... Args>
@@ -850,7 +851,7 @@ void CompositorAnimations::GetAnimationOnCompositor(
     absl::optional<double> start_time,
     base::TimeDelta time_offset,
     const KeyframeEffectModelBase& effect,
-    Vector<std::unique_ptr<CompositorKeyframeModel>>& keyframe_models,
+    Vector<std::unique_ptr<cc::KeyframeModel>>& keyframe_models,
     double animation_playback_rate) {
   DCHECK(keyframe_models.IsEmpty());
   CompositorTiming compositor_timing;
@@ -871,32 +872,32 @@ void CompositorAnimations::GetAnimationOnCompositor(
     const PropertySpecificKeyframeVector& values =
         *effect.GetPropertySpecificKeyframes(property);
 
-    std::unique_ptr<CompositorAnimationCurve> curve;
+    std::unique_ptr<gfx::AnimationCurve> curve;
     DCHECK(timing.timing_function);
-    absl::optional<CompositorKeyframeModel::TargetPropertyId>
-        target_property_id = absl::nullopt;
+    absl::optional<cc::KeyframeModel::TargetPropertyId> target_property_id =
+        absl::nullopt;
     switch (property.GetCSSProperty().PropertyID()) {
       case CSSPropertyID::kOpacity: {
-        auto float_curve = std::make_unique<CompositorFloatAnimationCurve>();
+        auto float_curve = gfx::KeyframedFloatAnimationCurve::Create();
         AddKeyframesToCurve(*float_curve, values);
-        float_curve->SetTimingFunction(*timing.timing_function);
-        float_curve->SetScaledDuration(scale);
+        float_curve->SetTimingFunction(timing.timing_function->CloneToCC());
+        float_curve->set_scaled_duration(scale);
         curve = std::move(float_curve);
-        target_property_id = CompositorKeyframeModel::TargetPropertyId(
-            compositor_target_property::OPACITY);
+        target_property_id =
+            cc::KeyframeModel::TargetPropertyId(cc::TargetProperty::OPACITY);
         break;
       }
       case CSSPropertyID::kFilter:
       case CSSPropertyID::kBackdropFilter: {
-        auto filter_curve = std::make_unique<CompositorFilterAnimationCurve>();
+        auto filter_curve = cc::KeyframedFilterAnimationCurve::Create();
         AddKeyframesToCurve(*filter_curve, values);
-        filter_curve->SetTimingFunction(*timing.timing_function);
-        filter_curve->SetScaledDuration(scale);
+        filter_curve->SetTimingFunction(timing.timing_function->CloneToCC());
+        filter_curve->set_scaled_duration(scale);
         curve = std::move(filter_curve);
-        target_property_id = CompositorKeyframeModel::TargetPropertyId(
+        target_property_id = cc::KeyframeModel::TargetPropertyId(
             property.GetCSSProperty().PropertyID() == CSSPropertyID::kFilter
-                ? compositor_target_property::FILTER
-                : compositor_target_property::BACKDROP_FILTER);
+                ? cc::TargetProperty::FILTER
+                : cc::TargetProperty::BACKDROP_FILTER);
         break;
       }
       case CSSPropertyID::kRotate:
@@ -906,14 +907,13 @@ void CompositorAnimations::GetAnimationOnCompositor(
         gfx::SizeF box_size(ComputedStyleUtils::ReferenceBoxForTransform(
                                 *target_element.GetLayoutObject())
                                 .size());
-        auto transform_curve =
-            std::make_unique<CompositorTransformAnimationCurve>();
+        auto transform_curve = gfx::KeyframedTransformAnimationCurve::Create();
         AddKeyframesToCurve(*transform_curve, values, box_size);
-        transform_curve->SetTimingFunction(*timing.timing_function);
-        transform_curve->SetScaledDuration(scale);
+        transform_curve->SetTimingFunction(timing.timing_function->CloneToCC());
+        transform_curve->set_scaled_duration(scale);
         curve = std::move(transform_curve);
-        target_property_id = CompositorKeyframeModel::TargetPropertyId(
-            compositor_target_property::TRANSFORM);
+        target_property_id =
+            cc::KeyframeModel::TargetPropertyId(cc::TargetProperty::TRANSFORM);
         break;
       }
       case CSSPropertyID::kBackgroundColor:
@@ -924,33 +924,33 @@ void CompositorAnimations::GetAnimationOnCompositor(
                 ? CompositorPaintWorkletInput::NativePropertyType::
                       kBackgroundColor
                 : CompositorPaintWorkletInput::NativePropertyType::kClipPath;
-        auto float_curve = std::make_unique<CompositorFloatAnimationCurve>();
+        auto float_curve = gfx::KeyframedFloatAnimationCurve::Create();
         AddKeyframesToCurve(*float_curve, values);
-        float_curve->SetTimingFunction(*timing.timing_function);
-        float_curve->SetScaledDuration(scale);
+        float_curve->SetTimingFunction(timing.timing_function->CloneToCC());
+        float_curve->set_scaled_duration(scale);
         curve = std::move(float_curve);
-        target_property_id = CompositorKeyframeModel::TargetPropertyId(
-            compositor_target_property::NATIVE_PROPERTY, native_property_type);
+        target_property_id = cc::KeyframeModel::TargetPropertyId(
+            cc::TargetProperty::NATIVE_PROPERTY, native_property_type);
         break;
       }
       case CSSPropertyID::kVariable: {
         DCHECK(RuntimeEnabledFeatures::OffMainThreadCSSPaintEnabled());
         // Create curve based on the keyframe value type
         if (values.front()->GetCompositorKeyframeValue()->IsColor()) {
-          auto color_curve = std::make_unique<CompositorColorAnimationCurve>();
+          auto color_curve = gfx::KeyframedColorAnimationCurve::Create();
           AddKeyframesToCurve(*color_curve, values);
-          color_curve->SetTimingFunction(*timing.timing_function);
-          color_curve->SetScaledDuration(scale);
+          color_curve->SetTimingFunction(timing.timing_function->CloneToCC());
+          color_curve->set_scaled_duration(scale);
           curve = std::move(color_curve);
         } else {
-          auto float_curve = std::make_unique<CompositorFloatAnimationCurve>();
+          auto float_curve = gfx::KeyframedFloatAnimationCurve::Create();
           AddKeyframesToCurve(*float_curve, values);
-          float_curve->SetTimingFunction(*timing.timing_function);
-          float_curve->SetScaledDuration(scale);
+          float_curve->SetTimingFunction(timing.timing_function->CloneToCC());
+          float_curve->set_scaled_duration(scale);
           curve = std::move(float_curve);
         }
-        target_property_id = CompositorKeyframeModel::TargetPropertyId(
-            compositor_target_property::CSS_CUSTOM_PROPERTY,
+        target_property_id = cc::KeyframeModel::TargetPropertyId(
+            cc::TargetProperty::CSS_CUSTOM_PROPERTY,
             property.CustomPropertyName().Utf8().data());
         break;
       }
@@ -960,12 +960,17 @@ void CompositorAnimations::GetAnimationOnCompositor(
     }
     DCHECK(curve.get());
     DCHECK(target_property_id.has_value());
-    std::unique_ptr<CompositorKeyframeModel> keyframe_model =
-        std::make_unique<CompositorKeyframeModel>(
-            *curve, 0, group, std::move(target_property_id.value()));
+    int keyframe_model_id = cc::AnimationIdProvider::NextKeyframeModelId();
+    if (!group)
+      group = cc::AnimationIdProvider::NextGroupId();
+    std::unique_ptr<cc::KeyframeModel> keyframe_model =
+        cc::KeyframeModel::Create(std::move(curve), keyframe_model_id, group,
+                                  std::move(target_property_id.value()));
 
-    if (start_time)
-      keyframe_model->SetStartTime(start_time.value());
+    if (start_time) {
+      keyframe_model->set_start_time(base::TimeTicks() +
+                                     base::Seconds(start_time.value()));
+    }
 
     // By default, it is a kInvalidElementId.
     CompositorElementId id;
@@ -976,13 +981,13 @@ void CompositorAnimations::GetAnimationOnCompositor(
           CompositorElementNamespaceForProperty(
               property.GetCSSProperty().PropertyID()));
     }
-    keyframe_model->SetElementId(id);
-    keyframe_model->SetIterations(compositor_timing.adjusted_iteration_count);
-    keyframe_model->SetIterationStart(compositor_timing.iteration_start);
-    keyframe_model->SetTimeOffset(compositor_timing.scaled_time_offset);
-    keyframe_model->SetDirection(compositor_timing.direction);
-    keyframe_model->SetPlaybackRate(compositor_timing.playback_rate);
-    keyframe_model->SetFillMode(compositor_timing.fill_mode);
+    keyframe_model->set_element_id(id);
+    keyframe_model->set_iterations(compositor_timing.adjusted_iteration_count);
+    keyframe_model->set_iteration_start(compositor_timing.iteration_start);
+    keyframe_model->set_time_offset(compositor_timing.scaled_time_offset);
+    keyframe_model->set_direction(compositor_timing.direction);
+    keyframe_model->set_playback_rate(compositor_timing.playback_rate);
+    keyframe_model->set_fill_mode(compositor_timing.fill_mode);
     keyframe_models.push_back(std::move(keyframe_model));
   }
   DCHECK(!keyframe_models.IsEmpty());

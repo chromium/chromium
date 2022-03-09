@@ -434,6 +434,20 @@ _CONFIG = [
 
             # Animation
             'cc::AnimationHost',
+            "cc::AnimationIdProvider",
+            "cc::FilterKeyframe",
+            "cc::KeyframedFilterAnimationCurve",
+            "cc::KeyframeModel",
+            "cc::ScrollOffsetAnimationCurveFactory",
+            "cc::TargetProperty",
+            "gfx::AnimationCurve",
+            "gfx::ColorKeyframe",
+            "gfx::FloatKeyframe",
+            "gfx::KeyframedColorAnimationCurve",
+            "gfx::KeyframedFloatAnimationCurve",
+            "gfx::KeyframedTransformAnimationCurve",
+            "gfx::TransformKeyframe",
+            "gfx::TransformOperations",
 
             # UMA Enums
             'cc::PaintHoldingCommitTrigger',

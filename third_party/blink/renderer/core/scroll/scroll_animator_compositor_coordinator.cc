@@ -13,7 +13,6 @@
 #include "third_party/blink/renderer/core/scroll/scrollable_area.h"
 #include "third_party/blink/renderer/platform/animation/compositor_animation.h"
 #include "third_party/blink/renderer/platform/animation/compositor_animation_timeline.h"
-#include "third_party/blink/renderer/platform/animation/compositor_keyframe_model.h"
 
 namespace blink {
 
@@ -74,11 +73,11 @@ bool ScrollAnimatorCompositorCoordinator::HasAnimationThatRequiresService()
 }
 
 bool ScrollAnimatorCompositorCoordinator::AddAnimation(
-    std::unique_ptr<CompositorKeyframeModel> keyframe_model) {
+    std::unique_ptr<cc::KeyframeModel> keyframe_model) {
   RemoveAnimation();
   if (compositor_animation_->IsElementAttached()) {
-    compositor_animation_id_ = keyframe_model->Id();
-    compositor_animation_group_id_ = keyframe_model->Group();
+    compositor_animation_id_ = keyframe_model->id();
+    compositor_animation_group_id_ = keyframe_model->group();
     compositor_animation_->AddKeyframeModel(std::move(keyframe_model));
     return true;
   }
