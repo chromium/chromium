@@ -56,7 +56,6 @@ source_set("test_support") {
     ":browser",
     "//base",
     "//ios/chrome/browser/ui/ntp:logo",
-    "//ios/public/provider/chrome/browser/discover_feed",
     "//ios/public/provider/chrome/browser/follow",
     "//ios/public/provider/chrome/browser/mailto:test_support",
     "//ios/public/provider/chrome/browser/signin",

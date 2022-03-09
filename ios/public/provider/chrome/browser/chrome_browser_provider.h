@@ -16,7 +16,6 @@
 #include "base/memory/ref_counted.h"
 #include "base/observer_list.h"
 
-class DiscoverFeedProvider;
 class FollowProvider;
 class MailtoHandlerProvider;
 class UserFeedbackProvider;
@@ -82,9 +81,6 @@ class ChromeBrowserProvider {
 
   // Returns a valid non-null instance of the mailto handler provider.
   virtual MailtoHandlerProvider* GetMailtoHandlerProvider() const;
-
-  // Returns an instance of the DiscoverFeed provider;
-  virtual DiscoverFeedProvider* GetDiscoverFeedProvider() const;
 
   // Returns an instance of the Follow provider;
   virtual FollowProvider* GetFollowProvider() const;

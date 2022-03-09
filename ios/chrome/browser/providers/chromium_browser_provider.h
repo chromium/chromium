@@ -14,14 +14,12 @@ class ChromiumBrowserProvider : public ios::ChromeBrowserProvider {
 
   // ChromeBrowserProvider implementation
   UserFeedbackProvider* GetUserFeedbackProvider() const override;
-  DiscoverFeedProvider* GetDiscoverFeedProvider() const override;
   FollowProvider* GetFollowProvider() const override;
   std::unique_ptr<ios::ChromeIdentityService> CreateChromeIdentityService()
       override;
 
  private:
   std::unique_ptr<UserFeedbackProvider> user_feedback_provider_;
-  std::unique_ptr<DiscoverFeedProvider> discover_feed_provider_;
   std::unique_ptr<FollowProvider> follow_provider_;
 };
 

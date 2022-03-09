@@ -2,18 +2,6 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-source_set("discover_feed") {
-  configs += [ "//build/config/compiler:enable_arc" ]
-  sources = [
-    "discover_feed_provider.h",
-    "discover_feed_provider.mm",
-  ]
-  deps = [
-    "//base",
-    "//ios/public/provider/chrome/browser",
-  ]
-}
-
 source_set("discover_feed_api") {
   configs += [ "//build/config/compiler:enable_arc" ]
   sources = [ "discover_feed_api.h" ]

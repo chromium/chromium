@@ -28,7 +28,6 @@ class TestChromeBrowserProvider : public ChromeBrowserProvider {
   ChromeTrustedVaultService* GetChromeTrustedVaultService() override;
   TestUserFeedbackProvider* GetUserFeedbackProvider() const override;
   MailtoHandlerProvider* GetMailtoHandlerProvider() const override;
-  DiscoverFeedProvider* GetDiscoverFeedProvider() const override;
   FollowProvider* GetFollowProvider() const override;
 
  private:
@@ -38,7 +37,6 @@ class TestChromeBrowserProvider : public ChromeBrowserProvider {
   std::unique_ptr<ChromeTrustedVaultService> chrome_trusted_vault_service_;
   std::unique_ptr<TestUserFeedbackProvider> user_feedback_provider_;
   std::unique_ptr<MailtoHandlerProvider> mailto_handler_provider_;
-  std::unique_ptr<DiscoverFeedProvider> discover_feed_provider_;
   std::unique_ptr<FollowProvider> follow_provider_;
 };
 

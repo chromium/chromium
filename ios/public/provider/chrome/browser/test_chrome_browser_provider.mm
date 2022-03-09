@@ -7,7 +7,6 @@
 #import <UIKit/UIKit.h>
 
 #include "base/check.h"
-#import "ios/public/provider/chrome/browser/discover_feed/discover_feed_provider.h"
 #import "ios/public/provider/chrome/browser/follow/follow_provider.h"
 #include "ios/public/provider/chrome/browser/mailto/test_mailto_handler_provider.h"
 #include "ios/public/provider/chrome/browser/signin/fake_chrome_identity_service.h"
@@ -23,7 +22,6 @@ namespace ios {
 TestChromeBrowserProvider::TestChromeBrowserProvider()
     : user_feedback_provider_(std::make_unique<TestUserFeedbackProvider>()),
       mailto_handler_provider_(std::make_unique<TestMailtoHandlerProvider>()),
-      discover_feed_provider_(std::make_unique<DiscoverFeedProvider>()),
       follow_provider_(std::make_unique<FollowProvider>()) {}
 
 TestChromeBrowserProvider::~TestChromeBrowserProvider() {}
@@ -50,11 +48,6 @@ TestUserFeedbackProvider* TestChromeBrowserProvider::GetUserFeedbackProvider()
 MailtoHandlerProvider* TestChromeBrowserProvider::GetMailtoHandlerProvider()
     const {
   return mailto_handler_provider_.get();
-}
-
-DiscoverFeedProvider* TestChromeBrowserProvider::GetDiscoverFeedProvider()
-    const {
-  return discover_feed_provider_.get();
 }
 
 FollowProvider* TestChromeBrowserProvider::GetFollowProvider() const {

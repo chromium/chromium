@@ -67,10 +67,6 @@ UserFeedbackProvider* ChromeBrowserProvider::GetUserFeedbackProvider() const {
   return nullptr;
 }
 
-DiscoverFeedProvider* ChromeBrowserProvider::GetDiscoverFeedProvider() const {
-  return nullptr;
-}
-
 FollowProvider* ChromeBrowserProvider::GetFollowProvider() const {
   return nullptr;
 }
