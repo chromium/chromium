@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2022 The Chromium Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -19,40 +19,71 @@ import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 
-/** Unit tests for MinAndroidSdkLevelSkipCheck. */
+/** Unit tests for {@link AndroidSdkLevelSkipCheck} */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE, sdk = 29)
-public class MinAndroidSdkLevelSkipCheckTest {
+public class AndroidSdkLevelSkipCheckTest {
     public static class UnannotatedBaseClass {
         @Test
         @MinAndroidSdkLevel(28)
         public void min28Method() {}
+
+        @Test
+        @MinAndroidSdkLevel(29)
+        public void min29Method() {}
+
         @Test
         @MinAndroidSdkLevel(30)
         public void min30Method() {}
+
+        @Test
+        @MaxAndroidSdkLevel(28)
+        public void max28Method() {}
+
+        @Test
+        @MaxAndroidSdkLevel(29)
+        public void max29Method() {}
+
+        @Test
+        @MaxAndroidSdkLevel(30)
+        public void max30Method() {}
+
+        @Test
+        @MinAndroidSdkLevel(28)
+        @MaxAndroidSdkLevel(30)
+        public void min28max30Method() {}
+
+        @Test
+        @MinAndroidSdkLevel(30)
+        @MaxAndroidSdkLevel(28)
+        public void min30max28Method() {}
     }
 
     @MinAndroidSdkLevel(28)
     public static class Min28Class extends UnannotatedBaseClass {
-        @Test public void unannotatedMethod() {}
+        @Test
+        public void unannotatedMethod() {}
     }
 
     @MinAndroidSdkLevel(30)
     public static class Min30Class extends UnannotatedBaseClass {
-        @Test public void unannotatedMethod() {}
+        @Test
+        public void unannotatedMethod() {}
     }
 
     public static class ExtendsMin28Class extends Min28Class {
         @Override
-        @Test public void unannotatedMethod() {}
+        @Test
+        public void unannotatedMethod() {}
     }
 
     public static class ExtendsMin30Class extends Min30Class {
         @Override
-        @Test public void unannotatedMethod() {}
+        @Test
+        public void unannotatedMethod() {}
     }
 
-    private static final MinAndroidSdkLevelSkipCheck sSkipCheck = new MinAndroidSdkLevelSkipCheck();
+    private static final AndroidSdkLevelSkipCheck sSkipCheck = new AndroidSdkLevelSkipCheck();
 
     private static class InnerTestRunner extends BlockJUnit4ClassRunner {
         public InnerTestRunner(Class<?> klass) throws InitializationError {
@@ -78,33 +109,69 @@ public class MinAndroidSdkLevelSkipCheckTest {
                 isIn(shouldSkip ? runListener.skippedTests : runListener.runTests));
     }
 
+    // Test {@link MinAndroidSdkLevel}
+
     @Test
-    public void testAnnotatedMethodAboveMin() throws Exception {
+    public void testAnnotatedMethodAboveMin_run() throws Exception {
         expectShouldSkip(UnannotatedBaseClass.class, "min28Method", false);
     }
 
     @Test
-    public void testAnnotatedMethodBelowMin() throws Exception {
+    public void testAnnotatedMethodAtMin_run() throws Exception {
+        expectShouldSkip(UnannotatedBaseClass.class, "min29Method", false);
+    }
+
+    @Test
+    public void testAnnotatedMethodBelowMin_skip() throws Exception {
         expectShouldSkip(UnannotatedBaseClass.class, "min30Method", true);
     }
 
     @Test
-    public void testAnnotatedClassAboveMin() throws Exception {
+    public void testAnnotatedClassAboveMin_run() throws Exception {
         expectShouldSkip(Min28Class.class, "unannotatedMethod", false);
     }
 
     @Test
-    public void testAnnotatedClassBelowMin() throws Exception {
+    public void testAnnotatedClassBelowMin_skip() throws Exception {
         expectShouldSkip(Min30Class.class, "unannotatedMethod", true);
     }
 
     @Test
-    public void testAnnotatedSuperclassAboveMin() throws Exception {
+    public void testAnnotatedSuperclassAboveMin_run() throws Exception {
         expectShouldSkip(ExtendsMin28Class.class, "unannotatedMethod", false);
     }
 
     @Test
-    public void testAnnotatedSuperclassBelowMin() throws Exception {
+    public void testAnnotatedSuperclassBelowMin_skip() throws Exception {
         expectShouldSkip(ExtendsMin30Class.class, "unannotatedMethod", true);
+    }
+
+    // Test {@link MaxAndroidSdkLevel}
+
+    @Test
+    public void testAnnotatedMethodAboveMax_skip() throws Exception {
+        expectShouldSkip(UnannotatedBaseClass.class, "max28Method", true);
+    }
+
+    @Test
+    public void testAnnotatedMethodAtMax_run() throws Exception {
+        expectShouldSkip(UnannotatedBaseClass.class, "max29Method", false);
+    }
+
+    @Test
+    public void testAnnotatedMethodBelowMax_run() throws Exception {
+        expectShouldSkip(UnannotatedBaseClass.class, "max30Method", false);
+    }
+
+    // Test combinations of {@link MinAndroidSdkLevel} and {@link MaxAndroidSdkLevel}
+
+    @Test
+    public void testAnnotatedMethodAboveMinBelowMax_run() throws Exception {
+        expectShouldSkip(UnannotatedBaseClass.class, "min28max30Method", false);
+    }
+
+    @Test
+    public void testAnnotatedMethodBelowMinAboveMax_skip() throws Exception {
+        expectShouldSkip(UnannotatedBaseClass.class, "min30max28Method", true);
     }
 }
