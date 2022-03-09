@@ -82,8 +82,9 @@ BrailleTranslatorManager = class {
    * @param {string} brailleTable The table for this translator to use.
    * @param {string=} opt_brailleTable8 Optionally specify an uncontracted
    * table.
+   * @param {function()=} opt_finishCallback Called when the refresh finishes.
    */
-  refresh(brailleTable, opt_brailleTable8) {
+  refresh(brailleTable, opt_brailleTable8, opt_finishCallback) {
     if (brailleTable && brailleTable === this.defaultTableId_) {
       return;
     }
@@ -154,6 +155,10 @@ BrailleTranslatorManager = class {
         this.liblouis_.getTranslator(
             uncontractedTable.fileNames, function(uncontractedTranslator) {
               finishRefresh(translator, uncontractedTranslator);
+
+              if (opt_finishCallback) {
+                opt_finishCallback();
+              }
             });
       }
     }.bind(this));
@@ -187,15 +192,18 @@ BrailleTranslatorManager = class {
   /**
    * Asynchronously fetches the list of braille tables and refreshes the
    * translators when done.
+   * @return {!Promise} Resolves when tables are loaded.
    * @private
    */
-  fetchTables_() {
-    BrailleTable.getAll(function(tables) {
-      this.tables_ = tables;
+  async fetchTables_() {
+    return new Promise(r => {
+      BrailleTable.getAll(tables => {
+        this.tables_ = tables;
 
-      // Initial refresh; set options from user preferences.
-      this.refresh(localStorage['brailleTable']);
-    }.bind(this));
+        // Initial refresh; set options from user preferences.
+        this.refresh(localStorage['brailleTable'], undefined, r);
+      });
+    });
   }
 
   /**
@@ -219,5 +227,13 @@ BrailleTranslatorManager = class {
    */
   getTablesForTest() {
     return this.tables_;
+  }
+
+  /**
+   * Loads liblouis tables and returns a promise resolved when loaded.
+   * @return {!Promise}
+   */
+  async loadTablesForTest() {
+    await this.fetchTables_();
   }
 };
