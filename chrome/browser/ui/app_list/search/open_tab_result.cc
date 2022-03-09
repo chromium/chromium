@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/app_list/search/open_tab_result.h"
 
 #include "ash/public/cpp/app_list/vector_icons/vector_icons.h"
+#include "ash/strings/grit/ash_strings.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
@@ -109,16 +110,15 @@ void OpenTabResult::UpdateText() {
   // `match.description`.
   SetTitle(match_.description);
 
-  // TODO(crbug.com/1293702): Change from "switch to tab" to "go to tab".
   std::u16string url = base::UTF8ToUTF16(match_.destination_url.spec());
   SetDetailsTextVector(
       {CreateStringTextItem(url).SetTextTags({Tag(Tag::URL, 0, url.length())}),
        CreateStringTextItem(kUrlDelimiter),
-       CreateStringTextItem(IDS_OMNIBOX_TAB_SUGGEST_HINT).SetElidable(false)});
+       CreateStringTextItem(IDS_APP_LIST_OPEN_TAB_HINT).SetElidable(false)});
 
   SetAccessibleName(
       base::StrCat({match_.description, kA11yDelimiter, url, kA11yDelimiter,
-                    l10n_util::GetStringUTF16(IDS_OMNIBOX_TAB_SUGGEST_HINT)}));
+                    l10n_util::GetStringUTF16(IDS_APP_LIST_OPEN_TAB_HINT)}));
 }
 
 void OpenTabResult::UpdateIcon() {

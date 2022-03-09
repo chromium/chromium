@@ -4,12 +4,12 @@
 
 #include "chrome/browser/ui/app_list/search/open_tab_result.h"
 
+#include "ash/strings/grit/ash_strings.h"
 #include "base/strings/strcat.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/ui/app_list/search/common/search_result_util.h"
 #include "components/omnibox/browser/autocomplete_match.h"
 #include "components/omnibox/browser/autocomplete_match_type.h"
-#include "components/strings/grit/components_strings.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -51,11 +51,11 @@ TEST_F(OpenTabResultTest, Basic) {
   EXPECT_EQ(
       StringFromTextVector(result->details_text_vector()),
       base::StrCat({u"http://www.website.com/ - ",
-                    l10n_util::GetStringUTF16(IDS_OMNIBOX_TAB_SUGGEST_HINT)}));
+                    l10n_util::GetStringUTF16(IDS_APP_LIST_OPEN_TAB_HINT)}));
   EXPECT_EQ(
       result->accessible_name(),
       base::StrCat({u"queryabc, http://www.website.com/, ",
-                    l10n_util::GetStringUTF16(IDS_OMNIBOX_TAB_SUGGEST_HINT)}));
+                    l10n_util::GetStringUTF16(IDS_APP_LIST_OPEN_TAB_HINT)}));
 }
 
 TEST_F(OpenTabResultTest, DriveId) {

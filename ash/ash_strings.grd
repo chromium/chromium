@@ -4739,6 +4739,9 @@ New install
       <message name="IDS_APP_LIST_CONTINUE_OPENED_YESTERDAY" desc="Text displayed under a file suggestion in the launcher, describing why it is being shown.">
         Opened yesterday
       </message>
+      <message name="IDS_APP_LIST_OPEN_TAB_HINT" desc="Shown alongside launcher search results which will take the user to an open tab when clicked.">
+        Go to this tab
+      </message>
       <message name="IDS_APP_LIST_START_ASSISTANT" desc="Tooltip for the button that starts Google Assistant from the search box in the app list.">
         Google Assistant
       </message>
