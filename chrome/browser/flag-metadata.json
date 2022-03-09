@@ -5613,11 +5613,6 @@
     "expiry_milestone": 104
   },
   {
-    "name": "swap-android-share-hub-rows",
-    "owners": [ "ellyjones", "chrome-sharing-eng@google.com" ],
-    "expiry_milestone": 100
-  },
-  {
     "name": "sync-android-promos-revamp",
     "owners": ["mmrashad@google.com", "chrome-sync-dev@google.com"],
     "expiry_milestone": 103

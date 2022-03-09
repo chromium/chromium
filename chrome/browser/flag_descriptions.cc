@@ -3552,11 +3552,6 @@ const char kRequestDesktopSiteGlobalDescription[] =
     "An option in `Site settings` to persistently request the "
     "desktop version of websites.";
 
-const char kSwapAndroidShareHubRowsName[] = "Swap Android share hub rows.";
-const char kSwapAndroidShareHubRowsDescription[] =
-    "Swap the order of the first-party and third-party rows in the Android "
-    "share hub.";
-
 const char kRequestDesktopSiteForTabletsName[] =
     "Request desktop site for tablets on Android";
 const char kRequestDesktopSiteForTabletsDescription[] =

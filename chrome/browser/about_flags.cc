@@ -7843,13 +7843,6 @@ const FeatureEntry kFeatureEntries[] = {
      kOsDesktop | kOsAndroid,
      FEATURE_VALUE_TYPE(omnibox::kUpdatedConnectionSecurityIndicators)},
 
-#if BUILDFLAG(IS_ANDROID)
-    {"swap-android-share-hub-rows",
-     flag_descriptions::kSwapAndroidShareHubRowsName,
-     flag_descriptions::kSwapAndroidShareHubRowsDescription, kOsAndroid,
-     FEATURE_VALUE_TYPE(share::kSwapAndroidShareHubRows)},
-#endif
-
     {"enable-drdc", flag_descriptions::kEnableDrDcName,
      flag_descriptions::kEnableDrDcDescription, kOsAll,
      FEATURE_VALUE_TYPE(features::kEnableDrDc)},
