@@ -15,9 +15,6 @@ declare_args() {
   android_unstripped_runtime_outputs = true
 }
 
-# Parameters:
-#  - binary_prefix
-#      Prefix of compiler executables.
 template("android_clang_toolchain") {
   clang_toolchain(target_name) {
     assert(defined(invoker.toolchain_args),
@@ -44,9 +41,19 @@ template("android_clang_toolchain") {
     if (_use_debug_fission) {
       # llvm-dwp does not work with thin lto, so use binutils one.
       # https://crbug.com/1264130
-      dwp = rebase_path(
-              "$android_toolchain_root/bin/${invoker.binary_prefix}-dwp",
-              root_build_dir)
+      if (toolchain_args.current_cpu == "arm") {
+        _dwp = "arm-linux-androideabi-4.9/prebuilt/linux-x86_64/bin/arm-linux-androideabi-dwp"
+      } else if (toolchain_args.current_cpu == "arm64") {
+        _dwp = "aarch64-linux-android-4.9/prebuilt/linux-x86_64/bin/aarch64-linux-android-dwp"
+      } else if (toolchain_args.current_cpu == "x86") {
+        _dwp = "x86-4.9/prebuilt/linux-x86_64/bin/i686-linux-android-dwp"
+      } else if (toolchain_args.current_cpu == "x64") {
+        _dwp = "x86_64-4.9/prebuilt/linux-x86_64/bin/x86_64-linux-android-dwp"
+      } else {
+        _dwp = "llvm/prebuilt/linux-x86_64/bin/llvm-dwp"
+      }
+
+      dwp = rebase_path("$android_ndk_root/toolchains/$_dwp", root_build_dir)
     }
 
     use_unstripped_as_runtime_outputs = android_unstripped_runtime_outputs
@@ -58,9 +65,6 @@ template("android_clang_toolchain") {
 }
 
 android_clang_toolchain("android_clang_x86") {
-  if (use_debug_fission && target_os == "android") {
-    binary_prefix = "i686-linux-android"
-  }
   toolchain_args = {
     current_cpu = "x86"
 
@@ -85,27 +89,18 @@ android_clang_toolchain("android_clang_x86") {
 }
 
 android_clang_toolchain("android_clang_arm") {
-  if (use_debug_fission && target_os == "android") {
-    binary_prefix = "arm-linux-androideabi"
-  }
   toolchain_args = {
     current_cpu = "arm"
   }
 }
 
 android_clang_toolchain("android_clang_mipsel") {
-  if (use_debug_fission && target_os == "android") {
-    binary_prefix = "mipsel-linux-android"
-  }
   toolchain_args = {
     current_cpu = "mipsel"
   }
 }
 
 android_clang_toolchain("android_clang_x64") {
-  if (use_debug_fission && target_os == "android") {
-    binary_prefix = "x86_64-linux-android"
-  }
   toolchain_args = {
     current_cpu = "x64"
 
@@ -130,18 +125,12 @@ android_clang_toolchain("android_clang_x64") {
 }
 
 android_clang_toolchain("android_clang_arm64") {
-  if (use_debug_fission && target_os == "android") {
-    binary_prefix = "aarch64-linux-android"
-  }
   toolchain_args = {
     current_cpu = "arm64"
   }
 }
 
 android_clang_toolchain("android_clang_arm64_hwasan") {
-  if (use_debug_fission && target_os == "android") {
-    binary_prefix = "aarch64-linux-android"
-  }
   toolchain_args = {
     current_cpu = "arm64"
     is_hwasan = true
@@ -150,9 +139,6 @@ android_clang_toolchain("android_clang_arm64_hwasan") {
 }
 
 android_clang_toolchain("android_clang_mips64el") {
-  if (use_debug_fission && target_os == "android") {
-    binary_prefix = "mips64el-linux-android"
-  }
   toolchain_args = {
     current_cpu = "mips64el"
   }
