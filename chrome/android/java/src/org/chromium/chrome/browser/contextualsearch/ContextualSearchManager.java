@@ -1947,8 +1947,8 @@ public class ContextualSearchManager
 
             @Override
             public void completeSearch() {
-                if (ChromeFeatureList.isEnabled(
-                            ChromeFeatureList.CONTEXTUAL_SEARCH_FORCE_CAPTION)) {
+                if (ChromeFeatureList.isEnabled(ChromeFeatureList.CONTEXTUAL_SEARCH_FORCE_CAPTION)
+                        && mSearchPanel != null) {
                     mSearchPanel.ensureCaption();
                 }
             }
