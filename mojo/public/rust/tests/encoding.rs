@@ -10,7 +10,7 @@
 
 use mojo::bindings::encoding::Context;
 use mojo::bindings::message::MessageHeader;
-use mojo::bindings::mojom::{MojomInterface, MojomPointer, MojomStruct, MojomUnion};
+use mojo::bindings::mojom::{MojomInterface, MojomPointer, MojomStruct};
 
 use mojo::system;
 use mojo::system::Handle;
@@ -433,240 +433,6 @@ encoding_tests! {
             }
         }
     }
-    conformance_mthd14_good_1 {
-        MessageHeader => {
-            |header: MessageHeader| {
-                assert_eq!(header.version, 0);
-                assert_eq!(header.name, 14);
-                assert_eq!(header.flags, 0);
-            }
-        },
-        ConformanceTestInterfaceMethod14Request => {
-            |payload: &ConformanceTestInterfaceMethod14Request| {
-                match payload.param0 {
-                    UnionA::a(ref val) => assert_eq!(*val, 54),
-                    _ => panic!("Incorrect union variant! Tag found: {}", payload.param0.get_tag()),
-                }
-            }
-        }
-    }
-    conformance_mthd14_good_array_in_union {
-        MessageHeader => {
-            |header: MessageHeader| {
-                assert_eq!(header.version, 0);
-                assert_eq!(header.name, 14);
-                assert_eq!(header.flags, 0);
-            }
-        },
-        ConformanceTestInterfaceMethod14Request => {
-            |payload: &ConformanceTestInterfaceMethod14Request| {
-                match payload.param0 {
-                    UnionA::d(ref val) => assert_eq!(*val, Some(vec![0, 1, 2])),
-                    _ => panic!("Incorrect union variant! Tag found: {}", payload.param0.get_tag()),
-                }
-            }
-        }
-    }
-    conformance_mthd14_good_map_in_union {
-        MessageHeader => {
-            |header: MessageHeader| {
-                assert_eq!(header.version, 0);
-                assert_eq!(header.name, 14);
-                assert_eq!(header.flags, 0);
-            }
-        },
-        ConformanceTestInterfaceMethod14Request => {
-            |payload: &ConformanceTestInterfaceMethod14Request| {
-                let mut map = HashMap::with_capacity(2);
-                map.insert(String::from_utf8(vec![0, 1, 2, 3, 4]).unwrap(), 1);
-                map.insert(String::from_utf8(vec![5, 6, 7, 8, 9]).unwrap(), 2);
-                match payload.param0 {
-                    UnionA::e(ref val) => assert_eq!(*val, Some(map)),
-                    _ => panic!("Incorrect union variant! Tag found: {}", payload.param0.get_tag()),
-                }
-            }
-        }
-    }
-    conformance_mthd14_good_nested_union {
-        MessageHeader => {
-            |header: MessageHeader| {
-                assert_eq!(header.version, 0);
-                assert_eq!(header.name, 14);
-                assert_eq!(header.flags, 0);
-            }
-        },
-        ConformanceTestInterfaceMethod14Request => {
-            |payload: &ConformanceTestInterfaceMethod14Request| {
-                match payload.param0 {
-                    UnionA::f(ref val) => {
-                        assert!(val.is_some());
-                        let inner = val.as_ref().unwrap();
-                        match *inner {
-                            UnionB::b(inner_val) => assert_eq!(inner_val, 10),
-                            _ => panic!("Incorrect inner union variant! Tag found: {}", inner.get_tag()),
-                        }
-                    },
-                    _ => panic!("Incorrect union variant! Tag found: {}", payload.param0.get_tag()),
-                }
-            }
-        }
-    }
-    conformance_mthd14_good_null_array_in_union {
-        MessageHeader => {
-            |header: MessageHeader| {
-                assert_eq!(header.version, 0);
-                assert_eq!(header.name, 14);
-                assert_eq!(header.flags, 0);
-            }
-        },
-        ConformanceTestInterfaceMethod14Request => {
-            |payload: &ConformanceTestInterfaceMethod14Request| {
-                match payload.param0 {
-                    UnionA::d(ref val) => assert_eq!(*val, None),
-                    _ => panic!("Incorrect union variant! Tag found: {}", payload.param0.get_tag()),
-                }
-            }
-        }
-    }
-    conformance_mthd14_good_null_map_in_union {
-        MessageHeader => {
-            |header: MessageHeader| {
-                assert_eq!(header.version, 0);
-                assert_eq!(header.name, 14);
-                assert_eq!(header.flags, 0);
-            }
-        },
-        ConformanceTestInterfaceMethod14Request => {
-            |payload: &ConformanceTestInterfaceMethod14Request| {
-                match payload.param0 {
-                    UnionA::e(ref val) => assert_eq!(*val, None),
-                    _ => panic!("Incorrect union variant! Tag found: {}", payload.param0.get_tag()),
-                }
-            }
-        }
-    }
-    conformance_mthd14_good_struct_in_union {
-        MessageHeader => {
-            |header: MessageHeader| {
-                assert_eq!(header.version, 0);
-                assert_eq!(header.name, 14);
-                assert_eq!(header.flags, 0);
-            }
-        },
-        ConformanceTestInterfaceMethod14Request => {
-            |payload: &ConformanceTestInterfaceMethod14Request| {
-                match payload.param0 {
-                    UnionA::c(ref val) => {
-                        let struct_val = val.as_ref().unwrap();
-                        assert_eq!(struct_val.i, 20);
-                    },
-                    _ => panic!("Incorrect union variant! Tag found: {}", payload.param0.get_tag()),
-                }
-            }
-        }
-    }
-    conformance_mthd14_good_unknown_union_tag {
-        MessageHeader => {
-            |header: MessageHeader| {
-                assert_eq!(header.version, 0);
-                assert_eq!(header.name, 14);
-                assert_eq!(header.flags, 0);
-            }
-        },
-        ConformanceTestInterfaceMethod14Request => {
-            |payload: &ConformanceTestInterfaceMethod14Request| {
-                match payload.param0 {
-                    UnionA::_Unknown(ref val) => assert_eq!(*val, 54),
-                    _ => panic!("Incorrect union variant! Tag found: {}", payload.param0.get_tag()),
-                }
-            }
-        }
-    }
-    conformance_mthd15_good_union_in_array {
-        MessageHeader => {
-            |header: MessageHeader| {
-                assert_eq!(header.version, 0);
-                assert_eq!(header.name, 15);
-                assert_eq!(header.flags, 0);
-            }
-        },
-        ConformanceTestInterfaceMethod15Request => {
-            |payload: &ConformanceTestInterfaceMethod15Request| {
-                assert_eq!(payload.param0.a, true);
-                assert_eq!(payload.param0.b, 22);
-                assert!(payload.param0.c.is_none());
-                assert!(payload.param0.d.is_some());
-                assert!(payload.param0.e.is_none());
-                let array = payload.param0.d.as_ref().unwrap();
-                assert_eq!(array.len(), 3);
-                for u in array.iter() {
-                    match *u {
-                        UnionA::b(ref val) => assert_eq!(*val, 10),
-                        _ => panic!("Incorrect union variant! Tag found: {}", u.get_tag()),
-                    }
-                }
-            }
-        }
-    }
-    conformance_mthd15_good_union_in_map {
-        MessageHeader => {
-            |header: MessageHeader| {
-                assert_eq!(header.version, 0);
-                assert_eq!(header.name, 15);
-                assert_eq!(header.flags, 0);
-            }
-        },
-        ConformanceTestInterfaceMethod15Request => {
-            |payload: &ConformanceTestInterfaceMethod15Request| {
-                assert_eq!(payload.param0.a, true);
-                assert_eq!(payload.param0.b, 22);
-                assert!(payload.param0.c.is_none());
-                assert!(payload.param0.d.is_none());
-                assert!(payload.param0.e.is_some());
-                let map = payload.param0.e.as_ref().unwrap();
-                assert_eq!(map.len(), 3);
-                let mut expect_keys = HashMap::with_capacity(3);
-                expect_keys.insert(8, false);
-                expect_keys.insert(7, false);
-                expect_keys.insert(1, false);
-                for (key, value) in map.iter() {
-                    expect_keys.insert(*key, true);
-                    match *value {
-                        UnionA::b(ref val) => assert_eq!(*val, 10),
-                        _ => panic!("Incorrect union variant! Tag found: {}", value.get_tag()),
-                    }
-                }
-                for (key, value) in expect_keys.iter() {
-                    if *value == false {
-                        panic!("Expected key `{}`, but not found!", *key);
-                    }
-                }
-            }
-        }
-    }
-    conformance_mthd15_good_union_in_struct {
-        MessageHeader => {
-            |header: MessageHeader| {
-                assert_eq!(header.version, 0);
-                assert_eq!(header.name, 15);
-                assert_eq!(header.flags, 0);
-            }
-        },
-        ConformanceTestInterfaceMethod15Request => {
-            |payload: &ConformanceTestInterfaceMethod15Request| {
-                assert_eq!(payload.param0.a, true);
-                assert_eq!(payload.param0.b, 22);
-                assert!(payload.param0.c.is_some());
-                assert!(payload.param0.d.is_none());
-                assert!(payload.param0.e.is_none());
-                let union_val = payload.param0.c.as_ref().unwrap();
-                match *union_val {
-                    UnionA::b(ref val) => assert_eq!(*val, 54),
-                    _ => panic!("Incorrect union variant! Tag found: {}", union_val.get_tag()),
-                }
-            }
-        }
-    }
     integration_intf_rqst_mthd0_good {
         MessageHeader => {
             |header: MessageHeader| {
@@ -697,4 +463,241 @@ encoding_tests! {
             }
         }
     }
+
+    // Tests with missing data:
+    //
+    // conformance_mthd14_good_1 {
+    //     MessageHeader => {
+    //         |header: MessageHeader| {
+    //             assert_eq!(header.version, 0);
+    //             assert_eq!(header.name, 14);
+    //             assert_eq!(header.flags, 0);
+    //         }
+    //     },
+    //     ConformanceTestInterfaceMethod14Request => {
+    //         |payload: &ConformanceTestInterfaceMethod14Request| {
+    //             match payload.param0 {
+    //                 UnionA::a(ref val) => assert_eq!(*val, 54),
+    //                 _ => panic!("Incorrect union variant! Tag found: {}", payload.param0.get_tag()),
+    //             }
+    //         }
+    //     }
+    // }
+    // conformance_mthd14_good_array_in_union {
+    //     MessageHeader => {
+    //         |header: MessageHeader| {
+    //             assert_eq!(header.version, 0);
+    //             assert_eq!(header.name, 14);
+    //             assert_eq!(header.flags, 0);
+    //         }
+    //     },
+    //     ConformanceTestInterfaceMethod14Request => {
+    //         |payload: &ConformanceTestInterfaceMethod14Request| {
+    //             match payload.param0 {
+    //                 UnionA::d(ref val) => assert_eq!(*val, Some(vec![0, 1, 2])),
+    //                 _ => panic!("Incorrect union variant! Tag found: {}", payload.param0.get_tag()),
+    //             }
+    //         }
+    //     }
+    // }
+    // conformance_mthd14_good_map_in_union {
+    //     MessageHeader => {
+    //         |header: MessageHeader| {
+    //             assert_eq!(header.version, 0);
+    //             assert_eq!(header.name, 14);
+    //             assert_eq!(header.flags, 0);
+    //         }
+    //     },
+    //     ConformanceTestInterfaceMethod14Request => {
+    //         |payload: &ConformanceTestInterfaceMethod14Request| {
+    //             let mut map = HashMap::with_capacity(2);
+    //             map.insert(String::from_utf8(vec![0, 1, 2, 3, 4]).unwrap(), 1);
+    //             map.insert(String::from_utf8(vec![5, 6, 7, 8, 9]).unwrap(), 2);
+    //             match payload.param0 {
+    //                 UnionA::e(ref val) => assert_eq!(*val, Some(map)),
+    //                 _ => panic!("Incorrect union variant! Tag found: {}", payload.param0.get_tag()),
+    //             }
+    //         }
+    //     }
+    // }
+    // conformance_mthd14_good_nested_union {
+    //     MessageHeader => {
+    //         |header: MessageHeader| {
+    //             assert_eq!(header.version, 0);
+    //             assert_eq!(header.name, 14);
+    //             assert_eq!(header.flags, 0);
+    //         }
+    //     },
+    //     ConformanceTestInterfaceMethod14Request => {
+    //         |payload: &ConformanceTestInterfaceMethod14Request| {
+    //             match payload.param0 {
+    //                 UnionA::f(ref val) => {
+    //                     assert!(val.is_some());
+    //                     let inner = val.as_ref().unwrap();
+    //                     match *inner {
+    //                         UnionB::b(inner_val) => assert_eq!(inner_val, 10),
+    //                         _ => panic!("Incorrect inner union variant! Tag found: {}", inner.get_tag()),
+    //                     }
+    //                 },
+    //                 _ => panic!("Incorrect union variant! Tag found: {}", payload.param0.get_tag()),
+    //             }
+    //         }
+    //     }
+    // }
+    // conformance_mthd14_good_null_array_in_union {
+    //     MessageHeader => {
+    //         |header: MessageHeader| {
+    //             assert_eq!(header.version, 0);
+    //             assert_eq!(header.name, 14);
+    //             assert_eq!(header.flags, 0);
+    //         }
+    //     },
+    //     ConformanceTestInterfaceMethod14Request => {
+    //         |payload: &ConformanceTestInterfaceMethod14Request| {
+    //             match payload.param0 {
+    //                 UnionA::d(ref val) => assert_eq!(*val, None),
+    //                 _ => panic!("Incorrect union variant! Tag found: {}", payload.param0.get_tag()),
+    //             }
+    //         }
+    //     }
+    // }
+    // conformance_mthd14_good_null_map_in_union {
+    //     MessageHeader => {
+    //         |header: MessageHeader| {
+    //             assert_eq!(header.version, 0);
+    //             assert_eq!(header.name, 14);
+    //             assert_eq!(header.flags, 0);
+    //         }
+    //     },
+    //     ConformanceTestInterfaceMethod14Request => {
+    //         |payload: &ConformanceTestInterfaceMethod14Request| {
+    //             match payload.param0 {
+    //                 UnionA::e(ref val) => assert_eq!(*val, None),
+    //                 _ => panic!("Incorrect union variant! Tag found: {}", payload.param0.get_tag()),
+    //             }
+    //         }
+    //     }
+    // }
+    // conformance_mthd14_good_struct_in_union {
+    //     MessageHeader => {
+    //         |header: MessageHeader| {
+    //             assert_eq!(header.version, 0);
+    //             assert_eq!(header.name, 14);
+    //             assert_eq!(header.flags, 0);
+    //         }
+    //     },
+    //     ConformanceTestInterfaceMethod14Request => {
+    //         |payload: &ConformanceTestInterfaceMethod14Request| {
+    //             match payload.param0 {
+    //                 UnionA::c(ref val) => {
+    //                     let struct_val = val.as_ref().unwrap();
+    //                     assert_eq!(struct_val.i, 20);
+    //                 },
+    //                 _ => panic!("Incorrect union variant! Tag found: {}", payload.param0.get_tag()),
+    //             }
+    //         }
+    //     }
+    // }
+    // conformance_mthd14_good_unknown_union_tag {
+    //     MessageHeader => {
+    //         |header: MessageHeader| {
+    //             assert_eq!(header.version, 0);
+    //             assert_eq!(header.name, 14);
+    //             assert_eq!(header.flags, 0);
+    //         }
+    //     },
+    //     ConformanceTestInterfaceMethod14Request => {
+    //         |payload: &ConformanceTestInterfaceMethod14Request| {
+    //             match payload.param0 {
+    //                 UnionA::_Unknown(ref val) => assert_eq!(*val, 54),
+    //                 _ => panic!("Incorrect union variant! Tag found: {}", payload.param0.get_tag()),
+    //             }
+    //         }
+    //     }
+    // }
+    // conformance_mthd15_good_union_in_array {
+    //     MessageHeader => {
+    //         |header: MessageHeader| {
+    //             assert_eq!(header.version, 0);
+    //             assert_eq!(header.name, 15);
+    //             assert_eq!(header.flags, 0);
+    //         }
+    //     },
+    //     ConformanceTestInterfaceMethod15Request => {
+    //         |payload: &ConformanceTestInterfaceMethod15Request| {
+    //             assert_eq!(payload.param0.a, true);
+    //             assert_eq!(payload.param0.b, 22);
+    //             assert!(payload.param0.c.is_none());
+    //             assert!(payload.param0.d.is_some());
+    //             assert!(payload.param0.e.is_none());
+    //             let array = payload.param0.d.as_ref().unwrap();
+    //             assert_eq!(array.len(), 3);
+    //             for u in array.iter() {
+    //                 match *u {
+    //                     UnionA::b(ref val) => assert_eq!(*val, 10),
+    //                     _ => panic!("Incorrect union variant! Tag found: {}", u.get_tag()),
+    //                 }
+    //             }
+    //         }
+    //     }
+    // }
+    // conformance_mthd15_good_union_in_map {
+    //     MessageHeader => {
+    //         |header: MessageHeader| {
+    //             assert_eq!(header.version, 0);
+    //             assert_eq!(header.name, 15);
+    //             assert_eq!(header.flags, 0);
+    //         }
+    //     },
+    //     ConformanceTestInterfaceMethod15Request => {
+    //         |payload: &ConformanceTestInterfaceMethod15Request| {
+    //             assert_eq!(payload.param0.a, true);
+    //             assert_eq!(payload.param0.b, 22);
+    //             assert!(payload.param0.c.is_none());
+    //             assert!(payload.param0.d.is_none());
+    //             assert!(payload.param0.e.is_some());
+    //             let map = payload.param0.e.as_ref().unwrap();
+    //             assert_eq!(map.len(), 3);
+    //             let mut expect_keys = HashMap::with_capacity(3);
+    //             expect_keys.insert(8, false);
+    //             expect_keys.insert(7, false);
+    //             expect_keys.insert(1, false);
+    //             for (key, value) in map.iter() {
+    //                 expect_keys.insert(*key, true);
+    //                 match *value {
+    //                     UnionA::b(ref val) => assert_eq!(*val, 10),
+    //                     _ => panic!("Incorrect union variant! Tag found: {}", value.get_tag()),
+    //                 }
+    //             }
+    //             for (key, value) in expect_keys.iter() {
+    //                 if *value == false {
+    //                     panic!("Expected key `{}`, but not found!", *key);
+    //                 }
+    //             }
+    //         }
+    //     }
+    // }
+    // conformance_mthd15_good_union_in_struct {
+    //     MessageHeader => {
+    //         |header: MessageHeader| {
+    //             assert_eq!(header.version, 0);
+    //             assert_eq!(header.name, 15);
+    //             assert_eq!(header.flags, 0);
+    //         }
+    //     },
+    //     ConformanceTestInterfaceMethod15Request => {
+    //         |payload: &ConformanceTestInterfaceMethod15Request| {
+    //             assert_eq!(payload.param0.a, true);
+    //             assert_eq!(payload.param0.b, 22);
+    //             assert!(payload.param0.c.is_some());
+    //             assert!(payload.param0.d.is_none());
+    //             assert!(payload.param0.e.is_none());
+    //             let union_val = payload.param0.c.as_ref().unwrap();
+    //             match *union_val {
+    //                 UnionA::b(ref val) => assert_eq!(*val, 54),
+    //                 _ => panic!("Incorrect union variant! Tag found: {}", union_val.get_tag()),
+    //             }
+    //         }
+    //     }
+    // }
 }

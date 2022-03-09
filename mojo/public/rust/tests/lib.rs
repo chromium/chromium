@@ -25,5 +25,5 @@ mod regression;
 // The code in crate/bindings/{encoding,decoding}.rs needs to be updated and
 // the tests must be updated to use the available test data
 //
-// mod encoding;
-// mod validation;
+mod encoding;
+mod validation;
