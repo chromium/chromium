@@ -51,7 +51,7 @@ class PropertyTreeState;
 
 enum class DataTransferAccessPolicy;
 
-// Used for drag and drop, copy/paste, and accessibility snapshots.
+// Used for drag and drop and copy/paste.
 // Drag and Drop:
 // https://html.spec.whatwg.org/multipage/dnd.html
 // Clipboard API (copy/paste):
@@ -136,15 +136,6 @@ class CORE_EXPORT DataTransfer final : public ScriptWrappable,
   // Clip to the visible area of the visual viewport.
   static gfx::RectF ClipByVisualViewport(const gfx::RectF& rect_in_document,
                                          const LocalFrame&);
-
-  // |frame| is the source for image pixels.
-  // |node| is the element whose bitmap is created.
-  // If |max_size| is provided and the node is larger than it, output image is
-  // scaled down based on it.
-  static bool CreateBitmapFromNode(const LocalFrame* frame,
-                                   Node* node,
-                                   const gfx::Size& max_size,
-                                   SkBitmap& bitmap);
 
   // |layout_size| is the size of the image in layout pixels.
   // |paint_offset| is the offset from the origin of the dragged object of the
