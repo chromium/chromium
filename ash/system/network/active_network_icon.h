@@ -90,6 +90,7 @@ class ASH_EXPORT ActiveNetworkIcon : public TrayNetworkStateObserver {
   // TrayNetworkStateObserver
   void ActiveNetworkStateChanged() override;
   void NetworkListChanged() override;
+  void DeviceStateListChanged() override;
 
   const chromeos::network_config::mojom::NetworkStateProperties*
   GetNetworkForType(Type type);

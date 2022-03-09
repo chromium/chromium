@@ -273,6 +273,18 @@ TEST_F(ActiveNetworkIconTest, CellularScanning) {
       AreImagesEqual(image, ImageForNetwork(NetworkType::kCellular,
                                             ConnectionStateType::kConnecting)));
   EXPECT_TRUE(animating);
+
+  // Set scanning property to false, expect no network connections icon.
+  network_state_helper().device_test()->SetDeviceProperty(
+      kShillManagerClientStubCellularDevice, shill::kScanningProperty,
+      base::Value(false), true /* notify_changed */);
+  base::RunLoop().RunUntilIdle();
+
+  image = active_network_icon()->GetImage(ActiveNetworkIcon::Type::kSingle,
+                                          icon_type(), &animating);
+  EXPECT_TRUE(AreImagesEqual(
+      image, network_icon::GetImageForWiFiNoConnections(icon_type())));
+  EXPECT_FALSE(animating);
 }
 
 TEST_F(ActiveNetworkIconTest, CellularDisable) {

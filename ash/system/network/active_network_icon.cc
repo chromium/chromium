@@ -301,6 +301,14 @@ void ActiveNetworkIcon::SetCellularUninitializedMsg() {
     return;
   }
 
+  // If cellular is not scanning and cellular device is enabled reset cellular
+  // initializing state.
+  if (cellular && !cellular->scanning &&
+      (cellular->device_state == DeviceStateType::kEnabled ||
+       cellular->device_state == DeviceStateType::kEnabling)) {
+    cellular_uninitialized_msg_ = 0;
+  }
+
   // There can be a delay between leaving the Initializing state and when
   // a Cellular device shows up, so keep showing the initializing
   // animation for a bit to avoid flashing the disconnect icon.
@@ -313,6 +321,10 @@ void ActiveNetworkIcon::SetCellularUninitializedMsg() {
 // TrayNetworkStateObserver
 
 void ActiveNetworkIcon::ActiveNetworkStateChanged() {
+  SetCellularUninitializedMsg();
+}
+
+void ActiveNetworkIcon::DeviceStateListChanged() {
   SetCellularUninitializedMsg();
 }
 
