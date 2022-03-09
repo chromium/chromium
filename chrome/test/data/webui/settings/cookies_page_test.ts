@@ -254,6 +254,19 @@ suite('CrSettingsCookiesPageTest', function() {
     assertFalse(page.$.toast.open);
   });
 
+  test('privacySandboxToast_restrictedSandbox', async function() {
+    // No toast should be shown if the privacy sandbox is restricted
+    loadTimeData.overrideValues({
+      isPrivacySandboxRestricted: true,
+    });
+    page.$.blockAll.click();
+    assertEquals(
+        'Settings.PrivacySandbox.Block3PCookies',
+        await testMetricsBrowserProxy.whenCalled('recordAction'));
+    testMetricsBrowserProxy.resetResolver('recordAction');
+    assertFalse(page.$.toast.open);
+  });
+
   test('AllSiteDataLink_consolidatedControlsDisabled', function() {
     const siteDataLinkRow =
         page.shadowRoot!.querySelector<CrLinkRowElement>('#site-data-trigger')!;

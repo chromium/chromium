@@ -256,13 +256,20 @@ export class SettingsCookiesPageElement extends SettingsCookiesPageElementBase {
     // the privacy sandbox toast should be shown.
     const currentCookieSetting =
         this.getPref('generated.cookie_primary_setting').value;
-    if (this.getPref('privacy_sandbox.apis_enabled').value &&
+    const privacySandboxEnabled =
+        loadTimeData.getBoolean('privacySandboxSettings3Enabled') ?
+        this.getPref('privacy_sandbox.apis_enabled_v2').value :
+        this.getPref('privacy_sandbox.apis_enabled').value;
+
+    if (privacySandboxEnabled &&
         (currentCookieSetting === CookiePrimarySetting.ALLOW_ALL ||
          currentCookieSetting ===
              CookiePrimarySetting.BLOCK_THIRD_PARTY_INCOGNITO) &&
         (selection === CookiePrimarySetting.BLOCK_THIRD_PARTY ||
          selection === CookiePrimarySetting.BLOCK_ALL)) {
-      this.$.toast.show();
+      if (!loadTimeData.getBoolean('isPrivacySandboxRestricted')) {
+        this.$.toast.show();
+      }
       this.metricsBrowserProxy_.recordAction(
           'Settings.PrivacySandbox.Block3PCookies');
     } else if (
