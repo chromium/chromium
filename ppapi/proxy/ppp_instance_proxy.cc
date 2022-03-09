@@ -35,7 +35,6 @@ namespace proxy {
 using thunk::EnterInstanceAPINoLock;
 using thunk::EnterInstanceNoLock;
 using thunk::EnterResourceNoLock;
-using thunk::PPB_Flash_Fullscreen_API;
 using thunk::PPB_Instance_API;
 using thunk::PPB_View_API;
 

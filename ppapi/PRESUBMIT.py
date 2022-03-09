@@ -223,12 +223,6 @@ def CheckChange(input_api, output_api):
   # through idl.
   whitelist = ['ppb_opengles2', 'ppb_opengles2ext_dev']
 
-  # The PDF interface is hand-written.
-  # TODO(crbug.com/1302684): Remove the addition below when the APIs they allow
-  # are gone. Removing these entries along with the PDF code in the same CL
-  # confuses this presubmit script.
-  whitelist += ['ppb_pdf', 'ppp_pdf']
-
   # Find all relevant .h and .idl files.
   for filename in files:
     name, ext = os.path.splitext(filename)
