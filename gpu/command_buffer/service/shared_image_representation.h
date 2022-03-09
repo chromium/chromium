@@ -247,6 +247,9 @@ class GPU_GLES2_EXPORT SharedImageRepresentationGLTexturePassthrough
   GetTexturePassthrough() = 0;
 
   gpu::TextureBase* GetTextureBase() override;
+
+ protected:
+  friend class SharedImageRepresentationDawnEGLImage;
 };
 
 class GPU_GLES2_EXPORT SharedImageRepresentationSkia
