@@ -107,8 +107,11 @@ def FuzzListInString(s, separators=r", |,|; |;|\r\n|\s"):
   items.RandomMutation()
   return sep.join(items)
 
-
-class FuzzySequence(object):
+# Pylint doesn't recognize that in this case 'self' is some mutable sequence,
+# so the unsupoorted-assignment-operation and unsupported-delete-operation
+# warnings have been disabled here.
+# pylint: disable=unsupported-assignment-operation,unsupported-delete-operation
+class FuzzySequence(object): #pylint: disable=useless-object-inheritance
   """A helpful mixin for writing fuzzy mutable sequence types.
 
   If a method parameter is left at its default value of None, an appropriate
@@ -154,6 +157,7 @@ class FuzzySequence(object):
     if amount is None:
       amount = utils.RandomLowInteger(min(1, len(self)), len(self) - location)
     del self[location:location+amount]
+# pylint: enable=unsupported-assignment-operation,unsupported-delete-operation
 
 
 class FuzzyList(list, FuzzySequence):
