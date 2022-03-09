@@ -152,6 +152,53 @@ TEST_F(AXAuraObjCacheTest, ViewDestruction) {
   EXPECT_TRUE(observer.was_called());
 }
 
+TEST_F(AXAuraObjCacheTest, CacheDestructionUAF) {
+  // This test ensures that a UAF is not possible during cache destruction.
+  // Two top-level widgets need to be created and inserted into |root_windows_|.
+  // This test uses manual memory management, rather than managed helpers
+  // that other tests are using. Ensure there is not a UAF crash when deleting
+  // the cache.
+  AXAuraObjCache* cache = new AXAuraObjCache();
+
+  Widget* widget = new Widget();
+  Widget::InitParams params = CreateParams(Widget::InitParams::TYPE_WINDOW);
+  params.ownership = views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET;
+  params.bounds = gfx::Rect(0, 0, 200, 200);
+  widget->Init(std::move(params));
+  cache->OnRootWindowObjCreated(widget->GetNativeWindow());
+
+  widget->Activate();
+  base::RunLoop().RunUntilIdle();
+
+  cache->GetOrCreate(widget);
+
+  // Everything should have an ID, indicating it's in the cache.
+  EXPECT_NE(cache->GetID(widget), ui::kInvalidAXNodeID);
+
+  // Create a second top-level widget to ensure |root_windows_| isn't empty.
+  Widget* widget2 = new Widget();
+  Widget::InitParams params2 = CreateParams(Widget::InitParams::TYPE_WINDOW);
+  params2.ownership = views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET;
+  params2.bounds = gfx::Rect(0, 0, 200, 200);
+  widget2->Init(std::move(params2));
+  cache->OnRootWindowObjCreated(widget2->GetNativeWindow());
+
+  cache->GetOrCreate(widget2);
+  widget2->Activate();
+  base::RunLoop().RunUntilIdle();
+
+  // Everything should have an ID, indicating it's in the cache.
+  EXPECT_NE(cache->GetID(widget2), ui::kInvalidAXNodeID);
+
+  // Delete the first widget, then delete the cache.
+  cache->OnRootWindowObjDestroyed(widget->GetNativeWindow());
+  delete widget;
+  delete cache;
+
+  // Delete |widget2| so it doesn't leak.
+  delete widget2;
+}
+
 TEST_F(AXAuraObjCacheTest, ValidTree) {
   // Create a parent window.
   std::unique_ptr<Widget> parent_widget = std::make_unique<Widget>();

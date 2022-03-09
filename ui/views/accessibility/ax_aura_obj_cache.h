@@ -158,7 +158,7 @@ class VIEWS_EXPORT AXAuraObjCache : public aura::client::FocusChangeObserver {
 
   raw_ptr<Delegate> delegate_ = nullptr;
 
-  std::set<aura::Window*> root_windows_;
+  std::vector<aura::Window*> root_windows_;
 
   raw_ptr<aura::Window> focused_window_ = nullptr;
 

@@ -195,10 +195,14 @@ AXAuraObjCache::AXAuraObjCache()
     : a11y_override_window_observer_(
           std::make_unique<A11yOverrideWindowObserver>(this)) {}
 
-// Never runs because object is leaked.
 AXAuraObjCache::~AXAuraObjCache() {
-  if (!root_windows_.empty() && GetFocusClient(*root_windows_.begin()))
-    GetFocusClient(*root_windows_.begin())->RemoveObserver(this);
+  // Remove all focus observers from |root_windows_|.
+  for (aura::Window* window : root_windows_) {
+    aura::client::FocusClient* focus_client = GetFocusClient(window);
+    if (focus_client)
+      focus_client->RemoveObserver(this);
+  }
+  root_windows_.clear();
 
   for (auto& entry : virtual_view_to_id_map_)
     entry.first->set_cache(nullptr);
@@ -280,11 +284,18 @@ void AXAuraObjCache::OnWindowFocused(aura::Window* gained_focus,
 void AXAuraObjCache::OnRootWindowObjCreated(aura::Window* window) {
   if (root_windows_.empty() && GetFocusClient(window))
     GetFocusClient(window)->AddObserver(this);
-  root_windows_.insert(window);
+
+  // Do not allow duplicate entries.
+  if (std::find(root_windows_.begin(), root_windows_.end(), window) ==
+      root_windows_.end()) {
+    root_windows_.push_back(window);
+  }
 }
 
 void AXAuraObjCache::OnRootWindowObjDestroyed(aura::Window* window) {
-  root_windows_.erase(window);
+  base::EraseIf(root_windows_, [window](aura::Window* current_window) {
+    return current_window == window;
+  });
   if (root_windows_.empty() && GetFocusClient(window))
     GetFocusClient(window)->RemoveObserver(this);
 
