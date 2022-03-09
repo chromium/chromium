@@ -200,7 +200,7 @@ public class AccountsReloadingTest {
 
     @Test
     @MediumTest
-    @DisableIf.Build(sdk_is_less_than = Build.VERSION_CODES.N, message = "crbug/1254427")
+    @DisableIf.Build(sdk_is_less_than = Build.VERSION_CODES.O, message = "crbug/1254427")
     public void testRefreshTokenUpdateWhenSignedInAndSyncUserAddsNewAccount() {
         final CoreAccountInfo account1 =
                 mAccountManagerTestRule.addTestAccountThenSigninAndEnableSync();
