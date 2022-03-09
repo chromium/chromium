@@ -150,7 +150,7 @@ void LinkStyle::NotifyLoadedSheetAndAllCriticalSubresources(
   fired_load_ = true;
 }
 
-void LinkStyle::StartLoadingDynamicSheet() {
+void LinkStyle::SetToPendingState() {
   DCHECK_LT(pending_sheet_type_, kBlocking);
   AddPendingSheet(kBlocking);
 }

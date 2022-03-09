@@ -374,9 +374,9 @@ void HTMLLinkElement::ScheduleEvent() {
               std::make_unique<IncrementLoadEventDelayCount>(GetDocument())));
 }
 
-void HTMLLinkElement::StartLoadingDynamicSheet() {
+void HTMLLinkElement::SetToPendingState() {
   DCHECK(GetLinkStyle());
-  GetLinkStyle()->StartLoadingDynamicSheet();
+  GetLinkStyle()->SetToPendingState();
 }
 
 bool HTMLLinkElement::IsURLAttribute(const Attribute& attribute) const {

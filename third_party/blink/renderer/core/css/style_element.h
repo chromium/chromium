@@ -52,7 +52,7 @@ class CORE_EXPORT StyleElement : public GarbageCollectedMixin {
 
   bool IsLoading() const;
   bool SheetLoaded(Document&);
-  void StartLoadingDynamicSheet(Document&, Element& element);
+  void SetToPendingState(Document&, Element& element);
 
   void RemovedFrom(Element&, ContainerNode& insertion_point);
   ProcessingResult ProcessStyleSheet(Document&, Element&);

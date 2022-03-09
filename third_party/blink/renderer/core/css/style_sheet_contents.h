@@ -77,7 +77,10 @@ class CORE_EXPORT StyleSheetContents final
   bool IsLoading() const;
 
   void CheckLoaded();
-  void StartLoadingDynamicSheet();
+
+  // Called if this sheet has finished loading and then a dynamically added
+  // @import rule starts loading a child stylesheet.
+  void SetToPendingState();
 
   StyleSheetContents* RootStyleSheet() const;
   bool HasSingleOwnerNode() const;

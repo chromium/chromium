@@ -196,8 +196,7 @@ bool StyleElement::SheetLoaded(Document& document) {
   return true;
 }
 
-void StyleElement::StartLoadingDynamicSheet(Document& document,
-                                            Element& element) {
+void StyleElement::SetToPendingState(Document& document, Element& element) {
   DCHECK(IsSameObject(element));
   document.GetStyleEngine().AddPendingSheet(element);
 }

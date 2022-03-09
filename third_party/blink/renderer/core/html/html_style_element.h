@@ -67,8 +67,8 @@ class CORE_EXPORT HTMLStyleElement final : public HTMLElement,
   }
   void NotifyLoadedSheetAndAllCriticalSubresources(
       LoadedSheetErrorStatus) override;
-  void StartLoadingDynamicSheet() override {
-    StyleElement::StartLoadingDynamicSheet(GetDocument(), *this);
+  void SetToPendingState() override {
+    StyleElement::SetToPendingState(GetDocument(), *this);
   }
 
   const AtomicString& media() const override;

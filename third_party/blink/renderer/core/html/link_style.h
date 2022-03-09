@@ -35,7 +35,7 @@ class LinkStyle final : public LinkResource, ResourceClient {
   bool HasLoaded() const override { return loaded_sheet_; }
   void Trace(Visitor*) const override;
 
-  void StartLoadingDynamicSheet();
+  void SetToPendingState();
   void NotifyLoadedSheetAndAllCriticalSubresources(
       Node::LoadedSheetErrorStatus);
   bool SheetLoaded();

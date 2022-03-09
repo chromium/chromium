@@ -212,7 +212,7 @@ class CORE_EXPORT CSSStyleSheet final : public StyleSheet {
 
   bool SheetLoaded();
   bool LoadCompleted() const { return load_completed_; }
-  void StartLoadingDynamicSheet();
+  void SetToPendingState();
   void SetText(const String&, CSSImportRules);
   void SetMedia(MediaList*);
   void SetAlternateFromConstructor(bool);

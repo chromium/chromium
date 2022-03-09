@@ -555,9 +555,9 @@ bool CSSStyleSheet::SheetLoaded() {
   return load_completed_;
 }
 
-void CSSStyleSheet::StartLoadingDynamicSheet() {
+void CSSStyleSheet::SetToPendingState() {
   SetLoadCompleted(false);
-  owner_node_->StartLoadingDynamicSheet();
+  owner_node_->SetToPendingState();
 }
 
 void CSSStyleSheet::SetLoadCompleted(bool completed) {

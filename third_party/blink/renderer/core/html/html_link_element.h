@@ -150,7 +150,7 @@ class CORE_EXPORT HTMLLinkElement final : public HTMLElement,
   bool SheetLoaded() override;
   void NotifyLoadedSheetAndAllCriticalSubresources(
       LoadedSheetErrorStatus) override;
-  void StartLoadingDynamicSheet() override;
+  void SetToPendingState() override;
   void FinishParsingChildren() override;
   bool HasActivationBehavior() const override;
 
