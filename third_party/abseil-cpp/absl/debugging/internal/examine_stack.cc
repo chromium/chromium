@@ -37,6 +37,16 @@ namespace absl {
 ABSL_NAMESPACE_BEGIN
 namespace debugging_internal {
 
+namespace {
+ABSL_CONST_INIT SymbolizeUrlEmitter debug_stack_trace_hook = nullptr;
+}  // namespace
+
+void RegisterDebugStackTraceHook(SymbolizeUrlEmitter hook) {
+  debug_stack_trace_hook = hook;
+}
+
+SymbolizeUrlEmitter GetDebugStackTraceHook() { return debug_stack_trace_hook; }
+
 // Returns the program counter from signal context, nullptr if
 // unknown. vuc is a ucontext_t*. We use void* to avoid the use of
 // ucontext_t on non-POSIX systems.

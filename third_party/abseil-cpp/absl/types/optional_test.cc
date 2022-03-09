@@ -27,6 +27,32 @@
 #include "absl/meta/type_traits.h"
 #include "absl/strings/string_view.h"
 
+// The following types help test an internal compiler error in GCC5 though
+// GCC10. The case OptionalTest.InternalCompilerErrorInGcc5ToGcc10 crashes the
+// compiler without a workaround. This test case should remain at the beginning
+// of the file as the internal compiler error is sensitive to other constructs
+// in this file.
+template <class T, class...>
+using GccIceHelper1 = T;
+template <typename T>
+struct GccIceHelper2 {};
+template <typename T>
+class GccIce {
+  template <typename U,
+            typename SecondTemplateArgHasToExistForSomeReason = void,
+            typename DependentType = void,
+            typename = std::is_assignable<GccIceHelper1<T, DependentType>&, U>>
+  GccIce& operator=(GccIceHelper2<U> const&) {}
+};
+
+TEST(OptionalTest, InternalCompilerErrorInGcc5ToGcc10) {
+  GccIce<int> instantiate_ice_with_same_type_as_optional;
+  static_cast<void>(instantiate_ice_with_same_type_as_optional);
+  absl::optional<int> val1;
+  absl::optional<int> val2;
+  val1 = val2;
+}
+
 struct Hashable {};
 
 namespace std {

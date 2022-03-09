@@ -87,30 +87,6 @@ static inline CordRep* VerifyTree(CordRep* node) {
   return node;
 }
 
-// Create a concatenation of the specified nodes.
-// Does not change the refcounts of "left" and "right".
-// The returned node has a refcount of 1.
-static CordRep* RawConcat(CordRep* left, CordRep* right) {
-  // Avoid making degenerate concat nodes (one child is empty)
-  if (left == nullptr) return right;
-  if (right == nullptr) return left;
-  if (left->length == 0) {
-    CordRep::Unref(left);
-    return right;
-  }
-  if (right->length == 0) {
-    CordRep::Unref(right);
-    return left;
-  }
-  ABSL_INTERNAL_LOG(FATAL, "CordRepConcat is no longer supported");
-  return nullptr;
-}
-
-static CordRep* Concat(CordRep* left, CordRep* right) {
-  CordRep* rep = RawConcat(left, right);
-  return VerifyTree(rep);
-}
-
 static CordRepFlat* CreateFlat(const char* data, size_t length,
                                size_t alloc_hint) {
   CordRepFlat* flat = CordRepFlat::New(length + alloc_hint);
@@ -608,68 +584,6 @@ inline void Cord::Prepend(T&& src) {
 
 template void Cord::Prepend(std::string&& src);
 
-static CordRep* RemovePrefixFrom(CordRep* node, size_t n) {
-  if (n >= node->length) return nullptr;
-  if (n == 0) return CordRep::Ref(node);
-  absl::InlinedVector<CordRep*, kInlinedVectorSize> rhs_stack;
-
-  assert(!node->IsCrc());
-  assert(n <= node->length);
-
-  if (n == 0) {
-    CordRep::Ref(node);
-  } else {
-    size_t start = n;
-    size_t len = node->length - n;
-    if (node->IsSubstring()) {
-      // Consider in-place update of node, similar to in RemoveSuffixFrom().
-      start += node->substring()->start;
-      node = node->substring()->child;
-    }
-    node = CordRepSubstring::Create(CordRep::Ref(node), start, len);
-  }
-  while (!rhs_stack.empty()) {
-    node = Concat(node, CordRep::Ref(rhs_stack.back()));
-    rhs_stack.pop_back();
-  }
-  return node;
-}
-
-// RemoveSuffixFrom() is very similar to RemovePrefixFrom(), with the
-// exception that removing a suffix has an optimization where a node may be
-// edited in place iff that node and all its ancestors have a refcount of 1.
-static CordRep* RemoveSuffixFrom(CordRep* node, size_t n) {
-  if (n >= node->length) return nullptr;
-  if (n == 0) return CordRep::Ref(node);
-  absl::InlinedVector<CordRep*, kInlinedVectorSize> lhs_stack;
-  bool inplace_ok = node->refcount.IsOne();
-  assert(!node->IsCrc());
-
-  assert(n <= node->length);
-
-  if (n == 0) {
-    CordRep::Ref(node);
-  } else if (inplace_ok && !node->IsExternal()) {
-    // Consider making a new buffer if the current node capacity is much
-    // larger than the new length.
-    CordRep::Ref(node);
-    node->length -= n;
-  } else {
-    size_t start = 0;
-    size_t len = node->length - n;
-    if (node->IsSubstring()) {
-      start = node->substring()->start;
-      node = node->substring()->child;
-    }
-    node = CordRepSubstring::Create(CordRep::Ref(node), start, len);
-  }
-  while (!lhs_stack.empty()) {
-    node = Concat(CordRep::Ref(lhs_stack.back()), node);
-    lhs_stack.pop_back();
-  }
-  return node;
-}
-
 void Cord::RemovePrefix(size_t n) {
   ABSL_INTERNAL_CHECK(n <= size(),
                       absl::StrCat("Requested prefix size ", n,
@@ -681,14 +595,20 @@ void Cord::RemovePrefix(size_t n) {
     auto constexpr method = CordzUpdateTracker::kRemovePrefix;
     CordzUpdateScope scope(contents_.cordz_info(), method);
     tree = cord_internal::RemoveCrcNode(tree);
-    if (tree->IsBtree()) {
+    if (n >= tree->length) {
+      CordRep::Unref(tree);
+      tree = nullptr;
+    } else if (tree->IsBtree()) {
       CordRep* old = tree;
       tree = tree->btree()->SubTree(n, tree->length - n);
       CordRep::Unref(old);
+    } else if (tree->IsSubstring() && tree->refcount.IsOne()) {
+      tree->substring()->start += n;
+      tree->length -= n;
     } else {
-      CordRep* newrep = RemovePrefixFrom(tree, n);
+      CordRep* rep = CordRepSubstring::Substring(tree, n, tree->length - n);
       CordRep::Unref(tree);
-      tree = VerifyTree(newrep);
+      tree = rep;
     }
     contents_.SetTreeOrEmpty(tree, scope);
   }
@@ -705,57 +625,21 @@ void Cord::RemoveSuffix(size_t n) {
     auto constexpr method = CordzUpdateTracker::kRemoveSuffix;
     CordzUpdateScope scope(contents_.cordz_info(), method);
     tree = cord_internal::RemoveCrcNode(tree);
-    if (tree->IsBtree()) {
-      tree = CordRepBtree::RemoveSuffix(tree->btree(), n);
-    } else {
-      CordRep* newrep = RemoveSuffixFrom(tree, n);
+    if (n >= tree->length) {
       CordRep::Unref(tree);
-      tree = VerifyTree(newrep);
+      tree = nullptr;
+    } else if (tree->IsBtree()) {
+      tree = CordRepBtree::RemoveSuffix(tree->btree(), n);
+    } else if (!tree->IsExternal() && tree->refcount.IsOne()) {
+      assert(tree->IsFlat() || tree->IsSubstring());
+      tree->length -= n;
+    } else {
+      CordRep* rep = CordRepSubstring::Substring(tree, 0, tree->length - n);
+      CordRep::Unref(tree);
+      tree = rep;
     }
     contents_.SetTreeOrEmpty(tree, scope);
   }
-}
-
-// Work item for NewSubRange().
-struct SubRange {
-  SubRange(CordRep* a_node, size_t a_pos, size_t a_n)
-      : node(a_node), pos(a_pos), n(a_n) {}
-  CordRep* node;  // nullptr means concat last 2 results.
-  size_t pos;
-  size_t n;
-};
-
-static CordRep* NewSubRange(CordRep* node, size_t pos, size_t n) {
-  absl::InlinedVector<CordRep*, kInlinedVectorSize> results;
-  absl::InlinedVector<SubRange, kInlinedVectorSize> todo;
-  assert(!node->IsCrc());
-  todo.push_back(SubRange(node, pos, n));
-  do {
-    const SubRange& sr = todo.back();
-    node = sr.node;
-    pos = sr.pos;
-    n = sr.n;
-    todo.pop_back();
-
-    if (node == nullptr) {
-      assert(results.size() >= 2);
-      CordRep* right = results.back();
-      results.pop_back();
-      CordRep* left = results.back();
-      results.pop_back();
-      results.push_back(Concat(left, right));
-    } else if (pos == 0 && n == node->length) {
-      results.push_back(CordRep::Ref(node));
-    } else {
-      if (node->IsSubstring()) {
-        pos += node->substring()->start;
-        node = node->substring()->child;
-      }
-      results.push_back(CordRepSubstring::Create(CordRep::Ref(node), pos, n));
-    }
-  } while (!todo.empty());
-  assert(results.size() == 1);
-  return results[0];
 }
 
 Cord Cord::Subcord(size_t pos, size_t new_size) const {
@@ -791,7 +675,7 @@ Cord Cord::Subcord(size_t pos, size_t new_size) const {
   if (tree->IsBtree()) {
     tree = tree->btree()->SubTree(pos, new_size);
   } else {
-    tree = NewSubRange(tree, pos, new_size);
+    tree = CordRepSubstring::Substring(tree, pos, new_size);
   }
   sub_cord.contents_.EmplaceTree(tree, contents_.data_,
                                  CordzUpdateTracker::kSubCord);
@@ -1140,7 +1024,7 @@ Cord Cord::ChunkIterator::AdvanceAndReadBytes(size_t n) {
                                            : payload->flat()->Data();
   const size_t offset = current_chunk_.data() - data;
 
-  auto* tree = CordRepSubstring::Create(CordRep::Ref(payload), offset, n);
+  auto* tree = CordRepSubstring::Substring(payload, offset, n);
   subcord.contents_.EmplaceTree(VerifyTree(tree), method);
   bytes_remaining_ -= n;
   current_chunk_.remove_prefix(n);

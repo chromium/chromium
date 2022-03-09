@@ -286,6 +286,14 @@ struct CordRepSubstring : public CordRep {
   // form a non-empty partial sub range of `'child`, i.e.:
   // `n > 0 && n < length && n + pos <= length`
   static inline CordRepSubstring* Create(CordRep* child, size_t pos, size_t n);
+
+  // Creates a substring of `rep`. Does not adopt a reference on `rep`.
+  // Requires `IsDataEdge(rep) && n > 0 && pos + n <= rep->length`.
+  // If `n == rep->length` then this method returns `CordRep::Ref(rep)`
+  // If `rep` is a substring of a flat or external node, then this method will
+  // return a new substring of that flat or external node with `pos` adjusted
+  // with the original `start` position.
+  static inline CordRep* Substring(CordRep* rep, size_t pos, size_t n);
 };
 
 // Type for function pointer that will invoke the releaser function and also
@@ -369,6 +377,25 @@ inline CordRepSubstring* CordRepSubstring::Create(CordRep* child, size_t pos,
   rep->start = pos;
   rep->child = child;
   return rep;
+}
+
+inline CordRep* CordRepSubstring::Substring(CordRep* rep, size_t pos,
+                                            size_t n) {
+  assert(rep != nullptr);
+  assert(n != 0);
+  assert(pos < rep->length);
+  assert(n <= rep->length - pos);
+  if (n == rep->length) return CordRep::Ref(rep);
+  if (rep->IsSubstring()) {
+    pos += rep->substring()->start;
+    rep = rep->substring()->child;
+  }
+  CordRepSubstring* substr = new CordRepSubstring();
+  substr->length = n;
+  substr->tag = SUBSTRING;
+  substr->start = pos;
+  substr->child = CordRep::Ref(rep);
+  return substr;
 }
 
 inline void CordRepExternal::Delete(CordRep* rep) {

@@ -421,6 +421,39 @@ H AbslHashValue(H hash_state, std::nullptr_t) {
   return H::combine(std::move(hash_state), static_cast<void*>(nullptr));
 }
 
+// AbslHashValue() for hashing pointers-to-member
+template <typename H, typename T, typename C>
+H AbslHashValue(H hash_state, T C::* ptr) {
+  auto salient_ptm_size = [](std::size_t n) -> std::size_t {
+#if defined(_MSC_VER)
+    // Pointers-to-member-function on MSVC consist of one pointer plus 0, 1, 2,
+    // or 3 ints. In 64-bit mode, they are 8-byte aligned and thus can contain
+    // padding (namely when they have 1 or 3 ints). The value below is a lower
+    // bound on the number of salient, non-padding bytes that we use for
+    // hashing.
+    if (alignof(T C::*) == alignof(int)) {
+      // No padding when all subobjects have the same size as the total
+      // alignment. This happens in 32-bit mode.
+      return n;
+    } else {
+      // Padding for 1 int (size 16) or 3 ints (size 24).
+      // With 2 ints, the size is 16 with no padding, which we pessimize.
+      return n == 24 ? 20 : n == 16 ? 12 : n;
+    }
+#else
+    // On other platforms, we assume that pointers-to-members do not have
+    // padding.
+#ifdef __cpp_lib_has_unique_object_representations
+    static_assert(std::has_unique_object_representations_v<T C::*>);
+#endif  // __cpp_lib_has_unique_object_representations
+    return n;
+#endif
+  };
+  return H::combine_contiguous(std::move(hash_state),
+                               reinterpret_cast<unsigned char*>(&ptr),
+                               salient_ptm_size(sizeof ptr));
+}
+
 // -----------------------------------------------------------------------------
 // AbslHashValue for Composite Types
 // -----------------------------------------------------------------------------

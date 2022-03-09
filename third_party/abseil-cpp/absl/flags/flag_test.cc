@@ -977,3 +977,16 @@ TEST_F(FlagTest, TesTypeWrappingEnum) {
   value = absl::GetFlag(FLAGS_test_enum_wrapper_flag);
   EXPECT_EQ(value.e, B);
 }
+
+// This is a compile test to ensure macros are expanded within ABSL_FLAG and
+// ABSL_DECLARE_FLAG.
+#define FLAG_NAME_MACRO(name) prefix_ ## name
+ABSL_DECLARE_FLAG(int, FLAG_NAME_MACRO(test_macro_named_flag));
+ABSL_FLAG(int, FLAG_NAME_MACRO(test_macro_named_flag), 0,
+          "Testing macro expansion within ABSL_FLAG");
+
+TEST_F(FlagTest, MacroWithinAbslFlag) {
+  EXPECT_EQ(absl::GetFlag(FLAGS_prefix_test_macro_named_flag), 0);
+  absl::SetFlag(&FLAGS_prefix_test_macro_named_flag, 1);
+  EXPECT_EQ(absl::GetFlag(FLAGS_prefix_test_macro_named_flag), 1);
+}

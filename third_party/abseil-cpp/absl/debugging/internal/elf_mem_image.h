@@ -31,8 +31,8 @@
 #error ABSL_HAVE_ELF_MEM_IMAGE cannot be directly set
 #endif
 
-#if defined(__ELF__) && !defined(__native_client__) && !defined(__asmjs__) && \
-    !defined(__wasm__)
+#if defined(__ELF__) && !defined(__OpenBSD__) && \
+    !defined(__native_client__) && !defined(__asmjs__) && !defined(__wasm__)
 #define ABSL_HAVE_ELF_MEM_IMAGE 1
 #endif
 
