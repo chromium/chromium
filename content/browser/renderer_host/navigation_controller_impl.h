@@ -217,7 +217,8 @@ class CONTENT_EXPORT NavigationControllerImpl : public NavigationController {
       const std::string& extra_headers,
       network::mojom::SourceLocationPtr source_location,
       scoped_refptr<network::SharedURLLoaderFactory> blob_url_loader_factory,
-      const absl::optional<blink::Impression>& impression);
+      const absl::optional<blink::Impression>& impression,
+      base::TimeTicks navigation_start_time);
 
   // Navigates to the history entry associated with the given app history |key|.
   // Searches |entries_| for a FrameNavigationEntry associated with |node|
@@ -554,7 +555,8 @@ class CONTENT_EXPORT NavigationControllerImpl : public NavigationController {
       network::mojom::SourceLocationPtr source_location,
       ReloadType reload_type,
       NavigationEntryImpl* entry,
-      FrameNavigationEntry* frame_entry);
+      FrameNavigationEntry* frame_entry,
+      base::TimeTicks navigation_start_time);
 
   // Creates and returns a NavigationRequest for a navigation to |entry|. Will
   // return nullptr if the parameters are invalid and the navigation cannot

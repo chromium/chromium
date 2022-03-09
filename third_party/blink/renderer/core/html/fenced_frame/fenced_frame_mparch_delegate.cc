@@ -35,7 +35,8 @@ void FencedFrameMPArchDelegate::DidGetInserted() {
 
 void FencedFrameMPArchDelegate::Navigate(const KURL& url) {
   DCHECK(remote_);
-  remote_->Navigate(url);
+  const auto navigation_start_time = base::TimeTicks::Now();
+  remote_->Navigate(url, navigation_start_time);
 }
 
 void FencedFrameMPArchDelegate::DidGetRemoved() {

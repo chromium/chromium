@@ -676,6 +676,12 @@ void RenderFrameProxyHost::OpenURL(blink::mojom::OpenURLParamsPtr params) {
     download_policy.SetDisallowed(blink::NavigationDownloadType::kSandbox);
   }
 
+  // This will be used to set the Navigation Timing API navigationStart
+  // parameter for renderer navigations in the remote frame. If the navigation
+  // must wait on the current RenderFrameHost to execute its BeforeUnload event,
+  // the navigation start will be updated when the BeforeUnload ack is received.
+  const auto navigation_start_time = base::TimeTicks::Now();
+
   // TODO(lfg, lukasza): Remove |extra_headers| parameter from
   // RequestTransferURL method once both RenderFrameProxyHost and
   // RenderFrameHostImpl call RequestOpenURL from their OnOpenURL handlers.
@@ -691,7 +697,7 @@ void RenderFrameProxyHost::OpenURL(blink::mojom::OpenURLParamsPtr params) {
       params->post_body ? "POST" : "GET", params->post_body,
       params->extra_headers, std::move(blob_url_loader_factory),
       std::move(params->source_location), params->user_gesture,
-      params->impression);
+      params->impression, navigation_start_time);
 }
 
 void RenderFrameProxyHost::UpdateViewportIntersection(

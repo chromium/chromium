@@ -7757,6 +7757,11 @@ bool RenderFrameHostImpl::CheckOrDispatchBeforeUnloadForSubtree(
     bool is_reload) {
   bool found_beforeunload = false;
   bool run_beforeunload_for_legacy = false;
+
+  // Beforeunload is not supported inside fenced frame trees.
+  if (IsFencedFrameRoot())
+    return false;
+
   for (FrameTreeNode* node : frame_tree()->SubtreeNodes(frame_tree_node_)) {
     RenderFrameHostImpl* rfh = node->current_frame_host();
 

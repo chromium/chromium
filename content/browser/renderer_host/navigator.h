@@ -160,7 +160,8 @@ class CONTENT_EXPORT Navigator {
       scoped_refptr<network::SharedURLLoaderFactory> blob_url_loader_factory,
       network::mojom::SourceLocationPtr source_location,
       bool has_user_gesture,
-      const absl::optional<blink::Impression>& impression);
+      const absl::optional<blink::Impression>& impression,
+      base::TimeTicks navigation_start_time);
 
   // Called after BeforeUnloadCompleted callback is invoked from the renderer.
   // If |frame_tree_node| has a NavigationRequest waiting for the renderer

@@ -4303,7 +4303,8 @@ TEST_F(NavigationControllerTest, NoURLRewriteForSubframes) {
       main_test_rfh()->GetSiteInstance(), Referrer(), ui::PAGE_TRANSITION_LINK,
       false /* should_replace_current_entry */,
       blink::NavigationDownloadPolicy(), "GET", nullptr, "",
-      network::mojom::SourceLocation::New(), nullptr, absl::nullopt);
+      network::mojom::SourceLocation::New(), nullptr, absl::nullopt,
+      base::TimeTicks::Now() /* navigation_start_time */);
 
   // Clean up the handler.
   BrowserURLHandlerImpl::GetInstance()->RemoveHandlerForTesting(
@@ -4348,7 +4349,7 @@ TEST_F(NavigationControllerTest,
       main_test_rfh()->GetSiteInstance(), Referrer(), ui::PAGE_TRANSITION_LINK,
       should_replace_current_entry, blink::NavigationDownloadPolicy(), "GET",
       nullptr, "", network::mojom::SourceLocation::New(), nullptr,
-      absl::nullopt);
+      absl::nullopt, base::TimeTicks::Now() /* navigation_start_time */);
   NavigationRequest* request = node->navigation_request();
   ASSERT_TRUE(request);
 

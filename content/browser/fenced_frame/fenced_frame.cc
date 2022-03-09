@@ -82,7 +82,8 @@ FencedFrame::~FencedFrame() {
   frame_tree_.reset();
 }
 
-void FencedFrame::Navigate(const GURL& url) {
+void FencedFrame::Navigate(const GURL& url,
+                           base::TimeTicks navigation_start_time) {
   FrameTreeNode* inner_root = frame_tree_->root();
 
   // TODO(crbug.com/1237552): Resolve the discussion around navigations being
@@ -107,7 +108,7 @@ void FencedFrame::Navigate(const GURL& url) {
       /*post_body=*/nullptr, /*extra_headers=*/"",
       /*blob_url_loader_factory=*/nullptr,
       network::mojom::SourceLocation::New(), /*has_user_gesture=*/false,
-      absl::nullopt);
+      /*impression=*/absl::nullopt, navigation_start_time);
 }
 
 void FencedFrame::DidStopLoading() {

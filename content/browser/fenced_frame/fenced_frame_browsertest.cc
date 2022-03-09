@@ -25,6 +25,7 @@
 #include "content/shell/browser/shell_browser_context.h"
 #include "content/shell/browser/shell_content_browser_client.h"
 #include "content/test/content_browser_test_utils_internal.h"
+#include "mojo/public/cpp/test_support/test_utils.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -220,6 +221,121 @@ IN_PROC_BROWSER_TEST_F(FencedFrameBrowserTest, FrameIteration) {
         }
       }));
   EXPECT_TRUE(visited_fenced_frame_frame_tree);
+}
+
+namespace {
+
+// Intercepts calls to RenderFramHostImpl's CreateFencedFrame mojo method, and
+// connects a NavigationDelayer which delays the FencedFrameOwnerHost's
+// Navigate mojo method.
+class NavigationDelayerInterceptor
+    : public mojom::FrameHostInterceptorForTesting {
+ public:
+  explicit NavigationDelayerInterceptor(RenderFrameHostImpl* render_frame_host,
+                                        base::TimeDelta duration)
+      : render_frame_host_(render_frame_host),
+        duration_(duration),
+        impl_(render_frame_host_->frame_host_receiver_for_testing()
+                  .SwapImplForTesting(this)) {}
+
+  ~NavigationDelayerInterceptor() override = default;
+
+  mojom::FrameHost* GetForwardingInterface() override { return impl_; }
+
+  void CreateFencedFrame(
+      mojo::PendingAssociatedReceiver<blink::mojom::FencedFrameOwnerHost>
+          pending_receiver,
+      CreateFencedFrameCallback callback) override {
+    mojo::PendingAssociatedRemote<blink::mojom::FencedFrameOwnerHost>
+        original_remote;
+
+    GetForwardingInterface()->CreateFencedFrame(
+        original_remote.InitWithNewEndpointAndPassReceiver(),
+        std::move(callback));
+    std::vector<FencedFrame*> fenced_frames =
+        render_frame_host_->GetFencedFrames();
+    ASSERT_FALSE(fenced_frames.empty());
+    navigate_interceptor_ = std::make_unique<NavigationDelayer>(
+        std::move(original_remote), std::move(pending_receiver),
+        fenced_frames.back(), duration_);
+  }
+
+ private:
+  class NavigationDelayer : public blink::mojom::FencedFrameOwnerHost {
+   public:
+    explicit NavigationDelayer(
+        mojo::PendingAssociatedRemote<blink::mojom::FencedFrameOwnerHost>
+            original_remote,
+        mojo::PendingAssociatedReceiver<blink::mojom::FencedFrameOwnerHost>
+            receiver,
+        FencedFrame* fenced_frame,
+        base::TimeDelta duration)
+        : original_remote_(std::move(original_remote)),
+          fenced_frame_(fenced_frame),
+          duration_(duration) {
+      receiver_.Bind(std::move(receiver));
+    }
+
+    ~NavigationDelayer() override = default;
+
+    void Navigate(const GURL& url,
+                  base::TimeTicks navigation_start_time) override {
+      base::PlatformThread::Sleep(duration_);
+      fenced_frame_->Navigate(url, navigation_start_time);
+    }
+
+   private:
+    mojo::AssociatedRemote<blink::mojom::FencedFrameOwnerHost> original_remote_;
+    mojo::AssociatedReceiver<blink::mojom::FencedFrameOwnerHost> receiver_{
+        this};
+    raw_ptr<FencedFrame> fenced_frame_;
+    const base::TimeDelta duration_;
+  };
+
+  raw_ptr<RenderFrameHostImpl> render_frame_host_;
+  std::unique_ptr<NavigationDelayer> navigate_interceptor_;
+  const base::TimeDelta duration_;
+  raw_ptr<mojom::FrameHost> impl_;
+};
+
+}  // namespace
+
+IN_PROC_BROWSER_TEST_F(FencedFrameBrowserTest, NavigationStartTime) {
+  const GURL main_url = https_server()->GetURL("a.test", "/title1.html");
+  EXPECT_TRUE(NavigateToURL(shell(), main_url));
+
+  RenderFrameHostImpl* primary_rfh = primary_main_frame_host();
+
+  const GURL fenced_frame_url =
+      https_server()->GetURL("a.test", "/fenced_frames/title1.html");
+  constexpr char kAddFencedFrameScript[] = R"({
+    const fenced_frame = document.createElement('fencedframe');
+    fenced_frame.src = $1;
+    document.body.appendChild(fenced_frame);
+  })";
+
+  const int delay_in_milliseconds = 1000;
+
+  // The UI thread of the browser process will sleep |delay_in_milliseconds|
+  // just before handing FencedFrameOwnerHost's Navigate mojo method.
+  NavigationDelayerInterceptor interceptor(
+      primary_rfh, base::Milliseconds(delay_in_milliseconds));
+
+  EXPECT_TRUE(
+      ExecJs(primary_rfh, JsReplace(kAddFencedFrameScript, fenced_frame_url)));
+  std::vector<FencedFrame*> fenced_frames = primary_rfh->GetFencedFrames();
+  ASSERT_EQ(1U, fenced_frames.size());
+  FencedFrame* fenced_frame = fenced_frames[0];
+  fenced_frame->WaitForDidStopLoadingForTesting();
+
+  // The duration between navigationStart (measured in the renderer process) and
+  // requestStart (measured in the browser process due to PlzNavigate) must be
+  // greater than or equal to |delay_in_milliseconds|.
+  EXPECT_GE(EvalJs(fenced_frame->GetInnerRoot(),
+                   "performance.timing.requestStart - "
+                   "performance.timing.navigationStart")
+                .ExtractInt(),
+            delay_in_milliseconds);
 }
 
 // Test that ensures we can post from an cross origin iframe into the

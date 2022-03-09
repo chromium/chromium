@@ -4,6 +4,7 @@
 
 module blink.mojom;
 
+import "mojo/public/mojom/base/time.mojom";
 import "url/mojom/origin.mojom";
 import "url/mojom/url.mojom";
 
@@ -15,5 +16,5 @@ interface FencedFrameOwnerHost {
   // Navigates the main frame of the fenced frame's frame tree, to `url`.
   // TODO(crbug.com/1243568): Document the restrictions on the types of URLs
   // that `url` can represent, once these restrictions are made.
-  Navigate(url.mojom.Url url);
+  Navigate(url.mojom.Url url, mojo_base.mojom.TimeTicks navigation_start_time);
 };

@@ -253,6 +253,9 @@ void Portal::Navigate(const GURL& url,
   // Fix this so that we can enforce this as an invariant.
   constexpr bool should_replace_entry = true;
 
+  // TODO(crbug.com/1290239): Measure the start time in the renderer process.
+  const auto navigation_start_time = base::TimeTicks::Now();
+
   // TODO(https://crbug.com/1074422): It is possible for a portal to be
   // navigated by a frame other than the owning frame. Find a way to route the
   // correct initiator of the portal navigation to this call.
@@ -265,7 +268,8 @@ void Portal::Navigate(const GURL& url,
       owner_render_frame_host_->GetSiteInstance(),
       mojo::ConvertTo<Referrer>(referrer), ui::PAGE_TRANSITION_LINK,
       should_replace_entry, download_policy, "GET", nullptr, "", nullptr,
-      network::mojom::SourceLocation::New(), false, absl::nullopt);
+      network::mojom::SourceLocation::New(), false,
+      /*impression=*/absl::nullopt, navigation_start_time);
 
   std::move(callback).Run();
 }
