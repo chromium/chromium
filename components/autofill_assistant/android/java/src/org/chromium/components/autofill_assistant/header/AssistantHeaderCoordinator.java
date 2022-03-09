@@ -16,7 +16,6 @@ import androidx.annotation.Nullable;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import org.chromium.chrome.browser.autofill_assistant.header.AnimatedPoodle;
 import org.chromium.components.autofill_assistant.AssistantProfileImageUtil;
 import org.chromium.components.autofill_assistant.AssistantSettingsUtil;
 import org.chromium.components.autofill_assistant.LayoutUtils;

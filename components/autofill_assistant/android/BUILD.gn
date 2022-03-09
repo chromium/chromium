@@ -300,7 +300,7 @@ android_resources("animated_poodle_resources") {
 
 # These java targets are overridden downstream and used instead of these ones.
 android_library("autofill_assistant_public_java") {
-  resources_package = "org.chromium.chrome.autofill_assistant.common"
+  resources_package = "org.chromium.components.autofill_assistant.common"
 
   deps = [
     ":animated_poodle_resources",
@@ -311,8 +311,8 @@ android_library("autofill_assistant_public_java") {
   ]
 
   sources = [
-    "internal/java/src/org/chromium/chrome/browser/autofill_assistant/header/AnimatedPoodle.java",
     "internal/java/src/org/chromium/chrome/browser/autofill_assistant/user_data/GmsIntegrator.java",
+    "java/src/org/chromium/components/autofill_assistant/header/AnimatedPoodle.java",
   ]
 
   # Add the actual implementation where necessary so that downstream targets
@@ -324,7 +324,7 @@ android_library("autofill_assistant_public_java") {
 }
 
 android_library("autofill_assistant_public_impl_java") {
-  resources_package = "org.chromium.chrome.autofill_assistant.common"
+  resources_package = "org.chromium.components.autofill_assistant.common"
 
   deps = [
     ":animated_poodle_resources",
@@ -336,8 +336,8 @@ android_library("autofill_assistant_public_impl_java") {
   ]
 
   sources = [
-    "internal/java/src/org/chromium/chrome/browser/autofill_assistant/header/AnimatedPoodle.java",
     "internal/java/src/org/chromium/chrome/browser/autofill_assistant/user_data/GmsIntegrator.java",
+    "java/src/org/chromium/components/autofill_assistant/header/AnimatedPoodle.java",
   ]
 }
 

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.chrome.browser.autofill_assistant.header;
+package org.chromium.components.autofill_assistant.header;
 
 import android.content.Context;
 import android.view.View;
@@ -11,7 +11,7 @@ import android.widget.ImageView;
 
 import androidx.appcompat.content.res.AppCompatResources;
 
-import org.chromium.chrome.autofill_assistant.common.R;
+import org.chromium.components.autofill_assistant.common.R;
 
 /**
  * Represents a poodle that can be animated. This default implementation is a static poodle, the
@@ -21,7 +21,7 @@ import org.chromium.chrome.autofill_assistant.common.R;
  * <p>Warning: do not rename this class or change the signature of the non-private methods
  * (including constructor) without adapting the associated downstream code.
  */
-public class AnimatedPoodle {
+/* package */ class AnimatedPoodle {
     private final ImageView mView;
 
     /**
@@ -29,7 +29,7 @@ public class AnimatedPoodle {
      * pixels that displays a centered poodle with a width and height of {@code poodleSizePx}
      * pixels.
      */
-    public AnimatedPoodle(Context context, int viewSizePx, int poodleSizePx) {
+    /* package */ AnimatedPoodle(Context context, int viewSizePx, int poodleSizePx) {
         mView = new ImageView(context);
         mView.setImageDrawable(
                 AppCompatResources.getDrawable(context, R.drawable.ic_autofill_assistant_24dp));
@@ -40,12 +40,12 @@ public class AnimatedPoodle {
     }
 
     /** Get the view associated to this animated poodle. */
-    public View getView() {
+    /* package */ View getView() {
         return mView;
     }
 
     /** Enable or disable the spin animation. */
-    public void setSpinEnabled(boolean enabled) {
+    /* package */ void setSpinEnabled(boolean enabled) {
         // Do nothing.
     }
 }
