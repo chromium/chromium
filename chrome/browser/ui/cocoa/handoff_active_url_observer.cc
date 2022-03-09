@@ -10,7 +10,7 @@
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/cocoa/handoff_active_url_observer_delegate.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
-#include "content/public/browser/navigation_handle.h"
+#include "content/public/browser/page.h"
 #include "content/public/browser/web_contents.h"
 
 HandoffActiveURLObserver::HandoffActiveURLObserver(
@@ -52,15 +52,7 @@ void HandoffActiveURLObserver::OnTabStripModelChanged(
   delegate_->HandoffActiveURLChanged(selection.new_contents);
 }
 
-void HandoffActiveURLObserver::DidFinishNavigation(
-     content::NavigationHandle* navigation_handle) {
-  // TODO(https://crbug.com/1218946): With MPArch there may be multiple main
-  // frames. This caller was converted automatically to the primary main frame
-  // to preserve its semantics. Follow up to confirm correctness.
-  if (!navigation_handle->IsInPrimaryMainFrame() ||
-      !navigation_handle->HasCommitted())
-    return;
-
+void HandoffActiveURLObserver::PrimaryPageChanged(content::Page& page) {
   delegate_->HandoffActiveURLChanged(web_contents());
 }
 
