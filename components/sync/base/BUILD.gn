@@ -31,8 +31,6 @@ static_library("base") {
     "invalidation_helper.h",
     "legacy_directory_deletion.cc",
     "legacy_directory_deletion.h",
-    "logging.cc",
-    "logging.h",
     "model_type.cc",
     "model_type.h",
     "passphrase_enums.cc",
