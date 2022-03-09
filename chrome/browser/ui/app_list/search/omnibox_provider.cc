@@ -80,7 +80,7 @@ int ProviderTypes() {
                   ~AutocompleteProvider::TYPE_DOCUMENT;
   if (ash::features::IsProductivityLauncherEnabled() &&
       base::GetFieldTrialParamByFeatureAsBool(
-          ash::features::kProductivityLauncher, "enable_open_tab", false)) {
+          ash::features::kProductivityLauncher, "enable_open_tab", true)) {
     providers |= AutocompleteProvider::TYPE_OPEN_TAB;
   }
   return providers;
