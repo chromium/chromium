@@ -78,7 +78,7 @@
   "audio": [
     {
       "channel": "stable",
-      "extension_types": ["platform_app"],
+      "extension_types": ["extension", "platform_app"],
       "platforms": ["chromeos"],
       "session_types": ["kiosk"]
     },
