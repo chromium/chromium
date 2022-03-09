@@ -69,9 +69,11 @@
 // doesn't suspend it's counterpart process.
 - (void)updateWebViewContentViewForContainerWindow:(UIWindow*)window;
 
+#if defined(__IPHONE_15_4) && __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_15_4
 // Updates |webViewContentView| with the current fullscreen state
 - (void)updateWebViewContentViewFullscreenState:
-    (CrFullscreenState)fullscreenState;
+    (WKFullscreenState)fullscreenState API_AVAILABLE(ios(15));
+#endif  // defined(__IPHONE_15_4)
 
 @end
 

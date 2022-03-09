@@ -481,13 +481,15 @@ typedef void (^ViewportStateCompletion)(const web::PageViewportState*);
     }];
   }
 
-  if (@available(iOS 15.4, *)) {
+#if defined(__IPHONE_15_4) && __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_15_4
+  if (@available(iOS 15, *)) {
     if (base::FeatureList::IsEnabled(web::features::kEnableFullscreenAPI)) {
       [observers addEntriesFromDictionary:@{
         @"fullscreenState" : @"fullscreenStateDidChange"
       }];
     }
   }
+#endif  // defined(__IPHONE_15_4)
 
   return observers;
 }
@@ -1193,25 +1195,6 @@ typedef void (^ViewportStateCompletion)(const web::PageViewportState*);
   }
 }
 
-#if defined(__IPHONE_15_4) && __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_15_4
-- (CrFullscreenState)CrFullscreenStateFromWKFullscreenState:
-    (WKFullscreenState)state API_AVAILABLE(ios(15.4)) {
-  switch (state) {
-    case WKFullscreenStateEnteringFullscreen:
-      return CrFullscreenState::kEnteringFullscreen;
-    case WKFullscreenStateExitingFullscreen:
-      return CrFullscreenState::kExitingFullscreen;
-    case WKFullscreenStateInFullscreen:
-      return CrFullscreenState::kInFullscreen;
-    case WKFullscreenStateNotInFullscreen:
-      return CrFullscreenState::kNotInFullScreen;
-    default:
-      NOTREACHED();
-      return CrFullscreenState::kNotInFullScreen;
-  }
-}
-#endif  // defined (__IPHONE_15_4)
-
 #pragma mark - End of loading
 
 - (void)didFinishNavigation:(web::NavigationContextImpl*)context {
@@ -1662,22 +1645,20 @@ typedef void (^ViewportStateCompletion)(const web::PageViewportState*);
     return;
 
 #if defined(__IPHONE_15_4) && __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_15_4
-  if (@available(iOS 15.4, *)) {
+  if (@available(iOS 15, *)) {
     CRWWebViewContentView* webViewContentView = [[CRWWebViewContentView alloc]
         initWithWebView:self.webView
              scrollView:self.webScrollView
-        fullscreenState:[self CrFullscreenStateFromWKFullscreenState:
-                                  self.webView.fullscreenState]];
+        fullscreenState:self.webView.fullscreenState];
     [_containerView displayWebViewContentView:webViewContentView];
     return;
   }
-#endif  // defined(__IPHONE_15_4)
-
-  CRWWebViewContentView* webViewContentView = [[CRWWebViewContentView alloc]
-      initWithWebView:self.webView
-           scrollView:self.webScrollView
-      fullscreenState:CrFullscreenState::kNotInFullScreen];
+#else
+  CRWWebViewContentView* webViewContentView =
+      [[CRWWebViewContentView alloc] initWithWebView:self.webView
+                                          scrollView:self.webScrollView];
   [_containerView displayWebViewContentView:webViewContentView];
+#endif  // defined(__IPHONE_15_4)
 }
 
 - (void)removeWebView {
@@ -1838,13 +1819,9 @@ typedef void (^ViewportStateCompletion)(const web::PageViewportState*);
 }
 
 #if defined(__IPHONE_15_4) && __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_15_4
-- (void)fullscreenStateDidChange {
-  if (@available(iOS 15.4, *)) {
-    [_containerView
-        updateWebViewContentViewFullscreenState:
-            [self CrFullscreenStateFromWKFullscreenState:self.webView
-                                                             .fullscreenState]];
-  }
+- (void)fullscreenStateDidChange API_AVAILABLE(ios(15.0)) {
+  [_containerView
+      updateWebViewContentViewFullscreenState:self.webView.fullscreenState];
 }
 #endif  // defined (__IPHONE_15_4)
 

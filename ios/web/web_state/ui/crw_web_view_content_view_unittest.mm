@@ -24,10 +24,9 @@ TEST_F(CRWWebViewContentViewTest, ContentInsetWithInsetForPadding) {
   UIView* webView = [[UIView alloc] init];
   UIScrollView* scrollView = [[UIScrollView alloc] init];
   [webView addSubview:scrollView];
-  CRWWebViewContentView* contentView = [[CRWWebViewContentView alloc]
-      initWithWebView:webView
-           scrollView:scrollView
-      fullscreenState:CrFullscreenState::kNotInFullScreen];
+  CRWWebViewContentView* contentView =
+      [[CRWWebViewContentView alloc] initWithWebView:webView
+                                          scrollView:scrollView];
   contentView.shouldUseViewContentInset = YES;
 
   const UIEdgeInsets contentInset = UIEdgeInsetsMake(10, 10, 10, 10);

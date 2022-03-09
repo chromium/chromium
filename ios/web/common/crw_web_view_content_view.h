@@ -16,15 +16,26 @@
 // The webView passed to |-initWithWebView|.
 @property(nonatomic, strong, readonly) UIView* webView;
 
+#if defined(__IPHONE_15_4) && __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_15_4
 // The fullscreen state of this view
-@property(nonatomic, readonly) CrFullscreenState fullscreenState;
+@property(nonatomic, readonly)
+    WKFullscreenState fullscreenState API_AVAILABLE(ios(15));
 
 // Initializes the CRWWebViewContentView to display |webView| and passes state
-// of fullscreen mode. This should pass in a default value of
-// CrFullscreenState (e.g., kNotInFullScreen).
+// of fullscreen mode. This should become the default constructor when we
+// start building with the 15.4 SDK and pass in a default value of
+// WKFullscreenState (e.g., WKFullscreenStateNotInFullscreen). Additionally,
+// code in initWithWebView:scrollView should be moved into this constructor at
+// that time.
 - (instancetype)initWithWebView:(UIView*)webView
                      scrollView:(UIScrollView*)scrollView
-                fullscreenState:(CrFullscreenState)fullscreenState
+                fullscreenState:(WKFullscreenState)fullscreenState
+    API_AVAILABLE(ios(15));
+#endif  // defined(__IPHONE_15_4)
+
+// Initializes the CRWWebViewContentView to display |webView|.
+- (instancetype)initWithWebView:(UIView*)webView
+                     scrollView:(UIScrollView*)scrollView
     NS_DESIGNATED_INITIALIZER;
 
 // Available only for testing.
@@ -35,7 +46,10 @@
 - (instancetype)initWithCoder:(NSCoder*)decoder NS_UNAVAILABLE;
 - (instancetype)initWithFrame:(CGRect)frame NS_UNAVAILABLE;
 
-- (void)updateFullscreenState:(CrFullscreenState)fullscreenState;
+#if defined(__IPHONE_15_4) && __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_15_4
+- (void)updateFullscreenState:(WKFullscreenState)fullscreenState
+    API_AVAILABLE(ios(15));
+#endif  // defined(__IPHONE_15_4)
 
 @end
 

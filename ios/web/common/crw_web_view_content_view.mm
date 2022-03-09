@@ -34,11 +34,13 @@ const CGFloat kBackgroundRGBComponents[] = {0.75f, 0.74f, 0.76f};
 @synthesize viewportEdgesAffectedBySafeArea = _viewportEdgesAffectedBySafeArea;
 @synthesize viewportInsets = _viewportInsets;
 @synthesize webView = _webView;
+
+#if defined(__IPHONE_15_4) && __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_15_4
 @synthesize fullscreenState = _fullscreenState;
+#endif  // defined(__IPHONE_15_4)
 
 - (instancetype)initWithWebView:(UIView*)webView
-                     scrollView:(UIScrollView*)scrollView
-                fullscreenState:(CrFullscreenState)fullscreenState {
+                     scrollView:(UIScrollView*)scrollView {
   self = [super initWithFrame:CGRectZero];
   if (self) {
     DCHECK(webView);
@@ -46,10 +48,21 @@ const CGFloat kBackgroundRGBComponents[] = {0.75f, 0.74f, 0.76f};
     DCHECK([scrollView isDescendantOfView:webView]);
     _webView = webView;
     _scrollView = scrollView;
+  }
+  return self;
+}
+
+#if defined(__IPHONE_15_4) && __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_15_4
+- (instancetype)initWithWebView:(UIView*)webView
+                     scrollView:(UIScrollView*)scrollView
+                fullscreenState:(WKFullscreenState)fullscreenState {
+  self = [self initWithWebView:webView scrollView:scrollView];
+  if (self) {
     _fullscreenState = fullscreenState;
   }
   return self;
 }
+#endif  // defined(__IPHONE_15_4)
 
 - (instancetype)initForTesting {
   return [super initWithFrame:CGRectZero];
@@ -82,9 +95,11 @@ const CGFloat kBackgroundRGBComponents[] = {0.75f, 0.74f, 0.76f};
   return [_webView becomeFirstResponder];
 }
 
-- (void)updateFullscreenState:(CrFullscreenState)fullscreenState {
+#if defined(__IPHONE_15_4) && __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_15_4
+- (void)updateFullscreenState:(WKFullscreenState)fullscreenState {
   _fullscreenState = fullscreenState;
 }
+#endif  // defined(__IPHONE_15_4)
 
 #pragma mark Layout
 
