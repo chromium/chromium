@@ -2,26 +2,32 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CONTENT_BROWSER_FIRST_PARTY_SETS_FIRST_PARTY_SETS_UTIL_H_
-#define CONTENT_BROWSER_FIRST_PARTY_SETS_FIRST_PARTY_SETS_UTIL_H_
+#ifndef CONTENT_BROWSER_FIRST_PARTY_SETS_FIRST_PARTY_SETS_HANDLER_IMPL_H_
+#define CONTENT_BROWSER_FIRST_PARTY_SETS_FIRST_PARTY_SETS_HANDLER_IMPL_H_
 
 #include <string>
 
 #include "base/callback.h"
+#include "base/files/file.h"
 #include "base/files/file_path.h"
 #include "base/no_destructor.h"
 #include "content/common/content_export.h"
+#include "content/public/browser/first_party_sets_handler.h"
 
 namespace content {
 
-class CONTENT_EXPORT FirstPartySetsUtil {
+class CONTENT_EXPORT FirstPartySetsHandlerImpl : public FirstPartySetsHandler {
  public:
-  static FirstPartySetsUtil* GetInstance();
+  static FirstPartySetsHandlerImpl* GetInstance();
 
-  // Note that FirstPartySetsUtil is a singleton that's never destroyed.
-  ~FirstPartySetsUtil() = delete;
-  FirstPartySetsUtil(const FirstPartySetsUtil&) = delete;
-  FirstPartySetsUtil& operator=(const FirstPartySetsUtil&) = delete;
+  ~FirstPartySetsHandlerImpl() override;
+
+  FirstPartySetsHandlerImpl(const FirstPartySetsHandlerImpl&) = delete;
+  FirstPartySetsHandlerImpl& operator=(const FirstPartySetsHandlerImpl&) =
+      delete;
+
+  // FirstPartySetsHandler
+  void SetPublicFirstPartySets(base::File sets_file) override;
 
   // This method reads the persisted First-Party Sets from the file under
   // `user_data_dir`, then invokes `send_sets` with the read data (could be
@@ -38,9 +44,9 @@ class CONTENT_EXPORT FirstPartySetsUtil {
                               const std::string&)> send_sets);
 
  private:
-  friend class base::NoDestructor<FirstPartySetsUtil>;
+  friend class base::NoDestructor<FirstPartySetsHandlerImpl>;
 
-  FirstPartySetsUtil();
+  FirstPartySetsHandlerImpl();
 
   // Called when the instance receives the "current" First-Party Sets.
   // Asynchronously writes those sets to disk.
@@ -58,4 +64,4 @@ class CONTENT_EXPORT FirstPartySetsUtil {
 
 }  // namespace content
 
-#endif  // CONTENT_BROWSER_FIRST_PARTY_SETS_FIRST_PARTY_SETS_UTIL_H_
+#endif  // CONTENT_BROWSER_FIRST_PARTY_SETS_FIRST_PARTY_SETS_HANDLER_IMPL_H_

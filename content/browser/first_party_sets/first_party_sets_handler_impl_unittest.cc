@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "content/browser/first_party_sets/first_party_sets_util.h"
+#include "content/browser/first_party_sets/first_party_sets_handler_impl.h"
 
 #include <string>
 
@@ -19,9 +19,9 @@
 
 namespace content {
 
-class FirstPartySetsUtilTest : public ::testing::Test {
+class FirstPartySetsHandlerImplTest : public ::testing::Test {
  public:
-  FirstPartySetsUtilTest() {
+  FirstPartySetsHandlerImplTest() {
     CHECK(scoped_dir_.CreateUniqueTempDir());
     CHECK(PathExists(scoped_dir_.GetPath()));
 
@@ -35,9 +35,10 @@ class FirstPartySetsUtilTest : public ::testing::Test {
   base::test::TaskEnvironment env_;
 };
 
-TEST_F(FirstPartySetsUtilTest, SendAndUpdatePersistedSets_NoUserDataDir) {
+TEST_F(FirstPartySetsHandlerImplTest,
+       SendAndUpdatePersistedSets_NoUserDataDir) {
   bool sent_sets = false;
-  FirstPartySetsUtil::GetInstance()->SendAndUpdatePersistedSets(
+  FirstPartySetsHandlerImpl::GetInstance()->SendAndUpdatePersistedSets(
       base::FilePath(),
       /*send_sets=*/
       base::BindLambdaForTesting(
@@ -52,11 +53,11 @@ TEST_F(FirstPartySetsUtilTest, SendAndUpdatePersistedSets_NoUserDataDir) {
   EXPECT_TRUE(sent_sets);
 }
 
-TEST_F(FirstPartySetsUtilTest, SendAndUpdatePersistedSets_FileNotExist) {
+TEST_F(FirstPartySetsHandlerImplTest, SendAndUpdatePersistedSets_FileNotExist) {
   SEQUENCE_CHECKER(sequence_checker);
   const std::string expected_updated_sets = "updated first party sets";
 
-  FirstPartySetsUtil::GetInstance()->SendAndUpdatePersistedSets(
+  FirstPartySetsHandlerImpl::GetInstance()->SendAndUpdatePersistedSets(
       scoped_dir_.GetPath(),
       /*send_sets=*/
       base::BindLambdaForTesting(
@@ -74,14 +75,14 @@ TEST_F(FirstPartySetsUtilTest, SendAndUpdatePersistedSets_FileNotExist) {
   EXPECT_EQ(got, expected_updated_sets);
 }
 
-TEST_F(FirstPartySetsUtilTest, SendAndUpdatePersistedSets) {
+TEST_F(FirstPartySetsHandlerImplTest, SendAndUpdatePersistedSets) {
   SEQUENCE_CHECKER(sequence_checker);
   const std::string expected_read_sets = "persisted first party sets";
   const std::string expected_updated_sets = "updated first party sets";
 
   ASSERT_TRUE(base::WriteFile(persisted_sets_path_, expected_read_sets));
 
-  FirstPartySetsUtil::GetInstance()->SendAndUpdatePersistedSets(
+  FirstPartySetsHandlerImpl::GetInstance()->SendAndUpdatePersistedSets(
       scoped_dir_.GetPath(),
       /*send_sets=*/
       base::BindLambdaForTesting(

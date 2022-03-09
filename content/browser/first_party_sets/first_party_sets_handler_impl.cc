@@ -2,14 +2,17 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "content/browser/first_party_sets/first_party_sets_util.h"
+#include "content/browser/first_party_sets/first_party_sets_handler_impl.h"
 
 #include "base/bind.h"
 #include "base/callback_helpers.h"
+#include "base/files/file.h"
 #include "base/files/file_util.h"
 #include "base/logging.h"
 #include "base/task/post_task.h"
 #include "base/task/thread_pool.h"
+#include "content/public/browser/network_service_instance.h"
+#include "services/network/public/mojom/network_service.mojom.h"
 
 namespace content {
 
@@ -48,14 +51,20 @@ void MaybeWriteSetsToDisk(const base::FilePath& path, const std::string& sets) {
 }  // namespace
 
 // static
-FirstPartySetsUtil* FirstPartySetsUtil::GetInstance() {
-  static base::NoDestructor<FirstPartySetsUtil> instance;
+FirstPartySetsHandler* FirstPartySetsHandler::GetInstance() {
+  return FirstPartySetsHandlerImpl::GetInstance();
+}
+
+// static
+FirstPartySetsHandlerImpl* FirstPartySetsHandlerImpl::GetInstance() {
+  static base::NoDestructor<FirstPartySetsHandlerImpl> instance;
   return instance.get();
 }
 
-FirstPartySetsUtil::FirstPartySetsUtil() = default;
+FirstPartySetsHandlerImpl::FirstPartySetsHandlerImpl() = default;
+FirstPartySetsHandlerImpl::~FirstPartySetsHandlerImpl() = default;
 
-void FirstPartySetsUtil::SendAndUpdatePersistedSets(
+void FirstPartySetsHandlerImpl::SendAndUpdatePersistedSets(
     const base::FilePath& user_data_dir,
     base::OnceCallback<void(base::OnceCallback<void(const std::string&)>,
                             const std::string&)> send_sets) {
@@ -74,13 +83,13 @@ void FirstPartySetsUtil::SendAndUpdatePersistedSets(
   base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE, {base::MayBlock(), base::TaskPriority::USER_BLOCKING},
       base::BindOnce(&LoadSetsFromDisk, persisted_sets_path),
-      base::BindOnce(&FirstPartySetsUtil::SendPersistedSets,
+      base::BindOnce(&FirstPartySetsHandlerImpl::SendPersistedSets,
                      base::Unretained(this), std::move(send_sets),
                      persisted_sets_path));
 }
 
-void FirstPartySetsUtil::OnGetUpdatedSets(const base::FilePath& path,
-                                          const std::string& sets) {
+void FirstPartySetsHandlerImpl::OnGetUpdatedSets(const base::FilePath& path,
+                                                 const std::string& sets) {
   if (!path.empty()) {
     base::ThreadPool::PostTask(
         FROM_HERE, {base::MayBlock(), base::TaskPriority::BEST_EFFORT},
@@ -88,15 +97,20 @@ void FirstPartySetsUtil::OnGetUpdatedSets(const base::FilePath& path,
   }
 }
 
-void FirstPartySetsUtil::SendPersistedSets(
+void FirstPartySetsHandlerImpl::SendPersistedSets(
     base::OnceCallback<void(base::OnceCallback<void(const std::string&)>,
                             const std::string&)> send_sets,
     const base::FilePath& path,
     const std::string& sets) {
   // base::Unretained(this) is safe here because this is a static singleton.
-  std::move(send_sets).Run(base::BindOnce(&FirstPartySetsUtil::OnGetUpdatedSets,
-                                          base::Unretained(this), path),
-                           sets);
+  std::move(send_sets).Run(
+      base::BindOnce(&FirstPartySetsHandlerImpl::OnGetUpdatedSets,
+                     base::Unretained(this), path),
+      sets);
+}
+
+void FirstPartySetsHandlerImpl::SetPublicFirstPartySets(base::File sets_file) {
+  content::GetNetworkService()->SetFirstPartySets(std::move(sets_file));
 }
 
 }  // namespace content

@@ -21,10 +21,9 @@
 #include "chrome/browser/first_party_sets/first_party_sets_settings.h"
 #include "components/component_updater/component_installer.h"
 #include "components/component_updater/component_updater_paths.h"
-#include "content/public/browser/network_service_instance.h"
+#include "content/public/browser/first_party_sets_handler.h"
 #include "content/public/common/content_features.h"
 #include "net/cookies/cookie_util.h"
-#include "services/network/public/mojom/network_service.mojom.h"
 
 using component_updater::ComponentUpdateService;
 
@@ -206,19 +205,15 @@ void FirstPartySetsComponentInstallerPolicy::ResetForTesting() {
   GetConfigPathInstance().clear();
 }
 
-// static
-void FirstPartySetsComponentInstallerPolicy::SendFileToNetworkService(
-    base::File sets_file) {
-  VLOG(1) << "Received First-Party Sets";
-  content::GetNetworkService()->SetFirstPartySets(std::move(sets_file));
-}
-
 void RegisterFirstPartySetsComponent(ComponentUpdateService* cus) {
   VLOG(1) << "Registering First-Party Sets component.";
 
   auto policy = std::make_unique<FirstPartySetsComponentInstallerPolicy>(
-      /*on_sets_ready=*/base::BindOnce(
-          &FirstPartySetsComponentInstallerPolicy::SendFileToNetworkService));
+      /*on_sets_ready=*/base::BindOnce([](base::File sets_file) {
+        VLOG(1) << "Received First-Party Sets";
+        content::FirstPartySetsHandler::GetInstance()->SetPublicFirstPartySets(
+            std::move(sets_file));
+      }));
 
   FirstPartySetsComponentInstallerPolicy* raw_policy = policy.get();
   // Dereferencing `raw_policy` this way is safe because the closure is invoked

@@ -177,6 +177,7 @@ source_set("browser_sources") {
     "file_system_access_write_item.cc",
     "file_system_access_write_item.h",
     "file_url_loader.h",
+    "first_party_sets_handler.h",
     "focused_node_details.h",
     "font_list_async.h",
     "frame_accept_header.cc",
