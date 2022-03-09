@@ -286,12 +286,11 @@ class AccountSelectionMediator {
     }
 
     private PropertyModel createAccountItem(Account account, boolean isAccountClickable) {
-        PropertyModel.Builder modelBuilder = new PropertyModel.Builder(AccountProperties.ALL_KEYS)
-                                                     .with(AccountProperties.ACCOUNT, account);
-        if (isAccountClickable) {
-            modelBuilder.with(AccountProperties.ON_CLICK_LISTENER, this::onAccountSelected);
-        }
-        return modelBuilder.build();
+        return new PropertyModel.Builder(AccountProperties.ALL_KEYS)
+                .with(AccountProperties.ACCOUNT, account)
+                .with(AccountProperties.ON_CLICK_LISTENER,
+                        isAccountClickable ? this::onAccountSelected : null)
+                .build();
     }
 
     private PropertyModel createContinueBtnItem(

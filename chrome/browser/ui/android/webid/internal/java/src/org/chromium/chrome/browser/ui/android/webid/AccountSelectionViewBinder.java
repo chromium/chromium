@@ -140,9 +140,12 @@ class AccountSelectionViewBinder {
             ImageView avatarView = view.findViewById(R.id.start_icon);
             avatarView.setImageDrawable(croppedAvatar);
         } else if (key == AccountProperties.ON_CLICK_LISTENER) {
-            view.setOnClickListener(clickedView -> {
-                model.get(AccountProperties.ON_CLICK_LISTENER).onResult(account);
-            });
+            Callback<Account> clickCallback = model.get(AccountProperties.ON_CLICK_LISTENER);
+            if (clickCallback == null) {
+                view.setOnClickListener(null);
+            } else {
+                view.setOnClickListener(clickedView -> { clickCallback.onResult(account); });
+            }
         } else if (key == AccountProperties.ACCOUNT) {
             TextView subject = view.findViewById(R.id.title);
             subject.setText(account.getName());
