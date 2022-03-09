@@ -41,31 +41,48 @@ function toStackFrame(callsite: CallSite): StackFrame {
   };
 }
 
+function parseStackTrace(stackTrace: string): StackFrame[] {
+  const regex = /at (\[?\w+\]? )?\(?(.+):(\d+):(\d+)/g;
+  const frames: StackFrame[] = [];
+  for (const m of stackTrace.matchAll(regex)) {
+    frames.push({
+      funcName: m[1]?.trim() ?? '',
+      fileName: m[2],
+      lineNo: Number(m[3]),
+      colNo: Number(m[4]),
+    });
+  }
+  return frames;
+}
+
 /**
  * Gets stack frames from error.
  *
  * @return Return null if failed to get frames from error.
  */
-function getStackFrames(error: Error): StackFrame[]|null {
+function getStackFrames(error: Error): StackFrame[] {
   const prevPrepareStackTrace = Error.prepareStackTrace;
   Error.prepareStackTrace = (_error, stack) => {
     try {
       return stack.map(toStackFrame);
     } catch (e) {
       console.warn('Failed to prepareStackTrace', e);
-      return null;
+      return [];
     }
   };
 
-  // Using "as" since overriding prepareStackTrace changes what error.stack
-  // returns, but TypeScript will still consider frames a string even if we
-  // manually annotate the type.
-  const frames = error.stack as (StackFrame[] | string);
-  Error.prepareStackTrace = prevPrepareStackTrace;
-
-  if (typeof frames !== 'object') {
-    return null;
+  let frames: StackFrame[];
+  if (typeof error.stack === 'string') {
+    // TODO(b/223324206): There is a known issue that when reporting error from
+    // intent instance, the type from |error.stack| will be a string instead.
+    frames = parseStackTrace(error.stack);
+  } else {
+    // Generally, error.stack returns whatever Error.prepareStackTrace returns.
+    // Since we override Error.prepareStackTrace to return StackFrame[] here,
+    // using "as unknown" first so that we can cast the type to StackFrame[].
+    frames = error.stack as unknown as StackFrame[];
   }
+  Error.prepareStackTrace = prevPrepareStackTrace;
   return frames;
 }
 
@@ -136,7 +153,7 @@ export function reportError(
   const errorName = error.name;
   const errorDesc = getErrorDescription(error);
   const {fileName = '', lineNo = 0, colNo = 0, funcName = ''} =
-      (frames !== null && frames.length > 0) ? frames[0] : {};
+      frames.length > 0 ? frames[0] : {};
 
   const hash = [errorName, fileName, String(lineNo), String(colNo)].join(',');
   if (triggeredErrorSet.has(hash)) {
