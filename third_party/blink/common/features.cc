@@ -1310,7 +1310,7 @@ const base::Feature kReduceUserAgentMinorVersion{
 // Enables correctly computing whether dedicated workers are secure contexts.
 // TODO(https://crbug.com/780031): Remove this once fully shipped.
 const base::Feature kSecureContextFixForWorkers{
-    "SecureContextFixForWorkers", base::FEATURE_DISABLED_BY_DEFAULT};
+    "SecureContextFixForWorkers", base::FEATURE_ENABLED_BY_DEFAULT};
 
 const base::Feature kZeroCopyTabCapture{"ZeroCopyTabCapture",
                                         base::FEATURE_DISABLED_BY_DEFAULT};
