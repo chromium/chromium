@@ -39,14 +39,14 @@ CdmRegistryImpl::CdmRegistryImpl() {}
 CdmRegistryImpl::~CdmRegistryImpl() {}
 
 void CdmRegistryImpl::Init() {
-  base::AutoLock auto_lock(lock_);
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   // Let embedders register CDMs.
   GetContentClient()->AddContentDecryptionModules(&cdms_, nullptr);
 }
 
 void CdmRegistryImpl::RegisterCdm(const CdmInfo& info) {
-  base::AutoLock auto_lock(lock_);
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   // Always register new CDMs at the end of the list, so that the behavior is
   // consistent across the browser process's lifetime. For example, we'll always
@@ -59,7 +59,8 @@ void CdmRegistryImpl::RegisterCdm(const CdmInfo& info) {
 std::unique_ptr<CdmInfo> CdmRegistryImpl::GetCdmInfo(
     const std::string& key_system,
     CdmInfo::Robustness robustness) {
-  base::AutoLock auto_lock(lock_);
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
   for (const auto& cdm : cdms_) {
     if (cdm.robustness == robustness && MatchKeySystem(cdm, key_system))
       return std::make_unique<CdmInfo>(cdm);
@@ -72,7 +73,7 @@ bool CdmRegistryImpl::FinalizeCdmCapability(
     const std::string& key_system,
     CdmInfo::Robustness robustness,
     absl::optional<media::CdmCapability> cdm_capability) {
-  base::AutoLock auto_lock(lock_);
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   auto itr = cdms_.begin();
   for (; itr != cdms_.end(); itr++) {
@@ -101,12 +102,12 @@ bool CdmRegistryImpl::FinalizeCdmCapability(
 }
 
 const std::vector<CdmInfo>& CdmRegistryImpl::GetRegisteredCdms() {
-  base::AutoLock auto_lock(lock_);
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return cdms_;
 }
 
 void CdmRegistryImpl::ResetForTesting() {
-  base::AutoLock auto_lock(lock_);
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   cdms_.clear();
 }
 

@@ -2486,8 +2486,8 @@ void RenderProcessHostImpl::RegisterMojoInterfaces() {
 #endif
 
 #if BUILDFLAG(ENABLE_LIBRARY_CDMS) || BUILDFLAG(IS_WIN)
-  registry->AddInterface(
-      base::BindRepeating(&KeySystemSupportImpl::BindReceiver));
+  AddUIThreadInterface(
+      registry.get(), base::BindRepeating(&KeySystemSupportImpl::BindReceiver));
 #endif
 
   AddUIThreadInterface(

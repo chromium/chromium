@@ -7,7 +7,7 @@
 
 #include <vector>
 
-#include "base/synchronization/lock.h"
+#include "base/sequence_checker.h"
 #include "base/thread_annotations.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/cdm_registry.h"
@@ -61,8 +61,9 @@ class CONTENT_EXPORT CdmRegistryImpl : public CdmRegistry {
   // Resets `this` to a clean state for testing.
   void ResetForTesting();
 
-  base::Lock lock_;
-  std::vector<CdmInfo> cdms_ GUARDED_BY(lock_);
+  std::vector<CdmInfo> cdms_ GUARDED_BY_CONTEXT(sequence_checker_);
+
+  SEQUENCE_CHECKER(sequence_checker_);
 };
 
 }  // namespace content
