@@ -1982,14 +1982,13 @@ TEST_F(BridgedNativeWidgetSimulateFullscreenTest, FailToEnterAndExit) {
   [center postNotificationName:NSWindowWillEnterFullScreenNotification
                         object:window];
 
-  // On a failure, Cocoa starts by sending an unexpected *exit* fullscreen, and
-  // NativeWidgetNSWindowBridge will think it's just a delayed transition and
-  // try to go back into fullscreen but get ignored by Cocoa.
+  // On a failure, Cocoa starts by sending an unexpected *exit* fullscreen.
+  // NativeWidgetNSWindowBridge recognize this failure and set its state
+  // back to windowed mode.
   EXPECT_EQ(0, [window ignoredToggleFullScreenCount]);
   EXPECT_TRUE(bridge()->target_fullscreen_state());
   [center postNotificationName:NSWindowDidExitFullScreenNotification
                         object:window];
-  EXPECT_EQ(1, [window ignoredToggleFullScreenCount]);
   EXPECT_FALSE(bridge()->target_fullscreen_state());
 
   // Cocoa follows up with a failure message sent to the NSWindowDelegate (there
@@ -2018,7 +2017,7 @@ TEST_F(BridgedNativeWidgetSimulateFullscreenTest, FailToEnterAndExit) {
   EXPECT_FALSE(bridge()->target_fullscreen_state());
   [center postNotificationName:NSWindowDidExitFullScreenNotification
                         object:window];
-  EXPECT_EQ(1, [window ignoredToggleFullScreenCount]);  // No change.
+  EXPECT_EQ(0, [window ignoredToggleFullScreenCount]);  // No change.
   EXPECT_FALSE(bridge()->target_fullscreen_state());
 
   widget_->CloseNow();
