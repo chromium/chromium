@@ -580,6 +580,8 @@ WebMediaPlayerImpl::~WebMediaPlayerImpl() {
   DVLOG(1) << __func__;
   DCHECK(main_task_runner_->BelongsToCurrentThread());
 
+  ReportSessionUMAs();
+
   if (set_cdm_result_) {
     DVLOG(2)
         << "Resolve pending SetCdmInternal() when media player is destroyed.";
@@ -1458,6 +1460,7 @@ void WebMediaPlayerImpl::Paint(cc::PaintCanvas* canvas,
   scoped_refptr<media::VideoFrame> video_frame =
       GetCurrentFrameFromCompositor();
   last_frame_request_time_ = tick_clock_->NowTicks();
+  video_frame_readback_count_++;
 
   video_renderer_.Paint(
       video_frame, canvas, gfx::RectF(rect), flags,
@@ -1467,6 +1470,7 @@ void WebMediaPlayerImpl::Paint(cc::PaintCanvas* canvas,
 
 scoped_refptr<media::VideoFrame> WebMediaPlayerImpl::GetCurrentFrame() {
   last_frame_request_time_ = tick_clock_->NowTicks();
+  video_frame_readback_count_++;
   return GetCurrentFrameFromCompositor();
 }
 
@@ -4013,6 +4017,32 @@ void WebMediaPlayerImpl::RegisterFrameSinkHierarchy() {
 void WebMediaPlayerImpl::UnregisterFrameSinkHierarchy() {
   if (bridge_)
     bridge_->UnregisterFrameSinkHierarchy();
+}
+
+void WebMediaPlayerImpl::ReportSessionUMAs() const {
+  if (renderer_type_ != media::RendererType::kDefault &&
+      renderer_type_ != media::RendererType::kMediaFoundation) {
+    return;
+  }
+
+  // Report the `Media.DroppedFrameCount2.{RendererType}.{EncryptedOrClear}`
+  // UMA.
+  constexpr char kDroppedFrameUmaPrefix[] = "Media.DroppedFrameCount2.";
+  std::string uma_name = kDroppedFrameUmaPrefix;
+  uma_name += GetRendererName(renderer_type_);
+  if (is_encrypted_)
+    uma_name += ".Encrypted";
+  else
+    uma_name += ".Clear";
+  base::UmaHistogramCounts1M(uma_name, DroppedFrameCount());
+
+  if (!is_encrypted_) {
+    // Report the `Media.FrameReadBackCount.{RendererType}` UMA.
+    constexpr char kFrameReadBackUmaPrefix[] = "Media.FrameReadBackCount.";
+    uma_name = kFrameReadBackUmaPrefix;
+    uma_name += GetRendererName(renderer_type_);
+    base::UmaHistogramCounts10M(uma_name, video_frame_readback_count_);
+  }
 }
 
 }  // namespace blink

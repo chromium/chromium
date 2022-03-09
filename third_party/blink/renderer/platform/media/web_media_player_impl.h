@@ -661,6 +661,9 @@ class BLINK_PLATFORM_EXPORT WebMediaPlayerImpl
   // Returns true if the video frame from this player are being captured.
   bool IsVideoBeingCaptured() const;
 
+  // Report UMAs when this object instance is destroyed.
+  void ReportSessionUMAs() const;
+
   WebLocalFrame* const frame_;
 
   WebMediaPlayer::NetworkState network_state_ =
@@ -1066,6 +1069,9 @@ class BLINK_PLATFORM_EXPORT WebMediaPlayerImpl
   // Time of the last call to GetCurrentFrameFromCompositor(). Used to prevent
   // background optimizations from being applied when capturing is active.
   base::TimeTicks last_frame_request_time_;
+
+  // Count the number of times a video frame is being readback.
+  unsigned video_frame_readback_count_ = 0;
 
   base::WeakPtr<WebMediaPlayerImpl> weak_this_;
   base::WeakPtrFactory<WebMediaPlayerImpl> weak_factory_{this};

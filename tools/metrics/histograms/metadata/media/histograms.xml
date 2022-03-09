@@ -55,6 +55,11 @@ chromium-metrics-reviews@google.com.
       summary="Software secure Widevine key system"/>
 </variants>
 
+<variants name="RendererType">
+  <variant name="MediaFoundationRenderer"/>
+  <variant name="RendererImpl"/>
+</variants>
+
 <histogram name="Media.AImageReaderGLOwner.AcquireImageResult"
     enum="MediaStatus" expires_after="2022-08-21">
   <owner>vikassoni@chromium.org</owner>
@@ -1859,6 +1864,23 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Media.DroppedFrameCount2.{RendererType}.{ClearOrEncrypted}"
+    units="units" expires_after="2023-03-08">
+  <owner>dalecurtis@chromium.org</owner>
+  <owner>frankli@microsoft.com</owner>
+  <owner>media-dev@chromium.org</owner>
+  <summary>
+    Monitors the DroppedFrameCount that is originated from a {RendererType} and
+    the video playback is {ClearOrEncrypted}. It is the count of dropped video
+    frames when an HTML5 video is unloaded.
+  </summary>
+  <token key="RendererType" variants="RendererType"/>
+  <token key="ClearOrEncrypted">
+    <variant name="Clear"/>
+    <variant name="Encrypted"/>
+  </token>
+</histogram>
+
 <histogram name="Media.DXVAVDA.DecoderLifetimeProgression"
     enum="DXVALifetimeProgression" expires_after="2022-04-24">
   <owner>liberato@chromium.org</owner>
@@ -2381,6 +2403,19 @@ chromium-metrics-reviews@google.com.
   <summary>
     Whether Chrome had to fallback to the high latency audio path or not.
   </summary>
+</histogram>
+
+<histogram name="Media.FrameReadBackCount.{RendererType}" units="frames"
+    expires_after="2023-03-08">
+  <owner>dalecurtis@chromium.org</owner>
+  <owner>frankli@microsoft.com</owner>
+  <owner>media-dev@chromium.org</owner>
+  <summary>
+    Monitors the number of video frames being read back from a {RendererType}.
+    It is the count of video frames being read back from an HTML5 video when it
+    is unloaded.
+  </summary>
+  <token key="RendererType" variants="RendererType"/>
 </histogram>
 
 <histogram name="Media.GlobalMediaControls.DeviceSelectorAvailable"
