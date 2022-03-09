@@ -356,6 +356,50 @@ IN_PROC_BROWSER_TEST_F(CrossPlatformAccessibilityBrowserTest,
               ElementsAre(Pair("type", "checkbox")));
 }
 
+// Android's text representation is different, so disable the test there.
+#if !BUILDFLAG(IS_ANDROID)
+IN_PROC_BROWSER_TEST_F(CrossPlatformAccessibilityBrowserTest,
+                       ReparentingANodeShouldReuseSameNativeWrapper) {
+  LoadInitialAccessibilityTreeFromHtml(R"HTML(
+      <!DOCTYPE html>
+      <html>
+      <body>
+        <div id="source">
+          <div id="destination">
+            <p id="paragraph">Testing</p>
+          </div>
+        </div>
+      </body>
+      </html>)HTML");
+
+  WaitForAccessibilityTreeToContainNodeWithName(shell()->web_contents(),
+                                                "Testing");
+  const BrowserAccessibility* wrapper1 = FindNode("Testing");
+  ASSERT_NE(nullptr, wrapper1);
+  wrapper1 = wrapper1->PlatformGetParent();
+  ASSERT_EQ(ax::mojom::Role::kParagraph, wrapper1->GetRole());
+  ASSERT_EQ(ax::mojom::Role::kGenericContainer,
+            wrapper1->PlatformGetParent()->GetRole());
+
+  // Reparent the paragraph from "source" to "destination".
+  ExecuteScript(
+      "let destination = document.getElementById('destination');"
+      "let paragraph = document.getElementById('paragraph');"
+      "destination.setAttribute('role', 'group');"
+      "paragraph.textContent = 'Testing changed';");
+
+  WaitForAccessibilityTreeToContainNodeWithName(shell()->web_contents(),
+                                                "Testing changed");
+  const BrowserAccessibility* wrapper2 = FindNode("Testing changed");
+  ASSERT_NE(nullptr, wrapper2);
+  wrapper2 = wrapper2->PlatformGetParent();
+  ASSERT_EQ(ax::mojom::Role::kParagraph, wrapper2->GetRole());
+  ASSERT_EQ(ax::mojom::Role::kGroup, wrapper2->PlatformGetParent()->GetRole());
+
+  EXPECT_EQ(wrapper1, wrapper2);
+}
+#endif  // !BUILDFLAG(IS_ANDROID)
+
 IN_PROC_BROWSER_TEST_F(CrossPlatformAccessibilityBrowserTest,
                        UnselectedEditableTextAccessibility) {
   LoadInitialAccessibilityTreeFromHtml(R"HTML(

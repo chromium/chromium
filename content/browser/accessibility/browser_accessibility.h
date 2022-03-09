@@ -316,11 +316,12 @@ class CONTENT_EXPORT BrowserAccessibility : public ui::AXPlatformNodeDelegate {
       const gfx::Point& blink_screen_point);
 
   //
-  // Accessors
+  // Accessors and simple setters.
   //
 
   BrowserAccessibilityManager* manager() const { return manager_; }
   ui::AXNode* node() const { return node_; }
+  void SetNode(ui::AXNode& node);  // Strictly not a trivial setter.
 
   // These access the internal unignored accessibility tree, which doesn't
   // necessarily reflect the accessibility tree that should be exposed on each
@@ -603,8 +604,10 @@ class CONTENT_EXPORT BrowserAccessibility : public ui::AXPlatformNodeDelegate {
   // The manager of this tree of accessibility objects. Weak, owns us.
   const raw_ptr<BrowserAccessibilityManager> manager_;
 
-  // The underlying node. Weak, `AXTree` owns this.
-  const raw_ptr<ui::AXNode> node_;
+  // The underlying node. This could change during the lifetime of this object
+  // if this object has been reparented, i.e. moved to another part of the tree.
+  // Weak, `AXTree` owns this.
+  raw_ptr<ui::AXNode> node_;
 
   // Protected so that it can't be called directly on a BrowserAccessibility
   // where it could be confused with an id that comes from the node data,

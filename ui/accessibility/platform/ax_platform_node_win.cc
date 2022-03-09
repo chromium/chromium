@@ -6518,9 +6518,6 @@ int AXPlatformNodeWin::MSAARole() {
     case ax::mojom::Role::kUnknown:
       return ROLE_SYSTEM_PANE;
   }
-
-  NOTREACHED();
-  return ROLE_SYSTEM_GROUPING;
 }
 
 AXPlatformNodeWin* AXPlatformNodeWin::GetParentPlatformNodeWin() const {

@@ -328,6 +328,10 @@ BrowserAccessibility* BrowserAccessibility::InternalDeepestLastChild() const {
   return manager()->GetFromAXNode(deepest_child);
 }
 
+void BrowserAccessibility::SetNode(ui::AXNode& node) {
+  node_ = &node;
+}
+
 uint32_t BrowserAccessibility::InternalChildCount() const {
   return node_->GetUnignoredChildCount();
 }
