@@ -12,6 +12,7 @@
 #include "chrome/browser/ui/browser_dialogs.h"
 #include "chrome/browser/ui/managed_ui.h"
 #include "chrome/browser/ui/media_router/media_cast_mode.h"
+#include "chrome/browser/ui/views/chrome_constrained_window_views_client.h"
 #include "chrome/browser/ui/views/chrome_web_dialog_view.h"
 #include "chrome/browser/ui/webui/webui_util.h"
 #include "chrome/common/url_constants.h"
@@ -19,6 +20,7 @@
 #include "chrome/grit/access_code_cast_resources.h"
 #include "chrome/grit/access_code_cast_resources_map.h"
 #include "chrome/grit/generated_resources.h"
+#include "components/constrained_window/constrained_window_views.h"
 #include "components/media_router/browser/media_router.h"
 #include "components/media_router/browser/media_router_factory.h"
 #include "components/strings/grit/components_strings.h"
@@ -35,15 +37,18 @@ using media_router::AccessCodeCastHandler;
 // Creates default params for showing AccessCodeCastDialog in ChromeOS
 views::Widget::InitParams CreateParams() {
   views::Widget::InitParams params;
-
-#if BUILDFLAG(IS_CHROMEOS)
+  params.remove_standard_frame = true;
   params.corner_radius = 12;
   // Dialog frame view has its own shadow.
   params.shadow_type = views::Widget::InitParams::ShadowType::kNone;
-#endif // IS_CHROMEOS
+  params.type = views::Widget::InitParams::Type::TYPE_BUBBLE;
+  // Make sure the dialog border is rendered correctly
+  params.opacity = views::Widget::InitParams::WindowOpacity::kTranslucent;
 
   return params;
 }
+
+// TODO(b/223434114): Add tests for AccessCodeCastDialog and AccessCodeCastUI
 
 ///////////////////////////////////////////////////////////////////////////////
 //  AccessCodeCast dialog:
@@ -74,11 +79,16 @@ void AccessCodeCastDialog::Show(
     content::WebContents* web_contents,
     std::unique_ptr<media_router::StartPresentationContext>
         start_presentation_context) {
+  gfx::NativeView parent = nullptr;
+  if (web_contents) {
+    views::Widget* widget = views::Widget::GetWidgetForNativeWindow(
+        web_contents->GetTopLevelNativeWindow());
+    DCHECK(widget) << "Could not find a parent widget!";
+    if (widget)
+      parent = widget->GetNativeView();
+  }
   AccessCodeCastDialog::Show(
-      web_contents ? web_contents->GetMainFrame()
-                         ->GetOutermostMainFrame()
-                         ->GetNativeView()
-                   : nullptr,
+      parent,
       web_contents ? web_contents->GetBrowserContext()
                    : ProfileManager::GetActiveUserProfile(),
       cast_mode_set, web_contents, std::move(start_presentation_context));
@@ -96,17 +106,26 @@ void AccessCodeCastDialog::Show(
     std::unique_ptr<media_router::StartPresentationContext>
         start_presentation_context) {
   views::Widget::InitParams extra_params = CreateParams();
-  chrome::ShowWebDialogWithParams(
-      parent, context,
-      new AccessCodeCastDialog(context, cast_mode_set, web_contents,
-                               std::move(start_presentation_context)),
-      absl::make_optional<views::Widget::InitParams>(std::move(extra_params)));
+  auto* dialog = new AccessCodeCastDialog(context, cast_mode_set, web_contents,
+      std::move(start_presentation_context));
+  gfx::NativeWindow dialog_window = chrome::ShowWebDialogWithParams(
+      parent, context, dialog,
+      absl::make_optional<views::Widget::InitParams>(
+          std::move(extra_params)));
+  if (web_contents) {
+    auto* dialog_widget = views::Widget::GetWidgetForNativeWindow(
+        dialog_window);
+    constrained_window::UpdateWidgetModalDialogPosition(dialog_widget,
+      CreateChromeConstrainedWindowViewsClient()->GetModalDialogHost(
+        web_contents->GetTopLevelNativeWindow()));
+    dialog_widget->AddObserver(dialog);
+  }
 }
 
 ui::ModalType AccessCodeCastDialog::GetDialogModalType() const {
   // If there are no web_contents_, that means that the dialog was launched
   // from the system tray, so therefore it shuold be a system dialog.
-  return web_contents_ ? ui::MODAL_TYPE_WINDOW : ui::MODAL_TYPE_SYSTEM;
+  return web_contents_ ? ui::MODAL_TYPE_NONE : ui::MODAL_TYPE_SYSTEM;
 }
 
 std::u16string AccessCodeCastDialog::GetDialogTitle() const {
@@ -150,6 +169,12 @@ void AccessCodeCastDialog::OnDialogShown(content::WebUI* webui) {
 }
 
 void AccessCodeCastDialog::OnDialogClosed(const std::string& json_retval) {
+  if (webui_) {
+    auto* dialog_web_contents = webui_->GetWebContents();
+    views::Widget* dialog_widget = views::Widget::GetWidgetForNativeWindow(
+        dialog_web_contents->GetTopLevelNativeWindow());
+    dialog_widget->RemoveObserver(this);
+  }
   delete this;
 }
 
@@ -185,6 +210,13 @@ bool AccessCodeCastDialog::CheckMediaAccessPermission(
     const GURL& security_origin,
     blink::mojom::MediaStreamType type) {
   return true;
+}
+
+void AccessCodeCastDialog::OnWidgetActivationChanged(views::Widget* widget,
+                                                     bool active) {
+  if (webui_ && !active) {
+    webui_->GetWebContents()->Close();
+  }
 }
 
 AccessCodeCastDialog::~AccessCodeCastDialog() = default;
