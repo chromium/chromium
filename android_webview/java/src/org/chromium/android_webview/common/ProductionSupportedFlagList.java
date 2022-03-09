@@ -284,5 +284,7 @@ public final class ProductionSupportedFlagList {
                     "Makes ThreadWrapper coalesce delayed tasks on metronome ticks."),
             Flag.baseFeature(WebRtcOverridesFeatures.WEB_RTC_TIMER_USES_METRONOME,
                     "Makes WebRtcTimer coalesce delayed tasks on metronome ticks."),
+            Flag.baseFeature(BlinkFeatures.VIEWPORT_HEIGHT_CLIENT_HINT_HEADER,
+                    "Enables the use of sec-ch-viewport-height client hint."),
     };
 }
