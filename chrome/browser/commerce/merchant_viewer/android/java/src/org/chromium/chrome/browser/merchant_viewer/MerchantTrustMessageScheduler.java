@@ -47,9 +47,17 @@ public class MerchantTrustMessageScheduler {
         clearScheduledMessage(clearReason);
     }
 
-    /** Adds a message to the underlying {@link MessageDispatcher} queue. */
+    // TODO(crbug.com/1298610): Clean up this api in tests.
+    @Deprecated
     void schedule(PropertyModel model, MerchantTrustMessageContext messageContext,
             long delayInMillis, Callback<MerchantTrustMessageContext> messageEnqueuedCallback) {
+        schedule(model, 4.0, messageContext, delayInMillis, messageEnqueuedCallback);
+    }
+
+    /** Adds a message to the underlying {@link MessageDispatcher} queue. */
+    void schedule(PropertyModel model, double starRating,
+            MerchantTrustMessageContext messageContext, long delayInMillis,
+            Callback<MerchantTrustMessageContext> messageEnqueuedCallback) {
         setScheduledMessage(
                 new Pair<MerchantTrustMessageContext, PropertyModel>(messageContext, model));
         mMetrics.recordMetricsForMessagePrepared();
@@ -57,11 +65,18 @@ public class MerchantTrustMessageScheduler {
             if (messageContext.isValid() && mTabSupplier.hasValue()
                     && messageContext.getWebContents().equals(
                             mTabSupplier.get().getWebContents())) {
-                mMessageDispatcher.enqueueMessage(
-                        model, messageContext.getWebContents(), MessageScopeType.NAVIGATION, false);
-                mMetrics.recordMetricsForMessageShown();
-                messageEnqueuedCallback.onResult(messageContext);
-                setScheduledMessage(null);
+                mMetrics.startRecordingMessageImpact(messageContext.getHostName(), starRating);
+                if (MerchantViewerConfig.isTrustSignalsMessageDisabledForImpactStudy()) {
+                    messageEnqueuedCallback.onResult(null);
+                    // TODO(crbug.com/1298610): Use a new message clear reason.
+                    clearScheduledMessage(MessageClearReason.UNKNOWN);
+                } else {
+                    mMessageDispatcher.enqueueMessage(model, messageContext.getWebContents(),
+                            MessageScopeType.NAVIGATION, false);
+                    mMetrics.recordMetricsForMessageShown();
+                    messageEnqueuedCallback.onResult(messageContext);
+                    setScheduledMessage(null);
+                }
             } else {
                 messageEnqueuedCallback.onResult(null);
                 if (!messageContext.isValid()) {

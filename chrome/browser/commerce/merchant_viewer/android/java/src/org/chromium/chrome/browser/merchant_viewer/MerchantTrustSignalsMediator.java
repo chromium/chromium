@@ -10,6 +10,7 @@ import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.chrome.browser.tab.CurrentTabObserver;
 import org.chromium.chrome.browser.tab.EmptyTabObserver;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tab.TabHidingType;
 import org.chromium.content_public.browser.NavigationHandle;
 
 /**
@@ -28,8 +29,8 @@ class MerchantTrustSignalsMediator {
 
     private final CurrentTabObserver mCurrentTabObserver;
 
-    MerchantTrustSignalsMediator(
-            ObservableSupplier<Tab> tabSupplier, MerchantTrustSignalsCallback delegate) {
+    MerchantTrustSignalsMediator(ObservableSupplier<Tab> tabSupplier,
+            MerchantTrustSignalsCallback delegate, MerchantTrustMetrics metrics) {
         mCurrentTabObserver = new CurrentTabObserver(tabSupplier, new EmptyTabObserver() {
             @Override
             public void onDidFinishNavigation(Tab tab, NavigationHandle navigation) {
@@ -41,8 +42,19 @@ class MerchantTrustSignalsMediator {
                     return;
                 }
 
+                metrics.updateRecordingMessageImpact(navigation.getUrl().getHost());
                 delegate.onFinishEligibleNavigation(
                         new MerchantTrustMessageContext(navigation, tab.getWebContents()));
+            }
+
+            @Override
+            public void onHidden(Tab tab, @TabHidingType int type) {
+                metrics.finishRecordingMessageImpact();
+            }
+
+            @Override
+            public void onDestroyed(Tab tab) {
+                metrics.finishRecordingMessageImpact();
             }
         });
     }

@@ -67,6 +67,14 @@ chromium-metrics-reviews@google.com.
       summary="the message introducing price chips"/>
 </variants>
 
+<variants name="MerchantTrustMessageStarRating">
+  <variant name="AboveFour" summary="rating value within [4 - 4.5)"/>
+  <variant name="AboveFourPointFive" summary="rating value within [4.5 - 5]"/>
+  <variant name="AboveThree" summary="rating value within [3 - 4)"/>
+  <variant name="AboveTwo" summary="rating value within [2 - 3)"/>
+  <variant name="BelowTwo" summary="rating value within [0 - 2)"/>
+</variants>
+
 <variants name="ProcessName">
   <variant name="BrowserProcess" summary=""/>
   <variant name="GPUProcess" summary=""/>
@@ -7283,6 +7291,60 @@ chromium-metrics-reviews@google.com.
     Records the duration in milliseconds that the merchant trust message is
     shown. Implemented for Android.
   </summary>
+</histogram>
+
+<histogram name="MerchantTrust.MessageImpact.BrowsingTime" units="ms"
+    expires_after="M105">
+  <owner>zhiyuancai@chromium.org</owner>
+  <owner>ayman@chromium.org</owner>
+  <owner>chrome-shopping@google.com</owner>
+  <summary>
+    Records the user browsing time in milliseconds in a tab on the same host
+    after a message shows. Recorded when user navigates to another host or the
+    tab gets hid/closed. Recorded for all messages. Implemented for Android.
+  </summary>
+</histogram>
+
+<histogram
+    name="MerchantTrust.MessageImpact.BrowsingTime.Rating{MessageStarRating}"
+    units="ms" expires_after="M105">
+  <owner>zhiyuancai@chromium.org</owner>
+  <owner>ayman@chromium.org</owner>
+  <owner>chrome-shopping@google.com</owner>
+  <summary>
+    Records the user browsing time in milliseconds in a tab on the same host
+    after a message shows. Recorded when user navigates to another host or the
+    tab gets hid/closed. Recorded for message with {MessageStarRating}.
+    Implemented for Android.
+  </summary>
+  <token key="MessageStarRating" variants="MerchantTrustMessageStarRating"/>
+</histogram>
+
+<histogram name="MerchantTrust.MessageImpact.NavigationCount"
+    units="navigations" expires_after="M105">
+  <owner>zhiyuancai@chromium.org</owner>
+  <owner>ayman@chromium.org</owner>
+  <owner>chrome-shopping@google.com</owner>
+  <summary>
+    Records the user navigation count in a tab on the same host after a message
+    shows. Recorded when user navigates to another host or the tab gets
+    hid/closed. Recorded for all messages. Implemented for Android.
+  </summary>
+</histogram>
+
+<histogram
+    name="MerchantTrust.MessageImpact.NavigationCount.Rating{MessageStarRating}"
+    units="navigations" expires_after="M105">
+  <owner>zhiyuancai@chromium.org</owner>
+  <owner>ayman@chromium.org</owner>
+  <owner>chrome-shopping@google.com</owner>
+  <summary>
+    Records the user navigation count in a tab on the same host after a message
+    shows. Recorded when user navigates to another host or the tab gets
+    hid/closed. Recorded for message with {MessageStarRating}. Implemented for
+    Android.
+  </summary>
+  <token key="MessageStarRating" variants="MerchantTrustMessageStarRating"/>
 </histogram>
 
 <histogram name="MerchantTrust.PageInfo.IsStoreInfoVisible"

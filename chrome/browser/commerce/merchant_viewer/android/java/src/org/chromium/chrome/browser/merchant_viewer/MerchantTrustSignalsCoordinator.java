@@ -102,7 +102,8 @@ public class MerchantTrustSignalsCoordinator
         mProfileSupplier = profileSupplier;
         mWindowAndroid = windowAndroid;
 
-        mMediator = new MerchantTrustSignalsMediator(tabSupplier, this::onFinishEligibleNavigation);
+        mMediator = new MerchantTrustSignalsMediator(
+                tabSupplier, this::onFinishEligibleNavigation, metrics);
         mMessageScheduler = messageScheduler;
         mDetailsTabCoordinator = detailsTabCoordinator;
     }
@@ -179,7 +180,7 @@ public class MerchantTrustSignalsCoordinator
         assert (trustSignals != null) && (item != null);
         mMessageScheduler.schedule(
                 MerchantTrustMessageViewModel.create(mContext, trustSignals, item.getUrl(), this),
-                item,
+                trustSignals.getMerchantStarRating(), item,
                 shouldExpediteMessage ? MerchantTrustMessageScheduler.MESSAGE_ENQUEUE_NO_DELAY
                                       : MerchantViewerConfig.getDefaultTrustSignalsMessageDelay(),
                 this::onMessageEnqueued);

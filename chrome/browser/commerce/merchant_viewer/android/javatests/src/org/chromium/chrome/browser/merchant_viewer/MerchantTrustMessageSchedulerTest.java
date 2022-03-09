@@ -27,8 +27,10 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.robolectric.annotation.Config;
 
+import org.chromium.base.FeatureList;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.merchant_viewer.MerchantTrustMetrics.MessageClearReason;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.test.util.browser.Features;
@@ -97,12 +99,13 @@ public class MerchantTrustMessageSchedulerTest {
         doReturn(true).when(mockMessagesContext).isValid();
         doReturn(mMockWebContents).when(mockMessagesContext).getWebContents();
         doReturn(mMockWebContents).when(mMockTab).getWebContents();
+        doReturn("fake_host").when(mockMessagesContext).getHostName();
 
         scheduler.setHandlerForTesting(mMockHandler);
 
         int callCount = callbackHelper.getCallCount();
         scheduler.schedule(
-                mockPropteryModel, mockMessagesContext, 2000, callbackHelper::notifyCalled);
+                mockPropteryModel, 4.7, mockMessagesContext, 2000, callbackHelper::notifyCalled);
         callbackHelper.waitForCallback(callCount);
 
         Assert.assertNotNull(callbackHelper.getResult());
@@ -111,7 +114,47 @@ public class MerchantTrustMessageSchedulerTest {
         verify(mMockMessageDispatcher, times(1))
                 .enqueueMessage(eq(mockPropteryModel), eq(mMockWebContents),
                         eq(MessageScopeType.NAVIGATION), eq(false));
+        verify(mMockMetrics, times(1)).startRecordingMessageImpact(eq("fake_host"), eq(4.7));
         verify(mMockMetrics, times(1)).recordMetricsForMessageShown();
+        Assert.assertNull(scheduler.getScheduledMessageContext());
+    }
+
+    @Test
+    public void testSchedule_DisableMessageForImpactStudy() throws TimeoutException {
+        FeatureList.TestValues testValues = new FeatureList.TestValues();
+        testValues.addFieldTrialParamOverride(ChromeFeatureList.COMMERCE_MERCHANT_VIEWER,
+                MerchantViewerConfig.TRUST_SIGNALS_MESSAGE_DISABLED_FOR_IMPACT_STUDY_PARAM, "true");
+        FeatureList.setTestValues(testValues);
+
+        MerchantTrustSignalsCallbackHelper callbackHelper =
+                new MerchantTrustSignalsCallbackHelper();
+        MerchantTrustMessageScheduler scheduler = getSchedulerUnderTest();
+        PropertyModel mockPropteryModel = mock(PropertyModel.class);
+        doReturn(false).when(mMockWebContents).isDestroyed();
+
+        MerchantTrustMessageContext mockMessagesContext = mock(MerchantTrustMessageContext.class);
+        doReturn(true).when(mockMessagesContext).isValid();
+        doReturn(mMockWebContents).when(mockMessagesContext).getWebContents();
+        doReturn(mMockWebContents).when(mMockTab).getWebContents();
+        doReturn("fake_host").when(mockMessagesContext).getHostName();
+
+        scheduler.setHandlerForTesting(mMockHandler);
+
+        int callCount = callbackHelper.getCallCount();
+        scheduler.schedule(
+                mockPropteryModel, 4.7, mockMessagesContext, 2000, callbackHelper::notifyCalled);
+        callbackHelper.waitForCallback(callCount);
+
+        Assert.assertNull(callbackHelper.getResult());
+        verify(mMockMetrics, times(1)).recordMetricsForMessagePrepared();
+        verify(mMockHandler, times(1)).postDelayed(any(Runnable.class), eq(2000L));
+        verify(mMockMessageDispatcher, times(0))
+                .enqueueMessage(eq(mockPropteryModel), eq(mMockWebContents),
+                        eq(MessageScopeType.NAVIGATION), eq(false));
+        verify(mMockMetrics, times(1)).startRecordingMessageImpact(eq("fake_host"), eq(4.7));
+        verify(mMockMetrics, times(0)).recordMetricsForMessageShown();
+        verify(mMockMetrics, times(1))
+                .recordMetricsForMessageCleared(eq(MessageClearReason.UNKNOWN));
         Assert.assertNull(scheduler.getScheduledMessageContext());
     }
 
