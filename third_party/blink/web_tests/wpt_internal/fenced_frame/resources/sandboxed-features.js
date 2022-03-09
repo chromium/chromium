@@ -1,3 +1,28 @@
+const run_in_fenced_frame = (func_name, description, is_nested) => {
+  promise_test(async test => {
+    const key = token();
+    const url = is_nested ?
+                'resources/sandboxed-features-looser-restriction.sub.html?' :
+                'resources/sandboxed-features-inner.sub.html?';
+    let params = new URLSearchParams();
+    params.set('key', key);
+    params.set('test_func', func_name);
+    const frame = document.createElement('fencedframe');
+    frame.src = 'resources/sandboxed-features-inner.sub.html?' +
+      params.toString();
+    test.add_cleanup(() => {
+      frame.remove();
+    });
+    document.body.appendChild(frame);
+    assert_equals(await nextValueFromServer(key), 'done');
+  }, description);
+};
+
+const run_sanboxed_feature_test = (func_name, description) => {
+  run_in_fenced_frame(func_name, description, false);
+  run_in_fenced_frame(func_name, description + '[looser sandboxed]', false);
+};
+
 async function test_prompt() {
   assert_equals(
     window.prompt('Test prompt'),
