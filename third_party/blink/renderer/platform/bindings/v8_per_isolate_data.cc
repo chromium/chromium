@@ -422,8 +422,8 @@ void ReportV8FatalError(const char* location, const char* message) {
 }
 
 void ReportV8OOMError(const char* location, bool is_js_heap) {
-  DVLOG(1) << "V8 " << (is_js_heap ? "javascript" : "process") << " OOM: ("
-           << location << ").";
+  LOG(FATAL) << "V8 " << (is_js_heap ? "javascript" : "process") << " OOM: ("
+             << location << ").";
   OOM_CRASH(0);
 }
 
