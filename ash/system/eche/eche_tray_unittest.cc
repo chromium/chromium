@@ -29,8 +29,10 @@ class EcheTrayTest : public AshTestBase {
   // AshTestBase:
   void SetUp() override {
     feature_list_.InitWithFeatures(
-        {chromeos::features::kEcheSWA, chromeos::features::kEcheCustomWidget},
-        {});
+        /*enabled_features=*/{chromeos::features::kEcheSWA,
+                              chromeos::features::kEcheCustomWidget,
+                              chromeos::features::kEcheSWAInBackground},
+        /*disabled_features=*/{});
 
     DCHECK(test_web_view_factory_.get());
 
@@ -121,6 +123,7 @@ TEST_F(EcheTrayTest, EcheTrayCreatesBubbleButHideFirst) {
   EXPECT_TRUE(eche_tray()->get_bubble_wrapper_for_test());
   EXPECT_FALSE(
       eche_tray()->get_bubble_wrapper_for_test()->bubble_view()->GetVisible());
+  EXPECT_TRUE(eche_tray()->loading_indicator_->GetAnimating());
 
   // Request this bubble to show up.
   eche_tray()->ShowBubble();
@@ -130,6 +133,7 @@ TEST_F(EcheTrayTest, EcheTrayCreatesBubbleButHideFirst) {
   EXPECT_TRUE(eche_tray()->get_bubble_wrapper_for_test());
   EXPECT_TRUE(
       eche_tray()->get_bubble_wrapper_for_test()->bubble_view()->GetVisible());
+  EXPECT_FALSE(eche_tray()->loading_indicator_->GetAnimating());
 }
 
 }  // namespace ash
