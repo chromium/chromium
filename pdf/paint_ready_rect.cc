@@ -4,13 +4,13 @@
 
 #include "pdf/paint_ready_rect.h"
 
-#include "pdf/ppapi_migration/image.h"
+#include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/gfx/geometry/rect.h"
 
 namespace chrome_pdf {
 
 PaintReadyRect::PaintReadyRect(const gfx::Rect& rect,
-                               const Image& image,
+                               const SkBitmap& image,
                                bool flush_now)
     : rect_(rect), image_(image), flush_now_(flush_now) {}
 

@@ -44,7 +44,6 @@ class Vector2d;
 
 namespace chrome_pdf {
 
-class Image;
 class PDFiumEngine;
 class Thumbnail;
 class UrlLoader;
@@ -263,7 +262,7 @@ class PdfViewPluginBase : public PDFEngine::Client,
   void OnGeometryChanged(double old_zoom, float old_device_scale);
 
   // Returns the plugin-specific image data buffer.
-  virtual Image GetPluginImageData() const;
+  virtual SkBitmap GetPluginImageData() const;
 
   // Updates the geometry of the plugin and its image data if the plugin rect
   // or the device scale has changed. `new_plugin_rect` must be in device

@@ -5,7 +5,7 @@
 #ifndef PDF_PAINT_READY_RECT_H_
 #define PDF_PAINT_READY_RECT_H_
 
-#include "pdf/ppapi_migration/image.h"
+#include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/gfx/geometry/rect.h"
 
 namespace chrome_pdf {
@@ -16,7 +16,7 @@ namespace chrome_pdf {
 class PaintReadyRect {
  public:
   PaintReadyRect(const gfx::Rect& rect,
-                 const Image& image,
+                 const SkBitmap& image,
                  bool flush_now = false);
 
   PaintReadyRect(const PaintReadyRect& other);
@@ -26,7 +26,7 @@ class PaintReadyRect {
   const gfx::Rect& rect() const { return rect_; }
   void set_rect(const gfx::Rect& rect) { rect_ = rect; }
 
-  const Image& image() const { return image_; }
+  const SkBitmap& image() const { return image_; }
 
   // Whether to flush to screen immediately; otherwise, when the rest of the
   // plugin viewport is ready.
@@ -34,7 +34,7 @@ class PaintReadyRect {
 
  private:
   gfx::Rect rect_;
-  Image image_;
+  SkBitmap image_;
   bool flush_now_;
 };
 

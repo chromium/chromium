@@ -10,7 +10,6 @@
 #include "cc/test/pixel_comparator.h"
 #include "cc/test/pixel_test_utils.h"
 #include "pdf/ppapi_migration/bitmap.h"
-#include "pdf/ppapi_migration/image.h"
 #include "pdf/test/test_helpers.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -120,7 +119,7 @@ class SkiaGraphicsScrollTest : public SkiaGraphicsTest {
     // Paint a nonuniform SkBitmap to graphics.
     initial_bitmap_ =
         CreateNonuniformBitmap(kGraphicsRect.width(), kGraphicsRect.height());
-    graphics_->PaintImage(Image(initial_bitmap_), kGraphicsRect);
+    graphics_->PaintImage(initial_bitmap_, kGraphicsRect);
     graphics_->Flush(base::DoNothing());
     SkBitmap initial_snapshot;
     ASSERT_TRUE(client_.snapshot->asLegacyBitmap(&initial_snapshot));
@@ -134,7 +133,7 @@ class SkiaGraphicsScrollTest : public SkiaGraphicsTest {
     if (!graphics_)
       return;
 
-    graphics_->PaintImage(Image(initial_bitmap_), kGraphicsRect);
+    graphics_->PaintImage(initial_bitmap_, kGraphicsRect);
     graphics_->Scroll(kGraphicsRect, scroll_amount);
     graphics_->Flush(base::DoNothing());
   }

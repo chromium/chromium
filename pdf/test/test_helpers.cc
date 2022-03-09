@@ -8,7 +8,6 @@
 #include "base/files/file_path.h"
 #include "base/path_service.h"
 #include "pdf/ppapi_migration/bitmap.h"
-#include "pdf/ppapi_migration/image.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/gfx/geometry/skia_conversions.h"
@@ -26,10 +25,10 @@ base::FilePath GetTestDataFilePath(const base::FilePath& path) {
       .Append(path);
 }
 
-Image CreateSkiaImageForTesting(const gfx::Size& size, SkColor color) {
+SkBitmap CreateSkiaImageForTesting(const gfx::Size& size, SkColor color) {
   SkBitmap bitmap = CreateN32PremulSkBitmap(gfx::SizeToSkISize(size));
   bitmap.eraseColor(color);
-  return Image(bitmap);
+  return bitmap;
 }
 
 }  // namespace chrome_pdf

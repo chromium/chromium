@@ -6,8 +6,9 @@
 #define PDF_TEST_TEST_HELPERS_H_
 
 #include "base/files/file_path.h"
-#include "pdf/ppapi_migration/image.h"
 #include "third_party/skia/include/core/SkColor.h"
+
+class SkBitmap;
 
 namespace gfx {
 class Size;
@@ -20,7 +21,7 @@ namespace chrome_pdf {
 base::FilePath GetTestDataFilePath(const base::FilePath& path);
 
 // Creates a Skia-format `Image` of a given size filled with a given color.
-Image CreateSkiaImageForTesting(const gfx::Size& size, SkColor color);
+SkBitmap CreateSkiaImageForTesting(const gfx::Size& size, SkColor color);
 
 }  // namespace chrome_pdf
 

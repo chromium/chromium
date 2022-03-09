@@ -13,6 +13,7 @@
 #include "third_party/skia/include/core/SkSurface.h"
 #include "ui/gfx/geometry/size.h"
 
+class SkBitmap;
 class SkImage;
 
 namespace gfx {
@@ -23,8 +24,6 @@ class Vector2dF;
 }  // namespace gfx
 
 namespace chrome_pdf {
-
-class Image;
 
 // Abstraction for a Pepper or Skia graphics device.
 // TODO(crbug.com/1099020): Implement the Skia graphics device.
@@ -40,7 +39,7 @@ class Graphics {
 
   // Paints the `src_rect` region of `image` to the graphics device. The image
   // must be compatible with the concrete `Graphics` implementation.
-  virtual void PaintImage(const Image& image, const gfx::Rect& src_rect) = 0;
+  virtual void PaintImage(const SkBitmap& image, const gfx::Rect& src_rect) = 0;
 
   // Shifts the `clip` region of the graphics device by `amount`.
   virtual void Scroll(const gfx::Rect& clip, const gfx::Vector2d& amount) = 0;
@@ -88,7 +87,7 @@ class SkiaGraphics final : public Graphics {
 
   bool Flush(base::OnceClosure callback) override;
 
-  void PaintImage(const Image& image, const gfx::Rect& src_rect) override;
+  void PaintImage(const SkBitmap& image, const gfx::Rect& src_rect) override;
 
   void Scroll(const gfx::Rect& clip, const gfx::Vector2d& amount) override;
   void SetScale(float scale) override;

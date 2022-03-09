@@ -51,7 +51,6 @@
 #include "pdf/pdf_features.h"
 #include "pdf/pdfium/pdfium_engine.h"
 #include "pdf/pdfium/pdfium_form_filler.h"
-#include "pdf/ppapi_migration/image.h"
 #include "pdf/ppapi_migration/result_codes.h"
 #include "pdf/ppapi_migration/url_loader.h"
 #include "pdf/ui/document_properties.h"
@@ -902,8 +901,8 @@ void PdfViewPluginBase::UpdateGeometryOnPluginRectChanged(
   OnGeometryChanged(zoom_, old_device_scale);
 }
 
-Image PdfViewPluginBase::GetPluginImageData() const {
-  return Image(image_data_);
+SkBitmap PdfViewPluginBase::GetPluginImageData() const {
+  return image_data_;
 }
 
 void PdfViewPluginBase::RecalculateAreas(double old_zoom,

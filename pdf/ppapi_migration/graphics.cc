@@ -15,8 +15,8 @@
 #include "base/memory/ptr_util.h"
 #include "base/notreached.h"
 #include "base/threading/sequenced_task_runner_handle.h"
-#include "pdf/ppapi_migration/image.h"
 #include "pdf/ppapi_migration/result_codes.h"
+#include "third_party/skia/include/core/SkBitmap.h"
 #include "third_party/skia/include/core/SkCanvas.h"
 #include "ui/gfx/blit.h"
 #include "ui/gfx/geometry/point.h"
@@ -63,11 +63,14 @@ bool SkiaGraphics::Flush(base::OnceClosure callback) {
   return true;
 }
 
-void SkiaGraphics::PaintImage(const Image& image, const gfx::Rect& src_rect) {
+void SkiaGraphics::PaintImage(const SkBitmap& image,
+                              const gfx::Rect& src_rect) {
   SkRect skia_rect = RectToSkRect(src_rect);
+
+  // TODO(crbug.com/1284255): Avoid inefficient `SkBitmap::asImage()`.
   skia_graphics_->getCanvas()->drawImageRect(
-      image.skia_image().asImage(), skia_rect, skia_rect, SkSamplingOptions(),
-      nullptr, SkCanvas::kStrict_SrcRectConstraint);
+      image.asImage(), skia_rect, skia_rect, SkSamplingOptions(), nullptr,
+      SkCanvas::kStrict_SrcRectConstraint);
 }
 
 void SkiaGraphics::Scroll(const gfx::Rect& clip, const gfx::Vector2d& amount) {
