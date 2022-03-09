@@ -20,7 +20,7 @@ import {assertNotReached} from '//resources/js/assert.m.js';
 import {I18nBehavior, I18nBehaviorInterface} from '//resources/js/i18n_behavior.m.js';
 import {html, mixinBehaviors, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {BatteryType} from 'chrome://resources/cr_components/chromeos/bluetooth/bluetooth_types.js';
-import {getBatteryPercentage, getDeviceName, hasAnyDetailedBatteryInfo, hasTrueWirelessImages} from 'chrome://resources/cr_components/chromeos/bluetooth/bluetooth_utils.js';
+import {getBatteryPercentage, getDeviceName, hasAnyDetailedBatteryInfo, hasDefaultImage, hasTrueWirelessImages} from 'chrome://resources/cr_components/chromeos/bluetooth/bluetooth_utils.js';
 import {getBluetoothConfig} from 'chrome://resources/cr_components/chromeos/bluetooth/cros_bluetooth_config.js';
 
 import {loadTimeData} from '../../i18n_setup.js';
@@ -503,7 +503,10 @@ class SettingsBluetoothDeviceDetailSubpageElement extends
       return false;
     }
 
-    return hasTrueWirelessImages(this.device_.deviceProperties);
+    // The True Wireless Images component expects all True Wireless
+    // images and the default image to be displayable.
+    return hasDefaultImage(this.device_.deviceProperties) &&
+        hasTrueWirelessImages(this.device_.deviceProperties);
   }
 
   /**

@@ -75,6 +75,7 @@ suite('OsBluetoothTrueWirelessImagesElementTest', function() {
       rightBudImageUrl: fakeUrl
     };
     bluetoothTrueWirelessImages.device.imageInfo = {
+      defaultImageUrl: fakeUrl,
       trueWirelessImages: trueWireless
     };
 

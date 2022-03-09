@@ -109,6 +109,17 @@ export function hasAnyDetailedBatteryInfo(device) {
 }
 
 /**
+ * Returns true if the device contains the default image URL.
+ * @param {!chromeos.bluetoothConfig.mojom.BluetoothDeviceProperties}
+ *     device
+ * @return {boolean}
+ */
+export function hasDefaultImage(device) {
+  return !!device.imageInfo && !!device.imageInfo.defaultImageUrl &&
+      !!device.imageInfo.defaultImageUrl.url;
+}
+
+/**
  * Returns true if the device contains True Wireless Images.
  * @param {!chromeos.bluetoothConfig.mojom.BluetoothDeviceProperties}
  *     device

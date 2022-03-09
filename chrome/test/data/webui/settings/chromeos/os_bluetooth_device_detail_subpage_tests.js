@@ -188,6 +188,7 @@ suite('OsBluetoothDeviceDetailPageTest', function() {
     const fakeUrl = {url: 'fake_image'};
     // Emulate missing the right bud image.
     device.deviceProperties.imageInfo = {
+      defaultImageUrl: fakeUrl,
       trueWirelessImages: {leftBudImageUrl: fakeUrl, caseImageUrl: fakeUrl}
     };
     device.deviceProperties.batteryInfo = {

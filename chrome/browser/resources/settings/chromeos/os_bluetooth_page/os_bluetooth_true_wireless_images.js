@@ -15,7 +15,7 @@ import {assertNotReached} from '//resources/js/assert.m.js';
 import {I18nBehavior, I18nBehaviorInterface} from '//resources/js/i18n_behavior.m.js';
 import {html, mixinBehaviors, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {BatteryType} from 'chrome://resources/cr_components/chromeos/bluetooth/bluetooth_types.js';
-import {getBatteryPercentage, hasTrueWirelessImages} from 'chrome://resources/cr_components/chromeos/bluetooth/bluetooth_utils.js';
+import {getBatteryPercentage, hasDefaultImage, hasTrueWirelessImages} from 'chrome://resources/cr_components/chromeos/bluetooth/bluetooth_utils.js';
 
 /**
  * @constructor
@@ -86,7 +86,7 @@ export class SettingsBluetoothTrueWirelessImagesElement extends
    * @protected
    */
   shouldShowNotConnectedInfo_(device) {
-    if (!hasTrueWirelessImages(device)) {
+    if (!hasDefaultImage(device)) {
       return false;
     }
 
@@ -125,6 +125,8 @@ export class SettingsBluetoothTrueWirelessImagesElement extends
    */
   getImageSrc_(device, batteryType) {
     switch (batteryType) {
+      case BatteryType.DEFAULT:
+        return this.device.imageInfo.defaultImageUrl.url;
       case BatteryType.LEFT_BUD:
         return this.device.imageInfo.trueWirelessImages.leftBudImageUrl.url;
       case BatteryType.CASE:
