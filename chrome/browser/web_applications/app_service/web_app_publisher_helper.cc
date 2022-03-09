@@ -701,11 +701,9 @@ void WebAppPublisherHelper::UninstallWebApp(
   web_app = nullptr;
 
   if (!clear_site_data) {
-    // TODO(crbug.com/1062885): Add UMA_HISTOGRAM_ENUMERATION here.
     return;
   }
 
-  // TODO(crbug.com/1062885): Add UMA_HISTOGRAM_ENUMERATION here.
   constexpr bool kClearCookies = true;
   constexpr bool kClearStorage = true;
   constexpr bool kClearCache = true;
