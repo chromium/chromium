@@ -46,16 +46,12 @@ div {
 async_test((t) => {
   t.step(() => {
     requestAnimationFrame(() => requestAnimationFrame(async () => {
-      document.createDocumentTransition(async (transition) => {
-        transition.setElement(e1, "e1");
-        transition.setElement(e2, "e2");
-
-        await transition.captureAndHold();
-
+      let transition = document.createDocumentTransition();
+      transition.setElement(e1, "e1");
+      transition.setElement(e2, "e2");
+      await transition.start(() => {
         container.classList.remove("left");
         container.classList.add("right");
-
-        await transition.start();
       });
 
       requestAnimationFrame(() => {

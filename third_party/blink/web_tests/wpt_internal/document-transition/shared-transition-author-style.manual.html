@@ -75,20 +75,16 @@ let pseudoStyle = document.createElement('style');
 pseudoStyle.appendChild(document.createTextNode(transitionStyle));
 
 async function runAnimation() {
-  document.createDocumentTransition(async (t) => {
-    t.setElement(target, "target");
-    await t.captureAndHold();
-
+  let t = document.createDocumentTransition();
+  t.setElement(target, "target");
+  await t.start(() => {
     target.classList.remove(classes[i]);
     i = (i + 1) % classes.length;
     target.classList.add(classes[i]);
 
     document.head.appendChild(pseudoStyle);
-
-    await t.start();
-
-    document.head.removeChild(pseudoStyle);
   });
+  document.head.removeChild(pseudoStyle)
 }
 
 function init() {

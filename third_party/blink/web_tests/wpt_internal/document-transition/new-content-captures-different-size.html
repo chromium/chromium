@@ -45,19 +45,16 @@ html::page-transition { background: lightpink; }
 <div id=e3 class=box>three</div>
 <script>
 async function runTest() {
-  document.createDocumentTransition(async (t) => {
-    t.setElement(e1, "e1");
-    t.setElement(e2, "e2");
-    t.setElement(e3, "e3");
-    await t.captureAndHold();
-
+  let t = document.createDocumentTransition();
+  t.setElement(e1, "e1");
+  t.setElement(e2, "e2");
+  t.setElement(e3, "e3");
+  t.start(() => {
     e1.classList.add("dst");
     e2.classList.add("dst");
     e3.classList.add("dst");
-
-    t.start();
+    requestAnimationFrame(() => requestAnimationFrame(takeScreenshot));
   });
-  requestAnimationFrame(() => requestAnimationFrame(takeScreenshot));
 }
 onload = () => requestAnimationFrame(() => requestAnimationFrame(runTest));
 </script>

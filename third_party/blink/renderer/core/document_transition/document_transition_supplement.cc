@@ -8,6 +8,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/v8_document_transition_callback.h"
 #include "third_party/blink/renderer/core/document_transition/document_transition.h"
 #include "third_party/blink/renderer/core/dom/document.h"
+#include "third_party/blink/renderer/platform/bindings/exception_state.h"
 
 namespace blink {
 
@@ -42,15 +43,18 @@ DocumentTransition* DocumentTransitionSupplement::EnsureDocumentTransition(
 }
 
 // static
-void DocumentTransitionSupplement::createDocumentTransition(
+DocumentTransition* DocumentTransitionSupplement::createDocumentTransition(
     Document& document,
-    V8DocumentTransitionCallback* callback) {
+    ExceptionState& exception_state) {
   auto* transition = EnsureDocumentTransition(document);
-  // TODO(vmpstr): We need to figure what to do if we already have a transition.
-  if (transition->HasActiveTransition())
-    return;
-  auto script_scope = transition->CreateScriptMutationsAllowedScope();
-  callback->InvokeAndReportException(&document, transition);
+
+  if (!transition->StartNewTransition()) {
+    exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
+                                      "Transition already in progress");
+    return nullptr;
+  }
+
+  return transition;
 }
 
 DocumentTransition* DocumentTransitionSupplement::GetTransition() {

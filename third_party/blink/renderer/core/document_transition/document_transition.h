@@ -10,6 +10,9 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/task/single_thread_task_runner.h"
 #include "third_party/blink/renderer/bindings/core/v8/active_script_wrappable.h"
+#include "third_party/blink/renderer/bindings/core/v8/script_function.h"
+#include "third_party/blink/renderer/bindings/core/v8/script_value.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_document_transition_callback.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/document_transition/document_transition_request.h"
 #include "third_party/blink/renderer/core/document_transition/document_transition_style_tracker.h"
@@ -18,6 +21,7 @@
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
 #include "third_party/blink/renderer/platform/graphics/document_transition_shared_element_id.h"
 #include "third_party/blink/renderer/platform/graphics/paint/effect_paint_property_node.h"
+#include "third_party/blink/renderer/platform/heap/forward.h"
 #include "third_party/blink/renderer/platform/wtf/wtf_size_t.h"
 
 namespace blink {
@@ -51,35 +55,10 @@ class CORE_EXPORT DocumentTransition
   // ActiveScriptWrappable functionality.
   bool HasPendingActivity() const override;
 
-  bool CanCreateNewTransition() const {
-    return state_ == State::kIdle && !script_mutations_allowed_;
-  }
-
-  class ScriptMutationsAllowedScope {
-    STACK_ALLOCATED();
-
-   public:
-    ~ScriptMutationsAllowedScope() {
-      transition_->script_mutations_allowed_ = false;
-      transition_->FinalizeNewTransition();
-    }
-
-   private:
-    friend class DocumentTransition;
-
-    explicit ScriptMutationsAllowedScope(DocumentTransition* transition)
-        : transition_(transition) {
-      transition_->script_mutations_allowed_ = true;
-      transition_->AssertNoTransition();
-      transition_->StartNewTransition();
-    }
-
-    DocumentTransition* transition_;
-  };
-
-  ScriptMutationsAllowedScope CreateScriptMutationsAllowedScope() {
-    return ScriptMutationsAllowedScope{this};
-  }
+  // Initiates a new transition via createDocumentTransition() API. Returns
+  // false if a transition was already active which must finish before a new one
+  // can be started.
+  bool StartNewTransition();
 
   // JavaScript API implementation.
   void setElement(ScriptState*,
@@ -87,8 +66,10 @@ class CORE_EXPORT DocumentTransition
                   const AtomicString&,
                   const DocumentTransitionSetElementOptions*,
                   ExceptionState&);
-  ScriptPromise captureAndHold(ScriptState*, ExceptionState&);
   ScriptPromise start(ScriptState*, ExceptionState&);
+  ScriptPromise start(ScriptState*,
+                      V8DocumentTransitionCallback* callback,
+                      ExceptionState&);
   void ignoreCSSTaggedElements(ScriptState*, ExceptionState&);
   void abandon(ScriptState*, ExceptionState&);
 
@@ -136,21 +117,36 @@ class CORE_EXPORT DocumentTransition
   // LifecycleNotificationObserver overrides.
   void WillStartLifecycleUpdate(const LocalFrameView&) override;
 
-  bool HasActiveTransition() const { return state_ != State::kIdle; }
-
  private:
   friend class DocumentTransitionTest;
 
   enum class State { kIdle, kCapturing, kCaptured, kStarted };
 
-  void AssertNoTransition();
-  void StartNewTransition();
-  void FinalizeNewTransition();
+  // Invoked when the async callback dispatched after capture finishes
+  // executing.
+  class PostCaptureResolved : public ScriptFunction::Callable {
+   public:
+    explicit PostCaptureResolved(DocumentTransition* transition, bool success);
+    ~PostCaptureResolved() override;
+
+    ScriptValue Call(ScriptState*, ScriptValue) override;
+    void Trace(Visitor* visitor) const override;
+
+    void Cancel();
+
+   private:
+    Member<DocumentTransition> transition_;
+    const bool success_;
+  };
 
   void NotifyHasChangesToCommit();
 
   void NotifyCaptureFinished(uint32_t sequence_id);
   void NotifyStartFinished(uint32_t sequence_id);
+
+  // Dispatched when the DocumentTransitionCallback has finished executing and
+  // start phase of the animation can be initiated.
+  void NotifyPostCaptureCallbackResolved(bool success);
 
   // Used to defer visual updates between transition prepare finishing and
   // transition start to allow the page to set up the final scene
@@ -163,13 +159,27 @@ class CORE_EXPORT DocumentTransition
 
   // Resets internal state, called in both abort situations and transition
   // finished situations.
-  void ResetState(bool abort_style_tracker = true);
+  void ResetTransitionState(bool abort_style_tracker = true);
+  void ResetScriptState(const char* abort_message);
 
   Member<Document> document_;
 
   State state_ = State::kIdle;
 
-  Member<ScriptPromiseResolver> capture_promise_resolver_;
+  // Script callback passed to the start() API. Dispatched when capturing
+  // snapshots from the old DOM finishes.
+  Member<V8DocumentTransitionCallback> capture_resolved_callback_;
+
+  // Script state cached from the start() API.
+  Member<ScriptState> start_script_state_;
+
+  // The following callables are used to track when the async
+  // |capture_resolved_callback_| finishes executing.
+  Member<PostCaptureResolved> post_capture_success_callable_;
+  Member<PostCaptureResolved> post_capture_reject_callable_;
+
+  // The following promise is provided to script and resolved when all
+  // animations from the start phase finish.
   Member<ScriptPromiseResolver> start_promise_resolver_;
 
   // Created conditionally if renderer based SharedElementTransitions is
@@ -191,9 +201,6 @@ class CORE_EXPORT DocumentTransition
   uint32_t document_tag_ = 0u;
 
   bool deferring_commits_ = false;
-
-  // This is set to true when we allow script calls to modify state.
-  bool script_mutations_allowed_ = false;
 
   // Set only for tests.
   bool disable_end_transition_ = false;

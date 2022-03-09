@@ -4,5 +4,5 @@
 
 [
   RuntimeEnabled=DocumentTransition
-] callback DocumentTransitionCallback = void(DocumentTransition documentTransition);
+] callback DocumentTransitionCallback = Promise<void>();
 

@@ -9,7 +9,11 @@
 #include "base/trace_event/trace_event.h"
 #include "cc/document_transition/document_transition_request.h"
 #include "cc/trees/paint_holding_reason.h"
+#include "third_party/blink/renderer/bindings/core/v8/script_function.h"
+#include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
+#include "third_party/blink/renderer/bindings/core/v8/script_value.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_core.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_document_transition_set_element_options.h"
 #include "third_party/blink/renderer/core/css/style_change_reason.h"
 #include "third_party/blink/renderer/core/dom/document.h"
@@ -22,7 +26,9 @@
 #include "third_party/blink/renderer/core/page/chrome_client.h"
 #include "third_party/blink/renderer/core/page/page.h"
 #include "third_party/blink/renderer/core/paint/paint_layer.h"
+#include "third_party/blink/renderer/platform/bindings/script_state.h"
 #include "third_party/blink/renderer/platform/graphics/compositor_element_id.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/wtf/cross_thread_functional.h"
 #include "third_party/blink/renderer/platform/wtf/hash_map.h"
 #include "third_party/blink/renderer/platform/wtf/std_lib_extras.h"
@@ -32,10 +38,12 @@
 namespace blink {
 namespace {
 
-const char kAbortedFromCaptureAndHold[] =
-    "Aborted due to captureAndHold() call";
 const char kAbortedFromStart[] = "Aborted due to start() call";
 const char kAbortedFromScript[] = "Aborted due to abort() call";
+const char kAbortedFromCallback[] =
+    "Aborted due to failure in DocumentTransitionCallback";
+const char kAbortedFromInvalidConfigAtStart[] =
+    "Start failed: invalid element configuration";
 
 uint32_t NextDocumentTag() {
   static uint32_t next_document_tag = 1u;
@@ -44,6 +52,30 @@ uint32_t NextDocumentTag() {
 
 }  // namespace
 
+DocumentTransition::PostCaptureResolved::PostCaptureResolved(
+    DocumentTransition* transition,
+    bool success)
+    : transition_(transition), success_(success) {}
+
+DocumentTransition::PostCaptureResolved::~PostCaptureResolved() = default;
+
+ScriptValue DocumentTransition::PostCaptureResolved::Call(ScriptState*,
+                                                          ScriptValue) {
+  if (transition_)
+    transition_->NotifyPostCaptureCallbackResolved(success_);
+  return ScriptValue();
+}
+
+void DocumentTransition::PostCaptureResolved::Trace(Visitor* visitor) const {
+  ScriptFunction::Callable::Trace(visitor);
+  visitor->Trace(transition_);
+}
+
+void DocumentTransition::PostCaptureResolved::Cancel() {
+  DCHECK(transition_);
+  transition_ = nullptr;
+}
+
 DocumentTransition::DocumentTransition(Document* document)
     : ExecutionContextLifecycleObserver(document->GetExecutionContext()),
       document_(document),
@@ -51,7 +83,10 @@ DocumentTransition::DocumentTransition(Document* document)
 
 void DocumentTransition::Trace(Visitor* visitor) const {
   visitor->Trace(document_);
-  visitor->Trace(capture_promise_resolver_);
+  visitor->Trace(capture_resolved_callback_);
+  visitor->Trace(start_script_state_);
+  visitor->Trace(post_capture_success_callable_);
+  visitor->Trace(post_capture_reject_callable_);
   visitor->Trace(start_promise_resolver_);
   visitor->Trace(style_tracker_);
 
@@ -61,36 +96,26 @@ void DocumentTransition::Trace(Visitor* visitor) const {
 }
 
 void DocumentTransition::ContextDestroyed() {
-  if (capture_promise_resolver_) {
-    capture_promise_resolver_->Detach();
-    capture_promise_resolver_ = nullptr;
-  }
-  if (start_promise_resolver_) {
-    start_promise_resolver_->Detach();
-    start_promise_resolver_ = nullptr;
-  }
-  ResetState();
+  ResetTransitionState();
+  ResetScriptState(nullptr);
 }
 
 bool DocumentTransition::HasPendingActivity() const {
-  if (capture_promise_resolver_ || start_promise_resolver_)
-    return true;
-  return false;
+  return style_tracker_;
 }
 
-void DocumentTransition::AssertNoTransition() {
-  DCHECK_EQ(state_, State::kIdle);
-  DCHECK(!style_tracker_);
-  DCHECK(!capture_promise_resolver_);
+bool DocumentTransition::StartNewTransition() {
+  if (state_ != State::kIdle || style_tracker_)
+    return false;
+
+  DCHECK(!capture_resolved_callback_);
+  DCHECK(!post_capture_success_callable_);
+  DCHECK(!post_capture_reject_callable_);
   DCHECK(!start_promise_resolver_);
-}
-
-void DocumentTransition::StartNewTransition() {
   style_tracker_ =
       MakeGarbageCollected<DocumentTransitionStyleTracker>(*document_);
+  return true;
 }
-
-void DocumentTransition::FinalizeNewTransition() {}
 
 void DocumentTransition::setElement(
     ScriptState* script_state,
@@ -110,9 +135,14 @@ void DocumentTransition::setElement(
     style_tracker_->AddSharedElement(element, tag);
 }
 
-ScriptPromise DocumentTransition::captureAndHold(
-    ScriptState* script_state,
-    ExceptionState& exception_state) {
+ScriptPromise DocumentTransition::start(ScriptState* script_state,
+                                        ExceptionState& exception_state) {
+  return start(script_state, nullptr, exception_state);
+}
+
+ScriptPromise DocumentTransition::start(ScriptState* script_state,
+                                        V8DocumentTransitionCallback* callback,
+                                        ExceptionState& exception_state) {
   switch (state_) {
     case State::kIdle:
       if (!document_ || !document_->View()) {
@@ -130,7 +160,7 @@ ScriptPromise DocumentTransition::captureAndHold(
     case State::kCapturing:
     case State::kCaptured:
     case State::kStarted:
-      CancelPendingTransition(kAbortedFromCaptureAndHold);
+      CancelPendingTransition(kAbortedFromStart);
       exception_state.ThrowDOMException(
           DOMExceptionCode::kInvalidStateError,
           "Transition aborted, invalid captureAndHold call");
@@ -146,11 +176,22 @@ ScriptPromise DocumentTransition::captureAndHold(
     exception_state.ThrowDOMException(
         DOMExceptionCode::kInvalidStateError,
         "Capture failed: invalid element configuration.");
-    ResetState();
+    ResetTransitionState();
     return ScriptPromise();
   }
 
-  capture_promise_resolver_ =
+  // PREPARE PHASE
+  // The capture request below will initiate an async operation to cache
+  // textures for the current DOM. The |capture_resolved_callback_| is invoked
+  // when that async operation finishes.
+  //
+  // START PHASE
+  // When this async callback finishes executing, animations are started using
+  // images from old and new DOM elements. The |start_promise_resolver_|
+  // returned here resolves when these animations finish.
+  capture_resolved_callback_ = callback;
+  start_script_state_ = script_state;
+  start_promise_resolver_ =
       MakeGarbageCollected<ScriptPromiseResolver>(script_state);
 
   state_ = State::kCapturing;
@@ -162,50 +203,6 @@ ScriptPromise DocumentTransition::captureAndHold(
 
   NotifyHasChangesToCommit();
 
-  return capture_promise_resolver_->Promise();
-}
-
-ScriptPromise DocumentTransition::start(ScriptState* script_state,
-                                        ExceptionState& exception_state) {
-  switch (state_) {
-    case State::kIdle:
-    case State::kCapturing:
-      CancelPendingTransition(kAbortedFromStart);
-      exception_state.ThrowDOMException(
-          DOMExceptionCode::kInvalidStateError,
-          "Transition must be prepared before it can be started.");
-      return ScriptPromise();
-    case State::kCaptured:
-      // We expect this case in a proper transition.
-      DCHECK(style_tracker_);
-      break;
-    case State::kStarted:
-      CancelPendingTransition(kAbortedFromStart);
-      exception_state.ThrowDOMException(
-          DOMExceptionCode::kInvalidStateError,
-          "Transition aborted, invalid start call");
-      return ScriptPromise();
-  }
-
-  StopDeferringCommits();
-
-  bool start_succeeded = style_tracker_->Start();
-  if (!start_succeeded) {
-    exception_state.ThrowDOMException(
-        DOMExceptionCode::kInvalidStateError,
-        "Start failed: invalid element configuration.");
-    ResetState();
-    return ScriptPromise();
-  }
-
-  last_start_sequence_id_ = next_sequence_id_++;
-  state_ = State::kStarted;
-  start_promise_resolver_ =
-      MakeGarbageCollected<ScriptPromiseResolver>(script_state);
-  pending_request_ =
-      DocumentTransitionRequest::CreateAnimateRenderer(document_tag_);
-
-  NotifyHasChangesToCommit();
   return start_promise_resolver_->Promise();
 }
 
@@ -233,20 +230,45 @@ void DocumentTransition::NotifyCaptureFinished(uint32_t sequence_id) {
   if (sequence_id != last_prepare_sequence_id_)
     return;
 
-  // We could have detached the resolver if the execution context was destroyed.
-  if (!capture_promise_resolver_)
+  // We could have abandoned the transition before capture finishes.
+  if (state_ == State::kIdle) {
     return;
+  }
 
   DCHECK(state_ == State::kCapturing);
-  DCHECK(capture_promise_resolver_);
   if (style_tracker_)
     style_tracker_->CaptureResolved();
 
   // Defer commits before resolving the promise to ensure any updates made in
   // the callback are deferred.
   StartDeferringCommits();
-  capture_promise_resolver_->Resolve();
-  capture_promise_resolver_ = nullptr;
+  if (!capture_resolved_callback_) {
+    state_ = State::kCaptured;
+    start_script_state_ = nullptr;
+    NotifyPostCaptureCallbackResolved(/*success=*/true);
+    return;
+  }
+
+  v8::Maybe<ScriptPromise> result = capture_resolved_callback_->Invoke(nullptr);
+  if (result.IsNothing()) {
+    CancelPendingTransition(kAbortedFromCallback);
+    return;
+  }
+
+  post_capture_success_callable_ =
+      MakeGarbageCollected<PostCaptureResolved>(this, true);
+  post_capture_reject_callable_ =
+      MakeGarbageCollected<PostCaptureResolved>(this, false);
+
+  ScriptState::Scope scope(start_script_state_);
+  result.ToChecked().Then(
+      MakeGarbageCollected<ScriptFunction>(start_script_state_,
+                                           post_capture_success_callable_),
+      MakeGarbageCollected<ScriptFunction>(start_script_state_,
+                                           post_capture_reject_callable_));
+
+  capture_resolved_callback_ = nullptr;
+  start_script_state_ = nullptr;
   state_ = State::kCaptured;
 }
 
@@ -272,7 +294,35 @@ void DocumentTransition::NotifyStartFinished(uint32_t sequence_id) {
   style_tracker_->StartFinished();
   pending_request_ = DocumentTransitionRequest::CreateRelease(document_tag_);
   NotifyHasChangesToCommit();
-  ResetState(/*abort_style_tracker=*/false);
+  ResetTransitionState(/*abort_style_tracker=*/false);
+}
+
+void DocumentTransition::NotifyPostCaptureCallbackResolved(bool success) {
+  DCHECK_EQ(state_, State::kCaptured);
+  DCHECK(style_tracker_);
+  DCHECK(start_promise_resolver_);
+  DCHECK(!capture_resolved_callback_);
+
+  StopDeferringCommits();
+
+  if (!success) {
+    CancelPendingTransition(kAbortedFromCallback);
+    return;
+  }
+
+  bool start_succeeded = style_tracker_->Start();
+  if (!start_succeeded) {
+    CancelPendingTransition(kAbortedFromInvalidConfigAtStart);
+    return;
+  }
+
+  last_start_sequence_id_ = next_sequence_id_++;
+  state_ = State::kStarted;
+  post_capture_success_callable_ = nullptr;
+  post_capture_reject_callable_ = nullptr;
+  pending_request_ =
+      DocumentTransitionRequest::CreateAnimateRenderer(document_tag_);
+  NotifyHasChangesToCommit();
 }
 
 std::unique_ptr<DocumentTransitionRequest>
@@ -282,11 +332,6 @@ DocumentTransition::TakePendingRequest() {
 
 bool DocumentTransition::IsTransitionParticipant(
     const LayoutObject& object) const {
-  // If our state is idle and we're outside of script mutation scope, it implies
-  // that we have no style tracker.
-  DCHECK(state_ != State::kIdle || script_mutations_allowed_ ||
-         !style_tracker_);
-
   // The layout view is always a participant if there is a transition.
   if (auto* layout_view = DynamicTo<LayoutView>(object))
     return state_ != State::kIdle;
@@ -438,24 +483,17 @@ void DocumentTransition::StopDeferringCommits() {
 }
 
 void DocumentTransition::CancelPendingTransition(const char* abort_message) {
-  ResetState();
+  bool need_release_directive = state_ == State::kStarted;
+  ResetTransitionState();
+  ResetScriptState(abort_message);
 
-  if (capture_promise_resolver_) {
-    capture_promise_resolver_->Reject(MakeGarbageCollected<DOMException>(
-        DOMExceptionCode::kAbortError, abort_message));
-    capture_promise_resolver_ = nullptr;
-  }
-  if (start_promise_resolver_) {
-    start_promise_resolver_->Reject(MakeGarbageCollected<DOMException>(
-        DOMExceptionCode::kAbortError, abort_message));
-    start_promise_resolver_ = nullptr;
-
+  if (need_release_directive) {
     pending_request_ = DocumentTransitionRequest::CreateRelease(document_tag_);
     NotifyHasChangesToCommit();
   }
 }
 
-void DocumentTransition::ResetState(bool abort_style_tracker) {
+void DocumentTransition::ResetTransitionState(bool abort_style_tracker) {
   if (abort_style_tracker) {
     if (style_tracker_)
       style_tracker_->Abort();
@@ -464,6 +502,31 @@ void DocumentTransition::ResetState(bool abort_style_tracker) {
   style_tracker_ = nullptr;
   StopDeferringCommits();
   state_ = State::kIdle;
+}
+
+void DocumentTransition::ResetScriptState(const char* abort_message) {
+  capture_resolved_callback_ = nullptr;
+  start_script_state_ = nullptr;
+
+  if (post_capture_success_callable_) {
+    DCHECK(post_capture_reject_callable_);
+
+    post_capture_success_callable_->Cancel();
+    post_capture_success_callable_ = nullptr;
+
+    post_capture_reject_callable_->Cancel();
+    post_capture_reject_callable_ = nullptr;
+  }
+
+  if (start_promise_resolver_) {
+    if (abort_message) {
+      start_promise_resolver_->Reject(MakeGarbageCollected<DOMException>(
+          DOMExceptionCode::kAbortError, abort_message));
+    } else {
+      start_promise_resolver_->Detach();
+    }
+    start_promise_resolver_ = nullptr;
+  }
 }
 
 }  // namespace blink

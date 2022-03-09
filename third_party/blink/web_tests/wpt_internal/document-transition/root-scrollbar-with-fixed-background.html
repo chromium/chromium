@@ -51,10 +51,9 @@ async function runTest() {
   await waitForAtLeastOneFrame();
 
   document.documentElement.scrollTop = 500;
-  document.createDocumentTransition(async (t) => {
-    t.setElement(hide, "hide");
-    await t.captureAndHold();
-    t.start();
+  let t = document.createDocumentTransition();
+  t.setElement(hide, "hide");
+  t.start(() => {
     requestAnimationFrame(() => requestAnimationFrame(takeScreenshot));
   });
 }

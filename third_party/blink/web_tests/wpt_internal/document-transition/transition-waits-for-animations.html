@@ -34,14 +34,11 @@ div {
 
 <script>
 async function startTransition() {
-  document.createDocumentTransition(async (t) => {
-    t.setElement(e1, "e1");
-    await t.captureAndHold();
-
+  let t = document.createDocumentTransition();
+  t.setElement(e1, "e1");
+  t.start(() => {
     e1.classList.remove("left");
     e1.classList.add("right");
-
-    t.start();
   });
 }
 

@@ -60,19 +60,16 @@ div {
 let classes = ["left", "right"]
 let i = 0;
 async function runAnimation() {
-  document.createDocumentTransition(async (t) => {
-    t.setElement(e1, "e1");
-    t.setElement(e2, "e2");
-    t.setElement(e3, "e3");
-    t.setElement(e4, "e4");
-    t.setElement(e5, "e5");
-    await t.captureAndHold();
-
+  let t = document.createDocumentTransition();
+  t.setElement(e1, "e1");
+  t.setElement(e2, "e2");
+  t.setElement(e3, "e3");
+  t.setElement(e4, "e4");
+  t.setElement(e5, "e5");
+  await t.start(() => {
     container.classList.remove(classes[i]);
     i = (i + 1) % classes.length;
     container.classList.add(classes[i]);
-
-    await t.start();
   });
 }
 

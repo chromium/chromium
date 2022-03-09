@@ -21,22 +21,20 @@
 <script>
 promise_test(async t => {
   return new Promise((resolve, reject) => {
-    document.createDocumentTransition(transition => {
-      transition.setElement(target, "root");
-      transition.captureAndHold().then(reject, resolve);
-    });
+    let transition = document.createDocumentTransition();
+    transition.setElement(target, "root");
+    transition.start().then(reject, resolve);
   });
 }, "Root tag on an element rejects capture");
 
 promise_test(async t => {
   return new Promise((resolve, reject) => {
-    document.createDocumentTransition(async transition => {
-      transition.setElement(target, "foo");
-      await transition.captureAndHold();
+    let transition = document.createDocumentTransition();
+    transition.setElement(target, "foo");
+    transition.start(() => {
       transition.setElement(target, null);
       transition.setElement(target, "root");
-      transition.start().then(reject, resolve);
-    });
+    }).then(reject, resolve);
   });
 }, "Root tag on an element rejects start");
 </script>

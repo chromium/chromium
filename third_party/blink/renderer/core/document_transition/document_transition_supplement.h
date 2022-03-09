@@ -26,8 +26,8 @@ class CORE_EXPORT DocumentTransitionSupplement
 
   static DocumentTransition* EnsureDocumentTransition(Document&);
 
-  static void createDocumentTransition(Document&,
-                                       V8DocumentTransitionCallback* callback);
+  static DocumentTransition* createDocumentTransition(Document&,
+                                                      ExceptionState&);
 
   DocumentTransition* GetTransition();
 

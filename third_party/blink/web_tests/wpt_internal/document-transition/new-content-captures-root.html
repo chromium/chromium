@@ -37,15 +37,10 @@ html::page-transition-incoming-image(root) { animation-duration: 0s; opacity: 1 
 <div id=shared></div>
 <script>
 async function runTest() {
-  document.createDocumentTransition(async (t) => {
-    t.setElement(shared, "shared");
-
-    await t.captureAndHold();
-
+  let t = document.createDocumentTransition();
+  t.setElement(shared, "shared");
+  t.start(() => {
     e1.classList.add("dst");
-
-    t.start();
-
     requestAnimationFrame(() => requestAnimationFrame(takeScreenshot));
   });
 }

@@ -22,33 +22,29 @@ div {
 <script>
 promise_test(async t => {
   return new Promise((resolve, reject) => {
-    document.createDocumentTransition(async transition => {
-      transition.setElement(first, "target");
-      transition.setElement(first, "target");
-      await transition.captureAndHold().then(() =>
-        transition.start().then(resolve, reject));
-    });
+    let transition = document.createDocumentTransition();
+    transition.setElement(first, "target");
+    transition.setElement(first, "target");
+    transition.start(()=>{}).then(resolve, reject);
   });
 }, "Same element with the same tag is no-op");
 
 promise_test(async t => {
   return new Promise((resolve, reject) => {
-    document.createDocumentTransition(async transition => {
-      transition.setElement(first, "target");
-      transition.setElement(second, "target");
-      transition.captureAndHold().then(reject, resolve);
-    });
+    let transition = document.createDocumentTransition();
+    transition.setElement(first, "target");
+    transition.setElement(second, "target");
+    transition.start(()=>{}).then(reject, resolve);
   });
 }, "Two different elements with the same tag rejects capture");
 
 promise_test(async t => {
   return new Promise((resolve, reject) => {
-    document.createDocumentTransition(async transition => {
-      transition.setElement(first, "target");
-      await transition.captureAndHold();
+    let transition = document.createDocumentTransition();
+    transition.setElement(first, "target");
+    transition.start(() => {
       transition.setElement(second, "target");
-      transition.start().then(reject, resolve);
-    });
+    }).then(reject, resolve);
   });
 }, "Two different elements with the same tag rejects start");
 </script>

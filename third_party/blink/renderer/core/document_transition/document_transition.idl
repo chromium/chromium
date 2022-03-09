@@ -13,13 +13,12 @@
   // transition, whether as a part of captureAndHold or start phases.
   [CallWith=ScriptState, RaisesException] void setElement(Element element, DOMString? tag, optional DocumentTransitionSetElementOptions options = {});
 
-  // Request to capture the currently set elements, including the root, and
-  // hold visual contents until start is called
-  [CallWith=ScriptState, RaisesException] Promise<void> captureAndHold();
-
-  // Starts the transition with the captured elements and elements set for
-  // start.
-  [CallWith=ScriptState, RaisesException] Promise<void> start();
+  // Starts the transition with the captured elements.
+  // |callback| is used to asynchronously initialize the new DOM for the
+  // transition. Animations are started when this callback returns.
+  // The returned promise is resolved when all animations for this transition
+  // are finished.
+  [CallWith=ScriptState, RaisesException] Promise<void> start(optional DocumentTransitionCallback callback);
 
   // Ignores CSS tagged elements
   [CallWith=ScriptState, RaisesException] void ignoreCSSTaggedElements();

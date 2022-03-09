@@ -57,19 +57,15 @@ html::page-transition { background: lightpink; }
 
 <script>
 async function runTest() {
-  document.createDocumentTransition(async (t) => {
-    t.setElement(hidden, "hidden");
+  let t = document.createDocumentTransition();
+  t.setElement(hidden, "hidden");
 
-    t.setElement(from, "target1");
-    t.setElement(from, "target2");
-
-    await t.captureAndHold();
-
+  t.setElement(from, "target1");
+  t.setElement(from, "target2");
+  t.start(() => {
     t.setElement(from, null);
     t.setElement(left, "target1");
     t.setElement(right, "target2");
-
-    t.start();
 
     requestAnimationFrame(() => requestAnimationFrame(() => 
       requestAnimationFrame(() => requestAnimationFrame(takeScreenshot))
