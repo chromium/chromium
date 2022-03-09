@@ -6,7 +6,7 @@
       '. image          . '
       '. mainpage-desc  . '
       '. .              . ';
-    grid-template-columns: 20px 1fr 20px;
+    grid-template-columns: 20px minmax(0,1fr) 20px;
     grid-template-rows: minmax(0, 48px) minmax(158px, 220px) 1fr 20px;
   }
 
@@ -16,7 +16,7 @@
       '. .              . .'
       '. image          . subpage-desc'
       '. .              . .';
-    grid-template-columns: 20px 1fr 20px 2fr;
+    grid-template-columns: 20px 224px 32px minmax(0,1fr);
     grid-template-rows: 20px minmax(158px, 220px) 20px;
   }
 
@@ -26,6 +26,12 @@
 
   :host(:not([main-page])) .currently-set-text {
     display: block;
+  }
+
+  :host([main-page]) #imageContainer {
+    justify-self: center;
+    max-width: 360px;
+    min-width: 252px;
   }
 
   ::slotted(div[id='ambientLabel']) {
