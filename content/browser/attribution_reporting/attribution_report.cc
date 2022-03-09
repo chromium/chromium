@@ -200,10 +200,14 @@ base::Value AttributionReport::ReportBody() const {
       dict.emplace("source_site", common_info.ImpressionSite().Serialize());
       dict.emplace("attribution_destination",
                    common_info.ConversionDestination().Serialize());
-      dict.emplace(
-          "source_registration_time",
-          base::NumberToString(common_info.impression_time().ToJavaTime() /
-                               base::Time::kMillisecondsPerSecond));
+
+      // source_registration_time is rounded to the nearest whole day and in
+      // seconds.
+      dict.emplace("source_registration_time",
+                   base::NumberToString(
+                       (common_info.impression_time() - base::Time::UnixEpoch())
+                           .RoundToMultiple(base::Days(1))
+                           .InSeconds()));
 
       if (absl::optional<uint64_t> debug_key = common_info.debug_key())
         dict.emplace("source_debug_key", base::NumberToString(*debug_key));
