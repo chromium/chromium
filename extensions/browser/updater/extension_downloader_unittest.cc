@@ -58,7 +58,7 @@ class ExtensionDownloaderTest : public ExtensionsTest {
 
   void AddFetchDataToDownloader(ExtensionDownloaderTestHelper* helper,
                                 std::unique_ptr<ManifestFetchData> fetch) {
-    helper->downloader().StartUpdateCheck(std::move(fetch));
+    helper->StartUpdateCheck(std::move(fetch));
   }
 
   const URLStats& GetDownloaderURLStats(ExtensionDownloaderTestHelper* helper) {

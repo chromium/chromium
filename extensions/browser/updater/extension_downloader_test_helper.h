@@ -92,6 +92,9 @@ class ExtensionDownloaderTestHelper {
     return test_url_loader_factory_;
   }
 
+  // Adds a fetch request directly to the internal downloader.
+  void StartUpdateCheck(std::unique_ptr<ManifestFetchData> fetch_data);
+
   // Returns a request that URL loader factory has received (or nullptr if it
   // didn't receive enough requests).
   network::TestURLLoaderFactory::PendingRequest* GetPendingRequest(

@@ -200,6 +200,7 @@ class ExtensionDownloader {
 
  private:
   friend class ExtensionDownloaderTest;
+  friend class ExtensionDownloaderTestHelper;
   friend class ExtensionUpdaterTest;
 
   // These counters are bumped as extensions are added to be fetched. They

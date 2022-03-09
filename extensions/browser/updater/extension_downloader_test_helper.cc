@@ -73,6 +73,11 @@ ExtensionDownloaderTestHelper::ExtensionDownloaderTestHelper()
 
 ExtensionDownloaderTestHelper::~ExtensionDownloaderTestHelper() = default;
 
+void ExtensionDownloaderTestHelper::StartUpdateCheck(
+    std::unique_ptr<ManifestFetchData> fetch_data) {
+  downloader_.StartUpdateCheck(std::move(fetch_data));
+}
+
 network::TestURLLoaderFactory::PendingRequest*
 ExtensionDownloaderTestHelper::GetPendingRequest(size_t index) {
   if (index >= test_url_loader_factory_.pending_requests()->size())

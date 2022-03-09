@@ -1219,10 +1219,10 @@ class ExtensionUpdaterTest : public testing::Test {
     GURL fetch2_url = fetch2->full_url();
     GURL fetch3_url = fetch3->full_url();
     GURL fetch4_url = fetch4->full_url();
-    helper.downloader().StartUpdateCheck(std::move(fetch1));
-    helper.downloader().StartUpdateCheck(std::move(fetch2));
-    helper.downloader().StartUpdateCheck(std::move(fetch3));
-    helper.downloader().StartUpdateCheck(std::move(fetch4));
+    helper.StartUpdateCheck(std::move(fetch1));
+    helper.StartUpdateCheck(std::move(fetch2));
+    helper.StartUpdateCheck(std::move(fetch3));
+    helper.StartUpdateCheck(std::move(fetch4));
     RunUntilIdle();
 
     // fetch1_url
@@ -1338,7 +1338,7 @@ class ExtensionUpdaterTest : public testing::Test {
                         ManifestFetchData::FetchPriority::BACKGROUND);
 
     // This will start the first fetcher.
-    helper.downloader().StartUpdateCheck(std::move(fetch));
+    helper.StartUpdateCheck(std::move(fetch));
     RunUntilIdle();
 
     // ExtensionDownloader should retry kMaxRetries times and then fail.
@@ -1372,7 +1372,7 @@ class ExtensionUpdaterTest : public testing::Test {
                         ManifestFetchData::FetchPriority::BACKGROUND);
 
     // This will start the first fetcher.
-    helper.downloader().StartUpdateCheck(std::move(fetch));
+    helper.StartUpdateCheck(std::move(fetch));
     RunUntilIdle();
 
     EXPECT_CALL(
@@ -1416,7 +1416,7 @@ class ExtensionUpdaterTest : public testing::Test {
                         std::string(), ManifestLocation::kInternal,
                         ManifestFetchData::FetchPriority::BACKGROUND);
 
-    helper.downloader().StartUpdateCheck(std::move(fetch));
+    helper.StartUpdateCheck(std::move(fetch));
     RunUntilIdle();
 
     helper.test_url_loader_factory().SetInterceptor(base::BindLambdaForTesting(
@@ -1444,7 +1444,7 @@ class ExtensionUpdaterTest : public testing::Test {
                         std::string(), ManifestLocation::kInternal,
                         ManifestFetchData::FetchPriority::BACKGROUND);
 
-    helper.downloader().StartUpdateCheck(std::move(fetch));
+    helper.StartUpdateCheck(std::move(fetch));
     RunUntilIdle();
 
     helper.test_url_loader_factory().SetInterceptor(base::BindLambdaForTesting(
@@ -1475,7 +1475,7 @@ class ExtensionUpdaterTest : public testing::Test {
                         std::string(), ManifestLocation::kInternal,
                         fetch_priority);
 
-    helper.downloader().StartUpdateCheck(std::move(fetch));
+    helper.StartUpdateCheck(std::move(fetch));
     RunUntilIdle();
 
     auto* request = helper.GetPendingRequest(0);
@@ -1777,7 +1777,7 @@ class ExtensionUpdaterTest : public testing::Test {
                     ExtensionDownloaderDelegate::Stage::DOWNLOADING_CRX))
         .InSequence(sequence);
 
-    helper.downloader().StartUpdateCheck(std::move(fetch));
+    helper.StartUpdateCheck(std::move(fetch));
 
     content::RunAllTasksUntilIdle();
 
