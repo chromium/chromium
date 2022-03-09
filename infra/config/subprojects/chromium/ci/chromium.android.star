@@ -376,6 +376,9 @@ ci.builder(
     executable = "recipe:cronet",
     notifies = ["cronet"],
     os = os.ANDROID,
+    goma_backend = None,
+    reclient_instance = rbe_instance.DEFAULT,
+    reclient_jobs = rbe_jobs.DEFAULT,
 )
 
 ci.builder(

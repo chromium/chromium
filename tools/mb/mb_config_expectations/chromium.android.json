@@ -373,10 +373,11 @@
       "target_cpu": "arm64",
       "target_os": "android",
       "use_crash_key_stubs": true,
-      "use_goma": true,
       "use_hashed_jni_names": true,
       "use_partition_alloc": false,
       "use_platform_icu_alternatives": true,
+      "use_rbe": true,
+      "use_remoteexec": true,
       "use_thin_lto": false
     }
   },
