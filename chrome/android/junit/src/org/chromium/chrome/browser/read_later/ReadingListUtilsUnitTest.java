@@ -203,6 +203,7 @@ public class ReadingListUtilsUnitTest {
         verify(bookmarkBridge)
                 .addToReadingList("Test", JUnitTestGURLs.getGURL(JUnitTestGURLs.NTP_URL));
         verify(bookmarkBridge).deleteBookmark(existingBookmarkId);
+        Assert.assertEquals(0, bookmarks.size());
     }
 
     @Test
@@ -228,6 +229,7 @@ public class ReadingListUtilsUnitTest {
         verify(bookmarkBridge)
                 .addBookmark(parentId, 0, "Test", JUnitTestGURLs.getGURL(JUnitTestGURLs.NTP_URL));
         verify(bookmarkBridge).deleteBookmark(existingBookmarkId);
+        Assert.assertEquals(0, bookmarks.size());
     }
 
     @Test
@@ -261,7 +263,7 @@ public class ReadingListUtilsUnitTest {
         bookmarks.add(existingBookmarkId1);
         bookmarks.add(existingBookmarkId2);
         ReadingListUtils.typeSwapBookmarksIfNecessary(bookmarkBridge, bookmarks, parentId);
-        Assert.assertEquals(2, bookmarks.size());
+        Assert.assertEquals(0, bookmarks.size());
 
         verify(bookmarkBridge)
                 .addBookmark(parentId, 0, "Test1", JUnitTestGURLs.getGURL(JUnitTestGURLs.NTP_URL));
@@ -286,6 +288,7 @@ public class ReadingListUtilsUnitTest {
         ArrayList<BookmarkId> bookmarks = new ArrayList<>();
         bookmarks.add(existingBookmarkId);
         ReadingListUtils.typeSwapBookmarksIfNecessary(bookmarkBridge, bookmarks, parentId);
+        Assert.assertEquals(1, bookmarks.size());
         Assert.assertEquals(existingBookmarkId, bookmarks.get(0));
     }
 

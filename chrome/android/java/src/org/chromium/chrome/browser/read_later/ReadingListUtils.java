@@ -9,6 +9,7 @@ import android.app.Activity;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import org.chromium.base.Log;
 import org.chromium.chrome.browser.bookmarks.BookmarkBridge;
 import org.chromium.chrome.browser.bookmarks.BookmarkBridge.BookmarkItem;
 import org.chromium.chrome.browser.bookmarks.BookmarkModel;
@@ -28,6 +29,8 @@ import java.util.List;
 
 /** Utility functions for reading list feature. */
 public final class ReadingListUtils {
+    private static final String TAG = "ReadingListUtils";
+
     private static Boolean sReadingListSupportedForTesting;
     private static Boolean sSkipShowSaveFlowForTesting;
 
@@ -98,7 +101,8 @@ public final class ReadingListUtils {
     }
 
     /**
-     * Performs type swapping on the given bookmarks if necessary.
+     * Performs type swapping on the given bookmarks if necessary. The input list will be modified,
+     * removing bookmarks that have been type swapped and thus don't need to be moved.
      *
      * @param bookmarkBridge The BookmarkBridge to perform add/delete operations.
      * @param bookmarksToMove The List of bookmarks to potentially type swap.
@@ -128,10 +132,11 @@ public final class ReadingListUtils {
                         existingBookmark.getTitle(), existingBookmark.getUrl());
             }
 
-            if (newBookmark != null) {
-                bookmarkBridge.deleteBookmark(bookmarkId);
-                outputList.add(newBookmark);
+            if (newBookmark == null) {
+                Log.e(TAG, "Null bookmark after typeswapping.");
+                continue;
             }
+            bookmarkBridge.deleteBookmark(bookmarkId);
         }
 
         bookmarksToMove.addAll(outputList);
