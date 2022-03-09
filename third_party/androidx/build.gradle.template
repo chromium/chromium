@@ -53,6 +53,7 @@ dependencies {
     compile 'androidx.savedstate:savedstate:{{androidx_dependency_version}}'
     compile 'androidx.slice:slice-builders:{{androidx_dependency_version}}'
     compile 'androidx.slice:slice-core:{{androidx_dependency_version}}'
+    compile 'androidx.slice:slice-view:{{androidx_dependency_version}}'
     compile 'androidx.swiperefreshlayout:swiperefreshlayout:{{androidx_dependency_version}}'
     compile 'androidx.tvprovider:tvprovider:{{androidx_dependency_version}}'
     compile 'androidx.vectordrawable:vectordrawable:{{androidx_dependency_version}}'
