@@ -2,7 +2,7 @@
   "name": "Site A",
   "icons": [
     {
-      "src": "48x48-green.png",
+      "src": "48x48-red.png",
       "sizes": "48x48",
       "type": "image/png"
     },
@@ -19,5 +19,5 @@
   ],
   "start_url": "/web_apps/site_a/basic.html",
   "scope": "/web_apps/site_a/",
-  "display": "minimal-ui"
+  "display": "standalone"
 }

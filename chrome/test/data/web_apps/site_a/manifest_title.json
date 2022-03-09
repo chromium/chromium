@@ -2,8 +2,13 @@
   "name": "Site A - Updated name",
   "icons": [
     {
-      "src": "basic-48.png",
+      "src": "48x48-green.png",
       "sizes": "48x48",
+      "type": "image/png"
+    },
+    {
+      "src": "96x96-green.png",
+      "sizes": "96x96",
       "type": "image/png"
     },
     {
