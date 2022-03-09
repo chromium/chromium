@@ -142,7 +142,6 @@
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 using content::BrowserThread;
-using syncer::ForwardingModelTypeControllerDelegate;
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
 using browser_sync::ExtensionModelTypeController;
@@ -463,26 +462,28 @@ ChromeSyncClient::CreateDataTypeControllers(syncer::SyncService* sync_service) {
             syncer::OS_PRIORITY_PREFERENCES, model_type_store_factory,
             GetSyncableServiceForType(syncer::OS_PRIORITY_PREFERENCES),
             dump_stack, profile_->GetPrefs(), sync_service));
-    syncer::ModelTypeControllerDelegate* printers_delegate =
-        GetControllerDelegateForModelType(syncer::PRINTERS).get();
-    controllers.push_back(std::make_unique<syncer::ModelTypeController>(
-        syncer::PRINTERS,
-        std::make_unique<ForwardingModelTypeControllerDelegate>(
-            printers_delegate)));
   }
+
+  syncer::ModelTypeControllerDelegate* printers_delegate =
+      GetControllerDelegateForModelType(syncer::PRINTERS).get();
+  controllers.push_back(std::make_unique<syncer::ModelTypeController>(
+      syncer::PRINTERS,
+      std::make_unique<syncer::ForwardingModelTypeControllerDelegate>(
+          printers_delegate)));
+
   if (WifiConfigurationSyncServiceFactory::ShouldRunInProfile(profile_)) {
     syncer::ModelTypeControllerDelegate* wifi_configurations_delegate =
         GetControllerDelegateForModelType(syncer::WIFI_CONFIGURATIONS).get();
     controllers.push_back(std::make_unique<syncer::ModelTypeController>(
         syncer::WIFI_CONFIGURATIONS,
-        std::make_unique<ForwardingModelTypeControllerDelegate>(
+        std::make_unique<syncer::ForwardingModelTypeControllerDelegate>(
             wifi_configurations_delegate)));
   }
   syncer::ModelTypeControllerDelegate* workspace_desk_delegate =
       GetControllerDelegateForModelType(syncer::WORKSPACE_DESK).get();
   controllers.push_back(std::make_unique<syncer::ModelTypeController>(
       syncer::WORKSPACE_DESK,
-      std::make_unique<ForwardingModelTypeControllerDelegate>(
+      std::make_unique<syncer::ForwardingModelTypeControllerDelegate>(
           workspace_desk_delegate)));
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
@@ -693,7 +694,8 @@ ChromeSyncClient::CreateWebAppsModelTypeController(
       GetControllerDelegateForModelType(syncer::WEB_APPS).get();
   return std::make_unique<syncer::ModelTypeController>(
       syncer::WEB_APPS,
-      std::make_unique<ForwardingModelTypeControllerDelegate>(delegate));
+      std::make_unique<syncer::ForwardingModelTypeControllerDelegate>(
+          delegate));
 }
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 

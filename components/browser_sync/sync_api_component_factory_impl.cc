@@ -44,7 +44,6 @@
 #include "components/sync/engine/sync_engine.h"
 #include "components/sync/invalidations/sync_invalidations_service.h"
 #include "components/sync/model/forwarding_model_type_controller_delegate.h"
-#include "components/sync/model/model_type_store_service.h"
 #include "components/sync/model/proxy_model_type_controller_delegate.h"
 #include "components/sync_bookmarks/bookmark_sync_service.h"
 #include "components/sync_device_info/device_info_sync_service.h"
@@ -162,12 +161,6 @@ SyncApiComponentFactoryImpl::CreateCommonDataTypeControllers(
 
   const base::RepeatingClosure dump_stack =
       base::BindRepeating(&syncer::ReportUnrecoverableError, channel_);
-
-  syncer::ModelTypeStoreService* model_type_store_service =
-      sync_client_->GetModelTypeStoreService();
-  DCHECK(model_type_store_service);
-  syncer::RepeatingModelTypeStoreFactory model_type_store_factory =
-      model_type_store_service->GetStoreFactory();
 
   // TODO(crbug.com/1005651): Consider using a separate delegate for
   // transport-only.
@@ -335,16 +328,6 @@ SyncApiComponentFactoryImpl::CreateCommonDataTypeControllers(
                                     syncer::PRIORITY_PREFERENCES),
             dump_stack));
   }
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  // When SyncSettingsCategorization is enabled the controller is created in
-  // ChromeSyncClient.
-  if (!disabled_types.Has(syncer::PRINTERS) &&
-      !chromeos::features::IsSyncSettingsCategorizationEnabled()) {
-    controllers.push_back(
-        CreateModelTypeControllerForModelRunningOnUIThread(syncer::PRINTERS));
-  }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   // Reading list sync is enabled by default only on iOS. Register unless
   // Reading List or Reading List Sync is explicitly disabled.
