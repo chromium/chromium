@@ -194,7 +194,7 @@ void GuestViewInternalCustomBindings::AttachIframeGuest(
 
   // Add flag to |params| to indicate that the element size is specified in
   // logical units.
-  params->SetBoolean(guest_view::kElementSizeIsLogical, true);
+  params->GetDict().Set(guest_view::kElementSizeIsLogical, true);
 
   content::RenderFrame* embedder_parent_frame =
       content::RenderFrame::FromWebFrame(parent_frame->ToWebLocalFrame());
