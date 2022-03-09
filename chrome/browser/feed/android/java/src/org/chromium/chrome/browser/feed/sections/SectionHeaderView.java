@@ -7,7 +7,6 @@ package org.chromium.chrome.browser.feed.sections;
 import android.content.Context;
 import android.graphics.PorterDuff;
 import android.graphics.Rect;
-import android.graphics.drawable.Drawable;
 import android.util.AttributeSet;
 import android.view.TouchDelegate;
 import android.view.View;
@@ -50,7 +49,6 @@ import org.chromium.ui.widget.ViewRectProvider;
  */
 public class SectionHeaderView extends LinearLayout {
     private static final String TAG = "SectionHeaderView";
-    private static final int ANIMATION_DURATION_MS = 200;
 
     /** OnTabSelectedListener that delegates calls to the SectionHeadSelectedListener. */
     private class SectionHeaderTabListener implements TabLayout.OnTabSelectedListener {
@@ -131,10 +129,6 @@ public class SectionHeaderView extends LinearLayout {
     private RelativeLayout mContent;
     private @Nullable View mOptionsPanel;
 
-    // Cached the indicator drawables for easy swapping.
-    private Drawable mEnabledIndicatorDrawable;
-    private Drawable mNoIndicatorDrawable;
-
     private boolean mTextsEnabled;
     private @Px int mToolbarHeight;
 
@@ -175,7 +169,6 @@ public class SectionHeaderView extends LinearLayout {
         if (mTabLayout != null) {
             mTabListener = new SectionHeaderTabListener();
             mTabLayout.addOnTabSelectedListener(mTabListener);
-            mEnabledIndicatorDrawable = mTabLayout.getTabSelectedIndicator();
         }
 
         int touchSize =
