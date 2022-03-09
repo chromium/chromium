@@ -23,10 +23,12 @@ AttributionTrigger::EventTriggerData::EventTriggerData(
 AttributionTrigger::AttributionTrigger(
     net::SchemefulSite conversion_destination,
     url::Origin reporting_origin,
+    AttributionFilterData filters,
     absl::optional<uint64_t> debug_key,
     std::vector<EventTriggerData> event_triggers)
     : conversion_destination_(std::move(conversion_destination)),
       reporting_origin_(std::move(reporting_origin)),
+      filters_(std::move(filters)),
       debug_key_(debug_key),
       event_triggers_(std::move(event_triggers)) {
   DCHECK(!reporting_origin_.opaque());
@@ -44,6 +46,7 @@ AttributionTrigger::AttributionTrigger(
     : AttributionTrigger(
           std::move(conversion_destination),
           std::move(reporting_origin),
+          /*filters=*/AttributionFilterData(),
           debug_key,
           std::vector<EventTriggerData>(
               {EventTriggerData(trigger_data,

@@ -9,6 +9,7 @@
 
 #include <vector>
 
+#include "content/browser/attribution_reporting/attribution_filter_data.h"
 #include "content/browser/attribution_reporting/attribution_source_type.h"
 #include "content/common/content_export.h"
 #include "net/base/schemeful_site.h"
@@ -39,8 +40,11 @@ class CONTENT_EXPORT AttributionTrigger {
     kPriorityTooLow = 7,
     kDroppedForNoise = 8,
     kExcessiveReportingOrigins = 9,
+    // TODO(apaseltiner): Remove this value once event-trigger matching is
+    // implemented.
     kNoMatchingEventTriggers = 10,
-    kMaxValue = kNoMatchingEventTriggers,
+    kNoMatchingSourceFilterData = 11,
+    kMaxValue = kNoMatchingSourceFilterData,
   };
 
   struct CONTENT_EXPORT EventTriggerData {
@@ -74,6 +78,7 @@ class CONTENT_EXPORT AttributionTrigger {
   // known by the browser process.
   AttributionTrigger(net::SchemefulSite conversion_destination,
                      url::Origin reporting_origin,
+                     AttributionFilterData filters,
                      absl::optional<uint64_t> debug_key,
                      std::vector<EventTriggerData> event_triggers);
 
@@ -105,6 +110,8 @@ class CONTENT_EXPORT AttributionTrigger {
 
   const url::Origin& reporting_origin() const { return reporting_origin_; }
 
+  const AttributionFilterData& filters() const { return filters_; }
+
   absl::optional<uint64_t> debug_key() const { return debug_key_; }
 
   void ClearDebugKey() { debug_key_ = absl::nullopt; }
@@ -120,6 +127,8 @@ class CONTENT_EXPORT AttributionTrigger {
   // Origin of the conversion redirect url, and the origin that will receive any
   // reports.
   url::Origin reporting_origin_;
+
+  AttributionFilterData filters_;
 
   absl::optional<uint64_t> debug_key_;
 

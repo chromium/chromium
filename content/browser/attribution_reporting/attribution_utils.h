@@ -43,6 +43,11 @@ CONTENT_EXPORT bool AttributionFilterDataMatch(
     const AttributionFilterData& trigger,
     bool negated = false);
 
+CONTENT_EXPORT bool AttributionFiltersMatch(
+    const AttributionFilterData& source_filter_data,
+    const AttributionFilterData& trigger_filters,
+    const AttributionFilterData& trigger_not_filters);
+
 }  // namespace content
 
 #endif  // CONTENT_BROWSER_ATTRIBUTION_REPORTING_ATTRIBUTION_UTILS_H_

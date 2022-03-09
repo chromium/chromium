@@ -2152,6 +2152,7 @@ TEST_F(AttributionStorageTest, NoMatchingTriggers) {
       AttributionTrigger::EventLevelResult::kNoMatchingEventTriggers,
       MaybeCreateAndStoreEventLevelReport(AttributionTrigger(
           net::SchemefulSite(origin), origin,
+          /*filters=*/AttributionFilterData(),
           /*debug_key=*/absl::nullopt,
           {AttributionTrigger::EventTriggerData(
               /*data=*/0,
@@ -2161,12 +2162,52 @@ TEST_F(AttributionStorageTest, NoMatchingTriggers) {
   EXPECT_EQ(AttributionTrigger::EventLevelResult::kSuccess,
             MaybeCreateAndStoreEventLevelReport(
                 AttributionTrigger(net::SchemefulSite(origin), origin,
+                                   /*filters=*/AttributionFilterData(),
                                    /*debug_key=*/absl::nullopt,
                                    {AttributionTrigger::EventTriggerData(
                                        /*data=*/0,
                                        /*priority=*/0,
                                        /*dedup_key=*/absl::nullopt,
                                        AttributionSourceType::kNavigation)})));
+}
+
+TEST_F(AttributionStorageTest, TopLevelTriggerFiltering) {
+  const auto origin = url::Origin::Create(GURL("https://r.test"));
+
+  storage()->StoreSource(
+      SourceBuilder()
+          .SetConversionOrigin(origin)
+          .SetReportingOrigin(origin)
+          .SetFilterData(*AttributionFilterData::FromSourceFilterValues(
+              {{"abc", {"123"}}}))
+          .Build());
+
+  const std::vector<AttributionTrigger::EventTriggerData> event_triggers = {
+      AttributionTrigger::EventTriggerData(
+          /*data=*/0,
+          /*priority=*/0,
+          /*dedup_key=*/absl::nullopt, AttributionSourceType::kNavigation),
+  };
+
+  AttributionTrigger trigger1(net::SchemefulSite(origin), origin,
+                              /*filters=*/
+                              *AttributionFilterData::FromTriggerFilterValues({
+                                  {"abc", {"456"}},
+                              }),
+                              /*debug_key=*/absl::nullopt, event_triggers);
+
+  AttributionTrigger trigger2(net::SchemefulSite(origin), origin,
+                              /*filters=*/
+                              *AttributionFilterData::FromTriggerFilterValues({
+                                  {"abc", {"123"}},
+                              }),
+                              /*debug_key=*/absl::nullopt, event_triggers);
+
+  EXPECT_EQ(AttributionTrigger::EventLevelResult::kNoMatchingSourceFilterData,
+            MaybeCreateAndStoreEventLevelReport(trigger1));
+
+  EXPECT_EQ(AttributionTrigger::EventLevelResult::kSuccess,
+            MaybeCreateAndStoreEventLevelReport(trigger2));
 }
 
 }  // namespace content

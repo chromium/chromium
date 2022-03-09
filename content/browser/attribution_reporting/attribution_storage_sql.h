@@ -251,6 +251,7 @@ class CONTENT_EXPORT AttributionStorageSql : public AttributionStorage {
   AttributionTrigger::EventLevelResult MaybeCreateEventLevelReport(
       StoredSource source,
       const AttributionTrigger& trigger,
+      bool top_level_filters_match,
       absl::optional<AttributionReport>& report,
       absl::optional<uint64_t>& dedup_key)
       VALID_CONTEXT_REQUIRED(sequence_checker_);

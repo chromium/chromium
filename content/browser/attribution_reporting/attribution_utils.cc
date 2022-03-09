@@ -136,9 +136,6 @@ bool AttributionFilterDataMatch(const AttributionFilterData& source,
   // If the filters are negated, the behavior should be that every single filter
   // key does not match between the two (negating the function result is not
   // sufficient by the API definition).
-  //
-  // TODO(apaseltiner, linnan): Figure out how to incorporate the implicitly
-  // generated source_type filter data.
   return base::ranges::all_of(
       trigger.filter_values(), [&](const auto& trigger_filter) {
         auto source_filter = source.filter_values().find(trigger_filter.first);
@@ -162,6 +159,23 @@ bool AttributionFilterDataMatch(const AttributionFilterData& source,
         return negated ? base::ranges::all_of(trigger_filter.second, predicate)
                        : base::ranges::any_of(trigger_filter.second, predicate);
       });
+}
+
+bool AttributionFiltersMatch(const AttributionFilterData& source_filter_data,
+                             const AttributionFilterData& trigger_filters,
+                             const AttributionFilterData& trigger_not_filters) {
+  if (!trigger_filters.filter_values().empty() &&
+      !AttributionFilterDataMatch(source_filter_data, trigger_filters)) {
+    return false;
+  }
+
+  if (!trigger_not_filters.filter_values().empty() &&
+      !AttributionFilterDataMatch(source_filter_data, trigger_not_filters,
+                                  /*negated=*/true)) {
+    return false;
+  }
+
+  return true;
 }
 
 }  // namespace content

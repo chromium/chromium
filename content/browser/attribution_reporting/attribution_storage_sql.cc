@@ -35,6 +35,7 @@
 #include "content/browser/attribution_reporting/attribution_storage_delegate.h"
 #include "content/browser/attribution_reporting/attribution_storage_sql_migrations.h"
 #include "content/browser/attribution_reporting/attribution_trigger.h"
+#include "content/browser/attribution_reporting/attribution_utils.h"
 #include "content/browser/attribution_reporting/common_source_info.h"
 #include "content/browser/attribution_reporting/rate_limit_result.h"
 #include "content/browser/attribution_reporting/sql_utils.h"
@@ -707,11 +708,17 @@ CreateReportResult AttributionStorageSql::MaybeCreateAndStoreReport(
         AttributionTrigger::EventLevelResult::kInternalError);
   }
 
+  const bool top_level_filters_match = AttributionFiltersMatch(
+      source_to_attribute->source.common_info().filter_data(),
+      trigger.filters(),
+      /*trigger_not_filters=*/AttributionFilterData());
+
   absl::optional<AttributionReport> report;
   absl::optional<uint64_t> dedup_key;
 
   AttributionTrigger::EventLevelResult result = MaybeCreateEventLevelReport(
-      std::move(source_to_attribute->source), trigger, report, dedup_key);
+      std::move(source_to_attribute->source), trigger, top_level_filters_match,
+      report, dedup_key);
   if (result != AttributionTrigger::EventLevelResult::kSuccess)
     return CreateReportResult(
         result,
@@ -888,6 +895,7 @@ AttributionTrigger::EventLevelResult
 AttributionStorageSql::MaybeCreateEventLevelReport(
     StoredSource source,
     const AttributionTrigger& trigger,
+    const bool top_level_filters_match,
     absl::optional<AttributionReport>& report,
     absl::optional<uint64_t>& dedup_key) {
   const AttributionSourceType source_type = source.common_info().source_type();
@@ -933,6 +941,9 @@ AttributionStorageSql::MaybeCreateEventLevelReport(
       AttributionReport::EventLevelData(trigger_data, priority,
                                         randomized_response_rate,
                                         /*id=*/absl::nullopt));
+
+  if (!top_level_filters_match)
+    return AttributionTrigger::EventLevelResult::kNoMatchingSourceFilterData;
 
   // Note that this cannot currently occur outside of tests, because all
   // triggers have two event triggers, one for each source type, one of which

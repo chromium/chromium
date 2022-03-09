@@ -848,6 +848,9 @@ std::ostream& operator<<(std::ostream& out,
     case AttributionTrigger::EventLevelResult::kNoMatchingEventTriggers:
       out << "noMatchingEventTriggers";
       break;
+    case AttributionTrigger::EventLevelResult::kNoMatchingSourceFilterData:
+      out << "noMatchingSourceFilterData";
+      break;
   }
   return out;
 }

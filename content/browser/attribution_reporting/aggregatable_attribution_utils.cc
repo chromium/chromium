@@ -42,14 +42,8 @@ std::vector<AggregatableHistogramContribution> CreateAggregatableHistogram(
   // match for the given source, and if applicable modify the bucket based on
   // the given key piece.
   for (const auto& data : trigger.trigger_data()) {
-    if (!data.filters().filter_values().empty() &&
-        !AttributionFilterDataMatch(source_filter_data, data.filters())) {
-      continue;
-    }
-
-    if (!data.not_filters().filter_values().empty() &&
-        !AttributionFilterDataMatch(source_filter_data, data.not_filters(),
-                                    /*negated*/ true)) {
+    if (!AttributionFiltersMatch(source_filter_data, data.filters(),
+                                 data.not_filters())) {
       continue;
     }
 

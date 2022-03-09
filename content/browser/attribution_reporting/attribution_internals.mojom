@@ -43,7 +43,10 @@ struct WebUIAttributionReport {
     kProhibitedByBrowserPolicy,
     kSent,
     kNetworkError,
+    // TODO(apaseltiner): Remove this value once event-trigger matching is
+    // implemented.
     kNoMatchingEventTriggers,
+    kNoMatchingSourceFilterData,
   };
 
   Status status;

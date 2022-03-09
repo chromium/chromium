@@ -553,6 +553,9 @@ class Report extends Selectable {
       case WebUIAttributionReport_Status.kNoMatchingEventTriggers:
         this.status = 'Dropped due to no matching event triggers';
         break;
+      case WebUIAttributionReport_Status.kNoMatchingSourceFilterData:
+        this.status = 'Dropped due to no matching source filter data';
+        break;
     }
   }
 }

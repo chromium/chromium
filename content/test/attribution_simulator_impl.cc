@@ -239,6 +239,7 @@ class AttributionEventHandler : public AttributionObserver {
       case AttributionTrigger::EventLevelResult::kDroppedForNoise:
       case AttributionTrigger::EventLevelResult::kExcessiveReportingOrigins:
       case AttributionTrigger::EventLevelResult::kNoMatchingEventTriggers:
+      case AttributionTrigger::EventLevelResult::kNoMatchingSourceFilterData:
         reason << result.event_level_status();
         break;
     }
