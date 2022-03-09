@@ -51,13 +51,13 @@
 #include "ui/base/theme_provider.h"
 #include "ui/base/webui/jstemplate_builder.h"
 #include "ui/base/webui/web_ui_util.h"
-#include "ui/chromeos/devicetype_utils.h"
 #include "ui/gfx/color_utils.h"
 #include "ui/native_theme/native_theme.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/browser/ash/policy/core/browser_policy_connector_ash.h"
 #include "chromeos/strings/grit/chromeos_strings.h"
+#include "ui/chromeos/devicetype_utils.h"
 #endif
 
 #if !BUILDFLAG(IS_CHROMEOS)
