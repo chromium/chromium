@@ -6,11 +6,13 @@
 
 #include <map>
 #include <memory>
+#include <string>
 #include <utility>
 #include <vector>
 
 #include "ash/webui/shimless_rma/backend/shimless_rma_delegate.h"
 #include "ash/webui/shimless_rma/mojom/shimless_rma.mojom.h"
+#include "base/strings/stringprintf.h"
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
 #include "chromeos/dbus/dbus_thread_manager.h"
@@ -28,8 +30,11 @@ namespace ash {
 namespace shimless_rma {
 
 namespace {
+
 using chromeos::DBusMethodCallback;
 using chromeos::FakeRmadClient;
+
+constexpr char kDefaultWifiGuid[] = "WiFi";
 
 class FakeRmadClientForTest : public FakeRmadClient {
  public:
@@ -200,10 +205,12 @@ class ShimlessRmaServiceTest : public testing::Test {
     return google::protobuf::down_cast<FakeRmadClientForTest*>(rmad_client_);
   }
 
-  void SetupWiFiNetwork() {
+  void SetupWiFiNetwork(const std::string& guid) {
     network_state_helper().ConfigureService(
-        R"({"GUID": "wifi1_guid", "Type": "wifi", "State": "online",
-            "Strength": 50, "AutoConnect": true, "WiFi.HiddenSSID": false})");
+        base::StringPrintf(R"({"GUID": "%s", "Type": "wifi", "State": "online",
+            "Strength": 50, "AutoConnect": true, "WiFi.HiddenSSID": false,
+            "Profile": "user_profile_path",})",
+                           guid.c_str()));
 
     base::RunLoop().RunUntilIdle();
   }
@@ -228,7 +235,7 @@ class ShimlessRmaServiceTest : public testing::Test {
 };
 
 TEST_F(ShimlessRmaServiceTest, AbortAndGoBackStatePassedCorrectly) {
-  SetupWiFiNetwork();
+  SetupWiFiNetwork(kDefaultWifiGuid);
   const std::vector<rmad::GetStateReply> fake_states = {
       CreateStateReply(rmad::RmadState::kDeviceDestination, rmad::RMAD_ERROR_OK,
                        /*can_abort*/ true, /*can_go_back*/ false),
@@ -274,7 +281,7 @@ TEST_F(ShimlessRmaServiceTest, AbortAndGoBackStatePassedCorrectly) {
 }
 
 TEST_F(ShimlessRmaServiceTest, WelcomeHasNetworkConnection) {
-  SetupWiFiNetwork();
+  SetupWiFiNetwork(kDefaultWifiGuid);
   const std::vector<rmad::GetStateReply> fake_states = {
       CreateStateReply(rmad::RmadState::kWelcome, rmad::RMAD_ERROR_OK),
       CreateStateReply(rmad::RmadState::kComponentsRepair,
@@ -361,7 +368,7 @@ TEST_F(ShimlessRmaServiceTest, ChooseNetworkHasNetworkConnection) {
         EXPECT_EQ(error, rmad::RmadErrorCode::RMAD_ERROR_OK);
       }));
   run_loop.RunUntilIdle();
-  SetupWiFiNetwork();
+  SetupWiFiNetwork(kDefaultWifiGuid);
 
   // With a WiFi network it should redirect to kUpdateOs
   shimless_rma_provider_->NetworkSelectionComplete(base::BindLambdaForTesting(
