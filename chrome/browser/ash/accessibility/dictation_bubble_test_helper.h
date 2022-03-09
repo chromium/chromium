@@ -15,7 +15,7 @@ enum class DictationBubbleIconType;
 
 class DictationBubbleTestHelper {
  public:
-  DictationBubbleTestHelper() = default;
+  DictationBubbleTestHelper();
   ~DictationBubbleTestHelper() = default;
   DictationBubbleTestHelper(const DictationBubbleTestHelper&) = delete;
   DictationBubbleTestHelper& operator=(const DictationBubbleTestHelper&) =

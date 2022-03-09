@@ -1271,7 +1271,7 @@ IN_PROC_BROWSER_TEST_P(DictationCommandsExtensionTest, Help) {
 // Tests the behavior of the Dictation bubble UI.
 class DictationUITest : public DictationExtensionTest {
  protected:
-  DictationUITest() : dictation_bubble_test_helper_() {}
+  DictationUITest() = default;
   ~DictationUITest() override = default;
   DictationUITest(const DictationUITest&) = delete;
   DictationUITest& operator=(const DictationUITest&) = delete;
@@ -1283,6 +1283,12 @@ class DictationUITest : public DictationExtensionTest {
         ::features::kExperimentalAccessibilityDictationHints};
     std::vector<base::Feature> disabled_features;
     scoped_feature_list_.InitWithFeatures(enabled_features, disabled_features);
+  }
+
+  void SetUpOnMainThread() override {
+    DictationExtensionTest::SetUpOnMainThread();
+    dictation_bubble_test_helper_ =
+        std::make_unique<DictationBubbleTestHelper>();
   }
 
   void WaitForProperties(
@@ -1303,7 +1309,8 @@ class DictationUITest : public DictationExtensionTest {
     std::string error_message = "Still waiting for UI visibility: ";
     error_message += visible ? "true" : "false";
     SuccessWaiter(base::BindLambdaForTesting([&]() {
-                    return dictation_bubble_test_helper_.IsVisible() == visible;
+                    return dictation_bubble_test_helper_->IsVisible() ==
+                           visible;
                   }),
                   error_message)
         .Wait();
@@ -1312,7 +1319,7 @@ class DictationUITest : public DictationExtensionTest {
   void WaitForVisibleIcon(DictationBubbleIconType icon) {
     std::string error_message = "Still waiting for UI icon: " + ToString(icon);
     SuccessWaiter(base::BindLambdaForTesting([&]() {
-                    return dictation_bubble_test_helper_.GetVisibleIcon() ==
+                    return dictation_bubble_test_helper_->GetVisibleIcon() ==
                            icon;
                   }),
                   error_message)
@@ -1323,7 +1330,7 @@ class DictationUITest : public DictationExtensionTest {
     std::string error_message =
         "Still waiting for UI text: " + base::UTF16ToUTF8(text);
     SuccessWaiter(base::BindLambdaForTesting([&]() {
-                    return dictation_bubble_test_helper_.GetText() == text;
+                    return dictation_bubble_test_helper_->GetText() == text;
                   }),
                   error_message)
         .Wait();
@@ -1332,14 +1339,15 @@ class DictationUITest : public DictationExtensionTest {
   void WaitForVisibleHints(const std::vector<std::u16string>& hints) {
     std::string error_message = base::UTF16ToUTF8(
         u"Still waiting for UI hints: " + base::JoinString(hints, u","));
-    SuccessWaiter(base::BindLambdaForTesting([&]() {
-                    return dictation_bubble_test_helper_.HasVisibleHints(hints);
-                  }),
-                  error_message)
+    SuccessWaiter(
+        base::BindLambdaForTesting([&]() {
+          return dictation_bubble_test_helper_->HasVisibleHints(hints);
+        }),
+        error_message)
         .Wait();
   }
 
-  DictationBubbleTestHelper dictation_bubble_test_helper_;
+  std::unique_ptr<DictationBubbleTestHelper> dictation_bubble_test_helper_;
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
@@ -1348,11 +1356,10 @@ INSTANTIATE_TEST_SUITE_P(
     DictationUITest,
     ::testing::Values(speech::SpeechRecognitionType::kNetwork));
 
-// TODO(crbug.com/1303604): OnDevice tests are flaky.
-// INSTANTIATE_TEST_SUITE_P(
-//     OnDevice,
-//     DictationUITest,
-//     ::testing::Values(speech::SpeechRecognitionType::kOnDevice));
+INSTANTIATE_TEST_SUITE_P(
+    OnDevice,
+    DictationUITest,
+    ::testing::Values(speech::SpeechRecognitionType::kOnDevice));
 
 IN_PROC_BROWSER_TEST_P(DictationUITest, ShownWhenSpeechRecognitionStarts) {
   ToggleDictationWithKeystroke();

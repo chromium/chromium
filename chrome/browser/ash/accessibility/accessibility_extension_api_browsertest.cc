@@ -30,10 +30,7 @@ class AccessibilityPrivateApiTest
     : public extensions::ExtensionApiTest,
       public testing::WithParamInterface<ContextType> {
  public:
-  AccessibilityPrivateApiTest() : ExtensionApiTest(GetParam()) {
-    dictation_bubble_test_helper_ =
-        std::make_unique<DictationBubbleTestHelper>();
-  }
+  AccessibilityPrivateApiTest() : ExtensionApiTest(GetParam()) {}
   ~AccessibilityPrivateApiTest() override = default;
   AccessibilityPrivateApiTest& operator=(const AccessibilityPrivateApiTest&) =
       delete;
@@ -45,6 +42,12 @@ class AccessibilityPrivateApiTest
     ExtensionApiTest::SetUpCommandLine(command_line);
     scoped_feature_list_.InitAndEnableFeature(
         ::features::kExperimentalAccessibilityDictationCommands);
+  }
+
+  void SetUpOnMainThread() override {
+    ExtensionApiTest::SetUpOnMainThread();
+    dictation_bubble_test_helper_ =
+        std::make_unique<DictationBubbleTestHelper>();
   }
 
   [[nodiscard]] bool RunSubtest(const char* subtest) {

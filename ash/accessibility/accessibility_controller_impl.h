@@ -491,9 +491,7 @@ class ASH_EXPORT AccessibilityControllerImpl : public AccessibilityController,
     return dictation_soda_download_progress_;
   }
 
-  DictationBubbleController* GetDictationBubbleControllerForTest() {
-    return dictation_bubble_controller_.get();
-  }
+  DictationBubbleController* GetDictationBubbleControllerForTest();
 
  private:
   // Populate |features_| with the feature of the correct type.

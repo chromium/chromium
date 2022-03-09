@@ -12,6 +12,11 @@
 
 namespace ash {
 
+DictationBubbleTestHelper::DictationBubbleTestHelper() {
+  // Ensure the bubble UI is initialized.
+  GetController()->MaybeInitialize();
+}
+
 bool DictationBubbleTestHelper::IsVisible() {
   return GetController()->widget_->IsVisible();
 }
