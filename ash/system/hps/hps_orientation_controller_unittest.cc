@@ -4,8 +4,10 @@
 
 #include "ash/system/hps/hps_orientation_controller.h"
 #include "ash/constants/ash_features.h"
+#include "ash/constants/ash_switches.h"
 #include "ash/shell.h"
 #include "ash/test/ash_test_base.h"
+#include "base/test/scoped_command_line.h"
 #include "base/test/scoped_feature_list.h"
 #include "ui/display/display.h"
 #include "ui/display/manager/display_manager.h"
@@ -46,8 +48,9 @@ class HpsOrientationControllerTest : public AshTestBase {
   ~HpsOrientationControllerTest() override = default;
 
   void SetUp() override {
-    scoped_feature_list_.InitAndEnableFeature(
-        ash::features::kSnoopingProtection);
+    scoped_feature_list_.InitWithFeatures({ash::features::kSnoopingProtection},
+                                          {ash::features::kQuickDim});
+    base::CommandLine::ForCurrentProcess()->AppendSwitch(switches::kHasHps);
 
     AshTestBase::SetUp();
 
@@ -75,6 +78,7 @@ class HpsOrientationControllerTest : public AshTestBase {
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
+  base::test::ScopedCommandLine scoped_command_line_;
 };
 
 TEST_F(HpsOrientationControllerTest, TabletMode) {

@@ -780,7 +780,7 @@ const base::Feature kHoldingSpaceInProgressDownloadsNotificationSuppression{
 
 // Controls whether the snooping protection prototype is enabled.
 const base::Feature kSnoopingProtection{"SnoopingProtection",
-                                        base::FEATURE_DISABLED_BY_DEFAULT};
+                                        base::FEATURE_ENABLED_BY_DEFAULT};
 
 // Enable or disable dark mode support for the Chrome OS virtual keyboard.
 const base::Feature kVirtualKeyboardDarkMode{"VirtualKeyboardDarkMode",
@@ -1099,7 +1099,7 @@ const base::Feature kProjectorAppDebug{"ProjectorAppDebug",
                                        base::FEATURE_DISABLED_BY_DEFAULT};
 
 // Controls whether the quick dim prototype is enabled.
-const base::Feature kQuickDim{"QuickDim", base::FEATURE_DISABLED_BY_DEFAULT};
+const base::Feature kQuickDim{"QuickDim", base::FEATURE_ENABLED_BY_DEFAULT};
 
 // Enables or disables the Quick Settings Network revamp, which updates Network
 // Quick Settings UI and related infrastructure. See https://crbug.com/1169479.
@@ -1689,7 +1689,8 @@ bool IsHostnameSettingEnabled() {
 }
 
 bool IsSnoopingProtectionEnabled() {
-  return base::FeatureList::IsEnabled(kSnoopingProtection);
+  return base::FeatureList::IsEnabled(kSnoopingProtection) &&
+         ash::switches::HasHps();
 }
 
 bool IsIdleInhibitEnabled() {
@@ -1910,7 +1911,7 @@ bool IsProjectorAppDebugMode() {
 }
 
 bool IsQuickDimEnabled() {
-  return base::FeatureList::IsEnabled(kQuickDim);
+  return base::FeatureList::IsEnabled(kQuickDim) && ash::switches::HasHps();
 }
 
 bool IsQuickSettingsNetworkRevampEnabled() {

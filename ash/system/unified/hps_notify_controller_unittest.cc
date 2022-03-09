@@ -8,11 +8,13 @@
 
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
+#include "ash/constants/ash_switches.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/session/test_session_controller_client.h"
 #include "ash/shell.h"
 #include "ash/test/ash_test_base.h"
 #include "base/run_loop.h"
+#include "base/test/scoped_command_line.h"
 #include "base/test/scoped_feature_list.h"
 #include "chromeos/dbus/hps/fake_hps_dbus_client.h"
 #include "chromeos/dbus/hps/hps_dbus_client.h"
@@ -52,6 +54,7 @@ class HpsNotifyControllerTestBase : public NoSessionAshTestBase {
   void SetUp() override {
     scoped_feature_list_.InitAndEnableFeatureWithParameters(
         ash::features::kSnoopingProtection, params_);
+    base::CommandLine::ForCurrentProcess()->AppendSwitch(switches::kHasHps);
 
     chromeos::HpsDBusClient::InitializeFake();
     dbus_client_ = chromeos::FakeHpsDBusClient::Get();
@@ -83,6 +86,7 @@ class HpsNotifyControllerTestBase : public NoSessionAshTestBase {
   HpsNotifyController* controller_ = nullptr;
 
   base::test::ScopedFeatureList scoped_feature_list_;
+  base::test::ScopedCommandLine scoped_command_line_;
 
   // Simulates a login. Because this could correctly or incorrectly trigger an
   // asynchronous DBus call, waits for the run loop to empty.
