@@ -653,7 +653,7 @@ class TrustStoreMac::TrustImplDomainCache : public TrustStoreMac::TrustImpl {
  private:
   // (Re-)Initialize the cache if necessary. Must be called after acquiring
   // |cache_lock_| and before accessing any of the |*_domain_cache_| members.
-  void MaybeInitializeCache() {
+  void MaybeInitializeCache() EXCLUSIVE_LOCKS_REQUIRED(cache_lock_) {
     cache_lock_.AssertAcquired();
     int64_t keychain_iteration = keychain_observer_->Iteration();
     if (iteration_ == keychain_iteration)
@@ -675,11 +675,11 @@ class TrustStoreMac::TrustImplDomainCache : public TrustStoreMac::TrustImpl {
 
   base::Lock cache_lock_;
   // |cache_lock_| must be held while accessing any following members.
-  int64_t iteration_ = -1;
-  bool system_domain_initialized_ = false;
-  TrustDomainCache system_domain_cache_;
-  TrustDomainCache admin_domain_cache_;
-  TrustDomainCache user_domain_cache_;
+  int64_t iteration_ GUARDED_BY(cache_lock_) = -1;
+  bool system_domain_initialized_ GUARDED_BY(cache_lock_) = false;
+  TrustDomainCache system_domain_cache_ GUARDED_BY(cache_lock_);
+  TrustDomainCache admin_domain_cache_ GUARDED_BY(cache_lock_);
+  TrustDomainCache user_domain_cache_ GUARDED_BY(cache_lock_);
 };
 
 // TrustImplNoCache is the simplest approach which calls
@@ -832,7 +832,7 @@ class TrustStoreMac::TrustImplLRUCache : public TrustStoreMac::TrustImpl {
     return trust_details;
   }
 
-  void MaybeResetCache() {
+  void MaybeResetCache() EXCLUSIVE_LOCKS_REQUIRED(cache_lock_) {
     cache_lock_.AssertAcquired();
     int64_t keychain_iteration = keychain_observer_->Iteration();
     if (iteration_ == keychain_iteration)
@@ -846,14 +846,15 @@ class TrustStoreMac::TrustImplLRUCache : public TrustStoreMac::TrustImpl {
 
   base::Lock cache_lock_;
   // |cache_lock_| must be held while accessing any following members.
-  base::LRUCache<SHA256HashValue, TrustStatusDetails> trust_status_cache_;
+  base::LRUCache<SHA256HashValue, TrustStatusDetails> trust_status_cache_
+      GUARDED_BY(cache_lock_);
   // Tracks the number of keychain changes that have been observed. If the
   // keychain observer has noted a change, MaybeResetCache will update
   // |iteration_| and the cache will be cleared. Any in-flight trust
   // resolutions that started before the keychain update was observed should
   // not cache their results, as it isn't clear whether the calculated result
   // applies to the new or old trust settings.
-  int64_t iteration_ = -1;
+  int64_t iteration_ GUARDED_BY(cache_lock_) = -1;
 };
 
 TrustStoreMac::TrustStoreMac(CFStringRef policy_oid,
