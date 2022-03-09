@@ -3466,6 +3466,15 @@
           'gtest_tests': 'chromium_mac_gtests',
         },
       },
+      'mac-fieldtrial-rel': {
+        'mixins': [
+          'mac_11_arm64',
+        ],
+        'test_suites': {
+          'gtest_tests': 'fieldtrial_browser_tests',
+          'isolated_scripts': 'fieldtrial_isolated_scripts',
+        },
+      },
       'mac-hermetic-upgrade-rel': {
         'additional_compile_targets': [
           'all',
