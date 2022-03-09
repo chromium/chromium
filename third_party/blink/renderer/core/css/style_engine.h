@@ -88,7 +88,6 @@ class ShadowTreeStyleSheetCollection;
 class DocumentStyleEnvironmentVariables;
 class CascadeLayerMap;
 class SpaceSplitString;
-class StyleEngineContext;
 class StyleResolver;
 class StyleResolverStats;
 class StyleRuleFontFace;
@@ -243,21 +242,14 @@ class CORE_EXPORT StyleEngine final : public GarbageCollected<StyleEngine>,
   void SetPreferredStylesheetSetNameIfNotSet(const String&);
   void SetHttpDefaultStyle(const String&);
 
-  void AddPendingSheet(StyleEngineContext&);
-  void RemovePendingSheet(Node& style_sheet_candidate_node,
-                          const StyleEngineContext&);
+  void AddPendingSheet(Node& style_sheet_candidate_node);
+  void RemovePendingSheet(Node& style_sheet_candidate_node);
 
   bool HasPendingScriptBlockingSheets() const {
     return pending_script_blocking_stylesheets_ > 0;
   }
-  bool HasPendingRenderBlockingSheets() const {
-    return pending_render_blocking_stylesheets_ > 0;
-  }
   bool HaveScriptBlockingStylesheetsLoaded() const {
     return !HasPendingScriptBlockingSheets();
-  }
-  bool HaveRenderBlockingStylesheetsLoaded() const {
-    return !HasPendingRenderBlockingSheets();
   }
 
   unsigned MaxDirectAdjacentSelectors() const {
@@ -353,8 +345,7 @@ class CORE_EXPORT StyleEngine final : public GarbageCollected<StyleEngine>,
 
   CSSStyleSheet* CreateSheet(Element&,
                              const String& text,
-                             WTF::TextPosition start_position,
-                             StyleEngineContext&);
+                             WTF::TextPosition start_position);
 
   void CollectFeaturesTo(RuleFeatureSet& features);
 
@@ -735,14 +726,6 @@ class CORE_EXPORT StyleEngine final : public GarbageCollected<StyleEngine>,
   // loaded). See:
   // https://html.spec.whatwg.org/multipage/semantics.html#interactions-of-styling-and-scripting
   int pending_script_blocking_stylesheets_{0};
-
-  // Tracks the number of currently loading top-level stylesheets which block
-  // rendering (the "Update the rendering" step of the event loop processing
-  // model) from starting. Sheets loaded using the @import directive are not
-  // included in this count. See:
-  // https://html.spec.whatwg.org/multipage/webappapis.html#event-loop-processing-model
-  // Once all of these sheets have loaded, rendering begins.
-  int pending_render_blocking_stylesheets_{0};
 
   // Tracks the number of currently loading top-level stylesheets which block
   // the HTML parser. Sheets loaded using the @import directive are not included

@@ -776,16 +776,15 @@ TEST_F(StyleEngineTest, TextToSheetCache) {
 
   String sheet_text("div {}");
   TextPosition min_pos = TextPosition::MinimumPosition();
-  StyleEngineContext context;
 
   CSSStyleSheet* sheet1 =
-      GetStyleEngine().CreateSheet(*element, sheet_text, min_pos, context);
+      GetStyleEngine().CreateSheet(*element, sheet_text, min_pos);
 
   // Check that the first sheet is not using a cached StyleSheetContents.
   EXPECT_FALSE(sheet1->Contents()->IsUsedFromTextCache());
 
   CSSStyleSheet* sheet2 =
-      GetStyleEngine().CreateSheet(*element, sheet_text, min_pos, context);
+      GetStyleEngine().CreateSheet(*element, sheet_text, min_pos);
 
   // Check that the second sheet uses the cached StyleSheetContents for the
   // first.
@@ -802,7 +801,7 @@ TEST_F(StyleEngineTest, TextToSheetCache) {
 
   element = MakeGarbageCollected<HTMLStyleElement>(GetDocument(),
                                                    CreateElementFlags());
-  sheet1 = GetStyleEngine().CreateSheet(*element, sheet_text, min_pos, context);
+  sheet1 = GetStyleEngine().CreateSheet(*element, sheet_text, min_pos);
 
   // Check that we did not use a cached StyleSheetContents after the garbage
   // collection.

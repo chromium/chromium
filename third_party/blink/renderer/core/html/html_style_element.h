@@ -68,11 +68,13 @@ class CORE_EXPORT HTMLStyleElement final : public HTMLElement,
   void NotifyLoadedSheetAndAllCriticalSubresources(
       LoadedSheetErrorStatus) override;
   void StartLoadingDynamicSheet() override {
-    StyleElement::StartLoadingDynamicSheet(GetDocument());
+    StyleElement::StartLoadingDynamicSheet(GetDocument(), *this);
   }
 
   const AtomicString& media() const override;
   const AtomicString& type() const override;
+
+  bool IsSameObject(const Node& node) const override { return this == &node; }
 
   Member<BlockingAttribute> blocking_attribute_;
 };

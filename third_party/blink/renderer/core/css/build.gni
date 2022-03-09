@@ -607,8 +607,6 @@ blink_core_sources_css = [
   "style_element.h",
   "style_engine.cc",
   "style_engine.h",
-  "style_engine_context.cc",
-  "style_engine_context.h",
   "style_environment_variables.cc",
   "style_environment_variables.h",
   "style_invalidation_root.cc",

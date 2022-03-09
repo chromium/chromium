@@ -114,8 +114,9 @@ void StyleElement::ClearSheet(Element& owner_element) {
   DCHECK(sheet_);
 
   if (sheet_->IsLoading()) {
+    DCHECK(IsSameObject(owner_element));
     owner_element.GetDocument().GetStyleEngine().RemovePendingSheet(
-        owner_element, style_engine_context_);
+        owner_element);
   }
 
   sheet_.Release()->ClearOwnerNode();
@@ -129,6 +130,7 @@ static bool IsInUserAgentShadowDOM(const Element& element) {
 StyleElement::ProcessingResult StyleElement::CreateSheet(Element& element,
                                                          const String& text) {
   DCHECK(element.isConnected());
+  DCHECK(IsSameObject(element));
   Document& document = element.GetDocument();
 
   ContentSecurityPolicy* csp =
@@ -162,8 +164,8 @@ StyleElement::ProcessingResult StyleElement::CreateSheet(Element& element,
         start_position_ == TextPosition::BelowRangePosition()
             ? TextPosition::MinimumPosition()
             : start_position_;
-    new_sheet = document.GetStyleEngine().CreateSheet(
-        element, text, start_position, style_engine_context_);
+    new_sheet =
+        document.GetStyleEngine().CreateSheet(element, text, start_position);
     new_sheet->SetMediaQueries(media_queries);
     loading_ = false;
   }
@@ -189,13 +191,15 @@ bool StyleElement::SheetLoaded(Document& document) {
   if (IsLoading())
     return false;
 
-  document.GetStyleEngine().RemovePendingSheet(*sheet_->ownerNode(),
-                                               style_engine_context_);
+  DCHECK(IsSameObject(*sheet_->ownerNode()));
+  document.GetStyleEngine().RemovePendingSheet(*sheet_->ownerNode());
   return true;
 }
 
-void StyleElement::StartLoadingDynamicSheet(Document& document) {
-  document.GetStyleEngine().AddPendingSheet(style_engine_context_);
+void StyleElement::StartLoadingDynamicSheet(Document& document,
+                                            Element& element) {
+  DCHECK(IsSameObject(element));
+  document.GetStyleEngine().AddPendingSheet(element);
 }
 
 void StyleElement::Trace(Visitor* visitor) const {

@@ -71,7 +71,7 @@ class CORE_EXPORT LinkResource : public GarbageCollected<LinkResource> {
   WTF::TextEncoding GetCharset() const;
   ExecutionContext* GetExecutionContext();
 
-  Member<HTMLLinkElement> owner_;
+  const Member<HTMLLinkElement> owner_;
 };
 
 }  // namespace blink

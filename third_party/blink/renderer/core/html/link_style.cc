@@ -176,7 +176,7 @@ void LinkStyle::AddPendingSheet(PendingSheetType type) {
 
   if (pending_sheet_type_ == kNonBlocking)
     return;
-  GetDocument().GetStyleEngine().AddPendingSheet(style_engine_context_);
+  GetDocument().GetStyleEngine().AddPendingSheet(*owner_);
 }
 
 void LinkStyle::RemovePendingSheet() {
@@ -192,8 +192,7 @@ void LinkStyle::RemovePendingSheet() {
     return;
   }
 
-  GetDocument().GetStyleEngine().RemovePendingSheet(*owner_,
-                                                    style_engine_context_);
+  GetDocument().GetStyleEngine().RemovePendingSheet(*owner_);
 }
 
 void LinkStyle::SetDisabledState(bool disabled) {

@@ -162,6 +162,7 @@ void StyleRuleImport::RequestStyleSheet() {
     // if the import rule is issued dynamically, the sheet may be
     // removed from the pending sheet count, so let the doc know
     // the sheet being imported is pending.
+    // TODO(xiaochengh): Rename StartLoadingDynamicSheet() to improve clarity.
     if (parent_style_sheet_ && parent_style_sheet_->LoadCompleted() &&
         root_sheet == parent_style_sheet_) {
       parent_style_sheet_->StartLoadingDynamicSheet();

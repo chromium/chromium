@@ -69,8 +69,10 @@ class SVGStyleElement final : public SVGElement, public StyleElement {
   void NotifyLoadedSheetAndAllCriticalSubresources(
       LoadedSheetErrorStatus) override;
   void StartLoadingDynamicSheet() override {
-    StyleElement::StartLoadingDynamicSheet(GetDocument());
+    StyleElement::StartLoadingDynamicSheet(GetDocument(), *this);
   }
+
+  bool IsSameObject(const Node& node) const override { return this == &node; }
 };
 
 }  // namespace blink

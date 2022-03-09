@@ -240,29 +240,31 @@ CSSStyleSheet& StyleEngine::EnsureInspectorStyleSheet() {
   return *inspector_style_sheet_;
 }
 
-void StyleEngine::AddPendingSheet(StyleEngineContext& context) {
+void StyleEngine::AddPendingSheet(Node& style_sheet_candidate_node) {
   pending_script_blocking_stylesheets_++;
 
-  context.AddingPendingSheet(GetDocument());
-
-  if (context.AddedPendingSheetBeforeBody()) {
-    pending_render_blocking_stylesheets_++;
-  } else {
+  auto* manager = GetDocument().GetRenderBlockingResourceManager();
+  bool is_render_blocking =
+      manager && manager->AddPendingStylesheet(style_sheet_candidate_node);
+  if (!is_render_blocking) {
     pending_parser_blocking_stylesheets_++;
+    if (GetDocument().body()) {
+      GetDocument().CountUse(
+          WebFeature::kPendingStylesheetAddedAfterBodyStarted);
+    }
     GetDocument().DidAddPendingParserBlockingStylesheet();
   }
 }
 
 // This method is called whenever a top-level stylesheet has finished loading.
-void StyleEngine::RemovePendingSheet(Node& style_sheet_candidate_node,
-                                     const StyleEngineContext& context) {
+void StyleEngine::RemovePendingSheet(Node& style_sheet_candidate_node) {
   if (style_sheet_candidate_node.isConnected())
     SetNeedsActiveStyleUpdate(style_sheet_candidate_node.GetTreeScope());
 
-  if (context.AddedPendingSheetBeforeBody()) {
-    DCHECK_GT(pending_render_blocking_stylesheets_, 0);
-    pending_render_blocking_stylesheets_--;
-  } else {
+  auto* manager = GetDocument().GetRenderBlockingResourceManager();
+  bool is_render_blocking =
+      manager && manager->RemovePendingStylesheet(style_sheet_candidate_node);
+  if (!is_render_blocking) {
     DCHECK_GT(pending_parser_blocking_stylesheets_, 0);
     pending_parser_blocking_stylesheets_--;
     if (!pending_parser_blocking_stylesheets_)
@@ -737,12 +739,11 @@ void StyleEngine::MarkViewportStyleDirty() {
 
 CSSStyleSheet* StyleEngine::CreateSheet(Element& element,
                                         const String& text,
-                                        TextPosition start_position,
-                                        StyleEngineContext& context) {
+                                        TextPosition start_position) {
   DCHECK(element.GetDocument() == GetDocument());
   CSSStyleSheet* style_sheet = nullptr;
 
-  AddPendingSheet(context);
+  AddPendingSheet(element);
 
   AtomicString text_content(text);
 
