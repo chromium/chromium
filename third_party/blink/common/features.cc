@@ -1312,5 +1312,8 @@ const base::Feature kReduceUserAgentMinorVersion{
 const base::Feature kSecureContextFixForWorkers{
     "SecureContextFixForWorkers", base::FEATURE_DISABLED_BY_DEFAULT};
 
+const base::Feature kZeroCopyTabCapture{"ZeroCopyTabCapture",
+                                        base::FEATURE_DISABLED_BY_DEFAULT};
+
 }  // namespace features
 }  // namespace blink

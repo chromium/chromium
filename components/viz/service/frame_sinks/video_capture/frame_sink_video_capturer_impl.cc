@@ -199,6 +199,8 @@ void FrameSinkVideoCapturerImpl::OnTargetWillGoAway() {
 
 void FrameSinkVideoCapturerImpl::SetFormat(media::VideoPixelFormat format) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  DVLOG(3) << __func__
+           << ": format=" << media::VideoPixelFormatToString(format);
 
   bool format_changed = false;
 

@@ -669,6 +669,10 @@ BLINK_COMMON_EXPORT extern const base::Feature kReduceUserAgentMinorVersion;
 
 BLINK_COMMON_EXPORT extern const base::Feature kSecureContextFixForWorkers;
 
+// If enabled, the `getDisplayMedia()` family of APIs will ask for NV12 frames,
+// which should trigger a zero-copy path in the tab capture code.
+BLINK_COMMON_EXPORT extern const base::Feature kZeroCopyTabCapture;
+
 }  // namespace features
 }  // namespace blink
 

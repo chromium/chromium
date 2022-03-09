@@ -1308,6 +1308,10 @@ const char kEnableWebAuthenticationChromeOSAuthenticatorDescription[] =
     "Enable the ChromeOS platform authenticator for the Web Authentication "
     "API.";
 
+const char kEnableZeroCopyTabCaptureName[] = "Zero-copy tab capture";
+const char kEnableZeroCopyTabCaptureDescription[] =
+    "Enable zero-copy content tab for getDisplayMedia() APIs.";
+
 const char kExperimentalWebAssemblyFeaturesName[] = "Experimental WebAssembly";
 const char kExperimentalWebAssemblyFeaturesDescription[] =
     "Enable web pages to use experimental WebAssembly features.";

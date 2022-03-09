@@ -735,6 +735,9 @@ extern const char kEnableWebAuthenticationCableDiscoCredsDescription[];
 extern const char kEnableWebAuthenticationChromeOSAuthenticatorName[];
 extern const char kEnableWebAuthenticationChromeOSAuthenticatorDescription[];
 
+extern const char kEnableZeroCopyTabCaptureName[];
+extern const char kEnableZeroCopyTabCaptureDescription[];
+
 extern const char kExperimentalWebAssemblyFeaturesName[];
 extern const char kExperimentalWebAssemblyFeaturesDescription[];
 

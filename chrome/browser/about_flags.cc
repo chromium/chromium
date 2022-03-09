@@ -5501,6 +5501,15 @@ const FeatureEntry kFeatureEntries[] = {
          kEnableWebAuthenticationChromeOSAuthenticatorDescription,
      kOsCrOS, FEATURE_VALUE_TYPE(device::kWebAuthCrosPlatformAuthenticator)},
 #endif
+
+    {
+        "zero-copy-tab-capture",
+        flag_descriptions::kEnableZeroCopyTabCaptureName,
+        flag_descriptions::kEnableZeroCopyTabCaptureDescription,
+        kOsMac,
+        FEATURE_VALUE_TYPE(blink::features::kZeroCopyTabCapture),
+    },
+
 #if BUILDFLAG(ENABLE_PDF)
     {"accessible-pdf-form", flag_descriptions::kAccessiblePDFFormName,
      flag_descriptions::kAccessiblePDFFormDescription, kOsDesktop,

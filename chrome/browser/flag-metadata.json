@@ -6227,6 +6227,11 @@
     "expiry_milestone": 99
   },
   {
+    "name": "zero-copy-tab-capture",
+    "owners": [ "bialpio@chromium.org", "media-capture-dev@chromium.org" ],
+    "expiry_milestone": 104
+  },
+  {
     "name": "zero-copy-video-capture",
     "owners": [
       // For CrOS

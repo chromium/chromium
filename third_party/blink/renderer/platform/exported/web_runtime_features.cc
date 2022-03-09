@@ -192,6 +192,10 @@ void WebRuntimeFeatures::EnableRemoveMobileViewportDoubleTap(bool enable) {
   RuntimeEnabledFeatures::SetRemoveMobileViewportDoubleTapEnabled(enable);
 }
 
+void WebRuntimeFeatures::EnableZeroCopyTabCapture(bool enable) {
+  RuntimeEnabledFeatures::SetZeroCopyTabCaptureEnabled(enable);
+}
+
 void WebRuntimeFeatures::EnableFencedFrames(bool enable) {
   RuntimeEnabledFeatures::SetFencedFramesEnabled(enable);
 }

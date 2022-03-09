@@ -104,6 +104,7 @@ class WebRuntimeFeatures {
   BLINK_PLATFORM_EXPORT static void EnableDevicePosture(bool enable);
   BLINK_PLATFORM_EXPORT static void EnableRemoveMobileViewportDoubleTap(
       bool enable);
+  BLINK_PLATFORM_EXPORT static void EnableZeroCopyTabCapture(bool enable);
   BLINK_PLATFORM_EXPORT static void EnableDisplayCutoutAPI(bool);
   BLINK_PLATFORM_EXPORT static void EnableDocumentPolicy(bool);
   BLINK_PLATFORM_EXPORT static void EnableDocumentPolicyNegotiation(bool);

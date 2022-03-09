@@ -308,6 +308,7 @@ void SetRuntimeFeaturesFromChromiumFeatures() {
     {wf::EnableWebXRViewportScale, device::features::kWebXrIncubations},
     {wf::EnableRemoveMobileViewportDoubleTap,
      features::kRemoveMobileViewportDoubleTap},
+    {wf::EnableZeroCopyTabCapture, blink::features::kZeroCopyTabCapture},
   };
   for (const auto& mapping : blinkFeatureToBaseFeatureMapping) {
     SetRuntimeFeatureFromChromiumFeature(
