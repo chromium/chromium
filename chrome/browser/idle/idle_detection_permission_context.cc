@@ -16,10 +16,10 @@
 
 IdleDetectionPermissionContext::IdleDetectionPermissionContext(
     content::BrowserContext* browser_context)
-    : PermissionContextBase(browser_context,
-                            ContentSettingsType::IDLE_DETECTION,
-                            blink::mojom::PermissionsPolicyFeature::kNotFound) {
-}
+    : PermissionContextBase(
+          browser_context,
+          ContentSettingsType::IDLE_DETECTION,
+          blink::mojom::PermissionsPolicyFeature::kIdleDetection) {}
 
 IdleDetectionPermissionContext::~IdleDetectionPermissionContext() = default;
 

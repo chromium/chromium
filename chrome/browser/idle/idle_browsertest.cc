@@ -9,6 +9,8 @@
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/content_settings/core/common/content_settings_types.h"
+#include "components/network_session_configurator/common/network_switches.h"
+#include "components/permissions/permission_request_manager.h"
 #include "content/public/browser/content_browser_client.h"
 #include "content/public/browser/idle_time_provider.h"
 #include "content/public/browser/storage_partition.h"
@@ -18,6 +20,7 @@
 #include "content/public/test/content_browser_test.h"
 #include "content/public/test/content_browser_test_utils.h"
 #include "content/public/test/idle_test_utils.h"
+#include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
@@ -40,24 +43,61 @@ class MockIdleTimeProvider : public content::IdleTimeProvider {
 
 class IdleBrowserTest : public InProcessBrowserTest {
  public:
-  IdleBrowserTest() = default;
+  IdleBrowserTest() : https_server_(net::EmbeddedTestServer::TYPE_HTTPS) {}
   ~IdleBrowserTest() override = default;
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
     command_line->AppendSwitchASCII(switches::kEnableBlinkFeatures,
                                     "IdleDetection");
+    command_line->AppendSwitch(switches::kIgnoreCertificateErrors);
     command_line->AppendSwitch(
         switches::kEnableExperimentalWebPlatformFeatures);
   }
 
   void SetUpOnMainThread() override {
-    embedded_test_server()->ServeFilesFromSourceDirectory("content/test/data");
-    ASSERT_TRUE(embedded_test_server()->Start());
+    host_resolver()->AddRule("*", "127.0.0.1");
+    https_server()->ServeFilesFromSourceDirectory("content/test/data");
+    https_server()->SetSSLConfig(net::EmbeddedTestServer::CERT_OK);
+    ASSERT_TRUE(https_server()->Start());
   }
+
+  content::WebContents* web_contents() const {
+    return browser()->tab_strip_model()->GetActiveWebContents();
+  }
+
+  net::EmbeddedTestServer* https_server() { return &https_server_; }
+
+  void TestSubframePermissionPolicy(bool positive_test) {
+    GURL subframe_url = https_server()->GetURL("b.com", "/simple_page.html");
+    GURL url = https_server()->GetURL(
+        "a.com", "/cross_site_iframe_factory.html?a(" + subframe_url.spec() +
+                     (positive_test ? "{allow-idle-detection})" : ")"));
+    ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
+
+    auto* map =
+        HostContentSettingsMapFactory::GetForProfile(browser()->profile());
+    map->SetContentSettingDefaultScope(
+        url, url, ContentSettingsType::IDLE_DETECTION, CONTENT_SETTING_ASK);
+
+    auto* manager =
+        permissions::PermissionRequestManager::FromWebContents(web_contents());
+    manager->set_auto_response_for_test(
+        permissions::PermissionRequestManager::ACCEPT_ALL);
+
+    std::string script = "IdleDetector.requestPermission();";
+
+    content::RenderFrameHost* child =
+        ChildFrameAt(web_contents()->GetMainFrame(), 0);
+
+    EXPECT_EQ(positive_test ? "granted" : "denied", EvalJs(child, script));
+  }
+
+ private:
+  net::EmbeddedTestServer https_server_;
 };
 
 IN_PROC_BROWSER_TEST_F(IdleBrowserTest, Start) {
-  GURL url = embedded_test_server()->GetURL("localhost", "/simple_page.html");
+  GURL url = https_server()->GetURL("a.com", "/simple_page.html");
   auto* map =
       HostContentSettingsMapFactory::GetForProfile(browser()->profile());
   map->SetContentSettingDefaultScope(
@@ -104,15 +144,16 @@ IN_PROC_BROWSER_TEST_F(IdleBrowserTest, Start) {
   content::ScopedIdleProviderForTest scoped_idle_provider(
       std::move(mock_time_provider));
 
-  std::string result =
-      EvalJs(browser()->tab_strip_model()->GetActiveWebContents(), script)
-          .ExtractString();
-  std::vector<std::string> states = base::SplitString(
-      result, ",", base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
+  EXPECT_EQ("idle-unlocked,idle-locked,active-unlocked",
+            EvalJs(web_contents(), script));
+}
 
-  EXPECT_EQ("idle-unlocked", states.at(0));
-  EXPECT_EQ("idle-locked", states.at(1));
-  EXPECT_EQ("active-unlocked", states.at(2));
+IN_PROC_BROWSER_TEST_F(IdleBrowserTest, SubframeWithoutPolicy) {
+  TestSubframePermissionPolicy(false);
+}
+
+IN_PROC_BROWSER_TEST_F(IdleBrowserTest, SubframeWithPolicy) {
+  TestSubframePermissionPolicy(true);
 }
 
 }  // namespace
