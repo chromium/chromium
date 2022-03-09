@@ -5,9 +5,6 @@
 #ifndef UI_VIEWS_CONTROLS_IMAGE_VIEW_H_
 #define UI_VIEWS_CONTROLS_IMAGE_VIEW_H_
 
-#include <memory>
-#include <utility>
-
 #include "base/memory/raw_ptr.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/models/image_model.h"
@@ -105,44 +102,9 @@ class VIEWS_EXPORT ImageView : public ImageViewBase {
 };
 
 BEGIN_VIEW_BUILDER(VIEWS_EXPORT, ImageView, ImageViewBase)
-// Explicitly declare the overloaded SetImage methods in order to properly
-// disambiguate between them.
-BuilderT& SetImage(const gfx::ImageSkia& value) & {
-  auto setter = std::make_unique<::views::internal::PropertySetter<
-      ViewClass_, gfx::ImageSkia,
-      decltype((static_cast<void (ViewClass_::*)(const gfx::ImageSkia&)>(
-          &ViewClass_::SetImage))),
-      &ViewClass_::SetImage>>(value);
-  ::views::internal::ViewBuilderCore::AddPropertySetter(std::move(setter));
-  return *static_cast<BuilderT*>(this);
-}
-BuilderT&& SetImage(const gfx::ImageSkia& value) && {
-  return std::move(this->SetImage(value));
-}
-BuilderT& SetImage(const gfx::ImageSkia* value) & {
-  auto setter = std::make_unique<::views::internal::PropertySetter<
-      ViewClass_, const gfx::ImageSkia*,
-      decltype((static_cast<void (ViewClass_::*)(const gfx::ImageSkia*)>(
-          &ViewClass_::SetImage))),
-      &ViewClass_::SetImage>>(value);
-  ::views::internal::ViewBuilderCore::AddPropertySetter(std::move(setter));
-  return *static_cast<BuilderT*>(this);
-}
-BuilderT&& SetImage(const gfx::ImageSkia* value) && {
-  return std::move(this->SetImage(value));
-}
-BuilderT& SetImage(const ui::ImageModel& value) & {
-  auto setter = std::make_unique<::views::internal::PropertySetter<
-      ViewClass_, ui::ImageModel,
-      decltype((static_cast<void (ViewClass_::*)(const ui::ImageModel&)>(
-          &ViewClass_::SetImage))),
-      &ViewClass_::SetImage>>(value);
-  ::views::internal::ViewBuilderCore::AddPropertySetter(std::move(setter));
-  return *static_cast<BuilderT*>(this);
-}
-BuilderT&& SetImage(const ui::ImageModel& value) && {
-  return std::move(this->SetImage(value));
-}
+VIEW_BUILDER_OVERLOAD_METHOD(SetImage, const gfx::ImageSkia&)
+VIEW_BUILDER_OVERLOAD_METHOD(SetImage, const gfx::ImageSkia*)
+VIEW_BUILDER_OVERLOAD_METHOD(SetImage, const ui::ImageModel&)
 END_VIEW_BUILDER
 
 }  // namespace views

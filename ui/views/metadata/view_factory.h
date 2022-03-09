@@ -259,6 +259,48 @@ class BaseViewBuilderT : public internal::ViewBuilderCore {
 // class VIEWS_EXPORT LabelButtonBuilder
 //     : public LabelButtonBuilderT<LabelButtonBuilder, LabelButton> {};
 
+// The maximum number of overloaded params is 10. This should be overkill since
+// a function with 10 params is well into the "suspect" territory anyway.
+// TODO(kylixrd@): Evaluate whether a max of 5 may be more reasonable.
+#define NUM_ARGS_IMPL(_1, _2, _3, _4, _5, _6, _7, _8, _9, _10, N, ...) N
+#define NUM_ARGS(...) NUM_ARGS_IMPL(__VA_ARGS__, _10, 9, 8, 7, 6, 5, 4, 3, 2, 1)
+
+#define BUILD_MACRO_NAME_IMPL(a, b) a##b
+#define BUILD_MACRO_NAME(a, b) BUILD_MACRO_NAME_IMPL(a, b)
+
+// This will expand the list of types into a parameter declaration list.
+// eg: DECL_PARAMS(int, char, float, double) will expand to:
+// int param4, char param3, float param2, double param1
+#define DECL_PARAM1(type) type param1
+#define DECL_PARAM2(type, ...) type param2, DECL_PARAM1(__VA_ARGS__)
+#define DECL_PARAM3(type, ...) type param3, DECL_PARAM2(__VA_ARGS__)
+#define DECL_PARAM4(type, ...) type param4, DECL_PARAM3(__VA_ARGS__)
+#define DECL_PARAM5(type, ...) type param5, DECL_PARAM4(__VA_ARGS__)
+#define DECL_PARAM6(type, ...) type param6, DECL_PARAM5(__VA_ARGS__)
+#define DECL_PARAM7(type, ...) type param7, DECL_PARAM6(__VA_ARGS__)
+#define DECL_PARAM8(type, ...) type param8, DECL_PARAM7(__VA_ARGS__)
+#define DECL_PARAM9(type, ...) type param9, DECL_PARAM8(__VA_ARGS__)
+#define DECL_PARAM10(type, ...) type param10, DECL_PARAM9(__VA_ARGS__)
+#define DECL_PARAMS(...) \
+  BUILD_MACRO_NAME(DECL_PARAM, NUM_ARGS(__VA_ARGS__))(__VA_ARGS__)
+
+// This will expand into list of parameters suitable for calling a function
+// using the same param names from the above expansion.
+// eg: PASS_PARAMS(int, char, float, double)
+// param4, param3, param2, param1
+#define PASS_PARAM1(type) param1
+#define PASS_PARAM2(type, ...) param2, PASS_PARAM1(__VA_ARGS__)
+#define PASS_PARAM3(type, ...) param3, PASS_PARAM2(__VA_ARGS__)
+#define PASS_PARAM4(type, ...) param4, PASS_PARAM3(__VA_ARGS__)
+#define PASS_PARAM5(type, ...) param5, PASS_PARAM4(__VA_ARGS__)
+#define PASS_PARAM6(type, ...) param6, PASS_PARAM5(__VA_ARGS__)
+#define PASS_PARAM7(type, ...) param7, PASS_PARAM6(__VA_ARGS__)
+#define PASS_PARAM8(type, ...) param8, PASS_PARAM7(__VA_ARGS__)
+#define PASS_PARAM9(type, ...) param9, PASS_PARAM8(__VA_ARGS__)
+#define PASS_PARAM10(type, ...) param10, PASS_PARAM9(__VA_ARGS__)
+#define PASS_PARAMS(...) \
+  BUILD_MACRO_NAME(PASS_PARAM, NUM_ARGS(__VA_ARGS__))(__VA_ARGS__)
+
 // BEGIN_VIEW_BUILDER, END_VIEW_BUILDER and VIEW_BUILDER_XXXX macros should
 // be placed into the same namespace as the 'view_class' parameter.
 
@@ -315,6 +357,31 @@ class BaseViewBuilderT : public internal::ViewBuilderCore {
 #define VIEW_BUILDER_PROPERTY(...)                                          \
   GET_VB_MACRO(__VA_ARGS__, VIEW_BUILDER_PROPERTY3, VIEW_BUILDER_PROPERTY2) \
   (__VA_ARGS__)
+
+// Sometimes the method being called is on the ancestor to ViewClass_. This
+// macro will ensure the overload casts function correctly by specifying the
+// ancestor class on which the method is declared. In most cases the following
+// macro will be used.
+// NOTE: See the Builder declaration for DialogDelegateView in dialog_delegate.h
+//       for an example.
+#define VIEW_BUILDER_OVERLOAD_METHOD_CLASS(class_name, method_name, ...)      \
+  BuilderT& method_name(DECL_PARAMS(__VA_ARGS__))& {                          \
+    auto caller = std::make_unique<::views::internal::ClassMethodCaller<      \
+        ViewClass_,                                                           \
+        decltype((static_cast<void (class_name::*)(__VA_ARGS__)>(             \
+            &ViewClass_::method_name))),                                      \
+        &class_name::method_name, __VA_ARGS__>>(PASS_PARAMS(__VA_ARGS__));    \
+    ::views::internal::ViewBuilderCore::AddPropertySetter(std::move(caller)); \
+    return *static_cast<BuilderT*>(this);                                     \
+  }                                                                           \
+  BuilderT&& method_name(DECL_PARAMS(__VA_ARGS__))&& {                        \
+    return std::move(this->method_name(PASS_PARAMS(__VA_ARGS__)));            \
+  }
+
+// Unless the above scenario is in play, please favor the use of this macro for
+// declaring overloaded builder methods.
+#define VIEW_BUILDER_OVERLOAD_METHOD(method_name, ...) \
+  VIEW_BUILDER_OVERLOAD_METHOD_CLASS(ViewClass_, method_name, __VA_ARGS__)
 
 #define VIEW_BUILDER_METHOD(method_name, ...)                                 \
   template <typename... Args>                                                 \

@@ -115,36 +115,12 @@ VIEW_BUILDER_PROPERTY(ImageButton::HorizontalAlignment,
                       ImageHorizontalAlignment)
 VIEW_BUILDER_PROPERTY(ImageButton::VerticalAlignment, ImageVerticalAlignment)
 VIEW_BUILDER_PROPERTY(gfx::Size, MinimumImageSize)
-// Explicitly declare the overloaded SetImage methods in order to properly
-// disambiguate between them.
-BuilderT& SetImage(Button::ButtonState state, const gfx::ImageSkia* image) & {
-  auto setter = std::make_unique<::views::internal::ClassMethodCaller<
-      ViewClass_,
-      decltype((static_cast<void (ViewClass_::*)(Button::ButtonState,
-                                                 const gfx::ImageSkia*)>(
-          &ViewClass_::SetImage))),
-      &ViewClass_::SetImage, Button::ButtonState, const gfx::ImageSkia*>>(
-      state, image);
-  ::views::internal::ViewBuilderCore::AddPropertySetter(std::move(setter));
-  return *static_cast<BuilderT*>(this);
-}
-BuilderT&& SetImage(Button::ButtonState state, const gfx::ImageSkia* image) && {
-  return std::move(this->SetImage(state, image));
-}
-BuilderT& SetImage(Button::ButtonState state, const gfx::ImageSkia& image) & {
-  auto setter = std::make_unique<::views::internal::ClassMethodCaller<
-      ViewClass_,
-      decltype((static_cast<void (ViewClass_::*)(Button::ButtonState,
-                                                 const gfx::ImageSkia&)>(
-          &ViewClass_::SetImage))),
-      &ViewClass_::SetImage, Button::ButtonState, const gfx::ImageSkia&>>(
-      state, image);
-  ::views::internal::ViewBuilderCore::AddPropertySetter(std::move(setter));
-  return *static_cast<BuilderT*>(this);
-}
-BuilderT&& SetImage(Button::ButtonState state, const gfx::ImageSkia& image) && {
-  return std::move(this->SetImage(state, image));
-}
+VIEW_BUILDER_OVERLOAD_METHOD(SetImage,
+                             Button::ButtonState,
+                             const gfx::ImageSkia*)
+VIEW_BUILDER_OVERLOAD_METHOD(SetImage,
+                             Button::ButtonState,
+                             const gfx::ImageSkia&)
 END_VIEW_BUILDER
 
 ////////////////////////////////////////////////////////////////////////////////
