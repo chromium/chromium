@@ -7,7 +7,6 @@
 
 #include "ash/quick_pair/repository/http_fetcher.h"
 #include "base/callback.h"
-#include "base/gtest_prod_util.h"
 #include "base/memory/weak_ptr.h"
 #include "components/signin/public/identity_manager/access_token_info.h"
 #include "google_apis/gaia/google_service_auth_error.h"
@@ -61,9 +60,6 @@ class OAuthHttpFetcher : public HttpFetcher, public OAuth2ApiCallFlow {
   std::string GetRequestTypeForBody(const std::string& body) override;
 
  private:
-  FRIEND_TEST_ALL_PREFIXES(OAuthHttpFetcherTest,
-                           ExecuteGetRequest_MultipleRaceCondition);
-
   void StartRequest(const GURL& url, FetchCompleteCallback callback);
   void OnAccessTokenFetched(GoogleServiceAuthError error,
                             signin::AccessTokenInfo access_token_info);
