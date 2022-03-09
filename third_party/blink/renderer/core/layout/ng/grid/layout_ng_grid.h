@@ -58,8 +58,8 @@ class CORE_EXPORT LayoutNGGrid : public LayoutNGBlock,
   const NGGridLayoutData* GridLayoutData() const;
 
   Vector<LayoutUnit> ComputeTrackSizeRepeaterForRange(
-      const NGGridLayoutData::TrackCollectionGeometry& geometry,
-      const NGGridLayoutData::RangeData& range) const;
+      const NGGridLayoutTrackCollection& track_collection,
+      wtf_size_t range_index) const;
   Vector<LayoutUnit> ComputeExpandedPositions(
       const GridTrackSizingDirection track_direction) const;
 

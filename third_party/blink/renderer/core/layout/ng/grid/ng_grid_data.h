@@ -5,7 +5,6 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_NG_GRID_NG_GRID_DATA_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_NG_GRID_NG_GRID_DATA_H_
 
-#include "third_party/blink/renderer/core/layout/ng/grid/ng_grid_geometry.h"
 #include "third_party/blink/renderer/core/layout/ng/grid/ng_grid_track_collection.h"
 #include "third_party/blink/renderer/platform/geometry/layout_unit.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
@@ -13,9 +12,6 @@
 namespace blink {
 
 struct CORE_EXPORT NGGridPlacementData {
-  USING_FAST_MALLOC(NGGridPlacementData);
-
- public:
   NGGridPlacementData(const bool is_parent_grid_container,
                       const wtf_size_t column_auto_repetitions,
                       const wtf_size_t row_auto_repetitions)
@@ -53,18 +49,14 @@ struct CORE_EXPORT NGGridLayoutData {
   USING_FAST_MALLOC(NGGridLayoutData);
 
  public:
-  using RangeData = NGGridLayoutTrackCollection::Range;
+  NGGridLayoutData() : columns(kForColumns), rows(kForRows) {}
 
-  struct TrackCollectionGeometry {
-    Vector<RangeData> ranges;
-    Vector<SetOffsetData> sets;
+  NGGridLayoutData(NGGridSizingTrackCollection&& columns,
+                   NGGridSizingTrackCollection&& rows)
+      : columns(std::move(columns)), rows(std::move(rows)) {}
 
-    LayoutUnit gutter_size;
-    wtf_size_t track_count;
-  };
-
-  TrackCollectionGeometry column_geometry;
-  TrackCollectionGeometry row_geometry;
+  NGGridSizingTrackCollection columns;
+  NGGridSizingTrackCollection rows;
 };
 
 }  // namespace blink

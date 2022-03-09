@@ -59,24 +59,22 @@ class NGGridLayoutAlgorithmTest
                                          &row_block_track_collection);
 
     LayoutUnit unused_intrinsic_block_size;
-    grid_geometry_ = algorithm.ComputeGridGeometry(
+    algorithm.ComputeGridGeometry(
         column_block_track_collection, row_block_track_collection,
-        &items_->grid_items_, &unused_intrinsic_block_size,
-        &column_track_collection_, &row_track_collection_);
+        &items_->grid_items_, &layout_data_, &unused_intrinsic_block_size);
   }
 
   NGGridSizingTrackCollection& TrackCollection(
       GridTrackSizingDirection track_direction) {
-    return (track_direction == kForColumns) ? column_track_collection_
-                                            : row_track_collection_;
+    return (track_direction == kForColumns) ? layout_data_.columns
+                                            : layout_data_.rows;
   }
 
   LayoutUnit BaseRowSizeForChild(const NGGridLayoutAlgorithm& algorithm,
                                  wtf_size_t index) {
     LayoutUnit offset, size;
     algorithm.ComputeGridItemOffsetAndSize(items_->grid_items_.item_data[index],
-                                           grid_geometry_.row_geometry,
-                                           kForRows, &offset, &size);
+                                           layout_data_.rows, &offset, &size);
     return size;
   }
 
@@ -162,16 +160,13 @@ class NGGridLayoutAlgorithmTest
   }
 
   struct Items final : public GarbageCollected<Items> {
-   public:
-    GridItems grid_items_;
-
     void Trace(Visitor* visitor) const { visitor->Trace(grid_items_); }
+    GridItems grid_items_;
   };
+
   Persistent<Items> items_ = MakeGarbageCollected<Items>();
 
-  NGGridGeometry grid_geometry_;
-  NGGridSizingTrackCollection column_track_collection_;
-  NGGridSizingTrackCollection row_track_collection_;
+  NGGridLayoutData layout_data_;
 };
 
 TEST_F(NGGridLayoutAlgorithmTest, NGGridLayoutAlgorithmBaseSetSizes) {
