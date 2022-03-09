@@ -16,7 +16,6 @@
 #include "content/browser/renderer_host/pepper/pepper_udp_socket_message_filter.h"
 #include "content/public/common/content_constants.h"
 #include "content/public/common/content_switches.h"
-#include "ppapi/shared_impl/ppapi_constants.h"
 #include "ppapi/shared_impl/ppapi_switches.h"
 
 using CharType = base::FilePath::CharType;
@@ -72,20 +71,6 @@ bool RegisterPluginWithDefaultMimeType(
   return RegisterPlugins(command_line, plugins);
 }
 
-bool RegisterFakePdfPluginLibrary(base::CommandLine* command_line,
-                                  const StringType& library_name) {
-  std::vector<PluginInfo> plugins;
-  // Register a fake PDF plugin with 100.0 version (to avoid outdated checks).
-  base::FilePath::StringType fake_pdf_parameter =
-      base::FilePath::FromUTF8Unsafe(std::string("#") + "Fake PDF" +
-                                     "#Description#100.0")
-          .value();
-  plugins.push_back(
-      PluginInfo(library_name, fake_pdf_parameter,
-                 FILE_PATH_LITERAL("application/x-fake-pdf-for-testing")));
-  return RegisterPlugins(command_line, plugins);
-}
-
 }  // namespace
 
 bool RegisterTestPlugin(base::CommandLine* command_line) {
@@ -105,12 +90,6 @@ bool RegisterTestPluginWithExtraParameters(
 #endif
   return RegisterPluginWithDefaultMimeType(command_line, plugin_library,
                                            extra_registration_parameters);
-}
-
-bool RegisterCorbTestPlugin(base::CommandLine* command_line) {
-  StringType library_name =
-      base::FilePath::FromUTF8Unsafe(ppapi::kCorbTestPluginName).value();
-  return RegisterFakePdfPluginLibrary(command_line, library_name);
 }
 
 bool RegisterBlinkTestPlugin(base::CommandLine* command_line) {

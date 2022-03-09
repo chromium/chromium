@@ -219,31 +219,6 @@ target(ppapi_tests_target_type, "ppapi_tests") {
   deps = [ ":ppapi_tests_sources" ]
 }
 
-# Test plugin for Cross-Origin Read Blocking.
-# See also ppapi::RegisterCorbTestPlugin.
-source_set("corb_test_plugin_sources") {
-  sources = [
-    "tests/corb_test_plugin.cc",
-    "tests/test_utils.cc",
-    "tests/test_utils.h",
-  ]
-
-  deps = [
-    "//ppapi/cpp",
-    "//ppapi/shared_impl",
-  ]
-}
-
-if (!is_mac) {
-  shared_library("corb_test_plugin") {
-    deps = [ ":corb_test_plugin_sources" ]
-  }
-} else {
-  mac_plugin_bundle("corb_test_plugin") {
-    deps = [ ":corb_test_plugin_sources" ]
-  }
-}
-
 source_set("blink_deprecated_test_plugin_sources") {
   sources = [ "tests/blink_deprecated_test_plugin.cc" ]
 

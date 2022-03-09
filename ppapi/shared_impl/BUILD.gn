@@ -139,7 +139,6 @@ component("shared_impl") {
     "media_stream_video_track_shared.h",
     "platform_file.cc",
     "platform_file.h",
-    "ppapi_constants.h",
     "ppapi_nacl_plugin_args.cc",
     "ppapi_nacl_plugin_args.h",
     "ppapi_permissions.cc",

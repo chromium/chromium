@@ -35,9 +35,6 @@ namespace ppapi {
     base::CommandLine* command_line,
     const base::FilePath::StringType& extra_registration_parameters);
 
-// Registers the PDF-imitating CORB-testing plugin.
-[[nodiscard]] bool RegisterCorbTestPlugin(base::CommandLine* command_line);
-
 // Registers the Blink test plugin to application/x-blink-test-plugin.
 [[nodiscard]] bool RegisterBlinkTestPlugin(base::CommandLine* command_line);
 
