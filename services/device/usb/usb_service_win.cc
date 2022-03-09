@@ -141,8 +141,10 @@ absl::optional<std::vector<std::wstring>> GetDeviceStringListProperty(
     return absl::nullopt;
   }
 
-  if (GetLastError() == ERROR_NOT_FOUND)
-    return {};
+  if (GetLastError() == ERROR_NOT_FOUND) {
+    // Simplify callers by returning empty list when the property isn't found.
+    return std::vector<std::wstring>();
+  }
 
   if (GetLastError() != ERROR_INSUFFICIENT_BUFFER) {
     USB_PLOG(ERROR) << "SetupDiGetDeviceProperty(" << property << ") failed";
