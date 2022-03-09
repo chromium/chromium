@@ -35,13 +35,15 @@ class StubPolicyHandler : public ConfigurationPolicyHandler {
 
   bool CheckPolicySettings(const PolicyMap& policies,
                            PolicyErrorMap* errors) override {
-    return policies.GetValue(policy_name_);
+    return policies.GetValueUnsafe(policy_name_);
   }
 
  protected:
   void ApplyPolicySettings(const PolicyMap& policies,
                            PrefValueMap* prefs) override {
-    prefs->SetInteger(policy_name_, policies.GetValue(policy_name_)->GetInt());
+    prefs->SetInteger(
+        policy_name_,
+        policies.GetValue(policy_name_, base::Value::Type::INTEGER)->GetInt());
   }
 
  private:
@@ -105,7 +107,8 @@ class ConfigurationPolicyHandlerListTest : public ::testing::Test {
       EXPECT_EQ(kPolicyValue, pref_value);
 
     // Pref filter never affects PolicyMap.
-    const base::Value* policy_value = policies_.GetValue(policy_name);
+    const base::Value* policy_value =
+        policies_.GetValue(policy_name, base::Value::Type::INTEGER);
     ASSERT_TRUE(policy_value);
     EXPECT_EQ(kPolicyValue, policy_value->GetInt());
 

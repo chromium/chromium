@@ -592,8 +592,8 @@ TEST_F(PolicyServiceTest, RefreshPolicies) {
 
   const PolicyMap& policies = policy_service_->GetPolicies(
       PolicyNamespace(POLICY_DOMAIN_CHROME, std::string()));
-  EXPECT_EQ(kValue2, *policies.GetValue("aaa"));
-  EXPECT_EQ(kValue0, *policies.GetValue("bbb"));
+  EXPECT_EQ(kValue2, *policies.GetValue("aaa", base::Value::Type::INTEGER));
+  EXPECT_EQ(kValue0, *policies.GetValue("bbb", base::Value::Type::INTEGER));
 }
 
 TEST_F(PolicyServiceTest, NamespaceMerge) {
@@ -1745,7 +1745,7 @@ TEST_F(PolicyServiceTest, GroupPoliciesMergingEnabled) {
   policies_2.emplace_back(key::kExtensionInstallForcelist, list2.Clone());
   policies_2.emplace_back(key::kExtensionInstallBlocklist, list2.Clone());
   policies_2.emplace_back(key::kExtensionInstallAllowlist,
-                          entry_list_3.value()->Clone());
+                          entry_list_3.value(base::Value::Type::LIST)->Clone());
   auto policy_bundle_2 = CreateBundle(POLICY_SCOPE_MACHINE, POLICY_SOURCE_CLOUD,
                                       std::move(policies_2), chrome_namespace);
 
@@ -2232,14 +2232,17 @@ TEST_F(PolicyServiceTest, IgnoreUserCloudPrecedencePolicies) {
 
   // Precedence metapolicies set from a user cloud source are ignored.
   EXPECT_EQ(nullptr, policy_service_->GetPolicies(chrome_namespace)
-                         .GetValue(key::kCloudPolicyOverridesPlatformPolicy));
+                         .GetValue(key::kCloudPolicyOverridesPlatformPolicy,
+                                   base::Value::Type::BOOLEAN));
   EXPECT_EQ(nullptr,
             policy_service_->GetPolicies(chrome_namespace)
-                .GetValue(key::kCloudUserPolicyOverridesCloudMachinePolicy));
+                .GetValue(key::kCloudUserPolicyOverridesCloudMachinePolicy,
+                          base::Value::Type::BOOLEAN));
 
   // Other policies set from a user cloud source are not ignored.
   EXPECT_NE(nullptr, policy_service_->GetPolicies(chrome_namespace)
-                         .GetValue(key::kBookmarkBarEnabled));
+                         .GetValue(key::kBookmarkBarEnabled,
+                                   base::Value::Type::BOOLEAN));
 }
 
 }  // namespace policy

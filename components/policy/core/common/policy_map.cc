@@ -182,8 +182,8 @@ bool PolicyMap::Entry::Equals(const PolicyMap::Entry& other) const {
                                  // They have to update when sources change.
       message_ids_ == other.message_ids_ &&
       is_default_value_ == other.is_default_value_ &&
-      ((!value_ && !other.value()) ||
-       (value_ && other.value() && *value_ == *other.value())) &&
+      ((!value_ && !other.value_unsafe()) ||
+       (value_ && other.value_unsafe() && *value_ == *other.value_unsafe())) &&
       ExternalDataFetcher::Equals(external_data_fetcher.get(),
                                   other.external_data_fetcher.get());
   return equals;
@@ -214,9 +214,9 @@ void PolicyMap::Entry::AddConflictingPolicy(Entry&& conflict) {
   std::move(conflict.conflicts.begin(), conflict.conflicts.end(),
             std::back_inserter(conflicts));
 
-  bool is_value_equal = (!this->value() && !conflict.value()) ||
-                        (this->value() && conflict.value() &&
-                         *this->value() == *conflict.value());
+  bool is_value_equal = (!this->value_unsafe() && !conflict.value_unsafe()) ||
+                        (this->value_unsafe() && conflict.value_unsafe() &&
+                         *this->value_unsafe() == *conflict.value_unsafe());
 
   ConflictType type =
       is_value_equal ? ConflictType::Supersede : ConflictType::Override;
@@ -486,7 +486,8 @@ void PolicyMap::MergePolicy(const std::string& policy_name,
       higher_policy.source != conflicting_policy.source &&
       conflicting_policy.source == POLICY_SOURCE_ENTERPRISE_DEFAULT;
   if (!overwriting_default_policy) {
-    policy->value() && *other_policy_copy.value() == *policy->value()
+    policy->value_unsafe() &&
+            *other_policy_copy.value_unsafe() == *policy->value_unsafe()
         ? higher_policy.AddMessage(MessageType::kInfo,
                                    IDS_POLICY_CONFLICT_SAME_VALUE)
         : higher_policy.AddMessage(MessageType::kWarning,

@@ -35,11 +35,10 @@ bool URLSchemeListPolicyHandler::CheckPolicySettings(const PolicyMap& policies,
   if (!TypeCheckingPolicyHandler::CheckPolicySettings(policies, errors))
     return false;
 
-  const base::Value* schemes = policies.GetValue(policy_name());
+  const base::Value* schemes =
+      policies.GetValue(policy_name(), base::Value::Type::LIST);
   if (!schemes || schemes->GetListDeprecated().empty())
     return true;
-
-  DCHECK(schemes->is_list());
 
   // Filters more than |url_util::kMaxFiltersPerPolicy| are ignored, add a
   // warning message.
@@ -65,8 +64,9 @@ bool URLSchemeListPolicyHandler::CheckPolicySettings(const PolicyMap& policies,
 
 void URLSchemeListPolicyHandler::ApplyPolicySettings(const PolicyMap& policies,
                                                      PrefValueMap* prefs) {
-  const base::Value* schemes = policies.GetValue(policy_name());
-  if (!schemes || !schemes->is_list())
+  const base::Value* schemes =
+      policies.GetValue(policy_name(), base::Value::Type::LIST);
+  if (!schemes)
     return;
   std::vector<base::Value> filtered_schemes;
   for (const auto& entry : schemes->GetListDeprecated()) {

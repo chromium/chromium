@@ -47,8 +47,8 @@ bool PolicyServiceIsEmpty(const PolicyService* service) {
       PolicyNamespace(POLICY_DOMAIN_CHROME, std::string()));
   if (!map.empty()) {
     base::DictionaryValue dict;
-    for (auto it = map.begin(); it != map.end(); ++it)
-      dict.SetKey(it->first, it->second.value()->Clone());
+    for (const auto& it : map)
+      dict.SetKey(it.first, it.second.value_unsafe()->Clone());
     LOG(WARNING) << "There are pre-existing policies in this machine: " << dict;
 #if BUILDFLAG(IS_WIN)
     LOG(WARNING) << "From: " << kRegistryChromePolicyKey;
@@ -182,7 +182,7 @@ std::ostream& operator<<(std::ostream& os, const policy::PolicyMap::Entry& e) {
   return os << "{" << std::endl
             << "  \"level\": " << e.level << "," << std::endl
             << "  \"scope\": " << e.scope << "," << std::endl
-            << "  \"value\": " << *e.value() << "}";
+            << "  \"value\": " << *e.value_unsafe() << "}";
 }
 
 std::ostream& operator<<(std::ostream& os, const policy::PolicyNamespace& ns) {

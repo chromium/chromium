@@ -48,7 +48,8 @@ class StubPolicyHandler : public ConfigurationPolicyHandler {
     if (has_error_) {
       errors->AddError(policy_name_, IDS_POLICY_BLOCKED);
     }
-    return policies.GetValue(kPolicyName) && !has_error_;
+    return policies.GetValue(kPolicyName, base::Value::Type::INTEGER) &&
+           !has_error_;
   }
 
  private:

@@ -34,7 +34,7 @@ bool URLBlocklistPolicyHandler::CheckPolicySettings(const PolicyMap& policies,
   size_t disabled_schemes_entries = 0;
   // This policy is deprecated but still supported so check it first.
   const base::Value* disabled_schemes =
-      policies.GetValue(key::kDisabledSchemes);
+      policies.GetValueUnsafe(key::kDisabledSchemes);
   if (disabled_schemes) {
     if (!disabled_schemes->is_list()) {
       errors->AddError(key::kDisabledSchemes, IDS_POLICY_TYPE_ERROR,
@@ -44,7 +44,7 @@ bool URLBlocklistPolicyHandler::CheckPolicySettings(const PolicyMap& policies,
     }
   }
 
-  const base::Value* url_blocklist = policies.GetValue(policy_name());
+  const base::Value* url_blocklist = policies.GetValueUnsafe(policy_name());
   if (!url_blocklist)
     return true;
 
@@ -93,9 +93,10 @@ bool URLBlocklistPolicyHandler::CheckPolicySettings(const PolicyMap& policies,
 
 void URLBlocklistPolicyHandler::ApplyPolicySettings(const PolicyMap& policies,
                                                     PrefValueMap* prefs) {
-  const base::Value* url_blocklist_policy = policies.GetValue(policy_name());
+  const base::Value* url_blocklist_policy =
+      policies.GetValueUnsafe(policy_name());
   const base::Value* disabled_schemes_policy =
-      policies.GetValue(key::kDisabledSchemes);
+      policies.GetValueUnsafe(key::kDisabledSchemes);
 
   absl::optional<std::vector<base::Value>> merged_url_blocklist;
 

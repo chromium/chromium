@@ -67,10 +67,10 @@ void SchemaMap::FilterBundle(PolicyBundle* bundle,
       PolicyMap::Entry& entry = it_map->second;
       const Schema policy_schema = schema->GetProperty(policy_name);
 
-      const bool has_value = entry.value();
+      const bool has_value = entry.value_unsafe();
       const bool is_valid =
           has_value &&
-          policy_schema.Normalize(entry.value(), SCHEMA_ALLOW_UNKNOWN,
+          policy_schema.Normalize(entry.value_unsafe(), SCHEMA_ALLOW_UNKNOWN,
                                   /* out_error_path=*/nullptr,
                                   /* out_error=*/nullptr,
                                   /* out_changed=*/nullptr);

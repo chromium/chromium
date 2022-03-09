@@ -31,7 +31,7 @@ jint PolicyMapAndroid::GetIntValue(
     const base::android::JavaRef<jstring>& policy) const {
   const base::Value* value = GetValue(env, policy);
   DCHECK(value && value->is_int())
-      << "The policy must be exist and stored as integer.";
+      << "The policy must exist and be stored as integer.";
   return value->GetInt();
 }
 
@@ -41,7 +41,7 @@ jboolean PolicyMapAndroid::GetBooleanValue(
     const base::android::JavaRef<jstring>& policy) const {
   const base::Value* value = GetValue(env, policy);
   DCHECK(value && value->is_bool())
-      << "The policy must be exist and stored as boolean.";
+      << "The policy must exist and be stored as boolean.";
   return value->GetBool();
 }
 
@@ -108,7 +108,7 @@ base::android::ScopedJavaLocalRef<jstring> PolicyMapAndroid::GetListOrDictValue(
 const base::Value* PolicyMapAndroid::GetValue(
     JNIEnv* env,
     const base::android::JavaRef<jstring>& policy) const {
-  return policy_map_.GetValue(
+  return policy_map_.GetValueUnsafe(
       base::android::ConvertJavaStringToUTF8(env, policy));
 }
 

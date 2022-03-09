@@ -71,8 +71,8 @@ bool FilterSensitiveExtensionsInstallForcelist(PolicyMap::Entry* map_entry) {
   if (!map_entry)
     return false;
 
-  base::Value* policy_list_value = map_entry->value();
-  if (!policy_list_value || !policy_list_value->is_list())
+  base::Value* policy_list_value = map_entry->value(base::Value::Type::LIST);
+  if (!policy_list_value)
     return false;
 
   // Using index for loop to update the list in place.
@@ -110,8 +110,8 @@ bool FilterSensitiveExtensionsInstallForcelist(PolicyMap::Entry* map_entry) {
 bool FilterSensitiveExtensionSettings(PolicyMap::Entry* map_entry) {
   if (!map_entry)
     return false;
-  base::Value* policy_dict_value = map_entry->value();
-  if (!policy_dict_value || !policy_dict_value->is_dict()) {
+  base::Value* policy_dict_value = map_entry->value(base::Value::Type::DICT);
+  if (!policy_dict_value) {
     return false;
   }
 

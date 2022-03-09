@@ -34,8 +34,8 @@ class PolicyLoaderCommandLineTest : public ::testing::Test {
       EXPECT_EQ(POLICY_SCOPE_MACHINE, actual_policy->scope);
       EXPECT_EQ(POLICY_SOURCE_COMMAND_LINE, actual_policy->source);
 
-      ASSERT_TRUE(actual_policy->value());
-      EXPECT_EQ(expected_policy.second, *(actual_policy->value()));
+      ASSERT_TRUE(actual_policy->value_unsafe());
+      EXPECT_EQ(expected_policy.second, *(actual_policy->value_unsafe()));
     }
   }
 

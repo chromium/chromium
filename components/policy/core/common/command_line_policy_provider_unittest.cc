@@ -25,7 +25,7 @@ void VerifyPolicyProvider(ConfigurationPolicyProvider* provider) {
   const base::Value* policy_value =
       provider->policies()
           .Get(PolicyNamespace(POLICY_DOMAIN_CHROME, std::string()))
-          .GetValue("policy");
+          .GetValue("policy", base::Value::Type::INTEGER);
   ASSERT_TRUE(policy_value);
   ASSERT_TRUE(policy_value->is_int());
   EXPECT_EQ(10, policy_value->GetInt());

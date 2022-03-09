@@ -29,7 +29,7 @@ URLAllowlistPolicyHandler::~URLAllowlistPolicyHandler() = default;
 
 bool URLAllowlistPolicyHandler::CheckPolicySettings(const PolicyMap& policies,
                                                     PolicyErrorMap* errors) {
-  const base::Value* url_allowlist = policies.GetValue(policy_name());
+  const base::Value* url_allowlist = policies.GetValueUnsafe(policy_name());
   if (!url_allowlist)
     return true;
 
@@ -77,8 +77,9 @@ bool URLAllowlistPolicyHandler::CheckPolicySettings(const PolicyMap& policies,
 
 void URLAllowlistPolicyHandler::ApplyPolicySettings(const PolicyMap& policies,
                                                     PrefValueMap* prefs) {
-  const base::Value* url_allowlist = policies.GetValue(policy_name());
-  if (!url_allowlist || !url_allowlist->is_list()) {
+  const base::Value* url_allowlist =
+      policies.GetValue(policy_name(), base::Value::Type::LIST);
+  if (!url_allowlist) {
     return;
   }
 

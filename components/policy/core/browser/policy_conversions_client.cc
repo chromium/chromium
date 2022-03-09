@@ -148,19 +148,20 @@ base::Value PolicyConversionsClient::GetPrecedenceOrder() {
       GetPolicyService()->GetPolicies(policy_namespace);
 
   bool cloud_machine_precedence =
-      chrome_policies.Get(key::kCloudPolicyOverridesPlatformPolicy)
-          ? chrome_policies.GetValue(key::kCloudPolicyOverridesPlatformPolicy)
-                ->GetIfBool()
-                .value_or(false)
-          : false;
+      chrome_policies.GetValue(key::kCloudPolicyOverridesPlatformPolicy,
+                               base::Value::Type::BOOLEAN) &&
+      chrome_policies
+          .GetValue(key::kCloudPolicyOverridesPlatformPolicy,
+                    base::Value::Type::BOOLEAN)
+          ->GetBool();
   bool cloud_user_precedence =
-      chrome_policies.Get(key::kCloudUserPolicyOverridesCloudMachinePolicy)
-          ? chrome_policies.IsUserAffiliated() &&
-                chrome_policies
-                    .GetValue(key::kCloudUserPolicyOverridesCloudMachinePolicy)
-                    ->GetIfBool()
-                    .value_or(false)
-          : false;
+      chrome_policies.IsUserAffiliated() &&
+      chrome_policies.GetValue(key::kCloudUserPolicyOverridesCloudMachinePolicy,
+                               base::Value::Type::BOOLEAN) &&
+      chrome_policies
+          .GetValue(key::kCloudUserPolicyOverridesCloudMachinePolicy,
+                    base::Value::Type::BOOLEAN)
+          ->GetBool();
 
   std::vector<int> precedence_order(4);
   if (cloud_user_precedence) {
@@ -235,8 +236,8 @@ Value PolicyConversionsClient::GetPolicyValue(
   absl::optional<Schema> known_policy_schema =
       GetKnownPolicySchema(known_policy_schemas, policy_name);
   Value value(Value::Type::DICTIONARY);
-  value.SetKey("value",
-               CopyAndMaybeConvert(*policy.value(), known_policy_schema));
+  value.SetKey("value", CopyAndMaybeConvert(*policy.value_unsafe(),
+                                            known_policy_schema));
   if (convert_types_enabled_) {
     value.SetKey(
         "scope",

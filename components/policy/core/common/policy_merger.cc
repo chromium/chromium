@@ -31,7 +31,7 @@ bool PolicyMerger::EntriesCanBeMerged(
     const PolicyMap::Entry& entry_1,
     const PolicyMap::Entry& entry_2,
     const bool is_user_cloud_merging_enabled) {
-  if (entry_1.value()->type() != entry_2.value()->type())
+  if (entry_1.value_unsafe()->type() != entry_2.value_unsafe()->type())
     return false;
 
   if (entry_1.ignored() || entry_2.ignored() ||
@@ -108,12 +108,12 @@ bool PolicyListMerger::CanMerge(const std::string& policy_name,
     return false;
 
   if (policies_to_merge_.find("*") != policies_to_merge_.end())
-    return policy.value()->is_list();
+    return policy.value(base::Value::Type::LIST) != nullptr;
 
   if (policies_to_merge_.find(policy_name) == policies_to_merge_.end())
     return false;
 
-  if (!policy.value()->is_list()) {
+  if (!policy.value(base::Value::Type::LIST)) {
     policy.AddMessage(PolicyMap::MessageType::kError,
                       IDS_POLICY_LIST_MERGING_WRONG_POLICY_TYPE_SPECIFIED);
     return false;
@@ -135,7 +135,8 @@ void PolicyListMerger::DoMerge(PolicyMap::Entry* policy) const {
       compare_value_ptr);
   bool value_changed = false;
 
-  for (const base::Value& val : policy->value()->GetListDeprecated()) {
+  for (const base::Value& val :
+       policy->value(base::Value::Type::LIST)->GetListDeprecated()) {
     if (duplicates.find(&val) != duplicates.end())
       continue;
     duplicates.insert(&val);
@@ -150,7 +151,8 @@ void PolicyListMerger::DoMerge(PolicyMap::Entry* policy) const {
       continue;
     }
 
-    for (const base::Value& val : it.entry().value()->GetListDeprecated()) {
+    for (const base::Value& val :
+         it.entry().value(base::Value::Type::LIST)->GetListDeprecated()) {
       if (duplicates.find(&val) != duplicates.end())
         continue;
       duplicates.insert(&val);
@@ -206,7 +208,7 @@ bool PolicyDictionaryMerger::CanMerge(const std::string& policy_name,
       allowed_policies_.find(policy_name) != allowed_policies_.end();
 
   if (policies_to_merge_.find("*") != policies_to_merge_.end())
-    return allowed_to_merge && policy.value()->is_dict();
+    return allowed_to_merge && policy.value(base::Value::Type::DICT);
 
   if (policies_to_merge_.find(policy_name) == policies_to_merge_.end())
     return false;
@@ -217,7 +219,7 @@ bool PolicyDictionaryMerger::CanMerge(const std::string& policy_name,
     return false;
   }
 
-  if (!policy.value()->is_dict()) {
+  if (!policy.value(base::Value::Type::DICT)) {
     policy.AddMessage(
         PolicyMap::MessageType::kError,
         IDS_POLICY_DICTIONARY_MERGING_WRONG_POLICY_TYPE_SPECIFIED);
@@ -255,7 +257,7 @@ void PolicyDictionaryMerger::DoMerge(PolicyMap::Entry* policy,
 
     const base::DictionaryValue* dict = nullptr;
 
-    it->value()->GetAsDictionary(&dict);
+    it->value(base::Value::Type::DICT)->GetAsDictionary(&dict);
     DCHECK(dict);
 
     for (auto pair : dict->DictItems()) {

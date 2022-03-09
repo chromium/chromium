@@ -52,8 +52,8 @@ void RemapRenamedPolicies(PolicyMap* policies) {
   // For all renamed policies we need to explicitly merge the value of the
   // old policy with the new one or else merging will not be carried over
   // if desired.
-  base::Value* merge_list =
-      policies->GetMutableValue(key::kPolicyListMultipleSourceMergeList);
+  base::Value* merge_list = policies->GetMutableValue(
+      key::kPolicyListMultipleSourceMergeList, base::Value::Type::LIST);
   base::flat_set<std::string> policy_lists_to_merge =
       policy::ValueToStringSet(merge_list);
   const std::vector<std::pair<const char*, const char*>> renamed_policies = {{
@@ -127,8 +127,8 @@ void DowngradeMetricsReportingToRecommendedPolicy(PolicyMap* policies) {
   for (const char* policy_key : metrics_keys) {
     PolicyMap::Entry* policy = policies->GetMutable(policy_key);
     if (policy && policy->level != POLICY_LEVEL_RECOMMENDED &&
-        policy->value() && policy->value()->is_bool() &&
-        policy->value()->GetBool()) {
+        policy->value(base::Value::Type::BOOLEAN) &&
+        policy->value(base::Value::Type::BOOLEAN)->GetBool()) {
       policy->level = POLICY_LEVEL_RECOMMENDED;
       policy->AddMessage(PolicyMap::MessageType::kInfo,
                          IDS_POLICY_IGNORED_MANDATORY_REPORTING_POLICY);
@@ -142,7 +142,8 @@ base::flat_set<std::string> GetStringListPolicyItems(
     const PolicyBundle& bundle,
     const PolicyNamespace& space,
     const std::string& policy) {
-  return ValueToStringSet(bundle.Get(space).GetValue(policy));
+  return ValueToStringSet(
+      bundle.Get(space).GetValue(policy, base::Value::Type::LIST));
 }
 
 }  // namespace
@@ -363,17 +364,17 @@ void PolicyServiceImpl::MergeAndTriggerUpdates() {
 
   // This has to be done after setting enterprise default values since it is
   // enabled by default for enterprise users.
-  auto* atomic_policy_group_enabled_policy_value =
+  auto* atomic_policy_group_enabled_entry =
       chrome_policies.Get(key::kPolicyAtomicGroupsEnabled);
 
   // This policy has to be ignored if it comes from a user signed-in profile.
   bool atomic_policy_group_enabled =
-      atomic_policy_group_enabled_policy_value &&
-      atomic_policy_group_enabled_policy_value->value()->GetIfBool().value_or(
-          false) &&
-      !(atomic_policy_group_enabled_policy_value->source ==
-            POLICY_SOURCE_CLOUD &&
-        atomic_policy_group_enabled_policy_value->scope == POLICY_SCOPE_USER);
+      atomic_policy_group_enabled_entry &&
+      atomic_policy_group_enabled_entry->value(base::Value::Type::BOOLEAN) &&
+      atomic_policy_group_enabled_entry->value(base::Value::Type::BOOLEAN)
+          ->GetBool() &&
+      !(atomic_policy_group_enabled_entry->source == POLICY_SOURCE_CLOUD &&
+        atomic_policy_group_enabled_entry->scope == POLICY_SCOPE_USER);
 
   PolicyListMerger policy_list_merger(std::move(policy_lists_to_merge));
   PolicyDictionaryMerger policy_dictionary_merger(
@@ -381,11 +382,10 @@ void PolicyServiceImpl::MergeAndTriggerUpdates() {
 
   // Pass affiliation and CloudUserPolicyMerge values to both mergers.
   const bool is_user_affiliated = chrome_policies.IsUserAffiliated();
+  const base::Value* cloud_user_policy_merge_value = chrome_policies.GetValue(
+      key::kCloudUserPolicyMerge, base::Value::Type::BOOLEAN);
   const bool is_user_cloud_merging_enabled =
-      chrome_policies.GetValue(key::kCloudUserPolicyMerge) &&
-      chrome_policies.GetValue(key::kCloudUserPolicyMerge)
-          ->GetIfBool()
-          .value_or(false);
+      cloud_user_policy_merge_value && cloud_user_policy_merge_value->GetBool();
   policy_list_merger.SetAllowUserCloudPolicyMerging(
       is_user_affiliated && is_user_cloud_merging_enabled);
   policy_dictionary_merger.SetAllowUserCloudPolicyMerging(

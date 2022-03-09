@@ -9,10 +9,7 @@
 namespace policy {
 
 base::flat_set<std::string> ValueToStringSet(const base::Value* value) {
-  if (!value)
-    return base::flat_set<std::string>();
-
-  if (!value->is_list())
+  if (!value || !value->is_list())
     return base::flat_set<std::string>();
 
   const auto& items = value->GetListDeprecated();

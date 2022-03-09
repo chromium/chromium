@@ -50,11 +50,13 @@ TEST(LegacyChromePolicyMigratorTest, CopyPolicyIfUnset) {
 
   // kOldPolicy should have been copied to kNewPolicy, kOtherPolicy remains
   EXPECT_EQ(3u, chrome_map.size());
-  ASSERT_TRUE(chrome_map.GetValue(kNewPolicy));
+  ASSERT_TRUE(chrome_map.GetValue(kNewPolicy, base::Value::Type::INTEGER));
   // Old Value should be copied over.
-  EXPECT_EQ(base::Value(kOldValue), *chrome_map.GetValue(kNewPolicy));
+  EXPECT_EQ(base::Value(kOldValue),
+            *chrome_map.GetValue(kNewPolicy, base::Value::Type::INTEGER));
   // Other Value should be unchanged.
-  EXPECT_EQ(base::Value(kOtherValue), *chrome_map.GetValue(kOtherPolicy));
+  EXPECT_EQ(base::Value(kOtherValue),
+            *chrome_map.GetValue(kOtherPolicy, base::Value::Type::INTEGER));
   base::RepeatingCallback<std::u16string(int)> l10nlookup =
       base::BindRepeating(&l10n_util::GetStringUTF16);
   // Old policy should always be marked deprecated
@@ -80,9 +82,10 @@ TEST(LegacyChromePolicyMigratorTest, TransformPolicy) {
 
   migrator.Migrate(&bundle);
 
-  ASSERT_TRUE(chrome_map.GetValue(kNewPolicy));
+  ASSERT_TRUE(chrome_map.GetValue(kNewPolicy, base::Value::Type::INTEGER));
   // Old Value should be transformed
-  EXPECT_EQ(base::Value(kTransformedValue), *chrome_map.GetValue(kNewPolicy));
+  EXPECT_EQ(base::Value(kTransformedValue),
+            *chrome_map.GetValue(kNewPolicy, base::Value::Type::INTEGER));
 }
 
 TEST(LegacyChromePolicyMigratorTest, IgnoreOldIfNewIsSet) {
@@ -97,7 +100,8 @@ TEST(LegacyChromePolicyMigratorTest, IgnoreOldIfNewIsSet) {
 
   migrator.Migrate(&bundle);
   // New Value is unchanged
-  EXPECT_EQ(base::Value(kNewValue), *chrome_map.GetValue(kNewPolicy));
+  EXPECT_EQ(base::Value(kNewValue),
+            *chrome_map.GetValue(kNewPolicy, base::Value::Type::INTEGER));
   // Should be no warning on new policy
   base::RepeatingCallback<std::u16string(int)> l10nlookup =
       base::BindRepeating(&l10n_util::GetStringUTF16);

@@ -40,15 +40,15 @@ void DefaultChromeAppsMigrator::Migrate(PolicyMap* policies) const {
     return;
 
   EnsurePolicyValueIsList(policies, key::kExtensionInstallBlocklist);
-  base::Value* blocklist_value =
-      policies->GetMutableValue(key::kExtensionInstallBlocklist);
+  base::Value* blocklist_value = policies->GetMutableValue(
+      key::kExtensionInstallBlocklist, base::Value::Type::LIST);
   for (const std::string& chrome_app_id : chrome_app_ids) {
     blocklist_value->Append(chrome_app_id);
   }
 
   EnsurePolicyValueIsList(policies, key::kWebAppInstallForceList);
-  base::Value* web_app_policy_value =
-      policies->GetMutableValue(key::kWebAppInstallForceList);
+  base::Value* web_app_policy_value = policies->GetMutableValue(
+      key::kWebAppInstallForceList, base::Value::Type::LIST);
   for (const std::string& chrome_app_id : chrome_app_ids) {
     base::Value web_app(base::Value::Type::DICTIONARY);
     web_app.SetStringKey("url", chrome_app_to_web_app_.at(chrome_app_id));
@@ -66,8 +66,9 @@ DefaultChromeAppsMigrator::RemoveChromeAppsFromExtensionForcelist(
   if (!forcelist_entry)
     return std::vector<std::string>();
 
-  const base::Value* forcelist_value = forcelist_entry->value();
-  if (!forcelist_value || !forcelist_value->is_list())
+  const base::Value* forcelist_value =
+      forcelist_entry->value(base::Value::Type::LIST);
+  if (!forcelist_value)
     return std::vector<std::string>();
 
   std::vector<std::string> chrome_app_ids;
@@ -95,7 +96,7 @@ DefaultChromeAppsMigrator::RemoveChromeAppsFromExtensionForcelist(
 void DefaultChromeAppsMigrator::EnsurePolicyValueIsList(
     PolicyMap* policies,
     const std::string& policy_name) const {
-  const base::Value* policy_value = policies->GetValue(policy_name);
+  const base::Value* policy_value = policies->GetValueUnsafe(policy_name);
   if (!policy_value || !policy_value->is_list()) {
     const PolicyMap::Entry* forcelist_entry =
         policies->Get(key::kExtensionInstallForcelist);
@@ -113,9 +114,9 @@ void DefaultChromeAppsMigrator::EnsurePolicyValueIsList(
 
 void DefaultChromeAppsMigrator::MigratePinningPolicy(
     PolicyMap* policies) const {
-  base::Value* pinned_apps_value =
-      policies->GetMutableValue(key::kPinnedLauncherApps);
-  if (!pinned_apps_value || !pinned_apps_value->is_list())
+  base::Value* pinned_apps_value = policies->GetMutableValue(
+      key::kPinnedLauncherApps, base::Value::Type::LIST);
+  if (!pinned_apps_value)
     return;
   for (auto& list_entry : pinned_apps_value->GetListDeprecated()) {
     if (!list_entry.is_string())

@@ -54,9 +54,10 @@ void ConfigurationPolicyHandlerList::ApplyPolicySettings(
   // applying the policies.
   PolicyMap filtered_policies = policies.Clone();
   base::flat_set<std::string> enabled_future_policies =
-      allow_future_policies_ ? base::flat_set<std::string>()
-                             : ValueToStringSet(policies.GetValue(
-                                   key::kEnableExperimentalPolicies));
+      allow_future_policies_
+          ? base::flat_set<std::string>()
+          : ValueToStringSet(policies.GetValue(key::kEnableExperimentalPolicies,
+                                               base::Value::Type::LIST));
   filtered_policies.EraseMatching(base::BindRepeating(
       &ConfigurationPolicyHandlerList::FilterOutUnsupportedPolicies,
       base::Unretained(this), enabled_future_policies, future_policies));

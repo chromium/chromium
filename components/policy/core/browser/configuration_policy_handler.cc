@@ -78,7 +78,7 @@ bool TypeCheckingPolicyHandler::CheckPolicySettings(const PolicyMap& policies,
 bool TypeCheckingPolicyHandler::CheckAndGetValue(const PolicyMap& policies,
                                                  PolicyErrorMap* errors,
                                                  const base::Value** value) {
-  *value = policies.GetValue(policy_name());
+  *value = policies.GetValueUnsafe(policy_name());
   if (*value && (*value)->type() != value_type_) {
     errors->AddError(policy_name(), IDS_POLICY_TYPE_ERROR,
                      base::Value::GetTypeName(value_type_));
@@ -233,7 +233,7 @@ void StringMappingListPolicyHandler::ApplyPolicySettings(
     PrefValueMap* prefs) {
   if (!pref_path_)
     return;
-  const base::Value* value = policies.GetValue(policy_name());
+  const base::Value* value = policies.GetValueUnsafe(policy_name());
   base::ListValue list;
   if (value && Convert(value, &list, nullptr))
     prefs->SetValue(pref_path_, std::move(list));
@@ -304,7 +304,7 @@ void IntRangePolicyHandler::ApplyPolicySettings(const PolicyMap& policies,
                                                 PrefValueMap* prefs) {
   if (!pref_path_)
     return;
-  const base::Value* value = policies.GetValue(policy_name());
+  const base::Value* value = policies.GetValueUnsafe(policy_name());
   int value_in_range;
   if (value && EnsureInRange(value, &value_in_range, nullptr))
     prefs->SetInteger(pref_path_, value_in_range);
@@ -328,7 +328,7 @@ void IntPercentageToDoublePolicyHandler::ApplyPolicySettings(
     PrefValueMap* prefs) {
   if (!pref_path_)
     return;
-  const base::Value* value = policies.GetValue(policy_name());
+  const base::Value* value = policies.GetValueUnsafe(policy_name());
   int percentage;
   if (value && EnsureInRange(value, &percentage, nullptr))
     prefs->SetDouble(pref_path_, static_cast<double>(percentage) / 100.);
@@ -348,7 +348,7 @@ void SimplePolicyHandler::ApplyPolicySettings(const PolicyMap& policies,
                                               PrefValueMap* prefs) {
   if (!pref_path_)
     return;
-  const base::Value* value = policies.GetValue(policy_name());
+  const base::Value* value = policies.GetValueUnsafe(policy_name());
   if (value)
     prefs->SetValue(pref_path_, value->Clone());
 }
@@ -368,7 +368,7 @@ SchemaValidatingPolicyHandler::~SchemaValidatingPolicyHandler() {}
 bool SchemaValidatingPolicyHandler::CheckPolicySettings(
     const PolicyMap& policies,
     PolicyErrorMap* errors) {
-  const base::Value* value = policies.GetValue(policy_name());
+  const base::Value* value = policies.GetValueUnsafe(policy_name());
   if (!value)
     return true;
 
@@ -389,7 +389,7 @@ bool SchemaValidatingPolicyHandler::CheckAndGetValue(
     const PolicyMap& policies,
     PolicyErrorMap* errors,
     std::unique_ptr<base::Value>* output) {
-  const base::Value* value = policies.GetValue(policy_name());
+  const base::Value* value = policies.GetValueUnsafe(policy_name());
   if (!value)
     return true;
 
@@ -449,7 +449,7 @@ void SimpleSchemaValidatingPolicyHandler::ApplyPolicySettings(
     PrefValueMap* prefs) {
   if (!pref_path_)
     return;
-  const base::Value* value = policies.GetValue(policy_name());
+  const base::Value* value = policies.GetValueUnsafe(policy_name());
   if (value)
     prefs->SetValue(pref_path_, value->Clone());
 }
@@ -481,7 +481,7 @@ SimpleJsonStringSchemaValidatingPolicyHandler::
 bool SimpleJsonStringSchemaValidatingPolicyHandler::CheckPolicySettings(
     const PolicyMap& policies,
     PolicyErrorMap* errors) {
-  const base::Value* root_value = policies.GetValue(policy_name());
+  const base::Value* root_value = policies.GetValueUnsafe(policy_name());
   if (!root_value)
     return true;
 
@@ -612,7 +612,7 @@ void SimpleJsonStringSchemaValidatingPolicyHandler::ApplyPolicySettings(
     PrefValueMap* prefs) {
   if (!pref_path_)
     return;
-  const base::Value* value = policies.GetValue(policy_name());
+  const base::Value* value = policies.GetValueUnsafe(policy_name());
   if (value)
     prefs->SetValue(pref_path_, value->Clone());
 }
