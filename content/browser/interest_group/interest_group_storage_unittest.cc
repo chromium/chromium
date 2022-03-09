@@ -4,6 +4,8 @@
 
 #include "content/browser/interest_group/interest_group_storage.h"
 
+#include <stddef.h>
+
 #include <functional>
 #include <memory>
 
@@ -201,7 +203,7 @@ TEST_F(InterestGroupStorageTest, DatabaseJoin) {
   histograms.ExpectUniqueSample("Storage.InterestGroup.PerSiteCount", 1u, 1);
 }
 
-// Test that joining and interest group twice increments the counter.
+// Test that joining an interest group twice increments the counter.
 // Test that joining multiple interest groups with the same owner only creates a
 // single distinct owner. Test that leaving one interest group does not affect
 // membership of other interest groups by the same owner.
@@ -247,6 +249,53 @@ TEST_F(InterestGroupStorageTest, JoinJoinLeave) {
   origins = storage->GetAllInterestGroupOwners();
   EXPECT_EQ(1u, origins.size());
   EXPECT_EQ(test_origin, origins[0]);
+}
+
+// Join 5 interest groups in the same origin, and one interest group in another
+// origin.
+//
+// Fetch interest groups for update with a limit of 2 interest groups. Only 2
+// interest groups should be returned, and they should all belong to the first
+// test origin.
+//
+// Then, fetch 100 groups for update. Only 5 should be returned.
+TEST_F(InterestGroupStorageTest, GetInterestGroupsForUpdate) {
+  const url::Origin test_origin1 =
+      url::Origin::Create(GURL("https://owner1.example.com"));
+  const url::Origin test_origin2 =
+      url::Origin::Create(GURL("https://owner2.example.com"));
+  std::unique_ptr<InterestGroupStorage> storage = CreateStorage();
+
+  constexpr size_t kNumOrigin1Groups = 5, kSmallFetchGroups = 2,
+                   kLargeFetchGroups = 100;
+  ASSERT_LT(kSmallFetchGroups, kNumOrigin1Groups);
+  ASSERT_GT(kLargeFetchGroups, kNumOrigin1Groups);
+  for (size_t i = 0; i < kNumOrigin1Groups; i++) {
+    storage->JoinInterestGroup(
+        NewInterestGroup(test_origin1,
+                         base::StrCat({"example", base::NumberToString(i)})),
+        test_origin1.GetURL());
+  }
+  storage->JoinInterestGroup(NewInterestGroup(test_origin2, "example"),
+                             test_origin2.GetURL());
+
+  std::vector<StorageInterestGroup> update_groups =
+      storage->GetInterestGroupsForUpdate(test_origin1,
+                                          /*groups_limit=*/kSmallFetchGroups);
+
+  EXPECT_EQ(kSmallFetchGroups, update_groups.size());
+  for (const auto& group : update_groups) {
+    EXPECT_EQ(test_origin1, group.interest_group.owner);
+  }
+
+  update_groups =
+      storage->GetInterestGroupsForUpdate(test_origin1,
+                                          /*groups_limit=*/kLargeFetchGroups);
+
+  EXPECT_EQ(kNumOrigin1Groups, update_groups.size());
+  for (const auto& group : update_groups) {
+    EXPECT_EQ(test_origin1, group.interest_group.owner);
+  }
 }
 
 TEST_F(InterestGroupStorageTest, BidCount) {

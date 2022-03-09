@@ -63,6 +63,10 @@ class CONTENT_EXPORT InterestGroupUpdateManager {
   // process can run before it gets cancelled for taking too long.
   void set_max_update_round_duration_for_testing(base::TimeDelta delta);
 
+  // For testing *only*; changes the maximum number of groups that can be
+  // updated at the same time.
+  void set_max_parallel_updates_for_testing(int max_parallel_updates);
+
  private:
   using UrlLoadersList = std::list<std::unique_ptr<network::SimpleURLLoader>>;
 
@@ -221,6 +225,11 @@ class CONTENT_EXPORT InterestGroupUpdateManager {
   //
   // Should *only* be changed by tests.
   base::TimeDelta max_update_round_duration_;
+
+  // The maximum number of groups that can be updated at the same time.
+  //
+  // Should *only* be changed by tests.
+  int max_parallel_updates_;
 
   // The last time we started a round of updating; used to cancel long-running
   // updates.

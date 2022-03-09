@@ -2599,6 +2599,186 @@ TEST_F(AdAuctionServiceImplTest, OnlyOneOriginUpdatesAtATime) {
   EXPECT_EQ(b_group.ads.value()[0].metadata, "{\"new_a\":\"b\"}");
 }
 
+// Set the maximum number of parallel updates to 2. Create three interest
+// groups, each in origin A, and update origin A's interest groups.
+//
+// Check that all the interest groups updated.
+TEST_F(AdAuctionServiceImplTest, UpdatesInBatches) {
+  manager_->set_max_parallel_updates_for_testing(2);
+
+  network_responder_->RegisterUpdateResponse(
+      kDailyUpdateUrlPath, base::StringPrintf(R"({
+"ads": [{"renderUrl": "%s/new_ad_render_url",
+         "metadata": {"new_a": "b"}
+        }]
+})",
+                                              kOriginStringA));
+
+  // Create 3 interest groups for kOriginA.
+  blink::InterestGroup interest_group = CreateInterestGroup();
+  interest_group.expiry = base::Time::Now() + base::Days(30);
+  interest_group.update_url = kUpdateUrlA;
+  interest_group.ads.emplace();
+  blink::InterestGroup::Ad ad(
+      /*render_url=*/GURL("https://example.com/render"),
+      /*metadata=*/"{\"ad\":\"metadata\",\"here\":[1,2,3]}");
+  interest_group.ads->emplace_back(std::move(ad));
+  JoinInterestGroupAndFlush(interest_group);
+  EXPECT_EQ(1, GetJoinCount(kOriginA, kInterestGroupName));
+
+  constexpr char kInterestGroupName2[] = "group2";
+  interest_group = CreateInterestGroup();
+  interest_group.name = kInterestGroupName2;
+  interest_group.expiry = base::Time::Now() + base::Days(30);
+  interest_group.update_url = kUpdateUrlA;
+  interest_group.ads.emplace();
+  ad = blink::InterestGroup::Ad(
+      /*render_url=*/GURL("https://example.com/render"),
+      /*metadata=*/"{\"ad\":\"metadata\",\"here\":[1,2,3]}");
+  interest_group.ads->emplace_back(std::move(ad));
+  JoinInterestGroupAndFlush(interest_group);
+  EXPECT_EQ(1, GetJoinCount(kOriginA, kInterestGroupName2));
+
+  constexpr char kInterestGroupName3[] = "group3";
+  interest_group = CreateInterestGroup();
+  interest_group.name = kInterestGroupName3;
+  interest_group.expiry = base::Time::Now() + base::Days(30);
+  interest_group.update_url = kUpdateUrlA;
+  interest_group.ads.emplace();
+  ad = blink::InterestGroup::Ad(
+      /*render_url=*/GURL("https://example.com/render"),
+      /*metadata=*/"{\"ad\":\"metadata\",\"here\":[1,2,3]}");
+  interest_group.ads->emplace_back(std::move(ad));
+  JoinInterestGroupAndFlush(interest_group);
+  EXPECT_EQ(1, GetJoinCount(kOriginA, kInterestGroupName3));
+
+  EXPECT_EQ(network_responder_->UpdateCount(), 0u);
+
+  // Update all interest groups.
+  NavigateAndCommit(kUrlA);
+  UpdateInterestGroupNoFlush();
+  task_environment()->RunUntilIdle();
+
+  EXPECT_EQ(network_responder_->UpdateCount(), 3u);
+
+  std::vector<StorageInterestGroup> groups =
+      GetInterestGroupsForOwner(kOriginA);
+  ASSERT_EQ(groups.size(), 3u);
+
+  for (size_t i = 0; i < groups.size(); i++) {
+    SCOPED_TRACE(i);
+    const auto& group = groups[i].interest_group;
+    ASSERT_TRUE(group.ads.has_value());
+    ASSERT_EQ(group.ads->size(), 1u);
+    EXPECT_EQ(group.ads.value()[0].render_url.spec(),
+              base::StringPrintf("%s/new_ad_render_url", kOriginStringA));
+    EXPECT_EQ(group.ads.value()[0].metadata, "{\"new_a\":\"b\"}");
+  }
+}
+
+// Set the maximum number of parallel updates to 2. Create three interest
+// groups, each in origin A, and update origin A's interest groups. Make one
+// fail, and one timeout.
+//
+// Check that the interest group that didn't fail or timeout updates
+// successfully.
+TEST_F(AdAuctionServiceImplTest, UpdatesInBatchesWithFailuresAndTimeouts) {
+  manager_->set_max_parallel_updates_for_testing(2);
+
+  network_responder_->RegisterUpdateResponse(
+      kDailyUpdateUrlPath, base::StringPrintf(R"({
+"ads": [{"renderUrl": "%s/new_ad_render_url",
+         "metadata": {"new_a": "b"}
+        }]
+})",
+                                              kOriginStringA));
+  network_responder_->FailUpdateRequestWithError(kDailyUpdateUrlPath2,
+                                                 net::ERR_CONNECTION_RESET);
+  // We never respond to this -- just let it timeout.
+  network_responder_->RegisterDeferredUpdateResponse(kDailyUpdateUrlPath3);
+
+  // Create 3 interest groups for kOriginA -- give them different update URLs to
+  // so that some timeout and some fail.
+  blink::InterestGroup interest_group = CreateInterestGroup();
+  interest_group.expiry = base::Time::Now() + base::Days(30);
+  interest_group.update_url = kUpdateUrlA;
+  interest_group.ads.emplace();
+  blink::InterestGroup::Ad ad(
+      /*render_url=*/GURL("https://example.com/render"),
+      /*metadata=*/"{\"ad\":\"metadata\",\"here\":[1,2,3]}");
+  interest_group.ads->emplace_back(std::move(ad));
+  JoinInterestGroupAndFlush(interest_group);
+  EXPECT_EQ(1, GetJoinCount(kOriginA, kInterestGroupName));
+
+  constexpr char kInterestGroupName2[] = "group2";
+  interest_group = CreateInterestGroup();
+  interest_group.name = kInterestGroupName2;
+  interest_group.expiry = base::Time::Now() + base::Days(30);
+  interest_group.update_url = kUpdateUrlA2;
+  interest_group.ads.emplace();
+  ad = blink::InterestGroup::Ad(
+      /*render_url=*/GURL("https://example.com/render"),
+      /*metadata=*/"{\"ad\":\"metadata\",\"here\":[1,2,3]}");
+  interest_group.ads->emplace_back(std::move(ad));
+  JoinInterestGroupAndFlush(interest_group);
+  EXPECT_EQ(1, GetJoinCount(kOriginA, kInterestGroupName2));
+
+  constexpr char kInterestGroupName3[] = "group3";
+  interest_group = CreateInterestGroup();
+  interest_group.name = kInterestGroupName3;
+  interest_group.expiry = base::Time::Now() + base::Days(30);
+  interest_group.update_url = kUpdateUrlA3;
+  interest_group.ads.emplace();
+  ad = blink::InterestGroup::Ad(
+      /*render_url=*/GURL("https://example.com/render"),
+      /*metadata=*/"{\"ad\":\"metadata\",\"here\":[1,2,3]}");
+  interest_group.ads->emplace_back(std::move(ad));
+  JoinInterestGroupAndFlush(interest_group);
+  EXPECT_EQ(1, GetJoinCount(kOriginA, kInterestGroupName3));
+
+  EXPECT_EQ(network_responder_->UpdateCount(), 0u);
+
+  // Update all interest groups.
+  NavigateAndCommit(kUrlA);
+  UpdateInterestGroupNoFlush();
+  task_environment()->RunUntilIdle();
+
+  // Requests are issued in random order. If the first or second request is the
+  // delayed request, the third request won't be issued, since the first 2
+  // aren't complete. On the other hand, if the delayed request is the third
+  // request, all three update requests would have been issued by now.
+  EXPECT_GE(network_responder_->UpdateCount(), 2u);
+  EXPECT_LE(network_responder_->UpdateCount(), 3u);
+
+  // Now, fast forward so that the hanging request times out. After this, all
+  // updates should be completed.
+  task_environment()->FastForwardBy(base::Seconds(31));
+  task_environment()->RunUntilIdle();
+  EXPECT_EQ(network_responder_->UpdateCount(), 3u);
+
+  std::vector<StorageInterestGroup> groups =
+      GetInterestGroupsForOwner(kOriginA);
+  ASSERT_EQ(groups.size(), 3u);
+
+  for (size_t i = 0; i < groups.size(); i++) {
+    SCOPED_TRACE(i);
+    const auto& group = groups[i].interest_group;
+    ASSERT_TRUE(group.ads.has_value());
+    ASSERT_EQ(group.ads->size(), 1u);
+
+    if (group.update_url == kUpdateUrlA) {
+      EXPECT_EQ(group.ads.value()[0].render_url.spec(),
+                base::StringPrintf("%s/new_ad_render_url", kOriginStringA));
+      EXPECT_EQ(group.ads.value()[0].metadata, "{\"new_a\":\"b\"}");
+    } else {
+      EXPECT_EQ(group.ads.value()[0].render_url.spec(),
+                "https://example.com/render");
+      EXPECT_EQ(group.ads.value()[0].metadata,
+                "{\"ad\":\"metadata\",\"here\":[1,2,3]}");
+    }
+  }
+}
+
 // Create an interest group in a.test, and in b.test. Defer the update response
 // for a.test, and update a.test and b.test.
 //

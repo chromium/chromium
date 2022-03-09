@@ -72,6 +72,12 @@ void InterestGroupManagerImpl::set_max_update_round_duration_for_testing(
   update_manager_.set_max_update_round_duration_for_testing(delta);  // IN-TEST
 }
 
+void InterestGroupManagerImpl::set_max_parallel_updates_for_testing(
+    int max_parallel_updates) {
+  update_manager_.set_max_parallel_updates_for_testing(  // IN-TEST
+      max_parallel_updates);
+}
+
 void InterestGroupManagerImpl::RecordInterestGroupBid(
     const ::url::Origin& owner,
     const std::string& name) {
@@ -128,9 +134,10 @@ void InterestGroupManagerImpl::GetLastMaintenanceTimeForTesting(
 
 void InterestGroupManagerImpl::GetInterestGroupsForUpdate(
     const url::Origin& owner,
+    int groups_limit,
     base::OnceCallback<void(std::vector<StorageInterestGroup>)> callback) {
   impl_.AsyncCall(&InterestGroupStorage::GetInterestGroupsForUpdate)
-      .WithArgs(owner)
+      .WithArgs(owner, groups_limit)
       .Then(std::move(callback));
 }
 

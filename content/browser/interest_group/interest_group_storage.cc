@@ -4,6 +4,9 @@
 
 #include "content/browser/interest_group/interest_group_storage.h"
 
+#include <stddef.h>
+
+#include <algorithm>
 #include <memory>
 #include <vector>
 
@@ -14,6 +17,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/notreached.h"
+#include "base/rand_util.h"
 #include "base/sequence_checker.h"
 #include "base/strings/string_piece.h"
 #include "base/threading/sequenced_task_runner_handle.h"
@@ -1738,7 +1742,8 @@ InterestGroupStorage::GetInterestGroupsForOwner(const url::Origin& owner) {
 }
 
 std::vector<StorageInterestGroup>
-InterestGroupStorage::GetInterestGroupsForUpdate(const url::Origin& owner) {
+InterestGroupStorage::GetInterestGroupsForUpdate(const url::Origin& owner,
+                                                 size_t groups_limit) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!EnsureDBInitialized())
     return {};
@@ -1748,6 +1753,8 @@ InterestGroupStorage::GetInterestGroupsForUpdate(const url::Origin& owner) {
                                   /*get_groups_for_update=*/true);
   if (!maybe_result)
     return {};
+  base::RandomShuffle(maybe_result->begin(), maybe_result->end());
+  maybe_result->resize(std::min(maybe_result->size(), groups_limit));
   return std::move(maybe_result.value());
 }
 

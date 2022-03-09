@@ -37,6 +37,9 @@ constexpr size_t kMaxUpdateSize = 10 * 1024;
 // cancelled for taking too long.
 constexpr base::TimeDelta kMaxUpdateRoundDuration = base::Minutes(10);
 
+// The maximum number of groups that can be updated at the same time.
+constexpr int kMaxParallelUpdates = 5;
+
 constexpr net::NetworkTrafficAnnotationTag kTrafficAnnotation =
     net::DefineNetworkTrafficAnnotation("interest_group_update_fetcher", R"(
         semantics {
@@ -185,6 +188,7 @@ InterestGroupUpdateManager::InterestGroupUpdateManager(
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory)
     : manager_(manager),
       max_update_round_duration_(kMaxUpdateRoundDuration),
+      max_parallel_updates_(kMaxParallelUpdates),
       url_loader_factory_(std::move(url_loader_factory)) {}
 
 InterestGroupUpdateManager::~InterestGroupUpdateManager() = default;
@@ -199,6 +203,11 @@ void InterestGroupUpdateManager::UpdateInterestGroupsOfOwner(
 void InterestGroupUpdateManager::set_max_update_round_duration_for_testing(
     base::TimeDelta delta) {
   max_update_round_duration_ = delta;
+}
+
+void InterestGroupUpdateManager::set_max_parallel_updates_for_testing(
+    int max_parallel_updates) {
+  max_parallel_updates_ = max_parallel_updates;
 }
 
 InterestGroupUpdateManager::OwnersToUpdate::OwnersToUpdate() = default;
@@ -275,7 +284,8 @@ void InterestGroupUpdateManager::GetInterestGroupsForUpdate(
   DCHECK_EQ(num_in_flight_updates_, 0);
   DCHECK(!waiting_on_db_read_);
   waiting_on_db_read_ = true;
-  manager_->GetInterestGroupsForUpdate(owner, std::move(callback));
+  manager_->GetInterestGroupsForUpdate(
+      owner, /*groups_limit=*/max_parallel_updates_, std::move(callback));
 }
 
 void InterestGroupUpdateManager::DidUpdateInterestGroupsOfOwnerDbLoad(
@@ -284,6 +294,8 @@ void InterestGroupUpdateManager::DidUpdateInterestGroupsOfOwnerDbLoad(
   DCHECK_EQ(owner, owners_to_update_.FrontOwner());
   DCHECK_EQ(num_in_flight_updates_, 0);
   DCHECK(waiting_on_db_read_);
+  DCHECK_LE(storage_groups.size(),
+            static_cast<unsigned int>(max_parallel_updates_));
   waiting_on_db_read_ = false;
   if (storage_groups.empty()) {
     // All interest groups for `owner` are up to date, so we can pop it off the

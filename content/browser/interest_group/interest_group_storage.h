@@ -107,8 +107,12 @@ class CONTENT_EXPORT InterestGroupStorage {
   // the `next_update_after` field such that a subsequent
   // GetInterestGroupsForUpdate() call with the same `owner` won't return
   // anything until after the success rate limit period passes.
+  //
+  // `groups_limit` sets a limit on the maximum number of interest groups that
+  // may be returned.
   std::vector<StorageInterestGroup> GetInterestGroupsForUpdate(
-      const url::Origin& owner);
+      const url::Origin& owner,
+      size_t groups_limit);
   // Gets a list of all interest group joining origins. Each joining origin
   // will only appear once.
   std::vector<url::Origin> GetAllInterestGroupJoiningOrigins();

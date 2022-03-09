@@ -86,6 +86,9 @@ class CONTENT_EXPORT InterestGroupManagerImpl : public InterestGroupManager {
   // For testing *only*; changes the maximum amount of time that the update
   // process can run before it gets cancelled for taking too long.
   void set_max_update_round_duration_for_testing(base::TimeDelta delta);
+  // For testing *only*; changes the maximum number of groups that can be
+  // updated at the same time.
+  void set_max_parallel_updates_for_testing(int max_parallel_updates);
   // Adds an entry to the bidding history for this interest group.
   void RecordInterestGroupBid(const url::Origin& owner,
                               const std::string& name);
@@ -147,9 +150,13 @@ class CONTENT_EXPORT InterestGroupManagerImpl : public InterestGroupManager {
   // GetInterestGroupsForUpdate() call with the same `owner` won't return
   // anything until after the success rate limit period passes.
   //
+  // `groups_limit` sets a limit on the maximum number of interest groups that
+  // may be returned.
+  //
   // To be called only by `update_manager_`.
   void GetInterestGroupsForUpdate(
       const url::Origin& owner,
+      int groups_limit,
       base::OnceCallback<void(std::vector<StorageInterestGroup>)> callback);
 
   // Updates the interest group of the same name based on the information in
