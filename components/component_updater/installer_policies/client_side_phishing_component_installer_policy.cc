@@ -13,7 +13,6 @@
 #include "base/callback.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
-#include "base/metrics/histogram_functions.h"
 #include "base/values.h"
 #include "base/version.h"
 #include "components/component_updater/component_installer.h"
@@ -30,9 +29,6 @@ const uint8_t kClientSidePhishingPublicKeySHA256[32] = {
     0xc0, 0x22, 0xc8, 0xd2, 0xe0, 0xe3, 0xe2, 0x33, 0x88, 0x1f, 0x09,
     0x6d, 0xde, 0x65, 0x6a, 0x83, 0x32, 0x71, 0x52, 0x6e, 0x77};
 
-const char kClientSidePhishingExtensionId[] =
-    "imefjhfbkmcmebodilednhmaccmincoa";
-
 }  // namespace
 
 const base::FilePath::CharType kClientModelBinaryPbFileName[] =
@@ -42,22 +38,14 @@ const base::FilePath::CharType kVisualTfLiteModelFileName[] =
 
 ClientSidePhishingComponentInstallerPolicy::
     ClientSidePhishingComponentInstallerPolicy(
-        ComponentUpdateService* cus,
         const ReadFilesCallback& read_files_callback,
         const InstallerAttributesCallback& installer_attributes_callback)
-    : cus_(cus),
-      read_files_callback_(std::move(read_files_callback)),
+    : read_files_callback_(std::move(read_files_callback)),
       installer_attributes_callback_(std::move(installer_attributes_callback)) {
-  // `cus_` can be nullptr on android_webview.
-  if (cus_)
-    cus_->AddObserver(this);
 }
 
 ClientSidePhishingComponentInstallerPolicy::
-    ~ClientSidePhishingComponentInstallerPolicy() {
-  if (cus_)
-    cus_->RemoveObserver(this);
-}
+    ~ClientSidePhishingComponentInstallerPolicy() = default;
 
 // static
 void ClientSidePhishingComponentInstallerPolicy::GetPublicHash(
@@ -120,20 +108,6 @@ std::string ClientSidePhishingComponentInstallerPolicy::GetName() const {
 update_client::InstallerAttributes
 ClientSidePhishingComponentInstallerPolicy::GetInstallerAttributes() const {
   return installer_attributes_callback_.Run();
-}
-
-void ClientSidePhishingComponentInstallerPolicy::OnEvent(
-    ComponentUpdateService::Observer::Events event,
-    const std::string& id) {
-  if (id != kClientSidePhishingExtensionId)
-    return;
-
-  if (event == ComponentUpdateService::Observer::Events::COMPONENT_UPDATED) {
-    base::UmaHistogramBoolean("SBClientPhishing.ComponentUpdated", true);
-  } else if (event ==
-             ComponentUpdateService::Observer::Events::COMPONENT_NOT_UPDATED) {
-    base::UmaHistogramBoolean("SBClientPhishing.ComponentUpdated", false);
-  }
 }
 
 }  // namespace component_updater

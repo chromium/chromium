@@ -72,7 +72,6 @@ void RegisterComponentsForUpdate(
   RegisterComponentInstallerPolicyShim(
       std::make_unique<
           component_updater::ClientSidePhishingComponentInstallerPolicy>(
-          nullptr,
           // Files shouldn't be parsed or loaded in this process, thus
           // ClientSidePhishingComponentInstallerPolicy::ComponentReady will
           // never be called in this process and the `ReadFilesCallback`
