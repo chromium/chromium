@@ -2,10 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// Workaround for linkage bug for rust binary -> C++ component -> rust component
-// dependency. TOOD(https://crbug.com/1289742): remove this after fix.
-extern crate base;
-
 #[macro_use]
 mod macros {
     /// This macro must be used at the top-level in any
