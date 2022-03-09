@@ -13,6 +13,15 @@ assert(is_chromeos_ash, "Eche App is ash-chrome only")
 preprocess_mojo_manifest = "preprocessed_mojo_manifest.json"
 preprocess_folder = "preprocessed"
 
+static_library("eche_app_ui_pref") {
+  sources = [
+    "pref_names.cc",
+    "pref_names.h",
+  ]
+
+  deps = [ "//base:base" ]
+}
+
 static_library("eche_app_ui") {
   sources = [
     "apps_access_manager.cc",
@@ -54,8 +63,6 @@ static_library("eche_app_ui") {
     "feature_status_provider.h",
     "launch_app_helper.cc",
     "launch_app_helper.h",
-    "pref_names.cc",
-    "pref_names.h",
     "system_info.cc",
     "system_info.h",
     "system_info_provider.cc",
@@ -67,6 +74,7 @@ static_library("eche_app_ui") {
   ]
 
   deps = [
+    ":eche_app_ui_pref",
     "//ash",
     "//ash/components/phonehub",
     "//ash/constants",
@@ -107,7 +115,10 @@ static_library("test_support") {
 
   public_deps = [ ":eche_app_ui" ]
 
-  deps = [ "//base" ]
+  deps = [
+    "//ash/components/phonehub:phonehub",
+    "//base",
+  ]
 }
 
 source_set("unit_tests") {
@@ -131,6 +142,7 @@ source_set("unit_tests") {
   ]
   deps = [
     ":eche_app_ui",
+    ":eche_app_ui_pref",
     ":test_support",
     "//ash:test_support",
     "//ash/components/phonehub",

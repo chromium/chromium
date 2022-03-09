@@ -10,9 +10,11 @@ namespace phonehub {
 FakeMultideviceFeatureAccessManager::FakeMultideviceFeatureAccessManager(
     AccessStatus notification_access_status,
     AccessStatus camera_roll_access_status,
+    AccessStatus apps_access_status,
     AccessProhibitedReason reason)
     : notification_access_status_(notification_access_status),
       camera_roll_access_status_(camera_roll_access_status),
+      apps_access_status_(apps_access_status),
       access_prohibited_reason_(reason) {}
 
 FakeMultideviceFeatureAccessManager::~FakeMultideviceFeatureAccessManager() =
@@ -42,6 +44,19 @@ void FakeMultideviceFeatureAccessManager::SetCameraRollAccessStatusInternal(
 
   camera_roll_access_status_ = camera_roll_access_status;
   NotifyCameraRollAccessChanged();
+}
+
+void FakeMultideviceFeatureAccessManager::SetAppsAccessStatusInternal(
+    AccessStatus apps_access_status) {
+  if (apps_access_status_ == apps_access_status)
+    return;
+
+  apps_access_status_ = apps_access_status;
+}
+
+MultideviceFeatureAccessManager::AccessStatus
+FakeMultideviceFeatureAccessManager::GetAppsAccessStatus() const {
+  return apps_access_status_;
 }
 
 MultideviceFeatureAccessManager::AccessStatus

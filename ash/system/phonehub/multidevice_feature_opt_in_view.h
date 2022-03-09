@@ -22,9 +22,21 @@ class ASH_EXPORT MultideviceFeatureOptInView
  public:
   METADATA_HEADER(MultideviceFeatureOptInView);
 
+  enum class PermissionSetupMode {
+    kNone = 0,
+    kNotificationSetupMode = 1,
+    kAppsSetupMode = 2,
+    kCameraRollSetupMode = 3,
+    kNotificationAndApps = 4,
+    kNotificationAndCameraRoll = 5,
+    kAppsAndCameraRoll = 6,
+    kAllPermissionsSetupMode = 7,
+  };
+
   explicit MultideviceFeatureOptInView(
       phonehub::MultideviceFeatureAccessManager*
           multidevice_feature_access_manager);
+
   MultideviceFeatureOptInView(const MultideviceFeatureOptInView&) = delete;
   MultideviceFeatureOptInView& operator=(const MultideviceFeatureOptInView&) =
       delete;
@@ -48,6 +60,9 @@ class ASH_EXPORT MultideviceFeatureOptInView
   base::ScopedObservation<phonehub::MultideviceFeatureAccessManager,
                           phonehub::MultideviceFeatureAccessManager::Observer>
       access_manager_observation_{this};
+
+  // The current setup mode.
+  MultideviceFeatureOptInView::PermissionSetupMode setup_mode_;
 };
 
 }  // namespace ash

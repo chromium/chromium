@@ -308,7 +308,7 @@ TEST_F(PhoneHubTrayTest, StartMultideviceFeatureSetUpFlow) {
   // for the notification set up flow.
   EXPECT_CALL(new_window_delegate(),
               OpenUrl(GURL("chrome://os-settings/multidevice/"
-                           "features?showPhonePermissionSetupDialog"),
+                           "features?showPhonePermissionSetupDialog&mode=5"),
                       NewWindowDelegate::OpenUrlFrom::kUserInteraction));
 
   LeftClickOn(notification_opt_in_set_up_button());
@@ -330,6 +330,160 @@ TEST_F(PhoneHubTrayTest, StartMultideviceFeatureSetUpFlow) {
 
   // This view should show up again.
   EXPECT_TRUE(multidevice_feature_opt_in_view()->GetVisible());
+}
+
+TEST_F(PhoneHubTrayTest, StartAllPermissionSetUpFlow) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      /*enabled_features=*/{chromeos::features::kPhoneHub,
+                            chromeos::features::kPhoneHubCameraRoll,
+                            chromeos::features::kEcheSWA,
+                            chromeos::features::
+                                kEchePhoneHubPermissionsOnboarding},
+      /*disabled_features=*/{});
+  GetMultideviceFeatureAccessManager()->SetNotificationAccessStatusInternal(
+      phonehub::MultideviceFeatureAccessManager::AccessStatus::
+          kAvailableButNotGranted);
+  GetMultideviceFeatureAccessManager()->SetCameraRollAccessStatusInternal(
+      phonehub::MultideviceFeatureAccessManager::AccessStatus::
+          kAvailableButNotGranted);
+  GetMultideviceFeatureAccessManager()->SetAppsAccessStatusInternal(
+      phonehub::MultideviceFeatureAccessManager::AccessStatus::
+          kAvailableButNotGranted);
+
+  ClickTrayButton();
+  EXPECT_TRUE(multidevice_feature_opt_in_view());
+  EXPECT_TRUE(multidevice_feature_opt_in_view()->GetVisible());
+
+  // Clicking on the set up button should open the corresponding settings page
+  // for the notification set up flow.
+  EXPECT_CALL(new_window_delegate(),
+              OpenUrl(GURL("chrome://os-settings/multidevice/"
+                           "features?showPhonePermissionSetupDialog&mode=7"),
+                      NewWindowDelegate::OpenUrlFrom::kUserInteraction));
+
+  LeftClickOn(notification_opt_in_set_up_button());
+}
+
+TEST_F(PhoneHubTrayTest, StartNotificationAndAppSetUpFlow) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      /*enabled_features=*/{chromeos::features::kPhoneHub,
+                            chromeos::features::kEcheSWA,
+                            chromeos::features::
+                                kEchePhoneHubPermissionsOnboarding},
+      /*disabled_features=*/{});
+  GetMultideviceFeatureAccessManager()->SetNotificationAccessStatusInternal(
+      phonehub::MultideviceFeatureAccessManager::AccessStatus::
+          kAvailableButNotGranted);
+  GetMultideviceFeatureAccessManager()->SetAppsAccessStatusInternal(
+      phonehub::MultideviceFeatureAccessManager::AccessStatus::
+          kAvailableButNotGranted);
+  GetMultideviceFeatureAccessManager()->SetCameraRollAccessStatusInternal(
+      phonehub::MultideviceFeatureAccessManager::AccessStatus::kAccessGranted);
+
+  ClickTrayButton();
+  EXPECT_TRUE(multidevice_feature_opt_in_view());
+  EXPECT_TRUE(multidevice_feature_opt_in_view()->GetVisible());
+
+  // Clicking on the set up button should open the corresponding settings page
+  // for the notification set up flow.
+  EXPECT_CALL(new_window_delegate(),
+              OpenUrl(GURL("chrome://os-settings/multidevice/"
+                           "features?showPhonePermissionSetupDialog&mode=4"),
+                      NewWindowDelegate::OpenUrlFrom::kUserInteraction));
+
+  LeftClickOn(notification_opt_in_set_up_button());
+}
+
+TEST_F(PhoneHubTrayTest, StartNotificationAccessOnlySetUpFlow) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      /*enabled_features=*/{chromeos::features::kPhoneHub,
+                            chromeos::features::kEcheSWA,
+                            chromeos::features::
+                                kEchePhoneHubPermissionsOnboarding},
+      /*disabled_features=*/{});
+  GetMultideviceFeatureAccessManager()->SetNotificationAccessStatusInternal(
+      phonehub::MultideviceFeatureAccessManager::AccessStatus::
+          kAvailableButNotGranted);
+  GetMultideviceFeatureAccessManager()->SetAppsAccessStatusInternal(
+      phonehub::MultideviceFeatureAccessManager::AccessStatus::kAccessGranted);
+  GetMultideviceFeatureAccessManager()->SetCameraRollAccessStatusInternal(
+      phonehub::MultideviceFeatureAccessManager::AccessStatus::kAccessGranted);
+
+  ClickTrayButton();
+  EXPECT_TRUE(multidevice_feature_opt_in_view());
+  EXPECT_TRUE(multidevice_feature_opt_in_view()->GetVisible());
+
+  // Clicking on the set up button should open the corresponding settings page
+  // for the notification set up flow.
+  EXPECT_CALL(new_window_delegate(),
+              OpenUrl(GURL("chrome://os-settings/multidevice/"
+                           "features?showPhonePermissionSetupDialog&mode=1"),
+                      NewWindowDelegate::OpenUrlFrom::kUserInteraction));
+
+  LeftClickOn(notification_opt_in_set_up_button());
+}
+
+TEST_F(PhoneHubTrayTest, StartAppsAccessOnlySetUpFlow) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      /*enabled_features=*/{chromeos::features::kPhoneHub,
+                            chromeos::features::kEcheSWA,
+                            chromeos::features::
+                                kEchePhoneHubPermissionsOnboarding},
+      /*disabled_features=*/{});
+  GetMultideviceFeatureAccessManager()->SetNotificationAccessStatusInternal(
+      phonehub::MultideviceFeatureAccessManager::AccessStatus::kAccessGranted);
+  GetMultideviceFeatureAccessManager()->SetCameraRollAccessStatusInternal(
+      phonehub::MultideviceFeatureAccessManager::AccessStatus::kAccessGranted);
+  GetMultideviceFeatureAccessManager()->SetAppsAccessStatusInternal(
+      phonehub::MultideviceFeatureAccessManager::AccessStatus::
+          kAvailableButNotGranted);
+
+  ClickTrayButton();
+  EXPECT_TRUE(multidevice_feature_opt_in_view());
+  EXPECT_TRUE(multidevice_feature_opt_in_view()->GetVisible());
+
+  // Clicking on the set up button should open the corresponding settings page
+  // for the notification set up flow.
+  EXPECT_CALL(new_window_delegate(),
+              OpenUrl(GURL("chrome://os-settings/multidevice/"
+                           "features?showPhonePermissionSetupDialog&mode=2"),
+                      NewWindowDelegate::OpenUrlFrom::kUserInteraction));
+
+  LeftClickOn(notification_opt_in_set_up_button());
+}
+
+TEST_F(PhoneHubTrayTest, StartCameraRollOnlySetUpFlow) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      /*enabled_features=*/{chromeos::features::kPhoneHub,
+                            chromeos::features::kEcheSWA,
+                            chromeos::features::
+                                kEchePhoneHubPermissionsOnboarding},
+      /*disabled_features=*/{});
+  GetMultideviceFeatureAccessManager()->SetNotificationAccessStatusInternal(
+      phonehub::MultideviceFeatureAccessManager::AccessStatus::kAccessGranted);
+  GetMultideviceFeatureAccessManager()->SetCameraRollAccessStatusInternal(
+      phonehub::MultideviceFeatureAccessManager::AccessStatus::
+          kAvailableButNotGranted);
+  GetMultideviceFeatureAccessManager()->SetAppsAccessStatusInternal(
+      phonehub::MultideviceFeatureAccessManager::AccessStatus::kAccessGranted);
+
+  ClickTrayButton();
+  EXPECT_TRUE(multidevice_feature_opt_in_view());
+  EXPECT_TRUE(multidevice_feature_opt_in_view()->GetVisible());
+
+  // Clicking on the set up button should open the corresponding settings page
+  // for the notification set up flow.
+  EXPECT_CALL(new_window_delegate(),
+              OpenUrl(GURL("chrome://os-settings/multidevice/"
+                           "features?showPhonePermissionSetupDialog&mode=3"),
+                      NewWindowDelegate::OpenUrlFrom::kUserInteraction));
+
+  LeftClickOn(notification_opt_in_set_up_button());
 }
 
 TEST_F(PhoneHubTrayTest, HideTrayItemOnUiStateChange) {

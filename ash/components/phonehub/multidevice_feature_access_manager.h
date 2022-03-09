@@ -83,6 +83,8 @@ class MultideviceFeatureAccessManager {
 
   virtual AccessStatus GetCameraRollAccessStatus() const = 0;
 
+  virtual AccessStatus GetAppsAccessStatus() const = 0;
+
   // Returns the reason notification access status is prohibited. The return
   // result is valid if the current access status (from GetAccessStatus())
   // is AccessStatus::kProhibited. Otherwise, the result is undefined and should

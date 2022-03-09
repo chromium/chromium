@@ -4,12 +4,16 @@
 
 #include "ash/webui/eche_app_ui/apps_access_manager.h"
 
+#include "ash/components/phonehub/multidevice_feature_access_manager.h"
 #include "ash/webui/eche_app_ui/proto/exo_messages.pb.h"
 #include "base/memory/ptr_util.h"
 #include "chromeos/components/multidevice/logging/logging.h"
 
 namespace ash {
 namespace eche_app {
+
+using AccessStatus =
+    ash::phonehub::MultideviceFeatureAccessManager::AccessStatus;
 
 AppsAccessManager::AppsAccessManager() = default;
 
@@ -72,19 +76,6 @@ void AppsAccessManager::OnSetupOperationDeleted(int operation_id) {
 
   if (id_to_operation_map_.empty())
     PA_LOG(INFO) << "Apps access setup operation has ended.";
-}
-
-std::ostream& operator<<(std::ostream& stream,
-                         AppsAccessManager::AccessStatus status) {
-  switch (status) {
-    case AppsAccessManager::AccessStatus::kAvailableButNotGranted:
-      stream << "[Access available but not granted]";
-      break;
-    case AppsAccessManager::AccessStatus::kAccessGranted:
-      stream << "[Access granted]";
-      break;
-  }
-  return stream;
 }
 
 }  // namespace eche_app

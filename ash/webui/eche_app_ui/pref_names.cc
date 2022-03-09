@@ -9,7 +9,7 @@ namespace eche_app {
 namespace prefs {
 // The last provided apps access status provided by the phone. This pref
 // stores the numerical value associated with the
-// AppsAccessManager::AccessStatus enum.
+// phonehub::MultideviceFeatureAccessManager::AccessStatus enum.
 const char kAppsAccessStatus[] = "cros.echeapps.apps_access_status";
 }  // namespace prefs
 }  // namespace eche_app
