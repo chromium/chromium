@@ -7,6 +7,7 @@
 #include "ash/quick_pair/common/logging.h"
 #include "base/bind.h"
 #include "base/callback.h"
+#include "base/containers/adapters.h"
 #include "device/bluetooth/bluetooth_adapter.h"
 #include "device/bluetooth/bluetooth_adapter_factory.h"
 #include "device/bluetooth/bluetooth_device.h"
@@ -74,10 +75,9 @@ void BatteryUpdateMessageHandler::GetBatteryUpdateFromMessageStream(
   DCHECK(message_stream);
 
   // Iterate over messages for battery update if it already exists.
-  for (auto it = message_stream->messages().rbegin();
-       it != message_stream->messages().rend(); ++it) {
-    if ((*it)->is_battery_update()) {
-      SetBatteryInfo(device_address, (*it)->get_battery_update());
+  for (const auto& message : base::Reversed(message_stream->messages())) {
+    if (message->is_battery_update()) {
+      SetBatteryInfo(device_address, message->get_battery_update());
       return;
     }
   }

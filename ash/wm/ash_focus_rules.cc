@@ -14,6 +14,7 @@
 #include "ash/wm/overview/overview_controller.h"
 #include "ash/wm/window_restore/window_restore_controller.h"
 #include "ash/wm/window_state.h"
+#include "base/containers/adapters.h"
 #include "base/containers/contains.h"
 #include "components/app_restore/full_restore_utils.h"
 #include "ui/aura/client/aura_constants.h"
@@ -225,13 +226,11 @@ aura::Window* AshFocusRules::GetTopmostWindowToActivateForContainerIndex(
 aura::Window* AshFocusRules::GetTopmostWindowToActivateInContainer(
     aura::Window* container,
     aura::Window* ignore) const {
-  for (aura::Window::Windows::const_reverse_iterator i =
-           container->children().rbegin();
-       i != container->children().rend(); ++i) {
-    WindowState* window_state = WindowState::Get(*i);
-    if (*i != ignore && window_state->CanActivate() &&
+  for (aura::Window* child : base::Reversed(container->children())) {
+    WindowState* window_state = WindowState::Get(child);
+    if (child != ignore && window_state->CanActivate() &&
         !window_state->IsMinimized())
-      return *i;
+      return child;
   }
   return nullptr;
 }

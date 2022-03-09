@@ -56,6 +56,7 @@
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/callback_list.h"
+#include "base/containers/adapters.h"
 #include "base/containers/contains.h"
 #include "base/containers/cxx20_erase.h"
 #include "base/logging.h"
@@ -165,10 +166,11 @@ bool MinimizeAllWindows(const aura::Window::Windows& windows,
   aura::Window* container = Shell::Get()->GetPrimaryRootWindow()->GetChildById(
       kShellWindowId_HomeScreenContainer);
   aura::Window::Windows windows_to_minimize;
-  for (auto it = windows.rbegin(); it != windows.rend(); it++) {
-    if (!container->Contains(*it) && !base::Contains(windows_to_ignore, *it) &&
-        !WindowState::Get(*it)->IsMinimized()) {
-      windows_to_minimize.push_back(*it);
+  for (aura::Window* window : base::Reversed(windows)) {
+    if (!container->Contains(window) &&
+        !base::Contains(windows_to_ignore, window) &&
+        !WindowState::Get(window)->IsMinimized()) {
+      windows_to_minimize.push_back(window);
     }
   }
 

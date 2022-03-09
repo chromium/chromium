@@ -16,6 +16,7 @@
 #include "ash/wm/wm_event.h"
 #include "ash/wm/workspace/phantom_window_controller.h"
 #include "ash/wm/workspace_controller.h"
+#include "base/containers/adapters.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
@@ -142,10 +143,10 @@ class WorkspaceWindowResizerTest : public AshTestBase {
   std::vector<int> WindowOrderAsIntVector(aura::Window* parent) const {
     std::vector<int> result;
     const aura::Window::Windows& windows = parent->children();
-    for (aura::Window::Windows::const_reverse_iterator i = windows.rbegin();
-         i != windows.rend(); ++i) {
-      if (*i == window_.get() || *i == window2_.get() || *i == window3_.get()) {
-        result.push_back((*i)->GetId());
+    for (aura::Window* window : base::Reversed(windows)) {
+      if (window == window_.get() || window == window2_.get() ||
+          window == window3_.get()) {
+        result.push_back(window->GetId());
       }
     }
     return result;

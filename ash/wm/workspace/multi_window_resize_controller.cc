@@ -13,6 +13,7 @@
 #include "ash/wm/resize_shadow_controller.h"
 #include "ash/wm/window_util.h"
 #include "ash/wm/workspace/workspace_window_resizer.h"
+#include "base/containers/adapters.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/aura/window_delegate.h"
 #include "ui/base/cursor/cursor.h"
@@ -387,8 +388,7 @@ aura::Window* MultiWindowResizeController::FindWindowByEdge(
     int y_in_parent) const {
   aura::Window* parent = window_to_ignore->parent();
   const aura::Window::Windows& windows = parent->children();
-  for (auto i = windows.rbegin(); i != windows.rend(); ++i) {
-    aura::Window* window = *i;
+  for (aura::Window* window : base::Reversed(windows)) {
     if (window == window_to_ignore || !window->IsVisible())
       continue;
 
@@ -422,8 +422,7 @@ aura::Window* MultiWindowResizeController::FindWindowTouching(
   int bottom = window->bounds().bottom();
   aura::Window* parent = window->parent();
   const aura::Window::Windows& windows = parent->children();
-  for (auto i = windows.rbegin(); i != windows.rend(); ++i) {
-    aura::Window* other = *i;
+  for (aura::Window* other : base::Reversed(windows)) {
     if (other == window || !other->IsVisible())
       continue;
     switch (direction) {

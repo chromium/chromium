@@ -28,6 +28,7 @@
 #include "ash/wm/window_util.h"
 #include "base/auto_reset.h"
 #include "base/bind.h"
+#include "base/containers/adapters.h"
 #include "base/memory/weak_ptr.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/compositor/layer.h"
@@ -292,9 +293,7 @@ void BackdropController::UpdateBackdrop() {
 
 aura::Window* BackdropController::GetTopmostWindowWithBackdrop() {
   const aura::Window::Windows windows = container_->children();
-  for (auto window_iter = windows.rbegin(); window_iter != windows.rend();
-       ++window_iter) {
-    aura::Window* window = *window_iter;
+  for (aura::Window* window : base::Reversed(windows)) {
     if (window == backdrop_window_)
       continue;
 
