@@ -7,6 +7,7 @@
 #include <algorithm>
 
 #include "ash/accessibility/accessibility_controller_impl.h"
+#include "ash/constants/ash_features.h"
 #include "ash/public/cpp/ash_web_view.h"
 #include "ash/public/cpp/ash_web_view_factory.h"
 #include "ash/session/session_controller_impl.h"
@@ -14,6 +15,7 @@
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/icon_button.h"
+#include "ash/system/eche/eche_icon_loading_indicator_view.h"
 #include "ash/system/phonehub/ui_constants.h"
 #include "ash/system/tray/tray_bubble_wrapper.h"
 #include "ash/system/tray/tray_container.h"
@@ -45,13 +47,11 @@ namespace ash {
 
 namespace {
 
-// Padding for tray icon (dp; the button that shows the eche menu).
-constexpr int kTrayIconMainAxisInset = 6;
-constexpr int kTrayIconCrossAxisInset = 0;
-
 constexpr int kIconColumnWidth = 16;
-constexpr int kIconWidth = 22;
-constexpr int kIconHeight = 22;
+
+// The icon size should be smaller than the tray item size to avoid the icon
+// padding becoming negative.
+constexpr int kIconSize = 22;
 
 constexpr gfx::Insets kBubblePadding(4, 4, kBubbleBottomPaddingDip, 4);
 
@@ -65,8 +65,19 @@ EcheTray::EcheTray(Shelf* shelf)
       icon_(tray_container()->AddChildView(
           std::make_unique<views::ImageView>())) {
   observed_session_.Observe(Shell::Get()->session_controller());
+
+  const int icon_padding = (kTrayItemSize - kIconSize) / 2;
+
+  icon_->SetBorder(
+      views::CreateEmptyBorder(gfx::Insets(icon_padding, icon_padding)));
+
   icon_->SetTooltipText(GetAccessibleNameForTray());
-  tray_container()->SetMargin(kTrayIconMainAxisInset, kTrayIconCrossAxisInset);
+
+  if (features::IsEcheSWAInBackgroundEnabled()) {
+    loading_indicator_ = icon_->AddChildView(
+        std::make_unique<EcheIconLoadingIndicatorView>(icon_));
+    loading_indicator_->SetVisible(false);
+  }
 }
 
 EcheTray::~EcheTray() {
@@ -116,6 +127,13 @@ void EcheTray::ShowBubble() {
     bubble_->GetBubbleWidget()->Activate();
     bubble_->bubble_view()->SetVisible(true);
     SetIsActive(true);
+
+    // TODO(b/223297066): Observe the connection status and add/remove the
+    // loading indicator based on the connection status.
+    if (features::IsEcheSWAInBackgroundEnabled() &&
+        loading_indicator_->GetAnimating()) {
+      loading_indicator_->SetAnimating(false);
+    }
     return;
   }
 
@@ -168,10 +186,15 @@ void EcheTray::SetUrl(const GURL& url) {
 void EcheTray::SetIcon(const gfx::Image& icon) {
   icon_->SetImage(gfx::ImageSkiaOperations::CreateResizedImage(
       icon.AsImageSkia(), skia::ImageOperations::RESIZE_BEST,
-      gfx::Size(kIconWidth, kIconHeight)));
+      gfx::Size(kIconSize, kIconSize)));
 }
 
 void EcheTray::PurgeAndClose() {
+  if (features::IsEcheSWAInBackgroundEnabled() &&
+      loading_indicator_->GetAnimating()) {
+    loading_indicator_->SetAnimating(false);
+  }
+
   if (!bubble_)
     return;
 
@@ -227,6 +250,9 @@ void EcheTray::InitBubble() {
 
   SetIsActive(true);
   bubble_->GetBubbleView()->UpdateBubble();
+
+  if (features::IsEcheSWAInBackgroundEnabled())
+    loading_indicator_->SetAnimating(true);
 }
 
 gfx::Size EcheTray::GetSizeForEche() const {
