@@ -1986,6 +1986,8 @@ static_library("ui") {
       "app_list/search/chrome_search_result.h",
       "app_list/search/common/icon_constants.cc",
       "app_list/search/common/icon_constants.h",
+      "app_list/search/common/search_result_util.cc",
+      "app_list/search/common/search_result_util.h",
       "app_list/search/common/string_util.cc",
       "app_list/search/common/string_util.h",
       "app_list/search/common/types_util.cc",

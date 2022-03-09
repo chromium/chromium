@@ -4,7 +4,9 @@
 
 #include "chrome/browser/ui/app_list/search/open_tab_result.h"
 
+#include "base/strings/strcat.h"
 #include "base/strings/utf_string_conversions.h"
+#include "chrome/browser/ui/app_list/search/common/search_result_util.h"
 #include "components/omnibox/browser/autocomplete_match.h"
 #include "components/omnibox/browser/autocomplete_match_type.h"
 #include "components/strings/grit/components_strings.h"
@@ -30,10 +32,10 @@ class OpenTabResultTest : public testing::Test {
   ~OpenTabResultTest() override {}
 
   std::unique_ptr<OpenTabResult> MakeResult(const std::string& query,
-                                            const std::string& contents,
+                                            const std::string& description,
                                             const std::string& url) {
     AutocompleteMatch match;
-    match.contents = base::UTF8ToUTF16(contents);
+    match.description = base::UTF8ToUTF16(description);
     match.destination_url = GURL(url);
     TokenizedString tokenized_query(base::UTF8ToUTF16(query),
                                     TokenizedString::Mode::kWords);
@@ -44,10 +46,16 @@ class OpenTabResultTest : public testing::Test {
 
 TEST_F(OpenTabResultTest, Basic) {
   std::unique_ptr<OpenTabResult> result =
-      MakeResult("query", "queryabc", "website.com");
-  EXPECT_EQ(result->details(),
-            l10n_util::GetStringUTF16(IDS_OMNIBOX_TAB_SUGGEST_HINT));
-  EXPECT_GT(result->relevance(), 0.8);
+      MakeResult("query", "queryabc", "http://www.website.com");
+  EXPECT_EQ(result->title(), u"queryabc");
+  EXPECT_EQ(
+      StringFromTextVector(result->details_text_vector()),
+      base::StrCat({u"http://www.website.com/ - ",
+                    l10n_util::GetStringUTF16(IDS_OMNIBOX_TAB_SUGGEST_HINT)}));
+  EXPECT_EQ(
+      result->accessible_name(),
+      base::StrCat({u"queryabc, http://www.website.com/, ",
+                    l10n_util::GetStringUTF16(IDS_OMNIBOX_TAB_SUGGEST_HINT)}));
 }
 
 TEST_F(OpenTabResultTest, DriveId) {

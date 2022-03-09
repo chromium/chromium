@@ -331,6 +331,18 @@ SearchResultTextItem& SearchResultTextItem::SetImage(gfx::ImageSkia icon) {
   raw_image = icon;
   return *this;
 }
+
+bool SearchResultTextItem::GetElidable() const {
+  DCHECK_EQ(item_type, SearchResultTextItemType::kString);
+  return elidable;
+}
+
+SearchResultTextItem& SearchResultTextItem::SetElidable(bool elidable) {
+  DCHECK_EQ(item_type, SearchResultTextItemType::kString);
+  this->elidable = elidable;
+  return *this;
+}
+
 ////////////////////////////////////////////////////////////////////////////////
 // SearchResultMetadata:
 

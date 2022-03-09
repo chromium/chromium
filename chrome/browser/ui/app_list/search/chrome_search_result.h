@@ -55,6 +55,9 @@ class ChromeSearchResult {
 
   virtual ~ChromeSearchResult();
 
+  // TODO(crbug.com/1258415): the |title| and |details| related methods should
+  // be replaced with convenience wrapper around |title_vector| and
+  // |details_vector|.
   const std::u16string& title() const { return metadata_->title; }
   const Tags& title_tags() const { return metadata_->title_tags; }
   const std::u16string& details() const { return metadata_->details; }

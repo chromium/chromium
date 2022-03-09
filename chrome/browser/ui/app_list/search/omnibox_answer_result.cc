@@ -13,6 +13,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/app_list/app_list_controller_delegate.h"
 #include "chrome/browser/ui/app_list/search/common/icon_constants.h"
+#include "chrome/browser/ui/app_list/search/common/search_result_util.h"
 #include "chrome/browser/ui/app_list/search/omnibox_util.h"
 #include "chrome/browser/ui/app_list/search/search_tags_util.h"
 #include "chrome/grit/generated_resources.h"
@@ -55,14 +56,6 @@ ChromeSearchResult::IconInfo CreateAnswerIconInfo(
   return ChromeSearchResult::IconInfo(icon, dimension);
 }
 
-// Creates a TextItem without tags.
-TextItem CreateTextItem(const std::u16string& text) {
-  TextItem text_item(TextType::kString);
-  text_item.SetText(text);
-  text_item.SetTextTags({});
-  return text_item;
-}
-
 TextItem TextFieldToTextItem(const SuggestionAnswer::TextField& text_field) {
   TextItem text_item(TextType::kString);
   text_item.SetText(text_field.text());
@@ -90,7 +83,7 @@ std::vector<TextItem> ImageLineToTextVector(
   std::vector<TextItem> text_vector;
   for (const auto& text_field : line.text_fields()) {
     if (!text_vector.empty()) {
-      text_vector.push_back(CreateTextItem(u" "));
+      text_vector.push_back(CreateStringTextItem(u" "));
     }
     text_vector.push_back(TextFieldToTextItem(text_field));
   }
@@ -105,7 +98,7 @@ void AppendAdditionalText(const SuggestionAnswer::ImageLine& line,
     return;
 
   if (!text_vector.empty()) {
-    text_vector.push_back(CreateTextItem(u" "));
+    text_vector.push_back(CreateStringTextItem(u" "));
   }
 
   text_vector.push_back(TextFieldToTextItem(*line.additional_text()));
@@ -143,24 +136,12 @@ std::vector<TextItem> AddBoldTags(std::vector<TextItem> text_vector) {
   return bolded_vector;
 }
 
-// TODO(crbug.com/1250154): Remove non-a11y references to this once the
-// productivity launcher is enabled.
-std::u16string TextVectorToString(const std::vector<TextItem>& text_vector) {
-  std::vector<std::u16string> text;
-  for (const auto& text_item : text_vector) {
-    if (text_item.GetType() == TextType::kString) {
-      text.push_back(text_item.GetText());
-    }
-  }
-  return base::StrCat(text);
-}
-
 std::u16string ComputeAccessibleName(
     const std::vector<std::vector<TextItem>>& text_vectors) {
   std::vector<std::u16string> text;
   for (const auto& text_vector : text_vectors) {
     if (!text_vector.empty()) {
-      text.push_back(TextVectorToString(text_vector));
+      text.push_back(StringFromTextVector(text_vector));
     }
   }
   return base::JoinString(text, u", ");
@@ -237,7 +218,7 @@ void OmniboxAnswerResult::UpdateTitleAndDetails() {
         MatchFieldsToTextVector(match_.contents, match_.contents_class);
     if (match_.description.empty()) {
       SetTitleTextVector(contents_vector);
-      SetDetailsTextVector({CreateTextItem(query_)});
+      SetDetailsTextVector({CreateStringTextItem(query_)});
     } else {
       SetTitleTextVector(MatchFieldsToTextVector(match_.description,
                                                  match_.description_class));
@@ -300,7 +281,7 @@ void OmniboxAnswerResult::UpdateClassicTitleAndDetails() {
 
     auto details_vector = ImageLineToTextVector(match_.answer->second_line());
     AppendAdditionalText(match_.answer->second_line(), details_vector);
-    SetDetails(TextVectorToString(details_vector));
+    SetDetails(StringFromTextVector(details_vector));
   }
 }
 
