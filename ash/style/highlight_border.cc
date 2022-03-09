@@ -8,6 +8,7 @@
 #include "ash/public/cpp/style/scoped_light_mode_as_default.h"
 #include "ash/style/ash_color_provider.h"
 #include "ui/gfx/canvas.h"
+#include "ui/gfx/geometry/dip_util.h"
 #include "ui/views/view.h"
 
 namespace ash {
@@ -51,15 +52,23 @@ void HighlightBorder::Paint(const views::View& view, gfx::Canvas* canvas) {
   flags.setAntiAlias(true);
 
   const float half_thickness = kHighlightBorderThickness / 2.0f;
-  gfx::RectF outer_border_bounds(view.GetLocalBounds());
-  outer_border_bounds.Inset(half_thickness, half_thickness);
-  canvas->DrawRoundRect(outer_border_bounds, corner_radius_, flags);
+  const gfx::Rect bounds = view.GetLocalBounds();
 
-  gfx::RectF inner_border_bounds(view.GetLocalBounds());
+  // Scale bounds and corner radius with device scale factor to make sure
+  // border bounds match content bounds but keep border stroke width the same.
+  const float dsf = canvas->UndoDeviceScaleFactor();
+  const gfx::RectF pixel_bounds = gfx::ConvertRectToPixels(bounds, dsf);
+  const float scaled_corner_radius = dsf * corner_radius_;
+  gfx::RectF outer_border_bounds(pixel_bounds);
+
+  outer_border_bounds.Inset(half_thickness, half_thickness);
+  canvas->DrawRoundRect(outer_border_bounds, scaled_corner_radius, flags);
+
+  gfx::RectF inner_border_bounds(pixel_bounds);
   inner_border_bounds.Inset(gfx::Insets(kHighlightBorderThickness));
   inner_border_bounds.Inset(half_thickness, half_thickness);
   flags.setColor(inner_color);
-  canvas->DrawRoundRect(inner_border_bounds, corner_radius_, flags);
+  canvas->DrawRoundRect(inner_border_bounds, scaled_corner_radius, flags);
 }
 
 gfx::Insets HighlightBorder::GetInsets() const {
