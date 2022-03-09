@@ -138,12 +138,13 @@ base::FilePath GetVersionedFileName(base::StringPiece input_language,
       // January 2020: Update fa-IR dictionaries from upstream.
       {"fa-IR", "-9-0"},
 
-      // March 2022: Update en-* dictionaries from upstream.
-      {"en-AU", "-10-0"},
-      {"en-CA", "-10-0"},
-      {"en-GB", "-10-0"},
-      {"en-GB-oxendict", "-10-0"},
-      {"en-US", "-10-0"},
+      // March 2022: Update en-* dictionaries from upstream and add "Kyiv" to
+      // those dictionaries.
+      {"en-AU", "-10-1"},
+      {"en-CA", "-10-1"},
+      {"en-GB", "-10-1"},
+      {"en-GB-oxendict", "-10-1"},
+      {"en-US", "-10-1"},
 
       // March 2022: Update uk-UA dictionary from upstream.
       {"uk-UA", "-5-0"},
