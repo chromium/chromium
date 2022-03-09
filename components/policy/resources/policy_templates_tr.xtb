@@ -1237,6 +1237,7 @@ Bu politikayı devre dışı bırakırsanız web sayfasını URL yoluyla belirli
 <translation id="2355876547176311490">Uzaktan erişim ana makinesi tarafından geçiş sunucuları kullanılmasını devre dışı bırak</translation>
 <translation id="2358176879566587521">Bu politika kullanımdan kaldırılmıştır. <ph name="PRODUCT_NAME" /> ürününün bu versiyonuyla uyumlu değildir. Daha fazla bilgiyi https://support.google.com/chrome/a/answer/7643500 adresinde bulabilirsiniz</translation>
 <translation id="2362469626417133796">Yeniden başlatma zaman aralığı</translation>
+<translation id="2362539163677485510">Bulut politikasının kayıt jetonu</translation>
 <translation id="2363928351203698966">Politika geçerli bir değere ayarlanırsa <ph name="PRODUCT_NAME" /> belirtilen sürümden daha eski SSL/TLS sürümlerini kullanmaz. Tanınmayan değerler yok sayılır.
 
       Bu politika ayarlanmazsa <ph name="PRODUCT_NAME" />; TLS 1.0 ve TLS 1.1 için hata gösterir, ancak kullanıcı bunu atlayabilir.

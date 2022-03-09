@@ -1262,6 +1262,7 @@ Si esta política se establece en True, <ph name="PRODUCT_OS_NAME" /> intentará
 <translation id="2355876547176311490">Inhabilitar el uso de servidores de retransmisión por parte del host de acceso remoto</translation>
 <translation id="2358176879566587521">Se ha retirado esta política. No es compatible con esta versión de <ph name="PRODUCT_NAME" />. Consulta https://support.google.com/chrome/a/answer/7643500</translation>
 <translation id="2362469626417133796">Periodo de reinicio</translation>
+<translation id="2362539163677485510">El token de registro de la política relativa a la nube</translation>
 <translation id="2363928351203698966">Si se le asigna un valor válido a esta política, <ph name="PRODUCT_NAME" /> no podrá usar las versiones de SSL/TLS anteriores a la versión especificada. Los valores que no se reconozcan se ignorarán.
 
       Si no se establece esta política, <ph name="PRODUCT_NAME" /> mostrará un error para las versiones TLS 1.0 y TLS 1.1, pero el usuario podrá evitarlo.

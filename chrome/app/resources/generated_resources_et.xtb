@@ -2503,6 +2503,7 @@ väljasuumimiseks klahvikombinatsiooni Ctrl + Alt + Ereduse vähendamine.</trans
 <translation id="346298925039590474">See mobiilsidevõrk on saadaval kõigile selle seadme kasutajatele</translation>
 <translation id="3464145797867108663">Lisa tööprofiil</translation>
 <translation id="346431825526753">Seda lastekontot haldab <ph name="CUSTODIAN_EMAIL" />.</translation>
+<translation id="346546413339447252">Hankige kaupmeeste <ph name="MERCHANT_NAME_1" />, <ph name="MERCHANT_NAME_2" /> ja teiste juures allahindlusi</translation>
 <translation id="3468298837301810372">Silt</translation>
 <translation id="3468999815377931311">Android-telefon</translation>
 <translation id="3469583217479686109">Valikutööriist</translation>
@@ -2947,6 +2948,7 @@ väljasuumimiseks klahvikombinatsiooni Ctrl + Alt + Ereduse vähendamine.</trans
 <translation id="3879748587602334249">Allalaadimishaldur</translation>
 <translation id="3882165008614329320">Olemasolev video kaamerast või failist</translation>
 <translation id="3883306461188700142">Sisestage teksti oma häälega. Vajutage klahvikombinatsiooni Otsing + D, seejärel alustage rääkimist.</translation>
+<translation id="3883482240657453056">Hankige kaupmeeste <ph name="MERCHANT_NAME_1" /> ja <ph name="MERCHANT_NAME_2" /> juures allahindlusi</translation>
 <translation id="3884152383786131369">Mitmes keeles saadaval olev veebisisu esitatakse loendi esimeses toetatud keeles. Need eelistused sünkroonitakse teie brauseri seadetega. <ph name="BEGIN_LINK_LEARN_MORE" />Lisateave<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="3885112598747515383">Värskendusi haldab teie administraator</translation>
 <translation id="3886446263141354045">Teie juurdepääsutaotlus sellele saidile saadeti kasutajale <ph name="NAME" /></translation>

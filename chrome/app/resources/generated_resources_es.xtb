@@ -2497,6 +2497,7 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="346298925039590474">Esta red móvil estará disponible para todos los usuarios de este dispositivo</translation>
 <translation id="3464145797867108663">Añadir perfil de trabajo</translation>
 <translation id="346431825526753">Esta es una cuenta infantil administrada por <ph name="CUSTODIAN_EMAIL" />.</translation>
+<translation id="346546413339447252">Recibir descuentos de <ph name="MERCHANT_NAME_1" />, <ph name="MERCHANT_NAME_2" /> y más</translation>
 <translation id="3468298837301810372">Etiqueta</translation>
 <translation id="3468999815377931311">Teléfono Android</translation>
 <translation id="3469583217479686109">Herramienta de selección</translation>
@@ -2941,6 +2942,7 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="3879748587602334249">Administrador de descargas</translation>
 <translation id="3882165008614329320">Vídeo de la cámara o un archivo</translation>
 <translation id="3883306461188700142">Escribe con la voz. Pulsa Buscar + D y empieza a hablar.</translation>
+<translation id="3883482240657453056">Recibir descuentos de <ph name="MERCHANT_NAME_1" /> y <ph name="MERCHANT_NAME_2" /></translation>
 <translation id="3884152383786131369">El contenido web que esté disponible en varios idiomas usará el primer idioma admitido de esta lista. Estas preferencias se sincronizan con la configuración de tu navegador. <ph name="BEGIN_LINK_LEARN_MORE" />Más información<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="3885112598747515383">Las actualizaciones las gestiona tu administrador</translation>
 <translation id="3886446263141354045">Tu solicitud de acceso a este sitio web se ha enviado a <ph name="NAME" /></translation>

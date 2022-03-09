@@ -2491,6 +2491,7 @@
 <translation id="346298925039590474">该移动网络将可供此设备上的所有用户使用</translation>
 <translation id="3464145797867108663">添加工作资料</translation>
 <translation id="346431825526753">此帐号是由 <ph name="CUSTODIAN_EMAIL" /> 管理的未成年人帐号。</translation>
+<translation id="346546413339447252">获取<ph name="MERCHANT_NAME_1" />和<ph name="MERCHANT_NAME_2" />等商家的折扣</translation>
 <translation id="3468298837301810372">标签</translation>
 <translation id="3468999815377931311">Android 手机</translation>
 <translation id="3469583217479686109">选择工具</translation>
@@ -2935,6 +2936,7 @@
 <translation id="3879748587602334249">下载管理器</translation>
 <translation id="3882165008614329320">来自摄像头或文件的现有视频</translation>
 <translation id="3883306461188700142">使用语音输入内容。按搜索键 + D 键，然后开始说话。</translation>
+<translation id="3883482240657453056">获取<ph name="MERCHANT_NAME_1" />和<ph name="MERCHANT_NAME_2" />的折扣</translation>
 <translation id="3884152383786131369">能以多种语言显示的网页内容将会使用此列表中第一项受支持的语言。这些偏好设置会与您的浏览器设置同步。<ph name="BEGIN_LINK_LEARN_MORE" />了解详情<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="3885112598747515383">更新是由您的管理员管理</translation>
 <translation id="3886446263141354045">系统已将您想访问此网站的请求发送给<ph name="NAME" /></translation>

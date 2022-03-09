@@ -689,7 +689,7 @@ Rechten die je al hebt gegeven aan apps, kunnen van toepassing zijn op dit accou
 <translation id="1660763353352708040">Probleem met voedingsadapter</translation>
 <translation id="1661156625580498328">AES-encryptie afdwingen (aanbevolen).</translation>
 <translation id="16620462294541761">Je wachtwoord kan niet worden geverifieerd. Probeer het opnieuw.</translation>
-<translation id="1662777896967868795">Aan/Wordt automatisch uitgezet bij zonsopgang</translation>
+<translation id="1662777896967868795">Aan/Wordt automatisch uitgezet bij zonsopkomst</translation>
 <translation id="166278006618318542">Algoritme van openbare sleutel van entiteit</translation>
 <translation id="1662801900924515589"><ph name="APP" /> is geïnstalleerd</translation>
 <translation id="1666232093776384142">Beveiliging voor gegevenstoegang voor randapparaten uitzetten</translation>
@@ -2094,7 +2094,7 @@ Als je later besluit dat je niet wilt dat je kind Voice Match gebruikt, verwijde
 <translation id="3027296729579831126">Dichtbij delen aanzetten</translation>
 <translation id="3029466929721441205">Stylustools in plank bekijken</translation>
 <translation id="3030311804857586740">{NUM_DAYS,plural, =1{<ph name="MANAGER" /> vereist dat je vandaag een update downloadt. De update wordt automatisch gedownload als je verbinding maakt met internet.}other{<ph name="MANAGER" /> vereist dat je vóór de deadline een update downloadt. De update wordt automatisch gedownload als je verbinding maakt met internet.}}</translation>
-<translation id="3030967311408872958">Zonsondergang tot zonsopgang</translation>
+<translation id="3030967311408872958">Zonsondergang tot zonsopkomst</translation>
 <translation id="3031417829280473749">Agente X</translation>
 <translation id="3031557471081358569">Selecteer items die je wilt importeren:</translation>
 <translation id="3032587662022429783">Meer informatie over diagnostische en gebruiksgegevens</translation>
@@ -3207,7 +3207,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="4132364317545104286">Naam van profiel voor e-simkaart wijzigen</translation>
 <translation id="4133076602192971179">Open de app om je wachtwoord te wijzigen</translation>
 <translation id="4135746311382563554">Aanvullende servicevoorwaarden van Google Chrome en Chrome OS</translation>
-<translation id="4136203100490971508">Nachtverlichting wordt automatisch uitgezet bij zonsopgang</translation>
+<translation id="4136203100490971508">Nachtverlichting wordt automatisch uitgezet bij zonsopkomst</translation>
 <translation id="41365691917097717">Als je doorgaat, wordt ADB-foutopsporing aangezet om Android-apps te maken en te testen. Let op: Met deze actie sta je toe dat Android-apps worden geïnstalleerd die niet door Google zijn geverifieerd. Als je deze functie wilt uitzetten, moeten de fabrieksinstellingen van je apparaat worden hersteld.</translation>
 <translation id="4138267921960073861">Gebruikersnamen en foto's in het inlogscherm bekijken</translation>
 <translation id="4138598238327913711">Grammaticacontrole is momenteel alleen beschikbaar voor het Engels</translation>
@@ -8085,7 +8085,7 @@ Op <ph name="BEGIN_LINK2" />policies.google.com<ph name="END_LINK2" /> vind je m
 <translation id="9148058034647219655">Sluiten</translation>
 <translation id="9148126808321036104">Opnieuw inloggen</translation>
 <translation id="9148963623915467028">Deze site heeft toegang tot je locatie.</translation>
-<translation id="9149529198050266366">De donkere modus wordt automatisch uitgezet bij zonsopgang</translation>
+<translation id="9149529198050266366">De donkere modus wordt automatisch uitgezet bij zonsopkomst</translation>
 <translation id="9149866541089851383">Bewerken...</translation>
 <translation id="9150045010208374699">Je camera gebruiken</translation>
 <translation id="9150079578948279438">Kan profiel niet verwijderen. Probeer het opnieuw of neem contact op met je provider voor technische support.</translation>

@@ -1263,6 +1263,7 @@ Si vous la désactivez, le défilement des pages Web vers des fragments de texte
 <translation id="2355876547176311490">Désactiver l'utilisation des serveurs de relais pour l'hôte d'accès à distance</translation>
 <translation id="2358176879566587521">Cette règle est supprimée. Elle n'est pas compatible avec cette version de <ph name="PRODUCT_NAME" />. Pour en savoir plus, rendez-vous sur https://support.google.com/chrome/a/answer/7643500.</translation>
 <translation id="2362469626417133796">Fenêtre de redémarrage</translation>
+<translation id="2362539163677485510">Jeton d'enregistrement des règles relatives au cloud</translation>
 <translation id="2363928351203698966">Si cette règle est définie sur une valeur valide, <ph name="PRODUCT_NAME" /> n'utilise pas de versions SSL/TLS antérieures à celle spécifiée. Les valeurs non reconnues sont ignorées.
 
       Si cette règle n'est pas configurée, un message d'erreur concernant TLS 1.0 et TLS 1.1 s'affiche dans <ph name="PRODUCT_NAME" />. Toutefois, l'utilisateur peut passer outre.

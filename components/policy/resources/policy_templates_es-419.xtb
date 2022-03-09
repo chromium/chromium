@@ -1259,6 +1259,7 @@ Si la inhabilitas, se inhabilitará el desplazamiento de la página web a fragme
 <translation id="2355876547176311490">Inhabilitar el uso de servidores de retransmisión por parte del host de acceso remoto</translation>
 <translation id="2358176879566587521">Se quita esta política. No es compatible con esta versión de <ph name="PRODUCT_NAME" />. Obtén más información en https://support.google.com/chrome/a/answer/7643500</translation>
 <translation id="2362469626417133796">Lapso para el reinicio</translation>
+<translation id="2362539163677485510">El token de inscripción de la política de nube</translation>
 <translation id="2363928351203698966">Si estableces la política en un valor válido, <ph name="PRODUCT_NAME" /> no usará versiones de SSL/TLS anteriores a las especificadas. Se ignorarán los valores que no se reconozcan.
 
       Si no estableces esta política, <ph name="PRODUCT_NAME" /> mostrará un mensaje de error para TLS 1.0 y TLS 1.1, pero el usuario podrá omitirlo.

@@ -2496,6 +2496,7 @@ i Ctrl+Alt+disminueix la brillantor per reduir.</translation>
 <translation id="346298925039590474">Aquesta xarxa mòbil estarà disponible per a tots els usuaris d'aquest dispositiu</translation>
 <translation id="3464145797867108663">Afegeix un perfil de treball</translation>
 <translation id="346431825526753">Aquest és un compte infantil gestionat per <ph name="CUSTODIAN_EMAIL" />.</translation>
+<translation id="346546413339447252">Obtén descomptes per a <ph name="MERCHANT_NAME_1" />, <ph name="MERCHANT_NAME_2" /> i més</translation>
 <translation id="3468298837301810372">Etiqueta</translation>
 <translation id="3468999815377931311">Telèfon Android</translation>
 <translation id="3469583217479686109">Eina de selecció</translation>
@@ -2940,6 +2941,7 @@ i Ctrl+Alt+disminueix la brillantor per reduir.</translation>
 <translation id="3879748587602334249">Gestor de baixades</translation>
 <translation id="3882165008614329320">Vídeo existent de la càmera o d'un fitxer</translation>
 <translation id="3883306461188700142">Escriu amb la veu. Prem Cerca+D i comença a parlar.</translation>
+<translation id="3883482240657453056">Obtén descomptes per a <ph name="MERCHANT_NAME_1" /> i <ph name="MERCHANT_NAME_2" /></translation>
 <translation id="3884152383786131369">El contingut web disponible en diversos idiomes utilitzarà el primer idioma admès d'aquesta llista. Aquestes preferències se sincronitzen amb les opcions de configuració del navegador. <ph name="BEGIN_LINK_LEARN_MORE" />Més informació<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="3885112598747515383">El teu administrador gestiona les actualitzacions</translation>
 <translation id="3886446263141354045">La teva sol·licitud per accedir a aquest lloc s'ha enviat a <ph name="NAME" /></translation>

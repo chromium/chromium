@@ -2495,6 +2495,7 @@ Sunucunun mesajı: <ph name="SERVER_MSG" /></translation>
 <translation id="346298925039590474">Bu mobil ağ, bu cihazdaki tüm kullanıcılar tarafından kullanılabilir</translation>
 <translation id="3464145797867108663">Çalışma profili ekle</translation>
 <translation id="346431825526753">Bu hesap çocuklar içindir ve <ph name="CUSTODIAN_EMAIL" /> tarafından yönetilmektedir</translation>
+<translation id="346546413339447252"><ph name="MERCHANT_NAME_1" />, <ph name="MERCHANT_NAME_2" /> ve diğer satıcılardan indirimli alışveriş yapın</translation>
 <translation id="3468298837301810372">Etiket</translation>
 <translation id="3468999815377931311">Android telefon</translation>
 <translation id="3469583217479686109">Seçim Aracı</translation>
@@ -2938,6 +2939,7 @@ Sunucunun mesajı: <ph name="SERVER_MSG" /></translation>
 <translation id="3879748587602334249">İndirme yöneticisi</translation>
 <translation id="3882165008614329320">Kameradan veya dosyadan mevcut video</translation>
 <translation id="3883306461188700142">Sesinizle yazın. Arama + D tuşuna basıp konuşmaya başlayın.</translation>
+<translation id="3883482240657453056"><ph name="MERCHANT_NAME_1" /> ve <ph name="MERCHANT_NAME_2" /> satıcılarından indirimli alışveriş yapın</translation>
 <translation id="3884152383786131369">Birden fazla dilde sunulan web içeriği bu listedeki desteklenen ilk dili kullanır. Bu tercihler, tarayıcı ayarlarınızla senkronize edilir. <ph name="BEGIN_LINK_LEARN_MORE" />Daha fazla bilgi<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="3885112598747515383">Güncellemeler yöneticiniz tarafından yönetilmektedir</translation>
 <translation id="3886446263141354045">Bu siteye erişim isteğiniz şu kişiye gönderildi: <ph name="NAME" /></translation>

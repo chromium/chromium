@@ -1229,6 +1229,7 @@
 <translation id="2355876547176311490">禁止远程访问主机使用中继服务器</translation>
 <translation id="2358176879566587521">此政策已被移除。它与这个版本的 <ph name="PRODUCT_NAME" /> 不兼容。如需了解详情，请访问 https://support.google.com/chrome/a/answer/7643500</translation>
 <translation id="2362469626417133796">重新启动时间范围</translation>
+<translation id="2362539163677485510">云政策的注册令牌</translation>
 <translation id="2363928351203698966">如果此政策设为有效值，<ph name="PRODUCT_NAME" /> 将不会使用低于指定版本的 SSL/TLS 版本。无法识别的值都会被忽略。
 
       如果此政策未设置，<ph name="PRODUCT_NAME" /> 将会针对 TLS 1.0 和 TLS 1.1 显示错误，但用户可以自行绕过。

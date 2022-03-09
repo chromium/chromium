@@ -1257,6 +1257,7 @@ Lasciare il criterio non impostato significa che nessuna estensione è esente da
 <translation id="2355876547176311490">Disattiva l'utilizzo dei relay server per l'host di accesso remoto</translation>
 <translation id="2358176879566587521">Il criterio è rimosso. Non è compatibile con questa versione di <ph name="PRODUCT_NAME" />. Leggi ulteriori informazioni all'indirizzo https://support.google.com/chrome/a/answer/7643500</translation>
 <translation id="2362469626417133796">Intervallo di tempo per il riavvio</translation>
+<translation id="2362539163677485510">Il token di registrazione della norma relativa al cloud</translation>
 <translation id="2363928351203698966">Se per il criterio viene impostato un valore valido, <ph name="PRODUCT_NAME" /> non utilizzerà versioni SSL/TLS precedenti alla versione specificata. I valori non riconosciuti vengono ignorati.
 
       Se il criterio non viene impostato, <ph name="PRODUCT_NAME" /> mostra un errore per TLS 1.0 e TLS 1.1, ma l'utente può ignorarlo.

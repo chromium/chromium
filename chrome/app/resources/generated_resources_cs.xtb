@@ -2498,6 +2498,7 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
 <translation id="346298925039590474">Tato mobilní síť bude k dispozici všem uživatelům tohoto zařízení</translation>
 <translation id="3464145797867108663">Přidat pracovní profil</translation>
 <translation id="346431825526753">Toto je dětský účet spravovaný uživatelem <ph name="CUSTODIAN_EMAIL" />.</translation>
+<translation id="346546413339447252">Získat slevy u obchodníků <ph name="MERCHANT_NAME_1" />, <ph name="MERCHANT_NAME_2" /> a dalších</translation>
 <translation id="3468298837301810372">Štítek</translation>
 <translation id="3468999815377931311">Telefon Android</translation>
 <translation id="3469583217479686109">Nástroj Výběr</translation>
@@ -2942,6 +2943,7 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
 <translation id="3879748587602334249">Správce stahování</translation>
 <translation id="3882165008614329320">Existující video z fotoaparátu nebo soubor</translation>
 <translation id="3883306461188700142">Zadávejte text hlasově. Stiskněte Hledat + D a začněte mluvit.</translation>
+<translation id="3883482240657453056">Získat slevy u obchodníků <ph name="MERCHANT_NAME_1" /> a <ph name="MERCHANT_NAME_2" /></translation>
 <translation id="3884152383786131369">U webového obsahu, který je k dispozici v několika jazycích, se použije první jazyk v seznamu. Tyto předvolby jsou synchronizovány s nastavením prohlížeče. <ph name="BEGIN_LINK_LEARN_MORE" />Další informace<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="3885112598747515383">Aktualizace spravuje administrátor</translation>
 <translation id="3886446263141354045">Vaše žádost o přístup k tomuto webu byla odeslána uživateli <ph name="NAME" />.</translation>

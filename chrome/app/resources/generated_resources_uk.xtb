@@ -2515,6 +2515,7 @@
 <translation id="346298925039590474">Усі користувачі пристрою матимуть доступ до цієї мобільної мережі</translation>
 <translation id="3464145797867108663">Додати робочий профіль</translation>
 <translation id="346431825526753"><ph name="CUSTODIAN_EMAIL" /> керує цим обліковим записом для дітей.</translation>
+<translation id="346546413339447252">Отримуйте знижки в магазинах "<ph name="MERCHANT_NAME_1" />", "<ph name="MERCHANT_NAME_2" />" та інших</translation>
 <translation id="3468298837301810372">Мітка</translation>
 <translation id="3468999815377931311">Телефон Android</translation>
 <translation id="3469583217479686109">Інструмент вибору</translation>
@@ -2959,6 +2960,7 @@
 <translation id="3879748587602334249">Менеджер завантажень</translation>
 <translation id="3882165008614329320">Наявні відео з камери або файлу</translation>
 <translation id="3883306461188700142">Вводьте текст голосом. Натисніть клавішу пошуку + D, а тоді почніть говорити.</translation>
+<translation id="3883482240657453056">Отримуйте знижки в магазинах "<ph name="MERCHANT_NAME_1" />" і "<ph name="MERCHANT_NAME_2" />"</translation>
 <translation id="3884152383786131369">Для веб-контенту, доступного багатьма мовами, використовуватиметься перший доступний варіант зі списку нижче. Ці параметри синхронізуються з налаштуваннями веб-переглядача. <ph name="BEGIN_LINK_LEARN_MORE" />Докладніше<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="3885112598747515383">Оновленнями керує адміністратор</translation>
 <translation id="3886446263141354045">Запит на доступ до цього сайту надіслано користувачу <ph name="NAME" /></translation>
@@ -5327,7 +5329,7 @@
 <translation id="6318944945640833942">Не вдалося виявити принтер. Введіть його адресу знову.</translation>
 <translation id="6321407676395378991">Увімкнути заставку</translation>
 <translation id="6322370287306604163">Розблоковуйте пристрій швидше за допомогою відбитка пальця</translation>
-<translation id="6324916366299863871">Змінення ярлика</translation>
+<translation id="6324916366299863871">Змінити ярлик</translation>
 <translation id="6325191661371220117">Вимкнути автозапуск</translation>
 <translation id="6326175484149238433">Видалити з Chrome</translation>
 <translation id="6326855256003666642">Кількість процесів, які використовуються розширеннями</translation>
