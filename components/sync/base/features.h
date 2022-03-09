@@ -17,10 +17,10 @@ inline constexpr base::Feature kAllowSilentTrustedVaultDeviceRegistration{
     "AllowSilentTrustedVaultDeviceRegistration",
     base::FEATURE_ENABLED_BY_DEFAULT};
 
-// Causes the device to advertise itself as a send-tab-to-self target regardless
-// of UserSelectableType::kTabs and SyncRequested.
-inline constexpr base::Feature kAlwaysReceiveSendTabToSelf{
-    "AlwaysReceiveSendTabToSelf", base::FEATURE_ENABLED_BY_DEFAULT};
+// Causes the device to be a valid send-tab-to-self target and sender,
+// regardless of UserSelectableType::kTabs and SyncRequested.
+inline constexpr base::Feature kDecoupleSendTabToSelfAndSyncSettings{
+    "DecoupleSendTabToSelfAndSyncSettings", base::FEATURE_ENABLED_BY_DEFAULT};
 
 // If enabled, EntitySpecifics will be cached in EntityMetadata in order to
 // prevent data loss caused by older clients dealing with unknown proto fields

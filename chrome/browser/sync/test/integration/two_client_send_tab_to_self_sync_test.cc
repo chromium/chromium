@@ -314,7 +314,8 @@ class TwoClientSendTabToSelfSyncTestWithAlwaysReceiveDisabled
     : public TwoClientSendTabToSelfSyncTest {
  public:
   TwoClientSendTabToSelfSyncTestWithAlwaysReceiveDisabled() {
-    feature_list_.InitAndDisableFeature(syncer::kAlwaysReceiveSendTabToSelf);
+    feature_list_.InitAndDisableFeature(
+        syncer::kDecoupleSendTabToSelfAndSyncSettings);
   }
 
  private:

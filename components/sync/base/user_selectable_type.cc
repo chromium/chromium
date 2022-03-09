@@ -6,8 +6,10 @@
 
 #include <type_traits>
 
+#include "base/feature_list.h"
 #include "base/notreached.h"
 #include "build/chromeos_buildflags.h"
+#include "components/sync/base/features.h"
 #include "components/sync/base/model_type.h"
 #include "components/sync/base/pref_names.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -93,9 +95,14 @@ UserSelectableTypeInfo GetUserSelectableTypeInfo(UserSelectableType type) {
     }
     case UserSelectableType::kReadingList:
       return {kReadingListTypeName, READING_LIST, {READING_LIST}};
-    case UserSelectableType::kTabs:
-      return {
-          kTabsTypeName, PROXY_TABS, {PROXY_TABS, SESSIONS, SEND_TAB_TO_SELF}};
+    case UserSelectableType::kTabs: {
+      ModelTypeSet model_type_group = {PROXY_TABS, SESSIONS};
+      if (!base::FeatureList::IsEnabled(
+              kDecoupleSendTabToSelfAndSyncSettings)) {
+        model_type_group.Put(SEND_TAB_TO_SELF);
+      }
+      return {kTabsTypeName, PROXY_TABS, model_type_group};
+    }
     case UserSelectableType::kWifiConfigurations: {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
       // SyncSettingsCategorization moves Wi-Fi configurations to Chrome OS

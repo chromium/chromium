@@ -53,7 +53,8 @@ std::string DeviceInfoSyncClientImpl::GetSigninScopedDeviceId() const {
 
 // syncer::DeviceInfoSyncClient:
 bool DeviceInfoSyncClientImpl::GetSendTabToSelfReceivingEnabled() const {
-  return base::FeatureList::IsEnabled(syncer::kAlwaysReceiveSendTabToSelf)
+  return base::FeatureList::IsEnabled(
+             syncer::kDecoupleSendTabToSelfAndSyncSettings)
              ? true
              : send_tab_to_self::IsReceivingEnabledByUserOnThisDevice(
                    profile_->GetPrefs());

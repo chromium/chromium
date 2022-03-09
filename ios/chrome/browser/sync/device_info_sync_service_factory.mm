@@ -50,7 +50,8 @@ class DeviceInfoSyncClient : public syncer::DeviceInfoSyncClient {
 
   // syncer::DeviceInfoSyncClient:
   bool GetSendTabToSelfReceivingEnabled() const override {
-    return base::FeatureList::IsEnabled(syncer::kAlwaysReceiveSendTabToSelf)
+    return base::FeatureList::IsEnabled(
+               syncer::kDecoupleSendTabToSelfAndSyncSettings)
                ? true
                : send_tab_to_self::IsReceivingEnabledByUserOnThisDevice(prefs_);
   }

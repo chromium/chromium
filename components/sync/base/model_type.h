@@ -263,10 +263,7 @@ constexpr ModelTypeSet UserTypes() {
 }
 
 // User types, which are not user-controlled.
-constexpr ModelTypeSet AlwaysPreferredUserTypes() {
-  return ModelTypeSet(DEVICE_INFO, USER_CONSENTS, SECURITY_EVENTS,
-                      SUPERVISED_USER_SETTINGS, SHARING_MESSAGE);
-}
+ModelTypeSet AlwaysPreferredUserTypes();
 
 // User types which are always encrypted.
 constexpr ModelTypeSet AlwaysEncryptedUserTypes() {

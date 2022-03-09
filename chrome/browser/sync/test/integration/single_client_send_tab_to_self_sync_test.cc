@@ -2,11 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/callback_list.h"
 #include "base/time/time.h"
+#include "build/build_config.h"
+#include "build/buildflag.h"
 #include "chrome/browser/history/history_service_factory.h"
 #include "chrome/browser/send_tab_to_self/send_tab_to_self_util.h"
 #include "chrome/browser/sync/send_tab_to_self_sync_service_factory.h"
 #include "chrome/browser/sync/test/integration/bookmarks_helper.h"
+#include "chrome/browser/sync/test/integration/secondary_account_helper.h"
 #include "chrome/browser/sync/test/integration/send_tab_to_self_helper.h"
 #include "chrome/browser/sync/test/integration/sync_integration_test_util.h"
 #include "chrome/browser/sync/test/integration/sync_service_impl_harness.h"
@@ -16,6 +20,7 @@
 #include "components/keyed_service/core/service_access_type.h"
 #include "components/send_tab_to_self/send_tab_to_self_model.h"
 #include "components/send_tab_to_self/send_tab_to_self_sync_service.h"
+#include "components/signin/public/identity_manager/account_info.h"
 #include "components/sync/base/time.h"
 #include "components/sync/protocol/entity_specifics.pb.h"
 #include "components/sync/protocol/send_tab_to_self_specifics.pb.h"
@@ -36,8 +41,14 @@ class SingleClientSendTabToSelfSyncTest : public SyncTest {
 
   ~SingleClientSendTabToSelfSyncTest() override {}
 
+  void SetUpInProcessBrowserTestFixture() override {
+    SyncTest::SetUpInProcessBrowserTestFixture();
+    test_signin_client_subscription_ =
+        secondary_account_helper::SetUpSigninClient(&test_url_loader_factory_);
+  }
+
  private:
-  base::test::ScopedFeatureList scoped_list_;
+  base::CallbackListSubscription test_signin_client_subscription_;
 };
 
 IN_PROC_BROWSER_TEST_F(SingleClientSendTabToSelfSyncTest,
@@ -132,14 +143,19 @@ IN_PROC_BROWSER_TEST_F(SingleClientSendTabToSelfSyncTest,
                   .Wait());
 }
 
+// An unconsented primary account is not supported on ChromeOS.
+#if !BUILDFLAG(IS_CHROMEOS)
 IN_PROC_BROWSER_TEST_F(SingleClientSendTabToSelfSyncTest,
-                       ShouldCleanupOnDisable) {
+                       ShouldCleanupOnSignout) {
   const GURL kUrl("https://www.example.com");
   const std::string kTitle("example");
   const base::Time kTime = base::Time::FromDoubleT(1);
   const std::string kTargetDeviceSyncCacheGuid("target");
 
-  ASSERT_TRUE(SetupSync()) << "SetupSync() failed.";
+  ASSERT_TRUE(SetupClients()) << "SetupClients() failed.";
+  AccountInfo account = secondary_account_helper::SignInUnconsentedAccount(
+      GetProfile(0), &test_url_loader_factory_, "user@g.com");
+  GetClient(0)->AwaitSyncTransportActive();
 
   send_tab_to_self::SendTabToSelfModel* model =
       SendTabToSelfSyncServiceFactory::GetForProfile(GetProfile(0))
@@ -147,13 +163,15 @@ IN_PROC_BROWSER_TEST_F(SingleClientSendTabToSelfSyncTest,
 
   ASSERT_TRUE(model->AddEntry(kUrl, kTitle, kTime, kTargetDeviceSyncCacheGuid));
 
-  GetClient(0)->DisableSyncForType(syncer::UserSelectableType::kTabs);
+  secondary_account_helper::SignOutAccount(
+      GetProfile(0), &test_url_loader_factory_, account.account_id);
 
   EXPECT_TRUE(send_tab_to_self_helper::SendTabToSelfUrlDeletedChecker(
                   SendTabToSelfSyncServiceFactory::GetForProfile(GetProfile(0)),
                   GURL(kUrl))
                   .Wait());
 }
+#endif  // !BUILDFLAG(IS_CHROMEOS)
 
 IN_PROC_BROWSER_TEST_F(SingleClientSendTabToSelfSyncTest,
                        ShouldNotUploadInSyncPausedState) {
