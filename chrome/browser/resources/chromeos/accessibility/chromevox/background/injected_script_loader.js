@@ -6,12 +6,7 @@
  * @fileoverview Responsible for loading scripts into the inject context.
  */
 
-goog.provide('InjectedScriptLoader');
-
-
-InjectedScriptLoader = class {
-  constructor() {}
-
+export class InjectedScriptLoader {
   /**
    * Loads a dictionary of file contents for Javascript files.
    * @param {Array<string>} files A list of file names.
@@ -55,4 +50,4 @@ InjectedScriptLoader = class {
       loadScriptAsCode(f);
     });
   }
-};
+}

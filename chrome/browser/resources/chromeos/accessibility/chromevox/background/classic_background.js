@@ -5,6 +5,7 @@
 /**
  * @fileoverview Script that runs on the background page.
  */
+import {InjectedScriptLoader} from './injected_script_loader.js';
 
 /**
  * This is the legacy ChromeVox background object.
