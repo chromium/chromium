@@ -7,6 +7,7 @@
 #include "ash/constants/ash_features.h"
 #include "ash/projector/projector_controller_impl.h"
 #include "ash/projector/ui/projector_color_button.h"
+#include "ash/public/cpp/projector/annotator_tool.h"
 #include "ash/public/cpp/shelf_config.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/shelf/shelf.h"
@@ -52,6 +53,9 @@ constexpr int kColorButtonViewRadius = 28;
 constexpr SkColor kRedPenColor = SkColorSetRGB(0xEA, 0x43, 0x35);
 constexpr SkColor kYellowPenColor = SkColorSetRGB(0xFB, 0xBC, 0x04);
 constexpr SkColor kBluePenColor = SkColorSetRGB(0x1A, 0x73, 0xE8);
+
+constexpr SkColor kPenColors[] = {kRedPenColor, kBluePenColor, SK_ColorWHITE,
+                                  kYellowPenColor, SK_ColorBLACK};
 
 // TODO(b/201664243): Use AnnotatorToolType.
 enum ProjectorTool { kToolNone, kToolPen };
@@ -189,32 +193,14 @@ void ProjectorAnnotationTray::ShowBubble() {
     marker_view_container->SetLayoutManager(std::move(box_layout));
 
     // TODO(b/201664243): Only draw outer circle on hover or selection.
-    marker_view_container->AddChildView(std::make_unique<ProjectorColorButton>(
-        base::BindRepeating(&ProjectorAnnotationTray::OnPenColorPressed,
-                            base::Unretained(this), kRedPenColor),
-        kRedPenColor, kColorButtonColorViewSize, kColorButtonViewRadius,
-        l10n_util::GetStringUTF16(IDS_RED_COLOR_BUTTON)));
-    marker_view_container->AddChildView(std::make_unique<ProjectorColorButton>(
-        base::BindRepeating(&ProjectorAnnotationTray::OnPenColorPressed,
-                            base::Unretained(this), kBluePenColor),
-        kBluePenColor, kColorButtonColorViewSize, kColorButtonViewRadius,
-        l10n_util::GetStringUTF16(IDS_BLUE_COLOR_BUTTON)));
-    marker_view_container->AddChildView(std::make_unique<ProjectorColorButton>(
-        base::BindRepeating(&ProjectorAnnotationTray::OnPenColorPressed,
-                            base::Unretained(this), SK_ColorWHITE),
-        SK_ColorWHITE, kColorButtonColorViewSize, kColorButtonViewRadius,
-        l10n_util::GetStringUTF16(IDS_WHITE_COLOR_BUTTON)));
-    marker_view_container->AddChildView(std::make_unique<ProjectorColorButton>(
-        base::BindRepeating(&ProjectorAnnotationTray::OnPenColorPressed,
-                            base::Unretained(this), kYellowPenColor),
-        kYellowPenColor, kColorButtonColorViewSize, kColorButtonViewRadius,
-        l10n_util::GetStringUTF16(IDS_YELLOW_COLOR_BUTTON)));
-    marker_view_container->AddChildView(std::make_unique<ProjectorColorButton>(
-        base::BindRepeating(&ProjectorAnnotationTray::OnPenColorPressed,
-                            base::Unretained(this), SK_ColorBLACK),
-        SK_ColorBLACK, kColorButtonColorViewSize, kColorButtonViewRadius,
-        l10n_util::GetStringUTF16(IDS_BLACK_COLOR_BUTTON)));
-
+    for (SkColor color : kPenColors) {
+      marker_view_container->AddChildView(
+          std::make_unique<ProjectorColorButton>(
+              base::BindRepeating(&ProjectorAnnotationTray::OnPenColorPressed,
+                                  base::Unretained(this), color),
+              color, kColorButtonColorViewSize, kColorButtonViewRadius,
+              l10n_util::GetStringUTF16(GetAccessibleNameForColor(color))));
+    }
     setup_layered_view(marker_view_container);
   }
 
@@ -266,18 +252,39 @@ void ProjectorAnnotationTray::DeactivateActiveTool() {
 }
 
 void ProjectorAnnotationTray::UpdateIcon() {
-  ProjectorTool tool = GetCurrentTool();
+  const ProjectorTool tool = GetCurrentTool();
   image_view_->SetImage(gfx::CreateVectorIcon(
       GetIconForTool(tool),
       AshColorProvider::Get()->GetContentLayerColor(
           AshColorProvider::ContentLayerType::kIconColorPrimary)));
-  SetIsActive(GetCurrentTool() == kToolNone);
+  SetIsActive(tool != kToolNone);
 }
 
 void ProjectorAnnotationTray::OnPenColorPressed(SkColor color) {
-  // TODO(b/201664243) Pass the color for the marker.
+  auto* projector_controller = ProjectorControllerImpl::Get();
+  DCHECK(projector_controller);
+  AnnotatorTool tool;
+  tool.color = color;
+  projector_controller->SetAnnotatorTool(tool);
   CloseBubble();
   UpdateIcon();
+}
+
+int ProjectorAnnotationTray::GetAccessibleNameForColor(SkColor color) {
+  switch (color) {
+    case kRedPenColor:
+      return IDS_RED_COLOR_BUTTON;
+    case kBluePenColor:
+      return IDS_BLUE_COLOR_BUTTON;
+    case SK_ColorWHITE:
+      return IDS_WHITE_COLOR_BUTTON;
+    case kYellowPenColor:
+      return IDS_YELLOW_COLOR_BUTTON;
+    case SK_ColorBLACK:
+      return IDS_BLACK_COLOR_BUTTON;
+  }
+  NOTREACHED();
+  return IDS_RED_COLOR_BUTTON;
 }
 
 }  // namespace ash

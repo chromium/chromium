@@ -35,7 +35,7 @@ struct ASH_PUBLIC_EXPORT AnnotatorTool {
   SkColor color = SK_ColorBLACK;
 
   // The size of the annotator stroke tip.
-  int size = 16;
+  int size = 4;
 
   // The type of the annotator tool.
   AnnotatorToolType type = AnnotatorToolType::kMarker;

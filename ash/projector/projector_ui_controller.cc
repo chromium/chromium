@@ -14,6 +14,7 @@
 #include "ash/public/cpp/notification_utils.h"
 #include "ash/public/cpp/projector/annotator_tool.h"
 #include "ash/public/cpp/projector/projector_annotator_controller.h"
+#include "ash/public/cpp/projector/projector_client.h"
 #include "ash/public/cpp/system/toast_data.h"
 #include "ash/public/cpp/window_properties.h"
 #include "ash/resources/vector_icons/vector_icons.h"
@@ -146,8 +147,11 @@ void ProjectorUiController::OnMarkerPressed() {
 }
 
 void ProjectorUiController::SetAnnotatorTool(const AnnotatorTool& tool) {
-  // TODO(b/216858461): Pass in default tool until color picker is implemented.
-  ash::ProjectorAnnotatorController::Get()->SetTool(AnnotatorTool());
+  if (!annotator_enabled_) {
+    ToggleAnnotator();
+    annotator_enabled_ = !annotator_enabled_;
+  }
+  ash::ProjectorAnnotatorController::Get()->SetTool(tool);
 }
 
 void ProjectorUiController::ResetTools() {
