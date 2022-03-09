@@ -69,3 +69,37 @@
 
 # crbug.com/1096612
 -All/SitePerProcessBrowserTest.DetachedIframeUnloadHandlerABCB/*
+
+# crbug.com/1304037
+-File/MediaTest.VideoBearMp4/0
+-File/MediaTest.VideoBearSilentMp4/0
+-File/MediaTest.VideoTulipWebm/0
+-Http/MediaTest.VideoBearMp4/0
+-Http/MediaTest.VideoBearSilentMp4/0
+-Http/MediaTest.VideoTulipWebm/0
+-MediaSessionPictureInPictureContentBrowserTest.ActionAvailableAfterEndOfStreamAndSrcUpdate
+-MediaSourceTest.Playback_Video_MP4_Audio_WEBM
+-MediaTest.VideoBearRotated0
+-MediaTest.VideoBearRotated180
+-MediaTest.VideoBearRotated270
+-MediaTest.VideoBearRotated90
+-MSE_ClearKey/EncryptedMediaTest.Playback_Encryption_CBCS_Video_CENC_Audio/0
+-MSE_ClearKey/EncryptedMediaTest.Playback_Encryption_CBCS/0
+-MSE_ClearKey/EncryptedMediaTest.Playback_Encryption_CENC_Video_CBCS_Audio/0
+-MSE_ClearKey/EncryptedMediaTest.Playback_Encryption_CENC/0
+-MSE_ClearKey/EncryptedMediaTest.Playback_VideoOnly_MP4_AV1_10bit/0
+-MSE_ClearKey/EncryptedMediaTest.Playback_VideoOnly_MP4_AV1/0
+-MSE_ClearKey/EncryptedMediaTest.Playback_VideoOnly_WebM_AV1_10bit/0
+-MSE_ClearKey/EncryptedMediaTest.Playback_VideoOnly_WebM_AV1/0
+-MSE_ExternalClearKey/EncryptedMediaTest.Playback_Encryption_CBCS_Video_CENC_Audio/0
+-MSE_ExternalClearKey/EncryptedMediaTest.Playback_Encryption_CBCS/0
+-MSE_ExternalClearKey/EncryptedMediaTest.Playback_Encryption_CENC_Video_CBCS_Audio/0
+-MSE_ExternalClearKey/EncryptedMediaTest.Playback_Encryption_CENC/0
+-MSE_ExternalClearKey/EncryptedMediaTest.Playback_VideoOnly_MP4_AV1_10bit/0
+-MSE_ExternalClearKey/EncryptedMediaTest.Playback_VideoOnly_MP4_AV1/0
+-MSE_ExternalClearKey/EncryptedMediaTest.Playback_VideoOnly_WebM_AV1_10bit/0
+-MSE_ExternalClearKey/EncryptedMediaTest.Playback_VideoOnly_WebM_AV1/0
+-SRC_ClearKey/EncryptedMediaTest.Playback_VideoOnly_WebM_AV1_10bit/0
+-SRC_ClearKey/EncryptedMediaTest.Playback_VideoOnly_WebM_AV1/0
+-SRC_ExternalClearKey/EncryptedMediaTest.Playback_VideoOnly_WebM_AV1_10bit/0
+-SRC_ExternalClearKey/EncryptedMediaTest.Playback_VideoOnly_WebM_AV1/0

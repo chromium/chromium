@@ -43,6 +43,15 @@
           'shards': 2,
         },
       },
+      'android-12-x64-rel': {
+        'args': [
+          # https://crbug.com/1289764
+          '--gtest_filter=-All/ChromeBrowsingDataLifetimeManagerScheduledRemovalTest.History/*',
+        ],
+        'swarming': {
+          'shards': 2,
+        },
+      },
       'android-marshmallow-arm64-rel': {
         'swarming': {
           'quickrun_shards': 3,
@@ -1304,7 +1313,7 @@
           '--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_12.content_browsertests.filter',
         ],
         'swarming': {
-          'shards': 20,
+          'shards': 25,
         },
       },
       'android-arm64-proguard-rel': {
