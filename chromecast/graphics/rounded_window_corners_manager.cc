@@ -8,6 +8,7 @@
 #include <string>
 #include <unordered_set>
 
+#include "base/containers/adapters.h"
 #include "base/containers/contains.h"
 #include "base/strings/string_number_conversions.h"
 #include "chromecast/graphics/cast_window_manager.h"
@@ -28,10 +29,9 @@ aura::Window* FindTopmostVisibleNonCornersWindow(
   if (base::Contains(observed_container_windows, window))
     return window;
 
-  for (auto it = window->children().rbegin(); it != window->children().rend();
-       ++it) {
+  for (auto* child : base::Reversed(window->children())) {
     found_window =
-        FindTopmostVisibleNonCornersWindow(*it, observed_container_windows);
+        FindTopmostVisibleNonCornersWindow(child, observed_container_windows);
     if (found_window)
       return found_window;
   }
