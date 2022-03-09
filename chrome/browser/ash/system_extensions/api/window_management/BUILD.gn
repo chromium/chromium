@@ -12,6 +12,7 @@ source_set("window_management") {
     "window_management_impl.h",
   ]
   deps = [
+    "//ash",
     "//chrome/browser/profiles:profile",
     "//components/services/app_service/public/cpp:instance_update",
     "//components/services/app_service/public/mojom",

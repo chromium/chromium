@@ -86,12 +86,22 @@ void CrosWindow::setFullscreen(bool fullscreen) {
   cros_window_management->SetFullscreen(window_->id, fullscreen);
 }
 
-bool CrosWindow::maximize() {
-  return false;
+void CrosWindow::maximize() {
+  auto* cros_window_management =
+      window_management_->GetCrosWindowManagementOrNull();
+  if (!cros_window_management) {
+    return;
+  }
+  cros_window_management->Maximize(window_->id);
 }
 
-bool CrosWindow::minimize() {
-  return false;
+void CrosWindow::minimize() {
+  auto* cros_window_management =
+      window_management_->GetCrosWindowManagementOrNull();
+  if (!cros_window_management) {
+    return;
+  }
+  cros_window_management->Minimize(window_->id);
 }
 
 bool CrosWindow::raise() {

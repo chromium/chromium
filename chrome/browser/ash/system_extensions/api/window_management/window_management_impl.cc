@@ -3,6 +3,8 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/ash/system_extensions/api/window_management/window_management_impl.h"
+
+#include "ash/wm/window_state.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/unguessable_token.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
@@ -70,6 +72,22 @@ void WindowManagementImpl::SetFullscreen(const base::UnguessableToken& id,
     return;
   }
   views::Widget::GetWidgetForNativeWindow(target)->SetFullscreen(fullscreen);
+}
+
+void WindowManagementImpl::Maximize(const base::UnguessableToken& id) {
+  aura::Window* target = GetWindow(id);
+  // TODO(b/223320570): Add error handling for stale ids.
+  if (target) {
+    WindowState::Get(target)->Maximize();
+  }
+}
+
+void WindowManagementImpl::Minimize(const base::UnguessableToken& id) {
+  aura::Window* target = GetWindow(id);
+  // TODO(b/223320570): Add error handling for stale ids.
+  if (target) {
+    WindowState::Get(target)->Minimize();
+  }
 }
 
 aura::Window* WindowManagementImpl::GetWindow(

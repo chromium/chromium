@@ -36,4 +36,10 @@ interface CrosWindowManagement {
 
   // Enable/disable fullscreen for window identified by id if one exists, else do nothing.
   SetFullscreen(mojo_base.mojom.UnguessableToken id, bool fullscreen);
+
+  // Maximizes the window identified by id if one exists, else do nothing.
+  Maximize(mojo_base.mojom.UnguessableToken id);
+
+  // Minimizes the window identified by id if one exists, else do nothing.
+  Minimize(mojo_base.mojom.UnguessableToken id);
 };
