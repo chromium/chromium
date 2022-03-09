@@ -40,10 +40,10 @@ int main(int argc, char* argv[]) {
   // Tasks are run asynchronously, so this will print before the task runs.
   LOG(INFO) << "Going to sleep for " << duration_seconds << " seconds...";
 
-  // Runs all the tasks that have been posted to the |SequencedTaskRunner|.
+  // Runs all the tasks that have been posted to the task runner.
   run_loop.Run();
 
-  // This will NOT complete until |run_loop.QuitClosure()| runs.
+  // This will NOT run until after `run_loop.QuitClosure()` is called.
   LOG(INFO) << "I'm awake!";
 
   return 0;
