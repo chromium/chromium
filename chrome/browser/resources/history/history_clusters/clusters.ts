@@ -95,6 +95,14 @@ class HistoryClustersElement extends PolymerElement {
       result_: Object,
 
       /**
+       * Boolean determining if spinner shows instead of load more button.
+       */
+      showSpinner_: {
+        type: Boolean,
+        value: false,
+      },
+
+      /**
        * The list of visits to be removed. A non-empty array indicates a pending
        * remove request to the browser.
        */
@@ -115,6 +123,7 @@ class HistoryClustersElement extends PolymerElement {
   private onVisitsRemovedListenerId_: number|null = null;
   private pageHandler_: PageHandlerRemote;
   private result_: QueryResult;
+  private showSpinner_: boolean;
   private visitsToBeRemoved_: Array<URLVisit>;
 
   //============================================================================
@@ -171,6 +180,7 @@ class HistoryClustersElement extends PolymerElement {
 
   private onLoadMoreButtonClick_() {
     if (this.result_ && this.result_.canLoadMore) {
+      this.showSpinner_ = true;
       // Prevent sending further load-more requests until this one finishes.
       this.set('result_.canLoadMore', false);
       this.pageHandler_.loadMoreClusters(this.result_.query);
@@ -321,6 +331,7 @@ class HistoryClustersElement extends PolymerElement {
         this.onLoadMoreButtonClick_();
       }
     });
+    this.showSpinner_ = false;
   }
 
   /**

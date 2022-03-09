@@ -47,9 +47,12 @@
 </iron-list>
 <div id="footer" hidden="[[getLoadMoreButtonHidden_(
     result_, result_.clusters.*, result_.canLoadMore)]]">
-  <cr-button id="loadMoreButton" on-click="onLoadMoreButtonClick_">
+  <cr-button id="loadMoreButton" on-click="onLoadMoreButtonClick_"
+             hidden$="[[showSpinner_]]">
     $i18n{loadMoreButtonLabel}
   </cr-button>
+  <iron-icon src="chrome://resources/images/throbber_small.svg"
+             hidden$="[[!showSpinner_]]"></iron-icon>
 </div>
 <iron-scroll-threshold id="scrollThreshold"
     lower-threshold="500" on-lower-threshold="onScrolledToBottom_">
