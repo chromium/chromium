@@ -246,15 +246,14 @@ or `base::PlatformThread::Sleep`).
 
 Take the given (slow) function to find a non-trivial factor of a given integer:
 ```cpp
-bool FindNonTrivialFactor(int n, int* factor) {
-  // Really naive algorithm.
-  for (int i = n-1; i >= 2; --i) {
-    if (n % i == 0) {
-      *factor = i;
-      return true;
-    }
-  }
-  return false;
+absl::optional<int> FindNonTrivialFactor(int n) {
+  // Really naive algorithm.
+  for (int i = 2; i < n; ++i) {
+    if (n % i == 0) {
+      return i;
+    }
+  }
+  return absl::nullopt;
 }
 ```
 Write a command-line utility `factor` that takes a number, posts a task to the
