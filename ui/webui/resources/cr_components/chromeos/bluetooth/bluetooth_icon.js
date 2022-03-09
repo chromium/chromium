@@ -10,6 +10,7 @@
 import './bluetooth_icons.js';
 
 import {html, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {hasDefaultImage} from './bluetooth_utils.js';
 
 /** @polymer */
 export class SettingsBluetoothIconElement extends PolymerElement {
@@ -69,9 +70,7 @@ export class SettingsBluetoothIconElement extends PolymerElement {
    * @private
    */
   hasDefaultImage_() {
-    return !!this.device && !!this.device.imageInfo &&
-        !!this.device.imageInfo.defaultImageUrl &&
-        !!this.device.imageInfo.defaultImageUrl.url;
+    return hasDefaultImage(this.device);
   }
 
   /**

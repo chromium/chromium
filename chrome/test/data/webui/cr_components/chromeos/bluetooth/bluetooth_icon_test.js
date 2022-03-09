@@ -5,7 +5,7 @@
 // clang-format off
 import {SettingsBluetoothIconElement} from 'chrome://resources/cr_components/chromeos/bluetooth/bluetooth_icon.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {assertEquals, assertTrue} from '../../../chai_assert.js';
+import {assertEquals, assertFalse, assertTrue} from '../../../chai_assert.js';
 import {createDefaultBluetoothDevice} from './fake_bluetooth_config.js';
 // clang-format on
 
@@ -29,6 +29,8 @@ suite('CrComponentsBluetoothIconTest', function() {
   });
 
   test('Correct icon is shown', async function() {
+    const getDefaultImage = () =>
+        bluetoothIcon.shadowRoot.querySelector('#image');
     const getDeviceIcon = () =>
         bluetoothIcon.shadowRoot.querySelector('#deviceTypeIcon');
     const device = createDefaultBluetoothDevice(
@@ -44,6 +46,7 @@ suite('CrComponentsBluetoothIconTest', function() {
     bluetoothIcon.device = device.deviceProperties;
     await flushAsync();
 
+    assertFalse(!!getDefaultImage());
     assertEquals(getDeviceIcon().icon, 'bluetooth:mouse');
 
     device.deviceProperties.deviceType = mojom.DeviceType.kUnknown;
@@ -56,5 +59,29 @@ suite('CrComponentsBluetoothIconTest', function() {
     await flushAsync();
 
     assertEquals(getDeviceIcon().icon, 'bluetooth:default');
+  });
+
+  test('Displays default image when available', async function() {
+    const getDefaultImage = () =>
+        bluetoothIcon.shadowRoot.querySelector('#image');
+    const getDeviceIcon = () =>
+        bluetoothIcon.shadowRoot.querySelector('#deviceTypeIcon');
+    const device = createDefaultBluetoothDevice(
+        /*id=*/ '12//345&6789',
+        /*publicName=*/ 'BeatsX',
+        /*connectionState=*/
+        chromeos.bluetoothConfig.mojom.DeviceConnectionState.kConnected,
+        /*opt_nickname=*/ 'device1',
+        /*opt_audioCapability=*/
+        mojom.AudioOutputCapability.kCapableOfAudioOutput,
+        /*opt_deviceType=*/ mojom.DeviceType.kMouse);
+    const fakeUrl = 'fake_image';
+    device.deviceProperties.imageInfo = {defaultImageUrl: {url: fakeUrl}};
+
+    bluetoothIcon.device = device.deviceProperties;
+    await flushAsync();
+
+    assertTrue(!!getDefaultImage());
+    assertFalse(!!getDeviceIcon());
   });
 });
