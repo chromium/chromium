@@ -10,6 +10,7 @@
 #include "ash/ash_export.h"
 #include "ash/public/cpp/app_list/app_list_controller_observer.h"
 #include "base/timer/timer.h"
+#include "ui/views/focus/focus_manager.h"
 #include "ui/views/view.h"
 
 namespace views {
@@ -27,6 +28,7 @@ class ContinueTaskView;
 // The "Continue" section of the bubble launcher. This view wraps around
 // suggestions with tasks to continue.
 class ASH_EXPORT ContinueSectionView : public views::View,
+                                       public views::FocusChangeListener,
                                        public AppListModelProvider::Observer,
                                        public AppListControllerObserver {
  public:
@@ -38,10 +40,6 @@ class ASH_EXPORT ContinueSectionView : public views::View,
   ContinueSectionView(const ContinueSectionView&) = delete;
   ContinueSectionView& operator=(const ContinueSectionView&) = delete;
   ~ContinueSectionView() override;
-
-  // AppListModelProvider::Observer:
-  void OnActiveAppListModelsChanged(AppListModel* model,
-                                    SearchModel* search_model) override;
 
   // Called when the `suggestion_container_` finishes updating the tasks.
   void OnSearchResultContainerResultsChanged();
@@ -70,6 +68,20 @@ class ASH_EXPORT ContinueSectionView : public views::View,
   ContinueTaskContainerView* suggestions_container() {
     return suggestions_container_;
   }
+
+  // views::View:
+  void AddedToWidget() override;
+  void RemovedFromWidget() override;
+
+  // views::FocusChangeListener:
+  void OnWillChangeFocus(views::View* focused_before,
+                         views::View* focused_now) override {}
+  void OnDidChangeFocus(views::View* focused_before,
+                        views::View* focused_now) override;
+
+  // AppListModelProvider::Observer:
+  void OnActiveAppListModelsChanged(AppListModel* model,
+                                    SearchModel* search_model) override;
 
   // AppListControllerObserver:
   void OnAppListVisibilityChanged(bool shown, int64_t display_id) override;

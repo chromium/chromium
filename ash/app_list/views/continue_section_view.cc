@@ -123,12 +123,6 @@ ContinueSectionView::~ContinueSectionView() {
     Shell::Get()->app_list_controller()->RemoveObserver(this);
 }
 
-void ContinueSectionView::OnActiveAppListModelsChanged(
-    AppListModel* model,
-    SearchModel* search_model) {
-  UpdateSuggestionTasks();
-}
-
 size_t ContinueSectionView::GetTasksSuggestionsCount() const {
   return suggestions_container_->num_results();
 }
@@ -387,6 +381,42 @@ void ContinueSectionView::UpdateElementsVisibility() {
   suggestions_container_->SetVisible(show_files_section);
   if (continue_label_)
     continue_label_->SetVisible(show_files_section);
+}
+
+void ContinueSectionView::AddedToWidget() {
+  GetFocusManager()->AddFocusChangeListener(this);
+}
+
+void ContinueSectionView::RemovedFromWidget() {
+  GetFocusManager()->RemoveFocusChangeListener(this);
+}
+
+void ContinueSectionView::OnDidChangeFocus(views::View* focused_before,
+                                           views::View* focused_now) {
+  // Tablet mode does not have a scrollable container or continue label.
+  if (tablet_mode_)
+    return;
+  // Nothing to do if views are losing focus.
+  if (!focused_now)
+    return;
+  // If a child of the privacy toast gained focus (e.g. the OK button) then
+  // ensure the whole toast is visible.
+  if (privacy_toast_ && privacy_toast_->Contains(focused_now)) {
+    privacy_toast_->ScrollViewToVisible();
+    return;
+  }
+  // If a suggested task gained focus then ensure the continue label is visible
+  // so the user knows what this section is.
+  if (suggestions_container_->Contains(focused_now)) {
+    DCHECK(continue_label_);
+    continue_label_->ScrollViewToVisible();
+  }
+}
+
+void ContinueSectionView::OnActiveAppListModelsChanged(
+    AppListModel* model,
+    SearchModel* search_model) {
+  UpdateSuggestionTasks();
 }
 
 void ContinueSectionView::OnAppListVisibilityChanged(bool shown,

@@ -42,6 +42,7 @@
 #include "ui/events/keycodes/keyboard_codes.h"
 #include "ui/views/animation/ink_drop.h"
 #include "ui/views/controls/button/label_button.h"
+#include "ui/views/controls/scroll_view.h"
 #include "ui/views/controls/textfield/textfield.h"
 
 namespace ash {
@@ -304,7 +305,7 @@ class ContinueSectionViewClamshellModeTest
 class ContinueSectionViewTabletModeTest : public ContinueSectionViewTestBase {
  public:
   ContinueSectionViewTabletModeTest()
-      : ContinueSectionViewTestBase(/*tablet_mode*/ true) {}
+      : ContinueSectionViewTestBase(/*tablet_mode=*/true) {}
   ~ContinueSectionViewTabletModeTest() override = default;
 };
 
@@ -570,6 +571,61 @@ TEST_F(ContinueSectionViewClamshellModeTest, UpArrowMovesFocusVertically) {
   EXPECT_FALSE(task1->HasFocus());
   EXPECT_FALSE(task2->HasFocus());
   EXPECT_FALSE(task3->HasFocus());
+}
+
+TEST_F(ContinueSectionViewClamshellModeTest, FocusingChipScrollsToShowLabel) {
+  auto* helper = GetAppListTestHelper();
+  helper->AddContinueSuggestionResults(4);
+  // Add enough apps to allow the apps page to scroll.
+  helper->AddAppItems(50);
+  EnsureLauncherShown();
+  VerifyResultViewsUpdated();
+
+  // Up arrow moves focus to the last row of the apps grid, forcing the apps
+  // page to scroll.
+  PressAndReleaseKey(ui::VKEY_UP);
+  auto* scroll_view = helper->GetBubbleAppsPage()->scroll_view();
+  const int initial_scroll_offset = scroll_view->GetVisibleRect().y();
+  ASSERT_GT(initial_scroll_offset, 0);
+
+  // Down arrow twice moves focus to search box, then to continue section.
+  PressAndReleaseKey(ui::VKEY_DOWN);
+  PressAndReleaseKey(ui::VKEY_DOWN);
+  ASSERT_TRUE(GetResultViewAt(0)->HasFocus());
+
+  // Scroll view has scrolled to the top to reveal the label.
+  const int final_scroll_offset = scroll_view->GetVisibleRect().y();
+  EXPECT_EQ(final_scroll_offset, 0);
+}
+
+TEST_F(ContinueSectionViewClamshellModeTest,
+       FocusingPrivacyNoticeScrollsToShowNotice) {
+  auto* helper = GetAppListTestHelper();
+  helper->AddContinueSuggestionResults(4);
+  // Add enough apps to allow the apps page to scroll.
+  helper->AddAppItems(50);
+  ResetPrivacyNoticePref();
+
+  EnsureLauncherShown();
+  VerifyResultViewsUpdated();
+  ASSERT_TRUE(IsPrivacyNoticeVisible());
+
+  // Up arrow moves focus to the last row of the apps grid, forcing the apps
+  // page to scroll.
+  PressAndReleaseKey(ui::VKEY_UP);
+  auto* scroll_view = helper->GetBubbleAppsPage()->scroll_view();
+  const int initial_scroll_offset = scroll_view->GetVisibleRect().y();
+  ASSERT_GT(initial_scroll_offset, 0);
+
+  // Down arrow twice moves focus to search box, then to privacy notice.
+  PressAndReleaseKey(ui::VKEY_DOWN);
+  PressAndReleaseKey(ui::VKEY_DOWN);
+  auto* privacy_notice = GetContinueSectionView()->GetPrivacyNoticeForTest();
+  ASSERT_TRUE(privacy_notice->toast_button()->HasFocus());
+
+  // Scroll view has scrolled to the top to reveal the whole notice.
+  const int final_scroll_offset = scroll_view->GetVisibleRect().y();
+  EXPECT_EQ(final_scroll_offset, 0);
 }
 
 // Regression test for https://crbug.com/1273170.
