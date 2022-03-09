@@ -47,6 +47,8 @@ extern const char kRegexFilterKey[];
 extern const char kIsUrlFilterCaseSensitiveKey[];
 extern const char kDomainsKey[];
 extern const char kExcludedDomainsKey[];
+extern const char kInitiatorDomainsKey[];
+extern const char kExcludedInitiatorDomainsKey[];
 extern const char kRequestDomainsKey[];
 extern const char kExcludedRequestDomainsKey[];
 extern const char kResourceTypesKey[];

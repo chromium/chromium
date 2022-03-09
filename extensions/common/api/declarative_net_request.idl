@@ -223,8 +223,8 @@ namespace declarativeNetRequest {
     boolean? isUrlFilterCaseSensitive;
 
     // The rule will only match network requests originating from the list of
-    // <code>domains</code>. If the list is omitted, the rule is applied to
-    // requests from all domains. An empty list is not allowed.
+    // <code>initiatorDomains</code>. If the list is omitted, the rule is
+    // applied to requests from all domains. An empty list is not allowed.
     //
     // Notes:
     // <ul>
@@ -235,11 +235,12 @@ namespace declarativeNetRequest {
     //    This matches against the request initiator and not the request url.
     //  </li>
     // </ul>
-    DOMString[]? domains;
+    DOMString[]? initiatorDomains;
 
     // The rule will not match network requests originating from the list of
     // <code>excludedDomains</code>. If the list is empty or omitted, no
-    // domains are excluded. This takes precedence over <code>domains</code>.
+    // domains are excluded. This takes precedence over
+    // <code>initiatorDomains</code>.
     //
     // Notes:
     // <ul>
@@ -250,7 +251,7 @@ namespace declarativeNetRequest {
     //    This matches against the request initiator and not the request url.
     //  </li>
     // </ul>
-    DOMString[]? excludedDomains;
+    DOMString[]? excludedInitiatorDomains;
 
     // The rule will only match network requests when the domain matches one
     // from the list of <code>requestDomains</code>. If the list is omitted,
@@ -263,7 +264,7 @@ namespace declarativeNetRequest {
     //  <li>The entries must consist of only ascii characters.</li>
     //  <li>Use punycode encoding for internationalized domains.</li>
     // </ul>
-    [nodoc] DOMString[]? requestDomains;
+    DOMString[]? requestDomains;
 
     // The rule will not match network requests when the domains matches one
     // from the list of <code>excludedDomains</code>. If the list is empty or
@@ -276,7 +277,17 @@ namespace declarativeNetRequest {
     //  <li>The entries must consist of only ascii characters.</li>
     //  <li>Use punycode encoding for internationalized domains.</li>
     // </ul>
-    [nodoc] DOMString[]? excludedRequestDomains;
+    DOMString[]? excludedRequestDomains;
+
+    // The rule will only match network requests originating from the list of
+    // <code>domains</code>.
+    [deprecated="Use $(ref:initiatorDomains) instead"]
+    DOMString[]? domains;
+
+    // The rule will not match network requests originating from the list of
+    // <code>excludedDomains</code>.
+    [deprecated="Use $(ref:excludedInitiatorDomains) instead"]
+    DOMString[]? excludedDomains;
 
     // List of resource types which the rule can match. An empty list is not
     // allowed.

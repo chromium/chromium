@@ -631,15 +631,22 @@ TEST_F(RulesetMatcherTest, RegexRules_Metadata) {
   rules.push_back(xyz_rule);
 
   // Test `domains`, `excludedDomains`.
-  TestRule initiator_domains_rule = create_regex_rule(3, "initiator_domains");
-  initiator_domains_rule.condition->domains =
+  TestRule domains_rule = create_regex_rule(3, "deprecated_domains");
+  domains_rule.condition->domains = std::vector<std::string>({"example.com"});
+  domains_rule.condition->excluded_domains =
+      std::vector<std::string>({"b.example.com"});
+  rules.push_back(domains_rule);
+
+  // Test `initiatorDomains`, `excludedInitiatorDomains`.
+  TestRule initiator_domains_rule = create_regex_rule(4, "initiator_domains");
+  initiator_domains_rule.condition->initiator_domains =
       std::vector<std::string>({"example.com"});
-  initiator_domains_rule.condition->excluded_domains =
+  initiator_domains_rule.condition->excluded_initiator_domains =
       std::vector<std::string>({"b.example.com"});
   rules.push_back(initiator_domains_rule);
 
   // Test `requestDomains`, `excludedRequestDomains`.
-  TestRule request_domains_rule = create_regex_rule(4, "request_domains");
+  TestRule request_domains_rule = create_regex_rule(5, "request_domains");
   request_domains_rule.condition->request_domains =
       std::vector<std::string>({"example.com"});
   request_domains_rule.condition->excluded_request_domains =
@@ -647,13 +654,13 @@ TEST_F(RulesetMatcherTest, RegexRules_Metadata) {
   rules.push_back(request_domains_rule);
 
   // Test |resourceTypes|.
-  TestRule sub_frame_rule = create_regex_rule(5, R"((abc|def)\.com)");
+  TestRule sub_frame_rule = create_regex_rule(6, R"((abc|def)\.com)");
   sub_frame_rule.condition->resource_types =
       std::vector<std::string>({"sub_frame"});
   rules.push_back(sub_frame_rule);
 
   // Test |domainType|.
-  TestRule third_party_rule = create_regex_rule(6, R"(http://(\d+)\.com)");
+  TestRule third_party_rule = create_regex_rule(7, R"(http://(\d+)\.com)");
   third_party_rule.condition->domain_type = "thirdParty";
   rules.push_back(third_party_rule);
 
@@ -693,6 +700,24 @@ TEST_F(RulesetMatcherTest, RegexRules_Metadata) {
     TestCase test_case = {"http://example.com/XYZ/abc"};
     test_case.expected_action =
         CreateRequestActionForTesting(RequestAction::Type::BLOCK, *xyz_rule.id);
+    test_cases.push_back(std::move(test_case));
+  }
+
+  {
+    TestCase test_case = {"http://example.com/deprecated_domains"};
+    test_case.first_party_origin =
+        url::Origin::Create(GURL("http://a.example.com"));
+    test_case.is_third_party = true;
+    test_case.expected_action = CreateRequestActionForTesting(
+        RequestAction::Type::BLOCK, *domains_rule.id);
+    test_cases.push_back(std::move(test_case));
+  }
+
+  {
+    TestCase test_case = {"http://example.com/deprecated_domains"};
+    test_case.first_party_origin =
+        url::Origin::Create(GURL("http://b.example.com"));
+    test_case.is_third_party = true;
     test_cases.push_back(std::move(test_case));
   }
 

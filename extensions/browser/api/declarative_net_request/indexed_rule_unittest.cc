@@ -381,27 +381,39 @@ TEST_F(IndexedRuleTest, DomainsParsing) {
 
   for (size_t i = 0; i < std::size(cases); ++i) {
     SCOPED_TRACE(base::StringPrintf("Testing case[%" PRIuS "]", i));
+    dnr_api::Rule domains_rule = CreateGenericParsedRule();
     dnr_api::Rule initiator_domains_rule = CreateGenericParsedRule();
     dnr_api::Rule request_domains_rule = CreateGenericParsedRule();
 
     if (cases[i].domains) {
+      auto domains = std::make_unique<DomainVec>(*cases[i].domains);
       auto initiator_domains = std::make_unique<DomainVec>(*cases[i].domains);
       auto request_domains = std::make_unique<DomainVec>(*cases[i].domains);
-      initiator_domains_rule.condition.domains = std::move(initiator_domains);
+      domains_rule.condition.domains = std::move(domains);
+      initiator_domains_rule.condition.initiator_domains =
+          std::move(initiator_domains);
       request_domains_rule.condition.request_domains =
           std::move(request_domains);
     }
 
     if (cases[i].excluded_domains) {
+      auto excluded_domains =
+          std::make_unique<DomainVec>(*cases[i].excluded_domains);
       auto excluded_initiator_domains =
           std::make_unique<DomainVec>(*cases[i].excluded_domains);
       auto excluded_request_domains =
           std::make_unique<DomainVec>(*cases[i].excluded_domains);
-      initiator_domains_rule.condition.excluded_domains =
+      domains_rule.condition.excluded_domains = std::move(excluded_domains);
+      initiator_domains_rule.condition.excluded_initiator_domains =
           std::move(excluded_initiator_domains);
       request_domains_rule.condition.excluded_request_domains =
           std::move(excluded_request_domains);
     }
+
+    IndexedRule indexed_domains_rule;
+    ParseResult domains_result = IndexedRule::CreateIndexedRule(
+        std::move(domains_rule), GetBaseURL(), kMinValidStaticRulesetID,
+        &indexed_domains_rule);
 
     IndexedRule indexed_initiator_domains_rule;
     ParseResult initiator_domains_result = IndexedRule::CreateIndexedRule(
@@ -413,38 +425,77 @@ TEST_F(IndexedRuleTest, DomainsParsing) {
         std::move(request_domains_rule), GetBaseURL(), kMinValidStaticRulesetID,
         &indexed_request_domains_rule);
 
-    EXPECT_EQ(cases[i].expected_result, initiator_domains_result);
+    EXPECT_EQ(cases[i].expected_result, domains_result);
 
     switch (cases[i].expected_result) {
       case ParseResult::ERROR_EMPTY_DOMAINS_LIST:
+        EXPECT_EQ(ParseResult::ERROR_EMPTY_INITIATOR_DOMAINS_LIST,
+                  initiator_domains_result);
         EXPECT_EQ(ParseResult::ERROR_EMPTY_REQUEST_DOMAINS_LIST,
                   request_domains_result);
         break;
       case ParseResult::ERROR_NON_ASCII_DOMAIN:
+        EXPECT_EQ(ParseResult::ERROR_NON_ASCII_INITIATOR_DOMAIN,
+                  initiator_domains_result);
         EXPECT_EQ(ParseResult::ERROR_NON_ASCII_REQUEST_DOMAIN,
                   request_domains_result);
         break;
       case ParseResult::ERROR_NON_ASCII_EXCLUDED_DOMAIN:
+        EXPECT_EQ(ParseResult::ERROR_NON_ASCII_EXCLUDED_INITIATOR_DOMAIN,
+                  initiator_domains_result);
         EXPECT_EQ(ParseResult::ERROR_NON_ASCII_EXCLUDED_REQUEST_DOMAIN,
                   request_domains_result);
         break;
       default:
+        EXPECT_EQ(cases[i].expected_result, initiator_domains_result);
         EXPECT_EQ(cases[i].expected_result, request_domains_result);
     }
 
-    if (initiator_domains_result == ParseResult::SUCCESS) {
+    if (cases[i].expected_result == ParseResult::SUCCESS) {
+      // The `domains` and `excluded_domains` rule conditions are deprecated and
+      // mapped to `initiator_domains` and `excluded_initiator_domains`.
+      EXPECT_EQ(cases[i].expected_domains,
+                indexed_domains_rule.initiator_domains);
+      EXPECT_EQ(cases[i].expected_excluded_domains,
+                indexed_domains_rule.excluded_initiator_domains);
+
       EXPECT_EQ(cases[i].expected_domains,
                 indexed_initiator_domains_rule.initiator_domains);
       EXPECT_EQ(cases[i].expected_excluded_domains,
                 indexed_initiator_domains_rule.excluded_initiator_domains);
-    }
-    if (request_domains_result == ParseResult::SUCCESS) {
+
       EXPECT_EQ(cases[i].expected_domains,
                 indexed_request_domains_rule.request_domains);
       EXPECT_EQ(cases[i].expected_excluded_domains,
                 indexed_request_domains_rule.excluded_request_domains);
     }
   }
+
+  // Test that attempting to include both domains + initiatorDomains, or
+  // excludedDomains + excludedInitiatorDomains results in an parsing error.
+  dnr_api::Rule both_domains_rule = CreateGenericParsedRule();
+  dnr_api::Rule both_excluded_domains_rule = CreateGenericParsedRule();
+  both_domains_rule.condition.domains =
+      std::make_unique<DomainVec>(DomainVec({"foo"}));
+  both_domains_rule.condition.initiator_domains =
+      std::make_unique<DomainVec>(DomainVec({"bar"}));
+  both_excluded_domains_rule.condition.excluded_domains =
+      std::make_unique<DomainVec>(DomainVec({"flib"}));
+  both_excluded_domains_rule.condition.excluded_initiator_domains =
+      std::make_unique<DomainVec>(DomainVec({"flob"}));
+
+  IndexedRule indexed_both_domains_rule;
+  IndexedRule indexed_both_excluded_domains_rule;
+  EXPECT_EQ(ParseResult::ERROR_DOMAINS_AND_INITIATOR_DOMAINS_BOTH_SPECIFIED,
+            IndexedRule::CreateIndexedRule(
+                std::move(both_domains_rule), GetBaseURL(),
+                kMinValidStaticRulesetID, &indexed_both_domains_rule));
+  EXPECT_EQ(
+      ParseResult::
+          ERROR_EXCLUDED_DOMAINS_AND_EXCLUDED_INITIATOR_DOMAINS_BOTH_SPECIFIED,
+      IndexedRule::CreateIndexedRule(std::move(both_excluded_domains_rule),
+                                     GetBaseURL(), kMinValidStaticRulesetID,
+                                     &indexed_both_excluded_domains_rule));
 }
 
 TEST_F(IndexedRuleTest, RedirectUrlParsing) {

@@ -423,9 +423,22 @@ std::string GetParseError(ParseResult error_reason, int rule_id) {
     case ParseResult::ERROR_EMPTY_DOMAINS_LIST:
       return ErrorUtils::FormatErrorMessage(
           kErrorEmptyList, base::NumberToString(rule_id), kDomainsKey);
+    case ParseResult::ERROR_EMPTY_INITIATOR_DOMAINS_LIST:
+      return ErrorUtils::FormatErrorMessage(
+          kErrorEmptyList, base::NumberToString(rule_id), kInitiatorDomainsKey);
     case ParseResult::ERROR_EMPTY_REQUEST_DOMAINS_LIST:
       return ErrorUtils::FormatErrorMessage(
           kErrorEmptyList, base::NumberToString(rule_id), kRequestDomainsKey);
+    case ParseResult::ERROR_DOMAINS_AND_INITIATOR_DOMAINS_BOTH_SPECIFIED:
+      return ErrorUtils::FormatErrorMessage(
+          kErrorDomainsAndInitiatorDomainsBothSpecified,
+          base::NumberToString(rule_id), kDomainsKey, kInitiatorDomainsKey);
+    case ParseResult::
+        ERROR_EXCLUDED_DOMAINS_AND_EXCLUDED_INITIATOR_DOMAINS_BOTH_SPECIFIED:
+      return ErrorUtils::FormatErrorMessage(
+          kErrorDomainsAndInitiatorDomainsBothSpecified,
+          base::NumberToString(rule_id), kExcludedDomainsKey,
+          kExcludedInitiatorDomainsKey);
     case ParseResult::ERROR_EMPTY_RESOURCE_TYPES_LIST:
       return ErrorUtils::FormatErrorMessage(
           kErrorEmptyList, base::NumberToString(rule_id), kResourceTypesKey);
@@ -451,6 +464,13 @@ std::string GetParseError(ParseResult error_reason, int rule_id) {
     case ParseResult::ERROR_NON_ASCII_EXCLUDED_DOMAIN:
       return ErrorUtils::FormatErrorMessage(
           kErrorNonAscii, base::NumberToString(rule_id), kExcludedDomainsKey);
+    case ParseResult::ERROR_NON_ASCII_INITIATOR_DOMAIN:
+      return ErrorUtils::FormatErrorMessage(
+          kErrorNonAscii, base::NumberToString(rule_id), kInitiatorDomainsKey);
+    case ParseResult::ERROR_NON_ASCII_EXCLUDED_INITIATOR_DOMAIN:
+      return ErrorUtils::FormatErrorMessage(kErrorNonAscii,
+                                            base::NumberToString(rule_id),
+                                            kExcludedInitiatorDomainsKey);
     case ParseResult::ERROR_NON_ASCII_REQUEST_DOMAIN:
       return ErrorUtils::FormatErrorMessage(
           kErrorNonAscii, base::NumberToString(rule_id), kRequestDomainsKey);

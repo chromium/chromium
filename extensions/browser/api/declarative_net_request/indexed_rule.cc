@@ -561,6 +561,11 @@ ParseResult IndexedRule::CreateIndexedRule(dnr_api::Rule parsed_rule,
   if (parsed_rule.condition.domains && parsed_rule.condition.domains->empty())
     return ParseResult::ERROR_EMPTY_DOMAINS_LIST;
 
+  if (parsed_rule.condition.initiator_domains &&
+      parsed_rule.condition.initiator_domains->empty()) {
+    return ParseResult::ERROR_EMPTY_INITIATOR_DOMAINS_LIST;
+  }
+
   if (parsed_rule.condition.request_domains &&
       parsed_rule.condition.request_domains->empty()) {
     return ParseResult::ERROR_EMPTY_REQUEST_DOMAINS_LIST;
@@ -655,14 +660,44 @@ ParseResult IndexedRule::CreateIndexedRule(dnr_api::Rule parsed_rule,
       return result;
   }
 
-  if (!CanonicalizeDomains(std::move(parsed_rule.condition.domains),
+  if (parsed_rule.condition.domains &&
+      parsed_rule.condition.initiator_domains) {
+    return ParseResult::ERROR_DOMAINS_AND_INITIATOR_DOMAINS_BOTH_SPECIFIED;
+  }
+
+  if (parsed_rule.condition.excluded_domains &&
+      parsed_rule.condition.excluded_initiator_domains) {
+    return ParseResult::
+        ERROR_EXCLUDED_DOMAINS_AND_EXCLUDED_INITIATOR_DOMAINS_BOTH_SPECIFIED;
+  }
+
+  // Note: The `domains` and `excluded_domains` rule conditions are deprecated.
+  //       If they are specified, they are mapped to the `initiator_domains` and
+  //       `excluded_initiator_domains` conditions on the indexed rule.
+
+  if (parsed_rule.condition.domains &&
+      !CanonicalizeDomains(std::move(parsed_rule.condition.domains),
                            &indexed_rule->initiator_domains)) {
     return ParseResult::ERROR_NON_ASCII_DOMAIN;
   }
 
-  if (!CanonicalizeDomains(std::move(parsed_rule.condition.excluded_domains),
+  if (parsed_rule.condition.initiator_domains &&
+      !CanonicalizeDomains(std::move(parsed_rule.condition.initiator_domains),
+                           &indexed_rule->initiator_domains)) {
+    return ParseResult::ERROR_NON_ASCII_INITIATOR_DOMAIN;
+  }
+
+  if (parsed_rule.condition.excluded_domains &&
+      !CanonicalizeDomains(std::move(parsed_rule.condition.excluded_domains),
                            &indexed_rule->excluded_initiator_domains)) {
     return ParseResult::ERROR_NON_ASCII_EXCLUDED_DOMAIN;
+  }
+
+  if (parsed_rule.condition.excluded_initiator_domains &&
+      !CanonicalizeDomains(
+          std::move(parsed_rule.condition.excluded_initiator_domains),
+          &indexed_rule->excluded_initiator_domains)) {
+    return ParseResult::ERROR_NON_ASCII_EXCLUDED_INITIATOR_DOMAIN;
   }
 
   if (!CanonicalizeDomains(std::move(parsed_rule.condition.request_domains),

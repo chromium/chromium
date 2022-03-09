@@ -42,6 +42,8 @@ const char kErrorInvalidTransformScheme[] =
     "values are: [*].";
 const char kErrorQueryAndTransformBothSpecified[] =
     "Rule with id * cannot specify both \"*\" and \"*\" keys.";
+const char kErrorDomainsAndInitiatorDomainsBothSpecified[] =
+    "Rule with id * cannot use deprecated field \"*\". Use \"*\" instead.";
 const char kErrorJavascriptRedirect[] =
     "Rule with id * specifies an incorrect value for the \"*\" key. Redirects "
     "to javascript urls are not supported.";
