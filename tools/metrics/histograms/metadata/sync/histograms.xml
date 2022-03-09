@@ -22,17 +22,6 @@ chromium-metrics-reviews@google.com.
 
 <histograms>
 
-<variants name="SyncConfigureResults">
-  <variant name=".ABORTED" summary="When configuration gets aborted."/>
-  <variant name=".OK" summary="When configuration is successful"/>
-</variants>
-
-<variants name="SyncDeviceType">
-  <variant name="Desktop"/>
-  <variant name="Phone"/>
-  <variant name="Tablet"/>
-</variants>
-
 <variants name="SyncModelType">
   <variant name=".APP" summary="APP"/>
   <variant name=".APP_LIST" summary="APP_LIST"/>
@@ -73,8 +62,7 @@ chromium-metrics-reviews@google.com.
   <variant name=".WORKSPACE_DESK" summary="WORKSPACE_DESK"/>
 </variants>
 
-<histogram
-    name="FCMInvalidations.SubscriptionResponseCodeForTopic{FCMInvalidationNonSyncPerUserTopics}"
+<histogram name="FCMInvalidations.SubscriptionResponseCodeForTopic{Topic}"
     enum="HttpResponseCode" expires_after="never">
 <!-- TODO(crbug.com/1266807): Move back to */invalidation/histograms.xml once
     variants can be shared across files. -->
@@ -86,7 +74,7 @@ chromium-metrics-reviews@google.com.
     response received from the server per topic. Note: This is only recorded
     with a data type suffix. The base version is never recorded.
   </summary>
-  <token key="FCMInvalidationNonSyncPerUserTopics" variants="SyncModelType">
+  <token key="Topic" variants="SyncModelType">
     <variant name=".OTHER" summary="OTHER"/>
   </token>
 </histogram>
@@ -243,28 +231,23 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Sync.ConfigureTime_Initial{SyncConfigureResults}" units="ms"
-    expires_after="2022-08-09">
+<histogram name="Sync.ConfigureTime_{ConfigurationType}.{Result}" units="ms"
+    expires_after="2023-08-09">
   <owner>victorvianna@google.com</owner>
   <owner>jkrcal@chromium.org</owner>
   <component>Services&gt;Sync</component>
   <summary>
-    Time spent configuring data types for the first sync. Recorded when
+    Time spent configuring data types for {ConfigurationType}. Recorded when
     DataTypeManagerImpl finishes.
   </summary>
-  <token key="SyncConfigureResults" variants="SyncConfigureResults"/>
-</histogram>
-
-<histogram name="Sync.ConfigureTime_Subsequent{SyncConfigureResults}"
-    units="ms" expires_after="2022-04-17">
-  <owner>victorvianna@google.com</owner>
-  <owner>jkrcal@chromium.org</owner>
-  <component>Services&gt;Sync</component>
-  <summary>
-    Time spent configuring data types for a subsequent (i.e. non-first) sync.
-    Recorded when DataTypeManagerImpl finishes.
-  </summary>
-  <token key="SyncConfigureResults" variants="SyncConfigureResults"/>
+  <token key="ConfigurationType">
+    <variant name="Initial" summary="initial sync"/>
+    <variant name="Subsequent" summary="subsequent (non-first) sync"/>
+  </token>
+  <token key="Result">
+    <variant name="ABORTED" summary="When configuration gets aborted."/>
+    <variant name="OK" summary="When configuration is successful"/>
+  </token>
 </histogram>
 
 <histogram
@@ -295,9 +278,8 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram
-    name="Sync.Crypto.NigoriKeyDerivationDuration{SyncKeyDerivationMethod}"
-    units="ms" expires_after="2022-06-29">
+<histogram name="Sync.Crypto.NigoriKeyDerivationDuration.{Method}" units="ms"
+    expires_after="2022-06-29">
   <owner>vitaliii@chromium.org</owner>
   <owner>treib@chromium.org</owner>
   <component>Services&gt;Sync</component>
@@ -306,9 +288,9 @@ chromium-metrics-reviews@google.com.
     This histogram is always recorded with one of the key derivation method
     suffixes.
   </summary>
-  <token key="SyncKeyDerivationMethod">
-    <variant name=".Pbkdf2" summary="PBKDF2_HMAC_SHA1_1003"/>
-    <variant name=".Scrypt8192" summary="SCRYPT_8192_8_11"/>
+  <token key="Method">
+    <variant name="Pbkdf2" summary="PBKDF2_HMAC_SHA1_1003"/>
+    <variant name="Scrypt8192" summary="SCRYPT_8192_8_11"/>
   </token>
 </histogram>
 
@@ -403,7 +385,7 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Sync.DeviceCount2.{SyncDeviceType}" units="devices"
+<histogram name="Sync.DeviceCount2.{DeviceType}" units="devices"
     expires_after="2023-11-02">
   <owner>ssid@chromium.org</owner>
   <owner>mastiz@chromium.org</owner>
@@ -412,10 +394,14 @@ chromium-metrics-reviews@google.com.
   <component>Services&gt;Sync</component>
   <summary>
     The largest number of active and concurrently syncing devices of type
-    {SyncDeviceType} known to any profile. May be 0 when there are no signed
+    {DeviceType} known to any profile. May be 0 when there are no signed
     in/syncing profiles open. Logged with every UMA log.
   </summary>
-  <token key="SyncDeviceType" variants="SyncDeviceType"/>
+  <token key="DeviceType">
+    <variant name="Desktop"/>
+    <variant name="Phone"/>
+    <variant name="Tablet"/>
+  </token>
 </histogram>
 
 <histogram name="Sync.InitialState" enum="SyncInitialState"
@@ -553,33 +539,22 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Sync.ModelTypeConfigurationTime.Ephemeral{SyncModelType}"
+<histogram name="Sync.ModelTypeConfigurationTime.{StorageType}{SyncModelType}"
     units="ms" expires_after="2023-03-06">
   <owner>jkrcal@chromium.org</owner>
   <owner>mastiz@chromium.org</owner>
   <component>Services&gt;Sync</component>
   <summary>
-    Recorded once per activation of an ephemeral (in-memory) data type; the
-    value is the duration of the setup (time from the start of the configuration
-    of sync until the data type receives all its sync data and the data is ready
-    for the user). This metric is used for monitoring general health of sync
-    client-side code.
+    Recorded once per activation of a(n) {StorageType} data type; the value is
+    the duration of the setup (time from the start of the configuration of sync
+    until the data type receives all its sync data and the data is ready for the
+    user). This metric is used for monitoring general health of sync client-side
+    code.
   </summary>
-  <token key="SyncModelType" variants="SyncModelType"/>
-</histogram>
-
-<histogram name="Sync.ModelTypeConfigurationTime.Persistent{SyncModelType}"
-    units="ms" expires_after="2022-04-10">
-  <owner>jkrcal@chromium.org</owner>
-  <owner>mastiz@chromium.org</owner>
-  <component>Services&gt;Sync</component>
-  <summary>
-    Recorded once per activation of a persistent (on-disk) data type; the value
-    is the duration of the setup (time from the start of the configuration of
-    sync until the data type receives all its sync data and the data is ready
-    for the user). This metric is used for monitoring general health of sync
-    client-side code.
-  </summary>
+  <token key="StorageType">
+    <variant name="Ephemeral" summary="ephemeral (in-memory)"/>
+    <variant name="Persistent" summary="persistent (on-disk)"/>
+  </token>
   <token key="SyncModelType" variants="SyncModelType"/>
 </histogram>
 
@@ -660,7 +635,7 @@ chromium-metrics-reviews@google.com.
   <token key="SyncModelType" variants="SyncModelType"/>
 </histogram>
 
-<histogram name="Sync.ModelTypeOrphanMetadata{SyncOrphanMetadata}"
+<histogram name="Sync.ModelTypeOrphanMetadata.{Operation}"
     enum="SyncModelTypes" expires_after="2023-03-05">
   <owner>jkrcal@chromium.org</owner>
   <owner>mastiz@chromium.org</owner>
@@ -669,18 +644,18 @@ chromium-metrics-reviews@google.com.
     Records whenever an orphan metadata is encountered by the
     ClientTagBasedModelTypeProcessor.
   </summary>
-  <token key="SyncOrphanMetadata">
-    <variant name=".GetData"
+  <token key="Operation">
+    <variant name="GetData"
         summary="This happens as a result of missing data in response from
                  GetData() call."/>
-    <variant name=".ModelReadyToSync"
+    <variant name="ModelReadyToSync"
         summary="This happens as a result of a ModelReadyToSync() call with
                  metadata batch containing entities with duplicate
                  client-tag-hashes (which indicates that all but one from
                  each equivalence class are previous orphans). The type of
                  the orphan is reported in this histogram, one for each
                  orphan."/>
-    <variant name=".Put"
+    <variant name="Put"
         summary="This happens as a result of a Put() call with an entity
                  whose client-tag-hash is already tracked by the processor
                  (which indicates an orphan)."/>
@@ -746,34 +721,34 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
-<histogram name="Sync.ModelTypeUpdateDrop{SyncModelTypeUpdateDrop}"
-    enum="SyncModelTypes" expires_after="2022-04-24">
+<histogram name="Sync.ModelTypeUpdateDrop.{Reason}" enum="SyncModelTypes"
+    expires_after="2022-04-24">
   <owner>jkrcal@chromium.org</owner>
   <owner>rushans@google.com</owner>
   <component>Services&gt;Sync</component>
   <summary>
     Recorded whenever a remote update for a particular data type gets dropped
-    for the following reason: {SyncModelTypeUpdateDrop}.
+    for the following reason: {Reason}.
   </summary>
-  <token key="SyncModelTypeUpdateDrop">
-    <variant name=".CannotGenerateStorageKey"
+  <token key="Reason">
+    <variant name="CannotGenerateStorageKey"
         summary="The bridge cannot generate a valid storage key based on the
                  entity data."/>
-    <variant name=".DecryptionPending"
+    <variant name="DecryptionPending"
         summary="Decryption keys are missing at the moment (it is queued for
                  later decryption which may or may not happen)."/>
-    <variant name=".DecryptionPendingForTooLong"
+    <variant name="DecryptionPendingForTooLong"
         summary="Decryption keys were missing for so long that the update was
                  ignored."/>
-    <variant name=".FailedToDecrypt"
+    <variant name="FailedToDecrypt"
         summary="Decryption is not successful (maybe the data is corrupt)."/>
-    <variant name=".InconsistentClientTag"
+    <variant name="InconsistentClientTag"
         summary="Client tag hash from the server does not match the one
                  computed by the bridge based on the entity data."/>
-    <variant name=".TombstoneForNonexistentInIncrementalUpdate"
+    <variant name="TombstoneForNonexistentInIncrementalUpdate"
         summary="It was a tombstone for an entity that does not exist
                  locally."/>
-    <variant name=".TombstoneInFullUpdate"
+    <variant name="TombstoneInFullUpdate"
         summary="It was a tombstone in a full update."/>
   </token>
 </histogram>
@@ -1007,7 +982,7 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Sync.SyncedHistoryFaviconAvailability{RequestOrigin}"
+<histogram name="Sync.SyncedHistoryFaviconAvailability.{RequestOrigin}"
     enum="FaviconAvailabilityStatus" expires_after="2022-07-10">
   <owner>victorvianna@google.com</owner>
   <owner>jkrcal@chromium.org</owner>
@@ -1021,10 +996,10 @@ chromium-metrics-reviews@google.com.
     in the android Recent Tabs UI.
   </summary>
   <token key="RequestOrigin">
-    <variant name=".HISTORY" summary="Request made by chrome://history."/>
-    <variant name=".RECENTLY_CLOSED_TABS"
+    <variant name="HISTORY" summary="Request made by chrome://history."/>
+    <variant name="RECENTLY_CLOSED_TABS"
         summary="Request made by the recently closed tabs menu."/>
-    <variant name=".SYNCED_TABS"
+    <variant name="SYNCED_TABS"
         summary="Request made by chrome://history/syncedTabs."/>
   </token>
 </histogram>
