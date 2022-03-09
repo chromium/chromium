@@ -287,6 +287,7 @@ void DesksTemplatesDialogController::CreateDialogWidget(
   dialog_widget_ = views::DialogDelegate::CreateDialogWidget(
       std::move(dialog),
       /*context=*/root_window, /*parent=*/nullptr);
+  dialog_widget_->GetNativeWindow()->SetName("TemplateDialogForTesting");
   dialog_widget_->Show();
   dialog_widget_observation_.Observe(dialog_widget_);
 }

@@ -90,7 +90,7 @@ class ASH_EXPORT DesksTemplatesItemView : public views::Button,
   // so, remove auto added number.
   void MaybeRemoveNameNumber();
   // Show replace dialog when found a name duplication.
-  bool MaybeShowReplaceDialog();
+  void MaybeShowReplaceDialog(DesksTemplatesItemView* template_to_replace);
   // Rename current template with new name, delete old template with same name
   // by uuid. Used for callback functions for Replace Dialog.
   void ReplaceTemplate(const std::string& uuid);

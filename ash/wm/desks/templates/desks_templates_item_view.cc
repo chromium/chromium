@@ -401,9 +401,6 @@ void DesksTemplatesItemView::OnViewBlurred(views::View* observed_view) {
   defer_select_all_ = false;
   name_view_->UpdateViewAppearance();
 
-  if (MaybeShowReplaceDialog())
-    return;
-
   // Collapse the whitespace for the text first before comparing it or trying to
   // commit the name in order to prevent duplicate name issues.
   const std::u16string user_entered_name =
@@ -421,27 +418,36 @@ void DesksTemplatesItemView::OnViewBlurred(views::View* observed_view) {
     return;
   }
 
+  // Check if template name exist, replace existing template if confirmed by
+  // user. Use a post task to avoid activating a widget while another widget is
+  // still being activated. In this case, we don't want to show the dialog and
+  // activate its associated widget until after the desks bar widget is finished
+  // activating. See https://crbug.com/1301759.
+  auto* template_to_replace = FindOtherTemplateWithName(name_view_->GetText());
+  if (template_to_replace) {
+    base::ThreadTaskRunnerHandle::Get()->PostTask(
+        FROM_HERE,
+        base::BindOnce(&DesksTemplatesItemView::MaybeShowReplaceDialog,
+                       weak_ptr_factory_.GetWeakPtr(), template_to_replace));
+    return;
+  }
+
   UpdateTemplateName();
 }
 
-bool DesksTemplatesItemView::MaybeShowReplaceDialog() {
-  // Check if template name exist, replace existing template if confirmed by
-  // user.
-  const std::u16string new_name = name_view_->GetText();
-  auto* template_item = FindOtherTemplateWithName(new_name);
-  if (!template_item)
-    return false;
+void DesksTemplatesItemView::MaybeShowReplaceDialog(
+    DesksTemplatesItemView* template_to_replace) {
   // Show replace template dialog. If accepted, replace old template and commit
   // name change.
   aura::Window* root_window = GetWidget()->GetNativeWindow()->GetRootWindow();
   DesksTemplatesDialogController::Get()->ShowReplaceDialog(
-      root_window, new_name,
-      base::BindOnce(&DesksTemplatesItemView::ReplaceTemplate,
-                     weak_ptr_factory_.GetWeakPtr(),
-                     template_item->desk_template_->uuid().AsLowercaseString()),
+      root_window, name_view_->GetText(),
+      base::BindOnce(
+          &DesksTemplatesItemView::ReplaceTemplate,
+          weak_ptr_factory_.GetWeakPtr(),
+          template_to_replace->desk_template_->uuid().AsLowercaseString()),
       base::BindOnce(&DesksTemplatesItemView::RevertTemplateName,
                      weak_ptr_factory_.GetWeakPtr()));
-  return true;
 }
 
 views::Button::KeyClickAction DesksTemplatesItemView::GetKeyClickActionForEvent(

@@ -66,6 +66,7 @@
 #include "ui/events/test/event_generator.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/controls/textfield/textfield.h"
+#include "ui/views/widget/any_widget_observer.h"
 #include "ui/views/window/dialog_delegate.h"
 #include "ui/wm/core/cursor_manager.h"
 
@@ -2948,16 +2949,16 @@ TEST_F(DesksTemplatesTest, NoDuplicateDisplayedName) {
   // Set template 1 under new name.
   GetItemViewFromTemplatesGrid(0)->desk_template()->set_template_name(
       u"Desk 2");
-  // Save template 2 under new name, this will trigger replace dialog.
+  // Save template 2 under new name and confirm, this will trigger replace
+  // dialog.
   name_view->SetText(u"Desk 2");
+  EXPECT_EQ(u"Desk 2", name_view->GetText());
+  views::NamedWidgetShownWaiter waiter(views::test::AnyWidgetTestPasskey{},
+                                       "TemplateDialogForTesting");
   GetEventGenerator()->PressAndReleaseKey(ui::VKEY_RETURN);
-
-  auto* dialog_controller = DesksTemplatesDialogController::Get();
+  views::Widget* dialog_widget = waiter.WaitIfNeededAndGet();
   // Cancel on replace dialog will revert view name to template name.
-  dialog_controller->dialog_widget()
-      ->widget_delegate()
-      ->AsDialogDelegate()
-      ->CancelDialog();
+  dialog_widget->widget_delegate()->AsDialogDelegate()->CancelDialog();
   EXPECT_EQ(u"Desk 1", name_view->GetText());
 }
 
