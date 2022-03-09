@@ -25,6 +25,8 @@ enum class LaunchLocation {
   NET_ERROR_SUGGESTION,
   // From Download shelf.
   DOWNLOAD_SHELF,
+  // From Download interstitial open button.
+  DOWNLOAD_INTERSTITIAL,
 };
 
 }  // namespace offline_items_collection

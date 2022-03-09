@@ -194,6 +194,10 @@ void ValidateFileCallback(
     case offline_items_collection::LaunchLocation::DOWNLOAD_SHELF:
       NOTREACHED();
       break;
+    case offline_items_collection::LaunchLocation::DOWNLOAD_INTERSTITIAL:
+      offline_header.reason =
+          offline_pages::OfflinePageHeader::Reason::DOWNLOAD;
+      break;
   }
   offline_header.need_to_persist = true;
   offline_header.id = base::NumberToString(offline_id);
