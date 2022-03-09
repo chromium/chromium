@@ -841,6 +841,11 @@ if (is_win) {
       "$root_out_dir/chrome_crashpad_handler",
     ]
 
+    if (is_chrome_branded) {
+      sources +=
+          [ "installer/mac/internal/developer_id_certificate_reauthorize" ]
+    }
+
     outputs = [ "{{bundle_contents_dir}}/Helpers/{{source_file_part}}" ]
 
     public_deps = [

@@ -5593,6 +5593,8 @@ static_library("browser") {
       "mac/auth_session_request.mm",
       "mac/bluetooth_utility.h",
       "mac/bluetooth_utility.mm",
+      "mac/developer_id_certificate_reauthorize.h",
+      "mac/developer_id_certificate_reauthorize.mm",
       "mac/dock.h",
       "mac/dock.mm",
       "mac/exception_processor.h",
