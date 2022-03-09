@@ -228,7 +228,7 @@ const NSInteger kMaxNumMostVisitedTiles = 4;
   return _notificationPromo.get();
 }
 
-- (void)setConsumer:(id<ContentSuggestionsConsumer>)consumer {
+- (void)setConsumer:(id<ContentSuggestionsCollectionConsumer>)consumer {
   _consumer = consumer;
   self.faviconMediator.consumer = consumer;
   [self reloadAllData];

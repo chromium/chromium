@@ -1,8 +1,8 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2022 The Chromium Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/ui/content_suggestions/content_suggestions_view_controller.h"
+#import "ios/chrome/browser/ui/content_suggestions/content_suggestions_collection_view_controller.h"
 
 #include "base/mac/foundation_util.h"
 #include "base/metrics/user_metrics.h"
@@ -56,7 +56,7 @@ namespace {
 const CGFloat kCardBorderRadius = 11;
 }  // namespace
 
-@interface ContentSuggestionsViewController () <
+@interface ContentSuggestionsCollectionViewController () <
     UIGestureRecognizerDelegate,
     ContentSuggestionsSelectionActions>
 
@@ -77,7 +77,7 @@ const CGFloat kCardBorderRadius = 11;
 
 @end
 
-@implementation ContentSuggestionsViewController
+@implementation ContentSuggestionsCollectionViewController
 
 @dynamic collectionViewModel;
 
@@ -284,6 +284,7 @@ const CGFloat kCardBorderRadius = 11;
                                  (UICollectionViewLayout*)collectionViewLayout
     referenceSizeForHeaderInSection:(NSInteger)section {
   if ([self isHeaderSection:section]) {
+    DCHECK(!IsContentSuggestionsHeaderMigrationEnabled());
     return CGSizeMake(0, [self.headerProvider headerHeight]);
   }
   CGSize defaultSize = [super collectionView:collectionView
@@ -325,7 +326,6 @@ const CGFloat kCardBorderRadius = 11;
   return [self shouldUseCustomStyleForSection:section];
 }
 
-
 #pragma mark - UIGestureRecognizerDelegate
 
 - (BOOL)gestureRecognizer:(UIGestureRecognizer*)gestureRecognizer
@@ -336,7 +336,7 @@ const CGFloat kCardBorderRadius = 11;
              ntp_home::FakeOmniboxAccessibilityID();
 }
 
-#pragma mark - ContentSuggestionsConsumer
+#pragma mark - ContentSuggestionsCollectionConsumer
 
 - (void)reloadDataWithSections:
             (NSArray<ContentSuggestionsSectionInformation*>*)sections

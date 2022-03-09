@@ -22,7 +22,7 @@
 #import "ios/chrome/browser/ui/commands/browser_commands.h"
 #import "ios/chrome/browser/ui/commands/snackbar_commands.h"
 #import "ios/chrome/browser/ui/content_suggestions/cells/content_suggestions_most_visited_item.h"
-#import "ios/chrome/browser/ui/content_suggestions/content_suggestions_view_controller.h"
+#import "ios/chrome/browser/ui/content_suggestions/content_suggestions_collection_view_controller.h"
 #import "ios/chrome/browser/ui/content_suggestions/ntp_home_consumer.h"
 #import "ios/chrome/browser/ui/ntp/logo_vendor.h"
 #import "ios/chrome/browser/ui/toolbar/test/toolbar_test_navigation_manager.h"
@@ -68,7 +68,7 @@ class NTPHomeMediatorTest : public PlatformTest {
     logo_vendor_ = OCMProtocolMock(@protocol(LogoVendor));
     dispatcher_ = OCMProtocolMock(@protocol(NTPHomeMediatorDispatcher));
     suggestions_view_controller_ =
-        OCMClassMock([ContentSuggestionsViewController class]);
+        OCMClassMock([ContentSuggestionsCollectionViewController class]);
     voice_availability_.SetVoiceProviderEnabled(true);
 
     UrlLoadingNotifierBrowserAgent::CreateForBrowser(browser_.get());

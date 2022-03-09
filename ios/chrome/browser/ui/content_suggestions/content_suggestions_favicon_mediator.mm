@@ -9,7 +9,7 @@
 #include "ios/chrome/browser/application_context.h"
 #import "ios/chrome/browser/ui/content_suggestions/cells/content_suggestions_most_visited_item.h"
 #import "ios/chrome/browser/ui/content_suggestions/cells/content_suggestions_parent_item.h"
-#import "ios/chrome/browser/ui/content_suggestions/content_suggestions_consumer.h"
+#import "ios/chrome/browser/ui/content_suggestions/content_suggestions_collection_consumer.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_feature.h"
 #import "ios/chrome/browser/ui/content_suggestions/identifier/content_suggestions_section_information.h"
 #import "ios/chrome/browser/ui/favicon/favicon_attributes_provider.h"

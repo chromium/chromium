@@ -12,7 +12,6 @@
 
 @class BubblePresenter;
 @class ContentSuggestionsHeaderViewController;
-@class ContentSuggestionsViewController;
 @class FeedMetricsRecorder;
 @class DiscoverFeedWrapperViewController;
 @class FeedHeaderViewController;

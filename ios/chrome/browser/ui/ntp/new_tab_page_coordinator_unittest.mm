@@ -16,7 +16,7 @@
 #import "ios/chrome/browser/ui/commands/command_dispatcher.h"
 #import "ios/chrome/browser/ui/commands/omnibox_commands.h"
 #import "ios/chrome/browser/ui/commands/snackbar_commands.h"
-#import "ios/chrome/browser/ui/content_suggestions/content_suggestions_view_controller.h"
+#import "ios/chrome/browser/ui/content_suggestions/content_suggestions_collection_view_controller.h"
 #import "ios/chrome/browser/ui/main/scene_state.h"
 #import "ios/chrome/browser/ui/main/scene_state_browser_agent.h"
 #import "ios/chrome/browser/ui/ntp/incognito_view_controller.h"

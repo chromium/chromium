@@ -14,7 +14,6 @@
 
 @protocol ContentSuggestionsCollectionControlling;
 @protocol ContentSuggestionsHeaderControlling;
-@class ContentSuggestionsViewController;
 
 // Synchronizer for all the interactions between the HeaderController and the
 // CollectionView. It handles the interactions both ways.

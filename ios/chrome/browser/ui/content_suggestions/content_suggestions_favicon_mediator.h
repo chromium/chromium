@@ -13,6 +13,7 @@ namespace favicon {
 class LargeIconService;
 }
 
+@protocol ContentSuggestionsCollectionConsumer;
 @protocol ContentSuggestionsConsumer;
 @class ContentSuggestionsMostVisitedItem;
 @class ContentSuggestionsParentItem;
@@ -33,7 +34,7 @@ class LargeIconCache;
 - (instancetype)init NS_UNAVAILABLE;
 
 // The consumer that will be notified when the data change.
-@property(nonatomic, weak) id<ContentSuggestionsConsumer> consumer;
+@property(nonatomic, weak) id<ContentSuggestionsCollectionConsumer> consumer;
 
 // FaviconAttributesProvider to fetch the favicon for the most visited tiles.
 @property(nonatomic, strong, readonly)

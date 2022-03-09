@@ -27,7 +27,7 @@ class ChromeAccountManagerService;
 @protocol ContentSuggestionsCollectionControlling;
 @class ContentSuggestionsHeaderSynchronizer;
 @class ContentSuggestionsMediator;
-@class ContentSuggestionsViewController;
+@class ContentSuggestionsCollectionViewController;
 @protocol LogoVendor;
 @class NewTabPageViewController;
 @protocol NTPHomeConsumer;
@@ -72,7 +72,7 @@ class VoiceSearchAvailability;
 // TODO(crbug.com/1114792): Create a protocol to avoid duplication and update
 // comment.
 @property(nonatomic, weak)
-    ContentSuggestionsViewController* suggestionsViewController;
+    ContentSuggestionsCollectionViewController* suggestionsViewController;
 // View Controller forthe NTP if using the refactored NTP and the Feed is
 // visible.
 // TODO(crbug.com/1114792): Create a protocol to avoid duplication and update

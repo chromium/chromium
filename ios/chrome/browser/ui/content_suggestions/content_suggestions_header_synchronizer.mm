@@ -10,8 +10,8 @@
 #import "ios/chrome/browser/ui/content_suggestions/cells/content_suggestions_most_visited_cell.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_collection_controlling.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_collection_utils.h"
+#import "ios/chrome/browser/ui/content_suggestions/content_suggestions_collection_view_controller.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_header_controlling.h"
-#import "ios/chrome/browser/ui/content_suggestions/content_suggestions_view_controller.h"
 #import "ios/chrome/browser/ui/util/uikit_ui_util.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)

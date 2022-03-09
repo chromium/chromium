@@ -37,6 +37,7 @@
 #import "ios/chrome/browser/ui/commands/omnibox_commands.h"
 #import "ios/chrome/browser/ui/commands/open_new_tab_command.h"
 #import "ios/chrome/browser/ui/content_suggestions/cells/content_suggestions_most_visited_item.h"
+#import "ios/chrome/browser/ui/content_suggestions/content_suggestions_collection_view_controller.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_constants.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_feature.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_header_commands.h"
@@ -44,7 +45,6 @@
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_header_view_controller.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_mediator.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_menu_provider.h"
-#import "ios/chrome/browser/ui/content_suggestions/content_suggestions_view_controller.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_view_controller_audience.h"
 #import "ios/chrome/browser/ui/content_suggestions/ntp_home_constant.h"
 #import "ios/chrome/browser/ui/content_suggestions/ntp_home_mediator.h"
@@ -89,7 +89,7 @@
 }
 
 @property(nonatomic, strong)
-    ContentSuggestionsViewController* suggestionsViewController;
+    ContentSuggestionsCollectionViewController* suggestionsViewController;
 @property(nonatomic, strong)
     ContentSuggestionsMediator* contentSuggestionsMediator;
 @property(nonatomic, strong)
@@ -209,8 +209,9 @@
         [self.contentSuggestionsMediator notificationPromo]->CanShow();
   }
 
-  self.suggestionsViewController = [[ContentSuggestionsViewController alloc]
-      initWithStyle:CollectionViewControllerStyleDefault];
+  self.suggestionsViewController =
+      [[ContentSuggestionsCollectionViewController alloc]
+          initWithStyle:CollectionViewControllerStyleDefault];
   self.suggestionsViewController.suggestionCommandHandler = self.ntpMediator;
   self.suggestionsViewController.audience = self;
   self.suggestionsViewController.contentSuggestionsEnabled =
