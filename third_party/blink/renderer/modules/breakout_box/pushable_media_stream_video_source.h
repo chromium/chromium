@@ -39,6 +39,8 @@ class MODULES_EXPORT PushableMediaStreamVideoSource
     void PushFrame(scoped_refptr<media::VideoFrame> video_frame,
                    base::TimeTicks estimated_capture_time);
     void StopSource();
+    bool IsMuted();
+    void SetMuted(bool);
 
    private:
     friend class PushableMediaStreamVideoSource;
@@ -62,6 +64,7 @@ class MODULES_EXPORT PushableMediaStreamVideoSource
     // it for simplicity.
     VideoCaptureDeliverFrameCB frame_callback_ GUARDED_BY(mutex_);
     int num_clients_ GUARDED_BY(mutex_) = 0;
+    bool muted_ GUARDED_BY(mutex_) = false;
     scoped_refptr<base::SingleThreadTaskRunner> main_task_runner_;
     scoped_refptr<base::SingleThreadTaskRunner> io_task_runner_;
   };

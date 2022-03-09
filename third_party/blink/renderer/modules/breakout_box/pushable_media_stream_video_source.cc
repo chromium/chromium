@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/modules/breakout_box/pushable_media_stream_video_source.h"
 
 #include "third_party/blink/public/mojom/mediastream/media_stream.mojom-blink.h"
+#include "third_party/blink/renderer/platform/mediastream/media_stream_source.h"
 #include "third_party/blink/renderer/platform/scheduler/public/post_cross_thread_task.h"
 #include "third_party/blink/renderer/platform/wtf/cross_thread_functional.h"
 
@@ -47,6 +48,10 @@ void PushableMediaStreamVideoSource::Broker::PushFrame(
   WTF::MutexLocker locker(mutex_);
   if (!source_ || frame_callback_.is_null())
     return;
+  // If the source is muted, we don't forward frames.
+  if (muted_) {
+    return;
+  }
 
   // Note that although use of the IO thread is rare in blink, it's required
   // by any implementation of MediaStreamVideoSource, which is made clear by
@@ -75,6 +80,16 @@ void PushableMediaStreamVideoSource::Broker::StopSource() {
             &PushableMediaStreamVideoSource::Broker::StopSourceOnMain,
             WrapRefCounted(this)));
   }
+}
+
+bool PushableMediaStreamVideoSource::Broker::IsMuted() {
+  WTF::MutexLocker locker(mutex_);
+  return muted_;
+}
+
+void PushableMediaStreamVideoSource::Broker::SetMuted(bool muted) {
+  WTF::MutexLocker locker(mutex_);
+  muted_ = muted;
 }
 
 void PushableMediaStreamVideoSource::Broker::OnSourceStarted(

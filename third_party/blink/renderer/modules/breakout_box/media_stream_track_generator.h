@@ -31,6 +31,7 @@ class MODULES_EXPORT MediaStreamTrackGenerator : public MediaStreamTrack {
   MediaStreamTrackGenerator(ScriptState*,
                             MediaStreamSource::StreamType,
                             const String& track_id);
+  MediaStreamTrackGenerator(ScriptState*, MediaStreamSource*);
   MediaStreamTrackGenerator(const MediaStreamTrackGenerator&) = delete;
   MediaStreamTrackGenerator& operator=(const MediaStreamTrackGenerator&) =
       delete;

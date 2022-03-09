@@ -281,6 +281,47 @@
       assert_throws_js(TypeError, writer.write(frame));
     }, "Mismatched frame and generator kind throws on write.");
 
+  promise_test(async t => {
+      const generator = new VideoTrackGenerator();
+    t.add_cleanup(() => generator.track.stop());
+
+    // Use a MediaStreamTrackProcessor as a sink for |generator| to verify
+    // that |processor| actually forwards the frames written to its writable
+    // field.
+    const processor = new MediaStreamTrackProcessor(generator.track);
+    const reader = processor.readable.getReader();
+    const videoFrame = makeVideoFrame(1);
+
+    const writer = generator.writable.getWriter();
+    const videoFrame1 = makeVideoFrame(1);
+    writer.write(videoFrame1);
+    const result1 = await reader.read();
+    assert_equals(result1.value.timestamp, 1);
+    generator.muted = true;
+
+    // This frame is expected to be discarded.
+    const videoFrame2 = makeVideoFrame(2);
+    writer.write(videoFrame2);
+    generator.muted = false;
+
+    const videoFrame3 = makeVideoFrame(3);
+    writer.write(videoFrame3);
+    const result3 = await reader.read();
+    assert_equals(result3.value.timestamp, 3);
+
+    // Set up a read ahead of time, then mute, enqueue and unmute.
+    const promise5 = reader.read();
+    generator.muted = true;
+    writer.write(makeVideoFrame(4)); // Expected to be discarded.
+    generator.muted = false;
+    writer.write(makeVideoFrame(5));
+    const result5 = await promise5;
+    assert_equals(result5.value.timestamp, 5);
+  }, 'Tests that VideoTrackGenerator forwards frames only when unmuted');
+
+  // Note - tests for mute/unmute events will be added once
+  // https://github.com/w3c/mediacapture-transform/issues/81 is resolved
+
   </script>
 </body>
 </html>

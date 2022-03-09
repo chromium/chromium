@@ -5,6 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_BREAKOUT_BOX_VIDEO_TRACK_GENERATOR_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_BREAKOUT_BOX_VIDEO_TRACK_GENERATOR_H_
 
+#include "third_party/blink/renderer/modules/breakout_box/media_stream_video_track_underlying_sink.h"
 #include "third_party/blink/renderer/modules/mediastream/media_stream_track.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
@@ -32,7 +33,7 @@ class MODULES_EXPORT VideoTrackGenerator : public ScriptWrappable {
   void Trace(Visitor* visitor) const override;
 
  private:
-  Member<MediaStreamTrackGenerator> underlying_generator_;
+  Member<MediaStreamTrackGenerator> wrapped_generator_;
 };
 
 }  // namespace blink

@@ -21,6 +21,7 @@
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
 #include "third_party/blink/renderer/platform/mediastream/media_stream_audio_track.h"
 #include "third_party/blink/renderer/platform/mediastream/media_stream_component.h"
+#include "third_party/blink/renderer/platform/mediastream/media_stream_source.h"
 #include "third_party/blink/renderer/platform/scheduler/main_thread/main_thread.h"
 #include "third_party/blink/renderer/platform/wtf/uuid.h"
 
@@ -85,21 +86,23 @@ MediaStreamTrackGenerator::MediaStreamTrackGenerator(
     ScriptState* script_state,
     MediaStreamSource::StreamType type,
     const String& track_id)
-    : MediaStreamTrack(
-          ExecutionContext::From(script_state),
-          MakeGarbageCollected<MediaStreamComponent>(
-              MakeGarbageCollected<MediaStreamSource>(track_id,
-                                                      type,
-                                                      track_id,
-                                                      /*remote=*/false))) {
-  if (type == MediaStreamSource::kTypeVideo) {
+    : MediaStreamTrackGenerator(
+          script_state,
+          MakeGarbageCollected<MediaStreamSource>(track_id,
+                                                  type,
+                                                  track_id,
+                                                  /*remote=*/false)) {}
+
+MediaStreamTrackGenerator::MediaStreamTrackGenerator(ScriptState* script_state,
+                                                     MediaStreamSource* source)
+    : MediaStreamTrack(ExecutionContext::From(script_state),
+                       MakeGarbageCollected<MediaStreamComponent>(source)) {
+  if (source->GetType() == MediaStreamSource::kTypeVideo) {
     CreateVideoOutputPlatformTrack();
   } else {
-    DCHECK_EQ(type, MediaStreamSource::kTypeAudio);
+    DCHECK_EQ(source->GetType(), MediaStreamSource::kTypeAudio);
     CreateAudioOutputPlatformTrack();
   }
-  UseCounter::Count(ExecutionContext::From(script_state),
-                    WebFeature::kMediaStreamTrackGenerator);
 }
 
 WritableStream* MediaStreamTrackGenerator::writable(ScriptState* script_state) {

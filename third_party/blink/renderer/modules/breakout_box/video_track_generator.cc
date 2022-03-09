@@ -33,31 +33,31 @@ VideoTrackGenerator* VideoTrackGenerator::Create(
 
 VideoTrackGenerator::VideoTrackGenerator(ScriptState* script_state,
                                          ExceptionState& exception_state) {
-  underlying_generator_ = MakeGarbageCollected<MediaStreamTrackGenerator>(
-      script_state, MediaStreamSource::kTypeVideo,
-      /*track_id=*/WTF::CreateCanonicalUUIDString());
+  auto track_id = WTF::CreateCanonicalUUIDString();
+  MediaStreamSource* wrapped_source = MakeGarbageCollected<MediaStreamSource>(
+      track_id, MediaStreamSource::kTypeVideo, track_id, /*remote=*/false);
+  wrapped_generator_ = MakeGarbageCollected<MediaStreamTrackGenerator>(
+      script_state, wrapped_source);
 }
 
 WritableStream* VideoTrackGenerator::writable(ScriptState* script_state) {
-  return underlying_generator_->writable(script_state);
+  return wrapped_generator_->writable(script_state);
 }
 
 bool VideoTrackGenerator::muted() {
-  return false;
+  return wrapped_generator_->PushableVideoSource()->GetBroker()->IsMuted();
 }
 
 void VideoTrackGenerator::setMuted(bool muted) {
-  // Not implemented yet.
-  // TODO(crbug.com/1300528): Implement.
-  NOTIMPLEMENTED();
+  wrapped_generator_->PushableVideoSource()->GetBroker()->SetMuted(muted);
 }
 
 MediaStreamTrack* VideoTrackGenerator::track() {
-  return underlying_generator_;
+  return wrapped_generator_;
 }
 
 void VideoTrackGenerator::Trace(Visitor* visitor) const {
-  visitor->Trace(underlying_generator_);
+  visitor->Trace(wrapped_generator_);
   ScriptWrappable::Trace(visitor);
 }
 
