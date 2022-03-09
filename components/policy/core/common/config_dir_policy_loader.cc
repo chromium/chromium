@@ -19,6 +19,7 @@
 #include "base/json/json_file_value_serializer.h"
 #include "base/json/json_reader.h"
 #include "base/logging.h"
+#include "base/syslog_logging.h"
 #include "components/policy/core/common/policy_bundle.h"
 #include "components/policy/core/common/policy_load_status.h"
 #include "components/policy/core/common/policy_types.h"
@@ -146,15 +147,15 @@ void ConfigDirPolicyLoader::LoadFromPath(const base::FilePath& path,
     std::unique_ptr<base::Value> value =
         deserializer.Deserialize(&error_code, &error_msg);
     if (!value) {
-      LOG(WARNING) << "Failed to read configuration file "
-                   << config_file.value() << ": " << error_msg;
+      SYSLOG(WARNING) << "Failed to read configuration file "
+                      << config_file.value() << ": " << error_msg;
       status.Add(JsonErrorToPolicyLoadStatus(error_code));
       continue;
     }
     base::DictionaryValue* dictionary_value = nullptr;
     if (!value->GetAsDictionary(&dictionary_value)) {
-      LOG(WARNING) << "Expected JSON dictionary in configuration file "
-                   << config_file.value();
+      SYSLOG(WARNING) << "Expected JSON dictionary in configuration file "
+                      << config_file.value();
       status.Add(POLICY_LOAD_STATUS_PARSE_ERROR);
       continue;
     }
@@ -188,7 +189,7 @@ void ConfigDirPolicyLoader::Merge3rdPartyPolicy(const base::Value* policies,
 
   const base::DictionaryValue* domains_dictionary;
   if (!policies->GetAsDictionary(&domains_dictionary)) {
-    LOG(WARNING) << "3rdparty value is not a dictionary!";
+    SYSLOG(WARNING) << "3rdparty value is not a dictionary!";
     return;
   }
 
@@ -201,15 +202,15 @@ void ConfigDirPolicyLoader::Merge3rdPartyPolicy(const base::Value* policies,
   for (base::DictionaryValue::Iterator domains_it(*domains_dictionary);
        !domains_it.IsAtEnd(); domains_it.Advance()) {
     if (!base::Contains(supported_domains, domains_it.key())) {
-      LOG(WARNING) << "Unsupported 3rd party policy domain: "
-                   << domains_it.key();
+      SYSLOG(WARNING) << "Unsupported 3rd party policy domain: "
+                      << domains_it.key();
       continue;
     }
 
     const base::DictionaryValue* components_dictionary;
     if (!domains_it.value().GetAsDictionary(&components_dictionary)) {
-      LOG(WARNING) << "3rdparty/" << domains_it.key()
-                   << " value is not a dictionary!";
+      SYSLOG(WARNING) << "3rdparty/" << domains_it.key()
+                      << " value is not a dictionary!";
       continue;
     }
 
@@ -218,8 +219,8 @@ void ConfigDirPolicyLoader::Merge3rdPartyPolicy(const base::Value* policies,
          !components_it.IsAtEnd(); components_it.Advance()) {
       const base::DictionaryValue* policy_dictionary;
       if (!components_it.value().GetAsDictionary(&policy_dictionary)) {
-        LOG(WARNING) << "3rdparty/" << domains_it.key() << "/"
-                     << components_it.key() << " value is not a dictionary!";
+        SYSLOG(WARNING) << "3rdparty/" << domains_it.key() << "/"
+                        << components_it.key() << " value is not a dictionary!";
         continue;
       }
 

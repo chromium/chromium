@@ -34,6 +34,7 @@
 #include "base/path_service.h"
 #include "base/scoped_native_library.h"
 #include "base/strings/string_util.h"
+#include "base/syslog_logging.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/threading/scoped_thread_priority.h"
 #include "base/values.h"
@@ -84,7 +85,7 @@ void ParsePolicy(const RegistryDict* gpo_dict,
   std::unique_ptr<base::Value> policy_value(gpo_dict->ConvertToJSON(schema));
   const base::DictionaryValue* policy_dict = nullptr;
   if (!policy_value->GetAsDictionary(&policy_dict) || !policy_dict) {
-    LOG(WARNING) << "Root policy object is not a dictionary!";
+    SYSLOG(WARNING) << "Root policy object is not a dictionary!";
     return;
   }
 
