@@ -5442,10 +5442,10 @@
             ],
             "experiments": [
                 {
-                    "name": "Prefetch_2_With_Decoys_20211129",
+                    "name": "Prefetch_2_20220214",
                     "params": {
                         "dns_canary_url": "http://dns-tunnel-check.googlezip.net/connect",
-                        "do_no_state_prefetch": "true",
+                        "do_no_state_prefetch": "false",
                         "ineligible_decoy_request_probability": "1",
                         "lite_mode_only": "false",
                         "max_srp_prefetches": "5",
