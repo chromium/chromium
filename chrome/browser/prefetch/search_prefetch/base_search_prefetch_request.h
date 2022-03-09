@@ -12,10 +12,6 @@
 #include "services/network/public/cpp/resource_request.h"
 #include "url/gurl.h"
 
-namespace net {
-class HttpResponseHeaders;
-}
-
 class Profile;
 class SearchPrefetchURLLoader;
 
@@ -75,6 +71,9 @@ class BaseSearchPrefetchRequest {
   // Called when the prefetch encounters an error.
   void ErrorEncountered();
 
+  // Called when the prefetch encounters an error.
+  void ErrorEncounteredUsingFallback();
+
   // Update the status when the request is serveable.
   void MarkPrefetchAsServable();
 
@@ -87,15 +86,12 @@ class BaseSearchPrefetchRequest {
   // The URL for the prefetch request.
   const GURL& prefetch_url() { return prefetch_url_; }
 
-  // Whether the prefetch should be served based on |headers|.
-  bool CanServePrefetchRequest(
-      const scoped_refptr<net::HttpResponseHeaders> headers);
-
   // Starts and begins processing |resource_request|.
   virtual void StartPrefetchRequestInternal(
       Profile* profile,
       std::unique_ptr<network::ResourceRequest> resource_request,
-      const net::NetworkTrafficAnnotationTag& traffic_annotation) = 0;
+      const net::NetworkTrafficAnnotationTag& traffic_annotation,
+      base::OnceClosure report_error_callback) = 0;
 
   // Stops the on-going prefetch and should mark |current_status_|
   // appropriately.

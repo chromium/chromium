@@ -23,8 +23,6 @@
 #include "content/public/common/content_constants.h"
 #include "net/base/load_flags.h"
 #include "net/cookies/site_for_cookies.h"
-#include "net/http/http_response_headers.h"
-#include "net/http/http_status_code.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "services/network/public/cpp/client_hints.h"
 #include "services/network/public/cpp/resource_request.h"
@@ -269,7 +267,8 @@ bool BaseSearchPrefetchRequest::StartPrefetchRequest(Profile* profile) {
   current_status_ = SearchPrefetchStatus::kInFlight;
 
   StartPrefetchRequestInternal(profile, std::move(resource_request),
-                               network_traffic_annotation);
+                               network_traffic_annotation,
+                               std::move(report_error_callback_));
   return true;
 }
 
@@ -281,12 +280,10 @@ void BaseSearchPrefetchRequest::CancelPrefetch() {
 }
 
 void BaseSearchPrefetchRequest::ErrorEncountered() {
-  DCHECK(!report_error_callback_.is_null());
   DCHECK(current_status_ == SearchPrefetchStatus::kInFlight ||
          current_status_ == SearchPrefetchStatus::kCanBeServed ||
          current_status_ == SearchPrefetchStatus::kCanBeServedAndUserClicked);
   current_status_ = SearchPrefetchStatus::kRequestFailed;
-  std::move(report_error_callback_).Run();
   StopPrefetch();
 }
 
@@ -305,18 +302,4 @@ void BaseSearchPrefetchRequest::MarkPrefetchAsComplete() {
 void BaseSearchPrefetchRequest::MarkPrefetchAsClicked() {
   DCHECK(current_status_ == SearchPrefetchStatus::kCanBeServed);
   current_status_ = SearchPrefetchStatus::kCanBeServedAndUserClicked;
-}
-
-bool BaseSearchPrefetchRequest::CanServePrefetchRequest(
-    const scoped_refptr<net::HttpResponseHeaders> headers) {
-  if (!headers)
-    return false;
-
-  // Any 200 response can be served.
-  if (headers->response_code() >= net::HTTP_OK &&
-      headers->response_code() < net::HTTP_MULTIPLE_CHOICES) {
-    return true;
-  }
-
-  return false;
 }

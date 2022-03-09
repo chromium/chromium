@@ -10,6 +10,12 @@
 
 extern const base::Feature kSearchPrefetchServicePrefetching;
 
+extern const base::Feature kSearchPrefetchBlockBeforeHeaders;
+
+// Whether matching prefetches can block navigation until they are determined to
+// be serve-able or not based on headers.
+bool SearchPrefetchBlockBeforeHeadersIsEnabled();
+
 // Whether the search prefetch service actually initiates prefetches.
 bool SearchPrefetchServicePrefetchingIsEnabled();
 

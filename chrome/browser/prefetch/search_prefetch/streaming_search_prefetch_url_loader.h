@@ -40,7 +40,8 @@ class StreamingSearchPrefetchURLLoader : public network::mojom::URLLoader,
       StreamingSearchPrefetchRequest* streaming_prefetch_request,
       Profile* profile,
       std::unique_ptr<network::ResourceRequest> resource_request,
-      const net::NetworkTrafficAnnotationTag& network_traffic_annotation);
+      const net::NetworkTrafficAnnotationTag& network_traffic_annotation,
+      base::OnceClosure report_error_callback);
 
   ~StreamingSearchPrefetchURLLoader() override;
 
@@ -86,8 +87,13 @@ class StreamingSearchPrefetchURLLoader : public network::mojom::URLLoader,
 
   // When a disconnection occurs in the network URLLoader mojo pipe, this
   // object's lifetime needs to be managed and the connections need to be closed
-  // unless complete has happened.
+  // unless complete has happened. This is the prefetch pathway callback.
   void OnURLLoaderMojoDisconnect();
+
+  // When a disconnection occurs in the network URLLoader mojo pipe, this
+  // object's lifetime needs to be managed and the connections need to be closed
+  // unless complete has happened. This is the fallback pathway callback.
+  void OnURLLoaderMojoDisconnectInFallback();
 
   // When a disconnection occurs in the navigation client mojo pipe, this
   // object's lifetime needs to be managed and the connections need to be
@@ -109,6 +115,9 @@ class StreamingSearchPrefetchURLLoader : public network::mojom::URLLoader,
 
   // Post a task to delete this object at a later point.
   void PostTaskToDeleteSelf();
+
+  // Creates a default network URL loader for the original request.
+  void Fallback();
 
   // Sets up mojo forwarding to the navigation path. Resumes
   // |network_url_loader_| calls. Serves the start of the response to the
@@ -176,6 +185,21 @@ class StreamingSearchPrefetchURLLoader : public network::mojom::URLLoader,
   // owns this loader and the loader has started. When the forwarding client is
   // set up, we will delete soon |this|.
   bool pending_delete_ = false;
+
+  // Whether fallback has started.
+  bool is_in_fallback_ = false;
+
+  // If the navigation path paused the url loader. Used to pause the network url
+  // loader on fallback.
+  bool paused_ = false;
+
+  // Whenever an error is reported, it needs to be reported to the service via
+  // this callback.
+  base::OnceClosure report_error_callback_;
+
+  raw_ptr<Profile> profile_;
+
+  net::NetworkTrafficAnnotationTag network_traffic_annotation_;
 
   base::WeakPtrFactory<StreamingSearchPrefetchURLLoader> weak_factory_{this};
 };

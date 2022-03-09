@@ -38,8 +38,8 @@ class StreamingSearchPrefetchRequest : public BaseSearchPrefetchRequest {
   void StartPrefetchRequestInternal(
       Profile* profile,
       std::unique_ptr<network::ResourceRequest> resource_request,
-      const net::NetworkTrafficAnnotationTag& network_traffic_annotation)
-      override;
+      const net::NetworkTrafficAnnotationTag& network_traffic_annotation,
+      base::OnceClosure report_error_callback) override;
   void StopPrefetch() override;
   std::unique_ptr<SearchPrefetchURLLoader> TakeSearchPrefetchURLLoader()
       override;
