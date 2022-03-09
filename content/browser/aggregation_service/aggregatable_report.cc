@@ -486,14 +486,11 @@ AggregatableReport::Provider::CreateFromRequestAndPublicKeys(
       kDomainSeparationPrefix + sizeof(kDomainSeparationPrefix));
 
   std::string encoded_shared_info =
-      report_request.shared_info_.SerializeAsJson();
+      report_request.shared_info().SerializeAsJson();
   authenticated_info.insert(authenticated_info.end(),
                             encoded_shared_info.begin(),
                             encoded_shared_info.end());
 
-  // To avoid unnecessary copies, we move the processing urls and shared info
-  // from the `report_request`'s private members. Note that the request object
-  // is destroyed at the end of this method.
   std::vector<AggregatableReport::AggregationServicePayload> encrypted_payloads;
   DCHECK_EQ(unencrypted_payloads.size(), num_processing_urls);
   for (size_t i = 0; i < num_processing_urls; ++i) {

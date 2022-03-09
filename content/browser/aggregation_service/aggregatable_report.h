@@ -274,10 +274,6 @@ class CONTENT_EXPORT AggregatableReportRequest {
   }
 
  private:
-  // To avoid unnecessary copies, allow the provider to directly access members
-  // of the AggregatableReportRequest being consumed.
-  friend class AggregatableReport::Provider;
-
   static absl::optional<AggregatableReportRequest> CreateInternal(
       std::vector<GURL> processing_urls,
       AggregationServicePayloadContents payload_contents,
