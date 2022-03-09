@@ -2595,7 +2595,6 @@
     'libaom': ['fgalligan@chromium.org',
                'jianj@chromium.org',
                'jzern@chromium.org',
-               'kyslov@google.com',
                'marpan@chromium.org',
                'tomfinegan@chromium.org'],
     'libvpx': ['fgalligan@chromium.org',
