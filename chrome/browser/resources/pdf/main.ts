@@ -5,44 +5,41 @@
 import './pdf_viewer_wrapper.js';
 
 import {BrowserApi, createBrowserApi} from './browser_api.js';
+import {PDFViewerBaseElement} from './pdf_viewer_wrapper.js';
 
 /**
  * Stores any pending messages received which should be passed to the
  * PDFViewer when it is created.
- * @type Array
  */
-const pendingMessages = [];
+const pendingMessages: MessageEvent[] = [];
 
 /**
  * Handles events that are received prior to the PDFViewer being created.
- * @param {Object} message A message event received.
  */
-function handleScriptingMessage(message) {
+function handleScriptingMessage(message: MessageEvent) {
   pendingMessages.push(message);
 }
 
 /**
  * Initialize the global PDFViewer and pass any outstanding messages to it.
- * @param {!BrowserApi} browserApi
  */
-function initViewer(browserApi) {
+function initViewer(browserApi: BrowserApi) {
   // PDFViewer will handle any messages after it is created.
   window.removeEventListener('message', handleScriptingMessage, false);
-  const viewer = document.querySelector('#viewer');
+  const viewer = document.querySelector<PDFViewerBaseElement>('#viewer')!;
   viewer.init(browserApi);
   while (pendingMessages.length > 0) {
-    viewer.handleScriptingMessage(pendingMessages.shift());
+    viewer.handleScriptingMessage(pendingMessages.shift()!);
   }
-  window.viewer = viewer;
+  Object.assign(window, {viewer});
 }
 
 /**
  * Determine if the content settings allow PDFs to execute javascript.
- * @param {!BrowserApi} browserApi
- * @return {!Promise<!BrowserApi>}
  */
-function configureJavaScriptContentSetting(browserApi) {
-  return new Promise((resolve, reject) => {
+function configureJavaScriptContentSetting(browserApi: BrowserApi):
+    Promise<BrowserApi> {
+  return new Promise(resolve => {
     chrome.contentSettings.javascript.get(
         {
           'primaryUrl': browserApi.getStreamInfo().originalUrl,

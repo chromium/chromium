@@ -284,7 +284,8 @@ export class PDFViewerElement extends PDFViewerBaseElement {
   }
 
   init(browserApi: BrowserApi) {
-    super.init(browserApi, this.$.scroller, this.$.sizer, this.$.content);
+    this.initInternal(
+        browserApi, this.$.scroller, this.$.sizer, this.$.content);
 
     this.pluginController_ = PluginController.getInstance();
 

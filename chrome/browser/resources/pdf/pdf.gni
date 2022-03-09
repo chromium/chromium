@@ -18,8 +18,7 @@ if (enable_ink) {
   pdf_non_webcomponents_files += [
     "annotation_tool.ts",
     "ink_controller.js",
-    "ink/drawing_canvas_externs.js",
-    "ink/ink_api.js",
+    "ink/ink_api.ts",
   ]
 }
 
@@ -65,12 +64,12 @@ print_preview_webcomponents_files = [
 # Files to pass directly to preprocess_if_expr() that are shared by PDF Viewer
 # and Print Preview.
 shared_non_webcomponents_files = [
-  "browser_api.js",
+  "browser_api.ts",
   "constants.ts",
   "controller.js",
   "gesture_detector.ts",
-  "internal_plugin.js",
-  "main.js",
+  "internal_plugin.ts",
+  "main.ts",
   "metrics.ts",
   "open_pdf_params_parser.ts",
   "pdf_scripting_api.js",

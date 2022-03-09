@@ -26,6 +26,7 @@ export {NavigatorDelegate, PdfNavigator, WindowOpenDisposition} from './navigato
 export {OpenPdfParamsParser} from './open_pdf_params_parser.js';
 export {PDFScriptingAPI} from './pdf_scripting_api.js';
 export {getFilenameFromURL, PDFViewerElement} from './pdf_viewer.js';
+export {PDFViewerBaseElement} from './pdf_viewer_base.js';
 export {shouldIgnoreKeyEvents} from './pdf_viewer_utils.js';
 export {LayoutOptions, PAGE_SHADOW, Viewport} from './viewport.js';
 export {ViewportScroller} from './viewport_scroller.js';

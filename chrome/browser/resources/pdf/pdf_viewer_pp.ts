@@ -22,7 +22,6 @@ import {PDFViewerBaseElement} from './pdf_viewer_base.js';
 import {DestinationMessageData, DocumentDimensionsMessageData, hasCtrlModifier, shouldIgnoreKeyEvents} from './pdf_viewer_utils.js';
 import {ToolbarManager} from './toolbar_manager.js';
 
-
 export interface PDFViewerPPElement {
   $: {
     content: HTMLElement,
@@ -63,7 +62,7 @@ export class PDFViewerPPElement extends PDFViewerBaseElement {
   }
 
   init(browserApi: BrowserApi) {
-    super.init(
+    this.initInternal(
         browserApi, document.documentElement, this.$.sizer, this.$.content);
 
     this.pluginController_ = PluginController.getInstance();

@@ -120,6 +120,26 @@ optimize_webui("build_internal_plugin") {
   ]
 }
 
+if (optimize_webui) {
+  # Need to manually register files that are excluded from the optimized bundle.
+  generate_grd("build_excluded_grdp") {
+    input_files = [
+      "browser_api.js",
+      "main.js",
+    ]
+    if (enable_ink) {
+      input_files += [ "ink/ink_api.js" ]
+    }
+    input_files_base_dir =
+        rebase_path("$target_gen_dir/$tsc_folder", root_build_dir)
+    deps = [ ":build_ts" ]
+
+    grd_prefix = "pdf"
+    out_grd = "$target_gen_dir/excluded_resources.grdp"
+    resource_path_prefix = "pdf"
+  }
+}
+
 generate_grd("build_grd") {
   input_files = [
     "index.css",
@@ -131,17 +151,14 @@ generate_grd("build_grd") {
   input_files_base_dir = rebase_path(".", "//")
 
   if (optimize_webui) {
-    input_files += [
-      "browser_api.js",
-      "main.js",
+    deps = [
+      ":build",
+      ":build_excluded_grdp",
     ]
-    if (enable_ink) {
-      input_files += [ "ink/ink_api.js" ]
-    }
-    deps = [ ":build" ]
     resource_path_rewrites =
         [ "pdf_viewer_wrapper.rollup.js|pdf_viewer_wrapper.js" ]
     manifest_files = [ "$target_gen_dir/$build_manifest" ]
+    grdp_files = [ "$target_gen_dir/excluded_resources.grdp" ]
   } else {
     deps = [ ":build_ts" ]
     manifest_files = [ "$target_gen_dir/tsconfig.manifest" ]
@@ -191,6 +208,7 @@ ts_library("build_ts") {
       print_preview_non_webcomponents_files + print_preview_webcomponents_files
   definitions = [
     "//tools/typescript/definitions/chrome_event.d.ts",
+    "//tools/typescript/definitions/content_settings.d.ts",
     "//tools/typescript/definitions/file_system.d.ts",
     "//tools/typescript/definitions/metrics_private.d.ts",
     "//tools/typescript/definitions/mime_handler_private.d.ts",
@@ -201,6 +219,11 @@ ts_library("build_ts") {
     "//tools/typescript/definitions/windows.d.ts",
     "source_capabilities.d.ts",
   ]
+
+  if (enable_ink) {
+    definitions += [ "ink/drawing_canvas.d.ts" ]
+  }
+
   deps = [
     "//third_party/polymer/v3_0:library",
     "//ui/webui/resources:library",

@@ -4,22 +4,29 @@
 
 import {assert} from 'chrome://resources/js/assert.m.js';
 
+export type StreamInfoWithExtras = chrome.mimeHandlerPrivate.StreamInfo&{
+  // Appended in main.js
+  javascript?: 'allow' | 'block',
+  // Appended in browser_api.js
+  tabUrl?: string,
+};
+
 /**
- * @param {!chrome.mimeHandlerPrivate.StreamInfo} streamInfo The stream object
- *     pointing to the data contained in the PDF.
- * @return {Promise<number>} A promise that will resolve to the default zoom
- *     factor.
+ * @param streamInfo The stream object pointing to the data contained in the
+ *     PDF.
+ * @return A promise that will resolve to the default zoom factor.
  */
-function lookupDefaultZoom(streamInfo) {
+function lookupDefaultZoom(streamInfo: chrome.mimeHandlerPrivate.StreamInfo):
+    Promise<number> {
   // Webviews don't run in tabs so |streamInfo.tabId| is -1 when running within
   // a webview.
   if (!chrome.tabs || streamInfo.tabId < 0) {
     return Promise.resolve(1);
   }
 
-  return new Promise(function(resolve, reject) {
+  return new Promise(function(resolve) {
     chrome.tabs.getZoomSettings(streamInfo.tabId, function(zoomSettings) {
-      resolve(zoomSettings.defaultZoomFactor);
+      resolve(zoomSettings.defaultZoomFactor!);
     });
   });
 }
@@ -28,34 +35,37 @@ function lookupDefaultZoom(streamInfo) {
  * Returns a promise that will resolve to the initial zoom factor
  * upon starting the plugin. This may differ from the default zoom
  * if, for example, the page is zoomed before the plugin is run.
- * @param {!chrome.mimeHandlerPrivate.StreamInfo} streamInfo The stream object
- *     pointing to the data contained in the PDF.
- * @return {Promise<number>} A promise that will resolve to the initial zoom
- *     factor.
+ * @param streamInfo The stream object pointing to the data contained in the
+ *     PDF.
+ * @return A promise that will resolve to the initial zoom factor.
  */
-function lookupInitialZoom(streamInfo) {
+function lookupInitialZoom(streamInfo: chrome.mimeHandlerPrivate.StreamInfo):
+    Promise<number> {
   // Webviews don't run in tabs so |streamInfo.tabId| is -1 when running within
   // a webview.
   if (!chrome.tabs || streamInfo.tabId < 0) {
     return Promise.resolve(1);
   }
 
-  return new Promise(function(resolve, reject) {
+  return new Promise(function(resolve) {
     chrome.tabs.getZoom(streamInfo.tabId, resolve);
   });
 }
 
 // A class providing an interface to the browser.
 export class BrowserApi {
+  private streamInfo_: StreamInfoWithExtras;
+  private defaultZoom_: number;
+  private initialZoom_: number;
+  private zoomBehavior_: ZoomBehavior;
+
   /**
-   * @param {!chrome.mimeHandlerPrivate.StreamInfo} streamInfo The stream object
-   *     which points to the data contained in the PDF.
-   * @param {number} defaultZoom The default browser zoom.
-   * @param {number} initialZoom The initial browser zoom
-   *     upon starting the plugin.
-   * @param {ZoomBehavior} zoomBehavior How to manage zoom.
+   * @param streamInfo The stream object pointing to the data contained in the
+   *     PDF.
    */
-  constructor(streamInfo, defaultZoom, initialZoom, zoomBehavior) {
+  constructor(
+      streamInfo: StreamInfoWithExtras, defaultZoom: number,
+      initialZoom: number, zoomBehavior: ZoomBehavior) {
     this.streamInfo_ = streamInfo;
     this.defaultZoom_ = defaultZoom;
     this.initialZoom_ = initialZoom;
@@ -63,12 +73,11 @@ export class BrowserApi {
   }
 
   /**
-   * @param {!chrome.mimeHandlerPrivate.StreamInfo} streamInfo The stream object
-   *     pointing to the data contained in the PDF.
-   * @param {ZoomBehavior} zoomBehavior How to manage zoom.
-   * @return {Promise<BrowserApi>} A promise to a BrowserApi.
+   * @param streamInfo The stream object pointing to the data contained in the
+   *     PDF.
    */
-  static create(streamInfo, zoomBehavior) {
+  static create(streamInfo: StreamInfoWithExtras, zoomBehavior: ZoomBehavior):
+      Promise<BrowserApi> {
     return Promise
         .all([lookupDefaultZoom(streamInfo), lookupInitialZoom(streamInfo)])
         .then(function(zoomFactors) {
@@ -78,18 +87,17 @@ export class BrowserApi {
   }
 
   /**
-   * @return {chrome.mimeHandlerPrivate.StreamInfo} The stream info object
-   *     pointing to the data contained in the PDF.
+   * @return The stream object pointing to the data contained in the PDF.
    */
-  getStreamInfo() {
+  getStreamInfo(): StreamInfoWithExtras {
     return this.streamInfo_;
   }
 
   /**
    * Navigates the current tab.
-   * @param {string} url The URL to navigate the tab to.
+   * @param url The URL to navigate the tab to.
    */
-  navigateInCurrentTab(url) {
+  navigateInCurrentTab(url: string) {
     const tabId = this.getStreamInfo().tabId;
     // We need to use the tabs API to navigate because
     // |window.location.href| cannot be used. This PDF extension is not loaded
@@ -112,70 +120,64 @@ export class BrowserApi {
    * @return {Promise} A promise that will be resolved when the browser zoom
    *     has been updated.
    */
-  setZoom(zoom) {
+  setZoom(zoom: number): Promise<void> {
     assert(
         this.zoomBehavior_ === ZoomBehavior.MANAGE,
         'Viewer does not manage browser zoom.');
-    return new Promise((resolve, reject) => {
+    return new Promise(resolve => {
       chrome.tabs.setZoom(this.streamInfo_.tabId, zoom, resolve);
     });
   }
 
-  /** @return {number} The default browser zoom factor. */
-  getDefaultZoom() {
+  /** @return The default browser zoom factor. */
+  getDefaultZoom(): number {
     return this.defaultZoom_;
   }
 
-  /** @return {number} The initial browser zoom factor. */
-  getInitialZoom() {
+  /** @return The initial browser zoom factor. */
+  getInitialZoom(): number {
     return this.initialZoom_;
   }
 
-  /** @return {ZoomBehavior} How to manage zoom. */
-  getZoomBehavior() {
+  /** @return How to manage zoom. */
+  getZoomBehavior(): ZoomBehavior {
     return this.zoomBehavior_;
   }
 
   /**
    * Adds an event listener to be notified when the browser zoom changes.
    *
-   * @param {!Function} listener The listener to be called with the new zoom
-   *     factor.
+   * @param listener The listener to be called with the new zoom factor.
    */
-  addZoomEventListener(listener) {
+  addZoomEventListener(listener: (newZoom: number) => void) {
     if (!(this.zoomBehavior_ === ZoomBehavior.MANAGE ||
           this.zoomBehavior_ === ZoomBehavior.PROPAGATE_PARENT)) {
       return;
     }
 
     chrome.tabs.onZoomChange.addListener(info => {
-      const zoomChangeInfo =
-          /** @type {{tabId: number, newZoomFactor: number}} */ (info);
-      if (zoomChangeInfo.tabId !== this.streamInfo_.tabId) {
+      if (info.tabId !== this.streamInfo_.tabId) {
         return;
       }
-      listener(zoomChangeInfo.newZoomFactor);
+      listener(info.newZoomFactor);
     });
   }
 }
 
-/**
- * Enumeration of ways to manage zoom changes.
- * @enum {number}
- */
-export const ZoomBehavior = {
-  NONE: 0,
-  MANAGE: 1,
-  PROPAGATE_PARENT: 2
-};
+/** Enumeration of ways to manage zoom changes. */
+export enum ZoomBehavior {
+  NONE = 0,
+  MANAGE = 1,
+  PROPAGATE_PARENT = 2,
+}
 
 /**
  * Creates a BrowserApi for an extension running as a mime handler.
- * @return {!Promise<!BrowserApi>} A promise to a BrowserApi instance
- *     constructed using the mimeHandlerPrivate API.
+ * @return A promise to a BrowserApi instance constructed using the
+ *     mimeHandlerPrivate API.
  */
-function createBrowserApiForMimeHandlerView() {
-  return new Promise(function(resolve, reject) {
+function createBrowserApiForMimeHandlerView(): Promise<BrowserApi> {
+  return new Promise<chrome.mimeHandlerPrivate.StreamInfo>(function(resolve) {
            chrome.mimeHandlerPrivate.getStreamInfo(resolve);
          })
       .then(function(streamInfo) {
@@ -184,48 +186,54 @@ function createBrowserApiForMimeHandlerView() {
         if (streamInfo.tabId !== -1) {
           zoomBehavior = streamInfo.embedded ? ZoomBehavior.PROPAGATE_PARENT :
                                                ZoomBehavior.MANAGE;
-          promises.push(new Promise(function(resolve) {
-                          chrome.tabs.get(streamInfo.tabId, resolve);
-                        }).then(function(tab) {
-            if (tab) {
-              streamInfo.tabUrl = tab.url;
-            }
-          }));
+          promises.push(
+              new Promise<chrome.tabs.Tab|undefined>(function(resolve) {
+                chrome.tabs.get(streamInfo.tabId, resolve);
+              }).then(function(tab) {
+                if (tab) {
+                  (streamInfo as StreamInfoWithExtras).tabUrl = tab!.url;
+                }
+              }));
         }
         if (zoomBehavior === ZoomBehavior.MANAGE) {
-          promises.push(new Promise(function(resolve) {
+          promises.push(new Promise<void>(function(resolve) {
             chrome.tabs.setZoomSettings(
-                streamInfo.tabId, {mode: 'manual', scope: 'per-tab'}, resolve);
+                streamInfo.tabId, {
+                  mode: chrome.tabs.ZoomSettingsMode.MANUAL,
+                  scope: chrome.tabs.ZoomSettingsScope.PER_TAB
+                },
+                resolve);
           }));
         }
         return Promise.all(promises).then(function() {
-          return BrowserApi.create(streamInfo, zoomBehavior);
+          return BrowserApi.create(
+              streamInfo as StreamInfoWithExtras, zoomBehavior);
         });
       });
 }
 
 /**
  * Creates a BrowserApi instance for an extension not running as a mime handler.
- * @return {!Promise<!BrowserApi>} A promise to a BrowserApi instance
- *     constructed from the URL.
+ * @return A promise to a BrowserApi instance constructed from the URL.
  */
-function createBrowserApiForPrintPreview() {
+function createBrowserApiForPrintPreview(): Promise<BrowserApi> {
   const url = window.location.search.substring(1);
-  const streamInfo = {
+  const streamInfo: StreamInfoWithExtras = {
     streamUrl: url,
     originalUrl: url,
     responseHeaders: {},
     embedded: window.parent !== window,
     tabId: -1,
+    mimeType: '',
   };
-  return new Promise(function(resolve, reject) {
+  return new Promise<void>(function(resolve) {
            if (!chrome.tabs) {
              resolve();
              return;
            }
            chrome.tabs.getCurrent(function(tab) {
-             streamInfo.tabId = tab.id;
-             streamInfo.tabUrl = tab.url;
+             streamInfo.tabId = tab!.id!;
+             streamInfo.tabUrl = tab!.url;
              resolve();
            });
          })

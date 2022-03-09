@@ -2,56 +2,49 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {AnnotationTool} from '../annotation_tool.js';
+
 /**
  * Wraps the Ink component with an API that can be called
  * across an IFrame boundary.
  */
 export class InkAPI {
-  /** @param {!drawings.Canvas} canvas */
-  constructor(canvas) {
+  private canvas_: drawings.Canvas;
+  private camera_: drawings.Box|null = null;
+
+  constructor(canvas: drawings.Canvas) {
     this.canvas_ = canvas;
     this.camera_ = null;
   }
 
-  /** @param {function(!drawings.UndoState)} listener */
-  addUndoStateListener(listener) {
+  addUndoStateListener(listener: (state: drawings.UndoState) => void) {
     this.canvas_.addUndoRedoListener(listener);
   }
 
-  /**
-   * @param {!ArrayBuffer} buffer
-   */
-  async setPDF(buffer) {
+  async setPDF(buffer: ArrayBuffer) {
     // We change the type from ArrayBuffer to Uint8Array due to the consequences
     // of the buffer being passed across the iframe boundary. This realm has a
     // different ArrayBuffer constructor than `buffer`.
     return this.canvas_.setPDF(new Uint8Array(buffer));
   }
 
-  /**
-   * @return {!Promise<!Uint8Array>}
-   */
-  async getPDF() {
+  async getPDF(): Promise<Uint8Array> {
     return this.canvas_.getPDF();
   }
 
-  /**
-   * @return {!Promise<!Uint8Array>}
-   */
-  async getPDFDestructive() {
+  async getPDFDestructive(): Promise<Uint8Array> {
     return this.canvas_.getPDFDestructive();
   }
 
-  async setCamera(camera) {
+  async setCamera(camera: drawings.Box) {
     this.camera_ = camera;
     this.canvas_.setCamera(camera);
     // Wait for the next task to avoid a race where Ink drops the camera value
     // when the canvas is rotated in low-latency mode.
-    setTimeout(() => this.canvas_.setCamera(this.camera_), 0);
+    setTimeout(() => this.canvas_.setCamera(this.camera_!), 0);
   }
 
-  /** @param {AnnotationTool} tool */
-  setAnnotationTool(tool) {
+  setAnnotationTool(tool: AnnotationTool) {
     this.canvas_.setTool(tool);
   }
 
@@ -59,22 +52,20 @@ export class InkAPI {
     return this.canvas_.flush();
   }
 
-  /** @param {string} hexColor */
-  setOutOfBoundsColor(hexColor) {
+  setOutOfBoundsColor(hexColor: string) {
     this.canvas_.setOutOfBoundsColor(hexColor);
   }
 
-  /** @param {string} url */
-  setBorderImage(url) {
+  setBorderImage(url: string) {
     this.canvas_.setBorderImage(url);
   }
 
-  /** @param {number} spacing in points */
-  setPageSpacing(spacing) {
+  /** @param spacing in points */
+  setPageSpacing(spacing: number) {
     this.canvas_.setVerticalPageLayout(spacing);
   }
 
-  dispatchPointerEvent(evt) {
+  dispatchPointerEvent(evt: drawings.InputEvent) {
     this.canvas_.dispatchInput(evt);
   }
 
