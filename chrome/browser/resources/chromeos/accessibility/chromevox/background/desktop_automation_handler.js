@@ -531,43 +531,51 @@ export class DesktopAutomationHandler extends DesktopAutomationInterface {
       return;
     }
 
-    const t = evt.target;
-    const fromDesktop = t.root.role === RoleType.DESKTOP;
+    const target = evt.target;
+    const fromDesktop = target.root.role === RoleType.DESKTOP;
     const onDesktop =
         ChromeVoxState.instance.currentRange.start.node.root.role ===
         RoleType.DESKTOP;
-    if (fromDesktop && !onDesktop && t.role !== RoleType.SLIDER) {
+    const isSlider = target.role === RoleType.SLIDER;
+
+    // TODO(accessibility): get rid of callers who use value changes on list
+    // boxes.
+    const isListBox = target.role === RoleType.LIST_BOX;
+    if (fromDesktop && !onDesktop && !isSlider && !isListBox) {
       // Only respond to value changes from the desktop if it's coming from a
       // slider e.g. the volume slider. Do this to avoid responding to frequent
       // updates from UI e.g. download progress bars.
       return;
     }
-    if (t.state.focused || fromDesktop ||
-        AutomationUtil.isDescendantOf(
-            ChromeVoxState.instance.currentRange.start.node, t)) {
-      if (new Date() - this.lastValueChanged_ <=
-          DesktopAutomationHandler.MIN_VALUE_CHANGE_DELAY_MS) {
-        return;
-      }
 
-      this.lastValueChanged_ = new Date();
-
-      const output = new Output();
-      output.withoutFocusRing();
-
-      if (fromDesktop &&
-          (!this.lastValueTarget_ || this.lastValueTarget_ !== t)) {
-        const range = cursors.Range.fromNode(t);
-        output.withRichSpeechAndBraille(range, range, OutputEventType.NAVIGATE);
-        this.lastValueTarget_ = t;
-      } else {
-        output.format(
-            '$if($value, $value, $if($valueForRange, $valueForRange))', t);
-      }
-
-      Output.forceModeForNextSpeechUtterance(QueueMode.INTERJECT);
-      output.go();
+    if (!target.state.focused && (!fromDesktop || (!isSlider && !isListBox)) &&
+        !AutomationUtil.isDescendantOf(
+            ChromeVoxState.instance.currentRange.start.node, target)) {
+      return;
     }
+
+    if (new Date() - this.lastValueChanged_ <=
+        DesktopAutomationHandler.MIN_VALUE_CHANGE_DELAY_MS) {
+      return;
+    }
+
+    this.lastValueChanged_ = new Date();
+
+    const output = new Output();
+    output.withoutFocusRing();
+
+    if (fromDesktop &&
+        (!this.lastValueTarget_ || this.lastValueTarget_ !== target)) {
+      const range = cursors.Range.fromNode(target);
+      output.withRichSpeechAndBraille(range, range, OutputEventType.NAVIGATE);
+      this.lastValueTarget_ = target;
+    } else {
+      output.format(
+          '$if($value, $value, $if($valueForRange, $valueForRange))', target);
+    }
+
+    Output.forceModeForNextSpeechUtterance(QueueMode.INTERJECT);
+    output.go();
   }
 
   /**
