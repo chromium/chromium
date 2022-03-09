@@ -22,6 +22,8 @@ int ComputeNextFibonacciNumber(FibonacciState* state) {
   return state->i;
 }
 
+// Creates and returns a closure which returns the next Fibonacci number each
+// time it is run.
 base::RepeatingCallback<int()> MakeFibonacciClosure() {
   auto state = std::make_unique<FibonacciState>();
   return base::BindRepeating(&ComputeNextFibonacciNumber,
@@ -42,8 +44,8 @@ int main(int argc, char* argv[]) {
     return -1;
   }
 
-  // |fibonacci_closure1| and |fibonacci_closure2| are independent. Though they
-  // are bound to the same method, they each have their own |FibonacciState|.
+  // `fibonacci_closure1` and `fibonacci_closure2` are independent. Though they
+  // are bound to the same method, they each have their own `FibonacciState`.
   // Running one closure does not affect the other.
   base::RepeatingCallback<int()> fibonacci_closure1 = MakeFibonacciClosure();
   base::RepeatingCallback<int()> fibonacci_closure2 = MakeFibonacciClosure();
