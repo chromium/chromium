@@ -98,7 +98,29 @@ var tests = [
         rule: {ruleId: 1, rulesetId: 'rules'}
       };
       verifyExpectedRuleInfo(expectedRuleInfo);
-      chrome.test.succeed();
+
+      const getFencedFrameWidth =
+        '(async function() {' +
+        '  while(true) { ' +
+        '    await new Promise(requestAnimationFrame);' +
+        '    let width =' +
+        '      document.getElementsByTagName("fencedframe")[0].clientWidth;' +
+        '    if (width == 0) {' +
+        '      chrome.runtime.sendMessage({width: width});' +
+        '      break;' +
+        '    }' +
+        '  }' +
+        '})()';
+
+      chrome.runtime.onMessage.addListener(results => {
+        // Ensure the clientWidth is 0 indicating
+        // the frame has no layout size and was
+        // collapsed correctly.
+        chrome.test.assertEq(0, results.width);
+        chrome.test.succeed();
+      });
+      chrome.tabs.executeScript(tab.id, {frameId: 0,
+                                         code: getFencedFrameWidth});
     });
   },
 

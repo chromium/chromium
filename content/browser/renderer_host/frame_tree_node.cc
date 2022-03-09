@@ -395,7 +395,7 @@ void FrameTreeNode::SetCurrentURL(const GURL& url) {
 }
 
 void FrameTreeNode::SetCollapsed(bool collapsed) {
-  DCHECK(!IsMainFrame());
+  DCHECK(!IsMainFrame() || IsFencedFrameRoot());
   if (is_collapsed_ == collapsed)
     return;
 

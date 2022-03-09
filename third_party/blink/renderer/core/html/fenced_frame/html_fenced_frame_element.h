@@ -69,6 +69,7 @@ class CORE_EXPORT HTMLFencedFrameElement : public HTMLFrameOwnerElement {
     NOTREACHED();
     return ParsedPermissionsPolicy();
   }
+  void SetCollapsed(bool) override;
 
   // HTMLElement overrides.
   bool IsHTMLFencedFrameElement() const final { return true; }
@@ -114,6 +115,7 @@ class CORE_EXPORT HTMLFencedFrameElement : public HTMLFrameOwnerElement {
       const QualifiedName&,
       const AtomicString&,
       MutableCSSPropertyValueSet*) override;
+  bool LayoutObjectIsNeeded(const ComputedStyle&) const override;
   LayoutObject* CreateLayoutObject(const ComputedStyle&, LegacyLayout) override;
   void AttachLayoutTree(AttachContext& context) override;
   bool SupportsFocus() const override;
@@ -139,6 +141,7 @@ class CORE_EXPORT HTMLFencedFrameElement : public HTMLFrameOwnerElement {
   absl::optional<PhysicalSize> frozen_frame_size_;
   absl::optional<PhysicalRect> content_rect_;
   bool should_freeze_frame_size_on_next_layout_ = false;
+  bool collapsed_by_client_ = false;
 
   friend class ResizeObserverDelegate;
 };

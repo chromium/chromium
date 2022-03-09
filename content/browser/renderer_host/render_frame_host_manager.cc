@@ -1361,6 +1361,15 @@ void RenderFrameHostManager::OnDidStopLoading() {
 }
 
 void RenderFrameHostManager::OnDidChangeCollapsedState(bool collapsed) {
+  // If we are a MPArch fenced frame root then ask the outer delegate node
+  // to collapse the frame. Note `IsFencedFrameRoot` returns true for
+  // ShadowDOM as well so we need to check the `FrameTree::Type` as well.
+  if (frame_tree_node_->IsFencedFrameRoot() &&
+      frame_tree_node_->frame_tree()->type() == FrameTree::Type::kFencedFrame) {
+    GetProxyToOuterDelegate()->GetAssociatedRemoteFrame()->Collapse(collapsed);
+    return;
+  }
+
   DCHECK(frame_tree_node_->parent());
   SiteInstanceImpl* parent_site_instance =
       frame_tree_node_->parent()->GetSiteInstance();

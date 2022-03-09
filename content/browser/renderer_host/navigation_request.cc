@@ -3632,15 +3632,8 @@ void NavigationRequest::OnRequestFailedInternal(
     return;
 
   if (collapse_frame) {
-    bool is_inner_frame_tree =
-        frame_tree_node_->frame_tree()->type() == FrameTree::Type::kFencedFrame;
-    FrameTreeNode* node_to_collapse =
-        is_inner_frame_tree
-            ? frame_tree_node_->render_manager()->GetOuterDelegateNode()
-            : frame_tree_node_;
-
     DCHECK_EQ(net::ERR_BLOCKED_BY_CLIENT, status.error_code);
-    node_to_collapse->SetCollapsed(true);
+    frame_tree_node_->SetCollapsed(true);
   }
 
   is_mhtml_or_subframe_ = false;

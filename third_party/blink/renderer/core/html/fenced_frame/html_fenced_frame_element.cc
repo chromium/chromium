@@ -8,6 +8,7 @@
 #include "third_party/blink/public/common/frame/fenced_frame_sandbox_flags.h"
 #include "third_party/blink/public/mojom/devtools/console_message.mojom-blink.h"
 #include "third_party/blink/public/mojom/web_feature/web_feature.mojom-blink.h"
+#include "third_party/blink/renderer/core/css/style_change_reason.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/shadow_root.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
@@ -60,6 +61,21 @@ void HTMLFencedFrameElement::Trace(Visitor* visitor) const {
 void HTMLFencedFrameElement::DisconnectContentFrame() {
   HTMLFrameOwnerElement::DisconnectContentFrame();
   DocumentFencedFrames::From(GetDocument()).DeregisterFencedFrame(this);
+}
+
+void HTMLFencedFrameElement::SetCollapsed(bool collapse) {
+  if (collapsed_by_client_ == collapse)
+    return;
+
+  collapsed_by_client_ = collapse;
+
+  // This is always called in response to an IPC, so should not happen in the
+  // middle of a style recalc.
+  DCHECK(!GetDocument().InStyleRecalc());
+
+  // Trigger style recalc to trigger layout tree re-attachment.
+  SetNeedsStyleRecalc(kLocalStyleChange, StyleChangeReasonForTracing::Create(
+                                             style_change_reason::kFrame));
 }
 
 // START HTMLFencedFrameElement::FencedFrameDelegate.
@@ -209,6 +225,12 @@ void HTMLFencedFrameElement::AttachLayoutTree(AttachContext& context) {
       SetEmbeddedContentView(ContentFrame()->View());
     }
   }
+}
+
+bool HTMLFencedFrameElement::LayoutObjectIsNeeded(
+    const ComputedStyle& style) const {
+  return !collapsed_by_client_ &&
+         HTMLFrameOwnerElement::LayoutObjectIsNeeded(style);
 }
 
 LayoutObject* HTMLFencedFrameElement::CreateLayoutObject(
