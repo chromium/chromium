@@ -762,6 +762,7 @@ void SkiaRenderer::BeginDrawingFrame() {
 
 void SkiaRenderer::FinishDrawingFrame() {
   TRACE_EVENT0("viz", "SkiaRenderer::FinishDrawingFrame");
+  root_canvas_ = nullptr;
   current_canvas_ = nullptr;
   current_surface_ = nullptr;
 
