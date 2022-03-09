@@ -3373,6 +3373,11 @@ class SameOriginUaOriginTrialBrowserTest
         base::StrCat({kOriginUrl, "/accept_ch_ua_iframe_request.html"}));
   }
 
+  GURL accept_ch_ua_iframe_sandbox_request_url() const {
+    return GURL(base::StrCat(
+        {kOriginUrl, "/accept_ch_ua_iframe_sandbox_request.html"}));
+  }
+
   GURL critical_ch_ua_subresource_request_url() const {
     return GURL(
         base::StrCat({kOriginUrl, "/critical_ch_ua_subresource_request.html"}));
@@ -3777,6 +3782,29 @@ IN_PROC_BROWSER_TEST_P(SameOriginUaOriginTrialBrowserTest,
   // UA string if Sec-CH-UA-Reduced set, or the full UA string if Sec-CH-UA-Full
   // set in the request header.
   NavigateAndCheckHeaders(accept_ch_ua_iframe_request_url(),
+                          /*ch_ua_reduced_expected=*/GetParam() ==
+                              UserAgentOriginTrialTestType::UAReduction,
+                          /*ch_ua_exist_expected=*/true);
+
+  CheckSecClientHintUaCount();
+
+  // Make sure the last intercepted URL was the request for the embedded iframe.
+  EXPECT_EQ(last_request_url().path(), "/simple.html");
+}
+
+IN_PROC_BROWSER_TEST_P(SameOriginUaOriginTrialBrowserTest,
+                       IframeRequestUaWithValidOriginTrialTokenIgnoreSandbox) {
+  SetTestOptions(
+      {
+          /*has_ot_token=*/true,
+          /*valid_ot_token=*/true,
+          /*has_accept_ch_header=*/true,
+          /*has_critical_ch_header=*/false,
+      },
+      {accept_ch_ua_iframe_sandbox_request_url(), simple_request_url()});
+
+  // Ensure that frames with sandbox flags don't interfere with the origin trial
+  NavigateAndCheckHeaders(accept_ch_ua_iframe_sandbox_request_url(),
                           /*ch_ua_reduced_expected=*/GetParam() ==
                               UserAgentOriginTrialTestType::UAReduction,
                           /*ch_ua_exist_expected=*/true);

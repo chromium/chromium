@@ -1592,12 +1592,16 @@ NavigationRequest::NavigationRequest(
     BrowserContext* browser_context = controller->GetBrowserContext();
     ClientHintsControllerDelegate* client_hints_delegate =
         browser_context->GetClientHintsControllerDelegate();
-    if (client_hints_delegate) {
+    // Loading an about:srcdoc url on the main frame will cause a failure later
+    // and GetTentativeOriginAtRequestTime() can't handle it until then.
+    if ((CheckAboutSrcDoc() != AboutSrcDocCheckResult::BLOCK_REQUEST) &&
+        client_hints_delegate) {
       net::HttpRequestHeaders client_hints_headers;
       AddNavigationRequestClientHintsHeaders(
-          url::Origin::Create(common_params_->url), &client_hints_headers,
+          GetTentativeOriginAtRequestTime(), &client_hints_headers,
           browser_context, client_hints_delegate, is_overriding_user_agent(),
-          frame_tree_node_, commit_params_->frame_policy.container_policy);
+          frame_tree_node_, commit_params_->frame_policy.container_policy,
+          common_params_->url);
       headers.MergeFrom(client_hints_headers);
     }
 
@@ -4110,16 +4114,18 @@ void NavigationRequest::OnRedirectChecksComplete(
                                       net::HTTP_TEMPORARY_REDIRECT) {
       std::vector<network::mojom::WebClientHintsType> client_hints =
           LookupAcceptCHForCommit(source_origin, client_hints_delegate,
-                                  frame_tree_node_);
+                                  frame_tree_node_,
+                                  commit_params_->redirects.back());
       RemoveOriginTrialHintsFromAcceptCH(commit_params_->redirects.back(),
                                          client_hints_delegate, response_head,
                                          client_hints, frame_tree_node_);
     }
 
     AddNavigationRequestClientHintsHeaders(
-        url::Origin::Create(common_params_->url), &client_hints_extra_headers,
+        GetTentativeOriginAtRequestTime(), &client_hints_extra_headers,
         browser_context, client_hints_delegate, is_overriding_user_agent(),
-        frame_tree_node_, commit_params_->frame_policy.container_policy);
+        frame_tree_node_, commit_params_->frame_policy.container_policy,
+        common_params_->url);
     modified_headers.MergeFrom(client_hints_extra_headers);
     // On a redirect, unless devtools has overridden the User-Agent header, if
     // the Critical-CH header has Sec-CH-UA-Reduced, then we should send the
@@ -4520,8 +4526,8 @@ void NavigationRequest::CommitNavigation() {
           frame_tree_node_);
     }
     commit_params_->enabled_client_hints =
-        LookupAcceptCHForCommit(url::Origin::Create(common_params_->url),
-                                client_hints_delegate, frame_tree_node_);
+        LookupAcceptCHForCommit(GetOriginToCommit(), client_hints_delegate,
+                                frame_tree_node_, common_params_->url);
     RemoveOriginTrialHintsFromAcceptCH(
         common_params_->url, client_hints_delegate, response(),
         commit_params_->enabled_client_hints, frame_tree_node_);
@@ -6684,8 +6690,9 @@ void NavigationRequest::SetIsOverridingUserAgent(bool override_ua) {
       browser_context->GetClientHintsControllerDelegate();
   if (client_hints_delegate) {
     UpdateNavigationRequestClientUaHeaders(
-        url::Origin::Create(common_params_->url), client_hints_delegate,
-        is_overriding_user_agent(), frame_tree_node_, &headers);
+        GetTentativeOriginAtRequestTime(), client_hints_delegate,
+        is_overriding_user_agent(), frame_tree_node_, &headers,
+        common_params_->url);
   }
   headers.SetHeader(
       net::HttpRequestHeaders::kUserAgent,
