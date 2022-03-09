@@ -10,7 +10,7 @@
 
 void VersionUpdaterBasic::CheckForUpdate(StatusCallback status_callback,
                                          PromoteCallback) {
-  const Status status = UpgradeDetector::GetInstance()->notify_upgrade()
+  const Status status = UpgradeDetector::GetInstance()->is_upgrade_available()
                             ? NEARLY_UPDATED
                             : DISABLED;
   status_callback.Run(status, 0, false, false, std::string(), 0,
