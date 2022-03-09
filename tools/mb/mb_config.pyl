@@ -154,7 +154,7 @@
       'chromeos-amd64-generic-rel': 'chromeos_amd64-generic_use_fake_dbus_clients_vm_optimized',
       'chromeos-arm-generic-dbg': 'chromeos_arm-generic_dbg',
       'chromeos-arm-generic-rel': 'chromeos_arm-generic',
-      'chromeos-arm64-generic-rel': 'chromeos_arm64-generic',
+      'chromeos-arm64-generic-rel': 'chromeos_arm64-generic_dchecks',
       'chromeos-kevin-rel': 'chromeos_kevin_dchecks',
       'lacros-amd64-generic-binary-size-rel': 'chromeos_amd64-generic_lacros_rel',
       'lacros-amd64-generic-rel': 'chromeos_amd64-generic_lacros_rel',
@@ -957,6 +957,7 @@
       'chromeos-amd64-generic-dbg': 'chromeos_amd64-generic_dbg',
       'chromeos-amd64-generic-rel': 'chromeos_amd64-generic_use_fake_dbus_clients_vm_optimized_dchecks',
       'chromeos-amd64-generic-rel-rts': 'chromeos_amd64-generic_use_fake_dbus_clients',
+      'chromeos-arm64-generic-rel': 'chromeos_arm64-generic_dchecks',
       'chromeos-arm-generic-dbg': 'chromeos_arm-generic_dbg',
       'chromeos-arm-generic-rel': 'chromeos_arm-generic_dcheck_always_on',
       'chromeos-kevin-compile-rel': 'chromeos_kevin_dchecks',
@@ -1948,8 +1949,8 @@
       'chromeos_device', 'arm-generic',
     ],
 
-    'chromeos_arm64-generic': [
-      'chromeos_device', 'arm64-generic',
+    'chromeos_arm64-generic_dchecks': [
+      'chromeos_device', 'arm64-generic', 'dcheck_always_on',
     ],
 
     'chromeos_arm-generic_cfi_thin_lto_official': [

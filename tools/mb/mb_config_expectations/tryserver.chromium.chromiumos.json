@@ -60,6 +60,15 @@
       "use_goma": true
     }
   },
+  "chromeos-arm64-generic-rel": {
+    "args_file": "//build/args/chromeos/arm64-generic.gni",
+    "gn_args": {
+      "dcheck_always_on": true,
+      "is_chromeos_device": true,
+      "ozone_platform_headless": true,
+      "use_goma": true
+    }
+  },
   "chromeos-kevin-compile-rel": {
     "args_file": "//build/args/chromeos/kevin.gni",
     "gn_args": {
