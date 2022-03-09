@@ -141,10 +141,10 @@ bool BookmarkEditorView::IsCommandIdChecked(int command_id) const {
 
 bool BookmarkEditorView::IsCommandIdEnabled(int command_id) const {
   switch (command_id) {
-    case IDS_EDIT:
-    case IDS_DELETE:
+    case kContextMenuItemEdit:
+    case kContextMenuItemDelete:
       return !running_menu_for_root_;
-    case IDS_BOOKMARK_EDITOR_NEW_FOLDER_MENU_ITEM:
+    case kContextMenuItemNewFolder:
       return true;
     default:
       NOTREACHED();
@@ -160,13 +160,13 @@ bool BookmarkEditorView::GetAcceleratorForCommandId(
 
 void BookmarkEditorView::ExecuteCommand(int command_id, int event_flags) {
   DCHECK(tree_view_->GetActiveNode());
-  if (command_id == IDS_EDIT) {
+  if (command_id == kContextMenuItemEdit) {
     tree_view_->StartEditing(tree_view_->GetActiveNode());
-  } else if (command_id == IDS_DELETE) {
+  } else if (command_id == kContextMenuItemDelete) {
     ExecuteCommandDelete(base::BindOnce(&chrome::ConfirmDeleteBookmarkNode,
                                         GetWidget()->GetNativeWindow()));
   } else {
-    DCHECK_EQ(IDS_BOOKMARK_EDITOR_NEW_FOLDER_MENU_ITEM, command_id);
+    DCHECK_EQ(kContextMenuItemNewFolder, command_id);
     NewFolder(tree_model_->AsNode(tree_view_->GetActiveNode()));
   }
 }
@@ -537,11 +537,11 @@ void BookmarkEditorView::UpdateExpandedNodes(
 ui::SimpleMenuModel* BookmarkEditorView::GetMenuModel() {
   if (!context_menu_model_.get()) {
     context_menu_model_ = std::make_unique<ui::SimpleMenuModel>(this);
-    context_menu_model_->AddItemWithStringId(IDS_EDIT, IDS_EDIT);
-    context_menu_model_->AddItemWithStringId(IDS_DELETE, IDS_DELETE);
+    context_menu_model_->AddItemWithStringId(kContextMenuItemEdit, IDS_EDIT);
+    context_menu_model_->AddItemWithStringId(kContextMenuItemDelete,
+                                             IDS_DELETE);
     context_menu_model_->AddItemWithStringId(
-        IDS_BOOKMARK_EDITOR_NEW_FOLDER_MENU_ITEM,
-        IDS_BOOKMARK_EDITOR_NEW_FOLDER_MENU_ITEM);
+        kContextMenuItemNewFolder, IDS_BOOKMARK_EDITOR_NEW_FOLDER_MENU_ITEM);
   }
   return context_menu_model_.get();
 }

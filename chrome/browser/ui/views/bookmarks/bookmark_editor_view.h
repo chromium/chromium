@@ -211,6 +211,11 @@ class BookmarkEditorView : public BookmarkEditor,
       EditorNode* editor_node,
       bookmarks::BookmarkExpandedStateTracker::Nodes* expanded_nodes);
 
+  enum {
+    kContextMenuItemEdit = 1,
+    kContextMenuItemDelete,
+    kContextMenuItemNewFolder,
+  };
   ui::SimpleMenuModel* GetMenuModel();
 
   // Helper functions that implements the IDS_DELETE logic for ExecuteCommand,
