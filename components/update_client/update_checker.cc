@@ -196,6 +196,13 @@ void UpdateCheckerImpl::CheckForUpdatesHelper(
                                 crx_component->target_version_prefix,
                                 crx_component->rollback_allowed,
                                 crx_component->same_version_update_allowed),
+        [](const std::string& install_data_index)
+            -> std::vector<protocol_request::Data> {
+          if (install_data_index.empty())
+            return {};
+          else
+            return {{"install", install_data_index, ""}};
+        }(crx_component->install_data_index),
         MakeProtocolPing(app_id, metadata_,
                          active_ids.find(app_id) != active_ids.end()),
         absl::nullopt));

@@ -4,6 +4,7 @@
 
 #include "components/update_client/protocol_parser_json.h"
 
+#include <algorithm>
 #include <utility>
 
 #include "base/json/json_reader.h"
@@ -159,6 +160,15 @@ bool ParseUrls(const base::Value& urls_node,
   return true;
 }
 
+void ParseData(const base::Value& data_node, ProtocolParser::Result* result) {
+  if (!data_node.is_dict())
+    return;
+
+  result->data.emplace_back(ProtocolParser::Result::Data(
+      GetValueString(data_node, "status"), GetValueString(data_node, "name"),
+      GetValueString(data_node, "index"), GetValueString(data_node, "#text")));
+}
+
 bool ParseUpdateCheck(const base::Value& updatecheck_node,
                       ProtocolParser::Result* result,
                       std::string* error) {
@@ -257,6 +267,15 @@ bool ParseApp(const base::Value& app_node,
   }
 
   DCHECK(result->status.empty() || result->status == "ok");
+
+  if (const auto* data_node = app_node.FindKey("data")) {
+    if (const auto* data_list = data_node->GetIfList()) {
+      std::for_each(
+          data_list->begin(), data_list->end(),
+          [&result](const base::Value& data) { ParseData(data, result); });
+    }
+  }
+
   const auto* updatecheck_node = app_node.FindKey("updatecheck");
   if (!updatecheck_node) {
     *error = "Missing updatecheck on app.";

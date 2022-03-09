@@ -212,6 +212,7 @@ protocol_request::App MakeProtocolApp(
     const std::string& release_channel,
     const std::vector<int>& disabled_reasons,
     absl::optional<protocol_request::UpdateCheck> update_check,
+    const std::vector<protocol_request::Data>& data,
     absl::optional<protocol_request::Ping> ping,
     absl::optional<std::vector<base::Value>> events) {
   protocol_request::App app;
@@ -231,6 +232,7 @@ protocol_request::App MakeProtocolApp(
   app.enabled = disabled_reasons.empty();
   app.disabled_reasons = disabled_reasons;
   app.update_check = std::move(update_check);
+  app.data = data;
   app.ping = std::move(ping);
   return app;
 }

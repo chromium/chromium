@@ -3,6 +3,9 @@
 // found in the LICENSE file.
 
 #include "components/update_client/protocol_parser.h"
+
+#include <string>
+
 #include "base/strings/stringprintf.h"
 
 namespace update_client {
@@ -30,6 +33,20 @@ ProtocolParser::Result::Manifest::Package::Package() = default;
 ProtocolParser::Result::Manifest::Package::Package(const Package& other) =
     default;
 ProtocolParser::Result::Manifest::Package::~Package() = default;
+
+ProtocolParser::Result::Data::Data() = default;
+ProtocolParser::Result::Data::Data(const Data& other) = default;
+ProtocolParser::Result::Data& ProtocolParser::Result::Data::operator=(Data&) =
+    default;
+ProtocolParser::Result::Data::Data(const std::string& status,
+                                   const std::string& name,
+                                   const std::string& install_data_index,
+                                   const std::string& text)
+    : status(status),
+      name(name),
+      install_data_index(install_data_index),
+      text(text) {}
+ProtocolParser::Result::Data::~Data() = default;
 
 void ProtocolParser::ParseError(const char* details, ...) {
   va_list args;

@@ -147,6 +147,24 @@ std::string ProtocolSerializerJSON::Serialize(
       }
     }
 
+    if (!app.data.empty()) {
+      std::vector<Value> data_nodes;
+      for (const auto& data : app.data) {
+        Value data_node(Value::Type::DICTIONARY);
+
+        data_node.SetKey("name", Value(data.name));
+        if (data.name == "install")
+          data_node.SetKey("index", Value(data.install_data_index));
+        else if (data.name == "untrusted")
+          data_node.SetKey("#text", Value(data.untrusted_data));
+
+        data_nodes.push_back(std::move(data_node));
+      }
+
+      if (!data_nodes.empty())
+        app_node.SetKey("data", Value(std::move(data_nodes)));
+    }
+
     if (app.ping) {
       const auto& ping = *app.ping;
       auto* ping_node = app_node.SetKey("ping", Value(Value::Type::DICTIONARY));

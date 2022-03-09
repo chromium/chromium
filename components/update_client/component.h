@@ -478,8 +478,7 @@ class Component {
   // the last update check.
   std::map<std::string, std::string> custom_attrs_;
 
-  // Contains the optional |run| and |arguments| values in the update response
-  // manifest. This data is provided as an argument to the |Install| call.
+  // Contains the optional install parameters from the update response.
   absl::optional<CrxInstaller::InstallParams> install_params_;
 
   // Contains the events which are therefore serialized in the requests.

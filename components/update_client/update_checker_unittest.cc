@@ -83,6 +83,9 @@ class UpdateCheckerTest : public testing::TestWithParam<bool> {
 
   std::unique_ptr<Component> MakeComponent() const;
   std::unique_ptr<Component> MakeComponent(const std::string& brand) const;
+  std::unique_ptr<Component> MakeComponent(
+      const std::string& brand,
+      const std::string& install_data_index) const;
 
   scoped_refptr<TestConfigurator> config_;
   std::unique_ptr<TestActivityDataService> activity_data_service_;
@@ -189,9 +192,16 @@ std::unique_ptr<Component> UpdateCheckerTest::MakeComponent() const {
 
 std::unique_ptr<Component> UpdateCheckerTest::MakeComponent(
     const std::string& brand) const {
+  return MakeComponent(brand, {});
+}
+
+std::unique_ptr<Component> UpdateCheckerTest::MakeComponent(
+    const std::string& brand,
+    const std::string& install_data_index) const {
   CrxComponent crx_component;
   crx_component.app_id = "jebgalgnebhfojomionfpkfelancnnkf";
   crx_component.brand = brand;
+  crx_component.install_data_index = install_data_index;
   crx_component.name = "test_jebg";
   crx_component.pk_hash.assign(jebg_hash, jebg_hash + std::size(jebg_hash));
   crx_component.installer = nullptr;
@@ -222,7 +232,8 @@ TEST_P(UpdateCheckerTest, UpdateCheckSuccess) {
   update_checker_ = UpdateChecker::Create(config_, metadata_.get());
 
   IdToComponentPtrMap components;
-  components[kUpdateItemId] = MakeComponent("TEST");
+  components[kUpdateItemId] =
+      MakeComponent("TEST", "foobar_install_data_index");
 
   auto& component = components[kUpdateItemId];
   component->crx_component_->installer_attributes["ap"] = "some_ap";
@@ -278,6 +289,12 @@ TEST_P(UpdateCheckerTest, UpdateCheckSuccess) {
   EXPECT_EQ(kUpdateItemId, app.FindKey("appid")->GetString());
   EXPECT_EQ("0.9", app.FindKey("version")->GetString());
   EXPECT_EQ("TEST", app.FindKey("brand")->GetString());
+
+  const auto& data = app.FindKey("data")->GetIfList()->front();
+  EXPECT_EQ("install", data.FindKey("name")->GetString());
+  EXPECT_EQ("foobar_install_data_index", data.FindKey("index")->GetString());
+  EXPECT_FALSE(data.FindKey("text"));
+
   if (is_foreground_)
     EXPECT_EQ("ondemand", app.FindKey("installsource")->GetString());
   EXPECT_EQ("some_ap", app.FindKey("ap")->GetString());
@@ -359,6 +376,7 @@ TEST_P(UpdateCheckerTest, UpdateCheckInvalidAp) {
     EXPECT_EQ(kUpdateItemId, app.FindKey("appid")->GetString());
     EXPECT_EQ("0.9", app.FindKey("version")->GetString());
     EXPECT_EQ("TEST", app.FindKey("brand")->GetString());
+    EXPECT_FALSE(app.FindKey("data"));
     if (is_foreground_)
       EXPECT_EQ("ondemand", app.FindKey("installsource")->GetString());
     EXPECT_FALSE(app.FindKey("ap"));

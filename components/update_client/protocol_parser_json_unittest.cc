@@ -328,12 +328,19 @@ const char* kJSONAppsStatusError = R"()]}'
    ]
   }})";
 
-// Includes a manifest |run| value for an update check with status='ok'.
+// Includes a manifest |run| value for an update check with status='ok'. Also
+// includes install data in the `data` element.
 const char* kJSONManifestRun = R"()]}'
   {"response":{
    "protocol":"3.1",
    "app":[
     {"appid":"12345",
+     "data":[{
+      "status":"ok",
+      "name":"install",
+      "index":"foobar_install_data_index",
+      "#text":"sampledata"
+     }],
      "updatecheck":{
      "status":"ok",
      "urls":{"url":[{"codebase":"http://example.com/"},
@@ -546,6 +553,13 @@ TEST(UpdateClientProtocolParserJSONTest, Parse) {
     const auto& result = parser->results().list[0];
     EXPECT_STREQ("UpdaterSetup.exe", result.manifest.run.c_str());
     EXPECT_STREQ("--arg1 --arg2", result.manifest.arguments.c_str());
+
+    ASSERT_EQ(1u, result.data.size());
+    EXPECT_STREQ("ok", result.data[0].status.c_str());
+    EXPECT_STREQ("install", result.data[0].name.c_str());
+    EXPECT_STREQ("foobar_install_data_index",
+                 result.data[0].install_data_index.c_str());
+    EXPECT_STREQ("sampledata", result.data[0].text.c_str());
   }
 }
 

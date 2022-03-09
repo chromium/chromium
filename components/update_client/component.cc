@@ -7,6 +7,7 @@
 #include <algorithm>
 #include <tuple>
 #include <utility>
+#include <vector>
 
 #include "base/bind.h"
 #include "base/callback.h"
@@ -343,7 +344,24 @@ void Component::SetParseResult(const ProtocolParser::Result& result) {
 
   if (!result.manifest.run.empty()) {
     install_params_ = absl::make_optional(CrxInstaller::InstallParams(
-        result.manifest.run, result.manifest.arguments));
+        result.manifest.run, result.manifest.arguments,
+        [&result](const std::string& expected) -> std::string {
+          if (expected.empty() || result.data.empty()) {
+            return "";
+          }
+
+          auto it =
+              std::find_if(std::begin(result.data), std::end(result.data),
+                           [&expected](const ProtocolParser::Result::Data& d) {
+                             return d.install_data_index == expected;
+                           });
+
+          const bool matched = it != std::end(result.data);
+          DVLOG(2) << "Expected install_data_index: " << expected
+                   << ", matched: " << matched;
+
+          return matched ? it->text : "";
+        }(crx_component_ ? crx_component_->install_data_index : "")));
   }
 }
 

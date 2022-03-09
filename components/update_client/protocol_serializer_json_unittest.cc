@@ -52,6 +52,7 @@ TEST(SerializeRequestJSON, Serialize) {
         "id1", base::Version("1.0"), "ap1", "BRND", "source1", "location1",
         "fp1", {{"attr1", "1"}, {"attr2", "2"}}, "c1", "ch1", "cn1", "test",
         {0, 1}, MakeProtocolUpdateCheck(true, "33.12", true, false),
+        {{"install", "foobar_install_data_index", ""}},
         MakeProtocolPing("id1", metadata.get(), {}), std::move(events)));
 
     const auto request = std::make_unique<ProtocolSerializerJSON>()->Serialize(
@@ -64,6 +65,7 @@ TEST(SerializeRequestJSON, Serialize) {
         R"("acceptformat":"crx3",)"
         R"("app":\[{"ap":"ap1","appid":"id1","attr1":"1","attr2":"2",)"
         R"("brand":"BRND","cohort":"c1","cohorthint":"ch1","cohortname":"cn1",)"
+        R"("data":\[{"index":"foobar_install_data_index","name":"install"}],)"
         R"("disabled":\[{"reason":0},{"reason":1}],"enabled":false,)"
         R"("event":\[{"a":1,"b":"2"},{"error":0}],)"
         R"("installedby":"location1","installsource":"source1",)"
@@ -91,7 +93,7 @@ TEST(SerializeRequestJSON, Serialize) {
     std::vector<protocol_request::App> apps;
     apps.push_back(MakeProtocolApp(
         "id1", base::Version("1.0"), "", "", "", "", "", {}, "", "", "", "", {},
-        MakeProtocolUpdateCheck(false, "", false, true), absl::nullopt,
+        MakeProtocolUpdateCheck(false, "", false, true), {}, absl::nullopt,
         absl::nullopt));
 
     const auto request = std::make_unique<ProtocolSerializerJSON>()->Serialize(

@@ -107,7 +107,7 @@ void PingSender::SendPing(const Component& component,
       metadata.GetCohortName(component.id()),
       component.crx_component()->channel,
       component.crx_component()->disabled_reasons,
-      absl::nullopt /* update check */, absl::nullopt /* ping */,
+      absl::nullopt /* update check */, {} /* data */, absl::nullopt /* ping */,
       component.GetEvents()));
   request_sender_ = std::make_unique<RequestSender>(config_);
   request_sender_->Send(

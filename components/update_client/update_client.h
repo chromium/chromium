@@ -189,9 +189,12 @@ class CrxInstaller : public base::RefCountedThreadSafe<CrxInstaller> {
   };
 
   struct InstallParams {
-    InstallParams(const std::string& run, const std::string& arguments);
+    InstallParams(const std::string& run,
+                  const std::string& arguments,
+                  const std::string& server_install_data);
     std::string run;
     std::string arguments;
+    std::string server_install_data;
   };
 
   using ProgressCallback = base::RepeatingCallback<void(int progress)>;
@@ -292,6 +295,12 @@ struct CrxComponent {
   // If nonempty, the brand is an uppercase 4-letter string that describes the
   // flavor, branding, or provenance of the software.
   std::string brand;
+
+  // If populated, the `install_data_index` is sent to the update server as part
+  // of the `data` element. The server will provide corresponding installer data
+  // in the update response. This data is then provided to the installer when
+  // running it.
+  std::string install_data_index;
 
   std::string fingerprint;  // Optional.
   std::string name;         // Optional.

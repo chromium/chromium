@@ -36,9 +36,13 @@
 
 namespace update_client {
 
-CrxInstaller::InstallParams::InstallParams(const std::string& run,
-                                           const std::string& arguments)
-    : run(run), arguments(arguments) {}
+CrxInstaller::InstallParams::InstallParams(
+    const std::string& run,
+    const std::string& arguments,
+    const std::string& server_install_data)
+    : run(run),
+      arguments(arguments),
+      server_install_data(server_install_data) {}
 
 CrxUpdateItem::CrxUpdateItem() : state(ComponentState::kNew) {}
 CrxUpdateItem::~CrxUpdateItem() = default;
