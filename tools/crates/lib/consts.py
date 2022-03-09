@@ -81,7 +81,7 @@ _GN_HEADER_YEAR = r"^# Copyright( \(c\))? (?P<year>[0-9]+) " \
     r"The Chromium Authors\. All rights reserved\."
 GN_HEADER_YEAR_REGEX = re.compile(_GN_HEADER_YEAR)
 
-# Comment on the skip_unit_tests field in BUILD.gn file output.
+# Comment on the build_native_rust_unit_tests field in BUILD.gn file output.
 GN_TESTS_COMMENT = \
 """# Unit tests skipped. Generate with --with-tests to include them."""
 

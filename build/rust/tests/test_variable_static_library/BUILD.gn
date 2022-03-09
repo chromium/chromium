@@ -17,7 +17,7 @@ mixed_static_library("test_variable_static_library") {
   ]
   rs_sources = [ "src/lib.rs" ]
   rs_cxx_bindings = [ "src/lib.rs" ]
-  rs_skip_unit_tests = false
+  rs_build_native_rust_unit_tests = true
 }
 
 executable("test_variable_static_library_demo") {

@@ -116,9 +116,10 @@ template("rust_target") {
     _public_deps += invoker.public_deps
   }
 
-  _build_unit_tests = build_rust_unit_tests
-  if (defined(invoker.skip_unit_tests) && invoker.skip_unit_tests == true) {
-    _build_unit_tests = false
+  _build_unit_tests = false
+  if (defined(invoker.build_native_rust_unit_tests)) {
+    _build_unit_tests =
+        invoker.build_native_rust_unit_tests && can_build_rust_unit_tests
   }
 
   # Declares that the Rust crate generates bindings between C++ and Rust via the

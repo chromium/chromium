@@ -90,10 +90,10 @@ import("//build/rust/rust_target.gni")
 #     to include headers from the mutually_dependent_target by depending on its
 #     public_deps.
 #
-#   skip_unit_tests (optional)
-#     Avoids building unit tests associated with this Rust crate. Normally,
-#     this template will create a `<name>_unittests` executable in the output
-#     directory; this behavior is suppressed if this flag is set to true.
+#   build_native_rust_unit_tests (optional)
+#     Builds native unit tests (under #[cfg(test)]) written inside the Rust
+#     crate. This will create a `<name>_unittests` executable in the output
+#     directory when set to true.
 #
 #   unit_test_target (optional)
 #     Overrides the default name for the unit tests target

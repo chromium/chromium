@@ -97,7 +97,7 @@ toolchain_has_rust =
 # We use the Rust linker for building test executables, so we only build them
 # if we're able to use the Rust linker. We could use the C++ linker for this
 # too, we've just not set up GN to do so at the moment.
-build_rust_unit_tests = toolchain_has_rust && rustc_can_link
+can_build_rust_unit_tests = toolchain_has_rust && rustc_can_link
 
 # We want to store rust_sysroot as a source-relative variable for ninja
 # portability. In practice if an external toolchain was specified, it might

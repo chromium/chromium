@@ -10,7 +10,7 @@ cargo_crate("test_support") {
   crate_type = "proc-macro"
   testonly = "true"
   crate_root = "crate/src/lib.rs"
-  skip_unit_tests = true
+  build_native_rust_unit_tests = false
   sources = [ "crate/src/lib.rs" ]
   edition = "2018"
 }

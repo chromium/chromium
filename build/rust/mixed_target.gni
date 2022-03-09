@@ -33,9 +33,6 @@ import("//build/rust/rust_target.gni")
 #   rs_configs
 #   rs_deps
 #   rs_public_deps
-#   rs_test_deps
-#   rs_skip_unit_tests
-#   rs_unit_test_target
 #   rs_crate_name
 #   rs_crate_root
 #   rs_features
@@ -43,6 +40,11 @@ import("//build/rust/rust_target.gni")
 #     Rust parameters. Same meaning as in 'rust_static_library' without the
 #     'rs_' prefix, e.g. rs_configs here means the same as 'configs' in
 #     rust_static_library.
+#
+#   rs_build_native_rust_unit_tests
+#     This is used by Rust build tests, but should not be used in Chromium
+#     code. Instead, prefer to write gtest tests. See how to do that in
+#     //testing/rust_gtest_interop/README.md.
 #
 # In the event that Rust is not enabled in the build, this will produce a
 # plain C/C++ target.
@@ -71,14 +73,12 @@ template("mixed_target") {
     "rs_configs",
     "rs_deps",
     "rs_public_deps",
-    "rs_test_deps",
     "rs_sources",
     "rs_features",
     "rs_cxx_bindings",
     "rs_crate_name",
     "rs_crate_root",
-    "rs_skip_unit_tests",
-    "rs_unit_test_target",
+    "rs_build_native_rust_unit_tests",
   ]
 
   # TODO(crbug.com/1280708, crbug.com/1304707): Drop toolchain_has_rust after we have support for
@@ -110,9 +110,6 @@ template("mixed_target") {
         # sets them for each type of rust target.
         configs += invoker.rs_configs
       }
-      if (defined(invoker.rs_test_deps)) {
-        test_deps = invoker.rs_test_deps
-      }
       if (defined(invoker.rs_sources)) {
         sources = invoker.rs_sources
       }
@@ -131,12 +128,9 @@ template("mixed_target") {
       if (defined(invoker.rs_crate_name)) {
         crate_name = invoker.rs_crate_name
       }
-      skip_unit_tests = true
-      if (defined(invoker.rs_skip_unit_tests)) {
-        skip_unit_tests = invoker.rs_skip_unit_tests
-      }
-      if (defined(invoker.rs_unit_test_target)) {
-        unit_test_target = invoker.rs_unit_test_target
+      build_native_rust_unit_tests = false
+      if (defined(invoker.rs_build_native_rust_unit_tests)) {
+        build_native_rust_unit_tests = invoker.rs_build_native_rust_unit_tests
       }
       if (defined(invoker.testonly) && invoker.testonly) {
         testonly = true
@@ -173,8 +167,8 @@ template("mixed_target") {
       public_deps += [ ":${_target_name}_rs" ]
 
       if (defined(visibility)) {
-        if (!defined(invoker.rs_skip_unit_tests) ||
-            !invoker.rs_skip_unit_tests) {
+        if (defined(invoker.rs_build_native_rust_unit_tests) &&
+            invoker.rs_build_native_rust_unit_tests) {
           _unit_test_target = "${_target_name}_rs_unittests"
           if (defined(invoker.rs_unit_test_target)) {
             _unit_test_target = invoker.rs_unit_test_target

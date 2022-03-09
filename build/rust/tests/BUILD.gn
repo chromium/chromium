@@ -11,7 +11,7 @@ group("tests") {
   testonly = true
 
   deps = [ ":deps" ]
-  if (build_rust_unit_tests) {
+  if (can_build_rust_unit_tests) {
     deps += [ ":build_rust_tests" ]
   }
 }
@@ -43,7 +43,7 @@ group("deps") {
         "test_rust_shared_library",
       ]
     }
-    if (build_rust_unit_tests) {
+    if (can_build_rust_unit_tests) {
       deps += [
         "test_cpp_including_rust:test_cpp_including_rust_unittests",
         "test_mixed_component:test_mixed_component_rs_unittests",
@@ -83,7 +83,7 @@ group("deps") {
   }
 }
 
-if (build_rust_unit_tests) {
+if (can_build_rust_unit_tests) {
   # A group covering all native Rust unit tests under //build/rust directory.
   rust_unit_tests_group("build_rust_tests") {
     deps = [ ":deps" ]

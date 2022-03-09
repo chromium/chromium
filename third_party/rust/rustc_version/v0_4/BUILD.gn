@@ -13,7 +13,7 @@ cargo_crate("buildrs_support") {
   # third_party.toml to use it from first-party code.
   visibility = [ "//third_party/rust/*" ]
   crate_root = "crate/src/lib.rs"
-  skip_unit_tests = true
+  build_native_rust_unit_tests = false
   sources = [ "crate/src/lib.rs" ]
   edition = "2018"
   deps = [ "//third_party/rust/semver/v1:lib" ]

@@ -25,7 +25,7 @@ import("//build/rust/rust_target.gni")
 #  epoch
 #  deps
 #  features
-#  skip_unit_tests
+#  build_native_rust_unit_tests
 #  edition
 #  crate_name
 #    All just as in rust_static_library.gni
@@ -102,6 +102,10 @@ template("cargo_crate") {
     } else {
       assert(crate_type == "rlib")
       target_type = "rust_library"
+    }
+
+    if (!defined(build_native_rust_unit_tests)) {
+      build_native_rust_unit_tests = true
     }
 
     # We may generate multiple build rules for the same Cargo crate, as they may
@@ -239,7 +243,6 @@ template("cargo_crate") {
     if (current_toolchain == host_toolchain) {
       rust_target(build_script_name) {
         target_type = "executable"
-        skip_unit_tests = true
         sources = invoker.build_sources
         crate_root = invoker.build_root
         if (defined(invoker.build_deps)) {

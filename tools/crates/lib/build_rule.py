@@ -342,12 +342,18 @@ class BuildRule:
                     self._write(indent + 2, "testonly = \"true\"")
                 self._write(indent + 2,
                             "crate_root = \"{}\"".format(self.lib_root))
-                if not usage == cargo.CrateUsage.FOR_NORMAL:
-                    self._write(indent + 2, "skip_unit_tests = true")
-                elif not args.with_tests:
-                    for c in consts.GN_TESTS_COMMENT.split("\n"):
-                        self._write(indent + 2, c)
-                    self._write(indent + 2, "skip_unit_tests = true")
+                if usage == cargo.CrateUsage.FOR_NORMAL:
+                    if args.with_tests:
+                        self._write(indent + 2,
+                                    "build_native_rust_unit_tests = true")
+                    else:
+                        for c in consts.GN_TESTS_COMMENT.split("\n"):
+                            self._write(indent + 2, c)
+                        self._write(indent + 2,
+                                    "build_native_rust_unit_tests = false")
+                else:
+                    self._write(indent + 2,
+                                "build_native_rust_unit_tests = false")
                 self._write_common(indent + 2, self, self.lib_sources, usage)
                 self._write(indent, "}")
 

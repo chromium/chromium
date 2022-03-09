@@ -15,7 +15,7 @@ group("rust") {
 # Meta target to build test binaries, if supported.
 rust_unit_tests_group("mojo_rust_tests") {
   deps = []
-  if (build_rust_unit_tests) {
+  if (can_build_rust_unit_tests) {
     deps += [ ":mojo_rust_unittests" ]
   }
   if (rustc_can_link) {
@@ -47,6 +47,9 @@ rust_static_library("mojo_rust") {
       "mojo_rust_unittests"  # avoids conflict with C++ target elsewhere
   crate_name = "mojo"
   edition = "2018"
+
+  # TODO(danakj): Move to a gtest target.
+  build_native_rust_unit_tests = true
   sources = [
     "bindings/decoding.rs",
     "bindings/encoding.rs",

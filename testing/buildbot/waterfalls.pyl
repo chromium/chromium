@@ -5484,7 +5484,7 @@
         'mixins': [ 'marshmallow' ],
         'test_suites': {
           'gtest_tests': 'rust_gtests',
-          # Currently `build_rust_unit_tests` is false on Android (because
+          # Currently `can_build_rust_unit_tests` is false on Android (because
           # `rustc_can_link` is false).
           # TODO(https://crbug.com/1260120): Cover `rust_native_tests` here.
         },

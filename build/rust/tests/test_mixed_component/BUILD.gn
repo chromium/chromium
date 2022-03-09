@@ -13,7 +13,10 @@ mixed_component("test_mixed_component") {
   rs_sources = [ "component.rs" ]
   rs_crate_root = "component.rs"
   rs_cxx_bindings = [ "component.rs" ]
-  rs_skip_unit_tests = false
+
+  # TODO(danakj): We should write a gtest binary instead of using native rust
+  # tests. Then remove this flag from mixed_target.gni.
+  rs_build_native_rust_unit_tests = true
 }
 
 executable("test_mixed_component_demo") {
