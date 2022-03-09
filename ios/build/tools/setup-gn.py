@@ -33,16 +33,6 @@ LLDBINIT_SKIP_PATTERNS = (
     re.compile('^settings append target.source-map .* /google/src/.*$'),
 )
 
-
-def HostCpuArch():
-  '''Returns the arch of the host cpu for GN.'''
-  HOST_CPU_ARCH = {
-    'arm64': '"arm64"',
-    'x86_64': '"x64"',
-  }
-  return HOST_CPU_ARCH[platform.machine()]
-
-
 class ConfigParserWithStringInterpolation(configparser.ConfigParser):
 
   '''A .ini file parser that supports strings and environment variables.'''
@@ -84,8 +74,8 @@ class GnGenerator(object):
 
   TARGET_CPU_VALUES = {
     'iphoneos': '"arm64"',
-    'iphonesimulator': HostCpuArch(),
-    'maccatalyst': HostCpuArch(),
+    'iphonesimulator': '"x64"',
+    'maccatalyst': '"x64"',
   }
 
   TARGET_ENVIRONMENT_VALUES = {
