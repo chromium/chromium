@@ -349,6 +349,9 @@ bool IsFaviconEnabled() {
 @property(nonatomic, assign)
     OnDeviceEncryptionState onDeviceEncryptionStateInModel;
 
+// Return YES if the search bar should be enabled.
+@property(nonatomic, assign) BOOL shouldEnableSearchBar;
+
 @end
 
 @implementation PasswordsTableViewController
@@ -388,6 +391,9 @@ bool IsFaviconEnabled() {
         initWithPrefService:_browserState->GetPrefs()
                    prefName:password_manager::prefs::kCredentialsEnableService];
     [_passwordManagerEnabled setObserver:self];
+
+    // Default behavior: search bar is enabled.
+    self.shouldEnableSearchBar = YES;
 
     [self updateUIForEditState];
     [self updateExportPasswordsButton];
@@ -516,19 +522,18 @@ bool IsFaviconEnabled() {
   }
 }
 
-- (void)setTableViewEditing:(BOOL)editing animated:(BOOL)animated {
+- (void)setEditing:(BOOL)editing animated:(BOOL)animated {
   [super setEditing:editing animated:animated];
   if (editing) {
     [self setSavePasswordsSwitchItemEnabled:NO];
     [self setExportPasswordsButtonEnabled:NO];
-    [self setSearchBarEnabled:NO];
   } else {
     [self setSavePasswordsSwitchItemEnabled:YES];
     if (_exportReady) {
       [self setExportPasswordsButtonEnabled:YES];
     }
-    [self setSearchBarEnabled:YES];
   }
+  [self setSearchBarEnabled:self.shouldEnableSearchBar];
   [self updatePasswordCheckButtonWithState:self.passwordCheckState];
   [self updatePasswordCheckStatusLabelWithState:self.passwordCheckState];
   if (_checkForProblemsItem) {
@@ -774,10 +779,11 @@ bool IsFaviconEnabled() {
 }
 
 - (void)editButtonPressed {
-  // No need to call super here because it is done in -setTableViewEditing
-  // already. Only consider the state to be editing when the Edit button is
-  // pressed (not when the user swiped to delete a password).
-  [self setTableViewEditing:!self.tableView.editing animated:YES];
+  // Disable search bar if the user is bulk editing (edit mode). (Reverse logic
+  // because parent method -editButtonPressed is calling setEditing to change
+  // the state).
+  self.shouldEnableSearchBar = self.tableView.editing;
+  [super editButtonPressed];
 }
 
 #pragma mark - SettingsControllerProtocol
@@ -1224,7 +1230,7 @@ bool IsFaviconEnabled() {
                     withRowAnimation:UITableViewRowAnimationAutomatic];
       [self scrollToLastUpdatedItem];
     } else if (_savedForms.empty() && _blockedForms.empty()) {
-      [self setTableViewEditing:NO animated:YES];
+      [self setEditing:NO animated:YES];
     }
   }
 }
@@ -1824,7 +1830,7 @@ bool IsFaviconEnabled() {
         // If both lists are empty, exit editing mode.
         if (strongSelf->_savedForms.empty() &&
             strongSelf->_blockedForms.empty())
-          [strongSelf setTableViewEditing:NO animated:YES];
+          [strongSelf setEditing:NO animated:YES];
         [strongSelf updateUIForEditState];
         [strongSelf updateExportPasswordsButton];
       }];
