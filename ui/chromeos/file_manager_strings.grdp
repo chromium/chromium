@@ -328,13 +328,13 @@
     Open
   </message>
   <message name="IDS_FILE_BROWSER_TASK_OPEN_GDOC" desc="Title of the action to open a Google Docs document.">
-    Docs
+    Google Docs
   </message>
   <message name="IDS_FILE_BROWSER_TASK_OPEN_GSHEET" desc="Title of the action to open a Google Spreadsheets document.">
-    Sheets
+    Google Sheets
   </message>
   <message name="IDS_FILE_BROWSER_TASK_OPEN_GSLIDES" desc="Title of the action to open a Google Slides document.">
-    Slides
+    Google Slides
   </message>
   <message name="IDS_FILE_BROWSER_TASK_LISTEN" desc="Title of the action to play an audio file.">
     Listen

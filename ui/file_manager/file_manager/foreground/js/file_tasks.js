@@ -339,15 +339,27 @@ export class FileTasks {
         } else if (parsedActionId === 'open-hosted-gdoc') {
           task.iconType = 'gdoc';
           task.title = loadTimeData.getString('TASK_OPEN_GDOC');
-          task.verb = undefined;
+          task.verb = chrome.fileManagerPrivate.Verb.OPEN_WITH;
         } else if (parsedActionId === 'open-hosted-gsheet') {
           task.iconType = 'gsheet';
           task.title = loadTimeData.getString('TASK_OPEN_GSHEET');
-          task.verb = undefined;
+          task.verb = chrome.fileManagerPrivate.Verb.OPEN_WITH;
         } else if (parsedActionId === 'open-hosted-gslides') {
           task.iconType = 'gslides';
           task.title = loadTimeData.getString('TASK_OPEN_GSLIDES');
-          task.verb = undefined;
+          task.verb = chrome.fileManagerPrivate.Verb.OPEN_WITH;
+        } else if (parsedActionId === 'open-web-drive-office-word') {
+          task.iconType = 'gdoc';
+          task.title = loadTimeData.getString('TASK_OPEN_GDOC');
+          task.verb = chrome.fileManagerPrivate.Verb.OPEN_WITH;
+        } else if (parsedActionId === 'open-web-drive-office-excel') {
+          task.iconType = 'gsheet';
+          task.title = loadTimeData.getString('TASK_OPEN_GSHEET');
+          task.verb = chrome.fileManagerPrivate.Verb.OPEN_WITH;
+        } else if (parsedActionId === 'open-web-drive-office-powerpoint') {
+          task.iconType = 'gslides';
+          task.title = loadTimeData.getString('TASK_OPEN_GSLIDES');
+          task.verb = chrome.fileManagerPrivate.Verb.OPEN_WITH;
         } else if (parsedActionId === 'install-linux-package') {
           task.iconType = 'crostini';
           task.title = loadTimeData.getString('TASK_INSTALL_LINUX_PACKAGE');
