@@ -325,6 +325,7 @@
 #include "chrome/browser/ash/login/quick_unlock/fingerprint_storage.h"
 #include "chrome/browser/ash/login/quick_unlock/pin_storage_prefs.h"
 #include "chrome/browser/ash/login/quick_unlock/quick_unlock_utils.h"
+#include "chrome/browser/ash/login/reporting/login_logout_reporter.h"
 #include "chrome/browser/ash/login/saml/saml_profile_prefs.h"
 #include "chrome/browser/ash/login/screens/enable_adb_sideloading_screen.h"
 #include "chrome/browser/ash/login/screens/reset_screen.h"
@@ -1075,6 +1076,7 @@ void RegisterLocalState(PrefRegistrySimple* registry) {
   chromeos::local_search_service::SearchMetricsReporter::
       RegisterLocalStatePrefs(registry);
   ash::login::SecurityTokenSessionController::RegisterLocalStatePrefs(registry);
+  ash::reporting::LoginLogoutReporter::RegisterPrefs(registry);
   ash::MultiProfileUserController::RegisterPrefs(registry);
   chromeos::NetworkMetadataStore::RegisterPrefs(registry);
   ash::NetworkThrottlingObserver::RegisterPrefs(registry);

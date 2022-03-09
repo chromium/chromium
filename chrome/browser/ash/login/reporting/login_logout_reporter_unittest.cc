@@ -6,11 +6,14 @@
 
 #include "ash/components/login/session/session_termination_manager.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/test/simple_test_clock.h"
 #include "base/test/task_environment.h"
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chrome/browser/ash/policy/core/device_local_account.h"
 #include "chrome/browser/ash/policy/reporting/user_event_reporter_helper_testing.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
+#include "chrome/test/base/scoped_testing_local_state.h"
+#include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chromeos/dbus/power/fake_power_manager_client.h"
 #include "components/policy/core/common/cloud/dm_token.h"
@@ -133,19 +136,25 @@ class LoginLogoutTestHelper {
   }
 
   std::unique_ptr<::reporting::UserEventReporterHelperTesting>
-  GetReporterHelper(bool reporting_enabled, bool should_report_user) {
+  GetReporterHelper(bool reporting_enabled,
+                    bool should_report_user,
+                    ::reporting::Status status = ::reporting::Status()) {
+    record_.Clear();
+    report_count_ = 0;
     auto mock_queue = std::unique_ptr<::reporting::MockReportQueue,
                                       base::OnTaskRunnerDeleter>(
         new testing::NiceMock<::reporting::MockReportQueue>(),
         base::OnTaskRunnerDeleter(base::SequencedTaskRunnerHandle::Get()));
 
     ON_CALL(*mock_queue, AddRecord(_, ::reporting::Priority::SECURITY, _))
-        .WillByDefault([&](base::StringPiece record_string,
+        .WillByDefault([this, status](
+                           base::StringPiece record_string,
                            ::reporting::Priority event_priority,
-                           ::reporting::ReportQueue::EnqueueCallback) {
+                           ::reporting::ReportQueue::EnqueueCallback cb) {
           ++report_count_;
           EXPECT_TRUE(record_.ParseFromArray(record_string.data(),
                                              record_string.size()));
+          std::move(cb).Run(status);
         });
 
     auto reporter_helper =
@@ -177,11 +186,16 @@ struct LoginLogoutReporterTestCase {
 class LoginLogoutReporterTest
     : public ::testing::TestWithParam<LoginLogoutReporterTestCase> {
  protected:
+  LoginLogoutReporterTest()
+      : local_state_(TestingBrowserProcess::GetGlobal()) {}
+
   void SetUp() override { test_helper_.Init(); }
 
   void TearDown() override { test_helper_.Shutdown(); }
 
   LoginLogoutTestHelper test_helper_;
+
+  ScopedTestingLocalState local_state_;
 };
 
 TEST_F(LoginLogoutReporterTest, ReportAffiliatedLogin) {
@@ -370,11 +384,16 @@ INSTANTIATE_TEST_SUITE_P(All,
 
 class LoginFailureReporterTest : public ::testing::TestWithParam<AuthFailure> {
  protected:
+  LoginFailureReporterTest()
+      : local_state_(TestingBrowserProcess::GetGlobal()) {}
+
   void SetUp() override { test_helper_.Init(); }
 
   void TearDown() override { test_helper_.Shutdown(); }
 
   LoginLogoutTestHelper test_helper_;
+
+  ScopedTestingLocalState local_state_;
 };
 
 TEST_F(LoginFailureReporterTest, ReportAffiliatedLoginFailure_OwnerRequired) {
@@ -402,7 +421,7 @@ TEST_F(LoginFailureReporterTest, ReportAffiliatedLoginFailure_OwnerRequired) {
   EXPECT_THAT(record.affiliated_user().user_email(), StrEq(user_email));
   ASSERT_TRUE(record.has_session_type());
   EXPECT_THAT(record.session_type(),
-              testing::Eq(LoginLogoutSessionType::REGULAR_USER_SESSION));
+              Eq(LoginLogoutSessionType::REGULAR_USER_SESSION));
   ASSERT_TRUE(record.has_login_event());
   ASSERT_TRUE(record.login_event().has_failure());
   ASSERT_THAT(record.login_event().failure().reason(),
@@ -435,7 +454,7 @@ TEST_F(LoginFailureReporterTest,
   EXPECT_THAT(record.affiliated_user().user_email(), StrEq(user_email));
   ASSERT_TRUE(record.has_session_type());
   EXPECT_THAT(record.session_type(),
-              testing::Eq(LoginLogoutSessionType::REGULAR_USER_SESSION));
+              Eq(LoginLogoutSessionType::REGULAR_USER_SESSION));
   ASSERT_TRUE(record.has_login_event());
   ASSERT_TRUE(record.login_event().has_failure());
   ASSERT_THAT(record.login_event().failure().reason(),
@@ -464,7 +483,7 @@ TEST_F(LoginFailureReporterTest, ReportUnaffiliatedLoginFailure_TpmError) {
   EXPECT_FALSE(record.has_affiliated_user());
   ASSERT_TRUE(record.has_session_type());
   EXPECT_THAT(record.session_type(),
-              testing::Eq(LoginLogoutSessionType::REGULAR_USER_SESSION));
+              Eq(LoginLogoutSessionType::REGULAR_USER_SESSION));
   ASSERT_TRUE(record.has_login_event());
   ASSERT_TRUE(record.login_event().has_failure());
   ASSERT_THAT(record.login_event().failure().reason(),
@@ -497,7 +516,7 @@ TEST_F(LoginFailureReporterTest,
   EXPECT_FALSE(record.has_affiliated_user());
   ASSERT_TRUE(record.has_session_type());
   EXPECT_THAT(record.session_type(),
-              testing::Eq(LoginLogoutSessionType::PUBLIC_ACCOUNT_SESSION));
+              Eq(LoginLogoutSessionType::PUBLIC_ACCOUNT_SESSION));
   ASSERT_TRUE(record.has_login_event());
   ASSERT_TRUE(record.login_event().has_failure());
   ASSERT_THAT(record.login_event().failure().reason(),
@@ -530,7 +549,7 @@ TEST_F(LoginFailureReporterTest,
   EXPECT_FALSE(record.has_affiliated_user());
   ASSERT_TRUE(record.has_session_type());
   EXPECT_THAT(record.session_type(),
-              testing::Eq(LoginLogoutSessionType::PUBLIC_ACCOUNT_SESSION));
+              Eq(LoginLogoutSessionType::PUBLIC_ACCOUNT_SESSION));
   ASSERT_TRUE(record.has_login_event());
   ASSERT_TRUE(record.login_event().has_failure());
   ASSERT_THAT(record.login_event().failure().reason(),
@@ -559,8 +578,7 @@ TEST_F(LoginFailureReporterTest, ReportGuestLoginFailure_MissingCryptohome) {
   EXPECT_FALSE(record.has_logout_event());
   EXPECT_FALSE(record.has_affiliated_user());
   ASSERT_TRUE(record.has_session_type());
-  EXPECT_THAT(record.session_type(),
-              testing::Eq(LoginLogoutSessionType::GUEST_SESSION));
+  EXPECT_THAT(record.session_type(), Eq(LoginLogoutSessionType::GUEST_SESSION));
   ASSERT_TRUE(record.has_login_event());
   ASSERT_TRUE(record.login_event().has_failure());
   ASSERT_THAT(record.login_event().failure().reason(),
@@ -605,6 +623,239 @@ TEST_F(LoginFailureReporterTest, ReportLoginLogoutDisabled) {
   ASSERT_THAT(test_helper_.GetReportCount(), Eq(0));
 }
 
+TEST_F(LoginFailureReporterTest, ReportKioskLoginFailure) {
+  const base::Time failure_time = base::Time::Now();
+  // Kiosk login failure session.
+  {
+    base::SimpleTestClock test_clock;
+    test_clock.SetNow(failure_time);
+    policy::ManagedSessionService managed_session_service;
+    auto reporter_helper = test_helper_.GetReporterHelper(
+        /*reporting_enabled=*/true,
+        /*should_report_user=*/false);
+
+    auto reporter = LoginLogoutReporter::CreateForTest(
+        std::move(reporter_helper),
+        std::make_unique<LoginLogoutReporterTestDelegate>(),
+        &managed_session_service, &test_clock);
+    base::RunLoop().RunUntilIdle();
+
+    managed_session_service.OnKioskProfileLoadFailed();
+
+    ASSERT_THAT(test_helper_.GetReportCount(), Eq(0));
+  }
+
+  // Next session after kiosk login failure session.
+  {
+    base::SimpleTestClock test_clock;
+    test_clock.SetNow(failure_time + base::Hours(10));
+    policy::ManagedSessionService managed_session_service;
+    // Only |reporting_enabled| value at the time of kiosk login failure matter.
+    auto reporter_helper = test_helper_.GetReporterHelper(
+        /*reporting_enabled=*/false,
+        /*should_report_user=*/false);
+
+    auto reporter = LoginLogoutReporter::CreateForTest(
+        std::move(reporter_helper),
+        std::make_unique<LoginLogoutReporterTestDelegate>(),
+        &managed_session_service, &test_clock);
+    base::RunLoop().RunUntilIdle();
+    const LoginLogoutRecord& record = test_helper_.GetRecord();
+
+    ASSERT_THAT(test_helper_.GetReportCount(), Eq(1));
+    ASSERT_TRUE(record.has_event_timestamp_sec());
+    EXPECT_THAT(record.event_timestamp_sec(), Eq(failure_time.ToTimeT()));
+    EXPECT_FALSE(record.is_guest_session());
+    EXPECT_FALSE(record.has_logout_event());
+    EXPECT_FALSE(record.has_affiliated_user());
+    ASSERT_TRUE(record.has_session_type());
+    EXPECT_THAT(record.session_type(),
+                Eq(LoginLogoutSessionType::KIOSK_SESSION));
+    ASSERT_TRUE(record.has_login_event());
+    ASSERT_TRUE(record.login_event().has_failure());
+    EXPECT_FALSE(record.login_event().failure().has_reason());
+  }
+
+  // Next session after kiosk login failure reporting session.
+  {
+    base::SimpleTestClock test_clock;
+    test_clock.SetNow(failure_time + base::Hours(20));
+    policy::ManagedSessionService managed_session_service;
+    auto reporter_helper = test_helper_.GetReporterHelper(
+        /*reporting_enabled=*/true,
+        /*should_report_user=*/false);
+
+    auto reporter = LoginLogoutReporter::CreateForTest(
+        std::move(reporter_helper),
+        std::make_unique<LoginLogoutReporterTestDelegate>(),
+        &managed_session_service, &test_clock);
+    base::RunLoop().RunUntilIdle();
+
+    ASSERT_THAT(test_helper_.GetReportCount(), Eq(0));
+  }
+}
+
+TEST_F(LoginFailureReporterTest, ReportKioskLoginFailure_ReportingError) {
+  const base::Time failure_time = base::Time::Now();
+  // Kiosk login failure session.
+  {
+    base::SimpleTestClock test_clock;
+    test_clock.SetNow(failure_time);
+    policy::ManagedSessionService managed_session_service;
+    auto reporter_helper = test_helper_.GetReporterHelper(
+        /*reporting_enabled=*/true,
+        /*should_report_user=*/false);
+
+    auto reporter = LoginLogoutReporter::CreateForTest(
+        std::move(reporter_helper),
+        std::make_unique<LoginLogoutReporterTestDelegate>(),
+        &managed_session_service, &test_clock);
+    base::RunLoop().RunUntilIdle();
+
+    managed_session_service.OnKioskProfileLoadFailed();
+
+    ASSERT_THAT(test_helper_.GetReportCount(), Eq(0));
+  }
+
+  // Next session after kiosk login failure session.
+  // Reporting error.
+  {
+    base::SimpleTestClock test_clock;
+    test_clock.SetNow(failure_time + base::Hours(10));
+    policy::ManagedSessionService managed_session_service;
+    // Only |reporting_enabled| value at the time of kiosk login failure matter.
+    auto reporter_helper = test_helper_.GetReporterHelper(
+        /*reporting_enabled=*/true,
+        /*should_report_user=*/false,
+        ::reporting::Status(::reporting::error::INTERNAL, ""));
+
+    auto reporter = LoginLogoutReporter::CreateForTest(
+        std::move(reporter_helper),
+        std::make_unique<LoginLogoutReporterTestDelegate>(),
+        &managed_session_service, &test_clock);
+    base::RunLoop().RunUntilIdle();
+
+    ASSERT_THAT(test_helper_.GetReportCount(), Eq(1));
+  }
+
+  // Next session after reporting error session.
+  // Report success.
+  {
+    base::SimpleTestClock test_clock;
+    test_clock.SetNow(failure_time + base::Hours(20));
+    policy::ManagedSessionService managed_session_service;
+    auto reporter_helper = test_helper_.GetReporterHelper(
+        /*reporting_enabled=*/true,
+        /*should_report_user=*/false);
+
+    auto reporter = LoginLogoutReporter::CreateForTest(
+        std::move(reporter_helper),
+        std::make_unique<LoginLogoutReporterTestDelegate>(),
+        &managed_session_service, &test_clock);
+    base::RunLoop().RunUntilIdle();
+    const LoginLogoutRecord& record = test_helper_.GetRecord();
+
+    ASSERT_THAT(test_helper_.GetReportCount(), Eq(1));
+    ASSERT_TRUE(record.has_event_timestamp_sec());
+    EXPECT_THAT(record.event_timestamp_sec(), Eq(failure_time.ToTimeT()));
+    EXPECT_FALSE(record.is_guest_session());
+    EXPECT_FALSE(record.has_logout_event());
+    EXPECT_FALSE(record.has_affiliated_user());
+    ASSERT_TRUE(record.has_session_type());
+    EXPECT_THAT(record.session_type(),
+                Eq(LoginLogoutSessionType::KIOSK_SESSION));
+    ASSERT_TRUE(record.has_login_event());
+    ASSERT_TRUE(record.login_event().has_failure());
+    EXPECT_FALSE(record.login_event().failure().has_reason());
+  }
+}
+
+TEST_F(LoginFailureReporterTest, ReportKioskLoginFailure_ReportingDisabled) {
+  const base::Time failure_time = base::Time::Now();
+  // Kiosk login failure session.
+  {
+    base::SimpleTestClock test_clock;
+    test_clock.SetNow(failure_time);
+    policy::ManagedSessionService managed_session_service;
+    auto reporter_helper = test_helper_.GetReporterHelper(
+        /*reporting_enabled=*/false,
+        /*should_report_user=*/false);
+
+    auto reporter = LoginLogoutReporter::CreateForTest(
+        std::move(reporter_helper),
+        std::make_unique<LoginLogoutReporterTestDelegate>(),
+        &managed_session_service, &test_clock);
+    base::RunLoop().RunUntilIdle();
+
+    managed_session_service.OnKioskProfileLoadFailed();
+
+    ASSERT_THAT(test_helper_.GetReportCount(), Eq(0));
+  }
+
+  // Next session after kiosk login failure session.
+  {
+    base::SimpleTestClock test_clock;
+    test_clock.SetNow(failure_time + base::Hours(10));
+    policy::ManagedSessionService managed_session_service;
+    // Only |reporting_enabled| value at the time of kiosk login failure matter.
+    auto reporter_helper = test_helper_.GetReporterHelper(
+        /*reporting_enabled=*/true,
+        /*should_report_user=*/false);
+
+    auto reporter = LoginLogoutReporter::CreateForTest(
+        std::move(reporter_helper),
+        std::make_unique<LoginLogoutReporterTestDelegate>(),
+        &managed_session_service, &test_clock);
+    base::RunLoop().RunUntilIdle();
+
+    ASSERT_THAT(test_helper_.GetReportCount(), Eq(0));
+  }
+}
+
+TEST_F(LoginFailureReporterTest,
+       ReportKioskLoginFailure_KioskLoginLogoutReportingDisabled) {
+  test_helper_.DisableKioskAndGuestLoginLogoutReporting();
+
+  const base::Time failure_time = base::Time::Now();
+  // Kiosk login failure session.
+  {
+    base::SimpleTestClock test_clock;
+    test_clock.SetNow(failure_time);
+    policy::ManagedSessionService managed_session_service;
+    auto reporter_helper = test_helper_.GetReporterHelper(
+        /*reporting_enabled=*/true,
+        /*should_report_user=*/false);
+
+    auto reporter = LoginLogoutReporter::CreateForTest(
+        std::move(reporter_helper),
+        std::make_unique<LoginLogoutReporterTestDelegate>(),
+        &managed_session_service, &test_clock);
+    base::RunLoop().RunUntilIdle();
+
+    managed_session_service.OnKioskProfileLoadFailed();
+
+    ASSERT_THAT(test_helper_.GetReportCount(), Eq(0));
+  }
+
+  // Next session after kiosk login failure session.
+  {
+    base::SimpleTestClock test_clock;
+    test_clock.SetNow(failure_time + base::Hours(10));
+    policy::ManagedSessionService managed_session_service;
+    auto reporter_helper = test_helper_.GetReporterHelper(
+        /*reporting_enabled=*/true,
+        /*should_report_user=*/false);
+
+    auto reporter = LoginLogoutReporter::CreateForTest(
+        std::move(reporter_helper),
+        std::make_unique<LoginLogoutReporterTestDelegate>(),
+        &managed_session_service, &test_clock);
+    base::RunLoop().RunUntilIdle();
+
+    ASSERT_THAT(test_helper_.GetReportCount(), Eq(0));
+  }
+}
+
 TEST_P(LoginFailureReporterTest,
        ReportUnaffiliatedLoginFailure_AuthenticationError) {
   policy::ManagedSessionService managed_session_service;
@@ -628,7 +879,7 @@ TEST_P(LoginFailureReporterTest,
   EXPECT_FALSE(record.has_affiliated_user());
   ASSERT_TRUE(record.has_session_type());
   EXPECT_THAT(record.session_type(),
-              testing::Eq(LoginLogoutSessionType::REGULAR_USER_SESSION));
+              Eq(LoginLogoutSessionType::REGULAR_USER_SESSION));
   ASSERT_TRUE(record.has_login_event());
   ASSERT_TRUE(record.login_event().has_failure());
   ASSERT_THAT(record.login_event().failure().reason(),
@@ -660,7 +911,7 @@ TEST_P(LoginFailureReporterTest,
   EXPECT_FALSE(record.has_affiliated_user());
   ASSERT_TRUE(record.has_session_type());
   EXPECT_THAT(record.session_type(),
-              testing::Eq(LoginLogoutSessionType::PUBLIC_ACCOUNT_SESSION));
+              Eq(LoginLogoutSessionType::PUBLIC_ACCOUNT_SESSION));
   ASSERT_TRUE(record.has_login_event());
   ASSERT_TRUE(record.login_event().has_failure());
   ASSERT_THAT(record.login_event().failure().reason(),
@@ -688,8 +939,7 @@ TEST_P(LoginFailureReporterTest, ReportGuestLoginFailure_InternalLoginFailure) {
   EXPECT_FALSE(record.has_logout_event());
   EXPECT_FALSE(record.has_affiliated_user());
   ASSERT_TRUE(record.has_session_type());
-  EXPECT_THAT(record.session_type(),
-              testing::Eq(LoginLogoutSessionType::GUEST_SESSION));
+  EXPECT_THAT(record.session_type(), Eq(LoginLogoutSessionType::GUEST_SESSION));
   ASSERT_TRUE(record.has_login_event());
   ASSERT_TRUE(record.login_event().has_failure());
   ASSERT_THAT(record.login_event().failure().reason(),

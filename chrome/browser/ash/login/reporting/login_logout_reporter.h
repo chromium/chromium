@@ -5,15 +5,18 @@
 #ifndef CHROME_BROWSER_ASH_LOGIN_REPORTING_LOGIN_LOGOUT_REPORTER_H_
 #define CHROME_BROWSER_ASH_LOGIN_REPORTING_LOGIN_LOGOUT_REPORTER_H_
 
+#include <memory>
+
 #include "ash/components/login/auth/auth_status_consumer.h"
-#include "base/containers/queue.h"
 #include "base/feature_list.h"
 #include "base/scoped_observation.h"
+#include "base/time/clock.h"
+#include "base/time/default_clock.h"
 #include "chrome/browser/ash/policy/status_collector/managed_session_service.h"
 #include "chrome/browser/policy/messaging_layer/proto/synced/login_logout_event.pb.h"
 #include "chrome/browser/profiles/profile.h"
-#include "components/policy/core/common/cloud/dm_token.h"
-#include "components/reporting/client/report_queue_provider.h"
+
+class PrefRegistrySimple;
 
 namespace reporting {
 
@@ -51,7 +54,10 @@ class LoginLogoutReporter : public policy::ManagedSessionService::Observer {
   static std::unique_ptr<LoginLogoutReporter> CreateForTest(
       std::unique_ptr<::reporting::UserEventReporterHelper> reporter_helper,
       std::unique_ptr<Delegate> delegate,
-      policy::ManagedSessionService* managed_session_service = nullptr);
+      policy::ManagedSessionService* managed_session_service,
+      base::Clock* clock = base::DefaultClock::GetInstance());
+
+  static void RegisterPrefs(PrefRegistrySimple* registry);
 
   // Report user device failed login attempt.
   void OnLoginFailure(const AuthFailure& error) override;
@@ -62,15 +68,20 @@ class LoginLogoutReporter : public policy::ManagedSessionService::Observer {
   // Report user device logout.
   void OnSessionTerminationStarted(const user_manager::User* user) override;
 
+  void OnKioskLoginFailure() override;
+
  private:
   static const base::Feature kEnableKioskAndGuestLoginLogoutReporting;
 
   LoginLogoutReporter(
       std::unique_ptr<::reporting::UserEventReporterHelper> reporter_helper,
       std::unique_ptr<Delegate> delegate,
-      policy::ManagedSessionService* managed_session_service);
+      policy::ManagedSessionService* managed_session_service,
+      base::Clock* clock = base::DefaultClock::GetInstance());
 
   void MaybeReportEvent(LoginLogoutRecord record, const AccountId& account_id);
+
+  void MaybeReportKioskLoginFailure();
 
   std::unique_ptr<::reporting::UserEventReporterHelper> reporter_helper_;
 
@@ -79,6 +90,8 @@ class LoginLogoutReporter : public policy::ManagedSessionService::Observer {
   base::ScopedObservation<policy::ManagedSessionService,
                           policy::ManagedSessionService::Observer>
       managed_session_observation_{this};
+
+  base::Clock* const clock_;
 
   // To be able to access |kEnableKioskAndGuestLoginLogoutReporting| in tests.
   friend class LoginLogoutTestHelper;
