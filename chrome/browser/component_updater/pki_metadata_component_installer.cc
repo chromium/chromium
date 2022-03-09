@@ -244,7 +244,7 @@ void PKIMetadataComponentInstallerPolicy::UpdateNetworkServiceOnUI(
   popular_scts.reserve(proto->popular_scts().size());
   std::transform(
       proto->popular_scts().begin(), proto->popular_scts().end(),
-      popular_scts.begin(), [](std::string sct) {
+      std::back_inserter(popular_scts), [](std::string sct) {
         const uint8_t* raw_data = reinterpret_cast<const uint8_t*>(sct.data());
         return std::vector<uint8_t>(raw_data, raw_data + sct.length());
       });
