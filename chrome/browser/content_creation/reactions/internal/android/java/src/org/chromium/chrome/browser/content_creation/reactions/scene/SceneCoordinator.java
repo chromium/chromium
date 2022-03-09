@@ -434,6 +434,8 @@ public class SceneCoordinator implements SceneEditorDelegate, ToolbarReactionsDe
                     new ReactionGifDrawable(reaction, baseGifImage, Bitmap.Config.ARGB_8888),
                     reaction.localizedName);
             resetReactions(mActiveReaction);
+            mActiveReaction.announceForAccessibility(mActivity.getString(
+                    R.string.lightweight_reactions_reaction_changed_announcement));
         });
     }
 
