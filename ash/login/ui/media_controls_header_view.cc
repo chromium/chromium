@@ -95,9 +95,13 @@ MediaControlsHeaderView::MediaControlsHeaderView(
   views::InkDrop::Get(close_button.get())
       ->SetBaseColor(color_utils::DeriveDefaultIconColor(gfx::kGoogleGrey700));
   close_button_ = AddChildView(std::move(close_button));
+
+  close_button_->AddObserver(this);
 }
 
-MediaControlsHeaderView::~MediaControlsHeaderView() = default;
+MediaControlsHeaderView::~MediaControlsHeaderView() {
+  close_button_->RemoveObserver(this);
+}
 
 void MediaControlsHeaderView::SetAppIcon(const gfx::ImageSkia& img) {
   app_icon_view_->SetImage(img);
@@ -107,17 +111,23 @@ void MediaControlsHeaderView::SetAppName(const std::u16string& name) {
   app_name_view_->SetText(name);
 }
 
-void MediaControlsHeaderView::SetCloseButtonVisibility(bool visible) {
-  if (visible) {
-    SetImageFromVectorIcon(close_button_, vector_icons::kCloseRoundedIcon,
-                           kCloseButtonIconSize, gfx::kGoogleGrey700);
-  } else {
-    close_button_->SetImage(views::Button::ButtonState::STATE_NORMAL, nullptr);
-  }
+void MediaControlsHeaderView::SetForceShowCloseButton(bool force_visible) {
+  force_close_x_visible_ = force_visible;
+  UpdateCloseButtonVisibility();
 }
 
 void MediaControlsHeaderView::GetAccessibleNodeData(ui::AXNodeData* node_data) {
   node_data->SetName(app_name_view_->GetText());
+}
+
+void MediaControlsHeaderView::OnViewFocused(views::View* observed_view) {
+  DCHECK_EQ(observed_view, close_button_);
+  UpdateCloseButtonVisibility();
+}
+
+void MediaControlsHeaderView::OnViewBlurred(views::View* observed_view) {
+  DCHECK_EQ(observed_view, close_button_);
+  UpdateCloseButtonVisibility();
 }
 
 const std::u16string& MediaControlsHeaderView::app_name_for_testing() const {
@@ -130,6 +140,15 @@ const views::ImageView* MediaControlsHeaderView::app_icon_for_testing() const {
 
 views::ImageButton* MediaControlsHeaderView::close_button_for_testing() const {
   return close_button_;
+}
+
+void MediaControlsHeaderView::UpdateCloseButtonVisibility() {
+  if (force_close_x_visible_ || close_button_->HasFocus()) {
+    SetImageFromVectorIcon(close_button_, vector_icons::kCloseRoundedIcon,
+                           kCloseButtonIconSize, gfx::kGoogleGrey700);
+  } else {
+    close_button_->SetImage(views::Button::ButtonState::STATE_NORMAL, nullptr);
+  }
 }
 
 }  // namespace ash

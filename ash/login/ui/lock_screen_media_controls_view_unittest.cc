@@ -501,6 +501,21 @@ TEST_F(LockScreenMediaControlsViewTest, CloseButtonVisibility) {
   EXPECT_TRUE(media_controls_view_->IsDrawn());
   EXPECT_TRUE(close_button()->IsDrawn());
   EXPECT_FALSE(CloseButtonHasImage());
+
+  // Focusing the close button should show it.
+  views::FocusManager* focus_manager = media_controls_view_->GetFocusManager();
+  focus_manager->SetFocusedView(close_button());
+  EXPECT_EQ(close_button(), focus_manager->GetFocusedView());
+  EXPECT_TRUE(media_controls_view_->IsDrawn());
+  EXPECT_TRUE(close_button()->IsDrawn());
+  EXPECT_TRUE(CloseButtonHasImage());
+
+  // Move focus somewhere else and the close button should hide.
+  SimulateTab();
+  EXPECT_NE(close_button(), focus_manager->GetFocusedView());
+  EXPECT_TRUE(media_controls_view_->IsDrawn());
+  EXPECT_TRUE(close_button()->IsDrawn());
+  EXPECT_FALSE(CloseButtonHasImage());
 }
 
 TEST_F(LockScreenMediaControlsViewTest, CloseButtonClick) {
