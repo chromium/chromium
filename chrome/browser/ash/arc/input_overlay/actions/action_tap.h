@@ -28,6 +28,7 @@ class ActionTap : public Action {
                     bool& keep_original_event) override;
   gfx::PointF GetUICenterPosition(const gfx::RectF& content_bounds) override;
   std::unique_ptr<ActionView> CreateView(
+      DisplayOverlayController* display_overlay_controller,
       const gfx::RectF& content_bounds) override;
 
  private:

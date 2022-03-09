@@ -49,8 +49,10 @@ std::unique_ptr<Position> ParseApplyAreaPosition(const base::Value& value,
 
 class ActionMove::ActionMoveMouseView : public ActionView {
  public:
-  ActionMoveMouseView(Action* action, const gfx::RectF& content_bounds)
-      : ActionView(action) {
+  ActionMoveMouseView(Action* action,
+                      DisplayOverlayController* display_overlay_controller,
+                      const gfx::RectF& content_bounds)
+      : ActionView(action, display_overlay_controller) {
     auto label = std::make_unique<ActionLabel>(u"mouse cursor lock (esc)");
     label->set_editable(false);
     auto label_size = label->GetPreferredSize();
@@ -68,8 +70,10 @@ class ActionMove::ActionMoveMouseView : public ActionView {
 
 class ActionMove::ActionMoveKeyView : public ActionView {
  public:
-  ActionMoveKeyView(Action* action, const gfx::RectF& content_bounds)
-      : ActionView(action) {
+  ActionMoveKeyView(Action* action,
+                    DisplayOverlayController* display_overlay_controller,
+                    const gfx::RectF& content_bounds)
+      : ActionView(action, display_overlay_controller) {
     int radius =
         std::max(kActionMoveMinRadius, action->GetUIRadius(content_bounds));
     auto* action_move = static_cast<ActionMove*>(action);
@@ -244,12 +248,15 @@ gfx::PointF ActionMove::GetUICenterPosition(const gfx::RectF& content_bounds) {
 }
 
 std::unique_ptr<ActionView> ActionMove::CreateView(
+    DisplayOverlayController* display_overlay_controller,
     const gfx::RectF& content_bounds) {
   std::unique_ptr<ActionView> view;
   if (IsMouseBound()) {
-    view = std::make_unique<ActionMoveMouseView>(this, content_bounds);
+    view = std::make_unique<ActionMoveMouseView>(
+        this, display_overlay_controller, content_bounds);
   } else {
-    view = std::make_unique<ActionMoveKeyView>(this, content_bounds);
+    view = std::make_unique<ActionMoveKeyView>(this, display_overlay_controller,
+                                               content_bounds);
   }
   view->set_editable(false);
   auto center_pos = GetUICenterPosition(content_bounds);

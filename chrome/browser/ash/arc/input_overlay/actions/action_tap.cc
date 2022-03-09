@@ -24,8 +24,10 @@ constexpr int kLabelMargin = 2;
 
 class ActionTap::ActionTapView : public ActionView {
  public:
-  ActionTapView(Action* action, const gfx::RectF& content_bounds)
-      : ActionView(action) {
+  ActionTapView(Action* action,
+                DisplayOverlayController* display_overlay_controller,
+                const gfx::RectF& content_bounds)
+      : ActionView(action, display_overlay_controller) {
     int radius = action->GetUIRadius(content_bounds);
     auto circle = std::make_unique<ActionCircle>(radius);
     std::string text;
@@ -263,8 +265,10 @@ gfx::PointF ActionTap::GetUICenterPosition(const gfx::RectF& content_bounds) {
 }
 
 std::unique_ptr<ActionView> ActionTap::CreateView(
+    DisplayOverlayController* display_overlay_controller,
     const gfx::RectF& content_bounds) {
-  auto view = std::make_unique<ActionTapView>(this, content_bounds);
+  auto view = std::make_unique<ActionTapView>(this, display_overlay_controller,
+                                              content_bounds);
   view->set_editable(true);
   auto center_pos = GetUICenterPosition(content_bounds);
   view->SetPositionFromCenterPosition(center_pos);

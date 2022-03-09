@@ -13,6 +13,7 @@
 #include "chrome/browser/ash/arc/input_overlay/constants.h"
 #include "chrome/browser/ash/arc/input_overlay/display_overlay_controller.h"
 #include "ui/events/event_rewriter.h"
+#include "ui/events/event_source.h"
 #include "ui/gfx/geometry/rect_f.h"
 
 namespace aura {
@@ -22,6 +23,7 @@ class Window;
 namespace arc {
 namespace input_overlay {
 class DisplayOverlayController;
+class Action;
 
 // If the following touch move sent immediately, the touch move event is not
 // processed correctly by apps. This is a delayed time to send touch move
@@ -42,7 +44,7 @@ class TouchInjector : public ui::EventRewriter {
   ~TouchInjector() override;
 
   aura::Window* target_window() { return target_window_; }
-  const std::vector<std::unique_ptr<input_overlay::Action>>& actions() const {
+  const std::vector<std::unique_ptr<Action>>& actions() const {
     return actions_;
   }
   bool is_mouse_locked() const { return is_mouse_locked_; }

@@ -33,6 +33,7 @@ class ActionMove : public Action {
                     bool& keep_original_event) override;
   gfx::PointF GetUICenterPosition(const gfx::RectF& content_bounds) override;
   std::unique_ptr<ActionView> CreateView(
+      DisplayOverlayController* display_overlay_controller,
       const gfx::RectF& content_bounds) override;
 
   void set_move_distance(int move_distance) { move_distance_ = move_distance; }

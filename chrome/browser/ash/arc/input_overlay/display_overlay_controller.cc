@@ -27,57 +27,10 @@ namespace {
 // UI specs.
 constexpr int kMenuEntrySize = 56;
 constexpr int kMenuEntrySideMargin = 24;
-constexpr SkColor kEditModeBgColor = SkColorSetA(SK_ColorGRAY, 0x99);
 constexpr SkColor kMenuEntryBgColor = SkColorSetA(SK_ColorWHITE, 0x99);
 constexpr int kCornerRadius = 8;
 
 }  // namespace
-
-// TODO(djacobo): Evaluate to move this to its own class for readability.
-class DisplayOverlayController::InputMappingView : public views::View {
- public:
-  explicit InputMappingView(DisplayOverlayController* owner) : owner_(owner) {
-    auto content_bounds = input_overlay::CalculateWindowContentBounds(
-        owner_->touch_injector_->target_window());
-    auto& actions = owner_->touch_injector_->actions();
-    SetBounds(content_bounds.x(), content_bounds.y(), content_bounds.width(),
-              content_bounds.height());
-    for (auto& action : actions) {
-      auto view = action->CreateView(content_bounds);
-      if (view)
-        AddChildView(std::move(view));
-    }
-  }
-  InputMappingView(const InputMappingView&) = delete;
-  InputMappingView& operator=(const InputMappingView&) = delete;
-  ~InputMappingView() override = default;
-
-  void SetDisplayMode(const DisplayMode mode) {
-    if (current_display_mode_ == mode)
-      return;
-    switch (mode) {
-      case DisplayMode::kMenu:
-      case DisplayMode::kView:
-        SetBackground(nullptr);
-        break;
-      case DisplayMode::kEdit:
-        SetBackground(views::CreateSolidBackground(kEditModeBgColor));
-        break;
-      default:
-        NOTREACHED();
-        break;
-    }
-    for (auto* view : children()) {
-      auto* action_view = static_cast<ActionView*>(view);
-      action_view->SetDisplayMode(mode);
-    }
-    current_display_mode_ = mode;
-  }
-
- private:
-  DisplayOverlayController* const owner_;
-  DisplayMode current_display_mode_ = DisplayMode::kNone;
-};
 
 DisplayOverlayController::DisplayOverlayController(
     TouchInjector* touch_injector)
@@ -286,6 +239,28 @@ DisplayOverlayController::GetOverlayMenuEntryBounds() {
     return absl::nullopt;
 
   return absl::optional<gfx::Rect>(menu_entry_->bounds());
+}
+
+void DisplayOverlayController::AddActionEditMenu(ActionView* anchor) {
+  RemoveActionEditMenu();
+  auto* overlay_widget = GetOverlayWidget();
+  DCHECK(overlay_widget);
+  if (!overlay_widget)
+    return;
+  auto* parent_view = overlay_widget->GetContentsView();
+  DCHECK(parent_view);
+  if (!parent_view)
+    return;
+  auto action_edit_menu = ActionEditMenu::BuildActionTapEditMenu(this, anchor);
+  if (action_edit_menu)
+    action_edit_menu_ = parent_view->AddChildView(std::move(action_edit_menu));
+}
+
+void DisplayOverlayController::RemoveActionEditMenu() {
+  if (!action_edit_menu_)
+    return;
+  action_edit_menu_->parent()->RemoveChildViewT(action_edit_menu_);
+  action_edit_menu_ = nullptr;
 }
 
 bool DisplayOverlayController::HasMenuView() const {

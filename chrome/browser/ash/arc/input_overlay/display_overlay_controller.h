@@ -7,9 +7,12 @@
 
 #include "chrome/browser/ash/arc/input_overlay/actions/action.h"
 #include "chrome/browser/ash/arc/input_overlay/touch_injector.h"
+#include "chrome/browser/ash/arc/input_overlay/ui/action_edit_menu.h"
+#include "chrome/browser/ash/arc/input_overlay/ui/input_mapping_view.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/views/controls/button/image_button.h"
+#include "ui/views/layout/layout_types.h"
 #include "ui/views/widget/widget_observer.h"
 
 namespace views {
@@ -19,7 +22,9 @@ class Widget;
 namespace arc {
 namespace input_overlay {
 class TouchInjector;
+class InputMappingView;
 class InputMenuView;
+class ActionEditMenu;
 
 // DisplayOverlayController manages the input mapping view, view and edit mode,
 // menu, and educational dialog.
@@ -35,15 +40,13 @@ class DisplayOverlayController {
   // Get the bounds of |overlay_menu_entry_| in contents view.
   absl::optional<gfx::Rect> GetOverlayMenuEntryBounds();
 
-  // For test:
-  gfx::Rect GetInputMappingViewBoundsForTesting();
+  void AddActionEditMenu(ActionView* anchor);
+  void RemoveActionEditMenu();
 
  private:
   friend class DisplayOverlayControllerTest;
   friend class InputMenuView;
-
-  // InputMappingView is the whole view of the input mappings.
-  class InputMappingView;
+  friend class InputMappingView;
 
   void AddOverlay();
   void RemoveOverlayIfAny();
@@ -58,13 +61,17 @@ class DisplayOverlayController {
 
   views::Widget* GetOverlayWidget();
   gfx::Point CalculateMenuEntryPosition();
-  gfx::Rect get_menu_entry_bounds() const { return menu_entry_->bounds(); }
   bool HasMenuView() const;
   void SetInputMappingVisible(bool visible);
   bool GetInputMappingViewVisible() const;
 
   void SetTouchInjectorEnable(bool enable);
   bool GetTouchInjectorEnable();
+
+  // For test:
+  gfx::Rect GetInputMappingViewBoundsForTesting();
+
+  TouchInjector* touch_injector() { return touch_injector_; }
 
   TouchInjector* touch_injector_;
 
@@ -73,6 +80,7 @@ class DisplayOverlayController {
   DisplayMode display_mode_ = DisplayMode::kNone;
   InputMenuView* input_menu_view_ = nullptr;
   views::ImageButton* menu_entry_ = nullptr;
+  ActionEditMenu* action_edit_menu_ = nullptr;
 };
 
 }  // namespace input_overlay

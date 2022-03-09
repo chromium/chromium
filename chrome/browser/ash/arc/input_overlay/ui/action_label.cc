@@ -97,6 +97,7 @@ void ActionLabel::OnFocus() {
   SetToEditFocus();
   SelectAll();
   Label::OnFocus();
+  static_cast<ActionView*>(parent())->RemoveEditMenu();
 }
 
 void ActionLabel::OnBlur() {

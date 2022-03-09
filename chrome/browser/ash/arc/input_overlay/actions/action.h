@@ -15,6 +15,7 @@
 #include "chrome/browser/ash/arc/input_overlay/actions/input_element.h"
 #include "chrome/browser/ash/arc/input_overlay/actions/position.h"
 #include "chrome/browser/ash/arc/input_overlay/constants.h"
+#include "chrome/browser/ash/arc/input_overlay/display_overlay_controller.h"
 #include "chrome/browser/ash/arc/input_overlay/ui/action_label.h"
 #include "chrome/browser/ash/arc/input_overlay/ui/action_view.h"
 #include "ui/aura/window.h"
@@ -29,6 +30,7 @@ constexpr char kKeyboard[] = "keyboard";
 constexpr char kMouse[] = "mouse";
 
 class ActionView;
+class DisplayOverlayController;
 
 // Parse position from Json.
 std::unique_ptr<Position> ParsePosition(const base::Value& value);
@@ -68,6 +70,7 @@ class Action {
   // Get the UI location in the content view.
   virtual gfx::PointF GetUICenterPosition(const gfx::RectF& content_bounds) = 0;
   virtual std::unique_ptr<ActionView> CreateView(
+      DisplayOverlayController* display_overlay_controller,
       const gfx::RectF& content_bounds) = 0;
 
   bool IsNoneBound();
