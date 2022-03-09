@@ -5,6 +5,8 @@
 #ifndef CONTENT_BROWSER_ATTRIBUTION_REPORTING_ATTRIBUTION_SOURCE_TYPE_H_
 #define CONTENT_BROWSER_ATTRIBUTION_REPORTING_ATTRIBUTION_SOURCE_TYPE_H_
 
+#include "content/common/content_export.h"
+
 namespace content {
 
 // Denotes the type of source for this impression. This allows different types
@@ -17,6 +19,9 @@ enum class AttributionSourceType {
   kEvent = 1,
   kMaxValue = kEvent,
 };
+
+// Returns "navigation" or "event".
+CONTENT_EXPORT const char* AttributionSourceTypeToString(AttributionSourceType);
 
 }  // namespace content
 

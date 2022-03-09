@@ -249,14 +249,18 @@ absl::optional<StoredSourceData> ReadSourceFromStatement(
   int64_t aggregatable_budget_consumed = statement.ColumnInt64(col++);
   absl::optional<AttributionAggregatableSources> aggregatable_sources =
       ParseAggregatableSources(statement.ColumnString(col++));
-  absl::optional<AttributionFilterData> filter_data =
-      AttributionFilterData::Deserialize(statement.ColumnString(col++));
 
   if (!source_type.has_value() || !attribution_logic.has_value() ||
       num_conversions < 0 || aggregatable_budget_consumed < 0 ||
-      !aggregatable_sources.has_value() || !filter_data.has_value()) {
+      !aggregatable_sources.has_value()) {
     return absl::nullopt;
   }
+
+  absl::optional<AttributionFilterData> filter_data =
+      AttributionFilterData::DeserializeSourceFilterData(
+          statement.ColumnString(col++), *source_type);
+  if (!filter_data)
+    return absl::nullopt;
 
   return StoredSourceData{
       .source = StoredSource(

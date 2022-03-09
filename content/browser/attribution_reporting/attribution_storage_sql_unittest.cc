@@ -751,7 +751,7 @@ TEST_F(AttributionStorageSqlTest, MaxUint64StorageSucceeds) {
   const auto impression = SourceBuilder().SetSourceEventId(kMaxUint64).Build();
   storage()->StoreSource(impression);
   EXPECT_THAT(storage()->GetActiveSources(),
-              ElementsAre(CommonSourceInfoIs(impression.common_info())));
+              ElementsAre(SourceEventIdIs(kMaxUint64)));
 
   EXPECT_EQ(
       AttributionTrigger::EventLevelResult::kSuccess,

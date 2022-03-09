@@ -154,10 +154,11 @@ TEST(AttributionSimulatorInputParserTest, ValidSourceParses) {
                   .SetExpiry(base::Days(10))  // rounded to whole number of days
                   .SetPriority(0)             // default
                   .SetDebugKey(absl::nullopt)  // default
-                  .SetFilterData(*AttributionFilterData::FromFilterValues({
-                      {"a", {}},
-                      {"b", {"c", "d"}},
-                  }))
+                  .SetFilterData(
+                      *AttributionFilterData::FromSourceFilterValues({
+                          {"a", {}},
+                          {"b", {"c", "d"}},
+                      }))
                   .Build(),
               _))));
   EXPECT_THAT(error_stream.str(), IsEmpty());

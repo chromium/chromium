@@ -430,6 +430,12 @@ SourceBuilder& SourceBuilder::SetFilterData(AttributionFilterData filter_data) {
   return *this;
 }
 
+SourceBuilder& SourceBuilder::SetDefaultFilterData() {
+  filter_data_ = AttributionFilterData::CreateForTesting(
+      {{"source_type", {AttributionSourceTypeToString(source_type_)}}});
+  return *this;
+}
+
 SourceBuilder& SourceBuilder::SetDebugKey(absl::optional<uint64_t> debug_key) {
   debug_key_ = debug_key;
   return *this;
@@ -867,15 +873,7 @@ std::ostream& operator<<(std::ostream& out, RateLimitResult result) {
 }
 
 std::ostream& operator<<(std::ostream& out, AttributionSourceType source_type) {
-  switch (source_type) {
-    case AttributionSourceType::kNavigation:
-      out << "kNavigation";
-      break;
-    case AttributionSourceType::kEvent:
-      out << "kEvent";
-      break;
-  }
-  return out;
+  return out << AttributionSourceTypeToString(source_type);
 }
 
 std::ostream& operator<<(std::ostream& out,

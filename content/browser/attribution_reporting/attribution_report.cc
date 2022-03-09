@@ -160,16 +160,8 @@ base::Value AttributionReport::ReportBody() const {
       dict.SetStringKey("trigger_data",
                         base::NumberToString(data.trigger_data));
 
-      const char* source_type = nullptr;
-      switch (common_source_info.source_type()) {
-        case AttributionSourceType::kNavigation:
-          source_type = "navigation";
-          break;
-        case AttributionSourceType::kEvent:
-          source_type = "event";
-          break;
-      }
-      dict.SetStringKey("source_type", source_type);
+      dict.SetStringKey("source_type", AttributionSourceTypeToString(
+                                           common_source_info.source_type()));
 
       dict.SetStringKey("report_id",
                         report->external_report_id().AsLowercaseString());

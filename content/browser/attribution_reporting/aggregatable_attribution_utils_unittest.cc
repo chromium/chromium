@@ -98,7 +98,7 @@ TEST(AggregatableAttributionUtilsTest, CreateAggregatableHistogram) {
       Values{{"key1", 32768}, {"key2", 1664}});
 
   absl::optional<AttributionFilterData> source_filter_data =
-      AttributionFilterData::FromFilterValues({{"filter", {"value"}}});
+      AttributionFilterData::FromSourceFilterValues({{"filter", {"value"}}});
   ASSERT_TRUE(source_filter_data.has_value());
 
   absl::optional<AttributionAggregatableSources> sources =

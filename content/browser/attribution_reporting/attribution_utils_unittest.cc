@@ -15,11 +15,11 @@ TEST(AttributionUtilsTest, EmptyOrMissingAttributionFilters) {
   auto empty_filter = AttributionFilterData();
 
   auto empty_filter_values =
-      AttributionFilterData::FromFilterValues({{"filter1", {}}});
+      AttributionFilterData::FromSourceFilterValues({{"filter1", {}}});
   ASSERT_TRUE(empty_filter_values.has_value());
 
   auto one_filter =
-      AttributionFilterData::FromFilterValues({{"filter1", {"value1"}}});
+      AttributionFilterData::FromSourceFilterValues({{"filter1", {"value1"}}});
   ASSERT_TRUE(one_filter.has_value());
 
   const struct {
@@ -58,26 +58,26 @@ TEST(AttributionUtilsTest, EmptyOrMissingAttributionFilters) {
 
 TEST(AttributionUtilsTest, AttributionFilterDataMatch) {
   auto empty_filter_values =
-      AttributionFilterData::FromFilterValues({{"filter1", {}}});
+      AttributionFilterData::FromSourceFilterValues({{"filter1", {}}});
   ASSERT_TRUE(empty_filter_values.has_value());
 
   auto one_filter =
-      AttributionFilterData::FromFilterValues({{"filter1", {"value1"}}});
+      AttributionFilterData::FromSourceFilterValues({{"filter1", {"value1"}}});
   ASSERT_TRUE(one_filter.has_value());
 
   auto one_filter_different =
-      AttributionFilterData::FromFilterValues({{"filter1", {"value2"}}});
+      AttributionFilterData::FromSourceFilterValues({{"filter1", {"value2"}}});
   ASSERT_TRUE(one_filter_different.has_value());
 
-  auto two_filters = AttributionFilterData::FromFilterValues(
+  auto two_filters = AttributionFilterData::FromSourceFilterValues(
       {{"filter1", {"value1"}}, {"filter2", {"value2"}}});
   ASSERT_TRUE(two_filters.has_value());
 
-  auto one_mismatched_filter = AttributionFilterData::FromFilterValues(
+  auto one_mismatched_filter = AttributionFilterData::FromSourceFilterValues(
       {{"filter1", {"value1"}}, {"filter2", {"value3"}}});
   ASSERT_TRUE(one_mismatched_filter.has_value());
 
-  auto two_mismatched_filter = AttributionFilterData::FromFilterValues(
+  auto two_mismatched_filter = AttributionFilterData::FromSourceFilterValues(
       {{"filter1", {"value3"}}, {"filter2", {"value4"}}});
   ASSERT_TRUE(two_mismatched_filter.has_value());
 
@@ -121,34 +121,35 @@ TEST(AttributionUtilsTest, AttributionFilterDataMatch) {
 
 TEST(AttributionUtilsTest, NegatedAttributionFilterDataMatch) {
   auto empty_filter_values =
-      AttributionFilterData::FromFilterValues({{"filter1", {}}});
+      AttributionFilterData::FromSourceFilterValues({{"filter1", {}}});
   ASSERT_TRUE(empty_filter_values.has_value());
 
   auto one_filter =
-      AttributionFilterData::FromFilterValues({{"filter1", {"value1"}}});
+      AttributionFilterData::FromSourceFilterValues({{"filter1", {"value1"}}});
   ASSERT_TRUE(one_filter.has_value());
 
   auto one_filter_different =
-      AttributionFilterData::FromFilterValues({{"filter1", {"value2"}}});
+      AttributionFilterData::FromSourceFilterValues({{"filter1", {"value2"}}});
   ASSERT_TRUE(one_filter_different.has_value());
 
-  auto one_filter_one_different = AttributionFilterData::FromFilterValues(
+  auto one_filter_one_different = AttributionFilterData::FromSourceFilterValues(
       {{"filter1", {"value1", "value2"}}});
   ASSERT_TRUE(one_filter_different.has_value());
 
-  auto one_filter_multiple_different = AttributionFilterData::FromFilterValues(
-      {{"filter1", {"value2", "value3"}}});
+  auto one_filter_multiple_different =
+      AttributionFilterData::FromSourceFilterValues(
+          {{"filter1", {"value2", "value3"}}});
   ASSERT_TRUE(one_filter_different.has_value());
 
-  auto two_filters = AttributionFilterData::FromFilterValues(
+  auto two_filters = AttributionFilterData::FromSourceFilterValues(
       {{"filter1", {"value1"}}, {"filter2", {"value2"}}});
   ASSERT_TRUE(two_filters.has_value());
 
-  auto one_mismatched_filter = AttributionFilterData::FromFilterValues(
+  auto one_mismatched_filter = AttributionFilterData::FromSourceFilterValues(
       {{"filter1", {"value1"}}, {"filter2", {"value3"}}});
   ASSERT_TRUE(one_mismatched_filter.has_value());
 
-  auto two_mismatched_filter = AttributionFilterData::FromFilterValues(
+  auto two_mismatched_filter = AttributionFilterData::FromSourceFilterValues(
       {{"filter1", {"value3"}}, {"filter2", {"value4"}}});
   ASSERT_TRUE(two_mismatched_filter.has_value());
 

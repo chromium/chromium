@@ -29,13 +29,13 @@ AttributionAggregatableTriggerData::FromMojo(
     return absl::nullopt;
 
   absl::optional<AttributionFilterData> filters =
-      AttributionFilterData::FromFilterValues(
+      AttributionFilterData::FromTriggerFilterValues(
           std::move(mojo->filters->filter_values));
   if (!filters.has_value())
     return absl::nullopt;
 
   absl::optional<AttributionFilterData> not_filters =
-      AttributionFilterData::FromFilterValues(
+      AttributionFilterData::FromTriggerFilterValues(
           std::move(mojo->not_filters->filter_values));
   if (!not_filters.has_value())
     return absl::nullopt;

@@ -377,10 +377,10 @@ class AttributionSimulatorInputParser {
     }
 
     absl::optional<AttributionFilterData> filter_data =
-        AttributionFilterData::FromFilterValues(std::move(container));
+        AttributionFilterData::FromSourceFilterValues(std::move(container));
     // TODO(apaseltiner): Provide more detailed information.
     if (!filter_data)
-      *Error() << "too big";
+      *Error() << "invalid";
 
     return std::move(filter_data).value_or(AttributionFilterData());
   }
