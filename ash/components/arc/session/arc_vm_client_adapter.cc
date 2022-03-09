@@ -393,16 +393,11 @@ vm_tools::concierge::StartArcVmRequest CreateStartArcVmRequest(
   for (auto& entry : kernel_cmdline)
     request.add_params(std::move(entry));
 
-  vm_tools::concierge::VirtualMachineSpec* vm = request.mutable_vm();
-
-  vm->set_kernel(file_system_status.guest_kernel_path().value());
-
   const bool should_set_blocksize =
       !base::FeatureList::IsEnabled(arc::kUseDefaultBlockSize);
   constexpr uint32_t kBlockSize = 4096;
 
   // Add rootfs as /dev/vda.
-  vm->set_rootfs(file_system_status.system_image_path().value());
   request.set_rootfs_writable(file_system_status.is_host_rootfs_writable() &&
                               file_system_status.is_system_image_ext_format());
   if (should_set_blocksize)
@@ -469,9 +464,6 @@ vm_tools::concierge::StartArcVmRequest CreateStartArcVmRequest(
     // "failed to lock disk image" error.
     disk_image->set_writable(false);
   }
-
-  // Add Android fstab.
-  request.set_fstab(file_system_status.fstab_path().value());
 
   // Add cpus.
   request.set_cpus(cpus);
