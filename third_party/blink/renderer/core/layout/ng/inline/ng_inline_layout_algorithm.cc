@@ -1117,6 +1117,11 @@ bool NGInlineLayoutAlgorithm::AddAnyClearanceAfterLine(
 const NGLayoutResult* NGInlineLayoutAlgorithm::Layout() {
   NGExclusionSpace initial_exclusion_space(ConstraintSpace().ExclusionSpace());
 
+  // Clear break tokens (for fragmented floats) propagated from the previous
+  // line (or even the *current* line, in cases where we retry layout after
+  // having resolved the BFC offset).
+  context_->ClearPropagatedBreakTokens();
+
   end_margin_strut_ = ConstraintSpace().MarginStrut();
   container_builder_.SetAdjoiningObjectTypes(
       ConstraintSpace().AdjoiningObjectTypes());

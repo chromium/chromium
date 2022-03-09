@@ -1902,7 +1902,6 @@ NGLayoutResult::EStatus NGBlockLayoutAlgorithm::FinishInflow(
         container_builder_.AddBreakToken(std::move(token),
                                          /* is_in_parallel_flow */ true);
       }
-      inline_child_layout_context->ClearPropagatedBreakTokens();
     }
   }
 
