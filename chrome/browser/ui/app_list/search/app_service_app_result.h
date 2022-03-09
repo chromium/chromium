@@ -12,6 +12,7 @@
 #include "base/task/cancelable_task_tracker.h"
 #include "chrome/browser/ui/app_list/search/app_result.h"
 #include "components/favicon_base/favicon_types.h"
+#include "components/services/app_service/public/cpp/app_types.h"
 #include "components/services/app_service/public/cpp/icon_cache.h"
 #include "components/services/app_service/public/cpp/icon_types.h"
 #include "components/services/app_service/public/mojom/types.mojom-forward.h"
@@ -84,7 +85,7 @@ class AppServiceAppResult : public AppResult {
   // the last icon is no longer used.
   std::unique_ptr<apps::IconLoader::Releaser> icon_loader_releaser_;
 
-  apps::mojom::AppType app_type_;
+  apps::AppType app_type_;
   bool is_platform_app_;
   bool show_in_launcher_;
 
