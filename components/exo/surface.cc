@@ -1229,7 +1229,8 @@ void Surface::UpdateResource(FrameSinkResourceManager* resource_manager) {
       // Use the buffer's size, so the AppendContentsToFrame() will append
       // a SolidColorDrawQuad with the buffer's size.
       current_resource_.size = state_.buffer->size();
-      current_resource_has_alpha_ = false;
+      SkColor color = state_.buffer->buffer()->GetColor().toSkColor();
+      current_resource_has_alpha_ = SkColorGetA(color) != SK_AlphaOPAQUE;
     }
   } else {
     current_resource_.id = viz::kInvalidResourceId;
