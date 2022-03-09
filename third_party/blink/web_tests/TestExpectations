@@ -3364,6 +3364,7 @@ crbug.com/626703 [ Win ] virtual/prerender/external/wpt/speculation-rules/preren
 crbug.com/626703 [ Win ] virtual/prerender/external/wpt/speculation-rules/prerender/storage-foundation.https.html [ Failure ]
 
 # ====== New tests from wpt-importer added here ======
+crbug.com/626703 virtual/no-forced-frame-updates/external/wpt/html/dom/render-blocking/header-inserted-preload-link.tentative.html [ Timeout ]
 crbug.com/626703 [ Mac11-arm64 ] external/wpt/html/cross-origin-embedder-policy/worker-inheritance.sub.https.html [ Timeout ]
 crbug.com/626703 [ Mac11-arm64 ] virtual/no-auto-wpt-origin-isolation/external/wpt/html/browsers/origin/origin-keyed-agent-clusters/1-iframe/parent-no-child-yes-port.sub.https.html [ Timeout ]
 crbug.com/626703 [ Mac11-arm64 ] virtual/no-auto-wpt-origin-isolation/external/wpt/html/browsers/origin/origin-keyed-agent-clusters/2-iframes/parent-no-child1-no-subdomain-child2-yes-subdomainport.sub.https.html [ Timeout ]
