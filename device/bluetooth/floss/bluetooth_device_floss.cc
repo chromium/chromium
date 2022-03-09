@@ -20,8 +20,7 @@ namespace floss {
 
 namespace {
 
-void OnCreateBond(BluetoothDeviceFloss::ConnectCallback callback,
-                  const absl::optional<bool>& ret,
+void OnCreateBond(const absl::optional<bool>& ret,
                   const absl::optional<Error>& error) {
   if (ret.has_value() && !*ret) {
     BLUETOOTH_LOG(ERROR) << "CreateBond returned failure";
@@ -31,17 +30,6 @@ void OnCreateBond(BluetoothDeviceFloss::ConnectCallback callback,
     BLUETOOTH_LOG(ERROR) << "Failed to create bond: " << error->name << ": "
                          << error->message;
   }
-
-  // In Floss API, |error| is not the error code of the pairing result, but only
-  // the error code of the pairing request.
-  // TODO(b/202874707): Handle the pairing result properly.
-  // TODO(b/192289534): Record UMA metrics.
-  auto connect_error =
-      error ? absl::optional<BluetoothDeviceFloss::ConnectErrorCode>(
-                  BluetoothDeviceFloss::ConnectErrorCode::ERROR_UNKNOWN)
-            : absl::nullopt;
-
-  std::move(callback).Run(connect_error);
 }
 
 void OnRemoveBond(base::OnceClosure callback,
@@ -57,14 +45,6 @@ void OnRemoveBond(base::OnceClosure callback,
   }
 
   std::move(callback).Run();
-}
-
-void OnConnectAllEnabledProfiles(const absl::optional<Void>& ret,
-                                 const absl::optional<Error>& error) {
-  if (error.has_value()) {
-    BLUETOOTH_LOG(ERROR) << "Failed to connect all enabled profiles: "
-                         << error->name << ": " << error->message;
-  }
 }
 
 }  // namespace
@@ -158,9 +138,9 @@ bool BluetoothDeviceFloss::IsGattConnected() const {
 }
 
 bool BluetoothDeviceFloss::IsConnectable() const {
-  NOTIMPLEMENTED();
-
-  return false;
+  // Mark all devices as connectable for now.
+  // TODO(b/211126690): Implement based on supported profiles.
+  return true;
 }
 
 bool BluetoothDeviceFloss::IsConnecting() const {
@@ -227,13 +207,18 @@ void BluetoothDeviceFloss::Connect(
     ConnectCallback callback) {
   BLUETOOTH_LOG(EVENT) << "Connecting to " << address_;
 
+  // To simulate BlueZ API behavior, we don't reply the callback as soon as
+  // Floss CreateBond API returns, but rather we trigger the callback later
+  // after pairing is done and profiles are connected.
+  pending_callback_on_connect_profiles_ = std::move(callback);
+
   if (IsPaired() || !pairing_delegate) {
     // No need to pair, or unable to, skip straight to connection.
-    // TODO(b/202334519): Support connection flow without pairing.
+    ConnectAllEnabledProfiles();
   } else {
     pairing_ = std::make_unique<BluetoothPairingFloss>(pairing_delegate);
     FlossDBusManager::Get()->GetAdapterClient()->CreateBond(
-        base::BindOnce(&OnCreateBond, std::move(callback)), AsFlossDeviceId(),
+        base::BindOnce(&OnCreateBond), AsFlossDeviceId(),
         FlossAdapterClient::BluetoothTransport::kAuto);
   }
 }
@@ -353,7 +338,9 @@ void BluetoothDeviceFloss::SetIsConnected(bool is_connected) {
 
 void BluetoothDeviceFloss::ConnectAllEnabledProfiles() {
   FlossDBusManager::Get()->GetAdapterClient()->ConnectAllEnabledProfiles(
-      base::BindOnce(&OnConnectAllEnabledProfiles), AsFlossDeviceId());
+      base::BindOnce(&BluetoothDeviceFloss::OnConnectAllEnabledProfiles,
+                     weak_ptr_factory_.GetWeakPtr()),
+      AsFlossDeviceId());
 }
 
 void BluetoothDeviceFloss::ResetPairing() {
@@ -422,6 +409,28 @@ void BluetoothDeviceFloss::OnCancelPairingError(const Error& error) {
 void BluetoothDeviceFloss::OnForgetError(ErrorCallback error_callback,
                                          const Error& error) {
   NOTIMPLEMENTED();
+}
+
+void BluetoothDeviceFloss::OnConnectAllEnabledProfiles(
+    const absl::optional<Void>& ret,
+    const absl::optional<Error>& error) {
+  if (error.has_value()) {
+    BLUETOOTH_LOG(ERROR) << "Failed to connect all enabled profiles: "
+                         << error->name << ": " << error->message;
+    // TODO(b/202874707): Design a proper new errors for Floss.
+    if (pending_callback_on_connect_profiles_)
+      TriggerConnectCallback(BluetoothDevice::ConnectErrorCode::ERROR_UNKNOWN);
+  }
+
+  TriggerConnectCallback(absl::nullopt);
+}
+
+void BluetoothDeviceFloss::TriggerConnectCallback(
+    absl::optional<BluetoothDevice::ConnectErrorCode> error_code) {
+  if (pending_callback_on_connect_profiles_) {
+    std::move(*pending_callback_on_connect_profiles_).Run(error_code);
+    pending_callback_on_connect_profiles_ = absl::nullopt;
+  }
 }
 
 }  // namespace floss

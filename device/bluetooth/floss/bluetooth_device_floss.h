@@ -108,6 +108,9 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothDeviceFloss
   void SetIsConnected(bool is_connected);
   void ConnectAllEnabledProfiles();
   void ResetPairing();
+  // Triggers the pending callback of Connect() method.
+  void TriggerConnectCallback(
+      absl::optional<BluetoothDevice::ConnectErrorCode> error_code);
 
   BluetoothPairingFloss* pairing() const { return pairing_.get(); }
 
@@ -135,6 +138,12 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothDeviceFloss
 
   void OnCancelPairingError(const Error& error);
   void OnForgetError(ErrorCallback error_callback, const Error& error);
+
+  void OnConnectAllEnabledProfiles(const absl::optional<Void>& ret,
+                                   const absl::optional<Error>& error);
+
+  absl::optional<ConnectCallback> pending_callback_on_connect_profiles_ =
+      absl::nullopt;
 
   // Address of this device. Changing this should necessitate creating a new
   // BluetoothDeviceFloss object.

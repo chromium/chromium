@@ -133,7 +133,8 @@ void FakeFlossAdapterClient::GetBondState(ResponseCallback<uint32_t> callback,
 void FakeFlossAdapterClient::ConnectAllEnabledProfiles(
     ResponseCallback<Void> callback,
     const FlossDeviceId& device) {
-  // No-op, there is no need for testing yet.
+  PostDelayedTask(base::BindOnce(std::move(callback), /*ret=*/absl::nullopt,
+                                 /*err=*/absl::nullopt));
 }
 
 void FakeFlossAdapterClient::PostDelayedTask(base::OnceClosure callback) {

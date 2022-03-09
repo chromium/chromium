@@ -51,6 +51,25 @@ class DEVICE_BLUETOOTH_EXPORT FlossAdapterClient : public FlossDBusClient {
     kBonded = 2,
   };
 
+  // Adopted from bt_status_t in system/include/hardware/bluetooth.h
+  enum class BtifStatus {
+    kSuccess = 0,
+    kFail,
+    kNotReady,
+    kNomem,
+    kBusy,
+    kDone,
+    kUnsupported,
+    kParmInvalid,
+    kUnhandled,
+    kAuthFailure,
+    kRmtDevDown,
+    kAuthRejected,
+    kJniEnvironmentError,
+    kJniThreadAttachError,
+    kWakelockError,
+  };
+
   class Observer : public base::CheckedObserver {
    public:
     Observer(const Observer&) = delete;
