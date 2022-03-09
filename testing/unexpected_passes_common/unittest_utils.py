@@ -10,6 +10,8 @@ from unexpected_passes_common import expectations
 from unexpected_passes_common import data_types
 from unexpected_passes_common import queries as queries_module
 
+# pylint: disable=useless-object-inheritance,super-with-arguments
+
 
 def CreateStatsWithPassFails(passes, fails):
   stats = data_types.BuildStats()

@@ -24,6 +24,8 @@ Result = None
 BuildStats = None
 TestExpectationMap = None
 
+# pylint: disable=super-with-arguments,useless-object-inheritance
+
 
 def SetExpectationImplementation(impl):
   global Expectation
@@ -191,7 +193,8 @@ class BaseBuildStats(object):
   def GetStatsAsString(self):
     return '(%d/%d passed)' % (self.passed_builds, self.total_builds)
 
-  def NeverNeededExpectation(self, expectation):  # pylint:disable=unused-argument
+  # pylint:disable=unused-argument
+  def NeverNeededExpectation(self, expectation):
     """Returns whether the results tallied in |self| never needed |expectation|.
 
     Args:
@@ -202,8 +205,10 @@ class BaseBuildStats(object):
       |expectation| being present. Otherwise, False.
     """
     return self.did_fully_pass
+  # pylint:enable=unused-argument
 
-  def AlwaysNeededExpectation(self, expectation):  # pylint:disable=unused-argument
+  # pylint:disable=unused-argument
+  def AlwaysNeededExpectation(self, expectation):
     """Returns whether the results tallied in |self| always needed |expectation.
 
     Args:
@@ -214,6 +219,7 @@ class BaseBuildStats(object):
       |expectation| being present. Otherwise, False.
     """
     return self.did_never_pass
+  # pylint:enable=unused-argument
 
   def __eq__(self, other):
     return (isinstance(other, BuildStats)

@@ -201,7 +201,7 @@ class QueryBuilderUnittest(unittest.TestCase):
     def SideEffect(result):
       if result['step_name'] == 'a step name':
         return ['foo_expectations']
-      elif result['step_name'] == 'another step name':
+      if result['step_name'] == 'another step name':
         return ['bar_expectations']
       raise RuntimeError('Unknown step %s' % result['step_name'])
 
@@ -352,19 +352,18 @@ class FillExpectationMapForBuildersUnittest(unittest.TestCase):
         return ([
             data_types.Result('foo', ['win'], 'Pass', 'step_name', 'build_id')
         ], None)
-      elif builder.name == 'matched_internal':
+      if builder.name == 'matched_internal':
         return ([
             data_types.Result('foo', ['win'], 'Pass', 'step_name_internal',
                               'build_id')
         ], None)
-      elif builder.name == 'unmatched_internal':
+      if builder.name == 'unmatched_internal':
         return ([
             data_types.Result('bar', [], 'Pass', 'step_name_internal',
                               'build_id')
         ], None)
-      else:
-        return ([data_types.Result('bar', [], 'Pass', 'step_name',
-                                   'build_id')], None)
+      return ([data_types.Result('bar', [], 'Pass', 'step_name',
+                                 'build_id')], None)
 
     self._query_mock.side_effect = SideEffect
 
@@ -520,8 +519,7 @@ class RunBigQueryCommandsForJsonOutputUnittest(unittest.TestCase):
       SideEffect.call_count += 1
       if SideEffect.call_count == 1:
         return unittest_utils.FakeProcess(stdout=json.dumps([{'foo': 'bar'}]))
-      else:
-        return unittest_utils.FakeProcess(stdout=json.dumps([{'bar': 'baz'}]))
+      return unittest_utils.FakeProcess(stdout=json.dumps([{'bar': 'baz'}]))
 
     SideEffect.call_count = 0
 

@@ -50,6 +50,8 @@ SUBMITTED_BUILDS_TEMPLATE = """\
       AND start_time > TIMESTAMP_SUB(CURRENT_TIMESTAMP(),
                                      INTERVAL 30 DAY)"""
 
+# pylint: disable=super-with-arguments,useless-object-inheritance
+
 
 class BigQueryQuerier(object):
   """Class to handle all BigQuery queries for a script invocation."""
@@ -151,7 +153,7 @@ class BigQueryQuerier(object):
     Returns:
       A copy of |builders| with any inactive builders removed.
     """
-    include_internal_builders = any([b.is_internal_builder for b in builders])
+    include_internal_builders = any(b.is_internal_builder for b in builders)
     query = self._GetActiveBuilderQuery(
         builder_type, include_internal_builders).encode('utf-8')
     cmd = GenerateBigQueryCommand(self._project, {}, batch=False)
@@ -172,7 +174,7 @@ class BigQueryQuerier(object):
     # longer. Since generating the initial list locally is basically
     # instantenous and we're optimizing for runtime, filtering is the better
     # option.
-    active_builders = set([r['builder_name'] for r in results])
+    active_builders = {r['builder_name'] for r in results}
     filtered_builders = [b for b in builders if b.name in active_builders]
     return filtered_builders
 
@@ -484,7 +486,8 @@ class _BaseQueryGenerator(object):
     raise NotImplementedError('GetQueries must be overridden in a child class')
 
 
-class FixedQueryGenerator(_BaseQueryGenerator):  # pylint: disable=abstract-method
+# pylint: disable=abstract-method
+class FixedQueryGenerator(_BaseQueryGenerator):
   """Concrete test filter that cannot be split."""
 
   def __init__(self, builder, test_filter):
@@ -501,9 +504,11 @@ class FixedQueryGenerator(_BaseQueryGenerator):  # pylint: disable=abstract-meth
 
   def GetClauses(self):
     return [self._test_filter]
+# pylint: enable=abstract-method
 
 
-class SplitQueryGenerator(_BaseQueryGenerator):  # pylint: disable=abstract-method
+# pylint: disable=abstract-method
+class SplitQueryGenerator(_BaseQueryGenerator):
   """Concrete test filter that can be split to a desired size."""
 
   def __init__(self, builder, test_ids, target_num_samples):
@@ -570,6 +575,7 @@ class SplitQueryGenerator(_BaseQueryGenerator):  # pylint: disable=abstract-meth
 
   def GetClauses(self):
     return self._clauses
+# pylint: enable=abstract-method
 
 
 def GenerateBigQueryCommand(project, parameters, batch=True):
@@ -628,14 +634,11 @@ def _ConvertActualResultToExpectationFileFormat(actual_result):
 
 class RateLimitError(Exception):
   """Exception raised when BigQuery hits a rate limit error."""
-  pass
 
 
 class MemoryLimitError(Exception):
   """Exception raised when BigQuery hits its hard memory limit."""
-  pass
 
 
 class QuerySplitError(Exception):
   """Exception raised when a query cannot be split any further."""
-  pass

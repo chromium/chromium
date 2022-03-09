@@ -63,6 +63,8 @@ GIT_BLAME_REGEX = re.compile(
     re.DOTALL)
 EXPECTATION_LINE_REGEX = re.compile(r'^.*\[ .* \] .* \[ \w* \].*$', re.DOTALL)
 
+# pylint: disable=useless-object-inheritance
+
 
 class RemovalType(object):
   STALE = FINDER_COMMENT_SUFFIX_STALE
@@ -237,7 +239,7 @@ class Expectations(object):
 
       # Add any lines containing expectations that don't match any of the given
       # expectations to remove.
-      if any([e for e in expectations if e == current_expectation]):
+      if any(e for e in expectations if e == current_expectation):
         # Skip any expectations that match if we're in a disable block or there
         # is an inline disable comment.
         if in_disable_block and _DisableSuffixIsRelevant(
