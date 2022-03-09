@@ -15,7 +15,6 @@
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "base/thread_annotations.h"
-#include "content/browser/attribution_reporting/attribution_observer_types.h"
 #include "content/browser/attribution_reporting/attribution_storage.h"
 #include "content/browser/attribution_reporting/attribution_trigger.h"
 #include "content/browser/attribution_reporting/rate_limit_table.h"
@@ -260,8 +259,7 @@ class CONTENT_EXPORT AttributionStorageSql : public AttributionStorage {
       const AttributionReport& report,
       absl::optional<uint64_t> dedup_key,
       int num_conversions,
-      absl::optional<AttributionReport>& replaced_report,
-      absl::optional<DeactivatedSource::Reason>& source_deactivation_reason)
+      absl::optional<AttributionReport>& replaced_report)
       VALID_CONTEXT_REQUIRED(sequence_checker_);
 
   // Initializes the database if necessary, and returns whether the database is

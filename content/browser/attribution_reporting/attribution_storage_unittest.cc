@@ -270,11 +270,10 @@ TEST_F(AttributionStorageTest,
   }
 
   // No additional conversion reports should be created.
-  EXPECT_THAT(
-      storage()->MaybeCreateAndStoreReport(DefaultTrigger()),
-      AllOf(CreateReportEventLevelStatusIs(
-                AttributionTrigger::EventLevelResult::kPriorityTooLow),
-            DroppedReportsAre(SizeIs(1)), DeactivatedSourceIs(absl::nullopt)));
+  EXPECT_THAT(storage()->MaybeCreateAndStoreReport(DefaultTrigger()),
+              AllOf(CreateReportEventLevelStatusIs(
+                        AttributionTrigger::EventLevelResult::kPriorityTooLow),
+                    DroppedReportsAre(SizeIs(1))));
 }
 
 TEST_F(AttributionStorageTest, OneConversion_OneReportScheduled) {
@@ -912,7 +911,10 @@ TEST_F(AttributionStorageTest, NeverAttributeImpression_RateLimitsNotChanged) {
             MaybeCreateAndStoreEventLevelReport(conversion));
 
   const AttributionReport expected_report = GetExpectedEventLevelReport(
-      builder.SetDefaultFilterData().BuildStored(), conversion);
+      builder.SetDefaultFilterData()
+          .SetActiveState(StoredSource::ActiveState::kInactive)
+          .BuildStored(),
+      conversion);
 
   task_environment_.FastForwardBy(kReportDelay);
 
@@ -1020,43 +1022,6 @@ TEST_F(AttributionStorageTest,
 }
 
 TEST_F(AttributionStorageTest,
-       MaxAttributionDestinationsPerSource_IgnoresInactiveImpressions) {
-  delegate()->set_max_attributions_per_source(1);
-  delegate()->set_max_destinations_per_source_site_reporting_origin(INT_MAX);
-
-  const auto origin_a = url::Origin::Create(GURL("https://a.example"));
-
-  storage()->StoreSource(SourceBuilder().SetConversionOrigin(origin_a).Build());
-  EXPECT_THAT(storage()->GetActiveSources(), SizeIs(1));
-
-  const auto trigger =
-      TriggerBuilder()
-          .SetConversionDestination(net::SchemefulSite(origin_a))
-          .Build();
-
-  EXPECT_EQ(AttributionTrigger::EventLevelResult::kSuccess,
-            MaybeCreateAndStoreEventLevelReport(trigger));
-  EXPECT_THAT(storage()->GetActiveSources(), SizeIs(1));
-
-  // Force the impression to be deactivated by ensuring that the next report is
-  // in a different window.
-  delegate()->set_report_delay(kReportDelay + base::Milliseconds(1));
-  EXPECT_EQ(AttributionTrigger::EventLevelResult::kPriorityTooLow,
-            MaybeCreateAndStoreEventLevelReport(trigger));
-  EXPECT_THAT(storage()->GetActiveSources(), IsEmpty());
-
-  delegate()->set_max_destinations_per_source_site_reporting_origin(1);
-  storage()->StoreSource(
-      SourceBuilder()
-          .SetConversionOrigin(url::Origin::Create(GURL("https://b.example")))
-          .Build());
-
-  EXPECT_THAT(storage()->GetActiveSources(),
-              ElementsAre(ConversionOriginIs(
-                  url::Origin::Create(GURL("https://b.example")))));
-}
-
-TEST_F(AttributionStorageTest,
        MultipleImpressionsPerConversion_MostRecentAttributesForSamePriority) {
   storage()->StoreSource(SourceBuilder().SetSourceEventId(3).Build());
 
@@ -1136,6 +1101,7 @@ TEST_F(AttributionStorageTest, FalselyAttributeImpression_ReportStored) {
               builder
                   .SetAttributionLogic(StoredSource::AttributionLogic::kFalsely)
                   .SetDefaultFilterData()
+                  .SetActiveState(StoredSource::ActiveState::kInactive)
                   .BuildStored())
               .SetTime(base::Time::Now())
               .Build())
@@ -1316,8 +1282,12 @@ TEST_F(AttributionStorageTest, TriggerPriority_DeactivatesImpression) {
             MaybeCreateAndStoreEventLevelReport(
                 TriggerBuilder().SetPriority(2).Build()));
 
-  // As a result, the impression with data 5 should also be deactivated.
-  EXPECT_THAT(storage()->GetActiveSources(), IsEmpty());
+  // As a result, the impression with data 5 should have reached event-level
+  // attribution limit.
+  EXPECT_THAT(
+      storage()->GetActiveSources(),
+      ElementsAre(SourceActiveStateIs(
+          StoredSource::ActiveState::kReachedEventLevelAttributionLimit)));
 }
 
 TEST_F(AttributionStorageTest, DedupKey_Dedups) {
@@ -1613,10 +1583,11 @@ TEST_F(AttributionStorageTest,
               AllOf(CreateReportEventLevelStatusIs(
                         AttributionTrigger::EventLevelResult::kPriorityTooLow),
                     DroppedReportsAre(ElementsAre(ReportSourceIs(
-                        builder.SetDefaultFilterData().BuildStored()))),
-                    DeactivatedSourceIs(DeactivatedSource(
-                        builder.SetDefaultFilterData().BuildStored(),
-                        DeactivatedSource::Reason::kReachedAttributionLimit))));
+                        builder.SetDefaultFilterData().BuildStored())))));
+  EXPECT_THAT(
+      storage()->GetActiveSources(),
+      ElementsAre(SourceActiveStateIs(
+          StoredSource::ActiveState::kReachedEventLevelAttributionLimit)));
 }
 
 TEST_F(AttributionStorageTest, ReportID_RoundTrips) {

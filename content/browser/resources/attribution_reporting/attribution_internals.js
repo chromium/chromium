@@ -688,8 +688,8 @@ function AttributabilityToText(attributability) {
       return 'Unattributable: noised';
     case WebUIAttributionSource_Attributability.kReplacedByNewerSource:
       return 'Unattributable: replaced by newer source';
-    case WebUIAttributionSource_Attributability.kReachedAttributionLimit:
-      return 'Unattributable: reached attribution limit';
+    case WebUIAttributionSource_Attributability.kReachedEventLevelAttributionLimit:
+      return 'Attributable: reached event-level attribution limit';
     case WebUIAttributionSource_Attributability.kInternalError:
       return 'Rejected: internal error';
     case WebUIAttributionSource_Attributability.kInsufficientSourceCapacity:

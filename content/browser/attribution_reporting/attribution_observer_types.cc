@@ -14,13 +14,9 @@ namespace content {
 CreateReportResult::CreateReportResult(
     AttributionTrigger::EventLevelResult event_level_status,
     std::vector<AttributionReport> dropped_reports,
-    absl::optional<DeactivatedSource::Reason>
-        dropped_report_source_deactivation_reason,
     std::vector<AttributionReport> new_reports)
     : event_level_status_(event_level_status),
       dropped_reports_(std::move(dropped_reports)),
-      dropped_report_source_deactivation_reason_(
-          dropped_report_source_deactivation_reason),
       new_reports_(std::move(new_reports)) {
   DCHECK(
       (event_level_status_ == AttributionTrigger::EventLevelResult::kSuccess &&
@@ -30,9 +26,6 @@ CreateReportResult::CreateReportResult(
       event_level_status_ ==
           AttributionTrigger::EventLevelResult::kInternalError ||
       !dropped_reports_.empty());
-
-  DCHECK(!dropped_reports_.empty() ||
-         !dropped_report_source_deactivation_reason_);
 
   DCHECK_EQ(
       event_level_status_ == AttributionTrigger::EventLevelResult::kSuccess ||
@@ -53,15 +46,6 @@ CreateReportResult& CreateReportResult::operator=(const CreateReportResult&) =
     default;
 CreateReportResult& CreateReportResult::operator=(CreateReportResult&&) =
     default;
-
-absl::optional<DeactivatedSource> CreateReportResult::GetDeactivatedSource()
-    const {
-  if (dropped_report_source_deactivation_reason_) {
-    return DeactivatedSource(dropped_reports_.front().attribution_info().source,
-                             *dropped_report_source_deactivation_reason_);
-  }
-  return absl::nullopt;
-}
 
 DeactivatedSource::DeactivatedSource(StoredSource source, Reason reason)
     : source(std::move(source)), reason(reason) {}

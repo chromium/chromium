@@ -10,9 +10,11 @@ namespace content {
 
 StoredSource::StoredSource(CommonSourceInfo common_info,
                            AttributionLogic attribution_logic,
+                           ActiveState active_state,
                            Id source_id)
     : common_info_(std::move(common_info)),
       attribution_logic_(attribution_logic),
+      active_state_(active_state),
       source_id_(source_id) {}
 
 StoredSource::~StoredSource() = default;

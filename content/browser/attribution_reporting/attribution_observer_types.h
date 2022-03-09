@@ -11,14 +11,12 @@
 #include "content/browser/attribution_reporting/attribution_trigger.h"
 #include "content/browser/attribution_reporting/stored_source.h"
 #include "content/common/content_export.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace content {
 
 struct CONTENT_EXPORT DeactivatedSource {
   enum class Reason {
     kReplacedByNewerSource,
-    kReachedAttributionLimit,
   };
 
   DeactivatedSource(StoredSource source, Reason reason);
@@ -39,8 +37,6 @@ class CONTENT_EXPORT CreateReportResult {
   explicit CreateReportResult(
       AttributionTrigger::EventLevelResult event_level_status,
       std::vector<AttributionReport> dropped_reports = {},
-      absl::optional<DeactivatedSource::Reason>
-          dropped_report_source_deactivation_reason = absl::nullopt,
       std::vector<AttributionReport> new_reports = {});
   ~CreateReportResult();
 
@@ -64,8 +60,6 @@ class CONTENT_EXPORT CreateReportResult {
 
   std::vector<AttributionReport>& new_reports() { return new_reports_; }
 
-  absl::optional<DeactivatedSource> GetDeactivatedSource() const;
-
  private:
   AttributionTrigger::EventLevelResult event_level_status_;
 
@@ -73,10 +67,6 @@ class CONTENT_EXPORT CreateReportResult {
   // with a dropped report if the browser succeeded in running the
   // source-to-attribute logic.
   std::vector<AttributionReport> dropped_reports_;
-
-  // Null unless `dropped_report_`'s source was deactivated.
-  absl::optional<DeactivatedSource::Reason>
-      dropped_report_source_deactivation_reason_;
 
   // Empty unless `event_level_status` is `kSuccess` or
   // `kSuccessDroppedLowerPriority`.

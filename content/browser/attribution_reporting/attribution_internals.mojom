@@ -77,7 +77,7 @@ struct WebUIAttributionSource {
     // The source was dropped due to `CommonSourceInfo::AttributionLogic::kNever`.
     kNoised,
     kReplacedByNewerSource,
-    kReachedAttributionLimit,
+    kReachedEventLevelAttributionLimit,
     kInternalError,
     kInsufficientSourceCapacity,
     kInsufficientUniqueDestinationCapacity,

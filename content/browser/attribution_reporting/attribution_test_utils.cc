@@ -447,6 +447,12 @@ SourceBuilder& SourceBuilder::SetAttributionLogic(
   return *this;
 }
 
+SourceBuilder& SourceBuilder::SetActiveState(
+    StoredSource::ActiveState active_state) {
+  active_state_ = active_state;
+  return *this;
+}
+
 SourceBuilder& SourceBuilder::SetSourceId(StoredSource::Id source_id) {
   source_id_ = source_id;
   return *this;
@@ -476,7 +482,8 @@ StorableSource SourceBuilder::Build() const {
 }
 
 StoredSource SourceBuilder::BuildStored() const {
-  StoredSource source(BuildCommonInfo(), attribution_logic_, source_id_);
+  StoredSource source(BuildCommonInfo(), attribution_logic_, active_state_,
+                      source_id_);
   source.SetDedupKeys(dedup_keys_);
   return source;
 }
@@ -745,7 +752,7 @@ bool operator==(const StorableSource& a, const StorableSource& b) {
 bool operator==(const StoredSource& a, const StoredSource& b) {
   const auto tie = [](const StoredSource& source) {
     return std::make_tuple(source.common_info(), source.attribution_logic(),
-                           source.dedup_keys());
+                           source.active_state(), source.dedup_keys());
   };
   return tie(a) == tie(b);
 }
@@ -850,9 +857,6 @@ std::ostream& operator<<(std::ostream& out, DeactivatedSource::Reason reason) {
     case DeactivatedSource::Reason::kReplacedByNewerSource:
       out << "kReplacedByNewerSource";
       break;
-    case DeactivatedSource::Reason::kReachedAttributionLimit:
-      out << "kReachedAttributionLimit";
-      break;
   }
   return out;
 }
@@ -901,6 +905,22 @@ std::ostream& operator<<(
                      ? base::NumberToString(*event_trigger.dedup_key)
                      : "null")
              << ",source_type=" << event_trigger.source_type << "}";
+}
+
+std::ostream& operator<<(std::ostream& out,
+                         StoredSource::ActiveState active_state) {
+  switch (active_state) {
+    case StoredSource::ActiveState::kActive:
+      out << "kActive";
+      break;
+    case StoredSource::ActiveState::kInactive:
+      out << "kInactive";
+      break;
+    case StoredSource::ActiveState::kReachedEventLevelAttributionLimit:
+      out << "kReachedEventLevelAttributionLimit";
+      break;
+  }
+  return out;
 }
 
 std::ostream& operator<<(std::ostream& out,
@@ -981,6 +1001,7 @@ std::ostream& operator<<(std::ostream& out, const StorableSource& source) {
 std::ostream& operator<<(std::ostream& out, const StoredSource& source) {
   out << "{common_info=" << source.common_info()
       << ",attribution_logic=" << source.attribution_logic()
+      << ",active_state=" << source.active_state()
       << ",source_id=" << *source.source_id() << ",dedup_keys=[";
 
   const char* separator = "";

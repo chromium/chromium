@@ -233,14 +233,15 @@ IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,
                .SetSourceType(AttributionSourceType::kEvent)
                .SetPriority(std::numeric_limits<int64_t>::max())
                .SetDedupKeys({13, 17})
+               .BuildStored(),
+           SourceBuilder(now + base::Hours(2))
+               .SetActiveState(StoredSource::ActiveState::
+                                   kReachedEventLevelAttributionLimit)
                .BuildStored()}));
 
   manager_.NotifySourceDeactivated(
-      DeactivatedSource(SourceBuilder(now + base::Hours(2)).BuildStored(),
-                        DeactivatedSource::Reason::kReplacedByNewerSource));
-  manager_.NotifySourceDeactivated(
       DeactivatedSource(SourceBuilder(now + base::Hours(3)).BuildStored(),
-                        DeactivatedSource::Reason::kReachedAttributionLimit));
+                        DeactivatedSource::Reason::kReplacedByNewerSource));
 
   // This shouldn't result in a row, as registration succeeded.
   manager_.NotifySourceHandled(SourceBuilder(now).Build(),
@@ -276,8 +277,8 @@ IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,
           table.children[1].children[9].innerText === "13, 17" &&
           table.children[0].children[10].innerText === "Unattributable: noised" &&
           table.children[1].children[10].innerText === "Attributable" &&
-          table.children[2].children[10].innerText === "Unattributable: replaced by newer source" &&
-          table.children[3].children[10].innerText === "Unattributable: reached attribution limit" &&
+          table.children[2].children[10].innerText === "Attributable: reached event-level attribution limit" &&
+          table.children[3].children[10].innerText === "Unattributable: replaced by newer source" &&
           table.children[4].children[10].innerText === "Rejected: internal error" &&
           table.children[5].children[10].innerText === "Rejected: insufficient source capacity" &&
           table.children[6].children[10].innerText === "Rejected: insufficient unique destination capacity" &&
@@ -461,7 +462,6 @@ IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,
   manager_.NotifyTriggerHandled(CreateReportResult(
       AttributionTrigger::EventLevelResult::kSuccess,
       /*dropped_reports=*/{},
-      /*dropped_report_source_deactivation_reason=*/absl::nullopt,
       /*new_reports=*/
       {ReportBuilder(
            AttributionInfoBuilder(SourceBuilder().BuildStored()).Build())

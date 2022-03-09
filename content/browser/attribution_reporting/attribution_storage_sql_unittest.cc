@@ -608,18 +608,6 @@ TEST_F(AttributionStorageSqlTest,
               .Build()));
   EXPECT_THAT(storage()->GetActiveSources(), SizeIs(1));
 
-  // Force the impression to be deactivated by ensuring that the next report is
-  // in a different window.
-  delegate()->set_report_delay(base::Milliseconds(1));
-  EXPECT_EQ(
-      AttributionTrigger::EventLevelResult::kPriorityTooLow,
-      MaybeCreateAndStoreEventLevelReport(
-          TriggerBuilder()
-              .SetConversionDestination(net::SchemefulSite(conversion_origin))
-              .SetReportingOrigin(reporting_origin)
-              .Build()));
-  EXPECT_THAT(storage()->GetActiveSources(), IsEmpty());
-
   task_environment_.FastForwardBy(base::Days(1));
   EXPECT_TRUE(
       storage()->DeleteReport(AttributionReport::EventLevelData::Id(1)));
@@ -665,18 +653,6 @@ TEST_F(AttributionStorageSqlTest,
               .SetReportingOrigin(reporting_origin)
               .Build()));
   EXPECT_THAT(storage()->GetActiveSources(), SizeIs(1));
-
-  // Force the impression to be deactivated by ensuring that the next report is
-  // in a different window.
-  delegate()->set_report_delay(base::Milliseconds(1));
-  EXPECT_EQ(
-      AttributionTrigger::EventLevelResult::kPriorityTooLow,
-      MaybeCreateAndStoreEventLevelReport(
-          TriggerBuilder()
-              .SetConversionDestination(net::SchemefulSite(conversion_origin))
-              .SetReportingOrigin(reporting_origin)
-              .Build()));
-  EXPECT_THAT(storage()->GetActiveSources(), IsEmpty());
 
   task_environment_.FastForwardBy(base::Days(1));
   EXPECT_TRUE(

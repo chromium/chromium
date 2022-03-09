@@ -449,11 +449,6 @@ void AttributionManagerImpl::OnReportStored(CreateReportResult result) {
     NotifyReportsChanged();
   }
 
-  if (absl::optional<DeactivatedSource> source =
-          result.GetDeactivatedSource()) {
-    NotifySourceDeactivated(*source);
-  }
-
   for (auto& observer : observers_)
     observer.OnTriggerHandled(result);
 }

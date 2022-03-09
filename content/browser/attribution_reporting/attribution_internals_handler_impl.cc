@@ -60,10 +60,22 @@ void ForwardSourcesToWebUI(
   web_ui_sources.reserve(active_sources.size());
 
   for (const StoredSource& source : active_sources) {
-    auto attributability =
-        source.attribution_logic() == StoredSource::AttributionLogic::kNever
-            ? Attributability::kNoised
-            : Attributability::kAttributable;
+    Attributability attributability;
+    if (source.attribution_logic() == StoredSource::AttributionLogic::kNever) {
+      attributability = Attributability::kNoised;
+    } else {
+      switch (source.active_state()) {
+        case StoredSource::ActiveState::kActive:
+          attributability = Attributability::kAttributable;
+          break;
+        case StoredSource::ActiveState::kReachedEventLevelAttributionLimit:
+          attributability = Attributability::kReachedEventLevelAttributionLimit;
+          break;
+        case StoredSource::ActiveState::kInactive:
+          NOTREACHED();
+          return;
+      }
+    }
 
     web_ui_sources.push_back(WebUIAttributionSource(
         source.common_info(), attributability, source.dedup_keys()));
@@ -210,9 +222,6 @@ void AttributionInternalsHandlerImpl::OnSourceDeactivated(
   switch (deactivated_source.reason) {
     case DeactivatedSource::Reason::kReplacedByNewerSource:
       attributability = Attributability::kReplacedByNewerSource;
-      break;
-    case DeactivatedSource::Reason::kReachedAttributionLimit:
-      attributability = Attributability::kReachedAttributionLimit;
       break;
   }
 

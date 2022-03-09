@@ -1141,10 +1141,6 @@ TEST_F(AttributionManagerImplTest, HandleTrigger_NotifiesObservers) {
 
     EXPECT_CALL(observer, OnSourcesChanged);
     EXPECT_CALL(observer, OnReportsChanged);
-    EXPECT_CALL(observer,
-                OnSourceDeactivated(DeactivatedSource{
-                    builder.SetDefaultFilterData().BuildStored(),
-                    DeactivatedSource::Reason::kReachedAttributionLimit}));
   }
 
   attribution_manager_->HandleSource(source);
