@@ -38,10 +38,6 @@ AX_EXPORT
 // Returns true if this accessible element should be included into the ax tree.
 - (BOOL)isIncludedInPlatformTree;
 
-// Returns true if this object should expose its accessible name using
-// accessibilityLabel (legacy AXDescription attribute).
-- (BOOL)isLabelable;
-
 // Returns an accessible element serving as a title UI element, an element
 // representing the accessible name of the object and which is exposed via
 // accessibilityTitleUIElement (or AXTitleUIElement legacy attribute) not via
