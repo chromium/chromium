@@ -32,6 +32,7 @@ static_library("projector_app") {
 
   deps = [
     "//ash/public/cpp",
+    "//ash/strings",
     "//ash/webui/media_app_ui:buildflags",
     "//ash/webui/resources:media_app_bundle_resources",
     "//ash/webui/resources:projector_app_bundle_resources",

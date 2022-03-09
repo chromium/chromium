@@ -4,6 +4,7 @@
 
 #include "ash/webui/projector_app/untrusted_projector_ui.h"
 
+#include "ash/strings/grit/ash_strings.h"
 #include "ash/webui/grit/ash_projector_app_untrusted_resources.h"
 #include "ash/webui/grit/ash_projector_app_untrusted_resources_map.h"
 #include "ash/webui/media_app_ui/buildflags.h"
@@ -32,6 +33,7 @@ content::WebUIDataSource* CreateProjectorHTMLSource(
       base::make_span(kChromeosProjectorAppBundleResources,
                       kChromeosProjectorAppBundleResourcesSize));
   source->AddResourcePath("", IDR_ASH_PROJECTOR_APP_UNTRUSTED_APP_INDEX_HTML);
+  source->AddLocalizedString("appTitle", IDS_ASH_PROJECTOR_DISPLAY_SOURCE);
 
   // Provide a list of specific script resources (javascript files and inlined
   // scripts inside html) or their sha-256 hashes to allow to be executed.
@@ -61,8 +63,8 @@ content::WebUIDataSource* CreateProjectorHTMLSource(
       "connect-src 'self' https://www.googleapis.com "
       "https://drive.google.com;");
 
-  // TODO(b/197120695): re-enable trusted type after fixing the issue that icon
-  // template is setting innerHTML.
+  // TODO(b/197120695): re-enable trusted type after fixing the issue that
+  // icon template is setting innerHTML.
   source->DisableTrustedTypesCSP();
 
   source->AddFrameAncestor(GURL(kChromeUITrustedProjectorUrl));
