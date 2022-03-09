@@ -107,6 +107,7 @@ static_idl_files_in_modules = get_path_info(
           "//third_party/blink/renderer/modules/clipboard/clipboard_item_options.idl",
           "//third_party/blink/renderer/modules/clipboard/navigator_clipboard.idl",
           "//third_party/blink/renderer/modules/closewatcher/close_watcher.idl",
+          "//third_party/blink/renderer/modules/closewatcher/close_watcher_options.idl",
           "//third_party/blink/renderer/modules/compression/compression_stream.idl",
           "//third_party/blink/renderer/modules/compression/decompression_stream.idl",
           "//third_party/blink/renderer/modules/compute_pressure/compute_pressure_observer.idl",

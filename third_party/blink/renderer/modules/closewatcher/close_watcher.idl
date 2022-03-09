@@ -7,7 +7,7 @@
   Exposed=Window,
   RuntimeEnabled=CloseWatcher
 ] interface CloseWatcher : EventTarget {
-  [CallWith=ScriptState, RaisesException] constructor();
+  [CallWith=ScriptState, RaisesException] constructor(optional CloseWatcherOptions options = {});
 
   void close();
   void destroy();

@@ -19,6 +19,8 @@ generated_callback_function_sources_in_modules = [
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_blink_audio_worklet_processor_constructor.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_close_watcher.cc",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_close_watcher.h",
+  "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_close_watcher_options.cc",
+  "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_close_watcher_options.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_database_callback.cc",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_database_callback.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_decode_error_callback.cc",

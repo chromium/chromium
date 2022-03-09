@@ -6,14 +6,36 @@
 
 #include "third_party/blink/public/mojom/frame/frame.mojom-blink.h"
 #include "third_party/blink/public/platform/interface_registry.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_close_watcher_options.h"
+#include "third_party/blink/renderer/core/dom/abort_signal.h"
 #include "third_party/blink/renderer/core/dom/events/event.h"
 #include "third_party/blink/renderer/core/events/keyboard_event.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/modules/event_target_modules.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/keyboard_codes.h"
 
 namespace blink {
+
+namespace {
+
+class DestroyOnAbortAlgorithm final : public AbortSignal::Algorithm {
+ public:
+  explicit DestroyOnAbortAlgorithm(CloseWatcher* watcher) : watcher_(watcher) {}
+
+  void Run() override { watcher_->destroy(); }
+
+  void Trace(Visitor* visitor) const override {
+    visitor->Trace(watcher_);
+    Algorithm::Trace(visitor);
+  }
+
+ private:
+  Member<CloseWatcher> watcher_;
+};
+
+}  // namespace
 
 const char CloseWatcher::WatcherStack::kSupplementName[] =
     "CloseWatcher::WatcherStack";
@@ -77,6 +99,7 @@ bool CloseWatcher::WatcherStack::CheckForCreation() {
 }
 
 CloseWatcher* CloseWatcher::Create(ScriptState* script_state,
+                                   CloseWatcherOptions* options,
                                    ExceptionState& exception_state) {
   LocalDOMWindow* window = LocalDOMWindow::From(script_state);
   if (!window->GetFrame()) {
@@ -97,6 +120,17 @@ CloseWatcher* CloseWatcher::Create(ScriptState* script_state,
   }
 
   CloseWatcher* watcher = MakeGarbageCollected<CloseWatcher>(window);
+
+  if (options && options->hasSignal()) {
+    AbortSignal* signal = options->signal();
+    if (signal->aborted()) {
+      watcher->state_ = State::kClosed;
+      return watcher;
+    }
+    signal->AddAlgorithm(
+        MakeGarbageCollected<DestroyOnAbortAlgorithm>(watcher));
+  }
+
   stack.Add(watcher);
   return watcher;
 }

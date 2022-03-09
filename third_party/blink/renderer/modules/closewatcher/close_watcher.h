@@ -17,12 +17,16 @@
 
 namespace blink {
 
+class CloseWatcherOptions;
+
 class CloseWatcher final : public EventTargetWithInlineData,
                            public ExecutionContextClient {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
-  static CloseWatcher* Create(ScriptState*, ExceptionState&);
+  static CloseWatcher* Create(ScriptState*,
+                              CloseWatcherOptions*,
+                              ExceptionState&);
   explicit CloseWatcher(LocalDOMWindow*);
   void Trace(Visitor*) const override;
 
