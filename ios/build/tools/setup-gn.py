@@ -9,6 +9,7 @@ import convert_gn_xcodeproj
 import errno
 import io
 import os
+import platform
 import re
 import shutil
 import subprocess
@@ -32,6 +33,16 @@ LLDBINIT_SKIP_PATTERNS = (
     re.compile('^script import lldbinit$'),
     re.compile('^settings append target.source-map .* /google/src/.*$'),
 )
+
+
+def HostCpuArch():
+  '''Returns the arch of the host cpu for GN.'''
+  HOST_CPU_ARCH = {
+    'arm64': '"arm64"',
+    'x86_64': '"x64"',
+  }
+  return HOST_CPU_ARCH[platform.machine()]
+
 
 class ConfigParserWithStringInterpolation(configparser.ConfigParser):
 
@@ -74,8 +85,8 @@ class GnGenerator(object):
 
   TARGET_CPU_VALUES = {
     'iphoneos': '"arm64"',
-    'iphonesimulator': '"x64"',
-    'maccatalyst': '"x64"',
+    'iphonesimulator': HostCpuArch(),
+    'maccatalyst': HostCpuArch(),
   }
 
   TARGET_ENVIRONMENT_VALUES = {
