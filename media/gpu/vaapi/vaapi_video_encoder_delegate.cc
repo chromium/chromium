@@ -122,26 +122,32 @@ BitstreamBufferMetadata VaapiVideoEncoderDelegate::GetMetadata(
                                  encode_job.timestamp());
 }
 
-std::unique_ptr<VaapiVideoEncoderDelegate::EncodeResult>
-VaapiVideoEncoderDelegate::Encode(std::unique_ptr<EncodeJob> encode_job) {
-  if (!PrepareEncodeJob(*encode_job)) {
+bool VaapiVideoEncoderDelegate::Encode(EncodeJob& encode_job) {
+  if (!PrepareEncodeJob(encode_job)) {
     VLOGF(1) << "Failed preparing an encode job";
-    return nullptr;
+    return false;
   }
 
-  const VASurfaceID va_surface_id = encode_job->input_surface_id();
+  const VASurfaceID va_surface_id = encode_job.input_surface_id();
   if (!native_input_mode_ && !vaapi_wrapper_->UploadVideoFrameToSurface(
-                                 *encode_job->input_frame(), va_surface_id,
-                                 encode_job->input_surface_size())) {
+                                 *encode_job.input_frame(), va_surface_id,
+                                 encode_job.input_surface_size())) {
     VLOGF(1) << "Failed to upload frame";
-    return nullptr;
+    return false;
   }
 
   if (!vaapi_wrapper_->ExecuteAndDestroyPendingBuffers(va_surface_id)) {
     VLOGF(1) << "Failed to execute encode";
-    return nullptr;
+    return false;
   }
 
+  return true;
+}
+
+std::unique_ptr<VaapiVideoEncoderDelegate::EncodeResult>
+VaapiVideoEncoderDelegate::GetEncodeResult(
+    std::unique_ptr<EncodeJob> encode_job) {
+  const VASurfaceID va_surface_id = encode_job->input_surface_id();
   const uint64_t encoded_chunk_size = vaapi_wrapper_->GetEncodedChunkSize(
       encode_job->coded_buffer_id(), va_surface_id);
   if (encoded_chunk_size == 0) {

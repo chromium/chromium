@@ -891,11 +891,20 @@ void VaapiVideoEncodeAccelerator::EncodePendingInputs() {
       jobs.emplace_back(std::move(job));
     }
 
-    for (auto&& job : jobs) {
+    for (auto& job : jobs) {
       TRACE_EVENT0("media,gpu", "VAVEA::Encode");
-      std::unique_ptr<EncodeResult> result = encoder_->Encode(std::move(job));
-      if (!result) {
+      if (!encoder_->Encode(*job)) {
         NOTIFY_ERROR(kPlatformFailureError, "Failed encoding job");
+        return;
+      }
+    }
+
+    for (auto&& job : jobs) {
+      TRACE_EVENT0("media,gpu", "VAVEA::GetEncodeResult");
+      std::unique_ptr<EncodeResult> result =
+          encoder_->GetEncodeResult(std::move(job));
+      if (!result) {
+        NOTIFY_ERROR(kPlatformFailureError, "Failed getting encode result");
         return;
       }
 

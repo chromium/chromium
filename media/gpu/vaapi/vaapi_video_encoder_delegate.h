@@ -170,7 +170,13 @@ class VaapiVideoEncoderDelegate {
   // at least this many frames simultaneously for encode to make progress.
   virtual size_t GetMaxNumOfRefFrames() const = 0;
 
-  virtual std::unique_ptr<EncodeResult> Encode(
+  // Prepares and submits the encode operation to underlying driver for an
+  // EncodeJob for one frame and returns true on success.
+  bool Encode(EncodeJob& encode_job);
+
+  // Creates and returns the encode result for specified EncodeJob by
+  // synchronizing the corresponding encode operation.
+  std::unique_ptr<EncodeResult> GetEncodeResult(
       std::unique_ptr<EncodeJob> encode_job);
 
   // Gets the active spatial layer resolutions for K-SVC encoding, VaapiVEA
