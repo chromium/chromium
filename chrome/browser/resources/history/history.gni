@@ -9,7 +9,6 @@ web_component_files = [
   "history_clusters/clusters.ts",
   "history_clusters/page_favicon.ts",
   "history_clusters/search_query.ts",
-  "history_clusters/top_visit.ts",
   "history_clusters/url_visit.ts",
   "history_item.ts",
   "history_list.ts",
