@@ -15,21 +15,27 @@ source_set("feed_management") {
     "//ios/chrome/browser/ui/coordinators:chrome_coordinators",
     "//ios/chrome/browser/ui/table_view",
   ]
+  public_deps = [ ":navigation_delegate" ]
 }
 
 source_set("feed_management_ui") {
   sources = [
-    "feed_management_delegate.h",
+    "feed_management_follow_delegate.h",
     "feed_management_view_controller.h",
     "feed_management_view_controller.mm",
   ]
   configs += [ "//build/config/compiler:enable_arc" ]
   deps = [
+    ":navigation_delegate",
     "//ios/chrome/app/strings:ios_strings_grit",
     "//ios/chrome/browser/ui/table_view",
     "//ios/chrome/browser/ui/table_view/cells",
     "//ui/base",
   ]
+}
+
+source_set("navigation_delegate") {
+  sources = [ "feed_management_navigation_delegate.h" ]
 }
 
 source_set("follow_management") {

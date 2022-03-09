@@ -5,15 +5,21 @@
 #ifndef IOS_CHROME_BROWSER_UI_NTP_FEED_MANAGEMENT_FEED_MANAGEMENT_VIEW_CONTROLLER_H_
 #define IOS_CHROME_BROWSER_UI_NTP_FEED_MANAGEMENT_FEED_MANAGEMENT_VIEW_CONTROLLER_H_
 
-#import "ios/chrome/browser/ui/ntp/feed_management/feed_management_delegate.h"
 #import "ios/chrome/browser/ui/table_view/chrome_table_view_controller.h"
+
+@protocol FeedManagementFollowDelegate;
+@protocol FeedManagementNavigationDelegate;
 
 // The UI that displays various settings for the feed (e.g., following,
 // interests, hidden, activity).
 @interface FeedManagementViewController : ChromeTableViewController
 
-// Delegate to execute user actions originating from this UI.
-@property(nonatomic, weak) id<FeedManagementDelegate> delegate;
+// Delegate to execute user actions related to follow management.
+@property(nonatomic, weak) id<FeedManagementFollowDelegate> followDelegate;
+
+// Delegate to execute user actions related to navigation.
+@property(nonatomic, weak) id<FeedManagementNavigationDelegate>
+    navigationDelegate;
 
 @end
 

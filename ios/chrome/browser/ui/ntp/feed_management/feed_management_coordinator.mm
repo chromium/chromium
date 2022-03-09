@@ -4,7 +4,7 @@
 
 #import "ios/chrome/browser/ui/ntp/feed_management/feed_management_coordinator.h"
 
-#import "ios/chrome/browser/ui/ntp/feed_management/feed_management_delegate.h"
+#import "ios/chrome/browser/ui/ntp/feed_management/feed_management_follow_delegate.h"
 #import "ios/chrome/browser/ui/ntp/feed_management/feed_management_view_controller.h"
 #import "ios/chrome/browser/ui/ntp/feed_management/follow_management_mediator.h"
 #import "ios/chrome/browser/ui/ntp/feed_management/follow_management_view_controller.h"
@@ -14,7 +14,7 @@
 #error "This file requires ARC support."
 #endif
 
-@interface FeedManagementCoordinator () <FeedManagementDelegate>
+@interface FeedManagementCoordinator () <FeedManagementFollowDelegate>
 
 // The navigation controller into which management UI will be placed. This is a
 // weak reference because we don't want to keep it in memory if it has been
@@ -32,7 +32,8 @@
   FeedManagementViewController* feedManagementViewController =
       [[FeedManagementViewController alloc]
           initWithStyle:UITableViewStyleInsetGrouped];
-  feedManagementViewController.delegate = self;
+  feedManagementViewController.followDelegate = self;
+  feedManagementViewController.navigationDelegate = self.navigationDelegate;
   TableViewNavigationController* navigationController =
       [[TableViewNavigationController alloc]
           initWithTable:feedManagementViewController];
@@ -50,9 +51,9 @@
   self.followManagementMediator = nil;
 }
 
-#pragma mark - FeedManagementDelegate
+#pragma mark - FeedManagementFollowDelegate
 
-- (void)followingTapped {
+- (void)handleFollowingTapped {
   if (!self.navigationController) {
     // Tapping on the done button and following button simultaneously may result
     // in the navigation controller being dismissed but the tap being
@@ -70,18 +71,6 @@
   self.followManagementMediator = mediator;
   [self.navigationController pushViewController:followManagementViewController
                                        animated:YES];
-}
-
-- (void)interestsTapped {
-  // TODO(crbug.com/1296745): Complete this method.
-}
-
-- (void)hiddenTapped {
-  // TODO(crbug.com/1296745): Complete this method.
-}
-
-- (void)activityTapped {
-  // TODO(crbug.com/1296745): Complete this method.
 }
 
 @end

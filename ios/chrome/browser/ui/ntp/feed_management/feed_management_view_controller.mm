@@ -4,6 +4,8 @@
 
 #import "ios/chrome/browser/ui/ntp/feed_management/feed_management_view_controller.h"
 
+#import "ios/chrome/browser/ui/ntp/feed_management/feed_management_follow_delegate.h"
+#import "ios/chrome/browser/ui/ntp/feed_management/feed_management_navigation_delegate.h"
 #import "ios/chrome/browser/ui/table_view/cells/table_view_detail_text_item.h"
 #import "ios/chrome/browser/ui/table_view/cells/table_view_text_item.h"
 #import "ios/chrome/grit/ios_strings.h"
@@ -108,16 +110,16 @@ typedef NS_ENUM(NSInteger, ItemType) {
 
   switch (itemType) {
     case FollowingItemType:
-      [self.delegate followingTapped];
+      [self.followDelegate handleFollowingTapped];
       break;
     case InterestsItemType:
-      [self.delegate interestsTapped];
+      [self.navigationDelegate handleNavigateToInterests];
       break;
     case HiddenItemType:
-      [self.delegate hiddenTapped];
+      [self.navigationDelegate handleNavigateToHidden];
       break;
     case ActivityItemType:
-      [self.delegate activityTapped];
+      [self.navigationDelegate handleNavigateToActivity];
       break;
   }
 }

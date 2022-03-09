@@ -56,6 +56,7 @@
 #import "ios/chrome/browser/ui/ntp/feed_control_delegate.h"
 #import "ios/chrome/browser/ui/ntp/feed_header_view_controller.h"
 #import "ios/chrome/browser/ui/ntp/feed_management/feed_management_coordinator.h"
+#import "ios/chrome/browser/ui/ntp/feed_management/feed_management_navigation_delegate.h"
 #import "ios/chrome/browser/ui/ntp/feed_menu_commands.h"
 #import "ios/chrome/browser/ui/ntp/feed_metrics_recorder.h"
 #import "ios/chrome/browser/ui/ntp/incognito_view_controller.h"
@@ -95,6 +96,7 @@ namespace {
                                      DiscoverFeedPreviewDelegate,
                                      DiscoverFeedWrapperViewControllerDelegate,
                                      FeedControlDelegate,
+                                     FeedManagementNavigationDelegate,
                                      FeedMenuCommands,
                                      NewTabPageCommands,
                                      NewTabPageContentDelegate,
@@ -883,6 +885,20 @@ namespace {
   }
 }
 
+#pragma mark - FeedManagementNavigationDelegate
+
+- (void)handleNavigateToActivity {
+  [self.ntpMediator handleFeedManageActivityTapped];
+}
+
+- (void)handleNavigateToInterests {
+  [self.ntpMediator handleFeedManageInterestsTapped];
+}
+
+- (void)handleNavigateToHidden {
+  // TODO(crbug.com/1296745): Implement.
+}
+
 #pragma mark - Private
 
 // Creates and configures the feed and feed header based on user prefs.
@@ -1073,6 +1089,7 @@ namespace {
   self.feedManagementCoordinator = [[FeedManagementCoordinator alloc]
       initWithBaseViewController:self.ntpViewController
                          browser:self.browser];
+  self.feedManagementCoordinator.navigationDelegate = self;
   [self.feedManagementCoordinator start];
 }
 

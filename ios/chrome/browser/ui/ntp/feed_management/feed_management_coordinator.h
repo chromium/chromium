@@ -7,10 +7,17 @@
 
 #import "ios/chrome/browser/ui/coordinators/chrome_coordinator.h"
 
+@protocol FeedManagementNavigationDelegate;
+
 // The top-level owner of the Feed Management component. It serves to connect
 // the various independent pieces such as the Feed Management UI, the Follow
 // Management UI, and mediators.
 @interface FeedManagementCoordinator : ChromeCoordinator
+
+// Delegate for handling web navigation actions.
+@property(nonatomic, weak) id<FeedManagementNavigationDelegate>
+    navigationDelegate;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_NTP_FEED_MANAGEMENT_FEED_MANAGEMENT_COORDINATOR_H_
