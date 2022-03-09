@@ -68,6 +68,8 @@ class DeviceCloudPolicyManagerAsh : public CloudPolicyManager {
     virtual void OnDeviceCloudPolicyManagerConnected() = 0;
     // Invoked when the device cloud policy manager disconnects.
     virtual void OnDeviceCloudPolicyManagerDisconnected() = 0;
+    // Invoked when the device cloud policy manager obtains schema registry.
+    virtual void OnDeviceCloudPolicyManagerGotRegistry() = 0;
   };
 
   using UnregisterCallback = base::OnceCallback<void(bool)>;
@@ -121,6 +123,10 @@ class DeviceCloudPolicyManagerAsh : public CloudPolicyManager {
   virtual void Disconnect();
 
   bool IsConnected() const { return core()->service() != nullptr; }
+
+  bool HasSchemaRegistry() const {
+    return signin_profile_forwarding_schema_registry_ != nullptr;
+  }
 
   DeviceCloudPolicyStoreAsh* device_store() { return device_store_.get(); }
 
@@ -176,6 +182,7 @@ class DeviceCloudPolicyManagerAsh : public CloudPolicyManager {
 
   void NotifyConnected();
   void NotifyDisconnected();
+  void NotifyGotRegistry();
 
   // Factory function to create the StatusUploader.
   void CreateStatusUploader(ManagedSessionService* managed_session_service);
