@@ -197,7 +197,7 @@ public final class RectUtils {
         int numClippedRects = 0;
         for (int i = 0; i < coverageRects.size(); i++) {
             Rect clipRect = coverageRects.get(i);
-            if (clipRect.intersect(screenRect)) { // This line may modify he the value of the passed
+            if (clipRect.intersect(screenRect)) { // This line may modify the value of the passed
                                                   // in coverage rects
                 sClippedRects[numClippedRects++] = clipRect;
             }
