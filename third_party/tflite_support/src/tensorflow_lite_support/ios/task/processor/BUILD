@@ -54,6 +54,14 @@ objc_library(
 )
 
 objc_library(
+    name = "TFLSegmentationResult",
+    hdrs = [
+        "sources/TFLSegmentationResult.h",
+    ],
+    module_name = "TFLSegmentationResult",
+)
+
+objc_library(
     name = "TFLClassificationOptionsHelpers",
     srcs = [
         "sources/TFLClassificationOptions+Helpers.m",
@@ -114,5 +122,17 @@ objc_library(
         ":TFLCategoryHelpers",
         "//tensorflow_lite_support/c/task/processor:detection_result",
         "//tensorflow_lite_support/ios/task/processor:TFLDetectionResult",
+    ],
+)
+
+objc_library(
+    name = "TFLSegmentationResultHelpers",
+    hdrs = [
+        "sources/TFLSegmentationResult+Helpers.h",
+    ],
+    module_name = "TFLSegmentationResultHelpers",
+    deps = [
+        "//tensorflow_lite_support/c/task/processor:segmentation_result",
+        "//tensorflow_lite_support/ios/task/processor:TFLSegmentationResult",
     ],
 )

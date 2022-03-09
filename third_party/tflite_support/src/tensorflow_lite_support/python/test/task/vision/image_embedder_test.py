@@ -174,6 +174,39 @@ class ImageEmbedderTest(parameterized.TestCase, unittest.TestCase):
     embedder = _ImageEmbedder.create_from_options(options)
     self.assertEqual(embedder.number_of_output_layers, 1)
 
+  def test_equal(self):
+    base_options1 = _BaseOptions(
+        model_file=_ExternalFile(file_name=self.model_path))
+    options1 = _ImageEmbedderOptions(base_options=base_options1)
+    embedder1 = _ImageEmbedder.create_from_options(options1)
+    # Checks the same embedder object.
+    self.assertEqual(embedder1, embedder1)
+
+    base_options2 = _BaseOptions(
+        model_file=_ExternalFile(file_name=self.model_path))
+    options2 = _ImageEmbedderOptions(base_options=base_options2)
+    embedder2 = _ImageEmbedder.create_from_options(options2)
+    # Checks the embedders with same file name.
+    self.assertEqual(embedder1, embedder2)
+
+    with open(self.model_path, "rb") as f:
+      model_content = f.read()
+    base_options3 = _BaseOptions(
+        model_file=_ExternalFile(file_content=model_content))
+    options3 = _ImageEmbedderOptions(base_options=base_options3)
+    embedder3 = _ImageEmbedder.create_from_options(options3)
+    # Checks one embedder with file_name and the other with model_content.
+    self.assertNotEqual(embedder1, embedder3)
+
+    base_options4 = _BaseOptions(
+        model_file=_ExternalFile(file_name=self.model_path))
+    options4 = _ImageEmbedderOptions(base_options=base_options4)
+    options4.embedding_options = embedding_options_pb2.EmbeddingOptions(
+        l2_normalize=True)
+    embedder4 = _ImageEmbedder.create_from_options(options4)
+    # Checks the embedders with different embedding options.
+    self.assertNotEqual(embedder1, embedder4)
+
 
 if __name__ == "__main__":
   unittest.main()

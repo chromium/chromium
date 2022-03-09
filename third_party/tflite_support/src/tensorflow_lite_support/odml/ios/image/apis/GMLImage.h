@@ -19,8 +19,8 @@
 NS_ASSUME_NONNULL_BEGIN
 
 /** Types of image sources. */
-typedef NSInteger GMLImageSourceType
-    NS_TYPED_ENUM NS_SWIFT_NAME(MLImageSourceType);
+typedef NSInteger GMLImageSourceType NS_TYPED_ENUM
+    NS_SWIFT_NAME(MLImageSourceType);
 /** Image source is a `UIImage`. */
 static const GMLImageSourceType GMLImageSourceTypeImage = 0;
 /** Image source is a `CVPixelBuffer`. */

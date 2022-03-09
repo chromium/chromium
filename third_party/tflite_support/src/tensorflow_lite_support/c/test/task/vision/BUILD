@@ -54,3 +54,24 @@ cc_test_with_tflite(
         "//tensorflow_lite_support/examples/task/vision/desktop/utils:image_utils",
     ],
 )
+
+cc_test_with_tflite(
+    name = "image_segmenter_test",
+    srcs = ["image_segmenter_test.cc"],
+    data = [
+        "//tensorflow_lite_support/cc/test/testdata/task/vision:test_images",
+        "//tensorflow_lite_support/cc/test/testdata/task/vision:test_models",
+    ],
+    tflite_deps = [
+        "//tensorflow_lite_support/c/task/vision:image_segmenter",
+        "@org_tensorflow//tensorflow/lite/core/shims:cc_shims_test_util",
+    ],
+    deps = [
+        "//tensorflow_lite_support/c:common",
+        "//tensorflow_lite_support/c/task/processor:segmentation_result",
+        "//tensorflow_lite_support/c/task/vision/core:frame_buffer",
+        "//tensorflow_lite_support/cc/port:gtest_main",
+        "//tensorflow_lite_support/cc/test:test_utils",
+        "//tensorflow_lite_support/examples/task/vision/desktop/utils:image_utils",
+    ],
+)

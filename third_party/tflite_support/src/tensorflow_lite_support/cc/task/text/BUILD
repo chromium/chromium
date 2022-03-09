@@ -132,3 +132,38 @@ cc_library_with_tflite(
         "@org_tensorflow//tensorflow/lite/core/api:op_resolver",
     ],
 )
+
+cc_library(
+    name = "clu_annotator",
+    hdrs = [
+        "clu_annotator.h",
+    ],
+    deps = [
+        "//tensorflow_lite_support/cc/task/core:base_task_api",
+        "//tensorflow_lite_support/cc/task/core:tflite_engine",
+        "//tensorflow_lite_support/cc/task/text/proto:clu_proto_inc",
+    ],
+)
+
+cc_library(
+    name = "bert_clu_annotator",
+    srcs = [
+        "bert_clu_annotator.cc",
+    ],
+    hdrs = [
+        "bert_clu_annotator.h",
+    ],
+    deps = [
+        ":clu_annotator",
+        "//tensorflow_lite_support/cc/port:status_macros",
+        "//tensorflow_lite_support/cc/task/core:task_api_factory",
+        "//tensorflow_lite_support/cc/task/core:task_utils",
+        "//tensorflow_lite_support/cc/task/text/clu_lib:tflite_modules",
+        "//tensorflow_lite_support/cc/task/text/proto:bert_clu_annotator_options_proto_inc",
+        "//tensorflow_lite_support/cc/text/tokenizers:bert_tokenizer",
+        "//tensorflow_lite_support/cc/text/tokenizers:tokenizer_utils",
+        "@com_google_absl//absl/status",
+        "@com_google_absl//absl/strings",
+        "@com_google_absl//absl/strings:str_format",
+    ],
+)

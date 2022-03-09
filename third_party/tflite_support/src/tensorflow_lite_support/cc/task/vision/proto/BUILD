@@ -78,6 +78,18 @@ cc_proto_library(
     ],
 )
 
+support_py_proto_library(
+    name = "object_detector_options_py_pb2",
+    srcs = ["object_detector_options.proto"],
+    api_version = 2,
+    proto_deps = [":object_detector_options_proto"],
+    py_proto_deps = [
+        "@org_tensorflow//tensorflow/lite/experimental/acceleration/configuration:configuration_proto_external_py",
+        "//tensorflow_lite_support/cc/task/core/proto:base_options_py_pb2",
+        "//tensorflow_lite_support/cc/task/core/proto:external_file_py_pb2",
+    ],
+)
+
 cc_library(
     name = "object_detector_options_proto_inc",
     hdrs = ["object_detector_options_proto_inc.h"],
@@ -102,6 +114,13 @@ cc_proto_library(
     deps = [
         ":detections_proto",
     ],
+)
+
+support_py_proto_library(
+    name = "detections_py_pb2",
+    srcs = ["detections.proto"],
+    api_version = 2,
+    proto_deps = [":detections_proto"],
 )
 
 cc_library(
@@ -140,6 +159,7 @@ support_py_proto_library(
     proto_deps = [":image_classifier_options_proto"],
     py_proto_deps = [
         "@org_tensorflow//tensorflow/lite/experimental/acceleration/configuration:configuration_proto_external_py",
+        "//tensorflow_lite_support/cc/task/core/proto:base_options_py_pb2",
         "//tensorflow_lite_support/cc/task/core/proto:external_file_py_pb2",
     ],
 )

@@ -24,7 +24,7 @@ limitations under the License.
 #include <iostream>
 #include <limits>
 
-#include "absl/flags/flag.h"   // from @com_google_absl
+#include "absl/flags/flag.h"  // from @com_google_absl
 #include "absl/flags/parse.h"  // from @com_google_absl
 #include "tensorflow_lite_support/examples/task/audio/desktop/audio_classifier_lib.h"
 

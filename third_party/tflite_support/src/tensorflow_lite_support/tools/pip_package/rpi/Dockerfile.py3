@@ -29,6 +29,7 @@ RUN apt-get update && \
       git && \
     apt-get clean
 
+RUN DEBIAN_FRONTEND=noninteractive TZ=Etc/UTC apt-get -y install tzdata
 # Install Python packages.
 RUN dpkg --add-architecture armhf
 RUN dpkg --add-architecture arm64
@@ -37,6 +38,7 @@ RUN apt-get update && \
     apt-get install -y \
       python$PYTHON_VERSION \
       python$PYTHON_VERSION-dev \
+      python$PYTHON_VERSION-venv \
       python$PYTHON_VERSION-distutils \
       libpython$PYTHON_VERSION-dev \
       libpython$PYTHON_VERSION-dev:armhf \

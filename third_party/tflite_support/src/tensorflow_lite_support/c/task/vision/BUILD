@@ -63,6 +63,9 @@ cc_library_with_tflite(
 
 cc_library_with_tflite(
     name = "image_segmenter",
+    srcs = [
+        "image_segmenter.cc",
+    ],
     hdrs = [
         "image_segmenter.h",
     ],
@@ -71,8 +74,13 @@ cc_library_with_tflite(
     ],
     deps = [
         "//tensorflow_lite_support/c:common",
+        "//tensorflow_lite_support/c:common_utils",
         "//tensorflow_lite_support/c/task/core:base_options",
+        "//tensorflow_lite_support/c/task/core/utils:base_options_utils",
         "//tensorflow_lite_support/c/task/processor:segmentation_result",
         "//tensorflow_lite_support/c/task/vision/core:frame_buffer",
+        "//tensorflow_lite_support/c/task/vision/utils:frame_buffer_cpp_c_utils",
+        "//tensorflow_lite_support/cc/task/vision/proto:image_segmenter_options_proto_inc",
+        "//tensorflow_lite_support/cc/task/vision/proto:segmentations_proto_inc",
     ],
 )

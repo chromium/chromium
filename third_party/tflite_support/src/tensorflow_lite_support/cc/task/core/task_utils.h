@@ -149,10 +149,8 @@ template <>
 inline absl::Status PopulateVector<std::string>(
     const TfLiteTensor* tensor,
     std::vector<std::string>* data) {
-  if (tensor->type != typeToTfLiteType<std::string>()) {
-    return absl::InvalidArgumentError("not of type string");
-  }
-
+  std::string* v __attribute__((unused));
+  ASSIGN_OR_RETURN(v, AssertAndReturnTypedTensor<std::string>(tensor));
   int num = GetStringCount(tensor);
   data->reserve(num);
   for (int i = 0; i < num; i++) {

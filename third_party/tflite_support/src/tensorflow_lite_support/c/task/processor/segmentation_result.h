@@ -27,9 +27,11 @@ extern "C" {
 // Holds a label associated with an RGB color, for display purposes.
 typedef struct TfLiteColoredLabel {
   // The RGB color components for the label, in the [0, 255] range.
-  unsigned int r;
-  unsigned int g;
-  unsigned int b;
+  // Note uint32_t to keep it consistent with underlying C++ segmentations
+  // proto.
+  uint32_t r;
+  uint32_t g;
+  uint32_t b;
 
   // The class name, as provided in the label map packed in the TFLite Model
   // Metadata.
@@ -39,18 +41,17 @@ typedef struct TfLiteColoredLabel {
   // the TFLite Model Metadata. See `display_names_locale` field in
   // ImageSegmenterOptions.
   char* display_name;
-
 } TfLiteColoredLabel;
 
 // Holds a resulting segmentation mask and associated metadata.
 typedef struct TfLiteSegmentation {
   // The width of the mask. This is an intrinsic parameter of the model being
   // used, and does not depend on the input image dimensions.
-  unsigned int width;
+  int width;
 
   // The height of the mask. This is an intrinsic parameter of the model being
   // used, and does not depend on the input image dimensions.
-  unsigned int height;
+  int height;
 
   // IMPORTANT: A TfLiteSegmentation can either have `confidence_masks`
   // or `category_mask` based on the output type selected in
@@ -75,6 +76,10 @@ typedef struct TfLiteSegmentation {
   // class to which the pixel belongs.
   uint8_t* category_mask;
 
+  // Number of colored labels which is equivalent to number of classes
+  // supported by the model.
+  int colored_labels_size;
+
   // The list of colored labels for all the supported categories (classes).
   // Depending on which is present, this list is in 1:1 correspondence with:
   // * `category_mask` pixel values, i.e. a pixel with value `i` is
@@ -82,7 +87,6 @@ typedef struct TfLiteSegmentation {
   // * `confidence_masks` indices, i.e. `confidence_masks[i]` is associated with
   //   `colored_labels[i]`.
   TfLiteColoredLabel* colored_labels;
-
 } TfLiteSegmentation;
 
 // Holds Image Segmentation Results.
@@ -99,7 +103,7 @@ typedef struct TfLiteSegmentationResult {
   TfLiteSegmentation* segmentations;
 } TfLiteSegmentationResult;
 
-// Frees up the TfLiteSegmentationResult Structure.
+// Frees up the TfLiteSegmentationResult structure.
 void TfLiteSegmentationResultDelete(
     TfLiteSegmentationResult* segmentation_result);
 

@@ -64,6 +64,7 @@ bazel test -c opt $BAZEL_PARALLEL --test_output=all \
     //tensorflow_lite_support/custom_ops/kernel/sentencepiece:all \
     //tensorflow_lite_support/metadata/python/tests:metadata_test \
     //tensorflow_lite_support/metadata/python/tests/metadata_writers:all \
+    //tensorflow_lite_support/python/test/task/...
 
 bazel test -c opt $BAZEL_PARALLEL --test_output=all --build_tests_only \
     --build_tag_filters=-tflite_emulator_test_android \

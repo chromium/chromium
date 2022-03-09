@@ -59,7 +59,7 @@ third_party_licenses(
         "JSR 250": "third_party/java/jsr250_annotations/LICENSE",
         "JSR 305": "third_party/java/jsr305_annotations/LICENSE",
         "JSpecify": "third_party/java/jspecify_annotations/LICENSE",
-        "JsInterop Annotations": "third_party/java_src/jsinterop_annotations/java/jsinterop/annotations/LICENSE",
+        "JsInterop Annotations": "third_party/java_src/jsinterop_annotations/LICENSE",
         "TensorFlow Lite Support": "third_party/tensorflow_lite_support/LICENSE",
         "Kotlin": "third_party/kotlin/kotlin/LICENSE",
     },

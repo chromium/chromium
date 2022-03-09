@@ -46,3 +46,16 @@ objc_library(
         "//tensorflow_lite_support/ios/task/vision/utils:GMLImageUtils",
     ],
 )
+
+objc_library(
+    name = "TFLImageSegmenter",
+    hdrs = [
+        "sources/TFLImageSegmenter.h",
+    ],
+    module_name = "TFLImageSegmenter",
+    deps = [
+        "//tensorflow_lite_support/ios/task/core:TFLBaseOptions",
+        "//tensorflow_lite_support/ios/task/processor:TFLSegmentationResult",
+        "//tensorflow_lite_support/ios/task/vision/utils:GMLImageUtils",
+    ],
+)

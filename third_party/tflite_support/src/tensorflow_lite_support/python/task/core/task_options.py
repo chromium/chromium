@@ -15,7 +15,7 @@
 
 import dataclasses
 
-from typing import Optional
+from typing import Any, Optional
 
 
 @dataclasses.dataclass
@@ -37,6 +37,23 @@ class ExternalFile:
   # The path to the file to open and mmap in memory.
   file_name: Optional[str] = None
 
+  def __eq__(self, other: Any) -> bool:
+    if self is other:
+      return True
+
+    if not isinstance(other, self.__class__):
+      return False
+
+    if self.file_name is not None and self.file_name == other.file_name:
+      return True
+
+    if (self.file_content is not None and other.file_content is not None and
+        len(self.file_content) == len(other.file_content) and
+        self.file_content == other.file_content):
+      return True
+
+    return False
+
 
 @dataclasses.dataclass
 class BaseOptions:
@@ -55,3 +72,9 @@ class BaseOptions:
 
   # If true, inference will be delegated to a connected Coral Edge TPU device.
   use_coral: bool = False
+
+  def __eq__(self, other: Any) -> bool:
+    return (isinstance(other, self.__class__) and
+            self.model_file == other.model_file and
+            self.num_threads == other.num_threads and
+            self.use_coral == other.use_coral)

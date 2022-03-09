@@ -1,8 +1,8 @@
 Name: TensorFlow Lite Support
 Short Name: tflite-support
 URL: https://github.com/tensorflow/tflite-support
-Version: 27decd8a9f30004d01b1cd5f40f27e7b1be20fa5
-Date: 2022/02/07
+Version: 71db695ff9b4118b042892745ae5cdf49420abf8
+Date: 2022/03/09
 License: Apache 2.0
 License File: LICENSE
 Security Critical: Yes
@@ -23,23 +23,32 @@ Modifications:
 01) Use re2::StringPiece instead of absl::string_view in regex_tokenizer.cc
 02) Remove support for sentencepiece tokenization because the required overhead
 isn't worth adding this functionality, esp since no feature team needs it.
-03) [To Be Upstreamed] Remove unused functions.
-04) Remove the ABSL_DEPRECATED annotation from a deprecated struct since this
+03) Remove the ABSL_DEPRECATED annotation from a deprecated struct since this
 is a no-op in chromium builds and upsets clang.
-05) [To Be Upstreamed] Use size_t in for loop in nl_classifier.h
-06) [To Be Upstreamed] Remove unused variable in task_utils.h
-07) Do not use absl::any since it is not supported in chromium
-08) [To Be Upstreamed] Remove unused stl include in tokenizer_jni_lib.h
-09) Remove memory mapped file support in external_file_handler.cc since it is
+04) Do not use absl::any since it is not supported in chromium
+05) Remove memory mapped file support in external_file_handler.cc since it is
 only available on POSIX systems.
-10) Run clang-format.
-11) Remove unbuilt files that triggered checkdeps warnings, and fix file perms.
-12) Remove an unneeded static initializer.
-13) Surface the error from NLClassifier::Classify.
+06) Remove an unneeded static initializer.
+07) Surface the error from NLClassifier::Classify.
+08) Remove unbuilt files that triggered checkdeps warnings, and fix file perms.
+  * Note that this patch might not apply cleanly, so just do everything that
+  `git cl presubmit` tells you to do.
+09) Run clang-format.
+  * This patch might not apply cleanly, so run `git cl format` and commit the
+  changes.
 
 Update Process (internal: http://shortn/_nwz8liqimy):
-1) Clone the tflite-support github repo at the desired commit into src/
-2) Apply each patch listed above residing in patches/ using `git apply patches/$PATCHFILE`
+1) Run these commands:
+```
+pushd third_party/tflite_support/
+rm -rf src/
+git clone https://github.com/tensorflow/tflite-support/
+mv tflite-support/ src/
+rm -rf src/.git/
+popd
+```
+2) Apply each patch listed above residing in patches/ using `git apply
+third_party/tflite_support/patches/$PATCHFILE`.
 3) Get the build working.
 4) Record the patches made with `git format-patches HEAD -<number of changes>`
 

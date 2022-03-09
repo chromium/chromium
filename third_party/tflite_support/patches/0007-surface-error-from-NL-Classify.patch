@@ -1,7 +1,7 @@
-From fcb313c8e990c28b6e2d931cb14904de5f4f9800 Mon Sep 17 00:00:00 2001
+From 6e8d05cb3923bc1ba2ebfa3860f44c7a25b98edf Mon Sep 17 00:00:00 2001
 From: Robert Ogden <robertogden@chromium.org>
-Date: Fri, 4 Mar 2022 11:44:57 -0800
-Subject: [PATCH 13/13] surface error from NL Classify
+Date: Wed, 9 Mar 2022 10:33:16 -0800
+Subject: [PATCH 7/9] surface error from NL Classify
 
 ---
  .../cc/task/text/nlclassifier/nl_classifier.cc             | 7 +++----
@@ -9,7 +9,7 @@ Subject: [PATCH 13/13] surface error from NL Classify
  2 files changed, 5 insertions(+), 5 deletions(-)
 
 diff --git a/third_party/tflite_support/src/tensorflow_lite_support/cc/task/text/nlclassifier/nl_classifier.cc b/third_party/tflite_support/src/tensorflow_lite_support/cc/task/text/nlclassifier/nl_classifier.cc
-index 542d153cb1262..2409dfd4c7c8e 100644
+index d03296d2d09b5..6d80966ce89ec 100644
 --- a/third_party/tflite_support/src/tensorflow_lite_support/cc/task/text/nlclassifier/nl_classifier.cc
 +++ b/third_party/tflite_support/src/tensorflow_lite_support/cc/task/text/nlclassifier/nl_classifier.cc
 @@ -113,10 +113,9 @@ absl::Status NLClassifier::TrySetLabelFromMetadata(
@@ -27,10 +27,10 @@ index 542d153cb1262..2409dfd4c7c8e 100644
  
  absl::Status NLClassifier::Preprocess(
 diff --git a/third_party/tflite_support/src/tensorflow_lite_support/cc/task/text/nlclassifier/nl_classifier.h b/third_party/tflite_support/src/tensorflow_lite_support/cc/task/text/nlclassifier/nl_classifier.h
-index 30fa25044e1cf..be1547cf536d3 100644
+index ab5126348f380..815bbf92840e2 100644
 --- a/third_party/tflite_support/src/tensorflow_lite_support/cc/task/text/nlclassifier/nl_classifier.h
 +++ b/third_party/tflite_support/src/tensorflow_lite_support/cc/task/text/nlclassifier/nl_classifier.h
-@@ -134,7 +134,8 @@ class NLClassifier : public core::BaseTaskApi<std::vector<core::Category>,
+@@ -131,7 +131,8 @@ class NLClassifier : public core::BaseTaskApi<std::vector<core::Category>,
            absl::make_unique<tflite_shims::ops::builtin::BuiltinOpResolver>());
  
    // Performs classification on a string input, returns classified results.

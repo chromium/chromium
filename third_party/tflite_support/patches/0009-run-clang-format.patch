@@ -1,7 +1,7 @@
-From 7cfcaacefdb45b518ac5808eebbffe6cc7131121 Mon Sep 17 00:00:00 2001
+From 55a61c623d26d2e31704a905a04c19da39032ca2 Mon Sep 17 00:00:00 2001
 From: Robert Ogden <robertogden@chromium.org>
-Date: Mon, 7 Feb 2022 12:20:58 -0800
-Subject: [PATCH 10/13] run clang format
+Date: Wed, 9 Mar 2022 10:50:47 -0800
+Subject: [PATCH 9/9] run clang format
 
 ---
  .../configuration/edgetpu_coral_plugin.cc     |   20 +-
@@ -18,10 +18,12 @@ Subject: [PATCH 10/13] run clang format
  .../c/task/text/nl_classifier.h               |    3 +-
  .../c/task/vision/image_classifier.cc         |    9 +-
  .../c/task/vision/image_classifier.h          |    9 +-
+ .../c/task/vision/image_segmenter.cc          |    6 +-
  .../c/task/vision/image_segmenter.h           |    6 +-
  .../c/task/vision/object_detector.cc          |    6 +-
  .../c/task/vision/object_detector.h           |    6 +-
  .../test/task/vision/image_classifier_test.cc |   84 +-
+ .../test/task/vision/image_segmenter_test.cc  |   62 +-
  .../test/task/vision/object_detector_test.cc  |   90 +-
  .../src/tensorflow_lite_support/cc/common.cc  |    2 +-
  .../src/tensorflow_lite_support/cc/common.h   |    5 +-
@@ -53,10 +55,23 @@ Subject: [PATCH 10/13] run clang format
  .../cc/task/processor/processor.h             |    5 +-
  .../cc/task/processor/regex_preprocessor.cc   |    3 +-
  .../cc/task/processor/regex_preprocessor.h    |    3 +-
+ .../cc/task/text/bert_clu_annotator.cc        |    4 +-
  .../cc/task/text/bert_nl_classifier.cc        |    3 +-
  .../cc/task/text/bert_nl_classifier.h         |    2 +-
- .../cc/task/text/bert_question_answerer.cc    |   34 +-
+ .../cc/task/text/bert_question_answerer.cc    |   32 +-
  .../cc/task/text/bert_question_answerer.h     |    7 +-
+ .../cc/task/text/clu_lib/bert_utils.cc        |   14 +-
+ .../cc/task/text/clu_lib/bert_utils.h         |    7 +-
+ .../cc/task/text/clu_lib/intent_repr.cc       |   18 +-
+ .../cc/task/text/clu_lib/intent_repr.h        |    5 +-
+ .../cc/task/text/clu_lib/slot_repr.cc         |   32 +-
+ .../cc/task/text/clu_lib/slot_repr.h          |    9 +-
+ .../task/text/clu_lib/slot_tagging_output.cc  |   24 +-
+ .../task/text/clu_lib/slot_tagging_output.h   |    6 +-
+ .../cc/task/text/clu_lib/tflite_modules.cc    |   41 +-
+ .../cc/task/text/clu_lib/tflite_modules.h     |   17 +-
+ .../cc/task/text/clu_lib/tflite_test_utils.cc |   14 +-
+ .../cc/task/text/clu_lib/tflite_test_utils.h  |    6 +-
  .../task/text/nlclassifier/nl_classifier.cc   |   18 +-
  .../cc/task/text/nlclassifier/nl_classifier.h |   19 +-
  .../cc/task/text/question_answerer.h          |    6 +-
@@ -75,14 +90,14 @@ Subject: [PATCH 10/13] run clang format
  .../cc/task/vision/image_embedder.h           |    9 +-
  .../cc/task/vision/image_segmenter.cc         |   17 +-
  .../cc/task/vision/image_segmenter.h          |    8 +-
- .../cc/task/vision/object_detector.cc         |   16 +-
+ .../cc/task/vision/object_detector.cc         |   14 +-
  .../cc/task/vision/object_detector.h          |    5 +-
  .../vision/utils/frame_buffer_common_utils.cc |   59 +-
  .../vision/utils/frame_buffer_common_utils.h  |   37 +-
  .../task/vision/utils/frame_buffer_utils.cc   |   50 +-
  .../cc/task/vision/utils/frame_buffer_utils.h |   40 +-
  .../utils/frame_buffer_utils_interface.h      |   11 +-
- .../vision/utils/libyuv_frame_buffer_utils.cc |   81 +-
+ .../vision/utils/libyuv_frame_buffer_utils.cc |   79 +-
  .../vision/utils/libyuv_frame_buffer_utils.h  |    9 +-
  .../cc/task/vision/utils/score_calibration.cc |    8 +-
  .../cc/task/vision/utils/score_calibration.h  |   11 +-
@@ -90,6 +105,8 @@ Subject: [PATCH 10/13] run clang format
  .../task/processor/image_preprocessor_test.cc |   13 +-
  .../test/task/text/bert_nl_classifier_test.cc |   36 +-
  .../task/text/bert_question_answerer_test.cc  |    7 +-
+ .../test/task/text/clu_lib/bert_utils_test.cc |   32 +-
+ .../task/text/clu_lib/intent_repr_test.cc     |    2 +-
  .../text/nlclassifier/nl_classifier_test.cc   |   83 +-
  .../cc/test/task/text/text_embedder_test.cc   |   16 +-
  .../test/task/vision/image_classifier_test.cc |  158 +-
@@ -139,7 +156,7 @@ Subject: [PATCH 10/13] run clang format
  .../sentencepiece_tokenizer_tflite.cc         |    7 +-
  .../custom_ops/kernel/whitespace_tokenizer.cc |   13 +-
  .../whitespace_tokenizer_op_resolver.cc       |    2 +-
- .../audio/desktop/audio_classifier_demo.cc    |   18 +-
+ .../audio/desktop/audio_classifier_demo.cc    |   16 +-
  .../audio/desktop/audio_classifier_lib.cc     |   11 +-
  .../task/audio/desktop/audio_classifier_lib.h |    3 +-
  .../text/desktop/bert_nl_classifier_demo.cc   |   14 +-
@@ -164,10 +181,13 @@ Subject: [PATCH 10/13] run clang format
  .../sources/TFLClassificationResult.h         |   15 +-
  .../sources/TFLDetectionResult+Helpers.h      |   12 +-
  .../processor/sources/TFLDetectionResult.h    |   15 +-
+ .../sources/TFLSegmentationResult+Helpers.h   |    4 +-
+ .../processor/sources/TFLSegmentationResult.h |   23 +-
  .../Sources/TFLBertNLClassifier.h             |   21 +-
  .../nlclassifier/Sources/TFLNLClassifier.h    |   47 +-
  .../text/qa/Sources/TFLBertQuestionAnswerer.h |    4 +-
  .../task/vision/sources/TFLImageClassifier.h  |   37 +-
+ .../task/vision/sources/TFLImageSegmenter.h   |   49 +-
  .../task/vision/sources/TFLObjectDetector.h   |   36 +-
  .../task/vision/utils/sources/GMLImageUtils.h |    5 +-
  .../vision/utils/sources/GMLImage+Helpers.h   |    6 +-
@@ -280,7 +300,7 @@ Subject: [PATCH 10/13] run clang format
  .../metadata/cc/metadata_extractor.cc         |   21 +-
  .../metadata/cc/metadata_extractor.h          |    4 +-
  .../metadata/cc/metadata_populator.h          |    7 +-
- .../metadata/cc/metadata_version.cc           |   37 +-
+ .../metadata/cc/metadata_version.cc           |   35 +-
  .../flatbuffers_lib/flatbuffers_lib.cc        |    2 +-
  .../support/metadata/BoundedInputStream.java  |  138 +-
  .../support/metadata/ByteBufferChannel.java   |  188 +-
@@ -316,15 +336,9 @@ Subject: [PATCH 10/13] run clang format
  .../odml/image/MediaImageExtractorTest.java   |   48 +-
  .../odml/image/MediaMlImageBuilderTest.java   |  109 +-
  .../android/odml/image/TestImageCreator.java  |  211 +-
- .../tools/ci_build/common.sh                  |  143 +-
- .../pip_package/rpi/build_arm_pip_package.sh  |   49 +-
- .../tools/pip_package/rpi/install_bazel.sh    |   75 +-
  .../src/third_party/fft2d/fft.h               |   12 +-
  .../src/third_party/fft2d/fft2d.h             |   12 +-
- .../com_google_protobuf_build.patch           |   12 +-
- 318 files changed, 17318 insertions(+), 16946 deletions(-)
- mode change 100755 => 100644 third_party/tflite_support/src/tensorflow_lite_support/tools/pip_package/rpi/build_arm_pip_package.sh
- mode change 100755 => 100644 third_party/tflite_support/src/tensorflow_lite_support/tools/pip_package/rpi/install_bazel.sh
+ 334 files changed, 17385 insertions(+), 16965 deletions(-)
 
 diff --git a/third_party/tflite_support/src/tensorflow_lite_support/acceleration/configuration/edgetpu_coral_plugin.cc b/third_party/tflite_support/src/tensorflow_lite_support/acceleration/configuration/edgetpu_coral_plugin.cc
 index 9f27f3baae82f..6a16d12856258 100644
@@ -633,11 +647,35 @@ index 290e57d56f5a1..8a53e5e2a079e 100644
      TfLiteSupportError** error);
  
  // Disposes off the image classifier.
+diff --git a/third_party/tflite_support/src/tensorflow_lite_support/c/task/vision/image_segmenter.cc b/third_party/tflite_support/src/tensorflow_lite_support/c/task/vision/image_segmenter.cc
+index 650cb8cd2383e..854985621f6a6 100644
+--- a/third_party/tflite_support/src/tensorflow_lite_support/c/task/vision/image_segmenter.cc
++++ b/third_party/tflite_support/src/tensorflow_lite_support/c/task/vision/image_segmenter.cc
+@@ -92,7 +92,8 @@ TfLiteImageSegmenterOptions TfLiteImageSegmenterOptionsCreate() {
+ }
+ 
+ TfLiteImageSegmenter* TfLiteImageSegmenterFromOptions(
+-    const TfLiteImageSegmenterOptions* options, TfLiteSupportError** error) {
++    const TfLiteImageSegmenterOptions* options,
++    TfLiteSupportError** error) {
+   StatusOr<ImageSegmenterOptionsCpp> cpp_option_status =
+       CreateImageSegmenterCppOptionsFromCOptions(options);
+ 
+@@ -182,7 +183,8 @@ TfLiteSegmentationResult* GetSegmentationResultCStruct(
+ 
+ TfLiteSegmentationResult* TfLiteImageSegmenterSegment(
+     const TfLiteImageSegmenter* segmenter,
+-    const TfLiteFrameBuffer* frame_buffer, TfLiteSupportError** error) {
++    const TfLiteFrameBuffer* frame_buffer,
++    TfLiteSupportError** error) {
+   if (segmenter == nullptr) {
+     tflite::support::CreateTfLiteSupportError(
+         kInvalidArgumentError, "Expected non null image segmenter.", error);
 diff --git a/third_party/tflite_support/src/tensorflow_lite_support/c/task/vision/image_segmenter.h b/third_party/tflite_support/src/tensorflow_lite_support/c/task/vision/image_segmenter.h
-index 5c2becc010e28..23b6b6eeb994c 100644
+index dd87e61e56b5d..a330acc43c282 100644
 --- a/third_party/tflite_support/src/tensorflow_lite_support/c/task/vision/image_segmenter.h
 +++ b/third_party/tflite_support/src/tensorflow_lite_support/c/task/vision/image_segmenter.h
-@@ -171,7 +171,8 @@ TfLiteImageSegmenterOptions TfLiteImageSegmenterOptionsCreate();
+@@ -172,7 +172,8 @@ TfLiteImageSegmenterOptions TfLiteImageSegmenterOptionsCreate();
  // TfLiteSupportErrorDelete(error)
  //
  TfLiteImageSegmenter* TfLiteImageSegmenterFromOptions(
@@ -647,7 +685,7 @@ index 5c2becc010e28..23b6b6eeb994c 100644
  
  // Invokes the encapsulated TFLite model and performs image segmentation on
  // the frame_buffer.
-@@ -200,7 +201,8 @@ TfLiteImageSegmenter* TfLiteImageSegmenterFromOptions(
+@@ -201,7 +202,8 @@ TfLiteImageSegmenter* TfLiteImageSegmenterFromOptions(
  //
  TfLiteSegmentationResult* TfLiteImageSegmenterSegment(
      const TfLiteImageSegmenter* segmenter,
@@ -944,6 +982,171 @@ index 688af14580ab3..b398b7adafe5c 100644
  
    ASSERT_NE(classification_result, nullptr);
    EXPECT_GE(classification_result->size, 1);
+diff --git a/third_party/tflite_support/src/tensorflow_lite_support/c/test/task/vision/image_segmenter_test.cc b/third_party/tflite_support/src/tensorflow_lite_support/c/test/task/vision/image_segmenter_test.cc
+index f5e37f94e749a..81ade94585caf 100644
+--- a/third_party/tflite_support/src/tensorflow_lite_support/c/test/task/vision/image_segmenter_test.cc
++++ b/third_party/tflite_support/src/tensorflow_lite_support/c/test/task/vision/image_segmenter_test.cc
+@@ -46,8 +46,8 @@ constexpr char kTestDataDirectory[] =
+ constexpr char kDeepLabV3[] = "deeplabv3.tflite";
+ 
+ StatusOr<ImageData> LoadImage(const char* image_name) {
+-  return DecodeImageFromFile(JoinPath("./" /*test src dir*/,
+-                                      kTestDataDirectory, image_name));
++  return DecodeImageFromFile(
++      JoinPath("./" /*test src dir*/, kTestDataDirectory, image_name));
+ }
+ 
+ // The maximum fraction of pixels in the candidate mask that can have a
+@@ -59,8 +59,11 @@ constexpr float kGoldenMaskTolerance = 1e-2;
+ // 20 means class index 2, etc.
+ constexpr int kGoldenMaskMagnificationFactor = 10;
+ 
+-void InitializeColoredLabel(TfLiteColoredLabel& colored_label, uint32_t r,
+-                            uint32_t g, uint32_t b, const char* label) {
++void InitializeColoredLabel(TfLiteColoredLabel& colored_label,
++                            uint32_t r,
++                            uint32_t g,
++                            uint32_t b,
++                            const char* label) {
+   colored_label.r = r;
+   colored_label.g = g;
+   colored_label.b = b;
+@@ -129,7 +132,8 @@ TEST_F(ImageSegmenterFromOptionsTest, FailsWithNullOptionsAndError) {
+ 
+   EXPECT_EQ(image_segmenter, nullptr);
+ 
+-  if (image_segmenter) TfLiteImageSegmenterDelete(image_segmenter);
++  if (image_segmenter)
++    TfLiteImageSegmenterDelete(image_segmenter);
+ 
+   ASSERT_NE(error, nullptr);
+   EXPECT_EQ(error->code, kInvalidArgumentError);
+@@ -147,7 +151,8 @@ TEST_F(ImageSegmenterFromOptionsTest, FailsWithMissingModelPath) {
+ 
+   EXPECT_EQ(image_segmenter, nullptr);
+ 
+-  if (image_segmenter) TfLiteImageSegmenterDelete(image_segmenter);
++  if (image_segmenter)
++    TfLiteImageSegmenterDelete(image_segmenter);
+ }
+ 
+ TEST_F(ImageSegmenterFromOptionsTest, FailsWithMissingModelPathAndError) {
+@@ -160,7 +165,8 @@ TEST_F(ImageSegmenterFromOptionsTest, FailsWithMissingModelPathAndError) {
+ 
+   EXPECT_EQ(image_segmenter, nullptr);
+ 
+-  if (image_segmenter) TfLiteImageSegmenterDelete(image_segmenter);
++  if (image_segmenter)
++    TfLiteImageSegmenterDelete(image_segmenter);
+ 
+   ASSERT_NE(error, nullptr);
+   EXPECT_EQ(error->code, kInvalidArgumentError);
+@@ -171,8 +177,8 @@ TEST_F(ImageSegmenterFromOptionsTest, FailsWithMissingModelPathAndError) {
+ }
+ 
+ TEST_F(ImageSegmenterFromOptionsTest, SucceedsWithModelPath) {
+-  std::string model_path = JoinPath("./" /*test src dir*/,
+-                                    kTestDataDirectory, kDeepLabV3);
++  std::string model_path =
++      JoinPath("./" /*test src dir*/, kTestDataDirectory, kDeepLabV3);
+ 
+   TfLiteImageSegmenterOptions options = TfLiteImageSegmenterOptionsCreate();
+   options.base_options.model_file.file_path = model_path.data();
+@@ -186,8 +192,8 @@ TEST_F(ImageSegmenterFromOptionsTest, SucceedsWithModelPath) {
+ }
+ 
+ TEST_F(ImageSegmenterFromOptionsTest, SucceedsWithNumberOfThreadsAndError) {
+-  std::string model_path = JoinPath("./" /*test src dir*/,
+-                                    kTestDataDirectory, kDeepLabV3);
++  std::string model_path =
++      JoinPath("./" /*test src dir*/, kTestDataDirectory, kDeepLabV3);
+ 
+   TfLiteImageSegmenterOptions options = TfLiteImageSegmenterOptionsCreate();
+   options.base_options.model_file.file_path = model_path.data();
+@@ -200,13 +206,15 @@ TEST_F(ImageSegmenterFromOptionsTest, SucceedsWithNumberOfThreadsAndError) {
+   EXPECT_NE(image_segmenter, nullptr);
+   EXPECT_EQ(error, nullptr);
+ 
+-  if (image_segmenter) TfLiteImageSegmenterDelete(image_segmenter);
+-  if (error) TfLiteSupportErrorDelete(error);
++  if (image_segmenter)
++    TfLiteImageSegmenterDelete(image_segmenter);
++  if (error)
++    TfLiteSupportErrorDelete(error);
+ }
+ 
+ TEST_F(ImageSegmenterFromOptionsTest, FailsWithUnspecifiedOutputTypeAndError) {
+-  std::string model_path = JoinPath("./" /*test src dir*/,
+-                                    kTestDataDirectory, kDeepLabV3);
++  std::string model_path =
++      JoinPath("./" /*test src dir*/, kTestDataDirectory, kDeepLabV3);
+ 
+   TfLiteImageSegmenterOptions options = TfLiteImageSegmenterOptionsCreate();
+   options.base_options.model_file.file_path = model_path.data();
+@@ -219,15 +227,17 @@ TEST_F(ImageSegmenterFromOptionsTest, FailsWithUnspecifiedOutputTypeAndError) {
+   EXPECT_EQ(image_segmenter, nullptr);
+   EXPECT_NE(error, nullptr);
+ 
+-  if (image_segmenter) TfLiteImageSegmenterDelete(image_segmenter);
+-  if (error) TfLiteSupportErrorDelete(error);
++  if (image_segmenter)
++    TfLiteImageSegmenterDelete(image_segmenter);
++  if (error)
++    TfLiteSupportErrorDelete(error);
+ }
+ 
+ class ImageSegmenterSegmentTest : public tflite_shims::testing::Test {
+  protected:
+   void SetUp() override {
+-    std::string model_path = JoinPath("./" /*test src dir*/,
+-                                      kTestDataDirectory, kDeepLabV3);
++    std::string model_path =
++        JoinPath("./" /*test src dir*/, kTestDataDirectory, kDeepLabV3);
+ 
+     TfLiteImageSegmenterOptions options = TfLiteImageSegmenterOptionsCreate();
+     options.base_options.model_file.file_path = model_path.data();
+@@ -241,7 +251,7 @@ class ImageSegmenterSegmentTest : public tflite_shims::testing::Test {
+ 
+ TEST_F(ImageSegmenterSegmentTest, SucceedsWithCategoryMask) {
+   SUPPORT_ASSERT_OK_AND_ASSIGN(ImageData image_data,
+-                       LoadImage("segmentation_input_rotation0.jpg"));
++                               LoadImage("segmentation_input_rotation0.jpg"));
+ 
+   TfLiteFrameBuffer frame_buffer = {
+       .format = kRGB,
+@@ -264,7 +274,7 @@ TEST_F(ImageSegmenterSegmentTest, SucceedsWithCategoryMask) {
+ 
+   // Load golden mask output.
+   SUPPORT_ASSERT_OK_AND_ASSIGN(ImageData golden_mask,
+-                       LoadImage("segmentation_golden_rotation0.png"));
++                               LoadImage("segmentation_golden_rotation0.png"));
+ 
+   int inconsistent_pixels = 0;
+   int num_pixels = golden_mask.height * golden_mask.width;
+@@ -285,8 +295,9 @@ TEST_F(ImageSegmenterSegmentTest, SucceedsWithCategoryMask) {
+ }
+ 
+ TEST_F(ImageSegmenterSegmentTest, SucceedsWithCategoryMaskAndOrientation) {
+-  SUPPORT_ASSERT_OK_AND_ASSIGN(ImageData image_data,
+-                       LoadImage("segmentation_input_rotation90_flop.jpg"));
++  SUPPORT_ASSERT_OK_AND_ASSIGN(
++      ImageData image_data,
++      LoadImage("segmentation_input_rotation90_flop.jpg"));
+ 
+   TfLiteFrameBuffer frame_buffer = {
+       .format = kRGB,
+@@ -308,8 +319,9 @@ TEST_F(ImageSegmenterSegmentTest, SucceedsWithCategoryMaskAndOrientation) {
+                        segmentation_result->segmentations[0]);
+ 
+   // Load golden mask output.
+-  SUPPORT_ASSERT_OK_AND_ASSIGN(ImageData golden_mask,
+-                       LoadImage("segmentation_golden_rotation90_flop.png"));
++  SUPPORT_ASSERT_OK_AND_ASSIGN(
++      ImageData golden_mask,
++      LoadImage("segmentation_golden_rotation90_flop.png"));
+ 
+   int inconsistent_pixels = 0;
+   int num_pixels = golden_mask.height * golden_mask.width;
 diff --git a/third_party/tflite_support/src/tensorflow_lite_support/c/test/task/vision/object_detector_test.cc b/third_party/tflite_support/src/tensorflow_lite_support/c/test/task/vision/object_detector_test.cc
 index f52623ada454c..99cd0034287ad 100644
 --- a/third_party/tflite_support/src/tensorflow_lite_support/c/test/task/vision/object_detector_test.cc
@@ -1756,7 +1959,7 @@ index 3d3bc801a6e5d..bbe549a802b39 100644
            tflite::proto::ComputeSettings()) {
      tflite::proto::ComputeSettings settings_copy =
 diff --git a/third_party/tflite_support/src/tensorflow_lite_support/cc/task/core/task_utils.h b/third_party/tflite_support/src/tensorflow_lite_support/cc/task/core/task_utils.h
-index b9438a576ee5b..43a508ae4d410 100644
+index 9c26d154634e1..2c21a95a1b075 100644
 --- a/third_party/tflite_support/src/tensorflow_lite_support/cc/task/core/task_utils.h
 +++ b/third_party/tflite_support/src/tensorflow_lite_support/cc/task/core/task_utils.h
 @@ -21,12 +21,12 @@ limitations under the License.
@@ -1809,10 +2012,10 @@ index b9438a576ee5b..43a508ae4d410 100644
 -    const TfLiteTensor* tensor, std::vector<std::string>* data) {
 +    const TfLiteTensor* tensor,
 +    std::vector<std::string>* data) {
-   if (tensor->type != typeToTfLiteType<std::string>()) {
-     return absl::InvalidArgumentError("not of type string");
-   }
-@@ -162,7 +166,8 @@ inline absl::Status PopulateVector<std::string>(
+   std::string* v __attribute__((unused));
+   ASSIGN_OR_RETURN(v, AssertAndReturnTypedTensor<std::string>(tensor));
+   int num = GetStringCount(tensor);
+@@ -160,7 +164,8 @@ inline absl::Status PopulateVector<std::string>(
  // Note: std::negation is not used because it is from C++17, where the code will
  // be compiled using C++14 in OSS.
  template <
@@ -1822,7 +2025,7 @@ index b9438a576ee5b..43a508ae4d410 100644
      typename = std::enable_if_t<std::is_same<T, std::string>::value == false>>
  inline absl::Status PopulateVectorToRepeated(const TfLiteTensor* tensor,
                                               TRepeatedField* data) {
-@@ -238,7 +243,8 @@ int FindTensorIndexByName(
+@@ -236,7 +241,8 @@ int FindTensorIndexByName(
    if (tensor_metadata != nullptr && tensor_metadata->size() == tensors.size()) {
      int index =
          FindTensorIndexByMetadataName(tensor_metadata, metadata_tensor_name);
@@ -1833,7 +2036,7 @@ index b9438a576ee5b..43a508ae4d410 100644
  
    return FindTensorIndexByModelName(tensors, model_tensor_name);
 diff --git a/third_party/tflite_support/src/tensorflow_lite_support/cc/task/core/tflite_engine.cc b/third_party/tflite_support/src/tensorflow_lite_support/cc/task/core/tflite_engine.cc
-index 484b9a099ecdc..0b34bad4f18f7 100644
+index 5999090cab973..41e06389af80b 100644
 --- a/third_party/tflite_support/src/tensorflow_lite_support/cc/task/core/tflite_engine.cc
 +++ b/third_party/tflite_support/src/tensorflow_lite_support/cc/task/core/tflite_engine.cc
 @@ -17,7 +17,7 @@ limitations under the License.
@@ -1845,7 +2048,7 @@ index 484b9a099ecdc..0b34bad4f18f7 100644
  #include "absl/strings/str_cat.h"  // from @com_google_absl
  #include "tensorflow/lite/builtin_ops.h"
  #include "tensorflow/lite/core/shims/cc/kernels/register.h"
-@@ -53,7 +53,8 @@ using ::tflite::support::CreateStatusWithPayload;
+@@ -38,7 +38,8 @@ using ::tflite::support::CreateStatusWithPayload;
  using ::tflite::support::InterpreterCreationResources;
  using ::tflite::support::TfLiteSupportStatus;
  
@@ -1855,7 +2058,7 @@ index 484b9a099ecdc..0b34bad4f18f7 100644
                                      tflite::ErrorReporter* reporter) {
    return tflite_shims::Verify(data, length, reporter);
  }
-@@ -84,7 +85,8 @@ std::vector<const TfLiteTensor*> TfLiteEngine::GetOutputs() {
+@@ -69,7 +70,8 @@ std::vector<const TfLiteTensor*> TfLiteEngine::GetOutputs() {
  }
  
  void TfLiteEngine::VerifyAndBuildModelFromBuffer(
@@ -1865,7 +2068,7 @@ index 484b9a099ecdc..0b34bad4f18f7 100644
      TfLiteVerifier* extra_verifier) {
    model_ = tflite_shims::FlatBufferModel::VerifyAndBuildFromBuffer(
        buffer_data, buffer_size, extra_verifier, &error_reporter_);
-@@ -131,7 +133,8 @@ absl::Status TfLiteEngine::InitializeFromModelFileHandler(
+@@ -116,7 +118,8 @@ absl::Status TfLiteEngine::InitializeFromModelFileHandler(
  }
  
  absl::Status TfLiteEngine::BuildModelFromFlatBuffer(
@@ -1875,7 +2078,7 @@ index 484b9a099ecdc..0b34bad4f18f7 100644
      const tflite::proto::ComputeSettings& compute_settings) {
    if (model_) {
      return CreateStatusWithPayload(StatusCode::kInternal,
-@@ -220,7 +223,8 @@ absl::Status TfLiteEngine::InitInterpreter(int num_threads) {
+@@ -205,7 +208,8 @@ absl::Status TfLiteEngine::InitInterpreter(int num_threads) {
  // absl::Status TfLiteEngine::InitInterpreter(
  //    const tflite::proto::ComputeSettings& compute_settings)
  absl::Status TfLiteEngine::InitInterpreter(
@@ -2086,6 +2289,22 @@ index 1f92bcc18e524..bdd4e5e207a12 100644
  
    absl::Status Preprocess(const std::string& text);
  
+diff --git a/third_party/tflite_support/src/tensorflow_lite_support/cc/task/text/bert_clu_annotator.cc b/third_party/tflite_support/src/tensorflow_lite_support/cc/task/text/bert_clu_annotator.cc
+index f60a556dbbe1b..802facec374f3 100644
+--- a/third_party/tflite_support/src/tensorflow_lite_support/cc/task/text/bert_clu_annotator.cc
++++ b/third_party/tflite_support/src/tensorflow_lite_support/cc/task/text/bert_clu_annotator.cc
+@@ -19,9 +19,9 @@ limitations under the License.
+ #include <string>
+ #include <utility>
+ 
+-#include "absl/status/status.h"  // from @com_google_absl
++#include "absl/status/status.h"       // from @com_google_absl
+ #include "absl/strings/str_format.h"  // from @com_google_absl
+-#include "absl/strings/str_split.h"  // from @com_google_absl
++#include "absl/strings/str_split.h"   // from @com_google_absl
+ #include "tensorflow_lite_support/cc/port/status_macros.h"
+ #include "tensorflow_lite_support/cc/task/core/task_api_factory.h"
+ #include "tensorflow_lite_support/cc/task/core/task_utils.h"
 diff --git a/third_party/tflite_support/src/tensorflow_lite_support/cc/task/text/bert_nl_classifier.cc b/third_party/tflite_support/src/tensorflow_lite_support/cc/task/text/bert_nl_classifier.cc
 index 386cb14c1a8c8..7de37f1082212 100644
 --- a/third_party/tflite_support/src/tensorflow_lite_support/cc/task/text/bert_nl_classifier.cc
@@ -2114,20 +2333,18 @@ index 4151025df917b..bcc9c5a533a3f 100644
  #include "tensorflow/lite/c/common.h"
  #include "tensorflow/lite/core/api/op_resolver.h"
 diff --git a/third_party/tflite_support/src/tensorflow_lite_support/cc/task/text/bert_question_answerer.cc b/third_party/tflite_support/src/tensorflow_lite_support/cc/task/text/bert_question_answerer.cc
-index 6b37649d4fbfd..591b70e84eb22 100644
+index 6b37649d4fbfd..b886e3b362902 100644
 --- a/third_party/tflite_support/src/tensorflow_lite_support/cc/task/text/bert_question_answerer.cc
 +++ b/third_party/tflite_support/src/tensorflow_lite_support/cc/task/text/bert_question_answerer.cc
-@@ -15,8 +15,8 @@ limitations under the License.
+@@ -15,7 +15,7 @@ limitations under the License.
  
  #include "tensorflow_lite_support/cc/task/text/bert_question_answerer.h"
  
 -#include "absl/status/status.h"  // from @com_google_absl
--#include "absl/strings/str_join.h"  // from @com_google_absl
-+#include "absl/status/status.h"      // from @com_google_absl
-+#include "absl/strings/str_join.h"   // from @com_google_absl
++#include "absl/status/status.h"     // from @com_google_absl
+ #include "absl/strings/str_join.h"  // from @com_google_absl
  #include "absl/strings/str_split.h"  // from @com_google_absl
  #include "tensorflow/lite/core/shims/cc/kernels/register.h"
- #include "tensorflow_lite_support/cc/port/status_macros.h"
 @@ -111,7 +111,8 @@ StatusOr<std::unique_ptr<QuestionAnswerer>> BertQuestionAnswerer::CreateFromFd(
  
  StatusOr<std::unique_ptr<QuestionAnswerer>>
@@ -2239,8 +2456,564 @@ index f041cc8e51637..52ec835371386 100644
  
    // Initialize the API with the tokenizer set in the metadata.
    absl::Status InitializeFromMetadata(
+diff --git a/third_party/tflite_support/src/tensorflow_lite_support/cc/task/text/clu_lib/bert_utils.cc b/third_party/tflite_support/src/tensorflow_lite_support/cc/task/text/clu_lib/bert_utils.cc
+index 0164bf48f156e..dc88aad9c2bdf 100644
+--- a/third_party/tflite_support/src/tensorflow_lite_support/cc/task/text/clu_lib/bert_utils.cc
++++ b/third_party/tflite_support/src/tensorflow_lite_support/cc/task/text/clu_lib/bert_utils.cc
+@@ -17,8 +17,8 @@ limitations under the License.
+ 
+ #include <string>
+ 
+-#include "absl/status/status.h"  // from @com_google_absl
+-#include "absl/strings/ascii.h"  // from @com_google_absl
++#include "absl/status/status.h"    // from @com_google_absl
++#include "absl/strings/ascii.h"    // from @com_google_absl
+ #include "absl/strings/str_cat.h"  // from @com_google_absl
+ #include "tensorflow_lite_support/cc/port/status_macros.h"
+ #include "tensorflow_lite_support/cc/task/text/clu_lib/constants.h"
+@@ -46,10 +46,13 @@ constexpr int kTurnIdForCurrentUtterance = 0;
+ absl::Status BertPreprocessing(
+     const tflite::support::text::tokenizer::BertTokenizer* tokenizer,
+     const std::vector<absl::string_view>& utterances_in_reverse_order,
+-    int max_seq_length, int max_history_turns, std::vector<int>* out_token_ids,
++    int max_seq_length,
++    int max_history_turns,
++    std::vector<int>* out_token_ids,
+     std::vector<std::pair<int, int>>* out_token_alignments,
+     std::vector<int>* out_token_first_subword_indicators,
+-    std::vector<int>* out_segment_id_list, std::vector<int>* out_turn_id_list) {
++    std::vector<int>* out_segment_id_list,
++    std::vector<int>* out_turn_id_list) {
+   int cls_id;
+   if (!tokenizer->LookupId(kClsToken, &cls_id)) {
+     return absl::InternalError(
+@@ -183,7 +186,8 @@ absl::Status BertPreprocessing(
+     out_turn_id_list->push_back(turn_id);
+ 
+     // Break if reaching max_seq_length.
+-    if (out_token_ids->size() >= max_seq_length) break;
++    if (out_token_ids->size() >= max_seq_length)
++      break;
+   }
+   if (out_token_ids->size() != out_token_alignments->size()) {
+     return absl::InternalError(absl::StrCat(
+diff --git a/third_party/tflite_support/src/tensorflow_lite_support/cc/task/text/clu_lib/bert_utils.h b/third_party/tflite_support/src/tensorflow_lite_support/cc/task/text/clu_lib/bert_utils.h
+index 69d13be6ce114..c3b3f6c4caf78 100644
+--- a/third_party/tflite_support/src/tensorflow_lite_support/cc/task/text/clu_lib/bert_utils.h
++++ b/third_party/tflite_support/src/tensorflow_lite_support/cc/task/text/clu_lib/bert_utils.h
+@@ -80,10 +80,13 @@ namespace tflite::task::text::clu {
+ absl::Status BertPreprocessing(
+     const tflite::support::text::tokenizer::BertTokenizer* tokenizer,
+     const std::vector<absl::string_view>& utterances_in_reverse_order,
+-    int max_seq_length, int max_history_turns, std::vector<int>* out_token_ids,
++    int max_seq_length,
++    int max_history_turns,
++    std::vector<int>* out_token_ids,
+     std::vector<std::pair<int, int>>* out_token_alignments,
+     std::vector<int>* out_token_first_subword_indicators,
+-    std::vector<int>* out_segment_id_list, std::vector<int>* out_turn_id_list);
++    std::vector<int>* out_segment_id_list,
++    std::vector<int>* out_turn_id_list);
+ 
+ }  // namespace tflite::task::text::clu
+ 
+diff --git a/third_party/tflite_support/src/tensorflow_lite_support/cc/task/text/clu_lib/intent_repr.cc b/third_party/tflite_support/src/tensorflow_lite_support/cc/task/text/clu_lib/intent_repr.cc
+index b310a0782c69f..037566235cf7c 100644
+--- a/third_party/tflite_support/src/tensorflow_lite_support/cc/task/text/clu_lib/intent_repr.cc
++++ b/third_party/tflite_support/src/tensorflow_lite_support/cc/task/text/clu_lib/intent_repr.cc
+@@ -17,9 +17,9 @@ limitations under the License.
+ 
+ #include <vector>
+ 
+-#include "absl/status/status.h"  // from @com_google_absl
+-#include "absl/strings/str_cat.h"  // from @com_google_absl
+-#include "absl/strings/str_split.h"  // from @com_google_absl
++#include "absl/status/status.h"        // from @com_google_absl
++#include "absl/strings/str_cat.h"      // from @com_google_absl
++#include "absl/strings/str_split.h"    // from @com_google_absl
+ #include "absl/strings/string_view.h"  // from @com_google_absl
+ #include "tensorflow_lite_support/cc/task/text/clu_lib/constants.h"
+ 
+@@ -28,7 +28,8 @@ namespace tflite::task::text::clu {
+ // IntentRepr
+ 
+ std::string IntentRepr::FullName() const {
+-  if (domain_.empty()) return name_;
++  if (domain_.empty())
++    return name_;
+   return absl::StrCat(domain_, kNamespaceDelim, name_);
+ }
+ 
+@@ -40,16 +41,19 @@ absl::StatusOr<IntentRepr> IntentRepr::CreateFromFullName(
+   if (splits.size() > 2) {
+     return absl::InternalError(absl::StrCat("invalid argument: ", full_name));
+   }
+-  if (splits.size() == 2) ret.domain_ = splits[0];
++  if (splits.size() == 2)
++    ret.domain_ = splits[0];
+   ret.name_ = splits[splits.size() - 1];
+   return ret;
+ }
+ 
+-IntentRepr IntentRepr::Create(absl::string_view name, absl::string_view domain,
++IntentRepr IntentRepr::Create(absl::string_view name,
++                              absl::string_view domain,
+                               const bool share_across_domains) {
+   IntentRepr ret;
+   ret.name_ = std::string(name);
+-  if (!share_across_domains) ret.domain_ = std::string(domain);
++  if (!share_across_domains)
++    ret.domain_ = std::string(domain);
+   return ret;
+ }
+ 
+diff --git a/third_party/tflite_support/src/tensorflow_lite_support/cc/task/text/clu_lib/intent_repr.h b/third_party/tflite_support/src/tensorflow_lite_support/cc/task/text/clu_lib/intent_repr.h
+index 9084deb1203b4..e040b04d998ea 100644
+--- a/third_party/tflite_support/src/tensorflow_lite_support/cc/task/text/clu_lib/intent_repr.h
++++ b/third_party/tflite_support/src/tensorflow_lite_support/cc/task/text/clu_lib/intent_repr.h
+@@ -18,7 +18,7 @@ limitations under the License.
+ 
+ #include <string>
+ 
+-#include "absl/status/statusor.h"  // from @com_google_absl
++#include "absl/status/statusor.h"      // from @com_google_absl
+ #include "absl/strings/string_view.h"  // from @com_google_absl
+ 
+ namespace tflite::task::text::clu {
+@@ -30,7 +30,8 @@ class IntentRepr {
+   const std::string& Name() const { return name_; }
+   std::string FullName() const;
+   static absl::StatusOr<IntentRepr> CreateFromFullName(const absl::string_view);
+-  static IntentRepr Create(absl::string_view name, absl::string_view domain,
++  static IntentRepr Create(absl::string_view name,
++                           absl::string_view domain,
+                            const bool share_across_domains);
+ 
+  private:
+diff --git a/third_party/tflite_support/src/tensorflow_lite_support/cc/task/text/clu_lib/slot_repr.cc b/third_party/tflite_support/src/tensorflow_lite_support/cc/task/text/clu_lib/slot_repr.cc
+index 114a721ee40ef..dbb0dc2a14263 100644
+--- a/third_party/tflite_support/src/tensorflow_lite_support/cc/task/text/clu_lib/slot_repr.cc
++++ b/third_party/tflite_support/src/tensorflow_lite_support/cc/task/text/clu_lib/slot_repr.cc
+@@ -20,15 +20,15 @@ limitations under the License.
+ #include <memory>
+ #include <vector>
+ 
+-#include "absl/status/status.h"  // from @com_google_absl
+-#include "absl/status/statusor.h"  // from @com_google_absl
+-#include "absl/strings/match.h"  // from @com_google_absl
+-#include "absl/strings/str_cat.h"  // from @com_google_absl
+-#include "absl/strings/str_split.h"  // from @com_google_absl
++#include "absl/status/status.h"        // from @com_google_absl
++#include "absl/status/statusor.h"      // from @com_google_absl
++#include "absl/strings/match.h"        // from @com_google_absl
++#include "absl/strings/str_cat.h"      // from @com_google_absl
++#include "absl/strings/str_split.h"    // from @com_google_absl
+ #include "absl/strings/string_view.h"  // from @com_google_absl
+-#include "absl/strings/strip.h"  // from @com_google_absl
+-#include "absl/strings/substitute.h"  // from @com_google_absl
+-#include "absl/types/span.h"  // from @com_google_absl
++#include "absl/strings/strip.h"        // from @com_google_absl
++#include "absl/strings/substitute.h"   // from @com_google_absl
++#include "absl/types/span.h"           // from @com_google_absl
+ #include "tensorflow_lite_support/cc/port/status_macros.h"
+ #include "tensorflow_lite_support/cc/task/text/clu_lib/constants.h"
+ 
+@@ -39,7 +39,8 @@ using ::absl::StatusOr;
+ // SlotRepr
+ 
+ std::string SlotRepr::FullName() const {
+-  if (domain_.empty()) return name_;
++  if (domain_.empty())
++    return name_;
+   return absl::StrCat(domain_, kNamespaceDelim, name_);
+ }
+ 
+@@ -52,14 +53,16 @@ SlotRepr::SplitDomainAndName(const absl::string_view full_name) {
+   }
+   absl::string_view domain = "";
+   absl::string_view name;
+-  if (splits.size() == 2) domain = splits[0];
++  if (splits.size() == 2)
++    domain = splits[0];
+   name = splits[splits.size() - 1];
+   return std::tuple<absl::string_view, absl::string_view>{domain, name};
+ }
+ 
+ StatusOr<SlotRepr> SlotRepr::CreateFromIob(const absl::string_view repr) {
+   SlotRepr ret;
+-  if (IsO(repr)) return ret;
++  if (IsO(repr))
++    return ret;
+   absl::string_view full_name;
+   if (absl::StartsWith(repr, kSlotBTagPrefix)) {
+     full_name = absl::StripPrefix(repr, kSlotBTagPrefix);
+@@ -76,7 +79,8 @@ StatusOr<SlotRepr> SlotRepr::CreateFromIob(const absl::string_view repr) {
+   return ret;
+ }
+ 
+-SlotRepr SlotRepr::Create(absl::string_view name, absl::string_view domain,
++SlotRepr SlotRepr::Create(absl::string_view name,
++                          absl::string_view domain,
+                           const bool share_across_domains) {
+   SlotRepr ret;
+   ret.name_ = std::string(name);
+@@ -94,7 +98,9 @@ bool SlotRepr::IsB(const absl::string_view repr) {
+   return absl::StartsWith(repr, kSlotBTagPrefix);
+ }
+ 
+-bool SlotRepr::IsO(const absl::string_view repr) { return repr == kSlotOTag; }
++bool SlotRepr::IsO(const absl::string_view repr) {
++  return repr == kSlotOTag;
++}
+ 
+ bool SlotRepr::operator==(const SlotRepr& other) const {
+   return domain_ == other.domain_ && name_ == other.name_;
+diff --git a/third_party/tflite_support/src/tensorflow_lite_support/cc/task/text/clu_lib/slot_repr.h b/third_party/tflite_support/src/tensorflow_lite_support/cc/task/text/clu_lib/slot_repr.h
+index 04ca49b268917..9a5f68a00bdcd 100644
+--- a/third_party/tflite_support/src/tensorflow_lite_support/cc/task/text/clu_lib/slot_repr.h
++++ b/third_party/tflite_support/src/tensorflow_lite_support/cc/task/text/clu_lib/slot_repr.h
+@@ -20,9 +20,9 @@ limitations under the License.
+ #include <utility>
+ #include <vector>
+ 
+-#include "absl/status/status.h"  // from @com_google_absl
+-#include "absl/status/statusor.h"  // from @com_google_absl
+-#include "absl/strings/str_cat.h"  // from @com_google_absl
++#include "absl/status/status.h"        // from @com_google_absl
++#include "absl/status/statusor.h"      // from @com_google_absl
++#include "absl/strings/str_cat.h"      // from @com_google_absl
+ #include "absl/strings/string_view.h"  // from @com_google_absl
+ #include "tensorflow_lite_support/cc/task/text/clu_lib/constants.h"
+ 
+@@ -68,7 +68,8 @@ class SlotRepr {
+   static absl::StatusOr<SlotRepr> CreateFromIob(const absl::string_view);
+ 
+   // Factory
+-  static SlotRepr Create(absl::string_view name, absl::string_view domain = "",
++  static SlotRepr Create(absl::string_view name,
++                         absl::string_view domain = "",
+                          const bool share_across_domains = true);
+ 
+   // Splits the full_name into domain and slot name.
+diff --git a/third_party/tflite_support/src/tensorflow_lite_support/cc/task/text/clu_lib/slot_tagging_output.cc b/third_party/tflite_support/src/tensorflow_lite_support/cc/task/text/clu_lib/slot_tagging_output.cc
+index 716d29b76a98f..0d5abb443fcc3 100644
+--- a/third_party/tflite_support/src/tensorflow_lite_support/cc/task/text/clu_lib/slot_tagging_output.cc
++++ b/third_party/tflite_support/src/tensorflow_lite_support/cc/task/text/clu_lib/slot_tagging_output.cc
+@@ -17,10 +17,10 @@ limitations under the License.
+ 
+ #include <vector>
+ 
+-#include "absl/status/status.h"  // from @com_google_absl
+-#include "absl/status/statusor.h"  // from @com_google_absl
++#include "absl/status/status.h"        // from @com_google_absl
++#include "absl/status/statusor.h"      // from @com_google_absl
+ #include "absl/strings/string_view.h"  // from @com_google_absl
+-#include "absl/types/span.h"  // from @com_google_absl
++#include "absl/types/span.h"           // from @com_google_absl
+ #include "tensorflow_lite_support/cc/port/status_macros.h"
+ #include "tensorflow_lite_support/cc/task/text/clu_lib/slot_repr.h"
+ 
+@@ -29,7 +29,9 @@ namespace {
+ 
+ absl::StatusOr<std::vector<SlotMentionStruct>>
+ DecodeSlotChunksPredictOnFirstSubword(
+-    int cur_turn_start, int cur_turn_end, int seq_len,
++    int cur_turn_start,
++    int cur_turn_end,
++    int seq_len,
+     const absl::Span<const absl::string_view> tags_as_span,
+     const absl::Span<const float> confidences_as_span,
+     const absl::Span<const std::pair<int, int>> token_alignments_as_span,
+@@ -74,10 +76,12 @@ DecodeSlotChunksPredictOnFirstSubword(
+ }  // namespace
+ 
+ absl::Status SlotModulePopulateResponse(
+-    const std::vector<absl::string_view>& tags, const float* confidences,
++    const std::vector<absl::string_view>& tags,
++    const float* confidences,
+     const std::vector<std::pair<int, int>>& token_alignments,
+     const std::vector<int>& token_turn_ids,
+-    const std::vector<int>& first_subword_indicators, float threshold,
++    const std::vector<int>& first_subword_indicators,
++    float threshold,
+     const std::vector<absl::string_view>& reverse_utterance_list_to_encode,
+     CluResponse* response) {
+   if (token_alignments.size() != token_turn_ids.size()) {
+@@ -104,7 +108,7 @@ absl::Status SlotModulePopulateResponse(
+ 
+     // Prepare the data and decode slot chunks.
+     std::vector<SlotMentionStruct> cur_turn_slot_mentions;
+-      // Decode slot chunks based on first subword tokens in the turn.
++    // Decode slot chunks based on first subword tokens in the turn.
+     ASSIGN_OR_RETURN(cur_turn_slot_mentions,
+                      DecodeSlotChunksPredictOnFirstSubword(
+                          cur_turn_start, cur_turn_end, seq_len, tags_as_span,
+@@ -113,8 +117,10 @@ absl::Status SlotModulePopulateResponse(
+ 
+     // Populate the response.
+     for (const auto& chunk : cur_turn_slot_mentions) {
+-      if (chunk.start == -1 || cur_turn_idx != 0) continue;
+-      if (chunk.confidence < threshold) continue;
++      if (chunk.start == -1 || cur_turn_idx != 0)
++        continue;
++      if (chunk.confidence < threshold)
++        continue;
+       auto slot = response->mutable_noncategorical_slots()->Add();
+       slot->set_slot(chunk.repr.Name());
+       auto extraction = slot->mutable_extraction();
+diff --git a/third_party/tflite_support/src/tensorflow_lite_support/cc/task/text/clu_lib/slot_tagging_output.h b/third_party/tflite_support/src/tensorflow_lite_support/cc/task/text/clu_lib/slot_tagging_output.h
+index b8fc64425634e..7d2b9a1a1fd27 100644
+--- a/third_party/tflite_support/src/tensorflow_lite_support/cc/task/text/clu_lib/slot_tagging_output.h
++++ b/third_party/tflite_support/src/tensorflow_lite_support/cc/task/text/clu_lib/slot_tagging_output.h
+@@ -41,10 +41,12 @@ namespace tflite::task::text::clu {
+ //   Outputs:
+ //     response
+ absl::Status SlotModulePopulateResponse(
+-    const std::vector<absl::string_view>& tags, const float* confidences,
++    const std::vector<absl::string_view>& tags,
++    const float* confidences,
+     const std::vector<std::pair<int, int>>& token_alignments,
+     const std::vector<int>& token_turn_ids,
+-    const std::vector<int>& first_subword_indicators, float threshold,
++    const std::vector<int>& first_subword_indicators,
++    float threshold,
+     const std::vector<absl::string_view>& reverse_utterance_list_to_encode,
+     CluResponse* response);
+ 
+diff --git a/third_party/tflite_support/src/tensorflow_lite_support/cc/task/text/clu_lib/tflite_modules.cc b/third_party/tflite_support/src/tensorflow_lite_support/cc/task/text/clu_lib/tflite_modules.cc
+index c16f5bc02b861..f893f0341c903 100644
+--- a/third_party/tflite_support/src/tensorflow_lite_support/cc/task/text/clu_lib/tflite_modules.cc
++++ b/third_party/tflite_support/src/tensorflow_lite_support/cc/task/text/clu_lib/tflite_modules.cc
+@@ -18,11 +18,11 @@ limitations under the License.
+ #include <memory>
+ #include <utility>
+ 
+-#include "absl/status/status.h"  // from @com_google_absl
+-#include "absl/status/statusor.h"  // from @com_google_absl
+-#include "absl/strings/str_cat.h"  // from @com_google_absl
+-#include "absl/strings/str_join.h"  // from @com_google_absl
+-#include "absl/strings/str_split.h"  // from @com_google_absl
++#include "absl/status/status.h"        // from @com_google_absl
++#include "absl/status/statusor.h"      // from @com_google_absl
++#include "absl/strings/str_cat.h"      // from @com_google_absl
++#include "absl/strings/str_join.h"     // from @com_google_absl
++#include "absl/strings/str_split.h"    // from @com_google_absl
+ #include "absl/strings/string_view.h"  // from @com_google_absl
+ #include "tensorflow/lite/kernels/kernel_util.h"
+ #include "tensorflow/lite/string_util.h"
+@@ -39,10 +39,14 @@ namespace tflite::task::text::clu {
+ // tensors by concatenating the current utterance with history turns. It also
+ // sets utterance_turn_id_seq for post-processing.
+ absl::Status PopulateInputTextTensorForBERT(
+-    const CluRequest& request, int token_id_tensor_idx,
+-    int token_mask_tensor_idx, int token_type_id_tensor_idx,
++    const CluRequest& request,
++    int token_id_tensor_idx,
++    int token_mask_tensor_idx,
++    int token_type_id_tensor_idx,
+     const tflite::support::text::tokenizer::BertTokenizer* tokenizer,
+-    size_t max_seq_len, int max_history_turns, tflite::Interpreter* interpreter,
++    size_t max_seq_len,
++    int max_history_turns,
++    tflite::Interpreter* interpreter,
+     Artifacts* artifacts) {
+   size_t seq_len;
+   int64_t* tokens_tensor =
+@@ -139,7 +143,8 @@ absl::Status AbstractModule::Init(tflite::Interpreter* interpreter,
+ }
+ 
+ absl::StatusOr<std::unique_ptr<AbstractModule>> UtteranceSeqModule::Create(
+-    tflite::Interpreter* interpreter, const TensorIndexMap* tensor_index_map,
++    tflite::Interpreter* interpreter,
++    const TensorIndexMap* tensor_index_map,
+     const BertCluAnnotatorOptions* options,
+     const tflite::support::text::tokenizer::BertTokenizer* tokenizer) {
+   auto out = std::make_unique<UtteranceSeqModule>();
+@@ -187,7 +192,8 @@ AbstractModule::NamesAndConfidencesFromOutput(int names_tensor_idx,
+ }
+ 
+ absl::StatusOr<std::unique_ptr<AbstractModule>> DomainModule::Create(
+-    tflite::Interpreter* interpreter, const TensorIndexMap* tensor_index_map,
++    tflite::Interpreter* interpreter,
++    const TensorIndexMap* tensor_index_map,
+     const BertCluAnnotatorOptions* options) {
+   auto out = std::make_unique<DomainModule>();
+   out->tensor_index_map_ = tensor_index_map;
+@@ -204,7 +210,8 @@ absl::Status DomainModule::Postprocess(Artifacts* artifacts,
+                                     tensor_index_map_->domain_scores_idx));
+   const auto& [names, confidences] = t_output;
+   for (int i = 0; i < names.size(); ++i) {
+-    if (confidences[i] < domain_threshold_) continue;
++    if (confidences[i] < domain_threshold_)
++      continue;
+     auto domain = response->add_domains();
+     // Conversion to string is needed due to portable_proto generated code
+     const std::string names_i(names[i]);
+@@ -215,7 +222,8 @@ absl::Status DomainModule::Postprocess(Artifacts* artifacts,
+ }
+ 
+ absl::StatusOr<std::unique_ptr<AbstractModule>> IntentModule::Create(
+-    tflite::Interpreter* interpreter, const TensorIndexMap* tensor_index_map,
++    tflite::Interpreter* interpreter,
++    const TensorIndexMap* tensor_index_map,
+     const BertCluAnnotatorOptions* options) {
+   auto out = std::make_unique<IntentModule>();
+   out->tensor_index_map_ = tensor_index_map;
+@@ -239,7 +247,8 @@ absl::Status IntentModule::Postprocess(Artifacts* artifacts,
+     std::vector<absl::string_view> parts = absl::StrSplit(name.Name(), '=');
+     if (parts.size() == 2) {
+       // The name is like 'xxx=yyy'. It's a categorical slot.
+-      if (confidences[i] < categorical_slot_threshold_) continue;
++      if (confidences[i] < categorical_slot_threshold_)
++        continue;
+       auto new_categorical_slot = response->mutable_categorical_slots()->Add();
+ 
+       const auto slot = std::string(parts[0]);
+@@ -251,7 +260,8 @@ absl::Status IntentModule::Postprocess(Artifacts* artifacts,
+       new_categorical_slot_prediction->set_score(confidences[i]);
+     } else {
+       // It's an intent.
+-      if (confidences[i] < intent_threshold_) continue;
++      if (confidences[i] < intent_threshold_)
++        continue;
+       auto new_intent = response->mutable_intents()->Add();
+       new_intent->set_display_name(name.Name());
+       new_intent->set_score(confidences[i]);
+@@ -261,7 +271,8 @@ absl::Status IntentModule::Postprocess(Artifacts* artifacts,
+ }
+ 
+ absl::StatusOr<std::unique_ptr<AbstractModule>> SlotModule::Create(
+-    tflite::Interpreter* interpreter, const TensorIndexMap* tensor_index_map,
++    tflite::Interpreter* interpreter,
++    const TensorIndexMap* tensor_index_map,
+     const BertCluAnnotatorOptions* options) {
+   auto out = std::make_unique<SlotModule>();
+   out->tensor_index_map_ = tensor_index_map;
+diff --git a/third_party/tflite_support/src/tensorflow_lite_support/cc/task/text/clu_lib/tflite_modules.h b/third_party/tflite_support/src/tensorflow_lite_support/cc/task/text/clu_lib/tflite_modules.h
+index 5a9f183b8ca4e..eecd65fc495bf 100644
+--- a/third_party/tflite_support/src/tensorflow_lite_support/cc/task/text/clu_lib/tflite_modules.h
++++ b/third_party/tflite_support/src/tensorflow_lite_support/cc/task/text/clu_lib/tflite_modules.h
+@@ -16,7 +16,7 @@ limitations under the License.
+ #ifndef TENSORFLOW_LITE_SUPPORT_CC_TASK_TEXT_CLU_LIB_TFLITE_MODULES_H_
+ #define TENSORFLOW_LITE_SUPPORT_CC_TASK_TEXT_CLU_LIB_TFLITE_MODULES_H_
+ 
+-#include "absl/status/statusor.h"  // from @com_google_absl
++#include "absl/status/statusor.h"      // from @com_google_absl
+ #include "absl/strings/string_view.h"  // from @com_google_absl
+ #include "tensorflow/lite/interpreter.h"
+ #include "tensorflow_lite_support/cc/task/text/proto/bert_clu_annotator_options_proto_inc.h"
+@@ -85,7 +85,8 @@ class AbstractModule {
+   // output tensors.
+   // The tensors are assumed to be of shape [1, max_seq_len]
+   absl::StatusOr<NamesAndConfidences> NamesAndConfidencesFromOutput(
+-      int names_tensor_idx, int scores_tensor_idx) const;
++      int names_tensor_idx,
++      int scores_tensor_idx) const;
+ 
+   // TFLite interpreter
+   Interpreter* interpreter_ = nullptr;
+@@ -98,7 +99,8 @@ class AbstractModule {
+ class UtteranceSeqModule : public AbstractModule {
+  public:
+   static absl::StatusOr<std::unique_ptr<AbstractModule>> Create(
+-      Interpreter* interpreter, const TensorIndexMap* tensor_index_map,
++      Interpreter* interpreter,
++      const TensorIndexMap* tensor_index_map,
+       const BertCluAnnotatorOptions* options,
+       const tflite::support::text::tokenizer::BertTokenizer* tokenizer);
+ 
+@@ -116,7 +118,8 @@ class UtteranceSeqModule : public AbstractModule {
+ class DomainModule : public AbstractModule {
+  public:
+   static absl::StatusOr<std::unique_ptr<AbstractModule>> Create(
+-      Interpreter* interpreter, const TensorIndexMap* tensor_index_map,
++      Interpreter* interpreter,
++      const TensorIndexMap* tensor_index_map,
+       const BertCluAnnotatorOptions* options);
+ 
+   absl::Status Postprocess(Artifacts* artifacts,
+@@ -130,7 +133,8 @@ class DomainModule : public AbstractModule {
+ class IntentModule : public AbstractModule {
+  public:
+   static absl::StatusOr<std::unique_ptr<AbstractModule>> Create(
+-      Interpreter* interpreter, const TensorIndexMap* tensor_index_map,
++      Interpreter* interpreter,
++      const TensorIndexMap* tensor_index_map,
+       const BertCluAnnotatorOptions* options);
+ 
+   absl::Status Postprocess(Artifacts* artifacts,
+@@ -145,7 +149,8 @@ class IntentModule : public AbstractModule {
+ class SlotModule : public AbstractModule {
+  public:
+   static absl::StatusOr<std::unique_ptr<AbstractModule>> Create(
+-      Interpreter* interpreter, const TensorIndexMap* tensor_index_map,
++      Interpreter* interpreter,
++      const TensorIndexMap* tensor_index_map,
+       const BertCluAnnotatorOptions* options);
+ 
+   absl::Status Postprocess(Artifacts* artifacts,
+diff --git a/third_party/tflite_support/src/tensorflow_lite_support/cc/task/text/clu_lib/tflite_test_utils.cc b/third_party/tflite_support/src/tensorflow_lite_support/cc/task/text/clu_lib/tflite_test_utils.cc
+index 543958ce93994..30d2bd7513909 100644
+--- a/third_party/tflite_support/src/tensorflow_lite_support/cc/task/text/clu_lib/tflite_test_utils.cc
++++ b/third_party/tflite_support/src/tensorflow_lite_support/cc/task/text/clu_lib/tflite_test_utils.cc
+@@ -24,7 +24,8 @@ namespace tflite::task::text::clu {
+ 
+ template <>
+ void PopulateTfLiteTensorValue<std::string>(
+-    const std::initializer_list<std::string> values, TfLiteTensor* tensor) {
++    const std::initializer_list<std::string> values,
++    TfLiteTensor* tensor) {
+   tflite::DynamicBuffer buf;
+   for (const std::string& s : values) {
+     buf.AddString(s.data(), s.length());
+@@ -38,13 +39,18 @@ size_t NumTotalFromShape(const std::initializer_list<int>& shape) {
+     num_total = 1;
+   else
+     num_total = 0;
+-  for (const int dim : shape) num_total *= dim;
++  for (const int dim : shape)
++    num_total *= dim;
+   return num_total;
+ }
+ 
+-TfLiteTensor* UniqueTfLiteTensor::get() { return tensor_; }
++TfLiteTensor* UniqueTfLiteTensor::get() {
++  return tensor_;
++}
+ 
+-UniqueTfLiteTensor::~UniqueTfLiteTensor() { TfLiteTensorFree(tensor_); }
++UniqueTfLiteTensor::~UniqueTfLiteTensor() {
++  TfLiteTensorFree(tensor_);
++}
+ 
+ template <>
+ TfLiteType TypeToTfLiteType<std::string>() {
+diff --git a/third_party/tflite_support/src/tensorflow_lite_support/cc/task/text/clu_lib/tflite_test_utils.h b/third_party/tflite_support/src/tensorflow_lite_support/cc/task/text/clu_lib/tflite_test_utils.h
+index 3a393c5223369..f19d2366fc092 100644
+--- a/third_party/tflite_support/src/tensorflow_lite_support/cc/task/text/clu_lib/tflite_test_utils.h
++++ b/third_party/tflite_support/src/tensorflow_lite_support/cc/task/text/clu_lib/tflite_test_utils.h
+@@ -64,7 +64,8 @@ size_t NumTotalFromShape(const std::initializer_list<int>& shape);
+ 
+ template <>
+ void PopulateTfLiteTensorValue<std::string>(
+-    const std::initializer_list<std::string> values, TfLiteTensor* tensor);
++    const std::initializer_list<std::string> values,
++    TfLiteTensor* tensor);
+ 
+ template <typename T>
+ TfLiteType TypeToTfLiteType() {
+@@ -84,7 +85,8 @@ void ReallocDynamicTensor(const std::initializer_list<int> shape,
+   TfLiteIntArray* shape_arr = TfLiteIntArrayCreate(shape.size());
+   int i = 0;
+   const size_t num_total = NumTotalFromShape(shape);
+-  for (const int dim : shape) shape_arr->data[i++] = dim;
++  for (const int dim : shape)
++    shape_arr->data[i++] = dim;
+   tensor->dims = shape_arr;
+   if (tensor->type != kTfLiteString) {
+     TfLiteTensorRealloc(num_total * sizeof(T), tensor);
 diff --git a/third_party/tflite_support/src/tensorflow_lite_support/cc/task/text/nlclassifier/nl_classifier.cc b/third_party/tflite_support/src/tensorflow_lite_support/cc/task/text/nlclassifier/nl_classifier.cc
-index d03296d2d09b5..542d153cb1262 100644
+index 6d80966ce89ec..2409dfd4c7c8e 100644
 --- a/third_party/tflite_support/src/tensorflow_lite_support/cc/task/text/nlclassifier/nl_classifier.cc
 +++ b/third_party/tflite_support/src/tensorflow_lite_support/cc/task/text/nlclassifier/nl_classifier.cc
 @@ -22,10 +22,10 @@ limitations under the License.
@@ -2257,7 +3030,7 @@ index d03296d2d09b5..542d153cb1262 100644
  #include "tensorflow/lite/c/common.h"
  #include "tensorflow/lite/core/api/op_resolver.h"
  #include "tensorflow/lite/kernels/internal/tensor_ctypes.h"
-@@ -120,7 +120,8 @@ std::vector<Category> NLClassifier::Classify(const std::string& text) {
+@@ -119,7 +119,8 @@ StatusOr<std::vector<Category>> NLClassifier::Classify(
  }
  
  absl::Status NLClassifier::Preprocess(
@@ -2267,7 +3040,7 @@ index d03296d2d09b5..542d153cb1262 100644
    return preprocessor_->Preprocess(input);
  }
  
-@@ -300,7 +301,8 @@ StatusOr<std::unique_ptr<NLClassifier>> NLClassifier::CreateFromOptions(
+@@ -299,7 +300,8 @@ StatusOr<std::unique_ptr<NLClassifier>> NLClassifier::CreateFromOptions(
  
  StatusOr<std::unique_ptr<NLClassifier>>
  NLClassifier::CreateFromBufferAndOptions(
@@ -2277,7 +3050,7 @@ index d03296d2d09b5..542d153cb1262 100644
      const NLClassifierOptions& options,
      std::unique_ptr<tflite::OpResolver> resolver) {
    std::unique_ptr<NLClassifier> nl_classifier;
-@@ -313,7 +315,8 @@ NLClassifier::CreateFromBufferAndOptions(
+@@ -312,7 +314,8 @@ NLClassifier::CreateFromBufferAndOptions(
  }
  
  StatusOr<std::unique_ptr<NLClassifier>> NLClassifier::CreateFromFileAndOptions(
@@ -2287,7 +3060,7 @@ index d03296d2d09b5..542d153cb1262 100644
      std::unique_ptr<tflite::OpResolver> resolver) {
    std::unique_ptr<NLClassifier> nl_classifier;
    ASSIGN_OR_RETURN(nl_classifier,
-@@ -324,7 +327,8 @@ StatusOr<std::unique_ptr<NLClassifier>> NLClassifier::CreateFromFileAndOptions(
+@@ -323,7 +326,8 @@ StatusOr<std::unique_ptr<NLClassifier>> NLClassifier::CreateFromFileAndOptions(
  }
  
  StatusOr<std::unique_ptr<NLClassifier>> NLClassifier::CreateFromFdAndOptions(
@@ -2298,7 +3071,7 @@ index d03296d2d09b5..542d153cb1262 100644
    std::unique_ptr<NLClassifier> nl_classifier;
    ASSIGN_OR_RETURN(nl_classifier,
 diff --git a/third_party/tflite_support/src/tensorflow_lite_support/cc/task/text/nlclassifier/nl_classifier.h b/third_party/tflite_support/src/tensorflow_lite_support/cc/task/text/nlclassifier/nl_classifier.h
-index ab5126348f380..30fa25044e1cf 100644
+index 815bbf92840e2..be1547cf536d3 100644
 --- a/third_party/tflite_support/src/tensorflow_lite_support/cc/task/text/nlclassifier/nl_classifier.h
 +++ b/third_party/tflite_support/src/tensorflow_lite_support/cc/task/text/nlclassifier/nl_classifier.h
 @@ -23,8 +23,8 @@ limitations under the License.
@@ -2342,7 +3115,7 @@ index ab5126348f380..30fa25044e1cf 100644
        std::unique_ptr<tflite::OpResolver> resolver =
            absl::make_unique<tflite_shims::ops::builtin::BuiltinOpResolver>());
  
-@@ -177,7 +180,8 @@ class NLClassifier : public core::BaseTaskApi<std::vector<core::Category>,
+@@ -178,7 +181,8 @@ class NLClassifier : public core::BaseTaskApi<std::vector<core::Category>,
        const std::vector<TensorType*>& tensors,
        const flatbuffers::Vector<flatbuffers::Offset<TensorMetadata>>*
            metadata_array,
@@ -2352,7 +3125,7 @@ index ab5126348f380..30fa25044e1cf 100644
      int tensor_index = FindTensorIndex(tensors, metadata_array, name, index);
      return tensor_index >= 0 && tensor_index < tensors.size()
                 ? tensors[tensor_index]
-@@ -192,7 +196,8 @@ class NLClassifier : public core::BaseTaskApi<std::vector<core::Category>,
+@@ -193,7 +197,8 @@ class NLClassifier : public core::BaseTaskApi<std::vector<core::Category>,
        const std::vector<TensorType*>& tensors,
        const flatbuffers::Vector<flatbuffers::Offset<TensorMetadata>>*
            metadata_array,
@@ -2929,22 +3702,20 @@ index 3f51f4962738e..e255110d9dc66 100644
    // Prebuilt list of ColoredLabel attached to each Segmentation result. The
    // i-th item in this list corresponds to the i-th label map item.
 diff --git a/third_party/tflite_support/src/tensorflow_lite_support/cc/task/vision/object_detector.cc b/third_party/tflite_support/src/tensorflow_lite_support/cc/task/vision/object_detector.cc
-index 0a4d5f7553ee9..ade2de74cf728 100644
+index 0a4d5f7553ee9..00775015515ac 100644
 --- a/third_party/tflite_support/src/tensorflow_lite_support/cc/task/vision/object_detector.cc
 +++ b/third_party/tflite_support/src/tensorflow_lite_support/cc/task/vision/object_detector.cc
-@@ -20,9 +20,9 @@ limitations under the License.
+@@ -20,8 +20,8 @@ limitations under the License.
  #include <vector>
  
  #include <glog/logging.h>
 -#include "absl/memory/memory.h"  // from @com_google_absl
 -#include "absl/status/status.h"  // from @com_google_absl
--#include "absl/strings/str_format.h"  // from @com_google_absl
-+#include "absl/memory/memory.h"        // from @com_google_absl
-+#include "absl/status/status.h"        // from @com_google_absl
-+#include "absl/strings/str_format.h"   // from @com_google_absl
++#include "absl/memory/memory.h"       // from @com_google_absl
++#include "absl/status/status.h"       // from @com_google_absl
+ #include "absl/strings/str_format.h"  // from @com_google_absl
  #include "absl/strings/string_view.h"  // from @com_google_absl
  #include "tensorflow/lite/c/common.h"
- #include "tensorflow_lite_support/cc/common.h"
 @@ -141,7 +141,8 @@ StatusOr<const BoundingBoxProperties*> GetBoundingBoxProperties(
  
  StatusOr<std::vector<LabelMapItem>> GetLabelMapIfAny(
@@ -3498,7 +4269,7 @@ index ec0c3119ea4e8..59da2206bb06f 100644
  
    // Flips `buffer` horizontally.
 diff --git a/third_party/tflite_support/src/tensorflow_lite_support/cc/task/vision/utils/libyuv_frame_buffer_utils.cc b/third_party/tflite_support/src/tensorflow_lite_support/cc/task/vision/utils/libyuv_frame_buffer_utils.cc
-index 6fd3ca81c984c..a00c8223fac99 100644
+index 53671cb88de51..a00c8223fac99 100644
 --- a/third_party/tflite_support/src/tensorflow_lite_support/cc/task/vision/utils/libyuv_frame_buffer_utils.cc
 +++ b/third_party/tflite_support/src/tensorflow_lite_support/cc/task/vision/utils/libyuv_frame_buffer_utils.cc
 @@ -20,10 +20,10 @@ limitations under the License.
@@ -3666,12 +4437,9 @@ index 6fd3ca81c984c..a00c8223fac99 100644
    FrameBuffer::Dimension crop_dimension = GetCropDimension(x0, x1, y0, y1);
    if (crop_dimension == output_buffer->dimension()) {
      return CropPlane(buffer, x0, y0, x1, y1, output_buffer);
-@@ -1326,10 +1354,13 @@ absl::Status CropResize(const FrameBuffer& buffer, int x0, int y0, int x1,
-   }
- }
+@@ -1328,8 +1356,11 @@ absl::Status CropResize(const FrameBuffer& buffer, int x0, int y0, int x1,
  
--} // namespace
-+}  // namespace
+ }  // namespace
  
 -absl::Status LibyuvFrameBufferUtils::Crop(const FrameBuffer& buffer, int x0,
 -                                          int y0, int x1, int y1,
@@ -3953,6 +4721,83 @@ index 252441df1cb59..a70dab7782044 100644
    }
  
    std::vector<QaAnswer> answer = question_answerer->Answer(kContext, kQuestion);
+diff --git a/third_party/tflite_support/src/tensorflow_lite_support/cc/test/task/text/clu_lib/bert_utils_test.cc b/third_party/tflite_support/src/tensorflow_lite_support/cc/test/task/text/clu_lib/bert_utils_test.cc
+index 3d98fe16b07e9..6fd9508fd1ba0 100644
+--- a/third_party/tflite_support/src/tensorflow_lite_support/cc/test/task/text/clu_lib/bert_utils_test.cc
++++ b/third_party/tflite_support/src/tensorflow_lite_support/cc/test/task/text/clu_lib/bert_utils_test.cc
+@@ -128,10 +128,10 @@ TEST_F(BertUtilsTestClass, ZeroHistoryNotTrucated) {
+   std::vector<int> subword_indicators;
+   std::vector<int> segment_id_list;
+   std::vector<int> turn_id_list;
+-  SUPPORT_ASSERT_OK(BertPreprocessing(tokenizer_.get(), conversations_in_reverse_order,
+-                              max_seq_length, max_history_turns, &token_ids,
+-                              &token_alignments, &subword_indicators,
+-                              &segment_id_list, &turn_id_list));
++  SUPPORT_ASSERT_OK(BertPreprocessing(
++      tokenizer_.get(), conversations_in_reverse_order, max_seq_length,
++      max_history_turns, &token_ids, &token_alignments, &subword_indicators,
++      &segment_id_list, &turn_id_list));
+   EXPECT_THAT(token_ids, expected_token_ids);
+   EXPECT_THAT(token_alignments, expected_token_alignments);
+   EXPECT_THAT(subword_indicators, expected_first_subword_indicators);
+@@ -193,10 +193,10 @@ TEST_F(BertUtilsTestClass, ZeroHistoryTrucated) {
+   std::vector<int> subword_indicators;
+   std::vector<int> segment_id_list;
+   std::vector<int> turn_id_list;
+-  SUPPORT_ASSERT_OK(BertPreprocessing(tokenizer_.get(), conversations_in_reverse_order,
+-                              max_seq_length, max_history_turns, &token_ids,
+-                              &token_alignments, &subword_indicators,
+-                              &segment_id_list, &turn_id_list));
++  SUPPORT_ASSERT_OK(BertPreprocessing(
++      tokenizer_.get(), conversations_in_reverse_order, max_seq_length,
++      max_history_turns, &token_ids, &token_alignments, &subword_indicators,
++      &segment_id_list, &turn_id_list));
+   EXPECT_THAT(token_ids, expected_token_ids);
+   EXPECT_THAT(token_alignments, expected_token_alignments);
+   EXPECT_THAT(subword_indicators, expected_first_subword_indicators);
+@@ -342,10 +342,10 @@ TEST_F(BertUtilsTestClass, WithHistoryNotTrucated) {
+   std::vector<int> subword_indicators;
+   std::vector<int> segment_id_list;
+   std::vector<int> turn_id_list;
+-  SUPPORT_ASSERT_OK(BertPreprocessing(tokenizer_.get(), conversations_in_reverse_order,
+-                              max_seq_length, max_history_turns, &token_ids,
+-                              &token_alignments, &subword_indicators,
+-                              &segment_id_list, &turn_id_list));
++  SUPPORT_ASSERT_OK(BertPreprocessing(
++      tokenizer_.get(), conversations_in_reverse_order, max_seq_length,
++      max_history_turns, &token_ids, &token_alignments, &subword_indicators,
++      &segment_id_list, &turn_id_list));
+   EXPECT_THAT(token_ids, expected_token_ids);
+   EXPECT_THAT(token_alignments, expected_token_alignments);
+   EXPECT_THAT(subword_indicators, expected_first_subword_indicators);
+@@ -458,10 +458,10 @@ TEST_F(BertUtilsTestClass, WithHistoryTrucated) {
+   std::vector<int> subword_indicators;
+   std::vector<int> segment_id_list;
+   std::vector<int> turn_id_list;
+-  SUPPORT_ASSERT_OK(BertPreprocessing(tokenizer_.get(), conversations_in_reverse_order,
+-                              max_seq_length, max_history_turns, &token_ids,
+-                              &token_alignments, &subword_indicators,
+-                              &segment_id_list, &turn_id_list));
++  SUPPORT_ASSERT_OK(BertPreprocessing(
++      tokenizer_.get(), conversations_in_reverse_order, max_seq_length,
++      max_history_turns, &token_ids, &token_alignments, &subword_indicators,
++      &segment_id_list, &turn_id_list));
+   EXPECT_THAT(token_ids, expected_token_ids);
+   EXPECT_THAT(token_alignments, expected_token_alignments);
+   EXPECT_THAT(subword_indicators, expected_first_subword_indicators);
+diff --git a/third_party/tflite_support/src/tensorflow_lite_support/cc/test/task/text/clu_lib/intent_repr_test.cc b/third_party/tflite_support/src/tensorflow_lite_support/cc/test/task/text/clu_lib/intent_repr_test.cc
+index 8341751bbbac2..0501ec4a669b5 100644
+--- a/third_party/tflite_support/src/tensorflow_lite_support/cc/test/task/text/clu_lib/intent_repr_test.cc
++++ b/third_party/tflite_support/src/tensorflow_lite_support/cc/test/task/text/clu_lib/intent_repr_test.cc
+@@ -29,7 +29,7 @@ TEST(IntentClassification, IntentRepr) {
+ 
+ TEST(IntentClassification, IntentRepr2) {
+   SUPPORT_ASSERT_OK_AND_ASSIGN(const auto intent_repr,
+-                       IntentRepr::CreateFromFullName("REQUEST"));
++                               IntentRepr::CreateFromFullName("REQUEST"));
+   EXPECT_EQ(intent_repr.Name(), "REQUEST");
+   EXPECT_EQ(intent_repr.Domain(), "");
+ }
 diff --git a/third_party/tflite_support/src/tensorflow_lite_support/cc/test/task/text/nlclassifier/nl_classifier_test.cc b/third_party/tflite_support/src/tensorflow_lite_support/cc/test/task/text/nlclassifier/nl_classifier_test.cc
 index 67b03c3a45323..81198cfca30fc 100644
 --- a/third_party/tflite_support/src/tensorflow_lite_support/cc/test/task/text/nlclassifier/nl_classifier_test.cc
@@ -6675,15 +7520,10 @@ index 534fbef4aff2d..6166bc149bc00 100644
  namespace tflite {
  namespace ops {
 diff --git a/third_party/tflite_support/src/tensorflow_lite_support/examples/task/audio/desktop/audio_classifier_demo.cc b/third_party/tflite_support/src/tensorflow_lite_support/examples/task/audio/desktop/audio_classifier_demo.cc
-index 7447870046f48..6339ed705bcb9 100644
+index 7447870046f48..904673a95b799 100644
 --- a/third_party/tflite_support/src/tensorflow_lite_support/examples/task/audio/desktop/audio_classifier_demo.cc
 +++ b/third_party/tflite_support/src/tensorflow_lite_support/examples/task/audio/desktop/audio_classifier_demo.cc
-@@ -24,22 +24,30 @@ limitations under the License.
- #include <iostream>
- #include <limits>
- 
--#include "absl/flags/flag.h"  // from @com_google_absl
-+#include "absl/flags/flag.h"   // from @com_google_absl
+@@ -28,18 +28,26 @@ limitations under the License.
  #include "absl/flags/parse.h"  // from @com_google_absl
  #include "tensorflow_lite_support/examples/task/audio/desktop/audio_classifier_lib.h"
  
@@ -7599,6 +8439,110 @@ index d5b97506ec508..4d7fc0c0503fa 100644
  
  @end
  
+diff --git a/third_party/tflite_support/src/tensorflow_lite_support/ios/task/processor/sources/TFLSegmentationResult+Helpers.h b/third_party/tflite_support/src/tensorflow_lite_support/ios/task/processor/sources/TFLSegmentationResult+Helpers.h
+index c979fda53c70b..0a85efe2877bb 100644
+--- a/third_party/tflite_support/src/tensorflow_lite_support/ios/task/processor/sources/TFLSegmentationResult+Helpers.h
++++ b/third_party/tflite_support/src/tensorflow_lite_support/ios/task/processor/sources/TFLSegmentationResult+Helpers.h
+@@ -28,8 +28,8 @@ NS_ASSUME_NONNULL_BEGIN
+  * @return Segmentation Result of type TFLSegmentationResult to be returned by
+  * inference methods of the iOS TF Lite Task Image Segmentation task.
+  */
+-+ (TFLSegmentationResult *)segmentationResultWithCResult:
+-    (TfLiteSegmentationResult *)cSegmentationResult;
+++ (TFLSegmentationResult*)segmentationResultWithCResult:
++    (TfLiteSegmentationResult*)cSegmentationResult;
+ @end
+ 
+ NS_ASSUME_NONNULL_END
+diff --git a/third_party/tflite_support/src/tensorflow_lite_support/ios/task/processor/sources/TFLSegmentationResult.h b/third_party/tflite_support/src/tensorflow_lite_support/ios/task/processor/sources/TFLSegmentationResult.h
+index fddc44d0f1dd1..f75aed592b351 100644
+--- a/third_party/tflite_support/src/tensorflow_lite_support/ios/task/processor/sources/TFLSegmentationResult.h
++++ b/third_party/tflite_support/src/tensorflow_lite_support/ios/task/processor/sources/TFLSegmentationResult.h
+@@ -1,11 +1,11 @@
+ /* Copyright 2022 The TensorFlow Authors. All Rights Reserved.
+- 
++
+  Licensed under the Apache License, Version 2.0 (the "License");
+  you may not use this file except in compliance with the License.
+  You may obtain a copy of the License at
+- 
++
+  http://www.apache.org/licenses/LICENSE-2.0
+- 
++
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+@@ -22,7 +22,7 @@ NS_ASSUME_NONNULL_BEGIN
+ /**
+  * Confidence masks of size `width` x `height` for any one class.
+  */
+-@property(nonatomic, assign) float *mask;
++@property(nonatomic, assign) float* mask;
+ 
+ /**
+  * The width of the mask. This is an intrinsic parameter of the model being
+@@ -46,7 +46,7 @@ NS_ASSUME_NONNULL_BEGIN
+  * The value of each pixel in this mask represents the class to which the
+  * pixel belongs.
+  */
+-@property(nonatomic, assign) UInt8 *mask;
++@property(nonatomic, assign) UInt8* mask;
+ 
+ /**
+  * The width of the mask. This is an intrinsic parameter of the model being
+@@ -73,13 +73,13 @@ NS_ASSUME_NONNULL_BEGIN
+ /** The class name, as provided in the label map packed in the TFLite Model
+  * Metadata.
+  */
+-@property(nonatomic, copy) NSString *label;
++@property(nonatomic, copy) NSString* label;
+ 
+ /** The display name, as provided in the label map (if available) packed in
+  * the TFLite Model Metadata. See `display_names_locale` field in
+  * ImageSegmenterOptions.
+  */
+-@property(nonatomic, copy) NSString *displayName;
++@property(nonatomic, copy) NSString* displayName;
+ 
+ @end
+ 
+@@ -93,14 +93,15 @@ NS_ASSUME_NONNULL_BEGIN
+  * this particular class.
+  * This property is mutually exclusive with `categoryMask`.
+  */
+-@property(nonatomic, copy, nullable) NSArray<TFLConfidenceMask *> *confidenceMasks;
++@property(nonatomic, copy, nullable)
++    NSArray<TFLConfidenceMask*>* confidenceMasks;
+ 
+ /** Holds the category mask  .
+  * The value of each pixel in this mask represents the class to which the
+  * pixel belongs.
+  * This property is mutually exclusive with `confidenceMasks`.
+  */
+-@property(nonatomic, copy, nullable) TFLCategoryMask *categoryMask;
++@property(nonatomic, copy, nullable) TFLCategoryMask* categoryMask;
+ 
+ /**
+  * The list of colored labels for all the supported categories (classes).
+@@ -109,7 +110,7 @@ NS_ASSUME_NONNULL_BEGIN
+  * `colored_labels[i]`, `confidence_masks` indices, i.e. `confidence_masks[i]`
+  * is associated with `colored_labels[i]`.
+  */
+-@property(nonatomic, copy) NSArray<TFLColoredLabel *> *coloredLabels;
++@property(nonatomic, copy) NSArray<TFLColoredLabel*>* coloredLabels;
+ 
+ @end
+ 
+@@ -122,7 +123,7 @@ NS_ASSUME_NONNULL_BEGIN
+  * e.g. instance segmentation models, which may return one segmentation per
+  * object.
+  */
+-@property(nonatomic, copy) NSArray<TFLSegmentation *> *segmentations;
++@property(nonatomic, copy) NSArray<TFLSegmentation*>* segmentations;
+ 
+ @end
+ 
 diff --git a/third_party/tflite_support/src/tensorflow_lite_support/ios/task/text/nlclassifier/Sources/TFLBertNLClassifier.h b/third_party/tflite_support/src/tensorflow_lite_support/ios/task/text/nlclassifier/Sources/TFLBertNLClassifier.h
 index 99de5ad04febf..ac81a15ac11c6 100644
 --- a/third_party/tflite_support/src/tensorflow_lite_support/ios/task/text/nlclassifier/Sources/TFLBertNLClassifier.h
@@ -7842,6 +8786,117 @@ index 5a161f2673632..1789508d6efda 100644
 +                                                    error:(NSError* _Nullable*)
 +                                                              error
      NS_SWIFT_NAME(classify(gmlImage:regionOfInterest:));
+ 
+ - (instancetype)init NS_UNAVAILABLE;
+diff --git a/third_party/tflite_support/src/tensorflow_lite_support/ios/task/vision/sources/TFLImageSegmenter.h b/third_party/tflite_support/src/tensorflow_lite_support/ios/task/vision/sources/TFLImageSegmenter.h
+index 48bf54e285930..eb0d565884a22 100644
+--- a/third_party/tflite_support/src/tensorflow_lite_support/ios/task/vision/sources/TFLImageSegmenter.h
++++ b/third_party/tflite_support/src/tensorflow_lite_support/ios/task/vision/sources/TFLImageSegmenter.h
+@@ -20,10 +20,10 @@
+ NS_ASSUME_NONNULL_BEGIN
+ 
+ /**
+- * Specifies the type of output segmentation mask to be returned as a result 
+- * of the image segmentation operation. This allows specifying the type of 
+- * post-processing to perform on the raw model results 
+- * 
++ * Specifies the type of output segmentation mask to be returned as a result
++ * of the image segmentation operation. This allows specifying the type of
++ * post-processing to perform on the raw model results
++ *
+  * @seealso TfLiteSegmentationResult for more.
+  */
+ typedef NS_ENUM(NSUInteger, TFLOutputType) {
+@@ -31,13 +31,13 @@ typedef NS_ENUM(NSUInteger, TFLOutputType) {
+   TFLUnspecifiedOutputType,
+ 
+   /**
+-   * Gives a single output mask where each pixel represents the class which 
++   * Gives a single output mask where each pixel represents the class which
+    * the pixel in the original image was predicted to belong to.
+    */
+   TFLCategoryMaskOutputType,
+ 
+   /**
+-   * Gives a list of output masks where, for each mask, each pixel represents 
++   * Gives a list of output masks where, for each mask, each pixel represents
+    * the prediction confidence, usually in the [0, 1] range.
+    */
+   TFLConfidenceMasksOutputType,
+@@ -53,33 +53,34 @@ typedef NS_ENUM(NSUInteger, TFLOutputType) {
+  * Base options that is used for creation of any type of task.
+  * @seealso TFLBaseOptions
+  */
+-@property(nonatomic, copy) TFLBaseOptions *baseOptions;
++@property(nonatomic, copy) TFLBaseOptions* baseOptions;
+ 
+ /**
+- * Specifies the type of output segmentation mask to be returned as a result 
++ * Specifies the type of output segmentation mask to be returned as a result
+  * of the image segmentation operation.
+  * @seealso TFLOutputType
+  */
+ @property(nonatomic, assign) TFLOutputType outputType;
+ 
+ /** Display names local for display names*/
+-@property(nonatomic, copy) NSString *displayNamesLocale;
++@property(nonatomic, copy) NSString* displayNamesLocale;
+ 
+ /**
+  * Initializes TFLImageSegmenterOptions with the model path set to the specified
+  * path to a model file.
+- * @description The external model file, must be a single standalone TFLite 
+- * file. It could be packed with TFLite Model Metadata[1] and associated files 
+- * if exist. Fail to provide the necessary metadata and associated files might 
+- * result in errors. Check the [documentation](https://www.tensorflow.org/lite/convert/metadata) 
+- * for each task about the specific requirement.
+- * 
++ * @description The external model file, must be a single standalone TFLite
++ * file. It could be packed with TFLite Model Metadata[1] and associated files
++ * if exist. Fail to provide the necessary metadata and associated files might
++ * result in errors. Check the
++ * [documentation](https://www.tensorflow.org/lite/convert/metadata) for each
++ * task about the specific requirement.
++ *
+  * @param modelPath Path to a TFLite model file.
+- * 
++ *
+  * @return An instance of TFLImageSegmenterOptions set to the specified
+  * modelPath.
+  */
+-- (nullable instancetype)initWithModelPath:(nonnull NSString *)modelPath;
++- (nullable instancetype)initWithModelPath:(nonnull NSString*)modelPath;
+ 
+ @end
+ 
+@@ -93,21 +94,23 @@ typedef NS_ENUM(NSUInteger, TFLOutputType) {
+  *
+  * @return A TFLImageSegmenter instance.
+  */
+-+ (nullable instancetype)imageSegmenterWithOptions:(nonnull TFLImageSegmenterOptions *)options
+-                                             error:(NSError **)error
+++ (nullable instancetype)imageSegmenterWithOptions:
++                             (nonnull TFLImageSegmenterOptions*)options
++                                             error:(NSError**)error
+     NS_SWIFT_NAME(imageSegmenter(options:));
+ 
+ /**
+- * Performs image segmentation on a GMLImage input, returns the segmentation 
++ * Performs image segmentation on a GMLImage input, returns the segmentation
+  * results.
+  *
+  * @param image input to the model.
+- * 
++ *
+  * @return Segmentation Result of type TFLSegmentationResult holds the
+  * segmentation masks returned by the image segmentation task.
+  */
+-- (nullable TFLSegmentationResult *)segmentWithGMLImage:(GMLImage *)image
+-                                                  error:(NSError *_Nullable *)error
++- (nullable TFLSegmentationResult*)segmentWithGMLImage:(GMLImage*)image
++                                                 error:
++                                                     (NSError* _Nullable*)error
+     NS_SWIFT_NAME(segment(gmlImage:));
  
  - (instancetype)init NS_UNAVAILABLE;
 diff --git a/third_party/tflite_support/src/tensorflow_lite_support/ios/task/vision/sources/TFLObjectDetector.h b/third_party/tflite_support/src/tensorflow_lite_support/ios/task/vision/sources/TFLObjectDetector.h
@@ -33472,21 +34527,19 @@ index a18e19bdb7973..9037f5853744b 100644
    // The unpacked model FlatBuffer.
    tflite::ModelT model_t_;
 diff --git a/third_party/tflite_support/src/tensorflow_lite_support/metadata/cc/metadata_version.cc b/third_party/tflite_support/src/tensorflow_lite_support/metadata/cc/metadata_version.cc
-index fb3e01e00b76d..2e2f2fa070362 100644
+index 17ffbbc67fbec..52f9335776035 100644
 --- a/third_party/tflite_support/src/tensorflow_lite_support/metadata/cc/metadata_version.cc
 +++ b/third_party/tflite_support/src/tensorflow_lite_support/metadata/cc/metadata_version.cc
-@@ -22,8 +22,8 @@ limitations under the License.
+@@ -22,7 +22,7 @@ limitations under the License.
  #include <string>
  #include <vector>
  
 -#include "absl/strings/str_join.h"  // from @com_google_absl
--#include "absl/strings/str_split.h"  // from @com_google_absl
-+#include "absl/strings/str_join.h"    // from @com_google_absl
-+#include "absl/strings/str_split.h"   // from @com_google_absl
++#include "absl/strings/str_join.h"   // from @com_google_absl
+ #include "absl/strings/str_split.h"  // from @com_google_absl
  #include "flatbuffers/flatbuffers.h"  // from @flatbuffers
  #include "tensorflow/lite/c/common.h"
- #include "tensorflow/lite/kernels/internal/compatibility.h"
-@@ -134,7 +134,8 @@ template <typename T>
+@@ -137,7 +137,8 @@ template <typename T>
  void UpdateMinimumVersionForArray(
      const flatbuffers::Vector<flatbuffers::Offset<T>>* array,
      Version* min_version) {
@@ -33496,7 +34549,7 @@ index fb3e01e00b76d..2e2f2fa070362 100644
  
    for (int i = 0; i < array->size(); ++i) {
      UpdateMinimumVersionForTable<T>(array->Get(i), min_version);
-@@ -143,8 +144,10 @@ void UpdateMinimumVersionForArray(
+@@ -146,8 +147,10 @@ void UpdateMinimumVersionForArray(
  
  template <>
  void UpdateMinimumVersionForTable<tflite::AssociatedFile>(
@@ -33509,7 +34562,7 @@ index fb3e01e00b76d..2e2f2fa070362 100644
  
    if (table->type() == AssociatedFileType_VOCABULARY) {
      UpdateMinimumVersion(
-@@ -155,8 +158,10 @@ void UpdateMinimumVersionForTable<tflite::AssociatedFile>(
+@@ -164,8 +167,10 @@ void UpdateMinimumVersionForTable<tflite::AssociatedFile>(
  
  template <>
  void UpdateMinimumVersionForTable<tflite::ProcessUnit>(
@@ -33522,7 +34575,7 @@ index fb3e01e00b76d..2e2f2fa070362 100644
  
    tflite::ProcessUnitOptions process_unit_type = table->options_type();
    if (process_unit_type == ProcessUnitOptions_BertTokenizerOptions) {
-@@ -182,7 +187,8 @@ void UpdateMinimumVersionForTable<tflite::ProcessUnit>(
+@@ -191,7 +196,8 @@ void UpdateMinimumVersionForTable<tflite::ProcessUnit>(
  template <>
  void UpdateMinimumVersionForTable<tflite::Content>(const tflite::Content* table,
                                                     Version* min_version) {
@@ -33532,7 +34585,7 @@ index fb3e01e00b76d..2e2f2fa070362 100644
  
    // Checks the ContenProperties field.
    if (table->content_properties_type() == ContentProperties_AudioProperties) {
-@@ -194,8 +200,10 @@ void UpdateMinimumVersionForTable<tflite::Content>(const tflite::Content* table,
+@@ -203,8 +209,10 @@ void UpdateMinimumVersionForTable<tflite::Content>(const tflite::Content* table,
  
  template <>
  void UpdateMinimumVersionForTable<tflite::TensorMetadata>(
@@ -33545,7 +34598,7 @@ index fb3e01e00b76d..2e2f2fa070362 100644
  
    // Checks the associated_files field.
    UpdateMinimumVersionForArray<tflite::AssociatedFile>(
-@@ -211,8 +219,10 @@ void UpdateMinimumVersionForTable<tflite::TensorMetadata>(
+@@ -220,8 +228,10 @@ void UpdateMinimumVersionForTable<tflite::TensorMetadata>(
  
  template <>
  void UpdateMinimumVersionForTable<tflite::SubGraphMetadata>(
@@ -33558,7 +34611,7 @@ index fb3e01e00b76d..2e2f2fa070362 100644
  
    // Checks in the input/output metadata arrays.
    UpdateMinimumVersionForArray<tflite::TensorMetadata>(
-@@ -259,7 +269,8 @@ void UpdateMinimumVersionForTable<tflite::SubGraphMetadata>(
+@@ -268,7 +278,8 @@ void UpdateMinimumVersionForTable<tflite::SubGraphMetadata>(
  
  template <>
  void UpdateMinimumVersionForTable<tflite::ModelMetadata>(
@@ -34615,7 +35668,7 @@ index 183d416481156..3fb3c48118748 100644
 +    }
  }
 diff --git a/third_party/tflite_support/src/tensorflow_lite_support/metadata/java/src/java/org/tensorflow/lite/support/metadata/MetadataParser.java b/third_party/tflite_support/src/tensorflow_lite_support/metadata/java/src/java/org/tensorflow/lite/support/metadata/MetadataParser.java
-index b6dd4a6216f11..20f556692f8f0 100644
+index 8a262a02eab14..1dbf9ebb46386 100644
 --- a/third_party/tflite_support/src/tensorflow_lite_support/metadata/java/src/java/org/tensorflow/lite/support/metadata/MetadataParser.java
 +++ b/third_party/tflite_support/src/tensorflow_lite_support/metadata/java/src/java/org/tensorflow/lite/support/metadata/MetadataParser.java
 @@ -17,11 +17,11 @@ package org.tensorflow.lite.support.metadata;
@@ -34626,12 +35679,12 @@ index b6dd4a6216f11..20f556692f8f0 100644
 -   * The version of the metadata parser that this metadata extractor library is depending on. The
 -   * value should match the value of "Schema Semantic version" in metadata_schema.fbs.
 -   */
--  public static final String VERSION = "1.3.0";
+-  public static final String VERSION = "1.4.0";
 +    /**
 +     * The version of the metadata parser that this metadata extractor library is depending on. The
 +     * value should match the value of "Schema Semantic version" in metadata_schema.fbs.
 +     */
-+    public static final String VERSION = "1.3.0";
++    public static final String VERSION = "1.4.0";
  
 -  private MetadataParser() {}
 +    private MetadataParser() {}
@@ -39667,7 +40720,7 @@ index 61231e902e03e..80d2ddc6fd34e 100644
 +    }
  }
 diff --git a/third_party/tflite_support/src/tensorflow_lite_support/odml/ios/image/apis/GMLImage.h b/third_party/tflite_support/src/tensorflow_lite_support/odml/ios/image/apis/GMLImage.h
-index 110186bb63a1b..18797d8135eb8 100644
+index 110186bb63a1b..0c494915e7357 100644
 --- a/third_party/tflite_support/src/tensorflow_lite_support/odml/ios/image/apis/GMLImage.h
 +++ b/third_party/tflite_support/src/tensorflow_lite_support/odml/ios/image/apis/GMLImage.h
 @@ -19,7 +19,8 @@
@@ -39675,8 +40728,8 @@ index 110186bb63a1b..18797d8135eb8 100644
  
  /** Types of image sources. */
 -typedef NSInteger GMLImageSourceType NS_TYPED_ENUM NS_SWIFT_NAME(MLImageSourceType);
-+typedef NSInteger GMLImageSourceType
-+    NS_TYPED_ENUM NS_SWIFT_NAME(MLImageSourceType);
++typedef NSInteger GMLImageSourceType NS_TYPED_ENUM
++    NS_SWIFT_NAME(MLImageSourceType);
  /** Image source is a `UIImage`. */
  static const GMLImageSourceType GMLImageSourceTypeImage = 0;
  /** Image source is a `CVPixelBuffer`. */
@@ -42674,328 +43727,6 @@ index c9e7134bedd93..28f54be2c70a3 100644
 +    // Should not be instantiated.
 +    private TestImageCreator() {}
  }
-diff --git a/third_party/tflite_support/src/tensorflow_lite_support/tools/ci_build/common.sh b/third_party/tflite_support/src/tensorflow_lite_support/tools/ci_build/common.sh
-index 135e4286275f1..17c38d288a25a 100644
---- a/third_party/tflite_support/src/tensorflow_lite_support/tools/ci_build/common.sh
-+++ b/third_party/tflite_support/src/tensorflow_lite_support/tools/ci_build/common.sh
-@@ -1,95 +1,90 @@
--#!/usr/bin/env bash
--# Copyright 2020 The TensorFlow Authors. All Rights Reserved.
-+#!/ usr / bin / env bash
-+#Copyright 2020 The TensorFlow Authors.All Rights Reserved.
- #
--# Licensed under the Apache License, Version 2.0 (the "License");
--# you may not use this file except in compliance with the License.
--# You may obtain a copy of the License at
-+#Licensed under the Apache License, Version 2.0(the "License");
-+#you may not use this file except in compliance with the License.
-+#You may obtain a copy of the License at
- #
--#     http://www.apache.org/licenses/LICENSE-2.0
-+#http:  // www.apache.org/licenses/LICENSE-2.0
- #
--# Unless required by applicable law or agreed to in writing, software
--# distributed under the License is distributed on an "AS IS" BASIS,
--# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
--# See the License for the specific language governing permissions and
--# limitations under the License.
--# ==============================================================================
--# External `common.sh`
-+#Unless required by applicable law or agreed to in writing, software
-+#distributed under the License is distributed on an "AS IS" BASIS,
-+#WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-+#See the License for the specific language governing permissions and
-+#limitations under the License.
-+#== == == == == == == == == == == == == == == == == == == == == == == == == == \
-+    == == == == == == == == == == == == ==
-+#External `common.sh`
- 
--# Keep in sync with tensorflow core and configure.py.
--LATEST_BAZEL_VERSION=4.2.2
--
--# Run flaky functions with retries.
--# run_with_retry cmd
--function run_with_retry {
-+#Keep in sync with tensorflow core and configure.py.
-+LATEST_BAZEL_VERSION = 4.2.2
-+#Run flaky functions with retries.
-+#run_with_retry cmd
-+    function run_with_retry {
-   eval "$1"
--  # If the command fails retry again in 60 seconds.
--  if [[ $? -ne 0 ]]; then
--    sleep 60
--    eval "$1"
--  fi
-+#If the command fails retry again in 60 seconds.
-+  if [[ $? -ne 0 ]];
-+  then sleep 60 eval "$1" fi
- }
- 
- function die() {
--  echo "$@" 1>&2 ; exit 1;
-+  echo "$@" 1 > &2;
-+  exit 1;
- }
- 
--# A small utility to run the command and only print logs if the command fails.
--# On success, all logs are hidden.
--function readable_run {
--  # Disable debug mode to avoid printing of variables here.
--  set +x
--  result=$("$@" 2>&1) || die "$result"
--  echo "$@"
--  echo "Command completed successfully at $(date)"
--  set -x
--}
-+#A small utility to run the command and only print logs if the command fails.
-+#On success, all logs are hidden.
-+function readable_run{
-+#Disable debug mode to avoid printing of variables here.
-+    set + x result =
-+        $("$@" 2 > &1) || die "$result" echo "$@" echo
-+                              "Command completed successfully at $(date)" set -
-+                              x}
- 
--# TODO(b/158448780): Guard bazel installation with IfChangeThenChange.
--function set_bazel_outdir {
--  mkdir -p /tmpfs/bazel_output
--  export TEST_TMPDIR=/tmpfs/bazel_output
--}
-+#TODO(b / 158448780) : Guard bazel installation with IfChangeThenChange.
-+function set_bazel_outdir{mkdir - p / tmpfs / bazel_output export TEST_TMPDIR =
-+                              / tmpfs / bazel_output}
- 
--# Downloads bazelisk to ~/bin as `bazel`.
-+#Downloads bazelisk to ~ / bin as `bazel`.
- function install_bazelisk {
-   date
-   case "$(uname -s)" in
--    Darwin) local name=bazelisk-darwin-amd64 ;;
--    Linux)  local name=bazelisk-linux-amd64  ;;
--    *) die "Unknown OS: $(uname -s)" ;;
--  esac
--  mkdir -p "$HOME/bin"
--  wget --no-verbose -O "$HOME/bin/bazel" \
--      "https://github.com/bazelbuild/bazelisk/releases/download/v1.3.0/$name"
--  chmod u+x "$HOME/bin/bazel"
--  if [[ ! ":$PATH:" =~ :"$HOME"/bin/?: ]]; then
--    PATH="$HOME/bin:$PATH"
--  fi
--  set_bazel_outdir
--  which bazel
--  bazel version
--  date
-+    Darwin) local name=bazelisk-darwin-amd64 ;
-+  ;
-+    Linux)  local name=bazelisk-linux-amd64  ;
-+    ;
-+    *) die "Unknown OS: $(uname -s)" ;
-+    ;
-+    esac mkdir - p "$HOME/bin" wget-- no - verbose -
-+        O
-+        "$HOME/bin/bazel"
-+        "https://github.com/bazelbuild/bazelisk/releases/download/v1.3.0/"
-+        "$name" chmod u +
-+        x "$HOME/bin/bazel" if[[!":$PATH:" = ~:"$HOME" / bin / ?: ]];
-+    then PATH =
-+        "$HOME/bin:$PATH" fi set_bazel_outdir which bazel bazel version date
- }
- 
--# Install the given bazel version on linux
-+#Install the given bazel version on linux
- function update_bazel_linux {
--  if [[ -z "$1" ]]; then
--    BAZEL_VERSION=${LATEST_BAZEL_VERSION}
--  else
--    BAZEL_VERSION=$1
--  fi
--  rm -rf ~/bazel
--  mkdir ~/bazel
-+  if
-+    [[-z "$1"]];
-+  then BAZEL_VERSION = $ {
-+    LATEST_BAZEL_VERSION
-+  }
-+  else BAZEL_VERSION =
-+      $1 fi rm -
-+      rf ~ / bazel mkdir ~ /
-+          bazel
- 
--  pushd ~/bazel
--  readable_run wget https://github.com/bazelbuild/bazel/releases/download/"${BAZEL_VERSION}"/bazel-"${BAZEL_VERSION}"-installer-linux-x86_64.sh
--  chmod +x bazel-*.sh
--  ./bazel-"${BAZEL_VERSION}"-installer-linux-x86_64.sh --user
--  rm bazel-"${BAZEL_VERSION}"-installer-linux-x86_64.sh
--  popd
-+              pushd ~ /
-+          bazel readable_run wget https
-+      :  // github.com/bazelbuild/bazel/releases/download/"${BAZEL_VERSION}"/bazel-"${BAZEL_VERSION}"-installer-linux-x86_64.sh
-+         chmod +
-+      x bazel - *.sh./ bazel - "${BAZEL_VERSION}" - installer - linux -
-+      x86_64.sh-- user rm bazel - "${BAZEL_VERSION}" - installer - linux -
-+      x86_64.sh popd
- 
--  PATH="/home/kbuilder/bin:$PATH"
--  set_bazel_outdir
--  which bazel
--  bazel version
-+          PATH =
-+          "/home/kbuilder/bin:$PATH" set_bazel_outdir which bazel bazel version
- }
-diff --git a/third_party/tflite_support/src/tensorflow_lite_support/tools/pip_package/rpi/build_arm_pip_package.sh b/third_party/tflite_support/src/tensorflow_lite_support/tools/pip_package/rpi/build_arm_pip_package.sh
-old mode 100755
-new mode 100644
-index 5580f4a7c7045..e2ad7acc54606
---- a/third_party/tflite_support/src/tensorflow_lite_support/tools/pip_package/rpi/build_arm_pip_package.sh
-+++ b/third_party/tflite_support/src/tensorflow_lite_support/tools/pip_package/rpi/build_arm_pip_package.sh
-@@ -1,24 +1,37 @@
--#!/usr/bin/env bash
--# Copyright 2021 The TensorFlow Authors. All Rights Reserved.
-+#!/ usr / bin / env bash
-+#Copyright 2021 The TensorFlow Authors.All Rights Reserved.
- #
--# Licensed under the Apache License, Version 2.0 (the "License");
--# you may not use this file except in compliance with the License.
--# You may obtain a copy of the License at
-+#Licensed under the Apache License, Version 2.0(the "License");
-+#you may not use this file except in compliance with the License.
-+#You may obtain a copy of the License at
- #
--#     http://www.apache.org/licenses/LICENSE-2.0
-+#http:  // www.apache.org/licenses/LICENSE-2.0
- #
--# Unless required by applicable law or agreed to in writing, software
--# distributed under the License is distributed on an "AS IS" BASIS,
--# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
--# See the License for the specific language governing permissions and
--# limitations under the License.
--# ==============================================================================
-+#Unless required by applicable law or agreed to in writing, software
-+#distributed under the License is distributed on an "AS IS" BASIS,
-+#WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-+#See the License for the specific language governing permissions and
-+#limitations under the License.
-+#== == == == == == == == == == == == == == == == == == == == == == == == == == \
-+    == == == == == == == == == == == == ==
- 
--set -ex
-+set - ex
- 
--NIGHTLY_FLAG=$1
-+          NIGHTLY_FLAG =
-+    $1
- 
--bazel build -c opt --config=elinux_armhf tensorflow_lite_support/tools/pip_package:build_pip_package
--EXTRA_PKG_NAME_FLAG="--plat-name=manylinux2014-armv7l" ./bazel-bin/tensorflow_lite_support/tools/pip_package/build_pip_package --dst wheels ${NIGHTLY_FLAG}
--bazel build -c opt --config=elinux_aarch64 tensorflow_lite_support/tools/pip_package:build_pip_package
--EXTRA_PKG_NAME_FLAG="--plat-name=manylinux2014-aarch64" ./bazel-bin/tensorflow_lite_support/tools/pip_package/build_pip_package --dst wheels ${NIGHTLY_FLAG}
-+        bazel build -
-+    c opt-- config =
-+        elinux_armhf tensorflow_lite_support / tools /
-+        pip_package : build_pip_package EXTRA_PKG_NAME_FLAG =
-+            "--plat-name=manylinux2014-armv7l"./ bazel -
-+            bin / tensorflow_lite_support / tools / pip_package /
-+                build_pip_package-- dst wheels ${NIGHTLY_FLAG} bazel build -
-+            c opt-- config =
-+                elinux_aarch64 tensorflow_lite_support / tools /
-+                pip_package : build_pip_package EXTRA_PKG_NAME_FLAG =
-+                    "--plat-name=manylinux2014-aarch64"./ bazel -
-+                    bin / tensorflow_lite_support / tools / pip_package /
-+                        build_pip_package-- dst wheels $ {
-+  NIGHTLY_FLAG
-+}
-diff --git a/third_party/tflite_support/src/tensorflow_lite_support/tools/pip_package/rpi/install_bazel.sh b/third_party/tflite_support/src/tensorflow_lite_support/tools/pip_package/rpi/install_bazel.sh
-old mode 100755
-new mode 100644
-index 9e3c0768dad04..fd376bf84ecb6
---- a/third_party/tflite_support/src/tensorflow_lite_support/tools/pip_package/rpi/install_bazel.sh
-+++ b/third_party/tflite_support/src/tensorflow_lite_support/tools/pip_package/rpi/install_bazel.sh
-@@ -1,40 +1,53 @@
--#!/usr/bin/env bash
--# Copyright 2015 The TensorFlow Authors. All Rights Reserved.
-+#!/ usr / bin / env bash
-+#Copyright 2015 The TensorFlow Authors.All Rights Reserved.
- #
--# Licensed under the Apache License, Version 2.0 (the "License");
--# you may not use this file except in compliance with the License.
--# You may obtain a copy of the License at
-+#Licensed under the Apache License, Version 2.0(the "License");
-+#you may not use this file except in compliance with the License.
-+#You may obtain a copy of the License at
- #
--#     http://www.apache.org/licenses/LICENSE-2.0
-+#http:  // www.apache.org/licenses/LICENSE-2.0
- #
--# Unless required by applicable law or agreed to in writing, software
--# distributed under the License is distributed on an "AS IS" BASIS,
--# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
--# See the License for the specific language governing permissions and
--# limitations under the License.
--# ==============================================================================
-+#Unless required by applicable law or agreed to in writing, software
-+#distributed under the License is distributed on an "AS IS" BASIS,
-+#WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-+#See the License for the specific language governing permissions and
-+#limitations under the License.
-+#== == == == == == == == == == == == == == == == == == == == == == == == == == \
-+    == == == == == == == == == == == == ==
- 
--# Select bazel version.
--BAZEL_VERSION="4.2.2"
-+#Select bazel version.
-+BAZEL_VERSION = "4.2.2"
- 
--set +e
--local_bazel_ver=$(bazel version 2>&1 | grep -i label | awk '{print $3}')
-+                set +
-+                e local_bazel_ver =
-+                    $(bazel version 2 > &1 | grep - i label | awk '{print $3}')
- 
--if [[ "$local_bazel_ver" == "$BAZEL_VERSION" ]]; then
--  exit 0
--fi
-+                        if[["$local_bazel_ver" == "$BAZEL_VERSION"]];
-+then exit 0 fi
- 
--set -e
-+        set -
-+    e
- 
--# Install bazel.
--mkdir -p /bazel
--cd /bazel
--if [[ ! -f "bazel-$BAZEL_VERSION-installer-linux-x86_64.sh" ]]; then
--  curl -fSsL -O https://github.com/bazelbuild/bazel/releases/download/$BAZEL_VERSION/bazel-$BAZEL_VERSION-installer-linux-x86_64.sh
--fi
--chmod +x /bazel/bazel-*.sh
--/bazel/bazel-$BAZEL_VERSION-installer-linux-x86_64.sh
--rm -f /bazel/bazel-$BAZEL_VERSION-installer-linux-x86_64.sh
-+#Install bazel.
-+        mkdir -
-+    p / bazel cd /
-+        bazel if[[!-f "bazel-$BAZEL_VERSION-installer-linux-x86_64.sh"]];
-+then curl - fSsL -
-+        O https
-+    :  // github.com/bazelbuild/bazel/releases/download/$BAZEL_VERSION/bazel-$BAZEL_VERSION-installer-linux-x86_64.sh
-+       fi chmod +
-+       x / bazel / bazel -
-+       *.sh / bazel / bazel -
-+       $BAZEL_VERSION -
-+       installer -
-+       linux -
-+       x86_64.sh rm -
-+       f / bazel / bazel -
-+       $BAZEL_VERSION -
-+       installer -
-+       linux -
-+       x86_64.sh
- 
--# Enable bazel auto completion.
--echo "source /usr/local/lib/bazel/bin/bazel-complete.bash" >> ~/.bashrc
-+#Enable bazel auto completion.
-+           echo "source /usr/local/lib/bazel/bin/bazel-complete.bash" >>
-+    ~ /.bashrc
 diff --git a/third_party/tflite_support/src/third_party/fft2d/fft.h b/third_party/tflite_support/src/third_party/fft2d/fft.h
 index 36d838b7f6280..35dbcc766c169 100644
 --- a/third_party/tflite_support/src/third_party/fft2d/fft.h
@@ -43042,26 +43773,6 @@ index d587b3b441ce2..d79441827d54c 100644
  
  #ifdef __cplusplus
  }
-diff --git a/third_party/tflite_support/src/third_party/pybind11_protobuf/com_google_protobuf_build.patch b/third_party/tflite_support/src/third_party/pybind11_protobuf/com_google_protobuf_build.patch
-index 01ecf027b5ac1..605337839c0fe 100644
---- a/third_party/tflite_support/src/third_party/pybind11_protobuf/com_google_protobuf_build.patch
-+++ b/third_party/tflite_support/src/third_party/pybind11_protobuf/com_google_protobuf_build.patch
-@@ -1,9 +1,9 @@
----- BUILD
--+++ BUILD
--@@ -889,6 +889,8 @@
--         "//conditions:default": [],
--         ":use_fast_cpp_protos": ["//external:python_headers"],
--     }),
-+-- -BUILD++ + BUILD @ @-889, 6 + 889,
-+    8 @@
-+         "//conditions:default" : [],
-+                                 ":use_fast_cpp_protos"
-+    : ["//external:python_headers"],
-+}),
- +
- +    visibility = ["//visibility:public"],
-  )
 -- 
-2.35.0.263.gb82422642f-goog
+2.35.1.616.g0bdcbb4464-goog
 

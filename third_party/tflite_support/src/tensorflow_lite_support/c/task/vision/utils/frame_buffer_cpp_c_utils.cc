@@ -39,10 +39,19 @@ StatusOr<std::unique_ptr<FrameBufferCpp>> CreateCppFrameBuffer(
   FrameBufferCpp::Format frame_buffer_format =
       FrameBufferCpp::Format(frame_buffer->format);
 
+  // If an invalid value is provided for Frame Buffer orientation by the C API
+  // call, the underlying C++ FrameBuffer orientation is initialized with a
+  // value of kTopLeft. This is to avoid invalid model inference results as the
+  // underlying C++ implementation does not perform error handling for enum
+  // values.
+  FrameBufferCpp::Orientation orientation =
+      (int)frame_buffer->orientation >= 1 && (int)frame_buffer->orientation <= 8
+          ? (FrameBufferCpp::Orientation)frame_buffer->orientation
+          : FrameBufferCpp::Orientation::kTopLeft;
   return CreateFromRawBuffer(
       frame_buffer->buffer,
       {frame_buffer->dimension.width, frame_buffer->dimension.height},
-      frame_buffer_format);
+      frame_buffer_format, orientation);
 }
 
 }  // namespace vision

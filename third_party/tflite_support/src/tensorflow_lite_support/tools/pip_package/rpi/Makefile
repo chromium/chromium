@@ -13,7 +13,7 @@
 # limitations under the License.
 
 # Values: debian:<version>, ubuntu:<version>
-BASE_IMAGE ?= ubuntu:16.04
+BASE_IMAGE ?= ubuntu:18.04
 PYTHON_VERSION ?= 3.9
 
 # Nightly flag for build_arm_pip_package.sh

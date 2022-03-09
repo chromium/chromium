@@ -348,7 +348,7 @@ class MetadataPopulator(object):
         associated files.
     """
     # Load the model metadata from src_model_buf if exist.
-    metadata_buffer = _get_metadata_buffer(src_model_buf)
+    metadata_buffer = get_metadata_buffer(src_model_buf)
     if metadata_buffer:
       self.load_metadata_buffer(metadata_buffer)
 
@@ -730,7 +730,7 @@ class MetadataDisplayer(object):
     """
     if not model_buffer:
       raise ValueError("model_buffer cannot be empty.")
-    metadata_buffer = _get_metadata_buffer(model_buffer)
+    metadata_buffer = get_metadata_buffer(model_buffer)
     if not metadata_buffer:
       raise ValueError("The model does not have metadata.")
     associated_file_list = cls._parse_packed_associted_file_list(model_buffer)
@@ -843,7 +843,7 @@ def _assert_metadata_buffer_identifier(metadata_buf):
         " be a valid TFLite Metadata.")
 
 
-def _get_metadata_buffer(model_buf):
+def get_metadata_buffer(model_buf):
   """Returns the metadata in the model file as a buffer.
 
   Args:

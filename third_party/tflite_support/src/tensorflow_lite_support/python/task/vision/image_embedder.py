@@ -14,7 +14,7 @@
 """Image embedder task."""
 
 import dataclasses
-from typing import Optional
+from typing import Any, Optional
 
 from tensorflow_lite_support.python.task.core import task_options
 from tensorflow_lite_support.python.task.core.proto import configuration_pb2
@@ -35,6 +35,20 @@ class ImageEmbedderOptions:
   """Options for the image embedder task."""
   base_options: task_options.BaseOptions
   embedding_options: Optional[embedding_options_pb2.EmbeddingOptions] = None
+
+  def __eq__(self, other: Any) -> bool:
+    if (not isinstance(other, self.__class__) or
+        self.base_options != other.base_options):
+      return False
+
+    if self.embedding_options is None and other.embedding_options is None:
+      return True
+    elif (self.embedding_options and other.embedding_options and
+          self.embedding_options.SerializeToString()
+          == self.embedding_options.SerializeToString()):
+      return True
+    else:
+      return False
 
 
 def _build_proto_options(
@@ -69,9 +83,12 @@ def _build_proto_options(
 class ImageEmbedder(object):
   """Class that performs dense feature vector extraction on images."""
 
-  def __init__(self, embedder: _CppImageEmbedder) -> None:
+  def __init__(self, options: ImageEmbedderOptions,
+               cpp_embedder: _CppImageEmbedder) -> None:
     """Initializes the `ImageEmbedder` object."""
-    self._embedder = embedder
+    # Creates the object of C++ ImageEmbedder class.
+    self._options = options
+    self._embedder = cpp_embedder
 
   @classmethod
   def create_from_options(cls,
@@ -90,11 +107,9 @@ class ImageEmbedder(object):
         module to catch this error: `from pybind11_abseil import status`, see
         https://github.com/pybind/pybind11_abseil#abslstatusor.
     """
-    # Creates the object of C++ ImageEmbedder class.
     proto_options = _build_proto_options(options)
     embedder = _CppImageEmbedder.create_from_options(proto_options)
-
-    return cls(embedder)
+    return cls(options, embedder)
 
   def embed(
       self,
@@ -166,3 +181,11 @@ class ImageEmbedder(object):
   def number_of_output_layers(self) -> int:
     """Gets the number of output layers of the model."""
     return self._embedder.get_number_of_output_layers()
+
+  def __eq__(self, other: Any) -> bool:
+    return (isinstance(other, self.__class__) and
+            self._options == other._options)
+
+  @property
+  def options(self) -> ImageEmbedderOptions:
+    return self._options

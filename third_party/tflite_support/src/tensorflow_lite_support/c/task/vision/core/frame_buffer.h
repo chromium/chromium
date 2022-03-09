@@ -66,6 +66,8 @@ typedef struct TfLiteFrameBuffer {
   // Colorspace format of the frame buffer.
   enum TfLiteFrameBufferFormat format;
   // Orientation of the frame buffer.
+  // If uninitialized or provided with a value outside the range of
+  // TfLiteFrameBufferOrientation, it takes the value `kTopLeft`.
   enum TfLiteFrameBufferOrientation orientation;
   // Dimension information for the whole frame.
   struct TfLiteFrameBufferDimension dimension;
