@@ -245,7 +245,7 @@ Jeśli się nie zgodzisz, zostaną one zablokowane ze względu na Twoje ustawien
 <translation id="1699570257714336246">Brak informacji</translation>
 <translation id="1703835215927279855">Letter</translation>
 <translation id="1706625117072057435">Poziomy powiększenia</translation>
-<translation id="1706954506755087368">{1,plural, =1{Ten serwer nie mógł udowodnić, że należy do <ph name="DOMAIN" />. Jego certyfikat bezpieczeństwa przypuszczalnie zacznie obowiązywać od jutra. Może to być spowodowane błędną konfiguracją lub przechwyceniem połączenia.}few{Ten serwer nie mógł udowodnić, że należy do <ph name="DOMAIN" />. Jego certyfikat bezpieczeństwa przypuszczalnie zacznie obowiązywać za # dni. Może to być spowodowane błędną konfiguracją lub przechwyceniem połączenia.}other{Ten serwer nie mógł udowodnić, że należy do <ph name="DOMAIN" />. Jego certyfikat bezpieczeństwa przypuszczalnie zacznie obowiązywać za # dnia. Może to być spowodowane błędną konfiguracją lub przechwyceniem połączenia.}}</translation>
+<translation id="1706954506755087368">{1,plural, =1{Ten serwer nie mógł udowodnić, że należy do <ph name="DOMAIN" />. Jego certyfikat bezpieczeństwa przypuszczalnie zacznie obowiązywać od jutra. Może to być spowodowane błędną konfiguracją lub przechwyceniem połączenia.}few{Ten serwer nie mógł udowodnić, że należy do <ph name="DOMAIN" />. Jego certyfikat bezpieczeństwa przypuszczalnie zacznie obowiązywać za # dni. Może to być spowodowane błędną konfiguracją lub przechwyceniem połączenia.}many{Ten serwer nie mógł udowodnić, że należy do <ph name="DOMAIN" />. Jego certyfikat bezpieczeństwa przypuszczalnie zacznie obowiązywać za # dni. Może to być spowodowane błędną konfiguracją lub przechwyceniem połączenia.}other{Ten serwer nie mógł udowodnić, że należy do <ph name="DOMAIN" />. Jego certyfikat bezpieczeństwa przypuszczalnie zacznie obowiązywać za # dnia. Może to być spowodowane błędną konfiguracją lub przechwyceniem połączenia.}}</translation>
 <translation id="1710259589646384581">System operacyjny</translation>
 <translation id="1711234383449478798">Zignorowano, ponieważ zasada <ph name="POLICY_NAME" /> nie została ustawiona na <ph name="VALUE" />.</translation>
 <translation id="1712552549805331520"><ph name="URL" /> chce na stałe przechowywać dane na Twoim komputerze lokalnym</translation>
@@ -304,7 +304,7 @@ Jeśli się nie zgodzisz, zostaną one zablokowane ze względu na Twoje ustawien
 <translation id="1883255238294161206">Zwiń listę</translation>
 <translation id="1890171020361705182">Gra z dinozaurem. Pikselowy dinozaur biegnie przez pustynię, unikając kaktusów i pterodaktyli. Gdy usłyszysz dźwięk, kliknij, aby przeskoczyć przeszkodę.</translation>
 <translation id="1898423065542865115">Filtrowanie</translation>
-<translation id="1901443836186977402">{1,plural, =1{Ten serwer nie może udowodnić, że należy do domeny <ph name="DOMAIN" />. Jego certyfikat bezpieczeństwa wygasł w ciągu ostatniej doby. Może to wynikać z błędnej konfiguracji lub przechwycenia połączenia. Zegar komputera jest obecnie ustawiony na <ph name="CURRENT_DATE" />. Czy to prawidłowa data? Jeśli nie, popraw zegar systemowy, a potem odśwież tę stronę.}few{Ten serwer nie może udowodnić, że należy do domeny <ph name="DOMAIN" />. Jego certyfikat wygasł # dni temu. Może to wynikać z błędnej konfiguracji lub przechwycenia połączenia. Zegar komputera jest obecnie ustawiony na <ph name="CURRENT_DATE" />. Czy to prawidłowa data? Jeśli nie, popraw zegar systemowy, a potem odśwież tę stronę.}other{Ten serwer nie może udowodnić, że należy do domeny <ph name="DOMAIN" />. Jego certyfikat wygasł # dnia temu. Może to wynikać z błędnej konfiguracji lub przechwycenia połączenia. Zegar komputera jest obecnie ustawiony na <ph name="CURRENT_DATE" />. Czy to prawidłowa data? Jeśli nie, popraw zegar systemowy, a potem odśwież tę stronę.}}</translation>
+<translation id="1901443836186977402">{1,plural, =1{Ten serwer nie może udowodnić, że należy do domeny <ph name="DOMAIN" />. Jego certyfikat bezpieczeństwa wygasł w ciągu ostatniej doby. Może to wynikać z błędnej konfiguracji lub przechwycenia połączenia. Zegar komputera jest obecnie ustawiony na <ph name="CURRENT_DATE" />. Czy to prawidłowa data? Jeśli nie, popraw zegar systemowy, a potem odśwież tę stronę.}few{Ten serwer nie może udowodnić, że należy do domeny <ph name="DOMAIN" />. Jego certyfikat wygasł # dni temu. Może to wynikać z błędnej konfiguracji lub przechwycenia połączenia. Zegar komputera jest obecnie ustawiony na <ph name="CURRENT_DATE" />. Czy to prawidłowa data? Jeśli nie, popraw zegar systemowy, a potem odśwież tę stronę.}many{Ten serwer nie może udowodnić, że należy do domeny <ph name="DOMAIN" />. Jego certyfikat wygasł # dni temu. Może to wynikać z błędnej konfiguracji lub przechwycenia połączenia. Zegar komputera jest obecnie ustawiony na <ph name="CURRENT_DATE" />. Czy to prawidłowa data? Jeśli nie, popraw zegar systemowy, a potem odśwież tę stronę.}other{Ten serwer nie może udowodnić, że należy do domeny <ph name="DOMAIN" />. Jego certyfikat wygasł # dnia temu. Może to wynikać z błędnej konfiguracji lub przechwycenia połączenia. Zegar komputera jest obecnie ustawiony na <ph name="CURRENT_DATE" />. Czy to prawidłowa data? Jeśli nie, popraw zegar systemowy, a potem odśwież tę stronę.}}</translation>
 <translation id="1902576642799138955">Okres ważności</translation>
 <translation id="1906155288650175567">Przycisk Utwórz notatkę; naciśnij Enter, aby szybko utworzyć nową notatkę w Google Keep</translation>
 <translation id="1908217026282415406">Używanie kamery i poruszanie nią</translation>
@@ -314,7 +314,7 @@ Jeśli się nie zgodzisz, zostaną one zablokowane ze względu na Twoje ustawien
 <translation id="1916770123977586577">Załaduj stronę ponownie, by zastosować na niej zaktualizowane ustawienia</translation>
 <translation id="1919345977826869612">Reklamy</translation>
 <translation id="1919367280705858090">Uzyskiwanie pomocy w przypadku konkretnego komunikatu o błędzie</translation>
-<translation id="192020519938775529">{COUNT,plural, =0{Brak}=1{1 witryna}few{# witryny}other{# witryny}}</translation>
+<translation id="192020519938775529">{COUNT,plural, =0{Brak}=1{1 witryna}few{# witryny}many{# witryn}other{# witryny}}</translation>
 <translation id="1923390796829649802">Przycisk zarządzania ustawieniami ułatwień dostępu; aby spersonalizować narzędzia ułatwień dostępu w ustawieniach Chrome OS, naciśnij Enter</translation>
 <translation id="1924727005275031552">Nowy</translation>
 <translation id="1939175642807587452">Może prosić o zgodę na wysyłanie powiadomień</translation>
@@ -332,7 +332,7 @@ Jeśli się nie zgodzisz, zostaną one zablokowane ze względu na Twoje ustawien
 <translation id="1988881251331415125">Jeśli pisownia jest poprawna, <ph name="BEGIN_LINK" />uruchom Diagnostykę problemów z łącznością<ph name="END_LINK" />.</translation>
 <translation id="1992331125980284532">JIS B3</translation>
 <translation id="1997484222658892567"><ph name="URL" /> chce na stałe przechowywać dużą ilość danych na Twoim komputerze</translation>
-<translation id="2001146170449793414">{COUNT,plural, =1{i jeszcze 1}few{i jeszcze #}other{i jeszcze #}}</translation>
+<translation id="2001146170449793414">{COUNT,plural, =1{i jeszcze 1}few{i jeszcze #}many{i jeszcze #}other{i jeszcze #}}</translation>
 <translation id="2003709556000175978">Zresetuj teraz swoje hasło</translation>
 <translation id="2003775180883135320">Cztery otwory u góry</translation>
 <translation id="201174227998721785">Zarządzaj uprawnieniami i danymi zapisanymi dla różnych witryn w ustawieniach Chrome</translation>
@@ -345,9 +345,9 @@ Jeśli się nie zgodzisz, zostaną one zablokowane ze względu na Twoje ustawien
 <translation id="2042213636306070719">Taca 7</translation>
 <translation id="204357726431741734">Zaloguj się, by używać haseł zapisanych na Twoim koncie Google</translation>
 <translation id="2053111141626950936">Strony w tym języku (<ph name="LANGUAGE" />) nie będą tłumaczone.</translation>
-<translation id="2053373601901562871">{NUM_DAYS,plural, =0{Gdy ta opcja jest włączona i ma stan aktywny, Chrome znajduje dużą grupę osób (kohortę), której aktywność związana z przeglądaniem jest najbardziej podobna do Twojej. Reklamodawcy mogą wybierać reklamy dla grupy, a Twoja aktywność związana z przeglądaniem pozostaje prywatna i jest przechowywana tylko na Twoim urządzeniu. Grupa, do której należysz, jest codziennie aktualizowana.}=1{Gdy ta opcja jest włączona i ma stan aktywny, Chrome znajduje dużą grupę osób (kohortę), której aktywność związana z przeglądaniem jest najbardziej podobna do Twojej. Reklamodawcy mogą wybierać reklamy dla grupy, a Twoja aktywność związana z przeglądaniem pozostaje prywatna i jest przechowywana tylko na Twoim urządzeniu. Grupa, do której należysz, jest codziennie aktualizowana.}few{Gdy ta opcja jest włączona i ma stan aktywny, Chrome znajduje dużą grupę osób (kohortę), której aktywność związana z przeglądaniem jest najbardziej podobna do Twojej. Reklamodawcy mogą wybierać reklamy dla grupy, a Twoja aktywność związana z przeglądaniem pozostaje prywatna i jest przechowywana tylko na Twoim urządzeniu. Grupa, do której należysz, jest aktualizowana co {NUM_DAYS} dni.}other{Gdy ta opcja jest włączona i ma stan aktywny, Chrome znajduje dużą grupę osób (kohortę), której aktywność związana z przeglądaniem jest najbardziej podobna do Twojej. Reklamodawcy mogą wybierać reklamy dla grupy, a Twoja aktywność związana z przeglądaniem pozostaje prywatna i jest przechowywana tylko na Twoim urządzeniu. Grupa, do której należysz, jest aktualizowana co {NUM_DAYS} dnia.}}</translation>
+<translation id="2053373601901562871">{NUM_DAYS,plural, =0{Gdy ta opcja jest włączona i ma stan aktywny, Chrome znajduje dużą grupę osób (kohortę), której aktywność związana z przeglądaniem jest najbardziej podobna do Twojej. Reklamodawcy mogą wybierać reklamy dla grupy, a Twoja aktywność związana z przeglądaniem pozostaje prywatna i jest przechowywana tylko na Twoim urządzeniu. Grupa, do której należysz, jest codziennie aktualizowana.}=1{Gdy ta opcja jest włączona i ma stan aktywny, Chrome znajduje dużą grupę osób (kohortę), której aktywność związana z przeglądaniem jest najbardziej podobna do Twojej. Reklamodawcy mogą wybierać reklamy dla grupy, a Twoja aktywność związana z przeglądaniem pozostaje prywatna i jest przechowywana tylko na Twoim urządzeniu. Grupa, do której należysz, jest codziennie aktualizowana.}few{Gdy ta opcja jest włączona i ma stan aktywny, Chrome znajduje dużą grupę osób (kohortę), której aktywność związana z przeglądaniem jest najbardziej podobna do Twojej. Reklamodawcy mogą wybierać reklamy dla grupy, a Twoja aktywność związana z przeglądaniem pozostaje prywatna i jest przechowywana tylko na Twoim urządzeniu. Grupa, do której należysz, jest aktualizowana co {NUM_DAYS} dni.}many{Gdy ta opcja jest włączona i ma stan aktywny, Chrome znajduje dużą grupę osób (kohortę), której aktywność związana z przeglądaniem jest najbardziej podobna do Twojej. Reklamodawcy mogą wybierać reklamy dla grupy, a Twoja aktywność związana z przeglądaniem pozostaje prywatna i jest przechowywana tylko na Twoim urządzeniu. Grupa, do której należysz, jest aktualizowana co {NUM_DAYS} dni.}other{Gdy ta opcja jest włączona i ma stan aktywny, Chrome znajduje dużą grupę osób (kohortę), której aktywność związana z przeglądaniem jest najbardziej podobna do Twojej. Reklamodawcy mogą wybierać reklamy dla grupy, a Twoja aktywność związana z przeglądaniem pozostaje prywatna i jest przechowywana tylko na Twoim urządzeniu. Grupa, do której należysz, jest aktualizowana co {NUM_DAYS} dnia.}}</translation>
 <translation id="2053553514270667976">Kod pocztowy</translation>
-<translation id="2064691555167957331">{COUNT,plural, =1{1 podpowiedź}few{# podpowiedzi}other{# podpowiedzi}}</translation>
+<translation id="2064691555167957331">{COUNT,plural, =1{1 podpowiedź}few{# podpowiedzi}many{# podpowiedzi}other{# podpowiedzi}}</translation>
 <translation id="2071156619270205202">Ta karta nie kwalifikuje się do nadania numeru karty wirtualnej.</translation>
 <translation id="2071692954027939183">Powiadomienia zostały automatycznie zablokowane, bo zazwyczaj na nie nie zezwalasz</translation>
 <translation id="2079545284768500474">Cofnij</translation>
@@ -389,7 +389,7 @@ Jeśli się nie zgodzisz, zostaną one zablokowane ze względu na Twoje ustawien
 <translation id="2169984857010174799">Kaku2 (koperta)</translation>
 <translation id="2181821976797666341">Zasady</translation>
 <translation id="2183608646556468874">Numer telefonu</translation>
-<translation id="2184405333245229118">{COUNT,plural, =1{1 adres}few{# adresy}other{# adresu}}</translation>
+<translation id="2184405333245229118">{COUNT,plural, =1{1 adres}few{# adresy}many{# adresów}other{# adresu}}</translation>
 <translation id="2187317261103489799">Wykrywaj (domyślnie)</translation>
 <translation id="2188375229972301266">Wiele otworów na dole</translation>
 <translation id="2202020181578195191">Wpisz rok w prawidłowym formacie</translation>
@@ -437,7 +437,7 @@ Jeśli się nie zgodzisz, zostaną one zablokowane ze względu na Twoje ustawien
 <translation id="2355395290879513365">Osoby dokonujące ataków mogą widzieć te same obrazy w witrynie co Ty i zmodyfikować je, by Cię oszukać.</translation>
 <translation id="2356070529366658676">Pytaj</translation>
 <translation id="2357481397660644965">Twoim urządzeniem zarządza <ph name="DEVICE_MANAGER" />, a Twoim kontem – <ph name="ACCOUNT_MANAGER" />.</translation>
-<translation id="2359347814217202136">{NUM_DAYS,plural, =0{Za mniej niż 1 dzień}=1{Za 1 dzień}few{Za {NUM_DAYS} dni}other{Za {NUM_DAYS} dnia}}</translation>
+<translation id="2359347814217202136">{NUM_DAYS,plural, =0{Za mniej niż 1 dzień}=1{Za 1 dzień}few{Za {NUM_DAYS} dni}many{Za {NUM_DAYS} dni}other{Za {NUM_DAYS} dnia}}</translation>
 <translation id="2359629602545592467">Różne</translation>
 <translation id="2359808026110333948">Dalej</translation>
 <translation id="236340516568226369">Menu przełączania rozmiaru</translation>
@@ -485,7 +485,7 @@ Jeśli się nie zgodzisz, zostaną one zablokowane ze względu na Twoje ustawien
 <translation id="2523886232349826891">Zapisana tylko na tym urządzeniu</translation>
 <translation id="2524461107774643265">Dodaj więcej informacji</translation>
 <translation id="2529899080962247600">Maksymalna liczba wpisów w tym polu to <ph name="MAX_ITEMS_LIMIT" />. Wszystkie następne wpisy będą ignorowane.</translation>
-<translation id="2535659140340599600">{COUNT,plural, =1{i jeszcze 1}few{i jeszcze #}other{i jeszcze #}}</translation>
+<translation id="2535659140340599600">{COUNT,plural, =1{i jeszcze 1}few{i jeszcze #}many{i jeszcze #}other{i jeszcze #}}</translation>
 <translation id="2536110899380797252">Dodaj adres</translation>
 <translation id="2539524384386349900">Wykrywaj</translation>
 <translation id="2540701853218677861">Historia logowania się na urządzeniu i wylogowywania się z niego, w tym sygnatury czasowe i próby nieudane</translation>
@@ -522,7 +522,7 @@ Jeśli się nie zgodzisz, zostaną one zablokowane ze względu na Twoje ustawien
 <translation id="2653659639078652383">Prześlij</translation>
 <translation id="2659491813326907275">Spersonalizuj narzędzia ułatwień dostępu w ustawieniach Chrome OS</translation>
 <translation id="2660779039299703961">Wydarzenie</translation>
-<translation id="2664887757054927933">{COUNT,plural, =0{Brak}=1{1 hasło (do <ph name="DOMAIN_LIST" />)}=2{2 hasła (do <ph name="DOMAIN_LIST" />)}few{# hasła (do <ph name="DOMAIN_LIST" />)}other{# hasła (do <ph name="DOMAIN_LIST" />)}}</translation>
+<translation id="2664887757054927933">{COUNT,plural, =0{Brak}=1{1 hasło (do <ph name="DOMAIN_LIST" />)}=2{2 hasła (do <ph name="DOMAIN_LIST" />)}few{# hasła (do <ph name="DOMAIN_LIST" />)}many{# haseł (do <ph name="DOMAIN_LIST" />)}other{# hasła (do <ph name="DOMAIN_LIST" />)}}</translation>
 <translation id="2666092431469916601">Do góry</translation>
 <translation id="2666117266261740852">Zamknij inne karty lub aplikacje</translation>
 <translation id="2672201172023654893">Twoja przeglądarka nie jest zarządzana.</translation>
@@ -590,7 +590,7 @@ Jeśli się nie zgodzisz, zostaną one zablokowane ze względu na Twoje ustawien
 <translation id="2922350208395188000">Nie można sprawdzić certyfikatu serwera.</translation>
 <translation id="2925673989565098301">Metoda dostawy</translation>
 <translation id="2928905813689894207">Adres rozliczeniowy</translation>
-<translation id="2929525460561903222">{SHIPPING_ADDRESS,plural, =0{<ph name="SHIPPING_ADDRESS_PREVIEW" />}=1{<ph name="SHIPPING_ADDRESS_PREVIEW" /> i jeszcze <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" />}few{<ph name="SHIPPING_ADDRESS_PREVIEW" /> i jeszcze <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" />}other{<ph name="SHIPPING_ADDRESS_PREVIEW" /> i jeszcze <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" />}}</translation>
+<translation id="2929525460561903222">{SHIPPING_ADDRESS,plural, =0{<ph name="SHIPPING_ADDRESS_PREVIEW" />}=1{<ph name="SHIPPING_ADDRESS_PREVIEW" /> i jeszcze <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" />}few{<ph name="SHIPPING_ADDRESS_PREVIEW" /> i jeszcze <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" />}many{<ph name="SHIPPING_ADDRESS_PREVIEW" /> i jeszcze <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" />}other{<ph name="SHIPPING_ADDRESS_PREVIEW" /> i jeszcze <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" />}}</translation>
 <translation id="2930577230479659665">Przycięcie po każdej kopii</translation>
 <translation id="2932085390869194046">Zaproponuj hasło...</translation>
 <translation id="2934466151127459956">Government-Letter</translation>
@@ -645,7 +645,7 @@ Jeśli się nie zgodzisz, zostaną one zablokowane ze względu na Twoje ustawien
 <translation id="3120730422813725195">Elo</translation>
 <translation id="31207688938192855"><ph name="BEGIN_LINK" />Uruchom diagnostykę połączeń<ph name="END_LINK" />.</translation>
 <translation id="3121994479408824897">Wejdź na <ph name="DOMAIN" /></translation>
-<translation id="3137507986424712703">{COUNT,plural, =0{Brak}=1{dane logowania dla 1 konta}few{dane logowania dla # kont}other{dane logowania dla # konta}}</translation>
+<translation id="3137507986424712703">{COUNT,plural, =0{Brak}=1{dane logowania dla 1 konta}few{dane logowania dla # kont}many{dane logowania dla # kont}other{dane logowania dla # konta}}</translation>
 <translation id="3145945101586104090">Dekodowanie odpowiedzi nie powiodło się</translation>
 <translation id="3150653042067488994">Tymczasowy błąd serwera</translation>
 <translation id="3154506275960390542">Strona zawiera formularz, którego nie można przesłać bezpiecznie. Podczas przesyłania dane mogą zobaczyć inni użytkownicy, a hakerzy mogą je zmodyfikować, by na serwer dotarły zmienione dane.</translation>
@@ -775,7 +775,7 @@ Jeśli się nie zgodzisz, zostaną one zablokowane ze względu na Twoje ustawien
 <translation id="3518941727116570328">Obsługa wielu obiektów</translation>
 <translation id="3528171143076753409">Certyfikat serwera nie jest zaufany.</translation>
 <translation id="3528485271872257980">Ciemnobrązowy</translation>
-<translation id="3530944546672790857">{COUNT,plural, =0{Co najmniej 1 element na synchronizowanych urządzeniach}=1{1 element (i więcej na synchronizowanych urządzeniach)}few{# elementy (i więcej na synchronizowanych urządzeniach)}other{# elementu (i więcej na synchronizowanych urządzeniach)}}</translation>
+<translation id="3530944546672790857">{COUNT,plural, =0{Co najmniej 1 element na synchronizowanych urządzeniach}=1{1 element (i więcej na synchronizowanych urządzeniach)}few{# elementy (i więcej na synchronizowanych urządzeniach)}many{# elementów (i więcej na synchronizowanych urządzeniach)}other{# elementu (i więcej na synchronizowanych urządzeniach)}}</translation>
 <translation id="3531780078352352885">Arkusze zadań</translation>
 <translation id="3532844647053365774"><ph name="HOST" /> chce korzystać z mikrofonu</translation>
 <translation id="3533328374079021623">Zestaw tac odbiorczych 5</translation>
@@ -793,7 +793,7 @@ Jeśli się nie zgodzisz, zostaną one zablokowane ze względu na Twoje ustawien
 <translation id="3586931643579894722">Ukryj szczegóły</translation>
 <translation id="3587738293690942763">Średni</translation>
 <translation id="3592413004129370115">Italian (koperta)</translation>
-<translation id="3595699422137460894">{NUM_DAYS,plural, =0{Możesz zresetować grupę w dowolnym momencie. Dołączenie do nowej grupy trwa około 1 dnia.}=1{Możesz zresetować grupę w dowolnym momencie. Dołączenie do nowej grupy trwa około 1 dnia.}few{Możesz zresetować grupę w dowolnym momencie. Dołączenie do nowej grupy trwa około {NUM_DAYS} dni.}other{Możesz zresetować grupę w dowolnym momencie. Dołączenie do nowej grupy trwa około {NUM_DAYS} dnia.}}</translation>
+<translation id="3595699422137460894">{NUM_DAYS,plural, =0{Możesz zresetować grupę w dowolnym momencie. Dołączenie do nowej grupy trwa około 1 dnia.}=1{Możesz zresetować grupę w dowolnym momencie. Dołączenie do nowej grupy trwa około 1 dnia.}few{Możesz zresetować grupę w dowolnym momencie. Dołączenie do nowej grupy trwa około {NUM_DAYS} dni.}many{Możesz zresetować grupę w dowolnym momencie. Dołączenie do nowej grupy trwa około {NUM_DAYS} dni.}other{Możesz zresetować grupę w dowolnym momencie. Dołączenie do nowej grupy trwa około {NUM_DAYS} dnia.}}</translation>
 <translation id="3596012367874587041">Ustawienia aplikacji</translation>
 <translation id="3600246354004376029"><ph name="TITLE" />, <ph name="DOMAIN" />, <ph name="TIME" /></translation>
 <translation id="3603507503523709">Aplikacja zablokowana przez administratora</translation>
@@ -908,7 +908,7 @@ Jeśli się nie zgodzisz, zostaną one zablokowane ze względu na Twoje ustawien
 <translation id="3962859241508114581">Poprzedni utwór</translation>
 <translation id="3963721102035795474">Tryb czytnika</translation>
 <translation id="3963837677003247395">Czy chcesz kontynuować samodzielnie?</translation>
-<translation id="3964661563329879394">{COUNT,plural, =0{Brak}=1{Z 1 witryny }few{Z # witryn }other{Z # witryny }}</translation>
+<translation id="3964661563329879394">{COUNT,plural, =0{Brak}=1{Z 1 witryny }few{Z # witryn }many{Z # witryn }other{Z # witryny }}</translation>
 <translation id="3969052498612555048">Nie możesz znaleźć kodu? <ph name="BEGIN_LINK" />Uzyskaj nowy kod<ph name="END_LINK" /></translation>
 <translation id="397105322502079400">Obliczanie...</translation>
 <translation id="3973234410852337861">Strona <ph name="HOST_NAME" /> jest zablokowana</translation>
@@ -921,7 +921,7 @@ Jeśli się nie zgodzisz, zostaną one zablokowane ze względu na Twoje ustawien
 <translation id="3990250421422698716">Odsunięcie poszczególnych kopii</translation>
 <translation id="3996311196211510766">Strona <ph name="ORIGIN" /> zażądała, by do wszystkich kierowanych do niej żądań stosować zasadę dotyczącą źródła, ale tej zasady nie można teraz zastosować.</translation>
 <translation id="4010758435855888356">Zezwolić na dostęp do pamięci?</translation>
-<translation id="4014128326099193693">{COUNT,plural, =1{Dokument PDF zawierający {COUNT} stronę}few{Dokument PDF zawierający {COUNT} strony}other{Dokument PDF zawierający {COUNT} strony}}</translation>
+<translation id="4014128326099193693">{COUNT,plural, =1{Dokument PDF zawierający {COUNT} stronę}few{Dokument PDF zawierający {COUNT} strony}many{Dokument PDF zawierający {COUNT} stron}other{Dokument PDF zawierający {COUNT} strony}}</translation>
 <translation id="4023431997072828269">Twoje dane będą widoczne dla innych, ponieważ połączenie używane do przesłania formularza nie jest bezpieczne.</translation>
 <translation id="4025913568718019429">Przycisk zarządzania prywatnością w Google; aby otworzyć ustawienia prywatności konta Google, naciśnij Enter</translation>
 <translation id="4030383055268325496">&amp;Cofnij dodanie</translation>
@@ -953,7 +953,7 @@ Jeśli się nie zgodzisz, zostaną one zablokowane ze względu na Twoje ustawien
 <translation id="4117700440116928470">Ten zakres zasad nie jest obsługiwany.</translation>
 <translation id="4121428309786185360">Wygasa dnia</translation>
 <translation id="4123572138124678573">Trzy otwory z dołu</translation>
-<translation id="4129401438321186435">{COUNT,plural, =1{1 inny wpis}few{# inne wpisy}other{# innego wpisu}}</translation>
+<translation id="4129401438321186435">{COUNT,plural, =1{1 inny wpis}few{# inne wpisy}many{# innych wpisów}other{# innego wpisu}}</translation>
 <translation id="4130226655945681476">Sprawdź kable sieciowe, modem i router</translation>
 <translation id="4133224101597112888">Przycisk Udostępnij tę kartę; aby udostępnić tę kartę za pomocą linku, kodu QR, przesyłania lub innej opcji, naciśnij Enter.</translation>
 <translation id="4134123981501319574">Utwórz dokument</translation>
@@ -961,7 +961,7 @@ Jeśli się nie zgodzisz, zostaną one zablokowane ze względu na Twoje ustawien
 <translation id="4142935452406587478">Taca 10</translation>
 <translation id="4148925816941278100">American Express</translation>
 <translation id="4151403195736952345">Użyj globalnego ustawienia domyślnego (Wykrywaj)</translation>
-<translation id="4152318981910038897">{COUNT,plural, =1{Strona 1}few{Strona {COUNT}}other{Strona {COUNT}}}</translation>
+<translation id="4152318981910038897">{COUNT,plural, =1{Strona 1}few{Strona {COUNT}}many{Strona {COUNT}}other{Strona {COUNT}}}</translation>
 <translation id="4154664944169082762">Odciski cyfrowe</translation>
 <translation id="4159784952369912983">Purpurowy</translation>
 <translation id="4165986682804962316">Ustawienia witryn</translation>
@@ -969,7 +969,7 @@ Jeśli się nie zgodzisz, zostaną one zablokowane ze względu na Twoje ustawien
 <translation id="4171489848299289778"><ph name="RESULT_MODIFIED_DATE" /> – <ph name="RESULT_OWNER" /> – <ph name="RESULT_PRODUCT_SOURCE" /></translation>
 <translation id="4172051516777682613">Zawsze pokazuj</translation>
 <translation id="4173315687471669144">Foolscap</translation>
-<translation id="4173827307318847180">{MORE_ITEMS,plural, =1{Jeszcze <ph name="ITEM_COUNT" /> element}few{Jeszcze <ph name="ITEM_COUNT" /> elementy}other{Jeszcze <ph name="ITEM_COUNT" /> elementu}}</translation>
+<translation id="4173827307318847180">{MORE_ITEMS,plural, =1{Jeszcze <ph name="ITEM_COUNT" /> element}few{Jeszcze <ph name="ITEM_COUNT" /> elementy}many{Jeszcze <ph name="ITEM_COUNT" /> elementów}other{Jeszcze <ph name="ITEM_COUNT" /> elementu}}</translation>
 <translation id="4176463684765177261">Wyłączone</translation>
 <translation id="4179515394835346607"><ph name="ROW_NAME" /> <ph name="ROW_CONTENT" /></translation>
 <translation id="4194250254487269611">W tej chwili nie można zapisać karty</translation>
@@ -1017,7 +1017,7 @@ Jeśli się nie zgodzisz, zostaną one zablokowane ze względu na Twoje ustawien
 <translation id="4275830172053184480">Zrestartuj urządzenie</translation>
 <translation id="4277028893293644418">Resetuj hasło</translation>
 <translation id="4278390842282768270">Dopuszczone</translation>
-<translation id="428639260510061158">{NUM_CARDS,plural, =1{Ta karta została zapisana na Twoim koncie Google}few{Te karty zostały zapisane na Twoim koncie Google}other{Te karty zostały zapisane na Twoim koncie Google}}</translation>
+<translation id="428639260510061158">{NUM_CARDS,plural, =1{Ta karta została zapisana na Twoim koncie Google}few{Te karty zostały zapisane na Twoim koncie Google}many{Te karty zostały zapisane na Twoim koncie Google}other{Te karty zostały zapisane na Twoim koncie Google}}</translation>
 <translation id="4287885627794386150">Kwalifikuje się do wersji próbnej, ale nie jest ona aktywna</translation>
 <translation id="4297502707443874121">Miniatura strony <ph name="THUMBNAIL_PAGE" /></translation>
 <translation id="42981349822642051">Rozwiń</translation>
@@ -1168,7 +1168,7 @@ Jeśli się nie zgodzisz, zostaną one zablokowane ze względu na Twoje ustawien
 <translation id="4764776831041365478">Strona internetowa pod adresem <ph name="URL" /> może być tymczasowo niedostępna lub została na stałe przeniesiona pod nowy adres internetowy.</translation>
 <translation id="4766713847338118463">Dwie zszywki na dole</translation>
 <translation id="4771973620359291008">Wystąpił nieznany błąd.</translation>
-<translation id="477945296921629067">{NUM_POPUPS,plural, =1{Zablokowano wyskakujące okienko}few{Zablokowano # wyskakujące okienka}other{Zablokowano # wyskakującego okienka}}</translation>
+<translation id="477945296921629067">{NUM_POPUPS,plural, =1{Zablokowano wyskakujące okienko}few{Zablokowano # wyskakujące okienka}many{Zablokowano # wyskakujących okienek}other{Zablokowano # wyskakującego okienka}}</translation>
 <translation id="4780366598804516005">Zestaw tac odbiorczych 1</translation>
 <translation id="4785376858512657294">Zarządzaj kontem Google</translation>
 <translation id="4785689107224900852">Przełącz na tę kartę</translation>
@@ -1204,7 +1204,7 @@ Jeśli się nie zgodzisz, zostaną one zablokowane ze względu na Twoje ustawien
 <translation id="485902285759009870">Weryfikuję kod...</translation>
 <translation id="4876188919622883022">Widok uproszczony</translation>
 <translation id="4876305945144899064">Brak nazwy użytkownika</translation>
-<translation id="4877083676943085827">{COUNT,plural, =0{Brak}=1{<ph name="EXAMPLE_DOMAIN_1" />}=2{<ph name="EXAMPLE_DOMAIN_1" />, <ph name="EXAMPLE_DOMAIN_2" />}few{<ph name="EXAMPLE_DOMAIN_1" />, <ph name="EXAMPLE_DOMAIN_2" />, <ph name="AND_MORE" />}other{<ph name="EXAMPLE_DOMAIN_1" />, <ph name="EXAMPLE_DOMAIN_2" />, <ph name="AND_MORE" />}}</translation>
+<translation id="4877083676943085827">{COUNT,plural, =0{Brak}=1{<ph name="EXAMPLE_DOMAIN_1" />}=2{<ph name="EXAMPLE_DOMAIN_1" />, <ph name="EXAMPLE_DOMAIN_2" />}few{<ph name="EXAMPLE_DOMAIN_1" />, <ph name="EXAMPLE_DOMAIN_2" />, <ph name="AND_MORE" />}many{<ph name="EXAMPLE_DOMAIN_1" />, <ph name="EXAMPLE_DOMAIN_2" />, <ph name="AND_MORE" />}other{<ph name="EXAMPLE_DOMAIN_1" />, <ph name="EXAMPLE_DOMAIN_2" />, <ph name="AND_MORE" />}}</translation>
 <translation id="4877422487531841831">Wyszukiwanie ciągu <ph name="TEXT" /></translation>
 <translation id="4879491255372875719">Automatycznie (domyślnie)</translation>
 <translation id="4879725228911483934">Otwierać i rozmieszczać okna na Twoich ekranach.</translation>
@@ -1259,12 +1259,12 @@ Jeśli się nie zgodzisz, zostaną one zablokowane ze względu na Twoje ustawien
 <translation id="5040262127954254034">Prywatność</translation>
 <translation id="5043480802608081735">Skopiowany link</translation>
 <translation id="5045550434625856497">Nieprawidłowe hasło</translation>
-<translation id="5056425809654826431">{NUM_FILES,plural, =1{Aby wysłać plik przez Udostępnianie w pobliżu, zwolnij miejsce (<ph name="DISK_SPACE_SIZE" />) na urządzeniu}few{Aby wysłać pliki przez Udostępnianie w pobliżu, zwolnij miejsce (<ph name="DISK_SPACE_SIZE" />) na urządzeniu}other{Aby wysłać pliki przez Udostępnianie w pobliżu, zwolnij miejsce (<ph name="DISK_SPACE_SIZE" />) na urządzeniu}}</translation>
+<translation id="5056425809654826431">{NUM_FILES,plural, =1{Aby wysłać plik przez Udostępnianie w pobliżu, zwolnij miejsce (<ph name="DISK_SPACE_SIZE" />) na urządzeniu}few{Aby wysłać pliki przez Udostępnianie w pobliżu, zwolnij miejsce (<ph name="DISK_SPACE_SIZE" />) na urządzeniu}many{Aby wysłać pliki przez Udostępnianie w pobliżu, zwolnij miejsce (<ph name="DISK_SPACE_SIZE" />) na urządzeniu}other{Aby wysłać pliki przez Udostępnianie w pobliżu, zwolnij miejsce (<ph name="DISK_SPACE_SIZE" />) na urządzeniu}}</translation>
 <translation id="5056549851600133418">Artykuły dla Ciebie</translation>
 <translation id="5061227663725596739">Czy chodziło Ci o <ph name="LOOKALIKE_DOMAIN" />?</translation>
 <translation id="5066056036849835175">Historia drukowania</translation>
 <translation id="5068524481479508725">A10</translation>
-<translation id="5068778127327928576">{NUM_COOKIES,plural, =1{(w użyciu: 1)}few{(w użyciu: #)}other{(w użyciu: #)}}</translation>
+<translation id="5068778127327928576">{NUM_COOKIES,plural, =1{(w użyciu: 1)}few{(w użyciu: #)}many{(w użyciu: #)}other{(w użyciu: #)}}</translation>
 <translation id="5070335125961472645"><ph name="BEGIN_LINK" />Sprawdź adres serwera proxy<ph name="END_LINK" /></translation>
 <translation id="5070838744279127212">Rolka 10</translation>
 <translation id="507130231501693183">Zestaw tac odbiorczych 4</translation>
@@ -1390,7 +1390,7 @@ Jeśli się nie zgodzisz, zostaną one zablokowane ze względu na Twoje ustawien
 <translation id="5452270690849572955">Nie można znaleźć tej strony na <ph name="HOST_NAME" /></translation>
 <translation id="5455374756549232013">Nieprawidłowy czas zasady</translation>
 <translation id="5457113250005438886">Nieprawidłowe</translation>
-<translation id="5458150163479425638">{CONTACT,plural, =0{<ph name="CONTACT_PREVIEW" />}=1{<ph name="CONTACT_PREVIEW" /> i jeszcze <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" />}few{<ph name="CONTACT_PREVIEW" /> i jeszcze <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" />}other{<ph name="CONTACT_PREVIEW" /> i jeszcze <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" />}}</translation>
+<translation id="5458150163479425638">{CONTACT,plural, =0{<ph name="CONTACT_PREVIEW" />}=1{<ph name="CONTACT_PREVIEW" /> i jeszcze <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" />}few{<ph name="CONTACT_PREVIEW" /> i jeszcze <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" />}many{<ph name="CONTACT_PREVIEW" /> i jeszcze <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" />}other{<ph name="CONTACT_PREVIEW" /> i jeszcze <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" />}}</translation>
 <translation id="5463625433003343978">Szukam urządzeń...</translation>
 <translation id="5469868506864199649">Włoski</translation>
 <translation id="5470861586879999274">&amp;Ponów edycję</translation>
@@ -1467,9 +1467,9 @@ Jeśli się nie zgodzisz, zostaną one zablokowane ze względu na Twoje ustawien
 <translation id="5720705177508910913">Bieżący użytkownik</translation>
 <translation id="5728056243719941842">C5 (koperta)</translation>
 <translation id="5730040223043577876">Chrome zaleca zresetowanie hasła, jeśli zostało użyte na innej stronie.</translation>
-<translation id="5737183892635480227">{NUM_CARDS,plural, =1{Zapisywanie karty na koncie Google}few{Zapisywanie kart na koncie Google}other{Zapisywanie kart na koncie Google}}</translation>
+<translation id="5737183892635480227">{NUM_CARDS,plural, =1{Zapisywanie karty na koncie Google}few{Zapisywanie kart na koncie Google}many{Zapisywanie kart na koncie Google}other{Zapisywanie kart na koncie Google}}</translation>
 <translation id="5745733273847572235">Może prosić o dostęp do Twojej lokalizacji</translation>
-<translation id="5745980000221562234">{NUM_CARDS,plural, =1{W przypadku tej karty użyj numeru wirtualnego}few{Wybierz kartę}other{Wybierz kartę}}</translation>
+<translation id="5745980000221562234">{NUM_CARDS,plural, =1{W przypadku tej karty użyj numeru wirtualnego}few{Wybierz kartę}many{Wybierz kartę}other{Wybierz kartę}}</translation>
 <translation id="5759751709240058861">Używanie kamery i poruszanie nią</translation>
 <translation id="5763042198335101085">Wpisz prawidłowy adres e-mail</translation>
 <translation id="5765072501007116331">Aby zobaczyć metody dostawy oraz wymagania, wybierz adres</translation>
@@ -1488,7 +1488,7 @@ Jeśli się nie zgodzisz, zostaną one zablokowane ze względu na Twoje ustawien
 <translation id="5812947184178430888">Gdy Chrome oznacza zdarzenia związane z bezpieczeństwem, odpowiednie dane o nich są wysyłane do administratora. Mogą one obejmować adresy URL stron odwiedzanych w Chrome, nazwy plików lub metadane oraz nazwę użytkownika, pod którą logujesz się w aplikacjach internetowych, na swoim urządzeniu i w Chrome.</translation>
 <translation id="5813119285467412249">&amp;Ponów dodanie</translation>
 <translation id="5817918615728894473">Sparuj</translation>
-<translation id="5824687817967109979">{NUM_CARDS,plural, =1{Gdy zapłacisz, karta zostanie obciążona, ale dana strona nie pozna jej rzeczywistego numeru. Jako dodatkowe zabezpieczenie zostanie wygenerowany tymczasowy kod CVC.}few{Gdy zapłacisz, wybrana karta zostanie obciążona, ale dana strona nie pozna jej rzeczywistego numeru. Jako dodatkowe zabezpieczenie zostanie wygenerowany tymczasowy kod CVC.}other{Gdy zapłacisz, wybrana karta zostanie obciążona, ale dana strona nie pozna jej rzeczywistego numeru. Jako dodatkowe zabezpieczenie zostanie wygenerowany tymczasowy kod CVC.}}</translation>
+<translation id="5824687817967109979">{NUM_CARDS,plural, =1{Gdy zapłacisz, karta zostanie obciążona, ale dana strona nie pozna jej rzeczywistego numeru. Jako dodatkowe zabezpieczenie zostanie wygenerowany tymczasowy kod CVC.}few{Gdy zapłacisz, wybrana karta zostanie obciążona, ale dana strona nie pozna jej rzeczywistego numeru. Jako dodatkowe zabezpieczenie zostanie wygenerowany tymczasowy kod CVC.}many{Gdy zapłacisz, wybrana karta zostanie obciążona, ale dana strona nie pozna jej rzeczywistego numeru. Jako dodatkowe zabezpieczenie zostanie wygenerowany tymczasowy kod CVC.}other{Gdy zapłacisz, wybrana karta zostanie obciążona, ale dana strona nie pozna jej rzeczywistego numeru. Jako dodatkowe zabezpieczenie zostanie wygenerowany tymczasowy kod CVC.}}</translation>
 <translation id="5826507051599432481">Nazwa pospolita (CN)</translation>
 <translation id="5830698870816298009">używanie kamery i poruszanie nią</translation>
 <translation id="5838278095973806738">Nie podawaj żadnych informacji poufnych (takich jak hasła czy dane kart kredytowych) w tej witrynie, bo osoby atakujące będą mogły je wykraść.</translation>
@@ -1514,7 +1514,7 @@ Jeśli się nie zgodzisz, zostaną one zablokowane ze względu na Twoje ustawien
 <translation id="5913377024445952699">Przechwytywanie ekranu zostało wstrzymane</translation>
 <translation id="59174027418879706">Włączony</translation>
 <translation id="5919090499915321845">B10</translation>
-<translation id="5920262536204764679">{NUM_COOKIES,plural, =1{W użyciu: 1}few{W użyciu: #}other{W użyciu: #}}</translation>
+<translation id="5920262536204764679">{NUM_COOKIES,plural, =1{W użyciu: 1}few{W użyciu: #}many{W użyciu: #}other{W użyciu: #}}</translation>
 <translation id="5921185718311485855">włączono</translation>
 <translation id="5921639886840618607">Zapisać kartę na koncie Google?</translation>
 <translation id="5922853866070715753">Prawie gotowe</translation>
@@ -1632,7 +1632,7 @@ Jeśli się nie zgodzisz, zostaną one zablokowane ze względu na Twoje ustawien
 <translation id="6337133576188860026">Zwolni się mniej niż <ph name="SIZE" />. Podczas następnej wizyty niektóre strony mogą ładować się wolniej.</translation>
 <translation id="6337534724793800597">Filtruj zasady według nazwy</translation>
 <translation id="6349101878882523185">Zainstaluj aplikację <ph name="APP_NAME" /></translation>
-<translation id="6353505687280762741">{COUNT,plural, =0{Brak}=1{1 hasło (do <ph name="DOMAIN_LIST" />, zsynchronizowano)}=2{2 hasła (do <ph name="DOMAIN_LIST" />, zsynchronizowano)}few{# hasła (do <ph name="DOMAIN_LIST" />, zsynchronizowano)}other{# hasła (do <ph name="DOMAIN_LIST" />, zsynchronizowano)}}</translation>
+<translation id="6353505687280762741">{COUNT,plural, =0{Brak}=1{1 hasło (do <ph name="DOMAIN_LIST" />, zsynchronizowano)}=2{2 hasła (do <ph name="DOMAIN_LIST" />, zsynchronizowano)}few{# hasła (do <ph name="DOMAIN_LIST" />, zsynchronizowano)}many{# haseł (do <ph name="DOMAIN_LIST" />, zsynchronizowano)}other{# hasła (do <ph name="DOMAIN_LIST" />, zsynchronizowano)}}</translation>
 <translation id="6355392890578844978">Ta przeglądarka nie jest zarządzana przez firmę ani inną organizację. Aktywność na tym urządzeniu może być zarządzana poza Chromium. <ph name="BEGIN_LINK" />Więcej informacji<ph name="END_LINK" /></translation>
 <translation id="6358450015545214790">Co to oznacza?</translation>
 <translation id="6361757823711327522">B7</translation>
@@ -1641,7 +1641,7 @@ Jeśli się nie zgodzisz, zostaną one zablokowane ze względu na Twoje ustawien
 <translation id="6377268785556383139">1 wynik dla zapytania „<ph name="SEARCH_TEXT" />”</translation>
 <translation id="6380497234672085559">A0</translation>
 <translation id="6383221683286411806">Uważaj na możliwe opłaty.</translation>
-<translation id="6386120369904791316">{COUNT,plural, =1{1 inna podpowiedź}few{# inne podpowiedzi}other{# innej podpowiedzi}}</translation>
+<translation id="6386120369904791316">{COUNT,plural, =1{1 inna podpowiedź}few{# inne podpowiedzi}many{# innych podpowiedzi}other{# innej podpowiedzi}}</translation>
 <translation id="6387645831795005740">Złośliwe strony czasami podszywają się pod inne, wprowadzając małe i trudne do zauważenia zmiany w adresie URL.</translation>
 <translation id="6389470377220713856">Imię i nazwisko na karcie</translation>
 <translation id="6390200185239044127">Składanie w połowie, a następnie składanie typu Z</translation>
@@ -1714,7 +1714,7 @@ Jeśli się nie zgodzisz, zostaną one zablokowane ze względu na Twoje ustawien
 <translation id="663260587451432563">JIS B4</translation>
 <translation id="6643016212128521049">Wyczyść</translation>
 <translation id="6645291930348198241">Dostęp do plików cookie i danych witryn.</translation>
-<translation id="6646269444027925224">{COUNT,plural, =0{Brak}=1{Z 1 witryny (nie spowoduje to wylogowania z konta Google)}few{Z # witryn (nie spowoduje to wylogowania z konta Google)}other{Z # witryny (nie spowoduje to wylogowania z konta Google)}}</translation>
+<translation id="6646269444027925224">{COUNT,plural, =0{Brak}=1{Z 1 witryny (nie spowoduje to wylogowania z konta Google)}few{Z # witryn (nie spowoduje to wylogowania z konta Google)}many{Z # witryn (nie spowoduje to wylogowania z konta Google)}other{Z # witryny (nie spowoduje to wylogowania z konta Google)}}</translation>
 <translation id="6648459603387803038">Administrator może zdalnie zmienić konfigurację przeglądarki. Aktywność na tym urządzeniu może być zarządzana również poza Chrome.</translation>
 <translation id="6648524591329069940">Czcionka szeryfowa</translation>
 <translation id="6651270836885078973">Zarządzane przez:</translation>
@@ -1826,7 +1826,7 @@ Jeśli się nie zgodzisz, zostaną one zablokowane ze względu na Twoje ustawien
 <translation id="7031646650991750659">Zainstalowane przez Ciebie aplikacje z Google Play</translation>
 <translation id="7038063300915481831"><ph name="MANAGE_GOOGLE_PRIVACY_FOCUSED_FRIENDLY_MATCH_TEXT" />; aby zarządzać ustawieniami prywatności konta Google, naciśnij Tab, a potem Enter</translation>
 <translation id="7050187094878475250">Próbujesz połączyć się z domeną <ph name="DOMAIN" />, ale serwer przedstawił certyfikat, którego okres ważności jest za długi, by był wiarygodny.</translation>
-<translation id="705310974202322020">{NUM_CARDS,plural, =1{Nie można teraz zapisać tej karty}few{Nie można teraz zapisać tych kart}other{Nie można teraz zapisać tych kart}}</translation>
+<translation id="705310974202322020">{NUM_CARDS,plural, =1{Nie można teraz zapisać tej karty}few{Nie można teraz zapisać tych kart}many{Nie można teraz zapisać tych kart}other{Nie można teraz zapisać tych kart}}</translation>
 <translation id="7053983685419859001">Blokuj</translation>
 <translation id="7058163556978339998">W <ph name="BROWSER" /> sprawdzono, że wydawcą certyfikatu tej witryny jest <ph name="ISSUER" />.</translation>
 <translation id="7062635574500127092">Morski</translation>
@@ -1856,13 +1856,13 @@ Jeśli się nie zgodzisz, zostaną one zablokowane ze względu na Twoje ustawien
 <translation id="7139892792842608322">Taca główna</translation>
 <translation id="714064300541049402">Strona 2 – przesunięcie obrazu wzdłuż osi X</translation>
 <translation id="7152423860607593928">Number-14 (koperta)</translation>
-<translation id="7153549335910886479">{PAYMENT_METHOD,plural, =0{<ph name="PAYMENT_METHOD_PREVIEW" />}=1{<ph name="PAYMENT_METHOD_PREVIEW" /> i jeszcze <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />}few{<ph name="PAYMENT_METHOD_PREVIEW" /> i jeszcze <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />}other{<ph name="PAYMENT_METHOD_PREVIEW" /> i jeszcze <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />}}</translation>
+<translation id="7153549335910886479">{PAYMENT_METHOD,plural, =0{<ph name="PAYMENT_METHOD_PREVIEW" />}=1{<ph name="PAYMENT_METHOD_PREVIEW" /> i jeszcze <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />}few{<ph name="PAYMENT_METHOD_PREVIEW" /> i jeszcze <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />}many{<ph name="PAYMENT_METHOD_PREVIEW" /> i jeszcze <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />}other{<ph name="PAYMENT_METHOD_PREVIEW" /> i jeszcze <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />}}</translation>
 <translation id="7153618581592392745">Lawendowy</translation>
 <translation id="7156870133441232244">Na serwerze należy przejść na TLS w wersji 1.2 lub nowszej.</translation>
 <translation id="717330890047184534">Identyfikator GAIA:</translation>
 <translation id="7173920250514487165">Zrzut ekranu z treściami poufnymi</translation>
 <translation id="7174545416324379297">Wartości scalone</translation>
-<translation id="7175401108899573750">{SHIPPING_OPTIONS,plural, =0{<ph name="SHIPPING_OPTION_PREVIEW" />}=1{<ph name="SHIPPING_OPTION_PREVIEW" /> i jeszcze <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" />}few{<ph name="SHIPPING_OPTION_PREVIEW" /> i jeszcze <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" />}other{<ph name="SHIPPING_OPTION_PREVIEW" /> i jeszcze <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" />}}</translation>
+<translation id="7175401108899573750">{SHIPPING_OPTIONS,plural, =0{<ph name="SHIPPING_OPTION_PREVIEW" />}=1{<ph name="SHIPPING_OPTION_PREVIEW" /> i jeszcze <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" />}few{<ph name="SHIPPING_OPTION_PREVIEW" /> i jeszcze <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" />}many{<ph name="SHIPPING_OPTION_PREVIEW" /> i jeszcze <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" />}other{<ph name="SHIPPING_OPTION_PREVIEW" /> i jeszcze <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" />}}</translation>
 <translation id="7179323680825933600">Zapisuj i automatycznie uzupełniaj informacje o formach płatności</translation>
 <translation id="7180611975245234373">Odśwież</translation>
 <translation id="7181261019481237103">Otwórz okno incognito</translation>
@@ -2011,7 +2011,7 @@ Dodatkowe informacje:
 <translation id="762844065391966283">Pojedynczo</translation>
 <translation id="7633909222644580952">Dane o wydajności i raporty o awariach</translation>
 <translation id="7637571805876720304">Usunąć tę kartę kredytową z Chromium?</translation>
-<translation id="7637586430889951925">{COUNT,plural, =0{Brak}=1{Na Twoim koncie zapisane jest 1 hasło (dla domen <ph name="DOMAIN_LIST" />)}few{Na Twoim koncie zapisane są # hasła (dla domen <ph name="DOMAIN_LIST" />)}other{Na Twoim koncie zapisane jest # hasła (dla domen <ph name="DOMAIN_LIST" />)}}</translation>
+<translation id="7637586430889951925">{COUNT,plural, =0{Brak}=1{Na Twoim koncie zapisane jest 1 hasło (dla domen <ph name="DOMAIN_LIST" />)}few{Na Twoim koncie zapisane są # hasła (dla domen <ph name="DOMAIN_LIST" />)}many{Na Twoim koncie zapisanych jest # haseł (dla domen <ph name="DOMAIN_LIST" />)}other{Na Twoim koncie zapisane jest # hasła (dla domen <ph name="DOMAIN_LIST" />)}}</translation>
 <translation id="7638605456503525968">Porty szeregowe</translation>
 <translation id="7639968568612851608">Ciemnoszary</translation>
 <translation id="7647206758853451655">Jakość wydruku</translation>
@@ -2027,7 +2027,7 @@ Dodatkowe informacje:
 <translation id="7667346355482952095">Zwrócony token zasad jest pusty lub nie pasuje do bieżącego tokena</translation>
 <translation id="7668654391829183341">Nieznane urządzenie</translation>
 <translation id="7669271284792375604">Osoby atakujące tę stronę mogą podstępem próbować nakłonić Cię do zainstalowania programów utrudniających przeglądanie internetu (np. zmieniających stronę główną lub wyświetlających dodatkowe reklamy na stronach, na które wchodzisz).</translation>
-<translation id="7669907849388166732">{COUNT,plural, =1{Wykonane działania dotyczące danych oznaczonych jako poufne (od momentu zalogowania zgłoszono 1 działanie). <ph name="BEGIN_LINK" />Więcej informacji<ph name="END_LINK" />}few{Wykonane działania dotyczące danych oznaczonych jako poufne (od momentu zalogowania zgłoszono # działania). <ph name="BEGIN_LINK" />Więcej informacji<ph name="END_LINK" />}other{Wykonane działania dotyczące danych oznaczonych jako poufne (od momentu zalogowania zgłoszono # działania). <ph name="BEGIN_LINK" />Więcej informacji<ph name="END_LINK" />}}</translation>
+<translation id="7669907849388166732">{COUNT,plural, =1{Wykonane działania dotyczące danych oznaczonych jako poufne (od momentu zalogowania zgłoszono 1 działanie). <ph name="BEGIN_LINK" />Więcej informacji<ph name="END_LINK" />}few{Wykonane działania dotyczące danych oznaczonych jako poufne (od momentu zalogowania zgłoszono # działania). <ph name="BEGIN_LINK" />Więcej informacji<ph name="END_LINK" />}many{Wykonane działania dotyczące danych oznaczonych jako poufne (od momentu zalogowania zgłoszono # działań). <ph name="BEGIN_LINK" />Więcej informacji<ph name="END_LINK" />}other{Wykonane działania dotyczące danych oznaczonych jako poufne (od momentu zalogowania zgłoszono # działania). <ph name="BEGIN_LINK" />Więcej informacji<ph name="END_LINK" />}}</translation>
 <translation id="7673278391011283842">Zestaw tac odbiorczych 6</translation>
 <translation id="7676643023259824263">Wyszukaj tekst ze schowka, <ph name="TEXT" /></translation>
 <translation id="7679367271685653708">Wyświetl historię przeglądania i zarządzaj nią w ustawieniach Chrome</translation>
@@ -2079,7 +2079,7 @@ Dodatkowe informacje:
 <translation id="7815407501681723534">Znalezione <ph name="SEARCH_RESULTS" /> dla zapytania „<ph name="SEARCH_STRING" />”: <ph name="NUMBER_OF_RESULTS" /></translation>
 <translation id="782886543891417279">Sieć Wi-Fi (<ph name="WIFI_NAME" />), której używasz, może wymagać otwarcia strony logowania.</translation>
 <translation id="7836231406687464395">Postfix (koperta)</translation>
-<translation id="7844689747373518809">{COUNT,plural, =0{Brak}=1{Jedna aplikacja (<ph name="EXAMPLE_APP_1" />)}=2{Dwie aplikacje (<ph name="EXAMPLE_APP_1" /> i <ph name="EXAMPLE_APP_2" />)}few{# aplikacje (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" /> <ph name="AND_MORE" />)}other{# aplikacji (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" /> <ph name="AND_MORE" />)}}</translation>
+<translation id="7844689747373518809">{COUNT,plural, =0{Brak}=1{Jedna aplikacja (<ph name="EXAMPLE_APP_1" />)}=2{Dwie aplikacje (<ph name="EXAMPLE_APP_1" /> i <ph name="EXAMPLE_APP_2" />)}few{# aplikacje (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" /> <ph name="AND_MORE" />)}many{# aplikacji (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" /> <ph name="AND_MORE" />)}other{# aplikacji (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" /> <ph name="AND_MORE" />)}}</translation>
 <translation id="7855695075675558090"><ph name="TOTAL_LABEL" />: <ph name="FORMATTED_TOTAL_AMOUNT" /> <ph name="CURRENCY_CODE" /></translation>
 <translation id="7862185352068345852">Opuścić stronę?</translation>
 <translation id="7865448901209910068">Optymalna szybkość</translation>
@@ -2128,7 +2128,7 @@ Dodatkowe informacje:
 <translation id="7995512525968007366">Nie określono</translation>
 <translation id="800218591365569300">Zamknij inne karty lub programy, by zwolnić pamięć.</translation>
 <translation id="8004582292198964060">Przeglądarka</translation>
-<translation id="8012116502927253373">{NUM_CARDS,plural, =1{Ta karta i jej adres rozliczeniowy zostaną zapisane. Możesz ich używać po zalogowaniu się na konto <ph name="USER_EMAIL" />.}few{Te karty i ich adresy rozliczeniowe zostaną zapisane. Możesz ich używać po zalogowaniu się na konto <ph name="USER_EMAIL" />.}other{Te karty i ich adresy rozliczeniowe zostaną zapisane. Możesz ich używać po zalogowaniu się na konto <ph name="USER_EMAIL" />.}}</translation>
+<translation id="8012116502927253373">{NUM_CARDS,plural, =1{Ta karta i jej adres rozliczeniowy zostaną zapisane. Możesz ich używać po zalogowaniu się na konto <ph name="USER_EMAIL" />.}few{Te karty i ich adresy rozliczeniowe zostaną zapisane. Możesz ich używać po zalogowaniu się na konto <ph name="USER_EMAIL" />.}many{Te karty i ich adresy rozliczeniowe zostaną zapisane. Możesz ich używać po zalogowaniu się na konto <ph name="USER_EMAIL" />.}other{Te karty i ich adresy rozliczeniowe zostaną zapisane. Możesz ich używać po zalogowaniu się na konto <ph name="USER_EMAIL" />.}}</translation>
 <translation id="8025119109950072390">Osoby atakujące tę stronę mogą podstępem nakłonić Cię do zrobienia czegoś niebezpiecznego, np. zainstalowania oprogramowania lub ujawnienia danych osobowych (takich jak hasła, numery telefonów czy dane kart kredytowych).</translation>
 <translation id="8026334261755873520">Wyczyść dane przeglądania</translation>
 <translation id="8027077570865220386">Taca 15</translation>
@@ -2270,7 +2270,7 @@ Dodatkowe informacje:
 <translation id="8446884382197647889">Więcej informacji</translation>
 <translation id="8457125768502047971">Bez ograniczeń</translation>
 <translation id="8461694314515752532">Szyfruj synchronizowane dane własnym hasłem synchronizacji</translation>
-<translation id="8466379296835108687">{COUNT,plural, =1{1 karta kredytowa}few{# karty kredytowe}other{# karty kredytowej}}</translation>
+<translation id="8466379296835108687">{COUNT,plural, =1{1 karta kredytowa}few{# karty kredytowe}many{# kart kredytowych}other{# karty kredytowej}}</translation>
 <translation id="8473863474539038330">Adresy i ustawienia</translation>
 <translation id="8474910779563686872">Pokaż informacje dla deweloperów</translation>
 <translation id="8479754468255770962">Zszywka w lewym dolnym rogu</translation>
@@ -2292,7 +2292,7 @@ Dodatkowe informacje:
 <translation id="8541158209346794904">Urządzenie Bluetooth</translation>
 <translation id="8542014550340843547">Trzy zszywki na dole</translation>
 <translation id="8543181531796978784">Możesz <ph name="BEGIN_ERROR_LINK" />zgłosić problem z wykrywaniem<ph name="END_ERROR_LINK" /> lub – jeśli rozumiesz zagrożenie – <ph name="BEGIN_LINK" />wejść na tę niebezpieczną stronę<ph name="END_LINK" />.</translation>
-<translation id="8554912124839363479">{NUM_PERMISSIONS,plural, =1{Zresetuj uprawnienia}few{Zresetuj uprawnienia}other{Zresetuj uprawnienia}}</translation>
+<translation id="8554912124839363479">{NUM_PERMISSIONS,plural, =1{Zresetuj uprawnienia}few{Zresetuj uprawnienia}many{Zresetuj uprawnienia}other{Zresetuj uprawnienia}}</translation>
 <translation id="8555010941760982128">Użyj tego kodu w momencie płatności</translation>
 <translation id="8557066899867184262">Kod CVC znajduje się na odwrocie karty.</translation>
 <translation id="8558485628462305855">Aby oglądać treści rzeczywistości rozszerzonej, zaktualizuj ARCore</translation>
@@ -2494,7 +2494,7 @@ Dodatkowe informacje:
 <translation id="962484866189421427">Te treści mogą próbować zainstalować wprowadzające w błąd aplikacje, które udają, że są przeznaczone do czegoś innego niż w rzeczywistości, lub zbierają dane, na podstawie których można Cię śledzić. <ph name="BEGIN_LINK" />Pokaż mimo to<ph name="END_LINK" /></translation>
 <translation id="969892804517981540">Oficjalna wersja</translation>
 <translation id="973773823069644502">Dodaj adres dostawy</translation>
-<translation id="975560348586398090">{COUNT,plural, =0{Brak}=1{1 element}few{# elementy}other{# elementu}}</translation>
+<translation id="975560348586398090">{COUNT,plural, =0{Brak}=1{1 element}few{# elementy}many{# elementów}other{# elementu}}</translation>
 <translation id="981121421437150478">Offline</translation>
 <translation id="984275831282074731">Formy płatności</translation>
 <translation id="985199708454569384">&lt;p&gt;Ten błąd występuje, jeśli data i godzina na komputerze lub urządzeniu mobilnym są niedokładne.&lt;/p&gt;

@@ -121,7 +121,7 @@
 <translation id="3091839911843451378">Niepowodzenie – drukarka została zatrzymana</translation>
 <translation id="3102119246920354026">Pamięć podręczna</translation>
 <translation id="3122464029669770682">Procesor</translation>
-<translation id="3127341325625468058">{PAGE_NUMBER,plural, =0{Usunąć stronę?}=1{Usunąć stronę {PAGE_NUMBER}?}few{Usunąć stronę {PAGE_NUMBER}?}other{Usunąć stronę {PAGE_NUMBER}?}}</translation>
+<translation id="3127341325625468058">{PAGE_NUMBER,plural, =0{Usunąć stronę?}=1{Usunąć stronę {PAGE_NUMBER}?}few{Usunąć stronę {PAGE_NUMBER}?}many{Usunąć stronę {PAGE_NUMBER}?}other{Usunąć stronę {PAGE_NUMBER}?}}</translation>
 <translation id="315116470104423982">Mobilna transmisja danych</translation>
 <translation id="3156846309055100599">Skanuję stronę <ph name="PAGE_NUMBER" />…</translation>
 <translation id="315738237743207937">Wykryto portal przechwytujący</translation>
@@ -131,7 +131,7 @@
 <translation id="3226405216343213872">Szukam skanerów</translation>
 <translation id="3246869037381808805">Zadania drukowania starsze niż 1 dzień zostaną usunięte</translation>
 <translation id="3268178239013324452">Niepowodzenie – otwarte drzwiczki drukarki</translation>
-<translation id="3283504360622356314">{0,plural, =1{Edytuj plik}few{Edytuj pliki}other{Edytuj pliki}}</translation>
+<translation id="3283504360622356314">{0,plural, =1{Edytuj plik}few{Edytuj pliki}many{Edytuj pliki}other{Edytuj pliki}}</translation>
 <translation id="3286515922899063534"><ph name="CURRENT" /> GHz</translation>
 <translation id="3310640316857623290">Opóźnienie DNS znacznie przekracza dopuszczalny próg</translation>
 <translation id="3328783797891415197">Test w toku</translation>
@@ -228,7 +228,7 @@
 <translation id="4835901797422965222">Brak aktywnych sieci</translation>
 <translation id="484790837831576105">(Android) Rozpoznawanie nazw DNS</translation>
 <translation id="4848429997038228357">W TOKU</translation>
-<translation id="4861758251032006121">{ATTEMPTS_LEFT,plural, =1{<ph name="ERROR_MESSAGE" /> Pozostała {0} próba.}few{<ph name="ERROR_MESSAGE" /> Pozostały {0} próby.}other{<ph name="ERROR_MESSAGE" /> Pozostało {0} próby.}}</translation>
+<translation id="4861758251032006121">{ATTEMPTS_LEFT,plural, =1{<ph name="ERROR_MESSAGE" /> Pozostała {0} próba.}few{<ph name="ERROR_MESSAGE" /> Pozostały {0} próby.}many{<ph name="ERROR_MESSAGE" /> Pozostało {0} prób.}other{<ph name="ERROR_MESSAGE" /> Pozostało {0} próby.}}</translation>
 <translation id="4871137769558798671">Nie udało się połączyć przez zaporę sieciową z witrynami HTTPS (port 443)</translation>
 <translation id="4880328057631981605">Nazwa punktu dostępu</translation>
 <translation id="4885705234041587624">MSCHAPv2</translation>
@@ -281,7 +281,7 @@ Kliknij mikrofon i zadaj pytanie.</translation>
 <translation id="5431825016875453137">OpenVPN / L2TP</translation>
 <translation id="5457599981699367932">Przeglądaj jako gość</translation>
 <translation id="54609108002486618">Zarządzany</translation>
-<translation id="5478289488939624992">{ATTEMPTS_LEFT,plural, =1{Pozostała {0} próba}few{Pozostały {0} próby}other{Pozostało {0} próby}}</translation>
+<translation id="5478289488939624992">{ATTEMPTS_LEFT,plural, =1{Pozostała {0} próba}few{Pozostały {0} próby}many{Pozostało {0} prób}other{Pozostało {0} próby}}</translation>
 <translation id="5493614766091057239"><ph name="VERDICT" />: <ph name="PROBLEMS" /></translation>
 <translation id="5499114900554609492">Nie udało się zeskanować</translation>
 <translation id="5502931783115429516">Android nie działa</translation>
@@ -305,7 +305,7 @@ Kliknij mikrofon i zadaj pytanie.</translation>
 <translation id="5866840822086176774">Bardzo silny</translation>
 <translation id="5895138241574237353">Uruchom ponownie</translation>
 <translation id="5916084858004523819">Niedozwolone</translation>
-<translation id="5921506667911082617">{COUNT,plural, =1{Plik został zeskanowany i zapisany w folderze <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}few{Pliki zostały zeskanowane i zapisane w folderze <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}other{Pliki zostały zeskanowane i zapisane w folderze <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}}</translation>
+<translation id="5921506667911082617">{COUNT,plural, =1{Plik został zeskanowany i zapisany w folderze <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}few{Pliki zostały zeskanowane i zapisane w folderze <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}many{Pliki zostały zeskanowane i zapisane w folderze <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}other{Pliki zostały zeskanowane i zapisane w folderze <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}}</translation>
 <translation id="5931523347251946569">Nie znaleziono pliku</translation>
 <translation id="594552776027197022">Wygeneruj losową parę kluczy</translation>
 <translation id="5972388717451707488">Update Engine</translation>
@@ -343,7 +343,7 @@ Kliknij mikrofon i zadaj pytanie.</translation>
 <translation id="641081527798843608">Dopasowanie do tematu</translation>
 <translation id="6423239382391657905">OpenVPN</translation>
 <translation id="6456394469623773452">Dobry</translation>
-<translation id="6463239094587744704">{PAGE_NUMBER,plural, =0{Przeskanować ponownie stronę?}=1{Przeskanować ponownie stronę {PAGE_NUMBER}?}few{Przeskanować ponownie stronę {PAGE_NUMBER}?}other{Przeskanować ponownie stronę {PAGE_NUMBER}?}}</translation>
+<translation id="6463239094587744704">{PAGE_NUMBER,plural, =0{Przeskanować ponownie stronę?}=1{Przeskanować ponownie stronę {PAGE_NUMBER}?}few{Przeskanować ponownie stronę {PAGE_NUMBER}?}many{Przeskanować ponownie stronę {PAGE_NUMBER}?}other{Przeskanować ponownie stronę {PAGE_NUMBER}?}}</translation>
 <translation id="6472207088655375767">Hasło jednorazowe</translation>
 <translation id="6480327114083866287">Zarządzane przez <ph name="MANAGER" /></translation>
 <translation id="649050271426829538">Zatrzymano – zacięcie papieru</translation>
@@ -383,7 +383,7 @@ Kliknij mikrofon i zadaj pytanie.</translation>
 <translation id="7059230779847288458">Ładuję (pełne naładowanie za <ph name="TIME_VALUE" />)</translation>
 <translation id="708426984172631313">ZATRZYMANO</translation>
 <translation id="7086440545492620869"><ph name="VALUE" /> <ph name="DISPLAY_NAME" /></translation>
-<translation id="7134436342991564651">{0,plural, =1{Serwer nazw}few{Serwery nazw}other{Serwery nazw}}</translation>
+<translation id="7134436342991564651">{0,plural, =1{Serwer nazw}few{Serwery nazw}many{Serwery nazw}other{Serwery nazw}}</translation>
 <translation id="7143207342074048698">Łączenie</translation>
 <translation id="7144878232160441200">Spróbuj jeszcze raz</translation>
 <translation id="714876143603641390">Łączność LAN</translation>
@@ -404,7 +404,7 @@ Kliknij mikrofon i zadaj pytanie.</translation>
 <translation id="7375053625150546623">EAP</translation>
 <translation id="7415801143053185905">Bardzo duże opóźnienie HTTP</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
-<translation id="7435977162516949853">{NUMBER_OF_PAGES,plural, =1{Gotowe. Zeskanowano 1 stronę.}few{Gotowe. Zeskanowano {NUMBER_OF_PAGES} strony.}other{Gotowe. Zeskanowano {NUMBER_OF_PAGES} strony.}}</translation>
+<translation id="7435977162516949853">{NUMBER_OF_PAGES,plural, =1{Gotowe. Zeskanowano 1 stronę.}few{Gotowe. Zeskanowano {NUMBER_OF_PAGES} strony.}many{Gotowe. Zeskanowano {NUMBER_OF_PAGES} stron.}other{Gotowe. Zeskanowano {NUMBER_OF_PAGES} strony.}}</translation>
 <translation id="7469648432129124067">Wykryto portal</translation>
 <translation id="7487067081878637334">Technologia</translation>
 <translation id="7490813197707563893">Adres MAC</translation>
@@ -519,7 +519,7 @@ Kliknij mikrofon i zadaj pytanie.</translation>
 <translation id="8968751544471797276">Szybkość ładowania</translation>
 <translation id="8970109610781093811">Uruchom ponownie</translation>
 <translation id="8983038754672563810">HSPA</translation>
-<translation id="8987565828374052507">{NUMBER_OF_PAGES,plural, =0{Skanuj}=1{Skanuj {NUMBER_OF_PAGES} stronę}few{Skanuj {NUMBER_OF_PAGES} strony}other{Skanuj {NUMBER_OF_PAGES} strony}}</translation>
+<translation id="8987565828374052507">{NUMBER_OF_PAGES,plural, =0{Skanuj}=1{Skanuj {NUMBER_OF_PAGES} stronę}few{Skanuj {NUMBER_OF_PAGES} strony}many{Skanuj {NUMBER_OF_PAGES} stron}other{Skanuj {NUMBER_OF_PAGES} strony}}</translation>
 <translation id="9003704114456258138">Częstotliwość</translation>
 <translation id="9039663905644212491">PEAP</translation>
 <translation id="9062831201344759865">Długi czas oczekiwania na rozpoznanie nazw DNS</translation>

@@ -13,7 +13,7 @@
 <translation id="151962892725702025">‏מערכת ההפעלה של Chromium לא הצליחה לסנכרן את הנתונים שלך מפני שסנכרון אינו זמין עבור הדומיין שלך.</translation>
 <translation id="1524282610922162960">‏שיתוף כרטיסיית Chromium</translation>
 <translation id="1553461853655228091">‏Chromium זקוק להרשאת גישה למצלמה כדי ליצור מפה תלת-ממדית של הסביבה שלך</translation>
-<translation id="1607715478322902680">{COUNT,plural, =0{‏מנהל המערכת מבקש להפעיל מחדש את Chromium כדי להחיל עדכון}=1{‏מנהל המערכת מבקש להפעיל מחדש את Chromium כדי להחיל עדכון. החלון האנונימי לא ייפתח מחדש.}two{‏מנהל המערכת מבקש להפעיל מחדש את Chromium כדי להחיל עדכון. # החלונות האנונימיים לא ייפתחו מחדש.}other{‏מנהל המערכת מבקש להפעיל מחדש את Chromium כדי להחיל עדכון. # החלונות האנונימיים לא ייפתחו מחדש.}}</translation>
+<translation id="1607715478322902680">{COUNT,plural, =0{‏מנהל המערכת מבקש להפעיל מחדש את Chromium כדי להחיל עדכון}=1{‏מנהל המערכת מבקש להפעיל מחדש את Chromium כדי להחיל עדכון. החלון האנונימי לא ייפתח מחדש.}two{‏מנהל המערכת מבקש להפעיל מחדש את Chromium כדי להחיל עדכון. # החלונות האנונימיים לא ייפתחו מחדש.}many{‏מנהל המערכת מבקש להפעיל מחדש את Chromium כדי להחיל עדכון. # החלונות האנונימיים לא ייפתחו מחדש.}other{‏מנהל המערכת מבקש להפעיל מחדש את Chromium כדי להחיל עדכון. # החלונות האנונימיים לא ייפתחו מחדש.}}</translation>
 <translation id="1667812772085710766">‏אחרי שסוגרים את Chromium, קובצי ה-cookie והנתונים מהדפים שבהם ביקרת יימחקו באופן אוטומטי</translation>
 <translation id="1708666629004767631">‏גרסה חדשה ובטוחה יותר של Chromium זמינה כעת.</translation>
 <translation id="1774152462503052664">‏התרה ל-Chromium לפעול ברקע</translation>
@@ -81,10 +81,10 @@
 <translation id="3509308970982693815">‏יש לסגור את כל חלונות Chromium ולנסות שוב.</translation>
 <translation id="3575459661164320785">‏יש במחשב שלך תוכנה מזיקה. Chromium יכול להסיר אותה, לשחזר את ההגדרות שלך ולהשבית תוספים כדי שהדפדפן יחזור שוב לפעולה רגילה.</translation>
 <translation id="3639635944603682591">‏נתוני הגלישה של האדם הזה יימחקו מהמכשיר. כדי לשחזר את הנתונים, יש להיכנס ל-Chromium בתור <ph name="USER_EMAIL" />.</translation>
-<translation id="364817392622123556">{COUNT,plural, =0{‏יש עדכון חדש בשביל Chromium והמערכת תחיל אותו ברגע שתבוצע הפעלה מחדש.}=1{‏יש עדכון חדש בשביל Chromium והמערכת תחיל אותו ברגע שתבוצע הפעלה מחדש. החלון האנונימי לא ייפתח מחדש.}two{‏יש עדכון חדש בשביל Chromium והמערכת תחיל אותו ברגע שתבוצע הפעלה מחדש. # החלונות האנונימיים לא ייפתחו מחדש.}other{‏יש עדכון חדש בשביל Chromium והמערכת תחיל אותו ברגע שתבוצע הפעלה מחדש. # החלונות האנונימיים לא ייפתחו מחדש.}}</translation>
+<translation id="364817392622123556">{COUNT,plural, =0{‏יש עדכון חדש בשביל Chromium והמערכת תחיל אותו ברגע שתבוצע הפעלה מחדש.}=1{‏יש עדכון חדש בשביל Chromium והמערכת תחיל אותו ברגע שתבוצע הפעלה מחדש. החלון האנונימי לא ייפתח מחדש.}two{‏יש עדכון חדש בשביל Chromium והמערכת תחיל אותו ברגע שתבוצע הפעלה מחדש. # החלונות האנונימיים לא ייפתחו מחדש.}many{‏יש עדכון חדש בשביל Chromium והמערכת תחיל אותו ברגע שתבוצע הפעלה מחדש. # החלונות האנונימיים לא ייפתחו מחדש.}other{‏יש עדכון חדש בשביל Chromium והמערכת תחיל אותו ברגע שתבוצע הפעלה מחדש. # החלונות האנונימיים לא ייפתחו מחדש.}}</translation>
 <translation id="3651803019964686660">‏כדי לשלוח מספר מ-<ph name="ORIGIN" /> לטלפון Android שלך, צריך להיכנס אל Chromium בשני המכשירים.</translation>
 <translation id="3685209450716071127">‏Chromium לא יכול לבדוק את הסיסמאות שלך. יש לבדוק את החיבור לאינטרנט.</translation>
-<translation id="370962675267501463">{COUNT,plural, =0{‏מנהל המערכת מבקש להפעיל מחדש את Chromium כדי להחיל את העדכון הזה}=1{‏מנהל המערכת מבקש להפעיל מחדש את Chromium כדי להחיל את העדכון הזה. החלון האנונימי לא ייפתח מחדש.}two{‏מנהל המערכת מבקש להפעיל מחדש את Chromium כדי להחיל את העדכון הזה. # החלונות האנונימיים לא ייפתחו מחדש.}other{‏מנהל המערכת מבקש להפעיל מחדש את Chromium כדי להחיל את העדכון הזה. # החלונות האנונימיים לא ייפתחו מחדש.}}</translation>
+<translation id="370962675267501463">{COUNT,plural, =0{‏מנהל המערכת מבקש להפעיל מחדש את Chromium כדי להחיל את העדכון הזה}=1{‏מנהל המערכת מבקש להפעיל מחדש את Chromium כדי להחיל את העדכון הזה. החלון האנונימי לא ייפתח מחדש.}two{‏מנהל המערכת מבקש להפעיל מחדש את Chromium כדי להחיל את העדכון הזה. # החלונות האנונימיים לא ייפתחו מחדש.}many{‏מנהל המערכת מבקש להפעיל מחדש את Chromium כדי להחיל את העדכון הזה. # החלונות האנונימיים לא ייפתחו מחדש.}other{‏מנהל המערכת מבקש להפעיל מחדש את Chromium כדי להחיל את העדכון הזה. # החלונות האנונימיים לא ייפתחו מחדש.}}</translation>
 <translation id="3713809861844741608">‏פתיחת הקישור ב&amp;כרטיסיית Chromium חדשה</translation>
 <translation id="3728336900324680424">‏Chromium ייגש ל-Drive שלך כדי להציג הצעות בשורת כתובת האתר</translation>
 <translation id="378917192836375108">‏Chromium מאפשר לך ללחוץ על מספר טלפון באינטרנט ולהתקשר אליו באמצעות Skype!</translation>
@@ -139,7 +139,7 @@
 <translation id="549669000822060376">‏יש להמתין בזמן ש-Chromium מתקין את עדכוני המערכת האחרונים.</translation>
 <translation id="5496810170689441661">‏Chromium מנסה לערוך את הסיסמאות. כדי לאפשר זאת, יש להזין את הסיסמה שלך ל-Windows.</translation>
 <translation id="5527463683072221100">‏פתיחה של קובצי PDF ב-Chromium</translation>
-<translation id="5623402015214259806">{0,plural, =0{‏יש עדכון ל-Chromium}=1{‏יש עדכון ל-Chromium}two{‏עדכון של Chromium זמין כבר # ימים}other{‏עדכון של Chromium זמין כבר # ימים}}</translation>
+<translation id="5623402015214259806">{0,plural, =0{‏יש עדכון ל-Chromium}=1{‏יש עדכון ל-Chromium}two{‏עדכון של Chromium זמין כבר # ימים}many{‏עדכון של Chromium זמין כבר # ימים}other{‏עדכון של Chromium זמין כבר # ימים}}</translation>
 <translation id="5634636535844844681">‏כדי להשתמש ב-Chromium יש צורך ב-Windows מגרסה 7 ואילך.</translation>
 <translation id="5653831366781983928">‏יש להפעיל מחדש את Chromium</translation>
 <translation id="5698481217667032250">‏הצגת Chromium בשפה זו</translation>
@@ -163,7 +163,7 @@
 <translation id="6145820983052037069">‏כאן ניתן לעבור בין פרופילים של Chromium</translation>
 <translation id="6183079672144801177">‏יש לוודא שנכנסת ל-Chromium ב-<ph name="TARGET_DEVICE_NAME" /> שלך ולשלוח שוב.</translation>
 <translation id="6212496753309875659">‏במחשב זה קיימת כבר גרסה מתקדמת יותר של Chromium. אם התוכנה אינה פועלת, יש להסיר את ההתקנה של Chromium ולנסות שוב.</translation>
-<translation id="6219195342503754812">{0,plural, =0{‏Chromium יופעל מחדש עכשיו}=1{‏Chromium יופעל מחדש בעוד שנייה אחת}two{‏Chromium יופעל מחדש בעוד # שניות}other{‏Chromium יופעל מחדש בעוד # שניות}}</translation>
+<translation id="6219195342503754812">{0,plural, =0{‏Chromium יופעל מחדש עכשיו}=1{‏Chromium יופעל מחדש בעוד שנייה אחת}two{‏Chromium יופעל מחדש בעוד # שניות}many{‏Chromium יופעל מחדש בעוד # שניות}other{‏Chromium יופעל מחדש בעוד # שניות}}</translation>
 <translation id="6241367896540709610">‏נדרשת הרשאת גישה לאחסון ב-Chromium כדי להוריד קבצים</translation>
 <translation id="6248213926982192922">‏יש להפוך את Chromium לדפדפן ברירת המחדל</translation>
 <translation id="6266342355635466082">‏Chromium לא יכול לחפש עדכונים. יש לבדוק את החיבור לאינטרנט.</translation>
@@ -178,7 +178,7 @@
 <translation id="6403826409255603130">‏Chromium הוא דפדפן אינטרנט המפעיל דפי אינטרנט ואפליקציות במהירות הבזק. זהו דפדפן מהיר, יציב וקל לשימוש שמאפשר לך לגלוש באינטרנט בצורה מאובטחת יותר הודות להגנה מפני תוכנות זדוניות ופישינג המובנית ב-Chromium.</translation>
 <translation id="6434250628340475518">‏מערכת Chromium OS</translation>
 <translation id="6455857529632101747">‏ברוך בואך לפרופילים של Chromium</translation>
-<translation id="6457450909262716557">{SECONDS,plural, =1{‏Chromium יבצע אתחול בעוד שנייה אחת}two{‏Chromium יבצע אתחול בעוד # שניות}other{‏Chromium יבצע אתחול בעוד # שניות}}</translation>
+<translation id="6457450909262716557">{SECONDS,plural, =1{‏Chromium יבצע אתחול בעוד שנייה אחת}two{‏Chromium יבצע אתחול בעוד # שניות}many{‏Chromium יבצע אתחול בעוד # שניות}other{‏Chromium יבצע אתחול בעוד # שניות}}</translation>
 <translation id="6475912303565314141">‏הגדרה זו גם קובעת איזה דף מוצג כשמפעילים את Chromium.</translation>
 <translation id="6510925080656968729">‏הסרה של התקנת Chromium</translation>
 <translation id="6542839706527980775">‏בכל פרופיל מאוחסנים נתוני Chromium משלו כמו סימניות, היסטוריה, סיסמאות ועוד</translation>
@@ -225,7 +225,7 @@ Chromium לא יכול לשחזר את ההגדרות שלך.</translation>
 <translation id="7449453770951226939">‏<ph name="PAGE_TITLE" /> - Chromium בגרסת פיתוח</translation>
 <translation id="7451052299415159299">‏Chromium זקוק להרשאת גישה למצלמה בשביל האתר הזה</translation>
 <translation id="7483335560992089831">‏לא ניתן להתקין את אותה גרסת Chromium שפועלת כרגע. יש לסגור את Chromium ולנסות שוב.</translation>
-<translation id="753534427205733210">{0,plural, =1{‏Chromium יופעל מחדש בעוד דקה}two{‏Chromium יופעל מחדש בעוד # דקות}other{‏Chromium יופעל מחדש בעוד # דקות}}</translation>
+<translation id="753534427205733210">{0,plural, =1{‏Chromium יופעל מחדש בעוד דקה}two{‏Chromium יופעל מחדש בעוד # דקות}many{‏Chromium יופעל מחדש בעוד # דקות}other{‏Chromium יופעל מחדש בעוד # דקות}}</translation>
 <translation id="7549178288319965365">‏על מערכת ההפעלה של Chromium</translation>
 <translation id="7561906087460245826">‏הסרת נתונים גם מ-Chromium (<ph name="URL" />)</translation>
 <translation id="7585853947355360626">‏אם הגדרה מסוימת לא מופיעה בדף הזה, אפשר לחפש אותה <ph name="LINK_BEGIN" />
@@ -254,7 +254,7 @@ Chromium לא יכול לשחזר את ההגדרות שלך.</translation>
 <translation id="8290862415967981663">‏Chromium‏ חסם את הקובץ הזה כי הוא עלול להיות מסוכן.</translation>
 <translation id="8330519371938183845">‏כניסה לחשבון תסנכרן ותתאים אישית את Chromium בכל המכשירים שברשותך</translation>
 <translation id="8340674089072921962">‏בכתובת <ph name="USER_EMAIL_ADDRESS" /> השתמשו בעבר ב-Chromium</translation>
-<translation id="8417404458978023919">{0,plural, =1{‏צריך להפעיל מחדש את Chromium בתוך יום אחד}two{‏צריך להפעיל מחדש את Chromium בתוך # ימים}other{‏צריך להפעיל מחדש את Chromium בתוך # ימים}}</translation>
+<translation id="8417404458978023919">{0,plural, =1{‏צריך להפעיל מחדש את Chromium בתוך יום אחד}two{‏צריך להפעיל מחדש את Chromium בתוך # ימים}many{‏צריך להפעיל מחדש את Chromium בתוך # ימים}other{‏צריך להפעיל מחדש את Chromium בתוך # ימים}}</translation>
 <translation id="8453117565092476964">‏הארכיון של המתקין פגום או שאינו חוקי. יש להוריד שוב את Chromium.</translation>
 <translation id="8493179195440786826">‏Chromium אינו מעודכן</translation>
 <translation id="8550334526674375523">פרופיל העבודה שלך נפרד לחלוטין מהפרופיל האישי שלך.</translation>
@@ -277,7 +277,7 @@ Chromium לא יכול לשחזר את ההגדרות שלך.</translation>
 <translation id="8986207147630327271">בחרת להוסיף פרופיל עבודה לדפדפן זה ולתת למנהל המערכת שליטה רק על פרופיל העבודה.</translation>
 <translation id="9019929317751753759">‏כדי לשפר את האבטחה של Chromium, השבתנו את התוסף הבא שאינו רשום ב-<ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> וייתכן שנוסף ללא ידיעתך.</translation>
 <translation id="9089354809943900324">‏Chromium אינו מעודכן</translation>
-<translation id="9093206154853821181">{0,plural, =1{‏Chromium יופעל מחדש בעוד שעה}two{‏Chromium יופעל מחדש בעוד # שעות}other{‏Chromium יופעל מחדש בעוד # שעות}}</translation>
+<translation id="9093206154853821181">{0,plural, =1{‏Chromium יופעל מחדש בעוד שעה}two{‏Chromium יופעל מחדש בעוד # שעות}many{‏Chromium יופעל מחדש בעוד # שעות}other{‏Chromium יופעל מחדש בעוד # שעות}}</translation>
 <translation id="91086099826398415">‏פתיחת הקישור &amp;בכרטיסיית Chromium חדשה</translation>
 <translation id="911206726377975832">למחוק גם את נתוני הגלישה שלך?</translation>
 <translation id="9158494823179993217">‏לפי הגדרת מנהל המערכת, Chromium יפתח דפדפן חלופי כדי לגשת אל <ph name="TARGET_URL_HOSTNAME" />.</translation>

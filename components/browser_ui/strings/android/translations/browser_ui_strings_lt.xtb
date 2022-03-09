@@ -53,14 +53,14 @@
 <translation id="2359808026110333948">Tęskite</translation>
 <translation id="2379925928934107488">Kai galima, taikyti tamsiąją temą svetainėse, kai „Chrome“ naudoja tamsiąją temą</translation>
 <translation id="2402980924095424747"><ph name="MEGABYTES" /> MB</translation>
-<translation id="2404630663942400771">{PERMISSIONS_SUMMARY_ALLOWED,plural, =1{Leidžiama: <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> ir dar <ph name="NUM_MORE" />}one{Leidžiama: <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> ir dar <ph name="NUM_MORE" />}few{Leidžiama: <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> ir dar <ph name="NUM_MORE" />}other{Leidžiama: <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> ir dar <ph name="NUM_MORE" />}}</translation>
+<translation id="2404630663942400771">{PERMISSIONS_SUMMARY_ALLOWED,plural, =1{Leidžiama: <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> ir dar <ph name="NUM_MORE" />}one{Leidžiama: <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> ir dar <ph name="NUM_MORE" />}few{Leidžiama: <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> ir dar <ph name="NUM_MORE" />}many{Leidžiama: <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> ir dar <ph name="NUM_MORE" />}other{Leidžiama: <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> ir dar <ph name="NUM_MORE" />}}</translation>
 <translation id="2434158240863470628">Atsisiųsta: <ph name="SEPARATOR" /> <ph name="BYTES_DOWNLOADED" /></translation>
 <translation id="2482878487686419369">Pranešimai</translation>
 <translation id="2485422356828889247">Pašalinti</translation>
 <translation id="2490684707762498678">Tvarko „<ph name="APP_NAME" />“</translation>
 <translation id="2498359688066513246">Pagalba ir atsiliepimai</translation>
 <translation id="2501278716633472235">Grįžti</translation>
-<translation id="2569468611847789653">{COOKIE_COUNT,plural, =1{Užblokuotas 1 slapukas}one{Užblokuotas # slapukas}few{Užblokuoti # slapukai}other{Užblokuota # slapukų}}</translation>
+<translation id="2569468611847789653">{COOKIE_COUNT,plural, =1{Užblokuotas 1 slapukas}one{Užblokuotas # slapukas}few{Užblokuoti # slapukai}many{Užblokuota # slapuko}other{Užblokuota # slapukų}}</translation>
 <translation id="2570922361219980984">Vietos prieiga taip pat išjungta šiame įrenginyje. Įjunkite ją skiltyje <ph name="BEGIN_LINK" />„Android“ nustatymai“<ph name="END_LINK" />.</translation>
 <translation id="257931822824936280">Išskleista – spustelėkite, kad sutrauktumėte</translation>
 <translation id="2586657967955657006">Iškarpinė</translation>
@@ -161,7 +161,7 @@
 <translation id="5335288049665977812">Leisti svetainėms paleisti „JavaScript“ (rekomenduojama)</translation>
 <translation id="534295439873310000">ALR įrenginiai</translation>
 <translation id="5354152178998424783">Tai atlikus bus išvalyta <ph name="DATASIZE" /> svetainių saugomų duomenų ir slapukų.</translation>
-<translation id="5394307150471348411">{DETAIL_COUNT,plural, =1{(ir dar 1)}one{(ir dar #)}few{(ir dar #)}other{(ir dar #)}}</translation>
+<translation id="5394307150471348411">{DETAIL_COUNT,plural, =1{(ir dar 1)}one{(ir dar #)}few{(ir dar #)}many{(ir dar #)}other{(ir dar #)}}</translation>
 <translation id="5403592356182871684">Pavadinimai</translation>
 <translation id="5438097262470833822">Bus iš naujo nustatyti svetainės <ph name="WEBSITE" /> leidimai</translation>
 <translation id="5489227211564503167">Praėjęs laikas: <ph name="ELAPSED_TIME" /> iš <ph name="TOTAL_TIME" />.</translation>
@@ -213,7 +213,7 @@
 <translation id="6447842834002726250">Slapukai</translation>
 <translation id="6527303717912515753">Bendrinti</translation>
 <translation id="6545864417968258051">„Bluetooth“ nuskaitymas</translation>
-<translation id="6552800053856095716">{PERMISSIONS_SUMMARY_BLOCKED,plural, =1{Užblokuota: <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> ir dar <ph name="NUM_MORE" />}one{Užblokuota: <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> ir dar <ph name="NUM_MORE" />}few{Užblokuota: <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> ir dar <ph name="NUM_MORE" />}other{Užblokuota: <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> ir dar <ph name="NUM_MORE" />}}</translation>
+<translation id="6552800053856095716">{PERMISSIONS_SUMMARY_BLOCKED,plural, =1{Užblokuota: <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> ir dar <ph name="NUM_MORE" />}one{Užblokuota: <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> ir dar <ph name="NUM_MORE" />}few{Užblokuota: <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> ir dar <ph name="NUM_MORE" />}many{Užblokuota: <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> ir dar <ph name="NUM_MORE" />}other{Užblokuota: <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> ir dar <ph name="NUM_MORE" />}}</translation>
 <translation id="6554732001434021288">Paskutinį kartą lankytasi prieš <ph name="NUM_DAYS" /> d.</translation>
 <translation id="6561560012278703671">Naudoti tylesnio susirašinėjimo funkcijas (blokuojami pranešimų įspėjimai, kad jūsų neblaškytų)</translation>
 <translation id="6593061639179217415">Svetainė kompiuteriams</translation>
@@ -237,7 +237,7 @@
 <translation id="7000754031042624318">Išjungta „Android“ nustatymuose</translation>
 <translation id="7016516562562142042">Leidžiama dabartiniam paieškos varikliui</translation>
 <translation id="7053983685419859001">Blokuoti</translation>
-<translation id="7066151586745993502">{NUM_SELECTED,plural, =1{Pasirinktas 1 elementas}one{Pasirinktas # elementas}few{Pasirinkti # elementai}other{Pasirinkta # elementų}}</translation>
+<translation id="7066151586745993502">{NUM_SELECTED,plural, =1{Pasirinktas 1 elementas}one{Pasirinktas # elementas}few{Pasirinkti # elementai}many{Pasirinkta # elemento}other{Pasirinkta # elementų}}</translation>
 <translation id="7087918508125750058">Pasirinkta: <ph name="ITEM_COUNT" />. Parinktys pasiekiamos netoli ekrano viršaus</translation>
 <translation id="7141896414559753902">Blokuoti, kad svetainėse nebūtų rodomi iššokantieji langai ir peradresavimai (rekomenduojama)</translation>
 <translation id="7176368934862295254"><ph name="KILOBYTES" /> KB</translation>
@@ -298,7 +298,7 @@
 <translation id="8441146129660941386">Ieškoti einant atgal</translation>
 <translation id="8444433999583714703">Norėdami leisti „<ph name="APP_NAME" />“ pasiekti jūsų vietovę, taip pat įjunkite ją <ph name="BEGIN_LINK" />„Android“ nustatymuose<ph name="END_LINK" />.</translation>
 <translation id="8447861592752582886">Anuliuoti įrenginio leidimą</translation>
-<translation id="8451050538944905715">{NUM_SELECTED,plural, =1{Naudojamas 1 slapukas}one{Naudojamas # slapukas}few{Naudojami # slapukai}other{Naudojama # slapukų}}</translation>
+<translation id="8451050538944905715">{NUM_SELECTED,plural, =1{Naudojamas 1 slapukas}one{Naudojamas # slapukas}few{Naudojami # slapukai}many{Naudojama # slapuko}other{Naudojama # slapukų}}</translation>
 <translation id="8487700953926739672">Pasiekiama neprisijungus</translation>
 <translation id="851751545965956758">Blokuoti svetaines, kad nebūtų galima prisijungti prie įrenginių</translation>
 <translation id="8525306231823319788">Viso ekrano režimas</translation>
@@ -325,7 +325,7 @@
 <translation id="8986362086234534611">Pamiršti</translation>
 <translation id="9019902583201351841">Tvarko jūsų tėvai</translation>
 <translation id="9074739597929991885">Bluetooth</translation>
-<translation id="9109747640384633967">{PERMISSIONS_SUMMARY_MIXED,plural, =1{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> ir dar <ph name="NUM_MORE" />}one{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> ir dar <ph name="NUM_MORE" />}few{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> ir dar <ph name="NUM_MORE" />}other{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> ir dar <ph name="NUM_MORE" />}}</translation>
+<translation id="9109747640384633967">{PERMISSIONS_SUMMARY_MIXED,plural, =1{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> ir dar <ph name="NUM_MORE" />}one{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> ir dar <ph name="NUM_MORE" />}few{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> ir dar <ph name="NUM_MORE" />}many{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> ir dar <ph name="NUM_MORE" />}other{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> ir dar <ph name="NUM_MORE" />}}</translation>
 <translation id="913657688200966289">Įjunkite „<ph name="APP_NAME" />“ leidimus <ph name="BEGIN_LINK" />„Android“ nustatymuose<ph name="END_LINK" />.</translation>
 <translation id="9162462602695099906">Šis puslapis pavojingas</translation>
 <translation id="930525582205581608">Pamiršti šią svetainę?</translation>

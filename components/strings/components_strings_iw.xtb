@@ -245,7 +245,7 @@
 <translation id="1699570257714336246">חסר מידע</translation>
 <translation id="1703835215927279855">Letter</translation>
 <translation id="1706625117072057435">רמות מרחק מתצוגה</translation>
-<translation id="1706954506755087368">{1,plural, =1{השרת הזה לא הצליח להוכיח שהוא <ph name="DOMAIN" />; אישור האבטחה שלו אמור להיכנס לתוקף רק מחר. ייתכן שהסיבה לכך היא הגדרה שגויה או שתוקף מיירט את החיבור שלך.}two{השרת הזה לא הצליח להוכיח שהוא <ph name="DOMAIN" />; אישור האבטחה שלו אמור להיכנס לתוקף רק בעוד יומיים. ייתכן שהסיבה לכך היא הגדרה שגויה או שתוקף מיירט את החיבור שלך.}other{השרת הזה לא הצליח להוכיח שהוא <ph name="DOMAIN" />; אישור האבטחה שלו אמור להיכנס לתוקף רק בעוד # ימים. ייתכן שהסיבה לכך היא הגדרה שגויה או שתוקף מיירט את החיבור שלך.}}</translation>
+<translation id="1706954506755087368">{1,plural, =1{השרת הזה לא הצליח להוכיח שהוא <ph name="DOMAIN" />; אישור האבטחה שלו אמור להיכנס לתוקף רק מחר. ייתכן שהסיבה לכך היא הגדרה שגויה או שתוקף מיירט את החיבור שלך.}two{השרת הזה לא הצליח להוכיח שהוא <ph name="DOMAIN" />; אישור האבטחה שלו אמור להיכנס לתוקף רק בעוד יומיים. ייתכן שהסיבה לכך היא הגדרה שגויה או שתוקף מיירט את החיבור שלך.}many{השרת הזה לא הצליח להוכיח שהוא <ph name="DOMAIN" />; אישור האבטחה שלו אמור להיכנס לתוקף רק בעוד # ימים. ייתכן שהסיבה לכך היא הגדרה שגויה או שתוקף מיירט את החיבור שלך.}other{השרת הזה לא הצליח להוכיח שהוא <ph name="DOMAIN" />; אישור האבטחה שלו אמור להיכנס לתוקף רק בעוד # ימים. ייתכן שהסיבה לכך היא הגדרה שגויה או שתוקף מיירט את החיבור שלך.}}</translation>
 <translation id="1710259589646384581">מערכת הפעלה</translation>
 <translation id="1711234383449478798">אין התייחסות למדיניות כי לא הוגדר הערך <ph name="VALUE" /> ב-<ph name="POLICY_NAME" />.</translation>
 <translation id="1712552549805331520"><ph name="URL" /> רוצה לאחסן נתונים במחשב המקומי שלך באופן קבוע</translation>
@@ -308,7 +308,7 @@
 <translation id="1883255238294161206">כיווץ רשימה</translation>
 <translation id="1890171020361705182">‏משחק Dino. דינוזאור בתצוגת פיקסלים חומק מקטטוסים ומפטרודקטילים בעודו רץ על רקע נוף שומם. כששומעים את האות באודיו, צריך להקיש כדי לדלג מעל מכשולים.</translation>
 <translation id="1898423065542865115">סינון</translation>
-<translation id="1901443836186977402">{1,plural, =1{השרת הזה לא הצליח להוכיח שהוא <ph name="DOMAIN" />. התוקף של אישור האבטחה שלו פג במהלך היממה האחרונה. ייתכן שהסיבה לכך היא הגדרה שגויה או שתוקף מיירט את החיבור שלך. על פי השעון במחשב שלך, עכשיו <ph name="CURRENT_DATE" />. האם זה נכון? אם לא, עליך לכוון את שעון המערכת ולאחר מכן לרענן את הדף הזה.}two{השרת הזה לא הצליח להוכיח שהוא <ph name="DOMAIN" />. תוקף אישור האבטחה שלו פג לפני יומיים. ייתכן שהסיבה לכך היא תצורה שגויה או שתוקף מיירט את החיבור שלך. על פי השעון במחשב שלך, עכשיו <ph name="CURRENT_DATE" />. האם זה נכון? אם לא, עליך לכוון את שעון המערכת ולאחר מכן לרענן את הדף הזה.}other{השרת הזה לא הצליח להוכיח שהוא <ph name="DOMAIN" />. תוקף אישור האבטחה שלו פג לפני # ימים. ייתכן שהסיבה לכך היא תצורה שגויה או שתוקף מיירט את החיבור שלך. על פי השעון במחשב שלך, עכשיו <ph name="CURRENT_DATE" />. האם זה נכון? אם לא, עליך לכוון את שעון המערכת ולאחר מכן לרענן את הדף הזה.}}</translation>
+<translation id="1901443836186977402">{1,plural, =1{השרת הזה לא הצליח להוכיח שהוא <ph name="DOMAIN" />. התוקף של אישור האבטחה שלו פג במהלך היממה האחרונה. ייתכן שהסיבה לכך היא הגדרה שגויה או שתוקף מיירט את החיבור שלך. על פי השעון במחשב שלך, עכשיו <ph name="CURRENT_DATE" />. האם זה נכון? אם לא, עליך לכוון את שעון המערכת ולאחר מכן לרענן את הדף הזה.}two{השרת הזה לא הצליח להוכיח שהוא <ph name="DOMAIN" />. תוקף אישור האבטחה שלו פג לפני יומיים. ייתכן שהסיבה לכך היא תצורה שגויה או שתוקף מיירט את החיבור שלך. על פי השעון במחשב שלך, עכשיו <ph name="CURRENT_DATE" />. האם זה נכון? אם לא, עליך לכוון את שעון המערכת ולאחר מכן לרענן את הדף הזה.}many{השרת הזה לא הצליח להוכיח שהוא <ph name="DOMAIN" />. תוקף אישור האבטחה שלו פג לפני # ימים. ייתכן שהסיבה לכך היא תצורה שגויה או שתוקף מיירט את החיבור שלך. שעל פי השעון במחשב שלך, עכשיו <ph name="CURRENT_DATE" />. האם זה נכון? אם לא, עליך לכוון את שעון המערכת ולאחר מכן לרענן את הדף הזה.}other{השרת הזה לא הצליח להוכיח שהוא <ph name="DOMAIN" />. תוקף אישור האבטחה שלו פג לפני # ימים. ייתכן שהסיבה לכך היא תצורה שגויה או שתוקף מיירט את החיבור שלך. על פי השעון במחשב שלך, עכשיו <ph name="CURRENT_DATE" />. האם זה נכון? אם לא, עליך לכוון את שעון המערכת ולאחר מכן לרענן את הדף הזה.}}</translation>
 <translation id="1902576642799138955">תקופת תוקף</translation>
 <translation id="1906155288650175567">‏לחצן ליצירת הערה, מקישים על Enter כדי ליצור במהירות הערה חדשה ב-Google Keep</translation>
 <translation id="1908217026282415406">הרשאה להשתמש במצלמה ולהזיז אותה</translation>
@@ -318,7 +318,7 @@
 <translation id="1916770123977586577">כדי להחיל על האתר את ההגדרות המעודכנות, יש לטעון מחדש את הדף</translation>
 <translation id="1919345977826869612">מודעות</translation>
 <translation id="1919367280705858090">עזרה לגבי הודעות שגיאה ספציפיות</translation>
-<translation id="192020519938775529">{COUNT,plural, =0{ללא}=1{אתר אחד}two{שני אתרים}other{# אתרים}}</translation>
+<translation id="192020519938775529">{COUNT,plural, =0{ללא}=1{אתר אחד}two{שני אתרים}many{# אתרים}other{# אתרים}}</translation>
 <translation id="1923390796829649802">‏הלחצן לניהול הגדרות הנגישות, מקישים על Enter כדי להתאים אישית את כלי הנגישות בהגדרות Chrome OS</translation>
 <translation id="1924727005275031552">חדשה</translation>
 <translation id="1939175642807587452">האתר יכול לבקש הרשאה לשלוח התראות</translation>
@@ -336,7 +336,7 @@
 <translation id="1988881251331415125">אם האיות תקין, <ph name="BEGIN_LINK" />יש לנסות להפעיל אבחון קישוריות<ph name="END_LINK" />.</translation>
 <translation id="1992331125980284532">JIS B3</translation>
 <translation id="1997484222658892567"><ph name="URL" /> רוצה לאחסן כמות גדולה של נתונים במחשב המקומי שלך באופן קבוע</translation>
-<translation id="2001146170449793414">{COUNT,plural, =1{ואפליקציה אחת נוספת}two{ושתי אפליקציות נוספות}other{ו-# אפליקציות נוספות}}</translation>
+<translation id="2001146170449793414">{COUNT,plural, =1{ואפליקציה אחת נוספת}two{ושתי אפליקציות נוספות}many{ו-# אפליקציות נוספות}other{ו-# אפליקציות נוספות}}</translation>
 <translation id="2003709556000175978">צריך לאפס את הסיסמה עכשיו</translation>
 <translation id="2003775180883135320">4 ניקובים בצד שמאל</translation>
 <translation id="201174227998721785">‏ניתן לנהל את ההרשאות והנתונים השמורים בכל האתרים בהגדרות Chrome</translation>
@@ -349,9 +349,9 @@
 <translation id="2042213636306070719">מגש 7</translation>
 <translation id="204357726431741734">‏כדי להשתמש בסיסמאות השמורות בחשבון Google, עליך להיכנס שוב לחשבון</translation>
 <translation id="2053111141626950936">דפים ב<ph name="LANGUAGE" /> לא יתורגמו.</translation>
-<translation id="2053373601901562871">{NUM_DAYS,plural, =0{‏כשהפקד הזה פועל והסטטוס פעיל, Chrome בודק מהי הקבוצה הגדולה של אנשים, או "הקבוצה בעלת המאפיינים המשותפים", שפעילות הגלישה האחרונה שלך הכי דומה לה. מפרסמים יכולים לבחור מודעות שמתאימות לקבוצה, ופעילות הגלישה שלך נשמרת באופן פרטי במכשיר. הקבוצה מתעדכנת מדי יום.}=1{‏כשהפקד הזה פועל והסטטוס פעיל, Chrome בודק מהי הקבוצה הגדולה של אנשים, או "הקבוצה בעלת המאפיינים המשותפים", שפעילות הגלישה האחרונה שלך הכי דומה לה. מפרסמים יכולים לבחור מודעות שמתאימות לקבוצה, ופעילות הגלישה שלך נשמרת באופן פרטי במכשיר. הקבוצה מתעדכנת מדי יום.}two{‏כשהפקד הזה פועל והסטטוס פעיל, Chrome בודק מהי הקבוצה הגדולה של אנשים, או "הקבוצה בעלת המאפיינים המשותפים", שפעילות הגלישה האחרונה שלך הכי דומה לה. מפרסמים יכולים לבחור מודעות שמתאימות לקבוצה, ופעילות הגלישה שלך נשמרת באופן פרטי במכשיר. הקבוצה מתעדכנת מדי יומיים ({NUM_DAYS}).}other{‏כשהפקד הזה פועל והסטטוס פעיל, Chrome בודק מהי הקבוצה הגדולה של אנשים, או "הקבוצה בעלת המאפיינים המשותפים", שפעילות הגלישה האחרונה שלך הכי דומה לה. מפרסמים יכולים לבחור מודעות שמתאימות לקבוצה, ופעילות הגלישה שלך נשמרת באופן פרטי במכשיר. הקבוצה מתעדכנת מדי {NUM_DAYS} ימים.}}</translation>
+<translation id="2053373601901562871">{NUM_DAYS,plural, =0{‏כשהפקד הזה פועל והסטטוס פעיל, Chrome בודק מהי הקבוצה הגדולה של אנשים, או "הקבוצה בעלת המאפיינים המשותפים", שפעילות הגלישה האחרונה שלך הכי דומה לה. מפרסמים יכולים לבחור מודעות שמתאימות לקבוצה, ופעילות הגלישה שלך נשמרת באופן פרטי במכשיר. הקבוצה מתעדכנת מדי יום.}=1{‏כשהפקד הזה פועל והסטטוס פעיל, Chrome בודק מהי הקבוצה הגדולה של אנשים, או "הקבוצה בעלת המאפיינים המשותפים", שפעילות הגלישה האחרונה שלך הכי דומה לה. מפרסמים יכולים לבחור מודעות שמתאימות לקבוצה, ופעילות הגלישה שלך נשמרת באופן פרטי במכשיר. הקבוצה מתעדכנת מדי יום.}two{‏כשהפקד הזה פועל והסטטוס פעיל, Chrome בודק מהי הקבוצה הגדולה של אנשים, או "הקבוצה בעלת המאפיינים המשותפים", שפעילות הגלישה האחרונה שלך הכי דומה לה. מפרסמים יכולים לבחור מודעות שמתאימות לקבוצה, ופעילות הגלישה שלך נשמרת באופן פרטי במכשיר. הקבוצה מתעדכנת מדי יומיים ({NUM_DAYS}).}many{‏כשהפקד הזה פועל והסטטוס פעיל, Chrome בודק מהי הקבוצה הגדולה של אנשים, או "הקבוצה בעלת המאפיינים המשותפים", שפעילות הגלישה האחרונה שלך הכי דומה לה. מפרסמים יכולים לבחור מודעות שמתאימות לקבוצה, ופעילות הגלישה שלך נשמרת באופן פרטי במכשיר. הקבוצה מתעדכנת מדי {NUM_DAYS} ימים.}other{‏כשהפקד הזה פועל והסטטוס פעיל, Chrome בודק מהי הקבוצה הגדולה של אנשים, או "הקבוצה בעלת המאפיינים המשותפים", שפעילות הגלישה האחרונה שלך הכי דומה לה. מפרסמים יכולים לבחור מודעות שמתאימות לקבוצה, ופעילות הגלישה שלך נשמרת באופן פרטי במכשיר. הקבוצה מתעדכנת מדי {NUM_DAYS} ימים.}}</translation>
 <translation id="2053553514270667976">מיקוד</translation>
-<translation id="2064691555167957331">{COUNT,plural, =1{הצעה אחת}two{שתי הצעות}other{# הצעות}}</translation>
+<translation id="2064691555167957331">{COUNT,plural, =1{הצעה אחת}two{שתי הצעות}many{# הצעות}other{# הצעות}}</translation>
 <translation id="2071156619270205202">הכרטיס הזה לא עומד בדרישות לקבלת מספר כרטיס וירטואלי.</translation>
 <translation id="2071692954027939183">ההתראות נחסמו באופן אוטומטי כי ברוב המקרים לא נתת הרשאה להציג אותן</translation>
 <translation id="2079545284768500474">ביטול הפעולה</translation>
@@ -393,7 +393,7 @@
 <translation id="2169984857010174799">Kaku2 (Envelope)‎</translation>
 <translation id="2181821976797666341">מדיניות</translation>
 <translation id="2183608646556468874">מספר טלפון</translation>
-<translation id="2184405333245229118">{COUNT,plural, =1{כתובת אחת}two{שתי כתובות}other{# כתובות}}</translation>
+<translation id="2184405333245229118">{COUNT,plural, =1{כתובת אחת}two{שתי כתובות}many{# כתובות}other{# כתובות}}</translation>
 <translation id="2187317261103489799">זהה (ברירת מחדל)</translation>
 <translation id="2188375229972301266">ניקובים מרובים בחלק התחתון</translation>
 <translation id="2202020181578195191">עליך להזין שנת תפוגה חוקית</translation>
@@ -441,7 +441,7 @@
 <translation id="2355395290879513365">ייתכן שתוקפים יוכלו לראות את התמונות שבהן צפית באתר זה, ולאחר מכן הם ינסו להונות אותך על ידי שינוי התמונות.</translation>
 <translation id="2356070529366658676">לשאול</translation>
 <translation id="2357481397660644965">המכשיר שלך מנוהל על ידי <ph name="DEVICE_MANAGER" /> והחשבון שלך מנוהל על ידי <ph name="ACCOUNT_MANAGER" />.</translation>
-<translation id="2359347814217202136">{NUM_DAYS,plural, =0{בעוד פחות מיום}=1{בעוד יום}two{בעוד יומיים ({NUM_DAYS})}other{בעוד {NUM_DAYS} ימים}}</translation>
+<translation id="2359347814217202136">{NUM_DAYS,plural, =0{בעוד פחות מיום}=1{בעוד יום}two{בעוד יומיים ({NUM_DAYS})}many{בעוד {NUM_DAYS} ימים}other{בעוד {NUM_DAYS} ימים}}</translation>
 <translation id="2359629602545592467">מטבעות מרובים</translation>
 <translation id="2359808026110333948">המשך</translation>
 <translation id="236340516568226369">תפריט מתגים לשינוי גודל</translation>
@@ -489,7 +489,7 @@
 <translation id="2523886232349826891">הכרטיס יישמר רק במכשיר הזה</translation>
 <translation id="2524461107774643265">הוספת עוד מידע</translation>
 <translation id="2529899080962247600">השדה הזה יכול לכלול עד <ph name="MAX_ITEMS_LIMIT" /> רשומות. המערכת תתעלם מרשומות נוספות.</translation>
-<translation id="2535659140340599600">{COUNT,plural, =1{ודומיין אחד נוסף}two{ו-# דומיינים נוספים}other{ו-# דומיינים נוספים}}</translation>
+<translation id="2535659140340599600">{COUNT,plural, =1{ודומיין אחד נוסף}two{ו-# דומיינים נוספים}many{ו-# דומיינים נוספים}other{ו-# דומיינים נוספים}}</translation>
 <translation id="2536110899380797252">הוספת כתובת</translation>
 <translation id="2539524384386349900">זהה</translation>
 <translation id="2540701853218677861">היסטוריית ההתחברויות וההתנתקויות של המכשיר, כולל חותמות זמן וניסיונות שנכשלו</translation>
@@ -526,7 +526,7 @@
 <translation id="2653659639078652383">שליחה</translation>
 <translation id="2659491813326907275">‏התאמה אישית של כלי הנגישות בהגדרות Chrome OS</translation>
 <translation id="2660779039299703961">אירוע</translation>
-<translation id="2664887757054927933">{COUNT,plural, =0{אין}=1{סיסמה אחת (עבור <ph name="DOMAIN_LIST" />)}=2{שתי סיסמאות (עבור <ph name="DOMAIN_LIST" />)}other{# סיסמאות (עבור <ph name="DOMAIN_LIST" />)}}</translation>
+<translation id="2664887757054927933">{COUNT,plural, =0{אין}=1{סיסמה אחת (עבור <ph name="DOMAIN_LIST" />)}=2{שתי סיסמאות (עבור <ph name="DOMAIN_LIST" />)}many{# סיסמאות (עבור <ph name="DOMAIN_LIST" />)}other{# סיסמאות (עבור <ph name="DOMAIN_LIST" />)}}</translation>
 <translation id="2666092431469916601">למעלה</translation>
 <translation id="2666117266261740852">סגירת כרטיסיות או אפליקציות אחרות</translation>
 <translation id="2672201172023654893">הדפדפן שלך לא מנוהל.</translation>
@@ -594,7 +594,7 @@
 <translation id="2922350208395188000">לא ניתן לבדוק את אישור השרת.</translation>
 <translation id="2925673989565098301">שיטת משלוח</translation>
 <translation id="2928905813689894207">כתובת לחיוב</translation>
-<translation id="2929525460561903222">{SHIPPING_ADDRESS,plural, =0{<ph name="SHIPPING_ADDRESS_PREVIEW" />}=1{<ph name="SHIPPING_ADDRESS_PREVIEW" /> ועוד <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" />}two{<ph name="SHIPPING_ADDRESS_PREVIEW" /> ועוד <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" />}other{<ph name="SHIPPING_ADDRESS_PREVIEW" /> ועוד <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" />}}</translation>
+<translation id="2929525460561903222">{SHIPPING_ADDRESS,plural, =0{<ph name="SHIPPING_ADDRESS_PREVIEW" />}=1{<ph name="SHIPPING_ADDRESS_PREVIEW" /> ועוד <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" />}two{<ph name="SHIPPING_ADDRESS_PREVIEW" /> ועוד <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" />}many{<ph name="SHIPPING_ADDRESS_PREVIEW" /> ועוד <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" />}other{<ph name="SHIPPING_ADDRESS_PREVIEW" /> ועוד <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" />}}</translation>
 <translation id="2930577230479659665">חיתוך אחרי כל עותק</translation>
 <translation id="2932085390869194046">הצעת סיסמה...</translation>
 <translation id="2934466151127459956">Government-Letter</translation>
@@ -649,7 +649,7 @@
 <translation id="3120730422813725195">Elo</translation>
 <translation id="31207688938192855"><ph name="BEGIN_LINK" />הפעלה של אבחון הקישוריות<ph name="END_LINK" />.</translation>
 <translation id="3121994479408824897">מעבר אל <ph name="DOMAIN" /></translation>
-<translation id="3137507986424712703">{COUNT,plural, =0{אין}=1{נתוני כניסה של חשבון אחד}two{נתוני כניסה של 2 חשבונות}other{נתוני כניסה של # חשבונות}}</translation>
+<translation id="3137507986424712703">{COUNT,plural, =0{אין}=1{נתוני כניסה של חשבון אחד}two{נתוני כניסה של 2 חשבונות}many{נתוני כניסה של # חשבונות}other{נתוני כניסה של # חשבונות}}</translation>
 <translation id="3145945101586104090">פענוח התגובה נכשל</translation>
 <translation id="3150653042067488994">שגיאת שרת זמנית</translation>
 <translation id="3154506275960390542">דף זה כולל טופס שעשוי להישלח באופן לא מאובטח. הנתונים ששולחים יהיו גלויים במהלך ההעברה, וקיימת סכנה שמישהו ישנה את הפרטים שהשרת יקבל.</translation>
@@ -779,7 +779,7 @@
 <translation id="3518941727116570328">טיפול באובייקטים מרובים</translation>
 <translation id="3528171143076753409">אישור השרת אינו מהימן.</translation>
 <translation id="3528485271872257980">חום כהה</translation>
-<translation id="3530944546672790857">{COUNT,plural, =0{לפחות פריט אחד במכשירים מסונכרנים}=1{פריט אחד (ופריטים נוספים במכשירים מסונכרנים)}two{שני פריטים (ופריטים נוספים במכשירים מסונכרנים)}other{# פריטים (ופריטים נוספים במכשירים מסונכרנים)}}</translation>
+<translation id="3530944546672790857">{COUNT,plural, =0{לפחות פריט אחד במכשירים מסונכרנים}=1{פריט אחד (ופריטים נוספים במכשירים מסונכרנים)}two{שני פריטים (ופריטים נוספים במכשירים מסונכרנים)}many{# פריטים (ופריטים נוספים במכשירים מסונכרנים)}other{# פריטים (ופריטים נוספים במכשירים מסונכרנים)}}</translation>
 <translation id="3531780078352352885">גיליונות עבודה</translation>
 <translation id="3532844647053365774"><ph name="HOST" /> רוצה להשתמש במיקרופון שלך</translation>
 <translation id="3533328374079021623">תיבת דואר 5</translation>
@@ -797,7 +797,7 @@
 <translation id="3586931643579894722">הסתרת הפרטים</translation>
 <translation id="3587738293690942763">אמצעי</translation>
 <translation id="3592413004129370115">Italian (Envelope)‎</translation>
-<translation id="3595699422137460894">{NUM_DAYS,plural, =0{ניתן לאפס את הקבוצה מתי שרוצים. הצטרפות לקבוצה חדשה נמשכת סביב יום אחד.}=1{ניתן לאפס את הקבוצה מתי שרוצים. הצטרפות לקבוצה חדשה נמשכת סביב יום אחד.}two{ניתן לאפס את הקבוצה מתי שרוצים. הצטרפות לקבוצה חדשה נמשכת סביב יומיים ({NUM_DAYS}).}other{ניתן לאפס את הקבוצה מתי שרוצים. הצטרפות לקבוצה חדשה נמשכת סביב {NUM_DAYS} ימים.}}</translation>
+<translation id="3595699422137460894">{NUM_DAYS,plural, =0{ניתן לאפס את הקבוצה מתי שרוצים. הצטרפות לקבוצה חדשה נמשכת סביב יום אחד.}=1{ניתן לאפס את הקבוצה מתי שרוצים. הצטרפות לקבוצה חדשה נמשכת סביב יום אחד.}two{ניתן לאפס את הקבוצה מתי שרוצים. הצטרפות לקבוצה חדשה נמשכת סביב יומיים ({NUM_DAYS}).}many{ניתן לאפס את הקבוצה מתי שרוצים. הצטרפות לקבוצה חדשה נמשכת סביב {NUM_DAYS} ימים.}other{ניתן לאפס את הקבוצה מתי שרוצים. הצטרפות לקבוצה חדשה נמשכת סביב {NUM_DAYS} ימים.}}</translation>
 <translation id="3596012367874587041">הגדרות האפליקציה</translation>
 <translation id="3600246354004376029"><ph name="TITLE" />, <ph name="DOMAIN" />, <ph name="TIME" /></translation>
 <translation id="3603507503523709">האפליקציה נחסמה על ידי מנהל המערכת</translation>
@@ -912,7 +912,7 @@
 <translation id="3962859241508114581">הטראק הקודם</translation>
 <translation id="3963721102035795474">מצב קורא</translation>
 <translation id="3963837677003247395">להמשיך באופן ידני?</translation>
-<translation id="3964661563329879394">{COUNT,plural, =0{ללא}=1{מאתר אחד }two{משני אתרים }other{מ-# אתרים }}</translation>
+<translation id="3964661563329879394">{COUNT,plural, =0{ללא}=1{מאתר אחד }two{משני אתרים }many{מ-# אתרים }other{מ-# אתרים }}</translation>
 <translation id="3969052498612555048">הקוד לא נמצא? <ph name="BEGIN_LINK" />אני רוצה לקבל קוד חדש<ph name="END_LINK" /></translation>
 <translation id="397105322502079400">מתבצע חישוב...</translation>
 <translation id="3973234410852337861"><ph name="HOST_NAME" /> חסום</translation>
@@ -926,7 +926,7 @@
 <translation id="3996311196211510766">האתר <ph name="ORIGIN" /> ביקש להחיל מדיניות מקור
     על כל הבקשות הנשלחות אליו, אבל לא ניתן כרגע להחיל את המדיניות הזו.</translation>
 <translation id="4010758435855888356">לאפשר את הגישה לאחסון?</translation>
-<translation id="4014128326099193693">{COUNT,plural, =1{‏מסמך ה-PDF מכיל דף אחד ({COUNT})}two{‏מסמך ה-PDF מכיל {COUNT} דפים}other{‏מסמך ה-PDF מכיל {COUNT} דפים}}</translation>
+<translation id="4014128326099193693">{COUNT,plural, =1{‏מסמך ה-PDF מכיל דף אחד ({COUNT})}two{‏מסמך ה-PDF מכיל {COUNT} דפים}many{‏מסמך ה-PDF מכיל {COUNT} דפים}other{‏מסמך ה-PDF מכיל {COUNT} דפים}}</translation>
 <translation id="4023431997072828269">שליחת הטופס הזה מתבצעת דרך חיבור שאינו מאובטח, לכן המידע שלך יהיה גלוי לאחרים.</translation>
 <translation id="4025913568718019429">‏הלחצן לניהול הגדרות הפרטיות ב-Google, מקישים על Enter כדי להיכנס להגדרות הפרטיות בחשבון Google</translation>
 <translation id="4030383055268325496">&amp;ביטול הוספה</translation>
@@ -958,7 +958,7 @@
 <translation id="4117700440116928470">היקף המדיניות אינו נתמך.</translation>
 <translation id="4121428309786185360">בתוקף עד </translation>
 <translation id="4123572138124678573">3 ניקובים בחלק התחתון</translation>
-<translation id="4129401438321186435">{COUNT,plural, =1{אחד נוסף}two{שניים נוספים}other{# נוספים}}</translation>
+<translation id="4129401438321186435">{COUNT,plural, =1{אחד נוסף}two{שניים נוספים}many{# נוספים}other{# נוספים}}</translation>
 <translation id="4130226655945681476">כדאי לבדוק את כבלי הרשת, את המודם ואת הנתב</translation>
 <translation id="4133224101597112888">‏לחצן לשיתוף הכרטיסייה הזו, מקישים על Enter כדי לשתף את הכרטיסייה הזו על ידי שיתוף הקישור, יצירת קוד QR, העברה (cast) ועוד.</translation>
 <translation id="4134123981501319574">יצירת מסמך</translation>
@@ -966,7 +966,7 @@
 <translation id="4142935452406587478">מגש 10</translation>
 <translation id="4148925816941278100">American Express</translation>
 <translation id="4151403195736952345">שימוש בברירת מחדל גלובלית (זיהוי)</translation>
-<translation id="4152318981910038897">{COUNT,plural, =1{דף 1}two{דף {COUNT}}other{דף {COUNT}}}</translation>
+<translation id="4152318981910038897">{COUNT,plural, =1{דף 1}two{דף {COUNT}}many{דף {COUNT}}other{דף {COUNT}}}</translation>
 <translation id="4154664944169082762">טביעות אצבע</translation>
 <translation id="4159784952369912983">סגול</translation>
 <translation id="4165986682804962316">הגדרות לאתרים</translation>
@@ -974,7 +974,7 @@
 <translation id="4171489848299289778"><ph name="RESULT_MODIFIED_DATE" /> ‏- <ph name="RESULT_OWNER" /> ‏- <ph name="RESULT_PRODUCT_SOURCE" /></translation>
 <translation id="4172051516777682613">להציג תמיד</translation>
 <translation id="4173315687471669144">Foolscap</translation>
-<translation id="4173827307318847180">{MORE_ITEMS,plural, =1{פריט אחד (<ph name="ITEM_COUNT" />) נוסף}two{<ph name="ITEM_COUNT" /> פריטים נוספים}other{<ph name="ITEM_COUNT" /> פריטים נוספים}}</translation>
+<translation id="4173827307318847180">{MORE_ITEMS,plural, =1{פריט אחד (<ph name="ITEM_COUNT" />) נוסף}two{<ph name="ITEM_COUNT" /> פריטים נוספים}many{<ph name="ITEM_COUNT" /> פריטים נוספים}other{<ph name="ITEM_COUNT" /> פריטים נוספים}}</translation>
 <translation id="4176463684765177261">מושבת</translation>
 <translation id="4179515394835346607"><ph name="ROW_NAME" /> <ph name="ROW_CONTENT" /></translation>
 <translation id="4194250254487269611">אי אפשר לשמור את הכרטיס שלך עכשיו</translation>
@@ -1024,7 +1024,7 @@
 <translation id="4275830172053184480">הפעלת המכשיר מחדש</translation>
 <translation id="4277028893293644418">איפוס סיסמה</translation>
 <translation id="4278390842282768270">מותר</translation>
-<translation id="428639260510061158">{NUM_CARDS,plural, =1{‏הכרטיס הזה נשמר בחשבון Google שלך}two{‏הכרטיסים האלה נשמרו בחשבון Google שלך}other{‏הכרטיסים האלה נשמרו בחשבון Google שלך}}</translation>
+<translation id="428639260510061158">{NUM_CARDS,plural, =1{‏הכרטיס הזה נשמר בחשבון Google שלך}two{‏הכרטיסים האלה נשמרו בחשבון Google שלך}many{‏הכרטיסים האלה נשמרו בחשבון Google שלך}other{‏הכרטיסים האלה נשמרו בחשבון Google שלך}}</translation>
 <translation id="4287885627794386150">מתאים להשתתפות בניסוי, לא פעיל</translation>
 <translation id="4297502707443874121">תמונה ממוזערת של הדף <ph name="THUMBNAIL_PAGE" /></translation>
 <translation id="42981349822642051">הרחבה</translation>
@@ -1179,7 +1179,7 @@
 
 1240185477879256427אתר
 Del</translation>
-<translation id="477945296921629067">{NUM_POPUPS,plural, =1{חלון קופץ נחסם}two{# חלונות קופצים נחסמו}other{# חלונות קופצים נחסמו}}</translation>
+<translation id="477945296921629067">{NUM_POPUPS,plural, =1{חלון קופץ נחסם}two{# חלונות קופצים נחסמו}many{# חלונות קופצים נחסמו}other{# חלונות קופצים נחסמו}}</translation>
 <translation id="4780366598804516005">תיבת דואר 1</translation>
 <translation id="4785376858512657294">‏ניהול חשבון Google</translation>
 <translation id="4785689107224900852">החלפה לכרטיסייה זו</translation>
@@ -1215,7 +1215,7 @@ Del</translation>
 <translation id="485902285759009870">הקוד בתהליך אימות…</translation>
 <translation id="4876188919622883022">תצוגה נקייה</translation>
 <translation id="4876305945144899064">אין שם משתמש</translation>
-<translation id="4877083676943085827">{COUNT,plural, =0{אין}=1{<ph name="EXAMPLE_DOMAIN_1" />}=2{<ph name="EXAMPLE_DOMAIN_1" />, <ph name="EXAMPLE_DOMAIN_2" />}other{<ph name="EXAMPLE_DOMAIN_1" />, <ph name="EXAMPLE_DOMAIN_2" /> <ph name="AND_MORE" />}}</translation>
+<translation id="4877083676943085827">{COUNT,plural, =0{אין}=1{<ph name="EXAMPLE_DOMAIN_1" />}=2{<ph name="EXAMPLE_DOMAIN_1" />, <ph name="EXAMPLE_DOMAIN_2" />}many{<ph name="EXAMPLE_DOMAIN_1" />, <ph name="EXAMPLE_DOMAIN_2" /> <ph name="AND_MORE" />}other{<ph name="EXAMPLE_DOMAIN_1" />, <ph name="EXAMPLE_DOMAIN_2" /> <ph name="AND_MORE" />}}</translation>
 <translation id="4877422487531841831"><ph name="TEXT" /> - חיפוש</translation>
 <translation id="4879491255372875719">אוטומטי (ברירת מחדל)</translation>
 <translation id="4879725228911483934">לפתוח ולמקם חלונות במסכים שלך</translation>
@@ -1270,12 +1270,12 @@ Del</translation>
 <translation id="5040262127954254034">פרטיות</translation>
 <translation id="5043480802608081735">קישור שהעתקת</translation>
 <translation id="5045550434625856497">סיסמה שגויה</translation>
-<translation id="5056425809654826431">{NUM_FILES,plural, =1{כדי לשלוח את הקובץ הזה באמצעות 'שיתוף בקרבת מקום', צריך לפנות שטח אחסון (<ph name="DISK_SPACE_SIZE" />) במכשיר}two{כדי לשלוח את הקבצים האלה באמצעות 'שיתוף בקרבת מקום', צריך לפנות שטח אחסון (<ph name="DISK_SPACE_SIZE" />) במכשיר}other{כדי לשלוח את הקבצים האלה באמצעות 'שיתוף בקרבת מקום', צריך לפנות שטח אחסון (<ph name="DISK_SPACE_SIZE" />) במכשיר}}</translation>
+<translation id="5056425809654826431">{NUM_FILES,plural, =1{כדי לשלוח את הקובץ הזה באמצעות 'שיתוף בקרבת מקום', צריך לפנות שטח אחסון (<ph name="DISK_SPACE_SIZE" />) במכשיר}two{כדי לשלוח את הקבצים האלה באמצעות 'שיתוף בקרבת מקום', צריך לפנות שטח אחסון (<ph name="DISK_SPACE_SIZE" />) במכשיר}many{כדי לשלוח את הקבצים האלה באמצעות 'שיתוף בקרבת מקום', צריך לפנות שטח אחסון (<ph name="DISK_SPACE_SIZE" />) במכשיר}other{כדי לשלוח את הקבצים האלה באמצעות 'שיתוף בקרבת מקום', צריך לפנות שטח אחסון (<ph name="DISK_SPACE_SIZE" />) במכשיר}}</translation>
 <translation id="5056549851600133418">מאמרים שעשויים לעניין אותך</translation>
 <translation id="5061227663725596739">האם התכוונת ל-<ph name="LOOKALIKE_DOMAIN" />?</translation>
 <translation id="5066056036849835175">היסטוריית הדפסות</translation>
 <translation id="5068524481479508725">A10</translation>
-<translation id="5068778127327928576">{NUM_COOKIES,plural, =1{(אחד נמצא בשימוש)}two{(# in use)}other{(# נמצאים בשימוש)}}</translation>
+<translation id="5068778127327928576">{NUM_COOKIES,plural, =1{(אחד נמצא בשימוש)}two{(# in use)}many{(# in use)}other{(# נמצאים בשימוש)}}</translation>
 <translation id="5070335125961472645">‏<ph name="BEGIN_LINK" />לבדוק את כתובת שרת ה-Proxy<ph name="END_LINK" /></translation>
 <translation id="5070838744279127212">גליל עשירי</translation>
 <translation id="507130231501693183">תיבת דואר 4</translation>
@@ -1401,7 +1401,7 @@ Del</translation>
 <translation id="5452270690849572955">לא ניתן למצוא את הדף של <ph name="HOST_NAME" /></translation>
 <translation id="5455374756549232013">חותמת הזמן של המדיניות שגויה</translation>
 <translation id="5457113250005438886">לא חוקי</translation>
-<translation id="5458150163479425638">{CONTACT,plural, =0{<ph name="CONTACT_PREVIEW" />}=1{<ph name="CONTACT_PREVIEW" /> ועוד <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" />}two{<ph name="CONTACT_PREVIEW" /> ועוד <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" />}other{<ph name="CONTACT_PREVIEW" /> ועוד <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" />}}</translation>
+<translation id="5458150163479425638">{CONTACT,plural, =0{<ph name="CONTACT_PREVIEW" />}=1{<ph name="CONTACT_PREVIEW" /> ועוד <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" />}two{<ph name="CONTACT_PREVIEW" /> ועוד <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" />}many{<ph name="CONTACT_PREVIEW" /> ועוד <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" />}other{<ph name="CONTACT_PREVIEW" /> ועוד <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" />}}</translation>
 <translation id="5463625433003343978">מתבצע חיפוש מכשירים…</translation>
 <translation id="5469868506864199649">איטלקית</translation>
 <translation id="5470861586879999274">&amp;ביצוע מחדש של עריכה</translation>
@@ -1479,9 +1479,9 @@ Del</translation>
 <translation id="5720705177508910913">משתמש נוכחי:</translation>
 <translation id="5728056243719941842">C5 (Envelope)‎</translation>
 <translation id="5730040223043577876">‏אם הזנת את הסיסמה שלך באתרים אחרים, ההמלצה של Chrome היא לאפס אותה.</translation>
-<translation id="5737183892635480227">{NUM_CARDS,plural, =1{‏שמירת הכרטיס בחשבון Google}two{‏שמירת הכרטיסים בחשבון Google}other{‏שמירת הכרטיסים בחשבון Google}}</translation>
+<translation id="5737183892635480227">{NUM_CARDS,plural, =1{‏שמירת הכרטיס בחשבון Google}two{‏שמירת הכרטיסים בחשבון Google}many{‏שמירת הכרטיסים בחשבון Google}other{‏שמירת הכרטיסים בחשבון Google}}</translation>
 <translation id="5745733273847572235">האתר יכול לבקש הרשאת גישה למיקום המכשיר</translation>
-<translation id="5745980000221562234">{NUM_CARDS,plural, =1{שימוש במספר וירטואלי בשביל הכרטיס הזה}two{בחירת כרטיס}other{בחירת כרטיס}}</translation>
+<translation id="5745980000221562234">{NUM_CARDS,plural, =1{שימוש במספר וירטואלי בשביל הכרטיס הזה}two{בחירת כרטיס}many{בחירת כרטיס}other{בחירת כרטיס}}</translation>
 <translation id="5759751709240058861">להשתמש במצלמה ולהזיז אותה</translation>
 <translation id="5763042198335101085">עליך להזין כתובת אימייל חוקית</translation>
 <translation id="5765072501007116331">עליך לבחור כתובת כדי לראות שיטות מסירה ודרישות</translation>
@@ -1500,7 +1500,7 @@ Del</translation>
 <translation id="5812947184178430888">‏כאשר אירועי אבטחה מדווחים על ידי Chrome, נתונים רלוונטיים לגבי האירועים האלה נשלחים למנהל המערכת. הנתונים האלה יכולים לכלול את כתובות ה-URL של הדפים שבהם ביקרת ב-Chrome, השמות או המטא-נתונים של הקבצים ואת שם המשתמש שבאמצעותו נכנסת לאפליקציות מבוססות-אינטרנט, למכשיר שלך ול-Chrome.</translation>
 <translation id="5813119285467412249">&amp;ביצוע מחדש של הוספה</translation>
 <translation id="5817918615728894473">התאמה</translation>
-<translation id="5824687817967109979">{NUM_CARDS,plural, =1{‏הכרטיס הזה יחויב בזמן התשלום, אבל המספר האמיתי שלו לא ישותף עם האתר הזה. כשכבת הגנה נוספת, המערכת תיצור קוד אימות (CVC) חדש.}two{‏הכרטיס שייבחר יחויב בזמן התשלום, אבל המספר האמיתי שלו לא ישותף עם האתר הזה. כשכבת הגנה נוספת, המערכת תיצור קוד אימות (CVC) חדש.}other{‏הכרטיס שייבחר יחויב בזמן התשלום, אבל המספר האמיתי שלו לא ישותף עם האתר הזה. כשכבת הגנה נוספת, המערכת תיצור קוד אימות (CVC) חדש.}}</translation>
+<translation id="5824687817967109979">{NUM_CARDS,plural, =1{‏הכרטיס הזה יחויב בזמן התשלום, אבל המספר האמיתי שלו לא ישותף עם האתר הזה. כשכבת הגנה נוספת, המערכת תיצור קוד אימות (CVC) חדש.}two{‏הכרטיס שייבחר יחויב בזמן התשלום, אבל המספר האמיתי שלו לא ישותף עם האתר הזה. כשכבת הגנה נוספת, המערכת תיצור קוד אימות (CVC) חדש.}many{‏הכרטיס שייבחר יחויב בזמן התשלום, אבל המספר האמיתי שלו לא ישותף עם האתר הזה. כשכבת הגנה נוספת, המערכת תיצור קוד אימות (CVC) חדש.}other{‏הכרטיס שייבחר יחויב בזמן התשלום, אבל המספר האמיתי שלו לא ישותף עם האתר הזה. כשכבת הגנה נוספת, המערכת תיצור קוד אימות (CVC) חדש.}}</translation>
 <translation id="5826507051599432481">‏שם נפוץ (CN)</translation>
 <translation id="5830698870816298009">שימוש במצלמה והזזה שלה</translation>
 <translation id="5838278095973806738">אין להזין מידע רגיש באתר הזה (כמו סיסמאות או מספרי כרטיסי אשראי), מאחר שתוקפים עלולים לקבל אליו גישה.</translation>
@@ -1526,7 +1526,7 @@ Del</translation>
 <translation id="5913377024445952699">אפשרות צילום המסך מושהית</translation>
 <translation id="59174027418879706">מופעל</translation>
 <translation id="5919090499915321845">B10</translation>
-<translation id="5920262536204764679">{NUM_COOKIES,plural, =1{אחד נמצא בשימוש}two{שניים נמצאים בשימוש}other{# נמצאים בשימוש}}</translation>
+<translation id="5920262536204764679">{NUM_COOKIES,plural, =1{אחד נמצא בשימוש}two{שניים נמצאים בשימוש}many{# נמצאים בשימוש}other{# נמצאים בשימוש}}</translation>
 <translation id="5921185718311485855">מופעל</translation>
 <translation id="5921639886840618607">‏לשמור את הכרטיס בחשבון Google?</translation>
 <translation id="5922853866070715753">עוד רגע מסיימים</translation>
@@ -1644,7 +1644,7 @@ Del</translation>
 <translation id="6337133576188860026">פינוי של פחות מ-<ph name="SIZE" /> מהנפח. ייתכן שחלק מהאתרים ייטענו לאט יותר בביקור הבא שלך.</translation>
 <translation id="6337534724793800597">סינון מדיניות לפי שם</translation>
 <translation id="6349101878882523185">התקנת <ph name="APP_NAME" /></translation>
-<translation id="6353505687280762741">{COUNT,plural, =0{אין}=1{סיסמה אחת (עבור <ph name="DOMAIN_LIST" />, מסונכרנת)}=2{שתי סיסמאות (עבור <ph name="DOMAIN_LIST" />, מסונכרנות)}other{# סיסמאות (עבור <ph name="DOMAIN_LIST" />, מסונכרנות)}}</translation>
+<translation id="6353505687280762741">{COUNT,plural, =0{אין}=1{סיסמה אחת (עבור <ph name="DOMAIN_LIST" />, מסונכרנת)}=2{שתי סיסמאות (עבור <ph name="DOMAIN_LIST" />, מסונכרנות)}many{# סיסמאות (עבור <ph name="DOMAIN_LIST" />, מסונכרנות)}other{# סיסמאות (עבור <ph name="DOMAIN_LIST" />, מסונכרנות)}}</translation>
 <translation id="6355392890578844978">‏הדפדפן הזה לא מנוהל על ידי חברה או ארגון אחר. ייתכן שהפעילות במכשיר הזה מנוהלת מחוץ ל-Chromium. <ph name="BEGIN_LINK" />למידע נוסף<ph name="END_LINK" /></translation>
 <translation id="6358450015545214790">מה זה אומר?</translation>
 <translation id="6361757823711327522">B7</translation>
@@ -1653,7 +1653,7 @@ Del</translation>
 <translation id="6377268785556383139">תוצאה אחת בשביל '<ph name="SEARCH_TEXT" />'</translation>
 <translation id="6380497234672085559">A0</translation>
 <translation id="6383221683286411806">ייתכנו חיובים באתר.</translation>
-<translation id="6386120369904791316">{COUNT,plural, =1{הצעה אחת נוספת}two{שתי הצעות נוספות}other{# הצעות נוספות}}</translation>
+<translation id="6386120369904791316">{COUNT,plural, =1{הצעה אחת נוספת}two{שתי הצעות נוספות}many{# הצעות נוספות}other{# הצעות נוספות}}</translation>
 <translation id="6387645831795005740">‏תוקפים שמחקים אתרים לפעמים משתמשים בכתובת ה-URL של האתר המקורי ועושים בה שינויים קלים ביותר כדי שיהיה קשה להבחין בהבדל.</translation>
 <translation id="6389470377220713856">שם על הכרטיס</translation>
 <translation id="6390200185239044127">‏קיפול Z עד האמצע</translation>
@@ -1726,7 +1726,7 @@ Del</translation>
 <translation id="663260587451432563">JIS B4</translation>
 <translation id="6643016212128521049">ניקוי</translation>
 <translation id="6645291930348198241">‏לקבל גישה לקובצי Cookie ולנתוני אתרים.</translation>
-<translation id="6646269444027925224">{COUNT,plural, =0{ללא}=1{‏מאתר אחד (לא תבוצע יציאה מחשבון Google שלך.)}two{‏מ-# אתרים (לא תבוצע יציאה מחשבון Google שלך.)}other{‏מ-# אתרים (לא תבוצע יציאה מחשבון Google שלך.)}}</translation>
+<translation id="6646269444027925224">{COUNT,plural, =0{ללא}=1{‏מאתר אחד (לא תבוצע יציאה מחשבון Google שלך.)}two{‏מ-# אתרים (לא תבוצע יציאה מחשבון Google שלך.)}many{‏מ-# אתרים (לא תבוצע יציאה מחשבון Google שלך.)}other{‏מ-# אתרים (לא תבוצע יציאה מחשבון Google שלך.)}}</translation>
 <translation id="6648459603387803038">‏מנהל המערכת יכול לשנות את הגדרת הדפדפן שלך מרחוק. בנוסף, ניתן לנהל את הפעילות במכשיר הזה מחוץ ל-Chrome.</translation>
 <translation id="6648524591329069940">‏גופן Serif</translation>
 <translation id="6651270836885078973">בניהול של:</translation>
@@ -1838,7 +1838,7 @@ Del</translation>
 <translation id="7031646650991750659">‏אילו אפליקציות התקנת מ-Google Play.</translation>
 <translation id="7038063300915481831">‏<ph name="MANAGE_GOOGLE_PRIVACY_FOCUSED_FRIENDLY_MATCH_TEXT" />, מקישים על Tab ואז על Enter כדי לנהל את הגדרות הפרטיות בחשבון Google.</translation>
 <translation id="7050187094878475250">ניסית להגיע אל <ph name="DOMAIN" />, אך השרת הציג אישור שתקופת התוקף שלו ארוכה מדי ולכן אינו מהימן.</translation>
-<translation id="705310974202322020">{NUM_CARDS,plural, =1{אי אפשר לשמור עכשיו את הכרטיס הזה}two{אי אפשר לשמור עכשיו את הכרטיסים האלה}other{אי אפשר לשמור עכשיו את הכרטיסים האלה}}</translation>
+<translation id="705310974202322020">{NUM_CARDS,plural, =1{אי אפשר לשמור עכשיו את הכרטיס הזה}two{אי אפשר לשמור עכשיו את הכרטיסים האלה}many{אי אפשר לשמור עכשיו את הכרטיסים האלה}other{אי אפשר לשמור עכשיו את הכרטיסים האלה}}</translation>
 <translation id="7053983685419859001">חסימה</translation>
 <translation id="7058163556978339998"><ph name="BROWSER" /> אימת ש-<ph name="ISSUER" /> הנפיק את האישור של האתר הזה.</translation>
 <translation id="7062635574500127092">כחול-ירקרק</translation>
@@ -1868,13 +1868,13 @@ Del</translation>
 <translation id="7139892792842608322">המגש הראשי</translation>
 <translation id="714064300541049402">‏הזזה של תמונה בצד 2 על ציר X</translation>
 <translation id="7152423860607593928">Number-14 (Envelope)‎</translation>
-<translation id="7153549335910886479">{PAYMENT_METHOD,plural, =0{<ph name="PAYMENT_METHOD_PREVIEW" />}=1{<ph name="PAYMENT_METHOD_PREVIEW" /> ועוד <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />}two{<ph name="PAYMENT_METHOD_PREVIEW" /> ועוד <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />}other{<ph name="PAYMENT_METHOD_PREVIEW" /> ועוד <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />}}</translation>
+<translation id="7153549335910886479">{PAYMENT_METHOD,plural, =0{<ph name="PAYMENT_METHOD_PREVIEW" />}=1{<ph name="PAYMENT_METHOD_PREVIEW" /> ועוד <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />}two{<ph name="PAYMENT_METHOD_PREVIEW" /> ועוד <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />}many{<ph name="PAYMENT_METHOD_PREVIEW" /> ועוד <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />}other{<ph name="PAYMENT_METHOD_PREVIEW" /> ועוד <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />}}</translation>
 <translation id="7153618581592392745">לבנדר</translation>
 <translation id="7156870133441232244">‏יש לשדרג את השרת ל-TLS 1.2 ואילך.</translation>
 <translation id="717330890047184534">‏מזהה GAIA:</translation>
 <translation id="7173920250514487165">צילום תוכן סודי שמוצג במסך</translation>
 <translation id="7174545416324379297">משולבת</translation>
-<translation id="7175401108899573750">{SHIPPING_OPTIONS,plural, =0{<ph name="SHIPPING_OPTION_PREVIEW" />}=1{<ph name="SHIPPING_OPTION_PREVIEW" /> ועוד <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" />}two{<ph name="SHIPPING_OPTION_PREVIEW" /> ועוד <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" />}other{<ph name="SHIPPING_OPTION_PREVIEW" /> ועוד <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" />}}</translation>
+<translation id="7175401108899573750">{SHIPPING_OPTIONS,plural, =0{<ph name="SHIPPING_OPTION_PREVIEW" />}=1{<ph name="SHIPPING_OPTION_PREVIEW" /> ועוד <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" />}two{<ph name="SHIPPING_OPTION_PREVIEW" /> ועוד <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" />}many{<ph name="SHIPPING_OPTION_PREVIEW" /> ועוד <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" />}other{<ph name="SHIPPING_OPTION_PREVIEW" /> ועוד <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" />}}</translation>
 <translation id="7179323680825933600">שמירה ומילוי של אמצעי תשלום</translation>
 <translation id="7180611975245234373">רענון</translation>
 <translation id="7181261019481237103">פתיחת חלון אנונימי</translation>
@@ -2023,7 +2023,7 @@ Del</translation>
 <translation id="762844065391966283">פריט מידע אחד בכל פעם</translation>
 <translation id="7633909222644580952">נתוני ביצועים ודוחות קריסה</translation>
 <translation id="7637571805876720304">‏האם להסיר מ-Chromium את כרטיס האשראי?</translation>
-<translation id="7637586430889951925">{COUNT,plural, =0{אין סיסמאות}=1{סיסמה אחת בחשבון (עבור <ph name="DOMAIN_LIST" />)}two{# סיסמאות בחשבון (עבור <ph name="DOMAIN_LIST" />)}other{# סיסמאות בחשבון (עבור <ph name="DOMAIN_LIST" />)}}</translation>
+<translation id="7637586430889951925">{COUNT,plural, =0{אין סיסמאות}=1{סיסמה אחת בחשבון (עבור <ph name="DOMAIN_LIST" />)}two{# סיסמאות בחשבון (עבור <ph name="DOMAIN_LIST" />)}many{# סיסמאות בחשבון (עבור <ph name="DOMAIN_LIST" />)}other{# סיסמאות בחשבון (עבור <ph name="DOMAIN_LIST" />)}}</translation>
 <translation id="7638605456503525968">יציאות טוריות</translation>
 <translation id="7639968568612851608">אפור כהה</translation>
 <translation id="7647206758853451655">איכות הדפסה</translation>
@@ -2039,7 +2039,7 @@ Del</translation>
 <translation id="7667346355482952095">אסימון המדיניות שהוחזר הוא ריק או שאינו תואם לאסימון הנוכחי</translation>
 <translation id="7668654391829183341">מכשיר לא ידוע</translation>
 <translation id="7669271284792375604">תוקפים באתר הזה עשויים לגרום לך, בדרכי מרמה, להתקין תוכנות שיפגעו בחוויית הגלישה שלך (לדוגמה, על ידי שינוי דף הבית או הצגת מודעות נוספות באתרים).</translation>
-<translation id="7669907849388166732">{COUNT,plural, =1{הפעולות שננקטו עם נתונים שסומנו כסודיים (פעולה אחת דווחה מאז ההתחברות). <ph name="BEGIN_LINK" />מידע נוסף<ph name="END_LINK" />}two{הפעולות שננקטו עם נתונים שסומנו כסודיים (# פעולות דווחו מאז ההתחברות). <ph name="BEGIN_LINK" />מידע נוסף<ph name="END_LINK" />}other{הפעולות שננקטו עם נתונים שסומנו כסודיים (# פעולות דווחו מאז ההתחברות). <ph name="BEGIN_LINK" />מידע נוסף<ph name="END_LINK" />}}</translation>
+<translation id="7669907849388166732">{COUNT,plural, =1{הפעולות שננקטו עם נתונים שסומנו כסודיים (פעולה אחת דווחה מאז ההתחברות). <ph name="BEGIN_LINK" />מידע נוסף<ph name="END_LINK" />}two{הפעולות שננקטו עם נתונים שסומנו כסודיים (# פעולות דווחו מאז ההתחברות). <ph name="BEGIN_LINK" />מידע נוסף<ph name="END_LINK" />}many{הפעולות שננקטו עם נתונים שסומנו כסודיים (# פעולות דווחו מאז ההתחברות). <ph name="BEGIN_LINK" />מידע נוסף<ph name="END_LINK" />}other{הפעולות שננקטו עם נתונים שסומנו כסודיים (# פעולות דווחו מאז ההתחברות). <ph name="BEGIN_LINK" />מידע נוסף<ph name="END_LINK" />}}</translation>
 <translation id="7673278391011283842">תיבת דואר 6</translation>
 <translation id="7676643023259824263">חיפוש טקסט בלוח, <ph name="TEXT" /></translation>
 <translation id="7679367271685653708">‏הצגה וניהול של היסטוריית הגלישה בהגדרות Chrome</translation>
@@ -2091,7 +2091,7 @@ Del</translation>
 <translation id="7815407501681723534">נמצאו <ph name="NUMBER_OF_RESULTS" /> <ph name="SEARCH_RESULTS" /> בנושא '<ph name="SEARCH_STRING" />'</translation>
 <translation id="782886543891417279">‏ייתכן שרשת ה-Wi-Fi דורשת כניסה לדף ההתחברות שלה. (<ph name="WIFI_NAME" />).</translation>
 <translation id="7836231406687464395">Postfix (Envelope)‎</translation>
-<translation id="7844689747373518809">{COUNT,plural, =0{ללא}=1{אפליקציה אחת (<ph name="EXAMPLE_APP_1" />)}=2{2 אפליקציות (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />)}other{# אפליקציות (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" /> <ph name="AND_MORE" />)}}</translation>
+<translation id="7844689747373518809">{COUNT,plural, =0{ללא}=1{אפליקציה אחת (<ph name="EXAMPLE_APP_1" />)}=2{2 אפליקציות (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />)}many{# אפליקציות (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" /> <ph name="AND_MORE" />)}other{# אפליקציות (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" /> <ph name="AND_MORE" />)}}</translation>
 <translation id="7855695075675558090"><ph name="TOTAL_LABEL" /> <ph name="CURRENCY_CODE" /> <ph name="FORMATTED_TOTAL_AMOUNT" /></translation>
 <translation id="7862185352068345852">לצאת מהאתר?</translation>
 <translation id="7865448901209910068">המהירות הטובה ביותר</translation>
@@ -2140,7 +2140,7 @@ Del</translation>
 <translation id="7995512525968007366">לא צוין</translation>
 <translation id="800218591365569300">מומלץ לסגור כרטיסיות או תוכניות אחרות וכך לפנות מקום בזיכרון.</translation>
 <translation id="8004582292198964060">דפדפן</translation>
-<translation id="8012116502927253373">{NUM_CARDS,plural, =1{הכרטיס הזה יישמר יחד עם הכתובת שלו לחיוב. יתאפשר לך להשתמש בו לאחר התחברות אל <ph name="USER_EMAIL" />.}two{הכרטיסים האלה יישמרו יחד עם הכתובות שלהם לחיוב. יתאפשר לך להשתמש בהם לאחר התחברות אל <ph name="USER_EMAIL" />.}other{הכרטיסים האלה יישמרו יחד עם הכתובות שלהם לחיוב. יתאפשר לך להשתמש בהם לאחר התחברות אל <ph name="USER_EMAIL" />.}}</translation>
+<translation id="8012116502927253373">{NUM_CARDS,plural, =1{הכרטיס הזה יישמר יחד עם הכתובת שלו לחיוב. יתאפשר לך להשתמש בו לאחר התחברות אל <ph name="USER_EMAIL" />.}two{הכרטיסים האלה יישמרו יחד עם הכתובות שלהם לחיוב. יתאפשר לך להשתמש בהם לאחר התחברות אל <ph name="USER_EMAIL" />.}many{הכרטיסים האלה יישמרו יחד עם הכתובות שלהם לחיוב. יתאפשר לך להשתמש בהם לאחר התחברות אל <ph name="USER_EMAIL" />.}other{הכרטיסים האלה יישמרו יחד עם הכתובות שלהם לחיוב. יתאפשר לך להשתמש בהם לאחר התחברות אל <ph name="USER_EMAIL" />.}}</translation>
 <translation id="8025119109950072390">תוקפים באתר הזה עשויים לגרום לך, בדרכי מרמה, לבצע פעולות מסוכנות כמו התקנת תוכנה או חשיפה של מידע אישי (לדוגמה: סיסמאות, מספרי טלפון או פרטי כרטיסי אשראי).</translation>
 <translation id="8026334261755873520">ניקוי נתוני גלישה</translation>
 <translation id="8027077570865220386">מגש 15</translation>
@@ -2282,7 +2282,7 @@ Del</translation>
 <translation id="8446884382197647889">למידע נוסף</translation>
 <translation id="8457125768502047971">ללא הגבלת זמן</translation>
 <translation id="8461694314515752532">הצפנת נתונים מסונכרנים בעזרת ביטוי סיסמה אישי לסנכרון</translation>
-<translation id="8466379296835108687">{COUNT,plural, =1{כרטיס אשראי אחד}two{שני כרטיסי אשראי}other{# כרטיסי אשראי}}</translation>
+<translation id="8466379296835108687">{COUNT,plural, =1{כרטיס אשראי אחד}two{שני כרטיסי אשראי}many{# כרטיסי אשראי}other{# כרטיסי אשראי}}</translation>
 <translation id="8473863474539038330">כתובות ועוד</translation>
 <translation id="8474910779563686872">הצגת פרטי המפתח</translation>
 <translation id="8479754468255770962">סיכת הידוק בפינה השמאלית התחתונה</translation>
@@ -2304,7 +2304,7 @@ Del</translation>
 <translation id="8541158209346794904">‏מכשיר Bluetooth</translation>
 <translation id="8542014550340843547">3 סיכות הידוק בחלק התחתון</translation>
 <translation id="8543181531796978784">באפשרותך <ph name="BEGIN_ERROR_LINK" />לדווח על בעיית זיהוי<ph name="END_ERROR_LINK" /> או, אם סיכוני האבטחה מובנים לך, <ph name="BEGIN_LINK" />להיכנס לאתר הזה, שאינו מאובטח<ph name="END_LINK" />.</translation>
-<translation id="8554912124839363479">{NUM_PERMISSIONS,plural, =1{איפוס ההרשאה}two{איפוס ההרשאות}other{איפוס ההרשאות}}</translation>
+<translation id="8554912124839363479">{NUM_PERMISSIONS,plural, =1{איפוס ההרשאה}two{איפוס ההרשאות}many{איפוס ההרשאות}other{איפוס ההרשאות}}</translation>
 <translation id="8555010941760982128">צריך להזין את הקוד הזה בקופה</translation>
 <translation id="8557066899867184262">קוד האימות נמצא בגב הכרטיס.</translation>
 <translation id="8558485628462305855">‏כדי להציג תוכן של מציאות רבודה, צריך לעדכן את ARCore</translation>
@@ -2506,7 +2506,7 @@ Del</translation>
 <translation id="962484866189421427">ייתכן שבתוכן הזה יש קוד להתקנת אפליקציות מטעות שמתחזות למשהו אחר או שאוספות נתונים המאפשרים לעקוב אחריך. <ph name="BEGIN_LINK" />אני רוצה לראות בכל זאת<ph name="END_LINK" /></translation>
 <translation id="969892804517981540">גרסה רשמית</translation>
 <translation id="973773823069644502">הוספת כתובת למסירה</translation>
-<translation id="975560348586398090">{COUNT,plural, =0{ללא}=1{פריט אחד}two{שני פריטים}other{# פריטים}}</translation>
+<translation id="975560348586398090">{COUNT,plural, =0{ללא}=1{פריט אחד}two{שני פריטים}many{# פריטים}other{# פריטים}}</translation>
 <translation id="981121421437150478">לא מקוון</translation>
 <translation id="984275831282074731">אמצעי תשלום</translation>
 <translation id="985199708454569384">‏&lt;p&gt;השגיאה הזו תוצג אם התאריך והשעה במחשב או בנייד אינם מדויקים.&lt;/p&gt;

@@ -121,7 +121,7 @@
 <translation id="3091839911843451378">Nepavyko – sustabdyta</translation>
 <translation id="3102119246920354026">Talpykla</translation>
 <translation id="3122464029669770682">Centrinis procesorius</translation>
-<translation id="3127341325625468058">{PAGE_NUMBER,plural, =0{Pašalinti puslapį?}=1{Pašalinti {PAGE_NUMBER} puslapį?}one{Pašalinti {PAGE_NUMBER} puslapį?}few{Pašalinti {PAGE_NUMBER} puslapį?}other{Pašalinti {PAGE_NUMBER} puslapį?}}</translation>
+<translation id="3127341325625468058">{PAGE_NUMBER,plural, =0{Pašalinti puslapį?}=1{Pašalinti {PAGE_NUMBER} puslapį?}one{Pašalinti {PAGE_NUMBER} puslapį?}few{Pašalinti {PAGE_NUMBER} puslapį?}many{Pašalinti {PAGE_NUMBER} puslapį?}other{Pašalinti {PAGE_NUMBER} puslapį?}}</translation>
 <translation id="315116470104423982">Duomenys mobiliesiems</translation>
 <translation id="3156846309055100599">Nuskaitomas <ph name="PAGE_NUMBER" /> puslapis...</translation>
 <translation id="315738237743207937">Aptiktas fiksuotasis portalas</translation>
@@ -131,7 +131,7 @@
 <translation id="3226405216343213872">Ieškoma skaitytuvų</translation>
 <translation id="3246869037381808805">Senesnės nei 1 dienos spausdinimo užduotys bus pašalintos</translation>
 <translation id="3268178239013324452">Nepavyko – atidarytos durelės</translation>
-<translation id="3283504360622356314">{0,plural, =1{Redaguoti failą}one{Redaguoti failus}few{Redaguoti failus}other{Redaguoti failus}}</translation>
+<translation id="3283504360622356314">{0,plural, =1{Redaguoti failą}one{Redaguoti failus}few{Redaguoti failus}many{Redaguoti failus}other{Redaguoti failus}}</translation>
 <translation id="3286515922899063534"><ph name="CURRENT" /> GHz</translation>
 <translation id="3310640316857623290">DNS delsa gerokai viršija leistiną slenksčio vertę</translation>
 <translation id="3328783797891415197">Vykdomas bandymas</translation>
@@ -228,7 +228,7 @@
 <translation id="4835901797422965222">Nėra jokių aktyvių tinklų</translation>
 <translation id="484790837831576105">(„Android“) DNS pavadinimų konvertavimas</translation>
 <translation id="4848429997038228357">VYKDOMA</translation>
-<translation id="4861758251032006121">{ATTEMPTS_LEFT,plural, =1{<ph name="ERROR_MESSAGE" /> Liko {0} bandymas}one{<ph name="ERROR_MESSAGE" /> Liko {0} bandymas}few{<ph name="ERROR_MESSAGE" /> Liko {0} bandymai}other{<ph name="ERROR_MESSAGE" /> Liko {0} bandymų}}</translation>
+<translation id="4861758251032006121">{ATTEMPTS_LEFT,plural, =1{<ph name="ERROR_MESSAGE" /> Liko {0} bandymas}one{<ph name="ERROR_MESSAGE" /> Liko {0} bandymas}few{<ph name="ERROR_MESSAGE" /> Liko {0} bandymai}many{<ph name="ERROR_MESSAGE" /> Liko {0} bandymo}other{<ph name="ERROR_MESSAGE" /> Liko {0} bandymų}}</translation>
 <translation id="4871137769558798671">Nepavyko prisijungti per užkardą prie HTTPS (prievadas: 443) svetainių</translation>
 <translation id="4880328057631981605">Prieigos taško pavadinimas</translation>
 <translation id="4885705234041587624">MSCHAPv2</translation>
@@ -281,7 +281,7 @@ Palieskite mikrofoną, kad užduotumėte reikiamus klausimus.</translation>
 <translation id="5431825016875453137">„OpenVPN“ / L2TP</translation>
 <translation id="5457599981699367932">Naršyti kaip svečiui</translation>
 <translation id="54609108002486618">Valdoma</translation>
-<translation id="5478289488939624992">{ATTEMPTS_LEFT,plural, =1{Liko {0} bandymas}one{Liko {0} bandymas}few{Liko {0} bandymai}other{Liko {0} bandymų}}</translation>
+<translation id="5478289488939624992">{ATTEMPTS_LEFT,plural, =1{Liko {0} bandymas}one{Liko {0} bandymas}few{Liko {0} bandymai}many{Liko {0} bandymo}other{Liko {0} bandymų}}</translation>
 <translation id="5493614766091057239"><ph name="VERDICT" />: <ph name="PROBLEMS" /></translation>
 <translation id="5499114900554609492">Nepavyko užbaigti nuskaitymo</translation>
 <translation id="5502931783115429516">„Android“ neveikia</translation>
@@ -305,7 +305,7 @@ Palieskite mikrofoną, kad užduotumėte reikiamus klausimus.</translation>
 <translation id="5866840822086176774">Labai stiprus</translation>
 <translation id="5895138241574237353">Paleisti iš naujo</translation>
 <translation id="5916084858004523819">Draudžiama</translation>
-<translation id="5921506667911082617">{COUNT,plural, =1{Failas sėkmingai nuskaitytas ir išsaugotas aplanke <ph name="LINK_BEGIN" />„<ph name="FOLDER_NAME" />“<ph name="LINK_END" />.}one{Failai sėkmingai nuskaityti ir išsaugoti aplanke <ph name="LINK_BEGIN" />„<ph name="FOLDER_NAME" />“<ph name="LINK_END" />.}few{Failai sėkmingai nuskaityti ir išsaugoti aplanke <ph name="LINK_BEGIN" />„<ph name="FOLDER_NAME" />“<ph name="LINK_END" />.}other{Failai sėkmingai nuskaityti ir išsaugoti aplanke <ph name="LINK_BEGIN" />„<ph name="FOLDER_NAME" />“<ph name="LINK_END" />.}}</translation>
+<translation id="5921506667911082617">{COUNT,plural, =1{Failas sėkmingai nuskaitytas ir išsaugotas aplanke <ph name="LINK_BEGIN" />„<ph name="FOLDER_NAME" />“<ph name="LINK_END" />.}one{Failai sėkmingai nuskaityti ir išsaugoti aplanke <ph name="LINK_BEGIN" />„<ph name="FOLDER_NAME" />“<ph name="LINK_END" />.}few{Failai sėkmingai nuskaityti ir išsaugoti aplanke <ph name="LINK_BEGIN" />„<ph name="FOLDER_NAME" />“<ph name="LINK_END" />.}many{Failai sėkmingai nuskaityti ir išsaugoti aplanke <ph name="LINK_BEGIN" />„<ph name="FOLDER_NAME" />“<ph name="LINK_END" />.}other{Failai sėkmingai nuskaityti ir išsaugoti aplanke <ph name="LINK_BEGIN" />„<ph name="FOLDER_NAME" />“<ph name="LINK_END" />.}}</translation>
 <translation id="5931523347251946569">Failas nerastas</translation>
 <translation id="594552776027197022">Generuoti atsitiktinę raktų porą</translation>
 <translation id="5972388717451707488">Update Engine</translation>
@@ -343,7 +343,7 @@ Palieskite mikrofoną, kad užduotumėte reikiamus klausimus.</translation>
 <translation id="641081527798843608">Temos atitiktis</translation>
 <translation id="6423239382391657905">Atidaryti virtualųjį privatųjį tinklą</translation>
 <translation id="6456394469623773452">Geras</translation>
-<translation id="6463239094587744704">{PAGE_NUMBER,plural, =0{Iš naujo nuskaityti puslapį?}=1{Iš naujo nuskaityti {PAGE_NUMBER} puslapį?}one{Iš naujo nuskaityti {PAGE_NUMBER} puslapį?}few{Iš naujo nuskaityti {PAGE_NUMBER} puslapį?}other{Iš naujo nuskaityti {PAGE_NUMBER} puslapį?}}</translation>
+<translation id="6463239094587744704">{PAGE_NUMBER,plural, =0{Iš naujo nuskaityti puslapį?}=1{Iš naujo nuskaityti {PAGE_NUMBER} puslapį?}one{Iš naujo nuskaityti {PAGE_NUMBER} puslapį?}few{Iš naujo nuskaityti {PAGE_NUMBER} puslapį?}many{Iš naujo nuskaityti {PAGE_NUMBER} puslapį?}other{Iš naujo nuskaityti {PAGE_NUMBER} puslapį?}}</translation>
 <translation id="6472207088655375767">Vienk. slaptažodis</translation>
 <translation id="6480327114083866287">Tvarko <ph name="MANAGER" /></translation>
 <translation id="649050271426829538">Sustabdyta – įstrigęs popierius</translation>
@@ -383,7 +383,7 @@ Palieskite mikrofoną, kad užduotumėte reikiamus klausimus.</translation>
 <translation id="7059230779847288458">Kraunama, <ph name="TIME_VALUE" />, kol bus įkrauta</translation>
 <translation id="708426984172631313">SUSTABDYTA</translation>
 <translation id="7086440545492620869"><ph name="VALUE" /> <ph name="DISPLAY_NAME" /></translation>
-<translation id="7134436342991564651">{0,plural, =1{Pavadinimų serveris}one{Pavadinimų serveriai}few{Pavadinimų serveriai}other{Pavadinimų serveriai}}</translation>
+<translation id="7134436342991564651">{0,plural, =1{Pavadinimų serveris}one{Pavadinimų serveriai}few{Pavadinimų serveriai}many{Pavadinimų serveriai}other{Pavadinimų serveriai}}</translation>
 <translation id="7143207342074048698">Jungiama</translation>
 <translation id="7144878232160441200">Kartoti</translation>
 <translation id="714876143603641390">LAN ryšys</translation>
@@ -404,7 +404,7 @@ Palieskite mikrofoną, kad užduotumėte reikiamus klausimus.</translation>
 <translation id="7375053625150546623">EAP</translation>
 <translation id="7415801143053185905">Itin didelė HTTP delsa</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
-<translation id="7435977162516949853">{NUMBER_OF_PAGES,plural, =1{Nuskaitymas baigtas. Nuskaitytas vienas puslapis}one{Nuskaitymas baigtas. Nuskaitytas {NUMBER_OF_PAGES} puslapis}few{Nuskaitymas baigtas. Nuskaityti {NUMBER_OF_PAGES} puslapiai}other{Nuskaitymas baigtas. Nuskaityta {NUMBER_OF_PAGES} puslapių}}</translation>
+<translation id="7435977162516949853">{NUMBER_OF_PAGES,plural, =1{Nuskaitymas baigtas. Nuskaitytas vienas puslapis}one{Nuskaitymas baigtas. Nuskaitytas {NUMBER_OF_PAGES} puslapis}few{Nuskaitymas baigtas. Nuskaityti {NUMBER_OF_PAGES} puslapiai}many{Nuskaitymas baigtas. Nuskaityta {NUMBER_OF_PAGES} puslapio}other{Nuskaitymas baigtas. Nuskaityta {NUMBER_OF_PAGES} puslapių}}</translation>
 <translation id="7469648432129124067">Aptiktas portalas</translation>
 <translation id="7487067081878637334">Technologija</translation>
 <translation id="7490813197707563893">MAC adresas</translation>
@@ -519,7 +519,7 @@ Palieskite mikrofoną, kad užduotumėte reikiamus klausimus.</translation>
 <translation id="8968751544471797276">Įkrovimo rodiklis</translation>
 <translation id="8970109610781093811">Paleisti dar kartą</translation>
 <translation id="8983038754672563810">HSPA</translation>
-<translation id="8987565828374052507">{NUMBER_OF_PAGES,plural, =0{Nuskaityti}=1{Nuskaityti {NUMBER_OF_PAGES} puslapį}one{Nuskaityti {NUMBER_OF_PAGES} puslapį}few{Nuskaityti {NUMBER_OF_PAGES} puslapį}other{Nuskaityti {NUMBER_OF_PAGES} puslapį}}</translation>
+<translation id="8987565828374052507">{NUMBER_OF_PAGES,plural, =0{Nuskaityti}=1{Nuskaityti {NUMBER_OF_PAGES} puslapį}one{Nuskaityti {NUMBER_OF_PAGES} puslapį}few{Nuskaityti {NUMBER_OF_PAGES} puslapį}many{Nuskaityti {NUMBER_OF_PAGES} puslapį}other{Nuskaityti {NUMBER_OF_PAGES} puslapį}}</translation>
 <translation id="9003704114456258138">Dažnis</translation>
 <translation id="9039663905644212491">PEAP</translation>
 <translation id="9062831201344759865">DNS pavadinimų konvertavimo delsa didelė</translation>

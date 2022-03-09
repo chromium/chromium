@@ -83,7 +83,7 @@ Ecco alcune cose che puoi provare per iniziare.</translation>
 <translation id="1503394326855300303">Questo account proprietario deve essere il primo account registrato in una sessione con accesso simultaneo.</translation>
 <translation id="1510238584712386396">Avvio app</translation>
 <translation id="1516740043221086139">La modalità Non disturbare è attiva.</translation>
-<translation id="1520303207432623762">{NUM_APPS,plural, =1{Mostra impostazioni di notifica. Le notifiche sono disattivate per un'app}other{Mostra impostazioni di notifica. Le notifiche sono disattivate per # app}}</translation>
+<translation id="1520303207432623762">{NUM_APPS,plural, =1{Mostra impostazioni di notifica. Le notifiche sono disattivate per un'app}one{Show notification settings. Notifications are off for # apps}other{Mostra impostazioni di notifica. Le notifiche sono disattivate per # app}}</translation>
 <translation id="1525508553941733066">IGNORA</translation>
 <translation id="1536604384701784949">Per usare l'account <ph name="USER_EMAIL_ADDRESS" />, devi prima uscire da tutti gli account. A tale scopo, seleziona Annulla per tornare indietro. Dopodiché seleziona l'ora per aprire l'area di stato e poi Esci. Quindi accedi di nuovo all'account <ph name="USER_EMAIL_ADDRESS_2" />.</translation>
 <translation id="15373452373711364">Puntatore del mouse grande</translation>
@@ -289,7 +289,7 @@ Ecco alcune cose che puoi provare per iniziare.</translation>
 <translation id="3153444934357957346">Puoi avere massimo <ph name="MULTI_PROFILE_USER_LIMIT" /> account per l'accesso simultaneo.</translation>
 <translation id="3154351730702813399">L'amministratore del dispositivo potrebbe monitorare l'attività di navigazione.</translation>
 <translation id="3181441307743005334">Il riavvio potrebbe richiedere un po' di tempo</translation>
-<translation id="3202010236269062730">{NUM_DEVICES,plural, =1{Connesso a un dispositivo}other{Connesso a # dispositivi}}</translation>
+<translation id="3202010236269062730">{NUM_DEVICES,plural, =1{Connesso a un dispositivo}one{Connected to # devices}other{Connesso a # dispositivi}}</translation>
 <translation id="320207200541803018">Imposta il timer</translation>
 <translation id="3203405173652969239">Funzionalità Switch Access attiva</translation>
 <translation id="3207953481422525583">Impostazioni utente</translation>
@@ -413,7 +413,7 @@ Ecco alcune cose che puoi provare per iniziare.</translation>
 <translation id="4032485810211612751"><ph name="HOURS" />:<ph name="MINUTES" />:<ph name="SECONDS" /></translation>
 <translation id="4042660782729322247">Stai condividendo lo schermo</translation>
 <translation id="4057003836560082631">Scheda del browser <ph name="INDEX" /> di <ph name="TOTAL_COUNT" />. <ph name="SITE_TITLE" />, <ph name="SITE_URL" /></translation>
-<translation id="4065525899979931964">{NUM_APPS,plural, =1{Off per un'app}other{Off per # app}}</translation>
+<translation id="4065525899979931964">{NUM_APPS,plural, =1{Off per un'app}one{Off for # apps}other{Off per # app}}</translation>
 <translation id="4066027111132117168">On, <ph name="REMAINING_TIME" /></translation>
 <translation id="4072264167173457037">Segnale medio</translation>
 <translation id="4095366824370681039">Penna stilografica</translation>
@@ -470,7 +470,7 @@ Ecco alcune cose che puoi provare per iniziare.</translation>
 <translation id="4424159417645388645">Scrivania 5</translation>
 <translation id="4430019312045809116">Volume</translation>
 <translation id="4445159312344259901">Accedi per sbloccare</translation>
-<translation id="4449692009715125625">{NUM_NOTIFICATIONS,plural, =1{1 notifica importante}other{# notifiche importanti}}</translation>
+<translation id="4449692009715125625">{NUM_NOTIFICATIONS,plural, =1{1 notifica importante}one{# notifiche importanti}other{# notifiche importanti}}</translation>
 <translation id="4450893287417543264">Non mostrare più</translation>
 <translation id="4451374464530248585">La scorciatoia da tastiera Alt + Freccia giù è cambiata. Per usare il tasto Pagina giù, premi il tasto <ph name="LAUNCHER_KEY_NAME" /> + Freccia giù.</translation>
 <translation id="445864333228800152">Buonasera,</translation>
@@ -578,7 +578,7 @@ Ecco alcune cose che puoi provare per iniziare.</translation>
 <translation id="5170568018924773124">Mostra nella cartella</translation>
 <translation id="5176318573511391780">Registra schermo parziale</translation>
 <translation id="5199367439331364630">Per accedere a Chromebook, inserisci la password</translation>
-<translation id="5206057955438543357">{NUM_NOTIFICATIONS,plural, =1{1 altra notifica}other{altre # notifiche}}</translation>
+<translation id="5206057955438543357">{NUM_NOTIFICATIONS,plural, =1{1 altra notifica}one{altre # notifiche}other{altre # notifiche}}</translation>
 <translation id="5207949376430453814">Evidenzia il cursore di testo</translation>
 <translation id="5208059991603368177">On</translation>
 <translation id="5222676887888702881">Esci</translation>
@@ -788,7 +788,7 @@ Ecco alcune cose che puoi provare per iniziare.</translation>
 <translation id="6850010208275816200">L'app aperta in questo momento è a schermo intero. Se l'app richiede la password, prima di tutto esci dallo schermo intero.</translation>
 <translation id="6852052252232534364">Fai clic per attivare</translation>
 <translation id="6857725247182211756"><ph name="SECONDS" /> sec</translation>
-<translation id="685782768769951078">{NUM_DIGITS,plural, =1{Manca una cifra}other{Mancano # cifre}}</translation>
+<translation id="685782768769951078">{NUM_DIGITS,plural, =1{Manca una cifra}one{Mancano # cifre}other{Mancano # cifre}}</translation>
 <translation id="6867938213751067702">Download di <ph name="FILENAME" /> sospeso</translation>
 <translation id="6878400149835617132">Scorciatoia disattivata</translation>
 <translation id="6886172995547742638">Il tuo <ph name="DEVICE_TYPE" /> potrebbe offrire prestazioni inferiori. Usa un alimentatore USB-C certificato da almeno <ph name="PREFERRED_MINIMUM_POWER" /> W.</translation>
@@ -902,7 +902,7 @@ Ecco alcune cose che puoi provare per iniziare.</translation>
 <translation id="7662283695561029522">Tocca per configurare</translation>
 <translation id="7705524343798198388">VPN</translation>
 <translation id="7714767791242455379">Aggiungi una nuova rete mobile</translation>
-<translation id="7723389094756330927">{NUM_NOTIFICATIONS,plural, =1{1 notifica}other{# notifiche}}</translation>
+<translation id="7723389094756330927">{NUM_NOTIFICATIONS,plural, =1{1 notifica}one{# notifications}other{# notifiche}}</translation>
 <translation id="7724603315864178912">Taglia</translation>
 <translation id="7745560842763881396">Mostra app nella barra delle app</translation>
 <translation id="7749443890790263709">Numero massimo di scrivanie raggiunto.</translation>

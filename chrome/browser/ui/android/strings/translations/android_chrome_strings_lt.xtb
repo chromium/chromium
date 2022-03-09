@@ -22,7 +22,7 @@
 <translation id="1123070903960493543">Kaip sąveikaujate su „Chrome“, jūsų pasirinkti nustatymai, išsami „Chrome“ strigčių informacija</translation>
 <translation id="1126809382673880764">Neapsaugo jūsų nuo pavojingų svetainių, atsisiuntimų ir plėtinių. Kai yra galimybė, vis tiek gausite saugaus naršymo pranešimus kitose „Google“ paslaugose, pvz., „Gmail“ ir paieškoje.</translation>
 <translation id="1129510026454351943">Išsami informacija: <ph name="ERROR_DESCRIPTION" /></translation>
-<translation id="1141800923049248244">{FILE_COUNT,plural, =1{Laukiama 1 atsisiuntimo.}one{Laukiama # atsisiuntimo.}few{Laukiama # atsisiuntimų.}other{Laukiama # atsisiuntimų.}}</translation>
+<translation id="1141800923049248244">{FILE_COUNT,plural, =1{Laukiama 1 atsisiuntimo.}one{Laukiama # atsisiuntimo.}few{Laukiama # atsisiuntimų.}many{Laukiama # atsisiuntimo.}other{Laukiama # atsisiuntimų.}}</translation>
 <translation id="1142732900304639782">Nesiūlyti versti šių svetainių</translation>
 <translation id="1145536944570833626">Ištrinti esamus duomenis.</translation>
 <translation id="1146678959555564648">Įgalinti VR</translation>
@@ -98,7 +98,7 @@
 <translation id="1558391695376153246">Uždaryti inkogn. skirtukus</translation>
 <translation id="1571304935088121812">Kopijuoti naudotojo vardą</translation>
 <translation id="1592864538817356322">Įprasta apsauga:</translation>
-<translation id="1628019612362412531">{NUM_SELECTED,plural, =1{Pašalinti 1 pasirinktą elementą}one{Pašalinti # pasirinktą elementą}few{Pašalinti # pasirinktus elementus}other{Pašalinti # pasirinktų elementų}}</translation>
+<translation id="1628019612362412531">{NUM_SELECTED,plural, =1{Pašalinti 1 pasirinktą elementą}one{Pašalinti # pasirinktą elementą}few{Pašalinti # pasirinktus elementus}many{Pašalinti # pasirinkto elemento}other{Pašalinti # pasirinktų elementų}}</translation>
 <translation id="1641113438599504367">Saugus naršymas</translation>
 <translation id="164269334534774161">Peržiūrite neprisijungus pasiekiamą šio puslapio kopiją (<ph name="CREATION_TIME" />)</translation>
 <translation id="1644574205037202324">Istorija</translation>
@@ -155,7 +155,7 @@
 <translation id="1987739130650180037"><ph name="MESSAGE" /> <ph name="LINK_NAME" /> mygtukas</translation>
 <translation id="2000419248597011803">Numatytajam paieškos varikliui siunčiami kai kurie slapukai ir į adreso juostą bei paieškos laukelį įvestos paieškos</translation>
 <translation id="200114059308480249">Įtraukti aplinkinį tekstą į „Google“ paieškas?</translation>
-<translation id="2013642289801508067">{FILE_COUNT,plural, =1{# failas}one{# failas}few{# failai}other{# failų}}</translation>
+<translation id="2013642289801508067">{FILE_COUNT,plural, =1{# failas}one{# failas}few{# failai}many{# failo}other{# failų}}</translation>
 <translation id="2021896219286479412">Viso ekrano svetainės valdikliai</translation>
 <translation id="2038563949887743358">Įjungti stalinio kompiuterio svetainės užklausą</translation>
 <translation id="204321170514947529">„<ph name="APP_NAME" />“ duomenų taip pat yra naršyklėje „Chrome“</translation>
@@ -163,7 +163,7 @@
 <translation id="2049574241039454490"><ph name="FILE_SIZE_OF_TOTAL" /> <ph name="SEPARATOR" /> <ph name="DESCRIPTION" /></translation>
 <translation id="2052422354554967744">Ieškoti internete</translation>
 <translation id="2056878612599315956">Svetainė pristabdyta</translation>
-<translation id="2065944887543506430">{FILE_COUNT,plural, =1{Nepavyko atlikti 1 atsisiuntimo}one{Nepavyko atlikti # atsisiuntimo}few{Nepavyko atlikti # atsisiuntimų}other{Nepavyko atlikti # atsisiuntimų}}</translation>
+<translation id="2065944887543506430">{FILE_COUNT,plural, =1{Nepavyko atlikti 1 atsisiuntimo}one{Nepavyko atlikti # atsisiuntimo}few{Nepavyko atlikti # atsisiuntimų}many{Nepavyko atlikti # atsisiuntimo}other{Nepavyko atlikti # atsisiuntimų}}</translation>
 <translation id="2067805253194386918">teksto pranešimas</translation>
 <translation id="2068748236079642969">Žiūrėti kitą vaizdo įrašą</translation>
 <translation id="2074143993849053708">Sutikimo atlikti paiešką balsu naudojant Padėjėją NS uždaryta</translation>
@@ -268,7 +268,7 @@ Norėdami ieškoti, palieskite ir palaikykite bet kurį žodį. Jei norite patik
 <translation id="2647434099613338025">Pridėti kalbą</translation>
 <translation id="2649068648233607930">Jūsų naršyklę tvarko <ph name="DOMAIN" /></translation>
 <translation id="2650751991977523696">Atsisiųsti failą dar kartą?</translation>
-<translation id="2651091186440431324">{FILE_COUNT,plural, =1{# garso įrašo failas}one{# garso įrašo failas}few{# garso įrašo failai}other{# garso įrašo failų}}</translation>
+<translation id="2651091186440431324">{FILE_COUNT,plural, =1{# garso įrašo failas}one{# garso įrašo failas}few{# garso įrašo failai}many{# garso įrašo failo}other{# garso įrašo failų}}</translation>
 <translation id="2656405586795711023">Žiniatinklio programos</translation>
 <translation id="2689830683995595741">Naudodami „Chrome“ sutinkate su <ph name="BEGIN_LINK1" />„Google“ paslaugų teikimo sąlygomis<ph name="END_LINK1" /> ir <ph name="BEGIN_LINK2" />„Google Chrome“ bei „Chrome“ OS papildomomis paslaugų teikimo sąlygomis<ph name="END_LINK2" />. Taip pat taikomas <ph name="BEGIN_LINK3" />„Google“ paskyrų, kurios tvarkomos naudojant „Family Link“, privatumo pranešimas<ph name="END_LINK3" />.</translation>
 <translation id="2702516483241149200">Naujiena: bendrinkite nuorodą, kuria galima slinkti į šį tekstą</translation>
@@ -299,8 +299,8 @@ Norėdami ieškoti, palieskite ir palaikykite bet kurį žodį. Jei norite patik
 <translation id="2827278682606527653">Sklaidos kanalo kortelės meniu atidarytas iki pusės</translation>
 <translation id="2830783625999891985">Iškarpinės turinys paslėptas</translation>
 <translation id="2839327205551510876">Nebestebima „<ph name="SITE_NAME" />“</translation>
-<translation id="2840810876587895427">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> inkognito skirtukas bus uždarytas}one{<ph name="TAB_COUNT_MANY" /> inkognito skirtukas bus uždarytas}few{<ph name="TAB_COUNT_MANY" /> inkognito skirtukai bus uždaryti}other{<ph name="TAB_COUNT_MANY" /> inkognito skirtukų bus uždaryta}}</translation>
-<translation id="2841216154655874070">{NUM_DAYS,plural, =1{Tikrinta prieš 1 dieną}one{Tikrinta prieš # dieną}few{Tikrinta prieš # dienas}other{Tikrinta prieš # dienų}}</translation>
+<translation id="2840810876587895427">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> inkognito skirtukas bus uždarytas}one{<ph name="TAB_COUNT_MANY" /> inkognito skirtukas bus uždarytas}few{<ph name="TAB_COUNT_MANY" /> inkognito skirtukai bus uždaryti}many{<ph name="TAB_COUNT_MANY" /> inkognito skirtuko bus uždaryta}other{<ph name="TAB_COUNT_MANY" /> inkognito skirtukų bus uždaryta}}</translation>
+<translation id="2841216154655874070">{NUM_DAYS,plural, =1{Tikrinta prieš 1 dieną}one{Tikrinta prieš # dieną}few{Tikrinta prieš # dienas}many{Tikrinta prieš # dienos}other{Tikrinta prieš # dienų}}</translation>
 <translation id="2842985007712546952">Viršaplankis</translation>
 <translation id="2856503607207334158">Nepavyko prisijungti</translation>
 <translation id="2860954141821109167">Įsitikinkite, kad šiame įrenginyje įgalinta telefono programa</translation>
@@ -323,7 +323,7 @@ Norėdami ieškoti, palieskite ir palaikykite bet kurį žodį. Jei norite patik
 <translation id="2946420957526726953">Atnaujinama „Chrome“, kad galėtumėte prisijungti prie kitų įrenginių</translation>
 <translation id="2951071800649516099">Pridėkite puslapių prie skaitymo sąrašo, kad galėtumėte perskaityti juos vėliau</translation>
 <translation id="2956410042958133412">Šią paskyrą tvarko <ph name="PARENT_NAME_1" /> ir <ph name="PARENT_NAME_2" />.</translation>
-<translation id="2961208450284224863">{READING_LIST_UNREAD_PAGE_COUNT,plural, =1{<ph name="READING_LIST_UNREAD_PAGE_COUNT_ONE" /> neskaitytas puslapis}one{<ph name="READING_LIST_UNREAD_PAGE_COUNT_MANY" /> neskaitytas puslapis}few{<ph name="READING_LIST_UNREAD_PAGE_COUNT_MANY" /> neskaityti puslapiai}other{<ph name="READING_LIST_UNREAD_PAGE_COUNT_MANY" /> neskaitytų puslapių}}</translation>
+<translation id="2961208450284224863">{READING_LIST_UNREAD_PAGE_COUNT,plural, =1{<ph name="READING_LIST_UNREAD_PAGE_COUNT_ONE" /> neskaitytas puslapis}one{<ph name="READING_LIST_UNREAD_PAGE_COUNT_MANY" /> neskaitytas puslapis}few{<ph name="READING_LIST_UNREAD_PAGE_COUNT_MANY" /> neskaityti puslapiai}many{<ph name="READING_LIST_UNREAD_PAGE_COUNT_MANY" /> neskaityto puslapio}other{<ph name="READING_LIST_UNREAD_PAGE_COUNT_MANY" /> neskaitytų puslapių}}</translation>
 <translation id="2961210776189273067">Kreipinys / titulas</translation>
 <translation id="2979025552038692506">Pasirinktas inkognito skirtukas</translation>
 <translation id="2979448359891869301">Nepavyko išplėsti ekrano kopijos. Bandykite dar kartą, kai telefonas nėra užimtas.</translation>
@@ -345,7 +345,7 @@ Norėdami ieškoti, palieskite ir palaikykite bet kurį žodį. Jei norite patik
 <translation id="3037517125981011456">Rodomi raginimai prisijungti prie „Chrome“.</translation>
 <translation id="3046945242843292318">Kitą kartą sparčiau pasiekite šią svetainę</translation>
 <translation id="305593374596241526">Vieta išjungta; įjunkite <ph name="BEGIN_LINK" />„Android“ nustatymuose<ph name="END_LINK" />.</translation>
-<translation id="3060635849835183725">{BOOKMARKS_COUNT,plural, =1{<ph name="BOOKMARKS_COUNT_ONE" /> žymė}one{<ph name="BOOKMARKS_COUNT_MANY" /> žymė}few{<ph name="BOOKMARKS_COUNT_MANY" /> žymės}other{<ph name="BOOKMARKS_COUNT_MANY" /> žymių}}</translation>
+<translation id="3060635849835183725">{BOOKMARKS_COUNT,plural, =1{<ph name="BOOKMARKS_COUNT_ONE" /> žymė}one{<ph name="BOOKMARKS_COUNT_MANY" /> žymė}few{<ph name="BOOKMARKS_COUNT_MANY" /> žymės}many{<ph name="BOOKMARKS_COUNT_MANY" /> žymės}other{<ph name="BOOKMARKS_COUNT_MANY" /> žymių}}</translation>
 <translation id="3062802207422175757">Su jūsų pomėgiais susiję straipsniai naršyklėje „Chrome“</translation>
 <translation id="3066573403916685335">Perkelti žemyn</translation>
 <translation id="3070005020161560471">Versti automatiškai</translation>
@@ -410,7 +410,7 @@ Norėdami ieškoti, palieskite ir palaikykite bet kurį žodį. Jei norite patik
 <translation id="3440975416244667276">Palieskite ir palaikykite, kad peržiūrėtumėte labiau susijusią informaciją</translation>
 <translation id="3443221991560634068">Iš naujo įkelti dabartinį puslapį</translation>
 <translation id="3444179773590444986">Bendrinti atsiliepimą apie tamsiąją temą, skirtą svetainėms?</translation>
-<translation id="3469665409713263828">{FILE_COUNT,plural, =1{Suplanuotas 1 atsisiuntimas}one{Suplanuotas # atsisiuntimas}few{Suplanuoti # atsisiuntimai}other{Suplanuota # atsisiuntimų}}</translation>
+<translation id="3469665409713263828">{FILE_COUNT,plural, =1{Suplanuotas 1 atsisiuntimas}one{Suplanuotas # atsisiuntimas}few{Suplanuoti # atsisiuntimai}many{Suplanuota # atsisiuntimo}other{Suplanuota # atsisiuntimų}}</translation>
 <translation id="3478363558367712427">Galite pasirinkti paieškos variklį</translation>
 <translation id="3493531032208478708"><ph name="BEGIN_LINK" />Sužinokite daugiau<ph name="END_LINK" /> apie siūlomą turinį</translation>
 <translation id="3499246418971111862">chrome_qrcode_<ph name="CURRENT_TIMESTAMP_MS" /></translation>
@@ -459,7 +459,7 @@ Norėdami ieškoti, palieskite ir palaikykite bet kurį žodį. Jei norite patik
 <translation id="3773856050682458546">Pagrindiniai duomenys ir informacija apie lankomas svetaines ir naudojamas programas</translation>
 <translation id="3775705724665058594">Išsiųsta į jūsų įrenginius</translation>
 <translation id="3778956594442850293">Pridėta prie pagrindinio ekrano</translation>
-<translation id="3791957072666773229">{TAB_COUNT,plural, =1{Vienas skirtukas}one{# skirtukas}few{# skirtukai}other{# skirtukų}}</translation>
+<translation id="3791957072666773229">{TAB_COUNT,plural, =1{Vienas skirtukas}one{# skirtukas}few{# skirtukai}many{# skirtuko}other{# skirtukų}}</translation>
 <translation id="3803784507854318295">Tvarkyti automatinį paleidimą</translation>
 <translation id="3810838688059735925">Vaizdo</translation>
 <translation id="3810973564298564668">Tvarkyti</translation>
@@ -482,7 +482,7 @@ Norėdami ieškoti, palieskite ir palaikykite bet kurį žodį. Jei norite patik
 <translation id="393697183122708255">Neįgalinta paieška balsu</translation>
 <translation id="395377504920307820">Naudoti be paskyros</translation>
 <translation id="3958287878205277013">Jei norite išvalyti naršymo inkognito režimu istoriją iš įrenginio, uždarykite visus inkognito skirtukus.</translation>
-<translation id="396192773038029076">{NUM_IN_PROGRESS,plural, =1{„Chrome“ įkels puslapį, kai bus paruošta}one{„Chrome“ įkels puslapius, kai bus paruošta}few{„Chrome“ įkels puslapius, kai bus paruošta}other{„Chrome“ įkels puslapius, kai bus paruošta}}</translation>
+<translation id="396192773038029076">{NUM_IN_PROGRESS,plural, =1{„Chrome“ įkels puslapį, kai bus paruošta}one{„Chrome“ įkels puslapius, kai bus paruošta}few{„Chrome“ įkels puslapius, kai bus paruošta}many{„Chrome“ įkels puslapius, kai bus paruošta}other{„Chrome“ įkels puslapius, kai bus paruošta}}</translation>
 <translation id="3962957115499249330">Matysite pranešimą, kai šis atsisiuntimas prasidės naudojant „Wi-Fi“.</translation>
 <translation id="3963007978381181125">Slaptafrazės šifruotė neapima mokėjimo metodų ir adresų iš „Google Pay“. Tik jūsų slaptafrazę žinantis asmuo gali skaityti šifruotus duomenis. Slaptafrazė nesiunčiama į sistemą „Google“ ir joje nesaugoma. Pamiršę slaptafrazę arba norėdami pakeisti šį nustatymą turėsite iš naujo nustatyti sinchronizavimą. <ph name="BEGIN_LINK" />Sužinokite daugiau<ph name="END_LINK" /></translation>
 <translation id="3969142555815019568">„Chrome“ negali patikrinti jūsų slaptažodžių</translation>
@@ -496,7 +496,7 @@ Norėdami ieškoti, palieskite ir palaikykite bet kurį žodį. Jei norite patik
 <translation id="3988466920954086464">Žiūrėkite tiesioginius paieškos rezultatus šiame skydelyje</translation>
 <translation id="4000212216660919741">„Home“ neprisijungus</translation>
 <translation id="4016425174436051808">Negalima stebėti. Kažkas ne taip.</translation>
-<translation id="4034817413553209278">{HOURS,plural, =1{# val.}one{# val.}few{# val.}other{# val.}}</translation>
+<translation id="4034817413553209278">{HOURS,plural, =1{# val.}one{# val.}few{# val.}many{# val.}other{# val.}}</translation>
 <translation id="4045764304651014138">Naudojimo duomenys</translation>
 <translation id="4056223980640387499">Sepija</translation>
 <translation id="4060598801229743805">Parinktys pasiekiamos netoli ekrano viršaus</translation>
@@ -564,14 +564,14 @@ Norėdami ieškoti, palieskite ir palaikykite bet kurį žodį. Jei norite patik
 <translation id="4504667196171871375">Naudojant „Wi-Fi“ ir mobiliojo ryšio duomenis</translation>
 <translation id="4508528996305412043">Sklaidos kanalo kortelės meniu atidarytas</translation>
 <translation id="4508642716788467538">Pasirinkite kalbą</translation>
-<translation id="4513387527876475750">{DAYS,plural, =1{Prieš # dieną}one{Prieš # dieną}few{Prieš # dienas}other{Prieš # dienų}}</translation>
+<translation id="4513387527876475750">{DAYS,plural, =1{Prieš # dieną}one{Prieš # dieną}few{Prieš # dienas}many{Prieš # dienos}other{Prieš # dienų}}</translation>
 <translation id="451872707440238414">Ieškoti žymėse</translation>
 <translation id="4521489764227272523">Pasirinkti duomenys pašalinti iš „Chrome“ ir sinchronizuojamų įrenginių.
 
 Adresu <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> gali būti pateikta kitų formų jūsų „Google“ paskyros naršymo istorija, pvz., paieškos ir veikla kitose „Google“ paslaugose.</translation>
 <translation id="4532845899244822526">Pasirinkti aplanką</translation>
 <translation id="4538018662093857852">Įjungti supaprastintąjį režimą</translation>
-<translation id="4547551584605870320">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> skirtukas}one{Skirtukų: <ph name="TAB_COUNT_MANY" />, <ph name="TAB_COUNT_INCOGNITO" /> inkognito}few{Skirtukų: <ph name="TAB_COUNT_MANY" />, <ph name="TAB_COUNT_INCOGNITO" /> inkognito}other{Skirtukų: <ph name="TAB_COUNT_MANY" />, <ph name="TAB_COUNT_INCOGNITO" /> inkognito}}</translation>
+<translation id="4547551584605870320">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> skirtukas}one{Skirtukų: <ph name="TAB_COUNT_MANY" />, <ph name="TAB_COUNT_INCOGNITO" /> inkognito}few{Skirtukų: <ph name="TAB_COUNT_MANY" />, <ph name="TAB_COUNT_INCOGNITO" /> inkognito}many{Skirtukų: <ph name="TAB_COUNT_MANY" />, <ph name="TAB_COUNT_INCOGNITO" /> inkognito}other{Skirtukų: <ph name="TAB_COUNT_MANY" />, <ph name="TAB_COUNT_INCOGNITO" /> inkognito}}</translation>
 <translation id="4550003330909367850">Jei norite čia peržiūrėti ar nukopijuoti slaptažodį, nustatykite ekrano užraktą šiame įrenginyje.</translation>
 <translation id="4554077758708533499">Prijungta USB laidu</translation>
 <translation id="4557685098773234337">Kad sparčiau čia patektumėte, šį puslapį pridėkite prie pagrindinio ekrano.</translation>
@@ -581,13 +581,13 @@ Adresu <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> gali 
 <translation id="4565377596337484307">Slėpti slaptažodį</translation>
 <translation id="4572422548854449519">Prisijungimas prie tvarkomos paskyros</translation>
 <translation id="4576892426230499203">Bandykite naudoti kitą patvirtinimo parinktį</translation>
-<translation id="4583164079174244168">{MINUTES,plural, =1{Prieš 1 minutę}one{Prieš # minutę}few{Prieš # minutes}other{Prieš # minučių}}</translation>
+<translation id="4583164079174244168">{MINUTES,plural, =1{Prieš 1 minutę}one{Prieš # minutę}few{Prieš # minutes}many{Prieš # minutės}other{Prieš # minučių}}</translation>
 <translation id="4587589328781138893">Svetainės</translation>
 <translation id="4594952190837476234">Šis neprisijungus naudojamas puslapis sukurtas <ph name="CREATION_TIME" />, todėl gali skirtis nuo prisijungus pateiktos versijos.</translation>
 <translation id="4616150815774728855">Atidaryti „<ph name="WEBAPK_NAME" />“</translation>
 <translation id="4619564267100705184">Patvirtinti tapatybę</translation>
 <translation id="4634124774493850572">Naudoti slaptažodį</translation>
-<translation id="4640331037679501949">{NUM_PASSWORDS,plural, =1{1 pažeistas slaptažodis}one{# pažeistas slaptažodis}few{# pažeisti slaptažodžiai}other{# pažeistų slaptažodžių}}</translation>
+<translation id="4640331037679501949">{NUM_PASSWORDS,plural, =1{1 pažeistas slaptažodis}one{# pažeistas slaptažodis}few{# pažeisti slaptažodžiai}many{# pažeisto slaptažodžio}other{# pažeistų slaptažodžių}}</translation>
 <translation id="4650364565596261010">Sistemos numatytasis nustatymas</translation>
 <translation id="465657074423018424">Saugaus naršymo funkcija apsaugo jus nuo apgaulingų svetainių. Jei ją išjungsite, būkite itin atsargūs naršydami, ypač prieš įvesdami slaptažodžius.</translation>
 <translation id="4662373422909645029">Skaičiai slapyvardyje negalimi</translation>
@@ -596,7 +596,7 @@ Adresu <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> gali 
 <translation id="4668347365065281350">Visi svetainių išsaugoti duomenys, įskaitant slapukus ir kitus vietoje saugomus duomenis</translation>
 <translation id="4678082183394354975">Tamsioji tema, skirta svetainėms, įjungta sistemoje „Chrome“</translation>
 <translation id="4684427112815847243">Viską sinchronizuoti</translation>
-<translation id="4695891336199304370">{SHIPPING_OPTIONS,plural, =1{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 ir dar <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" />}one{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 ir dar <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" />}few{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 ir dar <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" />}other{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 ir dar <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" />}}</translation>
+<translation id="4695891336199304370">{SHIPPING_OPTIONS,plural, =1{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 ir dar <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" />}one{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 ir dar <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" />}few{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 ir dar <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" />}many{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 ir dar <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" />}other{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 ir dar <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" />}}</translation>
 <translation id="4696983787092045100">Siųsti teksto pranešimą savo įrenginiams</translation>
 <translation id="4699172675775169585">Talpykloje esantys vaizdai ir failai</translation>
 <translation id="4714588616299687897">Sutaupykite iki 60 proc. duomenų</translation>
@@ -611,9 +611,9 @@ Adresu <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> gali 
 <translation id="4758061975920522644">Bendrinti tik vaizdą</translation>
 <translation id="4759238208242260848">Atsisiuntimai</translation>
 <translation id="4763480195061959176">vaizdo įrašas</translation>
-<translation id="4763829664323285145">{FILE_COUNT,plural, =1{Baigtas 1 atsisiuntimas.}one{Baigtas # atsisiuntimas.}few{Baigti # atsisiuntimai.}other{Baigta # atsisiuntimų.}}</translation>
+<translation id="4763829664323285145">{FILE_COUNT,plural, =1{Baigtas 1 atsisiuntimas.}one{Baigtas # atsisiuntimas.}few{Baigti # atsisiuntimai.}many{Baigta # atsisiuntimo.}other{Baigta # atsisiuntimų.}}</translation>
 <translation id="4766678251456904326">Pridėti paskyrą prie įrenginio</translation>
-<translation id="4767937498890654900">{FILE_COUNT,plural, =1{Suplanuotas vienas atsisiuntimas.}one{Suplanuotas # atsisiuntimas.}few{Suplanuoti # atsisiuntimai.}other{Suplanuota # atsisiuntimų.}}</translation>
+<translation id="4767937498890654900">{FILE_COUNT,plural, =1{Suplanuotas vienas atsisiuntimas.}one{Suplanuotas # atsisiuntimas.}few{Suplanuoti # atsisiuntimai.}many{Suplanuota # atsisiuntimo.}other{Suplanuota # atsisiuntimų.}}</translation>
 <translation id="4791358705705538979">Padedama jums atlikti užduotis, pvz., atsiskaitymo veiksmus, žiniatinklyje</translation>
 <translation id="4794291718671962615">(<ph name="MEGABYTES" />) <ph name="URL" /></translation>
 <translation id="4802417911091824046">Slaptafrazės šifruotė neapima mokėjimo metodų ir adresų iš „Google Pay“.
@@ -644,7 +644,7 @@ Jei norite pakeisti šį nustatymą, <ph name="BEGIN_LINK" />iš naujo nustatyki
 <translation id="4912413785358399818">Perkelti skirtuką</translation>
 <translation id="4913161338056004800">Iš naujo nustatyti statistiką</translation>
 <translation id="4913169188695071480">Sustabdyti atnaujinimą</translation>
-<translation id="4921180162323349895">{FILE_COUNT,plural, =1{# puslapis}one{# puslapis}few{# puslapiai}other{# puslapių}}</translation>
+<translation id="4921180162323349895">{FILE_COUNT,plural, =1{# puslapis}one{# puslapis}few{# puslapiai}many{# puslapio}other{# puslapių}}</translation>
 <translation id="4925120120285606924"><ph name="CURRENT_DATE_ISO" /> ekrano kopija</translation>
 <translation id="49268022542405662">Jūsų slaptažodžiai bus išeksportuoti ir atsisiųsti kaip teksto failas. Juos matys visi ir bet kuri programa, turinti paskirties aplanko prieigą.</translation>
 <translation id="4932247056774066048">Atsijungiate nuo paskyros, kurią valdo <ph name="DOMAIN_NAME" />, todėl jūsų „Chrome“ duomenys bus ištrinti iš šio įrenginio. Duomenys liks „Google“ paskyroje.</translation>
@@ -680,7 +680,7 @@ Jei norite pakeisti šį nustatymą, <ph name="BEGIN_LINK" />iš naujo nustatyki
 <translation id="5142281402488957685">Jei norite matyti naujas istorijas, patraukite žemyn, kad atnaujintumėte</translation>
 <translation id="5152843274749979095">Neįdiegta jokių palaikomų programų</translation>
 <translation id="5161254044473106830">Būtina nurodyti pavadinimą</translation>
-<translation id="5162754098604580781">{FILE_COUNT,plural, =1{Nepavyko atlikti 1 atsisiuntimo.}one{Nepavyko atlikti # atsisiuntimo.}few{Nepavyko atlikti # atsisiuntimų.}other{Nepavyko atlikti # atsisiuntimų.}}</translation>
+<translation id="5162754098604580781">{FILE_COUNT,plural, =1{Nepavyko atlikti 1 atsisiuntimo.}one{Nepavyko atlikti # atsisiuntimo.}few{Nepavyko atlikti # atsisiuntimų.}many{Nepavyko atlikti # atsisiuntimo.}other{Nepavyko atlikti # atsisiuntimų.}}</translation>
 <translation id="5170568018924773124">Rodyti aplanke</translation>
 <translation id="5171045022955879922">Ieškokite ar įveskite URL</translation>
 <translation id="5184329579814168207">Atidaryti naudojant „Chrome“</translation>
@@ -690,7 +690,7 @@ Jei norite pakeisti šį nustatymą, <ph name="BEGIN_LINK" />iš naujo nustatyki
 <translation id="5199929503336119739">Darbo profilis</translation>
 <translation id="5201464744567315552">Matysite pranešimą, kai šis atsisiuntimas prasidės <ph name="TIME" />.</translation>
 <translation id="5204967432542742771">Įveskite slaptažodį</translation>
-<translation id="5206168361184759344">{FILE_COUNT,plural, =1{Atsisiunčiamas failas…}one{Atsisiunčiamas # failas…}few{Atsisiunčiami # failai…}other{Atsisiunčiama # failų…}}</translation>
+<translation id="5206168361184759344">{FILE_COUNT,plural, =1{Atsisiunčiamas failas…}one{Atsisiunčiamas # failas…}few{Atsisiunčiami # failai…}many{Atsisiunčiama # failo…}other{Atsisiunčiama # failų…}}</translation>
 <translation id="5210286577605176222">Pereiti prie ankstesnio skirtuko</translation>
 <translation id="5210365745912300556">Uždaryti skirtuką</translation>
 <translation id="5213672942202814946">Naudoti paiešką balsu</translation>
@@ -713,7 +713,7 @@ Jei norite pakeisti šį nustatymą, <ph name="BEGIN_LINK" />iš naujo nustatyki
 <translation id="5329858041417644019">Jūsų naršyklė nėra tvarkoma</translation>
 <translation id="5342314432463739672">Leidimų užklausos</translation>
 <translation id="5355191726083956201">Sustiprinta apsauga įjungta</translation>
-<translation id="5368958499335451666">{OPEN_TABS,plural, =1{<ph name="OPEN_TABS_ONE" /> atidarytas skirtukas; palieskite, kad perjungtumėte skirtukus}one{<ph name="OPEN_TABS_MANY" /> atidarytas skirtukas; palieskite, kad perjungtumėte skirtukus}few{<ph name="OPEN_TABS_MANY" /> atidaryti skirtukai; palieskite, kad perjungtumėte skirtukus}other{<ph name="OPEN_TABS_MANY" /> atidarytų skirtukų; palieskite, kad perjungtumėte skirtukus}}</translation>
+<translation id="5368958499335451666">{OPEN_TABS,plural, =1{<ph name="OPEN_TABS_ONE" /> atidarytas skirtukas; palieskite, kad perjungtumėte skirtukus}one{<ph name="OPEN_TABS_MANY" /> atidarytas skirtukas; palieskite, kad perjungtumėte skirtukus}few{<ph name="OPEN_TABS_MANY" /> atidaryti skirtukai; palieskite, kad perjungtumėte skirtukus}many{<ph name="OPEN_TABS_MANY" /> atidaryto skirtuko; palieskite, kad perjungtumėte skirtukus}other{<ph name="OPEN_TABS_MANY" /> atidarytų skirtukų; palieskite, kad perjungtumėte skirtukus}}</translation>
 <translation id="5375577065097716013">Ieškoti vaizdo su „Google Lens“ <ph name="BEGIN_NEW" />Nauja<ph name="END_NEW" /></translation>
 <translation id="5403644198645076998">Leisti tik konkrečias svetaines</translation>
 <translation id="5409881200985013443">Pateikti <ph name="ONE_TIME_CODE" /> įrenginyje (<ph name="CLIENT_NAME" />)?</translation>
@@ -785,7 +785,7 @@ Jei norite pakeisti šį nustatymą, <ph name="BEGIN_LINK" />iš naujo nustatyki
 <translation id="5780792035410621042">Jei norite nukopijuoti slaptažodžius, pirmiausia nustatykite įrenginio ekrano užraktą</translation>
 <translation id="5793665092639000975">Naudojama <ph name="SPACE_USED" /> iš <ph name="SPACE_AVAILABLE" /></translation>
 <translation id="5795872532621730126">Ieškoti ir naršyti</translation>
-<translation id="5809361687334836369">{HOURS,plural, =1{Prieš 1 valandą}one{Prieš # valandą}few{Prieš # valandas}other{Prieš # valandų}}</translation>
+<translation id="5809361687334836369">{HOURS,plural, =1{Prieš 1 valandą}one{Prieš # valandą}few{Prieš # valandas}many{Prieš # valandos}other{Prieš # valandų}}</translation>
 <translation id="5810288467834065221">Autorių teisės „Google LLC.“, <ph name="YEAR" /> m. Visos teisės saugomos.</translation>
 <translation id="5810864297166300463">Žiniatinklio pagalba</translation>
 <translation id="5814131985548525293">Įveskite čia arba palieskite balso piktogramą, kad pradėtumėte</translation>
@@ -884,7 +884,7 @@ Pavyzdžiui, kai kurios svetainės gali atsakyti į šią užklausą rodydamos j
 <translation id="6337234675334993532">Šifruotė</translation>
 <translation id="6341580099087024258">Klausti, kur saugoti failus</translation>
 <translation id="6342069812937806050">Ką tik</translation>
-<translation id="6343495912647200061">{SHIPPING_ADDRESS,plural, =1{<ph name="SHIPPING_ADDRESS_PREVIEW" />\u2026 ir dar <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" />}one{<ph name="SHIPPING_ADDRESS_PREVIEW" />\u2026 ir dar <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" />}few{<ph name="SHIPPING_ADDRESS_PREVIEW" />\u2026 ir dar <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" />}other{<ph name="SHIPPING_ADDRESS_PREVIEW" />\u2026 ir dar <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" />}}</translation>
+<translation id="6343495912647200061">{SHIPPING_ADDRESS,plural, =1{<ph name="SHIPPING_ADDRESS_PREVIEW" />\u2026 ir dar <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" />}one{<ph name="SHIPPING_ADDRESS_PREVIEW" />\u2026 ir dar <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" />}few{<ph name="SHIPPING_ADDRESS_PREVIEW" />\u2026 ir dar <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" />}many{<ph name="SHIPPING_ADDRESS_PREVIEW" />\u2026 ir dar <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" />}other{<ph name="SHIPPING_ADDRESS_PREVIEW" />\u2026 ir dar <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" />}}</translation>
 <translation id="6345878117466430440">Žymėti kaip skaitytą</translation>
 <translation id="6363990818884053551">Jei norite pradėti sinchronizuoti, patvirtinkite savo tapatybę</translation>
 <translation id="6364438453358674297">Pašalinti pasiūlymą iš istorijos?</translation>
@@ -906,7 +906,7 @@ Pavyzdžiui, kai kurios svetainės gali atsakyti į šią užklausą rodydamos j
 <translation id="6434309073475700221">Išmesti</translation>
 <translation id="6437478888915024427">Puslapio informacija</translation>
 <translation id="6441734959916820584">Pavadinimas yra per ilgas</translation>
-<translation id="6444421004082850253">{FILE_COUNT,plural, =1{# vaizdas}one{# vaizdas}few{# vaizdai}other{# vaizdų}}</translation>
+<translation id="6444421004082850253">{FILE_COUNT,plural, =1{# vaizdas}one{# vaizdas}few{# vaizdai}many{# vaizdo}other{# vaizdų}}</translation>
 <translation id="6447558397796644647">Nepavyko rasti žymės Patikrinkite rašybą arba pridėkite naują žymę.</translation>
 <translation id="6459045781120991510">Apklausos</translation>
 <translation id="6461962085415701688">Nepavyksta atidaryti failo</translation>
@@ -917,16 +917,16 @@ Pavyzdžiui, kai kurios svetainės gali atsakyti į šią užklausą rodydamos j
 <translation id="6482749332252372425">Nepavyko atsisiųsti „<ph name="FILE_NAME" />“ dėl trūkstamos vietos saugykloje.</translation>
 <translation id="6489610539826642779">Skaitymo sąrašas <ph name="BEGIN_NEW" />Naujas<ph name="END_NEW" /></translation>
 <translation id="6496823230996795692">Jei „<ph name="APP_NAME" />“ norite naudoti pirmą kartą, prisijunkite prie interneto.</translation>
-<translation id="650224091954855786">{FILE_COUNT,plural, =1{Failas atsisiųstas}one{Baigtas # atsisiuntimas}few{Baigti # atsisiuntimai}other{Baigta # atsisiuntimų}}</translation>
+<translation id="650224091954855786">{FILE_COUNT,plural, =1{Failas atsisiųstas}one{Baigtas # atsisiuntimas}few{Baigti # atsisiuntimai}many{Baigta # atsisiuntimo}other{Baigta # atsisiuntimų}}</translation>
 <translation id="6508722015517270189">Iš naujo paleiskite „Chrome“</translation>
 <translation id="6527303717912515753">Bendrinti</translation>
 <translation id="6532866250404780454">Svetainės, kuriose lankotės naudodami „Chrome“, nebus rodomos. Visi svetainių laikmačiai bus ištrinti.</translation>
 <translation id="6534565668554028783">Per ilgai laukta „Google“ atsako</translation>
 <translation id="6539092367496845964">Įvyko klaida. Vėliau bandykite dar kartą.</translation>
-<translation id="6541983376925655882">{NUM_HOURS,plural, =1{Tikrinta prieš 1 valandą}one{Tikrinta prieš # valandą}few{Tikrinta prieš # valandas}other{Tikrinta prieš # valandų}}</translation>
+<translation id="6541983376925655882">{NUM_HOURS,plural, =1{Tikrinta prieš 1 valandą}one{Tikrinta prieš # valandą}few{Tikrinta prieš # valandas}many{Tikrinta prieš # valandos}other{Tikrinta prieš # valandų}}</translation>
 <translation id="6545017243486555795">Išvalyti visus duomenis</translation>
 <translation id="6546511553472444032">Failas gali būti žalingas</translation>
-<translation id="6556542240154580383">{TAB_COUNT,plural, =1{„<ph name="TAB_TITLE" />“ ir dar <ph name="TAB_COUNT_ONE" /> skirtukas bus uždaryti}one{„<ph name="TAB_TITLE" />“ ir dar <ph name="TAB_COUNT_MANY" /> skirtukas bus uždaryti}few{„<ph name="TAB_TITLE" />“ ir dar <ph name="TAB_COUNT_MANY" /> skirtukai bus uždaryti}other{„<ph name="TAB_TITLE" />“ ir dar <ph name="TAB_COUNT_MANY" /> skirtukų bus uždaryti}}</translation>
+<translation id="6556542240154580383">{TAB_COUNT,plural, =1{„<ph name="TAB_TITLE" />“ ir dar <ph name="TAB_COUNT_ONE" /> skirtukas bus uždaryti}one{„<ph name="TAB_TITLE" />“ ir dar <ph name="TAB_COUNT_MANY" /> skirtukas bus uždaryti}few{„<ph name="TAB_TITLE" />“ ir dar <ph name="TAB_COUNT_MANY" /> skirtukai bus uždaryti}many{„<ph name="TAB_TITLE" />“ ir dar <ph name="TAB_COUNT_MANY" /> skirtuko bus uždaryti}other{„<ph name="TAB_TITLE" />“ ir dar <ph name="TAB_COUNT_MANY" /> skirtukų bus uždaryti}}</translation>
 <translation id="6560414384669816528">Atlikti paiešką naudojant „Sogou“</translation>
 <translation id="656065428026159829">Žr. daugiau</translation>
 <translation id="6565959834589222080">„Wi-Fi“ naudojama, kai pasiekiama</translation>
@@ -948,7 +948,7 @@ Pavyzdžiui, kai kurios svetainės gali atsakyti į šią užklausą rodydamos j
 <translation id="6643016212128521049">Išvalyti</translation>
 <translation id="6643649862576733715">Rūšiuoti pagal išsaugotų duomenų kiekį</translation>
 <translation id="6648459603387803038">Administratorius gali nuotoliniu būdu keisti naršyklės sąranką. Veiklą šiame įrenginyje taip pat galima tvarkyti ne naršyklėje „Chrome“.</translation>
-<translation id="6648977384226967773">{CONTACT,plural, =1{<ph name="CONTACT_PREVIEW" />\u2026 ir dar <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" />}one{<ph name="CONTACT_PREVIEW" />\u2026 ir dar <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" />}few{<ph name="CONTACT_PREVIEW" />\u2026 ir dar <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" />}other{<ph name="CONTACT_PREVIEW" />\u2026 ir dar <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" />}}</translation>
+<translation id="6648977384226967773">{CONTACT,plural, =1{<ph name="CONTACT_PREVIEW" />\u2026 ir dar <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" />}one{<ph name="CONTACT_PREVIEW" />\u2026 ir dar <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" />}few{<ph name="CONTACT_PREVIEW" />\u2026 ir dar <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" />}many{<ph name="CONTACT_PREVIEW" />\u2026 ir dar <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" />}other{<ph name="CONTACT_PREVIEW" />\u2026 ir dar <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" />}}</translation>
 <translation id="6649642165559792194">Peržiūrėti vaizdą <ph name="BEGIN_NEW" />Naujas<ph name="END_NEW" /></translation>
 <translation id="6657585470893396449">Slaptažodis</translation>
 <translation id="6659594942844771486">Skirtukas</translation>
@@ -1036,7 +1036,7 @@ Pavyzdžiui, kai kurios svetainės gali atsakyti į šią užklausą rodydamos j
 <translation id="7187993566681480880">Apsaugo jus naršyklėje „Chrome“ ir gali būti naudojama apsaugai kitose „Google“ programose pagerinti, kai esate prisijungę.</translation>
 <translation id="718926126787620637">Žymių aplankų sąrašas, atidarytas per visą ekrano aukštį</translation>
 <translation id="7191430249889272776">Skirtuko lapas atidarytas fone.</translation>
-<translation id="7227218174981371415">{FILE_COUNT,plural, =1{Laukiama 1 atsisiuntimo}one{Laukiama # atsisiuntimo}few{Laukiama # atsisiuntimų}other{Laukiama # atsisiuntimų}}</translation>
+<translation id="7227218174981371415">{FILE_COUNT,plural, =1{Laukiama 1 atsisiuntimo}one{Laukiama # atsisiuntimo}few{Laukiama # atsisiuntimų}many{Laukiama # atsisiuntimo}other{Laukiama # atsisiuntimų}}</translation>
 <translation id="7233236755231902816">Jei norite matyti žiniatinklį savo kalba, gaukite naujausią „Chrome“ versiją</translation>
 <translation id="7242755609445462077">Stilizuotas paryškinimas: <ph name="CURRENT_DATE" /></translation>
 <translation id="7248069434667874558">Įsitikinkite, kad įrenginyje „<ph name="TARGET_DEVICE_NAME" />“ įjungtas sinchronizavimas sistemoje „Chrome“</translation>
@@ -1059,7 +1059,7 @@ Pavyzdžiui, kai kurios svetainės gali atsakyti į šią užklausą rodydamos j
 <translation id="7352339641508007922">Vilkite, kad užfiksuotumėte ilgą ekrano kopiją</translation>
 <translation id="7352651011704765696">Kažkas negerai</translation>
 <translation id="7352939065658542140">VAIZDO ĮRAŠAS</translation>
-<translation id="7353894246028566792">{NUM_SELECTED,plural, =1{Bendrinti 1 pasirinktą elementą}one{Bendrinti # pasirinktą elementą}few{Bendrinti # pasirinktus elementus}other{Bendrinti # pasirinktų elementų}}</translation>
+<translation id="7353894246028566792">{NUM_SELECTED,plural, =1{Bendrinti 1 pasirinktą elementą}one{Bendrinti # pasirinktą elementą}few{Bendrinti # pasirinktus elementus}many{Bendrinti # pasirinkto elemento}other{Bendrinti # pasirinktų elementų}}</translation>
 <translation id="7359002509206457351">Prieiga prie mokėjimo metodų</translation>
 <translation id="7375125077091615385">Tipas:</translation>
 <translation id="7376560087009844242">Įtraukus daugiau puslapio teksto, gali būti rodomi geresni rezultatai, naudojant Paiešką palietus. Galite bet kada apsilankyti <ph name="BEGIN_LINK" />„Nustatymų“<ph name="END_LINK" /> skiltyje ir tai pakeisti.</translation>
@@ -1102,7 +1102,7 @@ Pavyzdžiui, kai kurios svetainės gali atsakyti į šią užklausą rodydamos j
 <translation id="7562080006725997899">Naršymo duomenų išvalymas</translation>
 <translation id="756809126120519699">Išvalyti „Chrome“ duomenys</translation>
 <translation id="7577900504646297215">Tvarkyti pomėgius</translation>
-<translation id="757855969265046257">{FILES,plural, =1{Atsisiųstas <ph name="FILES_DOWNLOADED_ONE" /> failas}one{Atsisiųstas <ph name="FILES_DOWNLOADED_MANY" /> failas}few{Atsisiųsti <ph name="FILES_DOWNLOADED_MANY" /> failai}other{Atsisiųsta <ph name="FILES_DOWNLOADED_MANY" /> failų}}</translation>
+<translation id="757855969265046257">{FILES,plural, =1{Atsisiųstas <ph name="FILES_DOWNLOADED_ONE" /> failas}one{Atsisiųstas <ph name="FILES_DOWNLOADED_MANY" /> failas}few{Atsisiųsti <ph name="FILES_DOWNLOADED_MANY" /> failai}many{Atsisiųsta <ph name="FILES_DOWNLOADED_MANY" /> failo}other{Atsisiųsta <ph name="FILES_DOWNLOADED_MANY" /> failų}}</translation>
 <translation id="7581273696622423628">Dalyvauti apklausoje</translation>
 <translation id="7583262514280211622">Čia rasite skaitymo sąrašą</translation>
 <translation id="7588219262685291874">Įjungti tamsiąją temą, kai įjungta įrenginio akumuliatoriaus tausojimo priemonė</translation>
@@ -1134,7 +1134,7 @@ Pavyzdžiui, kai kurios svetainės gali atsakyti į šią užklausą rodydamos j
 <translation id="7764225426217299476">Pridėti adresą</translation>
 <translation id="7772032839648071052">Patvirtinti slaptafrazę</translation>
 <translation id="7772375229873196092">Uždaryti „<ph name="APP_NAME" />“</translation>
-<translation id="7774809984919390718">{PAYMENT_METHOD,plural, =1{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 ir dar <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />}one{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 ir dar <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />}few{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 ir dar <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />}other{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 ir dar <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />}}</translation>
+<translation id="7774809984919390718">{PAYMENT_METHOD,plural, =1{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 ir dar <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />}one{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 ir dar <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />}few{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 ir dar <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />}many{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 ir dar <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />}other{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 ir dar <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />}}</translation>
 <translation id="7778840695157240389">Patikrinkite vėliau, ar yra naujų istorijų</translation>
 <translation id="7786595606756654269">„Google“ padėjėjas teikia geresnes funkcijas balsu ieškant žiniatinklyje ir sąveikaujant su atidarytomis svetainėmis. „Google“ padėjėjas gaus svetainių, kuriose lankotės jį naudodami, URL ir turinį.</translation>
 <translation id="7791543448312431591">Pridėti</translation>
@@ -1156,13 +1156,13 @@ Pavyzdžiui, kai kurios svetainės gali atsakyti į šią užklausą rodydamos j
 <translation id="78707286264420418">„<ph name="PRODUCT_NAME" />“ reikalingas įrenginių netoliese leidimas, kad galėtų prisijungti prie įrenginio</translation>
 <translation id="7875915731392087153">Kurti el. laišką</translation>
 <translation id="7876243839304621966">Pašalinti viską</translation>
-<translation id="7879130110979560610">{READING_LIST_REMINDER_NOTIFICATION_SUBTITLE,plural, =1{Turite <ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_ONE" /> neskaitytą puslapį}one{Turite <ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_MANY" /> neskaitytą puslapį}few{Turite <ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_MANY" /> neskaitytus puslapius}other{Turite <ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_MANY" /> neskaitytų puslapių}}</translation>
+<translation id="7879130110979560610">{READING_LIST_REMINDER_NOTIFICATION_SUBTITLE,plural, =1{Turite <ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_ONE" /> neskaitytą puslapį}one{Turite <ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_MANY" /> neskaitytą puslapį}few{Turite <ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_MANY" /> neskaitytus puslapius}many{Turite <ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_MANY" /> neskaityto puslapio}other{Turite <ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_MANY" /> neskaitytų puslapių}}</translation>
 <translation id="7882131421121961860">Nerasta istorijos</translation>
 <translation id="7886917304091689118">Paleista naršyklėje „Chrome“</translation>
 <translation id="789763218334337857">Kaip naudoti „Chrome“</translation>
 <translation id="7903184275147100332">Tai gali šiek tiek užtrukti</translation>
 <translation id="7919123827536834358">Automatiškai versti šias kalbas</translation>
-<translation id="7925590027513907933">{FILE_COUNT,plural, =1{Atsisiunčiamas failas.}one{Atsisiunčiamas # failas.}few{Atsisiunčiami # failai.}other{Atsisiunčiama # failų.}}</translation>
+<translation id="7925590027513907933">{FILE_COUNT,plural, =1{Atsisiunčiamas failas.}one{Atsisiunčiamas # failas.}few{Atsisiunčiami # failai.}many{Atsisiunčiama # failo.}other{Atsisiunčiama # failų.}}</translation>
 <translation id="7926975587469166629">Kortelės slapyvardis</translation>
 <translation id="7929962904089429003">Atidaryti meniu</translation>
 <translation id="7930998711684428189">Įspėjama, jei slaptažodžiai atskleidžiami įvykus duomenų saugos pažeidimui</translation>
@@ -1190,7 +1190,7 @@ Pavyzdžiui, kai kurios svetainės gali atsakyti į šią užklausą rodydamos j
 <translation id="8037801708772278989">Ką tik patikrinta</translation>
 <translation id="8040831032425909005">Sparčiųjų veiksmų ir paieškos valdiklio piktograma</translation>
 <translation id="804335162455518893">SD kortelė nerasta</translation>
-<translation id="8048533522416101084">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> inkognito skirtukas}one{<ph name="TAB_COUNT_NORMAL" /> inkognito skirtukas}few{<ph name="TAB_COUNT_NORMAL" /> inkognito skirtukai}other{<ph name="TAB_COUNT_NORMAL" /> inkognito skirtukų}}</translation>
+<translation id="8048533522416101084">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> inkognito skirtukas}one{<ph name="TAB_COUNT_NORMAL" /> inkognito skirtukas}few{<ph name="TAB_COUNT_NORMAL" /> inkognito skirtukai}many{<ph name="TAB_COUNT_NORMAL" /> inkognito skirtuko}other{<ph name="TAB_COUNT_NORMAL" /> inkognito skirtukų}}</translation>
 <translation id="8051695050440594747">Galima <ph name="MEGABYTES" /> MB</translation>
 <translation id="8058746566562539958">Atidaryti naujame „Chrome“ skirtuke</translation>
 <translation id="8063895661287329888">Nepavyko pridėti žymės.</translation>
@@ -1350,7 +1350,7 @@ Pavyzdžiui, kai kurios svetainės gali atsakyti į šią užklausą rodydamos j
 <translation id="8955719471735800169">Į pradžią</translation>
 <translation id="8965591936373831584">laukiama</translation>
 <translation id="8967427617812342790">Prid. prie skait. sąrašo</translation>
-<translation id="8968085728801125376">{TAB_COUNT,plural, =1{<ph name="INCOGNITO_TAB_COUNT" /> inkognito ir dar <ph name="TAB_COUNT_ONE" /> skirtukas bus uždaryti}one{<ph name="INCOGNITO_TAB_COUNT" /> inkognito ir dar <ph name="TAB_COUNT_MANY" /> skirtukas bus uždaryti}few{<ph name="INCOGNITO_TAB_COUNT" /> inkognito ir dar <ph name="TAB_COUNT_MANY" /> skirtukai bus uždaryti}other{<ph name="INCOGNITO_TAB_COUNT" /> inkognito ir dar <ph name="TAB_COUNT_MANY" /> skirtukų bus uždaryti}}</translation>
+<translation id="8968085728801125376">{TAB_COUNT,plural, =1{<ph name="INCOGNITO_TAB_COUNT" /> inkognito ir dar <ph name="TAB_COUNT_ONE" /> skirtukas bus uždaryti}one{<ph name="INCOGNITO_TAB_COUNT" /> inkognito ir dar <ph name="TAB_COUNT_MANY" /> skirtukas bus uždaryti}few{<ph name="INCOGNITO_TAB_COUNT" /> inkognito ir dar <ph name="TAB_COUNT_MANY" /> skirtukai bus uždaryti}many{<ph name="INCOGNITO_TAB_COUNT" /> inkognito ir dar <ph name="TAB_COUNT_MANY" /> skirtuko bus uždaryti}other{<ph name="INCOGNITO_TAB_COUNT" /> inkognito ir dar <ph name="TAB_COUNT_MANY" /> skirtukų bus uždaryti}}</translation>
 <translation id="8970887620466824814">Kažkas ne taip.</translation>
 <translation id="8972098258593396643">Atsisiųsti į numatytąjį aplanką?</translation>
 <translation id="8987641763863173640">Tvarkykite vaizdo įrašų peržiūros nustatymus</translation>
@@ -1360,7 +1360,7 @@ Pavyzdžiui, kai kurios svetainės gali atsakyti į šią užklausą rodydamos j
 <translation id="9022774213089566801">Dažnai lankytasi</translation>
 <translation id="9028914725102941583">Įjunkite sinchronizavimą, kad galėtumėte bendrinti turinį įrenginiuose</translation>
 <translation id="9040142327097499898">Pranešimai leidžiami. Vieta išjungta šiame įrenginyje.</translation>
-<translation id="9041669420854607037">{FILE_COUNT,plural, =1{# vaizdo įrašas}one{# vaizdo įrašas}few{# vaizdo įrašai}other{# vaizdo įrašų}}</translation>
+<translation id="9041669420854607037">{FILE_COUNT,plural, =1{# vaizdo įrašas}one{# vaizdo įrašas}few{# vaizdo įrašai}many{# vaizdo įrašo}other{# vaizdo įrašų}}</translation>
 <translation id="9042893549633094279">Privatumas ir sauga</translation>
 <translation id="9050666287014529139">Slaptafrazė</translation>
 <translation id="9063523880881406963">Išjungti stalinio kompiuterio svetainės užklausą</translation>
@@ -1388,7 +1388,7 @@ Pavyzdžiui, kai kurios svetainės gali atsakyti į šią užklausą rodydamos j
 <translation id="9155898266292537608">Taip pat galite ieškoti greitai paliesdami žodį</translation>
 <translation id="9158770349521403363">Bendrinti tik turinį</translation>
 <translation id="9169507124922466868">Naršymo istorija atidaryta puse aukščio</translation>
-<translation id="9199368092038462496">{NUM_MINS,plural, =1{Tikrinta prieš 1 minutę}one{Tikrinta prieš # minutę}few{Tikrinta prieš # minutes}other{Tikrinta prieš # minučių}}</translation>
+<translation id="9199368092038462496">{NUM_MINS,plural, =1{Tikrinta prieš 1 minutę}one{Tikrinta prieš # minutę}few{Tikrinta prieš # minutes}many{Tikrinta prieš # minutės}other{Tikrinta prieš # minučių}}</translation>
 <translation id="9204836675896933765">Liko failų: 1</translation>
 <translation id="9206873250291191720">A</translation>
 <translation id="9209888181064652401">Nepavyksta skambinti</translation>

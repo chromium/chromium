@@ -83,7 +83,7 @@
 <translation id="1503394326855300303">החשבון של בעלים זה צריך להיות החשבון הראשון שאליו נכנסים בעת כניסה לפעילות באתר מחשבונות מרובים.</translation>
 <translation id="1510238584712386396">מרכז האפליקציות</translation>
 <translation id="1516740043221086139">מצב 'נא לא להפריע' מופעל.</translation>
-<translation id="1520303207432623762">{NUM_APPS,plural, =1{צפייה בהגדרות של הודעות. ההודעות מושבתות באפליקציה אחת}two{צפייה בהגדרות של הודעות. ההודעות מושבתות ב-# אפליקציות}other{צפייה בהגדרות של הודעות. ההודעות מושבתות ב-# אפליקציות}}</translation>
+<translation id="1520303207432623762">{NUM_APPS,plural, =1{צפייה בהגדרות של הודעות. ההודעות מושבתות באפליקציה אחת}two{צפייה בהגדרות של הודעות. ההודעות מושבתות ב-# אפליקציות}many{צפייה בהגדרות של הודעות. ההודעות מושבתות ב-# אפליקציות}other{צפייה בהגדרות של הודעות. ההודעות מושבתות ב-# אפליקציות}}</translation>
 <translation id="1525508553941733066">סגירה</translation>
 <translation id="1536604384701784949">כדי להשתמש ב-<ph name="USER_EMAIL_ADDRESS" />, עליך לצאת תחילה מכל החשבונות. כדי לצאת, בוחרים ב'ביטול' וחוזרים חזרה. לוחצים על השעון כדי לפתוח את אזור הסטטוס ובוחרים באפשרות 'יציאה'. אחר כך נכנסים שוב אל <ph name="USER_EMAIL_ADDRESS_2" />.</translation>
 <translation id="15373452373711364">סמן עכבר גדול</translation>
@@ -289,7 +289,7 @@
 <translation id="3153444934357957346">אפשר לכלול עד <ph name="MULTI_PROFILE_USER_LIMIT" /> חשבונות בכניסה עם מספר חשבונות.</translation>
 <translation id="3154351730702813399">ייתכן שמנהל המכשיר עוקב אחרי פעילות הגלישה שלך.</translation>
 <translation id="3181441307743005334">ההפעלה מחדש עשויה להימשך זמן מה</translation>
-<translation id="3202010236269062730">{NUM_DEVICES,plural, =1{מחובר למכשיר אחד}two{מחובר ל-# מכשירים}other{מחובר ל-# מכשירים}}</translation>
+<translation id="3202010236269062730">{NUM_DEVICES,plural, =1{מחובר למכשיר אחד}two{מחובר ל-# מכשירים}many{מחובר ל-# מכשירים}other{מחובר ל-# מכשירים}}</translation>
 <translation id="320207200541803018">הגדרת טיימר</translation>
 <translation id="3203405173652969239">'גישה באמצעות מתג' מופעלת</translation>
 <translation id="3207953481422525583">הגדרות משתמש</translation>
@@ -412,7 +412,7 @@
 <translation id="4032485810211612751"><ph name="HOURS" />:<ph name="MINUTES" />:<ph name="SECONDS" /></translation>
 <translation id="4042660782729322247">המסך שלך משותף</translation>
 <translation id="4057003836560082631">כרטיסייה <ph name="INDEX" /> מתוך <ph name="TOTAL_COUNT" /> בדפדפן. <ph name="SITE_TITLE" />, <ph name="SITE_URL" /></translation>
-<translation id="4065525899979931964">{NUM_APPS,plural, =1{מושבת לאפליקציה אחת}two{מושבת ל-2 אפליקציות}other{מושבת ל-# אפליקציות}}</translation>
+<translation id="4065525899979931964">{NUM_APPS,plural, =1{מושבת לאפליקציה אחת}two{מושבת ל-2 אפליקציות}many{מושבת ל-# אפליקציות}other{מושבת ל-# אפליקציות}}</translation>
 <translation id="4066027111132117168">פועל, <ph name="REMAINING_TIME" /></translation>
 <translation id="4072264167173457037">אות בינוני</translation>
 <translation id="4095366824370681039">עט דיו</translation>
@@ -469,7 +469,7 @@
 <translation id="4424159417645388645">שולחן עבודה וירטואלי 5</translation>
 <translation id="4430019312045809116">עוצמת קול</translation>
 <translation id="4445159312344259901">יש להיכנס כדי לבטל את הנעילה</translation>
-<translation id="4449692009715125625">{NUM_NOTIFICATIONS,plural, =1{התראה חשובה אחת}two{# התראות חשובות}other{# התראות חשובות}}</translation>
+<translation id="4449692009715125625">{NUM_NOTIFICATIONS,plural, =1{התראה חשובה אחת}two{# התראות חשובות}many{# התראות חשובות}other{# התראות חשובות}}</translation>
 <translation id="4450893287417543264">אין להציג שוב</translation>
 <translation id="4451374464530248585">‏מקשי הקיצור Alt + חץ למטה הוחלפו. כדי לדמות את הפעולה של המקש Page Down, יש להקיש על <ph name="LAUNCHER_KEY_NAME" /> + החץ למטה.</translation>
 <translation id="445864333228800152">ערב טוב,</translation>
@@ -577,7 +577,7 @@
 <translation id="5170568018924773124">הצגה בתיקייה</translation>
 <translation id="5176318573511391780">הקלטה של מסך חלקי</translation>
 <translation id="5199367439331364630">‏כדי לבטל את נעילת ה-Chromebook, עליך להזין סיסמה</translation>
-<translation id="5206057955438543357">{NUM_NOTIFICATIONS,plural, =1{התראה אחת נוספת}two{# התראות נוספות}other{# התראות נוספות}}</translation>
+<translation id="5206057955438543357">{NUM_NOTIFICATIONS,plural, =1{התראה אחת נוספת}two{# התראות נוספות}many{# התראות נוספות}other{# התראות נוספות}}</translation>
 <translation id="5207949376430453814">הדגשה של סמן הטקסט</translation>
 <translation id="5208059991603368177">פועל</translation>
 <translation id="5222676887888702881">יציאה</translation>
@@ -787,7 +787,7 @@
 <translation id="6850010208275816200">האפליקציה הנוכחית מוצגת במסך מלא. אם התבקשת להזין סיסמה, עליך קודם לצאת ממסך מלא.</translation>
 <translation id="6852052252232534364">תופעל בלחיצה</translation>
 <translation id="6857725247182211756"><ph name="SECONDS" /> שניות</translation>
-<translation id="685782768769951078">{NUM_DIGITS,plural, =1{נשארה ספרה אחת}two{נשארו # ספרות}other{נשארו # ספרות}}</translation>
+<translation id="685782768769951078">{NUM_DIGITS,plural, =1{נשארה ספרה אחת}two{נשארו # ספרות}many{נשארו # ספרות}other{נשארו # ספרות}}</translation>
 <translation id="6867938213751067702">ההורדה של <ph name="FILENAME" /> הושהתה</translation>
 <translation id="6878400149835617132">קיצור הדרך מושבת</translation>
 <translation id="6886172995547742638">‏ייתכן שהביצועים של <ph name="DEVICE_TYPE" /> יהיו נמוכים יותר. יש להשתמש במתאם מתח מאושר בהספק של <ph name="PREFERRED_MINIMUM_POWER" /> ואט לפחות, או מסוג USB-C.</translation>
@@ -903,7 +903,7 @@
 <translation id="7662283695561029522">יש להקיש כדי להגדיר</translation>
 <translation id="7705524343798198388">VPN</translation>
 <translation id="7714767791242455379">הוספה של רשת סלולרית חדשה</translation>
-<translation id="7723389094756330927">{NUM_NOTIFICATIONS,plural, =1{הודעה אחת}two{2 הודעות}other{# הודעות}}</translation>
+<translation id="7723389094756330927">{NUM_NOTIFICATIONS,plural, =1{הודעה אחת}two{2 הודעות}many{# הודעות}other{# הודעות}}</translation>
 <translation id="7724603315864178912">חיתוך</translation>
 <translation id="7745560842763881396">הצגת האפליקציות במדף</translation>
 <translation id="7749443890790263709">הגעת למספר המקסימלי של שולחנות עבודה.</translation>

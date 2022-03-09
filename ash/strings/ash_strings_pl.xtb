@@ -83,7 +83,7 @@ Oto kilka rzeczy, które możesz wypróbować na początek.</translation>
 <translation id="1503394326855300303">W sesji wielokrotnego logowania trzeba w pierwszej kolejności zalogować się na konto tego właściciela.</translation>
 <translation id="1510238584712386396">Menu z aplikacjami</translation>
 <translation id="1516740043221086139">Tryb Nie przeszkadzać jest włączony.</translation>
-<translation id="1520303207432623762">{NUM_APPS,plural, =1{Pokaż ustawienia powiadomień. Jedna aplikacja ma wyłączone powiadomienia.}few{Pokaż ustawienia powiadomień. # aplikacje mają wyłączone powiadomienia.}other{Pokaż ustawienia powiadomień. # aplikacji ma wyłączone powiadomienia.}}</translation>
+<translation id="1520303207432623762">{NUM_APPS,plural, =1{Pokaż ustawienia powiadomień. Jedna aplikacja ma wyłączone powiadomienia.}few{Pokaż ustawienia powiadomień. # aplikacje mają wyłączone powiadomienia.}many{Pokaż ustawienia powiadomień. # aplikacji ma wyłączone powiadomienia.}other{Pokaż ustawienia powiadomień. # aplikacji ma wyłączone powiadomienia.}}</translation>
 <translation id="1525508553941733066">ZAMKNIJ</translation>
 <translation id="1536604384701784949">Jeśli chcesz użyć adresu <ph name="USER_EMAIL_ADDRESS" />, musisz najpierw wylogować się ze wszystkich kont. Aby to zrobić, kliknij Anuluj i wróć na poprzednią stronę. Kliknij na niej godzinę, aby otworzyć pasek stanu, i kliknij Wyloguj się. Następnie zaloguj się ponownie na konto <ph name="USER_EMAIL_ADDRESS_2" />.</translation>
 <translation id="15373452373711364">Duży kursor myszy</translation>
@@ -289,7 +289,7 @@ Oto kilka rzeczy, które możesz wypróbować na początek.</translation>
 <translation id="3153444934357957346">W wielokrotnym logowaniu nie możesz mieć więcej kont niż <ph name="MULTI_PROFILE_USER_LIMIT" />.</translation>
 <translation id="3154351730702813399">Administrator urządzenia może monitorować Twoją aktywność związaną z przeglądaniem.</translation>
 <translation id="3181441307743005334">Ponowne uruchomienie może trochę potrwać</translation>
-<translation id="3202010236269062730">{NUM_DEVICES,plural, =1{Połączono z urządzeniem}few{Połączono z # urządzeniami}other{Połączono z # urządzenia}}</translation>
+<translation id="3202010236269062730">{NUM_DEVICES,plural, =1{Połączono z urządzeniem}few{Połączono z # urządzeniami}many{Połączono z # urządzeniami}other{Połączono z # urządzenia}}</translation>
 <translation id="320207200541803018">Ustaw licznik</translation>
 <translation id="3203405173652969239">Włączono funkcję Switch Access</translation>
 <translation id="3207953481422525583">Ustawienia użytkownika</translation>
@@ -412,7 +412,7 @@ Oto kilka rzeczy, które możesz wypróbować na początek.</translation>
 <translation id="4032485810211612751"><ph name="HOURS" />:<ph name="MINUTES" />:<ph name="SECONDS" /></translation>
 <translation id="4042660782729322247">Udostępniasz ekran</translation>
 <translation id="4057003836560082631">Karta <ph name="INDEX" /> z <ph name="TOTAL_COUNT" />. <ph name="SITE_TITLE" />, <ph name="SITE_URL" /></translation>
-<translation id="4065525899979931964">{NUM_APPS,plural, =1{Wyłączono (1 aplikacja)}few{Wyłączono (# aplikacje)}other{Wyłączono (# aplikacji)}}</translation>
+<translation id="4065525899979931964">{NUM_APPS,plural, =1{Wyłączono (1 aplikacja)}few{Wyłączono (# aplikacje)}many{Wyłączono (# aplikacji)}other{Wyłączono (# aplikacji)}}</translation>
 <translation id="4066027111132117168">Włączone. Pozostały czas: <ph name="REMAINING_TIME" />.</translation>
 <translation id="4072264167173457037">średni sygnał</translation>
 <translation id="4095366824370681039">Pióro</translation>
@@ -469,7 +469,7 @@ Oto kilka rzeczy, które możesz wypróbować na początek.</translation>
 <translation id="4424159417645388645">Biurko 5</translation>
 <translation id="4430019312045809116">Głośność</translation>
 <translation id="4445159312344259901">Zaloguj się, aby odblokować</translation>
-<translation id="4449692009715125625">{NUM_NOTIFICATIONS,plural, =1{1 ważne powiadomienie}few{# ważne powiadomienia}other{# ważnego powiadomienia}}</translation>
+<translation id="4449692009715125625">{NUM_NOTIFICATIONS,plural, =1{1 ważne powiadomienie}few{# ważne powiadomienia}many{# ważnych powiadomień}other{# ważnego powiadomienia}}</translation>
 <translation id="4450893287417543264">Nie pokazuj ponownie</translation>
 <translation id="4451374464530248585">Skrót klawiszowy Alt + strzałka w dół został zmieniony. Aby użyć klawisza Page Down, naciśnij klawisz <ph name="LAUNCHER_KEY_NAME" /> + strzałka w dół.</translation>
 <translation id="445864333228800152">Dobry wieczór,</translation>
@@ -577,7 +577,7 @@ Oto kilka rzeczy, które możesz wypróbować na początek.</translation>
 <translation id="5170568018924773124">Pokaż w folderze</translation>
 <translation id="5176318573511391780">Nagraj fragment ekranu</translation>
 <translation id="5199367439331364630">Aby zalogować się na Chromebooku, wpisz hasło</translation>
-<translation id="5206057955438543357">{NUM_NOTIFICATIONS,plural, =1{1 inne powiadomienie}few{# inne powiadomienia}other{# innego powiadomienia}}</translation>
+<translation id="5206057955438543357">{NUM_NOTIFICATIONS,plural, =1{1 inne powiadomienie}few{# inne powiadomienia}many{# innych powiadomień}other{# innego powiadomienia}}</translation>
 <translation id="5207949376430453814">Podświetlaj kursor tekstu</translation>
 <translation id="5208059991603368177">Włączono</translation>
 <translation id="5222676887888702881">Wyloguj się</translation>
@@ -787,7 +787,7 @@ Oto kilka rzeczy, które możesz wypróbować na początek.</translation>
 <translation id="6850010208275816200">Bieżąca aplikacja działa w trybie pełnoekranowym. Jeśli aplikacja pyta o hasło, najpierw zamknij ten tryb.</translation>
 <translation id="6852052252232534364">Kliknij, by włączyć</translation>
 <translation id="6857725247182211756"><ph name="SECONDS" /> s</translation>
-<translation id="685782768769951078">{NUM_DIGITS,plural, =1{Pozostała 1 cyfra}few{Pozostały # cyfry}other{Pozostało # cyfry}}</translation>
+<translation id="685782768769951078">{NUM_DIGITS,plural, =1{Pozostała 1 cyfra}few{Pozostały # cyfry}many{Pozostało # cyfr}other{Pozostało # cyfry}}</translation>
 <translation id="6867938213751067702">Pobieranie wstrzymane: <ph name="FILENAME" /></translation>
 <translation id="6878400149835617132">Skrót wyłączony</translation>
 <translation id="6886172995547742638">Twoje urządzenie <ph name="DEVICE_TYPE" /> może mieć gorszą wydajność. Używaj certyfikowanego zasilacza USB-C o mocy co najmniej <ph name="PREFERRED_MINIMUM_POWER" /> W.</translation>
@@ -901,7 +901,7 @@ Oto kilka rzeczy, które możesz wypróbować na początek.</translation>
 <translation id="7662283695561029522">Kliknij, by skonfigurować</translation>
 <translation id="7705524343798198388">VPN</translation>
 <translation id="7714767791242455379">Dodaj nową sieć komórkową</translation>
-<translation id="7723389094756330927">{NUM_NOTIFICATIONS,plural, =1{1 powiadomienie}few{# powiadomienia}other{# powiadomienia}}</translation>
+<translation id="7723389094756330927">{NUM_NOTIFICATIONS,plural, =1{1 powiadomienie}few{# powiadomienia}many{# powiadomień}other{# powiadomienia}}</translation>
 <translation id="7724603315864178912">Wytnij</translation>
 <translation id="7745560842763881396">Pokaż aplikacje na półce</translation>
 <translation id="7749443890790263709">Osiągnięto maksymalną liczbę biurek.</translation>
