@@ -268,7 +268,8 @@ void ReplaceManagedConfigurationVariables(const Profile* profile,
   if (applications) {
     base::Value::ListView list_view = applications->GetListDeprecated();
     for (base::Value& entry : list_view) {
-      base::Value* config = entry.FindDictKey("managedConfiguration");
+      base::Value* config =
+          entry.FindDictKey(ArcPolicyBridge::kManagedConfiguration);
       if (config)
         RecursivelyReplaceManagedConfigurationVariables(profile, config);
     }
@@ -344,13 +345,15 @@ std::string GetFilteredJSONPolicies(policy::PolicyService* const policy_service,
     if (applications_value) {
       base::Value::ListView list_view = applications_value->GetListDeprecated();
       for (base::Value& entry : list_view) {
-        const std::string* packageName = entry.FindStringKey("packageName");
+        const std::string* packageName =
+            entry.FindStringKey(ArcPolicyBridge::kPackageName);
         if (packageName && *packageName != kPlayStorePackageName)
           continue;
         base::Value management_entry(base::Value::Type::DICTIONARY);
         management_entry.SetStringKey("allowed_accounts",
                                       profile->GetProfileUserName());
-        entry.SetKey("managedConfiguration", std::move(management_entry));
+        entry.SetKey(ArcPolicyBridge::kManagedConfiguration,
+                     std::move(management_entry));
       }
     }
   }
@@ -459,6 +462,12 @@ class ArcPolicyBridgeFactory
 
 // static
 const char ArcPolicyBridge::kApplications[] = "applications";
+
+// static
+const char ArcPolicyBridge::kPackageName[] = "packageName";
+
+// static
+const char ArcPolicyBridge::kManagedConfiguration[] = "managedConfiguration";
 
 // static
 const char ArcPolicyBridge::kResetAndroidIdEnabled[] = "resetAndroidIdEnabled";

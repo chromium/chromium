@@ -104,6 +104,8 @@ class ArcPolicyBridge : public KeyedService,
 
   // Policy constants.
   static const char kApplications[];
+  static const char kPackageName[];
+  static const char kManagedConfiguration[];
   static const char kResetAndroidIdEnabled[];
 
   // Returns singleton instance for the given BrowserContext,
