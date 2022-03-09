@@ -10,7 +10,6 @@
 #include "content/public/browser/web_contents_observer.h"
 
 namespace content {
-class Page;
 class WebContents;
 }
 
@@ -43,7 +42,8 @@ class HandoffActiveURLObserver : public BrowserListObserver,
       const TabStripSelectionChange& selection) override;
 
   // content::WebContentsObserver
-  void PrimaryPageChanged(content::Page& page) override;
+  void DidFinishNavigation(
+      content::NavigationHandle* navigation_handle) override;
 
   // Updates the active browser.
   void SetActiveBrowser(Browser* active_browser);
