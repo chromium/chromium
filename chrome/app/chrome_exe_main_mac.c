@@ -57,58 +57,59 @@ typedef int (*ChromeMainPtr)(int, char**);
 // padding to the x86_64 slice that precedes it. The arm64 slice needs to remain
 // at offset 304kB (since 98.0.4758.80). The signed x86_64 slice has size 287296
 // bytes in 98.0.4758.80, but has shrunk since then, and before the introduction
-// of any padding, would now be 216784 bytes long. To make up the 70512-byte
-// difference, 68kB (69632 bytes) of padding is added to the x86_64 slice to
+// of any padding, would now be 37724 bytes long. To make up the 249572-byte
+// difference, 240kB (245760 bytes) of padding is added to the x86_64 slice to
 // ensure that its size is stable, causing the arm64 slice to land where it
 // needs to be when universalized. This padding needs to be added to the thin
-// form of the x86_64 image before being fed to universalizer.py. Why 69632
-// bytes and not 70512? To keep it an even multiple of linker pages (not machine
-// pages: linker pages are 4kB for lld targeting x86_64 and 16kB for ld64
-// targeting x86_64, but Chrome uses lld). In any case, I'll make up almost all
-// of the 880-byte difference with one more weird trick below.
+// form of the x86_64 image before being fed to universalizer.py. Why 245760
+// bytes and not 249572? To keep it an even multiple of linker pages (not
+// machine pages: linker pages are 4kB for lld targeting x86_64 and 16kB for
+// ld64 targeting x86_64, but Chrome uses lld). In any case, I'll make up almost
+// all of the 3812-byte difference with one more weird trick below.
 //
 // There are several terrible ways to insert this padding into the x86_64 image.
 // Best would be something that considers the size of the x86_64 image without
 // padding, and inserts the precise amount required. It may be possible to do
 // this after linking, but the options that have been attempted so far were not
-// successful. So this quick and very dirty 68kB buffer is added to increase the
-// size of __TEXT,__const in a way that no tool could possibly see as suspicious
-// after link time. The variable is marked with the "used" attribute to prevent
-// the compiler from issuing warnings about the referenced variable, to prevent
-// the compiler from removing it under optimization, and to set the
+// successful. So this quick and very dirty 240kB buffer is added to increase
+// the size of __TEXT,__const in a way that no tool could possibly see as
+// suspicious after link time. The variable is marked with the "used" attribute
+// to prevent the compiler from issuing warnings about the referenced variable,
+// to prevent the compiler from removing it under optimization, and to set the
 // S_ATTR_NO_DEAD_STRIP section attribute to prevent the linker from removing it
 // under -dead_strip. Note that the standardized [[maybe_unused]] attribute only
 // suppresses the warning, but does not prevent the compiler or linker from
 // removing it.
 //
-// The introduction of this fixed 68kB of padding causes the unsigned linker
-// output to grow by 68kB precisely, but the signed output will grow by slightly
-// more. This is because the code signature's code directory contains SHA-1 and
-// SHA-256 hashes of each 4kB code signing page (note, not machine pages or
-// linker pages) in the image, adding 20 and 32 bytes each (macOS 12.0.1
+// The introduction of this fixed 240kB of padding causes the unsigned linker
+// output to grow by 240kB precisely, but the signed output will grow by
+// slightly more. This is because the code signature's code directory contains
+// SHA-1 and SHA-256 hashes of each 4kB code signing page (note, not machine
+// pages or linker pages) in the image, adding 20 and 32 bytes each (macOS
+// 12.0.1
 // https://github.com/apple-oss-distributions/Security/blob/main/OSX/libsecurity_codesigning/lib/signer.cpp#L298
-// Security::CodeSigning::SecCodeSigner::Signer::prepare). For the 68kB
-// addition, the code signature grows by (68 / 4) * (20 + 32) = 884 bytes, thus
-// the total size of the linker output grows by 68kB + 884 = 70516 bytes. It is
-// not possible to control this any more granularly: if the buffer were sized at
-// 68kB - 884 = 68748 bytes, it would either cause no change in the space
-// allocated to the __TEXT segment (due to padding for alignment) or would cause
-// the segment to shrink by a linker page (note, not a code signing or machine
-// page) which would which would cause the linker output to shrink by the same
-// amount and would be absolutely undesirable. Luckily, the net growth of 70516
-// bytes is almost at the target of 70512 on the nose. In any event, having the
-// signed x86_64 slice sized at 287300 bytes instead of 287296 should not be a
-// problem. Subtle differences in characteristics including the code signature
-// itself can easily produce differences of that magnitude. It's necessary for
-// the size to wind up in the range (278528, 294912], and as long as that's met,
-// the 16kB alignment for the arm64 slice that follows it in the fat file will
-// cause it to appear at the desired 304kB.
+// Security::CodeSigning::SecCodeSigner::Signer::prepare). For the 240kB
+// addition, the code signature grows by (240 / 4) * (20 + 32) = 3120 bytes,
+// thus the total size of the linker output grows by 240kB + 3120 = 248880
+// bytes. It is not possible to control this any more granularly: if the buffer
+// were sized at 240kB - 3120 = 242640 bytes, it would either cause no change in
+// the space allocated to the __TEXT segment (due to padding for alignment) or
+// would cause the segment to shrink by a linker page (note, not a code signing
+// or machine page) which would which would cause the linker output to shrink by
+// the same amount and would be absolutely undesirable. Luckily, the net growth
+// of 248880 bytes is very close to the target growth of 249572 bytes. In any
+// event, having the signed x86_64 slice sized at 286604 bytes instead of 287296
+// should not be a problem. Subtle differences in characteristics including the
+// code signature itself can easily produce differences of that magnitude. It's
+// necessary for the size to wind up in the range (278528, 294912], and as long
+// as that's met, the 16kB alignment for the arm64 slice that follows it in the
+// fat file will cause it to appear at the desired 304kB.
 //
 // If the main executable has a significant change in size, this will need to be
 // revised. Hopefully a more elegant solution will become apparent before that's
 // required.
 static __attribute__((used))
-const char kGrossPaddingForCrbug1300598[68 * 1024] = {};
+const char kGrossPaddingForCrbug1300598[240 * 1024] = {};
 #endif
 
 __attribute__((visibility("default"))) int main(int argc, char* argv[]) {
