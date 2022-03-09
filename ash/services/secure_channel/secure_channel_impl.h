@@ -18,7 +18,6 @@
 #include "base/containers/flat_map.h"
 // TODO(https://crbug.com/1164001): move to forward declaration.
 #include "chromeos/components/multidevice/remote_device_cache.h"
-#include "mojo/public/cpp/bindings/pending_remote.h"
 
 namespace device {
 class BluetoothAdapter;

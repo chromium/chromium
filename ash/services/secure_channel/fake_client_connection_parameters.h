@@ -111,9 +111,4 @@ class FakeClientConnectionParametersObserver
 
 }  // namespace ash::secure_channel
 
-// TODO(https://crbug.com/1164001): remove after the migration is finished.
-namespace chromeos::secure_channel {
-using ::ash::secure_channel::FakeClientConnectionParameters;
-}
-
 #endif  // ASH_SERVICES_SECURE_CHANNEL_FAKE_CLIENT_CONNECTION_PARAMETERS_H_

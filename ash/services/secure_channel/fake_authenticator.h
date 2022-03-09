@@ -31,9 +31,4 @@ class FakeAuthenticator : public Authenticator {
 
 }  // namespace ash::secure_channel
 
-// TODO(https://crbug.com/1164001): remove after the migration is finished.
-namespace chromeos::secure_channel {
-using ::ash::secure_channel::FakeAuthenticator;
-}
-
 #endif  // ASH_SERVICES_SECURE_CHANNEL_FAKE_AUTHENTICATOR_H_

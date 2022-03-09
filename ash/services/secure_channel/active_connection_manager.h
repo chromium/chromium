@@ -9,13 +9,11 @@
 #include <string>
 #include <vector>
 
-// TODO(https://crbug.com/1164001): move to forward declaration.
-#include "ash/services/secure_channel/client_connection_parameters.h"
-#include "ash/services/secure_channel/connection_details.h"
-
 namespace ash::secure_channel {
 
 class AuthenticatedChannel;
+class ConnectionDetails;
+class ClientConnectionParameters;
 
 // Manages zero or more active connections to remote devices. Each connection
 // can be shared among one or more clients so that the underlying resources for
@@ -84,10 +82,5 @@ std::ostream& operator<<(
     const ActiveConnectionManager::ConnectionState& connection_state);
 
 }  // namespace ash::secure_channel
-
-// TODO(https://crbug.com/1164001): remove after the migration is finished.
-namespace chromeos::secure_channel {
-using ::ash::secure_channel::ActiveConnectionManager;
-}
 
 #endif  // ASH_SERVICES_SECURE_CHANNEL_ACTIVE_CONNECTION_MANAGER_H_

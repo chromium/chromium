@@ -10,8 +10,6 @@
 #include "ash/services/secure_channel/ble_initiator_failure_type.h"
 #include "ash/services/secure_channel/ble_listener_failure_type.h"
 #include "ash/services/secure_channel/connection_attempt_details.h"
-// TODO(https://crbug.com/1164001): move to forward declaration.
-#include "ash/services/secure_channel/connection_role.h"
 #include "ash/services/secure_channel/device_id_pair.h"
 #include "ash/services/secure_channel/public/cpp/shared/connection_priority.h"
 #include "base/callback.h"
@@ -21,6 +19,7 @@
 namespace ash::secure_channel {
 
 class AuthenticatedChannel;
+enum class ConnectionRole;
 
 // Creates connections to remote devices over Bluetooth, using either the
 // listener role (BLE scans only) or the initiator role (a combination of BLE
@@ -151,10 +150,5 @@ class BleConnectionManager {
 };
 
 }  // namespace ash::secure_channel
-
-// TODO(https://crbug.com/1164001): remove after the migration is finished.
-namespace chromeos::secure_channel {
-using ::ash::secure_channel::BleConnectionManager;
-}
 
 #endif  // ASH_SERVICES_SECURE_CHANNEL_BLE_CONNECTION_MANAGER_H_

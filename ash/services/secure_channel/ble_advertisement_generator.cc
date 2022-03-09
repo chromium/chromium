@@ -7,6 +7,8 @@
 #include <memory>
 #include <vector>
 
+#include "ash/services/secure_channel/data_with_timestamp.h"
+#include "ash/services/secure_channel/foreground_eid_generator.h"
 #include "chromeos/components/multidevice/logging/logging.h"
 #include "chromeos/components/multidevice/remote_device_ref.h"
 

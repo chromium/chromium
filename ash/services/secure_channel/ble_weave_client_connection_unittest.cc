@@ -9,10 +9,13 @@
 #include <memory>
 #include <utility>
 
+#include "ash/services/secure_channel/ble_weave_packet_generator.h"
+#include "ash/services/secure_channel/ble_weave_packet_receiver.h"
 #include "ash/services/secure_channel/connection_observer.h"
 #include "ash/services/secure_channel/fake_wire_message.h"
 #include "ash/services/secure_channel/wire_message.h"
 #include "base/bind.h"
+#include "base/callback.h"
 #include "base/memory/ptr_util.h"
 #include "base/run_loop.h"
 #include "base/test/gmock_move_support.h"

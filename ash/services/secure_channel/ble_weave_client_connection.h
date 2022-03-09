@@ -12,15 +12,11 @@
 #include <string>
 
 #include "ash/services/secure_channel/ble_characteristics_finder.h"
-#include "ash/services/secure_channel/ble_weave_packet_generator.h"
-#include "ash/services/secure_channel/ble_weave_packet_receiver.h"
+#include "ash/services/secure_channel/ble_weave_defines.h"
 #include "ash/services/secure_channel/connection.h"
 #include "ash/services/secure_channel/file_transfer_update_callback.h"
-#include "ash/services/secure_channel/public/mojom/secure_channel_types.mojom.h"
 #include "ash/services/secure_channel/remote_attribute.h"
-// TODO(https://crbug.com/1164001): move to forward declaration.
-#include "ash/services/secure_channel/wire_message.h"
-#include "base/callback.h"
+#include "base/callback_forward.h"
 #include "base/containers/queue.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/ref_counted.h"
@@ -38,7 +34,14 @@ namespace base {
 class TaskRunner;
 }
 
-namespace ash::secure_channel::weave {
+namespace ash::secure_channel {
+
+class WireMessage;
+
+namespace weave {
+
+class BluetoothLowEnergyWeavePacketGenerator;
+class BluetoothLowEnergyWeavePacketReceiver;
 
 // Creates GATT connection on top of the BLE connection and act as a Client.
 // uWeave communication follows the flow:
@@ -450,6 +453,7 @@ class BluetoothLowEnergyWeaveClientConnection
       weak_ptr_factory_{this};
 };
 
-}  // namespace ash::secure_channel::weave
+}  // namespace weave
+}  // namespace ash::secure_channel
 
 #endif  // ASH_SERVICES_SECURE_CHANNEL_BLE_WEAVE_CLIENT_CONNECTION_H_

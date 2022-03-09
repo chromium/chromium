@@ -6,10 +6,10 @@
 #define ASH_SERVICES_SECURE_CHANNEL_CONNECTION_OBSERVER_H_
 
 #include "ash/services/secure_channel/connection.h"
-// TODO(https://crbug.com/1164001): move to forward declaration.
-#include "ash/services/secure_channel/wire_message.h"
 
 namespace ash::secure_channel {
+
+class WireMessage;
 
 // An interface for observing events that happen on a Connection.
 class ConnectionObserver {
@@ -35,10 +35,5 @@ class ConnectionObserver {
 };
 
 }  // namespace ash::secure_channel
-
-// TODO(https://crbug.com/1164001): remove after the migration is finished.
-namespace chromeos::secure_channel {
-using ::ash::secure_channel::ConnectionObserver;
-}
 
 #endif  // ASH_SERVICES_SECURE_CHANNEL_CONNECTION_OBSERVER_H_

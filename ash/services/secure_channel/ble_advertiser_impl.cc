@@ -6,6 +6,7 @@
 
 #include "ash/services/secure_channel/bluetooth_helper.h"
 #include "ash/services/secure_channel/error_tolerant_ble_advertisement_impl.h"
+#include "ash/services/secure_channel/public/cpp/shared/connection_priority.h"
 #include "ash/services/secure_channel/shared_resource_scheduler.h"
 #include "ash/services/secure_channel/timer_factory.h"
 #include "base/bind.h"

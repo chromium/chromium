@@ -6,6 +6,7 @@
 
 #include "ash/services/secure_channel/authenticated_channel.h"
 #include "ash/services/secure_channel/client_connection_parameters.h"
+#include "ash/services/secure_channel/connection_details.h"
 
 namespace ash::secure_channel {
 

@@ -6,6 +6,8 @@
 
 #include <utility>
 
+#include "ash/services/secure_channel/client_connection_parameters.h"
+#include "ash/services/secure_channel/public/cpp/shared/connection_priority.h"
 #include "ash/services/secure_channel/public/mojom/secure_channel.mojom.h"
 #include "base/memory/ptr_util.h"
 #include "chromeos/components/multidevice/logging/logging.h"

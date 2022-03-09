@@ -7,12 +7,13 @@
 
 #include <string>
 
-#include "ash/services/secure_channel/session_keys.h"
 #include "base/callback_forward.h"
 // TODO(https://crbug.com/1164001): move to forward declaration.
 #include "chromeos/components/multidevice/secure_message_delegate.h"
 
 namespace ash::secure_channel {
+
+class SessionKeys;
 
 // Utility class containing operations in the DeviceToDevice protocol that the
 // initiator needs to perform. For Smart Lock, in which a phone unlocks a

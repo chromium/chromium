@@ -20,9 +20,4 @@ std::ostream& operator<<(std::ostream& stream,
 
 }  // namespace ash::secure_channel
 
-// TODO(https://crbug.com/1164001): remove after the migration is finished.
-namespace chromeos::secure_channel {
-using ::ash::secure_channel::BleListenerFailureType;
-}
-
 #endif  // ASH_SERVICES_SECURE_CHANNEL_BLE_LISTENER_FAILURE_TYPE_H_

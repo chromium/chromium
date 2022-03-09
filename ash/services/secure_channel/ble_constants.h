@@ -25,9 +25,4 @@ constexpr const char kGattServerUuid[] = "b3b7e28e-a000-3e17-bd86-6e97b9e28c11";
 
 }  // namespace ash::secure_channel
 
-//// TODO(https://crbug.com/1164001): remove after the migration is finished.
-namespace chromeos::secure_channel {
-using ::ash::secure_channel::kAdvertisingServiceUuid;
-}
-
 #endif  // ASH_SERVICES_SECURE_CHANNEL_BLE_CONSTANTS_H_

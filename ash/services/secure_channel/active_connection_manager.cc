@@ -5,6 +5,8 @@
 #include "ash/services/secure_channel/active_connection_manager.h"
 
 #include "ash/services/secure_channel/authenticated_channel.h"
+#include "ash/services/secure_channel/client_connection_parameters.h"
+#include "ash/services/secure_channel/connection_details.h"
 #include "base/logging.h"
 #include "chromeos/components/multidevice/logging/logging.h"
 

@@ -8,12 +8,12 @@
 #include <memory>
 
 #include "ash/services/secure_channel/ble_listener_failure_type.h"
-#include "ash/services/secure_channel/client_connection_parameters.h"
 #include "ash/services/secure_channel/pending_ble_connection_request_base.h"
-// TODO(https://crbug.com/1164001): move to forward declaration.
-#include "ash/services/secure_channel/public/cpp/shared/connection_priority.h"
 
 namespace ash::secure_channel {
+
+class ClientConnectionParameters;
+enum class ConnectionPriority;
 
 // ConnectionRequest corresponding to BLE connections in the listener role.
 class PendingBleListenerConnectionRequest

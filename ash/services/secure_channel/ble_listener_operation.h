@@ -10,13 +10,13 @@
 #include "ash/services/secure_channel/ble_listener_failure_type.h"
 #include "ash/services/secure_channel/connect_to_device_operation.h"
 #include "ash/services/secure_channel/connect_to_device_operation_base.h"
-#include "ash/services/secure_channel/public/cpp/shared/connection_priority.h"
 #include "base/memory/weak_ptr.h"
 #include "base/threading/thread_task_runner_handle.h"
 
 namespace ash::secure_channel {
 
 class BleConnectionManager;
+enum class ConnectionPriority;
 
 // Attempts to connect to a remote device over BLE via the listener role.
 class BleListenerOperation

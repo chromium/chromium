@@ -14,6 +14,8 @@
 #include "base/callback_helpers.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/time/clock.h"
+#include "base/time/default_clock.h"
 #include "base/time/time.h"
 
 namespace ash::secure_channel {

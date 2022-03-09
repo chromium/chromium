@@ -6,6 +6,7 @@
 
 #include "ash/services/secure_channel/authenticated_channel.h"
 #include "ash/services/secure_channel/ble_connection_manager.h"
+#include "ash/services/secure_channel/public/cpp/shared/connection_priority.h"
 #include "base/bind.h"
 #include "base/memory/ptr_util.h"
 

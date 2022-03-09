@@ -43,11 +43,4 @@ std::ostream& operator<<(std::ostream& stream, const DeviceIdPair& details);
 
 }  // namespace ash::secure_channel
 
-// TODO(https://crbug.com/1164001): remove after the migration is finished.
-namespace chromeos::secure_channel {
-using ::ash::secure_channel::DeviceIdPair;
-using ::ash::secure_channel::DeviceIdPairHash;
-using ::ash::secure_channel::DeviceIdPairSet;
-}  // namespace chromeos::secure_channel
-
 #endif  // ASH_SERVICES_SECURE_CHANNEL_DEVICE_ID_PAIR_H_

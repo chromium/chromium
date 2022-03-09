@@ -10,9 +10,7 @@
 #include "ash/services/secure_channel/authenticator.h"
 #include "ash/services/secure_channel/connection.h"
 #include "ash/services/secure_channel/connection_observer.h"
-#include "ash/services/secure_channel/device_to_device_initiator_helper.h"
 #include "ash/services/secure_channel/session_keys.h"
-#include "base/callback.h"
 #include "base/memory/weak_ptr.h"
 // TODO(https://crbug.com/1164001): move to forward declaration.
 #include "chromeos/components/multidevice/secure_message_delegate.h"
@@ -22,6 +20,8 @@ class OneShotTimer;
 }
 
 namespace ash::secure_channel {
+
+class DeviceToDeviceInitiatorHelper;
 
 // Authenticator implementation using the "device to device" protocol, which is
 // in turn built on top of the SecureMessage library.
@@ -174,10 +174,5 @@ class DeviceToDeviceAuthenticator : public Authenticator,
 };
 
 }  // namespace ash::secure_channel
-
-// TODO(https://crbug.com/1164001): remove after the migration is finished.
-namespace chromeos::secure_channel {
-using ::ash::secure_channel::DeviceToDeviceAuthenticator;
-}
 
 #endif  // ASH_SERVICES_SECURE_CHANNEL_DEVICE_TO_DEVICE_AUTHENTICATOR_H_

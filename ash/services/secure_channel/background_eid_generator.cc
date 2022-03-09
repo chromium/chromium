@@ -8,10 +8,12 @@
 #include <memory>
 
 #include "ash/services/device_sync/proto/cryptauth_api.pb.h"
+#include "ash/services/secure_channel/data_with_timestamp.h"
 #include "ash/services/secure_channel/raw_eid_generator.h"
 #include "ash/services/secure_channel/raw_eid_generator_impl.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
+#include "base/time/clock.h"
 #include "base/time/default_clock.h"
 #include "base/time/time.h"
 #include "chromeos/components/multidevice/beacon_seed.h"

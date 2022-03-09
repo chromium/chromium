@@ -5,6 +5,7 @@
 #include "ash/services/secure_channel/device_to_device_responder_operations.h"
 
 #include "ash/services/device_sync/proto/cryptauth_api.pb.h"
+#include "ash/services/secure_channel/session_keys.h"
 #include "base/bind.h"
 #include "base/callback.h"
 #include "chromeos/components/multidevice/logging/logging.h"

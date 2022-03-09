@@ -10,7 +10,6 @@
 #include <vector>
 
 #include "ash/services/secure_channel/secure_context.h"
-#include "ash/services/secure_channel/session_keys.h"
 #include "base/memory/weak_ptr.h"
 // TODO(https://crbug.com/1164001): move to forward declaration.
 #include "chromeos/components/multidevice/secure_message_delegate.h"
@@ -21,6 +20,8 @@ class Header;
 }
 
 namespace ash::secure_channel {
+
+class SessionKeys;
 
 struct MessageComparator {
   // Prioritize messages with the lowest sequence number

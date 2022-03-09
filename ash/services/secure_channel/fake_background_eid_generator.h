@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "ash/services/secure_channel/background_eid_generator.h"
+#include "ash/services/secure_channel/data_with_timestamp.h"
 
 namespace cryptauth {
 class BeaconSeed;

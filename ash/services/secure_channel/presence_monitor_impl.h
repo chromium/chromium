@@ -5,16 +5,15 @@
 #ifndef ASH_SERVICES_SECURE_CHANNEL_PRESENCE_MONITOR_IMPL_H_
 #define ASH_SERVICES_SECURE_CHANNEL_PRESENCE_MONITOR_IMPL_H_
 
-#include "ash/services/secure_channel/presence_monitor_delegate.h"
 #include "ash/services/secure_channel/public/cpp/shared/presence_monitor.h"
-// TODO(https://crbug.com/1164001): move to forward declaration.
-#include "chromeos/components/multidevice/remote_device.h"
 
 namespace device {
 class BluetoothAdapter;
 }
 
 namespace ash::secure_channel {
+
+class PresenceMonitorDelegate;
 
 // Monitors device proximity while a secure channel is active.
 class PresenceMonitorImpl : public PresenceMonitor {

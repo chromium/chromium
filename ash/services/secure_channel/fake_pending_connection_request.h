@@ -8,13 +8,13 @@
 #include <utility>
 #include <vector>
 
-#include "ash/services/secure_channel/client_connection_parameters.h"
 #include "ash/services/secure_channel/pending_connection_request.h"
-// TODO(https://crbug.com/1164001): move to forward declaration.
-#include "ash/services/secure_channel/pending_connection_request_delegate.h"
 #include "base/unguessable_token.h"
 
 namespace ash::secure_channel {
+
+class ClientConnectionParameters;
+class PendingConnectionRequestDelegate;
 
 // Fake PendingConnectionRequest implementation.
 template <typename FailureDetailType>
@@ -69,10 +69,5 @@ class FakePendingConnectionRequest
 };
 
 }  // namespace ash::secure_channel
-
-// TODO(https://crbug.com/1164001): remove after the migration is finished.
-namespace chromeos::secure_channel {
-using ::ash::secure_channel::FakePendingConnectionRequest;
-}
 
 #endif  // ASH_SERVICES_SECURE_CHANNEL_FAKE_PENDING_CONNECTION_REQUEST_H_

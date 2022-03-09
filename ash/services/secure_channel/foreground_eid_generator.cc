@@ -13,6 +13,7 @@
 #include "base/memory/ptr_util.h"
 #include "base/notreached.h"
 #include "base/strings/string_util.h"
+#include "base/time/clock.h"
 #include "base/time/default_clock.h"
 #include "base/time/time.h"
 #include "chromeos/components/multidevice/logging/logging.h"

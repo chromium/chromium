@@ -8,6 +8,7 @@
 #include <string>
 
 #include "ash/services/device_sync/proto/cryptauth_api.pb.h"
+#include "ash/services/secure_channel/data_with_timestamp.h"
 #include "ash/services/secure_channel/raw_eid_generator_impl.h"
 #include "base/strings/string_util.h"
 #include "base/test/simple_test_clock.h"

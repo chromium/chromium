@@ -32,9 +32,4 @@ class SecureChannelBase : public mojom::SecureChannel {
 
 }  // namespace ash::secure_channel
 
-// TODO(https://crbug.com/1164001): remove after the migration is finished.
-namespace chromeos::secure_channel {
-using ::ash::secure_channel::SecureChannelBase;
-}
-
 #endif  // ASH_SERVICES_SECURE_CHANNEL_SECURE_CHANNEL_BASE_H_

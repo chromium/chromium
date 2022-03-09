@@ -8,11 +8,10 @@
 #include <memory>
 
 #include "ash/services/secure_channel/public/cpp/client/presence_monitor_client.h"
-#include "ash/services/secure_channel/public/cpp/shared/presence_monitor.h"
-// TODO(https://crbug.com/1164001): move to forward declaration.
-#include "chromeos/components/multidevice/remote_device_ref.h"
 
 namespace ash::secure_channel {
+
+class PresenceMonitor;
 
 // Provides clients access to the PresenceMonitor API.
 class PresenceMonitorClientImpl : public PresenceMonitorClient {

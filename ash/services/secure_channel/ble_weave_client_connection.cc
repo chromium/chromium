@@ -9,6 +9,8 @@
 #include <utility>
 
 #include "ash/services/secure_channel/background_eid_generator.h"
+#include "ash/services/secure_channel/ble_weave_packet_generator.h"
+#include "ash/services/secure_channel/ble_weave_packet_receiver.h"
 #include "ash/services/secure_channel/file_transfer_update_callback.h"
 #include "ash/services/secure_channel/public/mojom/secure_channel_types.mojom.h"
 #include "ash/services/secure_channel/wire_message.h"

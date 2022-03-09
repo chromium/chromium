@@ -9,11 +9,8 @@
 #include <ostream>
 
 #include "ash/services/secure_channel/file_transfer_update_callback.h"
-#include "ash/services/secure_channel/public/mojom/secure_channel_types.mojom.h"
-// TODO(https://crbug.com/1164001): move to forward declaration.
-#include "ash/services/secure_channel/wire_message.h"
+#include "ash/services/secure_channel/public/mojom/secure_channel_types.mojom-forward.h"
 #include "base/callback_forward.h"
-#include "base/memory/ref_counted.h"
 #include "base/observer_list.h"
 #include "chromeos/components/multidevice/remote_device_ref.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -21,6 +18,7 @@
 namespace ash::secure_channel {
 
 class ConnectionObserver;
+class WireMessage;
 
 // Base class representing a connection with a remote device, which is a
 // persistent bidirectional channel for sending and receiving wire messages.
@@ -150,10 +148,5 @@ std::ostream& operator<<(std::ostream& stream,
                          const Connection::Status& status);
 
 }  // namespace ash::secure_channel
-
-// TODO(https://crbug.com/1164001): remove after the migration is finished.
-namespace chromeos::secure_channel {
-using ::ash::secure_channel::Connection;
-}
 
 #endif  // ASH_SERVICES_SECURE_CHANNEL_CONNECTION_H_

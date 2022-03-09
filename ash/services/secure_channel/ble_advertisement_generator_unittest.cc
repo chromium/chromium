@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "ash/services/device_sync/proto/cryptauth_api.pb.h"
+#include "ash/services/secure_channel/data_with_timestamp.h"
 #include "ash/services/secure_channel/mock_foreground_eid_generator.h"
 #include "base/bind.h"
 #include "base/memory/ptr_util.h"

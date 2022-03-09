@@ -11,20 +11,9 @@
 #include "ash/services/secure_channel/ble_advertiser.h"
 #include "ash/services/secure_channel/ble_connection_manager.h"
 #include "ash/services/secure_channel/ble_scanner.h"
-// TODO(https://crbug.com/1164001): move to forward declaration.
-#include "ash/services/secure_channel/ble_synchronizer_base.h"
-// TODO(https://crbug.com/1164001): move to forward declaration.
-#include "ash/services/secure_channel/bluetooth_helper.h"
 #include "ash/services/secure_channel/connection_role.h"
-#include "ash/services/secure_channel/device_id_pair.h"
-#include "ash/services/secure_channel/public/cpp/shared/connection_priority.h"
 #include "ash/services/secure_channel/secure_channel.h"
-// TODO(https://crbug.com/1164001): move to forward declaration.
-#include "ash/services/secure_channel/secure_channel_disconnector.h"
-// TODO(https://crbug.com/1164001): move to forward declaration.
-#include "ash/services/secure_channel/timer_factory.h"
 #include "base/containers/flat_map.h"
-#include "base/memory/ref_counted.h"
 #include "base/time/default_clock.h"
 
 namespace device {
@@ -32,6 +21,11 @@ class BluetoothAdapter;
 }
 
 namespace ash::secure_channel {
+
+class BleSynchronizerBase;
+class BluetoothHelper;
+class SecureChannelDisconnector;
+class TimerFactory;
 
 // Concrete BleConnectionManager implementation. This class initializes
 // BleAdvertiser and BleScanner objects and utilizes them to bootstrap
@@ -225,10 +219,5 @@ class BleConnectionManagerImpl : public BleConnectionManager,
 };
 
 }  // namespace ash::secure_channel
-
-// TODO(https://crbug.com/1164001): remove after the migration is finished.
-namespace chromeos::secure_channel {
-using ::ash::secure_channel::BleConnectionManagerImpl;
-}
 
 #endif  // ASH_SERVICES_SECURE_CHANNEL_BLE_CONNECTION_MANAGER_IMPL_H_

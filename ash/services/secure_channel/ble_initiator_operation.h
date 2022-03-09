@@ -10,14 +10,13 @@
 #include "ash/services/secure_channel/ble_initiator_failure_type.h"
 #include "ash/services/secure_channel/connect_to_device_operation.h"
 #include "ash/services/secure_channel/connect_to_device_operation_base.h"
-// TODO(https://crbug.com/1164001): move to forward declaration.
-#include "ash/services/secure_channel/public/cpp/shared/connection_priority.h"
 #include "base/memory/weak_ptr.h"
 #include "base/threading/thread_task_runner_handle.h"
 
 namespace ash::secure_channel {
 
 class BleConnectionManager;
+enum class ConnectionPriority;
 
 // Attempts to connect to a remote device over BLE via the initiator role.
 class BleInitiatorOperation

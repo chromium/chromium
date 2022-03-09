@@ -8,15 +8,14 @@
 #include <string>
 
 // TODO(https://crbug.com/1164001): move to forward declaration.
-#include "ash/services/secure_channel/public/cpp/shared/connection_medium.h"
-// TODO(https://crbug.com/1164001): move to forward declaration.
-#include "ash/services/secure_channel/public/cpp/shared/connection_priority.h"
 #include "chromeos/components/multidevice/remote_device_ref.h"
 
 namespace ash::secure_channel {
 
 class ConnectionAttempt;
 class NearbyConnector;
+enum class ConnectionMedium;
+enum class ConnectionPriority;
 
 // Provides clients access to the SecureChannel API.
 //

@@ -12,10 +12,12 @@
 #include "ash/services/secure_channel/public/cpp/client/client_channel.h"
 #include "ash/services/secure_channel/public/cpp/client/connection_attempt.h"
 #include "ash/services/secure_channel/public/cpp/client/connection_manager.h"
-#include "base/callback.h"
 #include "base/memory/weak_ptr.h"
-#include "base/time/default_clock.h"
-#include "base/timer/timer.h"
+
+namespace base {
+class Clock;
+class OneShotTimer;
+}  // namespace base
 
 namespace ash {
 

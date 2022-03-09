@@ -9,17 +9,21 @@
 #include <string>
 #include <vector>
 
-#include "ash/services/secure_channel/data_with_timestamp.h"
 // TODO(https://crbug.com/1164001): move to forward declaration.
-#include "ash/services/secure_channel/raw_eid_generator.h"
-#include "base/time/clock.h"
 #include "chromeos/components/multidevice/remote_device_ref.h"
+
+namespace base {
+class Clock;
+}
 
 namespace cryptauth {
 class BeaconSeed;
 }
 
 namespace ash::secure_channel {
+
+class RawEidGenerator;
+struct DataWithTimestamp;
 
 // Generates ephemeral ID (EID) values that are broadcast for background BLE
 // advertisements in the ProximityAuth protocol.
@@ -74,10 +78,5 @@ class BackgroundEidGenerator {
 };
 
 }  // namespace ash::secure_channel
-
-// TODO(https://crbug.com/1164001): remove after the migration is finished.
-namespace chromeos::secure_channel {
-using ::ash::secure_channel::BackgroundEidGenerator;
-}
 
 #endif  // ASH_SERVICES_SECURE_CHANNEL_BACKGROUND_EID_GENERATOR_H_
