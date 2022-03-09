@@ -52,7 +52,7 @@ class RtpPacketizer {
   size_t send_octet_count() const { return send_octet_count_; }
 
  private:
-  void BuildCommonRTPheader(Packet* packet,
+  void BuildCommonRtpHeader(Packet* packet,
                             bool marker_bit,
                             RtpTimeTicks rtp_timestamp);
 

@@ -8,15 +8,39 @@
 
 #include "base/big_endian.h"
 #include "base/check_op.h"
+#include "base/logging.h"
 #include "media/cast/net/pacing/paced_sender.h"
 #include "media/cast/net/rtp/rtp_defines.h"
 
 namespace media {
 namespace cast {
 
+namespace {
+
+// IP headers are 20 bytes, and ICMP headers are 8 bytes.
+constexpr uint16_t kIpAndIcmpHeadersLength = 28;
+
+// We may add an additional header to the first packet to update the playout
+// delay.
+constexpr uint16_t kPlayoutDelayHeaderLength = 4;
+
+// We always include the playout delay in our header length. This does result
+// in *slightly* suboptimal behavior in some edge cases, as we have a slightly
+// lower maximum packet size.
+constexpr uint16_t kHeadersLength =
+    kRtpHeaderLength + kCastHeaderLength + kPlayoutDelayHeaderLength;
+
+// The default max payload size is the maximum transmission unit
+// |kMaxIpPacketSize| minus all of the lower level headers (IP and ICMP
+// specifically).
+constexpr uint16_t kDefaultMaxPayloadLength =
+    kMaxIpPacketSize - kIpAndIcmpHeadersLength;
+
+}  // namespace
+
 RtpPacketizerConfig::RtpPacketizerConfig()
     : payload_type(-1),
-      max_payload_length(kMaxIpPacketSize - 28),  // Default is IP-v4/UDP.
+      max_payload_length(kDefaultMaxPayloadLength),
       sequence_number(0),
       ssrc(0) {}
 
@@ -42,13 +66,16 @@ uint16_t RtpPacketizer::NextSequenceNumber() {
 }
 
 void RtpPacketizer::SendFrameAsPackets(const EncodedFrame& frame) {
-  uint16_t rtp_header_length = kRtpHeaderLength + kCastHeaderLength;
-  uint16_t max_length = config_.max_payload_length - rtp_header_length - 1;
+  // We don't packetize empty packets.
+  if (frame.data.empty())
+    return;
 
+  const uint16_t max_length = config_.max_payload_length - kHeadersLength;
   // Split the payload evenly (round number up).
-  size_t num_packets = (frame.data.size() + max_length) / max_length;
-  size_t payload_length = (frame.data.size() + num_packets) / num_packets;
-  DCHECK_LE(payload_length, max_length) << "Invalid argument";
+  size_t num_packets = (frame.data.size() + max_length - 1) / max_length;
+  DCHECK_LE(num_packets, std::numeric_limits<uint16_t>::max());
+  size_t payload_length = (frame.data.size() + num_packets - 1) / num_packets;
+  DCHECK_LE(payload_length, max_length);
 
   SendPacketVector packets;
 
@@ -67,11 +94,10 @@ void RtpPacketizer::SendFrameAsPackets(const EncodedFrame& frame) {
       payload_length = remaining_size;
     }
     remaining_size -= payload_length;
-    BuildCommonRTPheader(
-        &packet->data, remaining_size == 0, frame.rtp_timestamp);
+    BuildCommonRtpHeader(&packet->data, remaining_size == 0,
+                         frame.rtp_timestamp);
 
     // Build Cast header.
-    // TODO(miu): Should we always set the ref frame bit and the ref_frame_id?
     DCHECK_NE(frame.dependency, EncodedFrame::UNKNOWN_DEPENDENCY);
     uint8_t byte0 = kCastReferenceFrameIdBitMask;
     if (frame.dependency == EncodedFrame::KEY)
@@ -89,7 +115,8 @@ void RtpPacketizer::SendFrameAsPackets(const EncodedFrame& frame) {
     big_endian_writer.WriteU16(packet_id);
     big_endian_writer.WriteU16(static_cast<uint16_t>(num_packets - 1));
     packet->data.push_back(frame.referenced_frame_id.lower_8_bits());
-    // Add extension details only on the first packet of the frame
+
+    // Add extension details only on the first packet of the frame.
     if (packet_id == 0 && frame.new_playout_delay_ms) {
       packet->data.push_back(kCastRtpExtensionAdaptiveLatency << 2);
       packet->data.push_back(2);  // 2 bytes
@@ -97,6 +124,7 @@ void RtpPacketizer::SendFrameAsPackets(const EncodedFrame& frame) {
           static_cast<uint8_t>(frame.new_playout_delay_ms >> 8));
       packet->data.push_back(static_cast<uint8_t>(frame.new_playout_delay_ms));
     }
+    DCHECK_LE(packet->data.size(), kHeadersLength);
 
     // Copy payload data.
     packet->data.insert(packet->data.end(),
@@ -104,6 +132,10 @@ void RtpPacketizer::SendFrameAsPackets(const EncodedFrame& frame) {
                         data_iter + payload_length);
     data_iter += payload_length;
 
+    // If packets are too large, meaning that the payload size plus all headers
+    // is larger than the MTU size of the network, this packet will get
+    // fragmented.
+    DCHECK(packet->data.size() <= config_.max_payload_length);
     packets.push_back(make_pair(PacketKey(frame.reference_time, config_.ssrc,
                                           frame.frame_id, packet_id),
                                 packet));
@@ -112,7 +144,7 @@ void RtpPacketizer::SendFrameAsPackets(const EncodedFrame& frame) {
     ++send_packet_count_;
     send_octet_count_ += payload_length;
   }
-  DCHECK_EQ(num_packets, packets.size()) << "Invalid state";
+  DCHECK_EQ(num_packets, packets.size());
 
   packet_storage_->StoreFrame(frame.frame_id, packets);
 
@@ -120,13 +152,13 @@ void RtpPacketizer::SendFrameAsPackets(const EncodedFrame& frame) {
   transport_->SendPackets(packets);
 }
 
-void RtpPacketizer::BuildCommonRTPheader(Packet* packet,
+void RtpPacketizer::BuildCommonRtpHeader(Packet* packet,
                                          bool marker_bit,
                                          RtpTimeTicks rtp_timestamp) {
   packet->push_back(0x80);
   packet->push_back(static_cast<uint8_t>(config_.payload_type) |
                     (marker_bit ? kRtpMarkerBitMask : 0));
-  size_t start_size = packet->size();
+  const size_t start_size = packet->size();
   packet->resize(start_size + 10);
   base::BigEndianWriter big_endian_writer(
       reinterpret_cast<char*>(&((*packet)[start_size])), 10);
