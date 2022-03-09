@@ -43,6 +43,14 @@ message HttpsLatencyRoutineData {
   optional int64 latency_ms = 3;
 }
 
+// Data describing observed network bandwidth
+message BandwidthData {
+  // Download speed in kbps
+  optional int64 download_speed_kbps = 1;
+  // Upload speed in kbps
+  optional int64 upload_speed_kbps = 2;
+}
+
 // Network connection state.
 enum NetworkConnectionState {
   NETWORK_CONNECTION_STATE_UNSPECIFIED = 0;
@@ -110,6 +118,8 @@ message NetworksTelemetry {
   repeated NetworkTelemetry network_telemetry = 1;
   // Https latency diagnostics routine result.
   optional HttpsLatencyRoutineData https_latency_data = 2;
+  // Observed bandwidth data for active connection
+  optional BandwidthData bandwidth_data = 3;
 }
 
 // Security level of the thunderbolt bus.
