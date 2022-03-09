@@ -1085,7 +1085,12 @@ void ControllerImpl::OnDownloadReadyToStart(
     return;
   }
 
-  DCHECK(!driver_->Find(guid).has_value());
+  auto driver_entry = driver_->Find(guid);
+  if (driver_entry.has_value()) {
+    DVLOG(1) << "Download already exists.";
+    return;
+  }
+
   driver_->Start(entry->request_params, entry->guid, entry->target_file_path,
                  post_body,
                  net::NetworkTrafficAnnotationTag(entry->traffic_annotation));
