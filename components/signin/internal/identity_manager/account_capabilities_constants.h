@@ -10,5 +10,6 @@
 
 extern const char kCanOfferExtendedChromeSyncPromosCapabilityName[];
 extern const char kIsSubjectToParentalControlsCapabilityName[];
+extern const char kCanRunChromePrivacySandboxTrialsCapabilityName[];
 
 #endif  // COMPONENTS_SIGNIN_INTERNAL_IDENTITY_MANAGER_ACCOUNT_CAPABILITIES_CONSTANTS_H_

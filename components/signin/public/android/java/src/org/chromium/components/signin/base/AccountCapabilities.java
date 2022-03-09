@@ -25,6 +25,7 @@ public class AccountCapabilities {
     public static final Set<String> SUPPORTED_ACCOUNT_CAPABILITY_NAMES = new HashSet<String>() {
         { add(AccountCapabilitiesConstants.IS_SUBJECT_TO_PARENTAL_CONTROLS_CAPABILITY_NAME); }
         { add(AccountCapabilitiesConstants.CAN_OFFER_EXTENDED_CHROME_SYNC_PROMOS_CAPABILITY_NAME); }
+        { add(AccountCapabilitiesConstants.CAN_RUN_CHROME_PRIVACY_SANDBOX_TRIALS_CAPABILITY_NAME); }
     };
 
     private final Map<String, Boolean> mAccountCapabilities = new HashMap<>();
@@ -50,8 +51,10 @@ public class AccountCapabilities {
      */
     public static AccountCapabilities parseFromCapabilitiesResponse(
             Map<String, Integer> capabilityResponses) {
+        assert capabilityResponses.size() == SUPPORTED_ACCOUNT_CAPABILITY_NAMES.size();
         AccountCapabilities capabilities = new AccountCapabilities();
         for (String capabilityName : SUPPORTED_ACCOUNT_CAPABILITY_NAMES) {
+            assert capabilityResponses.containsKey(capabilityName);
             @AccountManagerDelegate.CapabilityResponse
             int hasCapability = capabilityResponses.get(capabilityName);
             capabilities.setAccountCapability(capabilityName, hasCapability);
@@ -92,6 +95,14 @@ public class AccountCapabilities {
     public @Tribool int isSubjectToParentalControls() {
         return getCapabilityByName(
                 AccountCapabilitiesConstants.IS_SUBJECT_TO_PARENTAL_CONTROLS_CAPABILITY_NAME);
+    }
+
+    /**
+     * @return canRunChromePrivacySandboxTrials capability value.
+     */
+    public @Tribool int canRunChromePrivacySandboxTrials() {
+        return getCapabilityByName(
+                AccountCapabilitiesConstants.CAN_RUN_CHROME_PRIVACY_SANDBOX_TRIALS_CAPABILITY_NAME);
     }
 
     /**

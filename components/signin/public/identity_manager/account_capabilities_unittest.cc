@@ -34,11 +34,11 @@ TEST_F(AccountCapabilitiesTest, CanRunChromePrivacySandboxTrials) {
             signin::Tribool::kUnknown);
 
   AccountCapabilitiesTestMutator mutator(&capabilities);
-  mutator.set_can_offer_extended_chrome_sync_promos(true);
+  mutator.set_can_run_chrome_privacy_sandbox_trials(true);
   EXPECT_EQ(capabilities.can_run_chrome_privacy_sandbox_trials(),
             signin::Tribool::kTrue);
 
-  mutator.set_can_offer_extended_chrome_sync_promos(false);
+  mutator.set_can_run_chrome_privacy_sandbox_trials(false);
   EXPECT_EQ(capabilities.can_run_chrome_privacy_sandbox_trials(),
             signin::Tribool::kFalse);
 }

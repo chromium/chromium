@@ -33,7 +33,8 @@ AccountCapabilities& AccountCapabilities::operator=(
 const std::vector<std::string>&
 AccountCapabilities::GetSupportedAccountCapabilityNames() {
   static base::NoDestructor<std::vector<std::string>> kCapabilityNames{
-      {kCanOfferExtendedChromeSyncPromosCapabilityName}};
+      {kCanOfferExtendedChromeSyncPromosCapabilityName,
+       kCanRunChromePrivacySandboxTrialsCapabilityName}};
   return *kCapabilityNames;
 }
 
@@ -53,6 +54,11 @@ signin::Tribool AccountCapabilities::GetCapabilityByName(
 signin::Tribool AccountCapabilities::can_offer_extended_chrome_sync_promos()
     const {
   return GetCapabilityByName(kCanOfferExtendedChromeSyncPromosCapabilityName);
+}
+
+signin::Tribool AccountCapabilities::can_run_chrome_privacy_sandbox_trials()
+    const {
+  return GetCapabilityByName(kCanRunChromePrivacySandboxTrialsCapabilityName);
 }
 
 bool AccountCapabilities::UpdateWith(const AccountCapabilities& other) {

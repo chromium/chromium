@@ -40,10 +40,7 @@ class PrivacySandboxSettingsDelegateTest : public testing::Test {
                             ->identity_manager()
                             ->FindExtendedAccountInfoByEmailAddress(kTestEmail);
     AccountCapabilitiesTestMutator mutator(&account_info.capabilities);
-    // The Privacy Sandbox capability is currently connected to the sync promo.
-    // TODO(crbug.com/1298865): Replace with the actual capability when it is
-    // available.
-    mutator.set_can_offer_extended_chrome_sync_promos(enabled);
+    mutator.set_can_run_chrome_privacy_sandbox_trials(enabled);
     signin::UpdateAccountInfoForAccount(identity_test_env()->identity_manager(),
                                         account_info);
   }

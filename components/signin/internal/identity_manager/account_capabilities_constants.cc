@@ -9,3 +9,6 @@ const char kIsSubjectToParentalControlsCapabilityName[] =
 
 const char kCanOfferExtendedChromeSyncPromosCapabilityName[] =
     "accountcapabilities/gi2tklldmfya";
+
+const char kCanRunChromePrivacySandboxTrialsCapabilityName[] =
+    "accountcapabilities/gu2dqlldmfya";

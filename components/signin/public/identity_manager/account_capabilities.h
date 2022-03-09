@@ -46,11 +46,7 @@ class AccountCapabilities {
   signin::Tribool can_offer_extended_chrome_sync_promos() const;
 
   // Chrome can run privacy sandbox trials for accounts with this capability.
-  signin::Tribool can_run_chrome_privacy_sandbox_trials() const {
-    // TODO(crbug.com/1298865): Replace with the actual capability when it is
-    // available and update tests.
-    return can_offer_extended_chrome_sync_promos();
-  }
+  signin::Tribool can_run_chrome_privacy_sandbox_trials() const;
 
   // Whether none of the capabilities has `signin::Tribool::kUnknown`.
   bool AreAllCapabilitiesKnown() const;
