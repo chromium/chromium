@@ -1063,63 +1063,58 @@ var AnimationTimingFunction = {
   }
 };
 
-/**
- * @constructor
- * @extends EventEmitter
- */
-function AnimationManager() {
-  EventEmitter.call(this);
+// ----------------------------------------------------------------
 
-  this._isRunning = false;
-  this._runningAnimatorCount = 0;
-  this._runningAnimators = {};
-  this._animationFrameCallbackBound = this._animationFrameCallback.bind(this);
-}
+class AnimationManager extends EventEmitter {
+  constructor() {
+    super();
 
-{
-  AnimationManager.prototype = Object.create(EventEmitter.prototype);
+    this._isRunning = false;
+    this._runningAnimatorCount = 0;
+    this._runningAnimators = {};
+    this._animationFrameCallbackBound = this._animationFrameCallback.bind(this);
+  }
 
-  AnimationManager.EventTypeAnimationFrameWillFinish =
-      'animationFrameWillFinish';
+  static EventTypeAnimationFrameWillFinish = 'animationFrameWillFinish';
 
-  AnimationManager.prototype._startAnimation = function() {
+  _startAnimation() {
     if (this._isRunning)
       return;
     this._isRunning = true;
     window.requestAnimationFrame(this._animationFrameCallbackBound);
-  };
+  }
 
-  AnimationManager.prototype._stopAnimation = function() {
+  _stopAnimation() {
     if (!this._isRunning)
       return;
     this._isRunning = false;
-  };
+  }
 
   /**
    * @param {!Animator} animator
    */
-  AnimationManager.prototype.add = function(animator) {
+  add(animator) {
     if (this._runningAnimators[animator.id])
       return;
     this._runningAnimators[animator.id] = animator;
     this._runningAnimatorCount++;
     if (this._needsTimer())
       this._startAnimation();
-  };
+  }
 
   /**
    * @param {!Animator} animator
    */
-  AnimationManager.prototype.remove = function(animator) {
+  remove(animator) {
     if (!this._runningAnimators[animator.id])
       return;
     delete this._runningAnimators[animator.id];
     this._runningAnimatorCount--;
     if (!this._needsTimer())
       this._stopAnimation();
-  };
+  }
 
-  AnimationManager.prototype._animationFrameCallback = function(now) {
+  _animationFrameCallback(now) {
     if (this._runningAnimatorCount > 0) {
       for (var id in this._runningAnimators) {
         this._runningAnimators[id].onAnimationFrame(now);
@@ -1128,39 +1123,39 @@ function AnimationManager() {
     this.dispatchEvent(AnimationManager.EventTypeAnimationFrameWillFinish);
     if (this._isRunning)
       window.requestAnimationFrame(this._animationFrameCallbackBound);
-  };
+  }
 
   /**
    * @return {!boolean}
    */
-  AnimationManager.prototype._needsTimer = function() {
+  _needsTimer() {
     return this._runningAnimatorCount > 0 ||
         this.hasListener(AnimationManager.EventTypeAnimationFrameWillFinish);
-  };
+  }
 
   /**
    * @param {!string} type
    * @param {!Function} callback
    * @override
    */
-  AnimationManager.prototype.on = function(type, callback) {
+  on(type, callback) {
     EventEmitter.prototype.on.call(this, type, callback);
     if (this._needsTimer())
       this._startAnimation();
-  };
+  }
 
   /**
    * @param {!string} type
    * @param {!Function} callback
    * @override
    */
-  AnimationManager.prototype.removeListener = function(type, callback) {
+  removeListener(type, callback) {
     EventEmitter.prototype.removeListener.call(this, type, callback);
     if (!this._needsTimer())
       this._stopAnimation();
-  };
+  }
 
-  AnimationManager.shared = new AnimationManager();
+  static shared = new AnimationManager();
 }
 
 // ----------------------------------------------------------------
@@ -5000,6 +4995,7 @@ if (window.dialogArguments) {
 }
 
 // Necessary for some web tests.
+window.AnimationManager = AnimationManager;
 window.CalendarTableHeaderView = CalendarTableHeaderView;
 window.CalendarPicker = CalendarPicker;
 window.Day = Day;
