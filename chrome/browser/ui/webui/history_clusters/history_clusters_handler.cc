@@ -138,6 +138,10 @@ mojom::QueryResultPtr QueryClustersResultToMojom(
   for (const auto& cluster : clusters_batch) {
     auto cluster_mojom = mojom::Cluster::New();
     cluster_mojom->id = cluster.cluster_id;
+    if (cluster.label) {
+      cluster_mojom->label = base::UTF16ToUTF8(*cluster.label);
+    }
+
     for (const auto& visit : cluster.visits) {
       mojom::URLVisitPtr visit_mojom = VisitToMojom(profile, visit);
       if (!cluster_mojom->visit) {

@@ -179,7 +179,8 @@ struct Config {
   // Whether to split the clusters when a search visit is encountered.
   bool split_clusters_at_search_visits = true;
 
-  // Whether to assign labels to clusters.
+  // Whether to assign labels to clusters. If the label exists, it will be shown
+  // in the UI. If the label doesn't exist, the UI will emphasize the top visit.
   bool should_label_clusters = false;
 
   Config();

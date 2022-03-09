@@ -20,7 +20,7 @@
     user-select: none;
   }
 
-  :host(:not([is-top-visit])) #header {
+  :host([indented]) #header {
     padding-inline-start: calc(var(--cluster-padding-horizontal) +
                                var(--top-visit-favicon-size) +
                                var(--favicon-margin));
@@ -97,11 +97,11 @@
     margin-inline-start: 24px;
   }
 
-  :host(:not([is-top-visit])) #end-justified {
+  :host(:not([show-menu])) #end-justified {
     opacity: 0; /* Hides the element while keeping it in tab order. */
   }
 
-  :host(:not([is-top-visit]):-webkit-any(:focus-within, :hover)) #end-justified {
+  :host(:not([show-menu]):-webkit-any(:focus-within, :hover)) #end-justified {
     opacity: 1;
   }
 
@@ -110,7 +110,7 @@
     flex-shrink: 0;
   }
 
-  :host(:not([is-top-visit])) #timestamp {
+  :host(:not([show-menu])) #timestamp {
     display: none;
   }
 
@@ -118,7 +118,7 @@
     --cr-icon-button-margin-end: 8px;
   }
 
-  :host([is-top-visit]) #actionMenuButton {
+  :host([show-menu]) #actionMenuButton {
     --cr-icon-button-icon-size: 24px;
   }
 </style>

@@ -51,6 +51,12 @@ class TopVisitElement extends PolymerElement {
       visit: Object,
 
       /**
+       * The label for the whole cluster to display above this top-visit.
+       * It's in this element because <top-visit> is actually the card element.
+       */
+      clusterLabel: String,
+
+      /**
        * Whether the default-hidden related visits are visible.
        */
       expanded_: {

@@ -13,6 +13,12 @@
     margin-bottom: var(--cluster-padding-vertical);
   }
 
+  #cluster-label {
+    color: var(--cr-secondary-text-color);
+    font-weight: 500;
+    padding: 4px var(--cluster-padding-horizontal);
+  }
+
   #related-searches {
     padding: var(--cluster-padding-vertical) var(--cluster-padding-horizontal);
   }
@@ -72,12 +78,14 @@
     transform: rotate(180deg);
   }
 </style>
+<div id="cluster-label">[[clusterLabel]]</div>
 <url-visit visit="[[visit]]" cluster-index="[[clusterIndex]]" index="0"
-    is-top-visit>
+    is-top-visit$="[[!clusterLabel]]" show-menu>
 </url-visit>
 <template is="dom-repeat" items="[[visibleRelatedVisits_]]">
   <url-visit visit="[[item]]" cluster-index="[[clusterIndex]]"
-      index="[[getVisitIndex_(item, visit.relatedVisits.*)]]">
+      index="[[getVisitIndex_(item, visit.relatedVisits.*)]]"
+      indented$="[[!clusterLabel]]">
   </url-visit>
 </template>
 <!-- Disable animation on iron-collapse, as the parent iron-list can't
@@ -85,7 +93,8 @@
 <iron-collapse opened="[[expanded_]]" no-animation>
   <template is="dom-repeat" items="[[hiddenRelatedVisits_]]">
     <url-visit visit="[[item]]" cluster-index="[[clusterIndex]]"
-        index="[[getVisitIndex_(item, visit.relatedVisits.*)]]">
+        index="[[getVisitIndex_(item, visit.relatedVisits.*)]]"
+        indented$="[[!clusterLabel]]">
     </url-visit>
   </template>
 </iron-collapse>
