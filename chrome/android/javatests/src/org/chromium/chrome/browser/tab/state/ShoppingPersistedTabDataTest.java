@@ -1128,6 +1128,36 @@ public class ShoppingPersistedTabDataTest {
         helper.waitForCallback(count);
     }
 
+    @SmallTest
+    @Test
+    public void testDestroyedTab() throws TimeoutException {
+        TabImpl tab = mock(TabImpl.class);
+        doReturn(true).when(tab).isDestroyed();
+        CallbackHelper helper = new CallbackHelper();
+        int count = helper.getCallCount();
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            ShoppingPersistedTabData.from(tab, (res) -> {
+                Assert.assertNull(res);
+                helper.notifyCalled();
+            });
+        });
+        helper.waitForCallback(count);
+    }
+
+    @SmallTest
+    @Test
+    public void testNullTab() throws TimeoutException {
+        CallbackHelper helper = new CallbackHelper();
+        int count = helper.getCallCount();
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            ShoppingPersistedTabData.from(null, (res) -> {
+                Assert.assertNull(res);
+                helper.notifyCalled();
+            });
+        });
+        helper.waitForCallback(count);
+    }
+
     static class DeserializeAndLogCheckerShoppingPersistedTabData extends ShoppingPersistedTabData {
         DeserializeAndLogCheckerShoppingPersistedTabData(Tab tab) {
             super(tab);

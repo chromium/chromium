@@ -441,6 +441,10 @@ public class ShoppingPersistedTabData extends PersistedTabData {
      * - Uninitialized Tab
      */
     public static void from(Tab tab, Callback<ShoppingPersistedTabData> callback) {
+        if (tab == null || tab.isDestroyed()) {
+            PostTask.runOrPostTask(UiThreadTaskTraits.DEFAULT, () -> { callback.onResult(null); });
+            return;
+        }
         if (sDelayedInitFinished) {
             fromWithoutDelayedInit(tab, callback);
         } else {
