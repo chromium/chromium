@@ -49,7 +49,7 @@ import org.chromium.chrome.browser.sync.ui.PassphraseTypeDialogFragment;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.util.ActivityTestUtils;
 import org.chromium.chrome.test.util.ChromeRenderTestRule;
-import org.chromium.chrome.test.util.browser.Features;
+import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
 import org.chromium.chrome.test.util.browser.sync.SyncTestUtil;
 import org.chromium.components.browser_ui.settings.ChromeSwitchPreference;
 import org.chromium.components.sync.ModelType;
@@ -222,8 +222,6 @@ public class ManageSyncSettingsTest {
     @Feature({"Sync"})
     public void testPressingSignOutAndTurnOffSyncShowsSignOutDialog() {
         mSyncTestRule.setUpAccountAndEnableSyncForTesting();
-        mSyncTestRule.setChosenDataTypes(true, null);
-        mSyncTestRule.startSync();
         ManageSyncSettings fragment = startManageSyncPreferences();
 
         Preference turnOffSyncPreference =
@@ -234,6 +232,20 @@ public class ManageSyncSettingsTest {
                 fragment.findPreference(ManageSyncSettings.PREF_TURN_OFF_SYNC)::performClick);
         InstrumentationRegistry.getInstrumentation().waitForIdleSync();
         onView(withText(R.string.signout_title)).inRoot(isDialog()).check(matches(isDisplayed()));
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"Sync"})
+    public void testSignOutAndTurnOffSyncDisabledForChildUser() {
+        mSyncTestRule.setUpChildAccountAndEnableSyncForTesting();
+        ManageSyncSettings fragment = startManageSyncPreferences();
+
+        assertSyncOnState(fragment);
+        Preference turnOffSyncPreference =
+                fragment.findPreference(ManageSyncSettings.PREF_TURN_OFF_SYNC);
+        Assert.assertFalse("Sign out and turn off sync button should not be shown",
+                turnOffSyncPreference.isVisible());
     }
 
     @Test
@@ -541,7 +553,7 @@ public class ManageSyncSettingsTest {
     @Test
     @LargeTest
     @Feature({"Sync"})
-    @Features.EnableFeatures(ChromeFeatureList.SYNC_TRUSTED_VAULT_PASSPHRASE_RECOVERY)
+    @EnableFeatures(ChromeFeatureList.SYNC_TRUSTED_VAULT_PASSPHRASE_RECOVERY)
     public void testTrustedVaultRecoverabilityFix() {
         final byte[] trustedVaultKey = new byte[] {1, 2, 3, 4};
 
@@ -592,7 +604,7 @@ public class ManageSyncSettingsTest {
     @Feature({"Sync", "RenderTest"})
     public void testAdvancedSyncFlowTopView() throws Exception {
         mSyncTestRule.setUpAccountAndEnableSyncForTesting();
-        final ManageSyncSettings fragment = startManageSyncPreferencesFromSyncConsentFlow();
+        final ManageSyncSettings fragment = startManageSyncPreferences();
         InstrumentationRegistry.getInstrumentation().waitForIdleSync();
         mRenderTestRule.render(fragment.getView(), "advanced_sync_flow_top_view");
     }
@@ -601,6 +613,33 @@ public class ManageSyncSettingsTest {
     @LargeTest
     @Feature({"Sync", "RenderTest"})
     public void testAdvancedSyncFlowBottomView() throws Exception {
+        mSyncTestRule.setUpAccountAndEnableSyncForTesting();
+        final ManageSyncSettings fragment = startManageSyncPreferences();
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            RecyclerView recyclerView = fragment.getView().findViewById(R.id.recycler_view);
+            // Sometimes the rendered image may not contain the scrollbar and cause flakiness.
+            // Hide the scrollbar altogether to reduce flakiness.
+            recyclerView.setVerticalScrollBarEnabled(false);
+            recyclerView.scrollToPosition(recyclerView.getAdapter().getItemCount() - 1);
+        });
+        InstrumentationRegistry.getInstrumentation().waitForIdleSync();
+        mRenderTestRule.render(fragment.getView(), "advanced_sync_flow_bottom_view");
+    }
+
+    @Test
+    @LargeTest
+    @Feature({"Sync", "RenderTest"})
+    public void testAdvancedSyncFlowFromSyncConsentTopView() throws Exception {
+        mSyncTestRule.setUpAccountAndEnableSyncForTesting();
+        final ManageSyncSettings fragment = startManageSyncPreferencesFromSyncConsentFlow();
+        InstrumentationRegistry.getInstrumentation().waitForIdleSync();
+        mRenderTestRule.render(fragment.getView(), "advanced_sync_flow_top_view_from_sync_consent");
+    }
+
+    @Test
+    @LargeTest
+    @Feature({"Sync", "RenderTest"})
+    public void testAdvancedSyncFlowFromSyncConsentBottomView() throws Exception {
         mSyncTestRule.setUpAccountAndEnableSyncForTesting();
         final ManageSyncSettings fragment = startManageSyncPreferencesFromSyncConsentFlow();
         TestThreadUtils.runOnUiThreadBlocking(() -> {
@@ -611,7 +650,68 @@ public class ManageSyncSettingsTest {
             recyclerView.scrollToPosition(recyclerView.getAdapter().getItemCount() - 1);
         });
         InstrumentationRegistry.getInstrumentation().waitForIdleSync();
-        mRenderTestRule.render(fragment.getView(), "advanced_sync_flow_bottom_view");
+        mRenderTestRule.render(
+                fragment.getView(), "advanced_sync_flow_bottom_view_from_sync_consent");
+    }
+
+    @Test
+    @LargeTest
+    @Feature({"Sync", "RenderTest"})
+    @EnableFeatures({ChromeFeatureList.ALLOW_SYNC_OFF_FOR_CHILD_ACCOUNTS})
+    public void testAdvancedSyncFlowTopViewForChildUser() throws Exception {
+        mSyncTestRule.setUpChildAccountAndEnableSyncForTesting();
+        final ManageSyncSettings fragment = startManageSyncPreferences();
+        InstrumentationRegistry.getInstrumentation().waitForIdleSync();
+        mRenderTestRule.render(fragment.getView(), "advanced_sync_flow_top_view_child");
+    }
+
+    @Test
+    @LargeTest
+    @Feature({"Sync", "RenderTest"})
+    @EnableFeatures({ChromeFeatureList.ALLOW_SYNC_OFF_FOR_CHILD_ACCOUNTS})
+    public void testAdvancedSyncFlowBottomViewForChildUser() throws Exception {
+        mSyncTestRule.setUpChildAccountAndEnableSyncForTesting();
+        final ManageSyncSettings fragment = startManageSyncPreferences();
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            RecyclerView recyclerView = fragment.getView().findViewById(R.id.recycler_view);
+            // Sometimes the rendered image may not contain the scrollbar and cause flakiness.
+            // Hide the scrollbar altogether to reduce flakiness.
+            recyclerView.setVerticalScrollBarEnabled(false);
+            recyclerView.scrollToPosition(recyclerView.getAdapter().getItemCount() - 1);
+        });
+        InstrumentationRegistry.getInstrumentation().waitForIdleSync();
+        mRenderTestRule.render(fragment.getView(), "advanced_sync_flow_bottom_view_child");
+    }
+
+    @Test
+    @LargeTest
+    @Feature({"Sync", "RenderTest"})
+    @EnableFeatures({ChromeFeatureList.ALLOW_SYNC_OFF_FOR_CHILD_ACCOUNTS})
+    public void testAdvancedSyncFlowFromSyncConsentTopViewForChildUser() throws Exception {
+        mSyncTestRule.setUpChildAccountAndEnableSyncForTesting();
+        final ManageSyncSettings fragment = startManageSyncPreferencesFromSyncConsentFlow();
+        InstrumentationRegistry.getInstrumentation().waitForIdleSync();
+        mRenderTestRule.render(
+                fragment.getView(), "advanced_sync_flow_top_view_from_sync_consent_child");
+    }
+
+    @Test
+    @LargeTest
+    @Feature({"Sync", "RenderTest"})
+    @EnableFeatures({ChromeFeatureList.ALLOW_SYNC_OFF_FOR_CHILD_ACCOUNTS})
+    public void testAdvancedSyncFlowFromSyncConsentBottomViewForChildUser() throws Exception {
+        mSyncTestRule.setUpChildAccountAndEnableSyncForTesting();
+        final ManageSyncSettings fragment = startManageSyncPreferencesFromSyncConsentFlow();
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            RecyclerView recyclerView = fragment.getView().findViewById(R.id.recycler_view);
+            // Sometimes the rendered image may not contain the scrollbar and cause flakiness.
+            // Hide the scrollbar altogether to reduce flakiness.
+            recyclerView.setVerticalScrollBarEnabled(false);
+            recyclerView.scrollToPosition(recyclerView.getAdapter().getItemCount() - 1);
+        });
+        InstrumentationRegistry.getInstrumentation().waitForIdleSync();
+        mRenderTestRule.render(
+                fragment.getView(), "advanced_sync_flow_bottom_view_from_sync_consent_child");
     }
 
     private ManageSyncSettings startManageSyncPreferences() {

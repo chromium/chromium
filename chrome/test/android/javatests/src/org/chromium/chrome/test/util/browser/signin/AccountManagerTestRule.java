@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.test.util.browser.signin;
 
+import static org.hamcrest.Matchers.is;
+
 import android.accounts.Account;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
@@ -18,6 +20,11 @@ import org.junit.runner.Description;
 import org.junit.runners.model.Statement;
 
 import org.chromium.base.ContextUtils;
+import org.chromium.base.test.util.Criteria;
+import org.chromium.base.test.util.CriteriaHelper;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.sync.SyncService;
 import org.chromium.components.signin.AccountManagerFacadeProvider;
 import org.chromium.components.signin.AccountUtils;
@@ -93,7 +100,11 @@ public class AccountManagerTestRule implements TestRule {
             // only if an account is signed in. Otherwise, tearDownRule() ultimately results a crash
             // in SignoutManager::signOut(). This is because sign out is attempted when a sign-out
             // operation is already in progress. See crbug/1102746 for more details.
-            signOut();
+            //
+            // We call the force sign out version to make it easier for test writers to write tests
+            // which cleanly tear down (eg. for supervised users who otherwise are not allowed to
+            // sign out).
+            forceSignOut();
         }
         AccountManagerFacadeProvider.resetInstanceForTests();
         AccountInfoServiceProvider.resetForTests();
@@ -206,6 +217,69 @@ public class AccountManagerTestRule implements TestRule {
     }
 
     /**
+     * Adds and signs in a child account with the default name and enables sync.
+     *
+     * This method invokes native code. It shouldn't be called in a Robolectric test.
+     *
+     * @param syncService SyncService object to set up sync, if null, sync won't
+     *         start.
+     */
+    public CoreAccountInfo addChildTestAccountThenSigninAndEnableSync(
+            @Nullable SyncService syncService) {
+        assert !mIsSignedIn : "An account is already signed in!";
+        CoreAccountInfo coreAccountInfo =
+                addAccountAndWaitForSeeding(generateChildEmail(TEST_ACCOUNT_EMAIL));
+
+        // The child will be force signed in (by SigninChecker).  Wait for this to complete before
+        // enabling sync.
+        CriteriaHelper.pollUiThread(() -> {
+            Criteria.checkThat(IdentityServicesProvider.get()
+                                       .getIdentityManager(Profile.getLastUsedRegularProfile())
+                                       .getPrimaryAccountInfo(ConsentLevel.SIGNIN),
+                    is(coreAccountInfo));
+        });
+        mIsSignedIn = true;
+
+        if (ChromeFeatureList.isEnabled(ChromeFeatureList.ALLOW_SYNC_OFF_FOR_CHILD_ACCOUNTS)) {
+            // The auto sign-in should leave the user in signed-in, non-syncing state - check this
+            // and enable sync.
+            TestThreadUtils.runOnUiThreadBlocking(() -> {
+                assert IdentityServicesProvider.get()
+                                .getIdentityManager(Profile.getLastUsedRegularProfile())
+                                .getPrimaryAccountInfo(ConsentLevel.SYNC)
+                        == null : "Sync should not be enabled";
+            });
+            SigninTestUtil.signinAndEnableSync(coreAccountInfo, syncService);
+        } else {
+            // The auto sign-in should also enable sync.
+            TestThreadUtils.runOnUiThreadBlocking(() -> {
+                assert IdentityServicesProvider.get()
+                        .getIdentityManager(Profile.getLastUsedRegularProfile())
+                        .getPrimaryAccountInfo(ConsentLevel.SYNC)
+                        .equals(coreAccountInfo)
+                    : "Sync should be enabled";
+            });
+        }
+
+        return coreAccountInfo;
+    }
+
+    /**
+     * Adds and signs in an account with the default name and enables sync.
+     *
+     * This method invokes native code. It shouldn't be called in a Robolectric test.
+     *
+     * @param syncService SyncService object to set up sync, if null, sync won't
+     *         start.
+     * @param isChild Whether this is a supervised child account.
+     */
+    public CoreAccountInfo addTestAccountThenSigninAndEnableSync(
+            @Nullable SyncService syncService, boolean isChild) {
+        return isChild ? addChildTestAccountThenSigninAndEnableSync(syncService)
+                       : addTestAccountThenSigninAndEnableSync(syncService);
+    }
+
+    /**
      * @return The primary account of the requested {@link ConsentLevel}.
      * This method invokes native code. It shouldn't be called in a Robolectric test.
      */
@@ -228,6 +302,17 @@ public class AccountManagerTestRule implements TestRule {
      */
     public void signOut() {
         SigninTestUtil.signOut();
+        mIsSignedIn = false;
+    }
+
+    /**
+     * Sign out from the current account, ignoring usual checks (suitable for eg. test teardown, but
+     * not feature testing).
+     *
+     * This method invokes native code. It shouldn't be called in a Robolectric test.
+     */
+    public void forceSignOut() {
+        SigninTestUtil.forceSignOut();
         mIsSignedIn = false;
     }
 

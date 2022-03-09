@@ -138,12 +138,20 @@ public final class SigninTestUtil {
     }
 
     static void signOut() {
+        signOut(SignoutReason.SIGNOUT_TEST);
+    }
+
+    static void forceSignOut() {
+        signOut(SignoutReason.FORCE_SIGNOUT_ALWAYS_ALLOWED_FOR_TEST);
+    }
+
+    private static void signOut(@SignoutReason int signoutReason) {
         ThreadUtils.assertOnBackgroundThread();
         CallbackHelper callbackHelper = new CallbackHelper();
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             IdentityServicesProvider.get()
                     .getSigninManager(Profile.getLastUsedRegularProfile())
-                    .signOut(SignoutReason.SIGNOUT_TEST, callbackHelper::notifyCalled, false);
+                    .signOut(signoutReason, callbackHelper::notifyCalled, false);
         });
         try {
             callbackHelper.waitForFirst();
