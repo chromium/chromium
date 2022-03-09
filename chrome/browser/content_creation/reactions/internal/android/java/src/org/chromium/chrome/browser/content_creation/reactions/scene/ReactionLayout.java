@@ -134,6 +134,10 @@ public class ReactionLayout extends RelativeLayout {
                                 screenHeight - (layoutParams.topMargin - mHeight);
                         ReactionLayout.this.setLayoutParams(layoutParams);
                         break;
+                    case MotionEvent.ACTION_UP:
+                        view.announceForAccessibility(mContext.getString(
+                                R.string.lightweight_reactions_reaction_moved_announcement));
+                        break;
                 }
                 return true;
             }
