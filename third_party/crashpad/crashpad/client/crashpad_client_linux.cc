@@ -351,17 +351,11 @@ class RequestCrashDumpHandler : public SignalHandler {
       }
       pid = creds.pid;
     }
-    if (pid > 0 && prctl(PR_SET_PTRACER, pid, 0, 0, 0) != 0) {
-      PLOG(WARNING) << "prctl";
-      // TODO(jperaza): If this call to set the ptracer failed, it might be
-      // possible to try again just before a dump request, in case the
-      // environment has changed. Revisit ExceptionHandlerClient::SetPtracer()
-      // and consider saving the result of this call in ExceptionHandlerClient
-      // or as a member in this signal handler. ExceptionHandlerClient hasn't
-      // been responsible for maintaining state and a new ExceptionHandlerClient
-      // has been constructed as a local whenever a client needs to communicate
-      // with the handler. ExceptionHandlerClient lifetimes and ownership will
-      // need to be reconsidered if it becomes responsible for state.
+    if (pid > 0) {
+      pthread_atfork(nullptr, nullptr, SetPtracerAtFork);
+      if (prctl(PR_SET_PTRACER, pid, 0, 0, 0) != 0) {
+        PLOG(WARNING) << "prctl";
+      }
     }
     sock_to_handler_.reset(sock.release());
     handler_pid_ = pid;
@@ -382,6 +376,13 @@ class RequestCrashDumpHandler : public SignalHandler {
   }
 
   void HandleCrashImpl() override {
+    // Attempt to set the ptracer again, in case a crash occurs after a fork,
+    // before SetPtracerAtFork() has been called. Ignore errors because the
+    // system call may be disallowed if the sandbox is engaged.
+    if (handler_pid_ > 0) {
+      sys_prctl(PR_SET_PTRACER, handler_pid_, 0, 0, 0);
+    }
+
     ExceptionHandlerProtocol::ClientInformation info = {};
     info.exception_information_address =
         FromPointerCast<VMAddress>(&GetExceptionInfo());
@@ -403,6 +404,14 @@ class RequestCrashDumpHandler : public SignalHandler {
   RequestCrashDumpHandler() = default;
 
   ~RequestCrashDumpHandler() = delete;
+
+  static void SetPtracerAtFork() {
+    auto handler = RequestCrashDumpHandler::Get();
+    if (handler->handler_pid_ > 0 &&
+        prctl(PR_SET_PTRACER, handler->handler_pid_, 0, 0, 0) != 0) {
+      PLOG(WARNING) << "prctl";
+    }
+  }
 
   ScopedFileHandle sock_to_handler_;
   pid_t handler_pid_ = -1;

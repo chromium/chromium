@@ -68,16 +68,6 @@ bool GetHandlerSocket(int* fd, pid_t* pid) {
   return crashpad::CrashpadClient::GetHandlerSocket(fd, pid);
 }
 
-void SetPtracerAtFork() {
-  pid_t pid;
-  if (!GetHandlerSocket(nullptr, &pid)) {
-    return;
-  }
-  if (pid > 0 && prctl(PR_SET_PTRACER, pid, 0, 0, 0) != 0) {
-    PLOG(ERROR) << "prctl";
-  }
-}
-
 namespace internal {
 
 bool PlatformCrashpadInitialization(
@@ -225,8 +215,6 @@ bool PlatformCrashpadInitialization(
 
     *database_path = base::FilePath();
   }
-
-  pthread_atfork(nullptr, nullptr, SetPtracerAtFork);
 
   if (crash_reporter_client->GetShouldDumpLargerDumps()) {
     const uint32_t kIndirectMemoryLimit = 4 * 1024 * 1024;
