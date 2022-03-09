@@ -644,7 +644,24 @@ function touchDragTo(drag) {
             { name: 'pointerUp', x: drag.end_x, y: drag.end_y }
         ]}], resolve);
     } else {
-      reject();
+      reject('This test requires chrome.gpuBenchmarking');
+    }
+  });
+}
+
+// Trigger fling by doing pointerUp right after pointerMoves.
+function touchFling(drag) {
+  return new Promise(function(resolve, reject) {
+    if (window.chrome && chrome.gpuBenchmarking) {
+      chrome.gpuBenchmarking.pointerActionSequence( [
+        {source: 'touch',
+         actions: [
+            { name: 'pointerDown', x: drag.start_x, y: drag.start_y },
+            { name: 'pointerMove', x: drag.end_x, y: drag.end_y},
+            { name: 'pointerUp', x: drag.end_x, y: drag.end_y }
+        ]}], resolve);
+    } else {
+      reject('This test requires chrome.gpuBenchmarking');
     }
   });
 }
