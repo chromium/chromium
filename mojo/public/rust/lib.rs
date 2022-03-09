@@ -4,7 +4,7 @@
 
 // Workaround for linkage bug for rust binary -> C++ component -> rust component
 // dependency. TOOD(https://crbug.com/1289742): remove this after fix.
-extern crate base_rs;
+extern crate base;
 
 #[macro_use]
 mod macros {

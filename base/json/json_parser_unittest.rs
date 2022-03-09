@@ -1,5 +1,5 @@
-use base_rs::{JsonOptions, NewValueSlotForTesting, ValueSlotRef};
-use rust_gtest_interop_rs::prelude::*;
+use base::{JsonOptions, NewValueSlotForTesting, ValueSlotRef};
+use rust_gtest_interop::prelude::*;
 
 #[gtest(RustJsonParserTest, ChromiumExtensions)]
 fn test_chromium_extensions() {
@@ -28,6 +28,6 @@ fn test_decode_json() {
         allow_x_escapes: false,
     };
     let mut value_slot = NewValueSlotForTesting();
-    base_rs::decode_json(b"{ \"a\": 4 }", options, ValueSlotRef::from(&mut value_slot)).unwrap();
+    base::decode_json(b"{ \"a\": 4 }", options, ValueSlotRef::from(&mut value_slot)).unwrap();
     expect_eq!(format!("{:?}", ValueSlotRef::from(&mut value_slot)), "{\n   \"a\": 4\n}\n");
 }

@@ -1,5 +1,5 @@
-use base_rs::{NewValueSlotForTesting, ValueSlotRef};
-use rust_gtest_interop_rs::prelude::*;
+use base::{NewValueSlotForTesting, ValueSlotRef};
+use rust_gtest_interop::prelude::*;
 
 #[gtest(RustValuesTest, AllocDealloc)]
 fn test_alloc_dealloc() {

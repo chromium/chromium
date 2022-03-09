@@ -6,7 +6,7 @@
 extern crate test;
 
 use test::Bencher;
-use test_mixed_static_library_rs::add_two_ints_using_cpp;
+use test_mixed_static_library::add_two_ints_using_cpp;
 
 #[test]
 fn test_call_into_mixed_static_library() {

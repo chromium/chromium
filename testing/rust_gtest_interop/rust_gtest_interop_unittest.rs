@@ -1,4 +1,4 @@
-use rust_gtest_interop_rs::prelude::*;
+use rust_gtest_interop::prelude::*;
 
 #[gtest(Test, InTopModule)]
 fn test() {

@@ -93,6 +93,7 @@ template("mixed_target") {
 
   if (_rs_enable) {
     rust_static_library("${_target_name}_rs") {
+      crate_name = _target_name
       mutually_dependent_target = ":${_target_name}"
       mutually_dependent_public_deps = []
       if (defined(invoker.public_deps)) {

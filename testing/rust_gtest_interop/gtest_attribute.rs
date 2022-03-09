@@ -97,10 +97,6 @@ pub fn gtest(arg_stream: TokenStream, input: TokenStream) -> TokenStream {
         .into();
     }
 
-    // TODO(crbug.com/1296158): This should be `rust_gtest_interop` but currently the mixed-target
-    // Rust crate gets an _rs suffix.
-    let interop_crate_name = format_ident!("rust_gtest_interop_rs");
-
     let (test_suite_name, test_name) = match args.len() {
         2 => {
             let suite = match get_arg_string(&args, GtestAttributeArgument::TestSuite) {
@@ -197,16 +193,16 @@ pub fn gtest(arg_stream: TokenStream, input: TokenStream) -> TokenStream {
             use std::fmt::Display;
             use std::result::Result;
 
-            #[::#interop_crate_name::small_ctor::ctor]
+            #[::rust_gtest_interop::small_ctor::ctor]
             unsafe fn register_test() {
-                let r = ::#interop_crate_name::__private::TestRegistration {
+                let r = ::rust_gtest_interop::__private::TestRegistration {
                     func: #run_test_fn,
                     test_suite_name: #test_suite_name_c_bytes,
                     test_name: #test_name_c_bytes,
                     file: #file_c_bytes,
                     line: line!(),
                 };
-                ::#interop_crate_name::__private::register_test(r);
+                ::rust_gtest_interop::__private::register_test(r);
             }
 
             // The function is extern "C" so `register_test()` can pass this fn as a pointer to C++
@@ -222,13 +218,13 @@ pub fn gtest(arg_stream: TokenStream, input: TokenStream) -> TokenStream {
             #[no_mangle]
             extern "C" fn #run_test_fn() {
                 let catch_result = std::panic::catch_unwind(|| #test_fn());
-                use ::#interop_crate_name::TestResult;
+                use ::rust_gtest_interop::TestResult;
                 let err_message: Option<String> = match catch_result {
                     Ok(fn_result) => TestResult::into_error_message(fn_result),
                     Err(_) => Some("Test panicked".to_string()),
                 };
                 if let Some(m) = err_message.as_ref() {
-                    ::#interop_crate_name::__private::add_failure_at(file!(), line!(), &m);
+                    ::rust_gtest_interop::__private::add_failure_at(file!(), line!(), &m);
                 }
             }
 
