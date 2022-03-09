@@ -3011,8 +3011,12 @@ UrlInfo NavigationRequest::GetUrlInfo() {
   // response yet and don't have the final `sandbox_flags_to_commit_`, and
   // if the state of the kOrigin flag changes, we'll detect the change and
   // recompute the target SiteInstance elsewhere.
+  // Note: We don't try to process-isolate about:blank URLs since that would
+  // prevent the parent frame from interacting with them, and they would be
+  // stuck as empty content.
   bool is_origin_restricted_sandbox = false;
-  if (SiteIsolationPolicy::AreIsolatedSandboxedIframesEnabled()) {
+  if (SiteIsolationPolicy::AreIsolatedSandboxedIframesEnabled() &&
+      !GetURL().IsAboutBlank()) {
     if (state_ >= WILL_PROCESS_RESPONSE) {
       is_origin_restricted_sandbox =
           (policy_container_navigation_bundle_->FinalPolicies().sandbox_flags &

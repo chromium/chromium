@@ -2579,6 +2579,75 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessIsolatedSandboxedIframeTest,
   }
 }
 
+// A test to make sure that about:blank in a sandboxed iframe doesn't get
+// process isolation. If it did, it would be impossible for the parent to inject
+// any content, and it would be stuck as empty content.
+IN_PROC_BROWSER_TEST_P(SitePerProcessIsolatedSandboxedIframeTest,
+                       NotIsolatedSandboxAboutBlankSubframe) {
+  GURL main_url(embedded_test_server()->GetURL("a.com", "/title1.html"));
+  EXPECT_TRUE(NavigateToURL(shell(), main_url));
+
+  // Create sandboxed child frame, with about:blank content.
+  {
+    std::string js_str(
+        "var frame = document.createElement('iframe'); "
+        "frame.id = 'child_frame'; "
+        "frame.sandbox = ''; "
+        "frame.src = 'about:blank'; "
+        "document.body.appendChild(frame);");
+    EXPECT_TRUE(ExecJs(shell(), js_str));
+    ASSERT_TRUE(WaitForLoadStop(shell()->web_contents()));
+  }
+
+  FrameTreeNode* root = web_contents()->GetPrimaryFrameTree().root();
+  ASSERT_EQ(1U, root->child_count());
+  FrameTreeNode* child = root->child_at(0);
+  // Verify that the child has no permissions set.
+  EXPECT_EQ(child->effective_frame_policy().sandbox_flags,
+            network::mojom::WebSandboxFlags::kAll);
+  EXPECT_EQ(GURL(url::kAboutBlankURL),
+            child->current_frame_host()->GetLastCommittedURL());
+  EXPECT_TRUE(child->current_frame_host()->GetLastCommittedOrigin().opaque());
+  // Verify that the child's precursor origin matches 'a.com'. Note: we create
+  // the expected value using `main_url` so that the test server port will be
+  // correctly matched.
+  EXPECT_EQ(url::SchemeHostPort(main_url),
+            child->current_origin().GetTupleOrPrecursorTupleIfOpaque());
+  // The child needs to be in the parent's SiteInstance.
+  EXPECT_EQ(root->current_frame_host()->GetSiteInstance(),
+            child->current_frame_host()->GetSiteInstance());
+  EXPECT_FALSE(root->current_frame_host()
+                   ->GetSiteInstance()
+                   ->GetSiteInfo()
+                   .is_sandboxed());
+
+  // Navigate to a page that should get process isolation.
+  GURL isolated_child_url(
+      embedded_test_server()->GetURL("a.com", "/title1.html"));
+  EXPECT_TRUE(NavigateFrameToURL(child, isolated_child_url));
+  EXPECT_NE(root->current_frame_host()->GetSiteInstance(),
+            child->current_frame_host()->GetSiteInstance());
+  EXPECT_TRUE(child->current_frame_host()
+                  ->GetSiteInstance()
+                  ->GetSiteInfo()
+                  .is_sandboxed());
+
+  // Navigate back to about:blank, and verify it's put back into the parent's
+  // SiteInstance.
+  scoped_refptr<SiteInstanceImpl> child_previous_site_instance =
+      child->current_frame_host()->GetSiteInstance();
+  EXPECT_TRUE(NavigateIframeToURL(shell()->web_contents(), "child_frame",
+                                  GURL("about:blank")));
+  EXPECT_EQ(root->current_frame_host()->GetSiteInstance(),
+            child->current_frame_host()->GetSiteInstance());
+  EXPECT_NE(child_previous_site_instance,
+            child->current_frame_host()->GetSiteInstance());
+  EXPECT_FALSE(child->current_frame_host()
+                   ->GetSiteInstance()
+                   ->GetSiteInfo()
+                   .is_sandboxed());
+}
+
 // Test to make sure that an iframe with a data:url is appropriately sandboxed.
 IN_PROC_BROWSER_TEST_P(SitePerProcessIsolatedSandboxedIframeTest,
                        SandboxedIframeWithDataURL) {
