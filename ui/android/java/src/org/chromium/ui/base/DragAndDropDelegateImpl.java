@@ -268,15 +268,7 @@ class DragAndDropDelegateImpl implements ViewAndroidDelegate.DragAndDropDelegate
             recordDragTargetType(mDragTargetType);
         }
 
-        if (!dragResult) {
-            // Clear the image data immediately when not used.
-            DropDataContentProvider.clearCache();
-            // TODO(https://crbug.com/1299143): add metric
-        } else {
-            // Otherwise, clear it with a delay to allow asynchronous data transfer.
-            DropDataContentProvider.clearCacheWithDelay();
-            // TODO(https://crbug.com/1299143): add metric
-        }
+        DropDataContentProvider.onDragEnd(!mIsDropOnView && dragResult);
     }
 
     /**
