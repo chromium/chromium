@@ -268,18 +268,18 @@ content::InstallabilityError GetInstallabilityError(
       break;
     case MANIFEST_MISSING_SUITABLE_ICON:
       error_id = kManifestMissingSuitableIconId;
-      error_arguments.push_back(content::InstallabilityErrorArgument(
+      error_arguments.emplace_back(
           kMinimumIconSizeInPixelsId,
-          base::NumberToString(InstallableManager::GetMinimumIconSizeInPx())));
+          base::NumberToString(InstallableManager::GetMinimumIconSizeInPx()));
       break;
     case NO_MATCHING_SERVICE_WORKER:
       error_id = kNoMatchingServiceWorkerId;
       break;
     case NO_ACCEPTABLE_ICON:
       error_id = kNoAcceptableIconId;
-      error_arguments.push_back(content::InstallabilityErrorArgument(
+      error_arguments.emplace_back(
           kMinimumIconSizeInPixelsId,
-          base::NumberToString(InstallableManager::GetMinimumIconSizeInPx())));
+          base::NumberToString(InstallableManager::GetMinimumIconSizeInPx()));
       break;
     case CANNOT_DOWNLOAD_ICON:
       error_id = kCannotDownloadIconId;

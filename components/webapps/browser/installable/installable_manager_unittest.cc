@@ -33,7 +33,7 @@ class InstallableManagerUnitTest : public testing::Test {
 
     blink::Manifest::ImageResource primary_icon;
     primary_icon.type = u"image/png";
-    primary_icon.sizes.push_back(gfx::Size(144, 144));
+    primary_icon.sizes.emplace_back(144, 144);
     primary_icon.purpose.push_back(IconPurpose::ANY);
     manifest->icons.push_back(primary_icon);
 

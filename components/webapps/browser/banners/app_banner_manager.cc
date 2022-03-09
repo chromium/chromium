@@ -224,16 +224,9 @@ AppBannerManager::AppBannerManager(content::WebContents* web_contents)
     : content::WebContentsObserver(web_contents),
       SiteEngagementObserver(site_engagement::SiteEngagementService::Get(
           web_contents->GetBrowserContext())),
-      has_maskable_primary_icon_(false),
-      state_(State::INACTIVE),
       manager_(InstallableManager::FromWebContents(web_contents)),
       manifest_(blink::mojom::Manifest::New()),
-      has_sufficient_engagement_(false),
-      load_finished_(false),
-      status_reporter_(std::make_unique<NullStatusReporter>()),
-      install_animation_pending_(false),
-      installable_web_app_check_result_(
-          InstallableWebAppCheckResult::kUnknown) {
+      status_reporter_(std::make_unique<NullStatusReporter>()) {
   DCHECK(manager_);
 
   AppBannerSettingsHelper::UpdateFromFieldTrial();

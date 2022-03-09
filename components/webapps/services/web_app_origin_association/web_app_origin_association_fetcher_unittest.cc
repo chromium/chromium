@@ -93,7 +93,7 @@ TEST_F(WebAppOriginAssociationFetcherTest, FileExists) {
   auto handler = apps::UrlHandlerInfo();
   handler.origin = url::Origin::Create(GURL(server_.base_url()));
   fetcher_->FetchWebAppOriginAssociationFile(
-      std::move(handler), shared_url_loader_factory_.get(),
+      handler, shared_url_loader_factory_.get(),
       base::BindLambdaForTesting(
           [&](std::unique_ptr<std::string> file_content) {
             ASSERT_FALSE(!file_content);
@@ -112,7 +112,7 @@ TEST_F(WebAppOriginAssociationFetcherTest, FileDoesNotExist) {
   GURL url = server_.GetURL("foo.com", "/");
   handler.origin = url::Origin::Create(url);
   fetcher_->FetchWebAppOriginAssociationFile(
-      std::move(handler), shared_url_loader_factory_.get(),
+      handler, shared_url_loader_factory_.get(),
       base::BindLambdaForTesting(
           [&](std::unique_ptr<std::string> file_content) {
             ASSERT_TRUE(!file_content);
@@ -131,7 +131,7 @@ TEST_F(WebAppOriginAssociationFetcherTest, FileUrlIsInvalid) {
   auto handler = apps::UrlHandlerInfo();
   handler.origin = url::Origin::Create(GURL("https://co.uk"));
   fetcher_->FetchWebAppOriginAssociationFile(
-      std::move(handler), shared_url_loader_factory_.get(),
+      handler, shared_url_loader_factory_.get(),
       base::BindLambdaForTesting(
           [&](std::unique_ptr<std::string> file_content) {
             ASSERT_TRUE(!file_content);

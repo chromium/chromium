@@ -39,7 +39,7 @@ class WebAppOriginAssociationParserTest : public testing::Test {
 
   unsigned int GetErrorCount() const { return errors_.size(); }
 
-  bool failed() { return failed_; }
+  bool failed() const { return failed_; }
 
  private:
   std::vector<std::string> errors_;

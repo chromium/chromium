@@ -155,29 +155,29 @@ class InstallableManager
     IconProperty(const IconProperty&) = delete;
     IconProperty& operator=(const IconProperty&) = delete;
 
-    IconProperty(IconProperty&& other);
+    IconProperty(IconProperty&& other) noexcept;
     IconProperty& operator=(IconProperty&& other);
 
     ~IconProperty();
 
-    InstallableStatusCode error;
-    IconPurpose purpose;
+    InstallableStatusCode error = NO_ERROR_DETECTED;
+    IconPurpose purpose = blink::mojom::ManifestImageResource_Purpose::ANY;
     GURL url;
     std::unique_ptr<SkBitmap> icon;
-    bool fetched;
+    bool fetched = false;
   };
 
   // Returns true if an icon for the given usage is fetched successfully, or
   // doesn't need to fallback to another icon purpose (i.e. MASKABLE icon
   // allback to ANY icon).
-  bool IsIconFetchComplete(const IconUsage usage) const;
+  bool IsIconFetchComplete(IconUsage usage) const;
 
   // Returns true if we have tried fetching maskable icon. Note that this also
   // returns true if the fallback icon(IconPurpose::ANY) is fetched.
-  bool IsMaskableIconFetched(const IconUsage usage) const;
+  bool IsMaskableIconFetched(IconUsage usage) const;
 
   // Sets the icon matching |usage| as fetched.
-  void SetIconFetched(const IconUsage usage);
+  void SetIconFetched(IconUsage usage);
 
   // Returns a vector with all errors encountered for the resources requested in
   // |params|, or an empty vector if there is no error.
@@ -189,9 +189,9 @@ class InstallableManager
   InstallableStatusCode valid_manifest_error() const;
   void set_valid_manifest_error(InstallableStatusCode error_code);
   InstallableStatusCode worker_error() const;
-  InstallableStatusCode icon_error(const IconUsage usage);
-  GURL& icon_url(const IconUsage usage);
-  const SkBitmap* icon(const IconUsage usage);
+  InstallableStatusCode icon_error(IconUsage usage);
+  GURL& icon_url(IconUsage usage);
+  const SkBitmap* icon(IconUsage usage);
 
   // Returns the WebContents to which this object is attached, or nullptr if the
   // WebContents doesn't exist or is currently being destroyed.
@@ -237,14 +237,12 @@ class InstallableManager
 
   void CheckAndFetchBestIcon(int ideal_icon_size_in_px,
                              int minimum_icon_size_in_px,
-                             const IconPurpose purpose,
-                             const IconUsage usage);
-  void OnIconFetched(const GURL icon_url,
-                     const IconUsage usage,
-                     const SkBitmap& bitmap);
+                             IconPurpose purpose,
+                             IconUsage usage);
+  void OnIconFetched(GURL icon_url, IconUsage usage, const SkBitmap& bitmap);
 
   void CheckAndFetchScreenshots();
-  void OnScreenshotFetched(const GURL screenshot_url, const SkBitmap& bitmap);
+  void OnScreenshotFetched(GURL screenshot_url, const SkBitmap& bitmap);
 
   // content::ServiceWorkerContextObserver overrides
   void OnRegistrationCompleted(const GURL& pattern) override;

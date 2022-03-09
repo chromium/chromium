@@ -219,13 +219,10 @@ InstallableManager::ValidManifestProperty::ValidManifestProperty() = default;
 
 InstallableManager::ValidManifestProperty::~ValidManifestProperty() = default;
 
-InstallableManager::IconProperty::IconProperty()
-    : error(NO_ERROR_DETECTED),
-      purpose(IconPurpose::ANY),
-      icon(),
-      fetched(false) {}
+InstallableManager::IconProperty::IconProperty() = default;
 
-InstallableManager::IconProperty::IconProperty(IconProperty&& other) = default;
+InstallableManager::IconProperty::IconProperty(IconProperty&& other) noexcept =
+    default;
 
 InstallableManager::IconProperty::~IconProperty() = default;
 
@@ -914,7 +911,7 @@ void InstallableManager::CheckAndFetchScreenshots() {
   }
 }
 
-void InstallableManager::OnScreenshotFetched(const GURL screenshot_url,
+void InstallableManager::OnScreenshotFetched(GURL screenshot_url,
                                              const SkBitmap& bitmap) {
   DCHECK_GT(screenshots_downloading_, 0);
 

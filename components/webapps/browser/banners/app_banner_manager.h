@@ -191,8 +191,8 @@ class AppBannerManager : public content::WebContentsObserver,
 
   // Simple accessors:
   const blink::mojom::Manifest& manifest() const;
-  const SkBitmap& primary_icon() { return primary_icon_; }
-  bool has_maskable_primary_icon() { return has_maskable_primary_icon_; }
+  const SkBitmap& primary_icon() const { return primary_icon_; }
+  bool has_maskable_primary_icon() const { return has_maskable_primary_icon_; }
   const GURL& validated_url() { return validated_url_; }
 
   // Tracks the route taken to an install of a PWA (whether the bottom sheet
@@ -267,7 +267,7 @@ class AppBannerManager : public content::WebContentsObserver,
 
   // Callback invoked by the InstallableManager once it has fetched the page's
   // manifest.
-  virtual void OnDidGetManifest(const InstallableData& result);
+  virtual void OnDidGetManifest(const InstallableData& data);
 
   // Returns an InstallableParams object that requests all checks
   // necessary for a web app banner.
@@ -284,8 +284,7 @@ class AppBannerManager : public content::WebContentsObserver,
 
   // Callback invoked by the InstallableManager once it has finished checking
   // all other installable properties.
-  virtual void OnDidPerformInstallableWebAppCheck(
-      const InstallableData& result);
+  virtual void OnDidPerformInstallableWebAppCheck(const InstallableData& data);
 
   // Records that a banner was shown.
   void RecordDidShowBanner();
@@ -364,10 +363,10 @@ class AppBannerManager : public content::WebContentsObserver,
   SkBitmap primary_icon_;
 
   // Whether or not the primary icon is maskable.
-  bool has_maskable_primary_icon_;
+  bool has_maskable_primary_icon_ = false;
 
   // The current banner pipeline state for this page load.
-  State state_;
+  State state_ = State::INACTIVE;
 
  private:
   friend class AppBannerManagerTest;
@@ -418,12 +417,13 @@ class AppBannerManager : public content::WebContentsObserver,
 
   // If a banner is requested before the page has finished loading, defer
   // triggering the pipeline until the load is complete.
-  bool has_sufficient_engagement_;
-  bool load_finished_;
+  bool has_sufficient_engagement_ = false;
+  bool load_finished_ = false;
 
   std::unique_ptr<StatusReporter> status_reporter_;
-  bool install_animation_pending_;
-  InstallableWebAppCheckResult installable_web_app_check_result_;
+  bool install_animation_pending_ = false;
+  InstallableWebAppCheckResult installable_web_app_check_result_ =
+      InstallableWebAppCheckResult::kUnknown;
 
   // The scope of the most recent installability check that passes promotability
   // requirements, otherwise invalid.
