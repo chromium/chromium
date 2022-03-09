@@ -13,12 +13,14 @@
 #include "base/bind.h"
 #include "base/memory/weak_ptr.h"
 #include "base/test/gtest_util.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/values.h"
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chrome/browser/ash/ownership/owner_settings_service_ash.h"
 #include "chrome/browser/ash/ownership/owner_settings_service_ash_factory.h"
 #include "chrome/browser/ash/policy/core/device_policy_builder.h"
+#include "chrome/browser/ash/settings/device_settings_provider.h"
 #include "chrome/browser/ash/settings/device_settings_service.h"
 #include "chrome/test/base/scoped_testing_local_state.h"
 #include "chrome/test/base/testing_browser_process.h"
@@ -152,6 +154,7 @@ class CrosSettingsTest : public testing::Test {
       base::MakeRefCounted<ownership::MockOwnerKeyUtil>()};
   policy::DevicePolicyBuilder device_policy_;
   std::unique_ptr<TestingProfile> profile_;
+  base::HistogramTester histogram_tester_;
 };
 
 TEST_F(CrosSettingsTest, GetAndSetPref) {
@@ -277,6 +280,9 @@ TEST_F(CrosSettingsTest, WhitelistUsedWhenAllowlistNotPresent) {
       false);
   StoreDevicePolicy();
 
+  histogram_tester_.ExpectUniqueSample(kAllowlistCOILFallbackHistogram, true,
+                                       1);
+
   // Expect the same - a non-empty allowlist and no new users allowed.
   base::Value allowlist(base::Value::Type::LIST);
   allowlist.Append(kOwner);
@@ -298,6 +304,9 @@ TEST_F(CrosSettingsTest, AllowlistUsedWhenAllowlistAndWhitelistPresent) {
   device_policy_.payload().mutable_allow_new_users()->set_allow_new_users(
       false);
   StoreDevicePolicy();
+
+  histogram_tester_.ExpectUniqueSample(kAllowlistCOILFallbackHistogram, false,
+                                       1);
 
   // Expect the same - a non-empty allowlist and no new users allowed.
   base::Value allowlist(base::Value::Type::LIST);

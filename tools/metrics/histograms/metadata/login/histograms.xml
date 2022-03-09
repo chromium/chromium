@@ -22,6 +22,21 @@ chromium-metrics-reviews@google.com.
 
 <histograms>
 
+<histogram name="Login.AllowlistCOILFallback" enum="Boolean"
+    expires_after="2022-08-18">
+  <owner>emaamari@google.com</owner>
+  <owner>cros-lurs@google.com</owner>
+  <owner>cros-oac@google.com</owner>
+  <summary>
+    Chrome OS histogram that keeps track of cases where the user_allowlist
+    policy is not present, forcing us to use the user_whitelist policy instead.
+    We emit false to this histogram when user_allowlist is present. We emit true
+    when user_allowlist is not present and user_whitelist is present and used as
+    fallback. These checks happen during login policies decoding, which occurs
+    every time device settings are loaded or stored.
+  </summary>
+</histogram>
+
 <histogram name="Login.ArcBugReportBackupTime" units="ms"
     expires_after="2022-06-30">
   <owner>mhasank@google.com</owner>

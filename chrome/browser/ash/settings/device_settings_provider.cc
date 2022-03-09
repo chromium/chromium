@@ -239,14 +239,18 @@ absl::optional<bool> GetAllowNewUsers(
 //   present, and the user_whitelist has at least one element.
 absl::optional<bool> GetIsEmptyAllowList(
     const em::ChromeDeviceSettingsProto& policy) {
-  if (!policy.has_user_whitelist() && !policy.has_user_allowlist())
-    return absl::nullopt;
+  if (policy.has_user_allowlist()) {
+    base::UmaHistogramBoolean(kAllowlistCOILFallbackHistogram, false);
+    return policy.user_allowlist().user_allowlist_size() == 0;
+  }
+
   // use user_whitelist only if user_allowlist is not present
-  return !policy.has_user_allowlist()
-             ? absl::optional<bool>{policy.user_whitelist()
-                                        .user_whitelist_size() == 0}
-             : absl::optional<bool>{
-                   policy.user_allowlist().user_allowlist_size() == 0};
+  if (policy.has_user_whitelist()) {
+    base::UmaHistogramBoolean(kAllowlistCOILFallbackHistogram, true);
+    return policy.user_whitelist().user_whitelist_size() == 0;
+  }
+
+  return absl::nullopt;
 }
 
 // Decodes the allow_new_users (DeviceAllowNewUsers) and user_allowlist
