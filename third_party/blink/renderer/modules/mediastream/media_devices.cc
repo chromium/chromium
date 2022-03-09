@@ -272,6 +272,15 @@ ScriptPromise MediaDevices::SendUserMediaRequest(
   return promise;
 }
 
+ScriptPromise MediaDevices::getDisplayMediaSet(
+    ScriptState* script_state,
+    const MediaStreamConstraints* options,
+    ExceptionState& exception_state) {
+  exception_state.ThrowDOMException(DOMExceptionCode::kNotSupportedError,
+                                    "Not implemented.");
+  return ScriptPromise();
+}
+
 ScriptPromise MediaDevices::getDisplayMedia(
     ScriptState* script_state,
     const MediaStreamConstraints* options,

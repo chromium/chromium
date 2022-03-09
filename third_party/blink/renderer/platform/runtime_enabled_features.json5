@@ -1198,6 +1198,11 @@
         },
     },
     {
+      // Enables the getDisplayMediaSet API for multi surface capture.
+      name: "GetDisplayMediaSet",
+      depends_on: ["GetDisplayMedia"],
+    },
+    {
       name: "GravitySensor",
       status: "stable",
     },
