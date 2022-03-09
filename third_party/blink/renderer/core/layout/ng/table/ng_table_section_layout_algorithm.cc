@@ -6,6 +6,7 @@
 
 #include "third_party/blink/renderer/core/layout/ng/ng_block_break_token.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_block_child_iterator.h"
+#include "third_party/blink/renderer/core/layout/ng/ng_box_fragment.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_constraint_space_builder.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_fragmentation_utils.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_out_of_flow_layout_part.h"
@@ -73,12 +74,7 @@ const NGLayoutResult* NGTableSectionLayoutAlgorithm::Layout() {
     NGConstraintSpace row_space = row_space_builder.ToConstraintSpace();
     const NGLayoutResult* row_result = row.Layout(row_space, row_break_token);
 
-    LayoutUnit previously_consumed_row_block_size;
     if (ConstraintSpace().HasBlockFragmentation()) {
-      if (row_break_token) {
-        previously_consumed_row_block_size =
-            row_break_token->ConsumedBlockSize();
-      }
       LayoutUnit fragmentainer_block_offset =
           ConstraintSpace().FragmentainerOffsetAtBfc() + offset.block_offset;
       NGBreakStatus break_status = BreakBeforeChildIfNeeded(
@@ -88,15 +84,16 @@ const NGLayoutResult* NGTableSectionLayoutAlgorithm::Layout() {
         break;
     }
 
+    const NGBoxFragment fragment(
+        table_data.table_writing_direction,
+        To<NGPhysicalBoxFragment>(row_result->PhysicalFragment()));
+
     if (is_first_row) {
-      const NGPhysicalBoxFragment& physical_fragment =
-          To<NGPhysicalBoxFragment>(row_result->PhysicalFragment());
-      DCHECK(physical_fragment.Baseline());
-      section_baseline = physical_fragment.Baseline();
+      DCHECK(fragment.Baseline());
+      section_baseline = fragment.Baseline();
     }
     container_builder_.AddResult(*row_result, offset);
-    offset.block_offset += table_data.rows[row_index].block_size -
-                           previously_consumed_row_block_size;
+    offset.block_offset += fragment.BlockSize();
     is_first_row = false;
 
     if (container_builder_.HasInflowChildBreakInside())
