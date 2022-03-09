@@ -32,4 +32,4 @@ Set the following tools as active:
 
 After the Emscripten environment is setup properly, run `build_ffmpeg.sh` will build `ffmpeg.{js,wasm}` from `src/third_party/ffmpeg`.
 
-The emsdk version of the last build of this package is 1.39.13. TODO(b:199980849): Upgrade the version to 2.0.XX.
+The emsdk version of the last build of this package is 1.39.13. TODO(b/199980849): Upgrade the version to 2.0.XX.

@@ -423,7 +423,7 @@ export class Video extends ModeBase {
     }
 
     this.recordingType = this.getToggledRecordOption();
-    // TODO(b:191950622): Remove complex state logic bind with this enable flag
+    // TODO(b/191950622): Remove complex state logic bind with this enable flag
     // after GIF recording move outside of expert mode and replace it with
     // |RECORD_TYPE_GIF|.
     state.set(
@@ -439,7 +439,7 @@ export class Video extends ModeBase {
       state.set(state.State.RECORDING, false);
       this.gifRecordTime.stop({pause: false});
 
-      // TODO(b:191950622): Close capture stream before onGifCaptureDone()
+      // TODO(b/191950622): Close capture stream before onGifCaptureDone()
       // opening preview page when multi-stream recording enabled.
       return [this.handler.onGifCaptureDone({
         name: gifName,
@@ -513,7 +513,7 @@ export class Video extends ModeBase {
    * @return Saves recorded video.
    */
   private async captureGif(): Promise<GifSaver> {
-    // TODO(b:191950622): Grab frames from capture stream when multistream
+    // TODO(b/191950622): Grab frames from capture stream when multistream
     // enabled.
     const video = this.video.video;
     let {videoWidth: width, videoHeight: height} = video;
