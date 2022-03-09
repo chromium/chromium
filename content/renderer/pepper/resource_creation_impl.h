@@ -43,10 +43,6 @@ class ResourceCreationImpl : public ppapi::thunk::ResourceCreationAPI {
   PP_Resource CreateAudioOutput(PP_Instance instance) override;
   PP_Resource CreateBuffer(PP_Instance instance, uint32_t size) override;
   PP_Resource CreateCameraDevicePrivate(PP_Instance instance) override;
-  PP_Resource CreateFlashFontFile(
-      PP_Instance instance,
-      const PP_BrowserFont_Trusted_Description* description,
-      PP_PrivateFontCharset charset) override;
   PP_Resource CreateGraphics3D(PP_Instance instance,
                                PP_Resource share_context,
                                const int32_t* attrib_list) override;

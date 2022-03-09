@@ -187,8 +187,6 @@ component("proxy") {
       "browser_font_singleton_resource.h",
       "device_enumeration_resource_helper.cc",
       "device_enumeration_resource_helper.h",
-      "flash_font_file_resource.cc",
-      "flash_font_file_resource.h",
       "host_dispatcher.cc",
       "host_dispatcher.h",
       "host_var_serialization_rules.cc",

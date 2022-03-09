@@ -177,7 +177,6 @@ def CheckHistogramXml(input_api, output_api):
   files = input_api.change.AffectedFiles()
 
   INTERFACE_FILES = ('ppapi/thunk/interfaces_legacy.h',
-                     'ppapi/thunk/interfaces_ppb_private_flash.h',
                      'ppapi/thunk/interfaces_ppb_private.h',
                      'ppapi/thunk/interfaces_ppb_private_no_permissions.h',
                      'ppapi/thunk/interfaces_ppb_public_dev_channel.h',

@@ -73,7 +73,6 @@
 #include "ppapi/c/private/ppb_ext_crx_file_system_private.h"
 #include "ppapi/c/private/ppb_file_io_private.h"
 #include "ppapi/c/private/ppb_file_ref_private.h"
-#include "ppapi/c/private/ppb_flash_font_file.h"
 #include "ppapi/c/private/ppb_host_resolver_private.h"
 #include "ppapi/c/private/ppb_isolated_file_system_private.h"
 #include "ppapi/c/private/ppb_proxy_private.h"
@@ -96,7 +95,6 @@ bool IsSupportedPepperInterface(const char* name) {
     return true;
 
 #include "ppapi/thunk/interfaces_ppb_private.h"
-#include "ppapi/thunk/interfaces_ppb_private_flash.h"
 #include "ppapi/thunk/interfaces_ppb_private_no_permissions.h"
 #include "ppapi/thunk/interfaces_ppb_public_dev.h"
 #include "ppapi/thunk/interfaces_ppb_public_dev_channel.h"

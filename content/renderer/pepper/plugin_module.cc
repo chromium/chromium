@@ -104,7 +104,6 @@
 #include "ppapi/c/private/ppb_ext_crx_file_system_private.h"
 #include "ppapi/c/private/ppb_file_io_private.h"
 #include "ppapi/c/private/ppb_file_ref_private.h"
-#include "ppapi/c/private/ppb_flash_font_file.h"
 #include "ppapi/c/private/ppb_host_resolver_private.h"
 #include "ppapi/c/private/ppb_instance_private.h"
 #include "ppapi/c/private/ppb_isolated_file_system_private.h"
@@ -293,7 +292,6 @@ const void* InternalGetInterface(const char* name) {
     return ppapi::thunk::Get##iface_struct##_Thunk();
 
 #include "ppapi/thunk/interfaces_ppb_private.h"
-#include "ppapi/thunk/interfaces_ppb_private_flash.h"
 #include "ppapi/thunk/interfaces_ppb_private_no_permissions.h"
 #include "ppapi/thunk/interfaces_ppb_public_dev.h"
 #include "ppapi/thunk/interfaces_ppb_public_dev_channel.h"

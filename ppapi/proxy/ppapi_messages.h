@@ -1789,15 +1789,6 @@ IPC_MESSAGE_CONTROL2(PpapiPluginMsg_DeviceEnumeration_NotifyDeviceChange,
                      uint32_t /* callback_id */,
                      std::vector<ppapi::DeviceRefData> /* devices */)
 
-// Flash font file.
-IPC_MESSAGE_CONTROL2(PpapiHostMsg_FlashFontFile_Create,
-                     ppapi::proxy::SerializedFontDescription /* description */,
-                     PP_PrivateFontCharset /* charset */)
-IPC_MESSAGE_CONTROL1(PpapiHostMsg_FlashFontFile_GetFontTable,
-                     uint32_t /* table */)
-IPC_MESSAGE_CONTROL1(PpapiPluginMsg_FlashFontFile_GetFontTableReply,
-                     std::string /* output */)
-
 // VideoCapture ----------------------------------------------------------------
 
 // VideoCapture_Dev, plugin -> host

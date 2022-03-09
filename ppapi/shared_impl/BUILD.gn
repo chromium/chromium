@@ -61,7 +61,6 @@ source_set("common") {
     "ppb_audio_config_shared.h",
     "ppb_device_ref_shared.cc",
     "ppb_device_ref_shared.h",
-    "ppb_flash_font_file_shared.h",
     "ppb_image_data_shared.cc",
     "ppb_image_data_shared.h",
     "ppb_message_loop_shared.cc",

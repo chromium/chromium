@@ -76,7 +76,6 @@
 #include "ppapi/c/private/ppb_ext_crx_file_system_private.h"
 #include "ppapi/c/private/ppb_file_io_private.h"
 #include "ppapi/c/private/ppb_file_ref_private.h"
-#include "ppapi/c/private/ppb_flash_font_file.h"
 #include "ppapi/c/private/ppb_host_resolver_private.h"
 #include "ppapi/c/private/ppb_isolated_file_system_private.h"
 #include "ppapi/c/private/ppb_net_address_private.h"
@@ -178,10 +177,6 @@ InterfaceList::InterfaceList() {
   {
     Permission current_required_permission = PERMISSION_PRIVATE;
     #include "ppapi/thunk/interfaces_ppb_private.h"
-  }
-  {
-    Permission current_required_permission = PERMISSION_FLASH;
-    #include "ppapi/thunk/interfaces_ppb_private_flash.h"
   }
 #endif  // !BUILDFLAG(IS_NACL)
   {

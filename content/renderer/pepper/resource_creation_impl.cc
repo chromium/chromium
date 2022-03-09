@@ -81,13 +81,6 @@ PP_Resource ResourceCreationImpl::CreateCameraDevicePrivate(
   return 0;  // Not supported in-process.
 }
 
-PP_Resource ResourceCreationImpl::CreateFlashFontFile(
-    PP_Instance instance,
-    const PP_BrowserFont_Trusted_Description* description,
-    PP_PrivateFontCharset charset) {
-  return 0;  // Not supported in-process.
-}
-
 PP_Resource ResourceCreationImpl::CreateGraphics3D(PP_Instance instance,
                                                    PP_Resource share_context,
                                                    const int32_t* attrib_list) {
