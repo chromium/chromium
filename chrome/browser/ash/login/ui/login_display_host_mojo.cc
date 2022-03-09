@@ -78,13 +78,6 @@ bool AllAllowlistedUsersPresent() {
   cros_settings->GetBoolean(kAccountsPrefAllowNewUser, &allow_new_user);
   if (allow_new_user)
     return false;
-  user_manager::UserManager* user_manager = user_manager::UserManager::Get();
-  const user_manager::UserList& users = user_manager->GetUsers();
-
-  // Max number of users to show.
-  const size_t kMaxUsers = 18;
-  if (users.size() > kMaxUsers)
-    return false;
 
   bool allow_family_link = false;
   cros_settings->GetBoolean(kAccountsPrefFamilyLinkAccountsAllowed,
@@ -98,7 +91,7 @@ bool AllAllowlistedUsersPresent() {
   for (const base::Value& i : allowlist->GetListDeprecated()) {
     const std::string* allowlisted_user = i.GetIfString();
     // NB: Wildcards in the allowlist are also detected as not present here.
-    if (!allowlisted_user || !user_manager->IsKnownUser(
+    if (!allowlisted_user || !user_manager::UserManager::Get()->IsKnownUser(
                                  AccountId::FromUserEmail(*allowlisted_user))) {
       return false;
     }
