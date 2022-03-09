@@ -80,7 +80,7 @@ class BrowserDriver(abc.ABC):
 
 class SafariDriver(BrowserDriver):
   def __init__(self, extra_args=[]):
-    super().__init__("safari", "Safari")
+    super().__init__("safari", "", "Safari")
     self.extra_args = extra_args
 
   def Launch(self):
@@ -100,9 +100,12 @@ class SafariDriver(BrowserDriver):
 class ChromiumDriver(BrowserDriver):
   def __init__(self,
                browser_name: str,
+               variation: str,
                process_name: str,
                executable_path=None,
                extra_args=[]):
+    if variation != "":
+      browser_name += f"_{variation}"
     super().__init__(browser_name, process_name, executable_path)
     self.extra_args = extra_args
 
@@ -126,7 +129,8 @@ class ChromiumDriver(BrowserDriver):
         'name': self.name,
         'identifier': info['CFBundleIdentifier'],
         'version': info['CFBundleShortVersionString'],
-        'commit': info['SCMRevision']
+        'commit': info['SCMRevision'],
+        'extra_args': self.extra_args
     }
 
 
@@ -137,23 +141,33 @@ def Safari():
   return SafariDriver()
 
 
-def Chrome(extra_args=[]):
-  return ChromiumDriver("chrome", "Google Chrome", extra_args=extra_args)
+def Chrome(variation, extra_args=[]):
+  return ChromiumDriver("chrome",
+                        variation,
+                        "Google Chrome",
+                        extra_args=extra_args)
 
 
-def Canary(extra_args=[]):
-  return ChromiumDriver("canary", "Google Chrome Canary", extra_args=extra_args)
+def Canary(variation, extra_args=[]):
+  return ChromiumDriver("canary",
+                        variation,
+                        "Google Chrome Canary",
+                        extra_args=extra_args)
 
 
-def Chromium(executable_path=None, extra_args=[]):
+def Chromium(variation, executable_path=None, extra_args=[]):
   return ChromiumDriver("chromium",
+                        variation,
                         "Chromium",
                         executable_path=executable_path,
                         extra_args=extra_args)
 
 
-def Edge(extra_args=[]):
-  return ChromiumDriver("edge", "Microsoft Edge", extra_args=extra_args)
+def Edge(variation, extra_args=[]):
+  return ChromiumDriver("edge",
+                        variation,
+                        "Microsoft Edge",
+                        extra_args=extra_args)
 
 
 PROCESS_NAMES = [
@@ -163,6 +177,7 @@ PROCESS_NAMES = [
 
 
 def MakeBrowserDriver(browser_name: str,
+                      variation: str,
                       chrome_user_dir=None,
                       chromium_path=None) -> BrowserDriver:
   """Creates browser driver by name.
@@ -180,11 +195,14 @@ def MakeBrowserDriver(browser_name: str,
       chrome_extra_arg = [f"--user-data-dir={chrome_user_dir}"]
     else:
       chrome_extra_arg = ["--guest"]
+    if variation == 'AlignWakeUps':
+      chrome_extra_arg += ['--enable-features=AlignWakeUps']
     if browser_name == "chrome":
-      return Chrome(extra_args=chrome_extra_arg)
+      return Chrome(variation, extra_args=chrome_extra_arg)
     if browser_name == "canary":
-      return Canary(extra_args=chrome_extra_arg)
+      return Canary(variation, extra_args=chrome_extra_arg)
     elif browser_name == "chromium":
-      return Chromium(executable_path=chromium_path,
+      return Chromium(variation,
+                      executable_path=chromium_path,
                       extra_args=chrome_extra_arg)
   return None

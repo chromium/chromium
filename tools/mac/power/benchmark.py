@@ -22,7 +22,8 @@ def IterScenarios(
     **kwargs):
   for scenario_and_browser_name in scenario_names:
     scenario_name, _, browser_name = scenario_and_browser_name.partition(':')
-    browser_driver = browser_driver_factory(browser_name)
+    browser_name, _, variation = browser_name.partition(':')
+    browser_driver = browser_driver_factory(browser_name, variation)
     scenario_driver = scenarios.MakeScenarioDriver(scenario_name,
                                                    browser_driver, **kwargs)
     if scenario_driver is None:
@@ -98,12 +99,14 @@ def main():
     driver.WaitBatteryNotFull()
 
     # Measure or Profile all defined scenarios.
-    browser_factory = lambda browser_name: browsers.MakeBrowserDriver(
-        browser_name,
-        chrome_user_dir=args.chrome_user_dir,
-        chromium_path=args.chromium_path)
+    def BrowserFactory(browser_name, variation):
+      return browsers.MakeBrowserDriver(browser_name,
+                                        variation,
+                                        chrome_user_dir=args.chrome_user_dir,
+                                        chromium_path=args.chromium_path)
+
     for scenario in IterScenarios(args.scenarios,
-                                  browser_factory,
+                                  BrowserFactory,
                                   meet_meeting_id=args.meet_meeting_id):
 
       if args.profile_mode:
