@@ -4631,12 +4631,14 @@ class ProjectorCaptureModeIntegrationTests
     EXPECT_CALL(projector_client_, MinimizeProjectorApp());
     projector_controller->StartProjectorSession("projector_data");
     EXPECT_TRUE(projector_session->is_active());
+    auto* controller = CaptureModeController::Get();
+    EXPECT_EQ(controller->source(), CaptureModeSource::kFullscreen);
   }
 
   void StartRecordingForProjectorFromSource(CaptureModeSource source) {
+    StartProjectorModeSession();
     auto* controller = CaptureModeController::Get();
     controller->SetSource(source);
-    StartProjectorModeSession();
 
     switch (source) {
       case CaptureModeSource::kFullscreen:
@@ -5234,6 +5236,8 @@ TEST_F(ProjectorCaptureModeIntegrationTests,
     }
 
     StartProjectorModeSession();
+    auto* controller = CaptureModeController::Get();
+    controller->SetSource(CaptureModeSource::kRegion);
     test_api.SetUserSelectedRegion(target_region);
 
     // Resize the region twice by dragging the top right of the region out and
@@ -5247,7 +5251,7 @@ TEST_F(ProjectorCaptureModeIntegrationTests,
     test_api.PerformCapture();
     WaitForSeconds(1);
     test_api.StopVideoRecording();
-    EXPECT_FALSE(CaptureModeController::Get()->is_recording_in_progress());
+    EXPECT_FALSE(controller->is_recording_in_progress());
 
     histogram_tester_.ExpectBucketCount(
         GetCaptureModeHistogramName(
