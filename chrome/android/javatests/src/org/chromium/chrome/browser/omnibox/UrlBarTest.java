@@ -10,6 +10,7 @@ import android.support.test.InstrumentationRegistry;
 import android.text.TextUtils;
 import android.view.KeyEvent;
 import android.view.View;
+import android.view.inputmethod.InputConnection;
 
 import androidx.test.filters.SmallTest;
 
@@ -28,7 +29,6 @@ import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
-import org.chromium.base.test.util.FlakyTest;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.base.test.util.UrlUtils;
 import org.chromium.chrome.R;
@@ -40,6 +40,7 @@ import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.util.OmniboxTestUtils;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.content_public.common.ContentUrlConstants;
+import org.chromium.ui.test.util.DisableAnimationsTestRule;
 import org.chromium.ui.test.util.UiRestriction;
 
 import java.util.concurrent.TimeoutException;
@@ -58,6 +59,8 @@ public class UrlBarTest {
     @ClassRule
     public static ChromeTabbedActivityTestRule sActivityTestRule =
             new ChromeTabbedActivityTestRule();
+    @ClassRule
+    public static DisableAnimationsTestRule sIsableAnimationsRule = new DisableAnimationsTestRule();
 
     private UrlBar mUrlBar;
     private OmniboxTestUtils mOmnibox;
@@ -73,10 +76,12 @@ public class UrlBarTest {
     public void setUpTest() throws Exception {
         mOmnibox = new OmniboxTestUtils(sActivityTestRule.getActivity());
         mUrlBar = sActivityTestRule.getActivity().findViewById(R.id.url_bar);
-        sActivityTestRule.loadUrl(ContentUrlConstants.ABOUT_BLANK_DISPLAY_URL);
         InstrumentationRegistry.getInstrumentation().waitForIdleSync();
+
+        // Start with an empty Omnibox and disable all automatic features.
         mOmnibox.disableLiveAutocompletion();
         mOmnibox.requestFocus();
+        mOmnibox.setText("");
     }
 
     private static class AutocompleteState {
@@ -136,8 +141,12 @@ public class UrlBarTest {
 
     @Test
     @SmallTest
-    @FlakyTest(message = "crbug.com/1291515")
     public void testRefocusing() {
+        // This test is flaky, because of the asynchronous nature of keyboard management that does
+        // not involve canceling previously scheduled tasks.
+        // For cases where keyboard is requested and dismissed rapidly, tasks begin to compete with
+        // each other, and eventually a subsequent action's keyboard callup / dismiss is scheduled
+        // before the previous action's counter-request, leading to a flake.
         for (int i = 0; i < 5; i++) {
             mOmnibox.requestFocus();
             mOmnibox.clearFocus();
@@ -146,7 +155,6 @@ public class UrlBarTest {
 
     @Test
     @SmallTest
-    @FlakyTest(message = "https://crbug.com/1291159")
     public void testAutocompleteUpdatedOnSetText() {
         // Verify that setting a new string will clear the autocomplete.
         mOmnibox.setText("test");
@@ -201,7 +209,6 @@ public class UrlBarTest {
 
     @Test
     @SmallTest
-    @FlakyTest(message = "https://crbug.com/1291968")
     public void testAutocompleteUpdatedOnSelection() throws TimeoutException {
         // Verify that setting a selection before the autocomplete clears it.
         verifySelectionState("test", "ing is fun", 1, 1, false, "test", "test", true, "test");
@@ -251,7 +258,6 @@ public class UrlBarTest {
      */
     @Test
     @SmallTest
-    @FlakyTest(message = "https://crbug.com/1291968")
     public void testSendCursorPosition() throws TimeoutException {
         final CallbackHelper autocompleteHelper = new CallbackHelper();
         final AtomicInteger cursorPositionUsed = new AtomicInteger();
@@ -263,51 +269,43 @@ public class UrlBarTest {
             autocompleteHelper.notifyCalled();
         });
 
-        // Add "a" to the omnibox and leave the cursor at the end of the new
-        // text.
-        TestThreadUtils.runOnUiThreadBlocking(
-                () -> { mUrlBar.getInputConnection().commitText("a", 1); });
+        // User types "a".
+        // Omnibox: a|
+        mOmnibox.typeText("a", false);
         autocompleteHelper.waitForCallback(0);
-        // omnmibox text: a|
         Assert.assertEquals(1, cursorPositionUsed.get());
 
-        // Append "cd" to the omnibox and leave the cursor at the end of the new
-        // text.
-        TestThreadUtils.runOnUiThreadBlocking(
-                () -> { mUrlBar.getInputConnection().commitText("cd", 1); });
+        // Keyboard autocompletes "cd".
+        // Omnibox: acd|
+        mOmnibox.commitText("cd", true);
         autocompleteHelper.waitForCallback(1);
-        // omnmibox text: acd|
         Assert.assertEquals(3, cursorPositionUsed.get());
 
-        // Move the cursor.
-        TestThreadUtils.runOnUiThreadBlocking(
-                () -> { mUrlBar.getInputConnection().setSelection(1, 1); });
-        // omnmibox text: a|cd
-        // Moving the cursor shouldn't have caused a new call.
+        // User moves the cursor.
+        mOmnibox.sendKey(KeyEvent.KEYCODE_DPAD_LEFT);
+        mOmnibox.sendKey(KeyEvent.KEYCODE_DPAD_LEFT);
+
+        // Omnibox: a|cd.
+        // No new events sent - cursor position movements don't count as autocomplete events.
         Assert.assertEquals(2, autocompleteHelper.getCallCount());
-        // The cursor position used on the last call should be the old position.
         Assert.assertEquals(3, cursorPositionUsed.get());
 
-        // Insert "b" at the current cursor position and leave the cursor at
-        // the end of the new text.
-        TestThreadUtils.runOnUiThreadBlocking(
-                () -> { mUrlBar.getInputConnection().commitText("b", 1); });
+        // User appends "b"
+        // Omnibox: ab|cd.
+        mOmnibox.typeText("b", false);
         autocompleteHelper.waitForCallback(2);
-        // omnmibox text: ab|cd
         Assert.assertEquals(2, cursorPositionUsed.get());
 
-        // Delete the character before the cursor.
-        TestThreadUtils.runOnUiThreadBlocking(
-                () -> { mUrlBar.getInputConnection().deleteSurroundingText(1, 0); });
+        // User deletes "b"
+        // Omnibox text: a|cd
+        mOmnibox.sendKey(KeyEvent.KEYCODE_DEL);
         autocompleteHelper.waitForCallback(3);
-        // omnmibox text: a|cd
         Assert.assertEquals(1, cursorPositionUsed.get());
 
-        // Delete the character before the cursor (again).
-        TestThreadUtils.runOnUiThreadBlocking(
-                () -> { mUrlBar.getInputConnection().deleteSurroundingText(1, 0); });
+        // User deletes "a"
+        // Omnibox text: |cd
+        mOmnibox.sendKey(KeyEvent.KEYCODE_DEL);
         autocompleteHelper.waitForCallback(4);
-        // omnmibox text: |cd
         Assert.assertEquals(0, cursorPositionUsed.get());
 
         mUrlBar.setUrlTextChangeListener(null);
@@ -337,7 +335,6 @@ public class UrlBarTest {
         });
 
         mOmnibox.typeText(textToBeEntered, false);
-
         autocompleteHelper.waitForCallback(0);
         Assert.assertFalse(
                 "Inline autocomplete incorrectly prevented.", didPreventInlineAutocomplete.get());
@@ -380,7 +377,7 @@ public class UrlBarTest {
             return;
         }
 
-        mOmnibox.setText("test");
+        mOmnibox.typeText("test", false);
         mOmnibox.setAutocompleteText("ing is fun");
 
         TestThreadUtils.runOnUiThreadBlocking(
@@ -395,72 +392,70 @@ public class UrlBarTest {
 
     @Test
     @SmallTest
-    @FlakyTest(message = "https://crbug.com/1291159")
-    public void testBatchModeChangesTriggerCorrectSuggestions() {
+    public void testAutocorrectionChangesTriggerCorrectSuggestions() {
         final AtomicReference<String> requestedAutocompleteText = new AtomicReference<String>();
-        mOmnibox.setText("test");
+        mOmnibox.setComposingText("test", 0, 4);
         mOmnibox.setAutocompleteText("ing is fun");
+        mOmnibox.checkText(equalTo("test"), equalTo("testing is fun"));
+        mOmnibox.commitText("rest", false);
+        mOmnibox.checkText(equalTo("rest"), null);
+    }
 
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            mUrlBar.getInputConnection().beginBatchEdit();
-            mUrlBar.getInputConnection().commitText("y", 1);
-            mUrlBar.getInputConnection().endBatchEdit();
-        });
-
+    @Test
+    @SmallTest
+    public void testAutocompletionChangesTriggerCorrectSuggestions() {
+        final AtomicReference<String> requestedAutocompleteText = new AtomicReference<String>();
+        // Type text. Make sure it appears as composing text for the IME.
+        mOmnibox.setComposingText("test", 0, 4);
+        mOmnibox.setAutocompleteText("ing is fun");
+        mOmnibox.checkText(equalTo("test"), equalTo("testing is fun"));
+        mOmnibox.commitText("y", true);
         mOmnibox.checkText(equalTo("testy"), null);
     }
 
     @Test
     @SmallTest
-    @FlakyTest(message = "https://crbug.com/1291159")
     public void testAutocompleteCorrectlyPerservedOnBatchMode() {
         // Valid case (cursor at the end of text, single character, matches previous autocomplete).
         mOmnibox.setText("g");
         mOmnibox.setAutocompleteText("oogle.com");
-        TestThreadUtils.runOnUiThreadBlocking(
-                () -> { mUrlBar.getInputConnection().commitText("o", 1); });
+        mOmnibox.typeText("o", false);
         mOmnibox.checkText(equalTo("go"), equalTo("google.com"));
 
-        // Invalid case (cursor not at the end of the text)
+        // Invalid case (cursor not at the end of the text).
         mOmnibox.setText("g");
         mOmnibox.setAutocompleteText("oogle.com");
         TestThreadUtils.runOnUiThreadBlocking(() -> {
-            mUrlBar.getInputConnection().beginBatchEdit();
-            mUrlBar.getInputConnection().commitText("o", 1);
-            mUrlBar.getInputConnection().setSelection(0, 0);
-            mUrlBar.getInputConnection().endBatchEdit();
+            InputConnection conn = mUrlBar.getInputConnection();
+            conn.beginBatchEdit();
+            conn.finishComposingText();
+            conn.commitText("o", 1);
+            conn.setSelection(0, 0);
+            conn.endBatchEdit();
         });
         mOmnibox.checkText(equalTo("go"), null);
 
         // Invalid case (next character did not match previous autocomplete)
         mOmnibox.setText("g");
         mOmnibox.setAutocompleteText("oogle.com");
-        TestThreadUtils.runOnUiThreadBlocking(
-                () -> { mUrlBar.getInputConnection().commitText("a", 1); });
+        mOmnibox.typeText("a", false);
         mOmnibox.checkText(equalTo("ga"), null);
 
         // Multiple characters entered instead of 1.
         mOmnibox.setText("g");
         mOmnibox.setAutocompleteText("oogle.com");
-        TestThreadUtils.runOnUiThreadBlocking(
-                () -> { mUrlBar.getInputConnection().commitText("oogl", 1); });
+        mOmnibox.commitText("oogl", true);
         mOmnibox.checkText(equalTo("googl"), equalTo("google.com"));
     }
 
     @Test
     @SmallTest
-    @FlakyTest(message = "https://crbug.com/1291159")
     public void testAutocompleteSpanClearedOnNonMatchingCommitText() {
         mOmnibox.setText("a");
         mOmnibox.setAutocompleteText("mazon.com");
+        mOmnibox.checkText(equalTo("a"), equalTo("amazon.com"));
 
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            mUrlBar.getInputConnection().beginBatchEdit();
-            mUrlBar.getInputConnection().commitText("l", 1);
-            mUrlBar.getInputConnection().setComposingText("", 1);
-            mUrlBar.getInputConnection().endBatchEdit();
-        });
-
+        mOmnibox.typeText("l", false);
         mOmnibox.checkText(equalTo("al"), null);
     }
 
@@ -471,47 +466,46 @@ public class UrlBarTest {
         mOmnibox.setAutocompleteText("ing is fun");
 
         mOmnibox.setComposingText("ing compose", 4, 4);
-        mOmnibox.checkComposingText(equalTo("testing compose"), 4, 15);
+        mOmnibox.checkText(equalTo("testing compose"), null);
     }
 
     @Test
     @SmallTest
     public void testDelayedCompositionCorrectedWithAutocomplete() {
-        // Test with a single autocomplete
-        mOmnibox.setText("chrome://f");
+        // Test with a single IME autocomplete
+        mOmnibox.typeText("chrome://f", false);
         mOmnibox.setAutocompleteText("lags");
-
-        mOmnibox.setComposingText("f", 13, 14);
-        mOmnibox.checkComposingText(equalTo("chrome://ff"), 10, 11);
+        mOmnibox.setComposingText("l", 13, 14);
+        mOmnibox.checkText(equalTo("chrome://fl"), equalTo("chrome://flags"));
 
         // Test with > 1 characters in composition.
         mOmnibox.setText("chrome://fl");
         mOmnibox.setAutocompleteText("ags");
-
+        mOmnibox.checkText(equalTo("chrome://fl"), equalTo("chrome://flags"));
         mOmnibox.setComposingText("fl", 12, 14);
-        mOmnibox.checkComposingText(equalTo("chrome://flfl"), 11, 13);
+        mOmnibox.checkText(equalTo("chrome://flfl"), null);
 
         // Test with non-matching composition.  Should just append to the URL text.
         mOmnibox.setText("chrome://f");
         mOmnibox.setAutocompleteText("lags");
-
+        mOmnibox.checkText(equalTo("chrome://f"), equalTo("chrome://flags"));
         mOmnibox.setComposingText("g", 13, 14);
-        mOmnibox.checkComposingText(equalTo("chrome://fg"), 10, 11);
+        mOmnibox.checkText(equalTo("chrome://fg"), null);
 
         // Test with composition text that matches the entire text w/o autocomplete.
         mOmnibox.setText("chrome://f");
         mOmnibox.setAutocompleteText("lags");
-
+        mOmnibox.checkText(equalTo("chrome://f"), equalTo("chrome://flags"));
         mOmnibox.setComposingText("chrome://f", 13, 14);
-        mOmnibox.checkComposingText(equalTo("chrome://fchrome://f"), 10, 20);
+        mOmnibox.checkText(equalTo("chrome://fchrome://f"), null);
 
         // Test with composition text longer than the URL text.
         // Shouldn't crash and should just append text.
         mOmnibox.setText("chrome://f");
         mOmnibox.setAutocompleteText("lags");
-
+        mOmnibox.checkText(equalTo("chrome://f"), equalTo("chrome://flags"));
         mOmnibox.setComposingText("blahblahblah", 13, 14);
-        mOmnibox.checkComposingText(equalTo("chrome://fblahblahblah"), 10, 22);
+        mOmnibox.checkText(equalTo("chrome://fblahblahblah"), null);
     }
 
     @Test
