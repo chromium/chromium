@@ -299,6 +299,8 @@ class CORE_EXPORT FrameLoader final {
 
   LocalFrameClient* Client() const;
 
+  String ApplyUserAgentOverrideAndLog(const String& user_agent) const;
+
   Member<LocalFrame> frame_;
 
   Member<ProgressTracker> progress_tracker_;

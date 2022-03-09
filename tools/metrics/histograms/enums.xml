@@ -91123,6 +91123,12 @@ Full version information for the fingerprint enum values:
   <int value="15" label="kExtensionMessagingNeitherPrivileged"/>
 </enum>
 
+<enum name="UserAgentOverride">
+  <int value="0" label="Override does not contain original"/>
+  <int value="1" label="Override contains original string and is not a suffix"/>
+  <int value="2" label="Override is original string and suffix"/>
+</enum>
+
 <enum name="UserAgentRequestType">
   <int value="0" label="RequestDesktop"/>
   <int value="1" label="RequestMobile"/>

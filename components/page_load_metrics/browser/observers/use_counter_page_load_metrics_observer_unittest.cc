@@ -36,6 +36,8 @@ const char* GetUseCounterHistogramName(
       return internal::kPermissionsPolicyHeaderHistogramName;
     case FeatureType::kPermissionsPolicyIframeAttribute:
       return internal::kPermissionsPolicyIframeAttributeHistogramName;
+    case FeatureType::kUserAgentOverride:
+      return internal::kUserAgentOverrideHistogramName;
   }
 }
 

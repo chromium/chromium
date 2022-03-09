@@ -27,6 +27,8 @@ const char kPermissionsPolicyHeaderHistogramName[] =
     "Blink.UseCounter.PermissionsPolicy.Header2";
 const char kPermissionsPolicyIframeAttributeHistogramName[] =
     "Blink.UseCounter.PermissionsPolicy.Allow2";
+const char kUserAgentOverrideHistogramName[] =
+    "Blink.UseCounter.UserAgentOverride";
 
 }  // namespace internal
 
@@ -103,6 +105,11 @@ class UseCounterPageLoadMetricsObserver
                   blink::mojom::PermissionsPolicyFeature::kMaxValue) +
               1>
       header_permissions_policy_features_recorded_;
+  std::bitset<
+      static_cast<size_t>(
+          blink::UserAgentOverride::UserAgentOverrideHistogram::kMaxValue) +
+      1>
+      user_agent_override_features_recorded_;
 };
 
 #endif  // COMPONENTS_PAGE_LOAD_METRICS_BROWSER_OBSERVERS_USE_COUNTER_PAGE_LOAD_METRICS_OBSERVER_H_

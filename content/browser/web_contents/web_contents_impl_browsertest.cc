@@ -23,6 +23,7 @@
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_timeouts.h"
 #include "base/threading/thread_restrictions.h"
@@ -99,6 +100,7 @@
 #include "third_party/blink/public/common/client_hints/client_hints.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/page/page_zoom.h"
+#include "third_party/blink/public/common/user_agent/user_agent_metadata.h"
 #include "third_party/blink/public/mojom/frame/fullscreen.mojom.h"
 #include "ui/base/clipboard/clipboard_format_type.h"
 #include "url/gurl.h"
@@ -2452,6 +2454,96 @@ IN_PROC_BROWSER_TEST_F(WebContentsImplBrowserTest, UserAgentOverride) {
   tab_observer.Wait();
   EXPECT_EQ(kUserAgentOverride,
             EvalJs(shell()->web_contents(), "document.body.textContent;"));
+}
+
+class WebContentsImplBrowserTestUserAgentOverrideSubstring
+    : public WebContentsImplBrowserTest {
+ public:
+  void SetUp() override {
+    scoped_feature_list_.InitAndEnableFeature(
+        blink::features::kUserAgentOverrideExperiment);
+    WebContentsImplBrowserTest::SetUp();
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+// Verify UserAgentOverride histograms
+IN_PROC_BROWSER_TEST_F(WebContentsImplBrowserTestUserAgentOverrideSubstring,
+                       UserAgentOverrideHistogram) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+  const std::string kHeaderPath =
+      std::string("/echoheader?") + net::HttpRequestHeaders::kUserAgent;
+  const GURL kUrl(embedded_test_server()->GetURL(kHeaderPath));
+  EXPECT_TRUE(NavigateToURL(shell(), kUrl));
+
+  std::string original_ua = ShellContentBrowserClient::Get()->GetUserAgent();
+  std::string ua_no_substring = "foo";
+  std::string ua_prefix = "foo" + original_ua;
+  std::string ua_suffix = original_ua + "foo";
+  {
+    base::HistogramTester histogram;
+    shell()->web_contents()->SetUserAgentOverride(
+        blink::UserAgentOverride::UserAgentOnly(ua_no_substring), false);
+    shell()
+        ->web_contents()
+        ->GetController()
+        .GetLastCommittedEntry()
+        ->SetIsOverridingUserAgent(true);
+    EXPECT_TRUE(NavigateToURL(shell(), kUrl));
+    histogram.ExpectBucketCount(
+        blink::UserAgentOverride::kUserAgentOverrideHistogram,
+        blink::UserAgentOverride::UserAgentOverriden, 1);
+    histogram.ExpectBucketCount(
+        blink::UserAgentOverride::kUserAgentOverrideHistogram,
+        blink::UserAgentOverride::UserAgentOverrideSubstring, 0);
+    histogram.ExpectBucketCount(
+        blink::UserAgentOverride::kUserAgentOverrideHistogram,
+        blink::UserAgentOverride::UserAgentOverrideSuffix, 0);
+  }
+
+  {
+    base::HistogramTester histogram;
+    shell()->web_contents()->SetUserAgentOverride(
+        blink::UserAgentOverride::UserAgentOnly(ua_prefix), false);
+    shell()
+        ->web_contents()
+        ->GetController()
+        .GetLastCommittedEntry()
+        ->SetIsOverridingUserAgent(true);
+    EXPECT_TRUE(NavigateToURL(shell(), kUrl));
+    histogram.ExpectBucketCount(
+        blink::UserAgentOverride::kUserAgentOverrideHistogram,
+        blink::UserAgentOverride::UserAgentOverriden, 0);
+    histogram.ExpectBucketCount(
+        blink::UserAgentOverride::kUserAgentOverrideHistogram,
+        blink::UserAgentOverride::UserAgentOverrideSubstring, 1);
+    histogram.ExpectBucketCount(
+        blink::UserAgentOverride::kUserAgentOverrideHistogram,
+        blink::UserAgentOverride::UserAgentOverrideSuffix, 0);
+  }
+
+  {
+    base::HistogramTester histogram;
+    shell()->web_contents()->SetUserAgentOverride(
+        blink::UserAgentOverride::UserAgentOnly(ua_suffix), false);
+    shell()
+        ->web_contents()
+        ->GetController()
+        .GetLastCommittedEntry()
+        ->SetIsOverridingUserAgent(true);
+    EXPECT_TRUE(NavigateToURL(shell(), kUrl));
+    histogram.ExpectBucketCount(
+        blink::UserAgentOverride::kUserAgentOverrideHistogram,
+        blink::UserAgentOverride::UserAgentOverriden, 0);
+    histogram.ExpectBucketCount(
+        blink::UserAgentOverride::kUserAgentOverrideHistogram,
+        blink::UserAgentOverride::UserAgentOverrideSubstring, 0);
+    histogram.ExpectBucketCount(
+        blink::UserAgentOverride::kUserAgentOverrideHistogram,
+        blink::UserAgentOverride::UserAgentOverrideSuffix, 1);
+  }
 }
 
 // Verifies the user-agent string may be changed in DidStartNavigation().

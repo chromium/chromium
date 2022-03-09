@@ -40,6 +40,7 @@
 #include "mojo/public/cpp/bindings/type_converter.h"
 #include "third_party/blink/public/common/blob/blob_utils.h"
 #include "third_party/blink/public/common/permissions_policy/permissions_policy.h"
+#include "third_party/blink/public/common/user_agent/user_agent_metadata.h"
 #include "third_party/blink/public/mojom/frame/user_activation_update_types.mojom-blink-forward.h"
 #include "third_party/blink/public/platform/modules/service_worker/web_service_worker_provider.h"
 #include "third_party/blink/public/platform/modules/service_worker/web_service_worker_provider_client.h"
@@ -783,11 +784,17 @@ DocumentLoader* LocalFrameClientImpl::CreateDocumentLoader(
   return document_loader;
 }
 
+String LocalFrameClientImpl::UserAgentOverride() {
+  return web_frame_->Client()
+             ? String(web_frame_->Client()->UserAgentOverride())
+             : g_empty_string;
+}
+
 String LocalFrameClientImpl::UserAgent() {
-  WebString override =
-      web_frame_->Client() ? web_frame_->Client()->UserAgentOverride() : "";
-  if (!override.IsEmpty())
+  String override = UserAgentOverride();
+  if (!override.IsEmpty()) {
     return override;
+  }
 
   if (user_agent_.IsEmpty())
     user_agent_ = Platform::Current()->UserAgent();
@@ -795,10 +802,10 @@ String LocalFrameClientImpl::UserAgent() {
 }
 
 String LocalFrameClientImpl::ReducedUserAgent() {
-  WebString override =
-      web_frame_->Client() ? web_frame_->Client()->UserAgentOverride() : "";
-  if (!override.IsEmpty())
+  String override = UserAgentOverride();
+  if (!override.IsEmpty()) {
     return override;
+  }
 
   if (reduced_user_agent_.IsEmpty())
     reduced_user_agent_ = Platform::Current()->ReducedUserAgent();
@@ -806,10 +813,10 @@ String LocalFrameClientImpl::ReducedUserAgent() {
 }
 
 String LocalFrameClientImpl::FullUserAgent() {
-  WebString override =
-      web_frame_->Client() ? web_frame_->Client()->UserAgentOverride() : "";
-  if (!override.IsEmpty())
+  String override = UserAgentOverride();
+  if (!override.IsEmpty()) {
     return override;
+  }
 
   if (full_user_agent_.IsEmpty())
     full_user_agent_ = Platform::Current()->FullUserAgent();

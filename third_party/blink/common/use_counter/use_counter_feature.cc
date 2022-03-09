@@ -4,6 +4,7 @@
 
 #include "third_party/blink/public/common/use_counter/use_counter_feature.h"
 
+#include "third_party/blink/public/common/user_agent/user_agent_metadata.h"
 #include "third_party/blink/public/mojom/permissions_policy/permissions_policy_feature.mojom-shared.h"
 #include "third_party/blink/public/mojom/use_counter/css_property_id.mojom-shared.h"
 #include "third_party/blink/public/mojom/web_feature/web_feature.mojom-shared.h"
@@ -38,6 +39,11 @@ bool UseCounterFeature::IsValid() const {
     case mojom::UseCounterFeatureType::kPermissionsPolicyIframeAttribute:
       return value_ < static_cast<UseCounterFeature::EnumValue>(
                           mojom::PermissionsPolicyFeature::kMaxValue) +
+                          1;
+    case mojom::UseCounterFeatureType::kUserAgentOverride:
+      return value_ < static_cast<UseCounterFeature::EnumValue>(
+                          blink::UserAgentOverride::UserAgentOverrideHistogram::
+                              kMaxValue) +
                           1;
   }
 }

@@ -49,9 +49,11 @@
 #include "services/network/public/cpp/web_sandbox_flags.h"
 #include "services/network/public/mojom/web_sandbox_flags.mojom-blink.h"
 #include "third_party/blink/public/common/features.h"
+#include "third_party/blink/public/common/user_agent/user_agent_metadata.h"
 #include "third_party/blink/public/mojom/fetch/fetch_api_request.mojom-blink.h"
 #include "third_party/blink/public/mojom/loader/request_context_frame_type.mojom-blink.h"
 #include "third_party/blink/public/platform/modules/service_worker/web_service_worker_network_provider.h"
+#include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/public/platform/task_type.h"
 #include "third_party/blink/public/platform/web_content_settings_client.h"
 #include "third_party/blink/public/platform/web_url_request.h"
@@ -1329,25 +1331,53 @@ void FrameLoader::RestoreScrollPositionAndViewState(
   view->ScheduleAnimation();
 }
 
-String FrameLoader::UserAgent() const {
-  String user_agent = Client()->UserAgent();
+String FrameLoader::ApplyUserAgentOverrideAndLog(
+    const String& user_agent) const {
+  String user_agent_override;
   probe::ApplyUserAgentOverride(probe::ToCoreProbeSink(frame_->GetDocument()),
-                                &user_agent);
-  return user_agent;
+                                &user_agent_override);
+
+  if (Client()->UserAgentOverride().IsEmpty() &&
+      user_agent_override.IsEmpty()) {
+    return user_agent;
+  }
+
+  if (user_agent_override.IsEmpty()) {
+    user_agent_override = user_agent;
+  }
+
+  if (base::FeatureList::IsEnabled(
+          blink::features::kUserAgentOverrideExperiment)) {
+    String ua_original = Platform::Current()->UserAgent();
+
+    auto it = user_agent_override.Find(ua_original);
+    UserAgentOverride::UserAgentOverrideHistogram histogram =
+        UserAgentOverride::UserAgentOverrideHistogram::UserAgentOverriden;
+    if (it == 0) {
+      histogram = UserAgentOverride::UserAgentOverrideHistogram::
+          UserAgentOverrideSuffix;
+    } else if (it != kNotFound) {
+      histogram = UserAgentOverride::UserAgentOverrideHistogram::
+          UserAgentOverrideSubstring;
+    }
+
+    document_loader_->GetUseCounter().CountUserAgentOverride(histogram,
+                                                             frame_.Get());
+  }
+
+  return user_agent_override;
+}
+
+String FrameLoader::UserAgent() const {
+  return ApplyUserAgentOverrideAndLog(Client()->UserAgent());
 }
 
 String FrameLoader::FullUserAgent() const {
-  String user_agent = Client()->FullUserAgent();
-  probe::ApplyUserAgentOverride(probe::ToCoreProbeSink(frame_->GetDocument()),
-                                &user_agent);
-  return user_agent;
+  return ApplyUserAgentOverrideAndLog(Client()->FullUserAgent());
 }
 
 String FrameLoader::ReducedUserAgent() const {
-  String user_agent = Client()->ReducedUserAgent();
-  probe::ApplyUserAgentOverride(probe::ToCoreProbeSink(frame_->GetDocument()),
-                                &user_agent);
-  return user_agent;
+  return ApplyUserAgentOverrideAndLog(Client()->ReducedUserAgent());
 }
 
 absl::optional<blink::UserAgentMetadata> FrameLoader::UserAgentMetadata()

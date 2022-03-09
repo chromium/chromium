@@ -28,6 +28,8 @@ bool UseCounterFeatureTracker::Test(const UseCounterFeature& feature) const {
       return iframe_permissions_policy_features_.test(feature.value());
     case FeatureType::kPermissionsPolicyHeader:
       return header_permissions_policy_features_.test(feature.value());
+    case FeatureType::kUserAgentOverride:
+      return user_agent_override_features_.test(feature.value());
   }
 }
 
@@ -69,6 +71,12 @@ std::vector<UseCounterFeature> UseCounterFeatureTracker::GetRecordedFeatures()
     if (header_permissions_policy_features_.test(i))
       ret.push_back({FeatureType::kPermissionsPolicyHeader, i});
   }
+
+  for (uint32_t i = 0; i < user_agent_override_features_.size(); i++) {
+    if (user_agent_override_features_.test(i))
+      ret.push_back({FeatureType::kUserAgentOverride, i});
+  }
+
   return ret;
 }
 
@@ -105,6 +113,9 @@ void UseCounterFeatureTracker::Set(const UseCounterFeature& feature,
       break;
     case FeatureType::kPermissionsPolicyHeader:
       header_permissions_policy_features_[feature.value()] = value;
+      break;
+    case FeatureType::kUserAgentOverride:
+      user_agent_override_features_[feature.value()] = value;
       break;
   }
 }

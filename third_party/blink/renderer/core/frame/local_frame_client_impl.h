@@ -166,6 +166,7 @@ class CORE_EXPORT LocalFrameClientImpl final : public LocalFrameClient {
       std::unique_ptr<PolicyContainer> policy_container,
       std::unique_ptr<WebDocumentLoader::ExtraData> extra_data) override;
 
+  String UserAgentOverride() override;
   WTF::String UserAgent() override;
   WTF::String FullUserAgent() override;
   WTF::String ReducedUserAgent() override;

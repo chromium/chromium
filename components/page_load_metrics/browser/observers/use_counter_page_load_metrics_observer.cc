@@ -9,6 +9,7 @@
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/render_frame_host.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
+#include "third_party/blink/public/common/user_agent/user_agent_metadata.h"
 #include "third_party/blink/public/mojom/use_counter/use_counter_feature.mojom.h"
 
 using FeatureType = blink::mojom::UseCounterFeatureType;
@@ -16,6 +17,8 @@ using UkmFeatureList = UseCounterPageLoadMetricsObserver::UkmFeatureList;
 using WebFeature = blink::mojom::WebFeature;
 using CSSSampleId = blink::mojom::CSSSampleId;
 using PermissionsPolicyFeature = blink::mojom::PermissionsPolicyFeature;
+using UserAgentOverrideHistogram =
+    blink::UserAgentOverride::UserAgentOverrideHistogram;
 
 namespace {
 
@@ -213,6 +216,13 @@ void UseCounterPageLoadMetricsObserver::RecordUseCounterFeature(
       UMA_HISTOGRAM_ENUMERATION(
           internal::kPermissionsPolicyIframeAttributeHistogramName,
           static_cast<PermissionsPolicyFeature>(feature.value()));
+      break;
+    case FeatureType::kUserAgentOverride:
+      if (TestAndSet(user_agent_override_features_recorded_, feature.value()))
+        return;
+      UMA_HISTOGRAM_ENUMERATION(
+          internal::kUserAgentOverrideHistogramName,
+          static_cast<UserAgentOverrideHistogram>(feature.value()));
       break;
   }
 }

@@ -10,6 +10,7 @@
 #include <vector>
 #include "third_party/blink/public/common/common_export.h"
 #include "third_party/blink/public/common/use_counter/use_counter_feature.h"
+#include "third_party/blink/public/common/user_agent/user_agent_metadata.h"
 #include "third_party/blink/public/mojom/permissions_policy/permissions_policy_feature.mojom-shared.h"
 #include "third_party/blink/public/mojom/use_counter/css_property_id.mojom-shared.h"
 #include "third_party/blink/public/mojom/web_feature/web_feature.mojom-shared.h"
@@ -49,6 +50,10 @@ class BLINK_COMMON_EXPORT UseCounterFeatureTracker {
                   blink::mojom::PermissionsPolicyFeature::kMaxValue) +
               1>
       header_permissions_policy_features_;
+  std::bitset<static_cast<size_t>(
+                  UserAgentOverride::UserAgentOverrideHistogram::kMaxValue) +
+              1>
+      user_agent_override_features_;
 };
 
 }  // namespace blink

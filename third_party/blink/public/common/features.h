@@ -673,6 +673,10 @@ BLINK_COMMON_EXPORT extern const base::Feature kSecureContextFixForWorkers;
 // which should trigger a zero-copy path in the tab capture code.
 BLINK_COMMON_EXPORT extern const base::Feature kZeroCopyTabCapture;
 
+// Experiment for measuring how often an overridden User-Agent string is made by
+// appending or prepending to the original User-Agent string.
+BLINK_COMMON_EXPORT extern const base::Feature kUserAgentOverrideExperiment;
+
 }  // namespace features
 }  // namespace blink
 
