@@ -26,8 +26,6 @@ class VIZ_SERVICE_EXPORT OverlayProposedCandidate {
 
   // An iterator in the QuadList.
   QuadList::Iterator quad_iter;
-  // This is needed to sort candidates based on DrawQuad order.
-  size_t quad_index;
   OverlayCandidate candidate;
   raw_ptr<OverlayProcessorStrategy> strategy = nullptr;
 
