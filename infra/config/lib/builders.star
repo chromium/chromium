@@ -31,6 +31,7 @@ load("./branches.star", "branches")
 load("./bootstrap.star", "register_bootstrap")
 load("./builder_config.star", "register_builder_config")
 load("./recipe_experiments.star", "register_recipe_experiments_ref")
+load("./sheriff_rotations.star", "register_sheriffed_builder")
 
 ################################################################################
 # Constants for use with the builder function                                  #
@@ -765,6 +766,8 @@ def builder(
     # settings and the branch selector
     if builder == None:
         return None
+
+    register_sheriffed_builder(bucket, name, sheriff_rotations)
 
     register_recipe_experiments_ref(bucket, name, executable)
 
