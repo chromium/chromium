@@ -41,8 +41,9 @@ using ui_test_utils::NavigateToURL;
 
 // No current reliable way to determine OOM on Linux/Mac. Sanitizers also
 // interfere with the exit code on OOM, making this detection unreliable.
+// TODO(crbug.com/1304695): Fix flakiness on Windows.
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_MAC) || \
-    defined(ADDRESS_SANITIZER)
+    BUILDFLAG(IS_WIN) || defined(ADDRESS_SANITIZER)
 #define MAYBE_OutOfMemoryReporterBrowserTest \
   DISABLED_OutOfMemoryReporterBrowserTest
 #else
