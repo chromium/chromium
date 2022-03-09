@@ -14,6 +14,9 @@
 #include "base/callback_forward.h"
 #include "base/callback_helpers.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/notreached.h"
+#include "base/strings/strcat.h"
+#include "base/time/time.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/vector_icons/vector_icons.h"
 #include "ui/aura/window.h"
@@ -51,6 +54,30 @@ gfx::Insets GetShutdownConfirmationBubbleInsets() {
 constexpr char kActionHistogramName[] =
     "Ash.Shelf.ShutdownConfirmationBubble.Action";
 
+// Histogram for tracking the time delta between bubble opened and actions taken
+// on the shelf shutdown confirmation bubble.
+constexpr char kActionDurationHistogramPrefix[] =
+    "Ash.Shelf.ShutdownConfirmationBubble.ActionDuration.";
+
+// Suffix for shutdown confirmation action. Should match suffixes of the
+// Ash.Shelf.ShutdownConfirmationBubble.ActionDuration.* metrics in
+// metadata/ash/histograms.xml
+std::string BubbleActionSuffix(
+    ShelfShutdownConfirmationBubble::BubbleAction action) {
+  switch (action) {
+    case ShelfShutdownConfirmationBubble::kCancelled:
+      return "Cancel";
+    case ShelfShutdownConfirmationBubble::kConfirmed:
+      return "Confirm";
+    case ShelfShutdownConfirmationBubble::kDismissed:
+      return "Dismiss";
+    case ShelfShutdownConfirmationBubble::kOpened:
+    case ShelfShutdownConfirmationBubble::kMaxValue:
+      NOTREACHED();
+      return "";
+  }
+}
+
 }  // namespace
 
 ShelfShutdownConfirmationBubble::ShelfShutdownConfirmationBubble(
@@ -59,7 +86,8 @@ ShelfShutdownConfirmationBubble::ShelfShutdownConfirmationBubble(
     SkColor background_color,
     base::OnceClosure on_confirm_callback,
     base::OnceClosure on_cancel_callback)
-    : ShelfBubble(anchor, alignment, background_color) {
+    : ShelfBubble(anchor, alignment, background_color),
+      bubble_opened_timestamp_(base::TimeTicks::Now()) {
   DCHECK(on_confirm_callback);
   DCHECK(on_cancel_callback);
   confirm_callback_ = std::move(on_confirm_callback);
@@ -185,18 +213,15 @@ void ShelfShutdownConfirmationBubble::OnConfirmed() {
 void ShelfShutdownConfirmationBubble::OnClosed() {
   switch (dialog_result_) {
     case DialogResult::kCancelled:
-      base::UmaHistogramEnumeration(
-          kActionHistogramName, ShelfShutdownConfirmationBubble::kCancelled);
+      ReportBubbleAction(ShelfShutdownConfirmationBubble::kCancelled);
       std::move(cancel_callback_).Run();
       break;
     case DialogResult::kConfirmed:
-      base::UmaHistogramEnumeration(
-          kActionHistogramName, ShelfShutdownConfirmationBubble::kConfirmed);
+      ReportBubbleAction(ShelfShutdownConfirmationBubble::kConfirmed);
       std::move(confirm_callback_).Run();
       break;
     case DialogResult::kNone:
-      base::UmaHistogramEnumeration(
-          kActionHistogramName, ShelfShutdownConfirmationBubble::kDismissed);
+      ReportBubbleAction(ShelfShutdownConfirmationBubble::kDismissed);
       break;
   }
 }
@@ -212,6 +237,17 @@ bool ShelfShutdownConfirmationBubble::ShouldCloseOnPressDown() {
 
 bool ShelfShutdownConfirmationBubble::ShouldCloseOnMouseExit() {
   return false;
+}
+
+void ShelfShutdownConfirmationBubble::ReportBubbleAction(
+    ShelfShutdownConfirmationBubble::BubbleAction action) {
+  base::UmaHistogramEnumeration(kActionHistogramName, action);
+
+  const std::string action_suffix = BubbleActionSuffix(action);
+  auto elapsed_time = base::TimeTicks::Now() - bubble_opened_timestamp_;
+  base::UmaHistogramMediumTimes(
+      base::StrCat({kActionDurationHistogramPrefix, action_suffix}),
+      elapsed_time);
 }
 
 }  // namespace ash

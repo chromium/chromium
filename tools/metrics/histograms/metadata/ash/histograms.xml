@@ -3071,6 +3071,23 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram
+    name="Ash.Shelf.ShutdownConfirmationBubble.ActionDuration.{BubbleAction}"
+    units="ms" expires_after="2022-12-31">
+  <owner>sherrilin@google.com</owner>
+  <owner>cros-lurs@google.com</owner>
+  <summary>
+    Track time delta between a bubble opened and an action taken on the shutdown
+    confirmation bubble.
+  </summary>
+  <token key="BubbleAction">
+    <variant name="Cancel" summary="User clicked cancel button"/>
+    <variant name="Confirm" summary="User clicked confirm button"/>
+    <variant name="Dismiss"
+        summary="User dismissed the shutdown confirmation buble"/>
+  </token>
+</histogram>
+
 <histogram name="Ash.Shelf.ShutdownConfirmationBubble.TimeToNextBoot"
     units="seconds" expires_after="2022-12-31">
   <owner>sherrilin@google.com</owner>
