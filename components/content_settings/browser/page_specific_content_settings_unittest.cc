@@ -94,6 +94,17 @@ class PageSpecificContentSettingsTest
         web_contents());
   }
 
+  MockPageSpecificContentSettingsDelegate* InstallMockDelegate() {
+    PageSpecificContentSettings::DeleteForWebContentsForTest(web_contents());
+    PageSpecificContentSettings::CreateForWebContents(
+        web_contents(),
+        std::make_unique<
+            testing::NiceMock<MockPageSpecificContentSettingsDelegate>>(
+            prefs(), settings_map()));
+    return static_cast<MockPageSpecificContentSettingsDelegate*>(
+        PageSpecificContentSettings::GetDelegateForWebContents(web_contents()));
+  }
+
  private:
   sync_preferences::TestingPrefServiceSyncable prefs_;
   scoped_refptr<HostContentSettingsMap> settings_map_;
@@ -500,17 +511,6 @@ class PageSpecificContentSettingsWithPrerenderTest
   }
   ~PageSpecificContentSettingsWithPrerenderTest() override = default;
 
-  MockPageSpecificContentSettingsDelegate* InstallMockDelegate() {
-    PageSpecificContentSettings::DeleteForWebContentsForTest(web_contents());
-    PageSpecificContentSettings::CreateForWebContents(
-        web_contents(),
-        std::make_unique<
-            testing::NiceMock<MockPageSpecificContentSettingsDelegate>>(
-            prefs(), settings_map()));
-    return static_cast<MockPageSpecificContentSettingsDelegate*>(
-        PageSpecificContentSettings::GetDelegateForWebContents(web_contents()));
-  }
-
   content::RenderFrameHost* AddPrerender(const GURL& prerender_url) {
     content::RenderFrameHost* prerender_frame =
         content::WebContentsTester::For(web_contents())
@@ -678,6 +678,112 @@ TEST_F(PageSpecificContentSettingsTest, Topics) {
                         topic);
   EXPECT_TRUE(pscs->HasAccessedTopics());
   EXPECT_THAT(pscs->GetAccessedTopics(), testing::Contains(topic));
+}
+
+class PageSpecificContentSettingsWithFencedFrameTest
+    : public PageSpecificContentSettingsTest {
+ public:
+  PageSpecificContentSettingsWithFencedFrameTest() {
+    scoped_feature_list_.InitAndEnableFeatureWithParameters(
+        blink::features::kFencedFrames, {{"implementation_type", "mparch"}});
+  }
+  ~PageSpecificContentSettingsWithFencedFrameTest() override = default;
+
+  content::RenderFrameHost* CreateFencedFrame(const GURL& url) {
+    content::RenderFrameHost* fenced_frame_root =
+        content::RenderFrameHostTester::For(web_contents()->GetMainFrame())
+            ->AppendFencedFrame();
+    std::unique_ptr<content::NavigationSimulator> navigation_simulator =
+        content::NavigationSimulator::CreateForFencedFrame(url,
+                                                           fenced_frame_root);
+    navigation_simulator->Commit();
+    return navigation_simulator->GetFinalRenderFrameHost();
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+TEST_F(PageSpecificContentSettingsWithFencedFrameTest, SiteDataAccessed) {
+  NavigateAndCommit(GURL("http://google.com"));
+  const GURL& fenced_frame_url = GURL("http://foo.com");
+  content::RenderFrameHost* fenced_frame_root =
+      CreateFencedFrame(fenced_frame_url);
+  PageSpecificContentSettings* ff_pscs =
+      PageSpecificContentSettings::GetForFrame(fenced_frame_root);
+  ASSERT_NE(ff_pscs, nullptr);
+
+  // Simulate cookie access in fenced frame.
+  {
+    MockSiteDataObserver mock_observer(web_contents());
+    EXPECT_CALL(mock_observer, OnSiteDataAccessed()).Times(1);
+    // Set a cookie, block access to images, block mediastream access and block
+    // a popup.
+    GURL origin("http://google.com");
+    std::unique_ptr<net::CanonicalCookie> cookie1(net::CanonicalCookie::Create(
+        origin, "A=B", base::Time::Now(), absl::nullopt /* server_time */,
+        absl::nullopt /* cookie_partition_key */));
+    ASSERT_TRUE(cookie1);
+    ff_pscs->OnCookiesAccessed({content::CookieAccessDetails::Type::kChange,
+                                origin,
+                                origin,
+                                {*cookie1},
+                                false});
+  }
+}
+
+TEST_F(PageSpecificContentSettingsWithFencedFrameTest, DelegateUpdatesSent) {
+  MockPageSpecificContentSettingsDelegate* mock_delegate =
+      InstallMockDelegate();
+
+  const GURL main_url("http://google.com");
+  const GURL& ff_url = GURL("http://foo.com");
+  const url::Origin& ff_origin = url::Origin::Create(ff_url);
+
+  NavigateAndCommit(main_url);
+  content::RenderFrameHost* fenced_frame_root = CreateFencedFrame(ff_url);
+  PageSpecificContentSettings* ff_pscs =
+      PageSpecificContentSettings::GetForFrame(fenced_frame_root);
+  ASSERT_NE(ff_pscs, nullptr);
+
+  EXPECT_CALL(*mock_delegate, OnCookieAccessAllowed).Times(1);
+  EXPECT_CALL(*mock_delegate, OnIndexedDBAccessAllowed(ff_origin)).Times(1);
+  EXPECT_CALL(*mock_delegate, OnDomStorageAccessAllowed(ff_origin)).Times(1);
+  EXPECT_CALL(*mock_delegate, OnWebDatabaseAccessAllowed(ff_origin)).Times(1);
+
+  const bool blocked_by_policy = false;
+  auto cookie = net::CanonicalCookie::Create(
+      ff_url, "k=v", base::Time::Now(), absl::nullopt /* server_time */,
+      absl::nullopt /* cookie_partition_key */);
+  ff_pscs->OnCookiesAccessed({content::CookieAccessDetails::Type::kRead,
+                              ff_url,
+                              ff_url,
+                              {*cookie},
+                              blocked_by_policy});
+  ff_pscs->OnIndexedDBAccessed(ff_url, blocked_by_policy);
+  ff_pscs->OnDomStorageAccessed(ff_url, true, blocked_by_policy);
+  ff_pscs->OnWebDatabaseAccessed(ff_url, blocked_by_policy);
+}
+
+TEST_F(PageSpecificContentSettingsWithFencedFrameTest,
+       ContentAllowedAndBlocked) {
+  MockPageSpecificContentSettingsDelegate* mock_delegate =
+      InstallMockDelegate();
+  NavigateAndCommit(GURL("http://google.com"));
+  const GURL& fenced_frame_url = GURL("http://foo.com");
+  content::RenderFrameHost* fenced_frame_root =
+      CreateFencedFrame(fenced_frame_url);
+  PageSpecificContentSettings* ff_pscs =
+      PageSpecificContentSettings::GetForFrame(fenced_frame_root);
+  ASSERT_NE(ff_pscs, nullptr);
+
+  EXPECT_CALL(*mock_delegate, OnContentAllowed(ContentSettingsType::COOKIES))
+      .Times(1);
+  EXPECT_CALL(*mock_delegate, OnContentBlocked(ContentSettingsType::JAVASCRIPT))
+      .Times(1);
+
+  ff_pscs->OnContentBlocked(ContentSettingsType::JAVASCRIPT);
+  ff_pscs->OnContentAllowed(ContentSettingsType::COOKIES);
 }
 
 }  // namespace content_settings

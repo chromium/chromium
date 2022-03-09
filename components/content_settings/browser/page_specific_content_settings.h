@@ -533,6 +533,7 @@ class PageSpecificContentSettings
   void ClearContentSettingsChangedViaPageInfo();
 
   bool IsPagePrerendering() const;
+  bool IsEmbeddedPage() const;
   void OnPrerenderingPageActivation();
 
   // Delays the call of the delegate method if the page is currently
@@ -540,6 +541,8 @@ class PageSpecificContentSettings
   // otherwise.
   template <typename DelegateMethod, typename... Args>
   void NotifyDelegate(DelegateMethod method, Args... args) {
+    if (IsEmbeddedPage())
+      return;
     if (IsPagePrerendering()) {
       DCHECK(updates_queued_during_prerender_);
       updates_queued_during_prerender_->delegate_updates.emplace_back(
@@ -548,12 +551,25 @@ class PageSpecificContentSettings
     }
     (*delegate_.*method)(args...);
   }
+  // Used to notify the parent page's PSCS of a content access.
+  template <typename PSCSMethod, typename... Args>
+  void MaybeUpdateParent(PSCSMethod method, Args... args) {
+    if (IsEmbeddedPage()) {
+      PageSpecificContentSettings* pscs =
+          PageSpecificContentSettings::GetForFrame(
+              page().GetMainDocument().GetParentOrOuterDocument());
+      DCHECK(pscs);
+      (*pscs.*method)(args...);
+    }
+  }
+
   // Notifies observers. Like |NotifyDelegate|, the notification is delayed for
-  // prerendering pages until the page is activated.
-  void NotifySiteDataObservers();
+  // prerendering pages until the page is activated. Embedded pages will not
+  // notify observers directly and rely on the outermost page to do so.
+  void MaybeNotifySiteDataObservers();
 
   // Tells the delegate to update the location bar. This method is a no-op if
-  // the page is currently prerendering.
+  // the page is currently prerendering or is embedded.
   void MaybeUpdateLocationBar();
 
   WebContentsHandler& handler_;

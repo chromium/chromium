@@ -456,6 +456,7 @@ void PageSpecificContentSettings::OnContentBlocked(ContentSettingsType type) {
     status.blocked = true;
     MaybeUpdateLocationBar();
     NotifyDelegate(&Delegate::OnContentBlocked, type);
+    MaybeUpdateParent(&PageSpecificContentSettings::OnContentBlocked, type);
   }
 }
 
@@ -497,8 +498,10 @@ void PageSpecificContentSettings::OnContentAllowed(ContentSettingsType type) {
     NotifyDelegate(&Delegate::OnContentAllowed, type);
   }
 
-  if (access_changed)
+  if (access_changed) {
     MaybeUpdateLocationBar();
+    MaybeUpdateParent(&PageSpecificContentSettings::OnContentAllowed, type);
+  }
 }
 
 void PageSpecificContentSettings::OnDomStorageAccessed(const GURL& url,
@@ -522,7 +525,9 @@ void PageSpecificContentSettings::OnDomStorageAccessed(const GURL& url,
     OnContentAllowed(ContentSettingsType::COOKIES);
   }
 
-  NotifySiteDataObservers();
+  MaybeUpdateParent(&PageSpecificContentSettings::OnDomStorageAccessed, url,
+                    local, blocked_by_policy);
+  MaybeNotifySiteDataObservers();
 }
 
 void PageSpecificContentSettings::OnCookiesAccessed(
@@ -538,7 +543,8 @@ void PageSpecificContentSettings::OnCookiesAccessed(
     NotifyDelegate(&Delegate::OnCookieAccessAllowed, details.cookie_list);
   }
 
-  NotifySiteDataObservers();
+  MaybeUpdateParent(&PageSpecificContentSettings::OnCookiesAccessed, details);
+  MaybeNotifySiteDataObservers();
 }
 
 void PageSpecificContentSettings::OnIndexedDBAccessed(const GURL& url,
@@ -559,7 +565,9 @@ void PageSpecificContentSettings::OnIndexedDBAccessed(const GURL& url,
     OnContentAllowed(ContentSettingsType::COOKIES);
   }
 
-  NotifySiteDataObservers();
+  MaybeUpdateParent(&PageSpecificContentSettings::OnIndexedDBAccessed, url,
+                    blocked_by_policy);
+  MaybeNotifySiteDataObservers();
 }
 
 void PageSpecificContentSettings::OnCacheStorageAccessed(
@@ -577,7 +585,9 @@ void PageSpecificContentSettings::OnCacheStorageAccessed(
     OnContentAllowed(ContentSettingsType::COOKIES);
   }
 
-  NotifySiteDataObservers();
+  MaybeUpdateParent(&PageSpecificContentSettings::OnCacheStorageAccessed, url,
+                    blocked_by_policy);
+  MaybeNotifySiteDataObservers();
 }
 
 void PageSpecificContentSettings::OnServiceWorkerAccessed(
@@ -604,6 +614,9 @@ void PageSpecificContentSettings::OnServiceWorkerAccessed(
   } else {
     OnContentAllowed(ContentSettingsType::COOKIES);
   }
+
+  MaybeUpdateParent(&PageSpecificContentSettings::OnServiceWorkerAccessed,
+                    scope, allowed);
 }
 
 void PageSpecificContentSettings::OnSharedWorkerAccessed(
@@ -621,6 +634,8 @@ void PageSpecificContentSettings::OnSharedWorkerAccessed(
         worker_url, name, storage_key);
     OnContentAllowed(ContentSettingsType::COOKIES);
   }
+  MaybeUpdateParent(&PageSpecificContentSettings::OnSharedWorkerAccessed,
+                    worker_url, name, storage_key, blocked_by_policy);
 }
 
 void PageSpecificContentSettings::OnInterestGroupJoined(
@@ -633,7 +648,9 @@ void PageSpecificContentSettings::OnInterestGroupJoined(
     allowed_interest_group_api_.push_back(api_origin);
     OnContentAllowed(ContentSettingsType::COOKIES);
   }
-  NotifySiteDataObservers();
+  MaybeUpdateParent(&PageSpecificContentSettings::OnInterestGroupJoined,
+                    api_origin, blocked_by_policy);
+  MaybeNotifySiteDataObservers();
 }
 
 void PageSpecificContentSettings::OnTopicAccessed(
@@ -642,6 +659,8 @@ void PageSpecificContentSettings::OnTopicAccessed(
     privacy_sandbox::CanonicalTopic topic) {
   // TODO(crbug.com/1286276): Add URL and Topic to local_shared_objects?
   accessed_topics_.insert(topic);
+  MaybeUpdateParent(&PageSpecificContentSettings::OnTopicAccessed, api_origin,
+                    blocked_by_policy, topic);
 }
 
 void PageSpecificContentSettings::OnWebDatabaseAccessed(
@@ -657,7 +676,9 @@ void PageSpecificContentSettings::OnWebDatabaseAccessed(
     OnContentAllowed(ContentSettingsType::COOKIES);
   }
 
-  NotifySiteDataObservers();
+  MaybeUpdateParent(&PageSpecificContentSettings::OnWebDatabaseAccessed, url,
+                    blocked_by_policy);
+  MaybeNotifySiteDataObservers();
 }
 
 void PageSpecificContentSettings::OnFileSystemAccessed(const GURL& url,
@@ -675,7 +696,9 @@ void PageSpecificContentSettings::OnFileSystemAccessed(const GURL& url,
     OnContentAllowed(ContentSettingsType::COOKIES);
   }
 
-  NotifySiteDataObservers();
+  MaybeUpdateParent(&PageSpecificContentSettings::OnFileSystemAccessed, url,
+                    blocked_by_policy);
+  MaybeNotifySiteDataObservers();
 }
 
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_WIN)
@@ -720,6 +743,7 @@ void PageSpecificContentSettings::OnMediaStreamPermissionSet(
     const std::string& media_stream_selected_video_device,
     const std::string& media_stream_requested_audio_device,
     const std::string& media_stream_requested_video_device) {
+  DCHECK(!IsEmbeddedPage());
   media_stream_access_origin_ = request_origin;
 
   if (new_microphone_camera_state & MICROPHONE_ACCESSED) {
@@ -775,6 +799,8 @@ void PageSpecificContentSettings::SetPepperBrokerAllowed(bool allowed) {
   }
 }
 
+// TODO(crbug.com/1187618): This method needs to be updated to deal with
+// fenced frames.
 void PageSpecificContentSettings::OnContentSettingChanged(
     const ContentSettingsPattern& primary_pattern,
     const ContentSettingsPattern& secondary_pattern,
@@ -913,6 +939,10 @@ bool PageSpecificContentSettings::IsPagePrerendering() const {
   return !!updates_queued_during_prerender_;
 }
 
+bool PageSpecificContentSettings::IsEmbeddedPage() const {
+  return page().GetMainDocument().GetParentOrOuterDocument();
+}
+
 void PageSpecificContentSettings::OnPrerenderingPageActivation() {
   DCHECK(updates_queued_during_prerender_);
   for (auto& delegate_update :
@@ -927,7 +957,9 @@ void PageSpecificContentSettings::OnPrerenderingPageActivation() {
   updates_queued_during_prerender_.reset();
 }
 
-void PageSpecificContentSettings::NotifySiteDataObservers() {
+void PageSpecificContentSettings::MaybeNotifySiteDataObservers() {
+  if (IsEmbeddedPage())
+    return;
   if (IsPagePrerendering()) {
     updates_queued_during_prerender_->site_data_accessed = true;
     return;
@@ -936,6 +968,8 @@ void PageSpecificContentSettings::NotifySiteDataObservers() {
 }
 
 void PageSpecificContentSettings::MaybeUpdateLocationBar() {
+  if (IsEmbeddedPage())
+    return;
   if (IsPagePrerendering())
     return;
   delegate_->UpdateLocationBar();

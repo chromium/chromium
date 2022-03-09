@@ -1,0 +1,3 @@
+HTTP/1.1 200 OK
+Set-Cookie: name=Good;Max-Age=3600
+Supports-Loading-Mode: fenced-frame

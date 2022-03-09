@@ -27,7 +27,14 @@
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/test_launcher_utils.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "components/browsing_data/content/cache_storage_helper.h"
 #include "components/browsing_data/content/cookie_helper.h"
+#include "components/browsing_data/content/database_helper.h"
+#include "components/browsing_data/content/file_system_helper.h"
+#include "components/browsing_data/content/indexed_db_helper.h"
+#include "components/browsing_data/content/local_storage_helper.h"
+#include "components/browsing_data/content/service_worker_helper.h"
+#include "components/browsing_data/content/shared_worker_helper.h"
 #include "components/content_settings/browser/page_specific_content_settings.h"
 #include "components/content_settings/core/browser/cookie_settings.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
@@ -44,9 +51,11 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/content_constants.h"
 #include "content/public/common/content_features.h"
+#include "content/public/common/content_paths.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
+#include "content/public/test/fenced_frame_test_util.h"
 #include "content/public/test/ppapi_test_utils.h"
 #include "content/public/test/prerender_test_util.h"
 #include "content/public/test/test_frame_navigation_observer.h"
@@ -1443,12 +1452,14 @@ class ContentSettingsWithPrerenderingBrowserTest : public ContentSettingsTest {
   content::test::PrerenderTestHelper prerender_test_helper_;
 };
 
-// Used to wait for a prerendering page to set a cookie.
-class PrerenderCookieObserver : public content::WebContentsObserver {
+// Used to wait for non-primary pages to set a cookie (eg: prerendering pages or
+// fenced frames).
+class NonPrimaryPageCookieAccessObserver : public content::WebContentsObserver {
  public:
-  explicit PrerenderCookieObserver(content::WebContents* web_contents)
+  explicit NonPrimaryPageCookieAccessObserver(
+      content::WebContents* web_contents)
       : content::WebContentsObserver(web_contents) {}
-  ~PrerenderCookieObserver() override = default;
+  ~NonPrimaryPageCookieAccessObserver() override = default;
 
   void OnCookiesAccessed(content::NavigationHandle* navigation_handle,
                          const content::CookieAccessDetails& details) override {
@@ -1497,7 +1508,7 @@ IN_PROC_BROWSER_TEST_F(ContentSettingsWithPrerenderingBrowserTest,
   ASSERT_FALSE(main_pscs->IsContentAllowed(ContentSettingsType::COOKIES));
 
   {
-    PrerenderCookieObserver cookie_observer(GetWebContents());
+    NonPrimaryPageCookieAccessObserver cookie_observer(GetWebContents());
     prerender_test_helper().AddPrerender(prerender_url);
     int host_id = prerender_test_helper().GetHostForUrl(prerender_url);
     content::RenderFrameHost* prerender_frame =
@@ -1549,7 +1560,7 @@ IN_PROC_BROWSER_TEST_F(ContentSettingsWithPrerenderingBrowserTest,
 
   content::TestNavigationManager navigation_manager(GetWebContents(),
                                                     iframe_url);
-  PrerenderCookieObserver cookie_observer(GetWebContents());
+  NonPrimaryPageCookieAccessObserver cookie_observer(GetWebContents());
   EXPECT_TRUE(content::ExecJs(
       prerender_frame,
       content::JsReplace("const iframe = document.createElement('iframe');"
@@ -1572,4 +1583,129 @@ IN_PROC_BROWSER_TEST_F(ContentSettingsWithPrerenderingBrowserTest,
   // behavior.
   EXPECT_EQ(main_pscs->allowed_local_shared_objects().GetObjectCount(),
             cookie_observer.CookieAccessedByPrimaryPage() ? 1u : 0u);
+}
+
+class ContentSettingsWithFencedFrameBrowserTest : public ContentSettingsTest {
+ public:
+  ContentSettingsWithFencedFrameBrowserTest() = default;
+  ~ContentSettingsWithFencedFrameBrowserTest() override = default;
+
+  void SetUpOnMainThread() override {
+    ContentSettingsTest::SetUpOnMainThread();
+    base::FilePath path;
+    base::PathService::Get(content::DIR_TEST_DATA, &path);
+    https_server_.SetSSLConfig(net::EmbeddedTestServer::CERT_TEST_NAMES);
+    https_server_.ServeFilesFromDirectory(path);
+    ASSERT_TRUE(https_server_.Start());
+  }
+
+  content::test::FencedFrameTestHelper& fenced_frame_test_helper() {
+    return fenced_frame_test_helper_;
+  }
+
+  content::WebContents* GetWebContents() {
+    return browser()->tab_strip_model()->GetActiveWebContents();
+  }
+
+ private:
+  content::test::FencedFrameTestHelper fenced_frame_test_helper_;
+};
+
+IN_PROC_BROWSER_TEST_F(ContentSettingsWithFencedFrameBrowserTest,
+                       FencedFrameSetsCookie) {
+  const GURL main_url = https_server_.GetURL("a.test", "/empty.html");
+  const GURL fenced_frame_url =
+      https_server_.GetURL("b.test", "/fenced_frames/set_cookie_header.html");
+
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), main_url));
+  ASSERT_EQ(GetWebContents()->GetLastCommittedURL(), main_url);
+  auto* main_pscs = PageSpecificContentSettings::GetForFrame(
+      GetWebContents()->GetMainFrame());
+  ASSERT_FALSE(main_pscs->IsContentAllowed(ContentSettingsType::COOKIES));
+
+  std::unique_ptr<content::RenderFrameHostWrapper> fenced_frame;
+  {
+    NonPrimaryPageCookieAccessObserver cookie_observer(GetWebContents());
+    fenced_frame = std::make_unique<content::RenderFrameHostWrapper>(
+        fenced_frame_test_helper().CreateFencedFrame(
+            GetWebContents()->GetMainFrame(), fenced_frame_url));
+    EXPECT_NE(fenced_frame, nullptr);
+    // Ensure notification for cookie access by fenced frame has been sent.
+    cookie_observer.Wait();
+  }
+
+  auto* ff_pscs = PageSpecificContentSettings::GetForFrame(fenced_frame->get());
+  EXPECT_TRUE(ff_pscs->IsContentAllowed(ContentSettingsType::COOKIES));
+  EXPECT_TRUE(main_pscs->IsContentAllowed(ContentSettingsType::COOKIES));
+  EXPECT_EQ(main_pscs->allowed_local_shared_objects().GetObjectCount(), 1u);
+  EXPECT_EQ(ff_pscs->allowed_local_shared_objects().GetObjectCount(), 1u);
+
+  CookieSettingsFactory::GetForProfile(browser()->profile())
+      ->SetCookieSetting((*fenced_frame)->GetLastCommittedURL(),
+                         CONTENT_SETTING_BLOCK);
+  {
+    NonPrimaryPageCookieAccessObserver cookie_observer(GetWebContents());
+    ASSERT_TRUE(content::ExecJs(fenced_frame->get(), "document.cookie"));
+    cookie_observer.Wait();
+  }
+
+  EXPECT_TRUE(ff_pscs->IsContentBlocked(ContentSettingsType::COOKIES));
+  EXPECT_TRUE(main_pscs->IsContentBlocked(ContentSettingsType::COOKIES));
+  EXPECT_EQ(main_pscs->blocked_local_shared_objects().GetObjectCount(), 1u);
+  EXPECT_EQ(ff_pscs->blocked_local_shared_objects().GetObjectCount(), 1u);
+
+  ASSERT_TRUE(
+      content::ExecJs(GetWebContents()->GetMainFrame(),
+                      "const ff = document.querySelector('fencedframe'); "
+                      "ff.remove();"));
+  ASSERT_TRUE(fenced_frame->WaitUntilRenderFrameDeleted());
+
+  EXPECT_TRUE(main_pscs->IsContentBlocked(ContentSettingsType::COOKIES));
+  EXPECT_EQ(main_pscs->allowed_local_shared_objects().GetObjectCount(), 1u);
+  EXPECT_EQ(main_pscs->blocked_local_shared_objects().GetObjectCount(), 1u);
+}
+
+IN_PROC_BROWSER_TEST_F(ContentSettingsWithFencedFrameBrowserTest,
+                       StorageAccessInFencedFrame) {
+  const GURL main_url = https_server_.GetURL("a.test", "/empty.html");
+  const GURL fenced_frame_url =
+      https_server_.GetURL("b.test", "/browsing_data/site_data.html");
+
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), main_url));
+  ASSERT_FALSE(GetWebContents()->GetMainFrame()->IsErrorDocument());
+  ASSERT_EQ(GetWebContents()->GetLastCommittedURL(), main_url);
+  auto* main_pscs = PageSpecificContentSettings::GetForFrame(
+      GetWebContents()->GetMainFrame());
+
+  content::RenderFrameHost* fenced_frame =
+      fenced_frame_test_helper().CreateFencedFrame(
+          GetWebContents()->GetMainFrame(), fenced_frame_url);
+  ASSERT_NE(fenced_frame, nullptr);
+  auto* ff_pscs = PageSpecificContentSettings::GetForFrame(fenced_frame);
+
+  std::vector<std::string> storage_types_to_test{
+      "LocalStorage",     "SessionStorage", "CacheStorage", "FileSystem",
+      "FileSystemAccess", "IndexedDb",      "SharedWorker", "ServiceWorker"};
+  for (auto storage_type : storage_types_to_test) {
+    EXPECT_TRUE(content::EvalJs(fenced_frame, "set" + storage_type + "();",
+                                content::EXECUTE_SCRIPT_USE_MANUAL_REPLY)
+                    .ExtractBool());
+  }
+
+  std::vector<PageSpecificContentSettings*> pscs_list;
+  pscs_list.push_back(main_pscs);
+  pscs_list.push_back(ff_pscs);
+
+  for (auto* pscs : pscs_list) {
+    const browsing_data::LocalSharedObjectsContainer& container =
+        pscs->allowed_local_shared_objects();
+    EXPECT_TRUE(pscs->IsContentAllowed(ContentSettingsType::COOKIES));
+    EXPECT_EQ(container.local_storages()->GetCount(), 1u);
+    EXPECT_EQ(container.session_storages()->GetCount(), 1u);
+    EXPECT_EQ(container.cache_storages()->GetCount(), 1u);
+    EXPECT_EQ(container.file_systems()->GetCount(), 1u);
+    EXPECT_EQ(container.indexed_dbs()->GetCount(), 1u);
+    EXPECT_EQ(container.shared_workers()->GetSharedWorkerCount(), 1u);
+    EXPECT_EQ(container.service_workers()->GetCount(), 1u);
+  }
 }
