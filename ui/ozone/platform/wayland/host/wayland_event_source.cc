@@ -373,6 +373,19 @@ void WaylandEventSource::OnTouchReleaseEvent(base::TimeTicks timestamp,
                    keyboard_modifiers_);
   DispatchEvent(&event);
 
+  // It is possible that an user interaction triggers nested loops
+  // in higher levels of the application stack in order to process a
+  // given touch down/up action.
+  // For instance, a modal dialog might block this execution point,
+  // and trigger thread to continue to process events.
+  // The auxiliary flow might clear entries in touch_points_.
+  //
+  // Hence, we check whether the TouchId is still being held.
+  if (touch_points_.find(id) == touch_points_.end()) {
+    LOG(WARNING) << "Touch has been released during processing.";
+    return;
+  }
+
   HandleTouchFocusChange(touch_point->window, false, id);
   touch_points_.erase(it);
 }

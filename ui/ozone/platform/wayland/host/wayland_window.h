@@ -354,6 +354,7 @@ class WaylandWindow : public PlatformWindow,
 
  private:
   friend class WaylandBufferManagerViewportTest;
+  friend class BlockableWaylandToplevelWindow;
 
   FRIEND_TEST_ALL_PREFIXES(WaylandScreenTest, SetWindowScale);
   FRIEND_TEST_ALL_PREFIXES(WaylandBufferManagerTest, CanSubmitOverlayPriority);

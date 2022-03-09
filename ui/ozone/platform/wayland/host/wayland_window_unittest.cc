@@ -19,6 +19,7 @@
 #include "base/nix/xdg_util.h"
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/bind.h"
 #include "base/test/scoped_command_line.h"
 #include "build/chromeos_buildflags.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -44,6 +45,7 @@
 #include "ui/ozone/platform/wayland/host/wayland_output_manager.h"
 #include "ui/ozone/platform/wayland/host/wayland_seat.h"
 #include "ui/ozone/platform/wayland/host/wayland_subsurface.h"
+#include "ui/ozone/platform/wayland/host/wayland_toplevel_window.h"
 #include "ui/ozone/platform/wayland/host/wayland_zcr_cursor_shapes.h"
 #include "ui/ozone/platform/wayland/mojom/wayland_overlay_config.mojom.h"
 #include "ui/ozone/platform/wayland/test/mock_pointer.h"
@@ -3230,6 +3232,111 @@ TEST_P(WaylandWindowTest, StartWithMinimized) {
   // (which means the surface is not maximized, fullscreen or activated)
   states = ScopedWlArray();
   SendConfigureEvent(xdg_surface_, 0, 0, 2, states.get());
+  Sync();
+}
+
+class BlockableWaylandToplevelWindow : public WaylandToplevelWindow {
+ public:
+  BlockableWaylandToplevelWindow(MockPlatformWindowDelegate* delegate,
+                                 WaylandConnection* connection)
+      : WaylandToplevelWindow(delegate, connection) {}
+
+  static std::unique_ptr<BlockableWaylandToplevelWindow> Create(
+      const gfx::Rect bounds,
+      WaylandConnection* connection,
+      MockPlatformWindowDelegate* delegate) {
+    auto window =
+        std::make_unique<BlockableWaylandToplevelWindow>(delegate, connection);
+    window->set_update_visual_size_immediately(/*update_immediately=*/true);
+    window->set_apply_pending_state_on_update_visual_size(
+        /*apply_immediately=*/true);
+
+    PlatformWindowInitProperties properties;
+    properties.bounds = bounds;
+    properties.type = PlatformWindowType::kWindow;
+    properties.parent_widget = gfx::kNullAcceleratedWidget;
+    window->Initialize(std::move(properties));
+    window->Show(false);
+    return window;
+  }
+
+  // WaylandToplevelWindow overrides:
+  uint32_t DispatchEvent(const PlatformEvent& platform_event) override {
+    ui::Event* event(platform_event);
+    if (event->type() == ET_TOUCH_RELEASED && !blocked_) {
+      base::RunLoop run_loop{base::RunLoop::Type::kNestableTasksAllowed};
+      blocked_ = true;
+
+      base::ThreadTaskRunnerHandle::Get()->PostTask(
+          FROM_HERE,
+          base::BindOnce(std::move(async_task_), run_loop.QuitClosure()));
+      run_loop.Run();
+      blocked_ = false;
+    }
+
+    return WaylandToplevelWindow::DispatchEvent(platform_event);
+  }
+
+  void SetAsyncTask(
+      base::RepeatingCallback<void(base::OnceClosure)> async_task) {
+    async_task_ = std::move(async_task);
+  }
+
+ private:
+  bool blocked_ = false;
+  base::RepeatingCallback<void(base::OnceClosure)> async_task_;
+};
+
+// This test ensures that Ozone/Wayland does not crash while handling a
+// sequence of two or more touch down/up actions, where the first one blocks
+// unfinished before the second pair comes in.
+//
+// This mimics the behavior of a modal dialog that comes up as a result of
+// the first touch down/up action, and blocks the original flow, before it gets
+// handled completely.
+TEST_P(WaylandWindowTest, BlockingTouchDownUp_NoCrash) {
+  window_.reset();
+
+  MockPlatformWindowDelegate delegate;
+  auto window = BlockableWaylandToplevelWindow::Create(
+      gfx::Rect(0, 0, 800, 600), connection_.get(), &delegate);
+
+  wl_seat_send_capabilities(
+      server_.seat()->resource(),
+      WL_SEAT_CAPABILITY_POINTER | WL_SEAT_CAPABILITY_TOUCH);
+  Sync();
+  ASSERT_TRUE(connection_->seat()->pointer());
+  ASSERT_TRUE(connection_->seat()->touch());
+  window->set_touch_focus(true);
+
+  uint32_t serial = 0;
+
+  // Test that CanDispatchEvent is set correctly.
+  wl::MockSurface* toplevel_surface = server_.GetObject<wl::MockSurface>(
+      window->root_surface()->GetSurfaceId());
+  Sync();
+  VerifyCanDispatchTouchEvents({window.get()}, {});
+
+  // Steps to be executed after the handling of the first touch down/up
+  // pair blocks.
+  auto async_task = base::BindLambdaForTesting([&](base::OnceClosure closure) {
+    wl_touch_send_down(server_.seat()->touch()->resource(), ++serial, 0,
+                       toplevel_surface->resource(), 0 /* id */,
+                       wl_fixed_from_int(100), wl_fixed_from_int(100));
+    wl_touch_send_up(server_.seat()->touch()->resource(), ++serial, 2000,
+                     0 /* id */);
+    Sync();
+
+    std::move(closure).Run();
+  });
+  window->SetAsyncTask(std::move(async_task));
+
+  // Start executing the first touch down/up pair.
+  wl_touch_send_down(server_.seat()->touch()->resource(), ++serial, 0,
+                     toplevel_surface->resource(), 0 /* id */,
+                     wl_fixed_from_int(50), wl_fixed_from_int(50));
+  wl_touch_send_up(server_.seat()->touch()->resource(), ++serial, 1000,
+                   0 /* id */);
   Sync();
 }
 
