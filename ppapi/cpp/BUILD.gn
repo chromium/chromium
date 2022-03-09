@@ -215,8 +215,6 @@ source_set("objects") {
     "private/net_address_private.h",
     "private/pass_file_handle.cc",
     "private/pass_file_handle.h",
-    "private/pdf.cc",
-    "private/pdf.h",
     "private/tcp_server_socket_private.cc",
     "private/tcp_server_socket_private.h",
     "private/tcp_socket_private.cc",

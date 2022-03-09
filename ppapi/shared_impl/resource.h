@@ -53,7 +53,6 @@
   F(PPB_NetworkList_API)                \
   F(PPB_NetworkMonitor_API)             \
   F(PPB_NetworkProxy_API)               \
-  F(PPB_PDF_API)                        \
   F(PPB_Printing_API)                   \
   F(PPB_Scrollbar_API)                  \
   F(PPB_TCPServerSocket_Private_API)    \

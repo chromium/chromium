@@ -25,7 +25,6 @@
 #include "ppapi/proxy/isolated_file_system_private_resource.h"
 #include "ppapi/proxy/message_handler.h"
 #include "ppapi/proxy/network_proxy_resource.h"
-#include "ppapi/proxy/pdf_resource.h"
 #include "ppapi/proxy/plugin_dispatcher.h"
 #include "ppapi/proxy/ppapi_messages.h"
 #include "ppapi/proxy/serialized_var.h"
@@ -330,12 +329,8 @@ Resource* PPB_Instance_Proxy::GetSingletonResource(PP_Instance instance,
     case BROWSER_FONT_SINGLETON_ID:
       new_singleton = new BrowserFontSingletonResource(connection, instance);
       break;
-    case PDF_SINGLETON_ID:
-      new_singleton = new PDFResource(connection, instance);
-      break;
 #else
     case BROWSER_FONT_SINGLETON_ID:
-    case PDF_SINGLETON_ID:
       NOTREACHED();
       break;
 #endif  // !BUILDFLAG(IS_NACL) && !defined(NACL_WIN64)
