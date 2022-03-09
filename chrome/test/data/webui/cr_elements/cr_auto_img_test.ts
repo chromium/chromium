@@ -72,7 +72,7 @@ suite('CrAutoImgElementTest', () => {
         const autoSrc = 'https://foo.com/img.png';
 
         // Act.
-        img.withCookies = '';
+        img.withCookies = true;
         img.autoSrc = autoSrc;
 
         // Assert.
@@ -80,6 +80,12 @@ suite('CrAutoImgElementTest', () => {
             `chrome://image/?url=${
                 encodeURIComponent(autoSrc)}&withCookies=true`,
             img.src);
+
+        // Act.
+        img.withCookies = false;
+
+        // Assert.
+        assertEquals(`chrome://image/?${autoSrc}`, img.src);
       });
 
   test(
@@ -96,6 +102,12 @@ suite('CrAutoImgElementTest', () => {
             `chrome://image/?url=${
                 encodeURIComponent(autoSrc)}&withCookies=true`,
             img.src);
+
+        // Act.
+        img.removeAttribute('with-cookies');
+
+        // Assert.
+        assertEquals(`chrome://image/?${autoSrc}`, img.src);
       });
 
   test(

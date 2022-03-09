@@ -44,7 +44,14 @@ export class CrAutoImgElement extends HTMLImageElement {
   }
 
   attributeChangedCallback(name, oldValue, newValue) {
-    if (name !== AUTO_SRC) {
+    if (name !== AUTO_SRC && name !== WITH_COOKIES) {
+      return;
+    }
+
+    // Changes to |WITH_COOKIES| are only interesting when the attribute is
+    // being added or removed.
+    if (name === WITH_COOKIES &&
+        ((oldValue === null) === (newValue === null))) {
       return;
     }
 
@@ -56,7 +63,7 @@ export class CrAutoImgElement extends HTMLImageElement {
 
     let url = null;
     try {
-      url = new URL(newValue || '');
+      url = new URL(this.getAttribute(AUTO_SRC) || '');
     } catch (_) {
     }
 
@@ -95,14 +102,18 @@ export class CrAutoImgElement extends HTMLImageElement {
     return this.getAttribute(CLEAR_SRC);
   }
 
-  /** @param {string} _ */
-  set withCookies(_) {
-    this.setAttribute(WITH_COOKIES, '');
+  /** @param {boolean} enabled */
+  set withCookies(enabled) {
+    if (enabled) {
+      this.setAttribute(WITH_COOKIES, '');
+    } else {
+      this.removeAttribute(WITH_COOKIES);
+    }
   }
 
-  /** @return {string} */
+  /** @return {boolean} */
   get withCookies() {
-    return this.getAttribute(WITH_COOKIES);
+    return this.hasAttribute(WITH_COOKIES);
   }
 }
 
