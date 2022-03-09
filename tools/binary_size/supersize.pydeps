@@ -51,6 +51,7 @@ libsupersize/console.py
 libsupersize/data_quality.py
 libsupersize/demangle.py
 libsupersize/describe.py
+libsupersize/dex_disassembly.py
 libsupersize/diff.py
 libsupersize/dir_metadata.py
 libsupersize/dwarfdump.py

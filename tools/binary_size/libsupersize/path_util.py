@@ -200,3 +200,7 @@ def GetJavaHome():
 
 def GetDefaultJsonConfigPath():
   return FromToolsSrcRoot('tools', 'binary_size', 'supersize.json')
+
+
+def GetR8Path():
+  return FromToolsSrcRoot('third_party', 'r8', 'lib', 'r8.jar')

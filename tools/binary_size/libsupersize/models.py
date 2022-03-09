@@ -627,10 +627,7 @@ class DeltaSymbol(BaseSymbol):
   to one symbol in the |before|, and then be an alias to another in |after|.
   """
 
-  __slots__ = (
-      'before_symbol',
-      'after_symbol',
-  )
+  __slots__ = ('before_symbol', 'after_symbol', 'disassembly')
 
   def __init__(self, before_symbol, after_symbol):
     self.before_symbol = before_symbol

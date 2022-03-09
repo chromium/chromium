@@ -2,7 +2,6 @@
 # Copyright 2017 The Chromium Authors. All rights reserved.
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
-
 """Collect, archive, and analyze Chrome's binary size."""
 
 import argparse
@@ -16,6 +15,7 @@ import sys
 import archive
 import console
 import diff
+import dex_disassembly
 import file_format
 import models
 import os
@@ -62,7 +62,6 @@ class _DiffAction:
 
 
 class _SaveDiffAction:
-
   @staticmethod
   def AddArguments(parser):
     parser.add_argument('before', help='Before-patch .size file.')
@@ -97,7 +96,6 @@ class _SaveDiffAction:
         args.before_directory = os.path.dirname(args.before)
       if not args.after_directory:
         args.after_directory = os.path.dirname(args.after)
-
     before_size_info = archive.LoadAndPostProcessSizeInfo(args.before)
     after_size_info = archive.LoadAndPostProcessSizeInfo(args.after)
     # If a URL or title exists, we only want to add it to the build config of
@@ -107,6 +105,9 @@ class _SaveDiffAction:
     if args.url:
       after_size_info.build_config[models.BUILD_CONFIG_URL] = args.url
     delta_size_info = diff.Diff(before_size_info, after_size_info)
+    if args.save_disassembly:
+      dex_disassembly.AddDisassembly(delta_size_info, args.before_directory,
+                                     args.after_directory)
 
     file_format.SaveDeltaSizeInfo(delta_size_info, args.output_file)
 
