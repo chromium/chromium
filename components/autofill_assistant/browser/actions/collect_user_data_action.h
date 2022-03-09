@@ -62,7 +62,8 @@ class CollectUserDataAction : public Action,
   };
 
   void InternalProcessAction(ProcessActionCallback callback) override;
-  void EndAction(const ClientStatus& status);
+  void EndAction(const ClientStatus& status,
+                 const Metrics::CollectUserDataResult result);
   bool HasActionEnded() const;
 
   void OnGetUserData(const CollectUserDataProto& collect_user_data,

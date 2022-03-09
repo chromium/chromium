@@ -5758,6 +5758,8 @@ others/histograms.xml -->
   <int value="0" label="Unknown result"/>
   <int value="1" label="Success"/>
   <int value="2" label="Failure"/>
+  <int value="3" label="Terms and conditions link clicked"/>
+  <int value="4" label="Additional action selected"/>
 </enum>
 
 <enum name="AutofillAssistantCupRpcVerificationEvent">
@@ -5932,6 +5934,12 @@ others/histograms.xml -->
   <int value="1" label="Not changed &amp; Success"/>
   <int value="2" label="Changed &amp; Failure"/>
   <int value="3" label="Not changed &amp; Failure"/>
+  <int value="4" label="Changed &amp; Unknown result"/>
+  <int value="5" label="Not changed &amp; Unknown result"/>
+  <int value="6" label="Changed &amp; Terms link clicked"/>
+  <int value="7" label="Not changed &amp; Terms link clicked"/>
+  <int value="8" label="Changed &amp; Additional action selected"/>
+  <int value="9" label="Not changed &amp; Additional action selected"/>
 </enum>
 
 <enum name="AutofillAssistantPaymentRequestMandatoryPostalCode">
@@ -5947,6 +5955,12 @@ others/histograms.xml -->
   <int value="1" label="Initially incomplete &amp; Success"/>
   <int value="2" label="Initially complete &amp; Failure"/>
   <int value="3" label="Initially incomplete &amp; Failure"/>
+  <int value="4" label="Initially complete &amp; Unknown result"/>
+  <int value="5" label="Initially incomplete &amp; Unknown result"/>
+  <int value="6" label="Initially complete &amp; Terms link clicked"/>
+  <int value="7" label="Initially incomplete &amp; Terms link clicked"/>
+  <int value="8" label="Initially complete &amp; Additional action selected"/>
+  <int value="9" label="Initially incomplete &amp; Additional action selected"/>
 </enum>
 
 <enum name="AutofillAssistantSource">

@@ -198,43 +198,132 @@ void Metrics::RecordDropOut(DropOutReason reason, const std::string& intent) {
 }
 
 // static
-void Metrics::RecordPaymentRequestPrefilledSuccess(bool initially_complete,
-                                                   bool success) {
-  if (initially_complete && success) {
-    base::UmaHistogramEnumeration(kPaymentRequestPrefilled,
-                                  PaymentRequestPrefilled::PREFILLED_SUCCESS);
-  } else if (initially_complete && !success) {
-    base::UmaHistogramEnumeration(kPaymentRequestPrefilled,
-                                  PaymentRequestPrefilled::PREFILLED_FAILURE);
-  } else if (!initially_complete && success) {
-    base::UmaHistogramEnumeration(
-        kPaymentRequestPrefilled,
-        PaymentRequestPrefilled::NOTPREFILLED_SUCCESS);
-  } else if (!initially_complete && !success) {
-    base::UmaHistogramEnumeration(
-        kPaymentRequestPrefilled,
-        PaymentRequestPrefilled::NOTPREFILLED_FAILURE);
+void Metrics::RecordPaymentRequestPrefilledSuccess(
+    bool initially_complete,
+    CollectUserDataResult result) {
+  switch (result) {
+    case Metrics::CollectUserDataResult::UNKNOWN:
+      if (initially_complete) {
+        base::UmaHistogramEnumeration(
+            kPaymentRequestPrefilled,
+            PaymentRequestPrefilled::PREFILLED_UNKNOWN);
+        return;
+      }
+      base::UmaHistogramEnumeration(
+          kPaymentRequestPrefilled,
+          PaymentRequestPrefilled::NOTPREFILLED_UNKNOWN);
+      return;
+    case Metrics::CollectUserDataResult::FAILURE:
+      if (initially_complete) {
+        base::UmaHistogramEnumeration(
+            kPaymentRequestPrefilled,
+            PaymentRequestPrefilled::PREFILLED_FAILURE);
+        return;
+      }
+      base::UmaHistogramEnumeration(
+          kPaymentRequestPrefilled,
+          PaymentRequestPrefilled::NOTPREFILLED_FAILURE);
+      return;
+    case Metrics::CollectUserDataResult::SUCCESS:
+      if (initially_complete) {
+        base::UmaHistogramEnumeration(
+            kPaymentRequestPrefilled,
+            PaymentRequestPrefilled::PREFILLED_SUCCESS);
+        return;
+      }
+      base::UmaHistogramEnumeration(
+          kPaymentRequestPrefilled,
+          PaymentRequestPrefilled::NOTPREFILLED_SUCCESS);
+      return;
+    case Metrics::CollectUserDataResult::TERMS_AND_CONDITIONS_LINK_CLICKED:
+      if (initially_complete) {
+        base::UmaHistogramEnumeration(
+            kPaymentRequestPrefilled,
+            PaymentRequestPrefilled::
+                PREFILLED_TERMS_AND_CONDITIONS_LINK_CLICKED);
+        return;
+      }
+      base::UmaHistogramEnumeration(
+          kPaymentRequestPrefilled,
+          PaymentRequestPrefilled::
+              NOTPREFILLED_TERMS_AND_CONDITIONS_LINK_CLICKED);
+      return;
+    case Metrics::CollectUserDataResult::ADDITIONAL_ACTION_SELECTED:
+      if (initially_complete) {
+        base::UmaHistogramEnumeration(
+            kPaymentRequestPrefilled,
+            PaymentRequestPrefilled::PREFILLED_ADDITIONAL_ACTION_SELECTED);
+        return;
+      }
+      base::UmaHistogramEnumeration(
+          kPaymentRequestPrefilled,
+          PaymentRequestPrefilled::NOTPREFILLED_ADDITIONAL_ACTION_SELECTED);
+      return;
   }
 }
 
 // static
-void Metrics::RecordPaymentRequestAutofillChanged(bool changed, bool success) {
-  if (changed && success) {
-    base::UmaHistogramEnumeration(
-        kPaymentRequestAutofillInfoChanged,
-        PaymentRequestAutofillInfoChanged::CHANGED_SUCCESS);
-  } else if (changed && !success) {
-    base::UmaHistogramEnumeration(
-        kPaymentRequestAutofillInfoChanged,
-        PaymentRequestAutofillInfoChanged::CHANGED_FAILURE);
-  } else if (!changed && success) {
-    base::UmaHistogramEnumeration(
-        kPaymentRequestAutofillInfoChanged,
-        PaymentRequestAutofillInfoChanged::NOTCHANGED_SUCCESS);
-  } else if (!changed && !success) {
-    base::UmaHistogramEnumeration(
-        kPaymentRequestAutofillInfoChanged,
-        PaymentRequestAutofillInfoChanged::NOTCHANGED_FAILURE);
+void Metrics::RecordPaymentRequestAutofillChanged(
+    bool changed,
+    CollectUserDataResult result) {
+  switch (result) {
+    case Metrics::CollectUserDataResult::UNKNOWN:
+      if (changed) {
+        base::UmaHistogramEnumeration(
+            kPaymentRequestAutofillInfoChanged,
+            PaymentRequestAutofillInfoChanged::CHANGED_UNKNOWN);
+        return;
+      }
+      base::UmaHistogramEnumeration(
+          kPaymentRequestAutofillInfoChanged,
+          PaymentRequestAutofillInfoChanged::NOTCHANGED_UNKNOWN);
+      return;
+    case Metrics::CollectUserDataResult::FAILURE:
+      if (changed) {
+        base::UmaHistogramEnumeration(
+            kPaymentRequestAutofillInfoChanged,
+            PaymentRequestAutofillInfoChanged::CHANGED_FAILURE);
+        return;
+      }
+      base::UmaHistogramEnumeration(
+          kPaymentRequestAutofillInfoChanged,
+          PaymentRequestAutofillInfoChanged::NOTCHANGED_FAILURE);
+      return;
+    case Metrics::CollectUserDataResult::SUCCESS:
+      if (changed) {
+        base::UmaHistogramEnumeration(
+            kPaymentRequestAutofillInfoChanged,
+            PaymentRequestAutofillInfoChanged::CHANGED_SUCCESS);
+        return;
+      }
+      base::UmaHistogramEnumeration(
+          kPaymentRequestAutofillInfoChanged,
+          PaymentRequestAutofillInfoChanged::NOTCHANGED_SUCCESS);
+      return;
+    case Metrics::CollectUserDataResult::TERMS_AND_CONDITIONS_LINK_CLICKED:
+      if (changed) {
+        base::UmaHistogramEnumeration(
+            kPaymentRequestAutofillInfoChanged,
+            PaymentRequestAutofillInfoChanged::
+                CHANGED_TERMS_AND_CONDITIONS_LINK_CLICKED);
+        return;
+      }
+      base::UmaHistogramEnumeration(
+          kPaymentRequestAutofillInfoChanged,
+          PaymentRequestAutofillInfoChanged::
+              NOTCHANGED_TERMS_AND_CONDITIONS_LINK_CLICKED);
+      return;
+    case Metrics::CollectUserDataResult::ADDITIONAL_ACTION_SELECTED:
+      if (changed) {
+        base::UmaHistogramEnumeration(kPaymentRequestAutofillInfoChanged,
+                                      PaymentRequestAutofillInfoChanged::
+                                          CHANGED_ADDITIONAL_ACTION_SELECTED);
+        return;
+      }
+      base::UmaHistogramEnumeration(kPaymentRequestAutofillInfoChanged,
+                                    PaymentRequestAutofillInfoChanged::
+                                        NOTCHANGED_ADDITIONAL_ACTION_SELECTED);
+      return;
   }
 }
 
@@ -449,13 +538,11 @@ void Metrics::RecordShippingMetrics(ukm::UkmRecorder* ukm_recorder,
 // static
 void Metrics::RecordCollectUserDataSuccess(ukm::UkmRecorder* ukm_recorder,
                                            ukm::SourceId source_id,
-                                           bool success,
+                                           CollectUserDataResult result,
                                            int64_t time_taken_ms,
                                            UserDataSource source) {
   ukm::builders::AutofillAssistant_CollectUserDataResult(source_id)
-      .SetResult(static_cast<int64_t>(
-          success ? Metrics::CollectUserDataResult::SUCCESS
-                  : Metrics::CollectUserDataResult::FAILURE))
+      .SetResult(static_cast<int64_t>(result))
       .SetTimeTakenMs(time_taken_ms)
       .SetUserDataSource(static_cast<int64_t>(source))
       .Record(ukm_recorder);

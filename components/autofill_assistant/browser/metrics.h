@@ -123,12 +123,23 @@ class Metrics {
   // AutofillAssistantPaymentRequestPrefilled enum listing in
   // tools/metrics/histograms/enums.xml.
   enum class PaymentRequestPrefilled {
+    // The action finished successfully (the user clicked the "confirm" chip).
     PREFILLED_SUCCESS = 0,
     NOTPREFILLED_SUCCESS = 1,
+    // The action finished unsuccessfully.
     PREFILLED_FAILURE = 2,
     NOTPREFILLED_FAILURE = 3,
+    // Unknown result, should not happen.
+    PREFILLED_UNKNOWN = 4,
+    NOTPREFILLED_UNKNOWN = 5,
+    // The user clicked the link in the terms and condition text.
+    PREFILLED_TERMS_AND_CONDITIONS_LINK_CLICKED = 6,
+    NOTPREFILLED_TERMS_AND_CONDITIONS_LINK_CLICKED = 7,
+    // The user clicked one of the non-confirm chips.
+    PREFILLED_ADDITIONAL_ACTION_SELECTED = 8,
+    NOTPREFILLED_ADDITIONAL_ACTION_SELECTED = 9,
 
-    kMaxValue = NOTPREFILLED_FAILURE
+    kMaxValue = NOTPREFILLED_ADDITIONAL_ACTION_SELECTED
   };
 
   // Whether autofill info was changed during an autofill assistant payment
@@ -139,12 +150,23 @@ class Metrics {
   // AutofillAssistantPaymentRequestAutofillInfoChanged enum listing
   // in tools/metrics/histograms/enums.xml.
   enum class PaymentRequestAutofillInfoChanged {
+    // The action finished successfully (the user clicked the "confirm" chip).
     CHANGED_SUCCESS = 0,
     NOTCHANGED_SUCCESS = 1,
+    // The action finished unsuccessfully.
     CHANGED_FAILURE = 2,
     NOTCHANGED_FAILURE = 3,
+    // Unknown result, should not happen.
+    CHANGED_UNKNOWN = 4,
+    NOTCHANGED_UNKNOWN = 5,
+    // The user clicked the link in the terms and condition text.
+    CHANGED_TERMS_AND_CONDITIONS_LINK_CLICKED = 6,
+    NOTCHANGED_TERMS_AND_CONDITIONS_LINK_CLICKED = 7,
+    // The user clicked one of the non-confirm chips.
+    CHANGED_ADDITIONAL_ACTION_SELECTED = 8,
+    NOTCHANGED_ADDITIONAL_ACTION_SELECTED = 9,
 
-    kMaxValue = NOTCHANGED_FAILURE
+    kMaxValue = NOTCHANGED_ADDITIONAL_ACTION_SELECTED
   };
 
   // Whether a billing postal code was required and whether the user ultimately
@@ -574,10 +596,16 @@ class Metrics {
   // tools/metrics/ukm/ukm.xml as necessary.
   enum class CollectUserDataResult {
     UNKNOWN,
+    // The action finished successfully (the user clicked the "confirm" chip).
     SUCCESS,
+    // The action finished unsuccessfully.
     FAILURE,
+    // The user clicked the link in the terms and condition text.
+    TERMS_AND_CONDITIONS_LINK_CLICKED,
+    // The user clicked one of the non-confirm chips.
+    ADDITIONAL_ACTION_SELECTED,
 
-    kMaxValue = FAILURE
+    kMaxValue = ADDITIONAL_ACTION_SELECTED
   };
 
   // The source of the initial data for the current CollectUserData action.
@@ -673,9 +701,11 @@ class Metrics {
   };
 
   static void RecordDropOut(DropOutReason reason, const std::string& intent);
-  static void RecordPaymentRequestPrefilledSuccess(bool initially_complete,
-                                                   bool success);
-  static void RecordPaymentRequestAutofillChanged(bool changed, bool success);
+  static void RecordPaymentRequestPrefilledSuccess(
+      bool initially_complete,
+      CollectUserDataResult result);
+  static void RecordPaymentRequestAutofillChanged(bool changed,
+                                                  CollectUserDataResult result);
   static void RecordPaymentRequestFirstNameOnly(bool first_name_only);
   static void RecordTriggerScriptStarted(ukm::UkmRecorder* ukm_recorder,
                                          ukm::SourceId source_id,
@@ -741,7 +771,7 @@ class Metrics {
                                     UserDataSelectionState selection_state);
   static void RecordCollectUserDataSuccess(ukm::UkmRecorder* ukm_recorder,
                                            ukm::SourceId source_id,
-                                           bool success,
+                                           CollectUserDataResult result,
                                            int64_t time_taken_ms,
                                            UserDataSource source);
   static void RecordOnboardingFetcherResult(

@@ -2476,6 +2476,12 @@ TEST_F(CollectUserDataActionTest, LinkClickWritesPartialUserData) {
               Property(&CollectUserDataResultProto::set_text_input_memory_keys,
                        UnorderedElementsAre("key1")))))));
   action.ProcessAction(callback_.Get());
+  EXPECT_THAT(
+      GetUkmCollectUserDataResult(ukm_recorder_),
+      ElementsAreArray({ToHumanReadableEntry(
+          source_id_, kResult,
+          static_cast<int64_t>(Metrics::CollectUserDataResult::
+                                   TERMS_AND_CONDITIONS_LINK_CLICKED))}));
 }
 
 TEST_F(CollectUserDataActionTest, ConfirmButtonChip) {
@@ -3573,6 +3579,37 @@ TEST_F(CollectUserDataActionTest, LogUkmSuccess) {
       ElementsAreArray({ToHumanReadableEntry(
           source_id_, kUserDataSource,
           static_cast<int64_t>(Metrics::UserDataSource::CHROME_AUTOFILL))}));
+}
+
+TEST_F(CollectUserDataActionTest, LogUkmAdditionalActionSelected) {
+  ActionProto action_proto;
+  auto* collect_user_data_proto = action_proto.mutable_collect_user_data();
+  collect_user_data_proto->set_privacy_notice_text("privacy");
+  collect_user_data_proto->set_request_terms_and_conditions(true);
+  collect_user_data_proto->set_accept_terms_and_conditions_text(
+      "terms and conditions");
+  collect_user_data_proto->set_show_terms_as_checkbox(false);
+  collect_user_data_proto->set_terms_require_review_text("terms review");
+  collect_user_data_proto->add_additional_actions();
+
+  ON_CALL(mock_action_delegate_, CollectUserData(_))
+      .WillByDefault([&](CollectUserDataOptions* collect_user_data_options) {
+        std::move(collect_user_data_options->additional_actions_callback)
+            .Run(/* index= */ 0, &user_data_, &user_model_);
+      });
+
+  EXPECT_CALL(
+      callback_,
+      Run(Pointee(Property(&ProcessedActionProto::status, ACTION_APPLIED))));
+  CollectUserDataAction action(&mock_action_delegate_, action_proto);
+  action.ProcessAction(callback_.Get());
+
+  EXPECT_THAT(
+      GetUkmCollectUserDataResult(ukm_recorder_),
+      ElementsAreArray({ToHumanReadableEntry(
+          source_id_, kResult,
+          static_cast<int64_t>(
+              Metrics::CollectUserDataResult::ADDITIONAL_ACTION_SELECTED))}));
 }
 
 TEST_F(CollectUserDataActionTest, LogUkmFailure) {

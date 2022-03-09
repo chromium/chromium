@@ -158,7 +158,8 @@ struct UserDataMetrics {
 
   bool initially_prefilled = false;
   bool personal_data_changed = false;
-  bool action_successful = false;
+  Metrics::CollectUserDataResult action_result =
+      Metrics::CollectUserDataResult::FAILURE;
 
   Metrics::UserDataSource user_data_source = Metrics::UserDataSource::UNKNOWN;
 

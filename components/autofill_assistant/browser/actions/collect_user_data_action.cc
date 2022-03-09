@@ -432,13 +432,13 @@ void CollectUserDataAction::MaybeLogMetrics() {
 
   metrics_data_.metrics_logged = true;
   Metrics::RecordPaymentRequestPrefilledSuccess(
-      metrics_data_.initially_prefilled, metrics_data_.action_successful);
+      metrics_data_.initially_prefilled, metrics_data_.action_result);
   Metrics::RecordPaymentRequestAutofillChanged(
-      metrics_data_.personal_data_changed, metrics_data_.action_successful);
+      metrics_data_.personal_data_changed, metrics_data_.action_result);
 
   Metrics::RecordCollectUserDataSuccess(
       delegate_->GetUkmRecorder(), metrics_data_.source_id,
-      metrics_data_.action_successful,
+      metrics_data_.action_result,
       action_stopwatch_.TotalActiveTime().InMilliseconds(),
       metrics_data_.user_data_source);
   if (RequiresContact(*collect_user_data_options_)) {
@@ -481,7 +481,8 @@ void CollectUserDataAction::InternalProcessAction(
     ProcessActionCallback callback) {
   callback_ = std::move(callback);
   if (!CreateOptionsFromProto()) {
-    EndAction(ClientStatus(INVALID_ACTION));
+    EndAction(ClientStatus(INVALID_ACTION),
+              Metrics::CollectUserDataResult::FAILURE);
     return;
   }
 
@@ -523,10 +524,12 @@ void CollectUserDataAction::InternalProcessAction(
   }
 }
 
-void CollectUserDataAction::EndAction(const ClientStatus& status) {
-  metrics_data_.action_successful = status.ok();
+void CollectUserDataAction::EndAction(
+    const ClientStatus& status,
+    const Metrics::CollectUserDataResult result) {
+  metrics_data_.action_result = result;
   MaybeLogMetrics();
-  if (metrics_data_.action_successful) {
+  if (status.ok()) {
     delegate_->SetLastSuccessfulUserDataOptions(
         std::move(collect_user_data_options_));
   }
@@ -600,7 +603,8 @@ void CollectUserDataAction::OnShowToUser(UserData* user_data,
 
   if (collect_user_data_options_->request_login_choice &&
       collect_user_data_options_->login_choices.empty()) {
-    EndAction(ClientStatus(COLLECT_USER_DATA_ERROR));
+    EndAction(ClientStatus(COLLECT_USER_DATA_ERROR),
+              Metrics::CollectUserDataResult::FAILURE);
     return;
   }
 
@@ -691,7 +695,8 @@ void CollectUserDataAction::OnRequestUserData(
     bool success,
     const GetUserDataResponseProto& response) {
   if (!success) {
-    EndAction(ClientStatus(USER_DATA_REQUEST_FAILED));
+    EndAction(ClientStatus(USER_DATA_REQUEST_FAILED),
+              Metrics::CollectUserDataResult::FAILURE);
     return;
   }
   UpdateUserDataFromProto(response, user_data);
@@ -756,7 +761,8 @@ void CollectUserDataAction::OnGetUserData(
   }
   DCHECK(
       IsUserDataComplete(*user_data, *user_model, *collect_user_data_options_));
-  EndAction(ClientStatus(ACTION_APPLIED));
+  EndAction(ClientStatus(ACTION_APPLIED),
+            Metrics::CollectUserDataResult::SUCCESS);
 }
 
 void CollectUserDataAction::OnAdditionalActionTriggered(
@@ -772,7 +778,8 @@ void CollectUserDataAction::OnAdditionalActionTriggered(
   processed_action_proto_->mutable_collect_user_data_result()
       ->set_additional_action_index(index);
   WriteProcessedAction(user_data, user_model);
-  EndAction(ClientStatus(ACTION_APPLIED));
+  EndAction(ClientStatus(ACTION_APPLIED),
+            Metrics::CollectUserDataResult::ADDITIONAL_ACTION_SELECTED);
 }
 
 void CollectUserDataAction::OnTermsAndConditionsLinkClicked(
@@ -788,7 +795,8 @@ void CollectUserDataAction::OnTermsAndConditionsLinkClicked(
   processed_action_proto_->mutable_collect_user_data_result()->set_terms_link(
       link);
   WriteProcessedAction(user_data, user_model);
-  EndAction(ClientStatus(ACTION_APPLIED));
+  EndAction(ClientStatus(ACTION_APPLIED),
+            Metrics::CollectUserDataResult::TERMS_AND_CONDITIONS_LINK_CLICKED);
 }
 
 void CollectUserDataAction::ReloadUserData(UserData* user_data) {
@@ -809,7 +817,8 @@ void CollectUserDataAction::ReloadUserData(UserData* user_data) {
     user_data->previous_user_data_metrics_ = metrics_data_;
     // We do not wish to log this yet.
     metrics_data_.metrics_logged = true;
-    EndAction(ClientStatus(RESEND_USER_DATA));
+    EndAction(ClientStatus(RESEND_USER_DATA),
+              Metrics::CollectUserDataResult::UNKNOWN);
     return;
   }
   NOTREACHED();
@@ -1425,7 +1434,8 @@ void CollectUserDataAction::UpdateUserDataFromProto(
           });
       if (it == user_data->available_contacts_.end()) {
         NOTREACHED();
-        EndAction(ClientStatus(INVALID_ACTION));
+        EndAction(ClientStatus(INVALID_ACTION),
+                  Metrics::CollectUserDataResult::FAILURE);
         return;
       }
       const auto& contact_to_select = *it;
@@ -1460,7 +1470,8 @@ void CollectUserDataAction::UpdateUserDataFromProto(
           });
       if (it == user_data->available_phone_numbers_.end()) {
         NOTREACHED();
-        EndAction(ClientStatus(INVALID_ACTION));
+        EndAction(ClientStatus(INVALID_ACTION),
+                  Metrics::CollectUserDataResult::FAILURE);
         return;
       }
       const auto& phone_number_to_select = *it;
@@ -1496,7 +1507,8 @@ void CollectUserDataAction::UpdateUserDataFromProto(
           });
       if (it == user_data->available_addresses_.end()) {
         NOTREACHED();
-        EndAction(ClientStatus(INVALID_ACTION));
+        EndAction(ClientStatus(INVALID_ACTION),
+                  Metrics::CollectUserDataResult::FAILURE);
         return;
       }
       const auto& address_to_select = *it;
@@ -1570,7 +1582,8 @@ void CollectUserDataAction::UpdateUserDataFromProto(
           });
       if (it == user_data->available_payment_instruments_.end()) {
         NOTREACHED();
-        EndAction(ClientStatus(INVALID_ACTION));
+        EndAction(ClientStatus(INVALID_ACTION),
+                  Metrics::CollectUserDataResult::FAILURE);
         return;
       }
       const auto& instrument_to_select = *it;
