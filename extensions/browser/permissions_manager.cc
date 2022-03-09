@@ -209,6 +209,19 @@ PermissionsManager::GetUserPermissionsSettings() const {
   return user_permissions_;
 }
 
+PermissionsManager::UserSiteSetting PermissionsManager::GetUserSiteSetting(
+    const url::Origin& origin) const {
+  if (user_permissions_.permitted_sites.find(origin) !=
+      user_permissions_.permitted_sites.end()) {
+    return UserSiteSetting::kGrantAllExtensions;
+  }
+  if (user_permissions_.restricted_sites.find(origin) !=
+      user_permissions_.restricted_sites.end()) {
+    return UserSiteSetting::kBlockAllExtensions;
+  }
+  return UserSiteSetting::kCustomizeByExtension;
+}
+
 void PermissionsManager::AddObserver(Observer* observer) {
   observers_.AddObserver(observer);
 }

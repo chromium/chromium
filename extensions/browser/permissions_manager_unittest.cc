@@ -20,6 +20,8 @@ std::unique_ptr<KeyedService> SetTestingPermissionsManager(
 
 namespace extensions {
 
+using UserSiteSetting = PermissionsManager::UserSiteSetting;
+
 class PermissionsManagerUnittest : public ExtensionsTest {
  public:
   PermissionsManagerUnittest() = default;
@@ -94,12 +96,16 @@ TEST_F(PermissionsManagerUnittest, AddAndRemoveRestrictedSite) {
   // Verify the restricted sites list is empty.
   EXPECT_EQ(GetRestrictedSitesFromManager(), std::set<url::Origin>());
   EXPECT_EQ(GetRestrictedSitesFromPrefs(), nullptr);
+  EXPECT_EQ(manager_->GetUserSiteSetting(url),
+            UserSiteSetting::kCustomizeByExtension);
 
   // Add `url` to restricted sites. Verify the site is stored both in manager
   // and prefs restricted sites.
   manager_->AddUserRestrictedSite(url);
   EXPECT_EQ(GetRestrictedSitesFromManager(), set_with_url);
   EXPECT_EQ(*GetRestrictedSitesFromPrefs(), value_with_url);
+  EXPECT_EQ(manager_->GetUserSiteSetting(url),
+            UserSiteSetting::kBlockAllExtensions);
 
   // Adding an existent restricted site. Verify the entry is not duplicated.
   manager_->AddUserRestrictedSite(url);
@@ -112,6 +118,8 @@ TEST_F(PermissionsManagerUnittest, AddAndRemoveRestrictedSite) {
   EXPECT_EQ(GetRestrictedSitesFromManager(), std::set<url::Origin>());
   EXPECT_EQ(*GetRestrictedSitesFromPrefs(),
             base::Value(base::Value::Type::LIST));
+  EXPECT_EQ(manager_->GetUserSiteSetting(url),
+            UserSiteSetting::kCustomizeByExtension);
 }
 
 TEST_F(PermissionsManagerUnittest, AddAndRemovePermittedSite) {
@@ -124,12 +132,16 @@ TEST_F(PermissionsManagerUnittest, AddAndRemovePermittedSite) {
   // Verify the permitted sites list is empty.
   EXPECT_EQ(GetPermittedSitesFromManager(), std::set<url::Origin>());
   EXPECT_EQ(GetPermittedSitesFromPrefs(), nullptr);
+  EXPECT_EQ(manager_->GetUserSiteSetting(url),
+            PermissionsManager::UserSiteSetting::kCustomizeByExtension);
 
   // Add `url` to permitted sites. Verify the site is stored both in manager
   // and prefs permitted sites.
   manager_->AddUserPermittedSite(url);
   EXPECT_EQ(GetPermittedSitesFromManager(), set_with_url);
   EXPECT_EQ(*GetPermittedSitesFromPrefs(), value_with_url);
+  EXPECT_EQ(manager_->GetUserSiteSetting(url),
+            PermissionsManager::UserSiteSetting::kGrantAllExtensions);
 
   // Adding an existent permitted site. Verify the entry is not duplicated.
   manager_->AddUserPermittedSite(url);
@@ -142,6 +154,8 @@ TEST_F(PermissionsManagerUnittest, AddAndRemovePermittedSite) {
   EXPECT_EQ(GetPermittedSitesFromManager(), std::set<url::Origin>());
   EXPECT_EQ(*GetPermittedSitesFromPrefs(),
             base::Value(base::Value::Type::LIST));
+  EXPECT_EQ(manager_->GetUserSiteSetting(url),
+            PermissionsManager::UserSiteSetting::kCustomizeByExtension);
 }
 
 TEST_F(PermissionsManagerUnittest,
@@ -157,6 +171,8 @@ TEST_F(PermissionsManagerUnittest,
         manager_->GetUserPermissionsSettings();
     EXPECT_EQ(actual_permissions.restricted_sites, set_with_url);
     EXPECT_EQ(actual_permissions.permitted_sites, empty_set);
+    EXPECT_EQ(manager_->GetUserSiteSetting(url),
+              PermissionsManager::UserSiteSetting::kBlockAllExtensions);
   }
 
   {
@@ -168,6 +184,8 @@ TEST_F(PermissionsManagerUnittest,
         manager_->GetUserPermissionsSettings();
     EXPECT_EQ(actual_permissions.restricted_sites, empty_set);
     EXPECT_EQ(actual_permissions.permitted_sites, set_with_url);
+    EXPECT_EQ(manager_->GetUserSiteSetting(url),
+              PermissionsManager::UserSiteSetting::kGrantAllExtensions);
   }
 
   {
@@ -179,6 +197,8 @@ TEST_F(PermissionsManagerUnittest,
         manager_->GetUserPermissionsSettings();
     EXPECT_EQ(actual_permissions.restricted_sites, set_with_url);
     EXPECT_EQ(actual_permissions.permitted_sites, empty_set);
+    EXPECT_EQ(manager_->GetUserSiteSetting(url),
+              PermissionsManager::UserSiteSetting::kBlockAllExtensions);
   }
 }
 

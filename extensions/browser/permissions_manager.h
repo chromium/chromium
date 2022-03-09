@@ -52,6 +52,17 @@ class PermissionsManager : public KeyedService {
     std::set<url::Origin> permitted_sites;
   };
 
+  // The user's site setting for a given site.
+  enum class UserSiteSetting {
+    // All extensions that request access are granted access in the site.
+    kGrantAllExtensions,
+    // All extensions that request access have withheld access in the site.
+    kBlockAllExtensions,
+    // Each extension that requests access can have its site access customized
+    // in the site.
+    kCustomizeByExtension,
+  };
+
   class Observer {
    public:
     virtual void UserPermissionsSettingsChanged(
@@ -92,6 +103,9 @@ class PermissionsManager : public KeyedService {
 
   // Returns the user's permission settings.
   const UserPermissionsSettings& GetUserPermissionsSettings() const;
+
+  // Returns the user's site setting for `origin`.
+  UserSiteSetting GetUserSiteSetting(const url::Origin& origin) const;
 
   // Adds or removes observers.
   void AddObserver(Observer* observer);
