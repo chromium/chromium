@@ -386,8 +386,8 @@ public class StripLayoutHelperManager implements SceneOverlay {
 
     @Override
     public void getVirtualViews(List<VirtualView> views) {
-        if (mModelSelectorButton.isVisible()) views.add(mModelSelectorButton);
         if (!getStripScrim().isVisible()) getActiveStripLayoutHelper().getVirtualViews(views);
+        if (mModelSelectorButton.isVisible()) views.add(mModelSelectorButton);
     }
 
     @Override
