@@ -345,8 +345,9 @@ class DeviceTarget(target.Target):
     # Prefer connecting via node name over address:port. Assume that ffx already
     # knows about the target, so there's no need to add/remove it.
     self._ffx_target = ffx_session.FfxTarget(
-        self._ffx_runner, node_name=self._node_name) if self._node_name else \
-        ffx_session.FfxTarget(self._ffx_runner, self._host, self._port)
+        self._ffx_runner, self._node_name) if self._node_name else \
+        ffx_session.FfxTarget(self._ffx_runner,
+                              '%s:%s' % (self._host, self._port))
     self._ffx_target.wait(ATTACH_RETRY_SECONDS)
     return super(DeviceTarget, self)._ConnectToTarget()
 

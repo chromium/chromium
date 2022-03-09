@@ -44,6 +44,7 @@ class QemuTarget(emu_target.EmuTarget):
     self._cpu_cores=cpu_cores
     self._require_kvm=require_kvm
     self._ram_size_mb=ram_size_mb
+    self._host_ssh_port = None
 
   @staticmethod
   def CreateFromArgs(args):
@@ -183,6 +184,15 @@ class QemuTarget(emu_target.EmuTarget):
     qemu_command.extend(self._BuildQemuConfig())
     qemu_command.append('-nographic')
     return qemu_command
+
+  def _HasNetworking(self):
+    return False
+
+  def _GetEndpoint(self):
+    if not self._IsEmuStillRunning():
+      raise Exception('%s quit unexpectedly.' % (self.EMULATOR_NAME))
+    return (self.LOCAL_ADDRESS, self._host_ssh_port)
+
 
 def _ComputeFileHash(filename):
   hasher = hashlib.md5()

@@ -174,6 +174,9 @@ class FvdlTarget(emu_target.EmuTarget):
       for flag in env_flags:
         emu_command.extend(['--envs', flag])
 
+  def _HasNetworking(self):
+    return self._with_network
+
   def _ConnectToTarget(self):
     # Indicates the FVDL command finished running.
     self._emu_process.communicate()

@@ -19,7 +19,7 @@ import target
 
 
 class EmuTarget(target.Target):
-  LOCAL_ADDRESS = '127.0.0.1'
+  LOCAL_ADDRESS = 'localhost'
 
   def __init__(self, out_dir, target_cpu, logs_dir):
     """out_dir: The directory which will contain the files that are
@@ -49,10 +49,11 @@ class EmuTarget(target.Target):
       # wedged, leading to failures. Reach out and stop an old daemon if there
       # happens to be one.
       self._ffx_runner.stop_daemon()
-      # Bots may accumulate stale manually-added targets with the same address
-      # as the one to be added here. Preemtively remove any unknown targets at
-      # this address before starting the emulator and adding it as a target.
-      self._ffx_runner.remove_stale_targets(self.LOCAL_ADDRESS)
+      if not self._HasNetworking():
+        # Bots may accumulate stale manually-added targets with the same address
+        # as the one to be added here. Preemtively remove any unknown targets at
+        # this address before starting the emulator and adding it as a target.
+        self._ffx_runner.remove_stale_targets('127.0.0.1')
     emu_command = self._BuildCommand()
     logging.debug(' '.join(emu_command))
 
@@ -125,31 +126,44 @@ class EmuTarget(target.Target):
     self.LogSystemStatistics('system_statistics_end_log')
     self._DisconnectFromTarget()
 
+  def _HasNetworking(self):
+    """Returns `True` if the emulator will be started with networking (e.g.,
+    TUN/TAP emulated networking).
+    """
+    raise NotImplementedError()
+
   def _IsEmuStillRunning(self):
     if not self._emu_process:
       return False
     return os.waitpid(self._emu_process.pid, os.WNOHANG)[0] == 0
 
   def _GetEndpoint(self):
-    if not self._IsEmuStillRunning():
-      raise Exception('%s quit unexpectedly.' % (self.EMULATOR_NAME))
-    return (self.LOCAL_ADDRESS, self._host_ssh_port)
+    raise NotImplementedError()
 
   def _ConnectToTarget(self):
-    logging.info('Connecting to Fuchsia using ffx.')
-    host, port = self._GetEndpoint()
-    # The target is a freshly-started emulator, so add it as a target to ffx.
-    self._target_context = self._ffx_runner.scoped_target_context(host, port)
-    self._ffx_target = self._target_context.__enter__()
-    self._ffx_target.wait(common.ATTACH_RETRY_SECONDS)
-    return super(EmuTarget, self)._ConnectToTarget()
+    with_network = self._HasNetworking()
+    if not with_network:
+      # The target was started without networking, so tell ffx how to find it.
+      logging.info('Connecting to Fuchsia using ffx.')
+      _, host_ssh_port = self._GetEndpoint()
+      self._target_context = self._ffx_runner.scoped_target_context(
+          '127.0.0.1', host_ssh_port)
+      self._ffx_target = self._target_context.__enter__()
+      self._ffx_target.wait(common.ATTACH_RETRY_SECONDS)
+    super(EmuTarget, self)._ConnectToTarget()
+    if with_network:
+      # Interact with the target via its node name, which ffx should now know
+      # about.
+      address, port = self._GetNetworkAddress()
+      self._ffx_target = ffx_session.FfxTarget(
+          self._ffx_runner, self._ffx_runner.get_node_name(address, port))
 
   def _DisconnectFromTarget(self):
-    super(EmuTarget, self)._DisconnectFromTarget()
+    self._ffx_target = None
     if self._target_context:
-      self._ffx_target = None
       self._target_context.__exit__(None, None, None)
       self._target_context = None
+    super(EmuTarget, self)._DisconnectFromTarget()
 
   def _GetSshConfigPath(self):
     return boot_data.GetSSHConfigPath()

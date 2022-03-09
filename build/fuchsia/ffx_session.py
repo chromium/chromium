@@ -193,22 +193,28 @@ class FfxRunner():
                   ' doctor')
     self.run_ffx(['doctor', '--restart-daemon'], check=False)
 
+  def list_targets(self):
+    """Returns the (possibly empty) list of targets known to ffx.
+
+    Returns:
+      The list of targets parsed from the JSON output of `ffx target list`.
+    """
+    json_targets = self.run_ffx(['target', 'list', '-f', 'json'])
+    if not json_targets:
+      return []
+    try:
+      return json.loads(json_targets)
+    except ValueError:
+      # TODO(grt): Change to json.JSONDecodeError once p3 is supported.
+      return []
+
   def remove_stale_targets(self, address):
     """Removes any targets from ffx that are listening at a given address.
 
     Args:
       address: A string representation of the target's ip address.
     """
-    json_targets = self.run_ffx(['target', 'list', '-f', 'j'])
-    if not json_targets:
-      return
-    try:
-      targets = json.loads(json_targets)
-    except ValueError:
-      # TODO(grt): Change to json.JSONDecodeError once p3 is supported.
-      logging.debug('No stale targets to remove')
-      return
-    for target in targets:
+    for target in self.list_targets():
       if target['rcs_state'] == 'N' and address in target['addresses']:
         self.run_ffx(['target', 'remove', address])
 
@@ -223,34 +229,43 @@ class FfxRunner():
     Yields:
       An FfxTarget for interacting with the target.
     """
-    address_and_port = '%s:%d' % (address, port)
-    self.run_ffx(['target', 'add', address_and_port])
+    target_identifier = '%s:%d' % (address, port)
+    self.run_ffx(['target', 'add', target_identifier])
     try:
-      yield FfxTarget(self, address=address, port=port)
+      yield FfxTarget(self, target_identifier)
     finally:
-      self.run_ffx(['target', 'remove', address_and_port], check=False)
+      self.run_ffx(['target', 'remove', target_identifier], check=False)
+
+  def get_node_name(self, address, port):
+    """Returns the node name for a target given its SSH address.
+
+    Args:
+      address: The address at which the target's SSH daemon is listening.
+      port: The port number on which the daemon is listening.
+
+    Returns:
+      The target's node name.
+
+    Raises:
+      Exception: If the target cannot be found.
+    """
+    for target in self.list_targets():
+      if target['nodename'] and address in target['addresses']:
+        if FfxTarget(self, target['nodename']).get_ssh_address()[1] == port:
+          return target['nodename']
+    raise Exception('Failed to determine node name for target at %s:%s' %
+                    (address, port))
 
 
 class FfxTarget():
   """A helper to run `ffx` commands for a specific target."""
 
-  def __init__(self, ffx_runner, address=None, port=None, node_name=None):
+  def __init__(self, ffx_runner, target_identifier):
     """Args:
       ffx_runner: The runner to use to run ffx.
-      address: The IP address at which the target is listening.
-      port: The port number on which the target is listening.
-      node_name: The target's node name.
+      target_identifier: The target's node name or addr:port string.
     """
-    # Both or neither address and port must be specified.
-    assert (address is not None) == (port is not None)
-    # Either node_name or address+port must be specified.
-    assert (node_name is not None) != (address is not None)
     self._ffx_runner = ffx_runner
-    self._address = address
-    self._port = port
-    self._node_name = node_name
-    target_identifier = node_name if (node_name is not None) else \
-      ('%s:%d' % (self._address, self._port))
     self._target_args = ('--target', target_identifier)
 
   def wait(self, timeout=None):
@@ -264,6 +279,23 @@ class FfxTarget():
     if timeout is not None:
       command.extend(('-t', '%d' % int(timeout)))
     self._ffx_runner.run_ffx(command)
+
+  def get_ssh_address(self):
+    """Returns the host and port of the target's SSH address
+
+    Returns:
+      A tuple of a host address string and a port number integer.
+
+    Raises:
+      subprocess.CalledProcessError if the address cannot be obtained.
+    """
+    command = list(self._target_args)
+    command.extend(('target', 'get-ssh-address'))
+    host, port = self._ffx_runner.run_ffx(command).rsplit(':', 1)
+    # Strip the brackets if the host looks like an IPv6 address.
+    if len(host) > 2 and host[0] == '[' and host[-1] == ']':
+      host = host[1:-1]
+    return (host, int(port))
 
   def open_ffx(self, command):
     """Runs `ffx` for the target with some arguments.
