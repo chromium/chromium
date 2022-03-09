@@ -29,9 +29,16 @@ void AddReturnIfOnTop(JsSnippet* out,
                       const std::string& not_on_top,
                       const std::string& not_in_view) {
   // clang-format off
-  out->AddLine({"const bounds = ", element_var, R"(.getBoundingClientRect();
-  const x = bounds.x + bounds.width / 2;
-  const y = bounds.y + bounds.height / 2;
+  out->AddLine({"const rects = ", element_var, R"(.getClientRects();
+  if (rects.length == 0) return )", not_in_view, R"(;
+
+  const r = rects[0];
+  if (r.bottom <= 0 || r.right <= 0 ||
+      r.top >= window.innerHeight || r.left >= window.innerWidth) {
+    return )", not_in_view, R"(;
+  }
+  const x = Math.min(window.innerWidth - 1, Math.max(0, r.x + r.width / 2));
+  const y = Math.min(window.innerHeight - 1, Math.max(0, r.y + r.height / 2));
   const targets = [)", element_var, R"(];
   const labels = )", element_var, R"(.labels;
   if (labels) {

@@ -2486,6 +2486,28 @@ document.getElementById("touch_area_one").getBoundingClientRect().bottom
   RunLaxElementCheck(target, false);
 }
 
+IN_PROC_BROWSER_TEST_F(WebControllerBrowserTest, OnTopVeryTallElement) {
+  Selector target({"#triple_height_section"});
+  RunLaxElementCheck(target, true);
+  auto* on_top = target.proto.add_filters()->mutable_on_top();
+
+  // Apply on_top without scrolling.
+  on_top->set_scroll_into_view_if_needed(false);
+  RunLaxElementCheck(target, false);
+
+  // Allow on_top to scroll.
+  on_top->set_scroll_into_view_if_needed(true);
+  RunLaxElementCheck(target, true);
+
+  // Scroll until #triple_height_section is partially inside the viewport.
+  EXPECT_TRUE(ExecJs(shell(), R"(
+    const el = document.getElementById("triple_height_section");
+    const pos = el.getBoundingClientRect().top - window.innerHeight + 100;
+    window.scrollBy(0, pos);
+  )"));
+  RunLaxElementCheck(target, true);
+}
+
 IN_PROC_BROWSER_TEST_F(WebControllerBrowserTest, ALabelIsNotAnOverlay) {
   Selector input({"#input1"});
   RunLaxElementCheck(input, true);
