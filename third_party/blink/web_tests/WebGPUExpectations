@@ -163,11 +163,26 @@ crbug.com/dawn/1025 wpt_internal/webgpu/cts.https.html?q=webgpu:api,validation,r
 # Replace depth-clamp feature with depth-clip
 crbug.com/dawn/1178 wpt_internal/webgpu/cts.https.html?q=webgpu:api,operation,rendering,depth_clip_clamp:* [ Failure ]
 
+# crbug.com/dawn/1281
 # Temporary. Failing a loadOp/storeOp validation error in Dawn.
 # https://dawn-review.googlesource.com/c/dawn/+/82540
 wpt_internal/webgpu/cts.https.html?q=webgpu:api,validation,attachment_compatibility:render_pass_and_bundle,depth_format:* [ Failure ]
 wpt_internal/webgpu/cts.https.html?q=webgpu:api,operation,command_buffer,image_copy:rowsPerImage_and_bytesPerRow_depth_stencil:* [ Skip ] # Skipped because it conflicted with a Slow expectation.
 wpt_internal/webgpu/cts.https.html?q=webgpu:api,operation,command_buffer,image_copy:offsets_and_sizes_copy_depth_stencil:* [ Failure ]
+wpt_internal/webgpu/cts.https.html?q=webgpu:api,operation,command_buffer,copyTextureToTexture:copy_multisampled_depth:* [ Failure ]
+wpt_internal/webgpu/cts.https.html?q=webgpu:api,operation,render_pass,storeOp:render_pass_store_op,color_attachment_with_depth_stencil_attachment:* [ Failure ]
+wpt_internal/webgpu/cts.https.html?q=webgpu:api,operation,render_pass,storeOp:render_pass_store_op,depth_stencil_attachment_only:* [ Failure ]
+wpt_internal/webgpu/cts.https.html?q=webgpu:api,operation,render_pipeline,culling_tests:culling:* [ Failure ]
+wpt_internal/webgpu/cts.https.html?q=webgpu:api,operation,rendering,depth:depth_compare_func:* [ Failure ]
+wpt_internal/webgpu/cts.https.html?q=webgpu:api,operation,rendering,depth:reverse_depth:* [ Failure ]
+wpt_internal/webgpu/cts.https.html?q=webgpu:api,operation,resource_init,texture_zero:uninitialized_texture_is_zero:dimension="2d";readMethod="CopyToBuffer";format="depth32float";* [ Failure ]
+wpt_internal/webgpu/cts.https.html?q=webgpu:api,operation,resource_init,texture_zero:uninitialized_texture_is_zero:dimension="2d";readMethod="CopyToTexture";format="depth32float";* [ Failure ]
+wpt_internal/webgpu/cts.https.html?q=webgpu:api,operation,resource_init,texture_zero:uninitialized_texture_is_zero:dimension="2d";readMethod="DepthTest";format="depth24plus";* [ Failure ]
+wpt_internal/webgpu/cts.https.html?q=webgpu:api,operation,resource_init,texture_zero:uninitialized_texture_is_zero:dimension="2d";readMethod="DepthTest";format="depth32float";* [ Failure ]
+wpt_internal/webgpu/cts.https.html?q=webgpu:api,validation,attachment_compatibility:render_pass_or_bundle_and_pipeline,depth_format:* [ Failure ]
+wpt_internal/webgpu/cts.https.html?q=webgpu:api,validation,resource_usages,texture,in_pass_encoder:subresources_and_binding_types_combination_for_aspect:compute=false;* [ Failure ]
+wpt_internal/webgpu/cts.https.html?q=webgpu:api,validation,texture,destroy:submit_a_destroyed_texture_as_attachment:* [ Failure ]
+wpt_internal/webgpu/cts.https.html?worker=1&q=webgpu:api,operation,render_pass,storeOp:* [ Failure ]
 
 # Our automated build does not support mp4 currently (fails on Linux, Mac, and Win Intel)
 wpt_internal/webgpu/cts.https.html?q=webgpu:web_platform,external_texture,video:importExternalTexture,sample:videoSource="red-green.mp4" [ Failure ]
@@ -394,7 +409,7 @@ crbug.com/dawn/1071 [ Mac ] wpt_internal/webgpu/cts.https.html?q=webgpu:api,vali
 crbug.com/dawn/1071 [ Mac ] wpt_internal/webgpu/cts.https.html?q=webgpu:api,validation,image_copy,texture_related:format:method="CopyB2T";* [ Failure ]
 crbug.com/dawn/1071 [ Mac ] wpt_internal/webgpu/cts.https.html?q=webgpu:api,validation,image_copy,texture_related:format:method="CopyT2B";* [ Failure ]
 crbug.com/dawn/1071 [ Mac ] wpt_internal/webgpu/cts.https.html?q=webgpu:api,validation,image_copy,texture_related:format:method="WriteTexture";* [ Failure ]
-crbug.com/dawn/1071 [ Mac ] wpt_internal/webgpu/cts.https.html?worker=1&q=webgpu:api,operation,render_pass,storeOp:* [ Failure ]
+crbug.com/dawn/1071 [ Mac ] wpt_internal/webgpu/cts.https.html?worker=1&q=webgpu:api,operation,render_pass,storeOp:render_pass_store_op,color_attachment_only:* [ Failure ]
 
 crbug.com/tint/993 [ Mac ] wpt_internal/webgpu/cts.https.html?q=webgpu:shader,execution,robust_access:linear_memory:storageClass="workgroup";* [ Failure ]
 # Timeout + compilation failure
