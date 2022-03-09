@@ -12,6 +12,7 @@
 #include "content/common/content_export.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "net/base/isolation_info.h"
+#include "net/url_request/referrer_policy.h"
 #include "services/network/public/cpp/url_loader_completion_status.h"
 #include "services/network/public/mojom/early_hints.mojom.h"
 #include "services/network/public/mojom/url_loader_factory.mojom.h"
@@ -139,6 +140,7 @@ class CONTENT_EXPORT NavigationEarlyHintsManager {
   void MaybePreloadHintedResource(
       const network::mojom::LinkHeaderPtr& link,
       const network::ResourceRequest& request_for_navigation,
+      net::ReferrerPolicy referrer_policy,
       bool enabled_by_origin_trial);
 
   // Determines whether resource hints like preload and preconnect should be

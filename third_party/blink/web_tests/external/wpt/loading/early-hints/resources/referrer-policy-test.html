@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<meta charset=utf-8>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="early-hints-helpers.js"></script>
+<body>
+<script>
+const SEARCH_PARAMS = new URLSearchParams(window.location.search);
+const REFERRER_POLICY = SEARCH_PARAMS.get("referrer-policy");
+
+async function fetch_script(url) {
+    return new Promise((resolve) => {
+        const el = document.createElement("script");
+        el.src = url;
+        el.onload = resolve;
+        document.body.appendChild(el);
+    });
+}
+
+async function get_fetch_timing_and_headers(url) {
+    const index = url.lastIndexOf("?");
+    const params = new URLSearchParams(url.substring(index));
+    const id = params.get("id");
+    if (id === null) {
+        throw new Error(`"${url}" does not contain id parameter`);
+    }
+    const response = await fetch("get-fetch-timing-and-headers.h2.py?id=" + id);
+    const json = await response.json();
+    return json;
+}
+
+function get_expected_referrer() {
+    switch (REFERRER_POLICY) {
+        case "no-referrer": return undefined;
+        default: new Error(`Unknown referrer policy: ${REFERRER_POLICY}`);
+    }
+}
+
+promise_test(async (t) => {
+    const preload_url = SEARCH_PARAMS.get("preload-url");
+    await fetch_script(preload_url);
+
+    const { headers } = await get_fetch_timing_and_headers(preload_url);
+    const expected_referrer = get_expected_referrer();
+    assert_equals(headers["referrer"], expected_referrer);
+
+    const name = new URL(preload_url, window.location);
+    const entries = performance.getEntriesByName(name);
+    assert_equals(entries.length, 1);
+    assert_equals(entries[0].initiatorType, "early-hints");
+}, `Referrer policy: ${REFERRER_POLICY}`);
+</script>
+</body>

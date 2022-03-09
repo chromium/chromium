@@ -2052,9 +2052,11 @@ void URLLoader::NotifyEarlyResponse(
     origin_trial_tokens.push_back(value);
   }
 
+  mojom::ReferrerPolicy referrer_policy = ParseReferrerPolicy(*headers);
+
   url_loader_client_.Get()->OnReceiveEarlyHints(
-      mojom::EarlyHints::New(std::move(parsed_headers), ip_address_space,
-                             std::move(origin_trial_tokens)));
+      mojom::EarlyHints::New(std::move(parsed_headers), referrer_policy,
+                             ip_address_space, std::move(origin_trial_tokens)));
 }
 
 void URLLoader::SetRawRequestHeadersAndNotify(
