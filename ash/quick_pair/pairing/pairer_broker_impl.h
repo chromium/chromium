@@ -43,6 +43,7 @@ class PairerBrokerImpl final : public PairerBroker {
   void AddObserver(Observer* observer) override;
   void RemoveObserver(Observer* observer) override;
   void PairDevice(scoped_refptr<Device> device) override;
+  bool IsPairing() override;
 
  private:
   void PairFastPairDevice(scoped_refptr<Device> device);

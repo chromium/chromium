@@ -58,10 +58,7 @@ class FakeFastPairPresenter : public ash::quick_pair::FastPairPresenter {
     callback.Run(ash::quick_pair::CompanionAppAction::kDownloadAndLaunchApp);
   }
 
-  void RemoveNotifications(
-      scoped_refptr<ash::quick_pair::Device> device) override {
-    removed_ = true;
-  }
+  void RemoveNotifications() override { removed_ = true; }
 
   bool removed() { return removed_; }
 
@@ -258,7 +255,7 @@ TEST_F(UIBrokerImplTest, ShowCompanionApp_Retroactive) {
 TEST_F(UIBrokerImplTest, RemoveNotifications_Initial) {
   auto device = base::MakeRefCounted<Device>(kValidModelId, kTestDeviceAddress,
                                              Protocol::kFastPairInitial);
-  ui_broker_->RemoveNotifications(device);
+  ui_broker_->RemoveNotifications();
   base::RunLoop().RunUntilIdle();
 
   EXPECT_TRUE(presenter_factory_->fake_fast_pair_presenter()->removed());
@@ -267,7 +264,7 @@ TEST_F(UIBrokerImplTest, RemoveNotifications_Initial) {
 TEST_F(UIBrokerImplTest, RemoveNotifications_Subsequent) {
   auto device = base::MakeRefCounted<Device>(kValidModelId, kTestDeviceAddress,
                                              Protocol::kFastPairSubsequent);
-  ui_broker_->RemoveNotifications(device);
+  ui_broker_->RemoveNotifications();
   base::RunLoop().RunUntilIdle();
 
   EXPECT_TRUE(presenter_factory_->fake_fast_pair_presenter()->removed());
@@ -276,7 +273,7 @@ TEST_F(UIBrokerImplTest, RemoveNotifications_Subsequent) {
 TEST_F(UIBrokerImplTest, RemoveNotifications_Retroactive) {
   auto device = base::MakeRefCounted<Device>(kValidModelId, kTestDeviceAddress,
                                              Protocol::kFastPairRetroactive);
-  ui_broker_->RemoveNotifications(device);
+  ui_broker_->RemoveNotifications();
   base::RunLoop().RunUntilIdle();
 
   EXPECT_TRUE(presenter_factory_->fake_fast_pair_presenter()->removed());

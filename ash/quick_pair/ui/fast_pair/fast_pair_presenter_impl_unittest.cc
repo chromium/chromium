@@ -237,7 +237,7 @@ TEST_F(FastPairPresenterImplTest, RemoveNotifications) {
   EXPECT_TRUE(test_message_center_.FindVisibleNotificationById(
       kFastPairDiscoveryUserNotificationId));
 
-  fast_pair_presenter_->RemoveNotifications(device_);
+  fast_pair_presenter_->RemoveNotifications();
   base::RunLoop().RunUntilIdle();
   EXPECT_TRUE(test_message_center_.remove_notifications_for_notifier_id());
   EXPECT_FALSE(test_message_center_.FindVisibleNotificationById(

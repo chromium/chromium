@@ -59,6 +59,11 @@ class FakeFastPairPairer : public ash::quick_pair::FastPairPairer {
     std::move(paired_callback_).Run(device_);
   }
 
+  void TriggerPairingProcedureCompleteCallback() {
+    EXPECT_TRUE(pairing_procedure_complete_);
+    std::move(pairing_procedure_complete_).Run(device_);
+  }
+
   void TriggerAccountKeyFailureCallback(
       ash::quick_pair::AccountKeyFailure failure) {
     EXPECT_TRUE(account_key_failure_callback_);
@@ -179,12 +184,19 @@ TEST_F(PairerBrokerImplTest, PairDevice_Initial) {
                                              Protocol::kFastPairInitial);
   pairer_broker_->PairDevice(device);
   base::RunLoop().RunUntilIdle();
+  EXPECT_TRUE(pairer_broker_->IsPairing());
 
   fast_pair_pairer_factory_->fake_fast_pair_pairer()->TriggerPairedCallback();
   base::RunLoop().RunUntilIdle();
 
+  EXPECT_TRUE(pairer_broker_->IsPairing());
   EXPECT_EQ(device_paired_count_, 1);
   histogram_tester_.ExpectTotalCount(kFastPairRetryCountMetricName, 1);
+
+  fast_pair_pairer_factory_->fake_fast_pair_pairer()
+      ->TriggerPairingProcedureCompleteCallback();
+  base::RunLoop().RunUntilIdle();
+  EXPECT_FALSE(pairer_broker_->IsPairing());
 }
 
 TEST_F(PairerBrokerImplTest, PairDevice_Subsequent) {
@@ -194,12 +206,19 @@ TEST_F(PairerBrokerImplTest, PairDevice_Subsequent) {
 
   pairer_broker_->PairDevice(device);
   base::RunLoop().RunUntilIdle();
+  EXPECT_TRUE(pairer_broker_->IsPairing());
 
   fast_pair_pairer_factory_->fake_fast_pair_pairer()->TriggerPairedCallback();
   base::RunLoop().RunUntilIdle();
 
+  EXPECT_TRUE(pairer_broker_->IsPairing());
   EXPECT_EQ(device_paired_count_, 1);
   histogram_tester_.ExpectTotalCount(kFastPairRetryCountMetricName, 1);
+
+  fast_pair_pairer_factory_->fake_fast_pair_pairer()
+      ->TriggerPairingProcedureCompleteCallback();
+  base::RunLoop().RunUntilIdle();
+  EXPECT_FALSE(pairer_broker_->IsPairing());
 }
 
 TEST_F(PairerBrokerImplTest, PairDevice_Retroactive) {
@@ -209,12 +228,19 @@ TEST_F(PairerBrokerImplTest, PairDevice_Retroactive) {
 
   pairer_broker_->PairDevice(device);
   base::RunLoop().RunUntilIdle();
+  EXPECT_TRUE(pairer_broker_->IsPairing());
 
   fast_pair_pairer_factory_->fake_fast_pair_pairer()->TriggerPairedCallback();
   base::RunLoop().RunUntilIdle();
 
+  EXPECT_TRUE(pairer_broker_->IsPairing());
   EXPECT_EQ(device_paired_count_, 1);
   histogram_tester_.ExpectTotalCount(kFastPairRetryCountMetricName, 1);
+
+  fast_pair_pairer_factory_->fake_fast_pair_pairer()
+      ->TriggerPairingProcedureCompleteCallback();
+  base::RunLoop().RunUntilIdle();
+  EXPECT_FALSE(pairer_broker_->IsPairing());
 }
 
 TEST_F(PairerBrokerImplTest, AlreadyPairingDevice) {
@@ -225,10 +251,12 @@ TEST_F(PairerBrokerImplTest, AlreadyPairingDevice) {
   pairer_broker_->PairDevice(device);
   pairer_broker_->PairDevice(device);
   base::RunLoop().RunUntilIdle();
+  EXPECT_TRUE(pairer_broker_->IsPairing());
 
   fast_pair_pairer_factory_->fake_fast_pair_pairer()->TriggerPairedCallback();
   base::RunLoop().RunUntilIdle();
 
+  EXPECT_TRUE(pairer_broker_->IsPairing());
   EXPECT_EQ(device_paired_count_, 1);
   histogram_tester_.ExpectTotalCount(kFastPairRetryCountMetricName, 1);
 }
@@ -240,6 +268,8 @@ TEST_F(PairerBrokerImplTest, PairDeviceFailureMax_Initial) {
 
   pairer_broker_->PairDevice(device);
   base::RunLoop().RunUntilIdle();
+  EXPECT_TRUE(pairer_broker_->IsPairing());
+
   fast_pair_pairer_factory_->fake_fast_pair_pairer()
       ->TriggerPairFailureCallback(
           PairFailure::kPasskeyCharacteristicNotifySession);
@@ -253,6 +283,7 @@ TEST_F(PairerBrokerImplTest, PairDeviceFailureMax_Initial) {
           PairFailure::kPasskeyCharacteristicNotifySession);
   base::RunLoop().RunUntilIdle();
 
+  EXPECT_FALSE(pairer_broker_->IsPairing());
   EXPECT_EQ(pair_failure_count_, 1);
   histogram_tester_.ExpectTotalCount(kFastPairRetryCountMetricName, 0);
 }
@@ -264,6 +295,7 @@ TEST_F(PairerBrokerImplTest, PairDeviceFailureMax_Subsequent) {
 
   pairer_broker_->PairDevice(device);
   base::RunLoop().RunUntilIdle();
+  EXPECT_TRUE(pairer_broker_->IsPairing());
   fast_pair_pairer_factory_->fake_fast_pair_pairer()
       ->TriggerPairFailureCallback(
           PairFailure::kPasskeyCharacteristicNotifySession);
@@ -277,6 +309,7 @@ TEST_F(PairerBrokerImplTest, PairDeviceFailureMax_Subsequent) {
           PairFailure::kPasskeyCharacteristicNotifySession);
   base::RunLoop().RunUntilIdle();
 
+  EXPECT_FALSE(pairer_broker_->IsPairing());
   EXPECT_EQ(pair_failure_count_, 1);
   histogram_tester_.ExpectTotalCount(kFastPairRetryCountMetricName, 0);
 }
@@ -288,6 +321,7 @@ TEST_F(PairerBrokerImplTest, PairDeviceFailureMax_Retroactive) {
 
   pairer_broker_->PairDevice(device);
   base::RunLoop().RunUntilIdle();
+  EXPECT_TRUE(pairer_broker_->IsPairing());
   fast_pair_pairer_factory_->fake_fast_pair_pairer()
       ->TriggerPairFailureCallback(
           PairFailure::kPasskeyCharacteristicNotifySession);
@@ -301,6 +335,7 @@ TEST_F(PairerBrokerImplTest, PairDeviceFailureMax_Retroactive) {
           PairFailure::kPasskeyCharacteristicNotifySession);
   base::RunLoop().RunUntilIdle();
 
+  EXPECT_FALSE(pairer_broker_->IsPairing());
   EXPECT_EQ(pair_failure_count_, 1);
   histogram_tester_.ExpectTotalCount(kFastPairRetryCountMetricName, 0);
 }
@@ -311,11 +346,13 @@ TEST_F(PairerBrokerImplTest, AccountKeyFailure_Initial) {
 
   pairer_broker_->PairDevice(device);
   base::RunLoop().RunUntilIdle();
+  EXPECT_TRUE(pairer_broker_->IsPairing());
 
   fast_pair_pairer_factory_->fake_fast_pair_pairer()
       ->TriggerAccountKeyFailureCallback(
           AccountKeyFailure::kAccountKeyCharacteristicDiscovery);
 
+  EXPECT_FALSE(pairer_broker_->IsPairing());
   EXPECT_EQ(account_key_write_count_, 1);
 }
 
@@ -325,11 +362,13 @@ TEST_F(PairerBrokerImplTest, AccountKeyFailure_Subsequent) {
 
   pairer_broker_->PairDevice(device);
   base::RunLoop().RunUntilIdle();
+  EXPECT_TRUE(pairer_broker_->IsPairing());
 
   fast_pair_pairer_factory_->fake_fast_pair_pairer()
       ->TriggerAccountKeyFailureCallback(
           AccountKeyFailure::kAccountKeyCharacteristicDiscovery);
 
+  EXPECT_FALSE(pairer_broker_->IsPairing());
   EXPECT_EQ(account_key_write_count_, 1);
 }
 
@@ -339,11 +378,13 @@ TEST_F(PairerBrokerImplTest, AccountKeyFailure_Retroactive) {
 
   pairer_broker_->PairDevice(device);
   base::RunLoop().RunUntilIdle();
+  EXPECT_TRUE(pairer_broker_->IsPairing());
 
   fast_pair_pairer_factory_->fake_fast_pair_pairer()
       ->TriggerAccountKeyFailureCallback(
           AccountKeyFailure::kAccountKeyCharacteristicDiscovery);
 
+  EXPECT_FALSE(pairer_broker_->IsPairing());
   EXPECT_EQ(account_key_write_count_, 1);
 }
 

@@ -2243,6 +2243,7 @@ component("ash") {
     "//ash/app_list",
     "//ash/assistant/ui",
     "//ash/quick_pair/feature_status_tracker",
+    "//ash/quick_pair/keyed_service:keyed_service",
     "//ash/quick_pair/pairing",
     "//ash/quick_pair/repository",
     "//ash/quick_pair/ui",

@@ -7,6 +7,7 @@
 #include <cstdint>
 #include <memory>
 
+#include "ash/public/cpp/bluetooth_config_service.h"
 #include "ash/quick_pair/common/device.h"
 #include "ash/quick_pair/common/logging.h"
 #include "ash/quick_pair/fast_pair_handshake/fast_pair_handshake_lookup.h"
@@ -30,6 +31,7 @@
 #include "ash/quick_pair/ui/ui_broker_impl.h"
 #include "ash/services/quick_pair/quick_pair_process.h"
 #include "ash/services/quick_pair/quick_pair_process_manager_impl.h"
+#include "base/threading/thread_task_runner_handle.h"
 #include "chromeos/services/bluetooth_config/fast_pair_delegate.h"
 #include "components/prefs/pref_registry_simple.h"
 
@@ -98,8 +100,17 @@ Mediator::Mediator(
   pairer_broker_observation_.Observe(pairer_broker_.get());
   ui_broker_observation_.Observe(ui_broker_.get());
 
-  SetFastPairState(feature_status_tracker_->IsFastPairEnabled());
+  // If we already have a discovery session via the Settings pairing dialog,
+  // don't start Fast Pair scanning.
+  SetFastPairState(feature_status_tracker_->IsFastPairEnabled() &&
+                   !has_at_least_one_discovery_session_);
   quick_pair_process::SetProcessManager(process_manager_.get());
+
+  // Asynchronously bind to CrosBluetoothConfig so that we don't want to attempt
+  // to bind to it before it has initialized.
+  base::ThreadTaskRunnerHandle::Get()->PostTask(
+      FROM_HERE, base::BindOnce(&Mediator::BindToCrosBluetoothConfig,
+                                weak_ptr_factory_.GetWeakPtr()));
 }
 
 Mediator::~Mediator() {
@@ -121,12 +132,21 @@ void Mediator::RegisterLocalStatePrefs(PrefRegistrySimple* registry) {
   DeviceImageStore::RegisterLocalStatePrefs(registry);
 }
 
+void Mediator::BindToCrosBluetoothConfig() {
+  GetBluetoothConfigService(
+      remote_cros_bluetooth_config_.BindNewPipeAndPassReceiver());
+  remote_cros_bluetooth_config_->ObserveDiscoverySessionStatusChanges(
+      cros_discovery_session_observer_receiver_.BindNewPipeAndPassRemote());
+}
+
 chromeos::bluetooth_config::FastPairDelegate* Mediator::GetFastPairDelegate() {
   return fast_pair_bluetooth_config_delegate_.get();
 }
 
 void Mediator::OnFastPairEnabledChanged(bool is_enabled) {
-  SetFastPairState(is_enabled);
+  // If we already have a discovery session via the Settings pairing dialog,
+  // don't start Fast Pair scanning.
+  SetFastPairState(is_enabled && !has_at_least_one_discovery_session_);
 }
 
 void Mediator::OnDeviceFound(scoped_refptr<Device> device) {
@@ -138,7 +158,7 @@ void Mediator::OnDeviceFound(scoped_refptr<Device> device) {
 
 void Mediator::OnDeviceLost(scoped_refptr<Device> device) {
   QP_LOG(INFO) << __func__ << ": " << device;
-  ui_broker_->RemoveNotifications(device);
+  ui_broker_->RemoveNotifications();
   FastPairHandshakeLookup::GetInstance()->Erase(device);
 }
 
@@ -158,7 +178,7 @@ void Mediator::SetFastPairState(bool is_enabled) {
 
 void Mediator::OnDevicePaired(scoped_refptr<Device> device) {
   QP_LOG(INFO) << __func__ << ": Device=" << device;
-  ui_broker_->RemoveNotifications(device);
+  ui_broker_->RemoveNotifications();
   fast_pair_repository_->PersistDeviceImages(device);
 }
 
@@ -229,6 +249,38 @@ void Mediator::OnAssociateAccountAction(scoped_refptr<Device> device,
     case AssociateAccountAction::kDismissed:
       break;
   }
+}
+
+void Mediator::OnHasAtLeastOneDiscoverySessionChanged(
+    bool has_at_least_one_discovery_session) {
+  has_at_least_one_discovery_session_ = has_at_least_one_discovery_session;
+  QP_LOG(VERBOSE) << __func__
+                  << ": Discovery session status changed, we"
+                     " have at least one discovery session: "
+                  << has_at_least_one_discovery_session_;
+
+  // If we have a discovery session via the Settings pairing dialog, stop
+  // Fast Pair scanning. Else, start/stop scanning according to the feature
+  // status tracker. Stopping scanning stops all GATT connections that
+  // haven't completed their handshake
+  SetFastPairState(!has_at_least_one_discovery_session_ &&
+                   feature_status_tracker_->IsFastPairEnabled());
+
+  if (!has_at_least_one_discovery_session_) {
+    return;
+  }
+
+  // If we are midway through pairing, return early so we don't remove
+  // handshakes where they are required.
+  if (pairer_broker_->IsPairing()) {
+    return;
+  }
+
+  // Clear all existing handshakes.
+  FastPairHandshakeLookup::GetInstance()->Clear();
+
+  // Dismiss all UI notifications.
+  ui_broker_->RemoveNotifications();
 }
 
 }  // namespace quick_pair

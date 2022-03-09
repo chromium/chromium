@@ -22,6 +22,7 @@ static_library("keyed_service") {
   ]
 
   deps = [
+    "//ash/public/cpp",
     "//ash/quick_pair/common",
     "//ash/quick_pair/fast_pair_handshake",
     "//ash/quick_pair/feature_status_tracker",
@@ -34,10 +35,12 @@ static_library("keyed_service") {
     "//base",
     "//chromeos/services/bluetooth_config",
     "//chromeos/services/bluetooth_config/public/cpp",
+    "//chromeos/services/bluetooth_config/public/mojom",
     "//components/keyed_service/core",
     "//components/prefs",
     "//components/user_manager",
     "//device/bluetooth",
+    "//mojo/public/cpp/bindings",
   ]
 }
 
@@ -52,9 +55,11 @@ source_set("unit_tests") {
 
   deps = [
     ":keyed_service",
+    "//ash:test_support",
     "//ash/constants:constants",
     "//ash/quick_pair/common",
     "//ash/quick_pair/common:test_support",
+    "//ash/quick_pair/fast_pair_handshake:test_support",
     "//ash/quick_pair/feature_status_tracker:test_support",
     "//ash/quick_pair/message_stream",
     "//ash/quick_pair/message_stream:test_support",
@@ -67,11 +72,13 @@ source_set("unit_tests") {
     "//ash/services/quick_pair:test_support",
     "//base",
     "//base/test:test_support",
+    "//chromeos/services/bluetooth_config:test_support",
+    "//chromeos/services/bluetooth_config/public/mojom",
     "//components/prefs:test_support",
     "//components/user_manager:test_support",
     "//device/bluetooth",
     "//device/bluetooth:mocks",
-    "//mojo/public/cpp/bindings:bindings",
+    "//mojo/public/cpp/bindings",
     "//testing/gtest",
   ]
 }

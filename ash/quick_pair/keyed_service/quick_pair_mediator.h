@@ -14,6 +14,9 @@
 #include "ash/quick_pair/ui/ui_broker.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/scoped_observation.h"
+#include "chromeos/services/bluetooth_config/public/mojom/cros_bluetooth_config.mojom.h"
+#include "mojo/public/cpp/bindings/receiver.h"
+#include "mojo/public/cpp/bindings/remote.h"
 
 class PrefRegistrySimple;
 
@@ -36,11 +39,13 @@ class BatteryUpdateMessageHandler;
 
 // Implements the Mediator design pattern for the components in the Quick Pair
 // system, e.g. the UI Broker, Scanning Broker and Pairing Broker.
-class Mediator final : public FeatureStatusTracker::Observer,
-                       public ScannerBroker::Observer,
-                       public PairerBroker::Observer,
-                       public UIBroker::Observer,
-                       public RetroactivePairingDetector::Observer {
+class Mediator final
+    : public FeatureStatusTracker::Observer,
+      public ScannerBroker::Observer,
+      public PairerBroker::Observer,
+      public UIBroker::Observer,
+      public RetroactivePairingDetector::Observer,
+      public chromeos::bluetooth_config::mojom::DiscoverySessionStatusObserver {
  public:
   class Factory {
    public:
@@ -97,9 +102,15 @@ class Mediator final : public FeatureStatusTracker::Observer,
   // RetroactivePairingDetector::Observer
   void OnRetroactivePairFound(scoped_refptr<Device> device) override;
 
+  // chromeos::bluetooth_config::mojom::DiscoverySessionStatusObserver
+  void OnHasAtLeastOneDiscoverySessionChanged(
+      bool has_at_least_one_discovery_session) override;
+
  private:
   void SetFastPairState(bool is_enabled);
+  void BindToCrosBluetoothConfig();
 
+  bool has_at_least_one_discovery_session_ = false;
   std::unique_ptr<FeatureStatusTracker> feature_status_tracker_;
   std::unique_ptr<ScannerBroker> scanner_broker_;
   std::unique_ptr<MessageStreamLookup> message_stream_lookup_;
@@ -124,6 +135,12 @@ class Mediator final : public FeatureStatusTracker::Observer,
       retroactive_pairing_detector_observation_{this};
   base::ScopedObservation<UIBroker, UIBroker::Observer> ui_broker_observation_{
       this};
+  mojo::Remote<chromeos::bluetooth_config::mojom::CrosBluetoothConfig>
+      remote_cros_bluetooth_config_;
+  mojo::Receiver<
+      chromeos::bluetooth_config::mojom::DiscoverySessionStatusObserver>
+      cros_discovery_session_observer_receiver_{this};
+  base::WeakPtrFactory<Mediator> weak_ptr_factory_{this};
 };
 
 }  // namespace quick_pair

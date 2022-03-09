@@ -309,7 +309,7 @@ void FastPairPresenterImpl::OnAssociateAccountDismissed(
 void FastPairPresenterImpl::ShowCompanionApp(scoped_refptr<Device> device,
                                              CompanionAppCallback callback) {}
 
-void FastPairPresenterImpl::RemoveNotifications(scoped_refptr<Device> device) {
+void FastPairPresenterImpl::RemoveNotifications() {
   notification_controller_->RemoveNotifications();
 }
 
