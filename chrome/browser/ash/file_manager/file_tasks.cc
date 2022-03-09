@@ -90,7 +90,10 @@ namespace file_tasks {
 const char kActionIdView[] = "view";
 const char kActionIdSend[] = "send";
 const char kActionIdSendMultiple[] = "send_multiple";
-const char kActionIdWebDriveOffice[] = "open-web-drive-office";
+const char kActionIdWebDriveOfficeWord[] = "open-web-drive-office-word";
+const char kActionIdWebDriveOfficeExcel[] = "open-web-drive-office-excel";
+const char kActionIdWebDriveOfficePowerPoint[] =
+    "open-web-drive-office-powerpoint";
 
 namespace {
 
@@ -120,6 +123,18 @@ std::string parseFilesAppActionId(const std::string& action_id) {
   }
 
   return action_id;
+}
+
+// Returns true if the `task` is a Web Drive Office task.
+bool isWebDriveOfficeTask(const FullTaskDescriptor& task) {
+  const std::string action_id =
+      parseFilesAppActionId(task.task_descriptor.action_id);
+  bool is_web_drive_office_action_id =
+      action_id == kActionIdWebDriveOfficeWord ||
+      action_id == kActionIdWebDriveOfficeExcel ||
+      action_id == kActionIdWebDriveOfficePowerPoint;
+  return isFilesAppId(task.task_descriptor.app_id) &&
+         is_web_drive_office_action_id;
 }
 
 // Returns true if path_mime_set contains a Google document.
@@ -197,8 +212,8 @@ void AdjustTasksForMediaApp(const std::vector<extensions::EntryInfo>& entries,
   std::swap(*tasks, new_tasks);
 }
 
-// Helper class that validates whether the WebDriveOffice task can properly
-// handle a given set of files.
+// Helper class that validates whether a selected WebDriveOffice task can
+// properly handle a given set of files.
 class WebDriveOfficeValidationHelper {
  public:
   WebDriveOfficeValidationHelper(
@@ -231,27 +246,30 @@ class WebDriveOfficeValidationHelper {
   std::unique_ptr<std::vector<FullTaskDescriptor>> result_list;
 
  private:
-  // Starts processing entries to determine whether the Web Drive Office action
+  // Starts processing entries to determine whether a Web Drive Office action
   // should be disabled or not.
   void AdjustTasks() {
-    // No checks to perform if the Web Drive Office task has not been selected.
+    // No checks to perform if no Web Drive Office task has been selected. It is
+    // not possible to have multiple Web Drive Office tasks
+    // (Word/Excel/PowerPoint) selected simultaneously.
     const auto web_drive_office_task = std::find_if(
-        result_list->begin(), result_list->end(), [&](const auto& task) {
-          return isFilesAppId(task.task_descriptor.app_id) &&
-                 parseFilesAppActionId(task.task_descriptor.action_id) ==
-                     kActionIdWebDriveOffice;
-        });
+        result_list->begin(), result_list->end(),
+        [&](const auto& task) { return isWebDriveOfficeTask(task); });
     if (web_drive_office_task == result_list->end()) {
       EndAdjustTasks();
       return;
     }
+
+    DCHECK(web_drive_office_action_id_.empty());
+    web_drive_office_action_id_ =
+        parseFilesAppActionId(web_drive_office_task->task_descriptor.action_id);
 
     // Remove Web Drive Office action if Web Drive Office is disabled or if
     // Drive is Offline.
     if (!base::FeatureList::IsEnabled(ash::features::kFilesWebDriveOffice) ||
         drive::util::GetDriveConnectionStatus(profile) !=
             drive::util::DRIVE_CONNECTED) {
-      disabled_actions_.emplace(kActionIdWebDriveOffice);
+      disabled_actions_.emplace(web_drive_office_action_id_);
       EndAdjustTasks();
       return;
     }
@@ -270,7 +288,7 @@ class WebDriveOfficeValidationHelper {
     // Check whether the entry is on Drive.
     if (!::file_manager::util::IsDriveLocalPath(profile,
                                                 entries[entry_index].path)) {
-      disabled_actions_.emplace(kActionIdWebDriveOffice);
+      disabled_actions_.emplace(web_drive_office_action_id_);
       EndAdjustTasks();
       return;
     }
@@ -283,7 +301,7 @@ class WebDriveOfficeValidationHelper {
           integration_service->GetDriveFsInterface() &&
           integration_service->GetRelativeDrivePath(entries[entry_index].path,
                                                     &relative_drive_path))) {
-      disabled_actions_.emplace(kActionIdWebDriveOffice);
+      disabled_actions_.emplace(web_drive_office_action_id_);
       EndAdjustTasks();
       return;
     }
@@ -303,7 +321,7 @@ class WebDriveOfficeValidationHelper {
       drive::FileError error,
       drivefs::mojom::FileMetadataPtr metadata) {
     if (error != drive::FILE_ERROR_OK) {
-      disabled_actions_.emplace(kActionIdWebDriveOffice);
+      disabled_actions_.emplace(web_drive_office_action_id_);
       EndAdjustTasks();
       return;
     }
@@ -312,7 +330,7 @@ class WebDriveOfficeValidationHelper {
     // URLs for editing Office files in Web Drive all have a "docs.google.com"
     // host.
     if (!hosted_url.is_valid() || hosted_url.host() != "docs.google.com") {
-      disabled_actions_.emplace(kActionIdWebDriveOffice);
+      disabled_actions_.emplace(web_drive_office_action_id_);
       EndAdjustTasks();
       return;
     }
@@ -329,6 +347,7 @@ class WebDriveOfficeValidationHelper {
     std::move(callback_).Run();
   }
 
+  std::string web_drive_office_action_id_;
   std::set<std::string> disabled_actions_;
   base::OnceClosure callback_;
   base::WeakPtrFactory<WebDriveOfficeValidationHelper> weak_factory_{this};
@@ -518,7 +537,9 @@ bool ShouldBeOpenedWithBrowser(const std::string& extension_id,
           action_id == "open-hosted-gdoc" ||
           action_id == "open-hosted-gsheet" ||
           action_id == "open-hosted-gslides" ||
-          action_id == kActionIdWebDriveOffice);
+          action_id == kActionIdWebDriveOfficeWord ||
+          action_id == kActionIdWebDriveOfficeExcel ||
+          action_id == kActionIdWebDriveOfficePowerPoint);
 }
 
 // Opens the files specified by |file_urls| with the browser for |profile|.
@@ -912,9 +933,7 @@ void ChooseAndSetDefaultTask(const PrefService& pref_service,
   // No default task. If ShadowDocs is available for Office files, set as
   // default.
   for (FullTaskDescriptor& task : *tasks) {
-    if (isFilesAppId(task.task_descriptor.app_id) &&
-        parseFilesAppActionId(task.task_descriptor.action_id) ==
-            kActionIdWebDriveOffice) {
+    if (isWebDriveOfficeTask(task)) {
       task.is_default = true;
       return;
     }

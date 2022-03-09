@@ -1628,22 +1628,30 @@ WRAPPED_INSTANTIATE_TEST_SUITE_P(
     Office, /* office.js */
     FilesAppBrowserTest,
     ::testing::Values(
-        TestCase("openOfficeFile").EnableWebDriveOffice(),
-        TestCase("openOfficeFile").EnableWebDriveOffice().FilesSwa(),
-        TestCase("openOfficeFromMyFiles").EnableWebDriveOffice(),
-        TestCase("openOfficeFromMyFiles").EnableWebDriveOffice().FilesSwa(),
-        TestCase("openMultipleOfficeFromDrive").EnableWebDriveOffice(),
-        TestCase("openMultipleOfficeFromDrive")
+        TestCase("openOfficeWordFile").EnableWebDriveOffice(),
+        TestCase("openOfficeWordFile").EnableWebDriveOffice().FilesSwa(),
+        TestCase("openOfficeWordFromMyFiles").EnableWebDriveOffice(),
+        TestCase("openOfficeWordFromMyFiles").EnableWebDriveOffice().FilesSwa(),
+        TestCase("openMultipleOfficeWordFromDrive").EnableWebDriveOffice(),
+        TestCase("openMultipleOfficeWordFromDrive")
             .EnableWebDriveOffice()
             .FilesSwa(),
-        TestCase("openOfficeFromDrive").EnableWebDriveOffice(),
-        TestCase("openOfficeFromDrive").EnableWebDriveOffice().FilesSwa(),
-        TestCase("openOfficeFromDriveNotSynced").EnableWebDriveOffice(),
-        TestCase("openOfficeFromDriveNotSynced")
+        TestCase("openOfficeWordFromDrive").EnableWebDriveOffice(),
+        TestCase("openOfficeWordFromDrive").EnableWebDriveOffice().FilesSwa(),
+        TestCase("openOfficeExcelFromDrive").EnableWebDriveOffice(),
+        TestCase("openOfficeExcelFromDrive").EnableWebDriveOffice().FilesSwa(),
+        TestCase("openOfficePowerPointFromDrive").EnableWebDriveOffice(),
+        TestCase("openOfficePowerPointFromDrive")
             .EnableWebDriveOffice()
             .FilesSwa(),
-        TestCase("openOfficeFromDriveOffline").EnableWebDriveOffice().Offline(),
-        TestCase("openOfficeFromDriveOffline")
+        TestCase("openOfficeWordFromDriveNotSynced").EnableWebDriveOffice(),
+        TestCase("openOfficeWordFromDriveNotSynced")
+            .EnableWebDriveOffice()
+            .FilesSwa(),
+        TestCase("openOfficeWordFromDriveOffline")
+            .EnableWebDriveOffice()
+            .Offline(),
+        TestCase("openOfficeWordFromDriveOffline")
             .EnableWebDriveOffice()
             .Offline()
             .FilesSwa()));

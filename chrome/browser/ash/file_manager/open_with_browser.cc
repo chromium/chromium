@@ -167,7 +167,10 @@ bool OpenFileWithBrowser(Profile* profile,
     return true;
   }
 
-  if (action_id == ::file_manager::file_tasks::kActionIdWebDriveOffice) {
+  if (action_id == ::file_manager::file_tasks::kActionIdWebDriveOfficeWord ||
+      action_id == ::file_manager::file_tasks::kActionIdWebDriveOfficeExcel ||
+      action_id ==
+          ::file_manager::file_tasks::kActionIdWebDriveOfficePowerPoint) {
     drive::DriveIntegrationService* integration_service =
         drive::DriveIntegrationServiceFactory::FindForProfile(profile);
     base::FilePath path;

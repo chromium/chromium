@@ -9,16 +9,46 @@ import {remoteCall, setupAndWaitUntilReady} from './background.js';
 import {FILE_MANAGER_EXTENSIONS_ID, FILE_MANAGER_SWA_APP_ID, FILE_SWA_BASE_URL} from './test_data.js';
 
 /**
- * Returns Web Drive Office's task descriptor.
+ * Returns Web Drive Office Word's task descriptor.
  *
  * @return {!chrome.fileManagerPrivate.FileTaskDescriptor}
  */
-function webDriveOfficeDescriptor() {
+function webDriveOfficeWordDescriptor() {
   const filesAppId = remoteCall.isSwaMode() ? FILE_MANAGER_SWA_APP_ID :
                                               FILE_MANAGER_EXTENSIONS_ID;
   const filesTaskType = remoteCall.isSwaMode() ? 'web' : 'app';
   const actionIdPrefix = remoteCall.isSwaMode() ? FILE_SWA_BASE_URL + '?' : '';
-  const actionId = `${actionIdPrefix}open-web-drive-office`;
+  const actionId = `${actionIdPrefix}open-web-drive-office-word`;
+
+  return {appId: filesAppId, taskType: filesTaskType, actionId: actionId};
+}
+
+/**
+ * Returns Web Drive Office Excel's task descriptor.
+ *
+ * @return {!chrome.fileManagerPrivate.FileTaskDescriptor}
+ */
+function webDriveOfficeExcelDescriptor() {
+  const filesAppId = remoteCall.isSwaMode() ? FILE_MANAGER_SWA_APP_ID :
+                                              FILE_MANAGER_EXTENSIONS_ID;
+  const filesTaskType = remoteCall.isSwaMode() ? 'web' : 'app';
+  const actionIdPrefix = remoteCall.isSwaMode() ? FILE_SWA_BASE_URL + '?' : '';
+  const actionId = `${actionIdPrefix}open-web-drive-office-excel`;
+
+  return {appId: filesAppId, taskType: filesTaskType, actionId: actionId};
+}
+
+/**
+ * Returns Web Drive Office PowerPoint's task descriptor.
+ *
+ * @return {!chrome.fileManagerPrivate.FileTaskDescriptor}
+ */
+function webDriveOfficePowerPointDescriptor() {
+  const filesAppId = remoteCall.isSwaMode() ? FILE_MANAGER_SWA_APP_ID :
+                                              FILE_MANAGER_EXTENSIONS_ID;
+  const filesTaskType = remoteCall.isSwaMode() ? 'web' : 'app';
+  const actionIdPrefix = remoteCall.isSwaMode() ? FILE_SWA_BASE_URL + '?' : '';
+  const actionId = `${actionIdPrefix}open-web-drive-office-powerpoint`;
 
   return {appId: filesAppId, taskType: filesTaskType, actionId: actionId};
 }
@@ -54,7 +84,7 @@ async function getExecutedTask(appId, expectedCount = 1) {
   return executeTaskArgs[0];
 }
 
-testcase.openOfficeFile = async () => {
+testcase.openOfficeWordFile = async () => {
   await sendTestMessage({
     name: 'expectFileTask',
     fileNames: [ENTRIES.smallDocxHosted.targetPath],
@@ -68,13 +98,13 @@ testcase.openOfficeFile = async () => {
   chrome.test.assertTrue(await remoteCall.callRemoteTestUtil(
       'openFile', appId, [ENTRIES.smallDocxHosted.nameText]));
 
-  // Check that the Office file's alternate URL has been opened in a browser
+  // Check that the Word file's alternate URL has been opened in a browser
   // window.
   await remoteCall.waitForActiveBrowserTabUrl(
       ENTRIES.smallDocxHosted.alternateUrl);
 };
 
-testcase.openOfficeFromMyFiles = async () => {
+testcase.openOfficeWordFromMyFiles = async () => {
   const appId =
       await setupAndWaitUntilReady(RootPath.DOWNLOADS, [ENTRIES.smallDocx]);
 
@@ -89,11 +119,11 @@ testcase.openOfficeFromMyFiles = async () => {
   chrome.test.assertTrue(await remoteCall.callRemoteTestUtil(
       'openFile', appId, [ENTRIES.smallDocx.nameText]));
 
-  // The Web Drive Office task should not be available: another
+  // The Web Drive Office Word task should not be available: another
   // task should have been executed instead (QuickOffice or generic task).
   const taskDescriptor = await getExecutedTask(appId);
   chrome.test.assertFalse(
-      taskDescriptor.actionId == webDriveOfficeDescriptor().actionId);
+      taskDescriptor.actionId == webDriveOfficeWordDescriptor().actionId);
 
   // Remove fakes.
   const removedCount = await remoteCall.callRemoteTestUtil(
@@ -101,7 +131,7 @@ testcase.openOfficeFromMyFiles = async () => {
   chrome.test.assertEq(1, removedCount);
 };
 
-testcase.openOfficeFromDrive = async () => {
+testcase.openOfficeWordFromDrive = async () => {
   const appId = await setupAndWaitUntilReady(
       RootPath.DRIVE, [], [ENTRIES.smallDocxHosted]);
 
@@ -116,9 +146,9 @@ testcase.openOfficeFromDrive = async () => {
   chrome.test.assertTrue(await remoteCall.callRemoteTestUtil(
       'openFile', appId, [ENTRIES.smallDocxHosted.nameText]));
 
-  // The Web Drive Office task should be available and executed.
+  // The Web Drive Office Word task should be available and executed.
   const taskDescriptor = await getExecutedTask(appId);
-  chrome.test.assertEq(webDriveOfficeDescriptor(), taskDescriptor);
+  chrome.test.assertEq(webDriveOfficeWordDescriptor(), taskDescriptor);
 
   // Remove fakes.
   const removedCount = await remoteCall.callRemoteTestUtil(
@@ -126,11 +156,60 @@ testcase.openOfficeFromDrive = async () => {
   chrome.test.assertEq(1, removedCount);
 };
 
-testcase.openMultipleOfficeFromDrive = async () => {
-  const appId = await setupAndWaitUntilReady(RootPath.DRIVE, [], [
-    ENTRIES.smallDocx, ENTRIES.smallDocxHosted, ENTRIES.smallXlsxPinned,
-    ENTRIES.smallPptxPinned
-  ]);
+testcase.openOfficeExcelFromDrive = async () => {
+  const appId = await setupAndWaitUntilReady(
+      RootPath.DRIVE, [], [ENTRIES.smallXlsxPinned]);
+
+  // Fake chrome.fileManagerPrivate.executeTask to return
+  // chrome.fileManagerPrivate.TaskResult.OPENED.
+  const fakeData = {
+    'chrome.fileManagerPrivate.executeTask': ['static_fake', ['opened']],
+  };
+  await remoteCall.callRemoteTestUtil('foregroundFake', appId, [fakeData]);
+
+  // Open file.
+  chrome.test.assertTrue(await remoteCall.callRemoteTestUtil(
+      'openFile', appId, [ENTRIES.smallXlsxPinned.nameText]));
+
+  // The Web Drive Office Excel task should be available and executed.
+  const taskDescriptor = await getExecutedTask(appId);
+  chrome.test.assertEq(webDriveOfficeExcelDescriptor(), taskDescriptor);
+
+  // Remove fakes.
+  const removedCount = await remoteCall.callRemoteTestUtil(
+      'removeAllForegroundFakes', appId, []);
+  chrome.test.assertEq(1, removedCount);
+};
+
+testcase.openOfficePowerPointFromDrive = async () => {
+  const appId = await setupAndWaitUntilReady(
+      RootPath.DRIVE, [], [ENTRIES.smallPptxPinned]);
+
+  // Fake chrome.fileManagerPrivate.executeTask to return
+  // chrome.fileManagerPrivate.TaskResult.OPENED.
+  const fakeData = {
+    'chrome.fileManagerPrivate.executeTask': ['static_fake', ['opened']],
+  };
+  await remoteCall.callRemoteTestUtil('foregroundFake', appId, [fakeData]);
+
+  // Open file.
+  chrome.test.assertTrue(await remoteCall.callRemoteTestUtil(
+      'openFile', appId, [ENTRIES.smallPptxPinned.nameText]));
+
+  // The Web Drive Office PowerPoint task should be available and executed.
+  const taskDescriptor = await getExecutedTask(appId);
+  chrome.test.assertEq(webDriveOfficePowerPointDescriptor(), taskDescriptor);
+
+  // Remove fakes.
+  const removedCount = await remoteCall.callRemoteTestUtil(
+      'removeAllForegroundFakes', appId, []);
+  chrome.test.assertEq(1, removedCount);
+};
+
+testcase.openMultipleOfficeWordFromDrive = async () => {
+  const appId = await setupAndWaitUntilReady(
+      RootPath.DRIVE, [],
+      [ENTRIES.smallDocxHosted, ENTRIES.smallDocxPinned, ENTRIES.smallDocx]);
 
   const enterKey = ['#file-list', 'Enter', false, false, false];
 
@@ -145,12 +224,12 @@ testcase.openMultipleOfficeFromDrive = async () => {
   const ctrlA = ['#file-list', 'a', true, false, false];
   await remoteCall.fakeKeyDown(appId, ...ctrlA);
 
-  // Check: the file-list should show 4 selected files.
+  // Check: the file-list should show 3 selected files.
   const caller = getCaller();
   await repeatUntil(async () => {
     const element = await remoteCall.waitForElement(
         appId, '.check-select #files-selected-label');
-    if (element.text !== '4 files selected') {
+    if (element.text !== '3 files selected') {
       return pending(
           caller, `Waiting for files to be selected, got: ${element.text}`);
     }
@@ -165,7 +244,7 @@ testcase.openMultipleOfficeFromDrive = async () => {
   // Check whether the open button is available.
   const openButton = await remoteCall.waitForElement(appId, '#tasks');
 
-  // Check that the Web Drive Office task is not available: one of the
+  // Check that the Web Drive Office Word task is not available: one of the
   // selected entries doesn't have a "docs.google.com" alternate URL. The "Open"
   // button will be hidden if there is no other task to execute the selected
   // office files, this happens to non-branded bots because QuickOffice is only
@@ -178,7 +257,7 @@ testcase.openMultipleOfficeFromDrive = async () => {
     expectedExecuteTaskCount++;
     taskDescriptor = await getExecutedTask(appId, expectedExecuteTaskCount);
     chrome.test.assertFalse(
-        taskDescriptor.actionId == webDriveOfficeDescriptor().actionId);
+        taskDescriptor.actionId == webDriveOfficeWordDescriptor().actionId);
   }
 
   // Unselect the file that doesn't have an alternate URL.
@@ -193,10 +272,10 @@ testcase.openMultipleOfficeFromDrive = async () => {
   // Press Enter.
   remoteCall.fakeKeyDown(appId, ...enterKey);
 
-  // The Web Drive Office task should be available and executed.
+  // The Web Drive Office Word task should be available and executed.
   expectedExecuteTaskCount++;
   taskDescriptor = await getExecutedTask(appId, expectedExecuteTaskCount);
-  chrome.test.assertEq(webDriveOfficeDescriptor(), taskDescriptor);
+  chrome.test.assertEq(webDriveOfficeWordDescriptor(), taskDescriptor);
 
   // Remove fakes.
   const removedCount = await remoteCall.callRemoteTestUtil(
@@ -204,7 +283,7 @@ testcase.openMultipleOfficeFromDrive = async () => {
   chrome.test.assertEq(1, removedCount);
 };
 
-testcase.openOfficeFromDriveNotSynced = async () => {
+testcase.openOfficeWordFromDriveNotSynced = async () => {
   const appId =
       await setupAndWaitUntilReady(RootPath.DRIVE, [], [ENTRIES.smallDocx]);
 
@@ -225,7 +304,7 @@ testcase.openOfficeFromDriveNotSynced = async () => {
   // task).
   const taskDescriptor = await getExecutedTask(appId);
   chrome.test.assertFalse(
-      taskDescriptor.actionId == webDriveOfficeDescriptor().actionId);
+      taskDescriptor.actionId == webDriveOfficeWordDescriptor().actionId);
 
   // Remove fakes.
   const removedCount = await remoteCall.callRemoteTestUtil(
@@ -233,7 +312,7 @@ testcase.openOfficeFromDriveNotSynced = async () => {
   chrome.test.assertEq(1, removedCount);
 };
 
-testcase.openOfficeFromDriveOffline = async () => {
+testcase.openOfficeWordFromDriveOffline = async () => {
   const appId = await setupAndWaitUntilReady(
       RootPath.DRIVE, [], [ENTRIES.smallDocxPinned]);
 
@@ -248,11 +327,12 @@ testcase.openOfficeFromDriveOffline = async () => {
   chrome.test.assertTrue(await remoteCall.callRemoteTestUtil(
       'openFile', appId, [ENTRIES.smallDocxPinned.nameText]));
 
-  // When offline, the Web Drive Office task should not be available: another
-  // task should have been executed instead (QuickOffice or generic task).
+  // When offline, the Web Drive Office Word task should not be available:
+  // another task should have been executed instead (QuickOffice or generic
+  // task).
   const taskDescriptor = await getExecutedTask(appId);
   chrome.test.assertFalse(
-      taskDescriptor.actionId == webDriveOfficeDescriptor().actionId);
+      taskDescriptor.actionId == webDriveOfficeWordDescriptor().actionId);
 
   // Remove fakes.
   const removedCount = await remoteCall.callRemoteTestUtil(
