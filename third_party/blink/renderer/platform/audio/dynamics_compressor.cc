@@ -39,10 +39,22 @@
 
 namespace blink {
 
-// Metering hits peaks instantly, but releases this fast (in seconds).
-const float kMeteringReleaseTimeConstant = 0.325f;
+namespace {
 
-const float kUninitializedValue = -1;
+// Metering hits peaks instantly, but releases this fast (in seconds).
+constexpr float kMeteringReleaseTimeConstant = 0.325f;
+
+constexpr float kUninitializedValue = -1;
+
+// Returns x if x is finite (not NaN or infinite), otherwise returns
+// default_value
+float EnsureFinite(float x, float default_value) {
+  DCHECK(!std::isnan(x));
+  DCHECK(!std::isinf(x));
+  return std::isfinite(x) ? x : default_value;
+}
+
+}  // namespace
 
 DynamicsCompressor::DynamicsCompressor(float sample_rate,
                                        unsigned number_of_channels)
@@ -98,11 +110,11 @@ float DynamicsCompressor::ParameterValue(unsigned parameter_id) {
 void DynamicsCompressor::Process(const AudioBus* source_bus,
                                  AudioBus* destination_bus,
                                  unsigned frames_to_process) {
-  // Though numberOfChannels is retrived from destinationBus, we still name it
-  // numberOfChannels instead of numberOfDestinationChannels.  It's because we
-  // internally match sourceChannels's size to destinationBus by channel
-  // up/down mix. Thus we need numberOfChannels
-  // to do the loop work for both m_sourceChannels and m_destinationChannels.
+  // Though number_of_channels is retrieved from destination_bus, we still name
+  // it number_of_channels instead of number_of_destination_channels.  It's
+  // because we internally match source_channels's size to destination_bus by
+  // channel up/down mix. Thus we need number_of_channels to do the loop work
+  // for both source_channels_ and destination_channels_.
 
   unsigned number_of_channels = destination_bus->NumberOfChannels();
   unsigned number_of_source_channels = source_bus->NumberOfChannels();
@@ -204,9 +216,6 @@ double DynamicsCompressor::TailTime() const {
 DynamicsCompressorKernel::DynamicsCompressorKernel(float sample_rate,
                                                    unsigned number_of_channels)
     : sample_rate_(sample_rate),
-      last_pre_delay_frames_(kDefaultPreDelayFrames),
-      pre_delay_read_index_(0),
-      pre_delay_write_index_(kDefaultPreDelayFrames),
       ratio_(kUninitializedValue),
       slope_(kUninitializedValue),
       linear_threshold_(kUninitializedValue),
@@ -258,8 +267,8 @@ void DynamicsCompressorKernel::SetPreDelayTime(float pre_delay_time) {
 }
 
 // Exponential curve for the knee.
-// It is 1st derivative matched at m_linearThreshold and asymptotically
-// approaches the value m_linearThreshold + 1 / k.
+// It is 1st derivative matched at linear_threshold_ and asymptotically
+// approaches the value linear_threshold_ + 1 / k.
 float DynamicsCompressorKernel::KneeCurve(float x, float k) const {
   // Linear up to threshold.
   if (x < linear_threshold_) {
@@ -451,26 +460,16 @@ void DynamicsCompressorKernel::Process(
 
   unsigned frame_index = 0;
   for (int i = 0; i < n_divisions; ++i) {
-    // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     // Calculate desired gain
-    // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-    // Fix gremlins.
-    if (std::isnan(detector_average_)) {
-      detector_average_ = 1;
-    }
-    if (std::isinf(detector_average_)) {
-      detector_average_ = 1;
-    }
+    detector_average_ = EnsureFinite(detector_average_, 1);
 
     float desired_gain = detector_average_;
 
-    // Pre-warp so we get desiredGain after sin() warp below.
+    // Pre-warp so we get desired_gain after sin() warp below.
     float scaled_desired_gain = fdlibm::asinf(desired_gain) / kPiOverTwoFloat;
 
-    // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     // Deal with envelopes
-    // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
     // envelopeRate is the rate we slew from current compressor level to the
     // desired level.  The exact rate depends on if we're attacking or
@@ -479,8 +478,8 @@ void DynamicsCompressorKernel::Process(
 
     bool is_releasing = scaled_desired_gain > compressor_gain_;
 
-    // compressionDiffDb is the difference between current compression level and
-    // the desired level.
+    // compression_diff_db is the difference between current compression level
+    // and the desired level.
     float compression_diff_db;
 
     if (scaled_desired_gain == 0) {
@@ -491,20 +490,12 @@ void DynamicsCompressorKernel::Process(
     }
 
     if (is_releasing) {
-      // Release mode - compressionDiffDb should be negative dB
+      // Release mode - compression_diff_db should be negative dB
       max_attack_compression_diff_db_ = -1;
 
-      // Fix gremlins.
-      // TODO(rtoy): Replace with a DCHECK so we can figure out how NaN can
-      // occur.
-      if (std::isnan(compression_diff_db)) {
-        compression_diff_db = -1;
-      }
-      if (std::isinf(compression_diff_db)) {
-        compression_diff_db = -1;
-      }
+      compression_diff_db = EnsureFinite(compression_diff_db, -1);
 
-      // Adaptive release - higher compression (lower compressionDiffDb)
+      // Adaptive release - higher compression (lower compression_diff_db)
       // releases faster.
 
       // Contain within range: -12 -> 0 then scale to go from 0 -> 3
@@ -525,20 +516,12 @@ void DynamicsCompressorKernel::Process(
 
       envelope_rate = audio_utilities::DecibelsToLinear(db_per_frame);
     } else {
-      // Attack mode - compressionDiffDb should be positive dB
+      // Attack mode - compression_diff_db should be positive dB
 
-      // Fix gremlins.
-      // TODO(rtoy): Replace with a DCHECK so we can figure out how NaN can
-      // occur.
-      if (std::isnan(compression_diff_db)) {
-        compression_diff_db = 1;
-      }
-      if (std::isinf(compression_diff_db)) {
-        compression_diff_db = 1;
-      }
+      compression_diff_db = EnsureFinite(compression_diff_db, 1);
 
       // As long as we're still in attack mode, use a rate based off
-      // the largest compressionDiffDb we've encountered so far.
+      // the largest compression_diff_db we've encountered so far.
       if (max_attack_compression_diff_db_ == -1 ||
           max_attack_compression_diff_db_ < compression_diff_db) {
         max_attack_compression_diff_db_ = compression_diff_db;
@@ -550,10 +533,7 @@ void DynamicsCompressorKernel::Process(
       envelope_rate = 1 - fdlibm::powf(x, 1 / attack_frames);
     }
 
-    // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     // Inner loop - calculate shaped power average - apply compression.
-    // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
     {
       int pre_delay_read_index = pre_delay_read_index_;
       int pre_delay_write_index = pre_delay_write_index_;
@@ -606,13 +586,7 @@ void DynamicsCompressorKernel::Process(
         detector_average += (attenuation - detector_average) * rate;
         detector_average = std::min(1.0f, detector_average);
 
-        // Fix gremlins.
-        if (std::isnan(detector_average)) {
-          detector_average = 1;
-        }
-        if (std::isinf(detector_average)) {
-          detector_average = 1;
-        }
+        detector_average = EnsureFinite(detector_average, 1);
 
         // Exponential approach to desired gain.
         if (envelope_rate < 1) {
