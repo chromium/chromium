@@ -276,7 +276,8 @@ crbug.com/1123606 virtual/fenced-frame-mparch/* [ Pass ]
 # These tests require shared-storage and fenced-frames
 # Keep this in sync with VirtualTestSuites.
 crbug.com/1218540 wpt_internal/shared_storage/* [ Skip ]
-crbug.com/1218540 virtual/shared-storage/* [ Pass ]
+crbug.com/1218540 virtual/shared-storage-fenced-frame-mparch/* [ Pass ]
+crbug.com/1218540 virtual/shared-storage-fenced-frame-shadow-dom/* [ Pass ]
 
 # These tests require the experimental prerender feature.
 # See https://crbug.com/1126305.

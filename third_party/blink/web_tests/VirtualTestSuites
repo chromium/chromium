@@ -1022,11 +1022,18 @@
     "args": ["--enable-blink-features=HighlightInheritance"]
   },
   {
-    "prefix": "shared-storage",
+    "prefix": "shared-storage-fenced-frame-mparch",
     "bases": [
       "wpt_internal/shared_storage"
     ],
-    "args": ["--enable-features=SharedStorageAPI,FencedFrames"]
+    "args": ["--enable-features=SharedStorageAPI,FencedFrames:implementation_type/mparch"]
+  },
+  {
+    "prefix": "shared-storage-fenced-frame-shadow-dom",
+    "bases": [
+      "wpt_internal/shared_storage"
+    ],
+    "args": ["--enable-features=SharedStorageAPI,FencedFrames:implementation_type/shadow_dom"]
   },
   {
     "prefix": "fenced-frame-mparch",
