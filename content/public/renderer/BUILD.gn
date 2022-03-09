@@ -29,8 +29,6 @@ target(link_target_type, "renderer_sources") {
     "chrome_object_extensions_utils.h",
     "content_renderer_client.cc",
     "content_renderer_client.h",
-    "pepper_plugin_instance.h",
-    "plugin_ax_tree_source.h",
     "render_accessibility.h",
     "render_frame.h",
     "render_frame_media_playback_options.h",
@@ -44,7 +42,6 @@ target(link_target_type, "renderer_sources") {
     "render_thread_observer.h",
     "render_view.h",
     "render_view_visitor.h",
-    "renderer_ppapi_host.h",
     "v8_value_converter.h",
     "video_encode_accelerator.cc",
     "video_encode_accelerator.h",
@@ -52,10 +49,6 @@ target(link_target_type, "renderer_sources") {
     "window_features_converter.h",
     "worker_thread.h",
   ]
-
-  if (enable_plugins) {
-    sources += [ "ppapi_gfx_conversion.h" ]
-  }
 
   configs += [ "//content:content_implementation" ]
 
@@ -73,7 +66,6 @@ target(link_target_type, "renderer_sources") {
     "//media/gpu/ipc/client",
     "//net",
     "//ppapi/buildflags",
-    "//ppapi/c",
     "//skia",
     "//third_party/blink/public:blink_headers",
     "//third_party/blink/public/common",
@@ -90,6 +82,16 @@ target(link_target_type, "renderer_sources") {
     # include headers from each other.
     "//content/renderer",
   ]
+
+  if (enable_plugins) {
+    sources += [
+      "pepper_plugin_instance.h",
+      "plugin_ax_tree_source.h",
+      "ppapi_gfx_conversion.h",
+      "renderer_ppapi_host.h",
+    ]
+    deps += [ "//ppapi/c" ]
+  }
 
   if (is_android) {
     sources += [ "seccomp_sandbox_status_android.h" ]

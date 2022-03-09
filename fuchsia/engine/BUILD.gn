@@ -164,6 +164,20 @@ component("web_engine_core") {
     "//ui/wm/public",
   ]
 
+  assert_no_deps = [
+    # Pepper code should not be included as plugins are disabled.
+    # Exclude everything except "//ppapi/buildflags/*", which is allowed.
+    "//ppapi:*",
+    "//ppapi/c/*",
+    "//ppapi/cpp/*",
+    "//ppapi/host/*",
+    "//ppapi/lib/*",
+    "//ppapi/native_client/*",
+    "//ppapi/proxy/*",
+    "//ppapi/shared_impl/*",
+    "//ppapi/thunk/*",
+  ]
+
   # Technically the PAK files are only data dependencies, but specifying them
   # as |data_deps| causes metadata (.info) files to also be pulled-in to the
   # package.

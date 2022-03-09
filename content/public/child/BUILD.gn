@@ -41,7 +41,6 @@ source_set("child_sources") {
     "//content/child",  # Must not be public_deps!
     "//content/public/common:common_sources",
     "//gin",
-    "//ppapi/c",
   ]
 
   allow_circular_includes_from = [

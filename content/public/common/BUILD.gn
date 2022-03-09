@@ -290,6 +290,7 @@ source_set("common_sources") {
       "pepper_plugin_info.cc",
       "pepper_plugin_info.h",
     ]
+    deps -= [ "//ppapi/c" ]
   }
 
   if (use_clang_profiling_inside_sandbox) {

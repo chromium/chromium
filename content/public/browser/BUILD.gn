@@ -81,7 +81,6 @@ source_set("browser_sources") {
     "browser_plugin_guest_delegate.h",
     "browser_plugin_guest_manager.cc",
     "browser_plugin_guest_manager.h",
-    "browser_ppapi_host.h",
     "browser_task_traits.cc",
     "browser_task_traits.h",
     "browser_thread.h",
@@ -280,7 +279,6 @@ source_set("browser_sources") {
     "peak_gpu_memory_tracker.h",
     "peer_connection_tracker_host_observer.cc",
     "peer_connection_tracker_host_observer.h",
-    "pepper_vpn_provider_resource_host_proxy.h",
     "per_web_ui_browser_interface_broker.h",
     "permission_controller.h",
     "permission_controller_delegate.cc",
@@ -436,14 +434,6 @@ source_set("browser_sources") {
     "//content:content_implementation",
   ]
 
-  if (enable_plugins) {
-    sources += [
-      "plugin_data_remover.h",
-      "plugin_service.h",
-      "plugin_service_filter.h",
-    ]
-  }
-
   if (is_android) {
     sources += [ "color_chooser.h" ]
   }
@@ -502,7 +492,6 @@ source_set("browser_sources") {
     "//media",
     "//media/capture",
     "//net",
-    "//ppapi/c",
     "//services/device/public/cpp/geolocation",
     "//services/metrics/public/cpp:metrics_cpp",
     "//third_party/blink/public/common:buildflags",
@@ -521,6 +510,17 @@ source_set("browser_sources") {
     # include headers from each other.
     "//content/browser",
   ]
+
+  if (enable_plugins) {
+    sources += [
+      "browser_ppapi_host.h",
+      "pepper_vpn_provider_resource_host_proxy.h",
+      "plugin_data_remover.h",
+      "plugin_service.h",
+      "plugin_service_filter.h",
+    ]
+    deps += [ "//ppapi/c" ]
+  }
 
   if (is_chromeos || is_android || is_win || is_chromecast || is_fuchsia) {
     defines = [ "ENABLE_PROTECTED_MEDIA_IDENTIFIER_PERMISSION" ]
