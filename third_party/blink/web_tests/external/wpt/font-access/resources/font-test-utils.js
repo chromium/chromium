@@ -13,20 +13,19 @@ function filterFonts(fonts, filter) {
 }
 
 async function parseFontData(fontBlob) {
-  const fontInfo = {
-    errors: [],
-    numTables: 0,
-  };
-  const versionTag = await getTag(fontBlob, 0);
+  // Parsed result to be returned.
+  const fontInfo = {};
 
-  fontInfo.version = sfntVersionInfo(versionTag);
-  if (fontInfo.version === 'UNKNOWN') {
-    fontInfo.errors.push(`versionTag: "${versionTag}"`);
+  try {
+    // Parse the version info.
+    fontInfo.versionTag = await getTag(fontBlob, 0);
+    // Parse the table data.
+    const numTables = await getUint16(fontBlob, 4);
+    [fontInfo.tables, fontInfo.tableMeta] =
+        await getTableData(fontBlob, numTables);
+  } catch (error) {
+    throw `Error parsing font table: ${error.message}`;
   }
-
-  const numTables = await getUint16(fontBlob, 4);
-  [fontInfo.tables, fontInfo.tableMeta] =
-      await getTableData(fontBlob, numTables);
 
   return fontInfo;
 }
@@ -48,20 +47,6 @@ async function getTableData(fontBlob, numTables) {
   }
 
   return [dataMap, metaMap];
-}
-
-function sfntVersionInfo(version) {
-  // Spec: https://docs.microsoft.com/en-us/typography/opentype/spec/otff#organization-of-an-opentype-font
-  switch (version) {
-  case '\x00\x01\x00\x00':
-  case 'true':
-  case 'typ1':
-    return 'truetype';
-  case 'OTTO':
-    return 'cff';
-  default:
-    return 'UNKNOWN';
-  }
 }
 
 async function getTag(blob, offset) {
@@ -103,21 +88,6 @@ function isPlatformSupported() {
   return false;
 }
 
-async function simulateUserActivation() {
-  await promiseDocumentReady();
-  return new Promise(resolve => {
-    const button = document.createElement('button');
-    button.textContent = 'Click to enumerate fonts';
-    button.style.fontSize = '40px';
-    button.onclick = () => {
-      document.body.removeChild(button);
-      resolve();
-    };
-    document.body.appendChild(button);
-    test_driver.click(button);
-  });
-}
-
 function font_access_test(test_function, name, properties) {
   return promise_test(async (t) => {
     if (!isPlatformSupported()) {
@@ -126,7 +96,6 @@ function font_access_test(test_function, name, properties) {
       return;
     }
     await test_driver.set_permission({name: 'font-access'}, 'granted');
-    await simulateUserActivation();
     await test_function(t, name, properties);
   });
 }

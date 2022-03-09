@@ -1860,6 +1860,7 @@ crbug.com/626703 [ Win ] external/wpt/html/editing/dnd/events/historical-manual.
 # Remove from virtual tests when FontAccess is turned on by default.
 external/wpt/font-access/font_access_basic.tentative.https.window.html [ Skip ]
 external/wpt/font-access/font_access_blob.tentative.https.window.html [ Skip ]
+external/wpt/font-access/font_access_permission.tentative.https.window.html [ Skip ]
 external/wpt/font-access/font_access_query_select.tentative.https.window.html [ Skip ]
 external/wpt/font-access/font_access_sorted.tentative.https.window.html [ Skip ]
 

@@ -18,14 +18,13 @@ font_access_test(async t => {
     const data = await font.blob();
     assert_not_equals(data.size, 0, 'Blob has a positive size.');
     assert_equals(
-      data.type, 'application/octet-stream',
-      'Returned Blob is of type octet-stream.');
+        data.type, 'application/octet-stream',
+        'Returned Blob is of type octet-stream.');
     const buffer = await data.arrayBuffer();
     assert_not_equals(buffer.length, 0, 'Returned ArrayBuffer is not empty.');
 
     const parsedData = await parseFontData(data);
-    assert_not_equals(
-        parsedData.version, 'UNKNOWN', 'SFNT version is a known type.');
+    assert_version_info(parsedData.versionTag);
     assert_not_equals(
         parsedData.tables.size, 0, "Should not have tables of size zero.");
     assert_font_has_tables(font.postscriptName, parsedData.tables, BASE_TABLES);

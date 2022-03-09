@@ -27,3 +27,12 @@ function assert_font_has_tables(fontName, actualTables, expectedTables) {
         `Font ${fontName} has table ${expectedTable} of size 0.`);
   }
 }
+
+function assert_version_info(versionTag) {
+  // Spec: https://docs.microsoft.com/en-us/typography/opentype/spec/otff#organization-of-an-opentype-font
+  assert_true(versionTag === '\x00\x01\x00\x00' ||
+      versionTag === 'true' ||
+      versionTag === 'typ1' ||
+      versionTag === 'OTTO',
+      `Invalid sfnt version tag: ${versionTag}`);
+}
