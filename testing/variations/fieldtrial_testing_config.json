@@ -2155,21 +2155,6 @@
             ]
         }
     ],
-    "ContentCaptureWebLayer": [
-        {
-            "platforms": [
-                "android_weblayer"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "ContentCaptureInWebLayer"
-                    ]
-                }
-            ]
-        }
-    ],
     "ContentLanguagesInLanguagePicker": [
         {
             "platforms": [
