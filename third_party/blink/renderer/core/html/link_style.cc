@@ -280,7 +280,10 @@ LinkStyle::LoadReturnValue LinkStyle::LoadStylesheetIfNeeded(
   // Don't hold up layout tree construction and script execution on
   // stylesheets that are not needed for the layout at the moment.
   bool critical_style = media_query_matches && !owner_->IsAlternate();
-  bool render_blocking = critical_style && owner_->IsCreatedByParser();
+  bool render_blocking =
+      critical_style && (owner_->IsCreatedByParser() ||
+                         (RuntimeEnabledFeatures::BlockingAttributeEnabled() &&
+                          owner_->blocking().IsRenderBlocking()));
 
   AddPendingSheet(render_blocking ? kBlocking : kNonBlocking);
 
