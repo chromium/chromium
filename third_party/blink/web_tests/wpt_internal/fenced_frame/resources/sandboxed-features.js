@@ -20,7 +20,7 @@ const run_in_fenced_frame = (func_name, description, is_nested) => {
 
 const run_sanboxed_feature_test = (func_name, description) => {
   run_in_fenced_frame(func_name, description, false);
-  run_in_fenced_frame(func_name, description + '[looser sandboxed]', false);
+  run_in_fenced_frame(func_name, description + '[looser sandboxed]', true);
 };
 
 async function test_prompt() {
