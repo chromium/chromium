@@ -86,6 +86,7 @@
 
   if (base::FeatureList::IsEnabled(kIOSOmniboxUpdatedPopupUI)) {
     self.model = [[PopupModel alloc] initWithMatches:@[]
+                                             headers:@[]
                                             delegate:self.mediator];
     self.popupViewController =
         [OmniboxPopupViewProvider makeViewControllerWithModel:self.model];

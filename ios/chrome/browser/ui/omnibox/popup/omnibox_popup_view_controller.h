@@ -32,7 +32,8 @@
 @property(nonatomic, weak) id<ImageRetriever> imageRetriever;
 @property(nonatomic, weak) id<FaviconRetriever> faviconRetriever;
 
-@property(nonatomic, strong) NSArray<id<AutocompleteSuggestion>>* currentResult;
+@property(nonatomic, strong)
+    NSArray<id<AutocompleteSuggestionGroup>>* currentResult;
 
 - (instancetype)init NS_DESIGNATED_INITIALIZER;
 

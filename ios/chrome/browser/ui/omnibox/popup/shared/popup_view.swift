@@ -14,26 +14,48 @@ struct PopupView: View {
     VStack {
       List {
         ForEach(Array(zip(model.matches.indices, model.matches)), id: \.0) {
-          (index, match) in
-          PopupMatchRowView(
-            match: match,
-            isHighlighted: index == self.model.highlightedMatchIndex,
-            selectionHandler: {
-              model.delegate?.autocompleteResultConsumer(model, didSelectRow: UInt(index))
-            },
-            trailingButtonHandler: {
-              model.delegate?.autocompleteResultConsumer(
-                model, didTapTrailingButtonForRow: UInt(index))
+          sectionIndex, section in
+
+          let sectionContents =
+            ForEach(Array(zip(section.matches.indices, section.matches)), id: \.0) {
+              matchIndex, match in
+              PopupMatchRowView(
+                match: match,
+                isHighlighted: IndexPath(row: matchIndex, section: sectionIndex)
+                  == self.model.highlightedMatchIndexPath,
+
+                selectionHandler: {
+                  model.delegate?.autocompleteResultConsumer(
+                    model, didSelectRow: UInt(matchIndex), inSection: UInt(sectionIndex))
+                },
+                trailingButtonHandler: {
+                  model.delegate?.autocompleteResultConsumer(
+                    model, didTapTrailingButtonForRow: UInt(matchIndex),
+                    inSection: UInt(sectionIndex))
+                }
+
+              )
+              .deleteDisabled(!match.supportsDeletion)
+              .listRowInsets(Dimensions.matchListRowInsets)
             }
-          )
-          .deleteDisabled(!match.supportsDeletion)
-          .listRowInsets(Dimensions.matchListRowInsets)
-        }
-        .onDelete { indexSet in
-          for matchIndex in indexSet {
-            model.delegate?.autocompleteResultConsumer(
-              model, didSelectRowForDeletion: UInt(matchIndex))
+            .onDelete { indexSet in
+              for matchIndex in indexSet {
+                model.delegate?.autocompleteResultConsumer(
+                  model, didSelectRowForDeletion: UInt(matchIndex), inSection: UInt(sectionIndex))
+              }
+            }
+
+          // Split the suggestions into sections, but only add a header text if the header isn't empty
+          if !model.matches[sectionIndex].header.isEmpty {
+            Section(header: Text(model.matches[sectionIndex].header)) {
+              sectionContents
+            }
+          } else {
+            Section {
+              sectionContents
+            }
           }
+
         }
       }
     }
@@ -45,6 +67,6 @@ struct PopupView_Previews: PreviewProvider {
   static var previews: some View {
     PopupView(
       model: PopupModel(
-        matches: PopupMatch.previews, delegate: nil))
+        matches: [PopupMatch.previews], headers: ["Suggestions"], delegate: nil))
   }
 }

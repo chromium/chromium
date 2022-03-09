@@ -44,4 +44,16 @@
 
 @end
 
+// A group of AutocompleteSuggestions with an optional section header.
+@protocol AutocompleteSuggestionGroup
+
+// Optional title.
+@property(nonatomic, copy, readonly) NSString* title;
+
+// Contained suggestions.
+@property(nonatomic, strong, readonly)
+    NSArray<id<AutocompleteSuggestion>>* suggestions;
+
+@end
+
 #endif  // IOS_CHROME_BROWSER_UI_OMNIBOX_POPUP_AUTOCOMPLETE_SUGGESTION_H_
