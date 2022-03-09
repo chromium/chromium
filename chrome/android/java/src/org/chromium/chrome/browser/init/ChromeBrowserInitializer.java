@@ -27,6 +27,7 @@ import org.chromium.base.task.AsyncTask;
 import org.chromium.base.task.ChainedTasks;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
+import org.chromium.build.NativeLibraries;
 import org.chromium.chrome.browser.AppHooks;
 import org.chromium.chrome.browser.ChromeStrictMode;
 import org.chromium.chrome.browser.FileProviderHelper;
@@ -159,6 +160,10 @@ public class ChromeBrowserInitializer {
         }
         if (parts.isActivityFinishingOrDestroyed()) return;
         preInflationStartupDone();
+        if (Process.is64Bit()) {
+            // This should be called before calling into LibraryLoader.
+            ensureLibraryCanBeLoadedIn64Bit();
+        }
         parts.setContentViewAndLoadLibrary(() -> this.onInflationComplete(parts));
     }
 
@@ -314,6 +319,21 @@ public class ChromeBrowserInitializer {
         } else {
             startChromeBrowserProcessesSync();
             tasks.start(true);
+        }
+    }
+
+    private void ensureLibraryCanBeLoadedIn64Bit() {
+        // Fail here before loading libmonochrome.so on 64-bit platforms, otherwise the failing
+        // native stacktrace will not make it obvious that this is a bitness issue. See this bug
+        // for context: https://crbug.com/1303857 While non-component builds has only one library,
+        // monochrome may not be the first in the list for component builds.
+        for (String libraryName : NativeLibraries.LIBRARIES) {
+            if (libraryName.equals("monochrome") || libraryName.equals("monochrome.cr")) {
+                throw new RuntimeException(
+                        "Starting in 64-bit mode requires the 64-bit native library. If the "
+                        + "device is 64-bit only, see alternatives here: "
+                        + "https://crbug.com/1303857#c7.");
+            }
         }
     }
 
