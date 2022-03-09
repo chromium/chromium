@@ -13,7 +13,6 @@ import android.view.ViewGroup;
 import android.webkit.ValueCallback;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.fragment.app.FragmentManager;
 
 import org.chromium.base.Callback;
@@ -37,6 +36,7 @@ import org.chromium.weblayer_private.interfaces.SettingsIntentHelper;
 import org.chromium.weblayer_private.settings.WebLayerSiteSettingsDelegate;
 
 import java.util.Collection;
+import java.util.Collections;
 
 /**
  * WebLayer's customization of PageInfoControllerDelegate.
@@ -112,10 +112,10 @@ public class PageInfoControllerDelegateImpl extends PageInfoControllerDelegate {
      * {@inheritDoc}
      */
     @Override
-    @Nullable
+    @NonNull
     public Collection<PageInfoSubpageController> createAdditionalRowViews(
             PageInfoMainController mainController, ViewGroup rowWrapper) {
-        return null;
+        return Collections.emptyList();
     }
 
     /**

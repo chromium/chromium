@@ -7,8 +7,8 @@ package org.chromium.components.page_info;
 import android.view.View;
 import android.view.ViewGroup;
 
-import java.util.Arrays;
-import java.util.Collections;
+import androidx.annotation.NonNull;
+
 import java.util.List;
 
 /**
@@ -28,9 +28,10 @@ public class PageInfoAdPersonalizationController extends PageInfoPreferenceSubpa
         super(delegate);
         mMainController = mainController;
         mRowView = rowView;
+    }
 
-        fetchAdPersonalizationInfo();
-
+    public void setTopicsDisplay(List<String> topics) {
+        mInfo = topics;
         PageInfoRowView.ViewParams rowParams = new PageInfoRowView.ViewParams();
         rowParams.visible = !mInfo.isEmpty();
         rowParams.title = getSubpageTitle();
@@ -40,20 +41,12 @@ public class PageInfoAdPersonalizationController extends PageInfoPreferenceSubpa
         mRowView.setParams(rowParams);
     }
 
-    private void fetchAdPersonalizationInfo() {
-        // TODO(crbug.com/1286276): Populate with real data from site.
-        if (mMainController.getURL().domainIs("example.com")) {
-            mInfo = Arrays.asList("Arts & entertainment");
-        } else {
-            mInfo = Collections.emptyList();
-        }
-    }
-
     private void launchSubpage() {
         mMainController.recordAction(PageInfoAction.PAGE_INFO_AD_PERSONALIZATION_PAGE_OPENED);
         mMainController.launchSubpage(this);
     }
 
+    @NonNull
     @Override
     public String getSubpageTitle() {
         return mRowView.getContext().getResources().getString(
@@ -81,6 +74,9 @@ public class PageInfoAdPersonalizationController extends PageInfoPreferenceSubpa
 
     @Override
     public void updateRowIfNeeded() {}
+
+    @Override
+    public void onNativeInitialized() {}
 
     @Override
     public void onSubpageRemoved() {

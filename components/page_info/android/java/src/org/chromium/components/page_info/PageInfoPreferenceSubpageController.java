@@ -61,4 +61,7 @@ public abstract class PageInfoPreferenceSubpageController implements PageInfoSub
     protected boolean canCreateSubpageFragment() {
         return !mDelegate.getFragmentManager().isStateSaved();
     }
+
+    @Override
+    public void onNativeInitialized() {}
 }

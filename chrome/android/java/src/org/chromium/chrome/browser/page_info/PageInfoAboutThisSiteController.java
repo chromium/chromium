@@ -109,7 +109,6 @@ public class PageInfoAboutThisSiteController implements PageInfoSubpageControlle
         rowParams.decreaseIconSize = true;
         rowParams.clickCallback = this::launchSubpage;
         mRowView.setParams(rowParams);
-        mMainController.setAboutThisSiteShown(true);
     }
 
     private @Nullable SiteInfo getSiteInfo() {
@@ -130,6 +129,11 @@ public class PageInfoAboutThisSiteController implements PageInfoSubpageControlle
 
     @Override
     public void updateRowIfNeeded() {}
+
+    @Override
+    public void onNativeInitialized() {
+        mMainController.setAboutThisSiteShown(mSiteInfo != null);
+    }
 
     @NativeMethods
     interface Natives {

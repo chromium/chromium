@@ -159,7 +159,10 @@ public class PageInfoHistoryController
             updateLastVisit();
         }
         mDataIsStale = false;
-    };
+    }
+
+    @Override
+    public void onNativeInitialized() {}
 
     // HistoryContentManager.Observer
     @Override

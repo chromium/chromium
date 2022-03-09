@@ -101,4 +101,7 @@ public class PageInfoPageZoomController implements PageInfoSubpageController {
 
     @Override
     public void updateRowIfNeeded() {}
+
+    @Override
+    public void onNativeInitialized() {}
 }
