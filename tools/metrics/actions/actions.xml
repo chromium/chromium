@@ -31393,6 +31393,42 @@ should be able to be added at any place in this file.
   <description>Please enter the description of the metric.</description>
 </action>
 
+<action name="TextFragments.Menu.LearnMoreOpened">
+  <owner>tmartino@chromium.org</owner>
+  <owner>eic@chromium.org</owner>
+  <description>
+    The user selected the &quot;Learn more&quot; option in the Text Fragments
+    popup menu.
+  </description>
+</action>
+
+<action name="TextFragments.Menu.Opened">
+  <owner>tmartino@chromium.org</owner>
+  <owner>eic@chromium.org</owner>
+  <description>
+    The user tapped on a highlighted text fragment, opening the popup menu with
+    additional options.
+  </description>
+</action>
+
+<action name="TextFragments.Menu.Removed">
+  <owner>tmartino@chromium.org</owner>
+  <owner>eic@chromium.org</owner>
+  <description>
+    The user removed a highlighted text fragment from the page using the popup
+    menu.
+  </description>
+</action>
+
+<action name="TextFragments.Menu.Reshared">
+  <owner>tmartino@chromium.org</owner>
+  <owner>eic@chromium.org</owner>
+  <description>
+    The user selected the &quot;Share Highlight&quot; option in the Text
+    Fragments popup menu.
+  </description>
+</action>
+
 <action name="TextToSpeech.Pause">
   <owner>dtseng@chromium.org</owner>
   <description>Synthesized speech is paused.</description>

@@ -6,6 +6,7 @@
 
 #import <memory>
 
+#import "base/metrics/user_metrics.h"
 #import "base/strings/sys_string_conversions.h"
 #import "components/shared_highlighting/core/common/fragment_directives_utils.h"
 #import "components/shared_highlighting/core/common/text_fragment.h"
@@ -79,6 +80,8 @@
                            withFragments:
                                (std::vector<shared_highlighting::TextFragment>)
                                    fragments {
+  base::RecordAction(base::UserMetricsAction("TextFragments.Menu.Opened"));
+
   self.actionSheet = [[ActionSheetCoordinator alloc]
       initWithBaseViewController:[self baseViewController]
                          browser:[self browser]
@@ -92,12 +95,16 @@
   [self.actionSheet
       addItemWithTitle:l10n_util::GetNSString(IDS_IOS_SHARED_HIGHLIGHT_REMOVE)
                 action:^{
+                  base::RecordAction(
+                      base::UserMetricsAction("TextFragments.Menu.Removed"));
                   [weakSelf.mediator removeTextFragmentsInWebState:webState];
                 }
                  style:UIAlertActionStyleDestructive];
   [self.actionSheet
       addItemWithTitle:l10n_util::GetNSString(IDS_IOS_SHARED_HIGHLIGHT_RESHARE)
                 action:^{
+                  base::RecordAction(
+                      base::UserMetricsAction("TextFragments.Menu.Reshared"));
                   id<ActivityServiceCommands> handler = HandlerForProtocol(
                       weakSelf.browser->GetCommandDispatcher(),
                       ActivityServiceCommands);
@@ -129,6 +136,8 @@
       addItemWithTitle:l10n_util::GetNSString(
                            IDS_IOS_SHARED_HIGHLIGHT_LEARN_MORE)
                 action:^{
+                  base::RecordAction(base::UserMetricsAction(
+                      "TextFragments.Menu.LearnMoreOpened"));
                   id<ApplicationCommands> handler = HandlerForProtocol(
                       weakSelf.browser->GetCommandDispatcher(),
                       ApplicationCommands);
