@@ -1887,6 +1887,12 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
   RunHtmlTest(FILE_PATH_LITERAL("footer-inside-other-section.html"));
 }
 
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
+                       AccessibilityFooterInsideSectionRoleGeneric) {
+  RunRegressionTest(
+      FILE_PATH_LITERAL("footer-inside-section-role-generic.html"));
+}
+
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest, AccessibilityForm) {
   RunHtmlTest(FILE_PATH_LITERAL("form.html"));
 }
@@ -1941,6 +1947,12 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest, AccessibilityHeader) {
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
                        AccessibilityHeaderInsideOtherSection) {
   RunHtmlTest(FILE_PATH_LITERAL("header-inside-other-section.html"));
+}
+
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
+                       AccessibilityHeaderInsideSectionRoleGeneric) {
+  RunRegressionTest(
+      FILE_PATH_LITERAL("header-inside-section-role-generic.html"));
 }
 
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest, AccessibilityHeading) {
