@@ -119,6 +119,11 @@ void BeginFrameSourceWebView::AddBeginFrameCompletionCallback(
   parent_->AddBeginFrameCompletionCallback(std::move(callback));
 }
 
+const viz::BeginFrameArgs&
+BeginFrameSourceWebView::LastDispatchedBeginFrameArgs() {
+  return parent_observer_->LastUsedBeginFrameArgs();
+}
+
 // static
 RootBeginFrameSourceWebView* RootBeginFrameSourceWebView::GetInstance() {
   static base::NoDestructor<RootBeginFrameSourceWebView> instance;

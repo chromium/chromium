@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "base/containers/circular_deque.h"
+#include "components/viz/common/frame_sinks/begin_frame_args.h"
 #include "components/viz/common/surfaces/frame_sink_id.h"
 #include "components/viz/common/surfaces/surface_id.h"
 #include "content/public/browser/android/synchronous_compositor.h"
@@ -36,7 +37,8 @@ class ChildFrame {
       bool offscreen_pre_raster,
       float device_scale_factor,
       CopyOutputRequestQueue copy_requests,
-      bool did_invalidate);
+      bool did_invalidate,
+      const viz::BeginFrameArgs& begin_frame_args);
 
   ChildFrame(const ChildFrame&) = delete;
   ChildFrame& operator=(const ChildFrame&) = delete;
@@ -66,6 +68,13 @@ class ChildFrame {
 
   // Used for metrics, indicates that we invalidated for this frame.
   const bool did_invalidate;
+
+  // Latest BeginFrameArgs this frame is being presented for so far. Normally
+  // this corresponds to the begin frame of the current draw cycle (BeginFrame
+  // => DrawOnUI => Sync => DrawOnRT), but in cases when DrawOnRT doesn't happen
+  // (e.g webview is offscreen) this will be updated to more recent draws.
+  // See: `HardwareRenderer::WaitAndPruneFrameQueue()` for details.
+  viz::BeginFrameArgs begin_frame_args;
 };
 
 using ChildFrameQueue = base::circular_deque<std::unique_ptr<ChildFrame>>;

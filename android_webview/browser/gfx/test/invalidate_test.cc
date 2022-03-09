@@ -329,7 +329,7 @@ class InvalidateTest
 
     auto child_frame = std::make_unique<ChildFrame>(
         future, kRootClientSinkId, kFrameSize, gfx::Transform(), false, 1.0f,
-        CopyOutputRequestQueue(), /*did_invalidate=*/invalidated);
+        CopyOutputRequestQueue(), /*did_invalidate=*/invalidated, args);
     return child_frame;
   }
 

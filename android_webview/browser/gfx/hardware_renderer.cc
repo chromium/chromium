@@ -194,6 +194,11 @@ void MoveCopyRequests(CopyOutputRequestQueue* from,
   from->clear();
 }
 
+viz::BeginFrameArgs NewerBeginFrameArgs(const viz::BeginFrameArgs& args1,
+                                        const viz::BeginFrameArgs& args2) {
+  return args1.frame_id.IsNextInSequenceTo(args2.frame_id) ? args1 : args2;
+}
+
 }  // namespace
 
 // static
@@ -222,6 +227,11 @@ ChildFrameQueue HardwareRenderer::WaitAndPruneFrameQueue(
     child_frames.pop_back();
     MoveCopyRequests(&frame->copy_requests,
                      &child_frames[remaining_frame_index]->copy_requests);
+
+    // If we're dropping frames at the end, we need update begin frame args.
+    child_frames[remaining_frame_index]->begin_frame_args = NewerBeginFrameArgs(
+        child_frames[remaining_frame_index]->begin_frame_args,
+        frame->begin_frame_args);
     DCHECK(!frame->frame);
   }
   DCHECK_EQ(static_cast<size_t>(remaining_frame_index),
@@ -233,6 +243,9 @@ ChildFrameQueue HardwareRenderer::WaitAndPruneFrameQueue(
     child_frames.pop_front();
     MoveCopyRequests(&frame->copy_requests,
                      &child_frames.back()->copy_requests);
+    // We shouldn't drop newer frames.
+    DCHECK(!frame->begin_frame_args.frame_id.IsNextInSequenceTo(
+        child_frames.back()->begin_frame_args.frame_id));
     if (frame->frame)
       pruned_frames.emplace_back(std::move(frame));
   }
