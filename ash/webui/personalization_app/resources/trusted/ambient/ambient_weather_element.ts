@@ -53,15 +53,23 @@ export class AmbientWeatherUnit extends WithPersonalizationStore {
 
   disabled: boolean;
   private temperatureUnit_: TemperatureUnit;
-  private selectedTemperatureUnit: TemperatureUnit;
+  private selectedTemperatureUnit: string;
 
-  private onSelectedTemperatureUnitChanged_(newValue: string, _: string) {
-    const num = parseInt(newValue, 10);
-    if (!isNaN(num) &&
-        inBetween(num, TemperatureUnit.MIN_VALUE, TemperatureUnit.MAX_VALUE)) {
-      setTemperatureUnit(
-          num as TemperatureUnit, getAmbientProvider(), this.getStore());
+  private onSelectedTemperatureUnitChanged_(value: string) {
+    const num = parseInt(value, 10);
+    if (isNaN(num) ||
+        !inBetween(num, TemperatureUnit.MIN_VALUE, TemperatureUnit.MAX_VALUE)) {
+      console.warn('Unexpected temperature unit received', value);
+      return;
     }
+    setTemperatureUnit(
+        num as TemperatureUnit, getAmbientProvider(), this.getStore());
+  }
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    'ambient-weather-unit': AmbientWeatherUnit;
   }
 }
 

@@ -67,18 +67,17 @@ export class TestAmbientProvider extends TestBrowserProxy implements
   setAmbientObserver(remote: AmbientObserverRemote) {
     this.methodCalled('setAmbientObserver', remote);
     this.ambientObserverRemote = remote;
-    window.setTimeout(() => {
-      this.ambientObserverRemote!.onAmbientModeEnabledChanged(
-          /*ambientModeEnabled=*/ true);
-    }, 0);
+  }
 
-    // Add an arbitrary delay for simulation.
-    window.setTimeout(() => {
-      this.ambientObserverRemote!.onAlbumsChanged(this.albums);
-      this.ambientObserverRemote!.onTopicSourceChanged(TopicSource.kArtGallery);
-      this.ambientObserverRemote!.onTemperatureUnitChanged(
-          TemperatureUnit.kFahrenheit);
-    }, 10);
+  // Test only function to update the ambient observer.
+  updateAmbientObserver() {
+    this.ambientObserverRemote!.onAmbientModeEnabledChanged(
+        /*ambientModeEnabled=*/ true);
+
+    this.ambientObserverRemote!.onAlbumsChanged(this.albums);
+    this.ambientObserverRemote!.onTopicSourceChanged(TopicSource.kArtGallery);
+    this.ambientObserverRemote!.onTemperatureUnitChanged(
+        TemperatureUnit.kFahrenheit);
   }
 
   setAmbientModeEnabled(ambientModeEnabled: boolean) {

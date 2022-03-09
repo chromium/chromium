@@ -43,34 +43,33 @@ export function AmbientSubpageTest() {
   });
 
   async function displayMainSettings(
-      topicSource: TopicSource,
-      temperatureUnit: TemperatureUnit): Promise<AmbientSubpage> {
-    const ambientSubpage =
-        initElement(AmbientSubpage, {path: Paths.Ambient, queryParams: {}});
-    personalizationStore.data.ambient.ambientModeEnabled = false;
+      topicSource: TopicSource|null,
+      temperatureUnit: TemperatureUnit|null): Promise<AmbientSubpage> {
     personalizationStore.data.ambient.albums = ambientProvider.albums;
     personalizationStore.data.ambient.topicSource = topicSource;
     personalizationStore.data.ambient.temperatureUnit = temperatureUnit;
+    personalizationStore.data.ambient.ambientModeEnabled = false;
+    const ambientSubpage =
+        initElement(AmbientSubpage, {path: Paths.Ambient, queryParams: {}});
     personalizationStore.notifyObservers();
     await waitAfterNextRender(ambientSubpage);
     return Promise.resolve(ambientSubpage);
   }
 
   test('displays content', async () => {
-    ambientSubpageElement = await displayMainSettings(
-        TopicSource.kArtGallery, TemperatureUnit.kFahrenheit);
+    ambientSubpageElement = await displayMainSettings(null, null);
 
     const toggleRow =
         ambientSubpageElement.shadowRoot!.querySelector('toggle-row');
-    assertTrue(!!toggleRow);
+    assertTrue(!!toggleRow, 'toggle-row element exists');
     const toggleButton = toggleRow!.shadowRoot!.querySelector('cr-toggle');
-    assertTrue(!!toggleButton);
+    assertTrue(!!toggleButton, 'cr-toggle element exists');
     assertFalse(toggleButton!.checked);
 
     let spinner =
         ambientSubpageElement.shadowRoot!.querySelector('paper-spinner-lite');
-    assertTrue(!!spinner);
-    assertTrue(spinner.active);
+    assertTrue(!!spinner, 'paper-spinner-lite element exists');
+    assertTrue(spinner.active, 'paper-spinner-lite is active');
 
     personalizationStore.data.ambient.albums = ambientProvider.albums;
     personalizationStore.data.ambient.topicSource = TopicSource.kGooglePhotos;
@@ -81,12 +80,12 @@ export function AmbientSubpageTest() {
 
     spinner =
         ambientSubpageElement.shadowRoot!.querySelector('paper-spinner-lite');
-    assertTrue(!!spinner);
+    assertTrue(!!spinner, 'paper-spinner-lite still exists');
     assertEquals(getComputedStyle(spinner).display, 'none');
 
     const topicSource =
         ambientSubpageElement.shadowRoot!.querySelector('topic-source-list');
-    assertTrue(!!topicSource);
+    assertTrue(!!topicSource, 'topic-source-list element exists');
 
     const weatherUnit =
         ambientSubpageElement.shadowRoot!.querySelector('ambient-weather-unit');
@@ -98,6 +97,10 @@ export function AmbientSubpageTest() {
         AmbientActionName.SET_AMBIENT_MODE_ENABLED);
     ambientSubpageElement = await displayMainSettings(
         TopicSource.kArtGallery, TemperatureUnit.kFahrenheit);
+
+    await ambientProvider.whenCalled('setAmbientObserver');
+    ambientProvider.updateAmbientObserver();
+
     const action = await personalizationStore.waitForAction(
                        AmbientActionName.SET_AMBIENT_MODE_ENABLED) as
         SetAmbientModeEnabledAction;
@@ -189,10 +192,12 @@ export function AmbientSubpageTest() {
   });
 
   test('has correct topic sources on load', async () => {
+    personalizationStore.expectAction(AmbientActionName.SET_TOPIC_SOURCE);
     ambientSubpageElement = initElement(AmbientSubpage);
 
-    personalizationStore.setReducersEnabled(true);
-    personalizationStore.expectAction(AmbientActionName.SET_TOPIC_SOURCE);
+    await ambientProvider.whenCalled('setAmbientObserver');
+    ambientProvider.updateAmbientObserver();
+
     const action =
         await personalizationStore.waitForAction(
             AmbientActionName.SET_TOPIC_SOURCE) as SetTopicSourceAction;
@@ -232,10 +237,12 @@ export function AmbientSubpageTest() {
   });
 
   test('has correct temperature unit on load', async () => {
+    personalizationStore.expectAction(AmbientActionName.SET_TEMPERATURE_UNIT);
     ambientSubpageElement = initElement(AmbientSubpage);
 
-    personalizationStore.setReducersEnabled(true);
-    personalizationStore.expectAction(AmbientActionName.SET_TEMPERATURE_UNIT);
+    await ambientProvider.whenCalled('setAmbientObserver');
+    ambientProvider.updateAmbientObserver();
+
     const action =
         await personalizationStore.waitForAction(
             AmbientActionName.SET_TEMPERATURE_UNIT) as SetTemperatureUnitAction;
@@ -251,28 +258,30 @@ export function AmbientSubpageTest() {
     assertTrue(!!weatherUnit);
 
     const temperatureUnitItems =
-        weatherUnit!.shadowRoot!.querySelectorAll('cr-radio-button');
+        weatherUnit!.shadowRoot!.querySelectorAll<CrRadioButtonElement>(
+            'cr-radio-button');
     assertEquals(2, temperatureUnitItems!.length);
 
-    const fahrenheitUnitButton =
-        temperatureUnitItems[0] as CrRadioButtonElement;
-    const celsiusUnitButton = temperatureUnitItems[1] as CrRadioButtonElement;
+    const [fahrenheitUnitButton, celsiusUnitButton] = temperatureUnitItems;
 
-    personalizationStore.expectAction(AmbientActionName.SET_TEMPERATURE_UNIT);
-    fahrenheitUnitButton!.click();
-    assertTrue(fahrenheitUnitButton.checked);
-    let action =
-        await personalizationStore.waitForAction(
-            AmbientActionName.SET_TEMPERATURE_UNIT) as SetTemperatureUnitAction;
-    assertEquals(TemperatureUnit.kFahrenheit, action.temperatureUnit);
+    assertTrue(
+        fahrenheitUnitButton!.checked, 'fahrenheit button starts checked');
 
     personalizationStore.expectAction(AmbientActionName.SET_TEMPERATURE_UNIT);
     celsiusUnitButton!.click();
-    assertTrue(celsiusUnitButton.checked);
-    action =
+    assertTrue(celsiusUnitButton!.checked);
+    let action =
         await personalizationStore.waitForAction(
             AmbientActionName.SET_TEMPERATURE_UNIT) as SetTemperatureUnitAction;
     assertEquals(TemperatureUnit.kCelsius, action.temperatureUnit);
+
+    personalizationStore.expectAction(AmbientActionName.SET_TEMPERATURE_UNIT);
+    fahrenheitUnitButton!.click();
+    assertTrue(fahrenheitUnitButton!.checked);
+    action =
+        await personalizationStore.waitForAction(
+            AmbientActionName.SET_TEMPERATURE_UNIT) as SetTemperatureUnitAction;
+    assertEquals(TemperatureUnit.kFahrenheit, action.temperatureUnit);
   });
 
   test('has main settings visible with path ambient', async () => {
@@ -423,12 +432,16 @@ export function AmbientSubpageTest() {
   });
 
   test('toggle album selection by clicking', async () => {
+    personalizationStore.setReducersEnabled(true);
+    personalizationStore.expectAction(AmbientActionName.SET_ALBUMS);
     ambientSubpageElement = initElement(AmbientSubpage, {
       path: Paths.AmbientAlbums,
       queryParams: {topicSource: TopicSource.kArtGallery}
     });
-    personalizationStore.setReducersEnabled(true);
-    personalizationStore.expectAction(AmbientActionName.SET_ALBUMS);
+
+    await ambientProvider.whenCalled('setAmbientObserver');
+    ambientProvider.updateAmbientObserver();
+
     const action = await personalizationStore.waitForAction(
                        AmbientActionName.SET_ALBUMS) as SetAlbumsAction;
     assertEquals(4, action.albums.length);
@@ -457,12 +470,16 @@ export function AmbientSubpageTest() {
   });
 
   test('not deselect last art album', async () => {
+    personalizationStore.setReducersEnabled(true);
+    personalizationStore.expectAction(AmbientActionName.SET_ALBUMS);
     ambientSubpageElement = initElement(AmbientSubpage, {
       path: Paths.AmbientAlbums,
       queryParams: {topicSource: TopicSource.kArtGallery}
     });
-    personalizationStore.setReducersEnabled(true);
-    personalizationStore.expectAction(AmbientActionName.SET_ALBUMS);
+
+    await ambientProvider.whenCalled('setAmbientObserver');
+    ambientProvider.updateAmbientObserver();
+
     const action = await personalizationStore.waitForAction(
                        AmbientActionName.SET_ALBUMS) as SetAlbumsAction;
     assertEquals(4, action.albums.length);
@@ -499,10 +516,15 @@ export function AmbientSubpageTest() {
   });
 
   test('has correct album preview information', async () => {
-    ambientSubpageElement = await displayMainSettings(
-        TopicSource.kArtGallery, TemperatureUnit.kFahrenheit);
     personalizationStore.setReducersEnabled(true);
     personalizationStore.expectAction(AmbientActionName.SET_ALBUMS);
+
+    ambientSubpageElement = await displayMainSettings(
+        TopicSource.kArtGallery, TemperatureUnit.kFahrenheit);
+
+    await ambientProvider.whenCalled('setAmbientObserver');
+    ambientProvider.updateAmbientObserver();
+
     const action = await personalizationStore.waitForAction(
                        AmbientActionName.SET_ALBUMS) as SetAlbumsAction;
     assertEquals(4, action.albums.length);
