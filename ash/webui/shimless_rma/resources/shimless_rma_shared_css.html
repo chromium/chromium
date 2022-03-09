@@ -15,7 +15,6 @@
     }
 
     html {
-      --cr-card-shadow: var(--cr-elevation-1);
       background-color: var(--cros-bg-color);
     }
 
@@ -65,6 +64,10 @@
       font-size: var(--shimless-input-font-size);
       font-weight: var(--shimless-regular-font-weight);
       line-height: var(--shimless-input-line-height);
+    }
+
+    cr-dialog::part(dialog) {
+      box-shadow: var(--cros-elevation-3-shadow);
     }
 
     cr-dialog [slot=title] {
