@@ -1030,6 +1030,7 @@ crbug.com/1132627 external/wpt/css/css-flexbox/flex-minimum-height-flex-items-00
 crbug.com/1132627 external/wpt/css/css-flexbox/flex-aspect-ratio-img-column-011.html [ Failure ]
 crbug.com/721123 css3/flexbox/flexitem.html [ Failure ]
 crbug.com/591099 css3/flexbox/flex-align-vertical-writing-mode.html [ Failure ]
+crbug.com/591099 css3/flexbox/flex-flow-auto-margins-no-available-space-assert.html [ Failure ]
 crbug.com/721123 external/wpt/css/css-flexbox/flexitem-stretch-image.html [ Failure ]
 crbug.com/704294 external/wpt/css/css-flexbox/flex-aspect-ratio-img-row-006.html [ Failure ]
 crbug.com/704294 external/wpt/css/css-flexbox/canvas-dynamic-change-001.html [ Failure ]

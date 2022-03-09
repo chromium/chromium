@@ -1729,11 +1729,11 @@ int HTMLElement::offsetLeftForBinding() {
   GetDocument().EnsurePaintLocationDataValidForNode(
       this, DocumentUpdateReason::kJavaScript);
   Element* offset_parent = unclosedOffsetParent();
-  if (LayoutBoxModelObject* layout_object = GetLayoutBoxModelObject())
-    return AdjustForAbsoluteZoom::AdjustLayoutUnit(
-               LayoutUnit(layout_object->PixelSnappedOffsetLeft(offset_parent)),
-               layout_object->StyleRef())
-        .Round();
+  if (const auto* layout_object = GetLayoutBoxModelObject()) {
+    return AdjustForAbsoluteZoom::AdjustInt(
+        layout_object->PixelSnappedOffsetLeft(offset_parent),
+        layout_object->StyleRef());
+  }
   return 0;
 }
 
@@ -1741,11 +1741,11 @@ int HTMLElement::offsetTopForBinding() {
   GetDocument().EnsurePaintLocationDataValidForNode(
       this, DocumentUpdateReason::kJavaScript);
   Element* offset_parent = unclosedOffsetParent();
-  if (LayoutBoxModelObject* layout_object = GetLayoutBoxModelObject())
-    return AdjustForAbsoluteZoom::AdjustLayoutUnit(
-               LayoutUnit(layout_object->PixelSnappedOffsetTop(offset_parent)),
-               layout_object->StyleRef())
-        .Round();
+  if (const auto* layout_object = GetLayoutBoxModelObject()) {
+    return AdjustForAbsoluteZoom::AdjustInt(
+        layout_object->PixelSnappedOffsetTop(offset_parent),
+        layout_object->StyleRef());
+  }
   return 0;
 }
 
@@ -1754,12 +1754,10 @@ int HTMLElement::offsetWidthForBinding() {
       this, DocumentUpdateReason::kJavaScript);
   Element* offset_parent = unclosedOffsetParent();
   int result = 0;
-  if (LayoutBoxModelObject* layout_object = GetLayoutBoxModelObject()) {
-    result =
-        AdjustForAbsoluteZoom::AdjustLayoutUnit(
-            LayoutUnit(layout_object->PixelSnappedOffsetWidth(offset_parent)),
-            layout_object->StyleRef())
-            .Round();
+  if (const auto* layout_object = GetLayoutBoxModelObject()) {
+    result = AdjustForAbsoluteZoom::AdjustInt(
+        layout_object->PixelSnappedOffsetWidth(offset_parent),
+        layout_object->StyleRef());
     RecordScrollbarSizeForStudy(result, /* isWidth= */ true,
                                 /* is_offset= */ true);
   }
@@ -1772,12 +1770,10 @@ int HTMLElement::offsetHeightForBinding() {
       this, DocumentUpdateReason::kJavaScript);
   Element* offset_parent = unclosedOffsetParent();
   int result = 0;
-  if (LayoutBoxModelObject* layout_object = GetLayoutBoxModelObject()) {
-    result =
-        AdjustForAbsoluteZoom::AdjustLayoutUnit(
-            LayoutUnit(layout_object->PixelSnappedOffsetHeight(offset_parent)),
-            layout_object->StyleRef())
-            .Round();
+  if (const auto* layout_object = GetLayoutBoxModelObject()) {
+    result = AdjustForAbsoluteZoom::AdjustInt(
+        layout_object->PixelSnappedOffsetHeight(offset_parent),
+        layout_object->StyleRef());
     RecordScrollbarSizeForStudy(result, /* is_width= */ false,
                                 /* is_offset= */ true);
   }
