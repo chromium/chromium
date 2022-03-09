@@ -38,33 +38,7 @@ class PPAPI_PROXY_EXPORT PDFResource
   thunk::PPB_PDF_API* AsPPB_PDF_API() override;
 
   // PPB_PDF_API implementation.
-  void SearchString(const unsigned short* input_string,
-                    const unsigned short* input_term,
-                    bool case_sensitive,
-                    PP_PrivateFindResult** results,
-                    uint32_t* count) override;
-  void DidStartLoading() override;
-  void DidStopLoading() override;
-  void SetContentRestriction(int restrictions) override;
-  void UserMetricsRecordAction(const PP_Var& action) override;
-  void HasUnsupportedFeature() override;
   void Print() override;
-  void ShowAlertDialog(const char* messasge) override;
-  bool ShowConfirmDialog(const char* messasge) override;
-  PP_Var ShowPromptDialog(const char* messasge,
-                          const char* default_answer) override;
-  void SaveAs() override;
-  PP_Bool IsFeatureEnabled(PP_PDFFeature feature) override;
-  void SetSelectedText(const char* selected_text) override;
-  void SetLinkUnderCursor(const char* url) override;
-  void GetV8ExternalSnapshotData(const char** snapshot_data_out,
-                                 int* snapshot_size_out) override;
-  void SetCrashData(const char* pdf_url, const char* top_level_url) override;
-  void SelectionChanged(const PP_FloatPoint& left,
-                        int32_t left_height,
-                        const PP_FloatPoint& right,
-                        int32_t right_height) override;
-  void SetPluginCanSave(bool can_save) override;
 
  private:
   std::string locale_;

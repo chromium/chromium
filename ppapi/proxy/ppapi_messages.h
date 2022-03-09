@@ -1826,69 +1826,8 @@ IPC_MESSAGE_CONTROL1(PpapiPluginMsg_FlashFontFile_GetFontTableReply,
 // Creates the PDF resource.
 IPC_MESSAGE_CONTROL0(PpapiHostMsg_PDF_Create)
 
-// Notifies the renderer that the PDF started loading.
-IPC_MESSAGE_CONTROL0(PpapiHostMsg_PDF_DidStartLoading)
-
-// Notifies the renderer that the PDF stopped loading.
-IPC_MESSAGE_CONTROL0(PpapiHostMsg_PDF_DidStopLoading)
-
-// Sets any restrictions on the PDF content.
-IPC_MESSAGE_CONTROL1(PpapiHostMsg_PDF_SetContentRestriction,
-                     int /* restrictions */)
-
-// Requests that the specified action be recorded with UMA.
-IPC_MESSAGE_CONTROL1(PpapiHostMsg_PDF_UserMetricsRecordAction,
-                     std::string /* action */)
-
-// Notifies the renderer that the current PDF uses an unsupported feature.
-IPC_MESSAGE_CONTROL0(PpapiHostMsg_PDF_HasUnsupportedFeature)
-
 // Notifies the renderer to print the current PDF.
 IPC_MESSAGE_CONTROL0(PpapiHostMsg_PDF_Print)
-
-// Notifies the renderer to display an alert dialog.
-IPC_MESSAGE_CONTROL1(PpapiHostMsg_PDF_ShowAlertDialog,
-                     std::string /* message */)
-// Reply from the renderer that the alert has been acknowledged.
-IPC_MESSAGE_CONTROL0(PpapiPluginMsg_PDF_ShowAlertDialogReply)
-
-// Notifies the renderer to display a confirmation dialog.
-IPC_MESSAGE_CONTROL1(PpapiHostMsg_PDF_ShowConfirmDialog,
-                     std::string /* message */)
-// Reply from the renderer with the results of the confirm dialog.
-IPC_MESSAGE_CONTROL1(PpapiPluginMsg_PDF_ShowConfirmDialogReply,
-                     bool /* bool result */)
-
-// Notifies the renderer to display a prompt dialog.
-IPC_MESSAGE_CONTROL2(PpapiHostMsg_PDF_ShowPromptDialog,
-                     std::string /* message */,
-                     std::string /* default answer */)
-// Reply from the renderer with the results of the prompt dialog.
-IPC_MESSAGE_CONTROL1(PpapiPluginMsg_PDF_ShowPromptDialogReply,
-                     std::string /* str_result */)
-
-// Notifies the renderer to save the current PDF.
-IPC_MESSAGE_CONTROL0(PpapiHostMsg_PDF_SaveAs)
-
-// Called by the plugin when its selection changes.
-IPC_MESSAGE_CONTROL1(PpapiHostMsg_PDF_SetSelectedText,
-                     std::u16string /* selected_text */)
-
-// Called by the plugin to set the link under the cursor.
-IPC_MESSAGE_CONTROL1(PpapiHostMsg_PDF_SetLinkUnderCursor,
-                     std::string /* url */)
-
-// Send information about the selection coordinates.
-IPC_MESSAGE_CONTROL4(PpapiHostMsg_PDF_SelectionChanged,
-                     PP_FloatPoint /* left */,
-                     int32_t /* left_height */,
-                     PP_FloatPoint /* right */,
-                     int32_t /* right_height */)
-
-// Lets the renderer know that the PDF plugin can handle save commands
-// internally. i.e. It will provide the data to save and trigger the download
-// dialog.
-IPC_MESSAGE_CONTROL1(PpapiHostMsg_PDF_SetPluginCanSave, bool /* can_save */)
 
 // VideoCapture ----------------------------------------------------------------
 
