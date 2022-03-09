@@ -12,6 +12,7 @@
 #include "chrome/browser/ui/toolbar/toolbar_actions_model.h"
 #include "chrome/browser/ui/views/extensions/extensions_toolbar_button.h"
 #include "chrome/browser/ui/views/hover_button.h"
+#include "extensions/browser/permissions_manager.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
 
@@ -177,6 +178,10 @@ class ExtensionsTabbedMenuView : public views::BubbleDialogDelegateView,
   // site access tab, if any exists.
   std::vector<SiteAccessMenuItemView*> GetVisibleMenuItemsOf(
       SiteAccessSection section) const;
+
+  // Handles the selection of a site setting radio button.
+  void OnSiteSettingSelected(
+      extensions::PermissionsManager::UserSiteSetting site_setting);
 
   // Shows or hides the site setting options when `site_settings_button_` is
   // pressed.

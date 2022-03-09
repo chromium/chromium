@@ -26,14 +26,22 @@
 #include "extensions/common/extension_urls.h"
 #include "extensions/test/test_extension_dir.h"
 #include "testing/gmock/include/gmock/gmock.h"
+#include "ui/events/base_event_utils.h"
+#include "ui/views/controls/button/radio_button.h"
 #include "ui/views/controls/combobox/combobox.h"
 #include "ui/views/view_utils.h"
+#include "url/origin.h"
 
 namespace {
 
+// Combobox option's indexes for site access menu items.
 constexpr int kOnClickComboboxIndex = 0;
 constexpr int kOnSiteComboboxIndex = 1;
 constexpr int kOnAllSitesComboboxIndex = 2;
+// Button's indexes for site access settings
+constexpr int kGrantAllExtensionsIndex = 0;
+constexpr int kBlockAllExtensionsIndex = 1;
+constexpr int kCustomizeByExtensionIndex = 2;
 
 // A scoper that manages a Browser instance created by BrowserWithTestWindowTest
 // beyond the default instance it creates in SetUp.
@@ -156,6 +164,7 @@ class ExtensionsTabbedMenuViewUnitTest : public ExtensionsToolbarUnitTest {
   void ClickContextMenuButton(InstalledExtensionMenuItemView* installed_item);
   void SelectSiteAccessInCombobox(SiteAccessMenuItemView* site_access_item,
                                   int index);
+  void SelectSiteSetting(int index);
 
   void LayoutMenuIfNecessary() {
     extensions_tabbed_menu()->GetWidget()->LayoutRootViewIfNecessary();
@@ -273,6 +282,17 @@ void ExtensionsTabbedMenuViewUnitTest::SelectSiteAccessInCombobox(
   site_access_item->site_access_combobox_for_testing()->SetSelectedRow(index);
   permissions_observer.Wait();
   LayoutMenuIfNecessary();
+}
+
+void ExtensionsTabbedMenuViewUnitTest::SelectSiteSetting(int index) {
+  auto* site_setting = static_cast<views::RadioButton*>(
+      extensions_tabbed_menu()->GetSiteSettingsForTesting()->children().at(
+          index));
+
+  ui::MouseEvent release_event(ui::ET_MOUSE_RELEASED, gfx::PointF(),
+                               gfx::PointF(), ui::EventTimeForNow(),
+                               ui::EF_LEFT_MOUSE_BUTTON, 0);
+  site_setting->NotifyClick(release_event);
 }
 
 TEST_F(ExtensionsTabbedMenuViewUnitTest, ButtonOpensAndClosesCorrespondingTab) {
@@ -1013,6 +1033,46 @@ TEST_F(ExtensionsTabbedMenuViewUnitTest,
   // Verify clicking again the site settings button hides the site settings.
   ClickButton(extensions_tabbed_menu()->GetSiteSettingsButtonForTesting());
   EXPECT_FALSE(site_settings->GetVisible());
+}
+
+TEST_F(ExtensionsTabbedMenuViewUnitTest, SiteAccessTab_SelectSiteSetting) {
+  auto extensionA =
+      InstallExtensionWithHostPermissions("Extension A", {"<all_urls>"});
+  auto extensionB =
+      InstallExtensionWithHostPermissions("Extension B", {"<all_urls>"});
+
+  // Navigate to a url where the extension should have access to.
+  const GURL url("http://www.a.com");
+  web_contents_tester()->NavigateAndCommit(url);
+  WaitForAnimation();
+  ShowSiteAccessTabInMenu();
+
+  auto* manager = extensions::PermissionsManager::Get(profile());
+  auto origin = url::Origin::Create(url);
+
+  // Verify site has "customize by extensions" site setting by default.
+  EXPECT_EQ(
+      manager->GetUserSiteSetting(origin),
+      extensions::PermissionsManager::UserSiteSetting::kCustomizeByExtension);
+
+  // TODO(crbug.com/1263310): After adding a permissions manager observer in the
+  // menu, test the site access tab contents view is the appropriate instead of
+  // checking the user site setting directly.
+
+  SelectSiteSetting(kGrantAllExtensionsIndex);
+  EXPECT_EQ(
+      manager->GetUserSiteSetting(origin),
+      extensions::PermissionsManager::UserSiteSetting::kGrantAllExtensions);
+
+  SelectSiteSetting(kBlockAllExtensionsIndex);
+  EXPECT_EQ(
+      manager->GetUserSiteSetting(origin),
+      extensions::PermissionsManager::UserSiteSetting::kBlockAllExtensions);
+
+  SelectSiteSetting(kCustomizeByExtensionIndex);
+  EXPECT_EQ(
+      manager->GetUserSiteSetting(origin),
+      extensions::PermissionsManager::UserSiteSetting::kCustomizeByExtension);
 }
 
 TEST_F(ExtensionsTabbedMenuViewUnitTest, WindowTitle) {

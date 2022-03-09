@@ -13,6 +13,7 @@
 #include "base/i18n/case_conversion.h"
 #include "base/notreached.h"
 #include "base/strings/utf_string_conversions.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/browser/ui/extensions/extension_action_view_controller.h"
@@ -48,6 +49,8 @@
 #include "ui/views/view_utils.h"
 
 namespace {
+
+using UserSiteSetting = extensions::PermissionsManager::UserSiteSetting;
 
 // Site access settings group id for the radio buttons.
 constexpr int kGroupId = 1;
@@ -536,14 +539,16 @@ void ExtensionsTabbedMenuView::CreateSiteAccessTab() {
           .Build();
 
   const auto create_radio_button_builder =
-      [current_site](int label_id, bool replace_current_site) {
-        auto label = replace_current_site
+      [this, current_site](UserSiteSetting site_settings, int label_id) {
+        auto label = ((site_settings == UserSiteSetting::kGrantAllExtensions) ||
+                      (site_settings == UserSiteSetting::kBlockAllExtensions))
                          ? l10n_util::GetStringFUTF16(label_id, current_site)
                          : l10n_util::GetStringUTF16(label_id);
-        // TODO(crbug.com/1263310): Add callback. Differentiate between types
-        // with a SiteSettings enum.
         return views::Builder<views::RadioButton>(
-            std::make_unique<views::RadioButton>(label, kGroupId));
+                   std::make_unique<views::RadioButton>(label, kGroupId))
+            .SetCallback(base::BindRepeating(
+                &ExtensionsTabbedMenuView::OnSiteSettingSelected,
+                base::Unretained(this), site_settings));
       };
 
   auto site_access_footer =
@@ -565,28 +570,18 @@ void ExtensionsTabbedMenuView::CreateSiteAccessTab() {
                   .SetVisible(show_site_settings_)
                   .AddChildren(
                       create_radio_button_builder(
-                          IDS_EXTENSIONS_MENU_SITE_ACCESS_TAB_USER_SETTINGS_ALLOW_ALL_TEXT,
-                          true),
+                          UserSiteSetting::kGrantAllExtensions,
+                          IDS_EXTENSIONS_MENU_SITE_ACCESS_TAB_USER_SETTINGS_ALLOW_ALL_TEXT),
                       create_radio_button_builder(
-                          IDS_EXTENSIONS_MENU_SITE_ACCESS_TAB_USER_SETTINGS_BLOCK_ALL_TEXT,
-                          true),
+                          UserSiteSetting::kBlockAllExtensions,
+                          IDS_EXTENSIONS_MENU_SITE_ACCESS_TAB_USER_SETTINGS_BLOCK_ALL_TEXT),
                       create_radio_button_builder(
-                          IDS_EXTENSIONS_MENU_SITE_ACCESS_TAB_USER_SETTINGS_CUSTOMIZE_EACH_TEXT,
-                          false)))
+                          UserSiteSetting::kCustomizeByExtension,
+                          IDS_EXTENSIONS_MENU_SITE_ACCESS_TAB_USER_SETTINGS_CUSTOMIZE_EACH_TEXT)))
           .Build();
 
   CreateTab(tabbed_pane_, 0, IDS_EXTENSIONS_MENU_SITE_ACCESS_TAB_TITLE,
             std::move(site_access_content), std::move(site_access_footer));
-}
-
-void ExtensionsTabbedMenuView::OnSiteSettingsButtonPressed() {
-  show_site_settings_ = !show_site_settings_;
-
-  site_settings_button_->SetIcon(show_site_settings_);
-  site_settings_->SetVisible(show_site_settings_);
-
-  // Resize the menu according to the site settings visibility.
-  SizeToContents();
 }
 
 void ExtensionsTabbedMenuView::CreateExtensionsTab() {
@@ -695,6 +690,9 @@ void ExtensionsTabbedMenuView::MoveItemsBetweenSectionsIfNecessary() {
   move_items_between_sections_if_necessary(&has_access_);
 }
 
+// TODO(crbug.com/1263310): Add user permissions changes listener to update the
+// site access content views.
+
 void ExtensionsTabbedMenuView::UpdateSiteAccessSectionsVisibility() {
   // Site access tab should only display content related to the current site.
   // Therefore, hide all the site access content views if this method is called
@@ -764,6 +762,37 @@ ExtensionsTabbedMenuView::GetVisibleMenuItemsOf(
       menu_items.push_back(GetAsSiteAccessMenuItem(item));
   }
   return menu_items;
+}
+
+void ExtensionsTabbedMenuView::OnSiteSettingsButtonPressed() {
+  show_site_settings_ = !show_site_settings_;
+
+  site_settings_button_->SetIcon(show_site_settings_);
+  site_settings_->SetVisible(show_site_settings_);
+
+  // Resize the menu according to the site settings visibility.
+  SizeToContents();
+}
+
+void ExtensionsTabbedMenuView::OnSiteSettingSelected(
+    extensions::PermissionsManager::UserSiteSetting site_settings) {
+  auto current_origin = url::Origin::Create(browser_->tab_strip_model()
+                                                ->GetActiveWebContents()
+                                                ->GetLastCommittedURL());
+  auto* permissions_manager =
+      extensions::PermissionsManager::Get(browser_->profile());
+  switch (site_settings) {
+    case UserSiteSetting::kGrantAllExtensions:
+      permissions_manager->AddUserPermittedSite(current_origin);
+      break;
+    case UserSiteSetting::kBlockAllExtensions:
+      permissions_manager->AddUserRestrictedSite(current_origin);
+      break;
+    case UserSiteSetting::kCustomizeByExtension:
+      permissions_manager->RemoveUserPermittedSite(current_origin);
+      permissions_manager->RemoveUserRestrictedSite(current_origin);
+      break;
+  }
 }
 
 void ExtensionsTabbedMenuView::ConsistencyCheck() {
