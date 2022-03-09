@@ -38,20 +38,7 @@ class ReportingClient : public ReportQueueProvider {
   // RAII class for testing ReportingClient - substitutes reporting files
   // location, signature verification public key and a cloud policy client
   // builder to return given client. Resets client when destructed.
-  class TestEnvironment {
-   public:
-    TestEnvironment(const base::FilePath& reporting_path,
-                    base::StringPiece verification_key,
-                    policy::CloudPolicyClient* client);
-    TestEnvironment(const TestEnvironment& other) = delete;
-    TestEnvironment& operator=(const TestEnvironment& other) = delete;
-    ~TestEnvironment();
-
-   private:
-    StorageModuleCreateCallback saved_storage_create_cb_;
-    GetCloudPolicyClientCallback saved_build_cloud_policy_client_cb_;
-    std::unique_ptr<EncryptedReportingUploadProvider> saved_upload_provider_;
-  };
+  class TestEnvironment;
 
   ~ReportingClient() override;
   ReportingClient(const ReportingClient& other) = delete;
@@ -60,8 +47,8 @@ class ReportingClient : public ReportQueueProvider {
  private:
   class Uploader;
 
-  friend class TestEnvironment;
   friend class ReportQueueProvider;
+  friend class TestEnvironment;
   friend struct base::DefaultSingletonTraits<ReportingClient>;
 
   // Constructor to be used by singleton only.
@@ -72,6 +59,14 @@ class ReportingClient : public ReportQueueProvider {
   // Singleton<ReportingClient>::get() can only be used inside ReportingClient
   // class.
   static ReportingClient* GetInstance();
+
+  static void CreateLocalStorageModule(
+      const base::FilePath& local_reporting_path,
+      base::StringPiece verification_key,
+      CompressionInformation::CompressionAlgorithm compression_algorithm,
+      UploaderInterface::AsyncStartUploaderCb async_start_upload_cb,
+      base::OnceCallback<void(StatusOr<scoped_refptr<StorageModuleInterface>>)>
+          cb);
 
   void OnInitState(bool reporting_client_configured);
   void OnInitializationComplete(Status init_status);
