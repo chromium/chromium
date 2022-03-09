@@ -101,6 +101,7 @@ class CORE_EXPORT WebSharedWorkerImpl final : public WebSharedWorker {
       network::mojom::CredentialsMode,
       const WebString& name,
       WebSecurityOrigin constructor_origin,
+      bool is_constructor_secure_context,
       const WebString& user_agent,
       const WebString& full_user_agent,
       const WebString& reduced_user_agent,

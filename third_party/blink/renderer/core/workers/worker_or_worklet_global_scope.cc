@@ -211,13 +211,6 @@ WorkerOrWorkletGlobalScope::WorkerOrWorkletGlobalScope(
       reporting_proxy_(reporting_proxy) {
   GetSecurityContext().SetSecurityOrigin(std::move(origin));
 
-  // TODO(https://crbug.com/780031): When the right blink feature is disabled,
-  // we can incorrectly compute the secure context bit for this worker. It
-  // should never be true when the creator context was non-secure.
-  if (IsSecureContext() && !is_creator_secure_context_) {
-    CountUse(mojom::blink::WebFeature::kSecureContextIncorrectForWorker);
-  }
-
   SetPolicyContainer(PolicyContainer::CreateEmpty());
   if (worker_clients_)
     worker_clients_->ReattachThread();
@@ -427,13 +420,7 @@ bool WorkerOrWorkletGlobalScope::CanExecuteScripts(
 }
 
 bool WorkerOrWorkletGlobalScope::HasInsecureContextInAncestors() const {
-  if (RuntimeEnabledFeatures::SecureContextFixForWorkersEnabled()) {
-    return !is_creator_secure_context_;
-  }
-
-  // TODO(https://crbug.com/780031): Remove this branch once the feature is
-  // always enabled. This preserves previous functionality in the meantime.
-  return false;
+  return !is_creator_secure_context_;
 }
 
 void WorkerOrWorkletGlobalScope::Dispose() {

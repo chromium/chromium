@@ -48,6 +48,11 @@ interface SharedWorkerFactory {
       // https://html.spec.whatwg.org/C/#concept-sharedworkerglobalscope-constructor-origin
       url.mojom.Origin constructor_origin,
 
+      // Whether the page where `new SharedWorker()` is called is a secure
+      // context or not. Note that this may be false even if
+      // `constructor_origin` is potentially-trustworthy.
+      bool is_constructor_secure_context,
+
       string user_agent,
       string full_user_agent,
       string reduced_user_agent,

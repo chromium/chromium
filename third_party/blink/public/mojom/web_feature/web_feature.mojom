@@ -3496,6 +3496,7 @@ enum WebFeature {
   kMediaCapabilitiesEncodingInfoWebrtc = 4175,
   kUsbDeviceForget = 4176,
   kPartitionedCookies = 4177,
+  kSecureContextIncorrectForSharedWorker = 4178,
 
   // Add new features immediately above this line. Don't change assigned
   // numbers of any item, and don't reuse removed slots.

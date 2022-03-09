@@ -111,18 +111,24 @@ DedicatedWorkerGlobalScope* DedicatedWorkerGlobalScope::Create(
   }
 }
 
-struct ProcessedCreationParams {
-  std::unique_ptr<GlobalScopeCreationParams> creation_params;
-  ExecutionContextToken parent_context_token;
-};
-
 // static
 DedicatedWorkerGlobalScope::ParsedCreationParams
 DedicatedWorkerGlobalScope::ParseCreationParams(
     std::unique_ptr<GlobalScopeCreationParams> creation_params) {
   ParsedCreationParams parsed_creation_params;
+
+  // Copy some stuff we need after passing the creation params to
+  // WorkerGlobalScope.
   parsed_creation_params.parent_context_token =
       creation_params->parent_context_token.value();
+  parsed_creation_params.starter_secure_context =
+      creation_params->starter_secure_context;
+
+  if (!RuntimeEnabledFeatures::SecureContextFixForWorkersEnabled()) {
+    // Preserve incorrect behavior when the fix is not enabled.
+    creation_params->starter_secure_context = true;
+  }
+
   parsed_creation_params.creation_params = std::move(creation_params);
   return parsed_creation_params;
 }
@@ -174,6 +180,13 @@ DedicatedWorkerGlobalScope::DedicatedWorkerGlobalScope(
           MakeGarbageCollected<WorkerAnimationFrameProvider>(
               this,
               begin_frame_provider_params)) {
+  // TODO(https://crbug.com/780031): When the right blink feature is disabled,
+  // we can incorrectly compute the secure context bit for this worker. It
+  // should never be true when the creator context was non-secure.
+  if (IsSecureContext() && !parsed_creation_params.starter_secure_context) {
+    CountUse(mojom::blink::WebFeature::kSecureContextIncorrectForWorker);
+  }
+
   // https://html.spec.whatwg.org/C/#run-a-worker
   // Step 14.10 "If shared is false and owner's cross-origin isolated
   // capability is false, then set worker global scope's cross-origin isolated

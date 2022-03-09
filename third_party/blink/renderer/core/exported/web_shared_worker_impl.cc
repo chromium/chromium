@@ -196,6 +196,7 @@ void WebSharedWorkerImpl::StartWorkerContext(
     network::mojom::CredentialsMode credentials_mode,
     const WebString& name,
     WebSecurityOrigin constructor_origin,
+    bool is_constructor_secure_context,
     const WebString& user_agent,
     const WebString& full_user_agent,
     const WebString& reduced_user_agent,
@@ -236,13 +237,10 @@ void WebSharedWorkerImpl::StartWorkerContext(
               : mojom::blink::InsecureRequestPolicy::kBlockAllMixedContent,
           FetchClientSettingsObject::InsecureNavigationsSet());
 
-  // TODO(https://crbug.com/780031): This is incorrect, as the creator context
-  // may have a potentially-trustworthy origin yet be non-secure. This is the
-  // case for example when an https iframe is embedded in http document.
-  bool constructor_secure_context =
+  GetWorkerThread()->SetIsConstructorOriginSecure(
       constructor_origin.IsPotentiallyTrustworthy() ||
       SchemeRegistry::SchemeShouldBypassSecureContextCheck(
-          constructor_origin.Protocol());
+          constructor_origin.Protocol()));
 
   auto worker_settings = std::make_unique<WorkerSettings>(
       false /* disable_reading_from_canvas */,
@@ -277,8 +275,8 @@ void WebSharedWorkerImpl::StartWorkerContext(
       ConvertToMojoBlink(content_security_policies),
       Vector<network::mojom::blink::ContentSecurityPolicyPtr>(),
       outside_settings_object->GetReferrerPolicy(),
-      outside_settings_object->GetSecurityOrigin(), constructor_secure_context,
-      outside_settings_object->GetHttpsState(),
+      outside_settings_object->GetSecurityOrigin(),
+      is_constructor_secure_context, outside_settings_object->GetHttpsState(),
       MakeGarbageCollected<WorkerClients>(),
       std::make_unique<SharedWorkerContentSettingsProxy>(
           std::move(content_settings)),
@@ -352,6 +350,7 @@ std::unique_ptr<WebSharedWorker> WebSharedWorker::CreateAndStart(
     network::mojom::CredentialsMode credentials_mode,
     const WebString& name,
     WebSecurityOrigin constructor_origin,
+    bool is_constructor_secure_context,
     const WebString& user_agent,
     const WebString& full_user_agent,
     const WebString& reduced_user_agent,
@@ -375,8 +374,9 @@ std::unique_ptr<WebSharedWorker> WebSharedWorker::CreateAndStart(
       base::WrapUnique(new WebSharedWorkerImpl(token, std::move(host), client));
   worker->StartWorkerContext(
       script_request_url, script_type, credentials_mode, name,
-      constructor_origin, user_agent, full_user_agent, reduced_user_agent,
-      ua_metadata, content_security_policies, creation_address_space,
+      constructor_origin, is_constructor_secure_context, user_agent,
+      full_user_agent, reduced_user_agent, ua_metadata,
+      content_security_policies, creation_address_space,
       outside_fetch_client_settings_object, devtools_worker_token,
       std::move(content_settings), std::move(browser_interface_broker),
       pause_worker_context_on_start, std::move(worker_main_script_load_params),

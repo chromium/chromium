@@ -2067,6 +2067,10 @@
       name: "ScrollUnification",
     },
     {
+      name: "SecureContextFixForSharedWorkers",
+      status: "experimental",
+    },
+    {
       name: "SecureContextFixForWorkers",
       status: "experimental",
     },

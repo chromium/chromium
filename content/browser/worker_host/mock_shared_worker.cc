@@ -108,6 +108,7 @@ void MockSharedWorkerFactory::CreateSharedWorker(
     blink::mojom::SharedWorkerInfoPtr info,
     const blink::SharedWorkerToken& token,
     const url::Origin& constructor_origin,
+    bool is_constructor_secure_context,
     const std::string& user_agent,
     const std::string& full_user_agent,
     const std::string& reduced_user_agent,
