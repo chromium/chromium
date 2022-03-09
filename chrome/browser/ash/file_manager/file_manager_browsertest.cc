@@ -1517,6 +1517,7 @@ WRAPPED_INSTANTIATE_TEST_SUITE_P(
         TestCase("recentsDownloadsAndDriveWithOverlap"),
         TestCase("recentsDownloadsAndDriveWithOverlap")
             .EnableFiltersInRecents(),
+        TestCase("recentsFilterResetToAll").EnableFiltersInRecents(),
         TestCase("recentsNested"),
         TestCase("recentsNested").EnableFiltersInRecents(),
         TestCase("recentAudioDownloads"),

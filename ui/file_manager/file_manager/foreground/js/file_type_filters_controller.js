@@ -164,6 +164,9 @@ export class FileTypeFiltersController {
         buttonFilter;
     this.recentEntry_.recentFileType = newFilter;
     this.updateButtonActiveStates_();
+    if (isButtonActive) {
+      this.allFilterButton_.focus();
+    }
     // Refresh current directory with the updated Recent setting.
     // We don't need to invalidate the cached metadata for this rescan.
     this.directoryModel_.rescan(false);
