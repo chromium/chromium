@@ -105,8 +105,8 @@ IN_PROC_BROWSER_TEST_F(WebAppGlassBrowserFrameViewTest, NoThemeColor) {
     return;
 
   EXPECT_EQ(glass_frame_view_->GetTitlebarColor(),
-            ThemeProperties::GetDefaultColor(
-                ThemeProperties::COLOR_FRAME_ACTIVE, false));
+            browser()->window()->GetThemeProvider()->GetColor(
+                ThemeProperties::COLOR_FRAME_ACTIVE));
 }
 
 IN_PROC_BROWSER_TEST_F(WebAppGlassBrowserFrameViewTest, MaximizedLayout) {

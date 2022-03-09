@@ -375,12 +375,6 @@ TEST_F(NewTabPageHandlerTest, SetCustomBackground) {
   ASSERT_TRUE(theme);
   EXPECT_TRUE(theme->is_custom_background);
   EXPECT_EQ(gfx::kGoogleGrey050, theme->text_color);
-  EXPECT_EQ(ThemeProperties::GetDefaultColor(
-                ThemeProperties::COLOR_NTP_SHORTCUT, false),
-            theme->most_visited->background_color);
-  EXPECT_EQ(
-      ThemeProperties::GetDefaultColor(ThemeProperties::COLOR_NTP_LOGO, false),
-      theme->logo_color);
   EXPECT_EQ("https://foo.com/img.png", theme->background_image->url);
   EXPECT_EQ("foo line", theme->background_image_attribution_1);
   EXPECT_EQ("bar line", theme->background_image_attribution_2);
