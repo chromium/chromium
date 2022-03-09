@@ -108,6 +108,14 @@ class VizClient : public viz::mojom::CompositorFrameSinkClient {
         }
       }
 
+      // If we unsubscribed from begin frames then submit frame now regardless
+      // of our fps throttling.
+      if (!needs_begin_frames_) {
+        DCHECK(stop_submitting_frames_);
+        DCHECK(pending_frames_ < max_pending_frames_);
+        need_submit = true;
+      }
+
       if (need_submit)
         SubmitFrame(viz::BeginFrameAck(last_begin_frame_args_, true));
       else
@@ -135,6 +143,8 @@ class VizClient : public viz::mojom::CompositorFrameSinkClient {
 
   size_t frames_submitted() { return frames_submitted_; }
 
+  void MakeNextFrameLast() { stop_submitting_frames_ = true; }
+
   // viz::mojom::CompositorFrameSinkClient:
   void DidReceiveCompositorFrameAck(
       std::vector<viz::ReturnedResource> resources) override {
@@ -152,7 +162,17 @@ class VizClient : public viz::mojom::CompositorFrameSinkClient {
 
     DCHECK_GE(frame_interval_, args.interval);
 
+    if (!needs_begin_frames_) {
+      DidNotProduceFrame(viz::BeginFrameAck(args, false));
+      return;
+    }
+
     last_begin_frame_args_ = args;
+
+    if (stop_submitting_frames_) {
+      needs_begin_frames_ = false;
+      support_->SetNeedsBeginFrame(false);
+    }
   }
   void OnBeginFramePausedChanged(bool paused) override {}
   void ReclaimResources(std::vector<viz::ReturnedResource> resources) override {
@@ -191,6 +211,8 @@ class VizClient : public viz::mojom::CompositorFrameSinkClient {
 
   int pending_frames_ = 0;
   size_t frames_submitted_ = 0;
+  bool stop_submitting_frames_ = false;
+  bool needs_begin_frames_ = true;
 
   viz::BeginFrameArgs last_begin_frame_args_;
   base::TimeTicks last_submitted_time_;
@@ -223,10 +245,22 @@ struct PerFrameFlag {
   uint64_t bits;
 };
 
-class InvalidateTest : public testing::TestWithParam<
-                           testing::tuple<PerFrameFlag, PerFrameFlag, bool>>,
-                       public viz::ExternalBeginFrameSourceClient,
-                       public RootFrameSinkProxyClient {
+enum class AlwaysDrawType {
+  // No draw happens unless we invalidate for client
+  kNone,
+  // Invalidate every frame (e.g if app invalidates or root client draws every
+  // frame).
+  kAlwaysInvalidate,
+  // Invalidate only for client, but draw every frame (e.g other views updated
+  // in app that intersect webview).
+  kAlwaysDraw
+};
+
+class InvalidateTest
+    : public testing::TestWithParam<
+          testing::tuple<PerFrameFlag, PerFrameFlag, AlwaysDrawType>>,
+      public viz::ExternalBeginFrameSourceClient,
+      public RootFrameSinkProxyClient {
  public:
   InvalidateTest()
       : task_environment_(std::make_unique<base::test::TaskEnvironment>()) {
@@ -333,7 +367,15 @@ class InvalidateTest : public testing::TestWithParam<
       inside_begin_frame_ = true;
       begin_frame_source_->OnBeginFrame(args);
       inside_begin_frame_ = false;
+      root_begin_frames_count_++;
     }
+
+    // Client could have unsubscribed from begin frames or called invalidate
+    // without BF, make sure it was propagated to UI thread.
+    base::RunLoop run_loop;
+    base::ThreadTaskRunnerHandle::Get()->PostTask(FROM_HERE,
+                                                  run_loop.QuitClosure());
+    run_loop.Run();
 
     if (did_invalidate_)
       invalidate_count_++;
@@ -443,8 +485,10 @@ class InvalidateTest : public testing::TestWithParam<
         viz::BeginFrameArgs::NORMAL);
   }
 
-  void DrawLoop(PerFrameFlag client_slow_param, PerFrameFlag hwui_slow_param) {
-    const bool always_draw = testing::get<2>(GetParam());
+  void DrawLoop(PerFrameFlag client_slow_param,
+                PerFrameFlag hwui_slow_param,
+                int stop_submitting_after_frames = 10000) {
+    const AlwaysDrawType always_draw = testing::get<2>(GetParam());
 
     viz::BeginFrameArgs delayed_draw_args;
     bool delayed_draw_invalidate = false;
@@ -453,8 +497,17 @@ class InvalidateTest : public testing::TestWithParam<
       const bool client_fast = !client_slow_param.at(i);
       const bool hwui_fast = !hwui_slow_param.at(i);
 
+      if (i == stop_submitting_after_frames) {
+        VizCompositorThreadRunnerWebView::GetInstance()->PostTaskAndBlock(
+            FROM_HERE, base::BindOnce(&VizClient::MakeNextFrameLast,
+                                      base::Unretained(client_.get())));
+      }
+
       auto args = NextBeginFrameArgs();
       bool invalidate = BeginFrame(args);
+
+      if (always_draw == AlwaysDrawType::kAlwaysInvalidate)
+        invalidate = true;
 
       // Fast clients submit right after BF.
       if (client_fast)
@@ -473,7 +526,7 @@ class InvalidateTest : public testing::TestWithParam<
       Sync();
 
       // If webview invalidated or other views requested to draw, try to draw.
-      if (invalidate || always_draw) {
+      if (invalidate || always_draw == AlwaysDrawType::kAlwaysDraw) {
         // If this frame hwui is in "fast" mode (i.e RT is not a frame behind)
         // then draw a frame now.
         if (hwui_fast) {
@@ -541,6 +594,7 @@ class InvalidateTest : public testing::TestWithParam<
 
   viz::FrameTimingDetailsMap child_client_timings_;
   int invalidate_count_ = 0;
+  int root_begin_frames_count_ = 0;
   bool needs_begin_frames_ = false;
 
   bool inside_begin_frame_ = false;
@@ -550,15 +604,27 @@ class InvalidateTest : public testing::TestWithParam<
   base::OnceClosure set_needs_begin_frames_closure_;
 };
 
+std::string AlwaysDrawTypeToString(AlwaysDrawType type) {
+  switch (type) {
+    case AlwaysDrawType::kNone:
+      return "";
+    case AlwaysDrawType::kAlwaysInvalidate:
+      return "AlwaysInvalidate";
+    case AlwaysDrawType::kAlwaysDraw:
+      return "AlwaysDraw";
+  };
+}
+
 std::string TestParamToString(
     const testing::TestParamInfo<
-        testing::tuple<PerFrameFlag, PerFrameFlag, bool>>& param_info) {
+        testing::tuple<PerFrameFlag, PerFrameFlag, AlwaysDrawType>>&
+        param_info) {
   auto client_slow = testing::get<0>(param_info.param);
   auto hwui_slow = testing::get<1>(param_info.param);
-  auto draw_always = testing::get<2>(param_info.param);
+  auto always_draw = testing::get<2>(param_info.param);
 
   return "ClientSlow" + client_slow.ToString() + "HwuiSlow" +
-         hwui_slow.ToString() + (draw_always ? "AlwaysDraw" : "");
+         hwui_slow.ToString() + AlwaysDrawTypeToString(always_draw);
 }
 
 INSTANTIATE_TEST_SUITE_P(
@@ -568,7 +634,9 @@ INSTANTIATE_TEST_SUITE_P(
                                          PerFrameFlag::AlwaysTrue()),
                        ::testing::Values(PerFrameFlag::AlwaysFalse(),
                                          PerFrameFlag::AlwaysTrue()),
-                       ::testing::Bool()),
+                       ::testing::Values(AlwaysDrawType::kNone,
+                                         AlwaysDrawType::kAlwaysInvalidate,
+                                         AlwaysDrawType::kAlwaysDraw)),
     TestParamToString);
 
 INSTANTIATE_TEST_SUITE_P(
@@ -576,7 +644,9 @@ INSTANTIATE_TEST_SUITE_P(
     InvalidateTest,
     ::testing::Combine(::testing::Values(PerFrameFlag::AlwaysFalse()),
                        ::testing::Values(PerFrameFlag(0xAAAAAAAAAAAAAAAA)),
-                       ::testing::Bool()),
+                       ::testing::Values(AlwaysDrawType::kNone,
+                                         AlwaysDrawType::kAlwaysInvalidate,
+                                         AlwaysDrawType::kAlwaysDraw)),
     TestParamToString);
 
 TEST_P(InvalidateTest, LowFpsWithMaxFrame1) {
@@ -585,7 +655,7 @@ TEST_P(InvalidateTest, LowFpsWithMaxFrame1) {
   auto hwui_slow = testing::get<1>(GetParam());
 
   // Always draw case is broken because viz runs ahead of hwui.
-  if (always_draw) {
+  if (always_draw == AlwaysDrawType::kAlwaysDraw) {
     GTEST_SKIP();
   }
 
@@ -614,7 +684,7 @@ TEST_P(InvalidateTest, DISABLED_HighFpsWithMaxFrame1) {
   auto hwui_slow = testing::get<1>(GetParam());
 
   // Always draw case is broken because viz runs ahead of hwui.
-  if (always_draw) {
+  if (always_draw == AlwaysDrawType::kAlwaysDraw) {
     GTEST_SKIP();
   }
 
@@ -637,7 +707,7 @@ TEST_P(InvalidateTest, HighFpsWithMaxFrame2) {
   auto hwui_slow = testing::get<1>(GetParam());
 
   // Always draw case is broken because viz runs ahead of hwui.
-  if (always_draw) {
+  if (always_draw == AlwaysDrawType::kAlwaysDraw) {
     GTEST_SKIP();
   }
 
@@ -655,6 +725,83 @@ TEST_P(InvalidateTest, HighFpsWithMaxFrame2) {
   // Except the case when client is slower than hwui we currently drop first
   // frame always.
   EXPECT_LE(CountDroppedFrames(), 1);
+}
+
+TEST_P(InvalidateTest, LastFrameNotLost) {
+  auto always_draw = testing::get<2>(GetParam());
+  auto client_slow = testing::get<0>(GetParam());
+  auto hwui_slow = testing::get<1>(GetParam());
+
+  // Always draw case is broken because viz runs ahead of hwui.
+  if (always_draw == AlwaysDrawType::kAlwaysDraw) {
+    GTEST_SKIP();
+  }
+
+  // If client is faster than hwui, it runs ahead of hwui.
+  if (client_slow.IsNever() && !hwui_slow.IsNever()) {
+    GTEST_SKIP();
+  }
+
+  SetUpAndDrawFirstFrame(/*max_pending_frames=*/1, /*frame_rate=*/30);
+  DrawLoop(client_slow, hwui_slow, /*stop_submitting_after_frames=*/30);
+
+  ASSERT_EQ(child_client_timings_.size(), 16u);
+  EXPECT_EQ(CountDroppedFrames(), 0);
+
+  // With AlwaysInvalidate we currently trigger more BeginFrames than we need.
+
+  // Note, that client unsubscribes at frame 30 leading to 31 BF + 1 from
+  // initial draw + 1 extra to deliver presentation feedback if we didn't fetch
+  // it right after draw.
+  if (always_draw != AlwaysDrawType::kAlwaysInvalidate)
+    EXPECT_LE(root_begin_frames_count_, 33);
+}
+
+TEST_P(InvalidateTest, VeryLateFrame) {
+  SetUpAndDrawFirstFrame(/*max_pending_frames=*/1, /*frame_rate=*/60);
+  client_->MakeNextFrameLast();
+
+  // Draw until we don't need to draw anymore.
+  for (int i = 0; i < 10; i++) {
+    auto args = NextBeginFrameArgs();
+
+    bool invalidate = BeginFrame(args);
+
+    if (invalidate)
+      DrawOnUI(CreateChildFrame(nullptr, args, /*invalidated=*/invalidate));
+    Sync();
+
+    if (invalidate)
+      DrawOnRT(args, invalidate);
+  }
+
+  // Submit frame.
+  SubmitFrameIfNeeded();
+
+  // Client could have subscribed to begin frames, make sure it was
+  // propagated to UI thread.
+  base::RunLoop run_loop;
+  base::ThreadTaskRunnerHandle::Get()->PostTask(FROM_HERE,
+                                                run_loop.QuitClosure());
+  run_loop.Run();
+
+  for (int i = 0; i < 3; i++) {
+    auto args = NextBeginFrameArgs();
+    bool invalidate = BeginFrame(args);
+
+    if (invalidate)
+      DrawOnUI(CreateChildFrame(nullptr, args, /*invalidated=*/invalidate));
+    Sync();
+
+    if (invalidate)
+      DrawOnRT(args, invalidate);
+  }
+
+  UpdateFrameTimingDetails();
+
+  ASSERT_EQ(client_->frames_submitted(), child_client_timings_.size());
+  ASSERT_EQ(child_client_timings_.size(), 2u);
+  EXPECT_EQ(CountDroppedFrames(), 0);
 }
 
 }  // namespace

@@ -130,6 +130,10 @@ CompositorFrameSinkSupport::~CompositorFrameSinkSupport() {
 FrameTimingDetailsMap CompositorFrameSinkSupport::TakeFrameTimingDetailsMap() {
   FrameTimingDetailsMap map;
   map.swap(frame_timing_details_);
+
+  // As we're clearing `frame_timing_details_`, we might no longer need
+  // BeginFrame if delivering presentation feedback was the only reason.
+  UpdateNeedsBeginFramesInternal();
   return map;
 }
 
