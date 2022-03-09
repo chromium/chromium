@@ -460,9 +460,8 @@ bool IsAXSetter(SEL selector) {
   if (!ui::IsControl(_node->GetRole()))
     return nil;
 
-  if (!_node->HasNameFromOtherElement()) {
+  if (!_node->HasNameFromOtherElement())
     return nil;
-  }
 
   std::vector<int32_t> labelledby_ids =
       _node->GetIntListAttribute(ax::mojom::IntListAttribute::kLabelledbyIds);
@@ -480,6 +479,42 @@ bool IsAXSetter(SEL selector) {
     return nil;
 
   return label->GetNativeViewAccessible();
+}
+
+- (BOOL)isLabelable {
+  // Image annotations are not visible text, so they should be exposed
+  // as a description and not a title.
+  switch (_node->GetData().GetImageAnnotationStatus()) {
+    case ax::mojom::ImageAnnotationStatus::kEligibleForAnnotation:
+    case ax::mojom::ImageAnnotationStatus::kAnnotationPending:
+    case ax::mojom::ImageAnnotationStatus::kAnnotationEmpty:
+    case ax::mojom::ImageAnnotationStatus::kAnnotationAdult:
+    case ax::mojom::ImageAnnotationStatus::kAnnotationProcessFailed:
+    case ax::mojom::ImageAnnotationStatus::kAnnotationSucceeded:
+      return true;
+
+    case ax::mojom::ImageAnnotationStatus::kNone:
+    case ax::mojom::ImageAnnotationStatus::kWillNotAnnotateDueToScheme:
+    case ax::mojom::ImageAnnotationStatus::kIneligibleForAnnotation:
+    case ax::mojom::ImageAnnotationStatus::kSilentlyEligibleForAnnotation:
+      break;
+  }
+
+  // VoiceOver computes the wrong description for a link.
+  ax::mojom::Role role = _node->GetRole();
+  if (ui::IsLink(role))
+    return true;
+
+  // VoiceOver will not read the label of these roles unless it is
+  // exposed in the description instead of the title.
+  switch (role) {
+    case ax::mojom::Role::kGenericContainer:
+    case ax::mojom::Role::kGroup:
+    case ax::mojom::Role::kRadioGroup:
+      return true;
+    default:
+      return false;
+  }
 }
 
 + (NSString*)nativeRoleFromAXRole:(ax::mojom::Role)role {
@@ -701,28 +736,20 @@ bool IsAXSetter(SEL selector) {
 
   // These attributes are required on all accessibility objects.
   NSArray* const kAllRoleAttributes = @[
-    NSAccessibilityBlockQuoteLevelAttribute,
-    NSAccessibilityChildrenAttribute,
-    NSAccessibilityDOMClassList,
-    NSAccessibilityDOMIdentifierAttribute,
-    NSAccessibilityElementBusyAttribute,
-    NSAccessibilityParentAttribute,
-    NSAccessibilityPositionAttribute,
-    NSAccessibilityRoleAttribute,
-    NSAccessibilitySizeAttribute,
+    NSAccessibilityBlockQuoteLevelAttribute, NSAccessibilityChildrenAttribute,
+    NSAccessibilityDOMClassList, NSAccessibilityDOMIdentifierAttribute,
+    NSAccessibilityDescriptionAttribute, NSAccessibilityElementBusyAttribute,
+    NSAccessibilityParentAttribute, NSAccessibilityPositionAttribute,
+    NSAccessibilityRoleAttribute, NSAccessibilitySizeAttribute,
     NSAccessibilitySubroleAttribute,
     // Title is required for most elements. Cocoa asks for the value even if it
     // is omitted here, but won't present it to accessibility APIs without this.
     NSAccessibilityTitleAttribute,
     // Attributes which are not required, but are general to all roles.
-    NSAccessibilityRoleDescriptionAttribute,
-    NSAccessibilityEnabledAttribute,
-    NSAccessibilityFocusedAttribute,
-    NSAccessibilityHelpAttribute,
-    NSAccessibilityTopLevelUIElementAttribute,
-    NSAccessibilityVisitedAttribute,
-    NSAccessibilityWindowAttribute,
-    NSAccessibilityChromeAXNodeIdAttribute
+    NSAccessibilityRoleDescriptionAttribute, NSAccessibilityEnabledAttribute,
+    NSAccessibilityFocusedAttribute, NSAccessibilityHelpAttribute,
+    NSAccessibilityTopLevelUIElementAttribute, NSAccessibilityVisitedAttribute,
+    NSAccessibilityWindowAttribute, NSAccessibilityChromeAXNodeIdAttribute
   ];
   // Attributes required for user-editable controls.
   NSArray* const kValueAttributes = @[ NSAccessibilityValueAttribute ];
@@ -1445,7 +1472,7 @@ bool IsAXSetter(SEL selector) {
 }
 
 - (NSString*)AXDescription {
-  return [self AXTitle];
+  return [self accessibilityLabel];
 }
 
 // Misc attributes.
@@ -1627,11 +1654,84 @@ bool IsAXSetter(SEL selector) {
 }
 
 - (NSString*)accessibilityLabel {
-  // accessibilityLabel is "a short description of the accessibility element",
-  // and accessibilityTitle is "the title of the accessibility element"; at
-  // least in Chromium, the title usually is a short description of the element,
-  // so it also functions as a label.
-  return [self AXDescription];
+  if (![self instanceActive])
+    return nil;
+
+  // Mac OS X wants static text exposed in AXValue.
+  if (ui::IsNameExposedInAXValueForRole([self internalRole]))
+    return @"";
+
+  // If we're exposing the title in TitleUIElement, don't also redundantly
+  // expose it in AXDescription.
+  if ([self titleUIElement])
+    return @"";
+
+  std::string name = _node->GetName();
+  std::string extraText;
+  ax::mojom::ImageAnnotationStatus status =
+      _node->GetData().GetImageAnnotationStatus();
+  switch (status) {
+    case ax::mojom::ImageAnnotationStatus::kEligibleForAnnotation:
+    case ax::mojom::ImageAnnotationStatus::kAnnotationPending:
+    case ax::mojom::ImageAnnotationStatus::kAnnotationEmpty:
+    case ax::mojom::ImageAnnotationStatus::kAnnotationAdult:
+    case ax::mojom::ImageAnnotationStatus::kAnnotationProcessFailed: {
+      extraText = base::UTF16ToUTF8(
+          _node->GetDelegate()->GetLocalizedStringForImageAnnotationStatus(
+              status));
+      break;
+    }
+
+    case ax::mojom::ImageAnnotationStatus::kAnnotationSucceeded:
+      extraText = _node->GetStringAttribute(
+          ax::mojom::StringAttribute::kImageAnnotation);
+      break;
+
+    case ax::mojom::ImageAnnotationStatus::kNone:
+    case ax::mojom::ImageAnnotationStatus::kWillNotAnnotateDueToScheme:
+    case ax::mojom::ImageAnnotationStatus::kIneligibleForAnnotation:
+    case ax::mojom::ImageAnnotationStatus::kSilentlyEligibleForAnnotation:
+      break;
+  }
+
+  if (!extraText.empty()) {
+    if (!name.empty())
+      name += ". ";
+    name += extraText;
+  }
+
+  if (!name.empty()) {
+    // On Mac OS X, the accessible name of an object is exposed as its
+    // title if it comes from visible text, and as its description
+    // otherwise, but never both.
+    if ([self isLabelable])
+      return base::SysUTF8ToNSString(name);
+
+    ax::mojom::NameFrom nameFrom = _node->GetNameFrom();
+    if (nameFrom == ax::mojom::NameFrom::kCaption ||
+        nameFrom == ax::mojom::NameFrom::kContents ||
+        nameFrom == ax::mojom::NameFrom::kRelatedElement ||
+        nameFrom == ax::mojom::NameFrom::kValue) {
+      return @"";
+    }
+    return base::SysUTF8ToNSString(name);
+  }
+
+  // Given an image where there's no other title, return the base part
+  // of the filename as the description.
+  if ([[self accessibilityRole] isEqualToString:NSAccessibilityImageRole]) {
+    std::string url;
+    if (_node->GetStringAttribute(ax::mojom::StringAttribute::kUrl, &url)) {
+      // Given a url like http://foo.com/bar/baz.png, just return the
+      // base name, e.g., "baz.png".
+      size_t leftIndex = url.rfind('/');
+      std::string basename =
+          leftIndex != std::string::npos ? url.substr(leftIndex) : url;
+      return base::SysUTF8ToNSString(basename);
+    }
+  }
+
+  return @"";
 }
 
 - (NSString*)accessibilityTitle {
