@@ -94,7 +94,9 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="UMA.AntiVirusMetricsProvider.Result"
-    enum="AntiVirusMetricsProviderResult" expires_after="2020-03-08">
+    enum="AntiVirusMetricsProviderResult" expires_after="never">
+<!-- expires-never: needed to proactively diagnose changes in the Windows API used here. -->
+
   <owner>wfh@chromium.org</owner>
   <owner>src/base/metrics/OWNERS</owner>
   <summary>
