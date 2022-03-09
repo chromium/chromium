@@ -821,8 +821,8 @@
   'CROS_ATLAS_RELEASE_BETA': {
     'skylab': {
       'cros_board': 'atlas',
-      'cros_chrome_version': '99.0.4844.46',
-      'cros_img': 'atlas-release/R99-14469.33.0',
+      'cros_chrome_version': '100.0.4896.25',
+      'cros_img': 'atlas-release/R100-14526.16.0',
     },
     'enabled': True,
     'identifier': 'ATLAS_RELEASE_BETA',
@@ -857,8 +857,8 @@
   'CROS_EVE_RELEASE_BETA': {
     'skylab': {
       'cros_board': 'eve',
-      'cros_chrome_version': '99.0.4844.46',
-      'cros_img': 'eve-release/R99-14469.33.0',
+      'cros_chrome_version': '100.0.4896.25',
+      'cros_img': 'eve-release/R100-14526.16.0',
     },
     'enabled': True,
     'identifier': 'EVE_RELEASE_BETA',
@@ -929,8 +929,8 @@
   'CROS_OCTOPUS_RELEASE_BETA': {
     'skylab': {
       'cros_board': 'octopus',
-      'cros_chrome_version': '99.0.4844.46',
-      'cros_img': 'octopus-release/R99-14469.33.0',
+      'cros_chrome_version': '100.0.4896.25',
+      'cros_img': 'octopus-release/R100-14526.16.0',
     },
     'enabled': True,
     'identifier': 'OCTOPUS_RELEASE_BETA',
