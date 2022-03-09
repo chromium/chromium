@@ -108,7 +108,7 @@ def build(_venv, **kwargs):
             sys.exit(1)
         if kwargs["serve"] is not None:
             executable = "sphinx-autobuild"
-            extras = ["-p", str(kwargs["serve"]),
+            extras = ["--port", str(kwargs["serve"]),
                       "--host", "0.0.0.0",
                       "--watch", os.path.abspath(os.path.join(here, os.pardir, "resources")),
                       # Ignore changes to files specified with glob pattern

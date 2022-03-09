@@ -243498,7 +243498,7 @@
      []
     ],
     "README.md": [
-     "6ce0dd33303526980a361b7c091a982f3ee8730c",
+     "20f1e60a8bb2bf4aeb183d5ba4020f8f2a073327",
      []
     ],
     "build-css-testsuites.sh": [
@@ -280829,7 +280829,7 @@
       []
      ],
      "computed-testcommon.js": [
-      "42cc17652e169f07fe930196d00caf5501d3788f",
+      "3d1c7184422fea7f56c61e58e96a38d58df4c9c2",
       []
      ],
      "green.ico": [
@@ -281398,7 +281398,7 @@
      []
     ],
     "frontend.py": [
-     "9397e05ad5126240e82b9a5f4f1a87b239a4492d",
+     "3f06e3c1430d4e504bd6053f0fdd935d8af6c588",
      []
     ],
     "index.md": [
@@ -281414,7 +281414,7 @@
      []
     ],
     "requirements.txt": [
-     "66d66469d53ca6b1f5597f7ad0ce563df44f5cad",
+     "1cdeadd2dcc60e3262ab609b6fb89394f86d6d46",
      []
     ],
     "reviewing-tests": {
@@ -287405,15 +287405,15 @@
     ],
     "resources": {
      "font-asserts.js": [
-      "2c658a15c2c27dc8903296b687c6f735ceb1945d",
+      "7094d8f0bf3bb8a20a28d1fa037d1421aea669ee",
       []
      ],
      "font-data.js": [
-      "94575b7191b73cdef7c11e575472c4fa1157036e",
+      "f8e97038205a71201baa8c5a8750ebe2eea851bd",
       []
      ],
      "font-test-utils.js": [
-      "21327b5fed38d4b9c3a7c475210e137169a70538",
+      "84dade8d4b7baa0c07be2aca1cd7c1af6b9bac79",
       []
      ]
     }
@@ -306891,8 +306891,28 @@
        "175cdf80464a658981a55d09d788dee26bf1e1a0",
        []
       ],
+      "fetch-and-record-js.h2.py": [
+       "d1b5d0e1cb02847dbcbfd635d7b0934775617763",
+       []
+      ],
+      "get-fetch-timing-and-headers.h2.py": [
+       "ff4f8bedd2b473599828866e0c9353d5c63f5723",
+       []
+      ],
       "preload-initiator-type.html": [
        "34188df2fe437fdbc8d6814ad33c83c8dac23391",
+       []
+      ],
+      "referrer-policy-test-loader.h2.py": [
+       "ad48cbb71d3bb577be86c5a7ab02134ad018d2e9",
+       []
+      ],
+      "referrer-policy-test.html": [
+       "514e6c6539ca90e09756209d46b47e9321735148",
+       []
+      ],
+      "utils.py": [
+       "aa6f331b4196cfbc82a03aa058ad839081ea10e9",
        []
       ]
      }
@@ -314124,7 +314144,7 @@
      []
     ],
     "basic-shared-worker-expected.txt": [
-     "9e12e7b3b52d7ee50703cdb7ed115ddd71336c6f",
+     "a974f409b9debc2f2bf04d0047c39f0180308b8a",
      []
     ],
     "basic-shared-worker.https-expected.txt": [
@@ -314144,7 +314164,7 @@
      []
     ],
     "shared-worker-insecure-first.https-expected.txt": [
-     "170f14ce790bf70c74fad215bf36b8b0b85fa95d",
+     "4feba4d92f4e1f23e636bd690db91e19e9586354",
      []
     ],
     "shared-worker-secure-first.https-expected.txt": [
@@ -385927,7 +385947,7 @@
       ]
      },
      "calc-angle-values.html": [
-      "0bbb43dcf162a171ef8ea6414ea78625e1839204",
+      "699af7a5cdcb3b4cfa106f53eb416a15427f0a91",
       [
        null,
        {}
@@ -385969,7 +385989,7 @@
       ]
      ],
      "calc-infinity-nan-computed.html": [
-      "cfcaa816f4eea63191142d9113eff1e4b5e2cbd9",
+      "55b891c1e48bdf4b62603690cd163482f2e7ba17",
       [
        null,
        {}
@@ -423985,7 +424005,7 @@
      ]
     ],
     "font_access_blob.tentative.https.window.js": [
-     "90c58c8ea175204f4f1916d2fbd61b5a868a2b46",
+     "a4ab8b3a7d5e4cb5d0d520a243ead39a028b8c20",
      [
       "font-access/font_access_blob.tentative.https.window.html",
       {
@@ -424009,6 +424029,24 @@
         [
          "script",
          "resources/font-test-utils.js"
+        ]
+       ]
+      }
+     ]
+    ],
+    "font_access_permission.tentative.https.window.js": [
+     "6826f102743f013a0d6a156fe715c52ebf453825",
+     [
+      "font-access/font_access_permission.tentative.https.window.html",
+      {
+       "script_metadata": [
+        [
+         "script",
+         "/resources/testdriver.js"
+        ],
+        [
+         "script",
+         "/resources/testdriver-vendor.js"
         ]
        ]
       }
@@ -474531,6 +474569,20 @@
          [
           "script",
           "resources/early-hints-helpers.js"
+         ]
+        ]
+       }
+      ]
+     ],
+     "referrer-policy.h2.window.js": [
+      "28756c9f857704c0373f622d5778e219c8a2af94",
+      [
+       "loading/early-hints/referrer-policy.h2.window.html",
+       {
+        "script_metadata": [
+         [
+          "script",
+          "/common/utils.js"
          ]
         ]
        }
@@ -561586,14 +561638,14 @@
        ]
       ],
       "block-in-inline-insert-019.html": [
-       "0a2ea483e5d69e15410961bb92331405a685dc40",
+       "1f1cd1ae09a261f5339687f7386070f2c2c83827",
        [
         null,
         {}
        ]
       ],
       "block-in-inline-insert-020.html": [
-       "2a3b15a8e8dfdcf5b26b05131639f7a436a2a4f4",
+       "3fbed1b3c05c4d2e055129b32c44fafdc1339483",
        [
         null,
         {}
