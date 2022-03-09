@@ -1159,10 +1159,9 @@ bool AutofillProfile::HasStructuredData() {
   });
 }
 
-bool AutofillProfile::FindInaccessibleProfileValues(
-    const std::string& country_code,
-    bool remove) {
-  bool found_inaccessible_value = false;
+ServerFieldTypeSet AutofillProfile::FindInaccessibleProfileValues(
+    const std::string& country_code) const {
+  ServerFieldTypeSet inaccessible_fields;
   // Consider only AddressFields which are invisible in the settings for some
   // countries.
   for (const AddressField& field_type :
@@ -1173,14 +1172,17 @@ bool AutofillProfile::FindInaccessibleProfileValues(
         AddressFieldToServerFieldType(field_type);
     if (!GetRawInfo(server_field_type).empty() &&
         !::i18n::addressinput::IsFieldUsed(field_type, country_code)) {
-      if (remove) {
-        SetRawInfoWithVerificationStatus(server_field_type, u"",
-                                         VerificationStatus::kNoStatus);
-      }
-      found_inaccessible_value = true;
+      inaccessible_fields.insert(server_field_type);
     }
   }
-  return found_inaccessible_value;
+  return inaccessible_fields;
+}
+
+void AutofillProfile::ClearFields(const ServerFieldTypeSet& fields) {
+  for (ServerFieldType server_field_type : fields) {
+    SetRawInfoWithVerificationStatus(server_field_type, u"",
+                                     VerificationStatus::kNoStatus);
+  }
 }
 
 }  // namespace autofill

@@ -740,7 +740,15 @@ bool FormDataImporter::ImportAddressProfileForSection(
   // Filter unexpected values that are not shown in the settings.
   if (base::FeatureList::IsEnabled(
           features::kAutofillRemoveInaccessibleProfileValues)) {
-    candidate_profile.RemoveInaccessibleProfileValues(predicted_country_code);
+    const ServerFieldTypeSet inaccessible_fields =
+        candidate_profile.FindInaccessibleProfileValues(predicted_country_code);
+    candidate_profile.ClearFields(inaccessible_fields);
+    AutofillMetrics::LogRemovedSettingInaccessibleFields(
+        !inaccessible_fields.empty());
+    for (const ServerFieldType inaccessible_field : inaccessible_fields) {
+      AutofillMetrics::LogRemovedSettingInaccessibleField(
+          predicted_country_code, inaccessible_field);
+    }
   }
 
   // Reject the profile if minimum address and validation requirements are not

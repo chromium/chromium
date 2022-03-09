@@ -4229,6 +4229,40 @@ TEST_P(FormDataImporterTest, UnusableIncompleteProfile) {
   EXPECT_EQ(results[0]->GetRawInfo(NAME_LAST), u"Morrison");
 }
 
+// Tests that metrics are correctly recorded when removing setting-inaccessible
+// fields.
+// Note that this function doesn't test the removal functionality itself. This
+// is done in the AutofillProfile unit tests.
+TEST_P(FormDataImporterTest, RemoveInaccessibleProfileValuesMetrics) {
+  base::test::ScopedFeatureList remove_inaccessible_values_feature;
+  remove_inaccessible_values_feature.InitAndEnableFeature(
+      features::kAutofillRemoveInaccessibleProfileValues);
+
+  // Minimal importable profile, but with a state, which is setting-inaccessible
+  // for Germany.
+  std::vector<std::pair<ServerFieldType, std::string>> type_value_pairs{
+      {ADDRESS_HOME_COUNTRY, "DE"},
+      {ADDRESS_HOME_LINE1, kDefaultAddressLine1},
+      {ADDRESS_HOME_CITY, kDefaultCity},
+      {ADDRESS_HOME_ZIP, kDefaultZip},
+      {ADDRESS_HOME_STATE, kDefaultState}};
+
+  std::unique_ptr<FormStructure> form_structure =
+      ConstructFormStructureFromTypeValuePairs(type_value_pairs);
+  type_value_pairs.pop_back();  // Remove state manually for verification.
+  base::HistogramTester histogram_tester;
+  ImportAddressProfilesAndVerifyExpectation(
+      *form_structure, {ConstructProfileFromTypeValuePairs(type_value_pairs)});
+
+  // State was removed. Expect the metrics to behave accordingly.
+  const std::string metric =
+      "Autofill.ProfileImport.InaccessibleFieldsRemoved.";
+  histogram_tester.ExpectUniqueSample(metric + "Total", true, 1);
+  histogram_tester.ExpectUniqueSample(
+      metric + "DE",
+      AutofillMetrics::SettingsVisibleFieldTypeForMetrics::kState, 1);
+}
+
 // Runs the suite with the feature |kAutofillEnableSupportForApartmentNumbers|,
 // |kAutofillEnableDependentLocalityParsing| and
 // |kAutofillConsiderVariationCountryCodeForPhoneNumbers| enabled and disabled.

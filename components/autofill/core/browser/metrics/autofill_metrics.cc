@@ -3212,6 +3212,21 @@ void AutofillMetrics::LogUpdateProfileNumberOfAffectedFields(
       number_of_edited_fields, /*exclusive_max=*/15);
 }
 
+// static
+void AutofillMetrics::LogRemovedSettingInaccessibleFields(bool did_remove) {
+  base::UmaHistogramBoolean(
+      "Autofill.ProfileImport.InaccessibleFieldsRemoved.Total", did_remove);
+}
+
+// static
+void AutofillMetrics::LogRemovedSettingInaccessibleField(
+    const std::string& country_code,
+    ServerFieldType field) {
+  base::UmaHistogramEnumeration(
+      "Autofill.ProfileImport.InaccessibleFieldsRemoved." + country_code,
+      ConvertSettingsVisibleFieldTypeForMetrics(field));
+}
+
 void AutofillMetrics::LogVerificationStatusOfNameTokensOnProfileUsage(
     const AutofillProfile& profile) {
   constexpr base::StringPiece base_histogram_name =

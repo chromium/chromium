@@ -1705,6 +1705,15 @@ TEST_P(AutofillProfileTest, HasStructuredData) {
 }
 
 TEST_P(AutofillProfileTest, RemoveInaccessibleProfileValues) {
+  // Returns true if at least one field was removed.
+  auto RemoveInaccessibleProfileValues = [](AutofillProfile& profile,
+                                            const std::string& country_code) {
+    const ServerFieldTypeSet inaccessible_fields =
+        profile.FindInaccessibleProfileValues(country_code);
+    profile.ClearFields(inaccessible_fields);
+    return !inaccessible_fields.empty();
+  };
+
   AutofillProfile profile1;
   profile1.SetRawInfo(NAME_FIRST, u"Florian");
   AutofillProfile profile2 = profile1;
@@ -1712,19 +1721,19 @@ TEST_P(AutofillProfileTest, RemoveInaccessibleProfileValues) {
   // State is uncommon in Germany and inaccessible in the settings. Expect it
   // to be removed.
   profile1.SetRawInfo(ADDRESS_HOME_STATE, u"Bayern");
-  EXPECT_TRUE(profile1.RemoveInaccessibleProfileValues("DE"));
+  EXPECT_TRUE(RemoveInaccessibleProfileValues(profile1, "DE"));
   EXPECT_EQ(profile1.Compare(profile2), 0);
 
   // There are no ZIP codes in Angola.
   profile1.SetRawInfo(ADDRESS_HOME_ZIP, u"12345");
-  EXPECT_TRUE(profile1.RemoveInaccessibleProfileValues("AO"));
+  EXPECT_TRUE(RemoveInaccessibleProfileValues(profile1, "AO"));
   EXPECT_EQ(profile1.Compare(profile2), 0);
 
   // The US uses both ZIP codes and states.
   profile1.SetRawInfo(ADDRESS_HOME_STATE, u"CA");
   profile1.SetRawInfo(ADDRESS_HOME_ZIP, u"12345");
   profile2 = profile1;
-  EXPECT_FALSE(profile1.RemoveInaccessibleProfileValues("US"));
+  EXPECT_FALSE(RemoveInaccessibleProfileValues(profile1, "US"));
   EXPECT_EQ(profile1.Compare(profile2), 0);
 }
 
