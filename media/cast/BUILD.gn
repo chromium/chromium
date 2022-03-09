@@ -194,6 +194,7 @@ source_set("sender") {
 }
 
 source_set("test_receiver") {
+  testonly = true
   sources = [
     "test/receiver/audio_decoder.cc",
     "test/receiver/audio_decoder.h",
@@ -231,6 +232,8 @@ static_library("test_support") {
   sources = [
     "test/fake_receiver_time_offset_estimator.cc",
     "test/fake_receiver_time_offset_estimator.h",
+    "test/fake_video_encode_accelerator_factory.cc",
+    "test/fake_video_encode_accelerator_factory.h",
     "test/loopback_transport.cc",
     "test/loopback_transport.h",
     "test/mock_cast_transport.cc",
@@ -267,6 +270,7 @@ static_library("test_support") {
     ":test_receiver",
     "//base/test:test_support",
     "//media",
+    "//media:test_support",
     "//net",
     "//testing/gmock",
     "//testing/gtest",
@@ -325,8 +329,6 @@ test("cast_unittests") {
     "sender/audio_sender_unittest.cc",
     "sender/congestion_control_unittest.cc",
     "sender/external_video_encoder_unittest.cc",
-    "sender/fake_video_encode_accelerator_factory.cc",
-    "sender/fake_video_encode_accelerator_factory.h",
     "sender/video_encoder_unittest.cc",
     "sender/video_sender_unittest.cc",
     "sender/vpx_quantizer_parser_unittest.cc",
@@ -495,20 +497,4 @@ if (is_linux || is_chromeos_lacros) {
       "//net",
     ]
   }
-}
-
-# Projects external to Chromium can build cast_sender and/or cast_receiver to
-# produce libraries to link with their applications.  Chromium targets should
-# not reference these.
-
-static_library("cast_sender") {
-  complete_static_lib = true
-  configs -= [ "//build/config/compiler:thin_archive" ]
-  deps = [ ":sender" ]
-}
-
-static_library("cast_receiver") {
-  complete_static_lib = true
-  configs -= [ "//build/config/compiler:thin_archive" ]
-  deps = [ ":test_receiver" ]
 }

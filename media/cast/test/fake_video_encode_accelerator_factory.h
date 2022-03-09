@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef MEDIA_CAST_SENDER_FAKE_VIDEO_ENCODE_ACCELERATOR_FACTORY_H_
-#define MEDIA_CAST_SENDER_FAKE_VIDEO_ENCODE_ACCELERATOR_FACTORY_H_
+#ifndef MEDIA_CAST_TEST_FAKE_VIDEO_ENCODE_ACCELERATOR_FACTORY_H_
+#define MEDIA_CAST_TEST_FAKE_VIDEO_ENCODE_ACCELERATOR_FACTORY_H_
 
 #include <stddef.h>
 
@@ -33,9 +33,7 @@ class FakeVideoEncodeAcceleratorFactory {
 
   ~FakeVideoEncodeAcceleratorFactory();
 
-  int vea_response_count() const {
-    return vea_response_count_;
-  }
+  int vea_response_count() const { return vea_response_count_; }
 
   // Set whether the next created media::FakeVideoEncodeAccelerator will
   // initialize successfully.
@@ -66,4 +64,4 @@ class FakeVideoEncodeAcceleratorFactory {
 }  // namespace cast
 }  // namespace media
 
-#endif  // MEDIA_CAST_SENDER_FAKE_VIDEO_ENCODE_ACCELERATOR_FACTORY_H_
+#endif  // MEDIA_CAST_TEST_FAKE_VIDEO_ENCODE_ACCELERATOR_FACTORY_H_

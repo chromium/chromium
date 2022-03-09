@@ -21,8 +21,8 @@
 #include "media/base/video_frame.h"
 #include "media/cast/cast_environment.h"
 #include "media/cast/common/rtp_time.h"
-#include "media/cast/sender/fake_video_encode_accelerator_factory.h"
 #include "media/cast/sender/video_frame_factory.h"
+#include "media/cast/test/fake_video_encode_accelerator_factory.h"
 #include "media/cast/test/utility/default_config.h"
 #include "media/cast/test/utility/video_utility.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -58,9 +58,12 @@ class VideoEncoderTest
   ~VideoEncoderTest() override = default;
 
   void SetUp() final {
-    video_config_.codec = GetParam().first;
-    video_config_.use_external_encoder = GetParam().second;
+    Codec codec = GetParam().first;
+    if (codec == CODEC_VIDEO_FAKE)
+      video_config_.enable_fake_codec_for_tests = true;
 
+    video_config_.codec = codec;
+    video_config_.use_external_encoder = GetParam().second;
     if (video_config_.use_external_encoder) {
       vea_factory_ =
           std::make_unique<FakeVideoEncodeAcceleratorFactory>(task_runner_);
@@ -206,13 +209,8 @@ class VideoEncoderTest
 // Tests that the encoder outputs encoded frames, and also responds to frame
 // size changes. See media/cast/receiver/video_decoder_unittest.cc for a
 // complete encode/decode cycle of varied frame sizes that actually checks the
-// frame content. Fails consistently on official builds: crbug.com/612496
-#ifdef OFFICIAL_BUILD
-#define MAYBE_EncodesVariedFrameSizes DISABLED_EncodesVariedFrameSizes
-#else
-#define MAYBE_EncodesVariedFrameSizes EncodesVariedFrameSizes
-#endif
-TEST_P(VideoEncoderTest, MAYBE_EncodesVariedFrameSizes) {
+// frame content.
+TEST_P(VideoEncoderTest, EncodesVariedFrameSizes) {
   CreateEncoder();
   SetVEAFactoryAutoRespond(true);
 
@@ -329,14 +327,7 @@ TEST_P(VideoEncoderTest, MAYBE_EncodesVariedFrameSizes) {
 // before it has a chance to receive the VEA creation callback.  For all other
 // encoders, this tests that the encoder can be safely destroyed before the task
 // is run that delivers the first EncodedFrame.
-// Fails consistently on official builds: crbug.com/612496
-#ifdef OFFICIAL_BUILD
-#define MAYBE_CanBeDestroyedBeforeVEAIsCreated \
-  DISABLED_CanBeDestroyedBeforeVEAIsCreated
-#else
-#define MAYBE_CanBeDestroyedBeforeVEAIsCreated CanBeDestroyedBeforeVEAIsCreated
-#endif
-TEST_P(VideoEncoderTest, MAYBE_CanBeDestroyedBeforeVEAIsCreated) {
+TEST_P(VideoEncoderTest, CanBeDestroyedBeforeVEAIsCreated) {
   CreateEncoder();
 
   // Send a frame to spawn creation of the ExternalVideoEncoder instance.

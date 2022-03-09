@@ -12,8 +12,6 @@
 #include "media/cast/common/rtp_time.h"
 #include "media/cast/constants.h"
 
-#ifndef OFFICIAL_BUILD
-
 namespace media {
 namespace cast {
 
@@ -82,5 +80,3 @@ void FakeSoftwareVideoEncoder::GenerateKeyFrame() {
 
 }  // namespace cast
 }  // namespace media
-
-#endif

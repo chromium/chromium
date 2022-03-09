@@ -27,6 +27,7 @@ enum Codec {
   CODEC_AUDIO_PCM16,
   CODEC_AUDIO_AAC,
   CODEC_AUDIO_REMOTE,
+  // For tests only.  Must set enable_fake_codec_for_tests to true.
   CODEC_VIDEO_FAKE,
   CODEC_VIDEO_VP8,
   CODEC_VIDEO_H264,
@@ -198,6 +199,10 @@ struct FrameSenderConfig {
   // strings, crypto is not being used.
   std::string aes_key;
   std::string aes_iv_mask;
+
+  // When true, allows use of CODEC_VIDEO_FAKE.  When false, CODEC_VIDEO_FAKE is
+  // not supported.
+  bool enable_fake_codec_for_tests{false};
 
   // These are codec specific parameters for video streams only.
   VideoCodecParams video_codec_params;

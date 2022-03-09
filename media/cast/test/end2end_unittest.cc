@@ -457,6 +457,9 @@ class End2EndTest : public ::testing::Test {
     test_receiver_audio_callback_->SetExpectedSamplingFrequency(
         audio_receiver_config_.rtp_timebase);
 
+    if (video_codec == CODEC_VIDEO_FAKE)
+      video_sender_config_.enable_fake_codec_for_tests = true;
+
     video_sender_config_.sender_ssrc = 3;
     video_sender_config_.receiver_ssrc = 4;
     video_sender_config_.max_playout_delay =
@@ -896,15 +899,6 @@ class TransportClient : public CastTransport::Client {
       log_event_dispatcher_;             // Not owned by this class.
   const raw_ptr<End2EndTest> e2e_test_;  // Not owned by this class.
 };
-
-// Cast E2E tests are not designed to run on official builds, primarily due
-// to using fake codecs that cause official failures.
-#ifdef OFFICIAL_BUILD
-#define CAST_E2E_TEST(name) DISABLED_##name
-#else
-#define CAST_E2E_TEST(name) name
-#endif
-
 }  // namespace
 
 void End2EndTest::Create() {
@@ -950,7 +944,7 @@ void End2EndTest::Create() {
       kSoundFrequency, kSoundVolume);
 }
 
-TEST_F(End2EndTest, CAST_E2E_TEST(LoopWithLosslessEncoding)) {
+TEST_F(End2EndTest, LoopWithLosslessEncoding) {
   Configure(CODEC_VIDEO_FAKE, CODEC_AUDIO_PCM16);
   Create();
 
@@ -1064,7 +1058,7 @@ TEST_F(End2EndTest, DISABLED_StartSenderBeforeReceiver) {
   EXPECT_EQ(10, test_receiver_video_callback_->number_times_called());
 }
 
-TEST_F(End2EndTest, CAST_E2E_TEST(BasicFakeSoftwareVideo)) {
+TEST_F(End2EndTest, BasicFakeSoftwareVideo) {
   Configure(CODEC_VIDEO_FAKE, CODEC_AUDIO_PCM16);
   Create();
   StartBasicPlayer();
@@ -1099,7 +1093,7 @@ const int kLongTestIterations = 10000;
 const int kLongTestIterations = 1000;
 #endif
 
-TEST_F(End2EndTest, CAST_E2E_TEST(ReceiverClockFast)) {
+TEST_F(End2EndTest, ReceiverClockFast) {
   Configure(CODEC_VIDEO_FAKE, CODEC_AUDIO_PCM16);
   Create();
   StartBasicPlayer();
@@ -1114,7 +1108,7 @@ TEST_F(End2EndTest, CAST_E2E_TEST(ReceiverClockFast)) {
   EXPECT_EQ(static_cast<size_t>(kLongTestIterations), video_ticks_.size());
 }
 
-TEST_F(End2EndTest, CAST_E2E_TEST(ReceiverClockSlow)) {
+TEST_F(End2EndTest, ReceiverClockSlow) {
   Configure(CODEC_VIDEO_FAKE, CODEC_AUDIO_PCM16);
   Create();
   StartBasicPlayer();
@@ -1129,7 +1123,7 @@ TEST_F(End2EndTest, CAST_E2E_TEST(ReceiverClockSlow)) {
   EXPECT_EQ(static_cast<size_t>(kLongTestIterations), video_ticks_.size());
 }
 
-TEST_F(End2EndTest, CAST_E2E_TEST(SmoothPlayoutWithFivePercentClockRateSkew)) {
+TEST_F(End2EndTest, SmoothPlayoutWithFivePercentClockRateSkew) {
   Configure(CODEC_VIDEO_FAKE, CODEC_AUDIO_PCM16);
   Create();
   StartBasicPlayer();
@@ -1150,7 +1144,7 @@ TEST_F(End2EndTest, CAST_E2E_TEST(SmoothPlayoutWithFivePercentClockRateSkew)) {
   EXPECT_EQ(static_cast<size_t>(kLongTestIterations), video_ticks_.size());
 }
 
-TEST_F(End2EndTest, CAST_E2E_TEST(EvilNetwork)) {
+TEST_F(End2EndTest, EvilNetwork) {
   Configure(CODEC_VIDEO_FAKE, CODEC_AUDIO_PCM16);
   receiver_to_sender_->SetPacketPipe(test::EvilNetwork());
   sender_to_receiver_->SetPacketPipe(test::EvilNetwork());
@@ -1172,7 +1166,7 @@ TEST_F(End2EndTest, CAST_E2E_TEST(EvilNetwork)) {
 
 // Tests that a system configured for 30 FPS drops frames when input is provided
 // at a much higher frame rate.
-TEST_F(End2EndTest, CAST_E2E_TEST(ShoveHighFrameRateDownYerThroat)) {
+TEST_F(End2EndTest, ShoveHighFrameRateDownYerThroat) {
   Configure(CODEC_VIDEO_FAKE, CODEC_AUDIO_PCM16);
   receiver_to_sender_->SetPacketPipe(test::EvilNetwork());
   sender_to_receiver_->SetPacketPipe(test::EvilNetwork());
@@ -1203,7 +1197,7 @@ TEST_F(End2EndTest, CAST_E2E_TEST(ShoveHighFrameRateDownYerThroat)) {
   EXPECT_LT((video_ticks_.back().second - test_end).InMilliseconds(), 1000);
 }
 
-TEST_F(End2EndTest, CAST_E2E_TEST(OldPacketNetwork)) {
+TEST_F(End2EndTest, OldPacketNetwork) {
   Configure(CODEC_VIDEO_FAKE, CODEC_AUDIO_PCM16);
   sender_to_receiver_->SetPacketPipe(test::NewRandomDrop(0.01));
   std::unique_ptr<test::PacketPipe> echo_chamber(
@@ -1233,7 +1227,7 @@ TEST_F(End2EndTest, CAST_E2E_TEST(OldPacketNetwork)) {
   EXPECT_EQ(static_cast<size_t>(kLongTestIterations), video_ticks_.size());
 }
 
-TEST_F(End2EndTest, CAST_E2E_TEST(TestSetPlayoutDelay)) {
+TEST_F(End2EndTest, TestSetPlayoutDelay) {
   Configure(CODEC_VIDEO_FAKE, CODEC_AUDIO_PCM16);
   video_sender_config_.min_playout_delay =
       video_sender_config_.max_playout_delay;

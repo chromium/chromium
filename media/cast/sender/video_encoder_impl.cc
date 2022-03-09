@@ -54,14 +54,11 @@ void EncodeVideoFrameOnEncoderThread(
 
 // static
 bool VideoEncoderImpl::IsSupported(const FrameSenderConfig& video_config) {
-#ifndef OFFICIAL_BUILD
-  if (video_config.codec == CODEC_VIDEO_FAKE) {
-    return true;
-  }
-#endif
   return video_config.codec == CODEC_VIDEO_VP8 ||
          video_config.codec == CODEC_VIDEO_VP9 ||
-         video_config.codec == CODEC_VIDEO_AV1;
+         video_config.codec == CODEC_VIDEO_AV1 ||
+         (video_config.enable_fake_codec_for_tests &&
+          video_config.codec == CODEC_VIDEO_FAKE);
 }
 
 VideoEncoderImpl::VideoEncoderImpl(
@@ -79,10 +76,9 @@ VideoEncoderImpl::VideoEncoderImpl(
         CastEnvironment::VIDEO, FROM_HERE,
         base::BindOnce(&InitializeEncoderOnEncoderThread, cast_environment,
                        encoder_.get()));
-#ifndef OFFICIAL_BUILD
-  } else if (video_config.codec == CODEC_VIDEO_FAKE) {
+  } else if (video_config.enable_fake_codec_for_tests &&
+             video_config.codec == CODEC_VIDEO_FAKE) {
     encoder_ = std::make_unique<FakeSoftwareVideoEncoder>(video_config);
-#endif
 #if BUILDFLAG(ENABLE_LIBAOM)
   } else if (video_config.codec == CODEC_VIDEO_AV1) {
     encoder_ = std::make_unique<Av1Encoder>(video_config);

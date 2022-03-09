@@ -175,7 +175,6 @@ class VideoDecoder::Vp8Impl final : public VideoDecoder::ImplBase {
   vpx_codec_ctx_t context_;
 };
 
-#ifndef OFFICIAL_BUILD
 // A fake video decoder that always output 2x2 black frames.
 class VideoDecoder::FakeImpl final : public VideoDecoder::ImplBase {
  public:
@@ -209,18 +208,15 @@ class VideoDecoder::FakeImpl final : public VideoDecoder::ImplBase {
 
   int last_decoded_id_;
 };
-#endif
 
 VideoDecoder::VideoDecoder(
     const scoped_refptr<CastEnvironment>& cast_environment,
     Codec codec)
     : cast_environment_(cast_environment) {
   switch (codec) {
-#ifndef OFFICIAL_BUILD
     case CODEC_VIDEO_FAKE:
       impl_ = new FakeImpl(cast_environment);
       break;
-#endif
     case CODEC_VIDEO_VP8:
       impl_ = new Vp8Impl(cast_environment);
       break;

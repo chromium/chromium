@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "media/cast/sender/fake_video_encode_accelerator_factory.h"
+#include "media/cast/test/fake_video_encode_accelerator_factory.h"
 
 #include <utility>
 
