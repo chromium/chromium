@@ -22,6 +22,13 @@ chromium-metrics-reviews@google.com.
 
 <histograms>
 
+<variants name="MeasuringLayer">
+  <variant name="Delegate" summary="As reported by the network delegate."/>
+  <variant name="OS"
+      summary="As reported by the operating system. Currently logged only on
+               Android."/>
+</variants>
+
 <histogram name="ConnectivityDetector.ConnectionState.{Client}"
     enum="ConnectivityDetectorConnectionState" expires_after="2021-11-15">
   <owner>curranmax@chromium.org</owner>
@@ -134,6 +141,9 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="DataUse.AllServicesKB" enum="DataUseServicesHash"
     expires_after="2022-08-28">
+  <obsolete>
+    Obsoleted.
+  </obsolete>
   <owner>rajendrant@chromium.org</owner>
   <owner>mcrouse@chromium.org</owner>
   <summary>
@@ -182,6 +192,9 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="DataUse.BytesReceived2" units="bytes"
     expires_after="2022-06-19">
+  <obsolete>
+    Obsoleted.
+  </obsolete>
   <owner>rajendrant@chromium.org</owner>
   <owner>mcrouse@chromium.org</owner>
   <summary>
@@ -190,13 +203,40 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="DataUse.BytesReceived3.{MeasuringLayer}" units="bytes"
+    expires_after="2022-08-28">
+  <owner>curranmax@chromium.org</owner>
+  <owner>ryansturm@chromium.org</owner>
+  <owner>spelchat@chromium.org</owner>
+  <summary>
+    Count of total bytes received by the Chrome on the network. This is recorded
+    when requests complete.
+  </summary>
+  <token key="MeasuringLayer" variants="MeasuringLayer"/>
+</histogram>
+
 <histogram name="DataUse.BytesSent" units="bytes" expires_after="2022-08-28">
+  <obsolete>
+    Obsoleted.
+  </obsolete>
   <owner>rajendrant@chromium.org</owner>
   <owner>mcrouse@chromium.org</owner>
   <summary>
     Count of total bytes sent by the Chrome on the network. With network
     servicification this is recorded when requests complete.
   </summary>
+</histogram>
+
+<histogram name="DataUse.BytesSent3.{MeasuringLayer}" units="bytes"
+    expires_after="2022-08-28">
+  <owner>curranmax@chromium.org</owner>
+  <owner>ryansturm@chromium.org</owner>
+  <owner>spelchat@chromium.org</owner>
+  <summary>
+    Count of total bytes sent by the Chrome on the network. With network
+    servicification this is recorded when requests complete.
+  </summary>
+  <token key="MeasuringLayer" variants="MeasuringLayer"/>
 </histogram>
 
 <histogram name="DataUse.ContentType.UserTrafficKB" enum="DataUseContentType"
