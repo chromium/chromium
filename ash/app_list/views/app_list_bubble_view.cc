@@ -490,10 +490,12 @@ void AppListBubbleView::UpdateForNewSortingOrder(
     const absl::optional<AppListSortOrder>& new_order,
     bool animate,
     base::OnceClosure update_position_closure) {
-  // Hide any open folder by showing the apps page.
-  if (showing_folder_) {
+  // If app list sort order change is animated, hide any open folders as part of
+  // animation. If the update is not animated, e.g. when committing sort order,
+  // keep the folder open to prevent folder closure when apps within the folder
+  // are reordered, or whe the folder gets renamed.
+  if (animate && showing_folder_)
     HideFolderView(/*animate=*/false, /*hide_for_reparent=*/false);
-  }
 
   apps_page_->UpdateForNewSortingOrder(new_order, animate,
                                        std::move(update_position_closure));
@@ -535,8 +537,12 @@ void AppListBubbleView::OnThemeChanged() {
 }
 
 void AppListBubbleView::Layout() {
+  views::View::Layout();
+
   // The folder view has custom layout code that centers the folder over the
   // associated root apps grid folder item.
+  // Folder bounds depend on the associated item view location in the apps
+  // grid, so the folder needs to be laid out after the root apps grid.
   if (showing_folder_) {
     gfx::Rect folder_bounding_box = GetLocalBounds();
     folder_bounding_box.Inset(kFolderViewInset, kFolderViewInset);
@@ -546,8 +552,6 @@ void AppListBubbleView::Layout() {
     // view is "visible" but hidden offscreen. See app_list_folder_view.cc.
     folder_view_->SetBoundsRect(folder_view_->preferred_bounds());
   }
-
-  views::View::Layout();
 }
 
 void AppListBubbleView::QueryChanged(SearchBoxViewBase* sender) {

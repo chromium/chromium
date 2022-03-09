@@ -689,16 +689,19 @@ void AppsContainerView::UpdateForNewSortingOrder(
   if (new_order)
     toast_container_->AnnounceSortOrder(*new_order);
 
-  // Hide any open folder and transition to the apps page.
-  SetShowState(SHOW_APPS, /*show_apps_with_animation=*/false);
-  DisableFocusForShowingActiveFolder(false);
-
   if (!animate) {
     // Reordering is not required so update the undo toast and return early.
     app_list_nudge_controller_->OnTemporarySortOrderChanged(new_order);
     toast_container_->OnTemporarySortOrderChanged(new_order);
     return;
   }
+
+  // If app list sort order change is animated, hide any open folders as part of
+  // animation. If the update is not animated, e.g. when committing sort order,
+  // keep the folder open to prevent folder closure when apps within the folder
+  // are reordered, or whe the folder gets renamed.
+  SetShowState(SHOW_APPS, /*show_apps_with_animation=*/false);
+  DisableFocusForShowingActiveFolder(false);
 
   // If `apps_grid_view_` is under page transition animation, finish the
   // animation before starting the reorder animation.
