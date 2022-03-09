@@ -7,9 +7,7 @@
 
 #import <UIKit/UIKit.h>
 
-#ifdef __cplusplus
-class GURL;
-#endif
+@class CrURL;
 
 typedef NS_ENUM(NSInteger, OmniboxIconType) {
   OmniboxIconTypeSuggestionIcon,
@@ -25,9 +23,7 @@ typedef NS_ENUM(NSInteger, OmniboxIconType) {
 @protocol OmniboxIcon <NSObject>
 
 @property(nonatomic, assign, readonly) OmniboxIconType iconType;
-#ifdef __cplusplus
-@property(nonatomic, assign, readonly) GURL imageURL;
-#endif
+@property(nonatomic, strong, readonly) CrURL* imageURL;
 @property(nonatomic, strong, readonly) UIImage* iconImage;
 @property(nonatomic, strong, readonly) UIColor* iconImageTintColor;
 @property(nonatomic, strong, readonly) UIImage* backgroundImage;

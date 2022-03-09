@@ -8,8 +8,11 @@ swift_source_set("popup_swift") {
   bridge_header = "popup_swift_bridge.h"
   sources = [
     "omnibox_popup_view_provider.swift",
+    "shared/fake_omnibox_icon.swift",
     "shared/omnibox_pedal.swift",
+    "shared/popup_image.swift",
     "shared/popup_match.swift",
+    "shared/popup_match_image_view.swift",
     "shared/popup_match_row_action_button.swift",
     "shared/popup_match_row_view.swift",
     "shared/popup_match_trailing_button.swift",
@@ -22,6 +25,7 @@ swift_source_set("popup_swift") {
     ":popup_ui_protocols",
     "//base",
     "//ios/chrome/app/strings:ios_strings_grit",
+    "//ios/chrome/browser/net:crurl",
     "//ios/chrome/common/ui/colors:swift",
   ]
 
@@ -116,6 +120,7 @@ source_set("popup_ui") {
     "//components/omnibox/common",
     "//ios/chrome/app/strings:ios_strings_grit",
     "//ios/chrome/app/theme",
+    "//ios/chrome/browser/net:crurl",
     "//ios/chrome/browser/ui:feature_flags",
     "//ios/chrome/browser/ui/colors",
     "//ios/chrome/browser/ui/commands",
@@ -151,6 +156,7 @@ source_set("popup_internal") {
     "//base",
     "//components/omnibox/browser",
     "//ios/chrome/browser/browser_state",
+    "//ios/chrome/browser/net:crurl",
     "//ios/chrome/browser/ui:feature_flags",
     "//ios/chrome/browser/ui/colors",
     "//ios/chrome/browser/ui/omnibox:omnibox_util",

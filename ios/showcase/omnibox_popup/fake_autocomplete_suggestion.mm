@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #import "ios/showcase/omnibox_popup/fake_autocomplete_suggestion.h"
+#import "ios/chrome/browser/net/crurl.h"
 #import "ios/chrome/browser/ui/omnibox/omnibox_suggestion_icon_util.h"
 #import "ios/chrome/browser/ui/omnibox/popup/simple_omnibox_icon.h"
 
@@ -315,11 +316,11 @@ NSAttributedString* calculatorText() {
   FakeAutocompleteSuggestion* suggestion =
       [[FakeAutocompleteSuggestion alloc] init];
   suggestion.text = textString(@"Simple suggestion");
-  suggestion.icon =
-      [[SimpleOmniboxIcon alloc] initWithIconType:OmniboxIconTypeSuggestionIcon
-                               suggestionIconType:SEARCH
-                                         isAnswer:NO
-                                         imageURL:GURL()];
+  suggestion.icon = [[SimpleOmniboxIcon alloc]
+        initWithIconType:OmniboxIconTypeSuggestionIcon
+      suggestionIconType:SEARCH
+                isAnswer:NO
+                imageURL:[[CrURL alloc] initWithGURL:GURL()]];
   return suggestion;
 }
 
@@ -328,11 +329,11 @@ NSAttributedString* calculatorText() {
       [[FakeAutocompleteSuggestion alloc] init];
   suggestion.text = textString(@"Suggestion with detail");
   suggestion.detailText = detailTextString(@"Detail");
-  suggestion.icon =
-      [[SimpleOmniboxIcon alloc] initWithIconType:OmniboxIconTypeSuggestionIcon
-                               suggestionIconType:SEARCH
-                                         isAnswer:NO
-                                         imageURL:GURL()];
+  suggestion.icon = [[SimpleOmniboxIcon alloc]
+        initWithIconType:OmniboxIconTypeSuggestionIcon
+      suggestionIconType:SEARCH
+                isAnswer:NO
+                imageURL:[[CrURL alloc] initWithGURL:GURL()]];
   return suggestion;
 }
 
@@ -345,11 +346,11 @@ NSAttributedString* calculatorText() {
   suggestion.detailText = detailTextString(
       @"Detail about the suggestion that also clips because it is too long "
       @"for the screen and extends off of the right edge.");
-  suggestion.icon =
-      [[SimpleOmniboxIcon alloc] initWithIconType:OmniboxIconTypeSuggestionIcon
-                               suggestionIconType:SEARCH
-                                         isAnswer:NO
-                                         imageURL:GURL()];
+  suggestion.icon = [[SimpleOmniboxIcon alloc]
+        initWithIconType:OmniboxIconTypeSuggestionIcon
+      suggestionIconType:SEARCH
+                isAnswer:NO
+                imageURL:[[CrURL alloc] initWithGURL:GURL()]];
   return suggestion;
 }
 
@@ -389,8 +390,9 @@ NSAttributedString* calculatorText() {
         initWithIconType:OmniboxIconTypeImage
       suggestionIconType:DEFAULT_FAVICON
                 isAnswer:NO
-                imageURL:GURL("https://ssl.gstatic.com/onebox/weather/128/"
-                              "sunny.png")];
+                imageURL:[[CrURL alloc]
+                             initWithGURL:GURL("https://ssl.gstatic.com/onebox/"
+                                               "weather/128/sunny.png")]];
   return suggestion;
 }
 
@@ -400,11 +402,11 @@ NSAttributedString* calculatorText() {
   suggestion.text = stockText();
   suggestion.hasAnswer = YES;
   suggestion.detailText = stockDetailText();
-  suggestion.icon =
-      [[SimpleOmniboxIcon alloc] initWithIconType:OmniboxIconTypeSuggestionIcon
-                               suggestionIconType:STOCK
-                                         isAnswer:NO
-                                         imageURL:GURL()];
+  suggestion.icon = [[SimpleOmniboxIcon alloc]
+        initWithIconType:OmniboxIconTypeSuggestionIcon
+      suggestionIconType:STOCK
+                isAnswer:NO
+                imageURL:[[CrURL alloc] initWithGURL:GURL()]];
   return suggestion;
 }
 
@@ -415,11 +417,11 @@ NSAttributedString* calculatorText() {
   suggestion.numberOfLines = 3;
   suggestion.hasAnswer = YES;
   suggestion.detailText = definitionDetailText();
-  suggestion.icon =
-      [[SimpleOmniboxIcon alloc] initWithIconType:OmniboxIconTypeSuggestionIcon
-                               suggestionIconType:DICTIONARY
-                                         isAnswer:NO
-                                         imageURL:GURL()];
+  suggestion.icon = [[SimpleOmniboxIcon alloc]
+        initWithIconType:OmniboxIconTypeSuggestionIcon
+      suggestionIconType:DICTIONARY
+                isAnswer:NO
+                imageURL:[[CrURL alloc] initWithGURL:GURL()]];
   return suggestion;
 }
 
@@ -429,11 +431,11 @@ NSAttributedString* calculatorText() {
   suggestion.text = sunriseText();
   suggestion.hasAnswer = YES;
   suggestion.detailText = sunriseDetailText();
-  suggestion.icon =
-      [[SimpleOmniboxIcon alloc] initWithIconType:OmniboxIconTypeSuggestionIcon
-                               suggestionIconType:SUNRISE
-                                         isAnswer:NO
-                                         imageURL:GURL()];
+  suggestion.icon = [[SimpleOmniboxIcon alloc]
+        initWithIconType:OmniboxIconTypeSuggestionIcon
+      suggestionIconType:SUNRISE
+                isAnswer:NO
+                imageURL:[[CrURL alloc] initWithGURL:GURL()]];
   return suggestion;
 }
 
@@ -443,11 +445,11 @@ NSAttributedString* calculatorText() {
   suggestion.text = knowledgeText();
   suggestion.hasAnswer = YES;
   suggestion.detailText = knowledgeDetailText();
-  suggestion.icon =
-      [[SimpleOmniboxIcon alloc] initWithIconType:OmniboxIconTypeSuggestionIcon
-                               suggestionIconType:FALLBACK_ANSWER
-                                         isAnswer:NO
-                                         imageURL:GURL()];
+  suggestion.icon = [[SimpleOmniboxIcon alloc]
+        initWithIconType:OmniboxIconTypeSuggestionIcon
+      suggestionIconType:FALLBACK_ANSWER
+                isAnswer:NO
+                imageURL:[[CrURL alloc] initWithGURL:GURL()]];
   return suggestion;
 }
 
@@ -457,11 +459,11 @@ NSAttributedString* calculatorText() {
   suggestion.text = sportsText();
   suggestion.hasAnswer = YES;
   suggestion.detailText = sportsDetailText();
-  suggestion.icon =
-      [[SimpleOmniboxIcon alloc] initWithIconType:OmniboxIconTypeSuggestionIcon
-                               suggestionIconType:FALLBACK_ANSWER
-                                         isAnswer:NO
-                                         imageURL:GURL()];
+  suggestion.icon = [[SimpleOmniboxIcon alloc]
+        initWithIconType:OmniboxIconTypeSuggestionIcon
+      suggestionIconType:FALLBACK_ANSWER
+                isAnswer:NO
+                imageURL:[[CrURL alloc] initWithGURL:GURL()]];
   return suggestion;
 }
 
@@ -471,11 +473,11 @@ NSAttributedString* calculatorText() {
   suggestion.text = whenIsText();
   suggestion.hasAnswer = YES;
   suggestion.detailText = whenIsDetailText();
-  suggestion.icon =
-      [[SimpleOmniboxIcon alloc] initWithIconType:OmniboxIconTypeSuggestionIcon
-                               suggestionIconType:WHEN_IS
-                                         isAnswer:NO
-                                         imageURL:GURL()];
+  suggestion.icon = [[SimpleOmniboxIcon alloc]
+        initWithIconType:OmniboxIconTypeSuggestionIcon
+      suggestionIconType:WHEN_IS
+                isAnswer:NO
+                imageURL:[[CrURL alloc] initWithGURL:GURL()]];
   return suggestion;
 }
 
@@ -485,11 +487,11 @@ NSAttributedString* calculatorText() {
   suggestion.text = currencyText();
   suggestion.hasAnswer = YES;
   suggestion.detailText = currencyDetailText();
-  suggestion.icon =
-      [[SimpleOmniboxIcon alloc] initWithIconType:OmniboxIconTypeSuggestionIcon
-                               suggestionIconType:CONVERSION
-                                         isAnswer:NO
-                                         imageURL:GURL()];
+  suggestion.icon = [[SimpleOmniboxIcon alloc]
+        initWithIconType:OmniboxIconTypeSuggestionIcon
+      suggestionIconType:CONVERSION
+                isAnswer:NO
+                imageURL:[[CrURL alloc] initWithGURL:GURL()]];
   return suggestion;
 }
 
@@ -499,11 +501,11 @@ NSAttributedString* calculatorText() {
   suggestion.text = translateText();
   suggestion.hasAnswer = YES;
   suggestion.detailText = translateDetailText();
-  suggestion.icon =
-      [[SimpleOmniboxIcon alloc] initWithIconType:OmniboxIconTypeSuggestionIcon
-                               suggestionIconType:TRANSLATION
-                                         isAnswer:NO
-                                         imageURL:GURL()];
+  suggestion.icon = [[SimpleOmniboxIcon alloc]
+        initWithIconType:OmniboxIconTypeSuggestionIcon
+      suggestionIconType:TRANSLATION
+                isAnswer:NO
+                imageURL:[[CrURL alloc] initWithGURL:GURL()]];
   return suggestion;
 }
 
@@ -511,11 +513,11 @@ NSAttributedString* calculatorText() {
   FakeAutocompleteSuggestion* suggestion =
       [[FakeAutocompleteSuggestion alloc] init];
   suggestion.text = calculatorText();
-  suggestion.icon =
-      [[SimpleOmniboxIcon alloc] initWithIconType:OmniboxIconTypeSuggestionIcon
-                               suggestionIconType:CALCULATOR
-                                         isAnswer:NO
-                                         imageURL:GURL()];
+  suggestion.icon = [[SimpleOmniboxIcon alloc]
+        initWithIconType:OmniboxIconTypeSuggestionIcon
+      suggestionIconType:CALCULATOR
+                isAnswer:NO
+                imageURL:[[CrURL alloc] initWithGURL:GURL()]];
   return suggestion;
 }
 
@@ -529,11 +531,11 @@ NSAttributedString* calculatorText() {
   GURL imageURL = GURL("https://encrypted-tbn0.gstatic.com/"
                        "images?q=tbn:ANd9GcRl35jshKCRWt76yUSKh5r0_"
                        "BRbWuSU1uZOCGnzq95nJ8yXUg913LciCgz-s3reyfACsrAAYg");
-  suggestion.icon =
-      [[SimpleOmniboxIcon alloc] initWithIconType:OmniboxIconTypeImage
-                               suggestionIconType:SEARCH
-                                         isAnswer:NO
-                                         imageURL:imageURL];
+  suggestion.icon = [[SimpleOmniboxIcon alloc]
+        initWithIconType:OmniboxIconTypeImage
+      suggestionIconType:SEARCH
+                isAnswer:NO
+                imageURL:[[CrURL alloc] initWithGURL:imageURL]];
   return suggestion;
 }
 

@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/ui/omnibox/popup/omnibox_icon_view.h"
 
+#import "ios/chrome/browser/net/crurl.h"
 #import "ios/chrome/browser/ui/omnibox/popup/favicon_retriever.h"
 #import "ios/chrome/browser/ui/omnibox/popup/image_retriever.h"
 #import "ios/chrome/browser/ui/omnibox/popup/omnibox_icon.h"
@@ -103,12 +104,12 @@
     case OmniboxIconTypeImage: {
       self.mainImageView.contentMode = UIViewContentModeScaleAspectFit;
       __weak OmniboxIconView* weakSelf = self;
-      GURL imageURL = omniboxIcon.imageURL;
+      GURL imageURL = omniboxIcon.imageURL.gurl;
       [self.imageRetriever fetchImage:imageURL
                            completion:^(UIImage* image) {
                              // Make sure cell is still displaying the same
                              // suggestion.
-                             if (omniboxIcon.imageURL != imageURL) {
+                             if (omniboxIcon.imageURL.gurl != imageURL) {
                                return;
                              }
                              [weakSelf addOverlayImageView];
@@ -125,11 +126,11 @@
       self.mainImageView.image = omniboxIcon.iconImage;
 
       // Load favicon.
-      GURL pageURL = omniboxIcon.imageURL;
+      GURL pageURL = omniboxIcon.imageURL.gurl;
       __weak OmniboxIconView* weakSelf = self;
       [self.faviconRetriever fetchFavicon:pageURL
                                completion:^(UIImage* image) {
-                                 if (pageURL == omniboxIcon.imageURL) {
+                                 if (pageURL == omniboxIcon.imageURL.gurl) {
                                    weakSelf.mainImageView.image = image;
                                  }
                                }];

@@ -42,8 +42,12 @@ struct PopupMatchRowView: View {
         }
 
       /// The content is in front of the button, for proper hit testing.
-      HStack {
-        Spacer().frame(width: Dimensions.leadingSpacing)
+      HStack(alignment: .center, spacing: 0) {
+        HStack(alignment: .center, spacing: 0) {
+          Spacer()
+          match.image.map { image in PopupMatchImageView(image: image) }
+          Spacer()
+        }.frame(width: Dimensions.leadingSpacing)
         VStack(alignment: .leading, spacing: 0) {
           VStack(alignment: .leading, spacing: 0) {
             Text(match.text)

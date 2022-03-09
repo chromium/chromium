@@ -16,7 +16,8 @@ import Foundation
     return suggestion.detailText?.string
   }
 
-  /// Some suggestions can be appended to omnibox text in order to refine the query or URL.
+  /// Some suggestions can be appended to omnibox text in order to refine the
+  /// query or URL.
   var isAppendable: Bool {
     return suggestion.isAppendable
   }
@@ -30,6 +31,10 @@ import Foundation
   var supportsDeletion: Bool {
     return suggestion.supportsDeletion
   }
+
+  /// The image shown on the leading edge of the row (an icon, a favicon,
+  /// etc.).
+  lazy var image = suggestion.icon.map { icon in PopupImage(icon: icon) }
 
   let pedal: Pedal?
 
@@ -50,17 +55,17 @@ extension PopupMatch {
     let isAppendable: Bool
     let isTabMatch: Bool
     let supportsDeletion: Bool
+    let icon: OmniboxIcon?
 
     let hasAnswer = false
     let isURL = false
     let numberOfLines = 1
-    let icon: OmniboxIcon? = nil
     let isTailSuggestion = false
     let commonPrefix = ""
 
     init(
       text: String, detailText: String? = nil, isAppendable: Bool = false, isTabMatch: Bool = false,
-      supportsDeletion: Bool = false
+      supportsDeletion: Bool = false, icon: OmniboxIcon? = nil
     ) {
       self.text = NSAttributedString(string: text, attributes: [:])
       self.detailText = detailText.flatMap { string in
@@ -69,17 +74,20 @@ extension PopupMatch {
       self.isAppendable = isAppendable
       self.isTabMatch = isTabMatch
       self.supportsDeletion = supportsDeletion
+      self.icon = icon
     }
   }
 
   static let short = PopupMatch(
     suggestion: FakeAutocompleteSuggestion(
       text: "Google",
-      detailText: "google.com"))
+      detailText: "google.com",
+      icon: FakeOmniboxIcon.suggestionIcon))
   static let long = PopupMatch(
     suggestion: FakeAutocompleteSuggestion(
       text: "1292459 - Overflow menu is displayed on top of NTP ...",
-      detailText: "bugs.chromium.org/p/chromium/issues/detail?id=1292459"))
+      detailText: "bugs.chromium.org/p/chromium/issues/detail?id=1292459",
+      icon: FakeOmniboxIcon.favicon))
   static let pedal = PopupMatch(
     suggestion: FakeAutocompleteSuggestion(
       text: "clear browsing data"),
@@ -87,7 +95,8 @@ extension PopupMatch {
   static let appendable = PopupMatch(
     suggestion: FakeAutocompleteSuggestion(
       text: "is appendable",
-      isAppendable: true))
+      isAppendable: true,
+      icon: FakeOmniboxIcon.suggestionAnswerIcon))
   static let tabMatch = PopupMatch(
     suggestion: FakeAutocompleteSuggestion(
       text: "Home",
