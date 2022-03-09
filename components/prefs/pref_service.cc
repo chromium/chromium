@@ -547,6 +547,14 @@ void PrefService::SetString(const std::string& path, const std::string& value) {
   SetUserPrefValue(path, base::Value(value));
 }
 
+void PrefService::SetDict(const std::string& path, base::Value::Dict dict) {
+  SetUserPrefValue(path, base::Value(std::move(dict)));
+}
+
+void PrefService::SetList(const std::string& path, base::Value::List list) {
+  SetUserPrefValue(path, base::Value(std::move(list)));
+}
+
 void PrefService::SetFilePath(const std::string& path,
                               const base::FilePath& value) {
   SetUserPrefValue(path, base::FilePathToValue(value));
