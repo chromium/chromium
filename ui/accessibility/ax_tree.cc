@@ -759,6 +759,12 @@ AXTree::AXTree(const AXTreeUpdate& initial_state) {
 
 AXTree::~AXTree() {
   Destroy();
+
+  // Language detection manager will detach from AXTree observer list in its
+  // destructor. But because of variable order, when destroying AXTree, the
+  // observer list will already be destroyed. To avoid that problem, free
+  // language detection manager before.
+  language_detection_manager.reset();
 }
 
 void AXTree::AddObserver(AXTreeObserver* observer) {
