@@ -76,9 +76,10 @@ bool IsUserTypeAllowed(const User* user) {
     case user_manager::USER_TYPE_WEB_KIOSK_APP:
     case user_manager::USER_TYPE_PUBLIC_ACCOUNT:
       return true;
+    case user_manager::USER_TYPE_CHILD:
+      return base::FeatureList::IsEnabled(kLacrosForSupervisedUsers);
     case user_manager::USER_TYPE_GUEST:
     case user_manager::USER_TYPE_KIOSK_APP:
-    case user_manager::USER_TYPE_CHILD:
     case user_manager::USER_TYPE_ARC_KIOSK_APP:
     case user_manager::USER_TYPE_ACTIVE_DIRECTORY:
     case user_manager::NUM_USER_TYPES:
@@ -255,6 +256,15 @@ const base::Feature kLacrosDisableChromeApps{"LacrosDisableChromeApps",
 // Googlers.
 const base::Feature kLacrosGooglePolicyRollout{
     "LacrosGooglePolicyRollout", base::FEATURE_DISABLED_BY_DEFAULT};
+
+// Makes LaCrOS allowed for Family Link users.
+// With this feature disabled LaCrOS cannot be enabled for Family Link users.
+// When this feature is enabled LaCrOS availability is a under control of other
+// launch switches.
+// Note: Family Link users do not have access to chrome://flags and this feature
+// flag is meant to help with development and testing.
+const base::Feature kLacrosForSupervisedUsers{
+    "LacrosForSupervisedUsers", base::FEATURE_DISABLED_BY_DEFAULT};
 
 const Channel kLacrosDefaultChannel = Channel::DEV;
 
