@@ -59,6 +59,7 @@ class MockNavigationHandle : public NavigationHandle {
   bool IsPrerenderedPageActivation() override {
     return is_prerendered_page_activation_;
   }
+  bool IsInFencedFrameTree() override { return is_in_fenced_frame_tree_; }
   FrameType GetNavigatingFrameType() const override {
     NOTIMPLEMENTED();
     return FrameType::kPrimaryMainFrame;
@@ -239,6 +240,9 @@ class MockNavigationHandle : public NavigationHandle {
   void set_is_prerendered_page_activation(bool is_prerendered_page_activation) {
     is_prerendered_page_activation_ = is_prerendered_page_activation;
   }
+  void set_is_in_fenced_frame_tree(bool is_in_fenced_frame_tree) {
+    is_in_fenced_frame_tree_ = is_in_fenced_frame_tree;
+  }
   void set_is_renderer_initiated(bool is_renderer_initiated) {
     is_renderer_initiated_ = is_renderer_initiated;
   }
@@ -302,6 +306,7 @@ class MockNavigationHandle : public NavigationHandle {
   bool is_same_document_ = false;
   bool is_served_from_bfcache_ = false;
   bool is_prerendered_page_activation_ = false;
+  bool is_in_fenced_frame_tree_ = false;
   bool is_renderer_initiated_ = true;
   bool is_in_primary_main_frame_ = true;
   std::vector<GURL> redirect_chain_;

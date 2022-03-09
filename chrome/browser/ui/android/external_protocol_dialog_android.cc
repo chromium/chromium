@@ -17,6 +17,7 @@ void ExternalProtocolHandler::RunExternalProtocolDialog(
     WebContents* web_contents,
     ui::PageTransition page_transition,
     bool has_user_gesture,
+    bool is_in_fenced_frame_tree,
     const absl::optional<url::Origin>& initiating_origin,
     content::WeakDocumentPtr) {
   navigation_interception::InterceptNavigationDelegate* delegate =

@@ -4,18 +4,26 @@
 
 #include "chrome/browser/apps/intent_helper/page_transition_util.h"
 
+#include "base/check_op.h"
+
 namespace apps {
 
 bool ShouldIgnoreNavigation(ui::PageTransition page_transition,
                             bool allow_form_submit,
-                            bool allow_client_redirect) {
-  // |allow_client_redirect| is true only for non-http(s) cases, and for those
-  // we can ignore the CLIENT/SERVER REDIRECT flags, otherwise mask out the
-  // SERVER_REDIRECT flag only.
-  page_transition = MaskOutPageTransition(
-      page_transition, allow_client_redirect
-                           ? ui::PAGE_TRANSITION_IS_REDIRECT_MASK
-                           : ui::PAGE_TRANSITION_SERVER_REDIRECT);
+                            bool is_in_fenced_frame_tree,
+                            bool has_user_gesture) {
+  // Navigations inside fenced frame trees are marked with
+  // PAGE_TRANSITION_AUTO_SUBFRAME in order not to add session history items
+  // (see https://crrev.com/c/3265344). So we only check |has_user_gesture|.
+  if (is_in_fenced_frame_tree) {
+    DCHECK(ui::PageTransitionCoreTypeIs(page_transition,
+                                        ui::PAGE_TRANSITION_AUTO_SUBFRAME));
+    return !has_user_gesture;
+  }
+
+  // Mask out any redirect qualifiers
+  page_transition = MaskOutPageTransition(page_transition,
+                                          ui::PAGE_TRANSITION_IS_REDIRECT_MASK);
 
   if (!ui::PageTransitionCoreTypeIs(page_transition,
                                     ui::PAGE_TRANSITION_LINK) &&

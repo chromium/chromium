@@ -30,7 +30,8 @@ IN_PROC_BROWSER_TEST_F(ReloadButtonBrowserTest, AllowExternalProtocols) {
       url,
       base::BindRepeating(&ReloadButtonBrowserTest::GetWebContents,
                           base::Unretained(this)),
-      ui::PAGE_TRANSITION_LINK, true, url::Origin::Create(url),
+      ui::PAGE_TRANSITION_LINK, /*has_user_gesture=*/true,
+      /*is_in_fenced_frame_tree=*/false, url::Origin::Create(url),
       content::WeakDocumentPtr());
   ASSERT_EQ(ExternalProtocolHandler::BLOCK,
             ExternalProtocolHandler::GetBlockState(fake_protocol, nullptr,

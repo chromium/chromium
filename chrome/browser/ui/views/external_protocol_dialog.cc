@@ -55,6 +55,7 @@ void ExternalProtocolHandler::RunExternalProtocolDialog(
     WebContents* web_contents,
     ui::PageTransition ignored_page_transition,
     bool ignored_has_user_gesture,
+    bool ignored_is_in_fenced_frame_tree,
     const absl::optional<url::Origin>& initiating_origin,
     content::WeakDocumentPtr initiator_document) {
   DCHECK(web_contents);

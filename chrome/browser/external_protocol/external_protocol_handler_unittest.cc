@@ -194,7 +194,8 @@ class ExternalProtocolHandlerTest : public testing::Test {
         url,
         base::BindRepeating(&ExternalProtocolHandlerTest::GetWebContents,
                             base::Unretained(this)),
-        ui::PAGE_TRANSITION_LINK, true, initiating_origin,
+        ui::PAGE_TRANSITION_LINK, /*has_user_gesture=*/true,
+        /*is_in_fenced_frame_tree=*/false, initiating_origin,
         content::WeakDocumentPtr());
     run_loop_.Run();
     ExternalProtocolHandler::SetDelegateForTesting(nullptr);

@@ -142,7 +142,8 @@ bool IsolatedAppThrottle::OpenUrlExternal(const GURL& url) {
           frame_tree_node->frame_tree_node_id()),
       frame_tree_node->frame_tree_node_id(),
       navigation_request->GetNavigationUIData(),
-      /*is_primary_main_frame=*/true, network::mojom::WebSandboxFlags::kNone,
+      /*is_primary_main_frame=*/true, /*is_in_fenced_frame_tree=*/false,
+      network::mojom::WebSandboxFlags::kNone,
       (navigation_handle()->GetRedirectChain().size() > 1)
           ? ui::PageTransition::PAGE_TRANSITION_SERVER_REDIRECT
           : ui::PageTransition::PAGE_TRANSITION_LINK,

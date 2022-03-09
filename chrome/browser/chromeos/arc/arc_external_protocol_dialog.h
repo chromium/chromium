@@ -132,6 +132,7 @@ void RunArcExternalProtocolDialog(
     base::WeakPtr<content::WebContents> web_contents,
     ui::PageTransition page_transition,
     bool has_user_gesture,
+    bool is_in_fenced_frame_tree,
     std::unique_ptr<ArcIntentHelperMojoDelegate> mojo_delegate,
     base::OnceCallback<void(bool)> handled_cb);
 

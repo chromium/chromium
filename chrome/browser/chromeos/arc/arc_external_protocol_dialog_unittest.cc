@@ -1035,13 +1035,67 @@ TEST_F(ArcExternalProtocolDialogTestUtils, TestDialogWithoutAppsWithDevices) {
   RunArcExternalProtocolDialog(
       GURL("tel:12341234"), /*initiating_origin=*/absl::nullopt,
       web_contents()->GetWeakPtr(), ui::PAGE_TRANSITION_LINK,
-      /*has_user_gesture=*/true, std::make_unique<FakeArcIntentHelperMojo>(),
+      /*has_user_gesture=*/true, /*is_in_fenced_frame_tree=*/false,
+      std::make_unique<FakeArcIntentHelperMojo>(),
       base::BindOnce([](bool* handled, bool result) { *handled = result; },
                      &handled));
 
   // Wait until the bubble is visible.
   run_loop.Run();
   EXPECT_TRUE(handled);
+}
+
+TEST_F(ArcExternalProtocolDialogTestUtils,
+       TestDialogWithoutAppsWithDevicesInFencedFrameWithGesture) {
+  CreateTab(/*started_from_arc=*/false);
+
+  MockSharingService* sharing_service = CreateSharingService();
+  std::vector<std::unique_ptr<syncer::DeviceInfo>> devices;
+  devices.push_back(CreateFakeDeviceInfo("device_guid"));
+
+  EXPECT_CALL(*sharing_service, GetDeviceCandidates(testing::_))
+      .WillOnce(testing::Return(testing::ByMove(std::move(devices))));
+
+  base::RunLoop run_loop;
+  ClickToCallUiController::GetOrCreateFromWebContents(web_contents())
+      ->set_on_dialog_shown_closure_for_testing(run_loop.QuitClosure());
+
+  bool handled = false;
+  RunArcExternalProtocolDialog(
+      GURL("tel:12341234"), /*initiating_origin=*/absl::nullopt,
+      web_contents()->GetWeakPtr(), ui::PAGE_TRANSITION_AUTO_SUBFRAME,
+      /*has_user_gesture=*/true, /*is_in_fenced_frame_tree=*/true,
+      std::make_unique<FakeArcIntentHelperMojo>(),
+      base::BindOnce([](bool* handled, bool result) { *handled = result; },
+                     &handled));
+
+  // Wait until the bubble is visible.
+  run_loop.Run();
+  EXPECT_TRUE(handled);
+}
+
+TEST_F(ArcExternalProtocolDialogTestUtils,
+       TestDialogWithoutAppsWithDevicesInFencedFrameWithoutGesture) {
+  CreateTab(/*started_from_arc=*/false);
+
+  MockSharingService* sharing_service = CreateSharingService();
+  EXPECT_CALL(*sharing_service, GetDeviceCandidates).Times(0);
+
+  base::RunLoop run_loop;
+  ClickToCallUiController::GetOrCreateFromWebContents(web_contents())
+      ->set_on_dialog_shown_closure_for_testing(run_loop.QuitClosure());
+
+  absl::optional<bool> handled;
+  RunArcExternalProtocolDialog(
+      GURL("tel:12341234"), /*initiating_origin=*/absl::nullopt,
+      web_contents()->GetWeakPtr(), ui::PAGE_TRANSITION_AUTO_SUBFRAME,
+      /*has_user_gesture=*/false, /*is_in_fenced_frame_tree=*/true,
+      std::make_unique<FakeArcIntentHelperMojo>(),
+      base::BindOnce(
+          [](absl::optional<bool>* handled, bool result) { *handled = result; },
+          &handled));
+  EXPECT_TRUE(handled.has_value());
+  EXPECT_FALSE(*handled);
 }
 
 }  // namespace arc

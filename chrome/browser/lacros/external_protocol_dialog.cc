@@ -41,12 +41,14 @@ void ExternalProtocolHandler::RunExternalProtocolDialog(
     WebContents* web_contents,
     ui::PageTransition page_transition,
     bool has_user_gesture,
+    bool is_in_fenced_frame_tree,
     const absl::optional<url::Origin>& initiating_origin,
     content::WeakDocumentPtr initiator_document) {
   // First, check if ARC version of the dialog is available and run ARC version
   // when possible.
   arc::RunArcExternalProtocolDialog(
       url, initiating_origin, web_contents->GetWeakPtr(), page_transition,
-      has_user_gesture, std::make_unique<arc::ArcIntentHelperMojoLacros>(),
+      has_user_gesture, is_in_fenced_frame_tree,
+      std::make_unique<arc::ArcIntentHelperMojoLacros>(),
       base::BindOnce(&OnArcHandled));
 }

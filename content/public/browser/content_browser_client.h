@@ -1859,6 +1859,7 @@ class CONTENT_EXPORT ContentBrowserClient {
       int frame_tree_node_id,
       NavigationUIData* navigation_data,
       bool is_primary_main_frame,
+      bool is_in_fenced_frame_tree,
       network::mojom::WebSandboxFlags sandbox_flags,
       ui::PageTransition page_transition,
       bool has_user_gesture,

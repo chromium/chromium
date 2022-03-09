@@ -658,6 +658,8 @@ NavigationURLLoaderImpl::PrepareForNonInterceptedRequest(
       bool handled = GetContentClient()->browser()->HandleExternalProtocol(
           resource_request_->url, web_contents_getter_, frame_tree_node_id_,
           navigation_ui_data_.get(), request_info_->is_primary_main_frame,
+          FrameTreeNode::GloballyFindByID(frame_tree_node_id_)
+              ->IsInFencedFrameTree(),
           request_info_->sandbox_flags,
           static_cast<ui::PageTransition>(resource_request_->transition_type),
           resource_request_->has_user_gesture, initiating_origin,

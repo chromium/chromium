@@ -123,10 +123,15 @@ class CONTENT_EXPORT NavigationHandle : public base::SupportsUserData {
   // constant over the navigation lifetime.
   virtual bool IsInPrerenderedMainFrame() = 0;
 
-  // Prerender2
+  // Prerender2:
   // Returns true if this navigation will activate a prerendered page. It is
   // only meaningful to call this after BeginNavigation().
   virtual bool IsPrerenderedPageActivation() = 0;
+
+  // FencedFrame:
+  // Returns true if the navigation is taking place in a frame in a fenced frame
+  // tree.
+  virtual bool IsInFencedFrameTree() = 0;
 
   // Returns the type of the frame in which this navigation is taking place.
   virtual FrameType GetNavigatingFrameType() const = 0;
