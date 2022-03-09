@@ -140,8 +140,12 @@ TEST_F(BubbleViewTest, Accessibility) {
 TEST_F(BubbleViewTest, CloseButtonIsNotPresent) {
   BubbleView* bubble = [[BubbleView alloc] initWithText:longText_
                                          arrowDirection:arrowDirection_
-                                              alignment:alignment_];
-  [bubble setShowsCloseButton:NO];
+                                              alignment:alignment_
+                                       showsCloseButton:NO
+                                                  title:nil
+                                                  image:nil
+                                      showsSnoozeButton:NO
+                                               delegate:nil];
   UIView* superview = [[UIView alloc] initWithFrame:CGRectZero];
   [superview addSubview:bubble];
   UIButton* closeButton = GetCloseButton(bubble);
@@ -150,12 +154,15 @@ TEST_F(BubbleViewTest, CloseButtonIsNotPresent) {
 
 // Tests the close button action and its presence.
 TEST_F(BubbleViewTest, CloseButtonActionAndPresent) {
+  BubbleViewDelegateTest* delegate = [[BubbleViewDelegateTest alloc] init];
   BubbleView* bubble = [[BubbleView alloc] initWithText:longText_
                                          arrowDirection:arrowDirection_
-                                              alignment:alignment_];
-  BubbleViewDelegateTest* delegate = [[BubbleViewDelegateTest alloc] init];
-  [bubble setShowsCloseButton:YES];
-  [bubble setDelegate:delegate];
+                                              alignment:alignment_
+                                       showsCloseButton:YES
+                                                  title:nil
+                                                  image:nil
+                                      showsSnoozeButton:NO
+                                               delegate:delegate];
   UIView* superview = [[UIView alloc] initWithFrame:CGRectZero];
   [superview addSubview:bubble];
   UIButton* closeButton = GetCloseButton(bubble);
@@ -170,7 +177,6 @@ TEST_F(BubbleViewTest, TitleIsNotPresent) {
   BubbleView* bubble = [[BubbleView alloc] initWithText:longText_
                                          arrowDirection:arrowDirection_
                                               alignment:alignment_];
-  [bubble setTitleString:nil];
   UIView* superview = [[UIView alloc] initWithFrame:CGRectZero];
   [superview addSubview:bubble];
   UILabel* titleLabel = GetTitleLabel(bubble);
@@ -181,8 +187,12 @@ TEST_F(BubbleViewTest, TitleIsNotPresent) {
 TEST_F(BubbleViewTest, TitleIsPresentAndCorrect) {
   BubbleView* bubble = [[BubbleView alloc] initWithText:longText_
                                          arrowDirection:arrowDirection_
-                                              alignment:alignment_];
-  [bubble setTitleString:shortText_];
+                                              alignment:alignment_
+                                       showsCloseButton:NO
+                                                  title:shortText_
+                                                  image:nil
+                                      showsSnoozeButton:NO
+                                               delegate:nil];
   UIView* superview = [[UIView alloc] initWithFrame:CGRectZero];
   [superview addSubview:bubble];
   UILabel* titleLabel = GetTitleLabel(bubble);
@@ -190,12 +200,29 @@ TEST_F(BubbleViewTest, TitleIsPresentAndCorrect) {
   ASSERT_EQ(titleLabel.text, shortText_);
 }
 
+// Tests that the title is aligned correctly.
+TEST_F(BubbleViewTest, TitleIsAligned) {
+  BubbleView* bubble = [[BubbleView alloc] initWithText:longText_
+                                         arrowDirection:arrowDirection_
+                                              alignment:alignment_
+                                       showsCloseButton:NO
+                                                  title:shortText_
+                                                  image:nil
+                                      showsSnoozeButton:NO
+                                               delegate:nil];
+  UIView* superview = [[UIView alloc] initWithFrame:CGRectZero];
+  [bubble setTextAlignment:NSTextAlignmentNatural];
+  [superview addSubview:bubble];
+  UILabel* titleLabel = GetTitleLabel(bubble);
+  ASSERT_TRUE(titleLabel);
+  ASSERT_EQ(titleLabel.textAlignment, NSTextAlignmentNatural);
+}
+
 // Tests that the image is not showed when the image is empty.
 TEST_F(BubbleViewTest, ImageIsNotPresent) {
   BubbleView* bubble = [[BubbleView alloc] initWithText:longText_
                                          arrowDirection:arrowDirection_
                                               alignment:alignment_];
-  [bubble setImage:nil];
   UIView* superview = [[UIView alloc] initWithFrame:CGRectZero];
   [superview addSubview:bubble];
   UIImageView* imageView = GetImageView(bubble);
@@ -204,11 +231,15 @@ TEST_F(BubbleViewTest, ImageIsNotPresent) {
 
 // Tests that the image is present and correct.
 TEST_F(BubbleViewTest, ImageIsPresentAndCorrect) {
+  UIImage* testImage = [[UIImage alloc] init];
   BubbleView* bubble = [[BubbleView alloc] initWithText:longText_
                                          arrowDirection:arrowDirection_
-                                              alignment:alignment_];
-  UIImage* testImage = [[UIImage alloc] init];
-  [bubble setImage:testImage];
+                                              alignment:alignment_
+                                       showsCloseButton:NO
+                                                  title:nil
+                                                  image:testImage
+                                      showsSnoozeButton:NO
+                                               delegate:nil];
   UIView* superview = [[UIView alloc] initWithFrame:CGRectZero];
   [superview addSubview:bubble];
   UIImageView* imageView = GetImageView(bubble);
@@ -220,8 +251,12 @@ TEST_F(BubbleViewTest, ImageIsPresentAndCorrect) {
 TEST_F(BubbleViewTest, SnoozeButtonIsNotPresent) {
   BubbleView* bubble = [[BubbleView alloc] initWithText:longText_
                                          arrowDirection:arrowDirection_
-                                              alignment:alignment_];
-  [bubble setShowsSnoozeButton:NO];
+                                              alignment:alignment_
+                                       showsCloseButton:NO
+                                                  title:nil
+                                                  image:nil
+                                      showsSnoozeButton:NO
+                                               delegate:nil];
   UIView* superview = [[UIView alloc] initWithFrame:CGRectZero];
   [superview addSubview:bubble];
   UIButton* snoozeButton = GetSnoozeButton(bubble);
@@ -230,12 +265,15 @@ TEST_F(BubbleViewTest, SnoozeButtonIsNotPresent) {
 
 // Tests the snooze button action and its presence.
 TEST_F(BubbleViewTest, SnoozeButtonActionAndPresent) {
+  BubbleViewDelegateTest* delegate = [[BubbleViewDelegateTest alloc] init];
   BubbleView* bubble = [[BubbleView alloc] initWithText:longText_
                                          arrowDirection:arrowDirection_
-                                              alignment:alignment_];
-  BubbleViewDelegateTest* delegate = [[BubbleViewDelegateTest alloc] init];
-  [bubble setShowsSnoozeButton:YES];
-  [bubble setDelegate:delegate];
+                                              alignment:alignment_
+                                       showsCloseButton:NO
+                                                  title:nil
+                                                  image:nil
+                                      showsSnoozeButton:YES
+                                               delegate:delegate];
   UIView* superview = [[UIView alloc] initWithFrame:CGRectZero];
   [superview addSubview:bubble];
   UIButton* snoozeButton = GetSnoozeButton(bubble);

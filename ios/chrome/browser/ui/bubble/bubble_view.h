@@ -49,12 +49,24 @@ typedef NS_ENUM(NSInteger, BubbleAlignment) {
 // Speech bubble shaped view that displays a message.
 @interface BubbleView : UIView
 
-// Initialize with the given text, direction that the bubble should point, and
-// alignment of the bubble.
+// Initialize with the given text, direction that the bubble should point,
+// alignment of the bubble and optionals close button, title, image, snooze
+// button and delegate.
 - (instancetype)initWithText:(NSString*)text
               arrowDirection:(BubbleArrowDirection)direction
                    alignment:(BubbleAlignment)alignment
+            showsCloseButton:(BOOL)shouldShowCloseButton
+                       title:(NSString*)titleString
+                       image:(UIImage*)image
+           showsSnoozeButton:(BOOL)shouldShowSnoozeButton
+                    delegate:(id<BubbleViewDelegate>)delegate
     NS_DESIGNATED_INITIALIZER;
+
+// Initialize with the given text, direction that the bubble should point, and
+// alignment of the bubble. Optional arguments are set to nil.
+- (instancetype)initWithText:(NSString*)text
+              arrowDirection:(BubbleArrowDirection)direction
+                   alignment:(BubbleAlignment)alignment;
 
 - (instancetype)initWithFrame:(CGRect)frame NS_UNAVAILABLE;
 
@@ -62,27 +74,8 @@ typedef NS_ENUM(NSInteger, BubbleAlignment) {
 
 - (instancetype)init NS_UNAVAILABLE;
 
-// Controls if there is a close button in the view. Must be set before the view
-// is added to a superview.
-@property(nonatomic) BOOL showsCloseButton;
-
-// The headline of the bubble. If set, makes the body's font smaller. Must be
-// set before the view is added to a superview.
-@property(nonatomic, copy) NSString* titleString;
-
 // Text alignment used in this View. Default is NSTextAlignmentCenter.
 @property(nonatomic) NSTextAlignment textAlignment;
-
-// The image displayed alongside the text. Must be set before the view is added
-// to a superview.
-@property(nonatomic, strong) UIImage* image;
-
-// Controls if there is a snooze button in the view. Must be set before the view
-// is added to a superview. Default is NO.
-@property(nonatomic) BOOL showsSnoozeButton;
-
-// The delegate for interactions in this View.
-@property(nonatomic, weak) id<BubbleViewDelegate> delegate;
 
 @end
 

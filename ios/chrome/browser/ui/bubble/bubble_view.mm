@@ -96,9 +96,9 @@ const CGFloat kSnoozeButtonFontSize = 15.0f;
 
 @interface BubbleView ()
 // Label containing the text displayed on the bubble.
-@property(nonatomic, strong) UILabel* label;
+@property(nonatomic, strong, readonly) UILabel* label;
 // Label containing the title displayed on the bubble.
-@property(nonatomic, strong) UILabel* titleLabel;
+@property(nonatomic, strong, readonly) UILabel* titleLabel;
 // Pill-shaped view in the background of the bubble.
 @property(nonatomic, strong, readonly) UIView* background;
 // Triangular arrow that points to the target UI element.
@@ -108,17 +108,26 @@ const CGFloat kSnoozeButtonFontSize = 15.0f;
 // Optional snooze button displayed on the bubble.
 @property(nonatomic, strong, readonly) UIButton* snoozeButton;
 // Optional image displayed at the leading edge of the bubble.
-@property(nonatomic, strong) UIImageView* imageView;
+@property(nonatomic, strong, readonly) UIImageView* imageView;
 // Triangular shape, the backing layer for the arrow.
 @property(nonatomic, weak) CAShapeLayer* arrowLayer;
 @property(nonatomic, assign, readonly) BubbleArrowDirection direction;
 @property(nonatomic, assign, readonly) BubbleAlignment alignment;
 // Indicate whether view properties need to be added as subviews of the bubble.
 @property(nonatomic, assign) BOOL needsAddSubviews;
+
+// Controls if there is a close button in the view.
+@property(nonatomic, readonly) BOOL showsCloseButton;
+// Controls if there is a snooze button in the view.
+@property(nonatomic, readonly) BOOL showsSnoozeButton;
+// The delegate for interactions in this View.
+@property(nonatomic, weak, readonly) id<BubbleViewDelegate> delegate;
+
 @end
 
 @implementation BubbleView
 @synthesize label = _label;
+@synthesize titleLabel = _titleLabel;
 @synthesize background = _background;
 @synthesize arrow = _arrow;
 @synthesize direction = _direction;
@@ -129,33 +138,47 @@ const CGFloat kSnoozeButtonFontSize = 15.0f;
 
 - (instancetype)initWithText:(NSString*)text
               arrowDirection:(BubbleArrowDirection)direction
-                   alignment:(BubbleAlignment)alignment {
+                   alignment:(BubbleAlignment)alignment
+            showsCloseButton:(BOOL)shouldShowCloseButton
+                       title:(NSString*)titleString
+                       image:(UIImage*)image
+           showsSnoozeButton:(BOOL)shouldShowSnoozeButton
+                    delegate:(id<BubbleViewDelegate>)delegate {
   self = [super initWithFrame:CGRectZero];
   if (self) {
     _direction = direction;
     _alignment = alignment;
     _label = [BubbleView labelWithText:text];
+    if (titleString && titleString.length > 0) {
+      _titleLabel = [BubbleView titleLabelWithText:titleString];
+      [_label
+          setFont:[UIFont preferredFontForTextStyle:UIFontTextStyleFootnote]];
+    }
+    if (image) {
+      _imageView = [BubbleView imageViewWithImage:image];
+    }
+    _showsCloseButton = shouldShowCloseButton;
+    _showsSnoozeButton = shouldShowSnoozeButton;
+    _delegate = delegate;
     _needsAddSubviews = YES;
-    _showsCloseButton = NO;
-    _showsSnoozeButton = NO;
   }
   return self;
 }
 
-#pragma mark - Public
-
-- (void)setTitleString:(NSString*)titleString {
-  _titleString = [titleString copy];
-  if (titleString.length > 0) {
-    _titleLabel = [BubbleView titleLabelWithText:_titleString];
-    [self.label
-        setFont:[UIFont preferredFontForTextStyle:UIFontTextStyleFootnote]];
-  } else {
-    _titleLabel = nil;
-    [self.label
-        setFont:[UIFont preferredFontForTextStyle:UIFontTextStyleSubheadline]];
-  }
+- (instancetype)initWithText:(NSString*)text
+              arrowDirection:(BubbleArrowDirection)direction
+                   alignment:(BubbleAlignment)alignment {
+  return [self initWithText:text
+             arrowDirection:direction
+                  alignment:alignment
+           showsCloseButton:NO
+                      title:nil
+                      image:nil
+          showsSnoozeButton:NO
+                   delegate:nil];
 }
+
+#pragma mark - Public
 
 - (NSTextAlignment)textAlignment {
   return self.label.textAlignment;
@@ -164,15 +187,13 @@ const CGFloat kSnoozeButtonFontSize = 15.0f;
 - (void)setTextAlignment:(NSTextAlignment)textAlignment {
   [self.label setTextAlignment:textAlignment];
   [self.titleLabel setTextAlignment:textAlignment];
-}
-
-- (void)setImage:(UIImage*)image {
-  if (image) {
-    self.imageView = [BubbleView imageViewWithImage:image];
-  } else {
-    self.imageView = nil;
+  if (self.showsSnoozeButton) {
+    UIControlContentHorizontalAlignment buttonAlignment =
+        textAlignment == NSTextAlignmentCenter
+            ? UIControlContentHorizontalAlignmentCenter
+            : UIControlContentHorizontalAlignmentLeading;
+    [self.snoozeButton setContentHorizontalAlignment:buttonAlignment];
   }
-  _image = image;
 }
 
 #pragma mark - Private property accessors
