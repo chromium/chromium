@@ -1,15 +1,68 @@
 // Copyright 2021 The Chromium Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
+//
+// How dynamic assets are handled:
+//
+// Terminology:
+// "Position" - A physical location on the screen where a dynamic asset appears.
+// Its identifier is arbitrary, opaque, and embedded in the dynamic asset's id.
+//
+// "Index"- There shall be 1 or more assets assigned to each position. For
+// example, if an animation has a cross-fade transition from image 1 to image 2,
+// there may be 2 dynamic assets in the animation that share the same position.
+// However, their indices will be different. Example:
+// "_CrOS_Photo_PositionA_1" (Index 1 Position A)
+// "_CrOS_Photo_PositionA_2" (Index 2 Position A)
+// ...
+//
+// Now we'll step through an example with 2 positions and 2 assets per position:
+// "_CrOS_Photo_PositionA_1"
+// "_CrOS_Photo_PositionA_2"
+// "_CrOS_Photo_PositionB_1"
+// "_CrOS_Photo_PositionB_2"
+//
+// On the very first frame, the provider assigns a topic to each asset in the
+// model using all topics available in the model:
+// "_CrOS_Photo_PositionA_1" -> "TopicA"
+// "_CrOS_Photo_PositionA_2" -> "TopicB"
+// "_CrOS_Photo_PositionB_1" -> "TopicC"
+// "_CrOS_Photo_PositionB_2" -> "TopicD"
+//
+// At the start of each new animation cycle, the provider first "rotates" the
+// topics at each position. The topic previously assigned to asset with index
+// <i + 1> is now assigned to asset with index <i> for all <i> at a given
+// position. After rotation, the asset with the highest index at each position
+// is left without an assigned topic:
+// "_CrOS_Photo_PositionA_1" -> "TopicB"
+// "_CrOS_Photo_PositionA_2" -> ???
+// "_CrOS_Photo_PositionB_1" -> "TopicD"
+// "_CrOS_Photo_PositionB_2" -> ???
+//
+// The provider then pulls the latest 2 topics from the model (since there are
+// 2 assets left now without an assigned topic), and assigns a new topic to
+// those assets.
+// "_CrOS_Photo_PositionA_1" -> "TopicB"
+// "_CrOS_Photo_PositionA_2" -> "TopicE" (new)
+// "_CrOS_Photo_PositionB_1" -> "TopicD"
+// "_CrOS_Photo_PositionB_2" -> "TopicF" (new)
+//
+// The process above repeats for each new animation cycle. Note the process
+// generalizes to the simplest case where there is only 1 assigned topic per
+// position. Rotation will just leave all assets in the animation without an
+// assigned topic.
 
 #include "ash/ambient/model/ambient_animation_photo_provider.h"
 
+#include <algorithm>
 #include <functional>
+#include <iterator>
 #include <string>
 #include <utility>
 #include <vector>
 
 #include "ash/ambient/resources/ambient_animation_static_resources.h"
+#include "ash/ambient/util/ambient_util.h"
 #include "ash/utility/cropping_util.h"
 #include "ash/utility/lottie_util.h"
 #include "base/bind.h"
@@ -17,6 +70,7 @@
 #include "base/check.h"
 #include "base/logging.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/notreached.h"
 #include "base/numerics/ranges.h"
 #include "base/rand_util.h"
 #include "cc/paint/paint_flags.h"
@@ -91,14 +145,16 @@ class StaticImageAssetImpl : public cc::SkottieFrameDataProvider::ImageAsset {
 // * The photos should be shuffled among the assets between animation cycles.
 class DynamicImageProvider {
  public:
-  explicit DynamicImageProvider(
-      const base::circular_deque<PhotoWithDetails>& all_available_topics) {
+  using TopicReferenceVector =
+      std::vector<std::reference_wrapper<const PhotoWithDetails>>;
+
+  explicit DynamicImageProvider(TopicReferenceVector all_available_topics) {
     DCHECK(!all_available_topics.empty())
         << "Animation should not have started rendering without any decoded "
            "photos in the model.";
-    TopicReferenceVector all_available_topics_shuffled =
-        ShuffleTopics(all_available_topics);
-    for (auto& topic_ref : all_available_topics_shuffled) {
+    base::RandomShuffle(all_available_topics.begin(),
+                        all_available_topics.end());
+    for (auto& topic_ref : all_available_topics) {
       // Note the AmbientPhotoConfig for animations states that topics from IMAX
       // containing primary and related photos should be split into 2. So the
       // related photo should always be null (hence no point in reading it).
@@ -129,9 +185,6 @@ class DynamicImageProvider {
   }
 
  private:
-  using TopicReferenceVector =
-      std::vector<std::reference_wrapper<const PhotoWithDetails>>;
-
   struct TopicSet {
     // Not mutated after DynamicImageProvider's constructor.
     TopicReferenceVector topics;
@@ -139,16 +192,6 @@ class DynamicImageProvider {
     // 0 when all topics from all TopicSets have been exhausted.
     size_t current_topic_idx = 0;
   };
-
-  static TopicReferenceVector ShuffleTopics(
-      const base::circular_deque<PhotoWithDetails>& all_available_topics) {
-    TopicReferenceVector topics_shuffled;
-    for (const PhotoWithDetails& topic : all_available_topics) {
-      topics_shuffled.push_back(std::cref(topic));
-    }
-    base::RandomShuffle(topics_shuffled.begin(), topics_shuffled.end());
-    return topics_shuffled;
-  }
 
   static bool IsPortrait(const gfx::Size& size) {
     DCHECK(!size.IsEmpty());
@@ -196,6 +239,12 @@ class AmbientAnimationPhotoProvider::DynamicImageAssetImpl
       const base::WeakPtr<AmbientAnimationPhotoProvider>& provider)
       : asset_id_(asset_id), size_(std::move(size)), provider_(provider) {
     DCHECK(provider_);
+    if (!ambient::util::ParseDynamicLottieAssetId(asset_id, position_id_,
+                                                  idx_)) {
+      LOG(DFATAL) << "Animation file is invalid. Failed to parse dynamic "
+                     "image asset id "
+                  << asset_id;
+    }
     if (!size_)
       DLOG(ERROR) << "Dimensions unavailable for dynamic asset " << asset_id_;
   }
@@ -229,9 +278,19 @@ class AmbientAnimationPhotoProvider::DynamicImageAssetImpl
     return current_frame_data_;
   }
 
+  PhotoWithDetails ExtractAssignedTopic() {
+    current_frame_data_ = cc::SkottieFrameData();
+    current_frame_data_scale_factor_ = kImageScaleFactorInvalid;
+    return std::move(current_topic_);
+  }
+
+  bool HasAssignedTopic() const { return !current_topic_.photo.isNull(); }
+
   const absl::optional<gfx::Size>& size() const { return size_; }
 
   const std::string& asset_id() const { return asset_id_; }
+  const std::string& position_id() const { return position_id_; }
+  int idx() const { return idx_; }
 
  private:
   static constexpr float kAnimationTimestampInvalid = -1.f;
@@ -278,11 +337,12 @@ class AmbientAnimationPhotoProvider::DynamicImageAssetImpl
   }
 
   const std::string asset_id_;
+  std::string position_id_;
+  int idx_;
   const absl::optional<gfx::Size> size_;
   const base::WeakPtr<AmbientAnimationPhotoProvider> provider_;
   // Last animation frame timestamp that was observed.
   float last_observed_animation_timestamp_ = kAnimationTimestampInvalid;
-  gfx::ImageSkia new_image_;
   cc::SkottieFrameData current_frame_data_;
   float current_frame_data_scale_factor_ = kImageScaleFactorInvalid;
   // The original topic off of which |current_frame_data_| was built. May have
@@ -290,6 +350,14 @@ class AmbientAnimationPhotoProvider::DynamicImageAssetImpl
   // scale factor is required while rendering.
   PhotoWithDetails current_topic_;
 };
+
+bool AmbientAnimationPhotoProvider::OrderDynamicAssetsByIdx::operator()(
+    const scoped_refptr<DynamicImageAssetImpl>& asset_l,
+    const scoped_refptr<DynamicImageAssetImpl>& asset_r) const {
+  DCHECK(asset_l);
+  DCHECK(asset_r);
+  return asset_l->idx() < asset_r->idx();
+}
 
 AmbientAnimationPhotoProvider::AmbientAnimationPhotoProvider(
     const AmbientAnimationStaticResources* static_resources,
@@ -312,9 +380,12 @@ AmbientAnimationPhotoProvider::LoadImageAsset(
   // when the animation is initially loaded. So the set of assets does not
   // change once the animation starts rendering.
   if (IsCustomizableLottieId(asset_id)) {
-    dynamic_assets_.push_back(base::MakeRefCounted<DynamicImageAssetImpl>(
-        asset_id, size, weak_factory_.GetWeakPtr()));
-    return dynamic_assets_.back();
+    auto dynamic_asset = base::MakeRefCounted<DynamicImageAssetImpl>(
+        asset_id, size, weak_factory_.GetWeakPtr());
+    dynamic_assets_per_position_[dynamic_asset->position_id()].insert(
+        dynamic_asset);
+    ++total_num_dynamic_assets_;
+    return dynamic_asset;
   } else {
     // For static assets, the |size| isn't needed. It should match the size of
     // the image loaded from animation's |static_resources_| since that is the
@@ -355,11 +426,19 @@ AmbientAnimationPhotoProvider::GenerateNextTopicForDynamicAsset(
   DCHECK(pending_dynamic_asset_topics_.empty())
       << "All pending topics should have been returned before the first frame "
          "of each animation cycle.";
-  DynamicImageProvider image_provider(backend_model_->all_decoded_topics());
-  for (const auto& dynamic_asset : dynamic_assets_) {
-    pending_dynamic_asset_topics_.emplace(
-        dynamic_asset.get(),
-        image_provider.GetTopicForAssetSize(dynamic_asset->size()));
+  RotateDynamicAssetTopics();
+  DynamicImageProvider image_provider(GetTopicsToChooseFrom());
+  for (const auto& [_, dynamic_asset_set] : dynamic_assets_per_position_) {
+    for (const auto& dynamic_asset : dynamic_asset_set) {
+      bool asset_already_has_assigned_topic =
+          pending_dynamic_asset_topics_.contains(dynamic_asset.get());
+      if (asset_already_has_assigned_topic)
+        continue;
+
+      pending_dynamic_asset_topics_.emplace(
+          dynamic_asset.get(),
+          image_provider.GetTopicForAssetSize(dynamic_asset->size()));
+    }
   }
   NotifyObserverOfNewTopics();
   topic_for_target_asset = ExtractPendingTopicForDynamicAsset(target_asset);
@@ -380,6 +459,50 @@ AmbientAnimationPhotoProvider::ExtractPendingTopicForDynamicAsset(
     pending_dynamic_asset_topics_.erase(pending_topic_iter);
     return pending_topic;
   }
+}
+
+// For each position, the topic assigned to asset with index <i + 1> gets
+// assigned to the asset with index <i>. Ultimately, the asset with the highest
+// index at each position is left without an assigned topic. See comments at
+// the top of the file for an example.
+void AmbientAnimationPhotoProvider::RotateDynamicAssetTopics() {
+  for (const auto& [_, dynamic_asset_set] : dynamic_assets_per_position_) {
+    DCHECK(!dynamic_asset_set.empty());
+    auto current_asset = dynamic_asset_set.begin();
+    auto next_asset = std::next(current_asset);
+    for (; next_asset != dynamic_asset_set.end();
+         ++current_asset, ++next_asset) {
+      // HasAssignedTopic() should only be false on the very first frame.
+      if ((*next_asset)->HasAssignedTopic()) {
+        pending_dynamic_asset_topics_[current_asset->get()] =
+            (*next_asset)->ExtractAssignedTopic();
+      }
+    }
+  }
+}
+
+std::vector<std::reference_wrapper<const PhotoWithDetails>>
+AmbientAnimationPhotoProvider::GetTopicsToChooseFrom() const {
+  const base::circular_deque<PhotoWithDetails>& all_available_topics =
+      backend_model_->all_decoded_topics();
+  size_t num_assets_without_assigned_topic =
+      total_num_dynamic_assets_ - pending_dynamic_asset_topics_.size();
+  // Clamp |num_assets_without_assigned_topic| in case the controller is having
+  // a hard time preparing new topics (ex: network congestion) and there are
+  // minimal topics in the model (1 is the bare minimum).
+  size_t num_available_topics = all_available_topics.size();
+  size_t num_topics_to_choose_from =
+      std::min(num_assets_without_assigned_topic, num_available_topics);
+  // |all_available_topics| is ordered from least recent to most recent, so
+  // choose from the topics beginning at the end of the queue.
+  std::vector<std::reference_wrapper<const PhotoWithDetails>>
+      topics_to_choose_from;
+  auto range_begin = all_available_topics.rbegin();
+  auto range_end = range_begin + num_topics_to_choose_from;
+  for (auto topic_iter = range_begin; topic_iter != range_end; ++topic_iter) {
+    topics_to_choose_from.push_back(std::cref(*topic_iter));
+  }
+  return topics_to_choose_from;
 }
 
 void AmbientAnimationPhotoProvider::NotifyObserverOfNewTopics() {

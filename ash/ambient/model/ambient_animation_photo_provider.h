@@ -6,11 +6,13 @@
 #define ASH_AMBIENT_MODEL_AMBIENT_ANIMATION_PHOTO_PROVIDER_H_
 
 #include <functional>
+#include <string>
 #include <vector>
 
 #include "ash/ambient/model/ambient_backend_model.h"
 #include "ash/ash_export.h"
 #include "base/containers/flat_map.h"
+#include "base/containers/flat_set.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
@@ -67,17 +69,32 @@ class ASH_EXPORT AmbientAnimationPhotoProvider
  private:
   class DynamicImageAssetImpl;
 
+  struct OrderDynamicAssetsByIdx {
+    bool operator()(const scoped_refptr<DynamicImageAssetImpl>& asset_l,
+                    const scoped_refptr<DynamicImageAssetImpl>& asset_r) const;
+  };
+
+  using DynamicAssetSet = base::flat_set<scoped_refptr<DynamicImageAssetImpl>,
+                                         OrderDynamicAssetsByIdx>;
+
   PhotoWithDetails GenerateNextTopicForDynamicAsset(
       const DynamicImageAssetImpl& asset);
   PhotoWithDetails ExtractPendingTopicForDynamicAsset(
       const DynamicImageAssetImpl& asset);
+  void RotateDynamicAssetTopics();
+
+  std::vector<std::reference_wrapper<const PhotoWithDetails>>
+  GetTopicsToChooseFrom() const;
+
   void NotifyObserverOfNewTopics();
 
   // Unowned pointers. Must outlive the |AmbientAnimationPhotoProvider|.
   const AmbientAnimationStaticResources* const static_resources_;
   const AmbientBackendModel* const backend_model_;
 
-  std::vector<scoped_refptr<DynamicImageAssetImpl>> dynamic_assets_;
+  base::flat_map</*position_id*/ std::string, DynamicAssetSet>
+      dynamic_assets_per_position_;
+  size_t total_num_dynamic_assets_ = 0;
   base::flat_map<const DynamicImageAssetImpl*, PhotoWithDetails>
       pending_dynamic_asset_topics_;
   base::ObserverList<Observer> observers_;

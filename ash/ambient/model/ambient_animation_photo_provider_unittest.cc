@@ -36,6 +36,7 @@ using ::testing::AllOf;
 using ::testing::AnyOf;
 using ::testing::Each;
 using ::testing::ElementsAre;
+using ::testing::Invoke;
 using ::testing::IsSubsetOf;
 using ::testing::Key;
 using ::testing::Mock;
@@ -53,6 +54,13 @@ constexpr float kTestScaleFactor = 1;
 MATCHER_P2(HasImageDimensions, width, height, "") {
   return arg.image.GetSkImageInfo().width() == width &&
          arg.image.GetSkImageInfo().height() == height;
+}
+
+MATCHER_P(MatchesDimensionsFrom, other, "") {
+  return arg.image.GetSkImageInfo().width() ==
+             other.image.GetSkImageInfo().width() &&
+         arg.image.GetSkImageInfo().height() ==
+             other.image.GetSkImageInfo().height();
 }
 
 MATCHER_P(TopicHasDetails, expected_details, "") {
@@ -89,19 +97,19 @@ class AmbientAnimationPhotoProviderTest : public ::testing::Test {
  protected:
   static constexpr int kNumDynamicAssets = 4;
 
-  AmbientAnimationPhotoProviderTest()
-      : model_(
+  explicit AmbientAnimationPhotoProviderTest(
+      std::array<std::string, kNumDynamicAssets> dynamic_asset_ids =
+          GetDefaultDynamicAssetIds())
+      : dynamic_asset_ids_(dynamic_asset_ids),
+        model_(
             CreateAmbientAnimationPhotoConfig(BuildSkottieResourceMetadata())),
         provider_(&static_resources_, &model_) {}
 
   cc::SkottieResourceMetadataMap BuildSkottieResourceMetadata() const {
     cc::SkottieResourceMetadataMap resource_metadata;
-    char position_id = 'A';
-    for (int i = 0; i < kNumDynamicAssets; ++i, ++position_id) {
+    for (int i = 0; i < kNumDynamicAssets; ++i) {
       CHECK(resource_metadata.RegisterAsset(
-          "dummy-resource-path", "dummy-resource-name",
-          GenerateLottieDynamicAssetIdForTesting(
-              /*position=*/std::string(1, position_id), /*idx=*/1),
+          "dummy-resource-path", "dummy-resource-name", dynamic_asset_ids_[i],
           /*size=*/absl::nullopt));
     }
     return resource_metadata;
@@ -133,9 +141,7 @@ class AmbientAnimationPhotoProviderTest : public ::testing::Test {
     for (int asset_idx = 0; asset_idx < kNumDynamicAssets;
          ++asset_idx, ++position_id) {
       all_assets.push_back(
-          LoadAsset(GenerateLottieDynamicAssetIdForTesting(
-                        /*position=*/std::string(1, position_id), /*idx=*/1),
-                    asset_sizes[asset_idx]));
+          LoadAsset(dynamic_asset_ids_[asset_idx], asset_sizes[asset_idx]));
     }
     return all_assets;
   }
@@ -158,6 +164,21 @@ class AmbientAnimationPhotoProviderTest : public ::testing::Test {
     return all_frame_data;
   }
 
+  static std::array<std::string, kNumDynamicAssets>
+  GetDefaultDynamicAssetIds() {
+    return {
+        GenerateLottieDynamicAssetIdForTesting(
+            /*position=*/"A", /*idx=*/1),
+        GenerateLottieDynamicAssetIdForTesting(
+            /*position=*/"B", /*idx=*/1),
+        GenerateLottieDynamicAssetIdForTesting(
+            /*position=*/"C", /*idx=*/1),
+        GenerateLottieDynamicAssetIdForTesting(
+            /*position=*/"D", /*idx=*/1),
+    };
+  }
+
+  const std::array<std::string, kNumDynamicAssets> dynamic_asset_ids_;
   base::test::TaskEnvironment task_environment_;
   AmbientBackendModel model_;
   FakeAmbientAnimationStaticResources static_resources_;
@@ -502,6 +523,166 @@ TEST_F(AmbientAnimationPhotoProviderTest, LoadsDifferentImageScaleFactor) {
                                      /*scale=*/kTestScaleFactor * 2);
   ASSERT_THAT(frame_data, SizeIs(kNumDynamicAssets));
   EXPECT_THAT(frame_data, Each(HasImageDimensions(20, 20)));
+}
+
+class AmbientAnimationPhotoProviderTestMultipleAssetsPerPosition
+    : public AmbientAnimationPhotoProviderTest {
+ protected:
+  enum AssetIdx {
+    kPositionAIdx1 = 0,
+    kPositionAIdx2,
+    kPositionBIdx1,
+    kPositionBIdx2,
+  };
+
+  AmbientAnimationPhotoProviderTestMultipleAssetsPerPosition()
+      : AmbientAnimationPhotoProviderTest(GetDynamicAssetIds()) {}
+
+ private:
+  static std::array<std::string, kNumDynamicAssets> GetDynamicAssetIds() {
+    return {
+        GenerateLottieDynamicAssetIdForTesting(
+            /*position=*/"A", /*idx=*/1),
+        GenerateLottieDynamicAssetIdForTesting(
+            /*position=*/"A", /*idx=*/2),
+        GenerateLottieDynamicAssetIdForTesting(
+            /*position=*/"B", /*idx=*/1),
+        GenerateLottieDynamicAssetIdForTesting(
+            /*position=*/"B", /*idx=*/2),
+    };
+  }
+};
+
+TEST_F(AmbientAnimationPhotoProviderTestMultipleAssetsPerPosition,
+       RefreshesDynamicAssetsAtStartOfCycle) {
+  AddImageToModel(gfx::test::CreateImageSkia(/*width=*/10, /*height=*/10));
+  AddImageToModel(gfx::test::CreateImageSkia(/*width=*/11, /*height=*/11));
+  AddImageToModel(gfx::test::CreateImageSkia(/*width=*/12, /*height=*/12));
+  AddImageToModel(gfx::test::CreateImageSkia(/*width=*/13, /*height=*/13));
+
+  scoped_refptr<ImageAsset> asset_a_1 =
+      LoadAsset(dynamic_asset_ids_[kPositionAIdx1]);
+  scoped_refptr<ImageAsset> asset_a_2 =
+      LoadAsset(dynamic_asset_ids_[kPositionAIdx2]);
+  scoped_refptr<ImageAsset> asset_b_1 =
+      LoadAsset(dynamic_asset_ids_[kPositionBIdx1]);
+  scoped_refptr<ImageAsset> asset_b_2 =
+      LoadAsset(dynamic_asset_ids_[kPositionBIdx2]);
+  std::vector<scoped_refptr<ImageAsset>> all_assets(kNumDynamicAssets);
+  all_assets[kPositionAIdx1] = asset_a_1;
+  all_assets[kPositionAIdx2] = asset_a_2;
+  all_assets[kPositionBIdx1] = asset_b_1;
+  all_assets[kPositionBIdx2] = asset_b_2;
+
+  // Cycle 0 Frame 0
+  std::vector<cc::SkottieFrameData> frame_data =
+      GetFrameDataForAssets(all_assets, /*timestamp=*/0);
+  EXPECT_THAT(frame_data, UnorderedElementsAre(HasImageDimensions(10, 10),
+                                               HasImageDimensions(11, 11),
+                                               HasImageDimensions(12, 12),
+                                               HasImageDimensions(13, 13)));
+
+  // Cycle 0 Frame 1
+  frame_data = GetFrameDataForAssets(all_assets, /*timestamp=*/1);
+  EXPECT_THAT(frame_data, UnorderedElementsAre(HasImageDimensions(10, 10),
+                                               HasImageDimensions(11, 11),
+                                               HasImageDimensions(12, 12),
+                                               HasImageDimensions(13, 13)));
+
+  cc::SkottieFrameData asset_a_2_previous = frame_data[kPositionAIdx2];
+  cc::SkottieFrameData asset_b_2_previous = frame_data[kPositionBIdx2];
+
+  AddImageToModel(gfx::test::CreateImageSkia(/*width=*/20, /*height=*/20));
+  AddImageToModel(gfx::test::CreateImageSkia(/*width=*/21, /*height=*/21));
+
+  // Cycle 1 Frame 0
+  frame_data = GetFrameDataForAssets(all_assets, /*timestamp=*/0);
+  EXPECT_THAT(frame_data[kPositionAIdx1],
+              MatchesDimensionsFrom(asset_a_2_previous));
+  EXPECT_THAT(frame_data[kPositionBIdx1],
+              MatchesDimensionsFrom(asset_b_2_previous));
+  std::vector<cc::SkottieFrameData> idx_2_assets = {frame_data[kPositionAIdx2],
+                                                    frame_data[kPositionBIdx2]};
+  EXPECT_THAT(idx_2_assets, UnorderedElementsAre(HasImageDimensions(20, 20),
+                                                 HasImageDimensions(21, 21)));
+
+  // Cycle 1 Frame 1
+  frame_data = GetFrameDataForAssets(all_assets, /*timestamp=*/0);
+  EXPECT_THAT(frame_data[kPositionAIdx1],
+              MatchesDimensionsFrom(asset_a_2_previous));
+  EXPECT_THAT(frame_data[kPositionBIdx1],
+              MatchesDimensionsFrom(asset_b_2_previous));
+  idx_2_assets = {frame_data[kPositionAIdx2], frame_data[kPositionBIdx2]};
+  EXPECT_THAT(idx_2_assets, UnorderedElementsAre(HasImageDimensions(20, 20),
+                                                 HasImageDimensions(21, 21)));
+}
+
+TEST_F(AmbientAnimationPhotoProviderTestMultipleAssetsPerPosition,
+       NotifiesObserversWhenDynamicAssetsRefreshed) {
+  MockObserver observer(&provider_);
+
+  gfx::ImageSkia test_image =
+      gfx::test::CreateImageSkia(/*width=*/10, /*height=*/10);
+  AddImageToModel(test_image, "attribution-a");
+  AddImageToModel(test_image, "attribution-b");
+  AddImageToModel(test_image, "attribution-c");
+  AddImageToModel(test_image, "attribution-d");
+
+  std::vector<scoped_refptr<ImageAsset>> all_assets = LoadAllDynamicAssets();
+
+  std::string asset_a_2_prev_attribution;
+  std::string asset_b_2_prev_attribution;
+  // Cycle 0 Frame 0
+  EXPECT_CALL(
+      observer,
+      OnDynamicImageAssetsRefreshed(AllOf(
+          ElementsAre(Key(dynamic_asset_ids_[kPositionAIdx1]),
+                      Key(dynamic_asset_ids_[kPositionAIdx2]),
+                      Key(dynamic_asset_ids_[kPositionBIdx1]),
+                      Key(dynamic_asset_ids_[kPositionBIdx2])),
+          UnorderedElementsAre(Pair(_, TopicHasDetails("attribution-a")),
+                               Pair(_, TopicHasDetails("attribution-b")),
+                               Pair(_, TopicHasDetails("attribution-c")),
+                               Pair(_, TopicHasDetails("attribution-d"))))))
+      .WillOnce(Invoke(
+          [&](const base::flat_map<
+              std::string, std::reference_wrapper<const PhotoWithDetails>>&
+                  new_topics) {
+            asset_a_2_prev_attribution =
+                new_topics.at(dynamic_asset_ids_[kPositionAIdx2]).get().details;
+            asset_b_2_prev_attribution =
+                new_topics.at(dynamic_asset_ids_[kPositionBIdx2]).get().details;
+          }));
+  GetFrameDataForAssets(all_assets, /*timestamp=*/0);
+  Mock::VerifyAndClearExpectations(&observer);
+
+  // Cycle 0 Frame 1
+  EXPECT_CALL(observer, OnDynamicImageAssetsRefreshed(_)).Times(0);
+  GetFrameDataForAssets(all_assets, /*timestamp=*/1);
+  Mock::VerifyAndClearExpectations(&observer);
+
+  AddImageToModel(test_image, "attribution-e");
+  AddImageToModel(test_image, "attribution-f");
+
+  // Cycle 1 Frame 0
+  EXPECT_CALL(observer, OnDynamicImageAssetsRefreshed(ElementsAre(
+                            Pair(dynamic_asset_ids_[kPositionAIdx1],
+                                 TopicHasDetails(asset_a_2_prev_attribution)),
+                            Pair(dynamic_asset_ids_[kPositionAIdx2],
+                                 AnyOf(TopicHasDetails("attribution-e"),
+                                       TopicHasDetails("attribution-f"))),
+                            Pair(dynamic_asset_ids_[kPositionBIdx1],
+                                 TopicHasDetails(asset_b_2_prev_attribution)),
+                            Pair(dynamic_asset_ids_[kPositionBIdx2],
+                                 AnyOf(TopicHasDetails("attribution-e"),
+                                       TopicHasDetails("attribution-f"))))));
+  GetFrameDataForAssets(all_assets, /*timestamp=*/0);
+  Mock::VerifyAndClearExpectations(&observer);
+
+  // Cycle 1 Frame 1
+  EXPECT_CALL(observer, OnDynamicImageAssetsRefreshed(_)).Times(0);
+  GetFrameDataForAssets(all_assets, /*timestamp=*/1);
+  Mock::VerifyAndClearExpectations(&observer);
 }
 
 }  // namespace ash
