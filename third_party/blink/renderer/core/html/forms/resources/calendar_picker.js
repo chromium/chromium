@@ -1406,31 +1406,27 @@ class FlingGestureAnimator extends Animator {
 
 // ----------------------------------------------------------------
 
-/**
- * @constructor
- * @extends EventEmitter
- * @param {?Element} element
- * View adds itself as a property on the element so we can access it from Event.target.
- */
-function View(element) {
-  EventEmitter.call(this);
+class View extends EventEmitter {
   /**
-   * @type {Element}
-   * @const
+   * @param {?Element} element
+   * View adds itself as a property on the element so we can access it from Event.target.
    */
-  this.element = element || createElement('div');
-  this.element.$view = this;
-  this.bindCallbackMethods();
-}
-
-{
-  View.prototype = Object.create(EventEmitter.prototype);
+  constructor(element) {
+    super();
+    /**
+     * @type {Element}
+     * @const
+     */
+    this.element = element || createElement('div');
+    this.element.$view = this;
+    this.bindCallbackMethods();
+  }
 
   /**
    * @param {!Element} ancestorElement
    * @return {?Object}
    */
-  View.prototype.offsetRelativeTo = function(ancestorElement) {
+  offsetRelativeTo(ancestorElement) {
     var x = 0;
     var y = 0;
     var element = this.element;
@@ -1442,13 +1438,13 @@ function View(element) {
         return {x: x, y: y};
     }
     return null;
-  };
+  }
 
   /**
    * @param {!View|Node} parent
    * @param {?View|Node=} before
    */
-  View.prototype.attachTo = function(parent, before) {
+  attachTo(parent, before) {
     if (parent instanceof View)
       return this.attachTo(parent.element, before);
     if (typeof before === 'undefined')
@@ -1456,9 +1452,9 @@ function View(element) {
     if (before instanceof View)
       before = before.element;
     parent.insertBefore(this.element, before);
-  };
+  }
 
-  View.prototype.bindCallbackMethods = function() {
+  bindCallbackMethods() {
     for (var methodName in this) {
       if (!/^on[A-Z]/.test(methodName))
         continue;
@@ -1469,7 +1465,7 @@ function View(element) {
         continue;
       this[methodName] = method.bind(this);
     }
-  };
+  }
 }
 
 // ----------------------------------------------------------------
@@ -3196,36 +3192,34 @@ class YearListView extends dateRangeManagerMixin(ListView) {
   }
 }
 
-/**
- * @constructor
- * @extends View
- * @param {!Month} minimumMonth
- * @param {!Month} maximumMonth
- */
-function MonthPopupView(minimumMonth, maximumMonth) {
-  View.call(this, createElement('div', MonthPopupView.ClassNameMonthPopupView));
+// ----------------------------------------------------------------
 
+class MonthPopupView extends View {
   /**
-   * @type {!YearListView}
-   * @const
+   * @param {!Month} minimumMonth
+   * @param {!Month} maximumMonth
    */
-  this.yearListView = new YearListView(minimumMonth, maximumMonth);
-  this.yearListView.attachTo(this);
+  constructor(minimumMonth, maximumMonth) {
+    super(createElement('div', MonthPopupView.ClassNameMonthPopupView));
 
-  /**
-   * @type {!boolean}
-   */
-  this.isVisible = false;
+    /**
+     * @type {!YearListView}
+     * @const
+     */
+    this.yearListView = new YearListView(minimumMonth, maximumMonth);
+    this.yearListView.attachTo(this);
 
-  this.element.addEventListener('click', this.onClick, false);
-}
+    /**
+     * @type {!boolean}
+     */
+    this.isVisible = false;
 
-{
-  MonthPopupView.prototype = Object.create(View.prototype);
+    this.element.addEventListener('click', this.onClick.bind(this), false);
+  }
 
-  MonthPopupView.ClassNameMonthPopupView = 'month-popup-view';
+  static ClassNameMonthPopupView = 'month-popup-view';
 
-  MonthPopupView.prototype.show = function(initialMonth, calendarTableRect) {
+  show(initialMonth, calendarTableRect) {
     this.isVisible = true;
     if (global.params.mode == 'datetime-local') {
       // Place the month popup under the datetimelocal-picker element so that
@@ -3245,24 +3239,24 @@ function MonthPopupView(minimumMonth, maximumMonth) {
     this.yearListView.element.style.top = calendarTableRect.y + 'px';
     this.yearListView.show(initialMonth);
     this.yearListView.element.focus();
-  };
+  }
 
-  MonthPopupView.prototype.hide = function() {
+  hide() {
     if (!this.isVisible)
       return;
     this.isVisible = false;
     this.element.parentNode.removeChild(this.element);
     this.yearListView.hide();
-  };
+  }
 
   /**
    * @param {?Event} event
    */
-  MonthPopupView.prototype.onClick = function(event) {
+  onClick(event) {
     if (event.target !== this.element)
       return;
     this.hide();
-  };
+  }
 }
 
 // ----------------------------------------------------------------
@@ -3855,41 +3849,37 @@ class WeekNumberCell extends ListCell {
 
 // ----------------------------------------------------------------
 
-/**
- * @constructor
- * @extends View
- * @param {!boolean} hasWeekNumberColumn
- */
-function CalendarTableHeaderView(hasWeekNumberColumn) {
-  View.call(this, createElement('div', 'calendar-table-header-view'));
-  if (hasWeekNumberColumn) {
-    var weekNumberLabelElement =
-        createElement('div', 'week-number-label', global.params.weekLabel);
-    weekNumberLabelElement.style.width = WeekNumberCell.Width + 'px';
-    this.element.appendChild(weekNumberLabelElement);
-  }
-  for (var i = 0; i < DaysPerWeek; ++i) {
-    var weekDayNumber = (global.params.weekStartDay + i) % DaysPerWeek;
-    var labelElement = createElement(
-        'div', 'week-day-label', global.params.dayLabels[weekDayNumber]);
-    labelElement.style.width = DayCell.GetWidth() + 'px';
-    this.element.appendChild(labelElement);
-    if (getLanguage() === 'ja') {
-      if (weekDayNumber === 0)
-        labelElement.style.color = 'red';
-      else if (weekDayNumber === 6)
-        labelElement.style.color = 'blue';
+class CalendarTableHeaderView extends View {
+  /**
+   * @param {!boolean} hasWeekNumberColumn
+   */
+  constructor(hasWeekNumberColumn) {
+    super(createElement('div', 'calendar-table-header-view'));
+    if (hasWeekNumberColumn) {
+      var weekNumberLabelElement =
+          createElement('div', 'week-number-label', global.params.weekLabel);
+      weekNumberLabelElement.style.width = WeekNumberCell.Width + 'px';
+      this.element.appendChild(weekNumberLabelElement);
+    }
+    for (var i = 0; i < DaysPerWeek; ++i) {
+      var weekDayNumber = (global.params.weekStartDay + i) % DaysPerWeek;
+      var labelElement = createElement(
+          'div', 'week-day-label', global.params.dayLabels[weekDayNumber]);
+      labelElement.style.width = DayCell.GetWidth() + 'px';
+      this.element.appendChild(labelElement);
+      if (getLanguage() === 'ja') {
+        if (weekDayNumber === 0)
+          labelElement.style.color = 'red';
+        else if (weekDayNumber === 6)
+          labelElement.style.color = 'blue';
+      }
     }
   }
-}
 
-{
-  CalendarTableHeaderView.prototype = Object.create(View.prototype);
-
-  CalendarTableHeaderView._Height = 29;
-  CalendarTableHeaderView.GetHeight = function() {
+  static _Height = 29;
+  static GetHeight() {
     return CalendarTableHeaderView._Height;
-  };
+  }
 }
 
 // ----------------------------------------------------------------
@@ -5010,6 +5000,7 @@ if (window.dialogArguments) {
 }
 
 // Necessary for some web tests.
+window.CalendarTableHeaderView = CalendarTableHeaderView;
 window.CalendarPicker = CalendarPicker;
 window.Day = Day;
 window.DayCell = DayCell;
