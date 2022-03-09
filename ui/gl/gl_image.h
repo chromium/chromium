@@ -156,6 +156,8 @@ class GL_EXPORT GLImage : public base::RefCounted<GLImage> {
   // NativePixmap, returns null.
   virtual scoped_refptr<gfx::NativePixmap> GetNativePixmap();
 
+  virtual void* GetEGLImage() const;
+
  protected:
   virtual ~GLImage() = default;
 

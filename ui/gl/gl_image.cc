@@ -134,4 +134,8 @@ scoped_refptr<gfx::NativePixmap> GLImage::GetNativePixmap() {
   return nullptr;
 }
 
+void* GLImage::GetEGLImage() const {
+  return nullptr;
+}
+
 }  // namespace gl

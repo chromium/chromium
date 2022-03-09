@@ -43,6 +43,10 @@ gfx::Size GLImageEGL::GetSize() {
   return size_;
 }
 
+void* GLImageEGL::GetEGLImage() const {
+  return egl_image_;
+}
+
 GLImageEGL::BindOrCopy GLImageEGL::ShouldBindOrCopy() {
   return egl_image_ == EGL_NO_IMAGE_KHR ? COPY : BIND;
 }

@@ -5,6 +5,7 @@
 #include "gpu/command_buffer/service/shared_image_representation_dawn_egl_image.h"
 
 #include "build/build_config.h"
+#include "gpu/command_buffer/service/texture_manager.h"
 #if BUILDFLAG(IS_WIN)
 #include "gpu/command_buffer/service/shared_image_backing_d3d.h"
 #endif
@@ -14,19 +15,19 @@
 namespace gpu {
 
 SharedImageRepresentationDawnEGLImage::SharedImageRepresentationDawnEGLImage(
+    std::unique_ptr<SharedImageRepresentationGLTexturePassthrough>
+        gl_representation,
     SharedImageManager* manager,
     SharedImageBacking* backing,
     MemoryTypeTracker* tracker,
     WGPUDevice device,
-    EGLImage image,
     const WGPUTextureDescriptor& texture_descriptor)
     : SharedImageRepresentationDawn(manager, backing, tracker),
+      gl_representation_(std::move(gl_representation)),
       device_(device),
-      image_(image),
       texture_descriptor_(texture_descriptor),
       dawn_procs_(dawn::native::GetProcs()) {
   DCHECK(device_);
-  DCHECK(image_);
 
   // Keep a reference to the device so that it stays valid.
   dawn_procs_.deviceReference(device_);
@@ -50,7 +51,10 @@ WGPUTexture SharedImageRepresentationDawnEGLImage::BeginAccess(
 #endif
   dawn::native::opengl::ExternalImageDescriptorEGLImage externalImageDesc;
   externalImageDesc.cTextureDescriptor = &texture_descriptor_;
-  externalImageDesc.image = image_;
+  const auto& texture = gl_representation_->GetTexturePassthrough();
+  externalImageDesc.image =
+      texture->GetLevelImage(texture->target(), 0u)->GetEGLImage();
+  DCHECK(externalImageDesc.image);
   externalImageDesc.isInitialized = true;
   texture_ =
       dawn::native::opengl::WrapExternalEGLImage(device_, &externalImageDesc);

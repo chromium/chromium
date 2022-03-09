@@ -82,6 +82,10 @@ GLImage::BindOrCopy GLImageD3D::ShouldBindOrCopy() {
   return GLImage::BIND;
 }
 
+void* GLImageD3D::GetEGLImage() const {
+  return egl_image_;
+}
+
 gfx::Size GLImageD3D::GetSize() {
   return size_;
 }

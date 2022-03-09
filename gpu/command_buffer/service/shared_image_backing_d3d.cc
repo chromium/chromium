@@ -610,6 +610,16 @@ SharedImageBackingD3D::ProduceDawn(SharedImageManager* manager,
   texture_descriptor.mipLevelCount = 1;
   texture_descriptor.sampleCount = 1;
 
+#if BUILDFLAG(DAWN_ENABLE_BACKEND_OPENGLES)
+  if (backend_type == WGPUBackendType_OpenGLES) {
+    // EGLImage textures do not support sampling, at the moment.
+    texture_descriptor.usage &= ~WGPUTextureUsage_TextureBinding;
+    return std::make_unique<SharedImageRepresentationDawnEGLImage>(
+        ProduceGLTexturePassthrough(manager, tracker), manager, this, tracker,
+        device, texture_descriptor);
+  }
+#endif
+
   // We need to have an internal usage of CopySrc in order to use
   // CopyTextureToTextureInternal.
   WGPUDawnTextureInternalUsageDescriptor internalDesc = {};
@@ -617,21 +627,6 @@ SharedImageBackingD3D::ProduceDawn(SharedImageManager* manager,
   internalDesc.internalUsage = WGPUTextureUsage_CopySrc;
   texture_descriptor.nextInChain =
       reinterpret_cast<WGPUChainedStruct*>(&internalDesc);
-
-#if BUILDFLAG(DAWN_ENABLE_BACKEND_OPENGLES)
-  if (backend_type == WGPUBackendType_OpenGLES) {
-    // EGLImage textures do not support sampling, at the moment.
-    texture_descriptor.usage &= ~WGPUTextureUsage_TextureBinding;
-    EGLImage egl_image =
-        static_cast<gl::GLImageD3D*>(GetGLImage())->egl_image();
-    if (!egl_image) {
-      DLOG(ERROR) << "Failed to create EGLImage";
-      return nullptr;
-    }
-    return std::make_unique<SharedImageRepresentationDawnEGLImage>(
-        manager, this, tracker, device, egl_image, texture_descriptor);
-  }
-#endif
 
   // Persistently open the shared handle by caching it on this backing.
   if (!external_image_) {

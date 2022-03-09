@@ -47,6 +47,7 @@ class GL_EXPORT GLImageD3D : public GLImage {
 
   // GLImage implementation
   Type GetType() const override;
+  void* GetEGLImage() const override;
   BindOrCopy ShouldBindOrCopy() override;
   gfx::Size GetSize() override;
   unsigned GetInternalFormat() override;
@@ -70,8 +71,6 @@ class GL_EXPORT GLImageD3D : public GLImage {
   }
   size_t array_slice() const { return array_slice_; }
   size_t plane_index() const { return plane_index_; }
-
-  void* egl_image() const { return egl_image_; }
 
  protected:
   const gfx::Size size_;
