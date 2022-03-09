@@ -52,7 +52,13 @@ class InspectUITest : public WebUIBrowserTest {
   }
 };
 
-IN_PROC_BROWSER_TEST_F(InspectUITest, InspectUIPage) {
+// Disabled due to excessive flakiness. http://crbug.com/1304812
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_InspectUIPage DISABLED_InspectUIPage
+#else
+#define MAYBE_InspectUIPage InspectUIPage
+#endif
+IN_PROC_BROWSER_TEST_F(InspectUITest, MAYBE_InspectUIPage) {
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(),
                                            GURL(chrome::kChromeUIInspectURL)));
   ASSERT_TRUE(WebUIBrowserTest::RunJavascriptAsyncTest(
