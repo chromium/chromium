@@ -88,13 +88,14 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest, PrerenderAndActivate) {
   prerender_helper().AddPrerender(prerender_url);
 
   // Activate.
-  content::TestActivationManager activation_manager(GetActiveWebContents(),
+  content::TestNavigationManager navigation_manager(GetActiveWebContents(),
                                                     prerender_url);
   ASSERT_TRUE(
       content::ExecJs(GetActiveWebContents()->GetMainFrame(),
                       content::JsReplace("location = $1", prerender_url)));
-  activation_manager.WaitForNavigationFinished();
-  EXPECT_TRUE(activation_manager.was_activated());
+  navigation_manager.WaitForNavigationFinished();
+  EXPECT_TRUE(navigation_manager.was_prerendered_page_activation());
+  EXPECT_TRUE(navigation_manager.was_successful());
 
   histogram_tester.ExpectUniqueSample(
       "Prerender.Experimental.PrerenderHostFinalStatus.SpeculationRule",
@@ -123,7 +124,7 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest,
       *GetActiveWebContents(), prerender_url);
 
   // Activate.
-  content::TestActivationManager activation_manager(GetActiveWebContents(),
+  content::TestNavigationManager navigation_manager(GetActiveWebContents(),
                                                     prerender_url);
   // Simulate a browser-initiated navigation.
   GetActiveWebContents()->OpenURL(content::OpenURLParams(
@@ -131,8 +132,9 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest,
       ui::PageTransitionFromInt(ui::PAGE_TRANSITION_TYPED |
                                 ui::PAGE_TRANSITION_FROM_ADDRESS_BAR),
       /*is_renderer_initiated=*/false));
-  activation_manager.WaitForNavigationFinished();
-  EXPECT_TRUE(activation_manager.was_activated());
+  navigation_manager.WaitForNavigationFinished();
+  EXPECT_TRUE(navigation_manager.was_prerendered_page_activation());
+  EXPECT_TRUE(navigation_manager.was_successful());
 
   histogram_tester.ExpectUniqueSample(
       "Prerender.Experimental.PrerenderHostFinalStatus.Embedder_DirectURLInput",
