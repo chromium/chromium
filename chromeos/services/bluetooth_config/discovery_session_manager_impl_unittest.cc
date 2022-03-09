@@ -10,6 +10,7 @@
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/test/bind.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/types/token_type.h"
 #include "chromeos/services/bluetooth_config/device_conversion_util.h"
@@ -20,6 +21,7 @@
 #include "chromeos/services/bluetooth_config/fake_device_pairing_handler.h"
 #include "chromeos/services/bluetooth_config/fake_discovered_devices_provider.h"
 #include "chromeos/services/bluetooth_config/fake_discovery_session_status_observer.h"
+#include "device/bluetooth/floss/floss_features.h"
 #include "device/bluetooth/test/mock_bluetooth_adapter.h"
 #include "device/bluetooth/test/mock_bluetooth_device.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -152,9 +154,9 @@ class DiscoverySessionManagerImplTest : public testing::Test {
             /*connected=*/false);
     ON_CALL(*mock_device, Connect_(testing::_, testing::_))
         .WillByDefault(testing::Invoke(
-            [](device::BluetoothDevice::PairingDelegate* pairing_delegate,
-               device::BluetoothDevice::ConnectCallback& callback) {
-              std::move(callback).Run(absl::nullopt);
+            [this](device::BluetoothDevice::PairingDelegate* pairing_delegate,
+                   device::BluetoothDevice::ConnectCallback& callback) {
+              connect_callback_ = std::move(callback);
             }));
     mock_devices_.push_back(std::move(mock_device));
 
@@ -168,6 +170,15 @@ class DiscoverySessionManagerImplTest : public testing::Test {
         std::move(discovered_devices));
     fake_device_pairing_handler_factory_.UpdateActiveHandlerDeviceLists();
     discovery_session_manager_->FlushForTesting();
+  }
+
+  bool HasPendingConnectCallback() const {
+    return !connect_callback_.is_null();
+  }
+
+  void InvokePendingConnectCallback() {
+    std::move(connect_callback_).Run(absl::nullopt);
+    base::RunLoop().RunUntilIdle();
   }
 
   void SetShouldSynchronouslyInvokeStartScanCallback(bool should) {
@@ -249,6 +260,7 @@ class DiscoverySessionManagerImplTest : public testing::Test {
   bool should_synchronously_invoke_start_scan_callback_ = false;
   StartScanCallback start_scan_callback_;
   StopScanCallback stop_scan_callback_;
+  device::BluetoothDevice::ConnectCallback connect_callback_;
 
   FakeAdapterStateController fake_adapter_state_controller_;
   FakeDiscoveredDevicesProvider fake_discovered_devices_provider_;
@@ -450,6 +462,7 @@ TEST_F(DiscoverySessionManagerImplTest, MultipleClientsAttemptPairing) {
             result = pairing_result;
           }));
   base::RunLoop().RunUntilIdle();
+  EXPECT_FALSE(HasPendingConnectCallback());
   EXPECT_EQ(result, mojom::PairingResult::kNonAuthFailure);
 
   // First client's pairing handler should still be alive because we can retry
@@ -469,6 +482,8 @@ TEST_F(DiscoverySessionManagerImplTest, MultipleClientsAttemptPairing) {
             result = pairing_result;
           }));
   base::RunLoop().RunUntilIdle();
+  EXPECT_TRUE(HasPendingConnectCallback());
+  InvokePendingConnectCallback();
   EXPECT_EQ(result, mojom::PairingResult::kSuccess);
 
   // First client's Mojo pipes should be disconnected.
@@ -490,6 +505,8 @@ TEST_F(DiscoverySessionManagerImplTest, MultipleClientsAttemptPairing) {
             result = pairing_result;
           }));
   base::RunLoop().RunUntilIdle();
+  EXPECT_TRUE(HasPendingConnectCallback());
+  InvokePendingConnectCallback();
   EXPECT_EQ(result, mojom::PairingResult::kSuccess);
 
   // Second client's Mojo pipes should be disconnected and discovery stopped.
@@ -538,6 +555,87 @@ TEST_F(DiscoverySessionManagerImplTest, DisconnectToStopObserving) {
   InvokePendingStartScanCallback(/*success=*/true);
   EXPECT_FALSE(observer->has_at_least_one_discovery_session());
   EXPECT_EQ(0, observer->num_discovery_session_changed_calls());
+}
+
+TEST_F(DiscoverySessionManagerImplTest, AdapterDiscoveringStopsDuringPairing) {
+  std::unique_ptr<FakeBluetoothDiscoveryDelegate> delegate = StartDiscovery();
+
+  InvokePendingStartScanCallback(/*success=*/true);
+  EXPECT_TRUE(delegate->IsMojoPipeConnected());
+  EXPECT_EQ(1u, delegate->num_start_callbacks());
+  EXPECT_TRUE(delegate->pairing_handler().is_connected());
+
+  // Simulate client pairing with a device.
+  std::string device_id;
+  AddDevice(&device_id);
+  absl::optional<mojom::PairingResult> result;
+  auto pairing_delegate = std::make_unique<FakeDevicePairingDelegate>();
+  delegate->pairing_handler()->PairDevice(
+      device_id, pairing_delegate->GeneratePendingRemote(),
+      base::BindLambdaForTesting(
+          [&result](mojom::PairingResult pairing_result) {
+            result = pairing_result;
+          }));
+  base::RunLoop().RunUntilIdle();
+  EXPECT_TRUE(HasPendingConnectCallback());
+
+  // Simulate the discovery session stopping unexpectedly before pairing
+  // completes. Discovery should stop and the discovery delegate, pairing
+  // handler, and pairing delegate disconnected.
+  SimulateDiscoverySessionStopping();
+  EXPECT_FALSE(delegate->IsMojoPipeConnected());
+  EXPECT_EQ(1u, delegate->num_stop_callbacks());
+  EXPECT_FALSE(delegate->pairing_handler().is_connected());
+  EXPECT_FALSE(pairing_delegate->IsMojoPipeConnected());
+  InvokePendingStopScanCallback(/*success=*/true);
+}
+
+TEST_F(DiscoverySessionManagerImplTest,
+       AdapterDiscoveringStopsDuringPairing_Floss) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(floss::features::kFlossEnabled);
+  EXPECT_TRUE(base::FeatureList::IsEnabled(floss::features::kFlossEnabled));
+
+  std::unique_ptr<FakeBluetoothDiscoveryDelegate> delegate = StartDiscovery();
+
+  InvokePendingStartScanCallback(/*success=*/true);
+  EXPECT_TRUE(delegate->IsMojoPipeConnected());
+  EXPECT_EQ(1u, delegate->num_start_callbacks());
+  EXPECT_TRUE(delegate->pairing_handler().is_connected());
+
+  // Simulate client pairing with a device.
+  std::string device_id;
+  AddDevice(&device_id);
+  absl::optional<mojom::PairingResult> result;
+  auto pairing_delegate = std::make_unique<FakeDevicePairingDelegate>();
+  delegate->pairing_handler()->PairDevice(
+      device_id, pairing_delegate->GeneratePendingRemote(),
+      base::BindLambdaForTesting(
+          [&result](mojom::PairingResult pairing_result) {
+            result = pairing_result;
+          }));
+  base::RunLoop().RunUntilIdle();
+  EXPECT_TRUE(HasPendingConnectCallback());
+
+  // Simulate the discovery session stopping before pairing
+  // completes. This can happen with Floss enabled, but the device pairing
+  // handler should remain alive.
+  // TODO(b/222230887): Remove this test when DiscoverySessionManager and
+  // DevicePairingHandler lifecycles are decoupled.
+  SimulateDiscoverySessionStopping();
+  EXPECT_TRUE(delegate->IsMojoPipeConnected());
+  EXPECT_EQ(0u, delegate->num_stop_callbacks());
+  EXPECT_TRUE(delegate->pairing_handler().is_connected());
+  EXPECT_TRUE(pairing_delegate->IsMojoPipeConnected());
+
+  InvokePendingConnectCallback();
+  EXPECT_EQ(result, mojom::PairingResult::kSuccess);
+
+  // The client's Mojo pipes should now be disconnected and discovery stopped.
+  EXPECT_FALSE(delegate->IsMojoPipeConnected());
+  EXPECT_FALSE(delegate->pairing_handler().is_connected());
+  EXPECT_FALSE(pairing_delegate->IsMojoPipeConnected());
+  InvokePendingStopScanCallback(/*success=*/true);
 }
 
 }  // namespace bluetooth_config
