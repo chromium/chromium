@@ -57,6 +57,7 @@
       "-Wno-implicit-fallthrough",
       "-Wno-shadow",
       "-Wno-unreachable-code-return",
+      "-Wno-unreachable-code-break",
     ]
 
     if (is_android) {

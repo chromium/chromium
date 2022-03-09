@@ -1,8 +1,8 @@
 Name: grpc
 URL: https://github.com/grpc/grpc
 License: Apache 2.0
-Version: v1.43.0+
-Revision: 754913545189b819829284b79ac5a4d31fddbdcc
+Version: v1.44.0+
+Revision: f8a909e76fcd947949502832a7ab8e2cba2b8e27
 Security Critical: yes
 
 Please note that that the use of gRPC is not generally allowed within Chromium.
