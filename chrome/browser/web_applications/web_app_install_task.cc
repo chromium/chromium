@@ -201,7 +201,6 @@ void WebAppInstallTask::InstallWebAppFromManifest(
   CheckInstallPreconditions();
 
   Observe(contents);
-  installing_web_contents_ = contents;
   dialog_callback_ = std::move(dialog_callback);
   install_callback_ = std::move(install_callback);
   install_source_ = install_source;
@@ -228,7 +227,6 @@ void WebAppInstallTask::InstallWebAppFromManifestWithFallback(
   CheckInstallPreconditions();
 
   Observe(contents);
-  installing_web_contents_ = contents;
   dialog_callback_ = std::move(dialog_callback);
   install_callback_ = std::move(install_callback);
   install_source_ = install_source;
@@ -248,7 +246,6 @@ void WebAppInstallTask::LoadAndInstallWebAppFromManifestWithFallback(
   CheckInstallPreconditions();
 
   Observe(contents);
-  installing_web_contents_ = contents;
   if (ShouldStopInstall())
     return;
 
@@ -272,7 +269,6 @@ void WebAppInstallTask::LoadAndInstallSubAppFromURL(
   CheckInstallPreconditions();
 
   Observe(contents);
-  installing_web_contents_ = contents;
   if (ShouldStopInstall())
     return;
 
@@ -359,7 +355,6 @@ void WebAppInstallTask::InstallWebAppWithParams(
   CheckInstallPreconditions();
 
   Observe(contents);
-  installing_web_contents_ = contents;
   SetInstallParams(install_params);
   install_callback_ = std::move(install_callback);
   install_source_ = install_source;
@@ -404,7 +399,7 @@ std::unique_ptr<content::WebContents> WebAppInstallTask::CreateWebContents(
 }
 
 content::WebContents* WebAppInstallTask::GetInstallingWebContents() {
-  return installing_web_contents_;
+  return web_contents();
 }
 
 base::WeakPtr<WebAppInstallTask> WebAppInstallTask::GetWeakPtr() {
@@ -762,7 +757,6 @@ void WebAppInstallTask::InstallWebAppFromInfoRetrieveIcons(
   CheckInstallPreconditions();
 
   Observe(web_contents);
-  installing_web_contents_ = web_contents;
   if (ShouldStopInstall())
     return;
 
