@@ -202,11 +202,26 @@ const CGFloat kBadgeCornerRadius = 5.0;
     _titleLabel.textColor = [UIColor colorNamed:kBlueColor];
     _titleLabel.adjustsFontForContentSizeCategory = YES;
 
+    // ImageView is wrapped inside a wrapper to support symbol image. Doing so
+    // makes sure that the size of the badge stays the same across all cells,
+    // regardless of the badge image being used.
     _badgeView = [[UIImageView alloc] init];
     _badgeView.translatesAutoresizingMaskIntoConstraints = NO;
-    _badgeView.tintColor = [UIColor colorNamed:kBlueColor];
-    _badgeView.backgroundColor = [UIColor colorNamed:kBlueHaloColor];
-    _badgeView.layer.cornerRadius = kBadgeCornerRadius;
+    UIView* badgeWrapperView = [[UIView alloc] init];
+    badgeWrapperView.translatesAutoresizingMaskIntoConstraints = NO;
+    badgeWrapperView.tintColor = [UIColor colorNamed:kBlueColor];
+    badgeWrapperView.backgroundColor = [UIColor colorNamed:kBlueHaloColor];
+    badgeWrapperView.layer.cornerRadius = kBadgeCornerRadius;
+    [badgeWrapperView addSubview:_badgeView];
+
+    [NSLayoutConstraint activateConstraints:@[
+      [badgeWrapperView.widthAnchor
+          constraintEqualToConstant:kCellHeight - 2 * kVerticalMargin],
+      [badgeWrapperView.centerXAnchor
+          constraintEqualToAnchor:_badgeView.centerXAnchor],
+      [badgeWrapperView.centerYAnchor
+          constraintEqualToAnchor:_badgeView.centerYAnchor],
+    ]];
 
     _trailingImageView = [[UIImageView alloc]
         initWithImage:
@@ -216,11 +231,9 @@ const CGFloat kBadgeCornerRadius = 5.0;
     _trailingImageView.tintColor = [UIColor colorNamed:kBlueColor];
 
     [self.contentView addSubview:_titleLabel];
-    [self.contentView addSubview:_badgeView];
+    [self.contentView addSubview:badgeWrapperView];
     [self.contentView addSubview:_trailingImageView];
 
-    // TODO(crbug.com/1293060): Maintain image aspect ratio once we move icon
-    // image file format to SVG from PNG.
     ApplyVisualConstraintsWithMetrics(
         @[
           @"H:|-(margin)-[badge]-(margin)-[text]-(margin)-[gear]-(margin)-|",
@@ -230,7 +243,7 @@ const CGFloat kBadgeCornerRadius = 5.0;
         ],
         @{
           @"text" : _titleLabel,
-          @"badge" : _badgeView,
+          @"badge" : badgeWrapperView,
           @"gear" : _trailingImageView,
         },
         @{
