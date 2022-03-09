@@ -11,6 +11,7 @@
 #include "ash/calendar/calendar_client.h"
 #include "ash/calendar/calendar_controller.h"
 #include "ash/shell.h"
+#include "ash/system/time/calendar_event_fetch.h"
 #include "ash/system/time/calendar_utils.h"
 #include "base/bind.h"
 #include "base/check.h"
@@ -34,8 +35,6 @@ constexpr int kAdditionalNumberOfMonthsCached = 4;
 constexpr int kMaxNumberOfMonthsCached =
     kMinNumberOfMonthsCached + kAdditionalNumberOfMonthsCached;
 
-constexpr base::TimeDelta kTimeoutMs = base::Milliseconds(1000);
-
 // Methods for debugging and gathering of metrics.
 
 [[maybe_unused]] int GetEventMapSize(
@@ -54,101 +53,6 @@ constexpr base::TimeDelta kTimeoutMs = base::Milliseconds(1000);
 }  // namespace
 
 namespace ash {
-
-// Represents a single fetch of a given month's calendar events.
-class CalendarEventFetch {
- public:
-  // A callback invoked when a fetch of calendar events is complete.
-  using FetchCompleteCallback =
-      base::OnceCallback<void(base::Time start_of_month,
-                              google_apis::ApiErrorCode error,
-                              const google_apis::calendar::EventList* events)>;
-
-  // A callback invoked when a fetch of calendar events did not complete, due to
-  // an internal error.
-  using FetchInternalErrorCallback =
-      base::OnceCallback<void(base::Time start_of_month,
-                              FetchInternalErrorCode error)>;
-
-  // Fetch begins immediately on construction.
-  CalendarEventFetch(base::Time start_of_month,
-                     FetchCompleteCallback complete_callback,
-                     FetchInternalErrorCallback internal_error_callback)
-      : start_of_month_(start_of_month),
-        complete_callback_(std::move(complete_callback)),
-        internal_error_callback_(std::move(internal_error_callback)),
-        fetch_start_time_(base::Time::Now()),
-        timeout_(FROM_HERE,
-                 kTimeoutMs,
-                 base::BindRepeating(&CalendarEventFetch::OnTimeout,
-                                     base::Unretained(this))) {
-    CalendarClient* client = Shell::Get()->calendar_controller()->GetClient();
-    if (!client) {
-      base::UmaHistogramCounts100("Ash.Calendar.FetchEvents.NoCalendarClient",
-                                  1);
-
-      // IMPORTANT: 'this' is NOT safe to use after `internal_error_callback_`
-      // has been executed, as the last thing it does is destroy its
-      // std::unique_ptr<CalendarEventFetch> to this object.
-      std::move(internal_error_callback_)
-          .Run(start_of_month_, FetchInternalErrorCode::RESOURCE_UNAVAILABLE);
-      return;
-    }
-
-    const base::Time start_of_next_month =
-        calendar_utils::GetStartOfNextMonthUTC(start_of_month);
-    client->GetEventList(base::BindOnce(&CalendarEventFetch::OnResultReceived,
-                                        weak_factory_.GetWeakPtr()),
-                         start_of_month, start_of_next_month);
-
-    timeout_.Reset();
-  }
-  CalendarEventFetch(const CalendarEventFetch& other) = delete;
-  CalendarEventFetch& operator=(const CalendarEventFetch& other) = delete;
-  virtual ~CalendarEventFetch() = default;
-
- private:
-  // Callback invoked when results of a fetch are available.
-  void OnResultReceived(
-      google_apis::ApiErrorCode error,
-      std::unique_ptr<google_apis::calendar::EventList> events) {
-    // Cancel timeout timer.
-    timeout_.Stop();
-
-    base::UmaHistogramTimes("Ash.Calendar.FetchEvents.FetchDuration",
-                            base::Time::Now() - fetch_start_time_);
-
-    // IMPORTANT: 'this' is NOT safe to use after `complete_callback_` has been
-    // executed, as the last thing it does is destroy its
-    // std::unique_ptr<CalendarEventFetch> to this object.
-    std::move(complete_callback_).Run(start_of_month_, error, events.get());
-  }
-
-  void OnTimeout() {
-    // IMPORTANT: 'this' is NOT safe to use after `internal_error_callback_` has
-    // been executed, as the last thing it does is destroy its
-    // std::unique_ptr<CalendarEventFetch> to this object.
-    std::move(internal_error_callback_)
-        .Run(start_of_month_, FetchInternalErrorCode::TIMEOUT);
-  }
-
-  // Start of the month whose events we're fetching.
-  base::Time start_of_month_;
-
-  // Callback invoked when the fetch is complete.
-  FetchCompleteCallback complete_callback_;
-
-  // Callback invoked when the fetch failed with an internal error.
-  FetchInternalErrorCallback internal_error_callback_;
-
-  const base::Time fetch_start_time_;
-
-  // Timer we run at the start of a fetch, to ensure that we terminate if we go
-  // too long without a response.
-  base::RetainingOneShotTimer timeout_;
-
-  base::WeakPtrFactory<CalendarEventFetch> weak_factory_{this};
-};
 
 CalendarModel::CalendarModel() = default;
 
@@ -199,10 +103,13 @@ void CalendarModel::MaybeFetchMonth(base::Time start_of_month) {
       start_of_month,
       std::make_unique<CalendarEventFetch>(
           start_of_month,
+          /*complete_callback=*/
           base::BindRepeating(&CalendarModel::OnEventsFetched,
                               base::Unretained(this)),
+          /*internal_error_callback_=*/
           base::BindRepeating(&CalendarModel::OnEventFetchFailedInternalError,
-                              base::Unretained(this))));
+                              base::Unretained(this)),
+          /*tick_clock=*/nullptr));
 }
 
 void CalendarModel::MarkMonthAsFetched(base::Time start_of_month) {
@@ -297,7 +204,7 @@ void CalendarModel::OnEventsFetched(
 
 void CalendarModel::OnEventFetchFailedInternalError(
     base::Time start_of_month,
-    FetchInternalErrorCode error) {
+    CalendarEventFetchInternalErrorCode error) {
   LOG(ERROR) << __FUNCTION__
              << " Event fetch received internal error: " << (int)error;
 
@@ -309,6 +216,9 @@ void CalendarModel::OnEventFetchFailedInternalError(
 
 void CalendarModel::InsertEvent(
     const google_apis::calendar::CalendarEvent* event) {
+  if (!event)
+    return;
+
   base::Time start_of_month =
       calendar_utils::GetStartOfMonthUTC(GetStartTimeMidnightAdjusted(event));
 
@@ -328,6 +238,9 @@ void CalendarModel::InsertEvent(
 void CalendarModel::InsertEventInMonth(
     SingleMonthEventMap& month,
     const google_apis::calendar::CalendarEvent* event) {
+  if (!event)
+    return;
+
   base::Time start_time_midnight = GetStartTimeMidnightAdjusted(event);
 
   auto it = month.find(start_time_midnight);
@@ -356,6 +269,9 @@ base::Time CalendarModel::GetStartTimeMidnightAdjusted(
 
 void CalendarModel::InsertEvents(
     const google_apis::calendar::EventList* events) {
+  if (!events)
+    return;
+
   for (const auto& event : events->items())
     InsertEvent(event.get());
 }

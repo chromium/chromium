@@ -34,4 +34,9 @@ void CalendarController::OnActiveUserSessionChanged(
   active_user_account_id_ = account_id;
 }
 
+void CalendarController::SetActiveUserAccountIdForTesting(
+    const AccountId& account_id) {
+  active_user_account_id_ = account_id;
+}
+
 }  // namespace ash

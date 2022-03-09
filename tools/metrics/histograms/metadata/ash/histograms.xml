@@ -517,11 +517,14 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Ash.Calendar.FetchEvents.NoCalendarClient" units="instances"
     expires_after="2022-11-10">
+  <obsolete>
+    Deprecated Mar 2022, now that it's no longer needed.
+  </obsolete>
   <owner>rtinkoff@google.com</owner>
   <owner>jiamingc@google.com</owner>
   <summary>
-    Recorded whenever calendar events are requested, and we can't perform any
-    fetch because a valid CalendarClient doesn't exist.
+    Recorded whenever calendar events are requested, and we can't do the fetch
+    because a a resource we need doesn't exist or is not available.
   </summary>
 </histogram>
 
@@ -542,6 +545,16 @@ chromium-metrics-reviews@google.com.
   <summary>
     Recorded whenever calendar events are fetched. The recorded enum value
     indicates the return code of the fetch request.
+  </summary>
+</histogram>
+
+<histogram name="Ash.Calendar.FetchEvents.Timeout" enum="Boolean"
+    expires_after="2022-11-10">
+  <owner>rtinkoff@google.com</owner>
+  <owner>jiamingc@google.com</owner>
+  <summary>
+    Recorded whenever calendar events are requested, and the request went too
+    long without a response.
   </summary>
 </histogram>
 

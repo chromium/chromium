@@ -19,8 +19,7 @@ class CalendarClient;
 // Keeps track of all calendar clients per user account and makes
 // sure the current active client belongs to the current active user.
 // There is expected to exist at most one instance of this class at a time. In
-// production the instance is owned by ash::Shell. The instance can be retrieved
-// using `Shell::Get()->highlighter_controller()`.
+// production the instance is owned by ash::Shell.
 class ASH_EXPORT CalendarController : public SessionObserver {
  public:
   CalendarController();
@@ -36,6 +35,9 @@ class ASH_EXPORT CalendarController : public SessionObserver {
   // profile is not registered with the ProfileManager, e.g. before logging in,
   // guest user, etc.
   CalendarClient* GetClient();
+
+  // For testing only, directly assign `active_user_account_id_`.
+  void SetActiveUserAccountIdForTesting(const AccountId& account_id);
 
  private:
   // SessionObserver:

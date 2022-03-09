@@ -49,6 +49,9 @@ constexpr base::TimeDelta kResetToTodayFadeAnimationDuration =
 // Duration of moving animation.
 constexpr base::TimeDelta kAnimationDurationForMoving = base::Milliseconds(300);
 
+// Event fetch will terminate if we don't receive a response sooner than this.
+constexpr base::TimeDelta kEventFetchTimeout = base::Milliseconds(1000);
+
 // Checks if the `selected_date` is local time today.
 bool IsToday(const base::Time selected_date);
 

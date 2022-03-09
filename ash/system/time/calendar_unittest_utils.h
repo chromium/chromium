@@ -18,12 +18,24 @@ namespace calendar_test_utils {
 // tests.
 constexpr base::TimeDelta kAnimationSettleDownDuration = base::Seconds(3);
 
-// Creates a `google_apis::calendar::CalendarEvent` for testing.
+// Creates a `google_apis::calendar::CalendarEvent` for testing, that converts
+// start/end time strings to `google_apis::calendar::DateTime`.
 std::unique_ptr<google_apis::calendar::CalendarEvent> CreateEvent(
     const char* id,
     const char* summary,
     const char* start_time,
     const char* end_time);
+
+// Creates a `google_apis::calendar::CalendarEvent` for testing, that converts
+// start/end `base::Time` objects to `google_apis::calendar::DateTime`.
+std::unique_ptr<google_apis::calendar::CalendarEvent> CreateEvent(
+    const char* id,
+    const char* summary,
+    base::Time start_time,
+    base::Time end_time);
+
+// Checks if the two exploded are in the same month.
+bool IsTheSameMonth(const base::Time& date_a, const base::Time& date_b);
 
 }  // namespace calendar_test_utils
 
