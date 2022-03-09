@@ -2532,6 +2532,8 @@ TEST_F(CollectUserDataActionTest, ConfirmButtonFallbackText) {
 }
 
 TEST_F(CollectUserDataActionTest, ContactDataFromProto) {
+  ON_CALL(mock_action_delegate_, GetPersonalDataManager())
+      .WillByDefault(Return(nullptr));
   ON_CALL(mock_action_delegate_, CollectUserData(_))
       .WillByDefault([&](CollectUserDataOptions* collect_user_data_options) {
         EXPECT_FALSE(collect_user_data_options->should_store_data_changes);
@@ -2585,6 +2587,8 @@ TEST_F(CollectUserDataActionTest, ContactDataFromProto) {
 }
 
 TEST_F(CollectUserDataActionTest, PhoneNumberFromProto) {
+  ON_CALL(mock_action_delegate_, GetPersonalDataManager())
+      .WillByDefault(Return(nullptr));
   ON_CALL(mock_action_delegate_, CollectUserData(_))
       .WillByDefault([&](CollectUserDataOptions* collect_user_data_options) {
         EXPECT_FALSE(collect_user_data_options->should_store_data_changes);
@@ -2666,6 +2670,8 @@ TEST_F(CollectUserDataActionTest, PhoneNumberFromProto) {
 
 TEST_F(CollectUserDataActionTest, PaymentDataFromProto) {
   autofill::CountryNames::SetLocaleString("en-US");
+  ON_CALL(mock_action_delegate_, GetPersonalDataManager())
+      .WillByDefault(Return(nullptr));
   ON_CALL(mock_action_delegate_, CollectUserData(_))
       .WillByDefault([&](CollectUserDataOptions* collect_user_data_options) {
         EXPECT_FALSE(collect_user_data_options->should_store_data_changes);
@@ -2749,6 +2755,8 @@ TEST_F(CollectUserDataActionTest, PaymentDataFromProto) {
 
 TEST_F(CollectUserDataActionTest, ShippingDataFromProto) {
   autofill::CountryNames::SetLocaleString("en-US");
+  ON_CALL(mock_action_delegate_, GetPersonalDataManager())
+      .WillByDefault(Return(nullptr));
   ON_CALL(mock_action_delegate_, CollectUserData(_))
       .WillByDefault([&](CollectUserDataOptions* collect_user_data_options) {
         EXPECT_FALSE(collect_user_data_options->should_store_data_changes);
@@ -2794,6 +2802,8 @@ TEST_F(CollectUserDataActionTest, ShippingDataFromProto) {
 }
 
 TEST_F(CollectUserDataActionTest, RawDataFromProtoDoesNotGetFormatted) {
+  ON_CALL(mock_action_delegate_, GetPersonalDataManager())
+      .WillByDefault(Return(nullptr));
   ON_CALL(mock_action_delegate_, CollectUserData(_))
       .WillByDefault([&](CollectUserDataOptions* collect_user_data_options) {
         EXPECT_FALSE(collect_user_data_options->should_store_data_changes);
@@ -2846,6 +2856,8 @@ TEST_F(CollectUserDataActionTest, RawDataFromProtoDoesNotGetFormatted) {
 
 TEST_F(CollectUserDataActionTest, SelectEntriesFromProtoFromIdentifiers) {
   autofill::CountryNames::SetLocaleString("en-US");
+  ON_CALL(mock_action_delegate_, GetPersonalDataManager())
+      .WillByDefault(Return(nullptr));
   ON_CALL(mock_action_delegate_, CollectUserData(_))
       .WillByDefault([&](CollectUserDataOptions* collect_user_data_options) {
         ASSERT_TRUE(user_data_.has_selected_address("contact"));
@@ -2932,6 +2944,8 @@ TEST_F(CollectUserDataActionTest, SelectEntriesFromProtoFromIdentifiers) {
 TEST_F(CollectUserDataActionTest,
        DefaultSelectEntriesFromProtoWithoutIdentifiers) {
   autofill::CountryNames::SetLocaleString("en-US");
+  ON_CALL(mock_action_delegate_, GetPersonalDataManager())
+      .WillByDefault(Return(nullptr));
   ON_CALL(mock_action_delegate_, CollectUserData(_))
       .WillByDefault([&](CollectUserDataOptions* collect_user_data_options) {
         ASSERT_TRUE(user_data_.has_selected_address("contact"));
@@ -3786,6 +3800,8 @@ TEST_F(CollectUserDataActionTest, NoDefaultProfileLogsAllFieldsAsEmpty) {
 }
 
 TEST_F(CollectUserDataActionTest, FailsActionWithReloadStatus) {
+  ON_CALL(mock_action_delegate_, GetPersonalDataManager)
+      .WillByDefault(Return(nullptr));
   ON_CALL(mock_action_delegate_, CollectUserData(_))
       .WillByDefault(
           Invoke([=](CollectUserDataOptions* collect_user_data_options) {
@@ -3812,6 +3828,8 @@ TEST_F(CollectUserDataActionTest, FailsActionWithReloadStatus) {
 TEST_F(CollectUserDataActionTest, ReloadsDataIfRequested) {
   base::HistogramTester histogram_tester;
 
+  ON_CALL(mock_action_delegate_, GetPersonalDataManager)
+      .WillByDefault(Return(nullptr));
   EXPECT_CALL(mock_action_delegate_, RequestUserData)
       .Times(2)
       .WillRepeatedly(RunOnceCallback<1>(true, GetUserDataResponseProto()));
@@ -3844,6 +3862,8 @@ TEST_F(CollectUserDataActionTest, ReloadsDataIfRequested) {
 TEST_F(CollectUserDataActionTest, ReloadingActionDoesNotLog) {
   base::HistogramTester histogram_tester;
 
+  ON_CALL(mock_action_delegate_, GetPersonalDataManager)
+      .WillByDefault(Return(nullptr));
   ON_CALL(mock_action_delegate_, CollectUserData(_))
       .WillByDefault(
           Invoke([=](CollectUserDataOptions* collect_user_data_options) {

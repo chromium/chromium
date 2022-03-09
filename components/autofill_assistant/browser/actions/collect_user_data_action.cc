@@ -422,8 +422,7 @@ CollectUserDataAction::CollectUserDataAction(ActionDelegate* delegate,
 }
 
 CollectUserDataAction::~CollectUserDataAction() {
-  delegate_->GetPersonalDataManager()->RemoveObserver(this);
-
+  MaybeRemoveAsPersonalDataManagerObserver();
   MaybeLogMetrics();
 }
 
@@ -471,6 +470,13 @@ void CollectUserDataAction::MaybeLogMetrics() {
   }
 }
 
+void CollectUserDataAction::MaybeRemoveAsPersonalDataManagerObserver() {
+  if (!delegate_->GetPersonalDataManager()) {
+    return;
+  }
+  delegate_->GetPersonalDataManager()->RemoveObserver(this);
+}
+
 void CollectUserDataAction::InternalProcessAction(
     ProcessActionCallback callback) {
   callback_ = std::move(callback);
@@ -515,7 +521,6 @@ void CollectUserDataAction::InternalProcessAction(
   } else {
     ShowToUser();
   }
-  action_stopwatch_.StartWaitTime();
 }
 
 void CollectUserDataAction::EndAction(const ClientStatus& status) {
@@ -665,15 +670,20 @@ void CollectUserDataAction::UpdateUserData(UserData* user_data) {
   }
 
   if (proto_.collect_user_data().has_user_data()) {
-    OnRequestUserData(user_data, true, proto_.collect_user_data().user_data());
+    OnRequestUserData(user_data,
+                      /* success= */ true,
+                      proto_.collect_user_data().user_data());
     return;
   }
 
+  DCHECK(delegate_->GetPersonalDataManager());
   delegate_->GetPersonalDataManager()->AddObserver(this);
   UpdatePersonalDataManagerProfiles(user_data);
   UpdatePersonalDataManagerCards(user_data);
   UpdateMetrics(user_data);
   UpdateUi();
+
+  action_stopwatch_.StartWaitTime();
 }
 
 void CollectUserDataAction::OnRequestUserData(
@@ -687,6 +697,8 @@ void CollectUserDataAction::OnRequestUserData(
   UpdateUserDataFromProto(response, user_data);
   UpdateMetrics(user_data);
   UpdateUi();
+
+  action_stopwatch_.StartWaitTime();
 }
 
 void CollectUserDataAction::UpdateUi() {
@@ -731,7 +743,7 @@ void CollectUserDataAction::OnGetUserData(
     return;
   }
   action_stopwatch_.StartActiveTime();
-  delegate_->GetPersonalDataManager()->RemoveObserver(this);
+  MaybeRemoveAsPersonalDataManagerObserver();
 
   WriteProcessedAction(user_data, user_model);
   if (RequiresPhoneNumberSeparately(*collect_user_data_options_)) {
@@ -740,7 +752,7 @@ void CollectUserDataAction::OnGetUserData(
                                         last_user_data_.locale());
   }
   if (collect_user_data_options_->should_store_data_changes) {
-    UpdateProfileAndCardUse(user_data);
+    UpdateProfileAndCardUse(user_data, delegate_->GetPersonalDataManager());
   }
   DCHECK(
       IsUserDataComplete(*user_data, *user_model, *collect_user_data_options_));
@@ -755,7 +767,7 @@ void CollectUserDataAction::OnAdditionalActionTriggered(
     return;
   }
   action_stopwatch_.StartActiveTime();
-  delegate_->GetPersonalDataManager()->RemoveObserver(this);
+  MaybeRemoveAsPersonalDataManagerObserver();
 
   processed_action_proto_->mutable_collect_user_data_result()
       ->set_additional_action_index(index);
@@ -771,7 +783,7 @@ void CollectUserDataAction::OnTermsAndConditionsLinkClicked(
     return;
   }
   action_stopwatch_.StartActiveTime();
-  delegate_->GetPersonalDataManager()->RemoveObserver(this);
+  MaybeRemoveAsPersonalDataManagerObserver();
 
   processed_action_proto_->mutable_collect_user_data_result()->set_terms_link(
       link);
@@ -783,6 +795,7 @@ void CollectUserDataAction::ReloadUserData(UserData* user_data) {
   if (HasActionEnded()) {
     return;
   }
+  action_stopwatch_.StartActiveTime();
   if (proto_.collect_user_data().has_data_source()) {
     metrics_data_.personal_data_changed = true;
     delegate_->RequestUserData(
@@ -792,9 +805,6 @@ void CollectUserDataAction::ReloadUserData(UserData* user_data) {
     return;
   }
   if (proto_.collect_user_data().has_user_data()) {
-    action_stopwatch_.StartActiveTime();
-    delegate_->GetPersonalDataManager()->RemoveObserver(this);
-
     metrics_data_.personal_data_changed = true;
     user_data->previous_user_data_metrics_ = metrics_data_;
     // We do not wish to log this yet.
@@ -1337,7 +1347,14 @@ void CollectUserDataAction::WriteProcessedAction(UserData* user_data,
       ->set_shown_to_user(shown_to_user_);
 }
 
-void CollectUserDataAction::UpdateProfileAndCardUse(UserData* user_data) {
+void CollectUserDataAction::UpdateProfileAndCardUse(
+    UserData* user_data,
+    autofill::PersonalDataManager* personal_data_manager) {
+  if (!personal_data_manager) {
+    return;
+  }
+  DCHECK(user_data);
+
   base::flat_map<std::string, const autofill::AutofillProfile*> profiles_used;
   if (proto().collect_user_data().has_contact_details()) {
     auto contact_details_proto = proto().collect_user_data().contact_details();
@@ -1365,12 +1382,12 @@ void CollectUserDataAction::UpdateProfileAndCardUse(UserData* user_data) {
     }
   }
   for (const auto& it : profiles_used) {
-    delegate_->GetPersonalDataManager()->RecordUseOf(it.second);
+    personal_data_manager->RecordUseOf(it.second);
   }
   if (proto().collect_user_data().request_payment_method()) {
     auto* selected_card = user_data->selected_card();
     if (selected_card != nullptr) {
-      delegate_->GetPersonalDataManager()->RecordUseOf(selected_card);
+      personal_data_manager->RecordUseOf(selected_card);
     }
   }
 }
@@ -1581,12 +1598,14 @@ void CollectUserDataAction::UpdatePersonalDataManagerProfiles(
   if (!requires_contact && !requires_address) {
     return;
   }
-  DCHECK(user_data != nullptr);
+  DCHECK(user_data);
+
+  auto* personal_data_manager = delegate_->GetPersonalDataManager();
+  DCHECK(personal_data_manager);
 
   user_data->available_contacts_.clear();
   user_data->available_addresses_.clear();
-  for (const auto* profile :
-       delegate_->GetPersonalDataManager()->GetProfilesToSuggest()) {
+  for (const auto* profile : personal_data_manager->GetProfilesToSuggest()) {
     if (requires_contact) {
       user_data->available_contacts_.emplace_back(std::make_unique<Contact>(
           user_data::MakeUniqueFromProfile(*profile)));
@@ -1610,11 +1629,13 @@ void CollectUserDataAction::UpdatePersonalDataManagerCards(
   if (!RequiresPaymentMethod(*collect_user_data_options_)) {
     return;
   }
-  DCHECK(user_data != nullptr);
+  DCHECK(user_data);
+
+  auto* personal_data_manager = delegate_->GetPersonalDataManager();
+  DCHECK(personal_data_manager);
 
   user_data->available_payment_instruments_.clear();
-  for (const auto* card :
-       delegate_->GetPersonalDataManager()->GetCreditCardsToSuggest(
+  for (const auto* card : personal_data_manager->GetCreditCardsToSuggest(
            /* include_server_cards= */ true)) {
     if (!collect_user_data_options_->supported_basic_card_networks.empty() &&
         std::find(
@@ -1631,8 +1652,7 @@ void CollectUserDataAction::UpdatePersonalDataManagerCards(
 
     if (!card->billing_address_id().empty()) {
       auto* billing_address =
-          delegate_->GetPersonalDataManager()->GetProfileByGUID(
-              card->billing_address_id());
+          personal_data_manager->GetProfileByGUID(card->billing_address_id());
       if (billing_address != nullptr) {
         payment_instrument->billing_address =
             user_data::MakeUniqueFromProfile(*billing_address);

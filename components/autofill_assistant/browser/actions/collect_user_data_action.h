@@ -103,7 +103,9 @@ class CollectUserDataAction : public Action,
   void FillInitiallySelectedDataStateForMetrics(UserData* user_data);
 
   void WriteProcessedAction(UserData* user_data, const UserModel* user_model);
-  void UpdateProfileAndCardUse(UserData* user_data);
+  void UpdateProfileAndCardUse(
+      UserData* user_data,
+      autofill::PersonalDataManager* personal_data_manager);
 
   void UpdateUserDataFromProto(const GetUserDataResponseProto& proto_data,
                                UserData* user_data);
@@ -119,6 +121,7 @@ class CollectUserDataAction : public Action,
   void UpdateSelectedShippingAddress(UserData* user_data);
   void UpdateSelectedCreditCard(UserData* user_data);
   void MaybeLogMetrics();
+  void MaybeRemoveAsPersonalDataManagerObserver();
 
   UserDataMetrics metrics_data_;
   bool shown_to_user_ = false;
