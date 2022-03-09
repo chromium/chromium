@@ -132,11 +132,10 @@ IN_PROC_BROWSER_TEST_F(PerformanceManagerPrerenderingBrowserTest,
   // its main frame, and the original frame tree is gone.
   content::RenderFrameDeletedObserver deleted_observer(
       web_contents()->GetMainFrame());
-  content::TestNavigationManager navigation_manager(web_contents(),
-                                                    kPrerenderingUrl);
+  content::test::PrerenderHostObserver prerender_observer(*web_contents(),
+                                                          kPrerenderingUrl);
   prerender_helper_.NavigatePrimaryPage(kPrerenderingUrl);
-  navigation_manager.WaitForNavigationFinished();
-  ASSERT_TRUE(navigation_manager.was_prerendered_page_activation());
+  ASSERT_TRUE(prerender_observer.was_activated());
   deleted_observer.WaitUntilDeleted();
   RunInGraph([&](Graph*) {
     ASSERT_TRUE(page_node);

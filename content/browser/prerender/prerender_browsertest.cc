@@ -2107,14 +2107,12 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest, MojoCapabilityControl_LoosenMode) {
 
   // 5. Activate the prerendered page and listen to the DidFinishNavigation
   // event, to ensure the Activate IPC is sent.
-  TestNavigationManager prerendered_activation_navigation(web_contents(),
+  TestActivationManager prerendered_activation_navigation(web_contents(),
                                                           prerendering_url);
   ASSERT_TRUE(ExecJs(web_contents()->GetMainFrame(),
                      JsReplace("location = $1", prerendering_url)));
   prerendered_activation_navigation.WaitForNavigationFinished();
-  EXPECT_TRUE(
-      prerendered_activation_navigation.was_prerendered_page_activation());
-  EXPECT_TRUE(prerendered_activation_navigation.was_successful());
+  EXPECT_TRUE(prerendered_activation_navigation.was_activated());
 
   // 6. Renderers attempt to build Mojo connections for kCancel interfaces.
   // This part simulates some subframe documents start sending kCancel
@@ -2424,7 +2422,7 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest,
   // frame tree commits.
   {
     // Start navigation in primary page to kPrerenderingUrl.
-    TestNavigationManager primary_page_manager(shell()->web_contents(),
+    TestActivationManager primary_page_manager(shell()->web_contents(),
                                                kPrerenderingUrl);
     ASSERT_TRUE(ExecJs(shell()->web_contents()->GetMainFrame(),
                        JsReplace("location = $1", kPrerenderingUrl)));
@@ -2433,9 +2431,11 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest,
         web_contents_impl()->GetPrimaryFrameTree().root()->navigation_request();
 
     // Wait until the navigation is deferred by CommitDeferringCondition.
-    // TODO(nhiroki): Avoid using base::RunUntilIdle() and instead use some
-    // explicit signal of the running condition.
-    base::RunLoop().RunUntilIdle();
+    ASSERT_TRUE(primary_page_manager.WaitForBeforeChecks());
+    primary_page_manager.ResumeActivation();
+
+    // TODO(bokan): This could be any CommitDeferringCondition, we should have
+    // a way to pause on a specific CommitDeferringCondition.
     EXPECT_TRUE(request->IsCommitDeferringConditionDeferredForTesting());
 
     // The navigation should not have proceeded past NOT_STARTED because the
@@ -3342,7 +3342,9 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest, DidFailLoadCancelsPrerendering) {
 
   // The prerender host for the URL should be deleted as DidFailLoad cancels
   // prerendering.
-  TestNavigationManager activation_observer(shell()->web_contents(),
+  test::PrerenderHostObserver prerender_observer(*web_contents(),
+                                                 kPrerenderingUrl);
+  TestNavigationManager navigation_observer(shell()->web_contents(),
                                             kPrerenderingUrl);
   EXPECT_FALSE(HasHostForUrl(kPrerenderingUrl));
 
@@ -3350,8 +3352,8 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest, DidFailLoadCancelsPrerendering) {
   // prerender disables the activation due to DidFailLoad.
   ASSERT_TRUE(ExecJs(web_contents()->GetMainFrame(),
                      JsReplace("location = $1", kPrerenderingUrl)));
-  activation_observer.WaitForNavigationFinished();
-  EXPECT_FALSE(activation_observer.was_prerendered_page_activation());
+  navigation_observer.WaitForNavigationFinished();
+  EXPECT_FALSE(prerender_observer.was_activated());
 
   ExpectFinalStatusForSpeculationRule(PrerenderHost::FinalStatus::kDidFailLoad);
 }
@@ -5216,10 +5218,9 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest,
   EXPECT_EQ(current_frame_host()->GetFrameName(), "");
 
   // 4. Activate prerender.
-  TestNavigationManager activation_manager(web_contents(), kPrerenderingUrl);
+  test::PrerenderHostObserver host_observer(*web_contents(), kPrerenderingUrl);
   NavigatePrimaryPage(kPrerenderingUrl);
-  activation_manager.WaitForNavigationFinished();
-  EXPECT_TRUE(activation_manager.was_prerendered_page_activation());
+  EXPECT_TRUE(host_observer.was_activated());
   EXPECT_EQ(web_contents()->GetLastCommittedURL(), kPrerenderingUrl);
 
   // 5. Ensure that the window.name is preserved.
@@ -5371,10 +5372,9 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest,
               network::mojom::WebSandboxFlags::kNone);
   }
 
-  TestNavigationManager activation_manager(web_contents(), kPrerenderingUrl);
+  test::PrerenderHostObserver host_observer(*web_contents(), kPrerenderingUrl);
   NavigatePrimaryPage(kPrerenderingUrl);
-  activation_manager.WaitForNavigationFinished();
-  EXPECT_TRUE(activation_manager.was_prerendered_page_activation());
+  EXPECT_TRUE(host_observer.was_activated());
   EXPECT_EQ(web_contents()->GetLastCommittedURL(), kPrerenderingUrl);
 
   // Check that CSP was set on the prerendered page after activation.
@@ -5424,10 +5424,9 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest,
                   ~network::mojom::WebSandboxFlags::kAutomaticFeatures);
   }
 
-  TestNavigationManager activation_manager(web_contents(), kPrerenderingUrl);
+  test::PrerenderHostObserver host_observer(*web_contents(), kPrerenderingUrl);
   NavigatePrimaryPage(kPrerenderingUrl);
-  activation_manager.WaitForNavigationFinished();
-  EXPECT_TRUE(activation_manager.was_prerendered_page_activation());
+  EXPECT_TRUE(host_observer.was_activated());
   EXPECT_EQ(web_contents()->GetLastCommittedURL(), kPrerenderingUrl);
 
   // Check that CSP was set on the prerendered page after activation.
@@ -5472,10 +5471,9 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest, VerifyPrerenderProcessVisibility) {
   EXPECT_TRUE(prerender_process_host->IsProcessBackgrounded());
 
   // Activate the prerendered page.
-  TestNavigationManager activation_manager(web_contents(), kPrerenderingUrl);
+  test::PrerenderHostObserver host_observer(*web_contents(), kPrerenderingUrl);
   NavigatePrimaryPage(kPrerenderingUrl);
-  activation_manager.WaitForNavigationFinished();
-  EXPECT_TRUE(activation_manager.was_prerendered_page_activation());
+  EXPECT_TRUE(host_observer.was_activated());
   // Expect the change in the ChildProcessLauncherPriority to become visible.
   EXPECT_FALSE(prerender_process_host->IsProcessBackgrounded());
 }
@@ -5607,10 +5605,9 @@ IN_PROC_BROWSER_TEST_F(PrerenderPurposePrefetchBrowserTest, ResourceRequests) {
   EXPECT_TRUE(TestPurposePrefetchHeader(cross_origin_url1));
 
   // Activate the prerendered page.
-  TestNavigationManager activation_manager(web_contents(), kPrerenderingUrl);
+  test::PrerenderHostObserver host_observer(*web_contents(), kPrerenderingUrl);
   NavigatePrimaryPage(kPrerenderingUrl);
-  activation_manager.WaitForNavigationFinished();
-  EXPECT_TRUE(activation_manager.was_prerendered_page_activation());
+  EXPECT_TRUE(host_observer.was_activated());
 
   // Issue iframe and subresource requests in the activated page.
   EXPECT_TRUE(ExecJs(prerender_main_frame.get(), "run('after');",
