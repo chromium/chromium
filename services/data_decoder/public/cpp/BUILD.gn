@@ -25,18 +25,17 @@ source_set("cpp") {
   public = [
     "data_decoder.h",
     "json_sanitizer.h",
-    "safe_xml_parser.h",
   ]
 
   sources = [
     "data_decoder.cc",
     "json_sanitizer.cc",
-    "safe_xml_parser.cc",
   ]
 
   configs += [ "//build/config/compiler:wexit_time_destructors" ]
 
   public_deps = [
+    ":safe_xml_parser",
     ":service_provider",
     "//base",
     "//services/data_decoder/public/mojom",
@@ -70,6 +69,15 @@ source_set("cpp") {
   }
 
   defines = [ "IS_DATA_DECODER_PUBLIC_IMPL" ]
+}
+
+source_set("safe_xml_parser") {
+  public = [ "safe_xml_parser.h" ]
+
+  sources = [ "safe_xml_parser.cc" ]
+
+  public_deps = [ "//base" ]
+  deps = [ "//services/data_decoder/public/mojom:mojom_xml_parser" ]
 }
 
 source_set("test_support") {

@@ -12,11 +12,11 @@ mojom("mojom") {
     "image_decoder.mojom",
     "json_parser.mojom",
     "web_bundler.mojom",
-    "xml_parser.mojom",
   ]
 
   public_deps = [
     ":mojom_resource_snapshot_for_web_bundle",
+    ":mojom_xml_parser",
     "//components/web_package/mojom",
     "//mojo/public/mojom/base",
     "//sandbox/policy/mojom",
@@ -29,6 +29,12 @@ mojom("mojom") {
     sources += [ "ble_scan_parser.mojom" ]
     public_deps += [ "//device/bluetooth/public/mojom" ]
   }
+}
+
+mojom("mojom_xml_parser") {
+  sources = [ "xml_parser.mojom" ]
+
+  public_deps = [ "//mojo/public/mojom/base" ]
 }
 
 mojom("mojom_resource_snapshot_for_web_bundle") {
