@@ -167,14 +167,17 @@ void RecordBeaconFileState(BeaconFileState file_state) {
 // 3. The file is successfully read.
 // 4. The file contents are in the expected format with the expected info.
 //
-// The file is not expected to exist for clients that do not belong to the
-// kSignalAndWriteViaFileUtilGroup, but even among clients in that group, there
-// are some edge cases. MaybeGetFileContents() is called before clients are
-// assigned to an Extended Variations Safe Mode experiment group, so a client
-// that is later assigned to the kSignalAndWriteViaFileUtilGroup will not have
-// the file in the first session after updating. It is also possible for a user
-// to delete the file or to reset their variations state with
-// kResetVariationState.
+// The file is not expected to exist for clients that have never been in the
+// Extended Variations Safe Mode experiment group,
+// kSignalAndWriteViaFileUtilGroup. The file may not exist for all experiment
+// group clients because there are some are some edge cases. First,
+// MaybeGetFileContents() is called before clients are assigned to an Extended
+// Variations Safe Mode group, so a client that is later assigned to the
+// experiment group will not have the file in the first session after updating
+// to or installing a Chrome version with the experiment. Second, Android Chrome
+// experiment group clients with repeated background sessions may never write a
+// beacon file. Finally, it is possible for a user to delete the file or to
+// reset their variations state with kResetVariationState.
 //
 // Note that not all beacon files are expected to have a monitoring stage as
 // this info was added in M100.
@@ -295,14 +298,6 @@ void CleanExitBeacon::Initialize() {
   did_previous_session_exit_cleanly_ =
       DidPreviousSessionExitCleanly(beacon_file_contents.get());
 
-#if BUILDFLAG(IS_ANDROID)
-  // TODO(crbug/1248239): Use the beacon file, if any, to maybe increment the
-  // crash streak when the Extended Variations Safe Mode experiment is fully
-  // enabled on Android Chrome stable.
-  if (channel_ == version_info::Channel::STABLE)
-    beacon_file_contents.reset();
-#endif  // BUILDFLAG(IS_ANDROID)
-
   MaybeIncrementCrashStreak(did_previous_session_exit_cleanly_,
                             beacon_file_contents.get(), local_state_);
   initialized_ = true;
@@ -336,21 +331,12 @@ bool CleanExitBeacon::DidPreviousSessionExitCleanly(
                             beacon_file_beacon_value, local_state_beacon_value);
   }
 
-  // Emit this metric here so that it is meaningful for Android Chrome stable,
-  // on which the experiment is only partially enabled.
   bool did_previous_session_exit_cleanly =
       use_beacon_file ? beacon_file_beacon_value.value_or(true)
                       : local_state_beacon_value.value_or(true);
   if (!did_previous_session_exit_cleanly)
     RecordMonitoringStage(use_beacon_file ? beacon_file_contents : nullptr);
 
-#if BUILDFLAG(IS_ANDROID)
-  // TODO(crbug/1248239): Fully enable the Extended Variations Safe Mode
-  // experiment on Android Chrome by using the beacon file's beacon value for
-  // clients in the SignalAndWriteViaFileUtil group on stable.
-  if (channel_ == version_info::Channel::STABLE)
-    return local_state_beacon_value.value_or(true);
-#endif  // BUILDFLAG(IS_ANDROID)
 #if BUILDFLAG(IS_IOS)
   // For the time being, this is a no-op to avoid interference with the Extended
   // Variations Safe Mode experiment; i.e., ShouldUseUserDefaultsBeacon() always
