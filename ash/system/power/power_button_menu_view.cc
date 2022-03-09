@@ -79,8 +79,10 @@ using PowerButtonPosition = PowerButtonController::PowerButtonPosition;
 constexpr base::TimeDelta PowerButtonMenuView::kMenuAnimationDuration;
 
 PowerButtonMenuView::PowerButtonMenuView(
+    ShutdownReason shutdown_reason,
     PowerButtonPosition power_button_position)
-    : power_button_position_(power_button_position) {
+    : shutdown_reason_(shutdown_reason),
+      power_button_position_(power_button_position) {
   SetFocusBehavior(FocusBehavior::ALWAYS);
   SetPaintToLayer();
   layer()->SetFillsBoundsOpaquely(false);
@@ -212,7 +214,7 @@ void PowerButtonMenuView::RecreateItems() {
       base::BindRepeating(
           &LockStateController::StartShutdownAnimation,
           base::Unretained(Shell::Get()->lock_state_controller()),
-          ShutdownReason::POWER_BUTTON),
+          shutdown_reason_),
       kSystemPowerButtonMenuPowerOffIcon,
       l10n_util::GetStringUTF16(IDS_ASH_POWER_BUTTON_MENU_POWER_OFF_BUTTON),
       &power_off_item_);

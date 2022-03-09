@@ -12,6 +12,7 @@
 #include "ash/public/cpp/session/session_observer.h"
 #include "ash/public/cpp/system/power/power_button_controller_base.h"
 #include "ash/public/cpp/tablet_mode_observer.h"
+#include "ash/shutdown_reason.h"
 #include "ash/system/power/backlights_forced_off_setter.h"
 #include "ash/wm/lock_state_observer.h"
 #include "base/memory/weak_ptr.h"
@@ -170,10 +171,9 @@ class ASH_EXPORT PowerButtonController
   void StopTimersAndDismissMenu();
 
   // Starts the power menu animation. Called when a clamshell device's power
-  // button is pressed or when |power_button_menu_timer_| fires.
-  // |allow_pre_shutdown| determines whether PreShutdown action should be
-  // started when animation finished.
-  void StartPowerMenuAnimation(bool allow_pre_shutdown);
+  // button is pressed, or when |power_button_menu_timer_| fires, or by arc
+  // power button to show the PowerButtonMenu.
+  void StartPowerMenuAnimation(ShutdownReason reason);
 
   // Called by |pre_shutdown_timer_| to start the cancellable pre-shutdown
   // animation.
@@ -191,9 +191,6 @@ class ASH_EXPORT PowerButtonController
   // set and locking is possible.
   void LockScreenIfRequired();
 
-  // Sets |show_menu_animation_done_| to true and starts pre-shutdown process.
-  void SetShowMenuAnimationDoneWithPreShutdown();
-
   // Sets |show_menu_animation_done_| to true.
   void SetShowMenuAnimationDone();
 
@@ -210,7 +207,12 @@ class ASH_EXPORT PowerButtonController
   bool power_button_down_ = false;
   bool lock_button_down_ = false;
 
-  // True if the device is curently in tablet mode (per TabletModeController).
+  // Passed in StartPowerMenuAnimation(ShutdownReason reason). When it is not
+  // POWER_BUTTON such as when called from arc, we do not start
+  // |pre_shutdown_timer_|.
+  ShutdownReason shutdown_reason_ = ShutdownReason::POWER_BUTTON;
+
+  // True if the device is currently in tablet mode (per TabletModeController).
   bool in_tablet_mode_ = false;
 
   // Has the screen brightness been reduced to 0%?

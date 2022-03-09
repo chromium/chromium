@@ -14,6 +14,7 @@
 #include "ui/views/view.h"
 
 namespace ash {
+enum class ShutdownReason;
 class PowerButtonMenuView;
 
 // PowerButtonMenuScreenView is the top-level view of power button menu UI. It
@@ -25,6 +26,7 @@ class ASH_EXPORT PowerButtonMenuScreenView : public views::View,
   // |show_animation_done| is a callback for when the animation that shows the
   // power menu has finished.
   PowerButtonMenuScreenView(
+      ShutdownReason shutdown_reason,
       PowerButtonController::PowerButtonPosition power_button_position,
       double power_button_offset,
       base::RepeatingClosure show_animation_done);

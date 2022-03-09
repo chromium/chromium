@@ -6,6 +6,7 @@
 #define ASH_SYSTEM_POWER_POWER_BUTTON_MENU_VIEW_H_
 
 #include "ash/ash_export.h"
+#include "ash/shutdown_reason.h"
 #include "ash/system/power/power_button_controller.h"
 #include "ui/compositor/layer_animation_observer.h"
 #include "ui/views/view.h"
@@ -37,7 +38,8 @@ class ASH_EXPORT PowerButtonMenuView : public views::View,
     int distance;
   };
 
-  explicit PowerButtonMenuView(
+  PowerButtonMenuView(
+      ShutdownReason shutdown_reason,
       PowerButtonController::PowerButtonPosition power_button_position);
   PowerButtonMenuView(const PowerButtonMenuView&) = delete;
   PowerButtonMenuView& operator=(const PowerButtonMenuView&) = delete;
@@ -91,6 +93,7 @@ class ASH_EXPORT PowerButtonMenuView : public views::View,
   PowerButtonMenuItemView* capture_mode_item_ = nullptr;
   PowerButtonMenuItemView* feedback_item_ = nullptr;
 
+  ShutdownReason shutdown_reason_;
   // The physical display side of power button in landscape primary.
   PowerButtonController::PowerButtonPosition power_button_position_;
 
