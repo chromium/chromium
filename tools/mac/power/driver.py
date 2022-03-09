@@ -42,19 +42,10 @@ class DriverContext:
         "caffeinate",
         "-d",  # Prevent the display from sleeping.
     ])
-    # Force user_idle_level to stay active by poking a key code. caffeinate -u
-    # declares that a user is active but this doesn't seem to have a lasting
-    # effect.
-    self._poke_user_process = subprocess.Popen([
-        "osascript",
-        os.path.join(os.path.dirname(__file__), "driver_scripts_templates",
-                     "poke_user.scpt")
-    ])
     return self
 
   def __exit__(self, exc_type, exc_val, exc_tb):
     utils.TerminateProcess(self._caffeinate_process)
-    utils.TerminateProcess(self._poke_user_process)
 
   def SetMainDisplayBrightness(self, brightness_level: int):
     # This function imitates the open-source "brightness" tool at
@@ -188,7 +179,7 @@ class DriverContext:
                                               stdin=subprocess.PIPE)
       power_sampler_battery_args = [
           self._power_sample_path, "--sample-on-notification",
-          "--samplers=battery",
+          "--samplers=battery", "--simulate-user-active",
           f"--timeout={int(scenario_driver.duration.total_seconds())}",
           f"--json-output-file={power_sampler_battery_output}"
       ]
@@ -196,6 +187,9 @@ class DriverContext:
           power_sampler_battery_args,
           stdout=subprocess.PIPE,
           stdin=subprocess.PIPE)
+
+      # No need to simulate the user is active from both power_sampler
+      # instances.
       power_sampler_args = [
           self._power_sample_path, "--sample-interval=10",
           "--samplers=smc,user_idle_level,main_display",
