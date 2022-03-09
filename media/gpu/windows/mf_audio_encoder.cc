@@ -813,7 +813,7 @@ HRESULT MFAudioEncoder::ProcessOutput(EncodedAudioBuffer& encoded_audio) {
   std::unique_ptr<uint8_t[]> encoded_data(new uint8_t[encoded_data_size]);
   RETURN_IF_FAILED(output_buffer->Lock(&output_buffer_ptr, 0, 0));
 
-  memcpy(output_buffer_ptr, encoded_data.get(), encoded_data_size);
+  memcpy(encoded_data.get(), output_buffer_ptr, encoded_data_size);
   RETURN_IF_FAILED(output_buffer->Unlock());
 
   LONGLONG sample_duration = 0;

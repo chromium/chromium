@@ -36,6 +36,7 @@
 #include "third_party/blink/renderer/modules/webcodecs/encoded_audio_chunk.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/wtf/cross_thread_functional.h"
+#include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 
 namespace blink {
 
@@ -95,6 +96,30 @@ AudioEncoderTraits::ParsedConfig* ParseConfigStatic(
   return result;
 }
 
+template <typename T>
+bool VerifyParameterValues(const T& value,
+                           ExceptionState* exception_state,
+                           WTF::String error_message,
+                           WTF::Vector<T> supported_values) {
+  if (std::find(supported_values.begin(), supported_values.end(), value) ==
+      supported_values.end()) {
+    if (exception_state) {
+      WTF::StringBuilder error_builder;
+      error_builder.Append(error_message);
+      error_builder.Append(" Supported values: ");
+      for (auto i = 0u; i < supported_values.size(); i++) {
+        if (i != 0)
+          error_builder.Append(", ");
+        error_builder.AppendNumber(supported_values[i]);
+      }
+      exception_state->ThrowDOMException(DOMExceptionCode::kNotSupportedError,
+                                         error_builder.ToString());
+    }
+    return false;
+  }
+  return true;
+}
+
 bool VerifyCodecSupportStatic(AudioEncoderTraits::ParsedConfig* config,
                               ExceptionState* exception_state) {
   switch (config->options.codec) {
@@ -125,6 +150,27 @@ bool VerifyCodecSupportStatic(AudioEncoderTraits::ParsedConfig* config,
       }
       return true;
     }
+    case media::AudioCodec::kAAC: {
+      if (!VerifyParameterValues(config->options.channels, exception_state,
+                                 "Unsupported number of channels.",
+                                 {1, 2, 6})) {
+        return false;
+      }
+      if (config->options.bitrate.has_value()) {
+        if (!VerifyParameterValues(config->options.bitrate.value(),
+                                   exception_state, "Unsupported bitrate.",
+                                   {96000, 128000, 160000, 192000})) {
+          return false;
+        }
+      }
+      if (!VerifyParameterValues(config->options.sample_rate, exception_state,
+                                 "Unsupported sample rate.", {44100, 48000})) {
+        return false;
+      }
+    }
+      if (base::FeatureList::IsEnabled(features::kPlatformAudioEncoder))
+        return true;
+      [[fallthrough]];
     default:
       if (exception_state) {
         exception_state->ThrowDOMException(DOMExceptionCode::kNotSupportedError,
@@ -155,9 +201,7 @@ std::unique_ptr<media::AudioEncoder> CreateSoftwareAudioEncoder(
 
 std::unique_ptr<media::AudioEncoder> CreatePlatformAudioEncoder(
     media::AudioCodec codec) {
-  if (!base::FeatureList::IsEnabled(features::kPlatformAudioEncoder))
-    return nullptr;
-  if (codec != media::AudioCodec::kOpus)
+  if (codec != media::AudioCodec::kAAC)
     return nullptr;
 
   mojo::PendingRemote<media::mojom::InterfaceFactory> pending_interface_factory;
@@ -208,7 +252,6 @@ void AudioEncoder::ProcessConfigure(Request* request) {
   DCHECK_NE(state_.AsEnum(), V8CodecState::Enum::kClosed);
   DCHECK_EQ(request->type, Request::Type::kConfigure);
   DCHECK(active_config_);
-  DCHECK_EQ(active_config_->options.codec, media::AudioCodec::kOpus);
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   request->StartTracing();
