@@ -10,6 +10,8 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
+ * @deprecated Use "@DisabledTest" instead which has identical behavior.
+ *
  * This annotation is for flaky tests.
  * <p>
  * Tests with this annotation will not be run on any of the normal bots.
@@ -17,6 +19,7 @@ import java.lang.annotation.Target;
  */
 @Target({ElementType.METHOD, ElementType.TYPE})
 @Retention(RetentionPolicy.RUNTIME)
+@Deprecated
 public @interface FlakyTest {
     String message() default "";
 }
