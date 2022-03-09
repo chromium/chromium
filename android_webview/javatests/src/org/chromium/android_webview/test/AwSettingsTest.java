@@ -56,6 +56,7 @@ import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.content_public.common.ContentSwitches;
 import org.chromium.content_public.common.ContentUrlConstants;
 import org.chromium.net.test.EmbeddedTestServer;
+import org.chromium.net.test.ServerCertificate;
 import org.chromium.net.test.util.TestWebServer;
 import org.chromium.ui.display.DisplayAndroid;
 import org.chromium.ui.display.DisplayUtil;
@@ -1946,6 +1947,40 @@ public class AwSettingsTest {
             String userAgent =
                     mActivityTestRule.getJavaScriptResultBodyTextContent(awContents, contentClient);
             Assert.assertEquals(customUserAgentString, userAgent);
+        } finally {
+            testServer.stopAndDestroyServer();
+        }
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"AndroidWebView", "Preferences"})
+    @CommandLineFlags.Add({"enable-features=UserAgentClientHint"})
+    public void testUserAgentOverrideClientHints() throws Throwable {
+        final TestAwContentsClient contentClient = new TestAwContentsClient();
+        final AwTestContainerView testContainerView =
+                mActivityTestRule.createAwTestContainerViewOnMainSync(contentClient);
+        final String customUserAgentString = "testUserAgentOverrideClientHints";
+        AwContents awContents = testContainerView.getAwContents();
+        AwSettings settings = mActivityTestRule.getAwSettingsOnUiThread(awContents);
+        settings.setUserAgentString(customUserAgentString);
+
+        EmbeddedTestServer testServer = EmbeddedTestServer.createAndStartHTTPSServer(
+                InstrumentationRegistry.getInstrumentation().getContext(),
+                ServerCertificate.CERT_OK);
+
+        AwActivityTestRule.enableJavaScriptOnUiThread(awContents);
+
+        try {
+            String targetUrl = testServer.getURL("/android_webview/test/data/fetch-echo.html")
+                    + "?url="
+                    + URLEncoder.encode("/echoheader?Sec-CH-UA&Sec-CH-UA-Mobile&User-Agent");
+            mActivityTestRule.loadUrlSync(
+                    awContents, contentClient.getOnPageFinishedHelper(), targetUrl);
+            AwActivityTestRule.pollInstrumentationThread(
+                    () -> !"running".equals(mActivityTestRule.getTitleOnUiThread(awContents)));
+            Assert.assertEquals("?0 " + customUserAgentString,
+                    mActivityTestRule.getTitleOnUiThread(awContents));
         } finally {
             testServer.stopAndDestroyServer();
         }
