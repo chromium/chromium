@@ -198,6 +198,13 @@ Polymer({
       computed: 'computeIsESimInstallingProfile_(item, item.customItemType)',
     },
 
+    /** @private */
+    isESimUnactivatedProfile_: {
+      type: Boolean,
+      value: false,
+      computed: 'computeIsESimUnactivatedProfile_(managedProperties_)',
+    },
+
     /** @private {boolean} */
     isESimPolicyEnabled_: {
       type: Boolean,
@@ -618,7 +625,7 @@ Polymer({
       if (this.networkState.typeState.cellular.simLocked) {
         return this.i18n('networkListItemUpdatedCellularSimCardLocked');
       }
-      if (this.isPSimUnavailableNetwork_) {
+      if (this.isPSimUnavailableNetwork_ || this.isESimUnactivatedProfile_) {
         return this.i18n('networkListItemUnavailableSimNetwork');
       }
     }
@@ -646,7 +653,7 @@ Polymer({
         this.networkState.typeState.cellular.simLocked) {
       return 'warning';
     }
-    if (this.isPSimUnavailableNetwork_) {
+    if (this.isPSimUnavailableNetwork_ || this.isESimUnactivatedProfile_) {
       return 'warning';
     }
     return 'cr-secondary-text';
@@ -687,6 +694,9 @@ Polymer({
       return false;
     }
     if (this.shouldShowNotAvailableText_()) {
+      return false;
+    }
+    if (this.isESimUnactivatedProfile_) {
       return false;
     }
     return OncMojo.connectionStateIsConnected(
@@ -734,7 +744,8 @@ Polymer({
       this.fireShowDetails_(event);
     } else if (
         this.showButtons &&
-        (this.isPSimUnavailableNetwork_ || this.isPSimActivatingNetwork_)) {
+        (this.isPSimUnavailableNetwork_ || this.isPSimActivatingNetwork_ ||
+         this.isESimUnactivatedProfile_)) {
       this.fireShowDetails_(event);
     } else {
       this.fire('selected', this.item);
@@ -822,6 +833,25 @@ Polymer({
     return !!this.item && this.item.hasOwnProperty('customItemType') &&
         this.item.customItemType ===
         NetworkList.CustomItemType.ESIM_INSTALLING_PROFILE;
+  },
+
+  /**
+   * @param {?chromeos.networkConfig.mojom.ManagedProperties|undefined}
+   *     managedProperties
+   * @return {boolean}
+   * @private
+   */
+  computeIsESimUnactivatedProfile_(managedProperties) {
+    if (!managedProperties) {
+      return false;
+    }
+
+    const cellularProperties = managedProperties.typeProperties.cellular;
+    if (!cellularProperties || !cellularProperties.eid) {
+      return false;
+    }
+    return cellularProperties.activationState ===
+        chromeos.networkConfig.mojom.ActivationStateType.kNotActivated;
   },
 
   /**

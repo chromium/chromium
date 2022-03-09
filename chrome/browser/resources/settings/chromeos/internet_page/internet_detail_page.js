@@ -1395,6 +1395,12 @@ Polymer({
     if (!this.isCellular_(managedProperties)) {
       return false;
     }
+
+    // Only show the Activate button for unactivated pSIM networks.
+    if (managedProperties.typeProperties.cellular.eid) {
+      return false;
+    }
+
     const activation =
         managedProperties.typeProperties.cellular.activationState;
     return activation ===
@@ -1515,6 +1521,11 @@ Polymer({
     // Show either the 'Activate' or the 'View Account' button (Cellular only).
     if (!this.isCellular_(managedProperties) ||
         this.showActivate_(managedProperties)) {
+      return false;
+    }
+
+    // If the network is eSIM, don't show.
+    if (managedProperties.typeProperties.cellular.eid) {
       return false;
     }
 

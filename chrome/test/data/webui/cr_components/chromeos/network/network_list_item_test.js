@@ -220,6 +220,7 @@ suite('NetworkListItemTest', function() {
 
     // Activate button should not be showing.
     assertFalse(!!listItem.$$('#activateButton'));
+    assertFalse(networkStateText.hidden);
 
     // Set item to an unactivated pSIM network with a payment URL.
     const managedPropertiesNotActivated = OncMojo.getDefaultManagedProperties(
@@ -269,7 +270,7 @@ suite('NetworkListItemTest', function() {
     assertFalse(!!listItem.$$('#subpageButton'));
   });
 
-  test('Unavailable pSIM UI visibility', async () => {
+  test('Unavailable cellular network UI visibility', async () => {
     init();
 
     const networkStateText = listItem.$.networkStateText;
@@ -285,6 +286,8 @@ suite('NetworkListItemTest', function() {
     managedPropertiesESimUnavailable.typeProperties.cellular.activationState =
         mojom.ActivationStateType.kNotActivated;
     managedPropertiesESimUnavailable.typeProperties.cellular.paymentPortal = {};
+    managedPropertiesESimUnavailable.connectionState =
+        mojom.ConnectionStateType.kConnected;
     mojoApi_.setManagedPropertiesForTest(managedPropertiesESimUnavailable);
 
     listItem.item = OncMojo.managedPropertiesToNetworkState(
@@ -293,8 +296,18 @@ suite('NetworkListItemTest', function() {
 
     // Activate button should not be showing.
     assertFalse(!!listItem.$$('#activateButton'));
-    // Network state text should not be showing.
-    assertTrue(networkStateText.hidden);
+    // Network state text should be showing.
+    assertFalse(networkStateText.hidden);
+    assertTrue(networkStateText.classList.contains('warning'));
+    assertEquals(
+        networkStateText.textContent.trim(),
+        listItem.i18n('networkListItemUnavailableSimNetwork'));
+
+    // Selecting the row should fire the show-detail event.
+    let showDetailPromise = test_util.eventToPromise('show-detail', listItem);
+    listItem.$.divOuter.click();
+    let showDetailEvent = await showDetailPromise;
+    assertEquals(showDetailEvent.detail, listItem.item);
 
     // Set item to an unactivated pSIM network without a payment URL.
     const managedPropertiesUnavailable = OncMojo.getDefaultManagedProperties(
@@ -323,9 +336,9 @@ suite('NetworkListItemTest', function() {
     assertTrue(!!arrow);
 
     // Selecting the row should fire the show-detail event.
-    const showDetailPromise = test_util.eventToPromise('show-detail', listItem);
+    showDetailPromise = test_util.eventToPromise('show-detail', listItem);
     listItem.$.divOuter.click();
-    const showDetailEvent = await showDetailPromise;
+    showDetailEvent = await showDetailPromise;
     assertEquals(showDetailEvent.detail, networkState);
   });
 

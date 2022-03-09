@@ -673,6 +673,30 @@ suite('InternetDetailPage', function() {
               });
         });
 
+    test(
+        'Unactivated eSIM does not show activate or view account button',
+        function() {
+          init();
+          const mojom = chromeos.networkConfig.mojom;
+          mojoApi_.setNetworkTypeEnabledState(
+              mojom.NetworkType.kCellular, true);
+          const cellularNetwork =
+              getManagedProperties(mojom.NetworkType.kCellular, 'cellular');
+          cellularNetwork.typeProperties.cellular.eid = 'eid';
+          cellularNetwork.connectionState =
+              mojom.ConnectionStateType.kConnected;
+          cellularNetwork.typeProperties.cellular.activationState =
+              mojom.ActivationStateType.kNotActivated;
+          cellularNetwork.typeProperties.cellular.paymentPortal = {url: 'url'};
+          mojoApi_.setManagedPropertiesForTest(cellularNetwork);
+
+          internetDetailPage.init('cellular_guid', 'Cellular', 'cellular');
+          return flushAsync().then(() => {
+            assertTrue(internetDetailPage.$$('#activateButton').hidden);
+            assertTrue(internetDetailPage.$$('#viewAccountButton').hidden);
+          });
+        });
+
     test('Cellular Scanning', function() {
       const test_iccid = '11111111111111111';
 

@@ -153,13 +153,14 @@
           </div>
           <div id="networkStateText"
               class$="[[getNetworkStateTextClass_(networkState.*,
-                  isPSimUnavailableNetwork_)]]"
+                  isPSimUnavailableNetwork_, isESimUnactivatedProfile_)]]"
               hidden$="[[!isStateTextVisible_(networkState.*,
-                  isPSimUnavailableNetwork_)]]"
+                  isPSimUnavailableNetwork_, isESimUnactivatedProfile_)]]"
               active$="[[isStateTextActive_(networkState.*,
-                           activationUnavailable)]]">
+                           activationUnavailable, isESimUnactivatedProfile_)]]">
             [[getNetworkStateText_(networkState.*, activationUnavailable,
-                deviceState.*, isPSimUnavailableNetwork_)]]
+                deviceState.*, isPSimUnavailableNetwork_,
+                isESimUnactivatedProfile_)]]
           </div>
         </div>
         <template is="dom-if" if="[[isPolicySource(networkState.source)]]">
