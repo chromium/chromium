@@ -4,9 +4,9 @@
 
 #include "ui/chromeos/devicetype_utils.h"
 
-#include "ash/constants/devicetype.h"
 #include "base/notreached.h"
 #include "build/chromeos_buildflags.h"
+#include "chromeos/constants/devicetype.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/chromeos/strings/grit/ui_chromeos_strings.h"
 

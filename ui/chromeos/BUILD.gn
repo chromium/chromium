@@ -6,37 +6,44 @@ import("//build/config/chromeos/ui_mode.gni")
 import("//build/config/ui.gni")
 import("//testing/test.gni")
 
-assert(is_chromeos_ash)
-
 component("chromeos") {
   output_name = "ui_chromeos"
   sources = [
     "devicetype_utils.cc",
     "devicetype_utils.h",
-    "shill_error.cc",
-    "shill_error.h",
-    "user_activity_power_manager_notifier.cc",
-    "user_activity_power_manager_notifier.h",
   ]
   defines = [ "UI_CHROMEOS_IMPLEMENTATION" ]
   deps = [
-    "//ash/constants",
     "//base",
-    "//base/third_party/dynamic_annotations",
     "//build:chromeos_buildflags",
-    "//chromeos/dbus/power",
-    "//chromeos/dbus/power:power_manager_proto",
-    "//chromeos/network:network",
-    "//components/device_event_log",
-    "//mojo/public/cpp/bindings",
+    "//chromeos/constants",
     "//services/device/public/mojom",
-    "//services/service_manager/public/cpp",
     "//ui/base",
     "//ui/chromeos/strings",
-    "//ui/events",
-    "//ui/events:gesture_detection",
-    "//ui/events/devices:devices",
   ]
+
+  if (is_chromeos_ash) {
+    sources += [
+      "shill_error.cc",
+      "shill_error.h",
+      "user_activity_power_manager_notifier.cc",
+      "user_activity_power_manager_notifier.h",
+    ]
+    deps += [
+      "//ash/constants",
+      "//base/third_party/dynamic_annotations",
+      "//chromeos/dbus/power",
+      "//chromeos/dbus/power:power_manager_proto",
+      "//chromeos/network:network",
+      "//components/device_event_log",
+      "//mojo/public/cpp/bindings",
+      "//services/device/public/mojom",
+      "//services/service_manager/public/cpp",
+      "//ui/events",
+      "//ui/events:gesture_detection",
+      "//ui/events/devices:devices",
+    ]
+  }
 }
 
 test("ui_chromeos_unittests") {

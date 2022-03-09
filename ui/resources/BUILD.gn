@@ -171,16 +171,20 @@ repack("repack_ui_test_pak_100_percent") {
     deps += [ ":copy_ui_resources_100_percent" ]
   }
 
+  if (is_chromeos) {
+    sources +=
+        [ "$root_gen_dir/ui/chromeos/strings/ui_chromeos_strings_en-US.pak" ]
+    deps += [ "//ui/chromeos/strings" ]
+  }
+
   if (is_chromeos_ash) {
     sources += [
       "$root_gen_dir/ash/app_list/resources/app_list_resources_100_percent.pak",
       "$root_gen_dir/ui/chromeos/resources/ui_chromeos_resources_100_percent.pak",
-      "$root_gen_dir/ui/chromeos/strings/ui_chromeos_strings_en-US.pak",
     ]
     deps += [
       "//ash/app_list/resources",
       "//ui/chromeos/resources",
-      "//ui/chromeos/strings",
     ]
   }
 

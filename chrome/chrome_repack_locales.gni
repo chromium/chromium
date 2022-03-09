@@ -66,6 +66,11 @@ template("chrome_repack_locales") {
       deps += invoker.deps
     }
 
+    if (is_chromeos) {
+      source_patterns +=
+          [ "${root_gen_dir}/ui/chromeos/strings/ui_chromeos_strings_" ]
+      deps += [ "//ui/chromeos/strings" ]
+    }
     if (is_chromeos_ash) {
       source_patterns += [
         "${root_gen_dir}/ash/shortcut_viewer/strings/shortcut_viewer_strings_",
@@ -73,7 +78,6 @@ template("chrome_repack_locales") {
         "${root_gen_dir}/ash/webui/camera_app_ui/resources/strings/ash_camera_app_strings_",
         "${root_gen_dir}/chromeos/strings/chromeos_strings_",
         "${root_gen_dir}/remoting/resources/",
-        "${root_gen_dir}/ui/chromeos/strings/ui_chromeos_strings_",
       ]
       deps += [
         "//ash/shortcut_viewer/strings",
@@ -81,7 +85,6 @@ template("chrome_repack_locales") {
         "//ash/webui/camera_app_ui/resources/strings",
         "//chromeos/strings",
         "//remoting/resources",
-        "//ui/chromeos/strings",
       ]
       compress = true
     }
