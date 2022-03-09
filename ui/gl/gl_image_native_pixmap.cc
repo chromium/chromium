@@ -156,6 +156,15 @@ bool GLImageNativePixmap::Initialize(scoped_refptr<gfx::NativePixmap> pixmap) {
     attrs.push_back(EGL_LINUX_DRM_FOURCC_EXT);
     attrs.push_back(FourCC(format_));
 
+    if (format_ == gfx::BufferFormat::YUV_420_BIPLANAR ||
+        format_ == gfx::BufferFormat::YVU_420) {
+      // TODO(b/220336463): setting this to EGL_ITU_REC601_EXT always is not
+      // correct. We need to plumb enough information so that we can determine
+      // the right value for this attribute.
+      attrs.push_back(EGL_YUV_COLOR_SPACE_HINT_EXT);
+      attrs.push_back(EGL_ITU_REC601_EXT);
+    }
+
     if (plane_ == gfx::BufferPlane::DEFAULT) {
       const EGLint kLinuxDrmModifiers[] = {EGL_DMA_BUF_PLANE0_MODIFIER_LO_EXT,
                                            EGL_DMA_BUF_PLANE1_MODIFIER_LO_EXT,
