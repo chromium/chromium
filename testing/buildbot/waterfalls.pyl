@@ -840,10 +840,6 @@
         },
       },
       'android-cronet-x86-dbg-10-tests': {
-        'additional_compile_targets': [
-          'cronet_package',
-          'cronet_perf_test_apk',
-        ],
         'mixins': [
           '10-x86-emulator',
           'emulator-4-cores',
@@ -854,7 +850,6 @@
         'os_type': 'android',
         'test_suites': {
           'gtest_tests': 'cronet_gtests',
-          'isolated_scripts': 'cronet_dbg_isolated_scripts',
         },
       },
       'android-cronet-x86-dbg-11-tests': {

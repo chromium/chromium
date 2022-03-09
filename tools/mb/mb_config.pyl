@@ -822,6 +822,8 @@
       'android-cronet-arm64-dbg': 'android_cronet_debug_static_bot_arm64',
       'android-cronet-arm64-rel': 'android_cronet_release_bot_minimal_symbols_arm64',
       'android-cronet-kitkat-arm-rel': 'android_cronet_release_bot_minimal_symbols_arm_no_neon',
+      'android-cronet-lollipop-arm-rel': 'android_cronet_release_bot_minimal_symbols_arm_no_neon',
+      'android-cronet-marshmallow-arm64-rel': 'android_cronet_release_trybot_arm64',
       'android-cronet-x86-dbg': 'android_cronet_debug_static_bot_x86',
       'android-cronet-x86-rel': 'android_cronet_release_bot_minimal_symbols_x86',
       'android-cronet-x86-dbg-10-tests': 'android_cronet_debug_static_bot_x86',
@@ -1413,6 +1415,11 @@
 
     'android_cronet_release_trybot_arm_no_neon': [
       'android', 'cronet_android', 'release_trybot', 'arm_no_neon',
+    ],
+
+    'android_cronet_release_trybot_arm64': [
+      'android', 'cronet_android', 'official_optimize', 'release_trybot', 'arm64',
+      'strip_debug_info',
     ],
 
     'android_debug_bot': [
