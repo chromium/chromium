@@ -33,4 +33,7 @@ interface CrosWindowManagement {
   // Sets the bounds of a CrosWindow where |hash| is used as the window
   // identifier.
   SetWindowBounds(mojo_base.mojom.UnguessableToken id, int32 x, int32 y, int32 width, int32 height);
+
+  // Enable/disable fullscreen for window identified by id if one exists, else do nothing.
+  SetFullscreen(mojo_base.mojom.UnguessableToken id, bool fullscreen);
 };

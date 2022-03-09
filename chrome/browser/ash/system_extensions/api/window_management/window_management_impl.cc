@@ -12,6 +12,7 @@
 #include "components/services/app_service/public/mojom/types.mojom-shared.h"
 #include "components/services/app_service/public/mojom/types.mojom.h"
 #include "third_party/blink/public/mojom/chromeos/system_extensions/window_management/cros_window_management.mojom.h"
+#include "ui/aura/client/aura_constants.h"
 #include "ui/display/display.h"
 #include "ui/display/screen.h"
 #include "ui/views/widget/widget.h"
@@ -59,6 +60,16 @@ void WindowManagementImpl::SetWindowBounds(const base::UnguessableToken& id,
   if (target) {
     target->SetBounds(gfx::Rect(x, y, width, height));
   }
+}
+
+void WindowManagementImpl::SetFullscreen(const base::UnguessableToken& id,
+                                         bool fullscreen) {
+  aura::Window* target = GetWindow(id);
+  // TODO(b/223320570): Add error handling for stale ids.
+  if (!target) {
+    return;
+  }
+  views::Widget::GetWidgetForNativeWindow(target)->SetFullscreen(fullscreen);
 }
 
 aura::Window* WindowManagementImpl::GetWindow(

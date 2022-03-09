@@ -16,7 +16,7 @@ interface CrosWindow {
 
   boolean setOrigin(double x, double y);
   boolean setBounds(double x, double y, double width, double height);
-  boolean setFullscreen(boolean value);
+  void setFullscreen(boolean fullscreen);
   boolean maximize();
   boolean minimize();
   boolean raise();

@@ -28,6 +28,9 @@ class WindowManagementImpl : public blink::mojom::CrosWindowManagement {
                        int32_t width,
                        int32_t height) override;
 
+  void SetFullscreen(const base::UnguessableToken& id,
+                     bool fullscreen) override;
+
  private:
   aura::Window* GetWindow(const base::UnguessableToken& id);
 

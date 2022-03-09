@@ -34,7 +34,7 @@ class CrosWindow : public ScriptWrappable {
 
   bool setOrigin(double x, double y);
   bool setBounds(double x, double y, double width, double height);
-  bool setFullscreen(bool value);
+  void setFullscreen(bool fullscreen);
   bool maximize();
   bool minimize();
   bool raise();
