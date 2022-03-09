@@ -56,7 +56,7 @@
 <translation id="2402980924095424747"><ph name="MEGABYTES" /> MB</translation>
 <translation id="2404630663942400771">{PERMISSIONS_SUMMARY_ALLOWED,plural, =1{<ph name="PERMISSION_1" />、<ph name="PERMISSION_2" />、他 <ph name="NUM_MORE" /> 個の権限が許可されています}other{<ph name="PERMISSION_1" />、<ph name="PERMISSION_2" />、他 <ph name="NUM_MORE" /> 個の権限が許可されています}}</translation>
 <translation id="2434158240863470628">ダウンロードが完了しました<ph name="SEPARATOR" /> <ph name="BYTES_DOWNLOADED" /></translation>
-<translation id="2442870161001914531">常にデスクトップ版サイトを表示する</translation>
+<translation id="2442870161001914531">常に PC 版サイトを表示する</translation>
 <translation id="2482878487686419369">通知</translation>
 <translation id="2485422356828889247">アンインストール</translation>
 <translation id="2490684707762498678"><ph name="APP_NAME" /> で管理</translation>
