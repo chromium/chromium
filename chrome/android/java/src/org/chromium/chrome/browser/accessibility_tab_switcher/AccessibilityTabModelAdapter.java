@@ -177,7 +177,7 @@ public class AccessibilityTabModelAdapter extends BaseAdapter {
     }
 
     void focusTabWithId(int tabId) {
-        if (mTabIdToFocus != Tab.INVALID_TAB_ID) {
+        if (mTabIdToFocus != Tab.INVALID_TAB_ID && mListItemToFocus != null) {
             mListItemToFocus.removeOnAttachStateChangeListener(mItemToFocusAttachedListener);
             mListItemToFocus = null;
         }
