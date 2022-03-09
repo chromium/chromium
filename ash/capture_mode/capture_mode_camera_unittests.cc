@@ -188,6 +188,30 @@ class CaptureModeCameraTest : public AshTestBase {
                 GetEventGenerator());
   }
 
+  void DragPreviewToPoint(views::Widget* preview_widget,
+                          const gfx::Point& screen_location,
+                          bool by_touch_gestures = false,
+                          bool drop = true) {
+    DCHECK(preview_widget);
+    auto* event_generator = GetEventGenerator();
+    event_generator->set_current_screen_location(
+        preview_widget->GetWindowBoundsInScreen().CenterPoint());
+    if (by_touch_gestures) {
+      event_generator->PressTouch();
+      // Move the touch by an enough amount in X to make sure it generates a
+      // serial of gesture scroll events instead of a fling event.
+      event_generator->MoveTouchBy(50, 0);
+      event_generator->MoveTouch(screen_location);
+      if (drop)
+        event_generator->ReleaseTouch();
+    } else {
+      event_generator->PressLeftButton();
+      event_generator->MoveMouseTo(screen_location);
+      if (drop)
+        event_generator->ReleaseLeftButton();
+    }
+  }
+
   // Verifies that the camera preview is placed on the correct position based on
   // current preview snap position and the given `confine_bounds_in_screen`.
   void VerifyPreviewAlignment(const gfx::Rect& confine_bounds_in_screen) {
@@ -848,7 +872,7 @@ TEST_F(CaptureModeCameraTest, MultiDisplayCameraPreviewWidgetBounds) {
   // should be inside the window that is being recorded inside the second
   // display.
   window()->SetBoundsInScreen(
-      gfx::Rect(900, 0, 300, 200),
+      gfx::Rect(900, 0, 400, 300),
       display::Screen::GetScreen()->GetDisplayNearestWindow(
           Shell::GetAllRootWindows()[1]));
   StartRecordingFromSource(CaptureModeSource::kWindow);
@@ -914,7 +938,6 @@ TEST_F(CaptureModeCameraTest,
   EXPECT_FALSE(test_api_new.GetCameraMenuGroup());
   EXPECT_FALSE(test_api_new.GetAudioInputMenuGroup());
   EXPECT_TRUE(test_api_new.GetSaveToMenuGroup());
-  controller->Stop();
 }
 
 // Verify that starting a new capture session and updating capture source won't
@@ -971,7 +994,6 @@ TEST_F(CaptureModeCameraTest,
   EXPECT_EQ(
       parent,
       camera_controller->camera_preview_widget()->GetNativeWindow()->parent());
-  controller->Stop();
 }
 
 // Tests that changing the folder while there's a video recording in progress
@@ -1155,6 +1177,145 @@ TEST_P(CameraPreviewBoundsTest, DisplayRotation) {
       WindowTreeHostManager::GetPrimaryDisplayId(),
       display::Display::ROTATE_270, display::Display::RotationSource::USER);
   VerifyPreviewAlignment(GetCaptureBoundsInScreen());
+}
+
+// Tests that when camera preview is being dragged, at the end of the drag, it
+// should be snapped to the correct snap position. It tests two use cases, when
+// capture session is active and when there's a video recording in progress
+// including drag to snap by mouse and by touch.
+TEST_P(CameraPreviewBoundsTest, CameraPreviewDragToSnap) {
+  StartCaptureSessionWithParam();
+  auto* camera_controller = GetCameraController();
+  AddDefaultCamera();
+  camera_controller->SetSelectedCamera(CameraId(kDefaultCameraModelId, 1));
+  auto* preview_widget = camera_controller->camera_preview_widget();
+  const gfx::Point capture_bounds_center_point =
+      GetCaptureBoundsInScreen().CenterPoint();
+
+  // Verify that by default the snap position should be `kBottomRight` and
+  // camera preview is placed at the correct position.
+  EXPECT_EQ(CameraPreviewSnapPosition::kBottomRight,
+            camera_controller->camera_preview_snap_position());
+  VerifyPreviewAlignment(GetCaptureBoundsInScreen());
+
+  // Drag and drop camera preview by mouse to the top right of the
+  // `capture_bounds_center_point`, verify that camera preview is snapped to the
+  // top right with correct position.
+  DragPreviewToPoint(preview_widget, {capture_bounds_center_point.x() + 20,
+                                      capture_bounds_center_point.y() - 20});
+  EXPECT_EQ(CameraPreviewSnapPosition::kTopRight,
+            camera_controller->camera_preview_snap_position());
+  VerifyPreviewAlignment(GetCaptureBoundsInScreen());
+
+  // Now drag and drop camera preview by touch to the top left of the center
+  // point, verify that camera preview is snapped to the top left with correct
+  // position.
+  DragPreviewToPoint(preview_widget,
+                     {capture_bounds_center_point.x() - 20,
+                      capture_bounds_center_point.y() - 20},
+                     /*by_touch_gestures=*/true);
+  EXPECT_EQ(CameraPreviewSnapPosition::kTopLeft,
+            camera_controller->camera_preview_snap_position());
+  VerifyPreviewAlignment(GetCaptureBoundsInScreen());
+
+  // Start video recording, verify camera preview is snapped to the correct snap
+  // position at the end of drag when there's a video recording in progress.
+  StartVideoRecordingImmediately();
+  EXPECT_FALSE(CaptureModeController::Get()->IsActive());
+
+  // Drag and drop camera preview by mouse to the bottom left of the center
+  // point, verify that camera preview is snapped to the bottom left with
+  // correct position.
+  DragPreviewToPoint(preview_widget, {capture_bounds_center_point.x() - 20,
+                                      capture_bounds_center_point.y() + 20});
+  EXPECT_EQ(CameraPreviewSnapPosition::kBottomLeft,
+            camera_controller->camera_preview_snap_position());
+  VerifyPreviewAlignment(GetCaptureBoundsInScreen());
+
+  // Now drag and drop camera preview by touch to the bottom right of the center
+  // point, verify that camera preview is snapped to the bottom right with
+  // correct position.
+  DragPreviewToPoint(preview_widget,
+                     {capture_bounds_center_point.x() + 20,
+                      capture_bounds_center_point.y() + 20},
+                     /*by_touch_gestures=*/true);
+  EXPECT_EQ(CameraPreviewSnapPosition::kBottomRight,
+            camera_controller->camera_preview_snap_position());
+  VerifyPreviewAlignment(GetCaptureBoundsInScreen());
+}
+
+TEST_P(CameraPreviewBoundsTest, CameraPreviewDragToSnapOnMultipleDisplay) {
+  UpdateDisplay("800x700,801+0-800x700");
+
+  const gfx::Point point_in_second_display = gfx::Point(1000, 500);
+  auto* event_generator = GetEventGenerator();
+  MoveMouseToAndUpdateCursorDisplay(point_in_second_display, event_generator);
+
+  // Start capture mode on the second display.
+  StartCaptureSessionWithParam();
+  auto* camera_controller = GetCameraController();
+  AddDefaultCamera();
+  camera_controller->SetSelectedCamera(CameraId(kDefaultCameraModelId, 1));
+  auto* preview_widget = camera_controller->camera_preview_widget();
+  const gfx::Point capture_bounds_center_point =
+      GetCaptureBoundsInScreen().CenterPoint();
+
+  // Drag and drop camera preview by mouse to the top right of the
+  // `capture_bounds_center_point`, verify that camera preview is snapped to the
+  // top right with correct position.
+  DragPreviewToPoint(preview_widget, {capture_bounds_center_point.x() + 20,
+                                      capture_bounds_center_point.y() - 20});
+  EXPECT_EQ(CameraPreviewSnapPosition::kTopRight,
+            camera_controller->camera_preview_snap_position());
+  VerifyPreviewAlignment(GetCaptureBoundsInScreen());
+}
+
+// Tests that when there's a video recording is in progress, start a new
+// capture session will make camera preview not draggable.
+TEST_P(CameraPreviewBoundsTest,
+       DragPreviewInNewCaptureSessionWhileVideoRecordingInProgress) {
+  StartCaptureSessionWithParam();
+  auto* camera_controller = GetCameraController();
+  AddDefaultCamera();
+  camera_controller->SetSelectedCamera(CameraId(kDefaultCameraModelId, 1));
+  auto* preview_widget = camera_controller->camera_preview_widget();
+  const gfx::Point capture_bounds_center_point =
+      GetCaptureBoundsInScreen().CenterPoint();
+
+  StartVideoRecordingImmediately();
+  EXPECT_FALSE(CaptureModeController::Get()->IsActive());
+  // Start a new capture session while a video recording is in progress.
+  auto* controller = CaptureModeController::Get();
+  controller->Start(CaptureModeEntryType::kQuickSettings);
+
+  const gfx::Rect preview_bounds_in_screen_before_drag =
+      preview_widget->GetWindowBoundsInScreen();
+  const auto snap_position_before_drag =
+      camera_controller->camera_preview_snap_position();
+  // Verify by default snap position is `kBottomRight`.
+  EXPECT_EQ(snap_position_before_drag, CameraPreviewSnapPosition::kBottomRight);
+
+  // Try to drag camera preview by mouse without dropping it, verify camera
+  // preview is not draggable and its position is not changed.
+  DragPreviewToPoint(preview_widget,
+                     {preview_bounds_in_screen_before_drag.x() + 20,
+                      preview_bounds_in_screen_before_drag.y() + 20},
+                     /*by_touch_gestures=*/false,
+                     /*drop=*/false);
+  EXPECT_EQ(preview_widget->GetWindowBoundsInScreen(),
+            preview_bounds_in_screen_before_drag);
+
+  // Try to drag and drop camera preview by touch to the top left of the current
+  // capture bounds' center point, verity it's not moved. Also verify the snap
+  // position is not updated.
+  DragPreviewToPoint(preview_widget,
+                     {capture_bounds_center_point.x() - 20,
+                      capture_bounds_center_point.y() - 20},
+                     /*by_touch_gestures=*/true);
+  EXPECT_EQ(preview_widget->GetWindowBoundsInScreen(),
+            preview_bounds_in_screen_before_drag);
+  EXPECT_EQ(camera_controller->camera_preview_snap_position(),
+            snap_position_before_drag);
 }
 
 INSTANTIATE_TEST_SUITE_P(All,

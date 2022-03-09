@@ -1466,6 +1466,19 @@ void CaptureModeSession::OnLocatedEvent(ui::LocatedEvent* event,
     RefreshBarWidgetBounds();
   }
 
+  auto* camera_controller = controller_->camera_controller();
+  if (camera_controller && !controller_->is_recording_in_progress()) {
+    auto* camera_preview_widget = camera_controller->camera_preview_widget();
+    if ((camera_preview_widget &&
+         camera_preview_widget->GetWindowBoundsInScreen().Contains(
+             screen_location)) ||
+        camera_controller->is_drag_in_progress()) {
+      // Pass the event to camera preview to handle it if the event is on top of
+      // camera preview and there's no video recording is in progress.
+      return;
+    }
+  }
+
   const bool is_event_on_settings_menu =
       IsEventInSettingsMenuBounds(screen_location);
 

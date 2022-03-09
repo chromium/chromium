@@ -10,16 +10,28 @@
 
 namespace ash {
 
+class CaptureModeCameraController;
+
 // A view that acts as the contents view of the camera preview widget. It will
 // be responsible for painting the latest camera video frame inside its bounds.
 class CameraPreviewView : public views::View {
  public:
   METADATA_HEADER(CameraPreviewView);
 
-  CameraPreviewView();
+  explicit CameraPreviewView(CaptureModeCameraController* camera_controller);
   CameraPreviewView(const CameraPreviewView&) = delete;
   CameraPreviewView& operator=(const CameraPreviewView&) = delete;
   ~CameraPreviewView() override;
+
+ protected:
+  // views::View:
+  bool OnMousePressed(const ui::MouseEvent& event) override;
+  bool OnMouseDragged(const ui::MouseEvent& event) override;
+  void OnMouseReleased(const ui::MouseEvent& event) override;
+  void OnGestureEvent(ui::GestureEvent* event) override;
+
+ private:
+  CaptureModeCameraController* const camera_controller_;
 };
 
 }  // namespace ash

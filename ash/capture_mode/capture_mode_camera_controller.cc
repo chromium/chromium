@@ -12,13 +12,20 @@
 #include "ash/capture_mode/capture_mode_controller.h"
 #include "ash/public/cpp/capture_mode/capture_mode_delegate.h"
 #include "ash/public/cpp/shell_window_ids.h"
+#include "ash/shell.h"
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/check.h"
 #include "base/strings/stringprintf.h"
 #include "base/time/time.h"
 #include "media/capture/video/video_capture_device_descriptor.h"
+#include "ui/compositor/layer.h"
+#include "ui/compositor/scoped_layer_animation_settings.h"
+#include "ui/gfx/geometry/point.h"
+#include "ui/gfx/geometry/transform.h"
+#include "ui/views/animation/animation_builder.h"
 #include "ui/views/widget/widget.h"
+#include "ui/wm/core/window_properties.h"
 
 namespace ash {
 
@@ -121,6 +128,27 @@ std::unique_ptr<views::Widget> CreateCameraPreviewWidget(
   camera_preview_widget->Init(std::move(params));
   StackingPreviewAtTop(camera_preview_widget.get());
   return camera_preview_widget;
+}
+
+// Called by `ContinueDraggingPreview` to make sure camera preview is not
+// dragged outside of the capture surface.
+void AdjustBoundsWithinConfinedBounds(const gfx::Rect& confined_bounds,
+                                      gfx::Rect& preview_bounds) {
+  const int x = preview_bounds.x();
+  if (int offset = x - confined_bounds.x(); offset < 0) {
+    preview_bounds.set_x(x - offset);
+  } else if (int offset = confined_bounds.right() - preview_bounds.right();
+             offset < 0) {
+    preview_bounds.set_x(x + offset);
+  }
+
+  const int y = preview_bounds.y();
+  if (int offset = y - confined_bounds.y(); offset < 0) {
+    preview_bounds.set_y(y - offset);
+  } else if (int offset = confined_bounds.bottom() - preview_bounds.bottom();
+             offset < 0) {
+    preview_bounds.set_y(y + offset);
+  }
 }
 
 }  // namespace
@@ -253,6 +281,55 @@ void CaptureModeCameraController::MaybeUpdatePreviewWidgetBounds() {
   camera_preview_widget_->SetBounds(GetPreviewWidgetBounds());
 }
 
+void CaptureModeCameraController::StartDraggingPreview(
+    const gfx::PointF& screen_location) {
+  previous_location_in_screen_ = screen_location;
+
+  is_drag_in_progress_ = true;
+  // Use cursor compositing instead of the platform cursor when dragging to
+  // ensure the cursor is aligned with the camera preview.
+  Shell::Get()->UpdateCursorCompositingEnabled();
+}
+
+void CaptureModeCameraController::ContinueDraggingPreview(
+    const gfx::PointF& screen_location) {
+  gfx::Rect current_bounds = GetCurrentBoundsMatchingConfineBoundsCoordinates();
+
+  current_bounds.Offset(
+      gfx::ToRoundedVector2d(screen_location - previous_location_in_screen_));
+  AdjustBoundsWithinConfinedBounds(
+      CaptureModeController::Get()->GetCameraPreviewConfineBounds(),
+      current_bounds);
+  camera_preview_widget_->SetBounds(current_bounds);
+  previous_location_in_screen_ = screen_location;
+}
+
+void CaptureModeCameraController::EndDraggingPreview(
+    const gfx::PointF& screen_location) {
+  ContinueDraggingPreview(screen_location);
+  UpdateSnapPostionOnDragEnded();
+
+  const gfx::Rect current_bounds =
+      GetCurrentBoundsMatchingConfineBoundsCoordinates();
+  const gfx::Rect target_bounds = GetPreviewWidgetBounds();
+  camera_preview_widget_->SetBounds(target_bounds);
+  gfx::Transform transform;
+  transform.Translate(current_bounds.CenterPoint() -
+                      target_bounds.CenterPoint());
+  ui::Layer* layer = camera_preview_widget_->GetLayer();
+  layer->SetTransform(transform);
+  views::AnimationBuilder()
+      .SetPreemptionStrategy(
+          ui::LayerAnimator::IMMEDIATELY_ANIMATE_TO_NEW_TARGET)
+      .Once()
+      .SetDuration(base::Milliseconds(120))
+      .SetTransform(layer, gfx::Transform());
+
+  is_drag_in_progress_ = false;
+  // Disable cursor compositing at the end of the drag.
+  Shell::Get()->UpdateCursorCompositingEnabled();
+}
+
 void CaptureModeCameraController::OnDevicesChanged(
     base::SystemMonitor::DeviceType device_type) {
   if (device_type == base::SystemMonitor::DEVTYPE_VIDEO_CAPTURE)
@@ -351,7 +428,7 @@ void CaptureModeCameraController::RefreshCameraPreview() {
     camera_preview_widget_ =
         CreateCameraPreviewWidget(GetPreviewWidgetBounds());
     camera_preview_view_ = camera_preview_widget_->SetContentsView(
-        std::make_unique<CameraPreviewView>());
+        std::make_unique<CameraPreviewView>(this));
   }
   camera_preview_widget_->Show();
 }
@@ -402,6 +479,36 @@ gfx::Rect CaptureModeCameraController::GetPreviewWidgetBounds() const {
       break;
   }
   return gfx::Rect(origin, preview_size);
+}
+
+void CaptureModeCameraController::UpdateSnapPostionOnDragEnded() {
+  const gfx::Point center_point_of_preview_widget =
+      GetCurrentBoundsMatchingConfineBoundsCoordinates().CenterPoint();
+  const gfx::Point center_point_of_confine_bounds =
+      CaptureModeController::Get()
+          ->GetCameraPreviewConfineBounds()
+          .CenterPoint();
+
+  if (center_point_of_preview_widget.x() < center_point_of_confine_bounds.x()) {
+    if (center_point_of_preview_widget.y() < center_point_of_confine_bounds.y())
+      camera_preview_snap_position_ = CameraPreviewSnapPosition::kTopLeft;
+    else
+      camera_preview_snap_position_ = CameraPreviewSnapPosition::kBottomLeft;
+  } else {
+    if (center_point_of_preview_widget.y() < center_point_of_confine_bounds.y())
+      camera_preview_snap_position_ = CameraPreviewSnapPosition::kTopRight;
+    else
+      camera_preview_snap_position_ = CameraPreviewSnapPosition::kBottomRight;
+  }
+}
+
+gfx::Rect CaptureModeCameraController::
+    GetCurrentBoundsMatchingConfineBoundsCoordinates() {
+  aura::Window* preview_window = camera_preview_widget_->GetNativeWindow();
+  aura::Window* parent = preview_window->parent();
+  if (parent->GetProperty(wm::kUsesScreenCoordinatesKey))
+    return preview_window->GetBoundsInScreen();
+  return preview_window->bounds();
 }
 
 }  // namespace ash

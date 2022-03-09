@@ -882,7 +882,6 @@ void CaptureModeController::EndSessionOrRecording(EndRecordingReason reason) {
     // is active or after the three-second countdown had started but not
     // finished yet.
     Stop();
-    return;
   }
 
   if (!is_recording_in_progress())

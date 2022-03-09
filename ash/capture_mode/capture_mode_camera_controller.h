@@ -140,6 +140,7 @@ class ASH_EXPORT CaptureModeCameraController
   CameraPreviewSnapPosition camera_preview_snap_position() const {
     return camera_preview_snap_position_;
   }
+  bool is_drag_in_progress() const { return is_drag_in_progress_; }
 
   void AddObserver(Observer* observer);
   void RemoveObserver(Observer* observer);
@@ -164,6 +165,11 @@ class ASH_EXPORT CaptureModeCameraController
   // Updates the bounds of `camera_preview_widget_` to current
   // GetPreviewWidgetBounds() when necessary.
   void MaybeUpdatePreviewWidgetBounds();
+
+  // Handles drag events forwarded from `camera_preview_view_`.
+  void StartDraggingPreview(const gfx::PointF& screen_location);
+  void ContinueDraggingPreview(const gfx::PointF& screen_location);
+  void EndDraggingPreview(const gfx::PointF& screen_location);
 
   // base::SystemMonitor::DevicesChangedObserver:
   void OnDevicesChanged(base::SystemMonitor::DeviceType device_type) override;
@@ -209,6 +215,14 @@ class ASH_EXPORT CaptureModeCameraController
   // bounds depend on the surface being recorded and current preview snap
   // position.
   gfx::Rect GetPreviewWidgetBounds() const;
+
+  // Called by `EndDraggingPreview`, updating `camera_preview_snap_position_`
+  // according to the current position of the `camera_preview_view_`.
+  void UpdateSnapPostionOnDragEnded();
+
+  // Returns the current bounds of camemra preview widget that match the
+  // coordinate system of the confine bounds.
+  gfx::Rect GetCurrentBoundsMatchingConfineBoundsCoordinates();
 
   // Owned by CaptureModeController and guaranteed to be not null and to outlive
   // `this`.
@@ -262,6 +276,12 @@ class ASH_EXPORT CaptureModeCameraController
 
   CameraPreviewSnapPosition camera_preview_snap_position_ =
       CameraPreviewSnapPosition::kBottomRight;
+
+  // The location of the previous drag event in screen coordinate.
+  gfx::PointF previous_location_in_screen_;
+
+  // True when the dragging for `camera_preview_view_` is in progress.
+  bool is_drag_in_progress_ = false;
 
   base::WeakPtrFactory<CaptureModeCameraController> weak_ptr_factory_{this};
 };

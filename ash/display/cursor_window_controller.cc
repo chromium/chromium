@@ -5,6 +5,7 @@
 #include "ash/display/cursor_window_controller.h"
 
 #include "ash/accessibility/magnifier/fullscreen_magnifier_controller.h"
+#include "ash/capture_mode/capture_mode_camera_controller.h"
 #include "ash/capture_mode/capture_mode_controller.h"
 #include "ash/capture_mode/capture_mode_session.h"
 #include "ash/constants/ash_constants.h"
@@ -148,9 +149,16 @@ bool CursorWindowController::ShouldEnableCursorCompositing() {
   if (is_cursor_motion_blur_enabled_)
     return true;
 
-  auto* session = CaptureModeController::Get()->capture_mode_session();
+  auto* controller = CaptureModeController::Get();
+  auto* session = controller->capture_mode_session();
   if (session && session->is_drag_in_progress()) {
     // To ensure the cursor is aligned with the dragged region.
+    return true;
+  }
+
+  auto* camera_controller = controller->camera_controller();
+  if (camera_controller && camera_controller->is_drag_in_progress()) {
+    // To ensure the cursor is aligned with the dragged camera preview.
     return true;
   }
 
