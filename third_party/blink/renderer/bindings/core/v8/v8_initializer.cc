@@ -686,8 +686,14 @@ class ArrayBufferAllocator : public v8::ArrayBuffer::Allocator {
     DCHECK(virtual_size < size_t_max);
     // If AmountOfVirtualMemory() returns 0, there is no limit on virtual
     // memory, do not limit the total allocation. Otherwise, Limit the total
-    // allocation to 50% of available virtual memory.
-    max_allocation_ = static_cast<size_t>(virtual_size) / 2;
+    // allocation to reserve up to 2 GiB virtual memory space for other
+    // components.
+    uint64_t memory_reserve = 2ull * 1024 * 1024 * 1024;  // 2 GiB
+    if (virtual_size > memory_reserve * 2) {
+      max_allocation_ = static_cast<size_t>(virtual_size - memory_reserve);
+    } else {
+      max_allocation_ = static_cast<size_t>(virtual_size / 2);
+    }
   }
 
   // Allocate() methods return null to signal allocation failure to V8, which
