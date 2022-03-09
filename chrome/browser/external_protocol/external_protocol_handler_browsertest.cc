@@ -84,7 +84,15 @@ class ExternalProtocolHandlerSandboxBrowserTest
         "Failed to launch 'custom:custom' because the scheme does not have a "
         "registered handler.";
     const char blocked_msg[] =
-        "Navigation to external protocol blocked by sandbox.";
+        "Navigation to external protocol blocked by sandbox, because it "
+        "doesn't contain any of: "
+        "'allow-top-navigation-to-custom-protocols', "
+        "'allow-top-navigation-by-user-activation', "
+        "'allow-top-navigation', or "
+        "'allow-popups'. See "
+        "https://chromestatus.com/feature/5680742077038592 and "
+        "https://chromeenterprise.google/policies/"
+        "#SandboxExternalProtocolBlocked";
     content::WebContentsConsoleObserver observer(web_content());
     observer.SetFilter(base::BindLambdaForTesting(
         [&](const content::WebContentsConsoleObserver::Message& message) {
@@ -232,6 +240,14 @@ IN_PROC_BROWSER_TEST_F(ExternalProtocolHandlerSandboxBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_F(ExternalProtocolHandlerSandboxBrowserTest,
+                       SandboxAllowTopNavigationToCustomProtocols) {
+  EXPECT_TRUE(AllowedBySandbox(
+      CreateIFrame(web_content()->GetMainFrame(),
+                   "iframe.sandbox = 'allow-scripts "
+                   "allow-top-navigation-to-custom-protocols';")));
+}
+
+IN_PROC_BROWSER_TEST_F(ExternalProtocolHandlerSandboxBrowserTest,
                        SandboxAllowTopNavigation) {
   EXPECT_TRUE(AllowedBySandbox(
       CreateIFrame(web_content()->GetMainFrame(),
@@ -374,9 +390,18 @@ IN_PROC_BROWSER_TEST_F(ExternalProtocolHandlerSandboxFencedFrameBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(ExternalProtocolHandlerSandboxFencedFrameBrowserTest,
                        SandboxAllowTopNavigationInFencedFrame) {
-  EXPECT_FALSE(AllowedBySandbox(
+  EXPECT_TRUE(AllowedBySandbox(
       CreateIFrame(CreateFencedFrame(),
                    "iframe.sandbox = 'allow-scripts allow-top-navigation';")));
+}
+
+IN_PROC_BROWSER_TEST_F(
+    ExternalProtocolHandlerSandboxFencedFrameBrowserTest,
+    SandboxAllowTopNavigationToCustomProtocolsInFencedFrame) {
+  EXPECT_TRUE(AllowedBySandbox(
+      CreateIFrame(CreateFencedFrame(),
+                   "iframe.sandbox = 'allow-scripts "
+                   "allow-top-navigation-to-custom-protocols';")));
 }
 
 IN_PROC_BROWSER_TEST_F(ExternalProtocolHandlerSandboxFencedFrameBrowserTest,

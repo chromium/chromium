@@ -28,7 +28,8 @@ WebSandboxFlags ParseWebSandboxToken(const base::StringPiece& token) {
       {"allow-modals", WebSandboxFlags::kModals},
       {"allow-orientation-lock", WebSandboxFlags::kOrientationLock},
       {"allow-pointer-lock", WebSandboxFlags::kPointerLock},
-      {"allow-popups", WebSandboxFlags::kPopups},
+      {"allow-popups", WebSandboxFlags::kPopups |
+                           WebSandboxFlags::kTopNavigationToCustomProtocols},
       {"allow-popups-to-escape-sandbox",
        WebSandboxFlags::kPropagatesToAuxiliaryBrowsingContexts},
       {"allow-presentation", WebSandboxFlags::kPresentationController},
@@ -37,9 +38,13 @@ WebSandboxFlags ParseWebSandboxToken(const base::StringPiece& token) {
        WebSandboxFlags::kAutomaticFeatures | WebSandboxFlags::kScripts},
       {"allow-storage-access-by-user-activation",
        WebSandboxFlags::kStorageAccessByUserActivation},
-      {"allow-top-navigation", WebSandboxFlags::kTopNavigation},
+      {"allow-top-navigation",
+       WebSandboxFlags::kTopNavigation |
+           WebSandboxFlags::kTopNavigationToCustomProtocols},
       {"allow-top-navigation-by-user-activation",
        WebSandboxFlags::kTopNavigationByUserActivation},
+      {"allow-top-navigation-to-custom-protocols",
+       WebSandboxFlags::kTopNavigationToCustomProtocols},
   };
 
   for (const auto& it : table) {

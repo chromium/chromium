@@ -45,5 +45,8 @@ enum WebSandboxFlags {
 
   kStorageAccessByUserActivation         =  65536, // 1 << 16
 
+  // See https://github.com/whatwg/html/pull/7654
+  kTopNavigationToCustomProtocols        = 131072, // 1 << 17
+
   kAll                                   = -1, // Mask with all bits set.
 };

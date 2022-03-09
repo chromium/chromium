@@ -23,7 +23,10 @@ TEST(WebSandboxFlagsTest, All) {
       {"allow-modals", {~WebSandboxFlags::kModals, ""}},
       {"allow-orientation-lock", {~WebSandboxFlags::kOrientationLock, ""}},
       {"allow-pointer-lock", {~WebSandboxFlags::kPointerLock, ""}},
-      {"allow-popups", {~WebSandboxFlags::kPopups, ""}},
+      {"allow-popups",
+       {~WebSandboxFlags::kPopups &
+            ~WebSandboxFlags::kTopNavigationToCustomProtocols,
+        ""}},
       {"allow-popups-to-escape-sandbox",
        {~WebSandboxFlags::kPropagatesToAuxiliaryBrowsingContexts, ""}},
       {"allow-presentation", {~WebSandboxFlags::kPresentationController, ""}},
@@ -32,9 +35,14 @@ TEST(WebSandboxFlagsTest, All) {
        {~WebSandboxFlags::kAutomaticFeatures & ~WebSandboxFlags::kScripts, ""}},
       {"allow-storage-access-by-user-activation",
        {~WebSandboxFlags::kStorageAccessByUserActivation, ""}},
-      {"allow-top-navigation", {~WebSandboxFlags::kTopNavigation, ""}},
+      {"allow-top-navigation",
+       {~WebSandboxFlags::kTopNavigation &
+            ~WebSandboxFlags::kTopNavigationToCustomProtocols,
+        ""}},
       {"allow-top-navigation-by-user-activation",
        {~WebSandboxFlags::kTopNavigationByUserActivation, ""}},
+      {"allow-top-navigation-to-custom-protocols",
+       {~WebSandboxFlags::kTopNavigationToCustomProtocols, ""}},
 
       // Two tokens:
       {"allow-downloads allow-forms",

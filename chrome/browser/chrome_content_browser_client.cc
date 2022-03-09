@@ -1096,9 +1096,10 @@ void LaunchURL(base::WeakPtr<ChromeContentBrowserClient> client,
   //
   // This block adds an extra logic, gating external protocol in iframes to have
   // one of:
-  // - 'allow-popups'
   // - 'allow-top-navigation'
+  // - 'allow-top-navigation-to-custom-protocols'
   // - 'allow-top-navigation-by-user-navigation' + user-activation
+  // - 'allow-popups'
   //
   // See https://crbug.com/1148777
   if (!is_primary_main_frame) {
@@ -1106,8 +1107,7 @@ void LaunchURL(base::WeakPtr<ChromeContentBrowserClient> client,
     auto allow = [&](SandboxFlags flag) {
       return (sandbox_flags & flag) == SandboxFlags::kNone;
     };
-    bool allowed = (allow(SandboxFlags::kPopups)) ||
-                   (allow(SandboxFlags::kTopNavigation)) ||
+    bool allowed = (allow(SandboxFlags::kTopNavigationToCustomProtocols)) ||
                    (allow(SandboxFlags::kTopNavigationByUserActivation) &&
                     has_user_gesture);
 
@@ -1118,14 +1118,38 @@ void LaunchURL(base::WeakPtr<ChromeContentBrowserClient> client,
             rfh, blink::mojom::WebFeature::kExternalProtocolBlockedBySandbox);
       }
 
-      if (base::FeatureList::IsEnabled(
-              features::kSandboxExternalProtocolBlocked) &&
-          !base::CommandLine::ForCurrentProcess()->HasSwitch(
+      if (!base::CommandLine::ForCurrentProcess()->HasSwitch(
               kDisableSandboxExternalProtocolSwitch)) {
-        rfh->AddMessageToConsole(
-            blink::mojom::ConsoleMessageLevel::kError,
-            "Navigation to external protocol blocked by sandbox.");
-        return;
+        if (base::FeatureList::IsEnabled(
+                features::kSandboxExternalProtocolBlocked)) {
+          rfh->AddMessageToConsole(
+              blink::mojom::ConsoleMessageLevel::kError,
+              "Navigation to external protocol blocked by sandbox, because it "
+              "doesn't contain any of: "
+              "'allow-top-navigation-to-custom-protocols', "
+              "'allow-top-navigation-by-user-activation', "
+              "'allow-top-navigation', or "
+              "'allow-popups'. See "
+              "https://chromestatus.com/feature/5680742077038592 and "
+              "https://chromeenterprise.google/policies/"
+              "#SandboxExternalProtocolBlocked");
+          return;
+        }
+
+        if (base::FeatureList::IsEnabled(
+                features::kSandboxExternalProtocolBlockedWarning)) {
+          rfh->AddMessageToConsole(
+              blink::mojom::ConsoleMessageLevel::kError,
+              "After Chrome M103, navigation toward external protocol "
+              "will be blocked by sandbox, if it doesn't contain any of:"
+              "'allow-top-navigation-to-custom-protocols', "
+              "'allow-top-navigation-by-user-activation', "
+              "'allow-top-navigation', or "
+              "'allow-popups'. See "
+              "https://chromestatus.com/feature/5680742077038592 and "
+              "https://chromeenterprise.google/policies/"
+              "#SandboxExternalProtocolBlocked");
+        }
       }
     }
   }

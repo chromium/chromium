@@ -12,29 +12,30 @@ namespace blink {
 
 // In fenced frame trees, the features of the following flags are restricted.
 constexpr network::mojom::WebSandboxFlags kFencedFrameForcedSandboxFlags =
+    network::mojom::WebSandboxFlags::kDocumentDomain |
+    network::mojom::WebSandboxFlags::kDownloads |
+    network::mojom::WebSandboxFlags::kModals |
     network::mojom::WebSandboxFlags::kNavigation |
-    network::mojom::WebSandboxFlags::kTopNavigation |
+    network::mojom::WebSandboxFlags::kOrientationLock |
     network::mojom::WebSandboxFlags::kPlugins |
     network::mojom::WebSandboxFlags::kPointerLock |
-    network::mojom::WebSandboxFlags::kDocumentDomain |
-    network::mojom::WebSandboxFlags::kOrientationLock |
-    network::mojom::WebSandboxFlags::kModals |
     network::mojom::WebSandboxFlags::kPresentationController |
-    network::mojom::WebSandboxFlags::kDownloads |
-    network::mojom::WebSandboxFlags::kStorageAccessByUserActivation;
+    network::mojom::WebSandboxFlags::kStorageAccessByUserActivation |
+    network::mojom::WebSandboxFlags::kTopNavigation;
 
 // In fenced frame trees, the features of the following flags are allowed.
 // Sandboxed frames that do not allow these features can't load fenced frames.
 constexpr network::mojom::WebSandboxFlags
     kFencedFrameMandatoryUnsandboxedFlags =
         network::mojom::WebSandboxFlags::kAutomaticFeatures |
-        network::mojom::WebSandboxFlags::kOrigin |
         network::mojom::WebSandboxFlags::kForms |
-        network::mojom::WebSandboxFlags::kScripts |
+        network::mojom::WebSandboxFlags::kOrigin |
         network::mojom::WebSandboxFlags::kPopups |
         network::mojom::WebSandboxFlags::
             kPropagatesToAuxiliaryBrowsingContexts |
-        network::mojom::WebSandboxFlags::kTopNavigationByUserActivation;
+        network::mojom::WebSandboxFlags::kScripts |
+        network::mojom::WebSandboxFlags::kTopNavigationByUserActivation |
+        network::mojom::WebSandboxFlags::kTopNavigationToCustomProtocols;
 
 static_assert((kFencedFrameForcedSandboxFlags &
                kFencedFrameMandatoryUnsandboxedFlags) ==
