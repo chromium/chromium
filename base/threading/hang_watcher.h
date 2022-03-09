@@ -111,7 +111,8 @@ class BASE_EXPORT HangWatcher : public DelegateSimpleThread::Delegate {
     kBrowserProcess = 1,
     kGPUProcess = 2,
     kRendererProcess = 3,
-    kMax = kRendererProcess
+    kUtilityProcess = 4,
+    kMax = kUtilityProcess
   };
 
   // Describes the type of a thread for logging purposes.

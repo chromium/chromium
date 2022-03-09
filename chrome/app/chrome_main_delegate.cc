@@ -723,6 +723,8 @@ void ChromeMainDelegate::PostFieldTrialInitialization() {
   } else if (process_type == switches::kRendererProcess) {
     hang_watcher_process_type =
         base::HangWatcher::ProcessType::kRendererProcess;
+  } else if (process_type == switches::kUtilityProcess) {
+    hang_watcher_process_type = base::HangWatcher::ProcessType::kUtilityProcess;
   } else {
     hang_watcher_process_type = base::HangWatcher::ProcessType::kUnknownProcess;
   }

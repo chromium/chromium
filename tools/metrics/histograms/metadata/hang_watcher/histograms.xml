@@ -33,6 +33,10 @@ chromium-metrics-reviews@google.com.
       summary="the IO-Thread of a Renderer process"/>
   <variant name="RendererProcess.MainThread"
       summary="the Main Thread of a Renderer process"/>
+  <variant name="UtilityProcess.IOThread"
+      summary="the IO-Thread of a Utility process"/>
+  <variant name="UtilityProcess.MainThread"
+      summary="the Main Thread of a Utility process"/>
 </variants>
 
 <variants name="ProcessType">
