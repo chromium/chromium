@@ -62,12 +62,16 @@
       <cr-input id="containerNameInput"
           label="$i18n{crostiniExtraContainersContainerNameLabel}"
           maxlength="50"
-          aria-disabled="false">
+          aria-disabled="false"
+          on-input="validateNames_"
+          invalid="[[!validContainerName_]]"
+          error-message="[[containerNameError_]]">
       </cr-input>
       <cr-input id="vmNameInput"
           label="$i18n{crostiniExtraContainersVmNameLabel}"
           maxlength="50"
-          aria-disabled="false">
+          aria-disabled="false"
+          on-input="validateNames_">
       </cr-input>
     </div>
 
@@ -98,7 +102,8 @@
       <cr-button id="cancel" class="cancel-button" on-click="onCancelTap_">
         $i18n{cancel}
       </cr-button>
-      <cr-button id="create" class="action-button" on-click="onCreateTap_">
+      <cr-button id="create" class="action-button" on-click="onCreateTap_" 
+          disabled="[[disableCreateButton_]]">
         $i18n{crostiniExtraContainersCreate}
       </cr-button>
     </div>
