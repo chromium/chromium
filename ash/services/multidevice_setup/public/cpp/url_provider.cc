@@ -8,7 +8,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/system/sys_info.h"
 
-namespace chromeos {
+namespace ash {
 
 namespace multidevice_setup {
 
@@ -24,4 +24,4 @@ GURL GetBoardSpecificMessagesLearnMoreUrl() {
 
 }  // namespace multidevice_setup
 
-}  // namespace chromeos
+}  // namespace ash

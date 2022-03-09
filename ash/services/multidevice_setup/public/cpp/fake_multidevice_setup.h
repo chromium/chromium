@@ -15,7 +15,7 @@
 #include "mojo/public/cpp/bindings/remote.h"
 #include "mojo/public/cpp/bindings/remote_set.h"
 
-namespace chromeos {
+namespace ash {
 
 namespace multidevice_setup {
 
@@ -35,15 +35,13 @@ class FakeMultiDeviceSetup : public MultiDeviceSetupBase {
   bool HasAtLeastOneFeatureStateObserver();
 
   void NotifyHostStatusChanged(
-      ash::multidevice_setup::mojom::HostStatus host_status,
+      mojom::HostStatus host_status,
       const absl::optional<multidevice::RemoteDevice>& host_device);
   void NotifyFeatureStateChanged(
-      const base::flat_map<ash::multidevice_setup::mojom::Feature,
-                           ash::multidevice_setup::mojom::FeatureState>&
+      const base::flat_map<mojom::Feature, mojom::FeatureState>&
           feature_states);
 
-  mojo::Remote<ash::multidevice_setup::mojom::AccountStatusChangeDelegate>&
-  delegate() {
+  mojo::Remote<mojom::AccountStatusChangeDelegate>& delegate() {
     return delegate_;
   }
 
@@ -60,7 +58,7 @@ class FakeMultiDeviceSetup : public MultiDeviceSetupBase {
 
   std::vector<GetHostStatusCallback>& get_host_args() { return get_host_args_; }
 
-  std::vector<std::tuple<ash::multidevice_setup::mojom::Feature,
+  std::vector<std::tuple<mojom::Feature,
                          bool,
                          absl::optional<std::string>,
                          SetFeatureEnabledStateCallback>>&
@@ -76,15 +74,15 @@ class FakeMultiDeviceSetup : public MultiDeviceSetupBase {
     return retry_set_host_now_args_;
   }
 
-  std::vector<std::pair<ash::multidevice_setup::mojom::EventTypeForDebugging,
+  std::vector<std::pair<mojom::EventTypeForDebugging,
                         TriggerEventForDebuggingCallback>>&
   triggered_debug_events() {
     return triggered_debug_events_;
   }
 
-  std::vector<std::pair<std::string,
-                        ash::multidevice_setup::mojom::
-                            PrivilegedHostDeviceSetter::SetHostDeviceCallback>>&
+  std::vector<
+      std::pair<std::string,
+                mojom::PrivilegedHostDeviceSetter::SetHostDeviceCallback>>&
   set_host_without_auth_args() {
     return set_host_without_auth_args_;
   }
@@ -92,15 +90,12 @@ class FakeMultiDeviceSetup : public MultiDeviceSetupBase {
  private:
   // mojom::MultiDeviceSetup:
   void SetAccountStatusChangeDelegate(
-      mojo::PendingRemote<
-          ash::multidevice_setup::mojom::AccountStatusChangeDelegate> delegate)
+      mojo::PendingRemote<mojom::AccountStatusChangeDelegate> delegate)
       override;
   void AddHostStatusObserver(
-      mojo::PendingRemote<ash::multidevice_setup::mojom::HostStatusObserver>
-          observer) override;
+      mojo::PendingRemote<mojom::HostStatusObserver> observer) override;
   void AddFeatureStateObserver(
-      mojo::PendingRemote<ash::multidevice_setup::mojom::FeatureStateObserver>
-          observer) override;
+      mojo::PendingRemote<mojom::FeatureStateObserver> observer) override;
   void GetEligibleHostDevices(GetEligibleHostDevicesCallback callback) override;
   void GetEligibleActiveHostDevices(
       GetEligibleActiveHostDevicesCallback callback) override;
@@ -109,28 +104,25 @@ class FakeMultiDeviceSetup : public MultiDeviceSetupBase {
                      SetHostDeviceCallback callback) override;
   void RemoveHostDevice() override;
   void GetHostStatus(GetHostStatusCallback callback) override;
-  void SetFeatureEnabledState(ash::multidevice_setup::mojom::Feature feature,
+  void SetFeatureEnabledState(mojom::Feature feature,
                               bool enabled,
                               const absl::optional<std::string>& auth_token,
                               SetFeatureEnabledStateCallback callback) override;
   void GetFeatureStates(GetFeatureStatesCallback callback) override;
   void RetrySetHostNow(RetrySetHostNowCallback callback) override;
   void TriggerEventForDebugging(
-      ash::multidevice_setup::mojom::EventTypeForDebugging type,
+      mojom::EventTypeForDebugging type,
       TriggerEventForDebuggingCallback callback) override;
 
   // MultiDeviceSetupBase:
   void SetHostDeviceWithoutAuthToken(
       const std::string& host_instance_id_or_legacy_device_id,
-      ash::multidevice_setup::mojom::PrivilegedHostDeviceSetter::
-          SetHostDeviceCallback callback) override;
+      mojom::PrivilegedHostDeviceSetter::SetHostDeviceCallback callback)
+      override;
 
-  mojo::Remote<ash::multidevice_setup::mojom::AccountStatusChangeDelegate>
-      delegate_;
-  mojo::RemoteSet<ash::multidevice_setup::mojom::HostStatusObserver>
-      host_status_observers_;
-  mojo::RemoteSet<ash::multidevice_setup::mojom::FeatureStateObserver>
-      feature_state_observers_;
+  mojo::Remote<mojom::AccountStatusChangeDelegate> delegate_;
+  mojo::RemoteSet<mojom::HostStatusObserver> host_status_observers_;
+  mojo::RemoteSet<mojom::FeatureStateObserver> feature_state_observers_;
 
   std::vector<GetEligibleHostDevicesCallback> get_eligible_hosts_args_;
   std::vector<GetEligibleActiveHostDevicesCallback>
@@ -139,24 +131,29 @@ class FakeMultiDeviceSetup : public MultiDeviceSetupBase {
       set_host_args_;
   size_t num_remove_host_calls_ = 0u;
   std::vector<GetHostStatusCallback> get_host_args_;
-  std::vector<std::tuple<ash::multidevice_setup::mojom::Feature,
+  std::vector<std::tuple<mojom::Feature,
                          bool,
                          absl::optional<std::string>,
                          SetFeatureEnabledStateCallback>>
       set_feature_enabled_args_;
   std::vector<GetFeatureStatesCallback> get_feature_states_args_;
   std::vector<RetrySetHostNowCallback> retry_set_host_now_args_;
-  std::vector<std::pair<ash::multidevice_setup::mojom::EventTypeForDebugging,
-                        TriggerEventForDebuggingCallback>>
+  std::vector<
+      std::pair<mojom::EventTypeForDebugging, TriggerEventForDebuggingCallback>>
       triggered_debug_events_;
-  std::vector<std::pair<std::string,
-                        ash::multidevice_setup::mojom::
-                            PrivilegedHostDeviceSetter::SetHostDeviceCallback>>
+  std::vector<
+      std::pair<std::string,
+                mojom::PrivilegedHostDeviceSetter::SetHostDeviceCallback>>
       set_host_without_auth_args_;
 };
 
 }  // namespace multidevice_setup
 
-}  // namespace chromeos
+}  // namespace ash
+
+// TODO(https://crbug.com/1164001): remove when the migration is finished.
+namespace chromeos::multidevice_setup {
+using ::ash::multidevice_setup::FakeMultiDeviceSetup;
+}
 
 #endif  // ASH_SERVICES_MULTIDEVICE_SETUP_PUBLIC_CPP_FAKE_MULTIDEVICE_SETUP_H_

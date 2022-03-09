@@ -76,7 +76,7 @@ bool ProximityAuthLocalStatePrefManager::IsEasyUnlockAllowed() const {
   const base::Value* user_prefs = GetActiveUserPrefsDictionary();
   if (user_prefs) {
     absl::optional<bool> pref_value = user_prefs->FindBoolKey(
-        chromeos::multidevice_setup::kSmartLockAllowedPrefName);
+        ash::multidevice_setup::kSmartLockAllowedPrefName);
     if (pref_value.has_value()) {
       return pref_value.value();
     }
@@ -89,7 +89,7 @@ bool ProximityAuthLocalStatePrefManager::IsEasyUnlockEnabled() const {
   const base::Value* user_prefs = GetActiveUserPrefsDictionary();
   if (user_prefs) {
     absl::optional<bool> pref_value = user_prefs->FindBoolKey(
-        chromeos::multidevice_setup::kSmartLockEnabledPrefName);
+        ash::multidevice_setup::kSmartLockEnabledPrefName);
     if (pref_value.has_value()) {
       return pref_value.value();
     }
@@ -107,7 +107,7 @@ bool ProximityAuthLocalStatePrefManager::IsChromeOSLoginAllowed() const {
   const base::Value* user_prefs = GetActiveUserPrefsDictionary();
   if (user_prefs) {
     absl::optional<bool> pref_value = user_prefs->FindBoolKey(
-        chromeos::multidevice_setup::kSmartLockSigninAllowedPrefName);
+        ash::multidevice_setup::kSmartLockSigninAllowedPrefName);
     if (pref_value.has_value()) {
       return pref_value.value();
     }

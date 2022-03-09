@@ -88,8 +88,8 @@ class ProximityAuthProximityMonitorImplTest : public testing::Test {
   ~ProximityAuthProximityMonitorImplTest() override {}
 
   void InitializeTest(bool multidevice_flags_enabled) {
-    fake_multidevice_setup_client_ = std::make_unique<
-        chromeos::multidevice_setup::FakeMultiDeviceSetupClient>();
+    fake_multidevice_setup_client_ =
+        std::make_unique<ash::multidevice_setup::FakeMultiDeviceSetupClient>();
 
     monitor_ = std::make_unique<ProximityMonitorImpl>(
         remote_device_, fake_client_channel_.get());
@@ -134,7 +134,7 @@ class ProximityAuthProximityMonitorImplTest : public testing::Test {
   NiceMock<device::MockBluetoothDevice> remote_bluetooth_device_;
   std::unique_ptr<ash::secure_channel::FakeClientChannel> fake_client_channel_;
   chromeos::multidevice::RemoteDeviceRef remote_device_;
-  std::unique_ptr<chromeos::multidevice_setup::FakeMultiDeviceSetupClient>
+  std::unique_ptr<ash::multidevice_setup::FakeMultiDeviceSetupClient>
       fake_multidevice_setup_client_;
 
   // The proximity monitor under test.

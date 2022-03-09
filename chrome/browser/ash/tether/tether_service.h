@@ -60,16 +60,16 @@ class TetherService
       public chromeos::NetworkStateHandlerObserver,
       public TetherComponent::Observer,
       public chromeos::device_sync::DeviceSyncClient::Observer,
-      public chromeos::multidevice_setup::MultiDeviceSetupClient::Observer {
+      public multidevice_setup::MultiDeviceSetupClient::Observer {
  public:
-  TetherService(Profile* profile,
-                chromeos::PowerManagerClient* power_manager_client,
-                chromeos::device_sync::DeviceSyncClient* device_sync_client,
-                secure_channel::SecureChannelClient* secure_channel_client,
-                chromeos::multidevice_setup::MultiDeviceSetupClient*
-                    multidevice_setup_client,
-                chromeos::NetworkStateHandler* network_state_handler,
-                session_manager::SessionManager* session_manager);
+  TetherService(
+      Profile* profile,
+      chromeos::PowerManagerClient* power_manager_client,
+      chromeos::device_sync::DeviceSyncClient* device_sync_client,
+      secure_channel::SecureChannelClient* secure_channel_client,
+      multidevice_setup::MultiDeviceSetupClient* multidevice_setup_client,
+      chromeos::NetworkStateHandler* network_state_handler,
+      session_manager::SessionManager* session_manager);
   TetherService(const TetherService&) = delete;
   TetherService& operator=(const TetherService&) = delete;
   ~TetherService() override;
@@ -115,10 +115,10 @@ class TetherService
   // chromeos::device_sync::DeviceSyncClient::Observer:
   void OnReady() override;
 
-  // chromeos::multidevice_setup::MultiDeviceSetupClient::Observer:
+  // ash::multidevice_setup::MultiDeviceSetupClient::Observer:
   void OnFeatureStatesChanged(
-      const chromeos::multidevice_setup::MultiDeviceSetupClient::
-          FeatureStatesMap& feature_states_map) override;
+      const multidevice_setup::MultiDeviceSetupClient::FeatureStatesMap&
+          feature_states_map) override;
 
   // Stop the Tether module if it is currently enabled; if it was not enabled,
   // this function is a no-op.
@@ -269,8 +269,7 @@ class TetherService
   chromeos::PowerManagerClient* power_manager_client_;
   chromeos::device_sync::DeviceSyncClient* device_sync_client_;
   secure_channel::SecureChannelClient* secure_channel_client_;
-  chromeos::multidevice_setup::MultiDeviceSetupClient*
-      multidevice_setup_client_;
+  multidevice_setup::MultiDeviceSetupClient* multidevice_setup_client_;
   chromeos::NetworkStateHandler* network_state_handler_;
   session_manager::SessionManager* session_manager_;
   std::unique_ptr<NotificationPresenter> notification_presenter_;

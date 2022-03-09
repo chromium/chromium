@@ -7,7 +7,7 @@
 
 #include <string>
 
-namespace chromeos {
+namespace ash {
 
 namespace multidevice_setup {
 
@@ -26,14 +26,11 @@ class AuthTokenValidator {
 
 }  // namespace multidevice_setup
 
-}  // namespace chromeos
-
-// TODO(https://crbug.com/1164001): remove after the //chrome/browser/chromeos
-// source migration is finished.
-namespace ash {
-namespace multidevice_setup {
-using ::chromeos::multidevice_setup::AuthTokenValidator;
-}
 }  // namespace ash
+
+// TODO(https://crbug.com/1164001): remove when the migration is finished.
+namespace chromeos::multidevice_setup {
+using ::ash::multidevice_setup::AuthTokenValidator;
+}
 
 #endif  // ASH_SERVICES_MULTIDEVICE_SETUP_PUBLIC_CPP_AUTH_TOKEN_VALIDATOR_H_

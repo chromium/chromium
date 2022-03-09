@@ -7,7 +7,7 @@
 
 #include "ash/services/multidevice_setup/public/cpp/android_sms_app_helper_delegate.h"
 
-namespace chromeos {
+namespace ash {
 
 namespace multidevice_setup {
 
@@ -64,13 +64,11 @@ class FakeAndroidSmsAppHelperDelegate
 
 }  // namespace multidevice_setup
 
-}  // namespace chromeos
+}  // namespace ash
 
 // TODO(https://crbug.com/1164001): remove when the migration is finished.
-namespace ash {
-namespace multidevice_setup {
-using ::chromeos::multidevice_setup::FakeAndroidSmsAppHelperDelegate;
+namespace chromeos::multidevice_setup {
+using ::ash::multidevice_setup::FakeAndroidSmsAppHelperDelegate;
 }
-}  // namespace ash
 
 #endif  // ASH_SERVICES_MULTIDEVICE_SETUP_PUBLIC_CPP_FAKE_ANDROID_SMS_APP_HELPER_DELEGATE_H_

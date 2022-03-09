@@ -81,7 +81,7 @@ class MockUnlockManager : public UnlockManager {
 class MockProximityAuthPrefManager : public ProximityAuthProfilePrefManager {
  public:
   MockProximityAuthPrefManager(
-      chromeos::multidevice_setup::FakeMultiDeviceSetupClient*
+      ash::multidevice_setup::FakeMultiDeviceSetupClient*
           fake_multidevice_setup_client)
       : ProximityAuthProfilePrefManager(nullptr,
                                         fake_multidevice_setup_client) {}
@@ -146,8 +146,8 @@ class ProximityAuthSystemTest : public testing::Test {
   }
 
   void SetUp() override {
-    fake_multidevice_setup_client_ = std::make_unique<
-        chromeos::multidevice_setup::FakeMultiDeviceSetupClient>();
+    fake_multidevice_setup_client_ =
+        std::make_unique<ash::multidevice_setup::FakeMultiDeviceSetupClient>();
     pref_manager_ = std::make_unique<NiceMock<MockProximityAuthPrefManager>>(
         fake_multidevice_setup_client_.get());
 
@@ -210,7 +210,7 @@ class ProximityAuthSystemTest : public testing::Test {
   std::unique_ptr<TestableProximityAuthSystem> proximity_auth_system_;
   MockUnlockManager* unlock_manager_;
   std::unique_ptr<MockProximityAuthPrefManager> pref_manager_;
-  std::unique_ptr<chromeos::multidevice_setup::FakeMultiDeviceSetupClient>
+  std::unique_ptr<ash::multidevice_setup::FakeMultiDeviceSetupClient>
       fake_multidevice_setup_client_;
 
   chromeos::multidevice::RemoteDeviceRef user1_local_device_;

@@ -4,7 +4,7 @@
 
 #include "ash/services/multidevice_setup/public/cpp/fake_auth_token_validator.h"
 
-namespace chromeos {
+namespace ash {
 
 namespace multidevice_setup {
 
@@ -21,4 +21,4 @@ bool FakeAuthTokenValidator::IsAuthTokenValid(const std::string& auth_token) {
 
 }  // namespace multidevice_setup
 
-}  // namespace chromeos
+}  // namespace ash

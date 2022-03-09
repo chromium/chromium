@@ -14,12 +14,12 @@ namespace ash {
 namespace phonehub {
 namespace {
 
-using ::chromeos::multidevice_setup::MultiDeviceSetupClient;
 using ::chromeos::network_config::mojom::ConnectionStateType;
 using ::chromeos::network_config::mojom::DeviceStatePropertiesPtr;
 using ::chromeos::network_config::mojom::FilterType;
 using ::chromeos::network_config::mojom::NetworkType;
 using ::chromeos::network_config::mojom::StartConnectResult;
+using multidevice_setup::MultiDeviceSetupClient;
 using multidevice_setup::mojom::Feature;
 using multidevice_setup::mojom::FeatureState;
 

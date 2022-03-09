@@ -7,8 +7,6 @@
 
 #include <string>
 
-// TODO(https://crbug.com/1164001): move to forward declaration.
-#include "ash/services/multidevice_setup/public/cpp/multidevice_setup_client.h"
 #include "base/bind.h"
 #include "base/callback.h"
 #include "chrome/browser/ash/login/screens/base_screen.h"
@@ -16,6 +14,10 @@
 #include "chrome/browser/ui/webui/chromeos/login/multidevice_setup_screen_handler.h"
 
 namespace ash {
+
+namespace multidevice_setup {
+class MultiDeviceSetupClient;
+}
 
 class MultiDeviceSetupScreen : public BaseScreen {
  public:

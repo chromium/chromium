@@ -7,7 +7,7 @@
 
 #include "base/observer_list.h"
 
-namespace chromeos {
+namespace ash {
 namespace multidevice_setup {
 
 // Inspects and track pairing state of the Messages for Web PWA.
@@ -43,13 +43,11 @@ class AndroidSmsPairingStateTracker {
 };
 
 }  // namespace multidevice_setup
-}  // namespace chromeos
+}  // namespace ash
 
 // TODO(https://crbug.com/1164001): remove when the migration is finished.
-namespace ash {
-namespace multidevice_setup {
-using ::chromeos::multidevice_setup::AndroidSmsPairingStateTracker;
+namespace chromeos::multidevice_setup {
+using ::ash::multidevice_setup::AndroidSmsPairingStateTracker;
 }
-}  // namespace ash
 
 #endif  // ASH_SERVICES_MULTIDEVICE_SETUP_PUBLIC_CPP_ANDROID_SMS_PAIRING_STATE_TRACKER_H_

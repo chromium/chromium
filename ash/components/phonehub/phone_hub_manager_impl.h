@@ -11,8 +11,6 @@
 // TODO(https://crbug.com/1164001): move to forward declaration.
 #include "ash/services/device_sync/public/cpp/device_sync_client.h"
 // TODO(https://crbug.com/1164001): move to forward declaration.
-#include "ash/services/multidevice_setup/public/cpp/multidevice_setup_client.h"
-// TODO(https://crbug.com/1164001): move to forward declaration.
 #include "ash/services/secure_channel/public/cpp/client/connection_manager.h"
 // TODO(https://crbug.com/1164001): move to forward declaration.
 #include "ash/services/secure_channel/public/cpp/client/secure_channel_client.h"
@@ -22,6 +20,11 @@
 class PrefService;
 
 namespace ash {
+
+namespace multidevice_setup {
+class MultiDeviceSetupClient;
+}
+
 namespace phonehub {
 
 class BrowserTabsModelController;

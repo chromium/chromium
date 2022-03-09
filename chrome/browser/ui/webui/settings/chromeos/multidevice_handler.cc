@@ -31,16 +31,15 @@
 
 namespace chromeos {
 
-// TODO(https://crbug.com/1164001): remove after migrating to ash.
-namespace multidevice_setup {
-namespace mojom = ::ash::multidevice_setup::mojom;
-}
-
 namespace settings {
 
 namespace {
 
 const char kCameraRollAccessStatus[] = "cameraRollAccessStatus";
+
+// TODO(https://crbug.com/1164001): remove after migrating to ash.
+namespace multidevice_setup = ::ash::multidevice_setup;
+
 const char kPageContentDataModeKey[] = "mode";
 const char kPageContentDataHostDeviceNameKey[] = "hostDeviceName";
 const char kPageContentDataBetterTogetherStateKey[] = "betterTogetherState";

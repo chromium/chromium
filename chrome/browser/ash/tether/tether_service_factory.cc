@@ -29,7 +29,7 @@ namespace tether {
 namespace {
 
 bool IsFeatureAllowed(content::BrowserContext* context) {
-  return chromeos::multidevice_setup::IsFeatureAllowed(
+  return multidevice_setup::IsFeatureAllowed(
       multidevice_setup::mojom::Feature::kInstantTethering,
       Profile::FromBrowserContext(context)->GetPrefs());
 }

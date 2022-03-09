@@ -4,7 +4,7 @@
 
 #include "ash/services/multidevice_setup/public/cpp/android_sms_pairing_state_tracker.h"
 
-namespace chromeos {
+namespace ash {
 
 namespace multidevice_setup {
 
@@ -27,4 +27,4 @@ void AndroidSmsPairingStateTracker::NotifyPairingStateChanged() {
 
 }  // namespace multidevice_setup
 
-}  // namespace chromeos
+}  // namespace ash

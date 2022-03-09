@@ -17,9 +17,6 @@ using multidevice_setup::mojom::Feature;
 using multidevice_setup::mojom::FeatureState;
 using multidevice_setup::mojom::HostStatus;
 
-// TODO(https://crbug.com/1164001): remove after migrating to namespace ash.
-namespace multidevice_setup = ::chromeos::multidevice_setup;
-
 class MultideviceSetupStateUpdaterTest : public testing::Test {
  protected:
   MultideviceSetupStateUpdaterTest() = default;

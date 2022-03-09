@@ -17,9 +17,9 @@ using multidevice_setup::mojom::Feature;
 using multidevice_setup::mojom::FeatureState;
 using multidevice_setup::mojom::HostStatus;
 using HostStatusWithDevice =
-    ::chromeos::multidevice_setup::MultiDeviceSetupClient::HostStatusWithDevice;
+    multidevice_setup::MultiDeviceSetupClient::HostStatusWithDevice;
 using FeatureStatesMap =
-    ::chromeos::multidevice_setup::MultiDeviceSetupClient::FeatureStatesMap;
+    multidevice_setup::MultiDeviceSetupClient::FeatureStatesMap;
 
 const size_t kMaxMostRecentApps = 5;
 const size_t kMaxSavedRecentApps = 10;

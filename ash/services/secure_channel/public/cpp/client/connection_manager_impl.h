@@ -9,8 +9,6 @@
 
 // TODO(https://crbug.com/1164001): move to forward declaration.
 #include "ash/services/device_sync/public/cpp/device_sync_client.h"
-// TODO(https://crbug.com/1164001): move to forward declaration.
-#include "ash/services/multidevice_setup/public/cpp/multidevice_setup_client.h"
 #include "ash/services/secure_channel/public/cpp/client/client_channel.h"
 #include "ash/services/secure_channel/public/cpp/client/connection_attempt.h"
 #include "ash/services/secure_channel/public/cpp/client/connection_manager.h"
@@ -19,7 +17,13 @@
 #include "base/time/default_clock.h"
 #include "base/timer/timer.h"
 
-namespace ash::secure_channel {
+namespace ash {
+
+namespace multidevice_setup {
+class MultiDeviceSetupClient;
+}
+
+namespace secure_channel {
 
 class SecureChannelClient;
 
@@ -112,6 +116,7 @@ class ConnectionManagerImpl : public ConnectionManager,
   base::WeakPtrFactory<ConnectionManagerImpl> weak_ptr_factory_{this};
 };
 
-}  // namespace ash::secure_channel
+}  // namespace secure_channel
+}  // namespace ash
 
 #endif  // ASH_SERVICES_SECURE_CHANNEL_PUBLIC_CPP_CLIENT_CONNECTION_MANAGER_IMPL_H_

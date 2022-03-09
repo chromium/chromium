@@ -246,8 +246,8 @@ bool AppsAccessManagerImpl::IsWaitingForAccessToInitiallyEnableApps() const {
   // 2. the phone has granted access.
   // We do *not* want to automatically enable the feature unless the opt-in flow
   // was triggered from this device
-  return chromeos::multidevice_setup::IsDefaultFeatureEnabledValue(
-             Feature::kEche, pref_service_) &&
+  return multidevice_setup::IsDefaultFeatureEnabledValue(Feature::kEche,
+                                                         pref_service_) &&
          multidevice_setup_client_->GetFeatureState(Feature::kPhoneHub) ==
              FeatureState::kEnabledByUser;
 }

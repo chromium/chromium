@@ -73,7 +73,7 @@ std::string GetFullHardwareClassOnBackgroundThread() {
 }
 
 bool IsFeatureEnabled(
-    const chromeos::multidevice_setup::MultiDeviceSetupClient::FeatureStatesMap&
+    const ash::multidevice_setup::MultiDeviceSetupClient::FeatureStatesMap&
         feature_states_map,
     ash::multidevice_setup::mojom::Feature feature) {
   return feature_states_map.find(feature)->second ==
@@ -267,15 +267,15 @@ void ChromeOSMetricsProvider::ProvideCurrentSessionData(
 
 void ChromeOSMetricsProvider::WriteLinkedAndroidPhoneProto(
     metrics::SystemProfileProto* system_profile_proto) {
-  chromeos::multidevice_setup::MultiDeviceSetupClient* client =
+  ash::multidevice_setup::MultiDeviceSetupClient* client =
       ash::multidevice_setup::MultiDeviceSetupClientFactory::GetForProfile(
           cached_profile_->GetMetricsProfile());
 
   if (!client)
     return;
 
-  const chromeos::multidevice_setup::MultiDeviceSetupClient::
-      HostStatusWithDevice& host_status_with_device = client->GetHostStatus();
+  const ash::multidevice_setup::MultiDeviceSetupClient::HostStatusWithDevice&
+      host_status_with_device = client->GetHostStatus();
   if (host_status_with_device.first !=
       ash::multidevice_setup::mojom::HostStatus::kHostVerified) {
     return;
@@ -287,7 +287,7 @@ void ChromeOSMetricsProvider::WriteLinkedAndroidPhoneProto(
       variations::HashName(host_status_with_device.second->pii_free_name());
   linked_android_phone_data->set_phone_model_name_hash(hashed_name);
 
-  const chromeos::multidevice_setup::MultiDeviceSetupClient::FeatureStatesMap&
+  const ash::multidevice_setup::MultiDeviceSetupClient::FeatureStatesMap&
       feature_states_map = client->GetFeatureStates();
   linked_android_phone_data->set_is_smartlock_enabled(IsFeatureEnabled(
       feature_states_map, ash::multidevice_setup::mojom::Feature::kSmartLock));

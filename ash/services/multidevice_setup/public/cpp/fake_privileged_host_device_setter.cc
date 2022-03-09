@@ -4,7 +4,7 @@
 
 #include "ash/services/multidevice_setup/public/cpp/fake_privileged_host_device_setter.h"
 
-namespace chromeos {
+namespace ash {
 
 namespace multidevice_setup {
 
@@ -21,4 +21,4 @@ void FakePrivilegedHostDeviceSetter::SetHostDevice(
 
 }  // namespace multidevice_setup
 
-}  // namespace chromeos
+}  // namespace ash

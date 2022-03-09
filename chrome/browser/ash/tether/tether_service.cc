@@ -95,8 +95,7 @@ TetherService::TetherService(
     chromeos::PowerManagerClient* power_manager_client,
     chromeos::device_sync::DeviceSyncClient* device_sync_client,
     secure_channel::SecureChannelClient* secure_channel_client,
-    chromeos::multidevice_setup::MultiDeviceSetupClient*
-        multidevice_setup_client,
+    multidevice_setup::MultiDeviceSetupClient* multidevice_setup_client,
     chromeos::NetworkStateHandler* network_state_handler,
     session_manager::SessionManager* session_manager)
     : profile_(profile),
@@ -338,7 +337,7 @@ void TetherService::OnReady() {
 }
 
 void TetherService::OnFeatureStatesChanged(
-    const chromeos::multidevice_setup::MultiDeviceSetupClient::FeatureStatesMap&
+    const multidevice_setup::MultiDeviceSetupClient::FeatureStatesMap&
         feature_states_map) {
   const multidevice_setup::mojom::FeatureState new_state =
       feature_states_map
@@ -493,12 +492,12 @@ bool TetherService::IsCellularAvailableButNotEnabled() const {
 
 bool TetherService::IsAllowedByPolicy() const {
   return profile_->GetPrefs()->GetBoolean(
-      chromeos::multidevice_setup::kInstantTetheringAllowedPrefName);
+      multidevice_setup::kInstantTetheringAllowedPrefName);
 }
 
 bool TetherService::IsEnabledByPreference() const {
   return profile_->GetPrefs()->GetBoolean(
-      chromeos::multidevice_setup::kInstantTetheringEnabledPrefName);
+      multidevice_setup::kInstantTetheringEnabledPrefName);
 }
 
 TetherService::TetherFeatureState TetherService::GetTetherFeatureState() {

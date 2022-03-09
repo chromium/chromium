@@ -64,8 +64,8 @@ TEST_F(PushMessagingNotificationManagerTest,
       std::make_unique<ash::android_sms::FakeAndroidSmsAppManager>();
   fake_android_sms_app_manager->SetInstalledAppUrl(app_url);
 
-  auto fake_multidevice_setup_client = std::make_unique<
-      chromeos::multidevice_setup::FakeMultiDeviceSetupClient>();
+  auto fake_multidevice_setup_client =
+      std::make_unique<ash::multidevice_setup::FakeMultiDeviceSetupClient>();
   fake_multidevice_setup_client->SetFeatureState(
       ash::multidevice_setup::mojom::Feature::kMessages,
       ash::multidevice_setup::mojom::FeatureState::kEnabledByUser);

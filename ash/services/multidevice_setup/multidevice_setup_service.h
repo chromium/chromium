@@ -7,6 +7,18 @@
 
 #include <memory>
 
+// TODO(https://crbug.com/1164001): move to forward declaration
+#include "ash/services/device_sync/public/cpp/device_sync_client.h"
+// TODO(https://crbug.com/1164001): move to forward declaration
+#include "ash/services/device_sync/public/cpp/gcm_device_info_provider.h"
+// TODO(https://crbug.com/1164001): move to forward declaration
+#include "ash/services/multidevice_setup/public/cpp/android_sms_app_helper_delegate.h"
+// TODO(https://crbug.com/1164001): move to forward declaration
+#include "ash/services/multidevice_setup/public/cpp/android_sms_pairing_state_tracker.h"
+// TODO(https://crbug.com/1164001): move to forward declaration
+#include "ash/services/multidevice_setup/public/cpp/auth_token_validator.h"
+// TODO(https://crbug.com/1164001): move to forward declaration
+#include "ash/services/multidevice_setup/public/cpp/oobe_completion_tracker.h"
 #include "ash/services/multidevice_setup/public/mojom/multidevice_setup.mojom.h"
 
 class PrefService;
@@ -14,19 +26,10 @@ class PrefRegistrySimple;
 
 namespace chromeos {
 
-namespace device_sync {
-class DeviceSyncClient;
-class GcmDeviceInfoProvider;
-}  // namespace device_sync
-
 namespace multidevice_setup {
 
-class AndroidSmsAppHelperDelegate;
-class AndroidSmsPairingStateTracker;
-class AuthTokenValidator;
 class MultiDeviceSetupBase;
 class PrivilegedHostDeviceSetterBase;
-class OobeCompletionTracker;
 
 // Service which provides an implementation for mojom::MultiDeviceSetup. This
 // service creates one implementation and shares it among all connection

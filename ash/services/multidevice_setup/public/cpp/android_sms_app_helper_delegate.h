@@ -7,7 +7,7 @@
 
 #include "base/callback.h"
 
-namespace chromeos {
+namespace ash {
 namespace multidevice_setup {
 
 // A delegate class used to install the Messages for Web PWA.
@@ -44,13 +44,11 @@ class AndroidSmsAppHelperDelegate {
 };
 
 }  // namespace multidevice_setup
-}  // namespace chromeos
+}  // namespace ash
 
 // TODO(https://crbug.com/1164001): remove when the migration is finished.
-namespace ash {
-namespace multidevice_setup {
-using ::chromeos::multidevice_setup::AndroidSmsAppHelperDelegate;
+namespace chromeos::multidevice_setup {
+using ::ash::multidevice_setup::AndroidSmsAppHelperDelegate;
 }
-}  // namespace ash
 
 #endif  // ASH_SERVICES_MULTIDEVICE_SETUP_PUBLIC_CPP_ANDROID_SMS_APP_HELPER_DELEGATE_H_

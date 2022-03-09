@@ -25,7 +25,7 @@ constexpr base::TimeDelta kRepeatingFeatureStateLoggingPeriod =
 // minutes. The latter is necessary to capture users who stay logged in longer
 // than UMA aggregation periods and don't change feature state.
 void LogFeatureStates(
-    const chromeos::multidevice_setup::MultiDeviceSetupClient::FeatureStatesMap&
+    const ash::multidevice_setup::MultiDeviceSetupClient::FeatureStatesMap&
         feature_states_map) {
   // There is a duplicate metric of
   // "MultiDevice.BetterTogetherSuite.MultiDeviceFeatureState" on different
@@ -41,12 +41,9 @@ void LogFeatureStates(
 
 }  // namespace
 
-namespace chromeos {
+namespace ash {
 
 namespace multidevice_setup {
-
-// TODO(https://crbug.com/1164001): remove after migrating to ash.
-namespace mojom = ::ash::multidevice_setup::mojom;
 
 // static
 MultiDeviceSetupClientImpl::Factory*
@@ -230,4 +227,4 @@ void MultiDeviceSetupClientImpl::FlushForTesting() {
 
 }  // namespace multidevice_setup
 
-}  // namespace chromeos
+}  // namespace ash

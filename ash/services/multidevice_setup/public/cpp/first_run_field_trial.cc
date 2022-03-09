@@ -10,7 +10,7 @@
 #include "base/metrics/field_trial.h"
 #include "base/system/sys_info.h"
 
-namespace chromeos {
+namespace ash {
 
 namespace multidevice_setup {
 
@@ -51,4 +51,4 @@ void CreateFirstRunFieldTrial(base::FeatureList* feature_list) {
 
 }  // namespace multidevice_setup
 
-}  // namespace chromeos
+}  // namespace ash

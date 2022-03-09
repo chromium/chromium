@@ -10,7 +10,7 @@
 class PrefRegistrySimple;
 class PrefService;
 
-namespace chromeos {
+namespace ash {
 
 namespace multidevice_setup {
 
@@ -48,27 +48,40 @@ extern const char kSmartLockEnabledDeprecatedPrefName[];
 
 void RegisterFeaturePrefs(PrefRegistrySimple* registry);
 bool AreAnyMultiDeviceFeaturesAllowed(const PrefService* pref_service);
-bool IsFeatureAllowed(ash::multidevice_setup::mojom::Feature feature,
-                      const PrefService* pref_service);
+bool IsFeatureAllowed(mojom::Feature feature, const PrefService* pref_service);
 
 // Returns true if the pref tracking |feature|'s enabled state is using the
 // default value it was registered with.
-bool IsDefaultFeatureEnabledValue(
-    ash::multidevice_setup::mojom::Feature feature,
-    const PrefService* pref_service);
+bool IsDefaultFeatureEnabledValue(mojom::Feature feature,
+                                  const PrefService* pref_service);
 
 }  // namespace multidevice_setup
 
-}  // namespace chromeos
-
-// TODO(https://crbug.com/1164001): remove after the //chrome/browser/chromeos
-// source migration is finished.
-namespace ash {
-namespace multidevice_setup {
-using ::chromeos::multidevice_setup::AreAnyMultiDeviceFeaturesAllowed;
-using ::chromeos::multidevice_setup::IsFeatureAllowed;
-using ::chromeos::multidevice_setup::RegisterFeaturePrefs;
-}  // namespace multidevice_setup
 }  // namespace ash
+
+// TODO(https://crbug.com/1164001): remove when the migration is finished.
+namespace chromeos::multidevice_setup {
+using ::ash::multidevice_setup::AreAnyMultiDeviceFeaturesAllowed;
+using ::ash::multidevice_setup::IsFeatureAllowed;
+using ::ash::multidevice_setup::kBetterTogetherSuiteEnabledPrefName;
+using ::ash::multidevice_setup::kEcheAllowedPrefName;
+using ::ash::multidevice_setup::kEcheEnabledPrefName;
+using ::ash::multidevice_setup::kInstantTetheringAllowedPrefName;
+using ::ash::multidevice_setup::kInstantTetheringEnabledPrefName;
+using ::ash::multidevice_setup::kMessagesAllowedPrefName;
+using ::ash::multidevice_setup::kMessagesEnabledPrefName;
+using ::ash::multidevice_setup::kPhoneHubAllowedPrefName;
+using ::ash::multidevice_setup::kPhoneHubCameraRollAllowedPrefName;
+using ::ash::multidevice_setup::kPhoneHubCameraRollEnabledPrefName;
+using ::ash::multidevice_setup::kPhoneHubEnabledPrefName;
+using ::ash::multidevice_setup::kPhoneHubNotificationsAllowedPrefName;
+using ::ash::multidevice_setup::kPhoneHubNotificationsEnabledPrefName;
+using ::ash::multidevice_setup::kPhoneHubTaskContinuationAllowedPrefName;
+using ::ash::multidevice_setup::kPhoneHubTaskContinuationEnabledPrefName;
+using ::ash::multidevice_setup::kSmartLockAllowedPrefName;
+using ::ash::multidevice_setup::kSmartLockEnabledPrefName;
+using ::ash::multidevice_setup::kWifiSyncAllowedPrefName;
+using ::ash::multidevice_setup::RegisterFeaturePrefs;
+}  // namespace chromeos::multidevice_setup
 
 #endif  // ASH_SERVICES_MULTIDEVICE_SETUP_PUBLIC_CPP_PREFS_H_

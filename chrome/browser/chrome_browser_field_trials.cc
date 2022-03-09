@@ -91,7 +91,7 @@ void ChromeBrowserFieldTrials::SetUpFeatureControllingFieldTrials(
     CreateFallbackSamplingTrialIfNeeded(feature_list);
     CreateFallbackUkmSamplingTrialIfNeeded(feature_list);
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-    chromeos::multidevice_setup::CreateFirstRunFieldTrial(feature_list);
+    ash::multidevice_setup::CreateFirstRunFieldTrial(feature_list);
 #endif
   }
 }

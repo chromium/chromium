@@ -109,8 +109,7 @@ void PopulateLoadTimeData(content::WebUI* web_ui,
   // Messages, Smart Lock) is allowed on this device.
   source->AddBoolean(
       "multiDeviceFeaturesAllowed",
-      chromeos::multidevice_setup::AreAnyMultiDeviceFeaturesAllowed(
-          pref_service));
+      multidevice_setup::AreAnyMultiDeviceFeaturesAllowed(pref_service));
   source->AddBoolean("tabletMode", TabletMode::Get()->InTabletMode());
   // Checks if there are active touch screens.
   source->AddBoolean(

@@ -5,8 +5,6 @@
 #ifndef CHROME_BROWSER_ASH_MULTIDEVICE_SETUP_AUTH_TOKEN_VALIDATOR_FACTORY_H_
 #define CHROME_BROWSER_ASH_MULTIDEVICE_SETUP_AUTH_TOKEN_VALIDATOR_FACTORY_H_
 
-// TODO(https://crbug.com/1164001): move to forward declaration.
-#include "ash/services/multidevice_setup/public/cpp/auth_token_validator.h"
 #include "base/memory/singleton.h"
 #include "components/keyed_service/content/browser_context_keyed_service_factory.h"
 
@@ -15,6 +13,8 @@ class Profile;
 
 namespace ash {
 namespace multidevice_setup {
+
+class AuthTokenValidator;
 
 // Owns AuthTokenValidator instances and associates them with Profiles.
 class AuthTokenValidatorFactory : public BrowserContextKeyedServiceFactory {

@@ -145,8 +145,8 @@ class EasyUnlockServiceRegularTest : public testing::Test {
         std::make_unique<secure_channel::FakeSecureChannelClient>();
     fake_device_sync_client_ =
         std::make_unique<device_sync::FakeDeviceSyncClient>();
-    fake_multidevice_setup_client_ = std::make_unique<
-        chromeos::multidevice_setup::FakeMultiDeviceSetupClient>();
+    fake_multidevice_setup_client_ =
+        std::make_unique<multidevice_setup::FakeMultiDeviceSetupClient>();
 
     TestingProfile::Builder builder;
     profile_ = builder.Build();

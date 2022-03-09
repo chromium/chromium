@@ -15,7 +15,7 @@
 #include "chromeos/components/multidevice/remote_device_ref.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
-namespace chromeos {
+namespace ash {
 
 namespace multidevice_setup {
 
@@ -23,11 +23,9 @@ namespace multidevice_setup {
 class MultiDeviceSetupClient {
  public:
   using HostStatusWithDevice =
-      std::pair<ash::multidevice_setup::mojom::HostStatus,
+      std::pair<mojom::HostStatus,
                 absl::optional<multidevice::RemoteDeviceRef>>;
-  using FeatureStatesMap =
-      base::flat_map<ash::multidevice_setup::mojom::Feature,
-                     ash::multidevice_setup::mojom::FeatureState>;
+  using FeatureStatesMap = base::flat_map<mojom::Feature, mojom::FeatureState>;
 
   class Observer {
    public:
@@ -51,7 +49,7 @@ class MultiDeviceSetupClient {
 
   static HostStatusWithDevice GenerateDefaultHostStatusWithDevice();
   static FeatureStatesMap GenerateDefaultFeatureStatesMap(
-      ash::multidevice_setup::mojom::FeatureState default_value);
+      mojom::FeatureState default_value);
 
   MultiDeviceSetupClient();
 
@@ -68,26 +66,21 @@ class MultiDeviceSetupClient {
   virtual void SetHostDevice(
       const std::string& host_instance_id_or_legacy_device_id,
       const std::string& auth_token,
-      ash::multidevice_setup::mojom::MultiDeviceSetup::SetHostDeviceCallback
-          callback) = 0;
+      mojom::MultiDeviceSetup::SetHostDeviceCallback callback) = 0;
   virtual void RemoveHostDevice() = 0;
   virtual const HostStatusWithDevice& GetHostStatus() const = 0;
   virtual void SetFeatureEnabledState(
-      ash::multidevice_setup::mojom::Feature feature,
+      mojom::Feature feature,
       bool enabled,
       const absl::optional<std::string>& auth_token,
-      ash::multidevice_setup::mojom::MultiDeviceSetup::
-          SetFeatureEnabledStateCallback callback) = 0;
+      mojom::MultiDeviceSetup::SetFeatureEnabledStateCallback callback) = 0;
   virtual const FeatureStatesMap& GetFeatureStates() const = 0;
-  ash::multidevice_setup::mojom::FeatureState GetFeatureState(
-      ash::multidevice_setup::mojom::Feature feature) const;
+  mojom::FeatureState GetFeatureState(mojom::Feature feature) const;
   virtual void RetrySetHostNow(
-      ash::multidevice_setup::mojom::MultiDeviceSetup::RetrySetHostNowCallback
-          callback) = 0;
+      mojom::MultiDeviceSetup::RetrySetHostNowCallback callback) = 0;
   virtual void TriggerEventForDebugging(
-      ash::multidevice_setup::mojom::EventTypeForDebugging type,
-      ash::multidevice_setup::mojom::MultiDeviceSetup::
-          TriggerEventForDebuggingCallback callback) = 0;
+      mojom::EventTypeForDebugging type,
+      mojom::MultiDeviceSetup::TriggerEventForDebuggingCallback callback) = 0;
 
  protected:
   void NotifyHostStatusChanged(
@@ -105,14 +98,11 @@ std::string FeatureStatesMapToString(
 
 }  // namespace multidevice_setup
 
-}  // namespace chromeos
-
-// TODO(https://crbug.com/1164001): remove after the //chrome/browser/chromeos
-// source migration is finished.
-namespace ash {
-namespace multidevice_setup {
-using ::chromeos::multidevice_setup::MultiDeviceSetupClient;
-}
 }  // namespace ash
+
+// TODO(https://crbug.com/1164001): remove when the migration is finished.
+namespace chromeos::multidevice_setup {
+using ::ash::multidevice_setup::MultiDeviceSetupClient;
+}
 
 #endif  // ASH_SERVICES_MULTIDEVICE_SETUP_PUBLIC_CPP_MULTIDEVICE_SETUP_CLIENT_H_

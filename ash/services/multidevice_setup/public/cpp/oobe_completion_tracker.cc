@@ -4,7 +4,7 @@
 
 #include "ash/services/multidevice_setup/public/cpp/oobe_completion_tracker.h"
 
-namespace chromeos {
+namespace ash {
 
 namespace multidevice_setup {
 
@@ -27,4 +27,4 @@ void OobeCompletionTracker::MarkOobeShown() {
 
 }  // namespace multidevice_setup
 
-}  // namespace chromeos
+}  // namespace ash

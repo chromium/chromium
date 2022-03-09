@@ -5,8 +5,6 @@
 #ifndef CHROME_BROWSER_ASH_MULTIDEVICE_SETUP_MULTIDEVICE_SETUP_CLIENT_FACTORY_H_
 #define CHROME_BROWSER_ASH_MULTIDEVICE_SETUP_MULTIDEVICE_SETUP_CLIENT_FACTORY_H_
 
-// TODO(https://crbug.com/1164001): move to forward declaration.
-#include "ash/services/multidevice_setup/public/cpp/multidevice_setup_client.h"
 #include "base/memory/singleton.h"
 #include "components/keyed_service/content/browser_context_keyed_service_factory.h"
 
@@ -15,6 +13,8 @@ class Profile;
 
 namespace ash {
 namespace multidevice_setup {
+
+class MultiDeviceSetupClient;
 
 // Singleton that owns all MultiDeviceSetupClient instances and associates them
 // with Profiles.

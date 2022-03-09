@@ -42,10 +42,10 @@ class ProximityAuthProfilePrefManagerTest : public testing::Test {
   ProximityAuthProfilePrefManagerTest() = default;
 
   void SetUp() override {
-    fake_multidevice_setup_client_ = std::make_unique<
-        chromeos::multidevice_setup::FakeMultiDeviceSetupClient>();
+    fake_multidevice_setup_client_ =
+        std::make_unique<ash::multidevice_setup::FakeMultiDeviceSetupClient>();
     ProximityAuthProfilePrefManager::RegisterPrefs(pref_service_.registry());
-    chromeos::multidevice_setup::RegisterFeaturePrefs(pref_service_.registry());
+    ash::multidevice_setup::RegisterFeaturePrefs(pref_service_.registry());
     pref_manager_ = std::make_unique<ProximityAuthProfilePrefManager>(
         &pref_service_, fake_multidevice_setup_client_.get());
   }
@@ -57,7 +57,7 @@ class ProximityAuthProfilePrefManagerTest : public testing::Test {
     EXPECT_EQ(expected_eligible_value, pref_manager_->IsSmartLockEligible());
   }
 
-  std::unique_ptr<chromeos::multidevice_setup::FakeMultiDeviceSetupClient>
+  std::unique_ptr<ash::multidevice_setup::FakeMultiDeviceSetupClient>
       fake_multidevice_setup_client_;
   sync_preferences::TestingPrefServiceSyncable pref_service_;
   std::unique_ptr<ProximityAuthProfilePrefManager> pref_manager_;
@@ -69,8 +69,8 @@ TEST_F(ProximityAuthProfilePrefManagerTest, IsEasyUnlockAllowed) {
   EXPECT_TRUE(pref_manager_->IsEasyUnlockAllowed());
 
   // Simulating setting kEasyUnlockAllowed pref through enterprise policy.
-  pref_service_.SetBoolean(
-      chromeos::multidevice_setup::kSmartLockAllowedPrefName, false);
+  pref_service_.SetBoolean(ash::multidevice_setup::kSmartLockAllowedPrefName,
+                           false);
   EXPECT_FALSE(pref_manager_->IsEasyUnlockAllowed());
 }
 
@@ -142,8 +142,8 @@ TEST_F(ProximityAuthProfilePrefManagerTest, SyncsToLocalPrefOnChange) {
   // Test changing the kEasyUnlockAllowed pref value directly (e.g. through
   // enterprise policy).
   EXPECT_TRUE(local_pref_manager.IsEasyUnlockAllowed());
-  pref_service_.SetBoolean(
-      chromeos::multidevice_setup::kSmartLockAllowedPrefName, false);
+  pref_service_.SetBoolean(ash::multidevice_setup::kSmartLockAllowedPrefName,
+                           false);
   EXPECT_FALSE(profile_pref_manager.IsEasyUnlockAllowed());
   EXPECT_FALSE(local_pref_manager.IsEasyUnlockAllowed());
 

@@ -6,7 +6,7 @@
 
 #include "url/gurl.h"
 
-namespace chromeos {
+namespace ash {
 
 namespace multidevice_setup {
 
@@ -30,4 +30,4 @@ bool FakeAndroidSmsPairingStateTracker::IsAndroidSmsPairingComplete() {
 
 }  // namespace multidevice_setup
 
-}  // namespace chromeos
+}  // namespace ash

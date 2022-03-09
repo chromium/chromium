@@ -6,7 +6,7 @@
 
 #include "url/gurl.h"
 
-namespace chromeos {
+namespace ash {
 
 namespace multidevice_setup {
 
@@ -54,4 +54,4 @@ void FakeAndroidSmsAppHelperDelegate::ExecuteOnAppRegistryReady(
 
 }  // namespace multidevice_setup
 
-}  // namespace chromeos
+}  // namespace ash

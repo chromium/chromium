@@ -298,7 +298,7 @@ bool PushMessagingNotificationManager::ShouldSkipUserVisibleOnlyRequirements(
   // This is a short-term exception to user visible only enforcement added
   // to support for "Messages for Web" integration on ChromeOS.
 
-  chromeos::multidevice_setup::MultiDeviceSetupClient* multidevice_setup_client;
+  ash::multidevice_setup::MultiDeviceSetupClient* multidevice_setup_client;
   if (test_multidevice_setup_client_) {
     multidevice_setup_client = test_multidevice_setup_client_;
   } else {
@@ -341,8 +341,7 @@ bool PushMessagingNotificationManager::ShouldSkipUserVisibleOnlyRequirements(
 }
 
 void PushMessagingNotificationManager::SetTestMultiDeviceSetupClient(
-    chromeos::multidevice_setup::MultiDeviceSetupClient*
-        multidevice_setup_client) {
+    ash::multidevice_setup::MultiDeviceSetupClient* multidevice_setup_client) {
   test_multidevice_setup_client_ = multidevice_setup_client;
 }
 

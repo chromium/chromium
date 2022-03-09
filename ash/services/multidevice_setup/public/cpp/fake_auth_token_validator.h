@@ -10,7 +10,7 @@
 #include "ash/services/multidevice_setup/public/cpp/auth_token_validator.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
-namespace chromeos {
+namespace ash {
 
 namespace multidevice_setup {
 
@@ -37,6 +37,11 @@ class FakeAuthTokenValidator : public AuthTokenValidator {
 
 }  // namespace multidevice_setup
 
-}  // namespace chromeos
+}  // namespace ash
+
+// TODO(https://crbug.com/1164001): remove when the migration is finished.
+namespace chromeos::multidevice_setup {
+using ::ash::multidevice_setup::FakeAuthTokenValidator;
+}
 
 #endif  // ASH_SERVICES_MULTIDEVICE_SETUP_PUBLIC_CPP_FAKE_AUTH_TOKEN_VALIDATOR_H_

@@ -9,7 +9,7 @@ namespace base {
 class FeatureList;
 }  // namespace base
 
-namespace chromeos {
+namespace ash {
 
 namespace multidevice_setup {
 
@@ -20,6 +20,6 @@ void CreateFirstRunFieldTrial(base::FeatureList* feature_list);
 
 }  // namespace multidevice_setup
 
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // ASH_SERVICES_MULTIDEVICE_SETUP_PUBLIC_CPP_FIRST_RUN_FIELD_TRIAL_H_

@@ -16,7 +16,7 @@
 #include "chromeos/components/multidevice/remote_device_ref.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
-namespace chromeos {
+namespace ash {
 
 namespace multidevice_setup {
 
@@ -34,9 +34,8 @@ class FakeMultiDeviceSetupClient : public MultiDeviceSetupClient {
   void SetHostStatusWithDevice(
       const HostStatusWithDevice& host_status_with_device);
   void SetFeatureStates(const FeatureStatesMap& feature_states_map);
-  void SetFeatureState(
-      ash::multidevice_setup::mojom::Feature feature,
-      ash::multidevice_setup::mojom::FeatureState feature_state);
+  void SetFeatureState(mojom::Feature feature,
+                       mojom::FeatureState feature_state);
 
   void InvokePendingGetEligibleHostDevicesCallback(
       const multidevice::RemoteDeviceRefList& eligible_devices);
@@ -45,13 +44,13 @@ class FakeMultiDeviceSetupClient : public MultiDeviceSetupClient {
       const std::string& expected_auth_token,
       bool success);
   void InvokePendingSetFeatureEnabledStateCallback(
-      ash::multidevice_setup::mojom::Feature expected_feature,
+      mojom::Feature expected_feature,
       bool expected_enabled,
       const absl::optional<std::string>& expected_auth_token,
       bool success);
   void InvokePendingRetrySetHostNowCallback(bool success);
   void InvokePendingTriggerEventForDebuggingCallback(
-      ash::multidevice_setup::mojom::EventTypeForDebugging expected_type,
+      mojom::EventTypeForDebugging expected_type,
       bool success);
 
   size_t NumPendingSetFeatureEnabledStateCalls() const;
@@ -70,44 +69,40 @@ class FakeMultiDeviceSetupClient : public MultiDeviceSetupClient {
   void SetHostDevice(
       const std::string& host_instance_id_or_legacy_device_id,
       const std::string& auth_token,
-      ash::multidevice_setup::mojom::MultiDeviceSetup::SetHostDeviceCallback
-          callback) override;
+      mojom::MultiDeviceSetup::SetHostDeviceCallback callback) override;
   void RemoveHostDevice() override;
   void SetFeatureEnabledState(
-      ash::multidevice_setup::mojom::Feature feature,
+      mojom::Feature feature,
       bool enabled,
       const absl::optional<std::string>& auth_token,
-      ash::multidevice_setup::mojom::MultiDeviceSetup::
-          SetFeatureEnabledStateCallback callback) override;
+      mojom::MultiDeviceSetup::SetFeatureEnabledStateCallback callback)
+      override;
   void RetrySetHostNow(
-      ash::multidevice_setup::mojom::MultiDeviceSetup::RetrySetHostNowCallback
-          callback) override;
+      mojom::MultiDeviceSetup::RetrySetHostNowCallback callback) override;
   void TriggerEventForDebugging(
-      ash::multidevice_setup::mojom::EventTypeForDebugging type,
-      ash::multidevice_setup::mojom::MultiDeviceSetup::
-          TriggerEventForDebuggingCallback callback) override;
+      mojom::EventTypeForDebugging type,
+      mojom::MultiDeviceSetup::TriggerEventForDebuggingCallback callback)
+      override;
 
   size_t num_remove_host_device_called_ = 0u;
 
   std::queue<GetEligibleHostDevicesCallback>
       get_eligible_host_devices_callback_queue_;
-  std::queue<std::tuple<
-      std::string,
-      std::string,
-      ash::multidevice_setup::mojom::MultiDeviceSetup::SetHostDeviceCallback>>
+  std::queue<std::tuple<std::string,
+                        std::string,
+                        mojom::MultiDeviceSetup::SetHostDeviceCallback>>
       set_host_args_queue_;
-  std::queue<std::tuple<ash::multidevice_setup::mojom::Feature,
-                        bool,
-                        absl::optional<std::string>,
-                        ash::multidevice_setup::mojom::MultiDeviceSetup::
-                            SetFeatureEnabledStateCallback>>
-      set_feature_enabled_state_args_queue_;
   std::queue<
-      ash::multidevice_setup::mojom::MultiDeviceSetup::RetrySetHostNowCallback>
+      std::tuple<mojom::Feature,
+                 bool,
+                 absl::optional<std::string>,
+                 mojom::MultiDeviceSetup::SetFeatureEnabledStateCallback>>
+      set_feature_enabled_state_args_queue_;
+  std::queue<mojom::MultiDeviceSetup::RetrySetHostNowCallback>
       retry_set_host_now_callback_queue_;
-  std::queue<std::pair<ash::multidevice_setup::mojom::EventTypeForDebugging,
-                       ash::multidevice_setup::mojom::MultiDeviceSetup::
-                           TriggerEventForDebuggingCallback>>
+  std::queue<
+      std::pair<mojom::EventTypeForDebugging,
+                mojom::MultiDeviceSetup::TriggerEventForDebuggingCallback>>
       trigger_event_for_debugging_type_and_callback_queue_;
 
   HostStatusWithDevice host_status_with_device_;
@@ -116,14 +111,11 @@ class FakeMultiDeviceSetupClient : public MultiDeviceSetupClient {
 
 }  // namespace multidevice_setup
 
-}  // namespace chromeos
-
-// TODO(https://crbug.com/1164001): remove after the //chrome/browser/chromeos
-// source migration is finished.
-namespace ash {
-namespace multidevice_setup {
-using ::chromeos::multidevice_setup::FakeMultiDeviceSetupClient;
-}
 }  // namespace ash
+
+// TODO(https://crbug.com/1164001): remove when the migration is finished.
+namespace chromeos::multidevice_setup {
+using ::ash::multidevice_setup::FakeMultiDeviceSetupClient;
+}
 
 #endif  // ASH_SERVICES_MULTIDEVICE_SETUP_PUBLIC_CPP_FAKE_MULTIDEVICE_SETUP_CLIENT_H_

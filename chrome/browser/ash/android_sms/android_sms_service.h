@@ -7,10 +7,6 @@
 
 #include <memory>
 
-// TODO(https://crbug.com/1164001): move to forward declaration.
-#include "ash/services/multidevice_setup/public/cpp/android_sms_pairing_state_tracker.h"
-// TODO(https://crbug.com/1164001): move to forward declaration.
-#include "ash/services/multidevice_setup/public/cpp/multidevice_setup_client.h"
 #include "chrome/browser/ash/android_sms/android_sms_app_manager_impl.h"
 #include "chrome/browser/ash/android_sms/android_sms_pairing_state_tracker_impl.h"
 #include "components/keyed_service/core/keyed_service.h"
@@ -28,6 +24,12 @@ class WebAppProvider;
 }  // namespace web_app
 
 namespace ash {
+
+namespace multidevice_setup {
+class AndroidSmsPairingStateTracker;
+class MultiDeviceSetupClient;
+}  // namespace multidevice_setup
+
 namespace android_sms {
 
 class AndroidSmsAppManager;

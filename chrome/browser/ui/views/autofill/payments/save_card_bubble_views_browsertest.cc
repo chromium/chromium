@@ -866,7 +866,7 @@ class SaveCardBubbleViewsFullFormBrowserTestSettings
     // service for both browser()->profile() and GetProfile(0) hits a DCHECK,
     // so prevent this by disabling the feature.
     GetProfile(0)->GetPrefs()->SetBoolean(
-        chromeos::multidevice_setup::kPhoneHubAllowedPrefName, false);
+        ash::multidevice_setup::kPhoneHubAllowedPrefName, false);
 #endif
   }
 

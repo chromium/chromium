@@ -41,4 +41,9 @@ class PrivilegedHostDeviceSetterBase
 
 }  // namespace chromeos
 
+// TODO(https://crbug.com/1164001): remove when it moved to ash.
+namespace ash::multidevice_setup {
+using ::chromeos::multidevice_setup::PrivilegedHostDeviceSetterBase;
+}
+
 #endif  // ASH_SERVICES_MULTIDEVICE_SETUP_PRIVILEGED_HOST_DEVICE_SETTER_BASE_H_

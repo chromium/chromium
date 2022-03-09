@@ -9,6 +9,8 @@
 
 #include "ash/services/multidevice_setup/feature_state_manager.h"
 #include "ash/services/multidevice_setup/host_status_provider.h"
+// TODO(https://crbug.com/1164001): move to forward declaration
+#include "ash/services/multidevice_setup/public/cpp/android_sms_app_helper_delegate.h"
 
 class PrefRegistrySimple;
 class PrefService;
@@ -16,8 +18,6 @@ class PrefService;
 namespace chromeos {
 
 namespace multidevice_setup {
-
-class AndroidSmsAppHelperDelegate;
 
 // Listens for status changes in multidevice state and installs the Android
 // Messages PWA if needed.

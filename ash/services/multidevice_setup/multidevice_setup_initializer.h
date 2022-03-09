@@ -11,6 +11,14 @@
 
 #include "ash/services/device_sync/public/cpp/device_sync_client.h"
 #include "ash/services/multidevice_setup/multidevice_setup_base.h"
+// TODO(https://crbug.com/1164001): move to forward declaration
+#include "ash/services/multidevice_setup/public/cpp/android_sms_app_helper_delegate.h"
+// TODO(https://crbug.com/1164001): move to forward declaration
+#include "ash/services/multidevice_setup/public/cpp/android_sms_pairing_state_tracker.h"
+// TODO(https://crbug.com/1164001): move to forward declaration
+#include "ash/services/multidevice_setup/public/cpp/auth_token_validator.h"
+// TODO(https://crbug.com/1164001): move to forward declaration
+#include "ash/services/multidevice_setup/public/cpp/oobe_completion_tracker.h"
 #include "ash/services/multidevice_setup/public/mojom/multidevice_setup.mojom.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 
@@ -23,11 +31,6 @@ class GcmDeviceInfoProvider;
 }  // namespace device_sync
 
 namespace multidevice_setup {
-
-class AndroidSmsAppHelperDelegate;
-class AndroidSmsPairingStateTracker;
-class AuthTokenValidator;
-class OobeCompletionTracker;
 
 // Initializes the MultiDeviceSetup service. This class is responsible for
 // waiting for asynchronous initialization steps to complete before creating
@@ -189,5 +192,10 @@ class MultiDeviceSetupInitializer
 }  // namespace multidevice_setup
 
 }  // namespace chromeos
+
+// TODO(https://crbug.com/1164001): remove when it moved to ash.
+namespace ash::multidevice_setup {
+using ::chromeos::multidevice_setup::MultiDeviceSetupInitializer;
+}
 
 #endif  // ASH_SERVICES_MULTIDEVICE_SETUP_MULTIDEVICE_SETUP_INITIALIZER_H_

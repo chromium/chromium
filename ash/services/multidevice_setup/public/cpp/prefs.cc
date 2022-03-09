@@ -8,12 +8,9 @@
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 
-namespace chromeos {
+namespace ash {
 
 namespace multidevice_setup {
-
-// TODO(https://crbug.com/1164001): remove after migrating to ash.
-namespace mojom = ::ash::multidevice_setup::mojom;
 
 // Note: Pref name strings follow an inconsistent naming convention because some
 // of them were created before the MultiDeviceSetup project.
@@ -185,4 +182,4 @@ bool IsDefaultFeatureEnabledValue(mojom::Feature feature,
 
 }  // namespace multidevice_setup
 
-}  // namespace chromeos
+}  // namespace ash

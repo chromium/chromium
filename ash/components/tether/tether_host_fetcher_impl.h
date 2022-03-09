@@ -34,15 +34,14 @@ class TetherHostFetcherImpl
    public:
     static std::unique_ptr<TetherHostFetcher> Create(
         device_sync::DeviceSyncClient* device_sync_client,
-        chromeos::multidevice_setup::MultiDeviceSetupClient*
-            multidevice_setup_client);
+        multidevice_setup::MultiDeviceSetupClient* multidevice_setup_client);
 
     static void SetFactoryForTesting(Factory* factory);
 
    protected:
     virtual std::unique_ptr<TetherHostFetcher> CreateInstance(
         device_sync::DeviceSyncClient* device_sync_client,
-        chromeos::multidevice_setup::MultiDeviceSetupClient*
+        multidevice_setup::MultiDeviceSetupClient*
             multidevice_setup_client) = 0;
 
    private:
@@ -73,17 +72,16 @@ class TetherHostFetcherImpl
           feature_states_map) override;
 
  protected:
-  TetherHostFetcherImpl(device_sync::DeviceSyncClient* device_sync_client,
-                        chromeos::multidevice_setup::MultiDeviceSetupClient*
-                            multidevice_setup_client_);
+  TetherHostFetcherImpl(
+      device_sync::DeviceSyncClient* device_sync_client,
+      multidevice_setup::MultiDeviceSetupClient* multidevice_setup_client_);
 
  private:
   void CacheCurrentTetherHosts();
   multidevice::RemoteDeviceRefList GenerateHostDeviceList();
 
   device_sync::DeviceSyncClient* device_sync_client_;
-  chromeos::multidevice_setup::MultiDeviceSetupClient*
-      multidevice_setup_client_;
+  multidevice_setup::MultiDeviceSetupClient* multidevice_setup_client_;
 
   multidevice::RemoteDeviceRefList current_remote_device_list_;
   base::WeakPtrFactory<TetherHostFetcherImpl> weak_ptr_factory_{this};
