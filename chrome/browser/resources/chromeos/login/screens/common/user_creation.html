@@ -27,6 +27,11 @@ found in the LICENSE file. -->
 <dom-module id="user-creation-element">
   <template>
     <style include="oobe-dialog-host-styles cr-card-radio-group-styles">
+      @media screen and (max-width: 920px) {
+      :host {
+          --radio-button-height: 155px;
+        }
+      }
       .help-text {
         color: var(--oobe-subheader-text-color);
         margin-top: 16px;

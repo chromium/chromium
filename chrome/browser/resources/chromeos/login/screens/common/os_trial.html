@@ -16,6 +16,11 @@
 <dom-module id="os-trial-element">
   <template>
     <style include="oobe-dialog-host-styles cr-card-radio-group-styles">
+      @media screen and (max-width: 920px) {
+      :host {
+          --radio-button-height: 155px;
+        }
+      }
     </style>
 
     <oobe-adaptive-dialog id="osTrialDialog" role="dialog"
