@@ -36,6 +36,7 @@ class TestFencedFrameURLMappingResultObserver
 
   void OnFencedFrameURLMappingComplete(
       absl::optional<GURL> mapped_url,
+      absl::optional<AdAuctionData> ad_auction_data,
       absl::optional<FencedFrameURLMapping::PendingAdComponentsMap>
           pending_ad_components_map) override;
 
@@ -48,11 +49,16 @@ class TestFencedFrameURLMappingResultObserver
     return pending_ad_components_map_;
   }
 
+  const absl::optional<AdAuctionData> ad_auction_data() const {
+    return ad_auction_data_;
+  }
+
  private:
   bool mapping_complete_observed_ = false;
   absl::optional<GURL> mapped_url_;
   absl::optional<FencedFrameURLMapping::PendingAdComponentsMap>
       pending_ad_components_map_;
+  absl::optional<AdAuctionData> ad_auction_data_;
 };
 
 class FencedFrameNavigationObserver {

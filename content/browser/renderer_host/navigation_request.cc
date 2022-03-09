@@ -1915,6 +1915,7 @@ bool NavigationRequest::NeedFencedFrameURLMapping() {
 
 void NavigationRequest::OnFencedFrameURLMappingComplete(
     absl::optional<GURL> mapped_url,
+    absl::optional<AdAuctionData> ad_auction_data,
     absl::optional<FencedFrameURLMapping::PendingAdComponentsMap>
         pending_ad_components_map) {
   is_deferred_on_fenced_frame_url_mapping_ = false;

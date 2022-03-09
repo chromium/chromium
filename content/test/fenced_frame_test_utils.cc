@@ -55,10 +55,12 @@ TestFencedFrameURLMappingResultObserver::
 
 void TestFencedFrameURLMappingResultObserver::OnFencedFrameURLMappingComplete(
     absl::optional<GURL> mapped_url,
+    absl::optional<AdAuctionData> ad_auction_data,
     absl::optional<FencedFrameURLMapping::PendingAdComponentsMap>
         pending_ad_components_map) {
   mapping_complete_observed_ = true;
   mapped_url_ = std::move(mapped_url);
+  ad_auction_data_ = ad_auction_data;
   pending_ad_components_map_ = std::move(pending_ad_components_map);
 }
 

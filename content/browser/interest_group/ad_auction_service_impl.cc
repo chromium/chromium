@@ -312,6 +312,7 @@ class FencedFrameURLMappingObserver
 
   void OnFencedFrameURLMappingComplete(
       absl::optional<GURL> mapped_url,
+      absl::optional<AdAuctionData> ad_auction_data,
       absl::optional<FencedFrameURLMapping::PendingAdComponentsMap>
           pending_ad_components_map) override {
     mapped_url_ = mapped_url;
@@ -436,8 +437,9 @@ bool AdAuctionServiceImpl::IsInterestGroupAPIAllowed(
 void AdAuctionServiceImpl::OnAuctionComplete(
     RunAdAuctionCallback callback,
     AuctionRunner* auction,
+    absl::optional<AuctionRunner::InterestGroupKey> winning_group_id,
     absl::optional<GURL> render_url,
-    absl::optional<std::vector<GURL>> ad_component_urls,
+    std::vector<GURL> ad_component_urls,
     std::vector<GURL> report_urls,
     std::vector<GURL> debug_loss_report_urls,
     std::vector<GURL> debug_win_report_urls,
@@ -465,20 +467,14 @@ void AdAuctionServiceImpl::OnAuctionComplete(
         AdAuctionResultMetrics::AuctionResult::kFailed);
     return;
   }
-
+  DCHECK(winning_group_id);  // Should always be present with a render_url
   render_url =
       GetFrame()
           ->GetPage()
           .fenced_frame_urls_map()
-          .AddFencedFrameURLWithInterestGroupAdComponentUrls(
-              *render_url,
-              // Always pass in non-empty component URL vector, to avoid
-              // leaking any data to fenced frame.
-              //
-              // TODO(mmenke):  Make `ad_component_urls` non-optional
-              // everywhere instead of preserving the empty vs null
-              // distinction, only to discard it here.
-              std::move(ad_component_urls).value_or(std::vector<GURL>()));
+          .AddFencedFrameURLWithInterestGroupInfo(
+              *render_url, {winning_group_id->owner, winning_group_id->name},
+              ad_component_urls);
   DCHECK(render_url->is_valid());
 
   std::move(callback).Run(render_url);

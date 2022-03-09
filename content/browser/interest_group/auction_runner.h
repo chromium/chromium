@@ -35,7 +35,23 @@ class InterestGroupManagerImpl;
 // their reporting phases and produces the result via a callback.
 class CONTENT_EXPORT AuctionRunner {
  public:
+  // TODO(behamilton@google.com): Make this struct more broadly available to
+  // the rest of interest group code and adjust them to use it where
+  // appropriate.
+  struct InterestGroupKey {
+    InterestGroupKey(url::Origin o, std::string n) : owner(o), name(n) {}
+    constexpr bool operator<(const InterestGroupKey& other) const {
+      return owner != other.owner ? owner < other.owner : name < other.name;
+    }
+    constexpr bool operator==(const InterestGroupKey& other) const {
+      return owner == other.owner && name == other.name;
+    }
+    url::Origin owner;
+    std::string name;
+  };
   // Invoked when a FLEDGE auction is complete.
+  //
+  // `winning_group_id` owner and name of the winning interest group (if any).
   //
   // `render_url` URL of auction winning ad to render. Null if there is no
   //  winner.
@@ -54,14 +70,15 @@ class CONTENT_EXPORT AuctionRunner {
   //
   // `errors` are various error messages to be used for debugging. These are too
   //  sensitive for the renderers to see.
-  using RunAuctionCallback = base::OnceCallback<void(
-      AuctionRunner* auction_runner,
-      absl::optional<GURL> render_url,
-      absl::optional<std::vector<GURL>> ad_component_urls,
-      std::vector<GURL> report_urls,
-      std::vector<GURL> debug_loss_report_urls,
-      std::vector<GURL> debug_win_report_urls,
-      std::vector<std::string> errors)>;
+  using RunAuctionCallback =
+      base::OnceCallback<void(AuctionRunner* auction_runner,
+                              absl::optional<InterestGroupKey> winning_group_id,
+                              absl::optional<GURL> render_url,
+                              std::vector<GURL> ad_component_urls,
+                              std::vector<GURL> report_urls,
+                              std::vector<GURL> debug_loss_report_urls,
+                              std::vector<GURL> debug_win_report_urls,
+                              std::vector<std::string> errors)>;
 
   // Returns true if `origin` is allowed to use the interest group API. Will be
   // called on worklet / interest group origins before using them in any
@@ -158,7 +175,7 @@ class CONTENT_EXPORT AuctionRunner {
   // interest groups bid in an auction. A sets is used to avoid double-counting
   // interest groups that bid in multiple components auctions in a component
   // auction.
-  using InterestGroupSet = std::set<std::pair<url::Origin, std::string>>;
+  using InterestGroupSet = std::set<InterestGroupKey>;
 
   class Auction;
 
@@ -210,7 +227,7 @@ class CONTENT_EXPORT AuctionRunner {
     Bid(std::string ad_metadata,
         double bid,
         GURL render_url,
-        absl::optional<std::vector<GURL>> ad_components,
+        std::vector<GURL> ad_components,
         base::TimeDelta bid_duration,
         absl::optional<uint32_t> bidding_signals_data_version,
         const blink::InterestGroup::Ad* bid_ad,
@@ -226,7 +243,7 @@ class CONTENT_EXPORT AuctionRunner {
     const std::string ad_metadata;
     const double bid;
     const GURL render_url;
-    const absl::optional<std::vector<GURL>> ad_components;
+    const std::vector<GURL> ad_components;
     const base::TimeDelta bid_duration;
     const absl::optional<uint32_t> bidding_signals_data_version;
 

@@ -201,19 +201,26 @@ TEST(FencedFrameURLMappingTest, RegisterTwoObservers) {
 // Test the case `ad_component_urls` is empty. In this case, it should be filled
 // with URNs that are mapped to about:blank.
 TEST(FencedFrameURLMappingTest,
-     AddFencedFrameURLWithInterestGroupAdComponentUrlsNoAdComponentsUrls) {
+     AddFencedFrameURLWithInterestGroupInfoNoAdComponentsUrls) {
   FencedFrameURLMapping fenced_frame_url_mapping;
   GURL top_level_url("https://foo.test");
+  url::Origin interest_group_owner = url::Origin::Create(top_level_url);
+  std::string interest_group_name = "bars";
   std::vector<GURL> ad_component_urls;
 
-  GURL urn_uuid = fenced_frame_url_mapping
-                      .AddFencedFrameURLWithInterestGroupAdComponentUrls(
-                          top_level_url, ad_component_urls);
+  GURL urn_uuid =
+      fenced_frame_url_mapping.AddFencedFrameURLWithInterestGroupInfo(
+          top_level_url, {interest_group_owner, interest_group_name},
+          ad_component_urls);
 
   TestFencedFrameURLMappingResultObserver observer;
   fenced_frame_url_mapping.ConvertFencedFrameURNToURL(urn_uuid, &observer);
   EXPECT_TRUE(observer.mapping_complete_observed());
   EXPECT_EQ(top_level_url, observer.mapped_url());
+  EXPECT_EQ(interest_group_owner,
+            observer.ad_auction_data()->interest_group_owner);
+  EXPECT_EQ(interest_group_name,
+            observer.ad_auction_data()->interest_group_name);
   EXPECT_TRUE(observer.pending_ad_components_map());
 
   // Call with `add_to_new_map` set to false and true, to simulate ShadowDOM
@@ -230,19 +237,26 @@ TEST(FencedFrameURLMappingTest,
 
 // Test the case `ad_component_urls` has a single URL.
 TEST(FencedFrameURLMappingTest,
-     AddFencedFrameURLWithInterestGroupAdComponentUrlsOneAdComponentUrl) {
+     AddFencedFrameURLWithInterestGroupInfoOneAdComponentUrl) {
   FencedFrameURLMapping fenced_frame_url_mapping;
   GURL top_level_url("https://foo.test");
+  url::Origin interest_group_owner = url::Origin::Create(top_level_url);
+  std::string interest_group_name = "bars";
   std::vector<GURL> ad_component_urls{GURL("https://bar.test")};
 
-  GURL urn_uuid = fenced_frame_url_mapping
-                      .AddFencedFrameURLWithInterestGroupAdComponentUrls(
-                          top_level_url, ad_component_urls);
+  GURL urn_uuid =
+      fenced_frame_url_mapping.AddFencedFrameURLWithInterestGroupInfo(
+          top_level_url, {interest_group_owner, interest_group_name},
+          ad_component_urls);
 
   TestFencedFrameURLMappingResultObserver observer;
   fenced_frame_url_mapping.ConvertFencedFrameURNToURL(urn_uuid, &observer);
   EXPECT_TRUE(observer.mapping_complete_observed());
   EXPECT_EQ(top_level_url, observer.mapped_url());
+  EXPECT_EQ(interest_group_owner,
+            observer.ad_auction_data()->interest_group_owner);
+  EXPECT_EQ(interest_group_name,
+            observer.ad_auction_data()->interest_group_name);
   EXPECT_TRUE(observer.pending_ad_components_map());
 
   // Call with `add_to_new_map` set to false and true, to simulate ShadowDOM
@@ -260,23 +274,30 @@ TEST(FencedFrameURLMappingTest,
 // Test the case `ad_component_urls` has the maximum number of allowed ad
 // component URLs.
 TEST(FencedFrameURLMappingTest,
-     AddFencedFrameURLWithInterestGroupAdComponentUrlsMaxAdComponentUrl) {
+     AddFencedFrameURLWithInterestGroupInfoMaxAdComponentUrl) {
   FencedFrameURLMapping fenced_frame_url_mapping;
   GURL top_level_url("https://foo.test");
+  url::Origin interest_group_owner = url::Origin::Create(top_level_url);
+  std::string interest_group_name = "bars";
   std::vector<GURL> ad_component_urls;
   for (size_t i = 0; i < blink::kMaxAdAuctionAdComponents; ++i) {
     ad_component_urls.emplace_back(
         GURL(base::StringPrintf("https://%zu.test/", i)));
   }
 
-  GURL urn_uuid = fenced_frame_url_mapping
-                      .AddFencedFrameURLWithInterestGroupAdComponentUrls(
-                          top_level_url, ad_component_urls);
+  GURL urn_uuid =
+      fenced_frame_url_mapping.AddFencedFrameURLWithInterestGroupInfo(
+          top_level_url, {interest_group_owner, interest_group_name},
+          ad_component_urls);
 
   TestFencedFrameURLMappingResultObserver observer;
   fenced_frame_url_mapping.ConvertFencedFrameURNToURL(urn_uuid, &observer);
   EXPECT_TRUE(observer.mapping_complete_observed());
   EXPECT_EQ(top_level_url, observer.mapped_url());
+  EXPECT_EQ(interest_group_owner,
+            observer.ad_auction_data()->interest_group_owner);
+  EXPECT_EQ(interest_group_name,
+            observer.ad_auction_data()->interest_group_name);
   EXPECT_TRUE(observer.pending_ad_components_map());
 
   // Call with `add_to_new_map` set to false and true, to simulate ShadowDOM
@@ -294,22 +315,28 @@ TEST(FencedFrameURLMappingTest,
 // Test the case `ad_component_urls` has the maximum number of allowed ad
 // component URLs, and they're all identical. The main purpose of this test is
 // to make sure they receive unique URNs, despite being identical URLs.
-TEST(
-    FencedFrameURLMappingTest,
-    AddFencedFrameURLWithInterestGroupAdComponentUrlsMaxIdenticalAdComponentUrl) {
+TEST(FencedFrameURLMappingTest,
+     AddFencedFrameURLWithInterestGroupInfoMaxIdenticalAdComponentUrl) {
   FencedFrameURLMapping fenced_frame_url_mapping;
   GURL top_level_url("https://foo.test");
+  url::Origin interest_group_owner = url::Origin::Create(top_level_url);
+  std::string interest_group_name = "bars";
   std::vector<GURL> ad_component_urls(blink::kMaxAdAuctionAdComponents,
                                       GURL("https://bar.test/"));
 
-  GURL urn_uuid = fenced_frame_url_mapping
-                      .AddFencedFrameURLWithInterestGroupAdComponentUrls(
-                          top_level_url, ad_component_urls);
+  GURL urn_uuid =
+      fenced_frame_url_mapping.AddFencedFrameURLWithInterestGroupInfo(
+          top_level_url, {interest_group_owner, interest_group_name},
+          ad_component_urls);
 
   TestFencedFrameURLMappingResultObserver observer;
   fenced_frame_url_mapping.ConvertFencedFrameURNToURL(urn_uuid, &observer);
   EXPECT_TRUE(observer.mapping_complete_observed());
   EXPECT_EQ(top_level_url, observer.mapped_url());
+  EXPECT_EQ(interest_group_owner,
+            observer.ad_auction_data()->interest_group_owner);
+  EXPECT_EQ(interest_group_name,
+            observer.ad_auction_data()->interest_group_name);
   EXPECT_TRUE(observer.pending_ad_components_map());
 
   // Call with `add_to_new_map` set to false and true, to simulate ShadowDOM

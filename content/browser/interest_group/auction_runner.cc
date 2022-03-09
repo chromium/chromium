@@ -77,7 +77,7 @@ AuctionRunner::BidState::BidState(BidState&&) = default;
 AuctionRunner::Bid::Bid(std::string ad_metadata,
                         double bid,
                         GURL render_url,
-                        absl::optional<std::vector<GURL>> ad_components,
+                        std::vector<GURL> ad_components,
                         base::TimeDelta bid_duration,
                         absl::optional<uint32_t> bidding_signals_data_version,
                         const blink::InterestGroup::Ad* bid_ad,
@@ -322,8 +322,8 @@ void AuctionRunner::Auction::GetInterestGroupsThatBid(
 
   for (const BidState& bid_state : bid_states_) {
     if (bid_state.made_bid) {
-      interest_groups.emplace(std::pair(bid_state.bidder.interest_group.owner,
-                                        bid_state.bidder.interest_group.name));
+      interest_groups.emplace(bid_state.bidder.interest_group.owner,
+                              bid_state.bidder.interest_group.name);
     }
   }
 
@@ -738,8 +738,7 @@ void AuctionRunner::Auction::ScoreBidIfReady(std::unique_ptr<Bid> bid) {
       bid_raw->ad_metadata, bid_raw->bid,
       config_->auction_ad_config_non_shared_params.Clone(),
       GetOtherSellerParam(*bid_raw), bid_raw->interest_group->owner,
-      bid_raw->render_url,
-      bid_raw->ad_components ? *bid_raw->ad_components : std::vector<GURL>(),
+      bid_raw->render_url, bid_raw->ad_components,
       bid_raw->bid_duration.InMilliseconds(), SellerTimeout(),
       base::BindOnce(&Auction::OnBidScored, weak_ptr_factory_.GetWeakPtr(),
                      std::move(bid)));
@@ -1181,7 +1180,8 @@ void AuctionRunner::FailAuction() {
 
   std::move(callback_).Run(
       this, /*render_url=*/absl::nullopt,
-      /*ad_component_urls=*/absl::nullopt,
+      /*winning_group_key=*/absl::nullopt,
+      /*ad_component_urls=*/{},
       /*report_urls=*/{}, std::move(debug_loss_report_urls),
       std::move(debug_win_report_urls), auction_.TakeErrors());
 }
@@ -1224,6 +1224,7 @@ std::unique_ptr<AuctionRunner::Bid> AuctionRunner::Auction::TryToCreateBid(
     return nullptr;
   }
 
+  std::vector<GURL> ad_components;
   // Validate `ad_component` URLs, if present.
   if (mojo_bid->ad_components) {
     // Only InterestGroups with ad components should return bids with ad
@@ -1247,6 +1248,7 @@ std::unique_ptr<AuctionRunner::Bid> AuctionRunner::Auction::TryToCreateBid(
         return nullptr;
       }
     }
+    ad_components = *std::move(mojo_bid->ad_components);
   }
 
   // Validate `debug_loss_report_url` and `debug_win_report_url`, if present.
@@ -1263,7 +1265,7 @@ std::unique_ptr<AuctionRunner::Bid> AuctionRunner::Auction::TryToCreateBid(
 
   return std::make_unique<Bid>(
       std::move(mojo_bid->ad), mojo_bid->bid, std::move(mojo_bid->render_url),
-      std::move(mojo_bid->ad_components), mojo_bid->bid_duration,
+      std::move(ad_components), mojo_bid->bid_duration,
       bidding_signals_data_version, matching_ad, &bid_state, this);
 }
 
@@ -1291,9 +1293,8 @@ void AuctionRunner::OnBidsGeneratedAndScored(bool success) {
   InterestGroupSet interest_groups_that_bid;
   auction_.GetInterestGroupsThatBid(interest_groups_that_bid);
   for (const auto& interest_group : interest_groups_that_bid) {
-    interest_group_manager_->RecordInterestGroupBid(
-        /*owner=*/interest_group.first,
-        /*name=*/interest_group.second);
+    interest_group_manager_->RecordInterestGroupBid(interest_group.owner,
+                                                    interest_group.name);
   }
   if (!success) {
     FailAuction();
@@ -1333,8 +1334,12 @@ void AuctionRunner::OnReportingPhaseComplete(bool success) {
   std::vector<GURL> debug_loss_report_urls;
   auction_.TakeDebugReportUrls(debug_win_report_urls, debug_loss_report_urls);
 
+  DCHECK(auction_.top_bid()->bid->interest_group);
+  const blink::InterestGroup& winning_group =
+      *auction_.top_bid()->bid->interest_group;
+  InterestGroupKey winning_group_key({winning_group.owner, winning_group.name});
   std::move(callback_).Run(
-      this, auction_.top_bid()->bid->render_url,
+      this, std::move(winning_group_key), auction_.top_bid()->bid->render_url,
       auction_.top_bid()->bid->ad_components, auction_.TakeReportUrls(),
       std::move(debug_loss_report_urls), std::move(debug_win_report_urls),
       auction_.TakeErrors());

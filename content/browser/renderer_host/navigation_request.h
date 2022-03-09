@@ -983,6 +983,7 @@ class CONTENT_EXPORT NavigationRequest
   // resume the deferred navigation.
   void OnFencedFrameURLMappingComplete(
       absl::optional<GURL> mapped_url,
+      absl::optional<AdAuctionData> ad_auction_data,
       absl::optional<FencedFrameURLMapping::PendingAdComponentsMap>
           pending_ad_components_map) override;
 

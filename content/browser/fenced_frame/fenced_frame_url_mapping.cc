@@ -115,10 +115,12 @@ GURL FencedFrameURLMapping::AddFencedFrameURL(const GURL& url) {
   return AddMappingForUrl(url)->first;
 }
 
-GURL FencedFrameURLMapping::AddFencedFrameURLWithInterestGroupAdComponentUrls(
+GURL FencedFrameURLMapping::AddFencedFrameURLWithInterestGroupInfo(
     const GURL& url,
+    AdAuctionData ad_auction_data,
     std::vector<GURL> ad_component_urls) {
   UrnUuidToUrlMap::iterator it = AddMappingForUrl(url);
+  it->second.ad_auction_data = std::move(ad_auction_data);
   it->second.ad_component_urls = std::move(ad_component_urls);
   return it->first;
 }
@@ -153,6 +155,7 @@ void FencedFrameURLMapping::ConvertFencedFrameURNToURL(
   }
 
   absl::optional<GURL> result_url;
+  absl::optional<AdAuctionData> result_ad_auction_data;
   absl::optional<PendingAdComponentsMap> result_ad_components;
 
   auto it = urn_uuid_to_url_map_.find(urn_uuid);
@@ -162,9 +165,11 @@ void FencedFrameURLMapping::ConvertFencedFrameURNToURL(
           PendingAdComponentsMap(*it->second.ad_component_urls));
     }
     result_url = it->second.mapped_url;
+    result_ad_auction_data = it->second.ad_auction_data;
   }
 
   observer->OnFencedFrameURLMappingComplete(std::move(result_url),
+                                            std::move(result_ad_auction_data),
                                             std::move(result_ad_components));
 }
 
@@ -196,6 +201,7 @@ void FencedFrameURLMapping::OnURNMappingResultDetermined(
   for (raw_ptr<MappingResultObserver> observer : observers) {
     observer->OnFencedFrameURLMappingComplete(
         mapped_url,
+        /*ad_auction_data=*/absl::nullopt,
         /*pending_ad_components_map=*/absl::nullopt);
   }
 

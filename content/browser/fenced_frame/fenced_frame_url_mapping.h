@@ -14,10 +14,16 @@
 #include "content/common/content_export.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
+#include "url/origin.h"
 
 namespace content {
 
 extern const char kURNUUIDprefix[];
+
+struct AdAuctionData {
+  url::Origin interest_group_owner;
+  std::string interest_group_name;
+};
 
 // Keeps a mapping of fenced frames URN:UUID and URL. Also keeps a set of
 // pending mapped URN:UUIDs to support asynchronous mapping. See
@@ -87,7 +93,8 @@ class CONTENT_EXPORT FencedFrameURLMapping {
     // possible when the initial URN is already mapped, and the
     // `OnFencedFrameURLMappingComplete` is invoked synchronously),
     // `pending_ad_components_map` will be populated with a
-    // `PendingAdComponentsMap`. In that case, the observer needs to use the
+    // `PendingAdComponentsMap` and `ad_auction_data` will contain
+    // AdAuctionData. In that case, the observer needs to use the
     // `PendingAdComponentsMap` to provide ad component URNs to the fenced frame
     // via its commit parameters, and to add those URNs to the
     // `FencedFrameURLMapping` of the committed frame.
@@ -96,6 +103,7 @@ class CONTENT_EXPORT FencedFrameURLMapping {
     // absl::nullopt.
     virtual void OnFencedFrameURLMappingComplete(
         absl::optional<GURL> mapped_url,
+        absl::optional<AdAuctionData> ad_auction_data,
         absl::optional<PendingAdComponentsMap> pending_ad_components_map) = 0;
   };
 
@@ -109,14 +117,15 @@ class CONTENT_EXPORT FencedFrameURLMapping {
   // "potentially trustworthy URLs".
   GURL AddFencedFrameURL(const GURL& url);
 
-  // Just like AddFencedFrameURL, but also takes an ordered list of ad component
-  // URLs, as provided by a bidder running an auction. These will to be made
-  // available to any fenced frame navigated to the returned URN, via the
-  // InterestGroup API.
+  // Just like AddFencedFrameURL, but also takes additional ad auction data as
+  // well as an ordered list of ad component URLs, as provided by a bidder
+  // running an auction. These will to be made available to any fenced frame
+  // navigated to the returned URN, via the InterestGroup API.
   //
   // See https://github.com/WICG/turtledove/blob/main/FLEDGE.md
-  GURL AddFencedFrameURLWithInterestGroupAdComponentUrls(
+  GURL AddFencedFrameURLWithInterestGroupInfo(
       const GURL& url,
+      AdAuctionData auction_data,
       std::vector<GURL> ad_component_urls);
 
   static bool IsValidUrnUuidURL(const GURL& url);
@@ -172,6 +181,10 @@ class CONTENT_EXPORT FencedFrameURLMapping {
 
     GURL mapped_url;
 
+    // Extra data set if `mapped_url` is the result of a FLEDGE auction. Used
+    // to fill in `AdAuctionDocumentData` for the fenced frame that navigates
+    // to `mapped_url`.
+    absl::optional<AdAuctionData> ad_auction_data;
     // Ad component URLs if `mapped_url` is the result of a FLEDGE auction. When
     // a fenced frame navigates to `mapped_url`, these will be mapped to URNs
     // themselves, and those URNs will be provided to the fenced frame.
