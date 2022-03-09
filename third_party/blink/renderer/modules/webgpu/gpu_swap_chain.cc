@@ -19,22 +19,82 @@
 
 namespace blink {
 
-GPUSwapChain::GPUSwapChain(GPUCanvasContext* context,
-                           GPUDevice* device,
-                           WGPUTextureUsage usage,
-                           WGPUTextureFormat format,
-                           cc::PaintFlags::FilterQuality filter_quality,
-                           gfx::Size size)
+GPUSwapChain::GPUSwapChain(
+    GPUCanvasContext* context,
+    GPUDevice* device,
+    WGPUTextureUsage usage,
+    WGPUTextureFormat format,
+    cc::PaintFlags::FilterQuality filter_quality,
+    V8GPUCanvasCompositingAlphaMode::Enum compositing_alpha_mode,
+    gfx::Size size)
     : DawnObjectBase(device->GetDawnControlClient()),
       device_(device),
       context_(context),
       usage_(usage),
       format_(format),
+      compositing_alpha_mode_(compositing_alpha_mode),
       size_(size) {
   // TODO: Use label from GPUObjectDescriptorBase.
   swap_buffers_ = base::AdoptRef(new WebGPUSwapBufferProvider(
       this, GetDawnControlClient(), device->GetHandle(), usage_, format));
   swap_buffers_->SetFilterQuality(filter_quality);
+
+  // Note: SetContentsOpaque is only an optimization hint. It doesn't
+  // actually make the contents opaque.
+  switch (compositing_alpha_mode) {
+    case V8GPUCanvasCompositingAlphaMode::Enum::kOpaque: {
+      CcLayer()->SetContentsOpaque(true);
+
+      WGPUShaderModuleWGSLDescriptor wgsl_desc = {
+          .chain = {.sType = WGPUSType_ShaderModuleWGSLDescriptor},
+          .source = R"(
+          @stage(vertex) fn vert_main(@builtin(vertex_index) VertexIndex : u32) -> @builtin(position) vec4<f32> {
+            var pos = array<vec2<f32>, 3>(
+                vec2<f32>(-1.0, -1.0),
+                vec2<f32>( 3.0, -1.0),
+                vec2<f32>(-1.0,  3.0));
+            return vec4<f32>(pos[VertexIndex], 0.0, 1.0);
+          }
+
+          @stage(fragment) fn frag_main() -> @location(0) vec4<f32> {
+            return vec4<f32>(1.0);
+          }
+        )",
+      };
+      WGPUShaderModuleDescriptor shader_module_desc = {.nextInChain =
+                                                           &wgsl_desc.chain};
+      WGPUShaderModule shader_module = GetProcs().deviceCreateShaderModule(
+          device_->GetHandle(), &shader_module_desc);
+
+      WGPUColorTargetState color_target = {
+          .format = format_,
+          .writeMask = WGPUColorWriteMask_Alpha,
+      };
+      WGPUFragmentState fragment = {
+          .module = shader_module,
+          .entryPoint = "frag_main",
+          .targetCount = 1,
+          .targets = &color_target,
+      };
+      WGPURenderPipelineDescriptor pipeline_desc = {
+          .vertex =
+              {
+                  .module = shader_module,
+                  .entryPoint = "vert_main",
+              },
+          .primitive = {.topology = WGPUPrimitiveTopology_TriangleList},
+          .multisample = {.count = 1, .mask = 0xFFFFFFFF},
+          .fragment = &fragment,
+      };
+      alpha_to_one_pipeline_ = GetProcs().deviceCreateRenderPipeline(
+          device_->GetHandle(), &pipeline_desc);
+      GetProcs().shaderModuleRelease(shader_module);
+      break;
+    }
+    case V8GPUCanvasCompositingAlphaMode::Enum::kPremultiplied:
+      CcLayer()->SetContentsOpaque(false);
+      break;
+  }
 }
 
 GPUSwapChain::~GPUSwapChain() {
@@ -48,6 +108,10 @@ void GPUSwapChain::Trace(Visitor* visitor) const {
 }
 
 void GPUSwapChain::Neuter() {
+  if (alpha_to_one_pipeline_ != nullptr) {
+    GetProcs().renderPipelineRelease(alpha_to_one_pipeline_);
+    alpha_to_one_pipeline_ = nullptr;
+  }
   texture_ = nullptr;
   if (swap_buffers_) {
     swap_buffers_->Neuter();
@@ -310,6 +374,54 @@ GPUTexture* GPUSwapChain::getCurrentTexture() {
 // WebGPUSwapBufferProvider::Client implementation
 void GPUSwapChain::OnTextureTransferred() {
   DCHECK(texture_);
+  // The texture is about to be transferred to the compositor.
+  // For compositing alpha mode Opaque, clear the alpha channel to
+  // 1.0.
+  switch (compositing_alpha_mode_) {
+    case V8GPUCanvasCompositingAlphaMode::Enum::kOpaque: {
+      WGPUTextureView attachment_view =
+          GetProcs().textureCreateView(texture_->GetHandle(), nullptr);
+
+      WGPUDawnEncoderInternalUsageDescriptor internal_usage_desc = {
+          .chain = {.sType = WGPUSType_DawnEncoderInternalUsageDescriptor},
+          .useInternalUsages = true,
+      };
+      WGPUCommandEncoderDescriptor command_encoder_desc = {
+          .nextInChain = &internal_usage_desc.chain,
+      };
+      WGPUCommandEncoder command_encoder =
+          GetProcs().deviceCreateCommandEncoder(device_->GetHandle(),
+                                                &command_encoder_desc);
+
+      WGPURenderPassColorAttachment color_attachment = {
+          .view = attachment_view,
+          .loadOp = WGPULoadOp_Load,
+          .storeOp = WGPUStoreOp_Store,
+      };
+      WGPURenderPassDescriptor render_pass_desc = {
+          .colorAttachmentCount = 1,
+          .colorAttachments = &color_attachment,
+      };
+      WGPURenderPassEncoder pass = GetProcs().commandEncoderBeginRenderPass(
+          command_encoder, &render_pass_desc);
+      DCHECK(alpha_to_one_pipeline_);
+      GetProcs().renderPassEncoderSetPipeline(pass, alpha_to_one_pipeline_);
+      GetProcs().renderPassEncoderDraw(pass, 3, 1, 0, 0);
+      GetProcs().renderPassEncoderEnd(pass);
+
+      WGPUCommandBuffer command_buffer =
+          GetProcs().commandEncoderFinish(command_encoder, nullptr);
+      GetProcs().queueSubmit(device_->queue()->GetHandle(), 1, &command_buffer);
+
+      GetProcs().renderPassEncoderRelease(pass);
+      GetProcs().commandEncoderRelease(command_encoder);
+      GetProcs().commandBufferRelease(command_buffer);
+      GetProcs().textureViewRelease(attachment_view);
+      break;
+    }
+    case V8GPUCanvasCompositingAlphaMode::Enum::kPremultiplied:
+      break;
+  }
   texture_ = nullptr;
 }
 

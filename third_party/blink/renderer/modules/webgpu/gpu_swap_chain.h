@@ -5,6 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_WEBGPU_GPU_SWAP_CHAIN_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_WEBGPU_GPU_SWAP_CHAIN_H_
 
+#include "third_party/blink/renderer/bindings/modules/v8/v8_gpu_canvas_compositing_alpha_mode.h"
 #include "third_party/blink/renderer/modules/webgpu/dawn_object.h"
 #include "third_party/blink/renderer/platform/graphics/gpu/webgpu_swap_buffer_provider.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
@@ -30,6 +31,7 @@ class GPUSwapChain final : public GarbageCollected<GPUSwapChain>,
                         WGPUTextureUsage,
                         WGPUTextureFormat,
                         cc::PaintFlags::FilterQuality,
+                        V8GPUCanvasCompositingAlphaMode::Enum,
                         gfx::Size);
 
   GPUSwapChain(const GPUSwapChain&) = delete;
@@ -77,11 +79,13 @@ class GPUSwapChain final : public GarbageCollected<GPUSwapChain>,
 
   Member<GPUDevice> device_;
   Member<GPUCanvasContext> context_;
-  WGPUTextureUsage usage_;
-  WGPUTextureFormat format_;
+  const WGPUTextureUsage usage_;
+  const WGPUTextureFormat format_;
+  const V8GPUCanvasCompositingAlphaMode::Enum compositing_alpha_mode_;
   const gfx::Size size_;
 
   Member<GPUTexture> texture_;
+  WGPURenderPipeline alpha_to_one_pipeline_ = nullptr;
 
   scoped_refptr<StaticBitmapImage> SnapshotInternal(
       const WGPUTexture& texture,
