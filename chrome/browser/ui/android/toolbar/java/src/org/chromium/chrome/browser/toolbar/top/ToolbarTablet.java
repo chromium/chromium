@@ -358,7 +358,7 @@ public class ToolbarTablet extends ToolbarLayout
         if (v == mReloadButton) {
             description = (mReloadButton.getDrawable().getLevel()
                                   == resources.getInteger(R.integer.reload_button_level_reload))
-                    ? resources.getString(R.string.menu_refresh)
+                    ? resources.getString(R.string.refresh)
                     : resources.getString(R.string.menu_stop_refresh);
         } else if (v == mBookmarkButton) {
             description = resources.getString(R.string.menu_bookmark);

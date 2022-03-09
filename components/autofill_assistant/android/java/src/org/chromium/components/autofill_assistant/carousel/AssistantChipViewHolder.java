@@ -121,7 +121,7 @@ public class AssistantChipViewHolder extends ViewHolder {
                 break;
             case AssistantChip.Icon.REFRESH:
                 iconResource = R.drawable.ic_refresh_black_24dp;
-                iconDescriptionResource = R.string.menu_refresh;
+                iconDescriptionResource = R.string.refresh;
                 break;
             case AssistantChip.Icon.OVERFLOW:
                 iconResource = R.drawable.ic_overflow_black_24dp;

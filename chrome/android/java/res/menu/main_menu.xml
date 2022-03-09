@@ -31,7 +31,7 @@
                 android:icon="@drawable/btn_info" />
               <item android:id="@+id/reload_menu_id"
                 android:title="@string/accessibility_btn_refresh"
-                android:titleCondensed="@string/menu_refresh"
+                android:titleCondensed="@string/refresh"
                 android:icon="@drawable/btn_reload_stop"/>
             </menu>
         </item>

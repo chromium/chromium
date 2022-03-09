@@ -228,6 +228,9 @@
       <message name="IDS_RELOAD" desc="Label for a button that reloads the page. Used in multiple contexts. [CHAR_LIMIT=20]">
         Reload
       </message>
+      <message name="IDS_REFRESH" desc="Tooltip on Android for the button to refresh the current web page. [CHAR_LIMIT=27]">
+        Refresh
+      </message>
       <message name="IDS_NO_THANKS" desc="Generic label to say no thanks for a feature. [CHAR_LIMIT=32]">
         No thanks
       </message>

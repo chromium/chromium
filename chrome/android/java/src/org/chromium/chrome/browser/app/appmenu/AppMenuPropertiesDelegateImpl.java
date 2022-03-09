@@ -906,8 +906,7 @@ public class AppMenuPropertiesDelegateImpl implements AppMenuPropertiesDelegate 
                     resources.getString(isLoading ? R.string.accessibility_btn_stop_loading
                                                   : R.string.accessibility_btn_refresh));
             mReloadPropertyModel.set(AppMenuItemProperties.TITLE_CONDENSED,
-                    resources.getString(
-                            isLoading ? R.string.menu_stop_refresh : R.string.menu_refresh));
+                    resources.getString(isLoading ? R.string.menu_stop_refresh : R.string.refresh));
         }
     }
 
