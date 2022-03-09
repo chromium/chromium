@@ -7,6 +7,7 @@
 
 #include "base/callback.h"
 #include "components/signin/public/identity_manager/account_capabilities.h"
+#include "components/signin/public/identity_manager/account_info.h"
 #include "google_apis/gaia/core_account_id.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -16,7 +17,7 @@ class AccountCapabilitiesFetcher {
       base::OnceCallback<void(const CoreAccountId&,
                               const absl::optional<AccountCapabilities>&)>;
 
-  explicit AccountCapabilitiesFetcher(const CoreAccountId& account_id,
+  explicit AccountCapabilitiesFetcher(const CoreAccountInfo& account_info,
                                       OnCompleteCallback on_complete_callback);
   virtual ~AccountCapabilitiesFetcher();
 
@@ -28,7 +29,8 @@ class AccountCapabilitiesFetcher {
   virtual void Start() = 0;
 
  protected:
-  const CoreAccountId& account_id() { return account_id_; }
+  const CoreAccountInfo& account_info() { return account_info_; }
+  const CoreAccountId& account_id() { return account_info_.account_id; }
 
   // Completes the fetch by calling `on_complete_callback_`. Must be called no
   // more than once per object lifetime.
@@ -37,7 +39,7 @@ class AccountCapabilitiesFetcher {
       const absl::optional<AccountCapabilities>& capabilities);
 
  private:
-  const CoreAccountId account_id_;
+  const CoreAccountInfo account_info_;
   OnCompleteCallback on_complete_callback_;
 };
 

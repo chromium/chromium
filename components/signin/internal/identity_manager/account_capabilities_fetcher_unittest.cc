@@ -13,6 +13,7 @@
 #include "components/signin/internal/identity_manager/fake_profile_oauth2_token_service.h"
 #include "components/signin/public/identity_manager/account_capabilities.h"
 #include "components/signin/public/identity_manager/account_capabilities_test_mutator.h"
+#include "components/signin/public/identity_manager/identity_test_utils.h"
 #include "google_apis/gaia/core_account_id.h"
 #include "google_apis/gaia/gaia_urls.h"
 #include "google_apis/gaia/oauth2_access_token_consumer.h"
@@ -44,6 +45,14 @@ std::string GenerateValidAccountCapabilitiesResponse(bool capability_value) {
                             capability_value ? "true" : "false");
 }
 
+CoreAccountInfo GetTestAccountInfoByEmail(const std::string& email) {
+  CoreAccountInfo result;
+  result.email = email;
+  result.gaia = signin::GetTestGaiaIdForEmail(email);
+  result.account_id = CoreAccountId::FromGaiaId(result.gaia);
+  return result;
+}
+
 }  // namespace
 
 class AccountCapabilitiesFetcherGaiaTest : public testing::Test {
@@ -55,15 +64,15 @@ class AccountCapabilitiesFetcherGaiaTest : public testing::Test {
 
   void SetUp() override {
     fake_oauth2_token_service_.UpdateCredentials(
-        account_id_, base::StringPrintf("fake-refresh-token-%s",
-                                        account_id_.ToString().c_str()));
+        account_id(), base::StringPrintf("fake-refresh-token-%s",
+                                         account_id().ToString().c_str()));
   }
 
   std::unique_ptr<AccountCapabilitiesFetcher> CreateFetcher(
       AccountCapabilitiesFetcher::OnCompleteCallback callback) {
     return std::make_unique<AccountCapabilitiesFetcherGaia>(
         &fake_oauth2_token_service_,
-        test_url_loader_factory_.GetSafeWeakWrapper(), account_id_,
+        test_url_loader_factory_.GetSafeWeakWrapper(), account_info(),
         std::move(callback));
   }
 
@@ -82,11 +91,12 @@ class AccountCapabilitiesFetcherGaiaTest : public testing::Test {
 
   void SimulateIssueAccessTokenPersistentError() {
     fake_oauth2_token_service_.IssueErrorForAllPendingRequestsForAccount(
-        account_id_, GoogleServiceAuthError(
-                         GoogleServiceAuthError::INVALID_GAIA_CREDENTIALS));
+        account_id(), GoogleServiceAuthError(
+                          GoogleServiceAuthError::INVALID_GAIA_CREDENTIALS));
   }
 
-  const CoreAccountId& account_id() { return account_id_; }
+  const CoreAccountInfo& account_info() { return account_info_; }
+  const CoreAccountId& account_id() { return account_info_.account_id; }
 
  private:
   void ReturnFetchResults(const GURL& url,
@@ -106,11 +116,12 @@ class AccountCapabilitiesFetcherGaiaTest : public testing::Test {
 
   void IssueAccessToken() {
     fake_oauth2_token_service_.IssueAllTokensForAccount(
-        account_id_, TokenResponseBuilder()
-                         .WithAccessToken(base::StringPrintf(
-                             "access_token-%s", account_id_.ToString().c_str()))
-                         .WithExpirationTime(base::Time::Max())
-                         .build());
+        account_id(),
+        TokenResponseBuilder()
+            .WithAccessToken(base::StringPrintf(
+                "access_token-%s", account_id().ToString().c_str()))
+            .WithExpirationTime(base::Time::Max())
+            .build());
   }
 
   base::test::TaskEnvironment task_environment_;
@@ -118,7 +129,7 @@ class AccountCapabilitiesFetcherGaiaTest : public testing::Test {
   FakeProfileOAuth2TokenService fake_oauth2_token_service_;
   network::TestURLLoaderFactory test_url_loader_factory_;
 
-  CoreAccountId account_id_ = CoreAccountId::FromEmail("test@gmail.com");
+  CoreAccountInfo account_info_ = GetTestAccountInfoByEmail("test@gmail.com");
 };
 
 TEST_F(AccountCapabilitiesFetcherGaiaTest, Success_True) {

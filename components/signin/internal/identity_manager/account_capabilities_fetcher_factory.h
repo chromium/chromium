@@ -10,7 +10,7 @@
 #include "components/signin/internal/identity_manager/account_capabilities_fetcher.h"
 
 class AccountCapabilitiesFetcher;
-struct CoreAccountId;
+struct CoreAccountInfo;
 
 // Abstract factory class for creating `AccountCapabilitiesFetcher` objects.
 class AccountCapabilitiesFetcherFactory {
@@ -19,7 +19,7 @@ class AccountCapabilitiesFetcherFactory {
 
   virtual std::unique_ptr<AccountCapabilitiesFetcher>
   CreateAccountCapabilitiesFetcher(
-      const CoreAccountId& account_id,
+      const CoreAccountInfo& account_info,
       AccountCapabilitiesFetcher::OnCompleteCallback on_complete_callback) = 0;
 };
 

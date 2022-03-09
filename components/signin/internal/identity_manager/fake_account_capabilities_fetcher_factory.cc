@@ -6,6 +6,7 @@
 
 #include "base/bind.h"
 #include "components/signin/internal/identity_manager/fake_account_capabilities_fetcher.h"
+#include "components/signin/public/identity_manager/account_info.h"
 
 FakeAccountCapabilitiesFetcherFactory::FakeAccountCapabilitiesFetcherFactory() =
     default;
@@ -14,14 +15,14 @@ FakeAccountCapabilitiesFetcherFactory::
 
 std::unique_ptr<AccountCapabilitiesFetcher>
 FakeAccountCapabilitiesFetcherFactory::CreateAccountCapabilitiesFetcher(
-    const CoreAccountId& account_id,
+    const CoreAccountInfo& account_info,
     AccountCapabilitiesFetcher::OnCompleteCallback on_complete_callback) {
   auto fetcher = std::make_unique<FakeAccountCapabilitiesFetcher>(
-      account_id,
+      account_info,
       base::BindOnce(&FakeAccountCapabilitiesFetcherFactory::OnFetchComplete,
                      base::Unretained(this), std::move(on_complete_callback)));
-  DCHECK(!fetchers_.count(account_id));
-  fetchers_[account_id] = fetcher.get();
+  DCHECK(!fetchers_.count(account_info.account_id));
+  fetchers_[account_info.account_id] = fetcher.get();
   return fetcher;
 }
 

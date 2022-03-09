@@ -14,6 +14,7 @@
 class FakeAccountCapabilitiesFetcher;
 class AccountCapabilities;
 struct CoreAccountId;
+struct CoreAccountInfo;
 
 // Fake `AccountCapabilitiesFetcherFactory` implementation for tests.
 class FakeAccountCapabilitiesFetcherFactory
@@ -29,7 +30,7 @@ class FakeAccountCapabilitiesFetcherFactory
 
   // AccountCapabilitiesFetcherFactory:
   std::unique_ptr<AccountCapabilitiesFetcher> CreateAccountCapabilitiesFetcher(
-      const CoreAccountId& account_id,
+      const CoreAccountInfo& account_info,
       AccountCapabilitiesFetcher::OnCompleteCallback on_complete_callback)
       override;
 

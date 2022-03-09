@@ -5,9 +5,9 @@
 #include "components/signin/internal/identity_manager/account_capabilities_fetcher.h"
 
 AccountCapabilitiesFetcher::AccountCapabilitiesFetcher(
-    const CoreAccountId& account_id,
+    const CoreAccountInfo& account_info,
     OnCompleteCallback on_complete_callback)
-    : account_id_(account_id),
+    : account_info_(account_info),
       on_complete_callback_(std::move(on_complete_callback)) {
   DCHECK(on_complete_callback_);
 }
@@ -17,5 +17,5 @@ AccountCapabilitiesFetcher::~AccountCapabilitiesFetcher() = default;
 void AccountCapabilitiesFetcher::CompleteFetchAndMaybeDestroySelf(
     const absl::optional<AccountCapabilities>& capabilities) {
   DCHECK(on_complete_callback_);
-  std::move(on_complete_callback_).Run(account_id_, capabilities);
+  std::move(on_complete_callback_).Run(account_info_.account_id, capabilities);
 }

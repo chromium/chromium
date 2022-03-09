@@ -238,6 +238,7 @@ static_library("test_support") {
   public_deps = [
     ":identity_manager",
     "//base",
+    "//components/signin/public/identity_manager",
     "//google_apis:test_support",
   ]
 }

@@ -20,15 +20,15 @@
 AccountCapabilitiesFetcherGaia::AccountCapabilitiesFetcherGaia(
     ProfileOAuth2TokenService* token_service,
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
-    const CoreAccountId& account_id,
+    const CoreAccountInfo& account_info,
     AccountCapabilitiesFetcher::OnCompleteCallback on_complete_callback)
-    : AccountCapabilitiesFetcher(account_id, std::move(on_complete_callback)),
+    : AccountCapabilitiesFetcher(account_info, std::move(on_complete_callback)),
       OAuth2AccessTokenManager::Consumer("account_capabilities_fetcher"),
       token_service_(token_service),
       url_loader_factory_(std::move(url_loader_factory)) {
   TRACE_EVENT_NESTABLE_ASYNC_BEGIN1("AccountFetcherService",
                                     "AccountCapabilitiesFetcherGaia", this,
-                                    "account_id", account_id.ToString());
+                                    "account_id", account_id().ToString());
 }
 
 AccountCapabilitiesFetcherGaia::~AccountCapabilitiesFetcherGaia() {

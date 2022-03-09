@@ -30,6 +30,7 @@ class AccountTrackerService;
 class ProfileOAuth2TokenService;
 class PrefRegistrySimple;
 class SigninClient;
+struct CoreAccountInfo;
 
 #if BUILDFLAG(IS_ANDROID)
 class ChildAccountInfoFetcherAndroid;
@@ -145,7 +146,7 @@ class AccountFetcherService : public ProfileOAuth2TokenServiceObserver {
 #endif
 
   bool IsAccountCapabilitiesFetchingEnabled();
-  void StartFetchingAccountCapabilities(const CoreAccountId& account_id);
+  void StartFetchingAccountCapabilities(const CoreAccountInfo& account_info);
 
   // Refreshes the AccountInfo associated with |account_id|.
   void RefreshAccountInfo(const CoreAccountId& account_id,

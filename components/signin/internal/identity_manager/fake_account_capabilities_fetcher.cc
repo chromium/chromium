@@ -4,13 +4,14 @@
 
 #include "components/signin/internal/identity_manager/fake_account_capabilities_fetcher.h"
 
-#include "google_apis/gaia/core_account_id.h"
+#include "components/signin/public/identity_manager/account_info.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 FakeAccountCapabilitiesFetcher::FakeAccountCapabilitiesFetcher(
-    const CoreAccountId& account_id,
+    const CoreAccountInfo& account_info,
     OnCompleteCallback on_complete_callback)
-    : AccountCapabilitiesFetcher(account_id, std::move(on_complete_callback)) {}
+    : AccountCapabilitiesFetcher(account_info,
+                                 std::move(on_complete_callback)) {}
 FakeAccountCapabilitiesFetcher::~FakeAccountCapabilitiesFetcher() = default;
 
 void FakeAccountCapabilitiesFetcher::Start() {}

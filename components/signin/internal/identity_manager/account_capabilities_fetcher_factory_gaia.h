@@ -31,7 +31,7 @@ class AccountCapabilitiesFetcherFactoryGaia
 
   // AccountCapabilitiesFetcherFactory:
   std::unique_ptr<AccountCapabilitiesFetcher> CreateAccountCapabilitiesFetcher(
-      const CoreAccountId& account_id,
+      const CoreAccountInfo& account_info,
       AccountCapabilitiesFetcher::OnCompleteCallback on_complete_callback)
       override;
 

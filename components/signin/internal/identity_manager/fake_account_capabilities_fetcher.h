@@ -7,14 +7,14 @@
 
 #include "components/signin/internal/identity_manager/account_capabilities_fetcher.h"
 
-struct CoreAccountId;
+struct CoreAccountInfo;
 class AccountCapabilities;
 
 // Fake `AccountCapabilitiesFetcher` implementation for tests.
 class FakeAccountCapabilitiesFetcher : public AccountCapabilitiesFetcher {
  public:
   explicit FakeAccountCapabilitiesFetcher(
-      const CoreAccountId& account_id,
+      const CoreAccountInfo& account_info,
       OnCompleteCallback on_complete_callback);
   ~FakeAccountCapabilitiesFetcher() override;
 

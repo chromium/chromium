@@ -28,6 +28,7 @@
 #include "components/signin/public/base/signin_client.h"
 #include "components/signin/public/base/signin_switches.h"
 #include "components/signin/public/identity_manager/account_capabilities.h"
+#include "components/signin/public/identity_manager/account_info.h"
 #include "net/http/http_status_code.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 
@@ -260,16 +261,16 @@ bool AccountFetcherService::IsAccountCapabilitiesFetchingEnabled() {
 }
 
 void AccountFetcherService::StartFetchingAccountCapabilities(
-    const CoreAccountId& account_id) {
+    const CoreAccountInfo& account_info) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(network_fetches_enabled_);
 
   std::unique_ptr<AccountCapabilitiesFetcher>& request =
-      account_capabilities_requests_[account_id];
+      account_capabilities_requests_[account_info.account_id];
   if (!request) {
     request =
         account_capabilities_fetcher_factory_->CreateAccountCapabilitiesFetcher(
-            account_id,
+            account_info,
             base::BindOnce(
                 &AccountFetcherService::OnAccountCapabilitiesFetchComplete,
                 base::Unretained(this)));
@@ -287,7 +288,7 @@ void AccountFetcherService::RefreshAccountInfo(const CoreAccountId& account_id,
   if ((!only_fetch_if_invalid ||
        !info.capabilities.AreAllCapabilitiesKnown()) &&
       IsAccountCapabilitiesFetchingEnabled()) {
-    StartFetchingAccountCapabilities(account_id);
+    StartFetchingAccountCapabilities(info);
   }
 
   // |only_fetch_if_invalid| is false when the service is due for a timed

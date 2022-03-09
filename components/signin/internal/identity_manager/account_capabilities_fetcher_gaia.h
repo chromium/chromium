@@ -9,7 +9,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/time/time.h"
 #include "components/signin/internal/identity_manager/account_capabilities_fetcher.h"
-#include "google_apis/gaia/core_account_id.h"
+#include "components/signin/public/identity_manager/account_info.h"
 #include "google_apis/gaia/gaia_oauth_client.h"
 #include "google_apis/gaia/oauth2_access_token_manager.h"
 
@@ -40,7 +40,7 @@ class AccountCapabilitiesFetcherGaia
   AccountCapabilitiesFetcherGaia(
       ProfileOAuth2TokenService* token_service,
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
-      const CoreAccountId& account_id,
+      const CoreAccountInfo& account_info,
       AccountCapabilitiesFetcher::OnCompleteCallback on_complete_callback);
   ~AccountCapabilitiesFetcherGaia() override;
 
