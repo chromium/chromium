@@ -98,7 +98,7 @@ public abstract class BaseOnboardingCoordinator implements OnboardingView {
         initViewImpl(callback);
         setupSharedView(callback);
 
-        int fetchTimeoutMs = 500;
+        int fetchTimeoutMs = 1000;
         if (mParameters.containsKey(FETCH_TIMEOUT_IDENTIFIER)) {
             fetchTimeoutMs = Integer.parseInt(mParameters.get(FETCH_TIMEOUT_IDENTIFIER));
         }
