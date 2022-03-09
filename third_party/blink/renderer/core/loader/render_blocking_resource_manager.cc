@@ -92,7 +92,7 @@ void RenderBlockingResourceManager::FontPreloadingStarted(
   if (font_resource->IsLoaded())
     return;
 
-  if (font_preload_timer_has_fired_ || !awaiting_parser_inserted_body_)
+  if (font_preload_timer_has_fired_ || document_->body())
     return;
 
   FontPreloadFinishObserver* observer =
@@ -111,7 +111,7 @@ void RenderBlockingResourceManager::ImperativeFontLoadingStarted(
   if (font_face->LoadStatus() != FontFace::kLoading)
     return;
 
-  if (font_preload_timer_has_fired_ || !awaiting_parser_inserted_body_)
+  if (font_preload_timer_has_fired_ || document_->body())
     return;
 
   ImperativeFontLoadFinishedCallback* callback =

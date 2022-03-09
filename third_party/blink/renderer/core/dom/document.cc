@@ -3319,8 +3319,6 @@ void Document::setBody(HTMLElement* prp_new_body,
 void Document::WillInsertBody() {
   if (Loader())
     fetcher_->LoosenLoadThrottlingPolicy();
-  if (render_blocking_resource_manager_)
-    render_blocking_resource_manager_->WillInsertBody();
 
   // If we get to the <body> try to resume commits since we should have content
   // to paint now.
@@ -7411,7 +7409,7 @@ bool Document::HaveRenderBlockingResourcesLoaded() const {
   // stylesheets and other render-blocking resources.
   return style_engine_->HaveRenderBlockingStylesheetsLoaded() &&
          (!render_blocking_resource_manager_ ||
-          !render_blocking_resource_manager_->IsRenderBlocked());
+          !render_blocking_resource_manager_->HasRenderBlockingResources());
 }
 
 Locale& Document::GetCachedLocale(const AtomicString& locale) {
@@ -8149,7 +8147,11 @@ void Document::ClearUseCounterForTesting(mojom::WebFeature feature) {
 }
 
 void Document::RenderBlockingResourceUnblocked() {
-  BeginLifecycleUpdatesIfRenderingReady();
+  // Only HTML documents can ever be render-blocked by external resources.
+  // https://html.spec.whatwg.org/#allows-adding-render-blocking-elements
+  DCHECK(IsA<HTMLDocument>(this));
+  if (body())
+    BeginLifecycleUpdatesIfRenderingReady();
 }
 
 void Document::SetFindInPageActiveMatchNode(Node* node) {

@@ -28,11 +28,9 @@ class CORE_EXPORT RenderBlockingResourceManager final
   RenderBlockingResourceManager& operator=(
       const RenderBlockingResourceManager&) = delete;
 
-  void WillInsertBody() { awaiting_parser_inserted_body_ = false; }
-
-  // https://html.spec.whatwg.org/#render-blocked
-  bool IsRenderBlocked() const {
-    return awaiting_parser_inserted_body_ || HasRenderBlockingResources();
+  bool HasRenderBlockingResources() const {
+    return font_preload_finish_observers_.size() ||
+           imperative_font_loading_count_;
   }
 
   // TODO(crbug.com/1271296): Use this class to handle render-blocking scripts,
@@ -53,11 +51,6 @@ class CORE_EXPORT RenderBlockingResourceManager final
  private:
   friend class RenderBlockingResourceManagerTest;
 
-  bool HasRenderBlockingResources() const {
-    return font_preload_finish_observers_.size() ||
-           imperative_font_loading_count_;
-  }
-
   // Exposed to unit tests only.
   void SetFontPreloadTimeoutForTest(base::TimeDelta timeout);
   void DisableFontPreloadTimeoutForTest();
@@ -73,11 +66,6 @@ class CORE_EXPORT RenderBlockingResourceManager final
   HeapTaskRunnerTimer<RenderBlockingResourceManager> font_preload_timer_;
   base::TimeDelta font_preload_timeout_;
   bool font_preload_timer_has_fired_ = false;
-
-  // https://html.spec.whatwg.org/#awaiting-parser-inserted-body-flag
-  // Initialized to true as RenderBlockingResourceManager is created only on
-  // HTML documents
-  bool awaiting_parser_inserted_body_ = true;
 };
 
 }  // namespace blink
