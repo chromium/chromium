@@ -2582,8 +2582,9 @@
       status: "experimental",
     },
     {
+      // Draft WebGL extensions are deliberately not enabled by experimental web
+      // platform features.
       name: "WebGLDraftExtensions",
-      status: "experimental",
     },
     {
       name: "WebGLImageChromium",
