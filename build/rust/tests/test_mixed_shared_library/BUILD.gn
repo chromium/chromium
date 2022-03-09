@@ -17,6 +17,7 @@ if (rustc_can_link) {
       "//build/rust/tests/test_cpp_including_rust:*",
     ]
     deps = [ ":some_headers" ]
+    rs_skip_unit_tests = false
   }
 
   # Exists to test that such dependents are visible to the source_set

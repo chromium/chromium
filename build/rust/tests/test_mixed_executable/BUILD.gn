@@ -8,4 +8,5 @@ mixed_executable("test_mixed_executable") {
   sources = [ "main.cc" ]
   rs_sources = [ "src/lib.rs" ]
   rs_cxx_bindings = [ "src/lib.rs" ]
+  rs_skip_unit_tests = false
 }

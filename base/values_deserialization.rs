@@ -221,21 +221,3 @@ impl<'de, 'elem, 'container> DeserializeSeed<'de> for ValueVisitor<'elem, 'conta
         deserializer.deserialize_any(self)
     }
 }
-
-#[cfg(test)]
-mod test {
-    use super::ValueVisitor;
-    use crate::rs_glue::ffi::NewValueSlotForTesting;
-    use crate::values::ValueSlotRef;
-
-    #[test]
-    fn test_create() {
-        let mut value_slot = NewValueSlotForTesting();
-        let value_slot = ValueSlotRef::from(&mut value_slot);
-        let _ = ValueVisitor::new(value_slot, 12);
-        // Without introducing extra dependencies such as serde_test,
-        // we can't do much to test the actual deserialization.
-        // In any case, when deserializing JSON, this code will be
-        // thoroughly tested by the C++ JSON tests in base_unittests
-    }
-}

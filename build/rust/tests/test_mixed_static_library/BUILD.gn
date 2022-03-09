@@ -18,6 +18,7 @@ mixed_static_library("test_mixed_static_library") {
     "//build/rust/tests/test_rust_unittests:*",
   ]
   deps = [ ":some_headers" ]
+  rs_skip_unit_tests = false
 }
 
 # Exists to test that such dependents are visible to the source_set

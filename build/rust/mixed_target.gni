@@ -65,7 +65,7 @@ import("//build/rust/rust_target.gni")
 template("mixed_target") {
   _target_name = target_name
 
-  known_rs_variables = [
+  _known_rs_variables = [
     "rs_epoch",
     "rs_edition",
     "rs_configs",
@@ -81,7 +81,9 @@ template("mixed_target") {
     "rs_unit_test_target",
   ]
 
-  _rs_enable = enable_rust
+  # TODO(crbug.com/1280708, crbug.com/1304707): Drop toolchain_has_rust after we have support for
+  # all our toolchains: NaCl, Linux x86, etc.
+  _rs_enable = enable_rust && toolchain_has_rust
 
   # Conceivably, conditional statements in the template invocation
   # might result in no rs_sources files. If so, don't build any Rust.
@@ -128,6 +130,7 @@ template("mixed_target") {
       if (defined(invoker.rs_crate_name)) {
         crate_name = invoker.rs_crate_name
       }
+      skip_unit_tests = true
       if (defined(invoker.rs_skip_unit_tests)) {
         skip_unit_tests = invoker.rs_skip_unit_tests
       }
@@ -149,14 +152,14 @@ template("mixed_target") {
       support_use_from_cpp = true
     }
   } else {
-    not_needed(invoker, known_rs_variables)
+    not_needed(invoker, _known_rs_variables)
   }
 
   target(invoker.target_type, _target_name) {
     forward_variables_from(
         invoker,
         "*",
-        TESTONLY_AND_VISIBILITY + known_rs_variables + [ "target_type" ])
+        TESTONLY_AND_VISIBILITY + _known_rs_variables + [ "target_type" ])
     forward_variables_from(invoker, TESTONLY_AND_VISIBILITY)
 
     if (_rs_enable) {

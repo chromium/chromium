@@ -13,6 +13,7 @@ mixed_component("test_mixed_component") {
   rs_sources = [ "component.rs" ]
   rs_crate_root = "component.rs"
   rs_cxx_bindings = [ "component.rs" ]
+  rs_skip_unit_tests = false
 }
 
 executable("test_mixed_component_demo") {

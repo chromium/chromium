@@ -9,4 +9,5 @@ mixed_executable("test_mixed_testonly_executable") {
   rs_sources = [ "src/lib.rs" ]
   rs_cxx_bindings = [ "src/lib.rs" ]
   testonly = true
+  rs_skip_unit_tests = false
 }
