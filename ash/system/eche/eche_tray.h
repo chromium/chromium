@@ -10,9 +10,7 @@
 #include "ash/ash_export.h"
 #include "ash/public/cpp/session/session_observer.h"
 #include "ash/session/session_controller_impl.h"
-#include "ash/system/eche/eche_icon_loading_indicator_view.h"
 #include "ash/system/tray/tray_background_view.h"
-#include "base/gtest_prod_util.h"
 #include "components/session_manager/session_manager_types.h"
 #include "ui/views/controls/button/button.h"
 #include "url/gurl.h"
@@ -95,8 +93,6 @@ class ASH_EXPORT EcheTray : public TrayBackgroundView, public SessionObserver {
   TrayBubbleWrapper* get_bubble_wrapper_for_test() { return bubble_.get(); }
 
  private:
-  FRIEND_TEST_ALL_PREFIXES(EcheTrayTest, EcheTrayCreatesBubbleButHideFirst);
-
   // Returns the size of the Exo bubble based on the screen size and
   // orientation.
   gfx::Size GetSizeForEche() const;
@@ -130,9 +126,6 @@ class ASH_EXPORT EcheTray : public TrayBackgroundView, public SessionObserver {
   // Creates an arrow back button used in the corner of the dialog.
   std::unique_ptr<views::Button> CreateArrowBackButton(
       views::Button::PressedCallback callback);
-
-  // The loading indicator, showing a throbber animation on top of the icon.
-  EcheIconLoadingIndicatorView* loading_indicator_ = nullptr;
 
   base::WeakPtrFactory<EcheTray> weak_factory_{this};
 };
