@@ -10,6 +10,9 @@
 #include <utility>
 #include <vector>
 
+#include "ash/services/device_sync/device_sync_impl.h"
+#include "ash/services/device_sync/fake_device_sync.h"
+#include "ash/services/device_sync/feature_status_change.h"
 #include "ash/services/device_sync/proto/cryptauth_common.pb.h"
 #include "ash/services/device_sync/public/cpp/device_sync_prefs.h"
 #include "ash/services/device_sync/public/cpp/fake_client_app_metadata_provider.h"
@@ -25,9 +28,6 @@
 #include "base/test/test_simple_task_runner.h"
 #include "chromeos/components/multidevice/remote_device_test_util.h"
 #include "chromeos/components/multidevice/software_feature.h"
-#include "chromeos/services/device_sync/device_sync_impl.h"
-#include "chromeos/services/device_sync/fake_device_sync.h"
-#include "chromeos/services/device_sync/feature_status_change.h"
 #include "components/gcm_driver/fake_gcm_driver.h"
 #include "components/prefs/testing_pref_service.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"

@@ -3,7 +3,4 @@ include_rules = [
   "+components/proximity_auth/logging",
   "+components/session_manager/core",
   "+components/sync_preferences",
-
-  # TODO(https://crbug.com/1164001) : Remove when the following moves to ash.
-  "+chromeos/services/device_sync",
 ]

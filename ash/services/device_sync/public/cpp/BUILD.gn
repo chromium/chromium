@@ -21,11 +21,11 @@ source_set("cpp") {
 
   public_deps = [
     "//ash/constants",
+    "//ash/services/device_sync:feature_status_change",
     "//ash/services/device_sync/public/mojom",
     "//base",
     "//chromeos/components/multidevice",
     "//chromeos/components/multidevice/logging",
-    "//chromeos/services/device_sync:feature_status_change",
   ]
 
   deps = [ "//mojo/public/cpp/bindings" ]
@@ -39,15 +39,15 @@ source_set("prefs") {
 
   public_deps = [
     "//ash/constants",
+    "//ash/services/device_sync:feature_status_change",
     "//ash/services/device_sync/public/mojom",
     "//base",
     "//chromeos/components/multidevice",
     "//chromeos/components/multidevice/logging",
-    "//chromeos/services/device_sync:feature_status_change",
   ]
 
   deps = [
-    "//chromeos/services/device_sync",
+    "//ash/services/device_sync",
     "//components/prefs",
   ]
 }
@@ -78,12 +78,12 @@ source_set("unit_tests") {
     ":cpp",
     ":prefs",
     ":test_support",
+    "//ash/services/device_sync",
+    "//ash/services/device_sync:test_support",
     "//base",
     "//base/test:test_support",
     "//chromeos/components/multidevice",
     "//chromeos/components/multidevice:test_support",
-    "//chromeos/services/device_sync",
-    "//chromeos/services/device_sync:test_support",
     "//components/gcm_driver:test_support",
     "//components/prefs:test_support",
     "//components/signin/public/identity_manager:test_support",

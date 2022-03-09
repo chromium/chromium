@@ -16,11 +16,11 @@ all,chrome/browser/ash/policy/uploading/system_log_uploader.cc
 all,chrome/browser/ui/ash/assistant/search_and_assistant_enabled_checker.cc
 all,chromeos/geolocation/simple_geolocation_request.cc
 all,components/quirks/quirks_client.cc
-all,chromeos/services/device_sync/cryptauth_client_impl.cc
+all,ash/services/device_sync/cryptauth_client_impl.cc
 all,chrome/browser/supervised_user/child_accounts/family_info_fetcher.cc
 all,chrome/services/sharing/nearby/platform/webrtc.cc
 all,chrome/browser/nearby_sharing/client/nearby_share_client_impl.cc
-all,chromeos/services/device_sync/cryptauth_device_manager_impl.cc
+all,ash/services/device_sync/cryptauth_device_manager_impl.cc
 all,chrome/browser/nearby_sharing/instantmessaging/receive_messages_express.cc
 all,chrome/browser/nearby_sharing/instantmessaging/send_message_express.cc
 all,chrome/browser/supervised_user/child_accounts/permission_request_creator_apiary.cc

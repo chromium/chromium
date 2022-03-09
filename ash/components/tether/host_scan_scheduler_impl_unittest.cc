@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "ash/components/tether/fake_host_scanner.h"
+#include "ash/services/device_sync/cryptauth_device_manager.h"
 #include "base/memory/ptr_util.h"
 #include "base/run_loop.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -20,7 +21,6 @@
 #include "chromeos/network/network_state_handler.h"
 #include "chromeos/network/network_state_test_helper.h"
 #include "chromeos/network/network_type_pattern.h"
-#include "chromeos/services/device_sync/cryptauth_device_manager.h"
 #include "components/session_manager/core/session_manager.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"

@@ -24,7 +24,6 @@ source_set("unit_tests") {
     "//chromeos/services/chromebox_for_meetings/public/cpp:unit_tests",
     "//chromeos/services/cros_healthd/private/cpp:unit_tests",
     "//chromeos/services/cros_healthd/public/cpp:unit_tests",
-    "//chromeos/services/device_sync:unit_tests",
     "//chromeos/services/federated/public/cpp:unit_tests",
     "//chromeos/services/machine_learning/public/cpp:unit_tests",
     "//chromeos/services/network_config:unit_tests",

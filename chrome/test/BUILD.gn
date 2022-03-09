@@ -8540,9 +8540,9 @@ if (!is_android) {
         "//ash/components/cryptohome",
         "//ash/constants",
         "//ash/public/cpp",
+        "//ash/services/device_sync",
+        "//ash/services/device_sync:test_support",
         "//chrome/browser/chromeos",
-        "//chromeos/services/device_sync",
-        "//chromeos/services/device_sync:test_support",
       ]
     } else {
       sources += [

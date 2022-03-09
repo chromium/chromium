@@ -4,9 +4,9 @@
 
 #include "ash/services/device_sync/public/mojom/device_sync_mojom_traits.h"
 
+#include "ash/services/device_sync/feature_status_change.h"
 #include "ash/services/device_sync/proto/cryptauth_devicesync.pb.h"
 #include "ash/services/device_sync/public/mojom/device_sync.mojom.h"
-#include "chromeos/services/device_sync/feature_status_change.h"
 #include "mojo/public/cpp/test_support/test_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
