@@ -44,19 +44,16 @@ autocxx-gen = "0.16"
 [dependencies.bindgen]
 version = "0.59"
 build-script-outputs = [ "host-target.txt" ]
+features = [ "static" ]
 # TODO(crbug.com/1294010)
 # rustenv = [ "CARGO_PKG_VERSION=0.59" ]
 
 [dependencies.autocxx-bindgen]
 version = "0.59"
 build-script-outputs = [ "host-target.txt" ]
+features = [ "static" ]
 # TODO(crbug.com/1294010)
 # rustenv = [ "CARGO_PKG_VERSION=0.59" ]
-
-[dependencies.clang-sys]
-version = "1"
-allow-first-party-usage = false
-build_script_outputs = [ "common.rs", "dynamic.rs" ]
 
 [dependencies.rustversion]
 version = "1"

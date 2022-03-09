@@ -1,0 +1,69 @@
+# Copyright 2022 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+# Several Rust codegen tools (bindgen, autocxx_gen) link against
+# libclang. We prefer to distribute the static libraries that make up
+# the conceptual "libclang", but there are quite a few such libraries.
+# This script enumerates them.
+
+import("//build/config/rust.gni")
+
+_clang_libs_dir = "//third_party/llvm-build/Release+Asserts/lib"
+
+if (toolchain_has_rust) {
+  # This requires you to configure your .gclient file with
+  # "custom_vars": {
+  #   "checkout_clang_libs": True,
+  # }
+  group("clanglibs") {
+    # all_dependent_configs not public_configs because these directives
+    # need to propagate to the eventual final linking step. Our immediate
+    # dependent is probably libclang_sys.rlib, which will only later be
+    # linked into an executable.
+    all_dependent_configs = [ ":clanglibs_static_config" ]
+    deps = [ ":find_clanglibs" ]
+  }
+
+  action("find_clanglibs") {
+    # Generate the clang_libs.rsp file referred to below.
+    script = "find_clanglibs.py"
+    _liblist = "$target_out_dir/clang_libs.rsp"
+    depfile = "$target_out_dir/clang_libs.d"
+    args = [
+      "--clang-libs-dir",
+      rebase_path(_clang_libs_dir),
+      "--output",
+      rebase_path(_liblist, root_build_dir),
+      "--depfile",
+      rebase_path(depfile, root_build_dir),
+    ]
+    outputs = [ _liblist ]
+  }
+
+  config("clanglibs_static_config") {
+    # At present, all known Rust codegen tools are based ultimately
+    # on bindgen and libclang-sys, so set the environment variable
+    # required to inform those build processes where the libraries
+    # are.
+    rustenv = [ "LIBCLANG_STATIC_PATH=" + rebase_path(_clang_libs_dir) ]
+
+    # We need to tell rustc to link such binaries against a large
+    # and frequently-varying list of static libraries.
+    # gn/ninja, however, require statically determined dependency
+    # rules.
+    # Our options are:
+    # a) hard-code them in a .gn file like this, changing them frequently;
+    # b) use exec_script to enumerate them. This will slow down everyone's
+    #    'gn' invocations
+    # c) use libclang.so instead
+    # d) put these files entirely outside the visibility of gn/ninja
+    # We choose option (d). We generate extra command line arguments for
+    # the rustc invocations that link these tools.
+    rustflags = [ "-L" + rebase_path(_clang_libs_dir) ]
+    foreach(output, get_target_outputs(":find_clanglibs")) {
+      # Give rustc an extra .rsp file with extra command line arguments.
+      rustflags += [ "@" + rebase_path(output) ]
+    }
+  }
+}

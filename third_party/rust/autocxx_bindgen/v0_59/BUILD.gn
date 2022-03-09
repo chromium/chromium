@@ -37,7 +37,7 @@ cargo_crate("lib") {
     "env_logger",
     "log",
     "logging",
-    "runtime",
+    "static",
     "which",
     "which-rustfmt",
   ]

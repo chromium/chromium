@@ -73,7 +73,10 @@ fn main() {
 #[cfg(not(feature = "runtime"))]
 fn main() {
     if cfg!(feature = "static") {
-        static_::link();
+        // Chromium change - this outputs all sorts of linking
+        // configuration directives which we instead need to hard-code
+        // into GN rules.
+        // static_::link();
     } else {
         dynamic::link();
     }

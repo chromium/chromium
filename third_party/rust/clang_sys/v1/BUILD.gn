@@ -33,13 +33,19 @@ cargo_crate("lib") {
     "clang_5_0",
     "clang_6_0",
     "libloading",
-    "runtime",
+    "static",
   ]
   build_root = "crate/build.rs"
   build_sources = [ "crate/build.rs" ]
   build_deps = [ "//third_party/rust/glob/v0_3:lib" ]
-  build_script_outputs = [
-    "common.rs",
-    "dynamic.rs",
-  ]
+
+  # TODO(crbug.com/1304251): The following line arranges for dependent targets
+  # to link against clang's static libraries.
+  deps += [ "//build/rust/clanglibs" ]
+
+  # TODO(crbug.com/1304254): The following 'rustenv' is set by the dep above
+  # but is unavailable to the build script in cargo_crate.gni so we enforce it
+  # here.
+  rustenv = [ "LIBCLANG_STATIC_PATH=" +
+              rebase_path("//third_party/llvm-build/Release+Asserts/lib") ]
 }
