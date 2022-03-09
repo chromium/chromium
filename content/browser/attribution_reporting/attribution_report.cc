@@ -4,19 +4,20 @@
 
 #include "content/browser/attribution_reporting/attribution_report.h"
 
-#include <memory>
 #include <string>
 #include <utility>
 
+#include "base/base64.h"
 #include "base/check.h"
 #include "base/check_op.h"
 #include "base/memory/raw_ptr.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/values.h"
+#include "components/cbor/values.h"
+#include "components/cbor/writer.h"
 #include "content/browser/attribution_reporting/attribution_source_type.h"
 #include "content/browser/attribution_reporting/common_source_info.h"
-#include "crypto/secure_hash.h"
 #include "crypto/sha2.h"
 #include "net/base/schemeful_site.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
@@ -224,39 +225,26 @@ absl::optional<AttributionReport::Id> AttributionReport::ReportId() const {
 std::string AttributionReport::PrivacyBudgetKey() const {
   DCHECK(absl::holds_alternative<AggregatableAttributionData>(data_));
 
-  std::unique_ptr<crypto::SecureHash> ctx =
-      crypto::SecureHash::Create(crypto::SecureHash::Algorithm::SHA256);
-
   const CommonSourceInfo& common_source_info =
       attribution_info_.source.common_info();
-  const std::string serialized_reporting_origin =
-      common_source_info.reporting_origin().Serialize();
-  const std::string serialized_source_site =
-      common_source_info.ImpressionSite().Serialize();
-  const std::string serialized_attribution_destination =
-      common_source_info.ConversionDestination().Serialize();
 
-  static constexpr char kDelimiter[] = ";";
-
-  ctx->Update(serialized_reporting_origin.data(),
-              serialized_reporting_origin.size());
-
-  ctx->Update(kDelimiter, sizeof(kDelimiter));
-  ctx->Update(serialized_source_site.data(), serialized_source_site.size());
-
-  ctx->Update(kDelimiter, sizeof(kDelimiter));
-  ctx->Update(serialized_attribution_destination.data(),
-              serialized_attribution_destination.size());
+  // Use CBOR to be deterministic.
+  cbor::Value::MapValue value;
+  value.emplace("reporting_origin",
+                common_source_info.reporting_origin().Serialize());
+  value.emplace("source_site", common_source_info.ImpressionSite().Serialize());
+  value.emplace("destination",
+                common_source_info.ConversionDestination().Serialize());
 
   // TODO(linnan): Replace with a real version once a version string is decided.
-  static constexpr char kVersion[] = "1.0";
-  ctx->Update(kDelimiter, sizeof(kDelimiter));
-  ctx->Update(kVersion, sizeof(kVersion));
+  static constexpr char kVersion[] = "";
+  value.emplace("version", kVersion);
 
-  std::string output(crypto::kSHA256Length, 0);
-  ctx->Finish(std::data(output), output.size());
+  absl::optional<std::vector<uint8_t>> bytes =
+      cbor::Writer::Write(cbor::Value(std::move(value)));
+  DCHECK(bytes.has_value());
 
-  return output;
+  return base::Base64Encode(crypto::SHA256Hash(*bytes));
 }
 
 void AttributionReport::set_report_time(base::Time report_time) {
