@@ -4,6 +4,8 @@
 
 package org.chromium.components.ukm;
 
+import androidx.annotation.VisibleForTesting;
+
 import org.chromium.base.annotations.JNINamespace;
 import org.chromium.base.annotations.NativeMethods;
 import org.chromium.content_public.browser.WebContents;
@@ -69,7 +71,8 @@ public abstract class UkmRecorder {
     }
 
     @NativeMethods
-    interface Natives {
+    @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
+    public interface Natives {
         void recordEventWithBooleanMetric(
                 WebContents webContents, String eventName, String metricName);
         void recordEventWithIntegerMetric(

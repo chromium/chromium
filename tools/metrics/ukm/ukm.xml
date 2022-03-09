@@ -12153,6 +12153,21 @@ be describing additional metrics about the same event.
   </metric>
 </event>
 
+<event name="Omnibox.EditUrlSuggestion.Share">
+  <owner>nyquist@chromium.org</owner>
+  <owner>ssid@chromium.org</owner>
+  <owner>xingliu@chromium.org</owner>
+  <summary>
+    User pressed 'Share' while viewing edit URL suggestions which shares the
+    current URL.
+  </summary>
+  <metric name="HasOccurred" enum="Boolean">
+    <summary>
+      A boolean signaling that the event has occurred; only records true values.
+    </summary>
+  </metric>
+</event>
+
 <event name="OmniboxSecurityIndicator.FormSubmission">
   <owner>meacer@chromium.org</owner>
   <summary>
@@ -18517,6 +18532,20 @@ be describing additional metrics about the same event.
     <summary>
       Session ID of the browser or app window this entry represents, unique for
       the browsing session.
+    </summary>
+  </metric>
+</event>
+
+<event name="TopToolbar.Share">
+  <owner>nyquist@chromium.org</owner>
+  <owner>ssid@chromium.org</owner>
+  <owner>xingliu@chromium.org</owner>
+  <summary>
+    User pressed the 'Share' in the top toolbar, which shares the current URL.
+  </summary>
+  <metric name="HasOccurred" enum="Boolean">
+    <summary>
+      A boolean signaling that the event has occurred; only records true values.
     </summary>
   </metric>
 </event>

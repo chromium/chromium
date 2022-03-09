@@ -30,6 +30,7 @@ import org.mockito.MockitoAnnotations;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.browser.ActivityTabProvider;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -43,6 +44,8 @@ import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
 import org.chromium.components.feature_engagement.EventConstants;
 import org.chromium.components.feature_engagement.FeatureConstants;
 import org.chromium.components.feature_engagement.Tracker;
+import org.chromium.components.ukm.UkmRecorder;
+import org.chromium.components.ukm.UkmRecorderJni;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.testing.local.LocalRobolectricTestRunner;
 import org.chromium.ui.modaldialog.ModalDialogManager;
@@ -55,6 +58,11 @@ public final class ShareButtonControllerUnitTest {
 
     @Rule
     public TestRule mProcessor = new Features.JUnitProcessor();
+
+    @Rule
+    public JniMocker mJniMocker = new JniMocker();
+    @Mock
+    private UkmRecorder.Natives mUkmRecorderJniMock;
 
     @Mock
     private Context mContext;
@@ -85,6 +93,7 @@ public final class ShareButtonControllerUnitTest {
     @Before
     public void setUp() {
         MockitoAnnotations.initMocks(this);
+        mJniMocker.mock(UkmRecorderJni.TEST_HOOKS, mUkmRecorderJniMock);
 
         doReturn(mTab).when(mTabProvider).get();
         doReturn(mContext).when(mTab).getContext();

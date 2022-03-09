@@ -32,6 +32,7 @@ import org.chromium.components.browser_ui.widget.highlight.ViewHighlighter.Highl
 import org.chromium.components.feature_engagement.EventConstants;
 import org.chromium.components.feature_engagement.FeatureConstants;
 import org.chromium.components.feature_engagement.Tracker;
+import org.chromium.components.ukm.UkmRecorder;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modaldialog.ModalDialogManager.ModalDialogManagerObserver;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -112,6 +113,10 @@ public class ShareButtonController implements ButtonDataProvider, ConfigurationC
             if (tab == null) return;
             if (onShareRunnable != null) onShareRunnable.run();
             RecordUserAction.record("MobileTopToolbarShareButton");
+            if (tab.getWebContents() != null) {
+                new UkmRecorder.Bridge().recordEventWithBooleanMetric(
+                        tab.getWebContents(), "TopToolbar.Share", "HasOccurred");
+            }
             shareDelegate.share(tab, /*shareDirectly=*/false, ShareOrigin.TOP_TOOLBAR);
 
             if (mTrackerSupplier.hasValue()) {

@@ -25,6 +25,7 @@ import org.chromium.chrome.browser.tab.SadTab;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.components.favicon.LargeIconBridge;
 import org.chromium.components.omnibox.AutocompleteMatch;
+import org.chromium.components.ukm.UkmRecorder;
 import org.chromium.ui.base.Clipboard;
 import org.chromium.ui.modelutil.PropertyModel;
 
@@ -162,6 +163,12 @@ public class EditUrlSuggestionProcessor extends BaseSuggestionViewProcessor {
     /** Invoked when user interacts with Share action button. */
     private void onShareLink() {
         RecordUserAction.record("Omnibox.EditUrlSuggestion.Share");
+        Tab tab = mTabSupplier.get();
+        if (tab != null && tab.getWebContents() != null) {
+            new UkmRecorder.Bridge().recordEventWithBooleanMetric(
+                    mTabSupplier.get().getWebContents(), "Omnibox.EditUrlSuggestion.Share",
+                    "HasOccurred");
+        }
         mUrlBarDelegate.clearOmniboxFocus();
         // TODO(mdjones): This should only share the displayed URL instead of the background tab.
         mShareDelegateSupplier.get().share(mTabSupplier.get(), false, ShareOrigin.EDIT_URL);

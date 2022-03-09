@@ -13,6 +13,7 @@ include_rules = [
   "+components/page_info/android/java/src/org/chromium/components/page_info",
   "+components/search_engines/android",
   "+components/signin/public/android",
+  "+components/ukm/android",
   "+content/public/android",
   "+url/android",
 ]

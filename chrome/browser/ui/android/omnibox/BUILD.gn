@@ -187,6 +187,7 @@ android_library("java") {
     "//components/search_engines/android:java",
     "//components/security_state/core:security_state_enums_java",
     "//components/signin/public/android:java",
+    "//components/ukm/android:java",
     "//components/user_prefs/android:java",
     "//content/public/android:content_java",
     "//third_party/android_deps:android_support_v7_appcompat_java",
