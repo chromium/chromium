@@ -243,8 +243,10 @@ void ReportingJobConfigurationBase::OnURLLoadComplete(
     }
   }
 
-  base::Value response_value = response ? std::move(*response) : base::Value();
-  std::move(callback_).Run(job, code, net_error, response_value);
+  auto response_dict = response && response->is_dict()
+                           ? absl::make_optional(std::move(response->GetDict()))
+                           : absl::nullopt;
+  std::move(callback_).Run(job, code, net_error, std::move(response_dict));
 }
 
 DeviceManagementService::Job::RetryMethod

@@ -148,22 +148,21 @@ class ResponseValueBuilder {
     return upload_failure;
   }
 
-  static base::Value CreateResponse(
+  static base::Value::Dict CreateResponse(
       const base::Value& sequence_information,
       absl::optional<base::Value> upload_failure) {
-    base::Value response{base::Value::Type::DICTIONARY};
+    base::Value::Dict response;
 
-    response.SetKey(kLastSucceedUploadedRecordKey,
-                    sequence_information.Clone());
+    response.Set(kLastSucceedUploadedRecordKey, sequence_information.Clone());
 
     if (upload_failure.has_value()) {
-      response.SetKey(kFirstFailedUploadedRecordKey,
-                      std::move(upload_failure.value()));
+      response.Set(kFirstFailedUploadedRecordKey,
+                   std::move(upload_failure.value()));
     }
     return response;
   }
 
-  static std::string CreateResponseString(const base::Value& response) {
+  static std::string CreateResponseString(const base::Value::Dict& response) {
     std::string response_string;
     base::JSONWriter::Write(response, &response_string);
     return response_string;
@@ -242,7 +241,7 @@ class EncryptedReportingJobConfigurationTest : public testing::Test {
   using MockCompleteCb = MockFunction<void(DeviceManagementService::Job* job,
                                            DeviceManagementStatus code,
                                            int net_error,
-                                           const base::Value&)>;
+                                           absl::optional<base::Value::Dict>)>;
   static base::Value::Dict GenerateContext(base::StringPiece key,
                                            base::StringPiece value) {
     base::Value::Dict context;
@@ -496,7 +495,7 @@ TEST_F(EncryptedReportingJobConfigurationTest, OnURLLoadComplete_Success) {
   const std::string kEncryptedWrappedRecord = "TEST_INFO";
   base::Value record_value = GenerateSingleRecord(kEncryptedWrappedRecord);
 
-  base::Value response = ResponseValueBuilder::CreateResponse(
+  base::Value::Dict response = ResponseValueBuilder::CreateResponse(
       *record_value.FindDictKey(kSequenceInformationKey), absl::nullopt);
 
   EXPECT_CALL(complete_cb_,
@@ -519,10 +518,9 @@ TEST_F(EncryptedReportingJobConfigurationTest, OnURLLoadComplete_Success) {
 
 // Ensures that upload failure is handled correctly.
 TEST_F(EncryptedReportingJobConfigurationTest, OnURLLoadComplete_NetError) {
-  base::Value empty_response;
   int net_error = net::ERR_CONNECTION_RESET;
   EXPECT_CALL(complete_cb_, Call(&job_, DM_STATUS_REQUEST_FAILED, net_error,
-                                 testing::Eq(testing::ByRef(empty_response))))
+                                 testing::Eq(absl::nullopt)))
       .Times(1);
   EncryptedReportingJobConfiguration configuration(
       &client_, service_.configuration()->GetEncryptedReportingServerUrl(),

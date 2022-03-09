@@ -131,6 +131,12 @@ class PathSplitter {
   size_t pos_ = 0;
 };
 
+std::string DebugStringImpl(ValueView value) {
+  std::string json;
+  JSONWriter::WriteWithOptions(value, JSONWriter::OPTIONS_PRETTY_PRINT, &json);
+  return json;
+}
+
 }  // namespace
 
 // static
@@ -776,6 +782,10 @@ absl::optional<Value> Value::Dict::ExtractByDottedPath(StringPiece path) {
   return extracted;
 }
 
+std::string Value::Dict::DebugString() const {
+  return DebugStringImpl(*this);
+}
+
 Value::Dict::Dict(
     const flat_map<std::string, std::unique_ptr<Value>>& storage) {
   storage_.reserve(storage.size());
@@ -968,6 +978,10 @@ Value::List::iterator Value::List::Insert(const_iterator pos, Value&& value) {
 
 size_t Value::List::EraseValue(const Value& value) {
   return Erase(storage_, value);
+}
+
+std::string Value::List::DebugString() const {
+  return DebugStringImpl(*this);
 }
 
 Value::List::List(const std::vector<Value>& storage) {
@@ -1471,9 +1485,7 @@ size_t Value::EstimateMemoryUsage() const {
 }
 
 std::string Value::DebugString() const {
-  std::string json;
-  JSONWriter::WriteWithOptions(*this, JSONWriter::OPTIONS_PRETTY_PRINT, &json);
-  return json;
+  return DebugStringImpl(*this);
 }
 
 #if BUILDFLAG(ENABLE_BASE_TRACING)
@@ -1822,17 +1834,12 @@ std::ostream& operator<<(std::ostream& out, const Value& value) {
   return out << value.DebugString();
 }
 
-// TODO(dcheng): Add DebugString() to Value::Dict and Value::List?
 std::ostream& operator<<(std::ostream& out, const Value::Dict& dict) {
-  std::string json;
-  JSONWriter::WriteWithOptions(dict, JSONWriter::OPTIONS_PRETTY_PRINT, &json);
-  return out << json;
+  return out << dict.DebugString();
 }
 
 std::ostream& operator<<(std::ostream& out, const Value::List& list) {
-  std::string json;
-  JSONWriter::WriteWithOptions(list, JSONWriter::OPTIONS_PRETTY_PRINT, &json);
-  return out << json;
+  return out << list.DebugString();
 }
 
 std::ostream& operator<<(std::ostream& out, const Value::Type& type) {

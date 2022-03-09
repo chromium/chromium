@@ -44,8 +44,9 @@ MATCHER_P(EqualsProto,
 
 // Helper function composes JSON represented as base::Value from Sequence
 // information in request.
-base::Value ValueFromSucceededSequenceInfo(const base::Value::Dict& request,
-                                           bool force_confirm_flag) {
+base::Value::Dict ValueFromSucceededSequenceInfo(
+    const base::Value::Dict& request,
+    bool force_confirm_flag) {
   base::Value::Dict response;
 
   // Retrieve and process data
@@ -82,7 +83,7 @@ base::Value ValueFromSucceededSequenceInfo(const base::Value::Dict& request,
     response.Set("encryptionSettings", std::move(encryption_settings));
   }
 
-  return base::Value(std::move(response));
+  return response;
 }
 
 // CloudPolicyClient and UploadClient are not usable outside of a managed

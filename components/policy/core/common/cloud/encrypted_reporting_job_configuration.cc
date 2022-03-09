@@ -11,6 +11,7 @@
 #include "components/policy/core/common/cloud/cloud_policy_client.h"
 #include "components/reporting/proto/synced/record_constants.pb.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace policy {
 
@@ -46,7 +47,7 @@ EncryptedReportingJobConfiguration::~EncryptedReportingJobConfiguration() {
     std::move(callback_).Run(/*job=*/nullptr,
                              DeviceManagementStatus::DM_STATUS_REQUEST_FAILED,
                              /*net_error=*/418,
-                             /*response_body=*/base::Value());
+                             /*response_body=*/absl::nullopt);
   }
 }
 

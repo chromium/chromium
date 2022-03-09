@@ -198,7 +198,7 @@ struct MockRobotAuthCodeCallbackObserver {
 };
 
 struct MockResponseCallbackObserver {
-  MOCK_METHOD(void, OnResponseReceived, (absl::optional<base::Value>));
+  MOCK_METHOD(void, OnResponseReceived, (absl::optional<base::Value::Dict>));
 };
 
 class FakeClientDataDelegate : public ClientDataDelegate {

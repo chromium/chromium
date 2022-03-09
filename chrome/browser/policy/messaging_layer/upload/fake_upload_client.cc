@@ -21,9 +21,9 @@ namespace reporting {
 namespace {
 
 absl::optional<Priority> GetPriorityFromSequenceInformationValue(
-    const base::Value& sequence_information) {
+    const base::Value::Dict& sequence_information) {
   const absl::optional<int> priority_result =
-      sequence_information.FindIntKey("priority");
+      sequence_information.FindInt("priority");
   if (!priority_result.has_value() ||
       !Priority_IsValid(priority_result.value())) {
     return absl::nullopt;
@@ -32,9 +32,9 @@ absl::optional<Priority> GetPriorityFromSequenceInformationValue(
 }
 
 StatusOr<SequenceInformation> SequenceInformationValueToProto(
-    const base::Value& value) {
-  const std::string* const sequencing_id = value.FindStringKey("sequencingId");
-  const std::string* const generation_id = value.FindStringKey("generationId");
+    const base::Value::Dict& value) {
+  const std::string* const sequencing_id = value.FindString("sequencingId");
+  const std::string* const generation_id = value.FindString("generationId");
   const auto priority_result = GetPriorityFromSequenceInformationValue(value);
 
   // If any of the previous values don't exist, or are malformed, return error.
@@ -122,14 +122,14 @@ Status FakeUploadClient::EnqueueUpload(
 void FakeUploadClient::OnUploadComplete(
     ReportSuccessfulUploadCallback report_upload_success_cb,
     EncryptionKeyAttachedCallback encryption_key_attached_cb,
-    absl::optional<base::Value> response) {
+    absl::optional<base::Value::Dict> response) {
   if (!response.has_value()) {
     return;
   }
-  const base::Value* last_success =
-      response->FindDictKey("lastSucceedUploadedRecord");
+  const base::Value::Dict* last_success =
+      response->FindDict("lastSucceedUploadedRecord");
   if (last_success != nullptr) {
-    const auto force_confirm_flag = last_success->FindBoolKey("forceConfirm");
+    const auto force_confirm_flag = last_success->FindBool("forceConfirm");
     bool force_confirm =
         force_confirm_flag.has_value() && force_confirm_flag.value();
     auto seq_info_result = SequenceInformationValueToProto(*last_success);
@@ -139,15 +139,15 @@ void FakeUploadClient::OnUploadComplete(
     }
   }
 
-  const base::Value* signed_encryption_key_record =
-      response->FindDictKey("encryptionSettings");
+  const base::Value::Dict* signed_encryption_key_record =
+      response->FindDict("encryptionSettings");
   if (signed_encryption_key_record != nullptr) {
     const std::string* public_key_str =
-        signed_encryption_key_record->FindStringKey("publicKey");
+        signed_encryption_key_record->FindString("publicKey");
     const auto public_key_id_result =
-        signed_encryption_key_record->FindIntKey("publicKeyId");
+        signed_encryption_key_record->FindInt("publicKeyId");
     const std::string* public_key_signature_str =
-        signed_encryption_key_record->FindStringKey("publicKeySignature");
+        signed_encryption_key_record->FindString("publicKeySignature");
     std::string public_key;
     std::string public_key_signature;
     if (public_key_str != nullptr &&

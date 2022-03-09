@@ -518,6 +518,9 @@ class BASE_EXPORT GSL_OWNER Value {
 
     absl::optional<Value> ExtractByDottedPath(StringPiece path);
 
+    // Serializes to a string for logging and debug purposes.
+    std::string DebugString() const;
+
    private:
     BASE_EXPORT friend bool operator==(const Dict& lhs, const Dict& rhs);
     BASE_EXPORT friend bool operator!=(const Dict& lhs, const Dict& rhs);
@@ -631,6 +634,9 @@ class BASE_EXPORT GSL_OWNER Value {
     size_t EraseIf(Predicate predicate) {
       return base::EraseIf(storage_, predicate);
     }
+
+    // Serializes to a string for logging and debug purposes.
+    std::string DebugString() const;
 
    private:
     BASE_EXPORT friend bool operator==(const List& lhs, const List& rhs);

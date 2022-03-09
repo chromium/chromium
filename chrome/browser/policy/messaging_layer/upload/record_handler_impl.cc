@@ -40,15 +40,15 @@ namespace {
 // Priority could come back as an int or as a std::string, this function handles
 // both situations.
 absl::optional<Priority> GetPriorityProtoFromSequenceInformationValue(
-    const base::Value& sequence_information) {
+    const base::Value::Dict& sequence_information) {
   const absl::optional<int> int_priority_result =
-      sequence_information.FindIntKey("priority");
+      sequence_information.FindInt("priority");
   if (int_priority_result.has_value()) {
     return Priority(int_priority_result.value());
   }
 
   const std::string* str_priority_result =
-      sequence_information.FindStringKey("priority");
+      sequence_information.FindString("priority");
   if (!str_priority_result) {
     LOG(ERROR) << "Field priority is missing from SequenceInformation: "
                << sequence_information;
@@ -85,7 +85,7 @@ class RecordHandlerImpl::ReportUploader
   void OnStart() override;
 
   void StartUpload();
-  void OnUploadComplete(absl::optional<base::Value> response);
+  void OnUploadComplete(absl::optional<base::Value::Dict> response);
   void HandleFailedUpload();
   void HandleSuccessfulUpload();
   void Complete(DmServerUploadService::CompletionResponse result);
@@ -98,13 +98,13 @@ class RecordHandlerImpl::ReportUploader
   //   "priority": 3
   // }
   absl::optional<EncryptedRecord> HandleFailedUploadedSequenceInformation(
-      const base::Value& sequence_information);
+      const base::Value::Dict& sequence_information);
 
   // Helper function for converting a base::Value representation of
   // SequenceInformation into a proto. Will return an INVALID_ARGUMENT error
   // if the base::Value is not convertible.
   StatusOr<SequenceInformation> SequenceInformationValueToProto(
-      const base::Value& value);
+      const base::Value::Dict& value);
 
   bool need_encryption_key_;
   std::unique_ptr<std::vector<EncryptedRecord>> records_;
@@ -118,7 +118,7 @@ class RecordHandlerImpl::ReportUploader
   // Note: I could not find a way to pass it as a parameter,
   // so it is a class member variable. |last_response_| must be processed before
   // any attempt to retry calling the client, otherwise it will be overwritten.
-  base::Value last_response_;
+  base::Value::Dict last_response_;
 
   // When a record fails to be processed on the server, |ReportUploader| creates
   // a gap record to upload in its place.
@@ -204,7 +204,7 @@ void RecordHandlerImpl::ReportUploader::StartUpload() {
       FROM_HERE,
       base::BindOnce(
           [](policy::CloudPolicyClient* client, base::Value::Dict request,
-             base::OnceCallback<void(absl::optional<base::Value>)>
+             base::OnceCallback<void(absl::optional<base::Value::Dict>)>
                  response_cb) {
             client->UploadEncryptedReport(
                 std::move(request),
@@ -215,8 +215,8 @@ void RecordHandlerImpl::ReportUploader::StartUpload() {
 }
 
 void RecordHandlerImpl::ReportUploader::OnUploadComplete(
-    absl::optional<base::Value> response) {
-  if (!response.has_value() || !response.value().is_dict()) {
+    absl::optional<base::Value::Dict> response) {
+  if (!response.has_value()) {
     Schedule(&RecordHandlerImpl::ReportUploader::HandleFailedUpload,
              base::Unretained(this));
     return;
@@ -239,7 +239,6 @@ void RecordHandlerImpl::ReportUploader::HandleFailedUpload() {
 }
 
 void RecordHandlerImpl::ReportUploader::HandleSuccessfulUpload() {
-  DCHECK(last_response_.is_dict());
   //  {
   //    "lastSucceedUploadedRecord": ... // SequenceInformation proto
   //    "firstFailedUploadedRecord": {
@@ -250,8 +249,8 @@ void RecordHandlerImpl::ReportUploader::HandleSuccessfulUpload() {
   //                          // is to be accepted unconditionally by client
   //    "encryptionSettings": ... // EncryptionSettings proto
   //  }
-  const base::Value* last_succeed_uploaded_record =
-      last_response_.FindDictKey("lastSucceedUploadedRecord");
+  const base::Value::Dict* last_succeed_uploaded_record =
+      last_response_.FindDict("lastSucceedUploadedRecord");
   if (last_succeed_uploaded_record != nullptr) {
     auto seq_info_result =
         SequenceInformationValueToProto(*last_succeed_uploaded_record);
@@ -265,7 +264,7 @@ void RecordHandlerImpl::ReportUploader::HandleSuccessfulUpload() {
   }
 
   // Handle forceConfirm flag, if present.
-  const auto force_confirm_flag = last_response_.FindBoolKey("forceConfirm");
+  const auto force_confirm_flag = last_response_.FindBool("forceConfirm");
   if (force_confirm_flag.has_value() && force_confirm_flag.value()) {
     force_confirm_ = true;
   }
@@ -274,15 +273,15 @@ void RecordHandlerImpl::ReportUploader::HandleSuccessfulUpload() {
   // Note: server can attach it to response regardless of whether
   // the response indicates success or failure, and whether the client
   // set attach_encryption_settings to true in request.
-  const base::Value* signed_encryption_key_record =
-      last_response_.FindDictKey("encryptionSettings");
+  const base::Value::Dict* signed_encryption_key_record =
+      last_response_.FindDict("encryptionSettings");
   if (signed_encryption_key_record != nullptr) {
     const std::string* public_key_str =
-        signed_encryption_key_record->FindStringKey("publicKey");
+        signed_encryption_key_record->FindString("publicKey");
     const auto public_key_id_result =
-        signed_encryption_key_record->FindIntKey("publicKeyId");
+        signed_encryption_key_record->FindInt("publicKeyId");
     const std::string* public_key_signature_str =
-        signed_encryption_key_record->FindStringKey("publicKeySignature");
+        signed_encryption_key_record->FindString("publicKeySignature");
     std::string public_key;
     std::string public_key_signature;
     if (public_key_str != nullptr &&
@@ -300,8 +299,9 @@ void RecordHandlerImpl::ReportUploader::HandleSuccessfulUpload() {
   }
 
   // Check if a record was unprocessable on the server.
-  const base::Value* failed_uploaded_record = last_response_.FindDictPath(
-      "firstFailedUploadedRecord.failedUploadedRecord");
+  const base::Value::Dict* failed_uploaded_record =
+      last_response_.FindDictByDottedPath(
+          "firstFailedUploadedRecord.failedUploadedRecord");
   if (!force_confirm_ && failed_uploaded_record != nullptr) {
     // The record we uploaded previously was unprocessable by the server, if the
     // record was after the current |highest_sequence_information_| we should
@@ -340,7 +340,7 @@ void RecordHandlerImpl::ReportUploader::HandleSuccessfulUpload() {
 
 absl::optional<EncryptedRecord>
 RecordHandlerImpl::ReportUploader::HandleFailedUploadedSequenceInformation(
-    const base::Value& sequence_information) {
+    const base::Value::Dict& sequence_information) {
   if (!highest_sequence_information_.has_value()) {
     LOG(ERROR) << "highest_sequence_information_ has no value.";
     return absl::nullopt;
@@ -380,9 +380,9 @@ void RecordHandlerImpl::ReportUploader::Complete(
 
 StatusOr<SequenceInformation>
 RecordHandlerImpl::ReportUploader::SequenceInformationValueToProto(
-    const base::Value& value) {
-  const std::string* sequencing_id = value.FindStringKey("sequencingId");
-  const std::string* generation_id = value.FindStringKey("generationId");
+    const base::Value::Dict& value) {
+  const std::string* sequencing_id = value.FindString("sequencingId");
+  const std::string* generation_id = value.FindString("generationId");
   const auto priority_result =
       GetPriorityProtoFromSequenceInformationValue(value);
 

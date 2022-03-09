@@ -46,8 +46,6 @@ constexpr char kStatusCode[] = "status";
 constexpr char kDummyToken[] = "dm_token";
 constexpr char kPackage[] = "unitTestPackage";
 
-const base::Value empty_response;
-
 class MockCallbackObserver {
  public:
   MockCallbackObserver() = default;
@@ -56,7 +54,7 @@ class MockCallbackObserver {
                void(DeviceManagementService::Job* job,
                     DeviceManagementStatus code,
                     int net_error,
-                    const base::Value&));
+                    absl::optional<base::Value::Dict>));
 };
 
 MATCHER_P(MatchDict, expected, "matches DictionaryValue") {
@@ -106,23 +104,23 @@ class RealtimeReportingJobConfigurationTest : public testing::Test {
     return wrapper;
   }
 
-  static base::Value CreateResponse(
+  static base::Value::Dict CreateResponse(
       const std::set<std::string>& success_ids,
       const std::set<std::string>& failed_ids,
       const std::set<std::string>& permanent_failed_ids) {
-    base::Value response(base::Value::Type::DICTIONARY);
+    base::Value::Dict response;
     if (success_ids.size()) {
       base::Value* list =
-          response.SetKey(RealtimeReportingJobConfiguration::kUploadedEventsKey,
-                          base::Value(base::Value::Type::LIST));
+          response.Set(RealtimeReportingJobConfiguration::kUploadedEventsKey,
+                       base::Value(base::Value::Type::LIST));
       for (const auto& id : success_ids) {
         list->Append(id);
       }
     }
     if (failed_ids.size()) {
       base::Value* list =
-          response.SetKey(RealtimeReportingJobConfiguration::kFailedUploadsKey,
-                          base::Value(base::Value::Type::LIST));
+          response.Set(RealtimeReportingJobConfiguration::kFailedUploadsKey,
+                       base::Value(base::Value::Type::LIST));
       for (const auto& id : failed_ids) {
         base::Value failure(base::Value::Type::DICTIONARY);
         failure.SetStringKey(kEventId, id);
@@ -131,7 +129,7 @@ class RealtimeReportingJobConfigurationTest : public testing::Test {
       }
     }
     if (permanent_failed_ids.size()) {
-      base::Value* list = response.SetKey(
+      base::Value* list = response.Set(
           RealtimeReportingJobConfiguration::kPermanentFailedUploadsKey,
           base::Value(base::Value::Type::LIST));
       for (const auto& id : permanent_failed_ids) {
@@ -145,7 +143,7 @@ class RealtimeReportingJobConfigurationTest : public testing::Test {
     return response;
   }
 
-  static std::string CreateResponseString(const base::Value& response) {
+  static std::string CreateResponseString(const base::Value::Dict& response) {
     std::string response_string;
     base::JSONWriter::Write(response, &response_string);
     return response_string;
@@ -220,7 +218,7 @@ TEST_F(RealtimeReportingJobConfigurationTest, ValidatePayload) {
 }
 
 TEST_F(RealtimeReportingJobConfigurationTest, OnURLLoadComplete_Success) {
-  base::Value response = CreateResponse({ids[0], ids[1], ids[2]}, {}, {});
+  base::Value::Dict response = CreateResponse({ids[0], ids[1], ids[2]}, {}, {});
   EXPECT_CALL(callback_observer_,
               OnURLLoadComplete(&job_, DM_STATUS_SUCCESS, net::OK,
                                 testing::Eq(testing::ByRef(response))));
@@ -233,7 +231,7 @@ TEST_F(RealtimeReportingJobConfigurationTest, OnURLLoadComplete_NetError) {
   int net_error = net::ERR_CONNECTION_RESET;
   EXPECT_CALL(callback_observer_,
               OnURLLoadComplete(&job_, DM_STATUS_REQUEST_FAILED, net_error,
-                                testing::Eq(testing::ByRef(empty_response))));
+                                testing::Eq(absl::nullopt)));
   configuration_->OnURLLoadComplete(&job_, net_error, 0, "");
 }
 
@@ -241,7 +239,7 @@ TEST_F(RealtimeReportingJobConfigurationTest,
        OnURLLoadComplete_InvalidRequest) {
   EXPECT_CALL(callback_observer_,
               OnURLLoadComplete(&job_, DM_STATUS_REQUEST_INVALID, net::OK,
-                                testing::Eq(testing::ByRef(empty_response))));
+                                testing::Eq(absl::nullopt)));
   configuration_->OnURLLoadComplete(
       &job_, net::OK, DeviceManagementService::kInvalidArgument, "");
 }
@@ -251,7 +249,7 @@ TEST_F(RealtimeReportingJobConfigurationTest,
   EXPECT_CALL(
       callback_observer_,
       OnURLLoadComplete(&job_, DM_STATUS_SERVICE_MANAGEMENT_TOKEN_INVALID,
-                        net::OK, testing::Eq(testing::ByRef(empty_response))));
+                        net::OK, testing::Eq(absl::nullopt)));
   configuration_->OnURLLoadComplete(
       &job_, net::OK, DeviceManagementService::kInvalidAuthCookieOrDMToken, "");
 }
@@ -260,7 +258,7 @@ TEST_F(RealtimeReportingJobConfigurationTest, OnURLLoadComplete_NotSupported) {
   EXPECT_CALL(
       callback_observer_,
       OnURLLoadComplete(&job_, DM_STATUS_SERVICE_MANAGEMENT_NOT_SUPPORTED,
-                        net::OK, testing::Eq(testing::ByRef(empty_response))));
+                        net::OK, testing::Eq(absl::nullopt)));
   configuration_->OnURLLoadComplete(
       &job_, net::OK, DeviceManagementService::kDeviceManagementNotAllowed, "");
 }
@@ -268,7 +266,7 @@ TEST_F(RealtimeReportingJobConfigurationTest, OnURLLoadComplete_NotSupported) {
 TEST_F(RealtimeReportingJobConfigurationTest, OnURLLoadComplete_TempError) {
   EXPECT_CALL(callback_observer_,
               OnURLLoadComplete(&job_, DM_STATUS_TEMPORARY_UNAVAILABLE, net::OK,
-                                testing::Eq(testing::ByRef(empty_response))));
+                                testing::Eq(absl::nullopt)));
   configuration_->OnURLLoadComplete(
       &job_, net::OK, DeviceManagementService::kServiceUnavailable, "");
 }
@@ -276,7 +274,7 @@ TEST_F(RealtimeReportingJobConfigurationTest, OnURLLoadComplete_TempError) {
 TEST_F(RealtimeReportingJobConfigurationTest, OnURLLoadComplete_UnknownError) {
   EXPECT_CALL(callback_observer_,
               OnURLLoadComplete(&job_, DM_STATUS_HTTP_STATUS_ERROR, net::OK,
-                                testing::Eq(testing::ByRef(empty_response))));
+                                testing::Eq(absl::nullopt)));
   configuration_->OnURLLoadComplete(&job_, net::OK,
                                     DeviceManagementService::kInvalidURL, "");
 }

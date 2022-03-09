@@ -80,10 +80,8 @@ class POLICY_EXPORT CloudPolicyClient {
 
   // Callback that processes response value received from the server,
   // or nullopt, if there was a failure.
-  // TODO(https://crbug.com/1297247): Change this to accept an
-  // absl::optional<base::Value::Dict> parameter.
   using ResponseCallback =
-      base::OnceCallback<void(absl::optional<base::Value>)>;
+      base::OnceCallback<void(absl::optional<base::Value::Dict>)>;
 
   using ClientCertProvisioningStartCsrCallback = base::OnceCallback<void(
       DeviceManagementStatus,
@@ -691,18 +689,20 @@ class POLICY_EXPORT CloudPolicyClient {
       const enterprise_management::DeviceManagementResponse& response);
 
   // Callback for realtime report upload requests.
-  void OnRealtimeReportUploadCompleted(StatusCallback callback,
-                                       DeviceManagementService::Job* job,
-                                       DeviceManagementStatus status,
-                                       int net_error,
-                                       const base::Value& response);
+  void OnRealtimeReportUploadCompleted(
+      StatusCallback callback,
+      DeviceManagementService::Job* job,
+      DeviceManagementStatus status,
+      int net_error,
+      absl::optional<base::Value::Dict> response);
 
   // Callback for encrypted report upload requests.
-  void OnEncryptedReportUploadCompleted(ResponseCallback callback,
-                                        DeviceManagementService::Job* job,
-                                        DeviceManagementStatus status,
-                                        int net_error,
-                                        const base::Value& response);
+  void OnEncryptedReportUploadCompleted(
+      ResponseCallback callback,
+      DeviceManagementService::Job* job,
+      DeviceManagementStatus status,
+      int net_error,
+      absl::optional<base::Value::Dict> response);
 
   // Callback for remote command fetch requests.
   void OnRemoteCommandsFetched(

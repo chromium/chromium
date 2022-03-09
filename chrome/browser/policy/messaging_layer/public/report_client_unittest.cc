@@ -230,20 +230,19 @@ class ReportClientTest : public ::testing::TestWithParam<bool> {
       ASSERT_TRUE(attach_encryption_settings.value());  // If set, must be true.
       ASSERT_TRUE(is_encryption_enabled());
 
-      base::Value encryption_settings{base::Value::Type::DICTIONARY};
+      base::Value::Dict encryption_settings;
       std::string public_key;
       base::Base64Encode(signed_encryption_key_.public_asymmetric_key(),
                          &public_key);
-      encryption_settings.SetStringKey("publicKey", public_key);
-      encryption_settings.SetIntKey("publicKeyId",
-                                    signed_encryption_key_.public_key_id());
+      encryption_settings.Set("publicKey", public_key);
+      encryption_settings.Set("publicKeyId",
+                              signed_encryption_key_.public_key_id());
       std::string public_key_signature;
       base::Base64Encode(signed_encryption_key_.signature(),
                          &public_key_signature);
-      encryption_settings.SetStringKey("publicKeySignature",
-                                       public_key_signature);
-      base::Value response{base::Value::Type::DICTIONARY};
-      response.SetPath("encryptionSettings", std::move(encryption_settings));
+      encryption_settings.Set("publicKeySignature", public_key_signature);
+      base::Value::Dict response;
+      response.Set("encryptionSettings", std::move(encryption_settings));
       std::move(done_cb).Run(std::move(response));
     };
   }
@@ -276,7 +275,7 @@ class ReportClientTest : public ::testing::TestWithParam<bool> {
       ASSERT_THAT(seq_info, Ne(nullptr));
       base::Value::Dict response;
       response.Set("lastSucceedUploadedRecord", seq_info->Clone());
-      std::move(done_cb).Run(base::Value(std::move(response)));
+      std::move(done_cb).Run(std::move(response));
     };
   }
 

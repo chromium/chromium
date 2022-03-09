@@ -44,7 +44,7 @@ class POLICY_EXPORT ReportingJobConfigurationBase
       base::OnceCallback<void(DeviceManagementService::Job* job,
                               DeviceManagementStatus code,
                               int net_error,
-                              const base::Value&)>;
+                              absl::optional<base::Value::Dict>)>;
 
   // Builds a Device dictionary for uploading information about the device to
   // the server.

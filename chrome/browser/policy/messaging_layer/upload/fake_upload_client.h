@@ -32,7 +32,7 @@ class FakeUploadClient : public UploadClient {
   void OnUploadComplete(
       ReportSuccessfulUploadCallback report_upload_success_cb,
       EncryptionKeyAttachedCallback encryption_key_attached_cb,
-      absl::optional<base::Value> response);
+      absl::optional<base::Value::Dict> response);
 
   const raw_ptr<policy::CloudPolicyClient> cloud_policy_client_;
 };

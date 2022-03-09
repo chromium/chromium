@@ -1402,7 +1402,7 @@ void CloudPolicyClient::OnRealtimeReportUploadCompleted(
     DeviceManagementService::Job* job,
     DeviceManagementStatus status,
     int net_error,
-    const base::Value& response) {
+    absl::optional<base::Value::Dict> response) {
   status_ = status;
   if (status != DM_STATUS_SUCCESS)
     NotifyClientError();
@@ -1419,7 +1419,7 @@ void CloudPolicyClient::OnEncryptedReportUploadCompleted(
     DeviceManagementService::Job* job,
     DeviceManagementStatus status,
     int net_error,
-    const base::Value& response) {
+    absl::optional<base::Value::Dict> response) {
   if (job == nullptr) {
     std::move(callback).Run(absl::nullopt);
     return;
@@ -1428,7 +1428,7 @@ void CloudPolicyClient::OnEncryptedReportUploadCompleted(
   if (status != DM_STATUS_SUCCESS) {
     NotifyClientError();
   }
-  std::move(callback).Run(response.Clone());
+  std::move(callback).Run(std::move(response));
   RemoveJob(job);
 }
 
