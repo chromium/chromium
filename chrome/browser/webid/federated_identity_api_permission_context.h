@@ -1,0 +1,38 @@
+// Copyright 2022 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#ifndef CHROME_BROWSER_WEBID_FEDERATED_IDENTITY_API_PERMISSION_CONTEXT_H_
+#define CHROME_BROWSER_WEBID_FEDERATED_IDENTITY_API_PERMISSION_CONTEXT_H_
+
+#include "components/content_settings/core/browser/host_content_settings_map.h"
+#include "components/keyed_service/core/keyed_service.h"
+#include "content/public/browser/federated_identity_api_permission_context_delegate.h"
+
+namespace content {
+class BrowserContext;
+}
+
+// Context for storing user permission to use the browser FedCM API.
+class FederatedIdentityApiPermissionContext
+    : public content::FederatedIdentityApiPermissionContextDelegate,
+      public KeyedService {
+ public:
+  explicit FederatedIdentityApiPermissionContext(
+      content::BrowserContext* browser_context);
+
+  ~FederatedIdentityApiPermissionContext() override;
+
+  FederatedIdentityApiPermissionContext(
+      const FederatedIdentityApiPermissionContext&) = delete;
+  FederatedIdentityApiPermissionContext& operator=(
+      const FederatedIdentityApiPermissionContext&) = delete;
+
+  // content::FederatedIdentityApiPermissionContextDelegate:
+  bool HasApiPermission() override;
+
+ private:
+  const raw_ptr<HostContentSettingsMap> host_content_settings_map_;
+};
+
+#endif  // CHROME_BROWSER_WEBID_FEDERATED_IDENTITY_API_PERMISSION_CONTEXT_H_

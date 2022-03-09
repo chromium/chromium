@@ -17,6 +17,7 @@
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/content_browser_client.h"
 #include "content/public/browser/federated_identity_active_session_permission_context_delegate.h"
+#include "content/public/browser/federated_identity_api_permission_context_delegate.h"
 #include "content/public/browser/federated_identity_request_permission_context_delegate.h"
 #include "content/public/browser/federated_identity_sharing_permission_context_delegate.h"
 #include "content/public/browser/render_frame_host.h"
@@ -78,6 +79,9 @@ std::string GetConsoleErrorMessage(FederatedAuthRequestResult status) {
   switch (status) {
     case FederatedAuthRequestResult::kApprovalDeclined: {
       return "User declined the sign-in attempt.";
+    }
+    case FederatedAuthRequestResult::kErrorDisabledInSettings: {
+      return "Third-party sign in was disabled in browser Site Settings.";
     }
     case FederatedAuthRequestResult::kErrorTooManyRequests: {
       return "Only one navigator.credentials.get request may be outstanding at "
@@ -174,6 +178,7 @@ RequestIdTokenStatus FederatedAuthRequestResultToRequestIdTokenStatus(
     case FederatedAuthRequestResult::kErrorCanceled: {
       return RequestIdTokenStatus::kErrorCanceled;
     }
+    case FederatedAuthRequestResult::kErrorDisabledInSettings:
     case FederatedAuthRequestResult::kErrorFetchingManifestHttpNotFound:
     case FederatedAuthRequestResult::kErrorFetchingManifestNoResponse:
     case FederatedAuthRequestResult::kErrorFetchingManifestInvalidResponse:
@@ -260,6 +265,13 @@ void FederatedAuthRequestImpl::RequestIdToken(
     return;
   }
 
+  if (GetApiPermissionContext() &&
+      !GetApiPermissionContext()->HasApiPermission()) {
+    CompleteRequest(FederatedAuthRequestResult::kErrorDisabledInSettings, "",
+                    /*should_call_callback=*/false);
+    return;
+  }
+
   request_dialog_controller_ = CreateDialogController();
 
   FetchManifest(base::BindOnce(&FederatedAuthRequestImpl::OnManifestFetched,
@@ -269,6 +281,13 @@ void FederatedAuthRequestImpl::RequestIdToken(
 void FederatedAuthRequestImpl::CancelTokenRequest() {
   if (!auth_request_callback_)
     return;
+
+  if (GetApiPermissionContext() &&
+      !GetApiPermissionContext()->HasApiPermission()) {
+    CompleteRequest(FederatedAuthRequestResult::kErrorDisabledInSettings, "",
+                    /*should_call_callback=*/false);
+    return;
+  }
 
   // Dialog will be hidden by the destructor for request_dialog_controller_,
   // triggered by CompleteRequest.
@@ -305,6 +324,12 @@ void FederatedAuthRequestImpl::Revoke(
     return;
   }
 
+  if (GetApiPermissionContext() &&
+      !GetApiPermissionContext()->HasApiPermission()) {
+    CompleteRevokeRequest(RevokeStatus::kError, /*should_call_callback=*/false);
+    return;
+  }
+
   if (!GetRequestPermissionContext() ||
       !GetRequestPermissionContext()->HasRequestPermission(
           origin_, url::Origin::Create(provider_))) {
@@ -337,6 +362,12 @@ void FederatedAuthRequestImpl::LogoutRps(
   DCHECK(logout_requests_.empty());
 
   logout_callback_ = std::move(callback);
+
+  if (GetApiPermissionContext() &&
+      !GetApiPermissionContext()->HasApiPermission()) {
+    CompleteLogoutRequest(LogoutRpsStatus::kError);
+    return;
+  }
 
   if (logout_requests.empty()) {
     CompleteLogoutRequest(LogoutRpsStatus::kError);
@@ -1048,6 +1079,15 @@ FederatedAuthRequestImpl::GetActiveSessionPermissionContext() {
             ->GetFederatedIdentityActiveSessionPermissionContext();
   }
   return active_session_permission_delegate_;
+}
+
+FederatedIdentityApiPermissionContextDelegate*
+FederatedAuthRequestImpl::GetApiPermissionContext() {
+  if (!api_permission_delegate_) {
+    api_permission_delegate_ = render_frame_host_->GetBrowserContext()
+                                   ->GetFederatedIdentityApiPermissionContext();
+  }
+  return api_permission_delegate_;
 }
 
 FederatedIdentityRequestPermissionContextDelegate*

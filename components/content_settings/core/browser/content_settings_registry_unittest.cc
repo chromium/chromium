@@ -200,6 +200,11 @@ TEST_F(ContentSettingsRegistryTest, GetInitialDefaultSetting) {
       registry()->Get(ContentSettingsType::INSECURE_PRIVATE_NETWORK);
   EXPECT_EQ(CONTENT_SETTING_BLOCK,
             insecure_private_network->GetInitialDefaultSetting());
+
+  const ContentSettingsInfo* federated_identity =
+      registry()->Get(ContentSettingsType::FEDERATED_IDENTITY_API);
+  EXPECT_EQ(CONTENT_SETTING_ALLOW,
+            federated_identity->GetInitialDefaultSetting());
 }
 
 }  // namespace content_settings

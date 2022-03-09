@@ -281,6 +281,10 @@ enum class ContentSettingsType : int32_t {
   // site instead of the mobile one.
   REQUEST_DESKTOP_SITE,
 
+  // Setting to indicate whether browser should allow signing into a website via
+  // the browser FedCM API.
+  FEDERATED_IDENTITY_API,
+
   NUM_TYPES,
 };
 

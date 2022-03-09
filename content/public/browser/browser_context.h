@@ -83,6 +83,7 @@ class ContentIndexProvider;
 class DownloadManager;
 class DownloadManagerDelegate;
 class FederatedIdentityActiveSessionPermissionContextDelegate;
+class FederatedIdentityApiPermissionContextDelegate;
 class FederatedIdentityRequestPermissionContextDelegate;
 class FederatedIdentitySharingPermissionContextDelegate;
 class FileSystemAccessPermissionContext;
@@ -412,6 +413,10 @@ class CONTENT_EXPORT BrowserContext : public base::SupportsUserData {
   virtual std::unique_ptr<media::VideoDecodePerfHistory>
   CreateVideoDecodePerfHistory();
 
+  // Gets the permission context for determining whether the FedCM API is
+  // enabled in site settings.
+  virtual FederatedIdentityApiPermissionContextDelegate*
+  GetFederatedIdentityApiPermissionContext();
   // Gets the permission context for allowing session management capabilities
   // between an identity provider and a relying party if one exists, or
   // nullptr otherwise.

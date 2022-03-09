@@ -171,6 +171,9 @@ std::string FederatedAuthRequestResultToProtocol(
     case FederatedAuthRequestResult::kApprovalDeclined: {
       return FederatedAuthRequestIssueReasonEnum::ApprovalDeclined;
     }
+    case FederatedAuthRequestResult::kErrorDisabledInSettings: {
+      return FederatedAuthRequestIssueReasonEnum::DisabledInSettings;
+    }
     case FederatedAuthRequestResult::kErrorTooManyRequests: {
       return FederatedAuthRequestIssueReasonEnum::TooManyRequests;
     }

@@ -24,6 +24,7 @@
 namespace content {
 
 class FederatedIdentityActiveSessionPermissionContextDelegate;
+class FederatedIdentityApiPermissionContextDelegate;
 class FederatedIdentityRequestPermissionContextDelegate;
 class FederatedIdentitySharingPermissionContextDelegate;
 class RenderFrameHostImpl;
@@ -131,6 +132,7 @@ class CONTENT_EXPORT FederatedAuthRequestImpl {
 
   FederatedIdentityActiveSessionPermissionContextDelegate*
   GetActiveSessionPermissionContext();
+  FederatedIdentityApiPermissionContextDelegate* GetApiPermissionContext();
   FederatedIdentityRequestPermissionContextDelegate*
   GetRequestPermissionContext();
   FederatedIdentitySharingPermissionContextDelegate*
@@ -183,6 +185,8 @@ class CONTENT_EXPORT FederatedAuthRequestImpl {
 
   raw_ptr<FederatedIdentityActiveSessionPermissionContextDelegate>
       active_session_permission_delegate_ = nullptr;
+  raw_ptr<FederatedIdentityApiPermissionContextDelegate>
+      api_permission_delegate_ = nullptr;
   raw_ptr<FederatedIdentityRequestPermissionContextDelegate>
       request_permission_delegate_ = nullptr;
   raw_ptr<FederatedIdentitySharingPermissionContextDelegate>
