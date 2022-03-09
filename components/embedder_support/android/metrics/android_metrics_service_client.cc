@@ -265,6 +265,10 @@ void AndroidMetricsServiceClient::Initialize(PrefService* pref_service) {
 
   init_finished_ = true;
 
+  synthetic_trial_registry_ =
+      std::make_unique<variations::SyntheticTrialRegistry>(
+          IsExternalExperimentAllowlistEnabled());
+
   // Create the MetricsService immediately so that other code can make use of
   // it. Chrome always creates the MetricsService as well.
   metrics_service_ = std::make_unique<MetricsService>(
@@ -383,7 +387,8 @@ void AndroidMetricsServiceClient::CreateUkmService() {
   ukm_service_->RegisterMetricsProvider(
       std::make_unique<metrics::FormFactorMetricsProvider>());
 
-  ukm_service_->RegisterMetricsProvider(ukm::CreateFieldTrialsProviderForUkm());
+  ukm_service_->RegisterMetricsProvider(
+      ukm::CreateFieldTrialsProviderForUkm(synthetic_trial_registry_.get()));
 
   UpdateUkmService();
 }
@@ -468,6 +473,11 @@ bool AndroidMetricsServiceClient::IsReportingEnabled() const {
 MetricsService* AndroidMetricsServiceClient::GetMetricsServiceIfStarted() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return did_start_metrics_ ? metrics_service_.get() : nullptr;
+}
+
+variations::SyntheticTrialRegistry*
+AndroidMetricsServiceClient::GetSyntheticTrialRegistry() {
+  return synthetic_trial_registry_.get();
 }
 
 MetricsService* AndroidMetricsServiceClient::GetMetricsService() {

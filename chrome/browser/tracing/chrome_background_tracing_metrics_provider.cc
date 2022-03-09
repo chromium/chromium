@@ -40,7 +40,7 @@ void ChromeBackgroundTracingMetricsProvider::Init() {
   // Metrics service can be null in some testing contexts.
   if (g_browser_process->metrics_service() != nullptr) {
     variations::SyntheticTrialRegistry* registry =
-        g_browser_process->metrics_service()->synthetic_trial_registry();
+        g_browser_process->metrics_service()->GetSyntheticTrialRegistry();
     system_profile_providers_.emplace_back(
         std::make_unique<variations::FieldTrialsProvider>(registry,
                                                           base::StringPiece()));

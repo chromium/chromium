@@ -3,6 +3,7 @@ include_rules = [
   "+components/prefs",
   "+components/ukm",
   "+components/variations/service/variations_safe_mode_constants.h",
+  "+components/variations/synthetic_trial_registry.h",
   "+components/version_info",
   "+content/public/browser",
   "+content/public/test",

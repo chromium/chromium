@@ -88,15 +88,15 @@ class COMPONENT_EXPORT(VARIATIONS) SyntheticTrialRegistry {
                            GetSyntheticFieldTrialActiveGroups);
   FRIEND_TEST_ALL_PREFIXES(VariationsCrashKeysTest, BasicFunctionality);
 
-  // Registers a field trial name and group to be used to annotate a UMA report
-  // with a particular Chrome configuration state.
+  // Registers a field trial name and group to be used to annotate UMA and UKM
+  // reports with a particular Chrome configuration state.
   //
-  // If the |trial_group|'s |annotation_mode| is set to |kNextLog|,
-  // then a UMA report will be annotated with this trial group if and
-  // only if all events in the report were created after the trial's
-  // registration. If the |annotation_mode| is set to |kCurrentLog|, then a
-  // UMA report will be annotated with this trial group even if there are events
-  // in the report that were created before this trial's registration.
+  // If the |trial_group|'s |annotation_mode| is set to |kNextLog|, then reports
+  // will be annotated with this trial group if and only if all events in the
+  // report were created after the trial's registration. If the
+  // |annotation_mode| is set to |kCurrentLog|, then reports will be annotated
+  // with this trial group even if there are events in the report that were
+  // created before this trial's registration.
   //
   // Only one group name may be registered at a time for a given trial name.
   // Only the last group name that is registered for a given trial name will be
@@ -105,9 +105,6 @@ class COMPONENT_EXPORT(VARIATIONS) SyntheticTrialRegistry {
   //
   // The registered trials are not persisted to disk and will not be applied
   // after a restart.
-  //
-  // TODO(crbug.com/754877): Note that UKM is intentionally not mentioned.
-  // Currently, UKM does not record synthetic field trials.
   //
   // Note: Should not be used to replace trials that were
   // registered with RegisterExternalExperiments().

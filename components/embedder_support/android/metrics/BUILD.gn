@@ -28,6 +28,7 @@ static_library("metrics") {
     "//components/metrics:ui",
     "//components/prefs",
     "//components/ukm",
+    "//components/variations:variations",
     "//components/version_info",
     "//components/version_info/android:channel_getter",
     "//content/public/browser",

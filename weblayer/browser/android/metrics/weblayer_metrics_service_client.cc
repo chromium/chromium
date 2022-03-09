@@ -101,7 +101,7 @@ void WebLayerMetricsServiceClient::RegisterExternalExperiments(
     return;
   }
 
-  GetMetricsService()->synthetic_trial_registry()->RegisterExternalExperiments(
+  GetMetricsService()->GetSyntheticTrialRegistry()->RegisterExternalExperiments(
       "WebLayerExperiments", experiment_ids,
       variations::SyntheticTrialRegistry::kOverrideExistingIds);
 }

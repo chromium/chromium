@@ -178,6 +178,11 @@ void IOSChromeMetricsServiceClient::RegisterPrefs(
   ukm::UkmService::RegisterPrefs(registry);
 }
 
+variations::SyntheticTrialRegistry*
+IOSChromeMetricsServiceClient::GetSyntheticTrialRegistry() {
+  return synthetic_trial_registry_.get();
+}
+
 metrics::MetricsService* IOSChromeMetricsServiceClient::GetMetricsService() {
   return metrics_service_.get();
 }
@@ -258,6 +263,11 @@ void IOSChromeMetricsServiceClient::WebStateDidStopLoading(
 
 void IOSChromeMetricsServiceClient::Initialize() {
   PrefService* local_state = GetApplicationContext()->GetLocalState();
+
+  synthetic_trial_registry_ =
+      std::make_unique<variations::SyntheticTrialRegistry>(
+          IsExternalExperimentAllowlistEnabled());
+
   metrics_service_ = std::make_unique<metrics::MetricsService>(
       metrics_state_manager_, this, local_state);
   RegisterMetricsServiceProviders();
@@ -348,10 +358,9 @@ void IOSChromeMetricsServiceClient::RegisterUKMProviders() {
   ukm_service_->RegisterMetricsProvider(
       std::make_unique<metrics::ScreenInfoMetricsProvider>());
 
-  // TODO(crbug.com/754877): Support synthetic trials for UKM.
   ukm_service_->RegisterMetricsProvider(
-      std::make_unique<variations::FieldTrialsProvider>(nullptr,
-                                                        kUKMFieldTrialSuffix));
+      std::make_unique<variations::FieldTrialsProvider>(
+          synthetic_trial_registry_.get(), kUKMFieldTrialSuffix));
 
   metrics_service_->RegisterMetricsProvider(
       std::make_unique<IOSChromeDefaultBrowserMetricsProvider>(

@@ -41,6 +41,7 @@
 #include "components/translate/core/browser/translate_metrics_logger_impl.h"
 #include "components/variations/field_trial_config/field_trial_util.h"
 #include "components/variations/service/variations_service.h"
+#include "components/variations/synthetic_trial_registry.h"
 #include "components/variations/synthetic_trials_active_group_id_provider.h"
 #include "components/variations/variations_crash_keys.h"
 #include "components/variations/variations_ids_provider.h"
@@ -413,9 +414,9 @@ void IOSChromeMainParts::SetUpFieldTrials() {
 
 void IOSChromeMainParts::SetupMetrics() {
   metrics::MetricsService* metrics = application_context_->GetMetricsService();
-  metrics->synthetic_trial_registry()->AddSyntheticTrialObserver(
+  metrics->GetSyntheticTrialRegistry()->AddSyntheticTrialObserver(
       variations::VariationsIdsProvider::GetInstance());
-  metrics->synthetic_trial_registry()->AddSyntheticTrialObserver(
+  metrics->GetSyntheticTrialRegistry()->AddSyntheticTrialObserver(
       variations::SyntheticTrialsActiveGroupIdProvider::GetInstance());
   // Now that field trials have been created, initializes metrics recording.
   metrics->InitializeMetricsRecordingState();

@@ -183,7 +183,7 @@ int BrowserMainPartsImpl::PreCreateThreads() {
   // Chrome registers these providers from PreCreateThreads() as well.
   auto* synthetic_trial_registry = WebLayerMetricsServiceClient::GetInstance()
                                        ->GetMetricsService()
-                                       ->synthetic_trial_registry();
+                                       ->GetSyntheticTrialRegistry();
   synthetic_trial_registry->AddSyntheticTrialObserver(
       variations::VariationsIdsProvider::GetInstance());
   synthetic_trial_registry->AddSyntheticTrialObserver(

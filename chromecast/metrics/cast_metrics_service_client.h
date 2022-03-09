@@ -17,6 +17,7 @@
 #include "components/metrics/metrics_log_store.h"
 #include "components/metrics/metrics_log_uploader.h"
 #include "components/metrics/metrics_service_client.h"
+#include "components/variations/synthetic_trial_registry.h"
 
 class PrefRegistrySimple;
 class PrefService;
@@ -83,6 +84,7 @@ class CastMetricsServiceClient : public ::metrics::MetricsServiceClient,
   void Finalize();
 
   // ::metrics::MetricsServiceClient:
+  variations::SyntheticTrialRegistry* GetSyntheticTrialRegistry() override;
   ::metrics::MetricsService* GetMetricsService() override;
   void SetMetricsClientId(const std::string& client_id) override;
   int32_t GetProduct() override;
@@ -129,6 +131,7 @@ class CastMetricsServiceClient : public ::metrics::MetricsServiceClient,
 
   const scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
   std::unique_ptr<::metrics::MetricsStateManager> metrics_state_manager_;
+  std::unique_ptr<variations::SyntheticTrialRegistry> synthetic_trial_registry_;
   std::unique_ptr<::metrics::MetricsService> metrics_service_;
   std::unique_ptr<::metrics::EnabledStateProvider> enabled_state_provider_;
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;

@@ -27,6 +27,7 @@
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/ukm/observers/history_delete_observer.h"
 #include "components/ukm/observers/ukm_consent_state_observer.h"
+#include "components/variations/synthetic_trial_registry.h"
 #include "content/public/browser/notification_observer.h"
 #include "content/public/browser/notification_registrar.h"
 #include "ppapi/buildflags/buildflags.h"
@@ -75,6 +76,7 @@ class ChromeMetricsServiceClient : public metrics::MetricsServiceClient,
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   // metrics::MetricsServiceClient:
+  variations::SyntheticTrialRegistry* GetSyntheticTrialRegistry() override;
   metrics::MetricsService* GetMetricsService() override;
   ukm::UkmService* GetUkmService() override;
   void SetMetricsClientId(const std::string& client_id) override;
@@ -194,6 +196,9 @@ class ChromeMetricsServiceClient : public metrics::MetricsServiceClient,
 
   // Weak pointer to the MetricsStateManager.
   const raw_ptr<metrics::MetricsStateManager> metrics_state_manager_;
+
+  // The synthetic trial registry shared by metrics_service_ and ukm_service_.
+  std::unique_ptr<variations::SyntheticTrialRegistry> synthetic_trial_registry_;
 
   // The MetricsService that |this| is a client of.
   std::unique_ptr<metrics::MetricsService> metrics_service_;

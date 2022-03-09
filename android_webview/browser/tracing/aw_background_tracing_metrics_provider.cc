@@ -27,7 +27,7 @@ void AwBackgroundTracingMetricsProvider::Init() {
 
   system_profile_providers_.emplace_back(
       std::make_unique<variations::FieldTrialsProvider>(
-          metrics->synthetic_trial_registry(), base::StringPiece()));
+          metrics->GetSyntheticTrialRegistry(), base::StringPiece()));
 }
 
 void AwBackgroundTracingMetricsProvider::ProvideEmbedderMetrics(

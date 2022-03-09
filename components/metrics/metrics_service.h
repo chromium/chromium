@@ -31,7 +31,6 @@
 #include "components/metrics/metrics_log_store.h"
 #include "components/metrics/metrics_provider.h"
 #include "components/metrics/metrics_reporting_service.h"
-#include "components/variations/synthetic_trial_registry.h"
 
 class PrefService;
 class PrefRegistrySimple;
@@ -44,6 +43,10 @@ namespace base {
 class HistogramSamples;
 class PrefService;
 }  // namespace base
+
+namespace variations {
+class SyntheticTrialRegistry;
+}
 
 namespace metrics {
 
@@ -225,9 +228,7 @@ class MetricsService : public base::HistogramFlattener {
   void ResetClientId();
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
-  variations::SyntheticTrialRegistry* synthetic_trial_registry() {
-    return &synthetic_trial_registry_;
-  }
+  variations::SyntheticTrialRegistry* GetSyntheticTrialRegistry();
 
   MetricsLogStore* LogStoreForTest() {
     return reporting_service_.metrics_log_store();
@@ -448,8 +449,6 @@ class MetricsService : public base::HistogramFlattener {
 
   // Stores the time of the last call to |GetUptimes()|.
   base::TimeTicks last_updated_time_;
-
-  variations::SyntheticTrialRegistry synthetic_trial_registry_;
 
   // Indicates if loading of independent metrics is currently active.
   bool independent_loader_active_ = false;

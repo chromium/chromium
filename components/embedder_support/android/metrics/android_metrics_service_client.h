@@ -17,6 +17,7 @@
 #include "components/metrics/enabled_state_provider.h"
 #include "components/metrics/metrics_log_uploader.h"
 #include "components/metrics/metrics_service_client.h"
+#include "components/variations/synthetic_trial_registry.h"
 #include "components/version_info/android/channel_getter.h"
 #include "components/version_info/version_info.h"
 #include "content/public/browser/notification_observer.h"
@@ -134,6 +135,7 @@ class AndroidMetricsServiceClient : public MetricsServiceClient,
   MetricsService* GetMetricsServiceIfStarted();
 
   // MetricsServiceClient
+  variations::SyntheticTrialRegistry* GetSyntheticTrialRegistry() override;
   MetricsService* GetMetricsService() override;
   ukm::UkmService* GetUkmService() override;
   void SetMetricsClientId(const std::string& client_id) override;
@@ -264,6 +266,7 @@ class AndroidMetricsServiceClient : public MetricsServiceClient,
   void CreateUkmService();
 
   std::unique_ptr<MetricsStateManager> metrics_state_manager_;
+  std::unique_ptr<variations::SyntheticTrialRegistry> synthetic_trial_registry_;
   std::unique_ptr<MetricsService> metrics_service_;
   std::unique_ptr<ukm::UkmService> ukm_service_;
   content::NotificationRegistrar registrar_;

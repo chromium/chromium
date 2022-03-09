@@ -9,11 +9,16 @@
 
 #include "components/metrics/field_trials_provider.h"
 
+namespace variations {
+class SyntheticTrialRegistry;
+}
+
 namespace ukm {
 
 // Creates a FieldTrialsProvider for use with UKMs.
 std::unique_ptr<variations::FieldTrialsProvider>
-CreateFieldTrialsProviderForUkm();
+CreateFieldTrialsProviderForUkm(
+    variations::SyntheticTrialRegistry* synthetic_field_trial_registry);
 
 }  // namespace ukm
 

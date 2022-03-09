@@ -85,6 +85,7 @@ void FieldTrialsProvider::GetAndWriteFieldTrials(
   GetFieldTrialIds(&field_trials);
   WriteFieldTrials(field_trials, system_profile_proto);
 
+  // May be null in tests.
   if (registry_) {
     std::vector<ActiveGroupId> synthetic_trials;
     registry_->GetSyntheticFieldTrialsOlderThan(log_creation_time_,

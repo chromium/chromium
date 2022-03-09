@@ -530,6 +530,11 @@ void ChromeMetricsServiceClient::RegisterProfilePrefs(
 }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
+variations::SyntheticTrialRegistry*
+ChromeMetricsServiceClient::GetSyntheticTrialRegistry() {
+  return synthetic_trial_registry_.get();
+}
+
 metrics::MetricsService* ChromeMetricsServiceClient::GetMetricsService() {
   return metrics_service_.get();
 }
@@ -633,6 +638,10 @@ ChromeMetricsServiceClient::GetMetricsReportingDefaultState() {
 
 void ChromeMetricsServiceClient::Initialize() {
   PrefService* local_state = g_browser_process->local_state();
+
+  synthetic_trial_registry_ =
+      std::make_unique<variations::SyntheticTrialRegistry>(
+          IsExternalExperimentAllowlistEnabled());
 
   metrics_service_ = std::make_unique<metrics::MetricsService>(
       metrics_state_manager_, this, local_state);
@@ -882,7 +891,8 @@ void ChromeMetricsServiceClient::RegisterUKMProviders() {
   ukm_service_->RegisterMetricsProvider(
       std::make_unique<metrics::FormFactorMetricsProvider>());
 
-  ukm_service_->RegisterMetricsProvider(ukm::CreateFieldTrialsProviderForUkm());
+  ukm_service_->RegisterMetricsProvider(
+      ukm::CreateFieldTrialsProviderForUkm(synthetic_trial_registry_.get()));
 
   ukm_service_->RegisterMetricsProvider(
       std::make_unique<PrivacyBudgetMetricsProvider>(

@@ -1,6 +1,7 @@
 include_rules = [
   "+components/metrics",
   "+components/prefs",
+  "+components/variations/synthetic_trial_registry.h",
   "+components/version_info",
   "+net/base",
   "+services/network/public",

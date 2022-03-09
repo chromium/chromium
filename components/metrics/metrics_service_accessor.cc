@@ -11,6 +11,7 @@
 #include "components/metrics/metrics_switches.h"
 #include "components/prefs/pref_service.h"
 #include "components/variations/hashing.h"
+#include "components/variations/synthetic_trial_registry.h"
 
 namespace metrics {
 namespace {
@@ -63,7 +64,7 @@ bool MetricsServiceAccessor::RegisterSyntheticFieldTrialWithNameAndGroupHash(
 
   variations::SyntheticTrialGroup trial_group(trial_name_hash, group_name_hash,
                                               annotation_mode);
-  metrics_service->synthetic_trial_registry()->RegisterSyntheticFieldTrial(
+  metrics_service->GetSyntheticTrialRegistry()->RegisterSyntheticFieldTrial(
       trial_group);
   return true;
 }

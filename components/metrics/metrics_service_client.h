@@ -25,6 +25,10 @@ namespace network_time {
 class NetworkTimeTracker;
 }
 
+namespace variations {
+class SyntheticTrialRegistry;
+}
+
 namespace metrics {
 
 class MetricsLogUploader;
@@ -40,6 +44,10 @@ class MetricsServiceClient {
   MetricsServiceClient& operator=(const MetricsServiceClient&) = delete;
 
   virtual ~MetricsServiceClient();
+
+  // Returns the synthetic trial registry shared by MetricsService and
+  // UkmService.
+  virtual variations::SyntheticTrialRegistry* GetSyntheticTrialRegistry() = 0;
 
   // Returns the MetricsService instance that this client is associated with.
   // With the exception of testing contexts, the returned instance must be valid

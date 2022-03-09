@@ -30,6 +30,7 @@ class TestMetricsServiceClient : public MetricsServiceClient {
   ~TestMetricsServiceClient() override;
 
   // MetricsServiceClient:
+  variations::SyntheticTrialRegistry* GetSyntheticTrialRegistry() override;
   metrics::MetricsService* GetMetricsService() override;
   void SetMetricsClientId(const std::string& client_id) override;
   bool ShouldUploadMetricsForUserId(uint64_t user_id) override;

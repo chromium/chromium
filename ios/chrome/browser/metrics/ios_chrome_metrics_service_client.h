@@ -20,6 +20,7 @@
 #include "components/omnibox/browser/omnibox_event_global_tracker.h"
 #include "components/ukm/observers/history_delete_observer.h"
 #include "components/ukm/observers/ukm_consent_state_observer.h"
+#include "components/variations/synthetic_trial_registry.h"
 #import "ios/chrome/browser/metrics/incognito_web_state_observer.h"
 #include "ios/web/public/deprecated/global_web_state_observer.h"
 
@@ -58,6 +59,7 @@ class IOSChromeMetricsServiceClient : public IncognitoWebStateObserver,
   static void RegisterPrefs(PrefRegistrySimple* registry);
 
   // metrics::MetricsServiceClient:
+  variations::SyntheticTrialRegistry* GetSyntheticTrialRegistry() override;
   metrics::MetricsService* GetMetricsService() override;
   ukm::UkmService* GetUkmService() override;
   void SetMetricsClientId(const std::string& client_id) override;
@@ -141,6 +143,9 @@ class IOSChromeMetricsServiceClient : public IncognitoWebStateObserver,
 
   // Weak pointer to the MetricsStateManager.
   metrics::MetricsStateManager* metrics_state_manager_;
+
+  // The synthetic trial registry shared by metrics_service_ and ukm_service_.
+  std::unique_ptr<variations::SyntheticTrialRegistry> synthetic_trial_registry_;
 
   // The MetricsService that |this| is a client of.
   std::unique_ptr<metrics::MetricsService> metrics_service_;

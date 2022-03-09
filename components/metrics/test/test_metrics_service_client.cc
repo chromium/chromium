@@ -20,6 +20,11 @@ const char TestMetricsServiceClient::kBrandForTesting[] = "brand_for_testing";
 TestMetricsServiceClient::TestMetricsServiceClient() = default;
 TestMetricsServiceClient::~TestMetricsServiceClient() = default;
 
+variations::SyntheticTrialRegistry*
+TestMetricsServiceClient::GetSyntheticTrialRegistry() {
+  return nullptr;
+}
+
 metrics::MetricsService* TestMetricsServiceClient::GetMetricsService() {
   return nullptr;
 }

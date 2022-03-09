@@ -28,6 +28,7 @@
 #include "components/metrics_services_manager/metrics_services_manager.h"
 #include "components/prefs/pref_service.h"
 #include "components/ukm/ukm_service.h"
+#include "components/variations/synthetic_trial_registry.h"
 #include "content/public/browser/browser_thread.h"
 
 using base::android::ConvertJavaStringToUTF8;
@@ -292,7 +293,7 @@ static void JNI_UmaSessionStats_RegisterExternalExperiment(
           : variations::SyntheticTrialRegistry::kDoNotOverrideExistingIds;
 
   g_browser_process->metrics_service()
-      ->synthetic_trial_registry()
+      ->GetSyntheticTrialRegistry()
       ->RegisterExternalExperiments(fallback_study_name, experiment_ids,
                                     override_mode);
 }
