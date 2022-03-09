@@ -74,10 +74,15 @@ struct BLINK_COMMON_EXPORT UserAgentMetadata {
 // Like above, this has legacy IPC traits in
 // content/public/common/common_param_traits_macros.h
 struct BLINK_COMMON_EXPORT UserAgentOverride {
-  // Helper which sets only UA, no client hints.
+  // Helper which sets only UA with blank client hints.
   static UserAgentOverride UserAgentOnly(const std::string& ua) {
     UserAgentOverride result;
     result.ua_string_override = ua;
+
+    // If ua is empty, it's assumed the system default should be used
+    if (!ua.empty())
+      result.ua_metadata_override = UserAgentMetadata();
+
     return result;
   }
 
