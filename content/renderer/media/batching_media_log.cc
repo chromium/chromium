@@ -60,6 +60,7 @@ BatchingMediaLog::BatchingMediaLog(
   // Pre-bind the WeakPtr on the right thread since we'll receive calls from
   // other threads and don't want races.
   weak_this_ = weak_factory_.GetWeakPtr();
+  AddEvent<media::MediaLogEvent::kMediaLogCreated>(base::Time::Now());
 }
 
 BatchingMediaLog::~BatchingMediaLog() {

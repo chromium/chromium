@@ -156,6 +156,16 @@ struct MediaSerializer<base::TimeDelta> {
   }
 };
 
+// enum (simple)
+template <>
+struct MediaSerializer<base::Time> {
+  static inline base::Value Serialize(const base::Time value) {
+    std::stringstream formatted;
+    formatted << value;
+    return MediaSerializer<std::string>::Serialize(formatted.str());
+  }
+};
+
 // Enum (simple)
 template <>
 struct MediaSerializer<RendererType> {
