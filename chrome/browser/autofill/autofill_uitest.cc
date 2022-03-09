@@ -136,14 +136,6 @@ void AutofillUiTest::TearDownOnMainThread() {
         autofill::PopupHidingReason::kTabGone);
 }
 
-void AutofillUiTest::SendKeyToPage(content::WebContents* web_contents,
-                                   const ui::DomKey key) {
-  ui::KeyboardCode key_code = ui::NonPrintableDomKeyToKeyboardCode(key);
-  ui::DomCode code = ui::UsLayoutKeyboardCodeToDomCode(key_code);
-  content::SimulateKeyPress(web_contents, key, code, key_code, false, false,
-                            false, false);
-}
-
 bool AutofillUiTest::SendKeyToPageAndWait(
     ui::DomKey key,
     std::list<ObservedUiEvents> expected_events,
@@ -233,33 +225,6 @@ void AutofillUiTest::DoNothingAndWaitAndIgnoreEvents(base::TimeDelta timeout) {
   base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
       FROM_HERE, run_loop.QuitClosure(), timeout);
   run_loop.Run();
-}
-
-void AutofillUiTest::SendKeyToDataListPopup(ui::DomKey key) {
-  ui::KeyboardCode key_code = ui::NonPrintableDomKeyToKeyboardCode(key);
-  ui::DomCode code = ui::UsLayoutKeyboardCodeToDomCode(key_code);
-  SendKeyToDataListPopup(key, code, key_code);
-}
-
-// Datalist does not support autofill preview. There is no need to start
-// message loop for Datalist.
-void AutofillUiTest::SendKeyToDataListPopup(ui::DomKey key,
-                                            ui::DomCode code,
-                                            ui::KeyboardCode key_code) {
-  // Route popup-targeted key presses via the render view host.
-  content::NativeWebKeyboardEvent event(
-      blink::WebKeyboardEvent::Type::kRawKeyDown,
-      blink::WebInputEvent::kNoModifiers, ui::EventTimeForNow());
-  event.windows_key_code = key_code;
-  event.dom_code = static_cast<int>(code);
-  event.dom_key = key;
-  // Install the key press event sink to ensure that any events that are not
-  // handled by the installed callbacks do not end up crashing the test.
-  GetRenderViewHost()->GetWidget()->AddKeyPressEventCallback(
-      key_press_event_sink_);
-  GetRenderViewHost()->GetWidget()->ForwardKeyboardEvent(event);
-  GetRenderViewHost()->GetWidget()->RemoveKeyPressEventCallback(
-      key_press_event_sink_);
 }
 
 bool AutofillUiTest::HandleKeyPressEvent(

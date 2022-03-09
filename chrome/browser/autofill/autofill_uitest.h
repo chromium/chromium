@@ -86,7 +86,6 @@ class AutofillUiTest : public InProcessBrowserTest,
   void SetUpOnMainThread() override;
   void TearDownOnMainThread() override;
 
-  void SendKeyToPage(content::WebContents* web_contents, const ui::DomKey key);
   bool SendKeyToPageAndWait(ui::DomKey key,
                             std::list<ObservedUiEvents> expected_events,
                             base::TimeDelta timeout = {});
@@ -109,11 +108,6 @@ class AutofillUiTest : public InProcessBrowserTest,
                              std::list<ObservedUiEvents> expected_events,
                              content::RenderWidgetHost* widget,
                              base::TimeDelta timeout = {});
-
-  void SendKeyToDataListPopup(ui::DomKey key);
-  void SendKeyToDataListPopup(ui::DomKey key,
-                              ui::DomCode code,
-                              ui::KeyboardCode key_code);
 
   bool HandleKeyPressEvent(const content::NativeWebKeyboardEvent& event);
 
