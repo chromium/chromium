@@ -11,11 +11,13 @@
 #include "ash/login/login_screen_controller.h"
 #include "ash/public/cpp/new_window_delegate.h"
 #include "ash/public/cpp/style/scoped_light_mode_as_default.h"
+#include "ash/public/cpp/view_shadow.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/ash_color_provider.h"
+#include "ash/style/system_shadow.h"
 #include "ash/system/power/power_button_menu_item_view.h"
 #include "ash/system/power/power_button_menu_metrics_type.h"
 #include "ash/system/user/login_status.h"
@@ -27,6 +29,7 @@
 #include "ui/compositor/layer.h"
 #include "ui/compositor/layer_animator.h"
 #include "ui/compositor/scoped_layer_animation_settings.h"
+#include "ui/compositor_extra/shadow.h"
 #include "ui/gfx/vector_icon_types.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/background.h"
@@ -39,11 +42,35 @@ namespace {
 constexpr int kMenuItemHorizontalPadding = 16;
 constexpr int kMenuItemVerticalPadding = 16;
 
-// The amount of rounding applied to the corners of the menu view.
-constexpr gfx::RoundedCornersF kMenuViewRoundRectRadiusDp{16.f};
+// The rounded corner radius of menu.
+constexpr int kMenuCornerRadius = 16;
 
 // Horizontal padding between two menu items.
 constexpr int kPaddingBetweenMenuItems = 8;
+
+// Set show/hide animation for layer.
+void SetLayerAnimation(ui::Layer* layer,
+                       ui::ImplicitAnimationObserver* observer,
+                       bool show,
+                       const gfx::Transform& transform) {
+  DCHECK(layer);
+
+  auto* animator = layer->GetAnimator();
+  animator->AbortAllAnimations();
+
+  ui::ScopedLayerAnimationSettings animation_settings(animator);
+  animation_settings.SetTweenType(show ? gfx::Tween::EASE_IN
+                                       : gfx::Tween::FAST_OUT_LINEAR_IN);
+  animation_settings.SetTransitionDuration(
+      PowerButtonMenuView::kMenuAnimationDuration);
+  animation_settings.SetPreemptionStrategy(
+      ui::LayerAnimator::IMMEDIATELY_ANIMATE_TO_NEW_TARGET);
+  if (observer)
+    animation_settings.AddObserver(observer);
+
+  layer->SetOpacity(show ? 1.0f : 0.f);
+  layer->SetTransform(transform);
+}
 
 }  // namespace
 
@@ -57,12 +84,19 @@ PowerButtonMenuView::PowerButtonMenuView(
   SetFocusBehavior(FocusBehavior::ALWAYS);
   SetPaintToLayer();
   layer()->SetFillsBoundsOpaquely(false);
-  layer()->SetRoundedCornerRadius(kMenuViewRoundRectRadiusDp);
+  layer()->SetRoundedCornerRadius(gfx::RoundedCornersF(kMenuCornerRadius));
   layer()->SetBackgroundBlur(ColorProvider::kBackgroundBlurSigma);
   GetViewAccessibility().OverrideRole(ax::mojom::Role::kMenu);
   GetViewAccessibility().OverrideName(
       l10n_util::GetStringUTF16(IDS_ASH_POWER_BUTTON_MENU_ACCESSIBLE));
   RecreateItems();
+
+  // Create a view shadow.
+  shadow_ = std::make_unique<ViewShadow>(
+      this,
+      SystemShadow::GetElevationFromType(SystemShadow::Type::kElevation12));
+  shadow_->shadow()->SetShadowStyle(gfx::ShadowStyle::kChromeOSSystemUI);
+  shadow_->SetRoundedCornerRadius(kMenuCornerRadius);
 }
 
 PowerButtonMenuView::~PowerButtonMenuView() = default;
@@ -74,30 +108,19 @@ void PowerButtonMenuView::FocusPowerOffButton() {
 void PowerButtonMenuView::ScheduleShowHideAnimation(bool show) {
   // Set initial state.
   SetVisible(true);
-  layer()->GetAnimator()->AbortAllAnimations();
 
-  ui::ScopedLayerAnimationSettings animation(layer()->GetAnimator());
-  animation.AddObserver(this);
-  animation.SetTweenType(show ? gfx::Tween::EASE_IN
-                              : gfx::Tween::FAST_OUT_LINEAR_IN);
-  animation.SetTransitionDuration(kMenuAnimationDuration);
-  animation.SetPreemptionStrategy(
-      ui::LayerAnimator::IMMEDIATELY_ANIMATE_TO_NEW_TARGET);
-  layer()->SetOpacity(show ? 1.0f : 0.f);
-
-  // Animation of the menu view bounds change.
+  // Calculate transform of menu view and shadow bounds.
+  gfx::Transform transform;
   if (show) {
-    gfx::Transform transform;
     TransformDisplacement transform_displacement = GetTransformDisplacement();
     if (transform_displacement.direction == TransformDirection::X)
       transform.Translate(transform_displacement.distance, 0);
     else if (transform_displacement.direction == TransformDirection::Y)
       transform.Translate(0, transform_displacement.distance);
-
-    layer()->SetTransform(transform);
-  } else {
-    layer()->SetTransform(gfx::Transform());
   }
+
+  SetLayerAnimation(layer(), this, show, transform);
+  SetLayerAnimation(shadow_->shadow()->layer(), nullptr, show, transform);
 }
 
 PowerButtonMenuView::TransformDisplacement
