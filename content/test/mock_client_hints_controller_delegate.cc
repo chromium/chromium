@@ -2,13 +2,41 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "content/test/mock_client_hints_controller_delegate.h"
+#include "content/public/test/mock_client_hints_controller_delegate.h"
 
 #include "content/public/common/origin_util.h"
+#include "services/network/public/cpp/is_potentially_trustworthy.h"
 #include "third_party/blink/public/common/user_agent/user_agent_metadata.h"
 #include "url/gurl.h"
 
 namespace content {
+
+namespace {
+
+bool PersistClientHintsHelper(const GURL& url,
+                              const blink::EnabledClientHints& client_hints,
+                              ClientHintsContainer* container) {
+  DCHECK(container);
+  if (!network::IsUrlPotentiallyTrustworthy(url)) {
+    return false;
+  }
+  const url::Origin origin = url::Origin::Create(url);
+  (*container)[origin] = client_hints;
+  return true;
+}
+
+void GetAllowedClientHintsFromSourceHelper(
+    const url::Origin& origin,
+    const ClientHintsContainer& container,
+    blink::EnabledClientHints* client_hints) {
+  const auto& it = container.find(origin);
+  DCHECK(client_hints);
+  if (it != container.end()) {
+    *client_hints = it->second;
+  }
+}
+
+}  // namespace
 
 MockClientHintsControllerDelegate::MockClientHintsControllerDelegate(
     const blink::UserAgentMetadata& metadata)

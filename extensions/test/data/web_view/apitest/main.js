@@ -22,6 +22,7 @@ embedder.setUp_ = function(config) {
   embedder.windowOpenGuestURL = embedder.baseGuestURL + '/guest.html';
   embedder.sameDocumentNavigationURL =
       embedder.baseGuestURL + '/guest_same_document_navigation.html';
+  embedder.expectUserAgentURL = 'https://localhost:' + config.testServer.port + '/expect-user-agent';
 };
 
 window.runTest = function(testName) {
@@ -1943,6 +1944,21 @@ function testClosedShadowRoot() {
   document.body.appendChild(webview);
 }
 
+// Ensure that the 'setUserAgentOverride' function sets the correct User-Agent
+// request header and removes the values of User-Agent Client Hint headers
+function testSetUserAgentOverride() {
+  var webview = new WebView();
+  webview.setUserAgentOverride('foobar');
+
+  // Expectations are checked in the server.
+  webview.addEventListener('loadstop', () => {
+    embedder.test.succeed();
+  });
+
+  webview.setAttribute("src", embedder.expectUserAgentURL);
+  document.body.appendChild(webview);
+}
+
 // Tests end.
 
 embedder.test.testList = {
@@ -2021,6 +2037,7 @@ embedder.test.testList = {
   'testWebRequestAPIGoogleProperty': testWebRequestAPIGoogleProperty,
   'testCaptureVisibleRegion': testCaptureVisibleRegion,
   'testClosedShadowRoot': testClosedShadowRoot,
+  'testSetUserAgentOverride': testSetUserAgentOverride,
 };
 
 onload = function() {

@@ -1029,7 +1029,7 @@
       {
         "name": "setUserAgentOverride",
         "type": "function",
-        "description": "Override the user agent string used by the <code>webview</code> for guest page requests.",
+        "description": "Override the user agent string used by the <code>webview</code> for guest page requests. Overriding will cause the User-Agent Client Hint header values and the values returned by <code>navigator.userAgentData</code> to be empty for guest page requests this override is applied to.",
         "parameters": [
           {
             "name": "userAgent",

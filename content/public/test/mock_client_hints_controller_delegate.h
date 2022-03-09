@@ -2,17 +2,19 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CONTENT_TEST_MOCK_CLIENT_HINTS_CONTROLLER_DELEGATE_H_
-#define CONTENT_TEST_MOCK_CLIENT_HINTS_CONTROLLER_DELEGATE_H_
+#ifndef CONTENT_PUBLIC_TEST_MOCK_CLIENT_HINTS_CONTROLLER_DELEGATE_H_
+#define CONTENT_PUBLIC_TEST_MOCK_CLIENT_HINTS_CONTROLLER_DELEGATE_H_
 
 #include "content/public/browser/client_hints_controller_delegate.h"
-#include "content/test/mock_client_hints_utils.h"
 #include "services/network/public/cpp/network_quality_tracker.h"
 #include "third_party/blink/public/common/client_hints/enabled_client_hints.h"
 #include "third_party/blink/public/common/user_agent/user_agent_metadata.h"
 #include "url/origin.h"
 
 namespace content {
+
+using ClientHintsContainer =
+    std::map<const url::Origin, blink::EnabledClientHints>;
 
 class MockClientHintsControllerDelegate : public ClientHintsControllerDelegate {
  public:
@@ -56,4 +58,4 @@ class MockClientHintsControllerDelegate : public ClientHintsControllerDelegate {
 };
 }  // end namespace content
 
-#endif  // CONTENT_TEST_MOCK_CLIENT_HINTS_CONTROLLER_DELEGATE_H_
+#endif  // CONTENT_PUBLIC_TEST_MOCK_CLIENT_HINTS_CONTROLLER_DELEGATE_H_

@@ -14,12 +14,15 @@
 #include "base/path_service.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
+#include "base/test/metrics/histogram_tester.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/threading/thread_restrictions.h"
 #include "build/build_config.h"
 #include "components/guest_view/browser/guest_view_manager.h"
 #include "components/guest_view/browser/guest_view_manager_delegate.h"
 #include "components/guest_view/browser/guest_view_manager_factory.h"
 #include "components/guest_view/browser/test_guest_view_manager.h"
+#include "content/public/browser/browser_context.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/render_view_host.h"
@@ -27,6 +30,7 @@
 #include "content/public/common/content_switches.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/hit_test_region_observer.h"
+#include "content/public/test/mock_client_hints_controller_delegate.h"
 #include "content/public/test/no_renderer_crashes_assertion.h"
 #include "content/public/test/test_renderer_host.h"
 #include "content/public/test/test_utils.h"
@@ -39,6 +43,7 @@
 #include "extensions/common/extension_paths.h"
 #include "extensions/common/switches.h"
 #include "extensions/shell/browser/desktop_controller.h"
+#include "extensions/shell/browser/shell_browser_context.h"
 #include "extensions/shell/browser/shell_content_browser_client.h"
 #include "extensions/shell/browser/shell_extension_system.h"
 #include "extensions/shell/test/shell_test.h"
@@ -50,7 +55,9 @@
 #include "net/test/embedded_test_server/http_request.h"
 #include "net/test/embedded_test_server/http_response.h"
 #include "services/network/public/cpp/features.h"
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/switches.h"
+#include "third_party/blink/public/common/user_agent/user_agent_metadata.h"
 #include "ui/display/display_switches.h"
 
 #if defined(USE_AURA)
@@ -67,13 +74,14 @@ const char kRedirectResponsePath[] = "/server-redirect";
 const char kRedirectResponseFullPath[] = "/guest_redirect.html";
 const char kUserAgentRedirectResponsePath[] = "/detect-user-agent";
 const char kTestServerPort[] = "testServer.port";
+const char kExpectUserAgentPath[] = "/expect-user-agent";
 
 // Handles |request| by serving a redirect response if the |User-Agent| is
 // foobar.
-static std::unique_ptr<net::test_server::HttpResponse> UserAgentResponseHandler(
-    const std::string& path,
-    const GURL& redirect_target,
-    const net::test_server::HttpRequest& request) {
+static std::unique_ptr<net::test_server::HttpResponse>
+UserAgentRedirectResponseHandler(const std::string& path,
+                                 const GURL& redirect_target,
+                                 const net::test_server::HttpRequest& request) {
   if (!base::StartsWith(path, request.relative_url,
                         base::CompareCase::SENSITIVE)) {
     return nullptr;
@@ -88,6 +96,30 @@ static std::unique_ptr<net::test_server::HttpResponse> UserAgentResponseHandler(
       new net::test_server::BasicHttpResponse);
   http_response->set_code(net::HTTP_MOVED_PERMANENTLY);
   http_response->AddCustomHeader("Location", redirect_target.spec());
+  return std::move(http_response);
+}
+
+static std::unique_ptr<net::test_server::HttpResponse>
+ExpectUserAgentResponseHandler(const std::string& path,
+                               const net::test_server::HttpRequest& request) {
+  if (!base::StartsWith(path, request.relative_url,
+                        base::CompareCase::SENSITIVE)) {
+    return nullptr;
+  }
+
+  auto it = request.headers.find("User-Agent");
+  EXPECT_TRUE(it != request.headers.end());
+  EXPECT_TRUE(
+      base::StartsWith("foobar", it->second, base::CompareCase::SENSITIVE));
+
+  it = request.headers.find("Sec-CH-UA-Platform");
+  EXPECT_TRUE(it != request.headers.end());
+  EXPECT_EQ("\"\"", it->second);
+
+  std::unique_ptr<net::test_server::BasicHttpResponse> http_response(
+      new net::test_server::BasicHttpResponse);
+  http_response->set_code(net::HTTP_OK);
+  http_response->set_content_type("html/text");
   return std::move(http_response);
 }
 
@@ -238,7 +270,7 @@ void WebViewAPITest::StartTestServer(const std::string& app_location) {
       base::BindRepeating(&EmptyResponseHandler, kEmptyResponsePath));
 
   embedded_test_server()->RegisterRequestHandler(base::BindRepeating(
-      &UserAgentResponseHandler, kUserAgentRedirectResponsePath,
+      &UserAgentRedirectResponseHandler, kUserAgentRedirectResponsePath,
       embedded_test_server()->GetURL(kRedirectResponseFullPath)));
 
   net::test_server::RegisterDefaultHandlers(embedded_test_server());
@@ -865,6 +897,46 @@ IN_PROC_BROWSER_TEST_F(WebViewAPITest, TestNoUserCodeFocus) {
 
 IN_PROC_BROWSER_TEST_F(WebViewAPITest, TestClosedShadowRoot) {
   RunTest("testClosedShadowRoot", "web_view/apitest");
+}
+
+class WebViewAPITestUserAgentOverride
+    : public WebViewAPITest {
+ public:
+  void SetUp() override {
+    scoped_feature_list_.InitAndEnableFeature(
+        blink::features::kUserAgentOverrideExperiment);
+    WebViewAPITest::SetUp();
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(WebViewAPITestUserAgentOverride, TestSetUserAgentOverride) {
+  blink::UserAgentMetadata ua_metadata;
+  ua_metadata.platform = "foobar";
+  content::MockClientHintsControllerDelegate client_hints_controller_delegate(
+      ua_metadata);
+
+  static_cast<ShellBrowserContext*>(
+      ShellContentBrowserClient::Get()->GetBrowserContext())
+      ->set_client_hints_controller_delegate(&client_hints_controller_delegate);
+
+  // The 'Sec-CH-UA' header is only sent over HTTPS
+  net::test_server::EmbeddedTestServer https_server(
+      net::test_server::EmbeddedTestServer::TYPE_HTTPS);
+  https_server.RegisterRequestHandler(base::BindRepeating(
+      &ExpectUserAgentResponseHandler, kExpectUserAgentPath));
+  https_server.SetSSLConfig(
+      net::test_server::EmbeddedTestServer::CERT_COMMON_NAME_IS_DOMAIN);
+  ASSERT_TRUE(https_server.Start());
+  base::HistogramTester histogram;
+  test_config_.SetIntPath(kTestServerPort, https_server.port());
+  RunTest("testSetUserAgentOverride", "web_view/apitest");
+  content::FetchHistogramsFromChildProcesses();
+  histogram.ExpectBucketCount(
+      blink::UserAgentOverride::kUserAgentOverrideHistogram,
+      blink::UserAgentOverride::UserAgentOverriden, 1);
 }
 
 }  // namespace extensions
