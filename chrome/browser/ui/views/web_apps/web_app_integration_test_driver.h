@@ -77,7 +77,6 @@ struct AppState {
            const apps::RunOnOsLoginMode& run_on_os_login_mode,
            const blink::mojom::DisplayMode& effective_display_mode,
            const blink::mojom::DisplayMode& user_display_mode,
-           const std::string& manifest_install_icon,
            bool is_installed_locally,
            bool is_shortcut_created);
   ~AppState();
@@ -91,7 +90,6 @@ struct AppState {
   apps::RunOnOsLoginMode run_on_os_login_mode;
   blink::mojom::DisplayMode effective_display_mode;
   blink::mojom::DisplayMode user_display_mode;
-  std::string manifest_install_icon;
   bool is_installed_locally;
   bool is_shortcut_created;
 };
@@ -178,7 +176,6 @@ class WebAppIntegrationTestDriver : WebAppInstallManagerObserver {
   void NavigatePwaSiteATo(const std::string& site_mode);
   void NavigateNotfoundUrl();
   void NavigateTabbedBrowserToSite(const GURL& url);
-  void ManifestUpdateIcon(const std::string& site_mode);
   void ManifestUpdateTitle(const std::string& site_mode);
   void ManifestUpdateDisplayBrowser(const std::string& site_mode);
   void ManifestUpdateDisplayMinimal(const std::string& site_mode);
@@ -204,7 +201,6 @@ class WebAppIntegrationTestDriver : WebAppInstallManagerObserver {
   void CheckBrowserNavigationIsAppSettings(const std::string& site_mode);
   void CheckAppSettingsAppState(const std::string& site_mode);
   void CheckAppNotInList(const std::string& site_mode);
-  void CheckAppIconSiteA(const std::string& color);
   void CheckAppTitleSiteA(const std::string& title);
   void CheckAppWindowMode(const std::string& site_mode,
                           apps::WindowMode window_mode);
