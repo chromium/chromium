@@ -161,6 +161,16 @@ AxisEdge CrossAxisStaticPositionEdge(const ComputedStyle& style,
 // We are interested in cases where the flex item *may* expand due to
 // fragmentation (lines pushed down by a fragmentation line, etc).
 bool MinBlockSizeShouldEncompassIntrinsicSize(const NGFlexItem& item) {
+  // If this item has (any) descendant that is percentage based, we can end
+  // up in a situation where we'll constantly try and expand the row. E.g.
+  // <div style="display: flex;">
+  //   <div style="min-height: 100px;">
+  //     <div style="height: 200%;"></div>
+  //   </div>
+  // </div>
+  if (item.has_descendant_that_depends_on_percentage_block_size)
+    return false;
+
   if (item.ng_input_node.IsMonolithic())
     return false;
 
@@ -1171,6 +1181,9 @@ NGLayoutResult::EStatus NGFlexLayoutAlgorithm::GiveItemsFinalPositionAndSize(
         DCHECK(item);
         layout_result = item->layout_result_;
       }
+
+      flex_item.has_descendant_that_depends_on_percentage_block_size =
+          layout_result->HasDescendantThatDependsOnPercentageBlockSize();
 
       // The break-before and break-after values of flex items in a flex row are
       // propagated to the row itself. Accumulate the BreakBetween values for
