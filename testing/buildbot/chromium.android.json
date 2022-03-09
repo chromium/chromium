@@ -24884,6 +24884,10 @@
     ]
   },
   "android-cronet-x86-dbg-10-tests": {
+    "additional_compile_targets": [
+      "cronet_package",
+      "cronet_perf_test_apk"
+    ],
     "gtest_tests": [
       {
         "args": [
@@ -25348,6 +25352,57 @@
         },
         "test": "net_unittests",
         "test_id_prefix": "ninja://net:net_unittests/"
+      }
+    ],
+    "isolated_scripts": [
+      {
+        "args": [
+          "--avd-config=../../tools/android/avd/proto/generic_android29.textpb"
+        ],
+        "isolate_name": "cronet_sizes",
+        "merge": {
+          "script": "//tools/perf/process_perf_results.py"
+        },
+        "name": "cronet_sizes",
+        "resultdb": {
+          "enable": true,
+          "has_native_resultdb_integration": true
+        },
+        "swarming": {
+          "can_use_on_swarming_builders": true,
+          "cipd_packages": [
+            {
+              "cipd_package": "infra/tools/luci/logdog/butler/${platform}",
+              "location": "bin",
+              "revision": "git_revision:ff387eadf445b24c935f1cf7d6ddd279f8a6b04c"
+            }
+          ],
+          "dimension_sets": [
+            {
+              "cpu": "x86-64",
+              "device_os": null,
+              "device_type": null,
+              "machine_type": "n1-standard-4|e2-standard-4",
+              "os": "Ubuntu-16.04|Ubuntu-18.04",
+              "pool": "chromium.tests.avd"
+            }
+          ],
+          "named_caches": [
+            {
+              "name": "generic_android29",
+              "path": ".android_emulator/generic_android29"
+            }
+          ],
+          "optional_dimensions": {
+            "60": [
+              {
+                "caches": "generic_android29"
+              }
+            ]
+          },
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
+        },
+        "test_id_prefix": "ninja://components/cronet/android:cronet_sizes/"
       }
     ]
   },
