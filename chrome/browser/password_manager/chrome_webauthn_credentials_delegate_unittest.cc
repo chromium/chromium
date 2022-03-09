@@ -76,6 +76,13 @@ class ChromeWebAuthnCredentialsDelegateTest
     ChromeRenderViewHostTestHarness::TearDown();
   }
 
+  void SetUserList(std::vector<device::PublicKeyCredentialUserEntity> users) {
+    dialog_model()->StartFlow(
+        AuthenticatorRequestDialogModel::TransportAvailabilityInfo(),
+        /*use_location_bar_bubble=*/true, /*prefer_native_api=*/false);
+    dialog_model()->ReplaceUserListForTesting(users);
+  }
+
   raw_ptr<AuthenticatorRequestDialogModel> dialog_model() {
     return authenticator_request_delegate_->GetDialogModelForTesting();
   }
@@ -95,7 +102,7 @@ TEST_F(ChromeWebAuthnCredentialsDelegateTest, RetrieveCredentials) {
   users.emplace_back(device::PublicKeyCredentialUserEntity(
       UserId2(), UserName2(), DisplayName2(), absl::nullopt));
 
-  dialog_model()->ReplaceUserListForTesting(users);
+  SetUserList(users);
 
   credentials_delegate_->RetrieveWebAuthnSuggestions(base::BindOnce([]() {}));
   task_environment()->RunUntilIdle();
@@ -127,7 +134,7 @@ TEST_F(ChromeWebAuthnCredentialsDelegateTest,
   users.emplace_back(device::PublicKeyCredentialUserEntity(
       UserId1(), UserName1(), std::string(), absl::nullopt));
 
-  dialog_model()->ReplaceUserListForTesting(users);
+  SetUserList(users);
 
   credentials_delegate_->RetrieveWebAuthnSuggestions(base::BindOnce([]() {}));
   task_environment()->RunUntilIdle();
@@ -147,7 +154,7 @@ TEST_F(ChromeWebAuthnCredentialsDelegateTest,
   users.emplace_back(device::PublicKeyCredentialUserEntity(
       UserId1(), absl::nullopt, DisplayName1(), absl::nullopt));
 
-  dialog_model()->ReplaceUserListForTesting(users);
+  SetUserList(users);
 
   credentials_delegate_->RetrieveWebAuthnSuggestions(base::BindOnce([]() {}));
   task_environment()->RunUntilIdle();
@@ -164,7 +171,7 @@ TEST_F(ChromeWebAuthnCredentialsDelegateTest, SelectCredential) {
   users.emplace_back(device::PublicKeyCredentialUserEntity(
       UserId1(), UserName1(), DisplayName1(), absl::nullopt));
 
-  dialog_model()->ReplaceUserListForTesting(users);
+  SetUserList(users);
 
   credentials_delegate_->SelectWebAuthnCredential("1234");
 

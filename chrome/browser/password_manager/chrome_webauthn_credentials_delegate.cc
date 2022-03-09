@@ -47,17 +47,28 @@ ChromeWebAuthnCredentialsDelegate::GetWebAuthnSuggestions() const {
 
 void ChromeWebAuthnCredentialsDelegate::RetrieveWebAuthnSuggestions(
     base::OnceClosure callback) {
-#if !BUILDFLAG(IS_ANDROID)
+  retrieve_suggestions_callback_ = std::move(callback);
+
+#if BUILDFLAG(IS_ANDROID)
+  std::move(retrieve_suggestions_callback_).Run();
+#else
   ChromeAuthenticatorRequestDelegate* authenticator_delegate =
       AuthenticatorRequestScheduler::GetRequestDelegate(
           client_->web_contents());
   if (!authenticator_delegate) {
-    std::move(callback).Run();
+    std::move(retrieve_suggestions_callback_).Run();
     return;
   }
+  authenticator_delegate->dialog_model()->GetCredentialListForConditionalUi(
+      base::BindOnce(&ChromeWebAuthnCredentialsDelegate::OnCredentialsReceived,
+                     weak_ptr_factory_.GetWeakPtr()));
+#endif
+}
+
+void ChromeWebAuthnCredentialsDelegate::OnCredentialsReceived(
+    const std::vector<device::PublicKeyCredentialUserEntity>& credentials) {
   std::vector<autofill::Suggestion> suggestions;
-  for (const auto& credential :
-       authenticator_delegate->dialog_model()->users()) {
+  for (const auto& credential : credentials) {
     std::u16string name;
     if (credential.display_name && !credential.display_name->empty()) {
       name = base::UTF8ToUTF16(*credential.display_name);
@@ -77,7 +88,5 @@ void ChromeWebAuthnCredentialsDelegate::RetrieveWebAuthnSuggestions(
     suggestions.push_back(std::move(suggestion));
   }
   suggestions_ = std::move(suggestions);
-#endif
-
-  std::move(callback).Run();
+  std::move(retrieve_suggestions_callback_).Run();
 }

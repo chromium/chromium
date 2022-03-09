@@ -481,6 +481,12 @@ class AuthenticatorRequestDialogModel {
   // SetCurrentStepForTesting forces the model to the specified step.
   void SetCurrentStepForTesting(Step step);
 
+  void ReplaceUserListForTesting(
+      std::vector<device::PublicKeyCredentialUserEntity> users);
+  absl::optional<device::PublicKeyCredentialUserEntity>
+
+  GetPreselectedAccountForTesting();
+
   ObservableAuthenticatorList& saved_authenticators() {
     return ephemeral_state_.saved_authenticators_;
   }
@@ -518,6 +524,13 @@ class AuthenticatorRequestDialogModel {
   void RequestAttestationPermission(bool is_enterprise_attestation,
                                     base::OnceCallback<void(bool)> callback);
 
+  // If ephemeral_state_.users_ has been set, this invokes the callback
+  // immediately with the user list. If not, it waits until a user list is
+  // obtained from processing a Conditional UI getAssertion request.
+  void GetCredentialListForConditionalUi(
+      base::OnceCallback<
+          void(const std::vector<device::PublicKeyCredentialUserEntity>&)>);
+
   const std::vector<device::PublicKeyCredentialUserEntity>& users() {
     return ephemeral_state_.users_;
   }
@@ -543,11 +556,6 @@ class AuthenticatorRequestDialogModel {
   const std::string& relying_party_id() const { return relying_party_id_; }
 
   bool offer_try_again_in_ui() const { return offer_try_again_in_ui_; }
-
-  void ReplaceUserListForTesting(
-      std::vector<device::PublicKeyCredentialUserEntity> users);
-  absl::optional<device::PublicKeyCredentialUserEntity>
-  GetPreselectedAccountForTesting();
 
   base::WeakPtr<AuthenticatorRequestDialogModel> GetWeakPtr();
 
@@ -713,6 +721,14 @@ class AuthenticatorRequestDialogModel {
   base::RepeatingCallback<void(size_t)> contact_phone_callback_;
 
   absl::optional<std::string> cable_qr_string_;
+
+  // Callback for a request for a Conditional UI user list. This is set when
+  // password manager sees an input field that will accept WebAuthn
+  // credentials, but the signing request has not yet been received from the
+  // renderer.
+  base::OnceCallback<void(
+      const std::vector<device::PublicKeyCredentialUserEntity>&)>
+      conditional_ui_user_list_callback_;
 
   base::WeakPtrFactory<AuthenticatorRequestDialogModel> weak_factory_{this};
 };

@@ -667,6 +667,17 @@ void AuthenticatorRequestDialogModel::RequestAttestationPermission(
                      : Step::kAttestationPermissionRequest);
 }
 
+void AuthenticatorRequestDialogModel::GetCredentialListForConditionalUi(
+    base::OnceCallback<void(
+        const std::vector<device::PublicKeyCredentialUserEntity>&)> callback) {
+  if (current_step() == Step::kLocationBarBubble) {
+    std::move(callback).Run(ephemeral_state_.users_);
+    return;
+  }
+
+  conditional_ui_user_list_callback_ = std::move(callback);
+}
+
 void AuthenticatorRequestDialogModel::set_cable_transport_info(
     absl::optional<bool> extension_is_v2,
     std::vector<PairedPhone> paired_phones,
@@ -822,8 +833,13 @@ void AuthenticatorRequestDialogModel::StartLocationBarBubbleRequest() {
   ephemeral_state_.users_ = {};
   for (const auto& user :
        transport_availability_.recognized_platform_authenticator_credentials) {
-    ephemeral_state_.users_.push_back(user);
+    ephemeral_state_.users_.emplace_back(user);
   }
+
+  if (conditional_ui_user_list_callback_) {
+    std::move(conditional_ui_user_list_callback_).Run(ephemeral_state_.users_);
+  }
+
   SetCurrentStep(Step::kLocationBarBubble);
 }
 
