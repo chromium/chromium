@@ -261,7 +261,7 @@ button:disabled,
 .menu-item.hover,
 .menu-item:focus {
   background-color: rgb(246, 145, 57);
-  color: #fff;
+  color: black;
 }
 
 .menu-item-title {
