@@ -295,6 +295,7 @@ void ModelExecutionManagerImpl::OnSegmentInfoFetchedForModelUpdate(
   // If we find an existing SegmentInfo in the database, we can verify that it
   // is valid, and we can copy over the PredictionResult to the new version
   // we are creating.
+  absl::optional<int64_t> old_model_version;
   if (old_segment_info.has_value()) {
     // The retrieved SegmentInfo's ID should match the one we looked up,
     // otherwise the DB has not upheld its contract.
@@ -311,12 +312,22 @@ void ModelExecutionManagerImpl::OnSegmentInfoFetchedForModelUpdate(
       auto* prediction_result = new_segment_info.mutable_prediction_result();
       prediction_result->CopyFrom(old_segment_info->prediction_result());
     }
+
+    if (old_segment_info->has_model_version()) {
+      old_model_version = old_segment_info->model_version();
+    }
   }
 
   // Inject the newly updated metadata into the new SegmentInfo.
   auto* new_metadata = new_segment_info.mutable_model_metadata();
   new_metadata->CopyFrom(metadata);
   new_segment_info.set_model_version(model_version);
+
+  if (!old_model_version.has_value() ||
+      old_model_version.value() != model_version) {
+    new_segment_info.set_model_update_time_s(
+        clock_->Now().ToDeltaSinceWindowsEpoch().InSeconds());
+  }
 
   // We have a valid segment id, and the new metadata was valid, therefore the
   // new metadata should be valid. We are not allowed to invoke the callback

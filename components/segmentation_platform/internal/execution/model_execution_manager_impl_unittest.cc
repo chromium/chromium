@@ -283,6 +283,10 @@ TEST_F(ModelExecutionManagerTest, OnSegmentationModelUpdatedNoOldMetadata) {
 
   // The metadata should have been stored.
   EXPECT_EQ(42u, segment_info_from_db->model_metadata().bucket_duration());
+
+  // Model update time should be updated.
+  EXPECT_EQ(clock_.Now().ToDeltaSinceWindowsEpoch().InSeconds(),
+            segment_info_from_db->model_update_time_s());
 }
 
 TEST_F(ModelExecutionManagerTest,
@@ -369,6 +373,8 @@ TEST_F(ModelExecutionManagerTest,
   segment_database_->GetSegmentInfo(segment_id, db_callback_2.Get());
   EXPECT_TRUE(segment_info_from_db_2.has_value());
   EXPECT_EQ(segment_id, segment_info_from_db_2->segment_id());
+  EXPECT_EQ(clock_.Now().ToDeltaSinceWindowsEpoch().InSeconds(),
+            segment_info_from_db_2->model_update_time_s());
 
   // The metadata should have been updated.
   EXPECT_EQ(42u, segment_info_from_db_2->model_metadata().bucket_duration());
