@@ -341,40 +341,10 @@ Polymer({
     return state1 === state2;
   },
 
-  /**
-   * @param {State} state
-   * @return {boolean}
-   * @private
-   */
-  isProgressMessageHidden_(state) {
-    return this.isState_(this.state_, State.PROMPT) ||
-        this.isState_(this.state_, State.UPGRADE_ERROR) ||
-        this.isState_(this.state_, State.OFFER_RESTORE);
-  },
-
   isErrorLogsHidden_(state) {
     return !(
         this.isState_(this.state_, State.UPGRADE_ERROR) ||
         this.isState_(this.state_, State.OFFER_RESTORE));
-  },
-
-  isLogsMessageHidden_(state) {
-    return !(
-        this.isState_(this.state_, State.UPGRADE_ERROR) ||
-        this.isState_(this.state_, State.OFFER_RESTORE) ||
-        this.isState_(this.state_, State.SUCCEEDED));
-  },
-
-  getLogMessage_(state, file_name) {
-    switch (state) {
-      case State.SUCCEEDED:
-        return loadTimeData.getStringF('logFileMessageSuccess', file_name);
-      case State.UPGRADE_ERROR:
-      case State.OFFER_RESTORE:
-        return loadTimeData.getStringF('logFileMessageError', file_name);
-      default:
-        return '';
-    }
   },
 
   /**
@@ -503,7 +473,7 @@ Polymer({
    * @return {string}
    * @private
    */
-  getProgressMessage_(state, precheckStatus) {
+  getProgressMessage_(state, precheckStatus, file_name) {
     let messageId = null;
     switch (state) {
       case State.PROMPT:
@@ -514,9 +484,6 @@ Polymer({
         break;
       case State.BACKUP_ERROR:
         messageId = 'backupErrorMessage';
-        break;
-      case State.BACKUP_SUCCEEDED:
-        messageId = 'backupSucceededMessage';
         break;
       case State.PRECHECKS_FAILED:
         switch (precheckStatus) {
@@ -534,20 +501,18 @@ Polymer({
       case State.UPGRADING:
         messageId = 'upgradingMessage';
         break;
-      case State.CANCELING:
-        messageId = 'cancelingMessage';
-        break;
       case State.RESTORE:
         messageId = 'restoreMessage';
         break;
       case State.RESTORE_ERROR:
         messageId = 'restoreErrorMessage';
         break;
-      case State.RESTORE_SUCCEEDED:
-        messageId = 'restoreSucceededMessage';
-        break;
       case State.SUCCEEDED:
-        messageId = 'succeededMessage';
+        return loadTimeData.getStringF('logFileMessageSuccess', file_name);
+        break;
+      case State.UPGRADE_ERROR:
+      case State.OFFER_RESTORE:
+        return loadTimeData.getStringF('logFileMessageError', file_name);
         break;
     }
     return messageId ? loadTimeData.getString(messageId) : '';

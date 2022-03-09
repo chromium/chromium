@@ -101,17 +101,15 @@
   <div id="status-container" role="status" aria-atomic="false">
     <div id="main-title">[[getTitle_(state_)]]</div>
 
-    <!-- Prompt message.  Has Learn More link.-->
-    <div id="prompt-message" hidden="[[!isState_(state_, State.PROMPT)]]">
-      <span>[[getProgressMessage_(state_, precheckStatus_)]] </span>
-      <a href="$i18n{learnMoreUrl}" target="_blank">$i18n{learnMore}</a>
-    </div>
-    <!-- Progress message. -->
-    <div id="progress-message" hidden="[[isProgressMessageHidden_(state_)]]">
-      <span>[[getProgressMessage_(state_, precheckStatus_)]]</span>
+    <!-- Prompt/Progress message. Use inner-h-t-m-l because some
+         messages contain links. -->
+    <div id="progress-message">
+      <span inner-h-t-m-l=
+            "[[getProgressMessage_(state_, precheckStatus_, logFileName_)]]">
+      </span>
       <!-- Progress submessage. -->
       <div id = "progress-submessage"
-          hidden="[[!isState_(state_, State.UPGRADING)]]">
+           hidden="[[!isState_(state_, State.UPGRADING)]]">
         <span>[[lastProgressLine_]]</span>
       </div>
     </div>
@@ -143,9 +141,6 @@
   <img id="[[getIllustrationStyle_(state_)]]"
       src="[[getIllustrationURI_(state_)]]" alt=""
       hidden="[[hideIllustration_(state_)]]">
-  <div id="log-storage-message-error" hidden="[[isLogsMessageHidden_(state_)]]">
-    <span>[[getLogMessage_(state_, logFileName_)]]</span>
-  </div>
   <div id="backup-checkbox" hidden="[[!isState_(state_, State.PROMPT)]]">
     <cr-checkbox checked="{{backupCheckboxChecked_}}" >
       <p class="checkbox-text">

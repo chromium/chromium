@@ -134,7 +134,7 @@ suite('<crostini-upgrader-app>', () => {
   };
 
   test('upgradeFlow', async () => {
-    expectFalse(app.$$('#prompt-message').hidden);
+    expectFalse(getProgressMessage().hidden);
     expectEquals(fakeBrowserProxy.handler.getCallCount('backup'), 0);
 
     // The page will not register that backup has started until the first
@@ -178,7 +178,7 @@ suite('<crostini-upgrader-app>', () => {
   });
 
   test('upgradeFlowFailureOffersRestore', async () => {
-    expectFalse(app.$$('#prompt-message').hidden);
+    expectFalse(getProgressMessage().hidden);
     expectEquals(fakeBrowserProxy.handler.getCallCount('backup'), 0);
 
     // The page will not register that backup has started until the first
