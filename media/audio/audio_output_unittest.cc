@@ -160,10 +160,13 @@ TEST_P(AudioOutputTest, Play200HzTone) {
 
   // Play the stream until position gets past |samples_to_play|.
   base::RunLoop run_loop;
-  source.set_on_more_data_callback(
-      base::BindLambdaForTesting([&source, &run_loop, samples_to_play]() {
-        if (source.pos_samples() >= samples_to_play)
+  bool got_enough_samples = false;
+  source.set_on_more_data_callback(base::BindLambdaForTesting(
+      [&source, &run_loop, samples_to_play, &got_enough_samples]() {
+        if (source.pos_samples() >= samples_to_play && !got_enough_samples) {
+          got_enough_samples = true;
           run_loop.Quit();
+        }
       }));
   base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
       FROM_HERE, run_loop.QuitClosure(), TestTimeouts::action_timeout());
