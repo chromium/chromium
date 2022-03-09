@@ -687,6 +687,8 @@ module.exports = {
 
     'cca/generic-parameter-on-declaration-type': 'error',
 
+    'cca/todo-format': 'error',
+
     // go/tsstyle#constructors
     'new-parens': 'error',
 

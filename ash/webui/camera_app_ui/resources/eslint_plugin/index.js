@@ -70,10 +70,36 @@ const genericParameterOnDeclarationType = {
   },
 };
 
+const todoFormatRule = {
+  create: (context) => {
+    function verifyTodo(comment) {
+      return !/TODO(?!\((b\/\d+|crbug\.com\/\d+|[a-z]+)\))/g.test(comment);
+    }
+
+    const sourceCode = context.getSourceCode();
+    return {
+      /* eslint-disable-next-line @typescript-eslint/naming-convention */
+      Program: function() {
+        const comments = sourceCode.getAllComments();
+        for (const comment of comments) {
+          const commentValue = comment.value;
+          if (!verifyTodo(commentValue)) {
+            context.report({
+              node: comment,
+              message: `Use: TODO(ldap) / TODO(b/123) / TODO(crbug.com/123)`,
+            });
+          }
+        }
+      },
+    };
+  },
+};
+
 /* global module */
 module.exports = {
   rules: {
     'parameter-comment-format': parameterCommentFormatRule,
     'generic-parameter-on-declaration-type': genericParameterOnDeclarationType,
+    'todo-format': todoFormatRule,
   },
 };
