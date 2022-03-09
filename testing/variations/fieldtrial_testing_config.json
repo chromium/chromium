@@ -3558,25 +3558,6 @@
             ]
         }
     ],
-    "IOSFeedPreview": [
-        {
-            "platforms": [
-                "ios"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled_Preview_20220124",
-                    "params": {
-                        "DiscoverFeedIsNativeUIEnabled": "true"
-                    },
-                    "enable_features": [
-                        "DiscoverFeedInNtp",
-                        "EnableDiscoverFeedPreview"
-                    ]
-                }
-            ]
-        }
-    ],
     "IOSKeepsRenderProcessAlive": [
         {
             "platforms": [

@@ -37,7 +37,7 @@ class ContentSettingsTableViewControllerTest
   std::unique_ptr<TestBrowser> browser_;
 };
 
-// Tests that there are 2 items in Content Settings.
+// Tests that there are 3 items in Content Settings.
 TEST_F(ContentSettingsTableViewControllerTest,
        TestModelWithLanguageSettingsUI) {
   CreateController();
@@ -45,7 +45,7 @@ TEST_F(ContentSettingsTableViewControllerTest,
   CheckTitleWithId(IDS_IOS_CONTENT_SETTINGS_TITLE);
 
   ASSERT_EQ(1, NumberOfSections());
-  ASSERT_EQ(2, NumberOfItemsInSection(0));
+  ASSERT_EQ(3, NumberOfItemsInSection(0));
   CheckDetailItemTextWithIds(IDS_IOS_BLOCK_POPUPS, IDS_IOS_SETTING_ON, 0, 0);
 }
 

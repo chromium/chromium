@@ -11,7 +11,7 @@
 #endif
 
 const base::Feature kEnableDiscoverFeedPreview{
-    "EnableDiscoverFeedPreview", base::FEATURE_DISABLED_BY_DEFAULT};
+    "EnableDiscoverFeedPreview", base::FEATURE_ENABLED_BY_DEFAULT};
 
 const base::Feature kEnableDiscoverFeedAppFlows{
     "EnableDiscoverFeedAppFlows", base::FEATURE_DISABLED_BY_DEFAULT};
