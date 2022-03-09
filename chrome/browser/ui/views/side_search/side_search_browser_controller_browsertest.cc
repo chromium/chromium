@@ -62,9 +62,10 @@ GURL GetFilteredURL(const GURL& url) {
 // Note we clear away the port here since google_util::IsGoogleSearchUrl does
 // not allow arbitrary ports in the url but the EmbeddedTestServer requires us
 // to use URLs with the specific non-standard port it listens on.
-// TODO(tluk): Eliminate the Google specific nature of both of these. We should
-// be able to update tests to use URLs that satisfy a combination of the below
-// two checks without needing such complicated and specific logic.
+// TODO(crbug.com/1304513): Eliminate the Google specific nature of both of
+// these. We should be able to update tests to use URLs that satisfy a
+// combination of the below two checks without needing such complicated and
+// specific logic.
 bool ShouldNavigateInSidePanel(const GURL& url) {
   return google_util::IsGoogleSearchUrl(GetFilteredURL(url));
 }
@@ -78,8 +79,8 @@ bool CanShowSidePanelForURL(const GURL& url) {
 
 }  // namespace
 
-// TODO(tluk): Refactor out google specific references and have this apply
-// more generically to DSEs.
+// TODO(crbug.com/1304513): Refactor out google specific references and have
+// this apply more generically to DSEs.
 class SideSearchBrowserControllerTest : public InProcessBrowserTest {
  public:
   // InProcessBrowserTest:
@@ -98,7 +99,9 @@ class SideSearchBrowserControllerTest : public InProcessBrowserTest {
 
     InProcessBrowserTest::SetUpOnMainThread();
     auto* config = SideSearchConfig::Get(browser()->profile());
-    config->SetShouldNavigateInSidePanelCalback(
+    // TODO(crbug.com/1304513): Update test to avoid Google specific behavior.
+    config->ApplyGoogleSearchConfigurationForTesting();
+    config->SetShouldNavigateInSidePanelCallback(
         base::BindRepeating(ShouldNavigateInSidePanel));
     config->SetCanShowSidePanelForURLCallback(
         base::BindRepeating(CanShowSidePanelForURL));
@@ -753,7 +756,7 @@ class SideSearchExtensionsTest : public SideSearchBrowserControllerTest {
     // We want all navigations to be routed through the side panel for the
     // purposes of testing extension support.
     auto* config = SideSearchConfig::Get(browser()->profile());
-    config->SetShouldNavigateInSidePanelCalback(
+    config->SetShouldNavigateInSidePanelCallback(
         base::BindRepeating([](const GURL& url) { return true; }));
     config->SetCanShowSidePanelForURLCallback(
         base::BindRepeating([](const GURL& url) { return true; }));

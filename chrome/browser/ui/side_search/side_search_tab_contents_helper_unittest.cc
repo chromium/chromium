@@ -52,7 +52,10 @@ class SideSearchTabContentsHelperTest : public ::testing::Test {
     SideSearchTabContentsHelper::CreateForWebContents(web_contents_.get());
     helper()->SetSidePanelContentsForTesting(
         content::WebContentsTester::CreateTestWebContents(&profile_, nullptr));
-    SideSearchConfig::Get(&profile_)->set_is_side_panel_srp_available(true);
+    auto* config = SideSearchConfig::Get(&profile_);
+    config->set_is_side_panel_srp_available(true);
+    // TODO(crbug.com/1304513): Update test to avoid Google specific behavior.
+    config->ApplyGoogleSearchConfigurationForTesting();
     Test::SetUp();
   }
 

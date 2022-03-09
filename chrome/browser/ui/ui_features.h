@@ -71,6 +71,7 @@ extern const base::Feature kSidePanelDragAndDrop;
 extern const base::Feature kSideSearch;
 extern const base::Feature kSideSearchClearCacheWhenClosed;
 extern const base::Feature kSideSearchFeedback;
+extern const base::Feature kSideSearchDSESupport;
 #endif  // BUILDFLAG(ENABLE_SIDE_SEARCH)
 
 extern const base::Feature kTabGroupsAutoCreate;

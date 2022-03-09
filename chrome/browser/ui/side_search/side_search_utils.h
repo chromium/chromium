@@ -60,6 +60,10 @@ void SetSideSearchTabStateFromRestoreData(
 // side search feature.
 bool IsSidePanelWebContents(content::WebContents* web_contents);
 
+// Returns true if side search with DSE support for participating search engines
+// is enabled.
+bool IsDSESupportEnabled(const Profile* profile);
+
 }  // namespace side_search
 
 bool IsSideSearchEnabled(const Profile* profile);

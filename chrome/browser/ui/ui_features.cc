@@ -101,6 +101,13 @@ const base::Feature kSideSearchClearCacheWhenClosed{
 
 const base::Feature kSideSearchFeedback{"SideSearchFeedback",
                                         base::FEATURE_DISABLED_BY_DEFAULT};
+
+// Controls whether the Side Search feature is configured to support any
+// participating Chrome search engine. This should always be enabled with
+// kSideSearch on non-ChromeOS platforms.
+const base::Feature kSideSearchDSESupport{"SideSearchDSESupport",
+                                          base::FEATURE_DISABLED_BY_DEFAULT};
+
 #endif  // BUILDFLAG(ENABLE_SIDE_SEARCH)
 
 const base::Feature kSidePanelDragAndDrop{"SidePanelDragAndDrop",

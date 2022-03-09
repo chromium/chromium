@@ -12,14 +12,10 @@
 #include "content/public/browser/navigation_throttle.h"
 #include "content/public/browser/page_navigator.h"
 #include "content/public/browser/web_contents.h"
-#include "net/base/url_util.h"
 #include "third_party/blink/public/common/user_agent/user_agent_metadata.h"
 #include "url/gurl.h"
 
 namespace {
-
-constexpr char kSideSearchQueryParam[] = "sidesearch";
-constexpr char kSideSearchVersion[] = "1";
 
 #if !BUILDFLAG(IS_CHROMEOS)
 constexpr char kChromeOSUserAgent[] =
@@ -162,8 +158,7 @@ void SideSearchSideContentsHelper::LoadURL(const GURL& url) {
   if (web_contents()->GetLastCommittedURL() == url)
     return;
 
-  GURL side_search_url =
-      net::AppendQueryParameter(url, kSideSearchQueryParam, kSideSearchVersion);
+  const GURL side_search_url = GetConfig()->GenerateSideSearchURL(url);
   content::NavigationController::LoadURLParams load_url_params(side_search_url);
 
   // Fake the user agent on non ChromeOS systems to allow for development and

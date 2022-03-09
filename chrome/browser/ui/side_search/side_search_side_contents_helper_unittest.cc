@@ -8,6 +8,7 @@
 
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
+#include "chrome/browser/ui/side_search/side_search_config.h"
 #include "chrome/browser/ui/side_search/side_search_metrics.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/test/base/testing_profile.h"
@@ -68,6 +69,9 @@ class SideSearchSideContentsHelperTest : public ::testing::Test {
         content::WebContentsTester::CreateTestWebContents(&profile_, nullptr);
     SideSearchSideContentsHelper::CreateForWebContents(side_contents());
     helper()->SetDelegate(&delegate_);
+    // TODO(crbug.com/1304513): Update test to avoid Google specific behavior.
+    SideSearchConfig::Get(&profile_)
+        ->ApplyGoogleSearchConfigurationForTesting();
     Test::SetUp();
   }
 
