@@ -1195,16 +1195,20 @@ TEST_P(PartitionAllocTest, IsValidPtrDelta) {
   }
 }
 
-TEST_P(PartitionAllocTest, GetSlotStartMultiplePages) {
+// TODO(crbug.com/1217582): Disabled since the `real_size` is never set or set incorrectly.
+TEST_P(PartitionAllocTest, DISABLED_GetSlotStartMultiplePages) {
   // Find the smallest bucket with multiple PartitionPages.
   size_t real_size;
+  bool init_real_size = false;
   for (PartitionBucket<ThreadSafe>& bucket : allocator.root()->buckets) {
     if (bucket.num_system_pages_per_slot_span >
         NumSystemPagesPerPartitionPage()) {
       real_size = bucket.slot_size;
+      init_real_size = true;
       break;
     }
   }
+  ASSERT_TRUE(init_real_size);
 
   const size_t requested_size = real_size - kExtraAllocSize;
   // Double check we don't end up with 0 or negative size.
