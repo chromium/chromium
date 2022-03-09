@@ -1546,22 +1546,6 @@
             ]
         }
     ],
-    "CertificateTransparencyAndroid": [
-        {
-            "platforms": [
-                "android"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "CertificateTransparencyAndroid",
-                        "CertificateTransparencyComponentUpdater"
-                    ]
-                }
-            ]
-        }
-    ],
     "ChangeExtensionEventPageSuspendDelay": [
         {
             "platforms": [

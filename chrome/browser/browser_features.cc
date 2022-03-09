@@ -143,7 +143,7 @@ const base::Feature kWebUsbDeviceDetection{"WebUsbDeviceDetection",
 #if BUILDFLAG(IS_ANDROID)
 // Enables Certificate Transparency on Android.
 const base::Feature kCertificateTransparencyAndroid{
-    "CertificateTransparencyAndroid", base::FEATURE_DISABLED_BY_DEFAULT};
+    "CertificateTransparencyAndroid", base::FEATURE_ENABLED_BY_DEFAULT};
 #endif
 
 const base::Feature kLargeFaviconFromGoogle{"LargeFaviconFromGoogle",
