@@ -1116,6 +1116,11 @@ const base::Feature kProjectorAppDebug{"ProjectorAppDebug",
 const base::Feature kProjectorExcludeTranscript{
     "ProjectorExcludeTranscript", base::FEATURE_DISABLED_BY_DEFAULT};
 
+// Controls whether Projector's tutorial videos are displayed.
+const base::Feature kProjectorTutorialVideoView(
+    "ProjectorTutorialVideoView",
+    base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Controls whether the quick dim prototype is enabled.
 const base::Feature kQuickDim{"QuickDim", base::FEATURE_ENABLED_BY_DEFAULT};
 
@@ -1958,6 +1963,10 @@ bool IsProjectorAppDebugMode() {
 
 bool IsProjectorExcludeTranscriptEnabled() {
   return base::FeatureList::IsEnabled(kProjectorExcludeTranscript);
+}
+
+bool IsProjectorTutorialVideoViewEnabled() {
+  return base::FeatureList::IsEnabled(kProjectorTutorialVideoView);
 }
 
 bool IsQuickDimEnabled() {

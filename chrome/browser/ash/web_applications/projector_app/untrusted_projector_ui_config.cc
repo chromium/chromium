@@ -23,6 +23,8 @@ void ChromeUntrustedProjectorUIDelegate::PopulateLoadTimeData(
   source->AddBoolean("isDebugMode", ash::features::IsProjectorAppDebugMode());
   source->AddBoolean("isExcludeTranscriptEnabled",
                      ash::features::IsProjectorExcludeTranscriptEnabled());
+  source->AddBoolean("isTutorialVideoViewEnabled",
+                     ash::features::IsProjectorTutorialVideoViewEnabled());
 }
 
 UntrustedProjectorUIConfig::UntrustedProjectorUIConfig()
