@@ -128,10 +128,6 @@ void OomInterventionTabHelper::PrimaryMainFrameRenderProcessGone(
     return;
   }
 
-  // OOM crash is handled in OnForegroundOOMDetected().
-  if (status == base::TERMINATION_STATUS_OOM_PROTECTED)
-    return;
-
   if (near_oom_detected_time_) {
     ResetInterventionState();
   }
