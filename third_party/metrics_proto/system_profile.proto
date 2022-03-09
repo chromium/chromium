@@ -532,25 +532,6 @@ message SystemProfileProto {
   }
   optional GoogleUpdate google_update = 11;
 
-  // Information on all installed plugins.
-  message Plugin {
-    // The plugin's self-reported name and filename (without path).
-    optional string name = 1;
-    optional string filename = 2;
-
-    // The plugin's version.
-    optional string version = 3;
-
-    // True if the plugin is disabled.
-    // If a client has multiple local Chrome user accounts, this is logged based
-    // on the first user account launched during the current session.
-    optional bool is_disabled = 4;
-
-    // True if the plugin is PPAPI.
-    optional bool is_pepper = 5;
-  }
-  repeated Plugin plugin = 7;
-
   // Figures that can be used to generate application stability metrics.
   // All values are counts of events since the last time that these
   // values were reported.
@@ -625,16 +606,6 @@ message SystemProfileProto {
     // Whether the metrics being reported are from a previous run picked up via
     // the left-over memory mapped files.
     optional bool from_previous_run = 29;
-
-    // Stability information for all installed plugins.
-    message PluginStability {
-      // The relevant plugin's information (name, etc.)
-      optional Plugin plugin = 1;
-
-      // The number of times this plugin process crashed.
-      optional int32 crash_count = 4;
-    }
-    repeated PluginStability plugin_stability = 22;
   }
   optional Stability stability = 8;
 

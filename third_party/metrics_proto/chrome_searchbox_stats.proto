@@ -16,8 +16,8 @@ package metrics;
 // This proto is serialized and sent over by Chrome as a Base64-encoded URL
 // param for logging. Note that this proto is not itself persisted in logs. It
 // is instead decoded and deserialized into the searchbox_stats.proto which is
-// persisted in logs. Types, numbers, labels, annotations, optional-ness, and
-// default values of the fields MUST match those of their counterparts.
+// persisted in logs. Field types, IDs, labels, annotations, optional-ness, and
+// default values MUST match those of their counterparts.
 // See searchbox_stats.proto for documentation of these fields and do not
 // duplicate comments here.
 message ChromeSearchboxStats {
