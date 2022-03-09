@@ -520,21 +520,19 @@ const base::Feature kFormInputKeyboardReloadInputViews{
 // Post the passed |suggestions| to the consumer.
 - (void)updateWithProvider:(id<FormInputSuggestionsProvider>)provider
                suggestions:(NSArray<FormSuggestion*>*)suggestions {
-  if (self.suggestionsDisabled) {
+  if (self.suggestionsDisabled)
     return;
-  } else {
-    // If suggestions are enabled, update |currentProvider|.
-    self.currentProvider = provider;
-    // Post it to the consumer.
-    [self.consumer showAccessorySuggestions:suggestions];
-    if (suggestions.count) {
-      if (provider.type == SuggestionProviderTypeAutofill) {
-        LogLikelyInterestedDefaultBrowserUserActivity(
-            DefaultPromoTypeMadeForIOS);
-      }
-      if (base::FeatureList::IsEnabled(kAutofillPasswordRichIPH)) {
-        [self highlightFirstSuggestion:suggestions.firstObject];
-      }
+
+  // If suggestions are enabled, update |currentProvider|.
+  self.currentProvider = provider;
+  // Post it to the consumer.
+  [self.consumer showAccessorySuggestions:suggestions];
+  if (suggestions.count) {
+    if (provider.type == SuggestionProviderTypeAutofill) {
+      LogLikelyInterestedDefaultBrowserUserActivity(DefaultPromoTypeMadeForIOS);
+    }
+    if (base::FeatureList::IsEnabled(kAutofillPasswordRichIPH)) {
+      [self highlightFirstSuggestion:suggestions.firstObject];
     }
   }
 }
