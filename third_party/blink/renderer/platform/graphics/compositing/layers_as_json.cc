@@ -132,11 +132,14 @@ int LayersAsJSON::AddTransformJSON(
 void LayersAsJSON::AddLayer(const cc::Layer& layer,
                             const TransformPaintPropertyNode& transform,
                             const LayerAsJSONClient* json_client) {
-  if (!(flags_ & kLayerTreeIncludesAllLayers) && !layer.draws_content() &&
-      (layer.DebugName() == "LayoutView #document" ||
-       layer.DebugName() == "Inner Viewport Scroll Layer" ||
-       layer.DebugName() == "Scrolling Contents Layer"))
-    return;
+  if (!(flags_ & kLayerTreeIncludesAllLayers) && !layer.draws_content()) {
+    std::string debug_name = layer.DebugName();
+    if (debug_name == "LayoutNGView #document" ||
+        debug_name == "LayoutView #document" ||
+        debug_name == "Inner Viewport Scroll Layer" ||
+        debug_name == "Scrolling Contents Layer")
+      return;
+  }
 
   auto layer_json = CCLayerAsJSON(layer, flags_);
   if (json_client) {
