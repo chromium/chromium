@@ -1581,23 +1581,9 @@ class FrameDeletedObserver {
 // navigation it will ignore all subsequent navigations. Explicitly create
 // multiple instances of this class if you want to pause multiple navigations.
 //
-// Note2: For a prerender activation, this class cannot pause the navigation as
-// the activation doesn't run NavigationThrottles and runs
-// CommitDeferringConditions before StartNavigation() that WebContentsObserver
-// cannot observe. Use TestActivationManager in these cases instead.
-//
-// Note3: For a BFCache restore navigation, the navigation will not run
-// NavigationThrottles. The manager in this case uses a
-// CommitDeferringCondition for pausing the navigation at the equivalent of
-// WillProcessResponse. However, in this navigation you cannot use
-// WaitForRequestStart; if you want to yield before WillProcessResponse, use
-// WaitForFirstYieldAfterDidStartNavigation.
-// TODO(bokan): Hopefully BFCache will soon work like prerender activation
-// does. Prefer TestActivationManager for BFCache activations as well.
-// https://crbug.com/1226442.
-//
-// TODO(bokan): Remove uses of this class for page activations and add a DCHECK
-// that the navigation isn't page activating.
+// Note2: This class cannot be used with page activating navigations (e.g.
+// BFCache, prerendering, etc.) as the activation doesn't run
+// NavigationThrottles. Use TestActivationManager in these cases instead.
 class TestNavigationManager : public WebContentsObserver {
  public:
   // Monitors any frame in WebContents.
@@ -1612,19 +1598,14 @@ class TestNavigationManager : public WebContentsObserver {
   // WaitForRequestStart, this can be used to wait for a pause in cases where a
   // test expects a NavigationThrottle to defer in WillStartRequest. In cases
   // where throttles run and none defer, this will break at the same time as
-  // WaitForRequestStart. Also unlike WaitForRequestStart, this can be used to
-  // wait on a page activating navigation to start. Note: since we won't know
-  // which throttle deferred, don't use ResumeNavigation() after this call since
-  // it assumes we paused from the TestNavigationManagerThrottle.
+  // WaitForRequestStart. Note: since we won't know which throttle deferred,
+  // don't use ResumeNavigation() after this call since it assumes we paused
+  // from the TestNavigationManagerThrottle.
   void WaitForFirstYieldAfterDidStartNavigation();
 
   // Waits until the navigation request is ready to be sent to the network
   // stack. This will wait until all NavigationThrottles have proceeded through
   // WillStartRequest. Returns false if the request was aborted before starting.
-  // Note: RequestStart is never reached for page activating navigations (e.g.
-  // prerender activation, BFCache restore). In those cases you should either
-  // use WaitForFirstYieldAfterDidStartNavigation or WaitForResponse. See
-  // TestNavigationManager class comment for more detail.
   [[nodiscard]] bool WaitForRequestStart();
 
   // Waits until the navigation response's headers have been received. This
@@ -1651,11 +1632,6 @@ class TestNavigationManager : public WebContentsObserver {
 
   // Whether the navigation successfully committed and was not an error page.
   bool was_successful() const { return was_successful_; }
-
-  // Whether the navigation activated a prerendered page.
-  bool was_prerendered_page_activation() const {
-    return was_prerendered_page_activation_.value();
-  }
 
   // Allows nestable tasks when running a message loop in the Wait* functions.
   // This is useful for utilizing this class from within another message loop.
@@ -1690,10 +1666,6 @@ class TestNavigationManager : public WebContentsObserver {
   // WillProcessResponse.
   void OnWillProcessResponse();
 
-  // Called when the navigation pauses in the MockCommitDeferringCondition. This
-  // happens only for page activating navigations like a prerender activation.
-  void OnRunningCommitDeferringConditions(base::OnceClosure resume_closure);
-
   // Waits for the desired state. Returns false if the desired state cannot be
   // reached (eg the navigation finishes before reaching this state).
   bool WaitForDesiredState();
@@ -1712,15 +1684,8 @@ class TestNavigationManager : public WebContentsObserver {
   NavigationState desired_state_ = NavigationState::WILL_START;
   bool was_committed_ = false;
   bool was_successful_ = false;
-  absl::optional<bool> was_prerendered_page_activation_;
   base::OnceClosure quit_closure_;
   base::RunLoop::Type message_loop_type_ = base::RunLoop::Type::kDefault;
-
-  // In a page activating navigation (prerender activation, back-forward cache
-  // activation), the navigation will be stopped in a commit deferring condition
-  // (since NavigationThrottles aren't run in a page activation). When that
-  // happens, the navigation can be resumed using this closure.
-  base::OnceClosure commit_deferring_condition_resume_closure_;
 
   base::WeakPtrFactory<TestNavigationManager> weak_factory_{this};
 };
