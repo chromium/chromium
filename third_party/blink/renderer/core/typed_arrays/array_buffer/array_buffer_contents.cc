@@ -129,7 +129,7 @@ void* ArrayBufferContents::AllocateMemoryWithFlags(size_t size,
   }
 
   if (policy == kZeroInitialize) {
-    flags |= base::PartitionAllocZeroFill;
+    flags |= partition_alloc::AllocFlags::kZeroFill;
   }
   void* data = WTF::Partitions::ArrayBufferPartition()->AllocWithFlags(
       flags, size, WTF_HEAP_PROFILER_TYPE_NAME(ArrayBufferContents));
@@ -145,7 +145,8 @@ void* ArrayBufferContents::AllocateMemoryWithFlags(size_t size,
 
 void* ArrayBufferContents::AllocateMemoryOrNull(size_t size,
                                                 InitializationPolicy policy) {
-  return AllocateMemoryWithFlags(size, policy, base::PartitionAllocReturnNull);
+  return AllocateMemoryWithFlags(size, policy,
+                                 partition_alloc::AllocFlags::kReturnNull);
 }
 
 void ArrayBufferContents::FreeMemory(void* data) {

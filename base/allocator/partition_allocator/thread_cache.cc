@@ -430,7 +430,7 @@ ThreadCache* ThreadCache::Create(PartitionRoot<internal::ThreadSafe>* root) {
       root->buckets + PartitionRoot<internal::ThreadSafe>::SizeToBucketIndex(
                           raw_size, root->with_denser_bucket_distribution);
   uintptr_t buffer =
-      root->RawAlloc(bucket, PartitionAllocZeroFill, raw_size,
+      root->RawAlloc(bucket, AllocFlags::kZeroFill, raw_size,
                      PartitionPageSize(), &usable_size, &already_zeroed);
   ThreadCache* tcache = new (reinterpret_cast<void*>(buffer)) ThreadCache(root);
 
@@ -570,16 +570,16 @@ void ThreadCache::FillBucket(size_t bucket_index) {
   for (int i = 0; i < count; i++) {
     // Thread cache fill should not trigger expensive operations, to not grab
     // the lock for a long time needlessly, but also to not inflate memory
-    // usage. Indeed, without PartitionAllocFastPathOrReturnNull, cache fill may
-    // activate a new PartitionPage, or even a new SuperPage, which is clearly
-    // not desirable.
+    // usage. Indeed, without AllocFlags::kFastPathOrReturnNull, cache
+    // fill may activate a new PartitionPage, or even a new SuperPage, which is
+    // clearly not desirable.
     //
     // |raw_size| is set to the slot size, as we don't know it. However, it is
     // only used for direct-mapped allocations and single-slot ones anyway,
     // which are not handled here.
     uintptr_t slot_start = root_->AllocFromBucket(
         &root_->buckets[bucket_index],
-        PartitionAllocFastPathOrReturnNull | PartitionAllocReturnNull,
+        AllocFlags::kFastPathOrReturnNull | AllocFlags::kReturnNull,
         root_->buckets[bucket_index].slot_size /* raw_size */,
         PartitionPageSize(), &usable_size, &is_already_zeroed);
 

@@ -570,6 +570,9 @@ _CONFIG = [
             # Used in network service types.
             'net::SiteForCookies',
 
+            # PartitionAlloc
+            'partition_alloc::.+',
+
             # Some test helpers live in the blink::test namespace.
             'test::.+',
 

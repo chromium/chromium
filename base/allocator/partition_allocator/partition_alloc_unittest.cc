@@ -408,20 +408,20 @@ class PartitionAllocTest : public testing::TestWithParam<bool> {
     for (i = 0; i < num_allocations; ++i) {
       switch (mode) {
         case kPartitionAllocWithFlags: {
-          ptrs[i] = allocator.root()->AllocWithFlags(PartitionAllocReturnNull,
+          ptrs[i] = allocator.root()->AllocWithFlags(AllocFlags::kReturnNull,
                                                      alloc_size, type_name);
           break;
         }
         case kPartitionReallocWithFlags: {
-          ptrs[i] = allocator.root()->AllocWithFlags(PartitionAllocReturnNull,
-                                                     1, type_name);
+          ptrs[i] = allocator.root()->AllocWithFlags(AllocFlags::kReturnNull, 1,
+                                                     type_name);
           ptrs[i] = allocator.root()->ReallocWithFlags(
-              PartitionAllocReturnNull, ptrs[i], alloc_size, type_name);
+              AllocFlags::kReturnNull, ptrs[i], alloc_size, type_name);
           break;
         }
         case kPartitionRootTryRealloc: {
-          ptrs[i] = allocator.root()->AllocWithFlags(PartitionAllocReturnNull,
-                                                     1, type_name);
+          ptrs[i] = allocator.root()->AllocWithFlags(AllocFlags::kReturnNull, 1,
+                                                     type_name);
           ptrs[i] =
               allocator.root()->TryRealloc(ptrs[i], alloc_size, type_name);
         }
@@ -430,7 +430,7 @@ class PartitionAllocTest : public testing::TestWithParam<bool> {
       if (!i)
         EXPECT_TRUE(ptrs[0]);
       if (!ptrs[i]) {
-        ptrs[i] = allocator.root()->AllocWithFlags(PartitionAllocReturnNull,
+        ptrs[i] = allocator.root()->AllocWithFlags(AllocFlags::kReturnNull,
                                                    alloc_size, type_name);
         EXPECT_FALSE(ptrs[i]);
         break;
@@ -445,7 +445,7 @@ class PartitionAllocTest : public testing::TestWithParam<bool> {
     // check that freeing memory also works correctly after a failed allocation.
     for (--i; i >= 0; --i) {
       allocator.root()->Free(ptrs[i]);
-      ptrs[i] = allocator.root()->AllocWithFlags(PartitionAllocReturnNull,
+      ptrs[i] = allocator.root()->AllocWithFlags(AllocFlags::kReturnNull,
                                                  alloc_size, type_name);
       EXPECT_TRUE(ptrs[i]);
       allocator.root()->Free(ptrs[i]);
@@ -995,9 +995,9 @@ TEST_P(PartitionAllocTest, AllocSizes) {
     allocator.root()->Free(nullptr);
 
     // Do we correctly get a null for a failed allocation?
-    EXPECT_EQ(nullptr, allocator.root()->AllocWithFlags(
-                           PartitionAllocReturnNull, 3u * 1024 * 1024 * 1024,
-                           type_name));
+    EXPECT_EQ(nullptr,
+              allocator.root()->AllocWithFlags(
+                  AllocFlags::kReturnNull, 3u * 1024 * 1024 * 1024, type_name));
   }
 }
 
@@ -2898,8 +2898,8 @@ TEST_P(PartitionAllocTest, ZeroFill) {
   constexpr static size_t kAllZerosSentinel =
       std::numeric_limits<size_t>::max();
   for (size_t size : kTestSizes) {
-    char* p = static_cast<char*>(allocator.root()->AllocWithFlags(
-        PartitionAllocZeroFill, size, nullptr));
+    char* p = static_cast<char*>(
+        allocator.root()->AllocWithFlags(AllocFlags::kZeroFill, size, nullptr));
     size_t non_zero_position = kAllZerosSentinel;
     for (size_t i = 0; i < size; ++i) {
       if (0 != p[i]) {
@@ -2914,7 +2914,7 @@ TEST_P(PartitionAllocTest, ZeroFill) {
 
   for (int i = 0; i < 10; ++i) {
     SCOPED_TRACE(i);
-    AllocateRandomly(allocator.root(), 250, PartitionAllocZeroFill);
+    AllocateRandomly(allocator.root(), 250, AllocFlags::kZeroFill);
   }
 }
 
@@ -2926,10 +2926,10 @@ TEST_P(PartitionAllocTest, Bug_897585) {
   size_t kDesiredSize = 983100;
   ASSERT_GT(kInitialSize, kMaxBucketed);
   ASSERT_GT(kDesiredSize, kMaxBucketed);
-  void* ptr = allocator.root()->AllocWithFlags(PartitionAllocReturnNull,
+  void* ptr = allocator.root()->AllocWithFlags(AllocFlags::kReturnNull,
                                                kInitialSize, nullptr);
   ASSERT_NE(nullptr, ptr);
-  ptr = allocator.root()->ReallocWithFlags(PartitionAllocReturnNull, ptr,
+  ptr = allocator.root()->ReallocWithFlags(AllocFlags::kReturnNull, ptr,
                                            kDesiredSize, nullptr);
   ASSERT_NE(nullptr, ptr);
   memset(ptr, 0xbd, kDesiredSize);
@@ -2972,7 +2972,7 @@ TEST_P(PartitionAllocTest, OverrideHooks) {
       });
 
   void* ptr = allocator.root()->AllocWithFlags(
-      PartitionAllocReturnNull, kOverriddenSize, kOverriddenType);
+      AllocFlags::kReturnNull, kOverriddenSize, kOverriddenType);
   ASSERT_EQ(ptr, overridden_allocation);
 
   allocator.root()->Free(ptr);
@@ -2981,7 +2981,7 @@ TEST_P(PartitionAllocTest, OverrideHooks) {
   // overridden_allocation has not actually been freed so we can now immediately
   // realloc it.
   free_called = false;
-  ptr = allocator.root()->ReallocWithFlags(PartitionAllocReturnNull, ptr, 1,
+  ptr = allocator.root()->ReallocWithFlags(AllocFlags::kReturnNull, ptr, 1,
                                            nullptr);
   ASSERT_NE(ptr, nullptr);
   EXPECT_NE(ptr, overridden_allocation);
@@ -3902,7 +3902,7 @@ TEST_P(PartitionAllocTest, CheckReservationType) {
 TEST_P(PartitionAllocTest, CrossPartitionRootRealloc) {
   // Size is large enough to satisfy it from a single-slot slot span
   size_t test_size = MaxRegularSlotSpanSize() - kExtraAllocSize;
-  void* ptr = allocator.root()->AllocWithFlags(PartitionAllocReturnNull,
+  void* ptr = allocator.root()->AllocWithFlags(AllocFlags::kReturnNull,
                                                test_size, nullptr);
   EXPECT_TRUE(ptr);
 
@@ -3919,7 +3919,7 @@ TEST_P(PartitionAllocTest, CrossPartitionRootRealloc) {
   });
 
   // Realloc from |allocator.root()| into |new_root|.
-  void* ptr2 = new_root->ReallocWithFlags(PartitionAllocReturnNull, ptr,
+  void* ptr2 = new_root->ReallocWithFlags(AllocFlags::kReturnNull, ptr,
                                           test_size + 1024, nullptr);
   EXPECT_TRUE(ptr2);
   PA_EXPECT_PTR_NE(ptr, ptr2);
@@ -3930,23 +3930,23 @@ TEST_P(PartitionAllocTest, FastPathOrReturnNull) {
   // The very first allocation is never a fast path one, since it needs a new
   // super page and a new partition page.
   EXPECT_FALSE(allocator.root()->AllocWithFlags(
-      PartitionAllocFastPathOrReturnNull, allocation_size, ""));
+      AllocFlags::kFastPathOrReturnNull, allocation_size, ""));
   void* ptr = allocator.root()->AllocWithFlags(0, allocation_size, "");
   ASSERT_TRUE(ptr);
 
   // Next one is, since the partition page has been activated.
   void* ptr2 = allocator.root()->AllocWithFlags(
-      PartitionAllocFastPathOrReturnNull, allocation_size, "");
+      AllocFlags::kFastPathOrReturnNull, allocation_size, "");
   EXPECT_TRUE(ptr2);
 
   // First allocation of a different bucket is slow.
   EXPECT_FALSE(allocator.root()->AllocWithFlags(
-      PartitionAllocFastPathOrReturnNull, 2 * allocation_size, ""));
+      AllocFlags::kFastPathOrReturnNull, 2 * allocation_size, ""));
 
   size_t allocated_size = 2 * allocation_size;
   std::vector<void*> ptrs;
   while (void* new_ptr = allocator.root()->AllocWithFlags(
-             PartitionAllocFastPathOrReturnNull, allocation_size, "")) {
+             AllocFlags::kFastPathOrReturnNull, allocation_size, "")) {
     ptrs.push_back(new_ptr);
     allocated_size += allocation_size;
   }

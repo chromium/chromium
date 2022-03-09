@@ -59,9 +59,10 @@ struct PartitionBucket {
 
   // Sets |is_already_zeroed| to true if the allocation was satisfied by
   // requesting (a) new page(s) from the operating system, or false otherwise.
-  // This enables an optimization for when callers use |PartitionAllocZeroFill|:
-  // there is no need to call memset on fresh pages; the OS has already zeroed
-  // them. (See |PartitionRoot::AllocFromBucket|.)
+  // This enables an optimization for when callers use
+  // |AllocFlags::kZeroFill|: there is no need to call memset on fresh
+  // pages; the OS has already zeroed them. (See
+  // |PartitionRoot::AllocFromBucket|.)
   //
   // Note the matching Free() functions are in SlotSpanMetadata.
   BASE_EXPORT NOINLINE uintptr_t SlowPathAlloc(PartitionRoot<thread_safe>* root,

@@ -20,7 +20,28 @@
 #include <mach/vm_page_size.h>
 #endif
 
-namespace partition_alloc::internal {
+namespace partition_alloc {
+
+// Bit flag constants used at `flag` argument of PartitionRoot::AllocWithFlags,
+// AlignedAllocWithFlags, etc.
+struct AllocFlags {
+  // In order to support bit operations like `flag_a | flag_b`, the old-
+  // fashioned enum (+ surrounding named struct) is used instead of enum class.
+  enum : int {
+    kReturnNull = 1 << 0,
+    kZeroFill = 1 << 1,
+    kNoHooks = 1 << 2,  // Internal only.
+    // If the allocation requires a "slow path" (such as allocating/committing a
+    // new slot span), return nullptr instead. Note this makes all large
+    // allocations return nullptr, such as direct-mapped ones, and even for
+    // smaller ones, a nullptr value is common.
+    kFastPathOrReturnNull = 1 << 3,  // Internal only.
+
+    kLastFlag = kFastPathOrReturnNull
+  };
+};
+
+namespace internal {
 
 // Size of a cache line. Not all CPUs in the world have a 64 bytes cache line
 // size, but as of 2021, most do. This is in particular the case for almost all
@@ -395,26 +416,15 @@ constexpr unsigned char kQuarantinedByte = 0xEF;
 // static_cast<uint32_t>(-1) is too close to a "real" size.
 constexpr size_t kInvalidBucketSize = 1;
 
-// Flags for `PartitionAllocFlags`.
-enum PartitionAllocFlags {
-  PartitionAllocReturnNull = 1 << 0,
-  PartitionAllocZeroFill = 1 << 1,
-  PartitionAllocNoHooks = 1 << 2,  // Internal only.
-  // If the allocation requires a "slow path" (such as allocating/committing a
-  // new slot span), return nullptr instead. Note this makes all large
-  // allocations return nullptr, such as direct-mapped ones, and even for
-  // smaller ones, a nullptr value is common.
-  PartitionAllocFastPathOrReturnNull = 1 << 3,  // Internal only.
+}  // namespace internal
 
-  PartitionAllocLastFlag = PartitionAllocFastPathOrReturnNull
-};
-
-}  // namespace partition_alloc::internal
+}  // namespace partition_alloc
 
 namespace base {
 
 // TODO(https://crbug.com/1288247): Remove these 'using' declarations once
 // the migration to the new namespaces gets done.
+using ::partition_alloc::AllocFlags;
 using ::partition_alloc::internal::DirectMapAllocationGranularity;
 using ::partition_alloc::internal::DirectMapAllocationGranularityOffsetMask;
 using ::partition_alloc::internal::DirectMapAllocationGranularityShift;
@@ -462,12 +472,6 @@ using ::partition_alloc::internal::MaxSuperPagesInPool;
 using ::partition_alloc::internal::MaxSystemPagesPerRegularSlotSpan;
 using ::partition_alloc::internal::NumPartitionPagesPerSuperPage;
 using ::partition_alloc::internal::NumSystemPagesPerPartitionPage;
-using ::partition_alloc::internal::PartitionAllocFastPathOrReturnNull;
-using ::partition_alloc::internal::PartitionAllocFlags;
-using ::partition_alloc::internal::PartitionAllocLastFlag;
-using ::partition_alloc::internal::PartitionAllocNoHooks;
-using ::partition_alloc::internal::PartitionAllocReturnNull;
-using ::partition_alloc::internal::PartitionAllocZeroFill;
 using ::partition_alloc::internal::PartitionPageBaseMask;
 using ::partition_alloc::internal::PartitionPageOffsetMask;
 using ::partition_alloc::internal::PartitionPageShift;

@@ -250,8 +250,8 @@ void* AllocateAlignedMemory(size_t alignment, size_t size) {
                                               base::PartitionPageSize());
   }
 
-  return AlignedAllocator()->AlignedAllocWithFlags(base::PartitionAllocNoHooks,
-                                                   alignment, size);
+  return AlignedAllocator()->AlignedAllocWithFlags(
+      partition_alloc::AllocFlags::kNoHooks, alignment, size);
 }
 
 }  // namespace
@@ -279,7 +279,7 @@ void PartitionAllocSetCallNewHandlerOnMallocFailure(bool value) {
   if (value)
     g_alloc_flags = 0;
   else
-    g_alloc_flags = PartitionAllocReturnNull;
+    g_alloc_flags = partition_alloc::AllocFlags::kReturnNull;
 #endif
 }
 
@@ -294,8 +294,8 @@ void* PartitionMallocUnchecked(const AllocatorDispatch*,
                                void* context) {
   ScopedDisallowAllocations guard{};
   return Allocator()->AllocWithFlagsNoHooks(
-      base::PartitionAllocReturnNull | g_alloc_flags, MaybeAdjustSize(size),
-      PartitionPageSize());
+      partition_alloc::AllocFlags::kReturnNull | g_alloc_flags,
+      MaybeAdjustSize(size), PartitionPageSize());
 }
 
 void* PartitionCalloc(const AllocatorDispatch*,
@@ -305,7 +305,8 @@ void* PartitionCalloc(const AllocatorDispatch*,
   ScopedDisallowAllocations guard{};
   const size_t total = base::CheckMul(n, MaybeAdjustSize(size)).ValueOrDie();
   return Allocator()->AllocWithFlagsNoHooks(
-      base::PartitionAllocZeroFill | g_alloc_flags, total, PartitionPageSize());
+      partition_alloc::AllocFlags::kZeroFill | g_alloc_flags, total,
+      PartitionPageSize());
 }
 
 void* PartitionMemalign(const AllocatorDispatch*,
@@ -378,7 +379,7 @@ void* PartitionRealloc(const AllocatorDispatch*,
 #endif  // BUILDFLAG(IS_APPLE)
 
   return Allocator()->ReallocWithFlags(
-      base::PartitionAllocNoHooks | g_alloc_flags, address,
+      partition_alloc::AllocFlags::kNoHooks | g_alloc_flags, address,
       MaybeAdjustSize(size), "");
 }
 

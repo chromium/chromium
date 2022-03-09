@@ -176,7 +176,7 @@ SlotSpanMetadata<thread_safe>* PartitionDirectMap(
   // scoped unlocking.
   root->lock_.AssertAcquired();
 
-  const bool return_null = flags & PartitionAllocReturnNull;
+  const bool return_null = flags & AllocFlags::kReturnNull;
   if (UNLIKELY(raw_size > MaxDirectMapped())) {
     if (return_null)
       return nullptr;
@@ -657,7 +657,7 @@ ALWAYS_INLINE uintptr_t PartitionBucket<thread_safe>::AllocNewSuperPage(
   uintptr_t super_page =
       ReserveMemoryFromGigaCage(pool, requested_address, kSuperPageSize);
   if (UNLIKELY(!super_page)) {
-    if (flags & PartitionAllocReturnNull)
+    if (flags & AllocFlags::kReturnNull)
       return 0;
 
     // Didn't manage to get a new uncommitted super page -> address space issue.
@@ -997,7 +997,7 @@ uintptr_t PartitionBucket<thread_safe>::SlowPathAlloc(
               SlotSpanMetadata<thread_safe>::get_sentinel_slot_span());
 
     // No fast path for direct-mapped allocations.
-    if (flags & PartitionAllocFastPathOrReturnNull)
+    if (flags & AllocFlags::kFastPathOrReturnNull)
       return 0;
 
     new_slot_span =
@@ -1041,7 +1041,7 @@ uintptr_t PartitionBucket<thread_safe>::SlowPathAlloc(
     if (UNLIKELY(!new_slot_span) &&
         LIKELY(decommitted_slot_spans_head != nullptr)) {
       // Commit can be expensive, don't do it.
-      if (flags & PartitionAllocFastPathOrReturnNull)
+      if (flags & AllocFlags::kFastPathOrReturnNull)
         return 0;
 
       new_slot_span = decommitted_slot_spans_head;
@@ -1070,7 +1070,7 @@ uintptr_t PartitionBucket<thread_safe>::SlowPathAlloc(
     PA_DCHECK(new_slot_span);
   } else {
     // Getting a new slot span is expensive, don't do it.
-    if (flags & PartitionAllocFastPathOrReturnNull)
+    if (flags & AllocFlags::kFastPathOrReturnNull)
       return 0;
 
     // Third. If we get here, we need a brand new slot span.
@@ -1085,7 +1085,7 @@ uintptr_t PartitionBucket<thread_safe>::SlowPathAlloc(
   if (UNLIKELY(!new_slot_span)) {
     PA_DCHECK(active_slot_spans_head ==
               SlotSpanMetadata<thread_safe>::get_sentinel_slot_span());
-    if (flags & PartitionAllocReturnNull)
+    if (flags & AllocFlags::kReturnNull)
       return 0;
     // See comment in PartitionDirectMap() for unlocking.
     ::partition_alloc::internal::ScopedUnlockGuard unlock{root->lock_};

@@ -71,7 +71,7 @@
 // size as other alloc code.
 #define CHECK_MAX_SIZE_OR_RETURN_NULLPTR(size, flags) \
   if (size > MaxDirectMapped()) {                     \
-    if (flags & PartitionAllocReturnNull) {           \
+    if (flags & AllocFlags::kReturnNull) {            \
       return nullptr;                                 \
     }                                                 \
     PA_CHECK(false);                                  \
@@ -1563,15 +1563,15 @@ ALWAYS_INLINE void* PartitionRoot<thread_safe>::AllocWithFlagsInternal(
   PA_DCHECK((slot_span_alignment >= PartitionPageSize()) &&
             bits::IsPowerOfTwo(slot_span_alignment));
 
-  PA_DCHECK(flags < PartitionAllocLastFlag << 1);
-  PA_DCHECK((flags & PartitionAllocNoHooks) == 0);  // Internal only.
+  PA_DCHECK(flags < AllocFlags::kLastFlag << 1);
+  PA_DCHECK((flags & AllocFlags::kNoHooks) == 0);  // Internal only.
   PA_DCHECK(initialized);
 
 #if defined(MEMORY_TOOL_REPLACES_ALLOCATOR)
   CHECK_MAX_SIZE_OR_RETURN_NULLPTR(requested_size, flags);
-  const bool zero_fill = flags & PartitionAllocZeroFill;
+  const bool zero_fill = flags & AllocFlags::kZeroFill;
   void* result = zero_fill ? calloc(1, requested_size) : malloc(requested_size);
-  PA_CHECK(result || flags & PartitionAllocReturnNull);
+  PA_CHECK(result || flags & AllocFlags::kReturnNull);
   return result;
 #else
   PA_DCHECK(initialized);
@@ -1743,7 +1743,7 @@ ALWAYS_INLINE void* PartitionRoot<thread_safe>::AllocWithFlagsNoHooks(
 
   // Fill the region kUninitializedByte (on debug builds, if not requested to 0)
   // or 0 (if requested and not 0 already).
-  bool zero_fill = flags & PartitionAllocZeroFill;
+  bool zero_fill = flags & AllocFlags::kZeroFill;
   // LIKELY: operator new() calls malloc(), not calloc().
   if (LIKELY(!zero_fill)) {
     // memset() can be really expensive.
@@ -1848,7 +1848,7 @@ ALWAYS_INLINE void* PartitionRoot<thread_safe>::AlignedAllocWithFlags(
 
     // Overflow check. adjusted_size must be larger or equal to requested_size.
     if (UNLIKELY(adjusted_size < requested_size)) {
-      if (flags & PartitionAllocReturnNull)
+      if (flags & AllocFlags::kReturnNull)
         return nullptr;
       // OutOfMemoryDeathTest.AlignedAlloc requires
       // base::TerminateBecauseOutOfMemory (invoked by
@@ -1862,7 +1862,7 @@ ALWAYS_INLINE void* PartitionRoot<thread_safe>::AlignedAllocWithFlags(
   // Slot spans are naturally aligned on partition page size, but make sure you
   // don't pass anything less, because it'll mess up callee's calculations.
   size_t slot_span_alignment = std::max(alignment, PartitionPageSize());
-  bool no_hooks = flags & PartitionAllocNoHooks;
+  bool no_hooks = flags & AllocFlags::kNoHooks;
   void* object =
       no_hooks
           ? AllocWithFlagsNoHooks(0, adjusted_size, slot_span_alignment)
@@ -1895,7 +1895,7 @@ template <bool thread_safe>
 NOINLINE void* PartitionRoot<thread_safe>::TryRealloc(void* ptr,
                                                       size_t new_size,
                                                       const char* type_name) {
-  return ReallocWithFlags(PartitionAllocReturnNull, ptr, new_size, type_name);
+  return ReallocWithFlags(AllocFlags::kReturnNull, ptr, new_size, type_name);
 }
 
 // Return the capacity of the underlying slot (adjusted for extras) that'd be

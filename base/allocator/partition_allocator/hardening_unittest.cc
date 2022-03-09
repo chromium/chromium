@@ -121,7 +121,7 @@ TEST(HardeningTest, SuccessfulCorruption) {
   root.UncapEmptySlotSpanMemoryForTesting();
 
   uintptr_t* zero_vector = reinterpret_cast<uintptr_t*>(
-      root.AllocWithFlags(PartitionAllocZeroFill, 100 * sizeof(uintptr_t), ""));
+      root.AllocWithFlags(AllocFlags::kZeroFill, 100 * sizeof(uintptr_t), ""));
   ASSERT_TRUE(zero_vector);
   // Pointer to the middle of an existing allocation.
   uintptr_t* to_corrupt = zero_vector + 20;

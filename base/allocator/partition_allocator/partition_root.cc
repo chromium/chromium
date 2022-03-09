@@ -955,10 +955,10 @@ void* PartitionRoot<thread_safe>::ReallocWithFlags(int flags,
 #if defined(MEMORY_TOOL_REPLACES_ALLOCATOR)
   CHECK_MAX_SIZE_OR_RETURN_NULLPTR(new_size, flags);
   void* result = realloc(ptr, new_size);
-  PA_CHECK(result || flags & PartitionAllocReturnNull);
+  PA_CHECK(result || flags & AllocFlags::kReturnNull);
   return result;
 #else
-  bool no_hooks = flags & PartitionAllocNoHooks;
+  bool no_hooks = flags & AllocFlags::kNoHooks;
   if (UNLIKELY(!ptr)) {
     return no_hooks
                ? AllocWithFlagsNoHooks(flags, new_size, PartitionPageSize())
@@ -972,7 +972,7 @@ void* PartitionRoot<thread_safe>::ReallocWithFlags(int flags,
   }
 
   if (new_size > MaxDirectMapped()) {
-    if (flags & PartitionAllocReturnNull)
+    if (flags & AllocFlags::kReturnNull)
       return nullptr;
     internal::PartitionExcessiveAllocationSize(new_size);
   }
@@ -1024,7 +1024,7 @@ void* PartitionRoot<thread_safe>::ReallocWithFlags(int flags,
                   : AllocWithFlagsInternal(flags, new_size, PartitionPageSize(),
                                            type_name);
   if (!ret) {
-    if (flags & PartitionAllocReturnNull)
+    if (flags & AllocFlags::kReturnNull)
       return nullptr;
     internal::PartitionExcessiveAllocationSize(new_size);
   }
