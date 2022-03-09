@@ -176,9 +176,6 @@ crbug.com/angleproject/4846 [ mac angle-metal passthrough ] WebglExtension_EXT_d
 crbug.com/angleproject/4846 [ mac angle-metal passthrough ] WebglExtension_EXT_shader_texture_lod [ Skip ]
 crbug.com/angleproject/4846 [ mac angle-metal passthrough ] WebglExtension_EXT_texture_compression_rgtc [ Skip ]
 crbug.com/angleproject/4846 [ mac angle-metal passthrough ] WebglExtension_OES_fbo_render_mipmap [ Skip ]
-crbug.com/angleproject/4846 [ mac angle-metal passthrough ] WebglExtension_WEBGL_compressed_texture_s3tc [ Skip ]
-crbug.com/angleproject/4846 [ mac angle-metal passthrough ] WebglExtension_WEBGL_draw_buffers [ Skip ]
-crbug.com/1187260 [ mac angle-metal passthrough ] WebglExtension_WEBGL_debug_shaders [ Skip ]
 
 # Extensions not available on ChromeOS.
 crbug.com/957807 [ chromeos no-swiftshader-gl ] WebglExtension_EXT_sRGB [ Skip ]
