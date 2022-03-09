@@ -239,6 +239,9 @@ enum ProcessedActionStatusProto {
   // the renderer process may have crashed.
   NO_RENDER_FRAME = 37;
 
+  // Requesting the user data from our data endpoint failed.
+  USER_DATA_REQUEST_FAILED = 38;
+
   reserved 15, 23, 25, 32;
 }
 

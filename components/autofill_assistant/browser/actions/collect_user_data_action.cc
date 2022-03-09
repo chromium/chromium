@@ -505,7 +505,7 @@ void CollectUserDataAction::InternalProcessAction(
       base::BindRepeating(&CollectUserDataAction::OnSelectionStateChanged,
                           weak_ptr_factory_.GetWeakPtr());
   collect_user_data_options_->reload_data_callback = base::BindOnce(
-      &CollectUserDataAction::ReloadAction, weak_ptr_factory_.GetWeakPtr());
+      &CollectUserDataAction::ReloadUserData, weak_ptr_factory_.GetWeakPtr());
   if (requests_pwm_logins) {
     delegate_->GetWebsiteLoginManager()->GetLoginsForUrl(
         delegate_->GetWebContents()->GetLastCommittedURL(),
@@ -680,9 +680,11 @@ void CollectUserDataAction::OnRequestUserData(
     UserData* user_data,
     bool success,
     const GetUserDataResponseProto& response) {
-  if (success) {
-    UpdateUserDataFromProto(response, user_data);
+  if (!success) {
+    EndAction(ClientStatus(USER_DATA_REQUEST_FAILED));
+    return;
   }
+  UpdateUserDataFromProto(response, user_data);
   UpdateMetrics(user_data);
   UpdateUi();
 }
@@ -777,18 +779,30 @@ void CollectUserDataAction::OnTermsAndConditionsLinkClicked(
   EndAction(ClientStatus(ACTION_APPLIED));
 }
 
-void CollectUserDataAction::ReloadAction(UserData* user_data) {
+void CollectUserDataAction::ReloadUserData(UserData* user_data) {
   if (HasActionEnded()) {
     return;
   }
-  action_stopwatch_.StartActiveTime();
-  delegate_->GetPersonalDataManager()->RemoveObserver(this);
+  if (proto_.collect_user_data().has_data_source()) {
+    metrics_data_.personal_data_changed = true;
+    delegate_->RequestUserData(
+        *collect_user_data_options_,
+        base::BindOnce(&CollectUserDataAction::OnRequestUserData,
+                       weak_ptr_factory_.GetWeakPtr(), user_data));
+    return;
+  }
+  if (proto_.collect_user_data().has_user_data()) {
+    action_stopwatch_.StartActiveTime();
+    delegate_->GetPersonalDataManager()->RemoveObserver(this);
 
-  metrics_data_.personal_data_changed = true;
-  user_data->previous_user_data_metrics_ = metrics_data_;
-  // We do not wish to log this yet.
-  metrics_data_.metrics_logged = true;
-  EndAction(ClientStatus(RESEND_USER_DATA));
+    metrics_data_.personal_data_changed = true;
+    user_data->previous_user_data_metrics_ = metrics_data_;
+    // We do not wish to log this yet.
+    metrics_data_.metrics_logged = true;
+    EndAction(ClientStatus(RESEND_USER_DATA));
+    return;
+  }
+  NOTREACHED();
 }
 
 void CollectUserDataAction::OnSelectionStateChanged(

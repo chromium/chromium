@@ -74,7 +74,7 @@ class CollectUserDataAction : public Action,
   void OnTermsAndConditionsLinkClicked(int link,
                                        UserData* user_data,
                                        const UserModel* user_model);
-  void ReloadAction(UserData* user_data);
+  void ReloadUserData(UserData* user_data);
 
   // Only used for logging purposes.
   void OnSelectionStateChanged(UserDataEventField field,

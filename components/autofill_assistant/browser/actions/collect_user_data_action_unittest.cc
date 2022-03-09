@@ -3785,7 +3785,7 @@ TEST_F(CollectUserDataActionTest, NoDefaultProfileLogsAllFieldsAsEmpty) {
                   source_id_, kInitialCreditCardFieldsStatus, 0)}));
 }
 
-TEST_F(CollectUserDataActionTest, ReloadsDataOnRequest) {
+TEST_F(CollectUserDataActionTest, FailsActionWithReloadStatus) {
   ON_CALL(mock_action_delegate_, CollectUserData(_))
       .WillByDefault(
           Invoke([=](CollectUserDataOptions* collect_user_data_options) {
@@ -3797,6 +3797,7 @@ TEST_F(CollectUserDataActionTest, ReloadsDataOnRequest) {
   auto* collect_user_data_proto = action_proto.mutable_collect_user_data();
   collect_user_data_proto->set_privacy_notice_text("privacy");
   collect_user_data_proto->set_request_terms_and_conditions(false);
+  collect_user_data_proto->mutable_user_data();
 
   EXPECT_CALL(callback_,
               Run(Pointee(AllOf(
@@ -3806,6 +3807,38 @@ TEST_F(CollectUserDataActionTest, ReloadsDataOnRequest) {
 
   ASSERT_TRUE(user_data_.previous_user_data_metrics_);
   EXPECT_TRUE(user_data_.previous_user_data_metrics_->personal_data_changed);
+}
+
+TEST_F(CollectUserDataActionTest, ReloadsDataIfRequested) {
+  base::HistogramTester histogram_tester;
+
+  EXPECT_CALL(mock_action_delegate_, RequestUserData)
+      .Times(2)
+      .WillRepeatedly(RunOnceCallback<1>(true, GetUserDataResponseProto()));
+  EXPECT_CALL(mock_action_delegate_, CollectUserData(_))
+      .WillOnce(Invoke([=](CollectUserDataOptions* collect_user_data_options) {
+        std::move(collect_user_data_options->reload_data_callback)
+            .Run(&user_data_);
+      }))
+      .WillOnce(Invoke([=](CollectUserDataOptions* collect_user_data_options) {
+        // We can't submit here since the user data is not complete.
+      }));
+
+  ActionProto action_proto;
+  auto* collect_user_data_proto = action_proto.mutable_collect_user_data();
+  collect_user_data_proto->set_privacy_notice_text("privacy");
+  collect_user_data_proto->set_request_terms_and_conditions(false);
+  collect_user_data_proto->mutable_data_source();
+
+  // We do not expect the action to end.
+  std::unique_ptr<CollectUserDataAction> action =
+      std::make_unique<CollectUserDataAction>(&mock_action_delegate_,
+                                              action_proto);
+  action->ProcessAction(callback_.Get());
+
+  action.reset();
+  histogram_tester.ExpectTotalCount(
+      "Android.AutofillAssistant.PaymentRequest.AutofillChanged", 1u);
 }
 
 TEST_F(CollectUserDataActionTest, ReloadingActionDoesNotLog) {
@@ -3822,6 +3855,7 @@ TEST_F(CollectUserDataActionTest, ReloadingActionDoesNotLog) {
   auto* collect_user_data_proto = action_proto.mutable_collect_user_data();
   collect_user_data_proto->set_privacy_notice_text("privacy");
   collect_user_data_proto->set_request_terms_and_conditions(false);
+  collect_user_data_proto->mutable_user_data();
 
   std::unique_ptr<CollectUserDataAction> action =
       std::make_unique<CollectUserDataAction>(&mock_action_delegate_,
