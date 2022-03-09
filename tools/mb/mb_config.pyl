@@ -288,7 +288,7 @@
         'reclient': 'gpu_tests_release_bot_minimal_symbols_reclient',
       },
       'Comparison Simple Chrome (reclient)': {
-        'goma': 'chromeos_amd64-generic_use_fake_dbus_clients',
+        'goma': 'chromeos_amd64-generic_use_fake_dbus_clients_goma',
         'reclient': 'chromeos_amd64-generic_use_fake_dbus_clients_reclient',
       },
       'Libfuzzer Upload Chrome OS ASan': 'libfuzzer_chromeos_asan_release_bot',
@@ -1941,6 +1941,10 @@
       'chromeos_amd64-generic-vm', 'use_fake_dbus_clients', 'dcheck_always_on',
     ],
 
+    'chromeos_amd64-generic_use_fake_dbus_clients_goma':[
+      'chromeos_amd64-generic_goma', 'use_fake_dbus_clients',
+    ],
+
     'chromeos_amd64-generic_use_fake_dbus_clients_reclient': [
       'chromeos_amd64-generic_reclient', 'use_fake_dbus_clients',
     ],
@@ -3472,6 +3476,10 @@
 
     'chromeos_with_codecs': {
       'mixins': ['chromeos', 'chromeos_codecs'],
+    },
+
+    'chromeos_amd64-generic_goma': {
+      'mixins': ['chromeos_device', 'amd64-generic-vm',]
     },
 
     'chromeos_amd64-generic_reclient': {
