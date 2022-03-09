@@ -173,7 +173,7 @@ class SafeBrowsingPrivateEventRouter
       safe_browsing::DeepScanAccessPoint access_point,
       const enterprise_connectors::ContentAnalysisResponse::Result& result,
       const int64_t content_size,
-      absl::optional<std::u16string> user_justification = absl::nullopt);
+      absl::optional<std::u16string> user_justification);
 
   // Notifies listeners that deep scanning failed, for the given |reason|.
   void OnUnscannedFileEvent(const GURL& url,

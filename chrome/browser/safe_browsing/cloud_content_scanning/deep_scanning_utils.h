@@ -105,7 +105,7 @@ void ReportAnalysisConnectorWarningBypass(
     DeepScanAccessPoint access_point,
     const int64_t content_size,
     const enterprise_connectors::ContentAnalysisResponse& response,
-    absl::optional<std::u16string> user_justification = absl::nullopt);
+    absl::optional<std::u16string> user_justification);
 
 // Helper functions to record DeepScanning UMA metrics for the duration of the
 // request split by its result and bytes/sec for successful requests.

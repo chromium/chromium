@@ -121,7 +121,8 @@ void ReportAnalysisConnectorWarningBypassed(download::DownloadItem* download) {
           profile, download->GetURL(), metadata.filename, metadata.sha256,
           metadata.mime_type,
           extensions::SafeBrowsingPrivateEventRouter::kTriggerFileDownload,
-          DeepScanAccessPoint::DOWNLOAD, metadata.size, metadata.scan_response);
+          DeepScanAccessPoint::DOWNLOAD, metadata.size, metadata.scan_response,
+          /*user_justification=*/absl::nullopt);
     }
   } else {
     std::string raw_digest_sha256 = download->GetHash();
@@ -132,7 +133,8 @@ void ReportAnalysisConnectorWarningBypassed(download::DownloadItem* download) {
         download->GetMimeType(),
         extensions::SafeBrowsingPrivateEventRouter::kTriggerFileDownload,
         DeepScanAccessPoint::DOWNLOAD, download->GetTotalBytes(),
-        enterprise_connectors::ContentAnalysisResponse());
+        enterprise_connectors::ContentAnalysisResponse(),
+        /*user_justification=*/absl::nullopt);
   }
 }
 
