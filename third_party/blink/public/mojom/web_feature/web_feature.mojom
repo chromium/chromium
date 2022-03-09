@@ -3497,6 +3497,8 @@ enum WebFeature {
   kUsbDeviceForget = 4176,
   kPartitionedCookies = 4177,
   kSecureContextIncorrectForSharedWorker = 4178,
+  kV8FunctionPrototypeArguments = 4179,
+  kV8FunctionPrototypeCaller = 4180,
 
   // Add new features immediately above this line. Don't change assigned
   // numbers of any item, and don't reuse removed slots.

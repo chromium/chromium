@@ -37395,6 +37395,8 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="4176" label="UsbDeviceForget"/>
   <int value="4177" label="PartitionedCookies"/>
   <int value="4178" label="SecureContextIncorrectForSharedWorker"/>
+  <int value="4179" label="V8FunctionPrototypeArguments"/>
+  <int value="4180" label="V8FunctionPrototypeCaller"/>
 </enum>
 
 <enum name="FeaturePolicyAllowlistType">

@@ -377,6 +377,12 @@ void UseCounterCallback(v8::Isolate* isolate,
     case v8::Isolate::kWasmExceptionHandling:
       blink_feature = WebFeature::kV8WasmExceptionHandling;
       break;
+    case v8::Isolate::kFunctionPrototypeArguments:
+      blink_feature = WebFeature::kV8FunctionPrototypeArguments;
+      break;
+    case v8::Isolate::kFunctionPrototypeCaller:
+      blink_feature = WebFeature::kV8FunctionPrototypeCaller;
+      break;
 
     default:
       // This can happen if V8 has added counters that this version of Blink
