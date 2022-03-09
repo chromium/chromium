@@ -107,6 +107,9 @@ class ASH_EXPORT AppListToastView : public views::View {
   // Creates an ImageView for the icon and inserts it in the toast view.
   void CreateIconView();
 
+  // Get the available space for `title_label_` width.
+  int GetExpandedTitleLabelWidth();
+
   // Vector icons to use with dark/light mode.
   const gfx::VectorIcon* dark_icon_ = nullptr;
   const gfx::VectorIcon* light_icon_ = nullptr;

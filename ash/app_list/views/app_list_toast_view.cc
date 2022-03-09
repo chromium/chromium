@@ -166,6 +166,9 @@ AppListToastView::AppListToastView(const std::u16string title) {
       label_container_->AddChildView(std::make_unique<views::Label>(title));
   title_label_->SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_LEFT);
   title_label_->SetMultiLine(true);
+  // TODO(crbug/682266): This is a temporary fix for the issue where the multi
+  // line label appears cut-off.
+  title_label_->SetMaximumWidth(GetExpandedTitleLabelWidth());
 
   layout_manager_->SetFlexForView(label_container_, 1);
 }
@@ -325,6 +328,13 @@ void AppListToastView::CreateIconView() {
                          0);
   icon_->SetVerticalAlignment(views::ImageView::Alignment::kCenter);
   icon_->SetHorizontalAlignment(views::ImageView::Alignment::kCenter);
+}
+
+int AppListToastView::GetExpandedTitleLabelWidth() {
+  const int icon_width = icon_ ? icon_->size().width() : 0;
+  const int button_width = toast_button_ ? toast_button_->size().width() : 0;
+  return GetPreferredSize().width() - kInteriorMargin.width() - icon_width -
+         button_width - kTitleContainerMargin.width();
 }
 
 }  // namespace ash
