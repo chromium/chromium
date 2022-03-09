@@ -55,6 +55,7 @@ source_set("quiche") {
     "src/common/platform/api/quiche_url_utils.h",
     "src/common/platform/default/quiche_platform_impl/quiche_prefetch_impl.h",
     "src/common/print_elements.h",
+    "src/common/quiche_buffer_allocator.cc",
     "src/common/quiche_buffer_allocator.h",
     "src/common/quiche_circular_deque.h",
     "src/common/quiche_data_reader.cc",
