@@ -372,8 +372,10 @@ class AvdConfig:
         # Use svc as this also works on the images with build type "user".
         logging.info('Disabling the network in emulator.')
         instance.device.RunShellCommand(['svc', 'wifi', 'disable'],
+                                        as_root=True,
                                         check_return=True)
         instance.device.RunShellCommand(['svc', 'data', 'disable'],
+                                        as_root=True,
                                         check_return=True)
 
       if snapshot:
@@ -642,7 +644,11 @@ class _AvdInstance:
             gpu_mode=_DEFAULT_GPU_MODE,
             wipe_data=False,
             debug_tags=None):
-    """Starts the emulator running an instance of the given AVD."""
+    """Starts the emulator running an instance of the given AVD.
+
+    Note when ensure_system_settings is True, the program will wait until the
+    emulator is fully booted, and then update system settings.
+    """
     is_slow_start = False
     # Force to load system snapshot if detected.
     if self.HasSystemSnapshot():
@@ -740,13 +746,12 @@ class _AvdInstance:
         # pylint: disable=W0707
         raise AvdException('Emulator failed to start: %s' % str(e))
 
-    assert self.device is not None, '`instance.device` not initialized.'
-    self.device.WaitUntilFullyBooted(timeout=120 if is_slow_start else 30)
-
     # Set the system settings in "Start" here instead of setting in "Create"
     # because "Create" is used during AVD creation, and we want to avoid extra
     # turn-around on rolling AVD.
     if ensure_system_settings:
+      assert self.device is not None, '`instance.device` not initialized.'
+      self.device.WaitUntilFullyBooted(timeout=120 if is_slow_start else 30)
       _EnsureSystemSettings(self.device)
 
   def Stop(self):
