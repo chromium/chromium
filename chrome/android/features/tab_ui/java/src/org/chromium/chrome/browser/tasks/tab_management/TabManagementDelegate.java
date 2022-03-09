@@ -207,10 +207,14 @@ public interface TabManagementDelegate {
      * @param updateHost The parent {@link LayoutUpdateHost}.
      * @param renderHost The parent {@link LayoutRenderHost}.
      * @param startSurface The {@link StartSurface} the layout should own.
+     * @param startSurfaceScrimAnchor {@link ViewGroup} used by start surface layout to show scrim
+     *         when overview is visible.
+     * @param scrimCoordinator {@link ScrimCoordinator} to show/hide scrim.
      * @return The {@link StartSurfaceLayout}.
      */
     Layout createStartSurfaceLayout(Context context, LayoutUpdateHost updateHost,
-            LayoutRenderHost renderHost, StartSurface startSurface, JankTracker jankTracker);
+            LayoutRenderHost renderHost, StartSurface startSurface, JankTracker jankTracker,
+            ViewGroup startSurfaceScrimAnchor, ScrimCoordinator scrimCoordinator);
 
     /**
      * Create the {@link StartSurface}

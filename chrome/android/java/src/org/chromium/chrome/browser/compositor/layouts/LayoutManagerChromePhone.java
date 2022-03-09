@@ -49,7 +49,7 @@ public class LayoutManagerChromePhone extends LayoutManagerChrome {
             OneshotSupplierImpl<OverviewModeBehavior> overviewModeBehaviorSupplier,
             Supplier<TopUiThemeColorProvider> topUiThemeColorProvider, JankTracker jankTracker) {
         super(host, contentContainer, true, startSurface, tabContentManagerSupplier,
-                overviewModeBehaviorSupplier, topUiThemeColorProvider, jankTracker);
+                overviewModeBehaviorSupplier, topUiThemeColorProvider, jankTracker, null, null);
     }
 
     @Override

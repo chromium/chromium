@@ -141,10 +141,26 @@ public class TabUiTestHelper {
      * @param index The index of the target card.
      */
     public static void clickNthCardFromTabSwitcher(ChromeTabbedActivity cta, int index) {
+        clickTabSwitcherCardWithParent(cta, index, org.chromium.chrome.R.id.compositor_view_holder);
+    }
+
+    private static void clickTabSwitcherCardWithParent(
+            ChromeTabbedActivity cta, int index, int parentId) {
         assertTrue(cta.getLayoutManager().overviewVisible());
-        onView(allOf(withParent(withId(org.chromium.chrome.R.id.compositor_view_holder)),
-                       withId(R.id.tab_list_view)))
+        onView(allOf(withParent(withId(parentId)), withId(R.id.tab_list_view)))
                 .perform(RecyclerViewActions.actionOnItemAtPosition(index, click()));
+    }
+
+    /**
+     * Click the Nth card in grid tab switcher. When group is enabled and the Nth card is a
+     * group, this will open up the dialog; otherwise this will open up the tab page.
+     * @param cta  The current running activity.
+     * @param index The index of the target card.
+     */
+    public static void clickNthCardFromTabletTabSwitcherPolish(
+            ChromeTabbedActivity cta, int index) {
+        clickTabSwitcherCardWithParent(
+                cta, index, org.chromium.chrome.R.id.grid_tab_switcher_view_holder);
     }
 
     /**

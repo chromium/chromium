@@ -25,13 +25,6 @@
 
         <include layout="@layout/compositor_view_holder"/>
 
-        <ViewStub
-            android:id="@+id/grid_tab_switcher_view_holder_stub"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:inflatedId="@+id/grid_tab_switcher_view_holder"
-            android:layout="@layout/grid_tab_switcher_view_holder" />
-
         <!-- Parent holder for the AR SurfaceView, used to render content when
             in AR mode (which has some separate requirements preventing us from
             using the default compositor surface view). This needs to be in
@@ -128,6 +121,13 @@
             android:id="@+id/control_container_stub"
             android:layout_width="match_parent"
             android:layout_height="wrap_content" />
+
+      <ViewStub
+          android:id="@+id/grid_tab_switcher_view_holder_stub"
+          android:layout_width="match_parent"
+          android:layout_height="match_parent"
+          android:inflatedId="@+id/grid_tab_switcher_view_holder"
+          android:layout="@layout/grid_tab_switcher_view_holder" />
 
         <ViewStub
             android:id="@+id/continuous_search_container_stub"

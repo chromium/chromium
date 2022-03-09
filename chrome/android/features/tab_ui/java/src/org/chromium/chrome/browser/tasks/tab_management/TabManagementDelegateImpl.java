@@ -155,9 +155,10 @@ public class TabManagementDelegateImpl implements TabManagementDelegate {
 
     @Override
     public Layout createStartSurfaceLayout(Context context, LayoutUpdateHost updateHost,
-            LayoutRenderHost renderHost, StartSurface startSurface, JankTracker jankTracker) {
-        return StartSurfaceDelegate.createStartSurfaceLayout(
-                context, updateHost, renderHost, startSurface, jankTracker);
+            LayoutRenderHost renderHost, StartSurface startSurface, JankTracker jankTracker,
+            ViewGroup startSurfaceScrimAnchor, ScrimCoordinator scrimCoordinator) {
+        return StartSurfaceDelegate.createStartSurfaceLayout(context, updateHost, renderHost,
+                startSurface, jankTracker, startSurfaceScrimAnchor, scrimCoordinator);
     }
 
     @Override

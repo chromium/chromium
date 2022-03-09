@@ -19,12 +19,9 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
-import static org.chromium.components.embedder_support.util.UrlConstants.NTP_NON_NATIVE_URL;
-
 import android.graphics.Bitmap;
 import android.support.test.InstrumentationRegistry;
 
-import androidx.annotation.Nullable;
 import androidx.test.filters.MediumTest;
 
 import org.junit.After;
@@ -37,11 +34,9 @@ import org.junit.runner.RunWith;
 
 import org.chromium.base.Callback;
 import org.chromium.base.GarbageCollectionTestUtils;
-import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
-import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.browser.compositor.layouts.Layout;
 import org.chromium.chrome.browser.compositor.layouts.LayoutManagerImpl;
@@ -63,6 +58,7 @@ import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.util.TabStripUtils;
 import org.chromium.chrome.test.util.browser.Features.DisableFeatures;
 import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
+import org.chromium.components.browser_ui.widget.scrim.ScrimCoordinator;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.test.util.DisableAnimationsTestRule;
 import org.chromium.ui.test.util.UiRestriction;
@@ -78,14 +74,13 @@ import java.util.concurrent.TimeoutException;
  * Tests for the {@link TabSwitcher} on tablet
  */
 @RunWith(ChromeJUnit4ClassRunner.class)
-@CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
-@EnableFeatures({ChromeFeatureList.GRID_TAB_SWITCHER_FOR_TABLETS})
+@CommandLineFlags.
+Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE, "force-fieldtrials=Study/Group"})
+@EnableFeatures({ChromeFeatureList.GRID_TAB_SWITCHER_FOR_TABLETS + "<Study"})
 @DisableFeatures(ChromeFeatureList.TAB_TO_GTS_ANIMATION)
 @Restriction(
         {Restriction.RESTRICTION_TYPE_NON_LOW_END_DEVICE, UiRestriction.RESTRICTION_TYPE_TABLET})
-@Batch(Batch.PER_CLASS)
 public class TabSwitcherTabletTest {
-
     private static final long CALLBACK_WAIT_TIMEOUT = 15L;
     @ClassRule
     public static DisableAnimationsTestRule sEnableAnimationsRule =
@@ -94,33 +89,28 @@ public class TabSwitcherTabletTest {
     public ChromeTabbedActivityTestRule mActivityTestRule = new ChromeTabbedActivityTestRule();
 
     private List<WeakReference<Bitmap>> mAllBitmaps = new LinkedList<>();
-    private Callback<Bitmap> mBitmapListener =
-            (bitmap) -> mAllBitmaps.add(new WeakReference<>(bitmap));
     private TabSwitcher.TabListDelegate mTabListDelegate;
 
-    private CallbackHelper mLayoutChangedCallbackHelper;
-    private LayoutStateObserver mLayoutObserver;
+    private CallbackHelper mLayoutChangedCallbackHelper = new CallbackHelper();
     private int mCurrentlyActiveLayout;
     private Callback<LayoutManagerImpl> mLayoutManagerCallback;
 
     @Before
     public void setUp() throws ExecutionException {
-        // After setUp, Chrome is launched and has one NTP.
-        mActivityTestRule.startMainActivityFromLauncher();
+        mActivityTestRule.startMainActivityOnBlankPage();
+        CriteriaHelper.pollUiThread(mActivityTestRule.getActivity()
+                                            .getTabModelSelectorSupplier()
+                                            .get()::isTabStateInitialized);
 
         Layout layout = mActivityTestRule.getActivity().getLayoutManager().getOverviewLayout();
         assertTrue(layout instanceof StartSurfaceLayout);
         StartSurfaceLayout mStartSurfaceLayout = (StartSurfaceLayout) layout;
 
         mTabListDelegate = mStartSurfaceLayout.getStartSurfaceForTesting().getGridTabListDelegate();
+        Callback<Bitmap> mBitmapListener = (bitmap) -> mAllBitmaps.add(new WeakReference<>(bitmap));
         mTabListDelegate.setBitmapCallbackForTesting(mBitmapListener);
 
-        CriteriaHelper.pollUiThread(mActivityTestRule.getActivity()
-                                            .getTabModelSelectorSupplier()
-                                            .get()::isTabStateInitialized);
-
-        mLayoutChangedCallbackHelper = new CallbackHelper();
-        mLayoutObserver = new LayoutStateProvider.LayoutStateObserver() {
+        LayoutStateObserver mLayoutObserver = new LayoutStateProvider.LayoutStateObserver() {
             @Override
             public void onFinishedHiding(int layoutType) {
                 mCurrentlyActiveLayout = layoutType;
@@ -132,6 +122,8 @@ public class TabSwitcherTabletTest {
                 ()
                         -> mActivityTestRule.getActivity().getLayoutManagerSupplier().addObserver(
                                 mLayoutManagerCallback));
+
+        prepareTabs(1, 1);
     }
 
     @After
@@ -145,7 +137,6 @@ public class TabSwitcherTabletTest {
 
     @Test
     @MediumTest
-    @DisabledTest
     public void testEnterAndExitTabSwitcherVerifyThumbnails()
             throws ExecutionException, TimeoutException {
         enterGTSWithThumbnailChecking();
@@ -155,7 +146,6 @@ public class TabSwitcherTabletTest {
     @Test
     @MediumTest
     public void testToggleIncognitoSwitcher() throws InterruptedException, ExecutionException {
-        prepareTabs(1, 1, NTP_NON_NATIVE_URL);
         TabUiTestHelper.enterTabSwitcher(mActivityTestRule.getActivity());
 
         // Start with incognito switcher.
@@ -170,10 +160,8 @@ public class TabSwitcherTabletTest {
 
     @Test
     @MediumTest
-    @DisabledTest
     public void testTabSwitcherToolbar()
             throws InterruptedException, ExecutionException, TimeoutException {
-        prepareTabs(1, 0, NTP_NON_NATIVE_URL);
         TabUiTestHelper.enterTabSwitcher(mActivityTestRule.getActivity());
 
         // Assert hidden views.
@@ -184,14 +172,17 @@ public class TabSwitcherTabletTest {
                 .check(matches(withEffectiveVisibility(GONE)));
         onView(allOf(withId(R.id.new_tab_button), withParent(withId(R.id.tab_switcher_toolbar))))
                 .check(matches(withEffectiveVisibility(GONE)));
+        onView(allOf(withId(R.id.incognito_tabs_stub),
+                       withParent(withId(R.id.tab_switcher_toolbar))))
+                .check(matches(withEffectiveVisibility(GONE)));
+        onView(allOf(withId(R.id.tab_switcher_mode_tab_switcher_button),
+                       withParent(withId(R.id.tab_switcher_switches_and_menu))))
+                .check(matches(withEffectiveVisibility(GONE)));
 
         // Assert visible views.
         onView(allOf(withId(R.id.new_tab_view), withParent(withId(R.id.tab_switcher_toolbar))))
                 .check(matches(isDisplayed()));
         onView(allOf(withId(R.id.menu_button_wrapper),
-                       withParent(withId(R.id.tab_switcher_switches_and_menu))))
-                .check(matches(isDisplayed()));
-        onView(allOf(withId(R.id.tab_switcher_mode_tab_switcher_button),
                        withParent(withId(R.id.tab_switcher_switches_and_menu))))
                 .check(matches(isDisplayed()));
 
@@ -204,6 +195,62 @@ public class TabSwitcherTabletTest {
                 .check(matches(withEffectiveVisibility(GONE)));
         onView(allOf(withId(R.id.toolbar), withClassName(is(ToolbarTablet.class.getName()))))
                 .check(matches(isDisplayed()));
+    }
+
+    @Test
+    @MediumTest
+    @CommandLineFlags.Add({"force-fieldtrial-params=Study.Group:enable_launch_polish/true"})
+    public void testTabSwitcherToolbar_withPolishFlag_incognitoTabsOpen()
+            throws InterruptedException, ExecutionException, TimeoutException {
+        TabUiTestHelper.enterTabSwitcher(mActivityTestRule.getActivity());
+
+        // Assert hidden views.
+        onView(allOf(withId(R.id.incognito_switch),
+                       withParent(withId(R.id.tab_switcher_switches_and_menu))))
+                .check(matches(withEffectiveVisibility(GONE)));
+        onView(allOf(withId(R.id.new_tab_button), withParent(withId(R.id.tab_switcher_toolbar))))
+                .check(matches(withEffectiveVisibility(GONE)));
+        onView(allOf(withId(R.id.tab_switcher_mode_tab_switcher_button),
+                       withParent(withId(R.id.tab_switcher_switches_and_menu))))
+                .check(matches(withEffectiveVisibility(GONE)));
+
+        // Assert visible views.
+        onView(allOf(withId(R.id.new_tab_view), withParent(withId(R.id.tab_switcher_toolbar))))
+                .check(matches(isDisplayed()));
+        onView(allOf(withId(R.id.menu_button_wrapper),
+                       withParent(withId(R.id.tab_switcher_switches_and_menu))))
+                .check(matches(isDisplayed()));
+        onView(allOf(withId(R.id.incognito_toggle_tabs),
+                       withParent(withId(R.id.tab_switcher_toolbar))))
+                .check(matches(isDisplayed()));
+        // Tablet toolbar is not hidden for polish
+        onView(allOf(withId(R.id.toolbar), withClassName(is(ToolbarTablet.class.getName()))))
+                .check(matches(isDisplayed()));
+
+        // Exit switcher.
+        exitSwitcherPolishWithTabClick(0);
+
+        // Assert tablet toolbar shows and switcher toolbar is gone.
+        onView(allOf(withId(R.id.tab_switcher_toolbar),
+                       withClassName(is(TabSwitcherModeTopToolbar.class.getName()))))
+                .check(matches(withEffectiveVisibility(GONE)));
+        onView(allOf(withId(R.id.toolbar), withClassName(is(ToolbarTablet.class.getName()))))
+                .check(matches(isDisplayed()));
+    }
+
+    @Test
+    @MediumTest
+    @CommandLineFlags.Add({"force-fieldtrial-params=Study.Group:enable_launch_polish/true"})
+    public void testTabSwitcherV1Scrim() throws TimeoutException {
+        TabUiTestHelper.enterTabSwitcher(mActivityTestRule.getActivity());
+
+        ScrimCoordinator scrimCoordinator = mActivityTestRule.getActivity()
+                                                    .getRootUiCoordinatorForTesting()
+                                                    .getScrimCoordinator();
+        assertTrue(scrimCoordinator.isShowingScrim());
+
+        exitSwitcherPolishWithTabClick(0);
+        assertFalse(scrimCoordinator.isShowingScrim());
     }
 
     protected void clickIncognitoToggleButton() {
@@ -233,7 +280,7 @@ public class TabSwitcherTabletTest {
         });
     }
 
-    private void prepareTabs(int numTabs, int numIncognitoTabs, @Nullable String url) {
+    private void prepareTabs(int numTabs, int numIncognitoTabs) {
         int oldCount = mTabListDelegate.getBitmapFetchCountForTesting();
         TabUiTestHelper.prepareTabsWithThumbnail(
                 mActivityTestRule, numTabs, numIncognitoTabs, null);
@@ -252,7 +299,14 @@ public class TabSwitcherTabletTest {
 
     private void exitSwitcherWithTabClick(int index) throws TimeoutException {
         TabUiTestHelper.clickNthCardFromTabSwitcher(mActivityTestRule.getActivity(), index);
-        mLayoutChangedCallbackHelper.waitForFirst(CALLBACK_WAIT_TIMEOUT, TimeUnit.SECONDS);
+        mLayoutChangedCallbackHelper.waitForCallback(1, 1, CALLBACK_WAIT_TIMEOUT, TimeUnit.SECONDS);
+        assertTrue(mCurrentlyActiveLayout == LayoutType.TAB_SWITCHER);
+    }
+
+    private void exitSwitcherPolishWithTabClick(int index) throws TimeoutException {
+        TabUiTestHelper.clickNthCardFromTabletTabSwitcherPolish(
+                mActivityTestRule.getActivity(), index);
+        mLayoutChangedCallbackHelper.waitForCallback(1, 1, CALLBACK_WAIT_TIMEOUT, TimeUnit.SECONDS);
         assertTrue(mCurrentlyActiveLayout == LayoutType.TAB_SWITCHER);
     }
 
