@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/web_applications/web_app_launch_process.h"
 
 #include "base/files/file_path.h"
+#include "base/memory/values_equivalent.h"
 #include "base/metrics/histogram_macros.h"
 #include "build/build_config.h"
 #include "chrome/browser/apps/app_service/app_launch_params.h"
@@ -23,11 +24,11 @@
 #include "chrome/browser/ui/web_applications/web_app_launch_utils.h"
 #include "chrome/browser/web_applications/os_integration/os_integration_manager.h"
 #include "chrome/browser/web_applications/web_app.h"
+#include "chrome/browser/web_applications/web_app_launch_queue.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "chrome/browser/web_applications/web_app_sync_bridge.h"
 #include "chrome/browser/web_applications/web_app_tab_helper.h"
-#include "chrome/browser/web_applications/web_launch_params_helper.h"
 #include "components/services/app_service/public/cpp/intent_util.h"
 #include "components/site_engagement/content/site_engagement_service.h"
 #include "extensions/common/constants.h"
@@ -112,8 +113,9 @@ content::WebContents* WebAppLaunchProcess::Run() {
   if (!web_contents)
     return nullptr;
 
-  MaybeEnqueueWebLaunchParams(launch_url, is_file_handling, web_contents,
-                              navigate_result.did_navigate);
+  MaybeEnqueueWebLaunchParams(
+      launch_url, is_file_handling, web_contents,
+      /*started_new_navigation=*/navigate_result.did_navigate);
 
   RecordMetrics(params_.app_id, params_.container,
                 apps::GetAppLaunchSource(params_.launch_source), launch_url,
@@ -312,13 +314,25 @@ WebAppLaunchProcess::NavigateResult WebAppLaunchProcess::MaybeNavigateBrowser(
   content::WebContents* existing_tab = tab_strip->GetActiveWebContents();
   DCHECK(existing_tab);
   if (GetLaunchNavigateExistingClient() ==
-          LaunchHandler::NavigateExistingClient::kNever &&
-      provider_.registrar().IsUrlInAppScope(existing_tab->GetLastCommittedURL(),
-                                            params_.app_id)) {
-    // If the web contents is currently navigating then interrupt it. The
-    // current page is now being used for this app launch.
-    existing_tab->Stop();
-    return {.web_contents = existing_tab, .did_navigate = false};
+      LaunchHandler::NavigateExistingClient::kNever) {
+    if (base::ValuesEquivalent(WebAppTabHelper::FromWebContents(existing_tab)
+                                   ->EnsureLaunchQueue()
+                                   .GetPendingLaunchAppId(),
+                               &params_.app_id)) {
+      // This WebContents is already handling a launch for this app. It may
+      // currently be out of scope but the in progress app launch will put it
+      // back in scope. The new app launch params can be queued up to fire after
+      // the existing app launch completes.
+      return {.web_contents = existing_tab, .did_navigate = false};
+    }
+
+    if (provider_.registrar().IsUrlInAppScope(
+            existing_tab->GetLastCommittedURL(), params_.app_id)) {
+      // If the web contents is currently navigating then interrupt it. The
+      // current page is now being used for this app launch.
+      existing_tab->Stop();
+      return {.web_contents = existing_tab, .did_navigate = false};
+    }
   }
 
   const int tab_index = tab_strip->GetIndexOfWebContents(existing_tab);
@@ -342,14 +356,17 @@ void WebAppLaunchProcess::MaybeEnqueueWebLaunchParams(
     const GURL& launch_url,
     bool is_file_handling,
     content::WebContents* web_contents,
-    bool is_navigating) {
+    bool started_new_navigation) {
   if (is_file_handling || web_app_->launch_handler().has_value()) {
-    WebLaunchParamsHelper::EnqueueLaunchParams(
-        web_contents, provider_.registrar(), web_app_->app_id(),
-        /*await_navigation=*/is_navigating, launch_url,
-        /*launch_dir=*/{},
-        is_file_handling ? params_.launch_files
-                         : std::vector<base::FilePath>());
+    WebAppLaunchParams launch_params;
+    launch_params.started_new_navigation = started_new_navigation;
+    launch_params.app_id = web_app_->app_id();
+    launch_params.target_url = launch_url;
+    launch_params.paths =
+        is_file_handling ? params_.launch_files : std::vector<base::FilePath>();
+    WebAppTabHelper::FromWebContents(web_contents)
+        ->EnsureLaunchQueue()
+        .Enqueue(std::move(launch_params));
   }
 }
 

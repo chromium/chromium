@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/strings/strcat.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/ui/browser.h"
@@ -276,6 +277,115 @@ IN_PROC_BROWSER_TEST_F(WebAppLaunchHandlerBrowserTest,
     // Check that we never left the current page.
     EXPECT_TRUE(EvalJs(web_contents, "window.thisIsTheSamePage").ExtractBool());
   }
+}
+
+IN_PROC_BROWSER_TEST_F(WebAppLaunchHandlerBrowserTest,
+                       RouteToExistingClientNavigateNeverMultipleLaunches) {
+  AppId app_id = InstallTestWebApp(
+      "/web_apps/"
+      "get_manifest.html?route_to_existing_client_navigate_never.json");
+  EXPECT_EQ(GetLaunchHandler(app_id),
+            (LaunchHandler{RouteTo::kExistingClient,
+                           NavigateExistingClient::kNever}));
+
+  // Launch the app three times in quick succession.
+  Browser* browser_1 = LaunchWebAppBrowser(profile(), app_id);
+  Browser* browser_2 = LaunchWebAppBrowser(profile(), app_id);
+  Browser* browser_3 = LaunchWebAppBrowserAndWait(profile(), app_id);
+  EXPECT_EQ(browser_1, browser_2);
+  EXPECT_EQ(browser_2, browser_3);
+
+  // Check that all 3 LaunchParams got enqueued.
+  content::WebContents* web_contents =
+      browser_1->tab_strip_model()->GetActiveWebContents();
+  GURL start_url = embedded_test_server()->GetURL(
+      "/web_apps/basic.html?route_to=existing-client&navigate=never");
+  const char* script = R"(
+      new Promise(resolve => {
+        let remaining = 3;
+        let targetURLs = [];
+        window.launchQueue.setConsumer(launchParams => {
+          targetURLs.push(launchParams.targetURL);
+          if (--remaining == 0) {
+            resolve(targetURLs.join('|'));
+          }
+        });
+      });
+    )";
+  EXPECT_EQ(EvalJs(web_contents, script).ExtractString(),
+            base::StrCat({start_url.spec(), "|", start_url.spec(), "|",
+                          start_url.spec()}));
+}
+
+IN_PROC_BROWSER_TEST_F(WebAppLaunchHandlerBrowserTest,
+                       RouteToExistingClientNavigateAlwaysMultipleLaunches) {
+  AppId app_id = InstallTestWebApp(
+      "/web_apps/"
+      "get_manifest.html?route_to_existing_client_navigate_always.json");
+  EXPECT_EQ(GetLaunchHandler(app_id),
+            (LaunchHandler{RouteTo::kExistingClient,
+                           NavigateExistingClient::kAlways}));
+
+  // Launch the app three times in quick succession.
+  Browser* browser_1 = LaunchWebAppBrowser(profile(), app_id);
+  Browser* browser_2 = LaunchWebAppBrowser(profile(), app_id);
+  Browser* browser_3 = LaunchWebAppBrowserAndWait(profile(), app_id);
+  EXPECT_EQ(browser_1, browser_2);
+  EXPECT_EQ(browser_2, browser_3);
+
+  // Check that only the last LaunchParams made it through.
+  content::WebContents* web_contents =
+      browser_1->tab_strip_model()->GetActiveWebContents();
+  GURL start_url = embedded_test_server()->GetURL(
+      "/web_apps/basic.html?route_to=existing-client&navigate=always");
+  const char* script = R"(
+      new Promise(resolve => {
+        let targetURLs = [];
+        window.launchQueue.setConsumer(launchParams => {
+          targetURLs.push(launchParams.targetURL);
+          // Wait a tick to let any additional erroneous launchParams get added.
+          requestAnimationFrame(() => {
+            resolve(targetURLs.join('|'));
+          });
+        });
+      });
+    )";
+  EXPECT_EQ(EvalJs(web_contents, script).ExtractString(), start_url.spec());
+}
+
+IN_PROC_BROWSER_TEST_F(WebAppLaunchHandlerBrowserTest,
+                       LaunchNavigationInterruptedByOutOfScopeNavigation) {
+  AppId app_id =
+      InstallTestWebApp("/web_apps/get_manifest.html?route_to_new_client.json");
+  EXPECT_EQ(
+      GetLaunchHandler(app_id),
+      (LaunchHandler{RouteTo::kNewClient, NavigateExistingClient::kAlways}));
+
+  // Launch the web app and immediately navigate it out of scope during its
+  // initial navigation.
+  Browser* app_browser = LaunchWebAppBrowser(profile(), app_id);
+  GURL out_of_scope_url = embedded_test_server()->GetURL("/empty.html");
+  NavigateToURLAndWait(app_browser, out_of_scope_url);
+  content::WebContents* web_contents =
+      app_browser->tab_strip_model()->GetActiveWebContents();
+  EXPECT_EQ(web_contents->GetLastCommittedURL(), out_of_scope_url);
+
+  // Check that the launch params are not enqueued in the out of scope document.
+  GURL start_url = embedded_test_server()->GetURL(
+      "/web_apps/basic.html?route_to=existing-client&navigate=never");
+  const char* script = R"(
+      new Promise(resolve => {
+        let targetURLs = [];
+        window.launchQueue.setConsumer(launchParams => {
+          targetURLs.push(launchParams.targetURL);
+        });
+        // Wait a tick to let any erroneous launch params get added.
+        requestAnimationFrame(() => {
+          resolve(targetURLs.join('|'));
+        });
+      });
+    )";
+  EXPECT_EQ(EvalJs(web_contents, script).ExtractString(), "");
 }
 
 IN_PROC_BROWSER_TEST_F(WebAppLaunchHandlerBrowserTest, GlobalLaunchQueue) {
