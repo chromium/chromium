@@ -72,13 +72,14 @@ def ReadPowerMetricsData(scenario_dir, browser_identifier: str):
           'package_joules',
       ])
       # Expected processor fields on M1.
-      out_sample['processor'] = GetDictionaryKeys(parsed_sample['processor'], [
-          'ane_energy',
-          'dram_energy',
-          'cpu_energy',
-          'gpu_energy',
-          'package_energy',
-      ])
+      out_sample['processor'].update(
+          GetDictionaryKeys(parsed_sample['processor'], [
+              'ane_energy',
+              'dram_energy',
+              'cpu_energy',
+              'gpu_energy',
+              'package_energy',
+          ]))
       if 'clusters' in parsed_sample['processor']:
         for cluster in parsed_sample['processor']['clusters']:
           out_sample['processor'][cluster['name']] = GetDictionaryKeys(
