@@ -400,16 +400,6 @@ ci.builder(
 )
 
 ci.builder(
-    name = "linux-blink-v8-oilpan",
-    console_view_entry = consoles.console_view_entry(
-        category = "linux|blink",
-        short_name = "VO",
-    ),
-    notifies = ["linux-blink-fyi-bots"],
-    os = os.LINUX_BIONIC_SWITCH_TO_DEFAULT,
-)
-
-ci.builder(
     name = "linux-blink-v8-sandbox-future-dbg",
     console_view_entry = consoles.console_view_entry(
         category = "linux|blink",

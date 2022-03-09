@@ -3283,15 +3283,6 @@
           'isolated_scripts': 'chromium_web_tests_and_wpt_webdriver_isolated_scripts',
         },
       },
-      'linux-blink-v8-oilpan': {
-        'mixins': [
-          'linux-bionic',
-        ],
-        'test_suites': {
-          'gtest_tests': 'chromium_gtests',
-          'isolated_scripts': 'chromium_webkit_isolated_scripts',
-        },
-      },
       'linux-blink-v8-sandbox-future-dbg': {
         'mixins': [
           'linux-bionic',

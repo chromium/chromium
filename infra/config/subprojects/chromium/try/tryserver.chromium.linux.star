@@ -209,10 +209,6 @@ try_.builder(
 )
 
 try_.builder(
-    name = "linux-blink-v8-oilpan",
-)
-
-try_.builder(
     name = "linux-blink-web-tests-force-accessibility-rel",
 )
 
