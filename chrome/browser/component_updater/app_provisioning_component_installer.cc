@@ -1,0 +1,142 @@
+// Copyright 2022 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#include "chrome/browser/component_updater/app_provisioning_component_installer.h"
+
+#include <stdint.h>
+
+#include <iterator>
+#include <memory>
+#include <string>
+#include <utility>
+#include <vector>
+
+#include "base/bind.h"
+#include "base/feature_list.h"
+#include "base/files/file_path.h"
+#include "base/files/file_util.h"
+#include "base/logging.h"
+#include "base/memory/ref_counted.h"
+#include "base/path_service.h"
+#include "base/stl_util.h"
+#include "base/task/post_task.h"
+#include "base/task/thread_pool.h"
+#include "base/values.h"
+#include "base/version.h"
+#include "chrome/browser/apps/app_provisioning_service/app_provisioning_data_manager.h"
+#include "chrome/common/chrome_features.h"
+#include "components/component_updater/component_installer.h"
+#include "components/component_updater/component_updater_paths.h"
+
+namespace {
+
+constexpr base::FilePath::CharType kAppProvisioningBinaryPbFileName[] =
+    FILE_PATH_LITERAL("app_data.textproto");
+
+// The SHA256 of the SubjectPublicKeyInfo used to sign the extension.
+// The extension id is: fellaebeeieagcalnmmpapfioejgihci
+constexpr uint8_t kAppProvisioningPublicKeySHA256[32] = {
+    0x54, 0xbb, 0x04, 0x14, 0x48, 0x40, 0x62, 0x0b, 0xdc, 0xcf, 0x0f,
+    0x58, 0xe4, 0x96, 0x87, 0x28, 0x52, 0x36, 0x7f, 0x5f, 0x5c, 0xcf,
+    0xc5, 0x4c, 0xf5, 0xb9, 0x77, 0x25, 0x74, 0xce, 0xa1, 0xb3};
+
+constexpr char kAppProvisioningManifestName[] = "App Provisioning";
+
+void LoadAppMetadataFromDisk(const base::FilePath& pb_path) {
+  if (pb_path.empty())
+    return;
+
+  VLOG(1) << "Reading Download App Metadata from file: " << pb_path.value();
+  std::string binary_pb;
+  if (!base::ReadFileToString(pb_path, &binary_pb)) {
+    // ComponentReady will only be called when there is some installation of the
+    // component ready, so it would be correct to consider this an error.
+    VLOG(1) << "Failed reading from " << pb_path.value();
+    return;
+  }
+
+  apps::AppProvisioningDataManager::Get()->PopulateFromDynamicUpdate(binary_pb);
+}
+
+}  // namespace
+
+namespace component_updater {
+
+bool AppProvisioningComponentInstallerPolicy::
+    SupportsGroupPolicyEnabledComponentUpdates() const {
+  return true;
+}
+
+bool AppProvisioningComponentInstallerPolicy::RequiresNetworkEncryption()
+    const {
+  return false;
+}
+
+update_client::CrxInstaller::Result
+AppProvisioningComponentInstallerPolicy::OnCustomInstall(
+    const base::Value& manifest,
+    const base::FilePath& install_dir) {
+  return update_client::CrxInstaller::Result(0);  // Nothing custom here.
+}
+
+void AppProvisioningComponentInstallerPolicy::OnCustomUninstall() {}
+
+base::FilePath AppProvisioningComponentInstallerPolicy::GetInstalledPath(
+    const base::FilePath& base) {
+  return base.Append(kAppProvisioningBinaryPbFileName);
+}
+
+void AppProvisioningComponentInstallerPolicy::ComponentReady(
+    const base::Version& version,
+    const base::FilePath& install_dir,
+    base::Value manifest) {
+  VLOG(1) << "Component ready, version " << version.GetString() << " in "
+          << install_dir.value();
+
+  base::ThreadPool::PostTask(
+      FROM_HERE, {base::MayBlock(), base::TaskPriority::BEST_EFFORT},
+      base::BindOnce(&LoadAppMetadataFromDisk, GetInstalledPath(install_dir)));
+}
+
+// Called during startup and installation before ComponentReady().
+bool AppProvisioningComponentInstallerPolicy::VerifyInstallation(
+    const base::Value& manifest,
+    const base::FilePath& install_dir) const {
+  // No need to actually validate the proto here, since we'll do the checking
+  // in `PopulateFromDynamicUpdate()`.
+  return base::PathExists(GetInstalledPath(install_dir));
+}
+
+base::FilePath AppProvisioningComponentInstallerPolicy::GetRelativeInstallDir()
+    const {
+  return base::FilePath(FILE_PATH_LITERAL("AppProvisioning"));
+}
+
+void AppProvisioningComponentInstallerPolicy::GetHash(
+    std::vector<uint8_t>* hash) const {
+  hash->assign(std::begin(kAppProvisioningPublicKeySHA256),
+               std::end(kAppProvisioningPublicKeySHA256));
+}
+
+std::string AppProvisioningComponentInstallerPolicy::GetName() const {
+  return kAppProvisioningManifestName;
+}
+
+update_client::InstallerAttributes
+AppProvisioningComponentInstallerPolicy::GetInstallerAttributes() const {
+  return update_client::InstallerAttributes();
+}
+
+void RegisterAppProvisioningComponent(component_updater::ComponentUpdateService* cus) {
+  if (!base::FeatureList::IsEnabled(features::kAppProvisioningStatic)) {
+    return;
+  }
+
+  VLOG(1) << "Registering App Provisioning component.";
+  auto installer = base::MakeRefCounted<ComponentInstaller>(
+      std::make_unique<AppProvisioningComponentInstallerPolicy>());
+  installer->Register(cus, base::OnceClosure());
+}
+
+}  // namespace component_updater
