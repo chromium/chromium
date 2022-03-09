@@ -2133,7 +2133,7 @@
     },
     {
       name: "SharedAutofill",
-      status: "experimental",
+      status: "test",
     },
     {
       name: "SharedStorageAPI",
