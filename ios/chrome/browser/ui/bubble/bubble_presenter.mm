@@ -144,13 +144,13 @@ const CGFloat kBubblePresentationDelay = 1;
 }
 
 - (void)userEnteredTabSwitcher {
-  if ([self.tabTipBubblePresenter isUserEngaged]) {
+  if (self.tabTipBubblePresenter.userEngaged) {
     base::RecordAction(base::UserMetricsAction("NewTabTipTargetSelected"));
   }
 }
 
 - (void)toolsMenuDisplayed {
-  if (self.incognitoTabTipBubblePresenter.isUserEngaged) {
+  if (self.incognitoTabTipBubblePresenter.userEngaged) {
     base::RecordAction(
         base::UserMetricsAction("NewIncognitoTabTipTargetSelected"));
   }
@@ -176,8 +176,8 @@ const CGFloat kBubblePresentationDelay = 1;
   discoverFeedHeaderAnchor.x += menuButton.frame.size.width / 2;
 
   // If the feature engagement tracker does not consider it valid to display
-  // the new tab tip, then end early to prevent the potential reassignment
-  // of the existing |tabTipBubblePresenter| to nil.
+  // the tip, then end early to prevent the potential reassignment of the
+  // existing |discoverFeedHeaderMenuTipBubblePresenter| to nil.
   BubbleViewControllerPresenter* presenter = [self
       presentBubbleForFeature:feature_engagement::kIPHDiscoverFeedHeaderFeature
                     direction:arrowDirection
@@ -204,7 +204,7 @@ const CGFloat kBubblePresentationDelay = 1;
 
   // If the feature engagement tracker does not consider it valid to display
   // the tip, then end early to prevent the potential reassignment of the
-  // existing |bottomToolbarTipBubblePresenter| to nil.
+  // existing |readingListTipBubblePresenter| to nil.
   BubbleViewControllerPresenter* presenter = [self
       presentBubbleForFeature:feature_engagement::kIPHReadingListMessagesFeature
                     direction:arrowDirection
@@ -257,9 +257,9 @@ const CGFloat kBubblePresentationDelay = 1;
   // considered engaged, it can't be overwritten or set to |nil| or else it will
   // reset the |userEngaged| property. Once the user is not engaged, the bubble
   // can be safely overwritten or set to |nil|.
-  if (!self.tabTipBubblePresenter.isUserEngaged)
+  if (!self.tabTipBubblePresenter.userEngaged)
     [self presentNewTabTipBubble];
-  if (!self.incognitoTabTipBubblePresenter.isUserEngaged)
+  if (!self.incognitoTabTipBubblePresenter.userEngaged)
     [self presentNewIncognitoTabTipBubble];
 
   // The bottom toolbar and Discover feed header menu don't use the
@@ -268,7 +268,7 @@ const CGFloat kBubblePresentationDelay = 1;
 }
 
 - (void)presentLongPressBubble {
-  if (self.longPressToolbarTipBubblePresenter.isUserEngaged)
+  if (self.longPressToolbarTipBubblePresenter.userEngaged)
     return;
 
   if (![self canPresentBubble])

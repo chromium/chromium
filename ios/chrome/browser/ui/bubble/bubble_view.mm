@@ -471,8 +471,7 @@ const CGFloat kSnoozeButtonFontSize = 15.0f;
     // Enforce the arrow's size, scaling by |kArrowScaleFactor| to prevent gaps
     // between the arrow and the background view.
     [self.arrow.widthAnchor constraintEqualToConstant:kArrowSize.width],
-    [self.arrow.heightAnchor constraintEqualToConstant:kArrowSize.height]
-
+    [self.arrow.heightAnchor constraintEqualToConstant:kArrowSize.height],
   ];
   return constraints;
 }

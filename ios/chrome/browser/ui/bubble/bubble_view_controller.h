@@ -11,7 +11,7 @@
 // interest.
 @interface BubbleViewController : UIViewController
 
-// Initialize the bubble with the given text, arrow direction, and alignment.
+// Initializes the bubble with the given text, arrow direction, and alignment.
 - (instancetype)initWithText:(NSString*)text
               arrowDirection:(BubbleArrowDirection)direction
                    alignment:(BubbleAlignment)alignment

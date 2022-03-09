@@ -144,10 +144,8 @@ const CGFloat kVoiceOverAnnouncementDelay = 1;
   [parentView addGestureRecognizer:self.outsideBubbleTapRecognizer];
   [parentView addGestureRecognizer:self.swipeRecognizer];
 
-  CGFloat duration = kBubbleVisibilityDuration;
-
   self.bubbleDismissalTimer = [NSTimer
-      scheduledTimerWithTimeInterval:duration
+      scheduledTimerWithTimeInterval:kBubbleVisibilityDuration
                               target:self
                             selector:@selector(bubbleDismissalTimerFired:)
                             userInfo:nil
@@ -164,7 +162,7 @@ const CGFloat kVoiceOverAnnouncementDelay = 1;
 
   if (self.voiceOverAnnouncement) {
     // The VoiceOverAnnouncement should be dispatched after a delay to account
-    // the fact that it can be presented right after a screen change (for
+    // for the fact that it can be presented right after a screen change (for
     // example when the application or a new tab is opened). This screen change
     // is changing the VoiceOver focus to focus a newly visible element. If this
     // announcement is currently being read, it is cancelled. The added delay

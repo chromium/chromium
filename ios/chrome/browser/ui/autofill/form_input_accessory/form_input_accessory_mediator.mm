@@ -517,16 +517,13 @@ const base::Feature kFormInputKeyboardReloadInputViews{
         }];
 }
 
-// Post the passed |suggestionView| to the consumer. In case suggestions are
-// disabled, it's keep for later.
+// Post the passed |suggestions| to the consumer.
 - (void)updateWithProvider:(id<FormInputSuggestionsProvider>)provider
                suggestions:(NSArray<FormSuggestion*>*)suggestions {
-  // If the suggestions are disabled, post this view with no suggestions to the
-  // consumer. This allows the navigation buttons be in sync.
   if (self.suggestionsDisabled) {
     return;
   } else {
-    // If suggestions are enabled update |currentProvider|.
+    // If suggestions are enabled, update |currentProvider|.
     self.currentProvider = provider;
     // Post it to the consumer.
     [self.consumer showAccessorySuggestions:suggestions];

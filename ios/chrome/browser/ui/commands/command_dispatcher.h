@@ -61,7 +61,7 @@
 // (recursively) any protocols that |protocol| conforms to.
 - (BOOL)dispatchingForProtocol:(Protocol*)protocol;
 
-// Returns the reciever if it is dispatching for |protocol|, and CHECK()s
+// Returns the receiver if it is dispatching for |protocol|, and CHECK()s
 // otherwise.
 - (CommandDispatcher*)strictCallableForProtocol:(Protocol*)protocol;
 

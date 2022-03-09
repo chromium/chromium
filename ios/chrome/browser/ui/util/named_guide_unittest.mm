@@ -127,7 +127,7 @@ TEST_F(NamedGuideTest, TestConstrainedFrame) {
   VerifyLayoutFrame(guide, kNewLowerLeftCorner);
 }
 
-// Tests that setting the |constrainedView| and |contstrainedFrame| correctly
+// Tests that setting the |constrainedView| and |constrainedFrame| correctly
 // nullify other properties.
 TEST_F(NamedGuideTest, TestConstrainedViewFrameMutex) {
   GuideName* test_guide = @"NamedGuideTest";

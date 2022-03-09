@@ -146,8 +146,7 @@ AutofillSuggestionState::AutofillSuggestionState(
   }
 }
 
-#pragma mark -
-#pragma mark CRWWebStateObserver
+#pragma mark - CRWWebStateObserver
 
 - (void)webStateDestroyed:(web::WebState*)webState {
   DCHECK_EQ(_webState, webState);
@@ -320,7 +319,7 @@ AutofillSuggestionState::AutofillSuggestionState(
         }];
 }
 
-#pragma mark FormInputSuggestionsProvider
+#pragma mark - FormInputSuggestionsProvider
 
 - (void)retrieveSuggestionsForForm:(const autofill::FormActivityParams&)params
                           webState:(web::WebState*)webState

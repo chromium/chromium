@@ -39,7 +39,7 @@ class WebStateList;
 
 // This class contains all the logic to get and provide keyboard input accessory
 // views to its consumer. As well as telling the consumer when the default
-// accessory view shoeuld be restored to the system default.
+// accessory view should be restored to the system default.
 @interface FormInputAccessoryMediator : NSObject <FormSuggestionClient>
 
 // Returns a mediator observing the passed `WebStateList` and associated with
