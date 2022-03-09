@@ -186,6 +186,10 @@ class BLINK_COMMON_EXPORT PermissionsPolicy {
   static std::unique_ptr<PermissionsPolicy> CreateForFencedFrame(
       const url::Origin& origin);
 
+  static std::unique_ptr<PermissionsPolicy> CreateFromParsedPolicy(
+      const ParsedPermissionsPolicy& parsed_policy,
+      const url::Origin& origin);
+
   bool IsFeatureEnabled(mojom::PermissionsPolicyFeature feature) const;
 
   // Returns whether or not the given feature is enabled by this policy for a
@@ -242,6 +246,11 @@ class BLINK_COMMON_EXPORT PermissionsPolicy {
       const url::Origin& origin,
       const PermissionsPolicyFeatureList& features);
 
+  static std::unique_ptr<PermissionsPolicy> CreateFromParsedPolicy(
+      const ParsedPermissionsPolicy& parsed_policy,
+      const url::Origin& origin,
+      const PermissionsPolicyFeatureList& features);
+
   static std::unique_ptr<PermissionsPolicy> CreateForFencedFrame(
       const url::Origin& origin,
       const PermissionsPolicyFeatureList& features);
@@ -265,6 +274,10 @@ class BLINK_COMMON_EXPORT PermissionsPolicy {
 
   // Set this to true if `allowlists_` have already been checked.
   mutable bool allowlists_checked_;
+
+  // Set this to true if `allowlists_` was populated by web app manifest
+  // declared permissions policy.
+  bool allowlists_set_by_manifest_{false};
 
   // Records whether or not each feature was enabled for this frame by its
   // parent frame.

@@ -51,6 +51,13 @@ class PermissionsPolicyTest : public testing::Test {
         parent, empty_container_policy, origin, feature_list_);
   }
 
+  std::unique_ptr<PermissionsPolicy> CreateFromParsedPolicy(
+      const ParsedPermissionsPolicy& parsed_policy,
+      const url::Origin& origin) {
+    return PermissionsPolicy::CreateFromParsedPolicy(parsed_policy, origin,
+                                                     feature_list_);
+  }
+
   std::unique_ptr<PermissionsPolicy> CreateFromParentWithFramePolicy(
       const PermissionsPolicy* parent,
       const ParsedPermissionsPolicy& frame_policy,
@@ -1653,6 +1660,34 @@ TEST_F(PermissionsPolicyTest, ProposedTestNestedPolicyPropagates) {
 TEST_F(PermissionsPolicyTest, CreateForFencedFrame) {
   std::unique_ptr<PermissionsPolicy> policy = CreateForFencedFrame(origin_a_);
   EXPECT_FALSE(policy->IsFeatureEnabled(kDefaultOnFeature));
+  EXPECT_FALSE(policy->IsFeatureEnabled(kDefaultSelfFeature));
+}
+
+TEST_F(PermissionsPolicyTest, CreateFromParsedPolicy) {
+  ParsedPermissionsPolicy parsed_policy = {
+      {{kDefaultSelfFeature, /* allowed_origins */ {origin_a_, origin_b_},
+        false, false}}};
+  auto policy = CreateFromParsedPolicy(parsed_policy, origin_a_);
+  EXPECT_TRUE(
+      policy->IsFeatureEnabledForOrigin(kDefaultSelfFeature, origin_a_));
+  EXPECT_TRUE(
+      policy->IsFeatureEnabledForOrigin(kDefaultSelfFeature, origin_b_));
+}
+
+TEST_F(PermissionsPolicyTest, CreateFromParsedPolicyExcludingSelf) {
+  ParsedPermissionsPolicy parsed_policy = {
+      {{kDefaultSelfFeature, /* allowed_origins */ {origin_b_}, false, false}}};
+  auto policy = CreateFromParsedPolicy(parsed_policy, origin_a_);
+  EXPECT_FALSE(
+      policy->IsFeatureEnabledForOrigin(kDefaultSelfFeature, origin_a_));
+  EXPECT_FALSE(
+      policy->IsFeatureEnabledForOrigin(kDefaultSelfFeature, origin_b_));
+}
+
+TEST_F(PermissionsPolicyTest, CreateFromParsedPolicyWithEmptyAllowlist) {
+  ParsedPermissionsPolicy parsed_policy = {
+      {{kDefaultSelfFeature, /* allowed_origins */ {}, false, false}}};
+  auto policy = CreateFromParsedPolicy(parsed_policy, origin_a_);
   EXPECT_FALSE(policy->IsFeatureEnabled(kDefaultSelfFeature));
 }
 

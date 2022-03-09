@@ -128,6 +128,36 @@ std::unique_ptr<PermissionsPolicy> PermissionsPolicy::CopyStateFrom(
   return new_policy;
 }
 
+// static
+std::unique_ptr<PermissionsPolicy> PermissionsPolicy::CreateFromParsedPolicy(
+    const ParsedPermissionsPolicy& parsed_policy,
+    const url::Origin& origin) {
+  return CreateFromParsedPolicy(parsed_policy, origin,
+                                GetPermissionsPolicyFeatureList());
+}
+
+// static
+std::unique_ptr<PermissionsPolicy> PermissionsPolicy::CreateFromParsedPolicy(
+    const ParsedPermissionsPolicy& parsed_policy,
+    const url::Origin& origin,
+    const PermissionsPolicyFeatureList& features) {
+  std::unique_ptr<PermissionsPolicy> new_policy =
+      base::WrapUnique(new PermissionsPolicy(origin, features));
+
+  new_policy->SetHeaderPolicy(parsed_policy);
+  if (!new_policy->allowlists_.empty()) {
+    new_policy->allowlists_set_by_manifest_ = true;
+  }
+
+  for (const auto& feature : features) {
+    new_policy->inherited_policies_[feature.first] =
+        base::Contains(new_policy->allowlists_, feature.first) &&
+        new_policy->allowlists_[feature.first].Contains(origin);
+  }
+
+  return new_policy;
+}
+
 bool PermissionsPolicy::IsFeatureEnabledByInheritedPolicy(
     mojom::PermissionsPolicyFeature feature) const {
   DCHECK(base::Contains(inherited_policies_, feature));
@@ -242,6 +272,8 @@ PermissionsPolicy::GetAllowlistForFeatureIfExists(
 
 void PermissionsPolicy::SetHeaderPolicy(
     const ParsedPermissionsPolicy& parsed_header) {
+  if (allowlists_set_by_manifest_)
+    return;
   DCHECK(allowlists_.empty() && !allowlists_checked_);
   for (const ParsedPermissionsPolicyDeclaration& parsed_declaration :
        parsed_header) {
