@@ -141,6 +141,7 @@
 <translation id="1130589222747246278"><ph name="WINDOW_TITLE" /> - Μέρος της ομάδας <ph name="GROUP_NAME" /></translation>
 <translation id="1130676589211693127">Επίπεδο μπαταρίας δεξιού ακουστικού <ph name="PERCENTAGE" />%.</translation>
 <translation id="1133418583142946603">Προσθήκη τρέχουσας καρτέλας</translation>
+<translation id="1135971365523689618"><ph name="APP_TYPE" /> εγκαταστάθηκε από <ph name="INSTALL_SOURCE" /></translation>
 <translation id="1136179794690960030"><ph name="EMOJI_NAME" />. <ph name="EMOJI_INDEX" /> από <ph name="EMOJI_COUNT" />.</translation>
 <translation id="1136712381129578788">Το κλειδί ασφαλείας είναι κλειδωμένο επειδή έγινε εισαγωγή εσφαλμένου PIN πάρα πολλές φορές. Για να το ξεκλειδώσετε, αφαιρέστε το και επανατοποθετήστε το.</translation>
 <translation id="1137589305610962734">προσωρινά δεδομένα</translation>
@@ -275,6 +276,7 @@
 <translation id="1263231323834454256">Λίστα ανάγνωσης</translation>
 <translation id="1263733306853729545">Χρησιμοποιήστε τα πλήκτρα <ph name="MINUS" /> και <ph name="EQUAL" /> για αλλαγή σελίδας σε μια λίστα υποψηφίων</translation>
 <translation id="126387934568812801">Συμπερίληψη αυτού του στιγμιότυπου οθόνης και των τίτλων ανοικτών καρτελών</translation>
+<translation id="1264083566674525434">Επεξεργασία αδειών ιστοτόπου</translation>
 <translation id="1264337193001759725">Για προβολή αρχείων καταγραφής διεπαφής δικτύου, ανατρέξτε στην ενότητα: <ph name="DEVICE_LOG_LINK" /></translation>
 <translation id="126710816202626562">Γλώσσα μετάφρασης:</translation>
 <translation id="126768002343224824">16x</translation>
@@ -410,6 +412,7 @@
 <translation id="1410616244180625362">Να συνεχίσει να επιτρέπεται στο <ph name="HOST" /> η πρόσβαση στην κάμερά σας</translation>
 <translation id="1410797069449661718">Κύλιση προς την πρώτη καρτέλα</translation>
 <translation id="1410806973194718079">Δεν είναι δυνατός ο έλεγχος πολιτικών.</translation>
+<translation id="1411724932979011919">Η καταχώρισή σας θα πρέπει να έχει τη μορφή LPA:1$&lt;smdp address&gt;$&lt;κωδικός ενεργοποίησης&gt;</translation>
 <translation id="1412681350727866021">Επιπλέον επεκτάσεις</translation>
 <translation id="1414315029670184034">Να μην επιτρέπεται στους ιστοτόπους να χρησιμοποιούν την κάμερά σας</translation>
 <translation id="1414648216875402825">Πρόκειται να ενημερώσετε σε μια ασταθή έκδοση του <ph name="PRODUCT_NAME" />, η οποία περιλαμβάνει δυνατότητες που βρίσκονται υπό ανάπτυξη. Ενδεχομένως να υπάρχουν ατέλειες και απρόσμενα σφάλματα.</translation>
@@ -900,6 +903,9 @@
 <translation id="1849186935225320012">Αυτή η σελίδα έχει τον πλήρη έλεγχο των συσκευών MIDI.</translation>
 <translation id="1850145825777333687">Διαπιστευτήρια συσκευής</translation>
 <translation id="1850508293116537636">Περιστροφή &amp;προς τα δεξιά</translation>
+<translation id="185111092974636561"><ph name="BEGIN_PARAGRAPH1" />Πριν εγγραφείτε, πρέπει να διαγράψετε το TPM, ώστε το <ph name="DEVICE_OS" /> να μπορεί να αναλάβει την ιδιοκτησία της συσκευής.<ph name="END_PARAGRAPH1" />
+    <ph name="BEGIN_PARAGRAPH2" />Μπορείτε επίσης να απενεργοποιήσετε εντελώς τη συσκευή TPM. Τα δεδομένα σας θα εξακολουθούν να αποθηκεύονται με ασφάλεια με κρυπτογράφηση λογισμικού, αλλά ορισμένες λειτουργίες ασφάλειας, όπως τα πιστοποιητικά με υποστήριξη εξοπλισμού, θα απενεργοποιηθούν.<ph name="END_PARAGRAPH2" />
+    <ph name="BEGIN_PARAGRAPH3" />Μπορείτε να αλλάξετε τις ρυθμίσεις TPM με επανεκκίνηση και είσοδο στις ρυθμίσεις BIOS/UEFI του συστήματος. Τα βήματα διαφέρουν ανάλογα με το μοντέλο της συσκευής. Για περισσότερες πληροφορίες, ανοίξτε την τεκμηρίωση του <ph name="DEVICE_OS" /> σε ξεχωριστή συσκευή πριν κάνετε επανεκκίνηση: g.co/flex/TPMHelp.<ph name="END_PARAGRAPH3" /></translation>
 <translation id="1852141627593563189">Εύρεση επιβλαβούς λογισμικού</translation>
 <translation id="1852799913675865625">Παρουσιάστηκε σφάλμα κατά την απόπειρα ανάγνωσης του αρχείου: <ph name="ERROR_TEXT" />.</translation>
 <translation id="1854049213067042715">Συνεχίστε από εκεί όπου είχατε σταματήσει. Μπορείτε να ρυθμίσετε τις εφαρμογές ώστε να γίνεται πάντοτε επαναφορά κατά την εκκίνηση ή να απενεργοποιήσετε την επαναφορά στις Ρυθμίσεις.</translation>
@@ -1135,6 +1141,7 @@
 <translation id="2090165459409185032">Για να ανακτήσετε τα στοιχεία του λογαριασμού σας, μεταβείτε στη διεύθυνση: google.com/accounts/recovery</translation>
 <translation id="2090507354966565596">Συνδέεται αυτόματα κατά τη σύνδεση</translation>
 <translation id="2090876986345970080">Ρύθμιση ασφαλείας συστήματος</translation>
+<translation id="2095774564753225041">Υποστηριζόμενοι τύποι αρχείων</translation>
 <translation id="2096715839409389970">Διαγραφή cookie τρίτου μέρους</translation>
 <translation id="2098805196501063469">Έλεγχος κωδικών πρόσβασης που απομένουν</translation>
 <translation id="2099172618127234427">Ενεργοποιείτε τις λειτουργίες εντοπισμού σφαλμάτων του Chrome OS οι οποίες θα ρυθμίσουν το sshd daemon και θα επιτρέψουν την εκκίνηση από μονάδες USB.</translation>
@@ -1603,6 +1610,8 @@
 <translation id="2527167509808613699">Όλα τα είδη συνδέσεων</translation>
 <translation id="2529887123641260401">Μπορείτε οποιαδήποτε στιγμή να αλλάξετε τις ρυθμίσεις σας ή να ανοίξετε τον οδηγό ρύθμισης ξανά από τις ρυθμίσεις της Πρόσβασης με διακόπτη.</translation>
 <translation id="2530166226437958497">Αντιμετώπιση προβλημάτων</translation>
+<translation id="2531530485656743109"><ph name="BEGIN_PARAGRAPH1" />Παρουσιάστηκε κάποιο πρόβλημα και δεν ήταν δυνατή η εγκατάσταση του <ph name="DEVICE_OS" />.<ph name="END_PARAGRAPH1" />
+    <ph name="BEGIN_PARAGRAPH2" />Για περισσότερη βοήθεια, επισκεφτείτε τη διεύθυνση g.co/flex/InstallErrors.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="2532589005999780174">Λειτουργία υψηλής αντίθεσης</translation>
 <translation id="2533649878691950253">Ο ιστότοπος αυτός αποκλείστηκε από το να γνωρίζει την ακριβή τοποθεσία σας, γιατί συνήθως δεν το επιτρέπετε</translation>
 <translation id="253434972992662860">&amp;Παύση</translation>
@@ -1652,6 +1661,7 @@
 <translation id="2587922766792651800">Το χρονικό όριο έληξε</translation>
 <translation id="2588636910004461974">Συσκευές από <ph name="VENDOR_NAME" /></translation>
 <translation id="25899519884572181">Έξοδος από τη λειτουργία ανάγνωσης</translation>
+<translation id="2593499352046705383">Πριν ξεκινήσετε, βεβαιωθείτε ότι έχετε δημιουργήσει αντίγραφα ασφαλείας για τα δεδομένα σας. Η εγκατάσταση του <ph name="DEVICE_OS" /> θα αντικαταστήσει όλα τα δεδομένα στον σκληρό δίσκο σας. Μάθετε περισσότερα στη διεύθυνση g.co/flex/InstallGuide.</translation>
 <translation id="2594999711683503743">Κάντε αναζήτηση στο Google ή πληκτρολογήστε το URL</translation>
 <translation id="2602501489742255173">Σύρετε προς τα επάνω για να ξεκινήσετε</translation>
 <translation id="2603115962224169880">Εκκαθάριση υπολογιστή</translation>
@@ -1670,6 +1680,7 @@
 <translation id="2610780100389066815">Microsoft Trust List Signing</translation>
 <translation id="2611776654555141051">Εργαλείο ορθογώνιου παραλληλόγραμμου</translation>
 <translation id="2612676031748830579">Αριθμός κάρτας</translation>
+<translation id="2613210758071148851">Να μην επιτρέπεται καμία επέκταση στον ιστότοπο <ph name="RESTRICTED_SITE" /></translation>
 <translation id="2613535083491958306">Το <ph name="ORIGIN" /> θα έχει δυνατότητα επεξεργασίας του <ph name="FILENAME" />.</translation>
 <translation id="2616366145935564096">Διαβάστε και αλλάξτε τα δεδομένα σας στο <ph name="WEBSITE_1" /></translation>
 <translation id="2618797463720777311">Ρύθμιση λειτουργίας Κοινοποίηση κοντά</translation>
@@ -3183,6 +3194,7 @@
 <translation id="4100733287846229632">Ο ελεύθερος χώρος της συσκευής είναι οριακός</translation>
 <translation id="4100853287411968461">Νέο όριο χρόνου χρήσης</translation>
 <translation id="4101352914005291489">Κρυφό SSID</translation>
+<translation id="4102469565336584882">Μη έγκυρος κωδικός. Η καταχώρισή σας θα πρέπει να έχει τη μορφή LPA:1$&lt;smdp address&gt;$&lt;κωδικός ενεργοποίησης&gt;</translation>
 <translation id="4102906002417106771">Επανεκκίνηση για powerwash</translation>
 <translation id="4104163789986725820">Ε&amp;ξαγωγή...</translation>
 <translation id="4107048419833779140">Ταυτοποίηση και κατάργηση συσκευών αποθηκευτικού χώρου</translation>
@@ -3235,6 +3247,7 @@
 <translation id="4159681666905192102">Αυτός είναι ένας λογαριασμός για παιδιά τον οποίο διαχειρίζονται οι χρήστες <ph name="CUSTODIAN_EMAIL" /> και <ph name="SECOND_CUSTODIAN_EMAIL" />.</translation>
 <translation id="4163560723127662357">Άγνωστο πληκτρολόγιο</translation>
 <translation id="4165942112764990069">Ο χρήστης <ph name="USER_EMAIL" /> δεν ανήκει σε έγκυρο οργανισμό. Επικοινωνήστε με τον διαχειριστή σας. Εάν είστε διαχειριστής, μπορείτε να ρυθμίσετε τον οργανισμό σας από τη διεύθυνση: g.co/ChromeEnterpriseAccount</translation>
+<translation id="4167393659000039775">Η Google δεν φέρει καμία ευθύνη για τυχόν απώλεια δεδομένων και το <ph name="DEVICE_OS" /> ενδέχεται να μην λειτουργεί σε μη πιστοποιημένα μοντέλα. Μάθετε περισσότερα στη διεύθυνση g.co/flex/InstallGuide.</translation>
 <translation id="4167686856635546851">Οι ιστότοποι χρησιμοποιούν συνήθως JavaScript για την προβολή διαδραστικών λειτουργιών, όπως βιντεοπαιχνίδια ή φόρμες ιστού.</translation>
 <translation id="4168015872538332605">Ορισμένες ρυθμίσεις που ανήκουν στον χρήστη <ph name="PRIMARY_EMAIL" /> κοινοποιούνται σε εσάς. Αυτές οι ρυθμίσεις επηρεάζουν το λογαριασμό σας μόνο κατά τη χρήση πολλαπλών συνδέσεων.</translation>
 <translation id="4168651806173792090"><ph name="NETWORK_NAME" /> που λήγει σε <ph name="LAST_FOUR_DIGITS" /></translation>
@@ -3260,8 +3273,10 @@
 <translation id="4200983522494130825">Νέα &amp;καρτέλα</translation>
 <translation id="4201546031411513170">Μπορείτε πάντα να επιλέξετε τα στοιχεία που θέλετε να συγχρονίσετε στις ρυθμίσεις.</translation>
 <translation id="420283545744377356">Απενεργοποίηση προφύλαξης οθόνης</translation>
+<translation id="4204851595694839599">Πώς ήταν η εμπειρία gaming που είχατε;</translation>
 <translation id="4206144641569145248">Εξωγήινος</translation>
 <translation id="4206323443866416204">Αναφορά σχολίων</translation>
+<translation id="4207522141889799150">Επεξεργασία των αδειών του ιστοτόπου <ph name="SITE" /></translation>
 <translation id="4207932031282227921">Ζητήθηκε άδεια, πατήστε F6 για απάντηση.</translation>
 <translation id="4208390505124702064">Αναζήτηση <ph name="SITE_NAME" /></translation>
 <translation id="4209092469652827314">Μεγάλο</translation>
@@ -3395,6 +3410,9 @@
 <translation id="4349828822184870497">Χρήσιμη</translation>
 <translation id="4350230709416545141">Να αποκλείεται πάντα η πρόσβαση του <ph name="HOST" /> στην τοποθεσία σας.</translation>
 <translation id="4350782034419308508">Hey Google</translation>
+<translation id="4351770750390404505"><ph name="BEGIN_PARAGRAPH1" />Για να παρέχει την καλύτερη δυνατή εμπειρία, το <ph name="DEVICE_OS" /> συλλέγει δεδομένα εξοπλισμού σχετικά με συσκευές και τα κοινοποιεί στην Google για να προσδιορίσει ποιες ενημερώσεις πρέπει να διατεθούν. Προαιρετικά, μπορείτε να επιτρέψετε στην Google να χρησιμοποιεί αυτά τα δεδομένα για επιπλέον σκοπούς, όπως η παροχή υπηρεσιών υποστήριξης, καθώς και στο πλαίσιο της βελτίωσης της εμπειρίας και των υπηρεσιών που προσφέρει το <ph name="DEVICE_OS" />.<ph name="END_PARAGRAPH1" />
+    <ph name="BEGIN_PARAGRAPH2" />Μπορείτε να συνδεθείτε σε αυτήν τη συσκευή και να επισκεφτείτε την ενότητα CHROMEOSFLEX_HARDWARE_INFO στο chrome://system για να δείτε τα δεδομένα που αποστέλλονται στην Google για το φιλτράρισμα ενημερώσεων, καθώς και στο πλαίσιο άλλων περιστατικών όπου επιλέγετε να μοιραστείτε δεδομένα με την Google.<ph name="END_PARAGRAPH2" />
+    <ph name="BEGIN_PARAGRAPH3" />Για περισσότερες λεπτομέρειες σχετικά με τα δεδομένα που η συσκευή <ph name="DEVICE_OS" /> ενδέχεται να κοινοποιήσει στην Google και τον τρόπο χρήσης τους, επισκεφτείτε τη διεύθυνση g.co/flex/HWDataCollection.<ph name="END_PARAGRAPH3" /></translation>
 <translation id="4354073718307267720">Να γίνεται ερώτηση όταν ένας ιστότοπος θέλει να δημιουργήσει έναν τρισδιάστατο χάρτη του περιβάλλοντα χώρου σας ή να παρακολουθεί τη θέση της κάμερας</translation>
 <translation id="4354344420232759511">Οι ιστότοποι που επισκέπτεστε θα εμφανίζονται εδώ</translation>
 <translation id="435527878592612277">Επιλέξτε τη φωτογραφία σας</translation>
@@ -4274,6 +4292,7 @@
 <translation id="5266113311903163739">Σφάλμα εισαγωγής της Αρχής Πιστοποίησης</translation>
 <translation id="526622169288322445">Περισσότερες ενέργειες για <ph name="ADDRESS_SUMMARY" /></translation>
 <translation id="5269977353971873915">Η εκτύπωση απέτυχε</translation>
+<translation id="5273806377963980154">Επεξεργασία URL ιστοτόπου</translation>
 <translation id="5275352920323889391">Σκύλος</translation>
 <translation id="527605719918376753">Σίγαση καρτέλας</translation>
 <translation id="527605982717517565">Να επιτρέπεται πάντα το JavaScript στο <ph name="HOST" /></translation>
@@ -4591,6 +4610,7 @@
 <translation id="5588033542900357244">(<ph name="RATING_COUNT" />)</translation>
 <translation id="558918721941304263">Φόρτωση εφαρμογών…</translation>
 <translation id="5592595402373377407">Δεν υπάρχουν ακόμη αρκετά διαθέσιμα στοιχεία.</translation>
+<translation id="5593564924968945303">Πρόγραμμα περιήγησης Chrome</translation>
 <translation id="5595485650161345191">Επεξεργασία διεύθυνσης</translation>
 <translation id="5596627076506792578">Περισσότερες επιλογές</translation>
 <translation id="5600348067066185292">Για την εγκατάσταση απαιτούνται μόνο λίγα απλά βήματα. Θα έχετε και άλλη ευκαιρία να επιβεβαιώσετε πριν γίνουν αλλαγές στον υπολογιστή σας.</translation>
@@ -5154,7 +5174,6 @@
 <translation id="6181431612547969857">Η λήψη αποκλείστηκε</translation>
 <translation id="6184099524311454384">Αναζήτηση στις καρτέλες</translation>
 <translation id="6185132558746749656">Τοποθεσία συσκευής</translation>
-<translation id="6186394437969115158">Οι ιστότοποι προβάλλουν συνήθως διαφημίσεις, ώστε να μπορούν να παρέχουν περιεχόμενο ή υπηρεσίες δωρεάν. Ωστόσο, ορισμένοι ιστότοποι είναι γνωστοί για την προβολή παρεμβατικών ή παραπλανητικών διαφημίσεων.</translation>
 <translation id="6188346519670155113">Ο συγχρονισμός προγράμματος περιήγησης Chrome είναι ενεργοποιημένος</translation>
 <translation id="6190953336330058278">Εφαρμογές Phone Hub</translation>
 <translation id="619279033188484792">Δείτε τις πρόσφατες φωτογραφίες, τα μέσα και τις ειδοποιήσεις του τηλεφώνου σας στη συσκευή <ph name="DEVICE_TYPE" />.</translation>
@@ -5273,6 +5292,7 @@
 <translation id="6300177430812514606">Δεν επιτρέπεται να ολοκληρώνουν την αποστολή ή τη λήψη δεδομένων</translation>
 <translation id="630065524203833229">Έ&amp;ξοδος</translation>
 <translation id="6300718114348072351">Δεν ήταν δυνατή η αυτόματη διαμόρφωση του <ph name="PRINTER_NAME" />. Ορίστε σύνθετες λεπτομέρειες εκτυπωτή. <ph name="LINK_BEGIN" />Μάθετε περισσότερα<ph name="LINK_END" /></translation>
+<translation id="6301300352769835063">Επιτρέψτε στην Google να χρησιμοποιεί δεδομένα του εξοπλισμού σας στο πλαίσιο της βελτίωση του <ph name="DEVICE_OS" />. Εάν δεν αποδεχτείτε, αυτά τα δεδομένα αποστέλλονται στην Google για τον προσδιορισμό των κατάλληλων ενημερώσεων, αλλά δεν αποθηκεύονται και δεν χρησιμοποιούνται με άλλον τρόπο. Μάθετε περισσότερα στη διεύθυνση g.co/flex/HWDataCollection.</translation>
 <translation id="630292539633944562">Προτάσεις προσωπικών στοιχείων</translation>
 <translation id="6305607932814307878">Καθολική πολιτική:</translation>
 <translation id="6307990684951724544">Το σύστημα είναι απασχολημένο</translation>
@@ -5366,6 +5386,7 @@
 <translation id="6398715114293939307">Κατάργηση Google Play Store</translation>
 <translation id="6398765197997659313">Έξοδος από πλήρη οθόνη</translation>
 <translation id="6399774419735315745">Κατάσκοπος</translation>
+<translation id="6404187344102273690">Gaming στο Chromebook</translation>
 <translation id="6404511346730675251">Επεξεργασία σελιδοδείκτη</translation>
 <translation id="6406303162637086258">Προσομοίωση επανεκκίνησης προγράμματος περιήγησης</translation>
 <translation id="6406506848690869874">Συγχρονισμός</translation>
@@ -5786,6 +5807,7 @@
 <translation id="6824584962142919697">&amp;Inspect elements</translation>
 <translation id="6825184156888454064">Ταξινόμηση κατά όνομα</translation>
 <translation id="6826872289184051766">Επαλήθευση μέσω USB</translation>
+<translation id="6827121912381363404">Να επιτρέπεται σε όλες τις επεκτάσεις να διαβάζουν και να αλλάζουν τον ιστότοπο <ph name="PERMITTED_SITE" /></translation>
 <translation id="6828153365543658583">Περιορισμός σύνδεσης στους ακόλουθους χρήστες:</translation>
 <translation id="6828182567531805778">Εισαγάγετε τη φράση πρόσβασης για να συγχρονίσετε τα δεδομένα σας</translation>
 <translation id="682871081149631693">QuickFix</translation>
@@ -5837,6 +5859,7 @@
 <translation id="6868934826811377550">Δείτε λεπτομέρειες</translation>
 <translation id="6871644448911473373">Απόκριση OCSP: <ph name="LOCATION" /></translation>
 <translation id="6872781471649843364">Ο κωδικός πρόσβασης που εισαγάγατε απορρίφθηκε από τον διακομιστή.</translation>
+<translation id="6874503923667733123">Εφαρμογή συστήματος Chrome OS</translation>
 <translation id="6876155724392614295">Ποδήλατο</translation>
 <translation id="6876469544038980967">Δεν είναι χρήσιμη</translation>
 <translation id="6878422606530379992">Επιτρέπονται οι αισθητήρες</translation>
@@ -6515,6 +6538,7 @@
 <translation id="7582844466922312471">Δεδομένων Κινητής Συσκευής</translation>
 <translation id="7583948862126372804">Πλήθος</translation>
 <translation id="7586498138629385861">Το Chrome θα εξακολουθεί να εκτελείται όταν υπάρχουν ανοιχτές Εφαρμογές Chrome.</translation>
+<translation id="758895749110326677">Συμβάλετε στη βελτίωση του gaming στα Chromebook</translation>
 <translation id="7589461650300748890">Να είστε προσεκτικοί.</translation>
 <translation id="7593653750169415785">Αποκλείστηκε αυτόματα επειδή απορρίψατε τις ειδοποιήσεις αρκετές φορές</translation>
 <translation id="7594725637786616550">Εκτελέστε Powerwash για να επαναφέρετε τη συσκευή <ph name="DEVICE_TYPE" /> στην αρχική της κατάσταση.</translation>
@@ -7327,6 +7351,15 @@
 <translation id="8379991678458444070">Προσθέστε σελιδοδείκτη σε αυτήν την καρτέλα για να επιστρέψετε εδώ γρήγορα</translation>
 <translation id="8382715499079447151">Προστασία προβολής</translation>
 <translation id="8382913212082956454">Αντιγραφή διεύθυνσης &amp;ηλεκτρονικού ταχυδρομείου</translation>
+<translation id="8383266303049437646"><ph name="BEGIN_PARAGRAPH1" />Δοκιμάστε αυτά τα βήματα αντιμετώπισης προβλημάτων:
+    <ph name="BEGIN_LIST" />
+    <ph name="LIST_ITEM" />Βεβαιωθείτε ότι η συσκευή σας περιέχει εσωτερικό αποθηκευτικό χώρο όπως HDD, SSD ή eMMC σε λειτουργία
+    <ph name="LIST_ITEM" />Ελέγξτε αν η συσκευή εσωτερικού αποθηκευτικού χώρου είναι μεγαλύτερη από 16 GB
+    <ph name="LIST_ITEM" />Ελέγξτε τη σύνδεση στον εσωτερικό αποθηκευτικό χώρο, εάν είναι φυσικά προσβάσιμος
+    <ph name="LIST_ITEM" />Βεβαιωθείτε ότι χρησιμοποιείτε ένα πιστοποιημένο μοντέλο και ελέγξτε τις σημειώσεις εγκατάστασης
+    <ph name="END_LIST" />
+    <ph name="END_PARAGRAPH1" />
+    <ph name="BEGIN_PARAGRAPH2" />Για περισσότερη βοήθεια, επισκεφτείτε τη διεύθυνση: g.co/flex/InstallErrors.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="8386091599636877289">Η πολιτική δεν βρέθηκε.</translation>
 <translation id="8387361103813440603">Δεν επιτρέπεται να βλέπουν την τοποθεσία σας</translation>
 <translation id="8388770971141403598">Δεν υποστηρίζονται τα δευτερεύοντα προφίλ.</translation>

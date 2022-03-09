@@ -109,6 +109,7 @@
 <translation id="2212733584906323460">नाव रेझोल्यूशन</translation>
 <translation id="2217935453350629363">सध्याचा वेग</translation>
 <translation id="2224337661447660594">इंटरनेट नाही</translation>
+<translation id="222447520299472966">किमान एक आर्ट गॅलरी अल्बम निवडणे आवश्यक आहे</translation>
 <translation id="2230005943220647148">सेल्सियस</translation>
 <translation id="2230051135190148440">CHAP</translation>
 <translation id="225692081236532131">सक्रियन स्थिती</translation>
@@ -334,6 +335,7 @@
 <translation id="5051044138948155788">हे एकमेव पेज आहे. हे तुम्हाला स्कॅनिंग सुरुवात स्क्रीनवर घेऊन जाईल.</translation>
 <translation id="5088172560898466307">सर्व्हर होस्टनाव</translation>
 <translation id="5089810972385038852">राज्य</translation>
+<translation id="5090362543162270857">IPsec (IKEv2)</translation>
 <translation id="5142961317498132443">ऑथेंटिकेशन</translation>
 <translation id="5154917547274118687">मेमरी</translation>
 <translation id="5160857336552977725">आपल्या <ph name="DEVICE_TYPE" /> वर साइन इन करा</translation>
@@ -435,6 +437,7 @@
 <translation id="6319207335391420837"><ph name="DEVICE_NAME" /> वर फर्मवेअर अपडेट करा</translation>
 <translation id="6325525973963619867">अयशस्वी</translation>
 <translation id="6340526405444716530">पर्सनलायझेशन</translation>
+<translation id="6348738456043757611">वापरकर्ता नाव आणि पासवर्ड</translation>
 <translation id="636850387210749493">Enterprise नावनोंदणी</translation>
 <translation id="6379086450106841622">टचस्क्रीन</translation>
 <translation id="6388847657025262518">स्कॅनरचा दस्तऐवज फीडर अडकला आहे. फीडर तपासा आणि पुन्हा प्रयत्न करा.</translation>
@@ -618,6 +621,7 @@
 <translation id="8675354002693747642">आधी शेअर केलेली की</translation>
 <translation id="8677859815076891398">कोणतेही अल्बम नाहीत. <ph name="LINK_BEGIN" />Google Photos<ph name="LINK_END" /> मध्ये एखादा अल्बम तयार करा.</translation>
 <translation id="8709616837707653427"><ph name="DESC_TEXT" /> हे वैशिष्ट्य व्यवस्थापित करण्यासाठी लेफ्ट किंवा राइट अ‍ॅरो की वापरा.</translation>
+<translation id="8712637175834984815">समजले</translation>
 <translation id="871560550817059752">अयशस्वी झाले - शाई संपली आहे</translation>
 <translation id="8723108084122415655">डीफॉल्ट नसलेले नेटवर्क लेटन्सी सीमेपेक्षा जास्त आहे</translation>
 <translation id="8726019395068607495">थांबले - दार उघडे आहे</translation>

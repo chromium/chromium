@@ -109,6 +109,7 @@
 <translation id="2212733584906323460">Navneløsning</translation>
 <translation id="2217935453350629363">Nuværende hastighed</translation>
 <translation id="2224337661447660594">Der er ingen internetforbindelse</translation>
+<translation id="222447520299472966">Der skal vælges mindst ét album i kunstgalleriet</translation>
 <translation id="2230005943220647148">Celsius</translation>
 <translation id="2230051135190148440">CHAP</translation>
 <translation id="225692081236532131">Aktiveringsstatus</translation>
@@ -334,6 +335,7 @@
 <translation id="5051044138948155788">Dette er den eneste side. Du videreføres til startsiden for scanning.</translation>
 <translation id="5088172560898466307">Serverens hostname</translation>
 <translation id="5089810972385038852">Stat</translation>
+<translation id="5090362543162270857">IPsec (IKEv2)</translation>
 <translation id="5142961317498132443">Godkendelse</translation>
 <translation id="5154917547274118687">Hukommelse</translation>
 <translation id="5160857336552977725">Log ind på din <ph name="DEVICE_TYPE" /></translation>
@@ -434,6 +436,7 @@
 <translation id="6319207335391420837">Opdater firmware på <ph name="DEVICE_NAME" /></translation>
 <translation id="6325525973963619867">Mislykket</translation>
 <translation id="6340526405444716530">Tilpasning</translation>
+<translation id="6348738456043757611">Brugernavn og adgangskode</translation>
 <translation id="636850387210749493">Tilmelding af virksomhed</translation>
 <translation id="6379086450106841622">Touchskærm</translation>
 <translation id="6388847657025262518">Scannerens dokumentføder sidder fast. Løs problemet, og prøv igen.</translation>
@@ -617,6 +620,7 @@
 <translation id="8675354002693747642">Forhåndsdelt nøgle:</translation>
 <translation id="8677859815076891398">Der er ingen album. Opret et album i <ph name="LINK_BEGIN" />Google Fotos<ph name="LINK_END" />.</translation>
 <translation id="8709616837707653427"><ph name="DESC_TEXT" /> Tryk på venstre- eller højrepil for at bruge denne funktion.</translation>
+<translation id="8712637175834984815">Forstået</translation>
 <translation id="871560550817059752">Handlingen mislykkedes – Mangler blæk</translation>
 <translation id="8723108084122415655">Det netværk, der ikke er angivet som standardnetværket, overstiger grænsen for forsinkelse</translation>
 <translation id="8726019395068607495">Stoppet – Åben låge</translation>

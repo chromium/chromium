@@ -109,6 +109,7 @@
 <translation id="2212733584906323460">పేరు రిజల్యూషన్</translation>
 <translation id="2217935453350629363">ప్రస్తుత వేగం</translation>
 <translation id="2224337661447660594">ఇంటర్నెట్ లేదు</translation>
+<translation id="222447520299472966">కనీసం ఒక ఆర్ట్ గ్యాలరీ ఆల్బమ్‌ను ఎంచుకోవాలి</translation>
 <translation id="2230005943220647148">సెల్సియస్</translation>
 <translation id="2230051135190148440">CHAP</translation>
 <translation id="225692081236532131">క్రియాశీలత స్థితి</translation>
@@ -334,6 +335,7 @@
 <translation id="5051044138948155788">ఈ పేజీ మాత్రమే ఉంది. ఇది మిమ్మల్ని స్కానింగ్ ప్రారంభ స్క్రీన్‌కు తీసుకువెళ్తుంది.</translation>
 <translation id="5088172560898466307">సర్వర్ హోస్ట్ పేరు</translation>
 <translation id="5089810972385038852">రాష్ట్రం</translation>
+<translation id="5090362543162270857">IPsec (IKEv2)</translation>
 <translation id="5142961317498132443">ప్రమాణీకరణ</translation>
 <translation id="5154917547274118687">మెమరీ</translation>
 <translation id="5160857336552977725">మీ <ph name="DEVICE_TYPE" />కు సైన్ ఇన్ చేయండి</translation>
@@ -434,6 +436,7 @@
 <translation id="6319207335391420837"><ph name="DEVICE_NAME" />‌లో ఫర్మ్‌వేర్‌ను అప్‌డేట్ చేయండి</translation>
 <translation id="6325525973963619867">విఫలమైంది</translation>
 <translation id="6340526405444716530">వ్యక్తిగతీకరణ</translation>
+<translation id="6348738456043757611">యూజర్‌నేమ్, పాస్‌వర్డ్</translation>
 <translation id="636850387210749493">ఎంటర్‌ప్రైజ్ నమోదు</translation>
 <translation id="6379086450106841622">టచ్‌స్క్రీన్</translation>
 <translation id="6388847657025262518">స్కానర్ డాక్యుమెంట్ ఫీడర్ ఇరుక్కుపోయింది. ఫీడర్‌ను చెక్ చేసి, మళ్లీ ట్రై చేయండి.</translation>
@@ -617,6 +620,7 @@
 <translation id="8675354002693747642">ముందే షేర్ చేసిన కీ</translation>
 <translation id="8677859815076891398">ఆల్బమ్‌లు ఏవీ లేవు. <ph name="LINK_BEGIN" />Google Photos<ph name="LINK_END" />లో ఆల్బమ్‌ను క్రియేట్ చేయండి.</translation>
 <translation id="8709616837707653427"><ph name="DESC_TEXT" /> ఈ ఫీచర్‌ను మేనేజ్ చేయడానికి ఎడమ వైపు బాణం లేదా కుడి వైపు బాణం కీలను ఉపయోగించండి.</translation>
+<translation id="8712637175834984815">అర్థమైంది</translation>
 <translation id="871560550817059752">విఫలమైంది - ఇంక్ అయిపోయింది</translation>
 <translation id="8723108084122415655">పరిమితిని మించి ప్రతిస్పందన సమయం ఉన్న డిఫాల్ట్-యేతర నెట్‌వర్క్</translation>
 <translation id="8726019395068607495">ఆగిపోయింది - డోర్ తెరిచి ఉంది</translation>

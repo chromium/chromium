@@ -109,6 +109,7 @@
 <translation id="2212733584906323460">이름 결정</translation>
 <translation id="2217935453350629363">현재 속도</translation>
 <translation id="2224337661447660594">인터넷 연결 없음</translation>
+<translation id="222447520299472966">아트 갤러리 앨범을 하나 이상 선택해야 합니다.</translation>
 <translation id="2230005943220647148">섭씨</translation>
 <translation id="2230051135190148440">CHAP</translation>
 <translation id="225692081236532131">활성화 상태</translation>
@@ -619,6 +620,7 @@
 <translation id="8675354002693747642">사전 공유 키:</translation>
 <translation id="8677859815076891398">앨범이 없습니다. <ph name="LINK_BEGIN" />Google 포토<ph name="LINK_END" />에서 앨범을 만드세요.</translation>
 <translation id="8709616837707653427"><ph name="DESC_TEXT" /> 이 기능을 관리하려면 왼쪽 또는 오른쪽 화살표 키를 사용하세요.</translation>
+<translation id="8712637175834984815">확인</translation>
 <translation id="871560550817059752">실패 - 잉크 없음</translation>
 <translation id="8723108084122415655">기본이 아닌 네트워크가 지연 시간 기준을 초과했습니다.</translation>
 <translation id="8726019395068607495">중지됨 - 덮개 열림</translation>

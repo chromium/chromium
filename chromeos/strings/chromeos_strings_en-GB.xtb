@@ -109,6 +109,7 @@
 <translation id="2212733584906323460">Name resolution</translation>
 <translation id="2217935453350629363">Current speed</translation>
 <translation id="2224337661447660594">No Internet</translation>
+<translation id="222447520299472966">A minimum of one Art gallery album needs to be selected</translation>
 <translation id="2230005943220647148">Celsius</translation>
 <translation id="2230051135190148440">CHAP</translation>
 <translation id="225692081236532131">Activation status</translation>
@@ -620,6 +621,7 @@ Try tapping the mic to ask me anything.</translation>
 <translation id="8675354002693747642">Pre-shared key</translation>
 <translation id="8677859815076891398">No albums. Create an album in <ph name="LINK_BEGIN" />Google Photos<ph name="LINK_END" />.</translation>
 <translation id="8709616837707653427"><ph name="DESC_TEXT" /> Use the left or right arrow keys to manage this feature.</translation>
+<translation id="8712637175834984815">Got it</translation>
 <translation id="871560550817059752">Failed – Out of ink</translation>
 <translation id="8723108084122415655">Non-default network above latency threshold</translation>
 <translation id="8726019395068607495">Stopped – door open</translation>

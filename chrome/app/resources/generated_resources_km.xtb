@@ -141,6 +141,7 @@
 <translation id="1130589222747246278"><ph name="WINDOW_TITLE" /> - ផ្នែកនៃក្រុម <ph name="GROUP_NAME" /></translation>
 <translation id="1130676589211693127">កម្រិតថ្ម​ខាងស្ដាំ <ph name="PERCENTAGE" />%។</translation>
 <translation id="1133418583142946603">បញ្ចូល​ផ្ទាំង​បច្ចុប្បន្ន</translation>
+<translation id="1135971365523689618"><ph name="APP_TYPE" /> ដែលបានដំឡើងពី <ph name="INSTALL_SOURCE" /></translation>
 <translation id="1136179794690960030"><ph name="EMOJI_NAME" />។ <ph name="EMOJI_INDEX" /> នៃ <ph name="EMOJI_COUNT" />។</translation>
 <translation id="1136712381129578788">សោសុវត្ថិភាព​ជាប់សោហើយ ដោយសារបញ្ចូល​កូដ PIN មិនត្រឹមត្រូវ​ច្រើនដងពេក។ ដើម្បីដោះសោ​សោសុវត្ថិភាពនេះ សូមដកចេញ រួចដោតបញ្ចូលវាម្ដងទៀត។</translation>
 <translation id="1137589305610962734">ទិន្នន័យ​បណ្ដោះអាសន្ន</translation>
@@ -275,6 +276,7 @@
 <translation id="1263231323834454256">បញ្ជី​អាន</translation>
 <translation id="1263733306853729545">ប្រើ​គ្រាប់ចុច <ph name="MINUS" /> និង <ph name="EQUAL" /> ដើម្បី​មើលបញ្ជី​ពាក្យ</translation>
 <translation id="126387934568812801">រួមបញ្ចូល​រូបថតអេក្រង់​នេះ និង​ចំណងជើង​នៃផ្ទាំង​បើក</translation>
+<translation id="1264083566674525434">កែការអនុញ្ញាតគេហទំព័រ</translation>
 <translation id="1264337193001759725">ដើម្បីមើល​កំណត់ហេតុ UI របស់បណ្ដាញ សូមមើល៖ <ph name="DEVICE_LOG_LINK" /></translation>
 <translation id="126710816202626562">ភាសាបកប្រែ៖</translation>
 <translation id="126768002343224824">16x</translation>
@@ -410,6 +412,7 @@
 <translation id="1410616244180625362">បន្តអនុញ្ញាត <ph name="HOST" /> ឲ្យចូលប្រើកាមេរ៉ារបស់អ្នក</translation>
 <translation id="1410797069449661718">រំកិលទៅផ្ទាំងដំបូង</translation>
 <translation id="1410806973194718079">មិនអាចពិនិត្យគោលការណ៍បានទេ</translation>
+<translation id="1411724932979011919">ការបញ្ចូលរបស់អ្នកគួរតែមានទម្រង់ LPA៖1$&lt;smdp address&gt;$&lt;activation code&gt;</translation>
 <translation id="1412681350727866021">កម្មវិធីបន្ថែមបន្ថែម</translation>
 <translation id="1414315029670184034">មិនអនុញ្ញាតឱ្យ​គេហទំព័រ​ប្រើកាមេរ៉ា​របស់អ្នកទេ</translation>
 <translation id="1414648216875402825">អ្នកកំពុងធ្វើបច្ចុប្បន្នភាពកំណែមិនថេរនៃ <ph name="PRODUCT_NAME" /> ដែលផ្ទុកលក្ខណៈពិសេសដែលនៅក្នុងប្រតិបត្តិការនៅឡើយ។ ការគាំង និងកំហុសដែលបានមិនបានរំពឹងទុកនឹងកើតមាន។ សូមបន្តដោយប្រុងប្រយ័ត្ន។</translation>
@@ -900,6 +903,9 @@
 <translation id="1849186935225320012">ទំព័រនេះមានការគ្រប់គ្រងឧបករណ៍ MIDI ទាំងស្រុង។</translation>
 <translation id="1850145825777333687">ព័ត៌មានផ្ទៀងផ្ទាត់ឧបករណ៍</translation>
 <translation id="1850508293116537636">បង្វិលបញ្ច្រាសទ្រនិចនាឡិកា</translation>
+<translation id="185111092974636561"><ph name="BEGIN_PARAGRAPH1" />មុនពេលចុះឈ្មោះ អ្នកត្រូវសម្អាត TPM ជាមុនសិន ដើម្បីអាចឱ្យ <ph name="DEVICE_OS" /> មានកម្មសិទ្ធិលើឧបករណ៍។<ph name="END_PARAGRAPH1" />
+    <ph name="BEGIN_PARAGRAPH2" />អ្នកក៏អាចបិទឧបករណ៍ TPM ទាំងស្រុងបានផងដែរ។ ទិន្នន័យរបស់អ្នកនឹងនៅតែត្រូវបានរក្សាទុកយ៉ាងមានសុវត្ថិភាពដោយប្រើការ​អ៊ីនគ្រីបកម្មវិធីដដែល ប៉ុន្តែមុខងារសុវត្ថិភាពមួយចំនួនដូចជា វិញ្ញាបនបត្រដែលអ៊ីនគ្រីបដោយប្រើហាតវែរនឹងត្រូវបិទ។<ph name="END_PARAGRAPH2" />
+    <ph name="BEGIN_PARAGRAPH3" />អ្នកអាចផ្លាស់ប្ដូរការកំណត់ TPM របស់អ្នកដោយចាប់ផ្ដើមឡើងវិញ និងចូលការកំណត់ BIOS/UEFI ប្រព័ន្ធ។ ជំហានមានភាពខុសគ្នាផ្អែកលើម៉ូដែលឧបករណ៍។ ដើម្បីទទួលបានព័ត៌មានបន្ថែម សូមបើកឯកសារ <ph name="DEVICE_OS" /> នៅលើឧបករណ៍ដាច់ដោយឡែក មុនពេលអ្នកចាប់​ផ្ដើម​ឡើង​វិញ៖ g.co/flex/TPMHelp។<ph name="END_PARAGRAPH3" /></translation>
 <translation id="1852141627593563189">ស្វែងរកកម្មវិធី​បង្កគ្រោះថ្នាក់</translation>
 <translation id="1852799913675865625">មានកំហុសឆ្គងខណៈពេលព្យាយាមអានឯកសារនេះ៖ <ph name="ERROR_TEXT" />។</translation>
 <translation id="1854049213067042715">បន្តពីកន្លែង​ដែលអ្នកបាន​ចាកចេញ។ អ្នកអាចកំណត់​ឱ្យកម្មវិធី​ស្ដារជានិច្ច​នៅពេល​ចាប់ផ្ដើម ឬបិទការស្ដារ​នៅក្នុង​ការកំណត់។</translation>
@@ -1135,6 +1141,7 @@
 <translation id="2090165459409185032">ដើម្បីសង្គ្រោះទិន្នន័យគណនីរបស់អ្នក សូមចូលទៅកាន់៖ google.com/accounts/recovery</translation>
 <translation id="2090507354966565596">ភ្ជាប់​ដោយស្វ័យប្រវត្តិ នៅពេលដែល​អ្នកចូល</translation>
 <translation id="2090876986345970080">ការកំណត់សុវត្ថិភាពប្រព័ន្ធ</translation>
+<translation id="2095774564753225041">ប្រភេទឯកសារដែលអាចប្រើបាន</translation>
 <translation id="2096715839409389970">សម្អាតខូគីភាគីទីបី</translation>
 <translation id="2098805196501063469">ពិនិត្យមើល​ពាក្យសម្ងាត់​ដែលនៅសល់</translation>
 <translation id="2099172618127234427">អ្នកកំពុងបើកដំណើរការលក្ខណៈពិសេសកម្ចាត់កំហុស Chrome OS ដែលនឹងកំណត់  sshd daemon និងបើកដំណើរការចាប់ផ្តើមចេញពីឧបករណ៍ USB។</translation>
@@ -1603,6 +1610,8 @@
 <translation id="2527167509808613699">ប្រភេទនៃការភ្ជាប់ណាមួយ</translation>
 <translation id="2529887123641260401">អ្នកអាច​ប្ដូរការកំណត់របស់អ្នក​បានជានិច្ច ឬបើក​ការណែនាំ​អំពីការរៀបចំ​ម្តងទៀត​ពីការកំណត់​មុខងារប្រើឧបករណ៍ចុច។</translation>
 <translation id="2530166226437958497">ការដោះស្រាយបញ្ហា</translation>
+<translation id="2531530485656743109"><ph name="BEGIN_PARAGRAPH1" />មានអ្វីមួយខុសប្រក្រតី និងមិនអាចដំឡើង <ph name="DEVICE_OS" /> បានទេ។<ph name="END_PARAGRAPH1" />
+    <ph name="BEGIN_PARAGRAPH2" />ដើម្បីទទួលបាន​ជំនួយបន្ថែម សូមចូល​ទៅកាន់៖ g.co/flex/InstallErrors។<ph name="END_PARAGRAPH2" /></translation>
 <translation id="2532589005999780174">របៀបភាពដិតកម្រិតខ្ពស់</translation>
 <translation id="2533649878691950253">គេហទំព័រនេះ​ត្រូវបានទប់ស្កាត់​មិនឱ្យដឹង​ទីតាំងជាក់លាក់​របស់អ្នក ដោយសារ​ជាធម្មតា​អ្នកមិនអនុញ្ញាត​ឱ្យដឹង</translation>
 <translation id="253434972992662860">ផ្អាក</translation>
@@ -1652,6 +1661,7 @@
 <translation id="2587922766792651800">អស់ម៉ោង​ហើយ</translation>
 <translation id="2588636910004461974">ឧបករណ៍​ពី <ph name="VENDOR_NAME" /></translation>
 <translation id="25899519884572181">ចាកចេញពីមុខងារអាន</translation>
+<translation id="2593499352046705383">មុនពេលចាប់ផ្ដើម សូមប្រាកដថា អ្នកមានការបម្រុងទុកទិន្នន័យរបស់អ្នក។ ការដំឡើង <ph name="DEVICE_OS" /> នឹងលុបពីលើថាស​រឹងរបស់អ្នក។ ស្វែងយល់បន្ថែមតាមរយៈ g.co/flex/InstallGuide។</translation>
 <translation id="2594999711683503743">ស្វែងរក​តាម Google ឬ​វាយបញ្ចូល URL</translation>
 <translation id="2602501489742255173">អូស​ឡើងលើ ដើម្បី​ចាប់ផ្ដើម</translation>
 <translation id="2603115962224169880">សម្អាត​កុំព្យូទ័រ</translation>
@@ -1670,6 +1680,7 @@
 <translation id="2610780100389066815">ការចុះហត្ថលេខាបញ្ជីទុកចិត្ត Microsoft</translation>
 <translation id="2611776654555141051">ឧបករណ៍បញ្ចូលរាងចតុកោណកែង</translation>
 <translation id="2612676031748830579">លេខកាត</translation>
+<translation id="2613210758071148851">កុំអនុញ្ញាតកម្មវិធីបន្ថែមនៅលើ <ph name="RESTRICTED_SITE" /></translation>
 <translation id="2613535083491958306"><ph name="ORIGIN" /> នឹងអាចកែ <ph name="FILENAME" /></translation>
 <translation id="2616366145935564096">អាន និងប្តូរទិន្នន័យរបស់អ្នកនៅលើ <ph name="WEBSITE_1" /></translation>
 <translation id="2618797463720777311">រៀបចំការ​ចែករំលែកនៅ​ជិត</translation>
@@ -3183,6 +3194,7 @@
 <translation id="4100733287846229632">ទំហំផ្ទុកឧបករណ៍សល់តិចណាស់</translation>
 <translation id="4100853287411968461">រយៈពេលកំណត់នៅលើអេក្រង់ថ្មី</translation>
 <translation id="4101352914005291489">SSID ដែលបានលាក់</translation>
+<translation id="4102469565336584882">លេខកូដ​មិនត្រឹមត្រូវ។ ការបញ្ចូលរបស់អ្នកគួរតែមានទម្រង់ LPA៖1$&lt;smdp address&gt;$&lt;activation code&gt;</translation>
 <translation id="4102906002417106771">ចាប់ផ្ដើមឡើងវិញដើម្បីផៅវើរវាស់</translation>
 <translation id="4104163789986725820">នាំចេញ...</translation>
 <translation id="4107048419833779140">កំណត់​អត្តសញ្ញាណ និងដក​ឧបករណ៍ផ្ទុកចេញ។</translation>
@@ -3235,6 +3247,7 @@
 <translation id="4159681666905192102">នេះគឺជាគណនីសម្រាប់កុមារដែលគ្រប់គ្រងដោយ <ph name="CUSTODIAN_EMAIL" /> និង <ph name="SECOND_CUSTODIAN_EMAIL" />។</translation>
 <translation id="4163560723127662357">ក្តារចុចមិនស្គាល់</translation>
 <translation id="4165942112764990069"><ph name="USER_EMAIL" /> មិនមែនជា​កម្មសិទ្ធិរបស់​ស្ថាប័នដែលមាន​សុពលភាពទេ។ សូមទាក់ទង​អ្នកគ្រប់គ្រង​របស់អ្នក។ ប្រសិនបើអ្នក​គឺជាអ្នកគ្រប់គ្រង អ្នកអាចរៀបចំ​ស្ថាប័នរបស់អ្នក​ដោយចូលទៅកាន់៖ g.co/ChromeEnterpriseAccount</translation>
+<translation id="4167393659000039775">Google មិនទទួលខុសត្រូវចំពោះការបាត់បង់ទិន្នន័យទាំងឡាយឡើយ ហើយ <ph name="DEVICE_OS" /> អាចនឹងមិនដំណើរការនៅលើម៉ូដែលគ្មានការទទួលស្គាល់ទេ។ ស្វែងយល់បន្ថែមតាមរយៈ g.co/flex/InstallGuide។</translation>
 <translation id="4167686856635546851">ជាធម្មតា គេហទំព័រប្រើ JavaScript ដើម្បីបង្ហាញមុខងារអន្តរកម្មដូចជា វីដេអូហ្គេម ឬទម្រង់​បែបបទបណ្ដាញជាដើម</translation>
 <translation id="4168015872538332605">ការកំណត់មួយចំនួនជាកម្មសិទ្ធិរបស់ <ph name="PRIMARY_EMAIL" /> កំពុងត្រូវបានចែករំលែកជាមួយអ្នក។ ការកំណត់ទាំងនេះមានប្រសិទ្ធភាពលើគណនីរបស់អ្នក នៅពេលប្រើគណនីចូលច្រើនតែប៉ុណ្ណោះ។</translation>
 <translation id="4168651806173792090"><ph name="NETWORK_NAME" /> ដែលបញ្ចប់ដោយ <ph name="LAST_FOUR_DIGITS" /></translation>
@@ -3260,8 +3273,10 @@
 <translation id="4200983522494130825">ផ្ទាំងថ្មី</translation>
 <translation id="4201546031411513170">អ្នកអាចជ្រើសរើស​អ្វីដែលត្រូវធ្វើសមកាលកម្ម​នៅក្នុងការកំណត់បានជានិច្ច។</translation>
 <translation id="420283545744377356">បិទធាតុរក្សាអេក្រង់</translation>
+<translation id="4204851595694839599">តើបទពិសោធន៍នៃការលេងហ្គេមរបស់អ្នកយ៉ាងម៉េចដែរ?</translation>
 <translation id="4206144641569145248">មនុស្សភពក្រៅ</translation>
 <translation id="4206323443866416204">របាយការណ៍មតិស្ថាបនា</translation>
+<translation id="4207522141889799150">កែការអនុញ្ញាតគេហទំព័រសម្រាប់ <ph name="SITE" /></translation>
 <translation id="4207932031282227921">បានស្នើសុំការអនុញ្ញាត, ចុច F6 ដើម្បីឆ្លើយតប</translation>
 <translation id="4208390505124702064">ស្វែងរក <ph name="SITE_NAME" /></translation>
 <translation id="4209092469652827314">ធំ</translation>
@@ -3395,6 +3410,9 @@
 <translation id="4349828822184870497">មានប្រយោជន៍</translation>
 <translation id="4350230709416545141">ទប់ស្កាត់ <ph name="HOST" /> មិនឱ្យចូលប្រើទីតាំងរបស់អ្នកជានិច្ច</translation>
 <translation id="4350782034419308508">Ok Google</translation>
+<translation id="4351770750390404505"><ph name="BEGIN_PARAGRAPH1" />ដើម្បីផ្ដល់នូវ​បទពិសោធន៍ប្រើប្រាស់​ដ៏ល្អបំផុត <ph name="DEVICE_OS" /> ប្រមូលទិន្នន័យហាតវែរ​អំពីឧបករណ៍ ហើយចែករំលែកទិន្នន័យនោះជាមួយ Google ដើម្បីកំណត់ថាតើ​កំណែថ្មីៗ​ណាខ្លះ​ដែលគួរផ្ដល់ជូន។ ជាជម្រើស អ្នកអាច​អនុញ្ញាតឱ្យ Google ប្រើទិន្នន័យនេះ​សម្រាប់គោលបំណងបន្ថែម​ដូចជា ជំនួយ និងការកែលម្អ​សេវាកម្មនិងបទពិសោធន៍​ប្រើប្រាស់ <ph name="DEVICE_OS" />។<ph name="END_PARAGRAPH1" />
+    <ph name="BEGIN_PARAGRAPH2" />អ្នកអាច​ចូល​នៅលើ​ឧបករណ៍នេះ និងចូលទៅកាន់​ផ្នែក CHROMEOSFLEX_HARDWARE_INFO នៅក្នុង chrome://system ដើម្បីមើលទិន្នន័យ​ដែល​ផ្ញើទៅ Google សម្រាប់​ត្រងកំណែថ្មី ក៏ដូចជា​ករណី​ផ្សេងទៀត​ដែលអ្នកជ្រើសរើស​ចែករំលែក​ទិន្នន័យ​ជាមួយ Google ផងដែរ។<ph name="END_PARAGRAPH2" />
+    <ph name="BEGIN_PARAGRAPH3" />ដើម្បីទទួលបាន​ព័ត៌មានលម្អិតបន្ថែម​ពាក់ព័ន្ធនឹង​ទិន្នន័យ​ដែល <ph name="DEVICE_OS" /> អាចចែករំលែក​ជាមួយ Google និងរបៀបដែលវាត្រូវបាន​ប្រើប្រាស់ សូមចូល​ទៅកាន់ g.co/flex/HWDataCollection។<ph name="END_PARAGRAPH3" /></translation>
 <translation id="4354073718307267720">សួរ​នៅពេលគេហទំព័រចង់បង្កើតផែនទី 3D នៃមជ្ឈដ្ឋានជុំវិញរបស់អ្នក ឬតាមដានទីតាំងកាមេរ៉ា</translation>
 <translation id="4354344420232759511">គេហទំព័រ​ដែលអ្នកចូលមើលនឹង​បង្ហាញ​នៅ​ទីនេះ</translation>
 <translation id="435527878592612277">ជ្រើសរើសរូបថតរបស់អ្នក</translation>
@@ -4274,6 +4292,7 @@
 <translation id="5266113311903163739">កំហុសឆ្គងនាំចូលអាជ្ញាធរវិញ្ញាបនប័ត្រ</translation>
 <translation id="526622169288322445">សកម្មភាព​ច្រើន​ទៀត​សម្រាប់ <ph name="ADDRESS_SUMMARY" /></translation>
 <translation id="5269977353971873915">ការបោះពុម្ពបានបរាជ័យ</translation>
+<translation id="5273806377963980154">កែ URL គេហទំព័រ</translation>
 <translation id="5275352920323889391">ឆ្កែ</translation>
 <translation id="527605719918376753">បិទសម្លេងផ្ទាំង</translation>
 <translation id="527605982717517565">អនុញ្ញាតឲ្យ JavaScript នៅលើ <ph name="HOST" /> ជានិច្ច</translation>
@@ -4591,6 +4610,7 @@
 <translation id="5588033542900357244">(<ph name="RATING_COUNT" />)</translation>
 <translation id="558918721941304263">កំពុង​ផ្ទុក​កម្មវិធី...</translation>
 <translation id="5592595402373377407">មិនមានទិន្នន័យគ្រប់គ្រាន់នៅឡើយទេ។</translation>
+<translation id="5593564924968945303">កម្មវិធី​រុករក​តាម​អ៊ីនធឺណិត Chrome</translation>
 <translation id="5595485650161345191">កែអាសយដ្ឋាន</translation>
 <translation id="5596627076506792578">ជម្រើសច្រើនទៀត</translation>
 <translation id="5600348067066185292">ការដំឡើងអនុវត្តតាមពីរបីជំហានងាយៗ។ អ្នក​នឹង​មាន​ឱកាស​ម្ដងទៀតដើម្បីបញ្ជាក់ មុនពេលការផ្លាស់ប្ដូរត្រូវបានធ្វើឡើងចំពោះកុំព្យូទ័ររបស់អ្នក។</translation>
@@ -5154,7 +5174,6 @@
 <translation id="6181431612547969857">ការទាញយកត្រូវបានរារាំង</translation>
 <translation id="6184099524311454384">ស្វែងរកផ្ទាំង</translation>
 <translation id="6185132558746749656">ទីតាំងឧបករណ៍</translation>
-<translation id="6186394437969115158">ជាធម្មតា គេហទំព័របង្ហាញការផ្សាយពាណិជ្ជកម្ម ដើម្បីអាចឱ្យពួកគេផ្ដល់ខ្លឹមសារ ឬសេវាកម្មដោយឥតគិតថ្លៃ។ ប៉ុន្តែគេហទំព័រមួយចំនួនត្រូវបានគេស្គាល់ថា បង្ហាញ​ការផ្សាយពាណិជ្ជកម្ម​នាំឱ្យយល់ច្រឡំ ឬរំខាន។</translation>
 <translation id="6188346519670155113">សមកាលកម្ម​កម្មវិធីរុករកតាម​អ៊ីនធឺណិត Chrome ត្រូវបានបើក</translation>
 <translation id="6190953336330058278">កម្មវិធីមណ្ឌលទូរសព្ទ</translation>
 <translation id="619279033188484792">មើលរូបថត មេឌៀ និងការជូនដំណឹងថ្មីៗរបស់ទូរសព្ទអ្នកនៅលើ <ph name="DEVICE_TYPE" /> របស់អ្នក</translation>
@@ -5273,6 +5292,7 @@
 <translation id="6300177430812514606">មិនអនុញ្ញាតឱ្យបញ្ចប់ការផ្ញើ ឬការទទួលទិន្នន័យទេ</translation>
 <translation id="630065524203833229">ចាកចេញ</translation>
 <translation id="6300718114348072351">មិនអាចកំណត់​រចនាសម្ព័ន្ធ <ph name="PRINTER_NAME" /> ដោយស្វ័យប្រវត្តិ​បានទេ។ សូមបញ្ជាក់​ព័ត៌មានលម្អិត​ម៉ាស៊ីនបោះពុម្ព​កម្រិតខ្ពស់។ <ph name="LINK_BEGIN" />ស្វែងយល់បន្ថែម<ph name="LINK_END" /></translation>
+<translation id="6301300352769835063">អនុញ្ញាតឱ្យ Google ប្រើទិន្នន័យ​ហាតវែរ​របស់អ្នក ដើម្បីជួយ​កែលម្អ <ph name="DEVICE_OS" />។ ប្រសិនបើអ្នក​បដិសេធ ទិន្នន័យនេះ​នៅតែ​ត្រូវបាន​ផ្ញើទៅ Google ដើម្បីកំណត់​កំណែថ្មីៗ​ដែលត្រឹមត្រូវដដែល ប៉ុន្តែមិនត្រូវបាន​រក្សាទុក ឬប្រើផ្សេងពីនេះទេ។ ស្វែងយល់បន្ថែមតាមរយៈ g.co/flex/HWDataCollection។</translation>
 <translation id="630292539633944562">ការណែនាំ​ព័ត៌មានផ្ទាល់ខ្លួន</translation>
 <translation id="6305607932814307878">គោលការណ៍​សកល៖</translation>
 <translation id="6307990684951724544">ប្រព័ន្ធជាប់រវល់</translation>
@@ -5366,6 +5386,7 @@
 <translation id="6398715114293939307">លុប Google Play Store</translation>
 <translation id="6398765197997659313">ចាកចេញពីអេក្រង់ពេញ</translation>
 <translation id="6399774419735315745">អ្នកស៊ើបការ</translation>
+<translation id="6404187344102273690">ហ្គេម Chromebook</translation>
 <translation id="6404511346730675251">កែប្រែចំណាំ</translation>
 <translation id="6406303162637086258">កម្មវិធីរុករកសាកល្បងចាប់ផ្តើមឡើងវិញ</translation>
 <translation id="6406506848690869874">សមកាលកម្ម</translation>
@@ -5786,6 +5807,7 @@
 <translation id="6824584962142919697">ត្រួតពិនិត្យ​ធាតុ</translation>
 <translation id="6825184156888454064">តម្រៀប​តាម​ឈ្មោះ</translation>
 <translation id="6826872289184051766">ផ្ទៀងផ្ទាត់​តាមរយៈ USB</translation>
+<translation id="6827121912381363404">អនុញ្ញាតឱ្យកម្មវិធីបន្ថែមទាំងអស់អាន និងផ្លាស់ប្ដូរ <ph name="PERMITTED_SITE" /></translation>
 <translation id="6828153365543658583">រឹតបណ្តឹងការចូលចំពោះអ្នកប្រើខាងក្រោម៖</translation>
 <translation id="6828182567531805778">បញ្ចូល​ឃ្លាសម្ងាត់​របស់អ្នក ដើម្បី​ធ្វើសមកាលកម្ម​ទិន្នន័យ​របស់អ្នក</translation>
 <translation id="682871081149631693">QuickFix</translation>
@@ -5837,6 +5859,7 @@
 <translation id="6868934826811377550">មើល​ព័ត៌មាន​លម្អិត</translation>
 <translation id="6871644448911473373">ឧបករណ៍ឆ្លើយតប OCSP៖ <ph name="LOCATION" /></translation>
 <translation id="6872781471649843364">ពាក្យសម្ងាត់​ដែលអ្នក​បាន​បញ្ចូល​ត្រូវបាន​បដិសេធ​ដោយ​ម៉ាស៊ីនមេ។</translation>
+<translation id="6874503923667733123">កម្មវិធីប្រព័ន្ធ Chrome OS</translation>
 <translation id="6876155724392614295">កង់</translation>
 <translation id="6876469544038980967">គ្មាន​ប្រយោជន៍</translation>
 <translation id="6878422606530379992">បាន​អនុញ្ញាត​ឧបករណ៍​ចាប់សញ្ញា</translation>
@@ -6515,6 +6538,7 @@
 <translation id="7582844466922312471">ទិន្នន័យទូរស័ព្ទ</translation>
 <translation id="7583948862126372804">ចំនួន</translation>
 <translation id="7586498138629385861">Chrome នឹងបន្តដំណើរការ ខណៈពេលដែល Chrome កម្មវិធីបើក។</translation>
+<translation id="758895749110326677">ជួយយើងកែលម្អហ្គេមនៅក្នុង Chromebook</translation>
 <translation id="7589461650300748890">អូយ នៅទីនោះ។ ប្រយ័ត្ន។</translation>
 <translation id="7593653750169415785">បាន​ទប់ស្កាត់​ដោយស្វ័យប្រវត្តិ ដោយសារ​អ្នកបាន​បដិសេធ​ការជូនដំណឹង​ពីរបីដង</translation>
 <translation id="7594725637786616550">Powerwash ដើម្បីកំណត់ <ph name="DEVICE_TYPE" /> របស់អ្នកឡើងវិញ​ឱ្យដូចថ្មី។</translation>
@@ -7326,6 +7350,15 @@
 <translation id="8379991678458444070">ត្រឡប់​មកទីនេះ​វិញបាន​យ៉ាង​រហ័ស​ដោយ​ចំណាំ​ផ្ទាំងនេះ</translation>
 <translation id="8382715499079447151">ការការពារ​ការមើល</translation>
 <translation id="8382913212082956454">ចម្លងអាសយដ្ឋានអ៊ីម៉ែល</translation>
+<translation id="8383266303049437646"><ph name="BEGIN_PARAGRAPH1" />សាកល្បងជំហានដោះស្រាយបញ្ហាទាំងនេះ៖
+    <ph name="BEGIN_LIST" />
+    <ph name="LIST_ITEM" />ត្រូវប្រាកដថា ឧបករណ៍របស់អ្នកមានទំហំផ្ទុក​ខាង​ក្នុងដែលដំណើរការដូចជា HDD, SSD ឬ eMMC
+    <ph name="LIST_ITEM" />ពិនិត្យមើលថា ឧបករណ៍ទំហំផ្ទុកខាងក្នុងរបស់អ្នកធំជាង 16GB
+    <ph name="LIST_ITEM" />ពិនិត្យមើលការតភ្ជាប់ជាមួយទំហំផ្ទុកខាងក្នុង ប្រសិនបើអាចចូលមើលជាលក្ខណៈរូបវន្តបាន
+    <ph name="LIST_ITEM" />ត្រូវប្រាកដថា អ្នកកំពុងប្រើម៉ូដែល ដែលមានការទទួលស្គាល់ និងពិនិត្យមើលកំណត់សម្គាល់នៃការដំឡើង
+    <ph name="END_LIST" />
+    <ph name="END_PARAGRAPH1" />
+    <ph name="BEGIN_PARAGRAPH2" />ដើម្បីទទួលបានជំនួយបន្ថែម សូមចូលទៅកាន់៖ g.co/flex/InstallErrors។<ph name="END_PARAGRAPH2" /></translation>
 <translation id="8386091599636877289">រកមិន​ឃើញគោលការណ៍ទេ។</translation>
 <translation id="8387361103813440603">មិនអនុញ្ញាតឱ្យមើលទីតាំងរបស់អ្នកទេ</translation>
 <translation id="8388770971141403598">មិនអាចប្រើកម្រងព័ត៌មានបន្ទាប់បន្សំបានទេ</translation>

@@ -141,6 +141,7 @@
 <translation id="1130589222747246278"><ph name="WINDOW_TITLE" /> - <ph name="GROUP_NAME" /> ಗುಂಪಿಗೆ ಸೇರಿದೆ</translation>
 <translation id="1130676589211693127">ಬಲಬದಿಯ ಬ್ಯಾಟರಿ ಮಟ್ಟ <ph name="PERCENTAGE" />%.</translation>
 <translation id="1133418583142946603">ಪ್ರಸ್ತುತ ಟ್ಯಾಬ್ ಸೇರಿಸಿ</translation>
+<translation id="1135971365523689618"><ph name="INSTALL_SOURCE" /> ನಿಂದ <ph name="APP_TYPE" /> ಅನ್ನು ಇನ್‌ಸ್ಟಾಲ್ ಮಾಡಲಾಗಿದೆ</translation>
 <translation id="1136179794690960030"><ph name="EMOJI_NAME" />. <ph name="EMOJI_INDEX" />/<ph name="EMOJI_COUNT" />.</translation>
 <translation id="1136712381129578788">ತಪ್ಪಾದ ಪಿನ್ ಸಂಖ್ಯೆಯನ್ನು ಹಲವಾರು ಬಾರಿ ನಮೂದಿಸಿರುವ ಕಾರಣದಿಂದಾಗಿ, ಭದ್ರತೆ ಕೀ ಅನ್ನು ಲಾಕ್ ಮಾಡಲಾಗಿದೆ. ಅನ್‌ಲಾಕ್ ಮಾಡಲು, ಅದನ್ನು ತೆಗೆದು ಮರುಸೇರ್ಪಡಿಸಿ.</translation>
 <translation id="1137589305610962734">ತಾತ್ಕಾಲಿಕ ಡೇಟಾ</translation>
@@ -276,6 +277,7 @@
 <translation id="1263231323834454256">ಓದುವ ಪಟ್ಟಿ</translation>
 <translation id="1263733306853729545">ಕ್ಯಾಂಡಿಡೇಟ್ ಪಟ್ಟಿಯನ್ನು ವಿಭಾಗಿಸಲು <ph name="MINUS" /> ಮತ್ತು <ph name="EQUAL" /> ಕೀಗಳನ್ನು ಬಳಸಿ</translation>
 <translation id="126387934568812801">ಈ ಸ್ಕ್ರೀನ್‌ಶಾಟ್ ಮತ್ತು ತೆರೆದ ಟ್ಯಾಬ್‌ಗಳ ಶೀರ್ಷಿಕೆಗಳನ್ನು ಸೇರಿಸಿ</translation>
+<translation id="1264083566674525434">ಸೈಟ್ ಅನುಮತಿಗಳನ್ನು ಎಡಿಟ್ ಮಾಡಿ</translation>
 <translation id="1264337193001759725">ನೆಟ್‌ವರ್ಕ್ UI ಲಾಗ್‌ಗಳನ್ನು ವೀಕ್ಷಿಸಲು, ಇಲ್ಲಿ ನೋಡಿ: <ph name="DEVICE_LOG_LINK" /></translation>
 <translation id="126710816202626562">ಅನುವಾದ ಭಾಷೆ:</translation>
 <translation id="126768002343224824">16x</translation>
@@ -411,6 +413,7 @@
 <translation id="1410616244180625362">ನಿಮ್ಮ ಕ್ಯಾಮರಾ ಪ್ರವೇಶಿಸಲು <ph name="HOST" /> ಗೆ ಅನುಮತಿಸುವುದನ್ನು ಮುಂದುವರೆಸಿ</translation>
 <translation id="1410797069449661718">ಮೊದಲ ಟ್ಯಾಬ್ ಕಡೆಗೆ ಸ್ಕ್ರಾಲ್ ಮಾಡಿ</translation>
 <translation id="1410806973194718079">ನೀತಿಗಳನ್ನು ಪರಿಶೀಲಿಸಲು ಸಾಧ್ಯವಿಲ್ಲ</translation>
+<translation id="1411724932979011919">ನಿಮ್ಮ ನಮೂದು LPA ಫಾರ್ಮ್ಯಾಟ್‌ನಲ್ಲಿರಬೇಕು:1$&lt;smdp address&gt;$&lt;activation code&gt;</translation>
 <translation id="1412681350727866021">ಹೆಚ್ಚುವರಿ ವಿಸ್ತರಣೆಗಳು</translation>
 <translation id="1414315029670184034">ನಿಮ್ಮ ಕ್ಯಾಮರಾವನ್ನು‌ ಬಳಸಲು ಸೈಟ್‌ಗಳಿಗೆ ಅನುಮತಿಸಬೇಡಿ</translation>
 <translation id="1414648216875402825">ನೀವು ಪ್ರಗತಿ ಹಂತದಲ್ಲಿರುವ ವೈಶಿಷ್ಟ್ಯಗಳನ್ನು ಒಳಗೊಂಡಿರುವ <ph name="PRODUCT_NAME" /> ದ ಒಂದು ಅಸ್ಥಿರ ಆವೃತ್ತಿಯನ್ನು ನವೀಕರಿಸುತ್ತಿರುವಿರಿ. ವಿಫಲತೆಗಳು ಮತ್ತು ಅನರೀಕ್ಷಿತ ದೋಷಗಳು ಸಂಭವಿಸುತ್ತವೆ. ದಯವಿಟ್ಟು ಎಚ್ಚರಿಕೆಯಿಂದ ಮುಂದುವರಿಯಿರಿ.</translation>
@@ -894,6 +897,9 @@
 <translation id="1849186935225320012">ಈ ಪುಟಕ್ಕೆ MIDI ಸಾಧನಗಳ ಸಂಪೂರ್ಣ ನಿಯಂತ್ರಣವಿದೆ.</translation>
 <translation id="1850145825777333687">ಸಾಧನದ ರುಜುವಾತುಗಳು</translation>
 <translation id="1850508293116537636">&amp;ಪ್ರದಕ್ಷಿಣೆಯಂತೆ ತಿರುಗಿಸಿ</translation>
+<translation id="185111092974636561"><ph name="BEGIN_PARAGRAPH1" />ನೋಂದಾಯಿಸುವ ಮೊದಲು ನೀವು TPM ತೆರವುಗೊಳಿಸಬೇಕು, ಇದರಿಂದ <ph name="DEVICE_OS" /> ಗೆ ಸಾಧನದ ಮಾಲೀಕತ್ವ ವಹಿಸಿಕೊಳ್ಳಲು ಸಾಧ್ಯವಾಗುತ್ತದೆ.<ph name="END_PARAGRAPH1" />
+    <ph name="BEGIN_PARAGRAPH2" />ಅಲ್ಲದೇ, ನೀವು TPM ಸಾಧನವನ್ನು ಸಂಪೂರ್ಣವಾಗಿ ಆಫ್ ಮಾಡಬಹುದು. ನಿಮ್ಮ ಡೇಟಾವನ್ನು ಈಗಲೂ ಸಾಫ್ಟ್‌ವೇರ್ ಎನ್‌ಕ್ರಿಪ್ಶನ್‌ನ ಮೂಲಕ ಸುರಕ್ಷಿತವಾಗಿ ಸಂಗ್ರಹಿಸಲಾಗುತ್ತದೆ, ಆದರೆ ಹಾರ್ಡ್‌ವೇರ್ ಬೆಂಬಲಿತ ಪ್ರಮಾಣಪತ್ರಗಳಂತಹ ಕೆಲವು ಭದ್ರತಾ ವೈಶಿಷ್ಟ್ಯಗಳನ್ನು ನಿಷ್ಕ್ರಿಯಗೊಳಿಸಲಾಗುತ್ತದೆ.<ph name="END_PARAGRAPH2" />
+    <ph name="BEGIN_PARAGRAPH3" />ರೀಬೂಟ್ ಮಾಡಿ, ಸಿಸ್ಟಂ BIOS/UEFI ಸೆಟ್ಟಿಂಗ್‌ಗಳನ್ನು ನಮೂದಿಸುವ ಮೂಲಕ ನಿಮ್ಮ TPM ಸೆಟ್ಟಿಂಗ್‌ಗಳನ್ನು ನೀವು ಬದಲಾಯಿಸಬಹುದು. ಸಾಧನದ ಮಾದರಿಯನ್ನು ಆಧರಿಸಿ ಹಂತಗಳು ಬದಲಾಗುತ್ತವೆ. ಹೆಚ್ಚಿನ ಮಾಹಿತಿಗಾಗಿ, ನೀವು ರೀಬೂಟ್ ಮಾಡುವ ಮೊದಲು <ph name="DEVICE_OS" /> ಡಾಕ್ಯುಮೆಂಟೇಶನ್ ಅನ್ನು ಪ್ರತ್ಯೇಕ ಸಾಧನದಲ್ಲಿ ತೆರೆಯಿರಿ: g.co/flex/TPMHelp.<ph name="END_PARAGRAPH3" /></translation>
 <translation id="1852141627593563189">ಹಾನಿಕಾರಕ ಸಾಫ್ಟ್‌ವೇರ್ ಅನ್ನು ಹುಡುಕಿ</translation>
 <translation id="1852799913675865625">ಫೈಲ್ ಅನ್ನು ಓದಲು ಪ್ರಯತ್ನಿಸುವಾಗ ದೋಷ ಕಂಡುಬಂದಿದೆ: <ph name="ERROR_TEXT" />.</translation>
 <translation id="1854049213067042715">ನೀವು ಎಲ್ಲಿ ನಿಲ್ಲಿಸಿರುವಿರೋ, ಅಲ್ಲಿಂದ ಮುಂದುವರಿಸಿ. ಆರಂಭದಲ್ಲಿ ಆ್ಯಪ್‌ಗಳನ್ನು ಯಾವಾಗಲೂ ಮರುಸ್ಥಾಪಿಸಲು ನೀವು ಅವುಗಳನ್ನು ಸೆಟ್ ಮಾಡಬಹುದು ಅಥವಾ ಸೆಟ್ಟಿಂಗ್‌ಗಳಲ್ಲಿ ಮರುಸ್ಥಾಪನೆಯನ್ನು ಆಫ್ ಮಾಡಬಹುದು.</translation>
@@ -1128,6 +1134,7 @@
 <translation id="2090165459409185032">ನಿಮ್ಮ ಖಾತೆಯ ಮಾಹಿತಿಯನ್ನು ಮರುಪಡೆಯಲು, ಇಲ್ಲಿಗೆ ಹೋಗಿ: google.com/accounts/recovery</translation>
 <translation id="2090507354966565596">ನೀವು ಲಾಗ್ ಇನ್ ಮಾಡಿದ ನಂತರ, ಸ್ವಯಂಚಾಲಿತವಾಗಿ ಕನೆಕ್ಟ್ ಆಗುತ್ತದೆ</translation>
 <translation id="2090876986345970080">ಸಿಸ್ಟಂ ಸುರಕ್ಷತಾ ಸೆಟ್ಟಿಂಗ್</translation>
+<translation id="2095774564753225041">ಬೆಂಬಲಿತ ಫೈಲ್ ಪ್ರಕಾರಗಳು</translation>
 <translation id="2096715839409389970">ಮೂರನೇ ವ್ಯಕ್ತಿ ಕುಕೀಗಳನ್ನು ತೆರವುಗೊಳಿಸಿ</translation>
 <translation id="2098805196501063469">ಬಾಕಿ ಉಳಿದ ಪಾಸ್‌ವರ್ಡ್‌ಗಳನ್ನು ಪರಿಶೀಲಿಸಿ</translation>
 <translation id="2099172618127234427">sshd daemon ಅನ್ನು ಹೊಂದಿಸುವಂತಹ Chrome OS ಡೀಬಗ್ ಮಾಡುವಿಕೆ ವೈಶಿಷ್ಟ್ಯಗಳನ್ನು ನೀವು ಸಕ್ರಿಯಗೊಳಿಸುತ್ತಿರುವಿರಿ ಮತ್ತು USB ಡ್ರೈವ್‌ಗಳಿಂದ ಬೂಟ್ ಮಾಡುವುದನ್ನು ಸಕ್ರಿಯಗೊಳಿಸಿ.</translation>
@@ -1596,6 +1603,8 @@
 <translation id="2527167509808613699">ಯಾವುದೇ ರೀತಿಯ ಸಂಪರ್ಕ</translation>
 <translation id="2529887123641260401">ನೀವು ಯಾವಾಗ ಬೇಕಾದರೂ ನಿಮ್ಮ ಸೆಟ್ಟಿಂಗ್‌ಗಳನ್ನು ಬದಲಾಯಿಸಬಹುದು ಅಥವಾ ಪ್ರವೇಶದ ವಿಧಾನವನ್ನು ಬದಲಿಸುವ ಸೆಟ್ಟಿಂಗ್‌ಗಳಿಂದ ಮತ್ತೆ ಸೆಟಪ್ ಗೈಡ್ ಅನ್ನು ತೆರೆಯಬಹುದು.</translation>
 <translation id="2530166226437958497">ಸಮಸ್ಯೆ ನಿವಾರಣೆ</translation>
+<translation id="2531530485656743109"><ph name="BEGIN_PARAGRAPH1" />ಏನೋ ತಪ್ಪಾಗಿದೆ ಹಾಗೂ <ph name="DEVICE_OS" /> ಅನ್ನು ಇನ್‌ಸ್ಟಾಲ್ ಮಾಡಲು ಸಾಧ್ಯವಾಗಲಿಲ್ಲ.<ph name="END_PARAGRAPH1" />
+    <ph name="BEGIN_PARAGRAPH2" />ಹೆಚ್ಚಿನ ಸಹಾಯಕ್ಕಾಗಿ ಇಲ್ಲಿಗೆ ಭೇಟಿ ನೀಡಿ: g.co/flex/InstallErrors.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="2532589005999780174">ಹೆಚ್ಚಿನ ಕಾಂಟ್ರಾಸ್ಟ್ ಮೋಡ್</translation>
 <translation id="2533649878691950253">ನಿಮ್ಮ ನಿಖರವಾದ ಸ್ಥಳವನ್ನು ತಿಳಿದುಕೊಳ್ಳದಂತೆ ಈ ಸೈಟ್ ಅನ್ನು ನಿರ್ಬಂಧಿಸಲಾಗಿದೆ, ಏಕೆಂದರೆ ನೀವು ಸಾಮಾನ್ಯವಾಗಿ ಇದನ್ನು ಅನುಮತಿಸುವುದಿಲ್ಲ</translation>
 <translation id="253434972992662860">&amp;ವಿರಾಮ</translation>
@@ -1645,6 +1654,7 @@
 <translation id="2587922766792651800">ಸಮಯ ಮೀರಿದೆ</translation>
 <translation id="2588636910004461974"><ph name="VENDOR_NAME" /> ನಿಂದ ಸಾಧನಗಳು</translation>
 <translation id="25899519884572181">ರೀಡರ್ ಮೋಡ್‌ನಿಂದ ನಿರ್ಗಮಿಸಿ</translation>
+<translation id="2593499352046705383">ಪ್ರಾರಂಭಿಸುವ ಮೊದಲು, ನಿಮ್ಮ ಡೇಟಾದ ಬ್ಯಾಕಪ್ ನಿಮ್ಮ ಬಳಿ ಇದೆಯೇ ಎಂದು ಖಚಿತಪಡಿಸಿಕೊಳ್ಳಿ. <ph name="DEVICE_OS" /> ಅನ್ನು ಇನ್‌ಸ್ಟಾಲ್ ಮಾಡುವುದರಿಂದ ನಿಮ್ಮ ಹಾರ್ಡ್ ಡ್ರೈವ್ ಓವರ್‌ರೈಟ್ ಆಗುತ್ತದೆ. g.co/flex/InstallGuide ನಲ್ಲಿ ಇನ್ನಷ್ಟು ತಿಳಿಯಿರಿ.</translation>
 <translation id="2594999711683503743">Google ನಲ್ಲಿ ಹುಡುಕಿ ಅಥವಾ URL ಟೈಪ್ ಮಾಡಿ</translation>
 <translation id="2602501489742255173">ಪ್ರಾರಂಭಿಸಲು ಮೇಲಕ್ಕೆ ಸ್ವೈಪ್ ಮಾಡಿ</translation>
 <translation id="2603115962224169880">ಕಂಪ್ಯೂಟರ್ ಅನ್ನು ಸ್ವಚ್ಛಗೊಳಿಸಿ</translation>
@@ -1663,6 +1673,7 @@
 <translation id="2610780100389066815">Microsoft Trust List Signing</translation>
 <translation id="2611776654555141051">ಆಯತ ಟೂಲ್</translation>
 <translation id="2612676031748830579">ಕಾರ್ಡ್ ಸಂಖ್ಯೆ</translation>
+<translation id="2613210758071148851"><ph name="RESTRICTED_SITE" /> ನಲ್ಲಿ ಯಾವುದೇ ವಿಸ್ತರಣೆಗಳಿಗೆ ಅನುಮತಿಸಬೇಡಿ</translation>
 <translation id="2613535083491958306"><ph name="FILENAME" /> ಅನ್ನು ಎಡಿಟ್ ಮಾಡಲು <ph name="ORIGIN" /> ಗೆ ಸಾಧ್ಯವಾಗುತ್ತದೆ</translation>
 <translation id="2616366145935564096"><ph name="WEBSITE_1" /> ನಲ್ಲಿ ನಿಮ್ಮ ಡೇಟಾವನ್ನು ಓದಿ ಮತ್ತು ಬದಲಾಯಿಸಿ</translation>
 <translation id="2618797463720777311">Nearby ಶೇರ್ ಸೆಟಪ್ ಮಾಡಿ</translation>
@@ -3176,6 +3187,7 @@
 <translation id="4100733287846229632">ಸಾಧನ ಸ್ಥಳಾವಕಾಶ ತೀರಾ ಕಡಿಮೆ ಇದೆ</translation>
 <translation id="4100853287411968461">ಹೊಸ ವೀಕ್ಷಣಾ ಅವಧಿಯ ಮಿತಿ</translation>
 <translation id="4101352914005291489">ಮರೆಮಾಡಲಾಗಿರುವ SSID</translation>
+<translation id="4102469565336584882">ಅಮಾನ್ಯ ಕೋಡ್. ನಿಮ್ಮ ನಮೂದು LPA ಫಾರ್ಮ್ಯಾಟ್‌ನಲ್ಲಿರಬೇಕು:1$&lt;smdp address&gt;$&lt;activation code&gt;</translation>
 <translation id="4102906002417106771">ಪವರ್‌ವಾಷ್‌‌ಗೆ ಮರುಪ್ರಾರಂಭಿಸಿ</translation>
 <translation id="4104163789986725820">ರ&amp;ಫ್ತು...</translation>
 <translation id="4107048419833779140">ಸಂಗ್ರಹಣೆ ಸಾಧನಗಳನ್ನು ಗುರುತಿಸಿ ಮತ್ತು ತೆಗೆದುಹಾಕಿ</translation>
@@ -3228,6 +3240,7 @@
 <translation id="4159681666905192102"><ph name="CUSTODIAN_EMAIL" /> ಮತ್ತು <ph name="SECOND_CUSTODIAN_EMAIL" /> ಅವರು ಮಕ್ಕಳಿಗೆ ನಿರ್ವಹಿಸುವಂತಹ ಖಾತೆಯಾಗಿರುತ್ತದೆ.</translation>
 <translation id="4163560723127662357">ಅಪರಿಚಿತ ಕೀಬೋರ್ಡ್</translation>
 <translation id="4165942112764990069"><ph name="USER_EMAIL" /> ಇಮೇಲ್ ಮಾನ್ಯ ಸಂಸ್ಥೆಗೆ ಸೇರಿಲ್ಲ. ನಿಮ್ಮ ನಿರ್ವಾಹಕರನ್ನು ಸಂಪರ್ಕಿಸಿ. ನೀವು ನಿರ್ವಾಹಕರಾಗಿದ್ದರೆ, ಇಲ್ಲಿಗೆ ಭೇಟಿ ನೀಡುವ ಮೂಲಕ ನಿಮ್ಮ ಸಂಸ್ಥೆಯನ್ನು ನೀವು ಸೆಟಪ್ ಮಾಡಬಹುದು: g.co/ChromeEnterpriseAccount</translation>
+<translation id="4167393659000039775">ಯಾವುದೇ ಡೇಟಾ ನಷ್ಟಕ್ಕೆ Google ಜವಾಬ್ದಾರರಾಗಿರುವುದಿಲ್ಲ ಮತ್ತು ಪ್ರಮಾಣೀಕರಿಸದ ಮಾದರಿಗಳಲ್ಲಿ <ph name="DEVICE_OS" /> ಕೆಲಸ ಮಾಡದಿರಬಹುದು. g.co/flex/InstallGuide ನಲ್ಲಿ ಇನ್ನಷ್ಟು ತಿಳಿಯಿರಿ.</translation>
 <translation id="4167686856635546851">ಸೈಟ್‌ಗಳು ಸಾಮಾನ್ಯವಾಗಿ, ವೀಡಿಯೊ ಗೇಮ್‌ಗಳು ಅಥವಾ ವೆಬ್ ಫಾರ್ಮ್‌ಗಳಂತಹ ಸಂವಾದಾತ್ಮಕ ಫೀಚರ್‌ಗಳನ್ನು ಪ್ರದರ್ಶಿಸಲು JavaScript ಅನ್ನು ಬಳಸಿಕೊಳ್ಳುತ್ತವೆ</translation>
 <translation id="4168015872538332605"><ph name="PRIMARY_EMAIL" /> ಸೇರಿದಂತಹ ಕೆಲವು ಸೆಟ್ಟಿಂಗ್‍ಗಳನ್ನು ನಿಮ್ಮೊಂದಿಗೆ ಹಂಚಿಕೊಳ್ಳಲಾಗಿದೆ. ಬಹು ಸೈನ್‍-ಇನ್ ಬಳಸುವಾಗ ಮಾತ್ರ ಈ ಸೆಟ್ಟಿಂಗ್‍ಗಳು ನಿಮ್ಮ ಖಾತೆಯ ಮೇಲೆ ಪರಿಣಾಮ ಬೀರುತ್ತವೆ.</translation>
 <translation id="4168651806173792090"><ph name="LAST_FOUR_DIGITS" /> ಸಂಖ್ಯೆಯೊಂದಿಗೆ ಕೊನೆಗೊಳ್ಳುವ <ph name="NETWORK_NAME" /></translation>
@@ -3253,8 +3266,10 @@
 <translation id="4200983522494130825">ಹೊಸ &amp;ಟ್ಯಾಬ್</translation>
 <translation id="4201546031411513170">ನೀವು ಏನನ್ನು ಸಿಂಕ್ ಮಾಡಬೇಕು ಎಂಬುದನ್ನು ಸೆಟ್ಟಿಂಗ್‌ಗಳಲ್ಲಿ ಯಾವಾಗ ಬೇಕಾದರೂ ಆರಿಸಿಕೊಳ್ಳಬಹುದು.</translation>
 <translation id="420283545744377356">ಸ್ಕ್ರೀನ್ ಸೇವರ್ ಆಫ್ ಮಾಡಿ</translation>
+<translation id="4204851595694839599">ನಿಮ್ಮ ಗೇಮ್‌ಪ್ಲೇ ಅನುಭವ ಹೇಗಿತ್ತು?</translation>
 <translation id="4206144641569145248">ಏಲಿಯನ್</translation>
 <translation id="4206323443866416204">ಪ್ರತಿಕ್ರಿಯೆ ವರದಿ</translation>
+<translation id="4207522141889799150"><ph name="SITE" /> ಗಾಗಿ ಸೈಟ್ ಅನುಮತಿಗಳನ್ನು ಎಡಿಟ್ ಮಾಡಿ</translation>
 <translation id="4207932031282227921">ಅನುಮತಿಯನ್ನು ವಿನಂತಿಸಲಾಗಿದೆ, ಪ್ರತಿಕ್ರಿಯಿಸಲು F6 ಒತ್ತಿರಿ</translation>
 <translation id="4208390505124702064"><ph name="SITE_NAME" /> ಹುಡುಕಿ</translation>
 <translation id="4209092469652827314">ದೊಡ್ಡದು</translation>
@@ -3388,6 +3403,9 @@
 <translation id="4349828822184870497">ಉಪಯುಕ್ತ</translation>
 <translation id="4350230709416545141">ನಿಮ್ಮ ಸ್ಥಳವನ್ನು ಪ್ರವೇಶಿಸದಂತೆ <ph name="HOST" /> ಅನ್ನು ಯಾವಾಗಲೂ ನಿರ್ಬಂಧಿಸಿ</translation>
 <translation id="4350782034419308508">Ok Google</translation>
+<translation id="4351770750390404505"><ph name="BEGIN_PARAGRAPH1" />ಅತ್ಯುತ್ತಮ ಅನುಭವವನ್ನು ಒದಗಿಸಲು, <ph name="DEVICE_OS" /> ಸಾಧನಗಳಿಗೆ ಸಂಬಂಧಿಸಿದ ಹಾರ್ಡ್‌ವೇರ್‌ ಡೇಟಾವನ್ನು ಸಂಗ್ರಹಿಸುತ್ತದೆ ಮತ್ತು ಯಾವೆಲ್ಲ ಅಪ್‌ಡೇಟ್‌ಗಳನ್ನು ಒದಗಿಸಬೇಕು ಎಂಬುದನ್ನು ನಿರ್ಧರಿಸಲು ಆ ಡೇಟಾವನ್ನು Google ಜೊತೆ ಹಂಚಿಕೊಳ್ಳುತ್ತದೆ. ಐಚ್ಛಿಕವಾಗಿ, <ph name="DEVICE_OS" /> ನ ಅನುಭವ ಮತ್ತು ಸೇವೆಯನ್ನು ಸುಧಾರಿಸುವ ಮತ್ತು ಬೆಂಬಲಿಸುವಂತಹ ಹೆಚ್ಚುವರಿ ಉದ್ದೇಶಗಳಿಗಾಗಿ ಈ ಡೇಟಾವನ್ನು ಬಳಸಲು ನೀವು Google ಗೆ ಅನುಮತಿಸಬಹುದು.<ph name="END_PARAGRAPH1" />
+    <ph name="BEGIN_PARAGRAPH2" />ಅಪ್‌ಡೇಟ್ ಫಿಲ್ಟರ್ ಮಾಡುವಿಕೆಗಾಗಿ Google ಗೆ ಕಳುಹಿಸಲಾಗಿರುವ ಡೇಟಾವನ್ನು ನೋಡಲು, ಅಷ್ಟೇ ಅಲ್ಲದೇ ನೀವು Google ಜೊತೆ ಡೇಟಾ ಹಂಚಿಕೊಳ್ಳುವ ಆಯ್ಕೆಯನ್ನು ಮಾಡಿದ ಯಾವುದೇ ಇತರ ಸನ್ನಿವೇಶಗಳನ್ನು ನೋಡಲು ನೀವು ಈ ಸಾಧನದಲ್ಲಿ ಲಾಗ್‌ ಇನ್‌ ಮಾಡಿ, Chrome://ಸಿಸ್ಟಂನಲ್ಲಿ CHROMEOSFLEX_HARDWARE_INFO ವಿಭಾಗಕ್ಕೆ ಭೇಟಿ ನೀಡಬಹುದು.<ph name="END_PARAGRAPH2" />
+    <ph name="BEGIN_PARAGRAPH3" />Google ಜೊತೆಗೆ <ph name="DEVICE_OS" /> ಹಂಚಿಕೊಳ್ಳಬಹುದಾದ ಡೇಟಾದ ಕುರಿತು ಮತ್ತು ಅದನ್ನು ಹೇಗೆ ಬಳಸಲಾಗುತ್ತದೆ ಎಂಬುದರ ಕುರಿತು ಇನ್ನಷ್ಟು ಮಾಹಿತಿಗಾಗಿ g.co/flex/HWDataCollection ಗೆ ಭೇಟಿ ನೀಡಿ.<ph name="END_PARAGRAPH3" /></translation>
 <translation id="4354073718307267720">ಸೈಟ್, ನಿಮ್ಮ ಸುತ್ತಮುತ್ತಲಿನ 3D ನಕ್ಷೆಗಳನ್ನು ರಚಿಸಲು ಅಥವಾ ಕ್ಯಾಮರಾ ಸ್ಥಿತಿಯನ್ನು ಟ್ರ್ಯಾಕ್ ಮಾಡಲು ಬಯಸಿದಾಗ ಕೇಳಿ</translation>
 <translation id="4354344420232759511">ನೀವು ಭೇಟಿ ಮಾಡುವ ಸೈಟ್‌ಗಳು ಇಲ್ಲಿ ಗೋಚರಿಸುತ್ತವೆ</translation>
 <translation id="435527878592612277">ನಿಮ್ಮ ಫೋಟೋ ಆಯ್ಕೆಮಾಡಿ</translation>
@@ -4267,6 +4285,7 @@
 <translation id="5266113311903163739">ಪ್ರಮಾಣಪತ್ರದ ಅಧಿಕಾರ ಆಮದು ದೋಷ</translation>
 <translation id="526622169288322445"><ph name="ADDRESS_SUMMARY" /> ಗಾಗಿ ಇನ್ನಷ್ಟು ಕ್ರಿಯೆಗಳು</translation>
 <translation id="5269977353971873915">ಮುದ್ರಣ ವಿಫಲಗೊಂಡಿದೆ</translation>
+<translation id="5273806377963980154">ಸೈಟ್ URL ಅನ್ನು ಎಡಿಟ್ ಮಾಡಿ</translation>
 <translation id="5275352920323889391">ನಾಯಿ</translation>
 <translation id="527605719918376753">ಟ್ಯಾಬ್ ಮ್ಯೂಟ್ ಮಾಡಿ</translation>
 <translation id="527605982717517565"><ph name="HOST" /> ನಲ್ಲಿ JavaScript ಅನ್ನು ಯಾವಾಗಲೂ ಅನುಮತಿಸಿ</translation>
@@ -4584,6 +4603,7 @@
 <translation id="5588033542900357244">(<ph name="RATING_COUNT" />)</translation>
 <translation id="558918721941304263">ಅಪ್ಲಿಕೇಶನ್‌ಗಳನ್ನು ಲೋಡ್ ಮಾಡಲಾಗುತ್ತಿದೆ...</translation>
 <translation id="5592595402373377407">ಇನ್ನೂ ಸಾಕಷ್ಟು ಡೇಟಾ ಲಭ್ಯವಿಲ್ಲ.</translation>
+<translation id="5593564924968945303">Chrome ಬ್ರೌಸರ್</translation>
 <translation id="5595485650161345191">ವಿಳಾಸ ಎಡಿಟ್ ಮಾಡಿ</translation>
 <translation id="5596627076506792578">ಇನ್ನಷ್ಟು ಆಯ್ಕೆಗಳು</translation>
 <translation id="5600348067066185292">ಇನ್‌ಸ್ಟಾಲ್ ಮಾಡಲು ಕೆಲವು ಸರಳ ಹಂತಗಳ ಅಗತ್ಯವಿದೆ. ನಿಮ್ಮ ಕಂಪ್ಯೂಟರ್‌ನಲ್ಲಿ ಯಾವುದೇ ಬದಲಾವಣೆಗಳನ್ನು ಮಾಡುವ ಮೊದಲು, ಅದನ್ನು ದೃಢೀಕರಿಸಲು ನಿಮಗೆ ಇನ್ನೊಂದು ಅವಕಾಶವಿರುತ್ತದೆ.</translation>
@@ -5147,7 +5167,6 @@
 <translation id="6181431612547969857">ಡೌನ್‌ಲೋಡ್‌ ನಿರ್ಬಂಧಿಸಲಾಗಿದೆ</translation>
 <translation id="6184099524311454384">ಟ್ಯಾಬ್‌ಗಳನ್ನು ಹುಡುಕಿ</translation>
 <translation id="6185132558746749656">ಸಾಧನದ ಸ್ಥಳ</translation>
-<translation id="6186394437969115158">ಸೈಟ್‌ಗಳು ಸಾಮಾನ್ಯವಾಗಿ, ಜಾಹೀರಾತುಗಳನ್ನು ತೋರಿಸುತ್ತವೆ ಇದರಿಂದ ಅವು ಉಚಿತವಾಗಿ ವಿಷಯ ಅಥವಾ ಸೇವೆಗಳನ್ನು ಒದಗಿಸಬಹುದು. ಆದರೆ, ಕೆಲವು ಸೈಟ್‌ಗಳು ಅನಪೇಕ್ಷಿತ ಅಥವಾ ತಪ್ಪುದಾರಿಗೆಳೆಯುವ ಜಾಹೀರಾತುಗಳನ್ನು ತೋರಿಸುತ್ತವೆ.</translation>
 <translation id="6188346519670155113">Chrome ಬ್ರೌಸರ್ ಸಿಂಕ್ ಆನ್ ಆಗಿದೆ</translation>
 <translation id="6190953336330058278">ಫೋನ್ ಹಬ್ ಆ್ಯಪ್‌ಗಳು</translation>
 <translation id="619279033188484792">ನಿಮ್ಮ ಫೋನ್‌ನ ಇತ್ತೀಚಿನ ಫೋಟೋಗಳು, ಮೀಡಿಯಾ ಮತ್ತು ಅಧಿಸೂಚನೆಗಳನ್ನು ನಿಮ್ಮ <ph name="DEVICE_TYPE" /> ನಲ್ಲಿ ವೀಕ್ಷಿಸಿ</translation>
@@ -5266,6 +5285,7 @@
 <translation id="6300177430812514606">ಡೇಟಾವನ್ನು ಕಳುಹಿಸುವುದು ಅಥವಾ ಸ್ವೀಕರಿಸುವುದನ್ನು ಮುಗಿಸಲು ಈ ಸೈಟ್‌ಗಳಿಗೆ ಅನುಮತಿಸಲಾಗುವುದಿಲ್ಲ</translation>
 <translation id="630065524203833229">ನಿರ್ಗ&amp;ಮನ</translation>
 <translation id="6300718114348072351"><ph name="PRINTER_NAME" /> ಅನ್ನು ಸ್ವಯಂಚಾಲಿತವಾಗಿ ಕಾನ್ಫಿಗರ್ ಮಾಡಲು ಸಾಧ್ಯವಾಗಲಿಲ್ಲ. ಸುಧಾರಿತ ಪ್ರಿಂಟರ್ ವಿವರಗಳನ್ನು ನಿರ್ದಿಷ್ಟಪಡಿಸಿ. <ph name="LINK_BEGIN" />ಇನ್ನಷ್ಟು ತಿಳಿಯಿರಿ<ph name="LINK_END" /></translation>
+<translation id="6301300352769835063"><ph name="DEVICE_OS" /> ಅನ್ನು ಸುಧಾರಿಸಲು ನೆರವಾಗಲು Google ಗೆ ನಿಮ್ಮ ಹಾರ್ಡ್‌ವೇರ್ ಡೇಟಾ ಬಳಸಲು ಅನುಮತಿಸಿ. ನೀವು ನಿರಾಕರಿಸಿದರೆ, ಸೂಕ್ತವಾದ ಅಪ್‌ಡೇಟ್‌ಗಳನ್ನು ನಿರ್ಧರಿಸಲು ಈ ಡೇಟಾವನ್ನು ಈಗಲೂ Google ಗೆ ಕಳುಹಿಸಲಾಗುತ್ತದೆ ಆದರೆ ಅದನ್ನು ಬೇರೆ ರೀತಿಯಲ್ಲಿ ಸಂಗ್ರಹಿಸಲಾಗುವುದಿಲ್ಲ ಅಥವಾ ಬಳಸಲಾಗುವುದಿಲ್ಲ. g.co/flex/HWDataCollection ನಲ್ಲಿ ಇನ್ನಷ್ಟು ತಿಳಿಯಿರಿ.</translation>
 <translation id="630292539633944562">ವೈಯಕ್ತಿಕ ಮಾಹಿತಿ ಸಲಹೆಗಳು</translation>
 <translation id="6305607932814307878">ಜಾಗತಿಕ ನೀತಿ:</translation>
 <translation id="6307990684951724544">ಸಿಸ್ಟಂ ಕಾರ್ಯನಿರತವಾಗಿದೆ</translation>
@@ -5359,6 +5379,7 @@
 <translation id="6398715114293939307">Google Play Store  ತೆಗೆದುಹಾಕಿ</translation>
 <translation id="6398765197997659313">ಪೂರ್ಣಪರದೆಯಿಂದ ನಿರ್ಗಮಿಸಿ</translation>
 <translation id="6399774419735315745">ಸ್ಪೈ</translation>
+<translation id="6404187344102273690">Chromebook ಗೇಮಿಂಗ್</translation>
 <translation id="6404511346730675251">ಬುಕ್‌ಮಾರ್ಕ್‌ಗಳನ್ನು ಎಡಿಟ್ ಮಾಡಿ</translation>
 <translation id="6406303162637086258">ಬ್ರೌಸರ್ ಮರುಪ್ರಾರಂಭ ಸಿಮ್ಯುಲೇಟ್‌ ಮಾಡು</translation>
 <translation id="6406506848690869874">ಸಿಂಕ್</translation>
@@ -5779,6 +5800,7 @@
 <translation id="6824584962142919697">&amp;ಅಂಶಗಳನ್ನು ಪರಿಶೀಲಿಸಿ</translation>
 <translation id="6825184156888454064">ಹೆಸರಿನ ಪ್ರಕಾರ ವಿಂಗಡಿಸಿ</translation>
 <translation id="6826872289184051766">USB ಮೂಲಕ ಪರಿಶೀಲಿಸಿ</translation>
+<translation id="6827121912381363404">ಎಲ್ಲಾ ವಿಸ್ತರಣೆಗಳು <ph name="PERMITTED_SITE" /> ಅನ್ನು ಓದಲು ಮತ್ತು ಬದಲಾಯಿಸಲು ಅನುಮತಿಸಿ</translation>
 <translation id="6828153365543658583">ಕೆಳಗಿನ ಬಳಕೆದಾರರಿಗೆ ಸೈನ್-ಇನ್ ಮಾಡುವುದನ್ನು ನಿರ್ಬಂಧಿಸು:</translation>
 <translation id="6828182567531805778">ನಿಮ್ಮ ಡೇಟಾವನ್ನು ಸಿಂಕ್ ಮಾಡಲು ನಿಮ್ಮ ಪಾಸ್‌ಫ್ರೇಸ್ ಅನ್ನು ನಮೂದಿಸಿ</translation>
 <translation id="682871081149631693">QuickFix</translation>
@@ -5830,6 +5852,7 @@
 <translation id="6868934826811377550">ವಿವರಗಳನ್ನು ನೋಡಿ</translation>
 <translation id="6871644448911473373">OCSP ಪ್ರತಿಕ್ರಿಯೆ ನೀಡುಗ: <ph name="LOCATION" /></translation>
 <translation id="6872781471649843364">ನೀವು ನಮೂದಿಸಿದ ಪಾಸ್‌ವರ್ಡ್ ಅನ್ನು ಸರ್ವರ್‌ ನಿಂದ ತಿರಸ್ಕರಿಸಲಾಗಿದೆ.</translation>
+<translation id="6874503923667733123">Chrome OS ಸಿಸ್ಟಂ ಆ್ಯಪ್</translation>
 <translation id="6876155724392614295">ಬೈಕ್</translation>
 <translation id="6876469544038980967">ಉಪಯುಕ್ತವಲ್ಲ</translation>
 <translation id="6878422606530379992">ಸೆನ್ಸರ್‌ಗಳನ್ನು ಅನುಮತಿಸಲಾಗಿದೆ</translation>
@@ -6509,6 +6532,7 @@
 <translation id="7582844466922312471">ಮೊಬೈಲ್ ಡೇಟಾ</translation>
 <translation id="7583948862126372804">ಎಣಿಕೆ</translation>
 <translation id="7586498138629385861">Chrome Apps ತೆರೆದಿರುವಾಗ Chrome ರನ್ ಆಗುತ್ತಲೇ ಇರುತ್ತದೆ.</translation>
+<translation id="758895749110326677">Chromebooks ನಲ್ಲಿ ಗೇಮಿಂಗ್ ಅನ್ನು ಸುಧಾರಿಸಲು ನಮಗೆ ಸಹಾಯ ಮಾಡಿ</translation>
 <translation id="7589461650300748890">ವಾಹ್, ಇಲ್ಲ. ಜಾಗರೂಕರಾಗಿರಿ.</translation>
 <translation id="7593653750169415785">ನೀವು ಕೆಲವು ಬಾರಿ ಅಧಿಸೂಚನೆಗಳನ್ನು ನಿರಾಕರಿಸಿದ್ದರಿಂದಾಗಿ ಸ್ವಯಂಚಾಲಿತವಾಗಿ ನಿರ್ಬಂಧಿಸಲಾಗಿದೆ</translation>
 <translation id="7594725637786616550">ನಿಮ್ಮ <ph name="DEVICE_TYPE" /> ಅನ್ನು ಹೊಸದಾಗಿರುವಂತೆ ಮರುಹೊಂದಿಸಲು ಪವರ್‌ವಾಶ್ ಮಾಡಿ.</translation>
@@ -7317,6 +7341,15 @@
 <translation id="8379991678458444070">ಈ ಟ್ಯಾಬ್ ಅನ್ನು ಬುಕ್‌ಮಾರ್ಕ್‌ ಮಾಡಿ ಮತ್ತು ನಿಮಗೆ ಅಗತ್ಯವಿರುವಾಗ ತ್ವರಿತವಾಗಿ ಇಲ್ಲಿಗೆ ಹಿಂತಿರುಗಿ</translation>
 <translation id="8382715499079447151">ವೀಕ್ಷಣೆ ಸುರಕ್ಷತೆ</translation>
 <translation id="8382913212082956454">ಇಮೇಲ್ &amp;ವಿಳಾಸವನ್ನು ನಕಲು ಮಾಡಿ</translation>
+<translation id="8383266303049437646"><ph name="BEGIN_PARAGRAPH1" />ಈ ಕೆಳಗಿನ ಸಮಸ್ಯೆ ನಿವಾರಣಾ ಹಂತಗಳನ್ನು ಪ್ರಯತ್ನಿಸಿ:
+    <ph name="BEGIN_LIST" />
+    <ph name="LIST_ITEM" />ನಿಮ್ಮ ಸಾಧನ HDD, SSD, ಅಥವಾ eMMC ಯಂತಹ ಕಾರ್ಯನಿರ್ವಹಿಸುವ ಆಂತರಿಕ ಸಂಗ್ರಹಣೆ ಹೊಂದಿರುವುದನ್ನು ಖಚಿತಪಡಿಸಿಕೊಳ್ಳಿ
+    <ph name="LIST_ITEM" />ನಿಮ್ಮ ಆಂತರಿಕ ಸಂಗ್ರಹಣೆ ಸಾಧನದಲ್ಲಿ 16GB ಗಿಂತ ಹೆಚ್ಚಿನ ಸ್ಥಳಾವಕಾಶವಿದೆಯೇ ಎಂದು ಪರಿಶೀಲಿಸಿ
+    <ph name="LIST_ITEM" />ಭೌತಿಕವಾಗಿ ಪ್ರವೇಶಿಸುವ ಅವಕಾಶವಿದ್ದರೆ, ಆಂತರಿಕ ಸಂಗ್ರಹಣೆಯ ಕನೆಕ್ಷನ್ ಅನ್ನು ಪರಿಶೀಲಿಸಿ
+    <ph name="LIST_ITEM" />ನೀವು ಪ್ರಮಾಣೀಕೃತ ಮಾದರಿಯನ್ನು ಬಳಸುತ್ತಿದ್ದೀರಿ ಎಂಬುದನ್ನು ಖಚಿತಪಡಿಸಿಕೊಳ್ಳಿ ಮತ್ತು ಇನ್‌ಸ್ಟಾಲ್ ಟಿಪ್ಪಣಿಗಳನ್ನು ಪರಿಶೀಲಿಸಿ
+    <ph name="END_LIST" />
+    <ph name="END_PARAGRAPH1" />
+    <ph name="BEGIN_PARAGRAPH2" />ಹೆಚ್ಚಿನ ಸಹಾಯಕ್ಕಾಗಿ, ಇಲ್ಲಿಗೆ ಭೇಟಿ ನೀಡಿ: g.co/flex/InstallErrors.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="8386091599636877289">ಕಾರ್ಯನೀತಿ ಕಂಡುಬಂದಿಲ್ಲ.</translation>
 <translation id="8387361103813440603">ನಿಮ್ಮ ಸ್ಥಳವನ್ನು ನೋಡಲು ಈ ಸೈಟ್‌ಗಳಿಗೆ ಅನುಮತಿಸಲಾಗುವುದಿಲ್ಲ</translation>
 <translation id="8388770971141403598">ಸೆಕೆಂಡರಿ ಪ್ರೊಫೈಲ್‌ಗಳು ಬೆಂಬಲಿತವಾಗಿಲ್ಲ</translation>

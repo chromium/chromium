@@ -109,6 +109,7 @@
 <translation id="2212733584906323460">حل‌وفصل نام</translation>
 <translation id="2217935453350629363">سرعت کنونی</translation>
 <translation id="2224337661447660594">اتصال اینترنت وجود ندارد</translation>
+<translation id="222447520299472966">باید حداقل یک آلبوم از «گالری هنری» انتخاب شود</translation>
 <translation id="2230005943220647148">سانتی‌گراد</translation>
 <translation id="2230051135190148440">CHAP</translation>
 <translation id="225692081236532131">وضعیت فعال‌سازی</translation>
@@ -334,6 +335,7 @@
 <translation id="5051044138948155788">فقط این صفحه باقی مانده است. با این کار، به صفحه شروع اسکن هدایت می‌شوید.</translation>
 <translation id="5088172560898466307">نام سرور میزبان</translation>
 <translation id="5089810972385038852">ایالت</translation>
+<translation id="5090362543162270857">IPsec (IKEv2)</translation>
 <translation id="5142961317498132443">اصالت‌سنجی</translation>
 <translation id="5154917547274118687">حافظه</translation>
 <translation id="5160857336552977725">وارد سیستم <ph name="DEVICE_TYPE" /> خودتان شوید</translation>
@@ -618,6 +620,7 @@
 <translation id="8675354002693747642">کلید ازپیش هم‌رسانی‌شده</translation>
 <translation id="8677859815076891398">‏آلبومی وجود ندارد. آلبومی در <ph name="LINK_BEGIN" />Google Photos<ph name="LINK_END" /> ایجاد کنید.</translation>
 <translation id="8709616837707653427"><ph name="DESC_TEXT" /> برای مدیریت این ویژگی، از کلیدهای پیکان روبه راست یا روبه چپ استفاده کنید.</translation>
+<translation id="8712637175834984815">متوجه شدم</translation>
 <translation id="871560550817059752">انجام نشد - جوهر تمام شده است</translation>
 <translation id="8723108084122415655">آستانه تأخیر در شبکه غیر پیش‌فرض خیلی زیاد است</translation>
 <translation id="8726019395068607495">متوقف شد - در باز است</translation>

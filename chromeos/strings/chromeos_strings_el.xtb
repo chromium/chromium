@@ -109,6 +109,7 @@
 <translation id="2212733584906323460">Ανάλυση ονόματος</translation>
 <translation id="2217935453350629363">Τρέχουσα ταχύτητα</translation>
 <translation id="2224337661447660594">Χωρίς σύνδεση στο διαδίκτυο</translation>
+<translation id="222447520299472966">Απαιτείται η επιλογή τουλάχιστον ενός λευκώματος γκαλερί.</translation>
 <translation id="2230005943220647148">Βαθμοί Κελσίου</translation>
 <translation id="2230051135190148440">CHAP</translation>
 <translation id="225692081236532131">Κατάσταση ενεργοποίησης</translation>
@@ -436,6 +437,7 @@
 <translation id="6319207335391420837">Ενημέρωση υλικολογισμικού στη συσκευή <ph name="DEVICE_NAME" /></translation>
 <translation id="6325525973963619867">Απέτυχε</translation>
 <translation id="6340526405444716530">Εξατομίκευση</translation>
+<translation id="6348738456043757611">Όνομα χρήστη και κωδικός πρόσβασης</translation>
 <translation id="636850387210749493">Εγγραφή επιχείρησης</translation>
 <translation id="6379086450106841622">Οθόνη αφής</translation>
 <translation id="6388847657025262518">Ο τροφοδότης εγγράφων του σαρωτή έχει κολλήσει. Ελέγξτε τον τροφοδότη και δοκιμάστε ξανά.</translation>
@@ -619,6 +621,7 @@
 <translation id="8675354002693747642">Ήδη κοινόχρηστο κλειδί</translation>
 <translation id="8677859815076891398">Δεν υπάρχουν λευκώματα. Δημιουργήστε ένα λεύκωμα στις <ph name="LINK_BEGIN" />Φωτογραφίες Google<ph name="LINK_END" />.</translation>
 <translation id="8709616837707653427"><ph name="DESC_TEXT" /> Χρησιμοποιήστε τα πλήκτρα δεξιού ή αριστερού βέλους για τη διαχείριση αυτής της λειτουργίας.</translation>
+<translation id="8712637175834984815">Κατάλαβα!</translation>
 <translation id="871560550817059752">Σφάλμα - Τελείωσε το μελάνι</translation>
 <translation id="8723108084122415655">Ο λανθάνων χρόνος του μη προεπιλεγμένου δικτύου έχει υπερβεί το ελάχιστο όριο.</translation>
 <translation id="8726019395068607495">Διακοπή - Ανοικτή θύρα</translation>

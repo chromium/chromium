@@ -488,6 +488,7 @@
 <translation id="2430968933669123598">管理 Google 帳戶；按下 Enter 鍵即可管理 Google 帳戶的資訊、隱私權和安全性</translation>
 <translation id="2436186046335138073">要允許 <ph name="HANDLER_HOSTNAME" /> 開啟所有<ph name="PROTOCOL" />連結嗎？</translation>
 <translation id="2438874542388153331">四孔 (右側)</translation>
+<translation id="2448295565072560657">登入時連接至這部裝置的周邊裝置</translation>
 <translation id="2450021089947420533">瀏覽歷程</translation>
 <translation id="2463739503403862330">填入</translation>
 <translation id="2465402087343596252">Architecture-E</translation>
@@ -495,6 +496,7 @@
 <translation id="2465688316154986572">釘裝</translation>
 <translation id="2465914000209955735">管理在 Chrome 中下載的檔案</translation>
 <translation id="2466004615675155314">顯示來自網路的資訊</translation>
+<translation id="2467272921457885625">CPU/RAM 使用率記錄等裝置硬體規格和統計資料</translation>
 <translation id="2467694685043708798"><ph name="BEGIN_LINK" />執行網路診斷<ph name="END_LINK" /></translation>
 <translation id="2469153820345007638">1 到 N 的順序</translation>
 <translation id="2470767536994572628">這份文件會在你編輯註解時重設為單頁檢視和原始顯示方向</translation>

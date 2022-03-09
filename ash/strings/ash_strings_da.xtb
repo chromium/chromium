@@ -317,6 +317,7 @@ Her er nogle af de ting, du kan prøve for at komme godt i gang.</translation>
 <translation id="301282384882049174">Delt af din administrator</translation>
 <translation id="3017687597151988916">Vinduet er valgt som kilde</translation>
 <translation id="3033545621352269033">Til</translation>
+<translation id="3033912566804961911">Kombiner med <ph name="DESK_NAME" /></translation>
 <translation id="3036649622769666520">Åbn filer</translation>
 <translation id="3038571455154067151">Angiv forældreadgangskoden til Family Link for at logge ind</translation>
 <translation id="3039939407102840004">Styluspennens batteriniveau er på <ph name="PERCENTAGE" /> procent.</translation>
@@ -342,6 +343,7 @@ Her er nogle af de ting, du kan prøve for at komme godt i gang.</translation>
 <translation id="3153444934357957346">Du kan kun have op til <ph name="MULTI_PROFILE_USER_LIMIT" /> konti i samlet login fra flere konti.</translation>
 <translation id="3154351730702813399">Administratoren af enheden kan overvåge din browseraktivitet.</translation>
 <translation id="316086887565479535">Der er apps, som ikke understøttes, i skabelonen</translation>
+<translation id="3161500364292033097">Luk skrivebord og vinduer</translation>
 <translation id="316356270129335934"><ph name="MANAGER" /> skifter til en tidligere version af din <ph name="DEVICE_TYPE" />. Din enhed nulstilles, og alle data slettes.</translation>
 <translation id="3181441307743005334">Genstarten kan tage lidt tid</translation>
 <translation id="3202010236269062730">{NUM_DEVICES,plural, =1{Forbundet til en enhed}one{Forbundet til # enhed}other{Forbundet til # enheder}}</translation>
@@ -880,7 +882,6 @@ Installeret for nylig</translation>
 <translation id="6578407462441924264">Uden navn</translation>
 <translation id="6585808820553845416">Sessionen slutter om <ph name="SESSION_TIME_REMAINING" />.</translation>
 <translation id="6593850935013518327"><ph name="PRIMARY_TEXT" />, <ph name="SECONDARY_TEXT" /></translation>
-<translation id="6602800870584047641">Din forbindelse er skiftet til et mere sikkert netværk</translation>
 <translation id="661203523074512333"><ph name="SECURITY_STATUS" />, signalstyrke <ph name="SIGNAL_STRENGTH" />, administreret af din administrator</translation>
 <translation id="6612802754306526077">Skærmoptagelsestilstand er valgt</translation>
 <translation id="6614169507485700968">Privatlivsskærmen er slået til</translation>
@@ -1051,6 +1052,7 @@ Installeret for nylig</translation>
 <translation id="7649070708921625228">Hjælp</translation>
 <translation id="7654687942625752712">Tryk på begge lydstyrketaster, og hold dem nede i fem sekunder for at deaktivere oplæsning.</translation>
 <translation id="7658239707568436148">Annuller</translation>
+<translation id="7659861092419699379">Skrivebordet og vinduerne er blevet lukket</translation>
 <translation id="7660160718439869192"><ph name="NAME" /> vises på enheder, som er tilknyttet <ph name="EMAIL" /></translation>
 <translation id="7662283695561029522">Tryk for at konfigurere</translation>
 <translation id="7670953955701272011">Åbn denne dato i Google Kalender</translation>

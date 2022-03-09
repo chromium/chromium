@@ -138,6 +138,7 @@
 <translation id="1130589222747246278"><ph name="WINDOW_TITLE" /> - 屬於「<ph name="GROUP_NAME" />」群組</translation>
 <translation id="1130676589211693127">右側耳機電量為 <ph name="PERCENTAGE" />%。</translation>
 <translation id="1133418583142946603">新增目前的分頁</translation>
+<translation id="1135971365523689618">從 <ph name="INSTALL_SOURCE" /> 安裝的 <ph name="APP_TYPE" /></translation>
 <translation id="1136179794690960030"><ph name="EMOJI_NAME" />。第 <ph name="EMOJI_INDEX" /> 個，總共 <ph name="EMOJI_COUNT" /> 個。</translation>
 <translation id="1136712381129578788">由於你輸入太多次錯誤的 PIN 碼，因此安全金鑰已遭到鎖定。如要解鎖，請移除安全金鑰後重新插入。</translation>
 <translation id="1137589305610962734">暫存資料</translation>
@@ -272,6 +273,7 @@
 <translation id="1263231323834454256">閱讀清單</translation>
 <translation id="1263733306853729545">使用 <ph name="MINUS" /> 鍵與 <ph name="EQUAL" /> 鍵呼叫候選字清單</translation>
 <translation id="126387934568812801">加入這張螢幕截圖和已開啟分頁的標題</translation>
+<translation id="1264083566674525434">編輯網站權限</translation>
 <translation id="1264337193001759725">如要查看網路 UI 記錄，請參閱 <ph name="DEVICE_LOG_LINK" /></translation>
 <translation id="126710816202626562">翻譯語言：</translation>
 <translation id="126768002343224824">16 倍</translation>
@@ -407,6 +409,7 @@
 <translation id="1410616244180625362">繼續允許 <ph name="HOST" /> 存取你的攝影機</translation>
 <translation id="1410797069449661718">捲動至第一個分頁</translation>
 <translation id="1410806973194718079">無法檢查政策</translation>
+<translation id="1411724932979011919">輸入的內容必須使用 LPA 格式：1$&lt;smdp address&gt;$&lt;activation code&gt;</translation>
 <translation id="1412681350727866021">其他擴充功能</translation>
 <translation id="1414315029670184034">禁止網站使用攝影機</translation>
 <translation id="1414648216875402825">你即將更新為不穩定的 <ph name="PRODUCT_NAME" />版本，其中含有仍在開發中的功能。系統可能會發生當機情況和無法預期的錯誤，執行時請特別注意。</translation>
@@ -434,6 +437,7 @@
 <translation id="1427269577154060167">國家/地區</translation>
 <translation id="142758023928848008">啟用相黏鍵 (執行鍵盤快速鍵時只需依序輸入按鍵)</translation>
 <translation id="142765311413773645"><ph name="APP_NAME" /> 授權已過期</translation>
+<translation id="1428373049397869723">你可以在 Finder 或其他應用程式中，透過這個應用程式開啟及編輯支援的檔案。如要控管要在這個應用程式預設開啟哪些檔案，請<ph name="BEGIN_LINK" />進一步瞭解如何在裝置上設定預設應用程式<ph name="END_LINK" />。</translation>
 <translation id="1429300045468813835">已全部清除</translation>
 <translation id="1430915738399379752">列印</translation>
 <translation id="1431188203598586230">最後一次軟體更新</translation>
@@ -887,6 +891,9 @@
 <translation id="1849186935225320012">這個網頁可完整控制 MIDI 裝置。</translation>
 <translation id="1850145825777333687">裝置憑證</translation>
 <translation id="1850508293116537636">順時針旋轉(&amp;C)</translation>
+<translation id="185111092974636561"><ph name="BEGIN_PARAGRAPH1" />進行註冊前，你必須清除 TPM，<ph name="DEVICE_OS" /> 才能取得裝置的擁有權。<ph name="END_PARAGRAPH1" />
+    <ph name="BEGIN_PARAGRAPH2" />你也可以完全關閉 TPM 裝置。系統仍會透過軟體加密功能安全儲存你的資料，但會停用硬體支援憑證等特定安全性功能。<ph name="END_PARAGRAPH2" />
+    <ph name="BEGIN_PARAGRAPH3" />只要重新啟動並進入系統 BIOS/UEFI 設定，即可變更 TPM 設定。操作步驟會因裝置型號而有所不同。如需更多資訊，請在重新啟動前使用其他裝置開啟 <ph name="DEVICE_OS" /> 說明文件：g.co/flex/TPMHelp。<ph name="END_PARAGRAPH3" /></translation>
 <translation id="1852141627593563189">尋找有害軟體</translation>
 <translation id="1852799913675865625">嘗試讀取檔案時發生錯誤：<ph name="ERROR_TEXT" /></translation>
 <translation id="1854049213067042715">繼續進行還原程序。你可以將應用程式設為一律在啟動時還原，或前往「設定」頁面關閉還原功能。</translation>
@@ -1121,6 +1128,7 @@
 <translation id="2090165459409185032">如要還原您的帳戶資訊，請前往 google.com/accounts/recovery</translation>
 <translation id="2090507354966565596">登入時自動連線</translation>
 <translation id="2090876986345970080">系統安全性設定</translation>
+<translation id="2095774564753225041">支援的檔案類型</translation>
 <translation id="2096715839409389970">清除第三方 Cookie</translation>
 <translation id="2098805196501063469">檢查其餘密碼</translation>
 <translation id="2099172618127234427">你即將啟用 Chrome 作業系統偵錯功能，這會一併設定 sshd 精靈，並允許從 USB 磁碟機執行啟動作業。</translation>
@@ -1586,6 +1594,8 @@
 <translation id="2527167509808613699">任何類型的連線</translation>
 <translation id="2529887123641260401">你隨時可以變更設定，或是透過切換控制功能設定頁面再次開啟設定指南。</translation>
 <translation id="2530166226437958497">疑難排解</translation>
+<translation id="2531530485656743109"><ph name="BEGIN_PARAGRAPH1" />發生錯誤，無法安裝 <ph name="DEVICE_OS" />。<ph name="END_PARAGRAPH1" />
+    <ph name="BEGIN_PARAGRAPH2" />如需詳細說明，請前往：g.co/flex/InstallErrors。<ph name="END_PARAGRAPH2" /></translation>
 <translation id="2532589005999780174">高反差模式</translation>
 <translation id="2533649878691950253">系統已禁止這個網站取得你的精確位置資訊，因為你通常不允許這麼做</translation>
 <translation id="253434972992662860">暫停(&amp;P)</translation>
@@ -1635,6 +1645,7 @@
 <translation id="2587922766792651800">作業逾時</translation>
 <translation id="2588636910004461974">來自 <ph name="VENDOR_NAME" /> 的裝置</translation>
 <translation id="25899519884572181">結束閱讀器模式</translation>
+<translation id="2593499352046705383">開始操作前，請確認資料已備份。安裝 <ph name="DEVICE_OS" /> 會覆寫硬碟的資料。如要瞭解詳情，請前往 g.co/flex/InstallGuide。</translation>
 <translation id="2594999711683503743">搜尋 Google 或輸入網址</translation>
 <translation id="2602501489742255173">向上滑動即可開始使用</translation>
 <translation id="2603115962224169880">清理電腦</translation>
@@ -1653,6 +1664,7 @@
 <translation id="2610780100389066815">Microsoft 信任清單簽署</translation>
 <translation id="2611776654555141051">矩形工具</translation>
 <translation id="2612676031748830579">卡號</translation>
+<translation id="2613210758071148851">禁止 <ph name="RESTRICTED_SITE" /> 的任何擴充功能</translation>
 <translation id="2613535083491958306"><ph name="ORIGIN" /> 將可編輯「<ph name="FILENAME" />」</translation>
 <translation id="2616366145935564096">讀取以及變更你在 <ph name="WEBSITE_1" /> 網站上的資料</translation>
 <translation id="2618797463720777311">設定鄰近分享功能</translation>
@@ -3035,6 +3047,7 @@
 <translation id="3971764089670057203">這個安全金鑰上的指紋</translation>
 <translation id="3973005893595042880">不允許這位使用者</translation>
 <translation id="3973660817924297510">正在檢查密碼 (已檢查 <ph name="CHECKED_PASSWORDS" /> 個，共 <ph name="TOTAL_PASSWORDS" /> 個)…</translation>
+<translation id="3974514184580396500">使用「下一個」切換功能將焦點移至螢幕畫面的下一個項目</translation>
 <translation id="3975201861340929143">說明</translation>
 <translation id="3975565978598857337">無法連線至指定領域的伺服器</translation>
 <translation id="3976108569178263973">沒有可用的印表機。</translation>
@@ -3163,6 +3176,7 @@
 <translation id="4100733287846229632">裝置空間嚴重不足</translation>
 <translation id="4100853287411968461">新的裝置使用時間限制</translation>
 <translation id="4101352914005291489">隱藏的 SSID</translation>
+<translation id="4102469565336584882">代碼無效，輸入的內容必須使用 LPA 格式：1$&lt;smdp address&gt;$&lt;activation code&gt;</translation>
 <translation id="4102906002417106771">重新啟動以執行 Powerwash</translation>
 <translation id="4104163789986725820">匯出(&amp;X)...</translation>
 <translation id="4107048419833779140">識別並退出儲存裝置</translation>
@@ -3215,6 +3229,7 @@
 <translation id="4159681666905192102">這是由 <ph name="CUSTODIAN_EMAIL" /> 和 <ph name="SECOND_CUSTODIAN_EMAIL" /> 所管理的兒童專用帳戶。</translation>
 <translation id="4163560723127662357">未知的鍵盤</translation>
 <translation id="4165942112764990069"><ph name="USER_EMAIL" /> 不屬於有效機構，請與管理員聯絡。如果你是管理員，可以前往 g.co/ChromeEnterpriseAccount 進行機構設定</translation>
+<translation id="4167393659000039775">Google 不會對任何遺失的資料負責，而且 <ph name="DEVICE_OS" /> 可能不適用於未通過核准的型號。如要瞭解詳情，請前往 g.co/flex/InstallGuide。</translation>
 <translation id="4167686856635546851">網站通常會使用 JavaScript，以顯示電玩遊戲或網路表單等互動式功能</translation>
 <translation id="4168015872538332605"><ph name="PRIMARY_EMAIL" /> 的部分設定已與你共用。不過只有使用多重登入時，這些設定才會影響你的帳戶。</translation>
 <translation id="4168651806173792090"><ph name="NETWORK_NAME" />，末四碼為 <ph name="LAST_FOUR_DIGITS" /></translation>
@@ -3240,8 +3255,10 @@
 <translation id="4200983522494130825">新增分頁(&amp;T)</translation>
 <translation id="4201546031411513170">你隨時可以在設定中選擇要同步處理的資料。</translation>
 <translation id="420283545744377356">關閉螢幕保護程式</translation>
+<translation id="4204851595694839599">你的遊戲過程體驗如何？</translation>
 <translation id="4206144641569145248">外星人</translation>
 <translation id="4206323443866416204">意見回饋報告</translation>
+<translation id="4207522141889799150">編輯 <ph name="SITE" /> 的網站權限</translation>
 <translation id="4207932031282227921">已要求權限，按下 F6 鍵即可回覆</translation>
 <translation id="4208390505124702064">搜尋 <ph name="SITE_NAME" /></translation>
 <translation id="4209092469652827314">大</translation>
@@ -3375,6 +3392,9 @@
 <translation id="4349828822184870497">有幫助</translation>
 <translation id="4350230709416545141">一律禁止 <ph name="HOST" /> 存取你的位置資訊</translation>
 <translation id="4350782034419308508">Hey Google</translation>
+<translation id="4351770750390404505"><ph name="BEGIN_PARAGRAPH1" />為了提供最佳服務體驗，<ph name="DEVICE_OS" /> 會收集有關裝置的硬體資料並提供給 Google，以判斷要提供哪些更新內容。你可以選擇是否允許 Google 將這些資料用於其他用途，例如支援作業以及改善 <ph name="DEVICE_OS" /> 的使用體驗與服務。<ph name="END_PARAGRAPH1" />
+    <ph name="BEGIN_PARAGRAPH2" />你可以登入這部裝置，並造訪 chrome://system 查看 CHROMEOSFLEX_HARDWARE_INFO 部分，瞭解傳送給 Google 供篩選更新項目的資料，以及你選擇將資料提供給 Google 的任何其他情況。<ph name="END_PARAGRAPH2" />
+    <ph name="BEGIN_PARAGRAPH3" />如要進一步瞭解 <ph name="DEVICE_OS" /> 可能會將哪些資料提供給 Google，以及這些資料的用途，請造訪 g.co/flex/HWDataCollection。<ph name="END_PARAGRAPH3" /></translation>
 <translation id="4354073718307267720">網站必須先詢問你，才能根據你的周遭環境建立 3D 地圖或追蹤攝影機位置</translation>
 <translation id="4354344420232759511">這裡會顯示你曾造訪的網站</translation>
 <translation id="435527878592612277">請選取你的相片</translation>
@@ -3864,6 +3884,7 @@
 <translation id="4868281708609571334">訓練 Google 助理辨識<ph name="SUPERVISED_USER_NAME" />的聲音</translation>
 <translation id="4868284252360267853">這個對話方塊未處於聚焦狀態。按下 Command + Shift + Option + A 鍵即可聚焦這個對話方塊。</translation>
 <translation id="48704129375571883">新增其他功能</translation>
+<translation id="4870724079713069532">你可以在檔案總管或其他應用程式中，透過這個應用程式開啟及編輯支援的檔案。如要控管要在這個應用程式預設開啟哪些檔案，請前往 <ph name="BEGIN_LINK" />Windows 設定<ph name="END_LINK" />。</translation>
 <translation id="4870758487381879312">輸入管理員提供的密碼即可取得設定資訊</translation>
 <translation id="4870903493621965035">沒有任何配對裝置</translation>
 <translation id="4870995365819149457">某些支援連結仍會在「<ph name="APP_NAME" />」、「<ph name="APP_NAME_2" />」、「<ph name="APP_NAME_3" />」和另 1 個應用程式中開啟。</translation>
@@ -4083,6 +4104,7 @@
 <translation id="5088534251099454936">PKCS #1 SHA-512 (使用 RSA 加密)</translation>
 <translation id="5090637338841444533">不得追蹤攝影機位置</translation>
 <translation id="5093569275467863761">無痕模式往返快取子頁框：<ph name="BACK_FORWARD_CACHE_INCOGNITO_PAGE_URL" /></translation>
+<translation id="5094176498302660097">你可以在「檔案」應用程式或其他應用程式中，透過這個應用程式開啟及編輯支援的檔案。如要控管要在這個應用程式預設開啟哪些檔案，請<ph name="BEGIN_LINK" />進一步瞭解如何在裝置上設定預設應用程式<ph name="END_LINK" />。</translation>
 <translation id="5094721898978802975">與合作原生應用程式建立連線</translation>
 <translation id="5097002363526479830">無法連線至「<ph name="NAME" />」：<ph name="DETAILS" /></translation>
 <translation id="5097306410549350357">進一步瞭解如何使用位置資訊設定</translation>
@@ -4251,6 +4273,7 @@
 <translation id="5266113311903163739">憑證授權單位匯入錯誤</translation>
 <translation id="526622169288322445">可對「<ph name="ADDRESS_SUMMARY" />」執行的其他動作</translation>
 <translation id="5269977353971873915">列印失敗</translation>
+<translation id="5273806377963980154">編輯網站網址</translation>
 <translation id="5275352920323889391">狗</translation>
 <translation id="527605719918376753">關閉分頁音訊</translation>
 <translation id="527605982717517565">永遠允許在 <ph name="HOST" /> 執行 JavaScript</translation>
@@ -4568,6 +4591,7 @@
 <translation id="5588033542900357244">(<ph name="RATING_COUNT" />)</translation>
 <translation id="558918721941304263">正在載入應用程式...</translation>
 <translation id="5592595402373377407">目前還沒有足夠的資料。</translation>
+<translation id="5593564924968945303">Chrome 瀏覽器</translation>
 <translation id="5595485650161345191">編輯地址</translation>
 <translation id="5596627076506792578">更多選項</translation>
 <translation id="5600348067066185292">只要簡單幾個步驟即可完成安裝。請放心，系統會先讓你再次確認，才對你的電腦做出變更。</translation>
@@ -4730,6 +4754,7 @@
 <translation id="577322787686508614">無法在以下裝置上執行讀取作業：「<ph name="DEVICE_NAME" />」。</translation>
 <translation id="5774295353725270860">開啟「檔案」應用程式</translation>
 <translation id="577624874850706961">搜尋 Cookie</translation>
+<translation id="5776571780337000608">你可以在檔案瀏覽器或其他應用程式中，透過這個應用程式開啟及編輯支援的檔案。如要控管要在這個應用程式預設開啟哪些檔案，請<ph name="BEGIN_LINK" />進一步瞭解如何在裝置上設定預設應用程式<ph name="END_LINK" />。</translation>
 <translation id="5777468213129569553">開啟 Chrome</translation>
 <translation id="5778491106820461378">你可以透過<ph name="LINK_BEGIN" />設定<ph name="LINK_END" />管理已登入的 Google 帳戶。你授予網站和應用程式的權限可能適用於所有帳戶。如果不想讓網站和應用程式存取你的帳戶資訊，請以訪客身分登入 <ph name="DEVICE_TYPE" />。</translation>
 <translation id="5780011244986845107">你選取的資料夾包含敏感檔案。你確定要將這個資料夾的讀取權限永久授予「<ph name="APP_NAME" />」嗎？</translation>
@@ -5129,7 +5154,6 @@
 <translation id="6181431612547969857">下載遭封鎖</translation>
 <translation id="6184099524311454384">搜尋分頁</translation>
 <translation id="6185132558746749656">裝置位置</translation>
-<translation id="6186394437969115158">網站通常會顯示廣告，以便提供免費的內容或服務。不過，某些網站會顯示干擾性或誤導性的廣告。</translation>
 <translation id="6188346519670155113">Chrome 瀏覽器同步功能已開啟</translation>
 <translation id="6190953336330058278">Phone Hub 應用程式</translation>
 <translation id="619279033188484792">透過 <ph name="DEVICE_TYPE" /> 查看手機上最近的相片、媒體和通知</translation>
@@ -5248,6 +5272,7 @@
 <translation id="6300177430812514606">不得完成資料的傳送或接收</translation>
 <translation id="630065524203833229">結束(&amp;X)</translation>
 <translation id="6300718114348072351">無法自動設定「<ph name="PRINTER_NAME" />」。請手動設定印表機的進階選項。<ph name="LINK_BEGIN" />瞭解詳情<ph name="LINK_END" /></translation>
+<translation id="6301300352769835063">允許 Google 使用硬體資料來協助改善 <ph name="DEVICE_OS" />。如果拒絕，這項資料仍會傳送給 Google 以判斷適當的更新內容，但不會儲存或用於其他用途。如要瞭解詳情，請前往 g.co/flex/HWDataCollection。</translation>
 <translation id="630292539633944562">個人資訊建議</translation>
 <translation id="6305607932814307878">全域政策：</translation>
 <translation id="6307990684951724544">系統忙碌中</translation>
@@ -5340,6 +5365,7 @@
 <translation id="6398715114293939307">移除 Google Play 商店</translation>
 <translation id="6398765197997659313">退出全螢幕模式</translation>
 <translation id="6399774419735315745">女間諜</translation>
+<translation id="6404187344102273690">Chromebook Gaming</translation>
 <translation id="6404511346730675251">編輯書籤</translation>
 <translation id="6406303162637086258">模擬瀏覽器重新啟動</translation>
 <translation id="6406506848690869874">同步</translation>
@@ -5760,6 +5786,7 @@
 <translation id="6824584962142919697">檢查元素 (&amp;I)</translation>
 <translation id="6825184156888454064">依名稱排序</translation>
 <translation id="6826872289184051766">透過 USB 進行驗證</translation>
+<translation id="6827121912381363404">允許所有擴充功能讀取及變更 <ph name="PERMITTED_SITE" /></translation>
 <translation id="6828153365543658583">只允許下列使用者登入：</translation>
 <translation id="6828182567531805778">如果要同步處理資料，請輸入你的通關密語</translation>
 <translation id="682871081149631693">QuickFix</translation>
@@ -5811,6 +5838,7 @@
 <translation id="6868934826811377550">查看詳情</translation>
 <translation id="6871644448911473373">OCSP 回應程式：<ph name="LOCATION" /></translation>
 <translation id="6872781471649843364">輸入的密碼遭到伺服器拒絕。</translation>
+<translation id="6874503923667733123">Chrome OS 系統應用程式</translation>
 <translation id="6876155724392614295">自行車</translation>
 <translation id="6876469544038980967">沒有幫助</translation>
 <translation id="6878422606530379992">可使用感應器</translation>
@@ -6489,6 +6517,7 @@
 <translation id="7582844466922312471">行動數據</translation>
 <translation id="7583948862126372804">計數</translation>
 <translation id="7586498138629385861">在 Chrome 應用程式開啟的狀態下保持 Chrome 繼續執行。</translation>
+<translation id="758895749110326677">協助我們改善 Chromebook 的遊戲體驗</translation>
 <translation id="7589461650300748890">哎唷，請注意！</translation>
 <translation id="7593653750169415785">由於你拒絕通知數次而自動遭到封鎖的網站</translation>
 <translation id="7594725637786616550">執行 Powerwash 以將 <ph name="DEVICE_TYPE" /> 恢復原廠設定。</translation>
@@ -7254,6 +7283,7 @@
 <translation id="8326478304147373412">PKCS #7，憑證鏈結</translation>
 <translation id="8327676037044516220">權限和內容設定</translation>
 <translation id="8330689128072902965">附近的聯絡人可與你分享內容。按一下即可變更。</translation>
+<translation id="8331323939220256760">{FILE_TYPE_COUNT,plural, =1{支援的檔案類型：<ph name="FILE_TYPE1" />}=2{支援的檔案類型：<ph name="FILE_TYPE1" />、<ph name="FILE_TYPE2" />}=3{支援的檔案類型：<ph name="FILE_TYPE1" />、<ph name="FILE_TYPE2" />、<ph name="FILE_TYPE3" />}=4{支援的檔案類型：<ph name="FILE_TYPE1" />、<ph name="FILE_TYPE2" />、<ph name="FILE_TYPE3" />、<ph name="FILE_TYPE4" />}other{支援的檔案類型：<ph name="FILE_TYPE1" />、<ph name="FILE_TYPE2" />、<ph name="FILE_TYPE3" />、<ph name="FILE_TYPE4" /> (<ph name="LINK" />以及另外 {OVERFLOW_COUNT} 種<ph name="END_LINK" />)}}</translation>
 <translation id="833256022891467078">Crostini 共用資料夾</translation>
 <translation id="8335587457941836791">從檔案櫃中取消固定</translation>
 <translation id="8336407002559723354">這部裝置將在 <ph name="MONTH_AND_YEAR" />停止更新</translation>
@@ -7300,6 +7330,15 @@
 <translation id="8379991678458444070">將此分頁加入書籤，日後便能快速開啟這個頁面</translation>
 <translation id="8382715499079447151">檢視防護</translation>
 <translation id="8382913212082956454">複製電子郵件地址(&amp;E)</translation>
+<translation id="8383266303049437646"><ph name="BEGIN_PARAGRAPH1" />請試試下列疑難排解步驟：
+    <ph name="BEGIN_LIST" />
+    <ph name="LIST_ITEM" />確保裝置含有可用的內部儲存空間，例如 HDD、SSD 或 eMMC
+    <ph name="LIST_ITEM" />確認裝置內部儲存空間的容量大於 16 GB
+    <ph name="LIST_ITEM" />檢查內部儲存空間的連接狀態 (如果支援實體存取方式)
+    <ph name="LIST_ITEM" />務必使用通過認證的型號，並查看安裝注意事項
+    <ph name="END_LIST" />
+    <ph name="END_PARAGRAPH1" />
+    <ph name="BEGIN_PARAGRAPH2" />如需詳細說明，請前往：g.co/flex/InstallErrors。<ph name="END_PARAGRAPH2" /></translation>
 <translation id="8386091599636877289">找不到政策。</translation>
 <translation id="8387361103813440603">不得查看你的位置資訊</translation>
 <translation id="8388770971141403598">不支援次要設定檔</translation>

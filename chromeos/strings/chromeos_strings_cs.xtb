@@ -109,6 +109,7 @@
 <translation id="2212733584906323460">Rozlišení názvu</translation>
 <translation id="2217935453350629363">Aktuální rychlost</translation>
 <translation id="2224337661447660594">Nejste připojeni k internetu</translation>
+<translation id="222447520299472966">Je potřeba vybrat alespoň jedno album v Galerii umění</translation>
 <translation id="2230005943220647148">Stupně Celsia</translation>
 <translation id="2230051135190148440">CHAP</translation>
 <translation id="225692081236532131">Stav aktivace</translation>
@@ -165,7 +166,7 @@
 <translation id="3102119246920354026">Mezipaměť</translation>
 <translation id="3122464029669770682">CPU</translation>
 <translation id="3124039320086536031">Zařízení je připojeno.</translation>
-<translation id="3127341325625468058">{PAGE_NUMBER,plural, =0{Odstranit stránku?}=1{Odstranit stránku {PAGE_NUMBER}?}few{Odstranit stránku {PAGE_NUMBER}?}other{Odstranit stránku {PAGE_NUMBER}?}}</translation>
+<translation id="3127341325625468058">{PAGE_NUMBER,plural, =0{Odstranit stránku?}=1{Odstranit stránku {PAGE_NUMBER}?}few{Odstranit stránku {PAGE_NUMBER}?}many{Odstranit stránku {PAGE_NUMBER}?}other{Odstranit stránku {PAGE_NUMBER}?}}</translation>
 <translation id="315116470104423982">Mobilní datové přenosy</translation>
 <translation id="3156846309055100599">Skenování stránky <ph name="PAGE_NUMBER" />…</translation>
 <translation id="315738237743207937">Byl nalezen captive portál</translation>
@@ -176,7 +177,7 @@
 <translation id="3226405216343213872">Vyhledávání skenerů</translation>
 <translation id="3246869037381808805">Tiskové úlohy starší než 1 den budou odstraněny</translation>
 <translation id="3268178239013324452">Tisk selhal – jsou otevřená dvířka</translation>
-<translation id="3283504360622356314">{0,plural, =1{Upravit soubor}few{Upravit soubory}other{Upravit soubory}}</translation>
+<translation id="3283504360622356314">{0,plural, =1{Upravit soubor}few{Upravit soubory}many{Upravit soubory}other{Upravit soubory}}</translation>
 <translation id="3286515922899063534"><ph name="CURRENT" /> GHz</translation>
 <translation id="3291996639387199448">Směr klíče</translation>
 <translation id="3310640316857623290">DNS má latenci výrazně nad prahovou hodnotou</translation>
@@ -308,7 +309,7 @@
 <translation id="4847902821209177679">Je vybrána možnost <ph name="TOPIC_SOURCE" /> <ph name="TOPIC_SOURCE_DESC" />, stisknutím klávesy Enter vyberete alba z: <ph name="TOPIC_SOURCE" /></translation>
 <translation id="484790837831576105">(Android) Překlad záznamu DNS</translation>
 <translation id="4848429997038228357">PROBÍHÁ</translation>
-<translation id="4861758251032006121">{ATTEMPTS_LEFT,plural, =1{<ph name="ERROR_MESSAGE" /> Zbývá {0} pokus}few{<ph name="ERROR_MESSAGE" /> Zbývají {0} pokusy}other{<ph name="ERROR_MESSAGE" /> Zbývá {0} pokusů}}</translation>
+<translation id="4861758251032006121">{ATTEMPTS_LEFT,plural, =1{<ph name="ERROR_MESSAGE" /> Zbývá {0} pokus}few{<ph name="ERROR_MESSAGE" /> Zbývají {0} pokusy}many{<ph name="ERROR_MESSAGE" /> Zbývá {0} pokusu}other{<ph name="ERROR_MESSAGE" /> Zbývá {0} pokusů}}</translation>
 <translation id="4873827928179867585">Ověřovací algoritmus</translation>
 <translation id="4880328057631981605">Název přístupového bodu</translation>
 <translation id="4885705234041587624">MSCHAPv2</translation>
@@ -371,7 +372,7 @@ Zkuste klepnout na mikrofon a zeptat se.</translation>
 <translation id="5431318178759467895">Barevně</translation>
 <translation id="5457599981699367932">Použít jako host</translation>
 <translation id="54609108002486618">Spravovaný</translation>
-<translation id="5478289488939624992">{ATTEMPTS_LEFT,plural, =1{Zbývá {0} pokus}few{Zbývají {0} pokusy}other{Zbývá {0} pokusů}}</translation>
+<translation id="5478289488939624992">{ATTEMPTS_LEFT,plural, =1{Zbývá {0} pokus}few{Zbývají {0} pokusy}many{Zbývá {0} pokusu}other{Zbývá {0} pokusů}}</translation>
 <translation id="5493614766091057239"><ph name="VERDICT" />: <ph name="PROBLEMS" /></translation>
 <translation id="5499114900554609492">Skenování se nepodařilo dokončit</translation>
 <translation id="5502931783115429516">Android neběží</translation>
@@ -398,7 +399,7 @@ Zkuste klepnout na mikrofon a zeptat se.</translation>
 <translation id="5895138241574237353">Restartovat</translation>
 <translation id="5916084858004523819">Zakázáno</translation>
 <translation id="5916664084637901428">Zapnuto</translation>
-<translation id="5921506667911082617">{COUNT,plural, =1{Soubor byl úspěšně naskenován a uložen do složky <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}few{Soubory byly úspěšně naskenovány a uloženy do složky <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}other{Soubory byly úspěšně naskenovány a uloženy do složky <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}}</translation>
+<translation id="5921506667911082617">{COUNT,plural, =1{Soubor byl úspěšně naskenován a uložen do složky <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}few{Soubory byly úspěšně naskenovány a uloženy do složky <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}many{Soubory byly úspěšně naskenovány a uloženy do složky <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}other{Soubory byly úspěšně naskenovány a uloženy do složky <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}}</translation>
 <translation id="5931523347251946569">Soubor nebyl nalezen</translation>
 <translation id="5939518447894949180">Resetovat</translation>
 <translation id="594552776027197022">Vygenerovat náhodnou dvojici klíčů</translation>
@@ -443,7 +444,7 @@ Zkuste klepnout na mikrofon a zeptat se.</translation>
 <translation id="6423239382391657905">OpenVPN</translation>
 <translation id="6439505561246192797">Slabý (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="6456394469623773452">Průměrný</translation>
-<translation id="6463239094587744704">{PAGE_NUMBER,plural, =0{Znovu naskenovat stránku?}=1{Znovu naskenovat stránku {PAGE_NUMBER}?}few{Znovu naskenovat stránku {PAGE_NUMBER}?}other{Znovu naskenovat stránku {PAGE_NUMBER}?}}</translation>
+<translation id="6463239094587744704">{PAGE_NUMBER,plural, =0{Znovu naskenovat stránku?}=1{Znovu naskenovat stránku {PAGE_NUMBER}?}few{Znovu naskenovat stránku {PAGE_NUMBER}?}many{Znovu naskenovat stránku {PAGE_NUMBER}?}other{Znovu naskenovat stránku {PAGE_NUMBER}?}}</translation>
 <translation id="6472207088655375767">Jednorázové heslo</translation>
 <translation id="6480327114083866287">Spravováno doménou <ph name="MANAGER" /></translation>
 <translation id="649050271426829538">Zastaveno – zasekl se papír</translation>
@@ -495,7 +496,7 @@ Zkuste klepnout na mikrofon a zeptat se.</translation>
 <translation id="7086440545492620869"><ph name="VALUE" /> <ph name="DISPLAY_NAME" /></translation>
 <translation id="710028965487274708">Nezdařilo se – autorizace selhala</translation>
 <translation id="7103252855940681301">Zařízení <ph name="INDEX" /> z <ph name="COUNT" /> s názvem <ph name="NAME" />.</translation>
-<translation id="7134436342991564651">{0,plural, =1{Názvový server}few{Názvové servery}other{Názvové servery}}</translation>
+<translation id="7134436342991564651">{0,plural, =1{Názvový server}few{Názvové servery}many{Názvové servery}other{Názvové servery}}</translation>
 <translation id="7143207342074048698">Připojování</translation>
 <translation id="7144878232160441200">Opakovat</translation>
 <translation id="714876143603641390">Připojení k síti LAN</translation>
@@ -521,7 +522,7 @@ Zkuste klepnout na mikrofon a zeptat se.</translation>
 <translation id="741244894080940828">převod</translation>
 <translation id="7415801143053185905">Velmi vysoká latence požadavků HTTP</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
-<translation id="7435977162516949853">{NUMBER_OF_PAGES,plural, =1{Skenování bylo dokončeno. Naskenována 1 stránka}few{Skenování bylo dokončeno. Naskenovány {NUMBER_OF_PAGES} stránky}other{Skenování bylo dokončeno. Naskenováno {NUMBER_OF_PAGES} stránek}}</translation>
+<translation id="7435977162516949853">{NUMBER_OF_PAGES,plural, =1{Skenování bylo dokončeno. Naskenována 1 stránka}few{Skenování bylo dokončeno. Naskenovány {NUMBER_OF_PAGES} stránky}many{Skenování bylo dokončeno. Naskenováno {NUMBER_OF_PAGES} stránky}other{Skenování bylo dokončeno. Naskenováno {NUMBER_OF_PAGES} stránek}}</translation>
 <translation id="7469648432129124067">Byl zjištěn portál</translation>
 <translation id="7487067081878637334">Technologie</translation>
 <translation id="7490813197707563893">Adresa MAC</translation>
@@ -618,6 +619,7 @@ Zkuste klepnout na mikrofon a zeptat se.</translation>
 <translation id="8675354002693747642">Předsdílený klíč</translation>
 <translation id="8677859815076891398">Žádná alba. Vytvořte album ve <ph name="LINK_BEGIN" />Fotkách Google<ph name="LINK_END" />.</translation>
 <translation id="8709616837707653427"><ph name="DESC_TEXT" /> Tuto funkci můžete spravovat šipkami doleva nebo doprava.</translation>
+<translation id="8712637175834984815">Hotovo</translation>
 <translation id="871560550817059752">Tisk selhal – došel inkoust</translation>
 <translation id="8723108084122415655">Jiná než výchozí síť má latenci nad prahovou hodnotou</translation>
 <translation id="8726019395068607495">Zastaveno – jsou otevřená dvířka</translation>
@@ -651,7 +653,7 @@ Zkuste klepnout na mikrofon a zeptat se.</translation>
 <translation id="8968751544471797276">Rychlost nabíjení</translation>
 <translation id="8970109610781093811">Spustit znovu</translation>
 <translation id="8983038754672563810">HSPA</translation>
-<translation id="8987565828374052507">{NUMBER_OF_PAGES,plural, =0{Naskenovat}=1{Naskenovat {NUMBER_OF_PAGES} stránek}few{Naskenovat {NUMBER_OF_PAGES} stránky}other{Naskenovat {NUMBER_OF_PAGES} stránek}}</translation>
+<translation id="8987565828374052507">{NUMBER_OF_PAGES,plural, =0{Naskenovat}=1{Naskenovat {NUMBER_OF_PAGES} stránek}few{Naskenovat {NUMBER_OF_PAGES} stránky}many{Naskenovat {NUMBER_OF_PAGES} stránky}other{Naskenovat {NUMBER_OF_PAGES} stránek}}</translation>
 <translation id="8997710128084572139">Stav baterie zařízení je <ph name="BATTERY_PERCENTAGE" /> %.</translation>
 <translation id="9003704114456258138">Frekvence</translation>
 <translation id="9039663905644212491">PEAP</translation>

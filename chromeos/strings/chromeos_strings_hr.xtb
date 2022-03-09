@@ -109,6 +109,7 @@
 <translation id="2212733584906323460">Razlučivost naziva</translation>
 <translation id="2217935453350629363">Trenutačna brzina</translation>
 <translation id="2224337661447660594">Nema interneta</translation>
+<translation id="222447520299472966">Potrebno je odabrati najmanje jedan album iz umjetničke galerije</translation>
 <translation id="2230005943220647148">Celzij</translation>
 <translation id="2230051135190148440">CHAP</translation>
 <translation id="225692081236532131">Status aktivacije</translation>
@@ -620,6 +621,7 @@ Dodirnite mikrofon da biste mi dali glasovnu naredbu.</translation>
 <translation id="8675354002693747642">Unaprijed podijeljen ključ</translation>
 <translation id="8677859815076891398">Nema albuma. Izradite album u <ph name="LINK_BEGIN" />Google fotografijama<ph name="LINK_END" />.</translation>
 <translation id="8709616837707653427"><ph name="DESC_TEXT" /> Tipkom sa strelicom ulijevo ili strelicom udesno upravljajte ovom značajkom.</translation>
+<translation id="8712637175834984815">Shvaćam</translation>
 <translation id="871560550817059752">Nije uspjelo – nema tinte</translation>
 <translation id="8723108084122415655">Mreža koja nije zadana je iznad praga latencije</translation>
 <translation id="8726019395068607495">Zaustavljeno – vratašca su otvorena</translation>

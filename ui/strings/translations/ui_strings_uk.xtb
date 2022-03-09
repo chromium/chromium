@@ -3,9 +3,9 @@
 <translationbundle lang="uk">
 <translation id="1028699632127661925">Надсилання на пристрій "<ph name="DEVICE_NAME" />"…</translation>
 <translation id="111910763555783249">Налаштування сповіщень</translation>
-<translation id="1127811143501539442">{DAYS,plural, =1{1 день тому}one{# день тому}few{# дні тому}other{# дня тому}}</translation>
-<translation id="1156623771253174079">{SECONDS,plural, =1{1 хвилину тому}one{# хвилину тому}few{# хвилини тому}other{# хвилини тому}}</translation>
-<translation id="1169783199079129864">{MINUTES,plural, =1{1 хв}one{# хв}few{# хв}other{# хв}}</translation>
+<translation id="1127811143501539442">{DAYS,plural, =1{1 день тому}one{# день тому}few{# дні тому}many{# днів тому}other{# дня тому}}</translation>
+<translation id="1156623771253174079">{SECONDS,plural, =1{1 хвилину тому}one{# хвилину тому}few{# хвилини тому}many{# хвилин тому}other{# хвилини тому}}</translation>
+<translation id="1169783199079129864">{MINUTES,plural, =1{1 хв}one{# хв}few{# хв}many{# хв}other{# хв}}</translation>
 <translation id="1243314992276662751">Завантажити</translation>
 <translation id="1266864766717917324">Не вдалося надіслати: <ph name="CONTENT_TYPE" /></translation>
 <translation id="1269641567813814718">Win</translation>
@@ -15,16 +15,16 @@
 <translation id="1383876407941801731">Пошук</translation>
 <translation id="1398853756734560583">Збільшити</translation>
 <translation id="1450753235335490080">Не вдалося надіслати: <ph name="CONTENT_TYPE" /></translation>
-<translation id="1591184457164800433">{MINUTES,plural, =1{1 хвилина та }one{# хвилина та }few{# хвилини та }other{# хвилини та }}</translation>
+<translation id="1591184457164800433">{MINUTES,plural, =1{1 хвилина та }one{# хвилина та }few{# хвилини та }many{# хвилин і }other{# хвилини та }}</translation>
 <translation id="1643823602425662293">Сповіщення</translation>
 <translation id="169515659049020177">Shift</translation>
 <translation id="1710340000377843106">зараз</translation>
-<translation id="1752946267035950200">{MINUTES,plural, =1{1 хвилина}one{# хвилина}few{# хвилини}other{# хвилини}}</translation>
+<translation id="1752946267035950200">{MINUTES,plural, =1{1 хвилина}one{# хвилина}few{# хвилини}many{# хвилин}other{# хвилини}}</translation>
 <translation id="1761785978543082658"><ph name="QUANTITY" /> б</translation>
 <translation id="1801827354178857021">Крапка</translation>
-<translation id="1803208670097017349">{MONTHS,plural, =1{1 місяць}one{# місяць}few{# місяці}other{# місяця}}</translation>
+<translation id="1803208670097017349">{MONTHS,plural, =1{1 місяць}one{# місяць}few{# місяці}many{# місяців}other{# місяця}}</translation>
 <translation id="1809410197924942083"><ph name="QUANTITY" /> МБ/сек.</translation>
-<translation id="1830179671306812954">{HOURS,plural, =1{1 година та }one{# година та }few{# години та }other{# години та }}</translation>
+<translation id="1830179671306812954">{HOURS,plural, =1{1 година та }one{# година та }few{# години та }many{# годин і }other{# години та }}</translation>
 <translation id="1859234291848436338">Напрямок письма</translation>
 <translation id="1860796786778352021">Закрити сповіщення</translation>
 <translation id="186476001994626254">Веб-контент для розумного вставлення</translation>
@@ -34,7 +34,7 @@
 <translation id="19085484004813472">Це нова функція</translation>
 <translation id="2006524834898217237">Перевірте, чи пристрій підключено до Інтернету.</translation>
 <translation id="208586643495776849">Повторіть спробу</translation>
-<translation id="2141853158323869627">{DAYS,plural, =1{1 д.}one{# д.}few{# дн.}other{# дн.}}</translation>
+<translation id="2141853158323869627">{DAYS,plural, =1{1 д.}one{# д.}few{# дн.}many{# дн.}other{# дн.}}</translation>
 <translation id="2148716181193084225">Сьогодні</translation>
 <translation id="2161656808144014275">Текст</translation>
 <translation id="2168039046890040389">Сторінка вгору</translation>
@@ -56,15 +56,15 @@
 <translation id="2522350507219695259">Калібрування завершено</translation>
 <translation id="252373100621549798">Невідомий дисплей</translation>
 <translation id="2545651323591713692">Відкласти</translation>
-<translation id="2573731672208488250">{HOURS,plural, =1{через 1 год}one{через # год}few{через # год}other{через # год}}</translation>
+<translation id="2573731672208488250">{HOURS,plural, =1{через 1 год}one{через # год}few{через # год}many{через # год}other{через # год}}</translation>
 <translation id="2583543531130364912">Відкалібруйте сенсорний екран</translation>
 <translation id="2586657967955657006">Буфер обміну</translation>
 <translation id="2666092431469916601">Верх</translation>
 <translation id="2701330563083355633">Надіслано з пристрою "<ph name="DEVICE_NAME" />"</translation>
 <translation id="271033894570825754">Новий</translation>
-<translation id="2824719307700604149">{YEARS,plural, =1{1 рік тому}one{# рік тому}few{# роки тому}other{# року тому}}</translation>
+<translation id="2824719307700604149">{YEARS,plural, =1{1 рік тому}one{# рік тому}few{# роки тому}many{# років тому}other{# року тому}}</translation>
 <translation id="2878511608894704031">Видалити все</translation>
-<translation id="2907671656515444832">{DAYS,plural, =1{через 1 дн.}one{через # дн.}few{через # дн.}other{через # дн.}}</translation>
+<translation id="2907671656515444832">{DAYS,plural, =1{через 1 дн.}one{через # дн.}few{через # дн.}many{через # дн.}other{через # дн.}}</translation>
 <translation id="2922712708897119705">Стовпець "<ph name="COLUMN_NAME" />" відсортовано в порядку спадання.</translation>
 <translation id="3036649622769666520">Відкрити файли</translation>
 <translation id="3049748772180311791"><ph name="QUANTITY" /> МБ</translation>
@@ -73,13 +73,13 @@
 <translation id="3157931365184549694">Відновити</translation>
 <translation id="3183922693828471536">Прокрутка до цього місця</translation>
 <translation id="3234408098842461169">Курсор униз</translation>
-<translation id="3291688615589870984">{DAYS,plural, =1{1 день}one{# день}few{# дні}other{# дня}}</translation>
+<translation id="3291688615589870984">{DAYS,plural, =1{1 день}one{# день}few{# дні}many{# днів}other{# дня}}</translation>
 <translation id="3295886253693811851">Зателефонувати через</translation>
 <translation id="3306688585798492231">Вбудований екран</translation>
 <translation id="335581015389089642">Speech</translation>
 <translation id="3389286852084373014">SMS-повідомлення завелике</translation>
 <translation id="3406306243914553062">Контент HTML</translation>
-<translation id="3600566671520689681">{DAYS,plural, =1{Залишився 1 день}one{Залишився # день}few{Залишилося # дні}other{Залишилося # дня}}</translation>
+<translation id="3600566671520689681">{DAYS,plural, =1{Залишився 1 день}one{Залишився # день}few{Залишилося # дні}many{Залишилося # днів}other{Залишилося # дня}}</translation>
 <translation id="3600969208114796418">Файл <ph name="SAVEAS_EXTENSION_TYPE" /></translation>
 <translation id="3608915363409716668"><ph name="MAXIMUM_VALUE" />+</translation>
 <translation id="3618849550573277856">Шукати "<ph name="LOOKUP_STRING" />"</translation>
@@ -97,8 +97,8 @@
 <translation id="3990502903496589789">Правий край</translation>
 <translation id="3994749195054421561">Стовпець "<ph name="COLUMN_NAME" />" відсортовано в порядку зростання.</translation>
 <translation id="4031910098617850788">F5</translation>
-<translation id="40579289237549812">{UNREAD_NOTIFICATIONS,plural, =1{1 непрочитане сповіщення}one{# непрочитане сповіщення}few{# непрочитані сповіщення}other{# непрочитаного сповіщення}}</translation>
-<translation id="4266252015790371705">{MONTHS,plural, =1{1 місяць тому}one{# місяць тому}few{# місяці тому}other{# місяця тому}}</translation>
+<translation id="40579289237549812">{UNREAD_NOTIFICATIONS,plural, =1{1 непрочитане сповіщення}one{# непрочитане сповіщення}few{# непрочитані сповіщення}many{# непрочитаних сповіщень}other{# непрочитаного сповіщення}}</translation>
+<translation id="4266252015790371705">{MONTHS,plural, =1{1 місяць тому}one{# місяць тому}few{# місяці тому}many{# місяців тому}other{# місяця тому}}</translation>
 <translation id="4289300219472526559">Start Speaking</translation>
 <translation id="4289540628985791613">Огляд</translation>
 <translation id="4306392492252714209">Видалити з буфера обміну.</translation>
@@ -107,9 +107,9 @@
 <translation id="4588090240171750605">Прокрутка вправо</translation>
 <translation id="4724120544754982507">Центр сповіщень, непрочитаних сповіщень: <ph name="UNREAD_NOTIFICATION_COUNT" /></translation>
 <translation id="4746179598275229723">Розширення відкріплено</translation>
-<translation id="4788285488841504513">{MONTHS,plural, =1{Залишився 1 місяць}one{Залишився # місяць}few{Залишилося # місяці}other{Залишилося # місяця}}</translation>
+<translation id="4788285488841504513">{MONTHS,plural, =1{Залишився 1 місяць}one{Залишився # місяць}few{Залишилося # місяці}many{Залишилося # місяців}other{Залишилося # місяця}}</translation>
 <translation id="4888938634149558681">Зателефонувати</translation>
-<translation id="4968171027979920686">{SECONDS,plural, =1{1 секунда}one{# секунда}few{# секунди}other{# секунди}}</translation>
+<translation id="4968171027979920686">{SECONDS,plural, =1{1 секунда}one{# секунда}few{# секунди}many{# секунд}other{# секунди}}</translation>
 <translation id="4971687151119236543">Попередня композиція</translation>
 <translation id="5046499563572181734">Торкніться тут</translation>
 <translation id="5076340679995252485">&amp;Вставити</translation>
@@ -122,16 +122,16 @@
 <translation id="5574202486608032840">Система <ph name="IDS_SHORT_PRODUCT_OS_NAME" /></translation>
 <translation id="5583640892426849032">Backspace</translation>
 <translation id="5613020302032141669">Курсор ліворуч</translation>
-<translation id="5754277640426581776">{MINUTES,plural, =1{1 хв}one{# хв}few{# хв}other{# хв}}</translation>
-<translation id="5763338081255973061">{DAYS,plural, =0{Остання активність: сьогодні}=1{Остання активність: 1 день тому}one{Остання активність: # день тому}few{Остання активність: # дні тому}other{Остання активність: # дня тому}}</translation>
-<translation id="5768079895599174203">{DAYS,plural, =1{1 день і }one{# день і }few{# дні та }other{# дня та }}</translation>
+<translation id="5754277640426581776">{MINUTES,plural, =1{1 хв}one{# хв}few{# хв}many{# хв}other{# хв}}</translation>
+<translation id="5763338081255973061">{DAYS,plural, =0{Остання активність: сьогодні}=1{Остання активність: 1 день тому}one{Остання активність: # день тому}few{Остання активність: # дні тому}many{Остання активність: # днів тому}other{Остання активність: # дня тому}}</translation>
+<translation id="5768079895599174203">{DAYS,plural, =1{1 день і }one{# день і }few{# дні та }many{# днів і }other{# дня та }}</translation>
 <translation id="5789643057113097023">.</translation>
 <translation id="5843690142429128814">Зображення.</translation>
-<translation id="5866104238061687188">{YEARS,plural, =1{через 1 р.}one{через # р.}few{через # р.}other{через # р.}}</translation>
+<translation id="5866104238061687188">{YEARS,plural, =1{через 1 р.}one{через # р.}few{через # р.}many{через # р.}other{через # р.}}</translation>
 <translation id="588258955323874662">Повноекранний режим</translation>
-<translation id="5906667377645263094">{SECONDS,plural, =1{Залишилась 1 секунда}one{Залишилася # секунда}few{Залишилося # секунди}other{Залишилося # секунди}}</translation>
+<translation id="5906667377645263094">{SECONDS,plural, =1{Залишилась 1 секунда}one{Залишилася # секунда}few{Залишилося # секунди}many{Залишилося # секунд}other{Залишилося # секунди}}</translation>
 <translation id="5941711191222866238">Згорнути</translation>
-<translation id="5943826764092288734">{HOURS,plural, =1{1 година}one{# година}few{# години}other{# години}}</translation>
+<translation id="5943826764092288734">{HOURS,plural, =1{1 година}one{# година}few{# години}many{# годин}other{# години}}</translation>
 <translation id="6007284015834422026">Розширення закріплено</translation>
 <translation id="6040143037577758943">Закрити</translation>
 <translation id="6117103120090651229">Центральна кнопка</translation>
@@ -143,9 +143,9 @@
 <translation id="6364916375976753737">Прокрутка вліво</translation>
 <translation id="6394627529324717982">Кома</translation>
 <translation id="6397363302884558537">Stop Speaking</translation>
-<translation id="6404817160109697034">{SECONDS,plural, =1{1 с тому}one{# с тому}few{# с тому}other{# с тому}}</translation>
+<translation id="6404817160109697034">{SECONDS,plural, =1{1 с тому}one{# с тому}few{# с тому}many{# с тому}other{# с тому}}</translation>
 <translation id="6430678249303439055">Блокувати всі сповіщення від цього додатка</translation>
-<translation id="6483402905448010557">{SECONDS,plural, =1{1 секунду тому}one{# секунду тому}few{# секунди тому}other{# секунди тому}}</translation>
+<translation id="6483402905448010557">{SECONDS,plural, =1{1 секунду тому}one{# секунду тому}few{# секунди тому}many{# секунд тому}other{# секунди тому}}</translation>
 <translation id="6503257047630241175">Контент у форматі RTF</translation>
 <translation id="6539092367496845964">Сталася помилка. Спробуйте пізніше.</translation>
 <translation id="654149438358937226">Блокувати всі сповіщення</translation>
@@ -154,21 +154,21 @@
 <translation id="6699343763173986273">Наступна композиція</translation>
 <translation id="6808150112686056157">Зупинити</translation>
 <translation id="6845383723252244143">Вибір папки</translation>
-<translation id="6863590663815976734">{HOURS,plural, =1{Залишилась 1 година}one{Залишилася # година}few{Залишилося # години}other{Залишилося # години}}</translation>
+<translation id="6863590663815976734">{HOURS,plural, =1{Залишилась 1 година}one{Залишилася # година}few{Залишилося # години}many{Залишилося # годин}other{Залишилося # години}}</translation>
 <translation id="688711909580084195">Веб-сторінка без назви</translation>
 <translation id="6902419395050653510">Вміст HTML.</translation>
 <translation id="6907759265145635167"><ph name="QUANTITY" /> Пб/сек.</translation>
-<translation id="6917971086528278418">{YEARS,plural, =1{Залишився 1 рік}one{Залишився # рік}few{Залишилося # роки}other{Залишилося # року}}</translation>
+<translation id="6917971086528278418">{YEARS,plural, =1{Залишився 1 рік}one{Залишився # рік}few{Залишилося # роки}many{Залишилося # років}other{Залишилося # року}}</translation>
 <translation id="6945221475159498467">Вибрати</translation>
 <translation id="6965382102122355670">OK</translation>
 <translation id="6974053822202609517">Справа наліво</translation>
 <translation id="7052633198403197513">F1</translation>
 <translation id="7170202025028120564">Налаштування екрана для додатка почнуть діяти після наступного перезапуску.</translation>
 <translation id="7222373446505536781">F11</translation>
-<translation id="7238427729722629793">{MINUTES,plural, =1{Залишилась 1 хв}one{Залишилася # хв}few{Залишилося # хв}other{Залишилося # хв}}</translation>
-<translation id="7365057348334984696">{MINUTES,plural, =1{1 хв тому}one{# хв тому}few{# хв тому}other{# хв тому}}</translation>
+<translation id="7238427729722629793">{MINUTES,plural, =1{Залишилась 1 хв}one{Залишилася # хв}few{Залишилося # хв}many{Залишилося # хв}other{Залишилося # хв}}</translation>
+<translation id="7365057348334984696">{MINUTES,plural, =1{1 хв тому}one{# хв тому}few{# хв тому}many{# хв тому}other{# хв тому}}</translation>
 <translation id="7389409599945284130">– <ph name="MESSAGE" /></translation>
-<translation id="7410957453383678442">{MINUTES,plural, =1{Залишилась 1 хвилина}one{Залишилася # хвилина}few{Залишилося # хвилини}other{Залишилося # хвилини}}</translation>
+<translation id="7410957453383678442">{MINUTES,plural, =1{Залишилась 1 хвилина}one{Залишилася # хвилина}few{Залишилося # хвилини}many{Залишилося # хвилин}other{Залишилося # хвилини}}</translation>
 <translation id="7437971918971306061">Стовпець "<ph name="COLUMN_NAME" />" не відсортовано.</translation>
 <translation id="7460907917090416791"><ph name="QUANTITY" /> ТБ</translation>
 <translation id="7507604095951736240">Смайли</translation>
@@ -179,12 +179,12 @@
 <translation id="7879499977785298635">Не блокувати</translation>
 <translation id="7907591526440419938">Відкрити файл</translation>
 <translation id="7969046989155602842">Клавіша Command</translation>
-<translation id="8074552109918343525">{MAX_UNREAD_NOTIFICATIONS,plural, =1{Понад 1 непрочитане сповіщення}one{Понад # непрочитане сповіщення}few{Понад # непрочитані сповіщення}other{Понад # непрочитаного сповіщення}}</translation>
-<translation id="8086866675552927481">{MINUTES,plural, =1{через 1 хв}one{через # хв}few{через # хв}other{через # хв}}</translation>
+<translation id="8074552109918343525">{MAX_UNREAD_NOTIFICATIONS,plural, =1{Понад 1 непрочитане сповіщення}one{Понад # непрочитане сповіщення}few{Понад # непрочитані сповіщення}many{Понад # непрочитаних сповіщень}other{Понад # непрочитаного сповіщення}}</translation>
+<translation id="8086866675552927481">{MINUTES,plural, =1{через 1 хв}one{через # хв}few{через # хв}many{через # хв}other{через # хв}}</translation>
 <translation id="8087772101393322318"><ph name="KEY_MODIFIER_NAME" /> + <ph name="KEY_COMBO_NAME" /></translation>
 <translation id="8090736967111090568">Номер із сайту <ph name="ORIGIN" /></translation>
-<translation id="8106081041558092062">{HOURS,plural, =1{1 годину тому}one{# годину тому}few{# години тому}other{# години тому}}</translation>
-<translation id="8131263257437993507">{SECONDS,plural, =1{Залишилась 1 с}one{Залишилася # с}few{Залишилося # с}other{Залишилося # с}}</translation>
+<translation id="8106081041558092062">{HOURS,plural, =1{1 годину тому}one{# годину тому}few{# години тому}many{# годин тому}other{# години тому}}</translation>
+<translation id="8131263257437993507">{SECONDS,plural, =1{Залишилась 1 с}one{Залишилася # с}few{Залишилося # с}many{Залишилося # с}other{Залишилося # с}}</translation>
 <translation id="8134065097954893699">Оновити цю сторінку</translation>
 <translation id="815598010540052116">Прокрутка вниз</translation>
 <translation id="8179976553408161302">Enter</translation>
@@ -194,22 +194,22 @@
 <translation id="8259556432390118667">Шістнадцятковий код кольору</translation>
 <translation id="8328145009876646418">Лівий край</translation>
 <translation id="8331626408530291785">Прокрутка вгору</translation>
-<translation id="8352146631962686268">{YEARS,plural, =1{1 рік}one{# рік}few{# роки}other{# року}}</translation>
+<translation id="8352146631962686268">{YEARS,plural, =1{1 рік}one{# рік}few{# роки}many{# років}other{# року}}</translation>
 <translation id="8393700583063109961">Надіслати повідомлення</translation>
 <translation id="8394908167088220973">Відтворити чи призупинити</translation>
-<translation id="8458811141851741261">{YEARS,plural, =1{1 р.}one{# р.}few{# р.}other{# р.}}</translation>
+<translation id="8458811141851741261">{YEARS,plural, =1{1 р.}one{# р.}few{# р.}many{# р.}other{# р.}}</translation>
 <translation id="8602707065186045623">файл <ph name="SAVEAS_EXTENSION_TYPE" /> (.<ph name="SAVEAS_EXTENSION_NAME" />)</translation>
 <translation id="8677655579646609597"><ph name="QUANTITY" /> КБ/сек.</translation>
 <translation id="8725488761726303204">і ще <ph name="NUMBER" /></translation>
 <translation id="8730621377337864115">Готово</translation>
-<translation id="8772073294905169192">{HOURS,plural, =1{1 год}one{# год}few{# год}other{# год}}</translation>
+<translation id="8772073294905169192">{HOURS,plural, =1{1 год}one{# год}few{# год}many{# год}other{# год}}</translation>
 <translation id="8798099450830957504">За умовчанням</translation>
 <translation id="8841375032071747811">Кнопка "Назад"</translation>
 <translation id="8867568208303837180">Надсилання...</translation>
 <translation id="8876215549894133151">Формат:</translation>
 <translation id="8901569739625249689"><ph name="QUANTITY" /> КБ</translation>
 <translation id="8996630695507351249">Переконайтеся, що пристрій <ph name="TARGET_DEVICE_NAME" /> підключено до Інтернету.</translation>
-<translation id="9044832324875206639">{SECONDS,plural, =1{1 с}one{# с}few{# с}other{# с}}</translation>
+<translation id="9044832324875206639">{SECONDS,plural, =1{1 с}one{# с}few{# с}many{# с}other{# с}}</translation>
 <translation id="9059834730836941392">Згорнути сповіщення</translation>
 <translation id="9170848237812810038">&amp;Скасувати</translation>
 <translation id="932327136139879170">Домашня сторінка</translation>

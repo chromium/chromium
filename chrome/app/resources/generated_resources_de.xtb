@@ -139,6 +139,7 @@
 <translation id="1130589222747246278"><ph name="WINDOW_TITLE" /> – Teil der Gruppe <ph name="GROUP_NAME" /></translation>
 <translation id="1130676589211693127">Akkustand des rechten Kopfhörers bei <ph name="PERCENTAGE" /> %.</translation>
 <translation id="1133418583142946603">Aktuellen Tab hinzufügen</translation>
+<translation id="1135971365523689618"><ph name="APP_TYPE" /> über <ph name="INSTALL_SOURCE" /> installiert</translation>
 <translation id="1136179794690960030"><ph name="EMOJI_NAME" />. <ph name="EMOJI_INDEX" /> von <ph name="EMOJI_COUNT" />.</translation>
 <translation id="1136712381129578788">Der Sicherheitsschlüssel wurde gesperrt, weil zu oft die falsche PIN eingegeben wurde. Entfernen Sie den Sicherheitsschlüssel und stecken Sie ihn wieder ein, um ihn zu entsperren.</translation>
 <translation id="1137589305610962734">Temporäre Daten</translation>
@@ -273,6 +274,7 @@
 <translation id="1263231323834454256">Leseliste</translation>
 <translation id="1263733306853729545">Kandidatenliste mit den Tasten "<ph name="MINUS" />" und "<ph name="EQUAL" />" paginieren</translation>
 <translation id="126387934568812801">Diesen Screenshot und Titel der offenen Tabs mitsenden</translation>
+<translation id="1264083566674525434">Websiteberechtigungen bearbeiten</translation>
 <translation id="1264337193001759725">Wenn Sie Netzwerk-UI-Protokolle anzeigen möchten, gehen Sie zu: <ph name="DEVICE_LOG_LINK" /></translation>
 <translation id="126710816202626562">Zielsprache:</translation>
 <translation id="126768002343224824">16-fach</translation>
@@ -408,6 +410,7 @@
 <translation id="1410616244180625362"><ph name="HOST" /> weiterhin Zugriff auf meine Kamera gestatten</translation>
 <translation id="1410797069449661718">Zum ersten Tab scrollen</translation>
 <translation id="1410806973194718079">Richtlinien können nicht geprüft werden</translation>
+<translation id="1411724932979011919">Ihre Eingabe muss dieses Format haben: LPA:1$&lt;smdp address&gt;$&lt;activation code&gt;</translation>
 <translation id="1412681350727866021">Zusätzliche Erweiterungen</translation>
 <translation id="1414315029670184034">Websites dürfen nicht meine Kamera verwenden</translation>
 <translation id="1414648216875402825">Sie aktualisieren auf eine instabile Version von <ph name="PRODUCT_NAME" />. Diese enthält Funktionen, die sich noch in der Entwicklung befinden. Es können Abstürze und unerwartete Fehler auftreten. Es ist daher besondere Vorsicht geboten.</translation>
@@ -885,6 +888,9 @@ Berechtigungen, die Sie Apps bereits gewährt haben, gelten möglicherweise für
 <translation id="1849186935225320012">Diese Seite hat vollständige Kontrolle über MIDI-Geräte.</translation>
 <translation id="1850145825777333687">Geräte-Anmeldedaten</translation>
 <translation id="1850508293116537636">Im &amp;Uhrzeigersinn drehen</translation>
+<translation id="185111092974636561"><ph name="BEGIN_PARAGRAPH1" />Vor der Registrierung müssen Sie das TPM löschen, damit <ph name="DEVICE_OS" /> Inhaber des Geräts werden kann.<ph name="END_PARAGRAPH1" />
+    <ph name="BEGIN_PARAGRAPH2" />Sie können das TPM auch vollständig deaktivieren. Ihre Daten werden trotzdem sicher mit Softwareverschlüsselung gespeichert. Einige Sicherheitsfunktionen werden jedoch deaktiviert (z. B. hardwaregestützte Zertifikate).<ph name="END_PARAGRAPH2" />
+    <ph name="BEGIN_PARAGRAPH3" />Zum Ändern der TPM-Einstellungen müssen Sie das Gerät neu starten und die BIOS-/UEFI-Einstellungen aufrufen. Je nach Gerätemodell können diese Schritte variieren. Am besten öffnen Sie vor dem Neustart die Dokumentation von <ph name="DEVICE_OS" /> auf einem anderen Gerät: g.co/flex/TPMHelp.<ph name="END_PARAGRAPH3" /></translation>
 <translation id="1852141627593563189">Schädliche Software finden</translation>
 <translation id="1852799913675865625">Beim Versuch, die Datei <ph name="ERROR_TEXT" /> zu lesen, ist ein Fehler aufgetreten.</translation>
 <translation id="1854049213067042715">Fahren Sie dort fort, wo Sie aufgehört haben. In den Einstellungen können Sie festlegen, dass Apps beim Start immer wiederhergestellt werden, oder die Wiederherstellung deaktivieren.</translation>
@@ -1119,6 +1125,7 @@ Wenn Sie die Family Link App auf Ihrem Gerät installieren, können Sie die Eins
 <translation id="2090165459409185032">Besuchen Sie die folgende Seite, um Ihre Kontoinformationen wiederzuherstellen: google.com/accounts/recovery</translation>
 <translation id="2090507354966565596">Stellt automatisch eine Verbindung her, wenn Sie sich anmelden.</translation>
 <translation id="2090876986345970080">Sicherheitseinstellung des Systems</translation>
+<translation id="2095774564753225041">Unterstützte Dateitypen</translation>
 <translation id="2096715839409389970">Cookies von Drittanbietern löschen</translation>
 <translation id="2098805196501063469">Restliche Passwörter prüfen</translation>
 <translation id="2099172618127234427">Sie aktivieren Debugging-Funktionen für Chrome OS. Dadurch wird der SSHD-Daemon eingerichtet und das Starten über USB aktiviert.</translation>
@@ -1584,6 +1591,8 @@ Wenn Sie die Family Link App auf Ihrem Gerät installieren, können Sie die Eins
 <translation id="2527167509808613699">Jede Verbindungsart</translation>
 <translation id="2529887123641260401">Die Einstellungen lassen sich jederzeit ändern. Alternativ können Sie den Einrichtungsassistenten noch einmal über die Einstellungen für den Schalterzugriff aufrufen.</translation>
 <translation id="2530166226437958497">Fehlerbehebung</translation>
+<translation id="2531530485656743109"><ph name="BEGIN_PARAGRAPH1" />Bei der Installation von <ph name="DEVICE_OS" /> ist ein Fehler aufgetreten.<ph name="END_PARAGRAPH1" />
+    <ph name="BEGIN_PARAGRAPH2" />Hier finden Sie Hilfestellung: g.co/flex/InstallErrors.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="2532589005999780174">Modus mit hohem Kontrast</translation>
 <translation id="2533649878691950253">Diese Website darf nicht auf Ihren genauen Standort zugreifen, weil Sie das meist nicht erlauben</translation>
 <translation id="253434972992662860">&amp;Anhalten</translation>
@@ -1633,6 +1642,7 @@ Wenn Sie die Family Link App auf Ihrem Gerät installieren, können Sie die Eins
 <translation id="2587922766792651800">Zeitüberschreitung</translation>
 <translation id="2588636910004461974">Geräte von <ph name="VENDOR_NAME" /></translation>
 <translation id="25899519884572181">Lesemodus deaktivieren</translation>
+<translation id="2593499352046705383">Erstellen Sie vor der Installation auf jeden Fall ein Back-up Ihrer Daten. Wenn Sie <ph name="DEVICE_OS" /> installieren, werden die Daten auf Ihrer Festplatte überschrieben. Weitere Informationen finden Sie unter g.co/flex/InstallGuide.</translation>
 <translation id="2594999711683503743">Bei Google suchen oder URL eingeben</translation>
 <translation id="2602501489742255173">Zum Starten nach oben wischen</translation>
 <translation id="2603115962224169880">Computer bereinigen</translation>
@@ -1651,6 +1661,7 @@ Wenn Sie die Family Link App auf Ihrem Gerät installieren, können Sie die Eins
 <translation id="2610780100389066815">Microsoft-Vertrauenslistensignatur</translation>
 <translation id="2611776654555141051">Rechtecktool</translation>
 <translation id="2612676031748830579">Kartennummer</translation>
+<translation id="2613210758071148851">Keine Erweiterungen auf <ph name="RESTRICTED_SITE" /> zulassen</translation>
 <translation id="2613535083491958306"><ph name="ORIGIN" /> kann <ph name="FILENAME" /> bearbeiten</translation>
 <translation id="2616366145935564096">Eigene Daten auf <ph name="WEBSITE_1" /> lesen und ändern</translation>
 <translation id="2618797463720777311">Nearby Share einrichten</translation>
@@ -3163,6 +3174,7 @@ Möchten Sie <ph name="CONTROL_PANEL_APPLET_NAME" /> starten?</translation>
 <translation id="4100733287846229632">Speicherplatz auf Gerät äußerst niedrig</translation>
 <translation id="4100853287411968461">Neue Zeiten für Gerätenutzung</translation>
 <translation id="4101352914005291489">SSID ausgeblendet</translation>
+<translation id="4102469565336584882">Ungültiger Code. Ihre Eingabe muss dieses Format haben: LPA:1$&lt;smdp address&gt;$&lt;activation code&gt;</translation>
 <translation id="4102906002417106771">Für Powerwash neu starten</translation>
 <translation id="4104163789986725820">E&amp;xportieren...</translation>
 <translation id="4107048419833779140">Speichergeräte ermitteln und auswerfen</translation>
@@ -3215,6 +3227,7 @@ Möchten Sie <ph name="CONTROL_PANEL_APPLET_NAME" /> starten?</translation>
 <translation id="4159681666905192102">Dies ist ein Konto für Kinder, das von <ph name="CUSTODIAN_EMAIL" /> und <ph name="SECOND_CUSTODIAN_EMAIL" /> verwaltet wird.</translation>
 <translation id="4163560723127662357">Unbekannte Tastatur</translation>
 <translation id="4165942112764990069"><ph name="USER_EMAIL" /> gehört nicht zu einer gültigen Organisation. Wenden Sie sich an Ihren Administrator. Wenn Sie ein Administrator sind, können Sie Ihre Organisation unter g.co/ChromeEnterpriseAccount einrichten.</translation>
+<translation id="4167393659000039775">Google übernimmt keine Verantwortung für Datenverluste. Auf nicht zertifizierten Modellen funktioniert <ph name="DEVICE_OS" /> möglicherweise nicht. Weitere Informationen finden Sie unter g.co/flex/InstallGuide.</translation>
 <translation id="4167686856635546851">Websites verwenden normalerweise JavaScript zum Anzeigen interaktiver Funktionen, wie Videospiele oder Webformulare</translation>
 <translation id="4168015872538332605">Einige Einstellungen, die <ph name="PRIMARY_EMAIL" /> gehören, werden mit Ihnen geteilt. Diese Einstellungen wirken sich nur dann auf Ihr Konto aus, wenn die Mehrfachanmeldung verwendet wird.</translation>
 <translation id="4168651806173792090"><ph name="NETWORK_NAME" /> mit den Endziffern <ph name="LAST_FOUR_DIGITS" /></translation>
@@ -3240,8 +3253,10 @@ Möchten Sie <ph name="CONTROL_PANEL_APPLET_NAME" /> starten?</translation>
 <translation id="4200983522494130825">Neuer &amp;Tab</translation>
 <translation id="4201546031411513170">Sie können in den Einstellungen auswählen, was Sie synchronisieren möchten.</translation>
 <translation id="420283545744377356">Bildschirmschoner deaktivieren</translation>
+<translation id="4204851595694839599">Wie war das Gameplay?</translation>
 <translation id="4206144641569145248">Außerirdischer</translation>
 <translation id="4206323443866416204">Feedbackbericht</translation>
+<translation id="4207522141889799150">Websiteberechtigungen für <ph name="SITE" /> bearbeiten</translation>
 <translation id="4207932031282227921">Berechtigung angefordert. Drücken Sie „F6“, um zu reagieren.</translation>
 <translation id="4208390505124702064"><ph name="SITE_NAME" /> durchsuchen</translation>
 <translation id="4209092469652827314">Groß</translation>
@@ -3375,6 +3390,9 @@ Möchten Sie <ph name="CONTROL_PANEL_APPLET_NAME" /> starten?</translation>
 <translation id="4349828822184870497">Hilfreich</translation>
 <translation id="4350230709416545141"><ph name="HOST" /> immer daran hindern, auf den Standort zuzugreifen</translation>
 <translation id="4350782034419308508">Hey Google</translation>
+<translation id="4351770750390404505"><ph name="BEGIN_PARAGRAPH1" />Um eine optimale Nutzung zu ermöglichen, erhebt <ph name="DEVICE_OS" /> Hardwaredaten zu Geräten und teilt diese mit Google, um zu prüfen, welche Updates installiert werden sollten. Sie können außerdem zulassen, dass Google diese Daten zu Supportzwecken und zur Verbesserung von <ph name="DEVICE_OS" /> verwendet.<ph name="END_PARAGRAPH1" />
+    <ph name="BEGIN_PARAGRAPH2" />Für einen Überblick über die für die Updatefilterung erhobenen Daten können Sie sich auf diesem Gerät anmelden und unter chrome://system den Abschnitt CHROMEOSFLEX_HARDWARE_INFO aufrufen. Dort sehen Sie auch, welche Daten Sie noch mit Google teilen.<ph name="END_PARAGRAPH2" />
+    <ph name="BEGIN_PARAGRAPH3" />Weitere Informationen zu den Daten, die <ph name="DEVICE_OS" /> möglicherweise an Google sendet, und deren Verwendung finden Sie unter g.co/flex/HWDataCollection.<ph name="END_PARAGRAPH3" /></translation>
 <translation id="4354073718307267720">Nachfragen, wenn eine Website eine 3D-Karte meiner Umgebung erstellen oder die Kameraposition verfolgen möchte</translation>
 <translation id="4354344420232759511">Hier finden Sie die von Ihnen besuchten Websites</translation>
 <translation id="435527878592612277">Foto auswählen</translation>
@@ -4249,6 +4267,7 @@ Möchten Sie <ph name="CONTROL_PANEL_APPLET_NAME" /> starten?</translation>
 <translation id="5266113311903163739">Zertifizierungsstelle - Fehler beim Import</translation>
 <translation id="526622169288322445">Weitere Aktionen für <ph name="ADDRESS_SUMMARY" /></translation>
 <translation id="5269977353971873915">Fehler beim Drucken</translation>
+<translation id="5273806377963980154">Website-URL bearbeiten</translation>
 <translation id="5275352920323889391">Hund</translation>
 <translation id="527605719918376753">Stummschalten</translation>
 <translation id="527605982717517565">JavaScript auf <ph name="HOST" /> immer zulassen</translation>
@@ -4566,6 +4585,7 @@ Sie können dieser Aktion mehrere Schalter zuweisen.</translation>
 <translation id="5588033542900357244">(<ph name="RATING_COUNT" />)</translation>
 <translation id="558918721941304263">Apps werden geladen...</translation>
 <translation id="5592595402373377407">Noch nicht genügend Daten vorhanden</translation>
+<translation id="5593564924968945303">Chrome-Browser</translation>
 <translation id="5595485650161345191">Adresse bearbeiten</translation>
 <translation id="5596627076506792578">Weitere Optionen</translation>
 <translation id="5600348067066185292">Die Installation ist einfach und gelingt in wenigen Schritten. Sie müssen noch einmal alles bestätigen, bevor Änderungen an Ihrem Computer vorgenommen werden.</translation>
@@ -5127,7 +5147,6 @@ Sie können dieser Aktion mehrere Schalter zuweisen.</translation>
 <translation id="6181431612547969857">Download blockiert</translation>
 <translation id="6184099524311454384">Tabs suchen</translation>
 <translation id="6185132558746749656">Gerätestandort</translation>
-<translation id="6186394437969115158">Websites zeigen normalerweise Werbung an, um Inhalte oder Dienste kostenlos anbieten zu können. Allerdings gibt es auch Websites, auf denen bekanntermaßen aufdringliche oder irreführende Werbung erscheint.</translation>
 <translation id="6188346519670155113">Chrome-Browsersynchronisierung ist aktiviert</translation>
 <translation id="6190953336330058278">Phone Hub-Apps</translation>
 <translation id="619279033188484792">Letzte Fotos, Medien und Benachrichtigungen von Ihrem Smartphone auf Ihrem Gerät „<ph name="DEVICE_TYPE" />“ ansehen</translation>
@@ -5246,6 +5265,7 @@ Sie können dieser Aktion mehrere Schalter zuweisen.</translation>
 <translation id="6300177430812514606">Dürfen den Datenversand und ‑empfang nicht abschließen</translation>
 <translation id="630065524203833229">&amp;Beenden</translation>
 <translation id="6300718114348072351"><ph name="PRINTER_NAME" /> konnte nicht automatisch konfiguriert werden. Bitte legen Sie erweiterte Einstellungen für den Drucker fest. <ph name="LINK_BEGIN" />Weitere Informationen<ph name="LINK_END" /></translation>
+<translation id="6301300352769835063">Google darf meine Hardwaredaten zur Verbesserung von <ph name="DEVICE_OS" /> verwenden. Wenn ich ablehne, werden meine Daten trotzdem zur Überprüfung der zu installierenden Updates an Google gesendet – sie werden jedoch nicht gespeichert oder anderweitig verwendet. Weitere Informationen finden Sie unter g.co/flex/HWDataCollection.</translation>
 <translation id="630292539633944562">Vorschläge zu personenbezogenen Daten</translation>
 <translation id="6305607932814307878">Globale Richtlinien:</translation>
 <translation id="6307990684951724544">System ausgelastet</translation>
@@ -5339,6 +5359,7 @@ Sie können dieser Aktion mehrere Schalter zuweisen.</translation>
 <translation id="6398715114293939307">Google Play Store entfernen</translation>
 <translation id="6398765197997659313">Vollbildmodus beenden</translation>
 <translation id="6399774419735315745">Spionin</translation>
+<translation id="6404187344102273690">Gaming auf Chromebook</translation>
 <translation id="6404511346730675251">Lesezeichen bearbeiten</translation>
 <translation id="6406303162637086258">Browser-Neustart simulieren</translation>
 <translation id="6406506848690869874">Synchronisierung</translation>
@@ -5759,6 +5780,7 @@ Sie können dieser Aktion mehrere Schalter zuweisen.</translation>
 <translation id="6824584962142919697">&amp;Elemente untersuchen</translation>
 <translation id="6825184156888454064">Nach Name sortieren</translation>
 <translation id="6826872289184051766">Über USB bestätigen</translation>
+<translation id="6827121912381363404">Alle Erweiterungen dürfen Daten auf <ph name="PERMITTED_SITE" /> abrufen und ändern</translation>
 <translation id="6828153365543658583">Anmeldung auf die folgenden Nutzer beschränken:</translation>
 <translation id="6828182567531805778">Geben Sie die Passphrase ein, um Ihre Daten zu synchronisieren</translation>
 <translation id="682871081149631693">QuickFix-Build</translation>
@@ -5810,6 +5832,7 @@ Sie können dieser Aktion mehrere Schalter zuweisen.</translation>
 <translation id="6868934826811377550">Details ansehen</translation>
 <translation id="6871644448911473373">OCSP-Antwortdienst: <ph name="LOCATION" /></translation>
 <translation id="6872781471649843364">Das eingegebene Passwort wurde vom Server zurückgewiesen.</translation>
+<translation id="6874503923667733123">Chrome OS-System-App</translation>
 <translation id="6876155724392614295">Fahrrad</translation>
 <translation id="6876469544038980967">Nicht hilfreich</translation>
 <translation id="6878422606530379992">Sensorennutzung erlaubt</translation>
@@ -6488,6 +6511,7 @@ Sie können dieser Aktion mehrere Schalter zuweisen.</translation>
 <translation id="7582844466922312471">Mobilfunk</translation>
 <translation id="7583948862126372804">Anzahl</translation>
 <translation id="7586498138629385861">Chrome wird weiter ausgeführt, solange die Chrome-Apps geöffnet sind.</translation>
+<translation id="758895749110326677">Helfen Sie dabei, Gaming auf Chromebooks besser zu machen</translation>
 <translation id="7589461650300748890">Vorsicht!</translation>
 <translation id="7593653750169415785">Automatisch blockiert, weil Sie Benachrichtigungen mehrmals abgewiesen haben</translation>
 <translation id="7594725637786616550">Durch einen Powerwash wird Ihr <ph name="DEVICE_TYPE" /> auf den Werkszustand zurückgesetzt.</translation>
@@ -7298,6 +7322,15 @@ Unter <ph name="BEGIN_LINK" />photos.google.com/settings<ph name="END_LINK" /> k
 <translation id="8379991678458444070">Sie können diesen Tab als Lesezeichen speichern, um schnell wieder hierher zurückzukehren</translation>
 <translation id="8382715499079447151">Spionageschutz</translation>
 <translation id="8382913212082956454">E-Mail-Adr&amp;esse kopieren</translation>
+<translation id="8383266303049437646"><ph name="BEGIN_PARAGRAPH1" />So können Sie versuchen, das Problem zu beheben:
+    <ph name="BEGIN_LIST" />
+    <ph name="LIST_ITEM" />Sorgen Sie dafür, dass Ihr Gerät einen funktionierenden internen Speicher hat, z. B. eine HDD, eine SSD oder einen eMMC-Speicher
+    <ph name="LIST_ITEM" />Achten Sie darauf, dass der interne Speicher größer als 16 GB ist
+    <ph name="LIST_ITEM" />Prüfen Sie, ob der interne Speicher richtig angeschlossen ist (sofern Sie das Gerät selbst öffnen können)
+    <ph name="LIST_ITEM" />Vergewissern Sie sich, dass Sie ein zertifiziertes Modell verwenden, und lesen Sie sich die Installationshinweise durch
+    <ph name="END_LIST" />
+    <ph name="END_PARAGRAPH1" />
+    <ph name="BEGIN_PARAGRAPH2" />Weitere Hilfestellung finden Sie hier: g.co/flex/InstallErrors.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="8386091599636877289">Richtlinie nicht gefunden.</translation>
 <translation id="8387361103813440603">Dürfen meine Standortdaten nicht abrufen</translation>
 <translation id="8388770971141403598">Sekundäre Profile werden nicht unterstützt</translation>

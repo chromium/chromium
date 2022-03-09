@@ -314,6 +314,7 @@
 <translation id="301282384882049174">由系統管理員分享</translation>
 <translation id="3017687597151988916">選取區域為視窗</translation>
 <translation id="3033545621352269033">開啟</translation>
+<translation id="3033912566804961911">與「<ph name="DESK_NAME" />」合併</translation>
 <translation id="3036649622769666520">開啟檔案</translation>
 <translation id="3038571455154067151">如要登入帳戶，請輸入 Family Link 家長存取碼</translation>
 <translation id="3039939407102840004">觸控筆電量：<ph name="PERCENTAGE" />%。</translation>
@@ -339,6 +340,7 @@
 <translation id="3153444934357957346">使用多帳戶登入功能時，一次最多只能登入 <ph name="MULTI_PROFILE_USER_LIMIT" /> 個帳戶。</translation>
 <translation id="3154351730702813399">裝置管理員可能會監控你的瀏覽活動。</translation>
 <translation id="316086887565479535">範本中有不支援的應用程式</translation>
+<translation id="3161500364292033097">關閉桌面和視窗</translation>
 <translation id="316356270129335934"><ph name="MANAGER" /> 正在復原 <ph name="DEVICE_TYPE" />。你的裝置將會重設，且所有資料將遭到刪除。</translation>
 <translation id="3181441307743005334">重新啟動中，請稍候</translation>
 <translation id="3202010236269062730">{NUM_DEVICES,plural, =1{已連線至一部裝置}other{已連線至 # 部裝置}}</translation>
@@ -876,7 +878,6 @@
 <translation id="6578407462441924264">未命名</translation>
 <translation id="6585808820553845416">這個工作階段將在 <ph name="SESSION_TIME_REMAINING" />後結束。</translation>
 <translation id="6593850935013518327"><ph name="PRIMARY_TEXT" />，<ph name="SECONDARY_TEXT" /></translation>
-<translation id="6602800870584047641">已切換至更安全的網路連線</translation>
 <translation id="661203523074512333"><ph name="SECURITY_STATUS" />，訊號強度 <ph name="SIGNAL_STRENGTH" />，由系統管理員管理</translation>
 <translation id="6612802754306526077">已選取螢幕畫面錄製模式</translation>
 <translation id="6614169507485700968">已啟用隱私保護畫面</translation>
@@ -1047,6 +1048,7 @@
 <translation id="7649070708921625228">說明</translation>
 <translation id="7654687942625752712">同時按住音量調高和調低鍵五秒，即可停用互動朗讀。</translation>
 <translation id="7658239707568436148">取消</translation>
+<translation id="7659861092419699379">已關閉桌面和視窗</translation>
 <translation id="7660160718439869192">「<ph name="NAME" />」會顯示在與 <ph name="EMAIL" /> 連結的裝置上</translation>
 <translation id="7662283695561029522">輕觸即可進行設定</translation>
 <translation id="7670953955701272011">在 Google 日曆中開啟此日期</translation>

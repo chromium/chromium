@@ -109,6 +109,7 @@
 <translation id="2212733584906323460">名前解決</translation>
 <translation id="2217935453350629363">現在の速度</translation>
 <translation id="2224337661447660594">インターネットに接続されていません</translation>
+<translation id="222447520299472966">アート ギャラリーのアルバムを少なくとも 1 つ選択してください</translation>
 <translation id="2230005943220647148">摂氏</translation>
 <translation id="2230051135190148440">CHAP</translation>
 <translation id="225692081236532131">起動状態</translation>
@@ -620,6 +621,7 @@
 <translation id="8675354002693747642">事前共有キー</translation>
 <translation id="8677859815076891398">アルバムはありません。<ph name="LINK_BEGIN" />Google フォト<ph name="LINK_END" />でアルバムを作成してください。</translation>
 <translation id="8709616837707653427"><ph name="DESC_TEXT" /> 左右矢印キーでこの機能を管理できます。</translation>
+<translation id="8712637175834984815">閉じる</translation>
 <translation id="871560550817059752">失敗 - インクがありません</translation>
 <translation id="8723108084122415655">デフォルト以外のネットワークの応答時間がしきい値を超えています</translation>
 <translation id="8726019395068607495">停止 - 扉が開いています</translation>
