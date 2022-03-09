@@ -43,7 +43,7 @@ std::string GetWaylandProtocolError(int err, wl_display* display) {
       LOG(ERROR) << error_string;
     }
   } else {
-    error_string = base::StringPrintf("Fatal Wayland communication error %s.",
+    error_string = base::StringPrintf("Fatal Wayland communication error: %s.",
                                       std::strerror(err));
     LOG(ERROR) << error_string;
   }
@@ -171,8 +171,9 @@ void WaylandEventWatcher::WlDisplayCheckForErrors() {
 
     // This can be null in tests.
     if (!shutdown_cb_.is_null()) {
-      // Force a crash so that a crash report is generated.
-      CHECK(false) << "Wayland protocol error.";
+      // If Wayland compositor died, it'll be shutdown gracefully. In all the
+      // other cases, force a crash so that a crash report is generated.
+      CHECK(err == EPIPE || err == ECONNRESET) << "Wayland protocol error.";
       std::move(shutdown_cb_).Run();
     }
     StopProcessingEvents();
