@@ -8,6 +8,26 @@ import {CrAutoImgElement} from 'chrome://resources/cr_elements/cr_auto_img/cr_au
 
 import {assertEquals} from 'chrome://webui-test/chai_assert.js';
 
+async function waitForAttributeChange(
+    element: HTMLElement, attribute: string): Promise<Array<MutationRecord>> {
+  return new Promise(resolve => {
+    const observer = new MutationObserver((mutations, obs) => {
+      obs.disconnect();
+      resolve(mutations);
+    });
+    observer.observe(
+        element,
+        {
+          attributes: true,
+          attributeFilter: [attribute],
+          attributeOldValue: true,
+          childList: false,
+          subtree: false,
+        },
+    );
+  });
+}
+
 suite('CrAutoImgElementTest', () => {
   let img: CrAutoImgElement;
 
@@ -76,5 +96,31 @@ suite('CrAutoImgElementTest', () => {
             `chrome://image/?url=${
                 encodeURIComponent(autoSrc)}&withCookies=true`,
             img.src);
+      });
+
+  test(
+      'setting clear-src removes the src attribute first when auto-src changes',
+      async () => {
+        const originalSrc = 'chrome://foo/foo.png';
+        img.clearSrc = '';
+        img.autoSrc = originalSrc;
+        assertEquals(
+            originalSrc, img.src, 'src attribute is set to initial value');
+
+        const newSrc = 'chrome://bar/bar.png';
+
+        const attrChangedPromise = waitForAttributeChange(img, 'src');
+        img.autoSrc = newSrc;
+
+        const mutations = await attrChangedPromise;
+        assertEquals(2, mutations.length, 'src is changed twice');
+        assertEquals(
+            originalSrc, mutations[0]?.oldValue,
+            'src starts as original value');
+
+        assertEquals(
+            null, mutations[1]?.oldValue, 'src is set to null in between');
+
+        assertEquals(newSrc, img.src, 'src attribute is set to new value');
       });
 });

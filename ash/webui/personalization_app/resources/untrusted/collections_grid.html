@@ -19,7 +19,7 @@
           <div class$="[[getClassForImagesContainer_(item)]]">
             <template is="dom-repeat" items="[[item.preview]]" as="preview">
               <img is="cr-auto-img" auto-src="[[preview.url]]"
-                  aria-hidden="true">
+                  aria-hidden="true" clear-src>
             </template>
           </div>
           <div class="photo-text-container">
@@ -37,7 +37,7 @@
             on-click="onCollectionSelected_" on-keypress="onCollectionSelected_">
           <div class$="[[getClassForImagesContainer_(item)]]">
             <img is="cr-auto-img" auto-src="[[getImageUrlForEmptyTile_(item)]]"
-                aria-hidden="true">
+                aria-hidden="true" clear-src>
           </div>
           <div class="photo-text-container">
             <p title$="[[item.name]]">[[item.name]]</p>
@@ -53,7 +53,7 @@
             <template is="dom-repeat" items="[[item.preview]]" as="preview">
               <img is="cr-auto-img" auto-src="[[preview.url]]"
                   aria-hidden="true" on-load="onImgLoad_" on-error="onImgLoad_"
-                  with-cookies="[[isGooglePhotosTile_(item)]]">
+                  with-cookies="[[isGooglePhotosTile_(item)]]" clear-src>
             </template>
           </div>
           <div class="photo-text-container" hidden>

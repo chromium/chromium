@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import '//resources/cr_elements/cr_auto_img/cr_auto_img.js';
 import '//resources/polymer/v3_0/iron-list/iron-list.js';
 import './setup.js';
 import '../trusted/wallpaper/styles.js';
@@ -71,19 +72,6 @@ export class ImagesGrid extends PolymerElement {
         let visible = false;
         if (validateReceivedData(event)) {
           visible = event.visible;
-        }
-        if (!visible) {
-          // TODO(b/219799872) revisit if this is necessary.
-          // When the grid is hidden, do some dom magic to hide old image
-          // content. This is in preparation for a user switching to a new
-          // wallpaper collection and loading a new set of images.
-          const ironList = this.shadowRoot!.querySelector('iron-list');
-          const images: NodeListOf<HTMLImageElement> =
-              ironList!.querySelectorAll('.photo-container img');
-          for (const image of images) {
-            image.src = '';
-          }
-          this.tiles_ = [];
         }
         if (visible) {
           // If iron-list items were updated while this iron-list was hidden,

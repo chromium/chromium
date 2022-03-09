@@ -13,13 +13,17 @@
  *
  *   2. In HTML instantiate
  *
- *      <img is="cr-auto-img" auto-src="https://foo.com/bar.png"></img>
+ *      <img is="cr-auto-img" auto-src="https://foo.com/bar.png">
  *
  *      If your image needs to be fetched using cookies, you can use the
  *      with-cookies attribute as follows:
  *
  *      <img is="cr-auto-img" auto-src="https://foo.com/bar.png" with-cookies>
- *      </img>
+ *
+ *      If you want the image to reset to an empty state when auto-src changes
+ *      and the new image is still loading, set the clear-src attribute:
+ *
+ *      <img is="cr-auto-img" auto-src="[[calculateSrc()]]" clear-src>
  *
  * NOTE: Since <cr-auto-img> may use the chrome://image data source some images
  * may be transcoded to PNG.
@@ -27,6 +31,9 @@
 
 /** @type {string} */
 const AUTO_SRC = 'auto-src';
+
+/** @type {string} */
+const CLEAR_SRC = 'clear-src';
 
 /** @type {string} */
 const WITH_COOKIES = 'with-cookies';
@@ -39,6 +46,12 @@ export class CrAutoImgElement extends HTMLImageElement {
   attributeChangedCallback(name, oldValue, newValue) {
     if (name !== AUTO_SRC) {
       return;
+    }
+
+    if (this.hasAttribute(CLEAR_SRC)) {
+      // Remove the src attribute so that the old image is not shown while the
+      // new one is loading.
+      this.removeAttribute('src');
     }
 
     let url = null;
@@ -70,6 +83,16 @@ export class CrAutoImgElement extends HTMLImageElement {
   /** @return {string} */
   get autoSrc() {
     return this.getAttribute(AUTO_SRC);
+  }
+
+  /** @param {string} _ */
+  set clearSrc(_) {
+    this.setAttribute(CLEAR_SRC, '');
+  }
+
+  /** @return {string} */
+  get clearSrc() {
+    return this.getAttribute(CLEAR_SRC);
   }
 
   /** @param {string} _ */
