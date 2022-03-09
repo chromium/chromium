@@ -126,6 +126,11 @@ extern const base::Feature kBrowserAppInstanceTracking;
 COMPONENT_EXPORT(CHROME_FEATURES)
 extern const base::Feature kChangePictureVideoMode;
 
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+COMPONENT_EXPORT(CHROME_FEATURES)
+extern const base::Feature kChromeAppsDeprecation;
+#endif
+
 COMPONENT_EXPORT(CHROME_FEATURES)
 extern const base::Feature kClientStorageAccessContextAuditing;
 
@@ -222,8 +227,6 @@ extern const base::Feature kDesktopPWAsWebBundles;
     BUILDFLAG(IS_FUCHSIA)
 COMPONENT_EXPORT(CHROME_FEATURES)
 extern const base::Feature kDesktopPWAsWebAppSettingsPage;
-COMPONENT_EXPORT(CHROME_FEATURES)
-extern const base::Feature kChromeAppsDeprecation;
 #endif
 
 COMPONENT_EXPORT(CHROME_FEATURES)

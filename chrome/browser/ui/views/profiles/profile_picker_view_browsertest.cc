@@ -4,8 +4,6 @@
 
 #include "chrome/browser/ui/views/profiles/profile_picker_view.h"
 
-#include <set>
-
 #include "base/barrier_closure.h"
 #include "base/callback_helpers.h"
 #include "base/json/values_util.h"
@@ -77,7 +75,6 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
-#include "extensions/common/extension_id.h"
 #include "google_apis/gaia/gaia_urls.h"
 #include "services/network/test/test_url_loader_factory.h"
 #include "third_party/skia/include/core/SkColor.h"
@@ -270,9 +267,6 @@ class TestTabDialogs : public TabDialogs {
 
   void ShowManagePasswordsBubble(bool user_action) override {}
   void HideManagePasswordsBubble() override {}
-  void ShowDeprecatedAppsDialog(
-      const std::set<extensions::ExtensionId>& deprecated_app_ids,
-      content::WebContents* web_contents) override {}
 
  private:
   raw_ptr<content::WebContents> contents_;

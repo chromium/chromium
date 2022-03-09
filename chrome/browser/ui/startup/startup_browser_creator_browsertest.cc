@@ -664,8 +664,7 @@ class StartupBrowserCreatorChromeAppShortcutTest
     switch (std::get<0>(GetParam())) {
       case ChromeAppDeprecationFeatureValue::kDefault:
         break;
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
-    BUILDFLAG(IS_FUCHSIA)
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
       case ChromeAppDeprecationFeatureValue::kEnabled:
         scoped_feature_list_.InitAndEnableFeature(
             features::kChromeAppsDeprecation);
@@ -683,8 +682,7 @@ class StartupBrowserCreatorChromeAppShortcutTest
     switch (std::get<1>(GetParam())) {
       case ChromeAppsEnabledPrefValue::kDefault:
         break;
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
-    BUILDFLAG(IS_FUCHSIA)
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
       case ChromeAppsEnabledPrefValue::kEnabled:
         browser()->profile()->GetPrefs()->SetBoolean(
             extensions::pref_names::kChromeAppsEnabled, true);
