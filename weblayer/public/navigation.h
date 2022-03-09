@@ -125,7 +125,10 @@ class Navigation {
   // function may only be called from NavigationObserver::NavigationStarted().
   // Any value specified during start carries through to a redirect. |value|
   // must not contain any illegal characters as documented in
-  // SetRequestHeader().
+  // SetRequestHeader().  Setting this to a non empty string will cause the
+  // User-Agent Client Hint header values and the values returned by
+  // `navigator.userAgentData` to be empty for requests this override is applied
+  // to.
   virtual void SetUserAgentString(const std::string& value) = 0;
 
   // Disables auto-reload for this navigation if the network is down and comes

@@ -329,7 +329,10 @@ public class Navigation extends IClientNavigation.Stub {
     /**
      * Sets the user-agent string that applies to the current navigation. This user-agent is not
      * sticky, it applies to this navigation only (and any redirects or resources that are loaded).
-     * This method may only be called from {@link NavigationCallback.onNavigationStarted}.
+     * This method may only be called from {@link NavigationCallback.onNavigationStarted}.  Setting
+     * this to a non empty string will cause will cause the User-Agent Client Hint header values and
+     * the values returned by `navigator.userAgentData` to be empty for requests this override is
+     * applied to.
      *
      * Note that this user agent won't be sent again if the frame html is fetched again due to a
      * user reloading the page, navigating back and forth etc... when this fetch couldn't be cached
