@@ -46,7 +46,6 @@
 #include "ppapi/c/ppp_input_event.h"
 #include "ppapi/c/ppp_mouse_lock.h"
 #include "ppapi/c/private/ppp_instance_private.h"
-#include "ppapi/c/private/ppp_pdf.h"
 #include "ppapi/shared_impl/ppb_instance_shared.h"
 #include "ppapi/shared_impl/ppb_view_shared.h"
 #include "ppapi/shared_impl/singleton_resource_id.h"
@@ -273,18 +272,12 @@ class CONTENT_EXPORT PepperPluginInstanceImpl
   void RemovePluginObject(PluginObject* plugin_object);
 
   std::u16string GetSelectedText(bool html);
-  std::u16string GetLinkAtPosition(const gfx::Point& point);
   void RequestSurroundingText(size_t desired_number_of_characters);
 
   bool SupportsPrintInterface();
   int PrintBegin(const blink::WebPrintParams& print_params);
   void PrintPage(int page_number, cc::PaintCanvas* canvas);
   void PrintEnd();
-  bool GetPrintPresetOptionsFromDocument(
-      blink::WebPrintPresetOptions* preset_options);
-
-  bool CanRotateView();
-  void RotateView(blink::WebPlugin::RotationType type);
 
   // Implementation of PPB_Fullscreen.
 
@@ -371,18 +364,6 @@ class CONTENT_EXPORT PepperPluginInstanceImpl
   void SetLinkUnderCursor(const std::string& url) override;
   void SetTextInputType(ui::TextInputType type) override;
   void PostMessageToJavaScript(PP_Var message) override;
-  void SetCaretPosition(const gfx::PointF& position) override;
-  void MoveRangeSelectionExtent(const gfx::PointF& extent) override;
-  void SetSelectionBounds(const gfx::PointF& base,
-                          const gfx::PointF& extent) override;
-  bool CanEditText() override;
-  bool HasEditableText() override;
-  void ReplaceSelection(const std::string& text) override;
-  void SelectAll() override;
-  bool CanUndo() override;
-  bool CanRedo() override;
-  void Undo() override;
-  void Redo() override;
 
   // PPB_Instance_API implementation.
   PP_Bool BindGraphics(PP_Instance instance, PP_Resource device) override;
@@ -470,8 +451,6 @@ class CONTENT_EXPORT PepperPluginInstanceImpl
     return *audio_controller_;
   }
 
-  bool SupportsKeyboardFocus();
-
  private:
   friend class base::RefCounted<PepperPluginInstanceImpl>;
   friend class PpapiPluginInstanceTest;
@@ -533,7 +512,6 @@ class CONTENT_EXPORT PepperPluginInstanceImpl
 
   bool LoadInputEventInterface();
   bool LoadMouseLockInterface();
-  bool LoadPdfInterface();
   bool LoadPrintInterface();
   bool LoadPrivateInterface();
   bool LoadTextInputInterface();
@@ -696,7 +674,6 @@ class CONTENT_EXPORT PepperPluginInstanceImpl
   // When adding PPP interfaces, make sure to reset them in ResetAsProxied.
   const PPP_InputEvent* plugin_input_event_interface_;
   const PPP_MouseLock* plugin_mouse_lock_interface_;
-  const PPP_Pdf* plugin_pdf_interface_;
   const PPP_Instance_Private* plugin_private_interface_;
   const PPP_TextInput_Dev* plugin_textinput_interface_;
 
@@ -704,7 +681,6 @@ class CONTENT_EXPORT PepperPluginInstanceImpl
   // corresponding interfaces, so that we can ask only once.
   // When adding flags, make sure to reset them in ResetAsProxied.
   bool checked_for_plugin_input_event_interface_;
-  bool checked_for_plugin_pdf_interface_;
 
   // This is only valid between a successful PrintBegin call and a PrintEnd
   // call.

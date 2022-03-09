@@ -61,7 +61,6 @@
 #include "ppapi/c/ppp_messaging.h"
 #include "ppapi/c/ppp_mouse_lock.h"
 #include "ppapi/c/private/ppp_instance_private.h"
-#include "ppapi/c/private/ppp_pdf.h"
 #include "ppapi/host/ppapi_host.h"
 #include "ppapi/proxy/ppapi_messages.h"
 #include "ppapi/proxy/serialized_var.h"
@@ -104,7 +103,6 @@
 #include "third_party/blink/public/web/web_plugin_container.h"
 #include "third_party/blink/public/web/web_plugin_script_forbidden_scope.h"
 #include "third_party/blink/public/web/web_print_params.h"
-#include "third_party/blink/public/web/web_print_preset_options.h"
 #include "third_party/blink/public/web/web_script_source.h"
 #include "third_party/blink/public/web/web_view.h"
 #include "third_party/khronos/GLES2/gl2.h"
@@ -360,13 +358,6 @@ void PrintPDFOutput(PP_Resource print_output,
 #endif  // BUILDFLAG(ENABLE_PRINTING)
 }
 
-constexpr char kChromePrint[] = "chrome://print/";
-
-bool IsPrintPreviewUrl(const GURL& document_url) {
-  return url::Origin::Create(document_url.DeprecatedGetOriginAsURL()) ==
-         url::Origin::Create(GURL(kChromePrint));
-}
-
 }  // namespace
 
 // static
@@ -491,11 +482,9 @@ PepperPluginInstanceImpl::PepperPluginInstanceImpl(
       find_identifier_(-1),
       plugin_input_event_interface_(nullptr),
       plugin_mouse_lock_interface_(nullptr),
-      plugin_pdf_interface_(nullptr),
       plugin_private_interface_(nullptr),
       plugin_textinput_interface_(nullptr),
       checked_for_plugin_input_event_interface_(false),
-      checked_for_plugin_pdf_interface_(false),
       metafile_(nullptr),
       gamepad_impl_(new GamepadImpl()),
       uma_private_impl_(nullptr),
@@ -1303,137 +1292,6 @@ std::u16string PepperPluginInstanceImpl::GetSelectedText(bool html) {
   return selected_text_;
 }
 
-std::u16string PepperPluginInstanceImpl::GetLinkAtPosition(
-    const gfx::Point& point) {
-  // Keep a reference on the stack. See NOTE above.
-  scoped_refptr<PepperPluginInstanceImpl> ref(this);
-  if (!LoadPdfInterface()) {
-    // TODO(koz): Change the containing function to GetLinkUnderCursor(). We can
-    // return |link_under_cursor_| here because this is only ever called with
-    // the current mouse coordinates.
-    return link_under_cursor_;
-  }
-
-  PP_Point p;
-  p.x = point.x();
-  p.y = point.y();
-  PP_Var rv = plugin_pdf_interface_->GetLinkAtPosition(pp_instance(), p);
-  // If the plugin returns undefined for this function it has switched to
-  // providing us with the link under the cursor eagerly.
-  if (rv.type == PP_VARTYPE_UNDEFINED)
-    return link_under_cursor_;
-  StringVar* string = StringVar::FromPPVar(rv);
-  std::u16string link;
-  if (string)
-    link = base::UTF8ToUTF16(string->value());
-  // Release the ref the plugin transfered to us.
-  PpapiGlobals::Get()->GetVarTracker()->ReleaseVar(rv);
-  return link;
-}
-
-void PepperPluginInstanceImpl::SetCaretPosition(const gfx::PointF& position) {
-  if (!LoadPdfInterface())
-    return;
-
-  PP_FloatPoint p;
-  p.x = position.x();
-  p.y = position.y();
-  plugin_pdf_interface_->SetCaretPosition(pp_instance(), &p);
-}
-
-void PepperPluginInstanceImpl::MoveRangeSelectionExtent(
-    const gfx::PointF& extent) {
-  if (!LoadPdfInterface())
-    return;
-
-  PP_FloatPoint p;
-  p.x = extent.x();
-  p.y = extent.y();
-  plugin_pdf_interface_->MoveRangeSelectionExtent(pp_instance(), &p);
-}
-
-void PepperPluginInstanceImpl::SetSelectionBounds(const gfx::PointF& base,
-                                                  const gfx::PointF& extent) {
-  if (!LoadPdfInterface())
-    return;
-
-  PP_FloatPoint p_base;
-  p_base.x = base.x();
-  p_base.y = base.y();
-
-  PP_FloatPoint p_extent;
-  p_extent.x = extent.x();
-  p_extent.y = extent.y();
-  plugin_pdf_interface_->SetSelectionBounds(pp_instance(), &p_base, &p_extent);
-}
-
-bool PepperPluginInstanceImpl::CanEditText() {
-  if (!LoadPdfInterface())
-    return false;
-  // No reference to |this| on the stack. Do not do any more work after this.
-  // See NOTE above.
-  return PP_ToBool(plugin_pdf_interface_->CanEditText(pp_instance()));
-}
-
-bool PepperPluginInstanceImpl::HasEditableText() {
-  if (!LoadPdfInterface())
-    return false;
-
-  // No reference to |this| on the stack. Do not do any more work after this.
-  // See NOTE above.
-  return PP_ToBool(plugin_pdf_interface_->HasEditableText(pp_instance()));
-}
-
-void PepperPluginInstanceImpl::ReplaceSelection(const std::string& text) {
-  if (!LoadPdfInterface())
-    return;
-
-  // No reference to |this| on the stack. Do not do any more work after this.
-  // See NOTE above.
-  plugin_pdf_interface_->ReplaceSelection(pp_instance(), text.c_str());
-}
-
-void PepperPluginInstanceImpl::SelectAll() {
-  if (!LoadPdfInterface())
-    return;
-
-  plugin_pdf_interface_->SelectAll(pp_instance());
-}
-
-bool PepperPluginInstanceImpl::CanUndo() {
-  if (!LoadPdfInterface())
-    return false;
-
-  // No reference to |this| on the stack. Do not do any more work after this.
-  // See NOTE above.
-  return PP_ToBool(plugin_pdf_interface_->CanUndo(pp_instance()));
-}
-
-bool PepperPluginInstanceImpl::CanRedo() {
-  if (!LoadPdfInterface())
-    return false;
-
-  // No reference to |this| on the stack. Do not do any more work after this.
-  // See NOTE above.
-  return PP_ToBool(plugin_pdf_interface_->CanRedo(pp_instance()));
-}
-
-void PepperPluginInstanceImpl::Undo() {
-  if (!LoadPdfInterface())
-    return;
-
-  // No reference to |this| on the stack. Do not do any more work after this.
-  // See NOTE above.
-  plugin_pdf_interface_->Undo(pp_instance());
-}
-
-void PepperPluginInstanceImpl::Redo() {
-  if (!LoadPdfInterface())
-    return;
-
-  plugin_pdf_interface_->Redo(pp_instance());
-}
-
 void PepperPluginInstanceImpl::RequestSurroundingText(
     size_t desired_number_of_characters) {
   // Keep a reference on the stack. See NOTE above.
@@ -1460,16 +1318,6 @@ bool PepperPluginInstanceImpl::LoadMouseLockInterface() {
   }
 
   return !!plugin_mouse_lock_interface_;
-}
-
-bool PepperPluginInstanceImpl::LoadPdfInterface() {
-  if (!checked_for_plugin_pdf_interface_) {
-    checked_for_plugin_pdf_interface_ = true;
-    plugin_pdf_interface_ = static_cast<const PPP_Pdf*>(
-        module_->GetPluginInterface(PPP_PDF_INTERFACE_1));
-  }
-
-  return !!plugin_pdf_interface_;
 }
 
 bool PepperPluginInstanceImpl::LoadPrintInterface() {
@@ -1732,7 +1580,6 @@ int PepperPluginInstanceImpl::PrintBegin(const WebPrintParams& print_params) {
     return 0;
   }
 
-  int num_pages;
   PP_PrintSettings_Dev print_settings;
   print_settings.printable_area = PP_FromGfxRect(print_params.printable_area);
   print_settings.content_area = PP_FromGfxRect(print_params.print_content_area);
@@ -1744,21 +1591,14 @@ int PepperPluginInstanceImpl::PrintBegin(const WebPrintParams& print_params) {
       static_cast<PP_PrintScalingOption_Dev>(print_params.print_scaling_option);
   print_settings.format = format;
 
-  if (LoadPdfInterface()) {
-    PP_PdfPrintSettings_Dev pdf_print_settings;
-    pdf_print_settings.pages_per_sheet = print_params.pages_per_sheet;
-    pdf_print_settings.scale_factor = print_params.scale_factor;
+  // "fit to paper" should have never been a scaling option for the user to
+  // begin with, since it was only supported by the PDF plugin, which has been
+  // deleted.
+  DCHECK_NE(print_settings.print_scaling_option,
+            PP_PRINTSCALINGOPTION_FIT_TO_PAPER);
 
-    num_pages = plugin_pdf_interface_->PrintBegin(
-        pp_instance(), &print_settings, &pdf_print_settings);
-  } else {
-    // If the content is not from the PDF plugin, "fit to paper" should have
-    // never been a scaling option for the user to begin with.
-    DCHECK_NE(print_settings.print_scaling_option,
-              PP_PRINTSCALINGOPTION_FIT_TO_PAPER);
-
-    num_pages = plugin_print_interface_->Begin(pp_instance(), &print_settings);
-  }
+  int num_pages =
+      plugin_print_interface_->Begin(pp_instance(), &print_settings);
   if (!num_pages)
     return 0;
 
@@ -1818,61 +1658,6 @@ void PepperPluginInstanceImpl::PrintEnd() {
 
   plugin_print_interface_->End(pp_instance());
   memset(&current_print_settings_, 0, sizeof(current_print_settings_));
-}
-
-bool PepperPluginInstanceImpl::GetPrintPresetOptionsFromDocument(
-    blink::WebPrintPresetOptions* preset_options) {
-  // Keep a reference on the stack. See NOTE above.
-  scoped_refptr<PepperPluginInstanceImpl> ref(this);
-  if (!LoadPdfInterface())
-    return false;
-
-  PP_PdfPrintPresetOptions_Dev options;
-  if (!plugin_pdf_interface_->GetPrintPresetOptionsFromDocument(pp_instance(),
-                                                                &options)) {
-    return false;
-  }
-
-  preset_options->is_scaling_disabled = PP_ToBool(options.is_scaling_disabled);
-  switch (options.duplex) {
-    case PP_PRIVATEDUPLEXMODE_SIMPLEX:
-      preset_options->duplex_mode = printing::mojom::DuplexMode::kSimplex;
-      break;
-    case PP_PRIVATEDUPLEXMODE_SHORT_EDGE:
-      preset_options->duplex_mode = printing::mojom::DuplexMode::kShortEdge;
-      break;
-    case PP_PRIVATEDUPLEXMODE_LONG_EDGE:
-      preset_options->duplex_mode = printing::mojom::DuplexMode::kLongEdge;
-      break;
-    default:
-      preset_options->duplex_mode =
-          printing::mojom::DuplexMode::kUnknownDuplexMode;
-      break;
-  }
-  preset_options->copies = options.copies;
-
-  if (options.is_page_size_uniform) {
-    preset_options->uniform_page_size = gfx::Size(
-        options.uniform_page_size.width, options.uniform_page_size.height);
-  }
-
-  return true;
-}
-
-bool PepperPluginInstanceImpl::CanRotateView() {
-  return LoadPdfInterface() && !module()->is_crashed() &&
-         !IsPrintPreviewUrl(document_url_);
-}
-
-void PepperPluginInstanceImpl::RotateView(WebPlugin::RotationType type) {
-  if (!LoadPdfInterface())
-    return;
-  PP_PrivatePageTransformType transform_type =
-      type == WebPlugin::RotationType::k90Clockwise
-          ? PP_PRIVATEPAGETRANSFORMTYPE_ROTATE_90_CW
-          : PP_PRIVATEPAGETRANSFORMTYPE_ROTATE_90_CCW;
-  plugin_pdf_interface_->Transform(pp_instance(), transform_type);
-  // NOTE: plugin instance may have been deleted.
 }
 
 bool PepperPluginInstanceImpl::IsFullscreenOrPending() {
@@ -1984,12 +1769,6 @@ bool PepperPluginInstanceImpl::PrepareTransferableResource(
 
 void PepperPluginInstanceImpl::OnDestruct() {
   render_frame_ = nullptr;
-}
-
-bool PepperPluginInstanceImpl::SupportsKeyboardFocus() {
-  // Only PDF plugin supports keyboard focus. PDF plugin shouldn't be focusable
-  // if it's embedded in Print Preview.
-  return LoadPdfInterface() && !IsPrintPreviewUrl(document_url_);
 }
 
 void PepperPluginInstanceImpl::AddPluginObject(PluginObject* plugin_object) {
@@ -2586,8 +2365,6 @@ PP_ExternalPluginResult PepperPluginInstanceImpl::ResetAsProxied(
   plugin_input_event_interface_ = nullptr;
   checked_for_plugin_input_event_interface_ = false;
   plugin_mouse_lock_interface_ = nullptr;
-  plugin_pdf_interface_ = nullptr;
-  checked_for_plugin_pdf_interface_ = false;
   plugin_private_interface_ = nullptr;
   plugin_textinput_interface_ = nullptr;
 

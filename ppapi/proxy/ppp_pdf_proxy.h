@@ -5,8 +5,6 @@
 #ifndef PPAPI_PROXY_PPP_PDF_PROXY_H_
 #define PPAPI_PROXY_PPP_PDF_PROXY_H_
 
-#include <string>
-
 #include "ppapi/c/private/ppp_pdf.h"
 #include "ppapi/proxy/interface_proxy.h"
 
@@ -30,26 +28,6 @@ class PPP_Pdf_Proxy : public InterfaceProxy {
 
  private:
   // Message handlers.
-  void OnPluginMsgRotate(PP_Instance instance, bool clockwise);
-  void OnPluginMsgPrintPresetOptions(PP_Instance instance,
-                                     PP_PdfPrintPresetOptions_Dev* options,
-                                     PP_Bool* result);
-  void OnPluginMsgSetCaretPosition(PP_Instance instance,
-                                   const PP_FloatPoint& position);
-  void OnPluginMsgMoveRangeSelectionExtent(PP_Instance instance,
-                                           const PP_FloatPoint& extent);
-  void OnPluginMsgSetSelectionBounds(PP_Instance instance,
-                                     const PP_FloatPoint& base,
-                                     const PP_FloatPoint& extent);
-  void OnPluginMsgCanEditText(PP_Instance instance, PP_Bool* result);
-  void OnPluginMsgHasEditableText(PP_Instance instance, PP_Bool* result);
-  void OnPluginMsgReplaceSelection(PP_Instance instance,
-                                   const std::string& text);
-  void OnPluginMsgSelectAll(PP_Instance instance);
-  void OnPluginMsgCanUndo(PP_Instance instance, PP_Bool* result);
-  void OnPluginMsgCanRedo(PP_Instance instance, PP_Bool* result);
-  void OnPluginMsgUndo(PP_Instance instance);
-  void OnPluginMsgRedo(PP_Instance instance);
   void OnPluginMsgPrintBegin(PP_Instance instance,
                              const PP_PrintSettings_Dev& print_settings,
                              const PP_PdfPrintSettings_Dev& pdf_print_settings,

@@ -599,42 +599,6 @@ IPC_MESSAGE_ROUTED1(PpapiMsg_PPPMouseLock_MouseLockLost,
                     PP_Instance /* instance */)
 
 // PPP_Pdf
-IPC_MESSAGE_ROUTED2(PpapiMsg_PPPPdf_Rotate,
-                    PP_Instance /* instance */,
-                    bool /* clockwise */)
-IPC_SYNC_MESSAGE_ROUTED1_2(
-    PpapiMsg_PPPPdf_PrintPresetOptions,
-    PP_Instance /* instance */,
-    PP_PdfPrintPresetOptions_Dev /* print preset options */,
-    PP_Bool /* result */)
-IPC_MESSAGE_ROUTED2(PpapiMsg_PPPPdf_SetCaretPosition,
-                    PP_Instance /* instance */,
-                    PP_FloatPoint /* position */)
-IPC_MESSAGE_ROUTED2(PpapiMsg_PPPPdf_MoveRangeSelectionExtent,
-                    PP_Instance /* instance */,
-                    PP_FloatPoint /* extent */)
-IPC_MESSAGE_ROUTED3(PpapiMsg_PPPPdf_SetSelectionBounds,
-                    PP_Instance /* instance */,
-                    PP_FloatPoint /* base */,
-                    PP_FloatPoint /* extent */)
-IPC_SYNC_MESSAGE_ROUTED1_1(PpapiMsg_PPPPdf_CanEditText,
-                           PP_Instance /* instance */,
-                           PP_Bool /* result */)
-IPC_SYNC_MESSAGE_ROUTED1_1(PpapiMsg_PPPPdf_HasEditableText,
-                           PP_Instance /* instance */,
-                           PP_Bool /* result */)
-IPC_MESSAGE_ROUTED2(PpapiMsg_PPPPdf_ReplaceSelection,
-                    PP_Instance /* instance */,
-                    std::string /* text */)
-IPC_MESSAGE_ROUTED1(PpapiMsg_PPPPdf_SelectAll, PP_Instance /* instance */)
-IPC_SYNC_MESSAGE_ROUTED1_1(PpapiMsg_PPPPdf_CanUndo,
-                           PP_Instance /* instance */,
-                           PP_Bool /* result */)
-IPC_SYNC_MESSAGE_ROUTED1_1(PpapiMsg_PPPPdf_CanRedo,
-                           PP_Instance /* instance */,
-                           PP_Bool /* result */)
-IPC_MESSAGE_ROUTED1(PpapiMsg_PPPPdf_Undo, PP_Instance /* instance */)
-IPC_MESSAGE_ROUTED1(PpapiMsg_PPPPdf_Redo, PP_Instance /* instance */)
 IPC_SYNC_MESSAGE_ROUTED3_1(PpapiMsg_PPPPdf_PrintBegin,
                            PP_Instance /* instance */,
                            PP_PrintSettings_Dev /* print_settings */,

@@ -36,7 +36,6 @@
 #include "third_party/blink/public/web/web_plugin_container.h"
 #include "third_party/blink/public/web/web_plugin_params.h"
 #include "third_party/blink/public/web/web_print_params.h"
-#include "third_party/blink/public/web/web_print_preset_options.h"
 #include "ui/base/cursor/cursor.h"
 #include "ui/events/keycodes/keyboard_codes.h"
 #include "url/gurl.h"
@@ -187,10 +186,6 @@ v8::Local<v8::Object> PepperWebPluginImpl::V8ScriptableObject(
   return result;
 }
 
-bool PepperWebPluginImpl::SupportsKeyboardFocus() const {
-  return instance_ && instance_->SupportsKeyboardFocus();
-}
-
 void PepperWebPluginImpl::Paint(cc::PaintCanvas* canvas,
                                 const gfx::Rect& rect) {
   // Re-entrancy may cause JS to try to execute script on the plugin before it
@@ -214,30 +209,6 @@ void PepperWebPluginImpl::UpdateFocus(bool focused,
   // is fully initialized. See: crbug.com/715747.
   if (instance_) {
     instance_->SetWebKitFocus(focused);
-
-    if (focused && instance_->SupportsKeyboardFocus()) {
-      switch (focus_type) {
-        case blink::mojom::FocusType::kForward:
-        case blink::mojom::FocusType::kBackward: {
-          int modifiers = blink::WebInputEvent::kNoModifiers;
-          if (focus_type == blink::mojom::FocusType::kBackward)
-            modifiers |= blink::WebInputEvent::kShiftKey;
-          // As part of focus management for plugin, blink brings plugin to
-          // focus but does not forward the tab event to plugin. Hence
-          // simulating tab event here to enable seamless tabbing across UI &
-          // plugin.
-          blink::WebKeyboardEvent simulated_event(
-              blink::WebInputEvent::Type::kKeyDown, modifiers,
-              base::TimeTicks());
-          simulated_event.windows_key_code = ui::KeyboardCode::VKEY_TAB;
-          ui::Cursor cursor;
-          instance_->HandleInputEvent(simulated_event, &cursor);
-          break;
-        }
-        default:
-          break;
-      }
-    }
   }
 }
 
@@ -318,78 +289,6 @@ WebString PepperWebPluginImpl::SelectionAsMarkup() const {
   return WebString::FromUTF16(instance_->GetSelectedText(true));
 }
 
-bool PepperWebPluginImpl::CanEditText() const {
-  return instance_ && instance_->CanEditText();
-}
-
-bool PepperWebPluginImpl::HasEditableText() const {
-  return instance_ && instance_->HasEditableText();
-}
-
-bool PepperWebPluginImpl::CanUndo() const {
-  return instance_ && instance_->CanUndo();
-}
-
-bool PepperWebPluginImpl::CanRedo() const {
-  return instance_ && instance_->CanRedo();
-}
-
-bool PepperWebPluginImpl::ExecuteEditCommand(const blink::WebString& name,
-                                             const blink::WebString& value) {
-  if (!instance_)
-    return false;
-
-  if (name == "Cut") {
-    if (!HasSelection() || !CanEditText())
-      return false;
-
-    instance_->ReplaceSelection("");
-    return true;
-  }
-
-  if (name == "Paste" || name == "PasteAndMatchStyle") {
-    if (!CanEditText())
-      return false;
-
-    instance_->ReplaceSelection(value.Utf8());
-    return true;
-  }
-
-  if (name == "SelectAll") {
-    if (!CanEditText())
-      return false;
-
-    instance_->SelectAll();
-    return true;
-  }
-
-  if (name == "Undo") {
-    if (!CanUndo())
-      return false;
-
-    instance_->Undo();
-    return true;
-  }
-
-  if (name == "Redo") {
-    if (!CanRedo())
-      return false;
-
-    instance_->Redo();
-    return true;
-  }
-
-  return false;
-}
-
-WebURL PepperWebPluginImpl::LinkAtPosition(const gfx::Point& position) const {
-  // Re-entrancy may cause JS to try to execute script on the plugin before it
-  // is fully initialized. See: crbug.com/715747.
-  if (!instance_)
-    return GURL();
-  return GURL(instance_->GetLinkAtPosition(position));
-}
-
 bool PepperWebPluginImpl::SupportsPaginatedPrint() {
   // Re-entrancy may cause JS to try to execute script on the plugin before it
   // is fully initialized. See: crbug.com/715747.
@@ -418,30 +317,6 @@ void PepperWebPluginImpl::PrintEnd() {
   // is fully initialized. See: crbug.com/715747.
   if (instance_)
     instance_->PrintEnd();
-}
-
-bool PepperWebPluginImpl::GetPrintPresetOptionsFromDocument(
-    blink::WebPrintPresetOptions* preset_options) {
-  // Re-entrancy may cause JS to try to execute script on the plugin before it
-  // is fully initialized. See: crbug.com/715747.
-  if (!instance_)
-    return false;
-  return instance_->GetPrintPresetOptionsFromDocument(preset_options);
-}
-
-bool PepperWebPluginImpl::CanRotateView() {
-  // Re-entrancy may cause JS to try to execute script on the plugin before it
-  // is fully initialized. See: crbug.com/715747.
-  if (!instance_)
-    return false;
-  return instance_->CanRotateView();
-}
-
-void PepperWebPluginImpl::RotateView(blink::WebPlugin::RotationType type) {
-  // Re-entrancy may cause JS to try to execute script on the plugin before it
-  // is fully initialized. See: crbug.com/715747.
-  if (instance_)
-    instance_->RotateView(type);
 }
 
 bool PepperWebPluginImpl::IsPlaceholder() {

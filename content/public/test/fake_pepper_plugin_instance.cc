@@ -74,36 +74,4 @@ void FakePepperPluginInstance::SetLinkUnderCursor(const std::string& url) {}
 void FakePepperPluginInstance::SetTextInputType(ui::TextInputType type) {}
 void FakePepperPluginInstance::PostMessageToJavaScript(PP_Var message) {}
 
-void FakePepperPluginInstance::SetCaretPosition(const gfx::PointF& position) {}
-
-void FakePepperPluginInstance::MoveRangeSelectionExtent(
-    const gfx::PointF& extent) {}
-
-void FakePepperPluginInstance::SetSelectionBounds(const gfx::PointF& base,
-                                                  const gfx::PointF& extent) {}
-
-bool FakePepperPluginInstance::CanEditText() {
-  return false;
-}
-
-bool FakePepperPluginInstance::HasEditableText() {
-  return false;
-}
-
-void FakePepperPluginInstance::ReplaceSelection(const std::string& text) {}
-
-void FakePepperPluginInstance::SelectAll() {}
-
-bool FakePepperPluginInstance::CanUndo() {
-  return false;
-}
-
-bool FakePepperPluginInstance::CanRedo() {
-  return false;
-}
-
-void FakePepperPluginInstance::Undo() {}
-
-void FakePepperPluginInstance::Redo() {}
-
 }  // namespace content
