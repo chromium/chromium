@@ -45,6 +45,8 @@ void DiscoverySessionManager::StartDiscovery(
   if (!had_client_before_call) {
     BLUETOOTH_LOG(EVENT) << "StartDiscovery() called as the first client";
     OnHasAtLeastOneDiscoveryClientChanged();
+    NotifyHasAtLeastOneDiscoverySessionChanged(
+        /*has_at_least_one_discovery_session=*/true);
     return;
   }
 
@@ -83,6 +85,8 @@ void DiscoverySessionManager::NotifyDiscoveryStoppedAndClearActiveClients() {
 
   // The number of clients has decreased from >0 to 0.
   OnHasAtLeastOneDiscoveryClientChanged();
+  NotifyHasAtLeastOneDiscoverySessionChanged(
+      /*has_at_least_one_discovery_session=*/false);
 }
 
 bool DiscoverySessionManager::HasAtLeastOneDiscoveryClient() const {
@@ -147,6 +151,8 @@ void DiscoverySessionManager::OnDelegateDisconnected(
     BLUETOOTH_LOG(EVENT)
         << "The number of discovery clients has decreased from 1 to 0";
     OnHasAtLeastOneDiscoveryClientChanged();
+    NotifyHasAtLeastOneDiscoverySessionChanged(
+        /*has_at_least_one_discovery_session=*/false);
   }
 }
 

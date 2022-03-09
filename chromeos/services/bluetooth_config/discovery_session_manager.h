@@ -10,6 +10,7 @@
 #include "chromeos/services/bluetooth_config/adapter_state_controller.h"
 #include "chromeos/services/bluetooth_config/device_pairing_handler.h"
 #include "chromeos/services/bluetooth_config/discovered_devices_provider.h"
+#include "chromeos/services/bluetooth_config/discovery_session_status_notifier.h"
 #include "chromeos/services/bluetooth_config/public/mojom/cros_bluetooth_config.mojom.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/remote_set.h"
@@ -31,7 +32,8 @@ namespace bluetooth_config {
 // responsible for starting and stopping discovery and does not handle pairing
 // attempts.
 class DiscoverySessionManager : public AdapterStateController::Observer,
-                                public DiscoveredDevicesProvider::Observer {
+                                public DiscoveredDevicesProvider::Observer,
+                                public DiscoverySessionStatusNotifier {
  public:
   ~DiscoverySessionManager() override;
 

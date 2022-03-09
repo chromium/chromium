@@ -173,6 +173,14 @@ interface BluetoothDeviceStatusObserver {
   OnDeviceDisconnected(PairedBluetoothDeviceProperties device);
 };
 
+// Observer for changes to starting/stopping Discovery Sessions.
+interface DiscoverySessionStatusObserver {
+  // Invoked when the number of discovery sessions changes from 0 to 1
+  // or vice versa.
+  OnHasAtLeastOneDiscoverySessionChanged(
+      bool has_at_least_one_discovery_session);
+};
+
 // Provided to the pairing UI to handle keys that have been entered
 // on the user's keyboard during a pairing attempt which requires
 // that the user types in a PIN or passkey.
@@ -293,6 +301,12 @@ interface CrosBluetoothConfig {
   // disconnected. To stop observing, disconnect |observer|.
   ObserveDeviceStatusChanges(
     pending_remote<BluetoothDeviceStatusObserver> observer);
+
+  // Invokes OnHasAtLeastOneDiscoverySessionChanged() when the number of
+  // discovery sessions changes from 0 to 1 or vice versa. To stop observing,
+  // disconnect |observer|.
+  ObserveDiscoverySessionStatusChanges(
+    pending_remote<DiscoverySessionStatusObserver> observer);
 
   // Turns Bluetooth on or off. If Bluetooth is unavailable or if it is
   // not currently modifiable, this function is a no-op.

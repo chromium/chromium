@@ -23,10 +23,16 @@ void FakeDiscoverySessionManager::SetIsDiscoverySessionActive(bool is_active) {
 
   is_discovery_session_active_ = is_active;
 
-  if (is_discovery_session_active_)
+  if (is_discovery_session_active_) {
     NotifyDiscoveryStarted();
-  else
+    NotifyHasAtLeastOneDiscoverySessionChanged(is_discovery_session_active_);
+  } else {
     NotifyDiscoveryStoppedAndClearActiveClients();
+    // DiscoverySessionStatusObservers would have been notified by the above
+    // call but this fake manager always early returns before notifying
+    // observers. Explicitly notify observers.
+    NotifyHasAtLeastOneDiscoverySessionChanged(is_discovery_session_active_);
+  }
 }
 
 bool FakeDiscoverySessionManager::IsDiscoverySessionActive() const {

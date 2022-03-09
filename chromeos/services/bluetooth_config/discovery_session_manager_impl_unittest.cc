@@ -19,8 +19,11 @@
 #include "chromeos/services/bluetooth_config/fake_device_pairing_delegate.h"
 #include "chromeos/services/bluetooth_config/fake_device_pairing_handler.h"
 #include "chromeos/services/bluetooth_config/fake_discovered_devices_provider.h"
+#include "chromeos/services/bluetooth_config/fake_discovery_session_status_observer.h"
 #include "device/bluetooth/test/mock_bluetooth_adapter.h"
 #include "device/bluetooth/test/mock_bluetooth_device.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
+#include "mojo/public/cpp/bindings/receiver.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -169,6 +172,14 @@ class DiscoverySessionManagerImplTest : public testing::Test {
 
   void SetShouldSynchronouslyInvokeStartScanCallback(bool should) {
     should_synchronously_invoke_start_scan_callback_ = should;
+  }
+
+  std::unique_ptr<FakeDiscoverySessionStatusObserver> Observe() {
+    auto observer = std::make_unique<FakeDiscoverySessionStatusObserver>();
+    discovery_session_manager_->ObserveDiscoverySessionStatusChanges(
+        observer->GeneratePendingRemote());
+    discovery_session_manager_->FlushForTesting();
+    return observer;
   }
 
  private:
@@ -406,16 +417,28 @@ TEST_F(DiscoverySessionManagerImplTest, DiscoverDeviceBeforeStart) {
 }
 
 TEST_F(DiscoverySessionManagerImplTest, MultipleClientsAttemptPairing) {
+  std::unique_ptr<FakeDiscoverySessionStatusObserver> observer = Observe();
+
+  // Initially, observer would see the default state, which is 0 sessions.
+  EXPECT_FALSE(observer->has_at_least_one_discovery_session());
+  EXPECT_EQ(0, observer->num_discovery_session_changed_calls());
+
   std::unique_ptr<FakeBluetoothDiscoveryDelegate> delegate1 = StartDiscovery();
   InvokePendingStartScanCallback(/*success=*/true);
   EXPECT_TRUE(delegate1->IsMojoPipeConnected());
   EXPECT_EQ(1u, delegate1->num_start_callbacks());
   EXPECT_TRUE(delegate1->pairing_handler().is_connected());
+  // Going from 0 to 1 discovery sessions should notify observers.
+  EXPECT_TRUE(observer->has_at_least_one_discovery_session());
+  EXPECT_EQ(1, observer->num_discovery_session_changed_calls());
 
   std::unique_ptr<FakeBluetoothDiscoveryDelegate> delegate2 = StartDiscovery();
   EXPECT_TRUE(delegate2->IsMojoPipeConnected());
   EXPECT_EQ(1u, delegate2->num_start_callbacks());
   EXPECT_TRUE(delegate2->pairing_handler().is_connected());
+  // Going from 1 to 1+ discovery sessions should not notify observers.
+  EXPECT_TRUE(observer->has_at_least_one_discovery_session());
+  EXPECT_EQ(1, observer->num_discovery_session_changed_calls());
 
   // Simulate first client attempting to pair with an unknown device_id.
   absl::optional<mojom::PairingResult> result;
@@ -452,6 +475,9 @@ TEST_F(DiscoverySessionManagerImplTest, MultipleClientsAttemptPairing) {
   EXPECT_FALSE(delegate1->IsMojoPipeConnected());
   EXPECT_FALSE(delegate1->pairing_handler().is_connected());
   EXPECT_FALSE(pairing_delegate2->IsMojoPipeConnected());
+  // Going from 1+ to 1 discovery sessions should not notify observers.
+  EXPECT_TRUE(observer->has_at_least_one_discovery_session());
+  EXPECT_EQ(1, observer->num_discovery_session_changed_calls());
 
   // Simulate second client pairing with a known device_id.
   std::string device_id2;
@@ -471,6 +497,9 @@ TEST_F(DiscoverySessionManagerImplTest, MultipleClientsAttemptPairing) {
   EXPECT_FALSE(delegate2->pairing_handler().is_connected());
   EXPECT_FALSE(pairing_delegate3->IsMojoPipeConnected());
   InvokePendingStopScanCallback(/*success=*/true);
+  // Going from 1 to 0 discovery sessions should notify observers.
+  EXPECT_FALSE(observer->has_at_least_one_discovery_session());
+  EXPECT_EQ(2, observer->num_discovery_session_changed_calls());
 }
 
 TEST_F(DiscoverySessionManagerImplTest, StartDiscoverySynchronous) {
@@ -491,6 +520,24 @@ TEST_F(DiscoverySessionManagerImplTest, StartDiscoverySynchronous) {
   // disconnected, it should not have received a callback.
   InvokePendingStopScanCallback(/*success=*/true);
   EXPECT_EQ(0u, delegate->num_stop_callbacks());
+}
+
+TEST_F(DiscoverySessionManagerImplTest, DisconnectToStopObserving) {
+  std::unique_ptr<FakeDiscoverySessionStatusObserver> observer = Observe();
+
+  // Initially, observer would see the default state, which is 0 sessions.
+  EXPECT_FALSE(observer->has_at_least_one_discovery_session());
+  EXPECT_EQ(0, observer->num_discovery_session_changed_calls());
+
+  // Disconnect the Mojo pipe; this should stop observing.
+  observer->DisconnectMojoPipe();
+
+  // Add the first client and start discovery. The observer should not be
+  // notified since it is disconnected.
+  std::unique_ptr<FakeBluetoothDiscoveryDelegate> delegate1 = StartDiscovery();
+  InvokePendingStartScanCallback(/*success=*/true);
+  EXPECT_FALSE(observer->has_at_least_one_discovery_session());
+  EXPECT_EQ(0, observer->num_discovery_session_changed_calls());
 }
 
 }  // namespace bluetooth_config

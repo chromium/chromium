@@ -18,8 +18,8 @@ class FakeDiscoverySessionManager : public DiscoverySessionManager {
       DiscoveredDevicesProvider* discovered_devices_provider);
   ~FakeDiscoverySessionManager() override;
 
-  // Sets whether a discovery session is active and notifies delegates of the
-  // change.
+  // Sets whether a discovery session is active and notifies delegates and
+  // observers of the change.
   void SetIsDiscoverySessionActive(bool is_active);
 
   using DiscoverySessionManager::HasAtLeastOneDiscoveryClient;

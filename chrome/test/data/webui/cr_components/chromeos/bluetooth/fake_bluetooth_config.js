@@ -12,7 +12,7 @@ import 'chrome://resources/mojo/url/mojom/url.mojom-lite.js';
 import 'chrome://resources/mojo/chromeos/services/bluetooth_config/public/mojom/cros_bluetooth_config.mojom-lite.js';
 
 import {stringToMojoString16} from 'chrome://resources/cr_components/chromeos/bluetooth/bluetooth_utils.js';
-import {assertFalse, assertTrue} from '../../../chai_assert.js';
+import {assertFalse, assertNotReached, assertTrue} from '../../../chai_assert.js';
 import {FakeDevicePairingHandler} from './fake_device_pairing_handler.js';
 
 const mojom = chromeos.bluetoothConfig.mojom;
@@ -132,6 +132,16 @@ export class FakeBluetoothConfig {
    */
   observeDeviceStatusChanges(observer) {
     this.bluetooth_device_status_observers_.push(observer);
+  }
+
+  /**
+   * @override
+   * @param {!chromeos.bluetoothConfig.mojom.DiscoverySessionStatusObserverInterface}
+   *     observer
+   */
+  observeDiscoverySessionStatusChanges(observer) {
+    // This method left unimplemented while the observer is not used in JS.
+    assertNotReached();
   }
 
 

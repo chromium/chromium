@@ -15,6 +15,7 @@
 #include "chromeos/services/bluetooth_config/device_name_manager_impl.h"
 #include "chromeos/services/bluetooth_config/fake_bluetooth_device_status_observer.h"
 #include "chromeos/services/bluetooth_config/fake_bluetooth_discovery_delegate.h"
+#include "chromeos/services/bluetooth_config/fake_discovery_session_status_observer.h"
 #include "chromeos/services/bluetooth_config/fake_fast_pair_delegate.h"
 #include "chromeos/services/bluetooth_config/fake_system_properties_observer.h"
 #include "chromeos/services/bluetooth_config/initializer_impl.h"
@@ -159,6 +160,14 @@ TEST_F(CrosBluetoothConfigTest, CallBluetoothDeviceStatusApiFunction) {
   mojo::Remote<mojom::CrosBluetoothConfig> remote = BindToInterface();
   FakeBluetoothDeviceStatusObserver fake_observer;
   remote->ObserveDeviceStatusChanges(fake_observer.GeneratePendingRemote());
+  base::RunLoop().RunUntilIdle();
+}
+
+TEST_F(CrosBluetoothConfigTest, CallDiscoverySessionStatusApiFunction) {
+  mojo::Remote<mojom::CrosBluetoothConfig> remote = BindToInterface();
+  FakeDiscoverySessionStatusObserver fake_observer;
+  remote->ObserveDiscoverySessionStatusChanges(
+      fake_observer.GeneratePendingRemote());
   base::RunLoop().RunUntilIdle();
 }
 

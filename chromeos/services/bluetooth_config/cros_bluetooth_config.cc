@@ -87,6 +87,12 @@ void CrosBluetoothConfig::ObserveDeviceStatusChanges(
       std::move(observer));
 }
 
+void CrosBluetoothConfig::ObserveDiscoverySessionStatusChanges(
+    mojo::PendingRemote<mojom::DiscoverySessionStatusObserver> observer) {
+  discovery_session_manager_->ObserveDiscoverySessionStatusChanges(
+      std::move(observer));
+}
+
 void CrosBluetoothConfig::SetBluetoothEnabledState(bool enabled) {
   bluetooth_power_controller_->SetBluetoothEnabledState(enabled);
 }

@@ -58,6 +58,9 @@ class CrosBluetoothConfig : public mojom::CrosBluetoothConfig {
   void ObserveDeviceStatusChanges(
       mojo::PendingRemote<mojom::BluetoothDeviceStatusObserver> observer)
       override;
+  void ObserveDiscoverySessionStatusChanges(
+      mojo::PendingRemote<mojom::DiscoverySessionStatusObserver> observer)
+      override;
   void SetBluetoothEnabledState(bool enabled) override;
   void StartDiscovery(
       mojo::PendingRemote<mojom::BluetoothDiscoveryDelegate> delegate) override;
