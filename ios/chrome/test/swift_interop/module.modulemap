@@ -18,3 +18,9 @@ module Namespace {
   requires cplusplus
 }
 
+
+module Pointer {
+  header "pointer/pointer_returner.h"
+  requires cplusplus
+}
+
