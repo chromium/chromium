@@ -333,21 +333,21 @@ public class AppBannerManagerTest {
 
     private void waitUntilAmbientBadgePromptAppears(
             ChromeActivityTestRule<? extends ChromeActivity> rule) {
-        if (ChromeFeatureList.isEnabled(ChromeFeatureList.INSTALLABLE_AMBIENT_BADGE_INFOBAR)) {
-            CriteriaHelper.pollUiThread(() -> {
-                List<InfoBar> infobars = rule.getInfoBars();
-                Criteria.checkThat(infobars.size(), Matchers.is(1));
-                Criteria.checkThat(
-                        infobars.get(0), Matchers.instanceOf(InstallableAmbientBadgeInfoBar.class));
-            });
-        } else if (ChromeFeatureList.isEnabled(
-                           ChromeFeatureList.INSTALLABLE_AMBIENT_BADGE_MESSAGE)) {
+        if (ChromeFeatureList.isEnabled(ChromeFeatureList.INSTALLABLE_AMBIENT_BADGE_MESSAGE)) {
             WindowAndroid windowAndroid = rule.getActivity().getWindowAndroid();
             CriteriaHelper.pollUiThread(() -> {
                 Criteria.checkThat(
                         MessagesTestHelper.getMessageCount(windowAndroid), Matchers.is(1));
                 Criteria.checkThat(MessagesTestHelper.getMessageIdentifier(windowAndroid, 0),
                         Matchers.is(MessageIdentifier.INSTALLABLE_AMBIENT_BADGE));
+            });
+        } else if (ChromeFeatureList.isEnabled(
+                           ChromeFeatureList.INSTALLABLE_AMBIENT_BADGE_INFOBAR)) {
+            CriteriaHelper.pollUiThread(() -> {
+                List<InfoBar> infobars = rule.getInfoBars();
+                Criteria.checkThat(infobars.size(), Matchers.is(1));
+                Criteria.checkThat(
+                        infobars.get(0), Matchers.instanceOf(InstallableAmbientBadgeInfoBar.class));
             });
         }
     }

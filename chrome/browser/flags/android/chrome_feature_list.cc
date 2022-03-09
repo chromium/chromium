@@ -375,8 +375,8 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &switches::kSyncUseSessionsUnregisterDelay,
     &subresource_filter::kSafeBrowsingSubresourceFilter,
     &video_tutorials::features::kVideoTutorials,
-    &webapps::features::kInstallableAmbientBadgeMessage,
     &webapps::features::kInstallableAmbientBadgeInfoBar,
+    &webapps::features::kInstallableAmbientBadgeMessage,
 };
 
 const base::Feature* FindFeatureExposedToJava(const std::string& feature_name) {
