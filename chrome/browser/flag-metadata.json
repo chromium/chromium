@@ -2278,8 +2278,8 @@
   },
   {
     "name": "enable-idle-inhibit",
-    "owners": [ "aswolfers" ],
-    "expiry_milestone": 100
+    "owners": [ "aswolfers", "chromeos-gfx-compositor@google.com" ],
+    "expiry_milestone": 103
   },
   {
     "name": "enable-ikev2-vpn",
