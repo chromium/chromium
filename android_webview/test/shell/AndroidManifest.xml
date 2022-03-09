@@ -69,6 +69,11 @@
              android:exported="false" />
     <meta-data android:name="org.chromium.content.browser.NUM_PRIVILEGED_SERVICES"
                android:value="0"/>
+    <!-- JS Execution Sandbox -->
+    <service android:name="org.chromium.android_webview.js.renderer.JsSandboxService"
+             android:process=":js_sandboxed_process0"
+             android:isolatedProcess="true"
+             android:exported="false" />
     <!-- See AwSecondBrowserProcessTest -->
     <service android:name="org.chromium.android_webview.test.SecondBrowserProcess"
              android:process=":second_browser_process"

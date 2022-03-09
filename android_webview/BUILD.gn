@@ -731,6 +731,33 @@ android_library("common_platform_services_java") {
   jar_excluded_patterns = [ "*/PlatformServiceBridgeImpl.class" ]
 }
 
+android_aidl("js_sandbox_aidl") {
+  import_include = [ "java/src" ]
+  sources = [
+    "java/src/org/chromium/android_webview/js/common/IJsSandboxContext.aidl",
+    "java/src/org/chromium/android_webview/js/common/IJsSandboxContextCallback.aidl",
+    "java/src/org/chromium/android_webview/js/common/IJsSandboxService.aidl",
+  ]
+}
+
+android_library("js_sandbox_aidl_java") {
+  srcjar_deps = [ ":js_sandbox_aidl" ]
+}
+
+android_library("js_sandbox_java") {
+  sources = [
+    "java/src/org/chromium/android_webview/js/browser/AwJsContext.java",
+    "java/src/org/chromium/android_webview/js/browser/AwJsSandbox.java",
+    "java/src/org/chromium/android_webview/js/renderer/JsSandboxContext.java",
+    "java/src/org/chromium/android_webview/js/renderer/JsSandboxService.java",
+  ]
+
+  deps = [
+    ":js_sandbox_aidl_java",
+    "//base:base_java",
+  ]
+}
+
 # This target compiles the implementation of PlatformServiceBridge for AOSP targets.
 android_library("platform_service_bridge_upstream_implementation_java") {
   sources = [ "java/src/org/chromium/android_webview/common/PlatformServiceBridgeImpl.java" ]
