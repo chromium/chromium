@@ -9,10 +9,7 @@
 
 #include "base/types/strong_alias.h"
 #include "base/values.h"
-
-namespace browsing_topics {
-using Topic = base::StrongAlias<class TopicTag, int>;
-}
+#include "components/browsing_topics/common/common_types.h"
 
 namespace privacy_sandbox {
 // Contains a topic and a name in the current locale.

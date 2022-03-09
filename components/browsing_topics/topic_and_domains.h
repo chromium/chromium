@@ -13,8 +13,6 @@
 
 namespace browsing_topics {
 
-using Topic = base::StrongAlias<class TopicTag, int>;
-
 // Contains a topic and a set of hashed domains that has observed the associated
 // topic (i.e. the Topics API was used within the domains's context, and the
 // page is related to that topic.)

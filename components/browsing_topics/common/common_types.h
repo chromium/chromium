@@ -15,6 +15,7 @@ namespace browsing_topics {
 
 using HashedHost = base::StrongAlias<class HashedHostTag, int64_t>;
 using HashedDomain = base::StrongAlias<class HashedHostTag, int64_t>;
+using Topic = base::StrongAlias<class TopicTag, int>;
 
 struct COMPONENT_EXPORT(BROWSING_TOPICS_COMMON) ApiUsageContext {
   HashedDomain hashed_context_domain;

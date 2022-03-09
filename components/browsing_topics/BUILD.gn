@@ -4,6 +4,9 @@
 
 source_set("browsing_topics") {
   sources = [
+    "browsing_topics_service.h",
+    "browsing_topics_service_impl.cc",
+    "browsing_topics_service_impl.h",
     "epoch_topics.cc",
     "epoch_topics.h",
     "topic_and_domains.cc",
@@ -15,6 +18,8 @@ source_set("browsing_topics") {
   deps = [
     "//base",
     "//components/browsing_topics/common:common",
+    "//components/keyed_service/core",
+    "//components/privacy_sandbox",
     "//crypto",
     "//third_party/blink/public/common",
   ]

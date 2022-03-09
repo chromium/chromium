@@ -28,6 +28,7 @@ source_set("privacy_sandbox") {
 
   deps = [
     ":privacy_sandbox_prefs",
+    "//components/browsing_topics/common:common",
     "//components/content_settings/core/browser",
     "//components/content_settings/core/common",
     "//components/keyed_service/core:core",
