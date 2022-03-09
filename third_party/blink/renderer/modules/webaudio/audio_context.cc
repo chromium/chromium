@@ -494,6 +494,11 @@ MediaStreamAudioDestinationNode* AudioContext::createMediaStreamDestination(
 void AudioContext::NotifySourceNodeStart() {
   DCHECK(IsMainThread());
 
+  // Do nothing when the context is already closed. (crbug.com/1292101)
+  if (ContextState() == AudioContextState::kClosed) {
+    return;
+  }
+
   source_node_started_ = true;
   if (!user_gesture_required_) {
     return;
