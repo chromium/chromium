@@ -27,6 +27,13 @@ unsigned int aom_avg_4x4_c(const uint8_t*, int p);
 unsigned int aom_avg_8x8_c(const uint8_t*, int p);
 #define aom_avg_8x8 aom_avg_8x8_c
 
+void aom_avg_8x8_quad_c(const uint8_t* s,
+                        int p,
+                        int x16_idx,
+                        int y16_idx,
+                        int* avg);
+#define aom_avg_8x8_quad aom_avg_8x8_quad_c
+
 void aom_blend_a64_hmask_c(uint8_t* dst,
                            uint32_t dst_stride,
                            const uint8_t* src0,
@@ -1831,6 +1838,14 @@ void aom_paeth_predictor_8x8_c(uint8_t* dst,
                                const uint8_t* above,
                                const uint8_t* left);
 #define aom_paeth_predictor_8x8 aom_paeth_predictor_8x8_c
+
+void aom_pixel_scale_c(const int16_t* src_diff,
+                       ptrdiff_t src_stride,
+                       int16_t* coeff,
+                       int log_scale,
+                       int h8,
+                       int w8);
+#define aom_pixel_scale aom_pixel_scale_c
 
 void aom_quantize_b_c(const tran_low_t* coeff_ptr,
                       intptr_t n_coeffs,

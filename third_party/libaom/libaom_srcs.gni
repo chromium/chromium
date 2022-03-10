@@ -368,6 +368,11 @@ aom_av1_encoder_sources = [
   "//third_party/libaom/source/libaom/third_party/vector/vector.h",
 ]
 
+aom_av1_rc_qmode_sources = [
+  "//third_party/libaom/source/libaom/av1/ratectrl_qmode.cc",
+  "//third_party/libaom/source/libaom/av1/ratectrl_qmode.h",
+]
+
 aom_dsp_common_asm_sse2 = [
   "//third_party/libaom/source/libaom/aom_dsp/x86/aom_high_subpixel_8t_sse2.asm",
   "//third_party/libaom/source/libaom/aom_dsp/x86/aom_high_subpixel_bilinear_sse2.asm",

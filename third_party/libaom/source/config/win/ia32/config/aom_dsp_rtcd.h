@@ -29,6 +29,27 @@ unsigned int aom_avg_8x8_c(const uint8_t*, int p);
 unsigned int aom_avg_8x8_sse2(const uint8_t*, int p);
 #define aom_avg_8x8 aom_avg_8x8_sse2
 
+void aom_avg_8x8_quad_c(const uint8_t* s,
+                        int p,
+                        int x16_idx,
+                        int y16_idx,
+                        int* avg);
+void aom_avg_8x8_quad_sse2(const uint8_t* s,
+                           int p,
+                           int x16_idx,
+                           int y16_idx,
+                           int* avg);
+void aom_avg_8x8_quad_avx2(const uint8_t* s,
+                           int p,
+                           int x16_idx,
+                           int y16_idx,
+                           int* avg);
+RTCD_EXTERN void (*aom_avg_8x8_quad)(const uint8_t* s,
+                                     int p,
+                                     int x16_idx,
+                                     int y16_idx,
+                                     int* avg);
+
 void aom_blend_a64_hmask_c(uint8_t* dst,
                            uint32_t dst_stride,
                            const uint8_t* src0,
@@ -4348,6 +4369,20 @@ RTCD_EXTERN void (*aom_paeth_predictor_8x8)(uint8_t* dst,
                                             const uint8_t* above,
                                             const uint8_t* left);
 
+void aom_pixel_scale_c(const int16_t* src_diff,
+                       ptrdiff_t src_stride,
+                       int16_t* coeff,
+                       int log_scale,
+                       int h8,
+                       int w8);
+void aom_pixel_scale_sse2(const int16_t* src_diff,
+                          ptrdiff_t src_stride,
+                          int16_t* coeff,
+                          int log_scale,
+                          int h8,
+                          int w8);
+#define aom_pixel_scale aom_pixel_scale_sse2
+
 void aom_quantize_b_c(const tran_low_t* coeff_ptr,
                       intptr_t n_coeffs,
                       const int16_t* zbin_ptr,
@@ -8342,6 +8377,9 @@ static void setup_rtcd_internal(void) {
 
   (void)flags;
 
+  aom_avg_8x8_quad = aom_avg_8x8_quad_sse2;
+  if (flags & HAS_AVX2)
+    aom_avg_8x8_quad = aom_avg_8x8_quad_avx2;
   aom_blend_a64_hmask = aom_blend_a64_hmask_c;
   if (flags & HAS_SSE4_1)
     aom_blend_a64_hmask = aom_blend_a64_hmask_sse4_1;
