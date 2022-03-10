@@ -9,7 +9,7 @@
 
 #include <string>
 
-#include "components/user_notes/browser/user_notes_ui_delegate.h"
+#include "components/user_notes/interfaces/user_notes_ui_delegate.h"
 
 namespace user_notes {
 

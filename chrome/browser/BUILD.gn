@@ -6227,6 +6227,7 @@ static_library("browser") {
     deps += [
       "//components/user_notes:features",
       "//components/user_notes/browser",
+      "//components/user_notes/interfaces",
       "//components/user_notes/model",
     ]
   }

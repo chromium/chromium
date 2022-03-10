@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_USER_NOTES_BROWSER_USER_NOTES_UI_DELEGATE_H_
-#define COMPONENTS_USER_NOTES_BROWSER_USER_NOTES_UI_DELEGATE_H_
+#ifndef COMPONENTS_USER_NOTES_INTERFACES_USER_NOTES_UI_DELEGATE_H_
+#define COMPONENTS_USER_NOTES_INTERFACES_USER_NOTES_UI_DELEGATE_H_
 
 #include <string>
 
@@ -31,4 +31,4 @@ class UserNotesUIDelegate {
 
 }  // namespace user_notes
 
-#endif  // COMPONENTS_USER_NOTES_BROWSER_USER_NOTES_UI_DELEGATE_H_
+#endif  // COMPONENTS_USER_NOTES_INTERFACES_USER_NOTES_UI_DELEGATE_H_

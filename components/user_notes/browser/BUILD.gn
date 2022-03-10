@@ -10,12 +10,12 @@ static_library("browser") {
     "user_note_service.h",
     "user_notes_manager.cc",
     "user_notes_manager.h",
-    "user_notes_ui_delegate.h",
   ]
 
   deps = [
     "//components/keyed_service/core",
     "//components/user_notes:features",
+    "//components/user_notes/interfaces",
     "//content/public/browser",
   ]
 }
