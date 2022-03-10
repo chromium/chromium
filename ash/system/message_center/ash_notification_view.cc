@@ -86,12 +86,13 @@ constexpr int kMainRightViewVerticalSpacing = 4;
 // action buttons.
 constexpr gfx::Insets kMainRightViewChildPadding(0, 14, 0, 0);
 
-constexpr gfx::Insets kImageContainerPadding(12, 0, 0, 0);
+constexpr gfx::Insets kImageContainerPadding(12, 14, 0, 0);
 
 constexpr gfx::Insets kActionButtonsRowPadding(16, 22, 0, 4);
 constexpr int kActionsRowHorizontalSpacing = 8;
 
 constexpr int kContentRowHorizontalSpacing = 16;
+constexpr int kHeaderLeftContentContainerVerticalSpacing = 8;
 constexpr int kLeftContentVerticalSpacing = 4;
 constexpr int kTitleRowSpacing = 6;
 
@@ -341,7 +342,8 @@ AshNotificationView::AshNotificationView(
               views::Builder<views::BoxLayoutView>()
                   .SetID(kHeaderLeftContent)
                   .SetOrientation(Orientation::kVertical)
-                  .SetBetweenChildSpacing(kLeftContentVerticalSpacing)
+                  .SetBetweenChildSpacing(
+                      kHeaderLeftContentContainerVerticalSpacing)
                   .SetProperty(views::kFlexBehaviorKey,
                                views::FlexSpecification(
                                    views::MinimumFlexSizeRule::kScaleToZero,
@@ -737,11 +739,9 @@ void AshNotificationView::UpdateViewForExpandedState(bool expanded) {
   // Custom padding for app icon and expand button. These 2 views should always
   // use the same padding value so that they are vertical aligned.
   app_icon_view_->SetBorder(views::CreateEmptyBorder(
-      expanded ? kAppIconExpandButtonExpandedPadding
-               : kAppIconExpandButtonCollapsedPadding));
+      expanded ? gfx::Insets() : kAppIconExpandButtonCollapsedPadding));
   expand_button_container_->SetInteriorMargin(
-      expanded ? kAppIconExpandButtonExpandedPadding
-               : kAppIconExpandButtonCollapsedPadding);
+      expanded ? gfx::Insets() : kAppIconExpandButtonCollapsedPadding);
 
   expand_button_->SetExpanded(expanded);
 

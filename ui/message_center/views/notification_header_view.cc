@@ -38,6 +38,7 @@ namespace message_center {
 namespace {
 
 constexpr int kHeaderHeight = 32;
+constexpr int kHeaderHeightInAsh = 26;
 
 // The padding between controls in the header.
 constexpr gfx::Insets kHeaderSpacing(0, 2, 0, 2);
@@ -223,7 +224,7 @@ NotificationHeaderView::NotificationHeaderView(PressedCallback callback)
   spacer->SetPreferredSize(
       gfx::Size(kControlButtonSpacing, kInnerHeaderHeight));
   spacer->SetProperty(views::kFlexBehaviorKey, kSpacerFlex);
-  AddChildView(std::move(spacer));
+  spacer_ = AddChildView(std::move(spacer));
 
   SetPreferredSize(gfx::Size(kNotificationWidth, kHeaderHeight));
 
@@ -381,6 +382,12 @@ void NotificationHeaderView::SetIsInAshNotificationView(
   is_in_ash_notification_ = is_in_ash_notification;
   app_icon_view_->SetVisible(!is_in_ash_notification_);
   expand_button_->SetVisible(!is_in_ash_notification_);
+
+  // HeaderView size is different for ash notifications.
+  spacer_->SetPreferredSize(
+      gfx::Size(kControlButtonSpacing,
+                kHeaderHeightInAsh - kHeaderOuterPadding.height()));
+  SetPreferredSize(gfx::Size(kNotificationWidth, kHeaderHeightInAsh));
 }
 
 const std::u16string& NotificationHeaderView::app_name_for_testing() const {

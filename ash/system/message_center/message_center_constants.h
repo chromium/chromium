@@ -47,8 +47,7 @@ constexpr int kNotificationExpandButtonCornerRadius = 12;
 constexpr int kNotificationExpandButtonChevronIconSize = 16;
 constexpr int kNotificationExpandButtonLabelFontSize = 12;
 
-constexpr gfx::Insets kAppIconExpandButtonExpandedPadding(2, 0, 0, 0);
-constexpr gfx::Insets kAppIconExpandButtonCollapsedPadding(12, 0, 0, 0);
+constexpr gfx::Insets kAppIconExpandButtonCollapsedPadding(10, 0, 0, 0);
 
 constexpr int kControlButtonsContainerMinimumHeight = 20;
 constexpr gfx::Insets kControlButtonsContainerExpandedPadding(6, 0, 2, 0);

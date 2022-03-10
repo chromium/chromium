@@ -116,6 +116,7 @@ class MESSAGE_CENTER_EXPORT NotificationHeaderView : public views::Button {
   raw_ptr<views::ImageView> app_icon_view_ = nullptr;
   raw_ptr<views::Label> app_name_view_ = nullptr;
   raw_ptr<views::View> detail_views_ = nullptr;
+  raw_ptr<views::View> spacer_ = nullptr;
   raw_ptr<views::Label> summary_text_divider_ = nullptr;
   raw_ptr<views::Label> summary_text_view_ = nullptr;
   raw_ptr<views::Label> timestamp_divider_ = nullptr;
