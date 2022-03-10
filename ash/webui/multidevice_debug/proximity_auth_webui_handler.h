@@ -13,10 +13,6 @@
 #include "content/public/browser/web_ui_message_handler.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
-namespace base {
-class ListValue;
-}
-
 namespace ash {
 
 namespace multidevice {
@@ -57,7 +53,7 @@ class ProximityAuthWebUIHandler
   void ForceEnrollment(const base::ListValue* args);
   void ForceDeviceSync(const base::ListValue* args);
 
-  std::unique_ptr<base::DictionaryValue> RemoteDeviceToDictionary(
+  base::Value::Dict RemoteDeviceToDictionary(
       const multidevice::RemoteDeviceRef& remote_device);
 
   void OnForceEnrollmentNow(bool success);
