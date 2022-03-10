@@ -424,7 +424,7 @@ bool IsModelDownloadingEnabled() {
 bool IsUnrestrictedModelDownloadingEnabled() {
   return base::GetFieldTrialParamByFeatureAsBool(
       kOptimizationGuideModelDownloading, "unrestricted_model_downloading",
-      false);
+      true);
 }
 
 bool IsPageContentAnnotationEnabled() {
