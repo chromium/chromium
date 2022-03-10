@@ -9502,6 +9502,10 @@ if (!is_android && !is_fuchsia) {
       "//third_party/leveldatabase",
     ]
 
+    if (is_chromeos_ash) {
+      deps += [ "//chrome/browser/ash/crosapi:browser_util" ]
+    }
+
     data_deps = [
       "//testing:test_scripts_shared",
       "//testing/buildbot/filters:sync_integration_tests_filters",
@@ -9533,6 +9537,7 @@ if (!is_android && !is_fuchsia) {
     }
     if (is_chromeos_ash) {
       sources += [
+        "../browser/sync/test/integration/ash_lacros_sync_test.cc",
         "../browser/sync/test/integration/single_client_app_list_sync_test.cc",
         "../browser/sync/test/integration/single_client_arc_package_sync_test.cc",
         "../browser/sync/test/integration/single_client_os_preferences_sync_test.cc",

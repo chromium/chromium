@@ -367,6 +367,7 @@ void SyncTest::SetUpCommandLine(base::CommandLine* cl) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   cl->AppendSwitch(ash::switches::kIgnoreUserProfileMappingForTests);
   cl->AppendSwitch(ash::switches::kDisableArcOptInVerification);
+  cl->AppendSwitch(ash::switches::kDisableLacrosKeepAliveForTesting);
   arc::SetArcAvailableCommandLineForTesting(cl);
 #endif
 }
