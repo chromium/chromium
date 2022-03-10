@@ -56,13 +56,15 @@ class InfobarBadgeTabHelper
   friend class web::WebStateUserData<InfobarBadgeTabHelper>;
   explicit InfobarBadgeTabHelper(web::WebState* web_state);
 
-  // Notifies the tab helper to reset state for added or removed infobars with
-  // |infobar_type|.  Only called for infobars that support badges.
-  void ResetStateForAddedInfobar(InfobarType infobar_type);
-  void ResetStateForRemovedInfobar(InfobarType infobar_type);
+  // Registers/unregisters the infobar to the tab helper for observation of its
+  // activities.
+  void RegisterInfobar(infobars::InfoBar* infobar);
+  void UnregisterInfobar(infobars::InfoBar* infobar);
   // Notifies the tab helper that an infobar with |type| was accepted or
   // reverted.
   void OnInfobarAcceptanceStateChanged(InfobarType infobar_type, bool accepted);
+  // Update the badges displayed in the location bar.
+  void UpdateBadgesShown();
 
   // Helper object that listens for accept and revert events for an InfoBarIOS.
   class InfobarAcceptanceObserver : public InfoBarIOS::Observer {
@@ -126,6 +128,8 @@ class InfobarBadgeTabHelper
   web::WebState* web_state_;
   // Map storing the BadgeState for each InfobarType.
   std::map<InfobarType, BadgeState> infobar_badge_states_;
+  // Vector storing infobars that are added when prerendering.
+  std::vector<infobars::InfoBar*> infobars_added_when_prerendering_;
 
   WEB_STATE_USER_DATA_KEY_DECL();
 };

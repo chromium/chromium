@@ -34,6 +34,13 @@ InfobarBadgeTabHelper::~InfobarBadgeTabHelper() = default;
 void InfobarBadgeTabHelper::SetDelegate(
     id<InfobarBadgeTabHelperDelegate> delegate) {
   delegate_ = delegate;
+  // Prerendering complete; register infobars using delegate.
+  for (size_t index = 0; index < infobars_added_when_prerendering_.size();
+       ++index) {
+    RegisterInfobar(infobars_added_when_prerendering_.at(index));
+  }
+  infobars_added_when_prerendering_.clear();
+  UpdateBadgesShown();
 }
 
 void InfobarBadgeTabHelper::UpdateBadgeForInfobarAccepted(
@@ -58,7 +65,7 @@ void InfobarBadgeTabHelper::UpdateBadgeForInfobarBannerPresented(
   if (infobar_badge_states_.find(infobar_type) == infobar_badge_states_.end())
     return;
   infobar_badge_states_[infobar_type] |= BadgeStatePresented;
-  [delegate_ updateBadgesShownForWebState:web_state_];
+  UpdateBadgesShown();
 }
 
 void InfobarBadgeTabHelper::UpdateBadgeForInfobarBannerDismissed(
@@ -66,7 +73,7 @@ void InfobarBadgeTabHelper::UpdateBadgeForInfobarBannerDismissed(
   if (infobar_badge_states_.find(infobar_type) == infobar_badge_states_.end())
     return;
   infobar_badge_states_[infobar_type] &= ~BadgeStatePresented;
-  [delegate_ updateBadgesShownForWebState:web_state_];
+  UpdateBadgesShown();
 }
 
 std::map<InfobarType, BadgeState> InfobarBadgeTabHelper::GetInfobarBadgeStates()
@@ -76,16 +83,37 @@ std::map<InfobarType, BadgeState> InfobarBadgeTabHelper::GetInfobarBadgeStates()
 
 #pragma mark Private
 
-void InfobarBadgeTabHelper::ResetStateForAddedInfobar(
-    InfobarType infobar_type) {
-  infobar_badge_states_[infobar_type] = BadgeStateNone;
-  [delegate_ updateBadgesShownForWebState:web_state_];
+void InfobarBadgeTabHelper::RegisterInfobar(infobars::InfoBar* infobar) {
+  // Handling the case where an infobar is added during prerendering.
+  if (!delegate_) {
+    infobars_added_when_prerendering_.push_back(infobar);
+    return;
+  }
+  // All other cases.
+  InfobarType infobar_type = GetInfobarType(infobar);
+  if ([delegate_ badgeSupportedForInfobarType:infobar_type]) {
+    infobar_badge_states_[infobar_type] = BadgeStateNone;
+    infobar_accept_observer_.scoped_observations().AddObservation(
+        static_cast<InfoBarIOS*>(infobar));
+  }
 }
 
-void InfobarBadgeTabHelper::ResetStateForRemovedInfobar(
-    InfobarType infobar_type) {
-  infobar_badge_states_.erase(infobar_type);
-  [delegate_ updateBadgesShownForWebState:web_state_];
+void InfobarBadgeTabHelper::UnregisterInfobar(infobars::InfoBar* infobar) {
+  // Handling the case where an infobar is removed during prerendering.
+  if (!delegate_) {
+    auto pos = std::find(infobars_added_when_prerendering_.begin(),
+                         infobars_added_when_prerendering_.end(), infobar);
+    if (pos != infobars_added_when_prerendering_.end())
+      infobars_added_when_prerendering_.erase(pos);
+    return;
+  }
+  // All other cases.
+  InfobarType infobar_type = GetInfobarType(infobar);
+  if ([delegate_ badgeSupportedForInfobarType:infobar_type]) {
+    infobar_badge_states_.erase(infobar_type);
+    infobar_accept_observer_.scoped_observations().RemoveObservation(
+        static_cast<InfoBarIOS*>(infobar));
+  }
 }
 
 void InfobarBadgeTabHelper::OnInfobarAcceptanceStateChanged(
@@ -98,6 +126,10 @@ void InfobarBadgeTabHelper::OnInfobarAcceptanceStateChanged(
   } else {
     infobar_badge_states_[infobar_type] &= ~BadgeStateAccepted;
   }
+  UpdateBadgesShown();
+}
+
+void InfobarBadgeTabHelper::UpdateBadgesShown() {
   [delegate_ updateBadgesShownForWebState:web_state_];
 }
 
@@ -141,29 +173,21 @@ InfobarBadgeTabHelper::InfobarManagerObserver::~InfobarManagerObserver() =
 
 void InfobarBadgeTabHelper::InfobarManagerObserver::OnInfoBarAdded(
     infobars::InfoBar* infobar) {
-  if ([tab_helper_->delegate_
-          badgeSupportedForInfobarType:GetInfobarType(infobar)]) {
-    tab_helper_->ResetStateForAddedInfobar(GetInfobarType(infobar));
-    infobar_accept_observer_->scoped_observations().AddObservation(
-        static_cast<InfoBarIOS*>(infobar));
-  }
+  tab_helper_->RegisterInfobar(infobar);
+  tab_helper_->UpdateBadgesShown();
 }
 
 void InfobarBadgeTabHelper::InfobarManagerObserver::OnInfoBarRemoved(
     infobars::InfoBar* infobar,
     bool animate) {
-  if ([tab_helper_->delegate_
-          badgeSupportedForInfobarType:GetInfobarType(infobar)]) {
-    tab_helper_->ResetStateForRemovedInfobar(GetInfobarType(infobar));
-    infobar_accept_observer_->scoped_observations().RemoveObservation(
-        static_cast<InfoBarIOS*>(infobar));
-  }
+  tab_helper_->UnregisterInfobar(infobar);
+  tab_helper_->UpdateBadgesShown();
 }
 
 void InfobarBadgeTabHelper::InfobarManagerObserver::OnInfoBarReplaced(
     infobars::InfoBar* old_infobar,
     infobars::InfoBar* new_infobar) {
-  // New permission infobar in the same tab should keep preserve previous
+  // New permission infobar in the same tab should keep preserving previous
   // states.
   if (GetInfobarType(old_infobar) == InfobarType::kInfobarTypePermissions &&
       GetInfobarType(new_infobar) == InfobarType::kInfobarTypePermissions) {

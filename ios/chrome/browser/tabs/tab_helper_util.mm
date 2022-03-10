@@ -207,8 +207,9 @@ void AttachTabHelpers(web::WebState* web_state, bool for_prerender) {
                                          web_state->GetStableIdentifier());
     PagePlaceholderTabHelper::CreateForWebState(web_state);
     PrintTabHelper::CreateForWebState(web_state);
-    InfobarBadgeTabHelper::CreateForWebState(web_state);
   }
+
+  InfobarBadgeTabHelper::CreateForWebState(web_state);
 
   if (base::FeatureList::IsEnabled(kSharedHighlightingIOS)) {
     LinkToTextTabHelper::CreateForWebState(web_state);
