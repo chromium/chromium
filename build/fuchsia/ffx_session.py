@@ -40,6 +40,9 @@ class FfxRunner():
   def _run_repair_command(self, output):
     """Scans `output` for a self-repair command to run and, if found, runs it.
 
+    If logging is enabled, `ffx` is asked to emit its own logs to the log
+    directory.
+
     Returns:
       True if a repair command was found and ran successfully. False otherwise.
     """
@@ -48,14 +51,31 @@ class FfxRunner():
     match = re.search('`ffx ([^`]+)`', output)
     if not match or len(match.groups()) != 1:
       return False  # No repair command found.
-    try:
-      self.run_ffx(match.groups()[0].split(), suppress_repair=True)
-    except subprocess.CalledProcessError as cpe:
-      return False  # Repair failed.
-    return True  # Repair succeeded.
+    args = match.groups()[0].split()
+    # Tell ffx to include the configuration file without prompting in case
+    # logging is enabled.
+    with self.scoped_config('doctor.record_config', 'true'):
+      # If the repair command is `ffx doctor` and logging is enabled, add the
+      # options to emit ffx logs to the logging directory.
+      if len(args) and args[0] == 'doctor' and \
+         self._log_manager.IsLoggingEnabled():
+        args.extend(
+            ('--record', '--output-dir', self._log_manager.GetLogDirectory()))
+      try:
+        self.run_ffx(args, suppress_repair=True)
+      except subprocess.CalledProcessError as cpe:
+        return False  # Repair failed.
+      return True  # Repair succeeded.
 
   def run_ffx(self, args, check=True, suppress_repair=False):
     """Runs `ffx` with the given arguments, waiting for it to exit.
+
+    If `ffx` exits with a non-zero exit code, the output is scanned for a
+    recommended repair command (e.g., "Run `ffx doctor --restart-daemon` for
+    further diagnostics."). If such a command is found, it is run and then the
+    original command is retried. This behavior can be suppressed via the
+    `suppress_repair` argument.
+
     Args:
       args: A sequence of arguments to ffx.
       check: If True, CalledProcessError is raised if ffx returns a non-zero
@@ -177,21 +197,6 @@ class FfxRunner():
         return
       # If not, explicitly set the original value.
       self.run_ffx(['config', 'set', name, old_value])
-
-  def stop_daemon(self):
-    """Stops the ffx daemon.
-
-    If an initial attempt to stop it via `ffx daemon stop` fails,
-    `ffx doctor --restart-daemon` is used to force a restart.
-    """
-    try:
-      self.run_ffx(['daemon', 'stop'])
-      return
-    except subprocess.CalledProcessError:
-      pass
-    logging.error('Failed to stop the damon. Attempting to restart it via ffx' +
-                  ' doctor')
-    self.run_ffx(['doctor', '--restart-daemon'], check=False)
 
   def list_targets(self):
     """Returns the (possibly empty) list of targets known to ffx.

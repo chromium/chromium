@@ -45,10 +45,6 @@ class EmuTarget(target.Target):
 
   def Start(self):
     if common.IsRunningUnattended():
-      # On the bots, we sometimes find that a previous ffx daemon instance is
-      # wedged, leading to failures. Reach out and stop an old daemon if there
-      # happens to be one.
-      self._ffx_runner.stop_daemon()
       if not self._HasNetworking():
         # Bots may accumulate stale manually-added targets with the same address
         # as the one to be added here. Preemtively remove any unknown targets at
@@ -107,8 +103,6 @@ class EmuTarget(target.Target):
     if not self._emu_process:
       logging.error('%s did not start' % (self.EMULATOR_NAME))
       return
-    if common.IsRunningUnattended():
-      self._ffx_runner.stop_daemon()
     returncode = self._emu_process.poll()
     if returncode == None:
       logging.info('Shutting down %s' % (self.EMULATOR_NAME))
