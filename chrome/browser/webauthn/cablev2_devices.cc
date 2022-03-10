@@ -349,9 +349,7 @@ std::vector<base::StringPiece> KnownDevices::Names() const {
   return names;
 }
 
-void AddPairing(PrefService* pref_service,
-                std::unique_ptr<Pairing> pairing,
-                base::span<const base::StringPiece> existing_names) {
+void AddPairing(Profile* profile, std::unique_ptr<Pairing> pairing) {
   // This is called when doing a QR-code pairing with a phone and the phone
   // sends long-term pairing information during the handshake. The pairing
   // information is saved in preferences for future operations.
@@ -360,8 +358,7 @@ void AddPairing(PrefService* pref_service,
     return;
   }
 
-  const std::string name = FindUniqueName(pairing->name, existing_names);
-  ListPrefUpdate update(pref_service, kWebAuthnCablePairingsPrefName);
+  ListPrefUpdate update(profile->GetPrefs(), kWebAuthnCablePairingsPrefName);
 
   // Find any existing entries with the same public key and replace them. The
   // handshake protocol requires the phone to prove possession of the public
@@ -374,7 +371,12 @@ void AddPairing(PrefService* pref_service,
   dict.SetKey(kPairingPrefPublicKey, base::Value(std::move(public_key_base64)));
   dict.SetKey(kPairingPrefTunnelServer,
               base::Value(pairing->tunnel_server_domain));
-  dict.SetKey(kPairingPrefName, base::Value(std::move(name)));
+  // `Names` is called without calling `MergeDevices` because that function will
+  // discard linked entries with duplicate public keys, which can hide some
+  // names that we would still like to avoid colliding with.
+  dict.SetKey(kPairingPrefName,
+              base::Value(FindUniqueName(
+                  pairing->name, KnownDevices::FromProfile(profile)->Names())));
   dict.SetKey(kPairingPrefContactId,
               base::Value(base::Base64Encode(pairing->contact_id)));
   dict.SetKey(kPairingPrefId, base::Value(base::Base64Encode(pairing->id)));

@@ -138,15 +138,7 @@ class CableLinkingEventHandler : public ProfileObserver {
       return;
     }
 
-    PrefService* const prefs = profile_->GetPrefs();
-
-    // `existing_names` is built without calling `cablev2::MergeDevices` because
-    // that function will discard linked entries with duplicate public keys,
-    // which can hide some names that we would still like to avoid colliding
-    // with.
-    std::unique_ptr<cablev2::KnownDevices> known_devices =
-        cablev2::KnownDevices::FromProfile(profile_);
-    cablev2::AddPairing(prefs, std::move(pairing), known_devices->Names());
+    cablev2::AddPairing(profile_, std::move(pairing));
   }
 
   // ProfileObserver:
