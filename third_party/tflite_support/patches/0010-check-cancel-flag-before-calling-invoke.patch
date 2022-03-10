@@ -1,0 +1,40 @@
+From 9569aa143e5b42c1bff1837e70f313d78113e909 Mon Sep 17 00:00:00 2001
+From: Robert Ogden <robertogden@chromium.org>
+Date: Thu, 10 Mar 2022 10:59:46 -0800
+Subject: [PATCH] check cancel flag before calling invoke
+
+---
+ .../cc/port/default/tflite_wrapper.cc                  | 10 ++++++----
+ 1 file changed, 6 insertions(+), 4 deletions(-)
+
+diff --git a/third_party/tflite_support/src/tensorflow_lite_support/cc/port/default/tflite_wrapper.cc b/third_party/tflite_support/src/tensorflow_lite_support/cc/port/default/tflite_wrapper.cc
+index bb43d09f4a96b..ff3a2ee0457ce 100644
+--- a/third_party/tflite_support/src/tensorflow_lite_support/cc/port/default/tflite_wrapper.cc
++++ b/third_party/tflite_support/src/tensorflow_lite_support/cc/port/default/tflite_wrapper.cc
+@@ -258,8 +258,9 @@ absl::Status TfLiteInterpreterWrapper::InvokeWithFallback(
+     const std::function<absl::Status(tflite::Interpreter* interpreter)>&
+         set_inputs) {
+   RETURN_IF_ERROR(set_inputs(interpreter_.get()));
+-  // Reset cancel flag before calling `Invoke()`.
+-  cancel_flag_.Set(false);
++  if (cancel_flag_.Get()) {
++    return absl::CancelledError("cancelled before Invoke() was called");
++  }
+   TfLiteStatus status = kTfLiteError;
+   if (fallback_on_execution_error_) {
+     status = InterpreterUtils::InvokeWithCPUFallback(interpreter_.get());
+@@ -289,8 +290,9 @@ absl::Status TfLiteInterpreterWrapper::InvokeWithFallback(
+ }
+ 
+ absl::Status TfLiteInterpreterWrapper::InvokeWithoutFallback() {
+-  // Reset cancel flag before calling `Invoke()`.
+-  cancel_flag_.Set(false);
++  if (cancel_flag_.Get()) {
++    return absl::CancelledError("cancelled before Invoke() was called");
++  }
+   TfLiteStatus status = interpreter_->Invoke();
+   if (status != kTfLiteOk) {
+     // Assume InvokeWithoutFallback() is guarded under caller's synchronization.
+-- 
+2.35.1.723.g4982287a31-goog
+

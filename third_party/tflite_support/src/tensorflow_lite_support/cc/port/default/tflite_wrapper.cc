@@ -258,8 +258,9 @@ absl::Status TfLiteInterpreterWrapper::InvokeWithFallback(
     const std::function<absl::Status(tflite::Interpreter* interpreter)>&
         set_inputs) {
   RETURN_IF_ERROR(set_inputs(interpreter_.get()));
-  // Reset cancel flag before calling `Invoke()`.
-  cancel_flag_.Set(false);
+  if (cancel_flag_.Get()) {
+    return absl::CancelledError("cancelled before Invoke() was called");
+  }
   TfLiteStatus status = kTfLiteError;
   if (fallback_on_execution_error_) {
     status = InterpreterUtils::InvokeWithCPUFallback(interpreter_.get());
@@ -289,8 +290,9 @@ absl::Status TfLiteInterpreterWrapper::InvokeWithFallback(
 }
 
 absl::Status TfLiteInterpreterWrapper::InvokeWithoutFallback() {
-  // Reset cancel flag before calling `Invoke()`.
-  cancel_flag_.Set(false);
+  if (cancel_flag_.Get()) {
+    return absl::CancelledError("cancelled before Invoke() was called");
+  }
   TfLiteStatus status = interpreter_->Invoke();
   if (status != kTfLiteOk) {
     // Assume InvokeWithoutFallback() is guarded under caller's synchronization.

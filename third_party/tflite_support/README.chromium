@@ -36,6 +36,7 @@ only available on POSIX systems.
 09) Run clang-format.
   * This patch might not apply cleanly, so run `git cl format` and commit the
   changes.
+10) Check (instead of resetting) the cancel_flag_ before Invoking the model.
 
 Update Process (internal: http://shortn/_nwz8liqimy):
 1) Run these commands:
