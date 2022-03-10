@@ -4,7 +4,7 @@
 
 import("//build/config/chromeos/ui_mode.gni")
 
-# This file creates |platform_pak_locales| which is the set of current locales
+# This file creates |platform_pak_locales| which is the set of packed locales
 # based on the current platform. Locales in this list are formatted based on
 # what .pak files expect. The |platform_pak_locales| variable *may* contain
 # pseudolocales, depending on the |enable_pseudolocales| flag.
@@ -15,34 +15,7 @@ import("//build/config/chromeos/ui_mode.gni")
 # The following additional platform specific lists are created:
 # - |extended_locales| list of locales not shipped on desktop builds
 # - |android_bundle_locales_as_resources| locales formatted for XML output names
-# - |locales_as_mac_outputs| formated for mac output bundles
-# - |ios_packed_locales| subset for iOS
-# - |ios_packed_locales_as_mac_outputs| subset for iOS output
-
-# Chrome on iOS only ships with a subset of the locales supported by other
-# version of Chrome as the corresponding locales are not supported by the
-# operating system (but for simplicity, the corresponding .pak files are
-# still generated).
-ios_unsupported_locales = [
-  "am",
-  "bn",
-  "et",
-  "fil",
-  "gu",
-  "kn",
-  "lv",
-  "ml",
-  "mr",
-  "sl",
-  "sw",
-  "ta",
-  "te",
-]
-
-# These list are defined even when not building for Android or iOS for the
-# sake of build/locale_tool.py. Ensure that GN doesn't complain about them
-# being unused.
-not_needed([ "ios_unsupported_locales" ])
+# - |locales_as_apple_outputs| formatted for mac output bundles
 
 pseudolocales = [
   "ar-XB",
@@ -135,6 +108,18 @@ all_chrome_locales =
       "zu",
     ] + pseudolocales
 
+if (is_ios) {
+  # Chrome on iOS uses "es-MX" and "pt" for "es-419" and "pt-BR".
+  all_chrome_locales -= [
+    "es-419",
+    "pt-BR",
+  ]
+  all_chrome_locales += [
+    "es-MX",
+    "pt",
+  ]
+}
+
 # Chrome locales not on Windows, Mac, or Linux
 extended_locales = [
   "af",
@@ -167,31 +152,41 @@ extended_locales = [
   "zu",
 ]
 
-# Chrome on iOS uses different names for "es-419" and "pt-BR" (called
-# respectively "es-MX" and "pt" on iOS).
-if (is_ios) {
-  all_chrome_locales -= [
-    "es-419",
-    "pt-BR",
+# Setup |platform_pak_locales| for each platform.
+platform_pak_locales = all_chrome_locales
+if (!is_android) {
+  platform_pak_locales -= extended_locales
+}
+
+# The base list for all platforms except Android excludes the extended locales.
+# Add or subtract platform specific locales below.
+if (is_chromeos_ash || is_chromeos_lacros) {
+  platform_pak_locales += [
+    "af",
+    "is",
+    "zu",
   ]
-  all_chrome_locales += [
-    "es-MX",
-    "pt",
+} else if (is_ios) {
+  platform_pak_locales -= [
+    "am",
+    "bn",
+    "et",
+    "fil",
+    "gu",
+    "kn",
+    "lv",
+    "ml",
+    "mr",
+    "sl",
+    "sw",
+    "ta",
+    "te",
   ]
 }
 
-# New locales added to ChromeOS builds.
-chromeos_only_locales = [
-  "af",
-  "is",
-  "zu",
-]
-
+# List for Android locale names in .xml exports. Note: needs to stay in sync
+# with |ToAndroidLocaleName| in build/android/gyp/util/resource_utils.py.
 if (is_android) {
-  platform_pak_locales = all_chrome_locales
-
-  # List for Android locale names in .xml exports. Note: needs to stay in sync
-  # with |ToAndroidLocaleName| in build/android/gyp/util/resource_utils.py.
   #  - add r: (e.g. zh-HK -> zh-rHK )
   android_bundle_locales_as_resources = []
   foreach(_locale, platform_pak_locales) {
@@ -217,13 +212,6 @@ if (is_android) {
     "iw",
     "tl",
   ]
-} else if (is_chromeos_ash || is_chromeos_lacros) {
-  # In ChromeOS we support a few more locales than standard Chrome.
-  platform_pak_locales =
-      all_chrome_locales - extended_locales + chromeos_only_locales
-} else {
-  # Change if other platforms support more locales.
-  platform_pak_locales = all_chrome_locales - extended_locales
 }
 
 locales_without_pseudolocales = platform_pak_locales - pseudolocales
@@ -239,19 +227,15 @@ if (!enable_pseudolocales) {
   platform_pak_locales -= pseudolocales
 }
 
-# Same as the locales list but in the format Mac expects for output files:
-# it uses underscores instead of hyphens, and "en" instead of "en-US".
-locales_as_mac_outputs = []
-foreach(locale, platform_pak_locales) {
-  if (locale == "en-US") {
-    locales_as_mac_outputs += [ "en" ]
-  } else {
-    locales_as_mac_outputs += [ string_replace(locale, "-", "_") ]
+if (is_apple) {
+  # Same as the locales list but in the format Mac expects for output files:
+  # it uses underscores instead of hyphens, and "en" instead of "en-US".
+  locales_as_apple_outputs = []
+  foreach(locale, platform_pak_locales) {
+    if (locale == "en-US") {
+      locales_as_apple_outputs += [ "en" ]
+    } else {
+      locales_as_apple_outputs += [ string_replace(locale, "-", "_") ]
+    }
   }
-}
-
-if (is_ios) {
-  ios_packed_locales = platform_pak_locales - ios_unsupported_locales
-  ios_packed_locales_as_mac_outputs =
-      locales_as_mac_outputs - ios_unsupported_locales
 }

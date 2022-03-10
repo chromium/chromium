@@ -8,7 +8,7 @@ import("//tools/grit/grit_rule.gni")
 
 # Same as the locales list but in the format the extension system expects:
 # it uses underscores instead of hyphens, and "en" instead of "en-US".
-# Very similar to locales_as_mac_outputs, except pseudolocales are not included.
+# Very similar to locales_as_apple_outputs, except pseudolocales are not included.
 accessibility_locales = []
 foreach(locale, locales_without_pseudolocales) {
   if (locale == "en-US") {

@@ -80,8 +80,8 @@ source_set("content_widget") {
 }
 
 repack_locales("packed_resources") {
-  input_locales = ios_packed_locales
-  output_locales = ios_packed_locales_as_mac_outputs
+  input_locales = platform_pak_locales
+  output_locales = locales_as_apple_outputs
 
   source_patterns = [ "$root_gen_dir/ios/content_widget_extension/ios_content_widget_extension_${branding_path_component}_strings_" ]
 
@@ -93,7 +93,7 @@ generate_localizable_strings("system_strings") {
   _packed_resources_target = ":packed_resources"
   config_file = "content_widget_extension_localize_strings_config.plist"
   datapack_dir = get_label_info(_packed_resources_target, "target_gen_dir")
-  packed_locales = ios_packed_locales_as_mac_outputs
+  packed_locales = locales_as_apple_outputs
   output_filenames = [ "InfoPlist.strings" ]
   deps = [
     "//ios/chrome/content_widget_extension/strings:ios_content_widget_extension_chromium_strings",

@@ -41,8 +41,8 @@ group("packed_resources") {
 
 ios_chrome_repack_locales("repack_locales") {
   visibility = [ ":packed_resources" ]
-  input_locales = ios_packed_locales
-  output_locales = ios_packed_locales_as_mac_outputs
+  input_locales = platform_pak_locales
+  output_locales = locales_as_apple_outputs
 }
 
 ios_chrome_repack_scalables("repack_scalable_resources") {
@@ -140,7 +140,7 @@ generate_localizable_strings("system_strings") {
   config_file = "chrome_localize_strings_config.plist"
   datapack_dir = get_label_info("//ios/chrome/app/resources:packed_resources",
                                 "target_gen_dir")
-  packed_locales = ios_packed_locales_as_mac_outputs
+  packed_locales = locales_as_apple_outputs
   output_filenames = [
     "InfoPlist.strings",
     "Localizable.strings",

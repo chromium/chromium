@@ -1257,7 +1257,7 @@ fuzzer_test("file_info_fuzzer") {
 
 # Same as locales, but includes "en" on Apple platforms.
 # Apple platforms use "en" instead of "en-US" (see the definition of
-# |locales_as_mac_outputs| in locales.gni). However, we still want to keep
+# |locales_as_apple_outputs| in locales.gni). However, we still want to keep
 # "en-US" in the list as the |ResourceBundle::GetLocaleFilePath| implementations
 # in ui/base/resource/resource_bundle_{mac,ios}.mm return a valid path for
 # "en-US" (as they internally rewrite it as "en" instead).

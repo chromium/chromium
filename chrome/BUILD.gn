@@ -591,7 +591,7 @@ if (is_win) {
       inputs += [ "$root_gen_dir/chrome/${_strings_file}_${locale}.pak" ]
     }
 
-    foreach(locale, locales_as_mac_outputs) {
+    foreach(locale, locales_as_apple_outputs) {
       outputs += [
         "$target_gen_dir/app_infoplist_strings/$locale.lproj/InfoPlist.strings",
       ]
@@ -618,7 +618,7 @@ if (is_win) {
     }
   }
 
-  foreach(locale, locales_as_mac_outputs) {
+  foreach(locale, locales_as_apple_outputs) {
     bundle_data("chrome_app_strings_${locale}_bundle_data") {
       sources = [
         "$target_gen_dir/app_infoplist_strings/$locale.lproj/InfoPlist.strings",
@@ -630,7 +630,7 @@ if (is_win) {
   }
   group("chrome_app_strings_bundle_data") {
     public_deps = []
-    foreach(locale, locales_as_mac_outputs) {
+    foreach(locale, locales_as_apple_outputs) {
       public_deps += [ ":chrome_app_strings_${locale}_bundle_data" ]
     }
   }

@@ -1698,7 +1698,7 @@ foreach(_component, _components) {
 
     # Only MaterialTabs.bundle contains translation.
     if (component_name == "MaterialTabs") {
-      component_locales = ios_packed_locales_as_mac_outputs
+      component_locales = locales_as_apple_outputs
     }
   }
 }
