@@ -1,7 +1,7 @@
 {
   "$build/chromium_orchestrator": {
     "compilator": "mac-rel-compilator",
-    "compilator_watcher_git_revision": "5fd7f4ae276865742fe632642ec4633dd9f81649"
+    "compilator_watcher_git_revision": "7809a690bbd935bcb3b4d922e24cabe168aaabc8"
   },
   "$build/code_coverage": {
     "use_clang_coverage": true
