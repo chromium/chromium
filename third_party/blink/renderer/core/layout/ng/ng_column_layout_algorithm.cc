@@ -234,6 +234,11 @@ const NGLayoutResult* NGColumnLayoutAlgorithm::Layout() {
   column_inline_size_ =
       ResolveUsedColumnInlineSize(ChildAvailableSize().inline_size, Style());
 
+  // Write the column inline-size back to the legacy flow thread if we're at the
+  // first fragment. TextAutosizer needs this.
+  if (!IsResumingLayout(BreakToken()))
+    node_.StoreColumnInlineSize(column_inline_size_);
+
   column_inline_progression_ =
       column_inline_size_ +
       ResolveUsedColumnGap(ChildAvailableSize().inline_size, Style());

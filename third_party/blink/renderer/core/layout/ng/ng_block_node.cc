@@ -2004,6 +2004,13 @@ void NGBlockNode::StoreMargins(const NGPhysicalBoxStrut& physical_margins) {
   box_->SetMargin(physical_margins);
 }
 
+void NGBlockNode::StoreColumnInlineSize(LayoutUnit inline_size) {
+  LayoutMultiColumnFlowThread* flow_thread =
+      To<LayoutBlockFlow>(box_.Get())->MultiColumnFlowThread();
+  flow_thread->SetLogicalWidth(inline_size);
+  flow_thread->ClearNeedsLayout();
+}
+
 static bool g_devtools_layout = false;
 bool DevtoolsReadonlyLayoutScope::InDevtoolsLayout() {
   return g_devtools_layout;
