@@ -532,8 +532,8 @@ void FederatedAuthRequestImpl::OnManifestFetchedForRevoke(
     }
   }
 
-  GURL revoke_url = ResolveManifestUrl(endpoints.revoke);
-  if (!IsEndpointUrlValid(revoke_url)) {
+  GURL revocation_url = ResolveManifestUrl(endpoints.revocation);
+  if (!IsEndpointUrlValid(revocation_url)) {
     RecordRevokeStatus(RevokeStatusForMetrics::kRevokeUrlIsCrossOrigin,
                        render_frame_host_->GetPageUkmSourceId());
     CompleteRevokeRequest(RevokeStatus::kError,
@@ -541,7 +541,7 @@ void FederatedAuthRequestImpl::OnManifestFetchedForRevoke(
     return;
   }
   network_manager_->SendRevokeRequest(
-      revoke_url, client_id_, account_id_,
+      revocation_url, client_id_, account_id_,
       base::BindOnce(&FederatedAuthRequestImpl::OnRevokeResponse,
                      weak_ptr_factory_.GetWeakPtr()));
 }

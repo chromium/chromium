@@ -48,7 +48,7 @@ const char kTestAccountsEndpoint[] = "https://idp.test/accounts_endpoint";
 const char kTestTokenEndpoint[] = "https://idp.test/token_endpoint";
 const char kTestClientMetadataEndpoint[] =
     "https://idp.test/client_metadata_endpoint";
-const char kTestRevokeEndpoint[] = "https://idp.test/revoke_endpoint";
+const char kTestRevocationEndpoint[] = "https://idp.test/revocation_endpoint";
 
 class IdpNetworkRequestManagerTest : public ::testing::Test {
  public:
@@ -156,8 +156,8 @@ class IdpNetworkRequestManagerTest : public ::testing::Test {
       const char* client_id,
       const char* account_id,
       net::HttpStatusCode http_status = net::HTTP_NO_CONTENT) {
-    GURL revoke_endpoint(kTestRevokeEndpoint);
-    test_url_loader_factory().AddResponse(revoke_endpoint.spec(), "",
+    GURL revocation_endpoint(kTestRevocationEndpoint);
+    test_url_loader_factory().AddResponse(revocation_endpoint.spec(), "",
                                           http_status);
 
     RevokeResponse status;
@@ -167,7 +167,7 @@ class IdpNetworkRequestManagerTest : public ::testing::Test {
           status = revoke_status;
           run_loop.Quit();
         });
-    manager().SendRevokeRequest(revoke_endpoint, client_id, account_id,
+    manager().SendRevokeRequest(revocation_endpoint, client_id, account_id,
                                 std::move(callback));
     run_loop.Run();
     return status;

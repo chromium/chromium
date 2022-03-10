@@ -95,7 +95,7 @@ class CONTENT_EXPORT IdpNetworkRequestManager {
     std::string token;
     std::string accounts;
     std::string client_metadata;
-    std::string revoke;
+    std::string revocation;
   };
 
   struct ClientMetadata {

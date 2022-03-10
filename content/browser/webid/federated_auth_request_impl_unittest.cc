@@ -74,7 +74,7 @@ constexpr char kCrossOriginAccountsEndpoint[] = "https://idp2.example/accounts";
 constexpr char kTokenEndpoint[] = "https://idp.example/token";
 constexpr char kClientMetadataEndpoint[] =
     "https://idp.example/client_metadata";
-constexpr char kRevokeEndpoint[] = "https://idp.example/revoke";
+constexpr char kRevocationEndpoint[] = "https://idp.example/revoke";
 constexpr char kPrivacyPolicyUrl[] = "https://rp.example/pp";
 constexpr char kTermsOfServiceUrl[] = "https://rp.example/tos";
 constexpr char kClientId[] = "client_id_123";
@@ -1106,7 +1106,7 @@ TEST_F(FederatedAuthRequestImplTest, Revoke) {
           Invoke([&](absl::optional<int>, absl::optional<int>,
                      IdpNetworkRequestManager::FetchManifestCallback callback) {
             IdpNetworkRequestManager::Endpoints endpoints;
-            endpoints.revoke = kRevokeEndpoint;
+            endpoints.revocation = kRevocationEndpoint;
             std::move(callback).Run(FetchStatus::kSuccess, endpoints,
                                     IdentityProviderMetadata());
           }));
@@ -1114,7 +1114,7 @@ TEST_F(FederatedAuthRequestImplTest, Revoke) {
       .WillOnce(Invoke([&](const GURL& revoke_url, const std::string& client_id,
                            const std::string& account_id,
                            IdpNetworkRequestManager::RevokeCallback callback) {
-        EXPECT_EQ(kRevokeEndpoint, revoke_url.spec());
+        EXPECT_EQ(kRevocationEndpoint, revoke_url.spec());
         EXPECT_EQ(kClientId, client_id);
         EXPECT_EQ(kAccountId, account_id);
         std::move(callback).Run(RevokeResponse::kSuccess);

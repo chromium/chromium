@@ -42,7 +42,7 @@ using LoginState = IdentityRequestAccount::LoginState;
 constexpr char kTokenEndpointKey[] = "id_token_endpoint";
 constexpr char kAccountsEndpointKey[] = "accounts_endpoint";
 constexpr char kClientMetadataEndpointKey[] = "client_metadata_endpoint";
-constexpr char kRevokeEndpoint[] = "revoke_endpoint";
+constexpr char kRevocationEndpoint[] = "revocation_endpoint";
 
 // Keys in fedcm.json 'branding' dictionary.
 constexpr char kIdpBrandingBackgroundColor[] = "background_color";
@@ -625,7 +625,7 @@ void IdpNetworkRequestManager::OnManifestParsed(
   endpoints.token = ExtractEndpoint(kTokenEndpointKey);
   endpoints.accounts = ExtractEndpoint(kAccountsEndpointKey);
   endpoints.client_metadata = ExtractEndpoint(kClientMetadataEndpointKey);
-  endpoints.revoke = ExtractEndpoint(kRevokeEndpoint);
+  endpoints.revocation = ExtractEndpoint(kRevocationEndpoint);
 
   const base::Value* idp_metadata_value = response.FindKey(kIdpBrandingKey);
   IdentityProviderMetadata idp_metadata;
