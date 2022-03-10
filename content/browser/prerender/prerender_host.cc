@@ -155,7 +155,10 @@ class PrerenderHost::PageHolder : public FrameTree::Delegate,
   void NotifyNavigationListPruned(
       const PrunedDetails& pruned_details) override {}
   void NotifyNavigationEntriesDeleted() override {}
-  void ActivateAndShowRepostFormWarningDialog() override {}
+  void ActivateAndShowRepostFormWarningDialog() override {
+    // Not supported, cancel pending reload.
+    GetNavigationController().CancelPendingReload();
+  }
   bool ShouldPreserveAbortedURLs() override { return false; }
   WebContents* DeprecatedGetWebContents() override { return GetWebContents(); }
   void UpdateOverridingUserAgent() override {}

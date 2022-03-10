@@ -189,10 +189,7 @@ const base::UnguessableToken& FencedFrame::GetDevToolsFrameToken() const {
 
 void FencedFrame::NotifyNavigationStateChanged(InvalidateTypes changed_flags) {}
 
-void FencedFrame::NotifyBeforeFormRepostWarningShow() {
-  // TODO(https://crbug.com/1263557): Should we call
-  // web_contents_->NotifyBeforeFormRepostWarningShow()?
-}
+void FencedFrame::NotifyBeforeFormRepostWarningShow() {}
 
 void FencedFrame::NotifyNavigationEntryCommitted(
     const LoadCommittedDetails& load_details) {}
@@ -206,8 +203,8 @@ void FencedFrame::NotifyNavigationListPruned(
 void FencedFrame::NotifyNavigationEntriesDeleted() {}
 
 void FencedFrame::ActivateAndShowRepostFormWarningDialog() {
-  // TODO(https://crbug.com/1263557): The continuation callback would goto the
-  // wrong NavigationController so perhaps we need to pass a callback in?
+  // Not supported, cancel pending reload.
+  frame_tree_->controller().CancelPendingReload();
 }
 
 bool FencedFrame::ShouldPreserveAbortedURLs() {
