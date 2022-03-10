@@ -265,6 +265,8 @@ if (is_win || is_mac || is_linux) {
         "win/net/network.h",
         "win/net/network_fetcher.cc",
         "win/net/network_fetcher.h",
+        "win/protocol_parser_xml.cc",
+        "win/protocol_parser_xml.h",
         "win/scoped_handle.h",
         "win/scoped_impersonation.cc",
         "win/scoped_impersonation.h",
@@ -329,6 +331,7 @@ if (is_win || is_mac || is_linux) {
       defines = [ "SECURITY_WIN32" ]
 
       libs = [
+        "msxml2.lib",
         "secur32.lib",
         "taskschd.lib",
         "wtsapi32.lib",
@@ -631,6 +634,7 @@ if (is_win || is_mac || is_linux) {
         "util_win_unittest.cc",
         "win/installer_api_unittest.cc",
         "win/net/network_unittest.cc",
+        "win/protocol_parser_xml_unittest.cc",
         "win/setup/setup_util_unittest.cc",
         "win/tag_extractor_unittest.cc",
         "win/task_scheduler_unittest.cc",
