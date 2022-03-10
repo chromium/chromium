@@ -114,7 +114,7 @@ void AggregatableReportAssembler::AssembleReport(
   DCHECK(base::ranges::is_sorted(report_request.processing_urls()));
   const size_t num_processing_urls = report_request.processing_urls().size();
   DCHECK(AggregatableReport::IsNumberOfProcessingUrlsValid(
-      num_processing_urls, report_request.payload_contents().processing_type));
+      num_processing_urls, report_request.payload_contents().aggregation_mode));
 
   const AggregationServicePayloadContents& contents =
       report_request.payload_contents();

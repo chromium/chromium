@@ -41,13 +41,14 @@ AggregationServicePayloadContents::Operation ConvertToOperation(
   }
 }
 
-AggregationServicePayloadContents::ProcessingType ConvertToProcessingType(
-    TestAggregationService::ProcessingType processing_type) {
-  switch (processing_type) {
-    case TestAggregationService::ProcessingType::kTwoParty:
-      return AggregationServicePayloadContents::ProcessingType::kTwoParty;
-    case TestAggregationService::ProcessingType::kSingleServer:
-      return AggregationServicePayloadContents::ProcessingType::kSingleServer;
+AggregationServicePayloadContents::AggregationMode ConvertToAggregationMode(
+    TestAggregationService::AggregationMode aggregation_mode) {
+  switch (aggregation_mode) {
+    case TestAggregationService::AggregationMode::kTeeBased:
+      return AggregationServicePayloadContents::AggregationMode::kTeeBased;
+    case TestAggregationService::AggregationMode::kExperimentalPoplar:
+      return AggregationServicePayloadContents::AggregationMode::
+          kExperimentalPoplar;
   }
 }
 
@@ -135,7 +136,7 @@ void TestAggregationServiceImpl::AssembleReport(
       ConvertToOperation(request.operation),
       {AggregationServicePayloadContents::HistogramContribution{
           .bucket = request.bucket, .value = request.value}},
-      ConvertToProcessingType(request.processing_type));
+      ConvertToAggregationMode(request.aggregation_mode));
 
   AggregatableReportSharedInfo shared_info(
       /*scheduled_report_time=*/base::Time::Now() + base::Seconds(30),

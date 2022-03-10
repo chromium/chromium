@@ -142,10 +142,10 @@ testing::AssertionResult PayloadContentsEqual(
              << ", actual: " << actual.contributions[i].value;
     }
   }
-  if (expected.processing_type != actual.processing_type) {
+  if (expected.aggregation_mode != actual.aggregation_mode) {
     return testing::AssertionFailure()
-           << "Expected processing_type " << expected.processing_type
-           << ", actual: " << actual.processing_type;
+           << "Expected aggregation_mode " << expected.aggregation_mode
+           << ", actual: " << actual.aggregation_mode;
   }
 
   return testing::AssertionSuccess();
@@ -180,13 +180,13 @@ testing::AssertionResult SharedInfoEqual(
 }
 
 AggregatableReportRequest CreateExampleRequest(
-    AggregationServicePayloadContents::ProcessingType processing_type) {
+    AggregationServicePayloadContents::AggregationMode aggregation_mode) {
   return AggregatableReportRequest::Create(
              AggregationServicePayloadContents(
                  AggregationServicePayloadContents::Operation::kHistogram,
                  {AggregationServicePayloadContents::HistogramContribution{
                      .bucket = 123, .value = 456}},
-                 processing_type),
+                 aggregation_mode),
              AggregatableReportSharedInfo(
                  /*scheduled_report_time=*/base::Time::Now(),
                  /*privacy_budget_key=*/"example_budget_key",
@@ -253,7 +253,7 @@ TestAggregationServiceStorageContext::GetKeyStorage() {
 
 std::ostream& operator<<(
     std::ostream& out,
-    const AggregationServicePayloadContents::Operation& operation) {
+    AggregationServicePayloadContents::Operation operation) {
   switch (operation) {
     case AggregationServicePayloadContents::Operation::kHistogram:
       return out << "kHistogram";
@@ -262,18 +262,18 @@ std::ostream& operator<<(
 
 std::ostream& operator<<(
     std::ostream& out,
-    const AggregationServicePayloadContents::ProcessingType& processing_type) {
-  switch (processing_type) {
-    case AggregationServicePayloadContents::ProcessingType::kTwoParty:
-      return out << "kTwoParty";
-    case AggregationServicePayloadContents::ProcessingType::kSingleServer:
-      return out << "kSingleServer";
+    AggregationServicePayloadContents::AggregationMode aggregation_mode) {
+  switch (aggregation_mode) {
+    case AggregationServicePayloadContents::AggregationMode::kTeeBased:
+      return out << "kTeeBased";
+    case AggregationServicePayloadContents::AggregationMode::
+        kExperimentalPoplar:
+      return out << "kExperimentalPoplar";
   }
 }
 
-std::ostream& operator<<(
-    std::ostream& out,
-    const AggregatableReportSharedInfo::DebugMode& debug_mode) {
+std::ostream& operator<<(std::ostream& out,
+                         AggregatableReportSharedInfo::DebugMode debug_mode) {
   switch (debug_mode) {
     case AggregatableReportSharedInfo::DebugMode::kDisabled:
       return out << "kDisabled";

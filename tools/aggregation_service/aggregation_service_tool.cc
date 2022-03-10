@@ -37,12 +37,15 @@ absl::optional<content::TestAggregationService::Operation> ConvertToOperation(
   return absl::nullopt;
 }
 
-absl::optional<content::TestAggregationService::ProcessingType>
-ConvertToProcessingType(const std::string& processing_type_string) {
-  if (processing_type_string == "two-party")
-    return content::TestAggregationService::ProcessingType::kTwoParty;
-  if (processing_type_string == "single-server")
-    return content::TestAggregationService::ProcessingType::kSingleServer;
+absl::optional<content::TestAggregationService::AggregationMode>
+ConvertToAggregationMode(const std::string& aggregation_mode_string) {
+  if (aggregation_mode_string == "tee-based")
+    return content::TestAggregationService::AggregationMode::kTeeBased;
+  if (aggregation_mode_string == "experimental-poplar")
+    return content::TestAggregationService::AggregationMode::
+        kExperimentalPoplar;
+  if (aggregation_mode_string == "default")
+    return content::TestAggregationService::AggregationMode::kDefault;
 
   return absl::nullopt;
 }
@@ -127,7 +130,7 @@ base::Value::DictStorage AggregationServiceTool::AssembleReport(
     std::string operation_str,
     std::string bucket_str,
     std::string value_str,
-    std::string processing_type_str,
+    std::string aggregation_mode_str,
     url::Origin reporting_origin,
     std::string privacy_budget_key,
     std::vector<GURL> processing_urls,
@@ -153,10 +156,10 @@ base::Value::DictStorage AggregationServiceTool::AssembleReport(
     return result;
   }
 
-  absl::optional<content::TestAggregationService::ProcessingType>
-      processing_type = ConvertToProcessingType(processing_type_str);
-  if (!processing_type.has_value()) {
-    LOG(ERROR) << "Invalid processing type: " << processing_type_str;
+  absl::optional<content::TestAggregationService::AggregationMode>
+      aggregation_mode = ConvertToAggregationMode(aggregation_mode_str);
+  if (!aggregation_mode.has_value()) {
+    LOG(ERROR) << "Invalid aggregation mode: " << aggregation_mode_str;
     return result;
   }
 
@@ -166,7 +169,7 @@ base::Value::DictStorage AggregationServiceTool::AssembleReport(
   }
 
   content::TestAggregationService::AssembleRequest request(
-      operation.value(), bucket, value, processing_type.value(),
+      operation.value(), bucket, value, aggregation_mode.value(),
       std::move(reporting_origin), std::move(privacy_budget_key),
       std::move(processing_urls), is_debug_mode_enabled);
 

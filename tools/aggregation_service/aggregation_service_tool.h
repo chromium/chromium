@@ -58,7 +58,7 @@ class AggregationServiceTool {
   base::Value::DictStorage AssembleReport(std::string operation_str,
                                           std::string bucket_str,
                                           std::string value_str,
-                                          std::string processing_type_str,
+                                          std::string aggregation_mode_str,
                                           url::Origin reporting_origin,
                                           std::string privacy_budget_key,
                                           std::vector<GURL> processing_urls,

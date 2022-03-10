@@ -237,7 +237,7 @@ TEST_F(AggregatableReportAssemblerTest,
   base::HistogramTester histograms;
 
   AggregatableReportRequest request = aggregation_service::CreateExampleRequest(
-      AggregationServicePayloadContents::ProcessingType::kSingleServer);
+      AggregationServicePayloadContents::AggregationMode::kTeeBased);
 
   PublicKey public_key = aggregation_service::GenerateKey("id123").public_key;
 
@@ -273,7 +273,7 @@ TEST_F(AggregatableReportAssemblerTest,
   base::HistogramTester histograms;
 
   AggregatableReportRequest request = aggregation_service::CreateExampleRequest(
-      AggregationServicePayloadContents::ProcessingType::kSingleServer);
+      AggregationServicePayloadContents::AggregationMode::kTeeBased);
 
   EXPECT_CALL(*fetcher(), GetPublicKey)
       .WillOnce(base::test::RunOnceCallback<1>(

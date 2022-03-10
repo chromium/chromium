@@ -141,18 +141,8 @@ void VerifyReport(
     EXPECT_EQ(payload_map.at(cbor::Value("operation")).GetString(),
               "histogram");
 
-    switch (expected_payload_contents.processing_type) {
-      case AggregationServicePayloadContents::ProcessingType::kTwoParty: {
-        EXPECT_TRUE(CborMapContainsKeyAndType(payload_map, "dpf_key",
-                                              cbor::Value::Type::BYTE_STRING));
-
-        // TODO(crbug.com/1238459): Test the payload details (e.g. dpf key) in
-        // more depth against a minimal helper server implementation.
-
-        EXPECT_FALSE(payload_map.contains(cbor::Value("data")));
-        break;
-      }
-      case AggregationServicePayloadContents::ProcessingType::kSingleServer: {
+    switch (expected_payload_contents.aggregation_mode) {
+      case AggregationServicePayloadContents::AggregationMode::kTeeBased: {
         ASSERT_TRUE(CborMapContainsKeyAndType(payload_map, "data",
                                               cbor::Value::Type::ARRAY));
         const cbor::Value::ArrayValue& data_array =
@@ -186,6 +176,17 @@ void VerifyReport(
         EXPECT_FALSE(payload_map.contains(cbor::Value("dpf_key")));
         break;
       }
+      case AggregationServicePayloadContents::AggregationMode::
+          kExperimentalPoplar: {
+        EXPECT_TRUE(CborMapContainsKeyAndType(payload_map, "dpf_key",
+                                              cbor::Value::Type::BYTE_STRING));
+
+        // TODO(crbug.com/1238459): Test the payload details (e.g. dpf key) in
+        // more depth against a minimal helper server implementation.
+
+        EXPECT_FALSE(payload_map.contains(cbor::Value("data")));
+        break;
+      }
     }
   }
 }
@@ -214,7 +215,7 @@ TEST(AggregatableReportTest, ValidTwoPartyRequest_ValidReportReturned) {
 
 TEST(AggregatableReportTest, ValidSingleServerRequest_ValidReportReturned) {
   AggregatableReportRequest request = aggregation_service::CreateExampleRequest(
-      AggregationServicePayloadContents::ProcessingType::kSingleServer);
+      AggregationServicePayloadContents::AggregationMode::kTeeBased);
 
   AggregationServicePayloadContents expected_payload_contents =
       request.payload_contents();
@@ -237,7 +238,7 @@ TEST(AggregatableReportTest,
      ValidMultipleContributionsRequest_ValidReportReturned) {
   AggregatableReportRequest example_request =
       aggregation_service::CreateExampleRequest(
-          AggregationServicePayloadContents::ProcessingType::kSingleServer);
+          AggregationServicePayloadContents::AggregationMode::kTeeBased);
 
   AggregationServicePayloadContents expected_payload_contents =
       example_request.payload_contents();
@@ -351,7 +352,7 @@ TEST(AggregatableReportTest, RequestCreatedWithInvalidPrivacyBudgetKey_Failed) {
 TEST(AggregatableReportTest, RequestCreatedWithZeroContributions) {
   AggregatableReportRequest example_request =
       aggregation_service::CreateExampleRequest(
-          AggregationServicePayloadContents::ProcessingType::kSingleServer);
+          AggregationServicePayloadContents::AggregationMode::kTeeBased);
 
   AggregationServicePayloadContents payload_contents =
       example_request.payload_contents();
@@ -366,7 +367,8 @@ TEST(AggregatableReportTest, RequestCreatedWithZeroContributions) {
 TEST(AggregatableReportTest, RequestCreatedWithTooManyContributions) {
   AggregatableReportRequest example_request =
       aggregation_service::CreateExampleRequest(
-          AggregationServicePayloadContents::ProcessingType::kTwoParty);
+          AggregationServicePayloadContents::AggregationMode::
+              kExperimentalPoplar);
 
   AggregationServicePayloadContents payload_contents =
       example_request.payload_contents();

@@ -33,14 +33,22 @@ class AggregatableReportRequest;
 struct CONTENT_EXPORT AggregationServicePayloadContents {
   // TODO(alexmt): Add kDistinctCount option.
   enum class Operation {
-    kHistogram = 0,
-    kMaxValue = kHistogram,
+    kHistogram,
   };
 
-  enum class ProcessingType {
-    kTwoParty = 0,
-    kSingleServer = 1,
-    kMaxValue = kSingleServer,
+  // Corresponds to the 'alternative aggregation mode' optional setting, but
+  // also includes the default option (if no alternative is set).
+  enum class AggregationMode {
+    // Uses a server-side Trusted Execution Environment (TEE) to process the
+    // encrypted payloads, see
+    // https://github.com/WICG/conversion-measurement-api/blob/main/AGGREGATION_SERVICE_TEE.md.
+    kTeeBased,
+
+    // Implements a protocol similar to poplar VDAF in the PPM Framework, see
+    // https://github.com/WICG/conversion-measurement-api/blob/main/AGGREGATE.md#choosing-among-aggregation-services.
+    kExperimentalPoplar,
+
+    kDefault = kTeeBased,
   };
 
   struct HistogramContribution {
@@ -51,7 +59,7 @@ struct CONTENT_EXPORT AggregationServicePayloadContents {
   AggregationServicePayloadContents(
       Operation operation,
       std::vector<HistogramContribution> contributions,
-      ProcessingType processing_type);
+      AggregationMode aggregation_mode);
 
   AggregationServicePayloadContents(
       const AggregationServicePayloadContents& other);
@@ -64,7 +72,7 @@ struct CONTENT_EXPORT AggregationServicePayloadContents {
 
   Operation operation;
   std::vector<HistogramContribution> contributions;
-  ProcessingType processing_type;
+  AggregationMode aggregation_mode;
 };
 
 // Represents the information that will be provided to both the reporting
@@ -119,9 +127,8 @@ class CONTENT_EXPORT AggregatableReport {
 
     // This payload is constructed using the data in the
     // AggregationServicePayloadContents and then encrypted with one of
-    // `url`'s public keys. For the `kSingleServer` processing type, the
-    // plaintext of the encrypted payload is a serialized CBOR map structured as
-    // follows:
+    // `url`'s public keys. For the `kTeeBased` aggregation mode, the plaintext
+    // of the encrypted payload is a serialized CBOR map structured as follows:
     // {
     //   "operation": "<chosen operation as string>",
     //   "data": [{
@@ -130,7 +137,8 @@ class CONTENT_EXPORT AggregatableReport {
     //   }, ...],
     // }
     // Note that the "data" array may contain multiple contributions.
-    // For the `kTwoParty` processing type, the "data" field is replaced with:
+    // For the `kExperimentalPoplar` aggregation mode, the "data" field is
+    // replaced with:
     //   "dpf_key": <binary serialization of the DPF key>
     std::vector<uint8_t> payload;
 
@@ -215,16 +223,16 @@ class CONTENT_EXPORT AggregatableReport {
   // base::Value appears to represent a valid report.
 
   // Returns whether `number` is a valid number of processing URLs for the
-  // `processing_type`.
+  // `aggregation_mode`.
   static bool IsNumberOfProcessingUrlsValid(
       size_t number,
-      AggregationServicePayloadContents::ProcessingType processing_type);
+      AggregationServicePayloadContents::AggregationMode aggregation_mode);
 
   // Returns whether `number` is a valid number of histogram contributions for
-  // the `processing_type`.
+  // the `aggregation_mode`.
   static bool IsNumberOfHistogramContributionsValid(
       size_t number,
-      AggregationServicePayloadContents::ProcessingType processing_type);
+      AggregationServicePayloadContents::AggregationMode aggregation_mode);
 
  private:
   // This vector should have an entry for each processing URL specified in
@@ -240,7 +248,7 @@ class CONTENT_EXPORT AggregatableReport {
 class CONTENT_EXPORT AggregatableReportRequest {
  public:
   // Returns `absl::nullopt` if `payload_contents.contributions.size()` is not
-  // valid for the `payload_contents.processing_type` (see
+  // valid for the `payload_contents.aggregation_mode` (see
   // `IsNumberOfHistogramContributionsValid()` above). Also returns
   // `absl::nullopt` if any contribution has a negative value or if
   // `shared_info.report_id` is not valid. Also returns `absl::nullopt` if
@@ -252,7 +260,7 @@ class CONTENT_EXPORT AggregatableReportRequest {
 
   // Returns `absl::nullopt` if `payload_contents.contributions.size()` or
   // `processing_url.size()` is not valid for the
-  // `payload_contents.processing_type` (see
+  // `payload_contents.aggregation_mode` (see
   // `IsNumberOfHistogramContributionsValid()` and
   // `IsNumberOfProcessingUrlsValid`, respectively). Also returns
   // `absl::nullopt` if any contribution has a negative value or if

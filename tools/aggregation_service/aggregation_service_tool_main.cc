@@ -31,7 +31,8 @@ constexpr char kSwitchHelpShort[] = "h";
 constexpr char kSwitchOperation[] = "operation";
 constexpr char kSwitchBucket[] = "bucket";
 constexpr char kSwitchValue[] = "value";
-constexpr char kSwitchProcessingType[] = "processing-type";
+constexpr char kSwitchAlternativeAggregationMode[] =
+    "alternative-aggregation-mode";
 constexpr char kSwitchReportingOrigin[] = "reporting-origin";
 constexpr char kSwitchPrivacyBudgetKey[] = "privacy-budget-key";
 constexpr char kSwitchHelperKeyUrls[] = "helper-key-urls";
@@ -44,7 +45,7 @@ constexpr char kSwitchEnableDebugMode[] = "enable-debug-mode";
 
 constexpr char kHelpMsg[] = R"(
   aggregation_service_tool [--operation=<operation>] --bucket=<bucket>
-  --value=<value> --processing-type=<processing_type>
+  --value=<value> --aggregation-mode=<aggregation_mode>
   --reporting-origin=<reporting_origin>
   --privacy-budget-key=<privacy_budget_key>
   --helper-keys=<helper_server_keys> [--output=<output_file>]
@@ -53,7 +54,7 @@ constexpr char kHelpMsg[] = R"(
 
   Examples:
   aggregation_service_tool --operation="histogram" --bucket=1234 --value=5
-  --processing-type="two-party" --reporting-origin="https://example.com"
+  --alternative-aggregation-mode="experimental-poplar" --reporting-origin="https://example.com"
   --privacy-budget-key="test_privacy_budget_key"
   --helper-key-urls="https://a.com/keys.json https://b.com/path/to/keys.json"
   --output-file="output.json" --enable-debug-mode
@@ -61,7 +62,7 @@ constexpr char kHelpMsg[] = R"(
   "source_site=https://publisher.example,attribution_destination=https://advertiser.example"
   or
   aggregation_service_tool --bucket=1234 --value=5
-  --processing-type="single-server" --reporting-origin="https://example.com"
+  --reporting-origin="https://example.com"
   --privacy-budget-key="test_privacy_budget_key"
   --helper-key-files="keys.json"
   --output-url="https://c.com/reports"
@@ -79,8 +80,10 @@ constexpr char kHelpMsg[] = R"(
              integer.
   --value = Bucket value of the histogram contribution, must be non-negative
             integer.
-  --processing-type = The processing type to use, either "single-server" or
-                      "two-party".
+  --alternative-aggregation-mode = Optional switch to specify an alternative
+                                   aggregation mode. Supports "tee-based",
+                                   "experimental-poplar" and "default"
+                                   (default value, equivalent to "tee-based").
   --reporting-origin = The reporting origin endpoint.
   --privacy-budget-key = The privacy budgeting key.
   --helper-key-urls = Optional switch to specify the URL(s) to fetch the public
@@ -132,7 +135,7 @@ int main(int argc, char* argv[]) {
       kSwitchOperation,
       kSwitchBucket,
       kSwitchValue,
-      kSwitchProcessingType,
+      kSwitchAlternativeAggregationMode,
       kSwitchReportingOrigin,
       kSwitchPrivacyBudgetKey,
       kSwitchHelperKeyUrls,
@@ -159,8 +162,8 @@ int main(int argc, char* argv[]) {
   }
 
   const std::vector<std::string> kRequiredSwitches = {
-      kSwitchBucket, kSwitchValue, kSwitchProcessingType,
-      kSwitchReportingOrigin, kSwitchPrivacyBudgetKey};
+      kSwitchBucket, kSwitchValue, kSwitchReportingOrigin,
+      kSwitchPrivacyBudgetKey};
   for (const std::string& required_switch : kRequiredSwitches) {
     if (!command_line.HasSwitch(required_switch.c_str())) {
       LOG(ERROR) << "aggregation_service_tool expects " << required_switch
@@ -249,10 +252,10 @@ int main(int argc, char* argv[]) {
           ? command_line.GetSwitchValueASCII(kSwitchOperation)
           : "histogram";
 
-  std::string processing_type =
-      command_line.HasSwitch(kSwitchProcessingType)
-          ? command_line.GetSwitchValueASCII(kSwitchProcessingType)
-          : "two-party";
+  std::string aggregation_mode =
+      command_line.HasSwitch(kSwitchAlternativeAggregationMode)
+          ? command_line.GetSwitchValueASCII(kSwitchAlternativeAggregationMode)
+          : "default";
 
   url::Origin reporting_origin = url::Origin::Create(
       GURL(command_line.GetSwitchValueASCII(kSwitchReportingOrigin)));
@@ -265,7 +268,7 @@ int main(int argc, char* argv[]) {
   base::Value::DictStorage report_dict = tool.AssembleReport(
       std::move(operation), command_line.GetSwitchValueASCII(kSwitchBucket),
       command_line.GetSwitchValueASCII(kSwitchValue),
-      std::move(processing_type), std::move(reporting_origin),
+      std::move(aggregation_mode), std::move(reporting_origin),
       std::move(privacy_budget_key), std::move(processing_urls),
       is_debug_mode_enabled);
   if (report_dict.empty()) {

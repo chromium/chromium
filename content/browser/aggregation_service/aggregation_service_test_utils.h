@@ -55,9 +55,11 @@ testing::AssertionResult SharedInfoEqual(
     const AggregatableReportSharedInfo& actual);
 
 // Returns an example report request, using the given parameters.
+// TODO(crbug.com/1303041): Switch default aggregation mode to `kDefault`.
 AggregatableReportRequest CreateExampleRequest(
-    AggregationServicePayloadContents::ProcessingType processing_type =
-        AggregationServicePayloadContents::ProcessingType::kTwoParty);
+    AggregationServicePayloadContents::AggregationMode aggregation_mode =
+        AggregationServicePayloadContents::AggregationMode::
+            kExperimentalPoplar);
 
 AggregatableReportRequest CloneReportRequest(
     const AggregatableReportRequest& request);
@@ -95,13 +97,12 @@ class TestAggregationServiceStorageContext
 // Only used for logging in tests.
 std::ostream& operator<<(
     std::ostream& out,
-    const AggregationServicePayloadContents::Operation& operation);
+    AggregationServicePayloadContents::Operation operation);
 std::ostream& operator<<(
     std::ostream& out,
-    const AggregationServicePayloadContents::ProcessingType& processing_type);
-std::ostream& operator<<(
-    std::ostream& out,
-    const AggregatableReportSharedInfo::DebugMode& debug_mode);
+    AggregationServicePayloadContents::AggregationMode aggregation_mode);
+std::ostream& operator<<(std::ostream& out,
+                         AggregatableReportSharedInfo::DebugMode debug_mode);
 
 bool operator==(const PublicKey& a, const PublicKey& b);
 

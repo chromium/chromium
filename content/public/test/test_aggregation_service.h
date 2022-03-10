@@ -37,15 +37,14 @@ class TestAggregationService {
 
   // This is 1-1 mapping of AggregationServicePayloadContents::Operation.
   enum class Operation {
-    kHistogram = 0,
-    kMaxValue = kHistogram,
+    kHistogram,
   };
 
-  // This is 1-1 mapping of AggregationServicePayloadContent::ProcessingType.
-  enum class ProcessingType {
-    kTwoParty = 0,
-    kSingleServer = 1,
-    kMaxValue = kSingleServer,
+  // This is 1-1 mapping of AggregationServicePayloadContent::AggregationMode.
+  enum class AggregationMode {
+    kTeeBased,
+    kExperimentalPoplar,
+    kDefault = kTeeBased,
   };
 
   // Represents a request to assemble an aggregatable report.
@@ -53,7 +52,7 @@ class TestAggregationService {
     AssembleRequest(Operation operation,
                     int bucket,
                     int value,
-                    ProcessingType processing_type,
+                    AggregationMode aggregation_mode,
                     url::Origin reporting_origin,
                     std::string privacy_budget_key,
                     std::vector<GURL> processing_urls,
@@ -68,8 +67,8 @@ class TestAggregationService {
     int bucket;
     // Specifies the bucket value of the histogram contribution.
     int value;
-    // Indicates whether the aggregation servers run an MPC protocol or not.
-    ProcessingType processing_type;
+    // Specifies the aggregation mode to use.
+    AggregationMode aggregation_mode;
     // Specifies the endpoint reporting origin.
     url::Origin reporting_origin;
     // Specifies the key for the aggregation servers to do privacy budgeting.
