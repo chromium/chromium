@@ -236,4 +236,12 @@ TEST_F(ShortcutInfoTest, SplashIconFallbackToAny) {
   EXPECT_FALSE(info_.is_splash_image_maskable);
 }
 
+TEST_F(ShortcutInfoTest, DisplayOverride) {
+  manifest_.display = blink::mojom::DisplayMode::kStandalone;
+  manifest_.display_override = {blink::mojom::DisplayMode::kFullscreen};
+  info_.UpdateFromManifest(manifest_);
+
+  EXPECT_EQ(info_.display, blink::mojom::DisplayMode::kFullscreen);
+}
+
 }  // namespace webapps

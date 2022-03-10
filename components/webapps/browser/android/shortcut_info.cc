@@ -25,6 +25,8 @@ constexpr size_t kMaxShortcuts = 4;
 
 }  // namespace
 
+using blink::mojom::DisplayMode;
+
 ShareTargetParamsFile::ShareTargetParamsFile() {}
 
 ShareTargetParamsFile::ShareTargetParamsFile(
@@ -102,12 +104,20 @@ void ShortcutInfo::UpdateFromManifest(const blink::mojom::Manifest& manifest) {
   scope = manifest.scope;
 
   // Set the display based on the manifest value, if any.
-  if (manifest.display != blink::mojom::DisplayMode::kUndefined)
+  if (manifest.display != DisplayMode::kUndefined)
     display = manifest.display;
 
-  if (display == blink::mojom::DisplayMode::kStandalone ||
-      display == blink::mojom::DisplayMode::kFullscreen ||
-      display == blink::mojom::DisplayMode::kMinimalUi) {
+  for (DisplayMode display_mode : manifest.display_override) {
+    if (display_mode == DisplayMode::kStandalone ||
+        display_mode == DisplayMode::kFullscreen) {
+      display = display_mode;
+      break;
+    }
+  }
+
+  if (display == DisplayMode::kStandalone ||
+      display == DisplayMode::kFullscreen ||
+      display == DisplayMode::kMinimalUi) {
     source = SOURCE_ADD_TO_HOMESCREEN_STANDALONE;
     // Set the orientation based on the manifest value, or ignore if the display
     // mode is different from 'standalone', 'fullscreen' or 'minimal-ui'.
