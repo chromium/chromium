@@ -250,6 +250,11 @@ void ProcessInterceptedChromeURLNavigationInIncognito(Browser* browser,
 // Follows a web feed associated with the main frame of specified web contents.
 void FollowSite(Browser* browser, content::WebContents* web_contents);
 
+#if BUILDFLAG(IS_LINUX)
+// Triggers the Screen AI to be run once on the |browser|.
+void RunScreenAi(Browser* browser);
+#endif  // BUILDFLAG(IS_LINUX)
+
 }  // namespace chrome
 
 #endif  // CHROME_BROWSER_UI_BROWSER_COMMANDS_H_

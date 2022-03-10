@@ -638,6 +638,8 @@ const char* ToString(ax::mojom::Action action) {
       return "replaceSelectedText";
     case ax::mojom::Action::kResumeMedia:
       return "resumeMedia";
+    case ax::mojom::Action::kRunScreenAi:
+      return "runScreenAi";
     case ax::mojom::Action::kScrollBackward:
       return "scrollBackward";
     case ax::mojom::Action::kScrollForward:

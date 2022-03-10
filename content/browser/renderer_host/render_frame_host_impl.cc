@@ -2571,6 +2571,11 @@ void RenderFrameHostImpl::AccessibilityPerformAction(
       view->SetLastPointerType(ui::EventPointerType::kTouch);
   }
 
+  if (action_data.action == ax::mojom::Action::kRunScreenAi) {
+    // TODO(https://crbug.com/1278249): Get snapshot and run Screen AI.
+    return;
+  }
+
   render_accessibility_->PerformAction(action_data);
 }
 

@@ -405,6 +405,7 @@ chrome.automation.ActionType = {
   LOAD_INLINE_TEXT_BOXES: 'loadInlineTextBoxes',
   REPLACE_SELECTED_TEXT: 'replaceSelectedText',
   RESUME_MEDIA: 'resumeMedia',
+  RUN_SCREEN_AI: 'runScreenAi',
   SCROLL_BACKWARD: 'scrollBackward',
   SCROLL_DOWN: 'scrollDown',
   SCROLL_FORWARD: 'scrollForward',

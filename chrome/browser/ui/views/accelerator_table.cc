@@ -229,6 +229,9 @@ const AcceleratorMapping kAcceleratorMap[] = {
     {ui::VKEY_SPACE, ui::EF_CONTROL_DOWN, IDC_TOGGLE_COMMANDER},
 #endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
 #endif  // !BUILDFLAG(IS_MAC)
+#if BUILDFLAG(IS_LINUX)
+    {ui::VKEY_S, ui::EF_CONTROL_DOWN | ui::EF_SHIFT_DOWN, IDC_RUN_SCREEN_AI},
+#endif
 };
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)

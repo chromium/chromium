@@ -70,6 +70,10 @@
 #include "ui/base/ui_base_features.h"
 #include "ui/events/keycodes/keyboard_codes.h"
 
+#if BUILDFLAG(IS_LINUX)
+#include "ui/accessibility/accessibility_features.h"
+#endif
+
 #if BUILDFLAG(IS_MAC)
 #include "chrome/browser/ui/browser_commands_mac.h"
 #endif
@@ -884,6 +888,12 @@ bool BrowserCommandController::ExecuteCommandWithDisposition(
       ExecuteUIDebugCommand(id, browser_);
       break;
 
+#if BUILDFLAG(IS_LINUX)
+    case IDC_RUN_SCREEN_AI:
+      RunScreenAi(browser_);
+      break;
+#endif
+
     default:
       LOG(WARNING) << "Received Unimplemented Command: " << id;
       break;
@@ -1420,6 +1430,11 @@ void BrowserCommandController::UpdateCommandsForFullscreenMode() {
                                         main_not_fullscreen);
   command_updater_.UpdateCommandEnabled(
       IDC_FOCUS_INACTIVE_POPUP_FOR_ACCESSIBILITY, main_not_fullscreen);
+
+#if BUILDFLAG(IS_LINUX)
+  command_updater_.UpdateCommandEnabled(IDC_RUN_SCREEN_AI,
+                                        features::IsScreenAIEnabled());
+#endif
 
   // Show various bits of UI
   command_updater_.UpdateCommandEnabled(IDC_DEVELOPER_MENU, show_main_ui);
