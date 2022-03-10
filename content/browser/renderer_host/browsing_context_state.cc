@@ -5,6 +5,7 @@
 #include "content/browser/renderer_host/browsing_context_state.h"
 
 #include "content/browser/renderer_host/frame_tree_node.h"
+#include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/browser/renderer_host/render_view_host_impl.h"
 #include "content/common/content_navigation_policy.h"
 #include "services/network/public/cpp/web_sandbox_flags.h"
@@ -305,11 +306,63 @@ void BrowsingContextState::SendFramePolicyUpdatesToProxies(
   }
 }
 
+void BrowsingContextState::OnDidStartLoading() {
+  for (const auto& pair : proxy_hosts_)
+    pair.second->GetAssociatedRemoteFrame()->DidStartLoading();
+}
+
+void BrowsingContextState::OnDidStopLoading() {
+  for (const auto& pair : proxy_hosts_)
+    pair.second->GetAssociatedRemoteFrame()->DidStopLoading();
+}
+
 void BrowsingContextState::ResetProxyHosts() {
   for (const auto& pair : proxy_hosts_) {
     pair.second->site_instance_group()->RemoveObserver(this);
   }
   proxy_hosts_.clear();
+}
+
+void BrowsingContextState::UpdateOpener(SiteInstance* source_site_instance) {
+  for (const auto& pair : proxy_hosts_) {
+    if (pair.second->GetSiteInstance() == source_site_instance)
+      continue;
+    pair.second->UpdateOpener();
+  }
+}
+
+void BrowsingContextState::OnDidUpdateFrameOwnerProperties(
+    const blink::mojom::FrameOwnerProperties& properties) {
+  // Notify this frame's proxies if they live in a different process from its
+  // parent.  This is only currently needed for the allowFullscreen property,
+  // since that can be queried on RemoteFrame ancestors.
+  //
+  // TODO(alexmos): It would be sufficient to only send this update to proxies
+  // in the current FrameTree.
+  for (const auto& pair : proxy_hosts_) {
+    if (pair.second->site_instance_group() !=
+        parent_->GetSiteInstance()->group()) {
+      auto properties_for_remote_frame = properties.Clone();
+      RenderFrameProxyHost* proxy = pair.second.get();
+      proxy->GetAssociatedRemoteFrame()->SetFrameOwnerProperties(
+          std::move(properties_for_remote_frame));
+    }
+  }
+}
+
+void BrowsingContextState::ExecuteRemoteFramesBroadcastMethod(
+    base::RepeatingCallback<void(RenderFrameProxyHost*)> callback,
+    SiteInstance* instance_to_skip,
+    RenderFrameProxyHost* outer_delegate_proxy) {
+  for (const auto& pair : proxy_hosts_) {
+    if (outer_delegate_proxy == pair.second.get())
+      continue;
+    if (pair.second->GetSiteInstance() == instance_to_skip)
+      continue;
+    if (!pair.second->is_render_frame_proxy_live())
+      continue;
+    callback.Run(pair.second.get());
+  }
 }
 
 }  // namespace content

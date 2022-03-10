@@ -383,11 +383,6 @@ class CONTENT_EXPORT RenderFrameHostManager {
   // caller must ensure that the RenderFrame has been or will be cleaned up.
   void DiscardSpeculativeRenderFrameHostForShutdown();
 
-  // Notification methods to tell this RenderFrameHostManager that the frame it
-  // is responsible for has started or stopped loading a document.
-  void OnDidStartLoading();
-  void OnDidStopLoading();
-
   // Called when the client changes whether the frame's owner element in the
   // embedder document should be collapsed, that is, remove from the layout as
   // if it did not exist. Never called for main frames. Only has an effect for

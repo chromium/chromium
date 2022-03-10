@@ -208,6 +208,22 @@ class CONTENT_EXPORT BrowsingContextState
   // of WebContentsImpl.
   void ResetProxyHosts();
 
+  // Notification methods to tell this RenderFrameHostManager that the frame it
+  // is responsible for has started or stopped loading a document.
+  void OnDidStartLoading();
+  void OnDidStopLoading();
+
+  // Notify proxies that an opener has been updated.
+  void UpdateOpener(SiteInstance* source_site_instance);
+
+  void OnDidUpdateFrameOwnerProperties(
+      const blink::mojom::FrameOwnerProperties& properties);
+
+  void ExecuteRemoteFramesBroadcastMethod(
+      base::RepeatingCallback<void(RenderFrameProxyHost*)> callback,
+      SiteInstance* instance_to_skip,
+      RenderFrameProxyHost* outer_delegate_proxy);
+
  protected:
   friend class base::RefCounted<BrowsingContextState>;
 

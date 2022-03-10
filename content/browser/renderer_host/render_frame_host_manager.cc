@@ -602,12 +602,8 @@ void RenderFrameHostManager::DidChangeOpener(
 
   frame_tree_node_->SetOpener(opener);
 
-  for (const auto& pair :
-       render_frame_host_->browsing_context_state()->proxy_hosts()) {
-    if (pair.second->GetSiteInstance() == source_site_instance)
-      continue;
-    pair.second->UpdateOpener();
-  }
+  render_frame_host_->browsing_context_state()->UpdateOpener(
+      source_site_instance);
 
   if (render_frame_host_->GetSiteInstance() != source_site_instance)
     render_frame_host_->UpdateOpener();
@@ -1369,18 +1365,6 @@ void RenderFrameHostManager::DiscardSpeculativeRenderFrameHostForShutdown() {
   speculative_render_frame_host_.reset();
 }
 
-void RenderFrameHostManager::OnDidStartLoading() {
-  for (const auto& pair :
-       render_frame_host_->browsing_context_state()->proxy_hosts())
-    pair.second->GetAssociatedRemoteFrame()->DidStartLoading();
-}
-
-void RenderFrameHostManager::OnDidStopLoading() {
-  for (const auto& pair :
-       render_frame_host_->browsing_context_state()->proxy_hosts())
-    pair.second->GetAssociatedRemoteFrame()->DidStopLoading();
-}
-
 void RenderFrameHostManager::OnDidChangeCollapsedState(bool collapsed) {
   // If we are a MPArch fenced frame root then ask the outer delegate node
   // to collapse the frame. Note `IsFencedFrameRoot` returns true for
@@ -1425,21 +1409,8 @@ void RenderFrameHostManager::OnDidUpdateFrameOwnerProperties(
         std::move(properties_for_local_frame));
   }
 
-  // Notify this frame's proxies if they live in a different process from its
-  // parent.  This is only currently needed for the allowFullscreen property,
-  // since that can be queried on RemoteFrame ancestors.
-  //
-  // TODO(alexmos): It would be sufficient to only send this update to proxies
-  // in the current FrameTree.
-  for (const auto& pair :
-       render_frame_host_->browsing_context_state()->proxy_hosts()) {
-    if (pair.second->site_instance_group() != parent_instance->group()) {
-      auto properties_for_remote_frame = properties.Clone();
-      RenderFrameProxyHost* proxy = pair.second.get();
-      proxy->GetAssociatedRemoteFrame()->SetFrameOwnerProperties(
-          std::move(properties_for_remote_frame));
-    }
-  }
+  render_frame_host_->browsing_context_state()->OnDidUpdateFrameOwnerProperties(
+      properties);
 }
 
 RenderFrameHostManager::SiteInstanceDescriptor::SiteInstanceDescriptor(
@@ -3897,16 +3868,9 @@ void RenderFrameHostManager::ExecuteRemoteFramesBroadcastMethod(
   // frame as well.
   RenderFrameProxyHost* outer_delegate_proxy =
       IsMainFrameForInnerDelegate() ? GetProxyToOuterDelegate() : nullptr;
-  for (const auto& pair :
-       render_frame_host_->browsing_context_state()->proxy_hosts()) {
-    if (outer_delegate_proxy == pair.second.get())
-      continue;
-    if (pair.second->GetSiteInstance() == instance_to_skip)
-      continue;
-    if (!pair.second->is_render_frame_proxy_live())
-      continue;
-    callback.Run(pair.second.get());
-  }
+  render_frame_host_->browsing_context_state()
+      ->ExecuteRemoteFramesBroadcastMethod(callback, instance_to_skip,
+                                           outer_delegate_proxy);
 }
 
 void RenderFrameHostManager::EnsureRenderFrameHostVisibilityConsistent() {

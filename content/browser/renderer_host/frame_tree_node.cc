@@ -543,8 +543,8 @@ void FrameTreeNode::DidStartLoading(bool should_show_loading_ui,
   if (frame_tree() == frame_tree()->LoadingTree())
     DidChangeLoadProgress(blink::kInitialLoadProgress);
 
-  // Notify the RenderFrameHostManager of the event.
-  render_manager()->OnDidStartLoading();
+  // Notify the proxies of the event.
+  current_frame_host()->browsing_context_state()->OnDidStartLoading();
   base::UmaHistogramTimes(
       base::StrCat({"Navigation.DidStartLoading.",
                     IsMainFrame() ? "MainFrame" : "Subframe"}),
@@ -563,8 +563,8 @@ void FrameTreeNode::DidStopLoading() {
   if (frame_tree() == frame_tree()->LoadingTree())
     DidChangeLoadProgress(blink::kFinalLoadProgress);
 
-  // Notify the RenderFrameHostManager of the event.
-  render_manager()->OnDidStopLoading();
+  // Notify the proxies of the event.
+  current_frame_host()->browsing_context_state()->OnDidStopLoading();
 
   FrameTree* loading_tree = frame_tree()->LoadingTree();
   // When loading tree is null, ignore invoking DidStopLoadingNode as the frame
