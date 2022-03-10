@@ -12,6 +12,7 @@
 #include "chrome/browser/ui/hats/hats_service_factory.h"
 #include "chrome/browser/ui/hats/mock_hats_service.h"
 #include "chrome/browser/ui/hats/trust_safety_sentiment_service_factory.h"
+#include "chrome/common/channel_info.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/common/webui_url_constants.h"
@@ -24,6 +25,7 @@
 #include "components/signin/public/base/signin_pref_names.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "components/unified_consent/pref_names.h"
+#include "components/version_info/channel.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_renderer_host.h"
 #include "content/public/test/web_contents_tester.h"
@@ -462,9 +464,10 @@ TEST_F(TrustSafetySentimentServiceTest,
   profile()->GetTestingPrefService()->SetUserPref(
       prefs::kPrivacySandboxApisEnabledV2, std::make_unique<base::Value>(true));
 
-  SurveyBitsData expected_psd = {{"Stable channel", false},
-                                 {"3P cookies blocked", true},
-                                 {"Privacy Sandbox enabled", true}};
+  SurveyBitsData expected_psd = {
+      {"Stable channel", chrome::GetChannel() == version_info::Channel::STABLE},
+      {"3P cookies blocked", true},
+      {"Privacy Sandbox enabled", true}};
 
   EXPECT_CALL(
       *mock_hats_service(),
@@ -486,9 +489,10 @@ TEST_F(TrustSafetySentimentServiceTest,
   params.ntp_visits_max_range = "0";
   SetupFeatureParameters(params);
 
-  SurveyBitsData expected_psd = {{"Stable channel", false},
-                                 {"3P cookies blocked", false},
-                                 {"Privacy Sandbox enabled", false}};
+  SurveyBitsData expected_psd = {
+      {"Stable channel", chrome::GetChannel() == version_info::Channel::STABLE},
+      {"3P cookies blocked", false},
+      {"Privacy Sandbox enabled", false}};
 
   EXPECT_CALL(
       *mock_hats_service(),
@@ -510,9 +514,10 @@ TEST_F(TrustSafetySentimentServiceTest,
   params.ntp_visits_max_range = "0";
   SetupFeatureParameters(params);
 
-  SurveyBitsData expected_psd = {{"Stable channel", false},
-                                 {"3P cookies blocked", false},
-                                 {"Privacy Sandbox enabled", false}};
+  SurveyBitsData expected_psd = {
+      {"Stable channel", chrome::GetChannel() == version_info::Channel::STABLE},
+      {"3P cookies blocked", false},
+      {"Privacy Sandbox enabled", false}};
 
   EXPECT_CALL(
       *mock_hats_service(),
@@ -533,9 +538,10 @@ TEST_F(TrustSafetySentimentServiceTest, InteractedWithPrivacySandbox3NoticeOk) {
   params.ntp_visits_max_range = "0";
   SetupFeatureParameters(params);
 
-  SurveyBitsData expected_psd = {{"Stable channel", false},
-                                 {"3P cookies blocked", false},
-                                 {"Privacy Sandbox enabled", false}};
+  SurveyBitsData expected_psd = {
+      {"Stable channel", chrome::GetChannel() == version_info::Channel::STABLE},
+      {"3P cookies blocked", false},
+      {"Privacy Sandbox enabled", false}};
 
   EXPECT_CALL(*mock_hats_service(),
               LaunchSurvey(kHatsSurveyTriggerTrustSafetyPrivacySandbox3NoticeOk,
@@ -556,9 +562,10 @@ TEST_F(TrustSafetySentimentServiceTest,
   params.ntp_visits_max_range = "0";
   SetupFeatureParameters(params);
 
-  SurveyBitsData expected_psd = {{"Stable channel", false},
-                                 {"3P cookies blocked", false},
-                                 {"Privacy Sandbox enabled", false}};
+  SurveyBitsData expected_psd = {
+      {"Stable channel", chrome::GetChannel() == version_info::Channel::STABLE},
+      {"3P cookies blocked", false},
+      {"Privacy Sandbox enabled", false}};
 
   EXPECT_CALL(
       *mock_hats_service(),
