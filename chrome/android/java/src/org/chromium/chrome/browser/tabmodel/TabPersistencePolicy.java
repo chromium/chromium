@@ -122,4 +122,12 @@ public interface TabPersistencePolicy {
      * @param taskRunner The same SequencedTaskRunner as {@link TabPersistentStore} is using.
      */
     default void setTaskRunner(SequencedTaskRunner taskRunner) {}
+
+    /**
+     * @return Whether allows to skip loading the first active Tab during Startup when an overview
+     *         page is showing.
+     */
+    default boolean allowSkipLoadingTab() {
+        return false;
+    }
 }

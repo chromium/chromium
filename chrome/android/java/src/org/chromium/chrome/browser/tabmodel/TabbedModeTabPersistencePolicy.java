@@ -400,6 +400,11 @@ public class TabbedModeTabPersistencePolicy implements TabPersistencePolicy {
         mDestroyed = true;
     }
 
+    @Override
+    public boolean allowSkipLoadingTab() {
+        return true;
+    }
+
     private class CleanUpTabStateDataTask extends AsyncTask<Void> {
         private final Callback<List<String>> mFilesToDeleteCallback;
 
