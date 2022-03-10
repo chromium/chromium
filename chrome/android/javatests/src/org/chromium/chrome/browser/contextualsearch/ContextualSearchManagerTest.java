@@ -18,7 +18,6 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.graphics.Point;
 import android.os.Build;
-import android.os.Build.VERSION_CODES;
 import android.os.SystemClock;
 import android.support.test.InstrumentationRegistry;
 import android.text.TextUtils;
@@ -58,6 +57,7 @@ import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.FlakyTest;
+import org.chromium.base.test.util.MaxAndroidSdkLevel;
 import org.chromium.base.test.util.MinAndroidSdkLevel;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.base.test.util.UserActionTester;
@@ -2382,7 +2382,7 @@ public class ContextualSearchManagerTest {
     @Feature({"ContextualSearch"})
     @CommandLineFlags.Add(ChromeSwitches.DISABLE_TAB_MERGING_FOR_TESTING)
     @MinAndroidSdkLevel(Build.VERSION_CODES.N)
-    @DisableIf.Build(sdk_is_greater_than = VERSION_CODES.R, message = "crbug.com/1301017")
+    @MaxAndroidSdkLevel(value = Build.VERSION_CODES.R, reason = "crbug.com/1301017")
     @ParameterAnnotations.UseMethodParameter(FeatureParamProvider.class)
     public void testTabReparenting(@EnabledFeature int enabledFeature) throws Exception {
         // Move our "tap_test" tab to another activity.
