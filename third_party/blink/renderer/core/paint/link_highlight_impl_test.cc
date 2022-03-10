@@ -167,7 +167,8 @@ TEST_P(LinkHighlightImplTest, verifyWebViewImplIntegration) {
   // Find a target inside a scrollable div
   touch_event.SetPositionInWidget(gfx::PointF(20, 100));
   web_view_impl->EnableTapHighlightAtPoint(GetTargetedEvent(touch_event));
-  GetLinkHighlight().StartHighlightAnimationIfNeeded();
+  GetLinkHighlight().UpdateOpacityAndRequestAnimation();
+  UpdateAllLifecyclePhases();
   ASSERT_TRUE(highlight);
 
   // Ensure the timeline and animation was added to a host.
@@ -305,7 +306,7 @@ TEST_P(LinkHighlightImplTest, HighlightLayerEffectNode) {
   // After starting the highlight animation the effect node's opacity should
   // be 0.f as it will be overridden by the animation but may become visible
   // before the animation is destructed. See https://crbug.com/974160
-  GetLinkHighlight().StartHighlightAnimationIfNeeded();
+  GetLinkHighlight().UpdateOpacityAndRequestAnimation();
   EXPECT_EQ(0.f, highlight->Effect().Opacity());
   EXPECT_TRUE(highlight->Effect().HasActiveOpacityAnimation());
 
@@ -343,7 +344,11 @@ TEST_P(LinkHighlightImplTest, RemoveNodeDuringHighlightAnimation) {
   ASSERT_TRUE(touch_node);
 
   web_view_impl->EnableTapHighlightAtPoint(targeted_event);
-  GetLinkHighlight().StartHighlightAnimationIfNeeded();
+  GetLinkHighlight().UpdateOpacityAndRequestAnimation();
+  // The animation should not be created until the next lifecycle update
+  // after the effect node composition can be verified.
+  EXPECT_EQ(animation_count_before_highlight, AnimationCount());
+  UpdateAllLifecyclePhases();
   // The highlight should create one additional layer and animate it.
   EXPECT_EQ(layer_count_before_highlight + 1, LayerCount());
   EXPECT_EQ(animation_count_before_highlight + 1, AnimationCount());

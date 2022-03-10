@@ -24,6 +24,7 @@ class LayoutObject;
 class LocalFrame;
 class Node;
 class Page;
+class PaintArtifactCompositor;
 
 class CORE_EXPORT LinkHighlight final : public GarbageCollected<LinkHighlight> {
  public:
@@ -36,7 +37,7 @@ class CORE_EXPORT LinkHighlight final : public GarbageCollected<LinkHighlight> {
 
   void SetTapHighlight(Node*);
 
-  void StartHighlightAnimationIfNeeded();
+  void UpdateOpacityAndRequestAnimation();
 
   void AnimationHostInitialized(cc::AnimationHost&);
   void WillCloseAnimationHost();
@@ -48,6 +49,7 @@ class CORE_EXPORT LinkHighlight final : public GarbageCollected<LinkHighlight> {
   void UpdateBeforePrePaint();
   void UpdateAfterPrePaint();
   void Paint(GraphicsContext&) const;
+  void UpdateAfterPaint(const PaintArtifactCompositor*);
 
  private:
   friend class LinkHighlightImplTest;
