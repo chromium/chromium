@@ -123,8 +123,8 @@ class CONTENT_EXPORT NativeIOManager {
   // `host` must be owned by this manager. `host` may be deleted.
   void DidDeleteHostData(NativeIOHost* host, base::PassKey<NativeIOHost>);
 
-  storage::QuotaManagerProxy* quota_manager_proxy() const {
-    return quota_manager_proxy_.get();
+  const scoped_refptr<storage::QuotaManagerProxy>& quota_manager_proxy() const {
+    return quota_manager_proxy_;
   }
 
  private:
