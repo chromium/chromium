@@ -308,7 +308,7 @@ export class AppElement extends PolymerElement {
         Math.floor(document.documentElement.clientHeight));
   }
 
-  connectedCallback() {
+  override connectedCallback() {
     super.connectedCallback();
     this.setThemeListenerId_ =
         this.callbackRouter_.setTheme.addListener((theme: Theme) => {
@@ -350,13 +350,13 @@ export class AppElement extends PolymerElement {
     FocusOutlineManager.forDocument(document);
   }
 
-  disconnectedCallback() {
+  override disconnectedCallback() {
     super.disconnectedCallback();
     this.callbackRouter_.removeListener(this.setThemeListenerId_!);
     this.eventTracker_.removeAll();
   }
 
-  ready() {
+  override ready() {
     super.ready();
     this.pageHandler_.onAppRendered(WindowProxy.getInstance().now());
     // Let the browser breath and then render remaining elements.

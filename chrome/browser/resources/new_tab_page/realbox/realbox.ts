@@ -208,7 +208,7 @@ export class RealboxElement extends PolymerElement {
     return this.selectedMatch_ ? 'off' : 'polite';
   }
 
-  connectedCallback() {
+  override connectedCallback() {
     super.connectedCallback();
     this.autocompleteResultChangedListenerId_ =
         this.callbackRouter_.autocompleteResultChanged.addListener(
@@ -218,7 +218,7 @@ export class RealboxElement extends PolymerElement {
             this.onAutocompleteMatchImageAvailable_.bind(this));
   }
 
-  disconnectedCallback() {
+  override disconnectedCallback() {
     super.disconnectedCallback();
     this.callbackRouter_.removeListener(
         assert(this.autocompleteResultChangedListenerId_!));
@@ -226,7 +226,7 @@ export class RealboxElement extends PolymerElement {
         assert(this.autocompleteMatchImageAvailableListenerId_!));
   }
 
-  ready() {
+  override ready() {
     super.ready();
     performance.measure('realbox-creation', 'realbox-creation-start');
   }

@@ -66,7 +66,7 @@ class RealboxActionElement extends PolymerElement {
 
   action: Action;
   matchIndex: number;
-  ariaLabel: string;
+  override ariaLabel: string;
   private hintHtml_: string;
   private tooltip_: string;
 

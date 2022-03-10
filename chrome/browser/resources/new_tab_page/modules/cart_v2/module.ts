@@ -97,7 +97,7 @@ export class ChromeCartModuleElement extends I18nMixin
   private intersectionObserver_: IntersectionObserver|null = null;
   private currentMenuIndex_: number = 0;
 
-  connectedCallback() {
+  override connectedCallback() {
     super.connectedCallback();
     const leftProbe = this.$.cartCarousel.querySelector('#leftProbe');
     const rightProbe = this.$.cartCarousel.querySelector('#rightProbe');
@@ -125,7 +125,7 @@ export class ChromeCartModuleElement extends I18nMixin
         el => this.intersectionObserver_!.observe(el));
   }
 
-  disconnectedCallback() {
+  override disconnectedCallback() {
     super.disconnectedCallback();
     this.intersectionObserver_!.disconnect();
   }

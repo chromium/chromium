@@ -134,7 +134,7 @@ export class RealboxMatchElement extends PolymerElement {
     };
   }
 
-  ariaLabel: string;
+  override ariaLabel: string;
   hasImage: boolean;
   match: AutocompleteMatch;
   matchIndex: number;
@@ -153,7 +153,7 @@ export class RealboxMatchElement extends PolymerElement {
     this.pageHandler_ = RealboxBrowserProxy.getInstance().handler;
   }
 
-  ready() {
+  override ready() {
     super.ready();
 
     this.addEventListener('click', (event) => this.onMatchClick_(event));

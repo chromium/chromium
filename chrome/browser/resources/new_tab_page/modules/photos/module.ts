@@ -100,7 +100,7 @@ export class PhotosModuleElement extends I18nMixin
   private customArtworkUrl_: string;
   private showCustomArtWork_: boolean;
 
-  ready() {
+  override ready() {
     super.ready();
     this.addEventListener('detect-impression', () => {
       chrome.metricsPrivate.recordBoolean(

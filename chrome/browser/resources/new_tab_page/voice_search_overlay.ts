@@ -253,7 +253,7 @@ export class VoiceSearchOverlayElement extends PolymerElement {
     };
   }
 
-  connectedCallback() {
+  override connectedCallback() {
     super.connectedCallback();
     this.$.dialog.showModal();
     this.start();

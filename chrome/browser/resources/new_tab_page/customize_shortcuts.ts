@@ -60,7 +60,7 @@ export class CustomizeShortcutsElement extends PolymerElement {
         });
   }
 
-  connectedCallback() {
+  override connectedCallback() {
     super.connectedCallback();
     FocusOutlineManager.forDocument(document);
   }

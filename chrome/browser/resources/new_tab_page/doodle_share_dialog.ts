@@ -52,7 +52,7 @@ export class DoodleShareDialogElement extends PolymerElement {
     };
   }
 
-  title: string;
+  override title: string;
   url: Url;
 
   private onFacebookClick_() {

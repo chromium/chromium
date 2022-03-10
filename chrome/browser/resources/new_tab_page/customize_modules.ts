@@ -96,7 +96,7 @@ export class CustomizeModulesElement extends I18nMixin
 
   private setDisabledModulesListenerId_: number|null = null;
 
-  connectedCallback() {
+  override connectedCallback() {
     super.connectedCallback();
     this.setDisabledModulesListenerId_ =
         NewTabPageProxy.getInstance()
@@ -123,13 +123,13 @@ export class CustomizeModulesElement extends I18nMixin
     });
   }
 
-  disconnectedCallback() {
+  override disconnectedCallback() {
     super.disconnectedCallback();
     NewTabPageProxy.getInstance().callbackRouter.removeListener(
         this.setDisabledModulesListenerId_!);
   }
 
-  ready() {
+  override ready() {
     // |window.CrPolicyStrings.controlledSettingPolicy| populates the tooltip
     // text of <cr-policy-indicator indicator-type="devicePolicy" /> elements.
     // Needs to be called before |super.ready()| so that the string is available

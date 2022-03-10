@@ -45,7 +45,7 @@ export class DummyModuleElement extends I18nMixin
   }
 
   tiles: FooDataItem[];
-  title: string;
+  override title: string;
 
   constructor() {
     super();

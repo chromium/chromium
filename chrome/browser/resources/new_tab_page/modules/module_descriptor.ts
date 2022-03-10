@@ -85,7 +85,7 @@ export class ModuleDescriptorV2 extends ModuleDescriptor {
     this.height_ = height;
   }
 
-  get height() {
+  override get height() {
     return this.height_;
   }
 
@@ -93,7 +93,7 @@ export class ModuleDescriptorV2 extends ModuleDescriptor {
    * Like |ModuleDescriptor.initialize()| but returns an empty element on
    * timeout.
    */
-  async initialize(timeout: number): Promise<HTMLElement> {
+  override async initialize(timeout: number): Promise<HTMLElement> {
     return (await super.initialize(timeout)) || document.createElement('div');
   }
 }

@@ -112,7 +112,7 @@ export class ModulesElement extends PolymerElement {
   private setDisabledModulesListenerId_: number|null = null;
   private eventTracker_: EventTracker = new EventTracker();
 
-  connectedCallback() {
+  override connectedCallback() {
     super.connectedCallback();
     this.setDisabledModulesListenerId_ =
         NewTabPageProxy.getInstance()
@@ -125,14 +125,14 @@ export class ModulesElement extends PolymerElement {
     this.eventTracker_.add(window, 'keydown', this.onWindowKeydown_.bind(this));
   }
 
-  disconnectedCallback() {
+  override disconnectedCallback() {
     super.disconnectedCallback();
     NewTabPageProxy.getInstance().callbackRouter.removeListener(
         assert(this.setDisabledModulesListenerId_!));
     this.eventTracker_.removeAll();
   }
 
-  ready() {
+  override ready() {
     super.ready();
     this.renderModules_();
   }

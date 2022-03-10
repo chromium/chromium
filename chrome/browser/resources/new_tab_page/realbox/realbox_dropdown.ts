@@ -109,14 +109,14 @@ export class RealboxDropdownElement extends PolymerElement {
     this.pageHandler_ = RealboxBrowserProxy.getInstance().handler;
   }
 
-  connectedCallback() {
+  override connectedCallback() {
     super.connectedCallback();
     this.autocompleteMatchImageAvailableListenerId_ =
         this.callbackRouter_.autocompleteMatchImageAvailable.addListener(
             this.onAutocompleteMatchImageAvailable_.bind(this));
   }
 
-  disconnectedCallback() {
+  override disconnectedCallback() {
     super.disconnectedCallback();
     this.callbackRouter_.removeListener(
         this.autocompleteMatchImageAvailableListenerId_!);

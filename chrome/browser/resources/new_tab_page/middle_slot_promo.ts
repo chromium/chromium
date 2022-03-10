@@ -126,7 +126,7 @@ export class MiddleSlotPromoElement extends PolymerElement {
     return getTemplate();
   }
 
-  ready() {
+  override ready() {
     super.ready();
     renderPromo().then(container => {
       if (container) {

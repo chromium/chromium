@@ -104,7 +104,7 @@ export class CustomizeDialogElement extends PolymerElement {
     this.pageHandler_ = NewTabPageProxy.getInstance().handler;
   }
 
-  disconnectedCallback() {
+  override disconnectedCallback() {
     super.disconnectedCallback();
     this.intersectionObservers_.forEach(observer => {
       observer.disconnect();
@@ -112,7 +112,7 @@ export class CustomizeDialogElement extends PolymerElement {
     this.intersectionObservers_ = [];
   }
 
-  ready() {
+  override ready() {
     super.ready();
     this.intersectionObservers_ = [
       createScrollBorders(

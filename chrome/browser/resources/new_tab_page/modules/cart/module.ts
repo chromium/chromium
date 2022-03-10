@@ -108,7 +108,7 @@ export class ChromeCartModuleElement extends I18nMixin
   private firstThreeCartItems_: MerchantCart[];
   private eventTracker_: EventTracker = new EventTracker();
 
-  connectedCallback() {
+  override connectedCallback() {
     super.connectedCallback();
     const leftProbe = this.$.cartCarousel.querySelector('#leftProbe');
     const rightProbe = this.$.cartCarousel.querySelector('#rightProbe');
@@ -149,7 +149,7 @@ export class ChromeCartModuleElement extends I18nMixin
         () => this.onDiscountConsentContinued_());
   }
 
-  disconnectedCallback() {
+  override disconnectedCallback() {
     super.disconnectedCallback();
     this.intersectionObserver_!.disconnect();
 
