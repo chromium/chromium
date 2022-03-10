@@ -219,6 +219,17 @@ void CaptureModeCameraController::RemoveObserver(Observer* observer) {
   observers_.RemoveObserver(observer);
 }
 
+std::string CaptureModeCameraController::GetDisplayNameOfSelectedCamera()
+    const {
+  if (selected_camera_.is_valid()) {
+    const CameraInfo* camera_info =
+        GetCameraInfoById(selected_camera_, available_cameras_);
+    DCHECK(camera_info);
+    return camera_info->display_name;
+  }
+  return std::string();
+}
+
 void CaptureModeCameraController::SetSelectedCamera(CameraId camera_id) {
   if (selected_camera_ == camera_id)
     return;

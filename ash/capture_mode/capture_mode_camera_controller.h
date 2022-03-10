@@ -145,6 +145,10 @@ class ASH_EXPORT CaptureModeCameraController
   void AddObserver(Observer* observer);
   void RemoveObserver(Observer* observer);
 
+  // Returns the display name of `selected_camera_`. Returns an empty string if
+  // the selected camera is not set.
+  std::string GetDisplayNameOfSelectedCamera() const;
+
   // Sets the currently selected camera to the whose ID is the given
   // `camera_id`. If `camera_id` is invalid (see CameraId::is_valid()), this
   // clears the selected camera.
