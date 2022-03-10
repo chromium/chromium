@@ -63,39 +63,50 @@ AmbientAnimationAttributionProvider::~AmbientAnimationAttributionProvider() =
 // 1) The dynamic image assets and attribution text nodes in an animation are
 //    identified by 2 different sets of strings. Ex:
 //    Dynamic image asset ids:
-//    * "CrOS_AssetId1"
-//    * "CrOS_AssetId2"
+//    * "_CrOS_Photo_PositionA_1"
+//    * "_CrOS_Photo_PositionB_1"
 //    ...
-//    * "CrOS_AssetIdN"
+//    * "_CrOS_Photo_Position<P>_N"
 //    Attribution text node names:
-//    * "CrOS_AttributionNode1"
-//    * "CrOS_AttributionNode2"
+//    * "_CrOS_AttributionText1"
+//    * "_CrOS_AttributionText2"
 //    ...
-//    * "CrOS_AttributionNodeN"
-//    Each attribution text node should be assigned the attribution of the
-//    dynamic image asset who shares the same "index". "CrOS_AttributionNode1"
-//    is assigned the attribution for "CrOS_AssetId1", "CrOS_AttributionNode2"
-//    is assigned the attribution for "CrOS_AssetId2", and so on. This is easily
-//    accomplished by sorting the asset ids and attribution nodes as strings
-//    first, then iterating through them simultaneously when assigning. That is
-//    why |new_topics| is a flat_map (whose keys are inherently sorted), and
-//    GetAttributionNodeIds() returns the attribution node ids sorted by their
-//    string names.
+//    * "_CrOS_AttributionTextN"
+//
+//    To assign an image asset to an attribution text node, sort the
+//    asset ids by index first and position second (this is taken care of
+//    already by ParsedDynamicAssetId's comparison operator and the use of
+//    a sorted base::flat_map for |new_topics| below):
+//    1) "_CrOS_Photo_PositionA_1" (Index 1 Position A)
+//    2) "_CrOS_Photo_PositionB_1" (Index 1 Position B)
+//    3) "_CrOS_Photo_PositionA_2" (Index 2 Position A)
+//    4) "_CrOS_Photo_PositionB_2" (Index 2 Position B)
+//
+//    And sort the attribution text nodes by their name:
+//    1) "_CrOS_AttributionText1"
+//    2) "_CrOS_AttributionText2"
+//    3) "_CrOS_AttributionText3"
+//    4) "_CrOS_AttributionText4"
+//
+//    Afterwards, assign sorted asset <i> to sorted attribution node <i>. Note
+//    the animation is allowed to have fewer attribution nodes than dynamic
+//    image assets. In this case, the dynamic image assets left without a
+//    corresponding attribution text node are just ignored by design.
 //
 // 2) If a photo has no attribution (an empty string), just set its
 //    corresponding text node to be blank (an empty string). This is a
 //    corner case though. In practice, either all of the photos in the set
 //    should have an associated attribution, or none do.
 void AmbientAnimationAttributionProvider::OnDynamicImageAssetsRefreshed(
-    const base::flat_map</*asset_id*/ std::string,
+    const base::flat_map<ambient::util::ParsedDynamicAssetId,
                          std::reference_wrapper<const PhotoWithDetails>>&
         new_topics) {
-  DCHECK_EQ(new_topics.size(), attribution_node_ids_.size())
-      << "All ambient-mode animations should have an equal number of text "
-         "attribution nodes and dynamic image assets.";
+  DCHECK_GE(new_topics.size(), attribution_node_ids_.size())
+      << "All ambient-mode animations should have at least as many dynamic "
+         "image assets as text attribution nodes.";
   auto new_topics_iter = new_topics.begin();
   auto attribution_node_ids_iter = attribution_node_ids_.begin();
-  for (; new_topics_iter != new_topics.end();
+  for (; attribution_node_ids_iter != attribution_node_ids_.end();
        ++new_topics_iter, ++attribution_node_ids_iter) {
     const std::string& attribution_text = new_topics_iter->second.get().details;
     cc::SkottieResourceIdHash attribution_node_id = *attribution_node_ids_iter;

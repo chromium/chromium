@@ -71,22 +71,27 @@ class AmbientAnimationAttributionProviderTest : public ::testing::Test {
       absl::optional<std::string> asset_1_attribution) {
     gfx::ImageSkia test_image =
         gfx::test::CreateImageSkia(/*width=*/10, /*height=*/10);
-    base::flat_map</*asset_id*/ std::string,
+    base::flat_map<ambient::util::ParsedDynamicAssetId,
                    std::reference_wrapper<const PhotoWithDetails>>
         new_topics;
+    ambient::util::ParsedDynamicAssetId parsed_asset_id;
 
     PhotoWithDetails topic_0;
     if (asset_0_attribution) {
+      CHECK(ambient::util::ParseDynamicLottieAssetId(asset_id_0_,
+                                                     parsed_asset_id));
       topic_0.photo = test_image;
       topic_0.details = std::move(*asset_0_attribution);
-      new_topics.emplace(asset_id_0_, std::cref(topic_0));
+      new_topics.emplace(parsed_asset_id, std::cref(topic_0));
     }
 
     PhotoWithDetails topic_1;
     if (asset_1_attribution) {
+      CHECK(ambient::util::ParseDynamicLottieAssetId(asset_id_1_,
+                                                     parsed_asset_id));
       topic_1.photo = test_image;
       topic_1.details = std::move(*asset_1_attribution);
-      new_topics.emplace(asset_id_1_, std::cref(topic_1));
+      new_topics.emplace(parsed_asset_id, std::cref(topic_1));
     }
 
     attribution_provider_.OnDynamicImageAssetsRefreshed(new_topics);
@@ -125,6 +130,18 @@ class AmbientAnimationAttributionProviderTest1DynamicAsset
             "static-asset-id",
             GenerateLottieDynamicAssetIdForTesting(/*position=*/"A",
                                                    /*idx=*/1)) {}
+};
+
+class AmbientAnimationAttributionProviderTest2DynamicAssets1Attribution
+    : public AmbientAnimationAttributionProviderTest {
+ protected:
+  AmbientAnimationAttributionProviderTest2DynamicAssets1Attribution()
+      : AmbientAnimationAttributionProviderTest(
+            "static-text-node",
+            GenerateLottieCustomizableIdForTesting(1) + "Attribution",
+            GenerateLottieDynamicAssetIdForTesting(/*position=*/"A", /*idx=*/1),
+            GenerateLottieDynamicAssetIdForTesting(/*position=*/"A",
+                                                   /*idx=*/2)) {}
 };
 
 TEST_F(AmbientAnimationAttributionProviderTest2DynamicAssets,
@@ -182,6 +199,25 @@ TEST_F(AmbientAnimationAttributionProviderTest1DynamicAsset,
                            std::string(cc::kLottieDataWith2TextNode1Text))),
                   Pair(cc::HashSkottieResourceId(attribution_node_1_),
                        cc::SkottieTextPropertyValue("attribution_text_1"))));
+}
+
+TEST_F(AmbientAnimationAttributionProviderTest2DynamicAssets1Attribution,
+       HandlesFewerAttributionNodesThanAssets) {
+  RefreshDynamicImageAssets("attribution_text_0", "attribution_text_1");
+  // The static text node should the value that's baked into the lottie file
+  // (|kLottieDataWith2TextNode1Text|).
+  //
+  // The one attribution node should be assigned the very first asset's text,
+  // which is "attribution_text_0" in this case. The second asset's text
+  // ("attribution_text_1") should be unused because there are fewer text
+  // nodes than assets here.
+  EXPECT_THAT(animation_.text_map(),
+              UnorderedElementsAre(
+                  Pair(cc::HashSkottieResourceId(attribution_node_0_),
+                       cc::SkottieTextPropertyValue(
+                           std::string(cc::kLottieDataWith2TextNode1Text))),
+                  Pair(cc::HashSkottieResourceId(attribution_node_1_),
+                       cc::SkottieTextPropertyValue("attribution_text_0"))));
 }
 
 }  // namespace ash

@@ -14,33 +14,44 @@ namespace ambient {
 namespace util {
 namespace {
 using ::testing::Eq;
+using ::testing::Lt;
+using ::testing::Not;
 }  // namespace
 
 TEST(AmbientUtilTest, ParseDynamicLottieAssetId) {
-  std::string position;
-  int idx = 0;
-  EXPECT_FALSE(ParseDynamicLottieAssetId("StaticAsset", position, idx));
-  EXPECT_FALSE(ParseDynamicLottieAssetId("_CrOS_UnknownAsset", position, idx));
+  ParsedDynamicAssetId output;
+  EXPECT_FALSE(ParseDynamicLottieAssetId("StaticAsset", output));
+  EXPECT_FALSE(ParseDynamicLottieAssetId("_CrOS_UnknownAsset", output));
+  ASSERT_TRUE(ParseDynamicLottieAssetId("_CrOS_Photo_PositionA_1", output));
+  EXPECT_THAT(output.position_id, Eq("A"));
+  EXPECT_THAT(output.idx, Eq(1));
+  ASSERT_TRUE(ParseDynamicLottieAssetId("_CrOS_Photo_PositionB_1", output));
+  EXPECT_THAT(output.position_id, Eq("B"));
+  EXPECT_THAT(output.idx, Eq(1));
   ASSERT_TRUE(
-      ParseDynamicLottieAssetId("_CrOS_Photo_PositionA_1", position, idx));
-  EXPECT_THAT(position, Eq("A"));
-  EXPECT_THAT(idx, Eq(1));
+      ParseDynamicLottieAssetId("_CrOS_Photo_PositionTopLeft_1", output));
+  EXPECT_THAT(output.position_id, Eq("TopLeft"));
+  EXPECT_THAT(output.idx, Eq(1));
   ASSERT_TRUE(
-      ParseDynamicLottieAssetId("_CrOS_Photo_PositionB_1", position, idx));
-  EXPECT_THAT(position, Eq("B"));
-  EXPECT_THAT(idx, Eq(1));
-  ASSERT_TRUE(ParseDynamicLottieAssetId("_CrOS_Photo_PositionTopLeft_1",
-                                        position, idx));
-  EXPECT_THAT(position, Eq("TopLeft"));
-  EXPECT_THAT(idx, Eq(1));
-  ASSERT_TRUE(ParseDynamicLottieAssetId("_CrOS_Photo_PositionTopRight_2",
-                                        position, idx));
-  EXPECT_THAT(position, Eq("TopRight"));
-  EXPECT_THAT(idx, Eq(2));
-  ASSERT_TRUE(
-      ParseDynamicLottieAssetId("_CrOS_Photo_PositionA_1.png", position, idx));
-  EXPECT_THAT(position, Eq("A"));
-  EXPECT_THAT(idx, Eq(1));
+      ParseDynamicLottieAssetId("_CrOS_Photo_PositionTopRight_2", output));
+  EXPECT_THAT(output.position_id, Eq("TopRight"));
+  EXPECT_THAT(output.idx, Eq(2));
+  ASSERT_TRUE(ParseDynamicLottieAssetId("_CrOS_Photo_PositionA_1.png", output));
+  EXPECT_THAT(output.position_id, Eq("A"));
+  EXPECT_THAT(output.idx, Eq(1));
+}
+
+TEST(AmbientUtilTest, CompareDynamicLottieAssetId) {
+  EXPECT_THAT(ParsedDynamicAssetId({"A", 1}),
+              Lt(ParsedDynamicAssetId({"A", 2})));
+  EXPECT_THAT(ParsedDynamicAssetId({"A", 2}),
+              Not(Lt(ParsedDynamicAssetId({"A", 1}))));
+  EXPECT_THAT(ParsedDynamicAssetId({"A", 1}),
+              Lt(ParsedDynamicAssetId({"B", 1})));
+  EXPECT_THAT(ParsedDynamicAssetId({"B", 1}),
+              Not(Lt(ParsedDynamicAssetId({"A", 1}))));
+  EXPECT_THAT(ParsedDynamicAssetId({"A", 1}),
+              Not(Lt(ParsedDynamicAssetId({"A", 1}))));
 }
 
 }  // namespace util

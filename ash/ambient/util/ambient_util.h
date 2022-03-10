@@ -76,11 +76,21 @@ ASH_EXPORT bool IsAmbientModeTopicTypeAllowed(::ambient::TopicType topic);
 // Note this naming convention is agreed upon with the animation designer, so
 // any changes to the logic must be confirmed with them.
 //
-// Returns false and leaves the output arguments untouched if the |asset_id|
+// Returns false and leaves the output argument untouched if the |asset_id|
 // does not match the naming convention above.
+struct ASH_EXPORT ParsedDynamicAssetId {
+  // Orders by index first, then by position if indices match:
+  // "_CrOS_Photo_PositionA_1"
+  // "_CrOS_Photo_PositionB_1"
+  // "_CrOS_Photo_PositionA_2"
+  // "_CrOS_Photo_PositionB_2"
+  bool operator<(const ParsedDynamicAssetId& other) const;
+
+  std::string position_id;
+  int idx;
+};
 ASH_EXPORT bool ParseDynamicLottieAssetId(base::StringPiece asset_id,
-                                          std::string& position_id,
-                                          int& idx);
+                                          ParsedDynamicAssetId& parsed_output);
 
 }  // namespace util
 }  // namespace ambient

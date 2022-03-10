@@ -58,13 +58,13 @@ class ASH_EXPORT AmbientPhotoCache {
   // Write photo cache to disk at |cache_index| and call |callback| when
   // complete.
   virtual void WritePhotoCache(int cache_index,
-                               const ambient::PhotoCacheEntry& cache_entry,
+                               const ::ambient::PhotoCacheEntry& cache_entry,
                                base::OnceClosure callback) = 0;
 
   // Read the photo cache at |cache_index| and call |callback| when complete.
   // If a particular cache fails to be read, |cache_entry| will be empty.
   virtual void ReadPhotoCache(int cache_index,
-                              ambient::PhotoCacheEntry* cache_entry,
+                              ::ambient::PhotoCacheEntry* cache_entry,
                               base::OnceCallback<void()> callback) = 0;
 
   // Erase all stored files from disk.

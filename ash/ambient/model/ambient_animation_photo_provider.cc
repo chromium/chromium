@@ -239,8 +239,7 @@ class AmbientAnimationPhotoProvider::DynamicImageAssetImpl
       const base::WeakPtr<AmbientAnimationPhotoProvider>& provider)
       : asset_id_(asset_id), size_(std::move(size)), provider_(provider) {
     DCHECK(provider_);
-    if (!ambient::util::ParseDynamicLottieAssetId(asset_id, position_id_,
-                                                  idx_)) {
+    if (!ambient::util::ParseDynamicLottieAssetId(asset_id, parsed_asset_id_)) {
       LOG(DFATAL) << "Animation file is invalid. Failed to parse dynamic "
                      "image asset id "
                   << asset_id;
@@ -289,8 +288,13 @@ class AmbientAnimationPhotoProvider::DynamicImageAssetImpl
   const absl::optional<gfx::Size>& size() const { return size_; }
 
   const std::string& asset_id() const { return asset_id_; }
-  const std::string& position_id() const { return position_id_; }
-  int idx() const { return idx_; }
+  const ambient::util::ParsedDynamicAssetId& parsed_asset_id() const {
+    return parsed_asset_id_;
+  }
+  const std::string& position_id() const {
+    return parsed_asset_id_.position_id;
+  }
+  int idx() const { return parsed_asset_id_.idx; }
 
  private:
   static constexpr float kAnimationTimestampInvalid = -1.f;
@@ -337,8 +341,7 @@ class AmbientAnimationPhotoProvider::DynamicImageAssetImpl
   }
 
   const std::string asset_id_;
-  std::string position_id_;
-  int idx_;
+  ambient::util::ParsedDynamicAssetId parsed_asset_id_;
   const absl::optional<gfx::Size> size_;
   const base::WeakPtr<AmbientAnimationPhotoProvider> provider_;
   // Last animation frame timestamp that was observed.
@@ -506,11 +509,11 @@ AmbientAnimationPhotoProvider::GetTopicsToChooseFrom() const {
 }
 
 void AmbientAnimationPhotoProvider::NotifyObserverOfNewTopics() {
-  base::flat_map</*asset_id*/ std::string,
+  base::flat_map<ambient::util::ParsedDynamicAssetId,
                  std::reference_wrapper<const PhotoWithDetails>>
       new_topics;
   for (const auto& [asset, topic] : pending_dynamic_asset_topics_) {
-    new_topics.emplace(asset->asset_id(), std::cref(topic));
+    new_topics.emplace(asset->parsed_asset_id(), std::cref(topic));
   }
   for (Observer& obs : observers_) {
     obs.OnDynamicImageAssetsRefreshed(new_topics);

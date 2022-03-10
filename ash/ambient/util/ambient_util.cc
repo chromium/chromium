@@ -98,15 +98,19 @@ bool IsAmbientModeTopicTypeAllowed(::ambient::TopicType topic_type) {
   }
 }
 
+bool ParsedDynamicAssetId::operator<(const ParsedDynamicAssetId& other) const {
+  return idx == other.idx ? position_id < other.position_id : idx < other.idx;
+}
+
 bool ParseDynamicLottieAssetId(base::StringPiece asset_id,
-                               std::string& position_id,
-                               int& idx) {
+                               ParsedDynamicAssetId& parsed_output) {
   static const base::NoDestructor<std::string> kAssetIdPatternStr(
       base::StrCat({kLottieCustomizableIdPrefix,
                     R"(_Photo_Position([[:alnum:]]+)_([[:digit:]]+).*)"}));
   static const base::NoDestructor<RE2> kAssetIdPattern(
       kAssetIdPatternStr->data());
-  return RE2::FullMatch(asset_id.data(), *kAssetIdPattern, &position_id, &idx);
+  return RE2::FullMatch(asset_id.data(), *kAssetIdPattern,
+                        &parsed_output.position_id, &parsed_output.idx);
 }
 
 }  // namespace util

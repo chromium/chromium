@@ -334,7 +334,7 @@ class ASH_EXPORT AmbientPhotoController : public AmbientBackendModelObserver,
   scoped_refptr<base::SequencedTaskRunner> task_runner_;
 
   // Temporary data store when fetching images and details.
-  ambient::PhotoCacheEntry cache_entry_;
+  ::ambient::PhotoCacheEntry cache_entry_;
   gfx::ImageSkia image_;
   gfx::ImageSkia related_image_;
 

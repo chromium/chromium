@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "ash/ambient/model/ambient_backend_model.h"
+#include "ash/ambient/util/ambient_util.h"
 #include "ash/ash_export.h"
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
@@ -45,7 +46,7 @@ class ASH_EXPORT AmbientAnimationPhotoProvider
     // Note in the event that the same topic is assigned to multiple dynamic
     // assets, that topic will appear multiple times in |new_topics|.
     virtual void OnDynamicImageAssetsRefreshed(
-        const base::flat_map</*asset_id*/ std::string,
+        const base::flat_map<ambient::util::ParsedDynamicAssetId,
                              std::reference_wrapper<const PhotoWithDetails>>&
             new_topics) = 0;
 

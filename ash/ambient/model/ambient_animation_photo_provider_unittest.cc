@@ -36,6 +36,7 @@ using ::testing::AllOf;
 using ::testing::AnyOf;
 using ::testing::Each;
 using ::testing::ElementsAre;
+using ::testing::FieldsAre;
 using ::testing::Invoke;
 using ::testing::IsSubsetOf;
 using ::testing::Key;
@@ -80,7 +81,7 @@ class MockObserver : public AmbientAnimationPhotoProvider::Observer {
   MOCK_METHOD(
       void,
       OnDynamicImageAssetsRefreshed,
-      ((const base::flat_map<std::string,
+      ((const base::flat_map<ambient::util::ParsedDynamicAssetId,
                              std::reference_wrapper<const PhotoWithDetails>>&)),
       (override));
 
@@ -435,14 +436,8 @@ TEST_F(AmbientAnimationPhotoProviderTest,
   EXPECT_CALL(
       observer,
       OnDynamicImageAssetsRefreshed(AllOf(
-          ElementsAre(Key(GenerateLottieDynamicAssetIdForTesting(
-                          /*position=*/"A", /*idx=*/1)),
-                      Key(GenerateLottieDynamicAssetIdForTesting(
-                          /*position=*/"B", /*idx=*/1)),
-                      Key(GenerateLottieDynamicAssetIdForTesting(
-                          /*position=*/"C", /*idx=*/1)),
-                      Key(GenerateLottieDynamicAssetIdForTesting(
-                          /*position=*/"D", /*idx=*/1))),
+          ElementsAre(Key(FieldsAre("A", 1)), Key(FieldsAre("B", 1)),
+                      Key(FieldsAre("C", 1)), Key(FieldsAre("D", 1))),
           UnorderedElementsAre(Pair(_, TopicHasDetails("attribution-a")),
                                Pair(_, TopicHasDetails("attribution-b")),
                                Pair(_, TopicHasDetails("attribution-c")),
@@ -464,14 +459,8 @@ TEST_F(AmbientAnimationPhotoProviderTest,
   EXPECT_CALL(
       observer,
       OnDynamicImageAssetsRefreshed(AllOf(
-          ElementsAre(Key(GenerateLottieDynamicAssetIdForTesting(
-                          /*position=*/"A", /*idx=*/1)),
-                      Key(GenerateLottieDynamicAssetIdForTesting(
-                          /*position=*/"B", /*idx=*/1)),
-                      Key(GenerateLottieDynamicAssetIdForTesting(
-                          /*position=*/"C", /*idx=*/1)),
-                      Key(GenerateLottieDynamicAssetIdForTesting(
-                          /*position=*/"D", /*idx=*/1))),
+          ElementsAre(Key(FieldsAre("A", 1)), Key(FieldsAre("B", 1)),
+                      Key(FieldsAre("C", 1)), Key(FieldsAre("D", 1))),
           UnorderedElementsAre(Pair(_, TopicHasDetails("attribution-e")),
                                Pair(_, TopicHasDetails("attribution-f")),
                                Pair(_, TopicHasDetails("attribution-g")),
@@ -636,22 +625,24 @@ TEST_F(AmbientAnimationPhotoProviderTestMultipleAssetsPerPosition,
   EXPECT_CALL(
       observer,
       OnDynamicImageAssetsRefreshed(AllOf(
-          ElementsAre(Key(dynamic_asset_ids_[kPositionAIdx1]),
-                      Key(dynamic_asset_ids_[kPositionAIdx2]),
-                      Key(dynamic_asset_ids_[kPositionBIdx1]),
-                      Key(dynamic_asset_ids_[kPositionBIdx2])),
+          ElementsAre(Key(FieldsAre("A", 1)), Key(FieldsAre("B", 1)),
+                      Key(FieldsAre("A", 2)), Key(FieldsAre("B", 2))),
           UnorderedElementsAre(Pair(_, TopicHasDetails("attribution-a")),
                                Pair(_, TopicHasDetails("attribution-b")),
                                Pair(_, TopicHasDetails("attribution-c")),
                                Pair(_, TopicHasDetails("attribution-d"))))))
       .WillOnce(Invoke(
           [&](const base::flat_map<
-              std::string, std::reference_wrapper<const PhotoWithDetails>>&
-                  new_topics) {
+              ambient::util::ParsedDynamicAssetId,
+              std::reference_wrapper<const PhotoWithDetails>>& new_topics) {
             asset_a_2_prev_attribution =
-                new_topics.at(dynamic_asset_ids_[kPositionAIdx2]).get().details;
+                new_topics.at(ambient::util::ParsedDynamicAssetId({"A", 2}))
+                    .get()
+                    .details;
             asset_b_2_prev_attribution =
-                new_topics.at(dynamic_asset_ids_[kPositionBIdx2]).get().details;
+                new_topics.at(ambient::util::ParsedDynamicAssetId({"B", 2}))
+                    .get()
+                    .details;
           }));
   GetFrameDataForAssets(all_assets, /*timestamp=*/0);
   Mock::VerifyAndClearExpectations(&observer);
@@ -665,17 +656,15 @@ TEST_F(AmbientAnimationPhotoProviderTestMultipleAssetsPerPosition,
   AddImageToModel(test_image, "attribution-f");
 
   // Cycle 1 Frame 0
-  EXPECT_CALL(observer, OnDynamicImageAssetsRefreshed(ElementsAre(
-                            Pair(dynamic_asset_ids_[kPositionAIdx1],
-                                 TopicHasDetails(asset_a_2_prev_attribution)),
-                            Pair(dynamic_asset_ids_[kPositionAIdx2],
-                                 AnyOf(TopicHasDetails("attribution-e"),
-                                       TopicHasDetails("attribution-f"))),
-                            Pair(dynamic_asset_ids_[kPositionBIdx1],
-                                 TopicHasDetails(asset_b_2_prev_attribution)),
-                            Pair(dynamic_asset_ids_[kPositionBIdx2],
-                                 AnyOf(TopicHasDetails("attribution-e"),
-                                       TopicHasDetails("attribution-f"))))));
+  EXPECT_CALL(
+      observer,
+      OnDynamicImageAssetsRefreshed(ElementsAre(
+          Pair(FieldsAre("A", 1), TopicHasDetails(asset_a_2_prev_attribution)),
+          Pair(FieldsAre("B", 1), TopicHasDetails(asset_b_2_prev_attribution)),
+          Pair(FieldsAre("A", 2), AnyOf(TopicHasDetails("attribution-e"),
+                                        TopicHasDetails("attribution-f"))),
+          Pair(FieldsAre("B", 2), AnyOf(TopicHasDetails("attribution-e"),
+                                        TopicHasDetails("attribution-f"))))));
   GetFrameDataForAssets(all_assets, /*timestamp=*/0);
   Mock::VerifyAndClearExpectations(&observer);
 

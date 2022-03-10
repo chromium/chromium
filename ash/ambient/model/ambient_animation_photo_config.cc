@@ -19,21 +19,21 @@ void ParseDynamicAssetsIdsInAnimation(
     std::size_t& num_total_positions_out,
     std::size_t& num_assets_per_position_out) {
   base::flat_map<std::string, std::size_t> position_to_num_assets;
-  std::string position_id;
-  int idx = 0;
+  ambient::util::ParsedDynamicAssetId parsed_asset_id;
   for (const auto& [asset_id, _] : skottie_resource_metadata.asset_storage()) {
     if (!IsCustomizableLottieId(asset_id)) {
       DVLOG(4) << "Ignoring static image asset id";
       continue;
     }
 
-    if (!ambient::util::ParseDynamicLottieAssetId(asset_id, position_id, idx)) {
+    if (!ambient::util::ParseDynamicLottieAssetId(asset_id, parsed_asset_id)) {
       NOTREACHED() << "Lottie file contains invalid dynamic asset id "
                    << asset_id;
     }
 
     auto iter =
-        position_to_num_assets.try_emplace(position_id, /*initial count*/ 0)
+        position_to_num_assets
+            .try_emplace(parsed_asset_id.position_id, /*initial count*/ 0)
             .first;
     ++iter->second;
   }

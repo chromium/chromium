@@ -38,7 +38,7 @@ class ASH_EXPORT AmbientAnimationAttributionProvider
 
   // AmbientAnimationPhotoProvider::Observer implementation:
   void OnDynamicImageAssetsRefreshed(
-      const base::flat_map</*asset_id*/ std::string,
+      const base::flat_map<ambient::util::ParsedDynamicAssetId,
                            std::reference_wrapper<const PhotoWithDetails>>&
           new_topics) override;
 
