@@ -210,9 +210,10 @@ constexpr bool kUseLazyCommit = false;
 // Smaller slot spans may improve dirty memory fragmentation, but may also
 // increase address space usage.
 //
-// This is intended to roll out more broadly, but only enabled on Linux for now
-// to get performance bot and real-world data pre-A/B experiment.
-#if BUILDFLAG(IS_LINUX)
+// This is intended to roll out more broadly, but only enabled on Linux and
+// ARM64 macOS for now to get performance bot and real-world data pre-A/B
+// experiment. ARM64 macOS because it has a larger OS page size.
+#if BUILDFLAG(IS_LINUX) || (BUILDFLAG(IS_MAC) && defined(ARCH_CPU_ARM64))
 #define PA_PREFER_SMALLER_SLOT_SPANS
 #endif  // BUILDFLAG(IS_LINUX)
 
