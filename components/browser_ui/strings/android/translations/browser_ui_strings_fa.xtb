@@ -52,7 +52,7 @@
 <translation id="2289270750774289114">وقتی سایتی می‌خواهد دستگا‌ه‌های بلوتوث اطراف را پیدا کند، سؤال شود (توصیه می‌شود)</translation>
 <translation id="2315043854645842844">انتخاب گواهی سمت کلاینت توسط سیستم‌عامل پشتیبانی نمی‌شود.</translation>
 <translation id="2359808026110333948">ادامه</translation>
-<translation id="2379925928934107488">‏استفاده از طرح زمینه تیره برای سایت‌ها وقتی Chrome از طرح زمینه تیره استفاده می‌کند (هرگاه ممکن باشد)</translation>
+<translation id="2379925928934107488">‏استفاده از طرح‌زمینه تیره برای سایت‌ها وقتی Chrome از طرح‌زمینه تیره استفاده می‌کند (هرگاه ممکن باشد)</translation>
 <translation id="2402980924095424747"><ph name="MEGABYTES" /> مگابایت</translation>
 <translation id="2404630663942400771">{PERMISSIONS_SUMMARY_ALLOWED,plural, =1{<ph name="PERMISSION_1" />، <ph name="PERMISSION_2" />، و <ph name="NUM_MORE" /> اجازه دیگر مجاز هستند}one{<ph name="PERMISSION_1" />، <ph name="PERMISSION_2" />، و <ph name="NUM_MORE" /> اجازه دیگر مجاز هستند}other{<ph name="PERMISSION_1" />، <ph name="PERMISSION_2" />، و <ph name="NUM_MORE" /> اجازه دیگر مجاز هستند}}</translation>
 <translation id="2434158240863470628">بارگیری کامل شد <ph name="SEPARATOR" /> <ph name="BYTES_DOWNLOADED" /></translation>
@@ -66,7 +66,7 @@
 <translation id="2570922361219980984">‏دسترسی به مکان برای این دستگاه نیز خاموش است. آن را در <ph name="BEGIN_LINK" />تنظیمات Android<ph name="END_LINK" /> روشن کنید.</translation>
 <translation id="257931822824936280">بزرگ‌شده - برای کوچک کردن کلیک کنید.</translation>
 <translation id="2586657967955657006">بریده‌دان</translation>
-<translation id="2597457036804169544">طرح زمینه تیره برای سایت‌ها استفاده نشود</translation>
+<translation id="2597457036804169544">طرح‌زمینه تیره برای سایت‌ها استفاده نشود</translation>
 <translation id="2621115761605608342">جاوااسکریپت را برای سایتی خاص مجاز کنید.</translation>
 <translation id="2653659639078652383">ارسال</translation>
 <translation id="2677748264148917807">خروج</translation>
@@ -105,7 +105,7 @@
 <translation id="3600792891314830896">سایت‌هایی که صدا پخش می‌کنند بی‌صدا شوند</translation>
 <translation id="3744111561329211289">همگام‌سازی پس‌زمینه</translation>
 <translation id="3763247130972274048">در سمت راست یا چپ ویدیو دو ضربه سریع بزنید تا ۱۰ ثانیه رد شود</translation>
-<translation id="3797520601150691162">طرح زمینه تیره برای سایت خاصی استفاده نشود</translation>
+<translation id="3797520601150691162">طرح‌زمینه تیره برای سایت خاصی استفاده نشود</translation>
 <translation id="381841723434055211">شماره‌های تلفن</translation>
 <translation id="3835233591525155343">استفاده از دستگاه</translation>
 <translation id="385051799172605136">بازگشت</translation>
@@ -250,7 +250,7 @@
 <translation id="7302486331832100261">معمولاً اعلان‌ها را مسدود می‌کنید. برای مجاز کردن، روی «جزئیات» ضربه بزنید.</translation>
 <translation id="7423098979219808738">ابتدا سؤال شود</translation>
 <translation id="7423538860840206698">خواندن محتوای بریده‌دان مسدود شد</translation>
-<translation id="7425915948813553151">طرح زمینه تیره برای سایت‌ها</translation>
+<translation id="7425915948813553151">طرح‌زمینه تیره برای سایت‌ها</translation>
 <translation id="7521387064766892559">جاوا اسکریپت</translation>
 <translation id="7554752735887601236">سایتی درحال استفاده از میکروفونتان است</translation>
 <translation id="7561196759112975576">همیشه</translation>
