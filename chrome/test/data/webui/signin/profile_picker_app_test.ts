@@ -65,11 +65,6 @@ suite('ProfilePickerAppTest', function() {
         getComputedStyle(element.shadowRoot!.querySelector('#headerContainer')!)
             .backgroundColor,
         browserProxy.profileThemeInfo.themeFrameColor);
-    assertEquals(
-        getComputedStyle(element.shadowRoot!.querySelector('#backButton')!)
-            .getPropertyValue('--cr-icon-button-fill-color')
-            .trim(),
-        browserProxy.profileThemeInfo.themeFrameTextColor);
   }
 
   test('ProfilePickerMainView', async function() {
