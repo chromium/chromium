@@ -637,7 +637,6 @@ crbug.com/1050754 external/wpt/css/css-color-adjust/rendering/dark-color-scheme/
 crbug.com/1050754 external/wpt/css/css-color/system-color-compute.html [ Failure Pass ]
 crbug.com/1050754 external/wpt/css/css-contain/contain-size-grid-003.html [ Failure ]
 crbug.com/1050754 external/wpt/css/css-contain/contain-size-grid-004.html [ Failure ]
-crbug.com/1050754 external/wpt/css/css-contain/content-visibility/content-visibility-044.html [ Failure Pass ]
 crbug.com/1050754 external/wpt/css/css-contain/content-visibility/content-visibility-047.html [ Crash Failure Pass ]
 crbug.com/1050754 external/wpt/css/css-contain/content-visibility/content-visibility-053.html [ Crash Failure Pass ]
 crbug.com/1050754 external/wpt/css/css-contain/content-visibility/content-visibility-068.html [ Failure ]
