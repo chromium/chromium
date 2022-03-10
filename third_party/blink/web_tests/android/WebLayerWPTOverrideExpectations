@@ -1844,7 +1844,6 @@ crbug.com/1050754 external/wpt/webmessaging/multi-globals/broadcastchannel-curre
 crbug.com/1050754 external/wpt/webmessaging/multi-globals/broadcastchannel-incumbent.sub.html [ Pass ]
 crbug.com/1050754 external/wpt/webrtc-encoded-transform/RTCPeerConnection-insertable-streams-simulcast.https.html [ Pass Timeout ]
 crbug.com/1050754 external/wpt/webrtc-extensions/transfer-datachannel-service-worker.https.html [ Failure ]
-crbug.com/1050754 external/wpt/webrtc-extensions/transfer-datachannel.html [ Failure ]
 crbug.com/1050754 external/wpt/webrtc-insertable-streams/RTCPeerConnection-insertable-streams-simulcast.https.html [ Pass Timeout ]
 crbug.com/1050754 external/wpt/webrtc/RTCDTMFSender-ontonechange.https.html [ Failure Timeout ]
 crbug.com/1050754 external/wpt/webrtc/RTCIceConnectionState-candidate-pair.https.html [ Failure Pass ]
