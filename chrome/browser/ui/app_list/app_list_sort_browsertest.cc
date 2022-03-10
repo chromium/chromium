@@ -1155,7 +1155,7 @@ IN_PROC_BROWSER_TEST_F(AppListSortBrowserTest,
 // Verify that switching to tablet mode when the fade out animation in clamshell
 // mode is running works as expected.
 IN_PROC_BROWSER_TEST_F(AppListSortBrowserTest,
-                       TransitionToTabletModeDuringFadeOutAnimation) {
+                       DISABLED_TransitionToTabletModeDuringFadeOutAnimation) {
   ash::ShellTestApi().SetTabletModeEnabledForTest(false);
   ash::AcceleratorController::Get()->PerformActionIfEnabled(
       ash::TOGGLE_APP_LIST_FULLSCREEN, {});
@@ -1193,8 +1193,9 @@ IN_PROC_BROWSER_TEST_F(AppListSortBrowserTest,
 // Verify that switching to clamshell mode when the fade out animation in tablet
 // mode is running works as expected.
 // TODO(crbug.com/1302924): Flaky.
-IN_PROC_BROWSER_TEST_F(AppListSortBrowserTest,
-                       TransitionToClamshellModeDuringFadeOutAnimation) {
+IN_PROC_BROWSER_TEST_F(
+    AppListSortBrowserTest,
+    DISABLED_TransitionToClamshellModeDuringFadeOutAnimation) {
   ash::ShellTestApi().SetTabletModeEnabledForTest(true);
 
   ash::AcceleratorController::Get()->PerformActionIfEnabled(
