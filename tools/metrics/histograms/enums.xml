@@ -87015,6 +87015,13 @@ would be helpful to identify which type is being sent.
   <int value="2" label="No conflict, same global and unique id pair"/>
 </enum>
 
+<enum name="SyncIncomingInvalidationStatus">
+  <summary>Possible outcomes of handling incoming sync invalidations.</summary>
+  <int value="0" label="Success"/>
+  <int value="1" label="Failed to parse payload"/>
+  <int value="2" label="Contains only unknown data types"/>
+</enum>
+
 <enum name="SyncInitialState">
   <int value="0" label="Can attempt to start"/>
   <int value="1" label="No signed in user"/>

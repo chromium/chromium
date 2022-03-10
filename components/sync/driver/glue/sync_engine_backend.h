@@ -59,6 +59,24 @@ class SyncEngineBackend : public base::RefCountedThreadSafe<SyncEngineBackend>,
     base::TimeDelta poll_interval;
   };
 
+  // Used to record result of handling of incoming sync invalidations. These
+  // values are persisted to logs. Entries should not be renumbered and numeric
+  // values should never be reused.
+  enum class IncomingInvalidationStatus {
+    // The payload parsed successfully and contains at least one valid data
+    // type.
+    kSuccess = 0,
+
+    // Failed to parse incoming payload, relevant only for sync standalone
+    // invalidations.
+    kPayloadParseFailed = 1,
+
+    // All data types in the payload are unknown.
+    kUnknownModelType = 2,
+
+    kMaxValue = kUnknownModelType,
+  };
+
   SyncEngineBackend(const std::string& name,
                     const base::FilePath& sync_data_folder,
                     const base::WeakPtr<SyncEngineImpl>& host);
@@ -155,8 +173,9 @@ class SyncEngineBackend : public base::RefCountedThreadSafe<SyncEngineBackend>,
   // Notify about change in client id.
   void DoOnInvalidatorClientIdChange(const std::string& client_id);
 
-  // Forwards an invalidation to the sync manager for all data types from the
-  // |payload|.
+  // Forwards an invalidation to the sync manager for all data types extracted
+  // from the |payload|. This method is called for sync standalone
+  // invalidations.
   void DoOnInvalidationReceived(const std::string& payload);
 
   // Returns a ListValue representing Nigori node.
@@ -181,6 +200,9 @@ class SyncEngineBackend : public base::RefCountedThreadSafe<SyncEngineBackend>,
       ModelType Type) const;
 
   void LoadAndConnectNigoriController();
+
+  IncomingInvalidationStatus DoOnInvalidationReceivedImpl(
+      const std::string& payload);
 
   // Name used for debugging.
   const std::string name_;
