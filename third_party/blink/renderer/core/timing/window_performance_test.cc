@@ -911,31 +911,28 @@ TEST_F(WindowPerformanceTest, ElementTimingTraceEvent) {
   EXPECT_EQ("loading", events[0]->category);
   EXPECT_TRUE(events[0]->HasArg("frame"));
 
-  EXPECT_TRUE(events[0]->HasArg("data"));
-  base::Value arg;
-  EXPECT_TRUE(events[0]->GetArgAsValue("data", &arg));
-  base::DictionaryValue* arg_dict;
-  EXPECT_TRUE(arg.GetAsDictionary(&arg_dict));
-  std::string element_type;
-  EXPECT_TRUE(arg_dict->GetString("elementType", &element_type));
-  EXPECT_EQ(element_type, "image-paint");
-  EXPECT_EQ(arg_dict->FindIntKey("loadTime").value_or(-1), 1000);
-  EXPECT_EQ(arg_dict->FindIntKey("renderTime").value_or(-1), 2000);
-  EXPECT_EQ(arg_dict->FindDoubleKey("rectLeft").value_or(-1), 10);
-  EXPECT_EQ(arg_dict->FindDoubleKey("rectTop").value_or(-1), 20);
-  EXPECT_EQ(arg_dict->FindDoubleKey("rectWidth").value_or(-1), 30);
-  EXPECT_EQ(arg_dict->FindDoubleKey("rectHeight").value_or(-1), 40);
-  std::string identifier;
-  EXPECT_TRUE(arg_dict->GetString("identifier", &identifier));
-  EXPECT_EQ(identifier, "identifier");
-  EXPECT_EQ(arg_dict->FindIntKey("naturalWidth").value_or(-1), 200);
-  EXPECT_EQ(arg_dict->FindIntKey("naturalHeight").value_or(-1), 300);
-  std::string element_id;
-  EXPECT_TRUE(arg_dict->GetString("elementId", &element_id));
-  EXPECT_EQ(element_id, "id");
-  std::string url;
-  EXPECT_TRUE(arg_dict->GetString("url", &url));
-  EXPECT_EQ(url, "url");
+  ASSERT_TRUE(events[0]->HasDictArg("data"));
+  base::Value::Dict arg_dict = events[0]->GetKnownArgAsDict("data");
+  std::string* element_type = arg_dict.FindString("elementType");
+  ASSERT_TRUE(element_type);
+  EXPECT_EQ(*element_type, "image-paint");
+  EXPECT_EQ(arg_dict.FindInt("loadTime").value_or(-1), 1000);
+  EXPECT_EQ(arg_dict.FindInt("renderTime").value_or(-1), 2000);
+  EXPECT_EQ(arg_dict.FindDouble("rectLeft").value_or(-1), 10);
+  EXPECT_EQ(arg_dict.FindDouble("rectTop").value_or(-1), 20);
+  EXPECT_EQ(arg_dict.FindDouble("rectWidth").value_or(-1), 30);
+  EXPECT_EQ(arg_dict.FindDouble("rectHeight").value_or(-1), 40);
+  std::string* identifier = arg_dict.FindString("identifier");
+  ASSERT_TRUE(identifier);
+  EXPECT_EQ(*identifier, "identifier");
+  EXPECT_EQ(arg_dict.FindInt("naturalWidth").value_or(-1), 200);
+  EXPECT_EQ(arg_dict.FindInt("naturalHeight").value_or(-1), 300);
+  std::string* element_id = arg_dict.FindString("elementId");
+  ASSERT_TRUE(element_id);
+  EXPECT_EQ(*element_id, "id");
+  std::string* url = arg_dict.FindString("url");
+  ASSERT_TRUE(url);
+  EXPECT_EQ(*url, "url");
 }
 
 TEST_F(WindowPerformanceTest, InteractionIdInTrace) {
@@ -969,27 +966,26 @@ TEST_F(WindowPerformanceTest, InteractionIdInTrace) {
   EXPECT_EQ("devtools.timeline", events[0]->category);
   EXPECT_EQ("devtools.timeline", events[1]->category);
 
-  EXPECT_TRUE(events[0]->HasArg("data"));
-  base::Value arg;
-  EXPECT_TRUE(events[0]->GetArgAsValue("data", &arg));
-  base::DictionaryValue* arg_dict;
-  EXPECT_TRUE(arg.GetAsDictionary(&arg_dict));
-  EXPECT_GT(arg_dict->FindIntKey("interactionId").value_or(-1), 0);
-  std::string event_name;
-  EXPECT_TRUE(arg_dict->GetString("type", &event_name));
-  EXPECT_EQ(event_name, "pointerdown");
+  ASSERT_TRUE(events[0]->HasDictArg("data"));
+  base::Value::Dict arg_dict = events[0]->GetKnownArgAsDict("data");
+  EXPECT_GT(arg_dict.FindInt("interactionId").value_or(-1), 0);
+  std::string* event_name = arg_dict.FindString("type");
+  ASSERT_TRUE(event_name);
+  EXPECT_EQ(*event_name, "pointerdown");
 
-  EXPECT_TRUE(events[1]->GetArgAsValue("data", &arg));
-  EXPECT_TRUE(arg.GetAsDictionary(&arg_dict));
-  EXPECT_GT(arg_dict->FindIntKey("interactionId").value_or(-1), 0);
-  EXPECT_TRUE(arg_dict->GetString("type", &event_name));
-  EXPECT_EQ(event_name, "pointerup");
+  ASSERT_TRUE(events[1]->HasDictArg("data"));
+  arg_dict = events[1]->GetKnownArgAsDict("data");
+  EXPECT_GT(arg_dict.FindInt("interactionId").value_or(-1), 0);
+  event_name = arg_dict.FindString("type");
+  ASSERT_TRUE(event_name);
+  EXPECT_EQ(*event_name, "pointerup");
 
-  EXPECT_TRUE(events[2]->GetArgAsValue("data", &arg));
-  EXPECT_TRUE(arg.GetAsDictionary(&arg_dict));
-  EXPECT_GT(arg_dict->FindIntKey("interactionId").value_or(-1), 0);
-  EXPECT_TRUE(arg_dict->GetString("type", &event_name));
-  EXPECT_EQ(event_name, "click");
+  ASSERT_TRUE(events[2]->HasDictArg("data"));
+  arg_dict = events[2]->GetKnownArgAsDict("data");
+  EXPECT_GT(arg_dict.FindInt("interactionId").value_or(-1), 0);
+  event_name = arg_dict.FindString("type");
+  ASSERT_TRUE(event_name);
+  EXPECT_EQ(*event_name, "click");
 }
 
 TEST_F(WindowPerformanceTest, InteractionID) {
