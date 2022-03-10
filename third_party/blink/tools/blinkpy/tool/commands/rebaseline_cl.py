@@ -334,8 +334,16 @@ class RebaselineCL(AbstractParallelRebaselineCommand):
                     test = test.strip()
                     if not test or test.startswith('#'):
                         continue
-                    for build in builds_to_results:
-                        test_baseline_set.add(test, build)
+                    for build, results in builds_to_results.items():
+                        if self._resultdb_fetcher:
+                            # In the current flow, similar check to check for the presence of
+                            # a result is done later in rebaseline by sending the request again.
+                            # This can be done here itself to get an optimal test_baseline_set.
+                            if results and results.fail_result_exists_resultdb(
+                                    test):
+                                test_baseline_set.add(test, build)
+                        else:
+                            test_baseline_set.add(test, build)
         except IOError:
             _log.info('Could not read test names from %s', filename)
         return test_baseline_set
@@ -352,8 +360,12 @@ class RebaselineCL(AbstractParallelRebaselineCommand):
         """
         test_baseline_set = TestBaselineSet(self._tool)
         for test in tests:
-            for build in builds_to_results:
-                test_baseline_set.add(test, build)
+            for build, results in builds_to_results.items():
+                if self._resultdb_fetcher:
+                    if results and results.fail_result_exists_resultdb(test):
+                        test_baseline_set.add(test, build)
+                else:
+                    test_baseline_set.add(test, build)
         return test_baseline_set
 
     def _make_test_baseline_set(self, builds_to_results, only_changed_tests):
@@ -373,7 +385,12 @@ class RebaselineCL(AbstractParallelRebaselineCommand):
         """
         builds_to_tests = {}
         for build, results in builds_to_results.items():
-            builds_to_tests[build] = self._tests_to_rebaseline(build, results)
+            if self._resultdb_fetcher:
+                builds_to_tests[build] = self._tests_to_rebaseline_resultDB(
+                    build, results)
+            else:
+                builds_to_tests[build] = self._tests_to_rebaseline(
+                    build, results)
         if only_changed_tests:
             files_in_cl = self._tool.git().changed_files(diff_filter='AM')
             # In the changed files list from Git, paths always use "/" as
@@ -398,6 +415,35 @@ class RebaselineCL(AbstractParallelRebaselineCommand):
         finder = PathFinder(self._tool.filesystem)
         return self._tool.filesystem.relpath(
             finder.web_tests_dir(), finder.path_from_chromium_base()) + '/'
+
+    def _tests_to_rebaseline_resultDB(self, build, web_test_results):
+        """Fetches a list of tests that should be rebaselined for some build.
+
+        Args:
+            build: A Build instance.
+            web_test_results: A WebTestResults instance or None.
+
+        Returns:
+            A sorted list of tests to rebaseline for this build.
+        """
+        if web_test_results is None:
+            return []
+
+        failed_tests = web_test_results.failed_unexpected_resultdb()
+        failed_test_names = [
+            r['testId'][len('ninja://:blink_web_tests') + 1:]
+            for r in failed_tests
+        ]
+
+        # we do not create baselines for reftests.
+        port_name = self._tool.builders.port_name_for_builder_name(
+            build.builder_name)
+        port = self._tool.port_factory.get(port_name, None)
+        tests_to_rebaseline = []
+        for test_name in failed_test_names:
+            if not port.reference_files(test_name):
+                tests_to_rebaseline.append(test_name)
+        return tests_to_rebaseline
 
     def _tests_to_rebaseline(self, build, web_test_results):
         """Fetches a list of tests that should be rebaselined for some build.

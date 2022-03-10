@@ -148,34 +148,43 @@ class RebaselineCLTest(BaseTestCase, LoggingTestCase):
                 },
             },
         })
-        self.web_test_resultsdb = WebTestResults([
-            {
-                "name": "tests/two/image-fail.html/results/2",
-                "testId": "ninja://:blink_web_tests/two/image-fail.html",
-                "resultId": "2",
-                "variant": {
-                    "def": {
-                        "builder": "",
-                        "os": "",
-                        "test_suite": "blink_web_tests"
-                    }
-                },
-                "status": "FAIL"
+        self.web_test_resultsdb = WebTestResults([{
+            "name": "tests/two/image-fail.html/results/2",
+            "testId": "ninja://:blink_web_tests/two/image-fail.html",
+            "resultId": "2",
+            "variant": {
+                "def": {
+                    "builder": "",
+                    "os": "",
+                    "test_suite": "blink_web_tests"
+                }
             },
-            {
-                "name": "tests/one/missing.html/results/1",
-                "testId": "ninja://:blink_web_tests/one/image-fail.html",
-                "resultId": "1",
-                "variant": {
-                    "def": {
-                        "builder": "",
-                        "os": "",
-                        "test_suite": "blink_web_tests"
-                    }
-                },
-                "status": "FAIL"
+            "status": "FAIL"
+        }, {
+            "name": "tests/one/missing.html/results/1",
+            "testId": "ninja://:blink_web_tests/one/missing.html",
+            "resultId": "1",
+            "variant": {
+                "def": {
+                    "builder": "",
+                    "os": "",
+                    "test_suite": "blink_web_tests"
+                }
             },
-        ])
+            "status": "FAIL"
+        }, {
+            "name": "tests/one/crash.html/results/3",
+            "testId": "ninja://:blink_web_tests/one/crash.html",
+            "resultId": "3",
+            "variant": {
+                "def": {
+                    "builder": "",
+                    "os": "",
+                    "test_suite": "blink_web_tests"
+                }
+            },
+            "status": "CRASH"
+        }])
         self.test_artifacts_list = {
             "tests/one/missing.html/results/1": [{
                 "name":
@@ -192,6 +201,14 @@ class RebaselineCLTest(BaseTestCase, LoggingTestCase):
                 "fetchUrl":
                 "https://results.usercontent.cr.dev/invocations/task-chromium-swarm.appspot.com-2/tests/ninja:%2F%2F:blink_web_tests%2Ftwo%2Fimage-fail.html/results/artifacts/actual_image?token=2",
                 "contentType": "image/png",
+            }],
+            "tests/one/crash.html/results/3": [{
+                "name":
+                "invocations/task-chromium-swarm.appspot.com-2/tests/ninja:%2F%2F:blink_web_tests%2Ftwo%2Fcrash.html/results/3",
+                "artifactId": "actual_text",
+                "fetchUrl":
+                "https://results.usercontent.cr.dev/invocations/task-chromium-swarm.appspot.com-2/tests/ninja:%2F%2F:blink_web_tests%2Fone%2Fcrash.html/results/artifacts/actual_text?token=3",
+                "contentType": "text",
             }]
         }
 
@@ -250,6 +267,26 @@ class RebaselineCLTest(BaseTestCase, LoggingTestCase):
         options.update(kwargs)
         return optparse.Values(dict(**options))
 
+    @staticmethod
+    def command_options_resultDB(**kwargs):
+        options = {
+            'dry_run': False,
+            'only_changed_tests': False,
+            'trigger_jobs': True,
+            'fill_missing': None,
+            'optimize': True,
+            'results_directory': None,
+            'test_name_file': None,
+            'verbose': False,
+            'builders': [],
+            'patchset': None,
+            'use_blink_try_bots_only': False,
+            'flag_specific': None,
+            'resultDB': True
+        }
+        options.update(kwargs)
+        return optparse.Values(dict(**options))
+
     def test_execute_basic(self):
         # By default, with no arguments or options, rebaseline-cl rebaselines
         # all of the tests that unexpectedly failed.
@@ -261,6 +298,23 @@ class RebaselineCLTest(BaseTestCase, LoggingTestCase):
             'INFO: Rebaselining one/missing.html\n',
             'INFO: Rebaselining one/slow-fail.html\n',
             'INFO: Rebaselining one/text-fail.html\n',
+            'INFO: Rebaselining two/image-fail.html\n',
+        ])
+
+    def test_execute_basic_resultDB(self):
+        # By default, with no arguments or options, rebaseline-cl rebaselines
+        # all of the tests that unexpectedly failed.
+        for build in self.builds:
+            self.tool.results_fetcher.set_results_to_resultdb(
+                build, self.web_test_resultsdb)
+            self.tool.results_fetcher.set_artifact_list_for_test(
+                build, self.test_artifacts_list)
+        exit_code = self.command.execute(self.command_options_resultDB(), [],
+                                         self.tool)
+        self.assertEqual(exit_code, 0)
+        self.assertLog([
+            'INFO: Finished try jobs found for all try bots.\n',
+            'INFO: Rebaselining one/missing.html\n',
             'INFO: Rebaselining two/image-fail.html\n',
         ])
 

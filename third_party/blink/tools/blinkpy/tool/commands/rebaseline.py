@@ -340,19 +340,20 @@ class AbstractParallelRebaselineCommand(AbstractRebaseliningCommand):
         # test of interest than sending out the RPC for every test.
         webtest_results_resultdb = self._tool.results_fetcher.fetch_results_from_resultdb_layout_tests(
             self._tool, build, True)
-        results_list = webtest_results_resultdb.test_results_resultdb()
         artifact_fetch_urls = []
-        done = False
-        for result in results_list:
-            if done:
-                break
-            if test_name in result['testId']:
-                artifact_list = self._tool.results_fetcher.get_artifact_list_for_test(
-                    self._tool, result['name'])
-                for artifact in artifact_list:
-                    if 'actual' in artifact['artifactId']:
-                        artifact_fetch_urls.append(artifact['fetchUrl'])
-                    done = True
+        if webtest_results_resultdb:
+            results_list = webtest_results_resultdb.test_results_resultdb()
+            done = False
+            for result in results_list:
+                if done:
+                    break
+                if test_name in result['testId']:
+                    artifact_list = self._tool.results_fetcher.get_artifact_list_for_test(
+                        self._tool, result['name'])
+                    for artifact in artifact_list:
+                        if 'actual' in artifact['artifactId']:
+                            artifact_fetch_urls.append(artifact['fetchUrl'])
+                        done = True
         return artifact_fetch_urls
 
     def _rebaseline_commands(self, test_baseline_set, options):
@@ -361,6 +362,8 @@ class AbstractParallelRebaselineCommand(AbstractRebaseliningCommand):
         copy_baseline_commands = []
         rebaseline_commands = []
         lines_to_remove = {}
+        fetch_urls = []
+        suffixes = []
 
         builders_to_fetch_from = self._builders_to_fetch_from(
             test_baseline_set.all_builders())
@@ -368,10 +371,13 @@ class AbstractParallelRebaselineCommand(AbstractRebaseliningCommand):
             if build.builder_name not in builders_to_fetch_from:
                 continue
 
-            suffixes = list(self._suffixes_for_actual_failures(test, build))
-            # Sorting it here so we can have a deterministic order for comparing
-            # the suffixes in unit tests.
-            suffixes.sort()
+            if options.resultDB:
+                fetch_urls = self.baseline_fetch_url_resultdb(test, build)
+                suffixes = list(
+                    self._suffixes_for_actual_failures_resultdb(test, build))
+            else:
+                suffixes = list(self._suffixes_for_actual_failures(
+                    test, build))
             if not suffixes:
                 # Only try to remove the expectation if the test
                 #   1. ran and passed ([ Skip ], [ WontFix ] should be kept)
@@ -386,6 +392,9 @@ class AbstractParallelRebaselineCommand(AbstractRebaseliningCommand):
                     lines_to_remove[test].append(port_name)
                 continue
 
+            # Sorting it here so we can have a deterministic order for comparing
+            # the suffixes in unit tests.
+            suffixes.sort()
             args = []
             if options.verbose:
                 args.append('--verbose')
@@ -426,14 +435,15 @@ class AbstractParallelRebaselineCommand(AbstractRebaseliningCommand):
                         build.builder_name)):
                 args.extend(['--flag-specific', options.flag_specific])
 
-            step_name = self._tool.results_fetcher.get_layout_test_step_name(
-                build)
+            step_name = ""
+            if not options.resultDB:
+                step_name = self._tool.results_fetcher.get_layout_test_step_name(
+                    build)
             if step_name:
                 args.extend(['--step-name', step_name])
 
             if options.resultDB:
                 args.append('--resultDB')
-                fetch_urls = self.baseline_fetch_url_resultdb(test, build)
                 args.extend(['--fetch-url', ','.join(fetch_urls)])
 
             rebaseline_command = [
@@ -464,7 +474,10 @@ class AbstractParallelRebaselineCommand(AbstractRebaseliningCommand):
                 _log.debug('Could not add file based off output "%s"', stdout)
         return change_set
 
-    def _optimize_baselines(self, test_baseline_set, verbose=False):
+    def _optimize_baselines(self,
+                            test_baseline_set,
+                            verbose=False,
+                            resultDB=False):
         """Returns a list of commands to run in parallel to de-duplicate baselines."""
         tests_to_suffixes = collections.defaultdict(set)
         builders_to_fetch_from = self._builders_to_fetch_from(
@@ -484,8 +497,12 @@ class AbstractParallelRebaselineCommand(AbstractRebaseliningCommand):
                     build.builder_name):
                 continue
 
-            tests_to_suffixes[test].update(
-                self._suffixes_for_actual_failures(test, build))
+            if resultDB:
+                tests_to_suffixes[test].update(
+                    self._suffixes_for_actual_failures_resultdb(test, build))
+            else:
+                tests_to_suffixes[test].update(
+                    self._suffixes_for_actual_failures(test, build))
 
         optimize_commands = []
         for test, suffixes in tests_to_suffixes.items():
@@ -585,10 +602,8 @@ class AbstractParallelRebaselineCommand(AbstractRebaseliningCommand):
         copy_baseline_commands, rebaseline_commands, extra_lines_to_remove = self._rebaseline_commands(
             test_baseline_set, options)
         lines_to_remove = {}
-
         self._run_in_parallel(copy_baseline_commands)
         lines_to_remove = self._run_in_parallel(rebaseline_commands)
-
         for test in extra_lines_to_remove:
             if test in lines_to_remove:
                 lines_to_remove[test] = (
@@ -601,7 +616,8 @@ class AbstractParallelRebaselineCommand(AbstractRebaseliningCommand):
 
         if options.optimize:
             self._run_in_parallel(
-                self._optimize_baselines(test_baseline_set, options.verbose))
+                self._optimize_baselines(test_baseline_set, options.verbose,
+                                         options.resultDB))
 
         self._tool.git().add_list(self.unstaged_baselines())
 
@@ -636,6 +652,20 @@ class AbstractParallelRebaselineCommand(AbstractRebaseliningCommand):
 
     def _web_tests_dir(self):
         return self._tool.port_factory.get().web_tests_dir()
+
+    def _suffixes_for_actual_failures_resultdb(self, test, build):
+        suffixes = set()
+        fetch_url_list = self.baseline_fetch_url_resultdb(test, build)
+        for artifact_fetch_url in fetch_url_list:
+            if 'actual_image' in artifact_fetch_url:
+                suffixes.add('png')
+            if 'actual_text' in artifact_fetch_url:
+                suffixes.add('txt')
+            if 'actual_audio' in artifact_fetch_url:
+                suffixes.add('wav')
+            if self._tool.builders.is_wpt_builder(build.builder_name):
+                suffixes.add('txt')
+        return suffixes
 
     def _suffixes_for_actual_failures(self, test, build):
         """Gets the baseline suffixes for actual mismatch failures in some results.

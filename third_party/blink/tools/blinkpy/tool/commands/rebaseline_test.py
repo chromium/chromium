@@ -67,6 +67,8 @@ class RebaselineTest(AbstractRebaseliningCommand):
                     suffix = 'txt'
                 if 'actual_audio' in artifact_fetch_url:
                     suffix = 'wav'
+                if self._tool.builders.is_wpt_builder(options.builder):
+                    suffix = 'txt'
                 self._rebaseline_test(port_name,
                                       test_name,
                                       suffix,
