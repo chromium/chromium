@@ -179,9 +179,11 @@ class CORE_EXPORT FrameLoader final {
   enum class NavigationFinishState { kSuccess, kFailure };
   void DidFinishNavigation(NavigationFinishState);
 
-  void DidFinishSameDocumentNavigation(const KURL&,
-                                       WebFrameLoadType,
-                                       HistoryItem*);
+  void ProcessScrollForSameDocumentNavigation(
+      const KURL&,
+      WebFrameLoadType,
+      absl::optional<HistoryItem::ViewState>,
+      mojom::blink::ScrollRestorationType);
 
   // This will attempt to detach the current document. It will dispatch unload
   // events and abort XHR requests. Returns true if the frame is ready to

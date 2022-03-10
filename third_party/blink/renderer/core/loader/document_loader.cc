@@ -748,6 +748,9 @@ void DocumentLoader::UpdateForSameDocumentNavigation(
   TRACE_EVENT1("blink", "FrameLoader::updateForSameDocumentNavigation", "url",
                new_url.GetString().Ascii());
 
+  bool same_item_sequence_number =
+      history_item_ && history_item &&
+      history_item_->ItemSequenceNumber() == history_item->ItemSequenceNumber();
   if (history_item)
     history_item_ = history_item;
 
@@ -827,6 +830,26 @@ void DocumentLoader::UpdateForSameDocumentNavigation(
 
   if (auto* app_history = AppHistory::appHistory(*frame_->DomWindow()))
     app_history->UpdateForNavigation(*history_item_, type);
+
+  // Aything except a history.pushState/replaceState is considered a new
+  // navigation that resets whether the user has scrolled and fires popstate.
+  if (same_document_navigation_type !=
+      mojom::blink::SameDocumentNavigationType::kHistoryApi) {
+    initial_scroll_state_.was_scrolled_by_user = false;
+
+    // If the item sequence number didn't change, there's no need to trigger
+    // popstate. It's possible to get a same-document navigation
+    // to a same ISN when a history navigation targets a frame that no longer
+    // exists (https://crbug.com/705550).
+    if (!same_item_sequence_number) {
+      scoped_refptr<SerializedScriptValue> state_object =
+          history_item ? history_item->StateObject() : nullptr;
+      DCHECK(!state_object || type == WebFrameLoadType::kBackForward);
+      frame_->DomWindow()->StatePopped(
+          state_object ? std::move(state_object)
+                       : SerializedScriptValue::NullValue());
+    }
+  }
 }
 
 const KURL& DocumentLoader::UrlForHistory() const {
@@ -1418,15 +1441,22 @@ void DocumentLoader::CommitSameDocumentNavigationInternal(
   last_navigation_had_transient_user_activation_ =
       has_transient_user_activation;
 
-  bool same_item_sequence_number =
-      history_item_ && history_item &&
-      history_item_->ItemSequenceNumber() == history_item->ItemSequenceNumber();
+  // Events fired in UpdateForSameDocumentNavigation() might change view state,
+  // so stash for later restore.
+  absl::optional<HistoryItem::ViewState> view_state;
+  mojom::blink::ScrollRestorationType scroll_restoration_type =
+      mojom::blink::ScrollRestorationType::kAuto;
+  if (history_item) {
+    view_state = history_item->GetViewState();
+    scroll_restoration_type = history_item->ScrollRestorationType();
+  }
+
   UpdateForSameDocumentNavigation(
       url, history_item, same_document_navigation_type, nullptr,
-      mojom::blink::ScrollRestorationType::kAuto, frame_load_type,
-      initiator_origin, is_browser_initiated, is_synchronously_committed);
-
-  initial_scroll_state_.was_scrolled_by_user = false;
+      scroll_restoration_type, frame_load_type, initiator_origin,
+      is_browser_initiated, is_synchronously_committed);
+  if (!frame_)
+    return;
 
   if (frame_->GetDocument()->LoadEventStillNeeded()) {
     frame_->GetDocument()->CheckCompleted();
@@ -1448,15 +1478,8 @@ void DocumentLoader::CommitSameDocumentNavigationInternal(
     frame_->Owner()->DispatchLoad();
   }
 
-  // If the item sequence number didn't change, there's no need to trigger
-  // popstate, restore scroll positions, or scroll to fragments for this
-  // same-document navigation.  It's possible to get a same-document navigation
-  // to a same ISN when a history navigation targets a frame that no longer
-  // exists (https://crbug.com/705550).
-  if (!same_item_sequence_number) {
-    GetFrameLoader().DidFinishSameDocumentNavigation(url, frame_load_type,
-                                                     history_item);
-  }
+  GetFrameLoader().ProcessScrollForSameDocumentNavigation(
+      url, frame_load_type, view_state, scroll_restoration_type);
 }
 
 void DocumentLoader::ProcessDataBuffer(const char* bytes, size_t length) {
