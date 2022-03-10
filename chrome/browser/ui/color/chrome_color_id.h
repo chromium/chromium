@@ -26,6 +26,7 @@
     ThemeProperties::COLOR_AVATAR_BUTTON_HIGHLIGHT_SYNC_ERROR) \
   E(kColorAvatarButtonHighlightSyncPaused, \
     ThemeProperties::COLOR_AVATAR_BUTTON_HIGHLIGHT_SYNC_PAUSED) \
+  E_CPONLY(kColorAvatarStrokeLight) \
   /* Bookmark bar colors. */ \
   E(kColorBookmarkBarBackground, \
     ThemeProperties::COLOR_BOOKMARK_BAR_BACKGROUND) \

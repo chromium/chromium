@@ -190,6 +190,7 @@ void AddChromeColorMixer(ui::ColorProvider* provider,
       gfx::kGoogleRed900, gfx::kGoogleRed050);
   mixer[kColorAvatarButtonHighlightSyncPaused] = {
       kColorAvatarButtonHighlightNormal};
+  mixer[kColorAvatarStrokeLight] = {SK_ColorWHITE};
   mixer[kColorBookmarkBarBackground] = {kColorToolbar};
   mixer[kColorBookmarkBarForeground] = {kColorToolbarText};
   mixer[kColorBookmarkButtonIcon] = {kColorToolbarButtonIcon};

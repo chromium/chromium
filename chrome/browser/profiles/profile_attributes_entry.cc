@@ -527,15 +527,15 @@ ProfileThemeColors ProfileAttributesEntry::GetProfileThemeColors() const {
 #if BUILDFLAG(IS_ANDROID)
   // Profile theme colors shouldn't be queried on Android.
   NOTREACHED();
-  return {SK_ColorRED, SK_ColorRED, SK_ColorRED};
+  return {gfx::kPlaceholderColor, gfx::kPlaceholderColor,
+          gfx::kPlaceholderColor};
 #else
   absl::optional<ProfileThemeColors> theme_colors =
       GetProfileThemeColorsIfSet();
   if (theme_colors)
     return *theme_colors;
 
-  return GetDefaultProfileThemeColors(
-      ui::NativeTheme::GetInstanceForNativeUi()->ShouldUseDarkColors());
+  return GetDefaultProfileThemeColors();
 #endif
 }
 

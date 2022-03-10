@@ -55,8 +55,9 @@ void AddUiColorMixer(ColorProvider* provider,
   mixer[kColorDropdownForegroundSelected] = {kColorPrimaryForeground};
   mixer[kColorFocusableBorderFocused] = {kColorItemHighlight};
   mixer[kColorFocusableBorderUnfocused] = {kColorMidground};
-  mixer[kColorFrameActive] = {dark_mode ? gfx::kGoogleGrey900
-                                        : SkColorSetRGB(0xDE, 0xE1, 0xE6)};
+  mixer[kColorFrameActive] = {kColorFrameActiveUnthemed};
+  mixer[kColorFrameActiveUnthemed] = {
+      dark_mode ? gfx::kGoogleGrey900 : SkColorSetRGB(0xDE, 0xE1, 0xE6)};
   mixer[kColorFrameInactive] = {dark_mode ? gfx::kGoogleGrey800
                                           : gfx::kGoogleGrey200};
   mixer[kColorHelpIconActive] = {kColorPrimaryForeground};

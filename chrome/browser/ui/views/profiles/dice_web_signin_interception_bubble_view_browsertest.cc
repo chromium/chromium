@@ -163,7 +163,8 @@ class DiceWebSigninInterceptionBubblePixelTest
         /*profile_highlight_color=*/primary_highlight_color,
         /*default_avatar_fill_color=*/primary_highlight_color,
         /*default_avatar_stroke_color=*/
-        GetAvatarStrokeColor(primary_highlight_color)};
+        GetAvatarStrokeColor(*browser()->window()->GetColorProvider(),
+                             primary_highlight_color)};
     ProfileAttributesEntry* entry =
         g_browser_process->profile_manager()
             ->GetProfileAttributesStorage()

@@ -1609,6 +1609,7 @@ TEST_F(ProfileAttributesStorageTest, ProfilesState_SingleProfile) {
 // Themes aren't used on Android
 #if !BUILDFLAG(IS_ANDROID)
 TEST_F(ProfileAttributesStorageTest, ProfileThemeColors) {
+  ui::NativeTheme::GetInstanceForNativeUi()->set_use_dark_colors(false);
   AddTestingProfile();
   base::FilePath profile_path = GetProfilePath("testing_profile_path0");
 
@@ -1619,13 +1620,13 @@ TEST_F(ProfileAttributesStorageTest, ProfileThemeColors) {
   entry->SetAvatarIconIndex(profiles::GetPlaceholderAvatarIndex());
   VerifyAndResetCallExpectations();
 
-  EXPECT_EQ(entry->GetProfileThemeColors(),
-            GetDefaultProfileThemeColors(false));
+  ProfileThemeColors light_colors = GetDefaultProfileThemeColors();
+  EXPECT_EQ(entry->GetProfileThemeColors(), light_colors);
 
-  ui::NativeTheme::GetInstanceForNativeUi()->set_use_dark_colors(true);
-  EXPECT_EQ(entry->GetProfileThemeColors(), GetDefaultProfileThemeColors(true));
-  EXPECT_NE(entry->GetProfileThemeColors(),
-            GetDefaultProfileThemeColors(false));
+  auto* native_theme = ui::NativeTheme::GetInstanceForNativeUi();
+  native_theme->set_use_dark_colors(true);
+  EXPECT_EQ(entry->GetProfileThemeColors(), GetDefaultProfileThemeColors());
+  EXPECT_NE(entry->GetProfileThemeColors(), light_colors);
 
   ProfileThemeColors colors = {SK_ColorTRANSPARENT, SK_ColorBLACK,
                                SK_ColorWHITE};
@@ -1636,15 +1637,14 @@ TEST_F(ProfileAttributesStorageTest, ProfileThemeColors) {
   VerifyAndResetCallExpectations();
 
   // Colors shouldn't change after switching back to the light mode.
-  ui::NativeTheme::GetInstanceForNativeUi()->set_use_dark_colors(false);
+  native_theme->set_use_dark_colors(false);
   EXPECT_EQ(entry->GetProfileThemeColors(), colors);
 
   // absl::nullopt resets the colors to default.
   EXPECT_CALL(observer(), OnProfileAvatarChanged(profile_path)).Times(1);
   EXPECT_CALL(observer(), OnProfileThemeColorsChanged(profile_path)).Times(1);
   entry->SetProfileThemeColors(absl::nullopt);
-  EXPECT_EQ(entry->GetProfileThemeColors(),
-            GetDefaultProfileThemeColors(false));
+  EXPECT_EQ(entry->GetProfileThemeColors(), GetDefaultProfileThemeColors());
   VerifyAndResetCallExpectations();
 }
 #endif  // !BUILDFLAG(IS_ANDROID)

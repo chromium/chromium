@@ -46,8 +46,7 @@ KeyedService* ProfileThemeUpdateServiceFactory::BuildServiceInstanceFor(
 
   Profile* profile = Profile::FromBrowserContext(context);
   return new ProfileThemeUpdateService(
-      profile, &profile_manager->GetProfileAttributesStorage(),
-      ThemeServiceFactory::GetForProfile(profile));
+      profile, &profile_manager->GetProfileAttributesStorage());
 }
 
 bool ProfileThemeUpdateServiceFactory::ServiceIsCreatedWithBrowserContext()

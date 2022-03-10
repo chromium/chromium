@@ -6,12 +6,13 @@
 #define CHROME_BROWSER_PROFILES_PROFILE_THEME_UPDATE_SERVICE_H_
 
 #include "base/memory/raw_ptr.h"
+#include "base/scoped_observation.h"
+#include "chrome/browser/themes/theme_service.h"
 #include "chrome/browser/themes/theme_service_observer.h"
 #include "components/keyed_service/core/keyed_service.h"
 
 class Profile;
 class ProfileAttributesStorage;
-class ThemeService;
 
 // A KeyedService that listens to browser theme updates and updates profile
 // theme colors cached in ProfileAttributesStorage.
@@ -23,8 +24,7 @@ class ProfileThemeUpdateService : public KeyedService,
  public:
   ProfileThemeUpdateService(
       Profile* profile,
-      ProfileAttributesStorage* profile_attributes_storage,
-      ThemeService* theme_service);
+      ProfileAttributesStorage* profile_attributes_storage);
   ~ProfileThemeUpdateService() override;
 
   // This class in uncopyable.
@@ -42,7 +42,8 @@ class ProfileThemeUpdateService : public KeyedService,
 
   const raw_ptr<Profile> profile_;
   const raw_ptr<ProfileAttributesStorage> profile_attributes_storage_;
-  const raw_ptr<ThemeService> theme_service_;
+  base::ScopedObservation<ThemeService, ThemeServiceObserver> observation_{
+      this};
 };
 
 #endif  // CHROME_BROWSER_PROFILES_PROFILE_THEME_UPDATE_SERVICE_H_
