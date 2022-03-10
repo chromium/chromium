@@ -291,7 +291,9 @@ void DevicePairingHandler::HandlePairingFailed(
     return;
   }
 
-  BLUETOOTH_LOG(ERROR) << device->GetAddress()
+  // We use |current_pairing_device_id_| since it conveys the same information
+  // as the address and |device| could be |nullptr|.
+  BLUETOOTH_LOG(ERROR) << current_pairing_device_id_
                        << ": Pairing failed with error code: " << error_code;
 
   using ErrorCode = device::BluetoothDevice::ConnectErrorCode;
