@@ -83,12 +83,13 @@ class MODULES_EXPORT RemoteMediaStreamTrackAdapter
 
   void InitializeTrack(
       MediaStreamSource::StreamType type,
+      std::unique_ptr<WebPlatformMediaStreamSource> platform_source,
       std::unique_ptr<MediaStreamTrackPlatform> platform_track) {
     DCHECK(main_thread_->BelongsToCurrentThread());
     DCHECK(!component_);
 
-    auto* source = MakeGarbageCollected<MediaStreamSource>(id_, type, id_,
-                                                           true /*remote*/);
+    auto* source = MakeGarbageCollected<MediaStreamSource>(
+        id_, type, id_, true /*remote*/, std::move(platform_source));
     if (platform_track) {
       component_ = MakeGarbageCollected<MediaStreamComponent>(
           id_, source, std::move(platform_track));
