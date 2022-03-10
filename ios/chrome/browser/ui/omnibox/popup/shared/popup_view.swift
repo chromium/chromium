@@ -13,7 +13,7 @@ struct PopupView: View {
   var body: some View {
     VStack {
       List {
-        ForEach(Array(zip(model.matches.indices, model.matches)), id: \.0) {
+        ForEach(Array(zip(model.sections.indices, model.sections)), id: \.0) {
           sectionIndex, section in
 
           let sectionContents =
@@ -46,8 +46,8 @@ struct PopupView: View {
             }
 
           // Split the suggestions into sections, but only add a header text if the header isn't empty
-          if !model.matches[sectionIndex].header.isEmpty {
-            Section(header: Text(model.matches[sectionIndex].header)) {
+          if !section.header.isEmpty {
+            Section(header: Text(section.header)) {
               sectionContents
             }
           } else {

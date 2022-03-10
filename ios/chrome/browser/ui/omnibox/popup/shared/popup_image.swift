@@ -10,7 +10,7 @@ import SwiftUI
 /// can be absent.
 @objcMembers public class PopupImage: NSObject, ObservableObject {
   /// The underlying icon for this image.
-  let icon: OmniboxIcon
+  public let icon: OmniboxIcon
 
   /// The SwiftUI `Image` and tint color for the main static image.
   public var iconImage: Image? {

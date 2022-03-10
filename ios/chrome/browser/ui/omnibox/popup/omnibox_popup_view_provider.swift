@@ -17,6 +17,6 @@ import UIKit
 
 class OmniboxPopupHostingController: UIHostingController<PopupView>, ContentProviding {
   var hasContent: Bool {
-    return !rootView.model.matches.isEmpty
+    return !rootView.model.sections.isEmpty
   }
 }

@@ -75,6 +75,8 @@ const CGFloat kOmniboxIconSize = 16;
                                    groupWithTitle:nil
                                       suggestions:matches] ]
                  withAnimation:animation];
+
+  [self loadModelImages];
 }
 
 - (NSArray<id<AutocompleteSuggestion>>*)wrappedMatches {
@@ -177,6 +179,32 @@ const CGFloat kOmniboxIconSize = 16;
 - (void)autocompleteResultConsumerDidScroll:
     (id<AutocompleteResultConsumer>)sender {
   _delegate->OnScroll();
+}
+
+- (void)loadModelImages {
+  for (PopupMatchSection* section in self.model.sections) {
+    for (PopupMatch* match in section.matches) {
+      PopupImage* popupImage = match.image;
+      switch (popupImage.icon.iconType) {
+        case OmniboxIconTypeSuggestionIcon:
+          break;
+        case OmniboxIconTypeImage: {
+          [self fetchImage:popupImage.icon.imageURL.gurl
+                completion:^(UIImage* image) {
+                  popupImage.iconUIImageFromURL = image;
+                }];
+          break;
+        }
+        case OmniboxIconTypeFavicon: {
+          [self fetchFavicon:popupImage.icon.imageURL.gurl
+                  completion:^(UIImage* image) {
+                    popupImage.iconUIImageFromURL = image;
+                  }];
+          break;
+        }
+      }
+    }
+  }
 }
 
 #pragma mark - ImageFetcher

@@ -12,7 +12,7 @@ struct PopupMatchImageView: View {
   }
 
   /// The image model object for this view.
-  let image: PopupImage
+  @ObservedObject var image: PopupImage
 
   var body: some View {
     ZStack {

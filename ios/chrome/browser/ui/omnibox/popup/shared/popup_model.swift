@@ -7,10 +7,17 @@ import UIKit
 
 /// A match group consists of a title and a list of matches.
 /// Use empty string to hide the section header.
-typealias PopupMatchGroup = (header: String, matches: [PopupMatch])
+@objcMembers public class PopupMatchSection: NSObject {
+  let header: String
+  let matches: [PopupMatch]
+  public init(header: String, matches: [PopupMatch]) {
+    self.header = header
+    self.matches = matches
+  }
+}
 
 @objcMembers public class PopupModel: NSObject, ObservableObject, AutocompleteResultConsumer {
-  @Published var matches: [PopupMatchGroup]
+  @Published var sections: [PopupMatchSection]
 
   @Published var highlightedMatchIndexPath: IndexPath?
 
@@ -20,7 +27,9 @@ typealias PopupMatchGroup = (header: String, matches: [PopupMatch])
     matches: [[PopupMatch]], headers: [String], delegate: AutocompleteResultConsumerDelegate?
   ) {
     assert(headers.count == matches.count)
-    self.matches = zip(headers, matches).map { tuple in (header: tuple.0, matches: tuple.1) }
+    self.sections = zip(headers, matches).map { tuple in
+      PopupMatchSection(header: tuple.0, matches: tuple.1)
+    }
     self.delegate = delegate
   }
 
@@ -30,8 +39,8 @@ typealias PopupMatchGroup = (header: String, matches: [PopupMatch])
     // Reset highlight state.
     self.highlightedMatchIndexPath = nil
 
-    self.matches = matchGroups.map { group in
-      (
+    self.sections = matchGroups.map { group in
+      PopupMatchSection(
         header: group.title ?? String(),
         matches: group.suggestions.map { match in PopupMatch(suggestion: match, pedal: nil) }
       )
@@ -65,7 +74,7 @@ extension PopupModel: OmniboxSuggestionCommands {
     if indexPath.row == 0 && indexPath.section > 0 {
       // Move to the previous section
       indexPath.section -= 1
-      indexPath.row = matches[indexPath.section].matches.count - 1
+      indexPath.row = sections[indexPath.section].matches.count - 1
     } else {
       indexPath.row -= 1
     }
@@ -81,9 +90,9 @@ extension PopupModel: OmniboxSuggestionCommands {
     var indexPath = self.highlightedMatchIndexPath ?? IndexPath(row: -1, section: 0)
 
     // If there's a row below in current section, move highlight there
-    if indexPath.row < matches[indexPath.section].matches.count - 1 {
+    if indexPath.row < sections[indexPath.section].matches.count - 1 {
       indexPath.row += 1
-    } else if indexPath.section < matches.count - 1 {
+    } else if indexPath.section < sections.count - 1 {
       // Move to the next section
       indexPath.row = 0
       indexPath.section += 1

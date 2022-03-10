@@ -88,6 +88,7 @@
     self.model = [[PopupModel alloc] initWithMatches:@[]
                                              headers:@[]
                                             delegate:self.mediator];
+    self.mediator.model = self.model;
     self.popupViewController =
         [OmniboxPopupViewProvider makeViewControllerWithModel:self.model];
     [self.browser->GetCommandDispatcher()
