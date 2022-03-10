@@ -7,16 +7,13 @@
 
 #include "components/optimization_guide/core/hints_manager.h"
 
-namespace web {
-class BrowserState;
-}  // namespace web
-
 namespace optimization_guide {
 
 class IOSChromeHintsManager : public HintsManager {
  public:
   IOSChromeHintsManager(
-      web::BrowserState* browser_state,
+      bool off_the_record,
+      const std::string& application_locale,
       PrefService* pref_service,
       base::WeakPtr<optimization_guide::OptimizationGuideStore> hint_store,
       optimization_guide::TopHostProvider* top_host_provider,

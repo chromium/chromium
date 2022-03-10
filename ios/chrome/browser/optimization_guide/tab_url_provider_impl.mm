@@ -7,7 +7,6 @@
 #import "base/containers/adapters.h"
 #import "base/time/clock.h"
 #import "base/time/time.h"
-#import "ios/chrome/browser/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/main/browser.h"
 #import "ios/chrome/browser/main/browser_list.h"
 #import "ios/chrome/browser/main/browser_list_factory.h"
@@ -20,10 +19,9 @@
 #error "This file requires ARC support."
 #endif
 
-TabUrlProviderImpl::TabUrlProviderImpl(ChromeBrowserState* browser_state,
+TabUrlProviderImpl::TabUrlProviderImpl(BrowserList* browser_list,
                                        base::Clock* clock)
-    : browser_list_(BrowserListFactory::GetForBrowserState(browser_state)),
-      clock_(clock) {}
+    : browser_list_(browser_list), clock_(clock) {}
 
 TabUrlProviderImpl::~TabUrlProviderImpl() = default;
 

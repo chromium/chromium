@@ -4,8 +4,6 @@
 
 #include "ios/chrome/browser/optimization_guide/ios_chrome_hints_manager.h"
 
-#import "ios/chrome/browser/application_context.h"
-#import "ios/chrome/browser/browser_state/chrome_browser_state.h"
 #import "services/network/public/cpp/shared_url_loader_factory.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
@@ -15,15 +13,16 @@
 namespace optimization_guide {
 
 IOSChromeHintsManager::IOSChromeHintsManager(
-    web::BrowserState* browser_state,
+    bool off_the_record,
+    const std::string& application_locale,
     PrefService* pref_service,
     base::WeakPtr<optimization_guide::OptimizationGuideStore> hint_store,
     optimization_guide::TopHostProvider* top_host_provider,
     optimization_guide::TabUrlProvider* tab_url_provider,
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
     OptimizationGuideLogger* optimization_guide_logger)
-    : HintsManager(browser_state->IsOffTheRecord(),
-                   GetApplicationContext()->GetApplicationLocale(),
+    : HintsManager(off_the_record,
+                   application_locale,
                    pref_service,
                    hint_store,
                    top_host_provider,

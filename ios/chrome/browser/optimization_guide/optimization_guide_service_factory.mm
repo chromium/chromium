@@ -8,10 +8,13 @@
 #import "base/no_destructor.h"
 #import "components/keyed_service/ios/browser_state_dependency_manager.h"
 #import "components/optimization_guide/core/optimization_guide_features.h"
+#import "ios/chrome/browser/application_context.h"
 #include "ios/chrome/browser/browser_state/browser_state_otr_helper.h"
 #import "ios/chrome/browser/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/main/browser_list_factory.h"
+#include "ios/chrome/browser/optimization_guide/ios_chrome_hints_manager.h"
 #import "ios/chrome/browser/optimization_guide/optimization_guide_service.h"
+#import "services/network/public/cpp/shared_url_loader_factory.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -45,7 +48,31 @@ OptimizationGuideServiceFactory::~OptimizationGuideServiceFactory() = default;
 std::unique_ptr<KeyedService>
 OptimizationGuideServiceFactory::BuildServiceInstanceFor(
     web::BrowserState* context) const {
-  return std::make_unique<OptimizationGuideService>(context);
+  ChromeBrowserState* chrome_browser_state =
+      ChromeBrowserState::FromBrowserState(context);
+  ChromeBrowserState* original_browser_state =
+      chrome_browser_state->GetOriginalChromeBrowserState();
+  DCHECK(chrome_browser_state);
+  // Regardless of whether the profile is off the record or not, initialize the
+  // Optimization Guide with the database associated with the original profile.
+  auto* proto_db_provider = original_browser_state->GetProtoDatabaseProvider();
+  base::FilePath profile_path = original_browser_state->GetStatePath();
+
+  base::WeakPtr<optimization_guide::OptimizationGuideStore> hint_store;
+  if (chrome_browser_state->IsOffTheRecord()) {
+    OptimizationGuideService* original_ogs =
+        OptimizationGuideServiceFactory::GetForBrowserState(
+            original_browser_state);
+    DCHECK(original_ogs);
+    hint_store = original_ogs->GetHintsManager()->hint_store();
+  }
+
+  return std::make_unique<OptimizationGuideService>(
+      proto_db_provider, profile_path, chrome_browser_state->IsOffTheRecord(),
+      GetApplicationContext()->GetApplicationLocale(), hint_store,
+      chrome_browser_state->GetPrefs(),
+      BrowserListFactory::GetForBrowserState(chrome_browser_state),
+      chrome_browser_state->GetSharedURLLoaderFactory());
 }
 
 bool OptimizationGuideServiceFactory::ServiceIsCreatedWithBrowserState() const {

@@ -107,7 +107,7 @@ class OptimizationGuideServiceTest : public PlatformTest {
     optimization_guide_service_ =
         OptimizationGuideServiceFactory::GetForBrowserState(
             browser_state_.get());
-    optimization_guide_service_->DoFinalInit(browser_state_.get());
+    optimization_guide_service_->DoFinalInit();
   }
 
   void PushHintsComponentAndWaitForCompletion() {

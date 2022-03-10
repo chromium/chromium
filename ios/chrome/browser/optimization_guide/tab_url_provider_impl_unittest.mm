@@ -52,7 +52,7 @@ class TabUrlProviderImplTest : public PlatformTest {
     browser_list_->AddIncognitoBrowser(incognito_browser_.get());
 
     tab_url_provider_ =
-        std::make_unique<TabUrlProviderImpl>(browser_state_.get(), &clock_);
+        std::make_unique<TabUrlProviderImpl>(browser_list_, &clock_);
   }
 
   // Add a fake web state with certain URL and timestamp to be the last

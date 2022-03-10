@@ -15,13 +15,12 @@ class TimeDelta;
 }  // namespace base
 
 class BrowserList;
-class ChromeBrowserState;
 class GURL;
 
 // optimization_guide::TabUrlProvider implementation for iOS.
 class TabUrlProviderImpl : public optimization_guide::TabUrlProvider {
  public:
-  TabUrlProviderImpl(ChromeBrowserState* browser_state, base::Clock* clock);
+  TabUrlProviderImpl(BrowserList* browser_list, base::Clock* clock);
   ~TabUrlProviderImpl() override;
 
  private:

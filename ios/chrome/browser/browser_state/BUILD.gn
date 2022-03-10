@@ -78,6 +78,7 @@ source_set("browser_state_impl") {
     "//components/keyed_service/ios",
     "//components/metrics",
     "//components/net_log",
+    "//components/optimization_guide/core",
     "//components/password_manager/core/browser",
     "//components/policy/core/common",
     "//components/pref_registry",
