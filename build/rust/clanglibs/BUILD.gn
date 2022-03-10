@@ -7,7 +7,7 @@
 # the conceptual "libclang", but there are quite a few such libraries.
 # This script enumerates them.
 
-import("//build/config/rust.gni")
+import("//build/rust/rust_static_library.gni")
 
 _clang_libs_dir = "//third_party/llvm-build/Release+Asserts/lib"
 
@@ -16,38 +16,19 @@ if (toolchain_has_rust) {
   # "custom_vars": {
   #   "checkout_clang_libs": True,
   # }
-  group("clanglibs") {
+  rust_static_library("clanglibs") {
+    crate_root = get_label_info(":find_clanglibs", "target_gen_dir") + "/lib.rs"
+    sources = [ crate_root ]
+    deps = [ ":find_clanglibs" ]
+
     # all_dependent_configs not public_configs because these directives
     # need to propagate to the eventual final linking step. Our immediate
     # dependent is probably libclang_sys.rlib, which will only later be
     # linked into an executable.
     all_dependent_configs = [ ":clanglibs_static_config" ]
-    deps = [ ":find_clanglibs" ]
   }
 
   action("find_clanglibs") {
-    # Generate the clang_libs.rsp file referred to below.
-    script = "find_clanglibs.py"
-    _liblist = "$target_out_dir/clang_libs.rsp"
-    depfile = "$target_out_dir/clang_libs.d"
-    args = [
-      "--clang-libs-dir",
-      rebase_path(_clang_libs_dir),
-      "--output",
-      rebase_path(_liblist, root_build_dir),
-      "--depfile",
-      rebase_path(depfile, root_build_dir),
-    ]
-    outputs = [ _liblist ]
-  }
-
-  config("clanglibs_static_config") {
-    # At present, all known Rust codegen tools are based ultimately
-    # on bindgen and libclang-sys, so set the environment variable
-    # required to inform those build processes where the libraries
-    # are.
-    rustenv = [ "LIBCLANG_STATIC_PATH=" + rebase_path(_clang_libs_dir) ]
-
     # We need to tell rustc to link such binaries against a large
     # and frequently-varying list of static libraries.
     # gn/ninja, however, require statically determined dependency
@@ -58,12 +39,38 @@ if (toolchain_has_rust) {
     #    'gn' invocations
     # c) use libclang.so instead
     # d) put these files entirely outside the visibility of gn/ninja
-    # We choose option (d). We generate extra command line arguments for
-    # the rustc invocations that link these tools.
+    # We choose option (d). We generate a crate which tells rustc to link
+    # against these things.
+    script = "find_clanglibs.py"
+    _generated_crate_root = "$target_gen_dir/lib.rs"
+    depfile = "$target_out_dir/find_clanglibs.d"
+    args = [
+      "--clang-libs-dir",
+      rebase_path(_clang_libs_dir),
+      "--output",
+      rebase_path(_generated_crate_root, root_build_dir),
+      "--depfile",
+      rebase_path(depfile, root_build_dir),
+    ]
+
+    # Always rerun this script when clang rolls, in case the
+    # set of libraries has changed. The following script contains
+    # a clang revision label, so is guaranteed to change each time
+    # clang rolls.
+    inputs = [ rebase_path("//tools/clang/scripts/update.py") ]
+    outputs = [ _generated_crate_root ]
+    visibility = [ ":*" ]
+  }
+
+  config("clanglibs_static_config") {
+    # Inform dependent rustc invocations where these various libraries
+    # are to be found.
     rustflags = [ "-L" + rebase_path(_clang_libs_dir) ]
-    foreach(output, get_target_outputs(":find_clanglibs")) {
-      # Give rustc an extra .rsp file with extra command line arguments.
-      rustflags += [ "@" + rebase_path(output) ]
-    }
+
+    # At present, all known Rust codegen tools are based ultimately
+    # on bindgen and libclang-sys, so set the environment variable
+    # required to inform those build processes where the libraries
+    # are.
+    rustenv = [ "LIBCLANG_STATIC_PATH=" + rebase_path(_clang_libs_dir) ]
   }
 }

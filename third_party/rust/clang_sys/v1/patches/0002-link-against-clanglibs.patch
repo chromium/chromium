@@ -1,0 +1,35 @@
+From f8cada38a88b48ca4ab68e690b1977abc23bb53b Mon Sep 17 00:00:00 2001
+From: Adrian Taylor <adetaylor@chromium.org>
+Date: Thu, 10 Mar 2022 10:59:47 -0800
+Subject: [PATCH 1/1] Link against clanglibs
+
+Change-Id: Icaedc6dc749850df73ded4a8b0e49beb7da2e4c9
+---
+ third_party/rust/clang_sys/v1/crate/src/lib.rs | 11 +++++++++++
+ 1 file changed, 11 insertions(+)
+
+diff --git a/third_party/rust/clang_sys/v1/crate/src/lib.rs b/third_party/rust/clang_sys/v1/crate/src/lib.rs
+index 5bc0d2a68bef2..fec6acf7bf795 100644
+--- a/third_party/rust/clang_sys/v1/crate/src/lib.rs
++++ b/third_party/rust/clang_sys/v1/crate/src/lib.rs
+@@ -34,6 +34,17 @@
+ #![allow(non_camel_case_types, non_snake_case, non_upper_case_globals)]
+ #![cfg_attr(feature = "cargo-clippy", allow(clippy::unreadable_literal))]
+ 
++/// Chromium customization: in order to find the libraries shipped with our
++/// version of clang, we generate a synthetic Rust crate called clanglibs
++/// containing lots of #[link(...)] directives and nothing else. We need to
++/// ensure that clang_sys and all its dependencies duly absorb that crate
++/// so that the final linking step (performed by rustc) reads all these
++/// library names from crate metadata and passes them to the linker.
++/// If we don't have this 'extern crate' line, the clanglibs crate does not
++/// get used by clang_sys or its dependencies, and those extra libraries
++/// are discarded.
++extern crate clanglibs;
++
+ extern crate glob;
+ extern crate libc;
+ #[cfg(feature = "runtime")]
+-- 
+2.35.1.723.g4982287a31-goog
+

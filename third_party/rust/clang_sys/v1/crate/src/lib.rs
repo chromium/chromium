@@ -34,6 +34,17 @@
 #![allow(non_camel_case_types, non_snake_case, non_upper_case_globals)]
 #![cfg_attr(feature = "cargo-clippy", allow(clippy::unreadable_literal))]
 
+/// Chromium customization: in order to find the libraries shipped with our
+/// version of clang, we generate a synthetic Rust crate called clanglibs
+/// containing lots of #[link(...)] directives and nothing else. We need to
+/// ensure that clang_sys and all its dependencies duly absorb that crate
+/// so that the final linking step (performed by rustc) reads all these
+/// library names from crate metadata and passes them to the linker.
+/// If we don't have this 'extern crate' line, the clanglibs crate does not
+/// get used by clang_sys or its dependencies, and those extra libraries
+/// are discarded.
+extern crate clanglibs;
+
 extern crate glob;
 extern crate libc;
 #[cfg(feature = "runtime")]
