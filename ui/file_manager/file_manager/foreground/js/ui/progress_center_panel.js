@@ -69,6 +69,9 @@ export class ProgressCenterPanel {
           if (item.type === ProgressItemType.COPY) {
             return strf('COPY_FILE_NAME', source);
           }
+          if (item.type === ProgressItemType.EXTRACT) {
+            return strf('EXTRACT_FILE_NAME', source);
+          }
           if (item.type === ProgressItemType.MOVE) {
             return strf('MOVE_FILE_NAME', source);
           }
@@ -81,6 +84,9 @@ export class ProgressCenterPanel {
         // Multiple items:
         if (item.type === ProgressItemType.COPY) {
           return strf('COPY_ITEMS_REMAINING', count);
+        }
+        if (item.type === ProgressItemType.EXTRACT) {
+          return strf('EXTRACT_ITEMS_REMAINING', count);
         }
         if (item.type === ProgressItemType.MOVE) {
           return strf('MOVE_ITEMS_REMAINING', count);

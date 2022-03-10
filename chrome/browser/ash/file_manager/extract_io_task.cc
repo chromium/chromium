@@ -18,13 +18,27 @@ ExtractIOTask::ExtractIOTask(
       parent_folder_(std::move(parent_folder)),
       file_system_context_(std::move(file_system_context)) {
   progress_.type = OperationType::kExtract;
-  progress_.state = State::kSuccess;
+  progress_.state = State::kQueued;
+  progress_.bytes_transferred = 0;
+  progress_.total_bytes = 0;
+  // Store all the ZIP files in the selection so we have
+  // a proper count of how many need to be extracted.
+  for (const storage::FileSystemURL& source_url : source_urls_) {
+    const base::FilePath source_path = source_url.path();
+    if (source_path.MatchesExtension(".zip") &&
+        chromeos::FileSystemBackend::CanHandleURL(source_url)) {
+      progress_.sources.emplace_back(source_url, absl::nullopt);
+    }
+  }
 }
 
 ExtractIOTask::~ExtractIOTask() {}
 
 void ExtractIOTask::ZipExtractCallback(bool success) {
   progress_.state = success ? State::kSuccess : State::kError;
+  progress_callback_.Run(progress_);
+  // TODO(crbug.com/953256) Track count here and call for last unpack only.
+  Complete();
 }
 
 void ExtractIOTask::Execute(IOTask::ProgressCallback progress_callback,
@@ -33,28 +47,20 @@ void ExtractIOTask::Execute(IOTask::ProgressCallback progress_callback,
   complete_callback_ = std::move(complete_callback);
 
   VLOG(1) << "Executing EXTRACT_ARCHIVE IO task";
-  for (const auto& source_url : source_urls_) {
-    base::FilePath source_file = source_url.path();
-    if (source_file.MatchesExtension(".zip")) {
-      if (!chromeos::FileSystemBackend::CanHandleURL(source_url)) {
-        progress_.state = State::kError;
-        // TODO(crbug.com/953256) Report progress error.
-      } else {
-        // TODO(crbug.com/953256) Perform this check only once.
-        if (chromeos::FileSystemBackend::CanHandleURL(parent_folder_)) {
-          base::FilePath destination_directory = parent_folder_.path();
-          unzip::Unzip(unzip::LaunchUnzipper(), source_file,
-                       destination_directory,
-                       base::BindOnce(&ExtractIOTask::ZipExtractCallback,
-                                      weak_ptr_factory_.GetWeakPtr()));
-        } else {
-          progress_.state = State::kError;
-        }
-      }
+  progress_.state = State::kInProgress;
+  progress_callback_.Run(progress_);
+  for (const EntryStatus& source : progress_.sources) {
+    const base::FilePath source_file = source.url.path();
+    // TODO(crbug.com/953256) Perform this check only once.
+    if (chromeos::FileSystemBackend::CanHandleURL(parent_folder_)) {
+      const base::FilePath destination_directory = parent_folder_.path();
+      unzip::Unzip(unzip::LaunchUnzipper(), source_file, destination_directory,
+                   base::BindOnce(&ExtractIOTask::ZipExtractCallback,
+                                  weak_ptr_factory_.GetWeakPtr()));
+    } else {
+      progress_.state = State::kError;
     }
   }
-
-  Complete();
 }
 
 void ExtractIOTask::Cancel() {
