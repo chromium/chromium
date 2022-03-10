@@ -4,8 +4,6 @@
 
 #include "chrome/updater/win/protocol_parser_xml.h"
 
-#include "base/logging.h"
-
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace updater {
@@ -89,6 +87,26 @@ TEST(ProtocolParserXML, Parse) {
   EXPECT_TRUE(result.manifest.packages[0].namediff.empty());
   EXPECT_TRUE(result.manifest.packages[0].hashdiff_sha256.empty());
   EXPECT_EQ(result.manifest.packages[0].sizediff, 0);
+
+  EXPECT_EQ(result.data.size(), size_t{2});
+  EXPECT_EQ(result.data[0].status, "ok");
+  EXPECT_EQ(result.data[0].name, "install");
+  EXPECT_EQ(result.data[0].install_data_index, "verboselogging");
+  EXPECT_EQ(result.data[0].text,
+            "{"
+            "        \"distribution\": {"
+            "          \"verbose_logging\": true"
+            "        }"
+            "      }");
+  EXPECT_EQ(result.data[1].status, "ok");
+  EXPECT_EQ(result.data[1].name, "install");
+  EXPECT_EQ(result.data[1].install_data_index, "defaultbrowser");
+  EXPECT_EQ(result.data[1].text,
+            "{"
+            "        \"distribution\": {"
+            "          \"make_chrome_default_for_user\": true"
+            "        }"
+            "      }");
 }
 
 }  // namespace updater

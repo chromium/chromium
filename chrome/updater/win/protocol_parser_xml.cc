@@ -129,8 +129,29 @@ bool ProtocolParserXML::ParseApp(IXMLDOMNode* node, Results* results) {
 }
 
 bool ProtocolParserXML::ParseData(IXMLDOMNode* node, Results* results) {
-  // TODO(crbug.com/1292640): Parse <data> once Results structure adds the
-  // peer members.
+  ProtocolParser::Result::Data data;
+  if (!ReadStringAttribute(node, L"status", &data.status)) {
+    ParseError("Missing `status` attribute in <data>");
+    return false;
+  }
+  if (!ReadStringAttribute(node, L"index", &data.install_data_index)) {
+    ParseError("Missing `index` attribute in <data>");
+    return false;
+  }
+  if (!ReadStringAttribute(node, L"name", &data.name)) {
+    ParseError("Missing `name` attribute in <data>");
+    return false;
+  }
+
+  base::win::ScopedBstr text;
+  HRESULT hr = node->get_text(text.Receive());
+  if (FAILED(hr)) {
+    ParseError("Failed to get text from <data>: 0x%x", hr);
+    return false;
+  }
+  data.text = base::SysWideToUTF8(text.Get());
+
+  results->list.back().data.push_back(data);
   return true;
 }
 
