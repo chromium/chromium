@@ -1145,6 +1145,23 @@
         'use_swarming': True,
         'os_type': 'android',
       },
+      'android-cronet-asan-x86-rel': {
+        'mixins': [
+          'marshmallow-x86-emulator',
+          'emulator-4-cores',
+          'has_native_resultdb_integration',
+          'linux-xenial-or-bionic',
+          'x86-64',
+        ],
+        'additional_compile_targets': [
+          'cronet_package',
+          'cronet_perf_test_apk',
+        ],
+        'test_suites': {
+          'gtest_tests': 'cronet_gtests',
+        },
+        'os_type': 'android',
+      },
       'android-cronet-x86-dbg-kitkat-tests': {
         'mixins': [
           'kitkat-x86-emulator',
