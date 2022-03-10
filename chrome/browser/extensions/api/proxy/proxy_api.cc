@@ -38,12 +38,12 @@ void ProxyEventRouter::OnProxyError(
     void* profile,
     int error_code) {
   std::unique_ptr<base::ListValue> args(new base::ListValue());
-  std::unique_ptr<base::DictionaryValue> dict(new base::DictionaryValue());
-  dict->SetBoolKey(proxy_api_constants::kProxyEventFatal, true);
-  dict->SetStringKey(proxy_api_constants::kProxyEventError,
-                     net::ErrorToString(error_code));
-  dict->SetStringKey(proxy_api_constants::kProxyEventDetails, std::string());
-  args->Append(std::move(dict));
+  base::Value::Dict dict;
+  dict.Set(proxy_api_constants::kProxyEventFatal, true);
+  dict.Set(proxy_api_constants::kProxyEventError,
+           net::ErrorToString(error_code));
+  dict.Set(proxy_api_constants::kProxyEventDetails, std::string());
+  args->Append(base::Value(std::move(dict)));
 
   if (profile) {
     event_router->DispatchEventToRenderers(
@@ -63,10 +63,10 @@ void ProxyEventRouter::OnPACScriptError(EventRouterForwarder* event_router,
                                         int line_number,
                                         const std::u16string& error) {
   std::unique_ptr<base::ListValue> args(new base::ListValue());
-  std::unique_ptr<base::DictionaryValue> dict(new base::DictionaryValue());
-  dict->SetBoolKey(proxy_api_constants::kProxyEventFatal, false);
-  dict->SetStringKey(proxy_api_constants::kProxyEventError,
-                     net::ErrorToString(net::ERR_PAC_SCRIPT_FAILED));
+  base::Value::Dict dict;
+  dict.Set(proxy_api_constants::kProxyEventFatal, false);
+  dict.Set(proxy_api_constants::kProxyEventError,
+           net::ErrorToString(net::ERR_PAC_SCRIPT_FAILED));
   std::string error_msg;
   if (line_number != -1) {
     base::SStringPrintf(&error_msg,
@@ -75,8 +75,8 @@ void ProxyEventRouter::OnPACScriptError(EventRouterForwarder* event_router,
   } else {
     error_msg = base::UTF16ToUTF8(error);
   }
-  dict->SetStringKey(proxy_api_constants::kProxyEventDetails, error_msg);
-  args->Append(std::move(dict));
+  dict.Set(proxy_api_constants::kProxyEventDetails, error_msg);
+  args->Append(base::Value(std::move(dict)));
 
   if (profile) {
     event_router->DispatchEventToRenderers(
