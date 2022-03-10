@@ -526,6 +526,18 @@
       },
     },
   },
+  'ios_runtime_cache_15_4': {
+    '$mixin_append': {
+      'swarming': {
+        'named_caches': [
+          {
+            'name': 'runtime_ios_15_4',
+            'path': 'Runtime-ios-15.4',
+          },
+        ],
+      },
+    },
+  },
   'isolate_profile_data': {
     'isolate_profile_data': True,
   },
@@ -1267,13 +1279,13 @@
     '$mixin_append': {
       'args': [
         '--xcode-build-version',
-        '13c100'
+        '13e5104i'
       ],
     },
     'swarming': {
       'named_caches': [
         {
-          'name': 'xcode_ios_13c100',
+          'name': 'xcode_ios_13e5104i',
           'path': 'Xcode.app',
         },
       ],
