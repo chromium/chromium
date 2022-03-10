@@ -12,6 +12,7 @@
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/browser/ui/layout_constants.h"
+#include "chrome/browser/ui/page_action/page_action_icon_type.h"
 #include "chrome/browser/ui/side_search/side_search_utils.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/user_education/feature_promo_controller.h"
@@ -330,14 +331,20 @@ SideSearchBrowserController::CreateToolbarButton() {
   toolbar_button->SetVectorIcon(kWebIcon);
 #endif
 
-  toolbar_button->SetCallback(
-      base::BindRepeating(&SideSearchBrowserController::SidePanelButtonPressed,
-                          base::Unretained(this)));
+  toolbar_button->SetCallback(base::BindRepeating(
+      &SideSearchBrowserController::ToggleSidePanel, base::Unretained(this)));
   toolbar_button->SetVisible(false);
   toolbar_button->SetEnabled(true);
 
   toolbar_button_ = toolbar_button.get();
   return toolbar_button;
+}
+
+void SideSearchBrowserController::ToggleSidePanel() {
+  if (GetSidePanelToggledOpen())
+    CloseSidePanel(SideSearchCloseActionType::kTapOnSideSearchToolbarButton);
+  else
+    OpenSidePanel();
 }
 
 bool SideSearchBrowserController::GetSidePanelToggledOpen() const {
@@ -346,13 +353,6 @@ bool SideSearchBrowserController::GetSidePanelToggledOpen() const {
              ? SideSearchTabContentsHelper::FromWebContents(active_contents)
                    ->toggled_open()
              : false;
-}
-
-void SideSearchBrowserController::SidePanelButtonPressed() {
-  if (GetSidePanelToggledOpen())
-    CloseSidePanel(SideSearchCloseActionType::kTapOnSideSearchToolbarButton);
-  else
-    OpenSidePanel();
 }
 
 void SideSearchBrowserController::SidePanelCloseButtonPressed() {
@@ -435,20 +435,28 @@ void SideSearchBrowserController::UpdateSidePanel() {
                                 ? tab_contents_helper->GetSidePanelContents()
                                 : nullptr);
   side_panel_->SetVisible(will_show_side_panel);
-  toolbar_button_->SetHighlighted(will_show_side_panel);
-  toolbar_button_->SetAccessibleName(l10n_util::GetStringUTF16(
-      will_show_side_panel
-          ? IDS_ACCNAME_SIDE_SEARCH_TOOLBAR_BUTTON_ACTIVATED
-          : IDS_ACCNAME_SIDE_SEARCH_TOOLBAR_BUTTON_NOT_ACTIVATED));
 
-  // The toolbar button should remain visible in the toolbar as a side panel can
-  // be shown for the active tab.
-  if (toolbar_button_->GetVisible() != can_show_side_panel_for_page) {
-    toolbar_button_->SetVisible(can_show_side_panel_for_page);
-    RecordSideSearchAvailabilityChanged(
-        can_show_side_panel_for_page
-            ? SideSearchAvailabilityChangeType::kBecomeAvailable
-            : SideSearchAvailabilityChangeType::kBecomeUnavailable);
+  // Update the side panel entrypoints - either the page action or the toolbar
+  // button.
+  // TODO(tluk): Split the entrypoint implementations out into a separate class.
+  browser_view_->UpdatePageActionIcon(PageActionIconType::kSideSearch);
+
+  if (toolbar_button_) {
+    toolbar_button_->SetHighlighted(will_show_side_panel);
+    toolbar_button_->SetAccessibleName(l10n_util::GetStringUTF16(
+        will_show_side_panel
+            ? IDS_ACCNAME_SIDE_SEARCH_TOOLBAR_BUTTON_ACTIVATED
+            : IDS_ACCNAME_SIDE_SEARCH_TOOLBAR_BUTTON_NOT_ACTIVATED));
+
+    // The toolbar button should remain visible in the toolbar as a side panel
+    // can be shown for the active tab.
+    if (toolbar_button_->GetVisible() != can_show_side_panel_for_page) {
+      toolbar_button_->SetVisible(can_show_side_panel_for_page);
+      RecordSideSearchAvailabilityChanged(
+          can_show_side_panel_for_page
+              ? SideSearchAvailabilityChangeType::kBecomeAvailable
+              : SideSearchAvailabilityChangeType::kBecomeUnavailable);
+    }
   }
 
   // Once the anchor element is visible, maybe show promo.

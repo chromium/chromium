@@ -5452,6 +5452,8 @@ static_library("ui") {
       "side_search/side_search_utils.h",
       "views/side_search/side_search_browser_controller.cc",
       "views/side_search/side_search_browser_controller.h",
+      "views/side_search/side_search_icon_view.cc",
+      "views/side_search/side_search_icon_view.h",
     ]
 
     deps += [

@@ -129,6 +129,7 @@
 #endif
 
 #if BUILDFLAG(ENABLE_SIDE_SEARCH)
+#include "chrome/browser/ui/side_search/side_search_utils.h"
 #include "chrome/browser/ui/views/side_search/side_search_browser_controller.h"
 #endif  // BUILDFLAG(ENABLE_SIDE_SEARCH)
 
@@ -314,7 +315,8 @@ void ToolbarView::Init() {
 #if BUILDFLAG(ENABLE_SIDE_SEARCH)
   // The side search button (if enabled) should sit between the location bar and
   // the other navigation buttons.
-  if (browser_view_->side_search_controller()) {
+  if (browser_view_->side_search_controller() &&
+      !side_search::IsDSESupportEnabled(browser_->profile())) {
     left_side_panel_button_ = AddChildView(
         browser_view_->side_search_controller()->CreateToolbarButton());
   }

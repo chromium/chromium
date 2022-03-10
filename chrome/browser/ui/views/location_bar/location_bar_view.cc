@@ -138,6 +138,10 @@
 #include "ui/views/view_utils.h"
 #include "ui/views/widget/widget.h"
 
+#if BUILDFLAG(ENABLE_SIDE_SEARCH)
+#include "chrome/browser/ui/side_search/side_search_utils.h"
+#endif  // BUILDFLAG(ENABLE_SIDE_SEARCH)
+
 namespace {
 
 int IncrementalMinimumWidth(const views::View* view) {
@@ -312,6 +316,10 @@ void LocationBarView::Init() {
     if (!base::FeatureList::IsEnabled(features::kLinkCapturingUiUpdate))
       params.types_enabled.push_back(PageActionIconType::kIntentPicker);
     params.types_enabled.push_back(PageActionIconType::kPwaInstall);
+#if BUILDFLAG(ENABLE_SIDE_SEARCH)
+    if (side_search::IsDSESupportEnabled(profile_))
+      params.types_enabled.push_back(PageActionIconType::kSideSearch);
+#endif  // BUILDFLAG(ENABLE_SIDE_SEARCH)
     params.types_enabled.push_back(PageActionIconType::kFind);
     params.types_enabled.push_back(PageActionIconType::kTranslate);
     params.types_enabled.push_back(PageActionIconType::kZoom);

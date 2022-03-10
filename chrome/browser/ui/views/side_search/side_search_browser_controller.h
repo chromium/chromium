@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_SIDE_SEARCH_SIDE_SEARCH_BROWSER_CONTROLLER_H_
 #define CHROME_BROWSER_UI_VIEWS_SIDE_SEARCH_SIDE_SEARCH_BROWSER_CONTROLLER_H_
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/ui/side_search/side_search_metrics.h"
@@ -67,14 +68,14 @@ class SideSearchBrowserController
 
   bool GetSidePanelToggledOpen() const;
 
+  // Toggles panel visibility.
+  void ToggleSidePanel();
+
  private:
   // Gets and sets the toggled state of the side panel. If called with
   // kSideSearchStatePerTab enabled this determines whether the side panel
   // should be open for the currently active tab.
   void SetSidePanelToggledOpen(bool toggled_open);
-
-  // Toggles panel visibility on side panel toolbar button press.
-  void SidePanelButtonPressed();
 
   // Closes side panel on close button press.
   void SidePanelCloseButtonPressed();
@@ -98,10 +99,10 @@ class SideSearchBrowserController
 
   base::CallbackListSubscription web_view_visibility_subscription_;
 
-  ToolbarButton* toolbar_button_;
-  SidePanel* const side_panel_;
-  BrowserView* const browser_view_;
-  views::WebView* const web_view_;
+  raw_ptr<ToolbarButton> toolbar_button_ = nullptr;
+  raw_ptr<SidePanel> const side_panel_;
+  raw_ptr<BrowserView> const browser_view_;
+  raw_ptr<views::WebView> const web_view_;
 
   // Tracks and stores the last focused view which is not the
   // `side_panel_` or any of its children. Used to restore focus once

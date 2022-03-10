@@ -60,8 +60,7 @@ declare_args() {
   enable_session_service = !is_android && !is_chromecast
 
   # Enables usage of the side search feature, which is disabled by default.
-  # This feature is only approved for release on ChromeOS at this time.
-  enable_side_search = is_chromeos
+  enable_side_search = toolkit_views
 
   # Enables supervision for Family Link users.
   # Supervision is only supported on Chrome OS and Android.
