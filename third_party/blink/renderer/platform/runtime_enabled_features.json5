@@ -746,7 +746,7 @@
     },
     {
       name: "CSSPseudoHas",
-      status: "test",
+      status: "experimental",
     },
     {
       name: "CSSPseudoHasInSnapshotProfile",
