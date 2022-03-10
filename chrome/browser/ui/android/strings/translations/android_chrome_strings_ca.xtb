@@ -139,7 +139,7 @@
 <translation id="1829244130665387512">Cerca a la pàgina</translation>
 <translation id="1832459821645506983">Sí, ho accepto</translation>
 <translation id="1843805151597803366">Per obtenir traduccions millors, deixa que la Cerca de Google utilitzi la pàgina actual</translation>
-<translation id="1856325424225101786">Vols restablir el mode bàsic?</translation>
+<translation id="1856325424225101786">Vols restablir el mode lleuger?</translation>
 <translation id="1868024384445905608">Ara Chrome baixa els fitxers més ràpid</translation>
 <translation id="1877026089748256423">Chrome no està actualitzat</translation>
 <translation id="1883903952484604915">Els meus fitxers</translation>
@@ -584,7 +584,7 @@ Mantén premuda qualsevol paraula per cercar-la. Per definir millor la cerca, se
 <translation id="4404568932422911380">Cap adreça d'interès</translation>
 <translation id="4405224443901389797">Mou a…</translation>
 <translation id="4409271659088619928">El teu motor de cerca és <ph name="DSE" />. Consulta'n les instruccions per suprimir l'historial de cerques, si escau.</translation>
-<translation id="4411535500181276704">Mode bàsic</translation>
+<translation id="4411535500181276704">Mode lleuger</translation>
 <translation id="4415276339145661267">Gestiona el teu Compte de Google</translation>
 <translation id="4425140285732600465">Estàs fent un seguiment del preu. Si el preu baixa en qualsevol lloc web, rebràs una alerta.</translation>
 <translation id="4450672886426705087">Resultats de la cerca de Google.</translation>
@@ -1126,7 +1126,7 @@ Per exemple, és possible que alguns llocs web responguin a aquesta sol·licitud
 <translation id="7302081693174882195">Detalls: files ordenades per quantitat de dades estalviades</translation>
 <translation id="7304873321153398381">No tens connexió. Chrome no pot comprovar les teves contrasenyes.</translation>
 <translation id="7313188324932846546">Toca per configurar la sincronització</translation>
-<translation id="7328017930301109123">En el mode bàsic, Chrome carrega les pàgines més ràpidament i utilitza fins a un 60 per cent menys de dades.</translation>
+<translation id="7328017930301109123">En el mode lleuger, Chrome carrega les pàgines més ràpidament i utilitza fins a un 60 per cent menys de dades.</translation>
 <translation id="7332075081379534664">Has iniciat la sessió correctament</translation>
 <translation id="7333031090786104871">Encara s'hi està afegint el lloc anterior</translation>
 <translation id="7339898014177206373">Finestra nova</translation>
@@ -1149,7 +1149,7 @@ Per exemple, és possible que alguns llocs web responguin a aquesta sol·licitud
 <translation id="7431991332293347422">Controla com s'utilitza l'historial de navegació per personalitzar la Cerca i més</translation>
 <translation id="7435356471928173109">Desactivada per l'administrador</translation>
 <translation id="7437998757836447326">Tanca la sessió de Chrome</translation>
-<translation id="7438641746574390233">Quan el mode bàsic estigui activat, Chrome utilitzarà els servidors de Google perquè les pàgines es carreguin més de pressa. El mode bàsic reescriu les pàgines molt lentes per carregar només el contingut essencial. El mode bàsic no s'aplica a les pestanyes d'incògnit.</translation>
+<translation id="7438641746574390233">Quan el mode lleuger estigui activat, Chrome utilitzarà els servidors de Google perquè les pàgines es carreguin més de pressa. El mode lleuger reescriu les pàgines molt lentes per carregar només el contingut essencial. El mode lleuger no s'aplica a les pestanyes d'incògnit.</translation>
 <translation id="7443901082822119557">En mode d'incògnit, els llocs web no poden fer servir les teves galetes per veure la teva activitat de navegació en diferents llocs web, per exemple, per personalitzar els anuncis. Pot ser que aquestes funcions no responguin en alguns llocs web.</translation>
 <translation id="7444811645081526538">Més categories</translation>
 <translation id="7453467225369441013">Et tanca la sessió de la majoria de llocs web, però no la del Compte de Google.</translation>
@@ -1493,7 +1493,7 @@ Per exemple, és possible que alguns llocs web responguin a aquesta sol·licitud
 <translation id="9219103736887031265">Imatges</translation>
 <translation id="92381315203627188">Quan un lloc web demana precarregar de manera privada enllaços de la seva pàgina, Chrome encripta i carrega prèviament les pàgines mitjançant servidors de Google sense galetes. Això amaga la teva identitat del lloc web precarregat.</translation>
 <translation id="926205370408745186">Suprimeix l'activitat de Chrome de l'aplicació Benestar digital</translation>
-<translation id="927968626442779827">Utilitza el mode bàsic a Google Chrome</translation>
+<translation id="927968626442779827">Utilitza el mode lleuger a Google Chrome</translation>
 <translation id="928550791203542716">Segueixes <ph name="SITE_NAME" /></translation>
 <translation id="932327136139879170">Inici</translation>
 <translation id="938850635132480979">Error: <ph name="ERROR_CODE" /></translation>

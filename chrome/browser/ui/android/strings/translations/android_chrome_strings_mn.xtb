@@ -73,7 +73,7 @@
 <translation id="1376578503827013741">Тооцоолж байна...</translation>
 <translation id="1382912999714108023">Одоогийн мэдээллээ харахгүй байна уу? Үүнийг шинэчлэхийн тулд банктайгаа холбогдоно уу.</translation>
 <translation id="1383876407941801731">Хайлт</translation>
-<translation id="1384704387250346179">Google Дурангаар зураг орчуул <ph name="BEGIN_NEW" />Шинэ<ph name="END_NEW" /></translation>
+<translation id="1384704387250346179">Google Lens-р зураг орчуул <ph name="BEGIN_NEW" />Шинэ<ph name="END_NEW" /></translation>
 <translation id="1386674309198842382"><ph name="LAST_UPDATED" /> өдрийн өмнөөс идэвхтэй</translation>
 <translation id="1397811292916898096"><ph name="PRODUCT_NAME" />-р хайх</translation>
 <translation id="1406000523432664303">“Бүү дага”</translation>
@@ -116,7 +116,7 @@
 <translation id="1670399744444387456">Үндсэн</translation>
 <translation id="1671236975893690980">Таталт хүлээгдэж байна...</translation>
 <translation id="1672586136351118594">Дахиж бүү харуул</translation>
-<translation id="1680919990519905526">Google Дурангаар зураг авах <ph name="BEGIN_NEW" />Шинэ<ph name="END_NEW" /></translation>
+<translation id="1680919990519905526">Google Lens-р зураг авах <ph name="BEGIN_NEW" />Шинэ<ph name="END_NEW" /></translation>
 <translation id="1682195225331129001">Одоо турших</translation>
 <translation id="1697284962337958118">Дараахад нэмэх</translation>
 <translation id="1702543251015153180">Бараан загварын тохиргоогоо өөрчлөх үү?</translation>
@@ -759,7 +759,7 @@ Tаны Google бүртгэл <ph name="BEGIN_LINK" />history.google.com<ph name
 <translation id="5342314432463739672">Зөвшөөрлийн хүсэлт</translation>
 <translation id="5355191726083956201">Сайжруулсан хамгаалалт асаалттай байна</translation>
 <translation id="5368958499335451666">{OPEN_TABS,plural, =1{<ph name="OPEN_TABS_ONE" /> таб нээлттэй байна. Табыг сэлгэхийн тулд товшино уу}other{<ph name="OPEN_TABS_MANY" /> таб нээлттэй байна. Табыг сэлгэхийн тулд товшино уу}}</translation>
-<translation id="5375577065097716013">Google Дурангаар зураг хайх <ph name="BEGIN_NEW" />Шинэ<ph name="END_NEW" /></translation>
+<translation id="5375577065097716013">Google Lens-р зураг хайх <ph name="BEGIN_NEW" />Шинэ<ph name="END_NEW" /></translation>
 <translation id="5403644198645076998">Зөвхөн тодорхой сайтыг зөвшөөрөх</translation>
 <translation id="5409881200985013443"><ph name="CLIENT_NAME" /> дээр <ph name="ONE_TIME_CODE" />-г илгээх үү?</translation>
 <translation id="5414836363063783498">Баталгаажуулж байна ...</translation>
@@ -1164,7 +1164,7 @@ Privacy Sandbox-н туршилт нь идэвхтэй хөгжүүлэлтэд
 <translation id="7482656565088326534">Урьдчилан үзэх таб</translation>
 <translation id="7484997419527351112">Discover - унтраасан</translation>
 <translation id="7485033510383818941">Хангамжийн контентыг сэргээхийн тулд хуудсыг доош татна уу</translation>
-<translation id="749294055653435199">Энэ төхөөрөмж дээр Google Дуран боломжгүй</translation>
+<translation id="749294055653435199">Энэ төхөөрөмж дээр Google Lens боломжгүй</translation>
 <translation id="7493994139787901920"><ph name="VERSION" /> (Шинэчилсэн <ph name="TIME_SINCE_UPDATE" />)</translation>
 <translation id="7494974237137038751">хэмнэсэн дата</translation>
 <translation id="7498271377022651285">Түр хүлээнэ үү...</translation>
@@ -1173,7 +1173,7 @@ Privacy Sandbox-н туршилт нь идэвхтэй хөгжүүлэлтэд
 <translation id="7514365320538308">Татаж авах</translation>
 <translation id="751961395872307827">Сайтад холбогдох боломжгүй байна</translation>
 <translation id="752220631458524187">Дууссан үедээ салгана уу</translation>
-<translation id="7523960634226602883">Google Дуран ашиглан камераараа хайгаарай</translation>
+<translation id="7523960634226602883">Google Lens ашиглан камераараа хайгаарай</translation>
 <translation id="753225086557513863">Дараа эхлэхээр хуваарилсан</translation>
 <translation id="7560448309733608642">Синк хийсэн бүх төхөөрөмжөөс түүхийг арилгана. Таны Google Бүртгэл <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> дээр хөтчийн түүхийн өөр хэлбэртэй байж болзошгүй.</translation>
 <translation id="7562080006725997899">Хөтөчийн мэдээллийг арилгаж байна</translation>

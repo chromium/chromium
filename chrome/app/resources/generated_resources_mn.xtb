@@ -1619,7 +1619,7 @@
 <translation id="2602501489742255173">Эхлүүлэхийн тулд дээш шударна уу</translation>
 <translation id="2603115962224169880">Компьютерийг цэвэрлэх</translation>
 <translation id="2603355571917519942">Voice Match бэлэн байна</translation>
-<translation id="2604138917550693049">Google Дурангаар зураг хайх</translation>
+<translation id="2604138917550693049">Google Lens-р зураг хайх</translation>
 <translation id="2604255671529671813">Сүлжээний холболтын алдаа</translation>
 <translation id="2605668923777146443">"Better Together" онцлогийн сонголтоо харахын тулд <ph name="LINK_BEGIN" />Тохиргоо<ph name="LINK_END" /> руу очно уу.</translation>
 <translation id="2606246518223360146">Өгөгдлийг холбох</translation>
@@ -2383,7 +2383,7 @@
 <translation id="3393554941209044235">Chrome-н документын задлан шинжилгээ</translation>
 <translation id="3394850431319394743">Хамгаалагдсан контентыг тоглуулахын тулд таниулбар ашиглахыг зөвшөөрсөн</translation>
 <translation id="3395403082745257596"><ph name="DEVICE_COUNT" />-с <ph name="DEVICE_INDEX" /> төхөөрөмж, <ph name="DEVICE_NAME" />, Үл мэдэгдэх төхөөрөмжийн төрөл.</translation>
-<translation id="3396744558790608201">Та веб дээр үзэх болон дэлгүүр хэсэх үедээ харах визуал контентынхоо талаар нэмэлт мэдээлэл авахын тулд сайтын дурын хэсгийг хайх бол баруун талыг товшиж, “Google Дурангаар зураг хайх”-ыг сонгоно уу.</translation>
+<translation id="3396744558790608201">Та веб дээр үзэх болон дэлгүүр хэсэх үедээ харах визуал контентынхоо талаар нэмэлт мэдээлэл авахын тулд сайтын дурын хэсгийг хайх бол баруун талыг товшиж, “Google Lens-р зураг хайх”-ыг сонгоно уу.</translation>
 <translation id="3396800784455899911">"Зөвшөөрөөд үргэлжлүүлэх" товчлуурыг товшсоноор та Google-н эдгээр үйлчилгээг дээр дурдсан байдлаар боловсруулахыг зөвшөөрч байна.</translation>
 <translation id="339722927132407568">Царцдаг</translation>
 <translation id="3399432415385675819">Мэдэгдлийг идэвхгүй болгоно</translation>
@@ -3978,7 +3978,7 @@
 <translation id="5051836348807686060">Таны сонгосон хэл дээр зөв бичгийн дүрмийн алдаа шалгагч нь дэмжигдээгүй байна</translation>
 <translation id="5052499409147950210">Сайтыг засах</translation>
 <translation id="505347685865235222">Нэргүй бүлэг - <ph name="GROUP_CONTENT_STRING" /></translation>
-<translation id="5053962746715621840">Google Дурангаар зураг хайх</translation>
+<translation id="5053962746715621840">Google Lens-р зураг хайх</translation>
 <translation id="5056950756634735043">Агуулагчтай холбогдож байна</translation>
 <translation id="5057110919553308744">Та өргөтгөл гэснийг товших үед</translation>
 <translation id="505776528429481161">Ойролцоох төхөөрөмжүүдэд хялбархан холбогдож, тэдгээрийг тохируулаарай</translation>
@@ -7376,7 +7376,7 @@
 <translation id="8597845839771543242">Өмчийн хэлбэр нь:</translation>
 <translation id="8599681327221583254">Нэг эсвэл түүнээс олон бодлогыг зөв тохируулаагүй байна. Администратортайгаа холбогдоно уу</translation>
 <translation id="8601206103050338563">TLS WWW Хэрэглэгч баталгаажуулалт</translation>
-<translation id="8601611099293226919">Дэлгэцээ Google Дурангаар хайх</translation>
+<translation id="8601611099293226919">Дэлгэцээ Google Lens-р хайх</translation>
 <translation id="8602851771975208551">Таны компьютерт өөр нэг программ нэмэгдсэн бөгөөд энэ нь Chrome-ийн ажиллах зарчмыг өөрчилж болох юм.</translation>
 <translation id="8605428685123651449">SQLite санах ой</translation>
 <translation id="8608618451198398104">Kerberos тасалбар нэмэх</translation>
