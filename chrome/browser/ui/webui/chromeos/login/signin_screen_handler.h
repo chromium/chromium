@@ -115,8 +115,6 @@ class SigninScreenHandler
   friend class ash::LoginDisplayHostMojo;
   friend class ReportDnsCacheClearedOnUIThread;
 
-  void ShowImpl();
-
   void UpdateStateInternal(NetworkError::ErrorReason reason, bool force_update);
   void SetupAndShowOfflineMessage(NetworkStateInformer::State state,
                                   NetworkError::ErrorReason reason);
@@ -168,9 +166,6 @@ class SigninScreenHandler
 
   // A delegate that glues this handler with backend LoginDisplay.
   SigninScreenHandlerDelegate* delegate_ = nullptr;
-
-  // Whether screen should be shown right after initialization.
-  bool show_on_init_ = false;
 
   // Network state informer used to keep signin screen up.
   scoped_refptr<NetworkStateInformer> network_state_informer_;

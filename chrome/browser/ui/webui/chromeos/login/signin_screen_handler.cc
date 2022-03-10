@@ -250,6 +250,8 @@ void SigninScreenHandler::DeclareLocalizedValues(
                IDS_ENTERPRISE_ENROLLMENT_AUTH_INSECURE_URL_ERROR);
 }
 
+void SigninScreenHandler::Initialize() {}
+
 void SigninScreenHandler::RegisterMessages() {
   AddCallback("launchIncognito", &SigninScreenHandler::HandleLaunchIncognito);
   AddCallback("offlineLogin", &SigninScreenHandler::HandleOfflineLogin);
@@ -268,8 +270,6 @@ void SigninScreenHandler::RegisterMessages() {
 
 void SigninScreenHandler::Show() {
   CHECK(delegate_);
-
-  ShowImpl();
   histogram_helper_->OnScreenShow();
 }
 
@@ -291,13 +291,6 @@ void SigninScreenHandler::SetOfflineTimeoutForTesting(
 }
 
 // SigninScreenHandler, private: -----------------------------------------------
-
-void SigninScreenHandler::ShowImpl() {
-  if (!page_is_ready()) {
-    show_on_init_ = true;
-    return;
-  }
-}
 
 // TODO(antrim@): split this method into small parts.
 // TODO(antrim@): move this logic to GaiaScreenHandler.
@@ -452,14 +445,6 @@ void SigninScreenHandler::HideOfflineMessage(NetworkStateInformer::State state,
 
 void SigninScreenHandler::ReloadGaia(bool force_reload) {
   gaia_screen_handler_->ReloadGaia(force_reload);
-}
-
-void SigninScreenHandler::Initialize() {
-  // `delegate_` is null when we are preloading the lock screen.
-  if (delegate_ && show_on_init_) {
-    show_on_init_ = false;
-    ShowImpl();
-  }
 }
 
 void SigninScreenHandler::RegisterPrefs(PrefRegistrySimple* registry) {
