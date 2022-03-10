@@ -24,10 +24,14 @@ public class PasswordChangeLauncher {
     private static final String PASSWORD_CHANGE_USERNAME_PARAMETER = "PASSWORD_CHANGE_USERNAME";
     private static final String PASSWORD_CHANGE_SKIP_LOGIN_PARAMETER = "PASSWORD_CHANGE_SKIP_LOGIN";
     private static final String INTENT_PARAMETER = "INTENT";
+    private static final String SOURCE_PARAMETER = "SOURCE";
     private static final String INTENT = "PASSWORD_CHANGE";
     private static final String DEBUG_BUNDLE_ID = "DEBUG_BUNDLE_ID";
     private static final String DEBUG_SOCKET_ID = "DEBUG_SOCKET_ID";
+
     private static final int IN_CHROME_CALLER = 7;
+    private static final int SOURCE_PASSWORD_CHANGE_LEAK_WARNING = 10;
+    private static final int SOURCE_PASSWORD_CHANGE_SETTINGS = 11;
 
     private static final String ENCODING = "UTF-8";
 
@@ -56,6 +60,9 @@ public class PasswordChangeLauncher {
                             .addParameter(TriggerContext.PARAMETER_ORIGINAL_DEEPLINK,
                                     URLEncoder.encode(origin.getSpec(), ENCODING))
                             .addParameter(TriggerContext.PARAMETER_CALLER, IN_CHROME_CALLER)
+                            .addParameter(SOURCE_PARAMETER,
+                                    skipLogin ? SOURCE_PASSWORD_CHANGE_LEAK_WARNING
+                                              : SOURCE_PASSWORD_CHANGE_SETTINGS)
                             .build());
         } catch (UnsupportedEncodingException e) {
             throw new IllegalStateException("Encoding not available.", e);
