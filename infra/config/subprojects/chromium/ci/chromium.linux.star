@@ -185,6 +185,9 @@ ci.builder(
     main_console_view = None,
     notifies = args.ignore_default([]),
     tree_closing = False,
+    goma_backend = None,
+    reclient_jobs = rbe_jobs.DEFAULT,
+    reclient_instance = rbe_instance.DEFAULT,
 )
 
 ci.builder(
@@ -342,6 +345,9 @@ ci.builder(
         category = "release",
         short_name = "nsl",
     ),
+    goma_backend = None,
+    reclient_jobs = rbe_jobs.DEFAULT,
+    reclient_instance = rbe_instance.DEFAULT,
 )
 
 ci.builder(

@@ -923,7 +923,8 @@
       "target_cpu": "x64",
       "use_allocator": "partition",
       "use_backup_ref_ptr": true,
-      "use_goma": true
+      "use_rbe": true,
+      "use_remoteexec": true
     }
   },
   "linux-blink-animation-use-time-delta": {
@@ -965,7 +966,8 @@
       "is_debug": true,
       "symbol_level": 1,
       "target_cpu": "x64",
-      "use_goma": true,
+      "use_rbe": true,
+      "use_remoteexec": true,
       "v8_enable_sandbox_future": true
     }
   },
@@ -1151,7 +1153,8 @@
       "enable_perfetto_zlib": true,
       "is_component_build": false,
       "is_debug": false,
-      "use_goma": true
+      "use_rbe": true,
+      "use_remoteexec": true
     }
   },
   "linux-wpt-fyi-rel": {

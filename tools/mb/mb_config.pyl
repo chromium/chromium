@@ -358,20 +358,20 @@
       'linux-blink-animation-use-time-delta': 'debug_bot_enable_blink_animation_use_time_delta',
       'linux-blink-heap-concurrent-marking-tsan-rel': 'release_trybot_minimal_symbols_tsan',
       'linux-blink-heap-verification': 'release_bot_enable_blink_heap_verification_dcheck_always_on_reclient',
-      'linux-blink-v8-sandbox-future-dbg': 'debug_bot_enable_v8_sandbox_future',
+      'linux-blink-v8-sandbox-future-dbg': 'debug_bot_enable_v8_sandbox_future_reclient',
       'linux-chromeos-code-coverage': 'chromeos_with_codecs_release_bot_coverage',
       'linux-chromeos-js-code-coverage': 'chromeos_with_codecs_release_bot_javascript_coverage',
       'linux-code-coverage': 'clang_code_coverage',
       'linux-example-builder': 'release_bot',
       'linux-fieldtrial-rel': 'release_bot_minimal_symbols',
       'linux-headless-shell-rel': 'headless_shell_release_bot',
-      'linux-backuprefptr-x64-fyi-rel': 'release_trybot_backuprefptr_x64',
+      'linux-backuprefptr-x64-fyi-rel': 'release_trybot_backuprefptr_x64_reclient',
       'linux-lacros-builder-rel (goma cache silo)': 'lacros_on_linux_release_bot',
       'linux-lacros-builder-rel (reclient)': 'lacros_on_linux_release_bot_reclient',
       'linux-lacros-code-coverage': 'lacros_on_linux_clang_code_coverage',
       'linux-lacros-version-skew-fyi': 'lacros_on_linux_release_not_build_ash_bot',
       'linux-perfetto-rel': 'perfetto_release_bot',
-      'linux-upload-perfetto': 'release_bot_perfetto_zlib',
+      'linux-upload-perfetto': 'release_bot_perfetto_zlib_reclient',
       'linux-wpt-fyi-rel': 'release_bot_minimal_symbols_dcheck_always_on',
       'linux-wpt-identity-fyi-rel': 'release_bot_minimal_symbols',
       'linux-wpt-input-fyi-rel': 'release_bot_minimal_symbols',
@@ -527,12 +527,12 @@
       'Deterministic Linux': 'release_bot_minimal_symbols',
       'Fuchsia ARM64': 'release_bot_fuchsia_arm64',
       'Fuchsia x64': 'release_bot_fuchsia',
-      'Leak Detection Linux': 'release_bot',
+      'Leak Detection Linux': 'release_bot_reclient',
       'Linux Builder (dbg)': 'gpu_tests_debug_bot_reclient',
       'Linux Builder (dbg)(32)': 'gpu_tests_debug_bot_x86_reclient',
       'Linux Builder': 'gpu_tests_release_bot_do_typecheck_reclient',
       'Linux Builder (Wayland)': 'gpu_tests_wayland_release_bot_reclient',
-      'Network Service Linux': 'release_bot',
+      'Network Service Linux': 'release_bot_reclient',
       'fuchsia-arm64-cast': 'release_bot_fuchsia_arm64_cast',
       'fuchsia-x64-cast': 'release_bot_fuchsia_cast',
       'fuchsia-x64-dbg': 'debug_bot_fuchsia_compile_only_reclient',
@@ -568,7 +568,7 @@
       'WebKit Linux Leak': 'release_bot_blink_reclient',
       'WebKit Linux MSAN': 'msan_release_bot_blink_reclient',
       'android-asan': 'android_clang_asan_release_bot_reclient',
-      'linux-ubsan-vptr': 'ubsan_vptr_release_bot',
+      'linux-ubsan-vptr': 'ubsan_vptr_release_bot_reclient',
       'win-asan': 'asan_clang_fuzzer_static_v8_heap_minimal_symbols_release',
     },
 
@@ -2267,8 +2267,8 @@
       'debug_bot', 'enable_blink_animation_use_time_delta',
     ],
 
-    'debug_bot_enable_v8_sandbox_future': [
-      'debug_bot', 'v8_sandbox_future', 'dcheck_always_on', 'x64',
+    'debug_bot_enable_v8_sandbox_future_reclient': [
+      'debug_bot_reclient', 'v8_sandbox_future', 'dcheck_always_on', 'x64',
     ],
 
     'debug_bot_fuchsia': [
@@ -3123,6 +3123,10 @@
       'release_bot', 'perfetto_zlib',
     ],
 
+    'release_bot_perfetto_zlib_reclient' : [
+      'release_bot_reclient', 'perfetto_zlib',
+    ],
+
     'release_trybot': [
       'release_trybot',
     ],
@@ -3173,6 +3177,10 @@
 
     'release_trybot_backuprefptr_x64': [
       'release_trybot_minimal_symbols', 'backuprefptr', 'x64',
+    ],
+
+    'release_trybot_backuprefptr_x64_reclient': [
+      'release_trybot_minimal_symbols_reclient', 'backuprefptr', 'x64',
     ],
 
     'release_trybot_backuprefptr_arm_reclient': [
