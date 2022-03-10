@@ -8,6 +8,7 @@
 #include "base/time/time.h"
 #include "base/values.h"
 #include "chrome/browser/ash/child_accounts/time_limits/app_types.h"
+#include "components/services/app_service/public/cpp/app_types.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace ash {
@@ -16,7 +17,7 @@ namespace app_time {
 using PersistedAppInfoTest = testing::Test;
 
 TEST_F(PersistedAppInfoTest, RemoveActiveTimes) {
-  AppId app = AppId(apps::mojom::AppType::kArc, "1");
+  AppId app = AppId(apps::AppType::kArc, "1");
   AppState app_state = AppState::kAvailable;
   base::TimeDelta running_active_time = base::Hours(5);
 
@@ -49,7 +50,7 @@ TEST_F(PersistedAppInfoTest, RemoveActiveTimes) {
 }
 
 TEST_F(PersistedAppInfoTest, UpdateAppActivityPreference) {
-  AppId app = AppId(apps::mojom::AppType::kArc, "1");
+  AppId app = AppId(apps::AppType::kArc, "1");
   AppState app_state = AppState::kAvailable;
   base::TimeDelta running_active_time = base::Hours(5);
 

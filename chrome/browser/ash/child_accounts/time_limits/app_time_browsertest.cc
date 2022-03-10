@@ -32,6 +32,7 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/test/base/mixin_based_in_process_browser_test.h"
+#include "components/services/app_service/public/cpp/app_types.h"
 #include "components/user_manager/user.h"
 #include "components/user_manager/user_manager.h"
 #include "content/public/test/browser_test.h"
@@ -152,7 +153,7 @@ class AppTimeTest : public MixinBasedInProcessBrowserTest {
   }
 
   void InstallArcApp(const AppId& app_id) {
-    EXPECT_EQ(apps::mojom::AppType::kArc, app_id.app_type());
+    EXPECT_EQ(apps::AppType::kArc, app_id.app_type());
     const std::string& package_name = app_id.app_id();
     arc_app_instance_->SendPackageAdded(
         CreateArcAppPackage(package_name)->Clone());
@@ -195,7 +196,7 @@ class AppTimeTest : public MixinBasedInProcessBrowserTest {
 };
 
 IN_PROC_BROWSER_TEST_F(AppTimeTest, AppInstallation) {
-  const AppId app1(apps::mojom::AppType::kArc, "com.example.app1");
+  const AppId app1(apps::AppType::kArc, "com.example.app1");
   AppActivityRegistry* app_registry = GetAppRegistry();
   EXPECT_FALSE(app_registry->IsAppInstalled(app1));
 
@@ -207,7 +208,7 @@ IN_PROC_BROWSER_TEST_F(AppTimeTest, AppInstallation) {
 
 IN_PROC_BROWSER_TEST_F(AppTimeTest, PerAppTimeLimitsPolicyUpdates) {
   // Install an app.
-  const AppId app1(apps::mojom::AppType::kArc, "com.example.app1");
+  const AppId app1(apps::AppType::kArc, "com.example.app1");
   InstallArcApp(app1);
 
   AppActivityRegistry* app_registry = GetAppRegistry();
@@ -271,13 +272,13 @@ IN_PROC_BROWSER_TEST_F(AppTimeTest, PerAppTimeLimitsPolicyUpdates) {
 
 IN_PROC_BROWSER_TEST_F(AppTimeTest, PerAppTimeLimitsPolicyMultipleEntries) {
   // Install apps.
-  const AppId app1(apps::mojom::AppType::kArc, "com.example.app1");
+  const AppId app1(apps::AppType::kArc, "com.example.app1");
   InstallArcApp(app1);
-  const AppId app2(apps::mojom::AppType::kArc, "com.example.app2");
+  const AppId app2(apps::AppType::kArc, "com.example.app2");
   InstallArcApp(app2);
-  const AppId app3(apps::mojom::AppType::kArc, "com.example.app3");
+  const AppId app3(apps::AppType::kArc, "com.example.app3");
   InstallArcApp(app3);
-  const AppId app4(apps::mojom::AppType::kArc, "com.example.app4");
+  const AppId app4(apps::AppType::kArc, "com.example.app4");
   InstallArcApp(app4);
 
   AppActivityRegistry* app_registry = GetAppRegistry();

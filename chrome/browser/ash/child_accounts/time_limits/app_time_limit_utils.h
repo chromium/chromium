@@ -10,9 +10,7 @@
 class GURL;
 
 namespace apps {
-namespace mojom {
 enum class AppType;
-}  // namespace mojom
 }  // namespace apps
 
 namespace ash {
@@ -21,8 +19,7 @@ namespace app_time {
 class AppId;
 enum class AppState;
 
-enterprise_management::App::AppType AppTypeForReporting(
-    apps::mojom::AppType type);
+enterprise_management::App::AppType AppTypeForReporting(apps::AppType type);
 
 AppId GetChromeAppId();
 

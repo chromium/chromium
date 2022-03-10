@@ -56,7 +56,7 @@
 #include "components/prefs/pref_service.h"
 #include "components/prefs/scoped_user_pref_update.h"
 #include "components/prefs/testing_pref_service.h"
-#include "components/services/app_service/public/mojom/types.mojom.h"
+#include "components/services/app_service/public/cpp/app_types.h"
 #include "components/session_manager/core/session_manager.h"
 #include "components/user_manager/scoped_user_manager.h"
 #include "components/user_manager/user_type.h"
@@ -704,8 +704,8 @@ TEST_F(ChildStatusCollectorTest, ReportingAppActivity) {
   status_collector_->OnSubmittedSuccessfully();
 
   // Report activity for two different apps.
-  const ash::app_time::AppId app1(apps::mojom::AppType::kWeb, "app1");
-  const ash::app_time::AppId app2(apps::mojom::AppType::kChromeApp, "app2");
+  const ash::app_time::AppId app1(apps::AppType::kWeb, "app1");
+  const ash::app_time::AppId app2(apps::AppType::kChromeApp, "app2");
   const Time start_time = Time::Now();
   const base::TimeDelta app1_interval = base::Minutes(1);
   const base::TimeDelta app2_interval = base::Minutes(2);
@@ -761,8 +761,8 @@ TEST_F(ChildStatusCollectorTest, ReportingAppActivityNoReport) {
   EXPECT_EQ(0, child_status_.app_activity_size());
   status_collector_->OnSubmittedSuccessfully();
 
-  const ash::app_time::AppId app1(apps::mojom::AppType::kWeb, "app1");
-  const ash::app_time::AppId app2(apps::mojom::AppType::kChromeApp, "app2");
+  const ash::app_time::AppId app1(apps::AppType::kWeb, "app1");
+  const ash::app_time::AppId app2(apps::AppType::kChromeApp, "app2");
   const base::TimeDelta app1_interval = base::Minutes(1);
   const base::TimeDelta app2_interval = base::Minutes(2);
 
@@ -807,8 +807,8 @@ TEST_F(ChildStatusCollectorTest, ReportingAppActivityMetrics) {
       /*expected_count=*/0);
 
   // Report activity for two different apps.
-  const ash::app_time::AppId app1(apps::mojom::AppType::kWeb, "app1");
-  const ash::app_time::AppId app2(apps::mojom::AppType::kChromeApp, "app2");
+  const ash::app_time::AppId app1(apps::AppType::kWeb, "app1");
+  const ash::app_time::AppId app2(apps::AppType::kChromeApp, "app2");
   const base::TimeDelta app1_interval = base::Seconds(1);
   const base::TimeDelta app2_interval = base::Seconds(2);
   SimulateAppActivity(app1, app1_interval);

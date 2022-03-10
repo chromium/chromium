@@ -33,6 +33,7 @@
 #include "chromeos/dbus/system_clock/system_clock_client.h"
 #include "components/prefs/pref_service.h"
 #include "components/prefs/scoped_user_pref_update.h"
+#include "components/services/app_service/public/cpp/app_types.h"
 #include "components/services/app_service/public/cpp/icon_loader.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -53,8 +54,8 @@ constexpr base::TimeDelta kOneHour = base::Hours(1);
 constexpr base::TimeDelta kZeroTime = base::Seconds(0);
 constexpr char kApp1Name[] = "App1";
 constexpr char kApp2Name[] = "App2";
-const AppId kApp1(apps::mojom::AppType::kArc, "1");
-const AppId kApp2(apps::mojom::AppType::kArc, "2");
+const AppId kApp1(apps::AppType::kArc, "1");
+const AppId kApp2(apps::AppType::kArc, "2");
 
 // Calculate the previous reset time.
 base::Time GetLastResetTime(base::Time timestamp) {
@@ -554,7 +555,7 @@ TEST_F(AppTimeControllerTest, MetricsTest) {
 
   {
     AppTimeLimitsPolicyBuilder builder;
-    AppId absent_app(apps::mojom::AppType::kArc, "absent_app");
+    AppId absent_app(apps::AppType::kArc, "absent_app");
     AppLimit app_limit(AppRestriction::kTimeLimit, kOneHour, base::Time::Now());
     AppLimit blocked_app(AppRestriction::kBlocked, absl::nullopt,
                          base::Time::Now());

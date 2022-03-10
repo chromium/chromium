@@ -22,7 +22,7 @@
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/views/chrome_views_test_base.h"
 #include "components/prefs/pref_service.h"
-#include "components/services/app_service/public/mojom/types.mojom.h"
+#include "components/services/app_service/public/cpp/app_types.h"
 #include "extensions/common/constants.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -35,9 +35,9 @@ namespace app_time {
 
 namespace {
 
-const AppId kApp1(apps::mojom::AppType::kArc, "1");
-const AppId kApp2(apps::mojom::AppType::kWeb, "3");
-const AppId kGoogleSlidesApp(apps::mojom::AppType::kChromeApp,
+const AppId kApp1(apps::AppType::kArc, "1");
+const AppId kApp2(apps::AppType::kWeb, "3");
+const AppId kGoogleSlidesApp(apps::AppType::kChromeApp,
                              extension_misc::kGoogleSlidesAppId);
 
 class AppTimeNotificationDelegateMock : public AppTimeNotificationDelegate {
@@ -994,7 +994,7 @@ TEST_F(AppActivityRegistryTest, LimitSetAfterActivity) {
   AppStateObserverMock state_observer_mock;
   registry().AddAppStateObserver(&state_observer_mock);
 
-  const AppId kApp3(apps::mojom::AppType::kWeb, "l");
+  const AppId kApp3(apps::AppType::kWeb, "l");
   registry().OnAppInstalled(kApp3);
   registry().OnAppAvailable(kApp3);
 
@@ -1035,7 +1035,7 @@ TEST_F(AppActivityRegistryTest, WebAppInstalled) {
   task_environment()->FastForwardBy(base::Hours(1));
 
   // Now a new application is installed.
-  const AppId kApp3(apps::mojom::AppType::kWeb, "l");
+  const AppId kApp3(apps::AppType::kWeb, "l");
 
   registry().OnAppInstalled(kApp3);
   registry().OnAppAvailable(kApp3);

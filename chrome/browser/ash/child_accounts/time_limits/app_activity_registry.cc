@@ -24,7 +24,7 @@
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 #include "components/prefs/scoped_user_pref_update.h"
-#include "components/services/app_service/public/mojom/types.mojom.h"
+#include "components/services/app_service/public/cpp/app_types.h"
 
 namespace ash {
 namespace app_time {
@@ -396,7 +396,7 @@ void AppActivityRegistry::GenerateHiddenApps(
     enterprise_management::App* app_info = report->add_hidden_app();
     app_info->set_app_id(app_id.app_id());
     app_info->set_app_type(AppTypeForReporting(app_id.app_type()));
-    if (app_id.app_type() == apps::mojom::AppType::kArc) {
+    if (app_id.app_type() == apps::AppType::kArc) {
       app_info->add_additional_app_id(
           app_service_wrapper_->GetAppServiceId(app_id));
     }
@@ -446,7 +446,7 @@ AppActivityRegistry::GenerateAppActivityReport(
     app_info->set_app_id(app_id.app_id());
     app_info->set_app_type(AppTypeForReporting(app_id.app_type()));
     // AppService is is only different for ARC++ apps.
-    if (app_id.app_type() == apps::mojom::AppType::kArc) {
+    if (app_id.app_type() == apps::AppType::kArc) {
       app_info->add_additional_app_id(
           app_service_wrapper_->GetAppServiceId(app_id));
     }

@@ -9,7 +9,7 @@
 #include <vector>
 
 #include "base/time/time.h"
-#include "components/services/app_service/public/mojom/types.mojom.h"
+#include "components/services/app_service/public/cpp/app_types.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash {
@@ -83,14 +83,14 @@ enum class ChromeAppActivityState {
 // specific app id.
 class AppId {
  public:
-  AppId(apps::mojom::AppType app_type, const std::string& app_id);
+  AppId(apps::AppType app_type, const std::string& app_id);
   AppId(const AppId&);
   AppId& operator=(const AppId&);
   AppId(AppId&&);
   AppId& operator=(AppId&&);
   ~AppId();
 
-  apps::mojom::AppType app_type() const { return app_type_; }
+  apps::AppType app_type() const { return app_type_; }
   const std::string& app_id() const { return app_id_; }
 
   bool operator==(const AppId&) const;
@@ -99,7 +99,7 @@ class AppId {
   friend std::ostream& operator<<(std::ostream&, const AppId&);
 
  private:
-  apps::mojom::AppType app_type_ = apps::mojom::AppType::kUnknown;
+  apps::AppType app_type_ = apps::AppType::kUnknown;
 
   // Package name for |ARC| apps, 32 character long Chrome specific app id
   // otherwise.

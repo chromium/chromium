@@ -8,7 +8,7 @@
 #include <map>
 #include <string>
 
-#include "components/services/app_service/public/mojom/types.mojom.h"
+#include "components/services/app_service/public/cpp/app_types.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
@@ -40,10 +40,9 @@ extern const char kHourInt[];
 extern const char kMinInt[];
 extern const char kActivityReportingEnabled[];
 
-// Converts between apps::mojom::AppType and string used by app time limits
-// policies.
-apps::mojom::AppType PolicyStringToAppType(const std::string& app_type);
-std::string AppTypeToPolicyString(apps::mojom::AppType app_type);
+// Converts between apps::AppType and string used by app time limits policies.
+apps::AppType PolicyStringToAppType(const std::string& app_type);
+std::string AppTypeToPolicyString(apps::AppType app_type);
 
 // Converts between AppRestriction and string used by app time limits policies.
 AppRestriction PolicyStringToAppRestriction(const std::string& restriction);

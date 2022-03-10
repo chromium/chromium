@@ -24,6 +24,7 @@
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
 #include "chrome/browser/web_applications/web_app_id.h"
 #include "chrome/browser/web_applications/web_app_tab_helper.h"
+#include "components/services/app_service/public/cpp/app_types.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/web_contents.h"
 #include "net/base/registry_controlled_domains/registry_controlled_domain.h"
@@ -52,7 +53,7 @@ bool IsURLAllowlisted(const GURL& url, content::BrowserContext* context) {
 
 bool IsWebAppAllowlisted(const std::string& app_id_string,
                          content::BrowserContext* context) {
-  const app_time::AppId app_id(apps::mojom::AppType::kWeb, app_id_string);
+  const app_time::AppId app_id(apps::AppType::kWeb, app_id_string);
   auto* child_user_service =
       ChildUserServiceFactory::GetForBrowserContext(context);
   DCHECK(child_user_service);

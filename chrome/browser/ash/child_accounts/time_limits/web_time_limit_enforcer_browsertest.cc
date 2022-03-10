@@ -33,6 +33,7 @@
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/mixin_based_in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "components/services/app_service/public/cpp/app_types.h"
 #include "components/user_manager/user_manager.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/navigation_handle.h"
@@ -188,7 +189,7 @@ content::WebContents* WebTimeLimitEnforcerThrottleTest::InstallAndLaunchWebApp(
                                                        std::move(web_app_info));
 
   if (allowlisted_app)
-    AllowlistApp(app_time::AppId(apps::mojom::AppType::kWeb, app_id));
+    AllowlistApp(app_time::AppId(apps::AppType::kWeb, app_id));
   base::RunLoop().RunUntilIdle();
 
   // Add a tab to |browser()| and return the newly added WebContents.

@@ -114,15 +114,18 @@ class FamilyUserChromeActivityMetricsTest
   }
 
   void PushChromeApp() {
+    auto mojom_app_type = apps::ConvertAppTypeToMojomAppType(
+        app_time::GetChromeAppId().app_type());
+
     std::vector<apps::mojom::AppPtr> deltas;
     auto app = apps::mojom::App::New();
     app->app_id = app_time::GetChromeAppId().app_id();
-    app->app_type = app_time::GetChromeAppId().app_type();
+    app->app_type = mojom_app_type;
     deltas.push_back(std::move(app));
 
     apps::AppServiceProxyFactory::GetForProfile(profile())
         ->AppRegistryCache()
-        .OnApps(std::move(deltas), app_time::GetChromeAppId().app_type(),
+        .OnApps(std::move(deltas), mojom_app_type,
                 false /* should_notify_initialized */);
   }
 

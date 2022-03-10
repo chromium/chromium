@@ -38,14 +38,14 @@ namespace {
 // Gets AppId from |update|.
 AppId AppIdFromAppUpdate(const apps::AppUpdate& update) {
   bool is_arc = update.AppType() == apps::mojom::AppType::kArc;
-  return AppId(update.AppType(),
+  return AppId(apps::ConvertMojomAppTypToAppType(update.AppType()),
                is_arc ? update.PublisherId() : update.AppId());
 }
 
 // Gets AppId from |update|.
 AppId AppIdFromInstanceUpdate(const apps::InstanceUpdate& update,
                               apps::AppRegistryCache* app_cache) {
-  AppId app_id(apps::mojom::AppType::kUnknown, update.AppId());
+  AppId app_id(apps::AppType::kUnknown, update.AppId());
 
   app_cache->ForOneApp(update.AppId(),
                        [&app_id](const apps::AppUpdate& update) {
@@ -56,7 +56,7 @@ AppId AppIdFromInstanceUpdate(const apps::InstanceUpdate& update,
 
 // Gets app service id from |app_id|.
 std::string AppServiceIdFromAppId(const AppId& app_id, Profile* profile) {
-  return app_id.app_type() == apps::mojom::AppType::kArc
+  return app_id.app_type() == apps::AppType::kArc
              ? arc::ArcPackageNameToAppId(app_id.app_id(), profile)
              : app_id.app_id();
 }
@@ -121,7 +121,7 @@ std::vector<AppId> AppServiceWrapper::GetInstalledApps() const {
 }
 
 bool AppServiceWrapper::IsHiddenArcApp(const AppId& app_id) const {
-  if (app_id.app_type() != apps::mojom::AppType::kArc)
+  if (app_id.app_type() != apps::AppType::kArc)
     return false;
 
   bool is_hidden = false;
@@ -145,7 +145,7 @@ std::vector<AppId> AppServiceWrapper::GetHiddenArcApps() const {
       return;
 
     const AppId app_id = AppIdFromAppUpdate(update);
-    if (app_id.app_type() != apps::mojom::AppType::kArc ||
+    if (app_id.app_type() != apps::AppType::kArc ||
         update.ShowInLauncher().value_or(true)) {
       return;
     }
@@ -177,8 +177,8 @@ void AppServiceWrapper::GetAppIcon(
   if (base::FeatureList::IsEnabled(features::kAppServiceLoadIconWithoutMojom)) {
     apps::IconKey icon_key;
     GetAppProxy()->LoadIconFromIconKey(
-        apps::ConvertMojomAppTypToAppType(app_id.app_type()), app_service_id,
-        icon_key, apps::IconType::kStandard, size_hint_in_dp,
+        app_id.app_type(), app_service_id, icon_key, apps::IconType::kStandard,
+        size_hint_in_dp,
         /* allow_placeholder_icon */ false,
         base::BindOnce(
             [](base::OnceCallback<void(absl::optional<gfx::ImageSkia>)>
@@ -194,8 +194,9 @@ void AppServiceWrapper::GetAppIcon(
             std::move(on_icon_ready)));
   } else {
     GetAppProxy()->LoadIconFromIconKey(
-        app_id.app_type(), app_service_id, apps::mojom::IconKey::New(),
-        apps::mojom::IconType::kStandard, size_hint_in_dp,
+        apps::ConvertAppTypeToMojomAppType(app_id.app_type()), app_service_id,
+        apps::mojom::IconKey::New(), apps::mojom::IconType::kStandard,
+        size_hint_in_dp,
         /* allow_placeholder_icon */ false,
         base::BindOnce(
             [](base::OnceCallback<void(absl::optional<gfx::ImageSkia>)>
@@ -330,7 +331,7 @@ bool AppServiceWrapper::ShouldIncludeApp(const AppId& app_id) const {
   if (IsHiddenArcApp(app_id))
     return false;
 
-  if (app_id.app_type() == apps::mojom::AppType::kChromeApp) {
+  if (app_id.app_type() == apps::AppType::kChromeApp) {
     const extensions::Extension* extension =
         extensions::ExtensionRegistry::Get(profile_)->GetExtensionById(
             app_id.app_id(),
@@ -345,8 +346,8 @@ bool AppServiceWrapper::ShouldIncludeApp(const AppId& app_id) const {
     return extension->is_hosted_app() || extension->is_legacy_packaged_app();
   }
 
-  return app_id.app_type() == apps::mojom::AppType::kArc ||
-         app_id.app_type() == apps::mojom::AppType::kWeb;
+  return app_id.app_type() == apps::AppType::kArc ||
+         app_id.app_type() == apps::AppType::kWeb;
 }
 
 }  // namespace app_time

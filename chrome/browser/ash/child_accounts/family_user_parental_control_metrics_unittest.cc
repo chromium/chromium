@@ -36,6 +36,7 @@
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/prefs/scoped_user_pref_update.h"
+#include "components/services/app_service/public/cpp/app_types.h"
 #include "components/sync_preferences/pref_service_syncable.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "content/public/test/browser_task_environment.h"
@@ -51,7 +52,7 @@ constexpr char kStartTime[] = "1 Jan 2020 21:15";
 
 constexpr char kExampleHost0[] = "http://www.example0.com";
 constexpr char kExampleURL1[] = "http://www.example1.com/123";
-const app_time::AppId kArcApp(apps::mojom::AppType::kArc, "packageName");
+const app_time::AppId kArcApp(apps::AppType::kArc, "packageName");
 
 arc::mojom::ArcPackageInfoPtr CreateArcAppPackage(
     const std::string& package_name) {
@@ -260,7 +261,7 @@ TEST_F(FamilyUserParentalControlMetricsTest, AppAndWebTimeLimitMetrics) {
   arc_test_.SetUp(profile_.get());
   arc_test_.app_instance()->set_icon_response_type(
       arc::FakeAppInstance::IconResponseType::ICON_RESPONSE_SKIP);
-  EXPECT_EQ(apps::mojom::AppType::kArc, kArcApp.app_type());
+  EXPECT_EQ(apps::AppType::kArc, kArcApp.app_type());
   std::string package_name = kArcApp.app_id();
   arc_test_.AddPackage(CreateArcAppPackage(package_name)->Clone());
   std::vector<arc::mojom::AppInfoPtr> apps;

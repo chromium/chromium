@@ -30,41 +30,41 @@ const char kHourInt[] = "hour";
 const char kMinInt[] = "minute";
 const char kActivityReportingEnabled[] = "activity_reporting_enabled";
 
-apps::mojom::AppType PolicyStringToAppType(const std::string& app_type) {
+apps::AppType PolicyStringToAppType(const std::string& app_type) {
   if (app_type == "ARC")
-    return apps::mojom::AppType::kArc;
+    return apps::AppType::kArc;
   if (app_type == "BOREALIS")
-    return apps::mojom::AppType::kBorealis;
+    return apps::AppType::kBorealis;
   if (app_type == "BUILT-IN")
-    return apps::mojom::AppType::kBuiltIn;
+    return apps::AppType::kBuiltIn;
   if (app_type == "CROSTINI")
-    return apps::mojom::AppType::kCrostini;
+    return apps::AppType::kCrostini;
   if (app_type == "EXTENSION")
-    return apps::mojom::AppType::kChromeApp;
+    return apps::AppType::kChromeApp;
   if (app_type == "PLUGIN-VM")
-    return apps::mojom::AppType::kPluginVm;
+    return apps::AppType::kPluginVm;
   if (app_type == "WEB")
-    return apps::mojom::AppType::kWeb;
+    return apps::AppType::kWeb;
 
   NOTREACHED();
-  return apps::mojom::AppType::kUnknown;
+  return apps::AppType::kUnknown;
 }
 
-std::string AppTypeToPolicyString(apps::mojom::AppType app_type) {
+std::string AppTypeToPolicyString(apps::AppType app_type) {
   switch (app_type) {
-    case apps::mojom::AppType::kArc:
+    case apps::AppType::kArc:
       return "ARC";
-    case apps::mojom::AppType::kBorealis:
+    case apps::AppType::kBorealis:
       return "BOREALIS";
-    case apps::mojom::AppType::kBuiltIn:
+    case apps::AppType::kBuiltIn:
       return "BUILT-IN";
-    case apps::mojom::AppType::kCrostini:
+    case apps::AppType::kCrostini:
       return "CROSTINI";
-    case apps::mojom::AppType::kChromeApp:
+    case apps::AppType::kChromeApp:
       return "EXTENSION";
-    case apps::mojom::AppType::kPluginVm:
+    case apps::AppType::kPluginVm:
       return "PLUGIN-VM";
-    case apps::mojom::AppType::kWeb:
+    case apps::AppType::kWeb:
       return "WEB";
     default:
       NOTREACHED();
