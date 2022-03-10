@@ -38,8 +38,8 @@ bool NativeTheme::SystemDarkModeSupported() {
 #endif
 
 ColorProviderManager::Key NativeTheme::GetColorProviderKey(
-    scoped_refptr<ColorProviderManager::InitializerSupplier> custom_theme)
-    const {
+    scoped_refptr<ColorProviderManager::InitializerSupplier> custom_theme,
+    bool use_custom_frame) const {
   return ColorProviderManager::Key(
       (GetDefaultSystemColorScheme() == ColorScheme::kDark)
           ? ColorProviderManager::ColorMode::kDark
@@ -48,6 +48,8 @@ ColorProviderManager::Key NativeTheme::GetColorProviderKey(
                                   : ColorProviderManager::ContrastMode::kNormal,
       is_custom_system_theme_ ? ColorProviderManager::SystemTheme::kCustom
                               : ColorProviderManager::SystemTheme::kDefault,
+      use_custom_frame ? ui::ColorProviderManager::FrameType::kChromium
+                       : ui::ColorProviderManager::FrameType::kNative,
       std::move(custom_theme));
 }
 

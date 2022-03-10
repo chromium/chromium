@@ -41,6 +41,7 @@ class ThemeServiceTest;
 class BrowserThemeProviderDelegate {
  public:
   virtual CustomThemeSupplier* GetThemeSupplier() const = 0;
+  virtual bool ShouldUseCustomFrame() const = 0;
 };
 
 class ThemeService : public KeyedService,
@@ -87,6 +88,7 @@ class ThemeService : public KeyedService,
 
   // Overridden from BrowserThemeProviderDelegate:
   CustomThemeSupplier* GetThemeSupplier() const override;
+  bool ShouldUseCustomFrame() const override;
 
   // Set the current theme to the theme defined in |extension|.
   // |extension| must already be added to this profile's

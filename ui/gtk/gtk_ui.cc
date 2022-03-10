@@ -920,7 +920,11 @@ void GtkUi::UpdateColors() {
            (color_scheme == ui::NativeTheme::ColorScheme::kPlatformHighContrast)
                ? ui::ColorProviderManager::ContrastMode::kHigh
                : ui::ColorProviderManager::ContrastMode::kNormal,
-           ui::ColorProviderManager::SystemTheme::kCustom, nullptr});
+           ui::ColorProviderManager::SystemTheme::kCustom,
+           // Some theme colors, e.g. COLOR_NTP_LINK, are derived from color
+           // provider colors. We assume that those sources' colors won't change
+           // with frame type.
+           ui::ColorProviderManager::FrameType::kChromium, nullptr});
 
   SkColor location_bar_border = GetBorderColor("GtkEntry#entry");
   if (SkColorGetA(location_bar_border))

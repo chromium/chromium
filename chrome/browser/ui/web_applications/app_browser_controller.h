@@ -199,6 +199,7 @@ class AppBrowserController : public TabStripModelObserver,
 
   // BrowserThemeProviderDelegate:
   CustomThemeSupplier* GetThemeSupplier() const override;
+  bool ShouldUseCustomFrame() const override;
 
   void UpdateDraggableRegion(const SkRegion& region);
   const absl::optional<SkRegion>& draggable_region() const {

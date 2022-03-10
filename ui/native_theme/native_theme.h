@@ -385,9 +385,11 @@ class NATIVE_THEME_EXPORT NativeTheme {
   };
 
   // Returns the key corresponding to this native theme object.
+  // Use `use_custom_frame` == true when Chromium renders the titlebar.
+  // False when the window manager renders the titlebar (currently GTK only).
   ColorProviderManager::Key GetColorProviderKey(
-      scoped_refptr<ColorProviderManager::InitializerSupplier> custom_theme)
-      const;
+      scoped_refptr<ColorProviderManager::InitializerSupplier> custom_theme,
+      bool use_custom_frame = true) const;
 
   // Returns a shared instance of the native theme that should be used for web
   // rendering. Do not use it in a normal application context (i.e. browser).

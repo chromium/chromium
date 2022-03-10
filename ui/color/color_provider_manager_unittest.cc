@@ -31,7 +31,8 @@ ColorProvider* GetLightNormalColorProvider() {
   return ColorProviderManager::GetForTesting().GetColorProviderFor(
       {ColorProviderManager::ColorMode::kLight,
        ColorProviderManager::ContrastMode::kNormal,
-       ColorProviderManager::SystemTheme::kDefault, nullptr});
+       ColorProviderManager::SystemTheme::kDefault,
+       ColorProviderManager::FrameType::kChromium, nullptr});
 }
 
 }  // namespace

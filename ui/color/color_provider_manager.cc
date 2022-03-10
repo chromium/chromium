@@ -46,16 +46,19 @@ ColorProviderManager::Key::Key()
     : Key(ColorMode::kLight,
           ContrastMode::kNormal,
           SystemTheme::kDefault,
+          FrameType::kChromium,
           nullptr) {}
 
 ColorProviderManager::Key::Key(ColorMode color_mode,
                                ContrastMode contrast_mode,
                                SystemTheme system_theme,
+                               FrameType frame_type,
                                scoped_refptr<InitializerSupplier> custom_theme)
     : color_mode(color_mode),
       contrast_mode(contrast_mode),
       elevation_mode(ElevationMode::kLow),
       system_theme(system_theme),
+      frame_type(frame_type),
       custom_theme(std::move(custom_theme)) {}
 
 ColorProviderManager::Key::Key(const Key&) = default;
