@@ -175,7 +175,18 @@ class RenderViewHostTester {
 // RenderViewHostTester and RenderFrameHostTester respectively.
 class RenderViewHostTestEnabler {
  public:
-  RenderViewHostTestEnabler();
+  // Whether this RenderViewHostTestEnabler should create
+  // TestNavigationURLLoaderFactory or not.
+  enum class NavigationURLLoaderFactoryType {
+    // Create TestNavigationURLLoaderFactory.
+    kTest,
+    // Do not create TestRenderViewHostFactory. Useful for the tests which want
+    // to mock or customise the NavigationURLLoader creation logic themselves.
+    kNone,
+  };
+  explicit RenderViewHostTestEnabler(
+      NavigationURLLoaderFactoryType navigation_url_loader_factory_type =
+          NavigationURLLoaderFactoryType::kTest);
 
   RenderViewHostTestEnabler(const RenderViewHostTestEnabler&) = delete;
   RenderViewHostTestEnabler& operator=(const RenderViewHostTestEnabler&) =

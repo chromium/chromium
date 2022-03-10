@@ -113,14 +113,18 @@ void RenderViewHostTester::SendTouchEvent(
 
 // RenderViewHostTestEnabler --------------------------------------------------
 
-RenderViewHostTestEnabler::RenderViewHostTestEnabler()
+RenderViewHostTestEnabler::RenderViewHostTestEnabler(
+    NavigationURLLoaderFactoryType url_loader_factory_type)
     : rph_factory_(new MockRenderProcessHostFactory()),
       asgh_factory_(new MockAgentSchedulingGroupHostFactory()),
       rvh_factory_(new TestRenderViewHostFactory(rph_factory_.get(),
                                                  asgh_factory_.get())),
       rfh_factory_(new TestRenderFrameHostFactory()),
       rwhi_factory_(new TestRenderWidgetHostFactory()),
-      loader_factory_(new TestNavigationURLLoaderFactory()) {
+      loader_factory_(url_loader_factory_type ==
+                              NavigationURLLoaderFactoryType::kTest
+                          ? new TestNavigationURLLoaderFactory()
+                          : nullptr) {
   // A TaskEnvironment is needed on the main thread for Mojo bindings to
   // graphics services. Some tests have their own, so this only creates one
   // (single-threaded) when none exists. This means tests must ensure any

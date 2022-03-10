@@ -1279,10 +1279,10 @@ NavigationURLLoaderImpl::NavigationURLLoaderImpl(
       header_client;
   // `frame_tree_node` may be null in some unit test environments.
   if (frame_tree_node) {
-    // Initialize proxied factory remote/receiver if necessary.
-    // This also populates `bypass_redirect_checks_`.
     DCHECK(frame_tree_node->navigation_request());
 
+    // Initialize proxied factory remote/receiver if necessary.
+    // This also populates `bypass_redirect_checks_`.
     GetContentClient()
         ->browser()
         ->RegisterNonNetworkNavigationURLLoaderFactories(
