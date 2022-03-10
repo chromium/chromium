@@ -93,7 +93,8 @@ void WebRequestEventDetails::SetRequestHeaders(
 
   base::ListValue* headers = new base::ListValue();
   for (net::HttpRequestHeaders::Iterator it(request_headers); it.GetNext();)
-    headers->Append(helpers::CreateHeaderDictionary(it.name(), it.value()));
+    headers->Append(
+        base::Value(helpers::CreateHeaderDictionary(it.name(), it.value())));
   request_headers_.reset(headers);
 }
 
@@ -134,7 +135,8 @@ void WebRequestEventDetails::SetResponseHeaders(
                                                                  name)) {
           continue;
         }
-        headers->Append(helpers::CreateHeaderDictionary(name, value));
+        headers->Append(
+            base::Value(helpers::CreateHeaderDictionary(name, value)));
       }
     }
     response_headers_.reset(headers);

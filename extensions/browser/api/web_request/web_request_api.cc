@@ -318,7 +318,8 @@ void SendOnMessageEventOnUI(
     return;
 
   std::unique_ptr<base::ListValue> event_args(new base::ListValue);
-  event_args->Append(event_details->GetAndClearDict());
+  event_args->Append(
+      base::Value::FromUniquePtrValue(event_details->GetAndClearDict()));
 
   EventRouter* event_router = EventRouter::Get(browser_context);
 
@@ -1660,9 +1661,10 @@ void ExtensionWebRequestEventRouter::DispatchEventToListeners(
       }
       custom_event_details = event_details_filtered_copy.get();
     }
-    args_filtered->Append(custom_event_details->GetFilteredDict(
-        listener->extra_info_spec, PermissionHelper::Get(browser_context),
-        listener->id.extension_id, crosses_incognito));
+    args_filtered->Append(
+        base::Value::FromUniquePtrValue(custom_event_details->GetFilteredDict(
+            listener->extra_info_spec, PermissionHelper::Get(browser_context),
+            listener->id.extension_id, crosses_incognito)));
 
     EventRouter::DispatchEventToSender(
         rph, browser_context, listener->id.extension_id,
@@ -2141,7 +2143,7 @@ std::unique_ptr<base::Value> SerializeResponseHeaders(
   auto serialized_headers = std::make_unique<base::ListValue>();
   for (const auto& it : headers) {
     serialized_headers->Append(
-        helpers::CreateHeaderDictionary(it.first, it.second));
+        base::Value(helpers::CreateHeaderDictionary(it.first, it.second)));
   }
   return std::move(serialized_headers);
 }
@@ -2155,42 +2157,40 @@ std::unique_ptr<base::ListValue> SummarizeCookieModifications(
     const std::vector<CookieType>& modifications) {
   auto cookie_modifications = std::make_unique<base::ListValue>();
   for (const CookieType& mod : modifications) {
-    auto summary = std::make_unique<base::DictionaryValue>();
+    base::Value::Dict summary;
     switch (mod.type) {
       case helpers::ADD:
-        summary->SetStringKey(activity_log::kCookieModificationTypeKey,
-                              activity_log::kCookieModificationAdd);
+        summary.Set(activity_log::kCookieModificationTypeKey,
+                    activity_log::kCookieModificationAdd);
         break;
       case helpers::EDIT:
-        summary->SetStringKey(activity_log::kCookieModificationTypeKey,
-                              activity_log::kCookieModificationEdit);
+        summary.Set(activity_log::kCookieModificationTypeKey,
+                    activity_log::kCookieModificationEdit);
         break;
       case helpers::REMOVE:
-        summary->SetStringKey(activity_log::kCookieModificationTypeKey,
-                              activity_log::kCookieModificationRemove);
+        summary.Set(activity_log::kCookieModificationTypeKey,
+                    activity_log::kCookieModificationRemove);
         break;
     }
     if (mod.filter) {
       if (mod.filter->name) {
-        summary->SetStringKey(activity_log::kCookieFilterNameKey,
-                              *mod.modification->name);
+        summary.Set(activity_log::kCookieFilterNameKey,
+                    *mod.modification->name);
       }
       if (mod.filter->domain) {
-        summary->SetStringKey(activity_log::kCookieFilterDomainKey,
-                              *mod.modification->name);
+        summary.Set(activity_log::kCookieFilterDomainKey,
+                    *mod.modification->name);
       }
     }
     if (mod.modification) {
       if (mod.modification->name) {
-        summary->SetStringKey(activity_log::kCookieModDomainKey,
-                              *mod.modification->name);
+        summary.Set(activity_log::kCookieModDomainKey, *mod.modification->name);
       }
       if (mod.modification->domain) {
-        summary->SetStringKey(activity_log::kCookieModDomainKey,
-                              *mod.modification->name);
+        summary.Set(activity_log::kCookieModDomainKey, *mod.modification->name);
       }
     }
-    cookie_modifications->Append(std::move(summary));
+    cookie_modifications->Append(base::Value(std::move(summary)));
   }
   return cookie_modifications;
 }
@@ -2209,8 +2209,8 @@ std::unique_ptr<base::DictionaryValue> SummarizeResponseDelta(
   std::unique_ptr<base::ListValue> modified_headers(new base::ListValue());
   net::HttpRequestHeaders::Iterator iter(delta.modified_request_headers);
   while (iter.GetNext()) {
-    modified_headers->Append(
-        helpers::CreateHeaderDictionary(iter.name(), iter.value()));
+    modified_headers->Append(base::Value(
+        helpers::CreateHeaderDictionary(iter.name(), iter.value())));
   }
   if (!modified_headers->GetListDeprecated().empty()) {
     details->Set(activity_log::kModifiedRequestHeadersKey,

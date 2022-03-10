@@ -1716,16 +1716,14 @@ void ClearCacheOnNavigation() {
 
 // Converts the |name|, |value| pair of a http header to a HttpHeaders
 // dictionary.
-std::unique_ptr<base::DictionaryValue> CreateHeaderDictionary(
-    const std::string& name,
-    const std::string& value) {
-  auto header = std::make_unique<base::DictionaryValue>();
-  header->SetStringKey(keys::kHeaderNameKey, name);
+base::Value::Dict CreateHeaderDictionary(const std::string& name,
+                                         const std::string& value) {
+  base::Value::Dict header;
+  header.Set(keys::kHeaderNameKey, name);
   if (base::IsStringUTF8(value)) {
-    header->SetStringKey(keys::kHeaderValueKey, value);
+    header.Set(keys::kHeaderValueKey, value);
   } else {
-    header->Set(keys::kHeaderBinaryValueKey,
-                std::make_unique<base::Value>(StringToCharList(value)));
+    header.Set(keys::kHeaderBinaryValueKey, StringToCharList(value));
   }
   return header;
 }

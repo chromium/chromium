@@ -16,6 +16,7 @@
 
 #include "base/memory/ref_counted.h"
 #include "base/time/time.h"
+#include "base/values.h"
 #include "extensions/common/api/web_request.h"
 #include "extensions/common/extension_id.h"
 #include "net/base/auth.h"
@@ -24,11 +25,6 @@
 #include "services/network/public/cpp/features.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
-
-namespace base {
-class DictionaryValue;
-class Value;
-}  // namespace base
 
 namespace content {
 class BrowserContext;
@@ -500,9 +496,8 @@ void ClearCacheOnNavigation();
 
 // Converts the |name|, |value| pair of a http header to a HttpHeaders
 // dictionary.
-std::unique_ptr<base::DictionaryValue> CreateHeaderDictionary(
-    const std::string& name,
-    const std::string& value);
+base::Value::Dict CreateHeaderDictionary(const std::string& name,
+                                         const std::string& value);
 
 // Returns whether a request header should be hidden from listeners.
 bool ShouldHideRequestHeader(content::BrowserContext* browser_context,
