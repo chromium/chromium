@@ -105,7 +105,12 @@ class CodeSignedProduct(object):
         # a hash to the identifier, which would violate the
         # identifier_requirement and most other requirements that would be
         # specified.
-        if config.identity == '-':
+        #
+        # Similarly, if no explicit requirements are available, let codesign
+        # --sign use its defaults, which should be appropriate in any case where
+        # requirement customization is unnecessary.
+        if config.identity == '-' or (not self.requirements and
+                                      not config.codesign_requirements_basic):
             return ''
 
         reqs = []

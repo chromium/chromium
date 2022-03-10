@@ -98,10 +98,20 @@ class TestSignPart(unittest.TestCase):
     def test_sign_part(self, run_command, linker_signed_arm64_needs_force):
         part = model.CodeSignedProduct('Test.app', 'test.signing.app')
         signing.sign_part(self.paths, self.config, part)
+        run_command.assert_called_once_with(
+            ['codesign', '--sign', '[IDENTITY]', '--timestamp', '/$W/Test.app'])
+
+    def test_sign_part_with_requirements(self, run_command,
+                                         linker_signed_arm64_needs_force):
+        part = model.CodeSignedProduct(
+            'Test.app', 'test.signing.app', requirements='and true')
+        signing.sign_part(self.paths, self.config, part)
         run_command.assert_called_once_with([
             'codesign', '--sign', '[IDENTITY]', '--timestamp', '--requirements',
-            '=designated => identifier "test.signing.app"', '/$W/Test.app'
+            '=designated => identifier "test.signing.app" and true',
+            '/$W/Test.app'
         ])
+
 
     def test_sign_part_needs_force(self, run_command,
                                    linker_signed_arm64_needs_force):
@@ -110,7 +120,19 @@ class TestSignPart(unittest.TestCase):
         signing.sign_part(self.paths, self.config, part)
         run_command.assert_called_once_with([
             'codesign', '--sign', '[IDENTITY]', '--force', '--timestamp',
-            '--requirements', '=designated => identifier "test.signing.app"',
+            '/$W/Test.app'
+        ])
+
+    def test_sign_part_with_requirements_needs_force(
+            self, run_command, linker_signed_arm64_needs_force):
+        linker_signed_arm64_needs_force.return_value = True
+        part = model.CodeSignedProduct(
+            'Test.app', 'test.signing.app', requirements='and true')
+        signing.sign_part(self.paths, self.config, part)
+        run_command.assert_called_once_with([
+            'codesign', '--sign', '[IDENTITY]', '--force', '--timestamp',
+            '--requirements',
+            '=designated => identifier "test.signing.app" and true',
             '/$W/Test.app'
         ])
 
@@ -119,10 +141,8 @@ class TestSignPart(unittest.TestCase):
         config = test_config.TestConfig(notary_user=None, notary_password=None)
         part = model.CodeSignedProduct('Test.app', 'test.signing.app')
         signing.sign_part(self.paths, config, part)
-        run_command.assert_called_once_with([
-            'codesign', '--sign', '[IDENTITY]', '--requirements',
-            '=designated => identifier "test.signing.app"', '/$W/Test.app'
-        ])
+        run_command.assert_called_once_with(
+            ['codesign', '--sign', '[IDENTITY]', '/$W/Test.app'])
 
     def test_sign_part_no_identifier_requirement(
             self, run_command, linker_signed_arm64_needs_force):
@@ -139,8 +159,22 @@ class TestSignPart(unittest.TestCase):
         signing.sign_part(self.paths, self.config, part)
         run_command.assert_called_once_with([
             'codesign', '--sign', '[IDENTITY]', '--timestamp', '--identifier',
+            'test.signing.app', '/$W/Test.app'
+        ])
+
+    def test_sign_with_requirement_and_identifier(
+            self, run_command, linker_signed_arm64_needs_force):
+        part = model.CodeSignedProduct(
+            'Test.app',
+            'test.signing.app',
+            requirements='and true',
+            sign_with_identifier=True)
+        signing.sign_part(self.paths, self.config, part)
+        run_command.assert_called_once_with([
+            'codesign', '--sign', '[IDENTITY]', '--timestamp', '--identifier',
             'test.signing.app', '--requirements',
-            '=designated => identifier "test.signing.app"', '/$W/Test.app'
+            '=designated => identifier "test.signing.app" and true',
+            '/$W/Test.app'
         ])
 
     def test_sign_with_identifier_no_requirement(
@@ -165,9 +199,39 @@ class TestSignPart(unittest.TestCase):
             | model.CodeSignOptions.LIBRARY_VALIDATION)
         signing.sign_part(self.paths, self.config, part)
         run_command.assert_called_once_with([
-            'codesign', '--sign', '[IDENTITY]', '--timestamp', '--requirements',
-            '=designated => identifier "test.signing.app"', '--options',
+            'codesign', '--sign', '[IDENTITY]', '--timestamp', '--options',
             'library,restrict', '/$W/Test.app'
+        ])
+
+    def test_sign_part_with_requirement_and_options(
+            self, run_command, linker_signed_arm64_needs_force):
+        config = test_config.TestConfig(codesign_requirements_basic='or false')
+        part = model.CodeSignedProduct(
+            'Test.app',
+            'test.signing.app',
+            options=model.CodeSignOptions.RESTRICT
+            | model.CodeSignOptions.LIBRARY_VALIDATION)
+        signing.sign_part(self.paths, config, part)
+        run_command.assert_called_once_with([
+            'codesign', '--sign', '[IDENTITY]', '--timestamp', '--requirements',
+            '=designated => identifier "test.signing.app" or false',
+            '--options', 'library,restrict', '/$W/Test.app'
+        ])
+
+    def test_sign_part_with_requirements_and_options(
+            self, run_command, linker_signed_arm64_needs_force):
+        config = test_config.TestConfig(codesign_requirements_basic='or false')
+        part = model.CodeSignedProduct(
+            'Test.app',
+            'test.signing.app',
+            requirements='and true',
+            options=model.CodeSignOptions.RESTRICT
+            | model.CodeSignOptions.LIBRARY_VALIDATION)
+        signing.sign_part(self.paths, config, part)
+        run_command.assert_called_once_with([
+            'codesign', '--sign', '[IDENTITY]', '--timestamp', '--requirements',
+            '=designated => identifier "test.signing.app" and true or false',
+            '--options', 'library,restrict', '/$W/Test.app'
         ])
 
     def test_sign_part_with_entitlements(self, run_command,

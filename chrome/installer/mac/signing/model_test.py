@@ -21,8 +21,7 @@ class TestCodeSignedProduct(unittest.TestCase):
 
     def test_requirements_string_identifier(self):
         product = model.CodeSignedProduct('path/binary', 'binary')
-        self.assertEqual('designated => identifier "binary"',
-                         product.requirements_string(TestConfig()))
+        self.assertEqual('', product.requirements_string(TestConfig()))
 
     def test_requirements_no_identifier(self):
         product = model.CodeSignedProduct(

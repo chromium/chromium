@@ -34,7 +34,8 @@ class CodeSignConfig(object):
                  installer_identity=None,
                  notary_user=None,
                  notary_password=None,
-                 notary_asc_provider=None):
+                 notary_asc_provider=None,
+                 codesign_requirements_basic=''):
         """Creates a CodeSignConfig that will sign the product using the static
         properties on the class, using the code signing identity passed to the
         constructor.
@@ -65,6 +66,7 @@ class CodeSignConfig(object):
         self._notary_user = notary_user
         self._notary_password = notary_password
         self._notary_asc_provider = notary_asc_provider
+        self._codesign_requirements_basic = codesign_requirements_basic
 
     @staticmethod
     def is_chrome_branded():
@@ -146,7 +148,7 @@ class CodeSignConfig(object):
         |model.CodeSignedProduct|. This requirement is applied to all
         CodeSignedProducts.
         """
-        return ''
+        return self._codesign_requirements_basic
 
     @property
     def codesign_requirements_outer_app(self):
