@@ -81,8 +81,11 @@ TEST_F(BinaryIntegrityAnalyzerMacTest, GetCriticalPathsAndRequirements) {
       "(identifier \"com.google.Chrome\" or "
       "identifier \"com.google.Chrome.beta\" or "
       "identifier \"com.google.Chrome.dev\" or "
-      "identifier \"com.google.Chrome.canary\") "
-      "and certificate leaf = H\"c9a99324ca3fcb23dbcc36bd5fd4f9753305130a\"";
+      "identifier \"com.google.Chrome.canary\") and "
+      "anchor apple generic and "
+      "certificate 1[field.1.2.840.113635.100.6.2.6] and "
+      "certificate leaf[field.1.2.840.113635.100.6.1.13] and "
+      "certificate leaf[subject.OU] = EQHXZ8M8AV";
   paths_and_requirements_expected.push_back(
       PathAndRequirement(base::mac::OuterBundlePath(), expected_req));
   paths_and_requirements_expected.push_back(
