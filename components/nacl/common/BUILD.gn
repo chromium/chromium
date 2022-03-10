@@ -33,11 +33,11 @@ if (enable_nacl) {
     ]
 
     deps = [
-      ":nacl_error_code",
       "//base",
       "//base:base_static",
       "//content/public/common:content_descriptors",
       "//mojo/core/embedder",
+      "//native_client/src/trusted/error_code",
       "//services/service_manager/public/cpp",
     ]
   }
@@ -103,11 +103,6 @@ if (enable_nacl) {
     }
   }
 
-  source_set("nacl_error_code") {
-    sources =
-        [ "//native_client/src/trusted/service_runtime/nacl_error_code.h" ]
-  }
-
   mojom("mojo_bindings") {
     sources = [ "nacl.mojom" ]
     cpp_typemaps = [
@@ -124,7 +119,7 @@ if (enable_nacl) {
             [ "//components/nacl/common/nacl_types_param_traits.h" ]
         traits_public_deps = [
           ":minimal",
-          ":nacl_error_code",
+          "//native_client/src/trusted/error_code",
         ]
         traits_deps = [ "//ipc" ]
       },

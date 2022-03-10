@@ -25,9 +25,9 @@ static_library("nacl_trusted_plugin") {
 
   deps = [
     "//base",
-    "//components/nacl/common:nacl_error_code",
     "//content/public/common",
     "//media:shared_memory_support",
+    "//native_client/src/trusted/error_code",
     "//ppapi/c",
     "//ppapi/cpp:objects",
     "//ppapi/cpp/private:internal_module",
