@@ -29,8 +29,8 @@ ThreadSafePartitionRoot& PCScanMetadataAllocator() {
 
 void ReinitPCScanMetadataAllocatorForTesting() {
   // First, purge memory owned by PCScanMetadataAllocator.
-  PCScanMetadataAllocator().PurgeMemory(PartitionPurgeDecommitEmptySlotSpans |
-                                        PartitionPurgeDiscardUnusedSystemPages);
+  PCScanMetadataAllocator().PurgeMemory(PurgeFlags::kDecommitEmptySlotSpans |
+                                        PurgeFlags::kDiscardUnusedSystemPages);
   // Then, reinit the allocator.
   PCScanMetadataAllocator().~PartitionRoot();
   memset(&PCScanMetadataAllocator(), 0, sizeof(PCScanMetadataAllocator()));

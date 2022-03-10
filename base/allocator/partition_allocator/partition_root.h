@@ -113,17 +113,23 @@ class PartitionRootEnumerator;
 
 }  // namespace internal
 
-enum PartitionPurgeFlags {
-  // Decommitting the ring list of empty slot spans is reasonably fast.
-  PartitionPurgeDecommitEmptySlotSpans = 1 << 0,
-  // Discarding unused system pages is slower, because it involves walking all
-  // freelists in all active slot spans of all buckets >= system page
-  // size. It often frees a similar amount of memory to decommitting the empty
-  // slot spans, though.
-  PartitionPurgeDiscardUnusedSystemPages = 1 << 1,
-  // Aggressively reclaim memory. This is meant to be used in low-memory
-  // situations, not for periodic memory reclaiming.
-  PartitionPurgeAggressiveReclaim = 1 << 2,
+// Bit flag constants used to purge memory.  See PartitionRoot::PurgeMemory.
+//
+// In order to support bit operations like `flag_a | flag_b`, the old-fashioned
+// enum (+ surrounding named struct) is used instead of enum class.
+struct PurgeFlags {
+  enum : int {
+    // Decommitting the ring list of empty slot spans is reasonably fast.
+    kDecommitEmptySlotSpans = 1 << 0,
+    // Discarding unused system pages is slower, because it involves walking all
+    // freelists in all active slot spans of all buckets >= system page
+    // size. It often frees a similar amount of memory to decommitting the empty
+    // slot spans, though.
+    kDiscardUnusedSystemPages = 1 << 1,
+    // Aggressively reclaim memory. This is meant to be used in low-memory
+    // situations, not for periodic memory reclaiming.
+    kAggressiveReclaim = 1 << 2,
+  };
 };
 
 // Options struct used to configure PartitionRoot and PartitionAllocator.

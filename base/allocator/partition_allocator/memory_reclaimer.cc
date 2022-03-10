@@ -42,15 +42,15 @@ PartitionAllocMemoryReclaimer::PartitionAllocMemoryReclaimer() = default;
 PartitionAllocMemoryReclaimer::~PartitionAllocMemoryReclaimer() = default;
 
 void PartitionAllocMemoryReclaimer::ReclaimAll() {
-  constexpr int kFlags = PartitionPurgeDecommitEmptySlotSpans |
-                         PartitionPurgeDiscardUnusedSystemPages |
-                         PartitionPurgeAggressiveReclaim;
+  constexpr int kFlags = PurgeFlags::kDecommitEmptySlotSpans |
+                         PurgeFlags::kDiscardUnusedSystemPages |
+                         PurgeFlags::kAggressiveReclaim;
   Reclaim(kFlags);
 }
 
 void PartitionAllocMemoryReclaimer::ReclaimNormal() {
-  constexpr int kFlags = PartitionPurgeDecommitEmptySlotSpans |
-                         PartitionPurgeDiscardUnusedSystemPages;
+  constexpr int kFlags = PurgeFlags::kDecommitEmptySlotSpans |
+                         PurgeFlags::kDiscardUnusedSystemPages;
   Reclaim(kFlags);
 }
 
@@ -70,7 +70,7 @@ void PartitionAllocMemoryReclaimer::Reclaim(int flags) {
 #if PA_STARSCAN_ENABLE_STARSCAN_ON_RECLAIM
   {
     using PCScan = internal::PCScan;
-    const auto invocation_mode = flags & PartitionPurgeAggressiveReclaim
+    const auto invocation_mode = flags & PurgeFlags::kAggressiveReclaim
                                      ? PCScan::InvocationMode::kForcedBlocking
                                      : PCScan::InvocationMode::kBlocking;
     PCScan::PerformScanIfNeeded(invocation_mode);
@@ -81,7 +81,7 @@ void PartitionAllocMemoryReclaimer::Reclaim(int flags) {
   // Don't completely empty the thread cache outside of low memory situations,
   // as there is periodic purge which makes sure that it doesn't take too much
   // space.
-  if (flags & PartitionPurgeAggressiveReclaim)
+  if (flags & PurgeFlags::kAggressiveReclaim)
     internal::ThreadCacheRegistry::Instance().PurgeAll();
 #endif
 

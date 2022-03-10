@@ -390,7 +390,7 @@ constexpr size_t kBitsPerSizeT = sizeof(void*) * CHAR_BIT;
 // *possibly* empty SlotSpans.
 //
 // In all cases, PartitionRoot::PurgeMemory() with the
-// PartitionPurgeDecommitEmptySlotSpans flag will eagerly decommit all entries
+// PurgeFlags::kDecommitEmptySlotSpans flag will eagerly decommit all entries
 // in the ring buffer, so with periodic purge enabled, this typically happens
 // every few seconds.
 constexpr size_t kEmptyCacheIndexBits = 7;

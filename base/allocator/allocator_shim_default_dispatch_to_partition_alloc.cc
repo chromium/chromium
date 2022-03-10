@@ -623,8 +623,8 @@ void ConfigurePartitions(
   PA_CHECK(current_aligned_root == g_original_root);
 
   // Purge memory, now that the traffic to the original partition is cut off.
-  current_root->PurgeMemory(PartitionPurgeDecommitEmptySlotSpans |
-                            PartitionPurgeDiscardUnusedSystemPages);
+  current_root->PurgeMemory(PurgeFlags::kDecommitEmptySlotSpans |
+                            PurgeFlags::kDiscardUnusedSystemPages);
 
   if (!use_alternate_bucket_distribution) {
     g_root.Get()->SwitchToDenserBucketDistribution();

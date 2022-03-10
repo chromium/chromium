@@ -912,8 +912,8 @@ TEST_P(PartitionAllocThreadCacheTest, MAYBE_Bookkeeping) {
   void* arr[kFillCountForMediumBucket] = {};
   auto* tcache = root_->thread_cache_for_testing();
 
-  root_->PurgeMemory(PartitionPurgeDecommitEmptySlotSpans |
-                     PartitionPurgeDiscardUnusedSystemPages);
+  root_->PurgeMemory(PurgeFlags::kDecommitEmptySlotSpans |
+                     PurgeFlags::kDiscardUnusedSystemPages);
   root_->ResetBookkeepingForTesting();
 
   // The ThreadCache is allocated before we change buckets, so its size is

@@ -1045,9 +1045,9 @@ void PartitionRoot<thread_safe>::PurgeMemory(int flags) {
     // TODO(bikineev): Consider rescheduling the purging after PCScan.
     if (PCScan::IsInProgress())
       return;
-    if (flags & PartitionPurgeDecommitEmptySlotSpans)
+    if (flags & PurgeFlags::kDecommitEmptySlotSpans)
       DecommitEmptySlotSpans();
-    if (flags & PartitionPurgeDiscardUnusedSystemPages) {
+    if (flags & PurgeFlags::kDiscardUnusedSystemPages) {
       for (Bucket& bucket : buckets) {
         if (bucket.slot_size == kInvalidBucketSize)
           continue;

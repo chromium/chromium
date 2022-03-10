@@ -66,8 +66,8 @@ class PartitionAllocPCScanTestBase : public testing::Test {
   }
 
   ~PartitionAllocPCScanTestBase() override {
-    allocator_.root()->PurgeMemory(PartitionPurgeDecommitEmptySlotSpans |
-                                   PartitionPurgeDiscardUnusedSystemPages);
+    allocator_.root()->PurgeMemory(PurgeFlags::kDecommitEmptySlotSpans |
+                                   PurgeFlags::kDiscardUnusedSystemPages);
     PartitionAllocGlobalUninitForTesting();
   }
 
