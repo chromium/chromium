@@ -1,0 +1,43 @@
+// Copyright 2022 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module network.mojom;
+
+import "mojo/public/mojom/base/file.mojom";
+import "mojo/public/mojom/base/file_error.mojom";
+import "mojo/public/mojom/base/file_info.mojom";
+import "mojo/public/mojom/base/file_path.mojom";
+
+// An interface to provide file operations so that the HTTP cache works in
+// a sandboxed network service.
+// All the paths must be absolute paths.
+interface HttpCacheBackendFileOperations {
+  // Creates a directory with the given path and returns whether that succeeded.
+  [Sync] CreateDirectory(mojo_base.mojom.FilePath path) => (bool result);
+
+  // Returns true if the given path exists on the local filesystem.
+  [Sync] PathExists(mojo_base.mojom.FilePath path) => (bool result);
+
+  // Opens a file with the given path and flags. Returns the opened file and
+  // the error information.
+  [Sync] OpenFile(mojo_base.mojom.FilePath path, uint32 flags) =>
+      (mojo_base.mojom.File? file, mojo_base.mojom.FileError error);
+
+  // Deletes a file with the given path and returns whether that succeeded.
+  [Sync] DeleteFile(mojo_base.mojom.FilePath path) => (bool result);
+
+  // Renames a file `from_path` to `to_path`. Returns the error information.
+  [Sync] RenameFile(mojo_base.mojom.FilePath from_path,
+      mojo_base.mojom.FilePath to_path) => (mojo_base.mojom.FileError error);
+
+  // Returns information about the given path.
+  [Sync] GetFileInfo(
+      mojo_base.mojom.FilePath path) => (mojo_base.mojom.FileInfo? info);
+};
+
+// A factory interface for HttpcacheBackendFileOperations.
+interface HttpCacheBackendFileOperationsFactory {
+  // Creates a HttpCacheBackendFileOperations.
+  Create(pending_receiver<HttpCacheBackendFileOperations> receiver);
+};

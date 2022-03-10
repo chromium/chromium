@@ -1164,9 +1164,9 @@ void DiskCacheLPMFuzzer::CreateBackend(
           std::make_unique<disk_cache::SimpleFileTracker>(kMaxFdsSimpleCache);
     std::unique_ptr<disk_cache::SimpleBackendImpl> simple_backend =
         std::make_unique<disk_cache::SimpleBackendImpl>(
-            cache_path_, /* cleanup_tracker = */ nullptr,
-            simple_file_tracker_.get(), max_size_, type,
-            /*net_log = */ nullptr);
+            /*file_operations=*/nullptr, cache_path_,
+            /*cleanup_tracker=*/nullptr, simple_file_tracker_.get(), max_size_,
+            type, /*net_log=*/nullptr);
     int rv = simple_backend->Init(cb.callback());
     CHECK_EQ(cb.GetResult(rv), net::OK);
     simple_cache_impl_ = simple_backend.get();

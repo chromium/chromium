@@ -14,6 +14,7 @@
 #include <string>
 #include <vector>
 
+#include "base/files/file.h"
 #include "base/memory/ref_counted.h"
 #include "base/strings/string_split.h"
 #include "base/time/time.h"
@@ -23,6 +24,7 @@
 #include "net/base/net_errors.h"
 #include "net/base/net_export.h"
 #include "net/base/request_priority.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
 class FilePath;
@@ -43,6 +45,7 @@ namespace disk_cache {
 class Entry;
 class Backend;
 class EntryResult;
+class BackendFileOperationsFactory;
 struct RangeResult;
 using EntryResultCallback = base::OnceCallback<void(EntryResult)>;
 using RangeResultCallback = base::OnceCallback<void(const RangeResult&)>;
@@ -51,35 +54,39 @@ using RangeResultCallback = base::OnceCallback<void(const RangeResult&)>;
 // See CreateCacheBackend() for its usage.
 enum class ResetHandling { kReset, kResetOnError, kNeverReset };
 
-// Returns an instance of a Backend of the given |type|. |path| points to a
-// folder where the cached data will be stored (if appropriate). This cache
-// instance must be the only object that will be reading or writing files to
-// that folder (if another one exists, and |type| is not net::DISK_CACHE this
-// operation will not complete until the previous duplicate gets destroyed and
-// finishes all I/O). The returned object should be deleted when not needed
-// anymore.
+// Returns an instance of a Backend of the given `type`. `file_operations`
+// (nullable) is used to broker file operations in sandboxed environments.
+// Currently `file_operations` is only used for the simple backend.
+// `path` points to a folder where the cached data will be stored (if
+// appropriate). This cache instance must be the only object that will be
+// reading or writing files to that folder (if another one exists, and `type` is
+// not net::DISK_CACHE this operation will not complete until the previous
+// duplicate gets destroyed and finishes all I/O). The returned object should be
+// deleted when not needed anymore.
 //
-// If |reset_handling| is set to kResetOnError and there is a problem with the
+// If `reset_handling` is set to kResetOnError and there is a problem with the
 // cache initialization, the files will be deleted and a new set will be
 // created. If it's set to kReset, this will happen even if there isn't a
 // problem with cache initialization. Finally, if it's set to kNeverReset, the
 // cache creation will fail if there is a problem with cache initialization.
 //
-// |max_bytes| is the maximum size the cache can grow to. If zero is passed in
-// as |max_bytes|, the cache will determine the value to use. The returned
+// `max_bytes` is the maximum size the cache can grow to. If zero is passed in
+// as `max_bytes`, the cache will determine the value to use. The returned
 // pointer can be nullptr if a fatal error is found. The actual return value of
 // the function is a net error code. If this function returns ERR_IO_PENDING,
-// the |callback| will be invoked when a backend is available or a fatal error
-// condition is reached.  The pointer to receive the |backend| must remain valid
+// the `callback` will be invoked when a backend is available or a fatal error
+// condition is reached.  The pointer to receive the `backend` must remain valid
 // until the operation completes (the callback is notified).
-NET_EXPORT net::Error CreateCacheBackend(net::CacheType type,
-                                         net::BackendType backend_type,
-                                         const base::FilePath& path,
-                                         int64_t max_bytes,
-                                         ResetHandling reset_handling,
-                                         net::NetLog* net_log,
-                                         std::unique_ptr<Backend>* backend,
-                                         net::CompletionOnceCallback callback);
+NET_EXPORT net::Error CreateCacheBackend(
+    net::CacheType type,
+    net::BackendType backend_type,
+    scoped_refptr<BackendFileOperationsFactory> file_operations,
+    const base::FilePath& path,
+    int64_t max_bytes,
+    ResetHandling reset_handling,
+    net::NetLog* net_log,
+    std::unique_ptr<Backend>* backend,
+    net::CompletionOnceCallback callback);
 
 #if BUILDFLAG(IS_ANDROID)
 // Similar to the function above, but takes an |app_status_listener| which is
@@ -88,6 +95,7 @@ NET_EXPORT net::Error CreateCacheBackend(net::CacheType type,
 NET_EXPORT net::Error CreateCacheBackend(
     net::CacheType type,
     net::BackendType backend_type,
+    scoped_refptr<BackendFileOperationsFactory> file_operations,
     const base::FilePath& path,
     int64_t max_bytes,
     ResetHandling reset_handling,
@@ -109,6 +117,7 @@ NET_EXPORT net::Error CreateCacheBackend(
 NET_EXPORT net::Error CreateCacheBackend(
     net::CacheType type,
     net::BackendType backend_type,
+    scoped_refptr<BackendFileOperationsFactory> file_operations,
     const base::FilePath& path,
     int64_t max_bytes,
     ResetHandling reset_handling,
@@ -548,6 +557,70 @@ struct NET_EXPORT RangeResult {
 // point in having a very large WebUI code cache, even if lots of disk space is
 // available.
 constexpr int kMaxWebUICodeCacheSize = 5 * 1024 * 1024;
+
+// An interface to provide file operations so that the HTTP cache works on
+// a sandboxed process.
+// All the paths must be absolute paths.
+class BackendFileOperations {
+ public:
+  virtual ~BackendFileOperations() = default;
+
+  // Creates a directory with the given path and returns whether that succeeded.
+  virtual bool CreateDirectory(const base::FilePath& path) = 0;
+
+  // Returns true if the given path exists on the local filesystem.
+  virtual bool PathExists(const base::FilePath& path) = 0;
+
+  // Opens a file with the given path and flags. Returns the opened file.
+  virtual base::File OpenFile(const base::FilePath& path, uint32_t flags) = 0;
+
+  // Deletes a file with the given path and returns whether that succeeded.
+  virtual bool DeleteFile(const base::FilePath& path) = 0;
+
+  // Renames a file `from_path` to `to_path`. Returns the error information.
+  virtual bool ReplaceFile(const base::FilePath& from_path,
+                           const base::FilePath& to_path,
+                           base::File::Error* error) = 0;
+
+  // Returns information about the given path.
+  virtual absl::optional<base::File::Info> GetFileInfo(
+      const base::FilePath& path) = 0;
+};
+
+// A factory interface that creates BackendFileOperations.
+class BackendFileOperationsFactory
+    : public base::RefCounted<BackendFileOperationsFactory> {
+ public:
+  // Creates a BackendFileOperations which is bound to `task_runner`.
+  virtual std::unique_ptr<BackendFileOperations> Create(
+      scoped_refptr<base::SequencedTaskRunner> task_runner) = 0;
+
+ protected:
+  friend class base::RefCounted<BackendFileOperationsFactory>;
+  virtual ~BackendFileOperationsFactory() = default;
+};
+
+// A trivial BackendFileOperations implementation which uses corresponding
+// base functions.
+class NET_EXPORT TrivialFileOperations final : public BackendFileOperations {
+ public:
+  TrivialFileOperations();
+  ~TrivialFileOperations() override;
+
+  // BackendFileOperations implementation:
+  bool CreateDirectory(const base::FilePath& path) override;
+  bool PathExists(const base::FilePath& path) override;
+  base::File OpenFile(const base::FilePath& path, uint32_t flags) override;
+  bool DeleteFile(const base::FilePath& path) override;
+  bool ReplaceFile(const base::FilePath& from_path,
+                   const base::FilePath& to_path,
+                   base::File::Error* error) override;
+  absl::optional<base::File::Info> GetFileInfo(
+      const base::FilePath& path) override;
+
+ private:
+  SEQUENCE_CHECKER(sequence_checker_);
+};
 
 }  // namespace disk_cache
 

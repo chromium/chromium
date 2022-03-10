@@ -51,6 +51,7 @@ namespace disk_cache {
 // SimpleBackendImpl instance is created.
 
 class BackendCleanupTracker;
+class BackendFileOperationsFactory;
 class SimpleEntryImpl;
 class SimpleFileTracker;
 class SimpleIndex;
@@ -62,12 +63,14 @@ class NET_EXPORT_PRIVATE SimpleBackendImpl : public Backend,
   // Note: only pass non-nullptr for |file_tracker| if you don't want the global
   // one (which things other than tests would want). |file_tracker| must outlive
   // the backend and all the entries, including their asynchronous close.
-  SimpleBackendImpl(const base::FilePath& path,
-                    scoped_refptr<BackendCleanupTracker> cleanup_tracker,
-                    SimpleFileTracker* file_tracker,
-                    int64_t max_bytes,
-                    net::CacheType cache_type,
-                    net::NetLog* net_log);
+  SimpleBackendImpl(
+      scoped_refptr<BackendFileOperationsFactory> file_operations_factory,
+      const base::FilePath& path,
+      scoped_refptr<BackendCleanupTracker> cleanup_tracker,
+      SimpleFileTracker* file_tracker,
+      int64_t max_bytes,
+      net::CacheType cache_type,
+      net::NetLog* net_log);
 
   ~SimpleBackendImpl() override;
 
@@ -185,9 +188,11 @@ class NET_EXPORT_PRIVATE SimpleBackendImpl : public Backend,
 
   // Try to create the directory if it doesn't exist. This must run on the
   // sequence on which SimpleIndexFile is running disk I/O.
-  static DiskStatResult InitCacheStructureOnDisk(const base::FilePath& path,
-                                                 uint64_t suggested_max_size,
-                                                 net::CacheType cache_type);
+  static DiskStatResult InitCacheStructureOnDisk(
+      std::unique_ptr<BackendFileOperations> file_operations,
+      const base::FilePath& path,
+      uint64_t suggested_max_size,
+      net::CacheType cache_type);
 
   // Looks at current state of |entries_pending_doom_| and |active_entries_|
   // relevant to |entry_hash|, and, as appropriate, either returns a valid entry
@@ -251,6 +256,8 @@ class NET_EXPORT_PRIVATE SimpleBackendImpl : public Backend,
 
   // Calculates and returns a new entry's worker pool priority.
   uint32_t GetNewEntryPriority(net::RequestPriority request_priority);
+
+  scoped_refptr<BackendFileOperationsFactory> file_operations_factory_;
 
   // We want this destroyed after every other field.
   scoped_refptr<BackendCleanupTracker> cleanup_tracker_;

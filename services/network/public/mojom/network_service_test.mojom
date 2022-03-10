@@ -4,6 +4,7 @@
 
 module network.mojom;
 
+import "mojo/public/mojom/base/file.mojom";
 import "mojo/public/mojom/base/file_path.mojom";
 import "mojo/public/mojom/base/memory_pressure_level.mojom";
 import "mojo/public/mojom/base/time.mojom";
@@ -11,6 +12,7 @@ import "services/network/public/mojom/host_resolver.mojom";
 import "services/network/public/mojom/network_change_manager.mojom";
 import "services/network/public/mojom/network_param.mojom";
 import "services/network/public/mojom/network_types.mojom";
+import "services/network/public/mojom/http_cache_backend_file_operations.mojom";
 
 // Maps to net::RuleBasedHostResolverProc::Rule::ResolverType.
 //
@@ -33,6 +35,9 @@ struct Rule {
   int32 host_resolver_flags;
   array<string> dns_aliases;
 };
+
+// The "simple" backend of an HTTP cache.
+interface SimpleCache {};
 
 // Testing interface to the network service.
 // Methods are sometimes synchronous to avoid race conditions since this test
@@ -139,4 +144,11 @@ interface NetworkServiceTest {
 
   // Opens a file with the given `path`, and returns whether it is valid.
   OpenFile(mojo_base.mojom.FilePath path) => (bool result);
+
+  // Creates a "simple" backend for an HTTP cache.
+  // Returns the created cache if succeeded, and null otherwise.
+  CreateSimpleCache(
+      pending_remote<HttpCacheBackendFileOperationsFactory> factory,
+      mojo_base.mojom.FilePath path)
+      => (pending_remote<SimpleCache>? backend);
 };

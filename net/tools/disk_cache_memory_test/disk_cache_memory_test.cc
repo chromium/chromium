@@ -95,10 +95,10 @@ std::unique_ptr<Backend> CreateAndInitBackend(const CacheSpec& spec) {
   base::RunLoop run_loop;
   net::CompletionOnceCallback callback =
       base::BindOnce(&SetSuccessCodeOnCompletion, &run_loop, &succeeded);
-  const int net_error =
-      CreateCacheBackend(spec.cache_type, spec.backend_type, spec.path, 0,
-                         disk_cache::ResetHandling::kNeverReset, nullptr,
-                         &backend, std::move(callback));
+  const int net_error = CreateCacheBackend(
+      spec.cache_type, spec.backend_type, /*file_operations=*/nullptr,
+      spec.path, 0, disk_cache::ResetHandling::kNeverReset, nullptr, &backend,
+      std::move(callback));
   if (net_error == net::OK)
     SetSuccessCodeOnCompletion(&run_loop, &succeeded, net::OK);
   else

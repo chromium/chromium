@@ -101,13 +101,14 @@ int HttpCache::DefaultBackend::CreateBackend(
 #if BUILDFLAG(IS_ANDROID)
   if (app_status_listener_) {
     return disk_cache::CreateCacheBackend(
-        type_, backend_type_, path_, max_bytes_, reset_handling, net_log,
-        backend, std::move(callback), app_status_listener_);
+        type_, backend_type_, /*file_operations=*/nullptr, path_, max_bytes_,
+        reset_handling, net_log, backend, std::move(callback),
+        app_status_listener_);
   }
 #endif
-  return disk_cache::CreateCacheBackend(type_, backend_type_, path_, max_bytes_,
-                                        reset_handling, net_log, backend,
-                                        std::move(callback));
+  return disk_cache::CreateCacheBackend(
+      type_, backend_type_, /*file_operations=*/nullptr, path_, max_bytes_,
+      reset_handling, net_log, backend, std::move(callback));
 }
 
 #if BUILDFLAG(IS_ANDROID)

@@ -49,8 +49,6 @@
 
 using base::FilePath;
 using base::Time;
-using base::DirectoryExists;
-using base::CreateDirectory;
 
 namespace disk_cache {
 
@@ -75,12 +73,14 @@ base::LazyInstance<SimpleFileTracker>::Leaky g_simple_file_tracker =
 // backend type and version. If the directory contains no cache, occupies it
 // with the fresh structure.
 SimpleCacheConsistencyResult FileStructureConsistent(
+    BackendFileOperations* file_operations,
     const base::FilePath& path) {
-  if (!base::PathExists(path) && !base::CreateDirectory(path)) {
+  if (!file_operations->PathExists(path) &&
+      !file_operations->CreateDirectory(path)) {
     LOG(ERROR) << "Failed to create directory: " << path.LossyDisplayName();
     return SimpleCacheConsistencyResult::kCreateDirectoryFailed;
   }
-  return disk_cache::UpgradeSimpleCacheOnDisk(path);
+  return disk_cache::UpgradeSimpleCacheOnDisk(file_operations, path);
 }
 
 // A context used by a BarrierCompletionCallback to track state.
@@ -181,6 +181,17 @@ SimpleEntryImpl::OperationsMode CacheTypeToOperationsMode(net::CacheType type) {
              : SimpleEntryImpl::NON_OPTIMISTIC_OPERATIONS;
 }
 
+class TrivialFileOperationsFactory : public BackendFileOperationsFactory {
+ public:
+  std::unique_ptr<BackendFileOperations> Create(
+      scoped_refptr<base::SequencedTaskRunner> task_runner) override {
+    return std::make_unique<TrivialFileOperations>();
+  }
+
+ private:
+  ~TrivialFileOperationsFactory() override = default;
+};
+
 }  // namespace
 
 class SimpleBackendImpl::ActiveEntryProxy
@@ -210,6 +221,7 @@ class SimpleBackendImpl::ActiveEntryProxy
 };
 
 SimpleBackendImpl::SimpleBackendImpl(
+    scoped_refptr<BackendFileOperationsFactory> file_operations_factory,
     const FilePath& path,
     scoped_refptr<BackendCleanupTracker> cleanup_tracker,
     SimpleFileTracker* file_tracker,
@@ -217,6 +229,10 @@ SimpleBackendImpl::SimpleBackendImpl(
     net::CacheType cache_type,
     net::NetLog* net_log)
     : Backend(cache_type),
+      file_operations_factory_(
+          file_operations_factory
+              ? std::move(file_operations_factory)
+              : base::MakeRefCounted<TrivialFileOperationsFactory>()),
       cleanup_tracker_(std::move(cleanup_tracker)),
       file_tracker_(file_tracker ? file_tracker
                                  : g_simple_file_tracker.Pointer()),
@@ -249,7 +265,8 @@ void SimpleBackendImpl::SetTaskRunnerForTesting(
 
 net::Error SimpleBackendImpl::Init(CompletionOnceCallback completion_callback) {
   auto index_task_runner = base::ThreadPool::CreateSequencedTaskRunner(
-      {base::MayBlock(), base::TaskPriority::USER_BLOCKING,
+      {base::MayBlock(), base::WithBaseSyncPrimitives(),
+       base::TaskPriority::USER_BLOCKING,
        base::TaskShutdownBehavior::BLOCK_SHUTDOWN});
 
   prioritized_task_runner_ =
@@ -263,10 +280,12 @@ net::Error SimpleBackendImpl::Init(CompletionOnceCallback completion_callback) {
   index_->ExecuteWhenReady(
       base::BindOnce(&RecordIndexLoad, GetCacheType(), base::TimeTicks::Now()));
 
+  auto file_operations = file_operations_factory_->Create(index_task_runner);
   index_task_runner->PostTaskAndReplyWithResult(
       FROM_HERE,
-      base::BindOnce(&SimpleBackendImpl::InitCacheStructureOnDisk, path_,
-                     orig_max_size_, GetCacheType()),
+      base::BindOnce(&SimpleBackendImpl::InitCacheStructureOnDisk,
+                     std::move(file_operations), path_, orig_max_size_,
+                     GetCacheType()),
       base::BindOnce(&SimpleBackendImpl::InitializeIndex, AsWeakPtr(),
                      std::move(completion_callback)));
   return net::ERR_IO_PENDING;
@@ -695,13 +714,15 @@ void SimpleBackendImpl::IndexReadyForSizeBetweenCalculation(
 
 // static
 SimpleBackendImpl::DiskStatResult SimpleBackendImpl::InitCacheStructureOnDisk(
+    std::unique_ptr<BackendFileOperations> file_operations,
     const base::FilePath& path,
     uint64_t suggested_max_size,
     net::CacheType cache_type) {
   DiskStatResult result;
   result.max_size = suggested_max_size;
   result.net_error = net::OK;
-  SimpleCacheConsistencyResult consistency = FileStructureConsistent(path);
+  SimpleCacheConsistencyResult consistency =
+      FileStructureConsistent(file_operations.get(), path);
   SIMPLE_CACHE_UMA(ENUMERATION, "ConsistencyResult", cache_type, consistency);
 
   // If the cache structure is inconsistent make a single attempt at
@@ -716,7 +737,7 @@ SimpleBackendImpl::DiskStatResult SimpleBackendImpl::InitCacheStructureOnDisk(
                      cache_type, deleted_files);
     if (base::IsDirectoryEmpty(path)) {
       SimpleCacheConsistencyResult orig_consistency = consistency;
-      consistency = FileStructureConsistent(path);
+      consistency = FileStructureConsistent(file_operations.get(), path);
       SIMPLE_CACHE_UMA(ENUMERATION, "RetryConsistencyResult", cache_type,
                        consistency);
       if (consistency == SimpleCacheConsistencyResult::kOK) {
@@ -737,9 +758,9 @@ SimpleBackendImpl::DiskStatResult SimpleBackendImpl::InitCacheStructureOnDisk(
                << " path: " << path.LossyDisplayName();
     result.net_error = net::ERR_FAILED;
   } else {
-    bool mtime_result =
-        disk_cache::simple_util::GetMTime(path, &result.cache_dir_mtime);
-    if (!mtime_result) {
+    absl::optional<base::File::Info> file_info =
+        file_operations->GetFileInfo(path);
+    if (!file_info.has_value()) {
       // Something deleted the directory between when we set it up and the
       // mstat; this is not uncommon on some test fixtures which erase their
       // tempdir while some worker threads may still be running.
@@ -747,10 +768,13 @@ SimpleBackendImpl::DiskStatResult SimpleBackendImpl::InitCacheStructureOnDisk(
                     "after creation; path: "
                  << path.LossyDisplayName();
       result.net_error = net::ERR_FAILED;
-    } else if (!result.max_size) {
-      int64_t available = base::SysInfo::AmountOfFreeDiskSpace(path);
-      result.max_size = disk_cache::PreferredCacheSize(available, cache_type);
-      DCHECK(result.max_size);
+    } else {
+      result.cache_dir_mtime = file_info->last_modified;
+      if (!result.max_size) {
+        int64_t available = base::SysInfo::AmountOfFreeDiskSpace(path);
+        result.max_size = disk_cache::PreferredCacheSize(available, cache_type);
+        DCHECK(result.max_size);
+      }
     }
   }
   return result;

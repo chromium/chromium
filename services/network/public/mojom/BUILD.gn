@@ -267,6 +267,7 @@ mojom("url_loader_base") {
     "devtools_observer.mojom",
     "early_hints.mojom",
     "fetch_api.mojom",
+    "http_cache_backend_file_operations.mojom",
     "http_raw_headers.mojom",
     "http_request_headers.mojom",
     "ip_address_space.mojom",

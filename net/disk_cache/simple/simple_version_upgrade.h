@@ -20,6 +20,8 @@ class FilePath;
 
 namespace disk_cache {
 
+class BackendFileOperations;
+
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
 enum class SimpleCacheConsistencyResult {
@@ -44,7 +46,8 @@ enum class SimpleCacheConsistencyResult {
 // necessary transitions succeeded. If this function fails, there is nothing
 // left to do other than dropping the whole cache directory.
 NET_EXPORT_PRIVATE SimpleCacheConsistencyResult
-UpgradeSimpleCacheOnDisk(const base::FilePath& path);
+UpgradeSimpleCacheOnDisk(BackendFileOperations* file_operations,
+                         const base::FilePath& path);
 
 // Check if the cache structure at the given path is empty except for index
 // files.  If so, then delete the index files.  Returns true if any files
@@ -68,7 +71,8 @@ struct NET_EXPORT_PRIVATE FakeIndexData {
 };
 
 // Exposed for testing.
-NET_EXPORT_PRIVATE bool UpgradeIndexV5V6(const base::FilePath& cache_directory);
+NET_EXPORT_PRIVATE bool UpgradeIndexV5V6(BackendFileOperations* file_operations,
+                                         const base::FilePath& cache_directory);
 
 }  // namespace disk_cache
 

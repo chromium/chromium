@@ -562,9 +562,9 @@ void ShaderDiskCache::Init() {
 
   int rv = disk_cache::CreateCacheBackend(
       net::SHADER_CACHE, net::CACHE_BACKEND_DEFAULT,
-      cache_path_.Append(kGpuCachePath), CacheSizeBytes(),
-      disk_cache::ResetHandling::kResetOnError, nullptr, &backend_,
-      base::BindOnce(&ShaderDiskCache::CacheCreatedCallback, this));
+      /*file_operations=*/nullptr, cache_path_.Append(kGpuCachePath),
+      CacheSizeBytes(), disk_cache::ResetHandling::kResetOnError, nullptr,
+      &backend_, base::BindOnce(&ShaderDiskCache::CacheCreatedCallback, this));
 
   if (rv == net::OK)
     cache_available_ = true;

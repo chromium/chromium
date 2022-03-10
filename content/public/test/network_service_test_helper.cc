@@ -13,6 +13,7 @@
 #include "base/environment.h"
 #include "base/feature_list.h"
 #include "base/logging.h"
+#include "base/memory/weak_ptr.h"
 #include "base/metrics/field_trial.h"
 #include "base/process/process.h"
 #include "base/task/current_thread.h"
@@ -20,18 +21,23 @@
 #include "content/public/common/content_features.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/test/test_host_resolver.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
+#include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #include "net/base/ip_address.h"
 #include "net/cert/ev_root_ca_metadata.h"
 #include "net/cert/mock_cert_verifier.h"
+#include "net/disk_cache/disk_cache.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/dns/public/dns_over_https_server_config.h"
 #include "net/http/transport_security_state.h"
 #include "net/http/transport_security_state_test_util.h"
+#include "net/log/net_log.h"
 #include "net/nqe/network_quality_estimator.h"
 #include "net/test/test_data_directory.h"
 #include "sandbox/policy/sandbox_type.h"
 #include "services/network/cookie_manager.h"
+#include "services/network/disk_cache/mojo_backend_file_operations_factory.h"
 #include "services/network/host_resolver.h"
 #include "services/network/network_context.h"
 #include "services/network/network_service.h"
@@ -67,6 +73,17 @@ void CrashResolveHost(const std::string& host_to_crash,
   if (host_to_crash == host)
     base::Process::TerminateCurrentProcessImmediately(1);
 }
+
+class SimpleCache : public network::mojom::SimpleCache {
+ public:
+  explicit SimpleCache(std::unique_ptr<disk_cache::Backend> backend)
+      : backend_(std::move(backend)) {}
+  ~SimpleCache() override = default;
+
+ private:
+  std::unique_ptr<disk_cache::Backend> backend_;
+};
+
 }  // namespace
 
 class NetworkServiceTestHelper::NetworkServiceTestImpl
@@ -298,10 +315,50 @@ class NetworkServiceTestHelper::NetworkServiceTestImpl
     std::move(callback).Run(file.IsValid());
   }
 
+  void CreateSimpleCache(
+      mojo::PendingRemote<network::mojom::HttpCacheBackendFileOperationsFactory>
+          factory,
+      const base::FilePath& path,
+      CreateSimpleCacheCallback callback) override {
+    auto backend_holder = base::MakeRefCounted<
+        base::RefCountedData<std::unique_ptr<disk_cache::Backend>>>();
+    int rv = disk_cache::CreateCacheBackend(
+        net::DISK_CACHE, net::CACHE_BACKEND_SIMPLE,
+        base::MakeRefCounted<network::MojoBackendFileOperationsFactory>(
+            std::move(factory)),
+        path, 64 * 1024 * 1024, disk_cache::ResetHandling::kResetOnError,
+        net::NetLog::Get(), &backend_holder->data,
+        base::BindOnce(&NetworkServiceTestImpl::OnCacheCreated,
+                       weak_factory_.GetWeakPtr(), backend_holder,
+                       std::move(callback)));
+    DCHECK_EQ(rv, net::ERR_IO_PENDING);
+  }
+
  private:
   void OnMemoryPressure(
       base::MemoryPressureListener::MemoryPressureLevel memory_pressure_level) {
     latest_memory_pressure_level_ = memory_pressure_level;
+  }
+
+  void OnCacheCreated(
+      scoped_refptr<base::RefCountedData<std::unique_ptr<disk_cache::Backend>>>
+          backend_holder,
+      CreateSimpleCacheCallback callback,
+      int rv) {
+    DCHECK(backend_holder);
+    std::unique_ptr<disk_cache::Backend> backend =
+        std::move(backend_holder->data);
+    if (rv != net::OK) {
+      DCHECK(!backend);
+      std::move(callback).Run(mojo::NullRemote());
+      return;
+    }
+    DCHECK(backend);
+    mojo::PendingRemote<network::mojom::SimpleCache> remote;
+    mojo::MakeSelfOwnedReceiver(
+        std::make_unique<SimpleCache>(std::move(backend)),
+        remote.InitWithNewPipeAndPassReceiver());
+    std::move(callback).Run(std::move(remote));
   }
 
   bool registered_as_destruction_observer_ = false;
@@ -315,6 +372,9 @@ class NetworkServiceTestHelper::NetworkServiceTestImpl
   base::MemoryPressureListener::MemoryPressureLevel
       latest_memory_pressure_level_ =
           base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_NONE;
+  std::unique_ptr<disk_cache::Backend> disk_cache_backend_;
+
+  base::WeakPtrFactory<NetworkServiceTestImpl> weak_factory_{this};
 };
 
 NetworkServiceTestHelper::NetworkServiceTestHelper()

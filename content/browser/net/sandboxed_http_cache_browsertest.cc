@@ -3,9 +3,11 @@
 // found in the LICENSE file.
 
 #include "base/feature_list.h"
+#include "base/files/scoped_temp_dir.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
+#include "content/browser/net/http_cache_backend_file_operations_factory.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/network_service_instance.h"
 #include "content/public/browser/page.h"
@@ -27,6 +29,8 @@
 
 namespace content {
 namespace {
+
+using network::mojom::SimpleCache;
 
 class SandboxedHttpCacheBrowserTest : public ContentBrowserTest {
  public:
@@ -57,33 +61,117 @@ class SandboxedHttpCacheBrowserTest : public ContentBrowserTest {
     ASSERT_TRUE(IsOutOfProcessNetworkService());
     ASSERT_TRUE(sandbox::policy::features::IsNetworkSandboxEnabled());
 
+    ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
+
     ContentBrowserTest::SetUp();
   }
 
+  void SetUpOnMainThread() override {
+    ContentBrowserTest::SetUpOnMainThread();
+
+    content::GetNetworkService()->BindTestInterface(
+        network_service_test_.BindNewPipeAndPassReceiver());
+  }
+
+  mojo::Remote<network::mojom::NetworkServiceTest>& network_service_test() {
+    return network_service_test_;
+  }
+
+  const base::FilePath& GetTempDirPath() const { return temp_dir_.GetPath(); }
+
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
+  base::ScopedTempDir temp_dir_;
+  mojo::Remote<network::mojom::NetworkServiceTest> network_service_test_;
 };
 
 IN_PROC_BROWSER_TEST_F(SandboxedHttpCacheBrowserTest, OpeningFileIsProhibited) {
   base::RunLoop run_loop;
-  mojo::Remote<network::mojom::NetworkServiceTest> network_service_test;
-  content::GetNetworkService()->BindTestInterface(
-      network_service_test.BindNewPipeAndPassReceiver());
 
   absl::optional<bool> result;
-  network_service_test.set_disconnect_handler(run_loop.QuitClosure());
+  network_service_test().set_disconnect_handler(run_loop.QuitClosure());
   const base::FilePath path =
       GetTestDataFilePath().Append(FILE_PATH_LITERAL("blank.jpg"));
-  network_service_test->OpenFile(path, base::BindLambdaForTesting([&](bool b) {
-                                   result = b;
-                                   run_loop.Quit();
-                                 }));
+  network_service_test()->OpenFile(path,
+                                   base::BindLambdaForTesting([&](bool b) {
+                                     result = b;
+                                     run_loop.Quit();
+                                   }));
   run_loop.Run();
 
   EXPECT_EQ(result, absl::make_optional(false));
 }
 
-// TODO(yhirano): Add more tests.
+IN_PROC_BROWSER_TEST_F(SandboxedHttpCacheBrowserTest, CreateSimpleCache) {
+  base::RunLoop run_loop;
+
+  network_service_test().set_disconnect_handler(run_loop.QuitClosure());
+  const base::FilePath root_path = GetTempDirPath();
+  const base::FilePath path = root_path.AppendASCII("foobar");
+  mojo::Remote<SimpleCache> simple_cache;
+  mojo::PendingRemote<network::mojom::HttpCacheBackendFileOperationsFactory>
+      factory_remote;
+  HttpCacheBackendFileOperationsFactory factory(
+      factory_remote.InitWithNewPipeAndPassReceiver(), root_path);
+
+  network_service_test()->CreateSimpleCache(
+      std::move(factory_remote), path,
+      base::BindLambdaForTesting([&](mojo::PendingRemote<SimpleCache> cache) {
+        if (cache) {
+          simple_cache.Bind(std::move(cache));
+        }
+        run_loop.Quit();
+      }));
+  run_loop.Run();
+
+  ASSERT_TRUE(simple_cache.is_bound());
+}
+
+IN_PROC_BROWSER_TEST_F(SandboxedHttpCacheBrowserTest,
+                       CreateSimpleCacheOnParentDirectory) {
+  base::RunLoop run_loop;
+
+  const base::FilePath path = GetTempDirPath();
+  const base::FilePath root_path = path.AppendASCII("foobar");
+  mojo::PendingRemote<network::mojom::HttpCacheBackendFileOperationsFactory>
+      factory_remote;
+  HttpCacheBackendFileOperationsFactory factory(
+      factory_remote.InitWithNewPipeAndPassReceiver(), root_path);
+
+  // We expect the network service to crash due to a bad mojo message.
+  IgnoreNetworkServiceCrashes();
+  network_service_test().set_disconnect_handler(run_loop.QuitClosure());
+  network_service_test()->CreateSimpleCache(
+      std::move(factory_remote), path,
+      base::BindOnce([](mojo::PendingRemote<SimpleCache> cache) {
+        ADD_FAILURE() << "NOTREACHED";
+      }));
+  run_loop.Run();
+}
+
+IN_PROC_BROWSER_TEST_F(SandboxedHttpCacheBrowserTest,
+                       CreateSimpleCacheWithParentDirectory) {
+  base::RunLoop run_loop;
+
+  const base::FilePath root_path = GetTempDirPath();
+  const base::FilePath path = root_path.AppendASCII("foo")
+                                  .Append(base::FilePath::kParentDirectory)
+                                  .AppendASCII("bar");
+  mojo::PendingRemote<network::mojom::HttpCacheBackendFileOperationsFactory>
+      factory_remote;
+  HttpCacheBackendFileOperationsFactory factory(
+      factory_remote.InitWithNewPipeAndPassReceiver(), root_path);
+
+  // We expect the network service to crash due to a bad mojo message.
+  IgnoreNetworkServiceCrashes();
+  network_service_test().set_disconnect_handler(run_loop.QuitClosure());
+  network_service_test()->CreateSimpleCache(
+      std::move(factory_remote), path,
+      base::BindOnce([](mojo::PendingRemote<SimpleCache> cache) {
+        ADD_FAILURE() << "NOTREACHED";
+      }));
+  run_loop.Run();
+}
 
 }  // namespace
 }  // namespace content

@@ -13,6 +13,7 @@
 #include "base/format_macros.h"
 #include "base/strings/stringprintf.h"
 #include "net/base/net_errors.h"
+#include "net/disk_cache/disk_cache.h"
 #include "net/disk_cache/simple/simple_backend_version.h"
 #include "net/disk_cache/simple/simple_entry_format_history.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -58,8 +59,10 @@ TEST(SimpleVersionUpgradeTest, FailsToMigrateBackwards) {
   ASSERT_EQ(static_cast<int>(sizeof(data)),
             base::WriteFile(file_name, reinterpret_cast<const char*>(&data),
                             sizeof(data)));
+  disk_cache::TrivialFileOperations file_operations;
   EXPECT_EQ(disk_cache::SimpleCacheConsistencyResult::kVersionFromTheFuture,
-            disk_cache::UpgradeSimpleCacheOnDisk(cache_dir.GetPath()));
+            disk_cache::UpgradeSimpleCacheOnDisk(&file_operations,
+                                                 cache_dir.GetPath()));
 }
 
 TEST(SimpleVersionUpgradeTest, ExperimentBacktoDefault) {
@@ -77,10 +80,12 @@ TEST(SimpleVersionUpgradeTest, ExperimentBacktoDefault) {
             base::WriteFile(file_name, reinterpret_cast<const char*>(&data),
                             sizeof(data)));
 
+  disk_cache::TrivialFileOperations file_operations;
   // The cache needs to transition from a deprecated experiment back to not
   // having one.
   EXPECT_EQ(disk_cache::SimpleCacheConsistencyResult::kBadZeroCheck,
-            disk_cache::UpgradeSimpleCacheOnDisk(cache_dir.GetPath()));
+            disk_cache::UpgradeSimpleCacheOnDisk(&file_operations,
+                                                 cache_dir.GetPath()));
 }
 
 TEST(SimpleVersionUpgradeTest, FakeIndexVersionGetsUpdated) {
@@ -95,9 +100,10 @@ TEST(SimpleVersionUpgradeTest, FakeIndexVersionGetsUpdated) {
       static_cast<int>(file_contents.size()),
       base::WriteFile(index_file, file_contents.data(), file_contents.size()));
 
+  disk_cache::TrivialFileOperations file_operations;
   // Upgrade.
   ASSERT_EQ(disk_cache::SimpleCacheConsistencyResult::kOK,
-            disk_cache::UpgradeSimpleCacheOnDisk(cache_path));
+            disk_cache::UpgradeSimpleCacheOnDisk(&file_operations, cache_path));
 
   // Check that the version in the fake index file is updated.
   std::string new_fake_index_contents;
@@ -138,8 +144,9 @@ TEST(SimpleVersionUpgradeTest, UpgradeV5V6IndexMustDisappear) {
     }
   }
 
+  disk_cache::TrivialFileOperations file_operations;
   // Upgrade.
-  ASSERT_TRUE(disk_cache::UpgradeIndexV5V6(cache_path));
+  ASSERT_TRUE(disk_cache::UpgradeIndexV5V6(&file_operations, cache_path));
 
   // Check that the old index disappeared but the files remain unchanged.
   EXPECT_FALSE(base::PathExists(index_file));

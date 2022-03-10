@@ -21,6 +21,7 @@ import "services/network/public/mojom/cross_origin_embedder_policy.mojom";
 import "services/network/public/mojom/default_credentials.mojom";
 import "services/network/public/mojom/devtools_observer.mojom";
 import "services/network/public/mojom/host_resolver.mojom";
+import "services/network/public/mojom/http_cache_backend_file_operations.mojom";
 import "services/network/public/mojom/http_request_headers.mojom";
 import "services/network/public/mojom/ip_address.mojom";
 import "services/network/public/mojom/ip_endpoint.mojom";
@@ -338,6 +339,11 @@ struct NetworkContextParams {
   // Points to the HTTP cache directory. Ignored if the cache is disabled.
   // If null and the cache is enabled, an in-memory database is used.
   mojo_base.mojom.FilePath? http_cache_path;
+
+  // A factory to broker file operations needed for the HTTP cache on some
+  // platforms (depending on the sandboxing mechanism the platform provides).
+  pending_remote<HttpCacheBackendFileOperationsFactory>?
+      http_cache_file_operations_factory;
 
   // Enabled protocols. Note that these apply to all fetches, including those
   // used to fetch PAC scripts. Note that currently data URLs are always enabled

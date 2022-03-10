@@ -478,7 +478,8 @@ void GeneratedCodeCache::CreateBackend() {
   // all the contents and recreates a new one.
   int rv = disk_cache::CreateCacheBackend(
       CodeCacheTypeToNetCacheType(cache_type_), net::CACHE_BACKEND_SIMPLE,
-      path_, max_size_bytes_, disk_cache::ResetHandling::kResetOnError, nullptr,
+      /*file_operations=*/nullptr, path_, max_size_bytes_,
+      disk_cache::ResetHandling::kResetOnError, nullptr,
       &shared_backend_ptr->data, std::move(create_backend_complete));
   if (rv != net::ERR_IO_PENDING) {
     DidCreateBackend(shared_backend_ptr, rv);

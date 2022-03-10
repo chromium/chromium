@@ -568,8 +568,9 @@ TEST_F(SimpleIndexFileTest, SimpleCacheUpgrade) {
             base::WriteFile(old_index_file, index_file_contents.data(),
                             index_file_contents.size()));
 
+  TrivialFileOperations file_operations;
   // Upgrade the cache.
-  ASSERT_EQ(disk_cache::UpgradeSimpleCacheOnDisk(cache_path),
+  ASSERT_EQ(disk_cache::UpgradeSimpleCacheOnDisk(&file_operations, cache_path),
             SimpleCacheConsistencyResult::kOK);
 
   // Create the backend and initiate index flush by destroying the backend.
@@ -581,17 +582,17 @@ TEST_F(SimpleIndexFileTest, SimpleCacheUpgrade) {
   net::TestClosure post_cleanup;
   cleanup_tracker->AddPostCleanupCallback(post_cleanup.closure());
 
-  disk_cache::SimpleBackendImpl* simple_cache =
-      new disk_cache::SimpleBackendImpl(
-          cache_path, cleanup_tracker, /* file_tracker = */ nullptr, 0,
-          net::DISK_CACHE, /* net_log = */ nullptr);
+  auto simple_cache = std::make_unique<disk_cache::SimpleBackendImpl>(
+      /*file_operations_factory=*/nullptr, cache_path, cleanup_tracker,
+      /*file_tracker=*/nullptr, 0, net::DISK_CACHE,
+      /*net_log=*/nullptr);
   net::TestCompletionCallback cb;
   int rv = simple_cache->Init(cb.callback());
   EXPECT_THAT(cb.GetResult(rv), IsOk());
   simple_cache->index()->ExecuteWhenReady(cb.callback());
   rv = cb.WaitForResult();
   EXPECT_THAT(rv, IsOk());
-  delete simple_cache;
+  simple_cache.reset();
   cleanup_tracker = nullptr;
 
   // The backend flushes the index on destruction; it will run the post-cleanup

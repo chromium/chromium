@@ -753,8 +753,8 @@ int main(int argc, char* argv[]) {
   std::unique_ptr<Backend> cache_backend;
   net::TestCompletionCallback cb;
   int rv = disk_cache::CreateCacheBackend(
-      net::DISK_CACHE, backend_type, cache_path, INT_MAX,
-      disk_cache::ResetHandling::kNeverReset, nullptr, &cache_backend,
+      net::DISK_CACHE, backend_type, /*file_operations=*/nullptr, cache_path,
+      INT_MAX, disk_cache::ResetHandling::kNeverReset, nullptr, &cache_backend,
       cb.callback());
   if (cb.GetResult(rv) != net::OK) {
     std::cerr << "Invalid cache." << std::endl;

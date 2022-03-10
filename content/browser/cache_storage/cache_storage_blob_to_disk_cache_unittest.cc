@@ -121,7 +121,8 @@ class CacheStorageBlobToDiskCacheTest : public testing::Test {
 
   void InitCache() {
     int rv = CreateCacheBackend(
-        net::MEMORY_CACHE, net::CACHE_BACKEND_DEFAULT, base::FilePath(),
+        net::MEMORY_CACHE, net::CACHE_BACKEND_DEFAULT,
+        /*file_operations=*/nullptr, base::FilePath(),
         (CacheStorageBlobToDiskCache::kBufferSize * 100) /* max bytes */,
         disk_cache::ResetHandling::kNeverReset, nullptr /* net log */,
         &cache_backend_, base::DoNothing());

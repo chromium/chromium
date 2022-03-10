@@ -341,8 +341,9 @@ int PnaclTranslationCache::Init(net::CacheType cache_type,
                                 int cache_size,
                                 CompletionOnceCallback callback) {
   int rv = disk_cache::CreateCacheBackend(
-      cache_type, net::CACHE_BACKEND_DEFAULT, cache_dir, cache_size,
-      disk_cache::ResetHandling::kResetOnError, nullptr, /* dummy net log */
+      cache_type, net::CACHE_BACKEND_DEFAULT, /*file_operations=*/nullptr,
+      cache_dir, cache_size, disk_cache::ResetHandling::kResetOnError,
+      nullptr, /* dummy net log */
       &disk_cache_,
       base::BindOnce(&PnaclTranslationCache::OnCreateBackendComplete,
                      AsWeakPtr()));

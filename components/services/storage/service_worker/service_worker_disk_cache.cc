@@ -273,9 +273,9 @@ net::Error ServiceWorkerDiskCache::Init(net::CacheType cache_type,
       base::MakeRefCounted<CreateBackendCallbackShim>(this);
 
   net::Error return_value = disk_cache::CreateCacheBackend(
-      cache_type, net::CACHE_BACKEND_SIMPLE, cache_directory, cache_size,
-      disk_cache::ResetHandling::kNeverReset, nullptr,
-      &(create_backend_callback_->backend_ptr_),
+      cache_type, net::CACHE_BACKEND_SIMPLE, /*file_operations=*/nullptr,
+      cache_directory, cache_size, disk_cache::ResetHandling::kNeverReset,
+      nullptr, &(create_backend_callback_->backend_ptr_),
       std::move(post_cleanup_callback),
       base::BindOnce(&CreateBackendCallbackShim::Callback,
                      create_backend_callback_));
