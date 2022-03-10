@@ -123,8 +123,6 @@ There are two mechanisms for compressing Chrome l10n files.
  * Would a vector image work?
    * Images that can be described by a series of paths should generally be
      stored as vectors.
-     * The one exception is if the image will be used pre-Lollipop in a
-       notification or application icon.
    * For images used in native code: [VectorIcon](https://chromium.googlesource.com/chromium/src/+/HEAD/components/vector_icons/README.md).
    * For Android drawables: [VectorDrawable](https://developer.android.com/guide/topics/graphics/vector-drawable-resources).
      * Convert from `.svg` online using https://inloop.github.io/svg2android/.
