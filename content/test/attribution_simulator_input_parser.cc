@@ -104,17 +104,19 @@ class AttributionSimulatorInputParser {
     static constexpr char kKeySources[] = "sources";
     if (base::Value* sources = input.FindKey(kKeySources)) {
       auto context = PushContext(kKeySources);
-      ParseList(*sources, base::BindRepeating(
-                              &AttributionSimulatorInputParser::ParseSource,
+      ParseList(
+          std::move(*sources),
+          base::BindRepeating(&AttributionSimulatorInputParser::ParseSource,
                               base::Unretained(this)));
     }
 
     static constexpr char kKeyTriggers[] = "triggers";
     if (base::Value* triggers = input.FindKey(kKeyTriggers)) {
       auto context = PushContext(kKeyTriggers);
-      ParseList(*triggers, base::BindRepeating(
-                               &AttributionSimulatorInputParser::ParseTrigger,
-                               base::Unretained(this)));
+      ParseList(
+          std::move(*triggers),
+          base::BindRepeating(&AttributionSimulatorInputParser::ParseTrigger,
+                              base::Unretained(this)));
     }
 
     if (has_error_)
@@ -150,22 +152,23 @@ class AttributionSimulatorInputParser {
     return writer;
   }
 
-  void ParseList(base::Value& values,
-                 base::RepeatingCallback<void(base::Value)> callback) {
+  template <typename T>
+  void ParseList(T&& values,
+                 base::RepeatingCallback<void(decltype(values))> callback) {
     if (!values.is_list()) {
       *Error() << "must be a list";
       return;
     }
 
     size_t index = 0;
-    for (base::Value& value : values.GetList()) {
+    for (auto&& value : values.GetList()) {
       auto index_context = PushContext(index);
-      callback.Run(std::move(value));
+      callback.Run(std::forward<T>(value));
       index++;
     }
   }
 
-  void ParseSource(base::Value source) {
+  void ParseSource(base::Value&& source) {
     if (!EnsureDictionary(source))
       return;
 
@@ -174,7 +177,7 @@ class AttributionSimulatorInputParser {
     url::Origin reporting_origin = ParseOrigin(source, "reporting_origin");
     absl::optional<AttributionSourceType> source_type = ParseSourceType(source);
 
-    base::Value* cfg = ParseRegistrationConfig(source);
+    const base::Value* cfg = ParseRegistrationConfig(source);
     if (!cfg)
       return;
 
@@ -201,7 +204,7 @@ class AttributionSimulatorInputParser {
         std::move(source));
   }
 
-  void ParseTrigger(base::Value trigger) {
+  void ParseTrigger(base::Value&& trigger) {
     if (!EnsureDictionary(trigger))
       return;
 
@@ -332,12 +335,12 @@ class AttributionSimulatorInputParser {
     return source_type;
   }
 
-  base::Value* ParseRegistrationConfig(base::Value& dict) {
+  const base::Value* ParseRegistrationConfig(const base::Value& dict) {
     static constexpr char kKey[] = "registration_config";
 
     auto context = PushContext(kKey);
 
-    base::Value* cfg = dict.FindKey(kKey);
+    const base::Value* cfg = dict.FindKey(kKey);
     if (!cfg) {
       *Error() << "must be present";
       return nullptr;
@@ -349,11 +352,11 @@ class AttributionSimulatorInputParser {
     return cfg;
   }
 
-  AttributionFilterData ParseFilterData(base::Value& dict,
+  AttributionFilterData ParseFilterData(const base::Value& dict,
                                         base::StringPiece key) {
     auto context = PushContext(key);
 
-    base::Value* value = dict.FindKey(key);
+    const base::Value* value = dict.FindKey(key);
     if (!value)
       return AttributionFilterData();
 
@@ -361,19 +364,20 @@ class AttributionSimulatorInputParser {
       return AttributionFilterData();
 
     AttributionFilterData::FilterValues::container_type container;
-    for (auto [filter, values_list] : std::move(value->GetDict())) {
+    for (auto [filter, values_list] : value->GetDict()) {
       auto filter_context = PushContext(filter);
       std::vector<std::string> values;
 
-      ParseList(values_list, base::BindLambdaForTesting([&](base::Value value) {
+      ParseList(values_list,
+                base::BindLambdaForTesting([&](const base::Value& value) {
                   if (!value.is_string()) {
                     *Error() << "must be a string";
                   } else {
-                    values.emplace_back(std::move(value.GetString()));
+                    values.emplace_back(value.GetString());
                   }
                 }));
 
-      container.emplace_back(std::move(filter), std::move(values));
+      container.emplace_back(filter, std::move(values));
     }
 
     absl::optional<AttributionFilterData> filter_data =
