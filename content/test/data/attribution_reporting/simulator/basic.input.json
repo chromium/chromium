@@ -17,7 +17,11 @@
       "reporting_origin": "https://r.test",
       "destination": "https://d.test",
       "registration_config": {
-        "trigger_data": "7"
+        "event_triggers": [
+          {
+            "trigger_data": "7"
+	  }
+	]
       }
     }
   ]

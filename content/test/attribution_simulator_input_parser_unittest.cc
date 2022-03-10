@@ -215,11 +215,25 @@ TEST(AttributionSimulatorInputParserTest, ValidTriggerParses) {
       "reporting_origin": "https://a.r.test",
       "destination": " https://a.d1.test",
       "registration_config": {
-        "trigger_data": "10",
-        "event_source_trigger_data": "3",
-        "priority": "-5",
-        "deduplication_key": "123",
-        "debug_key": "14"
+        "event_triggers": [
+          {
+            "trigger_data": "10",
+            "priority": "-5",
+            "deduplication_key": "123",
+            "filters": {
+              "x": ["y"]
+            },
+            "not_filters": {
+              "z": []
+            }
+          },
+          {}
+        ],
+        "debug_key": "14",
+        "filters": {
+          "a": ["b", "c"],
+          "d": []
+        }
       }
     },
     {
@@ -238,35 +252,49 @@ TEST(AttributionSimulatorInputParserTest, ValidTriggerParses) {
       Optional(ElementsAre(
           Pair(
               AttributionTriggerAndTime{
-                  .trigger =
-                      TriggerBuilder()
-                          .SetReportingOrigin(
-                              url::Origin::Create(GURL("https://a.r.test")))
-                          .SetConversionDestination(net::SchemefulSite(
-                              url::Origin::Create(GURL("https://a.d1.test"))))
-                          .SetTriggerData(10)
-                          .SetEventSourceTriggerData(3)
-                          .SetPriority(-5)
-                          .SetDedupKey(123)
-                          .SetDebugKey(14)
-                          .Build(),
+                  .trigger = AttributionTrigger(
+                      /*conversion_destination=*/net::SchemefulSite(
+                          url::Origin::Create(GURL("https://a.d1.test"))),
+                      /*reporting_origin=*/
+                      url::Origin::Create(GURL("https://a.r.test")),
+                      *AttributionFilterData::FromTriggerFilterValues({
+                          {"a", {"b", "c"}},
+                          {"d", {}},
+                      }),
+                      /*debug_key=*/14,
+                      {
+                          AttributionTrigger::EventTriggerData(
+                              /*data=*/10,
+                              /*priority=*/-5,
+                              /*dedup_key=*/123,
+                              /*filters=*/
+                              *AttributionFilterData::FromTriggerFilterValues({
+                                  {"x", {"y"}},
+                              }),
+                              /*not_filters=*/
+                              *AttributionFilterData::FromTriggerFilterValues({
+                                  {"z", {}},
+                              })),
+                          AttributionTrigger::EventTriggerData(
+                              /*data=*/0,
+                              /*priority=*/0,
+                              /*dedup_key=*/absl::nullopt,
+                              /*filters=*/AttributionFilterData(),
+                              /*not_filters=*/AttributionFilterData()),
+                      }),
                   .time = kOffsetTime + base::Seconds(1643235576),
               },
               _),
           Pair(
               AttributionTriggerAndTime{
-                  .trigger =
-                      TriggerBuilder()
-                          .SetReportingOrigin(
-                              url::Origin::Create(GURL("https://b.r.test")))
-                          .SetConversionDestination(net::SchemefulSite(
-                              url::Origin::Create(GURL("https://a.d2.test"))))
-                          .SetTriggerData(0)             // default
-                          .SetEventSourceTriggerData(0)  // default
-                          .SetPriority(0)                // default
-                          .SetDedupKey(absl::nullopt)    // default
-                          .SetDebugKey(absl::nullopt)    // default
-                          .Build(),
+                  .trigger = AttributionTrigger(
+                      /*conversion_destination=*/net::SchemefulSite(
+                          url::Origin::Create(GURL("https://a.d2.test"))),
+                      /*reporting_origin=*/
+                      url::Origin::Create(GURL("https://b.r.test")),
+                      AttributionFilterData(),
+                      /*debug_key=*/absl::nullopt,
+                      /*event_triggers=*/{}),
                   .time = kOffsetTime + base::Seconds(1643235575),
               },
               _))));
@@ -565,6 +593,17 @@ const ParseErrorTestCase kParseErrorTestCases[] = {
     {
         R"(["triggers"]: must be a list)",
         R"json({"triggers": ""})json",
+    },
+    {
+        R"(["triggers"][0]["registration_config"]["event_triggers"]: must be a list)",
+        R"json({"triggers": [{
+          "trigger_time": 1643235576,
+          "reporting_origin": "https://a.r.test",
+          "destination": " https://a.d1.test",
+          "registration_config": {
+            "event_triggers": 1
+          }
+        }]})json",
     },
 };
 

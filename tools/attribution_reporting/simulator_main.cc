@@ -194,7 +194,17 @@ Input JSON format:
 
         // Optional int64 formatted as a base-10 string.
         // Defaults to 0.
-        "priority": "-456"
+        "priority": "-456",
+
+        // Optional dictionary of filters and corresponding values. Defaults
+        // to empty.
+        "filter_data": {
+          "a": ["b", "c"],
+          "d": []
+        },
+
+        // Optional uint64 formatted as a base-10 string. Defaults to null.
+        "debug_key": "987",
       }
     },
     ...
@@ -214,21 +224,45 @@ Input JSON format:
       "reporting_origin": "https://reporting.example",
 
       "registration_config": {
-        // Optional uint64 formatted as a base-10 string.
-        // Defaults to 0.
-        "trigger_data": "3",
+        // Optional uint64 formatted as a base-10 string. Defaults to null.
+        "debug_key": "987",
 
-        // Optional uint64 formatted as a base-10 string.
-        // Defaults to 0.
-        "event_source_trigger_data": "1",
+        // Optional dictionary of filters and corresponding values. Defaults
+        // to empty.
+        "filters": {
+          "a": ["b", "c"],
+          "d": []
+        },
 
-        // Optional int64 formatted as a base-10 string.
-        // Defaults to 0.
-        "priority": "-456",
+        "event_triggers": [
+          {
+            // Optional uint64 formatted as a base-10 string.
+            // Defaults to 0.
+            "trigger_data": "3",
 
-        // Optional int64 formatted as a base-10 string.
-        // Defaults to null.
-        "dedup_key": "789"
+            // Optional int64 formatted as a base-10 string.
+            // Defaults to 0.
+            "priority": "-456",
+
+            // Optional int64 formatted as a base-10 string.
+            // Defaults to null.
+            "dedup_key": "789",
+
+            // Optional dictionary of filters and corresponding values. Defaults
+            // to empty.
+            "filters": {
+              "a": ["b", "c"],
+              "d": []
+            },
+
+            // Optional dictionary of negated filters and corresponding values.
+            // Defaults to empty.
+            "not_filters": {
+              "x": ["y"],
+              "z": []
+            }
+          }
+        ]
       }
     },
     ...
@@ -255,6 +289,26 @@ Output JSON format:
       },
     },
     ...
+  ],
+  // List of rejected sources. Omitted if empty.
+  "rejected_sources": [
+    {
+      // Why the source was rejected.
+      "reason": "excessiveReportingOrigins",
+
+      // The original input JSON corresponding to the source.
+      "source": { ... }
+    }
+  ],
+  // List of rejected triggers. Omitted if empty.
+  "rejected_triggers": [
+    {
+      // Why the trigger was rejected.
+      "reason": "deduplicated",
+
+      // The original input JSON corresponding to the trigger.
+      "trigger": { ... }
+    }
   ],
   // The original input, if the `copy_input_to_output` switch is present.
   "input": { ... }

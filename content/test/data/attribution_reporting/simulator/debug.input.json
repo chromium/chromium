@@ -8,7 +8,7 @@
       "registration_config": {
         "destination": "https://d.test",
         "source_event_id": "123",
-	"debug_key": "222"
+        "debug_key": "222"
       }
     }
   ],
@@ -18,8 +18,12 @@
       "reporting_origin": "https://r.test",
       "destination": "https://d.test",
       "registration_config": {
-        "trigger_data": "7",
-	"debug_key": "333"
+        "event_triggers": [
+          {
+            "trigger_data": "7"
+          }
+        ],
+        "debug_key": "333"
       }
     }
   ]

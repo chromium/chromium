@@ -7,8 +7,12 @@
         "reporting_origin": "https://r.test",
         "destination": "https://d.test",
         "registration_config": {
-          "trigger_data": "1"
-        }
+          "event_triggers": [
+            {
+              "trigger_data": "1"
+            }
+          ]
+	}
       }
     },
     {
@@ -18,8 +22,12 @@
         "reporting_origin": "https://r.test",
         "destination": "https://d.test",
         "registration_config": {
-          "trigger_data": "3",
-          "deduplication_key": "22"
+          "event_triggers": [
+            {
+              "trigger_data": "3",
+              "deduplication_key": "22"
+            }
+          ]
         }
       }
     },
@@ -30,7 +38,11 @@
         "reporting_origin": "https://r.test",
         "destination": "https://d.test",
         "registration_config": {
-          "trigger_data": "6"
+          "event_triggers": [
+            {
+              "trigger_data": "6"
+            }
+          ]
         }
       }
     }

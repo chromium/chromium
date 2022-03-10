@@ -191,7 +191,9 @@ class AttributionSimulatorInputParser {
               debug_key = ParseOptionalUint64(cfg, "debug_key");
               priority = ParseOptionalInt64(cfg, "priority").value_or(0);
               expiry = ParseSourceExpiry(cfg).value_or(base::Days(30));
-              filter_data = ParseFilterData(cfg, "filter_data");
+              filter_data = ParseFilterData(
+                  cfg, "filter_data",
+                  &AttributionFilterData::FromSourceFilterValues);
             }))) {
       return;
     }
@@ -220,22 +222,19 @@ class AttributionSimulatorInputParser {
     url::Origin reporting_origin = ParseOrigin(trigger, "reporting_origin");
     net::SchemefulSite destination(ParseOrigin(trigger, "destination"));
 
-    uint64_t trigger_data = 0;
-    uint64_t event_source_trigger_data = 0;
     absl::optional<uint64_t> debug_key;
-    absl::optional<uint64_t> dedup_key;
-    int64_t priority = 0;
+    AttributionFilterData filters;
+    std::vector<AttributionTrigger::EventTriggerData> event_triggers;
 
     if (!ParseRegistrationConfig(
             trigger, base::BindLambdaForTesting([&](const base::Value& cfg) {
-              trigger_data =
-                  ParseOptionalUint64(cfg, "trigger_data").value_or(0);
-              event_source_trigger_data =
-                  ParseOptionalUint64(cfg, "event_source_trigger_data")
-                      .value_or(0);
               debug_key = ParseOptionalUint64(cfg, "debug_key");
-              dedup_key = ParseOptionalUint64(cfg, "deduplication_key");
-              priority = ParseOptionalInt64(cfg, "priority").value_or(0);
+
+              filters = ParseFilterData(
+                  cfg, "filters",
+                  &AttributionFilterData::FromTriggerFilterValues);
+
+              event_triggers = ParseEventTriggers(cfg);
             }))) {
       return;
     }
@@ -245,13 +244,54 @@ class AttributionSimulatorInputParser {
 
     events_.emplace_back(
         AttributionTriggerAndTime{
-            .trigger = AttributionTrigger(trigger_data, std::move(destination),
-                                          std::move(reporting_origin),
-                                          event_source_trigger_data, priority,
-                                          dedup_key, debug_key),
+            .trigger = AttributionTrigger(
+                std::move(destination), std::move(reporting_origin),
+                std::move(filters), debug_key, std::move(event_triggers)),
             .time = trigger_time,
         },
         std::move(trigger));
+  }
+
+  std::vector<AttributionTrigger::EventTriggerData> ParseEventTriggers(
+      const base::Value& cfg) {
+    std::vector<AttributionTrigger::EventTriggerData> event_triggers;
+
+    static constexpr char kKey[] = "event_triggers";
+
+    const base::Value* values = cfg.FindKey(kKey);
+    if (!values)
+      return event_triggers;
+
+    auto context = PushContext(kKey);
+    ParseList(
+        *values,
+        base::BindLambdaForTesting([&](const base::Value& event_trigger) {
+          uint64_t trigger_data =
+              ParseOptionalUint64(event_trigger, "trigger_data").value_or(0);
+
+          int64_t priority =
+              ParseOptionalInt64(event_trigger, "priority").value_or(0);
+
+          absl::optional<uint64_t> dedup_key =
+              ParseOptionalUint64(event_trigger, "deduplication_key");
+
+          AttributionFilterData filters =
+              ParseFilterData(event_trigger, "filters",
+                              &AttributionFilterData::FromTriggerFilterValues);
+
+          AttributionFilterData not_filters =
+              ParseFilterData(event_trigger, "not_filters",
+                              &AttributionFilterData::FromTriggerFilterValues);
+
+          if (has_error_)
+            return;
+
+          event_triggers.emplace_back(trigger_data, priority, dedup_key,
+                                      std::move(filters),
+                                      std::move(not_filters));
+        }));
+
+    return event_triggers;
   }
 
   url::Origin ParseOrigin(const base::Value& dict, base::StringPiece key) {
@@ -370,8 +410,13 @@ class AttributionSimulatorInputParser {
     return true;
   }
 
-  AttributionFilterData ParseFilterData(const base::Value& dict,
-                                        base::StringPiece key) {
+  using FromFilterValuesFunc = absl::optional<AttributionFilterData>(
+      AttributionFilterData::FilterValues&&);
+
+  AttributionFilterData ParseFilterData(
+      const base::Value& dict,
+      base::StringPiece key,
+      FromFilterValuesFunc from_filter_values) {
     auto context = PushContext(key);
 
     const base::Value* value = dict.FindKey(key);
@@ -399,7 +444,7 @@ class AttributionSimulatorInputParser {
     }
 
     absl::optional<AttributionFilterData> filter_data =
-        AttributionFilterData::FromSourceFilterValues(std::move(container));
+        from_filter_values(std::move(container));
     // TODO(apaseltiner): Provide more detailed information.
     if (!filter_data)
       *Error() << "invalid";

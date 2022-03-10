@@ -17,7 +17,11 @@
       "reporting_origin": "https://r.test",
       "destination": "https://d.test",
       "registration_config": {
-        "trigger_data": "1"
+        "event_triggers": [
+          {
+            "trigger_data": "1"
+          }
+        ]
       }
     },
     {
@@ -25,8 +29,12 @@
       "reporting_origin": "https://r.test",
       "destination": "https://d.test",
       "registration_config": {
-        "trigger_data": "2",
-	"deduplication_key": "22"
+        "event_triggers": [
+          {
+            "trigger_data": "2",
+            "deduplication_key": "22"
+          }
+        ]
       }
     },
     {
@@ -34,8 +42,12 @@
       "reporting_origin": "https://r.test",
       "destination": "https://d.test",
       "registration_config": {
-        "trigger_data": "3",
-	"deduplication_key": "22"
+        "event_triggers": [
+          {
+            "trigger_data": "3",
+            "deduplication_key": "22"
+          }
+        ]
       }
     },
     {
@@ -43,8 +55,12 @@
       "reporting_origin": "https://r.test",
       "destination": "https://d.test",
       "registration_config": {
-        "trigger_data": "4",
-	"priority": "100"
+        "event_triggers": [
+          {
+            "trigger_data": "4",
+            "priority": "100"
+          }
+        ]
       }
     },
     {
@@ -52,8 +68,12 @@
       "reporting_origin": "https://r.test",
       "destination": "https://d.test",
       "registration_config": {
-        "trigger_data": "5",
-	"priority": "100"
+        "event_triggers": [
+          {
+            "trigger_data": "5",
+            "priority": "100"
+          }
+        ]
       }
     },
     {
@@ -61,7 +81,11 @@
       "reporting_origin": "https://r.test",
       "destination": "https://d.test",
       "registration_config": {
-        "trigger_data": "6"
+        "event_triggers": [
+          {
+            "trigger_data": "6"
+          }
+        ]
       }
     }
   ]
