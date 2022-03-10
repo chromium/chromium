@@ -5,7 +5,6 @@
 #include "ash/accessibility/ui/accessibility_animation_one_shot.h"
 
 #include "ash/shell.h"
-#include "base/debug/crash_logging.h"
 #include "ui/compositor/layer.h"
 #include "ui/display/display.h"
 #include "ui/display/screen.h"
@@ -18,14 +17,13 @@ AccessibilityAnimationOneShot::AccessibilityAnimationOneShot(
     : callback_(callback) {
   display::Display display =
       display::Screen::GetScreen()->GetDisplayMatching(bounds_in_dip);
-  // Crash keys for https://crbug.com/1254275
-  SCOPED_CRASH_KEY_STRING32("Accessibility", "BoundsInDip",
-                            bounds_in_dip.ToString());
-  SCOPED_CRASH_KEY_STRING32("Accessibility", "Display", display.ToString());
   aura::Window* root_window = Shell::GetRootWindowForDisplayId(display.id());
-  SCOPED_CRASH_KEY_STRING32(
-      "Accessibility", "RootWindow",
-      !root_window ? "Root window is null" : "Root window is valid");
+  if (!root_window) {
+    // `root_window` can be invalid in some scenarios e.g. if an external
+    // display is unplugged or disconnected.
+    return;
+  }
+
   ui::Compositor* compositor = root_window->layer()->GetCompositor();
   animation_observation_.Observe(compositor);
 }
