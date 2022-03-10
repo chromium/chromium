@@ -49,8 +49,11 @@ constexpr int kMoveMigrationResumeCountLimit = 5;
 // 1) Delete any `ItemType::kDeletable` items in <Ash PDD>.
 // 2) Setup <Ash PDD>/<kMoveTmpDir> by copying `ItemType::kNeedCopy`
 // items into it.
-// 3) Move `ItemType::kLacros` in <Ash PDD> to <lacros PDD>.
-// 4) Rename <Ash PDD>/<kMoveTmpDir>/ as <Ash PDD>/lacros/.
+// 3) Setup <Ash PDD>/<kSplitTmpDir> by generating split data that will have to
+// remain in Ash.
+// 4) Move `ItemType::kLacros` in <Ash PDD> to <lacros PDD>.
+// 5) Move split items in <Ash PDD>/<kSplitTmpDir> to <Ash PDD>.
+// 6) Rename <Ash PDD>/<kMoveTmpDir>/ as <Ash PDD>/lacros/.
 class MoveMigrator : public BrowserDataMigratorImpl::MigratorDelegate {
  public:
   // Indicate which step the migration should be resumed from if left unfinished
@@ -58,8 +61,9 @@ class MoveMigrator : public BrowserDataMigratorImpl::MigratorDelegate {
   enum class ResumeStep {
     kStart = 0,
     kMoveLacrosItems = 1,
-    kMoveTmpDir = 2,
-    kCompleted = 3,
+    kMoveSplitItems = 2,
+    kMoveTmpDir = 3,
+    kCompleted = 4,
   };
 
   // Return value of `PreMigrationCleanUp()`.
@@ -114,7 +118,10 @@ class MoveMigrator : public BrowserDataMigratorImpl::MigratorDelegate {
   FRIEND_TEST_ALL_PREFIXES(MoveMigratorTest, MoveLacrosItemsToNewDir);
   FRIEND_TEST_ALL_PREFIXES(MoveMigratorMigrateTest,
                            MigrateResumeFromMoveLacrosItems);
-  FRIEND_TEST_ALL_PREFIXES(MoveMigratorMigrateTest, MigrateResumeFromMove);
+  FRIEND_TEST_ALL_PREFIXES(MoveMigratorMigrateTest,
+                           MigrateResumeFromMoveSplitItems);
+  FRIEND_TEST_ALL_PREFIXES(MoveMigratorMigrateTest,
+                           MigrateResumeFromMoveTmpDir);
   friend class BrowserDataMigratorResumeOnSignInTest;
   friend class BrowserDataMigratorResumeRestartInSession;
 
@@ -182,19 +189,19 @@ class MoveMigrator : public BrowserDataMigratorImpl::MigratorDelegate {
   // Called as a reply to `MoveLacrosItemsToNewDir()`.
   void OnMoveLacrosItemsToNewDir(bool success);
 
-  // Moves newly created `kMoveTmpDir` to `kLacrosDir`.
-  static bool MoveTmpDirToLacrosDir(const base::FilePath& original_profile_dir);
-
-  // Called as a reply to `MoveTmpDirToLacrosDir()`.
-  void OnMoveTmpDirToLacrosDir(bool success);
-
   // Moves newly created split items to the original profile directory.
-  // Completes the migration.
   static bool MoveSplitItemsToOriginalDir(
       const base::FilePath& original_profile_dir);
 
   // Called as a reply to `MoveSplitItemsToOriginalDir`.
   void OnMoveSplitItemsToOriginalDir(bool success);
+
+  // Moves newly created `kMoveTmpDir` to `kLacrosDir`.
+  // Completes the migration.
+  static bool MoveTmpDirToLacrosDir(const base::FilePath& original_profile_dir);
+
+  // Called as a reply to `MoveTmpDirToLacrosDir()`.
+  void OnMoveTmpDirToLacrosDir(bool success);
 
   // Path to the original profile data directory, which is directly under the
   // user data directory.

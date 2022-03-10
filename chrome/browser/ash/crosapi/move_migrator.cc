@@ -86,9 +86,21 @@ void MoveMigrator::Migrate() {
           base::BindOnce(&MoveMigrator::OnMoveLacrosItemsToNewDir,
                          weak_factory_.GetWeakPtr()));
       return;
+    case ResumeStep::kMoveSplitItems:
+      LOG(ERROR) << "Migration did not complete in the previous attempt. "
+                    "Resuming migration from kMoveSplitItems step.";
+      base::ThreadPool::PostTaskAndReplyWithResult(
+          FROM_HERE,
+          {base::MayBlock(), base::TaskPriority::USER_VISIBLE,
+           base::TaskShutdownBehavior::BLOCK_SHUTDOWN},
+          base::BindOnce(&MoveMigrator::MoveSplitItemsToOriginalDir,
+                         original_profile_dir_),
+          base::BindOnce(&MoveMigrator::OnMoveSplitItemsToOriginalDir,
+                         weak_factory_.GetWeakPtr()));
+      return;
     case ResumeStep::kMoveTmpDir:
       LOG(ERROR) << "Migration did not complete in the previous attempt. "
-                    "Resuming migration from kMoveDir step.";
+                    "Resuming migration from kMoveTmpDir step.";
       base::ThreadPool::PostTaskAndReplyWithResult(
           FROM_HERE,
           {base::MayBlock(), base::TaskPriority::USER_VISIBLE,
@@ -122,6 +134,8 @@ bool MoveMigrator::IsResumeStep(ResumeStep resume_step) {
     case ResumeStep::kStart:
       return false;
     case ResumeStep::kMoveLacrosItems:
+      return true;
+    case ResumeStep::kMoveSplitItems:
       return true;
     case ResumeStep::kMoveTmpDir:
       return true;
@@ -468,6 +482,86 @@ void MoveMigrator::OnMoveLacrosItemsToNewDir(bool success) {
     return;
   }
 
+  SetResumeStep(local_state_, user_id_hash_, ResumeStep::kMoveSplitItems);
+
+  base::ThreadPool::PostTaskAndReplyWithResult(
+      FROM_HERE,
+      {base::MayBlock(), base::TaskPriority::USER_VISIBLE,
+       base::TaskShutdownBehavior::BLOCK_SHUTDOWN},
+      base::BindOnce(&MoveMigrator::MoveSplitItemsToOriginalDir,
+                     original_profile_dir_),
+      base::BindOnce(&MoveMigrator::OnMoveSplitItemsToOriginalDir,
+                     weak_factory_.GetWeakPtr()));
+}
+
+// static
+bool MoveMigrator::MoveSplitItemsToOriginalDir(
+    const base::FilePath& original_profile_dir) {
+  LOG(WARNING) << "Running MoveSplitItemsToOriginalDir()";
+
+  const base::FilePath tmp_split_dir =
+      original_profile_dir.Append(browser_data_migrator_util::kSplitTmpDir);
+  const base::FilePath tmp_profile_dir =
+      original_profile_dir.Append(browser_data_migrator_util::kMoveTmpDir)
+          .Append(browser_data_migrator_util::kLacrosProfilePath);
+
+  // Move everything inside tmp_split_dir to Ash's profile directory.
+  base::FileEnumerator e(
+      tmp_split_dir, false,
+      base::FileEnumerator::FILES | base::FileEnumerator::DIRECTORIES);
+
+  for (base::FilePath path = e.Next(); !path.empty(); path = e.Next()) {
+    base::FilePath ash_path = original_profile_dir.Append(path.BaseName());
+    if (!base::Move(path, ash_path)) {
+      PLOG(ERROR) << "Failed moving " << path.value() << " to "
+                  << ash_path.value();
+      return false;
+    }
+  }
+
+  // Delete tmp_split_dir.
+  if (!base::DeleteFile(tmp_split_dir)) {
+    PLOG(ERROR) << "Failed removing " << tmp_split_dir.value();
+  }
+
+  // Move extensions in the keeplist back to Ash's profile directory.
+  const base::FilePath lacros_extensions_dir =
+      tmp_profile_dir.Append(browser_data_migrator_util::kExtensionsFilePath);
+  if (base::PathExists(lacros_extensions_dir)) {
+    const base::FilePath ash_extensions_dir = original_profile_dir.Append(
+        browser_data_migrator_util::kExtensionsFilePath);
+    if (!base::CreateDirectory(ash_extensions_dir)) {
+      PLOG(ERROR) << "CreateDirectory() failed for  "
+                  << ash_extensions_dir.value();
+      return false;
+    }
+
+    for (const char* extension_id :
+         browser_data_migrator_util::kExtensionKeepList) {
+      base::FilePath lacros_path = lacros_extensions_dir.Append(extension_id);
+      if (base::PathExists(lacros_path)) {
+        base::FilePath ash_path = ash_extensions_dir.Append(extension_id);
+        if (!base::Move(lacros_path, ash_path)) {
+          PLOG(ERROR) << "Failed moving " << lacros_path.value() << " to "
+                      << ash_path.value();
+          return false;
+        }
+      }
+    }
+  }
+
+  return true;
+}
+
+void MoveMigrator::OnMoveSplitItemsToOriginalDir(bool success) {
+  if (!success) {
+    LOG(ERROR) << "Moving split objects has failed.";
+    std::move(finished_callback_)
+        .Run({BrowserDataMigratorImpl::DataWipeResult::kSucceeded,
+              {BrowserDataMigratorImpl::ResultKind::kFailed}});
+    return;
+  }
+
   SetResumeStep(local_state_, user_id_hash_, ResumeStep::kMoveTmpDir);
 
   base::ThreadPool::PostTaskAndReplyWithResult(
@@ -514,85 +608,8 @@ void MoveMigrator::OnMoveTmpDirToLacrosDir(bool success) {
     return;
   }
 
-  base::ThreadPool::PostTaskAndReplyWithResult(
-      FROM_HERE,
-      {base::MayBlock(), base::TaskPriority::USER_VISIBLE,
-       base::TaskShutdownBehavior::BLOCK_SHUTDOWN},
-      base::BindOnce(&MoveMigrator::MoveSplitItemsToOriginalDir,
-                     original_profile_dir_),
-      base::BindOnce(&MoveMigrator::OnMoveSplitItemsToOriginalDir,
-                     weak_factory_.GetWeakPtr()));
-}
-
-// static
-bool MoveMigrator::MoveSplitItemsToOriginalDir(
-    const base::FilePath& original_profile_dir) {
-  LOG(WARNING) << "Running MoveSplitItemsToOriginalDir()";
-
-  const base::FilePath tmp_split_dir =
-      original_profile_dir.Append(browser_data_migrator_util::kSplitTmpDir);
-  const base::FilePath lacros_profile_dir =
-      original_profile_dir.Append(browser_data_migrator_util::kLacrosDir)
-          .Append(browser_data_migrator_util::kLacrosProfilePath);
-
-  // Move everything inside tmp_split_dir to Ash's profile directory.
-  base::FileEnumerator e(
-      tmp_split_dir, false,
-      base::FileEnumerator::FILES | base::FileEnumerator::DIRECTORIES);
-
-  for (base::FilePath path = e.Next(); !path.empty(); path = e.Next()) {
-    base::FilePath ash_path = original_profile_dir.Append(path.BaseName());
-    if (!base::Move(path, ash_path)) {
-      PLOG(ERROR) << "Failed moving " << path.value() << " to "
-                  << ash_path.value();
-      return false;
-    }
-  }
-
-  // Delete tmp_split_dir.
-  if (!base::DeleteFile(tmp_split_dir)) {
-    PLOG(ERROR) << "Failed removing " << tmp_split_dir.value();
-  }
-
-  // Move extensions in the keeplist back to Ash's profile directory.
-  const base::FilePath lacros_extensions_dir = lacros_profile_dir.Append(
-      browser_data_migrator_util::kExtensionsFilePath);
-  if (base::PathExists(lacros_extensions_dir)) {
-    const base::FilePath ash_extensions_dir = original_profile_dir.Append(
-        browser_data_migrator_util::kExtensionsFilePath);
-    if (!base::CreateDirectory(ash_extensions_dir)) {
-      PLOG(ERROR) << "CreateDirectory() failed for  "
-                  << ash_extensions_dir.value();
-      return false;
-    }
-
-    for (const char* extension_id :
-         browser_data_migrator_util::kExtensionKeepList) {
-      base::FilePath lacros_path = lacros_extensions_dir.Append(extension_id);
-      if (base::PathExists(lacros_path)) {
-        base::FilePath ash_path = ash_extensions_dir.Append(extension_id);
-        if (!base::Move(lacros_path, ash_path)) {
-          PLOG(ERROR) << "Failed moving " << lacros_path.value() << " to "
-                      << ash_path.value();
-          return false;
-        }
-      }
-    }
-  }
-
-  return true;
-}
-
-void MoveMigrator::OnMoveSplitItemsToOriginalDir(bool success) {
-  if (!success) {
-    LOG(ERROR) << "Moving split objects has failed.";
-    std::move(finished_callback_)
-        .Run({BrowserDataMigratorImpl::DataWipeResult::kSucceeded,
-              {BrowserDataMigratorImpl::ResultKind::kFailed}});
-    return;
-  }
-
   SetResumeStep(local_state_, user_id_hash_, ResumeStep::kCompleted);
+
   LOG(WARNING) << "Move migration completed successfully.";
   std::move(finished_callback_)
       .Run({BrowserDataMigratorImpl::DataWipeResult::kSucceeded,

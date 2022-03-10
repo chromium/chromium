@@ -52,24 +52,34 @@ constexpr int64_t kRequiredDiskSpaceForBot =
     browser_data_migrator_util::kBuffer * 2;
 
 // Setup the `Extensions` folder inside a profile.
-void SetUpExtensions(const base::FilePath& profile_path) {
+// If `ash_only` is true, it will only generate data associated to extensions
+// that have to be kept in Ash. Otherwise, it will generate data for both
+// categories of extensions.
+void SetUpExtensions(const base::FilePath& profile_path,
+                     bool ash = true,
+                     bool lacros = true) {
   base::FilePath path =
       profile_path.Append(browser_data_migrator_util::kExtensionsFilePath);
 
   // Generate data for an extension that has to be moved to Lacros.
-  ASSERT_TRUE(base::CreateDirectory(path.Append(kMoveExtensionId)));
-  ASSERT_EQ(base::WriteFile(path.Append(kMoveExtensionId).Append(kDataFilePath),
-                            kDataContent, kDataSize),
-            kDataSize);
+  if (lacros) {
+    ASSERT_TRUE(base::CreateDirectory(path.Append(kMoveExtensionId)));
+    ASSERT_EQ(
+        base::WriteFile(path.Append(kMoveExtensionId).Append(kDataFilePath),
+                        kDataContent, kDataSize),
+        kDataSize);
+  }
 
   // Generate data for an extension that has to stay in Ash.
-  std::string keep_extension_id =
-      browser_data_migrator_util::kExtensionKeepList[0];
-  ASSERT_TRUE(base::CreateDirectory(path.Append(keep_extension_id)));
-  ASSERT_EQ(
-      base::WriteFile(path.Append(keep_extension_id).Append(kDataFilePath),
-                      kDataContent, kDataSize),
-      kDataSize);
+  if (ash) {
+    std::string keep_extension_id =
+        browser_data_migrator_util::kExtensionKeepList[0];
+    ASSERT_TRUE(base::CreateDirectory(path.Append(keep_extension_id)));
+    ASSERT_EQ(
+        base::WriteFile(path.Append(keep_extension_id).Append(kDataFilePath),
+                        kDataContent, kDataSize),
+        kDataSize);
+  }
 }
 
 // Setup the `Local Storage` folder inside a profile.
@@ -379,6 +389,10 @@ TEST(MoveMigratorTest, ResumeRequired) {
   EXPECT_TRUE(MoveMigrator::ResumeRequired(&pref_service, user_id_hash));
 
   MoveMigrator::SetResumeStep(&pref_service, user_id_hash,
+                              MoveMigrator::ResumeStep::kMoveSplitItems);
+  EXPECT_TRUE(MoveMigrator::ResumeRequired(&pref_service, user_id_hash));
+
+  MoveMigrator::SetResumeStep(&pref_service, user_id_hash,
                               MoveMigrator::ResumeStep::kMoveTmpDir);
   EXPECT_TRUE(MoveMigrator::ResumeRequired(&pref_service, user_id_hash));
 
@@ -568,11 +582,13 @@ TEST_F(MoveMigratorMigrateTest, MigrateResumeFromMoveLacrosItems) {
   ASSERT_TRUE(base::Move(original_profile_dir_.Append(kBookmarksFilePath),
                          tmp_profile_dir.Append(kBookmarksFilePath)));
 
+  // Extensions have been moved to Lacros's tmp dir.
   ASSERT_TRUE(base::Move(
       original_profile_dir_.Append(
           browser_data_migrator_util::kExtensionsFilePath),
       tmp_profile_dir.Append(browser_data_migrator_util::kExtensionsFilePath)));
 
+  // Local Storage has been split.
   ASSERT_TRUE(
       base::Move(original_profile_dir_.Append(
                      browser_data_migrator_util::kLocalStorageFilePath),
@@ -591,9 +607,9 @@ TEST_F(MoveMigratorMigrateTest, MigrateResumeFromMoveLacrosItems) {
   CheckProfileDirFinalState();
 }
 
-TEST_F(MoveMigratorMigrateTest, MigrateResumeFromMove) {
+TEST_F(MoveMigratorMigrateTest, MigrateResumeFromMoveSplitItems) {
   MoveMigrator::SetResumeStep(&pref_service_, user_id_hash_,
-                              MoveMigrator::ResumeStep::kMoveTmpDir);
+                              MoveMigrator::ResumeStep::kMoveSplitItems);
 
   // Setup `original_profile_dir_` as below.
   // |- Downloads
@@ -631,17 +647,82 @@ TEST_F(MoveMigratorMigrateTest, MigrateResumeFromMove) {
   ASSERT_TRUE(base::Move(original_profile_dir_.Append(kCookiesFilePath),
                          tmp_profile_dir.Append(kCookiesFilePath)));
 
+  // Extensions have been moved to Lacros's tmp dir, but not yet split and moved
+  // to Ash profile dir.
   ASSERT_TRUE(base::Move(
       original_profile_dir_.Append(
           browser_data_migrator_util::kExtensionsFilePath),
       tmp_profile_dir.Append(browser_data_migrator_util::kExtensionsFilePath)));
 
+  // Local Storage has been split, but not yet moved to Ash profile dir.
   ASSERT_TRUE(
       base::Move(original_profile_dir_.Append(
                      browser_data_migrator_util::kLocalStorageFilePath),
                  tmp_profile_dir.Append(
                      browser_data_migrator_util::kLocalStorageFilePath)));
   SetUpLocalStorage(tmp_split_dir, true /* ash_only */);
+
+  migrator_->Migrate();
+  run_loop_->Run();
+
+  EXPECT_EQ(data_wipe_result_,
+            BrowserDataMigratorImpl::DataWipeResult::kSucceeded);
+  EXPECT_EQ(data_migration_result_.kind,
+            BrowserDataMigrator::ResultKind::kSucceeded);
+
+  CheckProfileDirFinalState();
+}
+
+TEST_F(MoveMigratorMigrateTest, MigrateResumeFromMoveTmpDir) {
+  MoveMigrator::SetResumeStep(&pref_service_, user_id_hash_,
+                              MoveMigrator::ResumeStep::kMoveTmpDir);
+
+  // Setup `original_profile_dir_` as below.
+  // |- Downloads
+  // |- Extensions
+  // |- Local Storage
+  // |- Login Data
+  // |- move_migrator/First Run
+  // |- move_migrator/Default/
+  //     |- Bookmarks
+  //     |- Cookies
+  //     |- Extensions
+  //     |- Local Storage
+  //     |- Login Data
+
+  const base::FilePath tmp_user_dir =
+      original_profile_dir_.Append(browser_data_migrator_util::kMoveTmpDir);
+  const base::FilePath tmp_profile_dir =
+      tmp_user_dir.Append(browser_data_migrator_util::kLacrosProfilePath);
+  ASSERT_TRUE(base::DeletePathRecursively(
+      original_profile_dir_.Append(kCacheFilePath)));
+
+  ASSERT_TRUE(base::CreateDirectory(tmp_user_dir));
+  ASSERT_EQ(
+      base::WriteFile(tmp_user_dir.Append(chrome::kFirstRunSentinel), "", 0),
+      0);
+  ASSERT_TRUE(base::CreateDirectory(tmp_profile_dir));
+  ASSERT_TRUE(base::CopyDirectory(
+      original_profile_dir_.Append(kLoginDataFilePath),
+      tmp_profile_dir.Append(kLoginDataFilePath), true /* recursive */));
+  ASSERT_TRUE(base::Move(original_profile_dir_.Append(kBookmarksFilePath),
+                         tmp_profile_dir.Append(kBookmarksFilePath)));
+  ASSERT_TRUE(base::Move(original_profile_dir_.Append(kCookiesFilePath),
+                         tmp_profile_dir.Append(kCookiesFilePath)));
+
+  // Extensions have been split, and Ash's version is in its final place.
+  ASSERT_TRUE(base::DeletePathRecursively(original_profile_dir_.Append(
+      browser_data_migrator_util::kExtensionsFilePath)));
+  SetUpExtensions(tmp_profile_dir, /*ash=*/false, /*lacros=*/true);
+  SetUpExtensions(original_profile_dir_, /*ash=*/true, /*lacros=*/false);
+
+  // Local Storage has been split, and Ash's version is in its final place.
+  ASSERT_TRUE(
+      base::Move(original_profile_dir_.Append(
+                     browser_data_migrator_util::kLocalStorageFilePath),
+                 tmp_profile_dir.Append(
+                     browser_data_migrator_util::kLocalStorageFilePath)));
+  SetUpLocalStorage(original_profile_dir_, true /* ash_only */);
 
   migrator_->Migrate();
   run_loop_->Run();
