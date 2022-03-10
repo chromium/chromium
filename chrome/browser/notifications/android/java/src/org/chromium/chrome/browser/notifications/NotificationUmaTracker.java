@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.notifications;
 
 import android.app.Notification;
+import android.content.pm.PackageManager;
 import android.os.Build;
 import android.text.format.DateUtils;
 
@@ -22,6 +23,7 @@ import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.chrome.browser.notifications.channels.ChromeChannelDefinitions;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
+import org.chromium.ui.permissions.PermissionConstants;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -176,6 +178,52 @@ public class NotificationUmaTracker {
         int SHARING_CANCEL = 27;
 
         int NUM_ENTRIES = 28;
+    }
+
+    /**
+     * A list of results from showing the notification permission rationale dialog, defined in
+     * enums.xml These values are persisted to logs. Entries should not be renumbered and numeric
+     * values should never be reused.
+     */
+    @IntDef({NotificationRationaleResult.POSITIVE_BUTTON_CLICKED,
+            NotificationRationaleResult.NEGATIVE_BUTTON_CLICKED,
+            NotificationRationaleResult.NAVIGATE_BACK_OR_TOUCH_OUTSIDE,
+            NotificationRationaleResult.NOT_ATTACHED_TO_WINDOW,
+            NotificationRationaleResult.ACTIVITY_DESTROYED,
+            NotificationRationaleResult.NUM_ENTRIES})
+    @Retention(RetentionPolicy.SOURCE)
+    public @interface NotificationRationaleResult {
+        int POSITIVE_BUTTON_CLICKED = 0;
+        int NEGATIVE_BUTTON_CLICKED = 1;
+        int NAVIGATE_BACK_OR_TOUCH_OUTSIDE = 2;
+        int ACTIVITY_DESTROYED = 3;
+        int NOT_ATTACHED_TO_WINDOW = 4;
+
+        int NUM_ENTRIES = 5;
+    }
+
+    /**
+     * A list of possible states of the notification permission, to be recorded on startup. Defined
+     * in enums.xml These values are persisted to logs. Entries should not be renumbered and numeric
+     * values should never be reused.
+     */
+    @IntDef({NotificationPermissionState.ALLOWED,
+            NotificationPermissionState.DENIED_BY_DEVICE_POLICY,
+            NotificationPermissionState.DENIED_NEVER_ASKED,
+            NotificationPermissionState.DENIED_ASKED_ONCE,
+            NotificationPermissionState.DENIED_ASKED_TWICE,
+            NotificationPermissionState.DENIED_ASKED_MORE_THAN_TWICE,
+            NotificationPermissionState.NUM_ENTRIES})
+    @Retention(RetentionPolicy.SOURCE)
+    public @interface NotificationPermissionState {
+        int ALLOWED = 0;
+        int DENIED_BY_DEVICE_POLICY = 1;
+        int DENIED_NEVER_ASKED = 2;
+        int DENIED_ASKED_ONCE = 3;
+        int DENIED_ASKED_TWICE = 4;
+        int DENIED_ASKED_MORE_THAN_TWICE = 5;
+
+        int NUM_ENTRIES = 6;
     }
 
     private static class LazyHolder {
@@ -345,6 +393,64 @@ public class NotificationUmaTracker {
                         createTime);
                 break;
         }
+    }
+
+    /**
+     * Records the count of requests for notification permission, this includes either showing the
+     * OS prompt or Chrome's permission rationale.
+     */
+    public void onNotificationPermissionRequested() {
+        int newCount = mSharedPreferences.incrementInt(
+                ChromePreferenceKeys.NOTIFICATION_PERMISSION_REQUEST_COUNT);
+        RecordHistogram.recordExactLinearHistogram(
+                "Mobile.SystemNotification.Permission.StartupRequestCount", newCount, 50);
+    }
+
+    /**
+     * Records the result of an OS prompt for notification permissions.
+     * @param permissions List of permissions requested, the only element should be the notification
+     *         permission.
+     * @param grantResults List of grant results.
+     */
+    public void onNotificationPermissionRequestResult(String[] permissions, int[] grantResults) {
+        assert permissions.length == 1;
+        assert grantResults.length == 1;
+        assert permissions[0].equals(PermissionConstants.NOTIFICATION_PERMISSION);
+
+        boolean isPermissionGranted = grantResults[0] == PackageManager.PERMISSION_GRANTED;
+
+        RecordHistogram.recordBooleanHistogram(
+                "Mobile.SystemNotification.Permission.OSPromptResult", isPermissionGranted);
+    }
+
+    /**
+     * Called when the app's notifications are blocked or allowed through Android settings or when
+     * allowed through the OS prompt.
+     * @param blockedState If true all notifications are blocked.
+     */
+    public void onNotificationPermissionSettingChange(boolean blockedState) {
+        boolean isPermissionGranted = !blockedState;
+
+        RecordHistogram.recordBooleanHistogram(
+                "Mobile.SystemNotification.Permission.Change", isPermissionGranted);
+    }
+
+    /**
+     * Records the result of showing the notification permission rationale dialog.
+     */
+    public void onNotificationPermissionRationaleResult(@NotificationRationaleResult int result) {
+        RecordHistogram.recordEnumeratedHistogram(
+                "Mobile.SystemNotification.Permission.RationaleResult", result,
+                NotificationRationaleResult.NUM_ENTRIES);
+    }
+
+    /**
+     * Records a metric indicating the state of notification permissions on startup.
+     */
+    public void recordNotificationPermissionState(@NotificationPermissionState int state) {
+        RecordHistogram.recordEnumeratedHistogram(
+                "Mobile.SystemNotification.Permission.StartupState", state,
+                NotificationPermissionState.NUM_ENTRIES);
     }
 
     private void logNotificationShown(@SystemNotificationType int type,

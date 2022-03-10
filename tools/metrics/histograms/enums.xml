@@ -65438,6 +65438,26 @@ Called by update_net_trust_anchors.py.-->
   <int value="5" label="Chrome process launch failed"/>
 </enum>
 
+<enum name="NotificationPermissionState">
+  <int value="0" label="Allowed"/>
+  <int value="1" label="Denied by device policy"/>
+  <int value="2" label="Denied, never asked before"/>
+  <int value="3" label="Denied by user once (OS prompt or rationale)"/>
+  <int value="4" label="Denied by user twice (OS prompt or rationale)"/>
+  <int value="5"
+      label="Denied by user more than twice (OS prompt or rationale)"/>
+</enum>
+
+<enum name="NotificationRationaleResult">
+  <int value="0" label="Positive: User confirmed the dialog"/>
+  <int value="1" label="Negative: User rejected the dialog"/>
+  <int value="2"
+      label="Dismissed: User dismissed the dialog, either tapped outside of
+             it or hit the back button"/>
+  <int value="3" label="Activity was destroyed before user could respond"/>
+  <int value="4" label="Dialog view no longer attached to window"/>
+</enum>
+
 <enum name="NotificationSchedulerActionButtonEvent">
   <int value="0" label="Shown"/>
   <int value="1" label="Helpful"/>

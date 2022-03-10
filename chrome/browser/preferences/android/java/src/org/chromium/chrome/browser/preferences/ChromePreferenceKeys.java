@@ -553,6 +553,11 @@ public final class ChromePreferenceKeys {
     public static final String NOTIFICATION_PERMISSION_RATIONALE_TIMESTAMP_KEY =
             "Chrome.NotificationPermission.RationaleTimestamp";
 
+    // Number of times we've showed any prompt (either Android UI or Chrome rationale) related to
+    // the notification permission.
+    public static final String NOTIFICATION_PERMISSION_REQUEST_COUNT =
+            "Chrome.NotificationPermission.RequestCount";
+
     public static final String NTP_SNIPPETS_IS_SCHEDULED = "ntp_snippets.is_scheduled";
 
     // Name of an application preference variable used to track whether or not the in-progress
@@ -1070,6 +1075,7 @@ public final class ChromePreferenceKeys {
                 MULTI_INSTANCE_TITLE.pattern(),
                 MULTI_INSTANCE_URL.pattern(),
                 NOTIFICATION_PERMISSION_RATIONALE_TIMESTAMP_KEY,
+                NOTIFICATION_PERMISSION_REQUEST_COUNT,
                 OFFLINE_INDICATOR_V2_WALL_TIME_SHOWN_MS,
                 OFFLINE_INDICATOR_V2_LAST_UPDATE_WALL_TIME_MS,
                 OFFLINE_INDICATOR_V2_TIME_IN_FOREGROUND_MS,

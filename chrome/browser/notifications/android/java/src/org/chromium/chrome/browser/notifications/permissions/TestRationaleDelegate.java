@@ -13,10 +13,12 @@ import org.chromium.ui.modaldialog.DialogDismissalCause;
  */
 class TestRationaleDelegate implements RationaleDelegate {
     private Integer mDialogAction;
+    private int mCallCount;
 
     @Override
     public void showRationaleUi(Callback<Boolean> callback) {
         assert mDialogAction != null;
+        mCallCount++;
         if (mDialogAction == DialogDismissalCause.POSITIVE_BUTTON_CLICKED) {
             callback.onResult(true);
         } else {
@@ -25,7 +27,12 @@ class TestRationaleDelegate implements RationaleDelegate {
     }
 
     /** Called by tests to set the user action to be taken when the dialog shows up.*/
-    void setDialogAction(Integer accept) {
+    void setDialogAction(@DialogDismissalCause Integer accept) {
         mDialogAction = accept;
+    }
+
+    /** Called by tests to get the number of times showRationaleUi has been called. */
+    int getCallCount() {
+        return mCallCount;
     }
 }

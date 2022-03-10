@@ -1042,6 +1042,14 @@ by a child template that "extends" this file.
             </intent-filter>
         </receiver>
 
+        <!-- Android Notification permission metrics -->
+        <receiver android:name="org.chromium.chrome.browser.notifications.permissions.NotificationPermissionChangeReceiver"
+                  android:exported="false">
+          <intent-filter>
+            <action android:name="android.app.action.APP_BLOCK_STATE_CHANGED"/>
+          </intent-filter>
+        </receiver>
+
         <!-- Android Notification job service -->
         <service android:name="org.chromium.chrome.browser.notifications.NotificationJobService"
             android:exported="false"

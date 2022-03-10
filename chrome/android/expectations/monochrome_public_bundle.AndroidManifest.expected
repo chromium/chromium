@@ -1042,6 +1042,13 @@
         <action android:name="android.intent.action.LOCALE_CHANGED"/>
       </intent-filter>  # DIFF-ANCHOR: 5458f2a2
     </receiver>  # DIFF-ANCHOR: a9b53579
+    <receiver  # DIFF-ANCHOR: 64dc49ab
+        android:name="org.chromium.chrome.browser.notifications.permissions.NotificationPermissionChangeReceiver"
+        android:exported="false">
+      <intent-filter>  # DIFF-ANCHOR: 772631d2
+        <action android:name="android.app.action.APP_BLOCK_STATE_CHANGED"/>
+      </intent-filter>  # DIFF-ANCHOR: 772631d2
+    </receiver>  # DIFF-ANCHOR: 64dc49ab
     <receiver  # DIFF-ANCHOR: 0cefd906
         android:name="org.chromium.chrome.browser.notifications.scheduler.DisplayAgent$Receiver"
         android:exported="false">

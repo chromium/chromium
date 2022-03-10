@@ -35,7 +35,7 @@ public class ActivityAndroidPermissionDelegate extends AndroidPermissionDelegate
     }
 
     @Override
-    protected final boolean requestPermissionsFromRequester(String[] permissions, int requestCode) {
+    protected boolean requestPermissionsFromRequester(String[] permissions, int requestCode) {
         Activity activity = mActivity.get();
         if (activity == null) return false;
         ApiHelperForM.requestActivityPermissions(activity, permissions, requestCode);

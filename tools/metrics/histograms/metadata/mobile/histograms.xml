@@ -506,6 +506,59 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Mobile.SystemNotification.Permission.Change"
+    enum="BooleanEnabled" expires_after="2022-12-31">
+  <owner>salg@google.com</owner>
+  <owner>shaktisahu@chromium.org</owner>
+  <summary>
+    Records the notification permission state every time Android notifies Chrome
+    of a change, this includes when granting access via the OS prompt and
+    granting/blocking access via the OS settings.
+  </summary>
+</histogram>
+
+<histogram name="Mobile.SystemNotification.Permission.OSPromptResult"
+    enum="BooleanEnabled" expires_after="2022-12-31">
+  <owner>salg@google.com</owner>
+  <owner>shaktisahu@chromium.org</owner>
+  <summary>
+    Records the action taken by the user after being shown the OS prompt to
+    grant notification permissions. Only recorded on Android T+.
+  </summary>
+</histogram>
+
+<histogram name="Mobile.SystemNotification.Permission.RationaleResult"
+    enum="NotificationRationaleResult" expires_after="2022-12-31">
+  <owner>salg@google.com</owner>
+  <owner>shaktisahu@chromium.org</owner>
+  <summary>
+    Records the action taken by the user after being shown the notification
+    rationale prompt. Only recorded on Android T+.
+  </summary>
+</histogram>
+
+<histogram name="Mobile.SystemNotification.Permission.StartupRequestCount"
+    units="attempts" expires_after="2022-12-31">
+  <owner>salg@google.com</owner>
+  <owner>shaktisahu@chromium.org</owner>
+  <summary>
+    Records how many times we've shown the user any notification permission UI
+    (either rationale and/or OS prompt) on startup. Recorded every time we are
+    about to show any UI. Only recorded on Android T+.
+  </summary>
+</histogram>
+
+<histogram name="Mobile.SystemNotification.Permission.StartupState"
+    enum="NotificationPermissionState" expires_after="2022-12-31">
+  <owner>salg@google.com</owner>
+  <owner>shaktisahu@chromium.org</owner>
+  <summary>
+    Records the current state of the notification permission and if disabled the
+    reason. Recorded on startup before any permission prompts are shown. Only
+    recorded on Android T+.
+  </summary>
+</histogram>
+
 <histogram name="Mobile.SystemNotification.Shown" enum="SystemNotificationType"
     expires_after="never">
 <!-- expires-never: Core Android notification metrics. Used by multiple teams. -->
