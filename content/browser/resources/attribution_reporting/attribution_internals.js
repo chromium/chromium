@@ -426,6 +426,7 @@ class Source {
     this.expiryTime = new Date(mojo.expiryTime);
     this.sourceType = SourceTypeToText(mojo.sourceType);
     this.priority = mojo.priority;
+    this.filterData = JSON.stringify(mojo.filterData, null, ' ');
     this.debugKey = mojo.debugKey ? mojo.debugKey.value : '';
     this.dedupKeys = mojo.dedupKeys.join(', ');
     this.status = AttributabilityToText(mojo.attributability);
@@ -446,6 +447,7 @@ class SourceTableModel extends TableModel {
       new DateColumn('Expiry Time', (e) => e.expiryTime),
       new ValueColumn('Source Type', (e) => e.sourceType),
       new ValueColumn('Priority', (e) => e.priority),
+      new CodeColumn('Filter Data', (e) => e.filterData),
       new ValueColumn('Debug Key', (e) => e.debugKey),
       new ValueColumn('Dedup Keys', (e) => e.dedupKeys, /*compare=*/ null),
       new ValueColumn('Status', (e) => e.status),

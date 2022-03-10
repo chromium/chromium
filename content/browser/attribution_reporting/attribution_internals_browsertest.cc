@@ -13,6 +13,7 @@
 #include "base/callback.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
+#include "content/browser/attribution_reporting/attribution_filter_data.h"
 #include "content/browser/attribution_reporting/attribution_manager.h"
 #include "content/browser/attribution_reporting/attribution_observer_types.h"
 #include "content/browser/attribution_reporting/attribution_report.h"
@@ -233,6 +234,8 @@ IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,
                .SetSourceType(AttributionSourceType::kEvent)
                .SetPriority(std::numeric_limits<int64_t>::max())
                .SetDedupKeys({13, 17})
+               .SetFilterData(*AttributionFilterData::FromSourceFilterValues(
+                   {{"a", {"b", "c"}}}))
                .BuildStored(),
            SourceBuilder(now + base::Hours(2))
                .SetActiveState(StoredSource::ActiveState::
@@ -271,18 +274,20 @@ IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,
           table.children[1].children[6].innerText === "Event" &&
           table.children[0].children[7].innerText === "0" &&
           table.children[1].children[7].innerText === $2 &&
-          table.children[0].children[8].innerText === "19" &&
-          table.children[1].children[8].innerText === "" &&
-          table.children[0].children[9].innerText === "" &&
-          table.children[1].children[9].innerText === "13, 17" &&
-          table.children[0].children[10].innerText === "Unattributable: noised" &&
-          table.children[1].children[10].innerText === "Attributable" &&
-          table.children[2].children[10].innerText === "Attributable: reached event-level attribution limit" &&
-          table.children[3].children[10].innerText === "Unattributable: replaced by newer source" &&
-          table.children[4].children[10].innerText === "Rejected: internal error" &&
-          table.children[5].children[10].innerText === "Rejected: insufficient source capacity" &&
-          table.children[6].children[10].innerText === "Rejected: insufficient unique destination capacity" &&
-          table.children[7].children[10].innerText === "Rejected: excessive reporting origins") {
+          table.children[0].children[8].innerText === "{}" &&
+          table.children[1].children[8].innerText === '{\n "a": [\n  "b",\n  "c"\n ]\n}' &&
+          table.children[0].children[9].innerText === "19" &&
+          table.children[1].children[9].innerText === "" &&
+          table.children[0].children[10].innerText === "" &&
+          table.children[1].children[10].innerText === "13, 17" &&
+          table.children[0].children[11].innerText === "Unattributable: noised" &&
+          table.children[1].children[11].innerText === "Attributable" &&
+          table.children[2].children[11].innerText === "Attributable: reached event-level attribution limit" &&
+          table.children[3].children[11].innerText === "Unattributable: replaced by newer source" &&
+          table.children[4].children[11].innerText === "Rejected: internal error" &&
+          table.children[5].children[11].innerText === "Rejected: insufficient source capacity" &&
+          table.children[6].children[11].innerText === "Rejected: insufficient unique destination capacity" &&
+          table.children[7].children[11].innerText === "Rejected: excessive reporting origins") {
         document.title = $3;
       }
     });

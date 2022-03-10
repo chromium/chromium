@@ -72,6 +72,7 @@ struct WebUIAttributionSource {
   int64 priority;
   AttributionDebugKey? debug_key;
   array<uint64> dedup_keys;
+  map<string, array<string>> filter_data;
 
   // Union of `StorableSource::Result` and `StoredSource::AttributionLogic`,
   // and `AttributionStorage::DeactivatedSource::Reason`.

@@ -49,7 +49,7 @@ mojom::WebUIAttributionSourcePtr WebUIAttributionSource(
       source.source_type(), source.priority(),
       source.debug_key() ? mojom::AttributionDebugKey::New(*source.debug_key())
                          : nullptr,
-      dedup_keys, attributability);
+      dedup_keys, source.filter_data().filter_values(), attributability);
 }
 
 void ForwardSourcesToWebUI(
