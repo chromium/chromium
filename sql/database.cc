@@ -1205,7 +1205,7 @@ bool Database::Execute(const char* sql) {
 
   int error = ExecuteAndReturnErrorCode(sql);
   if (error != SQLITE_OK)
-    error = OnSqliteError(error, nullptr, sql);
+    OnSqliteError(error, nullptr, sql);
 
 #if DCHECK_IS_ON()
   // Report SQL compilation errors. On developer machines, the errors are most
@@ -1754,9 +1754,9 @@ void Database::set_histogram_tag(const std::string& tag) {
   histogram_tag_ = tag;
 }
 
-int Database::OnSqliteError(int sqlite_error_code,
-                            sql::Statement* statement,
-                            const char* sql_statement) {
+void Database::OnSqliteError(int sqlite_error_code,
+                             sql::Statement* statement,
+                             const char* sql_statement) {
   TRACE_EVENT0("sql", "Database::OnSqliteError");
 
   DCHECK_NE(statement != nullptr, sql_statement != nullptr)
@@ -1784,13 +1784,12 @@ int Database::OnSqliteError(int sqlite_error_code,
     // subtle source of use-after-frees. See https://crbug.com/254584.
     ErrorCallback error_callback_copy = error_callback_;
     error_callback_copy.Run(sqlite_error_code, statement);
-    return sqlite_error_code;
+    return;
   }
 
   // The default handling is to assert on debug and to ignore on release.
   if (!is_expected_error)
     DLOG(DCHECK) << GetErrorMessage();
-  return sqlite_error_code;
 }
 
 std::string Database::GetDiagnosticInfo(int extended_error,

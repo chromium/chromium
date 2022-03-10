@@ -584,7 +584,7 @@ int Statement::CheckError(int err) {
   // Please don't add DCHECKs here, OnSqliteError() already has them.
   succeeded_ = (err == SQLITE_OK || err == SQLITE_ROW || err == SQLITE_DONE);
   if (!succeeded_ && ref_.get() && ref_->database())
-    return ref_->database()->OnSqliteError(err, this, nullptr);
+    ref_->database()->OnSqliteError(err, this, nullptr);
   return err;
 }
 

@@ -728,18 +728,9 @@ class COMPONENT_EXPORT(SQL) Database {
   // statically-allocated (valid for the entire duration of the process) buffer
   // pointing to either a SQL statement or a SQL comment (starting with "-- ")
   // pointing to a "sqlite3_" function name.
-  //
-  // This method always returns a valid SQLite error code, which is passed to
-  // the users of the sql:: method that encountered the SQLite error. This
-  // gives OnSqliteError() the ability to translate / mask SQLite errors.
-  //
-  // NOTE(shess): Originally, the return value was intended to allow
-  // error handlers to transparently convert errors into success.
-  // Unfortunately, transactions are not generally restartable, so
-  // this did not work out.
-  int OnSqliteError(int sqlite_error_code,
-                    Statement* statement,
-                    const char* sql_statement);
+  void OnSqliteError(int sqlite_error_code,
+                     Statement* statement,
+                     const char* sql_statement);
 
   // Like Execute(), but returns the error code given by SQLite.
   //
