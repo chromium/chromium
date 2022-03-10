@@ -242,6 +242,19 @@ hyperthreaded, 12 GB RAM)
 *   Without tmpfs
     *   15m:40s
 
+### Smaller builds
+
+The Chrome binary contains embedded symbols by default. You can reduce its size
+by using the Linux `strip` command to remove this debug information. You can
+also reduce binary size by disabling debug mode, disabling dchecks, and turning
+on all optimizations by enabling official build mode, with these GN args:
+
+```
+is_debug = false
+dcheck_always_on = false
+is_official_build = true
+```
+
 ## Build Chromium
 
 Build Chromium (the "chrome" target) with Ninja using the command:
