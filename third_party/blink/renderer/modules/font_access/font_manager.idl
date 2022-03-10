@@ -8,5 +8,5 @@
     SecureContext,
     RuntimeEnabled=FontAccess
 ] interface FontManager {
-    [CallWith=ScriptState, Measure] Promise<sequence<FontMetadata>> query(optional QueryOptions options = {});
+    [CallWith=ScriptState, RaisesException, Measure] Promise<sequence<FontMetadata>> query(optional QueryOptions options = {});
 };

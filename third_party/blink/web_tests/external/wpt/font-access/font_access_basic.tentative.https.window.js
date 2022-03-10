@@ -11,7 +11,7 @@ font_access_test(async t => {
   const testData = getTestData();
 
   // Get the system fonts.
-  let fonts = await navigator.fonts.query();
+  const fonts = await navigator.fonts.query();
   assert_true(Array.isArray(fonts), 'Result of query() should be an Array');
   assert_greater_than_equal(fonts.length, 1, 'Need a least one font');
 
