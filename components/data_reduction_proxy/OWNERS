@@ -1,10 +1,8 @@
-# Primary
-tbansal@chromium.org
-mcrouse@chromium.org
-rajendrant@chromium.org
-robertogden@chromium.org
-ryansturm@chromium.org
-sophiechang@chromium.org
+curranmax@chromium.org # Primary
+ryansturm@chromium.org # Primary
+spelchat@chromium.org # Primary
+
+tbansal@chromium.org # Secondary
 
 per-file *_messages.cc=set noparent
 per-file *_messages.cc=file://ipc/SECURITY_OWNERS
