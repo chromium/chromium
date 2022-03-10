@@ -24,8 +24,7 @@
 #endif
 
 namespace {
-
-const CGFloat kEstimatedRowHeight = 56;
+const CGFloat kEstimatedRowMaxHeight = 150;
 NSString* const kSuggestedActionsViewControllerAccessibilityIdentifier =
     @"search_suggestions_view_controller";
 const int kSectionIdentifierSuggestedActions = kSectionIdentifierEnumZero + 1;
@@ -67,7 +66,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
   self.view.accessibilityIdentifier =
       kSuggestedActionsViewControllerAccessibilityIdentifier;
   self.tableView.cellLayoutMarginsFollowReadableWidth = YES;
-  self.tableView.estimatedRowHeight = kEstimatedRowHeight;
+  self.tableView.estimatedRowHeight = kEstimatedRowMaxHeight;
   self.tableView.estimatedSectionHeaderHeight = 0.0;
   self.tableView.rowHeight = UITableViewAutomaticDimension;
   self.tableView.sectionFooterHeight = 0.0;

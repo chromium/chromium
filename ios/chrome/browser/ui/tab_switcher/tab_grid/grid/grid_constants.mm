@@ -57,6 +57,7 @@ const CGFloat kReorderingActiveCellScale = 1.15;
 
 // GridHeader styling.
 const CGFloat kGridHeaderHeight = 32.0f;
+const CGFloat kGridHeaderAccessibilityHeight = 58.0f;
 const int kGridHeaderTitleColor = 0xFFFFFF;
 const int kGridHeaderValueColor = 0xEBEBF5;
 const CGFloat kGridHeaderContentSpacing = 4.0f;

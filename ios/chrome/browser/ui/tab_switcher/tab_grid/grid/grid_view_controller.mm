@@ -598,7 +598,12 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
       !_searchText.length) {
     return CGSizeZero;
   }
-  return CGSizeMake(collectionView.bounds.size.width, kGridHeaderHeight);
+  CGFloat height = UIContentSizeCategoryIsAccessibilityCategory(
+                       self.traitCollection.preferredContentSizeCategory)
+                       ? kGridHeaderAccessibilityHeight
+                       : kGridHeaderHeight;
+
+  return CGSizeMake(collectionView.bounds.size.width, height);
 }
 
 // This prevents the user from dragging a cell past the plus sign cell (the last

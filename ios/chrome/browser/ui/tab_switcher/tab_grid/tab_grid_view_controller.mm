@@ -993,8 +993,18 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
   _currentPage = currentPage;
   self.currentPageViewController.view.accessibilityElementsHidden = NO;
   // Force VoiceOver to update its accessibility element tree immediately.
-  UIAccessibilityPostNotification(UIAccessibilityLayoutChangedNotification,
-                                  nil);
+  if (self.tabGridMode == TabGridModeSearch) {
+    // |UIAccessibilityLayoutChangedNotification| doesn't change the current
+    // item focused by the voiceOver if the notification argument provided with
+    // it is |nil|. In search mode, the item focused by the voiceOver needs to
+    // be reset and to do that |UIAccessibilityScreenChangedNotification| should
+    // be posted instead.
+    UIAccessibilityPostNotification(UIAccessibilityScreenChangedNotification,
+                                    nil);
+  } else {
+    UIAccessibilityPostNotification(UIAccessibilityLayoutChangedNotification,
+                                    nil);
+  }
 }
 
 // Sets the value of |currentPage|, adjusting the position of the scroll view
