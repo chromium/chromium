@@ -63,6 +63,12 @@ suite('SitePermissionsEditUrlDialog', function() {
     input.fire('input');
     assertFalse(input.invalid);
     assertFalse(submit.disabled);
+
+    // Wildcard scheme is considered invalid input.
+    input.value = '*://www.example.com';
+    input.fire('input');
+    assertTrue(input.invalid);
+    assertTrue(submit.disabled);
   });
 
   test('editing current site', async function() {

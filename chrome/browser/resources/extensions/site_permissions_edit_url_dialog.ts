@@ -26,7 +26,7 @@ import {SiteSettingsDelegate} from './site_settings_mixin.js';
 const patternRegExp = new RegExp(
     '^' +
     // Scheme; optional.
-    '((http|https|\\*)://)?' +
+    '((http|https)://)?' +
     // Hostname or localhost, required.
     '([a-z0-9\\.-]+\\.[a-z0-9]+|localhost)' +
     // Port, optional.
