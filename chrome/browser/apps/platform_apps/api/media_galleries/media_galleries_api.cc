@@ -172,28 +172,24 @@ base::ListValue* ConstructFileSystemList(
   const int child_id = rfh->GetProcess()->GetID();
   std::unique_ptr<base::ListValue> list(new base::ListValue());
   for (size_t i = 0; i < filesystems.size(); ++i) {
-    std::unique_ptr<base::DictionaryValue> file_system_dict_value(
-        new base::DictionaryValue());
+    base::Value::Dict file_system_dict_value;
 
     // Send the file system id so the renderer can create a valid FileSystem
     // object.
-    file_system_dict_value->SetKey("fsid", base::Value(filesystems[i].fsid));
+    file_system_dict_value.Set("fsid", filesystems[i].fsid);
 
-    file_system_dict_value->SetKey(kNameKey, base::Value(filesystems[i].name));
-    file_system_dict_value->SetKey(
-        kGalleryIdKey,
-        base::Value(base::NumberToString(filesystems[i].pref_id)));
+    file_system_dict_value.Set(kNameKey, filesystems[i].name);
+    file_system_dict_value.Set(kGalleryIdKey,
+                               base::NumberToString(filesystems[i].pref_id));
     if (!filesystems[i].transient_device_id.empty()) {
-      file_system_dict_value->SetKey(
-          kDeviceIdKey, base::Value(filesystems[i].transient_device_id));
+      file_system_dict_value.Set(kDeviceIdKey,
+                                 filesystems[i].transient_device_id);
     }
-    file_system_dict_value->SetKey(kIsRemovableKey,
-                                   base::Value(filesystems[i].removable));
-    file_system_dict_value->SetKey(kIsMediaDeviceKey,
-                                   base::Value(filesystems[i].media_device));
-    file_system_dict_value->SetKey(kIsAvailableKey, base::Value(true));
+    file_system_dict_value.Set(kIsRemovableKey, filesystems[i].removable);
+    file_system_dict_value.Set(kIsMediaDeviceKey, filesystems[i].media_device);
+    file_system_dict_value.Set(kIsAvailableKey, true);
 
-    list->Append(std::move(file_system_dict_value));
+    list->Append(base::Value(std::move(file_system_dict_value)));
 
     if (filesystems[i].path.empty())
       continue;
@@ -767,13 +763,12 @@ void MediaGalleriesGetMetadataFunction::ConstructNextBlob(
 
   metadata::AttachedImage* current_image =
       &(*attached_images)[blob_uuids->size()];
-  std::unique_ptr<base::DictionaryValue> attached_image(
-      new base::DictionaryValue);
-  attached_image->SetStringKey(kBlobUUIDKey, current_blob->GetUUID());
-  attached_image->SetStringKey(kMediaGalleriesApiTypeKey, current_image->type);
-  attached_image->SetIntKey(
-      kSizeKey, base::checked_cast<int>(current_image->data.size()));
-  attached_images_list->Append(std::move(attached_image));
+  base::Value::Dict attached_image;
+  attached_image.Set(kBlobUUIDKey, current_blob->GetUUID());
+  attached_image.Set(kMediaGalleriesApiTypeKey, current_image->type);
+  attached_image.Set(kSizeKey,
+                     base::checked_cast<int>(current_image->data.size()));
+  attached_images_list->Append(base::Value(std::move(attached_image)));
 
   blob_uuids->push_back(current_blob->GetUUID());
 
