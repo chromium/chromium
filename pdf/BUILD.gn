@@ -262,7 +262,6 @@ if (enable_pdf) {
   static_library("pdf_view_web_plugin") {
     visibility = [
       ":*",
-      "//chrome/renderer",
       "//components/pdf/renderer",
     ]
 
@@ -454,7 +453,5 @@ if (enable_pdf) {
   group("features") {
   }
   group("pdf") {
-  }
-  group("pdf_view_web_plugin") {
   }
 }
