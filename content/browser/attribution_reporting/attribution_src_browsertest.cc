@@ -15,6 +15,7 @@
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/content_browser_test.h"
 #include "content/public/test/content_browser_test_utils.h"
+#include "content/public/test/prerender_test_util.h"
 #include "content/shell/browser/shell.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "net/dns/mock_host_resolver.h"
@@ -741,6 +742,91 @@ IN_PROC_BROWSER_TEST_F(AttributionSrcBrowserTest,
   EXPECT_EQ(source_data.back()->destination,
             url::Origin::Create(GURL("https://d.test")));
   EXPECT_THAT(source_data.back()->aggregatable_sources->sources, SizeIs(2));
+}
+
+class AttributionSrcPrerenderBrowserTest : public AttributionSrcBrowserTest {
+ public:
+  AttributionSrcPrerenderBrowserTest()
+      : prerender_helper_(
+            base::BindRepeating(&AttributionSrcBrowserTest::web_contents,
+                                base::Unretained(this))) {}
+
+  ~AttributionSrcPrerenderBrowserTest() override = default;
+
+ protected:
+  content::test::PrerenderTestHelper prerender_helper_;
+};
+
+IN_PROC_BROWSER_TEST_F(AttributionSrcPrerenderBrowserTest,
+                       SourceNotRegisteredOnPrerender) {
+  MockAttributionHost host(web_contents());
+  EXPECT_CALL(host, RegisterDataHost).Times(0);
+
+  const GURL kInitialUrl =
+      https_server()->GetURL("b.test", "/page_with_impression_creator.html");
+  EXPECT_TRUE(NavigateToURL(web_contents(), kInitialUrl));
+
+  GURL page_url =
+      https_server()->GetURL("b.test", "/page_with_impression_creator.html");
+  int host_id = prerender_helper_.AddPrerender(page_url);
+  content::test::PrerenderHostObserver host_observer(*web_contents(), host_id);
+
+  prerender_helper_.WaitForPrerenderLoadCompletion(page_url);
+  content::RenderFrameHost* prerender_rfh =
+      prerender_helper_.GetPrerenderedMainFrameHost(host_id);
+
+  EXPECT_TRUE(ExecJs(
+      prerender_rfh,
+      JsReplace(
+          "createAttributionSrcImg($1);",
+          https_server()->GetURL("c.test", "/register_source_headers.html"))));
+
+  // If a data host were registered, it would arrive in the browser process
+  // before the navigation finished.
+  EXPECT_TRUE(NavigateToURL(web_contents(), kInitialUrl));
+}
+
+IN_PROC_BROWSER_TEST_F(AttributionSrcPrerenderBrowserTest,
+                       SourceRegisteredOnActivatedPrerender) {
+  MockAttributionHost host(web_contents());
+  std::unique_ptr<MockDataHost> data_host;
+  base::RunLoop loop;
+  EXPECT_CALL(host, RegisterDataHost)
+      .WillOnce(
+          [&](mojo::PendingReceiver<blink::mojom::AttributionDataHost> host) {
+            data_host = GetRegisteredDataHost(std::move(host));
+            loop.Quit();
+          });
+
+  const GURL kInitialUrl =
+      https_server()->GetURL("b.test", "/page_with_impression_creator.html");
+  EXPECT_TRUE(NavigateToURL(web_contents(), kInitialUrl));
+
+  GURL page_url =
+      https_server()->GetURL("b.test", "/page_with_impression_creator.html");
+  int host_id = prerender_helper_.AddPrerender(page_url);
+  content::test::PrerenderHostObserver host_observer(*web_contents(), host_id);
+
+  prerender_helper_.WaitForPrerenderLoadCompletion(page_url);
+  content::RenderFrameHost* prerender_rfh =
+      prerender_helper_.GetPrerenderedMainFrameHost(host_id);
+
+  EXPECT_TRUE(ExecJs(
+      prerender_rfh,
+      JsReplace(
+          "createAttributionSrcImg($1);",
+          https_server()->GetURL("c.test", "/register_source_headers.html"))));
+
+  prerender_helper_.NavigatePrimaryPage(page_url);
+  ASSERT_EQ(page_url, web_contents()->GetLastCommittedURL());
+
+  if (!data_host)
+    loop.Run();
+  data_host->WaitForSourceData(/*num_source_data=*/1);
+  const auto& source_data = data_host->source_data();
+
+  EXPECT_EQ(source_data.size(), 1u);
+  EXPECT_EQ(source_data.front()->source_event_id, 5UL);
 }
 
 class AttributionSrcInvalidFiltersBrowserTest

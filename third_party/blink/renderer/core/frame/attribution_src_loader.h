@@ -49,6 +49,8 @@ class CORE_EXPORT AttributionSrcLoader
  private:
   class ResourceClient;
 
+  void DoRegistration(const KURL& src_url);
+
   void LogAuditIssue(AttributionReportingIssueType issue_type,
                      const String& string,
                      HTMLElement* element = nullptr);

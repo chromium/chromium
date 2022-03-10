@@ -21,6 +21,7 @@
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/local_frame_client.h"
 #include "third_party/blink/renderer/core/html/html_image_element.h"
+#include "third_party/blink/renderer/platform/heap/persistent.h"
 #include "third_party/blink/renderer/platform/loader/cors/cors.h"
 #include "third_party/blink/renderer/platform/loader/fetch/fetch_context.h"
 #include "third_party/blink/renderer/platform/loader/fetch/fetch_initiator_type_names.h"
@@ -133,14 +134,13 @@ AttributionSrcLoader::RegisterResult AttributionSrcLoader::Register(
   if (!src_url.ProtocolIsInHTTPFamily())
     return RegisterResult::kInvalidProtocol;
 
-  ExecutionContext* execution_context =
-      local_frame_->GetDocument()->GetExecutionContext();
-  if (!RuntimeEnabledFeatures::ConversionMeasurementEnabled(
-          execution_context)) {
-    return RegisterResult::kNotAllowed;
-  }
+  LocalDOMWindow* window = local_frame_->DomWindow();
+  Document* document = window->document();
 
-  const bool feature_policy_enabled = execution_context->IsFeatureEnabled(
+  if (!RuntimeEnabledFeatures::ConversionMeasurementEnabled(window))
+    return RegisterResult::kNotAllowed;
+
+  const bool feature_policy_enabled = window->IsFeatureEnabled(
       mojom::blink::PermissionsPolicyFeature::kAttributionReporting);
 
   if (!feature_policy_enabled) {
@@ -150,7 +150,7 @@ AttributionSrcLoader::RegisterResult AttributionSrcLoader::Register(
   }
 
   // The API is only allowed in secure contexts.
-  if (!execution_context->IsSecureContext()) {
+  if (!window->IsSecureContext()) {
     LogAuditIssue(
         AttributionReportingIssueType::kAttributionSourceUntrustworthyOrigin,
         local_frame_->GetSecurityContext()->GetSecurityOrigin()->ToString(),
@@ -167,7 +167,20 @@ AttributionSrcLoader::RegisterResult AttributionSrcLoader::Register(
     return RegisterResult::kUntrustworthyOrigin;
   }
 
-  // TODO(crbug.com/1302680): Defer handling if the document is prerendering.
+  if (document->IsPrerendering()) {
+    document->AddPostPrerenderingActivationStep(
+        WTF::Bind(&AttributionSrcLoader::DoRegistration,
+                  WrapPersistentIfNeeded(this), src_url));
+  } else {
+    DoRegistration(src_url);
+  }
+
+  return RegisterResult::kSuccess;
+}
+
+void AttributionSrcLoader::DoRegistration(const KURL& src_url) {
+  if (!local_frame_->IsAttached())
+    return;
 
   ResourceRequest request(src_url);
   request.SetHttpMethod(http_names::kGET);
@@ -184,7 +197,6 @@ AttributionSrcLoader::RegisterResult AttributionSrcLoader::Register(
   auto* client = MakeGarbageCollected<ResourceClient>(this);
   resource_clients_.insert(client);
   RawResource::Fetch(params, local_frame_->DomWindow()->Fetcher(), client);
-  return RegisterResult::kSuccess;
 }
 
 String AttributionSrcLoader::ResourceClient::DebugName() const {
