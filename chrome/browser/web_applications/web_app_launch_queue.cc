@@ -135,10 +135,7 @@ const AppId* WebAppLaunchQueue::GetPendingLaunchAppId() const {
 }
 
 void WebAppLaunchQueue::DidFinishNavigation(content::NavigationHandle* handle) {
-  // Currently, launch data is only sent for the main frame.
-  // TODO(https://crbug.com/1218946): With MPArch there may be multiple main
-  // frames. This caller was converted automatically to the primary main frame
-  // to preserve its semantics. Follow up to confirm correctness.
+  // Currently, launch data is only sent the primary main frame.
   if (!handle->IsInPrimaryMainFrame())
     return;
 
