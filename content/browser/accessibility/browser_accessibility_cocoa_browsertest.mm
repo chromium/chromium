@@ -403,7 +403,7 @@ IN_PROC_BROWSER_TEST_F(BrowserAccessibilityCocoaBrowserTest,
         [child->GetNativeViewAccessible() retain]);
 
     EXPECT_NSEQ(base::SysUTF8ToNSString(expected_descriptions[child_index]),
-                [child_obj descriptionForAccessibility]);
+                [child_obj accessibilityLabel]);
   }
 }
 
@@ -492,13 +492,13 @@ IN_PROC_BROWSER_TEST_F(BrowserAccessibilityCocoaBrowserTest,
 
   EXPECT_EQ(3U, [row_nodes count]);
   EXPECT_NSEQ(@"AXRow", [row_nodes[0] role]);
-  EXPECT_NSEQ(@"row1", [row_nodes[0] descriptionForAccessibility]);
+  EXPECT_NSEQ(@"row1", [row_nodes[0] accessibilityLabel]);
 
   EXPECT_NSEQ(@"AXRow", [row_nodes[1] role]);
-  EXPECT_NSEQ(@"row2", [row_nodes[1] descriptionForAccessibility]);
+  EXPECT_NSEQ(@"row2", [row_nodes[1] accessibilityLabel]);
 
   EXPECT_NSEQ(@"AXRow", [row_nodes[2] role]);
-  EXPECT_NSEQ(@"row3", [row_nodes[2] descriptionForAccessibility]);
+  EXPECT_NSEQ(@"row3", [row_nodes[2] accessibilityLabel]);
 }
 
 IN_PROC_BROWSER_TEST_F(BrowserAccessibilityCocoaBrowserTest,
@@ -539,14 +539,14 @@ IN_PROC_BROWSER_TEST_F(BrowserAccessibilityCocoaBrowserTest,
   base::scoped_nsobject<BrowserAccessibilityCocoa> col_obj(
       [column->GetNativeViewAccessible() retain]);
   EXPECT_NSEQ(@"AXColumn", [col_obj role]);
-  EXPECT_NSEQ(@"column1", [col_obj descriptionForAccessibility]);
+  EXPECT_NSEQ(@"column1", [col_obj accessibilityLabel]);
 
   NSArray* row_nodes = [col_obj rows];
   EXPECT_NSEQ(@"AXRow", [row_nodes[0] role]);
-  EXPECT_NSEQ(@"row1", [row_nodes[0] descriptionForAccessibility]);
+  EXPECT_NSEQ(@"row1", [row_nodes[0] accessibilityLabel]);
 
   EXPECT_NSEQ(@"AXRow", [row_nodes[1] role]);
-  EXPECT_NSEQ(@"row2", [row_nodes[1] descriptionForAccessibility]);
+  EXPECT_NSEQ(@"row2", [row_nodes[1] accessibilityLabel]);
 }
 
 IN_PROC_BROWSER_TEST_F(BrowserAccessibilityCocoaBrowserTest,

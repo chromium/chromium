@@ -537,18 +537,6 @@ bool InitializeAccessibilityTreeSearch(OneShotAccessibilityTreeSearch* search,
   return true;
 }
 
-void AppendTextToString(const std::string& extra_text, std::string* string) {
-  if (extra_text.empty())
-    return;
-
-  if (string->empty()) {
-    *string = extra_text;
-    return;
-  }
-
-  *string += std::string(". ") + extra_text;
-}
-
 bool IsSelectedStateRelevant(BrowserAccessibility* item) {
   if (!item->HasBoolAttribute(ax::mojom::BoolAttribute::kSelected))
     return false;  // Does not have selected state -> not relevant.
@@ -611,7 +599,6 @@ bool content::IsNSRange(id value) {
       {NSAccessibilityColumnsAttribute, @"columns"},
       {NSAccessibilityColumnIndexRangeAttribute, @"columnIndexRange"},
       {NSAccessibilityContentsAttribute, @"contents"},
-      {NSAccessibilityDescriptionAttribute, @"descriptionForAccessibility"},
       {NSAccessibilityDisclosingAttribute, @"disclosing"},
       {NSAccessibilityDisclosedByRowAttribute, @"disclosedByRow"},
       {NSAccessibilityDisclosureLevelAttribute, @"disclosureLevel"},
@@ -779,91 +766,6 @@ bool content::IsNSRange(id value) {
     table = table->PlatformGetParent();
   }
   return table;
-}
-
-- (NSString*)AXDescription {
-  return [self descriptionForAccessibility];
-}
-
-- (NSString*)descriptionForAccessibility {
-  if (![self instanceActive])
-    return nil;
-
-  // Mac OS X wants static text exposed in AXValue.
-  if (ui::IsNameExposedInAXValueForRole([self internalRole]))
-    return @"";
-
-  // If we're exposing the title in TitleUIElement, don't also redundantly
-  // expose it in AXDescription.
-  if ([self titleUIElement])
-    return @"";
-
-  ax::mojom::NameFrom nameFrom = static_cast<ax::mojom::NameFrom>(
-      _owner->GetIntAttribute(ax::mojom::IntAttribute::kNameFrom));
-  std::string name = _owner->GetName();
-
-  auto status = _owner->GetData().GetImageAnnotationStatus();
-  switch (status) {
-    case ax::mojom::ImageAnnotationStatus::kEligibleForAnnotation:
-    case ax::mojom::ImageAnnotationStatus::kAnnotationPending:
-    case ax::mojom::ImageAnnotationStatus::kAnnotationEmpty:
-    case ax::mojom::ImageAnnotationStatus::kAnnotationAdult:
-    case ax::mojom::ImageAnnotationStatus::kAnnotationProcessFailed: {
-      std::u16string status_string =
-          _owner->GetLocalizedStringForImageAnnotationStatus(status);
-      AppendTextToString(base::UTF16ToUTF8(status_string), &name);
-      break;
-    }
-
-    case ax::mojom::ImageAnnotationStatus::kAnnotationSucceeded:
-      AppendTextToString(_owner->GetStringAttribute(
-                             ax::mojom::StringAttribute::kImageAnnotation),
-                         &name);
-      break;
-
-    case ax::mojom::ImageAnnotationStatus::kNone:
-    case ax::mojom::ImageAnnotationStatus::kWillNotAnnotateDueToScheme:
-    case ax::mojom::ImageAnnotationStatus::kIneligibleForAnnotation:
-    case ax::mojom::ImageAnnotationStatus::kSilentlyEligibleForAnnotation:
-      break;
-  }
-
-  if (!name.empty()) {
-    // On Mac OS X, the accessible name of an object is exposed as its
-    // title if it comes from visible text, and as its description
-    // otherwise, but never both.
-
-    // Group, radiogroup etc.
-    if ([self shouldExposeNameInDescription]) {
-      return base::SysUTF8ToNSString(name);
-    } else if (nameFrom == ax::mojom::NameFrom::kCaption ||
-               nameFrom == ax::mojom::NameFrom::kContents ||
-               nameFrom == ax::mojom::NameFrom::kRelatedElement ||
-               nameFrom == ax::mojom::NameFrom::kValue) {
-      return @"";
-    } else {
-      return base::SysUTF8ToNSString(name);
-    }
-  }
-
-  // Given an image where there's no other title, return the base part
-  // of the filename as the description.
-  if ([[self role] isEqualToString:NSAccessibilityImageRole]) {
-    if ([self accessibilityTitleUIElement])
-      return @"";
-
-    std::string url;
-    if (_owner->GetStringAttribute(ax::mojom::StringAttribute::kUrl, &url)) {
-      // Given a url like http://foo.com/bar/baz.png, just return the
-      // base name, e.g., "baz.png".
-      size_t leftIndex = url.rfind('/');
-      std::string basename =
-          leftIndex != std::string::npos ? url.substr(leftIndex) : url;
-      return base::SysUTF8ToNSString(basename);
-    }
-  }
-
-  return @"";
 }
 
 - (NSNumber*)disclosing {
@@ -1216,41 +1118,6 @@ bool content::IsNSRange(id value) {
   if ([self instanceActive])
     return static_cast<ax::mojom::Role>(_owner->GetRole());
   return ax::mojom::Role::kNone;
-}
-
-- (BOOL)shouldExposeNameInDescription {
-  // Image annotations are not visible text, so they should be exposed
-  // as a description and not a title.
-  switch (_owner->GetData().GetImageAnnotationStatus()) {
-    case ax::mojom::ImageAnnotationStatus::kEligibleForAnnotation:
-    case ax::mojom::ImageAnnotationStatus::kAnnotationPending:
-    case ax::mojom::ImageAnnotationStatus::kAnnotationEmpty:
-    case ax::mojom::ImageAnnotationStatus::kAnnotationAdult:
-    case ax::mojom::ImageAnnotationStatus::kAnnotationProcessFailed:
-    case ax::mojom::ImageAnnotationStatus::kAnnotationSucceeded:
-      return true;
-
-    case ax::mojom::ImageAnnotationStatus::kNone:
-    case ax::mojom::ImageAnnotationStatus::kWillNotAnnotateDueToScheme:
-    case ax::mojom::ImageAnnotationStatus::kIneligibleForAnnotation:
-    case ax::mojom::ImageAnnotationStatus::kSilentlyEligibleForAnnotation:
-      break;
-  }
-
-  // VoiceOver computes the wrong description for a link.
-  if (ui::IsLink(_owner->GetRole()))
-    return true;
-
-  // VoiceOver will not read the label of these roles unless it is
-  // exposed in the description instead of the title.
-  switch (_owner->GetRole()) {
-    case ax::mojom::Role::kGenericContainer:
-    case ax::mojom::Role::kGroup:
-    case ax::mojom::Role::kRadioGroup:
-      return true;
-    default:
-      return false;
-  }
 }
 
 - (content::BrowserAccessibility*)owner {
@@ -1668,7 +1535,7 @@ bool content::IsNSRange(id value) {
   if (ui::IsNameExposedInAXValueForRole([self internalRole]))
     return @"";
 
-  if ([self shouldExposeNameInDescription])
+  if ([self isLabelable])
     return @"";
 
   // If we're exposing the title in TitleUIElement, don't also redundantly
@@ -2622,7 +2489,6 @@ bool content::IsNSRange(id value) {
   // General attributes.
   NSMutableArray* ret = [NSMutableArray
       arrayWithObjects:NSAccessibilityChildrenAttribute,
-                       NSAccessibilityDescriptionAttribute,
                        NSAccessibilityEnabledAttribute,
                        NSAccessibilityEndTextMarkerAttribute,
                        NSAccessibilityFocusedAttribute,

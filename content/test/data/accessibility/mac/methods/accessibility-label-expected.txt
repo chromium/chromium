@@ -1,0 +1,2 @@
+// Labelable with not empty name
+labelable.accessibilityLabel='This is input'
