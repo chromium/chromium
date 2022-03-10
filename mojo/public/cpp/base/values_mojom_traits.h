@@ -17,6 +17,56 @@
 namespace mojo {
 
 template <>
+struct MapTraits<base::Value::Dict> {
+  using Key = std::string;
+  using Value = base::Value;
+  using Iterator = base::Value::Dict::const_iterator;
+
+  static size_t GetSize(const base::Value::Dict& in) { return in.size(); }
+
+  static Iterator GetBegin(const base::Value::Dict& in) { return in.cbegin(); }
+
+  static void AdvanceIterator(Iterator& it) { ++it; }
+
+  static const Key& GetKey(const Iterator& it) { return it->first; }
+
+  static const Value& GetValue(const Iterator& it) { return it->second; }
+};
+
+template <>
+struct COMPONENT_EXPORT(MOJO_BASE_SHARED_TRAITS)
+    StructTraits<mojo_base::mojom::DictionaryValueDataView, base::Value::Dict> {
+  static const base::Value::Dict& storage(const base::Value::Dict& in) {
+    return in;
+  }
+
+  static bool Read(mojo_base::mojom::DictionaryValueDataView data,
+                   base::Value::Dict* out);
+};
+
+template <>
+struct ArrayTraits<base::Value::List> {
+  using Element = base::Value;
+
+  static size_t GetSize(const base::Value::List& in) { return in.size(); }
+
+  static const base::Value& GetAt(const base::Value::List& in, size_t index) {
+    return in[index];
+  }
+};
+
+template <>
+struct COMPONENT_EXPORT(MOJO_BASE_SHARED_TRAITS)
+    StructTraits<mojo_base::mojom::ListValueDataView, base::Value::List> {
+  static const base::Value::List& storage(const base::Value::List& in) {
+    return in;
+  }
+
+  static bool Read(mojo_base::mojom::ListValueDataView data,
+                   base::Value::List* out);
+};
+
+template <>
 struct MapTraits<base::Value> {
   using Key = std::string;
   using Value = base::Value;
@@ -39,30 +89,6 @@ struct MapTraits<base::Value> {
   static const Value& GetValue(const Iterator& iterator) {
     return iterator->second;
   }
-};
-
-template <>
-struct COMPONENT_EXPORT(MOJO_BASE_SHARED_TRAITS)
-    StructTraits<mojo_base::mojom::DictionaryValueDataView, base::Value> {
-  static const base::Value& storage(const base::Value& value) {
-    DCHECK(value.is_dict());
-    return value;
-  }
-
-  static bool Read(mojo_base::mojom::DictionaryValueDataView data,
-                   base::Value* value);
-};
-
-template <>
-struct COMPONENT_EXPORT(MOJO_BASE_SHARED_TRAITS)
-    StructTraits<mojo_base::mojom::ListValueDataView, base::Value> {
-  static base::span<const base::Value> storage(const base::Value& value) {
-    DCHECK(value.is_list());
-    return value.GetListDeprecated();
-  }
-
-  static bool Read(mojo_base::mojom::ListValueDataView data,
-                   base::Value* value);
 };
 
 template <>
@@ -134,13 +160,12 @@ struct COMPONENT_EXPORT(MOJO_BASE_SHARED_TRAITS)
     return value.GetBlob();
   }
 
-  static const base::Value& list_value(const base::Value& value) {
-    DCHECK(value.is_list());
-    return value;
+  static const base::Value::Dict& dictionary_value(const base::Value& value) {
+    return value.GetDict();
   }
-  static const base::Value& dictionary_value(const base::Value& value) {
-    DCHECK(value.is_dict());
-    return value;
+
+  static const base::Value::List& list_value(const base::Value& value) {
+    return value.GetList();
   }
 
   static bool Read(mojo_base::mojom::ValueDataView view,

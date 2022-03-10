@@ -316,16 +316,12 @@ mojom_component("base") {
         },
         {
           mojom = "mojo_base.mojom.DictionaryValue"
-
-          # TODO(https://crbug.com/1301890): Change this to ::base::Value::Dict.
-          cpp = "::base::Value"
+          cpp = "::base::Value::Dict"
           move_only = true
         },
         {
           mojom = "mojo_base.mojom.ListValue"
-
-          # TODO(https://crbug.com/1301889): Change this to ::base::Value::List.
-          cpp = "::base::Value"
+          cpp = "::base::Value::List"
           move_only = true
         },
         {

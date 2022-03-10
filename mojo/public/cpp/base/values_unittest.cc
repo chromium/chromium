@@ -102,8 +102,15 @@ TEST(ValuesStructTraitsTest, DictionaryValue) {
   EXPECT_EQ(in, out);
 
   ASSERT_TRUE(
-      mojo::test::SerializeAndDeserialize<mojom::DictionaryValue>(in, out));
+      mojo::test::SerializeAndDeserialize<mojom::DeprecatedDictionaryValue>(
+          in, out));
   EXPECT_EQ(in, out);
+
+  base::Value::Dict in_dict = in.GetDict().Clone();
+  base::Value::Dict out_dict;
+  ASSERT_TRUE(mojo::test::SerializeAndDeserialize<mojom::DictionaryValue>(
+      in_dict, out_dict));
+  EXPECT_EQ(in_dict, out_dict);
 }
 
 TEST(ValuesStructTraitsTest, SerializeInvalidDictionaryValue) {
@@ -112,7 +119,8 @@ TEST(ValuesStructTraitsTest, SerializeInvalidDictionaryValue) {
 
   base::Value out;
   EXPECT_DCHECK_DEATH(
-      mojo::test::SerializeAndDeserialize<mojom::DictionaryValue>(in, out));
+      mojo::test::SerializeAndDeserialize<mojom::DeprecatedDictionaryValue>(
+          in, out));
 }
 
 TEST(ValuesStructTraitsTest, ListValue) {
@@ -130,8 +138,15 @@ TEST(ValuesStructTraitsTest, ListValue) {
   ASSERT_TRUE(mojo::test::SerializeAndDeserialize<mojom::Value>(in, out));
   EXPECT_EQ(in, out);
 
-  ASSERT_TRUE(mojo::test::SerializeAndDeserialize<mojom::ListValue>(in, out));
+  ASSERT_TRUE(
+      mojo::test::SerializeAndDeserialize<mojom::DeprecatedListValue>(in, out));
   EXPECT_EQ(in, out);
+
+  base::Value::List in_list = in.GetList().Clone();
+  base::Value::List out_list;
+  ASSERT_TRUE(
+      mojo::test::SerializeAndDeserialize<mojom::ListValue>(in_list, out_list));
+  EXPECT_EQ(in_list, out_list);
 }
 
 TEST(ValuesStructTraitsTest, SerializeInvalidListValue) {
@@ -140,7 +155,7 @@ TEST(ValuesStructTraitsTest, SerializeInvalidListValue) {
 
   base::Value out;
   EXPECT_DCHECK_DEATH(
-      mojo::test::SerializeAndDeserialize<mojom::ListValue>(in, out));
+      mojo::test::SerializeAndDeserialize<mojom::DeprecatedListValue>(in, out));
 }
 
 // A deeply nested base::Value should trigger a deserialization error.

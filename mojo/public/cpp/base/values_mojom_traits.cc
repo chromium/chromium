@@ -11,35 +11,33 @@
 
 namespace mojo {
 
-bool StructTraits<mojo_base::mojom::DictionaryValueDataView, base::Value>::Read(
-    mojo_base::mojom::DictionaryValueDataView data,
-    base::Value* value_out) {
+bool StructTraits<
+    mojo_base::mojom::DictionaryValueDataView,
+    base::Value::Dict>::Read(mojo_base::mojom::DictionaryValueDataView data,
+                             base::Value::Dict* out) {
   mojo::MapDataView<mojo::StringDataView, mojo_base::mojom::ValueDataView> view;
   data.GetStorageDataView(&view);
-  std::vector<base::Value::DictStorage::value_type> dict_storage;
-  dict_storage.reserve(view.size());
   for (size_t i = 0; i < view.size(); ++i) {
     base::StringPiece key;
     base::Value value;
     if (!view.keys().Read(i, &key) || !view.values().Read(i, &value))
       return false;
-    dict_storage.emplace_back(std::string(key), std::move(value));
+    out->Set(key, std::move(value));
   }
-  *value_out = base::Value(base::Value::DictStorage(std::move(dict_storage)));
   return true;
 }
 
-bool StructTraits<mojo_base::mojom::ListValueDataView, base::Value>::Read(
+bool StructTraits<mojo_base::mojom::ListValueDataView, base::Value::List>::Read(
     mojo_base::mojom::ListValueDataView data,
-    base::Value* value_out) {
+    base::Value::List* out) {
   mojo::ArrayDataView<mojo_base::mojom::ValueDataView> view;
   data.GetStorageDataView(&view);
-  base::Value::ListStorage list_storage(view.size());
+  base::Value element;
   for (size_t i = 0; i < view.size(); ++i) {
-    if (!view.Read(i, &list_storage[i]))
+    if (!view.Read(i, &element))
       return false;
+    out->Append(std::move(element));
   }
-  *value_out = base::Value(std::move(list_storage));
   return true;
 }
 
@@ -114,10 +112,18 @@ bool UnionTraits<mojo_base::mojom::ValueDataView, base::Value>::Read(
       return true;
     }
     case mojo_base::mojom::ValueDataView::Tag::DICTIONARY_VALUE: {
-      return data.ReadDictionaryValue(value_out);
+      base::Value::Dict dict;
+      if (!data.ReadDictionaryValue(&dict))
+        return false;
+      *value_out = base::Value(std::move(dict));
+      return true;
     }
     case mojo_base::mojom::ValueDataView::Tag::LIST_VALUE: {
-      return data.ReadListValue(value_out);
+      base::Value::List list;
+      if (!data.ReadListValue(&list))
+        return false;
+      *value_out = base::Value(std::move(list));
+      return true;
     }
   }
   return false;
