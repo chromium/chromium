@@ -257,7 +257,6 @@ void StatisticsRecorder::AddHistogramSampleObserver(
   const AutoLock auto_lock(lock_.Get());
   EnsureGlobalRecorderWhileLocked();
 
-  scoped_refptr<HistogramSampleObserverList> observers;
   auto iter = top_->observers_.find(name);
   if (iter == top_->observers_.end()) {
     top_->observers_.insert(
