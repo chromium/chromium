@@ -5148,6 +5148,10 @@ To change this setting, <ph name="BEGIN_LINK">&lt;resetlink&gt;</ph>reset sync<p
         Reaction deleted
       </message>
 
+      <message name="IDS_LIGHTWEIGHT_REACTIONS_REACTION_DUPLICATED_ANNOUNCEMENT" is_accessibility_with_no_ui="true" desc="The accessibility text to read when a reaction is duplicated.">
+        Reaction duplicated
+      </message>
+
       <message name="IDS_LIGHTWEIGHT_REACTIONS_TOOLBAR_ANNOUNCEMENT" is_accessibility_with_no_ui="true" desc="The accessibility text to read when the lightweight reactions toolbar is selected. The user can then select a reaction from the toolbar to place on the screen.">
         Choose an emotion
       </message>

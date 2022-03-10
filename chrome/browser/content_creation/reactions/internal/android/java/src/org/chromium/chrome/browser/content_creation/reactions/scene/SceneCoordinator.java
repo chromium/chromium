@@ -362,6 +362,8 @@ public class SceneCoordinator implements SceneEditorDelegate, ToolbarReactionsDe
                 newLayoutParams.bottomMargin = oldLayoutParams.bottomMargin - offsetPx;
             }
             addReactionLayoutToScene(newReactionLayout, newLayoutParams);
+            mActiveReaction.announceForAccessibility(mActivity.getString(
+                    R.string.lightweight_reactions_reaction_duplicated_announcement));
         });
     }
 
