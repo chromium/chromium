@@ -721,11 +721,11 @@ const DeprecationInfo GetDeprecationInfo(const WebFeature feature) {
 
     case WebFeature::kCookieWithTruncatingChar:
       return DeprecationInfo::WithDetails(
-          "WebFeature::kCookieWithTruncatingChar", kM106,
+          "WebFeature::kCookieWithTruncatingChar", kM103,
           String::Format(
               "Cookies containing a '\\0', '\\r', or '\\n' character will be "
               "rejected instead of truncated in %s.",
-              MilestoneString(kM106).Ascii().c_str()));
+              MilestoneString(kM103).Ascii().c_str()));
 
     case WebFeature::kEventPath:
       return DeprecationInfo::WithFeatureAndReplacementAndChromeStatusID(
