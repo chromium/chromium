@@ -516,14 +516,21 @@ ExtensionFunction::ResponseAction WebNavigationGetAllFramesFunction::Run() {
   // expose back/forward cached frames or prerender frames in the GetAllFrames
   // API.
   web_contents->GetMainFrame()->ForEachRenderFrameHost(base::BindRepeating(
-      [](std::vector<GetAllFrames::Results::DetailsType>& result_list,
+      [](content::WebContents* web_contents,
+         std::vector<GetAllFrames::Results::DetailsType>& result_list,
          content::RenderFrameHost* render_frame_host) {
+        // Don't expose inner WebContents for the getFrames API.
+        if (content::WebContents::FromRenderFrameHost(render_frame_host) !=
+            web_contents) {
+          return content::RenderFrameHost::FrameIterationAction::kSkipChildren;
+        }
+
         auto* navigation_state =
             FrameNavigationState::GetForCurrentDocument(render_frame_host);
 
         if (!navigation_state ||
             !FrameNavigationState::IsValidUrl(navigation_state->GetUrl())) {
-          return;
+          return content::RenderFrameHost::FrameIterationAction::kContinue;
         }
 
         GetAllFrames::Results::DetailsType frame;
@@ -534,8 +541,9 @@ ExtensionFunction::ResponseAction WebNavigationGetAllFramesFunction::Run() {
         frame.process_id = render_frame_host->GetProcess()->GetID();
         frame.error_occurred = navigation_state->GetErrorOccurredInFrame();
         result_list.push_back(std::move(frame));
+        return content::RenderFrameHost::FrameIterationAction::kContinue;
       },
-      std::ref(result_list)));
+      web_contents, std::ref(result_list)));
 
   return RespondNow(ArgumentList(GetAllFrames::Results::Create(result_list)));
 }

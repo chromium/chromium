@@ -85,6 +85,15 @@ IN_PROC_BROWSER_TEST_F(ScriptingAPITest, SubFramesTests) {
   ASSERT_TRUE(RunExtensionTest("scripting/sub_frames")) << message_;
 }
 
+// Test validating we don't insert content into nested WebContents.
+IN_PROC_BROWSER_TEST_F(ScriptingAPITest, NestedWebContents) {
+  OpenURLInCurrentTab(
+      embedded_test_server()->GetURL("a.com", "/page_with_embedded_pdf.html"));
+
+  // From there, the test continues in the JS.
+  ASSERT_TRUE(RunExtensionTest("scripting/nested_web_contents")) << message_;
+}
+
 IN_PROC_BROWSER_TEST_F(ScriptingAPITest, CSSInjection) {
   OpenURLInCurrentTab(
       embedded_test_server()->GetURL("example.com", "/simple.html"));
