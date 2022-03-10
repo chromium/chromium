@@ -156,6 +156,10 @@ class TestBluetoothAdapter final : public BluetoothAdapter {
   }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  void SetStandardChromeOSAdapterName() override {}
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
   void OnStartDiscoverySessionQuitLoop(
       base::OnceClosure run_loop_quit,
       std::unique_ptr<device::BluetoothDiscoverySession> discovery_session) {

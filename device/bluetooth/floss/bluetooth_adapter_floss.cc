@@ -704,6 +704,12 @@ BluetoothAdapterFloss::GetLowEnergyScanSessionHardwareOffloadingStatus() {
 }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+void BluetoothAdapterFloss::SetStandardChromeOSAdapterName() {
+  NOTIMPLEMENTED();
+}
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
 void BluetoothAdapterFloss::RemovePairingDelegateInternal(
     device::BluetoothDevice::PairingDelegate* pairing_delegate) {
   NOTIMPLEMENTED();

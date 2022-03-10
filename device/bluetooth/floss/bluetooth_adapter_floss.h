@@ -119,6 +119,12 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothAdapterFloss final
       override;
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  // Set the adapter name to one chosen from the system information. Only Ash
+  // needs to do this.
+  void SetStandardChromeOSAdapterName() override;
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
  protected:
   // BluetoothAdapter:
   void RemovePairingDelegateInternal(

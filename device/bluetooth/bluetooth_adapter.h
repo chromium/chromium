@@ -742,6 +742,12 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothAdapter
       base::WeakPtr<BluetoothLowEnergyScanSession::Delegate> delegate) = 0;
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  // Set the adapter name to one chosen from the system information. Only Ash
+  // needs to do this.
+  virtual void SetStandardChromeOSAdapterName() = 0;
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
   // The timeout in seconds used by RemoveTimedOutDevices.
   static const base::TimeDelta timeoutSec;
 

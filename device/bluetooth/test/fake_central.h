@@ -207,6 +207,9 @@ class FakeCentral final : public mojom::FakeCentral,
       base::WeakPtr<device::BluetoothLowEnergyScanSession::Delegate> delegate)
       override;
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  void SetStandardChromeOSAdapterName() override;
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
   base::WeakPtr<BluetoothAdapter> GetWeakPtr() override;
   bool SetPoweredImpl(bool powered) override;
   void UpdateFilter(

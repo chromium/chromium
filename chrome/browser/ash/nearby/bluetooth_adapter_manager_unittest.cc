@@ -4,116 +4,79 @@
 
 #include "chrome/browser/ash/nearby/bluetooth_adapter_manager.h"
 
-#include "base/run_loop.h"
-#include "base/test/bind.h"
-#include "base/test/task_environment.h"
-#include "device/bluetooth/bluetooth_adapter_factory.h"
-#include "device/bluetooth/bluez/bluetooth_adapter_bluez.h"
-#include "device/bluetooth/dbus/bluetooth_adapter_client.h"
-#include "device/bluetooth/dbus/bluez_dbus_manager.h"
-#include "device/bluetooth/dbus/fake_bluetooth_adapter_client.h"
-#include "device/bluetooth/dbus/fake_bluetooth_agent_manager_client.h"
-#include "device/bluetooth/dbus/fake_bluetooth_device_client.h"
-#include "device/bluetooth/dbus/fake_bluetooth_profile_manager_client.h"
+#include "base/test/with_feature_override.h"
+#include "device/bluetooth/floss/floss_features.h"
+#include "device/bluetooth/test/mock_bluetooth_adapter.h"
 #include "testing/gtest/include/gtest/gtest.h"
+
+using testing::_;
+using testing::NiceMock;
 
 namespace ash {
 namespace nearby {
 
-class BluetoothAdapterManagerTest : public testing::Test {
+class BluetoothAdapterManagerTest : public base::test::WithFeatureOverride,
+                                    public testing::Test {
  public:
-  BluetoothAdapterManagerTest() = default;
+  BluetoothAdapterManagerTest()
+      : base::test::WithFeatureOverride(floss::features::kFlossEnabled) {}
+
   ~BluetoothAdapterManagerTest() override = default;
 
   // testing::Test:
   void SetUp() override {
     bluetooth_adapter_manager_ = std::make_unique<BluetoothAdapterManager>();
-    std::unique_ptr<bluez::BluezDBusManagerSetter> dbus_setter =
-        bluez::BluezDBusManager::GetSetterForTesting();
 
-    dbus_setter->SetBluetoothAdapterClient(
-        std::make_unique<bluez::FakeBluetoothAdapterClient>());
-    dbus_setter->SetBluetoothAgentManagerClient(
-        std::make_unique<bluez::FakeBluetoothAgentManagerClient>());
-    dbus_setter->SetBluetoothDeviceClient(
-        std::make_unique<bluez::FakeBluetoothDeviceClient>());
-    dbus_setter->SetBluetoothProfileManagerClient(
-        std::make_unique<bluez::FakeBluetoothProfileManagerClient>());
+    mock_bluetooth_adapter_ =
+        base::MakeRefCounted<NiceMock<device::MockBluetoothAdapter>>();
+    ON_CALL(*mock_bluetooth_adapter_, SetStandardChromeOSAdapterName())
+        .WillByDefault(
+            Invoke(this, &BluetoothAdapterManagerTest::SetStandardName));
+    ON_CALL(*mock_bluetooth_adapter_, SetDiscoverable(_, _, _))
+        .WillByDefault(
+            Invoke(this, &BluetoothAdapterManagerTest::SetDiscoverable));
   }
 
   void Initialize() {
-    scoped_refptr<device::BluetoothAdapter> adapter;
-    base::RunLoop run_loop;
-    device::BluetoothAdapterFactory::Get()->GetAdapter(
-        base::BindLambdaForTesting(
-            [&](scoped_refptr<device::BluetoothAdapter> a) {
-              adapter = std::move(a);
-              run_loop.Quit();
-            }));
-    run_loop.Run();
-    ASSERT_TRUE(adapter);
-    ASSERT_TRUE(adapter->IsInitialized());
-    ASSERT_TRUE(adapter->IsPresent());
-
-    bluez_adapter_ = static_cast<bluez::BluetoothAdapterBlueZ*>(adapter.get());
-    default_name_ = bluez_adapter_->GetName();
     mojo::PendingReceiver<bluetooth::mojom::Adapter> pending_receiver;
     bluetooth_manager()->Initialize(std::move(pending_receiver),
-                                    std::move(adapter));
+                                    mock_bluetooth_adapter_);
   }
 
-  // Sets a non-default name and enables discoverability.
-  void EnterHighVizMode() {
-    base::RunLoop name_loop;
-    bluez_adapter_->SetName(
-        "High Viz", base::BindLambdaForTesting([&]() { name_loop.Quit(); }),
-        /*error_callback=*/base::DoNothing());
-    name_loop.Run();
+  void SetStandardName() { set_standard_name_called_ = true; }
 
-    base::RunLoop discoverable_loop;
-    bluez_adapter_->SetDiscoverable(
-        true, base::BindLambdaForTesting([&]() { discoverable_loop.Quit(); }),
-        /*error_callback=*/base::DoNothing());
-    discoverable_loop.Run();
-  }
+  bool IsSetStandardNameCalled() { return set_standard_name_called_; }
 
-  bluez::BluetoothAdapterBlueZ* adapter() { return bluez_adapter_; }
+  void SetDiscoverable() { set_discoverable_called_ = true; }
+
+  bool IsSetDiscoverableCalled() { return set_discoverable_called_; }
 
   BluetoothAdapterManager* bluetooth_manager() {
     return bluetooth_adapter_manager_.get();
   }
-  const std::string& default_name() { return default_name_; }
 
  private:
-  base::test::TaskEnvironment task_environment_;
-
   std::unique_ptr<BluetoothAdapterManager> bluetooth_adapter_manager_;
-  bluez::BluetoothAdapterBlueZ* bluez_adapter_;
-  std::string default_name_;
+  scoped_refptr<NiceMock<device::MockBluetoothAdapter>> mock_bluetooth_adapter_;
+  bool set_standard_name_called_ = false;
+  bool set_discoverable_called_ = false;
 };
 
-TEST_F(BluetoothAdapterManagerTest, Shutdown) {
+TEST_P(BluetoothAdapterManagerTest, Shutdown) {
   Initialize();
-
-  EnterHighVizMode();
-  ASSERT_NE(default_name(), adapter()->GetName());
-  ASSERT_TRUE(adapter()->IsDiscoverable());
-
-  dbus::ObjectPath object_path = adapter()->object_path();
   bluetooth_manager()->Shutdown();
-
-  bluez::BluetoothAdapterClient::Properties* properties =
-      bluez::BluezDBusManager::Get()
-          ->GetBluetoothAdapterClient()
-          ->GetProperties(object_path);
-  ASSERT_EQ(default_name(), properties->alias.value());
-  ASSERT_FALSE(properties->discoverable.value());
+  EXPECT_TRUE(IsSetStandardNameCalled());
+  EXPECT_TRUE(IsSetDiscoverableCalled());
 }
 
-TEST_F(BluetoothAdapterManagerTest, Shutdown_NeverInitialized) {
+TEST_P(BluetoothAdapterManagerTest, Shutdown_NeverInitialized) {
   bluetooth_manager()->Shutdown();
+  EXPECT_FALSE(IsSetStandardNameCalled());
+  EXPECT_FALSE(IsSetDiscoverableCalled());
   // Verify that nothing crashes.
 }
+
+INSTANTIATE_FEATURE_OVERRIDE_TEST_SUITE(BluetoothAdapterManagerTest);
 
 }  // namespace nearby
 }  // namespace ash

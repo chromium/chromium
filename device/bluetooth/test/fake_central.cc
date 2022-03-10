@@ -636,6 +636,12 @@ FakeCentral::GetLowEnergyScanSessionHardwareOffloadingStatus() {
 }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+void FakeCentral::SetStandardChromeOSAdapterName() {
+  NOTREACHED();
+}
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
 base::WeakPtr<device::BluetoothAdapter> FakeCentral::GetWeakPtr() {
   return weak_ptr_factory_.GetWeakPtr();
 }

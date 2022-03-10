@@ -189,6 +189,12 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothAdapterBlueZ final
       override;
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  // Set the adapter name to one chosen from the system information. Only Ash
+  // needs to do this.
+  void SetStandardChromeOSAdapterName() override;
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
   // These functions are specifically for use with ARC. They have no need to
   // exist for other platforms, hence we're putting them directly in the BlueZ
   // specific code.
@@ -232,12 +238,6 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothAdapterBlueZ final
                                const dbus::ObjectPath& device_path,
                                ScanRecordPtr scan_record);
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  // Set the adapter name to one chosen from the system information. Only Ash
-  // needs to do this.
-  void SetStandardChromeOSAdapterName();
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   // Announce to observers that |device| has changed its connected state.
   void NotifyDeviceConnectedStateChanged(BluetoothDeviceBlueZ* device,
