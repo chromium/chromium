@@ -197,29 +197,6 @@ TabStripUI* GetTabStripUI(content::WebContents* web_contents) {
              : nullptr;
 }
 
-class WebUINewTabButton : public ToolbarButton {
- public:
-  METADATA_HEADER(WebUINewTabButton);
-  explicit WebUINewTabButton(PressedCallback pressed_callback)
-      : ToolbarButton(pressed_callback) {
-    SetTooltipText(l10n_util::GetStringUTF16(IDS_TOOLTIP_NEW_TAB));
-    const int button_height = GetLayoutConstant(TOOLBAR_BUTTON_HEIGHT);
-    SetPreferredSize(gfx::Size(button_height, button_height));
-    SetHorizontalAlignment(gfx::ALIGN_CENTER);
-  }
-
-  void OnThemeChanged() override {
-    ToolbarButton::OnThemeChanged();
-    const SkColor normal_color = GetThemeProvider()->GetColor(
-        ThemeProperties::COLOR_TOOLBAR_BUTTON_ICON);
-    SetImage(views::Button::STATE_NORMAL,
-             gfx::CreateVectorIcon(kNewTabToolbarButtonIcon, normal_color));
-  }
-};
-
-BEGIN_METADATA(WebUINewTabButton, ToolbarButton)
-END_METADATA
-
 }  // namespace
 
 // When enabled, closes the container for taps in either the web content
@@ -567,9 +544,17 @@ views::NativeViewHost* WebUITabStripContainerView::GetNativeViewHost() {
 
 std::unique_ptr<views::View> WebUITabStripContainerView::CreateNewTabButton() {
   DCHECK_EQ(nullptr, new_tab_button_);
-  auto new_tab_button = std::make_unique<WebUINewTabButton>(
+  auto new_tab_button = std::make_unique<ToolbarButton>(
       base::BindRepeating(&WebUITabStripContainerView::NewTabButtonPressed,
                           base::Unretained(this)));
+
+  new_tab_button->SetTooltipText(
+      l10n_util::GetStringUTF16(IDS_TOOLTIP_NEW_TAB));
+  const int button_height = GetLayoutConstant(TOOLBAR_BUTTON_HEIGHT);
+  new_tab_button->SetPreferredSize(gfx::Size(button_height, button_height));
+  new_tab_button->SetHorizontalAlignment(gfx::ALIGN_CENTER);
+  new_tab_button->SetVectorIcon(kNewTabToolbarButtonIcon);
+
   new_tab_button_ = new_tab_button.get();
   view_observations_.AddObservation(new_tab_button_.get());
   return new_tab_button;
