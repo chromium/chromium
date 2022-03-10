@@ -7,13 +7,24 @@
 
 #include "components/keyed_service/core/keyed_service.h"
 
+#include <memory>
 #include <string>
+#include <unordered_map>
+#include <unordered_set>
+#include <utility>
 
 #include "components/user_notes/interfaces/user_notes_ui_delegate.h"
+#include "components/user_notes/model/user_note.h"
 
 namespace user_notes {
 
-// Keyed service cooridnating the different parts (Renderer, UI layer, storage
+class UserNotesManager;
+
+typedef std::pair<std::unique_ptr<UserNote>,
+                  std::unordered_set<UserNotesManager*>>
+    ModelMapEntry;
+
+// Keyed service coordinating the different parts (Renderer, UI layer, storage
 // layer) of the User Notes feature for the current user profile.
 class UserNoteService : public KeyedService, public UserNotesUIDelegate {
  public:
@@ -22,11 +33,33 @@ class UserNoteService : public KeyedService, public UserNotesUIDelegate {
   UserNoteService(const UserNoteService&) = delete;
   UserNoteService& operator=(const UserNoteService&) = delete;
 
+  // Called by |UserNotesManager| objects when a |UserNoteInstance| is added to
+  // the page they're attached to. Updates the model map to add a ref to the
+  // given |UserNotesManager| for the note with the specified GUID.
+  void OnNoteInstanceAddedToPage(const std::string& guid,
+                                 UserNotesManager* manager);
+
+  // Same as |OnNoteInstanceAddedToPage|, except for when a note is removed from
+  // a page. Updates the model map to remove the ref to the given
+  // |UserNotesManager|. If this is the last page where the note was displayed,
+  // also deletes the model from the model map.
+  void OnNoteInstanceRemovedFromPage(const std::string& guid,
+                                     UserNotesManager* manager);
+
   // UserNotesUIDelegate implementation.
   void OnNoteFocused(const std::string& guid) override;
   void OnNoteCreationDone(const std::string& guid,
                           const std::string& note_content) override;
   void OnNoteCreationCancelled(const std::string& guid) override;
+
+ private:
+  // Source of truth for the in-memory note models. Any note currently being
+  // displayed in a tab is stored in this data structure. Each entry also
+  // contains a set of pointers to all |UserNotesManager| objects holding an
+  // instance of that note, which is necessary to clean up the models when
+  // they're no longer in use and to remove notes from affected web pages when
+  // they're deleted by the user.
+  std::unordered_map<std::string, ModelMapEntry> model_map_;
 };
 
 }  // namespace user_notes

@@ -16,6 +16,7 @@ static_library("browser") {
     "//components/keyed_service/core",
     "//components/user_notes:features",
     "//components/user_notes/interfaces",
+    "//components/user_notes/model",
     "//content/public/browser",
   ]
 }
