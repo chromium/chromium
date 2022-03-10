@@ -335,6 +335,19 @@ TEST(AggregatableReportTest, RequestCreatedWithInvalidReportId_Failed) {
   EXPECT_FALSE(request.has_value());
 }
 
+TEST(AggregatableReportTest, RequestCreatedWithInvalidPrivacyBudgetKey_Failed) {
+  AggregatableReportRequest example_request =
+      aggregation_service::CreateExampleRequest();
+  AggregatableReportSharedInfo shared_info = example_request.shared_info();
+  shared_info.privacy_budget_key = {static_cast<char>(0xC0)};
+
+  absl::optional<AggregatableReportRequest> request =
+      AggregatableReportRequest::Create(example_request.payload_contents(),
+                                        std::move(shared_info));
+
+  EXPECT_FALSE(request.has_value());
+}
+
 TEST(AggregatableReportTest, RequestCreatedWithZeroContributions) {
   AggregatableReportRequest example_request =
       aggregation_service::CreateExampleRequest(

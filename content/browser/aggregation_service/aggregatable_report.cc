@@ -20,6 +20,7 @@
 #include "base/rand_util.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/strings/string_util.h"
 #include "base/time/time.h"
 #include "base/values.h"
 #include "components/cbor/values.h"
@@ -368,6 +369,11 @@ AggregatableReportRequest::CreateInternal(
   }
 
   if (!shared_info.report_id.is_valid()) {
+    return absl::nullopt;
+  }
+
+  if (!base::ranges::all_of(shared_info.privacy_budget_key,
+                            &base::IsAsciiPrintable<char>)) {
     return absl::nullopt;
   }
 

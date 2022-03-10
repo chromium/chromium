@@ -243,7 +243,9 @@ class CONTENT_EXPORT AggregatableReportRequest {
   // valid for the `payload_contents.processing_type` (see
   // `IsNumberOfHistogramContributionsValid()` above). Also returns
   // `absl::nullopt` if any contribution has a negative value or if
-  // `shared_info.report_id` is not valid.
+  // `shared_info.report_id` is not valid. Also returns `absl::nullopt` if
+  // `shared_info.privacy_budget_key` contains any character that isn't
+  // printable ASCII.
   static absl::optional<AggregatableReportRequest> Create(
       AggregationServicePayloadContents payload_contents,
       AggregatableReportSharedInfo shared_info);
@@ -254,7 +256,9 @@ class CONTENT_EXPORT AggregatableReportRequest {
   // `IsNumberOfHistogramContributionsValid()` and
   // `IsNumberOfProcessingUrlsValid`, respectively). Also returns
   // `absl::nullopt` if any contribution has a negative value or if
-  // `shared_info.report_id` is not valid.
+  // `shared_info.report_id` is not valid. Also returns `absl::nullopt` if
+  // `shared_info.privacy_budget_key` contains any character that isn't
+  // printable ASCII.
   static absl::optional<AggregatableReportRequest> CreateForTesting(
       std::vector<GURL> processing_urls,
       AggregationServicePayloadContents payload_contents,
