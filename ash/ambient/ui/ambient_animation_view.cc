@@ -18,6 +18,8 @@
 #include "ash/ambient/ui/ambient_view_delegate.h"
 #include "ash/ambient/ui/ambient_view_ids.h"
 #include "ash/ambient/ui/glanceable_info_view.h"
+#include "ash/ambient/ui/media_string_view.h"
+#include "ash/ambient/util/ambient_util.h"
 #include "base/bind.h"
 #include "base/check.h"
 #include "base/containers/span.h"
@@ -32,7 +34,9 @@
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/compositor/compositor.h"
 #include "ui/gfx/color_palette.h"
+#include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/geometry/vector2d.h"
+#include "ui/gfx/shadow_value.h"
 #include "ui/lottie/animation.h"
 #include "ui/views/background.h"
 #include "ui/views/border.h"
@@ -60,6 +64,13 @@ constexpr base::TimeDelta kThroughputTrackerRestartPeriod = base::Seconds(30);
 // Amount of x and y padding there should be from the top-left of the
 // AmbientAnimationView to the top-left of the weather/time content views.
 constexpr int kWeatherTimeBorderPaddingDip = 28;
+
+// Amount of padding from the left and bottom of the AmbientAnimationView's
+// bounds to the bottom-left of the media string content views.
+constexpr int kMediaStringPaddingFromLeftDip = 28;
+constexpr int kMediaStringPaddingFromBottomDip = 24;
+
+constexpr int kMediaStringTextElevation = 1;
 
 constexpr int kTimeFontSizeDip = 32;
 
@@ -105,6 +116,22 @@ std::unique_ptr<views::Border> CreateGlanceableInfoBorder(
   DCHECK_GE(left_padding, 0);
   return views::CreateEmptyBorder(top_padding, left_padding,
                                   /*bottom=*/0, /*right=*/0);
+}
+
+// The border serves as padding between the MediaStringView and its
+// parent view's bounds.
+std::unique_ptr<views::Border> CreateMediaStringBorder(
+    const gfx::Vector2d& jitter = gfx::Vector2d()) {
+  gfx::Insets shadow_insets = gfx::ShadowValue::GetMargin(
+      ambient::util::GetTextShadowValues(nullptr, kMediaStringTextElevation));
+  int bottom_padding =
+      kMediaStringPaddingFromBottomDip + shadow_insets.bottom() + jitter.y();
+  int left_padding =
+      kMediaStringPaddingFromLeftDip + shadow_insets.left() + jitter.x();
+  DCHECK_GE(bottom_padding, 0);
+  DCHECK_GE(left_padding, 0);
+  return views::CreateEmptyBorder(/*top=*/0, left_padding, bottom_padding,
+                                  /*right=*/0);
 }
 
 }  // namespace
@@ -208,6 +235,26 @@ void AmbientAnimationView::Init(AmbientViewDelegate* view_delegate) {
   glanceable_info_container_->AddChildView(std::make_unique<GlanceableInfoView>(
       view_delegate, kTimeFontSizeDip,
       /*time_temperature_font_color=*/gfx::kGoogleGrey900));
+
+  // Media string should appear in the bottom-left corner of the
+  // AmbientAnimationView's bounds.
+  media_string_container_ =
+      AddChildView(std::make_unique<views::BoxLayoutView>());
+  media_string_container_->SetOrientation(
+      views::BoxLayout::Orientation::kVertical);
+  media_string_container_->SetMainAxisAlignment(
+      views::BoxLayout::MainAxisAlignment::kEnd);
+  media_string_container_->SetCrossAxisAlignment(
+      views::BoxLayout::CrossAxisAlignment::kStart);
+  media_string_container_->SetBorder(CreateMediaStringBorder());
+  MediaStringView* media_string_view = media_string_container_->AddChildView(
+      std::make_unique<MediaStringView>(MediaStringView::Settings(
+          {/*icon_light_mode_color=*/gfx::kGoogleGrey600,
+           /*icon_dark_mode_color=*/gfx::kGoogleGrey500,
+           /*text_light_mode_color=*/gfx::kGoogleGrey600,
+           /*text_dark_mode_color=*/gfx::kGoogleGrey500,
+           kMediaStringTextElevation})));
+  media_string_view->SetVisible(false);
 }
 
 void AmbientAnimationView::AnimationWillStartPlaying(
@@ -279,10 +326,11 @@ void AmbientAnimationView::RestartThroughputTracking() {
 void AmbientAnimationView::ApplyJitter() {
   gfx::Vector2d jitter = animation_jitter_calculator_.Calculate();
   DVLOG(4) << "Applying jitter to animation: " << jitter.ToString();
-  // Sharing the same jitter between the animation and glanceable info keeps the
-  // spacing between the weather/time and animation features consistent.
+  // Sharing the same jitter between the animation and other peripheral content
+  // keeps the spacing between features consistent.
   animated_image_view_->SetAdditionalTranslation(jitter);
   glanceable_info_container_->SetBorder(CreateGlanceableInfoBorder(jitter));
+  media_string_container_->SetBorder(CreateMediaStringBorder(jitter));
 }
 
 BEGIN_METADATA(AmbientAnimationView, views::View)

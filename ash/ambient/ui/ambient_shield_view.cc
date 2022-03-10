@@ -118,6 +118,7 @@ void AmbientShieldView::InitLayout() {
   for (auto* view : {top, bottom})
     view->SetProperty(views::kFlexBehaviorKey, kScaleUnbounded);
 
+  // TODO(b/223270660): Listen for dark/light mode changes.
   bool dark_mode = AshColorProvider::Get()->IsDarkModeEnabled();
   const auto& colors = dark_mode ? kDarkModeColors : kLightModeColors;
 

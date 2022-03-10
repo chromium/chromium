@@ -264,7 +264,24 @@ void AmbientBackgroundImageView::InitLayout() {
       gfx::Insets(kMediaStringMarginDip + shadow_insets.top(), 0, 0,
                   kMediaStringMarginDip + shadow_insets.right()));
   media_string_view_ = media_string_view_container_->AddChildView(
-      std::make_unique<MediaStringView>());
+      std::make_unique<MediaStringView>(MediaStringView::Settings(
+          {/*icon_light_mode_color=*/ambient::util::GetContentLayerColor(
+               AshColorProvider::ContentLayerType::kIconColorPrimary,
+               /*dark_mode_enable=*/false),
+           /*icon_dark_mode_color=*/
+           ambient::util::GetContentLayerColor(
+               AshColorProvider::ContentLayerType::kIconColorPrimary,
+               /*dark_mode_enable=*/true),
+           /*text_light_mode_color=*/
+           ambient::util::GetContentLayerColor(
+               AshColorProvider::ContentLayerType::kTextColorPrimary,
+               /*dark_mode_enable=*/false),
+           /*text_dark_mode_color=*/
+           ambient::util::GetContentLayerColor(
+               AshColorProvider::ContentLayerType::kTextColorPrimary,
+               /*dark_mode_enable=*/true),
+           /*text_shadow_elevation=*/
+           ambient::util::kDefaultTextShadowElevation})));
   media_string_view_->SetVisible(false);
 }
 

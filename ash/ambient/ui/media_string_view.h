@@ -11,6 +11,7 @@
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/media_session/public/mojom/media_controller.mojom.h"
+#include "third_party/skia/include/core/SkColor.h"
 #include "ui/compositor/layer_animation_observer.h"
 #include "ui/views/view.h"
 #include "ui/views/view_observer.h"
@@ -34,9 +35,17 @@ class MediaStringView : public views::View,
                         public media_session::mojom::MediaControllerObserver,
                         public ui::ImplicitAnimationObserver {
  public:
+  struct Settings {
+    SkColor icon_light_mode_color;
+    SkColor icon_dark_mode_color;
+    SkColor text_light_mode_color;
+    SkColor text_dark_mode_color;
+    int text_shadow_elevation;
+  };
+
   METADATA_HEADER(MediaStringView);
 
-  MediaStringView();
+  explicit MediaStringView(Settings settings);
   MediaStringView(const MediaStringView&) = delete;
   MediaStringView& operator=(const MediaStringView&) = delete;
   ~MediaStringView() override;
@@ -84,6 +93,8 @@ class MediaStringView : public views::View,
   }
 
   views::Label* media_text_label_for_testing() { return media_text_; }
+
+  const Settings settings_;
 
   // Music eighth note.
   views::ImageView* icon_ = nullptr;

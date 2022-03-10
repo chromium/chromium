@@ -25,12 +25,18 @@ namespace ash {
 namespace ambient {
 namespace util {
 
+inline constexpr int kDefaultTextShadowElevation = 2;
+
 // Returns true if Ash is showing lock screen.
 ASH_EXPORT bool IsShowing(LockScreen::ScreenType type);
 
 // Ambient mode uses non-standard colors for some text and the media icon, so
 // provides a wrapper for |AshColorProvider::GetContentLayerColor|. This is
 // currently only supported for primary and secondary text and icons.
+ASH_EXPORT SkColor
+GetContentLayerColor(AshColorProvider::ContentLayerType content_layer_type,
+                     bool dark_mode_enable);
+// Version of the above that uses AshColorProvider::IsDarkModeEnabled().
 ASH_EXPORT SkColor
 GetContentLayerColor(AshColorProvider::ContentLayerType content_layer_type);
 
@@ -41,7 +47,8 @@ ASH_EXPORT const gfx::FontList& GetDefaultFontlist();
 // nullptr if the ShadowValues returned are only used to calculate margins, in
 // which kPlaceholderColor will be used for the shadow color.
 ASH_EXPORT gfx::ShadowValues GetTextShadowValues(
-    const ui::ColorProvider* color_provider);
+    const ui::ColorProvider* color_provider,
+    int elevation = kDefaultTextShadowElevation);
 
 ASH_EXPORT bool IsAmbientModeTopicTypeAllowed(::ambient::TopicType topic);
 

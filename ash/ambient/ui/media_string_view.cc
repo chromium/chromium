@@ -6,6 +6,7 @@
 
 #include <memory>
 #include <string>
+#include <utility>
 
 #include "ash/ambient/ambient_constants.h"
 #include "ash/ambient/ui/ambient_view_ids.h"
@@ -15,13 +16,13 @@
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
 #include "ash/shell_delegate.h"
+#include "ash/style/ash_color_provider.h"
 #include "base/bind.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
 #include "components/prefs/pref_service.h"
 #include "services/media_session/public/cpp/media_session_service.h"
 #include "services/media_session/public/mojom/media_session.mojom.h"
-#include "third_party/skia/include/core/SkColor.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/paint_recorder.h"
@@ -119,7 +120,8 @@ bool ShouldShowOnLockScreen() {
 
 }  // namespace
 
-MediaStringView::MediaStringView() {
+MediaStringView::MediaStringView(Settings settings)
+    : settings_(std::move(settings)) {
   SetID(AmbientViewID::kAmbientMediaStringView);
   InitLayout();
 }
@@ -128,8 +130,8 @@ MediaStringView::~MediaStringView() = default;
 
 void MediaStringView::OnThemeChanged() {
   views::View::OnThemeChanged();
-  media_text_->SetShadows(
-      ambient::util::GetTextShadowValues(GetColorProvider()));
+  media_text_->SetShadows(ambient::util::GetTextShadowValues(
+      GetColorProvider(), settings_.text_shadow_elevation));
 }
 void MediaStringView::OnViewBoundsChanged(views::View* observed_view) {
   UpdateMaskLayer();
@@ -202,6 +204,9 @@ void MediaStringView::InitLayout() {
   SetPaintToLayer();
   layer()->SetFillsBoundsOpaquely(false);
 
+  // TODO(b/223270660): Listen for dark/light mode changes.
+  bool dark_mode_enabled = AshColorProvider::Get()->IsDarkModeEnabled();
+
   constexpr int kChildSpacingDip = 8;
   auto* layout = SetLayoutManager(std::make_unique<views::BoxLayout>(
       views::BoxLayout::Orientation::kHorizontal));
@@ -213,10 +218,10 @@ void MediaStringView::InitLayout() {
   icon_ = AddChildView(std::make_unique<views::ImageView>());
   icon_->SetPreferredSize(
       gfx::Size(kMusicNoteIconSizeDip, kMusicNoteIconSizeDip));
-  icon_->SetImage(gfx::CreateVectorIcon(
-      kMusicNoteIcon, kMusicNoteIconSizeDip,
-      ambient::util::GetContentLayerColor(
-          AshColorProvider::ContentLayerType::kIconColorPrimary)));
+  icon_->SetImage(gfx::CreateVectorIcon(kMusicNoteIcon, kMusicNoteIconSizeDip,
+                                        dark_mode_enabled
+                                            ? settings_.icon_dark_mode_color
+                                            : settings_.icon_light_mode_color));
 
   media_text_container_ = AddChildView(std::make_unique<views::View>());
   media_text_container_->SetPaintToLayer();
@@ -240,15 +245,17 @@ void MediaStringView::InitLayout() {
   media_text_->SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_TO_HEAD);
   media_text_->SetVerticalAlignment(gfx::VerticalAlignment::ALIGN_MIDDLE);
   media_text_->SetAutoColorReadabilityEnabled(false);
-  media_text_->SetEnabledColor(ambient::util::GetContentLayerColor(
-      AshColorProvider::ContentLayerType::kTextColorPrimary));
+  media_text_->SetEnabledColor(dark_mode_enabled
+                                   ? settings_.text_dark_mode_color
+                                   : settings_.text_light_mode_color);
   media_text_->SetFontList(
       ambient::util::GetDefaultFontlist()
           .DeriveWithSizeDelta(kMediaStringFontSizeDip - kDefaultFontSizeDip)
           .DeriveWithWeight(gfx::Font::Weight::MEDIUM));
   media_text_->SetElideBehavior(gfx::ElideBehavior::NO_ELIDE);
   gfx::Insets shadow_insets =
-      gfx::ShadowValue::GetMargin(ambient::util::GetTextShadowValues(nullptr));
+      gfx::ShadowValue::GetMargin(ambient::util::GetTextShadowValues(
+          nullptr, settings_.text_shadow_elevation));
   // Compensate the shadow insets to put the text middle align with the icon.
   media_text_->SetBorder(views::CreateEmptyBorder(
       /*top=*/-shadow_insets.bottom(),
@@ -324,9 +331,10 @@ void MediaStringView::StartScrolling(bool is_initial) {
   {
     // Desired speed is 10 seconds for kMediaStringMaxWidthDip.
     const int text_width = media_text_->GetPreferredSize().width();
-    const int shadow_width =
-        gfx::ShadowValue::GetMargin(ambient::util::GetTextShadowValues(nullptr))
-            .width();
+    const int shadow_width = gfx::ShadowValue::GetMargin(
+                                 ambient::util::GetTextShadowValues(
+                                     nullptr, settings_.text_shadow_elevation))
+                                 .width();
     const int start_x = text_layer->GetTargetTransform().To2dTranslation().x();
     const int end_x = -(text_width + shadow_width) / 2;
     const int transform_distance = start_x - end_x;

@@ -65,6 +65,7 @@ class ASH_EXPORT AmbientAnimationView : public views::View,
 
   views::AnimatedImageView* animated_image_view_ = nullptr;
   views::BoxLayoutView* glanceable_info_container_ = nullptr;
+  views::BoxLayoutView* media_string_container_ = nullptr;
   std::unique_ptr<AmbientAnimationShieldController> shield_view_controller_;
   base::ScopedObservation<View, ViewObserver> animated_image_view_observer_{
       this};
