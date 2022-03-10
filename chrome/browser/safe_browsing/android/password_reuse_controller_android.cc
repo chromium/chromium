@@ -22,7 +22,8 @@ PasswordReuseControllerAndroid::PasswordReuseControllerAndroid(
     ChromePasswordProtectionService* service,
     ReusedPasswordAccountType password_type,
     OnWarningDone done_callback)
-    : service_(service),
+    : content::WebContentsObserver(web_contents),
+      service_(service),
       url_(web_contents->GetLastCommittedURL()),
       password_type_(password_type),
       window_android_(web_contents->GetTopLevelNativeWindow()),
