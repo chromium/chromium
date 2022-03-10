@@ -120,12 +120,8 @@ void DesksTemplatesPresenter::UpdateDesksTemplatesUI() {
 
     if (DesksBarView* desks_bar_view =
             const_cast<DesksBarView*>(overview_grid->desks_bar_view())) {
-      // When templates is enabled but templates haven't loaded, the templates
-      // button may be visible but have a size of 0x0 so we have to make a
-      // Layout() call here.
       desks_bar_view->UpdateDesksTemplatesButtonVisibility();
       desks_bar_view->UpdateButtonsForDesksTemplatesGrid();
-      desks_bar_view->Layout();
       overview_grid->UpdateSaveDeskAsTemplateButton();
     }
   }

@@ -976,10 +976,27 @@ void DesksBarView::UpdateDesksTemplatesButtonVisibility() {
   const bool should_show_ui =
       DesksTemplatesPresenter::Get()->should_show_templates_ui();
   const bool is_zero_state = IsZeroState();
+
   zero_state_desks_templates_button_->SetVisible(should_show_ui &&
                                                  is_zero_state);
   expanded_state_desks_templates_button_->SetVisible(should_show_ui &&
                                                      !is_zero_state);
+
+  const int begin_x = GetFirstMiniViewXOffset();
+  Layout();
+
+  if (mini_views_.empty())
+    return;
+
+  // The mini views and new desk button are already laid out in the earlier
+  // `Layout()` call. This call shifts the transforms of the mini views and new
+  // desk button and then animates to the identity transform.
+  PerformDesksTemplatesButtonVisibilityAnimation(
+      mini_views_,
+      is_zero_state
+          ? static_cast<views::View*>(zero_state_new_desk_button_)
+          : static_cast<views::View*>(expanded_state_new_desk_button_),
+      begin_x - GetFirstMiniViewXOffset());
 }
 
 DeskMiniView* DesksBarView::FindMiniViewForDesk(const Desk* desk) const {

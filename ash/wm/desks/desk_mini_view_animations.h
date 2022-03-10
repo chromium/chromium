@@ -8,6 +8,10 @@
 #include <memory>
 #include <vector>
 
+namespace views {
+class View;
+}
+
 namespace ash {
 
 class DesksBarView;
@@ -89,6 +93,17 @@ void PerformReorderDeskMiniViewAnimation(
     int old_index,
     int new_index,
     const std::vector<DeskMiniView*>& mini_views);
+
+// Performs the animation which happens when the desks templates button is shown
+// or hidden. Shifts all the mini views and the new desk button to the left by
+// `shift_x`.
+// * Notes:
+// - It assumes all the `mini_views` and new desk button have been laid out in
+//   their final positions.
+void PerformDesksTemplatesButtonVisibilityAnimation(
+    const std::vector<DeskMiniView*>& mini_views,
+    views::View* new_desk_button,
+    int shift_x);
 
 }  // namespace ash
 

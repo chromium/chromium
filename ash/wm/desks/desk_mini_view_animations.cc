@@ -18,6 +18,7 @@
 #include "ui/compositor/layer_animator.h"
 #include "ui/compositor/scoped_layer_animation_settings.h"
 #include "ui/gfx/geometry/transform_util.h"
+#include "ui/views/view.h"
 
 namespace ash {
 
@@ -368,6 +369,16 @@ void PerformReorderDeskMiniViewAnimation(
   ui::ScopedLayerAnimationSettings settings{layer->GetAnimator()};
   InitScopedAnimationSettings(&settings, kExistingMiniViewsAnimationDuration);
   layer->SetTransform(kEndTransform);
+}
+
+void PerformDesksTemplatesButtonVisibilityAnimation(
+    const std::vector<DeskMiniView*>& mini_views,
+    views::View* new_desk_button,
+    int shift_x) {
+  gfx::Transform translation;
+  translation.Translate(shift_x, 0);
+  AnimateMiniViews(mini_views, translation);
+  AnimateView(new_desk_button, translation);
 }
 
 }  // namespace ash
