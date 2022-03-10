@@ -181,6 +181,8 @@ std::unique_ptr<ScopedShortcutOverrideForTesting> OverrideShortcutsForTesting(
     bool success =
         scoped_override->desktop.CreateUniqueTempDirUnderPath(base_path);
     DCHECK(success);
+    success = scoped_override->startup.CreateUniqueTempDirUnderPath(base_path);
+    DCHECK(success);
 #endif
   } else {
 #if BUILDFLAG(IS_WIN)
@@ -197,6 +199,8 @@ std::unique_ptr<ScopedShortcutOverrideForTesting> OverrideShortcutsForTesting(
     DCHECK(success);
 #elif BUILDFLAG(IS_LINUX)
     bool success = scoped_override->desktop.CreateUniqueTempDir();
+    DCHECK(success);
+    success = scoped_override->startup.CreateUniqueTempDir();
     DCHECK(success);
 #endif
   }

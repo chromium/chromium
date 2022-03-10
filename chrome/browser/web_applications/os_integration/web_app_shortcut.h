@@ -49,6 +49,7 @@ struct ScopedShortcutOverrideForTesting {
   base::ScopedTempDir chrome_apps_folder;
 #elif BUILDFLAG(IS_LINUX)
   base::ScopedTempDir desktop;
+  base::ScopedTempDir startup;
 #endif
 };
 

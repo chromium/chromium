@@ -1551,6 +1551,14 @@ void WebAppIntegrationTestDriver::CheckRunOnOSLoginEnabled(
       after_state_change_action_state_.get(), profile(), site_mode);
   ASSERT_TRUE(app_state);
   EXPECT_EQ(app_state->run_on_os_login_mode, apps::RunOnOsLoginMode::kWindowed);
+#if BUILDFLAG(IS_LINUX)
+  base::ScopedAllowBlockingForTesting allow_blocking;
+  std::string shortcut_filename = "chrome-" + app_state->id + "-" +
+                                  profile()->GetBaseName().value() + ".desktop";
+
+  ASSERT_TRUE(base::PathExists(
+      shortcut_override_->startup.GetPath().Append(shortcut_filename)));
+#endif
   AfterStateCheckAction();
 }
 
@@ -1561,6 +1569,14 @@ void WebAppIntegrationTestDriver::CheckRunOnOSLoginDisabled(
       after_state_change_action_state_.get(), profile(), site_mode);
   ASSERT_TRUE(app_state);
   EXPECT_EQ(app_state->run_on_os_login_mode, apps::RunOnOsLoginMode::kNotRun);
+#if BUILDFLAG(IS_LINUX)
+  base::ScopedAllowBlockingForTesting allow_blocking;
+  std::string shortcut_filename = "chrome-" + app_state->id + "-" +
+                                  profile()->GetBaseName().value() + ".desktop";
+
+  ASSERT_FALSE(base::PathExists(
+      shortcut_override_->startup.GetPath().Append(shortcut_filename)));
+#endif
   AfterStateCheckAction();
 }
 
