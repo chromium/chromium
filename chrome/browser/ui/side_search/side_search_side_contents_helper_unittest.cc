@@ -22,9 +22,8 @@
 
 namespace {
 
-constexpr char kGoogleSearchURL[] = "https://www.google.com/search?q=test1";
-constexpr char kGoogleSearchHomePageURL[] = "https://www.google.com";
-constexpr char kNonGoogleURL[] = "https://www.test.com";
+constexpr char kSearchMatchUrl[] = "https://www.search-url.com/";
+constexpr char kNonMatchUrl[] = "https://www.tab-frame-url.com/";
 
 class MockSideContentsDelegate : public SideSearchSideContentsHelper::Delegate {
  public:
@@ -64,14 +63,22 @@ namespace test {
 class SideSearchSideContentsHelperTest : public ::testing::Test {
  public:
   void SetUp() override {
-    scoped_feature_list_.InitAndEnableFeature(features::kSideSearch);
+    scoped_feature_list_.InitWithFeatures(
+        {features::kSideSearch, features::kSideSearchDSESupport}, {});
     side_contents_ =
         content::WebContentsTester::CreateTestWebContents(&profile_, nullptr);
     SideSearchSideContentsHelper::CreateForWebContents(side_contents());
     helper()->SetDelegate(&delegate_);
-    // TODO(crbug.com/1304513): Update test to avoid Google specific behavior.
-    SideSearchConfig::Get(&profile_)
-        ->ApplyGoogleSearchConfigurationForTesting();
+    // Basic configuration for testing that will always show the side panel and
+    // allows navigations to URLs matching `kSearchMatchUrl` to proceed
+    // within the side panel.
+    auto* config = SideSearchConfig::Get(&profile_);
+    config->SetShouldNavigateInSidePanelCallback(base::BindRepeating(
+        [&](const GURL& url) { return url == kSearchMatchUrl; }));
+    config->SetCanShowSidePanelForURLCallback(
+        base::BindRepeating([](const GURL& url) { return true; }));
+    config->SetGenerateSideSearchURLCallback(
+        base::BindRepeating([](const GURL& url) { return url; }));
     Test::SetUp();
   }
 
@@ -118,11 +125,12 @@ class SideSearchSideContentsHelperTest : public ::testing::Test {
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-TEST_F(SideSearchSideContentsHelperTest, GoogleSearchURLsNavigateSideContents) {
-  LoadURL(kGoogleSearchURL);
-  EXPECT_EQ(GURL(kGoogleSearchURL),
+TEST_F(SideSearchSideContentsHelperTest,
+       RedirectionConfigNavigatesSideContents) {
+  LoadURL(kSearchMatchUrl);
+  EXPECT_EQ(GURL(kSearchMatchUrl),
             GetLastCommittedSideContentsEntry()->GetURL());
-  EXPECT_EQ(GURL(kGoogleSearchURL), delegate().last_search_url());
+  EXPECT_EQ(GURL(kSearchMatchUrl), delegate().last_search_url());
   EXPECT_TRUE(delegate().tab_contents_url().is_empty());
   histogram_tester_.ExpectUniqueSample(
       "SideSearch.Navigation",
@@ -130,23 +138,12 @@ TEST_F(SideSearchSideContentsHelperTest, GoogleSearchURLsNavigateSideContents) {
 }
 
 TEST_F(SideSearchSideContentsHelperTest,
-       NonGoogleSearchURLNavigatesTabContents) {
-  LoadURL(kNonGoogleURL);
+       RedirectionConfigNavigatesTabContents) {
+  LoadURL(kNonMatchUrl);
   EXPECT_TRUE(!GetLastCommittedSideContentsEntry() ||
               GetLastCommittedSideContentsEntry()->IsInitialEntry());
   EXPECT_TRUE(delegate().last_search_url().is_empty());
-  EXPECT_EQ(GURL(kNonGoogleURL), delegate().tab_contents_url());
-  histogram_tester_.ExpectUniqueSample(
-      "SideSearch.Navigation", SideSearchNavigationType::kRedirectionToTab, 1);
-}
-
-TEST_F(SideSearchSideContentsHelperTest,
-       GoogleHomePageURLNavigatesTabContents) {
-  LoadURL(kGoogleSearchHomePageURL);
-  EXPECT_TRUE(!GetLastCommittedSideContentsEntry() ||
-              GetLastCommittedSideContentsEntry()->IsInitialEntry());
-  EXPECT_TRUE(delegate().last_search_url().is_empty());
-  EXPECT_EQ(GURL(kGoogleSearchHomePageURL), delegate().tab_contents_url());
+  EXPECT_EQ(GURL(kNonMatchUrl), delegate().tab_contents_url());
   histogram_tester_.ExpectUniqueSample(
       "SideSearch.Navigation", SideSearchNavigationType::kRedirectionToTab, 1);
 }
