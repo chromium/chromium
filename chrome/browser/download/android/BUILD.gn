@@ -62,6 +62,7 @@ android_library("java") {
     "java/src/org/chromium/chrome/browser/download/home/DownloadManagerUiConfigHelper.java",
     "java/src/org/chromium/chrome/browser/download/home/FaviconProvider.java",
     "java/src/org/chromium/chrome/browser/download/home/JustNowProvider.java",
+    "java/src/org/chromium/chrome/browser/download/items/OfflineContentAggregatorFactory.java",
     "java/src/org/chromium/chrome/browser/download/settings/DownloadDirectoryAdapter.java",
     "java/src/org/chromium/chrome/browser/download/settings/DownloadLocationPreference.java",
     "java/src/org/chromium/chrome/browser/download/settings/DownloadLocationPreferenceAdapter.java",
@@ -137,6 +138,7 @@ generate_jni("jni_headers") {
     "java/src/org/chromium/chrome/browser/download/MimeUtils.java",
     "java/src/org/chromium/chrome/browser/download/MixedContentDownloadDialogBridge.java",
     "java/src/org/chromium/chrome/browser/download/StringUtils.java",
+    "java/src/org/chromium/chrome/browser/download/items/OfflineContentAggregatorFactory.java",
   ]
 }
 
