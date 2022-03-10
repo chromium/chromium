@@ -15,6 +15,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/webui/access_code_cast/access_code_cast.mojom.h"
 #include "components/leveldb_proto/public/proto_database.h"
+#include "components/media_router/browser/logger_impl.h"
 #include "components/signin/public/identity_manager/primary_account_access_token_fetcher.h"
 #include "google_apis/gaia/google_service_auth_error.h"
 #include "services/network/public/cpp/resource_request.h"
@@ -36,12 +37,14 @@ class AccessCodeCastDiscoveryInterface {
   using AddSinkResultCode = access_code_cast::mojom::AddSinkResultCode;
 
   AccessCodeCastDiscoveryInterface(Profile* profile,
-                                   const std::string& access_code);
+                                   const std::string& access_code,
+                                   LoggerImpl* logger);
 
   // Used for tests. Can be used if caller constructs their own EndpointFetcher.
   AccessCodeCastDiscoveryInterface(
       Profile* profile,
       const std::string& access_code,
+      LoggerImpl* logger,
       std::unique_ptr<EndpointFetcher> endpoint_fetcher);
 
   virtual ~AccessCodeCastDiscoveryInterface();
@@ -83,10 +86,16 @@ class AccessCodeCastDiscoveryInterface {
   void HandleServerResponse(std::unique_ptr<EndpointResponse> response);
   void ReportError(AddSinkResultCode error);
 
+  AddSinkResultCode GetErrorFromResponse(const base::Value& response);
+  AddSinkResultCode IsResponseValid(
+      const absl::optional<base::Value>& response);
+
   Profile* const profile_;
   // Access code passed down from the WebUI and used in the construction of the
   // discovery interface object.
   const std::string access_code_;
+
+  LoggerImpl* const logger_;
 
   std::unique_ptr<EndpointFetcher> endpoint_fetcher_;
 

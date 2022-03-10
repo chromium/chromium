@@ -85,6 +85,8 @@ class AccessCodeCastSinkServiceTest : public testing::Test {
     profile_ = profile_manager()->CreateTestingProfile("foo_email");
 
     router_ = std::make_unique<NiceMock<media_router::MockMediaRouter>>();
+    logger_ = std::make_unique<LoggerImpl>();
+    ON_CALL(*router_, GetLogger()).WillByDefault(Return(logger_.get()));
 
     access_code_cast_sink_service_ =
         base::WrapUnique(new AccessCodeCastSinkService(
@@ -115,6 +117,7 @@ class AccessCodeCastSinkServiceTest : public testing::Test {
   content::BrowserTaskEnvironment task_environment_;
   std::unique_ptr<TestingProfileManager> profile_manager_;
   std::unique_ptr<media_router::MockMediaRouter> router_;
+  std::unique_ptr<LoggerImpl> logger_;
 
   raw_ptr<TestingProfile> profile_;
   scoped_refptr<base::TestMockTimeTaskRunner> mock_time_task_runner_;

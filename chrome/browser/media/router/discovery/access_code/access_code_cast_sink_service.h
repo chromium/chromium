@@ -12,6 +12,8 @@
 #include "chrome/browser/media/router/discovery/mdns/cast_media_sink_service_impl.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/keyed_service/core/keyed_service.h"
+#include "components/media_router/browser/logger_impl.h"
+#include "components/media_router/browser/media_router.h"
 #include "components/media_router/browser/media_routes_observer.h"
 #include "components/media_router/common/discovery/media_sink_internal.h"
 #include "components/media_router/common/discovery/media_sink_service_base.h"

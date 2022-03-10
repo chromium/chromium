@@ -34,6 +34,7 @@ if (!is_android) {
       "//chrome/browser/profiles:profile",
       "//components/media_router/browser:browser",
       "//components/media_router/common",
+      "//components/media_router/common/mojom:logger",
       "//components/media_router/common/mojom:media_router",
     ]
     deps = [

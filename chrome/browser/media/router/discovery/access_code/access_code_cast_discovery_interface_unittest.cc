@@ -193,8 +193,10 @@ class AccessCodeCastDiscoveryInterfaceTest : public testing::Test {
         TRAFFIC_ANNOTATION_FOR_TESTS, test_url_loader_factory,
         identity_test_env_.identity_manager());
 
+    logger_ = std::make_unique<LoggerImpl>();
+
     discovery_interface_ = std::make_unique<AccessCodeCastDiscoveryInterface>(
-        profile, "123456", std::move(endpoint_fetcher_));
+        profile, "123456", logger_.get(), std::move(endpoint_fetcher_));
 
     in_process_data_decoder_ =
         std::make_unique<data_decoder::test::InProcessDataDecoder>();
@@ -277,6 +279,7 @@ class AccessCodeCastDiscoveryInterfaceTest : public testing::Test {
   std::unique_ptr<EndpointFetcher> endpoint_fetcher_;
   std::unique_ptr<data_decoder::test::InProcessDataDecoder>
       in_process_data_decoder_;
+  std::unique_ptr<LoggerImpl> logger_;
 };
 
 TEST_F(AccessCodeCastDiscoveryInterfaceTest,

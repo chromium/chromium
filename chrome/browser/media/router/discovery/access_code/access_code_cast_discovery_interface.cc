@@ -5,6 +5,7 @@
 #include "chrome/browser/media/router/discovery/access_code/access_code_cast_discovery_interface.h"
 
 #include <cstddef>
+#include <string>
 
 #include "base/callback_helpers.h"
 #include "base/json/json_reader.h"
@@ -34,6 +35,9 @@
 namespace media_router {
 
 namespace {
+
+constexpr char kLoggerComponent[] = "AccessCodeCastDiscoveryInterface";
+
 using AddSinkResultCode = access_code_cast::mojom::AddSinkResultCode;
 
 bool command_line_enabled_for_testing = false;
@@ -130,7 +134,55 @@ std::string GetDiscoveryUrl() {
   return std::string(kDefaultDiscoveryEndpoint) + kDiscoveryServicePath;
 }
 
-AddSinkResultCode GetErrorFromResponse(const base::Value& response) {
+bool HasAuthenticationError(const std::string& response) {
+  return response == "There was an authentication error";
+}
+
+bool HasServerError(const std::string& response) {
+  return response == "There was a response error";
+}
+
+bool HasSyncError(const std::string& response) {
+  return response == "No primary accounts found";
+}
+
+}  // namespace
+
+void AccessCodeCastDiscoveryInterface::EnableCommandLineSupportForTesting() {
+  command_line_enabled_for_testing = true;
+}
+
+AccessCodeCastDiscoveryInterface::AccessCodeCastDiscoveryInterface(
+    Profile* profile,
+    const std::string& access_code,
+    LoggerImpl* logger)
+    : profile_(profile),
+      access_code_(access_code),
+      logger_(logger),
+      endpoint_fetcher_(CreateEndpointFetcher(access_code)) {
+  DCHECK(profile_);
+}
+
+AccessCodeCastDiscoveryInterface::AccessCodeCastDiscoveryInterface(
+    Profile* profile,
+    const std::string& access_code,
+    LoggerImpl* logger,
+    std::unique_ptr<EndpointFetcher> endpoint_fetcher)
+    : profile_(profile),
+      access_code_(access_code),
+      logger_(logger),
+      endpoint_fetcher_(std::move(endpoint_fetcher)) {
+  DCHECK(profile_);
+}
+
+AccessCodeCastDiscoveryInterface::~AccessCodeCastDiscoveryInterface() = default;
+
+void AccessCodeCastDiscoveryInterface::ReportError(AddSinkResultCode error) {
+  std::move(callback_).Run(absl::nullopt, error);
+}
+
+AddSinkResultCode AccessCodeCastDiscoveryInterface::GetErrorFromResponse(
+    const base::Value& response) {
   const base::Value* error = response.FindKey(kJsonError);
   if (!error) {
     return AddSinkResultCode::OK;
@@ -143,8 +195,12 @@ AddSinkResultCode GetErrorFromResponse(const base::Value& response) {
   }
 
   const std::string* error_message = error->FindStringKey(kJsonErrorMessage);
-  LOG(ERROR) << "CAST2CLASS: Error: HTTP " << *http_code << ": ("
-             << (error_message ? *error_message : "") << ")";
+
+  logger_->LogError(
+      mojom::LogCategory::kDiscovery, kLoggerComponent,
+      "The server response yielded the error: " + std::string(*error_message) +
+          " with HTTP code: " + base::NumberToString(*http_code),
+      "", "", "");
 
   switch (*http_code) {
     // 401
@@ -194,62 +250,26 @@ AddSinkResultCode GetErrorFromResponse(const base::Value& response) {
 
 // TODO(b/206997996): Add an enum to the EndpointResponse struct so that we can
 // check the enum instead of the string
-AddSinkResultCode IsResponseValid(const absl::optional<base::Value>& response) {
+AddSinkResultCode AccessCodeCastDiscoveryInterface::IsResponseValid(
+    const absl::optional<base::Value>& response) {
   if (!response || !response->is_dict()) {
-    LOG(ERROR) << "CAST2CLASS: response_body was of unexpected format.";
+    logger_->LogError(
+        mojom::LogCategory::kDiscovery, kLoggerComponent,
+        "The response body from the server was of unexpected format.", "", "",
+        "");
     return AddSinkResultCode::RESPONSE_MALFORMED;
   }
 
   if (response->DictEmpty()) {
-    LOG(ERROR) << "CAST2CLASS: Response does not have value. Response: "
-               << response->DebugString();
+    logger_->LogError(mojom::LogCategory::kDiscovery, kLoggerComponent,
+                      "The response from the server does not have a value. "
+                      "Server response is: " +
+                          response->DebugString(),
+                      "", "", "");
     return AddSinkResultCode::EMPTY_RESPONSE;
   }
 
   return GetErrorFromResponse(*response);
-}
-
-bool HasAuthenticationError(const std::string& response) {
-  return response == "There was an authentication error";
-}
-
-bool HasServerError(const std::string& response) {
-  return response == "There was a response error";
-}
-
-bool HasSyncError(const std::string& response) {
-  return response == "No primary accounts found";
-}
-
-}  // namespace
-
-void AccessCodeCastDiscoveryInterface::EnableCommandLineSupportForTesting() {
-  command_line_enabled_for_testing = true;
-}
-
-AccessCodeCastDiscoveryInterface::AccessCodeCastDiscoveryInterface(
-    Profile* profile,
-    const std::string& access_code)
-    : profile_(profile),
-      access_code_(access_code),
-      endpoint_fetcher_(CreateEndpointFetcher(access_code)) {
-  DCHECK(profile_);
-}
-
-AccessCodeCastDiscoveryInterface::AccessCodeCastDiscoveryInterface(
-    Profile* profile,
-    const std::string& access_code,
-    std::unique_ptr<EndpointFetcher> endpoint_fetcher)
-    : profile_(profile),
-      access_code_(access_code),
-      endpoint_fetcher_(std::move(endpoint_fetcher)) {
-  DCHECK(profile_);
-}
-
-AccessCodeCastDiscoveryInterface::~AccessCodeCastDiscoveryInterface() = default;
-
-void AccessCodeCastDiscoveryInterface::ReportError(AddSinkResultCode error) {
-  std::move(callback_).Run(absl::nullopt, error);
 }
 
 void AccessCodeCastDiscoveryInterface::SetDeviceCapabilitiesField(
@@ -312,21 +332,25 @@ void AccessCodeCastDiscoveryInterface::HandleServerResponse(
     std::unique_ptr<EndpointResponse> response) {
   const std::string& response_string = response->response;
   if (HasAuthenticationError(response_string)) {
-    LOG(ERROR)
-        << "CAST2CLASS: The request to the server failed to be authenticated";
+    logger_->LogError(mojom::LogCategory::kDiscovery, kLoggerComponent,
+                      "The request to the server failed to be authenticated.",
+                      "", "", "");
     ReportError(AddSinkResultCode::AUTH_ERROR);
     return;
   }
 
   if (HasServerError(response_string)) {
-    LOG(ERROR) << "CAST2CLASS: Did not receive a response from server while "
-                  "attempting to validate discovery device.";
+    logger_->LogError(mojom::LogCategory::kDiscovery, kLoggerComponent,
+                      "Did not receive a response from server while "
+                      "attempting to validate discovery device.",
+                      "", "", "");
     ReportError(AddSinkResultCode::SERVER_ERROR);
     return;
   }
 
   if (HasSyncError(response_string)) {
-    LOG(ERROR) << "CAST2CLASS: The account needs to have sync enabled.";
+    logger_->LogError(mojom::LogCategory::kDiscovery, kLoggerComponent,
+                      "The account needs to have sync enabled.", "", "", "");
     ReportError(AddSinkResultCode::PROFILE_SYNC_ERROR);
     return;
   }
@@ -336,6 +360,9 @@ void AccessCodeCastDiscoveryInterface::HandleServerResponse(
 
   AddSinkResultCode result_code = IsResponseValid(response_value);
   if (result_code != AddSinkResultCode::OK) {
+    logger_->LogError(mojom::LogCategory::kDiscovery, kLoggerComponent,
+                      "The response string from the server was not valid", "",
+                      "", "");
     ReportError(result_code);
     return;
   }

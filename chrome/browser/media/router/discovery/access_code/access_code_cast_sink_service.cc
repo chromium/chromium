@@ -28,6 +28,7 @@ namespace media_router {
 namespace {
 using SinkSource = CastDeviceCountMetrics::SinkSource;
 using ChannelOpenedCallback = base::OnceCallback<void(bool)>;
+constexpr char kLoggerComponent[] = "AccessCodeCastSinkService";
 
 const base::TimeDelta kExpirationDelay = base::Milliseconds(250);
 }  // namespace
@@ -135,8 +136,8 @@ void AccessCodeCastSinkService::AccessCodeMediaRoutesObserver::OnRoutesUpdated(
 
 void AccessCodeCastSinkService::HandleMediaRouteDiscoveredByAccessCode(
     const MediaSinkInternal* sink) {
-  // The route Id did not correspond to a sink for some reason. Return to avoid
-  // nullptr issues.
+  // The route Id did not correspond to a sink for some reason. Return to
+  // avoid nullptr issues.
   if (!sink)
     return;
 
@@ -144,18 +145,20 @@ void AccessCodeCastSinkService::HandleMediaRouteDiscoveredByAccessCode(
   if (!sink->is_cast_sink()) {
     return;
   }
-
-  // There are two possible cases here. The common case is that a route for the
-  // specified sink has been terminated by local or remote user interaction. In
-  // this case, call OnAccessCodeRouteRemoved to check whether the sink should
-  // now be removed due to expiration.
-  // The second case occurs during discovery. It's possible that the discovery
-  // process discovered a sink that already existed, and that that sink had an
-  // active route. In that case, |OpenChannelIfNecessary| will have terminated
-  // that route. It is important though, that we don't attempt to expire the
-  // sink in that case, because the user has in fact just "discovered" it. So
-  // before attempting to expire the sink, check to see whether the termination
-  // was due to discovery. If so, then alert the dialog about the successful
+  media_router_->GetLogger()->LogInfo(
+      mojom::LogCategory::kDiscovery, kLoggerComponent,
+      "An Access Code Cast route has ended.", sink->id(), "", "");
+  // There are two possible cases here. The common case is that a route for
+  // the specified sink has been terminated by local or remote user
+  // interaction. In this case, call OnAccessCodeRouteRemoved to check whether
+  // the sink should now be removed due to expiration. The second case occurs
+  // during discovery. It's possible that the discovery process discovered a
+  // sink that already existed, and that that sink had an active route. In
+  // that case, |OpenChannelIfNecessary| will have terminated that route. It
+  // is important though, that we don't attempt to expire the sink in that
+  // case, because the user has in fact just "discovered" it. So before
+  // attempting to expire the sink, check to see whether the termination was
+  // due to discovery. If so, then alert the dialog about the successful
   // discovery.
   auto it = pending_callbacks_.find(sink->id());
   if (it != pending_callbacks_.end()) {
@@ -181,17 +184,22 @@ void AccessCodeCastSinkService::OnAccessCodeRouteRemoved(
   // If the sink is a cast sink discovered by Access Code, instantly expire
   // it from the media router after the casting session has ended. Need to be
   // careful though, because sometimes after a route is removed, another route
-  // is immediately reestablished (this can occur if a tab transitions from one
-  // type of content (mirroring) to another (preseentation).
-  // There was a pause before this method was called, so check again to see if
-  // there's an active route for this sink. Only expire the sink if a new route
-  // wasn't established during the pause.
+  // is immediately reestablished (this can occur if a tab transitions from
+  // one type of content (mirroring) to another (preseentation). There was a
+  // pause before this method was called, so check again to see if there's an
+  // active route for this sink. Only expire the sink if a new route wasn't
+  // established during the pause.
   auto routes = media_router_->GetCurrentRoutes();
   auto route_it = std::find_if(routes.begin(), routes.end(),
                                [&sink](const MediaRoute& route) {
                                  return route.media_sink_id() == sink.id();
                                });
   if (route_it == routes.end()) {
+    media_router_->GetLogger()->LogInfo(
+        mojom::LogCategory::kDiscovery, kLoggerComponent,
+        "Attempting to disconnect and remove the cast sink from "
+        "the media router.",
+        sink.id(), "", "");
     // Only remove the sink if there is still no active routes for this sink.
     cast_media_sink_service_impl_->task_runner()->PostTask(
         FROM_HERE,
@@ -219,16 +227,26 @@ void AccessCodeCastSinkService::OpenChannelIfNecessary(
     ChannelOpenedCallback callback,
     bool has_sink) {
   if (has_sink) {
+    media_router_->GetLogger()->LogInfo(
+        mojom::LogCategory::kDiscovery, kLoggerComponent,
+        "The sink already exists in the media router, no channel "
+        "needs to be opened.",
+        sink.id(), "", "");
     // Check to see if this sink has an active route. If so, we need to
-    // terminate the route before alerting the dialog to discovery success. This
-    // is because any attempt to start a route on a sink that already has one
-    // won't be successful.
+    // terminate the route before alerting the dialog to discovery success.
+    // This is because any attempt to start a route on a sink that already has
+    // one won't be successful.
     auto routes = media_router_->GetCurrentRoutes();
     auto route_it = std::find_if(routes.begin(), routes.end(),
                                  [&sink](const MediaRoute& route) {
                                    return route.media_sink_id() == sink.id();
                                  });
     if (route_it != routes.end()) {
+      media_router_->GetLogger()->LogInfo(
+          mojom::LogCategory::kDiscovery, kLoggerComponent,
+          "There was an existing route when discovery occurred, attempting to "
+          "terminate it.",
+          sink.id(), "", "");
       media_router_->TerminateRoute(route_it->media_route_id());
       pending_callbacks_.emplace(sink.id(), std::move(callback));
     } else {
@@ -237,6 +255,9 @@ void AccessCodeCastSinkService::OpenChannelIfNecessary(
     return;
   }
   auto backoff_entry = std::make_unique<net::BackoffEntry>(&backoff_policy_);
+  media_router_->GetLogger()->LogInfo(
+      mojom::LogCategory::kDiscovery, kLoggerComponent,
+      "Attempting to open a cast channel.", sink.id(), "", "");
   cast_media_sink_service_impl_->task_runner()->PostTask(
       FROM_HERE, base::BindOnce(&CastMediaSinkServiceImpl::OpenChannel,
                                 base::Unretained(cast_media_sink_service_impl_),
@@ -245,10 +266,10 @@ void AccessCodeCastSinkService::OpenChannelIfNecessary(
 }
 
 void AccessCodeCastSinkService::Shutdown() {
-  // There's no guarantee that MediaRouter is still in the MediaRoutesObserver.
-  // |media_routes_observer_| accesses MediaRouter in its dtor. Since
-  // MediaRouter and |this| are both KeyedServices, we must not access
-  // MediaRouter in the dtor of |this|, so we do it here.
+  // There's no guarantee that MediaRouter is still in the
+  // MediaRoutesObserver. |media_routes_observer_| accesses MediaRouter in its
+  // dtor. Since MediaRouter and |this| are both KeyedServices, we must not
+  // access MediaRouter in the dtor of |this|, so we do it here.
   media_routes_observer_.reset();
 }
 

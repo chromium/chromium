@@ -132,10 +132,11 @@ void AccessCodeCastHandler::AddSink(
     AddSinkCallback callback) {
   add_sink_callback_ = mojo::WrapCallbackWithDefaultInvokeIfNotRun(
       std::move(callback), AddSinkResultCode::UNKNOWN_ERROR);
+  DCHECK(media_router_) << "Must have media router!";
 
   discovery_server_interface_ =
-      std::make_unique<AccessCodeCastDiscoveryInterface>(profile_, access_code);
-
+      std::make_unique<AccessCodeCastDiscoveryInterface>(
+          profile_, access_code, media_router_->GetLogger());
   discovery_server_interface_->ValidateDiscoveryAccessCode(
       base::BindOnce(&AccessCodeCastHandler::OnAccessCodeValidated,
                      weak_ptr_factory_.GetWeakPtr()));
@@ -217,14 +218,10 @@ void AccessCodeCastHandler::OnAccessCodeValidated(
     absl::optional<DiscoveryDevice> discovery_device,
     AddSinkResultCode result_code) {
   if (result_code != AddSinkResultCode::OK) {
-    LOG(ERROR) << "CAST2CLASS: Device could not be properly validated with "
-                  "result code "
-               << result_code;
     std::move(add_sink_callback_).Run(result_code);
     return;
   }
   if (!discovery_device.has_value()) {
-    LOG(ERROR) << "CAST2CLASS: Response from the server is empty.";
     std::move(add_sink_callback_).Run(AddSinkResultCode::EMPTY_RESPONSE);
     return;
   }
@@ -233,7 +230,9 @@ void AccessCodeCastHandler::OnAccessCodeValidated(
 
   if (!creation_result.first.has_value() ||
       creation_result.second != CreateCastMediaSinkResult::kOk) {
-    LOG(ERROR) << "CAST2CLASS: An error occured while constructing the sink.";
+    media_router_->GetLogger()->LogError(
+        mojom::LogCategory::kDiscovery, kLoggerComponent,
+        "An error occured while constructing the sink.", "", "", "");
     std::move(add_sink_callback_).Run(AddSinkResultCode::SINK_CREATION_ERROR);
     return;
   }
@@ -262,9 +261,14 @@ void AccessCodeCastHandler::OnChannelOpenedResult(bool channel_opened) {
   if (add_sink_callback_) {
     if (channel_opened) {
       DCHECK(sink_id_) << "Must have sink_id_ when adding a sink!";
+      media_router_->GetLogger()->LogInfo(
+          mojom::LogCategory::kDiscovery, kLoggerComponent,
+          "The channel successfully opened.", sink_id_.value(), "", "");
       CheckForDiscoveryCompletion();
     } else {
-      LOG(ERROR) << "CAST2CLASS: The cast channel failed to open.";
+      media_router_->GetLogger()->LogError(
+          mojom::LogCategory::kDiscovery, kLoggerComponent,
+          "The channel failed to open.", sink_id_.value(), "", "");
       std::move(add_sink_callback_).Run(AddSinkResultCode::CHANNEL_OPEN_ERROR);
     }
   }
@@ -280,6 +284,11 @@ void AccessCodeCastHandler::SetSinkCallbackForTesting(
 void AccessCodeCastHandler::OnResultsUpdated(
     const std::vector<MediaSinkWithCastModes>& sinks) {
   if (add_sink_callback_ && sink_id_) {
+    media_router_->GetLogger()->LogInfo(
+        mojom::LogCategory::kDiscovery, kLoggerComponent,
+        "The QueryManager observer has been alerted about the availability of "
+        "newly discovered sinks.",
+        sink_id_.value(), "", "");
     CheckForDiscoveryCompletion();
   }
 }
@@ -318,8 +327,11 @@ void AccessCodeCastHandler::CastToSink(CastToSinkCallback callback) {
   if (RequiresScreenCapturePermission(cast_mode)) {
     const bool screen_capture_allowed = GetScreenCapturePermission();
     if (!screen_capture_allowed) {
-      LOG(ERROR) << "CAST2CLASS: Screen capture is not allowed. The Route "
-                    "Request has been cancelled";
+      media_router_->GetLogger()->LogError(
+          mojom::LogCategory::kUi, kLoggerComponent,
+          "Screen capture is not allowed. The Route "
+          "Request has been cancelled",
+          sink_id_.value(), "", "");
       std::move(callback).Run(RouteRequestResultCode::CANCELLED);
       return;
     }
