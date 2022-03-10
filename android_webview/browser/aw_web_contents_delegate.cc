@@ -210,7 +210,7 @@ void AwWebContentsDelegate::WebContentsCreated(
     const std::string& frame_name,
     const GURL& target_url,
     content::WebContents* new_contents) {
-  AwContentsIoThreadClient::RegisterPendingContents(new_contents);
+  // Intentionally left empty to override implementation in superclasses.
 }
 
 void AwWebContentsDelegate::CloseContents(WebContents* source) {

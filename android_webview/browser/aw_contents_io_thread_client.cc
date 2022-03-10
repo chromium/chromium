@@ -35,6 +35,7 @@
 #include "content/public/browser/web_contents_observer.h"
 #include "net/base/data_url.h"
 #include "services/network/public/cpp/resource_request.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 using base::LazyInstance;
 using base::android::AttachCurrentThread;
@@ -53,20 +54,11 @@ namespace android_webview {
 
 namespace {
 
-struct IoThreadClientData {
-  bool pending_association;
-  JavaObjectWeakGlobalRef io_thread_client;
+typedef map<content::GlobalRenderFrameHostId, JavaObjectWeakGlobalRef>
+    RenderFrameHostToWeakGlobalRefType;
 
-  IoThreadClientData();
-};
-
-IoThreadClientData::IoThreadClientData() : pending_association(false) {}
-
-typedef map<content::GlobalRenderFrameHostId, IoThreadClientData>
-    RenderFrameHostToIoThreadClientType;
-
-typedef pair<base::flat_set<RenderFrameHost*>, IoThreadClientData>
-    HostsAndClientDataPair;
+typedef pair<base::flat_set<RenderFrameHost*>, JavaObjectWeakGlobalRef>
+    HostsAndWeakGlobalRefPair;
 
 // When browser side navigation is enabled, RenderFrameIDs do not have
 // valid render process host and render frame ids for frame navigations.
@@ -74,30 +66,31 @@ typedef pair<base::flat_set<RenderFrameHost*>, IoThreadClientData>
 // to keep track of which RenderFrameHosts are associated with each
 // FrameTreeNodeId, so we know when the last RenderFrameHost is deleted (and
 // therefore the FrameTreeNodeId should be removed).
-typedef map<int, HostsAndClientDataPair> FrameTreeNodeToIoThreadClientType;
+typedef map<int, HostsAndWeakGlobalRefPair> FrameTreeNodeToWeakGlobalRefType;
 
 // RfhToIoThreadClientMap -----------------------------------------------------
 class RfhToIoThreadClientMap {
  public:
   static RfhToIoThreadClientMap* GetInstance();
   void Set(content::GlobalRenderFrameHostId rfh_id,
-           const IoThreadClientData& client);
-  bool Get(content::GlobalRenderFrameHostId rfh_id, IoThreadClientData* client);
+           const JavaObjectWeakGlobalRef& client);
+  absl::optional<JavaObjectWeakGlobalRef> Get(
+      content::GlobalRenderFrameHostId rfh_id);
 
-  bool Get(int frame_tree_node_id, IoThreadClientData* client);
+  absl::optional<JavaObjectWeakGlobalRef> Get(int frame_tree_node_id);
 
   // Prefer to call these when RenderFrameHost* is available, because they
   // update both maps at the same time.
-  void Set(RenderFrameHost* rfh, const IoThreadClientData& client);
+  void Set(RenderFrameHost* rfh, const JavaObjectWeakGlobalRef& client);
   void Erase(RenderFrameHost* rfh);
 
  private:
   base::Lock map_lock_;
   // We maintain two maps simultaneously so that we can always get the correct
-  // IoThreadClientData, even when only HostIdPair or FrameTreeNodeId is
+  // JavaObjectWeakGlobalRef, even when only HostIdPair or FrameTreeNodeId is
   // available.
-  RenderFrameHostToIoThreadClientType rfh_to_io_thread_client_;
-  FrameTreeNodeToIoThreadClientType frame_tree_node_to_io_thread_client_;
+  RenderFrameHostToWeakGlobalRefType rfh_to_weak_global_ref_;
+  FrameTreeNodeToWeakGlobalRefType frame_tree_node_to_weak_global_ref_;
 };
 
 // static
@@ -114,72 +107,73 @@ RfhToIoThreadClientMap* RfhToIoThreadClientMap::GetInstance() {
 }
 
 void RfhToIoThreadClientMap::Set(content::GlobalRenderFrameHostId rfh_id,
-                                 const IoThreadClientData& client) {
+                                 const JavaObjectWeakGlobalRef& client) {
   base::AutoLock lock(map_lock_);
-  rfh_to_io_thread_client_[rfh_id] = client;
+  rfh_to_weak_global_ref_[rfh_id] = client;
 }
 
-bool RfhToIoThreadClientMap::Get(content::GlobalRenderFrameHostId rfh_id,
-                                 IoThreadClientData* client) {
+absl::optional<JavaObjectWeakGlobalRef> RfhToIoThreadClientMap::Get(
+    content::GlobalRenderFrameHostId rfh_id) {
   base::AutoLock lock(map_lock_);
-  RenderFrameHostToIoThreadClientType::iterator iterator =
-      rfh_to_io_thread_client_.find(rfh_id);
-  if (iterator == rfh_to_io_thread_client_.end())
-    return false;
-
-  *client = iterator->second;
-  return true;
+  RenderFrameHostToWeakGlobalRefType::iterator iterator =
+      rfh_to_weak_global_ref_.find(rfh_id);
+  if (iterator == rfh_to_weak_global_ref_.end()) {
+    return absl::nullopt;
+  } else {
+    return iterator->second;
+  }
 }
 
-bool RfhToIoThreadClientMap::Get(int frame_tree_node_id,
-                                 IoThreadClientData* client) {
+absl::optional<JavaObjectWeakGlobalRef> RfhToIoThreadClientMap::Get(
+    int frame_tree_node_id) {
   base::AutoLock lock(map_lock_);
-  FrameTreeNodeToIoThreadClientType::iterator iterator =
-      frame_tree_node_to_io_thread_client_.find(frame_tree_node_id);
-  if (iterator == frame_tree_node_to_io_thread_client_.end())
-    return false;
-
-  *client = iterator->second.second;
-  return true;
+  FrameTreeNodeToWeakGlobalRefType::iterator iterator =
+      frame_tree_node_to_weak_global_ref_.find(frame_tree_node_id);
+  if (iterator == frame_tree_node_to_weak_global_ref_.end()) {
+    return absl::nullopt;
+  } else {
+    return iterator->second.second;
+  }
 }
 
 void RfhToIoThreadClientMap::Set(RenderFrameHost* rfh,
-                                 const IoThreadClientData& client) {
+                                 const JavaObjectWeakGlobalRef& client) {
   int frame_tree_node_id = rfh->GetFrameTreeNodeId();
   content::GlobalRenderFrameHostId rfh_id = rfh->GetGlobalId();
   base::AutoLock lock(map_lock_);
 
-  // If this FrameTreeNodeId already has an associated IoThreadClientData, add
-  // this RenderFrameHost to the hosts set (it's harmless to overwrite the
-  // IoThreadClientData). Otherwise, operator[] creates a new map entry and we
-  // add this RenderFrameHost to the hosts set and insert |client| in the pair.
-  HostsAndClientDataPair& current_entry =
-      frame_tree_node_to_io_thread_client_[frame_tree_node_id];
+  // If this FrameTreeNodeId already has an associated JavaObjectWeakGlobalRef,
+  // add this RenderFrameHost to the hosts set (it's harmless to overwrite the
+  // JavaObjectWeakGlobalRef). Otherwise, operator[] creates a new map entry and
+  // we add this RenderFrameHost to the hosts set and insert |client| in the
+  // pair.
+  HostsAndWeakGlobalRefPair& current_entry =
+      frame_tree_node_to_weak_global_ref_[frame_tree_node_id];
   current_entry.second = client;
   current_entry.first.insert(rfh);
 
   // Always add the entry to the HostIdPair map, since entries are 1:1 with
   // RenderFrameHosts.
-  rfh_to_io_thread_client_[rfh_id] = client;
+  rfh_to_weak_global_ref_[rfh_id] = client;
 }
 
 void RfhToIoThreadClientMap::Erase(RenderFrameHost* rfh) {
   int frame_tree_node_id = rfh->GetFrameTreeNodeId();
   content::GlobalRenderFrameHostId rfh_id = rfh->GetGlobalId();
   base::AutoLock lock(map_lock_);
-  HostsAndClientDataPair& current_entry =
-      frame_tree_node_to_io_thread_client_[frame_tree_node_id];
+  HostsAndWeakGlobalRefPair& current_entry =
+      frame_tree_node_to_weak_global_ref_[frame_tree_node_id];
   size_t num_erased = current_entry.first.erase(rfh);
   DCHECK(num_erased == 1);
   // Only remove this entry from the FrameTreeNodeId map if there are no more
   // live RenderFrameHosts.
   if (current_entry.first.empty()) {
-    frame_tree_node_to_io_thread_client_.erase(frame_tree_node_id);
+    frame_tree_node_to_weak_global_ref_.erase(frame_tree_node_id);
   }
 
   // Always safe to remove the entry from the HostIdPair map, since entries are
   // 1:1 with RenderFrameHosts.
-  rfh_to_io_thread_client_.erase(rfh_id);
+  rfh_to_weak_global_ref_.erase(rfh_id);
 }
 
 // ClientMapEntryUpdater ------------------------------------------------------
@@ -210,10 +204,7 @@ ClientMapEntryUpdater::ClientMapEntryUpdater(JNIEnv* env,
 }
 
 void ClientMapEntryUpdater::RenderFrameCreated(RenderFrameHost* rfh) {
-  IoThreadClientData client_data;
-  client_data.io_thread_client = jdelegate_;
-  client_data.pending_association = false;
-  RfhToIoThreadClientMap::GetInstance()->Set(rfh, client_data);
+  RfhToIoThreadClientMap::GetInstance()->Set(rfh, jdelegate_);
 }
 
 void ClientMapEntryUpdater::RenderFrameDeleted(RenderFrameHost* rfh) {
@@ -229,15 +220,15 @@ void ClientMapEntryUpdater::WebContentsDestroyed() {
 // AwContentsIoThreadClient -----------------------------------------------
 
 // static
-std::unique_ptr<AwContentsIoThreadClient> AwContentsIoThreadClient::FromID(
-    content::GlobalRenderFrameHostId render_frame_host_id) {
-  IoThreadClientData client_data;
-  bool found = RfhToIoThreadClientMap::GetInstance()->Get(render_frame_host_id,
-                                                          &client_data);
-  if (found) {
+// Wrap an optional |JavaObjectWeakGlobalRef| to a Java
+// |AwContentsIoThreadClient| in a native |AwContentsIoThreadClient| by getting
+// a scoped local reference. This will return |nullptr| if either the optional
+// is empty or the weak reference has already expired.
+std::unique_ptr<AwContentsIoThreadClient> WrapOptionalWeakRef(
+    absl::optional<JavaObjectWeakGlobalRef> opt_delegate_weak_ref) {
+  if (opt_delegate_weak_ref) {
     JNIEnv* env = AttachCurrentThread();
-    ScopedJavaLocalRef<jobject> java_delegate =
-        client_data.io_thread_client.get(env);
+    ScopedJavaLocalRef<jobject> java_delegate = opt_delegate_weak_ref->get(env);
     if (java_delegate) {
       return std::make_unique<AwContentsIoThreadClient>(java_delegate);
     }
@@ -245,20 +236,17 @@ std::unique_ptr<AwContentsIoThreadClient> AwContentsIoThreadClient::FromID(
   return nullptr;
 }
 
+// static
+std::unique_ptr<AwContentsIoThreadClient> AwContentsIoThreadClient::FromID(
+    content::GlobalRenderFrameHostId render_frame_host_id) {
+  return WrapOptionalWeakRef(
+      RfhToIoThreadClientMap::GetInstance()->Get(render_frame_host_id));
+}
+
 std::unique_ptr<AwContentsIoThreadClient> AwContentsIoThreadClient::FromID(
     int frame_tree_node_id) {
-  IoThreadClientData client_data;
-  bool found = RfhToIoThreadClientMap::GetInstance()->Get(frame_tree_node_id,
-                                                          &client_data);
-  if (found) {
-    JNIEnv* env = AttachCurrentThread();
-    ScopedJavaLocalRef<jobject> java_delegate =
-        client_data.io_thread_client.get(env);
-    if (java_delegate) {
-      return std::make_unique<AwContentsIoThreadClient>(java_delegate);
-    }
-  }
-  return nullptr;
+  return WrapOptionalWeakRef(
+      RfhToIoThreadClientMap::GetInstance()->Get(frame_tree_node_id));
 }
 
 // static
@@ -269,26 +257,17 @@ void AwContentsIoThreadClient::SubFrameCreated(int render_process_id,
                                                  parent_render_frame_id);
   content::GlobalRenderFrameHostId child_rfh_id(render_process_id,
                                                 child_render_frame_id);
-  IoThreadClientData client_data;
-  if (!RfhToIoThreadClientMap::GetInstance()->Get(parent_rfh_id,
-                                                  &client_data)) {
+  RfhToIoThreadClientMap* map = RfhToIoThreadClientMap::GetInstance();
+  absl::optional<JavaObjectWeakGlobalRef> opt_delegate_weak_ref =
+      map->Get(parent_rfh_id);
+  if (opt_delegate_weak_ref) {
+    map->Set(child_rfh_id, opt_delegate_weak_ref.value());
+  } else {
     // It is possible to not find a mapping for the parent rfh_id if the WebView
     // is in the process of being destroyed, and the mapping has already been
     // erased.
     LOG(WARNING) << "No IoThreadClient associated with parent RenderFrameHost.";
-    return;
   }
-
-  RfhToIoThreadClientMap::GetInstance()->Set(child_rfh_id, client_data);
-}
-
-// static
-void AwContentsIoThreadClient::RegisterPendingContents(
-    WebContents* web_contents) {
-  IoThreadClientData client_data;
-  client_data.pending_association = true;
-  RfhToIoThreadClientMap::GetInstance()->Set(
-      web_contents->GetMainFrame()->GetGlobalId(), client_data);
 }
 
 // static
@@ -313,13 +292,7 @@ void AwContentsIoThreadClient::SetServiceWorkerIoThreadClient(
 // static
 std::unique_ptr<AwContentsIoThreadClient>
 AwContentsIoThreadClient::GetServiceWorkerIoThreadClient() {
-  JNIEnv* env = AttachCurrentThread();
-  ScopedJavaLocalRef<jobject> java_delegate = g_sw_instance_.Get().get(env);
-
-  if (!java_delegate)
-    return nullptr;
-
-  return std::make_unique<AwContentsIoThreadClient>(java_delegate);
+  return WrapOptionalWeakRef(absl::make_optional(g_sw_instance_.Get()));
 }
 
 AwContentsIoThreadClient::AwContentsIoThreadClient(const JavaRef<jobject>& obj)
