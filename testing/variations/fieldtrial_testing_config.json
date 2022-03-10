@@ -2431,19 +2431,6 @@
     "DefaultPassthroughCommandDecoder": [
         {
             "platforms": [
-                "mac"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled_20220104",
-                    "enable_features": [
-                        "DefaultPassthroughCommandDecoder"
-                    ]
-                }
-            ]
-        },
-        {
-            "platforms": [
                 "android"
             ],
             "experiments": [
