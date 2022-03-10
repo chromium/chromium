@@ -77,6 +77,15 @@ AttributionFilterData::FromTriggerFilterValues(FilterValues&& filter_values) {
 }
 
 // static
+AttributionFilterData AttributionFilterData::ForSourceType(
+    AttributionSourceType source_type) {
+  return AttributionFilterData({{
+      kFilterSourceType,
+      std::vector<std::string>{AttributionSourceTypeToString(source_type)},
+  }});
+}
+
+// static
 absl::optional<AttributionFilterData> AttributionFilterData::FromFilterValues(
     FilterValues&& filter_values,
     size_t extra_filters_allowed) {

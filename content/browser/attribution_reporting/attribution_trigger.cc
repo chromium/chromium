@@ -7,6 +7,7 @@
 #include <utility>
 
 #include "base/check.h"
+#include "content/browser/attribution_reporting/attribution_source_type.h"
 
 namespace content {
 
@@ -14,11 +15,13 @@ AttributionTrigger::EventTriggerData::EventTriggerData(
     uint64_t data,
     int64_t priority,
     absl::optional<uint64_t> dedup_key,
-    AttributionSourceType source_type)
+    AttributionFilterData filters,
+    AttributionFilterData not_filters)
     : data(data),
       priority(priority),
       dedup_key(dedup_key),
-      source_type(source_type) {}
+      filters(std::move(filters)),
+      not_filters(std::move(not_filters)) {}
 
 AttributionTrigger::AttributionTrigger(
     net::SchemefulSite conversion_destination,
@@ -52,11 +55,17 @@ AttributionTrigger::AttributionTrigger(
               {EventTriggerData(trigger_data,
                                 priority,
                                 dedup_key,
-                                AttributionSourceType::kNavigation),
+                                /*filters=*/
+                                AttributionFilterData::ForSourceType(
+                                    AttributionSourceType::kNavigation),
+                                /*not_filters=*/AttributionFilterData()),
                EventTriggerData(event_source_trigger_data,
                                 priority,
                                 dedup_key,
-                                AttributionSourceType::kEvent)})) {}
+                                /*filters=*/
+                                AttributionFilterData::ForSourceType(
+                                    AttributionSourceType::kEvent),
+                                /*not_filters=*/AttributionFilterData())})) {}
 
 AttributionTrigger::AttributionTrigger(const AttributionTrigger& other) =
     default;

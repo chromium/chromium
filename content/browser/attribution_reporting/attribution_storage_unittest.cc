@@ -35,6 +35,7 @@
 #include "content/browser/attribution_reporting/attribution_storage_sql.h"
 #include "content/browser/attribution_reporting/attribution_test_utils.h"
 #include "content/browser/attribution_reporting/attribution_trigger.h"
+#include "content/browser/attribution_reporting/attribution_utils.h"
 #include "content/browser/attribution_reporting/common_source_info.h"
 #include "content/browser/attribution_reporting/storable_source.h"
 #include "content/browser/attribution_reporting/stored_source.h"
@@ -94,9 +95,13 @@ class AttributionStorageTest : public testing::Test {
       const AttributionTrigger& conversion) {
     // TOO(apaseltiner): Replace this logic with explicit setting of expected
     // values.
-    auto event_trigger = base::ranges::find(
-        conversion.event_triggers(), source.common_info().source_type(),
-        &AttributionTrigger::EventTriggerData::source_type);
+    auto event_trigger = base::ranges::find_if(
+        conversion.event_triggers(),
+        [&](const AttributionTrigger::EventTriggerData& event_trigger) {
+          return AttributionFiltersMatch(source.common_info().filter_data(),
+                                         event_trigger.filters,
+                                         event_trigger.not_filters);
+        });
     CHECK(event_trigger != conversion.event_triggers().end());
 
     return ReportBuilder(AttributionInfoBuilder(source)
@@ -2139,7 +2144,7 @@ TEST_F(AttributionStorageTest, SourceFilterData_RoundTrips) {
                   }))));
 }
 
-TEST_F(AttributionStorageTest, NoMatchingTriggers) {
+TEST_F(AttributionStorageTest, NoMatchingTriggerData_UsesDefaultData) {
   const auto origin = url::Origin::Create(GURL("https://r.test"));
 
   storage()->StoreSource(SourceBuilder()
@@ -2148,27 +2153,108 @@ TEST_F(AttributionStorageTest, NoMatchingTriggers) {
                              .SetReportingOrigin(origin)
                              .Build());
 
-  EXPECT_EQ(
-      AttributionTrigger::EventLevelResult::kNoMatchingEventTriggers,
-      MaybeCreateAndStoreEventLevelReport(AttributionTrigger(
-          net::SchemefulSite(origin), origin,
-          /*filters=*/AttributionFilterData(),
-          /*debug_key=*/absl::nullopt,
-          {AttributionTrigger::EventTriggerData(
-              /*data=*/0,
-              /*priority=*/0,
-              /*dedup_key=*/absl::nullopt, AttributionSourceType::kEvent)})));
+  EXPECT_EQ(AttributionTrigger::EventLevelResult::kSuccess,
+            MaybeCreateAndStoreEventLevelReport(AttributionTrigger(
+                net::SchemefulSite(origin), origin,
+                /*filters=*/AttributionFilterData(),
+                /*debug_key=*/absl::nullopt,
+                {AttributionTrigger::EventTriggerData(
+                    /*data=*/11,
+                    /*priority=*/12,
+                    /*dedup_key=*/13,
+                    /*filters=*/
+                    AttributionFilterData::ForSourceType(
+                        AttributionSourceType::kEvent),
+                    /*not_filters=*/AttributionFilterData())})));
+
+  EXPECT_THAT(storage()->GetAttributionReports(base::Time::Max()),
+              ElementsAre(EventLevelDataIs(
+                  AllOf(TriggerDataIs(0), TriggerPriorityIs(0)))));
+
+  EXPECT_THAT(storage()->GetActiveSources(),
+              ElementsAre(DedupKeysAre(IsEmpty())));
+}
+
+TEST_F(AttributionStorageTest, MatchingTriggerData_UsesCorrectData) {
+  const auto origin = url::Origin::Create(GURL("https://r.test"));
+
+  storage()->StoreSource(
+      SourceBuilder()
+          .SetSourceType(AttributionSourceType::kNavigation)
+          .SetConversionOrigin(origin)
+          .SetReportingOrigin(origin)
+          .SetFilterData(*AttributionFilterData::FromSourceFilterValues(
+              {{"abc", {"123"}}}))
+          .Build());
+
+  const std::vector<AttributionTrigger::EventTriggerData> event_triggers = {
+      // Filters don't match.
+      AttributionTrigger::EventTriggerData(
+          /*data=*/11,
+          /*priority=*/12,
+          /*dedup_key=*/13,
+          /*filters=*/
+          *AttributionFilterData::FromTriggerFilterValues({
+              {"abc", {"456"}},
+          }),
+          /*not_filters=*/AttributionFilterData()),
+
+      // Filters match, but negated filters do not.
+      AttributionTrigger::EventTriggerData(
+          /*data=*/21,
+          /*priority=*/22,
+          /*dedup_key=*/23,
+          /*filters=*/
+          *AttributionFilterData::FromTriggerFilterValues({
+              {"abc", {"123"}},
+          }),
+          /*not_filters=*/
+          *AttributionFilterData::FromTriggerFilterValues({
+              {"source_type", {"navigation"}},
+          })),
+
+      // Filters and negated filters match.
+      AttributionTrigger::EventTriggerData(
+          /*data=*/31,
+          /*priority=*/32,
+          /*dedup_key=*/33,
+          /*filters=*/
+          *AttributionFilterData::FromTriggerFilterValues({
+              {"abc", {"123"}},
+          }),
+          /*not_filters=*/
+          *AttributionFilterData::FromTriggerFilterValues({
+              {"source_type", {"event"}},
+          })),
+
+      // Filters and negated filters match, but not the first event
+      // trigger to match.
+      AttributionTrigger::EventTriggerData(
+          /*data=*/41,
+          /*priority=*/42,
+          /*dedup_key=*/43,
+          /*filters=*/
+          *AttributionFilterData::FromTriggerFilterValues({
+              {"abc", {"123"}},
+          }),
+          /*not_filters=*/
+          *AttributionFilterData::FromTriggerFilterValues({
+              {"source_type", {"event"}},
+          })),
+  };
 
   EXPECT_EQ(AttributionTrigger::EventLevelResult::kSuccess,
-            MaybeCreateAndStoreEventLevelReport(
-                AttributionTrigger(net::SchemefulSite(origin), origin,
-                                   /*filters=*/AttributionFilterData(),
-                                   /*debug_key=*/absl::nullopt,
-                                   {AttributionTrigger::EventTriggerData(
-                                       /*data=*/0,
-                                       /*priority=*/0,
-                                       /*dedup_key=*/absl::nullopt,
-                                       AttributionSourceType::kNavigation)})));
+            MaybeCreateAndStoreEventLevelReport(AttributionTrigger(
+                net::SchemefulSite(origin), origin,
+                /*filters=*/AttributionFilterData(),
+                /*debug_key=*/absl::nullopt, event_triggers)));
+
+  EXPECT_THAT(storage()->GetAttributionReports(base::Time::Max()),
+              ElementsAre(EventLevelDataIs(
+                  AllOf(TriggerDataIs(31), TriggerPriorityIs(32)))));
+
+  EXPECT_THAT(storage()->GetActiveSources(),
+              ElementsAre(DedupKeysAre(ElementsAre(33))));
 }
 
 TEST_F(AttributionStorageTest, TopLevelTriggerFiltering) {
@@ -2182,26 +2268,21 @@ TEST_F(AttributionStorageTest, TopLevelTriggerFiltering) {
               {{"abc", {"123"}}}))
           .Build());
 
-  const std::vector<AttributionTrigger::EventTriggerData> event_triggers = {
-      AttributionTrigger::EventTriggerData(
-          /*data=*/0,
-          /*priority=*/0,
-          /*dedup_key=*/absl::nullopt, AttributionSourceType::kNavigation),
-  };
-
   AttributionTrigger trigger1(net::SchemefulSite(origin), origin,
                               /*filters=*/
                               *AttributionFilterData::FromTriggerFilterValues({
                                   {"abc", {"456"}},
                               }),
-                              /*debug_key=*/absl::nullopt, event_triggers);
+                              /*debug_key=*/absl::nullopt,
+                              /*event_triggers=*/{});
 
   AttributionTrigger trigger2(net::SchemefulSite(origin), origin,
                               /*filters=*/
                               *AttributionFilterData::FromTriggerFilterValues({
                                   {"abc", {"123"}},
                               }),
-                              /*debug_key=*/absl::nullopt, event_triggers);
+                              /*debug_key=*/absl::nullopt,
+                              /*event_triggers=*/{});
 
   EXPECT_EQ(AttributionTrigger::EventLevelResult::kNoMatchingSourceFilterData,
             MaybeCreateAndStoreEventLevelReport(trigger1));

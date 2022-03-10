@@ -324,9 +324,6 @@ void AttributionInternalsHandlerImpl::OnTriggerHandled(
       status = mojom::WebUIAttributionReport::Status::
           kNoReportCapacityForDestinationSite;
       break;
-    case AttributionTrigger::EventLevelResult::kNoMatchingEventTriggers:
-      status = mojom::WebUIAttributionReport::Status::kNoMatchingEventTriggers;
-      break;
     case AttributionTrigger::EventLevelResult::kNoMatchingSourceFilterData:
       status =
           mojom::WebUIAttributionReport::Status::kNoMatchingSourceFilterData;

@@ -10,7 +10,6 @@
 #include <vector>
 
 #include "content/browser/attribution_reporting/attribution_filter_data.h"
-#include "content/browser/attribution_reporting/attribution_source_type.h"
 #include "content/common/content_export.h"
 #include "net/base/schemeful_site.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -40,10 +39,7 @@ class CONTENT_EXPORT AttributionTrigger {
     kPriorityTooLow = 7,
     kDroppedForNoise = 8,
     kExcessiveReportingOrigins = 9,
-    // TODO(apaseltiner): Remove this value once event-trigger matching is
-    // implemented.
-    kNoMatchingEventTriggers = 10,
-    kNoMatchingSourceFilterData = 11,
+    kNoMatchingSourceFilterData = 10,
     kMaxValue = kNoMatchingSourceFilterData,
   };
 
@@ -63,14 +59,19 @@ class CONTENT_EXPORT AttributionTrigger {
     // performed.
     absl::optional<uint64_t> dedup_key;
 
-    // The source type that this trigger data will match.
-    // TODO(apaseltiner): Replace this with the generalized filtering mechanism.
-    AttributionSourceType source_type;
+    // The filters used to determine whether this `EventTriggerData'`s fields
+    // are used.
+    AttributionFilterData filters;
+
+    // The negated filters used to determine whether this `EventTriggerData'`s
+    // fields are used.
+    AttributionFilterData not_filters;
 
     EventTriggerData(uint64_t data,
                      int64_t priority,
                      absl::optional<uint64_t> dedup_key,
-                     AttributionSourceType source_type);
+                     AttributionFilterData filters,
+                     AttributionFilterData not_filters);
   };
 
   // Should only be created with values that the browser process has already

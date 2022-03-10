@@ -686,7 +686,8 @@ AggregatableSourcesMojoBuilder::Build() const {
 bool operator==(const AttributionTrigger::EventTriggerData& a,
                 const AttributionTrigger::EventTriggerData& b) {
   const auto tie = [](const AttributionTrigger::EventTriggerData& t) {
-    return std::make_tuple(t.data, t.priority, t.dedup_key, t.source_type);
+    return std::make_tuple(t.data, t.priority, t.dedup_key, t.filters,
+                           t.not_filters);
   };
   return tie(a) == tie(b);
 }
@@ -845,9 +846,6 @@ std::ostream& operator<<(std::ostream& out,
     case AttributionTrigger::EventLevelResult::kExcessiveReportingOrigins:
       out << "excessiveReportingOrigins";
       break;
-    case AttributionTrigger::EventLevelResult::kNoMatchingEventTriggers:
-      out << "noMatchingEventTriggers";
-      break;
     case AttributionTrigger::EventLevelResult::kNoMatchingSourceFilterData:
       out << "noMatchingSourceFilterData";
       break;
@@ -907,7 +905,8 @@ std::ostream& operator<<(
              << (event_trigger.dedup_key
                      ? base::NumberToString(*event_trigger.dedup_key)
                      : "null")
-             << ",source_type=" << event_trigger.source_type << "}";
+             << ",filters=" << event_trigger.filters
+             << ",not_filters=" << event_trigger.not_filters << "}";
 }
 
 std::ostream& operator<<(std::ostream& out,

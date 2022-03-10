@@ -39,6 +39,9 @@ class CONTENT_EXPORT AttributionFilterData {
   static absl::optional<AttributionFilterData> FromTriggerFilterValues(
       FilterValues&&);
 
+  // Returns filter data that matches only the given source type.
+  static AttributionFilterData ForSourceType(AttributionSourceType);
+
   // Creates without validation.
   static AttributionFilterData CreateForTesting(FilterValues);
 

@@ -903,10 +903,17 @@ AttributionStorageSql::MaybeCreateEventLevelReport(
   uint64_t trigger_data = 0;
   int64_t priority = 0;
 
-  auto event_trigger =
-      base::ranges::find(trigger.event_triggers(), source_type,
-                         &AttributionTrigger::EventTriggerData::source_type);
+  auto event_trigger = base::ranges::find_if(
+      trigger.event_triggers(),
+      [&](const AttributionTrigger::EventTriggerData& event_trigger) {
+        return AttributionFiltersMatch(source.common_info().filter_data(),
+                                       event_trigger.filters,
+                                       event_trigger.not_filters);
+      });
 
+  // If there's a match, use its data. Otherwise use default values instead of
+  // returning an error so that a report is still sent.
+  // TODO(apaseltiner): Consider recording a metric for no match.
   if (event_trigger != trigger.event_triggers().end()) {
     // TODO(apaseltiner): Consider informing the manager if the trigger
     // data was out of range for DevTools issue reporting.
@@ -944,14 +951,6 @@ AttributionStorageSql::MaybeCreateEventLevelReport(
 
   if (!top_level_filters_match)
     return AttributionTrigger::EventLevelResult::kNoMatchingSourceFilterData;
-
-  // Note that this cannot currently occur outside of tests, because all
-  // triggers have two event triggers, one for each source type, one of which
-  // must match. In the future, when we have general filtering based on strings,
-  // this code path will be reachable and we return without performing
-  // attribution.
-  if (event_trigger == trigger.event_triggers().end())
-    return AttributionTrigger::EventLevelResult::kNoMatchingEventTriggers;
 
   switch (ReportAlreadyStored(report->attribution_info().source.source_id(),
                               dedup_key)) {
