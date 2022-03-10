@@ -49,14 +49,16 @@ IN_PROC_BROWSER_TEST_F(OobeTestApiTest, OobeAPI) {
   test::OobeJS().Evaluate("OobeAPI.screens.NetworkScreen.clickNext()");
 
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-  test::OobeJS().ExpectFalse("OobeAPI.screens.EulaScreen.shouldSkip()");
-  test::OobeJS()
-      .CreateWaiter("OobeAPI.screens.EulaScreen.isReadyForTesting()")
-      ->Wait();
-  test::OobeJS().Evaluate("OobeAPI.screens.EulaScreen.clickNext()");
-#else
-  test::OobeJS().ExpectTrue("OobeAPI.screens.EulaScreen.shouldSkip()");
+  if (!chromeos::features::IsOobeConsolidatedConsentEnabled()) {
+    test::OobeJS().ExpectFalse("OobeAPI.screens.EulaScreen.shouldSkip()");
+    test::OobeJS()
+        .CreateWaiter("OobeAPI.screens.EulaScreen.isReadyForTesting()")
+        ->Wait();
+    test::OobeJS().Evaluate("OobeAPI.screens.EulaScreen.clickNext()");
+    return;
+  }
 #endif
+  test::OobeJS().ExpectTrue("OobeAPI.screens.EulaScreen.shouldSkip()");
 }
 
 class OobeTestApiTestChromebox : public OobeTestApiTest {

@@ -121,8 +121,10 @@ void SkipToEnrollmentOnRecovery() {
   WaitForNetworkSelectionScreen();
   TapNetworkSelectionNext();
 
-  WaitForEulaScreen();
-  TapEulaAccept();
+  if (!chromeos::features::IsOobeConsolidatedConsentEnabled()) {
+    WaitForEulaScreen();
+    TapEulaAccept();
+  }
 
   WaitForUpdateScreen();
   ExitUpdateScreenNoUpdate();
