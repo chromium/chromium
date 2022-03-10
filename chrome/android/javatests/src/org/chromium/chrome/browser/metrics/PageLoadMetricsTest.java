@@ -87,7 +87,7 @@ public class PageLoadMetricsTest {
 
         @Override
         public void onFirstContentfulPaint(WebContents webContents, long navigationId,
-                long navigationStartTick, long firstContentfulPaintMs) {
+                long navigationStartMicros, long firstContentfulPaintMs) {
             if (mNavigationId != navigationId) return;
 
             if (firstContentfulPaintMs > 0) mFirstContentfulPaintLatch.countDown();
@@ -95,7 +95,7 @@ public class PageLoadMetricsTest {
 
         @Override
         public void onLoadEventStart(WebContents webContents, long navigationId,
-                long navigationStartTick, long loadEventStartMs) {
+                long navigationStartMicros, long loadEventStartMs) {
             if (mNavigationId != navigationId) return;
 
             if (loadEventStartMs > 0) mLoadEventStartLatch.countDown();

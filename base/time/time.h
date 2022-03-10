@@ -1012,11 +1012,34 @@ class BASE_EXPORT TimeTicks : public time_internal::TimeBase<TimeTicks> {
 
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_CHROMEOS_ASH)
   // Converts to TimeTicks the value obtained from SystemClock.uptimeMillis().
-  // Note: this convertion may be non-monotonic in relation to previously
+  // Note: this conversion may be non-monotonic in relation to previously
   // obtained TimeTicks::Now() values because of the truncation (to
   // milliseconds) performed by uptimeMillis().
   static TimeTicks FromUptimeMillis(int64_t uptime_millis_value);
-#endif
+
+#endif  // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_CHROMEOS_ASH)
+
+#if BUILDFLAG(IS_ANDROID)
+  // Converts to TimeTicks the value obtained from System.nanoTime(). This
+  // conversion will be monotonic in relation to previously obtained
+  // TimeTicks::Now() values as the clocks are based on the same posix monotonic
+  // clock, with nanoTime() potentially providing higher resolution.
+  static TimeTicks FromJavaNanoTime(int64_t nano_time_value);
+
+  // Truncates the TimeTicks value to the precision of SystemClock#uptimeMillis.
+  // Note that the clocks already share the same monotonic clock source.
+  jlong ToUptimeMillis() const;
+
+  // Returns the TimeTicks value as microseconds in the timebase of
+  // SystemClock#uptimeMillis.
+  // Note that the clocks already share the same monotonic clock source.
+  //
+  // System.nanoTime() may be used to get sub-millisecond precision in Java code
+  // and may be compared against this value as the two share the same clock
+  // source (though be sure to convert nanos to micros).
+  jlong ToUptimeMicros() const;
+
+#endif  // BUILDFLAG(IS_ANDROID)
 
   // Get an estimate of the TimeTick value at the time of the UnixEpoch. Because
   // Time and TimeTicks respond differently to user-set time and NTP

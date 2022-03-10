@@ -30,8 +30,6 @@ import org.mockito.MockitoAnnotations;
 import org.robolectric.Robolectric;
 import org.robolectric.annotation.Config;
 
-import org.chromium.base.TimeUtils;
-import org.chromium.base.TimeUtilsJni;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
@@ -57,8 +55,6 @@ public class OfflineIndicatorControllerV2UnitTest {
     @Mock
     private Supplier<Boolean> mCanAnimateNativeBrowserControls;
     @Mock
-    private TimeUtils.Natives mTimeUtils;
-    @Mock
     private OfflineIndicatorMetricsDelegate mMetricsDelegate;
 
     private Context mContext;
@@ -79,8 +75,6 @@ public class OfflineIndicatorControllerV2UnitTest {
         mOnlineString = mContext.getString(R.string.offline_indicator_v2_back_online_text);
 
         when(mCanAnimateNativeBrowserControls.get()).thenReturn(true);
-        TimeUtilsJni.TEST_HOOKS.setInstanceForTesting(mTimeUtils);
-        when(mTimeUtils.getTimeTicksNowUs()).thenReturn(0L);
         when(mOfflineDetector.isApplicationForeground()).thenReturn(true);
         when(mMetricsDelegate.isTrackingShownDuration()).thenReturn(false);
 

@@ -4,13 +4,13 @@
 
 package org.chromium.chrome.browser.contextmenu;
 
+import android.os.SystemClock;
 import android.util.Pair;
 import android.view.View;
 
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Callback;
-import org.chromium.base.TimeUtilsJni;
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.NativeMethods;
 import org.chromium.base.metrics.RecordHistogram;
@@ -24,7 +24,6 @@ import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 
 import java.util.List;
-import java.util.concurrent.TimeUnit;
 
 /**
  * A helper class that handles generating and dismissing context menus for {@link WebContents}.
@@ -113,8 +112,7 @@ public class ContextMenuHelper {
         };
         mOnMenuShown = () -> {
             mSelectedItemBeforeDismiss = false;
-            mMenuShownTimeMs =
-                    TimeUnit.MICROSECONDS.toMillis(TimeUtilsJni.get().getTimeTicksNowUs());
+            mMenuShownTimeMs = SystemClock.uptimeMillis();
             RecordHistogram.recordBooleanHistogram("ContextMenu.Shown", mWebContents != null);
             recordContextMenuShownType(params);
             if (sMenuShownCallbackForTests != null) {
@@ -191,9 +189,7 @@ public class ContextMenuHelper {
     private void recordTimeToTakeActionHistogram(boolean selectedItem) {
         final String histogramName =
                 "ContextMenu.TimeToTakeAction." + (selectedItem ? "SelectedItem" : "Abandoned");
-        final long timeToTakeActionMs =
-                TimeUnit.MICROSECONDS.toMillis(TimeUtilsJni.get().getTimeTicksNowUs())
-                - mMenuShownTimeMs;
+        final long timeToTakeActionMs = SystemClock.uptimeMillis() - mMenuShownTimeMs;
         RecordHistogram.recordTimesHistogram(histogramName, timeToTakeActionMs);
         if (mCurrentContextMenuParams.isAnchor()
                 && PerformanceHintsObserver.getPerformanceClassForURL(

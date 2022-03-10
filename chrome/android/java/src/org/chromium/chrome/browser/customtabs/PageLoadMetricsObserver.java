@@ -52,21 +52,21 @@ public class PageLoadMetricsObserver implements PageLoadMetrics.Observer {
 
     @Override
     public void onFirstContentfulPaint(WebContents webContents, long navigationId,
-            long navigationStartTick, long firstContentfulPaintMs) {
+            long navigationStartMicros, long firstContentfulPaintMs) {
         if (!shouldNotifyPageLoadMetrics(webContents, navigationId)) return;
 
         mConnection.notifySinglePageLoadMetric(mSession, PageLoadMetrics.FIRST_CONTENTFUL_PAINT,
-                navigationStartTick, firstContentfulPaintMs);
+                navigationStartMicros, firstContentfulPaintMs);
     }
 
     @Override
     public void onLargestContentfulPaint(WebContents webContents, long navigationId,
-            long navigationStartTick, long largestContentfulPaintMs,
+            long navigationStartMicros, long largestContentfulPaintMs,
             long largestContentfulPaintSize) {
         if (!shouldNotifyPageLoadMetrics(webContents, navigationId)) return;
 
         Bundle args = mConnection.createBundleWithNavigationStartAndPageLoadMetric(
-                PageLoadMetrics.LARGEST_CONTENTFUL_PAINT, navigationStartTick,
+                PageLoadMetrics.LARGEST_CONTENTFUL_PAINT, navigationStartMicros,
                 largestContentfulPaintMs);
         args.putLong(PageLoadMetrics.LARGEST_CONTENTFUL_PAINT_SIZE, largestContentfulPaintSize);
         mConnection.notifyPageLoadMetrics(mSession, args);
@@ -74,11 +74,11 @@ public class PageLoadMetricsObserver implements PageLoadMetrics.Observer {
 
     @Override
     public void onLoadEventStart(WebContents webContents, long navigationId,
-            long navigationStartTick, long loadEventStartMs) {
+            long navigationStartMicros, long loadEventStartMs) {
         if (!shouldNotifyPageLoadMetrics(webContents, navigationId)) return;
 
-        mConnection.notifySinglePageLoadMetric(
-                mSession, PageLoadMetrics.LOAD_EVENT_START, navigationStartTick, loadEventStartMs);
+        mConnection.notifySinglePageLoadMetric(mSession, PageLoadMetrics.LOAD_EVENT_START,
+                navigationStartMicros, loadEventStartMs);
     }
 
     @Override

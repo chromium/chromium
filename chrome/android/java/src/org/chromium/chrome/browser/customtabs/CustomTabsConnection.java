@@ -41,7 +41,6 @@ import org.chromium.base.Log;
 import org.chromium.base.StrictModeContext;
 import org.chromium.base.SysUtils;
 import org.chromium.base.ThreadUtils;
-import org.chromium.base.TimeUtilsJni;
 import org.chromium.base.TraceEvent;
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.JNINamespace;
@@ -209,10 +208,6 @@ public class CustomTabsConnection {
 
     @Nullable
     private Callback<CustomTabsSessionToken> mDisconnectCallback;
-
-    // Conversion between native TimeTicks and SystemClock.uptimeMillis().
-    private long mNativeTickOffsetUs;
-    private boolean mNativeTickOffsetUsComputed;
 
     private volatile ChainedTasks mWarmupTasks;
 
@@ -1191,28 +1186,17 @@ public class CustomTabsConnection {
      * Creates a Bundle with a value for navigation start and the specified page load metric.
      *
      * @param metricName Name of the page load metric.
-     * @param navigationStartTick Absolute navigation start time, as TimeTicks taken from native.
+     * @param navigationStartMicros Absolute navigation start time, in microseconds, in
+     *         {@link SystemClock#uptimeMillis()} timebase.
      * @param offsetMs Offset in ms from navigationStart for the page load metric.
      *
      * @return A Bundle containing navigation start and the page load metric.
      */
     Bundle createBundleWithNavigationStartAndPageLoadMetric(
-            String metricName, long navigationStartTick, long offsetMs) {
-        if (!mNativeTickOffsetUsComputed) {
-            // Compute offset from time ticks to uptimeMillis.
-            mNativeTickOffsetUsComputed = true;
-            long nativeNowUs = TimeUtilsJni.get().getTimeTicksNowUs();
-            long javaNowUs = SystemClock.uptimeMillis() * 1000;
-            mNativeTickOffsetUs = nativeNowUs - javaNowUs;
-        }
+            String metricName, long navigationStartMicros, long offsetMs) {
         Bundle args = new Bundle();
         args.putLong(metricName, offsetMs);
-        // SystemClock.uptimeMillis() is used here as it (as of June 2017) uses the same system call
-        // as all the native side of Chrome, that is clock_gettime(CLOCK_MONOTONIC). Meaning that
-        // the offset relative to navigationStart is to be compared with a
-        // SystemClock.uptimeMillis() value.
-        args.putLong(PageLoadMetrics.NAVIGATION_START,
-                (navigationStartTick - mNativeTickOffsetUs) / 1000);
+        args.putLong(PageLoadMetrics.NAVIGATION_START, navigationStartMicros / 1000);
         return args;
     }
 
@@ -1221,16 +1205,17 @@ public class CustomTabsConnection {
      *
      * @param session Session identifier.
      * @param metricName Name of the page load metric.
-     * @param navigationStartTick Absolute navigation start time, as TimeTicks taken from native.
+     * @param navigationStartMicros Absolute navigation start time, in microseconds, in
+     *         {@link SystemClock#uptimeMillis()} timebase.
      * @param offsetMs Offset in ms from navigationStart for the page load metric.
      *
      * @return Whether the metric has been dispatched to the client.
      */
     boolean notifySinglePageLoadMetric(CustomTabsSessionToken session, String metricName,
-            long navigationStartTick, long offsetMs) {
+            long navigationStartMicros, long offsetMs) {
         return notifyPageLoadMetrics(session,
                 createBundleWithNavigationStartAndPageLoadMetric(
-                        metricName, navigationStartTick, offsetMs));
+                        metricName, navigationStartMicros, offsetMs));
     }
 
     /**

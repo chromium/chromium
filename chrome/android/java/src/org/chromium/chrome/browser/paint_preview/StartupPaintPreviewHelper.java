@@ -172,7 +172,7 @@ public class StartupPaintPreviewHelper {
         PageLoadMetrics.Observer observer = new PageLoadMetrics.Observer() {
             @Override
             public void onFirstMeaningfulPaint(WebContents webContents, long navigationId,
-                    long navigationStartTick, long firstMeaningfulPaintMs) {
+                    long navigationStartMicros, long firstMeaningfulPaintMs) {
                 startupPaintPreview.onWebContentsFirstMeaningfulPaint(webContents);
             }
         };

@@ -22,7 +22,7 @@ public class FirstMeaningfulPaintObserver implements PageLoadMetrics.Observer {
 
     @Override
     public void onFirstMeaningfulPaint(WebContents webContents, long navigationId,
-            long navigationStartTick, long firstContentfulPaintMs) {
+            long navigationStartMicros, long firstContentfulPaintMs) {
         if (webContents != mTab.getWebContents()) return;
 
         mCustomTabObserver.onFirstMeaningfulPaint(mTab);

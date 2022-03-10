@@ -96,9 +96,9 @@ public class EarlyTraceEventTest {
         Assert.assertEquals(EVENT_ID, eventStart.mId);
         Assert.assertEquals(EVENT_NAME, eventEnd.mName);
         Assert.assertEquals(EVENT_ID, eventEnd.mId);
-        Assert.assertTrue(beforeNanos <= eventStart.mTimestampNanos
-                && eventEnd.mTimestampNanos <= afterNanos);
-        Assert.assertTrue(eventStart.mTimestampNanos <= eventEnd.mTimestampNanos);
+        Assert.assertTrue(
+                beforeNanos <= eventStart.mTimeNanos && eventEnd.mTimeNanos <= afterNanos);
+        Assert.assertTrue(eventStart.mTimeNanos <= eventEnd.mTimeNanos);
     }
 
     @Test

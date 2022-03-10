@@ -30,7 +30,7 @@ static void JNI_EarlyTraceEvent_RecordEarlyBeginEvent(
   trace_event_internal::AddTraceEventWithThreadIdAndTimestamps(
       TRACE_EVENT_PHASE_BEGIN, category_group_enabled, name.c_str(),
       /*scope=*/nullptr, trace_event_internal::kNoId, thread_id,
-      TimeTicks() + Nanoseconds(time_ns),
+      TimeTicks::FromJavaNanoTime(time_ns),
       ThreadTicks() + Milliseconds(thread_time_ms),
       TRACE_EVENT_FLAG_JAVA_STRING_LITERALS | TRACE_EVENT_FLAG_COPY);
 #endif  // BUILDFLAG(ENABLE_BASE_TRACING)
@@ -50,7 +50,7 @@ static void JNI_EarlyTraceEvent_RecordEarlyEndEvent(
   trace_event_internal::AddTraceEventWithThreadIdAndTimestamps(
       TRACE_EVENT_PHASE_END, category_group_enabled, name.c_str(),
       /*scope=*/nullptr, trace_event_internal::kNoId, thread_id,
-      TimeTicks() + Nanoseconds(time_ns),
+      TimeTicks::FromJavaNanoTime(time_ns),
       ThreadTicks() + Milliseconds(thread_time_ms),
       TRACE_EVENT_FLAG_JAVA_STRING_LITERALS | TRACE_EVENT_FLAG_COPY);
 #endif  // BUILDFLAG(ENABLE_BASE_TRACING)
@@ -71,7 +71,7 @@ static void JNI_EarlyTraceEvent_RecordEarlyToplevelBeginEvent(
   trace_event_internal::AddTraceEventWithThreadIdAndTimestamps(
       TRACE_EVENT_PHASE_BEGIN, category_group_enabled, name.c_str(),
       /*scope=*/nullptr, trace_event_internal::kNoId, thread_id,
-      TimeTicks() + Nanoseconds(time_ns),
+      TimeTicks::FromJavaNanoTime(time_ns),
       ThreadTicks() + Milliseconds(thread_time_ms),
       TRACE_EVENT_FLAG_JAVA_STRING_LITERALS | TRACE_EVENT_FLAG_COPY);
 #endif  // BUILDFLAG(ENABLE_BASE_TRACING)
@@ -92,7 +92,7 @@ static void JNI_EarlyTraceEvent_RecordEarlyToplevelEndEvent(
   trace_event_internal::AddTraceEventWithThreadIdAndTimestamps(
       TRACE_EVENT_PHASE_END, category_group_enabled, name.c_str(),
       /*scope=*/nullptr, trace_event_internal::kNoId, thread_id,
-      TimeTicks() + Nanoseconds(time_ns),
+      TimeTicks::FromJavaNanoTime(time_ns),
       ThreadTicks() + Milliseconds(thread_time_ms),
       TRACE_EVENT_FLAG_JAVA_STRING_LITERALS | TRACE_EVENT_FLAG_COPY);
 #endif  // BUILDFLAG(ENABLE_BASE_TRACING)
@@ -102,12 +102,12 @@ static void JNI_EarlyTraceEvent_RecordEarlyAsyncBeginEvent(
     JNIEnv* env,
     const JavaParamRef<jstring>& jname,
     jlong id,
-    jlong timestamp_ns) {
+    jlong time_ns) {
   std::string name = ConvertJavaStringToUTF8(env, jname);
 
   TRACE_EVENT_NESTABLE_ASYNC_BEGIN_WITH_TIMESTAMP_AND_FLAGS0(
       internal::kJavaTraceCategory, name.c_str(), TRACE_ID_LOCAL(id),
-      base::TimeTicks() + base::Nanoseconds(timestamp_ns),
+      TimeTicks::FromJavaNanoTime(time_ns),
       TRACE_EVENT_FLAG_JAVA_STRING_LITERALS | TRACE_EVENT_FLAG_COPY);
 }
 
@@ -115,12 +115,12 @@ static void JNI_EarlyTraceEvent_RecordEarlyAsyncEndEvent(
     JNIEnv* env,
     const JavaParamRef<jstring>& jname,
     jlong id,
-    jlong timestamp_ns) {
+    jlong time_ns) {
   std::string name = ConvertJavaStringToUTF8(env, jname);
 
   TRACE_EVENT_NESTABLE_ASYNC_END_WITH_TIMESTAMP_AND_FLAGS0(
       internal::kJavaTraceCategory, name.c_str(), TRACE_ID_LOCAL(id),
-      base::TimeTicks() + base::Nanoseconds(timestamp_ns),
+      TimeTicks::FromJavaNanoTime(time_ns),
       TRACE_EVENT_FLAG_JAVA_STRING_LITERALS | TRACE_EVENT_FLAG_COPY);
 }
 

@@ -150,8 +150,7 @@ void NavigationControllerImpl::OnFirstContentfulPaint(
   int64_t first_contentful_paint_ms = first_contentful_paint.InMilliseconds();
   Java_NavigationControllerImpl_onFirstContentfulPaint2(
       AttachCurrentThread(), java_controller_,
-      (navigation_start - base::TimeTicks()).InMicroseconds(),
-      first_contentful_paint_ms);
+      navigation_start.ToUptimeMillis(), first_contentful_paint_ms);
 #endif
 
   for (auto& observer : observers_)
@@ -168,8 +167,7 @@ void NavigationControllerImpl::OnLargestContentfulPaint(
       largest_contentful_paint.InMilliseconds();
   Java_NavigationControllerImpl_onLargestContentfulPaint(
       AttachCurrentThread(), java_controller_,
-      (navigation_start - base::TimeTicks()).InMicroseconds(),
-      largest_contentful_paint_ms);
+      navigation_start.ToUptimeMillis(), largest_contentful_paint_ms);
 #endif
 
   for (auto& observer : observers_)

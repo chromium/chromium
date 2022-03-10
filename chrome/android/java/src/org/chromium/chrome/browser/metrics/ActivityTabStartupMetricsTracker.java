@@ -103,10 +103,10 @@ public class ActivityTabStartupMetricsTracker {
 
         @Override
         public void onFirstContentfulPaint(WebContents webContents, long navigationId,
-                long navigationStartTick, long firstContentfulPaintMs) {
+                long navigationStartMicros, long firstContentfulPaintMs) {
             if (navigationId != mNavigationId || !mShouldRecordHistograms) return;
 
-            recordFirstContentfulPaint(navigationStartTick / 1000 + firstContentfulPaintMs);
+            recordFirstContentfulPaint(navigationStartMicros / 1000 + firstContentfulPaintMs);
         }
 
         void resetMetricsRecordingStateForInitialNavigation() {

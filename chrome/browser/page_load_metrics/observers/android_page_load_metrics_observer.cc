@@ -72,39 +72,28 @@ void AndroidPageLoadMetricsObserver::OnComplete(
 void AndroidPageLoadMetricsObserver::OnFirstContentfulPaintInPage(
     const page_load_metrics::mojom::PageLoadTiming& timing) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  int64_t first_contentful_paint_ms =
-      timing.paint_timing->first_contentful_paint->InMilliseconds();
-  ReportFirstContentfulPaint(
-      (GetDelegate().GetNavigationStart() - base::TimeTicks()).InMicroseconds(),
-      first_contentful_paint_ms);
+  ReportFirstContentfulPaint(GetDelegate().GetNavigationStart(),
+                             *timing.paint_timing->first_contentful_paint);
 }
 
 void AndroidPageLoadMetricsObserver::OnFirstInputInPage(
     const page_load_metrics::mojom::PageLoadTiming& timing) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  int64_t first_input_delay_ms =
-      timing.interactive_timing->first_input_delay->InMilliseconds();
-  ReportFirstInputDelay(first_input_delay_ms);
+  ReportFirstInputDelay(*timing.interactive_timing->first_input_delay);
 }
 
 void AndroidPageLoadMetricsObserver::OnFirstMeaningfulPaintInMainFrameDocument(
     const page_load_metrics::mojom::PageLoadTiming& timing) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  int64_t first_meaningful_paint_ms =
-      timing.paint_timing->first_meaningful_paint->InMilliseconds();
-  ReportFirstMeaningfulPaint(
-      (GetDelegate().GetNavigationStart() - base::TimeTicks()).InMicroseconds(),
-      first_meaningful_paint_ms);
+  ReportFirstMeaningfulPaint(GetDelegate().GetNavigationStart(),
+                             *timing.paint_timing->first_meaningful_paint);
 }
 
 void AndroidPageLoadMetricsObserver::OnLoadEventStart(
     const page_load_metrics::mojom::PageLoadTiming& timing) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  int64_t load_event_start_ms =
-      timing.document_timing->load_event_start->InMilliseconds();
-  ReportLoadEventStart(
-      (GetDelegate().GetNavigationStart() - base::TimeTicks()).InMicroseconds(),
-      load_event_start_ms);
+  ReportLoadEventStart(GetDelegate().GetNavigationStart(),
+                       *timing.document_timing->load_event_start);
 }
 
 void AndroidPageLoadMetricsObserver::OnLoadedResource(
@@ -166,7 +155,7 @@ void AndroidPageLoadMetricsObserver::ReportBufferedMetrics(
       GetDelegate().GetWebContents()->GetJavaWebContents();
   JNIEnv* env = base::android::AttachCurrentThread();
   int64_t navigation_start_tick =
-      (GetDelegate().GetNavigationStart() - base::TimeTicks()).InMicroseconds();
+      GetDelegate().GetNavigationStart().ToUptimeMicros();
   const page_load_metrics::ContentfulPaintTimingInfo& largest_contentful_paint =
       GetDelegate()
           .GetLargestContentfulPaintHandler()
@@ -201,39 +190,39 @@ void AndroidPageLoadMetricsObserver::ReportNetworkQualityEstimate(
 }
 
 void AndroidPageLoadMetricsObserver::ReportFirstContentfulPaint(
-    int64_t navigation_start_tick,
-    int64_t first_contentful_paint_ms) {
+    base::TimeTicks navigation_start_tick,
+    base::TimeDelta first_contentful_paint) {
   base::android::ScopedJavaLocalRef<jobject> java_web_contents =
       GetDelegate().GetWebContents()->GetJavaWebContents();
   JNIEnv* env = base::android::AttachCurrentThread();
   Java_PageLoadMetrics_onFirstContentfulPaint(
       env, java_web_contents, static_cast<jlong>(navigation_id_),
-      static_cast<jlong>(navigation_start_tick),
-      static_cast<jlong>(first_contentful_paint_ms));
+      navigation_start_tick.ToUptimeMicros(),
+      static_cast<jlong>(first_contentful_paint.InMilliseconds()));
 }
 
 void AndroidPageLoadMetricsObserver::ReportFirstMeaningfulPaint(
-    int64_t navigation_start_tick,
-    int64_t first_meaningful_paint_ms) {
+    base::TimeTicks navigation_start_tick,
+    base::TimeDelta first_meaningful_paint) {
   base::android::ScopedJavaLocalRef<jobject> java_web_contents =
       GetDelegate().GetWebContents()->GetJavaWebContents();
   JNIEnv* env = base::android::AttachCurrentThread();
   Java_PageLoadMetrics_onFirstMeaningfulPaint(
       env, java_web_contents, static_cast<jlong>(navigation_id_),
-      static_cast<jlong>(navigation_start_tick),
-      static_cast<jlong>(first_meaningful_paint_ms));
+      navigation_start_tick.ToUptimeMicros(),
+      static_cast<jlong>(first_meaningful_paint.InMilliseconds()));
 }
 
 void AndroidPageLoadMetricsObserver::ReportLoadEventStart(
-    int64_t navigation_start_tick,
-    int64_t load_event_start_ms) {
+    base::TimeTicks navigation_start_tick,
+    base::TimeDelta load_event_start) {
   base::android::ScopedJavaLocalRef<jobject> java_web_contents =
       GetDelegate().GetWebContents()->GetJavaWebContents();
   JNIEnv* env = base::android::AttachCurrentThread();
   Java_PageLoadMetrics_onLoadEventStart(
       env, java_web_contents, static_cast<jlong>(navigation_id_),
-      static_cast<jlong>(navigation_start_tick),
-      static_cast<jlong>(load_event_start_ms));
+      navigation_start_tick.ToUptimeMicros(),
+      static_cast<jlong>(load_event_start.InMilliseconds()));
 }
 
 void AndroidPageLoadMetricsObserver::ReportLoadedMainResource(
@@ -256,11 +245,11 @@ void AndroidPageLoadMetricsObserver::ReportLoadedMainResource(
 }
 
 void AndroidPageLoadMetricsObserver::ReportFirstInputDelay(
-    int64_t first_input_delay_ms) {
+    base::TimeDelta first_input_delay) {
   base::android::ScopedJavaLocalRef<jobject> java_web_contents =
       GetDelegate().GetWebContents()->GetJavaWebContents();
   JNIEnv* env = base::android::AttachCurrentThread();
   Java_PageLoadMetrics_onFirstInputDelay(
       env, java_web_contents, static_cast<jlong>(navigation_id_),
-      static_cast<jlong>(first_input_delay_ms));
+      static_cast<jlong>(first_input_delay.InMilliseconds()));
 }

@@ -8,6 +8,7 @@
 #include <jni.h>
 
 #include "base/memory/raw_ptr.h"
+#include "base/time/time.h"
 #include "components/page_load_metrics/browser/page_load_metrics_observer.h"
 #include "net/nqe/effective_connection_type.h"
 
@@ -67,14 +68,16 @@ class AndroidPageLoadMetricsObserver
       int64_t http_rtt_ms,
       int64_t transport_rtt_ms);
 
-  virtual void ReportFirstContentfulPaint(int64_t navigation_start_tick,
-                                          int64_t first_contentful_paint_ms);
+  virtual void ReportFirstContentfulPaint(
+      base::TimeTicks navigation_start_tick,
+      base::TimeDelta first_contentful_paint);
 
-  virtual void ReportFirstMeaningfulPaint(int64_t navigation_start_tick,
-                                          int64_t first_meaningful_paint_ms);
+  virtual void ReportFirstMeaningfulPaint(
+      base::TimeTicks navigation_start_tick,
+      base::TimeDelta first_meaningful_paint);
 
-  virtual void ReportLoadEventStart(int64_t navigation_start_tick,
-                                    int64_t load_event_start_ms);
+  virtual void ReportLoadEventStart(base::TimeTicks navigation_start_tick,
+                                    base::TimeDelta load_event_start);
 
   virtual void ReportLoadedMainResource(int64_t dns_start_ms,
                                         int64_t dns_end_ms,
@@ -84,7 +87,7 @@ class AndroidPageLoadMetricsObserver
                                         int64_t send_start_ms,
                                         int64_t send_end_ms);
 
-  virtual void ReportFirstInputDelay(int64_t first_input_delay_ms);
+  virtual void ReportFirstInputDelay(base::TimeDelta first_input_delay);
 
  private:
   bool did_dispatch_on_main_resource_ = false;

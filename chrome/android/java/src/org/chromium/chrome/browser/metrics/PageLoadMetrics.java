@@ -72,23 +72,27 @@ public class PageLoadMetrics {
          *
          * @param webContents the WebContents this metrics is related to.
          * @param navigationId the unique id of a navigation this metrics is related to.
-         * @param navigationStartTick Absolute navigation start time, as TimeTicks.
+         * @param navigationStartMicros Absolute navigation start time, in microseconds, in
+         *         the same timebase as {@link SystemClock#uptimeMillis()} and
+         *         {@link System#nanoTime()}.
          * @param firstContentfulPaintMs Time to first contentful paint from navigation start.
          */
         default void onFirstContentfulPaint(WebContents webContents, long navigationId,
-                long navigationStartTick, long firstContentfulPaintMs) {}
+                long navigationStartMicros, long firstContentfulPaintMs) {}
 
         /**
          * Called when the largest contentful paint page load metric is available.
          *
          * @param webContents the WebContents this metrics is related to.
          * @param navigationId the unique id of a navigation this metrics is related to.
-         * @param navigationStartTick Absolute navigation start time, as TimeTicks.
+         * @param navigationStartMicros Absolute navigation start time, in microseconds, in
+         *         the same timebase as {@link SystemClock#uptimeMillis()} and
+         *         {@link System#nanoTime()}.
          * @param largestContentfulPaintMs Time to largest contentful paint from navigation start.
          * @param largestContentfulPaintSize Size of largest contentful paint, in CSS pixels.
          */
         default void onLargestContentfulPaint(WebContents webContents, long navigationId,
-                long navigationStartTick, long largestContentfulPaintMs,
+                long navigationStartMicros, long largestContentfulPaintMs,
                 long largestContentfulPaintSize) {}
 
         /**
@@ -97,11 +101,13 @@ public class PageLoadMetrics {
          *
          * @param webContents the WebContents this metrics is related to.
          * @param navigationId the unique id of a navigation this metrics is related to.
-         * @param navigationStartTick Absolute navigation start time, as TimeTicks.
+         * @param navigationStartMicros Absolute navigation start time, in microseconds, in
+         *         the same timebase as {@link SystemClock#uptimeMillis()} and
+         *         {@link System#nanoTime()}.
          * @param firstMeaningfulPaintMs Time to first meaningful paint from navigation start.
          */
         default void onFirstMeaningfulPaint(WebContents webContents, long navigationId,
-                long navigationStartTick, long firstMeaningfulPaintMs) {}
+                long navigationStartMicros, long firstMeaningfulPaintMs) {}
 
         /**
          * Called when the first input delay page load metric is available.
@@ -118,11 +124,13 @@ public class PageLoadMetrics {
          *
          * @param webContents the WebContents this metrics is related to.
          * @param navigationId the unique id of a navigation this metrics is related to.
-         * @param navigationStartTick Absolute navigation start time, as TimeTicks.
+         * @param navigationStartMicros Absolute navigation start time, in microseconds, in
+         *         the same timebase as {@link SystemClock#uptimeMillis()} and
+         *         {@link System#nanoTime()}.
          * @param loadEventStartMs Time to load event start from navigation start.
          */
         default void onLoadEventStart(WebContents webContents, long navigationId,
-                long navigationStartTick, long loadEventStartMs) {}
+                long navigationStartMicros, long loadEventStartMs) {}
 
         /**
          * Called when the main resource is loaded.
@@ -190,35 +198,35 @@ public class PageLoadMetrics {
 
     @CalledByNative
     static void onFirstContentfulPaint(WebContents webContents, long navigationId,
-            long navigationStartTick, long firstContentfulPaintMs) {
+            long navigationStartMicros, long firstContentfulPaintMs) {
         ThreadUtils.assertOnUiThread();
         if (sObservers == null) return;
         for (Observer observer : sObservers) {
             observer.onFirstContentfulPaint(
-                    webContents, navigationId, navigationStartTick, firstContentfulPaintMs);
+                    webContents, navigationId, navigationStartMicros, firstContentfulPaintMs);
         }
     }
 
     @CalledByNative
     static void onLargestContentfulPaint(WebContents webContents, long navigationId,
-            long navigationStartTick, long largestContentfulPaintMs,
+            long navigationStartMicros, long largestContentfulPaintMs,
             long largestContentfulPaintSize) {
         ThreadUtils.assertOnUiThread();
         if (sObservers == null) return;
         for (Observer observer : sObservers) {
-            observer.onLargestContentfulPaint(webContents, navigationId, navigationStartTick,
+            observer.onLargestContentfulPaint(webContents, navigationId, navigationStartMicros,
                     largestContentfulPaintMs, largestContentfulPaintSize);
         }
     }
 
     @CalledByNative
     static void onFirstMeaningfulPaint(WebContents webContents, long navigationId,
-            long navigationStartTick, long firstMeaningfulPaintMs) {
+            long navigationStartMicros, long firstMeaningfulPaintMs) {
         ThreadUtils.assertOnUiThread();
         if (sObservers == null) return;
         for (Observer observer : sObservers) {
             observer.onFirstMeaningfulPaint(
-                    webContents, navigationId, navigationStartTick, firstMeaningfulPaintMs);
+                    webContents, navigationId, navigationStartMicros, firstMeaningfulPaintMs);
         }
     }
 
@@ -234,12 +242,12 @@ public class PageLoadMetrics {
 
     @CalledByNative
     static void onLoadEventStart(WebContents webContents, long navigationId,
-            long navigationStartTick, long loadEventStartMs) {
+            long navigationStartMicros, long loadEventStartMs) {
         ThreadUtils.assertOnUiThread();
         if (sObservers == null) return;
         for (Observer observer : sObservers) {
             observer.onLoadEventStart(
-                    webContents, navigationId, navigationStartTick, loadEventStartMs);
+                    webContents, navigationId, navigationStartMicros, loadEventStartMs);
         }
     }
 

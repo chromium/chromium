@@ -1485,12 +1485,31 @@ TEST(TimeTicks, Android_FromUptimeMillis_ClocksMatch) {
       android::MethodID::Get<android::MethodID::TYPE_STATIC>(
           env, clazz.obj(), "uptimeMillis", "()J");
   ASSERT_FALSE(!method_id);
-  // Subtract 1ms from the expected lower bound to allow millisecon-level
+  // Subtract 1ms from the expected lower bound to allow millisecond-level
   // truncation performed in uptimeMillis().
   const TimeTicks lower_bound_ticks = TimeTicks::Now() - Milliseconds(1);
   const TimeTicks converted_ticks = TimeTicks::FromUptimeMillis(
       env->CallStaticLongMethod(clazz.obj(), method_id));
   const TimeTicks upper_bound_ticks = TimeTicks::Now();
+  EXPECT_LE(lower_bound_ticks, converted_ticks);
+  EXPECT_GE(upper_bound_ticks, converted_ticks);
+}
+
+TEST(TimeTicks, Android_FromJavaNanoTime_ClocksMatch) {
+  JNIEnv* const env = android::AttachCurrentThread();
+  android::ScopedJavaLocalRef<jclass> clazz(
+      android::GetClass(env, "java/lang/System"));
+  ASSERT_TRUE(clazz.obj());
+  const jmethodID method_id =
+      android::MethodID::Get<android::MethodID::TYPE_STATIC>(env, clazz.obj(),
+                                                             "nanoTime", "()J");
+  ASSERT_FALSE(!method_id);
+  const TimeTicks lower_bound_ticks = TimeTicks::Now();
+  const TimeTicks converted_ticks = TimeTicks::FromJavaNanoTime(
+      env->CallStaticLongMethod(clazz.obj(), method_id));
+  // Add 1us to the expected upper bound to allow microsecond-level
+  // truncation performed in TimeTicks::Now().
+  const TimeTicks upper_bound_ticks = TimeTicks::Now() + Microseconds(1);
   EXPECT_LE(lower_bound_ticks, converted_ticks);
   EXPECT_GE(upper_bound_ticks, converted_ticks);
 }

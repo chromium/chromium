@@ -4,9 +4,7 @@
 
 package org.chromium.chrome.browser.tasks;
 
-import org.chromium.base.TimeUtilsJni;
-
-import java.util.concurrent.TimeUnit;
+import android.os.SystemClock;
 
 /**
  * Utility class to provide engagement time helper methods.
@@ -51,19 +49,19 @@ public class EngagementTimeUtil {
 
     /**
      * Given the last engagement time, typically set by System.currentTimeMillis(), and the current
-     * event timestamp in base::TimeTicks in milliseconds, this computes the elapsed time between
-     * the two in milliseconds.
+     * event timestamp in {@link SystemClock#uptimeMillis()} timebase, this computes the elapsed
+     * time between the two in milliseconds.
      *
      * @param lastEngagementMs Timestamp of the last engagement in milliseconds.
-     * @param currentEngagementTicksMs Timestamp of the current event in TimeTicks (ms)
+     * @param currentEngagementMs Timestamp of the current event in milliseconds
+     *         ({@link SystemClock#uptimeMillis()} timebase).
      * @return
      */
     public long timeSinceLastEngagementFromTimeTicksMs(
-            final long lastEngagementMs, final long currentEngagementTicksMs) {
+            final long lastEngagementMs, final long currentEngagementMs) {
         final long currentTimeMs = currentTime();
-        final long currentTimeTicksUs = TimeUtilsJni.get().getTimeTicksNowUs();
-        final long currentTimeTicksMs = TimeUnit.MICROSECONDS.toMillis(currentTimeTicksUs);
-        final long offsetMs = currentTimeTicksMs - currentEngagementTicksMs;
+        final long currentUptimeMs = SystemClock.uptimeMillis();
+        final long offsetMs = currentUptimeMs - currentEngagementMs;
         final long currentEngagementTimeMs = currentTimeMs - offsetMs;
         final long elapsedMs = currentEngagementTimeMs - lastEngagementMs;
 

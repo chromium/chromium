@@ -4,12 +4,9 @@
 
 package org.chromium.base;
 
-import org.chromium.base.annotations.JNINamespace;
 import org.chromium.base.annotations.MainDex;
-import org.chromium.base.annotations.NativeMethods;
 
 /** Time-related utilities. */
-@JNINamespace("base::android")
 @MainDex
 public class TimeUtils {
     private TimeUtils() {}
@@ -19,12 +16,4 @@ public class TimeUtils {
     public static final int SECONDS_PER_MINUTE = 60;
     public static final int SECONDS_PER_HOUR = 3600; // 60 sec * 60 min
     public static final int SECONDS_PER_DAY = 86400;
-
-    @NativeMethods
-    public interface Natives {
-        // 60 sec * 60 min * 24 h
-
-        /** Returns TimeTicks::Now() in microseconds. */
-        long getTimeTicksNowUs();
-    }
 }

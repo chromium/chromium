@@ -55,7 +55,7 @@ public class EarlyTraceEvent {
             mIsToplevel = isToplevel;
             mName = name;
             mThreadId = Process.myTid();
-            mTimeNanos = SystemClock.elapsedRealtimeNanos();
+            mTimeNanos = System.nanoTime(); // Same timebase as TimeTicks::Now().
             mThreadTimeMillis = SystemClock.currentThreadTimeMillis();
         }
     }
@@ -65,13 +65,13 @@ public class EarlyTraceEvent {
         final boolean mIsStart;
         final String mName;
         final long mId;
-        final long mTimestampNanos;
+        final long mTimeNanos;
 
         AsyncEvent(String name, long id, boolean isStart) {
             mName = name;
             mId = id;
             mIsStart = isStart;
-            mTimestampNanos = SystemClock.elapsedRealtimeNanos();
+            mTimeNanos = System.nanoTime(); // Same timebase as TimeTicks::Now().
         }
     }
 
@@ -315,44 +315,35 @@ public class EarlyTraceEvent {
     }
 
     private static void dumpEvents(List<Event> events) {
-        long offsetNanos = getOffsetNanos();
         for (Event e : events) {
             if (e.mIsStart) {
                 if (e.mIsToplevel) {
                     EarlyTraceEventJni.get().recordEarlyToplevelBeginEvent(
-                            e.mName, e.mTimeNanos + offsetNanos, e.mThreadId, e.mThreadTimeMillis);
+                            e.mName, e.mTimeNanos, e.mThreadId, e.mThreadTimeMillis);
                 } else {
                     EarlyTraceEventJni.get().recordEarlyBeginEvent(
-                            e.mName, e.mTimeNanos + offsetNanos, e.mThreadId, e.mThreadTimeMillis);
+                            e.mName, e.mTimeNanos, e.mThreadId, e.mThreadTimeMillis);
                 }
             } else {
                 if (e.mIsToplevel) {
                     EarlyTraceEventJni.get().recordEarlyToplevelEndEvent(
-                            e.mName, e.mTimeNanos + offsetNanos, e.mThreadId, e.mThreadTimeMillis);
+                            e.mName, e.mTimeNanos, e.mThreadId, e.mThreadTimeMillis);
                 } else {
                     EarlyTraceEventJni.get().recordEarlyEndEvent(
-                            e.mName, e.mTimeNanos + offsetNanos, e.mThreadId, e.mThreadTimeMillis);
+                            e.mName, e.mTimeNanos, e.mThreadId, e.mThreadTimeMillis);
                 }
             }
         }
     }
+
     private static void dumpAsyncEvents(List<AsyncEvent> events) {
-        long offsetNanos = getOffsetNanos();
         for (AsyncEvent e : events) {
             if (e.mIsStart) {
-                EarlyTraceEventJni.get().recordEarlyAsyncBeginEvent(
-                        e.mName, e.mId, e.mTimestampNanos + offsetNanos);
+                EarlyTraceEventJni.get().recordEarlyAsyncBeginEvent(e.mName, e.mId, e.mTimeNanos);
             } else {
-                EarlyTraceEventJni.get().recordEarlyAsyncEndEvent(
-                        e.mName, e.mId, e.mTimestampNanos + offsetNanos);
+                EarlyTraceEventJni.get().recordEarlyAsyncEndEvent(e.mName, e.mId, e.mTimeNanos);
             }
         }
-    }
-
-    private static long getOffsetNanos() {
-        long nativeNowNanos = TimeUtilsJni.get().getTimeTicksNowUs() * 1000;
-        long javaNowNanos = SystemClock.elapsedRealtimeNanos();
-        return nativeNowNanos - javaNowNanos;
     }
 
     @NativeMethods
@@ -363,7 +354,7 @@ public class EarlyTraceEvent {
                 String name, long timeNanos, int threadId, long threadMillis);
         void recordEarlyToplevelEndEvent(
                 String name, long timeNanos, int threadId, long threadMillis);
-        void recordEarlyAsyncBeginEvent(String name, long id, long timestamp);
-        void recordEarlyAsyncEndEvent(String name, long id, long timestamp);
+        void recordEarlyAsyncBeginEvent(String name, long id, long timeNanos);
+        void recordEarlyAsyncEndEvent(String name, long id, long timeNanos);
     }
 }
