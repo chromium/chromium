@@ -85,7 +85,7 @@ class SupportLibWebViewChromiumFactory implements WebViewProviderFactoryBoundary
                     Features.DOCUMENT_START_SCRIPT,
                     Features.PROXY_OVERRIDE_REVERSE_BYPASS,
                     Features.REQUESTED_WITH_HEADER_CONTROL + Features.DEV_SUFFIX,
-                    Features.GET_VARIATIONS_HEADER + Features.DEV_SUFFIX
+                    Features.GET_VARIATIONS_HEADER,
             };
 
     // These values are persisted to logs. Entries should not be renumbered and
