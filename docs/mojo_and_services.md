@@ -395,7 +395,7 @@ API:
 ``` cpp
 mojo::Remote<math::mojom::MathService> math_service =
     content::ServiceProcessHost::Launch<math::mojom::MathService>(
-        content::ServiceProcessHost::LaunchOptions()
+        content::ServiceProcessHost::Options()
             .WithDisplayName("Math!")
             .Pass());
 ```
