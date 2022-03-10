@@ -38,6 +38,9 @@
 
 namespace {
 
+// Generous cap to guard against out-of-memory issues.
+constexpr int kMaxDesiredSizeInPixel = 2048;
+
 // web_contents->GetLastCommittedURL in general will not necessarily yield the
 // original URL that started the request, but we're only interested in verifying
 // if it was issued by a history page, for whom this is the case. If it is not
@@ -109,6 +112,15 @@ void FaviconSource::StartDataRequest(
     return;
   }
 
+  const int desired_size_in_pixel =
+      std::ceil(parsed.size_in_dip * parsed.device_scale_factor);
+
+  // Guard against out-of-memory issues.
+  if (desired_size_in_pixel > kMaxDesiredSizeInPixel) {
+    SendDefaultResponse(std::move(callback), wc_getter);
+    return;
+  }
+
   if (url_format_ == chrome::FaviconUrlFormat::kFaviconLegacy) {
     const extensions::Extension* extension =
         extensions::ExtensionRegistry::Get(profile_)
@@ -120,9 +132,6 @@ void FaviconSource::StartDataRequest(
                                     extensions::Manifest::NUM_LOAD_TYPES);
     }
   }
-
-  int desired_size_in_pixel =
-      std::ceil(parsed.size_in_dip * parsed.device_scale_factor);
 
   if (parsed.page_url.empty()) {
     // Request by icon url.

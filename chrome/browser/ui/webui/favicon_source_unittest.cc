@@ -305,3 +305,17 @@ TEST_F(
            "com&allow_google_server_fallback=1"})),
       test_web_contents_getter_, base::BindOnce(&Noop));
 }
+
+TEST_F(FaviconSourceTestWithFavicon2Format,
+       ShouldNotQueryIfDesiredSizeTooLarge) {
+  EXPECT_CALL(*mock_history_ui_favicon_request_handler_,
+              GetRawFaviconForPageURL)
+      .Times(0);
+  EXPECT_CALL(*mock_favicon_service_, GetRawFavicon).Times(0);
+  EXPECT_CALL(*mock_favicon_service_, GetRawFaviconForPageURL).Times(0);
+
+  // 100x scale factor runs into the max cap.
+  source()->StartDataRequest(
+      GURL(base::StrCat({kDummyPrefix, "size/16@100x/https://www.google.com"})),
+      test_web_contents_getter_, base::BindOnce(&Noop));
+}
