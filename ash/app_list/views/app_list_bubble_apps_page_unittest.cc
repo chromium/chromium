@@ -4,14 +4,20 @@
 
 #include "ash/app_list/views/app_list_bubble_apps_page.h"
 
+#include <string>
 #include <utility>
 
+#include "ash/app_list/app_list_controller_impl.h"
+#include "ash/app_list/model/app_list_test_model.h"
+#include "ash/app_list/model/search/search_model.h"
+#include "ash/app_list/model/search/test_search_result.h"
 #include "ash/app_list/test/app_list_test_helper.h"
 #include "ash/app_list/views/app_list_a11y_announcer.h"
 #include "ash/app_list/views/app_list_bubble_search_page.h"
 #include "ash/app_list/views/app_list_toast_container_view.h"
 #include "ash/app_list/views/scrollable_apps_grid_view.h"
 #include "ash/constants/ash_features.h"
+#include "ash/shell.h"
 #include "ash/test/ash_test_base.h"
 #include "ash/test/layer_animation_stopped_waiter.h"
 #include "base/test/bind.h"
@@ -31,6 +37,15 @@ namespace {
 
 class AppListBubbleAppsPageTest : public AshTestBase {
  public:
+  void SetUp() override {
+    AshTestBase::SetUp();
+    search_model_ = std::make_unique<SearchModel>();
+
+    model_ = std::make_unique<test::AppListTestModel>();
+    Shell::Get()->app_list_controller()->SetActiveModel(
+        /*profile_id=*/1, model_.get(), search_model_.get());
+  }
+
   void OnReorderAnimationDone(base::OnceClosure closure,
                               bool aborted,
                               AppListReorderAnimationStatus status) {
@@ -39,8 +54,19 @@ class AppListBubbleAppsPageTest : public AshTestBase {
     std::move(closure).Run();
   }
 
+  void AddSearchResult(const std::string& id, const std::u16string& title) {
+    auto search_result = std::make_unique<TestSearchResult>();
+    search_result->set_result_id(id);
+    search_result->set_display_type(SearchResultDisplayType::kList);
+    search_result->SetTitle(title);
+    search_result->set_best_match(true);
+    search_model_->results()->Add(std::move(search_result));
+  }
+
  private:
   base::test::ScopedFeatureList features_{features::kProductivityLauncher};
+  std::unique_ptr<SearchModel> search_model_;
+  std::unique_ptr<test::AppListTestModel> model_;
 };
 
 TEST_F(AppListBubbleAppsPageTest, SlideViewIntoPositionCleansUpLayers) {
@@ -151,8 +177,10 @@ TEST_F(AppListBubbleAppsPageTest, AnimateShowPage) {
   helper->AddAppItems(5);
   helper->ShowAppList();
 
-  // Type a key switch to the search page.
+  // Type a key and add a result to switch to the search page.
   PressAndReleaseKey(ui::VKEY_A);
+  AddSearchResult("id", u"title");
+  base::RunLoop().RunUntilIdle();  // Update search model observers.
 
   auto* apps_page = helper->GetBubbleAppsPage();
   ASSERT_FALSE(apps_page->GetVisible());
