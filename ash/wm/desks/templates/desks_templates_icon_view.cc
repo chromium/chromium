@@ -39,9 +39,14 @@ constexpr int kCountLabelInsetSize = 4;
 constexpr int kAppIdImageSize = 64;
 
 // Return the formatted string for `count`. If `count` is <=9, the string will
-// be "+<count>". If `count` is >9, the string will be "9+".
-std::u16string GetCountString(int count) {
-  return base::UTF8ToUTF16(count > 9 ? "9+" : base::StringPrintf("+%i", count));
+// be "+<count>". If `count` is >9, the string will be "9+". If `show_plus` is
+// true, the string will be just the count.
+std::u16string GetCountString(int count, bool show_plus) {
+  if (show_plus) {
+    return base::UTF8ToUTF16(count > 9 ? "9+"
+                                       : base::StringPrintf("+%i", count));
+  }
+  return base::NumberToString16(count);
 }
 
 gfx::ImageSkia CreateResizedImageToIconSize(const gfx::ImageSkia& icon) {
@@ -60,7 +65,8 @@ DesksTemplatesIconView::~DesksTemplatesIconView() = default;
 void DesksTemplatesIconView::SetIconIdentifierAndCount(
     const std::string& icon_identifier,
     const std::string& app_id,
-    int count) {
+    int count,
+    bool show_plus) {
   icon_identifier_ = icon_identifier;
   count_ = count;
 
@@ -75,7 +81,7 @@ void DesksTemplatesIconView::SetIconIdentifierAndCount(
     DCHECK(!count_label_);
     count_label_ = AddChildView(
         views::Builder<views::Label>()
-            .SetText(GetCountString(visible_count))
+            .SetText(GetCountString(visible_count, show_plus))
             .SetBorder(views::CreateEmptyBorder(gfx::Insets(
                 kCountLabelInsetSize, kCountLabelInsetSize,
                 kCountLabelInsetSize,
@@ -143,7 +149,7 @@ void DesksTemplatesIconView::SetIconIdentifierAndCount(
 void DesksTemplatesIconView::UpdateCount(int count) {
   count_ = count;
   DCHECK(count_label_);
-  count_label_->SetText(GetCountString(count_));
+  count_label_->SetText(GetCountString(count_, /*show_plus=*/true));
 }
 
 gfx::Size DesksTemplatesIconView::CalculatePreferredSize() const {

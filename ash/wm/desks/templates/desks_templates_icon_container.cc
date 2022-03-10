@@ -154,8 +154,8 @@ void DesksTemplatesIconContainer::PopulateIconContainerFromTemplate(
   // Iterate through the template's WindowInfo, counting the occurrences of each
   // unique icon identifier and storing their lowest activation index.
   std::map<std::string, IconInfo> icon_identifier_to_icon_info;
-  for (auto& app_id_to_launch_list_entry :
-       restore_data->app_id_to_launch_list()) {
+  const auto& launch_list = restore_data->app_id_to_launch_list();
+  for (auto& app_id_to_launch_list_entry : launch_list) {
     InsertIconIdentifierToIconInfoFromLaunchList(
         app_id_to_launch_list_entry.first, app_id_to_launch_list_entry.second,
         &icon_identifier_to_icon_info);
@@ -228,6 +228,9 @@ void DesksTemplatesIconContainer::Layout() {
       if (used_horizontal_space <= available_horizontal_space)
         break;
     }
+    // Overflow icon count = the number of hidden icons + the number of
+    // unavailable windows + 1 to account for the overflow itself taking an
+    // icon.
     overflow_icon_view->UpdateCount(overflow_icon_view->count() +
                                     num_hidden_icons + 1);
   } else if (overflow_icon_view->count() == 0) {
@@ -244,27 +247,39 @@ void DesksTemplatesIconContainer::CreateIconViewsFromIconIdentifiers(
   if (icon_identifier_to_icon_info.empty())
     return;
 
-  for (size_t i = 0; i < kMaxIcons && i < icon_identifier_to_icon_info.size();
-       ++i) {
+  auto* delegate = Shell::Get()->desks_templates_delegate();
+  int num_hidden_icons = 0;
+  for (size_t i = 0; i < icon_identifier_to_icon_info.size(); ++i) {
     auto icon_identifier = icon_identifier_to_icon_info[i].first;
     auto icon_info = icon_identifier_to_icon_info[i].second;
-    DesksTemplatesIconView* icon_view = AddChildView(
-        views::Builder<DesksTemplatesIconView>()
-            .SetBackground(views::CreateRoundedRectBackground(
-                icon_info.count == 1
-                    ? SK_ColorTRANSPARENT
-                    : AshColorProvider::Get()->GetControlsLayerColor(
-                          AshColorProvider::ControlsLayerType::
-                              kControlBackgroundColorInactive),
-                DesksTemplatesIconView::kIconSize / 2))
-            .Build());
-    icon_view->SetIconIdentifierAndCount(icon_identifier, icon_info.app_id,
-                                         icon_info.count);
+    // Don't create new icons once we have reached the max, or if the app is
+    // unavailable (uninstalled or unsupported). Count the amount of skipped
+    // apps so we know what to display on the overflow.
+    if (children().size() < kMaxIcons &&
+        delegate->IsAppAvailable(icon_info.app_id)) {
+      DesksTemplatesIconView* icon_view = AddChildView(
+          views::Builder<DesksTemplatesIconView>()
+              .SetBackground(views::CreateRoundedRectBackground(
+                  icon_info.count == 1
+                      ? SK_ColorTRANSPARENT
+                      : AshColorProvider::Get()->GetControlsLayerColor(
+                            AshColorProvider::ControlsLayerType::
+                                kControlBackgroundColorInactive),
+                  DesksTemplatesIconView::kIconSize / 2))
+              .Build());
+      icon_view->SetIconIdentifierAndCount(icon_identifier, icon_info.app_id,
+                                           icon_info.count, /*show_plus=*/true);
+    } else {
+      num_hidden_icons++;
+    }
   }
+
+  // If no child views were added, the icon container contains only unavailable
+  // apps so we should *not* show plus.
+  const bool show_plus = !children().empty();
 
   // Always add a `DesksTemplatesIconView` overflow counter in case the width
   // of the view changes. It will be hidden if not needed.
-  const int num_added_icons = children().size();
   DesksTemplatesIconView* overflow_icon_view =
       AddChildView(views::Builder<DesksTemplatesIconView>()
                        .SetBackground(views::CreateRoundedRectBackground(
@@ -273,11 +288,12 @@ void DesksTemplatesIconContainer::CreateIconViewsFromIconIdentifiers(
                                    kControlBackgroundColorInactive),
                            DesksTemplatesIconView::kIconSize / 2))
                        .Build());
+
   // Set both `icon_identifier` and `app_id` to be empty strings for overflow
   // icon views, since only the count should matter.
   overflow_icon_view->SetIconIdentifierAndCount(
       /*icon_identifier=*/std::string(), /*app_id=*/std::string(),
-      icon_identifier_to_icon_info.size() - num_added_icons);
+      /*count=*/num_hidden_icons, show_plus);
 }
 
 BEGIN_METADATA(DesksTemplatesIconContainer, views::BoxLayoutView)

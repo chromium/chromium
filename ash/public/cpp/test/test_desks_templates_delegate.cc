@@ -5,6 +5,7 @@
 #include "ash/public/cpp/test/test_desks_templates_delegate.h"
 
 #include "ash/public/cpp/desk_template.h"
+#include "base/containers/contains.h"
 #include "components/app_restore/app_launch_info.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/aura/window.h"
@@ -64,6 +65,11 @@ void TestDesksTemplatesDelegate::OpenFeedbackDialog(
 std::string TestDesksTemplatesDelegate::GetAppShortName(
     const std::string& app_id) {
   return std::string();
+}
+
+bool TestDesksTemplatesDelegate::IsAppAvailable(
+    const std::string& app_id) const {
+  return !base::Contains(unavailable_app_ids_, app_id);
 }
 
 }  // namespace ash

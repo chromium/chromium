@@ -50,6 +50,7 @@ class ChromeDesksTemplatesDelegate : public ash::DesksTemplatesDelegate {
   bool IsWindowSupportedForDeskTemplate(aura::Window* window) const override;
   void OpenFeedbackDialog(const std::string& extra_diagnostics) override;
   std::string GetAppShortName(const std::string& app_id) override;
+  bool IsAppAvailable(const std::string& app_id) const override;
 };
 
 #endif  // CHROME_BROWSER_UI_ASH_DESKS_TEMPLATES_CHROME_DESKS_TEMPLATES_DELEGATE_H_

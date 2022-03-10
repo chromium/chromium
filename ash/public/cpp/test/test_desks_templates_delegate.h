@@ -5,6 +5,8 @@
 #ifndef ASH_PUBLIC_CPP_TEST_TEST_DESKS_TEMPLATES_DELEGATE_H_
 #define ASH_PUBLIC_CPP_TEST_TEST_DESKS_TEMPLATES_DELEGATE_H_
 
+#include <vector>
+
 #include "ash/public/cpp/ash_public_export.h"
 #include "ash/public/cpp/desks_templates_delegate.h"
 
@@ -40,6 +42,11 @@ class ASH_PUBLIC_EXPORT TestDesksTemplatesDelegate
     desk_model_ = desk_model;
   }
 
+  void set_unavailable_apps(
+      const std::vector<std::string>& unavailable_app_ids) {
+    unavailable_app_ids_ = unavailable_app_ids;
+  }
+
   // DesksTemplatesDelegate:
   std::unique_ptr<app_restore::AppLaunchInfo> GetAppLaunchDataForDeskTemplate(
       aura::Window* window) const override;
@@ -62,9 +69,11 @@ class ASH_PUBLIC_EXPORT TestDesksTemplatesDelegate
   bool IsWindowSupportedForDeskTemplate(aura::Window* window) const override;
   void OpenFeedbackDialog(const std::string& extra_diagnostics) override;
   std::string GetAppShortName(const std::string& app_id) override;
+  bool IsAppAvailable(const std::string& app_id) const override;
 
  private:
   desks_storage::DeskModel* desk_model_ = nullptr;
+  std::vector<std::string> unavailable_app_ids_;
 };
 
 }  // namespace ash

@@ -331,6 +331,18 @@ void ChromeDesksTemplatesDelegate::GetIconForAppId(
   }
 }
 
+bool ChromeDesksTemplatesDelegate::IsAppAvailable(
+    const std::string& app_id) const {
+  Profile* app_profile = ProfileManager::GetActiveUserProfile();
+  DCHECK(app_profile);
+
+  auto* app_service_proxy =
+      apps::AppServiceProxyFactory::GetForProfile(app_profile);
+  DCHECK(app_service_proxy);
+
+  return ::IsAppAvailable(app_id, app_service_proxy);
+}
+
 void ChromeDesksTemplatesDelegate::LaunchAppsFromTemplate(
     std::unique_ptr<ash::DeskTemplate> desk_template,
     base::Time time_launch_started,

@@ -100,6 +100,10 @@ class ASH_PUBLIC_EXPORT DesksTemplatesDelegate {
   // Return the readable app name for this app id (i.e. "madfksjfasdfkjasdkf" ->
   // "Chrome").
   virtual std::string GetAppShortName(const std::string& app_id) = 0;
+
+  // Return true if the app with the given `app_id` is available to launch from
+  // template.
+  virtual bool IsAppAvailable(const std::string& app_id) const = 0;
 };
 
 }  // namespace ash
