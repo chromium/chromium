@@ -323,10 +323,10 @@ class AURA_EXPORT WindowTreeHost : public ui::internal::InputMethodDelegate,
   // this.
   void OnAcceleratedWidgetMadeVisible(bool value);
 
-  void CreateCompositor(
-      bool force_software_compositor = false,
-      bool use_external_begin_frame_control = false,
-      bool enable_compositing_based_throttling = false);
+  void CreateCompositor(bool force_software_compositor = false,
+                        bool use_external_begin_frame_control = false,
+                        bool enable_compositing_based_throttling = false,
+                        size_t memory_limit_when_visible_mb = 0);
 
   void InitCompositor();
   void OnAcceleratedWidgetAvailable();

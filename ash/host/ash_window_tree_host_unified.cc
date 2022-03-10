@@ -65,8 +65,9 @@ class UnifiedEventTargeter : public aura::WindowTargeter {
 
 AshWindowTreeHostUnified::AshWindowTreeHostUnified(
     const gfx::Rect& initial_bounds,
-    AshWindowTreeHostDelegate* delegate)
-    : AshWindowTreeHostPlatform(delegate) {
+    AshWindowTreeHostDelegate* delegate,
+    size_t compositor_memory_limit_mb)
+    : AshWindowTreeHostPlatform(delegate, compositor_memory_limit_mb) {
   std::unique_ptr<ui::PlatformWindow> window(new ui::StubWindow(this));
   window->SetBounds(initial_bounds);
   SetPlatformWindow(std::move(window));

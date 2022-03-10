@@ -154,7 +154,8 @@ class COMPOSITOR_EXPORT Compositor : public base::PowerSuspendObserver,
              bool enable_pixel_canvas,
              bool use_external_begin_frame_control = false,
              bool force_software_compositor = false,
-             bool enable_compositing_based_throttling = false);
+             bool enable_compositing_based_throttling = false,
+             size_t memory_limit_when_visible_mb = 0);
 
   Compositor(const Compositor&) = delete;
   Compositor& operator=(const Compositor&) = delete;

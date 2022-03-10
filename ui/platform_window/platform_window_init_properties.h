@@ -64,9 +64,7 @@ struct COMPONENT_EXPORT(PLATFORM_WINDOW) PlatformWindowInitProperties {
   PlatformWindowInitProperties();
 
   // Initializes properties with the specified |bounds|.
-  explicit PlatformWindowInitProperties(
-      const gfx::Rect& bounds,
-      bool enable_compositing_based_throttling = false);
+  explicit PlatformWindowInitProperties(const gfx::Rect& bounds);
 
   PlatformWindowInitProperties(PlatformWindowInitProperties&& props);
 
@@ -136,6 +134,8 @@ struct COMPONENT_EXPORT(PLATFORM_WINDOW) PlatformWindowInitProperties {
 #endif
 
   bool enable_compositing_based_throttling = false;
+
+  size_t compositor_memory_limit_mb = 0;
 };
 
 }  // namespace ui

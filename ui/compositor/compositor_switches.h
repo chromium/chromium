@@ -17,7 +17,6 @@ COMPOSITOR_EXPORT extern const char kUIDisableZeroCopy[];
 COMPOSITOR_EXPORT extern const char kUIShowPaintRects[];
 COMPOSITOR_EXPORT extern const char kUISlowAnimations[];
 COMPOSITOR_EXPORT extern const char kDisableVsyncForTests[];
-COMPOSITOR_EXPORT extern const char kUiCompositorMemoryLimitWhenVisibleMB[];
 
 }  // namespace switches
 

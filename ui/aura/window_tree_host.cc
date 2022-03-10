@@ -602,10 +602,10 @@ void WindowTreeHost::OnAcceleratedWidgetMadeVisible(bool value) {
   UpdateCompositorVisibility(value);
 }
 
-void WindowTreeHost::CreateCompositor(
-    bool force_software_compositor,
-    bool use_external_begin_frame_control,
-    bool enable_compositing_based_throttling) {
+void WindowTreeHost::CreateCompositor(bool force_software_compositor,
+                                      bool use_external_begin_frame_control,
+                                      bool enable_compositing_based_throttling,
+                                      size_t memory_limit_when_visible_mb) {
   Env* env = Env::GetInstance();
   ui::ContextFactory* context_factory = env->context_factory();
   DCHECK(context_factory);
@@ -613,7 +613,7 @@ void WindowTreeHost::CreateCompositor(
       context_factory->AllocateFrameSinkId(), context_factory,
       base::ThreadTaskRunnerHandle::Get(), ui::IsPixelCanvasRecordingEnabled(),
       use_external_begin_frame_control, force_software_compositor,
-      enable_compositing_based_throttling);
+      enable_compositing_based_throttling, memory_limit_when_visible_mb);
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   compositor_->AddObserver(this);
 #endif

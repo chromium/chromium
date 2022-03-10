@@ -23,6 +23,8 @@ struct ASH_EXPORT AshWindowTreeHostInitParams {
   bool mirroring_unified = false;
   int64_t display_id = 0;
   float device_scale_factor = 0.0f;
+  // Compositor's memory limit in MB.
+  size_t compositor_memory_limit_mb = 0;
 };
 
 }  // namespace ash

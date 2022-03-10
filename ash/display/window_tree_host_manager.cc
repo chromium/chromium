@@ -68,8 +68,14 @@ namespace {
 // This is initialized in the constructor, and then in CreatePrimaryHost().
 int64_t primary_display_id = -1;
 
-// The default memory limit: 512mb.
-const char kUICompositorDefaultMemoryLimitMB[] = "512";
+// The compositor memory limit when display size is larger than a threshold.
+constexpr int kUICompositorLargeMemoryLimitMB = 1024;
+// The display size threshold, above which the larger memory limit is used.
+// Pixel size was chosen to trigger for 4K+ displays. See: crbug.com/1261776
+constexpr int kUICompositorMemoryLimitDisplaySizeThreshold = 3500;
+// Command line switch for setting a custom compositor memory limit.
+constexpr char kUiCompositorMemoryLimitWhenVisibleMB[] =
+    "ui-compositor-memory-limit-when-visible-mb";
 
 // An UMA signal for the current effective resolution is sent at this rate. This
 // keeps track of the effective resolution most used on internal display by the
@@ -298,14 +304,6 @@ void WindowTreeHostManager::Shutdown() {
 
 void WindowTreeHostManager::CreatePrimaryHost(
     const AshWindowTreeHostInitParams& init_params) {
-  auto* command_line = base::CommandLine::ForCurrentProcess();
-  if (!command_line->HasSwitch(
-          switches::kUiCompositorMemoryLimitWhenVisibleMB)) {
-    command_line->AppendSwitchASCII(
-        switches::kUiCompositorMemoryLimitWhenVisibleMB,
-        kUICompositorDefaultMemoryLimitMB);
-  }
-
   const display::Display& primary_candidate =
       GetDisplayManager()->GetPrimaryDisplayCandidate();
   primary_display_id = primary_candidate.id();
@@ -887,6 +885,27 @@ AshWindowTreeHost* WindowTreeHostManager::AddWindowTreeHostForDisplay(
   }
   params_with_bounds.display_id = display.id();
   params_with_bounds.device_scale_factor = display.device_scale_factor();
+
+  // Used to configure ui compositor memory limit for chromeos devices.
+  // See crbug.com/923141.
+  base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
+  if (command_line->HasSwitch(kUiCompositorMemoryLimitWhenVisibleMB)) {
+    std::string value_str = command_line->GetSwitchValueASCII(
+        kUiCompositorMemoryLimitWhenVisibleMB);
+    unsigned value_in_mb;
+    if (base::StringToUint(value_str, &value_in_mb)) {
+      params_with_bounds.compositor_memory_limit_mb = value_in_mb;
+    }
+    // TODO(crbug/1261776): Temporarily increase compositor memory limit for
+    // 4K+ displays to avoid rendering corruption.
+    // Check both width and height in case of rotated display.
+  } else if (std::max(display.GetSizeInPixel().width(),
+                      display.GetSizeInPixel().height()) >
+             kUICompositorMemoryLimitDisplaySizeThreshold) {
+    params_with_bounds.compositor_memory_limit_mb =
+        kUICompositorLargeMemoryLimitMB;
+  }
+
   // The AshWindowTreeHost ends up owned by the RootWindowControllers created
   // by this class.
   AshWindowTreeHost* ash_host =

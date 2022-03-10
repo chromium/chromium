@@ -21,7 +21,8 @@ class AshWindowTreeHostUnified : public AshWindowTreeHostPlatform,
                                  public aura::WindowObserver {
  public:
   AshWindowTreeHostUnified(const gfx::Rect& initial_bounds,
-                           AshWindowTreeHostDelegate* delegate);
+                           AshWindowTreeHostDelegate* delegate,
+                           size_t compositor_memory_limit_mb = 0);
 
   AshWindowTreeHostUnified(const AshWindowTreeHostUnified&) = delete;
   AshWindowTreeHostUnified& operator=(const AshWindowTreeHostUnified&) = delete;

@@ -44,7 +44,8 @@ class ASH_EXPORT AshWindowTreeHostPlatform
   friend AshWindowTreeHostPlatformTest;
   FRIEND_TEST_ALL_PREFIXES(AshWindowTreeHostPlatformTest, UnadjustedMovement);
 
-  explicit AshWindowTreeHostPlatform(AshWindowTreeHostDelegate* delegate);
+  explicit AshWindowTreeHostPlatform(AshWindowTreeHostDelegate* delegate,
+                                     size_t compositor_memory_limit_mb = 0);
 
   // AshWindowTreeHost:
   void ConfineCursorToRootWindow() override;
