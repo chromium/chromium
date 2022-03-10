@@ -4022,8 +4022,8 @@ void RenderFrameHostImpl::DidFailLoadWithError(const GURL& url,
 void RenderFrameHostImpl::DidFocusFrame() {
   TRACE_EVENT("navigation", "RenderFrameHostImpl::DidFocusFrame",
               ChromeTrackEvent::kRenderFrameHost, *this,
-              ChromeTrackEvent::kSiteInstance,
-              *static_cast<SiteInstanceImpl*>(GetSiteInstance()));
+              ChromeTrackEvent::kSiteInstanceGroup,
+              *GetSiteInstance()->group());
   // We don't handle this IPC signal for non-active RenderFrameHost.
   if (!IsActive())
     return;

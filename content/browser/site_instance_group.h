@@ -12,6 +12,11 @@
 #include "content/browser/renderer_host/agent_scheduling_group_host.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/render_process_host_observer.h"
+#include "third_party/perfetto/include/perfetto/tracing/traced_proto.h"
+
+namespace perfetto::protos::pbzero {
+class SiteInstanceGroup;
+}  // namespace perfetto::protos::pbzero
 
 namespace content {
 
@@ -75,7 +80,7 @@ class CONTENT_EXPORT SiteInstanceGroup
   SiteInstanceGroup(const SiteInstanceGroup&) = delete;
   SiteInstanceGroup& operator=(const SiteInstanceGroup&) = delete;
 
-  SiteInstanceGroupId GetId();
+  SiteInstanceGroupId GetId() const;
 
   void AddObserver(Observer* observer);
   void RemoveObserver(Observer* observer);
@@ -92,7 +97,7 @@ class CONTENT_EXPORT SiteInstanceGroup
   // Get the number of active frames which belong to this SiteInstanceGroup. If
   // there are no active frames left, all frames in this SiteInstanceGroup can
   // be safely discarded.
-  size_t active_frame_count() { return active_frame_count_; }
+  size_t active_frame_count() const { return active_frame_count_; }
 
   // `process_` and `agent_scheduling_group_` have to be set together. See
   // `process_` for more details.
@@ -100,8 +105,8 @@ class CONTENT_EXPORT SiteInstanceGroup
   // `process`.
   void SetProcessAndAgentSchedulingGroup(RenderProcessHost* process);
 
-  RenderProcessHost* process() { return process_; }
-  bool has_process() { return process_ != nullptr; }
+  RenderProcessHost* process() const { return process_; }
+  bool has_process() const { return process_ != nullptr; }
 
   AgentSchedulingGroupHost& agent_scheduling_group() {
     DCHECK(agent_scheduling_group_);
@@ -112,7 +117,11 @@ class CONTENT_EXPORT SiteInstanceGroup
     return agent_scheduling_group_ != nullptr;
   }
 
-  void WriteIntoTrace(perfetto::TracedValue context);
+  // Write a representation of this object into a trace.
+  void WriteIntoTrace(perfetto::TracedValue context) const;
+  void WriteIntoTrace(
+      perfetto::TracedProto<perfetto::protos::pbzero::SiteInstanceGroup> proto)
+      const;
 
  private:
   friend class RefCounted<SiteInstanceGroup>;

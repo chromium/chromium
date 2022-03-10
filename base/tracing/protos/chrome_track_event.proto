@@ -268,8 +268,23 @@ message SiteInstance {
   // related SiteInstances in the same BrowsingInstance.
   optional int32 related_active_contents_count = 5;
 
-  // The number of active RenderFrameHosts which belong to this SiteInstance.
+  // The number of active RenderFrameHosts this SiteInstance's SiteInstanceGroup
+  // has.
   optional int32 active_rfh_count = 6;
+
+  // The SiteInstanceGroup this SiteInstance belongs to.
+  optional SiteInstanceGroup site_instance_group = 7;
+}
+
+message SiteInstanceGroup {
+  // The ID of the SiteInstanceGroup.
+  optional int32 site_instance_group_id = 1;
+
+  // The number of active frames in this SiteInstanceGroup.
+  optional int32 active_frame_count = 2;
+
+  // The process ID of the SiteInstanceGroup.
+  optional RenderProcessHost process = 3;
 }
 
 message RenderViewHost {
@@ -306,6 +321,10 @@ message RenderFrameProxyHost {
 
   // Whether the renderer-side RenderFrameProxy is live or not.
   optional bool is_render_frame_proxy_live = 5;
+
+  // The SiteInstanceGroupId of the SiteInstanceGroup associated with the
+  // RenderFrameProxyHost.
+  optional int32 site_instance_group_id = 6;
 }
 
 message AndroidView {
@@ -685,7 +704,7 @@ message ProcessSingleton {
 
 message ChromeTrackEvent {
   // Extension range for Chrome: 1000-1999
-  // Next ID: 1034
+  // Next ID: 1035
   extend TrackEvent {
     optional ChromeAppState chrome_app_state = 1000;
 
@@ -759,5 +778,7 @@ message ChromeTrackEvent {
     optional EventLatency event_latency = 1032;
 
     optional ProcessSingleton process_singleton = 1033;
+
+    optional SiteInstanceGroup site_instance_group = 1034;
   }
 }

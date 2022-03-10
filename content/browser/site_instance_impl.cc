@@ -1321,8 +1321,8 @@ void SiteInstanceImpl::WriteIntoTrace(perfetto::TracedValue context) {
   dict.Add("browsing_instance_id", GetBrowsingInstanceId().value());
   dict.Add("is_default", IsDefaultSiteInstance());
   dict.Add("site_info", site_info_);
-  if (site_instance_group_)
-    dict.Add("active_rfh_count", site_instance_group_->active_frame_count());
+  if (group())
+    dict.Add("site_instance_group", group());
 }
 
 void SiteInstanceImpl::WriteIntoTrace(
@@ -1332,8 +1332,11 @@ void SiteInstanceImpl::WriteIntoTrace(
   proto->set_is_default(IsDefaultSiteInstance());
   proto->set_has_process(HasProcess());
   proto->set_related_active_contents_count(GetRelatedActiveContentsCount());
-  if (site_instance_group_)
+  if (group()) {
     proto->set_active_rfh_count(site_instance_group_->active_frame_count());
+    group()->WriteIntoTrace(proto.WriteNestedMessage(
+        perfetto::protos::pbzero::SiteInstance::kSiteInstanceGroup));
+  }
 }
 
 int SiteInstanceImpl::EstimateOriginAgentClusterOverheadForMetrics() {

@@ -28,7 +28,7 @@ SiteInstanceGroup::~SiteInstanceGroup() {
   process_->Cleanup();
 }
 
-SiteInstanceGroupId SiteInstanceGroup::GetId() {
+SiteInstanceGroupId SiteInstanceGroup::GetId() const {
   return id_;
 }
 
@@ -83,10 +83,22 @@ void SiteInstanceGroup::RenderProcessExited(
     observer.RenderProcessGone(this, info);
 }
 
-void SiteInstanceGroup::WriteIntoTrace(perfetto::TracedValue context) {
+void SiteInstanceGroup::WriteIntoTrace(perfetto::TracedValue context) const {
   auto dict = std::move(context).WriteDictionary();
   dict.Add("id", GetId().value());
   dict.Add("active_frame_count", active_frame_count_);
+  dict.Add("process_id", process()->GetID());
+}
+
+void SiteInstanceGroup::WriteIntoTrace(
+    perfetto::TracedProto<perfetto::protos::pbzero::SiteInstanceGroup> proto)
+    const {
+  proto->set_site_instance_group_id(GetId().value());
+  proto->set_active_frame_count(active_frame_count());
+  if (process()) {
+    process()->WriteIntoTrace(proto.WriteNestedMessage(
+        perfetto::protos::pbzero::SiteInstanceGroup::kProcess));
+  }
 }
 
 }  // namespace content
