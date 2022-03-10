@@ -252,8 +252,6 @@ void CaptureModeCameraController::MaybeReparentPreviewWidget() {
     views::Widget::ReparentNativeView(native_window, parent);
     StackingPreviewAtTop(camera_preview_widget_.get());
   }
-  // TODO(minch): Revisit to see whether it is better to separate this from
-  // MaybeReparentPreviewWidget and do the widget bounds updates when needed.
   MaybeUpdatePreviewWidgetBounds();
 }
 
