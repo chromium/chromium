@@ -4057,7 +4057,6 @@ void LocalFrameView::PaintOutsideOfLifecycle(GraphicsContext& context,
   SCOPED_UMA_AND_UKM_TIMER(EnsureUkmAggregator(),
                            LocalFrameUkmAggregator::kPaint);
 
-  AllowThrottlingScope allow_throttling(*this);
   ForAllNonThrottledLocalFrameViews([](LocalFrameView& frame_view) {
     frame_view.Lifecycle().AdvanceTo(DocumentLifecycle::kInPaint);
   });
@@ -4071,6 +4070,14 @@ void LocalFrameView::PaintOutsideOfLifecycle(GraphicsContext& context,
   ForAllNonThrottledLocalFrameViews([](LocalFrameView& frame_view) {
     frame_view.Lifecycle().AdvanceTo(DocumentLifecycle::kPaintClean);
   });
+}
+
+void LocalFrameView::PaintOutsideOfLifecycleWithThrottlingAllowed(
+    GraphicsContext& context,
+    const PaintFlags paint_flags,
+    const CullRect& cull_rect) {
+  AllowThrottlingScope allow_throttling(*this);
+  PaintOutsideOfLifecycle(context, paint_flags, cull_rect);
 }
 
 void LocalFrameView::PaintForTest(const CullRect& cull_rect) {

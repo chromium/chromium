@@ -60,8 +60,8 @@ SimCanvas::Commands SimCompositor::PaintFrame() {
 
   auto* frame = web_view_->MainFrameImpl()->GetFrame();
   auto* builder = MakeGarbageCollected<PaintRecordBuilder>();
-  frame->View()->PaintOutsideOfLifecycle(builder->Context(),
-                                         PaintFlag::kOmitCompositingInfo);
+  frame->View()->PaintOutsideOfLifecycleWithThrottlingAllowed(
+      builder->Context(), PaintFlag::kOmitCompositingInfo);
 
   auto infinite_rect = LayoutRect::InfiniteIntRect();
   SimCanvas canvas(infinite_rect.width(), infinite_rect.height());
