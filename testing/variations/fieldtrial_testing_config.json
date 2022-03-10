@@ -1774,7 +1774,32 @@
             ],
             "experiments": [
                 {
-                    "name": "ReadLater__SemiIntegrated",
+                    "name": "ReadLater_US__SemiIntegrated_M99_v1",
+                    "params": {
+                        "allow_bookmark_type_swapping": "true",
+                        "autodismiss_enabled": "true",
+                        "bookmark_in_app_menu": "false",
+                        "bookmark_visuals_enabled": "true",
+                        "enable_persisted_tab_data_maintenance": "true",
+                        "enable_price_notification": "false",
+                        "enable_price_tracking": "true",
+                        "price_tracking_with_optimization_guide": "true",
+                        "reading_list_in_app_menu": "false",
+                        "use_root_bookmark_as_default": "true"
+                    },
+                    "enable_features": [
+                        "BookmarksImprovedSaveFlow",
+                        "BookmarksRefresh",
+                        "CommercePriceTracking",
+                        "ReadLater"
+                    ],
+                    "disable_features": [
+                        "OptimizationGuidePushNotifications",
+                        "ShoppingList"
+                    ]
+                },
+                {
+                    "name": "ReadLater_non_US__SemiIntegrated_M99_v1",
                     "params": {
                         "allow_bookmark_type_swapping": "true",
                         "autodismiss_enabled": "true",
@@ -1789,18 +1814,29 @@
                         "ReadLater"
                     ],
                     "disable_features": [
+                        "CommercePriceTracking",
+                        "OptimizationGuidePushNotifications",
                         "ShoppingList"
                     ]
-                }
-            ]
-        },
-        {
-            "platforms": [
-                "android"
-            ],
-            "experiments": [
+                },
                 {
-                    "name": "ReadLater__DedicatedSaveFlow",
+                    "name": "ReadLater_non_US__NoCustomTab_M99_v1",
+                    "params": {
+                        "reading_list_in_app_menu": "false",
+                        "use_cct": "false",
+                        "use_root_bookmark_as_default": "true"
+                    },
+                    "enable_features": [
+                        "ReadLater"
+                    ],
+                    "disable_features": [
+                        "CommercePriceTracking",
+                        "OptimizationGuidePushNotifications",
+                        "ShoppingList"
+                    ]
+                },
+                {
+                    "name": "ReadLater_non_US__DedicatedSaveFlow_M99_v1",
                     "params": {
                         "allow_bookmark_type_swapping": "false",
                         "autodismiss_enabled": "true",
@@ -1815,63 +1851,13 @@
                         "ReadLater"
                     ],
                     "disable_features": [
+                        "CommercePriceTracking",
+                        "OptimizationGuidePushNotifications",
                         "ShoppingList"
                     ]
-                }
-            ]
-        },
-        {
-            "platforms": [
-                "android"
-            ],
-            "experiments": [
+                },
                 {
-                    "name": "ReadLater__NoCustomTab",
-                    "params": {
-                        "reading_list_in_app_menu": "false",
-                        "use_cct": "false",
-                        "use_root_bookmark_as_default": "true"
-                    },
-                    "enable_features": [
-                        "ReadLater"
-                    ],
-                    "disable_features": [
-                        "ShoppingList"
-                    ]
-                }
-            ]
-        },
-        {
-            "platforms": [
-                "android"
-            ],
-            "experiments": [
-                {
-                    "name": "WallE__BookmarkMenuItem",
-                    "params": {
-                        "bookmark_in_app_menu": "true",
-                        "bookmark_visuals_enabled": "true",
-                        "reading_list_in_app_menu": "false",
-                        "use_root_bookmark_as_default": "true"
-                    },
-                    "enable_features": [
-                        "BookmarksRefresh",
-                        "ReadLater"
-                    ],
-                    "disable_features": [
-                        "BookmarksImprovedSaveFlow",
-                        "ShoppingList"
-                    ]
-                }
-            ]
-        },
-        {
-            "platforms": [
-                "android"
-            ],
-            "experiments": [
-                {
-                    "name": "WallE__BookmarksRefresh",
+                    "name": "BookmarksRefresh_non_US__BookmarksRefresh_M99_v1",
                     "params": {
                         "bookmark_in_app_menu": "false",
                         "bookmark_visuals_enabled": "true",
@@ -1884,6 +1870,140 @@
                     ],
                     "disable_features": [
                         "BookmarksImprovedSaveFlow",
+                        "CommercePriceTracking",
+                        "OptimizationGuidePushNotifications",
+                        "ShoppingList"
+                    ]
+                },
+                {
+                    "name": "BookmarksRefresh_non_US__BookmarksRefreshWithMenuItem_M99_v1",
+                    "params": {
+                        "bookmark_in_app_menu": "true",
+                        "bookmark_visuals_enabled": "true",
+                        "reading_list_in_app_menu": "false",
+                        "use_root_bookmark_as_default": "true"
+                    },
+                    "enable_features": [
+                        "BookmarksRefresh",
+                        "ReadLater"
+                    ],
+                    "disable_features": [
+                        "BookmarksImprovedSaveFlow",
+                        "CommercePriceTracking",
+                        "OptimizationGuidePushNotifications",
+                        "ShoppingList"
+                    ]
+                },
+                {
+                    "name": "WallE_US__PriceWithNotifications_M99_v1",
+                    "params": {
+                        "autodismiss_enabled": "true",
+                        "bookmark_in_app_menu": "true",
+                        "bookmark_visuals_enabled": "true",
+                        "enable_persisted_tab_data_maintenance": "true",
+                        "enable_price_notification": "true",
+                        "enable_price_tracking": "true",
+                        "price_tracking_with_optimization_guide": "true",
+                        "reading_list_in_app_menu": "false",
+                        "use_root_bookmark_as_default": "true"
+                    },
+                    "enable_features": [
+                        "BookmarksImprovedSaveFlow",
+                        "BookmarksRefresh",
+                        "CommercePriceTracking",
+                        "OptimizationGuidePushNotifications",
+                        "ReadLater",
+                        "ShoppingList"
+                    ]
+                },
+                {
+                    "name": "WallE_US__BookmarksRefresh_M99_v1",
+                    "params": {
+                        "bookmark_in_app_menu": "false",
+                        "bookmark_visuals_enabled": "true",
+                        "enable_persisted_tab_data_maintenance": "true",
+                        "enable_price_notification": "false",
+                        "enable_price_tracking": "true",
+                        "price_tracking_with_optimization_guide": "true",
+                        "reading_list_in_app_menu": "false",
+                        "use_root_bookmark_as_default": "true"
+                    },
+                    "enable_features": [
+                        "BookmarksRefresh",
+                        "CommercePriceTracking",
+                        "ReadLater"
+                    ],
+                    "disable_features": [
+                        "BookmarksImprovedSaveFlow",
+                        "OptimizationGuidePushNotifications",
+                        "ShoppingList"
+                    ]
+                },
+                {
+                    "name": "WallE_US__BookmarkMenuItem_M99_v1",
+                    "params": {
+                        "bookmark_in_app_menu": "true",
+                        "bookmark_visuals_enabled": "true",
+                        "enable_persisted_tab_data_maintenance": "true",
+                        "enable_price_notification": "false",
+                        "enable_price_tracking": "true",
+                        "price_tracking_with_optimization_guide": "true",
+                        "reading_list_in_app_menu": "false",
+                        "use_root_bookmark_as_default": "true"
+                    },
+                    "enable_features": [
+                        "BookmarksRefresh",
+                        "CommercePriceTracking",
+                        "ReadLater"
+                    ],
+                    "disable_features": [
+                        "BookmarksImprovedSaveFlow",
+                        "OptimizationGuidePushNotifications",
+                        "ShoppingList"
+                    ]
+                },
+                {
+                    "name": "ReadLater_US__NoCustomTab_M99_v1",
+                    "params": {
+                        "enable_persisted_tab_data_maintenance": "true",
+                        "enable_price_notification": "false",
+                        "enable_price_tracking": "true",
+                        "price_tracking_with_optimization_guide": "true",
+                        "reading_list_in_app_menu": "false",
+                        "use_cct": "false",
+                        "use_root_bookmark_as_default": "true"
+                    },
+                    "enable_features": [
+                        "CommercePriceTracking",
+                        "ReadLater"
+                    ],
+                    "disable_features": [
+                        "OptimizationGuidePushNotifications",
+                        "ShoppingList"
+                    ]
+                },
+                {
+                    "name": "ReadLater_US__DedicatedSaveFlow_M99_v1",
+                    "params": {
+                        "allow_bookmark_type_swapping": "false",
+                        "autodismiss_enabled": "true",
+                        "bookmark_in_app_menu": "true",
+                        "bookmark_visuals_enabled": "true",
+                        "enable_persisted_tab_data_maintenance": "true",
+                        "enable_price_notification": "false",
+                        "enable_price_tracking": "true",
+                        "price_tracking_with_optimization_guide": "true",
+                        "reading_list_in_app_menu": "true",
+                        "use_root_bookmark_as_default": "true"
+                    },
+                    "enable_features": [
+                        "BookmarksImprovedSaveFlow",
+                        "BookmarksRefresh",
+                        "CommercePriceTracking",
+                        "ReadLater"
+                    ],
+                    "disable_features": [
+                        "OptimizationGuidePushNotifications",
                         "ShoppingList"
                     ]
                 }
