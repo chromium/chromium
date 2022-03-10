@@ -1145,4 +1145,28 @@ TEST_F(TextFragmentHandlerTest, IfGeneratorResetShouldRecordCorrectError) {
   EXPECT_EQ(expected_error, GetTextFragmentHandler().error_);
 }
 
+// crbug.com/1301794 If generation didn't start requesting selector shouldn't
+// crash.
+TEST_F(TextFragmentHandlerTest, NotGenerated) {
+  SimRequest request("https://example.com/test.html", "text/html");
+  LoadURL("https://example.com/test.html");
+  request.Complete(R"HTML(
+    <!DOCTYPE html>
+    <div>Test page</div>
+    <p id='first'>First paragraph text that is longer than 20 chars</p>
+    <p id='second'>Second paragraph text</p>
+  )HTML");
+
+  Node* first_paragraph = GetDocument().getElementById("first")->firstChild();
+  const auto& selected_start = Position(first_paragraph, 5);
+  const auto& selected_end = Position(first_paragraph, 6);
+  ASSERT_EQ(" ", PlainText(EphemeralRange(selected_start, selected_end)));
+
+  SetSelection(selected_start, selected_end);
+  EXPECT_EQ(RequestSelector(), "");
+
+  shared_highlighting::LinkGenerationError expected_error =
+      shared_highlighting::LinkGenerationError::kNotGenerated;
+  EXPECT_EQ(expected_error, GetTextFragmentHandler().error_);
+}
 }  // namespace blink

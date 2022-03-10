@@ -46,20 +46,29 @@ void TextFragmentHandler::RequestSelector(RequestSelectorCallback callback) {
   DCHECK(shared_highlighting::ShouldOfferLinkToText(
       GetFrame()->GetDocument()->Url()));
   DCHECK(!GetFrame()->Selection().SelectedText().IsEmpty());
-  DCHECK(GetTextFragmentSelectorGenerator());
 
-  GetTextFragmentSelectorGenerator()->RecordSelectorStateUma();
-
+  response_callback_ = std::move(callback);
   selector_ready_status_ =
       preemptive_generation_result_.has_value()
           ? shared_highlighting::LinkGenerationReadyStatus::kRequestedAfterReady
           : shared_highlighting::LinkGenerationReadyStatus::
                 kRequestedBeforeReady;
-  response_callback_ = std::move(callback);
 
-  // If generation finished simply
-  // respond with the result. Otherwise, the response callback is stored so
-  // that we reply on completion.
+  if (!GetTextFragmentSelectorGenerator()) {
+    // TODO(crbug.com/1303881): This shouldn't happen, but sometimes browser
+    // side requests link to text when generation was never started.
+    // See crash in crbug.com/1301794.
+    error_ = shared_highlighting::LinkGenerationError::kNotGenerated;
+    InvokeReplyCallback(
+        TextFragmentSelector(TextFragmentSelector::SelectorType::kInvalid),
+        error_);
+    return;
+  }
+
+  GetTextFragmentSelectorGenerator()->RecordSelectorStateUma();
+
+  // If generation finished simply respond with the result. Otherwise, the
+  // response callback is stored so that we reply on completion.
   if (selector_ready_status_.value() ==
       shared_highlighting::LinkGenerationReadyStatus::kRequestedAfterReady)
     InvokeReplyCallback(preemptive_generation_result_.value(), error_);
@@ -240,7 +249,8 @@ void TextFragmentHandler::InvokeReplyCallback(
       .Run(selector.ToString(), error, selector_ready_status_.value());
 
   // After reply is sent it is safe to reset the generator.
-  GetTextFragmentSelectorGenerator()->Reset();
+  if (GetTextFragmentSelectorGenerator())
+    GetTextFragmentSelectorGenerator()->Reset();
 }
 
 TextFragmentAnchor* TextFragmentHandler::GetTextFragmentAnchor() {

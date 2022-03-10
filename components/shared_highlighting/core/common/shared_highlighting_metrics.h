@@ -73,7 +73,11 @@ enum class LinkGenerationError {
   // cannot be established. Android only.
   kNoRemoteConnection = 13,
 
-  kMaxValue = kNoRemoteConnection
+  // TODO(crbug.com/1301794): This shouldn't happen, but sometimes browser side
+  // requests link to text when generation was never started.
+  kNotGenerated = 14,
+
+  kMaxValue = kNotGenerated
 };
 
 // These values are persisted to logs. Entries should not be renumbered and

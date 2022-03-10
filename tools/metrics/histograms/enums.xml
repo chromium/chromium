@@ -50440,6 +50440,7 @@ Called by update_gpu_driver_bug_workaround_entries.py.-->
   <int value="11" label="Timeout"/>
   <int value="12" label="BlockList"/>
   <int value="13" label="NoRemoteConnection"/>
+  <int value="14" label="NotGenerated"/>
 </enum>
 
 <enum name="LinkGenerationSharedStatus">
