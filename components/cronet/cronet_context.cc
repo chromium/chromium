@@ -209,11 +209,13 @@ CronetContext::~CronetContext() {
 
 CronetContext::NetworkTasks::NetworkTasks(
     std::unique_ptr<URLRequestContextConfig> context_config,
-    std::unique_ptr<CronetContext::Callback> callback)
+    std::unique_ptr<CronetContext::Callback> callback,
+    bool listen_to_network_changes)
     : default_context_(nullptr),
       is_default_context_initialized_(false),
       context_config_(std::move(context_config)),
-      callback_(std::move(callback)) {
+      callback_(std::move(callback)),
+      listen_to_network_changes_(listen_to_network_changes) {
   DETACH_FROM_THREAD(network_thread_checker_);
 }
 
@@ -230,6 +232,9 @@ CronetContext::NetworkTasks::~NetworkTasks() {
     network_quality_estimator_->RemoveEffectiveConnectionTypeObserver(this);
     network_quality_estimator_->RemoveRTTAndThroughputEstimatesObserver(this);
   }
+
+  if (listen_to_network_changes_)
+    net::NetworkChangeNotifier::RemoveNetworkObserver(this);
 }
 
 void CronetContext::InitRequestContextOnInitThread() {
@@ -307,6 +312,19 @@ void CronetContext::ProvideThroughputObservations(bool should) {
       base::BindOnce(
           &CronetContext::NetworkTasks::ProvideThroughputObservations,
           base::Unretained(network_tasks_), should));
+}
+
+void CronetContext::NetworkTasks::SpawnNetworkBoundURLRequestContextForTesting(
+    net::NetworkChangeNotifier::NetworkHandle network) {
+  DCHECK_CALLED_ON_VALID_THREAD(network_thread_checker_);
+  DCHECK(!contexts_.contains(network));
+  contexts_[network] = BuildNetworkBoundURLRequestContext(network);
+}
+
+bool CronetContext::NetworkTasks::DoesURLRequestContextExistForTesting(
+    net::NetworkChangeNotifier::NetworkHandle network) {
+  DCHECK_CALLED_ON_VALID_THREAD(network_thread_checker_);
+  return contexts_.contains(network);
 }
 
 void CronetContext::NetworkTasks::InitializeNQEPrefs() const {
@@ -492,6 +510,9 @@ void CronetContext::NetworkTasks::Initialize(
   contexts_[default_network] =
       BuildDefaultURLRequestContext(std::move(proxy_config_service));
   default_context_ = contexts_[default_network].get();
+
+  if (listen_to_network_changes_)
+    net::NetworkChangeNotifier::AddNetworkObserver(this);
 
   callback_->OnInitNetworkThread();
   is_default_context_initialized_ = true;
@@ -687,6 +708,29 @@ void CronetContext::NetworkTasks::OnThroughputObservation(
   callback_->OnThroughputObservation(
       throughput_kbps,
       (timestamp - base::TimeTicks::UnixEpoch()).InMilliseconds(), source);
+}
+
+void CronetContext::NetworkTasks::OnNetworkDisconnected(
+    net::NetworkChangeNotifier::NetworkHandle network) {
+  DCHECK_CALLED_ON_VALID_THREAD(network_thread_checker_);
+  DCHECK(listen_to_network_changes_);
+
+  // TODO(stefanoduo): Properly cancel pending requests before destroying the
+  // context.
+  contexts_.erase(network);
+}
+
+void CronetContext::NetworkTasks::OnNetworkConnected(
+    net::NetworkChangeNotifier::NetworkHandle network) {
+  DCHECK_CALLED_ON_VALID_THREAD(network_thread_checker_);
+}
+void CronetContext::NetworkTasks::OnNetworkSoonToDisconnect(
+    net::NetworkChangeNotifier::NetworkHandle network) {
+  DCHECK_CALLED_ON_VALID_THREAD(network_thread_checker_);
+}
+void CronetContext::NetworkTasks::OnNetworkMadeDefault(
+    net::NetworkChangeNotifier::NetworkHandle network) {
+  DCHECK_CALLED_ON_VALID_THREAD(network_thread_checker_);
 }
 
 void CronetContext::NetworkTasks::StartNetLog(const base::FilePath& file_path,

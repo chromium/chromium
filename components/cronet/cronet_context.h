@@ -172,20 +172,21 @@ class CronetContext {
   }
   base::TimeDelta heartbeat_interval() const { return heartbeat_interval_; }
 
- private:
-  friend class TestUtil;
-  class ContextGetter;
-
   // NetworkTasks performs tasks on the network thread and owns objects that
   // live on the network thread.
   class NetworkTasks : public net::EffectiveConnectionTypeObserver,
                        public net::RTTAndThroughputEstimatesObserver,
                        public net::NetworkQualityEstimator::RTTObserver,
-                       public net::NetworkQualityEstimator::ThroughputObserver {
+                       public net::NetworkQualityEstimator::ThroughputObserver,
+                       public net::NetworkChangeNotifier::NetworkObserver {
    public:
     // Invoked off the network thread.
+    // `listen_to_network_changes` is a temporary parameter to allow
+    // multi-network testing for the time being.
+    // TODO(1284972): Remove listen_to_network_changes once that has been fixed.
     NetworkTasks(std::unique_ptr<URLRequestContextConfig> config,
-                 std::unique_ptr<CronetContext::Callback> callback);
+                 std::unique_ptr<CronetContext::Callback> callback,
+                 bool listen_to_network_changes = false);
 
     NetworkTasks(const NetworkTasks&) = delete;
     NetworkTasks& operator=(const NetworkTasks&) = delete;
@@ -238,6 +239,16 @@ class CronetContext {
         const base::TimeTicks& timestamp,
         net::NetworkQualityObservationSource source) override;
 
+    // net::NetworkChangeNotifier::NetworkObserver implementation.
+    void OnNetworkDisconnected(
+        net::NetworkChangeNotifier::NetworkHandle network) override;
+    void OnNetworkConnected(
+        net::NetworkChangeNotifier::NetworkHandle network) override;
+    void OnNetworkSoonToDisconnect(
+        net::NetworkChangeNotifier::NetworkHandle network) override;
+    void OnNetworkMadeDefault(
+        net::NetworkChangeNotifier::NetworkHandle network) override;
+
     net::URLRequestContext* GetURLRequestContext(
         net::NetworkChangeNotifier::NetworkHandle network);
 
@@ -260,6 +271,11 @@ class CronetContext {
     // Initializes Network Quality Estimator (NQE) prefs manager on network
     // thread.
     void InitializeNQEPrefs() const;
+
+    void SpawnNetworkBoundURLRequestContextForTesting(
+        net::NetworkChangeNotifier::NetworkHandle network);
+    bool DoesURLRequestContextExistForTesting(
+        net::NetworkChangeNotifier::NetworkHandle network);
 
    private:
     friend class TestUtil;
@@ -330,8 +346,16 @@ class CronetContext {
     // Callback implemented by the client.
     std::unique_ptr<CronetContext::Callback> callback_;
 
+    // Whether `this` should listen to network changes and destroy network-bound
+    // contexts when their network goes away.
+    bool listen_to_network_changes_;
+
     THREAD_CHECKER(network_thread_checker_);
   };
+
+ private:
+  friend class TestUtil;
+  class ContextGetter;
 
   scoped_refptr<base::SingleThreadTaskRunner> GetNetworkTaskRunner() const;
 
