@@ -224,7 +224,12 @@ public class WebApkUpdateManagerUnitTest {
         }
 
         @Override
-        protected boolean iconOrNameUpdateDialogEnabled() {
+        protected boolean iconUpdateDialogEnabled() {
+            return false;
+        }
+
+        @Override
+        protected boolean nameUpdateDialogEnabled() {
             return false;
         }
 
