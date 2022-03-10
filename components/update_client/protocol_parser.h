@@ -60,7 +60,7 @@ class ProtocolParser {
     struct Data {
       Data();
       Data(const Data& other);
-      Data& operator=(Data&);
+      Data& operator=(const Data&);
       Data(const std::string& status,
            const std::string& name,
            const std::string& install_data_index,

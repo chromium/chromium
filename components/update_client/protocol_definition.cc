@@ -26,7 +26,7 @@ UpdateCheck::~UpdateCheck() = default;
 
 Data::Data() = default;
 Data::Data(const Data& other) = default;
-Data& Data::operator=(Data&) = default;
+Data& Data::operator=(const Data&) = default;
 Data::Data(const std::string& name,
            const std::string& install_data_index,
            const std::string& untrusted_data)

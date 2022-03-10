@@ -81,7 +81,7 @@ struct UpdateCheck {
 struct Data {
   Data();
   Data(const Data& other);
-  Data& operator=(Data&);
+  Data& operator=(const Data& other);
   Data(const std::string& name,
        const std::string& install_data_index,
        const std::string& untrusted_data);

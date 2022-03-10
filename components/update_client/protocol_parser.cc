@@ -36,8 +36,8 @@ ProtocolParser::Result::Manifest::Package::~Package() = default;
 
 ProtocolParser::Result::Data::Data() = default;
 ProtocolParser::Result::Data::Data(const Data& other) = default;
-ProtocolParser::Result::Data& ProtocolParser::Result::Data::operator=(Data&) =
-    default;
+ProtocolParser::Result::Data& ProtocolParser::Result::Data::operator=(
+    const Data&) = default;
 ProtocolParser::Result::Data::Data(const std::string& status,
                                    const std::string& name,
                                    const std::string& install_data_index,
