@@ -23,6 +23,7 @@ DEFINE_UI_CLASS_PROPERTY_KEY(bool, kParentToHiddenContainerKey, false)
 DEFINE_UI_CLASS_PROPERTY_KEY(bool, kRealArcTaskWindow, true)
 DEFINE_UI_CLASS_PROPERTY_KEY(int32_t, kRestoreWindowIdKey, 0)
 DEFINE_UI_CLASS_PROPERTY_KEY(int32_t, kWindowIdKey, 0)
+DEFINE_UI_CLASS_PROPERTY_KEY(int32_t, kLaunchId, 0)
 DEFINE_OWNED_UI_CLASS_PROPERTY_KEY(WindowInfo, kWindowInfoKey, nullptr)
 
 }  // namespace app_restore

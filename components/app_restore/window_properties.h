@@ -70,6 +70,11 @@ extern const ui::ClassProperty<int32_t>* const kRestoreWindowIdKey;
 COMPONENT_EXPORT(APP_RESTORE)
 extern const ui::ClassProperty<int32_t>* const kWindowIdKey;
 
+// A property key to indicate which launch (full restore or desk template) a
+// window is associated with.
+COMPONENT_EXPORT(APP_RESTORE)
+extern const ui::ClassProperty<int32_t>* const kLaunchId;
+
 COMPONENT_EXPORT(APP_RESTORE)
 extern const ui::ClassProperty<WindowInfo*>* const kWindowInfoKey;
 
