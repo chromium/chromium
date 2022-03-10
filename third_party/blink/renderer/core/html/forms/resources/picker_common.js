@@ -250,40 +250,39 @@ function enclosingNodeOrSelfWithClass(selfNode, className) {
   return null;
 }
 
-/**
- * @constructor
- */
-function EventEmitter() {
-}
+// ----------------------------------------------------------------
 
-{
+class EventEmitter {
+  constructor() {
+  }
+
   /**
    * @param {!string} type
    * @param {!function({...*})} callback
    */
-  EventEmitter.prototype.on = function(type, callback) {
+  on(type, callback) {
     console.assert(callback instanceof Function);
     if (!this._callbacks)
       this._callbacks = {};
     if (!this._callbacks[type])
       this._callbacks[type] = [];
     this._callbacks[type].push(callback);
-  };
+  }
 
-  EventEmitter.prototype.hasListener = function(type) {
+  hasListener(type) {
     if (!this._callbacks)
       return false;
     var callbacksForType = this._callbacks[type];
     if (!callbacksForType)
       return false;
     return callbacksForType.length > 0;
-  };
+  }
 
   /**
    * @param {!string} type
    * @param {!function(Object)} callback
    */
-  EventEmitter.prototype.removeListener = function(type, callback) {
+  removeListener(type, callback) {
     if (!this._callbacks)
       return;
     var callbacksForType = this._callbacks[type];
@@ -292,13 +291,13 @@ function EventEmitter() {
     callbacksForType.splice(callbacksForType.indexOf(callback), 1);
     if (callbacksForType.length === 0)
       delete this._callbacks[type];
-  };
+  }
 
   /**
    * @param {!string} type
    * @param {...*} var_args
    */
-  EventEmitter.prototype.dispatchEvent = function(type) {
+  dispatchEvent(type) {
     if (!this._callbacks)
       return;
     var callbacksForType = this._callbacks[type];
@@ -308,7 +307,7 @@ function EventEmitter() {
     for (var i = 0; i < callbacksForType.length; ++i) {
       callbacksForType[i].apply(this, Array.prototype.slice.call(arguments, 1));
     }
-  };
+  }
 }
 
 // ----------------------------------------------------------------
