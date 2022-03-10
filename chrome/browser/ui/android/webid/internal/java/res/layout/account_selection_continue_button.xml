@@ -5,7 +5,6 @@
 
 <org.chromium.ui.widget.ButtonCompat
     xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/account_selection_continue_btn"
     android:descendantFocusability="blocksDescendants"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"

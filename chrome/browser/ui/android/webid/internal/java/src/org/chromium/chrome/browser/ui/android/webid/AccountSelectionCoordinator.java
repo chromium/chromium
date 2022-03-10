@@ -50,12 +50,12 @@ public class AccountSelectionCoordinator implements AccountSelectionComponent {
         mBottomSheetController = sheetController;
         mContext = context;
 
-        PropertyModel headerModel =
-                new PropertyModel.Builder(AccountSelectionProperties.HeaderProperties.ALL_KEYS)
+        PropertyModel model =
+                new PropertyModel.Builder(AccountSelectionProperties.ItemProperties.ALL_KEYS)
                         .build();
         // Construct view and its related adaptor to be displayed in the bottom sheet.
         ModelList sheetItems = new ModelList();
-        View contentView = setupContentView(context, headerModel, sheetItems);
+        View contentView = setupContentView(context, model, sheetItems);
         mSheetItemListView = contentView.findViewById(R.id.sheet_item_list);
 
         // Setup the bottom sheet content view.
@@ -73,16 +73,16 @@ public class AccountSelectionCoordinator implements AccountSelectionComponent {
         @Px
         int avatarSize = context.getResources().getDimensionPixelSize(
                 R.dimen.account_selection_account_avatar_size);
-        mMediator = new AccountSelectionMediator(delegate, headerModel, sheetItems,
+        mMediator = new AccountSelectionMediator(delegate, model, sheetItems,
                 mBottomSheetController, mBottomSheetContent, imageFetcher, avatarSize);
     }
 
-    static View setupContentView(Context context, PropertyModel headerModel, ModelList sheetItems) {
+    static View setupContentView(Context context, PropertyModel model, ModelList sheetItems) {
         View contentView = (LinearLayout) LayoutInflater.from(context).inflate(
                 R.layout.account_selection_sheet, null);
 
-        PropertyModelChangeProcessor.create(headerModel, contentView.findViewById(R.id.header_view),
-                AccountSelectionViewBinder::bindHeaderView);
+        PropertyModelChangeProcessor.create(
+                model, contentView, AccountSelectionViewBinder::bindContentView);
 
         RecyclerView sheetItemListView = contentView.findViewById(R.id.sheet_item_list);
         sheetItemListView.setLayoutManager(new LinearLayoutManager(
@@ -91,18 +91,9 @@ public class AccountSelectionCoordinator implements AccountSelectionComponent {
 
         // Setup the recycler view to be updated as we update the sheet items.
         SimpleRecyclerViewAdapter adapter = new SimpleRecyclerViewAdapter(sheetItems);
-        adapter.registerType(AccountSelectionProperties.ItemType.ACCOUNT,
+        adapter.registerType(AccountSelectionProperties.ITEM_TYPE_ACCOUNT,
                 AccountSelectionCoordinator::buildAccountView,
                 AccountSelectionViewBinder::bindAccountView);
-        adapter.registerType(AccountSelectionProperties.ItemType.CONTINUE_BUTTON,
-                AccountSelectionCoordinator::buildContinueButtonView,
-                AccountSelectionViewBinder::bindContinueButtonView);
-        adapter.registerType(AccountSelectionProperties.ItemType.AUTO_SIGN_IN_CANCEL_BUTTON,
-                AccountSelectionCoordinator::buildAutoSignInCancelButtonView,
-                AccountSelectionViewBinder::bindAutoSignInCancelButtonView);
-        adapter.registerType(AccountSelectionProperties.ItemType.DATA_SHARING_CONSENT,
-                AccountSelectionCoordinator::buildDataSharingConsentView,
-                AccountSelectionViewBinder::bindDataSharingConsentView);
         sheetItemListView.setAdapter(adapter);
 
         return contentView;

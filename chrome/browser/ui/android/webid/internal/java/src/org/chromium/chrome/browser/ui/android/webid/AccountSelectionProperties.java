@@ -6,23 +6,22 @@ package org.chromium.chrome.browser.ui.android.webid;
 
 import android.graphics.Bitmap;
 
-import androidx.annotation.IntDef;
 import androidx.annotation.Nullable;
 
 import org.chromium.base.Callback;
 import org.chromium.chrome.browser.ui.android.webid.data.Account;
 import org.chromium.chrome.browser.ui.android.webid.data.IdentityProviderMetadata;
 import org.chromium.ui.modelutil.PropertyKey;
+import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModel.ReadableObjectPropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableObjectPropertyKey;
-
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
 
 /**
  * Properties defined here reflect the state of the AccountSelection-components.
  */
 class AccountSelectionProperties {
+    public static final int ITEM_TYPE_ACCOUNT = 1;
+
     /**
      * Properties for an account entry in AccountSelection sheet.
      */
@@ -58,16 +57,16 @@ class AccountSelectionProperties {
      */
     static class HeaderProperties {
         public enum HeaderType { AUTO_SIGN_IN, SIGN_IN, VERIFY }
-        static final WritableObjectPropertyKey<Runnable> CLOSE_ON_CLICK_LISTENER =
-                new WritableObjectPropertyKey<>("close_on_click_listener");
-        static final WritableObjectPropertyKey<String> FORMATTED_IDP_ETLD_PLUS_ONE =
-                new WritableObjectPropertyKey<>("formatted_idp_etld_plus_one");
-        static final WritableObjectPropertyKey<String> FORMATTED_RP_ETLD_PLUS_ONE =
-                new WritableObjectPropertyKey<>("formatted_rp_etld_plus_one");
-        static final WritableObjectPropertyKey<Bitmap> IDP_BRAND_ICON =
-                new WritableObjectPropertyKey<>("brand_icon");
-        static final WritableObjectPropertyKey<HeaderType> TYPE =
-                new WritableObjectPropertyKey<>("type");
+        static final ReadableObjectPropertyKey<Runnable> CLOSE_ON_CLICK_LISTENER =
+                new ReadableObjectPropertyKey<>("close_on_click_listener");
+        static final ReadableObjectPropertyKey<String> FORMATTED_IDP_ETLD_PLUS_ONE =
+                new ReadableObjectPropertyKey<>("formatted_idp_etld_plus_one");
+        static final ReadableObjectPropertyKey<String> FORMATTED_RP_ETLD_PLUS_ONE =
+                new ReadableObjectPropertyKey<>("formatted_rp_etld_plus_one");
+        static final ReadableObjectPropertyKey<Bitmap> IDP_BRAND_ICON =
+                new ReadableObjectPropertyKey<>("brand_icon");
+        static final ReadableObjectPropertyKey<HeaderType> TYPE =
+                new ReadableObjectPropertyKey<>("type");
 
         static final PropertyKey[] ALL_KEYS = {CLOSE_ON_CLICK_LISTENER, FORMATTED_IDP_ETLD_PLUS_ONE,
                 FORMATTED_RP_ETLD_PLUS_ONE, IDP_BRAND_ICON, TYPE};
@@ -123,30 +122,23 @@ class AccountSelectionProperties {
         private AutoSignInCancelButtonProperties() {}
     }
 
-    @IntDef({ItemType.ACCOUNT, ItemType.CONTINUE_BUTTON, ItemType.AUTO_SIGN_IN_CANCEL_BUTTON,
-            ItemType.DATA_SHARING_CONSENT})
-    @Retention(RetentionPolicy.SOURCE)
-    @interface ItemType {
-        /**
-         * A section containing a user's name and email.
-         */
-        int ACCOUNT = 1;
+    /**
+     * Properties defined here reflect sections in the FedCM bottom sheet.
+     */
+    static class ItemProperties {
+        static final WritableObjectPropertyKey<PropertyModel> AUTO_SIGN_IN_CANCEL_BUTTON =
+                new WritableObjectPropertyKey<>("auto_sign_in_btn");
+        static final WritableObjectPropertyKey<PropertyModel> CONTINUE_BUTTON =
+                new WritableObjectPropertyKey<>("continue_btn");
+        static final WritableObjectPropertyKey<PropertyModel> DATA_SHARING_CONSENT =
+                new WritableObjectPropertyKey<>("data_sharing_consent");
+        static final WritableObjectPropertyKey<PropertyModel> HEADER =
+                new WritableObjectPropertyKey<>("header");
 
-        /**
-         * The continue button at the end of the sheet when there is only one account.
-         */
-        int CONTINUE_BUTTON = 2;
+        static final PropertyKey[] ALL_KEYS = {
+                AUTO_SIGN_IN_CANCEL_BUTTON, CONTINUE_BUTTON, DATA_SHARING_CONSENT, HEADER};
 
-        /**
-         * The cancel button at the end of the sheet with auto sign in.
-         */
-        int AUTO_SIGN_IN_CANCEL_BUTTON = 3;
-
-        /**
-         * The user data sharing consent text when there is only one account and it is a sign-up
-         * moment.
-         */
-        int DATA_SHARING_CONSENT = 4;
+        private ItemProperties() {}
     }
 
     private AccountSelectionProperties() {}

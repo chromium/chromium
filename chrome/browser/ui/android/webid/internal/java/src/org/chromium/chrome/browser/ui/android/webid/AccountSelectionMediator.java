@@ -15,7 +15,7 @@ import org.chromium.chrome.browser.ui.android.webid.AccountSelectionProperties.C
 import org.chromium.chrome.browser.ui.android.webid.AccountSelectionProperties.DataSharingConsentProperties;
 import org.chromium.chrome.browser.ui.android.webid.AccountSelectionProperties.HeaderProperties;
 import org.chromium.chrome.browser.ui.android.webid.AccountSelectionProperties.HeaderProperties.HeaderType;
-import org.chromium.chrome.browser.ui.android.webid.AccountSelectionProperties.ItemType;
+import org.chromium.chrome.browser.ui.android.webid.AccountSelectionProperties.ItemProperties;
 import org.chromium.chrome.browser.ui.android.webid.data.Account;
 import org.chromium.chrome.browser.ui.android.webid.data.ClientIdMetadata;
 import org.chromium.chrome.browser.ui.android.webid.data.IdentityProviderMetadata;
@@ -40,8 +40,8 @@ import java.util.List;
 class AccountSelectionMediator {
     private boolean mVisible;
     private final AccountSelectionComponent.Delegate mDelegate;
-    private final PropertyModel mHeaderModel;
-    private final ModelList mSheetItems;
+    private final PropertyModel mModel;
+    private final ModelList mSheetAccountItems;
     private final ImageFetcher mImageFetcher;
     private final @Px int mDesiredAvatarSize;
 
@@ -64,15 +64,15 @@ class AccountSelectionMediator {
     // The account that the user has selected.
     private Account mSelectedAccount;
 
-    AccountSelectionMediator(AccountSelectionComponent.Delegate delegate, PropertyModel headerModel,
-            ModelList sheetItems, BottomSheetController bottomSheetController,
+    AccountSelectionMediator(AccountSelectionComponent.Delegate delegate, PropertyModel model,
+            ModelList sheetAccountItems, BottomSheetController bottomSheetController,
             AccountSelectionBottomSheetContent bottomSheetContent, ImageFetcher imageFetcher,
             @Px int desiredAvatarSize) {
         assert delegate != null;
         mVisible = false;
         mDelegate = delegate;
-        mHeaderModel = headerModel;
-        mSheetItems = sheetItems;
+        mModel = model;
+        mSheetAccountItems = sheetAccountItems;
         mImageFetcher = imageFetcher;
         mDesiredAvatarSize = desiredAvatarSize;
         mBottomSheetController = bottomSheetController;
@@ -105,8 +105,8 @@ class AccountSelectionMediator {
         return false;
     }
 
-    private void updateHeader(HeaderType headerType, String rpEtldPlusOne, String idpEtldPlusOne,
-            IdentityProviderMetadata idpMetadata) {
+    private PropertyModel createHeaderItem(HeaderType headerType, String rpEtldPlusOne,
+            String idpEtldPlusOne, IdentityProviderMetadata idpMetadata) {
         String formattedRpEtldPlusOne = UrlFormatter.formatUrlForSecurityDisplay(
                 UrlFormatter.fixupUrl(rpEtldPlusOne), SchemeDisplay.OMIT_HTTP_AND_HTTPS);
         String formattedIdpEtldPlusOne = UrlFormatter.formatUrlForSecurityDisplay(
@@ -116,48 +116,29 @@ class AccountSelectionMediator {
             onDismissed(BottomSheetController.StateChangeReason.NONE);
         };
 
-        // We remove the HTTPS from URL since it is the only protocol that is
-        // allowed with WebID.
-        mHeaderModel.set(HeaderProperties.IDP_BRAND_ICON, idpMetadata.getBrandIcon());
-        mHeaderModel.set(HeaderProperties.CLOSE_ON_CLICK_LISTENER, closeOnClickRunnable);
-        mHeaderModel.set(HeaderProperties.FORMATTED_IDP_ETLD_PLUS_ONE, formattedIdpEtldPlusOne);
-        mHeaderModel.set(HeaderProperties.FORMATTED_RP_ETLD_PLUS_ONE, formattedRpEtldPlusOne);
-        mHeaderModel.set(HeaderProperties.TYPE, headerType);
+        return new PropertyModel.Builder(HeaderProperties.ALL_KEYS)
+                .with(HeaderProperties.IDP_BRAND_ICON, idpMetadata.getBrandIcon())
+                .with(HeaderProperties.CLOSE_ON_CLICK_LISTENER, closeOnClickRunnable)
+                .with(HeaderProperties.FORMATTED_IDP_ETLD_PLUS_ONE, formattedIdpEtldPlusOne)
+                .with(HeaderProperties.FORMATTED_RP_ETLD_PLUS_ONE, formattedRpEtldPlusOne)
+                .with(HeaderProperties.TYPE, headerType)
+                .build();
     }
 
-    private void addAccounts(
+    private void updateAccounts(
             String idpEtldPlusOne, List<Account> accounts, boolean areAccountsClickable) {
+        mSheetAccountItems.clear();
+
         for (Account account : accounts) {
             final PropertyModel model = createAccountItem(account, areAccountsClickable);
-            mSheetItems.add(new ListItem(ItemType.ACCOUNT, model));
+            mSheetAccountItems.add(
+                    new ListItem(AccountSelectionProperties.ITEM_TYPE_ACCOUNT, model));
             requestAvatarImage(model);
         }
     }
 
-    private void addAutoSignInCancelButton(Account account) {
-        final PropertyModel cancelBtnModel = createAutoSignInCancelBtnItem();
-        mSheetItems.add(new ListItem(ItemType.AUTO_SIGN_IN_CANCEL_BUTTON, cancelBtnModel));
-    }
-
-    private void addContinueButton(Account account, String idpEtldPlusOne,
-            IdentityProviderMetadata idpMetadata, ClientIdMetadata clientMetadata) {
-        // Shows the continue button for both sign-up and non auto-sign-in.
-        final PropertyModel continueBtnModel = createContinueBtnItem(account, idpMetadata);
-        mSheetItems.add(new ListItem(ItemType.CONTINUE_BUTTON, continueBtnModel));
-
-        // Only show the user data sharing consent text for sign up.
-        if (!account.isSignIn()) {
-            mSheetItems.add(new ListItem(ItemType.DATA_SHARING_CONSENT,
-                    createDataSharingConsentItem(idpEtldPlusOne, clientMetadata)));
-        }
-    }
-
     void showVerifySheet(Account account) {
-        mSheetItems.clear();
-
-        updateHeader(HeaderType.VERIFY, mRpEtldPlusOne, mIdpEtldPlusOne, mIdpMetadata);
-
-        addAccounts(mIdpEtldPlusOne, Arrays.asList(account), /*areAccountsClickable=*/false);
+        updateSheet(HeaderType.VERIFY, Arrays.asList(account), /*areAccountsClickable=*/false);
         showContent();
 
         // When TalkBack is enabled, updating |mSheetItems| clears the current item's accessibility
@@ -183,8 +164,6 @@ class AccountSelectionMediator {
     private void showAccountsInternal(String rpEtldPlusOne, String idpEtldPlusOne,
             List<Account> accounts, Account selectedAccount, IdentityProviderMetadata idpMetadata,
             ClientIdMetadata clientMetadata, boolean isAutoSignIn) {
-        mSheetItems.clear();
-
         mRpEtldPlusOne = rpEtldPlusOne;
         mIdpEtldPlusOne = idpEtldPlusOne;
         mAccounts = accounts;
@@ -196,21 +175,45 @@ class AccountSelectionMediator {
             accounts = Arrays.asList(selectedAccount);
         }
 
-        updateHeader(isAutoSignIn ? HeaderType.AUTO_SIGN_IN : HeaderType.SIGN_IN, rpEtldPlusOne,
-                idpEtldPlusOne, idpMetadata);
-        addAccounts(idpEtldPlusOne, accounts, /*areAccountsClickable=*/mSelectedAccount == null);
+        HeaderType headerType = isAutoSignIn ? HeaderType.AUTO_SIGN_IN : HeaderType.SIGN_IN;
+        updateSheet(headerType, accounts, /*areAccountsClickable=*/mSelectedAccount == null);
+        showContent();
+    }
 
-        if (isAutoSignIn) {
-            assert mSelectedAccount != null;
-            assert mSelectedAccount.isSignIn();
-            addAutoSignInCancelButton(mSelectedAccount);
-            mAutoSignInTaskHandler.postDelayed(
-                    () -> onAccountSelected(mSelectedAccount), AUTO_SIGN_IN_CANCELLATION_TIMER_MS);
-        } else if (mSelectedAccount != null) {
-            addContinueButton(mSelectedAccount, idpEtldPlusOne, idpMetadata, clientMetadata);
+    private void updateSheet(
+            HeaderType headerType, List<Account> accounts, boolean areAccountsClickable) {
+        updateAccounts(mIdpEtldPlusOne, accounts, areAccountsClickable);
+
+        PropertyModel headerModel =
+                createHeaderItem(headerType, mRpEtldPlusOne, mIdpEtldPlusOne, mIdpMetadata);
+        mModel.set(ItemProperties.HEADER, headerModel);
+
+        boolean isContinueButtonVisible = false;
+        boolean isDataSharingConsentVisible = false;
+        if (headerType == HeaderType.SIGN_IN && mSelectedAccount != null) {
+            isContinueButtonVisible = true;
+            // Only show the user data sharing consent text for sign up.
+            isDataSharingConsentVisible = !mSelectedAccount.isSignIn();
         }
 
-        showContent();
+        if (headerType == HeaderType.AUTO_SIGN_IN) {
+            assert mSelectedAccount != null;
+            assert mSelectedAccount.isSignIn();
+
+            mModel.set(ItemProperties.AUTO_SIGN_IN_CANCEL_BUTTON, createAutoSignInCancelBtnItem());
+            mAutoSignInTaskHandler.postDelayed(
+                    () -> onAccountSelected(mSelectedAccount), AUTO_SIGN_IN_CANCELLATION_TIMER_MS);
+        } else {
+            mModel.set(ItemProperties.AUTO_SIGN_IN_CANCEL_BUTTON, null);
+        }
+
+        mModel.set(ItemProperties.CONTINUE_BUTTON,
+                isContinueButtonVisible ? createContinueBtnItem(mSelectedAccount, mIdpMetadata)
+                                        : null);
+        mModel.set(ItemProperties.DATA_SHARING_CONSENT,
+                isDataSharingConsentVisible
+                        ? createDataSharingConsentItem(mIdpEtldPlusOne, mClientMetadata)
+                        : null);
     }
 
     /**
@@ -268,6 +271,7 @@ class AccountSelectionMediator {
         if (mSelectedAccount == null && !selectedAccount.isSignIn()) {
             showAccountsInternal(mRpEtldPlusOne, mIdpEtldPlusOne, mAccounts, selectedAccount,
                     mIdpMetadata, mClientMetadata, /*isAutoSignIn=*/false);
+            mBottomSheetContent.focusContinueButtonForAccessibility();
             return;
         }
 

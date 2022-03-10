@@ -52,7 +52,7 @@ import org.chromium.chrome.browser.ui.android.webid.AccountSelectionProperties.A
 import org.chromium.chrome.browser.ui.android.webid.AccountSelectionProperties.ContinueButtonProperties;
 import org.chromium.chrome.browser.ui.android.webid.AccountSelectionProperties.DataSharingConsentProperties;
 import org.chromium.chrome.browser.ui.android.webid.AccountSelectionProperties.HeaderProperties.HeaderType;
-import org.chromium.chrome.browser.ui.android.webid.AccountSelectionProperties.ItemType;
+import org.chromium.chrome.browser.ui.android.webid.AccountSelectionProperties.ItemProperties;
 import org.chromium.chrome.browser.ui.android.webid.data.Account;
 import org.chromium.chrome.browser.ui.android.webid.data.ClientIdMetadata;
 import org.chromium.chrome.browser.ui.android.webid.data.IdentityProviderMetadata;
@@ -63,7 +63,9 @@ import org.chromium.components.url_formatter.UrlFormatter;
 import org.chromium.components.url_formatter.UrlFormatterJni;
 import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
+import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
+import org.chromium.ui.modelutil.PropertyModel.WritableObjectPropertyKey;
 import org.chromium.url.GURL;
 import org.chromium.url.JUnitTestGURLs;
 import org.chromium.url.ShadowGURL;
@@ -122,9 +124,9 @@ public class AccountSelectionControllerTest {
 
     private AccountSelectionBottomSheetContent mBottomSheetContent;
     private AccountSelectionMediator mMediator;
-    private final PropertyModel mHeaderModel =
-            new PropertyModel.Builder(AccountSelectionProperties.HeaderProperties.ALL_KEYS).build();
-    private final ModelList mSheetItems = new ModelList();
+    private final PropertyModel mModel =
+            new PropertyModel.Builder(AccountSelectionProperties.ItemProperties.ALL_KEYS).build();
+    private final ModelList mSheetAccountItems = new ModelList();
 
     public AccountSelectionControllerTest() {
         MockitoAnnotations.initMocks(this);
@@ -145,7 +147,7 @@ public class AccountSelectionControllerTest {
         when(mUrlFormatterJniMock.fixupUrl(anyString())).then(inv -> fixupUrl(inv.getArgument(0)));
 
         mBottomSheetContent = new AccountSelectionBottomSheetContent(null, null);
-        mMediator = new AccountSelectionMediator(mMockDelegate, mHeaderModel, mSheetItems,
+        mMediator = new AccountSelectionMediator(mMockDelegate, mModel, mSheetAccountItems,
                 mMockBottomSheetController, mBottomSheetContent, mMockImageFetcher,
                 DESIRED_AVATAR_SIZE);
     }
@@ -155,12 +157,13 @@ public class AccountSelectionControllerTest {
         mMediator.showAccounts(TEST_ETLD_PLUS_ONE, TEST_ETLD_PLUS_ONE_1, Arrays.asList(ANA),
                 IDP_METADATA, CLIENT_ID_METADATA, false /* isAutoSignIn */);
 
-        assertEquals(HeaderType.SIGN_IN, mHeaderModel.get(TYPE));
+        PropertyModel headerModel = mModel.get(ItemProperties.HEADER);
+        assertEquals(HeaderType.SIGN_IN, headerModel.get(TYPE));
         assertEquals(formatForSecurityDisplay(TEST_ETLD_PLUS_ONE),
-                mHeaderModel.get(FORMATTED_RP_ETLD_PLUS_ONE));
+                headerModel.get(FORMATTED_RP_ETLD_PLUS_ONE));
         assertEquals(formatForSecurityDisplay(TEST_ETLD_PLUS_ONE_1),
-                mHeaderModel.get(FORMATTED_IDP_ETLD_PLUS_ONE));
-        assertNotNull(mHeaderModel.get(IDP_BRAND_ICON));
+                headerModel.get(FORMATTED_IDP_ETLD_PLUS_ONE));
+        assertNotNull(headerModel.get(IDP_BRAND_ICON));
     }
 
     @Test
@@ -168,23 +171,25 @@ public class AccountSelectionControllerTest {
         mMediator.showAccounts(TEST_ETLD_PLUS_ONE, TEST_ETLD_PLUS_ONE_1, Arrays.asList(NEW_USER),
                 IDP_METADATA, CLIENT_ID_METADATA, false /* isAutoSignIn */);
 
-        assertEquals(HeaderType.SIGN_IN, mHeaderModel.get(TYPE));
+        PropertyModel headerModel = mModel.get(ItemProperties.HEADER);
+        assertEquals(HeaderType.SIGN_IN, headerModel.get(TYPE));
     }
 
     @Test
     public void testShowAccountAutoSignInHeader() {
         mMediator.showAccounts(TEST_ETLD_PLUS_ONE, TEST_ETLD_PLUS_ONE_1, Arrays.asList(ANA),
                 IDP_METADATA, CLIENT_ID_METADATA, true /* isAutoSignIn */);
-        assertEquals(HeaderType.AUTO_SIGN_IN, mHeaderModel.get(TYPE));
+        PropertyModel headerModel = mModel.get(ItemProperties.HEADER);
+        assertEquals(HeaderType.AUTO_SIGN_IN, headerModel.get(TYPE));
     }
 
     @Test
     public void testShowAccountsSetsAccountListAndRequestsAvatar() {
         mMediator.showAccounts(TEST_ETLD_PLUS_ONE, TEST_ETLD_PLUS_ONE_1, Arrays.asList(ANA, BOB),
                 IDP_METADATA, CLIENT_ID_METADATA, false);
-        assertEquals("Incorrect item sheet count", 2, mSheetItems.size());
-        assertNull(mSheetItems.get(0).model.get(AVATAR));
-        assertNull(mSheetItems.get(1).model.get(AVATAR));
+        assertEquals("Incorrect item sheet count", 2, mSheetAccountItems.size());
+        assertNull(mSheetAccountItems.get(0).model.get(AVATAR));
+        assertNull(mSheetAccountItems.get(1).model.get(AVATAR));
 
         // Both accounts have the same profile pic URL
         ImageFetcher.Params expected_params = ImageFetcher.Params.create(TEST_PROFILE_PIC.getSpec(),
@@ -198,10 +203,9 @@ public class AccountSelectionControllerTest {
     public void testFetchAvatarUpdatesModel() {
         mMediator.showAccounts(TEST_ETLD_PLUS_ONE, TEST_ETLD_PLUS_ONE_1,
                 Collections.singletonList(CARL), IDP_METADATA, CLIENT_ID_METADATA, false);
-        assertEquals("Incorrect item sheet count", 2, mSheetItems.size());
-        assertEquals("Incorrect type", ItemType.ACCOUNT, mSheetItems.get(0).type);
-        assertEquals("Incorrect account", CARL, mSheetItems.get(0).model.get(ACCOUNT));
-        assertNull(mSheetItems.get(0).model.get(AVATAR));
+        assertEquals("Incorrect item sheet count", 1, mSheetAccountItems.size());
+        assertEquals("Incorrect account", CARL, mSheetAccountItems.get(0).model.get(ACCOUNT));
+        assertNull(mSheetAccountItems.get(0).model.get(AVATAR));
 
         ImageFetcher.Params expected_params = ImageFetcher.Params.create(TEST_PROFILE_PIC.getSpec(),
                 ImageFetcher.WEB_ID_ACCOUNT_SELECTION_UMA_CLIENT_NAME, DESIRED_AVATAR_SIZE,
@@ -214,7 +218,7 @@ public class AccountSelectionControllerTest {
                 DESIRED_AVATAR_SIZE, DESIRED_AVATAR_SIZE, Bitmap.Config.ARGB_8888);
         callback.getValue().onResult(bitmap);
 
-        Avatar avatarData = mSheetItems.get(0).model.get(AVATAR);
+        Avatar avatarData = mSheetAccountItems.get(0).model.get(AVATAR);
         assertEquals("incorrect avatar bitmap", bitmap, avatarData.mAvatar);
         assertEquals("incorrect avatar name", CARL.getName(), avatarData.mName);
         assertEquals("incorrect avatar size", DESIRED_AVATAR_SIZE, avatarData.mAvatarSize);
@@ -224,27 +228,24 @@ public class AccountSelectionControllerTest {
     public void testShowAccountsFormatPslOrigins() {
         mMediator.showAccounts(TEST_ETLD_PLUS_ONE, TEST_ETLD_PLUS_ONE_1, Arrays.asList(ANA, BOB),
                 IDP_METADATA, CLIENT_ID_METADATA, false);
-        assertEquals("Incorrect item sheet count", 2, mSheetItems.size()); // Header + two Accounts
-        assertEquals("Incorrect item type", ItemType.ACCOUNT, mSheetItems.get(0).type);
-        assertEquals("Incorrect item type", ItemType.ACCOUNT, mSheetItems.get(1).type);
+        assertEquals(3, countAllItems()); // Header + two Accounts
+        assertEquals("Incorrect item sheet count", 2, mSheetAccountItems.size());
     }
 
     @Test
     public void testClearsAccountListWhenShowingAgain() {
         mMediator.showAccounts(TEST_ETLD_PLUS_ONE, TEST_ETLD_PLUS_ONE_1,
                 Collections.singletonList(ANA), IDP_METADATA, CLIENT_ID_METADATA, false);
-        assertEquals("Incorrect item sheet count", 2,
-                mSheetItems.size()); // Header + Account + Continue Button
-        assertEquals("Incorrect item type", ItemType.ACCOUNT, mSheetItems.get(0).type);
-        assertEquals("Incorrect account", ANA, mSheetItems.get(0).model.get(ACCOUNT));
+        assertEquals(3, countAllItems()); // Header + Account + Continue Button
+        assertEquals(1, mSheetAccountItems.size());
+        assertEquals("Incorrect account", ANA, mSheetAccountItems.get(0).model.get(ACCOUNT));
 
         // Showing the sheet a second time should replace all changed accounts.
         mMediator.showAccounts(TEST_ETLD_PLUS_ONE, TEST_ETLD_PLUS_ONE_1,
                 Collections.singletonList(BOB), IDP_METADATA, CLIENT_ID_METADATA, false);
-        assertEquals("Incorrect item sheet count", 2,
-                mSheetItems.size()); // Header + Account + Continue Button
-        assertEquals("Incorrect item type", ItemType.ACCOUNT, mSheetItems.get(0).type);
-        assertEquals("Incorrect account", BOB, mSheetItems.get(0).model.get(ACCOUNT));
+        assertEquals(3, countAllItems()); // Header + Account + Continue Button
+        assertEquals(1, mSheetAccountItems.size());
+        assertEquals("Incorrect account", BOB, mSheetAccountItems.get(0).model.get(ACCOUNT));
     }
 
     @Test
@@ -263,9 +264,12 @@ public class AccountSelectionControllerTest {
         mMediator.showAccounts(TEST_ETLD_PLUS_ONE, TEST_ETLD_PLUS_ONE_1, Arrays.asList(ANA),
                 IDP_METADATA, CLIENT_ID_METADATA, false);
         assertEquals("Incorrectly hidden", true, mMediator.isVisible());
-        assertNotNull(mSheetItems.get(1).model.get(ContinueButtonProperties.ON_CLICK_LISTENER));
+        assertNotNull(mModel.get(ItemProperties.CONTINUE_BUTTON)
+                              .get(ContinueButtonProperties.ON_CLICK_LISTENER));
 
-        mSheetItems.get(1).model.get(ContinueButtonProperties.ON_CLICK_LISTENER).onResult(ANA);
+        mModel.get(ItemProperties.CONTINUE_BUTTON)
+                .get(ContinueButtonProperties.ON_CLICK_LISTENER)
+                .onResult(ANA);
         verify(mMockDelegate).onAccountSelected(ANA);
         assertEquals(true, mMediator.isVisible());
         mMediator.hideBottomSheet();
@@ -278,9 +282,9 @@ public class AccountSelectionControllerTest {
         mMediator.showAccounts(TEST_ETLD_PLUS_ONE, TEST_ETLD_PLUS_ONE_1, Arrays.asList(ANA, CARL),
                 IDP_METADATA, CLIENT_ID_METADATA, false);
         assertEquals("Incorrectly hidden", true, mMediator.isVisible());
-        assertNotNull(mSheetItems.get(0).model.get(AccountProperties.ON_CLICK_LISTENER));
+        assertNotNull(mSheetAccountItems.get(0).model.get(AccountProperties.ON_CLICK_LISTENER));
 
-        mSheetItems.get(0).model.get(AccountProperties.ON_CLICK_LISTENER).onResult(CARL);
+        mSheetAccountItems.get(0).model.get(AccountProperties.ON_CLICK_LISTENER).onResult(CARL);
         verify(mMockDelegate).onAccountSelected(CARL);
         assertEquals(true, mMediator.isVisible());
         mMediator.hideBottomSheet();
@@ -327,8 +331,8 @@ public class AccountSelectionControllerTest {
         mMediator.onAccountSelected(NEW_USER);
 
         assertEquals(true, mMediator.isVisible());
-        assertTrue(containsListItemOfType(mSheetItems, ItemType.DATA_SHARING_CONSENT));
-        assertEquals(1, countListItemsOfType(mSheetItems, ItemType.ACCOUNT));
+        assertTrue(containsItemOfType(mModel, ItemProperties.DATA_SHARING_CONSENT));
+        assertEquals(1, mSheetAccountItems.size());
 
         verify(mMockDelegate, never()).onAccountSelected(NEW_USER);
     }
@@ -342,8 +346,8 @@ public class AccountSelectionControllerTest {
 
         pressBack();
         assertTrue(mMediator.isVisible());
-        assertFalse(containsListItemOfType(mSheetItems, ItemType.DATA_SHARING_CONSENT));
-        assertEquals(2, countListItemsOfType(mSheetItems, ItemType.ACCOUNT));
+        assertFalse(containsItemOfType(mModel, ItemProperties.DATA_SHARING_CONSENT));
+        assertEquals(2, mSheetAccountItems.size());
 
         pressBack();
         assertFalse(mMediator.isVisible());
@@ -380,10 +384,12 @@ public class AccountSelectionControllerTest {
         mMediator.showAccounts(TEST_ETLD_PLUS_ONE, TEST_ETLD_PLUS_ONE_1, Arrays.asList(ANA),
                 IDP_METADATA, CLIENT_ID_METADATA, true);
         assertEquals("Incorrectly hidden", true, mMediator.isVisible());
-        assertNotNull(
-                mSheetItems.get(1).model.get(AutoSignInCancelButtonProperties.ON_CLICK_LISTENER));
+        assertNotNull(mModel.get(ItemProperties.AUTO_SIGN_IN_CANCEL_BUTTON)
+                              .get(AutoSignInCancelButtonProperties.ON_CLICK_LISTENER));
 
-        mSheetItems.get(1).model.get(AutoSignInCancelButtonProperties.ON_CLICK_LISTENER).run();
+        mModel.get(ItemProperties.AUTO_SIGN_IN_CANCEL_BUTTON)
+                .get(AutoSignInCancelButtonProperties.ON_CLICK_LISTENER)
+                .run();
         verify(mMockDelegate).onAutoSignInCancelled();
         assertEquals("Incorrectly visible", false, mMediator.isVisible());
     }
@@ -406,18 +412,18 @@ public class AccountSelectionControllerTest {
         mMediator.showAccounts(TEST_ETLD_PLUS_ONE, TEST_ETLD_PLUS_ONE_2, Arrays.asList(NEW_USER),
                 IDP_METADATA, CLIENT_ID_METADATA, false);
         // For new user we expect header + account + consent text + continue btn
-        assertEquals("Incorrect item sheet count", 3, mSheetItems.size());
-        assertEquals("Incorrect item type", ItemType.ACCOUNT, mSheetItems.get(0).type);
-        assertEquals(
-                "Incorrect consent type", ItemType.DATA_SHARING_CONSENT, mSheetItems.get(2).type);
+        assertEquals(4, countAllItems());
+        assertEquals("Incorrect item sheet count", 1, mSheetAccountItems.size());
+        assertTrue(containsItemOfType(mModel, ItemProperties.DATA_SHARING_CONSENT));
 
         DataSharingConsentProperties.Properties dataSharingProperties =
-                mSheetItems.get(2).model.get(DataSharingConsentProperties.PROPERTIES);
+                mModel.get(ItemProperties.DATA_SHARING_CONSENT)
+                        .get(DataSharingConsentProperties.PROPERTIES);
         assertEquals("Incorrect privacy policy URL", TEST_URL_PRIVACY_POLICY.getSpec(),
                 dataSharingProperties.mPrivacyPolicyUrl);
         assertEquals("Incorrect terms of service URL", TEST_URL_TERMS_OF_SERVICE.getSpec(),
                 dataSharingProperties.mTermsOfServiceUrl);
-        assertEquals("Incorrect continue type", ItemType.CONTINUE_BUTTON, mSheetItems.get(1).type);
+        assertTrue(containsItemOfType(mModel, ItemProperties.CONTINUE_BUTTON));
         assertEquals("Incorrect provider ETLD+1", formatForSecurityDisplay(TEST_ETLD_PLUS_ONE_2),
                 dataSharingProperties.mFormattedIdpEtldPlusOne);
     }
@@ -429,9 +435,8 @@ public class AccountSelectionControllerTest {
                 IDP_METADATA, CLIENT_ID_METADATA, false);
         mMediator.showVerifySheet(ANA);
 
-        assertEquals(1, mSheetItems.size());
-        assertEquals(HeaderType.VERIFY, mHeaderModel.get(TYPE));
-        assertEquals(ItemType.ACCOUNT, mSheetItems.get(0).type);
+        assertEquals(1, mSheetAccountItems.size());
+        assertEquals(HeaderType.VERIFY, mModel.get(ItemProperties.HEADER).get(TYPE));
     }
 
     private void pressBack() {
@@ -440,8 +445,18 @@ public class AccountSelectionControllerTest {
         mMediator.onDismissed(BottomSheetController.StateChangeReason.BACK_PRESS);
     }
 
-    private static boolean containsListItemOfType(ModelList list, int searchType) {
-        return countListItemsOfType(list, searchType) >= 1;
+    private int countAllItems() {
+        int count = 0;
+        for (PropertyKey key : mModel.getAllProperties()) {
+            if (containsItemOfType(mModel, key)) {
+                count += 1;
+            }
+        }
+        return count + mSheetAccountItems.size();
+    }
+
+    private static boolean containsItemOfType(PropertyModel model, PropertyKey key) {
+        return model.get((WritableObjectPropertyKey<PropertyModel>) key) != null;
     }
 
     private static int countListItemsOfType(ModelList list, int searchType) {

@@ -39,12 +39,15 @@ import org.chromium.chrome.browser.ui.android.webid.AccountSelectionProperties.A
 import org.chromium.chrome.browser.ui.android.webid.AccountSelectionProperties.ContinueButtonProperties;
 import org.chromium.chrome.browser.ui.android.webid.AccountSelectionProperties.DataSharingConsentProperties;
 import org.chromium.chrome.browser.ui.android.webid.AccountSelectionProperties.HeaderProperties;
+import org.chromium.chrome.browser.ui.android.webid.AccountSelectionProperties.ItemProperties;
 import org.chromium.chrome.browser.ui.android.webid.data.Account;
 import org.chromium.chrome.browser.ui.android.webid.data.IdentityProviderMetadata;
 import org.chromium.components.browser_ui.util.AvatarGenerator;
 import org.chromium.components.browser_ui.widget.RoundedIconGenerator;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
+import org.chromium.ui.modelutil.PropertyModel.WritableObjectPropertyKey;
+import org.chromium.ui.modelutil.PropertyModelChangeProcessor.ViewBinder;
 import org.chromium.ui.text.NoUnderlineClickableSpan;
 import org.chromium.ui.text.SpanApplier;
 import org.chromium.ui.util.ColorUtils;
@@ -195,8 +198,8 @@ class AccountSelectionViewBinder {
             int consentTextId = termsOfServiceSpan == null
                     ? R.string.account_selection_data_sharing_consent_no_tos
                     : R.string.account_selection_data_sharing_consent;
-            String consentText = String.format(view.getContext().getString(consentTextId),
-                    properties.mFormattedIdpEtldPlusOne);
+            String consentText = String.format(
+                    context.getString(consentTextId), properties.mFormattedIdpEtldPlusOne);
 
             // |privacyPolicySpan| cannot be null due to the following:
             // 1. We check that the privacy URL is valid in
@@ -228,11 +231,11 @@ class AccountSelectionViewBinder {
     @SuppressWarnings("checkstyle:SetTextColorAndSetTextSizeCheck")
     static void bindContinueButtonView(PropertyModel model, View view, PropertyKey key) {
         Context context = view.getContext();
+        ButtonCompat button = view.findViewById(R.id.account_selection_continue_btn);
         if (key == ContinueButtonProperties.IDP_METADATA) {
             if (!ColorUtils.inNightMode(context)) {
                 IdentityProviderMetadata idpMetadata =
                         model.get(ContinueButtonProperties.IDP_METADATA);
-                ButtonCompat button = view.findViewById(R.id.account_selection_continue_btn);
 
                 Integer backgroundColor = idpMetadata.getBrandBackgroundColor();
                 if (backgroundColor != null) {
@@ -257,10 +260,9 @@ class AccountSelectionViewBinder {
                     givenName != null && !givenName.isEmpty() ? givenName : account.getName();
             String btnText = String.format(
                     context.getString(R.string.account_selection_continue), displayedName);
-            Button button = view.findViewById(R.id.account_selection_continue_btn);
             button.setText(btnText);
         } else if (key == ContinueButtonProperties.ON_CLICK_LISTENER) {
-            view.setOnClickListener(clickedView -> {
+            button.setOnClickListener(clickedView -> {
                 Account account = model.get(ContinueButtonProperties.ACCOUNT);
                 model.get(ContinueButtonProperties.ON_CLICK_LISTENER).onResult(account);
             });
@@ -286,6 +288,44 @@ class AccountSelectionViewBinder {
         String btnText = String.format(view.getContext().getString(R.string.cancel));
         Button button = view.findViewById(R.id.auto_sign_in_cancel_btn);
         button.setText(btnText);
+    }
+
+    /**
+     * Called whenever non-account views are bound to the bottom sheet.
+     * @param model The model containing the data for the view.
+     * @param view The view to be bound.
+     * @param key The key of the property to be bound.
+     */
+    static void bindContentView(PropertyModel model, View view, PropertyKey key) {
+        PropertyModel itemModel = model.get((WritableObjectPropertyKey<PropertyModel>) key);
+        View itemView = null;
+        ViewBinder<PropertyModel, View, PropertyKey> itemBinder = null;
+        if (key == ItemProperties.HEADER) {
+            itemView = view.findViewById(R.id.header_view_item);
+            itemBinder = AccountSelectionViewBinder::bindHeaderView;
+        } else if (key == ItemProperties.CONTINUE_BUTTON) {
+            itemView = view.findViewById(R.id.account_selection_continue_btn);
+            itemBinder = AccountSelectionViewBinder::bindContinueButtonView;
+        } else if (key == ItemProperties.AUTO_SIGN_IN_CANCEL_BUTTON) {
+            itemView = view.findViewById(R.id.auto_sign_in_cancel_btn);
+            itemBinder = AccountSelectionViewBinder::bindAutoSignInCancelButtonView;
+        } else if (key == ItemProperties.DATA_SHARING_CONSENT) {
+            itemView = view.findViewById(R.id.user_data_sharing_consent);
+            itemBinder = AccountSelectionViewBinder::bindDataSharingConsentView;
+        } else {
+            assert false : "Unhandled update to property:" + key;
+            return;
+        }
+
+        if (itemModel == null) {
+            itemView.setVisibility(View.GONE);
+            return;
+        }
+
+        itemView.setVisibility(View.VISIBLE);
+        for (PropertyKey itemKey : itemModel.getAllSetProperties()) {
+            itemBinder.bind(itemModel, itemView, itemKey);
+        }
     }
 
     /**

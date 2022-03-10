@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.ui.android.webid;
 
 import android.view.View;
+import android.view.accessibility.AccessibilityEvent;
 
 import androidx.annotation.Nullable;
 
@@ -40,6 +41,15 @@ public class AccountSelectionBottomSheetContent implements BottomSheetContent {
         String headerText = mContentView.getResources().getString(
                 AccountSelectionViewBinder.getVerifyHeaderStringId());
         mContentView.announceForAccessibility(headerText);
+    }
+
+    public void focusContinueButtonForAccessibility() {
+        // {@link mContentView} is null for some tests.
+        if (mContentView == null) return;
+
+        View continueButton = mContentView.findViewById(R.id.account_selection_continue_btn);
+        continueButton.requestFocus();
+        continueButton.sendAccessibilityEvent(AccessibilityEvent.TYPE_VIEW_FOCUSED);
     }
 
     @Override
