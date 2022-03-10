@@ -203,11 +203,18 @@ class WaylandWindow : public PlatformWindow,
   // The width and height come in DIP of the output that the surface is
   // currently bound to.
   virtual void HandleSurfaceConfigure(uint32_t serial);
-  virtual void HandleToplevelConfigure(int32_t widht,
+  virtual void HandleToplevelConfigure(int32_t width,
                                        int32_t height,
                                        bool is_maximized,
                                        bool is_fullscreen,
                                        bool is_activated);
+  virtual void HandleAuraToplevelConfigure(int32_t x,
+                                           int32_t y,
+                                           int32_t width,
+                                           int32_t height,
+                                           bool is_maximized,
+                                           bool is_fullscreen,
+                                           bool is_activated);
   virtual void HandlePopupConfigure(const gfx::Rect& bounds);
   // The final size of the Wayland surface is determined by the buffer size in
   // px * scale that the Chromium compositor renders at. If the window changes a

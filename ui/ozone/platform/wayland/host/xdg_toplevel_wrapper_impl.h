@@ -44,10 +44,13 @@ class XDGToplevelWrapperImpl : public ShellToplevelWrapper {
   void SetDecoration(DecorationMode decoration) override;
   void Lock(WaylandOrientationLockType lock_type) override;
   void Unlock() override;
+  void RequestWindowBounds(const gfx::Rect& bounds) override;
 
   XDGSurfaceWrapperImpl* xdg_surface_wrapper() const;
 
  private:
+  bool ProtocolSupportsScreenCoordinates();
+
   // xdg_toplevel_listener
   static void ConfigureTopLevel(void* data,
                                 struct xdg_toplevel* xdg_toplevel,
@@ -61,6 +64,20 @@ class XDGToplevelWrapperImpl : public ShellToplevelWrapper {
       void* data,
       struct zxdg_toplevel_decoration_v1* decoration,
       uint32_t mode);
+
+  // aura_toplevel_listener
+  static void ConfigureAuraTopLevel(void* data,
+                                    struct zaura_toplevel* zaura_toplevel,
+                                    int32_t x,
+                                    int32_t y,
+                                    int32_t width,
+                                    int32_t height,
+                                    struct wl_array* states);
+
+  static void OnOriginChange(void* data,
+                             struct zaura_toplevel* zaura_toplevel,
+                             int32_t x,
+                             int32_t y);
 
   // Send request to wayland compositor to enable a requested decoration mode.
   void SetTopLevelDecorationMode(DecorationMode requested_mode);

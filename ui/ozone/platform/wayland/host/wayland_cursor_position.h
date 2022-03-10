@@ -9,8 +9,8 @@
 
 namespace ui {
 
-// Stores last known cursor pointer position in regards to top-level windows'
-// coordinates and returns it on request.
+// Stores last known cursor pointer position relative to 0,0 origin
+// and returns it on request.
 class WaylandCursorPosition {
  public:
   WaylandCursorPosition();
@@ -22,8 +22,8 @@ class WaylandCursorPosition {
 
   void OnCursorPositionChanged(const gfx::Point& cursor_position);
 
-  // Returns last known cursor position in regards to top-level surface local
-  // coordinates. It is unknown what surface receives that cursor position.
+  // Returns last known cursor position relative to 0,0 origin.
+  // It is unknown what surface receives that cursor position.
   gfx::Point GetCursorSurfacePoint() const;
 
  private:

@@ -45,6 +45,7 @@ class ZXDGToplevelV6WrapperImpl : public ShellToplevelWrapper {
   void SetDecoration(DecorationMode decoration) override;
   void Lock(WaylandOrientationLockType lock_type) override;
   void Unlock() override;
+  void RequestWindowBounds(const gfx::Rect& geometry) override;
 
   ZXDGSurfaceV6WrapperImpl* zxdg_surface_v6_wrapper() const;
 

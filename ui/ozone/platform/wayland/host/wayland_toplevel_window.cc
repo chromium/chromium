@@ -16,6 +16,7 @@
 #include "ui/base/hit_test.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/native_widget_types.h"
+#include "ui/ozone/common/features.h"
 #include "ui/ozone/platform/wayland/host/gtk_shell1.h"
 #include "ui/ozone/platform/wayland/host/gtk_surface1.h"
 #include "ui/ozone/platform/wayland/host/shell_object_factory.h"
@@ -45,7 +46,8 @@ constexpr int kVisibleOnAllWorkspaces = -1;
 WaylandToplevelWindow::WaylandToplevelWindow(PlatformWindowDelegate* delegate,
                                              WaylandConnection* connection)
     : WaylandWindow(delegate, connection),
-      state_(PlatformWindowState::kNormal) {
+      state_(PlatformWindowState::kNormal),
+      screen_coordinates_enabled_(IsWaylandScreenCoordinatesEnabled()) {
   // Set a class property key, which allows |this| to be used for interactive
   // events, e.g. move or resize.
   SetWmMoveResizeHandler(this, AsWmMoveResizeHandler());
@@ -76,6 +78,10 @@ bool WaylandToplevelWindow::CreateShellToplevel() {
   TriggerStateChanges();
   SetUpShellIntegration();
   OnDecorationModeChanged();
+
+  if (screen_coordinates_enabled_)
+    SetBounds(GetBounds());
+
   // This could be the proper time to update window mask using
   // NonClientView::GetWindowMask, since |non_client_view| is not created yet
   // during the call to WaylandWindow::Initialize().
@@ -319,6 +325,17 @@ void WaylandToplevelWindow::HandleToplevelConfigure(int32_t width_dip,
                                                     bool is_maximized,
                                                     bool is_fullscreen,
                                                     bool is_activated) {
+  HandleAuraToplevelConfigure(0, 0, width_dip, height_dip, is_maximized,
+                              is_fullscreen, is_activated);
+}
+
+void WaylandToplevelWindow::HandleAuraToplevelConfigure(int32_t x,
+                                                        int32_t y,
+                                                        int32_t width_dip,
+                                                        int32_t height_dip,
+                                                        bool is_maximized,
+                                                        bool is_fullscreen,
+                                                        bool is_activated) {
   // Store the old state to propagte state changes if Wayland decides to change
   // the state to something else.
   PlatformWindowState old_state = state_;
@@ -359,11 +376,11 @@ void WaylandToplevelWindow::HandleToplevelConfigure(int32_t width_dip,
   // explicitly set the bounds to the current desired ones or the previous
   // bounds.
   if (width_dip > 1 && height_dip > 1) {
-    pending_bounds_dip_ = gfx::Rect(0, 0, width_dip, height_dip);
+    pending_bounds_dip_ = gfx::Rect(x, y, width_dip, height_dip);
     if (is_normal && frame_insets_px()) {
       pending_bounds_dip_.Inset(
           -gfx::ScaleToRoundedInsets(*frame_insets_px(), 1.f / window_scale()));
-      pending_bounds_dip_.set_origin({0, 0});
+      pending_bounds_dip_.set_origin({x, y});
     }
   } else if (is_normal) {
     pending_bounds_dip_.set_size(
@@ -392,6 +409,22 @@ void WaylandToplevelWindow::HandleToplevelConfigure(int32_t width_dip,
     delegate()->OnActivationChanged(is_active_);
 
   state_change_in_transit_ = false;
+}
+
+void WaylandToplevelWindow::SetBounds(const gfx::Rect& bounds) {
+  if (!shell_toplevel_ || !screen_coordinates_enabled_) {
+    WaylandWindow::SetBounds(bounds);
+    return;
+  }
+  gfx::Rect bounds_in_dip =
+      gfx::ScaleToEnclosingRect(bounds, 1.f / window_scale());
+  shell_toplevel_->RequestWindowBounds(bounds_in_dip);
+}
+
+void WaylandToplevelWindow::SetOrigin(const gfx::Point& origin) {
+  gfx::Point origin_px =
+      gfx::ScaleToFlooredPoint(origin, window_scale(), window_scale());
+  WaylandWindow::SetBounds(gfx::Rect(origin_px, GetBounds().size()));
 }
 
 void WaylandToplevelWindow::HandleSurfaceConfigure(uint32_t serial) {
@@ -459,11 +492,13 @@ void WaylandToplevelWindow::SetWindowGeometry(gfx::Rect bounds_dip) {
   if (!shell_toplevel_)
     return;
 
+  gfx::Rect geometry_dip(bounds_dip.size());
+
   if (state_ == PlatformWindowState::kNormal && frame_insets_px()) {
-    bounds_dip.Inset(
+    geometry_dip.Inset(
         gfx::ScaleToRoundedInsets(*frame_insets_px(), 1.f / window_scale()));
   }
-  shell_toplevel_->SetWindowGeometry(bounds_dip);
+  shell_toplevel_->SetWindowGeometry(geometry_dip);
 }
 
 void WaylandToplevelWindow::AckConfigure(uint32_t serial) {

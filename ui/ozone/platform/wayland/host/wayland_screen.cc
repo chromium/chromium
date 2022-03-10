@@ -224,9 +224,9 @@ display::Display WaylandScreen::GetDisplayForAcceleratedWidget(
 }
 
 gfx::Point WaylandScreen::GetCursorScreenPoint() const {
-  // Wayland does not provide either location of surfaces in global space
-  // coordinate system or location of a pointer. Instead, only locations of
-  // mouse/touch events are known. Given that Chromium assumes top-level
+  // wl_shell/xdg-shell do not provide either location of surfaces in global
+  // space coordinate system or location of a pointer. Instead, only locations
+  // of mouse/touch events are known. Given that Chromium assumes top-level
   // windows are located at origin, always provide a cursor point in regards
   // to surfaces' location.
   //

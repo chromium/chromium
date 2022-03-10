@@ -69,9 +69,17 @@ class WaylandToplevelWindow : public WaylandWindow,
   void SetOpaqueRegion(const std::vector<gfx::Rect>* region_px) override;
   void SetInputRegion(const gfx::Rect* region_px) override;
   void SetAspectRatio(const gfx::SizeF& aspect_ratio) override;
+  void SetBounds(const gfx::Rect& bounds) override;
+
+  // Sets the window's origin.
+  void SetOrigin(const gfx::Point& origin);
 
   // WaylandWindow overrides:
   absl::optional<std::vector<gfx::Rect>> GetWindowShape() const override;
+
+  bool screen_coordinates_enabled() const {
+    return screen_coordinates_enabled_;
+  }
 
   // Client-side decorations on Wayland take some portion of the window surface,
   // and when they are turned on or off, the window geometry is changed.  That
@@ -89,6 +97,13 @@ class WaylandToplevelWindow : public WaylandWindow,
                                bool is_maximized,
                                bool is_fullscreen,
                                bool is_activated) override;
+  void HandleAuraToplevelConfigure(int32_t x,
+                                   int32_t y,
+                                   int32_t width,
+                                   int32_t height,
+                                   bool is_maximized,
+                                   bool is_fullscreen,
+                                   bool is_activated) override;
   void HandleSurfaceConfigure(uint32_t serial) override;
   void UpdateVisualSize(const gfx::Size& size_px, float scale_factor) override;
   bool OnInitialize(PlatformWindowInitProperties properties) override;
@@ -272,6 +287,9 @@ class WaylandToplevelWindow : public WaylandWindow,
   // The desk index for the window.
   // If |workspace_| is -1, window is visible on all workspaces.
   absl::optional<int> workspace_ = absl::nullopt;
+
+  // True when screen coordinates is enabled.
+  bool screen_coordinates_enabled_;
 
   WorkspaceExtensionDelegate* workspace_extension_delegate_ = nullptr;
 };

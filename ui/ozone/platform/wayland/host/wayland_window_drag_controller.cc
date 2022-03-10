@@ -438,10 +438,10 @@ void WaylandWindowDragController::HandleMotionEvent(LocatedEvent* event) {
   if (!should_process_drag_event_)
     return;
 
-  // Update current cursor position, so it can be retrieved later on through
+  // Update current cursor position relative to the event source
+  // (pointer_grab_owner_) so it can be retrieved later on through
   // |Screen::GetCursorScreenPoint| API.
-  connection_->wayland_cursor_position()->OnCursorPositionChanged(
-      event->location());
+  pointer_grab_owner_->UpdateCursorPositionFromEvent(Event::Clone(*event));
 
   // Notify listeners about window bounds change (i.e: re-positioning) event.
   // To do so, set the new bounds as per the motion event location and the drag

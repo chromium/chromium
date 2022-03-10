@@ -14,6 +14,7 @@ extern const base::Feature kWaylandOverlayDelegation;
 
 bool IsWaylandSurfaceSubmissionInPixelCoordinatesEnabled();
 bool IsWaylandOverlayDelegationEnabled();
+bool IsWaylandScreenCoordinatesEnabled();
 
 }  // namespace ui
 

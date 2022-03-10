@@ -189,15 +189,17 @@ TEST_P(WaylandWindowDragControllerTest, DragInsideWindowAndDrop) {
         SendDndMotion({20, 20});
         test_step = kDragging;
         break;
-      case kDropping:
+      case kDropping: {
         EXPECT_EQ(ET_MOUSE_RELEASED, event->type());
         EXPECT_EQ(State::kDropped, drag_controller()->state());
         // Ensure PlatformScreen keeps consistent.
-        EXPECT_EQ(gfx::Point(20, 20), screen_->GetCursorScreenPoint());
+        gfx::Point expected_point{20, 20};
+        expected_point += window_->GetBoundsInDIP().origin().OffsetFromOrigin();
         EXPECT_EQ(window_->GetWidget(),
                   screen_->GetLocalProcessWidgetAtPoint({20, 20}, {}));
         test_step = kDone;
         break;
+      }
       case kDone:
         EXPECT_EQ(ET_MOUSE_EXITED, event->type());
         EXPECT_EQ(window_->GetWidget(),
@@ -280,7 +282,9 @@ TEST_P(WaylandWindowDragControllerTest, DragInsideWindowAndDrop_TOUCH) {
     EXPECT_EQ(ET_TOUCH_RELEASED, event->type());
     EXPECT_EQ(State::kDropped, drag_controller()->state());
     // Ensure PlatformScreen keeps consistent.
-    EXPECT_EQ(gfx::Point(20, 20), screen_->GetCursorScreenPoint());
+    gfx::Point expected_point{20, 20};
+    expected_point += window_->GetBoundsInDIP().origin().OffsetFromOrigin();
+    EXPECT_EQ(expected_point, screen_->GetCursorScreenPoint());
     EXPECT_EQ(window_->GetWidget(),
               screen_->GetLocalProcessWidgetAtPoint({20, 20}, {}));
     test_step = kDone;
@@ -364,15 +368,17 @@ TEST_P(WaylandWindowDragControllerTest, DragExitWindowAndDrop) {
         SendDndMotion({20, 20});
         test_step = kDragging;
         break;
-      case kExitedDropping:
+      case kExitedDropping: {
         EXPECT_EQ(ET_MOUSE_RELEASED, event->type());
         EXPECT_EQ(State::kDropped, drag_controller()->state());
         // Ensure PlatformScreen keeps consistent.
-        EXPECT_EQ(gfx::Point(20, 20), screen_->GetCursorScreenPoint());
+        gfx::Point expected_point{20, 20};
+        expected_point += window_->GetBoundsInDIP().origin().OffsetFromOrigin();
+        EXPECT_EQ(expected_point, screen_->GetCursorScreenPoint());
         EXPECT_EQ(window_->GetWidget(),
                   screen_->GetLocalProcessWidgetAtPoint({20, 20}, {}));
         test_step = kDone;
-        break;
+      } break;
       case kDone:
         EXPECT_EQ(ET_MOUSE_EXITED, event->type());
         break;
@@ -876,7 +882,7 @@ TEST_P(WaylandWindowDragControllerTest, IgnorePointerEventsUntilDrop) {
         SendDndMotion({100, 100});
         test_step = kDragging;
         break;
-      case kDropping:
+      case kDropping: {
         EXPECT_EQ(ET_MOUSE_RELEASED, event->type());
         EXPECT_EQ(State::kDropped, drag_controller()->state());
 
@@ -888,9 +894,11 @@ TEST_P(WaylandWindowDragControllerTest, IgnorePointerEventsUntilDrop) {
                   screen_->GetLocalProcessWidgetAtPoint({100, 100}, {}));
 
         // Rather, only PlatformScreen's cursor position is updated accordingly.
-        EXPECT_EQ(gfx::Point(20, 20), screen_->GetCursorScreenPoint());
+        gfx::Point expected_point{20, 20};
+        expected_point += window_->GetBoundsInDIP().origin().OffsetFromOrigin();
+        EXPECT_EQ(expected_point, screen_->GetCursorScreenPoint());
         test_step = kDone;
-        break;
+      } break;
       case kDone:
         EXPECT_EQ(ET_MOUSE_EXITED, event->type());
         EXPECT_EQ(window_->GetWidget(),
@@ -1044,15 +1052,19 @@ TEST_P(WaylandWindowDragControllerTest, CursorPositionIsUpdatedOnMotion) {
                  WmMoveLoopHandler* move_loop_handler,
                  bool in_pixel_coordinates) {
     for (auto* output : *outputs) {
-      // Resetting cursor to the initial position.
       gfx::Point p0{10, 10};
-      self->SendDndMotion(p0);
-      self->Sync();
+      // Compute the expected point first as drag operation will move the
+      // window.
       gfx::Point expected_point =
           in_pixel_coordinates
               ? gfx::ScaleToRoundedPoint(p0, 1.0f / window->window_scale())
               : p0;
+      expected_point += window->GetBoundsInDIP().origin().OffsetFromOrigin();
       EXPECT_EQ(expected_point, screen->GetCursorScreenPoint());
+
+      // Resetting cursor to the initial position.
+      self->SendDndMotion(p0);
+      self->Sync();
 
       // Send the window to |output|.
       wl::MockSurface* surface = server->GetObject<wl::MockSurface>(
@@ -1063,13 +1075,15 @@ TEST_P(WaylandWindowDragControllerTest, CursorPositionIsUpdatedOnMotion) {
       EXPECT_EQ(output->GetScale(), window->window_scale());
 
       gfx::Point p1{20, 20};
+      expected_point =
+          (in_pixel_coordinates
+               ? gfx::ScaleToRoundedPoint(p1, 1.0f / window->window_scale())
+               : p1);
+      expected_point += window->GetBoundsInDIP().origin().OffsetFromOrigin();
+
       self->SendDndMotion(p1);
       self->Sync();
 
-      expected_point =
-          in_pixel_coordinates
-              ? gfx::ScaleToRoundedPoint(p1, 1.0f / window->window_scale())
-              : p1;
       EXPECT_EQ(expected_point, screen->GetCursorScreenPoint());
       wl_surface_send_leave(surface->resource(), output->resource());
     }

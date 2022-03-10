@@ -193,4 +193,8 @@ void ZXDGToplevelV6WrapperImpl::Lock(WaylandOrientationLockType lock_type) {}
 
 void ZXDGToplevelV6WrapperImpl::Unlock() {}
 
+void ZXDGToplevelV6WrapperImpl::RequestWindowBounds(const gfx::Rect& bounds) {
+  NOTREACHED();
+}
+
 }  // namespace ui

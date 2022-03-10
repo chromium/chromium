@@ -479,6 +479,17 @@ void WaylandWindow::HandleToplevelConfigure(int32_t widht,
       << "Only shell toplevels must receive HandleToplevelConfigure calls.";
 }
 
+void WaylandWindow::HandleAuraToplevelConfigure(int32_t x,
+                                                int32_t y,
+                                                int32_t width,
+                                                int32_t height,
+                                                bool is_maximized,
+                                                bool is_fullscreen,
+                                                bool is_activated) {
+  NOTREACHED()
+      << "Only shell toplevels must receive HandleAuraToplevelConfigure calls.";
+}
+
 void WaylandWindow::HandlePopupConfigure(const gfx::Rect& bounds_dip) {
   NOTREACHED() << "Only shell popups must receive HandlePopupConfigure calls.";
 }
@@ -559,7 +570,10 @@ void WaylandWindow::OnDragSessionClose(DragOperation operation) {
 }
 
 void WaylandWindow::SetBoundsDip(const gfx::Rect& bounds_dip) {
-  SetBounds(gfx::ScaleToRoundedRect(bounds_dip, window_scale()));
+  // This method is used to update the content size, and this method is calling
+  // WindowWindow's SetBounds to avoid calling into
+  // WaylandToplevelWindow::SetBounds which sends a request to a compostior.
+  WaylandWindow::SetBounds(gfx::ScaleToRoundedRect(bounds_dip, window_scale()));
 }
 
 bool WaylandWindow::Initialize(PlatformWindowInitProperties properties) {
@@ -646,11 +660,11 @@ void WaylandWindow::UpdateCursorPositionFromEvent(
   //
   // Basically, this method must translate coordinates of all events
   // in regards to top-level windows' coordinates as it's always located at
-  // origin (0,0) from Chromium point of view (remember that Wayland doesn't
-  // provide global coordinates to its clients). And it's totally fine to use it
-  // as the target. Thus, the location of the |event| is always converted using
-  // the top-level window's bounds as the target excluding cases, when the
-  // mouse/touch is over a top-level window.
+  // origin (0,0) from Chromium point of view (remember that wl_shell/xdg_shell
+  // doesn't provide global coordinates to its clients). And it's totally fine
+  // to use it as the target. Thus, the location of the |event| is always
+  // converted using the top-level window's bounds as the target excluding
+  // cases, when the mouse/touch is over a top-level window.
   auto* toplevel_window = GetRootParentWindow();
   if (toplevel_window != this) {
     ConvertEventLocationToTargetWindowLocation(
@@ -660,7 +674,8 @@ void WaylandWindow::UpdateCursorPositionFromEvent(
   auto* cursor_position = connection_->wayland_cursor_position();
   if (cursor_position) {
     cursor_position->OnCursorPositionChanged(
-        event->AsLocatedEvent()->location());
+        event->AsLocatedEvent()->location() +
+        toplevel_window->GetBoundsInDIP().origin().OffsetFromOrigin());
   }
 }
 
@@ -687,7 +702,8 @@ gfx::PointF WaylandWindow::ToRootWindowPixel(const gfx::PointF& location_dp) {
   if (!connection_->surface_submission_in_pixel_coordinates())
     location_px.Scale(window_scale());
 
-  return location_px;
+  auto* root_window = GetRootParentWindow();
+  return location_px + root_window->GetBounds().origin().OffsetFromOrigin();
 }
 
 WaylandWindow* WaylandWindow::GetTopMostChildWindow() {
