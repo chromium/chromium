@@ -12,6 +12,7 @@
 #include "content/browser/renderer_host/render_frame_proxy_host.h"
 #include "content/browser/site_instance_group.h"
 #include "third_party/blink/public/mojom/frame/frame_replication_state.mojom-forward.h"
+#include "third_party/perfetto/include/perfetto/tracing/traced_value_forward.h"
 
 namespace features {
 // Currently there are two paths - legacy code, in which BrowsingContextState
@@ -223,6 +224,11 @@ class CONTENT_EXPORT BrowsingContextState
       base::RepeatingCallback<void(RenderFrameProxyHost*)> callback,
       SiteInstance* instance_to_skip,
       RenderFrameProxyHost* outer_delegate_proxy);
+
+  void WriteIntoTrace(perfetto::TracedValue ctx) const;
+  void WriteIntoTrace(
+      perfetto::TracedProto<perfetto::protos::pbzero::BrowsingContextState>
+          proto);
 
  protected:
   friend class base::RefCounted<BrowsingContextState>;

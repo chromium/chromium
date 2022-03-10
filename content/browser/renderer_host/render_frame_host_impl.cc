@@ -5229,6 +5229,7 @@ void RenderFrameHostImpl::WriteIntoTrace(perfetto::TracedValue context) {
   } else if (auto* embedder = GetParentOrOuterDocumentOrEmbedder()) {
     dict.Add("embedder", embedder);
   }
+  dict.Add("browsing_context_state", browsing_context_state_);
 }
 
 void RenderFrameHostImpl::WriteIntoTrace(
@@ -5255,6 +5256,8 @@ void RenderFrameHostImpl::WriteIntoTrace(
     embedder->WriteIntoTrace(proto.WriteNestedMessage(
         perfetto::protos::pbzero::RenderFrameHost::kEmbedder));
   }
+  browsing_context_state_->WriteIntoTrace(proto.WriteNestedMessage(
+      perfetto::protos::pbzero::RenderFrameHost::kBrowsingContextState));
 }
 
 perfetto::protos::pbzero::RenderFrameHost::LifecycleState

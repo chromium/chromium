@@ -150,6 +150,8 @@ message FrameTreeNodeInfo {
 
   // Whether there's a speculative RenderFrameHost or not.
   optional bool has_speculative_render_frame_host = 3;
+
+  optional RenderFrameHost current_frame_host = 4;
 }
 
 message ChromeHashedPerformanceMark {
@@ -415,6 +417,11 @@ message GlobalRenderFrameHostId {
   optional int32 process_id = 2;
 }
 
+message BrowsingContextState {
+  // The ID of the BrowsingInstance that the BrowsingContextState belongs to.
+  optional int32 browsing_instance_id = 1;
+}
+
 message RenderFrameHost {
   optional RenderProcessHost process = 1;
   optional GlobalRenderFrameHostId render_frame_host_id = 2;
@@ -440,6 +447,7 @@ message RenderFrameHost {
   optional RenderFrameHost parent = 8;
   optional RenderFrameHost outer_document = 9;
   optional RenderFrameHost embedder = 10;
+  optional BrowsingContextState browsing_context_state = 11;
 }
 
 message ChromeThreadPoolTask {
@@ -704,7 +712,7 @@ message ProcessSingleton {
 
 message ChromeTrackEvent {
   // Extension range for Chrome: 1000-1999
-  // Next ID: 1035
+  // Next ID: 1036
   extend TrackEvent {
     optional ChromeAppState chrome_app_state = 1000;
 
@@ -780,5 +788,7 @@ message ChromeTrackEvent {
     optional ProcessSingleton process_singleton = 1033;
 
     optional SiteInstanceGroup site_instance_group = 1034;
+
+    optional BrowsingContextState browsing_context_state = 1035;
   }
 }
