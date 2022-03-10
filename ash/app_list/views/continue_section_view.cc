@@ -7,6 +7,7 @@
 #include <algorithm>
 #include <memory>
 #include <string>
+#include <utility>
 #include <vector>
 
 #include "ash/app_list/app_list_controller_impl.h"
@@ -148,7 +149,7 @@ void ContinueSectionView::UpdateSuggestionTasks() {
 
 void ContinueSectionView::OnSearchResultContainerResultsChanged() {
   MaybeCreatePrivacyNotice();
-  UpdateElementsVisibility();
+  MaybeAnimateOutPrivacyNotice();
 }
 
 bool ContinueSectionView::HasMinimumFilesToShow() const {
@@ -210,24 +211,23 @@ void ContinueSectionView::OnPrivacyToastAcknowledged() {
   }
 
   // Keep the privacy notice view for the dismiss animation in clamshell mode.
-  if (tablet_mode_)
+  if (tablet_mode_) {
     RemovePrivacyNotice();
-  else
-    AnimateDismissToast();
+  } else {
+    AnimateDismissToast(
+        base::BindRepeating(&ContinueSectionView::AnimateShowContinueSection,
+                            weak_ptr_factory_.GetWeakPtr()));
+  }
 }
 
-void ContinueSectionView::AnimateDismissToast() {
+void ContinueSectionView::AnimateDismissToast(base::RepeatingClosure callback) {
   DCHECK(!tablet_mode_);
 
   PrepareForLayerAnimation(privacy_toast_);
 
   views::AnimationBuilder animation_builder;
-  animation_builder.OnEnded(
-      base::BindOnce(&ContinueSectionView::AnimateShowContinueSection,
-                     weak_ptr_factory_.GetWeakPtr()));
-  animation_builder.OnAborted(
-      base::BindOnce(&ContinueSectionView::AnimateShowContinueSection,
-                     weak_ptr_factory_.GetWeakPtr()));
+  animation_builder.OnEnded(std::move(callback));
+  animation_builder.OnAborted(std::move(callback));
 
   animation_builder
       .SetPreemptionStrategy(
@@ -235,6 +235,21 @@ void ContinueSectionView::AnimateDismissToast() {
       .Once()
       .SetOpacity(privacy_toast_, 0, gfx::Tween::LINEAR)
       .SetDuration(kDismissToastAnimationDuration);
+}
+
+void ContinueSectionView::AnimateSlideLauncherContent(int vertical_offset) {
+  RemovePrivacyNotice();
+  // The sibling views from this should slide down the total of the height
+  // difference to make room for the continue section suggestions and title.
+  for (views::View* view : parent()->children()) {
+    if (view == this)
+      continue;
+    const bool create_layer = PrepareForLayerAnimation(view);
+    auto cleanup = create_layer ? base::BindRepeating(&CleanupLayer, view)
+                                : base::DoNothing();
+    StartSlideInAnimation(view, vertical_offset, base::Milliseconds(300),
+                          gfx::Tween::ACCEL_40_DECEL_100_3, cleanup);
+  }
 }
 
 void ContinueSectionView::AnimateShowContinueSection() {
@@ -266,26 +281,13 @@ void ContinueSectionView::AnimateShowContinueSection() {
       height_difference + kVerticalPaddingFromParent,
       kShowSuggestionsAnimationDuration, animation_tween);
 
-  // The siblings views from this should slide down the total of the height
-  // difference to make room for the continue section suggestions and title.
-  for (views::View* view : parent()->children()) {
-    if (view == this)
-      continue;
-    const bool create_layer = PrepareForLayerAnimation(view);
-    auto cleanup = create_layer ? base::BindRepeating(&CleanupLayer, view)
-                                : base::DoNothing();
-    StartSlideInAnimation(view, height_difference,
-                          kShowSuggestionsAnimationDuration, animation_tween,
-                          cleanup);
-  }
+  AnimateSlideLauncherContent(height_difference);
+
+  auto cleanup = base::BindRepeating(&CleanupLayer, continue_label_);
 
   views::AnimationBuilder animation_builder;
-  animation_builder.OnEnded(
-      base::BindOnce(&ContinueSectionView::RemovePrivacyNotice,
-                     weak_ptr_factory_.GetWeakPtr()));
-  animation_builder.OnAborted(
-      base::BindOnce(&ContinueSectionView::RemovePrivacyNotice,
-                     weak_ptr_factory_.GetWeakPtr()));
+  animation_builder.OnEnded(cleanup);
+  animation_builder.OnAborted(cleanup);
 
   animation_builder
       .SetPreemptionStrategy(
@@ -303,9 +305,6 @@ void ContinueSectionView::RemovePrivacyNotice() {
     privacy_toast_ = nullptr;
   }
   UpdateElementsVisibility();
-
-  if (continue_label_)
-    continue_label_->DestroyLayer();
 }
 
 void ContinueSectionView::OnPrivacyNoticeShowTimerDone() {
@@ -372,6 +371,19 @@ bool ContinueSectionView::FirePrivacyNoticeShownTimerForTest() {
 
   privacy_notice_shown_timer_.FireNow();
   return true;
+}
+
+void ContinueSectionView::MaybeAnimateOutPrivacyNotice() {
+  if (Shell::HasInstance() && Shell::Get()->app_list_controller() &&
+      Shell::Get()->app_list_controller()->IsVisible() && !tablet_mode_ &&
+      privacy_toast_ && !ShouldShowPrivacyNotice()) {
+    AnimateDismissToast(
+        base::BindRepeating(&ContinueSectionView::AnimateSlideLauncherContent,
+                            weak_ptr_factory_.GetWeakPtr(),
+                            privacy_toast_->GetPreferredSize().height()));
+    return;
+  }
+  UpdateElementsVisibility();
 }
 
 void ContinueSectionView::UpdateElementsVisibility() {

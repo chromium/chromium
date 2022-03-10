@@ -1960,5 +1960,67 @@ TEST_P(ContinueSectionViewTest, AnimatesWhenNumberOfChipsChanges) {
   }
 }
 
+TEST_F(ContinueSectionViewClamshellModeTest, AnimatesOutAfterRemovingResults) {
+  ResetPrivacyNoticePref();
+  InitializeForAnimationTest(/*result_count=*/3);
+
+  EXPECT_TRUE(IsPrivacyNoticeVisible());
+  EXPECT_EQ(GetAppListNudgeController()->current_nudge(),
+            AppListNudgeController::NudgeType::kPrivacyNotice);
+
+  views::View* privacy_notice =
+      GetContinueSectionView()->GetPrivacyNoticeForTest();
+
+  RemoveSearchResultAt(1);
+
+  ContinueTaskContainerView* const container_view =
+      GetContinueSectionView()->suggestions_container();
+  container_view->Update();
+
+  EXPECT_EQ(1.0f, privacy_notice->layer()->opacity());
+  EXPECT_EQ(0.0f, privacy_notice->layer()->GetTargetOpacity());
+  EXPECT_TRUE(privacy_notice->layer()->GetAnimator()->is_animating());
+
+  LayerAnimationStoppedWaiter waiter;
+  waiter.Wait(privacy_notice->layer());
+
+  VerifyResultViewsUpdated();
+
+  ASSERT_LE(GetContinueSectionView()->GetTasksSuggestionsCount(), 2u);
+  EXPECT_FALSE(IsPrivacyNoticeVisible());
+
+  EXPECT_FALSE(GetContinueSectionView()->GetVisible());
+}
+
+TEST_F(ContinueSectionViewClamshellModeTest, AnimatesPrivacyNoticeAccept) {
+  ResetPrivacyNoticePref();
+  InitializeForAnimationTest(/*result_count=*/3);
+
+  EXPECT_TRUE(IsPrivacyNoticeVisible());
+  EXPECT_EQ(GetAppListNudgeController()->current_nudge(),
+            AppListNudgeController::NudgeType::kPrivacyNotice);
+
+  AppListToastView* privacy_notice =
+      GetContinueSectionView()->GetPrivacyNoticeForTest();
+
+  GestureTapOn(privacy_notice->toast_button());
+
+  EXPECT_EQ(1.0f, privacy_notice->layer()->opacity());
+  EXPECT_EQ(0.0f, privacy_notice->layer()->GetTargetOpacity());
+  EXPECT_TRUE(privacy_notice->layer()->GetAnimator()->is_animating());
+
+  LayerAnimationStoppedWaiter waiter;
+  waiter.Wait(privacy_notice->layer());
+
+  ContinueTaskContainerView* container_view =
+      GetContinueSectionView()->suggestions_container();
+
+  EXPECT_TRUE(container_view->layer()->GetAnimator()->is_animating());
+  WaitForAllChildrenAnimationsToComplete(container_view);
+  EXPECT_FALSE(IsPrivacyNoticeVisible());
+
+  EXPECT_TRUE(GetContinueSectionView()->GetVisible());
+}
+
 }  // namespace
 }  // namespace ash

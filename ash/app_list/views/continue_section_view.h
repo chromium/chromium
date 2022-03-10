@@ -119,10 +119,18 @@ class ASH_EXPORT ContinueSectionView : public views::View,
   void OnPrivacyToastAcknowledged();
 
   // Starts the animation to dismiss the privacy notice toast.
-  void AnimateDismissToast();
+  void AnimateDismissToast(base::RepeatingClosure callback);
 
   // Starts the animation to show the continue section in the app list bubble.
   void AnimateShowContinueSection();
+
+  // Starts the animation for sliding other launcher content by
+  // `vertical_offset`.
+  void AnimateSlideLauncherContent(int vertical_offset);
+
+  // Starts the animation to dismiss the privacy notice toast only. This is used
+  // when the privacy notice does not have enough items after an update.
+  void MaybeAnimateOutPrivacyNotice();
 
   bool tablet_mode_ = false;
 
