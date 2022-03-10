@@ -4,8 +4,8 @@
 
 ![WebView Shell](images/webview_shell.png)
 
-WebView team maintains a "shell"&mdash;a thin interface over the WebView
-APIs&mdash;to exercise WebView functionality. The System WebView Shell (AKA
+WebView team maintains a "shell"—a thin interface over the WebView
+APIs—to exercise WebView functionality. The System WebView Shell (AKA
 "shell browser," "WebView shell") is a standalone app implemented [in
 chromium](/android_webview/tools/system_webview_shell/). While often used for
 manual testing, we also use the shell for automated tests (see our [layout and
