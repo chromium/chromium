@@ -367,28 +367,25 @@ TEST_P(ImagePaintTimingDetectorTest, LargestImagePaint_TraceEvent_Candidate) {
 
   EXPECT_TRUE(events[0]->HasArg("frame"));
 
-  EXPECT_TRUE(events[0]->HasArg("data"));
-  base::Value arg;
-  EXPECT_TRUE(events[0]->GetArgAsValue("data", &arg));
-  base::DictionaryValue* arg_dict;
-  EXPECT_TRUE(arg.GetAsDictionary(&arg_dict));
-  EXPECT_GT(arg_dict->FindIntKey("DOMNodeId").value_or(-1), 0);
-  EXPECT_GT(arg_dict->FindIntKey("size").value_or(-1), 0);
-  EXPECT_EQ(arg_dict->FindIntKey("candidateIndex").value_or(-1), 2);
-  absl::optional<bool> isMainFrame = arg_dict->FindBoolKey("isMainFrame");
+  ASSERT_TRUE(events[0]->HasDictArg("data"));
+  base::Value::Dict arg_dict = events[0]->GetKnownArgAsDict("data");
+  EXPECT_GT(arg_dict.FindInt("DOMNodeId").value_or(-1), 0);
+  EXPECT_GT(arg_dict.FindInt("size").value_or(-1), 0);
+  EXPECT_EQ(arg_dict.FindInt("candidateIndex").value_or(-1), 2);
+  absl::optional<bool> isMainFrame = arg_dict.FindBool("isMainFrame");
   EXPECT_TRUE(isMainFrame.has_value());
   EXPECT_EQ(true, isMainFrame.value());
-  absl::optional<bool> isOOPIF = arg_dict->FindBoolKey("isOOPIF");
+  absl::optional<bool> isOOPIF = arg_dict.FindBool("isOOPIF");
   EXPECT_TRUE(isOOPIF.has_value());
   EXPECT_EQ(false, isOOPIF.value());
-  EXPECT_EQ(arg_dict->FindIntKey("frame_x").value_or(-1), 8);
-  EXPECT_EQ(arg_dict->FindIntKey("frame_y").value_or(-1), 8);
-  EXPECT_EQ(arg_dict->FindIntKey("frame_width").value_or(-1), 5);
-  EXPECT_EQ(arg_dict->FindIntKey("frame_height").value_or(-1), 5);
-  EXPECT_EQ(arg_dict->FindIntKey("root_x").value_or(-1), 8);
-  EXPECT_EQ(arg_dict->FindIntKey("root_y").value_or(-1), 8);
-  EXPECT_EQ(arg_dict->FindIntKey("root_width").value_or(-1), 5);
-  EXPECT_EQ(arg_dict->FindIntKey("root_height").value_or(-1), 5);
+  EXPECT_EQ(arg_dict.FindInt("frame_x").value_or(-1), 8);
+  EXPECT_EQ(arg_dict.FindInt("frame_y").value_or(-1), 8);
+  EXPECT_EQ(arg_dict.FindInt("frame_width").value_or(-1), 5);
+  EXPECT_EQ(arg_dict.FindInt("frame_height").value_or(-1), 5);
+  EXPECT_EQ(arg_dict.FindInt("root_x").value_or(-1), 8);
+  EXPECT_EQ(arg_dict.FindInt("root_y").value_or(-1), 8);
+  EXPECT_EQ(arg_dict.FindInt("root_width").value_or(-1), 5);
+  EXPECT_EQ(arg_dict.FindInt("root_height").value_or(-1), 5);
 }
 
 TEST_P(ImagePaintTimingDetectorTest,
@@ -419,28 +416,25 @@ TEST_P(ImagePaintTimingDetectorTest,
 
   EXPECT_TRUE(events[0]->HasArg("frame"));
 
-  EXPECT_TRUE(events[0]->HasArg("data"));
-  base::Value arg;
-  EXPECT_TRUE(events[0]->GetArgAsValue("data", &arg));
-  base::DictionaryValue* arg_dict;
-  EXPECT_TRUE(arg.GetAsDictionary(&arg_dict));
-  EXPECT_GT(arg_dict->FindIntKey("DOMNodeId").value_or(-1), 0);
-  EXPECT_GT(arg_dict->FindIntKey("size").value_or(-1), 0);
-  EXPECT_EQ(arg_dict->FindIntKey("candidateIndex").value_or(-1), 2);
-  absl::optional<bool> isMainFrame = arg_dict->FindBoolKey("isMainFrame");
+  ASSERT_TRUE(events[0]->HasDictArg("data"));
+  base::Value::Dict arg_dict = events[0]->GetKnownArgAsDict("data");
+  EXPECT_GT(arg_dict.FindInt("DOMNodeId").value_or(-1), 0);
+  EXPECT_GT(arg_dict.FindInt("size").value_or(-1), 0);
+  EXPECT_EQ(arg_dict.FindInt("candidateIndex").value_or(-1), 2);
+  absl::optional<bool> isMainFrame = arg_dict.FindBool("isMainFrame");
   EXPECT_TRUE(isMainFrame.has_value());
   EXPECT_EQ(false, isMainFrame.value());
-  absl::optional<bool> isOOPIF = arg_dict->FindBoolKey("isOOPIF");
+  absl::optional<bool> isOOPIF = arg_dict.FindBool("isOOPIF");
   EXPECT_TRUE(isOOPIF.has_value());
   EXPECT_EQ(false, isOOPIF.value());
-  EXPECT_EQ(arg_dict->FindIntKey("frame_x").value_or(-1), 10);
-  EXPECT_EQ(arg_dict->FindIntKey("frame_y").value_or(-1), 10);
-  EXPECT_EQ(arg_dict->FindIntKey("frame_width").value_or(-1), 200);
-  EXPECT_EQ(arg_dict->FindIntKey("frame_height").value_or(-1), 200);
-  EXPECT_GT(arg_dict->FindIntKey("root_x").value_or(-1), 40);
-  EXPECT_GT(arg_dict->FindIntKey("root_y").value_or(-1), 60);
-  EXPECT_EQ(arg_dict->FindIntKey("root_width").value_or(-1), 200);
-  EXPECT_EQ(arg_dict->FindIntKey("root_height").value_or(-1), 200);
+  EXPECT_EQ(arg_dict.FindInt("frame_x").value_or(-1), 10);
+  EXPECT_EQ(arg_dict.FindInt("frame_y").value_or(-1), 10);
+  EXPECT_EQ(arg_dict.FindInt("frame_width").value_or(-1), 200);
+  EXPECT_EQ(arg_dict.FindInt("frame_height").value_or(-1), 200);
+  EXPECT_GT(arg_dict.FindInt("root_x").value_or(-1), 40);
+  EXPECT_GT(arg_dict.FindInt("root_y").value_or(-1), 60);
+  EXPECT_EQ(arg_dict.FindInt("root_width").value_or(-1), 200);
+  EXPECT_EQ(arg_dict.FindInt("root_height").value_or(-1), 200);
 }
 
 TEST_P(ImagePaintTimingDetectorTest, LargestImagePaint_TraceEvent_NoCandidate) {
@@ -465,14 +459,11 @@ TEST_P(ImagePaintTimingDetectorTest, LargestImagePaint_TraceEvent_NoCandidate) {
 
   EXPECT_EQ("loading", events[0]->category);
   EXPECT_TRUE(events[0]->HasArg("frame"));
-  EXPECT_TRUE(events[0]->HasArg("data"));
-  base::Value arg;
-  EXPECT_TRUE(events[0]->GetArgAsValue("data", &arg));
-  base::DictionaryValue* arg_dict;
-  EXPECT_TRUE(arg.GetAsDictionary(&arg_dict));
-  EXPECT_EQ(arg_dict->FindIntKey("candidateIndex").value_or(-1), 1);
-  EXPECT_THAT(arg_dict->FindBoolKey("isMainFrame"), Optional(true));
-  EXPECT_THAT(arg_dict->FindBoolKey("isOOPIF"), Optional(false));
+  ASSERT_TRUE(events[0]->HasDictArg("data"));
+  base::Value::Dict arg_dict = events[0]->GetKnownArgAsDict("data");
+  EXPECT_EQ(arg_dict.FindInt("candidateIndex").value_or(-1), 1);
+  EXPECT_THAT(arg_dict.FindBool("isMainFrame"), Optional(true));
+  EXPECT_THAT(arg_dict.FindBool("isOOPIF"), Optional(false));
 }
 
 TEST_P(ImagePaintTimingDetectorTest, UpdatePerformanceTiming) {

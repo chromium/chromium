@@ -229,6 +229,16 @@ bool TraceEvent::GetArgAsNumber(const std::string& arg_name,
   return false;
 }
 
+bool TraceEvent::GetArgAsDict(const std::string& arg_name,
+                              base::Value::Dict* arg) const {
+  const auto it = arg_values.find(arg_name);
+  if (it != arg_values.end() && it->second.is_dict()) {
+    *arg = it->second.GetDict().Clone();
+    return true;
+  }
+  return false;
+}
+
 bool TraceEvent::GetArgAsValue(const std::string& arg_name,
                                base::Value* arg) const {
   const auto it = arg_values.find(arg_name);
@@ -245,6 +255,11 @@ bool TraceEvent::HasStringArg(const std::string& arg_name) const {
 
 bool TraceEvent::HasNumberArg(const std::string& arg_name) const {
   return (arg_numbers.find(arg_name) != arg_numbers.end());
+}
+
+bool TraceEvent::HasDictArg(const std::string& arg_name) const {
+  const auto it = arg_values.find(arg_name);
+  return (it != arg_values.end() && it->second.is_dict());
 }
 
 bool TraceEvent::HasArg(const std::string& arg_name) const {
@@ -277,6 +292,14 @@ bool TraceEvent::GetKnownArgAsBool(const std::string& arg_name) const {
   bool result = GetArgAsNumber(arg_name, &arg_double);
   DCHECK(result);
   return (arg_double != 0.0);
+}
+
+base::Value::Dict TraceEvent::GetKnownArgAsDict(
+    const std::string& arg_name) const {
+  base::Value::Dict arg_dict;
+  bool result = GetArgAsDict(arg_name, &arg_dict);
+  DCHECK(result);
+  return arg_dict;
 }
 
 base::Value TraceEvent::GetKnownArgAsValue(const std::string& arg_name) const {

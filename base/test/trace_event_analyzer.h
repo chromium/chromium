@@ -150,6 +150,8 @@ struct TraceEvent {
   bool GetArgAsString(const std::string& arg_name, std::string* arg) const;
   // Return the argument value if it exists and it is a number.
   bool GetArgAsNumber(const std::string& arg_name, double* arg) const;
+  // Return the argument value if it exists and is a dictionary.
+  bool GetArgAsDict(const std::string& arg_name, base::Value::Dict* arg) const;
   // Return the argument value if it exists.
   bool GetArgAsValue(const std::string& arg_name, base::Value* arg) const;
 
@@ -157,6 +159,8 @@ struct TraceEvent {
   bool HasStringArg(const std::string& arg_name) const;
   // Check if argument exists and is number (double, int or bool).
   bool HasNumberArg(const std::string& arg_name) const;
+  // Check if argument exists and is a dictionary.
+  bool HasDictArg(const std::string& arg_name) const;
   // Check if argument exists.
   bool HasArg(const std::string& arg_name) const;
 
@@ -167,6 +171,7 @@ struct TraceEvent {
   double GetKnownArgAsDouble(const std::string& arg_name) const;
   int GetKnownArgAsInt(const std::string& arg_name) const;
   bool GetKnownArgAsBool(const std::string& arg_name) const;
+  base::Value::Dict GetKnownArgAsDict(const std::string& arg_name) const;
   base::Value GetKnownArgAsValue(const std::string& arg_name) const;
 
   // Process ID and Thread ID.
