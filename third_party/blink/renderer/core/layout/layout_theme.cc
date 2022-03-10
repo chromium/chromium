@@ -279,8 +279,6 @@ void LayoutTheme::AdjustStyle(const Element* e, ComputedStyle& style) {
     case kSliderThumbHorizontalPart:
     case kSliderThumbVerticalPart:
       return AdjustSliderThumbStyle(style);
-    case kSearchFieldPart:
-      return AdjustSearchFieldStyle(style);
     case kSearchFieldCancelButtonPart:
       return AdjustSearchFieldCancelButtonStyle(style);
     default:
@@ -507,8 +505,6 @@ void LayoutTheme::AdjustSliderThumbStyle(ComputedStyle& style) const {
 }
 
 void LayoutTheme::AdjustSliderThumbSize(ComputedStyle&) const {}
-
-void LayoutTheme::AdjustSearchFieldStyle(ComputedStyle&) const {}
 
 void LayoutTheme::AdjustSearchFieldCancelButtonStyle(ComputedStyle&) const {}
 

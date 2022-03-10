@@ -205,11 +205,6 @@ void LayoutThemeDefault::AdjustButtonStyle(ComputedStyle& style) const {
   }
 }
 
-void LayoutThemeDefault::AdjustSearchFieldStyle(ComputedStyle& style) const {
-  // Ignore line-height.
-  style.SetLineHeight(ComputedStyleInitialValues::InitialLineHeight());
-}
-
 void LayoutThemeDefault::AdjustSearchFieldCancelButtonStyle(
     ComputedStyle& style) const {
   // Scale the button size based on the font size

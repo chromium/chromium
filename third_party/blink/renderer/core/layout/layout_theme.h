@@ -228,7 +228,6 @@ class CORE_EXPORT LayoutTheme : public RefCounted<LayoutTheme> {
   virtual void AdjustMenuListButtonStyle(ComputedStyle&) const;
   virtual void AdjustSliderContainerStyle(const Element&, ComputedStyle&) const;
   virtual void AdjustSliderThumbStyle(ComputedStyle&) const;
-  virtual void AdjustSearchFieldStyle(ComputedStyle&) const;
   virtual void AdjustSearchFieldCancelButtonStyle(ComputedStyle&) const;
 
   bool HasCustomFocusRingColor() const;

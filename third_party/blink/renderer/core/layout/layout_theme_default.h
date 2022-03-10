@@ -67,7 +67,6 @@ class CORE_EXPORT LayoutThemeDefault : public LayoutTheme {
                           Color inactive_foreground_color) override;
   Color PlatformFocusRingColor() const override;
 
-  void AdjustSearchFieldStyle(ComputedStyle&) const override;
   void AdjustSearchFieldCancelButtonStyle(ComputedStyle&) const override;
 
   // MenuList refers to an unstyled menulist (meaning a menulist without
