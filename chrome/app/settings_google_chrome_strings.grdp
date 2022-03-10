@@ -182,6 +182,47 @@
     If you also share Chrome usage reports, those reports include the URLs you visit
   </message>
 
+  <!-- Privacy Sandbox -->
+  <message name="IDS_SETTINGS_PRIVACY_SANDBOX_LEARN_MORE_DIALOG_TOPICS_TITLE" translateable="false" desc="Title of the browser-based interests section of the dialog to learn more about ad personalization.">
+    Your interests as estimated by Chrome
+  </message>
+  <message name="IDS_SETTINGS_PRIVACY_SANDBOX_LEARN_MORE_DIALOG_TOPICS_DATA_TYPES" translateable="false" desc="Description for Topic's data types subsection of the dialog to learn more about ad personalization.">
+    Your browsing history, a record of sites you've visited using Chrome on this device.
+  </message>
+  <message name="IDS_SETTINGS_PRIVACY_SANDBOX_LEARN_MORE_DIALOG_TOPICS_DATA_USAGE" translateable="false" desc="Description for Topic's data usage subsection of the dialog to learn more about ad personalization.">
+    Chrome can estimate your interests. Later, a site you visit can ask Chrome to see your interests in order to personalize the content and ads you see.
+  </message>
+  <message name="IDS_SETTINGS_PRIVACY_SANDBOX_LEARN_MORE_DIALOG_TOPICS_DATA_MANAGEMENT" translateable="false" desc="Description for Topic's data management subsection of the dialog to learn more about ad personalization.">
+    To protect your privacy, we auto-delete your interests that are older than 3 weeks. Interests can refresh. Or you can remove interests you don't want Chrome to consider.
+  </message>
+  <message name="IDS_SETTINGS_PRIVACY_SANDBOX_LEARN_MORE_DIALOG_FLEDGE_DATA_TYPES" translateable="false" desc="Description for Fledge's data types subsection of the dialog to learn more about ad personalization.">
+    Your browsing history, a record of sites you've visited using Chrome on this device.
+  </message>
+  <message name="IDS_SETTINGS_PRIVACY_SANDBOX_LEARN_MORE_DIALOG_FLEDGE_DATA_USAGE" translateable="false" desc="Description for Fledge's data usage subsection of the dialog to learn more about ad personalization.">
+    Sites can store information with Chrome about your interests. For example, if you visit a site to buy shoes for a marathon, the site might define your interest as running marathons. Later, if you visit a different site to register for a race, that site can see this interest and show you content and ads for running shoes.
+  </message>
+  <message name="IDS_SETTINGS_PRIVACY_SANDBOX_AD_PERSONALIZATION_DIALOG_DESCRIPTION" translateable="false" desc="Description of the main page of the 'ad personalization' dialog.">
+    Your browsing history affects the ads you see and the interests as estimated below. To protect your privacy, Chrome auto-deletes your interests on a rolling basis each month. Interests can refresh unless you remove them.
+  </message>
+  <message name="IDS_SETTINGS_PRIVACY_SANDBOX_AD_PERSONALIZATION_DIALOG_TOPICS_TITLE" translateable="false" desc="Title of the browser-based interests section of the 'ad personalization' dialog.">
+    Your interests as estimated by Chrome
+  </message>
+  <message name="IDS_SETTINGS_PRIVACY_SANDBOX_AD_PERSONALIZATION_DIALOG_TOPICS_LEARN_MORE_1" translateable="false" desc="First learn more description of the browser-based interests section of the 'ad personalization' dialog.">
+    Chrome can estimate your interests based on your browsing history from the last few weeks. This info stays on your device.
+  </message>
+  <message name="IDS_SETTINGS_PRIVACY_SANDBOX_AD_PERSONALIZATION_DIALOG_TOPICS_LEARN_MORE_2" translateable="false" desc="Second learn more description of the browser-based interests section of the 'ad personalization' dialog.">
+    Later, a site you visit can ask Chrome to see your interests in order to personalize the ads you see. Without identifying who you are, Chrome can share up to 3 interests.
+  </message>
+  <message name="IDS_SETTINGS_PRIVACY_SANDBOX_AD_PERSONALIZATION_DIALOG_TOPICS_LEARN_MORE_3" translateable="false" desc="Third learn more description of the browser-based interests section of the 'ad personalization' dialog.">
+    Your interests are deleted and refreshed each week. And if Chrome gets it wrong or you don't want to see certain ads, you can remove an interest.
+  </message>
+  <message name="IDS_SETTINGS_PRIVACY_SANDBOX_AD_PERSONALIZATION_DIALOG_FLEDGE_LEARN_MORE_1" translateable="false" desc="First learn more description of the website-based interests section of the 'ad personalization' dialog.">
+    It's common for sites you visit to remember things you're interested in, to personalize your experience. Sites can also store information with Chrome about your interests.
+  </message>
+  <message name="IDS_SETTINGS_PRIVACY_SANDBOX_AD_MEASUREMENT_DIALOG_DESCRIPTION" translateable="false" desc="Main description of the 'ad measurement' dialog.">
+    Ad measurement allows sites you visit to request information from Chrome that helps the site measure the performance of their ads. Ad measurement restricts cross-site tracking by transferring as little information as possible between sites.
+  </message>
+
   <!-- Safety check -->
   <message name="IDS_SETTINGS_SAFETY_CHECK_PARENT_PRIMARY_LABEL_BEFORE" desc="This text describes what the safety check is. (It's an area of the Settings page where users can quickly check whether their safety-related settings are fully protecting them.)">
     Chrome can help keep you safe from data breaches, bad extensions, and more

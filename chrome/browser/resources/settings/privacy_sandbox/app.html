@@ -124,8 +124,12 @@
     padding: 0 0 8px 16px;
   }
 
-  #trialsCardSettings3 > *:not(:last-child) {
-    border-bottom: var(--cr-separator-line);
+  #trialsCardSettings3 > cr-link-row {
+    border-top: var(--cr-separator-line);
+  }
+
+  #trialsDescription {
+    padding-bottom: var(--cr-section-vertical-padding);
   }
 
   #adPersonalizationBackButton {
@@ -177,19 +181,21 @@
       <settings-toggle-button id="trialsToggle"
           pref="{{prefs.privacy_sandbox.apis_enabled_v2}}"
           label="$i18n{privacySandboxTrialsTitle}"
-          sub-label="$i18n{privacySandboxTrialsSummary}"
           on-change="onApiToggleButtonChange_">
       </settings-toggle-button>
+      <div id="trialsDescription" class="cr-row continuation">
+        <div class="secondary">
+          $i18n{privacySandboxTrialsSummary}
+          <a id="learnMoreLink" on-click="onLearnMoreClick_">
+            $i18n{privacySandboxTrialsSummaryLearnMore}
+          </a>
+        </div>
+      </div>
       <cr-link-row id="adPersonalizationRow"
         start-icon="privacy-sandbox:ads-click"
         label="$i18n{privacySandboxAdPersonalizationTitle}"
+        sub-label="$i18n{privacySandboxAdPersonalizationSummary}"
         on-click="onAdPersonalizationRowClick_">
-        <div slot="sub-label">
-          $i18n{privacySandboxAdPersonalizationSummary}
-          <a id="learnMoreLink" on-click="onLearnMoreClick_">
-            $i18n{learnMore}
-          </a>
-        </div>
       </cr-link-row>
       <cr-link-row id="adMeasurementRow"
         start-icon="privacy-sandbox:insert-chart"
@@ -221,22 +227,19 @@
                   <span class="learn-more-section-subtitle">
                     $i18n{privacySandboxLearnMoreDialogDataTypes}
                   </span>
-                  <!-- TODO(crbug/1286276): Replace this with real string. -->
-                  $i18n{privacySandboxAdMeasurementSummary}
+                  $i18n{privacySandboxLearnMoreDialogTopicsDataTypes}
                 </li>
                 <li>
                   <span class="learn-more-section-subtitle">
                     $i18n{privacySandboxLearnMoreDialogDataUsage}
                   </span>
-                  <!-- TODO(crbug/1286276): Replace this with real string. -->
-                  $i18n{privacySandboxAdMeasurementSummary}
+                  $i18n{privacySandboxLearnMoreDialogTopicsDataUsage}
                 </li>
                 <li>
                   <span class="learn-more-section-subtitle">
                     $i18n{privacySandboxLearnMoreDialogDataManagement}
                   </span>
-                  <!-- TODO(crbug/1286276): Replace this with real string. -->
-                  $i18n{privacySandboxAdMeasurementSummary}
+                  $i18n{privacySandboxLearnMoreDialogTopicsDataManagement}
                 </li>
               </ul>
             </div>
@@ -249,22 +252,19 @@
                   <span class="learn-more-section-subtitle">
                     $i18n{privacySandboxLearnMoreDialogDataTypes}
                   </span>
-                  <!-- TODO(crbug/1286276): Replace this with real string. -->
-                  $i18n{privacySandboxAdMeasurementSummary}
+                  $i18n{privacySandboxLearnMoreDialogFledgeDataTypes}
                 </li>
                 <li>
                   <span class="learn-more-section-subtitle">
                     $i18n{privacySandboxLearnMoreDialogDataUsage}
                   </span>
-                  <!-- TODO(crbug/1286276): Replace this with real string. -->
-                  $i18n{privacySandboxAdMeasurementSummary}
+                  $i18n{privacySandboxLearnMoreDialogFledgeDataUsage}
                 </li>
                 <li>
                   <span class="learn-more-section-subtitle">
                     $i18n{privacySandboxLearnMoreDialogDataManagement}
                   </span>
-                  <!-- TODO(crbug/1286276): Replace this with real string. -->
-                  $i18n{privacySandboxAdMeasurementSummary}
+                  $i18n{privacySandboxLearnMoreDialogFledgeDataManagement}
                 </li>
               </ul>
             </div>
@@ -298,6 +298,9 @@
                 </div>
                 <div class="dialog-description">
                   $i18n{privacySandboxAdPersonalizationDialogTopicsLearnMore3}
+                </div>
+                <div class="dialog-description">
+                  $i18n{privacySandboxAdPersonalizationDialogTopicsLearnMore4}
                 </div>
               </paper-tooltip>
             </div>
@@ -369,12 +372,12 @@
                 on-click="onAdPersonalizationBackButtonClick_">
             </cr-icon-button>
             <span class="flex">
-              $i18n{privacySandboxAdPersonalizationDialogTitle}
+              $i18n{privacySandboxAdPersonalizationRemovedDialogTitle}
             </span>
           </div>
           <div slot="body">
             <div class="dialog-description">
-              $i18n{privacySandboxAdPersonalizationDialogRemovedDescription}
+              $i18n{privacySandboxAdPersonalizationRemovedDialogDescription}
             </div>
             <div class="ad-personalization-section-title">
               $i18n{privacySandboxAdPersonalizationDialogTopicsTitle}
