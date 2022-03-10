@@ -133,7 +133,7 @@ AppServiceContextMenu::AppServiceContextMenu(
   proxy_->AppRegistryCache().ForOneApp(
       app_id, [this](const apps::AppUpdate& update) {
         app_type_ = apps_util::IsInstalled(update.Readiness())
-                        ? apps::ConvertMojomAppTypToAppType(update.AppType())
+                        ? update.AppType()
                         : apps::AppType::kUnknown;
       });
 

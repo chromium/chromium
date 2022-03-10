@@ -254,7 +254,7 @@ bool WebApkManager::IsAppEligibleForWebApk(const AppUpdate& app) {
     return false;
   }
 
-  if (app.AppType() != apps::mojom::AppType::kWeb) {
+  if (app.AppType() != apps::AppType::kWeb) {
     return false;
   }
 

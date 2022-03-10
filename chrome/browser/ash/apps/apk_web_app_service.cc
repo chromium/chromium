@@ -463,7 +463,7 @@ void ApkWebAppService::OnWebAppInstallManagerDestroyed() {
 }
 
 void ApkWebAppService::OnAppUpdate(const apps::AppUpdate& update) {
-  if (update.AppType() == apps::mojom::AppType::kWeb &&
+  if (update.AppType() == apps::AppType::kWeb &&
       update.Readiness() == apps::Readiness::kUninstalledByUser) {
     MaybeRemoveArcPackageForWebApp(update.AppId());
   }

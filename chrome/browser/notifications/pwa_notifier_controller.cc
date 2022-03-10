@@ -40,7 +40,7 @@ std::vector<ash::NotifierMetadata> PwaNotifierController::GetNotifierList(
   std::vector<NotifierDataset> notifier_dataset;
   service->AppRegistryCache().ForEachApp(
       [&notifier_dataset](const apps::AppUpdate& update) {
-        if (update.AppType() != apps::mojom::AppType::kWeb)
+        if (update.AppType() != apps::AppType::kWeb)
           return;
 
         for (const auto& permission : update.Permissions()) {

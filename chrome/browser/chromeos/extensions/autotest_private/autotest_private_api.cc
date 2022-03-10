@@ -337,33 +337,33 @@ api::autotest_private::ShelfItemStatus GetShelfItemStatus(
   return api::autotest_private::ShelfItemStatus::SHELF_ITEM_STATUS_NONE;
 }
 
-api::autotest_private::AppType GetAppType(apps::mojom::AppType type) {
+api::autotest_private::AppType GetAppType(apps::AppType type) {
   switch (type) {
-    case apps::mojom::AppType::kArc:
+    case apps::AppType::kArc:
       return api::autotest_private::AppType::APP_TYPE_ARC;
-    case apps::mojom::AppType::kBuiltIn:
+    case apps::AppType::kBuiltIn:
       return api::autotest_private::AppType::APP_TYPE_BUILTIN;
-    case apps::mojom::AppType::kCrostini:
+    case apps::AppType::kCrostini:
       return api::autotest_private::AppType::APP_TYPE_CROSTINI;
-    case apps::mojom::AppType::kChromeApp:
-    case apps::mojom::AppType::kExtension:
+    case apps::AppType::kChromeApp:
+    case apps::AppType::kExtension:
       return api::autotest_private::AppType::APP_TYPE_EXTENSION;
-    case apps::mojom::AppType::kPluginVm:
+    case apps::AppType::kPluginVm:
       return api::autotest_private::AppType::APP_TYPE_PLUGINVM;
-    case apps::mojom::AppType::kWeb:
-    case apps::mojom::AppType::kSystemWeb:
+    case apps::AppType::kWeb:
+    case apps::AppType::kSystemWeb:
       return api::autotest_private::AppType::APP_TYPE_WEB;
-    case apps::mojom::AppType::kUnknown:
+    case apps::AppType::kUnknown:
       return api::autotest_private::AppType::APP_TYPE_NONE;
-    case apps::mojom::AppType::kMacOs:
+    case apps::AppType::kMacOs:
       return api::autotest_private::AppType::APP_TYPE_MACOS;
-    case apps::mojom::AppType::kStandaloneBrowser:
+    case apps::AppType::kStandaloneBrowser:
       return api::autotest_private::AppType::APP_TYPE_STANDALONEBROWSER;
-    case apps::mojom::AppType::kRemote:
+    case apps::AppType::kRemote:
       return api::autotest_private::AppType::APP_TYPE_REMOTE;
-    case apps::mojom::AppType::kBorealis:
+    case apps::AppType::kBorealis:
       return api::autotest_private::AppType::APP_TYPE_BOREALIS;
-    case apps::mojom::AppType::kStandaloneBrowserChromeApp:
+    case apps::AppType::kStandaloneBrowserChromeApp:
       // Intentionally fall-through for now.
       // TODO(https://crbug.com/1225848): Figure out appropriate behavior for
       // Lacros-hosted chrome-apps.

@@ -45,6 +45,7 @@
 #include "chromeos/dbus/dbus_thread_manager.h"
 #include "chromeos/dbus/seneschal/seneschal_client.h"
 #include "components/crx_file/id_util.h"
+#include "components/services/app_service/public/cpp/app_types.h"
 #include "components/services/app_service/public/cpp/stub_icon_loader.h"
 #include "components/services/app_service/public/mojom/types.mojom.h"
 #include "components/sessions/content/content_test_helper.h"
@@ -121,7 +122,7 @@ void UpdateIconKey(apps::AppServiceProxy& proxy, const std::string& app_id) {
   app->app_id = app_id;
   proxy.AppRegistryCache().ForOneApp(
       app_id, [&app](const apps::AppUpdate& update) {
-        app->app_type = update.AppType();
+        app->app_type = ConvertAppTypeToMojomAppType(update.AppType());
         app->icon_key = apps::mojom::IconKey::New(
             update.IconKey()->timeline + 1, update.IconKey()->resource_id,
             update.IconKey()->icon_effects);

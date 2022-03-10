@@ -216,11 +216,10 @@ void FamilyUserAppMetrics::RecordEnabledExtensionsCount() {
 void FamilyUserAppMetrics::RecordRecentlyUsedAppsCount(apps::AppType app_type) {
   int app_count = 0;
   base::Time now = base::Time::Now();
-  apps::mojom::AppType mojom_app_type = ConvertAppTypeToMojomAppType(app_type);
   // The below will execute synchronously.
   app_registry_->ForEachApp(
-      [mojom_app_type, now, this, &app_count](const apps::AppUpdate& update) {
-        if (update.AppType() != mojom_app_type)
+      [app_type, now, this, &app_count](const apps::AppUpdate& update) {
+        if (update.AppType() != app_type)
           return;
         // Only count apps that have been used recently.
         if (now - update.LastLaunchTime() <= kOneDay ||

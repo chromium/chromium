@@ -38,7 +38,7 @@ void AppServiceTest::UninstallAllApps(Profile* profile) {
   app_service_proxy->AppRegistryCache().ForEachApp(
       [&apps](const apps::AppUpdate& update) {
         apps::mojom::AppPtr app = apps::mojom::App::New();
-        app->app_type = update.AppType();
+        app->app_type = ConvertAppTypeToMojomAppType(update.AppType());
         app->app_id = update.AppId();
         app->readiness = apps::mojom::Readiness::kUninstalledByUser;
         apps.push_back(app.Clone());

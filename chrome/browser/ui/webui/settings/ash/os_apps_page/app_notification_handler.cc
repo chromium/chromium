@@ -43,8 +43,8 @@ bool ShouldIncludeApp(const apps::AppUpdate& update) {
   }
 
   // Only kArc and kWeb apps are supported.
-  if (update.AppType() == apps::mojom::AppType::kArc ||
-      update.AppType() == apps::mojom::AppType::kWeb) {
+  if (update.AppType() == apps::AppType::kArc ||
+      update.AppType() == apps::AppType::kWeb) {
     for (const auto& permission : update.Permissions()) {
       if (permission->permission_type == apps::PermissionType::kNotifications) {
         return true;

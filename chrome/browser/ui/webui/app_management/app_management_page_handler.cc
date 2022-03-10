@@ -354,7 +354,7 @@ app_management::mojom::AppPtr AppManagementPageHandler::CreateUIAppPtr(
     const apps::AppUpdate& update) {
   auto app = app_management::mojom::App::New();
   app->id = update.AppId();
-  app->type = apps::ConvertMojomAppTypToAppType(update.AppType());
+  app->type = update.AppType();
   app->title = update.Name();
 
   for (const auto& permission : update.Permissions()) {
@@ -398,7 +398,7 @@ app_management::mojom::AppPtr AppManagementPageHandler::CreateUIAppPtr(
 
 // TODO(crbug/1245293): implement on Chrome OS.
 #if !BUILDFLAG(IS_CHROMEOS)
-  if (update.AppType() == apps::mojom::AppType::kWeb) {
+  if (update.AppType() == apps::AppType::kWeb) {
     auto* provider = web_app::WebAppProvider::GetForWebApps(profile_);
     const bool fh_enabled =
         !provider->registrar().IsAppFileHandlerPermissionBlocked(app->id);

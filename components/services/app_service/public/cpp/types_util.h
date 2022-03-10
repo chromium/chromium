@@ -18,7 +18,7 @@ bool IsHumanLaunch(apps::mojom::LaunchSource launch_source);
 
 // Checks if an app of |app_type| runs in Browser/WebContents (web apps, hosted
 // apps, and packaged v1 apps).
-bool AppTypeUsesWebContents(apps::mojom::AppType app_type);
+bool AppTypeUsesWebContents(apps::AppType app_type);
 
 }  // namespace apps_util
 

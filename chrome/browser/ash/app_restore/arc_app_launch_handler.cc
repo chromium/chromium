@@ -260,8 +260,7 @@ bool ArcAppLaunchHandler::IsAppPendingRestore(const std::string& app_id) const {
 }
 
 void ArcAppLaunchHandler::OnAppUpdate(const apps::AppUpdate& update) {
-  if (!update.ReadinessChanged() ||
-      update.AppType() != apps::mojom::AppType::kArc) {
+  if (!update.ReadinessChanged() || update.AppType() != apps::AppType::kArc) {
     return;
   }
 
@@ -389,7 +388,7 @@ void ArcAppLaunchHandler::PrepareLaunchApps() {
   std::set<std::string> app_ids;
   cache.ForEachApp([&app_ids, this](const apps::AppUpdate& update) {
     if (update.Readiness() == apps::Readiness::kReady &&
-        update.AppType() == apps::mojom::AppType::kArc &&
+        update.AppType() == apps::AppType::kArc &&
         base::Contains(app_ids_, update.AppId())) {
       app_ids.insert(update.AppId());
     }

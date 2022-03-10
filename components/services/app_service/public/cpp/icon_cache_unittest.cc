@@ -133,8 +133,8 @@ class AppsIconCacheTest : public testing::Test,
     HitOrMiss expect_hom = kHit;
     if (gc_policy == apps::IconCache::GarbageCollectionPolicy::kExplicit) {
       if (remove_icon) {
-        cache.RemoveIcon(apps::mojom::AppType::kWeb, "cherry");
-        cache.RemoveIcon(apps::mojom::AppType::kWeb, "apricot");
+        cache.RemoveIcon(apps::AppType::kWeb, "cherry");
+        cache.RemoveIcon(apps::AppType::kWeb, "apricot");
         expect_hom = kMiss;
       } else {
         cache.SweepReleasedIcons();
@@ -147,7 +147,7 @@ class AppsIconCacheTest : public testing::Test,
 
     if (gc_policy == apps::IconCache::GarbageCollectionPolicy::kExplicit) {
       if (remove_icon) {
-        cache.RemoveIcon(apps::mojom::AppType::kWeb, "cherry");
+        cache.RemoveIcon(apps::AppType::kWeb, "cherry");
       } else {
         cache.SweepReleasedIcons();
       }
@@ -223,7 +223,7 @@ class AppsIconCacheTest : public testing::Test,
 
     if (gc_policy == apps::IconCache::GarbageCollectionPolicy::kExplicit) {
       if (remove_icon) {
-        cache.RemoveIcon(apps::mojom::AppType::kWeb, "watermelon");
+        cache.RemoveIcon(apps::AppType::kWeb, "watermelon");
       } else {
         cache.SweepReleasedIcons();
       }

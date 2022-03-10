@@ -666,10 +666,10 @@ void AppPlatformMetrics::OnAppUpdate(const apps::AppUpdate& update) {
     return;
   }
 
-  InstallTime install_time = app_registry_cache_.IsAppTypeInitialized(
-                                 ConvertMojomAppTypToAppType(update.AppType()))
-                                 ? InstallTime::kRunning
-                                 : InstallTime::kInit;
+  InstallTime install_time =
+      app_registry_cache_.IsAppTypeInitialized(update.AppType())
+          ? InstallTime::kRunning
+          : InstallTime::kInit;
   RecordAppsInstallUkm(update, install_time);
 }
 
@@ -900,19 +900,18 @@ void AppPlatformMetrics::RecordAppsCount(AppType app_type) {
   std::map<AppTypeName, std::map<apps::InstallReason, int>>
       app_count_per_install_reason;
 
-  apps::mojom::AppType mojom_app_type = ConvertAppTypeToMojomAppType(app_type);
   app_registry_cache_.ForEachApp(
-      [mojom_app_type, this, &app_count,
+      [app_type, this, &app_count,
        &app_count_per_install_reason](const apps::AppUpdate& update) {
-        if (mojom_app_type != apps::mojom::AppType::kUnknown &&
-            (update.AppType() != mojom_app_type ||
+        if (app_type != apps::AppType::kUnknown &&
+            (update.AppType() != app_type ||
              update.AppId() == app_constants::kChromeAppId)) {
           return;
         }
 
-        AppTypeName app_type_name = GetAppTypeName(
-            profile_, ConvertMojomAppTypToAppType(update.AppType()),
-            update.AppId(), apps::mojom::LaunchContainer::kLaunchContainerNone);
+        AppTypeName app_type_name =
+            GetAppTypeName(profile_, update.AppType(), update.AppId(),
+                           apps::mojom::LaunchContainer::kLaunchContainerNone);
 
         if (app_type_name == AppTypeName::kChromeBrowser ||
             app_type_name == AppTypeName::kUnknown) {
@@ -1043,9 +1042,9 @@ void AppPlatformMetrics::RecordAppsUsageTimeUkm() {
 
 void AppPlatformMetrics::RecordAppsInstallUkm(const apps::AppUpdate& update,
                                               InstallTime install_time) {
-  AppTypeName app_type_name = GetAppTypeName(
-      profile_, ConvertMojomAppTypToAppType(update.AppType()), update.AppId(),
-      apps::mojom::LaunchContainer::kLaunchContainerNone);
+  AppTypeName app_type_name =
+      GetAppTypeName(profile_, update.AppType(), update.AppId(),
+                     apps::mojom::LaunchContainer::kLaunchContainerNone);
 
   ukm::SourceId source_id = GetSourceId(profile_, update.AppId());
   if (source_id == ukm::kInvalidSourceId) {

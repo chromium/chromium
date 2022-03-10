@@ -89,8 +89,7 @@ void AppLaunchHandler::OnAppUpdate(const apps::AppUpdate& update) {
   base::ThreadTaskRunnerHandle::Get()->PostTask(
       FROM_HERE,
       base::BindOnce(&AppLaunchHandler::LaunchApp, GetWeakPtrAppLaunchHandler(),
-                     apps::ConvertMojomAppTypToAppType(update.AppType()),
-                     update.AppId()));
+                     update.AppType(), update.AppId()));
 }
 
 void AppLaunchHandler::OnAppTypeInitialized(apps::AppType app_type) {

@@ -325,7 +325,7 @@ class AppServiceDataSource : public AppSearchProvider::DataSource,
       if (!apps_util::IsInstalled(update.Readiness()) ||
           (!update.ShowInSearch().value_or(false) &&
            !(update.Recommendable().value_or(false) &&
-             update.AppType() == apps::mojom::AppType::kBuiltIn))) {
+             update.AppType() == apps::AppType::kBuiltIn))) {
         return;
       }
 

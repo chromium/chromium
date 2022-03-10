@@ -254,7 +254,7 @@ class AppUpdateMojomTest : public testing::Test {
   void TestAppUpdate(apps::mojom::App* state, apps::mojom::App* delta) {
     apps::AppUpdate u(state, delta, account_id_);
 
-    EXPECT_EQ(app_type, u.AppType());
+    EXPECT_EQ(app_type, apps::ConvertAppTypeToMojomAppType(u.AppType()));
     EXPECT_EQ(app_id, u.AppId());
     EXPECT_EQ(state == nullptr, u.StateIsNull());
 

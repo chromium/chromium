@@ -278,12 +278,12 @@ bool AppUpdate::StateIsNull() const {
   return mojom_state_ == nullptr;
 }
 
-apps::mojom::AppType AppUpdate::AppType() const {
-  return mojom_delta_ ? mojom_delta_->app_type : mojom_state_->app_type;
-}
-
-apps::AppType AppUpdate::GetAppType() const {
-  return delta_ ? delta_->app_type : state_->app_type;
+apps::AppType AppUpdate::AppType() const {
+  if (ShouldUseNonMojom()) {
+    return delta_ ? delta_->app_type : state_->app_type;
+  }
+  return ConvertMojomAppTypToAppType(mojom_delta_ ? mojom_delta_->app_type
+                                                  : mojom_state_->app_type);
 }
 
 const std::string& AppUpdate::AppId() const {
@@ -981,7 +981,7 @@ bool AppUpdate::ShouldUseNonMojom() const {
 }
 
 std::ostream& operator<<(std::ostream& out, const AppUpdate& app) {
-  out << "AppType: " << app.AppType() << std::endl;
+  out << "AppType: " << static_cast<int>(app.AppType()) << std::endl;
   out << "AppId: " << app.AppId() << std::endl;
   out << "Readiness: " << static_cast<int>(app.Readiness()) << std::endl;
   out << "Name: " << app.Name() << std::endl;

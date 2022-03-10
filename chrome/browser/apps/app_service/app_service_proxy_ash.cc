@@ -181,8 +181,7 @@ void AppServiceProxyAsh::PauseApps(
           LoadIconForDialog(
               update,
               base::BindOnce(&AppServiceProxyAsh::OnLoadIconForPauseDialog,
-                             weak_ptr_factory_.GetWeakPtr(),
-                             ConvertMojomAppTypToAppType(update.AppType()),
+                             weak_ptr_factory_.GetWeakPtr(), update.AppType(),
                              update.AppId(), update.Name(), data.second));
         });
   }
@@ -297,7 +296,7 @@ void AppServiceProxyAsh::UninstallImpl(
                                             const apps::AppUpdate& update) {
     auto icon_key = update.IconKey();
     DCHECK(icon_key.has_value());
-    auto app_type = ConvertMojomAppTypToAppType(update.AppType());
+    auto app_type = update.AppType();
     auto uninstall_dialog_ptr = std::make_unique<UninstallDialog>(
         profile_, app_type, update.AppId(), update.Name(), parent_window,
         base::BindOnce(&AppServiceProxyAsh::OnUninstallDialogClosed,
@@ -356,8 +355,8 @@ bool AppServiceProxyAsh::MaybeShowLaunchPreventionDialog(
     ash::app_time::AppTimeLimitInterface* app_limit =
         ash::app_time::AppTimeLimitInterface::Get(profile_);
     DCHECK(app_limit);
-    auto time_limit = app_limit->GetTimeLimitForApp(
-        update.AppId(), ConvertMojomAppTypToAppType(update.AppType()));
+    auto time_limit =
+        app_limit->GetTimeLimitForApp(update.AppId(), update.AppType());
     if (!time_limit.has_value()) {
       NOTREACHED();
       return true;
@@ -367,8 +366,7 @@ bool AppServiceProxyAsh::MaybeShowLaunchPreventionDialog(
     pause_data.minutes = time_limit.value().InMinutes() % 60;
     LoadIconForDialog(
         update, base::BindOnce(&AppServiceProxyAsh::OnLoadIconForPauseDialog,
-                               weak_ptr_factory_.GetWeakPtr(),
-                               ConvertMojomAppTypToAppType(update.AppType()),
+                               weak_ptr_factory_.GetWeakPtr(), update.AppType(),
                                update.AppId(), update.Name(), pause_data));
     return true;
   }
@@ -410,9 +408,9 @@ void AppServiceProxyAsh::LoadIconForDialog(const apps::AppUpdate& update,
         std::move(callback).Run(std::make_unique<IconValue>());
         return;
       }
-      LoadIconFromIconKey(ConvertMojomAppTypToAppType(app_type), update.AppId(),
-                          icon_key.value(), icon_type, kIconSize,
-                          kAllowPlaceholderIcon, std::move(callback));
+      LoadIconFromIconKey(app_type, update.AppId(), icon_key.value(), icon_type,
+                          kIconSize, kAllowPlaceholderIcon,
+                          std::move(callback));
     } else {
       if (!icon_key.has_value()) {
         MojomIconValueToIconValueCallback(std::move(callback))
@@ -420,7 +418,7 @@ void AppServiceProxyAsh::LoadIconForDialog(const apps::AppUpdate& update,
         return;
       }
       LoadIconFromIconKey(
-          app_type, update.AppId(),
+          ConvertAppTypeToMojomAppType(app_type), update.AppId(),
           ConvertIconKeyToMojomIconKey(icon_key.value()),
           apps::mojom::IconType::kStandard, kIconSize, kAllowPlaceholderIcon,
           MojomIconValueToIconValueCallback(std::move(callback)));
@@ -505,8 +503,8 @@ void AppServiceProxyAsh::RecordAppPlatformMetrics(
     const apps::AppUpdate& update,
     apps::mojom::LaunchSource launch_source,
     apps::mojom::LaunchContainer container) {
-  RecordAppLaunchMetrics(profile, ConvertMojomAppTypToAppType(update.AppType()),
-                         update.AppId(), launch_source, container);
+  RecordAppLaunchMetrics(profile, update.AppType(), update.AppId(),
+                         launch_source, container);
 }
 
 void AppServiceProxyAsh::InitAppPlatformMetrics() {

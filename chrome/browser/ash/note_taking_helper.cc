@@ -41,6 +41,7 @@
 #include "components/arc/intent_helper/arc_intent_helper_bridge.h"
 #include "components/prefs/pref_service.h"
 #include "components/services/app_service/public/cpp/app_registry_cache.h"
+#include "components/services/app_service/public/cpp/app_types.h"
 #include "components/services/app_service/public/cpp/app_update.h"
 #include "components/services/app_service/public/cpp/intent_util.h"
 #include "components/services/app_service/public/cpp/types_util.h"
@@ -93,7 +94,7 @@ bool IsInstalledWebApp(const std::string& app_id, Profile* profile) {
   bool result = false;
   cache->ForOneApp(app_id, [&result](const apps::AppUpdate& update) {
     if (apps_util::IsInstalled(update.Readiness()) &&
-        update.AppType() == apps::mojom::AppType::kWeb) {
+        update.AppType() == apps::AppType::kWeb) {
       result = true;
     }
   });
@@ -618,7 +619,7 @@ std::vector<std::string> NoteTakingHelper::GetNoteTakingAppIds(
       maybe_cache->ForOneApp(id, [&app_ids](const apps::AppUpdate& update) {
         if (!apps_util::IsInstalled(update.Readiness()))
           return;
-        if (update.AppType() != apps::mojom::AppType::kWeb)
+        if (update.AppType() != apps::AppType::kWeb)
           return;
         DCHECK(!base::Contains(app_ids, update.AppId()));
         app_ids.push_back(update.AppId());
@@ -648,7 +649,7 @@ std::vector<std::string> NoteTakingHelper::GetNoteTakingAppIds(
         return;
       if (HasNoteTakingIntentFilter(update.IntentFilters())) {
         // Currently only web apps are expected to have this intent set.
-        DCHECK(update.AppType() == apps::mojom::AppType::kWeb);
+        DCHECK(update.AppType() == apps::AppType::kWeb);
         app_ids.push_back(update.AppId());
       }
     });
@@ -798,9 +799,9 @@ void NoteTakingHelper::OnShutdown(extensions::ExtensionRegistry* registry) {
 }
 
 void NoteTakingHelper::OnAppUpdate(const apps::AppUpdate& update) {
-  bool is_web_app = update.AppType() == apps::mojom::AppType::kWeb;
+  bool is_web_app = update.AppType() == apps::AppType::kWeb;
   bool is_chrome_app =
-      update.AppType() == apps::mojom::AppType::kStandaloneBrowserChromeApp;
+      update.AppType() == apps::AppType::kStandaloneBrowserChromeApp;
   if (!is_web_app && !is_chrome_app)
     return;
   // App was added, removed, enabled, or disabled.

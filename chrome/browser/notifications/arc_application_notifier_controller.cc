@@ -48,7 +48,7 @@ ArcApplicationNotifierController::GetNotifierList(Profile* profile) {
 
   service->AppRegistryCache().ForEachApp([&notifier_dataset](
                                              const apps::AppUpdate& update) {
-    if (update.AppType() != apps::mojom::AppType::kArc)
+    if (update.AppType() != apps::AppType::kArc)
       return;
 
     for (const auto& permission : update.Permissions()) {

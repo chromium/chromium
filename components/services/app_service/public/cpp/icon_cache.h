@@ -13,6 +13,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
+#include "components/services/app_service/public/cpp/app_types.h"
 #include "components/services/app_service/public/cpp/icon_loader.h"
 #include "components/services/app_service/public/mojom/app_service.mojom.h"
 #include "components/services/app_service/public/mojom/types.mojom.h"
@@ -112,7 +113,7 @@ class IconCache : public IconLoader {
   // actively held.
   void SweepReleasedIcons();
 
-  void RemoveIcon(apps::mojom::AppType app_type, const std::string& app_id);
+  void RemoveIcon(AppType app_type, const std::string& app_id);
 
  private:
   class Value {

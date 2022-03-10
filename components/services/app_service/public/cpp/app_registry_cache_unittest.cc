@@ -175,7 +175,7 @@ class RecursiveObserver : public AppRegistryCache::Observer {
   }
 
   static void ExpectEq(const AppUpdate& outer, const AppUpdate& inner) {
-    EXPECT_EQ(outer.GetAppType(), inner.GetAppType());
+    EXPECT_EQ(outer.AppType(), inner.AppType());
     EXPECT_EQ(outer.AppId(), inner.AppId());
     EXPECT_EQ(outer.StateIsNull(), inner.StateIsNull());
     EXPECT_EQ(outer.Readiness(), inner.Readiness());

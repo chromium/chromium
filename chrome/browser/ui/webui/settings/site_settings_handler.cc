@@ -56,6 +56,7 @@
 #include "components/prefs/pref_change_registrar.h"
 #include "components/prefs/pref_service.h"
 #include "components/services/app_service/public/cpp/app_registry_cache.h"
+#include "components/services/app_service/public/cpp/app_types.h"
 #include "components/services/app_service/public/cpp/app_update.h"
 #include "components/services/app_service/public/mojom/types.mojom.h"
 #include "components/site_engagement/content/site_engagement_service.h"
@@ -172,8 +173,8 @@ base::flat_set<std::string> GetInstalledAppOrigins(Profile* profile) {
   apps::AppServiceProxyFactory::GetForProfile(profile)
       ->AppRegistryCache()
       .ForEachApp([&origins](const apps::AppUpdate& update) {
-        if (update.AppType() == apps::mojom::AppType::kWeb ||
-            update.AppType() == apps::mojom::AppType::kSystemWeb) {
+        if (update.AppType() == apps::AppType::kWeb ||
+            update.AppType() == apps::AppType::kSystemWeb) {
           // For web apps, |PublisherId()| is set to the start URL.
           const GURL start_url(update.PublisherId());
           DCHECK(start_url.is_valid());

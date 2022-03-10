@@ -10,6 +10,7 @@
 #include "chrome/browser/web_applications/web_app.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
+#include "components/services/app_service/public/cpp/app_types.h"
 #include "components/services/app_service/public/cpp/types_util.h"
 
 namespace web_app {
@@ -24,7 +25,7 @@ LinkCapturingPrefMigration::LinkCapturingPrefMigration(Profile& profile)
 LinkCapturingPrefMigration::~LinkCapturingPrefMigration() = default;
 
 void LinkCapturingPrefMigration::OnAppUpdate(const apps::AppUpdate& update) {
-  if (update.AppType() != apps::mojom::AppType::kWeb)
+  if (update.AppType() != apps::AppType::kWeb)
     return;
 
   if (apps_util::IsInstalled(update.PriorReadiness()))

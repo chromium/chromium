@@ -9,11 +9,11 @@
 #include "chrome/browser/supervised_user/supervised_user_service.h"
 #include "chrome/browser/supervised_user/supervised_user_service_factory.h"
 #include "chrome/browser/ui/webui/chromeos/add_supervision/add_supervision_metrics_recorder.h"
+#include "components/services/app_service/public/cpp/app_types.h"
 #include "components/services/app_service/public/cpp/app_update.h"
-#include "components/services/app_service/public/mojom/types.mojom.h"
 
 bool ShouldIncludeAppUpdate(const apps::AppUpdate& app_update) {
-  return app_update.AppType() == apps::mojom::AppType::kArc &&
+  return app_update.AppType() == apps::AppType::kArc &&
          app_update.InstallReason() != apps::InstallReason::kSystem;
 }
 

@@ -78,23 +78,23 @@ bool IsHumanLaunch(apps::mojom::LaunchSource launch_source) {
   NOTREACHED();
 }
 
-bool AppTypeUsesWebContents(apps::mojom::AppType app_type) {
+bool AppTypeUsesWebContents(apps::AppType app_type) {
   switch (app_type) {
-    case apps::mojom::AppType::kWeb:
-    case apps::mojom::AppType::kSystemWeb:
-    case apps::mojom::AppType::kChromeApp:
-    case apps::mojom::AppType::kExtension:
+    case apps::AppType::kWeb:
+    case apps::AppType::kSystemWeb:
+    case apps::AppType::kChromeApp:
+    case apps::AppType::kExtension:
       return true;
-    case apps::mojom::AppType::kUnknown:
-    case apps::mojom::AppType::kArc:
-    case apps::mojom::AppType::kBuiltIn:
-    case apps::mojom::AppType::kCrostini:
-    case apps::mojom::AppType::kMacOs:
-    case apps::mojom::AppType::kPluginVm:
-    case apps::mojom::AppType::kStandaloneBrowser:
-    case apps::mojom::AppType::kRemote:
-    case apps::mojom::AppType::kBorealis:
-    case apps::mojom::AppType::kStandaloneBrowserChromeApp:
+    case apps::AppType::kUnknown:
+    case apps::AppType::kArc:
+    case apps::AppType::kBuiltIn:
+    case apps::AppType::kCrostini:
+    case apps::AppType::kMacOs:
+    case apps::AppType::kPluginVm:
+    case apps::AppType::kStandaloneBrowser:
+    case apps::AppType::kRemote:
+    case apps::AppType::kBorealis:
+    case apps::AppType::kStandaloneBrowserChromeApp:
       return false;
   }
   NOTREACHED();

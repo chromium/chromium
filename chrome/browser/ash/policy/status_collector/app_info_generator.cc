@@ -51,29 +51,29 @@ em::AppInfo::Status ExtractStatus(const apps::Readiness readiness) {
   }
 }
 
-em::AppInfo::AppType ExtractAppType(const apps::mojom::AppType app_type) {
+em::AppInfo::AppType ExtractAppType(const apps::AppType app_type) {
   switch (app_type) {
-    case apps::mojom::AppType::kArc:
+    case apps::AppType::kArc:
       return em::AppInfo::AppType::AppInfo_AppType_TYPE_ARC;
-    case apps::mojom::AppType::kBuiltIn:
+    case apps::AppType::kBuiltIn:
       return em::AppInfo::AppType::AppInfo_AppType_TYPE_BUILTIN;
-    case apps::mojom::AppType::kCrostini:
+    case apps::AppType::kCrostini:
       return em::AppInfo::AppType::AppInfo_AppType_TYPE_CROSTINI;
-    case apps::mojom::AppType::kPluginVm:
+    case apps::AppType::kPluginVm:
       return em::AppInfo::AppType::AppInfo_AppType_TYPE_PLUGINVM;
-    case apps::mojom::AppType::kChromeApp:
-    case apps::mojom::AppType::kStandaloneBrowserChromeApp:
+    case apps::AppType::kChromeApp:
+    case apps::AppType::kStandaloneBrowserChromeApp:
       return em::AppInfo::AppType::AppInfo_AppType_TYPE_EXTENSION;
-    case apps::mojom::AppType::kWeb:
-    case apps::mojom::AppType::kSystemWeb:
+    case apps::AppType::kWeb:
+    case apps::AppType::kSystemWeb:
       return em::AppInfo::AppType::AppInfo_AppType_TYPE_WEB;
-    case apps::mojom::AppType::kBorealis:
+    case apps::AppType::kBorealis:
       return em::AppInfo::AppType::AppInfo_AppType_TYPE_BOREALIS;
-    case apps::mojom::AppType::kMacOs:
-    case apps::mojom::AppType::kStandaloneBrowser:
-    case apps::mojom::AppType::kExtension:
-    case apps::mojom::AppType::kRemote:
-    case apps::mojom::AppType::kUnknown:
+    case apps::AppType::kMacOs:
+    case apps::AppType::kStandaloneBrowser:
+    case apps::AppType::kExtension:
+    case apps::AppType::kRemote:
+    case apps::AppType::kUnknown:
       return em::AppInfo::AppType::AppInfo_AppType_TYPE_UNKNOWN;
   }
 }
@@ -221,8 +221,8 @@ const em::AppInfo AppInfoGenerator::ConvertToAppInfo(
     const apps::AppUpdate& update,
     const std::vector<em::TimePeriod>& app_activity) const {
   em::AppInfo info;
-  bool is_web_app = (update.AppType() == apps::mojom::AppType::kWeb) ||
-                    (update.AppType() == apps::mojom::AppType::kSystemWeb);
+  bool is_web_app = (update.AppType() == apps::AppType::kWeb) ||
+                    (update.AppType() == apps::AppType::kSystemWeb);
   if (!is_web_app) {
     info.set_app_id(update.AppId());
     info.set_app_name(update.Name());

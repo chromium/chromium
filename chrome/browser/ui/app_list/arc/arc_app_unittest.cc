@@ -436,7 +436,7 @@ void RemoveNonArcApps(Profile* profile,
     proxy->FlushMojoCallsForTesting();
   proxy->AppRegistryCache().ForEachApp(
       [&model_updater](const apps::AppUpdate& update) {
-        if (update.AppType() != apps::mojom::AppType::kArc) {
+        if (update.AppType() != apps::AppType::kArc) {
           model_updater->RemoveItem(update.AppId(), /*is_uninstall=*/true);
         }
       });
@@ -448,7 +448,7 @@ void RemoveArcApps(Profile* profile, FakeAppListModelUpdater* model_updater) {
   apps::AppServiceProxyFactory::GetForProfile(profile)
       ->AppRegistryCache()
       .ForEachApp([&model_updater](const apps::AppUpdate& update) {
-        if (update.AppType() == apps::mojom::AppType::kArc) {
+        if (update.AppType() == apps::AppType::kArc) {
           model_updater->RemoveItem(update.AppId(), /*is_uninstall=*/true);
         }
       });

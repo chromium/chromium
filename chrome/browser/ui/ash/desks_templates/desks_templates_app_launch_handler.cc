@@ -94,8 +94,8 @@ bool DesksTemplatesAppLaunchHandler::ShouldLaunchSystemWebAppOrChromeApp(
   apps::AppServiceProxyFactory::GetForProfile(profile())
       ->AppRegistryCache()
       .ForOneApp(app_id, [&is_system_web_app](const apps::AppUpdate& update) {
-        if (update.AppType() == apps::mojom::AppType::kWeb ||
-            update.AppType() == apps::mojom::AppType::kSystemWeb) {
+        if (update.AppType() == apps::AppType::kWeb ||
+            update.AppType() == apps::AppType::kSystemWeb) {
           is_system_web_app = true;
         }
       });
@@ -232,7 +232,7 @@ void DesksTemplatesAppLaunchHandler::MaybeLaunchArcApps() {
   cache.ForEachApp(
       [&app_ids, &app_id_to_launch_list](const apps::AppUpdate& update) {
         if (update.Readiness() == apps::Readiness::kReady &&
-            update.AppType() == apps::mojom::AppType::kArc &&
+            update.AppType() == apps::AppType::kArc &&
             base::Contains(app_id_to_launch_list, update.AppId())) {
           app_ids.insert(update.AppId());
         }

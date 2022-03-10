@@ -37,8 +37,8 @@ namespace {
 
 // Gets AppId from |update|.
 AppId AppIdFromAppUpdate(const apps::AppUpdate& update) {
-  bool is_arc = update.AppType() == apps::mojom::AppType::kArc;
-  return AppId(apps::ConvertMojomAppTypToAppType(update.AppType()),
+  bool is_arc = update.AppType() == apps::AppType::kArc;
+  return AppId(update.AppType(),
                is_arc ? update.PublisherId() : update.AppId());
 }
 

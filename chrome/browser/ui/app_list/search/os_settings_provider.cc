@@ -328,16 +328,16 @@ void OsSettingsProvider::OnAppUpdate(const apps::AppUpdate& update) {
     if (base::FeatureList::IsEnabled(
             features::kAppServiceLoadIconWithoutMojom)) {
       app_service_proxy_->LoadIcon(
-          apps::ConvertMojomAppTypToAppType(update.AppType()),
-          web_app::kOsSettingsAppId, apps::IconType::kStandard,
-          GetAppIconDimension(),
+          update.AppType(), web_app::kOsSettingsAppId,
+          apps::IconType::kStandard, GetAppIconDimension(),
           /*allow_placeholder_icon=*/false,
           base::BindOnce(&OsSettingsProvider::OnLoadIcon,
                          weak_factory_.GetWeakPtr()));
     } else {
       app_service_proxy_->LoadIcon(
-          update.AppType(), web_app::kOsSettingsAppId,
-          apps::mojom::IconType::kStandard, GetAppIconDimension(),
+          apps::ConvertAppTypeToMojomAppType(update.AppType()),
+          web_app::kOsSettingsAppId, apps::mojom::IconType::kStandard,
+          GetAppIconDimension(),
           /*allow_placeholder_icon=*/false,
           apps::MojomIconValueToIconValueCallback(base::BindOnce(
               &OsSettingsProvider::OnLoadIcon, weak_factory_.GetWeakPtr())));

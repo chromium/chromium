@@ -46,24 +46,24 @@ bool IsNewInstall(const apps::AppUpdate& app_update) {
     return false;
 
   switch (app_update.AppType()) {
-    case apps::mojom::AppType::kUnknown:
-    case apps::mojom::AppType::kBuiltIn:
-    case apps::mojom::AppType::kStandaloneBrowser:
-    case apps::mojom::AppType::kSystemWeb:
+    case apps::AppType::kUnknown:
+    case apps::AppType::kBuiltIn:
+    case apps::AppType::kStandaloneBrowser:
+    case apps::AppType::kSystemWeb:
       // Chrome, Lacros, Settings, etc. are built-in.
       return false;
-    case apps::mojom::AppType::kMacOs:
+    case apps::AppType::kMacOs:
       NOTREACHED();
       return false;
-    case apps::mojom::AppType::kArc:
-    case apps::mojom::AppType::kCrostini:
-    case apps::mojom::AppType::kChromeApp:
-    case apps::mojom::AppType::kExtension:
-    case apps::mojom::AppType::kWeb:
-    case apps::mojom::AppType::kPluginVm:
-    case apps::mojom::AppType::kRemote:
-    case apps::mojom::AppType::kBorealis:
-    case apps::mojom::AppType::kStandaloneBrowserChromeApp:
+    case apps::AppType::kArc:
+    case apps::AppType::kCrostini:
+    case apps::AppType::kChromeApp:
+    case apps::AppType::kExtension:
+    case apps::AppType::kWeb:
+    case apps::AppType::kPluginVm:
+    case apps::AppType::kRemote:
+    case apps::AppType::kBorealis:
+    case apps::AppType::kStandaloneBrowserChromeApp:
       // Other app types are user-installed.
       return true;
   }
@@ -80,7 +80,7 @@ AppServiceAppItem::AppServiceAppItem(
     const app_list::AppListSyncableService::SyncItem* sync_item,
     const apps::AppUpdate& app_update)
     : ChromeAppListItem(profile, app_update.AppId()),
-      app_type_(apps::ConvertMojomAppTypToAppType(app_update.AppType())),
+      app_type_(app_update.AppType()),
       creation_time_(base::TimeTicks::Now()) {
   OnAppUpdate(app_update, /*in_constructor=*/true);
   if (sync_item && sync_item->item_ordinal.IsValid()) {
@@ -173,10 +173,10 @@ void AppServiceAppItem::Activate(int event_flags) {
   apps::AppServiceProxyFactory::GetForProfile(profile())
       ->AppRegistryCache()
       .ForOneApp(id(), [&is_active_app](const apps::AppUpdate& update) {
-        if (update.AppType() == apps::mojom::AppType::kCrostini ||
-            update.AppType() == apps::mojom::AppType::kWeb ||
-            update.AppType() == apps::mojom::AppType::kSystemWeb ||
-            (update.AppType() == apps::mojom::AppType::kChromeApp &&
+        if (update.AppType() == apps::AppType::kCrostini ||
+            update.AppType() == apps::AppType::kWeb ||
+            update.AppType() == apps::AppType::kSystemWeb ||
+            (update.AppType() == apps::AppType::kChromeApp &&
              update.IsPlatformApp().value_or(true))) {
           is_active_app = true;
         }

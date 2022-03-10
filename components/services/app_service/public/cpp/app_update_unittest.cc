@@ -263,7 +263,7 @@ class AppUpdateTest : public testing::Test {
   void TestAppUpdate(App* state, App* delta) {
     AppUpdate u(state, delta, account_id_);
 
-    EXPECT_EQ(app_type, u.GetAppType());
+    EXPECT_EQ(app_type, u.AppType());
     EXPECT_EQ(app_id, u.AppId());
 
     expect_readiness_ = Readiness::kUnknown;

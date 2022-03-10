@@ -8,7 +8,7 @@
 #include <vector>
 
 #include "chrome/browser/apps/intent_helper/apps_navigation_types.h"
-#include "components/services/app_service/public/mojom/types.mojom-forward.h"
+#include "components/services/app_service/public/cpp/app_types.h"
 
 namespace content {
 class NavigationHandle;
@@ -45,7 +45,7 @@ void CloseOrGoBack(content::WebContents* web_contents);
 
 bool IsGoogleRedirectorUrlForTesting(const GURL& url);
 
-PickerEntryType GetPickerEntryType(mojom::AppType app_type);
+PickerEntryType GetPickerEntryType(AppType app_type);
 
 }  // namespace apps
 

@@ -56,10 +56,10 @@ void AppServiceAppModelBuilder::OnAppUpdate(const apps::AppUpdate& update) {
 
       // TODO(crbug.com/826982): drop the check for kChromeApp or kWeb, and
       // call UpdateItem unconditionally?
-      apps::mojom::AppType app_type = update.AppType();
-      if ((app_type == apps::mojom::AppType::kChromeApp) ||
-          (app_type == apps::mojom::AppType::kSystemWeb) ||
-          (app_type == apps::mojom::AppType::kWeb)) {
+      apps::AppType app_type = update.AppType();
+      if ((app_type == apps::AppType::kChromeApp) ||
+          (app_type == apps::AppType::kSystemWeb) ||
+          (app_type == apps::AppType::kWeb)) {
         app_list::AppListSyncableService* serv = service();
         if (serv) {
           serv->UpdateItem(item);
@@ -68,7 +68,7 @@ void AppServiceAppModelBuilder::OnAppUpdate(const apps::AppUpdate& update) {
 
     } else {
       bool unsynced_change = false;
-      if (update.AppType() == apps::mojom::AppType::kArc) {
+      if (update.AppType() == apps::AppType::kArc) {
         // Don't sync app removal in case it was caused by disabling Google
         // Play Store.
         unsynced_change = !arc::IsArcPlayStoreEnabledForProfile(profile());

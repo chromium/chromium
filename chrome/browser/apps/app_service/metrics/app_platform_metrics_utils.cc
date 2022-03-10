@@ -118,8 +118,8 @@ AppTypeName GetAppTypeNameForWebApp(Profile* profile,
       ->AppRegistryCache()
       .ForOneApp(
           app_id, [&type_name, &window_mode](const apps::AppUpdate& update) {
-            DCHECK(update.AppType() == apps::mojom::AppType::kWeb ||
-                   update.AppType() == apps::mojom::AppType::kSystemWeb);
+            DCHECK(update.AppType() == apps::AppType::kWeb ||
+                   update.AppType() == apps::AppType::kSystemWeb);
 
             // For system web apps, the install source is |kSystem|.
             // The app type may be kSystemWeb (system web apps in Ash when

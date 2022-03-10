@@ -51,7 +51,7 @@ AppServiceAppResult::AppServiceAppResult(Profile* profile,
   apps::AppServiceProxyFactory::GetForProfile(profile)
       ->AppRegistryCache()
       .ForOneApp(app_id, [this](const apps::AppUpdate& update) {
-        app_type_ = apps::ConvertMojomAppTypToAppType(update.AppType());
+        app_type_ = update.AppType();
         is_platform_app_ = update.IsPlatformApp().value_or(false);
         show_in_launcher_ = update.ShowInLauncher().value_or(false);
 
@@ -182,10 +182,10 @@ void AppServiceAppResult::Launch(int event_flags,
   bool is_active_app = false;
   proxy->AppRegistryCache().ForOneApp(
       app_id(), [&is_active_app](const apps::AppUpdate& update) {
-        if (update.AppType() == apps::mojom::AppType::kCrostini ||
-            update.AppType() == apps::mojom::AppType::kWeb ||
-            update.AppType() == apps::mojom::AppType::kSystemWeb ||
-            (update.AppType() == apps::mojom::AppType::kChromeApp &&
+        if (update.AppType() == apps::AppType::kCrostini ||
+            update.AppType() == apps::AppType::kWeb ||
+            update.AppType() == apps::AppType::kSystemWeb ||
+            (update.AppType() == apps::AppType::kChromeApp &&
              update.IsPlatformApp().value_or(true))) {
           is_active_app = true;
         }

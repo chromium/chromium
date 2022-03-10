@@ -271,8 +271,9 @@ void AppServiceProxyBase::Launch(const std::string& app_id,
               profile_, update, launch_source,
               apps::mojom::LaunchContainer::kLaunchContainerNone);
 
-          app_service_->Launch(update.AppType(), update.AppId(), event_flags,
-                               launch_source, std::move(window_info));
+          app_service_->Launch(ConvertAppTypeToMojomAppType(update.AppType()),
+                               update.AppId(), event_flags, launch_source,
+                               std::move(window_info));
 
           PerformPostLaunchTasks(launch_source);
         });
@@ -304,9 +305,9 @@ void AppServiceProxyBase::LaunchAppWithFiles(
             RecordAppLaunch(update.AppId(), launch_source);
           }
 
-          app_service_->LaunchAppWithFiles(update.AppType(), update.AppId(),
-                                           event_flags, launch_source,
-                                           std::move(file_paths));
+          app_service_->LaunchAppWithFiles(
+              ConvertAppTypeToMojomAppType(update.AppType()), update.AppId(),
+              event_flags, launch_source, std::move(file_paths));
 
           PerformPostLaunchTasks(launch_source);
         });
@@ -344,8 +345,9 @@ void AppServiceProxyBase::LaunchAppWithIntent(
               apps::mojom::LaunchContainer::kLaunchContainerNone);
 
           app_service_->LaunchAppWithIntent(
-              update.AppType(), update.AppId(), event_flags, std::move(intent),
-              launch_source, std::move(window_info), std::move(callback));
+              ConvertAppTypeToMojomAppType(update.AppType()), update.AppId(),
+              event_flags, std::move(intent), launch_source,
+              std::move(window_info), std::move(callback));
 
           PerformPostLaunchTasks(launch_source);
         });
@@ -407,8 +409,9 @@ void AppServiceProxyBase::SetPermission(const std::string& app_id,
   if (app_service_.is_connected()) {
     app_registry_cache_.ForOneApp(
         app_id, [this, &permission](const apps::AppUpdate& update) {
-          app_service_->SetPermission(update.AppType(), update.AppId(),
-                                      std::move(permission));
+          app_service_->SetPermission(
+              ConvertAppTypeToMojomAppType(update.AppType()), update.AppId(),
+              std::move(permission));
         });
   }
 }
@@ -465,7 +468,8 @@ void AppServiceProxyBase::OpenNativeSettings(const std::string& app_id) {
   if (app_service_.is_connected()) {
     app_registry_cache_.ForOneApp(
         app_id, [this](const apps::AppUpdate& update) {
-          app_service_->OpenNativeSettings(update.AppType(), update.AppId());
+          app_service_->OpenNativeSettings(
+              ConvertAppTypeToMojomAppType(update.AppType()), update.AppId());
         });
   }
 }

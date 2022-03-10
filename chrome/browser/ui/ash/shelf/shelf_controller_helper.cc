@@ -33,6 +33,7 @@
 #include "chrome/browser/ui/extensions/application_launch.h"
 #include "chrome/browser/ui/extensions/extension_enable_flow.h"
 #include "chrome/common/extensions/manifest_handlers/app_launch_info.h"
+#include "components/services/app_service/public/cpp/app_types.h"
 #include "components/services/app_service/public/cpp/types_util.h"
 #include "content/public/browser/navigation_entry.h"
 #include "net/base/url_util.h"
@@ -263,8 +264,8 @@ bool ShelfControllerHelper::IsValidIDFromAppService(
   apps::AppServiceProxyFactory::GetForProfile(profile_)
       ->AppRegistryCache()
       .ForOneApp(app_id, [&is_valid](const apps::AppUpdate& update) {
-        if (update.AppType() != apps::mojom::AppType::kArc &&
-            update.AppType() != apps::mojom::AppType::kUnknown &&
+        if (update.AppType() != apps::AppType::kArc &&
+            update.AppType() != apps::AppType::kUnknown &&
             update.Readiness() != apps::Readiness::kUnknown &&
             apps_util::IsInstalled(update.Readiness())) {
           is_valid = true;
