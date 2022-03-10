@@ -94,6 +94,18 @@ export class PrivacyGuideSafeBrowsingFragmentElement extends
     this.metricsBrowserProxy_.recordAction(
         'Settings.PrivacyGuide.ChangeSafeBrowsingStandard');
   }
+
+  private onRadioGroupKeyDown_(event: KeyboardEvent) {
+    switch (event.key) {
+      case 'ArrowLeft':
+      case 'ArrowRight':
+        // This event got consumed by the radio group to change the radio button
+        // selection. Do not propagate further, to not cause a privacy guide
+        // navigation.
+        event.stopPropagation();
+        break;
+    }
+  }
 }
 
 customElements.define(

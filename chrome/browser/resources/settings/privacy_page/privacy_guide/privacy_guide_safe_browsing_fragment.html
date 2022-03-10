@@ -10,7 +10,8 @@
 </div>
 <settings-radio-group id="safeBrowsingRadioGroup"
     pref="{{prefs.generated.safe_browsing}}"
-    selectable-elements="settings-collapse-radio-button">
+    selectable-elements="settings-collapse-radio-button"
+    on-keydown="onRadioGroupKeyDown_">
   <settings-collapse-radio-button id="safeBrowsingRadioEnhanced"
       pref="[[prefs.generated.safe_browsing]]"
       name="[[safeBrowsingSettingEnum_.ENHANCED]]"

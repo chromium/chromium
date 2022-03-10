@@ -4,6 +4,7 @@
 
 // clang-format off
 import {webUIListenerCallback} from 'chrome://resources/js/cr.m.js';
+import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {CookiePrimarySetting, PrivacyGuideCompletionFragmentElement, PrivacyGuideHistorySyncFragmentElement, PrivacyGuideStep, PrivacyGuideWelcomeFragmentElement, SafeBrowsingSetting, SettingsPrivacyGuidePageElement, SettingsRadioGroupElement} from 'chrome://settings/lazy_load.js';
 import {MetricsBrowserProxyImpl, PrivacyGuideInteractions, PrivacyGuideSettingsStates, Router, routes, StatusAction, SyncBrowserProxyImpl, SyncPrefs, syncPrefsIndividualDataTypes, SyncStatus} from 'chrome://settings/settings.js';
@@ -773,6 +774,89 @@ suite('PrivacyGuidePage', function() {
     Router.getInstance().navigateTo(routes.PRIVACY_GUIDE);
     flush();
     assertEquals(routes.PRIVACY, Router.getInstance().getCurrentRoute());
+  });
+
+  test('arrowKeyNavigation', function() {
+    const pgCard =
+        page.shadowRoot!.querySelector<HTMLElement>('#privacyGuideCard')!;
+    const arrowLeftEvent = new KeyboardEvent(
+        'keydown', {cancelable: true, key: 'ArrowLeft', keyCode: 37});
+    const arrowRightEvent = new KeyboardEvent(
+        'keydown', {cancelable: true, key: 'ArrowRight', keyCode: 39});
+    function dispatchArrowLeftEvent() {
+      pgCard.dispatchEvent(arrowLeftEvent);
+      flush();
+    }
+    function dispatchArrowRightEvent() {
+      pgCard.dispatchEvent(arrowRightEvent);
+      flush();
+    }
+
+    // Ensure a defined text direction.
+    loadTimeData.overrideValues({textdirection: 'ltr'});
+
+    // Ensure that all fragments are part of the flow.
+    setupSync({
+      syncBrowserProxy: syncBrowserProxy,
+      syncOn: true,
+      syncAllDataTypes: true,
+      typedUrlsSynced: true,
+    });
+    setCookieSetting(CookiePrimarySetting.BLOCK_THIRD_PARTY);
+    setSafeBrowsingSetting(SafeBrowsingSetting.STANDARD);
+
+    // Forward flow.
+    navigateToStep(PrivacyGuideStep.WELCOME);
+    dispatchArrowRightEvent();
+    assertMsbbCardVisible();
+    dispatchArrowRightEvent();
+    assertHistorySyncCardVisible();
+    dispatchArrowRightEvent();
+    assertSafeBrowsingCardVisible();
+    // Arrow keys don't trigger a navigation when the focus is inside the radio
+    // group.
+    const sbRadioGroup =
+        page.shadowRoot!
+            .querySelector<HTMLElement>('#' + PrivacyGuideStep.SAFE_BROWSING)!
+            .shadowRoot!.querySelector<HTMLElement>('#safeBrowsingRadioGroup')!;
+    sbRadioGroup.dispatchEvent(arrowLeftEvent);
+    assertSafeBrowsingCardVisible();
+    sbRadioGroup.dispatchEvent(arrowRightEvent);
+    assertSafeBrowsingCardVisible();
+
+    dispatchArrowRightEvent();
+    assertCookiesCardVisible();
+    // Arrow keys don't trigger a navigation when the focus is inside the radio
+    // group.
+    const cookiesRadioGroup =
+        page.shadowRoot!
+            .querySelector<HTMLElement>('#' + PrivacyGuideStep.COOKIES)!
+            .shadowRoot!.querySelector<HTMLElement>('#cookiesRadioGroup')!;
+    cookiesRadioGroup.dispatchEvent(arrowLeftEvent);
+    assertCookiesCardVisible();
+    cookiesRadioGroup.dispatchEvent(arrowRightEvent);
+    assertCookiesCardVisible();
+
+    dispatchArrowRightEvent();
+    assertCompletionCardVisible();
+    // Forward navigation on the completion card does not trigger a navigation.
+    dispatchArrowRightEvent();
+    assertCompletionCardVisible();
+
+    // Backward flow.
+    dispatchArrowLeftEvent();
+    assertCookiesCardVisible();
+    dispatchArrowLeftEvent();
+    assertSafeBrowsingCardVisible();
+    dispatchArrowLeftEvent();
+    assertHistorySyncCardVisible();
+    dispatchArrowLeftEvent();
+    assertMsbbCardVisible();
+    dispatchArrowLeftEvent();
+    assertWelcomeCardVisible();
+    // Backward navigation on the welcome card does not trigger a navigation.
+    dispatchArrowLeftEvent();
+    assertWelcomeCardVisible();
   });
 });
 

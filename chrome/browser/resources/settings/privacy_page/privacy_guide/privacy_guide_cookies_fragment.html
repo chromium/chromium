@@ -10,7 +10,8 @@
 </div>
 <settings-radio-group id="cookiesRadioGroup"
     pref="{{prefs.generated.cookie_primary_setting}}"
-    selectable-elements="settings-collapse-radio-button">
+    selectable-elements="settings-collapse-radio-button"
+    on-keydown="onRadioGroupKeyDown_">
   <settings-collapse-radio-button id="block3PIncognito"
       pref="[[prefs.generated.cookie_primary_setting]]"
       name="[[cookiePrimarySettingEnum_.BLOCK_THIRD_PARTY_INCOGNITO]]"

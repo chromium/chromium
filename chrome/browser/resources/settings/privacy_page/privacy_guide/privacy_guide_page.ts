@@ -349,7 +349,6 @@ export class SettingsPrivacyGuidePageElement extends PrivacyGuideBase {
   private navigateForward_() {
     const components =
         this.privacyGuideStepToComponentsMap_.get(this.privacyGuideStep_)!;
-    assert(components.onForwardNavigation || components.nextStep);
     if (components.onForwardNavigation) {
       components.onForwardNavigation();
     }
@@ -368,10 +367,9 @@ export class SettingsPrivacyGuidePageElement extends PrivacyGuideBase {
     if (components.onBackwardNavigation) {
       components.onBackwardNavigation();
     }
-    this.navigateToCard_(
-        this.privacyGuideStepToComponentsMap_.get(this.privacyGuideStep_)!
-            .previousStep!,
-        true, true);
+    if (components.previousStep) {
+      this.navigateToCard_(components.previousStep, true, true);
+    }
   }
 
   private navigateToCard_(
@@ -476,6 +474,18 @@ export class SettingsPrivacyGuidePageElement extends PrivacyGuideBase {
         assert((event.target! as HTMLElement)
                    .shadowRoot!.querySelector<HTMLElement>('[focus-element]'));
     afterNextRender(this, () => elementToFocus!.focus());
+  }
+
+  private onKeyDown_(event: KeyboardEvent) {
+    const isLtr = loadTimeData.getString('textdirection') === 'ltr';
+    switch (event.key) {
+      case 'ArrowLeft':
+        isLtr ? this.navigateBackward_() : this.navigateForward_();
+        break;
+      case 'ArrowRight':
+        isLtr ? this.navigateForward_() : this.navigateBackward_();
+        break;
+    }
   }
 }
 
