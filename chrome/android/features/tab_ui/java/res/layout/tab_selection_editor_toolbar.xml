@@ -14,5 +14,5 @@
         android:layout_gravity="end"
         android:enabled="false"
         android:text="@string/tab_selection_editor_group"
-        style="@style/TextButton.Inverse" />
+        style="@style/TextButton.OnAccent1" />
 </org.chromium.chrome.browser.tasks.tab_management.TabSelectionEditorToolbar>

@@ -12,7 +12,9 @@ import android.content.res.TypedArray;
 import android.util.AttributeSet;
 import android.view.ContextThemeWrapper;
 
+import androidx.annotation.ColorRes;
 import androidx.annotation.StyleRes;
+import androidx.appcompat.content.res.AppCompatResources;
 import androidx.appcompat.widget.AppCompatButton;
 
 import org.chromium.ui.R;
@@ -81,6 +83,15 @@ public class ButtonCompat extends AppCompatButton {
                 R.styleable.ButtonCompat_rippleCornerRadiusBottomStart, defaultRadius);
         final int bottomEndRippleRadius = a.getDimensionPixelSize(
                 R.styleable.ButtonCompat_rippleCornerRadiusBottomEnd, defaultRadius);
+
+        // If this attribute is not set, the text will keep the color set by android:textAppearance.
+        // This would have been handled in #super().
+        final @ColorRes int textColorRes =
+                a.getResourceId(R.styleable.ButtonCompat_buttonTextColor, -1);
+
+        if (textColorRes != -1) {
+            setTextColor(AppCompatResources.getColorStateList(getContext(), textColorRes));
+        }
 
         float[] radii;
         if (getLayoutDirection() == LAYOUT_DIRECTION_RTL) {

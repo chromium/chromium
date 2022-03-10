@@ -151,6 +151,7 @@ public class SemanticColorUtils {
     // Colors that will be experimented with. This is independent of |IS_FULL_DYNAMIC_COLORS|.
     /** Returns the semantic color value that corresponds to default_text_color_link. */
     public static @ColorInt int getDefaultTextColorLink(Context context) {
-        return context.getColor(R.color.default_text_color_link_baseline);
+        final @ColorInt int fallback = context.getColor(R.color.default_text_color_link_baseline);
+        return MaterialColors.getColor(context, R.attr.globalLinkTextColor, fallback);
     }
 }

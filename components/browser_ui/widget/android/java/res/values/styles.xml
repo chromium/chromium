@@ -145,7 +145,7 @@
     </style>
 
     <!-- Snooze button -->
-    <style name="TextButton.Inverse.Snooze">
+    <style name="TextButton.OnAccent1.Snooze">
         <item name="android:paddingStart">@dimen/text_bubble_with_snooze_padding_horizontal</item>
         <item name="android:paddingEnd">@dimen/text_bubble_with_snooze_padding_horizontal</item>
         <item name="android:paddingTop">10dp</item>

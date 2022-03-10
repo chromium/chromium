@@ -145,6 +145,12 @@
         <item name="android:background">@macro/default_bg_color</item>
     </style>
 
+    <style name="TextButton.OnAccent1" tools:ignore="UnusedResources">
+        <item name="android:textAppearance">@style/TextAppearance.Button.OnAccent1</item>
+        <item name="buttonTextColor">@color/default_text_color_on_accent1_list</item>
+        <item name="rippleColor">@color/filled_button_ripple_color</item>
+    </style>
+
     <!-- Text styles -->
     <!-- Primary text styles -->
     <style name="TextAppearance.Headline.Primary">
@@ -225,6 +231,7 @@
     <style name="TextAppearance.TextSmall.Primary.OnAccent1" tools:ignore="UnusedResources">
         <item name="android:textColor">@color/default_text_color_on_accent1_list</item>
     </style>
+    <style name="TextAppearance.Button.OnAccent1" parent="TextAppearance.TextMediumThick.Primary.OnAccent1"/>
 
     <!-- Chip Text Styles -->
     <style name="TextAppearance.ChipText" parent="TextAppearance.TextAccentMediumThick">

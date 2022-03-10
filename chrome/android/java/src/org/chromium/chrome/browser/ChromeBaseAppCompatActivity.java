@@ -243,6 +243,10 @@ public class ChromeBaseAppCompatActivity extends AppCompatActivity
         // still use dynamic colors, as in the android:textColorHighlight example where we use a
         // color state list that depends on colorPrimary.
         setTheme(R.style.ThemeOverlay_DynamicColorOverrides);
+
+        if (CachedFeatureFlags.isEnabled(ChromeFeatureList.DYNAMIC_COLOR_BUTTONS_ANDROID)) {
+            setTheme(R.style.ThemeOverlay_DynamicButtons);
+        }
     }
 
     /**

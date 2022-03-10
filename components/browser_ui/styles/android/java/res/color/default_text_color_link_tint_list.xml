@@ -6,5 +6,5 @@
 <selector xmlns:android="http://schemas.android.com/apk/res/android">
     <item android:alpha="@dimen/default_disabled_alpha" android:color="@macro/default_text_color"
         android:state_enabled="false" />
-    <item android:color="@macro/default_text_color_link"/>
+    <item android:color="?attr/globalLinkTextColor"/>
 </selector>

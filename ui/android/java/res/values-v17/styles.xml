@@ -38,7 +38,8 @@
         <item name="android:paddingStart">24dp</item>
         <item name="android:paddingEnd">24dp</item>
         <item name="android:textAppearance">@style/TextAppearance.Button.Text.Filled</item>
-        <item name="buttonColor">@color/filled_button_bg</item>
+        <item name="buttonTextColor">?attr/globalFilledButtonTextColor</item>
+        <item name="buttonColor">?attr/globalFilledButtonBgColor</item>
         <item name="rippleColor">@color/filled_button_ripple_color</item>
         <item name="buttonRaised">true</item>
     </style>
@@ -49,13 +50,10 @@
         <item name="android:paddingStart">8dp</item>
         <item name="android:paddingEnd">8dp</item>
         <item name="android:textAppearance">@style/TextAppearance.Button.Text.Blue</item>
+        <item name="buttonTextColor">?attr/globalTextButtonTextColor</item>
         <item name="buttonColor">@android:color/transparent</item>
         <item name="rippleColor">@color/text_button_ripple_color</item>
         <item name="buttonRaised">false</item>
-    </style>
-    <style name="TextButton.Inverse" tools:ignore="UnusedResources">
-        <item name="android:textAppearance">@style/TextAppearance.Button.Text.Inverse</item>
-        <item name="rippleColor">@color/filled_button_ripple_color</item>
     </style>
 
     <!-- Used by Chrome and Content -->

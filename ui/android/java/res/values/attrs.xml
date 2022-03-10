@@ -15,6 +15,9 @@
     <declare-styleable name="ButtonCompat">
         <!-- The color of the button background. -->
         <attr name="buttonColor" format="color"/>
+        <!-- The color of the button text. This attribute will override the text color set in
+             android:textAppearance. -->
+        <attr name="buttonTextColor" format="reference"/>
         <attr name="rippleColor"/>
         <!-- Whether the button is elevated. -->
         <attr name="buttonRaised" format="boolean"/>
@@ -28,6 +31,17 @@
         <attr name="rippleCornerRadiusBottomStart" format="reference|dimension" />
         <attr name="rippleCornerRadiusBottomEnd" format="reference|dimension" />
     </declare-styleable>
+
+    <!-- The attributes prefixed with 'global' are used to control the button, link and URL colors
+         throughout the app. They are defined in ThemeOverlay.DynamicButtons and are applied
+         conditionally to the activity theme. This enables us to toggle dynamic colors for the
+         mentioned UI elements using a feature flag. These attributes may not be set in the themes,
+         so the code dealing with them should handle their absence. -->
+    <attr name="globalFilledButtonBgColor" format="color"/>
+    <attr name="globalFilledButtonTextColor" format="reference"/>
+    <attr name="globalTextButtonTextColor" format="reference"/>
+    <attr name="globalLinkTextColor" format="color"/>
+    <attr name="globalClickableSpanColor" format="color"/>
 
     <declare-styleable name="TextViewWithLeading">
         <attr name="leading" format="reference|dimension"/>

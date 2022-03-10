@@ -93,6 +93,6 @@ public class TextViewWithTightWrapTest extends BlankUiTestActivityTestCase {
         Button snoozeButton = (Button) mView.findViewById(R.id.button_snooze);
         TestThreadUtils.runOnUiThreadBlocking(() -> { snoozeButton.setVisibility(View.VISIBLE); });
         // Render UI Elements.
-        mRenderTestRule.render(mView, "TextViewWithTightWrap_MatchParent");
+        mRenderTestRule.render(mView, "TextViewWithTightWrap_MatchParent_WithSnooze");
     }
 }

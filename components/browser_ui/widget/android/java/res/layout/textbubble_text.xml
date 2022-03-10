@@ -28,7 +28,7 @@
           android:clickable="true"
           android:visibility="gone"
           android:text="@string/iph_snooze"
-          style="@style/TextButton.Inverse.Snooze" />
+          style="@style/TextButton.OnAccent1.Snooze" />
 
      <org.chromium.ui.widget.ButtonCompat
           android:id="@+id/button_dismiss"
@@ -38,6 +38,6 @@
           android:clickable="true"
           android:visibility="gone"
           android:text="@string/got_it"
-          style="@style/TextButton.Inverse.Snooze" />
+          style="@style/TextButton.OnAccent1.Snooze" />
 
 </LinearLayout>
