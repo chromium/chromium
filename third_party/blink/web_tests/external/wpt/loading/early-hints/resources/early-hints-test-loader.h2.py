@@ -1,6 +1,6 @@
 # An HTTP/2 handler for testing Early Hints. Used as an entry point of Early
 # Hints related tests to inject Early Hints response. See comments in
-# `early-hints-helpers.js`.
+# `early-hints-helpers.sub.js`.
 
 import json
 import os

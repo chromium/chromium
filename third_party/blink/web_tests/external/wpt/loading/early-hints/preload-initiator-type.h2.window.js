@@ -1,4 +1,4 @@
-// META: script=resources/early-hints-helpers.js
+// META: script=resources/early-hints-helpers.sub.js
 
 test(() => {
     const preloads = [{

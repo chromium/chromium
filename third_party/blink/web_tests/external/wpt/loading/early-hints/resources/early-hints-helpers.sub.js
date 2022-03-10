@@ -36,3 +36,21 @@ function getPreloadsFromSearchParams() {
     }
     return preloads;
 }
+
+/**
+ * Navigate to the referrer policy test page.
+ *
+ * @param {string} referrer_policy - A value of Referrer-Policy to test.
+ */
+function testReferrerPolicy(referrer_policy) {
+    const params = new URLSearchParams();
+    params.set("referrer-policy", referrer_policy);
+    const same_origin_preload_url = "https://{{host}}:{{ports[h2][0]}}/loading/early-hints/resources/fetch-and-record-js.h2.py?id=" + token();
+    params.set("same-origin-preload-url", same_origin_preload_url);
+    const cross_origin_preload_url = "https://{{hosts[alt][www]}}:{{ports[h2][0]}}/loading/early-hints/resources/fetch-and-record-js.h2.py?id=" + token();
+    params.set("cross-origin-preload-url", cross_origin_preload_url);
+
+    const path = "resources/referrer-policy-test-loader.h2.py?" + params.toString();
+    const url = new URL(path, window.location);
+    window.location.replace(url);
+}

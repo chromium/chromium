@@ -6,7 +6,11 @@ def handle_headers(frame, request, response):
     headers = []
     referrer_policy = request.GET.first(b"referrer-policy")
     headers.append((b"referrer-policy", referrer_policy))
-    preload_url = request.GET.first(b"preload-url").decode()
+
+    preload_url = request.GET.first(b"same-origin-preload-url").decode()
+    link_header_value = "<{}>; rel=preload; as=script".format(preload_url)
+    headers.append((b"link", link_header_value))
+    preload_url = request.GET.first(b"cross-origin-preload-url").decode()
     link_header_value = "<{}>; rel=preload; as=script".format(preload_url)
     headers.append((b"link", link_header_value))
 
