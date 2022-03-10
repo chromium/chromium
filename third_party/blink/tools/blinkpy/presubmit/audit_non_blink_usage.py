@@ -159,9 +159,6 @@ _CONFIG = [
             # //base/memory/ptr_util.h.
             'base::WrapUnique',
 
-            # //base/allocator/partition_allocator/oom_callback.h.
-            'base::SetPartitionAllocOomCallback',
-
             # //base/containers/adapters.h
             'base::Reversed',
 

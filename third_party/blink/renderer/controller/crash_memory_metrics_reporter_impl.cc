@@ -31,7 +31,7 @@ CrashMemoryMetricsReporterImpl& CrashMemoryMetricsReporterImpl::Instance() {
 }
 
 CrashMemoryMetricsReporterImpl::CrashMemoryMetricsReporterImpl() {
-  base::SetPartitionAllocOomCallback(
+  ::partition_alloc::SetPartitionAllocOomCallback(
       CrashMemoryMetricsReporterImpl::OnOOMCallback);
 }
 

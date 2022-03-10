@@ -7,8 +7,10 @@
 
 #include "base/base_export.h"
 
-namespace base {
-typedef void (*PartitionAllocOomCallback)();
+namespace partition_alloc {
+
+using PartitionAllocOomCallback = void (*)();
+
 // Registers a callback to be invoked during an OOM_CRASH(). OOM_CRASH is
 // invoked by users of PageAllocator (including PartitionAlloc) to signify an
 // allocation failure from the platform.
@@ -19,6 +21,6 @@ namespace internal {
 BASE_EXPORT void RunPartitionAllocOomCallback();
 }  // namespace internal
 
-}  // namespace base
+}  // namespace partition_alloc
 
 #endif  // BASE_ALLOCATOR_PARTITION_ALLOCATOR_OOM_CALLBACK_H_

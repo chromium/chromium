@@ -9,11 +9,15 @@
 #include "base/immediate_crash.h"
 #include "base/process/memory.h"
 
+namespace partition_alloc::internal {
+
 // The crash is generated in a NOINLINE function so that we can classify the
 // crash as an OOM solely by analyzing the stack trace. It is tagged as
 // NOT_TAIL_CALLED to ensure that its parent function stays on the stack.
 [[noreturn]] NOINLINE void NOT_TAIL_CALLED OnNoMemory(size_t size) {
-  base::internal::RunPartitionAllocOomCallback();
+  RunPartitionAllocOomCallback();
   base::TerminateBecauseOutOfMemory(size);
   IMMEDIATE_CRASH();
 }
+
+}  // namespace partition_alloc::internal

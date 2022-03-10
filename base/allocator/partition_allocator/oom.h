@@ -5,11 +5,13 @@
 #ifndef BASE_ALLOCATOR_PARTITION_ALLOCATOR_OOM_H_
 #define BASE_ALLOCATOR_PARTITION_ALLOCATOR_OOM_H_
 
-#include <stddef.h>
+#include <cstddef>
 
 #include "base/allocator/partition_allocator/allocation_guard.h"
 #include "base/base_export.h"
 #include "base/compiler_specific.h"
+
+namespace partition_alloc::internal {
 
 // The crash is generated in a NOINLINE function so that we can classify the
 // crash as an OOM solely by analyzing the stack trace. It is tagged as
@@ -23,8 +25,10 @@
 #define OOM_CRASH(size)                                     \
   do {                                                      \
     /* Raising an exception might allocate, allow that.  */ \
-    base::internal::ScopedAllowAllocations guard{};         \
-    OnNoMemory(size);                                       \
+    ::partition_alloc::ScopedAllowAllocations guard{};      \
+    ::partition_alloc::internal::OnNoMemory(size);          \
   } while (0)
+
+}  // namespace partition_alloc::internal
 
 #endif  // BASE_ALLOCATOR_PARTITION_ALLOCATOR_OOM_H_
