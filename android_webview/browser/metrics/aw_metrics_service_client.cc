@@ -27,6 +27,8 @@ namespace android_webview {
 namespace prefs {
 const char kMetricsAppPackageNameLoggingRule[] =
     "aw_metrics_app_package_name_logging_rule";
+const char kAppPackageNameLoggingRuleLastUpdateTime[] =
+    "aw_metrics_app_package_name_logging_rule_last_update";
 }  // namespace prefs
 
 namespace {
@@ -179,6 +181,21 @@ AwMetricsServiceClient::GetCachedAppPackageNameLoggingRule() {
   return cached_package_name_record_;
 }
 
+base::Time AwMetricsServiceClient::GetAppPackageNameLoggingRuleLastUpdateTime()
+    const {
+  PrefService* local_state = pref_service();
+  DCHECK(local_state);
+  return local_state->GetTime(prefs::kAppPackageNameLoggingRuleLastUpdateTime);
+}
+
+void AwMetricsServiceClient::SetAppPackageNameLoggingRuleLastUpdateTime(
+    base::Time update_time) {
+  PrefService* local_state = pref_service();
+  DCHECK(local_state);
+  local_state->SetTime(prefs::kAppPackageNameLoggingRuleLastUpdateTime,
+                       update_time);
+}
+
 void AwMetricsServiceClient::OnMetricsStart() {
   delegate_->AddWebViewAppStateObserver(this);
 }
@@ -229,6 +246,8 @@ void AwMetricsServiceClient::RegisterMetricsPrefs(
   RegisterPrefs(registry);
   registry->RegisterDictionaryPref(prefs::kMetricsAppPackageNameLoggingRule,
                                    base::Value(base::Value::Type::DICTIONARY));
+  registry->RegisterTimePref(prefs::kAppPackageNameLoggingRuleLastUpdateTime,
+                             base::Time());
 }
 
 // static
