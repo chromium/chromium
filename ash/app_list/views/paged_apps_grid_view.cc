@@ -309,9 +309,9 @@ void PagedAppsGridView::UpdateOpacity(bool restore_opacity,
   // since the creation/destruction of the layer requires to repaint the parent
   // view (i.e. this class).
   if (restore_opacity) {
-    // If drag is in progress, layers are still required, so just update the
-    // opacity (the layers will be deleted when drag operation completes).
-    if (items_need_layer_for_drag_) {
+    // If item layers are still required (e.g. during drag), only update the
+    // opacity (the layers will be deleted when they are no longer needed).
+    if (ItemViewsRequireLayers()) {
       for (const auto& entry : view_model()->entries()) {
         if (!IsViewHiddenForDrag(entry.view) && entry.view->layer())
           entry.view->layer()->SetOpacity(1.0f);

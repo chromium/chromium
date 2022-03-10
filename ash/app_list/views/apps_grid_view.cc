@@ -533,7 +533,6 @@ bool AppsGridView::InitiateDrag(AppListItemView* view,
   folder_to_open_after_drag_icon_animation_.clear();
   drag_icon_proxy_.reset();
 
-  items_need_layer_for_drag_ = true;
   for (const auto& entry : view_model_.entries())
     static_cast<AppListItemView*>(entry.view)->EnsureLayer();
   drag_view_ = view;
@@ -808,7 +807,6 @@ void AppsGridView::InitiateDragFromReparentItemInRootLevelGridView(
   // entire apps grid.
   reorder_placeholder_ = view_structure_.GetLastTargetIndex();
 
-  items_need_layer_for_drag_ = true;
   for (const auto& entry : view_model_.entries())
     static_cast<AppListItemView*>(entry.view)->EnsureLayer();
 
@@ -1039,7 +1037,7 @@ std::unique_ptr<AppListItemView> AppsGridView::CreateViewForItemAtIndex(
   auto view = std::make_unique<AppListItemView>(
       app_list_config_, this, item_list_->item_at(index),
       app_list_view_delegate_, AppListItemView::Context::kAppsGridView);
-  if (items_need_layer_for_drag_)
+  if (ItemViewsRequireLayers())
     view->EnsureLayer();
   if (cardified_state_)
     view->EnterCardifyState();
@@ -2432,22 +2430,30 @@ void AppsGridView::OnBoundsAnimatorProgressed(views::BoundsAnimator* animator) {
 }
 
 void AppsGridView::OnBoundsAnimatorDone(views::BoundsAnimator* animator) {
-  if (drag_item_ || drag_icon_proxy_)
+  if (ItemViewsRequireLayers())
     return;
 
-  if (bounds_animation_for_cardified_state_in_progress_ ||
-      (bounds_animator_ && bounds_animator_->IsAnimating())) {
-    return;
-  }
-
-  // Return early if the item views' layers are used by the active reorder
-  // animation
-  if (IsUnderReorderAnimation())
-    return;
-
-  items_need_layer_for_drag_ = false;
   for (const auto& entry : view_model_.entries())
     entry.view->DestroyLayer();
+}
+
+bool AppsGridView::ItemViewsRequireLayers() const {
+  // Layers required for app list item move animations during drag (to make room
+  // for the current placeholder).
+  if (drag_item_ || drag_icon_proxy_)
+    return true;
+
+  // Bounds animations are in progress, which use layers to animate transforms.
+  if (bounds_animation_for_cardified_state_in_progress_ ||
+      (bounds_animator_ && bounds_animator_->IsAnimating())) {
+    return true;
+  }
+
+  // Reorder animation animate app list item layers.
+  if (IsUnderReorderAnimation())
+    return true;
+
+  return false;
 }
 
 GridIndex AppsGridView::GetNearestTileIndexForPoint(

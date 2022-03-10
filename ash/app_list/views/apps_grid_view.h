@@ -503,6 +503,10 @@ class ASH_EXPORT AppsGridView : public views::View,
   void OnBoundsAnimatorProgressed(views::BoundsAnimator* animator) override;
   void OnBoundsAnimatorDone(views::BoundsAnimator* animator) override;
 
+  // Whether app list item views require layers - for example during drag, or
+  // folder repositioning animation.
+  bool ItemViewsRequireLayers() const;
+
   void BeginHideCurrentGhostImageView();
 
   bool ignore_layout() const { return ignore_layout_; }
@@ -522,11 +526,6 @@ class ASH_EXPORT AppsGridView : public views::View,
 
   // View structure used only for non-folder.
   PagedViewStructure view_structure_{this};
-
-  // Set while apps grid items have layers to handle app list item drag
-  // operation. It's reset when the app list bounds animations requested after
-  // drag state is cleared complete.
-  bool items_need_layer_for_drag_ = false;
 
   // The `AppListItemView` that is being dragged within the apps grid (i.e. the
   // AppListItemView for `drag_item_`) if the drag item is currently part of the
