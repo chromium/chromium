@@ -4109,3 +4109,20 @@ TEST_F('ChromeVoxBackgroundTest', 'CrossWindowNextPreviousFocus', function() {
         .replay();
   });
 });
+
+TEST_F('ChromeVoxBackgroundTest', 'GestureOnPopUpButton', function() {
+  const mockFeedback = this.createMockFeedback();
+  const site = `
+    <select><option>apple</option><option>banana</option></select>
+  `;
+  this.runWithLoadedTree(site, function(root) {
+    mockFeedback.expectSpeech('Button', 'has pop up')
+        .call(doGesture(Gesture.CLICK))
+        .expectSpeech('Button', 'has pop up', 'Expanded')
+        .call(doGesture(Gesture.SWIPE_DOWN1))
+        .expectSpeech('banana')
+        .call(doGesture(Gesture.SWIPE_UP1))
+        .expectSpeech('apple')
+        .replay();
+  });
+});
