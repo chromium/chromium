@@ -476,7 +476,8 @@ void NativeWidgetMacNSWindowHost::SetBoundsInScreen(const gfx::Rect& bounds) {
 }
 
 void NativeWidgetMacNSWindowHost::SetFullscreen(bool fullscreen,
-                                                base::TimeDelta delay) {
+                                                base::TimeDelta delay,
+                                                int64_t target_display_id) {
   // Note that when the NSWindow begins a fullscreen transition, the value of
   // |target_fullscreen_state_| updates via OnWindowFullscreenTransitionStart.
   // The update here is necessary for the case where we are currently in
@@ -492,6 +493,7 @@ void NativeWidgetMacNSWindowHost::SetFullscreen(bool fullscreen,
     // i.e. so BrowserView::ProcessFullscreen will still hide its frame, etc.
     // TODO(crbug.com/1034783): Refine cross-display fullscreen implementations.
     // TODO(crbug.com/1210548): Find a better solution to avoid key resignation.
+    DCHECK_EQ(target_display_id, display::kInvalidDisplayId);
     auto callback = base::BindOnce(
         &NativeWidgetMacNSWindowHost::SetFullscreenAfterDelay, widget_id_);
     base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
@@ -499,7 +501,10 @@ void NativeWidgetMacNSWindowHost::SetFullscreen(bool fullscreen,
     return;
   }
 
-  GetNSWindowMojo()->SetFullscreen(target_fullscreen_state_);
+  if (target_fullscreen_state_)
+    GetNSWindowMojo()->EnterFullscreen(target_display_id);
+  else
+    GetNSWindowMojo()->ExitFullscreen();
 }
 
 void NativeWidgetMacNSWindowHost::SetRootView(views::View* root_view) {
@@ -600,8 +605,12 @@ void NativeWidgetMacNSWindowHost::DestroyCompositor() {
 // static
 void NativeWidgetMacNSWindowHost::SetFullscreenAfterDelay(
     uint64_t bridged_native_widget_id) {
-  if (NativeWidgetMacNSWindowHost* host = GetFromId(bridged_native_widget_id))
-    host->GetNSWindowMojo()->SetFullscreen(host->target_fullscreen_state_);
+  if (NativeWidgetMacNSWindowHost* host = GetFromId(bridged_native_widget_id)) {
+    if (host->target_fullscreen_state_)
+      host->GetNSWindowMojo()->EnterFullscreen(display::kInvalidDisplayId);
+    else
+      host->GetNSWindowMojo()->ExitFullscreen();
+  }
 }
 
 bool NativeWidgetMacNSWindowHost::SetWindowTitle(const std::u16string& title) {

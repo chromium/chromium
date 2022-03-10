@@ -804,12 +804,16 @@ bool Widget::IsMinimized() const {
   return native_widget_->IsMinimized();
 }
 
-void Widget::SetFullscreen(bool fullscreen, base::TimeDelta delay) {
-  if (IsFullscreen() == fullscreen)
+void Widget::SetFullscreen(bool fullscreen,
+                           base::TimeDelta delay,
+                           int64_t target_display_id) {
+  if (IsFullscreen() == fullscreen &&
+      target_display_id != display::kInvalidDisplayId) {
     return;
+  }
 
   auto weak_ptr = GetWeakPtr();
-  native_widget_->SetFullscreen(fullscreen, delay);
+  native_widget_->SetFullscreen(fullscreen, delay, target_display_id);
   if (!weak_ptr)
     return;
 

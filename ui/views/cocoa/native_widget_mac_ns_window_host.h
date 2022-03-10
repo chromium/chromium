@@ -153,9 +153,13 @@ class VIEWS_EXPORT NativeWidgetMacNSWindowHost
   void SetBoundsInScreen(const gfx::Rect& bounds);
 
   // Tell the window to transition to being fullscreen or not-fullscreen.
-  // If `delay` is given, this sets the target fullscreen state and then posts
-  // a delayed task to request the window transition. See crbug.com/1210548.
-  void SetFullscreen(bool fullscreen, base::TimeDelta delay = {});
+  // If `fullscreen` is true, then `target_display_id` specifies the display to
+  // which window should move (or an invalid display, to use the default). If
+  // `delay` is given, this sets the target fullscreen state and then posts a
+  // delayed task to request the window transition. See crbug.com/1210548.
+  void SetFullscreen(bool fullscreen,
+                     base::TimeDelta delay = {},
+                     int64_t target_display_id = display::kInvalidDisplayId);
 
   // The ultimate fullscreen state that is being targeted (irrespective of any
   // active transitions).

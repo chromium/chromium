@@ -641,15 +641,16 @@ bool NativeWidgetMac::IsMinimized() const {
 void NativeWidgetMac::Restore() {
   if (!GetNSWindowMojo())
     return;
-  GetNSWindowMojo()->SetFullscreen(false);
+  GetNSWindowMojo()->ExitFullscreen();
   GetNSWindowMojo()->SetMiniaturized(false);
 }
 
 void NativeWidgetMac::SetFullscreen(bool fullscreen,
-                                    const base::TimeDelta& delay) {
+                                    const base::TimeDelta& delay,
+                                    int64_t target_display_id) {
   if (!ns_window_host_)
     return;
-  ns_window_host_->SetFullscreen(fullscreen, delay);
+  ns_window_host_->SetFullscreen(fullscreen, delay, target_display_id);
 }
 
 bool NativeWidgetMac::IsFullscreen() const {

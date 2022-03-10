@@ -237,7 +237,8 @@ class REMOTE_COCOA_APP_SHIM_EXPORT NativeWidgetNSWindowBridge
   void SetTransitionsToAnimate(
       remote_cocoa::mojom::VisibilityTransition transitions) override;
   void SetVisibleOnAllSpaces(bool always_visible) override;
-  void SetFullscreen(bool fullscreen) override;
+  void EnterFullscreen(int64_t target_display_id) override;
+  void ExitFullscreen() override;
   void SetCanAppearInExistingFullscreenSpaces(
       bool can_appear_in_existing_fullscreen_spaces) override;
   void SetMiniaturized(bool miniaturized) override;
