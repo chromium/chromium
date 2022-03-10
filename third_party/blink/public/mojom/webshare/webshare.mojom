@@ -5,12 +5,13 @@
 [JavaPackage="org.chromium.webshare.mojom"]
 module blink.mojom;
 
+import "mojo/public/mojom/base/safe_base_name.mojom";
 import "third_party/blink/public/mojom/blob/serialized_blob.mojom";
 import "third_party/blink/public/mojom/webshare/share_error.mojom";
 import "url/mojom/url.mojom";
 
 struct SharedFile {
-  string name;
+  mojo_base.mojom.SafeBaseName name;
   SerializedBlob blob;
 };
 

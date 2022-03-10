@@ -8,6 +8,7 @@
 #include <string>
 #include <vector>
 
+#include "base/files/file_path.h"
 #include "base/memory/weak_ptr.h"
 #include "base/strings/string_piece.h"
 #include "build/build_config.h"
@@ -44,8 +45,8 @@ class ShareServiceImpl
       content::RenderFrameHost* render_frame_host,
       mojo::PendingReceiver<blink::mojom::ShareService> receiver);
 
-  static bool IsDangerousFilename(base::StringPiece);
-  static bool IsDangerousMimeType(base::StringPiece);
+  static bool IsDangerousFilename(const base::FilePath& path);
+  static bool IsDangerousMimeType(base::StringPiece content_type);
 
   // blink::mojom::ShareService:
   void Share(const std::string& title,

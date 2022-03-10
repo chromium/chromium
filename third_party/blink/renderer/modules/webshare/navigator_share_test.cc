@@ -9,6 +9,7 @@
 
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/browser_interface_broker_proxy.h"
+#include "third_party/blink/public/platform/file_path_conversion.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_file_property_bag.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_union_arraybuffer_arraybufferview_blob_usvstring.h"
@@ -185,7 +186,8 @@ TEST_F(NavigatorShareTest, ShareFile) {
   Share(share_data);
 
   EXPECT_EQ(mock_share_service().files().size(), 1U);
-  EXPECT_EQ(mock_share_service().files()[0]->name, file_name);
+  EXPECT_EQ(mock_share_service().files()[0]->name.path(),
+            StringToFilePath(file_name));
   EXPECT_EQ(mock_share_service().files()[0]->blob->GetType(), content_type);
   EXPECT_EQ(mock_share_service().files()[0]->blob->size(),
             file_contents.length());

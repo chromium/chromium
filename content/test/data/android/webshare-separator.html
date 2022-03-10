@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Web Share</title>
+        <script>
+            function initiate_share() {
+                if (navigator.share === undefined) {
+                    window.document.title = 'Fail: navigator.share === undefined';
+                    return;
+                }
+
+                const fileBits = ['contents'];
+                const fileName = '/';
+                const options = {type: 'video/ogg'};
+                const data = {files: [new File(fileBits, fileName, options)]};
+                navigator.share(data).then(() => {
+                    window.document.title = 'Success';
+                }).catch(e => {
+                    window.document.title = 'Fail: ' + e;
+                });
+            }
+
+            window.addEventListener('load', () => {
+                window.addEventListener('click', initiate_share);
+            });
+        </script>
+    </head>
+    <body>
+        WebShare Test!
+    </body>
+</html>

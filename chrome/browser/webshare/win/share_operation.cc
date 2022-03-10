@@ -416,7 +416,7 @@ void ShareOperation::Run(blink::mojom::ShareService::ShareCallback callback) {
         return;
       }
       if (FAILED(attachment_services->SetFileName(
-              base::UTF8ToWide(file->name).c_str()))) {
+              file->name.path().value().c_str()))) {
         Complete(blink::mojom::ShareError::INTERNAL_ERROR);
         return;
       }
@@ -573,7 +573,7 @@ bool ShareOperation::PutShareContentInDataPackage(IDataRequest* data_request) {
       auto operation = base::MakeRefCounted<OutputStreamWriteOperation>(
           web_contents_->GetBrowserContext()->GetBlobStorageContext(),
           file_bytes_shared, file->blob->uuid);
-      auto name_h = base::win::ScopedHString::Create(file->name);
+      auto name_h = base::win::ScopedHString::Create(file->name.path().value());
       auto raw_data_requested_callback =
           Callback<IStreamedFileDataRequestedHandler>(
               [operation](IOutputStream* stream) -> HRESULT {

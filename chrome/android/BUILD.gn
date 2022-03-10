@@ -1697,6 +1697,7 @@ android_library("chrome_test_java") {
     "//content/test/data/android/webshare-many.html",
     "//content/test/data/android/webshare-large.html",
     "//content/test/data/android/webshare-long.html",
+    "//content/test/data/android/webshare-separator.html",
     "//content/test/data/media/bear.webm",
     "//content/test/data/media/getusermedia.html",
     "//content/test/data/media/session/",

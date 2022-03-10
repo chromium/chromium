@@ -394,8 +394,10 @@ IN_PROC_BROWSER_TEST_F(WebShareTargetBrowserTest, ShareMultimedia) {
   content::WebContents* web_contents = ShareToTarget("share_multiple_files()");
   EXPECT_EQ(std::string(345, '*'), ReadTextContent(web_contents, "audio"));
   EXPECT_EQ(std::string(67890, '*'), ReadTextContent(web_contents, "video"));
+  EXPECT_EQ(std::string(1, '*'), ReadTextContent(web_contents, "image"));
   EXPECT_EQ("sam.ple.mp3", ReadTextContent(web_contents, "audio_filename"));
-  EXPECT_EQ("_sample.mp4", ReadTextContent(web_contents, "video_filename"));
+  EXPECT_EQ("sample.mp4", ReadTextContent(web_contents, "video_filename"));
+  EXPECT_EQ("sam_ple.gif", ReadTextContent(web_contents, "image_filename"));
 }
 
 IN_PROC_BROWSER_TEST_F(WebShareTargetBrowserTest, ShareToPartialWild) {

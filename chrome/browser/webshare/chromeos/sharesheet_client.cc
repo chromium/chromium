@@ -10,6 +10,7 @@
 #include "base/callback_helpers.h"
 #include "base/feature_list.h"
 #include "base/files/file_path.h"
+#include "base/files/safe_base_name.h"
 #include "base/no_destructor.h"
 #include "base/rand_util.h"
 #include "base/strings/string_piece.h"
@@ -60,7 +61,7 @@ constexpr char kDefaultShareName[] = "share";
 // ShareServiceImpl::IsDangerousFilename().
 base::FilePath GenerateFileName(content::WebContents* web_contents,
                                 const base::FilePath& directory,
-                                const std::string& suggested_name) {
+                                const base::SafeBaseName& suggested_name) {
   static unsigned counter = 0;
 
   ++counter;
@@ -71,10 +72,11 @@ base::FilePath GenerateFileName(content::WebContents* web_contents,
   std::string referrer_charset =
       profile->GetPrefs()->GetString(prefs::kDefaultCharset);
 
-  base::FilePath filename = net::GenerateFileName(
-      web_contents->GetLastCommittedURL(),
-      /*content_disposition=*/std::string(), referrer_charset, suggested_name,
-      /*mime_type=*/std::string(), kDefaultShareName);
+  base::FilePath filename =
+      net::GenerateFileName(web_contents->GetLastCommittedURL(),
+                            /*content_disposition=*/std::string(),
+                            referrer_charset, suggested_name.path().value(),
+                            /*mime_type=*/std::string(), kDefaultShareName);
 
   return directory.Append(dirname).Append(filename);
 }
