@@ -42,9 +42,12 @@ protocol::Response EmulationHandler::SetAutomationOverride(bool enabled) {
   }
 
   // Note since the observer removes itself when the info bar is removed, the
-  // observer is added at most once because of the info bar nullity check above.
-  info_bar_manager->AddObserver(this);
+  // observer is added at most once because of the info bar nullity check
+  // above.
   automation_info_bar_ = AutomationInfoBarDelegate::Create(info_bar_manager);
+  if (automation_info_bar_) {
+    info_bar_manager->AddObserver(this);
+  }
   return protocol::Response::FallThrough();
 }
 
