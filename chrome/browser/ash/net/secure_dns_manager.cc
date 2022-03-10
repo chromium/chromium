@@ -20,6 +20,7 @@
 #include "chromeos/network/network_configuration_handler.h"
 #include "chromeos/network/network_handler.h"
 #include "components/country_codes/country_codes.h"
+#include "net/dns/public/doh_provider_entry.h"
 #include "net/dns/public/secure_dns_mode.h"
 #include "third_party/cros_system_api/dbus/shill/dbus-constants.h"
 
@@ -42,10 +43,11 @@ SecureDnsManager::~SecureDnsManager() {
 }
 
 void SecureDnsManager::LoadProviders() {
-  auto local_providers = chrome_browser_net::secure_dns::ProvidersForCountry(
-      net::DohProviderEntry::GetList(), country_codes::GetCurrentCountryID());
-  local_providers = chrome_browser_net::secure_dns::RemoveDisabledProviders(
-      local_providers, chrome_browser_net::secure_dns::GetDisabledProviders());
+  const net::DohProviderEntry::List local_providers =
+      chrome_browser_net::secure_dns::SelectEnabledProviders(
+          chrome_browser_net::secure_dns::ProvidersForCountry(
+              net::DohProviderEntry::GetList(),
+              country_codes::GetCurrentCountryID()));
 
   for (const auto* provider : local_providers) {
     std::vector<std::string> ip_addrs;

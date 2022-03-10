@@ -5,6 +5,7 @@
 #include "chrome/browser/net/secure_dns_util.h"
 
 #include <algorithm>
+#include <iterator>
 #include <memory>
 #include <string>
 
@@ -12,8 +13,8 @@
 #include "base/containers/contains.h"
 #include "base/feature_list.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/string_piece.h"
-#include "base/strings/string_split.h"
 #include "build/build_config.h"
 #include "chrome/browser/net/dns_probe_runner.h"
 #include "chrome/common/chrome_features.h"
@@ -103,21 +104,13 @@ net::DohProviderEntry::List ProvidersForCountry(
   return local_providers;
 }
 
-std::vector<std::string> GetDisabledProviders() {
-  return SplitString(features::kDnsOverHttpsDisabledProvidersParam.Get(), ",",
-                     base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
-}
-
-net::DohProviderEntry::List RemoveDisabledProviders(
-    const net::DohProviderEntry::List& providers,
-    const std::vector<std::string>& disabled_providers) {
-  net::DohProviderEntry::List filtered_providers;
-  std::copy_if(providers.begin(), providers.end(),
-               std::back_inserter(filtered_providers),
-               [&disabled_providers](const auto* entry) {
-                 return !base::Contains(disabled_providers, entry->provider);
-               });
-  return filtered_providers;
+net::DohProviderEntry::List SelectEnabledProviders(
+    const net::DohProviderEntry::List& providers) {
+  net::DohProviderEntry::List enabled_providers;
+  base::ranges::copy_if(providers, std::back_inserter(enabled_providers),
+                        &base::FeatureList::IsEnabled,
+                        &net::DohProviderEntry::feature);
+  return enabled_providers;
 }
 
 void UpdateDropdownHistograms(

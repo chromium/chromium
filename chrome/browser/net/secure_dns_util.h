@@ -18,21 +18,16 @@ class PrefService;
 
 namespace chrome_browser_net::secure_dns {
 
-// Returns the subset of |providers| that are marked for use in the specified
-// country.
+// Returns the subsequence of `providers` that are marked for use in the
+// specified country.
 net::DohProviderEntry::List ProvidersForCountry(
     const net::DohProviderEntry::List& providers,
     int country_id);
 
-// Returns the names of providers that have been remotely disabled, for use with
-// RemoveDisabledProviders().
-std::vector<std::string> GetDisabledProviders();
-
-// Returns the subset of |providers| for which |DohProviderEntry::provider| is
-// not listed in |disabled_providers|.
-net::DohProviderEntry::List RemoveDisabledProviders(
-    const net::DohProviderEntry::List& providers,
-    const std::vector<std::string>& disabled_providers);
+// Returns the subsequence of `providers` that are enabled, according to their
+// `net::DohProviderEntry::feature` members.
+net::DohProviderEntry::List SelectEnabledProviders(
+    const net::DohProviderEntry::List& providers);
 
 // When the selected DoH provider changes, call this function to update the
 // Selected, Unselected, and Ignored histograms for all the included providers,

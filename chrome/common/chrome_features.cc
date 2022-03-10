@@ -342,12 +342,6 @@ const base::Feature kDnsOverHttps {
 #endif
 };
 
-// Provides a mechanism to remove providers from the dropdown list in the
-// settings UI. Separate multiple provider ids with commas. See the
-// mapping in net/dns/dns_util.cc for provider ids.
-const base::FeatureParam<std::string> kDnsOverHttpsDisabledProvidersParam{
-    &kDnsOverHttps, "DisabledProviders", ""};
-
 // Set whether fallback to insecure DNS is allowed by default. This setting may
 // be overridden for individual transactions.
 const base::FeatureParam<bool> kDnsOverHttpsFallbackParam{&kDnsOverHttps,

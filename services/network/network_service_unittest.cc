@@ -15,6 +15,7 @@
 #include "base/files/scoped_temp_dir.h"
 #include "base/json/json_file_value_serializer.h"
 #include "base/path_service.h"
+#include "base/ranges/algorithm.h"
 #include "base/run_loop.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
@@ -37,6 +38,7 @@
 #include "net/dns/host_resolver_manager.h"
 #include "net/dns/public/dns_over_https_config.h"
 #include "net/dns/public/dns_protocol.h"
+#include "net/dns/public/doh_provider_entry.h"
 #include "net/http/http_auth_handler_factory.h"
 #include "net/http/http_auth_scheme.h"
 #include "net/http/http_network_session.h"
@@ -629,10 +631,22 @@ TEST_F(NetworkServiceTest, DnsOverHttpsEnableDisable) {
 }
 
 TEST_F(NetworkServiceTest, DisableDohUpgradeProviders) {
+  auto FindProviderFeature = [](base::StringPiece provider) -> base::Feature {
+    const auto it =
+        base::ranges::find(net::DohProviderEntry::GetList(), provider,
+                           &net::DohProviderEntry::provider);
+    CHECK(it != net::DohProviderEntry::GetList().end())
+        << "Provider named \"" << provider
+        << "\" not found in DoH provider list.";
+    return (*it)->feature;
+  };
+
   base::test::ScopedFeatureList scoped_features;
-  scoped_features.InitAndEnableFeatureWithParameters(
-      features::kDnsOverHttpsUpgrade,
-      {{"DisabledProviders", "CleanBrowsingSecure, , Cloudflare,Unexpected"}});
+  scoped_features.InitWithFeatures(
+      /*enabled_features=*/{features::kDnsOverHttpsUpgrade},
+      /*disabled_features=*/{FindProviderFeature("CleanBrowsingSecure"),
+                             FindProviderFeature("Cloudflare")});
+
   service()->ConfigureStubHostResolver(
       /*insecure_dns_client_enabled=*/true, net::SecureDnsMode::kAutomatic,
       /*dns_over_https_config=*/{},
@@ -652,15 +666,11 @@ TEST_F(NetworkServiceTest, DisableDohUpgradeProviders) {
   // Non-upgradeable IP
   net::IPAddress dns_ip4(1, 2, 3, 4);
 
-  config.nameservers.push_back(
-      net::IPEndPoint(dns_ip0, net::dns_protocol::kDefaultPort));
-  config.nameservers.push_back(
-      net::IPEndPoint(dns_ip1, net::dns_protocol::kDefaultPort));
-  config.nameservers.push_back(net::IPEndPoint(dns_ip2, 54));
-  config.nameservers.push_back(
-      net::IPEndPoint(dns_ip3, net::dns_protocol::kDefaultPort));
-  config.nameservers.push_back(
-      net::IPEndPoint(dns_ip4, net::dns_protocol::kDefaultPort));
+  config.nameservers.emplace_back(dns_ip0, net::dns_protocol::kDefaultPort);
+  config.nameservers.emplace_back(dns_ip1, net::dns_protocol::kDefaultPort);
+  config.nameservers.emplace_back(dns_ip2, 54);
+  config.nameservers.emplace_back(dns_ip3, net::dns_protocol::kDefaultPort);
+  config.nameservers.emplace_back(dns_ip4, net::dns_protocol::kDefaultPort);
 
   auto dns_client = net::DnsClient::CreateClient(nullptr /* net_log */);
   dns_client->SetSystemConfig(config);

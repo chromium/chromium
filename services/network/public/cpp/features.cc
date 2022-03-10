@@ -92,8 +92,8 @@ const base::Feature kSplitAuthCacheByNetworkIsolationKey{
 // Enable usage of hardcoded DoH upgrade mapping for use in automatic mode.
 const base::Feature kDnsOverHttpsUpgrade {
   "DnsOverHttpsUpgrade",
-#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_MAC) || \
-    BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_WIN)
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_MAC) || \
+    BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_LINUX)
       base::FEATURE_ENABLED_BY_DEFAULT
 #else
       base::FEATURE_DISABLED_BY_DEFAULT
@@ -106,13 +106,6 @@ const base::Feature kDnsOverHttpsUpgrade {
 // mDNS names (random UUIDs) in the TXT record data.
 const base::Feature kMdnsResponderGeneratedNameListing{
     "MdnsResponderGeneratedNameListing", base::FEATURE_DISABLED_BY_DEFAULT};
-
-// Provides a mechanism to disable DoH upgrades for some subset of the hardcoded
-// upgrade mapping. Separate multiple provider ids with commas. See the
-// mapping in net/dns/dns_util.cc for provider ids.
-const base::FeatureParam<std::string>
-    kDnsOverHttpsUpgradeDisabledProvidersParam{&kDnsOverHttpsUpgrade,
-                                               "DisabledProviders", ""};
 
 // Disable special treatment on requests with keepalive set (see
 // https://fetch.spec.whatwg.org/#request-keepalive-flag). This is introduced

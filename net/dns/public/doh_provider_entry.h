@@ -9,6 +9,7 @@
 #include <string>
 #include <vector>
 
+#include "base/feature_list.h"
 #include "net/base/ip_address.h"
 #include "net/base/net_export.h"
 #include "net/dns/public/dns_over_https_server_config.h"
@@ -37,14 +38,18 @@ enum class DohProviderIdForHistogram {
 // Represents insecure DNS, DoT, and DoH services run by the same provider.
 // These entries are used to support upgrade from insecure DNS or DoT services
 // to associated DoH services in automatic mode and to populate the dropdown
-// menu for secure mode. To be eligible for auto-upgrade, entries must have a
-// non-empty |ip_strs| or non-empty |dns_over_tls_hostnames|. To be eligible for
-// the dropdown menu, entries must have non-empty |ui_name| and
-// |privacy_policy|. If |display_globally| is true, the entry is eligible for
-// being displayed globally in the dropdown menu. If |display_globally| is
-// false, |display_countries| should contain the two-letter ISO 3166-1 country
-// codes, if any, where the entry is eligible for being displayed in the
-// dropdown menu.
+// menu for secure mode.
+//
+// To be eligible for auto-upgrade, an entry must have a non-empty `ip_strs` or
+// non-empty `dns_over_tls_hostnames`. To be eligible for the dropdown menu, the
+// entry must have non-empty `ui_name` and `privacy_policy`. If
+// `display_globally` is true, the entry is eligible to be displayed globally in
+// the dropdown menu. If `display_globally` is false, `display_countries` should
+// contain the two-letter ISO 3166-1 country codes, if any, where the entry is
+// eligible for being displayed in the dropdown menu.
+//
+// If `feature` is disabled, the entry is eligible for neither auto-upgrade nor
+// the dropdown menu.
 struct NET_EXPORT DohProviderEntry {
  public:
   using List = std::vector<const DohProviderEntry*>;
@@ -59,6 +64,7 @@ struct NET_EXPORT DohProviderEntry {
   };
 
   std::string provider;
+  base::Feature feature;
   // A provider_id_for_histogram is required for entries that are intended to
   // be visible in the UI.
   absl::optional<DohProviderIdForHistogram> provider_id_for_histogram;
@@ -78,6 +84,7 @@ struct NET_EXPORT DohProviderEntry {
 
   static DohProviderEntry ConstructForTesting(
       std::string provider,
+      base::Feature&& feature,
       absl::optional<DohProviderIdForHistogram> provider_id_for_histogram,
       std::set<base::StringPiece> ip_strs,
       std::set<std::string> dns_over_tls_hostnames,
@@ -88,15 +95,20 @@ struct NET_EXPORT DohProviderEntry {
       std::set<std::string> display_countries,
       LoggingLevel logging_level = LoggingLevel::kNormal);
 
-  // Entries are move-only.  This allows tests to construct a List but ensures
-  // that |const DohProviderEntry*| is a safe type for application code.
-  DohProviderEntry(DohProviderEntry&& other);
-  DohProviderEntry& operator=(DohProviderEntry&& other);
+  // Entries are neither copyable nor moveable. This allows tests to construct a
+  // List but ensures that `const DohProviderEntry*` is a safe type for
+  // application code.
+  DohProviderEntry(DohProviderEntry& other) = delete;
+  DohProviderEntry(DohProviderEntry&& other) = delete;
+
   ~DohProviderEntry();
 
  private:
   DohProviderEntry(
       std::string provider,
+      // Disallow implicit copying of the `feature` parameter because there
+      // cannot be more than one `base::Feature` for a given feature name.
+      base::Feature&& feature,
       absl::optional<DohProviderIdForHistogram> provider_id_for_histogram,
       std::set<base::StringPiece> ip_strs,
       std::set<std::string> dns_over_tls_hostnames,

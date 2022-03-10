@@ -227,10 +227,9 @@ void SecureDnsHandler::SendSecureDnsSettingUpdatesToJavascript() {
 
 // static
 net::DohProviderEntry::List SecureDnsHandler::GetFilteredProviders() {
-  const auto local_providers = secure_dns::ProvidersForCountry(
-      net::DohProviderEntry::GetList(), country_codes::GetCurrentCountryID());
-  return secure_dns::RemoveDisabledProviders(
-      local_providers, secure_dns::GetDisabledProviders());
+  return secure_dns::ProvidersForCountry(
+      secure_dns::SelectEnabledProviders(net::DohProviderEntry::GetList()),
+      country_codes::GetCurrentCountryID());
 }
 
 }  // namespace settings

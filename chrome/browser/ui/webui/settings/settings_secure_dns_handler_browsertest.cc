@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/feature_list.h"
 #include "chrome/browser/ui/webui/settings/settings_secure_dns_handler.h"
 
 #include "base/containers/adapters.h"
@@ -44,31 +45,46 @@ constexpr char kWebUiFunctionName[] = "webUiCallbackName";
 
 net::DohProviderEntry::List GetDohProviderListForTesting() {
   static const auto global1 = net::DohProviderEntry::ConstructForTesting(
-      "Provider_Global1", net::DohProviderIdForHistogram(-1), {} /*ip_strs */,
+      "Provider_Global1",
+      base::Feature("DohProviderFeatureForProvider_Global1",
+                    base::FEATURE_ENABLED_BY_DEFAULT),
+      net::DohProviderIdForHistogram{-1}, {} /*ip_strs */,
       {} /* dot_hostnames */, "https://global1.provider/dns-query{?dns}",
       "Global Provider 1" /* ui_name */,
       "https://global1.provider/privacy_policy/" /* privacy_policy */,
       true /* display_globally */, {} /* display_countries */);
   static const auto no_display = net::DohProviderEntry::ConstructForTesting(
-      "Provider_NoDisplay", net::DohProviderIdForHistogram(-2), {} /*ip_strs */,
+      "Provider_NoDisplay",
+      base::Feature("DohProviderFeatureForProvider_NoDisplay",
+                    base::FEATURE_ENABLED_BY_DEFAULT),
+      net::DohProviderIdForHistogram{-2}, {} /*ip_strs */,
       {} /* dot_hostnames */, "https://nodisplay.provider/dns-query{?dns}",
       "No Display Provider" /* ui_name */,
       "https://nodisplay.provider/privacy_policy/" /* privacy_policy */,
       false /* display_globally */, {} /* display_countries */);
   static const auto ee_fr = net::DohProviderEntry::ConstructForTesting(
-      "Provider_EE_FR", net::DohProviderIdForHistogram(-3), {} /*ip_strs */,
+      "Provider_EE_FR",
+      base::Feature("DohProviderFeatureForProvider_EE_FR",
+                    base::FEATURE_ENABLED_BY_DEFAULT),
+      net::DohProviderIdForHistogram{-3}, {} /*ip_strs */,
       {} /* dot_hostnames */, "https://ee.fr.provider/dns-query{?dns}",
       "EE/FR Provider" /* ui_name */,
       "https://ee.fr.provider/privacy_policy/" /* privacy_policy */,
       false /* display_globally */, {"EE", "FR"} /* display_countries */);
   static const auto fr = net::DohProviderEntry::ConstructForTesting(
-      "Provider_FR", net::DohProviderIdForHistogram(-4), {} /*ip_strs */,
+      "Provider_FR",
+      base::Feature("DohProviderFeatureForProvider_FR",
+                    base::FEATURE_ENABLED_BY_DEFAULT),
+      net::DohProviderIdForHistogram{-4}, {} /*ip_strs */,
       {} /* dot_hostnames */, "https://fr.provider/dns-query{?dns}",
       "FR Provider" /* ui_name */,
       "https://fr.provider/privacy_policy/" /* privacy_policy */,
       false /* display_globally */, {"FR"} /* display_countries */);
   static const auto global2 = net::DohProviderEntry::ConstructForTesting(
-      "Provider_Global2", net::DohProviderIdForHistogram(-5), {} /*ip_strs */,
+      "Provider_Global2",
+      base::Feature("DohProviderFeatureForProvider_Global2",
+                    base::FEATURE_ENABLED_BY_DEFAULT),
+      net::DohProviderIdForHistogram{-5}, {} /*ip_strs */,
       {} /* dot_hostnames */, "https://global2.provider/dns-query{?dns}",
       "Global Provider 2" /* ui_name */,
       "https://global2.provider/privacy_policy/" /* privacy_policy */,
