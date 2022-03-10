@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.flags;
 
+import androidx.annotation.VisibleForTesting;
+
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.JNINamespace;
 import org.chromium.chrome.browser.ui.messages.snackbar.Snackbar;
@@ -24,7 +26,12 @@ public class BadFlagsSnackbarManager {
      */
     @CalledByNative
     public static void show(WindowAndroid windowAndroid, String message) {
-        SnackbarManager snackbarManager = SnackbarManagerProvider.from(windowAndroid);
+        createSnackbar(message, SnackbarManagerProvider.from(windowAndroid));
+    }
+
+    @VisibleForTesting
+    static void createSnackbar(String message, SnackbarManager snackbarManager) {
+        if (snackbarManager == null) return;
         Snackbar snackBar =
                 Snackbar.make(message, null, Snackbar.TYPE_NOTIFICATION, Snackbar.UMA_BAD_FLAGS);
         snackBar.setSingleLine(false);
