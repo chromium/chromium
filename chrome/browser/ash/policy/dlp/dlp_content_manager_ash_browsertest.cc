@@ -1092,13 +1092,13 @@ class DlpContentManagerAshScreenShareBrowserTest
   void StartDesktopScreenShare(
       content::WebContents* web_contents,
       blink::mojom::MediaStreamRequestResult expected_result) {
+    const content::DesktopMediaID media_id(content::DesktopMediaID::TYPE_SCREEN,
+                                           content::DesktopMediaID::kFakeId);
     const std::string requested_video_device_id =
         content::DesktopStreamsRegistry::GetInstance()->RegisterStream(
             web_contents->GetMainFrame()->GetProcess()->GetID(),
             web_contents->GetMainFrame()->GetRoutingID(),
-            url::Origin::Create(GURL(kExampleUrl)),
-            content::DesktopMediaID(content::DesktopMediaID::TYPE_SCREEN,
-                                    content::DesktopMediaID::kFakeId),
+            url::Origin::Create(GURL(kExampleUrl)), media_id,
             /*extension_name=*/"",
             content::DesktopStreamRegistryType::kRegistryStreamTypeDesktop);
 
@@ -1109,7 +1109,7 @@ class DlpContentManagerAshScreenShareBrowserTest
         CreateMediaStreamRequest(
             web_contents, requested_video_device_id,
             blink::mojom::MediaStreamType::GUM_DESKTOP_VIDEO_CAPTURE),
-        expected_result);
+        expected_result, media_id);
   }
 
   void StartTabScreenShare(
@@ -1131,15 +1131,17 @@ class DlpContentManagerAshScreenShareBrowserTest
         CreateMediaStreamRequest(
             web_contents, /*requested_video_device_id=*/std::string(),
             blink::mojom::MediaStreamType::GUM_TAB_VIDEO_CAPTURE),
-        expected_result);
+        expected_result, media_id);
   }
 
  private:
-  void StartScreenShare(
-      std::unique_ptr<MediaAccessHandler> handler,
-      content::WebContents* web_contents,
-      content::MediaStreamRequest request,
-      blink::mojom::MediaStreamRequestResult expected_result) {
+  void StartScreenShare(std::unique_ptr<MediaAccessHandler> handler,
+                        content::WebContents* web_contents,
+                        content::MediaStreamRequest request,
+                        blink::mojom::MediaStreamRequestResult expected_result,
+                        const content::DesktopMediaID& media_id) {
+    // First check for the permission to start screen sharing.
+    // It should call DlpContentManager::CheckScreenShareRestriction().
     base::test::TestFuture<
         std::reference_wrapper<const blink::MediaStreamDevices>,
         blink::mojom::MediaStreamRequestResult,
@@ -1153,7 +1155,21 @@ class DlpContentManagerAshScreenShareBrowserTest
         /*extension=*/nullptr);
     ASSERT_TRUE(test_future.Wait()) << "MediaResponseCallback timed out.";
     EXPECT_EQ(test_future.Get<1>(), expected_result);
+
+    // Simulate starting screen sharing.
+    // Calls DlpContentManager::OnScreenShareStarted().
+    if (expected_result == blink::mojom::MediaStreamRequestResult::OK) {
+      DlpContentManagerAsh* manager =
+          static_cast<DlpContentManagerAsh*>(helper_->GetContentManager());
+      EXPECT_CALL(stop_cb_, Run).Times(0);
+      manager->OnScreenShareStarted(kLabel, {media_id}, kApplicationTitle,
+                                    stop_cb_.Get(),
+                                    /*state_change_callback*/ base::DoNothing(),
+                                    /*source_callback=*/base::DoNothing());
+    }
   }
+
+  base::MockCallback<base::RepeatingClosure> stop_cb_;
 };
 
 IN_PROC_BROWSER_TEST_F(DlpContentManagerAshScreenShareBrowserTest,
@@ -1234,7 +1250,7 @@ IN_PROC_BROWSER_TEST_F(DlpContentManagerAshScreenShareBrowserTest,
   helper_->ResetWarnNotifierForTesting();
 }
 
-// Starting screen sharing and navigating other tabs should create exactly one
+// Starting screen sharing and visiting other tabs should create exactly one
 // reporting event.
 IN_PROC_BROWSER_TEST_F(DlpContentManagerAshScreenShareBrowserTest,
                        ScreenShareReporting) {
@@ -1246,8 +1262,7 @@ IN_PROC_BROWSER_TEST_F(DlpContentManagerAshScreenShareBrowserTest,
       browser()->tab_strip_model()->GetActiveWebContents();
   helper_->ChangeConfidentiality(web_contents, kScreenShareReported);
 
-  StartDesktopScreenShare(web_contents,
-                          blink::mojom::MediaStreamRequestResult::OK);
+  StartTabScreenShare(web_contents, blink::mojom::MediaStreamRequestResult::OK);
   CheckEvents(DlpRulesManager::Restriction::kScreenShare,
               DlpRulesManager::Level::kReport, 1u);
   EXPECT_FALSE(display_service_tester.GetNotification(
@@ -1262,6 +1277,12 @@ IN_PROC_BROWSER_TEST_F(DlpContentManagerAshScreenShareBrowserTest,
   chrome::NewTab(browser());
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL(kGoogleUrl)));
   ASSERT_NE(browser()->tab_strip_model()->GetActiveWebContents(), web_contents);
+  ASSERT_EQ(web_contents->GetLastCommittedURL(), origin);
+  ASSERT_EQ(browser()
+                ->tab_strip_model()
+                ->GetActiveWebContents()
+                ->GetLastCommittedURL(),
+            GURL(kGoogleUrl));
   // Just additional check that visiting a tab with restricted content does not
   // affect the shared tab.
   helper_->ChangeConfidentiality(
