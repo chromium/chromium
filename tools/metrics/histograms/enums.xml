@@ -53361,6 +53361,7 @@ from previous Chrome versions.
   <int value="-864232986" label="StartSurfaceAndroid:disabled"/>
   <int value="-864205629" label="enable-offline-load-stale-cache"/>
   <int value="-863581676" label="BluetoothFixA2dpPacketSize:disabled"/>
+  <int value="-863269581" label="WebFeedOnboarding:disabled"/>
   <int value="-861678473" label="disable-offer-upload-credit-cards"/>
   <int value="-861524874" label="AutofillParseMerchantPromoCodeFields:enabled"/>
   <int value="-861343291" label="ChromeHome:disabled"/>
@@ -57232,6 +57233,7 @@ from previous Chrome versions.
   <int value="1861067469" label="SystemJapanesePhysicalTyping:disabled"/>
   <int value="1861251313"
       label="enable-message-center-always-scroll-up-upon-notification-removal"/>
+  <int value="1861515782" label="WebFeedOnboarding:enabled"/>
   <int value="1861521561" label="OmniboxLocalEntitySuggestions:enabled"/>
   <int value="1862126613" label="DesktopPWAsRunOnOsLogin:enabled"/>
   <int value="1862207743" label="enable-android-spellchecker"/>

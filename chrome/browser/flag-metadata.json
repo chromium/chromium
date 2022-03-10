@@ -6123,6 +6123,11 @@
     "expiry_milestone": 105
   },
   {
+    "name": "web-feed-onboarding",
+    "owners": ["//chrome/android/feed/OWNERS", "feed@chromium.org" ],
+    "expiry_milestone": 110
+  },
+  {
     "name": "web-feed-sort",
     "owners": ["//chrome/android/feed/OWNERS", "feed@chromium.org" ],
     "expiry_milestone": 110

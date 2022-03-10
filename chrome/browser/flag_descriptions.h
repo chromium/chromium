@@ -2104,6 +2104,9 @@ extern const char kVoiceButtonInTopToolbarDescription[];
 extern const char kWebFeedName[];
 extern const char kWebFeedDescription[];
 
+extern const char kWebFeedOnboardingName[];
+extern const char kWebFeedOnboardingDescription[];
+
 extern const char kWebFeedSortName[];
 extern const char kWebFeedSortDescription[];
 
