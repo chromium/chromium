@@ -285,17 +285,17 @@ void FrameSinkVideoCaptureDevice::OnStopped() {
 }
 
 void FrameSinkVideoCaptureDevice::OnLog(const std::string& message) {
+  if (!BrowserThread::CurrentlyOn(BrowserThread::IO)) {
+    GetIOThreadTaskRunner({})->PostTask(
+        FROM_HERE, base::BindOnce(&FrameSinkVideoCaptureDevice::OnLog,
+                                  weak_factory_.GetWeakPtr(), message));
+    return;
+  }
+
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   if (receiver_) {
-    if (BrowserThread::CurrentlyOn(BrowserThread::IO)) {
-      receiver_->OnLog(message);
-    } else {
-      GetIOThreadTaskRunner({})->PostTask(
-          FROM_HERE,
-          base::BindOnce(&media::VideoFrameReceiver::OnLog,
-                         base::Unretained(receiver_.get()), message));
-    }
+    receiver_->OnLog(message);
   }
 }
 
