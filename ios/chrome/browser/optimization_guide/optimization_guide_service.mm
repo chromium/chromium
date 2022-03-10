@@ -62,14 +62,6 @@ OptimizationGuideService::OptimizationGuideService(
         optimization_guide::CommandLineTopHostProvider::CreateIfEnabled();
     tab_url_provider_ = std::make_unique<TabUrlProviderImpl>(
         chrome_browser_state, base::DefaultClock::GetInstance());
-    bool optimization_guide_fetching_enabled =
-        optimization_guide::IsUserPermittedToFetchFromRemoteOptimizationGuide(
-            browser_state->IsOffTheRecord(), chrome_browser_state->GetPrefs());
-    base::UmaHistogramBoolean("OptimizationGuide.RemoteFetchingEnabled",
-                              optimization_guide_fetching_enabled);
-    IOSChromeMetricsServiceAccessor::RegisterSyntheticFieldTrial(
-        "SyntheticOptimizationGuideRemoteFetching",
-        optimization_guide_fetching_enabled ? "Enabled" : "Disabled");
     hint_store_ =
         optimization_guide::features::ShouldPersistHintsToDisk()
             ? std::make_unique<optimization_guide::OptimizationGuideStore>(
@@ -91,6 +83,22 @@ OptimizationGuideService::OptimizationGuideService(
 
 OptimizationGuideService::~OptimizationGuideService() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+}
+
+void OptimizationGuideService::DoFinalInit(web::BrowserState* browser_state) {
+  ChromeBrowserState* chrome_browser_state =
+      ChromeBrowserState::FromBrowserState(browser_state);
+  DCHECK(chrome_browser_state);
+  if (!chrome_browser_state->IsOffTheRecord()) {
+    bool optimization_guide_fetching_enabled =
+        optimization_guide::IsUserPermittedToFetchFromRemoteOptimizationGuide(
+            browser_state->IsOffTheRecord(), chrome_browser_state->GetPrefs());
+    base::UmaHistogramBoolean("OptimizationGuide.RemoteFetchingEnabled",
+                              optimization_guide_fetching_enabled);
+    IOSChromeMetricsServiceAccessor::RegisterSyntheticFieldTrial(
+        "SyntheticOptimizationGuideRemoteFetching",
+        optimization_guide_fetching_enabled ? "Enabled" : "Disabled");
+  }
 }
 
 optimization_guide::HintsManager* OptimizationGuideService::GetHintsManager() {

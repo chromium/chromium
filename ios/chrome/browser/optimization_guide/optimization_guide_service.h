@@ -45,6 +45,10 @@ class OptimizationGuideService : public KeyedService {
   OptimizationGuideService(const OptimizationGuideService&) = delete;
   OptimizationGuideService& operator=(const OptimizationGuideService&) = delete;
 
+  // Some initialization parts must be done once |browser_state| is fully
+  // initialized.
+  void DoFinalInit(web::BrowserState* browser_state);
+
   // Registers the optimization types that intend to be queried during the
   // session. It is expected for this to be called right after the browser has
   // been initialized.

@@ -454,6 +454,10 @@ bool IOSChromeMetricsServiceClient::RegisterForNotifications() {
           ->GetChromeBrowserStateManager()
           ->GetLoadedBrowserStates();
   bool all_profiles_succeeded = true;
+
+  // If this function is called too early (before browser_state is fully
+  // initialized), the event listener will not be registered correctly.
+  DCHECK_GT(loaded_browser_states.size(), 0u);
   for (ChromeBrowserState* browser_state : loaded_browser_states) {
     if (!RegisterForBrowserStateEvents(browser_state)) {
       all_profiles_succeeded = false;
