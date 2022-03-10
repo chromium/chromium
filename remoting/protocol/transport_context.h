@@ -20,10 +20,6 @@ namespace network {
 class SharedURLLoaderFactory;
 }  // namespace network
 
-namespace rtc {
-class NetworkManager;
-}  // namespace rtc
-
 namespace remoting {
 
 class OAuthTokenGetter;
@@ -64,15 +60,6 @@ class TransportContext : public base::RefCountedThreadSafe<TransportContext> {
     ice_config_ = ice_config;
   }
 
-  // Sets a reference to the NetworkManager that holds the list of
-  // network interfaces. If the NetworkManager is deleted while this
-  // TransportContext is live, the caller should set this to nullptr.
-  // TODO(crbug.com/848045): This should be a singleton - either a global
-  // instance, or one that is owned by this TransportContext.
-  void set_network_manager(rtc::NetworkManager* network_manager) {
-    network_manager_ = network_manager;
-  }
-
   // Prepares fresh ICE configs. It may be called while connection is being
   // negotiated to minimize the chance that the following GetIceConfig() will
   // be blocking.
@@ -86,7 +73,6 @@ class TransportContext : public base::RefCountedThreadSafe<TransportContext> {
   }
   const NetworkSettings& network_settings() const { return network_settings_; }
   TransportRole role() const { return role_; }
-  rtc::NetworkManager* network_manager() const { return network_manager_; }
 
   // Returns the suggested bandwidth cap for TURN relay connections, or 0 if
   // no rate-limit is set in the IceConfig.
@@ -105,8 +91,6 @@ class TransportContext : public base::RefCountedThreadSafe<TransportContext> {
   raw_ptr<OAuthTokenGetter> oauth_token_getter_ = nullptr;
   NetworkSettings network_settings_;
   TransportRole role_;
-
-  raw_ptr<rtc::NetworkManager> network_manager_ = nullptr;
 
   IceConfig ice_config_;
 

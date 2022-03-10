@@ -21,7 +21,6 @@
 #include "third_party/webrtc/p2p/base/p2p_transport_channel.h"
 #include "third_party/webrtc/p2p/base/packet_transport_internal.h"
 #include "third_party/webrtc/p2p/base/port.h"
-#include "third_party/webrtc/rtc_base/network.h"
 
 namespace remoting {
 namespace protocol {
