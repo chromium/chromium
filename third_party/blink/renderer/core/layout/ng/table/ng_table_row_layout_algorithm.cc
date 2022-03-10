@@ -64,7 +64,9 @@ const NGLayoutResult* NGTableRowLayoutAlgorithm::Layout() {
         table_data.column_locations[cell_location_end_column].inline_size -
         table_data.column_locations[cell_location_start_column].offset;
     const LayoutUnit cell_block_size =
-        row.is_collapsed ? LayoutUnit() : cell_data.block_size;
+        cell_data.rowspan_block_size != kIndefiniteSize
+            ? cell_data.rowspan_block_size
+            : row.block_size;
 
     // Our initial block-size is definite if this cell has a fixed block-size,
     // or we have grown and the table has a specified block-size.
