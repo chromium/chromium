@@ -238,10 +238,38 @@ void PageContentAnnotationsService::OverridePageContentAnnotatorForTesting(
   annotator_ = annotator;
 }
 
+// static
+std::string PageContentAnnotationsService::StringInputForPageTopicsDomain(
+    const GURL& url) {
+  // TODO(crbug.com/1240822): Add whatever logic needs to be here to match the
+  // model data processing.
+  return url.host();
+}
+
+void PageContentAnnotationsService::BatchAnnotatePageTopics(
+    BatchAnnotationCallback callback,
+    const std::vector<GURL>& inputs) {
+  std::vector<std::string> domains;
+  for (const GURL& url : inputs) {
+    domains.emplace_back(StringInputForPageTopicsDomain(url));
+  }
+
+  if (!annotator_) {
+    std::move(callback).Run(CreateEmptyBatchAnnotationResults(domains));
+    return;
+  }
+
+  annotator_->Annotate(std::move(callback), domains,
+                       AnnotationType::kPageTopics);
+}
+
 void PageContentAnnotationsService::BatchAnnotate(
     BatchAnnotationCallback callback,
     const std::vector<std::string>& inputs,
     AnnotationType annotation_type) {
+  DCHECK_NE(annotation_type, AnnotationType::kPageTopics)
+      << "Please use |BatchAnnotatePageTopics| instead";
+
   if (!annotator_) {
     std::move(callback).Run(CreateEmptyBatchAnnotationResults(inputs));
     return;
