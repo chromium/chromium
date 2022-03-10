@@ -16,6 +16,7 @@
 #include "base/bind.h"
 #include "base/check_op.h"
 #include "base/feature_list.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/strings/string_number_conversions.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "components/prefs/pref_registry_simple.h"
@@ -303,10 +304,12 @@ bool AshColorProvider::IsThemed() const {
 
 void AshColorProvider::ToggleColorMode() {
   DCHECK(active_user_pref_service_);
-  active_user_pref_service_->SetBoolean(prefs::kDarkModeEnabled,
-                                        !IsDarkModeEnabled());
+  const bool value = !IsDarkModeEnabled();
+  active_user_pref_service_->SetBoolean(prefs::kDarkModeEnabled, value);
   active_user_pref_service_->CommitPendingWrite();
   NotifyDarkModeEnabledPrefChange();
+  base::UmaHistogramBoolean("Ash.DarkTheme.SystemTray.IsDarkModeEnabled",
+                            value);
 }
 
 void AshColorProvider::UpdateColorModeThemed(bool is_themed) {

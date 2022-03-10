@@ -63,6 +63,7 @@
 #include "ash/constants/ash_pref_names.h"
 #include "ash/constants/ash_pref_names.h"  // nogncheck
 #include "ash/public/cpp/ambient/ambient_prefs.h"
+#include "base/metrics/histogram_functions.h"
 #include "chrome/browser/ash/app_restore/full_restore_prefs.h"
 #include "chrome/browser/ash/crostini/crostini_pref_names.h"
 #include "chrome/browser/ash/guest_os/guest_os_pref_names.h"
@@ -1124,6 +1125,18 @@ settings_private::SetPrefResult PrefsUtil::SetPref(const std::string& pref_name,
     default:
       return settings_private::SetPrefResult::PREF_TYPE_UNSUPPORTED;
   }
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  if (pref_name == ash::prefs::kDarkModeEnabled) {
+    DCHECK(value->is_bool());
+    base::UmaHistogramBoolean("Ash.DarkTheme.Settings.IsDarkModeEnabled",
+                              value->GetBool());
+  } else if (pref_name == ash::prefs::kColorModeThemed) {
+    DCHECK(value->is_bool());
+    base::UmaHistogramBoolean("Ash.DarkTheme.Settings.IsThemed",
+                              value->GetBool());
+  }
+#endif
 
   // TODO(orenb): Process setting metrics here and in the CrOS setting method
   // too (like "ProcessUserMetric" in CoreOptionsHandler).

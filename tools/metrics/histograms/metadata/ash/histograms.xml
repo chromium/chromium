@@ -1130,6 +1130,39 @@ chromium-metrics-reviews@google.com.
       variants="ContextualNudgesCategories"/>
 </histogram>
 
+<histogram name="Ash.DarkTheme.Settings.IsDarkModeEnabled" enum="Boolean"
+    expires_after="2023-03-01">
+  <owner>minch@chromium.org</owner>
+  <owner>changmar@chromium.org</owner>
+  <summary>
+    Emitted true when the user switched to dark mode through (Dark theme) page
+    inside settings. Emitted false if the user switched to light mode in this
+    case. ChromeOS only.
+  </summary>
+</histogram>
+
+<histogram name="Ash.DarkTheme.Settings.IsThemed" enum="Boolean"
+    expires_after="2023-03-01">
+  <owner>minch@chromium.org</owner>
+  <owner>changmar@chromium.org</owner>
+  <summary>
+    Emitted true if the user checked (Based on your wallpaper) radio button
+    inside (Dark theme) page of the settings. Emitted false if the user checked
+    (Neutral) radio button inside the page. ChromeOS only.
+  </summary>
+</histogram>
+
+<histogram name="Ash.DarkTheme.SystemTray.IsDarkModeEnabled" enum="Boolean"
+    expires_after="2023-03-01">
+  <owner>minch@chromium.org</owner>
+  <owner>changmar@chromium.org</owner>
+  <summary>
+    Emitted true when the user switched to dark mode through toggling the (Dark
+    theme) feature pod button inside system tray menu. Emitted false if the user
+    switched to light mode through toggling this button. ChromeOS only.
+  </summary>
+</histogram>
+
 <histogram name="Ash.Desks.AnimationSmoothness.DeskActivation" units="%"
     expires_after="2022-04-17">
   <owner>afakhry@chromium.org</owner>
