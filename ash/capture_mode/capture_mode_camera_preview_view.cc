@@ -52,7 +52,8 @@ bool CameraPreviewView::OnMouseDragged(const ui::MouseEvent& event) {
 }
 
 void CameraPreviewView::OnMouseReleased(const ui::MouseEvent& event) {
-  camera_controller_->EndDraggingPreview(GetEventScreenLocation(event));
+  camera_controller_->EndDraggingPreview(GetEventScreenLocation(event),
+                                         /*is_touch=*/false);
 }
 
 void CameraPreviewView::OnGestureEvent(ui::GestureEvent* event) {
@@ -71,11 +72,13 @@ void CameraPreviewView::OnGestureEvent(ui::GestureEvent* event) {
       break;
     case ui::ET_GESTURE_SCROLL_END:
       DCHECK(camera_controller_->is_drag_in_progress());
-      camera_controller_->EndDraggingPreview(screen_location);
+      camera_controller_->EndDraggingPreview(screen_location,
+                                             /*is_touch=*/true);
       break;
     case ui::ET_GESTURE_END:
       if (camera_controller_->is_drag_in_progress())
-        camera_controller_->EndDraggingPreview(screen_location);
+        camera_controller_->EndDraggingPreview(screen_location,
+                                               /*is_touch=*/true);
       break;
     default:
       break;

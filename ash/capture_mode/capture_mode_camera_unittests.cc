@@ -1085,15 +1085,15 @@ TEST_F(CaptureModeCameraTest,
   EXPECT_EQ(window(), capture_mode_session->GetSelectedWindow());
 }
 
-class CameraPreviewBoundsTest
+class CaptureModeCameraPreviewTest
     : public CaptureModeCameraTest,
       public testing::WithParamInterface<CaptureModeSource> {
  public:
-  CameraPreviewBoundsTest() = default;
-  CameraPreviewBoundsTest(
-      const CameraPreviewBoundsTest& capture_mode_save_file_test) = delete;
-  CameraPreviewBoundsTest& operator=(const CameraPreviewBoundsTest&) = delete;
-  ~CameraPreviewBoundsTest() override = default;
+  CaptureModeCameraPreviewTest() = default;
+  CaptureModeCameraPreviewTest(const CaptureModeCameraPreviewTest&) = delete;
+  CaptureModeCameraPreviewTest& operator=(const CaptureModeCameraPreviewTest&) =
+      delete;
+  ~CaptureModeCameraPreviewTest() override = default;
 
   void StartCaptureSessionWithParam() {
     auto* controller = CaptureModeController::Get();
@@ -1137,12 +1137,26 @@ class CameraPreviewBoundsTest
         return window()->GetBoundsInScreen();
     }
   }
+
+  // Returns the cursor type when cursor is on top of the current capture
+  // surface.
+  ui::mojom::CursorType GetCursorTypeOnCaptureSurface() {
+    DCHECK(CaptureModeController::Get()->IsActive());
+
+    switch (GetParam()) {
+      case CaptureModeSource::kFullscreen:
+      case CaptureModeSource::kWindow:
+        return ui::mojom::CursorType::kCustom;
+      case CaptureModeSource::kRegion:
+        return ui::mojom::CursorType::kMove;
+    }
+  }
 };
 
 // Tests that camera preview's bounds is updated after display rotations with
 // two use cases, when capture session is active and when there's a video
 // recording in progress.
-TEST_P(CameraPreviewBoundsTest, DisplayRotation) {
+TEST_P(CaptureModeCameraPreviewTest, DisplayRotation) {
   StartCaptureSessionWithParam();
   auto* camera_controller = GetCameraController();
   AddDefaultCamera();
@@ -1183,7 +1197,7 @@ TEST_P(CameraPreviewBoundsTest, DisplayRotation) {
 // should be snapped to the correct snap position. It tests two use cases, when
 // capture session is active and when there's a video recording in progress
 // including drag to snap by mouse and by touch.
-TEST_P(CameraPreviewBoundsTest, CameraPreviewDragToSnap) {
+TEST_P(CaptureModeCameraPreviewTest, CameraPreviewDragToSnap) {
   StartCaptureSessionWithParam();
   auto* camera_controller = GetCameraController();
   AddDefaultCamera();
@@ -1244,7 +1258,7 @@ TEST_P(CameraPreviewBoundsTest, CameraPreviewDragToSnap) {
   VerifyPreviewAlignment(GetCaptureBoundsInScreen());
 }
 
-TEST_P(CameraPreviewBoundsTest, CameraPreviewDragToSnapOnMultipleDisplay) {
+TEST_P(CaptureModeCameraPreviewTest, CameraPreviewDragToSnapOnMultipleDisplay) {
   UpdateDisplay("800x700,801+0-800x700");
 
   const gfx::Point point_in_second_display = gfx::Point(1000, 500);
@@ -1272,7 +1286,7 @@ TEST_P(CameraPreviewBoundsTest, CameraPreviewDragToSnapOnMultipleDisplay) {
 
 // Tests that when there's a video recording is in progress, start a new
 // capture session will make camera preview not draggable.
-TEST_P(CameraPreviewBoundsTest,
+TEST_P(CaptureModeCameraPreviewTest,
        DragPreviewInNewCaptureSessionWhileVideoRecordingInProgress) {
   StartCaptureSessionWithParam();
   auto* camera_controller = GetCameraController();
@@ -1318,8 +1332,53 @@ TEST_P(CameraPreviewBoundsTest,
             snap_position_before_drag);
 }
 
+// Tests that when mouse event is on top of camera preview, cursor type should
+// be updated accordingly.
+TEST_P(CaptureModeCameraPreviewTest, CursorTypeUpdates) {
+  StartCaptureSessionWithParam();
+  auto* camera_controller = GetCameraController();
+  AddDefaultCamera();
+  camera_controller->SetSelectedCamera(CameraId(kDefaultCameraModelId, 1));
+
+  auto* preview_widget = camera_controller->camera_preview_widget();
+  const gfx::Rect preview_bounds_in_screen =
+      preview_widget->GetWindowBoundsInScreen();
+  const gfx::Point camera_preview_center_point =
+      preview_bounds_in_screen.CenterPoint();
+  const gfx::Point camera_preview_origin_point =
+      preview_bounds_in_screen.origin();
+  auto* event_generator = GetEventGenerator();
+
+  // Verify that moving mouse on camera preview will update the cursor type to
+  // `kPointer`.
+  auto* cursor_manager = Shell::Get()->cursor_manager();
+  event_generator->MoveMouseTo(camera_preview_center_point);
+  EXPECT_EQ(cursor_manager->GetCursor(), ui::mojom::CursorType::kPointer);
+
+  // Move mouse from camera preview to capture surface, verify cursor type is
+  // updated to the correct type of the current capture source.
+  event_generator->MoveMouseTo({camera_preview_origin_point.x() - 10,
+                                camera_preview_origin_point.y() - 10});
+  EXPECT_EQ(cursor_manager->GetCursor(), GetCursorTypeOnCaptureSurface());
+
+  // Drag camera preview, verify that cursor type is updated to `kPointer`.
+  DragPreviewToPoint(preview_widget,
+                     {camera_preview_center_point.x() - 10,
+                      camera_preview_center_point.y() - 10},
+                     /*by_touch_gestures=*/false,
+                     /*drop=*/false);
+  EXPECT_EQ(cursor_manager->GetCursor(), ui::mojom::CursorType::kPointer);
+
+  // Continue dragging and then drop camera preview, make sure cursor's position
+  // is outside of camera preview after it's snapped. Verify cursor type is
+  // updated to the correct type of the current capture source.
+  DragPreviewToPoint(preview_widget, {camera_preview_origin_point.x() - 20,
+                                      camera_preview_origin_point.y() - 20});
+  EXPECT_EQ(cursor_manager->GetCursor(), GetCursorTypeOnCaptureSurface());
+}
+
 INSTANTIATE_TEST_SUITE_P(All,
-                         CameraPreviewBoundsTest,
+                         CaptureModeCameraPreviewTest,
                          testing::Values(CaptureModeSource::kFullscreen,
                                          CaptureModeSource::kRegion,
                                          CaptureModeSource::kWindow));

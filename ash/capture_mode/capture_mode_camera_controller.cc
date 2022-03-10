@@ -10,6 +10,7 @@
 #include "ash/capture_mode/capture_mode_camera_preview_view.h"
 #include "ash/capture_mode/capture_mode_constants.h"
 #include "ash/capture_mode/capture_mode_controller.h"
+#include "ash/capture_mode/capture_mode_session.h"
 #include "ash/public/cpp/capture_mode/capture_mode_delegate.h"
 #include "ash/public/cpp/shell_window_ids.h"
 #include "ash/shell.h"
@@ -22,6 +23,7 @@
 #include "ui/compositor/layer.h"
 #include "ui/compositor/scoped_layer_animation_settings.h"
 #include "ui/gfx/geometry/point.h"
+#include "ui/gfx/geometry/point_conversions.h"
 #include "ui/gfx/geometry/transform.h"
 #include "ui/views/animation/animation_builder.h"
 #include "ui/views/widget/widget.h"
@@ -314,7 +316,8 @@ void CaptureModeCameraController::ContinueDraggingPreview(
 }
 
 void CaptureModeCameraController::EndDraggingPreview(
-    const gfx::PointF& screen_location) {
+    const gfx::PointF& screen_location,
+    bool is_touch) {
   ContinueDraggingPreview(screen_location);
   UpdateSnapPostionOnDragEnded();
 
@@ -337,6 +340,12 @@ void CaptureModeCameraController::EndDraggingPreview(
   is_drag_in_progress_ = false;
   // Disable cursor compositing at the end of the drag.
   Shell::Get()->UpdateCursorCompositingEnabled();
+
+  // Make sure cursor is updated correctly after camera preview is snapped.
+  if (CaptureModeController::Get()->IsActive()) {
+    CaptureModeController::Get()->capture_mode_session()->UpdateCursor(
+        gfx::ToRoundedPoint(screen_location), is_touch);
+  }
 }
 
 void CaptureModeCameraController::OnDevicesChanged(

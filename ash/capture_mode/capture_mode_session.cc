@@ -365,6 +365,21 @@ bool CameraPreviewWillBeShown(CaptureModeController* controller) {
   }
 }
 
+bool IsDragAllowedOnCameraPreview(const gfx::Point& screen_location) {
+  auto* controller = CaptureModeController::Get();
+  auto* camera_controller = controller->camera_controller();
+  if (camera_controller && !controller->is_recording_in_progress()) {
+    auto* camera_preview_widget = camera_controller->camera_preview_widget();
+    if ((camera_preview_widget &&
+         camera_preview_widget->GetWindowBoundsInScreen().Contains(
+             screen_location)) ||
+        camera_controller->is_drag_in_progress()) {
+      return true;
+    }
+  }
+  return false;
+}
+
 }  // namespace
 
 // -----------------------------------------------------------------------------
@@ -1133,6 +1148,13 @@ void CaptureModeSession::UpdateCursor(const gfx::Point& location_in_screen,
     return;
   }
 
+  // If the current mouse is on camera preview or camera preview drag is in
+  // progress, use the pointer cursor.
+  if (IsDragAllowedOnCameraPreview(location_in_screen)) {
+    cursor_setter_->UpdateCursor(ui::mojom::CursorType::kPointer);
+    return;
+  }
+
   // If the current mouse is on capture bar or settings menu, use the pointer
   // mouse cursor.
   const bool is_event_on_capture_bar_or_menu =
@@ -1499,17 +1521,12 @@ void CaptureModeSession::OnLocatedEvent(ui::LocatedEvent* event,
     RefreshBarWidgetBounds();
   }
 
-  auto* camera_controller = controller_->camera_controller();
-  if (camera_controller && !controller_->is_recording_in_progress()) {
-    auto* camera_preview_widget = camera_controller->camera_preview_widget();
-    if ((camera_preview_widget &&
-         camera_preview_widget->GetWindowBoundsInScreen().Contains(
-             screen_location)) ||
-        camera_controller->is_drag_in_progress()) {
-      // Pass the event to camera preview to handle it if the event is on top of
-      // camera preview and there's no video recording is in progress.
-      return;
-    }
+  if (IsDragAllowedOnCameraPreview(screen_location)) {
+    // Update cursor type when the event is on top of camera preview.
+    UpdateCursor(screen_location, is_touch);
+    // Pass the event to camera preview to handle it if the event is on top of
+    // camera preview and there's no video recording is in progress.
+    return;
   }
 
   const bool is_event_on_settings_menu =

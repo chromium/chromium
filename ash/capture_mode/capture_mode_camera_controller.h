@@ -173,7 +173,7 @@ class ASH_EXPORT CaptureModeCameraController
   // Handles drag events forwarded from `camera_preview_view_`.
   void StartDraggingPreview(const gfx::PointF& screen_location);
   void ContinueDraggingPreview(const gfx::PointF& screen_location);
-  void EndDraggingPreview(const gfx::PointF& screen_location);
+  void EndDraggingPreview(const gfx::PointF& screen_location, bool is_touch);
 
   // base::SystemMonitor::DevicesChangedObserver:
   void OnDevicesChanged(base::SystemMonitor::DeviceType device_type) override;
