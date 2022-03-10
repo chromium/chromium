@@ -29,7 +29,7 @@
 //     (e.g. an optional "Options" structure as many functions here have).
 //
 #pragma pack(push, 8)
-struct MojoSystemThunks {
+struct MojoSystemThunks64 {
   uint32_t size;  // Should be set to sizeof(MojoSystemThunks).
 
   MojoResult (*Initialize)(const struct MojoInitializeOptions* options);
@@ -240,7 +240,7 @@ struct MojoSystemThunks {
 // longer consuming it.
 typedef uint32_t MojoHandle32;
 
-struct MojoSystemThunks32 {
+struct MojoSystemThunks {
   uint32_t size;  // Should be set to sizeof(MojoSystemThunks32).
 
   MojoResult (*Initialize)(const struct MojoInitializeOptions* options);
@@ -439,14 +439,14 @@ struct MojoSystemThunks32 {
 };
 #pragma pack(pop)
 
-MOJO_SYSTEM_EXPORT const struct MojoSystemThunks* MojoEmbedderGetSystemThunks();
+typedef struct MojoSystemThunks MojoSystemThunks32;
 
-MOJO_SYSTEM_EXPORT const struct MojoSystemThunks32*
-MojoEmbedderGetSystemThunks32();
+MOJO_SYSTEM_EXPORT const struct MojoSystemThunks64*
+MojoEmbedderGetSystemThunks64();
 
-// A function for setting up the embedder's own system thunks. This should only
-// be called by Mojo embedder code.
+MOJO_SYSTEM_EXPORT const MojoSystemThunks32* MojoEmbedderGetSystemThunks32();
+
 MOJO_SYSTEM_EXPORT void MojoEmbedderSetSystemThunks(
-    const struct MojoSystemThunks* system_thunks);
+    const struct MojoSystemThunks64* system_thunks);
 
 #endif  // MOJO_PUBLIC_C_SYSTEM_THUNKS_H_

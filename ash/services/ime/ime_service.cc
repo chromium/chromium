@@ -269,7 +269,7 @@ void ImeService::SimpleDownloadFinishedV2(SimpleDownloadCallbackV2 callback,
   }
 }
 
-const MojoSystemThunks32* ImeService::GetMojoSystemThunks() {
+const MojoSystemThunks* ImeService::GetMojoSystemThunks() {
   return MojoEmbedderGetSystemThunks32();
 }
 

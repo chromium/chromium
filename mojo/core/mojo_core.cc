@@ -183,7 +183,7 @@ MojoResult ShutdownImpl(const struct MojoShutdownOptions* options) {
   return MOJO_RESULT_OK;
 }
 
-MojoSystemThunks g_thunks = {0};
+MojoSystemThunks64 g_thunks = {0};
 
 }  // namespace
 
@@ -193,7 +193,7 @@ MojoSystemThunks g_thunks = {0};
 #define EXPORT_FROM_MOJO_CORE __attribute__((visibility("default")))
 #endif
 
-EXPORT_FROM_MOJO_CORE void MojoGetSystemThunks(MojoSystemThunks* thunks) {
+EXPORT_FROM_MOJO_CORE void MojoGetSystemThunks(MojoSystemThunks64* thunks) {
   if (!g_thunks.size) {
     g_thunks = mojo::core::GetSystemThunks();
     g_thunks.Initialize = InitializeImpl;
@@ -202,7 +202,7 @@ EXPORT_FROM_MOJO_CORE void MojoGetSystemThunks(MojoSystemThunks* thunks) {
 
   // Caller must provide a thunk structure at least large enough to hold Core
   // ABI version 0. SetQuota is the first function introduced in ABI version 1.
-  CHECK_GE(thunks->size, offsetof(MojoSystemThunks, SetQuota));
+  CHECK_GE(thunks->size, offsetof(MojoSystemThunks64, SetQuota));
 
   // NOTE: This also overrites |thunks->size| with the actual size of our own
   // thunks if smaller than the caller's. This informs the caller that we
