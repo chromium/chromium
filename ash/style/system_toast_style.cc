@@ -10,6 +10,7 @@
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/ash_color_provider.h"
+#include "ash/style/highlight_border.h"
 #include "ash/style/pill_button.h"
 #include "ash/system/toast/toast_overlay.h"
 #include "ash/wm/work_area_insets.h"
@@ -160,9 +161,15 @@ SystemToastStyle::SystemToastStyle(
       views::BoxLayout::CrossAxisAlignment::kCenter);
   layout->SetFlexForView(label_, 1);
 
-  layer()->SetRoundedCornerRadius(gfx::RoundedCornersF(toast_height / 2.f));
+  const int toast_corner_radius = toast_height / 2.f;
+  layer()->SetRoundedCornerRadius(gfx::RoundedCornersF(toast_corner_radius));
   SetBackground(views::CreateRoundedRectBackground(GetBackgroundColor(),
-                                                   toast_height / 2.f));
+                                                   toast_corner_radius));
+  if (features::IsDarkLightModeEnabled()) {
+    SetBorder(std::make_unique<HighlightBorder>(
+        toast_corner_radius, HighlightBorder::Type::kHighlightBorder1,
+        /*use_light_colors=*/false));
+  }
 }
 
 SystemToastStyle::~SystemToastStyle() = default;
