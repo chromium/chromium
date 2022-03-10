@@ -45,6 +45,7 @@
 #include "chrome/browser/ash/certificate_provider/certificate_provider_service.h"
 #include "chrome/browser/ash/certificate_provider/certificate_provider_service_factory.h"
 #include "chrome/browser/ash/certificate_provider/pin_dialog_manager.h"
+#include "chrome/browser/ash/login/helper.h"
 #include "chrome/browser/ash/login/reauth_stats.h"
 #include "chrome/browser/ash/login/saml/public_saml_url_fetcher.h"
 #include "chrome/browser/ash/login/saml/saml_metric_utils.h"
@@ -817,10 +818,11 @@ void GaiaScreenHandler::HandleCompleteAuthentication(
       signin_partition_name_, signin_partition_manager,
       base::BindOnce(&GaiaScreenHandler::OnCookieWaitTimeout,
                      weak_factory_.GetWeakPtr()),
-      base::BindOnce(&LoginDisplayHost::CompleteLogin,
-                     base::Unretained(LoginDisplayHost::default_host())));
+      base::BindOnce([](std::unique_ptr<UserContext> user_context) {
+        LoginDisplayHost::default_host()->CompleteLogin(*user_context);
+      }));
 
-  pending_user_context_ = std::make_unique<UserContext>();
+  auto user_context = std::make_unique<UserContext>();
   SigninError error;
   if (!login::BuildUserContextForGaiaSignIn(
           login::GetUsertypeFromServicesString(services),
@@ -829,15 +831,14 @@ void GaiaScreenHandler::HandleCompleteAuthentication(
           SamlPasswordAttributes::FromJs(*password_attributes),
           GetSyncTrustedVaultKeysForUserContext(sync_trusted_vault_keys,
                                                 gaia_id),
-          *extension_provided_client_cert_usage_observer_,
-          pending_user_context_.get(), &error)) {
+          *extension_provided_client_cert_usage_observer_, user_context.get(),
+          &error)) {
     LoginDisplayHost::default_host()->GetSigninUI()->ShowSigninError(
         error, /*details=*/std::string());
-    pending_user_context_.reset();
     return;
   }
 
-  online_login_helper_->SetUserContext(std::move(pending_user_context_));
+  online_login_helper_->SetUserContext(std::move(user_context));
   online_login_helper_->RequestCookiesAndCompleteAuthentication();
 
   if (test_expects_complete_login_) {

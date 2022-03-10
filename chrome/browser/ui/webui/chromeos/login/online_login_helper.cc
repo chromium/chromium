@@ -172,7 +172,7 @@ OnlineLoginHelper::OnlineLoginHelper(
       on_cookie_timeout_callback_(std::move(on_cookie_timeout_callback)),
       complete_login_callback_(std::move(complete_login_callback)) {}
 
-OnlineLoginHelper::~OnlineLoginHelper() {}
+OnlineLoginHelper::~OnlineLoginHelper() = default;
 
 void OnlineLoginHelper::SetUserContext(
     std::unique_ptr<UserContext> pending_user_context) {
@@ -244,18 +244,18 @@ void OnlineLoginHelper::OnGetCookiesForCompleteAuthentication(
   }
 
   DCHECK(pending_user_context_);
-  UserContext user_context = *pending_user_context_;
+  auto user_context = std::move(pending_user_context_);
   pending_user_context_.reset();
   oauth_code_listener_.reset();
   cookie_waiting_timer_.reset();
 
-  user_context.SetAuthCode(auth_code);
+  user_context->SetAuthCode(auth_code);
   if (!gaps_cookie.empty())
-    user_context.SetGAPSCookie(gaps_cookie);
+    user_context->SetGAPSCookie(gaps_cookie);
   if (!rapt.empty())
-    user_context.SetReauthProofToken(rapt);
+    user_context->SetReauthProofToken(rapt);
 
-  std::move(complete_login_callback_).Run(user_context);
+  std::move(complete_login_callback_).Run(std::move(user_context));
 }
 
 }  // namespace chromeos

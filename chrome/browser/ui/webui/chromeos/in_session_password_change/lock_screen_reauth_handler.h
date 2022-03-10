@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_UI_WEBUI_CHROMEOS_IN_SESSION_PASSWORD_CHANGE_LOCK_SCREEN_REAUTH_HANDLER_H_
 #define CHROME_BROWSER_UI_WEBUI_CHROMEOS_IN_SESSION_PASSWORD_CHANGE_LOCK_SCREEN_REAUTH_HANDLER_H_
 
+#include <memory>
 #include "base/memory/weak_ptr.h"
 #include "base/values.h"
 // TODO(https://crbug.com/1164001): move to forward declaration.
@@ -61,7 +62,7 @@ class LockScreenReauthHandler : public content::WebUIMessageHandler {
 
   void OnReauthDialogReadyForTesting();
 
-  void CheckCredentials(const UserContext& user_context);
+  void CheckCredentials(std::unique_ptr<UserContext> user_context);
 
   void UpdateOrientationAndWidth();
 

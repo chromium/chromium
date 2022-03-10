@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_UI_WEBUI_CHROMEOS_LOGIN_ONLINE_LOGIN_HELPER_H_
 #define CHROME_BROWSER_UI_WEBUI_CHROMEOS_LOGIN_ONLINE_LOGIN_HELPER_H_
 
+#include <memory>
 #include <string>
 
 #include "ash/components/login/auth/cryptohome_authenticator.h"
@@ -89,7 +90,8 @@ bool BuildUserContextForGaiaSignIn(
 class OnlineLoginHelper : public network::mojom::CookieChangeListener {
  public:
   using OnCookieTimeoutCallback = base::OnceCallback<void(void)>;
-  using CompleteLoginCallback = base::OnceCallback<void(const UserContext&)>;
+  using CompleteLoginCallback =
+      base::OnceCallback<void(std::unique_ptr<UserContext>)>;
 
   explicit OnlineLoginHelper(
       std::string signin_partition_name,

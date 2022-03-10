@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ui/webui/chromeos/in_session_password_change/lock_screen_reauth_handler.h"
 
+#include <memory>
+
 #include "ash/components/login/auth/challenge_response/cert_utils.h"
 #include "ash/components/login/auth/cryptohome_key_constants.h"
 #include "ash/constants/ash_features.h"
@@ -304,9 +306,9 @@ void LockScreenReauthHandler::OnReauthDialogReadyForTesting() {
 }
 
 void LockScreenReauthHandler::CheckCredentials(
-    const UserContext& user_context) {
+    std::unique_ptr<UserContext> user_context) {
   Profile* profile = chromeos::ProfileHelper::Get()->GetProfileByAccountId(
-      user_context.GetAccountId());
+      user_context->GetAccountId());
   if (!profile) {
     LOG(ERROR) << "Invalid account id";
     return;
@@ -316,7 +318,7 @@ void LockScreenReauthHandler::CheckCredentials(
                           weak_factory_.GetWeakPtr());
   password_sync_manager_ =
       InSessionPasswordSyncManagerFactory::GetForProfile(profile);
-  password_sync_manager_->CheckCredentials(user_context,
+  password_sync_manager_->CheckCredentials(*user_context,
                                            password_changed_callback);
 }
 

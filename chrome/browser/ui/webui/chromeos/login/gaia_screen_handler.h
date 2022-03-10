@@ -446,8 +446,6 @@ class GaiaScreenHandler : public BaseScreenHandler,
 
   std::unique_ptr<OnlineLoginHelper> online_login_helper_;
 
-  std::unique_ptr<UserContext> pending_user_context_;
-
   base::WeakPtrFactory<GaiaScreenHandler> weak_factory_{this};
 };
 
