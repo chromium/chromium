@@ -9,6 +9,7 @@
 #include "chrome/browser/autofill/autofill_uitest.h"
 #include "chrome/browser/autofill/autofill_uitest_util.h"
 #include "chrome/browser/autofill/personal_data_manager_factory.h"
+#include "chrome/browser/platform_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/autofill/chrome_autofill_client.h"
 #include "chrome/browser/ui/browser.h"
@@ -24,6 +25,7 @@
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/test_utils.h"
 #include "ui/events/base_event_utils.h"
+#include "ui/views/widget/widget.h"
 
 namespace autofill {
 
@@ -39,6 +41,27 @@ std::ostream& operator<<(std::ostream& os, ObservedUiEvents event) {
       return os << "kNoEvent";
     default:
       return os << "<OutOfRange>";
+  }
+}
+
+// Keep in sync with BoundsOverlapWithAnyOpenPrompt() from
+// autofill_popup_view_utils.cc.
+void TryToCloseAllPrompts(content::WebContents* web_contents) {
+  gfx::NativeView top_level_view =
+      platform_util::GetViewForWindow(web_contents->GetTopLevelNativeWindow());
+  DCHECK(top_level_view);
+
+  // On Aura-based systems, prompts are siblings to the top level native window,
+  // and hence we need to go one level up to start searching from the root
+  // window.
+  top_level_view = platform_util::GetParent(top_level_view)
+                       ? platform_util::GetParent(top_level_view)
+                       : top_level_view;
+  views::Widget::Widgets all_widgets;
+  views::Widget::GetAllChildWidgets(top_level_view, &all_widgets);
+  for (views::Widget* w : all_widgets) {
+    if (w->IsDialogBox())
+      w->CloseWithReason(views::Widget::ClosedReason::kUnspecified);
   }
 }
 

@@ -37,6 +37,11 @@ enum class ObservedUiEvents {
 
 std::ostream& operator<<(std::ostream& os, ObservedUiEvents event);
 
+// Attempts to close all open bubbles.
+// This is not reliable on Windows because on Windows bubbles are not
+// necessarily children of the top-level view.
+void TryToCloseAllPrompts(content::WebContents* web_contents);
+
 class BrowserAutofillManagerTestDelegateImpl
     : public autofill::BrowserAutofillManagerTestDelegate {
  public:
@@ -108,6 +113,11 @@ class AutofillUiTest : public InProcessBrowserTest,
                              std::list<ObservedUiEvents> expected_events,
                              content::RenderWidgetHost* widget,
                              base::TimeDelta timeout = {});
+
+  void SendKeyToDataListPopup(ui::DomKey key);
+  void SendKeyToDataListPopup(ui::DomKey key,
+                              ui::DomCode code,
+                              ui::KeyboardCode key_code);
 
   bool HandleKeyPressEvent(const content::NativeWebKeyboardEvent& event);
 

@@ -72,6 +72,8 @@ bool CanShowDropdownHere(int item_height,
 
 // Returns whether there is any open prompt in |web_contents| with bounds that
 // overlap |screen_bounds|.
+// This is unreliable on Windows because bubbles are not necessarily children of
+// the root view of the current tab.
 bool BoundsOverlapWithAnyOpenPrompt(const gfx::Rect& screen_bounds,
                                     content::WebContents* web_contents);
 

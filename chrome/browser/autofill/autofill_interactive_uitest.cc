@@ -379,9 +379,13 @@ struct ShowAutofillPopupParams {
   bool field_was_focused_initially = IsFocusedField(e, rfh);
   for (size_t i = 1; i <= p.max_tries; ++i) {
     a = a << "Iteration " << i << "/" << p.max_tries << ". ";
-    // The translate bubble may overlap with the Autofill popup. This causes
+    // The translate bubble may overlap with the Autofill popup, which causes
     // flakiness. See crbug.com/1175735#c10.
+    // Also, the address-save prompts and others may overlap with the Autofill
+    // popup. So we preemptively close all bubbles, which however is not
+    // reliable on Windows.
     translate::test_utils::CloseCurrentBubble(test->browser());
+    TryToCloseAllPrompts(test->GetWebContents());
     if (i > 1) {
       test->DoNothingAndWaitAndIgnoreEvents(p.timeout);
       if (field_was_focused_initially) {

@@ -254,6 +254,7 @@ bool CanShowDropdownHere(int item_height,
           element_bottom_is_within_content_area_bounds);
 }
 
+// Keep in sync with TryToCloseAllPrompts() from autofill_uitest.cc.
 bool BoundsOverlapWithAnyOpenPrompt(const gfx::Rect& screen_bounds,
                                     content::WebContents* web_contents) {
   gfx::NativeView top_level_view =
