@@ -148,6 +148,8 @@ bool AutofillAssistantModelExecutor::Preprocess(
   for (const auto& text : node_signals.context_features.header_text) {
     Tokenize(text.Utf16(), text_tokenizer_.get(), &inputs[4]);
   }
+  Tokenize(node_signals.context_features.form_type.Utf16(),
+           text_tokenizer_.get(), &inputs[4]);
 
   for (size_t i = 0; i < inputs.size(); ++i) {
     absl::Status tensor_status =

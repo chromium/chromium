@@ -29,6 +29,7 @@
 #include "third_party/blink/renderer/platform/wtf/hash_map.h"
 #include "third_party/blink/renderer/platform/wtf/text/atomic_string.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
+#include "third_party/blink/renderer/platform/wtf/text/string_impl.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
 namespace blink {
@@ -37,6 +38,10 @@ namespace {
 constexpr int kMaxAncestorLevelForGeometry = 5;
 constexpr double kToleranceForGeometry = 1e-5;
 constexpr int kMaxCSSPixelDistance = 30;
+
+constexpr char kShippingFormType[] = "SHIPPING";
+constexpr char kBillingFormType[] = "BILLING";
+constexpr char kAfterLabel[] = "AFTRLBL";
 
 WebString JoinStrings(const WebVector<WebString>& strings,
                       const char* separator) {
@@ -166,13 +171,9 @@ void CollectNodeFeatures(const Element& element,
 // Add label name based on ancestors.
 // Example: <label>Label <input></label>
 WebString GetLabelRelatedChild(const Element& element) {
-  Node* document = element.ownerDocument();
   Node* node = element.parentNode();
-  while (node != document) {
-    if (!node) {
-      break;
-    }
-    if (node->IsElementNode() && node->HasTagName(html_names::kLabelTag)) {
+  while (node) {
+    if (node->HasTagName(html_names::kLabelTag)) {
       Element* label = DynamicTo<Element>(node);
       if (!IsVisible(*label)) {
         return WebString();
@@ -281,7 +282,7 @@ WebString GetLabelFromGeometry(const Element& element) {
       continue;
     }
 
-    WebString text = DynamicTo<Text>(node)->wholeText();
+    WebString text(DynamicTo<Text>(node)->wholeText());
     if (!text.IsNull() && !text.IsEmpty()) {
       distance_and_text.push_back({distance, text});
       if (distance < closest_distance) {
@@ -338,16 +339,12 @@ void AddFirstLegendOfFieldset(Node* node, WebVector<WebString>* header_text) {
 // Example: <fieldset><legend>Legend</legend><input/><fieldset>
 void GetFieldsetLegends(const Element& element,
                         AutofillAssistantContextFeatures* features) {
-  Node* document = element.ownerDocument();
   Node* node = element.parentNode();
-  while (node != document) {
-    if (!node) {
+  while (node) {
+    if (node->HasTagName(html_names::kFormTag)) {
       break;
     }
-    if (node->IsElementNode() && node->HasTagName(html_names::kFormTag)) {
-      break;
-    }
-    if (node->IsElementNode() && node->HasTagName(html_names::kFieldsetTag)) {
+    if (node->HasTagName(html_names::kFieldsetTag)) {
       AddFirstLegendOfFieldset(node, &features->header_text);
     }
     node = node->parentNode();
@@ -391,11 +388,120 @@ void AddHeaders(const Element& element,
   }
 }
 
+bool HasVisibleParent(const Node& node) {
+  if (!node.parentNode() || !node.parentNode()->IsElementNode()) {
+    return false;
+  }
+
+  return IsVisible(*DynamicTo<Element>(*node.parentNode()));
+}
+
+bool IsShippingFormObjective(const AtomicString& text) {
+  return text.Contains("ship", kTextCaseUnicodeInsensitive) ||
+         text.Contains("deliver", kTextCaseUnicodeInsensitive);
+}
+
+bool IsBillingFormObjective(const AtomicString& text) {
+  return text.Contains("billing", kTextCaseUnicodeInsensitive) ||
+         text.Contains("payment", kTextCaseUnicodeInsensitive);
+}
+
+WebVector<WebString> GetObjectivesFromAtomicString(const AtomicString& text) {
+  WebVector<WebString> objectives;
+  if (IsShippingFormObjective(text)) {
+    objectives.push_back(WebString::FromUTF8(kShippingFormType));
+  }
+  if (IsBillingFormObjective(text)) {
+    objectives.push_back(WebString::FromUTF8(kBillingFormType));
+  }
+  return objectives;
+}
+
+WebVector<WebString> GetObjectivesFromTextNode(const Node& node) {
+  return GetObjectivesFromAtomicString(
+      AtomicString(DynamicTo<Text>(node)->wholeText()));
+}
+
+WebVector<WebString> GetObjectivesFromElementNode(const Node& node) {
+  const Element* element = DynamicTo<Element>(node);
+  return GetObjectivesFromAtomicString(AtomicString(
+      String::FromUTF8(element->getAttribute(html_names::kIdAttr).Utf8() + " " +
+                       element->getAttribute(html_names::kNameAttr).Utf8())));
+}
+
+bool HasLabelAncestor(const Node& node) {
+  const Node* iter = &node;
+  while (iter) {
+    if (iter->HasTagName(html_names::kLabelTag)) {
+      return true;
+    }
+    iter = iter->parentNode();
+  }
+  return false;
+}
+
+void AddFormTypeForContext(const Element& element,
+                           AutofillAssistantContextFeatures* features) {
+  WebVector<WebString> best_objectives;
+  // First attempt: Look at text nodes.
+  // |after_label| captures the presence of a label between the header and the
+  // input, typically a checkbox "billing same as shipping".
+  bool after_label = false;
+  for (Node& node : NodeTraversal::DescendantsOf(*element.ownerDocument())) {
+    if (&node == &element) {
+      break;
+    }
+    if (!node.IsTextNode() || !HasVisibleParent(node)) {
+      continue;
+    }
+
+    WebVector<WebString> objectives = GetObjectivesFromTextNode(node);
+    if (objectives.empty()) {
+      continue;
+    }
+
+    if (HasLabelAncestor(node)) {
+      after_label = true;
+    } else {
+      after_label = false;
+      best_objectives = objectives;
+    }
+  }
+
+  if (best_objectives.empty()) {
+    // Second attempt: Try with id and names of ancestor nodes.
+    after_label = false;
+    Node* iter = element.parentNode();
+    while (iter && !iter->IsDocumentNode()) {
+      if (iter->IsElementNode()) {
+        WebVector<WebString> objectives = GetObjectivesFromElementNode(*iter);
+        if (!objectives.empty()) {
+          best_objectives = objectives;
+        }
+      }
+      iter = iter->parentNode();
+    }
+  }
+
+  if (best_objectives.empty()) {
+    return;
+  }
+
+  WebVector<WebString> form_type;
+  if (after_label) {
+    form_type.push_back(kAfterLabel);
+  }
+  for (const WebString& objective : best_objectives) {
+    form_type.push_back(objective);
+  }
+  features->form_type = JoinStrings(form_type, " ");
+}
+
 void CollectContextFeatures(const Element& element,
                             AutofillAssistantContextFeatures* features) {
   GetFieldsetLegends(element, features);
   AddHeaders(element, features);
-  // TODO(b/204839535): Implement form type.
+  AddFormTypeForContext(element, features);
 }
 
 void CollectSignalsForNode(

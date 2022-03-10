@@ -42,6 +42,8 @@ struct BLINK_MODULES_EXPORT AutofillAssistantLabelFeatures {
 struct BLINK_MODULES_EXPORT AutofillAssistantContextFeatures {
   // Text of headers.
   WebVector<WebString> header_text;
+  // Form the element is part of.
+  WebString form_type;
 };
 
 struct BLINK_MODULES_EXPORT AutofillAssistantNodeSignals {

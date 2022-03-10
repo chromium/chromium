@@ -413,4 +413,126 @@ TEST_F(NodeSignalsTest, AddHeadersOnlyIfAboveVisually) {
   EXPECT_TRUE(results[0].context_features.header_text.empty());
 }
 
+TEST_F(NodeSignalsTest, GetShippingFormTypeFromText) {
+  SetBodyContent(R"(
+    <div>Shipping</div>
+    <input>
+  )");
+
+  WebVector<AutofillAssistantNodeSignals> results =
+      GetAutofillAssistantNodeSignals(WebDocument(&GetDocument()));
+  ASSERT_EQ(results.size(), 1u);
+
+  EXPECT_EQ(results[0].context_features.form_type, "SHIPPING");
+}
+
+TEST_F(NodeSignalsTest, GetBillingFormTypeFromText) {
+  SetBodyContent(R"(
+    <div>Billing</div>
+    <input>
+  )");
+
+  WebVector<AutofillAssistantNodeSignals> results =
+      GetAutofillAssistantNodeSignals(WebDocument(&GetDocument()));
+  ASSERT_EQ(results.size(), 1u);
+
+  EXPECT_EQ(results[0].context_features.form_type, "BILLING");
+}
+
+TEST_F(NodeSignalsTest, DoNotGetFormTypeFromUnrelatedText) {
+  SetBodyContent(R"(
+    <div>Enter Address</div>
+    <input>
+  )");
+
+  WebVector<AutofillAssistantNodeSignals> results =
+      GetAutofillAssistantNodeSignals(WebDocument(&GetDocument()));
+  ASSERT_EQ(results.size(), 1u);
+
+  EXPECT_TRUE(results[0].context_features.form_type.IsEmpty());
+}
+
+TEST_F(NodeSignalsTest, DoNotGetFormTypeFromTextBelow) {
+  SetBodyContent(R"(
+    <input>
+    <div>Shipping</div>
+  )");
+
+  WebVector<AutofillAssistantNodeSignals> results =
+      GetAutofillAssistantNodeSignals(WebDocument(&GetDocument()));
+  ASSERT_EQ(results.size(), 1u);
+
+  EXPECT_TRUE(results[0].context_features.form_type.IsEmpty());
+}
+
+TEST_F(NodeSignalsTest, GetFormTypeFromAncestorId) {
+  SetBodyContent(R"(
+    <div id="shipping_address">
+      <input>
+    </div>
+  )");
+
+  WebVector<AutofillAssistantNodeSignals> results =
+      GetAutofillAssistantNodeSignals(WebDocument(&GetDocument()));
+  ASSERT_EQ(results.size(), 1u);
+
+  EXPECT_EQ(results[0].context_features.form_type, "SHIPPING");
+}
+
+TEST_F(NodeSignalsTest, GetFormTypeFromAncestorName) {
+  SetBodyContent(R"(
+    <div name="shipping_address">
+      <input>
+    </div>
+  )");
+
+  WebVector<AutofillAssistantNodeSignals> results =
+      GetAutofillAssistantNodeSignals(WebDocument(&GetDocument()));
+  ASSERT_EQ(results.size(), 1u);
+
+  EXPECT_EQ(results[0].context_features.form_type, "SHIPPING");
+}
+
+TEST_F(NodeSignalsTest, GetFormTypeFromTextOverAncestor) {
+  SetBodyContent(R"(
+    <div name="shipping_address">
+      <div>Billing</div>
+      <input>
+    </div>
+  )");
+
+  WebVector<AutofillAssistantNodeSignals> results =
+      GetAutofillAssistantNodeSignals(WebDocument(&GetDocument()));
+  ASSERT_EQ(results.size(), 1u);
+
+  EXPECT_EQ(results[0].context_features.form_type, "BILLING");
+}
+
+TEST_F(NodeSignalsTest, DoNotGetFormTypeFromLabel) {
+  SetBodyContent(R"(
+    <label>Shipping</label>
+    <input>
+  )");
+
+  WebVector<AutofillAssistantNodeSignals> results =
+      GetAutofillAssistantNodeSignals(WebDocument(&GetDocument()));
+  ASSERT_EQ(results.size(), 1u);
+
+  EXPECT_TRUE(results[0].context_features.form_type.IsEmpty());
+}
+
+TEST_F(NodeSignalsTest, GetFormTypeAfterLabel) {
+  SetBodyContent(R"(
+    <div>Billing</div>
+    <label>Shipping address is the same</label>
+    <input>
+  )");
+
+  WebVector<AutofillAssistantNodeSignals> results =
+      GetAutofillAssistantNodeSignals(WebDocument(&GetDocument()));
+  ASSERT_EQ(results.size(), 1u);
+
+  EXPECT_EQ(results[0].context_features.form_type, "AFTRLBL BILLING");
+}
+
 }  // namespace blink
