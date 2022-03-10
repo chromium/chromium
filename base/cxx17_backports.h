@@ -5,11 +5,7 @@
 #ifndef BASE_CXX17_BACKPORTS_H_
 #define BASE_CXX17_BACKPORTS_H_
 
-#include <array>
 #include <functional>
-#include <initializer_list>
-#include <memory>
-#include <string>
 #include <tuple>
 #include <type_traits>
 #include <utility>
