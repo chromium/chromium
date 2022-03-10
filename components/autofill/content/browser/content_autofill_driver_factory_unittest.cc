@@ -240,10 +240,9 @@ TEST_P(ContentAutofillDriverFactoryTest_WithOrWithoutBfCacheAndIframes,
 
   NavigateMainFrame("https://a.com/after-navigation");
 
+  ASSERT_EQ(orig_rfh, main_rfh());
   EXPECT_EQ(factory_test_api().GetDriver(orig_rfh), orig_driver);
-  // If BFCache is enabled, there will be 2 drivers as the old document is still
-  // around.
-  EXPECT_EQ(factory_test_api().num_drivers(), use_bfcache() ? 2u : 1u);
+  EXPECT_EQ(factory_test_api().num_drivers(), 1u);
 }
 
 // Tests that that a driver is removed and replaced with a fresh one after a
@@ -271,11 +270,10 @@ TEST_P(ContentAutofillDriverFactoryTest_WithOrWithoutBfCacheAndIframes,
   // been removed in ContentAutofillDriverFactory::RenderFrameDeleted(), unless
   // BFcache is enabled (or main_rfh() happens to have the same address as
   // |orig_rfh|).
-  if (use_bfcache()) {
+  if (use_bfcache())
     EXPECT_EQ(factory_test_api().GetDriver(orig_rfh), orig_driver);
-  } else if (main_rfh() != orig_rfh) {
+  else if (main_rfh() != orig_rfh)
     EXPECT_EQ(factory_test_api().GetDriver(orig_rfh), nullptr);
-  }
   EXPECT_NE(factory_test_api().GetDriver(main_rfh()), nullptr);
   EXPECT_EQ(factory_test_api().num_drivers(), use_bfcache() ? 2u : 1u);
 }

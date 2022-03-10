@@ -1,6 +1,6 @@
 This is a testharness.js-based test.
-PASS SameOrigin
-PASS SameSite
+NOTRUN SameOrigin Should be BFCached but actually wasn't
+NOTRUN SameSite Should be BFCached but actually wasn't
 PASS CrossSite
 PASS beforeunload
 NOTRUN unload Should be BFCached but actually wasn't

@@ -22,8 +22,6 @@
 #include "components/policy/policy_constants.h"
 #include "components/prefs/pref_service.h"
 #include "components/user_prefs/user_prefs.h"
-#include "content/public/browser/render_frame_host.h"
-#include "content/public/browser/web_contents.h"
 #include "content/public/common/content_features.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/test/browser_test.h"
@@ -58,6 +56,12 @@ class EnableDirectSocketsPolicyTest
     provider_.UpdateChromePolicy(GenerateEnableDirectSocketsPolicy());
   }
 
+ protected:
+  Browser* GetBrowserFromFrame(content::RenderFrameHost* frame) {
+    return chrome::FindBrowserWithWebContents(
+        content::WebContents::FromRenderFrameHost(frame));
+  }
+
  private:
   policy::PolicyMap GenerateEnableDirectSocketsPolicy() {
     policy::PolicyMap policies;
@@ -81,31 +85,27 @@ class EnableDirectSocketsPolicyTest
 IN_PROC_BROWSER_TEST_P(EnableDirectSocketsPolicyTest, MockTcp) {
   auto app_id = InstallIsolatedApp(kDirectSocketsAppHost);
 
-  content::RenderFrameHost* app_frame = OpenApp(app_id);
-  content::WebContents* app_contents =
-      content::WebContents::FromRenderFrameHost(app_frame);
+  auto* app_frame = OpenApp(app_id);
+  auto* app_browser = GetBrowserFromFrame(app_frame);
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
-      chrome::FindBrowserWithWebContents(app_contents),
-      https_server()->GetURL(kDirectSocketsAppHost,
-                             "/policy/direct_sockets.html")));
+      app_browser, https_server()->GetURL(kDirectSocketsAppHost,
+                                          "/policy/direct_sockets.html")));
 
   const bool enabled = std::get<1>(GetParam());
-  ASSERT_EQ(enabled, EvalJs(app_contents->GetMainFrame(), "mockTcp()"));
+  ASSERT_EQ(enabled, EvalJs(app_frame, "mockTcp()"));
 }
 
 IN_PROC_BROWSER_TEST_P(EnableDirectSocketsPolicyTest, MockUdp) {
   auto app_id = InstallIsolatedApp(kDirectSocketsAppHost);
 
-  content::RenderFrameHost* app_frame = OpenApp(app_id);
-  content::WebContents* app_contents =
-      content::WebContents::FromRenderFrameHost(app_frame);
+  auto* app_frame = OpenApp(app_id);
+  auto* app_browser = GetBrowserFromFrame(app_frame);
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
-      chrome::FindBrowserWithWebContents(app_contents),
-      https_server()->GetURL(kDirectSocketsAppHost,
-                             "/policy/direct_sockets.html")));
+      app_browser, https_server()->GetURL(kDirectSocketsAppHost,
+                                          "/policy/direct_sockets.html")));
 
   const bool enabled = std::get<1>(GetParam());
-  ASSERT_EQ(enabled, EvalJs(app_contents->GetMainFrame(), "mockUdp()"));
+  ASSERT_EQ(enabled, EvalJs(app_frame, "mockUdp()"));
 }
 
 INSTANTIATE_TEST_SUITE_P(

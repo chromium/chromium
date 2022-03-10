@@ -181,21 +181,6 @@ class DestructiveScriptTest : public ExecuteScriptApiTestBase,
   }
 };
 
-class BackForwardCacheDisabledDestructiveScriptTest
-    : public DestructiveScriptTest {
- private:
-  void SetUp() override {
-    // The SynchronousRemoval and MicrotaskRemoval tests seem to be especially
-    // flaky when same-site back/forward cache is enabled, so disable the
-    // feature.
-    // TODO(https://crbug.com/1293865): Fix the flakiness.
-    scoped_feature_list_.InitAndDisableFeature(features::kBackForwardCache);
-    DestructiveScriptTest::SetUp();
-  }
-
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
-
 // Flaky on ASAN and -dbg. crbug.com/1293865
 #if defined(ADDRESS_SANITIZER) || !defined(NDEBUG)
 #define MAYBE_SynchronousRemoval DISABLED_SynchronousRemoval
@@ -203,8 +188,7 @@ class BackForwardCacheDisabledDestructiveScriptTest
 #define MAYBE_SynchronousRemoval SynchronousRemoval
 #endif
 // Removes the frame as soon as the content script is executed.
-IN_PROC_BROWSER_TEST_P(BackForwardCacheDisabledDestructiveScriptTest,
-                       MAYBE_SynchronousRemoval) {
+IN_PROC_BROWSER_TEST_P(DestructiveScriptTest, MAYBE_SynchronousRemoval) {
   ASSERT_TRUE(RunSubtest("synchronous")) << message_;
 }
 
@@ -215,8 +199,7 @@ IN_PROC_BROWSER_TEST_P(BackForwardCacheDisabledDestructiveScriptTest,
 #define MAYBE_MicrotaskRemoval MicrotaskRemoval
 #endif
 // Removes the frame at the frame's first scheduled microtask.
-IN_PROC_BROWSER_TEST_P(BackForwardCacheDisabledDestructiveScriptTest,
-                       MAYBE_MicrotaskRemoval) {
+IN_PROC_BROWSER_TEST_P(DestructiveScriptTest, MAYBE_MicrotaskRemoval) {
   ASSERT_TRUE(RunSubtest("microtask")) << message_;
 }
 
@@ -258,11 +241,6 @@ IN_PROC_BROWSER_TEST_P(DestructiveScriptTest, DOMSubtreeModified3) {
 
 INSTANTIATE_TEST_SUITE_P(ExecuteScriptApiTest,
                          DestructiveScriptTest,
-                         ::testing::Range(0,
-                                          kDestructiveScriptTestBucketCount));
-
-INSTANTIATE_TEST_SUITE_P(ExecuteScriptApiTest,
-                         BackForwardCacheDisabledDestructiveScriptTest,
                          ::testing::Range(0,
                                           kDestructiveScriptTestBucketCount));
 

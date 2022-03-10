@@ -109,7 +109,7 @@ void MimeHandlerViewEmbedder::ReadyToCommitNavigation(
 void MimeHandlerViewEmbedder::DidFinishNavigation(
     content::NavigationHandle* handle) {
   if (!handle->HasCommitted() ||
-      render_frame_host_ != handle->GetRenderFrameHost()) {
+      frame_tree_node_id_ != handle->GetFrameTreeNodeId()) {
     return;
   }
   // We should've deleted the MimeHandlerViewEmbedder at this point if the frame
