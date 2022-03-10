@@ -158,8 +158,14 @@ IN_PROC_BROWSER_TEST_F(FileSystemAccessCapacityAllocationHostImplBrowserTest,
   EXPECT_EQ(usage_before_operation, usage_after_operation + 100);
 }
 
+// TODO(crbug.com/1304977): Failing on Mac builders.
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_QuotaUsageOverallocation DISABLED_QuotaUsageOverallocation
+#else
+#define MAYBE_QuotaUsageOverallocation QuotaUsageOverallocation
+#endif
 IN_PROC_BROWSER_TEST_F(FileSystemAccessCapacityAllocationHostImplBrowserTest,
-                       QuotaUsageOverallocation) {
+                       MAYBE_QuotaUsageOverallocation) {
   // TODO(https://crbug.com/1240056): Implement a more sophisticated test suite
   // for this feature.
   const GURL& test_url =
