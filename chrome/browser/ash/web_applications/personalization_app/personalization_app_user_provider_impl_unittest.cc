@@ -9,6 +9,7 @@
 #include "ash/constants/ash_features.h"
 #include "ash/webui/personalization_app/mojom/personalization_app.mojom.h"
 #include "base/callback_helpers.h"
+#include "base/memory/ref_counted_memory.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
@@ -26,6 +27,7 @@
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/testing_pref_service.h"
 #include "components/user_manager/scoped_user_manager.h"
+#include "components/user_manager/user_image/user_image.h"
 #include "components/user_manager/user_manager.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_task_environment.h"
@@ -33,7 +35,9 @@
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/skia/include/core/SkColor.h"
 #include "ui/base/webui/web_ui_util.h"
+#include "ui/gfx/codec/png_codec.h"
 #include "ui/gfx/image/image_skia.h"
 #include "url/gurl.h"
 
@@ -61,6 +65,7 @@ void AddAndLoginUser(const AccountId& account_id,
 gfx::ImageSkia CreateImage(int width, int height) {
   SkBitmap bitmap;
   bitmap.allocN32Pixels(width, height);
+  bitmap.eraseColor(SK_ColorGREEN);
   gfx::ImageSkia image = gfx::ImageSkia::CreateFrom1xBitmap(bitmap);
   return image;
 }
@@ -68,8 +73,9 @@ gfx::ImageSkia CreateImage(int width, int height) {
 class TestUserImageObserver
     : public ash::personalization_app::mojom::UserImageObserver {
  public:
-  void OnUserImageChanged(const GURL& image) override {
-    current_user_image_ = image;
+  void OnUserImageChanged(
+      ash::personalization_app::mojom::UserImagePtr image) override {
+    current_user_image_ = std::move(image);
   }
 
   void OnUserProfileImageUpdated(const GURL& profile_image) override {
@@ -84,10 +90,10 @@ class TestUserImageObserver
     return user_image_observer_receiver_.BindNewPipeAndPassRemote();
   }
 
-  const GURL& current_user_image() {
+  const ash::personalization_app::mojom::UserImage* current_user_image() {
     if (user_image_observer_receiver_.is_bound())
       user_image_observer_receiver_.FlushForTesting();
-    return current_user_image_;
+    return current_user_image_.get();
   }
 
   const GURL& current_profile_image() {
@@ -100,7 +106,7 @@ class TestUserImageObserver
   mojo::Receiver<ash::personalization_app::mojom::UserImageObserver>
       user_image_observer_receiver_{this};
 
-  GURL current_user_image_;
+  ash::personalization_app::mojom::UserImagePtr current_user_image_;
   GURL current_profile_image_;
 };
 
@@ -172,7 +178,7 @@ class PersonalizationAppUserProviderImplTest : public testing::Test {
         test_user_image_observer_.pending_remote());
   }
 
-  const GURL& current_user_image() {
+  const ash::personalization_app::mojom::UserImage* current_user_image() {
     if (user_provider_remote_.is_bound())
       user_provider_remote_.FlushForTesting();
     return test_user_image_observer_.current_user_image();
@@ -209,23 +215,26 @@ TEST_F(PersonalizationAppUserProviderImplTest, GetsUserInfo) {
 
 TEST_F(PersonalizationAppUserProviderImplTest, ObservesUserAvatarImage) {
   // Observer has not received any images yet because it is not bound.
-  EXPECT_EQ(GURL(), current_user_image());
+  EXPECT_EQ(nullptr, current_user_image());
 
+  // Mock out profile image so the test does not try to download a real one.
+  const gfx::ImageSkia& profile_image = CreateImage(50, 50);
+  user_image_manager()->SetDownloadedProfileImageForTesting(profile_image);
+
+  user_image_manager()->SaveUserImageFromProfileImage();
   SetUserImageObserver();
 
-  // Observer received current user's avatar image as data url.
-  EXPECT_EQ(webui::GetBitmapDataUrl(*user_image().bitmap()),
-            current_user_image());
+  // Observer received current user's avatar image.
+  EXPECT_TRUE(current_user_image()->is_profile_image());
 
   // Select a default image.
   int image_index = ash::default_user_image::GetRandomDefaultImageIndex();
   user_image_manager()->SaveUserDefaultImageIndex(image_index);
 
-  // Observer received the updated image url. Because it is a default image,
-  // receives the chrome://theme url.
-  EXPECT_EQ(base::StringPrintf("chrome://theme/IDR_LOGIN_DEFAULT_USER_%d",
-                               image_index),
-            current_user_image());
+  // Observer received the updated image information. Because it is a default
+  // image, receives a default image with the right index.
+  EXPECT_TRUE(current_user_image()->is_default_image());
+  EXPECT_EQ(image_index, current_user_image()->get_default_image().index);
 }
 
 TEST_F(PersonalizationAppUserProviderImplTest, SelectDefaultImage) {
@@ -236,11 +245,10 @@ TEST_F(PersonalizationAppUserProviderImplTest, SelectDefaultImage) {
   user_provider_remote()->get()->SelectDefaultImage(image_index);
   user_provider_remote()->FlushForTesting();
 
-  // Observer received the updated image url. Because it is a default image,
-  // receives the chrome://theme url.
-  EXPECT_EQ(base::StringPrintf("chrome://theme/IDR_LOGIN_DEFAULT_USER_%d",
-                               image_index),
-            current_user_image());
+  // Observer received the updated user image of type default with the right
+  // index.
+  EXPECT_TRUE(current_user_image()->is_default_image());
+  EXPECT_EQ(image_index, current_user_image()->get_default_image().index);
 }
 
 TEST_F(PersonalizationAppUserProviderImplTest, ObservesUserProfileImage) {
@@ -269,6 +277,36 @@ TEST_F(PersonalizationAppUserProviderImplTest, SelectProfileImage) {
 
   EXPECT_EQ(GURL(webui::GetBitmapDataUrl(*profile_image.bitmap())),
             current_profile_image());
+}
+
+TEST_F(PersonalizationAppUserProviderImplTest, EncodesUserImageToPngBuffer) {
+  SetUserImageObserver();
+
+  gfx::ImageSkia test_image = CreateImage(4, 4);
+  test_image.MakeThreadSafe();
+
+  // Save a jpg user image. This will trigger the image encoding to png path.
+  user_image_manager()->SaveUserImage(std::make_unique<user_manager::UserImage>(
+      test_image, base::MakeRefCounted<base::RefCountedBytes>(),
+      user_manager::UserImage::ImageFormat::FORMAT_JPEG));
+
+  EXPECT_TRUE(current_user_image()->is_external_image());
+
+  auto encoded_png = base::MakeRefCounted<base::RefCountedBytes>(
+      current_user_image()->get_external_image().data(),
+      current_user_image()->get_external_image().size());
+
+  std::vector<unsigned char> expected_data;
+  ASSERT_TRUE(gfx::PNGCodec::EncodeBGRASkBitmap(
+      *test_image.bitmap(), /*discard_transparency=*/false, &expected_data));
+
+  // The BigBuffer data received from the observer should be equal to the test
+  // image encoded to png.
+  ASSERT_EQ(expected_data.size(), encoded_png->size());
+  ASSERT_GT(expected_data.size(), 0);
+  for (auto i = 0; i < expected_data.size(); i++) {
+    EXPECT_EQ(expected_data.at(i), encoded_png->data().at(i));
+  }
 }
 
 class PersonalizationAppUserProviderImplWithMockTest

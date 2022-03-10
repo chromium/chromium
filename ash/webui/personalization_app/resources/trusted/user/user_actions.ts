@@ -5,7 +5,7 @@
 import {Action} from 'chrome://resources/js/cr/ui/store.js';
 import {Url} from 'chrome://resources/mojo/url/mojom/url.mojom-webui.js';
 
-import {DefaultUserImage, UserInfo} from '../personalization_app.mojom-webui.js';
+import {DefaultUserImage, UserImage, UserInfo} from '../personalization_app.mojom-webui.js';
 
 /**
  * @fileoverview Defines the actions to change user state.
@@ -37,10 +37,10 @@ export function setIsCameraPresentAction(isCameraPresent: boolean):
 
 export type SetUserImageAction = Action&{
   name: UserActionName.SET_USER_IMAGE,
-  image: Url,
+  image: UserImage,
 };
 
-export function setUserImageAction(image: Url): SetUserImageAction {
+export function setUserImageAction(image: UserImage): SetUserImageAction {
   return {name: UserActionName.SET_USER_IMAGE, image};
 }
 

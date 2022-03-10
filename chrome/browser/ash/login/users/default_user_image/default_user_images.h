@@ -85,6 +85,8 @@ bool IsValidIndex(int index);
 // Returns true if `index` is a in the current set of default images.
 bool IsInCurrentImageSet(int index);
 
+DefaultUserImage GetDefaultUserImage(int index);
+
 // Returns a vector of current |DefaultUserImage|.
 std::vector<DefaultUserImage> GetCurrentImageSet();
 

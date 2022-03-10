@@ -2,8 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {UserImage} from 'chrome://personalization/trusted/personalization_app.mojom-webui.js';
 import {UserPreview} from 'chrome://personalization/trusted/user/user_preview_element.js';
-import {assertEquals} from 'chrome://webui-test/chai_assert.js';
+import {assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {waitAfterNextRender} from 'chrome://webui-test/test_util.js';
 
 import {baseSetup, initElement, teardownElement} from './personalization_app_test_utils.js';
@@ -46,23 +47,63 @@ export function UserPreviewTest() {
         userPreviewElement!.shadowRoot!.getElementById('name')!.innerText);
   });
 
-  test('displays clickable user image on main page', async () => {
+  test('displays user image from default image', async () => {
     personalizationStore.data.user.image = userProvider.image;
-    userPreviewElement = initElement(UserPreview, {'clickable': true});
+    userPreviewElement = initElement(UserPreview, {clickable: true});
     await waitAfterNextRender(userPreviewElement!);
 
     const avatarImage = userPreviewElement!.shadowRoot!.getElementById(
                             'avatar') as HTMLImageElement;
-    assertEquals(userProvider.image.url, avatarImage.src);
+    assertEquals(
+        userProvider.image.defaultImage?.url.url, avatarImage.src,
+        'correct image url is shown for default image');
+  });
+
+  test('displays user image from profile image', async () => {
+    personalizationStore.data.user.image = {profileImage: {}};
+    personalizationStore.data.user.profileImage = userProvider.profileImage;
+    userPreviewElement = initElement(UserPreview, {clickable: true});
+    await waitAfterNextRender(userPreviewElement!);
+
+    const avatarImage = userPreviewElement!.shadowRoot!.getElementById(
+                            'avatar') as HTMLImageElement;
+    assertEquals(
+        userProvider.profileImage.url, avatarImage.src,
+        'correct image url is shown for profile image');
+  });
+
+  test('displays user image from external image', async () => {
+    // Use a cast here because generated types for |UserImage| are incorrect:
+    // only one field should be specified at a time.
+    const externalImage = {
+      externalImage: {
+        bytes: [0, 0, 0, 0],
+        sharedMemory: undefined,
+        invalidBuffer: false,
+      },
+    } as UserImage;
+    personalizationStore.data.user.image = externalImage;
+
+    userPreviewElement = initElement(UserPreview, {clickable: true});
+    await waitAfterNextRender(userPreviewElement);
+
+    const avatarImage = userPreviewElement!.shadowRoot!.getElementById(
+                            'avatar') as HTMLImageElement;
+
+    assertTrue(
+        avatarImage.src.startsWith('blob:'),
+        'blob url is shown for external image');
   });
 
   test('displays non-clickable user image on user subpage', async () => {
     personalizationStore.data.user.image = userProvider.image;
     userPreviewElement = initElement(UserPreview);
-    await waitAfterNextRender(userPreviewElement!);
+    await waitAfterNextRender(userPreviewElement);
 
     const avatarImage = userPreviewElement!.shadowRoot!.getElementById(
                             'avatar2') as HTMLImageElement;
-    assertEquals(userProvider.image.url, avatarImage.src);
+    assertEquals(
+        userProvider.image.defaultImage?.url.url, avatarImage.src,
+        'default image url is shown on non-clickable image');
   });
 }

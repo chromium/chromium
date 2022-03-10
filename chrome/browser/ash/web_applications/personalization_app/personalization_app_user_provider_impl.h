@@ -9,6 +9,7 @@
 #include "ash/webui/personalization_app/personalization_app_user_provider.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted_memory.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/ash/camera_presence_notifier.h"
@@ -21,6 +22,10 @@
 #include "third_party/skia/include/core/SkBitmap.h"
 
 class Profile;
+
+namespace base {
+class SequencedTaskRunner;
+}  // namespace base
 
 namespace content {
 class WebUI;
@@ -80,6 +85,11 @@ class PersonalizationAppUserProviderImpl
   void OnCameraImageDecoded(scoped_refptr<base::RefCountedBytes> photo_bytes,
                             const SkBitmap& decoded_bitmap);
 
+  void OnExternalUserImageEncoded(std::vector<unsigned char> encoded_png);
+
+  void UpdateUserImageObserver(
+      ash::personalization_app::mojom::UserImagePtr user_image);
+
   // Pointer to profile of user that opened personalization SWA. Not owned.
   raw_ptr<Profile> profile_ = nullptr;
 
@@ -99,8 +109,13 @@ class PersonalizationAppUserProviderImpl
 
   std::unique_ptr<ash::UserImageFileSelector> user_image_file_selector_;
 
+  scoped_refptr<base::SequencedTaskRunner> image_encoding_task_runner_;
+
   base::WeakPtrFactory<PersonalizationAppUserProviderImpl> weak_ptr_factory_{
       this};
+
+  base::WeakPtrFactory<PersonalizationAppUserProviderImpl>
+      image_encoding_weak_ptr_factory_{this};
 
   base::WeakPtrFactory<PersonalizationAppUserProviderImpl>
       image_decode_weak_ptr_factory_{this};

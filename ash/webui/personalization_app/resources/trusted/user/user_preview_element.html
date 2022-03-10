@@ -72,15 +72,15 @@
 </style>
 <div id="container">
   <div id="imageContainer">
-    <template is="dom-if" if="[[image_]]">
+    <template is="dom-if" if="[[imageUrl_]]">
       <template is="dom-if" if="[[clickable]]">
         <paper-ripple class="circle"></paper-ripple>
-        <img tabindex="0" id="avatar" src$="[[image_.url]]"
+        <img tabindex="0" id="avatar" src$="[[imageUrl_.url]]"
             on-click="onClickUserSubpageLink_"
             on-keypress="onClickUserSubpageLink_">
       </template>
       <template is="dom-if" if="[[!clickable]]">
-        <img id="avatar2" src$="[[image_.url]]">
+        <img id="avatar2" src$="[[imageUrl_.url]]">
       </template>
     </template>
     <slot></slot>

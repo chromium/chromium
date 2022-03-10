@@ -358,16 +358,20 @@ bool IsInCurrentImageSet(int index) {
          kDefaultImageInfo[index].eligibility == Eligibility::kEligible;
 }
 
+DefaultUserImage GetDefaultUserImage(int index) {
+  DCHECK(IsValidIndex(index));
+  int string_id = kDefaultImageInfo[index].description_message_id;
+  std::u16string title =
+      string_id ? l10n_util::GetStringUTF16(string_id) : std::u16string();
+
+  return {index, std::move(title),
+          default_user_image::GetDefaultImageUrl(index)};
+}
+
 std::vector<DefaultUserImage> GetCurrentImageSet() {
   std::vector<DefaultUserImage> result;
-  for (int index : kCurrentImageIndexes) {
-    int string_id = kDefaultImageInfo[index].description_message_id;
-    std::u16string title =
-        string_id ? l10n_util::GetStringUTF16(string_id) : std::u16string();
-
-    result.push_back({index, std::move(title),
-                      default_user_image::GetDefaultImageUrl(index)});
-  }
+  for (int index : kCurrentImageIndexes)
+    result.push_back(GetDefaultUserImage(index));
   return result;
 }
 

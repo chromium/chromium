@@ -284,20 +284,6 @@ struct UserInfo {
   string name;
 };
 
-// Receives necessary information to display and change user image for the
-// current user.
-interface UserImageObserver {
-  // Triggered by |UserManager::Observer::OnUserImageChanged|.
-  OnUserImageChanged(url.mojom.Url image);
-
-  // Triggered by |UserManager::Observer::OnUserProfileImageUpdated|.
-  OnUserProfileImageUpdated(url.mojom.Url profile_image);
-
-  // Triggered by
-  // |ash::CameraPresenceNotifier::Observer::OnCameraPresenceCheckDone|.
-  OnCameraPresenceCheckDone(bool is_camera_present);
-};
-
 // A default user image stored on the device that can be set as the user's
 // device avatar image.
 struct DefaultUserImage {
@@ -309,6 +295,43 @@ struct DefaultUserImage {
 
   // A url to display the image. Typically |chrome://theme/IDR_LOGIN_DEFAULT_X|.
   url.mojom.Url url;
+};
+
+// An empty struct that is just used to indicate the presence of a profile
+// image.
+struct ProfileImage {};
+
+// An empty struct that is used to signify the user does not have a valid image.
+struct InvalidImage {};
+
+// The current image that the user has selected as device avatar.
+union UserImage {
+  // Set if the user has selected a default (built-in) avatar image.
+  DefaultUserImage default_image;
+
+  // Set if the user has selected an external image, usually from file or from
+  // webcam capture.
+  mojo_base.mojom.BigBuffer external_image;
+
+  // Set if the user has selected their gaia account profile image.
+  ProfileImage profile_image;
+
+  // Set if the user does not have a valid image selected or there was an error.
+  InvalidImage invalid_image;
+};
+
+// Receives necessary information to display and change user image for the
+// current user.
+interface UserImageObserver {
+  // Triggered by |UserManager::Observer::OnUserImageChanged|.
+  OnUserImageChanged(UserImage user_image);
+
+  // Triggered by |UserManager::Observer::OnUserProfileImageUpdated|.
+  OnUserProfileImageUpdated(url.mojom.Url profile_image);
+
+  // Triggered by
+  // |ash::CameraPresenceNotifier::Observer::OnCameraPresenceCheckDone|.
+  OnCameraPresenceCheckDone(bool is_camera_present);
 };
 
 // Provides APIs to view information about the current user. This API is exposed

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {DefaultUserImage, UserImageObserverRemote, UserInfo, UserProviderInterface} from 'chrome://personalization/trusted/personalization_app.mojom-webui.js';
+import {DefaultUserImage, UserImage, UserImageObserverRemote, UserInfo, UserProviderInterface} from 'chrome://personalization/trusted/personalization_app.mojom-webui.js';
 import {BigBuffer} from 'chrome://resources/mojo/mojo/public/mojom/base/big_buffer.mojom-webui.js';
 import {Url} from 'chrome://resources/mojo/url/mojom/url.mojom-webui.js';
 import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
@@ -17,7 +17,7 @@ export class TestUserProvider extends
     },
   ];
 
-  public image: Url = {url: 'data://avatar-url'};
+  public image: UserImage = {defaultImage: this.defaultUserImages[0]} as any;
 
   public info: UserInfo = {
     name: 'test name',
