@@ -5,6 +5,7 @@
 import("//build/config/locales.gni")
 import("//components/feed/features.gni")
 import("//device/vr/buildflags/buildflags.gni")
+import("//pdf/features.gni")
 import("//ppapi/buildflags/buildflags.gni")
 import("//printing/buildflags/buildflags.gni")
 import("//tools/grit/grit_rule.gni")
@@ -31,6 +32,7 @@ grit("components_strings") {
   source = "../components_strings.grd"
   defines = [
     "enable_arcore=$enable_arcore",
+    "enable_pdf=$enable_pdf",
     "enable_plugins=$enable_plugins",
     "enable_print_preview=$enable_print_preview",
     "enable_vr=$enable_vr",

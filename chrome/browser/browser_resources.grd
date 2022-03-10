@@ -122,7 +122,7 @@
       <if expr="chromeos_ash">
         <include name="IDR_ORIGIN_MOJO_JS" file="${root_gen_dir}\url\mojom\origin.mojom-lite.js" use_base_dir="false" type="BINDATA"/>
     </if>
-      <if expr="enable_plugins">
+      <if expr="enable_pdf">
         <include name="IDR_PDF_MANIFEST" file="resources\pdf\manifest.json" type="BINDATA" />
       </if>
       <if expr="is_win">

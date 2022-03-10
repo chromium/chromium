@@ -15,6 +15,7 @@ import("//device/vr/buildflags/buildflags.gni")
 import("//extensions/buildflags/buildflags.gni")
 import("//media/media_options.gni")
 import("//net/features.gni")
+import("//pdf/features.gni")
 import("//ppapi/buildflags/buildflags.gni")
 import("//printing/buildflags/buildflags.gni")
 import("//ui/base/ui_features.gni")
@@ -88,6 +89,7 @@ chrome_grit_defines = [
   "enable_extensions=$enable_extensions",
   "enable_hangout_services_extension=$enable_hangout_services_extension",
   "enable_plugins=$enable_plugins",
+  "enable_pdf=$enable_pdf",
   "enable_print_preview=$enable_print_preview",
   "enable_printing=$enable_basic_printing",
   "enable_service_discovery=$enable_service_discovery",

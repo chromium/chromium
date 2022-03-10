@@ -14,7 +14,7 @@
 #include "components/nacl/common/buildflags.h"
 #include "components/paint_preview/buildflags/buildflags.h"
 #include "media/media_buildflags.h"
-#include "ppapi/buildflags/buildflags.h"
+#include "pdf/buildflags.h"
 #include "printing/buildflags/buildflags.h"
 #include "third_party/blink/public/common/buildflags.h"
 
@@ -50,10 +50,10 @@ extern const char kAcceleratedVideoEncodeDescription[];
 extern const char kEnableMediaInternalsName[];
 extern const char kEnableMediaInternalsDescription[];
 
-#if BUILDFLAG(ENABLE_PLUGINS)
+#if BUILDFLAG(ENABLE_PDF)
 extern const char kAccessiblePDFFormName[];
 extern const char kAccessiblePDFFormDescription[];
-#endif  // BUILDFLAG(ENABLE_PLUGINS)
+#endif
 
 extern const char kAccountIdMigrationName[];
 extern const char kAccountIdMigrationDescription[];
