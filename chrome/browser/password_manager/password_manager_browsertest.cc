@@ -2949,7 +2949,8 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerBrowserTest,
 }
 
 // Check that the internals page contains logs from the renderer.
-IN_PROC_BROWSER_TEST_F(PasswordManagerBrowserTest, InternalsPage_Renderer) {
+IN_PROC_BROWSER_TEST_F(PasswordManagerBrowserTest,
+                       DISABLED_InternalsPage_Renderer) {
   // The test is flaky with same-site back/forward cache (which is enabled by
   // default).
   // TODO(https://crbug.com/1276313): Investigate and fix this.
