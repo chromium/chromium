@@ -155,10 +155,8 @@ class RendererSwapDataImpl : public RendererSwapData {
       const std::vector<::userspace_swap::mojom::MemoryRegionPtr>& regions,
       std::vector<Region>& resident_regions);
 
-  static const size_t kPageSize;
-
-  const int render_process_host_id_ = 0;
-  const base::ProcessId pid_ = 0;
+  const int render_process_host_id_;
+  const base::ProcessId pid_;
 
   bool swap_allowed_ = false;
 
@@ -179,9 +177,6 @@ class RendererSwapDataImpl : public RendererSwapData {
 };
 
 RendererSwapDataImpl::~RendererSwapDataImpl() = default;
-
-// static
-const size_t RendererSwapDataImpl::kPageSize = base::GetPageSize();
 
 int RendererSwapDataImpl::render_process_host_id() const {
   return render_process_host_id_;
@@ -205,7 +200,7 @@ void RendererSwapDataImpl::InitializeSwapRemapAreas(
   // the destination of MREMAP_DONTUNMAPs.
   const uint64_t kPagesPerRegion =
       UserspaceSwapConfig::Get().number_of_pages_per_region;
-  const size_t kRegionSizeBytes = kPageSize * kPagesPerRegion;
+  const size_t kRegionSizeBytes = base::GetPageSize() * kPagesPerRegion;
 
   for (uint64_t base_addr = swap_remap_area.address;
        (base_addr + kRegionSizeBytes) <=
@@ -310,8 +305,8 @@ void RendererSwapDataImpl::PASuperPagesToResidentRegions(
   // The RegionSize is the size that is considered for swapping, this is
   // independent of PA SuperPage size and is configurable as a multiple of the
   // system page size.
-  size_t kRegionSize =
-      UserspaceSwapConfig::Get().number_of_pages_per_region * kPageSize;
+  size_t kRegionSize = UserspaceSwapConfig::Get().number_of_pages_per_region *
+                       base::GetPageSize();
   for (const auto& area : regions) {
     Region area_end(area->address + area->length);
     for (Region r(area->address, kRegionSize); r < area_end;
