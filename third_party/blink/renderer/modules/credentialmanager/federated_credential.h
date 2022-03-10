@@ -33,6 +33,7 @@ class MODULES_EXPORT FederatedCredential final : public Credential {
 
   static FederatedCredential* Create(const KURL& provider_url,
                                      const String& client_id,
+                                     const String& hint,
                                      const CredentialRequestOptions* options);
 
   FederatedCredential(const String& id,
@@ -42,6 +43,7 @@ class MODULES_EXPORT FederatedCredential final : public Credential {
 
   FederatedCredential(const KURL& provider_url,
                       const String& client_id,
+                      const String& hint,
                       const CredentialRequestOptions* options);
 
   void Trace(Visitor*) const override;

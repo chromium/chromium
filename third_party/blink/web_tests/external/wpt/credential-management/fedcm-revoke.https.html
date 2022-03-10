@@ -13,11 +13,11 @@
     const provider = {
       url: provider_url || "https://idp.example/",
       clientId: "1234",
+      hint: "foo@bar.com",
     };
     return await navigator.credentials.get({
       federated:  {
         providers: [provider],
-        hint: "foo@bar.com",
       },
     });
   }

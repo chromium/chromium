@@ -166,9 +166,10 @@ FederatedCredential* FederatedCredential::Create(
 FederatedCredential* FederatedCredential::Create(
     const KURL& provider_url,
     const String& client_id,
+    const String& hint,
     const CredentialRequestOptions* options) {
   return MakeGarbageCollected<FederatedCredential>(provider_url, client_id,
-                                                   options);
+                                                   hint, options);
 }
 
 FederatedCredential::FederatedCredential(
@@ -186,9 +187,9 @@ FederatedCredential::FederatedCredential(
 FederatedCredential::FederatedCredential(
     const KURL& provider_url,
     const String& client_id,
+    const String& hint,
     const CredentialRequestOptions* options)
-    : Credential(/* id = */ options->federated()->getHintOr(""),
-                 kFederatedCredentialType),
+    : Credential(/* id = */ hint, kFederatedCredentialType),
       provider_origin_(SecurityOrigin::Create(provider_url)),
       provider_url_(provider_url),
       client_id_(client_id),

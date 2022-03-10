@@ -1118,8 +1118,9 @@ ScriptPromise CredentialsContainer::get(
           return promise;
         }
 
-        FederatedCredential* credential =
-            FederatedCredential::Create(provider_url, client_id, options);
+        FederatedCredential* credential = FederatedCredential::Create(
+            provider_url, client_id, federated_identity_provider->getHintOr(""),
+            options);
         resolver->Resolve(credential);
         return promise;
       }
