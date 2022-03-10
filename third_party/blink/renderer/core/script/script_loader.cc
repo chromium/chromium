@@ -619,6 +619,14 @@ bool ScriptLoader::PrepareScript(const TextPosition& script_start_position,
       return false;
     }
 
+    // If the element is render-blocking, block rendering on the element.
+    if (RuntimeEnabledFeatures::BlockingAttributeEnabled() &&
+        element_->IsRenderBlocking() &&
+        element_document.GetRenderBlockingResourceManager()) {
+      element_document.GetRenderBlockingResourceManager()->AddPendingScript(
+          *element_);
+    }
+
     // <spec step="24.6">Switch on the script's type:</spec>
     switch (GetScriptType()) {
       case ScriptTypeAtPrepare::kInvalid:

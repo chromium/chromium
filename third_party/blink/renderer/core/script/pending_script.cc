@@ -185,6 +185,12 @@ void PendingScript::ExecuteScriptBlockInternal(
   Document* context_document =
       To<LocalDOMWindow>(element_document.GetExecutionContext())->document();
 
+  // Unblock rendering on scriptElement.
+  if (element_document.GetRenderBlockingResourceManager()) {
+    element_document.GetRenderBlockingResourceManager()->RemovePendingScript(
+        *element);
+  }
+
   // <spec step="2">If the script's script is null, fire an event named error at
   // the element, and return.</spec>
   if (!script) {

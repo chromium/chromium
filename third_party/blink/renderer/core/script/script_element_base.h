@@ -67,6 +67,7 @@ class CORE_EXPORT ScriptElementBase : public GarbageCollectedMixin {
   virtual bool HasChildren() const = 0;
   virtual const AtomicString& GetNonceForElement() const = 0;
   virtual bool ElementHasDuplicateAttributes() const = 0;
+  virtual bool IsRenderBlocking() const = 0;
 
   // Whether the inline script is allowed by the CSP. Must be called
   // synchronously to ensure the correct Javascript world is used for CSP

@@ -11,6 +11,7 @@
 #include "third_party/blink/renderer/core/html/html_document.h"
 #include "third_party/blink/renderer/core/loader/document_loader.h"
 #include "third_party/blink/renderer/core/loader/resource/font_resource.h"
+#include "third_party/blink/renderer/core/script/script_element_base.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_finish_observer.h"
 
 namespace blink {
@@ -181,9 +182,26 @@ bool RenderBlockingResourceManager::RemovePendingStylesheet(
   return true;
 }
 
+void RenderBlockingResourceManager::AddPendingScript(
+    const ScriptElementBase& script) {
+  if (document_->body())
+    return;
+  pending_scripts_.insert(&script);
+}
+
+void RenderBlockingResourceManager::RemovePendingScript(
+    const ScriptElementBase& script) {
+  auto iter = pending_scripts_.find(&script);
+  if (iter == pending_scripts_.end())
+    return;
+  pending_scripts_.erase(iter);
+  document_->RenderBlockingResourceUnblocked();
+}
+
 void RenderBlockingResourceManager::Trace(Visitor* visitor) const {
   visitor->Trace(document_);
   visitor->Trace(pending_stylesheet_owner_nodes_);
+  visitor->Trace(pending_scripts_);
   visitor->Trace(font_preload_finish_observers_);
   visitor->Trace(font_preload_timer_);
 }

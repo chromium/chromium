@@ -17,6 +17,7 @@ class FontResource;
 class FontFace;
 class Node;
 class ResourceFinishObserver;
+class ScriptElementBase;
 
 // https://html.spec.whatwg.org/#render-blocking-mechanism with some extensions.
 class CORE_EXPORT RenderBlockingResourceManager final
@@ -30,13 +31,12 @@ class CORE_EXPORT RenderBlockingResourceManager final
       const RenderBlockingResourceManager&) = delete;
 
   bool HasRenderBlockingResources() const {
-    return pending_stylesheet_owner_nodes_.size() ||
+    return pending_stylesheet_owner_nodes_.size() || pending_scripts_.size() ||
            font_preload_finish_observers_.size() ||
            imperative_font_loading_count_;
   }
 
-  // TODO(crbug.com/1271296): Use this class to handle render-blocking scripts
-  // and preloads.
+  // TODO(crbug.com/1271296): Use this class to handle render-blocking preloads.
 
   bool HasPendingStylesheets() const {
     return pending_stylesheet_owner_nodes_.size();
@@ -47,6 +47,9 @@ class CORE_EXPORT RenderBlockingResourceManager final
   // If the sheet is a render-blocking resource, removes it and returns true;
   // otherwise, returns false with no operation.
   bool RemovePendingStylesheet(const Node& owner_node);
+
+  void AddPendingScript(const ScriptElementBase& script);
+  void RemovePendingScript(const ScriptElementBase& script);
 
   // We additionally allow font preloading (via <link rel="preload"> or Font
   // Loading API) to block rendering for a short period, so that preloaded fonts
@@ -75,6 +78,9 @@ class CORE_EXPORT RenderBlockingResourceManager final
   // https://html.spec.whatwg.org/multipage/links.html#link-type-stylesheet
   // https://html.spec.whatwg.org/multipage/semantics.html#update-a-style-block
   HeapHashSet<Member<const Node>> pending_stylesheet_owner_nodes_;
+
+  // Tracks the currently pending render-blocking script elements.
+  HeapHashSet<Member<const ScriptElementBase>> pending_scripts_;
 
   // Need to hold strong references here, otherwise they'll be GC-ed immediately
   // as Resource only holds weak references.
