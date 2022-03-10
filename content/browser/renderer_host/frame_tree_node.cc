@@ -488,7 +488,7 @@ void FrameTreeNode::CreatedNavigationRequest(
   DCHECK(!navigation_request->common_params().url.SchemeIs(
       url::kJavaScriptScheme));
 
-  bool was_previously_loading = frame_tree()->IsLoading();
+  bool was_previously_loading = frame_tree()->LoadingTree()->IsLoading();
 
   // There's no need to reset the state: there's still an ongoing load, and the
   // RenderFrameHostManager will take care of updates to the speculative
@@ -537,12 +537,17 @@ void FrameTreeNode::DidStartLoading(bool should_show_loading_ui,
                "should_show_loading_ui ", should_show_loading_ui);
   base::ElapsedTimer timer;
 
-  frame_tree_->DidStartLoadingNode(*this, should_show_loading_ui,
-                                   was_previously_loading);
+  frame_tree()->LoadingTree()->DidStartLoadingNode(
+      *this, should_show_loading_ui, was_previously_loading);
 
   // Set initial load progress and update overall progress. This will notify
   // the WebContents of the load progress change.
-  DidChangeLoadProgress(blink::kInitialLoadProgress);
+  //
+  // Only notify when the load is triggered from primary/prerender main frame as
+  // we only update load progress for these nodes which happens when the frame
+  // tree matches the loading tree.
+  if (frame_tree() == frame_tree()->LoadingTree())
+    DidChangeLoadProgress(blink::kInitialLoadProgress);
 
   // Notify the RenderFrameHostManager of the event.
   render_manager()->OnDidStartLoading();
@@ -557,12 +562,22 @@ void FrameTreeNode::DidStopLoading() {
                frame_tree_node_id());
   // Set final load progress and update overall progress. This will notify
   // the WebContents of the load progress change.
-  DidChangeLoadProgress(blink::kFinalLoadProgress);
+  //
+  // Only notify when the load is triggered from primary/prerender main frame as
+  // we only update load progress for these nodes which happens when the frame
+  // tree matches the loading tree.
+  if (frame_tree() == frame_tree()->LoadingTree())
+    DidChangeLoadProgress(blink::kFinalLoadProgress);
 
   // Notify the RenderFrameHostManager of the event.
   render_manager()->OnDidStopLoading();
 
-  frame_tree_->DidStopLoadingNode(*this);
+  FrameTree* loading_tree = frame_tree()->LoadingTree();
+  // When loading tree is null, ignore invoking DidStopLoadingNode as the frame
+  // tree is already deleted. This can happen when prerendering gets cancelled
+  // and DidStopLoading is called during FrameTree destruction.
+  if (loading_tree)
+    loading_tree->DidStopLoadingNode(*this);
 }
 
 void FrameTreeNode::DidChangeLoadProgress(double load_progress) {

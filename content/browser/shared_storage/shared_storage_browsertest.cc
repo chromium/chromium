@@ -19,6 +19,7 @@
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/content_browser_test.h"
 #include "content/public/test/content_browser_test_utils.h"
+#include "content/public/test/test_frame_navigation_observer.h"
 #include "content/shell/browser/shell.h"
 #include "content/test/content_browser_test_utils_internal.h"
 #include "content/test/fenced_frame_test_utils.h"
@@ -1010,12 +1011,12 @@ IN_PROC_BROWSER_TEST_F(
   std::string navigate_fenced_frame_to_urn_script =
       JsReplace("f.src = $1;", urn_uuid);
 
-  FencedFrameNavigationObserver observer(
+  TestFrameNavigationObserver observer(
       fenced_frame_root_node->current_frame_host());
 
   EXPECT_EQ(urn_uuid, EvalJs(root, navigate_fenced_frame_to_urn_script));
 
-  observer.Wait(net::OK);
+  observer.Wait();
 
   EXPECT_EQ(
       https_server()->GetURL("a.test", "/fenced_frames/title1.html"),
@@ -1071,7 +1072,7 @@ IN_PROC_BROWSER_TEST_F(
   std::string navigate_fenced_frame_to_urn_script =
       JsReplace("f.src = $1;", urn_uuid);
 
-  FencedFrameNavigationObserver observer(
+  TestFrameNavigationObserver observer(
       fenced_frame_root_node->current_frame_host());
 
   EXPECT_EQ(urn_uuid, EvalJs(root, navigate_fenced_frame_to_urn_script));
@@ -1100,7 +1101,7 @@ IN_PROC_BROWSER_TEST_F(
       .GetAttachedWorkletHost()
       ->ExecutePendingWorkletMessages();
 
-  observer.Wait(net::OK);
+  observer.Wait();
 
   EXPECT_EQ(
       https_server()->GetURL("a.test", "/fenced_frames/title1.html"),
@@ -1158,12 +1159,12 @@ IN_PROC_BROWSER_TEST_F(SharedStorageBrowserTest,
   std::string navigate_fenced_frame_to_urn_script =
       JsReplace("f.src = $1;", urn_uuid);
 
-  FencedFrameNavigationObserver observer1(
+  TestFrameNavigationObserver observer1(
       fenced_frame_root_node->current_frame_host());
 
   EXPECT_EQ(urn_uuid, EvalJs(root, navigate_fenced_frame_to_urn_script));
 
-  observer1.Wait(net::OK);
+  observer1.Wait();
 
   EXPECT_EQ(
       https_server()->GetURL("a.test", "/fenced_frames/title1.html"),
@@ -1185,12 +1186,13 @@ IN_PROC_BROWSER_TEST_F(SharedStorageBrowserTest,
   EXPECT_EQ(1U, root->child_count());
   fenced_frame_root_node = GetFencedFrameRootNode(root->child_at(0));
 
-  FencedFrameNavigationObserver observer2(
+  TestFrameNavigationObserver observer2(
       fenced_frame_root_node->current_frame_host());
 
   EXPECT_EQ(urn_uuid, EvalJs(root, navigate_fenced_frame_to_urn_script));
 
-  observer2.Wait(net::ERR_INVALID_URL);
+  observer2.Wait();
+  EXPECT_EQ(observer2.last_net_error_code(), net::ERR_INVALID_URL);
 }
 
 // Tests that if the URN mapping is not finished before the keep-alive timeout,
@@ -1262,7 +1264,7 @@ IN_PROC_BROWSER_TEST_F(
   std::string navigate_fenced_frame_to_urn_script =
       JsReplace("f.src = $1;", urn_uuid);
 
-  FencedFrameNavigationObserver observer(
+  TestFrameNavigationObserver observer(
       fenced_frame_root_node->current_frame_host());
 
   EXPECT_EQ(urn_uuid, EvalJs(root, navigate_fenced_frame_to_urn_script));
@@ -1289,7 +1291,8 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_EQ(0u, test_worklet_host_manager().GetAttachedWorkletHostsCount());
   EXPECT_EQ(0u, test_worklet_host_manager().GetKeepAliveWorkletHostsCount());
 
-  observer.Wait(net::ERR_INVALID_URL);
+  observer.Wait();
+  EXPECT_EQ(observer.last_net_error_code(), net::ERR_INVALID_URL);
 }
 
 IN_PROC_BROWSER_TEST_F(SharedStorageBrowserTest,
@@ -1340,12 +1343,13 @@ IN_PROC_BROWSER_TEST_F(SharedStorageBrowserTest,
   std::string navigate_fenced_frame_to_urn_script =
       JsReplace("f.src = $1;", urn_uuid);
 
-  FencedFrameNavigationObserver observer(
+  TestFrameNavigationObserver observer(
       fenced_frame_root_node->current_frame_host());
 
   EXPECT_EQ(urn_uuid, EvalJs(root, navigate_fenced_frame_to_urn_script));
 
-  observer.Wait(net::ERR_INVALID_URL);
+  observer.Wait();
+  EXPECT_EQ(observer.last_net_error_code(), net::ERR_INVALID_URL);
 }
 
 }  // namespace content

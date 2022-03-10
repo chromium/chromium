@@ -656,7 +656,8 @@ double FrameTree::GetLoadProgress() {
 }
 
 bool FrameTree::IsLoading() const {
-  for (const FrameTreeNode* node : const_cast<FrameTree*>(this)->Nodes()) {
+  for (const FrameTreeNode* node :
+       const_cast<FrameTree*>(this)->CollectNodesForIsLoading()) {
     if (node->IsLoading())
       return true;
   }

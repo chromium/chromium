@@ -119,6 +119,7 @@
 #include "content/public/browser/download_manager.h"
 #include "content/public/browser/file_select_listener.h"
 #include "content/public/browser/focused_node_details.h"
+#include "content/public/browser/frame_type.h"
 #include "content/public/browser/global_routing_id.h"
 #include "content/public/browser/invalidate_type.h"
 #include "content/public/browser/javascript_dialog_manager.h"
@@ -7317,8 +7318,10 @@ void WebContentsImpl::DidStartLoading(FrameTreeNode* frame_tree_node,
                                       bool should_show_loading_ui) {
   OPTIONAL_TRACE_EVENT1("content", "WebContentsImpl::DidStartLoading",
                         "frame_tree_node", frame_tree_node);
-  LoadingStateChanged(frame_tree_node->IsMainFrame() && should_show_loading_ui,
-                      nullptr);
+  LoadingStateChanged(
+      frame_tree_node->GetFrameType() == FrameType::kPrimaryMainFrame &&
+          should_show_loading_ui,
+      nullptr);
 
   // Reset the focus state from DidStartNavigation to false if a new load starts
   // afterward, in case loading logic triggers a FocusLocationBarByDefault call.

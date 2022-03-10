@@ -37,18 +37,19 @@ class FencedFrameTestHelper {
                                      const GURL& url,
                                      net::Error expected_error_code = net::OK);
 
+  // This method is similar to `FencedFrameTestUtil::CreateFencedFrame` but
+  // doesn't wait until the fenced frame completes loading.
+  void CreateFencedFrameAsync(RenderFrameHost* fenced_frame_parent_rfh,
+                              const GURL& url);
+
   // This method provides a way to navigate frames within a fenced frame's tree,
-  // and synchronously wait for the load to finish. The reason we have this
-  // method is because navigations inside of a fenced frame's tree cannot be
-  // synchronously waited on via the traditional means of using e.g.,
-  // `TestFrameNavigationObserver`. This method returns the `RenderFrameHost`
-  // that the navigation committed to if it was successful (which may be
-  // different from the one that navigation started in), and `nullptr`
-  // otherwise. It takes an `expected_error_code` in case the navigation to
-  // `url` fails, which can be detected on a per-error-code basis.
-  // TODO(crbug.com/1199682): Fix the underlying reason why we cannot use
-  // traditional means of waiting for a navigation to finish loading inside a
-  // fenced frame tree.
+  // and synchronously wait for the load to finish. This method returns the
+  // `RenderFrameHost` that the navigation committed to if it was successful
+  // (which may be different from the one that navigation started in), and
+  // `nullptr` otherwise. It takes an `expected_error_code` in case the
+  // navigation to `url` fails, which can be detected on a per-error-code basis.
+  // TODO(crbug.com/1294189): Directly use TestFrameNavigationObserver instead
+  // of relying on this method.
   RenderFrameHost* NavigateFrameInFencedFrameTree(
       RenderFrameHost* rfh,
       const GURL& url,

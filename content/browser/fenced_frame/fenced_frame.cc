@@ -111,11 +111,6 @@ void FencedFrame::Navigate(const GURL& url,
       /*impression=*/absl::nullopt, navigation_start_time);
 }
 
-void FencedFrame::DidStopLoading() {
-  if (on_did_finish_loading_callback_for_testing_)
-    std::move(on_did_finish_loading_callback_for_testing_).Run();
-}
-
 bool FencedFrame::IsHidden() {
   return web_contents_->IsHidden();
 }
@@ -190,15 +185,6 @@ void FencedFrame::CreateProxyAndAttachToOuterFrameTree() {
 const base::UnguessableToken& FencedFrame::GetDevToolsFrameToken() const {
   DCHECK(frame_tree_);
   return frame_tree_->GetMainFrame()->GetDevToolsFrameToken();
-}
-
-void FencedFrame::WaitForDidStopLoadingForTesting() {
-  if (!frame_tree_->IsLoading())
-    return;
-
-  base::RunLoop run_loop;
-  on_did_finish_loading_callback_for_testing_ = run_loop.QuitClosure();
-  run_loop.Run();
 }
 
 void FencedFrame::NotifyNavigationStateChanged(InvalidateTypes changed_flags) {}

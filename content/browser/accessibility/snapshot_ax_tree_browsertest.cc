@@ -142,7 +142,7 @@ IN_PROC_BROWSER_TEST_F(SnapshotAXTreeFencedFrameBrowserTest,
   EXPECT_TRUE(ExecJs(
       primary_rfh, JsReplace("document.querySelector('fencedframe').src = $1;",
                              fenced_frame_url.spec())));
-  fenced_frames.at(0)->WaitForDidStopLoadingForTesting();
+  EXPECT_TRUE(WaitForLoadStop(web_contents));
 
   AXTreeSnapshotWaiter waiter;
   web_contents->RequestAXTreeSnapshot(

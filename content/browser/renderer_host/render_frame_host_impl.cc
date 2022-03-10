@@ -5749,7 +5749,10 @@ void RenderFrameHostImpl::DidBlockNavigation(
 }
 
 void RenderFrameHostImpl::DidChangeLoadProgress(double load_progress) {
-  if (!is_main_frame())
+  // We should not be invoking DidChangeLoadProgress for subframes or fenced
+  // frames as we only update the observers for primary/ prerender main frame
+  // load progress change.
+  if (!is_main_frame() || IsFencedFrameRoot())
     return;
 
   if (load_progress < GetPage().load_progress())
@@ -8593,7 +8596,7 @@ void RenderFrameHostImpl::HandleRendererDebugURL(const GURL& url) {
   // the renderer process is done handling the URL.
   // TODO(crbug.com/1254130): Remove the test dependency on this behavior.
   if (!url.SchemeIs(url::kJavaScriptScheme)) {
-    bool was_loading = frame_tree()->IsLoading();
+    bool was_loading = frame_tree()->LoadingTree()->IsLoading();
     is_loading_ = true;
     frame_tree_node()->DidStartLoading(true /* should_show_loading_ui */,
                                        was_loading);
@@ -10782,7 +10785,6 @@ bool RenderFrameHostImpl::DidCommitNavigationInternal(
   // racy DidStopLoading Mojo method resets the loading state that was set to
   // true in CommitNavigation.
   if (!is_loading()) {
-    bool was_loading = frame_tree()->IsLoading();
     // In general, loading ui is only shown for cross-document navigations,
     // because same-document navigations are already complete by the time the
     // renderer notifies the browser process of the navigation.
@@ -10793,6 +10795,8 @@ bool RenderFrameHostImpl::DidCommitNavigationInternal(
         same_document_params->same_document_navigation_type ==
             blink::mojom::SameDocumentNavigationType::
                 kAppHistoryTransitionWhile;
+
+    bool was_loading = frame_tree()->LoadingTree()->IsLoading();
     is_loading_ = true;
     frame_tree_node()->DidStartLoading(should_show_loading_ui, was_loading);
   }

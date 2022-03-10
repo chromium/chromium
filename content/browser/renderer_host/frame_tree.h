@@ -427,7 +427,11 @@ class CONTENT_EXPORT FrameTree {
   // is navigating returns `blink::kInitialLoadProgress`.
   double GetLoadProgress();
 
-  // Returns true if at least one of the nodes in this FrameTree is loading.
+  // Returns true if at least one of the nodes in this frame tree or nodes in
+  // any inner frame tree of the same WebContents is loading.
+  //
+  // TODO(crbug.com/1293846): Rename to IsLoadingIncludingInnerFrameTrees() to
+  // adapt to new logic.
   bool IsLoading() const;
 
   // Set page-level focus in all SiteInstances involved in rendering

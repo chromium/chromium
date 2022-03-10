@@ -879,15 +879,10 @@ class FencedFrameTreeBrowserTest
       RenderFrameHostImpl* fenced_frame_rfh,
       const std::string& script,
       net::Error expected_net_error_code = net::OK) {
-    FencedFrameNavigationObserver observer(fenced_frame_rfh);
+    TestFrameNavigationObserver observer(fenced_frame_rfh);
     EXPECT_TRUE(ExecJs(target_rfh, script));
-    observer.Wait(expected_net_error_code);
-  }
-
-  void WaitForDidStopLoadingForTesting(RenderFrameHostImpl* fenced_frame_rfh) {
-    FencedFrame* fenced_frame =
-        GetMatchingFencedFrameInOuterFrameTree(fenced_frame_rfh);
-    fenced_frame->WaitForDidStopLoadingForTesting();
+    observer.Wait();
+    EXPECT_EQ(observer.last_net_error_code(), expected_net_error_code);
   }
 
   FrameTreeNode* AddIframeInFencedFrame(FrameTreeNode* fenced_frame,
@@ -1117,7 +1112,7 @@ IN_PROC_BROWSER_TEST_P(
       https_server()->GetURL("a.test", "/fenced_frames/title1.html");
   std::string navigate_urn_script = JsReplace("f.src = $1;", urn_uuid.spec());
 
-  FencedFrameNavigationObserver observer(
+  TestFrameNavigationObserver observer(
       fenced_frame_root_node->current_frame_host());
 
   EXPECT_EQ(urn_uuid.spec(), EvalJs(root, navigate_urn_script));
@@ -1142,7 +1137,7 @@ IN_PROC_BROWSER_TEST_P(
 
   EXPECT_FALSE(url_mapping.HasObserverForTesting(urn_uuid, request));
 
-  observer.Wait(net::OK);
+  observer.Wait();
 
   EXPECT_EQ(
       mapped_url,
@@ -1177,7 +1172,7 @@ IN_PROC_BROWSER_TEST_P(
   const GURL urn_uuid = url_mapping.GeneratePendingMappedURN();
   std::string navigate_urn_script = JsReplace("f.src = $1;", urn_uuid.spec());
 
-  FencedFrameNavigationObserver observer(
+  TestFrameNavigationObserver observer(
       fenced_frame_root_node->current_frame_host());
 
   EXPECT_EQ(urn_uuid.spec(), EvalJs(root, navigate_urn_script));
@@ -1202,7 +1197,8 @@ IN_PROC_BROWSER_TEST_P(
 
   EXPECT_FALSE(url_mapping.HasObserverForTesting(urn_uuid, request));
 
-  observer.Wait(net::ERR_INVALID_URL);
+  observer.Wait();
+  EXPECT_EQ(observer.last_net_error_code(), net::ERR_INVALID_URL);
 }
 
 IN_PROC_BROWSER_TEST_P(
@@ -1235,7 +1231,7 @@ IN_PROC_BROWSER_TEST_P(
       https_server()->GetURL("a.test", "/fenced_frames/title1.html");
   std::string navigate_urn_script = JsReplace("f.src = $1;", urn_uuid.spec());
 
-  FencedFrameNavigationObserver observer(
+  TestFrameNavigationObserver observer(
       fenced_frame_root_node->current_frame_host());
 
   EXPECT_EQ(urn_uuid.spec(), EvalJs(root, navigate_urn_script));
@@ -1264,7 +1260,7 @@ IN_PROC_BROWSER_TEST_P(
 
   EXPECT_FALSE(url_mapping.HasObserverForTesting(urn_uuid, request));
 
-  observer.Wait(net::OK);
+  observer.Wait();
 
   EXPECT_EQ(
       new_url,
@@ -2081,7 +2077,7 @@ IN_PROC_BROWSER_TEST_P(FencedFrameTreeBrowserTest,
     EXPECT_EQ(root->navigator().controller().GetEntryCount(),
               fenced_frame->navigator().controller().GetEntryCount());
   } else {
-    WaitForDidStopLoadingForTesting(fenced_frame->current_frame_host());
+    EXPECT_TRUE(WaitForLoadStop(shell()->web_contents()));
     EXPECT_EQ(1, fenced_frame->navigator().controller().GetEntryCount());
   }
   EXPECT_EQ(fenced_frame_url_1,
@@ -2132,7 +2128,7 @@ IN_PROC_BROWSER_TEST_P(FencedFrameTreeBrowserTest,
     EXPECT_EQ(fenced_frame_url_2,
               fenced_frame->current_frame_host()->GetLastCommittedURL());
   } else {
-    WaitForDidStopLoadingForTesting(fenced_frame->current_frame_host());
+    EXPECT_TRUE(WaitForLoadStop(shell()->web_contents()));
     EXPECT_EQ(1, fenced_frame->navigator().controller().GetEntryCount());
     EXPECT_EQ(fenced_frame_url_1,
               fenced_frame->current_frame_host()->GetLastCommittedURL());

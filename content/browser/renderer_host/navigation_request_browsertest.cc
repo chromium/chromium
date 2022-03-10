@@ -3591,7 +3591,7 @@ IN_PROC_BROWSER_TEST_P(NavigationRequestMPArchBrowserTest,
           EXPECT_TRUE(navigation_handle->ShouldUpdateHistory());
         }));
 
-    // Navigate the primary pagea.
+    // Navigate the primary page.
     EXPECT_TRUE(
         NavigateToURL(shell(), embedded_test_server()->GetURL("/title1.html")));
   }

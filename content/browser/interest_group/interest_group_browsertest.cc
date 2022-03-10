@@ -882,17 +882,8 @@ class InterestGroupFencedFrameBrowserTest
       ASSERT_EQ(GURL(url::kAboutBlankURL), expected_url);
     }
 
-    switch (GetParam()) {
-      case blink::features::FencedFramesImplementationType::kShadowDOM: {
-        observer.Wait();
-        break;
-      }
-      case blink::features::FencedFramesImplementationType::kMPArch: {
-        // Wait for the load to complete.
-        FencedFrame* fenced_frame = GetFencedFrame(execution_target);
-        fenced_frame->WaitForDidStopLoadingForTesting();
-      }
-    }
+    // Wait for the load to complete.
+    observer.Wait();
 
     RenderFrameHost* fenced_frame_host =
         GetFencedFrameRenderFrameHost(execution_target);
@@ -3262,17 +3253,7 @@ IN_PROC_BROWSER_TEST_P(InterestGroupFencedFrameBrowserTest,
   WaitForURL(new_url);
 
   // Wait for the load to complete.
-  switch (GetParam()) {
-    case blink::features::FencedFramesImplementationType::kShadowDOM: {
-      observer.Wait();
-      break;
-    }
-    case blink::features::FencedFramesImplementationType::kMPArch: {
-      // Wait for the load to complete.
-      FencedFrame* fenced_frame = GetFencedFrame(shell());
-      fenced_frame->WaitForDidStopLoadingForTesting();
-    }
-  }
+  observer.Wait();
 
   // Navigating the ad fenced frame may result in it using a new
   // RenderFrameHost, invalidating the old `ad_frame`.

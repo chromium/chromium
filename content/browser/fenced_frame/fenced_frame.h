@@ -50,7 +50,7 @@ class CONTENT_EXPORT FencedFrame : public blink::mojom::FencedFrameOwnerHost,
   // FrameTree::Delegate.
   void DidStartLoading(FrameTreeNode* frame_tree_node,
                        bool should_show_loading_ui) override {}
-  void DidStopLoading() override;
+  void DidStopLoading() override {}
   void DidChangeLoadProgress() override {}
   bool IsHidden() override;
   void NotifyPageChanged(PageImpl& page) override {}
@@ -63,9 +63,6 @@ class CONTENT_EXPORT FencedFrame : public blink::mojom::FencedFrameOwnerHost,
   // Returns the devtools frame token of the fenced frame's inner FrameTree's
   // main frame.
   const base::UnguessableToken& GetDevToolsFrameToken() const;
-
-  // For testing only.
-  void WaitForDidStopLoadingForTesting();
 
   RenderFrameHostImpl* GetInnerRoot() { return frame_tree_->GetMainFrame(); }
 
@@ -115,8 +112,6 @@ class CONTENT_EXPORT FencedFrame : public blink::mojom::FencedFrameOwnerHost,
 
   // The FrameTree that we create to host the "inner" fenced frame contents.
   std::unique_ptr<FrameTree> frame_tree_;
-
-  base::OnceClosure on_did_finish_loading_callback_for_testing_;
 
   // Receives messages from the frame owner element in Blink.
   mojo::AssociatedReceiver<blink::mojom::FencedFrameOwnerHost> receiver_{this};

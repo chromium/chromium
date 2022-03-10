@@ -23,30 +23,6 @@ FrameTreeNode* GetFencedFrameRootNode(FrameTreeNode* node) {
   return FrameTreeNode::GloballyFindByID(inner_node_id);
 }
 
-FencedFrame* GetMatchingFencedFrameInOuterFrameTree(RenderFrameHostImpl* rfh) {
-  EXPECT_EQ(blink::features::kFencedFramesImplementationTypeParam.Get(),
-            blink::features::FencedFramesImplementationType::kMPArch);
-  // `rfh` doesn't always have to be a root frame, since this needs to work
-  // for arbitrary frames within a fenced frame.
-  EXPECT_TRUE(rfh->frame_tree_node()->IsInFencedFrameTree());
-
-  RenderFrameHostImpl* outer_delegate_frame =
-      rfh->GetMainFrame()->GetParentOrOuterDocument();
-
-  std::vector<FencedFrame*> fenced_frames =
-      outer_delegate_frame->GetFencedFrames();
-  EXPECT_FALSE(fenced_frames.empty());
-
-  for (FencedFrame* fenced_frame : fenced_frames) {
-    if (fenced_frame->GetInnerRoot() == rfh->GetMainFrame()) {
-      return fenced_frame;
-    }
-  }
-
-  NOTREACHED();
-  return nullptr;
-}
-
 TestFencedFrameURLMappingResultObserver::
     TestFencedFrameURLMappingResultObserver() = default;
 
@@ -62,48 +38,6 @@ void TestFencedFrameURLMappingResultObserver::OnFencedFrameURLMappingComplete(
   mapped_url_ = std::move(mapped_url);
   ad_auction_data_ = ad_auction_data;
   pending_ad_components_map_ = std::move(pending_ad_components_map);
-}
-
-FencedFrameNavigationObserver::FencedFrameNavigationObserver(
-    RenderFrameHostImpl* fenced_frame_rfh)
-    : frame_tree_node_(fenced_frame_rfh->frame_tree_node()) {
-  EXPECT_TRUE(frame_tree_node_->IsInFencedFrameTree());
-
-  if (blink::features::kFencedFramesImplementationTypeParam.Get() ==
-      blink::features::FencedFramesImplementationType::kShadowDOM) {
-    observer_for_shadow_dom_ =
-        std::make_unique<TestFrameNavigationObserver>(fenced_frame_rfh);
-    return;
-  }
-
-  fenced_frame_for_mparch_ =
-      GetMatchingFencedFrameInOuterFrameTree(fenced_frame_rfh);
-}
-
-FencedFrameNavigationObserver::~FencedFrameNavigationObserver() = default;
-
-void FencedFrameNavigationObserver::Wait(net::Error expected_net_error_code) {
-  if (blink::features::kFencedFramesImplementationTypeParam.Get() ==
-      blink::features::FencedFramesImplementationType::kShadowDOM) {
-    DCHECK(observer_for_shadow_dom_);
-    observer_for_shadow_dom_->Wait();
-    EXPECT_EQ(observer_for_shadow_dom_->last_net_error_code(),
-              expected_net_error_code);
-    return;
-  }
-
-  DCHECK(fenced_frame_for_mparch_);
-
-  // TODO(crbug.com/1257133): Once this bug is fixed, we can use
-  // `TestFrameNavigationObserver` to tell us when the navigation has finished,
-  // which actually exposes net::Error codes encountered during navigation.
-  // Therefore once that bug is fixed, we can perform finer-grained error
-  // code comparisons than the crude `RenderFrameHost::IsErrorDocument()` one
-  // below.
-  fenced_frame_for_mparch_->WaitForDidStopLoadingForTesting();
-
-  EXPECT_EQ(frame_tree_node_->current_frame_host()->IsErrorDocument(),
-            expected_net_error_code != net::OK);
 }
 
 }  // namespace content
