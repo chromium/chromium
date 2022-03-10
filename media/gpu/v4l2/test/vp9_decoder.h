@@ -25,7 +25,7 @@ class Vp9Decoder : public VideoDecoder {
  public:
   Vp9Decoder(const Vp9Decoder&) = delete;
   Vp9Decoder& operator=(const Vp9Decoder&) = delete;
-  ~Vp9Decoder();
+  ~Vp9Decoder() override;
 
   // Creates a Vp9Decoder after verifying that the underlying implementation
   // supports VP9 stateless decoding.
