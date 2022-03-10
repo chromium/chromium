@@ -20,7 +20,7 @@ namespace media_message_center {
 class COMPONENT_EXPORT(MEDIA_MESSAGE_CENTER) MediaNotificationBackgroundAshImpl
     : public MediaNotificationBackground {
  public:
-  MediaNotificationBackgroundAshImpl() = default;
+  explicit MediaNotificationBackgroundAshImpl(bool paint_artwork = true);
   MediaNotificationBackgroundAshImpl(
       const MediaNotificationBackgroundAshImpl&) = delete;
   MediaNotificationBackgroundAshImpl& operator=(
@@ -45,6 +45,9 @@ class COMPONENT_EXPORT(MEDIA_MESSAGE_CENTER) MediaNotificationBackgroundAshImpl
   SkPath GetArtworkClipPath(const gfx::Rect& view_bounds) const;
 
   gfx::ImageSkia artwork_;
+
+  // True if this should paint the artwork as part of the background.
+  bool paint_artwork_;
 };
 
 }  // namespace media_message_center

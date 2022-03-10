@@ -25,6 +25,7 @@ component("media_message_center") {
     "media_notification_view_modern_impl.h",
     "media_notification_volume_slider_view.cc",
     "media_notification_volume_slider_view.h",
+    "notification_theme.h",
   ]
 
   defines = [ "IS_MEDIA_MESSAGE_CENTER_IMPL" ]

@@ -9,6 +9,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "components/media_message_center/media_notification_view.h"
+#include "components/media_message_center/notification_theme.h"
 #include "services/media_session/public/mojom/media_session.mojom.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/metadata/metadata_header_macros.h"
@@ -30,14 +31,6 @@ namespace media_message_center {
 class MediaNotificationBackground;
 class MediaNotificationContainer;
 class MediaNotificationItem;
-
-struct COMPONENT_EXPORT(MEDIA_MESSAGE_CENTER) NotificationTheme {
-  SkColor primary_text_color = 0;
-  SkColor secondary_text_color = 0;
-  SkColor enabled_icon_color = 0;
-  SkColor disabled_icon_color = 0;
-  SkColor separator_color = 0;
-};
 
 class COMPONENT_EXPORT(MEDIA_MESSAGE_CENTER) MediaNotificationViewImpl
     : public MediaNotificationView {

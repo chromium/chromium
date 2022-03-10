@@ -10,6 +10,7 @@
 #include "base/unguessable_token.h"
 #include "components/global_media_controls/public/media_session_item_producer.h"
 #include "components/global_media_controls/public/views/media_item_ui_list_view.h"
+#include "components/media_message_center/notification_theme.h"
 #include "services/media_session/public/cpp/media_session_service.h"
 #include "services/media_session/public/mojom/audio_focus.mojom.h"
 #include "services/media_session/public/mojom/media_session.mojom.h"

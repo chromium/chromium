@@ -11,7 +11,9 @@
 #include "base/component_export.h"
 #include "base/memory/weak_ptr.h"
 #include "components/media_message_center/media_notification_view.h"
+#include "components/media_message_center/notification_theme.h"
 #include "services/media_session/public/mojom/media_session.mojom.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/controls/button/image_button.h"
 #include "ui/views/controls/image_view.h"
@@ -64,7 +66,8 @@ class COMPONENT_EXPORT(MEDIA_MESSAGE_CENTER) MediaNotificationViewModernImpl
       base::WeakPtr<MediaNotificationItem> item,
       std::unique_ptr<views::View> notification_controls_view,
       std::unique_ptr<views::View> notification_footer_view,
-      int notification_width);
+      int notification_width,
+      absl::optional<NotificationTheme> theme = absl::nullopt);
   MediaNotificationViewModernImpl(const MediaNotificationViewModernImpl&) =
       delete;
   MediaNotificationViewModernImpl& operator=(
@@ -164,6 +167,8 @@ class COMPONENT_EXPORT(MEDIA_MESSAGE_CENTER) MediaNotificationViewModernImpl
   raw_ptr<MediaControlsProgressView> progress_ = nullptr;
   raw_ptr<views::ToggleImageButton> mute_button_ = nullptr;
   raw_ptr<MediaNotificationVolumeSliderView> volume_slider_ = nullptr;
+
+  absl::optional<NotificationTheme> theme_;
 };
 
 }  // namespace media_message_center

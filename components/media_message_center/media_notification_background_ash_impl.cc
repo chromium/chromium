@@ -39,6 +39,10 @@ gfx::Size ScaleToFitSize(const gfx::Size& image_size) {
 
 }  // namespace
 
+MediaNotificationBackgroundAshImpl::MediaNotificationBackgroundAshImpl(
+    bool paint_artwork)
+    : paint_artwork_(paint_artwork) {}
+
 gfx::Rect MediaNotificationBackgroundAshImpl::GetArtworkBounds(
     const gfx::Rect& view_bounds) const {
   gfx::Size target_size = ScaleToFitSize(artwork_.size());
@@ -73,6 +77,9 @@ SkPath MediaNotificationBackgroundAshImpl::GetArtworkClipPath(
 
 void MediaNotificationBackgroundAshImpl::Paint(gfx::Canvas* canvas,
                                                views::View* view) const {
+  if (!paint_artwork_)
+    return;
+
   gfx::Rect source_bounds(0, 0, artwork_.width(), artwork_.height());
   gfx::Rect target_bounds = GetArtworkBounds(view->GetContentsBounds());
 

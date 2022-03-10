@@ -137,7 +137,7 @@ MediaItemUIView::MediaItemUIView(
     view =
         std::make_unique<media_message_center::MediaNotificationViewModernImpl>(
             this, std::move(item), std::move(dismiss_button_placeholder),
-            std::move(footer_view), kModernUIWidth);
+            std::move(footer_view), kModernUIWidth, theme);
     SetPreferredSize(kModernUISize);
   } else {
     view = std::make_unique<media_message_center::MediaNotificationViewImpl>(
