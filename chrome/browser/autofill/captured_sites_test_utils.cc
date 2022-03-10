@@ -343,10 +343,8 @@ std::vector<CapturedSiteParams> GetCapturedSites(
     if (item.FindKey("scenario_dir"))
       param.scenario_dir = *(item.FindStringKey("scenario_dir"));
     param.is_disabled = item.FindBoolKey("disabled").value_or(false);
-    if (item.FindKey("bug_number")) {
-      param.bug_number =
-          base::FormatNumber(item.FindIntKey("bug_number").value());
-    }
+    if (item.FindKey("bug_number"))
+      param.bug_number = item.FindIntKey("bug_number");
     if (param.is_disabled && !also_run_disabled)
       continue;
 
