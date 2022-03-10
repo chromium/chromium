@@ -619,7 +619,6 @@ void PdfViewPluginBase::HandleMessage(const base::Value& message) {
           {"setReadOnly", &PdfViewPluginBase::HandleSetReadOnlyMessage},
           {"setTwoUpView", &PdfViewPluginBase::HandleSetTwoUpViewMessage},
           {"stopScrolling", &PdfViewPluginBase::HandleStopScrollingMessage},
-          {"updateScroll", &PdfViewPluginBase::HandleUpdateScrollMessage},
           {"viewport", &PdfViewPluginBase::HandleViewportMessage},
       });
 
@@ -1298,11 +1297,6 @@ void PdfViewPluginBase::HandleSetTwoUpViewMessage(const base::Value& message) {
 void PdfViewPluginBase::HandleStopScrollingMessage(
     const base::Value& /*message*/) {
   stop_scrolling_ = true;
-}
-
-void PdfViewPluginBase::HandleUpdateScrollMessage(const base::Value& message) {
-  UpdateScroll(GetScrollPositionFromOffset(gfx::Vector2dF(
-      message.FindDoubleKey("x").value(), message.FindDoubleKey("y").value())));
 }
 
 void PdfViewPluginBase::HandleViewportMessage(const base::Value& message) {

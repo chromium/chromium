@@ -46,13 +46,6 @@ export class PDFViewerPPElement extends PDFViewerBaseElement {
   private pluginController_: PluginController|undefined = undefined;
   private toolbarManager_: ToolbarManager|null = null;
 
-  ready() {
-    super.ready();
-    window.addEventListener('scroll', () => {
-      this.pluginController_!.updateScroll(window.scrollX, window.scrollY);
-    });
-  }
-
   isNewUiEnabled() {
     return false;
   }

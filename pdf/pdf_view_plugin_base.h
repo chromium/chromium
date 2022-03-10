@@ -443,7 +443,6 @@ class PdfViewPluginBase : public PDFEngine::Client,
   void HandleSetReadOnlyMessage(const base::Value& message);
   void HandleSetTwoUpViewMessage(const base::Value& message);
   void HandleStopScrollingMessage(const base::Value& /*message*/);
-  void HandleUpdateScrollMessage(const base::Value& message);
   void HandleViewportMessage(const base::Value& message);
 
   // Sends start/stop loading notifications to the plugin's render frame
@@ -601,10 +600,10 @@ class PdfViewPluginBase : public PDFEngine::Client,
   // transformations are applied.
   gfx::Vector2dF scroll_offset_at_last_raster_;
 
-  // If this is true, then don't scroll the plugin in response to the messages
-  // from DidChangeView() or HandleUpdateScrollMessage(). This will be true when
-  // the extension page is in the process of zooming the plugin so that
-  // flickering doesn't occur while zooming.
+  // If this is true, then don't scroll the plugin in response to calls to
+  // `UpdateScroll()`. This will be true when the extension page is in the
+  // process of zooming the plugin so that flickering doesn't occur while
+  // zooming.
   bool stop_scrolling_ = false;
 
   // Whether the plugin has received a viewport changed message. Nothing should

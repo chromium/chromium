@@ -495,14 +495,6 @@ export class PDFViewerElement extends PDFViewerBaseElement {
     this.currentController.setDisplayAnnotations(e.detail);
   }
 
-  private onScroll_(e: Event) {
-    if (this.pluginController_!.isActive && !this.annotationMode_) {
-      const scroller = e.target as HTMLElement;
-      this.pluginController_!.updateScroll(
-          scroller.scrollLeft, scroller.scrollTop);
-    }
-  }
-
   private onPresentClick_() {
     const scroller = this.$.scroller;
 
