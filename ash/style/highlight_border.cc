@@ -9,6 +9,7 @@
 #include "ash/style/ash_color_provider.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/geometry/dip_util.h"
+#include "ui/gfx/scoped_canvas.h"
 #include "ui/views/view.h"
 
 namespace ash {
@@ -51,6 +52,7 @@ void HighlightBorder::PaintBorderToCanvas(gfx::Canvas* canvas,
 
   // Scale bounds and corner radius with device scale factor to make sure
   // border bounds match content bounds but keep border stroke width the same.
+  gfx::ScopedCanvas scoped_canvas(canvas);
   const float dsf = canvas->UndoDeviceScaleFactor();
   const gfx::RectF pixel_bounds = gfx::ConvertRectToPixels(bounds, dsf);
   const float scaled_corner_radius = dsf * corner_radius;
