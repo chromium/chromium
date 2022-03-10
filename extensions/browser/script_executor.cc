@@ -78,6 +78,13 @@ class Handler : public content::WebContentsObserver {
         continue;
       }
 
+      if (frame->IsErrorDocument()) {
+        AddWillNotInjectResult(
+            frame_id, base::StringPrintf(
+                          "Frame with ID %d is showing error page", frame_id));
+        continue;
+      }
+
       pending_render_frames_.push_back(frame);
     }
 
