@@ -1477,21 +1477,6 @@
       },
     },
   },
-  'cronet_sizes': {
-    'modifications': {
-      'android-cronet-arm-dbg': {
-        'swarming': {
-          'dimension_sets': [
-            {
-              'device_os': None,
-              'device_type': None,
-              'os': 'Ubuntu-16.04',
-            },
-          ],
-        },
-      },
-    },
-  },
   'depth_capture_tests': {
     'remove_from': [
       # TODO(https://crbug.com/850107): Remove the Android FYI Release (Pixel 2)
@@ -2141,50 +2126,6 @@
       'fuchsia-code-coverage': {
         'swarming': {
           'shards': 2,
-        },
-      },
-    },
-  },
-  'monochrome_public_apk_checker': {
-    'modifications': {
-      'ToTAndroid': {
-        'swarming': {
-          'dimension_sets': [
-            {
-              'cpu': 'x86-64',
-              'device_os': None,
-              'device_playstore_version': None,
-              'device_type': None,
-              'os': 'Ubuntu-16.04',
-            },
-          ],
-        },
-      },
-      'android-arm64-proguard-rel': {
-        'swarming': {
-          'dimension_sets': [
-            {
-              'cpu': 'x86-64',
-              'device_os': None,
-              'device_playstore_version': None,
-              'device_type': None,
-              'os': 'Ubuntu-16.04',
-            },
-          ],
-        },
-      },
-      'android-pie-arm64-rel': {
-        'swarming': {
-          'dimension_sets': [
-            {
-              'cpu': 'x86-64',
-              'device_os': None,
-              'device_os_flavor': None,
-              'device_playstore_version': None,
-              'device_type': None,
-              'os': 'Ubuntu-16.04',
-            },
-          ],
         },
       },
     },
