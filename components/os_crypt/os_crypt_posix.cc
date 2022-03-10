@@ -17,21 +17,21 @@
 namespace {
 
 // Salt for Symmetric key derivation.
-const char kSalt[] = "saltysalt";
+constexpr char kSalt[] = "saltysalt";
 
 // Key size required for 128 bit AES.
-const size_t kDerivedKeySizeInBits = 128;
+constexpr size_t kDerivedKeySizeInBits = 128;
 
-// Constant for Symmetic key derivation.
-const size_t kEncryptionIterations = 1;
+// Constant for Symmetric key derivation.
+constexpr size_t kEncryptionIterations = 1;
 
 // Size of initialization vector for AES 128-bit.
-const size_t kIVBlockSizeAES128 = 16;
+constexpr size_t kIVBlockSizeAES128 = 16;
 
 // Prefix for cypher text returned by obfuscation version.  We prefix the
 // cyphertext with this string so that future data migration can detect
 // this and migrate to full encryption without data loss.
-const char kObfuscationPrefix[] = "v10";
+constexpr char kObfuscationPrefix[] = "v10";
 
 // Generates a newly allocated SymmetricKey object based a hard-coded password.
 // Ownership of the key is passed to the caller.  Returns NULL key if a key
@@ -41,8 +41,8 @@ crypto::SymmetricKey* GetEncryptionKey() {
   // password.  We need to improve this password situation by moving a secure
   // password into a system-level key store.
   // http://crbug.com/25404 and http://crbug.com/49115
-  std::string password = "peanuts";
-  std::string salt(kSalt);
+  const std::string password = "peanuts";
+  const std::string salt(kSalt);
 
   // Create an encryption key from our password and salt.
   std::unique_ptr<crypto::SymmetricKey> encryption_key(
@@ -87,7 +87,7 @@ bool OSCrypt::EncryptString(const std::string& plaintext,
   if (!encryption_key.get())
     return false;
 
-  std::string iv(kIVBlockSizeAES128, ' ');
+  const std::string iv(kIVBlockSizeAES128, ' ');
   crypto::Encryptor encryptor;
   if (!encryptor.Init(encryption_key.get(), crypto::Encryptor::CBC, iv))
     return false;
@@ -124,13 +124,14 @@ bool OSCrypt::DecryptString(const std::string& ciphertext,
   }
 
   // Strip off the versioning prefix before decrypting.
-  std::string raw_ciphertext = ciphertext.substr(strlen(kObfuscationPrefix));
+  const std::string raw_ciphertext =
+      ciphertext.substr(strlen(kObfuscationPrefix));
 
   std::unique_ptr<crypto::SymmetricKey> encryption_key(GetEncryptionKey());
   if (!encryption_key.get())
     return false;
 
-  std::string iv(kIVBlockSizeAES128, ' ');
+  const std::string iv(kIVBlockSizeAES128, ' ');
   crypto::Encryptor encryptor;
   if (!encryptor.Init(encryption_key.get(), crypto::Encryptor::CBC, iv))
     return false;

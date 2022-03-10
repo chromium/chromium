@@ -21,19 +21,19 @@
 namespace {
 
 // Contains base64 random key encrypted with DPAPI.
-const char kOsCryptEncryptedKeyPrefName[] = "os_crypt.encrypted_key";
+constexpr char kOsCryptEncryptedKeyPrefName[] = "os_crypt.encrypted_key";
 
 // AEAD key length in bytes.
-const size_t kKeyLength = 256 / 8;
+constexpr size_t kKeyLength = 256 / 8;
 
 // AEAD nonce length in bytes.
-const size_t kNonceLength = 96 / 8;
+constexpr size_t kNonceLength = 96 / 8;
 
 // Version prefix for data encrypted with profile bound key.
-const char kEncryptionVersionPrefix[] = "v10";
+constexpr char kEncryptionVersionPrefix[] = "v10";
 
 // Key prefix for a key encrypted with DPAPI.
-const char kDPAPIKeyPrefix[] = "DPAPI";
+constexpr char kDPAPIKeyPrefix[] = "DPAPI";
 
 // Use mock key instead of a real encryption key. Used for testing.
 bool g_use_mock_key = false;
@@ -64,7 +64,7 @@ bool EncryptStringWithDPAPI(const std::string& plaintext,
   input.cbData = static_cast<DWORD>(plaintext.length());
 
   DATA_BLOB output;
-  BOOL result =
+  const BOOL result =
       CryptProtectData(&input, L"", nullptr, nullptr, nullptr, 0, &output);
   if (!result) {
     PLOG(ERROR) << "Failed to encrypt";
@@ -87,8 +87,8 @@ bool DecryptStringWithDPAPI(const std::string& ciphertext,
   input.cbData = static_cast<DWORD>(ciphertext.length());
 
   DATA_BLOB output;
-  BOOL result = CryptUnprotectData(&input, nullptr, nullptr, nullptr, nullptr,
-                                   0, &output);
+  const BOOL result = CryptUnprotectData(&input, nullptr, nullptr, nullptr,
+                                         nullptr, 0, &output);
   if (!result) {
     PLOG(ERROR) << "Failed to decrypt";
     return false;
@@ -140,7 +140,7 @@ bool OSCrypt::EncryptString(const std::string& plaintext,
 
   crypto::Aead aead(crypto::Aead::AES_256_GCM);
 
-  auto key = GetEncryptionKeyInternal();
+  const auto key = GetEncryptionKeyInternal();
   aead.Init(&key);
 
   // Note: can only check these once AEAD is initialized.
@@ -171,10 +171,10 @@ bool OSCrypt::DecryptString(const std::string& ciphertext,
   aead.Init(&key);
 
   // Obtain the nonce.
-  std::string nonce =
+  const std::string nonce =
       ciphertext.substr(sizeof(kEncryptionVersionPrefix) - 1, kNonceLength);
   // Strip off the versioning prefix before decrypting.
-  std::string raw_ciphertext =
+  const std::string raw_ciphertext =
       ciphertext.substr(kNonceLength + (sizeof(kEncryptionVersionPrefix) - 1));
 
   return aead.Open(raw_ciphertext, nonce, std::string(), plaintext);
@@ -224,7 +224,7 @@ OSCrypt::InitResult OSCrypt::InitWithExistingKey(PrefService* local_state) {
   if (!local_state->HasPrefPath(kOsCryptEncryptedKeyPrefName))
     return kKeyDoesNotExist;
 
-  std::string base64_encrypted_key =
+  const std::string base64_encrypted_key =
       local_state->GetString(kOsCryptEncryptedKeyPrefName);
   std::string encrypted_key_with_header;
 
@@ -236,7 +236,7 @@ OSCrypt::InitResult OSCrypt::InitWithExistingKey(PrefService* local_state) {
     return kInvalidKeyFormat;
   }
 
-  std::string encrypted_key =
+  const std::string encrypted_key =
       encrypted_key_with_header.substr(sizeof(kDPAPIKeyPrefix) - 1);
   std::string key;
   // This DPAPI decryption can fail if the user's password has been reset

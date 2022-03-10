@@ -30,13 +30,13 @@ class EncryptionKeyCreationUtil;
 namespace {
 
 // Salt for Symmetric key derivation.
-const char kSalt[] = "saltysalt";
+constexpr char kSalt[] = "saltysalt";
 
 // Key size required for 128 bit AES.
-const size_t kDerivedKeySizeInBits = 128;
+constexpr size_t kDerivedKeySizeInBits = 128;
 
 // Constant for Symmetic key derivation.
-const size_t kEncryptionIterations = 1003;
+constexpr size_t kEncryptionIterations = 1003;
 
 // TODO(dhollowa): Refactor to allow dependency injection of Keychain.
 bool use_mock_keychain = false;
@@ -48,7 +48,7 @@ bool use_locked_mock_keychain = false;
 // Prefix for cypher text returned by current encryption version.  We prefix
 // the cypher text with this string so that future data migration can detect
 // this and migrate to different encryption without data loss.
-const char kEncryptionVersionPrefix[] = "v10";
+constexpr char kEncryptionVersionPrefix[] = "v10";
 
 // This lock is used to make the GetEncrytionKey and
 // OSCrypt::GetRawEncryptionKey methods thread-safe.
@@ -93,7 +93,7 @@ crypto::SymmetricKey* GetEncryptionKey() {
   if (password.empty())
     return g_cached_encryption_key;
 
-  std::string salt(kSalt);
+  const std::string salt(kSalt);
 
   // Create an encryption key from our password and salt. The key is
   // intentionally leaked.
@@ -111,10 +111,9 @@ crypto::SymmetricKey* GetEncryptionKey() {
 
 // static
 std::string OSCrypt::GetRawEncryptionKey() {
-  crypto::SymmetricKey* key = GetEncryptionKey();
-  if (!key)
-    return std::string();
-  return key->key();
+  if (crypto::SymmetricKey* key = GetEncryptionKey())
+    return key->key();
+  return std::string();
 }
 
 // static
@@ -154,7 +153,7 @@ bool OSCrypt::EncryptString(const std::string& plaintext,
   if (!encryption_key)
     return false;
 
-  std::string iv(kCCBlockSizeAES128, ' ');
+  const std::string iv(kCCBlockSizeAES128, ' ');
   crypto::Encryptor encryptor;
   if (!encryptor.Init(encryption_key, crypto::Encryptor::CBC, iv))
     return false;
@@ -185,7 +184,7 @@ bool OSCrypt::DecryptString(const std::string& ciphertext,
   }
 
   // Strip off the versioning prefix before decrypting.
-  std::string raw_ciphertext =
+  const std::string raw_ciphertext =
       ciphertext.substr(strlen(kEncryptionVersionPrefix));
 
   crypto::SymmetricKey* encryption_key = GetEncryptionKey();
@@ -194,7 +193,7 @@ bool OSCrypt::DecryptString(const std::string& ciphertext,
     return false;
   }
 
-  std::string iv(kCCBlockSizeAES128, ' ');
+  const std::string iv(kCCBlockSizeAES128, ' ');
   crypto::Encryptor encryptor;
   if (!encryptor.Init(encryption_key, crypto::Encryptor::CBC, iv))
     return false;
