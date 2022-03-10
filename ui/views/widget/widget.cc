@@ -1334,7 +1334,19 @@ bool Widget::OnNativeWidgetActivationChanged(bool active) {
 
   // Widgets in a widget tree should share the same ShouldPaintAsActive().
   // Lock the parent as paint-as-active when this widget becomes active.
-  if (!active && !paint_as_active_refcount_)
+  // If we're in the process of closing the widget, delay resetting the
+  // `parent_paint_as_active_lock_` until the owning native widget destroys this
+  // widget (i.e. wait until widget destruction). Do this as closing a widget
+  // may result in synchronously calling into this method, which can cause the
+  // parent to immediately paint as inactive. This is an issue if, after this
+  // widget has been closed, the parent widget is the next widget to receive
+  // activation. If using a desktop native widget, the next widget to receive
+  // activation may be determined by the system's window manager and this may
+  // not happen synchronously with closing the Widget. By waiting for the owning
+  // native widget to destroy this widget we ensure that resetting the paint
+  // lock happens synchronously with the activation the next widget (see
+  // crbug/1303549).
+  if (!active && !paint_as_active_refcount_ && !widget_closed_)
     parent_paint_as_active_lock_.reset();
   else if (parent())
     parent_paint_as_active_lock_ = parent()->LockPaintAsActive();
