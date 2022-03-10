@@ -9,6 +9,7 @@
 #include "services/metrics/public/cpp/ukm_recorder.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
 #include "third_party/blink/public/common/common_export.h"
+#include "third_party/blink/public/common/storage_key/storage_key.h"
 
 namespace blink {
 
@@ -25,8 +26,10 @@ class BLINK_COMMON_EXPORT PostMessageCounter {
       : partition_(partition) {}
   ~PostMessageCounter() = default;
 
-  void RecordMessage(ukm::SourceId source,
-                     ukm::SourceId target,
+  void RecordMessage(ukm::SourceId source_id,
+                     const StorageKey& source_storage_key,
+                     ukm::SourceId target_id,
+                     const StorageKey& target_storage_key,
                      ukm::UkmRecorder* recorder);
 
  private:

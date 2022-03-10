@@ -1046,8 +1046,9 @@ void LocalDOMWindow::SchedulePostMessage(PostedMessage* posted_message) {
   LocalDOMWindow* source = posted_message->source;
 
   // Record UKM metrics for postMessage event.
-  post_message_counter_.RecordMessage(source->UkmSourceID(), UkmSourceID(),
-                                      UkmRecorder());
+  post_message_counter_.RecordMessage(source->UkmSourceID(),
+                                      source->GetStorageKey(), UkmSourceID(),
+                                      GetStorageKey(), UkmRecorder());
 
   // Convert the posted message to a MessageEvent so it can be unpacked for
   // local dispatch.

@@ -15398,12 +15398,84 @@ be describing additional metrics about the same event.
   </metric>
 </event>
 
+<event name="PostMessage.Incoming.FirstPartyToFirstParty.DifferentBucket">
+  <owner>arichiv@chromium.org</owner>
+  <owner>miketaylr@chromium.org</owner>
+  <summary>
+    A top level frame received an incoming postMessage event from another top
+    level frame with a different storage key and a different origin.
+  </summary>
+  <metric name="SourceFrameSourceId">
+    <summary>
+      The UKM source ID of the postMessage event's source frame, as an integer.
+    </summary>
+  </metric>
+</event>
+
+<event name="PostMessage.Incoming.FirstPartyToFirstParty.SameBucket">
+  <owner>arichiv@chromium.org</owner>
+  <owner>miketaylr@chromium.org</owner>
+  <summary>
+    A top level frame received an incoming postMessage event from another top
+    level frame with the same storage key.
+  </summary>
+  <metric name="SourceFrameSourceId">
+    <summary>
+      The UKM source ID of the postMessage event's source frame, as an integer.
+    </summary>
+  </metric>
+</event>
+
+<event
+    name="PostMessage.Incoming.FirstPartyToThirdParty.DifferentBucket.DifferentOrigin">
+  <owner>arichiv@chromium.org</owner>
+  <owner>miketaylr@chromium.org</owner>
+  <summary>
+    A child frame received an incoming postMessage event from a top level frame
+    with a different storage key and a different origin.
+  </summary>
+  <metric name="SourceFrameSourceId">
+    <summary>
+      The UKM source ID of the postMessage event's source frame, as an integer.
+    </summary>
+  </metric>
+</event>
+
+<event
+    name="PostMessage.Incoming.FirstPartyToThirdParty.DifferentBucket.SameOrigin">
+  <owner>arichiv@chromium.org</owner>
+  <owner>miketaylr@chromium.org</owner>
+  <summary>
+    A child frame received an incoming postMessage event from a top level frame
+    with a different storage key and the same origin.
+  </summary>
+  <metric name="SourceFrameSourceId">
+    <summary>
+      The UKM source ID of the postMessage event's source frame, as an integer.
+    </summary>
+  </metric>
+</event>
+
 <event name="PostMessage.Incoming.Frame">
   <owner>arichiv@chromium.org</owner>
   <owner>miketaylr@chromium.org</owner>
   <summary>
     The frame received an incoming postMessage event. This is recorded only for
     postMessage events sent between frames in the same renderer process.
+  </summary>
+  <metric name="SourceFrameSourceId">
+    <summary>
+      The UKM source ID of the postMessage event's source frame, as an integer.
+    </summary>
+  </metric>
+</event>
+
+<event name="PostMessage.Incoming.Opaque">
+  <owner>arichiv@chromium.org</owner>
+  <owner>miketaylr@chromium.org</owner>
+  <summary>
+    A frame received an incoming postMessage event from another frame where
+    either of their origins or top level origins are opaque.
   </summary>
   <metric name="SourceFrameSourceId">
     <summary>
@@ -15423,6 +15495,80 @@ be describing additional metrics about the same event.
   <metric name="SourcePageSourceId">
     <summary>
       The UKM source ID of the postMessage event's source page, as an integer.
+    </summary>
+  </metric>
+</event>
+
+<event
+    name="PostMessage.Incoming.ThirdPartyToFirstParty.DifferentBucket.DifferentOrigin">
+  <owner>arichiv@chromium.org</owner>
+  <owner>miketaylr@chromium.org</owner>
+  <summary>
+    A top level frame received an incoming postMessage event from a child frame
+    with a different storage key and a different origin.
+  </summary>
+  <metric name="SourceFrameSourceId">
+    <summary>
+      The UKM source ID of the postMessage event's source frame, as an integer.
+    </summary>
+  </metric>
+</event>
+
+<event
+    name="PostMessage.Incoming.ThirdPartyToFirstParty.DifferentBucket.SameOrigin">
+  <owner>arichiv@chromium.org</owner>
+  <owner>miketaylr@chromium.org</owner>
+  <summary>
+    A top level frame received an incoming postMessage event from a child frame
+    with a different storage key and the same origin.
+  </summary>
+  <metric name="SourceFrameSourceId">
+    <summary>
+      The UKM source ID of the postMessage event's source frame, as an integer.
+    </summary>
+  </metric>
+</event>
+
+<event
+    name="PostMessage.Incoming.ThirdPartyToThirdParty.DifferentBucket.DifferentOrigin">
+  <owner>arichiv@chromium.org</owner>
+  <owner>miketaylr@chromium.org</owner>
+  <summary>
+    A child frame received an incoming postMessage event from another child
+    frame with a different storage key and a different origin.
+  </summary>
+  <metric name="SourceFrameSourceId">
+    <summary>
+      The UKM source ID of the postMessage event's source frame, as an integer.
+    </summary>
+  </metric>
+</event>
+
+<event
+    name="PostMessage.Incoming.ThirdPartyToThirdParty.DifferentBucket.SameOrigin">
+  <owner>arichiv@chromium.org</owner>
+  <owner>miketaylr@chromium.org</owner>
+  <summary>
+    A child frame received an incoming postMessage event from another child
+    frame with a different storage key and the same origin.
+  </summary>
+  <metric name="SourceFrameSourceId">
+    <summary>
+      The UKM source ID of the postMessage event's source frame, as an integer.
+    </summary>
+  </metric>
+</event>
+
+<event name="PostMessage.Incoming.ThirdPartyToThirdParty.SameBucket">
+  <owner>arichiv@chromium.org</owner>
+  <owner>miketaylr@chromium.org</owner>
+  <summary>
+    A child frame received an incoming postMessage event from another child
+    frame with the same storage key.
+  </summary>
+  <metric name="SourceFrameSourceId">
+    <summary>
+      The UKM source ID of the postMessage event's source frame, as an integer.
     </summary>
   </metric>
 </event>

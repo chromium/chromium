@@ -158,6 +158,20 @@ class BLINK_COMMON_EXPORT StorageKey {
   // components/services/storage/service_worker/service_worker_database.cc
   static bool ShouldSkipKeyDueToPartitioning(const std::string& reg_key_string);
 
+  // Returns a copy of what this storage key would have been if
+  // `kThirdPartyStoragePartitioning` were enabled. This is a convenience
+  // function for callsites that benefit from future functionality that
+  // should be removed when storage partitioning is fully launched.
+  // TODO(crbug.com/1159586): Add support in BlinkStorageKey if needed.
+  StorageKey CopyWithForceEnabledThirdPartyStoragePartitioning() const {
+    StorageKey storage_key = *this;
+    storage_key.top_level_site_ =
+        storage_key.top_level_site_if_third_party_enabled_;
+    storage_key.ancestor_chain_bit_ =
+        storage_key.ancestor_chain_bit_if_third_party_enabled_;
+    return storage_key;
+  }
+
  private:
   // This enum represents the different type of encodable partitioning
   // attributes.
@@ -177,10 +191,12 @@ class BLINK_COMMON_EXPORT StorageKey {
         top_level_site_(IsThirdPartyStoragePartitioningEnabled()
                             ? top_level_site
                             : net::SchemefulSite(origin)),
+        top_level_site_if_third_party_enabled_(top_level_site),
         nonce_(nonce ? absl::make_optional(*nonce) : absl::nullopt),
         ancestor_chain_bit_(IsThirdPartyStoragePartitioningEnabled()
                                 ? ancestor_chain_bit
-                                : blink::mojom::AncestorChainBit::kSameSite) {}
+                                : blink::mojom::AncestorChainBit::kSameSite),
+        ancestor_chain_bit_if_third_party_enabled_(ancestor_chain_bit) {}
 
   // Converts the attribute type into the separator + uint8_t byte
   // serialization. E.x.: kTopLevelSite becomes "^0"
@@ -216,6 +232,13 @@ class BLINK_COMMON_EXPORT StorageKey {
   // flag `kThirdPartyStoragePartitioning` is enabled.
   net::SchemefulSite top_level_site_;
 
+  // Stores the value `top_level_site_` would have had if
+  // `kThirdPartyStoragePartitioning` were enabled. This isn't used in
+  // serialization or comparison, and this information is lost if you convert
+  // to a BlinkStorageKey or send it via mojom.
+  // TODO(crbug.com/1159586): Add support in BlinkStorageKey if needed.
+  net::SchemefulSite top_level_site_if_third_party_enabled_;
+
   // An optional nonce, forcing a partitioned storage from anything else. Used
   // by anonymous iframes:
   // https://github.com/camillelamy/explainers/blob/master/anonymous_iframes.md
@@ -225,6 +248,13 @@ class BLINK_COMMON_EXPORT StorageKey {
   // cross-site with the current frame. kSameSite if entire ancestor
   // chain is same-site with the current frame. Used by service workers.
   blink::mojom::AncestorChainBit ancestor_chain_bit_;
+
+  // Stores the value `ancestor_chain_bit_` would have had if
+  // `kThirdPartyStoragePartitioning` were enabled. This isn't used in
+  // serialization or comparison, and this information is lost if you convert
+  // to a BlinkStorageKey or send it via mojom.
+  // TODO(crbug.com/1159586): Add support in BlinkStorageKey if needed.
+  blink::mojom::AncestorChainBit ancestor_chain_bit_if_third_party_enabled_;
 };
 
 BLINK_COMMON_EXPORT

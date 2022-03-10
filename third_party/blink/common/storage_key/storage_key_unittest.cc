@@ -710,4 +710,26 @@ TEST(StorageKeyTest, ToNetSiteForCookies) {
   }
 }
 
+TEST(StorageKeyTest, CopyWithForceEnabledThirdPartyStoragePartitioning) {
+  const url::Origin kOrigin = url::Origin::Create(GURL("https://foo.com"));
+  const url::Origin kOtherOrigin = url::Origin::Create(GURL("https://bar.com"));
+
+  for (const bool toggle : {false, true}) {
+    base::test::ScopedFeatureList scope_feature_list;
+    scope_feature_list.InitWithFeatureState(
+        features::kThirdPartyStoragePartitioning, toggle);
+
+    const StorageKey storage_key(kOrigin, kOtherOrigin);
+    EXPECT_EQ(storage_key.IsThirdPartyContext(), toggle);
+    EXPECT_EQ(storage_key.top_level_site(),
+              net::SchemefulSite(toggle ? kOtherOrigin : kOrigin));
+
+    const StorageKey storage_key_with_3psp =
+        storage_key.CopyWithForceEnabledThirdPartyStoragePartitioning();
+    EXPECT_TRUE(storage_key_with_3psp.IsThirdPartyContext());
+    EXPECT_EQ(storage_key_with_3psp.top_level_site(),
+              net::SchemefulSite(kOtherOrigin));
+  }
+}
+
 }  // namespace blink

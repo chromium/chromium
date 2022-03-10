@@ -43,6 +43,7 @@
 #include "services/metrics/public/cpp/ukm_recorder.h"
 #include "services/network/public/cpp/web_sandbox_flags.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
+#include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "third_party/blink/public/mojom/frame/frame_owner_properties.mojom.h"
 #include "third_party/blink/public/mojom/messaging/transferable_message.mojom.h"
 #include "third_party/blink/public/mojom/scroll/scroll_into_view_params.mojom.h"
@@ -540,6 +541,7 @@ void RenderFrameProxyHost::RouteMessageEvent(
   // equivalent RenderFrameProxyHost in the target process.
   absl::optional<blink::RemoteFrameToken> translated_source_token;
   ukm::SourceId source_page_ukm_source_id = ukm::kInvalidSourceId;
+  blink::StorageKey source_storage_key;
   if (source_frame_token) {
     RenderFrameHostImpl* source_rfh = RenderFrameHostImpl::FromFrameToken(
         GetProcess()->GetID(), source_frame_token.value());
@@ -580,13 +582,15 @@ void RenderFrameProxyHost::RouteMessageEvent(
       }
 
       source_page_ukm_source_id = source_rfh->GetPageUkmSourceId();
+      source_storage_key = source_rfh->storage_key();
     }
   }
 
   // Record UKM metrics for the postMessage event.
-  post_message_counter_.RecordMessage(source_page_ukm_source_id,
-                                      target_rfh->GetPageUkmSourceId(),
-                                      ukm::UkmRecorder::Get());
+  post_message_counter_.RecordMessage(
+      source_page_ukm_source_id, source_storage_key,
+      target_rfh->GetPageUkmSourceId(), target_rfh->storage_key(),
+      ukm::UkmRecorder::Get());
 
   target_rfh->PostMessageEvent(translated_source_token, source_origin,
                                target_origin, std::move(message));
