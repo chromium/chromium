@@ -50,7 +50,7 @@ TEST(PerformanceMarkTest, Construction) {
 
   ASSERT_EQ(SerializedScriptValue::NullValue()->Deserialize(isolate),
             pm->detail(script_state).V8Value());
-  ASSERT_EQ(1u, pm->navigationCount());
+  ASSERT_EQ(1u, pm->navigationId());
 }
 
 TEST(PerformanceMarkTest, ConstructionWithDetail) {

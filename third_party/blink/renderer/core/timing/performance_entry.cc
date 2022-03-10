@@ -46,22 +46,22 @@ static base::AtomicSequenceNumber index_seq;
 PerformanceEntry::PerformanceEntry(const AtomicString& name,
                                    double start_time,
                                    double finish_time,
-                                   uint32_t navigation_count)
+                                   uint32_t navigation_id)
     : duration_(finish_time - start_time),
       name_(name),
       start_time_(start_time),
       index_(index_seq.GetNext()),
-      navigation_count_(navigation_count) {}
+      navigation_id_(navigation_id) {}
 
 PerformanceEntry::PerformanceEntry(double duration,
                                    const AtomicString& name,
                                    double start_time,
-                                   uint32_t navigation_count)
+                                   uint32_t navigation_id)
     : duration_(duration),
       name_(name),
       start_time_(start_time),
       index_(index_seq.GetNext()),
-      navigation_count_(navigation_count) {
+      navigation_id_(navigation_id) {
   DCHECK_GE(duration_, 0.0);
 }
 
@@ -75,8 +75,8 @@ DOMHighResTimeStamp PerformanceEntry::duration() const {
   return duration_;
 }
 
-uint32_t PerformanceEntry::navigationCount() const {
-  return navigation_count_;
+uint32_t PerformanceEntry::navigationId() const {
+  return navigation_id_;
 }
 
 mojom::blink::PerformanceMarkOrMeasurePtr
@@ -126,12 +126,12 @@ PerformanceEntry::EntryType PerformanceEntry::ToEntryTypeEnum(
   return kInvalid;
 }
 
-uint32_t PerformanceEntry::GetNavigationCounter(ScriptState* script_state) {
+uint32_t PerformanceEntry::GetNavigationId(ScriptState* script_state) {
   const auto* local_dom_window = LocalDOMWindow::From(script_state);
   if (!local_dom_window || !local_dom_window->GetFrame()) {
-    return 0;
+    return 1;
   }
-  return local_dom_window->GetFrame()->GetNavigationCounter();
+  return local_dom_window->GetFrame()->GetNavigationId();
 }
 
 ScriptValue PerformanceEntry::toJSONForBinding(
@@ -146,8 +146,8 @@ void PerformanceEntry::BuildJSONValue(V8ObjectBuilder& builder) const {
   builder.AddString("entryType", entryType());
   builder.AddNumber("startTime", startTime());
   builder.AddNumber("duration", duration());
-  if (RuntimeEnabledFeatures::NavigationCounterEnabled()) {
-    builder.AddNumber("navigationCount", navigationCount());
+  if (RuntimeEnabledFeatures::NavigationIdEnabled()) {
+    builder.AddNumber("navigationId", navigationId());
   }
 }
 

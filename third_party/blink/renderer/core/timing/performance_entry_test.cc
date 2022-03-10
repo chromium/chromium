@@ -17,12 +17,12 @@ TEST(PerformanceEntryTest, GetNavigationCounter) {
   V8TestingScope scope;
   ScriptState* script_state = scope.GetScriptState();
 
-  EXPECT_EQ(0u, PerformanceEntry::GetNavigationCounter(script_state));
+  EXPECT_EQ(1u, PerformanceEntry::GetNavigationId(script_state));
 
-  scope.GetFrame().IncrementNavigationCounter();
-  EXPECT_EQ(1u, PerformanceEntry::GetNavigationCounter(script_state));
+  scope.GetFrame().IncrementNavigationId();
+  EXPECT_EQ(2u, PerformanceEntry::GetNavigationId(script_state));
 
-  scope.GetFrame().IncrementNavigationCounter();
-  EXPECT_EQ(2u, PerformanceEntry::GetNavigationCounter(script_state));
+  scope.GetFrame().IncrementNavigationId();
+  EXPECT_EQ(3u, PerformanceEntry::GetNavigationId(script_state));
 }
 }  // namespace blink

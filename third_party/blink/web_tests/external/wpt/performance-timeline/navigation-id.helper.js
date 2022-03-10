@@ -3,11 +3,11 @@
 // '/html/browsers/browsing-the-web/back-forward-cache/resources/helper.sub.js'
 // which should be included before this file to use these functions.
 
-function runNavigationCounterTest(params, description) {
+function runNavigationIdTest(params, description) {
   const defaultParams = {
     constants: {
-      performanceMarkName: 'mark_navigation_counter',
-      performanceMeasureName: 'measure_navigation_counter',
+      performanceMarkName: 'mark_navigation_id',
+      performanceMeasureName: 'measure_navigation_id',
     },
     // This function is to make and obtain the navigation counter value for a
     // performance entries of mark and measure type. It is to be extended for
@@ -16,24 +16,24 @@ function runNavigationCounterTest(params, description) {
       window.performance.mark(constants.performanceMarkName);
       return window.performance
         .getEntriesByName(constants.performanceMarkName)[0]
-        .navigationCount;
+        .navigationId;
     },
-    funcAfterBFCacheLoad: (expectedNavigationCount, constants) => {
+    funcAfterBFCacheLoad: (expectedNavigationId, constants) => {
       window.performance.mark(
-        constants.performanceMarkName + expectedNavigationCount);
+        constants.performanceMarkName + expectedNavigationId);
       window.performance.measure(
-        constants.performanceMeasureName + expectedNavigationCount,
+        constants.performanceMeasureName + expectedNavigationId,
         constants.performanceMarkName,
-        constants.performanceMarkName + expectedNavigationCount);
+        constants.performanceMarkName + expectedNavigationId);
       return [
         window.performance
           .getEntriesByName(
-            constants.performanceMarkName + expectedNavigationCount)[0]
-          .navigationCount,
+            constants.performanceMarkName + expectedNavigationId)[0]
+          .navigationId,
         window.performance
           .getEntriesByName(
-            constants.performanceMeasureName + expectedNavigationCount)[0]
-          .navigationCount
+            constants.performanceMeasureName + expectedNavigationId)[0]
+          .navigationId
       ];
     },
   };
@@ -63,20 +63,20 @@ function runBfcacheWithMultipleNavigationTest(params, description) {
 
     await pageA.execute_script(waitForPageShow);
 
-    // Assert navigation counter is 0 when the document is loaded first time.
-    let navigationCount = await pageA.execute_script(
+    // Assert navigation id is 1 when the document is loaded first time.
+    let navigationId = await pageA.execute_script(
       params.funcBeforeNavigation, [params.constants])
     assert_implements_optional(
-      navigationCount === 0, 'NavigationCount should be 0.');
+      navigationId === 1, 'Navigation Id should be 0.');
 
-    for (i = 0; i < params.navigationTimes; i++) {
+    for (i = 1; i <= params.navigationTimes; i++) {
       await navigateAndThenBack(pageA, pageB, urlB);
 
-      let navigationCounts = await pageA.execute_script(
+      let navigationIds = await pageA.execute_script(
         params.funcAfterBFCacheLoad, [i + 1, params.constants]);
       assert_implements_optional(
-        navigationCounts.every(t => t === (i + 1)),
-        'NavigationCount should all be ' + (i + 1) + '.');
+        navigationIds.every(t => t === (i + 1)),
+        'Navigation Id should all be ' + (i + 1) + '.');
     }
   }, description);
 }

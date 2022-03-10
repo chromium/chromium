@@ -73,7 +73,7 @@ class CORE_EXPORT PerformanceEntry : public ScriptWrappable {
 
   const AtomicString& name() const { return name_; }
   DOMHighResTimeStamp startTime() const;
-  uint32_t navigationCount() const;
+  uint32_t navigationId() const;
   virtual AtomicString entryType() const = 0;
   virtual PerformanceEntryType EntryTypeEnum() const = 0;
   // PerformanceNavigationTiming will override this due to
@@ -114,7 +114,7 @@ class CORE_EXPORT PerformanceEntry : public ScriptWrappable {
     return valid_timeline_entry_types.Contains(entry_type);
   }
 
-  static uint32_t GetNavigationCounter(ScriptState* script_state);
+  static uint32_t GetNavigationId(ScriptState* script_state);
 
   // PerformanceMark/Measure override this and it returns Mojo structure pointer
   // which has all members of PerformanceMark/Measure. Common data members are
@@ -127,11 +127,11 @@ class CORE_EXPORT PerformanceEntry : public ScriptWrappable {
   PerformanceEntry(const AtomicString& name,
                    double start_time,
                    double finish_time,
-                   uint32_t navigation_count = 0);
+                   uint32_t navigation_id = 1);
   PerformanceEntry(double duration,
                    const AtomicString& name,
                    double start_time,
-                   uint32_t navigation_count = 0);
+                   uint32_t navigation_id = 1);
 
   virtual void BuildJSONValue(V8ObjectBuilder&) const;
 
@@ -142,7 +142,7 @@ class CORE_EXPORT PerformanceEntry : public ScriptWrappable {
   const AtomicString name_;
   const double start_time_;
   const int index_;
-  const uint32_t navigation_count_;
+  const uint32_t navigation_id_;
 };
 
 }  // namespace blink

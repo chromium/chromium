@@ -36,6 +36,6 @@ interface PerformanceEntry {
     readonly attribute DOMString entryType;
     readonly attribute DOMHighResTimeStamp startTime;
     readonly attribute DOMHighResTimeStamp duration;
-    [RuntimeEnabled=NavigationCounter] readonly attribute unsigned long navigationCount;
+    [RuntimeEnabled=NavigationId] readonly attribute unsigned long navigationId;
     [CallWith=ScriptState, ImplementedAs=toJSONForBinding] object toJSON();
 };

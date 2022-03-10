@@ -6355,7 +6355,7 @@ interface PerformanceEntry
     getter duration
     getter entryType
     getter name
-    getter navigationCount
+    getter navigationId
     getter startTime
     method constructor
     method toJSON

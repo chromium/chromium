@@ -23,7 +23,7 @@ PerformanceMeasure::PerformanceMeasure(
     : PerformanceEntry(name,
                        start_time,
                        end_time,
-                       PerformanceEntry::GetNavigationCounter(script_state)),
+                       PerformanceEntry::GetNavigationId(script_state)),
       serialized_detail_(serialized_detail) {}
 
 // static

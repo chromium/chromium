@@ -1558,7 +1558,7 @@
       status: "stable",
     },
     {
-      name: "NavigationCounter",
+      name: "NavigationId",
       status: "experimental",
     },
     {
