@@ -1649,6 +1649,14 @@ _CONFIG = [
     },
     {
         'paths': [
+            'third_party/blink/renderer/modules/webdatabase/dom_window_web_database.cc',
+        ],
+        'allowed': [
+            'base::CommandLine',
+        ]
+    },
+    {
+        'paths': [
             'third_party/blink/renderer/controller/blink_shutdown.cc',
         ],
         'allowed': [

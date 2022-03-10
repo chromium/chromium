@@ -1668,6 +1668,9 @@ extern const char kDurableClientHintsCacheDescription[];
 extern const char kReduceUserAgentMinorVersionName[];
 extern const char kReduceUserAgentMinorVersionDescription[];
 
+extern const char kWebSQLAccessName[];
+extern const char kWebSQLAccessDescription[];
+
 // Android --------------------------------------------------------------------
 
 #if BUILDFLAG(IS_ANDROID)

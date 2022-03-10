@@ -1620,6 +1620,9 @@ const PolicyToPreferenceMapEntry kSimplePolicyMap[] = {
   { key::kWindowPlacementBlockedForUrls,
     prefs::kManagedWindowPlacementBlockedForUrls,
     base::Value::Type::LIST },
+  { key::kWebSQLAccess,
+    policy_prefs::kWebSQLAccess,
+    base::Value::Type::BOOLEAN },
 #if !BUILDFLAG(IS_ANDROID)
   { key::kWebAuthenticationRemoteProxiedRequestsAllowed,
     webauthn::pref_names::kRemoteProxiedRequestsAllowed,

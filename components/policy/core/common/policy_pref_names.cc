@@ -94,5 +94,8 @@ const char kUserAgentClientHintsGREASEUpdateEnabled[] =
 // required). If false, the API gets blocked unconditionally.
 const char kEnableDirectSockets[] = "policy.enable_direct_sockets";
 
+// Boolean policy to force WebSQL to be enabled.
+const char kWebSQLAccess[] = "policy.web_sql_access";
+
 }  // namespace policy_prefs
 }  // namespace policy

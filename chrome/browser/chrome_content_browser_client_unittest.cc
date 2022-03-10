@@ -845,3 +845,41 @@ TEST_F(ChromeContentBrowserClientStoragePartitionTest, IsolationEnabled) {
       &profile_, GURL(kScope)));
 }
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
+
+class ChromeContentBrowserClientSwitchTest : public testing::Test {
+ public:
+  ChromeContentBrowserClientSwitchTest()
+      : command_line_(base::CommandLine::NO_PROGRAM),
+        testing_local_state_(TestingBrowserProcess::GetGlobal()) {}
+
+  void SetUp() override {
+    command_line_.AppendSwitchASCII(switches::kProcessType,
+                                    switches::kRendererProcess);
+  }
+
+ protected:
+  base::CommandLine command_line_;
+  ScopedTestingLocalState testing_local_state_;
+  ChromeContentBrowserClient client_;
+  content::BrowserTaskEnvironment task_environment_;
+  static const int kFakeChildProcessId = 1;
+};
+
+TEST_F(ChromeContentBrowserClientSwitchTest, WebSQLAccessDefault) {
+  client_.AppendExtraCommandLineSwitches(&command_line_, kFakeChildProcessId);
+  EXPECT_FALSE(command_line_.HasSwitch(blink::switches::kWebSQLAccess));
+}
+
+TEST_F(ChromeContentBrowserClientSwitchTest, WebSQLAccessDisabled) {
+  testing_local_state_.Get()->SetBoolean(policy::policy_prefs::kWebSQLAccess,
+                                         false);
+  client_.AppendExtraCommandLineSwitches(&command_line_, kFakeChildProcessId);
+  EXPECT_FALSE(command_line_.HasSwitch(blink::switches::kWebSQLAccess));
+}
+
+TEST_F(ChromeContentBrowserClientSwitchTest, WebSQLAccessEnabled) {
+  testing_local_state_.Get()->SetBoolean(policy::policy_prefs::kWebSQLAccess,
+                                         true);
+  client_.AppendExtraCommandLineSwitches(&command_line_, kFakeChildProcessId);
+  EXPECT_TRUE(command_line_.HasSwitch(blink::switches::kWebSQLAccess));
+}

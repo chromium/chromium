@@ -1318,5 +1318,9 @@ const base::Feature kZeroCopyTabCapture{"ZeroCopyTabCapture",
 const base::Feature kUserAgentOverrideExperiment{
     "UserAgentOverrideExperiment", base::FEATURE_DISABLED_BY_DEFAULT};
 
+// Allow access to WebSQL APIs.
+const base::Feature kWebSQLAccess{"kWebSQLAccess",
+                                  base::FEATURE_ENABLED_BY_DEFAULT};
+
 }  // namespace features
 }  // namespace blink

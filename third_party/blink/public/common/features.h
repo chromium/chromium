@@ -677,6 +677,8 @@ BLINK_COMMON_EXPORT extern const base::Feature kZeroCopyTabCapture;
 // appending or prepending to the original User-Agent string.
 BLINK_COMMON_EXPORT extern const base::Feature kUserAgentOverrideExperiment;
 
+BLINK_COMMON_EXPORT extern const base::Feature kWebSQLAccess;
+
 }  // namespace features
 }  // namespace blink
 

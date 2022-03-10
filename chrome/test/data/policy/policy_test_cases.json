@@ -18231,5 +18231,44 @@
         }
       }
     ]
+  },
+  "WebSQLAccess": {
+    "os": [
+      "win",
+      "linux",
+      "mac",
+      "chromeos_ash",
+      "chromeos_lacros",
+      "android"
+    ],
+    "policy_pref_mapping_tests": [
+      {
+        "policies": {},
+        "prefs": {
+          "policy.web_sql_access": {
+            "location": "local_state",
+            "default_value": false
+          }
+        }
+      },
+      {
+        "policies": { "WebSQLAccess": false },
+        "prefs": {
+          "policy.web_sql_access": {
+            "location": "local_state",
+            "value": false
+          }
+        }
+      },
+      {
+        "policies": { "WebSQLAccess": true },
+        "prefs": {
+          "policy.web_sql_access": {
+            "location": "local_state",
+            "value": true
+          }
+        }
+      }
+    ]
   }
 }

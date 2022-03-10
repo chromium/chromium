@@ -28829,6 +28829,7 @@ Called by update_document_policy_enum.py.-->
   <int value="963" label="OptimizationGuideFetchingEnabled"/>
   <int value="964" label="WebAuthnFactors"/>
   <int value="965" label="WebAuthenticationRemoteProxiedRequestsAllowed"/>
+  <int value="966" label="WebSQLAccess"/>
 </enum>
 
 <enum name="EnterprisePolicyDeviceIdValidity">
@@ -52480,6 +52481,7 @@ from previous Chrome versions.
   <int value="-1460561942" label="SystemEmojiPicker:disabled"/>
   <int value="-1460462432" label="disable-media-source"/>
   <int value="-1459907288" label="DesksTemplates:enabled"/>
+  <int value="-1459246132" label="kWebSQLAccess:disabled"/>
   <int value="-1458056084" label="SyncUndecryptablePasswordsLinux:enabled"/>
   <int value="-1457775295" label="PasswordSearchMobile:disabled"/>
   <int value="-1456789591" label="MediaFoundationVideoCapture:enabled"/>
@@ -52745,6 +52747,7 @@ from previous Chrome versions.
   <int value="-1288130734" label="OpenVR:disabled"/>
   <int value="-1287511172"
       label="OmniboxUIExperimentHideSteadyStateUrlSchemeAndSubdomains:disabled"/>
+  <int value="-1287060518" label="web-sql-access"/>
   <int value="-1286038936"
       label="AutofillEnableCardNicknameManagement:enabled"/>
   <int value="-1285790931" label="FencedFrames:disabled"/>
@@ -56689,6 +56692,7 @@ from previous Chrome versions.
   <int value="1467322206" label="AssistAutoCorrect:enabled"/>
   <int value="1467583815" label="AVIF:disabled"/>
   <int value="1469407485" label="disable-accelerated-2d-canvas"/>
+  <int value="1471169381" label="kWebSQLAccess:enabled"/>
   <int value="1472938299" label="WellKnownChangePassword:disabled"/>
   <int value="1473379096" label="NearbySharingReceiveWifiCredentials:disabled"/>
   <int value="1473838479" label="EnableVirtualKeyboardMdUi:disabled"/>

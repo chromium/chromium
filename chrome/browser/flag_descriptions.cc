@@ -2927,6 +2927,10 @@ const char kReduceUserAgentMinorVersionDescription[] =
     "The Chrome version in the User-Agent string will be reported as "
     "Chrome/<major_version>.0.0.0.";
 
+const char kWebSQLAccessName[] = "Allows access to WebSQL APIs";
+const char kWebSQLAccessDescription[] =
+    "The WebSQL API is enabled by default, but can be disabled here.";
+
 // Android ---------------------------------------------------------------------
 
 #if BUILDFLAG(IS_ANDROID)

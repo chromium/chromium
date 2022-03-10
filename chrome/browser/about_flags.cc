@@ -8341,6 +8341,10 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(ash::features::kProjectorExcludeTranscript)},
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
+    {"web-sql-access", flag_descriptions::kWebSQLAccessName,
+     flag_descriptions::kWebSQLAccessDescription, kOsAll,
+     FEATURE_VALUE_TYPE(blink::features::kWebSQLAccess)},
+
     // NOTE: Adding a new flag requires adding a corresponding entry to enum
     // "LoginCustomFlags" in tools/metrics/histograms/enums.xml. See "Flag
     // Histograms" in tools/metrics/histograms/README.md (run the
