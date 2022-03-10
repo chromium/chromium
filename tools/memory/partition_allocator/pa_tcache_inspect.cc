@@ -327,7 +327,9 @@ bool PartitionRootInspector::GatherStatistics() {
         return false;
 
       size_t freelist_size =
-          bucket.get_slots_per_span() - allocated_unprovisioned;
+          active_slot_span.is_decommitted()
+              ? 0
+              : (bucket.get_slots_per_span() - allocated_unprovisioned);
 
       stats.freelist_size += freelist_size;
       stats.freelist_sizes.push_back(freelist_size);
@@ -495,11 +497,16 @@ base::Value Dump(PartitionRootInspector& root_inspector) {
                   base::Value{slot_span.freelist_is_sorted()});
     result.SetKey("freelist_is_sorted",
                   base::Value{slot_span.freelist_is_sorted()});
-    size_t freelist_size = slots_per_span - slot_span.num_allocated_slots -
-                           slot_span.num_unprovisioned_slots;
+    size_t freelist_size =
+        slot_span.is_decommitted()
+            ? 0
+            : (slots_per_span - slot_span.num_allocated_slots -
+               slot_span.num_unprovisioned_slots);
     result.SetKey("freelist_size",
                   base::Value{static_cast<int>(freelist_size)});
     result.SetKey("marked_full", base::Value{slot_span.marked_full});
+    result.SetKey("is_empty", base::Value{slot_span.is_empty()});
+    result.SetKey("is_decommitted", base::Value{slot_span.is_decommitted()});
     return result;
   };
 
