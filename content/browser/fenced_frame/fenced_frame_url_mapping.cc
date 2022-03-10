@@ -4,6 +4,7 @@
 
 #include "content/browser/fenced_frame/fenced_frame_url_mapping.h"
 
+#include <cstring>
 #include <map>
 #include <string>
 
@@ -28,7 +29,6 @@ GURL GenerateURN() {
 }  // namespace
 
 const char kURNUUIDprefix[] = "urn:uuid:";
-const int kURNUUIDDashLocations[4] = {17, 22, 27, 32};
 
 bool FencedFrameURLMapping::IsValidUrnUuidURL(const GURL& url) {
   if (!url.is_valid())
@@ -36,10 +36,9 @@ bool FencedFrameURLMapping::IsValidUrnUuidURL(const GURL& url) {
   std::string spec = url.spec();
   return base::StartsWith(spec, kURNUUIDprefix,
                           base::CompareCase::INSENSITIVE_ASCII) &&
-         spec.at(kURNUUIDDashLocations[0]) == '-' &&
-         spec.at(kURNUUIDDashLocations[1]) == '-' &&
-         spec.at(kURNUUIDDashLocations[2]) == '-' &&
-         spec.at(kURNUUIDDashLocations[3]) == '-';
+         base::GUID::ParseCaseInsensitive(
+             base::StringPiece(spec).substr(std::strlen(kURNUUIDprefix)))
+             .is_valid();
 }
 
 FencedFrameURLMapping::PendingAdComponentsMap::PendingAdComponentsMap(
