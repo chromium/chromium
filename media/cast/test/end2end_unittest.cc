@@ -69,9 +69,6 @@ static const double kVideoAcceptedPSNR = 38.0;
 
 // The tests are commonly implemented with |kFrameTimerMs| RunTask function;
 // a normal video is 30 fps hence the 33 ms between frames.
-//
-// TODO(miu): The errors in timing will add up significantly.  Find an
-// alternative approach that eliminates use of this constant.
 static const int kFrameTimerMs = 33;
 
 // The size of audio frames.  The encoder joins/breaks all inserted audio into
@@ -166,11 +163,6 @@ class LoopBackPacketPipe final : public test::PacketPipe {
 
 // Class that sends the packet direct from sender into the receiver with the
 // ability to drop packets between the two.
-//
-// TODO(miu): This should be reconciled/merged into
-// media/cast/test/loopback_transport.*.  It's roughly the same class and has
-// exactly the same name (and when it was outside of the anonymous namespace bad
-// things happened when linking on Android!).
 class LoopBackTransport : public PacketTransport {
  public:
   explicit LoopBackTransport(scoped_refptr<CastEnvironment> cast_environment)

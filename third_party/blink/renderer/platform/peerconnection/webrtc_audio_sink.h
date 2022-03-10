@@ -143,8 +143,6 @@ class PLATFORM_EXPORT WebRtcAudioSink : public WebMediaStreamAudioSink {
 
     // Task runner used for the final de-referencing of |audio_processor_| at
     // destruction time.
-    //
-    // TODO(miu): Remove this once MediaStreamAudioProcessor is fixed.
     const scoped_refptr<base::SingleThreadTaskRunner> main_task_runner_;
 
     // The audio processsor that applies audio post-processing on the source

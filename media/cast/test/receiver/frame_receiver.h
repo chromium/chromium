@@ -172,8 +172,6 @@ class FrameReceiver final : public RtpPayloadFeedback {
   base::TimeDelta target_playout_delay_;
 
   // Hack: This is used in logic that determines whether to skip frames.
-  // TODO(miu): Revisit this.  Logic needs to also account for expected decode
-  // time.
   const base::TimeDelta expected_frame_duration_;
 
   // Set to false initially, then set to true after scheduling the periodic

@@ -363,7 +363,7 @@ TEST_F(VideoSenderTest, ResendTimer) {
   video_sender_->InsertRawVideoFrame(video_frame, reference_time);
 
   base::TimeDelta max_resend_timeout =
-      base::Milliseconds(1 + kDefaultRtpMaxDelayMs);
+      kDefaultTargetPlayoutDelay + base::Milliseconds(1);
 
   // Make sure that we do a re-send.
   RunTasks(max_resend_timeout.InMilliseconds());

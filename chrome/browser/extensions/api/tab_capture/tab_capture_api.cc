@@ -204,8 +204,6 @@ ExtensionFunction::ResponseAction TabCaptureCaptureFunction::Run() {
       target_contents, extension_id, false, extension()->url(), source,
       extension()->name(), extension_web_contents);
   if (device_id.empty()) {
-    // TODO(miu): Allow multiple consumers of single tab capture.
-    // http://crbug.com/535336
     return RespondNow(Error(kCapturingSameTab));
   }
   AddMediaStreamSourceConstraints(target_contents, &params->options, device_id);

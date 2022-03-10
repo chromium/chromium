@@ -626,11 +626,11 @@ IN_PROC_BROWSER_TEST_P(CompositingRenderWidgetHostViewBrowserTest,
 // Tests that the callback passed to CopyFromSurface is always called, even
 // when the RenderWidgetHostView is deleting in the middle of an async copy.
 //
-// TODO(miu): On some bots (e.g., ChromeOS and Cast Shell), this test fails
-// because the RunLoop quits before its QuitClosure() is run. This is because
-// the call to WebContents::Close() leads to something that makes the current
-// thread's RunLoop::Delegate constantly report "should quit." We'll need to
-// find a better way of testing this functionality.
+// TODO(https://crbug.com/1033066): On some bots (e.g., ChromeOS and Cast
+// Shell), this test fails because the RunLoop quits before its QuitClosure() is
+// run. This is because the call to WebContents::Close() leads to something that
+// makes the current thread's RunLoop::Delegate constantly report "should quit."
+// We'll need to find a better way of testing this functionality.
 IN_PROC_BROWSER_TEST_P(CompositingRenderWidgetHostViewBrowserTest,
                        DISABLED_CopyFromSurface_CallbackDespiteDelete) {
   SET_UP_SURFACE_OR_PASS_TEST(nullptr);

@@ -74,9 +74,6 @@ MediaStreamAudioProcessor::MediaStreamAudioProcessor(
 }
 
 MediaStreamAudioProcessor::~MediaStreamAudioProcessor() {
-  // TODO(miu): This class is ref-counted, shared among threads, and then
-  // requires itself to be destroyed on the main thread only?!?!? Fix this, and
-  // then remove the hack in WebRtcAudioSink::Adapter.
   DCHECK(main_thread_runner_->BelongsToCurrentThread());
   Stop();
 }

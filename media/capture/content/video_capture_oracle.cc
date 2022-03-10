@@ -64,8 +64,6 @@ double FractionFromExpectedFrameRate(base::TimeDelta delta, int frame_rate) {
 }
 
 // Returns the next-higher TimeTicks value.
-// TODO(miu): Patch FeedbackSignalAccumulator reset behavior and remove this
-// hack.
 base::TimeTicks JustAfter(base::TimeTicks t) {
   return t + base::Microseconds(1);
 }

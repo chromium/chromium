@@ -134,9 +134,6 @@ int GetCaptureBufferSize(bool need_webrtc_processing,
 
   // If the buffer size is missing from the MediaStreamDevice, provide 10ms as
   // a fall-back.
-  //
-  // TODO(miu): Identify where/why the buffer size might be missing, fix the
-  // code, and then require it here. https://crbug.com/638081
   return input_device_params.sample_rate() / 100;
 #endif
 }

@@ -161,10 +161,8 @@ class OffscreenTab final : public ProfileObserver,
   // Poll timer to monitor the capturer count on |offscreen_tab_web_contents_|.
   // When the capturer count returns to zero, this OffscreenTab is automatically
   // destroyed.
-  //
-  // TODO(miu): Add a method to WebContentsObserver to report capturer count
-  // changes and get rid of this polling-based approach.
-  // http://crbug.com/540965
+  // TODO(https://crbug.com/540965): add a method to WebContentsObserver to
+  // report capturer count and get rid of this polling-based approach.
   base::OneShotTimer capture_poll_timer_;
 
   // This is false until after the Start() method is called, and capture of the

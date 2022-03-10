@@ -231,7 +231,6 @@ base::TimeDelta FrameSender::GetAllowedInFlightMediaDuration() const {
   // The total amount allowed in-flight media should equal the amount that fits
   // within the entire playout delay window, plus the amount of time it takes to
   // receive an ACK from the receiver.
-  // TODO(miu): Research is needed, but there is likely a better formula.
   return target_playout_delay_ + (current_round_trip_time_ / 2);
 }
 
@@ -370,7 +369,6 @@ void FrameSender::OnReceivedCastFeedback(const RtcpCastMessage& cast_feedback) {
     } else {
       duplicate_ack_counter_ = 0;
     }
-    // TODO(miu): The values "2" and "3" should be derived from configuration.
     if (duplicate_ack_counter_ >= 2 && duplicate_ack_counter_ % 3 == 2) {
       ResendForKickstart();
     }

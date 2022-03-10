@@ -67,7 +67,8 @@ struct CONTENT_EXPORT DesktopMediaID {
   // it possible for both of these to be non-null, which means both IDs are
   // referring to the same logical window.
   Id id = kNullId;
-  // TODO(miu): Make this an int, after clean-up for http://crbug.com/513490.
+
+  // TODO(https://crbug.com/1304392): Change window ID to an integer.
   Id window_id = kNullId;
 
   // This records whether the desktop share has sound or not.

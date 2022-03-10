@@ -588,9 +588,6 @@ class MEDIA_EXPORT VideoFrame : public base::RefCountedThreadSafe<VideoFrame> {
   // Returns a dictionary of optional metadata.  This contains information
   // associated with the frame that downstream clients might use for frame-level
   // logging, quality/performance optimizations, signaling, etc.
-  //
-  // TODO(miu): Move some of the "extra" members of VideoFrame (below) into
-  // here as a later clean-up step.
   const VideoFrameMetadata& metadata() const { return metadata_; }
   VideoFrameMetadata& metadata() { return metadata_; }
   void set_metadata(const VideoFrameMetadata& metadata) {

@@ -280,10 +280,6 @@ static_library("test_support") {
 
   # FFMPEG software video decoders are not available on Android and/or
   # Chromecast content_shell builds.
-  #
-  # TODO(miu): There *are* hardware decoder APIs available via FFMPEG, and we
-  # should use those for the Android receiver.  See media's BUILD.gn for usage
-  # details.  http://crbug.com/558714
   if (!is_android && !is_chromecast) {
     sources += [
       "test/fake_media_source.cc",
@@ -312,7 +308,7 @@ test("cast_unittests") {
     "net/rtcp/rtcp_unittest.cc",
     "net/rtcp/rtcp_utility_unittest.cc",
 
-    # TODO(miu): The following two are test utility modules.  Rename/move the
+    # TODO(jophba): The following two are test utility modules.  Rename/move the
     # files.
     "net/rtcp/test_rtcp_packet_builder.cc",
     "net/rtcp/test_rtcp_packet_builder.h",

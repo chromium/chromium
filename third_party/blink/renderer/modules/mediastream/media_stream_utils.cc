@@ -41,10 +41,6 @@ void MediaStreamUtils::CreateNativeAudioMediaStreamTrack(
   // At this point, a MediaStreamAudioSource instance must exist. The one
   // exception is when a WebAudio destination node is acting as a source of
   // audio.
-  //
-  // TODO(miu): This needs to be moved to an appropriate location. A WebAudio
-  // source should have been created before this method was called so that this
-  // special case code isn't needed here.
   if (!audio_source && source->RequiresAudioConsumer()) {
     DVLOG(1) << "Creating WebAudio media stream source.";
     audio_source = new WebAudioMediaStreamSource(source, task_runner);

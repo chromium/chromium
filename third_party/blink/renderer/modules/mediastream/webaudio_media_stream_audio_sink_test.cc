@@ -54,10 +54,6 @@ class WebAudioMediaStreamAudioSinkTest : public testing::Test {
 };
 
 TEST_F(WebAudioMediaStreamAudioSinkTest, VerifyDataFlow) {
-  // TODO(miu): This test should be re-worked so that the audio data and format
-  // is feed into a MediaStreamAudioSource and, through the
-  // MediaStreamAudioTrack, ultimately delivered to the |source_provider_|.
-
   // Point the WebVector into memory owned by |sink_bus_|.
   WebVector<float*> audio_data(static_cast<size_t>(sink_bus_->channels()));
   for (int i = 0; i < sink_bus_->channels(); ++i)

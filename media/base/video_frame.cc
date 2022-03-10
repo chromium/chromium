@@ -267,8 +267,6 @@ static absl::optional<VideoFrameLayout> GetDefaultLayout(
     }
 
     default:
-      // TODO(miu): This function should support any pixel format.
-      // http://crbug.com/555909 .
       DLOG(ERROR) << "Unsupported pixel format"
                   << VideoPixelFormatToString(format);
       return absl::nullopt;

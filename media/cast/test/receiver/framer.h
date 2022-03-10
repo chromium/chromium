@@ -50,17 +50,12 @@ class Framer {
                        bool* next_frame,
                        bool* have_multiple_complete_frames);
 
-  // TODO(hubbe): Move this elsewhere.
   void AckFrame(FrameId frame_id);
-
   void ReleaseFrame(FrameId frame_id);
 
   bool TimeToSendNextCastMessage(base::TimeTicks* time_to_send);
   void SendCastMessage();
 
-  // TODO(miu): These methods are called from CastMessageBuilder.  We need to
-  // resolve these circular dependencies with some refactoring.
-  // http://crbug.com/530845
   FrameId newest_frame_id() const { return newest_frame_id_; }
   bool Empty() const;
   bool FrameExists(FrameId frame_id) const;

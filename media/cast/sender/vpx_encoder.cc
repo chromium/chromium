@@ -149,18 +149,13 @@ void VpxEncoder::ConfigureForNewFrameSize(const gfx::Size& frame_size) {
 
   // Rate control settings.
   config_.rc_dropframe_thresh = 0;  // The encoder may not drop any frames.
-  config_.rc_resize_allowed = 0;    // TODO(miu): Why not?  Investigate this.
+  config_.rc_resize_allowed = 0;
   config_.rc_end_usage = VPX_CBR;
   config_.rc_target_bitrate = bitrate_kbit_;
   config_.rc_min_quantizer = cast_config_.video_codec_params.min_qp;
   config_.rc_max_quantizer = cast_config_.video_codec_params.max_qp;
-  // TODO(miu): Revisit these now that the encoder is being successfully
-  // micro-managed.
   config_.rc_undershoot_pct = 100;
   config_.rc_overshoot_pct = 15;
-  // TODO(miu): Document why these rc_buf_*_sz values were chosen and/or
-  // research for better values.  Should they be computed from the target
-  // playout delay?
   config_.rc_buf_initial_sz = 500;
   config_.rc_buf_optimal_sz = 600;
   config_.rc_buf_sz = 1000;

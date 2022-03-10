@@ -44,9 +44,6 @@ void WebAudioMediaStreamSource::SetFormat(int number_of_channels,
   // Set the format used by this WebAudioMediaStreamSource. We are using 10ms
   // data as a buffer size since that is the native buffer size of WebRtc packet
   // running on.
-  //
-  // TODO(miu): Re-evaluate whether this is needed. For now (this refactoring),
-  // I did not want to change behavior. https://crbug.com/577874
   fifo_.Reset(sample_rate / 100);
   media::AudioParameters params(media::AudioParameters::AUDIO_PCM_LOW_LATENCY,
                                 channel_layout, sample_rate,
@@ -90,11 +87,9 @@ void WebAudioMediaStreamSource::ConsumeAudio(
                "WebAudioMediaStreamSource::ConsumeAudio", "frames",
                number_of_frames);
 
-  // TODO(miu): Plumbing is needed to determine the actual capture timestamp
-  // of the audio, instead of just snapshotting base::TimeTicks::Now(), for
-  // proper audio/video sync.  https://crbug.com/335335
+  //  TODO(https://crbug.com/1302080): this should use the actual audio
+  // playout stamp instead of Now().
   current_reference_time_ = base::TimeTicks::Now();
-
   wrapper_bus_->set_frames(number_of_frames);
   DCHECK_EQ(wrapper_bus_->channels(), static_cast<int>(audio_data.size()));
   for (wtf_size_t i = 0; i < audio_data.size(); ++i) {

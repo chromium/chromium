@@ -14,8 +14,6 @@
 namespace media {
 namespace cast {
 
-// TODO(miu): Consolidate with RtpPacketizer as a single Cast packet
-// serialization implementation.
 class RtpPacketBuilder {
  public:
   RtpPacketBuilder();

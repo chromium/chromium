@@ -18,8 +18,6 @@ VideoCodecParams::VideoCodecParams(const VideoCodecParams& other) = default;
 
 VideoCodecParams::~VideoCodecParams() = default;
 
-// TODO(miu): Provide IsValidConfig() functions?
-
 FrameSenderConfig::FrameSenderConfig()
     : sender_ssrc(0),
       receiver_ssrc(0),
@@ -29,8 +27,8 @@ FrameSenderConfig::FrameSenderConfig()
       // All three delays are set to the same value due to adaptive latency
       // being disabled in Chrome. This will be fixed as part of the migration
       // to libcast.
-      min_playout_delay(base::Milliseconds(kDefaultRtpMaxDelayMs)),
-      max_playout_delay(min_playout_delay),
+      min_playout_delay(kDefaultTargetPlayoutDelay),
+      max_playout_delay(kDefaultTargetPlayoutDelay),
       animated_playout_delay(min_playout_delay),
       rtp_payload_type(RtpPayloadType::UNKNOWN),
       use_external_encoder(false),
@@ -49,7 +47,7 @@ FrameSenderConfig::~FrameSenderConfig() = default;
 FrameReceiverConfig::FrameReceiverConfig()
     : receiver_ssrc(0),
       sender_ssrc(0),
-      rtp_max_delay_ms(kDefaultRtpMaxDelayMs),
+      rtp_max_delay_ms(kDefaultTargetPlayoutDelay.InMilliseconds()),
       rtp_payload_type(RtpPayloadType::UNKNOWN),
       rtp_timebase(0),
       channels(0),

@@ -16,7 +16,6 @@
 namespace media {
 namespace cast {
 
-// TODO(miu): Document this class.
 class ReceiverStats {
  public:
   explicit ReceiverStats(const base::TickClock* clock);

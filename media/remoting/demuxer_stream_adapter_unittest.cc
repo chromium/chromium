@@ -157,7 +157,6 @@ class DemuxerStreamAdapterTest : public ::testing::Test {
  protected:
   void SetUp() override { SetUpDataPipe(); }
 
-  // TODO(miu): Add separate media thread, to test threading also.
   base::test::SingleThreadTaskEnvironment task_environment_;
   std::unique_ptr<FakeDemuxerStream> demuxer_stream_;
   std::unique_ptr<FakeRemotingDataStreamSender> data_stream_sender_;

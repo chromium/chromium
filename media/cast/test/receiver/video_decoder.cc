@@ -110,8 +110,6 @@ class VideoDecoder::Vp8Impl final : public VideoDecoder::ImplBase {
       return;
 
     vpx_codec_dec_cfg_t cfg = {0};
-    // TODO(miu): Revisit this for typical multi-core desktop use case.  This
-    // feels like it should be 4 or 8.
     cfg.threads = 1;
 
     DCHECK(vpx_codec_get_caps(vpx_codec_vp8_dx()) & VPX_CODEC_CAP_POSTPROC);
@@ -221,7 +219,6 @@ VideoDecoder::VideoDecoder(
       impl_ = new Vp8Impl(cast_environment);
       break;
     case CODEC_VIDEO_H264:
-      // TODO(miu): Need implementation.
       NOTIMPLEMENTED();
       break;
     default:

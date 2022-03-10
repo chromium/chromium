@@ -162,8 +162,6 @@ void CastReceiverImpl::EmitDecodedAudioFrame(
   DCHECK(cast_environment->CurrentlyOn(CastEnvironment::MAIN));
 
   if (audio_bus.get()) {
-    // TODO(miu): This is reporting incorrect timestamp and delay.
-    // http://crbug.com/547251
     std::unique_ptr<FrameEvent> playout_event(new FrameEvent());
     playout_event->timestamp = cast_environment->Clock()->NowTicks();
     playout_event->type = FRAME_PLAYOUT;
@@ -189,8 +187,6 @@ void CastReceiverImpl::EmitDecodedVideoFrame(
   DCHECK(cast_environment->CurrentlyOn(CastEnvironment::MAIN));
 
   if (video_frame) {
-    // TODO(miu): This is reporting incorrect timestamp and delay.
-    // http://crbug.com/547251
     std::unique_ptr<FrameEvent> playout_event(new FrameEvent());
     playout_event->timestamp = cast_environment->Clock()->NowTicks();
     playout_event->type = FRAME_PLAYOUT;

@@ -33,7 +33,6 @@ using AudioFrameDecodedCallback =
     base::RepeatingCallback<void(std::unique_ptr<AudioBus> audio_bus,
                                  base::TimeTicks playout_time,
                                  bool is_continuous)>;
-// TODO(miu): |video_frame| includes a timestamp, so use that instead.
 using VideoFrameDecodedCallback =
     base::RepeatingCallback<void(scoped_refptr<media::VideoFrame> video_frame,
                                  base::TimeTicks playout_time,

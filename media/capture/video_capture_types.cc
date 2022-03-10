@@ -95,8 +95,6 @@ VideoCaptureParams::SuggestConstraints() const {
       break;
 
     case ResolutionChangePolicy::FIXED_ASPECT_RATIO: {
-      // TODO(miu): This is a place-holder until "min constraints" are plumbed-
-      // in from the MediaStream framework.  http://crbug.com/473336
       constexpr int kMinLines = 180;
       if (max_frame_size.height() <= kMinLines) {
         min_frame_size = max_frame_size;

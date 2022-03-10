@@ -240,7 +240,3 @@ chrome.test.runTests([
         });
   }
 ]);
-
-// TODO(miu): Once the WebAudio API is finalized, we should add a test to emit a
-// tone from the sender page, and have the receiver page check for the audio
-// tone.

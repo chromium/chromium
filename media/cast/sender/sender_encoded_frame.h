@@ -39,8 +39,8 @@ struct SenderEncodedFrame final : public EncodedFrame {
   // encode the frame within the target bitrate (even at its lowest quality
   // setting).  Negative values indicate the field was not computed.
   //
-  // TODO(miu): Rename to idealized_bitrate_utilization.
-  double lossy_utilization;
+  // TODO(jophba): Rename to idealized_bitrate_utilization.
+  double lossy_utilization = {};
 
   // The time at which the encode of the frame completed.
   base::TimeTicks encode_completion_time;

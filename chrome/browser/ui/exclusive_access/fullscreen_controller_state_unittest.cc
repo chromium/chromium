@@ -529,11 +529,7 @@ TEST_F(FullscreenControllerStateUnitTest, OneCapturedFullscreenedTab) {
   EXPECT_TRUE(wc_delegate->IsFullscreenForTabOrPending(first_tab));
   EXPECT_FALSE(wc_delegate->IsFullscreenForTabOrPending(second_tab));
   EXPECT_FALSE(GetFullscreenController()->IsWindowFullscreenForTabOrPending());
-  // TODO(miu): Need to make an adjustment to content::WebContentsViewMac for
-  // the following to work:
-#if !BUILDFLAG(IS_MAC)
   EXPECT_EQ(kCaptureSize, first_tab->GetViewBounds().size());
-#endif
 
   // Switch back to the first tab and exit fullscreen.
   browser()->tab_strip_model()->ActivateTabAt(

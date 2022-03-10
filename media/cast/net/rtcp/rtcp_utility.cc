@@ -329,11 +329,6 @@ bool RtcpParser::ParseFeedbackCommon(base::BigEndianReader* reader,
       !reader->ReadU16(&cast_message_.target_delay_ms))
     return false;
 
-  // TODO(miu): 8 bits is not enough.  If an RTCP packet is received very late
-  // (e.g., more than 1.2 seconds late for 100 FPS audio), the frame ID here
-  // will be mis-interpreted as a higher-numbered frame than what the packet
-  // intends to represent.  This could make the sender's tracking of ACK'ed
-  // frames inconsistent.
   cast_message_.ack_frame_id =
       max_valid_frame_id_.ExpandLessThanOrEqual(truncated_last_frame_id);
 

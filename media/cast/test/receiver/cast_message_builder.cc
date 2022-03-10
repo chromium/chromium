@@ -13,17 +13,12 @@ namespace cast {
 
 namespace {
 
-// TODO(miu): These should probably be dynamic and computed base on configured
-// end-to-end latency and packet loss rates.  http://crbug.com/563784
-enum {
-  // Number of milliseconds between sending of ACK/NACK Cast Message RTCP
-  // packets back to the sender.
-  kCastMessageUpdateIntervalMs = 33,
+// Interval between sending of ACK/NACK Cast Message RTCP packets back to the
+// sender.
+constexpr base::TimeDelta kCastMessageUpdateInterval = base::Milliseconds(33);
 
-  // Number of milliseconds between repeating a NACK for packets in the same
-  // frame.
-  kNackRepeatIntervalMs = 30,
-};
+// Interval between repeating a NACK for packets in the same frame.
+constexpr base::TimeDelta kNackRepeatInterval = base::Milliseconds(30);
 
 }  // namespace
 
@@ -117,8 +112,7 @@ bool CastMessageBuilder::TimeToSendNextCastMessage(
   if (last_update_time_.is_null() && framer_->Empty())
     return false;
 
-  *time_to_send =
-      last_update_time_ + base::Milliseconds(kCastMessageUpdateIntervalMs);
+  *time_to_send = last_update_time_ + kCastMessageUpdateInterval;
   return true;
 }
 
@@ -142,8 +136,7 @@ bool CastMessageBuilder::UpdateCastMessageInternal(RtcpCastMessage* message) {
 
   // Is it time to update the cast message?
   base::TimeTicks now = clock_->NowTicks();
-  if (now - last_update_time_ <
-      base::Milliseconds(kCastMessageUpdateIntervalMs)) {
+  if (now - last_update_time_ < kCastMessageUpdateInterval) {
     return false;
   }
   last_update_time_ = now;
@@ -174,7 +167,7 @@ void CastMessageBuilder::BuildPacketList() {
     if (it != time_last_nacked_map_.end()) {
       // We have sent a NACK in this frame before, make sure enough time have
       // passed.
-      if (now - it->second < base::Milliseconds(kNackRepeatIntervalMs)) {
+      if (now - it->second < kNackRepeatInterval) {
         continue;
       }
     }

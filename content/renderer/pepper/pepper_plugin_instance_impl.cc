@@ -2559,10 +2559,6 @@ void PepperPluginInstanceImpl::SetSizeAttributesForFullscreen() {
   if (!render_frame_)
     return;
 
-  // TODO(miu): Revisit this logic.  If the style must be modified for correct
-  // behavior, the width and height should probably be set to 100%, rather than
-  // a fixed screen size.
-
   display::ScreenInfo info =
       render_frame_->GetLocalRootWebFrameWidget()->GetScreenInfo();
   screen_size_for_fullscreen_ = info.rect.size();

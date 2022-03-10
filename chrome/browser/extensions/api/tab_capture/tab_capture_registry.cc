@@ -44,8 +44,6 @@ class TabCaptureRegistry::LiveRequest : public content::WebContentsObserver {
         registry_(registry),
         capture_state_(tab_capture::TAB_CAPTURE_STATE_NONE),
         is_verified_(false),
-        // TODO(miu): This initial value for |is_fullscreened_| is a faulty
-        // assumption.  http://crbug.com/350491
         is_fullscreened_(false),
         render_process_id_(
             target_contents->GetMainFrame()->GetProcess()->GetID()),

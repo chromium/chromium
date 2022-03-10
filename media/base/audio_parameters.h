@@ -115,8 +115,6 @@ MEDIA_SHMEM_EXPORT uint32_t ComputeAudioOutputBufferSize(int channels,
 
 class MEDIA_SHMEM_EXPORT AudioParameters {
  public:
-  // TODO(miu): Rename this enum to something that correctly reflects its
-  // semantics, such as "TransportScheme."
   // GENERATED_JAVA_ENUM_PACKAGE: org.chromium.media
   // GENERATED_JAVA_CLASS_NAME_OVERRIDE: AudioEncodingFormat
   // GENERATED_JAVA_PREFIX_TO_STRIP: AUDIO_

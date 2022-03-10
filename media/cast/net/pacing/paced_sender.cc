@@ -158,9 +158,6 @@ bool PacedSender::ShouldResend(const PacketKey& packet_key,
   // packet Y sent just before X. Reject retransmission of X if ACK for
   // Y has not been received.
   // Only do this for video packets.
-  //
-  // TODO(miu): This sounds wrong.  Audio packets are always transmitted first
-  // (because they are put in |priority_packet_list_|, see PopNextPacket()).
   auto session_it = sessions_.find(packet_key.ssrc);
   // The session should always have been registered in |sessions_|.
   DCHECK(session_it != sessions_.end());
@@ -411,9 +408,6 @@ void PacedSender::SendStoredPackets() {
   }
 
   // Keep ~0.5 seconds of data (1000 packets).
-  //
-  // TODO(miu): This has no relation to the actual size of the frames, and so
-  // there's no way to reason whether 1000 is enough or too much, or whatever.
   if (send_history_buffer_.size() >=
       max_burst_size_ * kMaxDedupeWindowMs / kPacingIntervalMs) {
     send_history_.swap(send_history_buffer_);
@@ -432,8 +426,6 @@ void PacedSender::LogPacketEvent(const Packet& packet, CastLoggingEvent type) {
   PacketEvent& event = recent_packet_events_->back();
 
   // Populate the new PacketEvent by parsing the wire-format |packet|.
-  //
-  // TODO(miu): This parsing logic belongs in RtpParser.
   event.timestamp = clock_->NowTicks();
   event.type = type;
   base::BigEndianReader reader(packet);

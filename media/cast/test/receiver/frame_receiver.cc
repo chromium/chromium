@@ -204,8 +204,6 @@ void FrameReceiver::EmitAvailableEncodedFrames() {
 
   while (!frame_request_queue_.empty()) {
     // Attempt to peek at the next completed frame from the |framer_|.
-    // TODO(miu): We should only be peeking at the metadata, and not copying the
-    // payload yet!  Or, at least, peek using a StringPiece instead of a copy.
     std::unique_ptr<EncodedFrame> encoded_frame(new EncodedFrame());
     bool is_consecutively_next_frame = false;
     bool have_multiple_complete_frames = false;

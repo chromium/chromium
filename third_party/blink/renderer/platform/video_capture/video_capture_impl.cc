@@ -876,8 +876,6 @@ void VideoCaptureImpl::OnBufferReady(
 
   // If the timestamp is not prepared, we use reference time to make a rough
   // estimate. e.g. ThreadSafeCaptureOracle::DidCaptureFrame().
-  // TODO(miu): Fix upstream capturers to always set timestamp and reference
-  // time. See http://crbug/618407/ for tracking.
   if (buffer->info->timestamp.is_zero())
     buffer->info->timestamp = reference_time - first_frame_ref_time_;
 

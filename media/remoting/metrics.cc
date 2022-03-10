@@ -15,8 +15,6 @@ namespace {
 
 ////////////////////////////////////////////////////////////////////////////////
 // BEGIN: These were all borrowed from src/media/filters/ffmpeg_demuxer.cc.
-// TODO(miu): This code will be de-duped in a soon-upcoming change.
-
 // Some videos just want to watch the world burn, with a height of 0; cap the
 // "infinite" aspect ratio resulting.
 constexpr int kInfiniteRatio = 99999;

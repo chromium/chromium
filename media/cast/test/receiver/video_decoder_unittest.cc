@@ -144,7 +144,6 @@ class VideoDecoderTest : public ::testing::TestWithParam<Codec> {
     EXPECT_EQ(expected_video_frame->coded_size().height(),
               video_frame->coded_size().height());
     EXPECT_LT(40.0, I420PSNR(*expected_video_frame, *video_frame));
-    // TODO(miu): Once we start using VideoFrame::timestamp_, check that here.
 
     // Signal the main test thread that more video was decoded.
     base::AutoLock auto_lock(lock_);

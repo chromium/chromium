@@ -248,9 +248,6 @@ base::TimeTicks AnimatedContentSampler::ComputeNextFrameTimestamp(
   // clock relative to the video hardware, which affects the event times; and
   // 2) The small error introduced by this frame timestamp rewriting, as it is
   // based on averaging over recent events.
-  //
-  // TODO(miu): This is similar to the ClockSmoother in
-  // media/base/audio_shifter.cc.  Consider refactor-and-reuse here.
   const base::TimeDelta drift = ideal_timestamp - event_time;
   const int64_t correct_over_num_frames =
       kDriftCorrection.IntDiv(sampling_period_);
