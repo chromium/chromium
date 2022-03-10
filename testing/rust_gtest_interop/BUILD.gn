@@ -57,7 +57,6 @@ if (enable_rust) {
       "//testing/gtest",
     ]
 
-    rs_crate_root = "rust_gtest_interop_unittest.rs"
     rs_sources = [ "rust_gtest_interop_unittest.rs" ]
   }
 }

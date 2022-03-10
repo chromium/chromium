@@ -22,9 +22,9 @@ test("some_unittests") {
 }
 ```
 
-To add a Rust file to the test suite, simply add it to the `rs_sources`, and to
-the _crate root_. If this is the first Rust file being added, then you will have
-to write the crate root as well.
+To add a Rust file to the test suite, simply add it to the `rs_sources`. Unlike
+other Rust crates, the `crate_root` is not specified, since it is generated from
+the sources list.
 
 `BUILD.gn`:
 ```gn
@@ -34,25 +34,12 @@ test("some_unittests") {
     "another_cpp_file.cc",
   ]
   rs_sources = [
-    "some_unittests.rs",
     "a_rust_file.rs",
   ]
-  crate_root = "some_unittests.rs"
   deps = [
     "//testing/gtest",
   ]
 }
-```
-
-The crate root is named after the unit test target. In this case, it is
-`some_unittests.rs`. The file just lists the modules in the test suite. By
-default the test files are expected to be in the crate root's directory, but you
-can use the `#[path]` attribute to add tests in subdirectories too.
-
-`some_unittests.rs`:
-```rs
-#[path = "a_rust_file.rs"]
-mod a_rust_file;
 ```
 
 ## To write a Gtest unit test in Rust
@@ -130,4 +117,25 @@ fn test() -> std::io::Result {
   expect_eq!(s, "hello world");
   Ok(())
 }
+```
+
+### Shared helper utilities
+
+Sometimes tests across different test files want to share helper utilities. Such
+helpers should be placed in a separate GN target, typically named with a
+`_test_support` suffix, such as `starship_test_support` for the
+`starship_unittests`. And would also usually be found in a `test/` subdirectory.
+
+#### Example
+The `starship_unittests` test() target would include any unit test files, such as
+`starship_unittest.rs`. And the `starship_test_support` static_library() target
+would include the files in the `test/` subdirectory, such as
+`starship_test_helper.rs` and `starship_test_things.rs`.
+```
+src/
+  starship/
+    starship_unittest.rs
+    test/
+      starship_test_helper.rs
+      starship_test_things.rs
 ```

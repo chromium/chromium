@@ -59,6 +59,10 @@ template("mixed_test") {
     }
     rs_configs += [ "//build/rust:test" ]
 
+    # The crate_root is generated and should not be specified.
+    assert(!defined(rs_crate_root))
+    rs_generate_crate_root = true
+
     # We could automatically add `rs_deps += [ "//testing/rust_gtest_interop" ]`
     # if `rs_sources` is non-empty. But we don't automatically provide
     # //testing/gtest either so it would be asymmetric and could break in that

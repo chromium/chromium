@@ -35,23 +35,49 @@ import("//build/rust/rust_unit_test.gni")
 # different defaults can be provided.
 
 template("rust_target") {
+  # Only one of `crate_root` or `generate_crate_root` can be specified, or
+  # neither.
+  assert(!defined(invoker.crate_root) ||
+         !(defined(invoker.generate_crate_root) && invoker.generate_crate_root))
+
   _target_name = target_name
   _crate_name = target_name
   if (defined(invoker.crate_name)) {
     _crate_name = invoker.crate_name
-  }
-  if (defined(invoker.crate_root)) {
-    _crate_root = invoker.crate_root
-  } else if (invoker.target_type == "executable") {
-    _crate_root = "src/main.rs"
-  } else {
-    _crate_root = "src/lib.rs"
   }
 
   if (defined(invoker.output_dir) && invoker.output_dir != "") {
     _out_dir = invoker.output_dir
   } else {
     _out_dir = target_out_dir
+  }
+
+  if (defined(invoker.generate_crate_root) && invoker.generate_crate_root) {
+    generated_file("${_target_name}_crate_root") {
+      outputs = [ "${target_gen_dir}/${target_name}.rs" ]
+      contents = [
+        "// Generated crate root for ${_target_name}.",
+        "// @generated",
+        "",
+      ]
+      foreach(rs, invoker.sources) {
+        rs_path_from_root = rebase_path(rs, target_gen_dir)
+        contents += [ "#[path = \"${rs_path_from_root}\"]" ]
+        rs_modname = string_replace(string_replace(rs, "/", "_"), ".rs", "")
+        contents += [
+          "mod ${rs_modname};",
+          "",
+        ]
+      }
+    }
+    _crate_root =
+        string_join("", get_target_outputs(":${_target_name}_crate_root"))
+  } else if (defined(invoker.crate_root)) {
+    _crate_root = invoker.crate_root
+  } else if (invoker.target_type == "executable") {
+    _crate_root = "src/main.rs"
+  } else {
+    _crate_root = "src/lib.rs"
   }
 
   _testonly = false

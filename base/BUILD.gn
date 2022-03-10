@@ -3408,8 +3408,7 @@ test("base_unittests") {
   # TODO(crbug.com/1304253): iOS test() targets don't support mixing Rust code
   # yet.
   if (!is_ios) {
-    rs_crate_root = "base_unittests.rs"
-    rs_sources = [ "base_unittests.rs" ]
+    rs_sources = []
 
     if (build_rust_json_parser) {
       # TODO(crbug.com/1298039): The BUILDFLAG should be used instead.

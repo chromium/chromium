@@ -35,6 +35,7 @@ import("//build/rust/rust_target.gni")
 #   rs_public_deps
 #   rs_crate_name
 #   rs_crate_root
+#   rs_generate_crate_root
 #   rs_features
 #   rs_cxx_bindings
 #     Rust parameters. Same meaning as in 'rust_static_library' without the
@@ -79,6 +80,7 @@ template("mixed_target") {
     "rs_crate_name",
     "rs_crate_root",
     "rs_build_native_rust_unit_tests",
+    "rs_generate_crate_root",
   ]
 
   # TODO(crbug.com/1280708, crbug.com/1304707): Drop toolchain_has_rust after we have support for
@@ -124,6 +126,9 @@ template("mixed_target") {
       }
       if (defined(invoker.rs_crate_root)) {
         crate_root = invoker.rs_crate_root
+      }
+      if (defined(invoker.rs_generate_crate_root)) {
+        generate_crate_root = invoker.rs_generate_crate_root
       }
       if (defined(invoker.rs_crate_name)) {
         crate_name = invoker.rs_crate_name
