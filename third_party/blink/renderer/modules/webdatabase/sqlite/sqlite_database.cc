@@ -284,7 +284,7 @@ int SQLiteDatabase::LastChanges() {
 }
 
 int SQLiteDatabase::LastError() {
-  return db_ ? sqlite3_errcode(db_) : open_error_;
+  return db_ ? sqlite3_extended_errcode(db_) : open_error_;
 }
 
 const char* SQLiteDatabase::LastErrorMsg() {

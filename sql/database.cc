@@ -98,7 +98,7 @@ int BackupDatabase(sqlite3* src, sqlite3* dst, const char* db_name) {
     // Since this call only sets things up, this indicates a gross
     // error in SQLite.
     DLOG(DCHECK) << "Unable to start sqlite3_backup(): " << sqlite3_errmsg(dst);
-    return sqlite3_errcode(dst);
+    return sqlite3_extended_errcode(dst);
   }
 
   // -1 backs up the entire database.
@@ -1507,7 +1507,7 @@ int Database::GetMemoryUsage() {
 int Database::GetErrorCode() const {
   if (!db_)
     return SQLITE_ERROR;
-  return sqlite3_errcode(db_);
+  return sqlite3_extended_errcode(db_);
 }
 
 int Database::GetLastErrno() const {
