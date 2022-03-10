@@ -359,7 +359,7 @@ void SCTAuditingHandler::SetMode(mojom::SCTAuditingMode mode) {
   // processes can fail to report metrics during shutdown). The timer should
   // only be running if SCT auditing is enabled.
   if (mode != mojom::SCTAuditingMode::kDisabled) {
-    histogram_timer_.Start(FROM_HERE, base::Hours(1), this,
+    histogram_timer_.Start(FROM_HERE, hwm_metrics_period_, this,
                            &SCTAuditingHandler::ReportHWMMetrics);
   } else {
     histogram_timer_.Stop();

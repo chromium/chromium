@@ -126,6 +126,10 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) SCTAuditingHandler
 
   base::ImportantFileWriter* GetFileWriterForTesting() { return writer_.get(); }
 
+  void set_hwm_metrics_period_for_testing(base::TimeDelta hwm_metrics_period) {
+    hwm_metrics_period_ = hwm_metrics_period;
+  }
+
   base::WeakPtr<SCTAuditingHandler> GetWeakPtr();
 
  private:
@@ -161,6 +165,9 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) SCTAuditingHandler
   scoped_refptr<base::SequencedTaskRunner> background_runner_;
   bool is_after_startup_ = false;
   bool persisted_reports_read_ = false;
+
+  // How often the high-water-mark metrics get logged.
+  base::TimeDelta hwm_metrics_period_ = base::Hours(1);
 
   base::WeakPtrFactory<SCTAuditingHandler> weak_factory_{this};
 };
