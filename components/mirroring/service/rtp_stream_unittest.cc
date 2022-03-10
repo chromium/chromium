@@ -32,7 +32,7 @@ namespace {
 
 class StreamClient final : public RtpStreamClient {
  public:
-  StreamClient(base::SimpleTestTickClock* clock) : clock_(clock) {}
+  explicit StreamClient(base::SimpleTestTickClock* clock) : clock_(clock) {}
 
   StreamClient(const StreamClient&) = delete;
   StreamClient& operator=(const StreamClient&) = delete;
@@ -76,9 +76,9 @@ class StreamClient final : public RtpStreamClient {
   }
 
  private:
-  raw_ptr<VideoRtpStream> video_stream_ = nullptr;
+  raw_ptr<VideoRtpStream> video_stream_;
   base::TimeTicks first_frame_time_;
-  raw_ptr<base::SimpleTestTickClock> clock_;
+  const raw_ptr<base::SimpleTestTickClock> clock_;
   base::WeakPtrFactory<StreamClient> weak_factory_{this};
 };
 
@@ -107,8 +107,7 @@ class RtpStreamTest : public ::testing::Test {
   const scoped_refptr<media::cast::CastEnvironment> cast_environment_;
   StreamClient client_;
 
-  // We currently don't care about sender reports, so we have a nick
-  // mock for the transport.
+  // We currently don't care about sender reports, so we use a nice mock here.
   testing::NiceMock<media::cast::MockCastTransport> transport_;
 };
 
