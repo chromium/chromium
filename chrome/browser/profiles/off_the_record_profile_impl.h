@@ -128,6 +128,8 @@ class OffTheRecordProfileImpl : public Profile {
   GetFederatedIdentityRequestPermissionContext() override;
   content::FederatedIdentitySharingPermissionContextDelegate*
   GetFederatedIdentitySharingPermissionContext() override;
+  content::FederatedIdentityApiPermissionContextDelegate*
+  GetFederatedIdentityApiPermissionContext() override;
 
  protected:
   // Profile implementation.

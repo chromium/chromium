@@ -51,6 +51,8 @@
 #include "chrome/browser/ui/zoom/chrome_zoom_level_otr_delegate.h"
 #include "chrome/browser/webid/federated_identity_active_session_permission_context.h"
 #include "chrome/browser/webid/federated_identity_active_session_permission_context_factory.h"
+#include "chrome/browser/webid/federated_identity_api_permission_context.h"
+#include "chrome/browser/webid/federated_identity_api_permission_context_factory.h"
 #include "chrome/browser/webid/federated_identity_request_permission_context.h"
 #include "chrome/browser/webid/federated_identity_request_permission_context_factory.h"
 #include "chrome/browser/webid/federated_identity_sharing_permission_context.h"
@@ -689,4 +691,9 @@ OffTheRecordProfileImpl::GetFederatedIdentityRequestPermissionContext() {
 content::FederatedIdentitySharingPermissionContextDelegate*
 OffTheRecordProfileImpl::GetFederatedIdentitySharingPermissionContext() {
   return FederatedIdentitySharingPermissionContextFactory::GetForProfile(this);
+}
+
+content::FederatedIdentityApiPermissionContextDelegate*
+OffTheRecordProfileImpl::GetFederatedIdentityApiPermissionContext() {
+  return FederatedIdentityApiPermissionContextFactory::GetForProfile(this);
 }
