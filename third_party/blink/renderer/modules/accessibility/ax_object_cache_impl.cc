@@ -453,8 +453,8 @@ bool IsNodeRelevantForAccessibility(const Node* node,
   if (!node || !node->isConnected())
     return false;
 
-  if (node->IsDocumentNode())
-    return true;
+  if (const Document* document = DynamicTo<Document>(node))
+    return document->GetFrame();  // Only relevant if the document has a frame.
 
   if (node->ContainingShadowRoot() &&
       !IsShadowContentRelevantForAccessibility(node)) {
