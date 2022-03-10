@@ -72,7 +72,8 @@ class MODULES_EXPORT MediaStreamTrack
                                   base::OnceClosure callback,
                                   const String& descriptor_id);
   // TODO(1288839): Implement to recreate MST after transfer
-  static MediaStreamTrack* Create(ExecutionContext* context);
+  static MediaStreamTrack* Create(ExecutionContext* context,
+                                  const base::UnguessableToken& token);
 
   MediaStreamTrack(ExecutionContext*, MediaStreamComponent*);
   MediaStreamTrack(ExecutionContext*,

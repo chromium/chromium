@@ -34,6 +34,7 @@
 #include "third_party/blink/renderer/modules/crypto/crypto_result_impl.h"
 #include "third_party/blink/renderer/modules/filesystem/dom_file_system.h"
 #include "third_party/blink/renderer/modules/mediastream/media_stream_track.h"
+#include "third_party/blink/renderer/modules/mediastream/mock_media_stream_video_source.h"
 #include "third_party/blink/renderer/modules/peerconnection/rtc_certificate.h"
 #include "third_party/blink/renderer/modules/peerconnection/rtc_certificate_generator.h"
 #include "third_party/blink/renderer/modules/webcodecs/allow_shared_buffer_source_util.h"
@@ -1185,6 +1186,13 @@ TEST(V8ScriptValueSerializerForModulesTest, TransferMediaStreamTrack) {
   MediaStreamSource* source = MakeGarbageCollected<MediaStreamSource>(
       "test_id", MediaStreamSource::StreamType::kTypeVideo, "test_name",
       false /* remote */);
+  std::unique_ptr<MockMediaStreamVideoSource> mock_source(
+      base::WrapUnique(new MockMediaStreamVideoSource()));
+  MediaStreamDevice device;
+  base::UnguessableToken token = base::UnguessableToken::Create();
+  device.set_session_id(token);
+  mock_source->SetDevice(device);
+  source->SetPlatformSource(std::move(mock_source));
   MediaStreamComponent* component =
       MakeGarbageCollected<MediaStreamComponent>(source);
   MediaStreamTrack* blink_track = MakeGarbageCollected<MediaStreamTrack>(
@@ -1203,5 +1211,31 @@ TEST(V8ScriptValueSerializerForModulesTest, TransferMediaStreamTrack) {
       V8MediaStreamTrack::ToImpl(result.As<v8::Object>());
   EXPECT_EQ(new_track->label(), "dummy");
 }
+
+TEST(V8ScriptValueSerializerForModulesTest,
+     TransferMediaStreamTrackNoSessionIdThrows) {
+  V8TestingScope scope;
+  ExceptionState exception_state(scope.GetIsolate(),
+                                 ExceptionState::kExecutionContext, "Window",
+                                 "postMessage");
+
+  MediaStreamSource* source = MakeGarbageCollected<MediaStreamSource>(
+      "test_id", MediaStreamSource::StreamType::kTypeVideo, "test_name",
+      false /* remote */);
+  MediaStreamComponent* component =
+      MakeGarbageCollected<MediaStreamComponent>(source);
+  MediaStreamTrack* blink_track = MakeGarbageCollected<MediaStreamTrack>(
+      scope.GetExecutionContext(), component);
+
+  // Transfer a MediaStreamTrack with no session id should throw an error.
+  Transferables transferables;
+  transferables.media_stream_tracks.push_back(blink_track);
+  v8::Local<v8::Value> wrapper = ToV8(blink_track, scope.GetScriptState());
+  EXPECT_FALSE(V8ScriptValueSerializer(scope.GetScriptState())
+                   .Serialize(wrapper, exception_state));
+  EXPECT_TRUE(HadDOMExceptionInModulesTest(
+      "DataCloneError", scope.GetScriptState(), exception_state));
+}
+
 }  // namespace
 }  // namespace blink

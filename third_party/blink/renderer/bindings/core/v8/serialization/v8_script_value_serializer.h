@@ -70,6 +70,7 @@ class CORE_EXPORT V8ScriptValueSerializer
   void WriteRawBytes(const void* data, size_t size) {
     serializer_.WriteRawBytes(data, size);
   }
+  void WriteUnguessableToken(const base::UnguessableToken& token);
   void WriteUTF8String(const String&);
 
   template <typename E>

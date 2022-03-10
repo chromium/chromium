@@ -234,7 +234,8 @@ bool V8ScriptValueSerializerForModules::WriteDOMObject(
       return false;
     }
 
-    return WriteMediaStreamTrack();
+    return WriteMediaStreamTrack(wrappable->ToImpl<MediaStreamTrack>(),
+                                 exception_state);
   }
   return false;
 }
@@ -505,9 +506,18 @@ bool V8ScriptValueSerializerForModules::WriteDecoderBuffer(
   return true;
 }
 
-bool V8ScriptValueSerializerForModules::WriteMediaStreamTrack() {
-  WriteTag(kMediaStreamTrack);
+bool V8ScriptValueSerializerForModules::WriteMediaStreamTrack(
+    MediaStreamTrack* track,
+    ExceptionState& exception_state) {
+  if (!track->serializable_session_id()) {
+    exception_state.ThrowDOMException(
+        DOMExceptionCode::kDataCloneError,
+        "MediaStreamTrack could not be serialized.");
+    return false;
+  }
 
+  WriteTag(kMediaStreamTrack);
+  WriteUnguessableToken(*track->serializable_session_id());
   return true;
 }
 

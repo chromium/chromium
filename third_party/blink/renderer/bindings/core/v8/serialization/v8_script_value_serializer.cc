@@ -369,6 +369,12 @@ void V8ScriptValueSerializer::FinalizeTransfer(
   }
 }
 
+void V8ScriptValueSerializer::WriteUnguessableToken(
+    const base::UnguessableToken& token) {
+  WriteUint64(token.GetHighForSerialization());
+  WriteUint64(token.GetLowForSerialization());
+}
+
 void V8ScriptValueSerializer::WriteUTF8String(const String& string) {
   // TODO(jbroman): Ideally this method would take a WTF::StringView, but the
   // StringUTF8Adaptor trick doesn't yet work with StringView.

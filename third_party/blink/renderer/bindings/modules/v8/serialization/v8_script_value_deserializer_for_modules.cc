@@ -531,7 +531,12 @@ MediaStreamTrack* V8ScriptValueDeserializerForModules::ReadMediaStreamTrack() {
     return nullptr;
   }
 
-  return MediaStreamTrack::Create(ExecutionContext::From(GetScriptState()));
+  base::UnguessableToken session_id;
+  if (!ReadUnguessableToken(&session_id))
+    return nullptr;
+
+  return MediaStreamTrack::Create(ExecutionContext::From(GetScriptState()),
+                                  session_id);
 }
 
 }  // namespace blink

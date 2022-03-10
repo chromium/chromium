@@ -225,6 +225,16 @@ void V8ScriptValueDeserializer::Transfer() {
   }
 }
 
+bool V8ScriptValueDeserializer::ReadUnguessableToken(
+    base::UnguessableToken* token_out) {
+  uint64_t high;
+  uint64_t low;
+  if (!ReadUint64(&high) || !ReadUint64(&low))
+    return false;
+  *token_out = base::UnguessableToken::Deserialize(high, low);
+  return true;
+}
+
 bool V8ScriptValueDeserializer::ReadUTF8String(String* string) {
   uint32_t utf8_length = 0;
   const void* utf8_data = nullptr;

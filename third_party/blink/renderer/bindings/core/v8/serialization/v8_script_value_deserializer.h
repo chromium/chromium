@@ -69,6 +69,7 @@ class CORE_EXPORT V8ScriptValueDeserializer
   bool ReadRawBytes(size_t size, const void** data) {
     return deserializer_.ReadRawBytes(size, data);
   }
+  bool ReadUnguessableToken(base::UnguessableToken* token_out);
   bool ReadUTF8String(String* string_out);
   DOMRectReadOnly* ReadDOMRectReadOnly();
 

@@ -270,7 +270,9 @@ MediaStreamTrack* MediaStreamTrack::Create(ExecutionContext* context,
   }
 }
 
-MediaStreamTrack* MediaStreamTrack::Create(ExecutionContext* context) {
+MediaStreamTrack* MediaStreamTrack::Create(
+    ExecutionContext* context,
+    const base::UnguessableToken& token) {
   MediaStreamSource* source = MakeGarbageCollected<MediaStreamSource>(
       "dummy", MediaStreamSource::StreamType::kTypeVideo, "dummy",
       false /* remote */);
