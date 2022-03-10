@@ -128,9 +128,13 @@ class FullscreenController : public ExclusiveAccessControllerBase {
   // |web_contents| represents the tab that requests to no longer be fullscreen.
   void ExitFullscreenModeForTab(content::WebContents* web_contents);
 
+  base::WeakPtr<FullscreenController> GetWeakPtr() {
+    return ptr_factory_.GetWeakPtr();
+  }
+
   // Platform Fullscreen ///////////////////////////////////////////////////////
 
-  // Overrde from ExclusiveAccessControllerBase.
+  // Override from ExclusiveAccessControllerBase.
   void OnTabDeactivated(content::WebContents* web_contents) override;
   void OnTabDetachedFromView(content::WebContents* web_contents) override;
   void OnTabClosing(content::WebContents* web_contents) override;
