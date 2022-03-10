@@ -148,8 +148,8 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) DatabaseTracker
   virtual bool GetAllOriginsInfo(std::vector<OriginInfo>* origins_info);
 
   // Thread-safe getter.
-  QuotaManagerProxy* quota_manager_proxy() const {
-    return quota_manager_proxy_.get();
+  const scoped_refptr<QuotaManagerProxy>& quota_manager_proxy() const {
+    return quota_manager_proxy_;
   }
 
   bool IsDatabaseScheduledForDeletion(const std::string& origin_identifier,
