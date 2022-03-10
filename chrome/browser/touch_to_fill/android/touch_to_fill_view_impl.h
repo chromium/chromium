@@ -24,10 +24,10 @@ class TouchToFillViewImpl : public TouchToFillView {
   ~TouchToFillViewImpl() override;
 
   // TouchToFillView:
-  void Show(
-      const GURL& url,
-      IsOriginSecure is_origin_secure,
-      base::span<const password_manager::UiCredential> credentials) override;
+  void Show(const GURL& url,
+            IsOriginSecure is_origin_secure,
+            base::span<const password_manager::UiCredential> credentials,
+            bool trigger_submission) override;
   void OnCredentialSelected(
       const password_manager::UiCredential& credential) override;
   void OnDismiss() override;

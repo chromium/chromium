@@ -534,9 +534,9 @@ class PasswordAutofillAgent::DeferringPasswordManagerDriver
     DeferMsg(&mojom::PasswordManagerDriver::ShowPasswordSuggestions,
              text_direction, typed_username, options, bounds);
   }
-  void ShowTouchToFill(bool trigger_submission) override {
+  void ShowTouchToFill(bool ready_for_submission) override {
     DeferMsg(&mojom::PasswordManagerDriver::ShowTouchToFill,
-             trigger_submission);
+             ready_for_submission);
   }
   void CheckSafeBrowsingReputation(const GURL& form_action,
                                    const GURL& frame_url) override {
@@ -1006,7 +1006,7 @@ bool PasswordAutofillAgent::TryToShowTouchToFill(
       IsReadyForSubmissionAfterCredentialFilling(username_element,
                                                  password_element));
 #else
-  GetPasswordManagerDriver().ShowTouchToFill(/*trigger_submission*/ false);
+  GetPasswordManagerDriver().ShowTouchToFill(/*ready_for_submission*/ false);
 #endif
 
   touch_to_fill_state_ = TouchToFillState::kIsShowing;

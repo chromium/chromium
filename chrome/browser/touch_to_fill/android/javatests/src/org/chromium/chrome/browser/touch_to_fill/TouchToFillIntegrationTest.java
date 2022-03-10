@@ -99,7 +99,7 @@ public class TouchToFillIntegrationTest {
     @MediumTest
     public void testClickingSuggestionsTriggersCallback() {
         runOnUiThreadBlocking(() -> {
-            mTouchToFill.showCredentials(sExampleUrl, true, Collections.singletonList(sAna));
+            mTouchToFill.showCredentials(sExampleUrl, true, Collections.singletonList(sAna), false);
         });
         BottomSheetTestSupport.waitForOpen(mBottomSheetController);
 
@@ -114,7 +114,7 @@ public class TouchToFillIntegrationTest {
     @MediumTest
     public void testBackDismissesAndCallsCallback() {
         runOnUiThreadBlocking(() -> {
-            mTouchToFill.showCredentials(sExampleUrl, true, Arrays.asList(sAna, sBob));
+            mTouchToFill.showCredentials(sExampleUrl, true, Arrays.asList(sAna, sBob), false);
         });
         BottomSheetTestSupport.waitForOpen(mBottomSheetController);
 
@@ -189,7 +189,7 @@ public class TouchToFillIntegrationTest {
         Espresso.onView(withText("Another bottom sheet content")).check(matches(isDisplayed()));
 
         runOnUiThreadBlocking(() -> {
-            mTouchToFill.showCredentials(sExampleUrl, true, Arrays.asList(sAna, sBob));
+            mTouchToFill.showCredentials(sExampleUrl, true, Arrays.asList(sAna, sBob), false);
         });
         waitForEvent(mMockBridge).onDismissed();
         verify(mMockBridge, never()).onCredentialSelected(any());

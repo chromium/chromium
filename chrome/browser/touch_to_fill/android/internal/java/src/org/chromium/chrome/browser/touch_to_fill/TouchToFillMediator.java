@@ -8,6 +8,7 @@ import static org.chromium.chrome.browser.touch_to_fill.TouchToFillProperties.Cr
 import static org.chromium.chrome.browser.touch_to_fill.TouchToFillProperties.CredentialProperties.FAVICON_OR_FALLBACK;
 import static org.chromium.chrome.browser.touch_to_fill.TouchToFillProperties.CredentialProperties.FORMATTED_ORIGIN;
 import static org.chromium.chrome.browser.touch_to_fill.TouchToFillProperties.CredentialProperties.ON_CLICK_LISTENER;
+import static org.chromium.chrome.browser.touch_to_fill.TouchToFillProperties.CredentialProperties.SHOW_SUBMIT_BUTTON;
 import static org.chromium.chrome.browser.touch_to_fill.TouchToFillProperties.HeaderProperties.FORMATTED_URL;
 import static org.chromium.chrome.browser.touch_to_fill.TouchToFillProperties.HeaderProperties.ORIGIN_SECURE;
 import static org.chromium.chrome.browser.touch_to_fill.TouchToFillProperties.HeaderProperties.SINGLE_CREDENTIAL;
@@ -62,7 +63,8 @@ class TouchToFillMediator {
         mDesiredIconSize = desiredIconSize;
     }
 
-    void showCredentials(GURL url, boolean isOriginSecure, List<Credential> credentials) {
+    void showCredentials(GURL url, boolean isOriginSecure, List<Credential> credentials,
+            boolean triggerSubmission) {
         assert credentials != null;
         mModel.set(ON_CLICK_MANAGE, this::onManagePasswordSelected);
 
@@ -80,7 +82,7 @@ class TouchToFillMediator {
 
         mCredentials = credentials;
         for (Credential credential : credentials) {
-            final PropertyModel model = createModel(credential);
+            final PropertyModel model = createModel(credential, triggerSubmission);
             sheetItems.add(new ListItem(TouchToFillProperties.ItemType.CREDENTIAL, model));
             requestIconOrFallbackImage(model, url);
             if (shouldCreateConfirmationButton(credentials)) {
@@ -156,12 +158,13 @@ class TouchToFillMediator {
         return credentials.size() == 1;
     }
 
-    private PropertyModel createModel(Credential credential) {
+    private PropertyModel createModel(Credential credential, boolean triggerSubmission) {
         return new PropertyModel.Builder(CredentialProperties.ALL_KEYS)
                 .with(CREDENTIAL, credential)
                 .with(ON_CLICK_LISTENER, this::onSelectedCredential)
                 .with(FORMATTED_ORIGIN,
                         UrlFormatter.formatUrlForDisplayOmitScheme(credential.getOriginUrl()))
+                .with(SHOW_SUBMIT_BUTTON, triggerSubmission)
                 .build();
     }
 }

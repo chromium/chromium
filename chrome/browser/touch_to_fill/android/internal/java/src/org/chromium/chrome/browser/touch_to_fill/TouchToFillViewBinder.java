@@ -8,6 +8,7 @@ import static org.chromium.chrome.browser.touch_to_fill.TouchToFillProperties.Cr
 import static org.chromium.chrome.browser.touch_to_fill.TouchToFillProperties.CredentialProperties.FAVICON_OR_FALLBACK;
 import static org.chromium.chrome.browser.touch_to_fill.TouchToFillProperties.CredentialProperties.FORMATTED_ORIGIN;
 import static org.chromium.chrome.browser.touch_to_fill.TouchToFillProperties.CredentialProperties.ON_CLICK_LISTENER;
+import static org.chromium.chrome.browser.touch_to_fill.TouchToFillProperties.CredentialProperties.SHOW_SUBMIT_BUTTON;
 import static org.chromium.chrome.browser.touch_to_fill.TouchToFillProperties.DISMISS_HANDLER;
 import static org.chromium.chrome.browser.touch_to_fill.TouchToFillProperties.HeaderProperties.FORMATTED_URL;
 import static org.chromium.chrome.browser.touch_to_fill.TouchToFillProperties.HeaderProperties.ORIGIN_SECURE;
@@ -142,6 +143,8 @@ class TouchToFillViewBinder {
             TextView passwordText = view.findViewById(R.id.password);
             passwordText.setText(credential.getPassword());
             passwordText.setTransformationMethod(new PasswordTransformationMethod());
+        } else if (propertyKey == SHOW_SUBMIT_BUTTON) {
+            // Whether Touch To Fill should auto-submit a form doesn't affect the credentials list.
         } else {
             assert false : "Unhandled update to property:" + propertyKey;
         }
@@ -159,9 +162,18 @@ class TouchToFillViewBinder {
         if (propertyKey == ON_CLICK_LISTENER) {
             view.setOnClickListener(
                     clickedView -> { model.get(ON_CLICK_LISTENER).onResult(credential); });
+        } else if (propertyKey == SHOW_SUBMIT_BUTTON) {
+            TextView buttonTitleText = view.findViewById(R.id.touch_to_fill_button_title);
+            if (ChromeFeatureList.isEnabled(ChromeFeatureList.TOUCH_TO_FILL_PASSWORD_SUBMISSION)) {
+                buttonTitleText.setText(view.getContext().getString(model.get(SHOW_SUBMIT_BUTTON)
+                                ? R.string.touch_to_fill_signin
+                                : R.string.touch_to_fill_continue));
+            } else {
+                buttonTitleText.setText(R.string.touch_to_fill_continue);
+            }
         } else if (propertyKey == FAVICON_OR_FALLBACK || propertyKey == FORMATTED_ORIGIN
                 || propertyKey == CREDENTIAL) {
-            // The button appearance is static.
+            // Credential properties don't affect the button.
         } else {
             assert false : "Unhandled update to property:" + propertyKey;
         }
@@ -200,6 +212,8 @@ class TouchToFillViewBinder {
             sheetTitleText.setText(getTitle(model, view));
 
             TextView sheetSubtitleText = view.findViewById(R.id.touch_to_fill_sheet_subtitle);
+            // TODO(crbug.com/1283004): Variate the subtitle if auto-submission is going to be
+            // triggered.
             if (model.get(ORIGIN_SECURE)) {
                 sheetSubtitleText.setText(model.get(FORMATTED_URL));
             } else {

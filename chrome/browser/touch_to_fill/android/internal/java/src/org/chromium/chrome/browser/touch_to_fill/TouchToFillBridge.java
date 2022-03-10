@@ -61,8 +61,10 @@ class TouchToFillBridge implements TouchToFillComponent.Delegate {
     }
 
     @CalledByNative
-    private void showCredentials(GURL url, boolean isOriginSecure, Credential[] credentials) {
-        mTouchToFillComponent.showCredentials(url, isOriginSecure, Arrays.asList(credentials));
+    private void showCredentials(
+            GURL url, boolean isOriginSecure, Credential[] credentials, boolean submitCredential) {
+        mTouchToFillComponent.showCredentials(
+                url, isOriginSecure, Arrays.asList(credentials), submitCredential);
     }
 
     @Override

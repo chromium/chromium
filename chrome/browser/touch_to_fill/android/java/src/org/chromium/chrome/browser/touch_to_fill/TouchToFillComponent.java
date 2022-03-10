@@ -74,6 +74,9 @@ public interface TouchToFillComponent {
      * @param url A {@link String} that contains the URL to display credentials for.
      * @param isOriginSecure A {@link boolean} that indicates whether the current origin is secure.
      * @param credentials A list of {@link Credential}s that will be displayed.
+     * @param triggerSubmission A {@link boolean} that indicates whether a form should be submitted
+     *         after filling.
      */
-    void showCredentials(GURL url, boolean isOriginSecure, List<Credential> credentials);
+    void showCredentials(GURL url, boolean isOriginSecure, List<Credential> credentials,
+            boolean triggerSubmission);
 }

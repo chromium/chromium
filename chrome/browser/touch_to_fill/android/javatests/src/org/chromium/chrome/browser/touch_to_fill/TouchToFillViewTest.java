@@ -16,6 +16,7 @@ import static org.chromium.base.test.util.CriteriaHelper.pollUiThread;
 import static org.chromium.chrome.browser.touch_to_fill.TouchToFillProperties.CredentialProperties.CREDENTIAL;
 import static org.chromium.chrome.browser.touch_to_fill.TouchToFillProperties.CredentialProperties.FORMATTED_ORIGIN;
 import static org.chromium.chrome.browser.touch_to_fill.TouchToFillProperties.CredentialProperties.ON_CLICK_LISTENER;
+import static org.chromium.chrome.browser.touch_to_fill.TouchToFillProperties.CredentialProperties.SHOW_SUBMIT_BUTTON;
 import static org.chromium.chrome.browser.touch_to_fill.TouchToFillProperties.HeaderProperties.FORMATTED_URL;
 import static org.chromium.chrome.browser.touch_to_fill.TouchToFillProperties.HeaderProperties.ORIGIN_SECURE;
 import static org.chromium.chrome.browser.touch_to_fill.TouchToFillProperties.HeaderProperties.SINGLE_CREDENTIAL;
@@ -307,9 +308,7 @@ public class TouchToFillViewTest {
     public void testSingleCredentialHasClickableButton() {
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             mModel.get(SHEET_ITEMS)
-                    .addAll(asList(
-                            buildSheetItem(TouchToFillProperties.ItemType.CREDENTIAL, ANA, null),
-                            buildConfirmationButton(ANA)));
+                    .addAll(asList(buildCredentialItem(ANA), buildConfirmationButton(ANA, false)));
             mModel.set(VISIBLE, true);
         });
         BottomSheetTestSupport.waitForOpen(mBottomSheetController);
@@ -320,6 +319,39 @@ public class TouchToFillViewTest {
         TouchCommon.singleClickView(getCredentials().getChildAt(1));
 
         waitForEvent(mCredentialCallback).onResult(eq(ANA));
+    }
+
+    @Test
+    @MediumTest
+    public void testButtonTitleWithoutAutoSubmission() {
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            mModel.get(SHEET_ITEMS)
+                    .addAll(asList(buildCredentialItem(ANA), buildConfirmationButton(ANA, false)));
+            mModel.set(VISIBLE, true);
+        });
+        BottomSheetTestSupport.waitForOpen(mBottomSheetController);
+
+        TextView title =
+                mTouchToFillView.getContentView().findViewById(R.id.touch_to_fill_button_title);
+
+        assertThat(title.getText(), is(getActivity().getString(R.string.touch_to_fill_continue)));
+    }
+
+    @Test
+    @MediumTest
+    @EnableFeatures({ChromeFeatureList.TOUCH_TO_FILL_PASSWORD_SUBMISSION})
+    public void testButtonTitleWithAutoSubmission() {
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            mModel.get(SHEET_ITEMS)
+                    .addAll(asList(buildCredentialItem(ANA), buildConfirmationButton(ANA, true)));
+            mModel.set(VISIBLE, true);
+        });
+        BottomSheetTestSupport.waitForOpen(mBottomSheetController);
+
+        TextView title =
+                mTouchToFillView.getContentView().findViewById(R.id.touch_to_fill_button_title);
+
+        assertThat(title.getText(), is(getActivity().getString(R.string.touch_to_fill_signin)));
     }
 
     @Test
@@ -390,22 +422,24 @@ public class TouchToFillViewTest {
 
     private MVCListAdapter.ListItem buildCredentialItem(Credential credential) {
         return buildSheetItem(
-                TouchToFillProperties.ItemType.CREDENTIAL, credential, mCredentialCallback);
+                TouchToFillProperties.ItemType.CREDENTIAL, credential, mCredentialCallback, false);
     }
 
-    private MVCListAdapter.ListItem buildConfirmationButton(Credential credential) {
-        return buildSheetItem(
-                TouchToFillProperties.ItemType.FILL_BUTTON, credential, mCredentialCallback);
+    private MVCListAdapter.ListItem buildConfirmationButton(
+            Credential credential, boolean showSubmitButton) {
+        return buildSheetItem(TouchToFillProperties.ItemType.FILL_BUTTON, credential,
+                mCredentialCallback, showSubmitButton);
     }
 
     private static MVCListAdapter.ListItem buildSheetItem(
             @TouchToFillProperties.ItemType int itemType, Credential credential,
-            Callback<Credential> callback) {
+            Callback<Credential> callback, boolean showSubmitButton) {
         return new MVCListAdapter.ListItem(itemType,
                 new PropertyModel.Builder(TouchToFillProperties.CredentialProperties.ALL_KEYS)
                         .with(CREDENTIAL, credential)
                         .with(ON_CLICK_LISTENER, callback)
                         .with(FORMATTED_ORIGIN, credential.getOriginUrl())
+                        .with(SHOW_SUBMIT_BUTTON, showSubmitButton)
                         .build());
     }
 }

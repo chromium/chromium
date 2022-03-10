@@ -64,7 +64,8 @@ TouchToFillViewImpl::~TouchToFillViewImpl() {
 void TouchToFillViewImpl::Show(
     const GURL& url,
     IsOriginSecure is_origin_secure,
-    base::span<const password_manager::UiCredential> credentials) {
+    base::span<const password_manager::UiCredential> credentials,
+    bool trigger_submission) {
   if (!RecreateJavaObject()) {
     // It's possible that the constructor cannot access the bottom sheet clank
     // component. That case may be temporary but we can't let users in a waiting
@@ -93,8 +94,7 @@ void TouchToFillViewImpl::Show(
 
   Java_TouchToFillBridge_showCredentials(
       env, java_object_internal_, url::GURLAndroid::FromNativeGURL(env, url),
-
-      is_origin_secure.value(), credential_array);
+      is_origin_secure.value(), credential_array, trigger_submission);
 }
 
 void TouchToFillViewImpl::OnCredentialSelected(const UiCredential& credential) {

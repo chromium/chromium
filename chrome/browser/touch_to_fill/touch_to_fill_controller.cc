@@ -76,11 +76,13 @@ TouchToFillController::~TouchToFillController() {
 
 void TouchToFillController::Show(base::span<const UiCredential> credentials,
                                  base::WeakPtr<PasswordManagerDriver> driver,
-                                 bool trigger_submission) {
+                                 bool ready_for_submission) {
   DCHECK(!driver_ || driver_.get() == driver.get());
   driver_ = std::move(driver);
-  // TODO(crbug.com/1283004): Propagte this to Java to variate UI strings.
-  trigger_submission_ = trigger_submission;
+  trigger_submission_ =
+      ready_for_submission &&
+      base::FeatureList::IsEnabled(
+          password_manager::features::kTouchToFillPasswordSubmission);
 
   base::UmaHistogramCounts100("PasswordManager.TouchToFill.NumCredentialsShown",
                               credentials.size());
@@ -101,7 +103,7 @@ void TouchToFillController::Show(base::span<const UiCredential> credentials,
       url,
       TouchToFillView::IsOriginSecure(
           network::IsOriginPotentiallyTrustworthy(url::Origin::Create(url))),
-      SortCredentials(credentials));
+      SortCredentials(credentials), trigger_submission_);
 }
 
 void TouchToFillController::OnCredentialSelected(
@@ -189,10 +191,7 @@ void TouchToFillController::FillCredential(const UiCredential& credential) {
   driver_->FillSuggestion(credential.username(), credential.password());
 
   if (trigger_submission_) {
-    if (base::FeatureList::IsEnabled(
-            password_manager::features::kTouchToFillPasswordSubmission)) {
-      driver_->TriggerFormSubmission();
-    }
+    driver_->TriggerFormSubmission();
   }
   driver_ = nullptr;
 
