@@ -15,6 +15,7 @@
 #include "ui/compositor/layer.h"
 #include "ui/compositor/scoped_layer_animation_settings.h"
 #include "ui/gfx/canvas.h"
+#include "ui/views/controls/button/button.h"
 #include "ui/views/controls/scrollbar/base_scroll_bar_thumb.h"
 
 namespace ash {
@@ -43,6 +44,13 @@ class RoundedScrollBar::Thumb : public views::BaseScrollBarThumb {
   Thumb& operator=(const Thumb&) = delete;
   ~Thumb() override = default;
 
+  bool ShouldPaintAsActive() const {
+    // The thumb is active during hover and also when the user is dragging the
+    // thumb with the mouse. In the latter case, the mouse might be outside the
+    // scroll bar, due to mouse capture.
+    return IsMouseHovered() || GetState() == views::Button::STATE_PRESSED;
+  }
+
   // views::BaseScrollBarThumb:
   gfx::Size CalculatePreferredSize() const override {
     return gfx::Size(kScrollThumbThicknessDp, kScrollThumbThicknessDp);
@@ -53,7 +61,7 @@ class RoundedScrollBar::Thumb : public views::BaseScrollBarThumb {
     fill_flags.setStyle(cc::PaintFlags::kFill_Style);
     fill_flags.setAntiAlias(true);
     // May be null in tests.
-    if (auto* color_provider = ColorProvider::Get()) {
+    if (auto* color_provider = ColorProvider::Get(); color_provider) {
       fill_flags.setColor(color_provider->GetContentLayerColor(
           ColorProvider::ContentLayerType::kScrollBarColor));
     }
@@ -68,6 +76,7 @@ class RoundedScrollBar::Thumb : public views::BaseScrollBarThumb {
 
 RoundedScrollBar::RoundedScrollBar(bool horizontal)
     : ScrollBar(horizontal),
+      thumb_(new Thumb(this)),  // Owned by views hierarchy.
       hide_scrollbar_timer_(
           FROM_HERE,
           kScrollThumbHideTimeout,
@@ -76,12 +85,11 @@ RoundedScrollBar::RoundedScrollBar(bool horizontal)
   // Moving the mouse directly into the thumb will also notify this view.
   SetNotifyEnterExitOnChild(true);
 
-  auto* thumb = new Thumb(this);  // Owned by views hierarchy.
-  SetThumb(thumb);
-  thumb->SetPaintToLayer();
-  thumb->layer()->SetFillsBoundsOpaquely(false);
+  SetThumb(thumb_);
+  thumb_->SetPaintToLayer();
+  thumb_->layer()->SetFillsBoundsOpaquely(false);
   // The thumb is hidden by default.
-  thumb->layer()->SetOpacity(0.f);
+  thumb_->layer()->SetOpacity(0.f);
 }
 
 RoundedScrollBar::~RoundedScrollBar() = default;
@@ -130,24 +138,23 @@ void RoundedScrollBar::ObserveScrollEvent(const ui::ScrollEvent& event) {
 }
 
 views::BaseScrollBarThumb* RoundedScrollBar::GetThumbForTest() const {
-  return GetThumb();
+  return thumb_;
 }
 
 void RoundedScrollBar::ShowScrollbar() {
   if (!IsMouseHovered())
     hide_scrollbar_timer_.Reset();
 
-  auto* thumb = GetThumb();
   const float target_opacity =
-      thumb->IsMouseHovered() ? kActiveOpacity : kDefaultOpacity;
-  if (base::IsApproximatelyEqual(thumb->layer()->GetTargetOpacity(),
+      thumb_->ShouldPaintAsActive() ? kActiveOpacity : kDefaultOpacity;
+  if (base::IsApproximatelyEqual(thumb_->layer()->GetTargetOpacity(),
                                  target_opacity,
                                  std::numeric_limits<float>::epsilon())) {
     return;
   }
-  ui::ScopedLayerAnimationSettings animation(thumb->layer()->GetAnimator());
+  ui::ScopedLayerAnimationSettings animation(thumb_->layer()->GetAnimator());
   animation.SetTransitionDuration(kScrollThumbFadeDuration);
-  thumb->layer()->SetOpacity(target_opacity);
+  thumb_->layer()->SetOpacity(target_opacity);
 }
 
 void RoundedScrollBar::HideScrollBar() {
@@ -157,10 +164,9 @@ void RoundedScrollBar::HideScrollBar() {
     return;
 
   hide_scrollbar_timer_.Stop();
-  ui::ScopedLayerAnimationSettings animation(
-      GetThumb()->layer()->GetAnimator());
+  ui::ScopedLayerAnimationSettings animation(thumb_->layer()->GetAnimator());
   animation.SetTransitionDuration(kScrollThumbFadeDuration);
-  GetThumb()->layer()->SetOpacity(0.f);
+  thumb_->layer()->SetOpacity(0.f);
 }
 
 void RoundedScrollBar::OnThumbStateChanged() {

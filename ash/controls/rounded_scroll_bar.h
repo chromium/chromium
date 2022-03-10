@@ -58,6 +58,9 @@ class ASH_EXPORT RoundedScrollBar : public views::ScrollBar {
   // Called when the thumb hover/pressed state changed.
   void OnThumbStateChanged();
 
+  // Equivalent to GetThumb() but typed as the inner class `Thumb`.
+  Thumb* const thumb_;
+
   // Insets for the scroll track.
   gfx::Insets insets_;
 

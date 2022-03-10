@@ -18,6 +18,9 @@
 namespace ash {
 namespace {
 
+constexpr int kScrollBarWidth = 10;
+
+// Thumb opacity values.
 constexpr float kDefaultOpacity = 0.38f;
 constexpr float kActiveOpacity = 1.0f;
 
@@ -58,7 +61,7 @@ class RoundedScrollBarTest : public views::ViewsTestBase {
     scroll_bar_ = contents->AddChildView(
         std::make_unique<RoundedScrollBar>(/*horizontal=*/false));
     scroll_bar_->set_controller(&controller_);
-    scroll_bar_->SetBounds(90, 0, 10, 200);
+    scroll_bar_->SetBounds(90, 0, kScrollBarWidth, 200);
     scroll_bar_->Update(/*viewport_size=*/200, /*content_size=*/1000,
                         /*contents_scroll_offset=*/0);
     thumb_ = scroll_bar_->GetThumbForTest();
@@ -116,6 +119,16 @@ TEST_F(RoundedScrollBarTest, MoveFromTrackToThumbShowsActiveOpacity) {
   gfx::Point thumb_bottom = thumb_->GetBoundsInScreen().bottom_center();
   generator_->MoveMouseTo(thumb_bottom.x(), thumb_bottom.y() + 1);
   generator_->MoveMouseTo(thumb_->GetBoundsInScreen().CenterPoint());
+  EXPECT_EQ(thumb_->layer()->GetTargetOpacity(), kActiveOpacity);
+}
+
+TEST_F(RoundedScrollBarTest, DragOutsideTrackShowsActiveOpacity) {
+  gfx::Point thumb_center = thumb_->GetBoundsInScreen().CenterPoint();
+  generator_->MoveMouseTo(thumb_center);
+  generator_->PressLeftButton();
+  gfx::Point outside_scroll_bar(thumb_center.x() + kScrollBarWidth,
+                                thumb_center.y());
+  generator_->MoveMouseTo(outside_scroll_bar);
   EXPECT_EQ(thumb_->layer()->GetTargetOpacity(), kActiveOpacity);
 }
 
