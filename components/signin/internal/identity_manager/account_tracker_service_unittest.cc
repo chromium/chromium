@@ -267,10 +267,11 @@ class AccountTrackerServiceTest : public testing::Test {
 
   void CheckAccountCapabilities(AccountKey account_key,
                                 const AccountInfo& info) {
-    EXPECT_EQ(AccountKeyToAccountCapability(account_key)
-                  ? signin::Tribool::kTrue
-                  : signin::Tribool::kFalse,
-              info.capabilities.can_offer_extended_chrome_sync_promos());
+    AccountCapabilities expected_capabilities;
+    AccountCapabilitiesTestMutator mutator(&expected_capabilities);
+    mutator.SetAllSupportedCapabilities(
+        AccountKeyToAccountCapability(account_key));
+    EXPECT_EQ(info.capabilities, expected_capabilities);
   }
 
   testing::AssertionResult CheckAccountTrackerEvents(
@@ -472,7 +473,7 @@ void AccountTrackerServiceTest::ReturnAccountCapabilitiesFetchSuccess(
   IssueAccessToken(account_key);
   AccountCapabilities capabilities;
   AccountCapabilitiesTestMutator mutator(&capabilities);
-  mutator.set_can_offer_extended_chrome_sync_promos(
+  mutator.SetAllSupportedCapabilities(
       AccountKeyToAccountCapability(account_key));
   fake_account_capabilities_fetcher_factory_->CompleteAccountCapabilitiesFetch(
       AccountKeyToAccountId(account_key), capabilities);

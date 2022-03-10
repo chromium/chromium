@@ -13,9 +13,15 @@ class AccountCapabilitiesTestMutator {
  public:
   explicit AccountCapabilitiesTestMutator(AccountCapabilities* capabilities);
 
+  // Exposes the full list of supported capabilities for tests.
+  static const std::vector<std::string>& GetSupportedAccountCapabilityNames();
+
   // Exposes setters for the supported capabilities.
   void set_can_offer_extended_chrome_sync_promos(bool value);
   void set_can_run_chrome_privacy_sandbox_trials(bool value);
+
+  // Modifies all supported capabilities at once.
+  void SetAllSupportedCapabilities(bool value);
 
  private:
   AccountCapabilities* capabilities_;

@@ -62,7 +62,7 @@ class AccountCapabilities {
  private:
   friend absl::optional<AccountCapabilities> AccountCapabilitiesFromValue(
       const base::Value& account_capabilities);
-  friend class AccountCapabilitiesFetcher;
+  friend class AccountCapabilitiesFetcherGaia;
   friend class AccountCapabilitiesTestMutator;
   friend class AccountTrackerService;
 

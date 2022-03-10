@@ -10,6 +10,12 @@ AccountCapabilitiesTestMutator::AccountCapabilitiesTestMutator(
     AccountCapabilities* capabilities)
     : capabilities_(capabilities) {}
 
+// static
+const std::vector<std::string>&
+AccountCapabilitiesTestMutator::GetSupportedAccountCapabilityNames() {
+  return AccountCapabilities::GetSupportedAccountCapabilityNames();
+}
+
 void AccountCapabilitiesTestMutator::set_can_offer_extended_chrome_sync_promos(
     bool value) {
   capabilities_
@@ -22,4 +28,11 @@ void AccountCapabilitiesTestMutator::set_can_run_chrome_privacy_sandbox_trials(
   capabilities_
       ->capabilities_map_[kCanRunChromePrivacySandboxTrialsCapabilityName] =
       value;
+}
+
+void AccountCapabilitiesTestMutator::SetAllSupportedCapabilities(bool value) {
+  for (const std::string& name :
+       AccountCapabilities::GetSupportedAccountCapabilityNames()) {
+    capabilities_->capabilities_map_[name] = value;
+  }
 }

@@ -25,12 +25,16 @@
 #include "components/signin/internal/identity_manager/account_capabilities_fetcher_android.h"
 #include "components/signin/public/android/test_support_jni_headers/AccountCapabilitiesFetcherTestUtil_jni.h"
 #else
+#include "base/strings/string_piece.h"
+#include "base/strings/string_split.h"
+#include "base/strings/string_util.h"
 #include "components/prefs/testing_pref_service.h"
 #include "components/signin/internal/identity_manager/account_capabilities_fetcher_gaia.h"
 #include "components/signin/internal/identity_manager/fake_profile_oauth2_token_service.h"
 #include "google_apis/gaia/gaia_urls.h"
 #include "google_apis/gaia/oauth2_access_token_consumer.h"
 #include "net/http/http_status_code.h"
+#include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
 #include "services/network/test/test_url_loader_factory.h"
@@ -85,7 +89,7 @@ class TestSupportAndroid {
       bool capability_value) {
     AccountCapabilities capabilities;
     AccountCapabilitiesTestMutator mutator(&capabilities);
-    mutator.set_can_offer_extended_chrome_sync_promos(capability_value);
+    mutator.SetAllSupportedCapabilities(capability_value);
     ReturnFetchResults(account_info, capabilities);
   }
 
@@ -118,16 +122,42 @@ using TestSupport = TestSupportAndroid;
 using TokenResponseBuilder = OAuth2AccessTokenConsumer::TokenResponse::Builder;
 
 const char kAccountCapabilitiesResponseFormat[] =
-    R"({
-        "accountCapabilities": [
-          {"name": "%s", "booleanValue": %s}
-        ]
-       })";
+    R"({"accountCapabilities": [%s]})";
+
+const char kSingleCapabilitiyResponseFormat[] =
+    R"({"name": "%s", "booleanValue": %s})";
+
+const char kCapabilityParamName[] = "names=";
 
 std::string GenerateValidAccountCapabilitiesResponse(bool capability_value) {
+  std::vector<std::string> dict_array;
+  for (const std::string& name :
+       AccountCapabilitiesTestMutator::GetSupportedAccountCapabilityNames()) {
+    dict_array.push_back(
+        base::StringPrintf(kSingleCapabilitiyResponseFormat, name.c_str(),
+                           capability_value ? "true" : "false"));
+  }
   return base::StringPrintf(kAccountCapabilitiesResponseFormat,
-                            kCanOfferExtendedChromeSyncPromosCapabilityName,
-                            capability_value ? "true" : "false");
+                            base::JoinString(dict_array, ",").c_str());
+}
+
+void VerifyAccountCapabilitiesRequest(const network::ResourceRequest& request) {
+  EXPECT_EQ(request.method, "POST");
+  base::StringPiece request_string = request.request_body->elements()
+                                         ->at(0)
+                                         .As<network::DataElementBytes>()
+                                         .AsStringPiece();
+  // The request body should look like:
+  // "names=Name1&names=Name2&names=Name3"
+  std::vector<std::string> requested_capabilities = base::SplitString(
+      request_string, "&", base::KEEP_WHITESPACE, base::SPLIT_WANT_ALL);
+  for (auto& name : requested_capabilities) {
+    EXPECT_TRUE(base::StartsWith(name, kCapabilityParamName));
+    name = name.substr(std::strlen(kCapabilityParamName));
+  }
+  EXPECT_THAT(requested_capabilities,
+              ::testing::ContainerEq(AccountCapabilitiesTestMutator::
+                                         GetSupportedAccountCapabilityNames()));
 }
 class TestSupportGaia {
  public:
@@ -184,6 +214,8 @@ class TestSupportGaia {
     // It's possible for multiple requests to be pending. Respond to all of
     // them.
     while (test_url_loader_factory_.IsPending(url.spec())) {
+      VerifyAccountCapabilitiesRequest(
+          test_url_loader_factory_.GetPendingRequest(/*index=*/0)->request);
       test_url_loader_factory_.SimulateResponseForPendingRequest(
           url, network::URLLoaderCompletionStatus(net::OK),
           network::CreateURLResponseHead(response_code), response_string,
@@ -247,7 +279,7 @@ TEST_F(AccountCapabilitiesFetcherTest, Success_True) {
       CreateFetcher(callback.Get());
   AccountCapabilities expected_capabilities;
   AccountCapabilitiesTestMutator mutator(&expected_capabilities);
-  mutator.set_can_offer_extended_chrome_sync_promos(true);
+  mutator.SetAllSupportedCapabilities(true);
   base::HistogramTester tester;
 
   fetcher->Start();
@@ -272,7 +304,7 @@ TEST_F(AccountCapabilitiesFetcherTest, Success_False) {
       CreateFetcher(callback.Get());
   AccountCapabilities expected_capabilities;
   AccountCapabilitiesTestMutator mutator(&expected_capabilities);
-  mutator.set_can_offer_extended_chrome_sync_promos(false);
+  mutator.SetAllSupportedCapabilities(false);
 
   fetcher->Start();
   EXPECT_CALL(callback,
