@@ -1937,5 +1937,30 @@ TEST_F(NGOutOfFlowLayoutPartTest, RelayoutNestedMulticolWithOOF) {
   // It should still have two children: the relpos and the OOF.
   EXPECT_EQ(fragmentainer->Children().size(), 2u);
 }
+
+// https://crbug.com/1304371
+TEST_F(NGOutOfFlowLayoutPartTest, PositionedElementMulticolLegacyNGTree) {
+  ScopedLayoutNGBlockFragmentationForTest block_frag(false);
+  ScopedLayoutNGFlexFragmentationForTest flex_frag(false);
+  ScopedLayoutNGGridFragmentationForTest grid_frag(false);
+  ScopedLayoutNGPrintingForTest printing_frag(false);
+  ScopedLayoutNGTableFragmentationForTest table_frag(false);
+  ASSERT_FALSE(RuntimeEnabledFeatures::LayoutNGBlockFragmentationEnabled());
+
+  SetBodyInnerHTML(
+      R"HTML(
+      <div id="container" style="position: relative;">
+        <div style="position: absolute;">
+        </div>
+        <div style="column-count: 2;">
+          <div id="target" style="position: absolute;">PASS</div>
+        </div>
+      </div>
+      )HTML");
+  UpdateAllLifecyclePhasesForTest();
+
+  ASSERT_FALSE(GetElementById("target")->GetLayoutObject()->NeedsLayout());
+}
+
 }  // namespace
 }  // namespace blink

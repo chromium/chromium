@@ -253,7 +253,18 @@ bool NGOutOfFlowLayoutPart::SweepLegacyCandidates(
     return false;
   TrackedLayoutBoxLinkedHashSet* legacy_objects =
       container_block->PositionedObjects();
-  if (!legacy_objects || legacy_objects->size() == placed_objects->size()) {
+
+  bool are_legacy_objects_already_placed = true;
+  if (legacy_objects) {
+    for (LayoutObject* legacy_object : *legacy_objects) {
+      if (!placed_objects->Contains(legacy_object)) {
+        are_legacy_objects_already_placed = false;
+        break;
+      }
+    }
+  }
+
+  if (!legacy_objects || are_legacy_objects_already_placed) {
     if (!has_legacy_flex_box_ || performing_extra_legacy_check_)
       return false;
     // If there is an OOF legacy flex container, and PositionedObjects() are out
