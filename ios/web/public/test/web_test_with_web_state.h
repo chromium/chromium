@@ -20,7 +20,7 @@ class WebClient;
 class WebState;
 
 // Base test fixture that provides WebState for testing.
-class WebTestWithWebState : public WebTest, public base::TaskObserver {
+class WebTestWithWebState : public WebTest {
  public:
   // Destroys underlying WebState. web_state() will return null after this call.
   void DestroyWebState();
@@ -94,15 +94,8 @@ class WebTestWithWebState : public WebTest, public base::TaskObserver {
   const web::WebState* web_state() const;
 
  private:
-  // base::TaskObserver overrides.
-  void WillProcessTask(const base::PendingTask& pending_task,
-                       bool was_blocked_or_low_priority) override;
-  void DidProcessTask(const base::PendingTask& pending_task) override;
-
   // The web state for testing.
   std::unique_ptr<WebState> web_state_;
-  // true if a task has been processed.
-  bool processed_a_task_;
 };
 
 }  // namespace web

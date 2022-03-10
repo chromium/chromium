@@ -138,6 +138,8 @@ source_set("util") {
     "js_test_util.mm",
     "navigation_test_util.h",
     "navigation_test_util.mm",
+    "task_observer_util.h",
+    "task_observer_util.mm",
     "url_test_util.h",
     "web_view_content_test_util.h",
     "web_view_content_test_util.mm",

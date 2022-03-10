@@ -15,6 +15,7 @@
 #import "ios/web/navigation/wk_navigation_util.h"
 #include "ios/web/public/deprecated/url_verification_constants.h"
 #import "ios/web/public/test/js_test_util.h"
+#import "ios/web/public/test/task_observer_util.h"
 #import "ios/web/public/test/web_state_test_util.h"
 #import "ios/web/public/test/web_view_interaction_test_util.h"
 #import "ios/web/public/web_client.h"
@@ -148,28 +149,7 @@ bool WebTestWithWebState::LoadHtmlInWebState(const std::string& html,
 }
 
 void WebTestWithWebState::WaitForBackgroundTasks() {
-  // Because tasks can add new tasks to either queue, the loop continues until
-  // the first pass where no activity is seen from either queue.
-  bool activitySeen = false;
-  base::CurrentThread messageLoop = base::CurrentThread::Get();
-  messageLoop->AddTaskObserver(this);
-  do {
-    activitySeen = false;
-
-    // Yield to the iOS message queue, e.g. [NSObject performSelector:] events.
-    if (CFRunLoopRunInMode(kCFRunLoopDefaultMode, 0, true) ==
-        kCFRunLoopRunHandledSource)
-      activitySeen = true;
-
-    // Yield to the Chromium message queue, e.g. WebThread::PostTask()
-    // events.
-    processed_a_task_ = false;
-    base::RunLoop().RunUntilIdle();
-    if (processed_a_task_)  // Set in TaskObserver method.
-      activitySeen = true;
-
-  } while (activitySeen);
-  messageLoop->RemoveTaskObserver(this);
+  web::test::WaitForBackgroundTasks();
 }
 
 void WebTestWithWebState::WaitForCondition(ConditionBlock condition) {
@@ -177,10 +157,7 @@ void WebTestWithWebState::WaitForCondition(ConditionBlock condition) {
 }
 
 bool WebTestWithWebState::WaitUntilLoaded() {
-  return WaitUntilConditionOrTimeout(kWaitForPageLoadTimeout, ^{
-    WaitForBackgroundTasks();
-    return !web_state()->IsLoading();
-  });
+  return web::test::WaitUntilLoaded(web_state());
 }
 
 std::unique_ptr<base::Value> WebTestWithWebState::CallJavaScriptFunction(
@@ -238,14 +215,6 @@ web::WebState* WebTestWithWebState::web_state() {
 
 const web::WebState* WebTestWithWebState::web_state() const {
   return web_state_.get();
-}
-
-void WebTestWithWebState::WillProcessTask(const base::PendingTask&, bool) {
-  // Nothing to do.
-}
-
-void WebTestWithWebState::DidProcessTask(const base::PendingTask&) {
-  processed_a_task_ = true;
 }
 
 }  // namespace web
