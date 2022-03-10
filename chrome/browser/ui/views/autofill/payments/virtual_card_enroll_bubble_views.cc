@@ -53,6 +53,8 @@ VirtualCardEnrollBubbleViews::VirtualCardEnrollBubbleViews(
   legal_message_view->SetID(DialogViewId::FOOTNOTE_VIEW);
 }
 
+VirtualCardEnrollBubbleViews::~VirtualCardEnrollBubbleViews() = default;
+
 void VirtualCardEnrollBubbleViews::Show(DisplayReason reason) {
   ShowForReason(reason);
 }
@@ -113,8 +115,6 @@ void VirtualCardEnrollBubbleViews::OnWidgetClosing(views::Widget* widget) {
       widget->closed_reason());
 }
 
-VirtualCardEnrollBubbleViews::~VirtualCardEnrollBubbleViews() = default;
-
 void VirtualCardEnrollBubbleViews::Init() {
   ChromeLayoutProvider* const provider = ChromeLayoutProvider::Get();
   SetLayoutManager(std::make_unique<views::BoxLayout>(
@@ -153,10 +153,10 @@ void VirtualCardEnrollBubbleViews::Init() {
   description_view->SetMainAxisAlignment(
       views::BoxLayout::MainAxisAlignment::kStart);
 
-  const VirtualCardEnrollmentFields* virtual_card_enrollment_fields =
+  const VirtualCardEnrollmentFields virtual_card_enrollment_fields =
       controller_->GetVirtualCardEnrollmentFields();
-  const CreditCard& card = virtual_card_enrollment_fields->credit_card;
-  gfx::Image* card_image = virtual_card_enrollment_fields->card_art_image.get();
+  CreditCard card = virtual_card_enrollment_fields.credit_card;
+  gfx::Image* card_image = virtual_card_enrollment_fields.card_art_image.get();
 
   auto* const card_network_icon =
       description_view->AddChildView(std::make_unique<views::ImageView>());
@@ -201,9 +201,9 @@ VirtualCardEnrollBubbleViews::CreateLegalMessageView() {
           DISTANCE_RELATED_CONTROL_VERTICAL_SMALL));
 
   const LegalMessageLines google_legal_message =
-      controller_->GetVirtualCardEnrollmentFields()->google_legal_message;
+      controller_->GetVirtualCardEnrollmentFields().google_legal_message;
   const LegalMessageLines issuser_legal_message =
-      controller_->GetVirtualCardEnrollmentFields()->issuer_legal_message;
+      controller_->GetVirtualCardEnrollmentFields().issuer_legal_message;
 
   DCHECK(!google_legal_message.empty());
   legal_message_view->AddChildView(std::make_unique<LegalMessageView>(

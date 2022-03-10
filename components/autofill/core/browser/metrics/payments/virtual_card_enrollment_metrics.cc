@@ -14,20 +14,6 @@ namespace autofill {
 
 namespace {
 
-// Converts the VirtualCardEnrollmentSource to string to be used in histograms.
-const char* GetVirtualCardEnrollmentSource(VirtualCardEnrollmentSource source) {
-  switch (source) {
-    case VirtualCardEnrollmentSource::kUpstream:
-      return "Upstream";
-    case VirtualCardEnrollmentSource::kDownstream:
-      return "Downstream";
-    case VirtualCardEnrollmentSource::kSettingsPage:
-      return "SettingsPage";
-    case VirtualCardEnrollmentSource::kNone:
-      return "Unknown";
-  }
-}
-
 // Converts the VirtualCardEnrollmentRequestType to string to be used in
 // histograms.
 const char* GetVirtualCardEnrollmentRequestType(
@@ -44,11 +30,46 @@ const char* GetVirtualCardEnrollmentRequestType(
 
 }  // namespace
 
+// Converts the VirtualCardEnrollmentSource to string to be used in histograms.
+const std::string VirtualCardEnrollmentSourceToMetricSuffix(
+    VirtualCardEnrollmentSource source) {
+  switch (source) {
+    case VirtualCardEnrollmentSource::kUpstream:
+      return "Upstream";
+    case VirtualCardEnrollmentSource::kDownstream:
+      return "Downstream";
+    case VirtualCardEnrollmentSource::kSettingsPage:
+      return "SettingsPage";
+    case VirtualCardEnrollmentSource::kNone:
+      return "Unknown";
+  }
+}
+
+void LogVirtualCardEnrollmentBubbleShownMetric(
+    VirtualCardEnrollmentBubbleSource source,
+    bool is_reshow) {
+  base::UmaHistogramBoolean(
+      "Autofill.VirtualCardEnrollBubble.Shown." +
+          VirtualCardEnrollmentBubbleSourceToMetricSuffix(source),
+      is_reshow);
+}
+
+void LogVirtualCardEnrollmentBubbleResultMetric(
+    VirtualCardEnrollmentBubbleResult result,
+    VirtualCardEnrollmentBubbleSource source,
+    bool is_reshow) {
+  base::UmaHistogramEnumeration(
+      "Autofill.VirtualCardEnrollBubble.Result." +
+          VirtualCardEnrollmentBubbleSourceToMetricSuffix(source) +
+          (is_reshow ? ".Reshows" : ".FirstShow"),
+      result);
+}
+
 void LogGetDetailsForEnrollmentRequestAttempt(
     VirtualCardEnrollmentSource source) {
   base::UmaHistogramBoolean(
       base::StrCat({"Autofill.VirtualCard.GetDetailsForEnrollment.Attempt.",
-                    GetVirtualCardEnrollmentSource(source)}),
+                    VirtualCardEnrollmentSourceToMetricSuffix(source)}),
       true);
 }
 
@@ -56,7 +77,7 @@ void LogGetDetailsForEnrollmentRequestResult(VirtualCardEnrollmentSource source,
                                              bool succeeded) {
   base::UmaHistogramBoolean(
       base::StrCat({"Autofill.VirtualCard.GetDetailsForEnrollment.Result.",
-                    GetVirtualCardEnrollmentSource(source)}),
+                    VirtualCardEnrollmentSourceToMetricSuffix(source)}),
       succeeded);
 }
 
@@ -66,7 +87,7 @@ void LogUpdateVirtualCardEnrollmentRequestAttempt(
   base::UmaHistogramBoolean(
       base::JoinString(
           {"Autofill.VirtualCard", GetVirtualCardEnrollmentRequestType(type),
-           "Attempt", GetVirtualCardEnrollmentSource(source)},
+           "Attempt", VirtualCardEnrollmentSourceToMetricSuffix(source)},
           "."),
       true);
 }
@@ -78,9 +99,27 @@ void LogUpdateVirtualCardEnrollmentRequestResult(
   base::UmaHistogramBoolean(
       base::JoinString(
           {"Autofill.VirtualCard", GetVirtualCardEnrollmentRequestType(type),
-           "Result", GetVirtualCardEnrollmentSource(source)},
+           "Result", VirtualCardEnrollmentSourceToMetricSuffix(source)},
           "."),
       succeeded);
+}
+
+std::string VirtualCardEnrollmentBubbleSourceToMetricSuffix(
+    VirtualCardEnrollmentBubbleSource source) {
+  switch (source) {
+    case VirtualCardEnrollmentBubbleSource::
+        VIRTUAL_CARD_ENROLLMENT_UNKNOWN_SOURCE:
+      return "Unknown";
+    case VirtualCardEnrollmentBubbleSource::
+        VIRTUAL_CARD_ENROLLMENT_UPSTREAM_SOURCE:
+      return "Upstream";
+    case VirtualCardEnrollmentBubbleSource::
+        VIRTUAL_CARD_ENROLLMENT_DOWNSTREAM_SOURCE:
+      return "Downstream";
+    case VirtualCardEnrollmentBubbleSource::
+        VIRTUAL_CARD_ENROLLMENT_SETTINGS_PAGE_SOURCE:
+      return "SettingsPage";
+  }
 }
 
 }  // namespace autofill

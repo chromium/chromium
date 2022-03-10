@@ -33,13 +33,25 @@ VirtualCardEnrollBubbleControllerImpl::VirtualCardEnrollBubbleControllerImpl(
 VirtualCardEnrollBubbleControllerImpl::
     ~VirtualCardEnrollBubbleControllerImpl() = default;
 
+// static
+VirtualCardEnrollBubbleController*
+VirtualCardEnrollBubbleController::GetOrCreate(
+    content::WebContents* web_contents) {
+  if (!web_contents)
+    return nullptr;
+
+  VirtualCardEnrollBubbleControllerImpl::CreateForWebContents(web_contents);
+  return VirtualCardEnrollBubbleControllerImpl::FromWebContents(web_contents);
+}
+
 void VirtualCardEnrollBubbleControllerImpl::ShowBubble(
-    const VirtualCardEnrollmentFields* virtual_card_enrollment_fields,
+    const VirtualCardEnrollmentFields& virtual_card_enrollment_fields,
     base::OnceClosure accept_virtual_card_callback,
     base::OnceClosure decline_virtual_card_callback) {
   virtual_card_enrollment_fields_ = virtual_card_enrollment_fields;
   accept_virtual_card_callback_ = std::move(accept_virtual_card_callback);
   decline_virtual_card_callback_ = std::move(decline_virtual_card_callback);
+
   is_user_gesture_ = false;
   Show();
 }
@@ -75,7 +87,7 @@ std::u16string VirtualCardEnrollBubbleControllerImpl::GetAcceptButtonText()
 std::u16string VirtualCardEnrollBubbleControllerImpl::GetDeclineButtonText()
     const {
   return l10n_util::GetStringUTF16(
-      virtual_card_enrollment_fields_->virtual_card_enrollment_source ==
+      virtual_card_enrollment_fields_.virtual_card_enrollment_source ==
               VirtualCardEnrollmentSource::kSettingsPage
           ? IDS_CANCEL
           : IDS_AUTOFILL_VIRTUAL_CARD_ENROLLMENT_DECLINE_BUTTON_LABEL);
@@ -87,9 +99,9 @@ std::u16string VirtualCardEnrollBubbleControllerImpl::GetLearnMoreLinkText()
       IDS_AUTOFILL_VIRTUAL_CARD_ENROLLMENT_LEARN_MORE_LINK_LABEL);
 }
 
-const VirtualCardEnrollmentFields*
+const VirtualCardEnrollmentFields
 VirtualCardEnrollBubbleControllerImpl::GetVirtualCardEnrollmentFields() const {
-  return virtual_card_enrollment_fields_.get();
+  return virtual_card_enrollment_fields_;
 }
 
 AutofillBubbleBase*
@@ -125,6 +137,33 @@ void VirtualCardEnrollBubbleControllerImpl::OnBubbleClosed(
     PaymentsBubbleClosedReason closed_reason) {
   set_bubble_view(nullptr);
   UpdatePageActionIcon();
+
+  VirtualCardEnrollmentBubbleResult result;
+  switch (closed_reason) {
+    case PaymentsBubbleClosedReason::kAccepted:
+      result = VirtualCardEnrollmentBubbleResult::
+          VIRTUAL_CARD_ENROLLMENT_BUBBLE_ACCEPTED;
+      break;
+    case PaymentsBubbleClosedReason::kClosed:
+      result = VirtualCardEnrollmentBubbleResult::
+          VIRTUAL_CARD_ENROLLMENT_BUBBLE_CLOSED;
+      break;
+    case PaymentsBubbleClosedReason::kNotInteracted:
+      result = VirtualCardEnrollmentBubbleResult::
+          VIRTUAL_CARD_ENROLLMENT_BUBBLE_NOT_INTERACTED;
+      break;
+    case PaymentsBubbleClosedReason::kLostFocus:
+      result = VirtualCardEnrollmentBubbleResult::
+          VIRTUAL_CARD_ENROLLMENT_BUBBLE_LOST_FOCUS;
+      break;
+    default:
+      NOTREACHED();
+      result = VirtualCardEnrollmentBubbleResult::
+          VIRTUAL_CARD_ENROLLMENT_BUBBLE_RESULT_UNKNOWN;
+  }
+
+  LogVirtualCardEnrollmentBubbleResultMetric(
+      result, GetVirtualCardEnrollmentBubbleSource(), is_user_gesture_);
 }
 
 bool VirtualCardEnrollBubbleControllerImpl::IsIconVisible() const {
@@ -188,6 +227,31 @@ void VirtualCardEnrollBubbleControllerImpl::DoShowBubble() {
   bubble_state_ = BubbleState::kShowingIcon;
 
 #endif  // BUILDFLAG(IS_ANDROID)
+
+  LogVirtualCardEnrollmentBubbleShownMetric(
+      GetVirtualCardEnrollmentBubbleSource(), is_user_gesture_);
+
+  if (bubble_shown_closure_for_testing_)
+    bubble_shown_closure_for_testing_.Run();
+}
+
+VirtualCardEnrollmentBubbleSource
+VirtualCardEnrollBubbleControllerImpl::GetVirtualCardEnrollmentBubbleSource() {
+  switch (virtual_card_enrollment_fields_.virtual_card_enrollment_source) {
+    case VirtualCardEnrollmentSource::kUpstream:
+      return VirtualCardEnrollmentBubbleSource::
+          VIRTUAL_CARD_ENROLLMENT_UPSTREAM_SOURCE;
+    case VirtualCardEnrollmentSource::kDownstream:
+      return VirtualCardEnrollmentBubbleSource::
+          VIRTUAL_CARD_ENROLLMENT_DOWNSTREAM_SOURCE;
+    case VirtualCardEnrollmentSource::kSettingsPage:
+      return VirtualCardEnrollmentBubbleSource::
+          VIRTUAL_CARD_ENROLLMENT_SETTINGS_PAGE_SOURCE;
+    default:
+      NOTREACHED();
+      return VirtualCardEnrollmentBubbleSource::
+          VIRTUAL_CARD_ENROLLMENT_UNKNOWN_SOURCE;
+  }
 }
 
 #if !BUILDFLAG(IS_ANDROID)
