@@ -33,6 +33,7 @@
 #include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "chrome/browser/themes/theme_properties.h"
 #include "chrome/browser/ui/chrome_select_file_policy.h"
+#include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/hats/hats_service.h"
 #include "chrome/browser/ui/hats/hats_service_factory.h"
 #include "chrome/browser/ui/omnibox/omnibox_theme.h"
@@ -57,6 +58,7 @@
 #include "services/network/public/mojom/url_response_head.mojom.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/theme_provider.h"
+#include "ui/color/color_provider.h"
 #include "ui/gfx/color_palette.h"
 #include "ui/gfx/color_utils.h"
 #include "ui/native_theme/native_theme.h"
@@ -66,6 +68,7 @@ namespace {
 const int64_t kMaxDownloadBytes = 1024 * 1024;
 
 new_tab_page::mojom::ThemePtr MakeTheme(
+    const ui::ColorProvider& color_provider,
     const ui::ThemeProvider* theme_provider,
     ThemeService* theme_service,
     NtpCustomBackgroundService* ntp_custom_background_service) {
@@ -79,23 +82,20 @@ new_tab_page::mojom::ThemePtr MakeTheme(
           ? ntp_custom_background_service->GetCustomBackground()
           : absl::nullopt;
   theme->is_default = theme_service->UsingDefaultTheme();
-  theme->background_color =
-      theme_provider->GetColor(ThemeProperties::COLOR_NTP_BACKGROUND);
+  theme->background_color = color_provider.GetColor(kColorNewTabPageBackground);
   SkColor text_color;
   if (custom_background.has_value()) {
-    text_color = gfx::kGoogleGrey050;
-    most_visited->background_color = ThemeProperties::GetDefaultColor(
-        ThemeProperties::COLOR_NTP_SHORTCUT, false);
-    theme->logo_color = ThemeProperties::GetDefaultColor(
-        ThemeProperties::COLOR_NTP_LOGO, false);
+    text_color = color_provider.GetColor(kColorNewTabPageTextUnthemed);
+    most_visited->background_color = color_provider.GetColor(
+        kColorNewTabPageMostVisitedTileBackgroundUnthemed);
+    theme->logo_color = color_provider.GetColor(kColorNewTabPageLogoUnthemed);
   } else {
-    text_color = theme_provider->GetColor(ThemeProperties::COLOR_NTP_TEXT);
+    text_color = color_provider.GetColor(kColorNewTabPageText);
     most_visited->background_color =
-        theme_provider->GetColor(ThemeProperties::COLOR_NTP_SHORTCUT);
+        color_provider.GetColor(kColorNewTabPageMostVisitedTileBackground);
     if (theme_provider->GetDisplayProperty(
             ThemeProperties::NTP_LOGO_ALTERNATE) == 1) {
-      theme->logo_color =
-          theme_provider->GetColor(ThemeProperties::COLOR_NTP_LOGO);
+      theme->logo_color = color_provider.GetColor(kColorNewTabPageLogo);
     }
   }
   most_visited->use_white_tile_icon =
@@ -173,8 +173,7 @@ new_tab_page::mojom::ThemePtr MakeTheme(
   theme->most_visited = std::move(most_visited);
 
   auto search_box = realbox::mojom::SearchBoxTheme::New();
-  search_box->ntp_bg =
-      theme_provider->GetColor(ThemeProperties::COLOR_NTP_BACKGROUND);
+  search_box->ntp_bg = color_provider.GetColor(kColorNewTabPageBackground);
   search_box->bg =
       GetOmniboxColor(theme_provider, OmniboxPart::LOCATION_BAR_BACKGROUND);
   search_box->bg_hovered =
@@ -384,8 +383,7 @@ NewTabPageHandler::NewTabPageHandler(
   ntp_custom_background_service_observation_.Observe(
       ntp_custom_background_service_.get());
   promo_service_observation_.Observe(promo_service_.get());
-  page_->SetTheme(MakeTheme(theme_provider_, theme_service_,
-                            ntp_custom_background_service_));
+  OnThemeChanged();
 }
 
 NewTabPageHandler::~NewTabPageHandler() {
@@ -848,18 +846,16 @@ void NewTabPageHandler::OnPromoLinkClicked() {
 }
 
 void NewTabPageHandler::OnNativeThemeUpdated(ui::NativeTheme* observed_theme) {
-  page_->SetTheme(MakeTheme(theme_provider_, theme_service_,
-                            ntp_custom_background_service_));
+  OnThemeChanged();
 }
 
 void NewTabPageHandler::OnThemeChanged() {
-  page_->SetTheme(MakeTheme(theme_provider_, theme_service_,
-                            ntp_custom_background_service_));
+  page_->SetTheme(MakeTheme(web_contents_->GetColorProvider(), theme_provider_,
+                            theme_service_, ntp_custom_background_service_));
 }
 
 void NewTabPageHandler::OnCustomBackgroundImageUpdated() {
-  page_->SetTheme(MakeTheme(theme_provider_, theme_service_,
-                            ntp_custom_background_service_));
+  OnThemeChanged();
 }
 
 void NewTabPageHandler::OnNtpCustomBackgroundServiceShuttingDown() {

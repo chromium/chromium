@@ -55,6 +55,7 @@ class COMPONENT_EXPORT(COLOR) ColorProvider {
   // provider after this has been called.
   void GenerateColorMap();
 
+  void SetColorForTesting(ColorId id, SkColor color);
   const ColorMap& color_map_for_testing() { return *color_map_; }
 
  private:

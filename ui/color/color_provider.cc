@@ -12,6 +12,7 @@
 #include "base/logging.h"
 #include "ui/color/color_mixer.h"
 #include "ui/color/color_provider_utils.h"
+#include "ui/color/color_recipe.h"
 #include "ui/gfx/color_palette.h"
 
 namespace ui {
@@ -90,6 +91,16 @@ void ColorProvider::GenerateColorMap() {
   // Clear away all associated mixers as these are no longer needed.
   mixers_.clear();
   first_postprocessing_mixer_ = mixers_.before_begin();
+}
+
+void ColorProvider::SetColorForTesting(ColorId id, SkColor color) {
+  if (color_map_) {
+    (*color_map_)[id] = color;
+  } else {
+    if (mixers_.empty())
+      AddMixer();
+    (*std::next(first_postprocessing_mixer_, 1))[id] = {color};
+  }
 }
 
 const ColorMixer* ColorProvider::GetLastNonPostprocessingMixer() const {

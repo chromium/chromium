@@ -20,6 +20,7 @@
 #include "chrome/browser/themes/theme_properties.h"
 #include "chrome/browser/themes/theme_service.h"
 #include "chrome/browser/themes/theme_service_observer.h"
+#include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/webui/new_tab_page/new_tab_page.mojom.h"
 #include "chrome/browser/ui/webui/webui_util.h"
 #include "chrome/common/pref_names.h"
@@ -32,6 +33,7 @@
 #include "components/search/ntp_features.h"
 #include "components/search_provider_logos/logo_common.h"
 #include "components/search_provider_logos/logo_service.h"
+#include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_web_contents_factory.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -44,6 +46,10 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/theme_provider.h"
+#include "ui/color/color_mixer.h"
+#include "ui/color/color_provider_source.h"
+#include "ui/color/color_recipe.h"
+#include "ui/color/color_transform.h"
 #include "ui/gfx/color_palette.h"
 #include "url/gurl.h"
 
@@ -77,6 +83,25 @@ class MockLogoService : public search_provider_logos::LogoService {
  public:
   MOCK_METHOD2(GetLogo, void(search_provider_logos::LogoCallbacks, bool));
   MOCK_METHOD1(GetLogo, void(search_provider_logos::LogoObserver*));
+};
+
+class MockColorProviderSource : public ui::ColorProviderSource {
+ public:
+  MockColorProviderSource() { color_provider_.GenerateColorMap(); }
+  MockColorProviderSource(const MockColorProviderSource&) = delete;
+  MockColorProviderSource& operator=(const MockColorProviderSource&) = delete;
+  ~MockColorProviderSource() override = default;
+
+  const ui::ColorProvider* GetColorProvider() const override {
+    return &color_provider_;
+  }
+
+  void SetColor(ui::ColorId id, SkColor color) {
+    color_provider_.SetColorForTesting(id, color);
+  }
+
+ private:
+  ui::ColorProvider color_provider_;
 };
 
 class MockThemeProvider : public ui::ThemeProvider {
@@ -169,6 +194,7 @@ class NewTabPageHandlerTest : public testing::Test {
     EXPECT_CALL(mock_ntp_custom_background_service_, RefreshBackgroundIfNeeded)
         .Times(1);
     webui::SetThemeProviderForTesting(&mock_theme_provider_);
+    web_contents_->SetColorProviderSource(&mock_color_provider_source_);
     handler_ = std::make_unique<NewTabPageHandler>(
         mojo::PendingReceiver<new_tab_page::mojom::PageHandler>(),
         mock_page_.BindAndGetRemote(), profile_.get(),
@@ -221,6 +247,7 @@ class NewTabPageHandlerTest : public testing::Test {
       mock_ntp_custom_background_service_;
   testing::NiceMock<MockThemeService> mock_theme_service_;
   MockLogoService mock_logo_service_;
+  MockColorProviderSource mock_color_provider_source_;
   testing::NiceMock<MockThemeProvider> mock_theme_provider_;
   MockPromoService& mock_promo_service_;
   content::TestWebContentsFactory factory_;
@@ -241,17 +268,17 @@ TEST_F(NewTabPageHandlerTest, SetTheme) {
       }));
   ON_CALL(mock_ntp_custom_background_service_, GetCustomBackground())
       .WillByDefault(testing::Return(absl::optional<CustomBackground>()));
-  ON_CALL(mock_theme_provider_, GetColor(ThemeProperties::COLOR_NTP_BACKGROUND))
-      .WillByDefault(testing::Return(SkColorSetRGB(0, 0, 1)));
-  ON_CALL(mock_theme_provider_, GetColor(ThemeProperties::COLOR_NTP_TEXT))
-      .WillByDefault(testing::Return(SkColorSetRGB(0, 0, 2)));
+  mock_color_provider_source_.SetColor(kColorNewTabPageBackground,
+                                       SkColorSetRGB(0, 0, 1));
+  mock_color_provider_source_.SetColor(kColorNewTabPageText,
+                                       SkColorSetRGB(0, 0, 2));
   ON_CALL(mock_theme_service_, UsingDefaultTheme())
       .WillByDefault(testing::Return(false));
   ON_CALL(mock_theme_provider_,
           GetDisplayProperty(ThemeProperties::NTP_LOGO_ALTERNATE))
       .WillByDefault(testing::Return(1));
-  ON_CALL(mock_theme_provider_, GetColor(ThemeProperties::COLOR_NTP_LOGO))
-      .WillByDefault(testing::Return(SkColorSetRGB(0, 0, 3)));
+  mock_color_provider_source_.SetColor(kColorNewTabPageLogo,
+                                       SkColorSetRGB(0, 0, 3));
   ON_CALL(mock_theme_service_, GetThemeID())
       .WillByDefault(testing::Return("bar"));
   ON_CALL(mock_theme_provider_,
@@ -264,8 +291,8 @@ TEST_F(NewTabPageHandlerTest, SetTheme) {
       .WillByDefault(testing::Return(true));
   ON_CALL(mock_theme_provider_, HasCustomImage(IDR_THEME_NTP_BACKGROUND))
       .WillByDefault(testing::Return(true));
-  ON_CALL(mock_theme_provider_, GetColor(ThemeProperties::COLOR_NTP_SHORTCUT))
-      .WillByDefault(testing::Return(SkColorSetRGB(0, 0, 4)));
+  mock_color_provider_source_.SetColor(
+      kColorNewTabPageMostVisitedTileBackground, SkColorSetRGB(0, 0, 4));
   ON_CALL(mock_theme_provider_,
           GetColor(ThemeProperties::COLOR_OMNIBOX_BACKGROUND))
       .WillByDefault(testing::Return(SkColorSetRGB(0, 0, 5)));
@@ -368,13 +395,25 @@ TEST_F(NewTabPageHandlerTest, SetCustomBackground) {
   custom_background.collection_id = "baz collection";
   ON_CALL(mock_ntp_custom_background_service_, GetCustomBackground())
       .WillByDefault(testing::Return(absl::make_optional(custom_background)));
+  mock_color_provider_source_.SetColor(kColorNewTabPageBackground,
+                                       SkColorSetRGB(0, 0, 1));
+  mock_color_provider_source_.SetColor(kColorNewTabPageTextUnthemed,
+                                       SkColorSetRGB(0, 0, 2));
+  mock_color_provider_source_.SetColor(kColorNewTabPageLogoUnthemed,
+                                       SkColorSetRGB(0, 0, 3));
+  mock_color_provider_source_.SetColor(
+      kColorNewTabPageMostVisitedTileBackgroundUnthemed,
+      SkColorSetRGB(0, 0, 4));
 
   ntp_custom_background_service_observer_->OnCustomBackgroundImageUpdated();
   mock_page_.FlushForTesting();
 
   ASSERT_TRUE(theme);
   EXPECT_TRUE(theme->is_custom_background);
-  EXPECT_EQ(gfx::kGoogleGrey050, theme->text_color);
+  EXPECT_EQ(SkColorSetRGB(0, 0, 1), theme->background_color);
+  EXPECT_EQ(SkColorSetRGB(0, 0, 2), theme->text_color);
+  EXPECT_EQ(SkColorSetRGB(0, 0, 3), theme->logo_color);
+  EXPECT_EQ(SkColorSetRGB(0, 0, 4), theme->most_visited->background_color);
   EXPECT_EQ("https://foo.com/img.png", theme->background_image->url);
   EXPECT_EQ("foo line", theme->background_image_attribution_1);
   EXPECT_EQ("bar line", theme->background_image_attribution_2);

@@ -102,5 +102,15 @@ TEST(ColorProviderTest, RedefinitionWithProcessing) {
   EXPECT_FALSE(color_utils::IsDark(provider.GetColor(kColorTest1)));
 }
 
+TEST(ColorProviderTest, SetColorForTesting) {
+  ColorProvider provider;
+  provider.SetColorForTesting(kColorTest0, SK_ColorGREEN);
+  provider.GenerateColorMap();
+  EXPECT_EQ(SK_ColorGREEN, provider.GetColor(kColorTest0));
+  EXPECT_EQ(gfx::kPlaceholderColor, provider.GetColor(kColorTest1));
+  provider.SetColorForTesting(kColorTest1, SK_ColorBLUE);
+  EXPECT_EQ(SK_ColorBLUE, provider.GetColor(kColorTest1));
+}
+
 }  // namespace
 }  // namespace ui
