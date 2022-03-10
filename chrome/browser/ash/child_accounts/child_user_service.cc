@@ -139,7 +139,7 @@ void ChildUserService::ResumeWebActivity(const std::string& app_service_id) {
 
 absl::optional<base::TimeDelta> ChildUserService::GetTimeLimitForApp(
     const std::string& app_service_id,
-    apps::mojom::AppType app_type) {
+    apps::AppType app_type) {
   if (!app_time_controller_)
     return absl::nullopt;
 

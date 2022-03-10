@@ -293,7 +293,7 @@ bool AppTimeController::IsExtensionAllowlisted(
 
 absl::optional<base::TimeDelta> AppTimeController::GetTimeLimitForApp(
     const std::string& app_service_id,
-    apps::mojom::AppType app_type) const {
+    apps::AppType app_type) const {
   const app_time::AppId app_id =
       app_service_wrapper_->AppIdFromAppServiceId(app_service_id, app_type);
   return app_registry_->GetTimeLimit(app_id);

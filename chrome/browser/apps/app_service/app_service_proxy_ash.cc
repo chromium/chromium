@@ -356,8 +356,8 @@ bool AppServiceProxyAsh::MaybeShowLaunchPreventionDialog(
     ash::app_time::AppTimeLimitInterface* app_limit =
         ash::app_time::AppTimeLimitInterface::Get(profile_);
     DCHECK(app_limit);
-    auto time_limit =
-        app_limit->GetTimeLimitForApp(update.AppId(), update.AppType());
+    auto time_limit = app_limit->GetTimeLimitForApp(
+        update.AppId(), ConvertMojomAppTypToAppType(update.AppType()));
     if (!time_limit.has_value()) {
       NOTREACHED();
       return true;

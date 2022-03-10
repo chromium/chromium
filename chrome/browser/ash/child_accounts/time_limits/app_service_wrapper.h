@@ -14,6 +14,7 @@
 #include "base/time/time.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_forward.h"
 #include "components/services/app_service/public/cpp/app_registry_cache.h"
+#include "components/services/app_service/public/cpp/app_types.h"
 #include "components/services/app_service/public/cpp/instance_registry.h"
 
 class Profile;
@@ -140,7 +141,7 @@ class AppServiceWrapper : public apps::AppRegistryCache::Observer,
 
   // Returns AppId from |app_service_id| and |app_type|.
   AppId AppIdFromAppServiceId(const std::string& app_service_id,
-                              apps::mojom::AppType app_type) const;
+                              apps::AppType app_type) const;
 
   void AddObserver(EventListener* observer);
   void RemoveObserver(EventListener* observer);

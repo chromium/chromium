@@ -17,7 +17,7 @@
 #include "chrome/browser/ash/child_accounts/time_limits/app_activity_registry.h"
 #include "chrome/browser/ash/child_accounts/time_limits/app_time_notification_delegate.h"
 #include "chromeos/dbus/system_clock/system_clock_client.h"
-#include "components/services/app_service/public/mojom/types.mojom.h"
+#include "components/services/app_service/public/cpp/app_types.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 class Profile;
@@ -87,7 +87,7 @@ class AppTimeController : public SystemClockClient::Observer,
   // tracked.
   absl::optional<base::TimeDelta> GetTimeLimitForApp(
       const std::string& app_service_id,
-      apps::mojom::AppType app_type) const;
+      apps::AppType app_type) const;
 
   // Called by ChildUserService when it is being destructed to save metrics.
   void RecordMetricsOnShutdown() const;

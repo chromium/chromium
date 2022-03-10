@@ -19,7 +19,6 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/app_list/arc/arc_app_utils.h"
 #include "chrome/common/chrome_features.h"
-#include "components/services/app_service/public/cpp/app_types.h"
 #include "components/services/app_service/public/cpp/app_update.h"
 #include "components/services/app_service/public/cpp/icon_types.h"
 #include "components/services/app_service/public/cpp/instance_update.h"
@@ -133,7 +132,7 @@ bool AppServiceWrapper::IsHiddenArcApp(const AppId& app_id) const {
         if (!apps_util::IsInstalled(update.Readiness()))
           return;
 
-        is_hidden = !update.ShowInLauncher().value_or(true);
+        is_hidden = !update.ShowInLauncher().value_or(false);
       });
 
   return is_hidden;
@@ -223,7 +222,7 @@ bool AppServiceWrapper::IsAppInstalled(const std::string& app_id) {
 
 AppId AppServiceWrapper::AppIdFromAppServiceId(
     const std::string& app_service_id,
-    apps::mojom::AppType app_type) const {
+    apps::AppType app_type) const {
   absl::optional<AppId> app_id;
   GetAppCache().ForOneApp(app_service_id,
                           [&app_id](const apps::AppUpdate& update) {
