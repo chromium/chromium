@@ -197,6 +197,7 @@ class DocumentServiceBase;
 }  // namespace internal
 
 class AgentSchedulingGroupHost;
+class AXScreenAIAnnotator;
 class BrowsingContextState;
 class CodeCacheHostImpl;
 class CrossOriginEmbedderPolicyReporter;
@@ -3303,6 +3304,10 @@ class CONTENT_EXPORT RenderFrameHostImpl
   perfetto::protos::pbzero::RenderFrameHost::LifecycleState
   LifecycleStateToProto();
 
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
+  void RunScreenAIAnnotator();
+#endif
+
   // The RenderViewHost that this RenderFrameHost is associated with.
   //
   // It is kept alive as long as any RenderFrameHosts or RenderFrameProxyHosts
@@ -4130,6 +4135,11 @@ class CONTENT_EXPORT RenderFrameHostImpl
       back_forward_cache_disabling_features_callback_for_testing_;
 
   int check_if_deleted_request_count_ = 0;
+
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
+  // Manages the snapshot processing by Screen AI, if enabled.
+  std::unique_ptr<AXScreenAIAnnotator> ax_screen_ai_annotator_;
+#endif
 
   // BrowserInterfaceBroker implementation through which this
   // RenderFrameHostImpl exposes document-scoped Mojo services to the currently

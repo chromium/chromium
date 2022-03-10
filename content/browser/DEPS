@@ -17,6 +17,7 @@ include_rules = [
   "+components/services/font/ppapi_fontconfig_matching.h",
   "+components/services/quarantine/test_support.h",
   "+components/services/quarantine/quarantine.h",
+  "+components/services/screen_ai",
   "+components/services/storage",
   "+components/services/storage/public",
   "+components/session_manager/core",

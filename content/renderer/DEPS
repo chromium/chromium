@@ -7,7 +7,6 @@ include_rules = [
   "+components/discardable_memory/client",
   "+components/metrics",
   "+components/metrics:single_sample_metrics",
-  "+components/services/screen_ai",
   "+components/url_formatter",
   "+components/viz/client",
   "+components/viz/common",
