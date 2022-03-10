@@ -89,6 +89,9 @@ ci.gpu.linux_builder(
         category = "Linux|Builder|ANGLE",
         short_name = "x64",
     ),
+    goma_backend = None,
+    reclient_instance = rbe_instance.DEFAULT,
+    reclient_jobs = rbe_jobs.DEFAULT,
 )
 
 ci.thin_tester(
@@ -115,6 +118,9 @@ ci.gpu.linux_builder(
         category = "Linux|Builder|Chromium",
         short_name = "x64",
     ),
+    goma_backend = None,
+    reclient_instance = rbe_instance.DEFAULT,
+    reclient_jobs = rbe_jobs.DEFAULT,
 )
 
 ci.thin_tester(
