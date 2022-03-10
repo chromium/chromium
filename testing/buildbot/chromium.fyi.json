@@ -76094,10 +76094,7 @@
   },
   "lacros-amd64-generic-rel-skylab-fyi": {
     "additional_compile_targets": [
-      "chrome",
-      "linux_symbols",
-      "symupload",
-      "strip_chrome_binary"
+      "chrome"
     ],
     "skylab_tests": [
       {
