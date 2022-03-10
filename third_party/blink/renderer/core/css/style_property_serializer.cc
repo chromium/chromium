@@ -1221,13 +1221,16 @@ String StylePropertySerializer::GetShorthandValue(
 namespace {
 
 String NamedGridAreaTextForPosition(const NamedGridAreaMap& grid_area_map,
-                                    wtf_size_t index) {
+                                    wtf_size_t row,
+                                    wtf_size_t column) {
   for (const auto& item : grid_area_map) {
     const GridArea& area = item.value;
-    if (index >= area.rows.StartLine() && index < area.rows.EndLine())
+    if (row >= area.rows.StartLine() && row < area.rows.EndLine() &&
+        column >= area.columns.StartLine() && column < area.columns.EndLine()) {
       return item.key;
+    }
   }
-  return g_empty_string;
+  return ".";
 }
 
 }  // namespace
@@ -1337,6 +1340,7 @@ String StylePropertySerializer::GetShorthandValueForGridTemplate(
         DynamicTo<cssvalue::CSSGridTemplateAreasValue>(template_area_values);
     DCHECK(template_areas);
     const NamedGridAreaMap& grid_area_map = template_areas->GridAreaMap();
+    wtf_size_t grid_area_column_count = template_areas->ColumnCount();
     wtf_size_t grid_area_index = 0;
     for (const auto& row_value : *template_row_value_list) {
       const String row_value_text = row_value->CssText();
@@ -1346,8 +1350,13 @@ String StylePropertySerializer::GetShorthandValueForGridTemplate(
         result.Append(row_value_text);
         continue;
       }
-      const String grid_area_text =
-          NamedGridAreaTextForPosition(grid_area_map, grid_area_index);
+      StringBuilder grid_area_text;
+      for (wtf_size_t column = 0; column < grid_area_column_count; ++column) {
+        grid_area_text.Append(NamedGridAreaTextForPosition(
+            grid_area_map, grid_area_index, column));
+        if (column != grid_area_column_count - 1)
+          grid_area_text.Append(' ');
+      }
       if (!grid_area_text.IsEmpty()) {
         if (!result.IsEmpty())
           result.Append(' ');

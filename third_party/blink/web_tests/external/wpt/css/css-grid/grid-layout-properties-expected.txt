@@ -36,8 +36,8 @@ FAIL grid-template.initial assert_equals: initial value of grid-template should 
 FAIL grid-template.none assert_equals: none expected "50px 50px 50px / 150px" but got "50px 50px 50px / 150px / none"
 FAIL grid-template.<grid-template-rows> / <grid-template-columns> assert_equals: <grid-template-rows> / <grid-template-columns> expected "100px 100px / 200px 200px" but got "100px 100px / 200px 200px / none"
 FAIL grid-template.<line-names> assert_equals: <line-names> expected "[a] auto [b] auto [c] / [d] auto [e] auto [f]" but got "[a] 50px [b] 50px [c] / [d] 150px [e] 100px [f] / none"
-FAIL grid-template.<string>+ assert_equals: <string>+ expected "\"a b\" \"a b\"" but got "\"b\" \"b\""
-FAIL grid-template.<string><track-size>+ assert_equals: <string><track-size>+ expected "100px / \"a b\" 50px" but got "\"b\" \"b\""
+FAIL grid-template.<string>+ assert_equals: <string>+ expected "\"a b\" \"a b\"" but got "50px 50px / 150px 100px / \"a b\" \"a b\""
+FAIL grid-template.<string><track-size>+ assert_equals: <string><track-size>+ expected "100px / \"a b\" 50px" but got "\"a b\" \"a b\""
 FAIL grid-template.reset assert_equals: reset expected "50px 50px 50px / 150px" but got "50px 50px 50px / 150px / none"
 PASS grid-auto-columns
 PASS grid-auto-columns.initial
