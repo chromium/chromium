@@ -50,3 +50,8 @@ size_t SearchPrefetchMaxCacheEntries() {
   return base::GetFieldTrialParamByFeatureAsInt(
       kSearchPrefetchServicePrefetching, "cache_size", 10);
 }
+
+base::TimeDelta SearchPrefetchBlockHeadStart() {
+  return base::Milliseconds(base::GetFieldTrialParamByFeatureAsInt(
+      kSearchPrefetchBlockBeforeHeaders, "block_head_start_ms", 0));
+}

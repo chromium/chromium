@@ -2563,6 +2563,124 @@ INSTANTIATE_TEST_SUITE_P(All,
                          SearchPrefetchServiceEnabledBrowserTest,
                          testing::Bool());
 
+class SearchPrefetchServiceHeadStartTooLongTest
+    : public SearchPrefetchBaseBrowserTest {
+ public:
+  SearchPrefetchServiceHeadStartTooLongTest() {
+    feature_list_.InitWithFeaturesAndParameters(
+        {{kSearchPrefetchServicePrefetching,
+          {{"max_attempts_per_caching_duration", "3"},
+           {"cache_size", "1"},
+           {"device_memory_threshold_MB", "0"}}},
+         {kSearchPrefetchBlockBeforeHeaders,
+          {{"block_head_start_ms", "100000"}}}},
+        {});
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(SearchPrefetchServiceHeadStartTooLongTest,
+                       HungRequestNotServedBeforeHeadStart) {
+  set_should_hang_requests(true);
+  auto* search_prefetch_service =
+      SearchPrefetchServiceFactory::GetForProfile(browser()->profile());
+  std::string search_terms = kOmniboxSuggestPrefetchQuery;
+
+  // Trigger an omnibox suggest fetch that has a prefetch hint.
+  AutocompleteInput input(
+      base::ASCIIToUTF16(search_terms), metrics::OmniboxEventProto::BLANK,
+      ChromeAutocompleteSchemeClassifier(browser()->profile()));
+  LocationBar* location_bar = browser()->window()->GetLocationBar();
+  OmniboxView* omnibox = location_bar->GetOmniboxView();
+  AutocompleteController* autocomplete_controller =
+      omnibox->model()->autocomplete_controller();
+
+  // Prevent the stop timer from killing the hints fetch early.
+  autocomplete_controller->SetStartStopTimerDurationForTesting(
+      base::Seconds(10));
+  autocomplete_controller->Start(input);
+
+  ui_test_utils::WaitForAutocompleteDone(browser());
+  EXPECT_TRUE(autocomplete_controller->done());
+
+  auto prefetch_status =
+      search_prefetch_service->GetSearchPrefetchStatusForTesting(
+          base::ASCIIToUTF16(search_terms));
+  ASSERT_TRUE(prefetch_status.has_value());
+  EXPECT_EQ(SearchPrefetchStatus::kInFlight, prefetch_status.value());
+
+  omnibox->model()->AcceptInput(WindowOpenDisposition::CURRENT_TAB);
+
+  WaitUntilStatusChangesTo(base::ASCIIToUTF16(search_terms),
+                           SearchPrefetchStatus::kRequestCancelled);
+
+  prefetch_status = search_prefetch_service->GetSearchPrefetchStatusForTesting(
+      base::ASCIIToUTF16(search_terms));
+  ASSERT_TRUE(prefetch_status.has_value());
+  EXPECT_EQ(SearchPrefetchStatus::kRequestCancelled, prefetch_status.value());
+}
+
+class SearchPrefetchServiceHeadStartTest
+    : public SearchPrefetchBaseBrowserTest {
+ public:
+  SearchPrefetchServiceHeadStartTest() {
+    feature_list_.InitWithFeaturesAndParameters(
+        {{kSearchPrefetchServicePrefetching,
+          {{"max_attempts_per_caching_duration", "3"},
+           {"cache_size", "1"},
+           {"device_memory_threshold_MB", "0"}}},
+         {kSearchPrefetchBlockBeforeHeaders, {{"block_head_start_ms", "10"}}}},
+        {});
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(SearchPrefetchServiceHeadStartTest,
+                       HungRequestServedAfterHeadStart) {
+  set_should_hang_requests(true);
+  auto* search_prefetch_service =
+      SearchPrefetchServiceFactory::GetForProfile(browser()->profile());
+  std::string search_terms = kOmniboxSuggestPrefetchQuery;
+
+  // Trigger an omnibox suggest fetch that has a prefetch hint.
+  AutocompleteInput input(
+      base::ASCIIToUTF16(search_terms), metrics::OmniboxEventProto::BLANK,
+      ChromeAutocompleteSchemeClassifier(browser()->profile()));
+  LocationBar* location_bar = browser()->window()->GetLocationBar();
+  OmniboxView* omnibox = location_bar->GetOmniboxView();
+  AutocompleteController* autocomplete_controller =
+      omnibox->model()->autocomplete_controller();
+
+  // Prevent the stop timer from killing the hints fetch early.
+  autocomplete_controller->SetStartStopTimerDurationForTesting(
+      base::Seconds(10));
+  autocomplete_controller->Start(input);
+
+  ui_test_utils::WaitForAutocompleteDone(browser());
+  EXPECT_TRUE(autocomplete_controller->done());
+
+  auto prefetch_status =
+      search_prefetch_service->GetSearchPrefetchStatusForTesting(
+          base::ASCIIToUTF16(search_terms));
+  ASSERT_TRUE(prefetch_status.has_value());
+  EXPECT_EQ(SearchPrefetchStatus::kInFlight, prefetch_status.value());
+
+  WaitUntilStatusChangesTo(base::ASCIIToUTF16(search_terms),
+                           SearchPrefetchStatus::kCanBeServed);
+
+  omnibox->model()->AcceptInput(WindowOpenDisposition::CURRENT_TAB);
+
+  WaitUntilStatusChangesTo(base::ASCIIToUTF16(search_terms), absl::nullopt);
+
+  prefetch_status = search_prefetch_service->GetSearchPrefetchStatusForTesting(
+      base::ASCIIToUTF16(search_terms));
+  ASSERT_FALSE(prefetch_status.has_value());
+}
+
 class SearchPrefetchServiceBFCacheTest : public SearchPrefetchBaseBrowserTest {
  public:
   SearchPrefetchServiceBFCacheTest() {

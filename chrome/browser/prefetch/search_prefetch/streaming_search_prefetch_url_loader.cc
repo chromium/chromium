@@ -60,8 +60,18 @@ StreamingSearchPrefetchURLLoader::StreamingSearchPrefetchURLLoader(
       profile_(profile),
       network_traffic_annotation_(network_traffic_annotation) {
   DCHECK(streaming_prefetch_request_);
-  if (SearchPrefetchBlockBeforeHeadersIsEnabled())
-    streaming_prefetch_request_->MarkPrefetchAsServable();
+  if (SearchPrefetchBlockBeforeHeadersIsEnabled()) {
+    if (SearchPrefetchBlockHeadStart() > base::TimeDelta()) {
+      base::SequencedTaskRunnerHandle::Get()->PostDelayedTask(
+          FROM_HERE,
+          base::BindOnce(
+              &StreamingSearchPrefetchURLLoader::MarkPrefetchAsServable,
+              weak_factory_.GetWeakPtr()),
+          SearchPrefetchBlockHeadStart());
+    } else {
+      MarkPrefetchAsServable();
+    }
+  }
   auto url_loader_factory = profile->GetDefaultStoragePartition()
                                 ->GetURLLoaderFactoryForBrowserProcess();
 
@@ -78,6 +88,14 @@ StreamingSearchPrefetchURLLoader::StreamingSearchPrefetchURLLoader(
 }
 
 StreamingSearchPrefetchURLLoader::~StreamingSearchPrefetchURLLoader() = default;
+
+void StreamingSearchPrefetchURLLoader::MarkPrefetchAsServable() {
+  if (marked_as_servable_)
+    return;
+  DCHECK(streaming_prefetch_request_);
+  marked_as_servable_ = true;
+  streaming_prefetch_request_->MarkPrefetchAsServable();
+}
 
 SearchPrefetchURLLoader::RequestHandler
 StreamingSearchPrefetchURLLoader::ServingResponseHandler(
@@ -127,8 +145,9 @@ void StreamingSearchPrefetchURLLoader::SetUpForwardingClient(
 
   // Headers have not been received yet, we can forward the response if
   // we receive it without error.
-  if (!resource_response_)
+  if (!resource_response_) {
     return;
+  }
 
   // We are serving, so if the request is complete before serving, mark the
   // request completion time as now.
@@ -182,8 +201,7 @@ void StreamingSearchPrefetchURLLoader::OnReceiveResponse(
     return;
   }
 
-  if (!SearchPrefetchBlockBeforeHeadersIsEnabled())
-    streaming_prefetch_request_->MarkPrefetchAsServable();
+  MarkPrefetchAsServable();
 
   // Store head and pause new messages until the forwarding client is set up.
   resource_response_ = std::move(head);

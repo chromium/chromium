@@ -133,6 +133,9 @@ class StreamingSearchPrefetchURLLoader : public network::mojom::URLLoader,
   // Forwards all queued events to |forwarding_client_|.
   void RunEventQueue();
 
+  // Marks the parent prefetch request as servable. Called as delayed task.
+  void MarkPrefetchAsServable();
+
   // The network URLLoader that fetches the prefetch URL and its receiver.
   mojo::Remote<network::mojom::URLLoader> network_url_loader_;
   mojo::Receiver<network::mojom::URLLoaderClient> url_loader_receiver_{this};
@@ -196,6 +199,10 @@ class StreamingSearchPrefetchURLLoader : public network::mojom::URLLoader,
   // Whenever an error is reported, it needs to be reported to the service via
   // this callback.
   base::OnceClosure report_error_callback_;
+
+  // Track if the request has already been marked as servable, and if so, don't
+  // report it again.
+  bool marked_as_servable_ = false;
 
   raw_ptr<Profile> profile_;
 

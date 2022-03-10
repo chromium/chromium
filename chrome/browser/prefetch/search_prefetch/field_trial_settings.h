@@ -34,4 +34,8 @@ base::TimeDelta SearchPrefetchErrorBackoffDuration();
 // of navigation URLs to prefetch URLs.
 size_t SearchPrefetchMaxCacheEntries();
 
+// The amount of time that needs to have elapsed before we consider a prefetch
+// eligible to be served.
+base::TimeDelta SearchPrefetchBlockHeadStart();
+
 #endif  // CHROME_BROWSER_PREFETCH_SEARCH_PREFETCH_FIELD_TRIAL_SETTINGS_H_
