@@ -22,6 +22,7 @@
         android:layout_gravity="top"
         android:layout_height="48dp"
         android:layout_width="48dp"
+        android:visibility="gone"
         app:srcCompat="@drawable/ic_more_vert_24dp_on_dark_bg"
         app:menuMaxWidth="@dimen/list_menu_width"
         style="@style/ToolbarButton"/>
@@ -60,6 +61,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="32dp"
+            android:visibility="gone"
             android:text="@string/incognito_reauth_page_see_other_tabs_label"
             android:textAppearance="@style/TextAppearance.TextMedium.Blue.Baseline.Light"
             app:buttonTextColor="@color/default_icon_color_blue_light" />

@@ -4,24 +4,38 @@
 
 package org.chromium.chrome.browser.incognito.reauth;
 
+import static org.chromium.chrome.browser.incognito.reauth.IncognitoReauthProperties.createPropertyModel;
+
 import android.content.Context;
+import android.view.LayoutInflater;
+import android.view.View;
 
 import androidx.annotation.NonNull;
 
+import org.chromium.chrome.browser.incognito.R;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.ui.modaldialog.DialogDismissalCause;
 import org.chromium.ui.modaldialog.ModalDialogManager;
+import org.chromium.ui.modelutil.PropertyModel;
+import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 
 /**
  * The coordinator which is responsible for showing the Incognito re-authentication page.
  *
- * TODO(crbug.com/1227656):  Add View inflation and set up the re-auth dialog.
+ * TODO(crbug.com/1227656): Add support to disable/enable certain UI elements in the Toolbar when
+ * the re-auth dialog is shown/hidden in the Incognito tab switcher.
  */
 class IncognitoReauthCoordinator {
     private final @NonNull Context mContext;
     private final @NonNull ModalDialogManager mModalDialogManager;
-    private final @NonNull IncognitoReauthManager.IncognitoReauthCallback mIncognitoReauthCallback;
     private final boolean mShowFullScreen;
+
+    private final IncognitoReauthMediator mIncognitoReauthMediator;
+
+    private View mIncognitoReauthView;
+    private IncognitoReauthDialog mIncognitoReauthDialog;
+    private PropertyModel mPropertyModel;
+    private PropertyModelChangeProcessor mModelChangeProcessor;
 
     /**
      * @param context The {@link Context} to use for inflating the Incognito re-auth view.
@@ -40,15 +54,33 @@ class IncognitoReauthCoordinator {
             boolean showFullScreen) {
         mContext = context;
         mModalDialogManager = modalDialogManager;
-        mIncognitoReauthCallback = incognitoReauthCallback;
         mShowFullScreen = showFullScreen;
+        mIncognitoReauthMediator =
+                new IncognitoReauthMediator(tabModelSelector, incognitoReauthCallback);
     }
 
-    void showDialog() {}
+    private void destroy() {
+        mModelChangeProcessor.destroy();
+    }
+
+    void showDialog() {
+        mIncognitoReauthView =
+                LayoutInflater.from(mContext).inflate(R.layout.incognito_reauth_view, null);
+        mPropertyModel =
+                createPropertyModel(mIncognitoReauthMediator::onUnlockIncognitoButtonClicked,
+                        mIncognitoReauthMediator::onSeeOtherTabsButtonClicked, mShowFullScreen);
+        mModelChangeProcessor = PropertyModelChangeProcessor.create(
+                mPropertyModel, mIncognitoReauthView, IncognitoReauthViewBinder::bind);
+
+        // TODO(crbug.com/1227656): Add implementation for R.id.incognito_reauth_menu_button
+        mIncognitoReauthDialog =
+                new IncognitoReauthDialog(mModalDialogManager, mIncognitoReauthView);
+        mIncognitoReauthDialog.showIncognitoReauthDialog(mShowFullScreen);
+    }
 
     void hideDialogAndDestroy(@DialogDismissalCause int dismissalCause) {
+        assert mIncognitoReauthDialog != null : "Incognito re-auth dialog doesn't exists.";
+        mIncognitoReauthDialog.dismissIncognitoReauthDialog(dismissalCause);
         destroy();
     }
-
-    private void destroy() {}
 }

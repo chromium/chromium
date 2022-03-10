@@ -38,13 +38,11 @@ public class IncognitoReauthManager {
     }
 
     /**
-     * Constructor for {@link IncognitoReauthManager}. Initialises |mReauthenticatorBridge|.
+     * Constructor for {@link IncognitoReauthManager}.
      */
-    public IncognitoReauthManager() {
-        mReauthenticatorBridge =
-                new ReauthenticatorBridge(BiometricAuthRequester.INCOGNITO_REAUTH_PAGE);
-    }
+    public IncognitoReauthManager() {}
 
+    // This is strictly meant to be called for testing purposes.
     @VisibleForTesting
     public IncognitoReauthManager(ReauthenticatorBridge reauthenticatorBridge) {
         mReauthenticatorBridge = reauthenticatorBridge;
@@ -59,6 +57,11 @@ public class IncognitoReauthManager {
      */
     public void startReauthenticationFlow(
             @NonNull IncognitoReauthCallback incognitoReauthCallback) {
+        if (mReauthenticatorBridge == null) {
+            mReauthenticatorBridge =
+                    new ReauthenticatorBridge(BiometricAuthRequester.INCOGNITO_REAUTH_PAGE);
+        }
+
         if (!mReauthenticatorBridge.canUseAuthentication()
                 || !isIncognitoReauthFeatureAvailable()) {
             incognitoReauthCallback.onIncognitoReauthNotPossible();
