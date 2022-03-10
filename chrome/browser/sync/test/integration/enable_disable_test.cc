@@ -19,7 +19,6 @@
 #include "components/sync/base/user_selectable_type.h"
 #include "components/sync/driver/glue/sync_transport_data_prefs.h"
 #include "components/sync/driver/sync_service_impl.h"
-#include "components/sync/driver/sync_user_settings_impl.h"
 #include "components/sync/test/fake_server/bookmark_entity_builder.h"
 #include "components/sync/test/fake_server/entity_builder_factory.h"
 #include "content/public/test/browser_test.h"
@@ -47,7 +46,7 @@ ModelTypeSet MultiGroupTypes(const ModelTypeSet& registered_types) {
   ModelTypeSet multi;
   for (UserSelectableType type : UserSelectableTypeSet::All()) {
     const ModelTypeSet grouped_types =
-        syncer::SyncUserSettingsImpl::ResolvePreferredTypesForTesting({type});
+        syncer::UserSelectableTypeToAllModelTypes(type);
     for (ModelType grouped_type : grouped_types) {
       if (seen.Has(grouped_type)) {
         multi.Put(grouped_type);
@@ -111,7 +110,7 @@ class EnableDisableSingleClientTest : public SyncTest {
 
   ModelTypeSet ResolveGroup(UserSelectableType type) {
     ModelTypeSet grouped_types =
-        syncer::SyncUserSettingsImpl::ResolvePreferredTypesForTesting({type});
+        syncer::UserSelectableTypeToAllModelTypes(type);
     grouped_types.RetainAll(registered_data_types_);
     return grouped_types;
   }

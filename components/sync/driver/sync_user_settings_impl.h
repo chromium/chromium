@@ -77,12 +77,6 @@ class SyncUserSettingsImpl : public SyncUserSettings {
   ModelTypeSet GetPreferredDataTypes() const;
   bool IsEncryptedDatatypeEnabled() const;
 
-  // Converts |selected_types| to ModelTypeSet of corresponding UserTypes() by
-  // resolving pref groups (e.g. {kExtensions} becomes {EXTENSIONS,
-  // EXTENSION_SETTINGS}).
-  static ModelTypeSet ResolvePreferredTypesForTesting(
-      UserSelectableTypeSet selected_types);
-
  private:
   const raw_ptr<SyncServiceCrypto> crypto_;
   const raw_ptr<SyncPrefs> prefs_;

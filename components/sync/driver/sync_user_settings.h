@@ -61,8 +61,7 @@ class SyncUserSettings {
   virtual void SetSelectedTypes(bool sync_everything,
                                 UserSelectableTypeSet types) = 0;
   // Registered user selectable types are derived from registered model types.
-  // UserSelectableType is registered iff main corresponding  ModelType is
-  // registered.
+  // A UserSelectableType is registered if any of its ModelTypes is registered.
   virtual UserSelectableTypeSet GetRegisteredSelectableTypes() const = 0;
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)

@@ -64,12 +64,15 @@ UserSelectableTypeSet TestSyncUserSettings::GetSelectedTypes() const {
 void TestSyncUserSettings::SetSelectedTypes(bool sync_everything,
                                             UserSelectableTypeSet types) {
   sync_everything_enabled_ = sync_everything;
-  syncer::ModelTypeSet preferred_types;
+
   if (sync_everything_enabled_) {
-    preferred_types = syncer::ModelTypeSet::All();
-  } else {
-    preferred_types =
-        syncer::SyncUserSettingsImpl::ResolvePreferredTypesForTesting(types);
+    service_->SetPreferredDataTypes(syncer::ModelTypeSet::All());
+    return;
+  }
+
+  syncer::ModelTypeSet preferred_types;
+  for (UserSelectableType type : types) {
+    preferred_types.PutAll(UserSelectableTypeToAllModelTypes(type));
   }
   service_->SetPreferredDataTypes(preferred_types);
 }
