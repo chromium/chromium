@@ -41,45 +41,9 @@ namespace {
 using ::testing::_;
 using ::testing::Property;
 
-constexpr char kText[] = "test";
 constexpr char kTextMimeType[] = "text/plain";
 
 }  // namespace
-
-class TestDataSourceDelegate : public DataSourceDelegate {
- public:
-  // DataSourceDelegate:
-  void OnDataSourceDestroying(DataSource* source) override {}
-
-  void OnTarget(const absl::optional<std::string>& mime_type) override {}
-
-  void OnSend(const std::string& mime_type, base::ScopedFD fd) override {
-    if (data_map_.empty()) {
-      base::WriteFileDescriptor(fd.get(), kText);
-    } else {
-      base::WriteFileDescriptor(fd.get(), data_map_[mime_type]);
-    }
-  }
-
-  void OnCancelled() override {}
-
-  void OnDndDropPerformed() override {}
-
-  void OnDndFinished() override {}
-
-  void OnAction(DndAction dnd_action) override {}
-
-  bool CanAcceptDataEventsForSurface(Surface* surface) const override {
-    return true;
-  }
-
-  void SetData(const std::string& mime_type, std::vector<uint8_t> data) {
-    data_map_[mime_type] = std::move(data);
-  }
-
- private:
-  base::flat_map<std::string, std::vector<uint8_t>> data_map_;
-};
 
 class DragDropOperationTest : public test::ExoTestBase,
                               public aura::client::DragDropClientObserver {
@@ -104,8 +68,10 @@ class DragDropOperationTest : public test::ExoTestBase,
   // aura::client::DragDropClientObserver:
   void OnDragStarted() override {
     drag_start_count_++;
-    base::SequencedTaskRunnerHandle::Get()->PostTask(
-        FROM_HERE, std::move(drag_blocked_callback_));
+    if (!drag_blocked_callback_.is_null()) {
+      base::SequencedTaskRunnerHandle::Get()->PostTask(
+          FROM_HERE, std::move(drag_blocked_callback_));
+    }
   }
 
   void OnDragCompleted(const ui::DropTargetEvent& event) override {
@@ -466,6 +432,7 @@ TEST_F(DragDropOperationTest, DragDropCheckSourceFromNonLacros) {
 
   ::testing::Mock::VerifyAndClearExpectations(dlp_controller.get());
 }
+
 #endif
 
 }  // namespace exo

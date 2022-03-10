@@ -153,14 +153,14 @@ uint32_t HandleXdgSurfaceV6ConfigureCallback(
     wl_resource* resource,
     SerialTracker* serial_tracker,
     const XdgSurfaceConfigureCallback& callback,
-    const gfx::Size& size,
+    const gfx::Rect& bounds,
     chromeos::WindowStateType state_type,
     bool resizing,
     bool activated,
     const gfx::Vector2d& origin_offset) {
   uint32_t serial =
       serial_tracker->GetNextSerial(SerialTracker::EventType::OTHER_EVENT);
-  callback.Run(size, state_type, resizing, activated);
+  callback.Run(bounds.size(), state_type, resizing, activated);
   zxdg_surface_v6_send_configure(resource, serial);
   wl_client_flush(wl_resource_get_client(resource));
   return serial;

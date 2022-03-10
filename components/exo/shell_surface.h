@@ -44,13 +44,21 @@ class ShellSurface : public ShellSurfaceBase, public ash::WindowStateObserver {
   // it doesn't resize, pick a smaller size (to satisfy aspect ratio or resize
   // in steps of NxM pixels).
   using ConfigureCallback =
-      base::RepeatingCallback<uint32_t(const gfx::Size& size,
+      base::RepeatingCallback<uint32_t(const gfx::Rect& bounds,
                                        chromeos::WindowStateType state_type,
                                        bool resizing,
                                        bool activated,
                                        const gfx::Vector2d& origin_offset)>;
+  using OriginChangeCallback =
+      base::RepeatingCallback<void(const gfx::Point& origin)>;
+
   void set_configure_callback(const ConfigureCallback& configure_callback) {
     configure_callback_ = configure_callback;
+  }
+
+  void set_origin_change_callback(
+      const OriginChangeCallback& origin_change_callback) {
+    origin_change_callback_ = origin_change_callback;
   }
 
   // When the client is asked to configure the surface, it should acknowledge
@@ -167,6 +175,7 @@ class ShellSurface : public ShellSurfaceBase, public ash::WindowStateObserver {
 
   std::unique_ptr<ui::CompositorLock> configure_compositor_lock_;
   ConfigureCallback configure_callback_;
+  OriginChangeCallback origin_change_callback_;
   ScopedConfigure* scoped_configure_ = nullptr;
   base::circular_deque<std::unique_ptr<Config>> pending_configs_;
 

@@ -13,6 +13,7 @@ struct wl_resource;
 namespace exo {
 class Display;
 class ShellSurfaceBase;
+class ShellSurface;
 
 namespace wayland {
 class SerialTracker;
@@ -36,7 +37,26 @@ void bind_xdg_shell(wl_client* client,
                     uint32_t version,
                     uint32_t id);
 
-ShellSurfaceBase* GetShellSurfaceFromToplevelResource(
+struct ShellSurfaceData {
+  ShellSurfaceData(ShellSurface* shell_surface,
+                   SerialTracker* serial_tracker,
+                   wl_resource* surface_resource)
+      : shell_surface(shell_surface),
+        serial_tracker(serial_tracker),
+        surface_resource(surface_resource) {}
+
+  ShellSurfaceData(const ShellSurfaceData&) = delete;
+  ShellSurfaceData& operator=(const ShellSurfaceData&) = delete;
+
+  ShellSurface* const shell_surface;
+
+  // Owned by Server, which always outlives xdg_shell.
+  SerialTracker* const serial_tracker;
+
+  wl_resource* const surface_resource;
+};
+
+ShellSurfaceData GetShellSurfaceFromToplevelResource(
     wl_resource* surface_resource);
 
 ShellSurfaceBase* GetShellSurfaceFromPopupResource(

@@ -8,6 +8,7 @@
 #include <string>
 
 #include "base/files/scoped_file.h"
+#include "components/exo/data_device.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace exo {
