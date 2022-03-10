@@ -5160,6 +5160,10 @@ To change this setting, <ph name="BEGIN_LINK">&lt;resetlink&gt;</ph>reset sync<p
         Reaction changed
       </message>
 
+      <message name="IDS_LIGHTWEIGHT_REACTIONS_REACTION_ADDED_ANNOUNCEMENT" is_accessibility_with_no_ui="true" desc="The accessibility text to read when a reaction is added to the scene.">
+        Reaction added
+      </message>
+
       <message name="IDS_LIGHTWEIGHT_REACTIONS_RESIZE_AND_ROTATE_BUTTON" is_accessibility_with_no_ui="true" desc="The accessibility text to read when the resize and rotate editing tool is selected. The user can then resize and rotate the reaction on the scene.">
         Resize and rotate
       </message>

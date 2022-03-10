@@ -135,6 +135,8 @@ public class SceneCoordinator implements SceneEditorDelegate, ToolbarReactionsDe
                 mNumReactionsInPosition.add(1);
             }
             addReactionLayoutToScene(reactionLayout, lp);
+            reactionLayout.announceForAccessibility(mActivity.getString(
+                    R.string.lightweight_reactions_reaction_added_announcement));
         });
     }
 
