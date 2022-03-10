@@ -395,6 +395,8 @@ bool GetStatusForSigninPolicy() {
     }
     [items addObject:self.passwordLeakCheckItem];
     if (self.localPrefService->IsManagedPreference(
+            metrics::prefs::kMetricsReportingEnabled) &&
+        !self.localPrefService->GetBoolean(
             metrics::prefs::kMetricsReportingEnabled)) {
       TableViewInfoButtonItem* improveChromeItem = [self
           tableViewInfoButtonItemType:ImproveChromeManagedItemType
