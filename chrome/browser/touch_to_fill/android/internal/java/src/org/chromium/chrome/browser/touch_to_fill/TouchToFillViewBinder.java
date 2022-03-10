@@ -25,6 +25,7 @@ import android.widget.TextView;
 
 import androidx.annotation.StringRes;
 
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.touch_to_fill.TouchToFillProperties.CredentialProperties;
 import org.chromium.chrome.browser.touch_to_fill.TouchToFillProperties.ItemType;
 import org.chromium.chrome.browser.touch_to_fill.data.Credential;
@@ -167,6 +168,27 @@ class TouchToFillViewBinder {
     }
 
     /**
+     * Helper function to infer the title of Touch To Fill sheet.
+     * @param model The observed {@link PropertyModel}. Its data need to be reflected in the view.
+     * @param view The {@link View} of the header to update.
+     * @return The title of Touch To Fill sheet.
+     */
+    private static String getTitle(PropertyModel model, View view) {
+        if (ChromeFeatureList.isEnabled(ChromeFeatureList.TOUCH_TO_FILL_PASSWORD_SUBMISSION)) {
+            return view.getContext().getString(R.string.touch_to_fill_sheet_uniform_title);
+        }
+
+        @StringRes
+        int titleStringId;
+        if (model.get(SINGLE_CREDENTIAL)) {
+            titleStringId = R.string.touch_to_fill_sheet_title_single;
+        } else {
+            titleStringId = R.string.touch_to_fill_sheet_title;
+        }
+        return view.getContext().getString(titleStringId);
+    }
+
+    /**
      * Called whenever a property in the given model changes. It updates the given view accordingly.
      * @param model The observed {@link PropertyModel}. Its data need to be reflected in the view.
      * @param view The {@link View} of the header to update.
@@ -175,14 +197,8 @@ class TouchToFillViewBinder {
     private static void bindHeaderView(PropertyModel model, View view, PropertyKey key) {
         if (key == SINGLE_CREDENTIAL || key == FORMATTED_URL || key == ORIGIN_SECURE) {
             TextView sheetTitleText = view.findViewById(R.id.touch_to_fill_sheet_title);
-            @StringRes
-            int titleStringId;
-            if (model.get(SINGLE_CREDENTIAL)) {
-                titleStringId = R.string.touch_to_fill_sheet_title_single;
-            } else {
-                titleStringId = R.string.touch_to_fill_sheet_title;
-            }
-            sheetTitleText.setText(view.getContext().getString(titleStringId));
+            sheetTitleText.setText(getTitle(model, view));
+
             TextView sheetSubtitleText = view.findViewById(R.id.touch_to_fill_sheet_subtitle);
             if (model.get(ORIGIN_SECURE)) {
                 sheetSubtitleText.setText(model.get(FORMATTED_URL));

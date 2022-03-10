@@ -45,11 +45,13 @@ import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.ScalableTimeout;
 import org.chromium.chrome.browser.app.ChromeActivity;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.touch_to_fill.TouchToFillProperties.HeaderProperties;
 import org.chromium.chrome.browser.touch_to_fill.data.Credential;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
+import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.SheetState;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetTestSupport;
@@ -120,6 +122,9 @@ public class TouchToFillViewTest {
     @Test
     @MediumTest
     public void testSingleCredentialTitleDisplayed() {
+        // TODO(crbug.com/1283004): Replace the test with
+        // |testSingleCredentialTitleDisplayedWithSubmissionEnabled| when
+        // TOUCH_TO_FILL_PASSWORD_SUBMISSION is enabled.
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             mModel.get(SHEET_ITEMS)
                     .add(new MVCListAdapter.ListItem(TouchToFillProperties.ItemType.HEADER,
@@ -141,6 +146,9 @@ public class TouchToFillViewTest {
     @Test
     @MediumTest
     public void testMultiCredentialTitleDisplayed() {
+        // TODO(crbug.com/1283004): Replace the test with
+        // |testMultiCredentialTitleDisplayedWithSubmissionEnabled| when
+        // TOUCH_TO_FILL_PASSWORD_SUBMISSION is enabled.
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             mModel.get(SHEET_ITEMS)
                     .add(new MVCListAdapter.ListItem(TouchToFillProperties.ItemType.HEADER,
@@ -157,6 +165,50 @@ public class TouchToFillViewTest {
 
         assertThat(
                 title.getText(), is(getActivity().getString(R.string.touch_to_fill_sheet_title)));
+    }
+
+    @Test
+    @MediumTest
+    @EnableFeatures({ChromeFeatureList.TOUCH_TO_FILL_PASSWORD_SUBMISSION})
+    public void testSingleCredentialTitleDisplayedWithSubmissionEnabled() {
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            mModel.get(SHEET_ITEMS)
+                    .add(new MVCListAdapter.ListItem(TouchToFillProperties.ItemType.HEADER,
+                            new PropertyModel.Builder(HeaderProperties.ALL_KEYS)
+                                    .with(SINGLE_CREDENTIAL, true)
+                                    .with(FORMATTED_URL, "www.example.org")
+                                    .with(ORIGIN_SECURE, true)
+                                    .build()));
+            mModel.set(VISIBLE, true);
+        });
+        BottomSheetTestSupport.waitForOpen(mBottomSheetController);
+        TextView title =
+                mTouchToFillView.getContentView().findViewById(R.id.touch_to_fill_sheet_title);
+
+        assertThat(title.getText(),
+                is(getActivity().getString(R.string.touch_to_fill_sheet_uniform_title)));
+    }
+
+    @Test
+    @MediumTest
+    @EnableFeatures({ChromeFeatureList.TOUCH_TO_FILL_PASSWORD_SUBMISSION})
+    public void testMultiCredentialTitleDisplayedWithSubmissionEnabled() {
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            mModel.get(SHEET_ITEMS)
+                    .add(new MVCListAdapter.ListItem(TouchToFillProperties.ItemType.HEADER,
+                            new PropertyModel.Builder(HeaderProperties.ALL_KEYS)
+                                    .with(SINGLE_CREDENTIAL, false)
+                                    .with(FORMATTED_URL, "www.example.org")
+                                    .with(ORIGIN_SECURE, true)
+                                    .build()));
+            mModel.set(VISIBLE, true);
+        });
+        BottomSheetTestSupport.waitForOpen(mBottomSheetController);
+        TextView title =
+                mTouchToFillView.getContentView().findViewById(R.id.touch_to_fill_sheet_title);
+
+        assertThat(title.getText(),
+                is(getActivity().getString(R.string.touch_to_fill_sheet_uniform_title)));
     }
 
     @Test
