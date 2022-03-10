@@ -104,6 +104,7 @@ base::FileErrorOr<int> FileSystemAccessRegularFileDelegate::Write(
 
 void FileSystemAccessRegularFileDelegate::GetLength(
     base::OnceCallback<void(base::FileErrorOr<int64_t>)> callback) {
+  DCHECK(task_runner_->RunsTasksInCurrentSequence());
   auto wrapped_callback =
       CrossThreadOnceFunction<void(base::FileErrorOr<int64_t>)>(
           std::move(callback));
@@ -252,6 +253,7 @@ void FileSystemAccessRegularFileDelegate::DidSetLengthIPC(
 
 void FileSystemAccessRegularFileDelegate::Flush(
     base::OnceCallback<void(bool)> callback) {
+  DCHECK(task_runner_->RunsTasksInCurrentSequence());
   auto wrapped_callback =
       CrossThreadOnceFunction<void(bool)>(std::move(callback));
 
@@ -274,6 +276,7 @@ void FileSystemAccessRegularFileDelegate::DoFlush(
 }
 
 void FileSystemAccessRegularFileDelegate::Close(base::OnceClosure callback) {
+  DCHECK(task_runner_->RunsTasksInCurrentSequence());
   auto wrapped_callback = CrossThreadOnceClosure(std::move(callback));
 
   // Close file on a worker thread and reply back to this sequence.
