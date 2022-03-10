@@ -322,8 +322,8 @@ TEST_P(PersonalizationAppWallpaperProviderImplTest, SelectWallpaper) {
   const GURL image_url("http://test_url");
   const uint64_t unit_id = 1;
   std::vector<ash::OnlineWallpaperVariant> variants;
-  variants.emplace_back(ash::OnlineWallpaperVariant(
-      asset_id, image_url, backdrop::Image::IMAGE_TYPE_UNKNOWN));
+  variants.emplace_back(asset_id, image_url,
+                        backdrop::Image::IMAGE_TYPE_UNKNOWN);
 
   AddWallpaperImage(asset_id, /*image_info=*/{
                         image_url,
@@ -355,8 +355,8 @@ TEST_P(PersonalizationAppWallpaperProviderImplTest, PreviewWallpaper) {
   const GURL image_url("http://test_url");
   const uint64_t unit_id = 1;
   std::vector<ash::OnlineWallpaperVariant> variants;
-  variants.emplace_back(ash::OnlineWallpaperVariant(
-      asset_id, image_url, backdrop::Image::IMAGE_TYPE_UNKNOWN));
+  variants.emplace_back(asset_id, image_url,
+                        backdrop::Image::IMAGE_TYPE_UNKNOWN);
 
   AddWallpaperImage(asset_id, /*image_info=*/{
                         image_url,
@@ -391,8 +391,8 @@ TEST_P(PersonalizationAppWallpaperProviderImplTest,
   const GURL image_url("http://test_url");
   const uint64_t unit_id = 1;
   std::vector<ash::OnlineWallpaperVariant> variants;
-  variants.emplace_back(ash::OnlineWallpaperVariant(
-      asset_id, image_url, backdrop::Image::IMAGE_TYPE_UNKNOWN));
+  variants.emplace_back(asset_id, image_url,
+                        backdrop::Image::IMAGE_TYPE_UNKNOWN);
 
   AddWallpaperImage(asset_id, /*image_info=*/{
                         image_url,

@@ -676,19 +676,19 @@ CreateSystemAppDelegateWithWindowConfig(
 std::unique_ptr<TestSystemWebAppInstallation>
 TestSystemWebAppInstallation::SetUpAppsForContestMenuTest() {
   std::vector<std::unique_ptr<UnittestingSystemAppDelegate>> delegates;
-  delegates.emplace_back(CreateSystemAppDelegateWithWindowConfig(
+  delegates.push_back(CreateSystemAppDelegateWithWindowConfig(
       SystemAppType::SETTINGS, GURL("chrome://single-window/pwa.html"),
       SystemWebAppWindowConfig::SINGLE_WINDOW));
 
-  delegates.emplace_back(CreateSystemAppDelegateWithWindowConfig(
+  delegates.push_back(CreateSystemAppDelegateWithWindowConfig(
       SystemAppType::FILE_MANAGER, GURL("chrome://multi-window/pwa.html"),
       SystemWebAppWindowConfig::MULTI_WINDOW));
 
-  delegates.emplace_back(CreateSystemAppDelegateWithWindowConfig(
+  delegates.push_back(CreateSystemAppDelegateWithWindowConfig(
       SystemAppType::MEDIA, GURL("chrome://single-window-tab-strip/pwa.html"),
       SystemWebAppWindowConfig::SINGLE_WINDOW_TAB_STRIP));
 
-  delegates.emplace_back(CreateSystemAppDelegateWithWindowConfig(
+  delegates.push_back(CreateSystemAppDelegateWithWindowConfig(
       SystemAppType::HELP, GURL("chrome://multi-window-tab-strip/pwa.html"),
       SystemWebAppWindowConfig::MULTI_WINDOW_TAB_STRIP));
   auto* installation =

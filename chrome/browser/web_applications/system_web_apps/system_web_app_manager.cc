@@ -110,41 +110,36 @@ SystemAppDelegateMap CreateSystemWebApps(Profile* profile) {
   // TODO(crbug.com/1051229): Currently unused, will be hooked up
   // post-migration. We're making delegates for everything, and will then use
   // them in place of SystemAppInfos.
-  info_vec.emplace_back(std::make_unique<CameraSystemAppDelegate>(profile));
-  info_vec.emplace_back(
-      std::make_unique<DiagnosticsSystemAppDelegate>(profile));
-  info_vec.emplace_back(std::make_unique<OSSettingsSystemAppDelegate>(profile));
-  info_vec.emplace_back(std::make_unique<CroshSystemAppDelegate>(profile));
-  info_vec.emplace_back(std::make_unique<TerminalSystemAppDelegate>(profile));
-  info_vec.emplace_back(
-      std::make_unique<ash::HelpAppSystemAppDelegate>(profile));
-  info_vec.emplace_back(std::make_unique<MediaSystemAppDelegate>(profile));
-  info_vec.emplace_back(
+  info_vec.push_back(std::make_unique<CameraSystemAppDelegate>(profile));
+  info_vec.push_back(std::make_unique<DiagnosticsSystemAppDelegate>(profile));
+  info_vec.push_back(std::make_unique<OSSettingsSystemAppDelegate>(profile));
+  info_vec.push_back(std::make_unique<CroshSystemAppDelegate>(profile));
+  info_vec.push_back(std::make_unique<TerminalSystemAppDelegate>(profile));
+  info_vec.push_back(std::make_unique<ash::HelpAppSystemAppDelegate>(profile));
+  info_vec.push_back(std::make_unique<MediaSystemAppDelegate>(profile));
+  info_vec.push_back(
       std::make_unique<PrintManagementSystemAppDelegate>(profile));
-  info_vec.emplace_back(std::make_unique<ScanningSystemAppDelegate>(profile));
-  info_vec.emplace_back(
-      std::make_unique<ShimlessRMASystemAppDelegate>(profile));
-  info_vec.emplace_back(
+  info_vec.push_back(std::make_unique<ScanningSystemAppDelegate>(profile));
+  info_vec.push_back(std::make_unique<ShimlessRMASystemAppDelegate>(profile));
+  info_vec.push_back(
       std::make_unique<ConnectivityDiagnosticsSystemAppDelegate>(profile));
-  info_vec.emplace_back(std::make_unique<EcheSystemAppDelegate>(profile));
-  info_vec.emplace_back(
+  info_vec.push_back(std::make_unique<EcheSystemAppDelegate>(profile));
+  info_vec.push_back(
       std::make_unique<PersonalizationSystemAppDelegate>(profile));
-  info_vec.emplace_back(
+  info_vec.push_back(
       std::make_unique<ShortcutCustomizationSystemAppDelegate>(profile));
-  info_vec.emplace_back(std::make_unique<OSFeedbackAppDelegate>(profile));
-  info_vec.emplace_back(
-      std::make_unique<FileManagerSystemAppDelegate>(profile));
-  info_vec.emplace_back(
-      std::make_unique<ProjectorSystemWebAppDelegate>(profile));
-  info_vec.emplace_back(
+  info_vec.push_back(std::make_unique<OSFeedbackAppDelegate>(profile));
+  info_vec.push_back(std::make_unique<FileManagerSystemAppDelegate>(profile));
+  info_vec.push_back(std::make_unique<ProjectorSystemWebAppDelegate>(profile));
+  info_vec.push_back(
       std::make_unique<OsUrlHandlerSystemWebAppDelegate>(profile));
-  info_vec.emplace_back(
+  info_vec.push_back(
       std::make_unique<FirmwareUpdateSystemAppDelegate>(profile));
-  info_vec.emplace_back(std::make_unique<OsFlagsSystemWebAppDelegate>(profile));
+  info_vec.push_back(std::make_unique<OsFlagsSystemWebAppDelegate>(profile));
 
 #if !defined(OFFICIAL_BUILD)
-  info_vec.emplace_back(std::make_unique<DemoModeSystemAppDelegate>(profile));
-  info_vec.emplace_back(std::make_unique<SampleSystemAppDelegate>(profile));
+  info_vec.push_back(std::make_unique<DemoModeSystemAppDelegate>(profile));
+  info_vec.push_back(std::make_unique<SampleSystemAppDelegate>(profile));
 #endif  // !defined(OFFICIAL_BUILD)
 
   SystemAppDelegateMap delegate_map;

@@ -1503,31 +1503,34 @@ class WebAppInstallTaskTestWithShortcutsMenu : public WebAppInstallTaskTest {
       const GURL& shortcut_url,
       SquareSizePx icon_size,
       const GURL& icon_src) {
-    InstallResult result;
-    auto manifest = blink::mojom::Manifest::New();
-    manifest->start_url = start_url;
-    manifest->has_theme_color = true;
-    manifest->theme_color = theme_color;
-    manifest->name = u"Manifest Name";
+    {
+      auto manifest = blink::mojom::Manifest::New();
+      manifest->start_url = start_url;
+      manifest->has_theme_color = true;
+      manifest->theme_color = theme_color;
+      manifest->name = u"Manifest Name";
 
-    // Add shortcuts to manifest.
-    blink::Manifest::ShortcutItem shortcut_item;
-    shortcut_item.name = base::UTF8ToUTF16(shortcut_name);
-    shortcut_item.url = shortcut_url;
-    blink::Manifest::ImageResource icon;
-    icon.src = icon_src;
-    icon.sizes.emplace_back(gfx::Size(icon_size, icon_size));
-    icon.purpose.emplace_back(IconPurpose::ANY);
-    shortcut_item.icons.emplace_back(icon);
-    manifest->shortcuts.emplace_back(shortcut_item);
+      // Add shortcuts to manifest.
+      blink::Manifest::ShortcutItem shortcut_item;
+      shortcut_item.name = base::UTF8ToUTF16(shortcut_name);
+      shortcut_item.url = shortcut_url;
+      blink::Manifest::ImageResource icon;
+      icon.src = icon_src;
+      icon.sizes.emplace_back(icon_size, icon_size);
+      icon.purpose.push_back(IconPurpose::ANY);
+      shortcut_item.icons.push_back(std::move(icon));
+      manifest->shortcuts.push_back(std::move(shortcut_item));
 
-    data_retriever_->SetManifest(std::move(manifest), /*is_installable=*/true);
+      data_retriever_->SetManifest(std::move(manifest),
+                                   /*is_installable=*/true);
+    }
 
     base::RunLoop run_loop;
     bool callback_called = false;
 
     SetInstallFinalizerForTesting();
 
+    InstallResult result;
     install_task_->InstallWebAppFromManifest(
         web_contents(), /*bypass_service_worker_check=*/false,
         webapps::WebappInstallSource::MENU_BROWSER_TAB,
@@ -1598,8 +1601,7 @@ class WebAppInstallTaskTestWithShortcutsMenu : public WebAppInstallTaskTest {
     icon.square_size_px = icon_size;
     shortcut_item.SetShortcutIconInfosForPurpose(IconPurpose::MASKABLE,
                                                  {std::move(icon)});
-    web_app_info->shortcuts_menu_item_infos.emplace_back(
-        std::move(shortcut_item));
+    web_app_info->shortcuts_menu_item_infos.push_back(std::move(shortcut_item));
 
     base::RunLoop run_loop;
     bool callback_called = false;

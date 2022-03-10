@@ -234,7 +234,7 @@ std::vector<WebAppShortcutsMenuItemInfo> CreateRandomShortcutsMenuItemInfos(
     shortcut_info.SetShortcutIconInfosForPurpose(
         IconPurpose::MONOCHROME, std::move(shortcut_icons_monochrome));
 
-    shortcuts_menu_item_infos.emplace_back(std::move(shortcut_info));
+    shortcuts_menu_item_infos.push_back(std::move(shortcut_info));
   }
   return shortcuts_menu_item_infos;
 }
@@ -248,11 +248,9 @@ std::vector<IconSizes> CreateRandomDownloadedShortcutsMenuIconsSizes(
     std::vector<SquareSizePx> shortcuts_menu_icon_sizes_maskable;
     std::vector<SquareSizePx> shortcuts_menu_icon_sizes_monochrome;
     for (unsigned int j = 0; j < i; ++j) {
-      shortcuts_menu_icon_sizes_any.emplace_back(random.next_uint(256) + 1);
-      shortcuts_menu_icon_sizes_maskable.emplace_back(random.next_uint(256) +
-                                                      1);
-      shortcuts_menu_icon_sizes_monochrome.emplace_back(random.next_uint(256) +
-                                                        1);
+      shortcuts_menu_icon_sizes_any.push_back(random.next_uint(256) + 1);
+      shortcuts_menu_icon_sizes_maskable.push_back(random.next_uint(256) + 1);
+      shortcuts_menu_icon_sizes_monochrome.push_back(random.next_uint(256) + 1);
     }
     result.SetSizesForPurpose(IconPurpose::ANY,
                               std::move(shortcuts_menu_icon_sizes_any));
@@ -260,7 +258,7 @@ std::vector<IconSizes> CreateRandomDownloadedShortcutsMenuIconsSizes(
                               std::move(shortcuts_menu_icon_sizes_maskable));
     result.SetSizesForPurpose(IconPurpose::MONOCHROME,
                               std::move(shortcuts_menu_icon_sizes_monochrome));
-    results.emplace_back(std::move(result));
+    results.push_back(std::move(result));
   }
   return results;
 }

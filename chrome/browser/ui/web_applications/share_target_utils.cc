@@ -171,10 +171,9 @@ NavigateParams NavigateParamsForShareTarget(
     names.push_back(shared_field.name);
     values.push_back(shared_field.value);
     is_value_file_uris.push_back(false);
-    filenames.emplace_back(std::string());
+    filenames.emplace_back();
     types.push_back("text/plain");
-    data_pipe_getters.emplace_back(
-        mojo::PendingRemote<network::mojom::DataPipeGetter>());
+    data_pipe_getters.emplace_back();
   }
 
   if (share_target.enctype == apps::ShareTarget::Enctype::kMultipartFormData) {

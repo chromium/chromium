@@ -62,7 +62,7 @@ void AddIconToIconsMap(const GURL& icon_url,
 
 void AddEmptyIconToIconsMap(const GURL& icon_url, IconsMap* icons_map) {
   std::vector<SkBitmap> bitmaps;
-  bitmaps.emplace_back(SkBitmap{});
+  bitmaps.emplace_back();
 
   icons_map->emplace(icon_url, std::move(bitmaps));
 }
