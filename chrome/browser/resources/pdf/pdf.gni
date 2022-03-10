@@ -72,7 +72,7 @@ shared_non_webcomponents_files = [
   "main.ts",
   "metrics.ts",
   "open_pdf_params_parser.ts",
-  "pdf_scripting_api.js",
+  "pdf_scripting_api.ts",
   "pdf_viewer_base.ts",
   "pdf_viewer_utils.ts",
   "viewport.ts",

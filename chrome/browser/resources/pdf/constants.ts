@@ -2,8 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {MessageData} from './controller.js';
-
 export type Attachment = {
   name: string,
   size: number,
@@ -59,10 +57,6 @@ export type Point = {
   x: number,
   y: number,
 };
-
-// TODO(crbug.com/1260303): Move this to controller.js when it is migrtaed to
-// TypeScript.
-export type KeyEventData = MessageData&{keyEvent: Object};
 
 export type ExtendedKeyEvent = KeyboardEvent&{
   fromScriptingAPI?: boolean,

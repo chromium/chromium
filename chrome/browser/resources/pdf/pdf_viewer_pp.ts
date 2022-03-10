@@ -13,12 +13,12 @@ import {isRTL} from 'chrome://resources/js/util.m.js';
 import {html} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {BrowserApi} from './browser_api.js';
-import {ExtendedKeyEvent, FittingType, KeyEventData} from './constants.js';
+import {ExtendedKeyEvent, FittingType} from './constants.js';
 import {MessageData, PluginController, PrintPreviewParams} from './controller.js';
 import {ViewerPageIndicatorElement} from './elements/viewer-page-indicator.js';
 import {ViewerZoomToolbarElement} from './elements/viewer-zoom-toolbar.js';
 import {DeserializeKeyEvent, LoadState, SerializeKeyEvent} from './pdf_scripting_api.js';
-import {PDFViewerBaseElement} from './pdf_viewer_base.js';
+import {KeyEventData, PDFViewerBaseElement} from './pdf_viewer_base.js';
 import {DestinationMessageData, DocumentDimensionsMessageData, hasCtrlModifier, shouldIgnoreKeyEvents} from './pdf_viewer_utils.js';
 import {ToolbarManager} from './toolbar_manager.js';
 

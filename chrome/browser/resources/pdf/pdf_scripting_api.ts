@@ -2,59 +2,44 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-/** @interface */
-export class PDFPlugin extends HTMLIFrameElement {
-  /** @param {boolean} darkMode */
-  darkModeChanged(darkMode) {}
+type ViewportChangedCallback =
+    (pageX: number, pageY: number, pageWidth: number, viewportWidth: number,
+     viewportHeight: number) => void;
 
-  hideToolbar() {}
-  /**
-   * @param {string} url
-   * @param {number} index
-   */
-  loadPreviewPage(url, index) {}
-
-  /**
-   * @param {string} url
-   * @param {boolean} color
-   * @param {Array<number>} pages
-   * @param {boolean} modifiable
-   */
-  resetPrintPreviewMode(url, color, pages, modifiable) {}
-
-  /**
-   * @param {number} x
-   * @param {number} y
-   */
-  scrollPosition(x, y) {}
-
-  /**
-   * @param {!KeyboardEvent} e
-   */
-  sendKeyEvent(e) {}
-
-  /**
-   * @param {function(KeyboardEvent): void} callback
-   */
-  setKeyEventCallback(callback) {}
-
-  /**
-   * @param {function(boolean): void} callback
-   */
-  setLoadCompleteCallback(callback) {}
-
-  /**
-   * @param {function(number, number, number, number, number): void} callback
-   */
-  setViewportChangedCallback(callback) {}
+export interface PDFPlugin extends HTMLIFrameElement {
+  darkModeChanged(darkMode: boolean): void;
+  hideToolbar(): void;
+  loadPreviewPage(url: string, index: number): void;
+  resetPrintPreviewMode(
+      url: string, color: boolean, pages: number[], modifiable: boolean): void;
+  scrollPosition(x: number, y: number): void;
+  sendKeyEvent(e: KeyboardEvent): void;
+  setKeyEventCallback(callback: (e: KeyboardEvent) => void): void;
+  setLoadCompleteCallback(callback: (loaded: boolean) => void): void;
+  setViewportChangedCallback(callback: ViewportChangedCallback): void;
 }
+
+export type SerializedKeyEvent = {
+  keyCode: number,
+  code: string,
+  key: string,
+  shiftKey: boolean,
+  ctrlKey: boolean,
+  altKey: boolean,
+  metaKey: boolean,
+};
+
+type ThumbnailData = {
+  imageData: ArrayBuffer,
+  width: number,
+  height: number,
+};
 
 /**
  * Turn a dictionary received from postMessage into a key event.
- * @param {Object} dict A dictionary representing the key event.
- * @return {!KeyboardEvent} A key event.
+ * @param dict A dictionary representing the key event.
  */
-export function DeserializeKeyEvent(dict) {
+export function DeserializeKeyEvent(dict: SerializedKeyEvent): KeyboardEvent {
   const e = new KeyboardEvent('keydown', {
     bubbles: true,
     cancelable: true,
@@ -71,10 +56,9 @@ export function DeserializeKeyEvent(dict) {
 
 /**
  * Turn a key event into a dictionary which can be sent over postMessage.
- * @param {Event} event A key event.
- * @return {Object} A dictionary representing the key event.
+ * @return A dictionary representing the key event.
  */
-export function SerializeKeyEvent(event) {
+export function SerializeKeyEvent(event: KeyboardEvent): SerializedKeyEvent {
   return {
     keyCode: event.keyCode,
     code: event.code,
@@ -89,43 +73,33 @@ export function SerializeKeyEvent(event) {
 /**
  * An enum containing a value specifying whether the PDF is currently loading,
  * has finished loading or failed to load.
- * @enum {string}
  */
-export const LoadState = {
-  LOADING: 'loading',
-  SUCCESS: 'success',
-  FAILED: 'failed'
-};
+export enum LoadState {
+  LOADING = 'loading',
+  SUCCESS = 'success',
+  FAILED = 'failed',
+}
 
 // Provides a scripting interface to the PDF viewer so that it can be customized
 // by things like print preview.
 export class PDFScriptingAPI {
+  private loadState_: LoadState = LoadState.LOADING;
+  private pendingScriptingMessages_: Array<{type: string}> = [];
+
+  private viewportChangedCallback_: ViewportChangedCallback;
+  private loadCompleteCallback_: (completed: boolean) => void;
+  private selectedTextCallback_: ((text: string) => void)|null;
+  private thumbnailCallback_: ((data: ThumbnailData) => void)|null;
+  private keyEventCallback_: (e: KeyboardEvent) => void;
+
+  private plugin_: Window|null;
+
   /**
-   * @param {Window} window the window of the page containing the pdf viewer.
-   * @param {Object} plugin the plugin element containing the pdf viewer.
+   * @param window the window of the page containing the pdf viewer.
+   * @param plugin the plugin element containing the pdf viewer.
    */
-  constructor(window, plugin) {
-    this.loadState_ = LoadState.LOADING;
-    this.pendingScriptingMessages_ = [];
+  constructor(window: Window, plugin: Window|null) {
     this.setPlugin(plugin);
-
-    /** @private {Function} */
-    this.viewportChangedCallback_;
-
-    /** @private {Function} */
-    this.loadCompleteCallback_;
-
-    /** @private {Function} */
-    this.selectedTextCallback_;
-
-    /** @private {Function} */
-    this.thumbnailCallback_;
-
-    /** @private {Function} */
-    this.keyEventCallback_;
-
-    /** @private {Object} */
-    this.plugin_;
 
     window.addEventListener('message', event => {
       if (event.origin !==
@@ -137,15 +111,6 @@ export class PDFScriptingAPI {
       }
       switch (event.data.type) {
         case 'viewport':
-          /**
-           * @type {{
-           *   pageX: number,
-           *   pageY: number,
-           *   pageWidth: number,
-           *   viewportWidth: number,
-           *   viewportHeight: number
-           * }}
-           */
           const viewportData = event.data;
           if (this.viewportChangedCallback_) {
             this.viewportChangedCallback_(
@@ -154,7 +119,7 @@ export class PDFScriptingAPI {
           }
           break;
         case 'documentLoaded': {
-          const data = /** @type {{load_state: LoadState}} */ (event.data);
+          const data = event.data;
           this.loadState_ = data.load_state;
           if (this.loadCompleteCallback_) {
             this.loadCompleteCallback_(this.loadState_ === LoadState.SUCCESS);
@@ -162,7 +127,7 @@ export class PDFScriptingAPI {
           break;
         }
         case 'getSelectedTextReply': {
-          const data = /** @type {{selectedText: string}} */ (event.data);
+          const data = event.data;
           if (this.selectedTextCallback_) {
             this.selectedTextCallback_(data.selectedText);
             this.selectedTextCallback_ = null;
@@ -170,14 +135,8 @@ export class PDFScriptingAPI {
           break;
         }
         case 'getThumbnailReply': {
-          const data =
-              /**
-               * @type {{imageData: !ArrayBuffer, width: number,
-               *         height: number}}
-               */
-              (event.data);
           if (this.thumbnailCallback_) {
-            this.thumbnailCallback_(data);
+            this.thumbnailCallback_(event.data as ThumbnailData);
             this.thumbnailCallback_ = null;
           }
           break;
@@ -195,10 +154,8 @@ export class PDFScriptingAPI {
    * Send a message to the extension. If messages try to get sent before there
    * is a plugin element set, then we queue them up and send them later (this
    * can happen in print preview).
-   * @param {Object} message The message to send.
-   * @private
    */
-  sendMessage_(message) {
+  private sendMessage_<M extends {type: string}>(message: M) {
     if (this.plugin_) {
       this.plugin_.postMessage(message, '*');
     } else {
@@ -209,9 +166,9 @@ export class PDFScriptingAPI {
   /**
    * Sets the plugin element containing the PDF viewer. The element will usually
    * be passed into the PDFScriptingAPI constructor but may also be set later.
-   * @param {Object} plugin the plugin element containing the PDF viewer.
+   * @param plugin the plugin element containing the PDF viewer.
    */
-  setPlugin(plugin) {
+  setPlugin(plugin: Window|null) {
     this.plugin_ = plugin;
 
     if (this.plugin_) {
@@ -220,26 +177,23 @@ export class PDFScriptingAPI {
       this.sendMessage_({type: 'initialize'});
       // Flush pending messages.
       while (this.pendingScriptingMessages_.length > 0) {
-        this.sendMessage_(this.pendingScriptingMessages_.shift());
+        this.sendMessage_(this.pendingScriptingMessages_.shift()!);
       }
     }
   }
 
   /**
    * Sets the callback which will be run when the PDF viewport changes.
-   * @param {Function} callback the callback to be called.
    */
-  setViewportChangedCallback(callback) {
+  setViewportChangedCallback(callback: ViewportChangedCallback) {
     this.viewportChangedCallback_ = callback;
   }
 
   /**
    * Sets the callback which will be run when the PDF document has finished
    * loading. If the document is already loaded, it will be run immediately.
-   *
-   * @param {Function} callback the callback to be called.
    */
-  setLoadCompleteCallback(callback) {
+  setLoadCompleteCallback(callback: (loaded: boolean) => void) {
     this.loadCompleteCallback_ = callback;
     if (this.loadState_ !== LoadState.LOADING && this.loadCompleteCallback_) {
       this.loadCompleteCallback_(this.loadState_ === LoadState.SUCCESS);
@@ -248,20 +202,21 @@ export class PDFScriptingAPI {
 
   /**
    * Sets a callback that gets run when a key event is fired in the PDF viewer.
-   * @param {Function} callback the callback to be called with a key event.
    */
-  setKeyEventCallback(callback) {
+  setKeyEventCallback(callback: (e: KeyboardEvent) => void) {
     this.keyEventCallback_ = callback;
   }
 
   /**
    * Resets the PDF viewer into print preview mode.
-   * @param {string} url the url of the PDF to load.
-   * @param {boolean} grayscale whether or not to display the PDF in grayscale.
-   * @param {Array<number>} pageNumbers an array of the page numbers.
-   * @param {boolean} modifiable whether or not the document is modifiable.
+   * @param url the url of the PDF to load.
+   * @param grayscale whether or not to display the PDF in grayscale.
+   * @param pageNumbers an array of the page numbers.
+   * @param modifiable whether or not the document is modifiable.
    */
-  resetPrintPreviewMode(url, grayscale, pageNumbers, modifiable) {
+  resetPrintPreviewMode(
+      url: string, grayscale: boolean, pageNumbers: number[],
+      modifiable: boolean) {
     this.loadState_ = LoadState.LOADING;
     this.sendMessage_({
       type: 'resetPrintPreviewMode',
@@ -279,15 +234,15 @@ export class PDFScriptingAPI {
 
   /**
    * Load a page into the document while in print preview mode.
-   * @param {string} url the url of the pdf page to load.
-   * @param {number} index the index of the page to load.
+   * @param url the url of the pdf page to load.
+   * @param index the index of the page to load.
    */
-  loadPreviewPage(url, index) {
+  loadPreviewPage(url: string, index: number) {
     this.sendMessage_({type: 'loadPreviewPage', url: url, index: index});
   }
 
-  /** @param {boolean} darkMode Whether the page is in dark mode. */
-  darkModeChanged(darkMode) {
+  /** @param darkMode Whether the page is in dark mode. */
+  darkModeChanged(darkMode: boolean) {
     this.sendMessage_({type: 'darkModeChanged', darkMode: darkMode});
   }
 
@@ -302,11 +257,11 @@ export class PDFScriptingAPI {
   /**
    * Get the selected text in the document. The callback will be called with the
    * text that is selected. May only be called after document load.
-   * @param {Function} callback a callback to be called with the selected text.
-   * @return {boolean} true if the function is successful, false if there is an
+   * @param callback a callback to be called with the selected text.
+   * @return Whether the function is successful, false if there is an
    *     outstanding request for selected text that has not been answered.
    */
-  getSelectedText(callback) {
+  getSelectedText(callback: (text: string) => void): boolean {
     if (this.selectedTextCallback_) {
       return false;
     }
@@ -318,12 +273,12 @@ export class PDFScriptingAPI {
   /**
    * Get the thumbnail data for a page. The data will be passed to a callback.
    * May only be called after document loaded.
-   * @param {number} page the page number.
-   * @param {Function} callback a callback to be called with the thumbnail data.
-   * @return {boolean} true if the function is successful, false if there is an
+   * @param page the page number.
+   * @param callback a callback to be called with the thumbnail data.
+   * @return Whether the function is successful, false if there is an
    *     outstanding request for thumbnail data that has not been answered.
    */
-  getThumbnail(page, callback) {
+  getThumbnail(page: number, callback: (data: ThumbnailData) => void): boolean {
     if (this.thumbnailCallback_) {
       return false;
     }
@@ -342,18 +297,18 @@ export class PDFScriptingAPI {
 
   /**
    * Send a key event to the extension.
-   * @param {Event} keyEvent the key event to send to the extension.
+   * @param keyEvent the key event to send to the extension.
    */
-  sendKeyEvent(keyEvent) {
+  sendKeyEvent(keyEvent: KeyboardEvent) {
     this.sendMessage_(
         {type: 'sendKeyEvent', keyEvent: SerializeKeyEvent(keyEvent)});
   }
 
   /**
-   * @param {number} scrollX The amount to horizontally scroll in pixels.
-   * @param {number} scrollY The amount to vertically scroll in pixels.
+   * @param scrollX The amount to horizontally scroll in pixels.
+   * @param scrollY The amount to vertically scroll in pixels.
    */
-  scrollPosition(scrollX, scrollY) {
+  scrollPosition(scrollX: number, scrollY: number) {
     this.sendMessage_({type: 'scrollPosition', x: scrollX, y: scrollY});
   }
 }
@@ -363,14 +318,14 @@ export class PDFScriptingAPI {
  * iframe which is navigated to the PDF viewer extension and 2) a scripting
  * interface which provides access to various features of the viewer for use
  * by print preview and accessibility.
- * @param {string} src the source URL of the PDF to load initially.
- * @param {string} baseUrl the base URL of the PDF viewer
- * @return {!PDFPlugin} the iframe element containing the PDF viewer.
+ * @param src the source URL of the PDF to load initially.
+ * @param baseUrl the base URL of the PDF viewer
+ * @return The iframe element containing the PDF viewer.
  */
-export function PDFCreateOutOfProcessPlugin(src, baseUrl) {
+export function PDFCreateOutOfProcessPlugin(
+    src: string, baseUrl: string): PDFPlugin {
   const client = new PDFScriptingAPI(window, null);
-  const iframe = /** @type {!HTMLIFrameElement} */ (
-      window.document.createElement('iframe'));
+  const iframe = window.document.createElement('iframe') as PDFPlugin;
   iframe.setAttribute('src', baseUrl + '/index.html?' + src);
 
   iframe.onload = function() {
@@ -388,5 +343,5 @@ export function PDFCreateOutOfProcessPlugin(src, baseUrl) {
   iframe.setLoadCompleteCallback = client.setLoadCompleteCallback.bind(client);
   iframe.setViewportChangedCallback =
       client.setViewportChangedCallback.bind(client);
-  return /** @type {!PDFPlugin} */ (iframe);
+  return iframe;
 }

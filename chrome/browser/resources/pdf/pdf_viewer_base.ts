@@ -13,7 +13,7 @@ import {FittingType, Point} from './constants.js';
 import {ContentController, MessageData, PluginController, PluginControllerEventType} from './controller.js';
 import {record, recordFitTo, UserAction} from './metrics.js';
 import {OpenPdfParams, OpenPdfParamsParser} from './open_pdf_params_parser.js';
-import {LoadState} from './pdf_scripting_api.js';
+import {LoadState, SerializedKeyEvent} from './pdf_scripting_api.js';
 import {DocumentDimensionsMessageData} from './pdf_viewer_utils.js';
 import {Viewport} from './viewport.js';
 import {ViewportScroller} from './viewport_scroller.js';
@@ -32,6 +32,8 @@ function getScrollbarWidth(): number {
   div.parentNode!.removeChild(div);
   return result;
 }
+
+export type KeyEventData = MessageData&{keyEvent: SerializedKeyEvent};
 
 export abstract class PDFViewerBaseElement extends PolymerElement {
   static get is() {

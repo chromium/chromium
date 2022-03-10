@@ -22,7 +22,7 @@ import {html} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.
 
 import {Bookmark} from './bookmark_type.js';
 import {BrowserApi} from './browser_api.js';
-import {Attachment, DocumentMetadata, ExtendedKeyEvent, FittingType, KeyEventData, Point, SaveRequestType} from './constants.js';
+import {Attachment, DocumentMetadata, ExtendedKeyEvent, FittingType, Point, SaveRequestType} from './constants.js';
 import {ContentController, MessageData, PluginController} from './controller.js';
 import {ViewerErrorDialogElement} from './elements/viewer-error-dialog.js';
 import {ViewerPasswordDialogElement} from './elements/viewer-password-dialog.js';
@@ -35,7 +35,7 @@ import {LocalStorageProxyImpl} from './local_storage_proxy.js';
 import {record, UserAction} from './metrics.js';
 import {NavigatorDelegateImpl, PdfNavigator, WindowOpenDisposition} from './navigator.js';
 import {DeserializeKeyEvent, LoadState} from './pdf_scripting_api.js';
-import {PDFViewerBaseElement} from './pdf_viewer_base.js';
+import {KeyEventData, PDFViewerBaseElement} from './pdf_viewer_base.js';
 import {DestinationMessageData, DocumentDimensionsMessageData, hasCtrlModifier, shouldIgnoreKeyEvents} from './pdf_viewer_utils.js';
 
 type EmailMessageData = {
