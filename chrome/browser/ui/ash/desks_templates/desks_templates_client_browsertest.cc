@@ -66,6 +66,7 @@
 #include "components/keep_alive_registry/keep_alive_types.h"
 #include "components/keep_alive_registry/scoped_keep_alive.h"
 #include "components/policy/policy_constants.h"
+#include "components/services/app_service/public/cpp/app_types.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/test_navigation_observer.h"
 #include "content/public/test/test_utils.h"
@@ -301,7 +302,7 @@ class MockDesksTemplatesAppLaunchHandler
 
   MOCK_METHOD(void,
               LaunchSystemWebAppOrChromeApp,
-              (apps::mojom::AppType,
+              (apps::AppType,
                const std::string&,
                const app_restore::RestoreData::LaunchList&),
               (override));

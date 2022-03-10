@@ -9,7 +9,6 @@
 #include "components/app_restore/restore_data.h"
 #include "components/services/app_service/public/cpp/app_registry_cache.h"
 #include "components/services/app_service/public/cpp/app_types.h"
-#include "components/services/app_service/public/mojom/types.mojom.h"
 
 namespace apps {
 class AppUpdate;
@@ -74,10 +73,10 @@ class AppLaunchHandler : public apps::AppRegistryCache::Observer {
   }
 
  private:
-  void LaunchApp(apps::mojom::AppType app_type, const std::string& app_id);
+  void LaunchApp(apps::AppType app_type, const std::string& app_id);
 
   virtual void LaunchSystemWebAppOrChromeApp(
-      apps::mojom::AppType app_type,
+      apps::AppType app_type,
       const std::string& app_id,
       const ::app_restore::RestoreData::LaunchList& launch_list);
 
