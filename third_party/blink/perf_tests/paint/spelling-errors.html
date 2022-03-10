@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<title>Spelling error makers painting</title>
+<script src="../resources/runner.js"></script>
+<script src="resources/paint.js"></script>
+<p>To run this test use: <code>content_shell --expose-internals-for-testing</code>.</p>
+<p id="warning" style="color: red;"></p>
+<pre id="log"></pre>
+<div id="wrapper" contenteditable></div>
+<script>
+  const REPETITIONS = 1000;
+  const LOREM_IPSUM = "Lorem ipsum dolor sit amet.";
+
+  function createRange(element, start, end) {
+    let range = new Range();
+    range.setStart(element.firstChild, start);
+    range.setEnd(element.firstChild, end);
+    return range;
+  }
+
+  function setupTest() {
+    if (!window.internals)
+      warning.innerHTML = "WARNING: You need to pass <code>--expose-internals-for-testing</code> to <code>content_shell</code> to run this test."
+
+    for (let i = 0; i < REPETITIONS; i++) {
+      let p = document.createElement("p");
+      p.textContent = LOREM_IPSUM;
+      wrapper.appendChild(p);
+
+      if (window.internals) {
+        internals.setMarker(document, createRange(p, 0, 5), "spelling");
+        internals.setMarker(document, createRange(p, 6, 11), "spelling");
+        internals.setMarker(document, createRange(p, 12, 17), "spelling");
+        internals.setMarker(document, createRange(p, 22, 26), "spelling");
+      }
+    }
+    wrapper.focus();
+  }
+
+  setupTest();
+
+  measurePaint({
+    description: "Measure time for adding content to a large text with lots of spelling errors",
+    run: () => document.execCommand("insertText", false, "X"),
+  });
+</script>
