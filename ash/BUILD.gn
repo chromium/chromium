@@ -239,6 +239,8 @@ component("ash") {
     "calendar/calendar_controller.h",
     "cancel_mode.cc",
     "cancel_mode.h",
+    "capture_mode/camera_video_frame_handler.cc",
+    "capture_mode/camera_video_frame_handler.h",
     "capture_mode/capture_label_view.cc",
     "capture_mode/capture_label_view.h",
     "capture_mode/capture_mode_api.cc",
