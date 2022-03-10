@@ -7,13 +7,14 @@
 
 #import <Foundation/Foundation.h>
 
-@class WebChannel;
+@class FollowedWebChannel;
 
 // A data source from which the UI can pull a list of followed web channels.
 @protocol FollowedWebChannelsDataSource
 
 // Returns an array of WebChannels. This must be synchronous.
-@property(nonatomic, readonly) NSArray<WebChannel*>* followedWebChannels;
+@property(nonatomic, readonly)
+    NSArray<FollowedWebChannel*>* followedWebChannels;
 
 @end
 

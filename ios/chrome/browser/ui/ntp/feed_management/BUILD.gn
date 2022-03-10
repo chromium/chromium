@@ -49,19 +49,17 @@ source_set("follow_management") {
 
 source_set("follow_management_ui") {
   sources = [
-    "follow_management_delegate.h",
     "follow_management_view_controller.h",
     "follow_management_view_controller.mm",
     "followed_web_channel_item.h",
     "followed_web_channel_item.mm",
     "followed_web_channels_data_source.h",
-    "web_channel.h",
-    "web_channel.mm",
   ]
   configs += [ "//build/config/compiler:enable_arc" ]
   deps = [
     "//base",
     "//ios/chrome/app/strings:ios_strings_grit",
+    "//ios/chrome/browser/ui/follow",
     "//ios/chrome/browser/ui/table_view",
     "//ios/chrome/browser/ui/table_view/cells",
     "//ui/base",

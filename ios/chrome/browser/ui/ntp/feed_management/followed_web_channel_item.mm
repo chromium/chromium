@@ -5,7 +5,7 @@
 #import "ios/chrome/browser/ui/ntp/feed_management/followed_web_channel_item.h"
 
 #include "base/mac/foundation_util.h"
-#import "ios/chrome/browser/ui/ntp/feed_management/web_channel.h"
+#import "ios/chrome/browser/ui/follow/followed_web_channel.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ui/base/l10n/l10n_util_mac.h"
 
@@ -22,11 +22,11 @@
 
 @implementation FollowedWebChannelItem
 
-- (void)setWebChannel:(WebChannel*)webChannel {
-  _webChannel = webChannel;
-  self.title = webChannel.title;
-  if (!_webChannel.unavailable) {
-    self.detailText = _webChannel.hostname;
+- (void)setFollowedWebChannel:(FollowedWebChannel*)followedWebChannel {
+  _followedWebChannel = followedWebChannel;
+  self.title = followedWebChannel.title;
+  if (!_followedWebChannel.unavailable) {
+    self.detailText = _followedWebChannel.hostname;
     return;
   }
 
@@ -38,7 +38,8 @@
       initWithString:[NSString stringWithFormat:@"\n%@", unavailableText]
           attributes:@{NSForegroundColorAttributeName : UIColor.redColor}];
   NSMutableAttributedString* concatenatedString =
-      [[NSMutableAttributedString alloc] initWithString:_webChannel.hostname];
+      [[NSMutableAttributedString alloc]
+          initWithString:_followedWebChannel.hostname];
   [concatenatedString appendAttributedString:unavailableString];
   _detailAttributedString = concatenatedString;
 }

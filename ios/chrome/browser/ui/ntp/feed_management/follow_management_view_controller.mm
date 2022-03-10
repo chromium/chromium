@@ -5,8 +5,10 @@
 #import "ios/chrome/browser/ui/ntp/feed_management/follow_management_view_controller.h"
 
 #include "base/mac/foundation_util.h"
+#import "ios/chrome/browser/ui/follow/follow_block_types.h"
+#import "ios/chrome/browser/ui/follow/followed_web_channel.h"
 #import "ios/chrome/browser/ui/ntp/feed_management/followed_web_channel_item.h"
-#import "ios/chrome/browser/ui/ntp/feed_management/web_channel.h"
+#import "ios/chrome/browser/ui/ntp/feed_management/followed_web_channels_data_source.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ui/base/l10n/l10n_util_mac.h"
 
@@ -40,14 +42,15 @@ typedef NS_ENUM(NSInteger, ItemType) {
 
 - (void)loadModel {
   [super loadModel];
-  NSArray<WebChannel*>* webChannels = self.dataSource.followedWebChannels;
+  NSArray<FollowedWebChannel*>* followedWebChannels =
+      self.dataSource.followedWebChannels;
 
   TableViewModel* model = self.tableViewModel;
   [model addSectionWithIdentifier:DefaultSectionIdentifier];
-  for (WebChannel* webChannel in webChannels) {
+  for (FollowedWebChannel* followedWebChannel in followedWebChannels) {
     FollowedWebChannelItem* item = [[FollowedWebChannelItem alloc]
         initWithType:FollowedWebChannelItemType];
-    item.webChannel = webChannel;
+    item.followedWebChannel = followedWebChannel;
     [model addItem:item toSectionWithIdentifier:DefaultSectionIdentifier];
   }
 }
@@ -91,17 +94,16 @@ typedef NS_ENUM(NSInteger, ItemType) {
   FollowedWebChannelItem* item =
       base::mac::ObjCCastStrict<FollowedWebChannelItem>(
           [self.tableViewModel itemAtIndexPath:indexPath]);
-  WebChannel* webChannel = item.webChannel;
-  [self.delegate unfollowWebChannel:webChannel
-                         completion:^(BOOL success) {
-                           if (success) {
-                             // TODO(crbug.com/1296745): Show success snackbar
-                             // with undo button.
-                           } else {
-                             // TODO(crbug.com/1296745): Show failure snackbar
-                             // with try again button.
-                           }
-                         }];
+
+  item.followedWebChannel.unfollowRequestBlock(^(BOOL success) {
+    if (success) {
+      // TODO(crbug.com/1296745): Show success snackbar
+      // with undo button. Also remove row.
+    } else {
+      // TODO(crbug.com/1296745): Show failure snackbar
+      // with try again button.
+    }
+  });
 }
 
 @end

@@ -67,7 +67,6 @@
           initWithStyle:UITableViewStyleInsetGrouped];
   FollowManagementMediator* mediator = [[FollowManagementMediator alloc] init];
   followManagementViewController.dataSource = mediator;
-  followManagementViewController.delegate = mediator;
   self.followManagementMediator = mediator;
   [self.navigationController pushViewController:followManagementViewController
                                        animated:YES];

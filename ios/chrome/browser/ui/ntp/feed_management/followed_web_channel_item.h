@@ -7,13 +7,13 @@
 
 #import "ios/chrome/browser/ui/table_view/cells/table_view_image_item.h"
 
-@class WebChannel;
+@class FollowedWebChannel;
 
 // A table view item representing a web channel.
 @interface FollowedWebChannelItem : TableViewImageItem
 
 // Web channel associated with this table view item.
-@property(nonatomic, strong) WebChannel* webChannel;
+@property(nonatomic, strong) FollowedWebChannel* followedWebChannel;
 
 @end
 
