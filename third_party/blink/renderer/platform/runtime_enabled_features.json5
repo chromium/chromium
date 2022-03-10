@@ -2416,6 +2416,7 @@
     },
     {
       name: "ViewportHeightClientHintHeader",
+      origin_trial_feature_name: "ViewportHeightClientHintHeader",
       status: "experimental",
     },
     {
