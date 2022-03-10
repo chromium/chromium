@@ -168,9 +168,15 @@ std::unique_ptr<views::Textfield> CreateCvcTextfield() {
 LegalMessageView::LegalMessageView(const LegalMessageLines& legal_message_lines,
                                    LinkClickedCallback callback) {
   SetOrientation(views::BoxLayout::Orientation::kVertical);
+  SetBetweenChildSpacing(ChromeLayoutProvider::Get()->GetDistanceMetric(
+      DISTANCE_RELATED_CONTROL_VERTICAL_SMALL));
   for (const LegalMessageLine& line : legal_message_lines) {
+    // To ensure spacing between child paragraphs, all legal message lines are
+    // enclosed in their own view.
+    auto* line_view_ptr =
+        AddChildView(std::make_unique<views::BoxLayoutView>());
     views::StyledLabel* label =
-        AddChildView(std::make_unique<views::StyledLabel>());
+        line_view_ptr->AddChildView(std::make_unique<views::StyledLabel>());
     label->SetText(line.text());
     label->SetTextContext(views::style::CONTEXT_DIALOG_BODY_TEXT);
     label->SetDefaultTextStyle(views::style::STYLE_SECONDARY);
