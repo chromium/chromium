@@ -8,12 +8,17 @@
 #import "ios/chrome/browser/ui/table_view/chrome_table_view_controller.h"
 
 @protocol FollowedWebChannelsDataSource;
+@protocol TableViewFaviconDataSource;
 
 // The UI that displays the web channels that the user is following.
 @interface FollowManagementViewController : ChromeTableViewController
 
 // DataSource for followed web channels.
-@property(nonatomic, weak) id<FollowedWebChannelsDataSource> dataSource;
+@property(nonatomic, weak) id<FollowedWebChannelsDataSource>
+    followedWebChannelsDataSource;
+
+// Source for favicons.
+@property(nonatomic, weak) id<TableViewFaviconDataSource> faviconDataSource;
 
 @end
 

@@ -47,11 +47,15 @@
 - (void)configureCell:(TableViewCell*)tableCell
            withStyler:(ChromeTableViewStyler*)styler {
   [super configureCell:tableCell withStyler:styler];
-  TableViewImageCell* cell =
-      base::mac::ObjCCastStrict<TableViewImageCell>(tableCell);
-  if (self.detailAttributedString != nil) {
-    cell.detailTextLabel.attributedText = self.detailAttributedString;
-  }
+  FollowedWebChannelCell* cell =
+      base::mac::ObjCCastStrict<FollowedWebChannelCell>(tableCell);
+  cell.followedWebChannel = self.followedWebChannel;
+
+  // TODO(crbug.com/1296745): Modify TableViewURLCell to have spinner and third
+  // row text.
 }
 
+@end
+
+@implementation FollowedWebChannelCell
 @end

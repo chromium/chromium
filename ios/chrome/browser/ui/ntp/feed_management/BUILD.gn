@@ -44,7 +44,12 @@ source_set("follow_management") {
     "follow_management_mediator.mm",
   ]
   configs += [ "//build/config/compiler:enable_arc" ]
-  deps = [ ":follow_management_ui" ]
+  deps = [
+    ":follow_management_ui",
+    "//ios/chrome/browser/net",
+    "//ios/chrome/browser/ui/follow",
+    "//ios/chrome/browser/ui/table_view",
+  ]
 }
 
 source_set("follow_management_ui") {
@@ -59,9 +64,11 @@ source_set("follow_management_ui") {
   deps = [
     "//base",
     "//ios/chrome/app/strings:ios_strings_grit",
+    "//ios/chrome/browser/net",
     "//ios/chrome/browser/ui/follow",
     "//ios/chrome/browser/ui/table_view",
     "//ios/chrome/browser/ui/table_view/cells",
+    "//ios/chrome/common/ui/favicon",
     "//ui/base",
   ]
 }
