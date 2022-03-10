@@ -317,18 +317,6 @@ void SearchResultView::OnResultChanging(SearchResult* new_result) {
 
 void SearchResultView::OnResultChanged() {
   OnMetadataChanged();
-  // Update tile, separator, and details text visibility.
-  if (view_type_ == SearchResultViewType::kAnswerCard)
-    UpdateBigTitleContainer();
-  if (view_type_ != SearchResultViewType::kClassic &&
-      app_list_features::IsSearchResultInlineIconEnabled()) {
-    UpdateKeyboardShortcutContainer();
-  }
-  UpdateTitleContainer();
-  UpdateDetailsContainer();
-  UpdateBadgeIcon();
-  UpdateRating();
-  UpdateAccessibleName();
   SchedulePaint();
 }
 
@@ -950,6 +938,9 @@ void SearchResultView::OnMetadataChanged() {
   }
   UpdateTitleContainer();
   UpdateDetailsContainer();
+  UpdateAccessibleName();
+  UpdateBadgeIcon();
+  UpdateRating();
   // Updates |icon_|.
   // Note: this might leave the view with an old icon. But it is needed to avoid
   // flash when a SearchResult's icon is loaded asynchronously. In this case, it
