@@ -1,18 +1,18 @@
-Tests access of cached DOMWindow properties after the associated frame is removed from a web page and garbage collected. Test should not crash and properties should be set to sane defaults.
+Tests access of cached DOMWindow properties after the associated frame is removed from a web page and garbage collected. Test should not crash and properties should be set to reasonable defaults as appropriate.
 
 On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
 
 PASS window.cached_cookieStore.onchange is null
-FAIL window.cached_location.hash should be  (of type string). Was undefined (of type undefined).
-FAIL window.cached_location.host should be  (of type string). Was undefined (of type undefined).
-FAIL window.cached_location.hostname should be  (of type string). Was undefined (of type undefined).
-FAIL window.cached_location.href should be about:blank (of type string). Was undefined (of type undefined).
-FAIL window.cached_location.origin should be null (of type string). Was undefined (of type undefined).
-FAIL window.cached_location.pathname should be blank (of type string). Was undefined (of type undefined).
-FAIL window.cached_location.port should be  (of type string). Was undefined (of type undefined).
-FAIL window.cached_location.protocol should be about: (of type string). Was undefined (of type undefined).
-FAIL window.cached_location.search should be  (of type string). Was undefined (of type undefined).
-PASS window.cached_location_ancestorOrigins.length is 1
+PASS window.cached_location.hash is undefined
+PASS window.cached_location.host is undefined
+PASS window.cached_location.hostname is undefined
+PASS window.cached_location.href is undefined
+PASS window.cached_location.origin is undefined
+PASS window.cached_location.pathname is undefined
+PASS window.cached_location.port is undefined
+PASS window.cached_location.protocol is undefined
+PASS window.cached_location.search is undefined
+FAIL window.cached_location_ancestorOrigins.length should be 0. Was 1.
 PASS window.cached_locationbar.visible is false
 PASS window.cached_menubar.visible is false
 PASS window.cached_navigator.appCodeName is window.navigator.appCodeName
@@ -33,7 +33,9 @@ PASS window.cached_navigator.userAgent is ''
 PASS window.cached_navigator.vendor is window.navigator.vendor
 PASS window.cached_navigator.vendorSub is ''
 PASS window.cached_navigator.webdriver is false
+PASS window.cached_navigator_connection.effectiveType is window.navigator.connection.effectiveType
 PASS window.cached_navigator_connection.onchange is null
+PASS window.cached_navigator_connection.rtt is window.navigator.connection.rtt
 PASS window.cached_navigator_connection.saveData is false
 PASS window.cached_navigator_hid.onconnect is null
 PASS window.cached_navigator_hid.ondisconnect is null
@@ -105,7 +107,7 @@ PASS window.cached_screen.pixelDepth is 0
 PASS window.cached_screen.width is 0
 PASS window.cached_screen_orientation.angle is 0
 PASS window.cached_screen_orientation.onchange is null
-PASS window.cached_screen_orientation.type is 'portrait-primary'
+PASS window.cached_screen_orientation.type is window.screen.orientation.type
 PASS window.cached_scrollbars.visible is false
 PASS window.cached_speechSynthesis.onvoiceschanged is null
 PASS window.cached_speechSynthesis.paused is false

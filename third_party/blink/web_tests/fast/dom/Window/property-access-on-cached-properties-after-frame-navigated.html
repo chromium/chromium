@@ -28,10 +28,9 @@ function insertExpectedResult(path, expected)
 function runTest()
 {
     frame = document.getElementById("test_frame");
-    description("Tests access of cached DOMWindow properties after the associated frame is navigated. Test should not crash and properties should be set to sane defaults.");
+    description("Tests access of cached DOMWindow properties after the associated frame is navigated. Test should not crash and properties should be set to reasonable defaults as appropriate.");
     childWindow = frame.contentWindow;
-    // Have expected results assume that the frame hasn't been closed (=> window.closed = false.)
-    collectProperties(document.getElementById("src_frame").contentWindow, false);
+    collectProperties(document.getElementById("src_frame").contentWindow);
     frame.onload = testFrameLoaded;
     frame.src = 'data:text/plain,';
 }

@@ -1,17 +1,17 @@
-Tests property access on a cached DOMWindow after the associated frame is no longer in a web page. Test should not crash and properties should be set to sane defaults.
+Tests property access on a cached DOMWindow after the associated frame is no longer in a web page. Test should not crash and properties should be set to reasonable defaults as appropriate.
 
 On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
 
-PASS childWindow.closed is true
+FAIL childWindow.closed should be false. Was true.
 PASS childWindow.crossOriginIsolated is false
 PASS childWindow.defaultStatus is ''
 PASS childWindow.defaultstatus is ''
 PASS childWindow.devicePixelRatio is 0
 PASS childWindow.innerHeight is 0
 PASS childWindow.innerWidth is 0
-PASS childWindow.isSecureContext is false
+PASS childWindow.isSecureContext is true
 PASS childWindow.length is 0
-FAIL childWindow.location.href should be about:blank (of type string). Was undefined (of type undefined).
+PASS childWindow.location.href is undefined
 PASS childWindow.locationbar.visible is false
 PASS childWindow.menubar.visible is false
 PASS childWindow.name is ''

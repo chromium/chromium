@@ -28,7 +28,9 @@ PASS oldChildWindow.name is newChildWindow.name
 PASS oldChildWindow.navigator.appCodeName is newChildWindow.navigator.appCodeName
 PASS oldChildWindow.navigator.appName is newChildWindow.navigator.appName
 PASS oldChildWindow.navigator.appVersion is newChildWindow.navigator.appVersion
+PASS oldChildWindow.navigator.connection.effectiveType is newChildWindow.navigator.connection.effectiveType
 PASS oldChildWindow.navigator.connection.onchange is newChildWindow.navigator.connection.onchange
+PASS oldChildWindow.navigator.connection.rtt is newChildWindow.navigator.connection.rtt
 PASS oldChildWindow.navigator.connection.saveData is newChildWindow.navigator.connection.saveData
 PASS oldChildWindow.navigator.cookieEnabled is newChildWindow.navigator.cookieEnabled
 PASS oldChildWindow.navigator.deviceMemory is newChildWindow.navigator.deviceMemory

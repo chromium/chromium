@@ -1847,7 +1847,7 @@ External* LocalDOMWindow::external() {
 }
 
 bool LocalDOMWindow::isSecureContext() const {
-  return GetFrame() && IsSecureContext();
+  return IsSecureContext();
 }
 
 void LocalDOMWindow::ClearIsolatedWorldCSPForTesting(int32_t world_id) {
