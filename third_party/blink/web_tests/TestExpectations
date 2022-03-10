@@ -7674,3 +7674,6 @@ crbug.com/1300352 http/tests/inspector-protocol/network/blocked-cookie-not-on-pa
 
 crbug.com/1298836 external/wpt/fetch/api/basic/response-null-body.any.* [ Failure Pass ]
 crbug.com/1298836 virtual/plz-dedicated-worker/external/wpt/fetch/api/basic/response-null-body.any.* [ Failure Pass ]
+
+# Sheriff 2022-03-10
+crbug.com/1304956 storage/indexeddb/dont-wedge.html [ Failure Pass ]
