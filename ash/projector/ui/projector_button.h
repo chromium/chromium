@@ -18,6 +18,7 @@ namespace ash {
 class ASH_EXPORT ProjectorButton : public views::ToggleImageButton {
  public:
   const int kProjectorButtonSize = 32;
+  const int kProjectorButtonBorderSize = 1;
 
   ProjectorButton(views::Button::PressedCallback callback,
                   const std::u16string& name);

@@ -60,6 +60,9 @@ class ProjectorAnnotationTray : public TrayBackgroundView {
 
   // The bubble that appears after clicking the annotation tools tray button.
   std::unique_ptr<TrayBubbleWrapper> bubble_;
+
+  // The last selected pen color.
+  SkColor current_pen_color_;
 };
 
 }  // namespace ash

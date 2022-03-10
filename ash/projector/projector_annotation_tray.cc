@@ -34,13 +34,13 @@ namespace {
 constexpr int kPaddingBetweenBottomAndLastTrayItem = 4;
 
 // Width of the bubble itself (dp).
-constexpr int kBubbleWidth = 288;
+constexpr int kBubbleWidth = 242;
 
 // Insets for the views (dp).
-constexpr gfx::Insets kPenViewPadding(4, 24, 0, 24);
+constexpr gfx::Insets kPenViewPadding(4, 16, 0, 16);
 
 // Spacing between buttons (dp).
-constexpr int kButtonsPadding = 20;
+constexpr int kButtonsPadding = 12;
 
 // Size of menu rows.
 constexpr int kMenuRowHeight = 48;
@@ -95,6 +95,8 @@ ProjectorAnnotationTray::ProjectorAnnotationTray(Shelf* shelf)
   image_view_->SetHorizontalAlignment(views::ImageView::Alignment::kCenter);
   image_view_->SetVerticalAlignment(views::ImageView::Alignment::kCenter);
   image_view_->SetPreferredSize(gfx::Size(kTrayItemSize, kTrayItemSize));
+  // The default pen color upon creation is red.
+  current_pen_color_ = kRedPenColor;
 }
 
 ProjectorAnnotationTray::~ProjectorAnnotationTray() = default;
@@ -192,14 +194,14 @@ void ProjectorAnnotationTray::ShowBubble() {
     box_layout->set_minimum_cross_axis_size(kMenuRowHeight);
     marker_view_container->SetLayoutManager(std::move(box_layout));
 
-    // TODO(b/201664243): Only draw outer circle on hover or selection.
     for (SkColor color : kPenColors) {
-      marker_view_container->AddChildView(
+      auto* colorButton = marker_view_container->AddChildView(
           std::make_unique<ProjectorColorButton>(
               base::BindRepeating(&ProjectorAnnotationTray::OnPenColorPressed,
                                   base::Unretained(this), color),
               color, kColorButtonColorViewSize, kColorButtonViewRadius,
               l10n_util::GetStringUTF16(GetAccessibleNameForColor(color))));
+      colorButton->SetToggled(current_pen_color_ == color);
     }
     setup_layered_view(marker_view_container);
   }
@@ -266,6 +268,7 @@ void ProjectorAnnotationTray::OnPenColorPressed(SkColor color) {
   AnnotatorTool tool;
   tool.color = color;
   projector_controller->SetAnnotatorTool(tool);
+  current_pen_color_ = color;
   CloseBubble();
   UpdateIcon();
 }
