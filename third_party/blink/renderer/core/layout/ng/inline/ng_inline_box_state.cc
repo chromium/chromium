@@ -203,6 +203,7 @@ NGInlineBoxState* NGInlineLayoutStateStack::OnBeginPlaceItems(
     FontBaseline baseline_type,
     bool line_height_quirk,
     NGLogicalLineItems* line_box) {
+  has_block_in_inline_ = false;
   is_svg_text_ = node.IsSvgText();
   if (stack_.IsEmpty()) {
     // For the first line, push a box state for the line itself.
@@ -343,6 +344,9 @@ void NGInlineLayoutStateStack::EndBoxState(const NGConstraintSpace& space,
 
 void NGInlineLayoutStateStack::OnBlockInInline(const FontHeight& metrics,
                                                NGLogicalLineItems* line_box) {
+  DCHECK(!has_block_in_inline_);
+  has_block_in_inline_ = true;
+
   for (NGInlineBoxState& box : stack_)
     box.metrics = metrics;
 
@@ -877,6 +881,13 @@ NGInlineLayoutStateStack::PositionPending
 NGInlineLayoutStateStack::ApplyBaselineShift(NGInlineBoxState* box,
                                              NGLogicalLineItems* line_box,
                                              FontBaseline baseline_type) {
+  // The `vertical-align` property should not apply to the line wrapper for
+  // block-in-inline.
+  if (UNLIKELY(has_block_in_inline_)) {
+    DCHECK(box->pending_descendants.IsEmpty());
+    return kPositionNotPending;
+  }
+
   // Some 'vertical-align' values require the size of their parents. Align all
   // such descendant boxes that require the size of this box; they are queued in
   // |pending_descendants|.
