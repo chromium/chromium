@@ -177,16 +177,24 @@ class AttributionSimulatorInputParser {
     url::Origin reporting_origin = ParseOrigin(source, "reporting_origin");
     absl::optional<AttributionSourceType> source_type = ParseSourceType(source);
 
-    const base::Value* cfg = ParseRegistrationConfig(source);
-    if (!cfg)
-      return;
+    uint64_t source_event_id = 0;
+    url::Origin destination_origin;
+    absl::optional<uint64_t> debug_key;
+    int64_t priority = 0;
+    base::TimeDelta expiry;
+    AttributionFilterData filter_data;
 
-    uint64_t source_event_id = ParseRequiredUint64(*cfg, "source_event_id");
-    url::Origin destination_origin = ParseOrigin(*cfg, "destination");
-    absl::optional<uint64_t> debug_key = ParseOptionalUint64(*cfg, "debug_key");
-    int64_t priority = ParseOptionalInt64(*cfg, "priority").value_or(0);
-    base::TimeDelta expiry = ParseSourceExpiry(*cfg).value_or(base::Days(30));
-    AttributionFilterData filter_data = ParseFilterData(*cfg, "filter_data");
+    if (!ParseRegistrationConfig(
+            source, base::BindLambdaForTesting([&](const base::Value& cfg) {
+              source_event_id = ParseRequiredUint64(cfg, "source_event_id");
+              destination_origin = ParseOrigin(cfg, "destination");
+              debug_key = ParseOptionalUint64(cfg, "debug_key");
+              priority = ParseOptionalInt64(cfg, "priority").value_or(0);
+              expiry = ParseSourceExpiry(cfg).value_or(base::Days(30));
+              filter_data = ParseFilterData(cfg, "filter_data");
+            }))) {
+      return;
+    }
 
     // TODO(linnan): Support aggregatable reports in the simulator.
 
@@ -212,18 +220,25 @@ class AttributionSimulatorInputParser {
     url::Origin reporting_origin = ParseOrigin(trigger, "reporting_origin");
     net::SchemefulSite destination(ParseOrigin(trigger, "destination"));
 
-    const base::Value* cfg = ParseRegistrationConfig(trigger);
-    if (!cfg)
-      return;
+    uint64_t trigger_data = 0;
+    uint64_t event_source_trigger_data = 0;
+    absl::optional<uint64_t> debug_key;
+    absl::optional<uint64_t> dedup_key;
+    int64_t priority = 0;
 
-    uint64_t trigger_data =
-        ParseOptionalUint64(*cfg, "trigger_data").value_or(0);
-    uint64_t event_source_trigger_data =
-        ParseOptionalUint64(*cfg, "event_source_trigger_data").value_or(0);
-    absl::optional<uint64_t> debug_key = ParseOptionalUint64(*cfg, "debug_key");
-    absl::optional<uint64_t> dedup_key =
-        ParseOptionalUint64(*cfg, "deduplication_key");
-    int64_t priority = ParseOptionalInt64(*cfg, "priority").value_or(0);
+    if (!ParseRegistrationConfig(
+            trigger, base::BindLambdaForTesting([&](const base::Value& cfg) {
+              trigger_data =
+                  ParseOptionalUint64(cfg, "trigger_data").value_or(0);
+              event_source_trigger_data =
+                  ParseOptionalUint64(cfg, "event_source_trigger_data")
+                      .value_or(0);
+              debug_key = ParseOptionalUint64(cfg, "debug_key");
+              dedup_key = ParseOptionalUint64(cfg, "deduplication_key");
+              priority = ParseOptionalInt64(cfg, "priority").value_or(0);
+            }))) {
+      return;
+    }
 
     if (has_error_)
       return;
@@ -335,7 +350,9 @@ class AttributionSimulatorInputParser {
     return source_type;
   }
 
-  const base::Value* ParseRegistrationConfig(const base::Value& dict) {
+  bool ParseRegistrationConfig(
+      base::Value& dict,
+      base::OnceCallback<void(const base::Value&)> callback) {
     static constexpr char kKey[] = "registration_config";
 
     auto context = PushContext(kKey);
@@ -343,13 +360,14 @@ class AttributionSimulatorInputParser {
     const base::Value* cfg = dict.FindKey(kKey);
     if (!cfg) {
       *Error() << "must be present";
-      return nullptr;
+      return false;
     }
 
     if (!EnsureDictionary(*cfg))
-      return nullptr;
+      return false;
 
-    return cfg;
+    std::move(callback).Run(*cfg);
+    return true;
   }
 
   AttributionFilterData ParseFilterData(const base::Value& dict,

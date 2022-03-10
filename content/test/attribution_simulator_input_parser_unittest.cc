@@ -394,7 +394,7 @@ const ParseErrorTestCase kParseErrorTestCases[] = {
         }]})json",
     },
     {
-        R"(["sources"][0]["source_event_id"]: must be a uint64 formatted)",
+        R"(["sources"][0]["registration_config"]["source_event_id"]: must be a uint64 formatted)",
         R"json({"sources": [{
           "source_type": "navigation",
           "source_time": 1643235574,
@@ -406,7 +406,7 @@ const ParseErrorTestCase kParseErrorTestCases[] = {
         }]})json",
     },
     {
-        R"(["sources"][0]["destination"]: must be a valid origin)",
+        R"(["sources"][0]["registration_config"]["destination"]: must be a valid origin)",
         R"json({"sources": [{
           "source_type": "navigation",
           "source_time": 1643235574,
@@ -431,7 +431,7 @@ const ParseErrorTestCase kParseErrorTestCases[] = {
         }]})json",
     },
     {
-        R"(["sources"][0]["expiry"]: must be a positive number of)",
+        R"(["sources"][0]["registration_config"]["expiry"]: must be a positive number of)",
         R"json({"sources": [{
           "source_type": "navigation",
           "source_time": 1643235574,
@@ -445,7 +445,7 @@ const ParseErrorTestCase kParseErrorTestCases[] = {
         }]})json",
     },
     {
-        R"(["sources"][0]["priority"]: must be an int64)",
+        R"(["sources"][0]["registration_config"]["priority"]: must be an int64)",
         R"json({"sources": [{
           "source_type": "navigation",
           "source_time": 1643235574,
@@ -459,7 +459,7 @@ const ParseErrorTestCase kParseErrorTestCases[] = {
         }]})json",
     },
     {
-        R"(["sources"][0]["source_event_id"]: must be a uint64 formatted)",
+        R"(["sources"][0]["registration_config"]["source_event_id"]: must be a uint64 formatted)",
         R"json({"sources": [{
           "source_type": "navigation",
           "source_time": 1643235574,
@@ -472,7 +472,7 @@ const ParseErrorTestCase kParseErrorTestCases[] = {
         }]})json",
     },
     {
-        R"(["sources"][0]["filter_data"]: must be a dictionary)",
+        R"(["sources"][0]["registration_config"]["filter_data"]: must be a dictionary)",
         R"json({"sources": [{
           "source_type": "navigation",
           "source_time": 1643235574,
@@ -486,7 +486,7 @@ const ParseErrorTestCase kParseErrorTestCases[] = {
         }]})json",
     },
     {
-        R"(["sources"][0]["filter_data"]["a"]: must be a list)",
+        R"(["sources"][0]["registration_config"]["filter_data"]["a"]: must be a list)",
         R"json({"sources": [{
           "source_type": "navigation",
           "source_time": 1643235574,
@@ -502,7 +502,7 @@ const ParseErrorTestCase kParseErrorTestCases[] = {
         }]})json",
     },
     {
-        R"(["sources"][0]["filter_data"]["a"][0]: must be a string)",
+        R"(["sources"][0]["registration_config"]["filter_data"]["a"][0]: must be a string)",
         R"json({"sources": [{
           "source_type": "navigation",
           "source_time": 1643235574,
