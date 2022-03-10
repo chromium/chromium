@@ -814,6 +814,32 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
+<histogram
+    name="Autofill.CreditCardMessage.DialogPrompt{SaveSituation}{DialogInteraction}"
+    enum="AutofillCreditCardMessageDialogPrompt" expires_after="M110">
+  <owner>lazzzis@google.com</owner>
+  <owner>jsaul@google.com</owner>
+  <owner>chrome-autofill-alerts@google.com</owner>
+  <summary>
+    The relative frequency with which users accept, deny, or ignore the Autofill
+    credit card message prompt when card is saved to server and users see the
+    dialog prompt followed by the Message UI. Message prompt is an alternative
+    UI to info bar prompt.
+  </summary>
+  <token key="SaveSituation">
+    <variant name=".ConfirmInfo" summary="confirm card info"/>
+    <variant name=".RequestingCardholderName"
+        summary="explicitly requesting cardholder name"/>
+    <variant name=".RequestingExpirationDate"
+        summary="explicitly requesting expiration date"/>
+  </token>
+  <token key="DialogInteraction">
+    <variant name="" summary="aggregated across all situations"/>
+    <variant name=".DidClickLinks"
+        summary="user clicked on links in the dialog"/>
+  </token>
+</histogram>
+
 <histogram name="Autofill.CreditCardMessage.{SaveDestination}{SaveSituation}"
     enum="AutofillCreditCardMessage" expires_after="M110">
   <owner>lazzzis@google.com</owner>
