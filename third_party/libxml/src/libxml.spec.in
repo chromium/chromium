@@ -6,7 +6,7 @@ Version: @VERSION@
 Release: 1%{?dist}%{?extra_release}
 License: MIT
 Group: Development/Libraries
-Source: ftp://xmlsoft.org/libxml2/libxml2-%{version}.tar.gz
+Source: https://download.gnome.org/sources/libxml2/@LIBXML_MAJOR_VERSION@.@LIBXML_MINOR_VERSION@/libxml2-%{version}.tar.xz
 BuildRoot: %{_tmppath}/%{name}-%{version}-root
 BuildRequires: python-devel
 %if 0%{?with_python3}
@@ -15,7 +15,7 @@ BuildRequires: python3-devel
 BuildRequires: zlib-devel
 BuildRequires: pkgconfig
 BuildRequires: xz-devel
-URL: http://xmlsoft.org/
+URL: https://gitlab.gnome.org/GNOME/libxml2
 
 %description
 This library allows to manipulate XML files. It includes support
@@ -141,7 +141,7 @@ rm -fr %{buildroot}
 %files
 %defattr(-, root, root)
 
-%doc AUTHORS NEWS README Copyright TODO
+%doc NEWS README.md Copyright TODO
 %doc %{_mandir}/man1/xmllint.1*
 %doc %{_mandir}/man1/xmlcatalog.1*
 %doc %{_mandir}/man3/libxml.3*
@@ -154,7 +154,7 @@ rm -fr %{buildroot}
 %defattr(-, root, root)
 
 %doc %{_mandir}/man1/xml2-config.1*
-%doc AUTHORS NEWS README Copyright
+%doc NEWS README.md Copyright
 %doc doc/*.html doc/html doc/*.gif doc/*.png
 %doc doc/tutorial doc/libxml2-api.xml.gz
 %doc doc/examples
@@ -205,5 +205,5 @@ rm -fr %{buildroot}
 
 %changelog
 * @RELDATE@ Daniel Veillard <veillard@redhat.com>
-- upstream release @VERSION@ see http://xmlsoft.org/news.html
+- upstream release @VERSION@
 

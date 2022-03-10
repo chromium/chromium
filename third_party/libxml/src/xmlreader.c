@@ -20,13 +20,8 @@
 #ifdef LIBXML_READER_ENABLED
 #include <string.h> /* for memset() only ! */
 #include <stdarg.h>
-
-#ifdef HAVE_CTYPE_H
 #include <ctype.h>
-#endif
-#ifdef HAVE_STDLIB_H
 #include <stdlib.h>
-#endif
 
 #include <libxml/xmlmemory.h>
 #include <libxml/xmlIO.h>
@@ -229,116 +224,6 @@ static void xmlTextReaderFreeNode(xmlTextReaderPtr reader, xmlNodePtr cur);
 static void xmlTextReaderFreeNodeList(xmlTextReaderPtr reader, xmlNodePtr cur);
 
 /**
- * xmlFreeID:
- * @not:  A id
- *
- * Deallocate the memory used by an id definition
- */
-static void
-xmlFreeID(xmlIDPtr id) {
-    xmlDictPtr dict = NULL;
-
-    if (id == NULL) return;
-
-    if (id->doc != NULL)
-        dict = id->doc->dict;
-
-    if (id->value != NULL)
-	DICT_FREE(id->value)
-    if (id->name != NULL)
-	DICT_FREE(id->name)
-    xmlFree(id);
-}
-
-/**
- * xmlTextReaderRemoveID:
- * @doc:  the document
- * @attr:  the attribute
- *
- * Remove the given attribute from the ID table maintained internally.
- *
- * Returns -1 if the lookup failed and 0 otherwise
- */
-static int
-xmlTextReaderRemoveID(xmlDocPtr doc, xmlAttrPtr attr) {
-    xmlIDTablePtr table;
-    xmlIDPtr id;
-    xmlChar *ID;
-
-    if (doc == NULL) return(-1);
-    if (attr == NULL) return(-1);
-    table = (xmlIDTablePtr) doc->ids;
-    if (table == NULL)
-        return(-1);
-
-    ID = xmlNodeListGetString(doc, attr->children, 1);
-    if (ID == NULL)
-	return(-1);
-    id = xmlHashLookup(table, ID);
-    xmlFree(ID);
-    if (id == NULL || id->attr != attr) {
-	return(-1);
-    }
-    id->name = attr->name;
-    attr->name = NULL;
-    id->attr = NULL;
-    return(0);
-}
-
-/**
- * xmlTextReaderWalkRemoveRef:
- * @data:  Contents of current link
- * @user:  Value supplied by the user
- *
- * Returns 0 to abort the walk or 1 to continue
- */
-static int
-xmlTextReaderWalkRemoveRef(const void *data, void *user)
-{
-    xmlRefPtr ref = (xmlRefPtr)data;
-    xmlAttrPtr attr = (xmlAttrPtr)user;
-
-    if (ref->attr == attr) { /* Matched: remove and terminate walk */
-        ref->name = xmlStrdup(attr->name);
-        ref->attr = NULL;
-        return 0;
-    }
-    return 1;
-}
-
-/**
- * xmlTextReaderRemoveRef:
- * @doc:  the document
- * @attr:  the attribute
- *
- * Remove the given attribute from the Ref table maintained internally.
- *
- * Returns -1 if the lookup failed and 0 otherwise
- */
-static int
-xmlTextReaderRemoveRef(xmlDocPtr doc, xmlAttrPtr attr) {
-    xmlListPtr ref_list;
-    xmlRefTablePtr table;
-    xmlChar *ID;
-
-    if (doc == NULL) return(-1);
-    if (attr == NULL) return(-1);
-    table = (xmlRefTablePtr) doc->refs;
-    if (table == NULL)
-        return(-1);
-
-    ID = xmlNodeListGetString(doc, attr->children, 1);
-    if (ID == NULL)
-        return(-1);
-    ref_list = xmlHashLookup(table, ID);
-    xmlFree(ID);
-    if(ref_list == NULL)
-        return (-1);
-    xmlListWalk(ref_list, xmlTextReaderWalkRemoveRef, attr);
-    return(0);
-}
-
-/**
  * xmlTextReaderFreeProp:
  * @reader:  the xmlTextReaderPtr used
  * @cur:  the node
@@ -358,15 +243,6 @@ xmlTextReaderFreeProp(xmlTextReaderPtr reader, xmlAttrPtr cur) {
     if ((__xmlRegisterCallbacks) && (xmlDeregisterNodeDefaultValue))
 	xmlDeregisterNodeDefaultValue((xmlNodePtr) cur);
 
-    /* Check for ID removal -> leading to invalid references ! */
-    if ((cur->parent != NULL) && (cur->parent->doc != NULL)) {
-        if (xmlIsID(cur->parent->doc, cur->parent, cur))
-	    xmlTextReaderRemoveID(cur->parent->doc, cur);
-	if (((cur->parent->doc->intSubset != NULL) ||
-	     (cur->parent->doc->extSubset != NULL)) &&
-            (xmlIsRef(cur->parent->doc, cur->parent, cur)))
-            xmlTextReaderRemoveRef(cur->parent->doc, cur);
-    }
     if (cur->children != NULL)
         xmlTextReaderFreeNodeList(reader, cur->children);
 
@@ -570,22 +446,6 @@ xmlTextReaderFreeNode(xmlTextReaderPtr reader, xmlNodePtr cur) {
     }
 }
 
-static void
-xmlTextReaderFreeIDTableEntry(void *id, const xmlChar *name ATTRIBUTE_UNUSED) {
-    xmlFreeID((xmlIDPtr) id);
-}
-
-/**
- * xmlTextReaderFreeIDTable:
- * @table:  An id table
- *
- * Deallocate the memory used by an ID hash table.
- */
-static void
-xmlTextReaderFreeIDTable(xmlIDTablePtr table) {
-    xmlHashFree(table, xmlTextReaderFreeIDTableEntry);
-}
-
 /**
  * xmlTextReaderFreeDoc:
  * @reader:  the xmlTextReaderPtr used
@@ -605,7 +465,7 @@ xmlTextReaderFreeDoc(xmlTextReaderPtr reader, xmlDocPtr cur) {
     /*
      * Do this before freeing the children list to avoid ID lookups
      */
-    if (cur->ids != NULL) xmlTextReaderFreeIDTable((xmlIDTablePtr) cur->ids);
+    if (cur->ids != NULL) xmlFreeIDTable((xmlIDTablePtr) cur->ids);
     cur->ids = NULL;
     if (cur->refs != NULL) xmlFreeRefTable((xmlRefTablePtr) cur->refs);
     cur->refs = NULL;
@@ -6028,6 +5888,5 @@ main(int argc, char **argv)
 }
 #endif
 #endif /* NOT_USED_YET */
-#define bottom_xmlreader
-#include "elfgcchack.h"
+
 #endif /* LIBXML_READER_ENABLED */

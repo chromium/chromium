@@ -6,7 +6,6 @@
 
 #ifdef TESTING
 #define STANDALONE
-#define HAVE_STDLIB_H
 #define HAVE_UNISTD_H
 #define HAVE_SYS_SOCKET_H
 #define HAVE_NETINET_IN_H
@@ -19,10 +18,9 @@
 
 #ifdef LIBXML_FTP_ENABLED
 #include <string.h>
-
-#ifdef HAVE_STDLIB_H
 #include <stdlib.h>
-#endif
+#include <errno.h>
+
 #ifdef HAVE_UNISTD_H
 #include <unistd.h>
 #endif
@@ -41,9 +39,6 @@
 #ifdef HAVE_FCNTL_H
 #include <fcntl.h>
 #endif
-#ifdef HAVE_ERRNO_H
-#include <errno.h>
-#endif
 #ifdef HAVE_SYS_TIME_H
 #include <sys/time.h>
 #endif
@@ -55,9 +50,6 @@
 #endif
 #ifdef HAVE_SYS_TYPES_H
 #include <sys/types.h>
-#endif
-#ifdef HAVE_STRINGS_H
-#include <strings.h>
 #endif
 
 #include <libxml/xmlmemory.h>
@@ -75,7 +67,7 @@
 #endif
 
 
-#if defined(_WIN32) && !defined(__CYGWIN__)
+#if defined(_WIN32)
 #include <wsockcompat.h>
 #endif
 
@@ -2114,5 +2106,3 @@ int main(int argc, char **argv) {
 }
 #endif /* STANDALONE */
 #endif /* LIBXML_FTP_ENABLED */
-#define bottom_nanoftp
-#include "elfgcchack.h"

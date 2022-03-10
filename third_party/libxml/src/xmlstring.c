@@ -424,13 +424,7 @@ xmlStrsub(const xmlChar *str, int start, int len) {
 
 int
 xmlStrlen(const xmlChar *str) {
-    size_t len = 0;
-
-    if (str == NULL) return(0);
-    while (*str != 0) { /* non input consuming */
-        str++;
-        len++;
-    }
+    size_t len = str ? strlen((const char *)str) : 0;
     return(len > INT_MAX ? 0 : len);
 }
 
@@ -1051,5 +1045,3 @@ xmlEscapeFormatString(xmlChar **msg)
     return *msg;
 }
 
-#define bottom_xmlstring
-#include "elfgcchack.h"

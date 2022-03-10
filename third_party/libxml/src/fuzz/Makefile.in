@@ -107,11 +107,10 @@ am_genSeed_OBJECTS = genSeed.$(OBJEXT) fuzz.$(OBJEXT)
 genSeed_OBJECTS = $(am_genSeed_OBJECTS)
 genSeed_LDADD = $(LDADD)
 am__DEPENDENCIES_1 =
-genSeed_DEPENDENCIES = $(am__DEPENDENCIES_1) \
-	$(top_builddir)/libxml2.la $(am__DEPENDENCIES_1) \
+genSeed_DEPENDENCIES = $(top_builddir)/libxml2.la \
 	$(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1) \
 	$(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1) \
-	$(am__DEPENDENCIES_1)
+	$(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1)
 AM_V_lt = $(am__v_lt_@AM_V@)
 am__v_lt_ = $(am__v_lt_@AM_DEFAULT_V@)
 am__v_lt_0 = --silent
@@ -119,68 +118,67 @@ am__v_lt_1 =
 am_html_OBJECTS = html.$(OBJEXT) fuzz.$(OBJEXT)
 html_OBJECTS = $(am_html_OBJECTS)
 html_LDADD = $(LDADD)
-html_DEPENDENCIES = $(am__DEPENDENCIES_1) $(top_builddir)/libxml2.la \
+html_DEPENDENCIES = $(top_builddir)/libxml2.la $(am__DEPENDENCIES_1) \
 	$(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1) \
 	$(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1) \
-	$(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1)
+	$(am__DEPENDENCIES_1)
 html_LINK = $(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) \
 	$(LIBTOOLFLAGS) --mode=link $(CCLD) $(AM_CFLAGS) $(CFLAGS) \
 	$(html_LDFLAGS) $(LDFLAGS) -o $@
 am_regexp_OBJECTS = regexp.$(OBJEXT) fuzz.$(OBJEXT)
 regexp_OBJECTS = $(am_regexp_OBJECTS)
 regexp_LDADD = $(LDADD)
-regexp_DEPENDENCIES = $(am__DEPENDENCIES_1) $(top_builddir)/libxml2.la \
+regexp_DEPENDENCIES = $(top_builddir)/libxml2.la $(am__DEPENDENCIES_1) \
 	$(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1) \
 	$(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1) \
-	$(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1)
+	$(am__DEPENDENCIES_1)
 regexp_LINK = $(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) \
 	$(LIBTOOLFLAGS) --mode=link $(CCLD) $(AM_CFLAGS) $(CFLAGS) \
 	$(regexp_LDFLAGS) $(LDFLAGS) -o $@
 am_schema_OBJECTS = schema.$(OBJEXT) fuzz.$(OBJEXT)
 schema_OBJECTS = $(am_schema_OBJECTS)
 schema_LDADD = $(LDADD)
-schema_DEPENDENCIES = $(am__DEPENDENCIES_1) $(top_builddir)/libxml2.la \
+schema_DEPENDENCIES = $(top_builddir)/libxml2.la $(am__DEPENDENCIES_1) \
 	$(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1) \
 	$(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1) \
-	$(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1)
+	$(am__DEPENDENCIES_1)
 schema_LINK = $(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) \
 	$(LIBTOOLFLAGS) --mode=link $(CCLD) $(AM_CFLAGS) $(CFLAGS) \
 	$(schema_LDFLAGS) $(LDFLAGS) -o $@
 am_testFuzzer_OBJECTS = testFuzzer.$(OBJEXT) fuzz.$(OBJEXT)
 testFuzzer_OBJECTS = $(am_testFuzzer_OBJECTS)
 testFuzzer_LDADD = $(LDADD)
-testFuzzer_DEPENDENCIES = $(am__DEPENDENCIES_1) \
-	$(top_builddir)/libxml2.la $(am__DEPENDENCIES_1) \
-	$(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1) \
-	$(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1) \
-	$(am__DEPENDENCIES_1)
-am_uri_OBJECTS = uri.$(OBJEXT) fuzz.$(OBJEXT)
-uri_OBJECTS = $(am_uri_OBJECTS)
-uri_LDADD = $(LDADD)
-uri_DEPENDENCIES = $(am__DEPENDENCIES_1) $(top_builddir)/libxml2.la \
+testFuzzer_DEPENDENCIES = $(top_builddir)/libxml2.la \
 	$(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1) \
 	$(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1) \
 	$(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1)
+am_uri_OBJECTS = uri.$(OBJEXT) fuzz.$(OBJEXT)
+uri_OBJECTS = $(am_uri_OBJECTS)
+uri_LDADD = $(LDADD)
+uri_DEPENDENCIES = $(top_builddir)/libxml2.la $(am__DEPENDENCIES_1) \
+	$(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1) \
+	$(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1) \
+	$(am__DEPENDENCIES_1)
 uri_LINK = $(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) \
 	$(LIBTOOLFLAGS) --mode=link $(CCLD) $(AM_CFLAGS) $(CFLAGS) \
 	$(uri_LDFLAGS) $(LDFLAGS) -o $@
 am_xml_OBJECTS = xml.$(OBJEXT) fuzz.$(OBJEXT)
 xml_OBJECTS = $(am_xml_OBJECTS)
 xml_LDADD = $(LDADD)
-xml_DEPENDENCIES = $(am__DEPENDENCIES_1) $(top_builddir)/libxml2.la \
+xml_DEPENDENCIES = $(top_builddir)/libxml2.la $(am__DEPENDENCIES_1) \
 	$(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1) \
 	$(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1) \
-	$(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1)
+	$(am__DEPENDENCIES_1)
 xml_LINK = $(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) \
 	$(LIBTOOLFLAGS) --mode=link $(CCLD) $(AM_CFLAGS) $(CFLAGS) \
 	$(xml_LDFLAGS) $(LDFLAGS) -o $@
 am_xpath_OBJECTS = xpath.$(OBJEXT) fuzz.$(OBJEXT)
 xpath_OBJECTS = $(am_xpath_OBJECTS)
 xpath_LDADD = $(LDADD)
-xpath_DEPENDENCIES = $(am__DEPENDENCIES_1) $(top_builddir)/libxml2.la \
+xpath_DEPENDENCIES = $(top_builddir)/libxml2.la $(am__DEPENDENCIES_1) \
 	$(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1) \
 	$(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1) \
-	$(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1)
+	$(am__DEPENDENCIES_1)
 xpath_LINK = $(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) \
 	$(LIBTOOLFLAGS) --mode=link $(CCLD) $(AM_CFLAGS) $(CFLAGS) \
 	$(xpath_LDFLAGS) $(LDFLAGS) -o $@
@@ -359,7 +357,6 @@ RELDATE = @RELDATE@
 SED = @SED@
 SET_MAKE = @SET_MAKE@
 SHELL = @SHELL@
-STATIC_BINARIES = @STATIC_BINARIES@
 STRIP = @STRIP@
 TAR = @TAR@
 TEST_C14N = @TEST_C14N@
@@ -490,12 +487,12 @@ top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
 AUTOMAKE_OPTIONS = -Wno-syntax
 EXTRA_DIST = html.dict regexp.dict schema.dict xml.dict xpath.dict \
-	     seed/uri seed/regexp fuzz.h
+	     static_seed/uri static_seed/regexp fuzz.h
 
 CLEANFILES = $(EXTRA_PROGRAMS)
-AM_CPPFLAGS = -I$(top_srcdir)/include
+AM_CPPFLAGS = -I$(top_srcdir)/include -I$(top_builddir)/include
 DEPENDENCIES = $(top_builddir)/libxml2.la
-LDADD = $(STATIC_BINARIES) $(top_builddir)/libxml2.la $(THREAD_LIBS) $(Z_LIBS) $(LZMA_LIBS) $(ICONV_LIBS) $(M_LIBS) $(WIN32_EXTRA_LIBADD)
+LDADD = $(top_builddir)/libxml2.la $(THREAD_LIBS) $(Z_LIBS) $(LZMA_LIBS) $(ICONV_LIBS) $(M_LIBS) $(WIN32_EXTRA_LIBADD)
 XML_MAX_LEN = 80000
 # Single quotes to avoid wildcard expansion by the shell
 XML_SEED_CORPUS_SRC = \
@@ -517,12 +514,8 @@ xml_SOURCES = xml.c fuzz.c
 xml_LDFLAGS = -fsanitize=fuzzer
 html_SOURCES = html.c fuzz.c
 html_LDFLAGS = -fsanitize=fuzzer
-
-# Regexp fuzzer
 regexp_SOURCES = regexp.c fuzz.c
 regexp_LDFLAGS = -fsanitize=fuzzer
-
-# URI fuzzer
 uri_SOURCES = uri.c fuzz.c
 uri_LDFLAGS = -fsanitize=fuzzer
 schema_SOURCES = schema.c fuzz.c
@@ -775,7 +768,7 @@ maintainer-clean-generic:
 	@echo "it deletes files that may require special tools to rebuild."
 clean: clean-am
 
-clean-am: clean-checkPROGRAMS clean-generic clean-libtool \
+clean-am: clean-checkPROGRAMS clean-generic clean-libtool clean-local \
 	mostlyclean-am
 
 distclean: distclean-am
@@ -861,15 +854,15 @@ uninstall-am:
 .MAKE: check-am install-am install-strip
 
 .PHONY: CTAGS GTAGS TAGS all all-am am--depfiles check check-am clean \
-	clean-checkPROGRAMS clean-generic clean-libtool cscopelist-am \
-	ctags ctags-am distclean distclean-compile distclean-generic \
-	distclean-libtool distclean-tags distdir dvi dvi-am html \
-	html-am info info-am install install-am install-data \
-	install-data-am install-dvi install-dvi-am install-exec \
-	install-exec-am install-html install-html-am install-info \
-	install-info-am install-man install-pdf install-pdf-am \
-	install-ps install-ps-am install-strip installcheck \
-	installcheck-am installdirs maintainer-clean \
+	clean-checkPROGRAMS clean-generic clean-libtool clean-local \
+	cscopelist-am ctags ctags-am distclean distclean-compile \
+	distclean-generic distclean-libtool distclean-tags distdir dvi \
+	dvi-am html html-am info info-am install install-am \
+	install-data install-data-am install-dvi install-dvi-am \
+	install-exec install-exec-am install-html install-html-am \
+	install-info install-info-am install-man install-pdf \
+	install-pdf-am install-ps install-ps-am install-strip \
+	installcheck installcheck-am installdirs maintainer-clean \
 	maintainer-clean-generic mostlyclean mostlyclean-compile \
 	mostlyclean-generic mostlyclean-libtool pdf pdf-am ps ps-am \
 	tags tags-am uninstall uninstall-am
@@ -879,23 +872,23 @@ uninstall-am:
 
 .PHONY: tests corpus clean-corpus
 
-corpus: seed/html.stamp seed/schema.stamp seed/xml.stamp seed/xpath.stamp
+corpus: seed/html.stamp seed/regexp.stamp seed/schema.stamp seed/uri.stamp \
+    seed/xml.stamp seed/xpath.stamp
 
 tests: testFuzzer$(EXEEXT) corpus
 	@echo "## Running fuzzer tests"
 	@./testFuzzer$(EXEEXT)
 
 clean-corpus:
-	rm -rf seed/html.stamp seed/html
-	rm -rf seed/schema.stamp seed/schema
-	rm -rf seed/xml.stamp seed/xml
-	rm -rf seed/xpath.stamp seed/xpath
+	rm -rf seed
+
+clean-local: clean-corpus
 
 # XML fuzzer
 
 seed/xml.stamp: genSeed$(EXEEXT)
 	@mkdir -p seed/xml
-	@./genSeed$(EXEEXT) xml $(XML_SEED_CORPUS_SRC)
+	./genSeed$(EXEEXT) xml $(XML_SEED_CORPUS_SRC)
 	@touch seed/xml.stamp
 
 fuzz-xml: xml$(EXEEXT) seed/xml.stamp
@@ -910,7 +903,7 @@ fuzz-xml: xml$(EXEEXT) seed/xml.stamp
 
 seed/html.stamp: genSeed$(EXEEXT)
 	@mkdir -p seed/html
-	@./genSeed$(EXEEXT) html '$(top_srcdir)/test/HTML/*'
+	./genSeed$(EXEEXT) html '$(top_srcdir)/test/HTML/*'
 	@touch seed/html.stamp
 
 fuzz-html: html$(EXEEXT) seed/html.stamp
@@ -921,26 +914,40 @@ fuzz-html: html$(EXEEXT) seed/html.stamp
 	    -timeout=10 \
 	    corpus/html seed/html
 
+# Regexp fuzzer
+
+seed/regexp.stamp:
+	@mkdir -p seed/regexp
+	cp -r $(srcdir)/static_seed/regexp seed
+	@touch seed/regexp.stamp
+
 fuzz-regexp: regexp$(EXEEXT)
 	@mkdir -p corpus/regexp
 	./regexp$(EXEEXT) \
 	    -dict=regexp.dict \
 	    -max_len=200 \
 	    -timeout=5 \
-	    corpus/regexp $(srcdir)/seed/regexp
+	    corpus/regexp seed/regexp
+
+# URI fuzzer
+
+seed/uri.stamp:
+	@mkdir -p seed/uri
+	cp -r $(srcdir)/static_seed/uri seed
+	@touch seed/uri.stamp
 
 fuzz-uri: uri$(EXEEXT)
 	@mkdir -p corpus/uri
 	./uri$(EXEEXT) \
 	    -max_len=10000 \
 	    -timeout=2 \
-	    corpus/uri $(srcdir)/seed/uri
+	    corpus/uri seed/uri
 
 # XML Schema fuzzer
 
 seed/schema.stamp: genSeed$(EXEEXT)
 	@mkdir -p seed/schema
-	@./genSeed$(EXEEXT) schema '$(top_srcdir)/test/schemas/*.xsd'
+	./genSeed$(EXEEXT) schema '$(top_srcdir)/test/schemas/*.xsd'
 	@touch seed/schema.stamp
 
 fuzz-schema: schema$(EXEEXT) seed/schema.stamp
@@ -955,7 +962,7 @@ fuzz-schema: schema$(EXEEXT) seed/schema.stamp
 
 seed/xpath.stamp: genSeed$(EXEEXT)
 	@mkdir -p seed/xpath
-	@./genSeed$(EXEEXT) xpath "$(top_builddir)/test/XPath"
+	./genSeed$(EXEEXT) xpath '$(top_srcdir)/test/XPath'
 	@touch seed/xpath.stamp
 
 fuzz-xpath: xpath$(EXEEXT) seed/xpath.stamp

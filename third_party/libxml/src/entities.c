@@ -15,9 +15,8 @@
 #include "libxml.h"
 
 #include <string.h>
-#ifdef HAVE_STDLIB_H
 #include <stdlib.h>
-#endif
+
 #include <libxml/xmlmemory.h>
 #include <libxml/hash.h>
 #include <libxml/entities.h>
@@ -86,12 +85,29 @@ xmlEntitiesErrMemory(const char *extra)
  * @code:  the error code
  * @msg:  the message
  *
- * Handle an out of memory condition
+ * Raise an error.
  */
 static void LIBXML_ATTR_FORMAT(2,0)
 xmlEntitiesErr(xmlParserErrors code, const char *msg)
 {
     __xmlSimpleError(XML_FROM_TREE, code, NULL, msg, NULL);
+}
+
+/**
+ * xmlEntitiesWarn:
+ * @code:  the error code
+ * @msg:  the message
+ *
+ * Raise a warning.
+ */
+static void LIBXML_ATTR_FORMAT(2,0)
+xmlEntitiesWarn(xmlParserErrors code, const char *msg, const xmlChar *str1)
+{
+    __xmlRaiseError(NULL, NULL, NULL,
+                NULL, NULL, XML_FROM_TREE, code,
+                XML_ERR_WARNING, NULL, 0,
+                (const char *)str1, NULL, NULL, 0, 0,
+                msg, (const char *)str1, NULL);
 }
 
 /*
@@ -256,9 +272,9 @@ xmlAddEntity(xmlDtdPtr dtd, const xmlChar *name, int type,
                     }
                 }
                 if (!valid) {
-                    xmlEntitiesErr(XML_ERR_ENTITY_PROCESSING,
+                    xmlEntitiesWarn(XML_ERR_ENTITY_PROCESSING,
                             "xmlAddEntity: invalid redeclaration of predefined"
-                            " entity");
+                            " entity '%s'", name);
                     return(NULL);
                 }
             }
@@ -1161,5 +1177,3 @@ xmlDumpEntitiesTable(xmlBufferPtr buf, xmlEntitiesTablePtr table) {
     xmlHashScan(table, xmlDumpEntityDeclScan, buf);
 }
 #endif /* LIBXML_OUTPUT_ENABLED */
-#define bottom_entities
-#include "elfgcchack.h"

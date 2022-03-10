@@ -8,6 +8,9 @@
  * daniel@veillard.com
  */
 
+/* Disable deprecation warnings */
+#define XML_DEPRECATED
+
 #include "libxml.h"
 #include <stdio.h>
 
@@ -382,6 +385,7 @@ static void des_FILE_ptr(int no ATTRIBUTE_UNUSED, FILE *val, int nr ATTRIBUTE_UN
     if (val != NULL) fclose(val);
 }
 
+#ifdef LIBXML_DEBUG_ENABLED
 #define gen_nb_debug_FILE_ptr 2
 static FILE *gen_debug_FILE_ptr(int no ATTRIBUTE_UNUSED, int nr ATTRIBUTE_UNUSED) {
     return(fopen("test.out", "a+"));
@@ -389,6 +393,7 @@ static FILE *gen_debug_FILE_ptr(int no ATTRIBUTE_UNUSED, int nr ATTRIBUTE_UNUSED
 static void des_debug_FILE_ptr(int no ATTRIBUTE_UNUSED, FILE *val, int nr ATTRIBUTE_UNUSED) {
     if (val != NULL) fclose(val);
 }
+#endif
 
 #define gen_nb_const_xmlChar_ptr 5
 
@@ -9308,33 +9313,6 @@ test_xmlAddDtdEntity(void) {
 
 
 static int
-test_xmlCleanupPredefinedEntities(void) {
-    int test_ret = 0;
-
-#if defined(LIBXML_LEGACY_ENABLED)
-#ifdef LIBXML_LEGACY_ENABLED
-    int mem_base;
-
-        mem_base = xmlMemBlocks();
-
-        xmlCleanupPredefinedEntities();
-        call_tests++;
-        xmlResetLastError();
-        if (mem_base != xmlMemBlocks()) {
-            printf("Leak of %d blocks found in xmlCleanupPredefinedEntities",
-	           xmlMemBlocks() - mem_base);
-	    test_ret++;
-            printf("\n");
-        }
-    function_tests++;
-#endif
-#endif
-
-    return(test_ret);
-}
-
-
-static int
 test_xmlCopyEntitiesTable(void) {
     int test_ret = 0;
 
@@ -9681,33 +9659,6 @@ test_xmlGetPredefinedEntity(void) {
 
 
 static int
-test_xmlInitializePredefinedEntities(void) {
-    int test_ret = 0;
-
-#if defined(LIBXML_LEGACY_ENABLED)
-#ifdef LIBXML_LEGACY_ENABLED
-    int mem_base;
-
-        mem_base = xmlMemBlocks();
-
-        xmlInitializePredefinedEntities();
-        call_tests++;
-        xmlResetLastError();
-        if (mem_base != xmlMemBlocks()) {
-            printf("Leak of %d blocks found in xmlInitializePredefinedEntities",
-	           xmlMemBlocks() - mem_base);
-	    test_ret++;
-            printf("\n");
-        }
-    function_tests++;
-#endif
-#endif
-
-    return(test_ret);
-}
-
-
-static int
 test_xmlNewEntity(void) {
     int test_ret = 0;
 
@@ -9777,10 +9728,9 @@ static int
 test_entities(void) {
     int test_ret = 0;
 
-    if (quiet == 0) printf("Testing entities : 13 of 17 functions ...\n");
+    if (quiet == 0) printf("Testing entities : 11 of 17 functions ...\n");
     test_ret += test_xmlAddDocEntity();
     test_ret += test_xmlAddDtdEntity();
-    test_ret += test_xmlCleanupPredefinedEntities();
     test_ret += test_xmlCopyEntitiesTable();
     test_ret += test_xmlCreateEntitiesTable();
     test_ret += test_xmlDumpEntitiesTable();
@@ -9791,7 +9741,6 @@ test_entities(void) {
     test_ret += test_xmlGetDtdEntity();
     test_ret += test_xmlGetParameterEntity();
     test_ret += test_xmlGetPredefinedEntity();
-    test_ret += test_xmlInitializePredefinedEntities();
     test_ret += test_xmlNewEntity();
 
     if (test_ret != 0)
@@ -13158,106 +13107,6 @@ test_xmlGetExternalEntityLoader(void) {
 
 
 static int
-test_xmlGetFeature(void) {
-    int test_ret = 0;
-
-#if defined(LIBXML_LEGACY_ENABLED)
-#ifdef LIBXML_LEGACY_ENABLED
-    int mem_base;
-    int ret_val;
-    xmlParserCtxtPtr ctxt; /* an XML/HTML parser context */
-    int n_ctxt;
-    char * name; /* the feature name */
-    int n_name;
-    void * result; /* location to store the result */
-    int n_result;
-
-    for (n_ctxt = 0;n_ctxt < gen_nb_xmlParserCtxtPtr;n_ctxt++) {
-    for (n_name = 0;n_name < gen_nb_const_char_ptr;n_name++) {
-    for (n_result = 0;n_result < gen_nb_void_ptr;n_result++) {
-        mem_base = xmlMemBlocks();
-        ctxt = gen_xmlParserCtxtPtr(n_ctxt, 0);
-        name = gen_const_char_ptr(n_name, 1);
-        result = gen_void_ptr(n_result, 2);
-
-        ret_val = xmlGetFeature(ctxt, (const char *)name, result);
-        desret_int(ret_val);
-        call_tests++;
-        des_xmlParserCtxtPtr(n_ctxt, ctxt, 0);
-        des_const_char_ptr(n_name, (const char *)name, 1);
-        des_void_ptr(n_result, result, 2);
-        xmlResetLastError();
-        if (mem_base != xmlMemBlocks()) {
-            printf("Leak of %d blocks found in xmlGetFeature",
-	           xmlMemBlocks() - mem_base);
-	    test_ret++;
-            printf(" %d", n_ctxt);
-            printf(" %d", n_name);
-            printf(" %d", n_result);
-            printf("\n");
-        }
-    }
-    }
-    }
-    function_tests++;
-#endif
-#endif
-
-    return(test_ret);
-}
-
-
-#define gen_nb_const_char_ptr_ptr 1
-static char ** gen_const_char_ptr_ptr(int no ATTRIBUTE_UNUSED, int nr ATTRIBUTE_UNUSED) {
-    return(NULL);
-}
-static void des_const_char_ptr_ptr(int no ATTRIBUTE_UNUSED, const char ** val ATTRIBUTE_UNUSED, int nr ATTRIBUTE_UNUSED) {
-}
-
-static int
-test_xmlGetFeaturesList(void) {
-    int test_ret = 0;
-
-#if defined(LIBXML_LEGACY_ENABLED)
-#ifdef LIBXML_LEGACY_ENABLED
-    int mem_base;
-    int ret_val;
-    int * len; /* the length of the features name array (input/output) */
-    int n_len;
-    char ** result; /* an array of string to be filled with the features name. */
-    int n_result;
-
-    for (n_len = 0;n_len < gen_nb_int_ptr;n_len++) {
-    for (n_result = 0;n_result < gen_nb_const_char_ptr_ptr;n_result++) {
-        mem_base = xmlMemBlocks();
-        len = gen_int_ptr(n_len, 0);
-        result = gen_const_char_ptr_ptr(n_result, 1);
-
-        ret_val = xmlGetFeaturesList(len, (const char **)result);
-        desret_int(ret_val);
-        call_tests++;
-        des_int_ptr(n_len, len, 0);
-        des_const_char_ptr_ptr(n_result, (const char **)result, 1);
-        xmlResetLastError();
-        if (mem_base != xmlMemBlocks()) {
-            printf("Leak of %d blocks found in xmlGetFeaturesList",
-	           xmlMemBlocks() - mem_base);
-	    test_ret++;
-            printf(" %d", n_len);
-            printf(" %d", n_result);
-            printf("\n");
-        }
-    }
-    }
-    function_tests++;
-#endif
-#endif
-
-    return(test_ret);
-}
-
-
-static int
 test_xmlHasFeature(void) {
     int test_ret = 0;
 
@@ -15323,56 +15172,6 @@ test_xmlSetExternalEntityLoader(void) {
 
 
 static int
-test_xmlSetFeature(void) {
-    int test_ret = 0;
-
-#if defined(LIBXML_LEGACY_ENABLED)
-#ifdef LIBXML_LEGACY_ENABLED
-    int mem_base;
-    int ret_val;
-    xmlParserCtxtPtr ctxt; /* an XML/HTML parser context */
-    int n_ctxt;
-    char * name; /* the feature name */
-    int n_name;
-    void * value; /* pointer to the location of the new value */
-    int n_value;
-
-    for (n_ctxt = 0;n_ctxt < gen_nb_xmlParserCtxtPtr;n_ctxt++) {
-    for (n_name = 0;n_name < gen_nb_const_char_ptr;n_name++) {
-    for (n_value = 0;n_value < gen_nb_void_ptr;n_value++) {
-        mem_base = xmlMemBlocks();
-        ctxt = gen_xmlParserCtxtPtr(n_ctxt, 0);
-        name = gen_const_char_ptr(n_name, 1);
-        value = gen_void_ptr(n_value, 2);
-
-        ret_val = xmlSetFeature(ctxt, (const char *)name, value);
-        desret_int(ret_val);
-        call_tests++;
-        des_xmlParserCtxtPtr(n_ctxt, ctxt, 0);
-        des_const_char_ptr(n_name, (const char *)name, 1);
-        des_void_ptr(n_value, value, 2);
-        xmlResetLastError();
-        if (mem_base != xmlMemBlocks()) {
-            printf("Leak of %d blocks found in xmlSetFeature",
-	           xmlMemBlocks() - mem_base);
-	    test_ret++;
-            printf(" %d", n_ctxt);
-            printf(" %d", n_name);
-            printf(" %d", n_value);
-            printf("\n");
-        }
-    }
-    }
-    }
-    function_tests++;
-#endif
-#endif
-
-    return(test_ret);
-}
-
-
-static int
 test_xmlSetupParserForBuffer(void) {
     int test_ret = 0;
 
@@ -15487,7 +15286,7 @@ static int
 test_parser(void) {
     int test_ret = 0;
 
-    if (quiet == 0) printf("Testing parser : 61 of 70 functions ...\n");
+    if (quiet == 0) printf("Testing parser : 58 of 70 functions ...\n");
     test_ret += test_xmlByteConsumed();
     test_ret += test_xmlClearNodeInfoSeq();
     test_ret += test_xmlClearParserCtxt();
@@ -15500,8 +15299,6 @@ test_parser(void) {
     test_ret += test_xmlCtxtResetPush();
     test_ret += test_xmlCtxtUseOptions();
     test_ret += test_xmlGetExternalEntityLoader();
-    test_ret += test_xmlGetFeature();
-    test_ret += test_xmlGetFeaturesList();
     test_ret += test_xmlHasFeature();
     test_ret += test_xmlIOParseDTD();
     test_ret += test_xmlInitNodeInfoSeq();
@@ -15547,7 +15344,6 @@ test_parser(void) {
     test_ret += test_xmlSAXUserParseFile();
     test_ret += test_xmlSAXUserParseMemory();
     test_ret += test_xmlSetExternalEntityLoader();
-    test_ret += test_xmlSetFeature();
     test_ret += test_xmlSetupParserForBuffer();
     test_ret += test_xmlStopParser();
     test_ret += test_xmlSubstituteEntitiesDefault();
