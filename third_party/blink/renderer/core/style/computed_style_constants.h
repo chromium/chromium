@@ -124,6 +124,10 @@ inline bool IsTransitionPseudoElement(PseudoId pseudo_id) {
 inline bool PseudoElementHasArguments(PseudoId pseudo_id) {
   switch (pseudo_id) {
     case kPseudoIdHighlight:
+    case kPseudoIdPageTransitionContainer:
+    case kPseudoIdPageTransitionImageWrapper:
+    case kPseudoIdPageTransitionIncomingImage:
+    case kPseudoIdPageTransitionOutgoingImage:
       return true;
     default:
       return false;
