@@ -82,8 +82,13 @@ class MockMessagePump : public MessagePump {
   MOCK_METHOD1(Run, void(MessagePump::Delegate*));
   MOCK_METHOD0(Quit, void());
   MOCK_METHOD0(ScheduleWork, void());
-  MOCK_METHOD1(ScheduleDelayedWork, void(const TimeTicks&));
+  MOCK_METHOD1(ScheduleDelayedWork_TimeTicks, void(const TimeTicks&));
   MOCK_METHOD1(SetTimerSlack, void(TimerSlack));
+
+  void ScheduleDelayedWork(
+      const MessagePump::Delegate::NextWorkInfo& next_work_info) override {
+    ScheduleDelayedWork_TimeTicks(next_work_info.delayed_run_time);
+  }
 };
 
 // TODO(crbug.com/901373): Deduplicate FakeTaskRunners.
@@ -226,7 +231,7 @@ TEST_F(ThreadControllerWithMessagePumpTest, ScheduleDelayedWork) {
 
   // Call a no-op DoWork. Expect that it doesn't do any work.
   clock_.SetNowTicks(Seconds(5));
-  EXPECT_CALL(*message_pump_, ScheduleDelayedWork(_)).Times(0);
+  EXPECT_CALL(*message_pump_, ScheduleDelayedWork_TimeTicks(_)).Times(0);
   {
     auto next_work_info = thread_controller_.DoWork();
     EXPECT_FALSE(next_work_info.is_immediate());
@@ -268,14 +273,14 @@ TEST_F(ThreadControllerWithMessagePumpTest, ScheduleDelayedWork) {
 }
 
 TEST_F(ThreadControllerWithMessagePumpTest, SetNextDelayedDoWork) {
-  EXPECT_CALL(*message_pump_, ScheduleDelayedWork(Seconds(123)));
+  EXPECT_CALL(*message_pump_, ScheduleDelayedWork_TimeTicks(Seconds(123)));
 
   LazyNow lazy_now(&clock_);
   thread_controller_.SetNextDelayedDoWork(&lazy_now, WakeUp{Seconds(123)});
 }
 
 TEST_F(ThreadControllerWithMessagePumpTest, SetNextDelayedDoWork_CapAtOneDay) {
-  EXPECT_CALL(*message_pump_, ScheduleDelayedWork(Days(1)));
+  EXPECT_CALL(*message_pump_, ScheduleDelayedWork_TimeTicks(Days(1)));
 
   LazyNow lazy_now(&clock_);
   thread_controller_.SetNextDelayedDoWork(&lazy_now, WakeUp{Days(2)});
@@ -293,7 +298,7 @@ TEST_F(ThreadControllerWithMessagePumpTest, DoWorkDoesntScheduleDelayedWork) {
   MockCallback<OnceClosure> task1;
   task_source_.AddTask(FROM_HERE, task1.Get(), Seconds(10));
 
-  EXPECT_CALL(*message_pump_, ScheduleDelayedWork(_)).Times(0);
+  EXPECT_CALL(*message_pump_, ScheduleDelayedWork_TimeTicks(_)).Times(0);
   auto next_work_info = thread_controller_.DoWork();
   EXPECT_EQ(next_work_info.delayed_run_time, Seconds(10));
 }

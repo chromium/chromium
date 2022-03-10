@@ -37,7 +37,8 @@ class BASE_EXPORT MessagePumpForUI : public MessagePump {
   void Run(Delegate* delegate) override;
   void Quit() override;
   void ScheduleWork() override;
-  void ScheduleDelayedWork(const TimeTicks& delayed_work_time) override;
+  void ScheduleDelayedWork(
+      const Delegate::NextWorkInfo& next_work_info) override;
 
   // Attaches |delegate| to this native MessagePump. |delegate| will from then
   // on be invoked by the native loop to process application tasks.

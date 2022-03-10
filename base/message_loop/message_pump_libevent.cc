@@ -271,7 +271,7 @@ void MessagePumpLibevent::ScheduleWork() {
 }
 
 void MessagePumpLibevent::ScheduleDelayedWork(
-    const TimeTicks& delayed_work_time) {
+    const Delegate::NextWorkInfo& next_work_info) {
   // We know that we can't be blocked on Run()'s |timer_event| right now since
   // this method can only be called on the same thread as Run(). Hence we have
   // nothing to do here, this thread will sleep in Run() with the correct

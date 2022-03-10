@@ -133,7 +133,8 @@ class BASE_EXPORT MessagePumpForUI : public MessagePumpWin {
 
   // MessagePump methods:
   void ScheduleWork() override;
-  void ScheduleDelayedWork(const TimeTicks& delayed_work_time) override;
+  void ScheduleDelayedWork(
+      const Delegate::NextWorkInfo& next_work_info) override;
 
   // Make the MessagePumpForUI respond to WM_QUIT messages.
   void EnableWmQuit();
@@ -260,7 +261,8 @@ class BASE_EXPORT MessagePumpForIO : public MessagePumpWin {
 
   // MessagePump methods:
   void ScheduleWork() override;
-  void ScheduleDelayedWork(const TimeTicks& delayed_work_time) override;
+  void ScheduleDelayedWork(
+      const Delegate::NextWorkInfo& next_work_info) override;
 
   // Register the handler to be used when asynchronous IO for the given file
   // completes. The registration persists as long as |file_handle| is valid, so

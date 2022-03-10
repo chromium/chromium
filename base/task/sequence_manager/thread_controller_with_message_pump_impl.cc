@@ -184,7 +184,7 @@ void ThreadControllerWithMessagePumpImpl::SetNextDelayedDoWork(
     // |pump_| can't be null as all postTasks are cross-thread before binding,
     // and delayed cross-thread postTasks do the thread hop through an immediate
     // task.
-    pump_->ScheduleDelayedWork(run_time);
+    pump_->ScheduleDelayedWork({run_time, lazy_now->Now()});
   }
 }
 

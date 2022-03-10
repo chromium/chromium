@@ -81,8 +81,8 @@ void MockTimeMessagePump::Quit() {
 void MockTimeMessagePump::ScheduleWork() {}
 
 void MockTimeMessagePump::ScheduleDelayedWork(
-    const TimeTicks& delayed_work_time) {
-  next_wake_up_time_ = delayed_work_time;
+    const Delegate::NextWorkInfo& next_work_info) {
+  next_wake_up_time_ = next_work_info.delayed_run_time;
 }
 
 }  // namespace sequence_manager

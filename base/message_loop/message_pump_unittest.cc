@@ -194,7 +194,8 @@ class TimerSlackTestDelegate : public MessagePump::Delegate {
     // We first schedule a delayed task far in the future with maximum timer
     // slack.
     message_pump_->SetTimerSlack(TIMER_SLACK_MAXIMUM);
-    message_pump_->ScheduleDelayedWork(TimeTicks::Now() + Hours(1));
+    const TimeTicks now = TimeTicks::Now();
+    message_pump_->ScheduleDelayedWork({now + Hours(1), now});
 
     // Since we have no other work pending, the pump will initially be idle.
     action_.store(NONE);

@@ -133,9 +133,11 @@ TEST(MockMessagePumpTest, StoresNextWakeUpTimeInScheduleDelayedWork) {
   SimpleTestTickClock mock_clock;
   StrictMock<MockMessagePumpDelegate> delegate;
   MockTimeMessagePump pump(&mock_clock);
-  const auto kNextDelayedWorkTime = mock_clock.NowTicks() + Seconds(2);
+  const auto kStartTime = mock_clock.NowTicks();
+  const auto kNextDelayedWorkTime = kStartTime + Seconds(2);
 
-  pump.ScheduleDelayedWork(kNextDelayedWorkTime);
+  pump.ScheduleDelayedWork(
+      MessagePump::Delegate::NextWorkInfo{kNextDelayedWorkTime, kStartTime});
 
   EXPECT_THAT(pump.next_wake_up_time(), Eq(kNextDelayedWorkTime));
 }

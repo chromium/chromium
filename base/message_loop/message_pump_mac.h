@@ -59,7 +59,6 @@
 namespace base {
 
 class RunLoop;
-class TimeTicks;
 
 // AutoreleasePoolType is a proxy type for autorelease pools. Its definition
 // depends on the translation unit (TU) in which this header appears. In pure
@@ -93,7 +92,8 @@ class BASE_EXPORT MessagePumpCFRunLoopBase : public MessagePump {
   void Run(Delegate* delegate) override;
   void Quit() override;
   void ScheduleWork() override;
-  void ScheduleDelayedWork(const TimeTicks& delayed_work_time) override;
+  void ScheduleDelayedWork(
+      const Delegate::NextWorkInfo& next_work_info) override;
   void SetTimerSlack(TimerSlack timer_slack) override;
 
 #if BUILDFLAG(IS_IOS)

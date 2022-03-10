@@ -181,8 +181,10 @@ void MessagePumpCFRunLoopBase::ScheduleWork() {
 
 // Must be called on the run loop thread.
 void MessagePumpCFRunLoopBase::ScheduleDelayedWork(
-    const TimeTicks& delayed_work_time) {
-  ScheduleDelayedWorkImpl(delayed_work_time - TimeTicks::Now());
+    const Delegate::NextWorkInfo& next_work_info) {
+  DCHECK(!next_work_info.is_immediate());
+  if (!next_work_info.delayed_run_time.is_max())
+    ScheduleDelayedWorkImpl(next_work_info.remaining_delay());
 }
 
 MessagePumpCFRunLoopBase::LudicrousSlackSetting

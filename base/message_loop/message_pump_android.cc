@@ -171,7 +171,7 @@ void MessagePumpForUI::DoDelayedLooperWork() {
 
   DoIdleWork();
   if (!next_work_info.delayed_run_time.is_max())
-    ScheduleDelayedWork(next_work_info.delayed_run_time);
+    ScheduleDelayedWork(next_work_info);
 }
 
 void MessagePumpForUI::OnNonDelayedLooperCallback() {
@@ -261,7 +261,7 @@ void MessagePumpForUI::DoNonDelayedLooperWork(bool do_idle_work) {
   // are still queued up.
   DoIdleWork();
   if (!next_work_info.delayed_run_time.is_max())
-    ScheduleDelayedWork(next_work_info.delayed_run_time);
+    ScheduleDelayedWork(next_work_info);
 }
 
 void MessagePumpForUI::DoIdleWork() {
@@ -339,16 +339,20 @@ void MessagePumpForUI::ScheduleWorkInternal(bool do_idle_work) {
   DPCHECK(ret >= 0);
 }
 
-void MessagePumpForUI::ScheduleDelayedWork(const TimeTicks& delayed_work_time) {
+void MessagePumpForUI::ScheduleDelayedWork(
+    const Delegate::NextWorkInfo& next_work_info) {
   if (ShouldQuit())
     return;
 
-  if (delayed_scheduled_time_ && *delayed_scheduled_time_ == delayed_work_time)
+  if (delayed_scheduled_time_ &&
+      *delayed_scheduled_time_ == next_work_info.delayed_run_time) {
     return;
+  }
 
-  DCHECK(!delayed_work_time.is_null());
-  delayed_scheduled_time_ = delayed_work_time;
-  int64_t nanos = delayed_work_time.since_origin().InNanoseconds();
+  DCHECK(!next_work_info.is_immediate());
+  delayed_scheduled_time_ = next_work_info.delayed_run_time;
+  int64_t nanos =
+      next_work_info.delayed_run_time.since_origin().InNanoseconds();
   struct itimerspec ts;
   ts.it_interval.tv_sec = 0;  // Don't repeat.
   ts.it_interval.tv_nsec = 0;

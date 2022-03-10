@@ -126,7 +126,8 @@ void MessagePumpForUI::ScheduleWork() {
                        TRACE_EVENT_SCOPE_THREAD);
 }
 
-void MessagePumpForUI::ScheduleDelayedWork(const TimeTicks& delayed_work_time) {
+void MessagePumpForUI::ScheduleDelayedWork(
+    const Delegate::NextWorkInfo& next_work_info) {
   DCHECK_CALLED_ON_VALID_THREAD(bound_thread_);
 
   // Since this is always called from |bound_thread_|, there is almost always
@@ -146,9 +147,7 @@ void MessagePumpForUI::ScheduleDelayedWork(const TimeTicks& delayed_work_time) {
   // TODO(gab): This could potentially be replaced by a ForegroundIdleProc hook
   // if Windows ends up being the only platform requiring ScheduleDelayedWork().
   if (in_native_loop_ && !work_scheduled_) {
-    // TODO(gab): Consider passing a NextWorkInfo object to ScheduleDelayedWork
-    // to take advantage of |recent_now| here too.
-    ScheduleNativeTimer({delayed_work_time, TimeTicks::Now()});
+    ScheduleNativeTimer(next_work_info);
   }
 }
 
@@ -672,7 +671,8 @@ void MessagePumpForIO::ScheduleWork() {
                        TRACE_EVENT_SCOPE_THREAD);
 }
 
-void MessagePumpForIO::ScheduleDelayedWork(const TimeTicks& delayed_work_time) {
+void MessagePumpForIO::ScheduleDelayedWork(
+    const Delegate::NextWorkInfo& next_work_info) {
   DCHECK_CALLED_ON_VALID_THREAD(bound_thread_);
 
   // Since this is always called from |bound_thread_|, there is nothing to do as

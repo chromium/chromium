@@ -99,7 +99,8 @@ class BASE_EXPORT MessagePumpGlib : public MessagePump,
   void Run(Delegate* delegate) override;
   void Quit() override;
   void ScheduleWork() override;
-  void ScheduleDelayedWork(const TimeTicks& delayed_work_time) override;
+  void ScheduleDelayedWork(
+      const Delegate::NextWorkInfo& next_work_info) override;
 
   // Internal methods used for processing the FdWatchSource callbacks. As for
   // main pump callbacks, they are public for simplicity but should not be used

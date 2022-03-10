@@ -223,7 +223,7 @@ void MessagePumpKqueue::ScheduleWork() {
 }
 
 void MessagePumpKqueue::ScheduleDelayedWork(
-    const TimeTicks& delayed_work_time) {
+    const Delegate::NextWorkInfo& next_work_info) {
   // Nothing to do. This MessagePump uses DoWork().
 }
 

@@ -60,7 +60,7 @@ TEST(TimerSlackTest, LudicrousTimerSlackDefaultsOff) {
 
   // Tickle the delay work path.
   const base::TimeTicks now = TimeTicks::Now();
-  message_pump_cf_run_loop.ScheduleDelayedWork(now);
+  message_pump_cf_run_loop.ScheduleDelayedWork({now, now});
   EXPECT_EQ(MessagePumpCFRunLoop::LudicrousSlackSetting::kLudicrousSlackOff,
             message_pump_cf_run_loop.GetLudicrousSlackStateForTesting());
 
@@ -90,7 +90,7 @@ TEST(TimerSlackTest, LudicrousTimerSlackObservesFeature) {
 
   // Tickle the delay work path.
   const base::TimeTicks now = TimeTicks::Now();
-  message_pump_cf_run_loop.ScheduleDelayedWork(now);
+  message_pump_cf_run_loop.ScheduleDelayedWork({now, now});
   EXPECT_EQ(MessagePumpCFRunLoop::LudicrousSlackSetting::kLudicrousSlackOn,
             message_pump_cf_run_loop.GetLudicrousSlackStateForTesting());
 

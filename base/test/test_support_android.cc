@@ -160,11 +160,12 @@ class MessagePumpForUIStub : public base::MessagePumpForUI {
     }
   }
 
-  void ScheduleDelayedWork(const base::TimeTicks& delayed_work_time) override {
+  void ScheduleDelayedWork(
+      const Delegate::NextWorkInfo& next_work_info) override {
     if (g_state && g_state->run_depth > 1) {
       Waitable::GetInstance()->Signal();
     } else {
-      MessagePumpForUI::ScheduleDelayedWork(delayed_work_time);
+      MessagePumpForUI::ScheduleDelayedWork(next_work_info);
     }
   }
 };

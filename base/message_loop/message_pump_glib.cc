@@ -436,7 +436,8 @@ void MessagePumpGlib::ScheduleWork() {
   }
 }
 
-void MessagePumpGlib::ScheduleDelayedWork(const TimeTicks& delayed_work_time) {
+void MessagePumpGlib::ScheduleDelayedWork(
+    const Delegate::NextWorkInfo& next_work_info) {
   // We need to wake up the loop in case the poll timeout needs to be
   // adjusted.  This will cause us to try to do work, but that's OK.
   ScheduleWork();

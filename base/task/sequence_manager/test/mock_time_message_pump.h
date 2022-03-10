@@ -34,7 +34,8 @@ class MockTimeMessagePump : public MessagePump {
   void Run(Delegate* delegate) override;
   void Quit() override;
   void ScheduleWork() override;
-  void ScheduleDelayedWork(const TimeTicks& delayed_work_time) override;
+  void ScheduleDelayedWork(
+      const Delegate::NextWorkInfo& next_work_info) override;
 
   // Returns the time at which the pump would have to wake up to be perform
   // work.

@@ -146,7 +146,8 @@ class BASE_EXPORT MessagePumpFuchsia : public MessagePump,
   void Run(Delegate* delegate) override;
   void Quit() override;
   void ScheduleWork() override;
-  void ScheduleDelayedWork(const TimeTicks& delayed_work_time) override;
+  void ScheduleDelayedWork(
+      const Delegate::NextWorkInfo& next_work_info) override;
 
  private:
   // Handles IO events by running |async_dispatcher_| until |deadline|. Returns
