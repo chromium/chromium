@@ -33,7 +33,8 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Quota.AgeOfOriginInDays" units="days"
-    expires_after="2022-03-15">
+    expires_after="2023-03-09">
+  <owner>ayui@chromium.org</owner>
   <owner>jarrydg@chromium.org</owner>
   <owner>chrome-owp-storage@google.com</owner>
   <summary>
