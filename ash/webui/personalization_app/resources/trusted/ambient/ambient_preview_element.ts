@@ -87,10 +87,16 @@ export class AmbientPreview extends WithPersonalizationStore {
   }
 
   private getAlbumDescription_(): string {
-    return this.previewAlbum_ && this.topicSource_ !== null ?
-        `${getTopicSourceName(this.topicSource_)} • ${
-            getPhotoCount(this.previewAlbum_)}` :
-        '';
+    if (!this.previewAlbum_ || this.topicSource_ === null) {
+      return '';
+    }
+    const topicSourceDesc = getTopicSourceName(this.topicSource_);
+    // TODO(b/223834394): replace dot separator symbol • with an icon/image.
+    // As we don't know the number of photos in Art Gallery albums,
+    // this info won't be shown in this case.
+    return this.topicSource_ === TopicSource.kArtGallery ?
+        topicSourceDesc :
+        `${topicSourceDesc} • ${getPhotoCount(this.previewAlbum_)}`;
   }
 }
 
