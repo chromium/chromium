@@ -22,6 +22,7 @@ generate_grd("build_grd") {
     "images:build_grdp",
     "js:build_grdp",
     "js/cr/ui:build_grdp",
+    "js/metrics_reporter:build_grdp",
     "//third_party/jstemplate:build_grdp",
   ]
   grdp_files = [
@@ -29,6 +30,7 @@ generate_grd("build_grd") {
     "$target_gen_dir/html/resources.grdp",
     "$target_gen_dir/images/resources.grdp",
     "$target_gen_dir/js/cr/ui/resources.grdp",
+    "$target_gen_dir/js/metrics_reporter/resources.grdp",
     "$target_gen_dir/js/resources.grdp",
     "$target_gen_dir/resources_ts.grdp",
     "$root_gen_dir/third_party/jstemplate/resources.grdp",

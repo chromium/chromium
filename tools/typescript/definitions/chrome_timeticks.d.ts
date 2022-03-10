@@ -6,6 +6,6 @@
 
 declare namespace chrome {
   export namespace timeTicks {
-    function nowInMicroseconds(): BigInt;
+    function nowInMicroseconds(): bigint;
   }
 }
