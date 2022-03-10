@@ -222,7 +222,7 @@ class AccountManagerFacadeImpl::AccessTokenFetcher
 
     CancelRequest();
     FireOnGetTokenFailure(
-        GoogleServiceAuthError(GoogleServiceAuthError::State::SERVICE_ERROR));
+        GoogleServiceAuthError::FromServiceError("Mojo pipe disconnected"));
   }
 
   AccountManagerFacadeImpl* const account_manager_facade_impl_;
@@ -391,7 +391,7 @@ AccountManagerFacadeImpl::CreateAccessTokenFetcher(
             << " for CreateAccessTokenFetcher";
     return std::make_unique<OAuth2AccessTokenFetcherImmediateError>(
         consumer,
-        GoogleServiceAuthError(GoogleServiceAuthError::State::SERVICE_ERROR));
+        GoogleServiceAuthError::FromServiceError("Mojo pipe disconnected"));
   }
 
   auto access_token_fetcher = std::make_unique<AccessTokenFetcher>(

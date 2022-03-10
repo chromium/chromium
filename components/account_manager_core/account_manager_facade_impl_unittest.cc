@@ -397,7 +397,7 @@ TEST_F(AccountManagerFacadeImplTest, GetAccountsHangsWhenRemoteIsNull) {
   // scoped_closure that sets `callback_was_dropped` when it is destroyed.
   base::ScopedClosureRunner scoped_closure(base::BindLambdaForTesting(
       [&callback_was_dropped]() { callback_was_dropped = true; }));
-  // Pass ownership of the scopped closure to the main callback, so that the
+  // Pass ownership of the scoped closure to the main callback, so that the
   // scoped closure is run when the callback is destroyed.
   // This callback should not be run.
   base::OnceCallback<void(const std::vector<Account>&)> dropped_callback =
@@ -592,7 +592,8 @@ TEST_F(AccountManagerFacadeImplTest,
   const Account account = CreateTestGaiaAccount(kTestAccountEmail);
 
   MockOAuthConsumer consumer;
-  GoogleServiceAuthError error(GoogleServiceAuthError::SERVICE_ERROR);
+  GoogleServiceAuthError error =
+      GoogleServiceAuthError::FromServiceError("Mojo pipe disconnected");
   EXPECT_CALL(consumer, OnGetTokenFailure(Eq(error)));
 
   std::unique_ptr<OAuth2AccessTokenFetcher> access_token_fetcher =
@@ -639,7 +640,8 @@ TEST_F(AccountManagerFacadeImplTest,
   const Account account = CreateTestGaiaAccount(kTestAccountEmail);
 
   MockOAuthConsumer consumer;
-  GoogleServiceAuthError error(GoogleServiceAuthError::SERVICE_ERROR);
+  GoogleServiceAuthError error =
+      GoogleServiceAuthError::FromServiceError("Mojo pipe disconnected");
   EXPECT_CALL(consumer, OnGetTokenFailure(Eq(error)));
 
   std::unique_ptr<OAuth2AccessTokenFetcher> access_token_fetcher =
