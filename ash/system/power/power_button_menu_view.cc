@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "ash/capture_mode/capture_mode_controller.h"
+#include "ash/constants/ash_features.h"
 #include "ash/display/screen_orientation_controller.h"
 #include "ash/login/login_screen_controller.h"
 #include "ash/public/cpp/new_window_delegate.h"
@@ -17,6 +18,7 @@
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/ash_color_provider.h"
+#include "ash/style/highlight_border.h"
 #include "ash/style/system_shadow.h"
 #include "ash/system/power/power_button_menu_item_view.h"
 #include "ash/system/power/power_button_menu_metrics_type.h"
@@ -85,6 +87,11 @@ PowerButtonMenuView::PowerButtonMenuView(
       power_button_position_(power_button_position) {
   SetFocusBehavior(FocusBehavior::ALWAYS);
   SetPaintToLayer();
+  if (features::IsDarkLightModeEnabled()) {
+    SetBorder(std::make_unique<HighlightBorder>(
+        kMenuCornerRadius, HighlightBorder::Type::kHighlightBorder1,
+        /*use_light_colors=*/false));
+  }
   layer()->SetFillsBoundsOpaquely(false);
   layer()->SetRoundedCornerRadius(gfx::RoundedCornersF(kMenuCornerRadius));
   layer()->SetBackgroundBlur(ColorProvider::kBackgroundBlurSigma);
