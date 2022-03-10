@@ -54,10 +54,18 @@ const base::FilePath::CharType kLevelDBExtension[] =
 
 // static
 base::FilePath GetBlobStoreFileName(const blink::StorageKey& storage_key) {
-  // TODO(crbug.com/1199077): This will be replaced when the new storage is
-  // implemented.
-  std::string storage_key_id =
-      storage::GetIdentifierFromOrigin(storage_key.origin());
+  std::string storage_key_id;
+  if (storage_key.IsFirstPartyContext()) {
+    storage_key_id = storage::GetIdentifierFromOrigin(storage_key.origin());
+  } else {
+    // TODO(crbug.com/1218100): This is a stop-gap to prevent crashes, we need
+    // to point to a real storage bucket here not a transient one. We only
+    // hit this case when `kThirdPartyStoragePartitioning` is enabled.
+    storage_key_id = storage::GetIdentifierFromOrigin(url::Origin());
+  }
+  // TODO(crbug.com/1218100): Desired first and third party paths:
+  // {{storage_partition}}/IndexedDB/{{serialized_origin}}.blob/
+  // {{storage_partition}}/WebStorage/{{bucket_id}}/IndexedDB/indexeddb.blob/
   return base::FilePath()
       .AppendASCII(storage_key_id)
       .AddExtension(kIndexedDBExtension)
@@ -66,10 +74,18 @@ base::FilePath GetBlobStoreFileName(const blink::StorageKey& storage_key) {
 
 // static
 base::FilePath GetLevelDBFileName(const blink::StorageKey& storage_key) {
-  // TODO(crbug.com/1199077): This will be replaced when the new storage is
-  // implemented.
-  std::string storage_key_id =
-      storage::GetIdentifierFromOrigin(storage_key.origin());
+  std::string storage_key_id;
+  if (storage_key.IsFirstPartyContext()) {
+    storage_key_id = storage::GetIdentifierFromOrigin(storage_key.origin());
+  } else {
+    // TODO(crbug.com/1218100): This is a stop-gap to prevent crashes, we need
+    // to point to a real storage bucket here not a transient one. We only
+    // hit this case when `kThirdPartyStoragePartitioning` is enabled.
+    storage_key_id = storage::GetIdentifierFromOrigin(url::Origin());
+  }
+  // TODO(crbug.com/1218100): Desired first and third party paths:
+  // {{storage_partition}}/IndexedDB/{{serialized_origin}}.leveldb/
+  // {{storage_partition}}/WebStorage/{{bucket_id}}/IndexedDB/indexeddb.leveldb/
   return base::FilePath()
       .AppendASCII(storage_key_id)
       .AddExtension(kIndexedDBExtension)
