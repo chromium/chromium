@@ -9,9 +9,9 @@
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/strings/string_piece_forward.h"
+#include "base/test/bind.h"
 #include "sql/database.h"
 #include "sql/statement.h"
-#include "sql/test/error_callback_support.h"
 #include "sql/test/scoped_error_expecter.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/sqlite/sqlite3.h"
@@ -76,13 +76,17 @@ TEST_F(StatementTest, Run) {
 }
 
 // Error callback called for error running a statement.
-TEST_F(StatementTest, ErrorCallback) {
+TEST_F(StatementTest, DatabaseErrorCallbackCalledOnError) {
   ASSERT_TRUE(db_.Execute(
       "CREATE TABLE rows(a INTEGER PRIMARY KEY NOT NULL, b INTEGER NOT NULL)"));
 
+  bool error_callback_called = false;
   int error = SQLITE_OK;
-  ScopedErrorCallback sec(&db_,
-                          base::BindRepeating(&CaptureErrorCallback, &error));
+  db_.set_error_callback(base::BindLambdaForTesting(
+      [&](int sqlite_error, sql::Statement* statement) {
+        error_callback_called = true;
+        error = sqlite_error;
+      }));
 
   // `rows` is a table with ROWID. https://www.sqlite.org/rowidtable.html
   // Since `a` is declared as INTEGER PRIMARY KEY, it is an alias for SQLITE's
@@ -90,10 +94,14 @@ TEST_F(StatementTest, ErrorCallback) {
   // anything else causes the error callback handler to be called with
   // SQLITE_MISMATCH as error code.
   Statement insert(db_.GetUniqueStatement("INSERT INTO rows(a) VALUES(?)"));
-  EXPECT_TRUE(insert.is_valid());
+  ASSERT_TRUE(insert.is_valid());
   insert.BindString(0, "not an integer, not suitable as primary key value");
-  EXPECT_FALSE(insert.Run());
-  EXPECT_EQ(SQLITE_MISMATCH, error);
+  EXPECT_FALSE(insert.Run())
+      << "Invalid statement should not Run() successfully";
+  EXPECT_TRUE(error_callback_called)
+      << "Statement::Run() should report errors to the database error callback";
+  EXPECT_EQ(SQLITE_MISMATCH, error)
+      << "Statement::Run() should report errors to the database error callback";
 }
 
 // Error expecter works for error running a statement.
