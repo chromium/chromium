@@ -3189,6 +3189,20 @@ void HostResolverManager::DeregisterResolveContext(
   RemoveAllJobs(context);
 }
 
+void HostResolverManager::RemoveResolveContextRegistrationIfNeeded(
+    const ResolveContext* context) {
+  // Whether ResolveContext should register for notifications or not depends on
+  // ResolveContext::MustRegisterForNotifications. Ideally that would be an
+  // invariant for the entire lifetime of `context`, unfortunately it is not
+  // due to the current ResolveContexts creation procedure (their
+  // URLRequestContext is initially set to nullptr and only later it is
+  // updated).
+  if (!context->MustRegisterForInvalidations() &&
+      registered_contexts_.HasObserver(context)) {
+    registered_contexts_.RemoveObserver(context);
+  }
+}
+
 void HostResolverManager::SetTickClockForTesting(
     const base::TickClock* tick_clock) {
   tick_clock_ = tick_clock;

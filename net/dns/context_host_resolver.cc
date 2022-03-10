@@ -130,6 +130,7 @@ void ContextHostResolver::SetRequestContext(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   resolve_context_->set_url_request_context(request_context);
+  manager_->RemoveResolveContextRegistrationIfNeeded(resolve_context_.get());
 }
 
 HostResolverManager* ContextHostResolver::GetManagerForTesting() {

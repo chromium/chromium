@@ -179,6 +179,12 @@ class NET_EXPORT HostResolverManager
   void RegisterResolveContext(ResolveContext* context);
   void DeregisterResolveContext(const ResolveContext* context);
 
+  // ContextHostResolvers should call this after associating a ResolveContext
+  // with a URLRequestContext.
+  // TODO(stefanoduo): Remove once MustRegisterForInvalidations becomes an
+  // invariant.
+  void RemoveResolveContextRegistrationIfNeeded(const ResolveContext* context);
+
   void set_proc_params_for_test(const ProcTaskParams& proc_params) {
     proc_params_ = proc_params;
   }
