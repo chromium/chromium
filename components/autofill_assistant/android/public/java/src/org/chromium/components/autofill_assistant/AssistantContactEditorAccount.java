@@ -9,9 +9,9 @@ import android.app.Activity;
 import androidx.annotation.Nullable;
 
 import org.chromium.base.Callback;
-import org.chromium.chrome.browser.autofill_assistant.user_data.GmsIntegrator;
 import org.chromium.components.autofill_assistant.AssistantEditor.AssistantContactEditor;
 import org.chromium.components.autofill_assistant.AssistantOptionModel.ContactModel;
+import org.chromium.components.autofill_assistant.user_data.GmsIntegrator;
 import org.chromium.ui.base.WindowAndroid;
 
 /**

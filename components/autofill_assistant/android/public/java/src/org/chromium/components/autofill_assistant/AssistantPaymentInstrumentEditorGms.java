@@ -7,9 +7,9 @@ package org.chromium.components.autofill_assistant;
 import android.app.Activity;
 
 import org.chromium.base.Callback;
-import org.chromium.chrome.browser.autofill_assistant.user_data.GmsIntegrator;
 import org.chromium.components.autofill_assistant.AssistantEditor.AssistantPaymentInstrumentEditor;
 import org.chromium.components.autofill_assistant.AssistantOptionModel.PaymentInstrumentModel;
+import org.chromium.components.autofill_assistant.user_data.GmsIntegrator;
 import org.chromium.ui.base.WindowAndroid;
 
 /**

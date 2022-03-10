@@ -5679,39 +5679,6 @@
 
     <issue
         id="WrongConstant"
-        message="Must be one of: AutofillAssistantGetClientTokenResult.CALLED, AutofillAssistantGetClientTokenResult.SUCCESS, AutofillAssistantGetClientTokenResult.FAILURE"
-        errorLine1="                AutofillAssistantGetClientTokenResult.NUM_ENTRIES);"
-        errorLine2="                                                      ~~~~~~~~~~~">
-        <location
-            file="../../clank/components/autofill_assistant/android/internal/java/src/org/chromium/chrome/browser/autofill_assistant/user_data/GmsIntegrator.java"
-            line="122"
-            column="55"/>
-    </issue>
-
-    <issue
-        id="WrongConstant"
-        message="Must be one of: AutofillAssistantGetClientTokenResult.CALLED, AutofillAssistantGetClientTokenResult.SUCCESS, AutofillAssistantGetClientTokenResult.FAILURE"
-        errorLine1="                        AutofillAssistantGetClientTokenResult.NUM_ENTRIES);"
-        errorLine2="                                                              ~~~~~~~~~~~">
-        <location
-            file="../../clank/components/autofill_assistant/android/internal/java/src/org/chromium/chrome/browser/autofill_assistant/user_data/GmsIntegrator.java"
-            line="129"
-            column="63"/>
-    </issue>
-
-    <issue
-        id="WrongConstant"
-        message="Must be one of: AutofillAssistantGetClientTokenResult.CALLED, AutofillAssistantGetClientTokenResult.SUCCESS, AutofillAssistantGetClientTokenResult.FAILURE"
-        errorLine1="                        AutofillAssistantGetClientTokenResult.NUM_ENTRIES);"
-        errorLine2="                                                              ~~~~~~~~~~~">
-        <location
-            file="../../clank/components/autofill_assistant/android/internal/java/src/org/chromium/chrome/browser/autofill_assistant/user_data/GmsIntegrator.java"
-            line="138"
-            column="63"/>
-    </issue>
-
-    <issue
-        id="WrongConstant"
         message="Must be one of: OmniboxSuggestionUiType.DEFAULT, OmniboxSuggestionUiType.EDIT_URL_SUGGESTION, OmniboxSuggestionUiType.ANSWER_SUGGESTION, OmniboxSuggestionUiType.ENTITY_SUGGESTION, OmniboxSuggestionUiType.TAIL_SUGGESTION, OmniboxSuggestionUiType.CLIPBOARD_SUGGESTION, OmniboxSuggestionUiType.TILE_SUGGESTION, OmniboxSuggestionUiType.TILE_NAVSUGGEST, OmniboxSuggestionUiType.PEDAL_SUGGESTION"
         errorLine1="        return OmniboxSuggestionUiType.HEADER;"
         errorLine2="                                       ~~~~~~">

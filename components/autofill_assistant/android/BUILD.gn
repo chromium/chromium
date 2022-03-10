@@ -310,8 +310,8 @@ android_library("autofill_assistant_public_java") {
   ]
 
   sources = [
-    "internal/java/src/org/chromium/chrome/browser/autofill_assistant/user_data/GmsIntegrator.java",
     "java/src/org/chromium/components/autofill_assistant/header/AnimatedPoodle.java",
+    "java/src/org/chromium/components/autofill_assistant/user_data/GmsIntegrator.java",
   ]
 
   # Add the actual implementation where necessary so that downstream targets
@@ -335,8 +335,8 @@ android_library("autofill_assistant_public_impl_java") {
   ]
 
   sources = [
-    "internal/java/src/org/chromium/chrome/browser/autofill_assistant/user_data/GmsIntegrator.java",
     "java/src/org/chromium/components/autofill_assistant/header/AnimatedPoodle.java",
+    "java/src/org/chromium/components/autofill_assistant/user_data/GmsIntegrator.java",
   ]
 }
 
