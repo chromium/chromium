@@ -20,8 +20,17 @@ const { parseQuery } = require(`${ctsRoot}/common/internal/query/parseQuery`);
   try {
     const loader = new DefaultTestFileLoader();
     for (const entry of expectations) {
-      for (const testcase of await loader.loadCases(parseQuery(entry.q))) {
-        const name = testcase.query.toString();
+      const q = parseQuery(entry.q);
+      // Multicase query expectations with depthInLevel > 0, should be expanded out since the
+      // case parameters are unordered.
+      // ex.) you can suppress test:foo="b";* and/or test:bar="c";* and/or test:foo="d";bar="a";*
+      // All other expectations may end in a * wildcard since the prefix is stable.
+      const expandAllTestcases = q.isMultiCase && q.depthInLevel > 0;
+      const testcases = Array.from(await loader.loadCases(q));
+      const tests = expandAllTestcases
+        ? testcases.map(testcase => testcase.query.toString())
+        : [q.toString()];
+      for (const name of tests) {
         if (entry.b) {
           outStream.write(entry.b);
           outStream.write(' ');
@@ -47,6 +56,9 @@ const { parseQuery } = require(`${ctsRoot}/common/internal/query/parseQuery`);
           outStream.write(' ]')
         }
 
+        if (!expandAllTestcases) {
+          outStream.write(` # ${testcases.length} testcases`);
+        }
         outStream.write('\n');
       }
     }
