@@ -4,7 +4,7 @@
 
 package org.chromium.chrome.browser.password_manager;
 
-import static org.chromium.chrome.browser.flags.ChromeFeatureList.UNIFIED_PASSWORD_MANAGER_ANDROID;
+import static org.chromium.chrome.browser.password_manager.PasswordManagerHelper.usesUnifiedPasswordManagerUI;
 
 import android.accounts.Account;
 import android.app.PendingIntent;
@@ -16,7 +16,6 @@ import com.google.common.base.Optional;
 import org.chromium.base.Log;
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.NativeMethods;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.components.signin.AccountUtils;
 
 import java.lang.annotation.ElementType;
@@ -128,8 +127,7 @@ class PasswordStoreAndroidBackendBridgeImpl {
             error = AndroidBackendErrorType.EXTERNAL_ERROR;
             api_error_code = ((ApiException) exception).getStatusCode();
 
-            if (ChromeFeatureList.isEnabled(UNIFIED_PASSWORD_MANAGER_ANDROID)
-                    && exception instanceof ResolvableApiException
+            if (usesUnifiedPasswordManagerUI() && exception instanceof ResolvableApiException
                     && api_error_code != ChromeSyncStatusCode.AUTH_ERROR_RESOLVABLE) {
                 // Backend error is user-recoverable, launch pending intent to allow the user to
                 // resolve it. Resolution for the authentication errors is not launched as

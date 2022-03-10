@@ -137,11 +137,9 @@ void SaveUpdatePasswordMessageDelegate::CreateMessage(bool update_password) {
   }
   message_->SetTitle(l10n_util::GetStringUTF16(title_message_id));
 
-  const bool kIsUnifiedPasswordManager = base::FeatureList::IsEnabled(
-      password_manager::features::kUnifiedPasswordManagerAndroid);
-
   std::u16string description = GetMessageDescription(
-      pending_credentials, update_password, kIsUnifiedPasswordManager);
+      pending_credentials, update_password,
+      password_manager::features::UsesUnifiedPasswordManagerUi());
   message_->SetDescription(description);
 
   update_password_ = update_password;
@@ -155,7 +153,7 @@ void SaveUpdatePasswordMessageDelegate::CreateMessage(bool update_password) {
   message_->SetPrimaryButtonText(l10n_util::GetStringUTF16(
       GetPrimaryButtonTextId(update_password, use_followup_button_text)));
 
-  if (kIsUnifiedPasswordManager) {
+  if (password_manager::features::UsesUnifiedPasswordManagerUi()) {
     message_->SetIconResourceId(ResourceMapper::MapToJavaDrawableId(
         IDR_ANDROID_PASSWORD_MANAGER_LOGO_24DP));
     message_->DisableIconTint();

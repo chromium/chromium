@@ -6,11 +6,9 @@
 
 #include "build/build_config.h"
 
-namespace password_manager {
-
+namespace password_manager::features {
 // NOTE: It is strongly recommended to use UpperCamelCase style for feature
 //       names, e.g. "MyGreatFeature".
-namespace features {
 
 // Enables Biometrics for the Touch To Fill feature. This only effects Android.
 const base::Feature kBiometricTouchToFill = {"BiometricTouchToFill",
@@ -285,6 +283,12 @@ bool IsPasswordScriptsFetchingEnabled() {
          base::FeatureList::IsEnabled(kPasswordDomainCapabilitiesFetching);
 }
 
-}  // namespace features
+#if BUILDFLAG(IS_ANDROID)
+bool UsesUnifiedPasswordManagerUi() {
+  return base::FeatureList::IsEnabled(kUnifiedPasswordManagerAndroid) &&
+         kUpmExperimentVariationParam.Get() !=
+             UpmExperimentVariation::kShadowSyncingUsers;
+}
+#endif  // IS_ANDROID
 
-}  // namespace password_manager
+}  // namespace password_manager::features

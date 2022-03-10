@@ -2,6 +2,10 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+if (is_android) {
+  import("//build/config/android/rules.gni")
+}
+
 static_library("common") {
   sources = [
     "credential_manager_types.cc",
@@ -33,6 +37,10 @@ source_set("features") {
     "password_manager_features.h",
   ]
 
+  if (is_android) {
+    sources += [ "password_manager_feature_variations_android.h" ]
+  }
+
   deps = [ "//base" ]
 }
 
@@ -50,5 +58,17 @@ if (is_ios) {
       "//testing/gtest",
       "//url",
     ]
+  }
+}
+
+if (is_android) {
+  java_cpp_enum("java_enums_srcjar") {
+    visibility = [ ":*" ]
+    sources = [ "password_manager_feature_variations_android.h" ]
+  }
+
+  android_library("password_manager_common_java_enums") {
+    deps = [ "//third_party/androidx:androidx_annotation_annotation_java" ]
+    srcjar_deps = [ ":java_enums_srcjar" ]
   }
 }

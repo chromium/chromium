@@ -4,7 +4,7 @@
 
 package org.chromium.chrome.browser.settings;
 
-import static org.chromium.chrome.browser.flags.ChromeFeatureList.UNIFIED_PASSWORD_MANAGER_ANDROID;
+import static org.chromium.chrome.browser.password_manager.PasswordManagerHelper.usesUnifiedPasswordManagerUI;
 
 import android.content.Context;
 import android.content.Intent;
@@ -21,7 +21,6 @@ import androidx.preference.PreferenceFragmentCompat;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.chrome.R;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.homepage.HomepageManager;
 import org.chromium.chrome.browser.night_mode.NightModeMetrics.ThemeSettingsEntry;
 import org.chromium.chrome.browser.night_mode.NightModeUtils;
@@ -171,7 +170,7 @@ public class MainSettings extends PreferenceFragmentCompat
 
         updatePasswordsPreference();
 
-        if (ChromeFeatureList.isEnabled(UNIFIED_PASSWORD_MANAGER_ANDROID)) {
+        if (usesUnifiedPasswordManagerUI()) {
             setManagedPreferenceDelegateForPreference(PREF_PASSWORDS);
         }
 
@@ -380,8 +379,7 @@ public class MainSettings extends PreferenceFragmentCompat
                 if (PREF_SEARCH_ENGINE.equals(preference.getKey())) {
                     return TemplateUrlServiceFactory.get().isDefaultSearchManaged();
                 }
-                if (ChromeFeatureList.isEnabled(UNIFIED_PASSWORD_MANAGER_ANDROID)
-                        && PREF_PASSWORDS.equals(preference.getKey())) {
+                if (usesUnifiedPasswordManagerUI() && PREF_PASSWORDS.equals(preference.getKey())) {
                     return UserPrefs.get(Profile.getLastUsedRegularProfile())
                             .isManagedPreference(Pref.CREDENTIALS_ENABLE_SERVICE);
                 }
@@ -393,8 +391,7 @@ public class MainSettings extends PreferenceFragmentCompat
                 if (PREF_SEARCH_ENGINE.equals(preference.getKey())) {
                     return TemplateUrlServiceFactory.get().isDefaultSearchManaged();
                 }
-                if (ChromeFeatureList.isEnabled(UNIFIED_PASSWORD_MANAGER_ANDROID)
-                        && PREF_PASSWORDS.equals(preference.getKey())) {
+                if (usesUnifiedPasswordManagerUI() && PREF_PASSWORDS.equals(preference.getKey())) {
                     return UserPrefs.get(Profile.getLastUsedRegularProfile())
                             .isManagedPreference(Pref.CREDENTIALS_ENABLE_SERVICE);
                 }

@@ -27,6 +27,8 @@ public class PasswordManagerHelper {
     // all points of entry to the passwords settings.
     public static final String MANAGE_PASSWORDS_REFERRER = "manage-passwords-referrer";
 
+    private static final String UPM_VARIATION_FEATURE_PARAM = "stage";
+
     // |PasswordSettings| full class name to open the fragment. Will be changed to
     // |PasswordSettings.class.getName()| once it's modularized.
     private static final String PASSWORD_SETTINGS_CLASS =
@@ -61,12 +63,17 @@ public class PasswordManagerHelper {
         RecordHistogram.recordEnumeratedHistogram("PasswordManager.ManagePasswordsReferrer",
                 referrer, ManagePasswordsReferrer.MAX_VALUE + 1);
 
+        // The credential manager is NonNull if the Unified password manager is active or there is
+        // a dry run measuring the latency/success of fetching the launch intent.
         if (credentialManagerLauncher != null) {
+            // This method always request the launch intent but only actually launches it when the
+            // UnifiedPasswordManager feature allows it.
             launchTheCredentialManager(referrer, credentialManagerLauncher, syncService);
 
-            // If the global feature is not enabled the Credential Manager will not be launched even
-            // if the intent is fetched so the regular password settings should be launched instead.
-            if (ChromeFeatureList.isEnabled(UNIFIED_PASSWORD_MANAGER_ANDROID)) return;
+            if (usesUnifiedPasswordManagerUI()) {
+                // While waiting for the new UI, exit early to prevent launching the old settings.
+                return;
+            }
         }
 
         Bundle fragmentArgs = new Bundle();
@@ -118,6 +125,14 @@ public class PasswordManagerHelper {
         return true;
     }
 
+    public static boolean usesUnifiedPasswordManagerUI() {
+        return ChromeFeatureList.isEnabled(UNIFIED_PASSWORD_MANAGER_ANDROID)
+                && ChromeFeatureList.getFieldTrialParamByFeatureAsInt(
+                           UNIFIED_PASSWORD_MANAGER_ANDROID, UPM_VARIATION_FEATURE_PARAM,
+                           UpmExperimentVariation.ENABLE_FOR_SYNCING_USERS)
+                != UpmExperimentVariation.SHADOW_SYNCING_USERS;
+    }
+
     private static void launchTheCredentialManager(@ManagePasswordsReferrer int referrer,
             CredentialManagerLauncher credentialManagerLauncher, SyncService syncService) {
         if (hasChosenToSyncPasswords(syncService)) {
@@ -155,8 +170,8 @@ public class PasswordManagerHelper {
             PendingIntent intent, long startTimeMs, boolean forAccount) {
         recordSuccessMetrics(SystemClock.elapsedRealtime() - startTimeMs, forAccount);
 
-        if (!ChromeFeatureList.isEnabled(UNIFIED_PASSWORD_MANAGER_ANDROID)) {
-            return;
+        if (!usesUnifiedPasswordManagerUI()) {
+            return; // The built-in settings screen has already been started at this point.
         }
 
         boolean launchIntentSuccessfully = true;

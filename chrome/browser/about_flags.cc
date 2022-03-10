@@ -2900,6 +2900,19 @@ const FeatureEntry::FeatureVariation kTabStripImprovementsTabWidthVariations[] =
 };
 #endif  // BUILDFLAG(IS_ANDROID)
 
+#if BUILDFLAG(IS_ANDROID)
+const FeatureEntry::FeatureParam kUpmAndroidShadowSyncingUsers[] = {
+    {password_manager::features::kUpmExperimentVariationParam.name,
+     password_manager::features::kUpmExperimentVariationOption[1].name}};
+
+const FeatureEntry::FeatureVariation
+    kUnifiedPasswordManagerAndroidVariations[] = {
+        // Skip kEnableForSyncingUsers which is the default Enabled param.
+        {"Shadow Traffic only", kUpmAndroidShadowSyncingUsers,
+         std::size(kUpmAndroidShadowSyncingUsers), nullptr},
+};
+#endif  // BUILDFLAG(IS_ANDROID)
+
 const FeatureEntry::FeatureParam kUnthrottledNestedTimeout_NestingLevel = {
     "nesting", "100"};
 
@@ -7714,8 +7727,10 @@ const FeatureEntry kFeatureEntries[] = {
     {"google-mobile-services-passwords",
      flag_descriptions::kUnifiedPasswordManagerAndroidName,
      flag_descriptions::kUnifiedPasswordManagerAndroidDescription, kOsAndroid,
-     FEATURE_VALUE_TYPE(
-         password_manager::features::kUnifiedPasswordManagerAndroid)},
+     FEATURE_WITH_PARAMS_VALUE_TYPE(
+         password_manager::features::kUnifiedPasswordManagerAndroid,
+         kUnifiedPasswordManagerAndroidVariations,
+         "UnifiedPasswordManagerAndroid")},
 #endif
 
     {"extension-workflow-justification",
