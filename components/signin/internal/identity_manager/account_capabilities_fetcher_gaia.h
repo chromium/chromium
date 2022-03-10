@@ -49,9 +49,6 @@ class AccountCapabilitiesFetcherGaia
   AccountCapabilitiesFetcherGaia& operator=(
       const AccountCapabilitiesFetcherGaia&) = delete;
 
-  // AccountCapabilitiesFetcher:
-  void Start() override;
-
   // OAuth2AccessTokenManager::Consumer:
   void OnGetTokenSuccess(
       const OAuth2AccessTokenManager::Request* request,
@@ -64,6 +61,10 @@ class AccountCapabilitiesFetcherGaia
       std::unique_ptr<base::Value> account_capabilities) override;
   void OnOAuthError() override;
   void OnNetworkError(int response_code) override;
+
+ protected:
+  // AccountCapabilitiesFetcher:
+  void StartImpl() override;
 
  private:
   void RecordFetchResultAndDuration(FetchResult result);

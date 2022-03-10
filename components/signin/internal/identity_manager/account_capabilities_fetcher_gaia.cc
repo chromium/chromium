@@ -37,7 +37,7 @@ AccountCapabilitiesFetcherGaia::~AccountCapabilitiesFetcherGaia() {
   RecordFetchResultAndDuration(FetchResult::kCancelled);
 }
 
-void AccountCapabilitiesFetcherGaia::Start() {
+void AccountCapabilitiesFetcherGaia::StartImpl() {
   TRACE_EVENT_NESTABLE_ASYNC_BEGIN0("AccountFetcherService", "GetAccessToken",
                                     this);
   fetch_start_time_ = base::TimeTicks::Now();

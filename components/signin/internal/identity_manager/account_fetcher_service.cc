@@ -251,8 +251,7 @@ bool AccountFetcherService::IsAccountCapabilitiesFetchingEnabled() {
   if (enable_account_capabilities_fetcher_for_test_)
     return true;
 
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || \
-    BUILDFLAG(IS_CHROMEOS_LACROS) || BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_IOS)
   return base::FeatureList::IsEnabled(
       switches::kEnableFetchingAccountCapabilities);
 #else

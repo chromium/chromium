@@ -14,7 +14,7 @@ FakeAccountCapabilitiesFetcher::FakeAccountCapabilitiesFetcher(
                                  std::move(on_complete_callback)) {}
 FakeAccountCapabilitiesFetcher::~FakeAccountCapabilitiesFetcher() = default;
 
-void FakeAccountCapabilitiesFetcher::Start() {}
+void FakeAccountCapabilitiesFetcher::StartImpl() {}
 
 void FakeAccountCapabilitiesFetcher::CompleteFetch(
     const absl::optional<AccountCapabilities>& account_capabilities) {

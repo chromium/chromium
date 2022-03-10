@@ -14,6 +14,12 @@ AccountCapabilitiesFetcher::AccountCapabilitiesFetcher(
 
 AccountCapabilitiesFetcher::~AccountCapabilitiesFetcher() = default;
 
+void AccountCapabilitiesFetcher::Start() {
+  DCHECK(!started_);
+  started_ = true;
+  StartImpl();
+}
+
 void AccountCapabilitiesFetcher::CompleteFetchAndMaybeDestroySelf(
     const absl::optional<AccountCapabilities>& capabilities) {
   DCHECK(on_complete_callback_);

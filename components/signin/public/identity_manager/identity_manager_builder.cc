@@ -12,7 +12,6 @@
 #include "components/image_fetcher/core/image_decoder.h"
 #include "components/prefs/pref_service.h"
 #include "components/signin/internal/identity_manager/account_capabilities_fetcher_factory.h"
-#include "components/signin/internal/identity_manager/account_capabilities_fetcher_factory_gaia.h"
 #include "components/signin/internal/identity_manager/account_fetcher_service.h"
 #include "components/signin/internal/identity_manager/account_tracker_service.h"
 #include "components/signin/internal/identity_manager/accounts_cookie_mutator_impl.h"
@@ -28,9 +27,12 @@
 #include "components/signin/public/identity_manager/accounts_mutator.h"
 #include "components/signin/public/identity_manager/device_accounts_synchronizer.h"
 
-#if !BUILDFLAG(IS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
+#include "components/signin/internal/identity_manager/account_capabilities_fetcher_factory_android.h"
+#else
+#include "components/signin/internal/identity_manager/account_capabilities_fetcher_factory_gaia.h"
 #include "components/signin/public/webdata/token_web_data.h"
-#endif
+#endif  // BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_IOS)
 #include "components/signin/public/identity_manager/ios/device_accounts_provider.h"
@@ -162,9 +164,16 @@ IdentityManager::InitParameters BuildIdentityManagerInitParameters(
   init_params.diagnostics_provider = std::make_unique<DiagnosticsProviderImpl>(
       token_service.get(), gaia_cookie_manager_service.get());
 
-  auto account_capabilities_fetcher_factory =
+  std::unique_ptr<AccountCapabilitiesFetcherFactory>
+      account_capabilities_fetcher_factory;
+#if BUILDFLAG(IS_ANDROID)
+  account_capabilities_fetcher_factory =
+      std::make_unique<AccountCapabilitiesFetcherFactoryAndroid>();
+#else
+  account_capabilities_fetcher_factory =
       std::make_unique<AccountCapabilitiesFetcherFactoryGaia>(
           token_service.get(), params->signin_client);
+#endif  // BULIDFLAG(IS_ANDROID)
 
   init_params.account_fetcher_service = BuildAccountFetcherService(
       params->signin_client, token_service.get(), account_tracker_service.get(),

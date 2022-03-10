@@ -27,15 +27,18 @@ const char kClearTokenService[] = "clear-token-service";
 // Disables sending signin scoped device id to LSO with refresh token request.
 const char kDisableSigninScopedDeviceId[] = "disable-signin-scoped-device-id";
 
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || \
-    BUILDFLAG(IS_CHROMEOS_LACROS)
-// Enable fetching account capabilities.
-const base::Feature kEnableFetchingAccountCapabilities{
-    "EnableFetchingAccountCapabilities", base::FEATURE_DISABLED_BY_DEFAULT};
-#elif BUILDFLAG(IS_CHROMEOS_ASH)
+// Enables fetching account capabilities and populating AccountInfo with the
+// fetch result.
+// Not available on iOS because this platform doesn't have a compatible
+// `AccountCapabilitiesFetcher` implementation yet.
+// TODO(https://crbug.com/1305191): implement feature on iOS.
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 const base::Feature kEnableFetchingAccountCapabilities{
     "EnableFetchingAccountCapabilities", base::FEATURE_ENABLED_BY_DEFAULT};
-#endif
+#elif !BUILDFLAG(IS_IOS)
+const base::Feature kEnableFetchingAccountCapabilities{
+    "EnableFetchingAccountCapabilities", base::FEATURE_DISABLED_BY_DEFAULT};
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 // This feature disables all extended sync promos.
 const base::Feature kForceDisableExtendedSyncPromos{

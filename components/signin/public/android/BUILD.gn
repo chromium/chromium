@@ -22,6 +22,7 @@ android_library("java") {
 
   sources = [
     "java/src/org/chromium/components/signin/AccessTokenData.java",
+    "java/src/org/chromium/components/signin/AccountCapabilitiesFetcher.java",
     "java/src/org/chromium/components/signin/AccountManagerDelegate.java",
     "java/src/org/chromium/components/signin/AccountManagerFacade.java",
     "java/src/org/chromium/components/signin/AccountManagerFacadeImpl.java",
@@ -56,6 +57,7 @@ android_library("java") {
 generate_jni("jni_headers") {
   namespace = "signin"
   sources = [
+    "java/src/org/chromium/components/signin/AccountCapabilitiesFetcher.java",
     "java/src/org/chromium/components/signin/AccountManagerFacadeProvider.java",
     "java/src/org/chromium/components/signin/ChildAccountInfoFetcher.java",
     "java/src/org/chromium/components/signin/base/AccountCapabilities.java",
@@ -82,7 +84,10 @@ java_cpp_enum("tribool_javagen") {
 
 generate_jni("test_support_jni_headers") {
   namespace = "signin"
-  sources = [ "java/src/org/chromium/components/signin/test/util/AccountManagerFacadeUtil.java" ]
+  sources = [
+    "java/src/org/chromium/components/signin/test/util/AccountCapabilitiesFetcherTestUtil.java",
+    "java/src/org/chromium/components/signin/test/util/AccountManagerFacadeUtil.java",
+  ]
 }
 
 android_library("signin_java_test_support") {
@@ -92,6 +97,7 @@ android_library("signin_java_test_support") {
     ":signin_test_resources",
     ":test_support_jni_headers",
     "//base:base_java",
+    "//base:base_java_test_support",
     "//base:jni_java",
     "//content/public/test/android:content_java_test_support",
     "//third_party/android_deps:guava_android_java",
@@ -99,6 +105,7 @@ android_library("signin_java_test_support") {
     "//third_party/mockito:mockito_java",
   ]
   sources = [
+    "java/src/org/chromium/components/signin/test/util/AccountCapabilitiesFetcherTestUtil.java",
     "java/src/org/chromium/components/signin/test/util/AccountHolder.java",
     "java/src/org/chromium/components/signin/test/util/AccountManagerFacadeUtil.java",
     "java/src/org/chromium/components/signin/test/util/FakeAccountInfoService.java",

@@ -23,11 +23,12 @@ class FakeAccountCapabilitiesFetcher : public AccountCapabilitiesFetcher {
   FakeAccountCapabilitiesFetcher& operator=(
       const FakeAccountCapabilitiesFetcher&) = delete;
 
-  // AccountCapabilitiesFetcher:
-  void Start() override;
-
   void CompleteFetch(
       const absl::optional<AccountCapabilities>& account_capabilities);
+
+ protected:
+  // AccountCapabilitiesFetcher:
+  void StartImpl() override;
 };
 
 #endif  // COMPONENTS_SIGNIN_INTERNAL_IDENTITY_MANAGER_FAKE_ACCOUNT_CAPABILITIES_FETCHER_H_

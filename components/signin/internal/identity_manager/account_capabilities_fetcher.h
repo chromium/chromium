@@ -25,12 +25,16 @@ class AccountCapabilitiesFetcher {
   AccountCapabilitiesFetcher& operator=(const AccountCapabilitiesFetcher&) =
       delete;
 
-  // Start fetching account capabilities.
-  virtual void Start() = 0;
+  // Start fetching account capabilities. Must be called no more than once per
+  // object lifetime.
+  void Start();
 
  protected:
   const CoreAccountInfo& account_info() { return account_info_; }
   const CoreAccountId& account_id() { return account_info_.account_id; }
+
+  // Implemented by subclasses.
+  virtual void StartImpl() = 0;
 
   // Completes the fetch by calling `on_complete_callback_`. Must be called no
   // more than once per object lifetime.
@@ -39,6 +43,9 @@ class AccountCapabilitiesFetcher {
       const absl::optional<AccountCapabilities>& capabilities);
 
  private:
+  // Ensures that `Start()` isn't called multiple times.
+  bool started_ = false;
+
   const CoreAccountInfo account_info_;
   OnCompleteCallback on_complete_callback_;
 };
