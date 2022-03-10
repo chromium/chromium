@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/web_applications/app_service/web_apps_publisher_host.h"
+#include "chrome/browser/web_applications/app_service/lacros_web_apps_controller.h"
 
 #include <utility>
 
@@ -37,7 +37,7 @@ using apps::IconEffects;
 
 namespace web_app {
 
-WebAppsPublisherHost::WebAppsPublisherHost(Profile* profile)
+LacrosWebAppsController::LacrosWebAppsController(Profile* profile)
     : profile_(profile),
       provider_(WebAppProvider::GetForWebApps(profile)),
       publisher_helper_(profile,
@@ -48,9 +48,9 @@ WebAppsPublisherHost::WebAppsPublisherHost(Profile* profile)
   DCHECK(provider_);
 }
 
-WebAppsPublisherHost::~WebAppsPublisherHost() = default;
+LacrosWebAppsController::~LacrosWebAppsController() = default;
 
-void WebAppsPublisherHost::Init() {
+void LacrosWebAppsController::Init() {
   if (!remote_publisher_) {
     auto* service = chromeos::LacrosService::Get();
     if (!service) {
@@ -78,26 +78,26 @@ void WebAppsPublisherHost::Init() {
   }
 
   provider_->on_registry_ready().Post(
-      FROM_HERE, base::BindOnce(&WebAppsPublisherHost::OnReady,
+      FROM_HERE, base::BindOnce(&LacrosWebAppsController::OnReady,
                                 weak_ptr_factory_.GetWeakPtr()));
 }
 
-void WebAppsPublisherHost::Shutdown() {
+void LacrosWebAppsController::Shutdown() {
   publisher_helper().Shutdown();
 }
 
-WebAppRegistrar& WebAppsPublisherHost::registrar() const {
+WebAppRegistrar& LacrosWebAppsController::registrar() const {
   return provider_->registrar();
 }
 
-void WebAppsPublisherHost::SetPublisherForTesting(
+void LacrosWebAppsController::SetPublisherForTesting(
     crosapi::mojom::AppPublisher* publisher) {
   remote_publisher_ = publisher;
   // Set the publisher version to the newest version for testing.
   remote_publisher_version_ = crosapi::mojom::AppPublisher::Version_;
 }
 
-void WebAppsPublisherHost::OnReady() {
+void LacrosWebAppsController::OnReady() {
   if (!remote_publisher_ || publisher_helper().IsShuttingDown()) {
     return;
   }
@@ -109,7 +109,7 @@ void WebAppsPublisherHost::OnReady() {
   PublishWebApps(std::move(apps));
 }
 
-void WebAppsPublisherHost::Uninstall(
+void LacrosWebAppsController::Uninstall(
     const std::string& app_id,
     apps::mojom::UninstallSource uninstall_source,
     bool clear_site_data,
@@ -123,19 +123,19 @@ void WebAppsPublisherHost::Uninstall(
                                      report_abuse);
 }
 
-void WebAppsPublisherHost::PauseApp(const std::string& app_id) {
+void LacrosWebAppsController::PauseApp(const std::string& app_id) {
   publisher_helper().PauseApp(app_id);
 }
 
-void WebAppsPublisherHost::UnpauseApp(const std::string& app_id) {
+void LacrosWebAppsController::UnpauseApp(const std::string& app_id) {
   publisher_helper().UnpauseApp(app_id);
 }
 
-void WebAppsPublisherHost::LoadIcon(const std::string& app_id,
-                                    apps::IconKeyPtr icon_key,
-                                    apps::IconType icon_type,
-                                    int32_t size_hint_in_dip,
-                                    apps::LoadIconCallback callback) {
+void LacrosWebAppsController::LoadIcon(const std::string& app_id,
+                                       apps::IconKeyPtr icon_key,
+                                       apps::IconType icon_type,
+                                       int32_t size_hint_in_dip,
+                                       apps::LoadIconCallback callback) {
   if (!icon_key) {
     // On failure, we still run the callback, with an empty IconValue.
     std::move(callback).Run(std::make_unique<apps::IconValue>());
@@ -147,18 +147,18 @@ void WebAppsPublisherHost::LoadIcon(const std::string& app_id,
                               std::move(callback));
 }
 
-void WebAppsPublisherHost::OpenNativeSettings(const std::string& app_id) {
+void LacrosWebAppsController::OpenNativeSettings(const std::string& app_id) {
   publisher_helper().OpenNativeSettings(app_id);
 }
 
-void WebAppsPublisherHost::SetWindowMode(const std::string& app_id,
-                                         apps::WindowMode window_mode) {
+void LacrosWebAppsController::SetWindowMode(const std::string& app_id,
+                                            apps::WindowMode window_mode) {
   return publisher_helper().SetWindowMode(
       app_id, apps::ConvertWindowModeToMojomWindowMode(window_mode));
 }
 
-void WebAppsPublisherHost::GetMenuModel(const std::string& app_id,
-                                        GetMenuModelCallback callback) {
+void LacrosWebAppsController::GetMenuModel(const std::string& app_id,
+                                           GetMenuModelCallback callback) {
   const WebApp* web_app = GetWebApp(app_id);
   auto menu_items = crosapi::mojom::MenuItems::New();
   if (!web_app) {
@@ -169,15 +169,16 @@ void WebAppsPublisherHost::GetMenuModel(const std::string& app_id,
   // Read shortcuts menu item icons from disk, if any.
   if (!web_app->shortcuts_menu_item_infos().empty()) {
     provider_->icon_manager().ReadAllShortcutsMenuIcons(
-        app_id, base::BindOnce(&WebAppsPublisherHost::OnShortcutsMenuIconsRead,
-                               weak_ptr_factory_.GetWeakPtr(), app_id,
-                               std::move(menu_items), std::move(callback)));
+        app_id,
+        base::BindOnce(&LacrosWebAppsController::OnShortcutsMenuIconsRead,
+                       weak_ptr_factory_.GetWeakPtr(), app_id,
+                       std::move(menu_items), std::move(callback)));
   } else {
     std::move(callback).Run(std::move(menu_items));
   }
 }
 
-void WebAppsPublisherHost::ExecuteContextMenuCommand(
+void LacrosWebAppsController::ExecuteContextMenuCommand(
     const std::string& app_id,
     const std::string& id,
     ExecuteContextMenuCommandCallback callback) {
@@ -187,20 +188,21 @@ void WebAppsPublisherHost::ExecuteContextMenuCommand(
   ReturnLaunchResult(std::move(callback), web_contents);
 }
 
-void WebAppsPublisherHost::StopApp(const std::string& app_id) {
+void LacrosWebAppsController::StopApp(const std::string& app_id) {
   publisher_helper().StopApp(app_id);
 }
 
-void WebAppsPublisherHost::SetPermission(const std::string& app_id,
-                                         apps::PermissionPtr permission) {
+void LacrosWebAppsController::SetPermission(const std::string& app_id,
+                                            apps::PermissionPtr permission) {
   publisher_helper().SetPermission(
       app_id, apps::ConvertPermissionToMojomPermission(permission));
 }
 
 // TODO(crbug.com/1144877): Clean up the multiple launch interfaces and remove
 // duplicated code.
-void WebAppsPublisherHost::Launch(crosapi::mojom::LaunchParamsPtr launch_params,
-                                  LaunchCallback callback) {
+void LacrosWebAppsController::Launch(
+    crosapi::mojom::LaunchParamsPtr launch_params,
+    LaunchCallback callback) {
   content::WebContents* web_contents = nullptr;
   if (launch_params->intent) {
     if (!profile_) {
@@ -223,7 +225,7 @@ void WebAppsPublisherHost::Launch(crosapi::mojom::LaunchParamsPtr launch_params,
     // File handling may create the WebContents asynchronously.
     publisher_helper().LaunchAppWithFilesCheckingUserPermission(
         launch_params->app_id, std::move(params),
-        base::BindOnce(&WebAppsPublisherHost::ReturnLaunchResult,
+        base::BindOnce(&LacrosWebAppsController::ReturnLaunchResult,
                        weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
     return;
   }
@@ -233,7 +235,7 @@ void WebAppsPublisherHost::Launch(crosapi::mojom::LaunchParamsPtr launch_params,
   ReturnLaunchResult(std::move(callback), web_contents);
 }
 
-void WebAppsPublisherHost::ReturnLaunchResult(
+void LacrosWebAppsController::ReturnLaunchResult(
     LaunchCallback callback,
     content::WebContents* web_contents) {
   // TODO(crbug.com/1144877): Run callback when the window is ready.
@@ -255,7 +257,7 @@ void WebAppsPublisherHost::ReturnLaunchResult(
   std::move(callback).Run(std::move(launch_result));
 }
 
-void WebAppsPublisherHost::OnShortcutsMenuIconsRead(
+void LacrosWebAppsController::OnShortcutsMenuIconsRead(
     const std::string& app_id,
     crosapi::mojom::MenuItemsPtr menu_items,
     GetMenuModelCallback callback,
@@ -302,11 +304,11 @@ void WebAppsPublisherHost::OnShortcutsMenuIconsRead(
   std::move(callback).Run(std::move(menu_items));
 }
 
-const WebApp* WebAppsPublisherHost::GetWebApp(const AppId& app_id) const {
+const WebApp* LacrosWebAppsController::GetWebApp(const AppId& app_id) const {
   return registrar().GetAppById(app_id);
 }
 
-void WebAppsPublisherHost::PublishWebApps(std::vector<apps::AppPtr> apps) {
+void LacrosWebAppsController::PublishWebApps(std::vector<apps::AppPtr> apps) {
   if (!remote_publisher_) {
     return;
   }
@@ -321,7 +323,7 @@ void WebAppsPublisherHost::PublishWebApps(std::vector<apps::AppPtr> apps) {
   remote_publisher_->OnApps(std::move(apps));
 }
 
-void WebAppsPublisherHost::PublishWebApp(apps::AppPtr app) {
+void LacrosWebAppsController::PublishWebApp(apps::AppPtr app) {
   if (!remote_publisher_) {
     return;
   }
@@ -331,7 +333,7 @@ void WebAppsPublisherHost::PublishWebApp(apps::AppPtr app) {
   PublishWebApps(std::move(apps));
 }
 
-void WebAppsPublisherHost::ModifyWebAppCapabilityAccess(
+void LacrosWebAppsController::ModifyWebAppCapabilityAccess(
     const std::string& app_id,
     absl::optional<bool> accessing_camera,
     absl::optional<bool> accessing_microphone) {

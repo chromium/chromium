@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_WEB_APPLICATIONS_APP_SERVICE_WEB_APPS_PUBLISHER_HOST_H_
-#define CHROME_BROWSER_WEB_APPLICATIONS_APP_SERVICE_WEB_APPS_PUBLISHER_HOST_H_
+#ifndef CHROME_BROWSER_WEB_APPLICATIONS_APP_SERVICE_LACROS_WEB_APPS_CONTROLLER_H_
+#define CHROME_BROWSER_WEB_APPLICATIONS_APP_SERVICE_LACROS_WEB_APPS_CONTROLLER_H_
 
 #include <string>
 #include <vector>
@@ -36,17 +36,17 @@ class WebApp;
 class WebAppProvider;
 class WebAppRegistrar;
 
-// This WebAppsPublisherHost observes web app updates on Lacros, and calls
+// This LacrosWebAppsController observes web app updates on Lacros, and calls
 // WebAppsCrosapi to inform the Ash browser of the current set of web apps.
-class WebAppsPublisherHost : public crosapi::mojom::AppController,
-                             public WebAppPublisherHelper::Delegate {
+class LacrosWebAppsController : public crosapi::mojom::AppController,
+                                public WebAppPublisherHelper::Delegate {
  public:
   using LoadIconCallback = WebAppPublisherHelper::LoadIconCallback;
 
-  explicit WebAppsPublisherHost(Profile* profile);
-  WebAppsPublisherHost(const WebAppsPublisherHost&) = delete;
-  WebAppsPublisherHost& operator=(const WebAppsPublisherHost&) = delete;
-  ~WebAppsPublisherHost() override;
+  explicit LacrosWebAppsController(Profile* profile);
+  LacrosWebAppsController(const LacrosWebAppsController&) = delete;
+  LacrosWebAppsController& operator=(const LacrosWebAppsController&) = delete;
+  ~LacrosWebAppsController() override;
 
   void Init();
 
@@ -60,13 +60,14 @@ class WebAppsPublisherHost : public crosapi::mojom::AppController,
   void SetPublisherForTesting(crosapi::mojom::AppPublisher* publisher);
 
  private:
-  FRIEND_TEST_ALL_PREFIXES(WebAppsPublisherHostBrowserTest,
+  FRIEND_TEST_ALL_PREFIXES(LacrosWebAppsControllerBrowserTest,
                            ExecuteContextMenuCommand);
-  FRIEND_TEST_ALL_PREFIXES(WebAppsPublisherHostBrowserTest, PauseUnpause);
-  FRIEND_TEST_ALL_PREFIXES(WebAppsPublisherHostBrowserTest, OpenNativeSettings);
-  FRIEND_TEST_ALL_PREFIXES(WebAppsPublisherHostBrowserTest, WindowMode);
-  FRIEND_TEST_ALL_PREFIXES(WebAppsPublisherHostBrowserTest, Launch);
-  FRIEND_TEST_ALL_PREFIXES(WebAppsPublisherHostBrowserTest, LaunchWithFiles);
+  FRIEND_TEST_ALL_PREFIXES(LacrosWebAppsControllerBrowserTest, PauseUnpause);
+  FRIEND_TEST_ALL_PREFIXES(LacrosWebAppsControllerBrowserTest,
+                           OpenNativeSettings);
+  FRIEND_TEST_ALL_PREFIXES(LacrosWebAppsControllerBrowserTest, WindowMode);
+  FRIEND_TEST_ALL_PREFIXES(LacrosWebAppsControllerBrowserTest, Launch);
+  FRIEND_TEST_ALL_PREFIXES(LacrosWebAppsControllerBrowserTest, LaunchWithFiles);
 
   void OnReady();
 
@@ -124,9 +125,9 @@ class WebAppsPublisherHost : public crosapi::mojom::AppController,
 
   mojo::Receiver<crosapi::mojom::AppController> receiver_{this};
 
-  base::WeakPtrFactory<WebAppsPublisherHost> weak_ptr_factory_{this};
+  base::WeakPtrFactory<LacrosWebAppsController> weak_ptr_factory_{this};
 };
 
 }  // namespace web_app
 
-#endif  // CHROME_BROWSER_WEB_APPLICATIONS_APP_SERVICE_WEB_APPS_PUBLISHER_HOST_H_
+#endif  // CHROME_BROWSER_WEB_APPLICATIONS_APP_SERVICE_LACROS_WEB_APPS_CONTROLLER_H_

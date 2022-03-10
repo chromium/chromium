@@ -56,8 +56,8 @@ source_set("app_service") {
   if (is_chromeos_lacros) {
     assert(enable_system_notifications)
     sources += [
-      "web_apps_publisher_host.cc",
-      "web_apps_publisher_host.h",
+      "lacros_web_apps_controller.cc",
+      "lacros_web_apps_controller.h",
     ]
 
     deps += [

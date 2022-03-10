@@ -37,7 +37,7 @@
 class Profile;
 
 namespace web_app {
-class WebAppsPublisherHost;
+class LacrosWebAppsController;
 }  // namespace web_app
 
 namespace apps {
@@ -243,7 +243,7 @@ class AppServiceProxyLacros : public KeyedService,
   void SetWindowMode(const std::string& app_id,
                      apps::mojom::WindowMode window_mode);
 
-  web_app::WebAppsPublisherHost* WebAppsPublisherHostForTesting();
+  web_app::LacrosWebAppsController* LacrosWebAppsControllerForTesting();
 
  protected:
   // An adapter, presenting an IconLoader interface based on the underlying
@@ -364,7 +364,7 @@ class AppServiceProxyLacros : public KeyedService,
   bool is_using_testing_profile_ = false;
   base::OnceClosure dialog_created_callback_;
 
-  std::unique_ptr<web_app::WebAppsPublisherHost> web_apps_publisher_host_;
+  std::unique_ptr<web_app::LacrosWebAppsController> lacros_web_apps_controller_;
   mojo::Receiver<crosapi::mojom::AppServiceSubscriber> crosapi_receiver_{this};
   int crosapi_app_service_proxy_version_ = 0;
 

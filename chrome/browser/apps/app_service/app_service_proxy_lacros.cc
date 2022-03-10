@@ -21,7 +21,7 @@
 #include "chrome/browser/apps/app_service/launch_utils.h"
 #include "chrome/browser/apps/app_service/publishers/extension_apps.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/web_applications/app_service/web_apps_publisher_host.h"
+#include "chrome/browser/web_applications/app_service/lacros_web_apps_controller.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_utils.h"
 #include "chromeos/lacros/lacros_service.h"
@@ -164,9 +164,9 @@ void AppServiceProxyLacros::Initialize() {
   browser_app_launcher_ = std::make_unique<apps::BrowserAppLauncher>(profile_);
 
   if (profile_->IsMainProfile()) {
-    web_apps_publisher_host_ =
-        std::make_unique<web_app::WebAppsPublisherHost>(profile_);
-    web_apps_publisher_host_->Init();
+    lacros_web_apps_controller_ =
+        std::make_unique<web_app::LacrosWebAppsController>(profile_);
+    lacros_web_apps_controller_->Init();
   }
 
   // Make the chrome://app-icon/ resource available.
@@ -593,14 +593,14 @@ void AppServiceProxyLacros::FlushMojoCallsForTesting() {
   crosapi_receiver_.FlushForTesting();
 }
 
-web_app::WebAppsPublisherHost*
-AppServiceProxyLacros::WebAppsPublisherHostForTesting() {
-  return web_apps_publisher_host_.get();
+web_app::LacrosWebAppsController*
+AppServiceProxyLacros::LacrosWebAppsControllerForTesting() {
+  return lacros_web_apps_controller_.get();
 }
 
 void AppServiceProxyLacros::Shutdown() {
-  if (web_apps_publisher_host_) {
-    web_apps_publisher_host_->Shutdown();
+  if (lacros_web_apps_controller_) {
+    lacros_web_apps_controller_->Shutdown();
   }
 }
 

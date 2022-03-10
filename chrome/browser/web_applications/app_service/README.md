@@ -8,7 +8,7 @@ For Ash, Linux, Mac and Windows, the publisher is [WebApps](web_apps.h). (This i
 
 In Ash with the Lacros flags enabled, this publisher only manages system web apps.
 
-For Lacros, we have a proxy publisher [WebAppsCrosapi](../../apps/app_service/publishers/web_apps_crosapi.h) in the Ash process, that communicates over [mojom](../../../../chromeos/crosapi/mojom/app_service.mojom) with the Lacros [WebAppsPublisherHost](web_apps_publisher_host.h). (The web app registry for non-system web apps is in the Lacros process, while the App Service controlling the Chrome OS launcher, shelf, etc. is in the Ash process.)
+For Lacros, we have a proxy publisher [WebAppsCrosapi](../../apps/app_service/publishers/web_apps_crosapi.h) in the Ash process, that communicates over [mojom](../../../../chromeos/crosapi/mojom/app_service.mojom) with the Lacros [LacrosWebAppsController](lacros_web_apps_controller.h). (The web app registry for non-system web apps is in the Lacros process, while the App Service controlling the Chrome OS launcher, shelf, etc. is in the Ash process.)
 
 # WebAppPublisherHelper
 
