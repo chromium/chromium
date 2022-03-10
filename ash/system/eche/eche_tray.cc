@@ -10,10 +10,12 @@
 #include "ash/constants/ash_features.h"
 #include "ash/public/cpp/ash_web_view.h"
 #include "ash/public/cpp/ash_web_view_factory.h"
+#include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shelf/shelf.h"
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
+#include "ash/style/ash_color_provider.h"
 #include "ash/style/icon_button.h"
 #include "ash/system/eche/eche_icon_loading_indicator_view.h"
 #include "ash/system/phonehub/ui_constants.h"
@@ -31,9 +33,11 @@
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size.h"
+#include "ui/gfx/geometry/vector2d.h"
 #include "ui/gfx/image/image.h"
 #include "ui/gfx/image/image_skia_operations.h"
 #include "ui/gfx/paint_vector_icon.h"
+#include "ui/gfx/vector_icon_types.h"
 #include "ui/strings/grit/ui_strings.h"
 #include "ui/views/border.h"
 #include "ui/views/controls/button/image_button_factory.h"
@@ -47,16 +51,40 @@ namespace ash {
 
 namespace {
 
-constexpr int kIconColumnWidth = 16;
-
 // The icon size should be smaller than the tray item size to avoid the icon
 // padding becoming negative.
 constexpr int kIconSize = 22;
 
-constexpr gfx::Insets kBubblePadding(4, 4, kBubbleBottomPaddingDip, 4);
+constexpr int kHeaderHeight = 40;
+constexpr int kHeaderHorizontalInteriorMargins = 12;
+constexpr gfx::Insets kHeaderDefaultSpacing =
+    gfx::Insets(/*vertical=*/0, /*horizontal=*/8);
+
+constexpr gfx::Insets kBubblePadding(/*vertical=*/8, /*horizontal=*/8);
 
 constexpr float kDefaultAspectRatio = 16.0 / 9.0f;
-constexpr int kMinimumEcheWidth = 240;
+constexpr gfx::Size kDefaultBubbleSize(360, 360 * kDefaultAspectRatio);
+
+// Max percentage of the screen height that can be covered by the eche bubble.
+constexpr float kMaxHeightPercentage = 0.85;
+
+// Creates a button with the given callback, icon, and tooltip text.
+// `message_id` is the resource id of the tooltip text of the icon.
+std::unique_ptr<views::Button> CreateButton(
+    views::Button::PressedCallback callback,
+    const gfx::VectorIcon& icon,
+    int message_id) {
+  SkColor color = AshColorProvider::Get()->GetContentLayerColor(
+      AshColorProvider::ContentLayerType::kIconColorPrimary);
+  auto button = views::CreateVectorImageButton(std::move(callback));
+  views::SetImageFromVectorIconWithColor(button.get(), icon, color);
+  button->SetTooltipText(l10n_util::GetStringUTF16(message_id));
+  button->SizeToPreferredSize();
+
+  views::InstallCircleHighlightPathGenerator(button.get());
+
+  return button;
+}
 
 }  // namespace
 
@@ -219,7 +247,7 @@ void EcheTray::InitBubble() {
   init_params.delegate = this;
   init_params.parent_window = GetBubbleWindowContainer();
   init_params.anchor_mode = TrayBubbleView::AnchorMode::kRect;
-  init_params.anchor_rect = GetBubbleAnchor()->GetAnchorBoundsInScreen();
+  init_params.anchor_rect = shelf()->GetSystemTrayAnchorRect();
   init_params.insets = GetTrayBubbleInsets();
   init_params.shelf_alignment = shelf()->alignment();
   init_params.preferred_width = GetSizeForEche().width();
@@ -256,18 +284,16 @@ void EcheTray::InitBubble() {
 }
 
 gfx::Size EcheTray::GetSizeForEche() const {
-  // Ensures the Eche bounds is always 16:9 portrait aspect ratio and not more
-  // than half of the windows.
-  gfx::Rect bounds = display::Screen::GetScreen()
-                         ->GetDisplayNearestWindow(
-                             tray_container()->GetWidget()->GetNativeWindow())
-                         .work_area();
-  const float bounds_aspect_ratio =
-      static_cast<float>(bounds.width()) / bounds.height();
-  const bool is_landscape = bounds_aspect_ratio >= 1;
-  int new_width = is_landscape ? (bounds.height() / 2) : (bounds.width() / 2);
-  new_width = std::min(new_width, kMinimumEcheWidth);
-  return gfx::Size(new_width, new_width * kDefaultAspectRatio);
+  const gfx::Rect work_area_bounds =
+      display::Screen::GetScreen()
+          ->GetDisplayNearestWindow(
+              tray_container()->GetWidget()->GetNativeWindow())
+          .work_area();
+  float height_scale =
+      (static_cast<float>(work_area_bounds.height()) * kMaxHeightPercentage) /
+      kDefaultBubbleSize.height();
+  height_scale = std::min(height_scale, 1.0f);
+  return gfx::ScaleToFlooredSize(kDefaultBubbleSize, height_scale);
 }
 
 void EcheTray::OnArrowBackActivated() {
@@ -278,10 +304,19 @@ void EcheTray::OnArrowBackActivated() {
 std::unique_ptr<views::View> EcheTray::CreateBubbleHeaderView() {
   auto header = std::make_unique<views::View>();
   header->SetLayoutManager(std::make_unique<views::FlexLayout>())
-      ->SetInteriorMargin(gfx::Insets(0, kIconColumnWidth));
-  auto arrow_back_buttom = CreateArrowBackButton(base::BindRepeating(
-      &EcheTray::OnArrowBackActivated, weak_factory_.GetWeakPtr()));
-  header->AddChildView(arrow_back_buttom.release());
+      ->SetInteriorMargin(
+          gfx::Insets(/*vertical=*/0,
+                      /*horizontal=*/kHeaderHorizontalInteriorMargins))
+      .SetCollapseMargins(true)
+      .SetMinimumCrossAxisSize(kHeaderHeight)
+      .SetDefault(views::kMarginsKey, kHeaderDefaultSpacing)
+      .SetCrossAxisAlignment(views::LayoutAlignment::kCenter);
+
+  // Add arrowback button
+  header->AddChildView(
+      CreateButton(base::BindRepeating(&EcheTray::OnArrowBackActivated,
+                                       weak_factory_.GetWeakPtr()),
+                   kEcheArrowBackIcon, IDS_APP_ACCNAME_BACK));
 
   views::Label* title = header->AddChildView(std::make_unique<views::Label>(
       std::u16string(), views::style::CONTEXT_DIALOG_TITLE,
@@ -297,41 +332,17 @@ std::unique_ptr<views::View> EcheTray::CreateBubbleHeaderView() {
           .WithWeight(1));
   title->SetHorizontalAlignment(gfx::ALIGN_LEFT);
 
-  auto minimize_button = views::BubbleFrameView::CreateMinimizeButton(
-      base::BindRepeating(&EcheTray::CloseBubble, weak_factory_.GetWeakPtr()));
+  // Add minimize button
+  header->AddChildView(CreateButton(
+      base::BindRepeating(&EcheTray::CloseBubble, weak_factory_.GetWeakPtr()),
+      kEcheMinimizeIcon, IDS_APP_ACCNAME_MINIMIZE));
 
-  minimize_button->SetProperty(views::kCrossAxisAlignmentKey,
-                               views::LayoutAlignment::kStart);
-  minimize_button->SetProperty(views::kInternalPaddingKey,
-                               minimize_button->GetInsets());
-  header->AddChildView(minimize_button.release());
-
-  auto close_button =
-      views::BubbleFrameView::CreateCloseButton(base::BindRepeating(
-          &EcheTray::PurgeAndClose, weak_factory_.GetWeakPtr()));
-
-  close_button->SetProperty(views::kCrossAxisAlignmentKey,
-                            views::LayoutAlignment::kStart);
-  // Set views::kInternalPaddingKey for flex layout to account for internal
-  // button padding when calculating margins.
-  close_button->SetProperty(views::kInternalPaddingKey,
-                            close_button->GetInsets());
-  header->AddChildView(close_button.release());
+  // Add close button
+  header->AddChildView(CreateButton(
+      base::BindRepeating(&EcheTray::PurgeAndClose, weak_factory_.GetWeakPtr()),
+      kEcheCloseIcon, IDS_APP_ACCNAME_CLOSE));
 
   return header;
-}
-
-std::unique_ptr<views::Button> EcheTray::CreateArrowBackButton(
-    Button::PressedCallback callback) {
-  auto arrow_back_button = views::CreateVectorImageButtonWithNativeTheme(
-      std::move(callback), vector_icons::kBackArrowIcon);
-  arrow_back_button->SetTooltipText(
-      l10n_util::GetStringUTF16(IDS_APP_ACCNAME_BACK));
-  arrow_back_button->SizeToPreferredSize();
-
-  views::InstallCircleHighlightPathGenerator(arrow_back_button.get());
-
-  return arrow_back_button;
 }
 
 BEGIN_METADATA(EcheTray, TrayBackgroundView)

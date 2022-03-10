@@ -126,11 +126,6 @@ class ASH_EXPORT EcheTray : public TrayBackgroundView, public SessionObserver {
 
   base::ScopedObservation<SessionControllerImpl, SessionObserver>
       observed_session_{this};
-
-  // Creates an arrow back button used in the corner of the dialog.
-  std::unique_ptr<views::Button> CreateArrowBackButton(
-      views::Button::PressedCallback callback);
-
   // The loading indicator, showing a throbber animation on top of the icon.
   EcheIconLoadingIndicatorView* loading_indicator_ = nullptr;
 
