@@ -4,7 +4,7 @@
 """Definitions of builders in the chromium.angle builder group."""
 
 load("//lib/builders.star", "goma", "xcode")
-load("//lib/ci.star", "ci")
+load("//lib/ci.star", "ci", "rbe_instance", "rbe_jobs")
 load("//lib/consoles.star", "consoles")
 
 ci.defaults.set(
@@ -41,6 +41,9 @@ ci.gpu.linux_builder(
         category = "Android|Builder|ANGLE",
         short_name = "arm64",
     ),
+    goma_backend = None,
+    reclient_instance = rbe_instance.DEFAULT,
+    reclient_jobs = rbe_jobs.DEFAULT,
 )
 
 ci.thin_tester(
@@ -58,6 +61,9 @@ ci.gpu.linux_builder(
         category = "Android|Builder|Chromium",
         short_name = "arm64",
     ),
+    goma_backend = None,
+    reclient_instance = rbe_instance.DEFAULT,
+    reclient_jobs = rbe_jobs.DEFAULT,
 )
 
 ci.thin_tester(

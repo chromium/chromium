@@ -132,8 +132,8 @@
     },
 
     'chromium.angle': {
-      'android-angle-arm64-builder': 'angle_deqp_android_release_trybot_dcheck_always_on_arm64',
-      'android-angle-chromium-arm64-builder': 'gpu_tests_android_release_bot_dcheck_always_on_arm64_fastbuild',
+      'android-angle-arm64-builder': 'angle_deqp_android_release_trybot_dcheck_always_on_arm64_reclient',
+      'android-angle-chromium-arm64-builder': 'gpu_tests_android_release_bot_dcheck_always_on_arm64_fastbuild_reclient',
       'fuchsia-angle-builder': 'angle_deqp_release_bot_dcheck_always_on_fuchsia',
       'ios-angle-builder': 'angle_deqp_release_bot_dcheck_always_on_ios',
       'linux-angle-builder': 'angle_deqp_release_trybot',
@@ -1714,9 +1714,9 @@
       'angle_deqp_tests', 'shared_release_trybot', 'x86',
     ],
 
-    'angle_deqp_android_release_trybot_dcheck_always_on_arm64': [
+    'angle_deqp_android_release_trybot_dcheck_always_on_arm64_reclient': [
       'angle_deqp_tests', 'android_without_codecs',
-      'shared_release_bot_dcheck_always_on', 'arm64',
+      'shared_release_bot_dcheck_always_on_reclient', 'arm64',
     ],
 
     'angle_deqp_release_bot_dcheck_always_on_fuchsia': [
@@ -2408,11 +2408,6 @@
 
     'gpu_tests_android_release_trybot_arm64_reclient': [
       'gpu_tests', 'android', 'release_trybot_minimal_symbols_reclient', 'arm64', 'static_angle',
-    ],
-
-    'gpu_tests_android_release_bot_dcheck_always_on_arm64_fastbuild': [
-      'gpu_tests', 'android', 'release_trybot_minimal_symbols', 'arm64', 'static_angle',
-      'android_fastbuild',
     ],
 
     'gpu_tests_android_release_bot_dcheck_always_on_arm64_fastbuild_reclient': [
