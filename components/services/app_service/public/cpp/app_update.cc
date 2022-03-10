@@ -14,8 +14,19 @@
 
 namespace {
 
-void ClonePermissions(const std::vector<apps::mojom::PermissionPtr>& clone_from,
-                      std::vector<apps::mojom::PermissionPtr>* clone_to) {
+std::vector<apps::PermissionPtr> ConvertMojomPermissionsToPermissions(
+    const std::vector<apps::mojom::PermissionPtr>& mojom_permissions) {
+  std::vector<apps::PermissionPtr> permissions;
+  for (const auto& mojom_permission : mojom_permissions) {
+    permissions.push_back(
+        apps::ConvertMojomPermissionToPermission(mojom_permission));
+  }
+  return permissions;
+}
+
+void CloneMojomPermissions(
+    const std::vector<apps::mojom::PermissionPtr>& clone_from,
+    std::vector<apps::mojom::PermissionPtr>* clone_to) {
   for (const auto& permission : clone_from) {
     clone_to->push_back(permission->Clone());
   }
@@ -101,7 +112,7 @@ void AppUpdate::Merge(apps::mojom::App* state, const apps::mojom::App* delta) {
     DCHECK(state->permissions.empty() ||
            (delta->permissions.size() == state->permissions.size()));
     state->permissions.clear();
-    ::ClonePermissions(delta->permissions, &state->permissions);
+    ::CloneMojomPermissions(delta->permissions, &state->permissions);
   }
   if (delta->install_reason != apps::mojom::InstallReason::kUnknown) {
     state->install_reason = delta->install_reason;
@@ -532,28 +543,22 @@ bool AppUpdate::InstallTimeChanged() const {
           (mojom_delta_->install_time != mojom_state_->install_time));
 }
 
-std::vector<apps::mojom::PermissionPtr> AppUpdate::Permissions() const {
-  std::vector<apps::mojom::PermissionPtr> permissions;
+apps::Permissions AppUpdate::Permissions() const {
+  if (ShouldUseNonMojom()) {
+    if (delta_ && !delta_->permissions.empty()) {
+      return ClonePermissions(delta_->permissions);
+    } else if (state_ && !state_->permissions.empty()) {
+      return ClonePermissions(state_->permissions);
+    }
+    return std::vector<PermissionPtr>{};
+  }
 
   if (mojom_delta_ && !mojom_delta_->permissions.empty()) {
-    ::ClonePermissions(mojom_delta_->permissions, &permissions);
+    return ::ConvertMojomPermissionsToPermissions(mojom_delta_->permissions);
   } else if (mojom_state_ && !mojom_state_->permissions.empty()) {
-    ::ClonePermissions(mojom_state_->permissions, &permissions);
+    return ::ConvertMojomPermissionsToPermissions(mojom_state_->permissions);
   }
-
-  return permissions;
-}
-
-apps::Permissions AppUpdate::GetPermissions() const {
-  apps::Permissions permissions;
-
-  if (delta_ && !delta_->permissions.empty()) {
-    permissions = ClonePermissions(delta_->permissions);
-  } else if (state_ && !state_->permissions.empty()) {
-    permissions = ClonePermissions(state_->permissions);
-  }
-
-  return permissions;
+  return std::vector<PermissionPtr>{};
 }
 
 bool AppUpdate::PermissionsChanged() const {
@@ -996,15 +1001,7 @@ std::ostream& operator<<(std::ostream& out, const AppUpdate& app) {
 
   out << "Permissions:" << std::endl;
   for (const auto& permission : app.Permissions()) {
-    out << "  ID: " << permission->permission_type;
-    out << " value: " << std::endl;
-    if (permission->value->is_bool_value()) {
-      out << " bool_value: " << permission->value->get_bool_value();
-    }
-    if (permission->value->is_tristate_value()) {
-      out << " tristate_value: " << permission->value->get_tristate_value();
-    }
-    out << " is_managed: " << permission->is_managed << std::endl;
+    out << permission->ToString();
   }
 
   out << "InstallReason: " << static_cast<int>(app.InstallReason())

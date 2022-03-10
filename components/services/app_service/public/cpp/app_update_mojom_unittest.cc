@@ -57,7 +57,7 @@ class AppUpdateMojomTest : public testing::Test {
   base::Time expect_install_time_;
   bool expect_install_time_changed_;
 
-  std::vector<apps::mojom::PermissionPtr> expect_permissions_;
+  apps::Permissions expect_permissions_;
   bool expect_permissions_changed_;
 
   apps::InstallReason expect_install_reason_;
@@ -191,7 +191,7 @@ class AppUpdateMojomTest : public testing::Test {
     EXPECT_EQ(expect_install_time_, u.InstallTime());
     EXPECT_EQ(expect_install_time_changed_, u.InstallTimeChanged());
 
-    EXPECT_EQ(expect_permissions_, u.Permissions());
+    EXPECT_TRUE(IsEqual(expect_permissions_, u.Permissions()));
     EXPECT_EQ(expect_permissions_changed_, u.PermissionsChanged());
 
     EXPECT_EQ(expect_install_reason_, u.InstallReason());
@@ -828,8 +828,10 @@ class AppUpdateMojomTest : public testing::Test {
                                apps::mojom::TriState::kAllow);
       state->permissions.push_back(p0.Clone());
       state->permissions.push_back(p1.Clone());
-      expect_permissions_.push_back(p0.Clone());
-      expect_permissions_.push_back(p1.Clone());
+      expect_permissions_.push_back(
+          apps::ConvertMojomPermissionToPermission(p0));
+      expect_permissions_.push_back(
+          apps::ConvertMojomPermissionToPermission(p1));
       expect_permissions_changed_ = false;
       CheckExpects(u);
     }
@@ -843,8 +845,10 @@ class AppUpdateMojomTest : public testing::Test {
 
       delta->permissions.push_back(p0.Clone());
       delta->permissions.push_back(p1.Clone());
-      expect_permissions_.push_back(p0.Clone());
-      expect_permissions_.push_back(p1.Clone());
+      expect_permissions_.push_back(
+          apps::ConvertMojomPermissionToPermission(p0));
+      expect_permissions_.push_back(
+          apps::ConvertMojomPermissionToPermission(p1));
       expect_permissions_changed_ = true;
       CheckExpects(u);
     }

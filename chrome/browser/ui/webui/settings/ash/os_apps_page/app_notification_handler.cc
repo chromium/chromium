@@ -21,20 +21,17 @@ namespace settings {
 
 namespace {
 app_notification::mojom::AppPtr CreateAppPtr(const apps::AppUpdate& update) {
-  apps::PermissionPtr permission_copy;
-  for (const auto& permission : update.Permissions()) {
-    if (permission->permission_type ==
-        apps::mojom::PermissionType::kNotifications) {
-      permission_copy = apps::ConvertMojomPermissionToPermission(permission);
-      break;
-    }
-  }
-
   auto app = app_notification::mojom::App::New();
   app->id = update.AppId();
   app->title = update.Name();
-  app->notification_permission = std::move(permission_copy);
   app->readiness = update.Readiness();
+
+  for (const auto& permission : update.Permissions()) {
+    if (permission->permission_type == apps::PermissionType::kNotifications) {
+      app->notification_permission = permission->Clone();
+      break;
+    }
+  }
 
   return app;
 }
@@ -49,8 +46,7 @@ bool ShouldIncludeApp(const apps::AppUpdate& update) {
   if (update.AppType() == apps::mojom::AppType::kArc ||
       update.AppType() == apps::mojom::AppType::kWeb) {
     for (const auto& permission : update.Permissions()) {
-      if (permission->permission_type ==
-          apps::mojom::PermissionType::kNotifications) {
+      if (permission->permission_type == apps::PermissionType::kNotifications) {
         return true;
       }
     }

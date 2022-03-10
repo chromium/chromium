@@ -56,6 +56,10 @@ mojom("mojo_bindings") {
           cpp = "::apps::AppType"
         },
         {
+          mojom = "app_management.mojom.PermissionType"
+          cpp = "::apps::PermissionType"
+        },
+        {
           mojom = "app_management.mojom.Permission"
           cpp = "::apps::PermissionPtr"
           move_only = true

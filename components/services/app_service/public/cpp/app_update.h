@@ -115,8 +115,7 @@ class COMPONENT_EXPORT(APP_UPDATE) AppUpdate {
   base::Time InstallTime() const;
   bool InstallTimeChanged() const;
 
-  std::vector<apps::mojom::PermissionPtr> Permissions() const;
-  apps::Permissions GetPermissions() const;
+  apps::Permissions Permissions() const;
   bool PermissionsChanged() const;
 
   apps::InstallReason InstallReason() const;

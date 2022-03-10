@@ -358,17 +358,11 @@ app_management::mojom::AppPtr AppManagementPageHandler::CreateUIAppPtr(
   app->title = update.Name();
 
   for (const auto& permission : update.Permissions()) {
-    if (permission->permission_type == apps::mojom::PermissionType::kStorage &&
+    if (permission->permission_type == apps::PermissionType::kStorage &&
         ShouldHideStoragePermission(update.AppId())) {
       continue;
     }
-    app_management::mojom::PermissionType permission_type =
-        mojo::EnumTraits<app_management::mojom::PermissionType,
-                         apps::PermissionType>::
-            ToMojom(apps::ConvertMojomPermissionTypeToPermissionType(
-                permission->permission_type));
-    app->permissions[permission_type] =
-        apps::ConvertMojomPermissionToPermission(permission);
+    app->permissions[permission->permission_type] = permission->Clone();
   }
 
   app->install_reason = update.InstallReason();

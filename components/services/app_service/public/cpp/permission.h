@@ -46,7 +46,7 @@ struct COMPONENT_EXPORT(APP_TYPES) PermissionValue {
 
   // Checks whether this is equal to permission enabled. If it is TriState, only
   // Allow represent permission enabled.
-  bool IsPermissionEnabled();
+  bool IsPermissionEnabled() const;
 
   absl::optional<bool> bool_value;
   absl::optional<TriState> tristate_value;
@@ -66,6 +66,12 @@ struct COMPONENT_EXPORT(APP_TYPES) Permission {
   bool operator!=(const Permission& other) const;
 
   std::unique_ptr<Permission> Clone() const;
+
+  // Checks whether this is equal to permission enabled. If it is TriState, only
+  // Allow represent permission enabled.
+  bool IsPermissionEnabled() const;
+
+  std::string ToString() const;
 
   PermissionType permission_type;
   std::unique_ptr<PermissionValue> value;

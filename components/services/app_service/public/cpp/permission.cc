@@ -37,7 +37,7 @@ std::unique_ptr<PermissionValue> PermissionValue::Clone() const {
   return nullptr;
 }
 
-bool PermissionValue::IsPermissionEnabled() {
+bool PermissionValue::IsPermissionEnabled() const {
   if (tristate_value.has_value()) {
     return tristate_value.value() == TriState::kAllow;
   } else if (bool_value.has_value()) {
@@ -72,6 +72,25 @@ PermissionPtr Permission::Clone() const {
 
   return std::make_unique<Permission>(permission_type, value->Clone(),
                                       is_managed);
+}
+
+bool Permission::IsPermissionEnabled() const {
+  return value && value->IsPermissionEnabled();
+}
+
+std::string Permission::ToString() const {
+  std::stringstream out;
+  out << " permission type: " << static_cast<int>(permission_type);
+  out << " value: " << std::endl;
+  if (value && value->bool_value.has_value()) {
+    out << " bool_value: " << (value->bool_value.value() ? "true" : "false");
+  }
+  if (value && value->tristate_value.has_value()) {
+    out << " tristate_value: "
+        << static_cast<int>(value->tristate_value.value());
+  }
+  out << " is_managed: " << (is_managed ? "true" : "false") << std::endl;
+  return out.str();
 }
 
 Permissions ClonePermissions(const Permissions& source_permissions) {
