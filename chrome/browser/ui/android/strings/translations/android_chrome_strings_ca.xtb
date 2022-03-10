@@ -127,7 +127,7 @@
 <translation id="1810845389119482123">La configuració de la sincronització inicial no ha finalitzat</translation>
 <translation id="1829244130665387512">Cerca a la pàgina</translation>
 <translation id="1843805151597803366">Per obtenir traduccions millors, deixa que la Cerca de Google utilitzi la pàgina actual</translation>
-<translation id="1856325424225101786">Vols restablir el mode bàsic?</translation>
+<translation id="1856325424225101786">Vols restablir el mode lleuger?</translation>
 <translation id="1868024384445905608">Ara Chrome baixa els fitxers més ràpid</translation>
 <translation id="1877026089748256423">Chrome no està actualitzat</translation>
 <translation id="1883903952484604915">Els meus fitxers</translation>
@@ -245,7 +245,7 @@ Mantén premuda qualsevol paraula per cercar-la. Per definir millor la cerca, se
 <translation id="2512164632052122970">Idiomes del contingut</translation>
 <translation id="2513403576141822879">Per trobar més opcions de configuració relacionades amb la privadesa, la seguretat i la recollida de dades, consulta <ph name="BEGIN_LINK" />Sincronització i serveis de Google<ph name="END_LINK" /></translation>
 <translation id="2517472476991765520">Escaneja</translation>
-<translation id="2518590038762162553">En el mode bàsic, Chrome carrega les pàgines més ràpidament i utilitza fins a un 60 per cent menys de dades. Per optimitzar les pàgines que visites, Chrome envia el teu trànsit web a Google. <ph name="BEGIN_LINK" />Més informació<ph name="END_LINK" /></translation>
+<translation id="2518590038762162553">En el mode lleuger, Chrome carrega les pàgines més ràpidament i utilitza fins a un 60 per cent menys de dades. Per optimitzar les pàgines que visites, Chrome envia el teu trànsit web a Google. <ph name="BEGIN_LINK" />Més informació<ph name="END_LINK" /></translation>
 <translation id="2523184218357549926">Envia a Google els URL de les pàgines que visites</translation>
 <translation id="2527209463677295330">Si inclous més text d'una pàgina, pots obtenir millors resultats</translation>
 <translation id="2527497042232966453">S'ha canviat a pestanyes d'incògnit</translation>
@@ -549,7 +549,7 @@ Mantén premuda qualsevol paraula per cercar-la. Per definir millor la cerca, se
 <translation id="4404568932422911380">Cap adreça d'interès</translation>
 <translation id="4405224443901389797">Mou a…</translation>
 <translation id="4409271659088619928">El teu motor de cerca és <ph name="DSE" />. Consulta'n les instruccions per suprimir l'historial de cerques, si escau.</translation>
-<translation id="4411535500181276704">Mode bàsic</translation>
+<translation id="4411535500181276704">Mode lleuger</translation>
 <translation id="4415276339145661267">Gestiona el teu Compte de Google</translation>
 <translation id="4427306783828095590">La protecció millorada és més efiçaç a l'hora de bloquejar la pesca de credencials i el programari maliciós</translation>
 <translation id="4450672886426705087">Resultats de la cerca de Google.</translation>
@@ -560,7 +560,7 @@ Mantén premuda qualsevol paraula per cercar-la. Per definir millor la cerca, se
 <translation id="4479972344484327217">S'està instal·lant <ph name="MODULE" /> per a Chrome…</translation>
 <translation id="4487967297491345095">Totes les dades de les aplicacions de Chrome, com ara els fitxers, la configuració, els comptes o les bases de dades, entre d'altres, se suprimiran permanentment.</translation>
 <translation id="449126573531210296">Encripta contrasenyes sincronitzades amb el teu Compte de Google</translation>
-<translation id="4493497663118223949">El mode bàsic està activat</translation>
+<translation id="4493497663118223949">El mode lleuger està activat</translation>
 <translation id="4504667196171871375">Amb Wi‑Fi i dades mòbils</translation>
 <translation id="4508528996305412043">El menú de la targeta del tauler està obert</translation>
 <translation id="4508642716788467538">Tria l'idioma</translation>
@@ -570,7 +570,7 @@ Mantén premuda qualsevol paraula per cercar-la. Per definir millor la cerca, se
 
 És possible que el teu compte de Google tingui altres formes de l'historial de navegació, com ara les cerques i l'activitat d'altres serveis de Google a <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" />.</translation>
 <translation id="4532845899244822526">Tria la carpeta</translation>
-<translation id="4538018662093857852">Activa el mode bàsic</translation>
+<translation id="4538018662093857852">Activa el mode lleuger</translation>
 <translation id="4547551584605870320">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> pestanya}other{<ph name="TAB_COUNT_MANY" /> pestanyes, <ph name="TAB_COUNT_INCOGNITO" /> d'incògnit}}</translation>
 <translation id="4550003330909367850">Per veure o copiar la contrasenya aquí, estableix el bloqueig de pantalla en aquest dispositiu.</translation>
 <translation id="4554077758708533499">Connectat amb un cable USB</translation>
@@ -769,7 +769,7 @@ Per canviar aquesta opció, <ph name="BEGIN_LINK" />restableix la sincronitzaci�
 <translation id="5697688514913266141">El fitxer es desarà a <ph name="BEGIN_BOLD" /><ph name="DIRECTORY" /><ph name="END_BOLD" />. <ph name="BEGIN_LINK2" />Edita<ph name="END_LINK2" />.</translation>
 <translation id="570347048394355941">Canvia a la pestanya</translation>
 <translation id="572328651809341494">Pestanyes recents</translation>
-<translation id="5723735397759933332">Ara el mode bàsic et permet estalviar més dades optimitzant imatges de pàgines HTTPS.</translation>
+<translation id="5723735397759933332">Ara el mode lleuger et permet estalviar més dades optimitzant imatges de pàgines HTTPS.</translation>
 <translation id="5726692708398506830">Augmenta la mida de tots els elements de la pàgina</translation>
 <translation id="5748802427693696783">S'ha canviat a les pestanyes estàndard</translation>
 <translation id="5749068826913805084">Chrome necessita accedir a l'emmagatzematge per poder baixar fitxers.</translation>
@@ -1051,7 +1051,7 @@ Per exemple, és possible que alguns llocs web responguin a aquesta sol·licitud
 <translation id="7302081693174882195">Detalls: files ordenades per quantitat de dades estalviades</translation>
 <translation id="7304873321153398381">No tens connexió. Chrome no pot comprovar les teves contrasenyes.</translation>
 <translation id="7313188324932846546">Toca per configurar la sincronització</translation>
-<translation id="7328017930301109123">En el mode bàsic, Chrome carrega les pàgines més ràpidament i utilitza fins a un 60 per cent menys de dades.</translation>
+<translation id="7328017930301109123">En el mode lleuger, Chrome carrega les pàgines més ràpidament i utilitza fins a un 60 per cent menys de dades.</translation>
 <translation id="7332075081379534664">Has iniciat la sessió correctament</translation>
 <translation id="7333031090786104871">Encara s'hi està afegint el lloc anterior</translation>
 <translation id="7339898014177206373">Finestra nova</translation>
@@ -1073,7 +1073,7 @@ Per exemple, és possible que alguns llocs web responguin a aquesta sol·licitud
 <translation id="7431991332293347422">Controla com s'utilitza l'historial de navegació per personalitzar la Cerca i més</translation>
 <translation id="7435356471928173109">Desactivada per l'administrador</translation>
 <translation id="7437998757836447326">Tanca la sessió de Chrome</translation>
-<translation id="7438641746574390233">Quan el mode bàsic estigui activat, Chrome utilitzarà els servidors de Google perquè les pàgines es carreguin més de pressa. El mode bàsic reescriu les pàgines molt lentes per carregar només el contingut essencial. El mode bàsic no s'aplica a les pestanyes d'incògnit.</translation>
+<translation id="7438641746574390233">Quan el mode lleuger estigui activat, Chrome utilitzarà els servidors de Google perquè les pàgines es carreguin més de pressa. El mode lleuger reescriu les pàgines molt lentes per carregar només el contingut essencial. El mode lleuger no s'aplica a les pestanyes d'incògnit.</translation>
 <translation id="7444811645081526538">Més categories</translation>
 <translation id="7453467225369441013">Et tanca la sessió de la majoria de llocs web, però no la del Compte de Google.</translation>
 <translation id="7454641608352164238">No hi ha prou espai</translation>
@@ -1097,7 +1097,7 @@ Per exemple, és possible que alguns llocs web responguin a aquesta sol·licitud
 <translation id="752220631458524187">Desconnecta'l quan hagis acabat</translation>
 <translation id="7523960634226602883">Cerca amb la càmera mitjançant Google Lens</translation>
 <translation id="753225086557513863">Programades per a més tard</translation>
-<translation id="7559975015014302720">El mode bàsic està desactivat</translation>
+<translation id="7559975015014302720">El mode lleuger està desactivat</translation>
 <translation id="7560448309733608642">Esborra l'historial de tots els dispositius sincronitzats. A <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> trobaràs altres maneres d'explorar l'historial de navegació del teu Compte de Google.</translation>
 <translation id="7562080006725997899">S'estan esborrant les dades de navegació</translation>
 <translation id="756809126120519699">S'han esborrat les dades de Chrome</translation>
@@ -1110,7 +1110,7 @@ Per exemple, és possible que alguns llocs web responguin a aquesta sol·licitud
 <translation id="7594687499944811403">Permet que <ph name="EMBEDDED_ORIGIN" /> verifiqui la teva identitat per a <ph name="TOP_ORIGIN" /></translation>
 <translation id="7596558890252710462">Sistema operatiu</translation>
 <translation id="7605594153474022051">La sincronització no funciona</translation>
-<translation id="7606077192958116810">El mode bàsic està activat. Gestiona'l a Configuració.</translation>
+<translation id="7606077192958116810">El mode lleuger està activat. Gestiona'l a Configuració.</translation>
 <translation id="7612619742409846846">Has iniciat la sessió a Google com a</translation>
 <translation id="7616551326690708776">Selecciona una plantilla per a la marca.</translation>
 <translation id="7619072057915878432">No s'ha pogut baixar <ph name="FILE_NAME" /> a causa d'errors a la xarxa.</translation>
@@ -1395,7 +1395,7 @@ Per exemple, és possible que alguns llocs web responguin a aquesta sol·licitud
 <translation id="9212845824145208577">No es pot baixar més. Prova de començar des de més avall a la pàgina.</translation>
 <translation id="9219103736887031265">Imatges</translation>
 <translation id="926205370408745186">Suprimeix l'activitat de Chrome de l'aplicació Benestar digital</translation>
-<translation id="927968626442779827">Utilitza el mode bàsic a Google Chrome</translation>
+<translation id="927968626442779827">Utilitza el mode lleuger a Google Chrome</translation>
 <translation id="928550791203542716">Segueixes <ph name="SITE_NAME" /></translation>
 <translation id="932327136139879170">Inici</translation>
 <translation id="938850635132480979">Error: <ph name="ERROR_CODE" /></translation>
