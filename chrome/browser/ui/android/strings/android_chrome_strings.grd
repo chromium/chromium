@@ -300,6 +300,9 @@ CHAR_LIMIT guidelines:
       <message name="IDS_SIGN_OUT_AND_TURN_OFF_SYNC" desc="The text for a preferences row that for signs out the user and turns off sync.">
         Sign out and turn off sync
       </message>
+      <message name="IDS_TURN_OFF_SYNC" desc="The text for a preferences row that turns off sync without signing the user out.">
+        Turn off sync
+      </message>
       <message name="IDS_SIGN_OUT" desc="The text for a preference row that signs out the user.">
         Sign out
       </message>

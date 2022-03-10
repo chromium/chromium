@@ -39,6 +39,7 @@ import org.chromium.chrome.browser.AppHooks;
 import org.chromium.chrome.browser.SyncFirstSetupCompleteSource;
 import org.chromium.chrome.browser.autofill.PersonalDataManager;
 import org.chromium.chrome.browser.feedback.HelpAndFeedbackLauncherImpl;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.settings.ChromeManagedPreferenceDelegate;
 import org.chromium.chrome.browser.settings.SettingsActivity;
@@ -197,8 +198,27 @@ public class ManageSyncSettings extends PreferenceFragmentCompat
 
         Profile profile = Profile.getLastUsedRegularProfile();
         if (!mIsFromSigninScreen) {
-            // Child profiles should not be able to sign out.
-            mTurnOffSync.setVisible(!profile.isChild());
+            if (!profile.isChild()) {
+                // Non-child users have an option to sign out and turn off sync.  This is to ensure
+                // that revoking consents for sign in and sync does not require more steps than
+                // enabling them.
+                mTurnOffSync.setVisible(true);
+                mTurnOffSync.setIcon(R.drawable.ic_signout_40dp);
+                mTurnOffSync.setTitle(R.string.sign_out_and_turn_off_sync);
+            } else if (ChromeFeatureList.isEnabled(
+                               ChromeFeatureList.ALLOW_SYNC_OFF_FOR_CHILD_ACCOUNTS)) {
+                // Child users are force signed-in, so have an option which only turns off sync.
+                //
+                // TODO(crbug.com/1294761): update implementation to turn off sync without signing
+                // out.
+                mTurnOffSync.setVisible(true);
+                mTurnOffSync.setIcon(R.drawable.ic_turn_off_sync_48dp);
+                mTurnOffSync.setTitle(R.string.turn_off_sync);
+            } else {
+                // Child users who are not allowed to disable sync have this option hidden.
+                mTurnOffSync.setVisible(false);
+            }
+
             findPreference(PREF_ADVANCED_CATEGORY).setVisible(true);
 
             /**
