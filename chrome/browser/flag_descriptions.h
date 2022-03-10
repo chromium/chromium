@@ -3014,6 +3014,15 @@ extern const char kPhoneHubCameraRollDescription[];
 extern const char kProductivityLauncherName[];
 extern const char kProductivityLauncherDescription[];
 
+extern const char kProjectorName[];
+extern const char kProjectorDescription[];
+
+extern const char kProjectorAnnotatorName[];
+extern const char kProjectorAnnotatorDescription[];
+
+extern const char kProjectorExcludeTranscriptName[];
+extern const char kProjectorExcludeTranscriptDescription[];
+
 extern const char kForceShowContinueSectionName[];
 extern const char kForceShowContinueSectionDescription[];
 

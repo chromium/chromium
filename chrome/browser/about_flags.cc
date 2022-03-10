@@ -8311,6 +8311,19 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kAppProvisioningStaticName,
      flag_descriptions::kAppProvisioningStaticDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(features::kAppProvisioningStatic)},
+
+    {"enable-projector", flag_descriptions::kProjectorName,
+     flag_descriptions::kProjectorDescription, kOsCrOS,
+     FEATURE_VALUE_TYPE(ash::features::kProjector)},
+
+    {"enable-projector-annotator", flag_descriptions::kProjectorAnnotatorName,
+     flag_descriptions::kProjectorAnnotatorDescription, kOsCrOS,
+     FEATURE_VALUE_TYPE(ash::features::kProjectorAnnotator)},
+
+    {"enable-projector-exclude-transcript",
+     flag_descriptions::kProjectorExcludeTranscriptName,
+     flag_descriptions::kProjectorExcludeTranscriptDescription, kOsCrOS,
+     FEATURE_VALUE_TYPE(ash::features::kProjectorExcludeTranscript)},
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
     // NOTE: Adding a new flag requires adding a corresponding entry to enum

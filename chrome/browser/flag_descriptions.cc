@@ -5242,6 +5242,19 @@ const char kProductivityLauncherDescription[] =
     "To evaluate an enhanced Launcher experience that aims to improve app "
     "workflows by optimizing access to apps, app content, and app actions.";
 
+const char kProjectorName[] = "Enable Projector";
+const char kProjectorDescription[] =
+    "Enables Projects SWA and associated recording tools";
+
+const char kProjectorAnnotatorName[] = "Enable Projector annotator";
+const char kProjectorAnnotatorDescription[] =
+    "Turns on annotator tools when recording a screen capture using projector";
+
+const char kProjectorExcludeTranscriptName[] =
+    "Enable Projector exclude transcript feature";
+const char kProjectorExcludeTranscriptDescription[] =
+    "Support excluding segment of Projector recording by excluding transcript";
+
 const char kForceShowContinueSectionName[] =
     "App Launcher: Force Continue Section Suggestions";
 const char kForceShowContinueSectionDescription[] =
