@@ -134,14 +134,14 @@ class LOCKABLE BASE_EXPORT SpinningMutex {
 #else  // defined(PA_HAS_FAST_MUTEX)
   std::atomic<bool> lock_{false};
 
-#if BUILDFLAG(IS_APPLE) && !defined(PA_NO_OS_UNFAIR_LOCK_CRBUG_1267256)
+#if BUILDFLAG(IS_APPLE)
 
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wunguarded-availability"
   os_unfair_lock unfair_lock_ = OS_UNFAIR_LOCK_INIT;
 #pragma clang diagnostic pop
 
-#endif  // BUILDFLAG(IS_APPLE) && !defined(PA_NO_OS_UNFAIR_LOCK_CRBUG_1267256)
+#endif  // BUILDFLAG(IS_APPLE)
 
   // Spinlock-like, fallback.
   ALWAYS_INLINE bool TrySpinLock();
