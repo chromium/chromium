@@ -90,7 +90,9 @@ void SearchResultInlineIconView::OnPaint(gfx::Canvas* canvas) {
       AshColorProvider::ContentLayerType::kTextColorURL));
   paint_flags.setStyle(cc::PaintFlags::kStroke_Style);
   paint_flags.setStrokeWidth(kBorderThickness);
-  canvas->DrawRoundRect(GetContentsBounds(), kButtonCornerRadius, paint_flags);
+  gfx::Rect bounds = GetContentsBounds();
+  bounds.Inset(gfx::Insets(kBorderThickness));
+  canvas->DrawRoundRect(bounds, kButtonCornerRadius, paint_flags);
 }
 
 void SearchResultInlineIconView::OnThemeChanged() {
