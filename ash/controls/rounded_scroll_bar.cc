@@ -98,6 +98,10 @@ void RoundedScrollBar::SetInsets(const gfx::Insets& insets) {
   insets_ = insets;
 }
 
+void RoundedScrollBar::SetSnapBackOnDragOutside(bool snap) {
+  thumb_->SetSnapBackOnDragOutside(snap);
+}
+
 gfx::Rect RoundedScrollBar::GetTrackBounds() const {
   gfx::Rect bounds = GetLocalBounds();
   bounds.Inset(insets_);

@@ -35,6 +35,10 @@ class ASH_EXPORT RoundedScrollBar : public views::ScrollBar {
   // to the edge of the screen or the edge of a widget.
   void SetInsets(const gfx::Insets& insets);
 
+  // Sets whether a drag that starts on the scroll thumb and then moves far
+  // outside the thumb should "snap back" to the original scroll position.
+  void SetSnapBackOnDragOutside(bool snap);
+
   // views::ScrollBar:
   gfx::Rect GetTrackBounds() const override;
   bool OverlapsContent() const override;

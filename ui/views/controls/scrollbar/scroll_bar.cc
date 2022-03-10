@@ -399,8 +399,8 @@ base::RetainingOneShotTimer* ScrollBar::GetHideTimerForTesting(
 }
 #endif
 
-int ScrollBar::GetThumbSizeForTesting() {
-  return thumb_->GetSize();
+int ScrollBar::GetThumbLengthForTesting() {
+  return thumb_->GetLength();
 }
 
 void ScrollBar::ProcessPressEvent(const ui::LocatedEvent& event) {
@@ -440,7 +440,7 @@ int ScrollBar::CalculateThumbPosition(int contents_scroll_offset) const {
   // In some combination of viewport_size and contents_size_, the result of
   // simple division can be rounded and there could be 1 pixel gap even when the
   // contents scroll down to the bottom. See crbug.com/244671.
-  int thumb_max = GetTrackSize() - thumb_->GetSize();
+  int thumb_max = GetTrackSize() - thumb_->GetLength();
   if (contents_scroll_offset + viewport_size_ == contents_size_)
     return thumb_max;
   return (contents_scroll_offset * thumb_max) /
@@ -449,7 +449,7 @@ int ScrollBar::CalculateThumbPosition(int contents_scroll_offset) const {
 
 int ScrollBar::CalculateContentsOffset(float thumb_position,
                                        bool scroll_to_middle) const {
-  float thumb_size = static_cast<float>(thumb_->GetSize());
+  float thumb_size = static_cast<float>(thumb_->GetLength());
   int track_size = GetTrackSize();
   if (track_size == thumb_size)
     return 0;
