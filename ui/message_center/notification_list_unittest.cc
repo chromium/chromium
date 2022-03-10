@@ -242,6 +242,35 @@ TEST_F(NotificationListTest, UpdateNotificationWithRenotifyAndQuietMode) {
   }
 }
 
+TEST_F(NotificationListTest, ResetPopupInQuietMode) {
+  for (size_t quiet_mode = 0u; quiet_mode < 2u; ++quiet_mode) {
+    // Set Do Not Disturb mode.
+    notification_list_->SetQuietMode(static_cast<bool>(quiet_mode));
+
+    // Create notification.
+    std::string id;
+    auto old_notification = MakeNotification(&id);
+    notification_list_->AddNotification(std::move(old_notification));
+    EXPECT_EQ(1u, notification_list_->NotificationCount(blockers_));
+
+    // Reset single popup and make sure that the behavior is correct
+    // within/outside of quiet mode.
+    notification_list_->ResetSinglePopup(id);
+
+    // Normally, `shown_as_popup` should be reset in order to show the popup
+    // again. However, in quiet mode, `shown_as_popup` should not be reset since
+    // we don't want the popup to be shown.
+    const NotificationList::PopupNotifications popup_notifications =
+        notification_list_->GetPopupNotifications(blockers_, nullptr);
+    if (quiet_mode) {
+      ASSERT_EQ(0U, popup_notifications.size());
+    } else {
+      ASSERT_EQ(1U, popup_notifications.size());
+      EXPECT_EQ(id, (*popup_notifications.begin())->id());
+    }
+  }
+}
+
 TEST_F(NotificationListTest, GetNotificationsByNotifierId) {
   NotifierId id0(NotifierType::APPLICATION, "ext0");
   NotifierId id1(NotifierType::APPLICATION, "ext1");

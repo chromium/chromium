@@ -312,7 +312,8 @@ void NotificationList::ResetSinglePopup(const std::string& id) {
   DCHECK(iter != notifications_.end());
 
   NotificationState* state = &iter->second;
-  state->shown_as_popup = false;
+  // `shown_as_popup` should be true if quiet mode is enabled.
+  state->shown_as_popup = quiet_mode_;
   state->is_read = false;
 }
 
@@ -327,6 +328,8 @@ NotificationDelegate* NotificationList::GetNotificationDelegate(
 void NotificationList::SetQuietMode(bool quiet_mode) {
   quiet_mode_ = quiet_mode;
   if (quiet_mode_) {
+    // To prevent popups showing in quiet mode, mark all notifications'
+    // `shown_as_popup` to true.
     for (auto& tuple : notifications_)
       tuple.second.shown_as_popup = true;
   }
