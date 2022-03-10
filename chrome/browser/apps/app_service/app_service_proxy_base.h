@@ -371,7 +371,7 @@ class AppServiceProxyBase : public KeyedService,
                                         apps::mojom::LaunchContainer container);
 
   virtual void PerformPostUninstallTasks(
-      apps::mojom::AppType app_type,
+      apps::AppType app_type,
       const std::string& app_id,
       apps::mojom::UninstallSource uninstall_source);
 

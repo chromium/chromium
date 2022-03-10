@@ -420,7 +420,8 @@ void AppServiceProxyBase::UninstallSilently(
     apps::mojom::AppType app_type = app_registry_cache_.GetAppType(app_id);
     app_service_->Uninstall(app_type, app_id, uninstall_source,
                             /*clear_site_data=*/false, /*report_abuse=*/false);
-    PerformPostUninstallTasks(app_type, app_id, uninstall_source);
+    PerformPostUninstallTasks(ConvertMojomAppTypToAppType(app_type), app_id,
+                              uninstall_source);
   }
 }
 
@@ -731,7 +732,7 @@ void AppServiceProxyBase::RecordAppPlatformMetrics(
     apps::mojom::LaunchContainer container) {}
 
 void AppServiceProxyBase::PerformPostUninstallTasks(
-    apps::mojom::AppType app_type,
+    apps::AppType app_type,
     const std::string& app_id,
     apps::mojom::UninstallSource uninstall_source) {}
 

@@ -181,7 +181,8 @@ void AppServiceProxyAsh::PauseApps(
           LoadIconForDialog(
               update,
               base::BindOnce(&AppServiceProxyAsh::OnLoadIconForPauseDialog,
-                             weak_ptr_factory_.GetWeakPtr(), update.AppType(),
+                             weak_ptr_factory_.GetWeakPtr(),
+                             ConvertMojomAppTypToAppType(update.AppType()),
                              update.AppId(), update.Name(), data.second));
         });
   }
@@ -296,12 +297,12 @@ void AppServiceProxyAsh::UninstallImpl(
                                             const apps::AppUpdate& update) {
     auto icon_key = update.IconKey();
     DCHECK(icon_key.has_value());
+    auto app_type = ConvertMojomAppTypToAppType(update.AppType());
     auto uninstall_dialog_ptr = std::make_unique<UninstallDialog>(
-        profile_, update.AppType(), update.AppId(), update.Name(),
-        parent_window,
+        profile_, app_type, update.AppId(), update.Name(), parent_window,
         base::BindOnce(&AppServiceProxyAsh::OnUninstallDialogClosed,
-                       weak_ptr_factory_.GetWeakPtr(), update.AppType(),
-                       update.AppId(), uninstall_source));
+                       weak_ptr_factory_.GetWeakPtr(), app_type, update.AppId(),
+                       uninstall_source));
     UninstallDialog* uninstall_dialog = uninstall_dialog_ptr.get();
     uninstall_dialog_ptr->SetDialogCreatedCallbackForTesting(
         std::move(callback));
@@ -311,7 +312,7 @@ void AppServiceProxyAsh::UninstallImpl(
 }
 
 void AppServiceProxyAsh::OnUninstallDialogClosed(
-    apps::mojom::AppType app_type,
+    apps::AppType app_type,
     const std::string& app_id,
     apps::mojom::UninstallSource uninstall_source,
     bool uninstall,
@@ -321,8 +322,8 @@ void AppServiceProxyAsh::OnUninstallDialogClosed(
   if (uninstall) {
     app_registry_cache_.ForOneApp(app_id, RecordAppBounce);
 
-    app_service_->Uninstall(app_type, app_id, uninstall_source, clear_site_data,
-                            report_abuse);
+    app_service_->Uninstall(ConvertAppTypeToMojomAppType(app_type), app_id,
+                            uninstall_source, clear_site_data, report_abuse);
 
     PerformPostUninstallTasks(app_type, app_id, uninstall_source);
   }
@@ -366,7 +367,8 @@ bool AppServiceProxyAsh::MaybeShowLaunchPreventionDialog(
     pause_data.minutes = time_limit.value().InMinutes() % 60;
     LoadIconForDialog(
         update, base::BindOnce(&AppServiceProxyAsh::OnLoadIconForPauseDialog,
-                               weak_ptr_factory_.GetWeakPtr(), update.AppType(),
+                               weak_ptr_factory_.GetWeakPtr(),
+                               ConvertMojomAppTypToAppType(update.AppType()),
                                update.AppId(), update.Name(), pause_data));
     return true;
   }
@@ -448,7 +450,7 @@ void AppServiceProxyAsh::OnLoadIconForBlockDialog(const std::string& app_name,
   }
 }
 
-void AppServiceProxyAsh::OnLoadIconForPauseDialog(apps::mojom::AppType app_type,
+void AppServiceProxyAsh::OnLoadIconForPauseDialog(apps::AppType app_type,
                                                   const std::string& app_id,
                                                   const std::string& app_name,
                                                   const PauseData& pause_data,
@@ -469,7 +471,7 @@ void AppServiceProxyAsh::OnLoadIconForPauseDialog(apps::mojom::AppType app_type,
   }
 }
 
-void AppServiceProxyAsh::OnPauseDialogClosed(apps::mojom::AppType app_type,
+void AppServiceProxyAsh::OnPauseDialogClosed(apps::AppType app_type,
                                              const std::string& app_id) {
   bool should_pause_app = pending_pause_requests_.IsPaused(app_id);
   if (!should_pause_app) {
@@ -481,7 +483,7 @@ void AppServiceProxyAsh::OnPauseDialogClosed(apps::mojom::AppType app_type,
         });
   }
   if (should_pause_app) {
-    app_service_->PauseApp(app_type, app_id);
+    app_service_->PauseApp(ConvertAppTypeToMojomAppType(app_type), app_id);
   }
 }
 
@@ -515,13 +517,13 @@ void AppServiceProxyAsh::InitAppPlatformMetrics() {
 }
 
 void AppServiceProxyAsh::PerformPostUninstallTasks(
-    apps::mojom::AppType app_type,
+    apps::AppType app_type,
     const std::string& app_id,
     apps::mojom::UninstallSource uninstall_source) {
   if (app_platform_metrics_service_ &&
       app_platform_metrics_service_->AppPlatformMetrics()) {
     app_platform_metrics_service_->AppPlatformMetrics()->RecordAppUninstallUkm(
-        ConvertMojomAppTypToAppType(app_type), app_id, uninstall_source);
+        app_type, app_id, uninstall_source);
   }
 }
 

@@ -127,7 +127,7 @@ class AppServiceProxyAsh : public AppServiceProxyBase,
                                 const gfx::ImageSkia& image,
                                 Profile* profile);
 
-  static void CreatePauseDialog(apps::mojom::AppType app_type,
+  static void CreatePauseDialog(apps::AppType app_type,
                                 const std::string& app_name,
                                 const gfx::ImageSkia& image,
                                 const PauseData& pause_data,
@@ -145,7 +145,7 @@ class AppServiceProxyAsh : public AppServiceProxyBase,
   // available for Chrome Apps only. If true, the app will be reported for abuse
   // to the Web Store. |uninstall_dialog| will be removed from
   // |uninstall_dialogs_|.
-  void OnUninstallDialogClosed(apps::mojom::AppType app_type,
+  void OnUninstallDialogClosed(apps::AppType app_type,
                                const std::string& app_id,
                                apps::mojom::UninstallSource uninstall_source,
                                bool uninstall,
@@ -167,7 +167,7 @@ class AppServiceProxyAsh : public AppServiceProxyBase,
                                 IconValuePtr icon_value);
 
   // Callback invoked when the icon is loaded for the pause app dialog.
-  void OnLoadIconForPauseDialog(apps::mojom::AppType app_type,
+  void OnLoadIconForPauseDialog(apps::AppType app_type,
                                 const std::string& app_id,
                                 const std::string& app_name,
                                 const PauseData& pause_data,
@@ -175,8 +175,7 @@ class AppServiceProxyAsh : public AppServiceProxyBase,
 
   // Invoked when the user clicks the 'OK' button of the pause app dialog.
   // AppService stops the running app and applies the paused app icon effect.
-  void OnPauseDialogClosed(apps::mojom::AppType app_type,
-                           const std::string& app_id);
+  void OnPauseDialogClosed(apps::AppType app_type, const std::string& app_id);
 
   // apps::AppRegistryCache::Observer overrides:
   void OnAppUpdate(const apps::AppUpdate& update) override;
@@ -194,7 +193,7 @@ class AppServiceProxyAsh : public AppServiceProxyBase,
   void InitAppPlatformMetrics();
 
   void PerformPostUninstallTasks(
-      apps::mojom::AppType app_type,
+      apps::AppType app_type,
       const std::string& app_id,
       apps::mojom::UninstallSource uninstall_source) override;
 

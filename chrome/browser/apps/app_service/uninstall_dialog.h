@@ -11,8 +11,8 @@
 #include "base/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "components/services/app_service/public/cpp/app_types.h"
 #include "components/services/app_service/public/cpp/icon_types.h"
-#include "components/services/app_service/public/mojom/types.mojom.h"
 #include "ui/gfx/native_widget_types.h"
 #include "ui/views/widget/widget.h"
 
@@ -58,7 +58,7 @@ class UninstallDialog {
     virtual ~UiBase() = default;
 
     static views::Widget* Create(Profile* profile,
-                                 apps::mojom::AppType app_type,
+                                 apps::AppType app_type,
                                  const std::string& app_id,
                                  const std::string& app_name,
                                  gfx::ImageSkia image,
@@ -85,7 +85,7 @@ class UninstallDialog {
   using OnUninstallForTestingCallback = base::OnceCallback<void(bool)>;
 
   UninstallDialog(Profile* profile,
-                  apps::mojom::AppType app_type,
+                  apps::AppType app_type,
                   const std::string& app_id,
                   const std::string& app_name,
                   gfx::NativeWindow parent_window,
@@ -112,7 +112,7 @@ class UninstallDialog {
   void OnLoadIcon(IconValuePtr icon_value);
 
   const raw_ptr<Profile> profile_;
-  const apps::mojom::AppType app_type_;
+  const apps::AppType app_type_;
   const std::string app_id_;
   const std::string app_name_;
   gfx::NativeWindow parent_window_;

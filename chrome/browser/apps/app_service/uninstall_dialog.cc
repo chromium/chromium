@@ -22,7 +22,7 @@ constexpr int32_t kUninstallIconSize = 48;
 namespace apps {
 
 UninstallDialog::UninstallDialog(Profile* profile,
-                                 apps::mojom::AppType app_type,
+                                 apps::AppType app_type,
                                  const std::string& app_id,
                                  const std::string& app_name,
                                  gfx::NativeWindow parent_window,
@@ -42,19 +42,19 @@ UninstallDialog::~UninstallDialog() = default;
 void UninstallDialog::PrepareToShow(IconKey icon_key,
                                     apps::IconLoader* icon_loader) {
   switch (app_type_) {
-    case apps::mojom::AppType::kArc:
-    case apps::mojom::AppType::kBorealis:
-    case apps::mojom::AppType::kPluginVm:
+    case apps::AppType::kArc:
+    case apps::AppType::kBorealis:
+    case apps::AppType::kPluginVm:
       break;
-    case apps::mojom::AppType::kCrostini:
+    case apps::AppType::kCrostini:
       // Crostini icons might be a big image, and not fit the size, so add the
       // resize icon effect, to resize the image.
       icon_key.icon_effects = static_cast<apps::IconEffects>(
           icon_key.icon_effects | apps::IconEffects::kMdIconStyle);
       break;
-    case apps::mojom::AppType::kChromeApp:
-    case apps::mojom::AppType::kStandaloneBrowserChromeApp:
-    case apps::mojom::AppType::kWeb:
+    case apps::AppType::kChromeApp:
+    case apps::AppType::kStandaloneBrowserChromeApp:
+    case apps::AppType::kWeb:
       UMA_HISTOGRAM_ENUMERATION("Extensions.UninstallSource",
                                 extensions::UNINSTALL_SOURCE_APP_LIST,
                                 extensions::NUM_UNINSTALL_SOURCES);
@@ -70,15 +70,16 @@ void UninstallDialog::PrepareToShow(IconKey icon_key,
   if (base::FeatureList::IsEnabled(features::kAppServiceLoadIconWithoutMojom)) {
     auto icon_type = IconType::kStandard;
     icon_loader->LoadIconFromIconKey(
-        ConvertMojomAppTypToAppType(app_type_), app_id_, icon_key, icon_type,
-        size_hint_in_dip, kAllowPlaceholderIcon,
+        app_type_, app_id_, icon_key, icon_type, size_hint_in_dip,
+        kAllowPlaceholderIcon,
         base::BindOnce(&UninstallDialog::OnLoadIcon,
                        weak_ptr_factory_.GetWeakPtr()));
   } else {
     auto mojom_icon_type = apps::mojom::IconType::kStandard;
     icon_loader->LoadIconFromIconKey(
-        app_type_, app_id_, ConvertIconKeyToMojomIconKey(icon_key),
-        mojom_icon_type, size_hint_in_dip, kAllowPlaceholderIcon,
+        ConvertAppTypeToMojomAppType(app_type_), app_id_,
+        ConvertIconKeyToMojomIconKey(icon_key), mojom_icon_type,
+        size_hint_in_dip, kAllowPlaceholderIcon,
         MojomIconValueToIconValueCallback(base::BindOnce(
             &UninstallDialog::OnLoadIcon, weak_ptr_factory_.GetWeakPtr())));
   }

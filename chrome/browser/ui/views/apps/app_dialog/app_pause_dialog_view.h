@@ -7,6 +7,7 @@
 
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/ui/views/apps/app_dialog/app_dialog_view.h"
+#include "components/services/app_service/public/cpp/app_types.h"
 
 namespace gfx {
 class ImageSkia;
@@ -17,7 +18,7 @@ class ImageSkia;
 class AppPauseDialogView : public AppDialogView {
  public:
   AppPauseDialogView(
-      apps::mojom::AppType app_type,
+      apps::AppType app_type,
       const std::string& app_name,
       const gfx::ImageSkia& image,
       const apps::PauseData& pause_data,
