@@ -942,8 +942,16 @@ SkiaOutputSurfaceImpl::CreateSkSurfaceCharacterization(
     DCHECK(!is_overlay);
     const auto format_index = static_cast<int>(format);
     const auto& color_type = capabilities_.sk_color_types[format_index];
-    const auto backend_format = gr_context_thread_safe_->defaultBackendFormat(
+    auto backend_format = gr_context_thread_safe_->defaultBackendFormat(
         color_type, GrRenderable::kYes);
+#if BUILDFLAG(IS_MAC)
+    DCHECK_EQ(dependency_->gr_context_type(), gpu::GrContextType::kGL);
+    // For root rander pass, IOSurface will be used, and we may need using
+    // GL_TEXTURE_RECTANGLE_ARB as texture target.
+    backend_format =
+        GrBackendFormat::MakeGL(backend_format.asGLFormatEnum(),
+                                gpu::GetPlatformSpecificTextureTarget());
+#endif
     DCHECK(color_type != kUnknown_SkColorType)
         << "SkColorType is invalid for buffer format_index: " << format_index;
     DCHECK(backend_format.isValid())
