@@ -85,6 +85,7 @@ body > main {
   background-color: rgb(250, 250, 250);
 }
 
+.policy.conflict.row .value,
 .warnings.row .value,
 .errors.row .value,
 .infos.row .value,

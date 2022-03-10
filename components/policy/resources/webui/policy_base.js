@@ -236,7 +236,7 @@ PolicyConflict.prototype = {
                                            'levelMandatory');
     this.querySelector('.source').textContent =
         loadTimeData.getString(conflict.source);
-    this.querySelector('.value.row .value').textContent = conflict.value;
+    this.querySelector('.value').textContent = conflict.value;
     this.querySelector('.name').textContent = loadTimeData.getString(row_label);
   }
 };
