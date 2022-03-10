@@ -400,6 +400,7 @@ public class PaymentRequestTestRule extends ChromeTabbedActivityTestRule
 
     /** Clicks on an HTML node. */
     protected void clickNode(String nodeId) throws TimeoutException {
+        DOMUtils.waitForNonZeroNodeBounds(mWebContentsRef.get(), nodeId);
         DOMUtils.clickNode(mWebContentsRef.get(), nodeId);
     }
 

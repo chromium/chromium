@@ -96,7 +96,7 @@ IN_PROC_BROWSER_TEST_F(PaymentHandlerJustInTimeInstallationTest,
   // that uses invalid payment method.
   ExpectBodyContains(
       "\nBob Pay and Cards Test\nInstallable App\nThe payment method "
-      "\"https://henrypay.com/webpay\" is not supported.\n\n\n\n\n");
+      "\"https://henrypay.com/webpay\" is not supported.\n\n\n");
 }
 
 using PaymentHandlerSkipSheetTest = PaymentHandlerJustInTimeInstallationTest;
