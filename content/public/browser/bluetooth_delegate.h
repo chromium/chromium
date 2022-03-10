@@ -133,6 +133,11 @@ class CONTENT_EXPORT BluetoothDelegate {
       RenderFrameHost* frame,
       const blink::WebBluetoothDeviceId& device_id) = 0;
 
+  // Revokes |frame| access to the Bluetooth device ordered by website.
+  virtual void RevokeDevicePermissionWebInitiated(
+      RenderFrameHost* frame,
+      const blink::WebBluetoothDeviceId& device_id) = 0;
+
   // This should return true if |frame| has permission to access |service| from
   // the device with |device_id|.
   virtual bool IsAllowedToAccessService(

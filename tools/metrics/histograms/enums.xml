@@ -37407,6 +37407,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="4178" label="SecureContextIncorrectForSharedWorker"/>
   <int value="4179" label="V8FunctionPrototypeArguments"/>
   <int value="4180" label="V8FunctionPrototypeCaller"/>
+  <int value="4181" label="BluetoothDeviceForget"/>
 </enum>
 
 <enum name="FeaturePolicyAllowlistType">

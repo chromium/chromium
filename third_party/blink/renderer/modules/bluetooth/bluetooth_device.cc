@@ -192,6 +192,22 @@ void BluetoothDevice::AbortWatchAdvertisements() {
   }
 }
 
+ScriptPromise BluetoothDevice::forget(ScriptState* script_state,
+                                      ExceptionState& exception_state) {
+  if (!GetExecutionContext()) {
+    exception_state.ThrowTypeError(kInactiveDocumentError);
+    return ScriptPromise();
+  }
+
+  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
+  ScriptPromise promise = resolver->Promise();
+  bluetooth_->Service()->ForgetDevice(
+      device_->id, WTF::Bind(&BluetoothDevice::ForgetCallback,
+                             WrapPersistent(this), WrapPersistent(resolver)));
+
+  return promise;
+}
+
 void BluetoothDevice::AdvertisingEvent(
     mojom::blink::WebBluetoothAdvertisingEventPtr advertising_event) {
   auto* event = MakeGarbageCollected<BluetoothAdvertisingEvent>(
@@ -240,6 +256,10 @@ void BluetoothDevice::WatchAdvertisementsCallback(
   // 2.2.3.3. Resolve promise with undefined.
   watch_advertisements_resolver_->Resolve();
   watch_advertisements_resolver_.Clear();
+}
+
+void BluetoothDevice::ForgetCallback(ScriptPromiseResolver* resolver) {
+  resolver->Resolve();
 }
 
 }  // namespace blink

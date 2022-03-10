@@ -256,6 +256,14 @@ bool BluetoothChooserContext::HasDevicePermission(
   return !device.is_none();
 }
 
+void BluetoothChooserContext::RevokeDevicePermissionWebInitiated(
+    const url::Origin& origin,
+    const WebBluetoothDeviceId& device_id) {
+  base::Value device = FindDeviceObject(origin, device_id);
+  if (!device.is_none())
+    RevokeObjectPermission(origin, device);
+}
+
 bool BluetoothChooserContext::IsAllowedToAccessAtLeastOneService(
     const url::Origin& origin,
     const WebBluetoothDeviceId& device_id) {

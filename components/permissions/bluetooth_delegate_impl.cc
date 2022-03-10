@@ -83,6 +83,14 @@ bool BluetoothDelegateImpl::HasDevicePermission(
       frame->GetMainFrame()->GetLastCommittedOrigin(), device_id);
 }
 
+void BluetoothDelegateImpl::RevokeDevicePermissionWebInitiated(
+    RenderFrameHost* frame,
+    const WebBluetoothDeviceId& device_id) {
+  client_->GetBluetoothChooserContext(frame)
+      ->RevokeDevicePermissionWebInitiated(
+          frame->GetMainFrame()->GetLastCommittedOrigin(), device_id);
+}
+
 bool BluetoothDelegateImpl::IsAllowedToAccessService(
     RenderFrameHost* frame,
     const WebBluetoothDeviceId& device_id,

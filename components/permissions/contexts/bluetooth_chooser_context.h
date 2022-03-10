@@ -68,6 +68,9 @@ class BluetoothChooserContext : public ObjectPermissionContextBase {
       const blink::mojom::WebBluetoothRequestDeviceOptions* options);
   bool HasDevicePermission(const url::Origin& origin,
                            const blink::WebBluetoothDeviceId& device_id);
+  void RevokeDevicePermissionWebInitiated(
+      const url::Origin& origin,
+      const blink::WebBluetoothDeviceId& device_id);
   bool IsAllowedToAccessAtLeastOneService(
       const url::Origin& origin,
       const blink::WebBluetoothDeviceId& device_id);

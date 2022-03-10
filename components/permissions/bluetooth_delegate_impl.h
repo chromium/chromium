@@ -109,6 +109,9 @@ class BluetoothDelegateImpl : public content::BluetoothDelegate {
   bool HasDevicePermission(
       content::RenderFrameHost* frame,
       const blink::WebBluetoothDeviceId& device_id) override;
+  void RevokeDevicePermissionWebInitiated(
+      content::RenderFrameHost* frame,
+      const blink::WebBluetoothDeviceId& device_id) override;
   bool IsAllowedToAccessService(content::RenderFrameHost* frame,
                                 const blink::WebBluetoothDeviceId& device_id,
                                 const device::BluetoothUUID& service) override;

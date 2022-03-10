@@ -38,6 +38,7 @@ interface BluetoothDevice : EventTarget
     getter ongattserverdisconnected
     getter watchingAdvertisements
     method constructor
+    method forget
     method watchAdvertisements
     setter onadvertisementreceived
     setter ongattserverdisconnected

@@ -68,6 +68,9 @@ class FakeBluetoothDelegate : public BluetoothDelegate {
   bool HasDevicePermission(
       RenderFrameHost* frame,
       const blink::WebBluetoothDeviceId& device_id) override;
+  void RevokeDevicePermissionWebInitiated(
+      RenderFrameHost* frame,
+      const blink::WebBluetoothDeviceId& device_id) override;
   bool IsAllowedToAccessService(RenderFrameHost* frame,
                                 const blink::WebBluetoothDeviceId& device_id,
                                 const device::BluetoothUUID& service) override;

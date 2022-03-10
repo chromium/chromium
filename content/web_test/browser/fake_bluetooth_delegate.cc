@@ -100,6 +100,17 @@ bool FakeBluetoothDelegate::HasDevicePermission(
   return base::Contains(device_id_to_services_map_, device_id);
 }
 
+void FakeBluetoothDelegate::RevokeDevicePermissionWebInitiated(
+    RenderFrameHost* frame,
+    const WebBluetoothDeviceId& device_id) {
+  device_id_to_services_map_.erase(device_id);
+  device_id_to_name_map_.erase(device_id);
+  device_id_to_manufacturer_code_map_.erase(device_id);
+  auto& device_address_to_id_map = GetAddressToIdMapForOrigin(frame);
+  base::EraseIf(device_address_to_id_map,
+                [device_id](auto& entry) { return entry.second == device_id; });
+}
+
 bool FakeBluetoothDelegate::IsAllowedToAccessService(
     RenderFrameHost* frame,
     const WebBluetoothDeviceId& device_id,

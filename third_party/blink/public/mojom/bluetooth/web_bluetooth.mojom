@@ -218,8 +218,12 @@ interface WebBluetoothService {
   // Returns a list of permitted Bluetooth devices that the current origin can
   // access services on. These devices are granted access via RequestDevice(),
   // but the permission can be revoked at any time by the user through the
-  // browser's UI.
+  // browser's UI or by the website through ForgetDevice().
   GetDevices() => (array<WebBluetoothDevice> devices);
+
+  // Attempts to revoke the permission to the Device identified by |device_id|.
+  // It will fail silently if the permission cannot be revoked.
+  ForgetDevice(WebBluetoothDeviceId device_id) => ();
 
   // Creates a GATT Connection to a Bluetooth Device identified by |device_id|
   // if a connection to the device didn't exist already. If a GATT connection

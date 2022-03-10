@@ -213,6 +213,8 @@ class CONTENT_EXPORT WebBluetoothServiceImpl
   void RequestDevice(blink::mojom::WebBluetoothRequestDeviceOptionsPtr options,
                      RequestDeviceCallback callback) override;
   void GetDevices(GetDevicesCallback callback) override;
+  void ForgetDevice(const blink::WebBluetoothDeviceId& device_id,
+                    ForgetDeviceCallback callback) override;
   void RemoteServerConnect(
       const blink::WebBluetoothDeviceId& device_id,
       mojo::PendingAssociatedRemote<blink::mojom::WebBluetoothServerClient>

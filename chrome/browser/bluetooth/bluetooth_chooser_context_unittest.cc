@@ -262,6 +262,44 @@ TEST_F(BluetoothChooserContextTest, CheckGrantAndRevokePermission) {
   EXPECT_EQ(0u, all_origin_objects.size());
 }
 
+TEST_F(BluetoothChooserContextTest, RevokeDevicePermissionWebInitiated) {
+  const std::vector<BluetoothUUID> services{kGlucoseUUID, kBloodPressureUUID};
+  WebBluetoothRequestDeviceOptionsPtr options =
+      CreateOptionsForServices(services);
+
+  BluetoothChooserContext* context = GetChooserContext(profile());
+
+  blink::WebBluetoothDeviceId device_id = context->GrantServiceAccessPermission(
+      foo_origin_, fake_device1_.get(), options.get());
+
+  EXPECT_TRUE(context->HasDevicePermission(foo_origin_, device_id));
+
+  std::vector<std::unique_ptr<BluetoothChooserContext::Object>> origin_objects =
+      context->GetGrantedObjects(foo_origin_);
+  ASSERT_EQ(1u, origin_objects.size());
+
+  std::vector<std::unique_ptr<BluetoothChooserContext::Object>>
+      all_origin_objects = context->GetAllGrantedObjects();
+  ASSERT_EQ(1u, all_origin_objects.size());
+  EXPECT_EQ(foo_origin_.GetURL(), all_origin_objects[0]->origin);
+
+  EXPECT_CALL(mock_permission_observer_,
+              OnObjectPermissionChanged(
+                  absl::make_optional(ContentSettingsType::BLUETOOTH_GUARD),
+                  ContentSettingsType::BLUETOOTH_CHOOSER_DATA));
+  EXPECT_CALL(mock_permission_observer_, OnPermissionRevoked(foo_origin_));
+
+  context->RevokeDevicePermissionWebInitiated(foo_origin_, device_id);
+
+  EXPECT_FALSE(context->HasDevicePermission(foo_origin_, device_id));
+
+  origin_objects = context->GetGrantedObjects(foo_origin_);
+  EXPECT_EQ(0u, origin_objects.size());
+
+  all_origin_objects = context->GetAllGrantedObjects();
+  EXPECT_EQ(0u, all_origin_objects.size());
+}
+
 // Check that Web Bluetooth permissions granted in incognito mode remain only
 // in the incognito session.
 TEST_F(BluetoothChooserContextTest, GrantPermissionInIncognito) {

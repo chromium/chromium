@@ -92,6 +92,7 @@ class BluetoothDevice final
   ScriptPromise watchAdvertisements(ScriptState*,
                                     const WatchAdvertisementsOptions*,
                                     ExceptionState&);
+  ScriptPromise forget(ScriptState*, ExceptionState&);
   String id() { return device_->id.DeviceIdInBase64().c_str(); }
   String name() { return device_->name; }
   BluetoothRemoteGATTServer* gatt() { return gatt_; }
@@ -116,6 +117,7 @@ class BluetoothDevice final
 
  private:
   void WatchAdvertisementsCallback(mojom::blink::WebBluetoothResult);
+  void ForgetCallback(ScriptPromiseResolver*);
 
   // Holds all GATT Attributes associated with this BluetoothDevice.
   Member<BluetoothAttributeInstanceMap> attribute_instance_map_;
