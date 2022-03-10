@@ -313,7 +313,6 @@ void EasyUnlockService::UpdateSmartLockState(SmartLockState state) {
     }
 
     if (state != SmartLockState::kPhoneAuthenticated && auth_attempt_) {
-      LOG(ERROR) << "HERE!";
       // Clean up existing auth attempt if we can no longer authenticate the
       // remote device.
       auth_attempt_.reset();
