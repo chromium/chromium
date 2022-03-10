@@ -539,7 +539,7 @@ VideoDecoder::Result Vp9Decoder::DecodeNextFrame(std::vector<char>& y_plane,
   OUTPUT_queue_->GetBuffer(0)->set_frame_number(frame_number);
 
   if (!v4l2_ioctl_->QBuf(OUTPUT_queue_, 0))
-    LOG(ERROR) << "VIDIOC_QBUF failed for OUTPUT queue.";
+    LOG(FATAL) << "VIDIOC_QBUF failed for OUTPUT queue.";
 
   struct v4l2_ctrl_vp9_frame_decode_params v4l2_frame_params;
   memset(&v4l2_frame_params, 0, sizeof(v4l2_frame_params));
@@ -547,15 +547,15 @@ VideoDecoder::Result Vp9Decoder::DecodeNextFrame(std::vector<char>& y_plane,
   SetupFrameParams(frame_hdr, &v4l2_frame_params);
 
   if (!v4l2_ioctl_->SetExtCtrls(OUTPUT_queue_, v4l2_frame_params))
-    LOG(ERROR) << "VIDIOC_S_EXT_CTRLS failed.";
+    LOG(FATAL) << "VIDIOC_S_EXT_CTRLS failed.";
 
   if (!v4l2_ioctl_->MediaRequestIocQueue(OUTPUT_queue_))
-    LOG(ERROR) << "MEDIA_REQUEST_IOC_QUEUE failed.";
+    LOG(FATAL) << "MEDIA_REQUEST_IOC_QUEUE failed.";
 
   uint32_t index;
 
   if (!v4l2_ioctl_->DQBuf(CAPTURE_queue_, &index))
-    LOG(ERROR) << "VIDIOC_DQBUF failed for CAPTURE queue.";
+    LOG(FATAL) << "VIDIOC_DQBUF failed for CAPTURE queue.";
 
   scoped_refptr<MmapedBuffer> buffer = CAPTURE_queue_->GetBuffer(index);
   CHECK_EQ(buffer->mmaped_planes().size(), 2u)
@@ -591,7 +591,7 @@ VideoDecoder::Result Vp9Decoder::DecodeNextFrame(std::vector<char>& y_plane,
   }
 
   if (!v4l2_ioctl_->DQBuf(OUTPUT_queue_, &index))
-    LOG(ERROR) << "VIDIOC_DQBUF failed for OUTPUT queue.";
+    LOG(FATAL) << "VIDIOC_DQBUF failed for OUTPUT queue.";
 
   // TODO(stevecho): With current VP9 API, VIDIOC_G_EXT_CTRLS ioctl call is
   // needed when forward probabilities update is used. With new VP9 API landing
@@ -599,7 +599,7 @@ VideoDecoder::Result Vp9Decoder::DecodeNextFrame(std::vector<char>& y_plane,
   // https://lwn.net/Articles/855419/
 
   if (!v4l2_ioctl_->MediaRequestIocReinit(OUTPUT_queue_))
-    LOG(ERROR) << "MEDIA_REQUEST_IOC_REINIT failed.";
+    LOG(FATAL) << "MEDIA_REQUEST_IOC_REINIT failed.";
 
   return Vp9Decoder::kOk;
 }

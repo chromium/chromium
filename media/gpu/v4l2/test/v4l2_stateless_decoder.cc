@@ -163,8 +163,7 @@ int main(int argc, char** argv) {
   if (!dec)
     LOG(FATAL) << "Failed to create decoder for file: " << video_path;
 
-  if (!dec->Initialize())
-    LOG(FATAL) << "Initialization for decoding failed.";
+  dec->Initialize();
 
   for (int i = 0; i < n_frames || n_frames == 0; i++) {
     LOG(INFO) << "Frame " << i << "...";
