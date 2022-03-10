@@ -46,6 +46,7 @@ class FakeLockHandler : public ScreenlockBridge::LockHandler {
   absl::optional<bool> smart_lock_auth_result() const {
     return smart_lock_auth_result_;
   }
+  int unlock_called() const { return unlock_called_; }
 
   void ClearSmartLockState();
   void ClearSmartLockAuthResult();
@@ -53,6 +54,8 @@ class FakeLockHandler : public ScreenlockBridge::LockHandler {
  private:
   absl::optional<ash::SmartLockState> smart_lock_state_;
   absl::optional<bool> smart_lock_auth_result_;
+  mojom::AuthType latest_set_auth_type_ = mojom::AuthType::USER_CLICK;
+  int unlock_called_ = 0;
 };
 
 }  // namespace proximity_auth
