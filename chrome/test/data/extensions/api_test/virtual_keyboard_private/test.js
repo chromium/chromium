@@ -2,21 +2,23 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-var callbackPass = chrome.test.callbackPass;
+const callbackPass = chrome.test.callbackPass;
 
-function callbackResult(result) {
-  var result = result.map((item) => {
-    return {
-      displayFormat: item.displayFormat,
-      textData: !!item.textData,
-      imageData: !!item.imageData,
-      timeCopied: !!item.timeCopied
-    };
-  });
+const itemToDict = (item) => {
+  return {
+    displayFormat: item.displayFormat,
+    textData: !!item.textData,
+    imageData: !!item.imageData,
+    timeCopied: !!item.timeCopied
+  };
+};
+
+function checkFullResult(result) {
+  const parsed = result.map(itemToDict);
 
   // Test that clipboard items are in the correct order with the correct data
   // types.
-  chrome.test.assertEq(result, [
+  chrome.test.assertEq(parsed, [
     {
       'displayFormat': 'file',
       'textData': true,
@@ -44,9 +46,17 @@ function callbackResult(result) {
   ]);
 }
 
-chrome.test.runTests([
-  function multipasteApi() {
-    chrome.virtualKeyboardPrivate.getClipboardHistory({},
-      callbackPass(callbackResult));
-  }
-]);
+function checkEmptyResult(result) {
+  const parsed = result.map(itemToDict);
+
+  // Test that no clipboard items are returned.
+  chrome.test.assertEq(parsed, []);
+}
+
+chrome.test.getConfig(function(config) {
+  const screenLocked = config.customArg;
+  chrome.test.runTests([function multipasteApi() {
+    chrome.virtualKeyboardPrivate.getClipboardHistory(
+        {}, callbackPass(screenLocked ? checkEmptyResult : checkFullResult));
+  }]);
+});
