@@ -1756,23 +1756,25 @@ void Database::set_histogram_tag(const std::string& tag) {
 
 int Database::OnSqliteError(int sqlite_error_code,
                             sql::Statement* statement,
-                            const char* sql) const {
+                            const char* sql_statement) {
   TRACE_EVENT0("sql", "Database::OnSqliteError");
+
+  DCHECK_NE(statement != nullptr, sql_statement != nullptr)
+      << "OnSqliteError() should either get a Statement or a raw SQL string";
 
   bool is_expected_error = IsExpectedSqliteError(sqlite_error_code);
   if (!is_expected_error) {
     // Log unexpected errors.
-    if (!sql && statement)
-      sql = statement->GetSQLStatement();
-    if (!sql)
-      sql = "(SQL unknown)";
+    if (statement)
+      sql_statement = statement->GetSQLStatement();
+    DCHECK(sql_statement);
 
     std::string id = histogram_tag_;
     if (id.empty())
       id = DbPath().BaseName().AsUTF8Unsafe();
     LOG(ERROR) << id << " SQLite error: code " << sqlite_error_code << " errno "
                << GetLastErrno() << ": " << GetErrorMessage()
-               << " sql: " << sql;
+               << " sql: " << sql_statement;
   }
 
   if (!error_callback_.is_null()) {

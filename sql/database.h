@@ -718,17 +718,28 @@ class COMPONENT_EXPORT(SQL) Database {
   void StatementRefCreated(StatementRef* ref);
   void StatementRefDeleted(StatementRef* ref);
 
-  // Called when a sqlite function returns an error, which is passed
-  // as |err|.  The return value is the error code to be reflected
-  // back to client code.  |stmt| is non-null if the error relates to
-  // an sql::Statement instance.  |sql| is non-nullptr if the error
-  // relates to non-statement sql code (Execute, for instance).  Both
-  // can be null, but both should never be set.
+  // Used by sql:: internals to report a SQLite error related to this database.
+  //
+  // `sqlite_error_code` contains the error code reported by SQLite. Possible
+  // values are documented at https://www.sqlite.org/rescode.html
+  //
+  // `statement` is non-null if the error is associated with a sql::Statement.
+  // Otherwise, `sql_statement` will be a non-null string pointing to a
+  // statically-allocated (valid for the entire duration of the process) buffer
+  // pointing to either a SQL statement or a SQL comment (starting with "-- ")
+  // pointing to a "sqlite3_" function name.
+  //
+  // This method always returns a valid SQLite error code, which is passed to
+  // the users of the sql:: method that encountered the SQLite error. This
+  // gives OnSqliteError() the ability to translate / mask SQLite errors.
+  //
   // NOTE(shess): Originally, the return value was intended to allow
   // error handlers to transparently convert errors into success.
   // Unfortunately, transactions are not generally restartable, so
   // this did not work out.
-  int OnSqliteError(int err, Statement* stmt, const char* sql) const;
+  int OnSqliteError(int sqlite_error_code,
+                    Statement* statement,
+                    const char* sql_statement);
 
   // Like Execute(), but returns the error code given by SQLite.
   //
