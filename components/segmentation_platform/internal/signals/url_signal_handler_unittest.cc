@@ -5,6 +5,7 @@
 #include "components/segmentation_platform/internal/signals/url_signal_handler.h"
 
 #include "base/test/task_environment.h"
+#include "components/segmentation_platform/internal/database/mock_ukm_database.h"
 #include "components/segmentation_platform/internal/database/ukm_database.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -23,22 +24,6 @@ void RunNotFoundCallback(const GURL& url,
                          UrlSignalHandler::FindCallback callback) {
   std::move(callback).Run(false);
 }
-
-class MockUkmDatabase : public UkmDatabase {
- public:
-  MockUkmDatabase() : UkmDatabase(base::FilePath()) {}
-
-  MOCK_METHOD1(UkmEntryAdded, void(ukm::mojom::UkmEntryPtr ukm_entry));
-
-  MOCK_METHOD3(UkmSourceUrlUpdated,
-               void(ukm::SourceId source_id,
-                    const GURL& url,
-                    bool is_validated));
-
-  MOCK_METHOD1(OnUrlValidated, void(const GURL& url));
-
-  MOCK_METHOD1(RemoveUrls, void(const std::vector<GURL>& urls));
-};
 
 class MockHistoryDelegate : public UrlSignalHandler::HistoryDelegate {
  public:

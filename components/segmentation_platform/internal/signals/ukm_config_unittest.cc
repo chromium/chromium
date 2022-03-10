@@ -28,7 +28,7 @@ TEST(UkmConfigTest, AddEvents) {
   UkmConfig config;
   EXPECT_EQ(config.metrics_for_event_for_testing(),
             UkmConfig::EventsToMetricsMap());
-  EXPECT_FALSE(config.IsObserving(kEvent1, TestMetric(100)));
+  EXPECT_EQ(config.GetObservedMetrics(kEvent1), nullptr);
   EXPECT_EQ(config.GetRawObservedEvents(), base::flat_set<uint64_t>());
 
   config.AddEvent(kEvent1, {TestMetric(100), TestMetric(101), TestMetric(102)});
@@ -37,8 +37,10 @@ TEST(UkmConfigTest, AddEvents) {
       UkmConfig::EventsToMetricsMap(
           {{kEvent1, {TestMetric(100), TestMetric(101), TestMetric(102)}}}));
 
-  EXPECT_TRUE(config.IsObserving(kEvent1, TestMetric(100)));
-  EXPECT_TRUE(config.IsObserving(kEvent1, TestMetric(102)));
+  EXPECT_EQ(*config.GetObservedMetrics(kEvent1),
+            base::flat_set<UkmMetricHash>(
+                {TestMetric(100), TestMetric(101), TestMetric(102)}));
+  EXPECT_EQ(config.GetObservedMetrics(kEvent3), nullptr);
   EXPECT_EQ(config.GetRawObservedEvents(),
             base::flat_set<uint64_t>({kEvent1.GetUnsafeValue()}));
 
@@ -48,11 +50,13 @@ TEST(UkmConfigTest, AddEvents) {
                 {{kEvent1, {TestMetric(100), TestMetric(101), TestMetric(102)}},
                  {kEvent2, {TestMetric(100)}}}));
 
-  EXPECT_TRUE(config.IsObserving(kEvent1, TestMetric(100)));
-  EXPECT_TRUE(config.IsObserving(kEvent1, TestMetric(102)));
-  EXPECT_TRUE(config.IsObserving(kEvent2, TestMetric(100)));
-  EXPECT_FALSE(config.IsObserving(kEvent2, TestMetric(101)));
-  EXPECT_FALSE(config.IsObserving(kEvent3, TestMetric(100)));
+  config.AddEvent(kEvent2, {TestMetric(100), TestMetric(102), TestMetric(103)});
+  EXPECT_EQ(*config.GetObservedMetrics(kEvent1),
+            base::flat_set<UkmMetricHash>(
+                {TestMetric(100), TestMetric(101), TestMetric(102)}));
+  EXPECT_EQ(*config.GetObservedMetrics(kEvent2),
+            base::flat_set<UkmMetricHash>(
+                {TestMetric(100), TestMetric(102), TestMetric(103)}));
   EXPECT_EQ(config.GetRawObservedEvents(),
             base::flat_set<uint64_t>(
                 {kEvent1.GetUnsafeValue(), kEvent2.GetUnsafeValue()}));

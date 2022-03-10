@@ -152,12 +152,13 @@ class SegmentationPlatformServiceImplTest : public testing::Test {
     SetUpPrefs();
 
     std::vector<std::unique_ptr<Config>> configs = CreateTestConfigs();
+    // TODO(ssid): use mock a history service here.
     segmentation_platform_service_impl_ =
         std::make_unique<SegmentationPlatformServiceImpl>(
             std::move(segment_db), std::move(signal_db),
             std::move(segment_storage_config_db), ukm_data_manager_.get(),
-            &model_provider_, &pref_service_, task_runner_, &test_clock_,
-            std::move(configs));
+            &model_provider_, &pref_service_, /*history_service=*/nullptr,
+            task_runner_, &test_clock_, std::move(configs));
     segmentation_platform_service_impl_->GetServiceProxy()->AddObserver(
         &observer_);
   }

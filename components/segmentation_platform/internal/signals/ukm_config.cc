@@ -30,12 +30,13 @@ base::flat_set<uint64_t> UkmConfig::GetRawObservedEvents() const {
   return events;
 }
 
-bool UkmConfig::IsObserving(UkmEventHash event, UkmMetricHash metric) const {
-  const auto it = metrics_for_event_.find(event);
+const base::flat_set<UkmMetricHash>* UkmConfig::GetObservedMetrics(
+    UkmEventHash event) {
+  const auto& it = metrics_for_event_.find(event);
   if (it != metrics_for_event_.end()) {
-    return it->second.count(metric) > 0;
+    return &it->second;
   }
-  return false;
+  return nullptr;
 }
 
 void UkmConfig::AddEvent(UkmEventHash event_hash,

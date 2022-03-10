@@ -28,6 +28,7 @@ SignalStorageConfigTest.*
 StatsTest.*
 TrainingDataCollectorTest.*
 UkmConfigTest.*
+UkmObserverTest.*
 UrlSignalHandlerTest.*
 UkmDatabaseBackendTest.*
 UkmMetricsTableTest.*

@@ -10,6 +10,7 @@
 #include "base/task/thread_pool.h"
 #include "base/time/default_clock.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/history/history_service_factory.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
@@ -50,6 +51,7 @@ SegmentationPlatformServiceFactory::SegmentationPlatformServiceFactory()
           "SegmentationPlatformService",
           BrowserContextDependencyManager::GetInstance()) {
   DependsOn(OptimizationGuideKeyedServiceFactory::GetInstance());
+  DependsOn(HistoryServiceFactory::GetInstance());
 }
 
 SegmentationPlatformServiceFactory::~SegmentationPlatformServiceFactory() =
@@ -63,6 +65,9 @@ KeyedService* SegmentationPlatformServiceFactory::BuildServiceInstanceFor(
   Profile* profile = Profile::FromBrowserContext(context);
   OptimizationGuideKeyedService* optimization_guide =
       OptimizationGuideKeyedServiceFactory::GetForProfile(profile);
+  history::HistoryService* history_service =
+      HistoryServiceFactory::GetForProfile(profile,
+                                           ServiceAccessType::IMPLICIT_ACCESS);
   // If optimization guide feature is disabled, then disable segmentation.
   if (!optimization_guide)
     return new DummySegmentationPlatformService();
@@ -79,7 +84,7 @@ KeyedService* SegmentationPlatformServiceFactory::BuildServiceInstanceFor(
   auto* service = new SegmentationPlatformServiceImpl(
       optimization_guide, db_provider, storage_dir,
       UkmDatabaseClient::GetInstance().GetUkmDataManager(), profile->GetPrefs(),
-      task_runner, clock, GetSegmentationPlatformConfig());
+      history_service, task_runner, clock, GetSegmentationPlatformConfig());
 
   service->SetUserData(kSegmentationPlatformProfileObserverKey,
                        std::make_unique<SegmentationPlatformProfileObserver>(

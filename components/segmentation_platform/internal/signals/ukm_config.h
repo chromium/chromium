@@ -40,8 +40,9 @@ class UkmConfig {
   // Returns a list of observed event hashes, for sending it to UkmRecorderImpl.
   base::flat_set<uint64_t> GetRawObservedEvents() const;
 
-  // Returns true if the config has the given event and metric.
-  bool IsObserving(UkmEventHash event, UkmMetricHash metric) const;
+  // Returns a list of metrics observed for the given |event|. Returns nullptr
+  // if the event is not observed.
+  const base::flat_set<UkmMetricHash>* GetObservedMetrics(UkmEventHash event);
 
   // Add the given event and metrics for observation.
   void AddEvent(UkmEventHash event_hash,

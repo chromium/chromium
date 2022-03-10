@@ -27,6 +27,10 @@ class FilePath;
 class SequencedTaskRunner;
 }  // namespace base
 
+namespace history {
+class HistoryService;
+}
+
 namespace leveldb_proto {
 class ProtoDatabaseProvider;
 }  // namespace leveldb_proto
@@ -49,6 +53,7 @@ struct Config;
 class DatabaseMaintenanceImpl;
 class FeatureListQueryProcessor;
 class HistogramSignalHandler;
+class HistoryServiceObserver;
 class ModelExecutionManager;
 class ModelExecutionSchedulerImpl;
 class SegmentationResultPrefs;
@@ -87,6 +92,7 @@ class SegmentationPlatformServiceImpl : public SegmentationPlatformService {
       const base::FilePath& storage_dir,
       UkmDataManager* ukm_data_manager,
       PrefService* pref_service,
+      history::HistoryService* history_service,
       const scoped_refptr<base::SequencedTaskRunner>& task_runner,
       base::Clock* clock,
       std::vector<std::unique_ptr<Config>> configs);
@@ -102,6 +108,7 @@ class SegmentationPlatformServiceImpl : public SegmentationPlatformService {
       UkmDataManager* ukm_data_manager,
       optimization_guide::OptimizationGuideModelProvider* model_provider,
       PrefService* pref_service,
+      history::HistoryService* history_service,
       const scoped_refptr<base::SequencedTaskRunner>& task_runner,
       base::Clock* clock,
       std::vector<std::unique_ptr<Config>> configs);
@@ -166,6 +173,7 @@ class SegmentationPlatformServiceImpl : public SegmentationPlatformService {
   std::unique_ptr<UserActionSignalHandler> user_action_signal_handler_;
   std::unique_ptr<HistogramSignalHandler> histogram_signal_handler_;
   std::unique_ptr<SignalFilterProcessor> signal_filter_processor_;
+  std::unique_ptr<HistoryServiceObserver> history_service_observer_;
 
   // Training/inference input data generation.
   std::unique_ptr<FeatureListQueryProcessor> feature_list_query_processor_;

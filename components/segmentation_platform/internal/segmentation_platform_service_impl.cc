@@ -37,6 +37,7 @@
 #include "components/segmentation_platform/internal/selection/segment_selector_impl.h"
 #include "components/segmentation_platform/internal/selection/segmentation_result_prefs.h"
 #include "components/segmentation_platform/internal/signals/histogram_signal_handler.h"
+#include "components/segmentation_platform/internal/signals/history_service_observer.h"
 #include "components/segmentation_platform/internal/signals/signal_filter_processor.h"
 #include "components/segmentation_platform/internal/signals/user_action_signal_handler.h"
 #include "components/segmentation_platform/internal/stats.h"
@@ -61,6 +62,7 @@ SegmentationPlatformServiceImpl::SegmentationPlatformServiceImpl(
     const base::FilePath& storage_dir,
     UkmDataManager* ukm_data_manager,
     PrefService* pref_service,
+    history::HistoryService* history_service,
     const scoped_refptr<base::SequencedTaskRunner>& task_runner,
     base::Clock* clock,
     std::vector<std::unique_ptr<Config>> configs)
@@ -80,6 +82,7 @@ SegmentationPlatformServiceImpl::SegmentationPlatformServiceImpl(
           ukm_data_manager,
           model_provider,
           pref_service,
+          history_service,
           task_runner,
           clock,
           std::move(configs)) {}
@@ -93,6 +96,7 @@ SegmentationPlatformServiceImpl::SegmentationPlatformServiceImpl(
     UkmDataManager* ukm_data_manager,
     optimization_guide::OptimizationGuideModelProvider* model_provider,
     PrefService* pref_service,
+    history::HistoryService* history_service,
     const scoped_refptr<base::SequencedTaskRunner>& task_runner,
     base::Clock* clock,
     std::vector<std::unique_ptr<Config>> configs)
@@ -102,7 +106,6 @@ SegmentationPlatformServiceImpl::SegmentationPlatformServiceImpl(
       platform_options_(PlatformOptions::CreateDefault()),
       configs_(std::move(configs)),
       ukm_data_manager_(ukm_data_manager) {
-  ukm_data_manager_->AddRef();
   // Construct databases.
   segment_info_database_ =
       std::make_unique<SegmentInfoDatabase>(std::move(segment_db));
@@ -112,6 +115,7 @@ SegmentationPlatformServiceImpl::SegmentationPlatformServiceImpl(
       std::move(signal_storage_config_db), clock);
   segmentation_result_prefs_ =
       std::make_unique<SegmentationResultPrefs>(pref_service);
+  ukm_data_manager_->AddRef();
 
   // Construct signal processors.
   user_action_signal_handler_ =
@@ -121,6 +125,13 @@ SegmentationPlatformServiceImpl::SegmentationPlatformServiceImpl(
   signal_filter_processor_ = std::make_unique<SignalFilterProcessor>(
       segment_info_database_.get(), user_action_signal_handler_.get(),
       histogram_signal_handler_.get(), ukm_data_manager_);
+
+  if (ukm_data_manager_->IsUkmEngineEnabled() && history_service) {
+    // If UKM engine is enabled and history service is not available, then we
+    // would write metrics without URLs to the database, which is OK.
+    history_service_observer_ = std::make_unique<HistoryServiceObserver>(
+        history_service, ukm_data_manager_->GetOrCreateUrlHandler());
+  }
 
   for (const auto& config : configs_) {
     segment_selectors_[config->segmentation_key] =
@@ -159,6 +170,7 @@ SegmentationPlatformServiceImpl::SegmentationPlatformServiceImpl(
 }
 
 SegmentationPlatformServiceImpl::~SegmentationPlatformServiceImpl() {
+  history_service_observer_.reset();
   ukm_data_manager_->RemoveRef();
 }
 
