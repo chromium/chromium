@@ -5,7 +5,8 @@
 import 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
 import './keyboard_icons.js';
 
-import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {I18nBehavior, I18nBehaviorInterface} from 'chrome://resources/js/i18n_behavior.m.js';
+import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 /**
  * @fileoverview
@@ -67,7 +68,16 @@ export const KeyboardKeyState = {
   kTested: 'tested',
 };
 
-export class KeyboardKeyElement extends PolymerElement {
+/**
+ * @constructor
+ * @extends {PolymerElement}
+ * @implements {I18nBehaviorInterface}
+ */
+const KeyboardKeyElementBase =
+    mixinBehaviors([I18nBehavior], PolymerElement);
+
+/** @polymer */
+export class KeyboardKeyElement extends KeyboardKeyElementBase {
   static get is() {
     return 'keyboard-key';
   }
@@ -139,7 +149,33 @@ export class KeyboardKeyElement extends PolymerElement {
         value: KeyboardKeyState.kNotPressed,
         reflectToAttribute: true,
       },
+
+      /**
+       * The key name to report to assistive technologies. Defaults to mainGlyph
+       * if not set.
+       * @type {?string}
+       */
+      ariaName: String,
+
+      /** @protected {string} */
+      ariaLabel_: {
+        type: String,
+        computed: 'computeAriaLabel_(' +
+            'ariaName, mainGlyph, bottomLeftGlyph, bottomRightGlyph, state)',
+      },
     };
+  }
+
+  computeAriaLabel_(
+      ariaName, mainGlyph, bottomLeftGlyph, bottomRightGlyph, state) {
+    const name =
+        ariaName || mainGlyph || bottomRightGlyph || bottomLeftGlyph || '';
+    const stateStringIds = {
+      [KeyboardKeyState.kNotPressed]: 'keyboardDiagramAriaLabelNotPressed',
+      [KeyboardKeyState.kPressed]: 'keyboardDiagramAriaLabelPressed',
+      [KeyboardKeyState.kTested]: 'keyboardDiagramAriaLabelTested',
+    };
+    return this.i18n(stateStringIds[state], name);
   }
 
   /**

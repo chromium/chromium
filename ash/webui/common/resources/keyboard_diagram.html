@@ -239,10 +239,17 @@
       <keyboard-key main-glyph="esc" data-code="1"></keyboard-key>
       <dom-repeat items="[[topRowKeys]]" as="key">
         <template>
-          <keyboard-key icon="[[key.icon]]" main-glyph="[[key.text]]"></keyboard-key>
+          <keyboard-key
+              icon="[[key.icon]]"
+              main-glyph="[[key.text]]"
+              aria-name="[[optionalI18n_(key.ariaNameI18n)]]">
+          </keyboard-key>
         </template>
       </dom-repeat>
-      <keyboard-key icon="keyboard:power"></keyboard-key>
+      <keyboard-key
+          icon="keyboard:power"
+          aria-name="[[i18n('keyboardDiagramAriaNamePower')]]">
+      </keyboard-key>
     </div>
 
     <keyboard-key data-code="41"></keyboard-key>
@@ -261,9 +268,21 @@
     <template is="dom-if" if="[[isEqual_(mechanicalLayout, 'jis')]]">
       <keyboard-key id="jisYenKey" data-code="124"></keyboard-key>
     </template>
-    <keyboard-key id="backspaceKey" class="right" icon="keyboard:backspace" data-code="14"></keyboard-key>
+    <keyboard-key
+        id="backspaceKey"
+        class="right"
+        icon="keyboard:backspace"
+        data-code="14"
+        aria-name="[[i18n('keyboardDiagramAriaNameBackspace')]]">
+    </keyboard-key>
 
-    <keyboard-key id="tabKey" class="left" icon="keyboard:tab" data-code="15"></keyboard-key>
+    <keyboard-key
+        id="tabKey"
+        class="left"
+        icon="keyboard:tab"
+        data-code="15"
+        aria-name="[[i18n('keyboardDiagramAriaNameTab')]]">
+    </keyboard-key>
     <keyboard-key data-code="16"></keyboard-key>
     <keyboard-key data-code="17"></keyboard-key>
     <keyboard-key data-code="18"></keyboard-key>
@@ -278,7 +297,13 @@
     <keyboard-key data-code="27"></keyboard-key>
     <keyboard-key id="backslashKey" data-code="43"></keyboard-key>
 
-    <keyboard-key id="launcherKey" class="left" icon="keyboard:launcher" data-code="125"></keyboard-key>
+    <keyboard-key
+        id="launcherKey"
+        class="left"
+        icon="keyboard:launcher"
+        data-code="125"
+        aria-name="[[i18n('keyboardDiagramAriaNameLauncher')]]">
+    </keyboard-key>
     <keyboard-key data-code="30"></keyboard-key>
     <keyboard-key data-code="31"></keyboard-key>
     <keyboard-key data-code="32"></keyboard-key>
@@ -290,10 +315,22 @@
     <keyboard-key data-code="38"></keyboard-key>
     <keyboard-key data-code="39"></keyboard-key>
     <keyboard-key data-code="40"></keyboard-key>
-    <keyboard-key id="enterKey" class="right" icon="keyboard:return" data-code="28"></keyboard-key>
-    <keyboard-key id="enterKeyLowerPart" data-code="28"></keyboard-key>
+    <keyboard-key
+        id="enterKey"
+        class="right"
+        icon="keyboard:return"
+        data-code="28"
+        aria-name="[[i18n('keyboardDiagramAriaNameEnter')]]">
+    </keyboard-key>
+    <keyboard-key id="enterKeyLowerPart" data-code="28" aria-hidden="true"></keyboard-key>
 
-    <keyboard-key id="leftShiftKey" class="left" icon="keyboard:shift" data-code="42"></keyboard-key>
+    <keyboard-key
+        id="leftShiftKey"
+        class="left"
+        icon="keyboard:shift"
+        data-code="42"
+        aria-name="[[i18n('keyboardDiagramAriaNameShiftLeft')]]">
+    </keyboard-key>
     <template is="dom-if" if="[[isEqual_(mechanicalLayout, 'iso')]]">
       <keyboard-key id="isoKey" bottom-left-glyph="&lt;" top-left-glyph="&gt;" data-code="86"></keyboard-key>
     </template>
@@ -310,15 +347,30 @@
     <template is="dom-if" if="[[isEqual_(mechanicalLayout, 'jis')]]">
       <keyboard-key id="jisBackslashKey" data-code="89"></keyboard-key>
     </template>
-    <keyboard-key id="rightShiftKey" class="right" icon="keyboard:shift" data-code="54"></keyboard-key>
+    <keyboard-key
+        id="rightShiftKey"
+        class="right"
+        icon="keyboard:shift"
+        data-code="54"
+        aria-name="[[i18n('keyboardDiagramAriaNameShiftRight')]]">
+    </keyboard-key>
 
     <keyboard-key id="leftCtrlKey" class="left" main-glyph="ctrl" data-code="29"></keyboard-key>
     <template is="dom-if" if="[[showFnAndGlobeKeys_]]">
       <keyboard-key id="fnKey" class="disabled" main-glyph="fn"></keyboard-key>
-      <keyboard-key id="layoutSwitchKey" icon="keyboard:layout-switch" data-code="584"></keyboard-key>
+      <keyboard-key
+          id="layoutSwitchKey"
+          icon="keyboard:layout-switch"
+          data-code="584"
+          aria-name="[[i18n('keyboardDiagramAriaNameLayoutSwitch')]]">
+      </keyboard-key>
     </template>
     <template is="dom-if" if="[[showAssistantKey]]">
-      <keyboard-key icon="keyboard:assistant" data-code="583"></keyboard-key>
+      <keyboard-key
+          icon="keyboard:assistant"
+          data-code="583"
+          aria-name="[[i18n('keyboardDiagramAriaNameAssistant')]]">
+      </keyboard-key>
     </template>
     <keyboard-key id="leftAltKey" class="left" main-glyph="alt" data-code="56"></keyboard-key>
     <template is="dom-if" if="[[isEqual_(mechanicalLayout, 'jis')]]">
@@ -336,14 +388,31 @@
           if="[[isEqual_(physicalLayout, 'dell-enterprise-wilco')]]">
         <keyboard-key id="dellPageUpKey" main-glyph="pg up" data-code="104"></keyboard-key>
       </template>
-      <keyboard-key id="upArrow" icon="keyboard:arrow-up" data-code="103"></keyboard-key>
+      <keyboard-key
+          id="upArrow"
+          icon="keyboard:arrow-up"
+          data-code="103"
+          aria-name="[[i18n('keyboardDiagramAriaNameArrowUp')]]">
+      </keyboard-key>
       <template is="dom-if"
           if="[[isEqual_(physicalLayout, 'dell-enterprise-wilco')]]">
         <keyboard-key id="dellPageDownKey" main-glyph="pg dn" data-code="109"></keyboard-key>
       </template>
-      <keyboard-key icon="keyboard:arrow-left" data-code="105"></keyboard-key>
-      <keyboard-key icon="keyboard:arrow-down" data-code="108"></keyboard-key>
-      <keyboard-key icon="keyboard:arrow-right" data-code="106"></keyboard-key>
+      <keyboard-key
+          icon="keyboard:arrow-left"
+          data-code="105"
+          aria-name="[[i18n('keyboardDiagramAriaNameArrowLeft')]]">
+      </keyboard-key>
+      <keyboard-key
+          icon="keyboard:arrow-down"
+          data-code="108"
+          aria-name="[[i18n('keyboardDiagramAriaNameArrowDown')]]">
+      </keyboard-key>
+      <keyboard-key
+          icon="keyboard:arrow-right"
+          data-code="106"
+          aria-name="[[i18n('keyboardDiagramAriaNameArrowRight')]]">
+      </keyboard-key>
     </div>
   </div>
   <div id="numberPad">

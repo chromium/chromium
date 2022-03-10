@@ -9,6 +9,7 @@
 
 #include "ash/constants/ash_features.h"
 #include "ash/webui/common/backend/plural_string_handler.h"
+#include "ash/webui/common/keyboard_diagram_strings.h"
 #include "ash/webui/diagnostics_ui/backend/diagnostics_manager.h"
 #include "ash/webui/diagnostics_ui/backend/histogram_util.h"
 #include "ash/webui/diagnostics_ui/backend/input_data_provider.h"
@@ -395,6 +396,7 @@ DiagnosticsDialogUI::DiagnosticsDialogUI(
   web_ui->AddMessageHandler(std::move(session_log_handler));
 
   AddDiagnosticsStrings(html_source);
+  ash::common::AddKeyboardDiagramStrings(html_source);
   // Add localized strings required for network-icon.
   ui::network_element::AddLocalizedStrings(html_source);
   ui::network_element::AddOncLocalizedStrings(html_source);

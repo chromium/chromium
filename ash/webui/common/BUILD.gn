@@ -9,6 +9,19 @@ assert(is_chromeos_ash, "Non-ChromeOS builds cannot depend on //ash")
 static_library("common") {
 }
 
+static_library("keyboard_diagram_strings") {
+  sources = [
+    "keyboard_diagram_strings.cc",
+    "keyboard_diagram_strings.h",
+  ]
+
+  deps = [
+    "//chromeos/strings/",
+    "//content/public/browser",
+    "//ui/base",
+  ]
+}
+
 group("closure_compile") {
   deps = [ "resources:closure_compile_module" ]
 }

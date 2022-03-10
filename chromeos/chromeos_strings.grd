@@ -1182,6 +1182,115 @@ Try tapping the mic to ask me anything.
         USB touchscreen
       </message>
 
+      <!-- Ash keyboard diagram ARIA labels -->
+      <message name="IDS_KEYBOARD_DIAGRAM_ARIA_LABEL_NOT_PRESSED" desc="ARIA label that describes a key that has not yet been pressed, as part of a keyboard testing UI. Key names could be single letters like Q, or a phrase like 'Down arrow'.">
+        <ph name="KEY_NAME">$1<ex>Q</ex></ph> key not pressed
+      </message>
+      <message name="IDS_KEYBOARD_DIAGRAM_ARIA_LABEL_PRESSED" desc="ARIA label that describes a key that is currently being pressed, as part of a keyboard testing UI. Key names could be single letters like W, or a phrase like 'Down arrow'.">
+        <ph name="KEY_NAME">$1<ex>W</ex></ph> key pressed
+      </message>
+      <message name="IDS_KEYBOARD_DIAGRAM_ARIA_LABEL_TESTED" desc="ARIA label that describes a key that is not currently being pressed but has been pressed during the current test, as part of a keyboard testing UI. Key names could be single letters like E, or a phrase like 'Down arrow'.">
+        <ph name="KEY_NAME">$1<ex>E</ex></ph> key tested
+      </message>
+
+      <message name="IDS_KEYBOARD_DIAGRAM_ARIA_NAME_ARROW_DOWN" desc="Describes the down arrow key on a keyboard. Used as part of an ARIA label on a keyboard testing UI (one of 'Down arrow key not pressed', 'Down arrow key pressed', or 'Down arrow key tested').">
+        Down arrow
+      </message>
+      <message name="IDS_KEYBOARD_DIAGRAM_ARIA_NAME_ARROW_LEFT" desc="Describes the left arrow key on a keyboard. Used as part of an ARIA label on a keyboard testing UI (one of 'Left arrow key not pressed', 'Left arrow key pressed', or 'Left arrow key tested').">
+        Left arrow
+      </message>
+      <message name="IDS_KEYBOARD_DIAGRAM_ARIA_NAME_ARROW_RIGHT" desc="Describes the right arrow key on a keyboard. Used as part of an ARIA label on a keyboard testing UI (one of 'Right arrow key not pressed', 'Right arrow key pressed', or 'Right arrow key tested').">
+        Right arrow
+      </message>
+      <message name="IDS_KEYBOARD_DIAGRAM_ARIA_NAME_ARROW_UP" desc="Describes the up arrow key on a keyboard. Used as part of an ARIA label on a keyboard testing UI (one of 'Up arrow key not pressed', 'Up arrow key pressed', or 'Up arrow key tested').">
+        Up arrow
+      </message>
+      <message name="IDS_KEYBOARD_DIAGRAM_ARIA_NAME_ASSISTANT" desc="Describes the key on a keyboard that activates the Google Assistant. Used as part of an ARIA label on a keyboard testing UI (one of 'Assistant key not pressed', 'Assistant key pressed', or 'Assistant key tested').">
+        Assistant
+      </message>
+      <message name="IDS_KEYBOARD_DIAGRAM_ARIA_NAME_BACKSPACE" desc="Describes the Backspace key on a keyboard. Used as part of an ARIA label on a keyboard testing UI (one of 'Backspace key not pressed', 'Backspace key pressed', or 'Backspace key tested').">
+        Backspace
+      </message>
+      <message name="IDS_KEYBOARD_DIAGRAM_ARIA_NAME_ENTER" desc="Describes the Enter key on a keyboard. Used as part of an ARIA label on a keyboard testing UI (one of 'Enter key not pressed', 'Enter key pressed', or 'Enter key tested').">
+        Enter
+      </message>
+      <message name="IDS_KEYBOARD_DIAGRAM_ARIA_NAME_JIS_LETTER_SWITCH" desc="Describes the key on a Japanese Chromebook keyboard that switches between entering Kana and alphanumeric characters, labelled 'かな/英数' on the keyboard itself. Used as part of an ARIA label on a keyboard testing UI (one of 'Kana/alphanumeric switch key not pressed', 'Kana/alphanumeric switch key pressed', or 'Kana/alphanumeric switch key tested').">
+        Kana/alphanumeric switch
+      </message>
+      <message name="IDS_KEYBOARD_DIAGRAM_ARIA_NAME_LAUNCHER" desc="Describes the Launcher key on a keyboard. Used as part of an ARIA label on a keyboard testing UI (one of 'Launcher key not pressed', 'Launcher key pressed', or 'Launcher key tested').">
+        Launcher
+      </message>
+      <message name="IDS_KEYBOARD_DIAGRAM_ARIA_NAME_LAYOUT_SWITCH" desc="Describes the key on a Dell Chromebook keyboard that switches between keyboard layouts. Used as part of an ARIA label on a keyboard testing UI (one of 'Layout switch key not pressed', 'Layout switch key pressed', or 'Layout switch key tested').">
+        Layout switch
+      </message>
+      <message name="IDS_KEYBOARD_DIAGRAM_ARIA_NAME_POWER" desc="Describes the power key on a keyboard. Used as part of an ARIA label on a keyboard testing UI (one of 'Power key not pressed', 'Power key pressed', or 'Power key tested').">
+        Power
+      </message>
+      <message name="IDS_KEYBOARD_DIAGRAM_ARIA_NAME_SHIFT_LEFT" desc="Describes the left Shift key on a keyboard. Used as part of an ARIA label on a keyboard testing UI (one of 'Left shift key not pressed', 'Left shift key pressed', or 'Left shift key tested').">
+        Left shift
+      </message>
+      <message name="IDS_KEYBOARD_DIAGRAM_ARIA_NAME_SHIFT_RIGHT" desc="Describes the right Shift key on a keyboard. Used as part of an ARIA label on a keyboard testing UI (one of 'Right shift key not pressed', 'Right shift key pressed', or 'Right shift key tested').">
+        Right shift
+      </message>
+      <message name="IDS_KEYBOARD_DIAGRAM_ARIA_NAME_TAB" desc="Describes the Tab key on a keyboard. Used as part of an ARIA label on a keyboard testing UI (one of 'Tab key not pressed', 'Tab key pressed', or 'Tab key tested').">
+        Tab
+      </message>
+
+      <message name="IDS_KEYBOARD_DIAGRAM_ARIA_NAME_BACK" desc="Describes the Back key on the top row of a ChromeOS keyboard. Used as part of an ARIA label on a keyboard testing UI (one of 'Back key not pressed', 'Back key pressed', or 'Back key tested')">
+        Back
+      </message>
+      <message name="IDS_KEYBOARD_DIAGRAM_ARIA_NAME_FORWARD" desc="Describes the Forward key on the top row of a ChromeOS keyboard. Used as part of an ARIA label on a keyboard testing UI (one of 'Forward key not pressed', 'Forward key pressed', or 'Forward key tested')">
+        Forward
+      </message>
+      <message name="IDS_KEYBOARD_DIAGRAM_ARIA_NAME_FULLSCREEN" desc="Describes the Fullscreen key on the top row of a ChromeOS keyboard. Used as part of an ARIA label on a keyboard testing UI (one of 'Fullscreen key not pressed', 'Fullscreen key pressed', or 'Fullscreen key tested')">
+        Fullscreen
+      </message>
+      <message name="IDS_KEYBOARD_DIAGRAM_ARIA_NAME_KEYBOARD_BACKLIGHT_DOWN" desc="Describes the key for decreasing keyboard backlight brightness on the top row of a ChromeOS keyboard. Used as part of an ARIA label on a keyboard testing UI (one of 'Keyboard brightness up key not pressed', 'Keyboard brightness up key pressed', or 'Keyboard brightness up key tested')">
+        Keyboard brightness down
+      </message>
+      <message name="IDS_KEYBOARD_DIAGRAM_ARIA_NAME_KEYBOARD_BACKLIGHT_UP" desc="Describes the key for increasing keyboard backlight brightness on the top row of a ChromeOS keyboard. Used as part of an ARIA label on a keyboard testing UI (one of 'Keyboard brightness down key not pressed', 'Keyboard brightness down key pressed', or 'Keyboard brightness down key tested')">
+        Keyboard brightness up
+      </message>
+      <message name="IDS_KEYBOARD_DIAGRAM_ARIA_NAME_MUTE" desc="Describes the Mute key on the top row of a ChromeOS keyboard. Used as part of an ARIA label on a keyboard testing UI (one of 'Mute key not pressed', 'Mute key pressed', or 'Mute key tested')">
+        Mute
+      </message>
+      <message name="IDS_KEYBOARD_DIAGRAM_ARIA_NAME_OVERVIEW" desc="Describes the Overview key on the top row of a ChromeOS keyboard. Used as part of an ARIA label on a keyboard testing UI (one of 'Overview key not pressed', 'Overview key pressed', or 'Overview key tested')">
+        Overview
+      </message>
+      <message name="IDS_KEYBOARD_DIAGRAM_ARIA_NAME_PLAY_PAUSE" desc="Describes the play/pause key on the top row of a ChromeOS keyboard. Used as part of an ARIA label on a keyboard testing UI (one of 'Play/Pause key not pressed', 'Play/Pause key pressed', or 'Play/Pause key tested')">
+        Play/Pause
+      </message>
+      <message name="IDS_KEYBOARD_DIAGRAM_ARIA_NAME_PRIVACY_SCREEN_TOGGLE" desc="Describes the key on the top row of a ChromeOS keyboard that toggles the electronic privacy screen. Used as part of an ARIA label on a keyboard testing UI (one of 'Privacy screen toggle key not pressed', 'Privacy screen toggle key pressed', or 'Privacy screen toggle key tested')">
+        Privacy screen toggle
+      </message>
+      <message name="IDS_KEYBOARD_DIAGRAM_ARIA_NAME_REFRESH" desc="Describes the Refresh key on the top row of a ChromeOS keyboard. Used as part of an ARIA label on a keyboard testing UI (one of 'Refresh key not pressed', 'Refresh key pressed', or 'Refresh key tested')">
+        Refresh
+      </message>
+      <message name="IDS_KEYBOARD_DIAGRAM_ARIA_NAME_SCREENSHOT" desc="Describes the Screenshot key on the top row of a ChromeOS keyboard. Used as part of an ARIA label on a keyboard testing UI (one of 'Screenshot key not pressed', 'Screenshot key pressed', or 'Screenshot key tested')">
+        Screenshot
+      </message>
+      <message name="IDS_KEYBOARD_DIAGRAM_ARIA_NAME_SCREEN_BRIGHTNESS_DOWN" desc="Describes the key for decreasing display brightness on the top row of a ChromeOS keyboard. Used as part of an ARIA label on a keyboard testing UI (one of 'Display brightness down key not pressed', 'Display brightness down key pressed', or 'Display brightness down key tested')">
+        Display brightness down
+      </message>
+      <message name="IDS_KEYBOARD_DIAGRAM_ARIA_NAME_SCREEN_BRIGHTNESS_UP" desc="Describes the key for increasing display brightness on the top row of a ChromeOS keyboard. Used as part of an ARIA label on a keyboard testing UI (one of 'Display brightness up key not pressed', 'Display brightness up key pressed', or 'Display brightness up key tested')">
+        Display brightness up
+      </message>
+      <message name="IDS_KEYBOARD_DIAGRAM_ARIA_NAME_SCREEN_MIRROR" desc="Describes the key on the top row of a ChromeOS keyboard that changes the screen mirroring mode. Used as part of an ARIA label on a keyboard testing UI (one of 'Screen mirror key not pressed', 'Screen mirror key pressed', or 'Screen mirror key tested')">
+        Screen mirror
+      </message>
+      <message name="IDS_KEYBOARD_DIAGRAM_ARIA_NAME_TRACK_NEXT" desc="Describes the next track key on the top row of a ChromeOS keyboard. Used as part of an ARIA label on a keyboard testing UI (one of 'Next track key not pressed', 'Next track key pressed', or 'Next track key tested')">
+        Next track
+      </message>
+      <message name="IDS_KEYBOARD_DIAGRAM_ARIA_NAME_TRACK_PREVIOUS" desc="Describes the previous track key on the top row of a ChromeOS keyboard. Used as part of an ARIA label on a keyboard testing UI (one of 'Previous track key not pressed', 'Previous track key pressed', or 'Previous track key tested')">
+        Previous track
+      </message>
+      <message name="IDS_KEYBOARD_DIAGRAM_ARIA_NAME_VOLUME_DOWN" desc="Describes the volume down key on the top row of a ChromeOS keyboard. Used as part of an ARIA label on a keyboard testing UI (one of 'Volume down key not pressed', 'Volume down key pressed', or 'Volume down key tested')">
+        Volume down
+      </message>
+      <message name="IDS_KEYBOARD_DIAGRAM_ARIA_NAME_VOLUME_UP" desc="Describes the volume up key on the top row of a ChromeOS keyboard. Used as part of an ARIA label on a keyboard testing UI (one of 'Volume up key not pressed', 'Volume up key pressed', or 'Volume up key tested')">
+        Volume up
+      </message>
+
       <message name="IDS_ECHE_APP_DEFAULT_DEVICE_NAME" desc="The default device name used to display on Android endpoint of Eche app.">
         <ph name="GIVEN_NAME">$1<ex>Josh</ex></ph>'s <ph name="DEVICE_TYPE">$2<ex>Chromebook</ex></ph>
       </message>

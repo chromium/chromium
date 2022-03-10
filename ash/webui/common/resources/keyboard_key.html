@@ -149,19 +149,24 @@
   }
 </style>
 <div id="background"></div>
-<div id="foreground">
+<div id="foreground" aria-label="[[ariaLabel_]]">
+  <!--
+    Child elements are aria-hidden to make ChromeVox treat the whole key as
+    one unit with an aria-label, rather than individual labels that don't
+    reflect the key's state.
+  -->
   <template is="dom-if" if="[[icon]]">
-    <iron-icon icon="[[icon]]"></iron-icon>
+    <iron-icon aria-hidden="true" icon="[[icon]]"></iron-icon>
   </template>
   <template is="dom-if" if="[[mainGlyph]]">
-    <span id="mainGlyph">[[mainGlyph]]</span>
+    <span aria-hidden="true" id="mainGlyph">[[mainGlyph]]</span>
   </template>
   <template is="dom-if" if="[[showCornerGlyphs_]]">
-    <span>[[topLeftGlyph]]</span>
-    <span>[[bottomLeftGlyph]]</span>
+    <span aria-hidden="true">[[topLeftGlyph]]</span>
+    <span aria-hidden="true">[[bottomLeftGlyph]]</span>
     <template is="dom-if" if="[[showSecondColumn_]]">
-      <span>[[topRightGlyph]]</span>
-      <span>[[bottomRightGlyph]]</span>
+      <span aria-hidden="true">[[topRightGlyph]]</span>
+      <span aria-hidden="true">[[bottomRightGlyph]]</span>
     </template>
   </template>
 </div>

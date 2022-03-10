@@ -496,6 +496,7 @@ const kTraditionalChinese = [
  *   topRight: ?string,
  *   bottomLeft: ?string,
  *   bottomRight: ?string,
+ *   ariaNameI18n: ?string,
  * })>>>}
  */
 const kLayouts = {
@@ -1036,7 +1037,10 @@ const kLayouts = {
   ],
   /* Japan */
   'jp': [
-    [41, {icon: 'keyboard:jis-letter-switch'}],
+    [41, {
+      icon: 'keyboard:jis-letter-switch',
+      ariaNameI18n: 'keyboardDiagramAriaNameJisLetterSwitch'
+    }],
     [ 2, {bottomLeft: '1', topLeft: '!', bottomRight: 'ぬ'}],
     [ 3, {bottomLeft: '2', topLeft: '"', bottomRight: 'ふ'}],
     [ 4, {bottomLeft: '3', topLeft: '#', bottomRight: 'あ'}],

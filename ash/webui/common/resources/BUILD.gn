@@ -70,6 +70,7 @@ js_library("keyboard_diagram") {
     ":keyboard_key",
     ":keyboard_layouts",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
+    "//ui/webui/resources/js:i18n_behavior.m",
   ]
 }
 
@@ -83,6 +84,7 @@ js_library("keyboard_key") {
   deps = [
     ":keyboard_icons",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
+    "//ui/webui/resources/js:i18n_behavior.m",
   ]
 }
 
