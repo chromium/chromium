@@ -562,6 +562,14 @@ void SetCustomizedRuntimeFeaturesFromCombinedArgs(
         break;
     }
   }
+
+  // Enables the Blink feature only when the base feature variation is enabled.
+  if (base::FeatureList::IsEnabled(features::kFedCm) &&
+      base::GetFieldTrialParamByFeatureAsBool(
+          features::kFedCm, features::kFedCmIdpSignoutFieldTrialParamName,
+          false)) {
+    WebRuntimeFeatures::EnableWebIdIdpSignout(true);
+  }
 }
 
 // Ensures that the various ways of enabling/disabling features do not produce

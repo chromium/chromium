@@ -175,6 +175,7 @@ class WebRuntimeFeatures {
   BLINK_PLATFORM_EXPORT static void EnableWebGLImageChromium(bool);
   BLINK_PLATFORM_EXPORT static void EnableWebGPU(bool);
   BLINK_PLATFORM_EXPORT static void EnableWebID(bool);
+  BLINK_PLATFORM_EXPORT static void EnableWebIdIdpSignout(bool);
   BLINK_PLATFORM_EXPORT static void EnableWebNfc(bool);
   BLINK_PLATFORM_EXPORT static void EnableWebOTPAssertionFeaturePolicy(bool);
   BLINK_PLATFORM_EXPORT static void EnableWebShare(bool);

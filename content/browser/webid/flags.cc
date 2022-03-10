@@ -20,4 +20,9 @@ bool IsFedCmAutoSigninEnabled() {
       features::kFedCm, features::kFedCmAutoSigninFieldTrialParamName, false);
 }
 
+bool IsFedCmIdpSignoutEnabled() {
+  return GetFieldTrialParamByFeatureAsBool(
+      features::kFedCm, features::kFedCmIdpSignoutFieldTrialParamName, false);
+}
+
 }  // namespace content

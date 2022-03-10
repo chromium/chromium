@@ -15,6 +15,9 @@ bool IsFedCmEnabled();
 // Whether FedCM auto sign-in is enabled.
 bool IsFedCmAutoSigninEnabled();
 
+// Whether FedCM IDP sign-out is enabled.
+bool IsFedCmIdpSignoutEnabled();
+
 }  // namespace content
 
 #endif  // CONTENT_BROWSER_WEBID_FLAGS_H_

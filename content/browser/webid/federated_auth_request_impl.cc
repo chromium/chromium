@@ -365,6 +365,11 @@ void FederatedAuthRequestImpl::Revoke(
 void FederatedAuthRequestImpl::LogoutRps(
     std::vector<blink::mojom::LogoutRpsRequestPtr> logout_requests,
     blink::mojom::FederatedAuthRequest::LogoutRpsCallback callback) {
+  if (!IsFedCmIdpSignoutEnabled()) {
+    std::move(callback).Run(LogoutRpsStatus::kError);
+    return;
+  }
+
   if (HasPendingRequest()) {
     std::move(callback).Run(LogoutRpsStatus::kErrorTooManyRequests);
     return;

@@ -2615,6 +2615,10 @@
       status: "test",
     },
     {
+      name: "WebIdIdpSignout",
+      status: "test",
+    },
+    {
       name: "WebNFC",
       status: {"Android": "stable", "default": "test"},
     },

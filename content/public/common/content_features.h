@@ -86,6 +86,7 @@ CONTENT_EXPORT extern const base::Feature
     kExtraSafelistedRequestHeadersForOutOfBlinkCors;
 CONTENT_EXPORT extern const base::Feature kFedCm;
 CONTENT_EXPORT extern const char kFedCmAutoSigninFieldTrialParamName[];
+CONTENT_EXPORT extern const char kFedCmIdpSignoutFieldTrialParamName[];
 CONTENT_EXPORT extern const base::Feature kFirstPartySets;
 CONTENT_EXPORT extern const base::FeatureParam<bool> kFirstPartySetsIsDogfooder;
 CONTENT_EXPORT extern const base::Feature kFirstPartySetsV2ComponentFormat;

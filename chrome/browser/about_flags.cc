@@ -2427,9 +2427,13 @@ const FeatureEntry::FeatureVariation kDrawPredictedPointVariations[] = {
 #if BUILDFLAG(IS_ANDROID)
 const FeatureEntry::FeatureParam kFedCmVariationAutoSignin[] = {
     {features::kFedCmAutoSigninFieldTrialParamName, "true"}};
+const FeatureEntry::FeatureParam kFedCmVariationIdpSignout[] = {
+    {features::kFedCmIdpSignoutFieldTrialParamName, "true"}};
 const FeatureEntry::FeatureVariation kFedCmFeatureVariations[] = {
-    {"- with FedCM auto-signin", kFedCmVariationAutoSignin,
-     std::size(kFedCmVariationAutoSignin), nullptr}};
+    {"- with FedCM auto sign-in", kFedCmVariationAutoSignin,
+     std::size(kFedCmVariationAutoSignin), nullptr},
+    {"- with FedCM IDP sign-out", kFedCmVariationIdpSignout,
+     std::size(kFedCmVariationIdpSignout), nullptr}};
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)

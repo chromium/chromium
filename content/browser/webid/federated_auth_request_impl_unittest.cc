@@ -890,6 +890,11 @@ TEST_F(BasicFederatedAuthRequestImplTest, AllInvalidEndpoints) {
 
 // Test Logout method success with multiple relying parties.
 TEST_F(BasicFederatedAuthRequestImplTest, LogoutSuccessMultiple) {
+  base::test::ScopedFeatureList list;
+  list.InitAndEnableFeatureWithParameters(
+      features::kFedCm,
+      {{features::kFedCmIdpSignoutFieldTrialParamName, "true"}});
+
   CreateAuthRequest(GURL(kIdpTestOrigin));
 
   auto request1 = MakeLogoutRequest("https://rp1.example", "user123");
@@ -910,6 +915,11 @@ TEST_F(BasicFederatedAuthRequestImplTest, LogoutSuccessMultiple) {
 
 // Test Logout without session permission granted.
 TEST_F(BasicFederatedAuthRequestImplTest, LogoutWithoutPermission) {
+  base::test::ScopedFeatureList list;
+  list.InitAndEnableFeatureWithParameters(
+      features::kFedCm,
+      {{features::kFedCmIdpSignoutFieldTrialParamName, "true"}});
+
   CreateAuthRequest(GURL(kIdpTestOrigin));
 
   // logout_return_count is not set here because there should be no

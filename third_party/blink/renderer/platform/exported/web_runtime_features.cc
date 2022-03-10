@@ -643,6 +643,10 @@ void WebRuntimeFeatures::EnableWebID(bool enable) {
   RuntimeEnabledFeatures::SetWebIDEnabled(enable);
 }
 
+void WebRuntimeFeatures::EnableWebIdIdpSignout(bool enable) {
+  RuntimeEnabledFeatures::SetWebIdIdpSignoutEnabled(enable);
+}
+
 void WebRuntimeFeatures::EnableTargetBlankImpliesNoOpener(bool enable) {
   RuntimeEnabledFeatures::SetTargetBlankImpliesNoOpenerEnabled(enable);
 }
