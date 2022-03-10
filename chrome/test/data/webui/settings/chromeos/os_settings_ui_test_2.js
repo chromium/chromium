@@ -7,7 +7,7 @@
 
 // #import {CrSettingsPrefs, Router, routes, setUserActionRecorderForTesting, setNearbyShareSettingsForTesting, setContactManagerForTesting} from 'chrome://os-settings/chromeos/os_settings.js';
 // #import {FakeUserActionRecorder} from './fake_user_action_recorder.m.js';
-// #import {eventToPromise} from '../../../test_util.js';
+// #import {eventToPromise, waitBeforeNextRender} from '../../../test_util.js';
 // #import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 // #import {assertEquals, assertFalse, assertTrue} from '../../chai_assert.js';
 // #import {assert} from 'chrome://resources/js/assert.m.js';
@@ -188,6 +188,29 @@ suite('os-settings-ui', () => {
     settingsMenu.$.osPeople.click();
     assertEquals(
         '', settings.Router.getInstance().getQueryParameters().toString());
+  });
+
+  test('Clicking About menu item should focus About section', async () => {
+    const router = settings.Router.getInstance();
+    const settingsMenu = ui.$$('os-settings-menu');
+
+    // As of iron-selector 2.x, need to force iron-selector to update before
+    // clicking items on it, or wait for 'iron-items-changed'
+    const ironSelector = settingsMenu.$$('iron-selector');
+    ironSelector.forceSynchronousItemUpdate();
+
+    const {aboutItem} = settingsMenu.$;
+    aboutItem.click();
+
+    Polymer.dom.flush();
+    assertEquals(settings.routes.ABOUT_ABOUT, router.getCurrentRoute());
+    assertNotEquals(aboutItem, settingsMenu.shadowRoot.activeElement);
+
+    const settingsMain = ui.$$('os-settings-main');
+    const aboutPage = settingsMain.$$('os-settings-about-page');
+    await waitBeforeNextRender(aboutPage);
+    const aboutSection = aboutPage.$$('settings-section[section="about"]');
+    assertEquals(aboutSection, aboutPage.shadowRoot.activeElement);
   });
 
   test('userActionRouteChange', function() {
