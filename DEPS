@@ -932,17 +932,6 @@ deps = {
       'dep_type': 'cipd',
   },
 
-  'src/third_party/android_build_tools/art': {
-      'packages': [
-          {
-              'package': 'chromium/third_party/android_build_tools/art',
-              'version': '87169fbc701d244c311e6aa8843591a7f1710bc0',
-          },
-      ],
-      'condition': 'checkout_android',
-      'dep_type': 'cipd',
-  },
-
   'src/third_party/android_build_tools/bundletool': {
       'packages': [
           {

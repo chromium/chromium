@@ -89,7 +89,6 @@
 ../print_python_deps.py
 adb_command_line.py
 apk_operations.py
-convert_dex_profile.py
 devil_chromium.py
 gyp/bundletool.py
 gyp/dex.py

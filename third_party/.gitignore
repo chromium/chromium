@@ -12,9 +12,6 @@
 /amd/
 /android_build_tools/aapt2/aapt2
 /android_build_tools/aapt2/lib64/*.so
-/android_build_tools/art/dexlayout
-/android_build_tools/art/lib/*.so
-/android_build_tools/art/profman
 /android_build_tools/bundletool/*.jar
 /android_ndk/
 /android_prebuilts/build_tools

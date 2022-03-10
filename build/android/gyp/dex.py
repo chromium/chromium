@@ -18,10 +18,6 @@ from util import build_utils
 from util import md5_check
 from util import zipalign
 
-sys.path.insert(1, os.path.join(os.path.dirname(__file__), os.path.pardir))
-
-import convert_dex_profile
-
 
 _DEX_XMX = '2G'  # Increase this when __final_dex OOMs.
 
@@ -136,36 +132,7 @@ def _ParseArgs(args):
                       action='store_true',
                       help='Use when filing D8 bugs to capture inputs.'
                       ' Stores inputs to d8inputs.zip')
-
-  group = parser.add_argument_group('Dexlayout')
-  group.add_argument(
-      '--dexlayout-profile',
-      help=('Text profile for dexlayout. If present, a dexlayout '
-            'pass will happen'))
-  group.add_argument(
-      '--profman-path',
-      help=('Path to ART profman binary. There should be a lib/ directory at '
-            'the same path with shared libraries (shared with dexlayout).'))
-  group.add_argument(
-      '--dexlayout-path',
-      help=('Path to ART dexlayout binary. There should be a lib/ directory at '
-            'the same path with shared libraries (shared with dexlayout).'))
-  group.add_argument('--dexdump-path', help='Path to dexdump binary.')
-  group.add_argument(
-      '--proguard-mapping-path',
-      help=('Path to proguard map from obfuscated symbols in the jar to '
-            'unobfuscated symbols present in the code. If not present, the jar '
-            'is assumed not to be obfuscated.'))
-
   options = parser.parse_args(args)
-
-  if options.dexlayout_profile:
-    build_utils.CheckOptions(
-        options,
-        parser,
-        required=('profman_path', 'dexlayout_path', 'dexdump_path'))
-  elif options.proguard_mapping_path is not None:
-    parser.error('Unexpected proguard mapping without dexlayout')
 
   if options.main_dex_rules_path and not options.multi_dex:
     parser.error('--main-dex-rules-path is unused if multidex is not enabled')
@@ -244,128 +211,6 @@ def _RunD8(dex_cmd, input_paths, output_path, warnings_as_errors,
                             fail_on_output=warnings_as_errors)
 
 
-def _EnvWithArtLibPath(binary_path):
-  """Return an environment dictionary for ART host shared libraries.
-
-  Args:
-    binary_path: the path to an ART host binary.
-
-  Returns:
-    An environment dictionary where LD_LIBRARY_PATH has been augmented with the
-    shared library path for the binary. This assumes that there is a lib/
-    directory in the same location as the binary.
-  """
-  lib_path = os.path.join(os.path.dirname(binary_path), 'lib')
-  env = os.environ.copy()
-  libraries = [l for l in env.get('LD_LIBRARY_PATH', '').split(':') if l]
-  libraries.append(lib_path)
-  env['LD_LIBRARY_PATH'] = ':'.join(libraries)
-  return env
-
-
-def _CreateBinaryProfile(text_profile, input_dex, profman_path, temp_dir):
-  """Create a binary profile for dexlayout.
-
-  Args:
-    text_profile: The ART text profile that will be converted to a binary
-        profile.
-    input_dex: The input dex file to layout.
-    profman_path: Path to the profman binary.
-    temp_dir: Directory to work in.
-
-  Returns:
-    The name of the binary profile, which will live in temp_dir.
-  """
-  binary_profile = os.path.join(
-      temp_dir, 'binary_profile-for-' + os.path.basename(text_profile))
-  open(binary_profile, 'w').close()  # Touch binary_profile.
-  profman_cmd = [profman_path,
-                 '--apk=' + input_dex,
-                 '--dex-location=' + input_dex,
-                 '--create-profile-from=' + text_profile,
-                 '--reference-profile-file=' + binary_profile]
-  build_utils.CheckOutput(
-    profman_cmd,
-    env=_EnvWithArtLibPath(profman_path),
-    stderr_filter=lambda output:
-        build_utils.FilterLines(output, '|'.join(
-            [r'Could not find (method_id|proto_id|name):',
-             r'Could not create type list'])))
-  return binary_profile
-
-
-def _LayoutDex(binary_profile, input_dex, dexlayout_path, temp_dir):
-  """Layout a dexfile using a profile.
-
-  Args:
-    binary_profile: An ART binary profile, eg output from _CreateBinaryProfile.
-    input_dex: The dex file used to create the binary profile.
-    dexlayout_path: Path to the dexlayout binary.
-    temp_dir: Directory to work in.
-
-  Returns:
-    List of output files produced by dexlayout. This will be one if the input
-    was a single dexfile, or multiple files if the input was a multidex
-    zip. These output files are located in temp_dir.
-  """
-  dexlayout_output_dir = os.path.join(temp_dir, 'dexlayout_output')
-  os.mkdir(dexlayout_output_dir)
-  dexlayout_cmd = [ dexlayout_path,
-                    '-u',  # Update checksum
-                    '-p', binary_profile,
-                    '-w', dexlayout_output_dir,
-                    input_dex ]
-  build_utils.CheckOutput(
-      dexlayout_cmd,
-      env=_EnvWithArtLibPath(dexlayout_path),
-      stderr_filter=lambda output:
-          build_utils.FilterLines(output,
-                                  r'Can.t mmap dex file.*please zipalign'))
-  output_files = os.listdir(dexlayout_output_dir)
-  if not output_files:
-    raise Exception('dexlayout unexpectedly produced no output')
-  return sorted([os.path.join(dexlayout_output_dir, f) for f in output_files])
-
-
-def _ZipMultidex(file_dir, dex_files):
-  """Zip dex files into a multidex.
-
-  Args:
-    file_dir: The directory into which to write the output.
-    dex_files: The dexfiles forming the multizip. Their names must end with
-      classes.dex, classes2.dex, ...
-
-  Returns:
-    The name of the multidex file, which will live in file_dir.
-  """
-  ordered_files = []  # List of (archive name, file name)
-  for f in dex_files:
-    if f.endswith('dex.jar'):
-      ordered_files.append(('classes.dex', f))
-      break
-  if not ordered_files:
-    raise Exception('Could not find classes.dex multidex file in %s' %
-                    dex_files)
-  for dex_idx in range(2, len(dex_files) + 1):
-    archive_name = 'classes%d.dex' % dex_idx
-    for f in dex_files:
-      if f.endswith(archive_name):
-        ordered_files.append((archive_name, f))
-        break
-    else:
-      raise Exception('Could not find classes%d.dex multidex file in %s' %
-                      dex_files)
-  if len(set(f[1] for f in ordered_files)) != len(ordered_files):
-    raise Exception('Unexpected clashing filenames for multidex in %s' %
-                    dex_files)
-
-  zip_name = os.path.join(file_dir, 'multidex_classes.zip')
-  build_utils.DoZip(((archive_name, os.path.join(file_dir, file_name))
-                     for archive_name, file_name in ordered_files),
-                    zip_name)
-  return zip_name
-
-
 def _ZipAligned(dex_files, output_path):
   """Creates a .dex.jar with 4-byte aligned files.
 
@@ -377,30 +222,6 @@ def _ZipAligned(dex_files, output_path):
     for i, dex_file in enumerate(dex_files):
       name = 'classes{}.dex'.format(i + 1 if i > 0 else '')
       zipalign.AddToZipHermetic(z, name, src_path=dex_file, alignment=4)
-
-
-def _PerformDexlayout(tmp_dir, tmp_dex_output, options):
-  if options.proguard_mapping_path is not None:
-    matching_profile = os.path.join(tmp_dir, 'obfuscated_profile')
-    convert_dex_profile.ObfuscateProfile(
-        options.dexlayout_profile, tmp_dex_output,
-        options.proguard_mapping_path, options.dexdump_path, matching_profile)
-  else:
-    logging.warning('No obfuscation for %s', options.dexlayout_profile)
-    matching_profile = options.dexlayout_profile
-  binary_profile = _CreateBinaryProfile(matching_profile, tmp_dex_output,
-                                        options.profman_path, tmp_dir)
-  output_files = _LayoutDex(binary_profile, tmp_dex_output,
-                            options.dexlayout_path, tmp_dir)
-  if len(output_files) > 1:
-    return _ZipMultidex(tmp_dir, output_files)
-
-  if zipfile.is_zipfile(output_files[0]):
-    return output_files[0]
-
-  final_output = os.path.join(tmp_dir, 'dex_classes.zip')
-  _ZipAligned(output_files, final_output)
-  return final_output
 
 
 def _CreateFinalDex(d8_inputs, output, tmp_dir, dex_cmd, options=None):
@@ -432,9 +253,6 @@ def _CreateFinalDex(d8_inputs, output, tmp_dir, dex_cmd, options=None):
     # Skip dexmerger. Just put all incrementals into the .jar individually.
     _ZipAligned(sorted(d8_inputs), tmp_dex_output)
     logging.debug('Quick-zipped %d files', len(d8_inputs))
-
-  if options and options.dexlayout_profile:
-    tmp_dex_output = _PerformDexlayout(tmp_dir, tmp_dex_output, options)
 
   # The dex file is complete and can be moved out of tmp_dir.
   shutil.move(tmp_dex_output, output)

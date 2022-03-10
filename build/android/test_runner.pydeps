@@ -141,7 +141,6 @@
 ../util/lib/results/__init__.py
 ../util/lib/results/result_sink.py
 ../util/lib/results/result_types.py
-convert_dex_profile.py
 devil_chromium.py
 gyp/dex.py
 gyp/util/__init__.py

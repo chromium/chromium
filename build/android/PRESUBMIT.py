@@ -93,7 +93,6 @@ def CommonChecks(input_api, output_api):
           input_api,
           output_api,
           unit_tests=[
-              J('.', 'convert_dex_profile_tests.py'),
               J('.', 'emma_coverage_stats_test.py'),
               J('.', 'list_class_verification_failures_test.py'),
               J('pylib', 'constants', 'host_paths_unittest.py'),

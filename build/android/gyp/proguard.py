@@ -16,9 +16,11 @@ import zipfile
 
 import dex
 import dex_jdk_libs
-from pylib.dex import dex_parser
 from util import build_utils
 from util import diff_utils
+
+sys.path.insert(1, os.path.dirname(os.path.dirname(__file__)))
+from pylib.dex import dex_parser
 
 _API_LEVEL_VERSION_CODE = [
     (21, 'L'),

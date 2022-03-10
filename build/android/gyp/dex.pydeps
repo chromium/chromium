@@ -2,7 +2,6 @@
 #   build/print_python_deps.py --root build/android/gyp --output build/android/gyp/dex.pydeps build/android/gyp/dex.py
 ../../gn_helpers.py
 ../../print_python_deps.py
-../convert_dex_profile.py
 dex.py
 util/__init__.py
 util/build_utils.py
