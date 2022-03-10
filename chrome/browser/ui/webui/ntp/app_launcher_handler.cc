@@ -45,6 +45,7 @@
 #include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/browser/ui/extensions/app_launch_params.h"
 #include "chrome/browser/ui/extensions/extension_enable_flow.h"
+#include "chrome/browser/ui/tab_dialogs.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/web_applications/web_app_dialog_manager.h"
 #include "chrome/browser/ui/web_applications/web_app_ui_manager_impl.h"
@@ -314,7 +315,8 @@ void AppLauncherHandler::CreateExtensionInfo(const Extension* extension,
       base::CommandLine::ForCurrentProcess()->HasSwitch(switches::kKioskMode));
 
   bool is_deprecated_app = false;
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
+    BUILDFLAG(IS_FUCHSIA)
   is_deprecated_app = extensions::IsExtensionUnsupportedDeprecatedApp(
       extension_service_->GetBrowserContext(), extension->id());
 #endif
@@ -331,8 +333,10 @@ void AppLauncherHandler::CreateExtensionInfo(const Extension* extension,
 
   std::u16string name = base::UTF8ToUTF16(extension->name());
   base::i18n::UnadjustStringForLocaleDirection(&name);
-  if (is_deprecated_app)
+  if (is_deprecated_app) {
     name = l10n_util::GetStringFUTF16(IDS_APPS_PAGE_DEPRECATED_APP_TITLE, name);
+    deprecated_app_ids_.insert(extension->id());
+  }
   NewTabUI::SetFullNameAndDirection(name, value);
 
   bool enabled = extension_service_->IsExtensionEnabled(extension->id()) &&
@@ -757,12 +761,13 @@ void AppLauncherHandler::HandleLaunchApp(const base::ListValue* args) {
 
   Profile* profile = extension_service_->profile();
 
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
-  if (extensions::IsExtensionUnsupportedDeprecatedApp(profile, extension_id)) {
-    // TODO(crbug.com/1225779): Show the deprecated apps dialog.
+  if (extensions::IsExtensionUnsupportedDeprecatedApp(profile, extension_id) &&
+      base::FeatureList::IsEnabled(features::kChromeAppsDeprecation)) {
+    TabDialogs::FromWebContents(web_ui()->GetWebContents())
+        ->ShowDeprecatedAppsDialog(deprecated_app_ids_,
+                                   web_ui()->GetWebContents());
     return;
   }
-#endif
 
   extensions::Manifest::Type type;
   GURL full_launch_url;
@@ -1320,6 +1325,11 @@ AppLauncherHandler::CreateExtensionUninstallDialog() {
 
 void AppLauncherHandler::ExtensionRemoved(const Extension* extension,
                                           bool is_uninstall) {
+  // // If deprecated extension is deleted, remove from set for dialog.
+  if (deprecated_app_ids_.find(extension->id()) != deprecated_app_ids_.end()) {
+    deprecated_app_ids_.erase(extension->id());
+  }
+
   if (!ShouldShow(extension))
     return;
 

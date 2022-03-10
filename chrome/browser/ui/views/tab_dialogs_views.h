@@ -29,6 +29,9 @@ class TabDialogsViews : public TabDialogs {
   bool IsShowingHungRendererDialog() override;
   void ShowManagePasswordsBubble(bool user_action) override;
   void HideManagePasswordsBubble() override;
+  void ShowDeprecatedAppsDialog(
+      const std::set<extensions::ExtensionId>& deprecated_app_ids,
+      content::WebContents* web_contents) override;
 
  private:
   raw_ptr<content::WebContents> web_contents_;  // Weak. Owns this.
