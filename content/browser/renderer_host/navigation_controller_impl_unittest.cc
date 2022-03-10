@@ -1460,13 +1460,11 @@ TEST_F(NavigationControllerTest, RedirectsAreNotResetByCommit) {
 }
 
 // Tests that webkit preferences are updated when user agent override changes.
-// Fails on linux-bfcache-rel: crbug.com/1244109
-#if BUILDFLAG(IS_LINUX)
-#define MAYBE_GoBackWithUserAgentOverrideChange DISABLED_GoBackWithUserAgentOverrideChange
-#else
-#define MAYBE_GoBackWithUserAgentOverrideChange GoBackWithUserAgentOverrideChange
-#endif
-TEST_F(NavigationControllerTest, MAYBE_GoBackWithUserAgentOverrideChange) {
+TEST_F(NavigationControllerTest, GoBackWithUserAgentOverrideChange) {
+  // The test requires that going back will load a new document instead of
+  // restoring an old one from the back/forward cache.
+  DisableBackForwardCacheForTesting(RenderViewHostTestHarness::web_contents(),
+                                    BackForwardCache::TEST_REQUIRES_NO_CACHING);
   NavigationControllerImpl& controller = controller_impl();
 
   // Set up a simple NavigationEntry stack of two pages.

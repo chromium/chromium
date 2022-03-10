@@ -2949,14 +2949,13 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerBrowserTest,
 }
 
 // Check that the internals page contains logs from the renderer.
-// Flaky on linux-bfcache-rel crbug.com/1276313.
-#if BUILDFLAG(IS_LINUX)
-#define MAYBE_InternalsPage_Renderer DISABLED_InternalsPage_Renderer
-#else
-#define MAYBE_InternalsPage_Renderer InternalsPage_Renderer
-#endif
-IN_PROC_BROWSER_TEST_F(PasswordManagerBrowserTest,
-                       MAYBE_InternalsPage_Renderer) {
+IN_PROC_BROWSER_TEST_F(PasswordManagerBrowserTest, InternalsPage_Renderer) {
+  // The test is flaky with same-site back/forward cache (which is enabled by
+  // default).
+  // TODO(https://crbug.com/1276313): Investigate and fix this.
+  content::DisableBackForwardCacheForTesting(
+      WebContents(), content::BackForwardCache::TEST_REQUIRES_NO_CACHING);
+
   // Open the internals page.
   ui_test_utils::NavigateToURLWithDisposition(
       browser(), GURL("chrome://password-manager-internals"),
