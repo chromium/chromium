@@ -130,6 +130,25 @@ class WebApkInstallerRunner {
     run_loop.Run();
   }
 
+  void RunInstallForService(std::unique_ptr<WebApkInstaller> installer,
+                            std::unique_ptr<std::string> serialized_webapk,
+                            const std::u16string& short_name,
+                            webapps::ShortcutInfo::Source source) {
+    base::RunLoop run_loop;
+    on_completed_callback_ = run_loop.QuitClosure();
+
+    GURL manifest_url("httsp://manifest.com");
+
+    // WebApkInstaller owns itself.
+    WebApkInstaller::InstallForServiceAsyncForTesting(
+        installer.release(), std::move(serialized_webapk), short_name, source,
+        SkBitmap(), false, manifest_url,
+        base::BindOnce(&WebApkInstallerRunner::OnCompleted,
+                       base::Unretained(this)));
+
+    run_loop.Run();
+  }
+
   void RunUpdateWebApk(std::unique_ptr<WebApkInstaller> installer,
                        const base::FilePath& update_request_path) {
     base::RunLoop run_loop;
@@ -256,16 +275,24 @@ class BuildProtoRunner {
 
   webapk::WebApk* GetWebApkRequest() { return webapk_request_.get(); }
 
+  std::unique_ptr<std::string> TakeSerializedWebApk() {
+    return std::move(serialized_webapk_);
+  }
+
  private:
   // Called when the |webapk_request_| is populated.
   void OnBuiltWebApkProto(std::unique_ptr<std::string> serialized_proto) {
     webapk_request_ = std::make_unique<webapk::WebApk>();
     webapk_request_->ParseFromString(*serialized_proto);
+    serialized_webapk_ = std::move(serialized_proto);
     std::move(on_completed_callback_).Run();
   }
 
   // The populated webapk::WebApk.
   std::unique_ptr<webapk::WebApk> webapk_request_;
+
+  // The serialized webapk::WebApk.
+  std::unique_ptr<std::string> serialized_webapk_;
 
   // Called after the |webapk_request_| is built.
   base::OnceClosure on_completed_callback_;
@@ -329,6 +356,26 @@ class WebApkInstallerTest : public ::testing::Test {
     info.best_shortcut_icon_urls.push_back(
         test_server_.GetURL(kBestShortcutIconUrl));
     return info;
+  }
+
+  std::unique_ptr<std::string> DefaultSerializedWebApk() {
+    std::string icon_url_1 = test_server()->GetURL("/icon1.png").spec();
+    std::string icon_url_2 = test_server()->GetURL("/icon2.png").spec();
+    std::map<std::string, webapps::WebApkIconHasher::Icon>
+        icon_url_to_murmur2_hash;
+    icon_url_to_murmur2_hash[icon_url_1] = {"data1", "1"};
+    icon_url_to_murmur2_hash[icon_url_2] = {"data2", "2"};
+
+    std::string primary_icon_data = "data3";
+    std::string splash_icon_data = "data4";
+
+    std::unique_ptr<BuildProtoRunner> runner = CreateBuildProtoRunner();
+    runner->BuildSync(GURL(), GURL(), std::move(icon_url_to_murmur2_hash),
+                      primary_icon_data, splash_icon_data,
+                      true /* is_manifest_stale */,
+                      true /* is_app_identity_update_supported */, {});
+
+    return runner->TakeSerializedWebApk();
   }
 
   // Sets the URL to send the webapk::CreateWebApkRequest to. WebApkInstaller
@@ -447,6 +494,53 @@ TEST_F(WebApkInstallerTest, CreateWebApkRequestTimesOut) {
   WebApkInstallerRunner runner;
   runner.RunInstallWebApk(std::move(installer), web_contents(),
                           DefaultShortcutInfo());
+  EXPECT_EQ(WebApkInstallResult::FAILURE, runner.result());
+}
+
+// InstallForService tests
+
+// Test installation for service succeeding
+TEST_F(WebApkInstallerTest, ServiceSuccess) {
+  std::unique_ptr<WebApkInstaller> installer(
+      new TestWebApkInstaller(profile(), SpaceStatus::ENOUGH_SPACE));
+
+  webapps::ShortcutInfo shortcut_info = DefaultShortcutInfo();
+
+  WebApkInstallerRunner runner;
+  runner.RunInstallForService(std::move(installer), DefaultSerializedWebApk(),
+                              shortcut_info.short_name, shortcut_info.source);
+
+  EXPECT_EQ(WebApkInstallResult::SUCCESS, runner.result());
+}
+
+// Test installation for service failing if not enough space
+TEST_F(WebApkInstallerTest, ServiceFailOnLowSpace) {
+  std::unique_ptr<WebApkInstaller> installer(
+      new TestWebApkInstaller(profile(), SpaceStatus::NOT_ENOUGH_SPACE));
+
+  webapps::ShortcutInfo shortcut_info = DefaultShortcutInfo();
+
+  WebApkInstallerRunner runner;
+  runner.RunInstallForService(std::move(installer), DefaultSerializedWebApk(),
+                              shortcut_info.short_name, shortcut_info.source);
+
+  EXPECT_EQ(WebApkInstallResult::FAILURE, runner.result());
+}
+
+// Test installation for service failing if serialized apk invalid.
+TEST_F(WebApkInstallerTest, ServiceFailOnInvalidSerializedWebApk) {
+  std::unique_ptr<WebApkInstaller> installer(
+      new TestWebApkInstaller(profile(), SpaceStatus::ENOUGH_SPACE));
+
+  webapps::ShortcutInfo shortcut_info = DefaultShortcutInfo();
+  std::string invalid_serialized_webapk = "😀";
+
+  WebApkInstallerRunner runner;
+  runner.RunInstallForService(
+      std::move(installer),
+      std::make_unique<std::string>(invalid_serialized_webapk),
+      shortcut_info.short_name, shortcut_info.source);
+
   EXPECT_EQ(WebApkInstallResult::FAILURE, runner.result());
 }
 

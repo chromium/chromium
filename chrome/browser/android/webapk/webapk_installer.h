@@ -16,6 +16,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/timer/timer.h"
 #include "chrome/browser/android/webapk/webapk_install_service.h"
+#include "components/webapps/browser/android/shortcut_info.h"
 #include "components/webapps/browser/android/webapk/webapk_icon_hasher.h"
 #include "components/webapps/browser/android/webapk/webapk_types.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -39,10 +40,6 @@ struct NetworkTrafficAnnotationTag;
 namespace network {
 class SimpleURLLoader;
 }  // namespace network
-
-namespace webapps {
-struct ShortcutInfo;
-}  // namespace webapps
 
 // The enum values are persisted to logs |WebApkInstallSpaceStatus| in
 // enums.xml, therefore they should never be reused nor renumbered.
@@ -78,6 +75,22 @@ class WebApkInstaller {
                            FinishCallback finish_callback);
 
   // Creates a self-owned WebApkInstaller instance and talks to the Chrome
+  // WebAPK server to generate a WebAPK on the server and locally requests the
+  // APK to be installed. This function is used when the install is scheduled by
+  // the WebApkInstallSchedulerService as this already receives the
+  // |serialized_webapk| from the client. Calls |callback| once the install
+  // completed or failed.
+  static void InstallForServiceAsync(
+      content::BrowserContext* context,
+      std::unique_ptr<std::string> serialized_webapk,
+      const std::u16string& short_name,
+      webapps::ShortcutInfo::Source source,
+      const SkBitmap& primary_icon,
+      bool is_primary_icon_maskable,
+      GURL& manifest_url,
+      FinishCallback finish_callback);
+
+  // Creates a self-owned WebApkInstaller instance and talks to the Chrome
   // WebAPK server to update a WebAPK on the server and locally requests the
   // APK to be installed. Calls |callback| once the install completed or failed.
   // |update_request_path| is the path of the file with the update request.
@@ -93,6 +106,18 @@ class WebApkInstaller {
                                      const SkBitmap& primary_icon,
                                      bool is_primary_icon_maskable,
                                      FinishCallback callback);
+
+  // Calls the private function |InstallForServiceAsync| for testing.
+  // Should be used only for testing.
+  static void InstallForServiceAsyncForTesting(
+      WebApkInstaller* installer,
+      std::unique_ptr<std::string> serialized_webapk,
+      const std::u16string& short_name,
+      webapps::ShortcutInfo::Source source,
+      const SkBitmap& primary_icon,
+      bool is_primary_icon_maskable,
+      GURL& manifest_url,
+      FinishCallback callback);
 
   // Calls the private function |UpdateAsync| for testing.
   // Should be used only for testing.
@@ -189,6 +214,17 @@ class WebApkInstaller {
   void UpdateAsync(const base::FilePath& update_request_path,
                    FinishCallback finish_callback);
 
+  // Talks to the Chrome WebAPK server to generate a WebAPK on the server and to
+  // Google Play to install the downloaded WebAPK when the install is requested
+  // by Weblayer. Calls |finish_callback| once the install completed or failed.
+  void InstallForServiceAsync(std::unique_ptr<std::string> serialized_webapk,
+                              const std::u16string& short_name,
+                              webapps::ShortcutInfo::Source source,
+                              const SkBitmap& primary_icon,
+                              bool is_primary_icon_maskable,
+                              GURL& manifest_url,
+                              FinishCallback finish_callback);
+
   // Called once there is sufficient space on the user's device to install a
   // WebAPK. The user may already have had sufficient space on their device
   // prior to initiating the install process. This method might be called as a
@@ -232,15 +268,29 @@ class WebApkInstaller {
   FinishCallback finish_callback_;
 
   // Data for installs.
-  std::unique_ptr<webapps::ShortcutInfo> install_shortcut_info_;
-  SkBitmap install_primary_icon_;
 
+  // True if install was scheduled via WebApkInstallSchedulerService
+  bool install_from_webapk_service_;
+
+  // Only available if the install was scheduled by the
+  // WebApkInstallSchedulerService.
+  std::unique_ptr<std::string> serialized_webapk_;
+
+  // Only available if the install was scheduled directly in chrome and not in
+  // the WebApkInstallSchedulerService.
+  std::unique_ptr<webapps::ShortcutInfo> install_shortcut_info_;
+
+  SkBitmap install_primary_icon_;
   bool is_primary_icon_maskable_;
 
   std::u16string short_name_;
 
   // WebAPK server URL.
   GURL server_url_;
+
+  webapps::ShortcutInfo::Source source_;
+
+  GURL manifest_url_;
 
   // The number of milliseconds to wait for the WebAPK server to respond.
   int webapk_server_timeout_ms_;

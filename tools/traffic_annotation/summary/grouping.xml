@@ -42,6 +42,7 @@ hidden="true" so that these annotations don't show up in the document.
       <traffic_annotation unique_id="pull_template_request"/>
       <traffic_annotation unique_id="rlz"/>
       <traffic_annotation unique_id="webapk_create"/>
+      <traffic_annotation unique_id="webapk_create_for_service"/>
       <traffic_annotation unique_id="webapk_update"/>
       <traffic_annotation unique_id="webview_proxy_config"/>
     </sender>
