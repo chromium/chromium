@@ -294,7 +294,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Media.Audio.Capture.Mac.MicSystemPermission.FixedTime.SinceFirstFailure"
-    units="ms" expires_after="2020-03-01">
+    units="ms" expires_after="2023-03-01">
   <owner>grunell@chromium.org</owner>
   <owner>engedy@chromium.org</owner>
   <owner>hkamila@chromium.org</owner>
@@ -302,12 +302,14 @@ chromium-metrics-reviews@google.com.
     The time from the first microphone access failure due to blocked system
     permission before the last browser restart to startup after browser restart.
     Logged once at browser startup if the system permission then is allowed.
+    Warning: this histogram was expired from 2020-03-01 to 2022-03-09; data may
+    be missing.
   </summary>
 </histogram>
 
 <histogram
     name="Media.Audio.Capture.Mac.MicSystemPermission.FixedTime.SinceLastFailure"
-    units="ms" expires_after="2020-03-01">
+    units="ms" expires_after="2023-03-01">
   <owner>grunell@chromium.org</owner>
   <owner>engedy@chromium.org</owner>
   <owner>hkamila@chromium.org</owner>
@@ -315,11 +317,13 @@ chromium-metrics-reviews@google.com.
     The time from the last microphone access failure due to blocked system
     permission before the last browser restart to startup after browser restart.
     Logged once at browser startup if the system permission then is allowed.
+    Warning: this histogram was expired from 2020-03-01 to 2022-03-09; data may
+    be missing.
   </summary>
 </histogram>
 
 <histogram name="Media.Audio.Capture.Mac.MicSystemPermission.Startup"
-    enum="SystemMediaCapturePermission" expires_after="2020-03-01">
+    enum="SystemMediaCapturePermission" expires_after="2023-03-01">
   <owner>grunell@chromium.org</owner>
   <owner>engedy@chromium.org</owner>
   <owner>hkamila@chromium.org</owner>
@@ -327,12 +331,14 @@ chromium-metrics-reviews@google.com.
     The Mac system permission state for microphone. Logged once at browser
     startup. For more information on the values, see
     https://developer.apple.com/documentation/avfoundation/avauthorizationstatus.
+    Warning: this histogram was expired from 2020-03-01 to 2022-03-09; data may
+    be missing.
   </summary>
 </histogram>
 
 <histogram
     name="Media.Audio.Capture.Mac.MicSystemPermission.StartupAfterFailure"
-    enum="SystemMediaCapturePermission" expires_after="2020-03-01">
+    enum="SystemMediaCapturePermission" expires_after="2023-03-01">
   <owner>grunell@chromium.org</owner>
   <owner>engedy@chromium.org</owner>
   <owner>hkamila@chromium.org</owner>
@@ -342,11 +348,13 @@ chromium-metrics-reviews@google.com.
     system permission before the last browser restart. For more information on
     the values, see
     https://developer.apple.com/documentation/avfoundation/avauthorizationstatus.
+    Warning: this histogram was expired from 2020-03-01 to 2022-03-09; data may
+    be missing.
   </summary>
 </histogram>
 
 <histogram name="Media.Audio.Capture.Mac.MicSystemPermission.UserMedia"
-    enum="SystemMediaCapturePermission" expires_after="2020-03-01">
+    enum="SystemMediaCapturePermission" expires_after="2023-03-01">
   <owner>grunell@chromium.org</owner>
   <owner>engedy@chromium.org</owner>
   <owner>hkamila@chromium.org</owner>
@@ -357,6 +365,8 @@ chromium-metrics-reviews@google.com.
     resulting permission (from the user response) is also logged. For more
     information on the values, see
     https://developer.apple.com/documentation/avfoundation/avauthorizationstatus.
+    Warning: this histogram was expired from 2020-03-01 to 2022-03-09; data may
+    be missing.
   </summary>
 </histogram>
 
@@ -4312,7 +4322,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Media.Video.Capture.Mac.CameraSystemPermission.FixedTime.SinceFirstFailure"
-    units="ms" expires_after="2020-03-01">
+    units="ms" expires_after="2023-03-01">
   <owner>grunell@chromium.org</owner>
   <owner>engedy@chromium.org</owner>
   <owner>hkamila@chromium.org</owner>
@@ -4320,12 +4330,14 @@ chromium-metrics-reviews@google.com.
     The time from the first camera access failure due to blocked system
     permission before the last browser restart to startup after browser restart.
     Logged once at browser startup if the system permission then is allowed.
+    Warning: this histogram was expired from 2020-03-01 to 2022-03-09; data may
+    be missing.
   </summary>
 </histogram>
 
 <histogram
     name="Media.Video.Capture.Mac.CameraSystemPermission.FixedTime.SinceLastFailure"
-    units="ms" expires_after="2020-03-01">
+    units="ms" expires_after="2023-03-01">
   <owner>grunell@chromium.org</owner>
   <owner>engedy@chromium.org</owner>
   <owner>hkamila@chromium.org</owner>
@@ -4333,11 +4345,13 @@ chromium-metrics-reviews@google.com.
     The time from the last camera access failure due to blocked system
     permission before the last browser restart to startup after browser restart.
     Logged once at browser startup if the system permission then is allowed.
+    Warning: this histogram was expired from 2020-03-01 to 2022-03-09; data may
+    be missing.
   </summary>
 </histogram>
 
 <histogram name="Media.Video.Capture.Mac.CameraSystemPermission.Startup"
-    enum="SystemMediaCapturePermission" expires_after="2020-03-01">
+    enum="SystemMediaCapturePermission" expires_after="2023-03-01">
   <owner>grunell@chromium.org</owner>
   <owner>engedy@chromium.org</owner>
   <owner>hkamila@chromium.org</owner>
@@ -4345,12 +4359,14 @@ chromium-metrics-reviews@google.com.
     The Mac system permission state for camera. Logged once at browser startup.
     For more information on the values, see
     https://developer.apple.com/documentation/avfoundation/avauthorizationstatus.
+    Warning: this histogram was expired from 2020-03-01 to 2022-03-09; data may
+    be missing.
   </summary>
 </histogram>
 
 <histogram
     name="Media.Video.Capture.Mac.CameraSystemPermission.StartupAfterFailure"
-    enum="SystemMediaCapturePermission" expires_after="2020-03-01">
+    enum="SystemMediaCapturePermission" expires_after="2023-03-01">
   <owner>grunell@chromium.org</owner>
   <owner>engedy@chromium.org</owner>
   <owner>hkamila@chromium.org</owner>
@@ -4359,11 +4375,13 @@ chromium-metrics-reviews@google.com.
     if there was a failure accessing the camera due to blocked system permission
     before the last browser restart. For more information on the values, see
     https://developer.apple.com/documentation/avfoundation/avauthorizationstatus.
+    Warning: this histogram was expired from 2020-03-01 to 2022-03-09; data may
+    be missing.
   </summary>
 </histogram>
 
 <histogram name="Media.Video.Capture.Mac.CameraSystemPermission.UserMedia"
-    enum="SystemMediaCapturePermission" expires_after="2020-03-01">
+    enum="SystemMediaCapturePermission" expires_after="2023-03-01">
   <owner>grunell@chromium.org</owner>
   <owner>engedy@chromium.org</owner>
   <owner>hkamila@chromium.org</owner>
@@ -4374,6 +4392,8 @@ chromium-metrics-reviews@google.com.
     resulting permission (from the user response) is also logged. For more
     information on the values, see
     https://developer.apple.com/documentation/avfoundation/avauthorizationstatus.
+    Warning: this histogram was expired from 2020-03-01 to 2022-03-09; data may
+    be missing.
   </summary>
 </histogram>
 
