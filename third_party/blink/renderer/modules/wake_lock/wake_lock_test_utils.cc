@@ -33,7 +33,6 @@ using mojom::blink::PermissionStatus;
 namespace {
 
 void RunWithStack(base::RunLoop* run_loop) {
-  HeapPointersOnStackScope scan_stack(ThreadState::Current());
   run_loop->Run();
 }
 

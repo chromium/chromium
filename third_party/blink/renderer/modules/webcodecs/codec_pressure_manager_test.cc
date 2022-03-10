@@ -97,7 +97,6 @@ class CodecPressureManagerTest
     base::RunLoop run_loop;
     base::SequencedTaskRunnerHandle::Get()->PostTask(FROM_HERE,
                                                      run_loop.QuitClosure());
-    HeapPointersOnStackScope pointers_on_stack(ThreadState::Current());
     run_loop.Run();
   }
 

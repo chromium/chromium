@@ -12,7 +12,6 @@ namespace blink {
 WaitForEvent::WaitForEvent(Element* element, const AtomicString& name)
     : element_(element), event_name_(name) {
   element_->addEventListener(event_name_, this, /*use_capture=*/false);
-  HeapPointersOnStackScope scan_stack(ThreadState::Current());
   run_loop_.Run();
 }
 

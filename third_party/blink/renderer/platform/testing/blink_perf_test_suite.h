@@ -11,6 +11,8 @@
 namespace blink {
 
 class BlinkPerfTestSuite : public base::TestSuite {
+  STACK_ALLOCATED();
+
  public:
   BlinkPerfTestSuite(int argc, char** argv);
 

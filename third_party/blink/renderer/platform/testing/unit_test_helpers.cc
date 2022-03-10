@@ -73,9 +73,6 @@ void RunDelayedTasks(base::TimeDelta delay) {
 }
 
 void EnterRunLoop() {
-  // The following runloop can execute non-nested tasks with heap pointers
-  // living on stack, so we force both Oilpan and unified GC to visit the stack.
-  HeapPointersOnStackScope scan_stack(ThreadState::Current());
   base::RunLoop().Run();
 }
 
