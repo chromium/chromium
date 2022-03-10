@@ -3533,7 +3533,6 @@ crbug.com/626703 [ Mac11 ] virtual/scroll-unification-unified-autoplay/external/
 crbug.com/626703 [ Mac11 ] external/wpt/secure-payment-confirmation/authentication-accepted.https.html [ Failure Timeout ]
 crbug.com/626703 [ Mac11-arm64 ] external/wpt/css/css-shapes/shape-outside/shape-image/shape-image-004.html [ Failure ]
 crbug.com/626703 [ Mac10.15 ] external/wpt/page-visibility/minimize.html [ Failure Skip Timeout ]
-crbug.com/626703 [ Mac10.15 ] virtual/shared_array_buffer_on_desktop/external/wpt/compression/decompression-constructor-error.tentative.any.serviceworker.html [ Timeout ]
 crbug.com/626703 [ Win10.20h2 ] external/wpt/web-locks/bfcache/abort.tentative.https.html [ Failure Skip Timeout ]
 crbug.com/626703 [ Mac11 ] virtual/plz-dedicated-worker/external/wpt/html/cross-origin-embedder-policy/reporting-subresource-corp.https.html [ Skip Timeout ]
 crbug.com/626703 [ Mac11-arm64 ] external/wpt/webrtc/RTCPeerConnection-getStats.https.html [ Skip Timeout ]
@@ -4697,12 +4696,10 @@ crbug.com/1194557 http/tests/devtools/sources/debugger-breakpoints/set-breakpoin
 # Test output varies depending on the bot. A single expectation file doesn't
 # work.
 crbug.com/1194557 fast/beacon/beacon-basic.html [ Failure Pass ]
-crbug.com/1194557 virtual/shared_array_buffer_on_desktop/fast/beacon/beacon-basic.html [ Pass ]
 
 # Tests are failing on CodeMirror 6 update, temporarily disable to re-open the tree.
 # Restore set-breakpoint-while-blocking-main-thread.js test to previous state [ Pass ] with
 # crbug.com/1194557 annotation as soon as crbug.com/1270207 has been fixed.
-crbug.com/1270207 virtual/shared_array_buffer_on_desktop/http/tests/devtools/sources/debugger-breakpoints/set-breakpoint-while-blocking-main-thread.js [ Skip ]
 crbug.com/1270207 virtual/portals/http/tests/devtools/portals/portals-sources-activate.js [ Skip ]
 
 # This test passes only when the JXL feature is enabled.
@@ -6697,7 +6694,6 @@ crbug.com/1210687 [ Mac10.15 ] http/tests/devtools/a11y-axe-core/sources/scope-p
 crbug.com/1210687 [ Mac ] http/tests/permissions/chromium/test-request-worker.html [ Pass Skip Timeout ]
 crbug.com/1210687 [ Mac10.15 ] storage/websql/sql-error-codes.html [ Pass Skip Timeout ]
 crbug.com/1210687 [ Mac10.15 ] external/wpt/html/user-activation/propagation-crossorigin.sub.tentative.html [ Pass Skip Timeout ]
-crbug.com/1210687 [ Win ] virtual/shared_array_buffer_on_desktop/http/tests/devtools/a11y-axe-core/sources/scope-pane-a11y-test.js [ Pass Skip Timeout ]
 
 # Sheriff 2021-06-02
 crbug.com/1215575 [ Mac11 ] fast/peerconnection/RTCPeerConnection-applyConstraints-remoteVideoTrack.html [ Pass Timeout ]
@@ -6929,9 +6925,6 @@ crbug.com/1243128 [ Win ] external/wpt/web-share/disabled-by-permissions-policy.
 # Sheriff 2021-08-26
 crbug.com/1243707 [ Debug Linux ] http/tests/inspector-protocol/target/auto-attach-related-sw.js [ Crash Pass ]
 
-# Sheriff 2021-08-26
-crbug.com/1243933 [ Win7 ] virtual/shared_array_buffer_on_desktop/http/tests/devtools/elements/accessibility/edit-aria-attributes.js [ Failure ]
-
 # Sheriff 2021-09-03
 crbug.com/1246351 http/tests/misc/scroll-cross-origin-iframes-scrollbar.html [ Failure Pass Timeout ]
 
@@ -6982,9 +6975,6 @@ crbug.com/1249176 [ Mac11-arm64 ] http/tests/images/document-policy-oversized-im
 crbug.com/1249176 [ Mac11-arm64 ] transforms/transformed-document-element.html [ Failure ]
 crbug.com/1249176 [ Mac11-arm64 ] virtual/no-alloc-direct-call/external/wpt/html/canvas/element/manual/drawing-images-to-the-canvas/image-orientation/drawImage-from-blob.tentative.html [ Failure ]
 crbug.com/1249176 [ Mac11-arm64 ] virtual/plz-dedicated-worker/external/wpt/service-workers/service-worker/clients-matchall-order.https.html [ Failure ]
-crbug.com/1249176 [ Mac11-arm64 ] virtual/shared_array_buffer_on_desktop/http/tests/devtools/tracing/console-timeline.js [ Failure ]
-crbug.com/1249176 [ Mac11-arm64 ] virtual/shared_array_buffer_on_desktop/http/tests/devtools/tracing/timeline-paint/paint-profiler-update.js [ Failure ]
-crbug.com/1249176 [ Mac11-arm64 ] virtual/shared_array_buffer_on_desktop/http/tests/devtools/tracing/timeline-time/timeline-usertiming.js [ Failure ]
 crbug.com/1249176 [ Mac11-arm64 ] virtual/threaded/http/tests/devtools/tracing/timeline-paint/paint-profiler-update.js [ Failure ]
 crbug.com/1249176 [ Mac11-arm64 ] virtual/threaded/http/tests/devtools/tracing/timeline-time/timeline-usertiming.js [ Failure ]
 crbug.com/1249176 [ Mac11-arm64 ] webaudio/codec-tests/webm/webm-decode.html [ Failure ]
@@ -7137,8 +7127,6 @@ crbug.com/1250457 [ Mac ] virtual/prefer_compositing_to_lcd_text/scrollbars/cust
 crbug.com/1250457 [ Mac ] virtual/prerender/wpt_internal/prerender/csp-prefetch-src-allow.html [ Skip Timeout ]
 crbug.com/1250457 [ Mac ] virtual/scalefactor200/css3/filters/filter-animation-multi-hw.html [ Timeout ]
 crbug.com/1250457 [ Mac ] virtual/scroll-unification/fast/events/space-scroll-textinput-canceled.html [ Timeout ]
-crbug.com/1250457 [ Mac ] virtual/shared_array_buffer_on_desktop/fast/css/text-overflow-ellipsis-bidi.html [ Timeout ]
-crbug.com/1250457 [ Mac ] virtual/shared_array_buffer_on_desktop/storage/indexeddb/keypath-arrays.html [ Timeout ]
 crbug.com/1250457 [ Mac ] external/wpt/html/syntax/speculative-parsing/generated/document-write/meta-viewport-link-stylesheet-media.tentative.sub.html [ Failure ]
 
 crbug.com/1249622 external/wpt/largest-contentful-paint/initially-invisible-images.html [ Failure ]
@@ -7322,7 +7310,6 @@ crbug.com/1186771 [ Mac ] fast/scroll-snap/snaps-after-scrollbar-scrolling-track
 crbug.com/894077 [ Linux ] virtual/android/fullscreen/video-fixed-background.html [ Failure Pass ]
 crbug.com/1271336 external/wpt/native-io/detach_iframe_during_open.https.window.html [ Crash Pass ]
 crbug.com/1197465 virtual/scroll-unification/fast/events/mouse-cursor-no-mousemove.html [ Skip ]
-crbug.com/1272017 [ Mac11-arm64 ] virtual/shared_array_buffer_on_desktop/http/tests/devtools/sources/debugger-ui/reveal-not-skipped.js [ Skip ]
 
 # Sheriff 2021-11-22
 crbug.com/1272352 virtual/threaded/http/tests/devtools/isolated-code-cache/same-origin-test.js [ Skip ]
@@ -7522,9 +7509,6 @@ crbug.com/1253323 http/tests/devtools/sources/debugger/navigator-view.js [ Skip 
 crbug.com/1290978 [ Win ] external/wpt/css/CSS2/normal-flow/crashtests/block-in-inline-ax-crash.html [ Crash Failure Pass Timeout ]
 crbug.com/1290978 [ Mac ] external/wpt/css/CSS2/normal-flow/crashtests/block-in-inline-ax-crash.html [ Crash Failure Pass Timeout ]
 crbug.com/1290978 [ Win7 ] http/tests/devtools/elements/accessibility/edit-aria-attributes.js [ Crash Failure Pass Skip Timeout ]
-
-# Sheriff 2022-01-27 Flaky test
-crbug.com/1291488 virtual/shared_array_buffer_on_desktop/fast/peerconnection/RTCPeerConnection-addMultipleTracks.html [ Skip ]
 
 # Now flaky due to a timing issue.
 crbug.com/1292296 http/tests/inspector-protocol/accessibility/accessibility-getRootNode.js [ Failure Pass ]
