@@ -3,6 +3,8 @@
 # found in the LICENSE file.
 """Class for interacting with the Skia Gold image diffing service."""
 
+# pylint: disable=useless-object-inheritance
+
 import logging
 import os
 import platform

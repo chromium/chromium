@@ -9,6 +9,8 @@ Examples:
 * What the continuous integration system is
 """
 
+# pylint: disable=useless-object-inheritance
+
 import logging
 import os
 

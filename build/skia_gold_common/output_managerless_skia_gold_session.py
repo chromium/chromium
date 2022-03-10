@@ -28,6 +28,7 @@ class OutputManagerlessSkiaGoldSession(skia_gold_session.SkiaGoldSession):
     # Passing True for the output manager is a bit of a hack, as we don't
     # actually need an output manager and just need to get past the truthy
     # check.
+    # pylint: disable=super-with-arguments
     return super(OutputManagerlessSkiaGoldSession, self).RunComparison(
         name=name,
         png_file=png_file,
@@ -36,6 +37,7 @@ class OutputManagerlessSkiaGoldSession(skia_gold_session.SkiaGoldSession):
         use_luci=use_luci,
         optional_keys=optional_keys,
         force_dryrun=force_dryrun)
+    # pylint: enable=super-with-arguments
 
   def _CreateDiffOutputDir(self, name):
     # Do this instead of just making a temporary directory so that it's easier

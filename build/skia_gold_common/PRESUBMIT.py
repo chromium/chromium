@@ -25,7 +25,8 @@ def CommonChecks(input_api, output_api):
           input_api.PresubmitLocalPath(), [r'^.+_unittest\.py$'],
           env=skia_gold_env,
           skip_shebang_check=True))
-  output.extend(input_api.canned_checks.RunPylint(input_api, output_api))
+  output.extend(
+      input_api.canned_checks.RunPylint(input_api, output_api, version='2.7'))
   return output
 
 

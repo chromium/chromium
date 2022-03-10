@@ -3,6 +3,8 @@
 # found in the LICENSE file.
 """Class for managing multiple SkiaGoldSessions."""
 
+# pylint: disable=useless-object-inheritance
+
 import json
 import tempfile
 
