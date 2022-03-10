@@ -39,7 +39,7 @@ const NGLayoutResult* NGTableSectionLayoutAlgorithm::Layout() {
   const LogicalSize available_size = {container_builder_.InlineSize(),
                                       kIndefiniteSize};
   LogicalOffset offset;
-  bool is_first_row = true;
+  bool is_first_non_collapsed_row = true;
   const wtf_size_t start_row_index =
       table_data.sections[section_index].start_row_index;
   NGBlockChildIterator child_iterator(Node().FirstChild(), BreakToken(),
@@ -51,8 +51,9 @@ const NGLayoutResult* NGTableSectionLayoutAlgorithm::Layout() {
     wtf_size_t row_index = start_row_index + *entry.index;
     DCHECK_LT(row_index, table_data.sections[section_index].start_row_index +
                              table_data.sections[section_index].row_count);
+    bool is_row_collapsed = table_data.rows[row_index].is_collapsed;
 
-    if (!is_first_row && !table_data.rows[row_index].is_collapsed)
+    if (!is_first_non_collapsed_row && !is_row_collapsed)
       offset.block_offset += table_data.table_border_spacing.block_size;
 
     NGConstraintSpaceBuilder row_space_builder(
@@ -79,7 +80,7 @@ const NGLayoutResult* NGTableSectionLayoutAlgorithm::Layout() {
           ConstraintSpace().FragmentainerOffsetAtBfc() + offset.block_offset;
       NGBreakStatus break_status = BreakBeforeChildIfNeeded(
           ConstraintSpace(), row, *row_result, fragmentainer_block_offset,
-          !is_first_row, &container_builder_);
+          !is_first_non_collapsed_row, &container_builder_);
       if (break_status != NGBreakStatus::kContinue)
         break;
     }
@@ -88,13 +89,13 @@ const NGLayoutResult* NGTableSectionLayoutAlgorithm::Layout() {
         table_data.table_writing_direction,
         To<NGPhysicalBoxFragment>(row_result->PhysicalFragment()));
 
-    if (is_first_row) {
+    if (!section_baseline) {
       DCHECK(fragment.Baseline());
       section_baseline = fragment.Baseline();
     }
     container_builder_.AddResult(*row_result, offset);
     offset.block_offset += fragment.BlockSize();
-    is_first_row = false;
+    is_first_non_collapsed_row &= is_row_collapsed;
 
     if (container_builder_.HasInflowChildBreakInside())
       break;

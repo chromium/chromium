@@ -1301,6 +1301,7 @@ crbug.com/377847 external/wpt/css/css-tables/subpixel-table-cell-width-002.html 
 crbug.com/377847 external/wpt/css/css-tables/subpixel-table-width-001.html [ Failure ]
 crbug.com/598134 external/wpt/css/css-tables/table-has-box-sizing-border-box-002.html [ Failure ]
 crbug.com/764031 external/wpt/css/css-tables/toggle-row-display-property-001.html [ Failure ]
+crbug.com/591099 external/wpt/css/css-tables/visibility-collapse-border-spacing.html [ Failure ]
 crbug.com/174167 external/wpt/css/css-tables/visibility-collapse-col-001.html [ Failure ]
 crbug.com/174167 external/wpt/css/css-tables/visibility-collapse-col-002.html [ Failure ]
 crbug.com/174167 external/wpt/css/css-tables/visibility-collapse-col-003.html [ Failure ]
