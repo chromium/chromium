@@ -5280,6 +5280,24 @@
             ]
         }
     ],
+    "PasswordsCapabilitiesFetching": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled_20220217",
+                    "params": {
+                        "live_experiment": "true"
+                    },
+                    "enable_features": [
+                        "PasswordDomainCapabilitiesFetching"
+                    ]
+                }
+            ]
+        }
+    ],
     "Path2DPaintCache": [
         {
             "platforms": [
