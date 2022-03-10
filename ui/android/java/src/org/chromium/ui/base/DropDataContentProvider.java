@@ -203,6 +203,10 @@ public class DropDataContentProvider extends ContentProvider {
     }
 
     private boolean matchMimeType(String mimeType, String mimeTypeFilter) {
+        if (mimeType == null || mimeTypeFilter == null) {
+            return false;
+        }
+
         int idx1 = mimeType.indexOf('/');
         String type = mimeType.substring(0, idx1);
         String subtype = mimeType.substring(idx1 + 1);
