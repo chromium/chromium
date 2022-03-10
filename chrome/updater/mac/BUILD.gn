@@ -17,6 +17,7 @@ group("mac") {
     ":updater_bundle",
     ":updater_bundle_test",
     ":updater_install_script",
+    "//chrome/updater/mac/installer:metainstaller",
     "//chrome/updater/mac/signing",
   ]
 }
