@@ -9,6 +9,7 @@
 #include "base/metrics/field_trial_params.h"
 #include "base/strings/stringprintf.h"
 #include "media/base/media_switches.h"
+#include "media/capabilities/bucket_utility.h"
 
 namespace media {
 
@@ -32,33 +33,6 @@ VideoCodecProfile ValidateVideoCodecProfile(VideoCodecProfile codec_profile) {
   return VIDEO_CODEC_PROFILE_UNKNOWN;
 }
 
-template <typename T, size_t N>
-constexpr size_t array_size(T (&)[N]) {
-  return N;
-}
-
-int GetPixelsBucket(int pixels) {
-  constexpr int kPixelsBuckets[] = {1280 * 720, 1920 * 1080, 3840 * 2160};
-  // The boundaries between buckets are calculated as the point between the two
-  // buckets.
-  constexpr int kPixelsBoundaries[] = {
-      (kPixelsBuckets[0] + kPixelsBuckets[1]) / 2,
-      (kPixelsBuckets[1] + kPixelsBuckets[2]) / 2};
-  // Static assert to make sure that `kPixelBoundaries[]` is updated if new
-  // pixel sizes are added to kPixelsBuckets[]`.
-  static_assert(array_size(kPixelsBoundaries) + 1 ==
-                array_size(kPixelsBuckets));
-
-  const int* pixels_bucket_it = std::lower_bound(
-      std::begin(kPixelsBoundaries), std::end(kPixelsBoundaries), pixels);
-  // The output from std::lower_bound is in the range [begin, end], hence the
-  // subtraction below is well defined.
-  int pixels_bucket_index = (pixels_bucket_it - std::begin(kPixelsBoundaries));
-  DCHECK_GE(pixels_bucket_index, 0);
-  DCHECK_LT(pixels_bucket_index, static_cast<int>(array_size(kPixelsBuckets)));
-  return kPixelsBuckets[pixels_bucket_index];
-}
-
 }  // namespace
 
 // static
@@ -71,7 +45,7 @@ WebrtcVideoStatsDB::VideoDescKey::MakeBucketedKey(
   // Bucket pixel size to prevent an explosion of one-off values in the
   // database and add basic guards against fingerprinting.
   return VideoDescKey(is_decode_stats, ValidateVideoCodecProfile(codec_profile),
-                      hardware_accelerated, GetPixelsBucket(pixels));
+                      hardware_accelerated, GetWebrtcPixelsBucket(pixels));
 }
 
 WebrtcVideoStatsDB::VideoDescKey::VideoDescKey(bool is_decode_stats,

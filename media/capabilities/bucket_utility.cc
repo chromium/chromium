@@ -6,6 +6,9 @@
 
 #include <algorithm>
 #include <cmath>
+#include <iterator>
+
+#include "base/check_op.h"
 
 namespace {
 
@@ -24,6 +27,23 @@ const int kSizeBuckets[] = {
     50,   100,  144,  240,  256,  280,  360,  426,  480,   640,   720,
     854,  960,  1080, 1280, 1440, 1920, 2160, 2560, 2880,  3160,  3840,
     4128, 4320, 5120, 6144, 7360, 7680, 8000, 9000, 10000, 11000, 11520};
+
+// Pixel buckets that are used to quantize the resolution to limit the amount of
+// information that is stored and exposed through the API. The pixel size
+// indices are used for logging, the pixel size buckets can therefore not be
+// changed unless the corresponding logging code is updated.
+constexpr int kWebrtcPixelsBuckets[] = {1280 * 720, 1920 * 1080, 2560 * 1440,
+                                        3840 * 2160};
+// The boundaries between buckets are calculated as the point between the two
+// buckets.
+constexpr int kWebrtcPixelsBoundaries[] = {
+    (kWebrtcPixelsBuckets[0] + kWebrtcPixelsBuckets[1]) / 2,
+    (kWebrtcPixelsBuckets[1] + kWebrtcPixelsBuckets[2]) / 2,
+    (kWebrtcPixelsBuckets[2] + kWebrtcPixelsBuckets[3]) / 2};
+// Static assert to make sure that `kWebrtcPixelsBoundaries[]` is updated if new
+// pixel sizes are added to kWebrtcPixelsBuckets[]`.
+static_assert(std::size(kWebrtcPixelsBoundaries) + 1 ==
+              std::size(kWebrtcPixelsBuckets));
 
 }  //  namespace
 
@@ -79,6 +99,24 @@ int GetFpsBucket(double raw_fps) {
   }
 
   return higher_bucket;
+}
+
+int GetWebrtcPixelsBucket(int pixels) {
+  return kWebrtcPixelsBuckets[GetWebrtcPixelsBucketIndex(pixels)];
+}
+
+int GetWebrtcPixelsBucketIndex(int pixels) {
+  const int* pixels_bucket_it =
+      std::lower_bound(std::begin(kWebrtcPixelsBoundaries),
+                       std::end(kWebrtcPixelsBoundaries), pixels);
+  // The output from std::lower_bound is in the range [begin, end], hence the
+  // subtraction below is well defined.
+  int pixels_bucket_index =
+      std::distance(std::begin(kWebrtcPixelsBoundaries), pixels_bucket_it);
+  DCHECK_GE(pixels_bucket_index, 0);
+  DCHECK_LT(pixels_bucket_index,
+            static_cast<int>(std::size(kWebrtcPixelsBuckets)));
+  return pixels_bucket_index;
 }
 
 }  // namespace media

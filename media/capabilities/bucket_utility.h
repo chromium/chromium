@@ -23,6 +23,16 @@ MEDIA_EXPORT gfx::Size GetSizeBucket(const gfx::Size& raw_size);
 // characteristics. Bucketing helps avoid fragmentation of recorded stats.
 MEDIA_EXPORT int GetFpsBucket(double raw_fps);
 
+// Find the nearest WebRTC pixels bucket. Pixel buckets are used to quantize the
+// resolution to limit the amount of information that is stored and exposed
+// through the API.
+MEDIA_EXPORT int GetWebrtcPixelsBucket(int pixels);
+
+// Find the nearest WebRTC pixels bucket index. The index is used when logging
+// the performance of the API, if the index is changed the corresponding logging
+// code must also be changed.
+MEDIA_EXPORT int GetWebrtcPixelsBucketIndex(int pixels);
+
 }  // namespace media
 
 #endif  // MEDIA_CAPABILITIES_BUCKET_UTILITY_H_
