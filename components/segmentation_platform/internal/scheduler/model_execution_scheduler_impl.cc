@@ -50,7 +50,7 @@ void ModelExecutionSchedulerImpl::OnNewModelInfoReady(
     return;
   }
 
-  RequestModelExecution(segment_info.segment_id());
+  RequestModelExecution(segment_info);
 }
 
 void ModelExecutionSchedulerImpl::RequestModelExecutionForEligibleSegments(
@@ -64,14 +64,15 @@ void ModelExecutionSchedulerImpl::RequestModelExecutionForEligibleSegments(
 }
 
 void ModelExecutionSchedulerImpl::RequestModelExecution(
-    OptimizationTarget segment_id) {
+    const proto::SegmentInfo& segment_info) {
+  OptimizationTarget segment_id = segment_info.segment_id();
   CancelOutstandingExecutionRequests(segment_id);
   outstanding_requests_.insert(std::make_pair(
       segment_id,
       base::BindOnce(&ModelExecutionSchedulerImpl::OnModelExecutionCompleted,
                      weak_ptr_factory_.GetWeakPtr(), segment_id)));
   model_execution_manager_->ExecuteModel(
-      segment_id, outstanding_requests_[segment_id].callback());
+      segment_info, outstanding_requests_[segment_id].callback());
 }
 
 void ModelExecutionSchedulerImpl::OnModelExecutionCompleted(
@@ -101,7 +102,7 @@ void ModelExecutionSchedulerImpl::OnModelExecutionCompleted(
 void ModelExecutionSchedulerImpl::FilterEligibleSegments(
     bool expired_only,
     std::unique_ptr<SegmentInfoDatabase::SegmentInfoList> all_segments) {
-  std::vector<OptimizationTarget> models_to_run;
+  std::vector<const proto::SegmentInfo*> models_to_run;
   for (const auto& pair : *all_segments) {
     OptimizationTarget segment_id = pair.first;
     const proto::SegmentInfo& segment_info = pair.second;
@@ -111,11 +112,11 @@ void ModelExecutionSchedulerImpl::FilterEligibleSegments(
       continue;
     }
 
-    models_to_run.emplace_back(segment_id);
+    models_to_run.emplace_back(&segment_info);
   }
 
-  for (OptimizationTarget segment_id : models_to_run)
-    RequestModelExecution(segment_id);
+  for (const proto::SegmentInfo* segment_info : models_to_run)
+    RequestModelExecution(*segment_info);
 }
 
 bool ModelExecutionSchedulerImpl::ShouldExecuteSegment(

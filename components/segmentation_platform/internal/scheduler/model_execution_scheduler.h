@@ -45,7 +45,8 @@ class ModelExecutionScheduler {
   virtual void RequestModelExecutionForEligibleSegments(bool expired_only) = 0;
 
   // Runs model execution for a particular segment.
-  virtual void RequestModelExecution(OptimizationTarget segment_id) = 0;
+  virtual void RequestModelExecution(
+      const proto::SegmentInfo& segment_info) = 0;
 
   // Called after model execution completes. If the execution was successful,
   // saves the results to the DB, and notifies observers. If the execution was

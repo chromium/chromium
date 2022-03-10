@@ -4,7 +4,9 @@
 
 #include "components/segmentation_platform/internal/service_proxy_impl.h"
 
+#include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/test/task_environment.h"
 #include "components/leveldb_proto/public/proto_database.h"
 #include "components/leveldb_proto/testing/fake_db.h"
 #include "components/optimization_guide/core/model_util.h"
@@ -21,6 +23,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 using testing::_;
+using testing::Invoke;
 
 namespace segmentation_platform {
 
@@ -41,7 +44,7 @@ proto::SegmentInfo AddSegmentInfo(
 class MockModelExecutionScheduler : public ModelExecutionScheduler {
  public:
   MockModelExecutionScheduler() = default;
-  MOCK_METHOD(void, RequestModelExecution, (OptimizationTarget));
+  MOCK_METHOD(void, RequestModelExecution, (const proto::SegmentInfo&));
   MOCK_METHOD(void, OnNewModelInfoReady, (const proto::SegmentInfo&));
   MOCK_METHOD(void, RequestModelExecutionForEligibleSegments, (bool));
   MOCK_METHOD(void,
@@ -123,6 +126,7 @@ class ServiceProxyImplTest : public testing::Test,
   }
 
  protected:
+  base::test::TaskEnvironment task_environment_;
   bool is_initialized_ = false;
   int status_flag_ = 0;
 
@@ -185,6 +189,11 @@ TEST_F(ServiceProxyImplTest, ExecuteModel) {
   service_proxy_impl_->OnServiceStatusChanged(true, 7);
   db_->LoadCallback(true);
 
+  segment_db_->UpdateSegment(
+      OptimizationTarget::OPTIMIZATION_TARGET_SEGMENTATION_NEW_TAB, info,
+      base::DoNothing());
+  db_->UpdateCallback(true);
+
   MockModelExecutionScheduler scheduler;
   // Scheduler is not set, ExecuteModel() will do nothing.
   EXPECT_CALL(scheduler, RequestModelExecution(_)).Times(0);
@@ -192,12 +201,17 @@ TEST_F(ServiceProxyImplTest, ExecuteModel) {
       OptimizationTarget::OPTIMIZATION_TARGET_SEGMENTATION_NEW_TAB);
 
   service_proxy_impl_->SetModelExecutionScheduler(&scheduler);
-  EXPECT_CALL(scheduler,
-              RequestModelExecution(
-                  OptimizationTarget::OPTIMIZATION_TARGET_SEGMENTATION_NEW_TAB))
-      .Times(1);
+  base::RunLoop wait_for_execution;
+  EXPECT_CALL(scheduler, RequestModelExecution(_))
+      .WillOnce(Invoke(
+          [&info, &wait_for_execution](const proto::SegmentInfo actual_info) {
+            EXPECT_EQ(info.segment_id(), actual_info.segment_id());
+            wait_for_execution.QuitClosure().Run();
+          }));
   service_proxy_impl_->ExecuteModel(
       OptimizationTarget::OPTIMIZATION_TARGET_SEGMENTATION_NEW_TAB);
+  db_->GetCallback(true);
+  wait_for_execution.Run();
 
   EXPECT_CALL(scheduler, RequestModelExecution(_)).Times(0);
   service_proxy_impl_->ExecuteModel(

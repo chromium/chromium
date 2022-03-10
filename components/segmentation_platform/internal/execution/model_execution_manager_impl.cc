@@ -121,8 +121,10 @@ ModelExecutionManagerImpl::ModelExecutionManagerImpl(
 
 ModelExecutionManagerImpl::~ModelExecutionManagerImpl() = default;
 
-void ModelExecutionManagerImpl::ExecuteModel(OptimizationTarget segment_id,
-                                             ModelExecutionCallback callback) {
+void ModelExecutionManagerImpl::ExecuteModel(
+    const proto::SegmentInfo& segment_info,
+    ModelExecutionCallback callback) {
+  OptimizationTarget segment_id = segment_info.segment_id();
   auto model_handler_it = model_handlers_.find(segment_id);
   DCHECK(model_handler_it != model_handlers_.end());
 
@@ -137,32 +139,16 @@ void ModelExecutionManagerImpl::ExecuteModel(OptimizationTarget segment_id,
   ModelExecutionTraceEvent trace_event(
       "ModelExecutionManagerImpl::ExecuteModel", *state);
 
-  // We first need to look up all relevant metadata for the related segment, as
-  // the metadata informs how we should process the data.
-  segment_database_->GetSegmentInfo(
-      segment_id,
-      base::BindOnce(
-          &ModelExecutionManagerImpl::OnSegmentInfoFetchedForExecution,
-          weak_ptr_factory_.GetWeakPtr(), std::move(state)));
-}
-
-void ModelExecutionManagerImpl::OnSegmentInfoFetchedForExecution(
-    std::unique_ptr<ExecutionState> state,
-    absl::optional<proto::SegmentInfo> segment_info) {
-  ModelExecutionTraceEvent trace_event(
-      "ModelExecutionManagerImpl::OnSegmentInfoFetchedForExecution", *state);
   // It is required to have a valid and well formed segment info.
-  if (!segment_info ||
-      metadata_utils::ValidateSegmentInfo(*segment_info) !=
-          metadata_utils::ValidationResult::kValidationSuccess) {
+  if (metadata_utils::ValidateSegmentInfo(segment_info) !=
+      metadata_utils::ValidationResult::kValidationSuccess) {
     RunModelExecutionCallback(std::move(state), 0,
                               ModelExecutionStatus::kInvalidMetadata);
     return;
   }
 
-  OptimizationTarget segment_id = state->segment_id;
   feature_list_query_processor_->ProcessFeatureList(
-      segment_info->model_metadata(), segment_id, clock_->Now(),
+      segment_info.model_metadata(), segment_id, clock_->Now(),
       base::BindOnce(
           &ModelExecutionManagerImpl::OnProcessingFeatureListComplete,
           weak_ptr_factory_.GetWeakPtr(), std::move(state)));

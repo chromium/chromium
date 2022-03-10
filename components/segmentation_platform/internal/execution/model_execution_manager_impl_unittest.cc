@@ -167,9 +167,11 @@ class ModelExecutionManagerTest : public testing::Test {
   void RunUntilIdle() { task_environment_.RunUntilIdle(); }
 
   void ExecuteModel(const std::pair<float, ModelExecutionStatus>& expected) {
+    proto::SegmentInfo* info = segment_database_->FindOrCreateSegment(
+        OptimizationTarget::OPTIMIZATION_TARGET_SEGMENTATION_NEW_TAB);
     base::RunLoop loop;
     model_execution_manager_->ExecuteModel(
-        OptimizationTarget::OPTIMIZATION_TARGET_SEGMENTATION_NEW_TAB,
+        *info,
         base::BindOnce(&ModelExecutionManagerTest::OnExecutionCallback,
                        base::Unretained(this), loop.QuitClosure(), expected));
     loop.Run();

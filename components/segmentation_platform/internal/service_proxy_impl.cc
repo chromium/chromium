@@ -107,11 +107,20 @@ void ServiceProxyImpl::GetServiceStatus() {
 }
 
 void ServiceProxyImpl::ExecuteModel(OptimizationTarget segment_id) {
-  if (!model_execution_scheduler_)
+  if (!model_execution_scheduler_ ||
+      segment_id == OptimizationTarget::OPTIMIZATION_TARGET_UNKNOWN) {
     return;
-  if (segment_id != OptimizationTarget::OPTIMIZATION_TARGET_UNKNOWN) {
-    model_execution_scheduler_->RequestModelExecution(segment_id);
   }
+  segment_db_->GetSegmentInfo(
+      segment_id,
+      base::BindOnce(&ServiceProxyImpl::OnSegmentInfoFetchedForExecution,
+                     weak_ptr_factory_.GetWeakPtr()));
+}
+
+void ServiceProxyImpl::OnSegmentInfoFetchedForExecution(
+    absl::optional<proto::SegmentInfo> segment_info) {
+  if (segment_info)
+    model_execution_scheduler_->RequestModelExecution(*segment_info);
 }
 
 void ServiceProxyImpl::OverwriteResult(OptimizationTarget segment_id,

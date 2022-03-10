@@ -61,6 +61,9 @@ class ServiceProxyImpl : public ServiceProxy {
   // be sent.
   void UpdateObservers(bool update_service_status);
 
+  void OnSegmentInfoFetchedForExecution(
+      absl::optional<proto::SegmentInfo> segment_info);
+
   //  Called after retrieving all the segmentation info from the DB.
   void OnGetAllSegmentationInfo(
       std::unique_ptr<SegmentInfoDatabase::SegmentInfoList> segment_info);

@@ -11,6 +11,7 @@
 #include "base/test/task_environment.h"
 #include "components/optimization_guide/proto/models.pb.h"
 #include "components/segmentation_platform/internal/execution/model_execution_status.h"
+#include "components/segmentation_platform/internal/proto/model_prediction.pb.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace segmentation_platform {
@@ -34,8 +35,7 @@ class DummyModelExecutionManagerTest : public testing::Test {
   void ExecuteModel() {
     base::RunLoop loop;
     model_execution_manager_->ExecuteModel(
-        optimization_guide::proto::OptimizationTarget::
-            OPTIMIZATION_TARGET_SEGMENTATION_NEW_TAB,
+        proto::SegmentInfo(),
         base::BindOnce(&DummyModelExecutionManagerTest::OnExecutionCallback,
                        base::Unretained(this), loop.QuitClosure()));
     loop.Run();

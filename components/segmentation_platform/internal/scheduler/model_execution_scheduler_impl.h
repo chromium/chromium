@@ -49,7 +49,7 @@ class ModelExecutionSchedulerImpl : public ModelExecutionScheduler {
   // ModelExecutionScheduler overrides.
   void OnNewModelInfoReady(const proto::SegmentInfo& segment_info) override;
   void RequestModelExecutionForEligibleSegments(bool expired_only) override;
-  void RequestModelExecution(OptimizationTarget segment_id) override;
+  void RequestModelExecution(const proto::SegmentInfo& segment_info) override;
   void OnModelExecutionCompleted(
       OptimizationTarget segment_id,
       const std::pair<float, ModelExecutionStatus>& score) override;
