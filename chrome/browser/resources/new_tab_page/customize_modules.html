@@ -61,11 +61,11 @@
   <cr-radio-group selected="[[radioSelection_(show_)]]"
       disabled="[[showManagedByPolicy_]]"
       on-selected-changed="onShowRadioSelectionChanged_">
-    <cr-radio-button id="hideButton" name="hide">
-      $i18n{hideAllCards}
+    <cr-radio-button id="hideButton" name="hide"
+        label="$i18n{hideAllCards}">
     </cr-radio-button>
-    <cr-radio-button id="customizeButton" name="customize">
-      $i18n{customizeCards}
+    <cr-radio-button id="customizeButton" name="customize"
+        label="$i18n{customizeCards}">
     </cr-radio-button>
   </cr-radio-group>
   <cr-policy-indicator indicator-type="devicePolicy"
