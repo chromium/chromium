@@ -434,6 +434,7 @@ WaylandRemoteShell::WaylandRemoteShell(
   WMHelperChromeOS* helper = WMHelperChromeOS::GetInstance();
   helper->AddTabletModeObserver(this);
   helper->AddFrameThrottlingObserver();
+  helper->SetDefaultScaleCancellation(use_default_scale_cancellation_);
 
   layout_mode_ = helper->InTabletMode()
                      ? ZCR_REMOTE_SHELL_V1_LAYOUT_MODE_TABLET
