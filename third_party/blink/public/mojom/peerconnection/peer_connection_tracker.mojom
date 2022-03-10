@@ -126,10 +126,10 @@ interface PeerConnectionTrackerHost {
   // Adds standard PeerConnection stats for webrtc-internals.
   // |lid| is the renderer local id,
   // |value| is the list of stats reports.
-  AddStandardStats(int32 lid, mojo_base.mojom.ListValue value);
+  AddStandardStats(int32 lid, mojo_base.mojom.DeprecatedListValue value);
 
   // Adds legacy PeerConnection stats for webrtc-internals.
   // |lid| is the renderer local id,
   // |value| is the list of stats reports.
-  AddLegacyStats(int32 lid, mojo_base.mojom.ListValue value);
+  AddLegacyStats(int32 lid, mojo_base.mojom.DeprecatedListValue value);
 };

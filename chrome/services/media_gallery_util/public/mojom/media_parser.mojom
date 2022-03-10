@@ -78,7 +78,7 @@ struct MediaStreamInfo {
   string type;
 
   // A string->string dictionary of tags for the media stream.
-  mojo_base.mojom.DictionaryValue additional_properties;
+  mojo_base.mojom.DeprecatedDictionaryValue additional_properties;
 };
 
 // All data are parsed from user-defined media data. The consumer of this API should filter special

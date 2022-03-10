@@ -32,5 +32,5 @@ interface DevToolsFrontend {
 // Provides embedder functionality to a frame serving as DevTools frontend.
 interface DevToolsFrontendHost {
   // Sends a message to DevTools frontend embedder.
-  DispatchEmbedderMessage(mojo_base.mojom.DictionaryValue message);
+  DispatchEmbedderMessage(mojo_base.mojom.DeprecatedDictionaryValue message);
 };

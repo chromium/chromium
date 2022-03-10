@@ -742,7 +742,7 @@ interface LocalFrame {
   JavaScriptMethodExecuteRequest(
       mojo_base.mojom.String16 object_name,
       mojo_base.mojom.String16 method_name,
-      mojo_base.mojom.ListValue arguments,
+      mojo_base.mojom.DeprecatedListValue arguments,
       bool wants_result) => (mojo_base.mojom.Value result);
 
   // Request for the renderer to execute JavaScript in the frame's context.

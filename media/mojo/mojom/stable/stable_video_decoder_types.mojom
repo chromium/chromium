@@ -501,6 +501,6 @@ struct MediaLogRecord {
 
   int32 id@0;
   Type type@1;
-  mojo_base.mojom.DictionaryValue params@2;
+  mojo_base.mojom.DeprecatedDictionaryValue params@2;
   mojo_base.mojom.TimeTicks time@3;
 };

@@ -1043,7 +1043,7 @@ interface NetworkContext {
               mojo_base.mojom.UnguessableToken? reporting_source,
               NetworkIsolationKey network_isolation_key,
               string? user_agent,
-              mojo_base.mojom.DictionaryValue body);
+              mojo_base.mojom.DeprecatedDictionaryValue body);
 
   // Queues a signed exchange report.
   //
@@ -1100,7 +1100,7 @@ interface NetworkContext {
   [EnableIf=is_ct_supported]
   GetExpectCTState(string domain,
                    NetworkIsolationKey network_isolation_key)
-                   => (mojo_base.mojom.DictionaryValue state);
+                   => (mojo_base.mojom.DeprecatedDictionaryValue state);
 
   // Creates a UDP socket. Caller can supply a |listener| interface pointer
   // to listen for incoming datagrams. A null |listener| is acceptable if caller
@@ -1346,7 +1346,8 @@ interface NetworkContext {
 
   // Retrieve values from the HSTS state from the associated contexts
   // transport security state.
-  GetHSTSState(string domain) => (mojo_base.mojom.DictionaryValue state);
+  GetHSTSState(string domain)
+      => (mojo_base.mojom.DeprecatedDictionaryValue state);
 
   // Sets allowed and blocked origins respectively for the URLLoaderFactory
   // consumers to access beyond the same-origin policy. The list is managed per

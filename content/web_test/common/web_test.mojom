@@ -134,7 +134,8 @@ interface WebTestRenderThread {
   // 1) broadcasting change happening in one renderer to all other renderers, or
   // 2) sending accumulated changes to a single new renderer.
   ReplicateWebTestRuntimeFlagsChanges(
-      mojo_base.mojom.DictionaryValue changed_layout_test_runtime_flags);
+      mojo_base.mojom.DeprecatedDictionaryValue
+      changed_layout_test_runtime_flags);
 
   // Called on the renderer process with the main window's local main frame to
   // conclude the test. Used to bounce this request from another renderer.
@@ -156,7 +157,8 @@ interface WebTestRenderThread {
   ProcessWorkItem(WorkItem work_item);
 
   // Syncs the work queue states to the new renderer.
-  ReplicateWorkQueueStates(mojo_base.mojom.DictionaryValue work_queue_states);
+  ReplicateWorkQueueStates(
+      mojo_base.mojom.DeprecatedDictionaryValue work_queue_states);
 };
 
 // Web test messages sent from the renderer process to the browser. This
@@ -285,7 +287,7 @@ interface WebTestControlHost {
   // Notifies the browser that one of renderers has changed web test runtime
   // flags (i.e. has set dump_as_text).
   WebTestRuntimeFlagsChanged(
-      mojo_base.mojom.DictionaryValue changed_web_test_runtime_flags);
+      mojo_base.mojom.DeprecatedDictionaryValue changed_web_test_runtime_flags);
 
   // Registers a new isolated filesystem with the given files, and returns the
   // new filesystem id.
@@ -319,5 +321,5 @@ interface WebTestControlHost {
 
   // Notifies the browser that the work queue states changed.
   WorkQueueStatesChanged(
-      mojo_base.mojom.DictionaryValue changed_work_queue_states);
+      mojo_base.mojom.DeprecatedDictionaryValue changed_work_queue_states);
 };

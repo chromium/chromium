@@ -75,7 +75,7 @@ interface IndexedDBControl {
 
   // Called by chrome://indexeddb-internals to populate its page details.
   GetAllStorageKeysDetails() => (bool incognito,
-                                 mojo_base.mojom.ListValue details);
+                                 mojo_base.mojom.DeprecatedListValue details);
 
   // Disables the exit-time deletion of session-only data, so that internal
   // restarts can preserve that data.

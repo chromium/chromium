@@ -1049,7 +1049,7 @@ interface BrowserService {
   // "Lacros extensions: xxx", "Lacros mem_usage: xxx", etc.
   [MinVersion=6]
   GetFeedbackData@3() => (
-      mojo_base.mojom.DictionaryValue feedback_info);
+      mojo_base.mojom.DeprecatedDictionaryValue feedback_info);
 
   // Returns the browser histograms used for generating feedback report.
   // The histograms returned is zip compressed and is typically around 100KB.

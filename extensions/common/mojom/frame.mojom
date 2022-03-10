@@ -35,7 +35,7 @@ struct RequestParams {
   // Message name.
   string name;
   // List of message arguments.
-  mojo_base.mojom.ListValue arguments;
+  mojo_base.mojom.DeprecatedListValue arguments;
   // Extension ID this request was sent from. This can be empty, in the case
   // where we expose APIs to normal web pages using the extension function
   // system.
@@ -85,7 +85,7 @@ interface LocalFrame {
   MessageInvoke(string extension_id,
                 string module_name,
                 string function_name,
-                mojo_base.mojom.ListValue args);
+                mojo_base.mojom.DeprecatedListValue args);
 
   // Notifies the renderer that it should run some JavaScript code. The reply
   // is sent back to the browser to return the script running result. An empty
@@ -127,9 +127,11 @@ interface LocalFrameHost {
   // one of the base::Value types, wrapped as the first element in a LIST
   // typed Value.
   [UnlimitedSize]
-  Request(RequestParams params) => (bool success,
-                                    mojo_base.mojom.ListValue response_wrapper,
-                                    string error);
+  Request(RequestParams params)
+      => (bool success,
+          mojo_base.mojom.DeprecatedListValue response_wrapper,
+          string error);
+
   // Notifies the browser process that a tab has started or stopped matching
   // certain conditions.  This method is called by response to several events:
   //
