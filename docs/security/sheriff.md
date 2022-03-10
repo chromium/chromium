@@ -294,8 +294,9 @@ If you reproduced the bug with ClusterFuzz, it should do this on your behalf.
 Sometimes Extended Stable is the same milestone as Stable; sometimes it
 differs. If in doubt about the currently active milestones, check
 [ChromiumDash](https://chromiumdash.appspot.com/releases?platform=Windows).
-There's no need to check for reproducibility on milestones earlier than the
-current Stable milestone.
+(It's fine to just check the Windows platform, via that link - there's no need
+to look at all the different platforms). There's no need to check for
+reproducibility on milestones earlier than the current Stable milestone.
 
 #### Step 4. [Check other labels](security-labels.md).
 
