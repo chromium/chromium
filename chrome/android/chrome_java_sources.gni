@@ -881,7 +881,6 @@ chrome_java_sources = [
   "java/src/org/chromium/chrome/browser/partnerbookmarks/PartnerBookmarksProviderIterator.java",
   "java/src/org/chromium/chrome/browser/partnerbookmarks/PartnerBookmarksReader.java",
   "java/src/org/chromium/chrome/browser/partnerbookmarks/PartnerBookmarksShim.java",
-  "java/src/org/chromium/chrome/browser/partnercustomizations/PartnerBrowserCustomizations.java",
   "java/src/org/chromium/chrome/browser/password_manager/AccountChooserDialog.java",
   "java/src/org/chromium/chrome/browser/password_manager/AutoSigninFirstRunDialog.java",
   "java/src/org/chromium/chrome/browser/password_manager/AutoSigninSnackbarController.java",

@@ -5,7 +5,7 @@
 #include "chrome/browser/android/partner_browser_customizations.h"
 
 #include "base/android/jni_android.h"
-#include "chrome/android/chrome_jni_headers/PartnerBrowserCustomizations_jni.h"
+#include "chrome/browser/partnercustomizations/jni_headers/PartnerBrowserCustomizations_jni.h"
 
 namespace chrome {
 namespace android {

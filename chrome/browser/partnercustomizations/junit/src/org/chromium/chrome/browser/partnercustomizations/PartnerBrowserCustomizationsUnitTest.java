@@ -22,9 +22,64 @@ import org.chromium.content_public.browser.test.NativeLibraryTestUtils;
 @RunWith(BaseJUnit4ClassRunner.class)
 @Batch(Batch.UNIT_TESTS)
 public class PartnerBrowserCustomizationsUnitTest {
+    private static final String TEST_HOMEPAGE = "http://example.com";
+
+    private static class CustomizationProviderDelegateTestImpl
+            implements CustomizationProviderDelegate {
+        @Override
+        public String getHomepage() {
+            return TEST_HOMEPAGE;
+        }
+
+        @Override
+        public boolean isIncognitoModeDisabled() {
+            return true;
+        }
+
+        @Override
+        public boolean isBookmarksEditingDisabled() {
+            return true;
+        }
+    }
+
     @Before
     public void setUp() {
         NativeLibraryTestUtils.loadNativeLibraryNoBrowserProcess();
+    }
+
+    @SmallTest
+    @Test
+    public void testGetHomepageUrl() {
+        PartnerBrowserCustomizations partnerBrowserCustomizations =
+                PartnerBrowserCustomizations.getInstance();
+        Assert.assertEquals(null, partnerBrowserCustomizations.getHomePageUrl());
+
+        partnerBrowserCustomizations.refreshHomepage(new CustomizationProviderDelegateTestImpl());
+        Assert.assertEquals(TEST_HOMEPAGE, partnerBrowserCustomizations.getHomePageUrl());
+    }
+
+    @SmallTest
+    @Test
+    public void testIsIncognitoModeDisabled() {
+        PartnerBrowserCustomizations partnerBrowserCustomizations =
+                PartnerBrowserCustomizations.getInstance();
+        Assert.assertEquals(false, partnerBrowserCustomizations.isIncognitoModeDisabled());
+
+        partnerBrowserCustomizations.refreshIncognitoModeDisabled(
+                new CustomizationProviderDelegateTestImpl());
+        Assert.assertEquals(true, partnerBrowserCustomizations.isIncognitoModeDisabled());
+    }
+
+    @SmallTest
+    @Test
+    public void testIsBookmarksEditingDisabled() {
+        PartnerBrowserCustomizations partnerBrowserCustomizations =
+                PartnerBrowserCustomizations.getInstance();
+        Assert.assertEquals(false, partnerBrowserCustomizations.isBookmarksEditingDisabled());
+
+        partnerBrowserCustomizations.refreshBookmarksEditingDisabled(
+                new CustomizationProviderDelegateTestImpl());
+        Assert.assertEquals(true, partnerBrowserCustomizations.isBookmarksEditingDisabled());
     }
 
     @Feature({"Homepage"})

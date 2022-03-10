@@ -397,6 +397,7 @@ android_library("chrome_java") {
     "//chrome/browser/page_annotations/android:java",
     "//chrome/browser/paint_preview/android:java",
     "//chrome/browser/partnercustomizations:delegate_java",
+    "//chrome/browser/partnercustomizations:java",
     "//chrome/browser/password_check:public_java",
     "//chrome/browser/password_entry_edit:public_java",
     "//chrome/browser/password_manager/android:java",
@@ -1011,6 +1012,7 @@ junit_binary("chrome_junit_tests") {
     "//chrome/browser/omaha/android:java",
     "//chrome/browser/optimization_guide/android:java",
     "//chrome/browser/page_annotations/test/android:junit",
+    "//chrome/browser/partnercustomizations:java",
     "//chrome/browser/password_edit_dialog/android:junit",
     "//chrome/browser/password_entry_edit/android/internal:junit",
     "//chrome/browser/payments/android:junit",
@@ -1395,6 +1397,9 @@ android_library("chrome_test_java") {
     "//chrome/browser/page_annotations/test/android:javatests",
     "//chrome/browser/paint_preview/android:java",
     "//chrome/browser/paint_preview/android:javatests",
+    "//chrome/browser/partnercustomizations:delegate_java",
+    "//chrome/browser/partnercustomizations:java",
+    "//chrome/browser/partnercustomizations:test_support_java",
     "//chrome/browser/password_check:public_java",
     "//chrome/browser/password_edit_dialog/android:javatests",
     "//chrome/browser/password_entry_edit/android/internal:javatests",
@@ -3069,6 +3074,7 @@ chrome_test_apk_tmpl("chrome_public_unit_test_apk") {
   shared_libraries = [ ":libchromefortest" ]
   deps = [
     ":chrome_unit_test_java",
+    "//chrome/browser/partnercustomizations:javatests",
     "//chrome/browser/user_education:javatests",
     "//chrome/browser/video_tutorials/internal:javatests",
   ]
@@ -3933,7 +3939,6 @@ generate_jni("chrome_jni_headers") {
     "java/src/org/chromium/chrome/browser/offlinepages/prefetch/PrefetchBackgroundTaskScheduler.java",
     "java/src/org/chromium/chrome/browser/page_info/PageInfoAboutThisSiteController.java",
     "java/src/org/chromium/chrome/browser/partnerbookmarks/PartnerBookmarksReader.java",
-    "java/src/org/chromium/chrome/browser/partnercustomizations/PartnerBrowserCustomizations.java",
     "java/src/org/chromium/chrome/browser/password_manager/AccountChooserDialog.java",
     "java/src/org/chromium/chrome/browser/password_manager/AutoSigninFirstRunDialog.java",
     "java/src/org/chromium/chrome/browser/password_manager/AutoSigninSnackbarController.java",

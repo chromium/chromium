@@ -63,7 +63,8 @@ public class PartnerHomepageUnitTest {
 
         Assert.assertNotSame(
                 TestPartnerBrowserCustomizationsProvider.HOMEPAGE_URI, TEST_CUSTOM_HOMEPAGE_URI);
-        PartnerBrowserCustomizations.ignoreBrowserProviderSystemPackageCheckForTests(true);
+        CustomizationProviderDelegateUpstreamImpl.ignoreBrowserProviderSystemPackageCheckForTesting(
+                true);
     }
 
     @After
@@ -93,8 +94,9 @@ public class PartnerHomepageUnitTest {
 
         // Note that unlike other tests in this file, we test if Chrome ignores a customizations
         // provider that is not from a system package.
-        PartnerBrowserCustomizations.ignoreBrowserProviderSystemPackageCheckForTests(false);
-        PartnerBrowserCustomizations.setProviderAuthorityForTests(
+        CustomizationProviderDelegateUpstreamImpl.ignoreBrowserProviderSystemPackageCheckForTesting(
+                false);
+        CustomizationProviderDelegateUpstreamImpl.setProviderAuthorityForTesting(
                 PARTNER_BROWSER_CUSTOMIZATIONS_PROVIDER);
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             mPartnerBrowserCustomizations.initializeAsync(
@@ -123,7 +125,7 @@ public class PartnerHomepageUnitTest {
             mHomepageManager.setHomepagePreferences(false, true, TEST_CUSTOM_HOMEPAGE_URI);
         });
 
-        PartnerBrowserCustomizations.setProviderAuthorityForTests(
+        CustomizationProviderDelegateUpstreamImpl.setProviderAuthorityForTesting(
                 PARTNER_BROWSER_CUSTOMIZATIONS_NO_PROVIDER);
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             mPartnerBrowserCustomizations.initializeAsync(
@@ -152,7 +154,7 @@ public class PartnerHomepageUnitTest {
             mHomepageManager.setHomepagePreferences(false, true, TEST_CUSTOM_HOMEPAGE_URI);
         });
 
-        PartnerBrowserCustomizations.setProviderAuthorityForTests(
+        CustomizationProviderDelegateUpstreamImpl.setProviderAuthorityForTesting(
                 PARTNER_BROWSER_CUSTOMIZATIONS_PROVIDER);
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             mPartnerBrowserCustomizations.initializeAsync(
@@ -184,7 +186,7 @@ public class PartnerHomepageUnitTest {
             mHomepageManager.setHomepagePreferences(false, false, TEST_CUSTOM_HOMEPAGE_URI);
         });
 
-        PartnerBrowserCustomizations.setProviderAuthorityForTests(
+        CustomizationProviderDelegateUpstreamImpl.setProviderAuthorityForTesting(
                 PARTNER_BROWSER_CUSTOMIZATIONS_PROVIDER);
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             mPartnerBrowserCustomizations.initializeAsync(
@@ -217,7 +219,7 @@ public class PartnerHomepageUnitTest {
             mHomepageManager.setHomepagePreferences(false, true, TEST_CUSTOM_HOMEPAGE_URI);
         });
 
-        PartnerBrowserCustomizations.setProviderAuthorityForTests(
+        CustomizationProviderDelegateUpstreamImpl.setProviderAuthorityForTesting(
                 PARTNER_BROWSER_CUSTOMIZATIONS_DELAYED_PROVIDER);
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             mPartnerBrowserCustomizations.initializeAsync(mTestRule.getContextWrapper(), 500);
@@ -258,7 +260,7 @@ public class PartnerHomepageUnitTest {
             mHomepageManager.setHomepagePreferences(false, true, TEST_CUSTOM_HOMEPAGE_URI);
         });
 
-        PartnerBrowserCustomizations.setProviderAuthorityForTests(
+        CustomizationProviderDelegateUpstreamImpl.setProviderAuthorityForTesting(
                 PARTNER_BROWSER_CUSTOMIZATIONS_DELAYED_PROVIDER);
         mTestRule.setDelayProviderUriPathForDelay(
                 PartnerBrowserCustomizations.PARTNER_HOMEPAGE_PATH);
@@ -301,7 +303,7 @@ public class PartnerHomepageUnitTest {
             mHomepageManager.setHomepagePreferences(false, true, TEST_CUSTOM_HOMEPAGE_URI);
         });
 
-        PartnerBrowserCustomizations.setProviderAuthorityForTests(
+        CustomizationProviderDelegateUpstreamImpl.setProviderAuthorityForTesting(
                 PARTNER_BROWSER_CUSTOMIZATIONS_PROVIDER);
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             mPartnerBrowserCustomizations.initializeAsync(

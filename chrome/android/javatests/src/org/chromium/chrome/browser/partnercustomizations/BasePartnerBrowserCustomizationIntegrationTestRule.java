@@ -22,8 +22,9 @@ public class BasePartnerBrowserCustomizationIntegrationTestRule
         return super.apply(new Statement() {
             @Override
             public void evaluate() throws Throwable {
-                PartnerBrowserCustomizations.ignoreBrowserProviderSystemPackageCheckForTests(true);
-                PartnerBrowserCustomizations.setProviderAuthorityForTests(
+                CustomizationProviderDelegateUpstreamImpl
+                        .ignoreBrowserProviderSystemPackageCheckForTesting(true);
+                CustomizationProviderDelegateUpstreamImpl.setProviderAuthorityForTesting(
                         TestPartnerBrowserCustomizationsProvider.class.getName());
                 base.evaluate();
             }

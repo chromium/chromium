@@ -28,29 +28,30 @@ import org.chromium.chrome.test.partnercustomizations.TestPartnerBrowserCustomiz
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 
 /**
- * Unit tests for the partner disabling incognito mode functionality.
+ * Unit tests for the partner disabling bookmarks editing functionality.
  */
 @RunWith(ChromeJUnit4ClassRunner.class)
-public class PartnerDisableIncognitoModeUnitTest {
+public class PartnerDisableBookmarksEditingUnitTest {
     @Rule
     public BasePartnerBrowserCustomizationUnitTestRule mTestRule =
             new BasePartnerBrowserCustomizationUnitTestRule();
 
     private PartnerBrowserCustomizations mPartnerBrowserCustomizations;
 
-    private void setParentalControlsEnabled(boolean enabled) {
-        Uri uri = PartnerBrowserCustomizations.buildQueryUri(
-                PartnerBrowserCustomizations.PARTNER_DISABLE_INCOGNITO_MODE_PATH);
+    private void setBookmarksEditingDisabled(boolean disabled) {
+        Uri uri = CustomizationProviderDelegateUpstreamImpl.buildQueryUri(
+                PartnerBrowserCustomizations.PARTNER_DISABLE_BOOKMARKS_EDITING_PATH);
         Bundle bundle = new Bundle();
         bundle.putBoolean(
-                TestPartnerBrowserCustomizationsProvider.INCOGNITO_MODE_DISABLED_KEY, enabled);
+                TestPartnerBrowserCustomizationsProvider.BOOKMARKS_EDITING_DISABLED_KEY, disabled);
         mTestRule.getContextWrapper().getContentResolver().call(
-                uri, "setIncognitoModeDisabled", null, bundle);
+                uri, "setBookmarksEditingDisabled", null, bundle);
     }
 
     @Before
     public void setUp() {
-        PartnerBrowserCustomizations.ignoreBrowserProviderSystemPackageCheckForTests(true);
+        CustomizationProviderDelegateUpstreamImpl.ignoreBrowserProviderSystemPackageCheckForTesting(
+                true);
         mPartnerBrowserCustomizations = PartnerBrowserCustomizations.getInstance();
     }
 
@@ -61,12 +62,13 @@ public class PartnerDisableIncognitoModeUnitTest {
 
     @Test
     @SmallTest
-    @Feature({"ParentalControls"})
+    @Feature({"PartnerBookmarksEditing"})
     public void testProviderNotFromSystemPackage() throws InterruptedException {
         // Note that unlike other tests in this file, we test if Chrome ignores a customizations
         // provider that is not from a system package.
-        PartnerBrowserCustomizations.ignoreBrowserProviderSystemPackageCheckForTests(false);
-        PartnerBrowserCustomizations.setProviderAuthorityForTests(
+        CustomizationProviderDelegateUpstreamImpl.ignoreBrowserProviderSystemPackageCheckForTesting(
+                false);
+        CustomizationProviderDelegateUpstreamImpl.setProviderAuthorityForTesting(
                 PARTNER_BROWSER_CUSTOMIZATIONS_PROVIDER);
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             mPartnerBrowserCustomizations.initializeAsync(
@@ -78,14 +80,14 @@ public class PartnerDisableIncognitoModeUnitTest {
         mTestRule.getCallbackLock().acquire();
 
         Assert.assertTrue(mPartnerBrowserCustomizations.isInitialized());
-        Assert.assertFalse(PartnerBrowserCustomizations.isIncognitoDisabled());
+        Assert.assertFalse(mPartnerBrowserCustomizations.isBookmarksEditingDisabled());
     }
 
     @Test
     @SmallTest
-    @Feature({"ParentalControls"})
+    @Feature({"PartnerBookmarksEditing"})
     public void testNoProvider() throws InterruptedException {
-        PartnerBrowserCustomizations.setProviderAuthorityForTests(
+        CustomizationProviderDelegateUpstreamImpl.setProviderAuthorityForTesting(
                 PARTNER_BROWSER_CUSTOMIZATIONS_NO_PROVIDER);
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             mPartnerBrowserCustomizations.initializeAsync(
@@ -96,16 +98,16 @@ public class PartnerDisableIncognitoModeUnitTest {
         mTestRule.getCallbackLock().acquire();
 
         Assert.assertTrue(mPartnerBrowserCustomizations.isInitialized());
-        Assert.assertFalse(PartnerBrowserCustomizations.isIncognitoDisabled());
+        Assert.assertFalse(mPartnerBrowserCustomizations.isBookmarksEditingDisabled());
     }
 
     @Test
     @SmallTest
-    @Feature({"ParentalControls"})
-    public void testParentalControlsNotEnabled() throws InterruptedException {
-        PartnerBrowserCustomizations.setProviderAuthorityForTests(
+    @Feature({"PartnerBookmarksEditing"})
+    public void testBookmarksEditingNotDisabled() throws InterruptedException {
+        CustomizationProviderDelegateUpstreamImpl.setProviderAuthorityForTesting(
                 PARTNER_BROWSER_CUSTOMIZATIONS_PROVIDER);
-        setParentalControlsEnabled(false);
+        setBookmarksEditingDisabled(false);
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             mPartnerBrowserCustomizations.initializeAsync(
                     mTestRule.getContextWrapper(), DEFAULT_TIMEOUT_MS);
@@ -116,16 +118,16 @@ public class PartnerDisableIncognitoModeUnitTest {
         mTestRule.getCallbackLock().acquire();
 
         Assert.assertTrue(mPartnerBrowserCustomizations.isInitialized());
-        Assert.assertFalse(PartnerBrowserCustomizations.isIncognitoDisabled());
+        Assert.assertFalse(mPartnerBrowserCustomizations.isBookmarksEditingDisabled());
     }
 
     @Test
     @SmallTest
-    @Feature({"ParentalControls"})
-    public void testParentalControlsEnabled() throws InterruptedException {
-        PartnerBrowserCustomizations.setProviderAuthorityForTests(
+    @Feature({"PartnerBookmarksEditing"})
+    public void testBookmarksEditingDisabled() throws InterruptedException {
+        CustomizationProviderDelegateUpstreamImpl.setProviderAuthorityForTesting(
                 PARTNER_BROWSER_CUSTOMIZATIONS_PROVIDER);
-        setParentalControlsEnabled(true);
+        setBookmarksEditingDisabled(true);
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             mPartnerBrowserCustomizations.initializeAsync(
                     mTestRule.getContextWrapper(), DEFAULT_TIMEOUT_MS);
@@ -136,25 +138,25 @@ public class PartnerDisableIncognitoModeUnitTest {
         mTestRule.getCallbackLock().acquire();
 
         Assert.assertTrue(mPartnerBrowserCustomizations.isInitialized());
-        Assert.assertTrue(PartnerBrowserCustomizations.isIncognitoDisabled());
+        Assert.assertTrue(mPartnerBrowserCustomizations.isBookmarksEditingDisabled());
     }
 
     @Test
     @SmallTest
-    @Feature({"ParentalControls"})
-    public void testParentalControlsProviderDelayed() throws InterruptedException {
-        PartnerBrowserCustomizations.setProviderAuthorityForTests(
+    @Feature({"PartnerBookmarksEditing"})
+    public void testBookmarksEditingProviderDelayed() throws InterruptedException {
+        CustomizationProviderDelegateUpstreamImpl.setProviderAuthorityForTesting(
                 PARTNER_BROWSER_CUSTOMIZATIONS_DELAYED_PROVIDER);
         mTestRule.setDelayProviderUriPathForDelay(
-                PartnerBrowserCustomizations.PARTNER_DISABLE_INCOGNITO_MODE_PATH);
-        setParentalControlsEnabled(true);
+                PartnerBrowserCustomizations.PARTNER_DISABLE_BOOKMARKS_EDITING_PATH);
+        setBookmarksEditingDisabled(true);
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             mPartnerBrowserCustomizations.initializeAsync(mTestRule.getContextWrapper(), 2000);
         });
         mPartnerBrowserCustomizations.setOnInitializeAsyncFinished(mTestRule.getCallback());
 
         Assert.assertFalse(mPartnerBrowserCustomizations.isInitialized());
-        Assert.assertFalse(PartnerBrowserCustomizations.isIncognitoDisabled());
+        Assert.assertFalse(mPartnerBrowserCustomizations.isBookmarksEditingDisabled());
 
         TestPartnerBrowserCustomizationsDelayedProvider.unblockQuery();
         mPartnerBrowserCustomizations.setOnInitializeAsyncFinished(mTestRule.getCallback(), 3000);
@@ -162,6 +164,6 @@ public class PartnerDisableIncognitoModeUnitTest {
         mTestRule.getCallbackLock().acquire();
 
         Assert.assertTrue(mPartnerBrowserCustomizations.isInitialized());
-        Assert.assertTrue(PartnerBrowserCustomizations.isIncognitoDisabled());
+        Assert.assertTrue(mPartnerBrowserCustomizations.isBookmarksEditingDisabled());
     }
 }

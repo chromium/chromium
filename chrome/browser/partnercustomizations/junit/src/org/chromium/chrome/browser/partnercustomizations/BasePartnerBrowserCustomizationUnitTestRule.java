@@ -47,9 +47,9 @@ public class BasePartnerBrowserCustomizationUnitTestRule implements TestRule {
      * @param uriPath The path to be delayed.
      */
     void setDelayProviderUriPathForDelay(String uriPath) {
-        PartnerBrowserCustomizations.setProviderAuthorityForTests(
+        CustomizationProviderDelegateUpstreamImpl.setProviderAuthorityForTesting(
                 PARTNER_BROWSER_CUSTOMIZATIONS_DELAYED_PROVIDER);
-        Uri uri = PartnerBrowserCustomizations.buildQueryUri(uriPath);
+        Uri uri = CustomizationProviderDelegateUpstreamImpl.buildQueryUri(uriPath);
         getContextWrapper().getContentResolver().call(uri, "setUriPathToDelay", uriPath, null);
     }
 

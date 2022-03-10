@@ -46,7 +46,7 @@ public class PartnerDisableIncognitoModeIntegrationTest {
             new BasePartnerBrowserCustomizationIntegrationTestRule();
 
     private void setParentalControlsEnabled(boolean enabled) {
-        Uri uri = PartnerBrowserCustomizations.buildQueryUri(
+        Uri uri = CustomizationProviderDelegateUpstreamImpl.buildQueryUri(
                 PartnerBrowserCustomizations.PARTNER_DISABLE_INCOGNITO_MODE_PATH);
         Bundle bundle = new Bundle();
         bundle.putBoolean(
