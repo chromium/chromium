@@ -277,8 +277,9 @@ typedef std::pair<SessionID, TableViewURLItem*> RecentlyClosedTableViewItemPair;
   DCHECK(self.syncService);
   bool syncDisabledPolicy = self.syncService->GetDisableReasons().Has(
       syncer::SyncService::DISABLE_REASON_ENTERPRISE_POLICY);
+  PrefService* prefService = self.browserState->GetPrefs();
   bool syncTypesDisabledPolicy =
-      IsManagedSyncDataType(self.browserState, SyncSetupService::kSyncOpenTabs);
+      IsManagedSyncDataType(prefService, SyncSetupService::kSyncOpenTabs);
   return syncDisabledPolicy || syncTypesDisabledPolicy;
 }
 

@@ -560,8 +560,9 @@ const int kMaxBookmarksSearchResults = 50;
   DCHECK(self.syncService);
   bool syncDisabledPolicy = self.syncService->GetDisableReasons().Has(
       syncer::SyncService::DISABLE_REASON_ENTERPRISE_POLICY);
-  bool syncTypesDisabledPolicy = IsManagedSyncDataType(
-      self.browserState, SyncSetupService::kSyncBookmarks);
+  PrefService* prefService = self.browserState->GetPrefs();
+  bool syncTypesDisabledPolicy =
+      IsManagedSyncDataType(prefService, SyncSetupService::kSyncBookmarks);
   return syncDisabledPolicy || syncTypesDisabledPolicy;
 }
 @end

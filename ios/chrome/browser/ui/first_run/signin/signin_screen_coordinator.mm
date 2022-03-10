@@ -108,9 +108,9 @@
     return;
   }
 
+  ChromeBrowserState* browserState = self.browser->GetBrowserState();
   AuthenticationService* authenticationService =
-      AuthenticationServiceFactory::GetForBrowserState(
-          self.browser->GetBrowserState());
+      AuthenticationServiceFactory::GetForBrowserState(browserState);
 
   if (authenticationService->GetPrimaryIdentity(
           signin::ConsentLevel::kSignin)) {
@@ -126,12 +126,12 @@
 
   self.viewController = [[SigninScreenViewController alloc] init];
   self.viewController.delegate = self;
+  PrefService* prefService = browserState->GetPrefs();
   self.viewController.enterpriseSignInRestrictions =
-      GetEnterpriseSignInRestrictions(self.browser->GetBrowserState());
+      GetEnterpriseSignInRestrictions(prefService);
 
   self.accountManagerService =
-      ChromeAccountManagerServiceFactory::GetForBrowserState(
-          self.browser->GetBrowserState());
+      ChromeAccountManagerServiceFactory::GetForBrowserState(browserState);
 
   self.mediator = [[SigninScreenMediator alloc]
       initWithAccountManagerService:self.accountManagerService

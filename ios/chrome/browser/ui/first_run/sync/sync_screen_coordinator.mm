@@ -131,8 +131,8 @@
 
   self.viewController = [[SyncScreenViewController alloc] init];
   self.viewController.delegate = self;
-  self.viewController.syncTypesRestricted =
-      HasManagedSyncDataType(browserState);
+  PrefService* prefService = browserState->GetPrefs();
+  self.viewController.syncTypesRestricted = HasManagedSyncDataType(prefService);
   // Setup mediator.
   self.mediator = [[SyncScreenMediator alloc]
       initWithAuthenticationService:authenticationService

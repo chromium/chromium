@@ -658,7 +658,8 @@ SyncState GetSyncStateFromBrowserState(ChromeBrowserState* browserState) {
   AccountSignInItem* signInTextItem =
       [[AccountSignInItem alloc] initWithType:SettingsItemTypeSignInButton];
   signInTextItem.accessibilityIdentifier = kSettingsSignInCellId;
-  if (!HasManagedSyncDataType(_browserState)) {
+  PrefService* prefService = _browserState->GetPrefs();
+  if (!HasManagedSyncDataType(prefService)) {
     signInTextItem.detailText =
         l10n_util::GetNSString(IDS_IOS_SIGN_IN_TO_CHROME_SETTING_SUBTITLE);
   } else {

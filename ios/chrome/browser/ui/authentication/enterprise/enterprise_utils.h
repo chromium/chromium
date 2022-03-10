@@ -9,7 +9,10 @@
 
 #include "ios/chrome/browser/sync/sync_setup_service.h"
 
-class ChromeBrowserState;
+class PrefService;
+namespace syncer {
+class SyncService;
+}
 
 // List of Enterprise restriction options.
 typedef NS_OPTIONS(NSUInteger, EnterpriseSignInRestrictions) {
@@ -28,17 +31,17 @@ bool IsRestrictAccountsToPatternsEnabled();
 bool IsForceSignInEnabled();
 
 // Returns true if the |dataType| is managed by policies (i.e. is not syncable).
-bool IsManagedSyncDataType(ChromeBrowserState* browserState,
+bool IsManagedSyncDataType(PrefService* pref_service,
                            SyncSetupService::SyncableDatatype dataType);
 
 // Returns true if any data type is managed by policies (i.e. is not syncable).
-bool HasManagedSyncDataType(ChromeBrowserState* browserState);
+bool HasManagedSyncDataType(PrefService* pref_service);
 
 // Returns current EnterpriseSignInRestrictions.
 EnterpriseSignInRestrictions GetEnterpriseSignInRestrictions(
-    ChromeBrowserState* browserState);
+    PrefService* pref_service);
 
 // true if sync is disabled.
-bool IsSyncDisabledByPolicy(ChromeBrowserState* browserState);
+bool IsSyncDisabledByPolicy(syncer::SyncService* sync_service);
 
 #endif  // IOS_CHROME_BROWSER_UI_AUTHENTICATION_ENTERPRISE_ENTERPRISE_UTILS_H_

@@ -30,15 +30,16 @@
 @implementation ConsistencyDefaultAccountCoordinator
 
 - (void)start {
+  ChromeBrowserState* browserState = self.browser->GetBrowserState();
   self.mediator = [[ConsistencyDefaultAccountMediator alloc]
       initWithAccountManagerService:ChromeAccountManagerServiceFactory::
-                                        GetForBrowserState(
-                                            self.browser->GetBrowserState())];
+                                        GetForBrowserState(browserState)];
   self.mediator.delegate = self;
   self.defaultAccountViewController =
       [[ConsistencyDefaultAccountViewController alloc] init];
+  PrefService* prefService = browserState->GetPrefs();
   self.defaultAccountViewController.enterpriseSignInRestrictions =
-      GetEnterpriseSignInRestrictions(self.browser->GetBrowserState());
+      GetEnterpriseSignInRestrictions(prefService);
   self.mediator.consumer = self.defaultAccountViewController;
   self.defaultAccountViewController.actionDelegate = self;
   self.defaultAccountViewController.layoutDelegate = self.layoutDelegate;

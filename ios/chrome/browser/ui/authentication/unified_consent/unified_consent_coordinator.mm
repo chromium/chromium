@@ -5,6 +5,7 @@
 #include "ios/chrome/browser/ui/authentication/unified_consent/unified_consent_coordinator.h"
 
 #include "base/check_op.h"
+#import "ios/chrome/browser/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/main/browser.h"
 #import "ios/chrome/browser/signin/authentication_service.h"
 #import "ios/chrome/browser/signin/authentication_service_factory.h"
@@ -106,7 +107,9 @@
 }
 
 - (BOOL)hasManagedSyncDataType {
-  return HasManagedSyncDataType(self.browser->GetBrowserState());
+  ChromeBrowserState* browserState = self.browser->GetBrowserState();
+  PrefService* prefService = browserState->GetPrefs();
+  return HasManagedSyncDataType(prefService);
 }
 
 - (BOOL)hasAccountRestrictions {

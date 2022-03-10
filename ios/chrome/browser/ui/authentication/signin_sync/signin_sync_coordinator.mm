@@ -155,7 +155,9 @@
       [self finishPresentingAndSkipRemainingScreens:NO];
       return;
   }
-  if (IsSyncDisabledByPolicy(browserState)) {
+  syncer::SyncService* syncService =
+      SyncServiceFactory::GetForBrowserState(browserState);
+  if (IsSyncDisabledByPolicy(syncService)) {
     // Skip the screen if sync is disabled by policy.
     self.attemptStatus = first_run::SignInAttemptStatus::SKIPPED_BY_POLICY;
     [self finishPresentingAndSkipRemainingScreens:NO];
@@ -182,8 +184,9 @@
 
   self.viewController = [[SigninSyncViewController alloc] init];
   self.viewController.delegate = self;
+  PrefService* prefService = browserState->GetPrefs();
   self.viewController.enterpriseSignInRestrictions =
-      GetEnterpriseSignInRestrictions(browserState);
+      GetEnterpriseSignInRestrictions(prefService);
   self.viewController.identitySwitcherPosition =
       fre_field_trial::GetSigninSyncScreenUIIdentitySwitcherPosition();
   self.viewController.stringsSet =
