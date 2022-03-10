@@ -379,6 +379,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="V8.GC.Cycle.CollectionRate.Full" units="%"
+    expires_after="M109">
+  <owner>nikolaos@chromium.org</owner>
+  <owner>v8-memory-sheriffs@google.com</owner>
+  <summary>
+    The percentage of managed JavaScript memory that has been collected by a
+    full garbage collection of the unified heap. Reported at the end of the
+    garbage collection cycle.
+  </summary>
+</histogram>
+
 <histogram name="V8.GC.Cycle.CollectionRate.Full.Cpp" units="%"
     expires_after="M109">
   <owner>omerkatz@chromium.org</owner>
@@ -396,8 +407,18 @@ chromium-metrics-reviews@google.com.
   <owner>v8-memory-sheriffs@google.com</owner>
   <summary>
     The percentage of managed JavaScript memory that has been collected by a
-    young generation garbage collection of the managed JavaScript heap. Reported
-    at the end of the garbage collection cycle.
+    young generation garbage collection of the JavaScript heap. Reported at the
+    end of the garbage collection cycle.
+  </summary>
+</histogram>
+
+<histogram name="V8.GC.Cycle.Efficiency.Full" units="KB/ms"
+    expires_after="M109">
+  <owner>nikolaos@chromium.org</owner>
+  <owner>v8-memory-sheriffs@google.com</owner>
+  <summary>
+    The speed at which a full garbage collection of the unified heap reclaims
+    unused memory. Reported at the end of the garbage collection cycle.
   </summary>
 </histogram>
 
@@ -408,6 +429,17 @@ chromium-metrics-reviews@google.com.
   <summary>
     The speed at which garbage collection of the managed C++ heap reclaims
     unused memory. Reported at the end of the garbage collection cycle.
+  </summary>
+</histogram>
+
+<histogram name="V8.GC.Cycle.Efficiency.MainThread.Full" units="KB/ms"
+    expires_after="M109">
+  <owner>nikolaos@chromium.org</owner>
+  <owner>v8-memory-sheriffs@google.com</owner>
+  <summary>
+    The speed at which a full garbage collection of the unified heap reclaims
+    unused memory on the main thread only. This histogram ignores concurrent
+    garbage collection. Reported at the end of the garbage collection cycle.
   </summary>
 </histogram>
 
@@ -427,10 +459,10 @@ chromium-metrics-reviews@google.com.
   <owner>nikolaos@chromium.org</owner>
   <owner>v8-memory-sheriffs@google.com</owner>
   <summary>
-    The speed at which a young generation garbage collection of the managed
-    JavaScript heap reclaims unused memory on the main thread only. This
-    histogram ignores concurrent garbage collection. Reported at the end of the
-    garbage collection cycle.
+    The speed at which a young generation garbage collection of the JavaScript
+    heap reclaims unused memory on the main thread only. This histogram ignores
+    concurrent garbage collection. Reported at the end of the garbage collection
+    cycle.
   </summary>
 </histogram>
 
@@ -439,9 +471,27 @@ chromium-metrics-reviews@google.com.
   <owner>nikolaos@chromium.org</owner>
   <owner>v8-memory-sheriffs@google.com</owner>
   <summary>
-    The speed at which a young generation garbage collection of the managed
-    JavaScript heap reclaims unused memory. Reported at the end of the garbage
-    collection cycle.
+    The speed at which a young generation garbage collection of the JavaScript
+    heap reclaims unused memory. Reported at the end of the garbage collection
+    cycle.
+  </summary>
+</histogram>
+
+<histogram name="V8.GC.Cycle.Full" units="ms" expires_after="M109">
+  <owner>nikolaos@chromium.org</owner>
+  <owner>v8-memory-sheriffs@google.com</owner>
+  <summary>
+    Overall duration of a full garbage collection of the unified heap. Reported
+    at the end of the garbage collection cycle.
+  </summary>
+</histogram>
+
+<histogram name="V8.GC.Cycle.Full.Compact" units="ms" expires_after="M109">
+  <owner>nikolaos@chromium.org</owner>
+  <owner>v8-memory-sheriffs@google.com</owner>
+  <summary>
+    Time spent on compaction during a full garbage collection of the unified
+    heap. Reported at the end of the garbage collection cycle.
   </summary>
 </histogram>
 
@@ -463,12 +513,30 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="V8.GC.Cycle.Full.Mark" units="ms" expires_after="M109">
+  <owner>nikolaos@chromium.org</owner>
+  <owner>v8-memory-sheriffs@google.com</owner>
+  <summary>
+    Time spent on marking during a full garbage collection of the unified heap.
+    Reported at the end of the garbage collection cycle.
+  </summary>
+</histogram>
+
 <histogram name="V8.GC.Cycle.Full.Mark.Cpp" units="ms" expires_after="M109">
   <owner>omerkatz@chromium.org</owner>
   <owner>v8-memory-sheriffs@google.com</owner>
   <summary>
     Time spent on marking during a whole garbage collection of the managed C++
     heap. Reported at the end of the garbage collection cycle.
+  </summary>
+</histogram>
+
+<histogram name="V8.GC.Cycle.Full.Sweep" units="ms" expires_after="M109">
+  <owner>nikolaos@chromium.org</owner>
+  <owner>v8-memory-sheriffs@google.com</owner>
+  <summary>
+    Time spent on sweeping during a full garbage collection of the unified heap.
+    Reported at the end of the garbage collection cycle.
   </summary>
 </histogram>
 
@@ -481,12 +549,54 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="V8.GC.Cycle.Full.Weak" units="ms" expires_after="M109">
+  <owner>nikolaos@chromium.org</owner>
+  <owner>v8-memory-sheriffs@google.com</owner>
+  <summary>
+    Time spent on weakness handling during a full garbage collection of the
+    unified heap. Reported at the end of the garbage collection cycle.
+  </summary>
+</histogram>
+
 <histogram name="V8.GC.Cycle.Full.Weak.Cpp" units="ms" expires_after="M109">
   <owner>omerkatz@chromium.org</owner>
   <owner>v8-memory-sheriffs@google.com</owner>
   <summary>
     Time spent on weakness handling during a whole garbage collection of the
     managed C++ heap. Reported at the end of the garbage collection cycle.
+  </summary>
+</histogram>
+
+<histogram name="V8.GC.Cycle.MainThread.Full" units="ms" expires_after="M109">
+  <owner>nikolaos@chromium.org</owner>
+  <owner>v8-memory-sheriffs@google.com</owner>
+  <summary>
+    Main-thread only duration of a full garbage collection of the unified heap.
+    Reported at the end of the garbage collection cycle.
+  </summary>
+</histogram>
+
+<histogram name="V8.GC.Cycle.MainThread.Full.Atomic" units="ms"
+    expires_after="M109">
+  <owner>nikolaos@chromium.org</owner>
+  <owner>v8-memory-sheriffs@google.com</owner>
+  <summary>
+    Overall main thread duration of the atomic pause of a garbage collection of
+    the unified heap. There is only a single atomic pause event per cycle but it
+    may cover several sub-events. Reported at the end of the garbage collection
+    cycle.
+  </summary>
+</histogram>
+
+<histogram name="V8.GC.Cycle.MainThread.Full.Atomic.Compact" units="ms"
+    expires_after="M109">
+  <owner>nikolaos@chromium.org</owner>
+  <owner>v8-memory-sheriffs@google.com</owner>
+  <summary>
+    Overall duration of compaction on the main thread during the atomic pause of
+    a garbage collection of the unified heap. There is only a single atomic
+    pause compaction event per cycle but it may cover several sub-events.
+    Reported at the end of the garbage collection cycle.
   </summary>
 </histogram>
 
@@ -514,6 +624,18 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="V8.GC.Cycle.MainThread.Full.Atomic.Mark" units="ms"
+    expires_after="M109">
+  <owner>nikolaos@chromium.org</owner>
+  <owner>v8-memory-sheriffs@google.com</owner>
+  <summary>
+    Overall duration of marking on the main thread during the atomic pause of a
+    garbage collection of the unified heap. There is only a single atomic pause
+    marking event per cycle but it may cover several sub-events. Reported at the
+    end of the garbage collection cycle.
+  </summary>
+</histogram>
+
 <histogram name="V8.GC.Cycle.MainThread.Full.Atomic.Mark.Cpp" units="ms"
     expires_after="M109">
   <owner>omerkatz@chromium.org</owner>
@@ -523,6 +645,18 @@ chromium-metrics-reviews@google.com.
     garbage collection of the managed C++ heap. There is only a single atomic
     pause marking event per cycle but it may cover several sub-events. Reported
     at the end of the garbage collection cycle.
+  </summary>
+</histogram>
+
+<histogram name="V8.GC.Cycle.MainThread.Full.Atomic.Sweep" units="ms"
+    expires_after="M109">
+  <owner>nikolaos@chromium.org</owner>
+  <owner>v8-memory-sheriffs@google.com</owner>
+  <summary>
+    Overall duration of sweeping on the main thread during the atomic pasue of a
+    garbage collection of the unified heap. There is only a single atomic pause
+    sweeping event per cycle but it may cover several sub-events. Reported at
+    the end of the garbage collection cycle.
   </summary>
 </histogram>
 
@@ -538,6 +672,18 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="V8.GC.Cycle.MainThread.Full.Atomic.Weak" units="ms"
+    expires_after="M109">
+  <owner>nikolaos@chromium.org</owner>
+  <owner>v8-memory-sheriffs@google.com</owner>
+  <summary>
+    Overall duration of weakness handling on the main thread during the atomic
+    pause of a garbage collection of the unified heap. There is only a single
+    atomic pause weakness handling event per cycle but it may cover several
+    sub-events. Reported at the end of the garbage collection cycle.
+  </summary>
+</histogram>
+
 <histogram name="V8.GC.Cycle.MainThread.Full.Atomic.Weak.Cpp" units="ms"
     expires_after="M109">
   <owner>omerkatz@chromium.org</owner>
@@ -547,6 +693,16 @@ chromium-metrics-reviews@google.com.
     pause of a garbage collection of the managed C++ heap. There is only a
     single atomic pause weakness handling event per cycle but it may cover
     several sub-events. Reported at the end of the garbage collection cycle.
+  </summary>
+</histogram>
+
+<histogram name="V8.GC.Cycle.MainThread.Full.Compact" units="ms"
+    expires_after="M109">
+  <owner>nikolaos@chromium.org</owner>
+  <owner>v8-memory-sheriffs@google.com</owner>
+  <summary>
+    Time spent on compaction on the main thread during a full garbage collection
+    of the unified heap. Reported at the end of the garbage collection cycle.
   </summary>
 </histogram>
 
@@ -571,6 +727,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="V8.GC.Cycle.MainThread.Full.Mark" units="ms"
+    expires_after="M109">
+  <owner>nikolaos@chromium.org</owner>
+  <owner>v8-memory-sheriffs@google.com</owner>
+  <summary>
+    Time spent on marking on the main thread during a full garbage collection of
+    the unified heap. Reported at the end of the garbage collection cycle.
+  </summary>
+</histogram>
+
 <histogram name="V8.GC.Cycle.MainThread.Full.Mark.Cpp" units="ms"
     expires_after="M109">
   <owner>omerkatz@chromium.org</owner>
@@ -582,6 +748,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="V8.GC.Cycle.MainThread.Full.Sweep" units="ms"
+    expires_after="M109">
+  <owner>nikolaos@chromium.org</owner>
+  <owner>v8-memory-sheriffs@google.com</owner>
+  <summary>
+    Time spent on sweeping on the main thread during a full garbage collection
+    of the unified heap. Reported at the end of the garbage collection cycle.
+  </summary>
+</histogram>
+
 <histogram name="V8.GC.Cycle.MainThread.Full.Sweep.Cpp" units="ms"
     expires_after="M109">
   <owner>omerkatz@chromium.org</owner>
@@ -590,6 +766,17 @@ chromium-metrics-reviews@google.com.
     Time spent on sweeping on the main thread during a whole garbage collection
     of the managed C++ heap. Reported at the end of the garbage collection
     cycle.
+  </summary>
+</histogram>
+
+<histogram name="V8.GC.Cycle.MainThread.Full.Weak" units="ms"
+    expires_after="M109">
+  <owner>nikolaos@chromium.org</owner>
+  <owner>v8-memory-sheriffs@google.com</owner>
+  <summary>
+    Time spent on weakness handling on the main thread during a full garbage
+    collection of the unified heap. Reported at the end of the garbage
+    collection cycle.
   </summary>
 </histogram>
 
@@ -650,6 +837,16 @@ chromium-metrics-reviews@google.com.
   <summary>
     Amount of used memory freed by a garbage collection of the managed C++ heap.
     Reported at the end of the garbage collection cycle.
+  </summary>
+</histogram>
+
+<histogram name="V8.GC.Cycle.Reason.Full" enum="GarbageCollectionReason"
+    expires_after="M109">
+  <owner>nikolaos@chromium.org</owner>
+  <owner>v8-memory-sheriffs@google.com</owner>
+  <summary>
+    Reason a full garbage collection was started in V8. Reported at the end of
+    the garbage collection cycle.
   </summary>
 </histogram>
 
