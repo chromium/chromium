@@ -298,7 +298,7 @@ public class SingleWebsiteSettings extends SiteSettingsPreferenceFragment
     private void init() {
         // Remove this Preference if it gets restored without a valid SiteSettingsDelegate. This
         // can happen e.g. when it is included in PageInfo.
-        if (getSiteSettingsDelegate() == null) {
+        if (!hasSiteSettingsDelegate()) {
             getParentFragmentManager().beginTransaction().remove(this).commit();
             return;
         }

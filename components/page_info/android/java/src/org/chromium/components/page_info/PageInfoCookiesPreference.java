@@ -50,7 +50,7 @@ public class PageInfoCookiesPreference extends SiteSettingsPreferenceFragment {
     @Override
     public void onCreatePreferences(Bundle bundle, String s) {
         // Remove this Preference if it is restored without SiteSettingsDelegate.
-        if (getSiteSettingsDelegate() == null) {
+        if (!hasSiteSettingsDelegate()) {
             getParentFragmentManager().beginTransaction().remove(this).commit();
             return;
         }
