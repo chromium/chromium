@@ -26,6 +26,7 @@ include_rules = [
   "+components/viz/common",
   "+components/viz/host",
   "+components/wallpaper",
+  "+crypto",
   "+dbus",
   "+extensions/common/constants.h",
   "+gpu/config",

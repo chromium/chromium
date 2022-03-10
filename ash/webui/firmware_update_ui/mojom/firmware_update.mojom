@@ -36,6 +36,10 @@ struct FirmwareUpdate {
 
   // Filepath of the device's firmware update.
   mojo_base.mojom.FilePath filepath;
+
+  // The expected sha256 checksum of the firmware update patch. Formatted as:
+  // "{sha256}".
+  string checksum;
 };
 
 // Contains the completion percentage and state of an in-progress firmware

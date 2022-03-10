@@ -16,6 +16,8 @@ export const fakeFirmwareUpdates = [[
          dock device`),
     priority: UpdatePriority.kCritical,
     filepath: {'path': '1.cab'},
+    checksum:
+        '3fab34cfa1ef97238fb24c5e40a979bc544bb2b0967b863e43e7d58e0d9a923f',
   },
   {
     deviceId: '2',
@@ -26,6 +28,8 @@ export const fakeFirmwareUpdates = [[
          adds new features`),
     priority: UpdatePriority.kMedium,
     filepath: {'path': '2.cab'},
+    checksum:
+        '3fab34cfa1ef97238fb24c5e40a979bc544bb2b0967b863e43e7d58e0d9a9231',
   },
   {
     deviceId: '3',
@@ -35,6 +39,8 @@ export const fakeFirmwareUpdates = [[
         'Update firmware for Logitech keyboard to improve performance'),
     priority: UpdatePriority.kLow,
     filepath: {'path': '3.cab'},
+    checksum:
+        '3fab34cfa1ef97238fb24c5e40a979bc544bb2b0967b863e43e7d58e0d9a9232',
   },
 ]];
 
@@ -62,6 +68,7 @@ export const fakeFirmwareUpdate = {
       'Update firmware for Logitech keyboard to improve performance'),
   priority: UpdatePriority.kLow,
   filepath: {'path': '1.cab'},
+  checksum: '3fab34cfa1ef97238fb24c5e40a979bc544bb2b0967b863e43e7d58e0d9a923f',
 };
 
 /** @type {!FirmwareUpdate} */
@@ -73,4 +80,5 @@ export const fakeCriticalFirmwareUpdate = {
       'Update firmware for Logitech keyboard to improve performance'),
   priority: UpdatePriority.kCritical,
   filepath: {'path': '2.cab'},
+  checksum: '3fab34cfa1ef97238fb24c5e40a979bc544bb2b0967b863e43e7d58e0d9a923f',
 };

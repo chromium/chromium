@@ -15,6 +15,7 @@ component("fwupd") {
     "//ash/webui/firmware_update_ui/mojom",
     "//base:base",
     "//chromeos/dbus/fwupd",
+    "//crypto",
     "//dbus",
   ]
 

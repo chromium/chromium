@@ -13,11 +13,13 @@ FwupdUpdate::FwupdUpdate() = default;
 FwupdUpdate::FwupdUpdate(const std::string& version,
                          const std::string& description,
                          int priority,
-                         const base::FilePath& filepath)
+                         const base::FilePath& filepath,
+                         const std::string& checksum)
     : version(version),
       description(description),
       priority(priority),
-      filepath(filepath) {}
+      filepath(filepath),
+      checksum(checksum) {}
 
 FwupdUpdate::FwupdUpdate(FwupdUpdate&& other) = default;
 FwupdUpdate& FwupdUpdate::operator=(FwupdUpdate&& other) = default;

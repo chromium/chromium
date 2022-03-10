@@ -25,6 +25,7 @@ namespace {
 FwupdClient* g_instance = nullptr;
 
 const char kCabFileExtension[] = ".cab";
+const int kSha256Length = 64;
 
 // "1" is the bitflag for an internal device. Defined here:
 // https://github.com/fwupd/fwupd/blob/main/libfwupd/fwupd-enums.h
@@ -48,6 +49,35 @@ base::FilePath GetFilePathFromUri(const GURL uri) {
 
   // Return empty file path if filename can't be found.
   return base::FilePath();
+}
+
+std::string ParseCheckSum(const std::string& raw_sum) {
+  // The raw checksum string from fwupd can be formatted as:
+  // "SHA{Option},SHA{Option}" or "SHA{Option}". Grab the SHA256 when possible.
+  const std::size_t delim_pos = raw_sum.find_first_of(",");
+  if (delim_pos != std::string::npos) {
+    DCHECK(raw_sum.size() > 0);
+    if (delim_pos >= raw_sum.size() - 1) {
+      return "";
+    }
+
+    const std::string first = raw_sum.substr(0, delim_pos);
+    const std::string second = raw_sum.substr(delim_pos + 1);
+    if (first.length() == kSha256Length) {
+      return first;
+    }
+    if (second.length() == kSha256Length) {
+      return second;
+    }
+    return "";
+  }
+
+  // Only one checksum available, use it if it's a sha256 checksum.
+  if (raw_sum.length() != kSha256Length) {
+    return "";
+  }
+
+  return raw_sum;
 }
 
 }  // namespace
@@ -226,23 +256,29 @@ class FwupdClientImpl : public FwupdClient {
       const auto* description = dict->FindKey("Description");
       const auto* priority = dict->FindKey("Urgency");
       const auto* uri = dict->FindKey("Uri");
-      base::FilePath filepath;
+      const auto* checksum = dict->FindKey("Checksum");
 
+      base::FilePath filepath;
       if (uri) {
         filepath = GetFilePathFromUri(GURL(uri->GetString()));
       }
 
-      const bool success =
-          version && description && priority && !filepath.empty();
+      std::string sha_checksum;
+      if (checksum) {
+        sha_checksum = ParseCheckSum(checksum->GetString());
+      }
+
+      const bool success = version && description && priority &&
+                           !filepath.empty() && !sha_checksum.empty();
       // TODO(michaelcheco): Confirm that this is the expected behavior.
       if (success) {
         VLOG(1) << "fwupd: Found update version for device: " << device_id
                 << " with version: " << version->GetString();
         updates.emplace_back(version->GetString(), description->GetString(),
-                             priority->GetInt(), filepath);
+                             priority->GetInt(), filepath, sha_checksum);
       } else {
-        LOG(ERROR) << "Update version, description, filepath or priority is "
-                   << "not found.";
+        LOG(ERROR) << "Update version, description, filepath, checksum or "
+                   << "priority is not found.";
       }
     }
 

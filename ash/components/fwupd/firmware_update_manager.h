@@ -12,6 +12,7 @@
 #include "base/component_export.h"
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
+#include "base/files/file.h"
 #include "base/files/file_path.h"
 #include "base/files/scoped_file.h"
 #include "base/memory/weak_ptr.h"
@@ -127,11 +128,17 @@ class COMPONENT_EXPORT(ASH_FIRMWARE_UPDATE_MANAGER) FirmwareUpdateManager
   // Query the fwupd DBus client for updates for a certain device.
   void RequestUpdates(const std::string& device_id);
 
+  // Callback handler after fetching the file descriptor.
+  void OnGetFileDescriptor(const std::string& device_id,
+                           chromeos::FirmwareInstallOptions options,
+                           base::OnceCallback<void()> callback,
+                           base::ScopedFD file_descriptor);
+
   // Query the fwupd DBus client to install an update for a certain device.
   void InstallUpdate(const std::string& device_id,
                      chromeos::FirmwareInstallOptions options,
                      base::OnceCallback<void()> callback,
-                     base::ScopedFD file_descriptor);
+                     base::File patch_file);
 
   void CreateLocalPatchFile(const base::FilePath& cache_path,
                             const std::string& device_id,

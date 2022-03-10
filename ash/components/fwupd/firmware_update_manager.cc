@@ -25,6 +25,7 @@
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "chromeos/dbus/fwupd/fwupd_client.h"
+#include "crypto/sha2.h"
 #include "dbus/message.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
@@ -106,6 +107,50 @@ base::ScopedFD OpenFileAndGetFileDescriptor(base::FilePath download_path) {
   return base::ScopedFD(dest_file.TakePlatformFile());
 }
 
+base::File VerifyChecksum(base::File file, const std::string& checksum) {
+  // Sha256 is 32 bytes, if it isn't Sha256 then return false.
+  // The Sha256 string representation is 64 bytes, Sha256 is 32 bytes long.
+  if (checksum.length() != crypto::kSHA256Length * 2) {
+    return base::File();
+  }
+
+  const int64_t raw_file_length = file.GetLength();
+
+  // Length of the file should not exceed int::max.
+  if (raw_file_length > std::numeric_limits<int>::max()) {
+    return base::File();
+  }
+
+  // Safe to truncate down to <int>.
+  int file_length = raw_file_length;
+
+  // Check checksum of the file.
+  std::vector<char> buf(file_length);
+  if (file.Read(0, buf.data(), file_length) != file_length) {
+    return base::File();
+  }
+
+  const base::StringPiece contents(buf.data(), file_length);
+
+  const std::string sha_contents = crypto::SHA256HashString(contents);
+
+  const std::string encoded_sha = base::ToLowerASCII(
+      base::HexEncode(sha_contents.data(), sha_contents.size()));
+
+  if (encoded_sha != checksum) {
+    LOG(ERROR) << "Wrong checksum, expected: " << checksum
+               << " but got: " << encoded_sha;
+    return base::File();
+  }
+
+  // Reset current pointer of file so that it can be read again.
+  if (file.Seek(base::File::FROM_BEGIN, 0) != 0) {
+    return base::File();
+  }
+
+  return file;
+}
+
 bool CreateDirIfNotExists(const base::FilePath& path) {
   return base::DirectoryExists(path) || base::CreateDirectory(path);
 }
@@ -122,6 +167,7 @@ firmware_update::mojom::FirmwareUpdatePtr CreateUpdate(
   update->priority =
       firmware_update::mojom::UpdatePriority(update_details.priority);
   update->filepath = update_details.filepath;
+  update->checksum = update_details.checksum;
   return update;
 }
 
@@ -420,7 +466,7 @@ void FirmwareUpdateManager::MaybeDownloadFileToInternal(
           {"none", false}, {"force", true}, {"allow-reinstall", true}};
       task_runner_->PostTaskAndReplyWithResult(
           FROM_HERE, base::BindOnce(&OpenFileAndGetFileDescriptor, file),
-          base::BindOnce(&FirmwareUpdateManager::InstallUpdate,
+          base::BindOnce(&FirmwareUpdateManager::OnGetFileDescriptor,
                          weak_ptr_factory_.GetWeakPtr(), device_id,
                          std::move(options), std::move(callback)));
       return;
@@ -485,12 +531,12 @@ void FirmwareUpdateManager::OnUrlDownloadedToFile(
 
   task_runner_->PostTaskAndReplyWithResult(
       FROM_HERE, base::BindOnce(&OpenFileAndGetFileDescriptor, download_path),
-      base::BindOnce(&FirmwareUpdateManager::InstallUpdate,
+      base::BindOnce(&FirmwareUpdateManager::OnGetFileDescriptor,
                      weak_ptr_factory_.GetWeakPtr(), device_id,
                      std::move(options), std::move(callback)));
 }
 
-void FirmwareUpdateManager::InstallUpdate(
+void FirmwareUpdateManager::OnGetFileDescriptor(
     const std::string& device_id,
     chromeos::FirmwareInstallOptions options,
     base::OnceCallback<void()> callback,
@@ -512,8 +558,29 @@ void FirmwareUpdateManager::InstallUpdate(
     }
   }
 
+  base::File patch_file(std::move(file_descriptor));
+  task_runner_->PostTaskAndReplyWithResult(
+      FROM_HERE,
+      base::BindOnce(&VerifyChecksum, std::move(patch_file),
+                     inflight_update_->checksum),
+      base::BindOnce(&FirmwareUpdateManager::InstallUpdate,
+                     weak_ptr_factory_.GetWeakPtr(), device_id,
+                     std::move(options), std::move(callback)));
+}
+
+void FirmwareUpdateManager::InstallUpdate(
+    const std::string& device_id,
+    chromeos::FirmwareInstallOptions options,
+    base::OnceCallback<void()> callback,
+    base::File patch_file) {
+  if (!patch_file.IsValid()) {
+    inflight_update_.reset();
+    std::move(callback).Run();
+    return;
+  }
+
   chromeos::FwupdClient::Get()->InstallUpdate(
-      device_id, std::move(file_descriptor), options);
+      device_id, base::ScopedFD(patch_file.TakePlatformFile()), options);
 
   std::move(callback).Run();
 }
