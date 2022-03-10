@@ -329,13 +329,17 @@ void PowerMetricsReporter::MaybeEmitHighCPUTraceEvent(
   // .ResourceCoalition.CPUTime2_10sec.AllTabsHidden_NoVideoCaptureOrAudio"
   constexpr double kHighCPUUsageThreshold_AllTabsHidden = 0.1433;
 
+  // This matches the conditions for scenario
+  // ".AllTabsHidden_NoVideoCaptureOrAudio";
   if (short_interval_data.max_visible_window_count == 0 &&
+      short_interval_data.max_tab_count > 0 &&
       short_interval_data.time_playing_audio.is_zero() &&
       short_interval_data.time_capturing_video.is_zero() &&
       coalition_resource_usage_rate->cpu_time_per_second >=
           kHighCPUUsageThreshold_AllTabsHidden) {
     const base::TimeTicks now = base::TimeTicks::Now();
-    constexpr char kEventTitle[] = "High CPU - All tabs Hidden";
+    constexpr char kEventTitle[] =
+        "High CPU - All Tabs Hidden, No Video Capture or Audio";
 
     TRACE_EVENT_NESTABLE_ASYNC_BEGIN_WITH_TIMESTAMP0(
         "browser", kEventTitle, TRACE_ID_LOCAL(this),
