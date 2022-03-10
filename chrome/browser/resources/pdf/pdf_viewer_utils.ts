@@ -5,16 +5,7 @@
 import {assert} from 'chrome://resources/js/assert_ts.js';
 import {getDeepActiveElement} from 'chrome://resources/js/util.m.js';
 
-import {LayoutOptions} from './viewport.js';
-
-// TODO(crbug.com/1260303): Move this to viewport.js once it is migrated to
-// TypeScript.
-type ViewportRect = {
-  x: number,
-  y: number,
-  width: number,
-  height: number,
-};
+import {LayoutOptions, ViewportRect} from './viewport.js';
 
 export type DocumentDimensionsMessageData = {
   type: string,

@@ -26,6 +26,7 @@ type ChangePageAndXyEvent = CustomEvent<{
 declare global {
   interface HTMLElementEventMap {
     'change-page-and-xy': ChangePageAndXyEvent;
+    'change-zoom': CustomEvent<{zoom: number}>;
   }
 }
 

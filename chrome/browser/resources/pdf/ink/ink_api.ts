@@ -78,7 +78,6 @@ export class InkAPI {
   }
 }
 
-/** @return {Promise<InkAPI>} */
 window.initInk = async function() {
   const canvas = await drawings.Canvas.execute(document.body);
   return new InkAPI(canvas);

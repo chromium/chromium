@@ -17,11 +17,17 @@ enum State {
 
 const BACKGROUND_COLOR: string = '#525659';
 
+declare global {
+  interface HTMLElementEventMap {
+    'undo-state-changed': CustomEvent<drawings.UndoState>;
+  }
+}
+
 /**
  * Hosts the Ink component which is responsible for both PDF rendering and
  * annotation when in annotation mode.
  */
-class ViewerInkHostElement extends PolymerElement {
+export class ViewerInkHostElement extends PolymerElement {
   static get is() {
     return 'viewer-ink-host';
   }

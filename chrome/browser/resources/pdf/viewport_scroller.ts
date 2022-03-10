@@ -9,8 +9,6 @@ type ScrollVelocity = {
   y: number,
 };
 
-// TODO(crbug.com/1260303): Move this to viewport.js once it is migrated to
-// TypeScript, or constants.ts?
 export interface ViewportInterface {
   position: Point;
   setPosition(point: Point): void;

@@ -2,196 +2,130 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {assert} from 'chrome://resources/js/assert.m.js';
+import {assert} from 'chrome://resources/js/assert_ts.js';
 import {NativeEventTarget as EventTarget} from 'chrome://resources/js/cr/event_target.m.js';
-import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {PromiseResolver} from 'chrome://resources/js/promise_resolver.m.js';
 
-import {NamedDestinationMessageData, Point, SaveRequestType} from './constants.js';
-import {Gesture} from './gesture_detector.js';
+import {NamedDestinationMessageData, SaveRequestType} from './constants.js';
 import {UnseasonedPdfPluginElement} from './internal_plugin.js';
-import {PartialPoint, PinchPhase, Viewport} from './viewport.js';
+import {PinchPhase, Viewport} from './viewport.js';
 
-/** @typedef {{type: string, messageId: (string|undefined)}} */
-export let MessageData;
+export type MessageData = {
+  type: string,
+  messageId?: string,
+};
 
-/**
- * @typedef {{
- *   type: string,
- *   dataToSave: ArrayBuffer,
- *   messageId: string,
- * }}
- */
-let SaveAttachmentMessageData;
+export type SaveAttachmentMessageData = {
+  type: string,
+  dataToSave: ArrayBuffer,
+  messageId: string,
+}
 
-/**
- * @typedef {{
- *   dataToSave: Array,
- *   token: string,
- *   fileName: string
- * }}
- */
-let SaveDataMessageData;
+type SaveDataMessageData = {
+  dataToSave: ArrayBuffer,
+  token: string,
+  fileName: string,
+};
 
-/**
- * @typedef {{
- *   type: string,
- *   url: string,
- *   grayscale: boolean,
- *   modifiable: boolean,
- *   pageNumbers: !Array<number>
- * }}
- */
-export let PrintPreviewParams;
+export type PrintPreviewParams = {
+  type: string,
+  url: string,
+  grayscale: boolean,
+  modifiable: boolean,
+  pageNumbers: number[],
+};
 
-/**
- * @typedef {{
- *   imageData: !ArrayBuffer,
- *   width: number,
- *   height: number,
- * }}
- */
-let ThumbnailMessageData;
+type ThumbnailMessageData = {
+  imageData: ArrayBuffer,
+  width: number,
+  height: number,
+};
 
 /**
  * Creates a cryptographically secure pseudorandom 128-bit token.
- * @return {string} The generated token as a hex string.
+ * @return The generated token as a hex string.
  */
-function createToken() {
+function createToken(): string {
   const randomBytes = new Uint8Array(16);
   window.crypto.getRandomValues(randomBytes);
   return Array.from(randomBytes, b => b.toString(16).padStart(2, '0')).join('');
 }
 
-/** @interface */
-export class ContentController {
-  constructor() {}
+export interface ContentController {
+  isActive: boolean;
 
-  /** @return {!EventTarget} */
-  getEventTarget() {}
-
-  /** @return {boolean} */
-  get isActive() {}
-
-  /** @param {boolean} isActive */
-  set isActive(isActive) {}
-
-  beforeZoom() {}
-
-  afterZoom() {}
-
-  viewportChanged() {}
-
-  rotateClockwise() {}
-
-  rotateCounterclockwise() {}
-
-  /** @param {boolean} displayAnnotations */
-  setDisplayAnnotations(displayAnnotations) {}
-
-  /** @param {boolean} enableTwoUpView */
-  setTwoUpView(enableTwoUpView) {}
+  getEventTarget(): EventTarget;
+  beforeZoom(): void;
+  afterZoom(): void;
+  viewportChanged(): void;
+  rotateClockwise(): void;
+  rotateCounterclockwise(): void;
+  setDisplayAnnotations(displayAnnotations: boolean): void;
+  setTwoUpView(enableTwoUpView: boolean): void;
 
   /** Triggers printing of the current document. */
-  print() {}
+  print(): void;
 
   /** Undo an edit action. */
-  undo() {}
+  undo(): void;
 
   /** Redo an edit action. */
-  redo() {}
+  redo(): void;
 
   /**
    * Requests that the current document be saved.
-   * @param {!SaveRequestType} requestType The type of save request. If
-   *     ANNOTATION, a response is required, otherwise the controller may save
-   *     the document to disk internally.
-   * @return {!Promise<!{fileName: string, dataToSave: !ArrayBuffer}>}
+   * @param requestType The type of save request. If ANNOTATION, a response is
+   *     required, otherwise the controller may save the document to disk
+   *     internally.
    */
-  save(requestType) {}
+  save(requestType: SaveRequestType):
+      Promise<{fileName: string, dataToSave: ArrayBuffer}>;
 
   /**
    * Requests that the attachment at a certain index be saved.
-   * @param {number} index The index of the attachment to be saved.
-   * @return {!Promise<!SaveAttachmentMessageData>}
-   * @abstract
+   * @param index The index of the attachment to be saved.
    */
-  saveAttachment(index) {}
+  saveAttachment(index: number): Promise<SaveAttachmentMessageData>;
 
-  /**
-   * Loads PDF document from `data` activates UI.
-   * @param {string} fileName
-   * @param {!ArrayBuffer} data
-   * @return {!Promise<void>}
-   */
-  load(fileName, data) {}
+  /** Loads PDF document from `data` activates UI. */
+  load(fileName: string, data: ArrayBuffer): Promise<void>;
 
   /** Unloads the current document and removes the UI. */
-  unload() {}
+  unload(): void;
 }
 
-/**
- * Event types dispatched by the plugin controller.
- * @enum {string}
- */
-export const PluginControllerEventType = {
-  IS_ACTIVE_CHANGED: 'PluginControllerEventType.IS_ACTIVE_CHANGED',
-  PLUGIN_MESSAGE: 'PluginControllerEventType.PLUGIN_MESSAGE',
-};
+/** Event types dispatched by the plugin controller. */
+export enum PluginControllerEventType {
+  IS_ACTIVE_CHANGED = 'PluginControllerEventType.IS_ACTIVE_CHANGED',
+  PLUGIN_MESSAGE = 'PluginControllerEventType.PLUGIN_MESSAGE',
+}
 
 /**
  * PDF plugin controller singleton, responsible for communicating with the
  * embedded plugin element. Dispatches a
  * `PluginControllerEventType.PLUGIN_MESSAGE` event containing the message from
  * the plugin, if a message type not handled by this controller is received.
- * @implements {ContentController}
  */
-export class PluginController {
-  constructor() {
-    /** @private {!EventTarget} */
-    this.eventTarget_ = new EventTarget();
+export class PluginController implements ContentController {
+  private eventTarget_: EventTarget = new EventTarget();
+  private isActive_: boolean = false;
+  private plugin_: HTMLEmbedElement;
+  private unseasonedPlugin_: UnseasonedPdfPluginElement|null = null;
+  private unseasonedDelayedMessages_:
+      Array<{message: any, transfer?: Transferable[]}>|null = null;
+  private viewport_: Viewport;
+  private getIsUserInitiatedCallback_: () => boolean;
+  private getLoadedCallback_: () => Promise<void>| null;
+  private pendingTokens_:
+      Map<string,
+          PromiseResolver<{fileName: string, dataToSave: ArrayBuffer}|null>>;
+  private requestResolverMap_: Map<string, PromiseResolver<any>>;
+  private uidCounter_: number = 1;
 
-    /** @private {boolean} */
-    this.isActive_ = false;
-
-    /** @private {!HTMLEmbedElement} */
-    this.plugin_;
-
-    /** @private {?UnseasonedPdfPluginElement} */
-    this.unseasonedPlugin_ = null;
-
-    /** @private {?Array} */
-    this.unseasonedDelayedMessages_ = null;
-
-    /** @private {!Viewport} */
-    this.viewport_;
-
-    /** @private {!function():boolean} */
-    this.getIsUserInitiatedCallback_;
-
-    /** @private {!function():?Promise} */
-    this.getLoadedCallback_;
-
-    /** @private {!Map<string, PromiseResolver>} */
-    this.pendingTokens_;
-
-    /** @private {!Map<string, !PromiseResolver>} */
-    this.requestResolverMap_;
-
-    /**
-     * Counter for use with createUid
-     * @private {number}
-     */
-    this.uidCounter_ = 1;
-  }
-
-  /**
-   * @param {!HTMLEmbedElement} plugin
-   * @param {!Viewport} viewport
-   * @param {function():boolean} getIsUserInitiatedCallback
-   * @param {function():?Promise} getLoadedCallback
-   */
-  init(plugin, viewport, getIsUserInitiatedCallback, getLoadedCallback) {
+  init(
+      plugin: HTMLEmbedElement, viewport: Viewport,
+      getIsUserInitiatedCallback: () => boolean,
+      getLoadedCallback: () => Promise<void>| null) {
     this.plugin_ = plugin;
     this.viewport_ = viewport;
     this.getIsUserInitiatedCallback_ = getIsUserInitiatedCallback;
@@ -201,40 +135,25 @@ export class PluginController {
 
     this.viewport_.setContent(this.plugin_);
     this.plugin_.addEventListener(
-        'message', e => this.handlePluginMessage_(e), false);
-    if (!this.plugin_.postMessage) {
-      this.unseasonedPlugin_ =
-          /** @type {!UnseasonedPdfPluginElement} */ (this.plugin_);
+        'message', e => this.handlePluginMessage_(e as MessageEvent), false);
+    if (!(this.plugin_ as UnseasonedPdfPluginElement).postMessage) {
+      this.unseasonedPlugin_ = this.plugin_ as UnseasonedPdfPluginElement;
       this.unseasonedDelayedMessages_ = [];
 
-      this.unseasonedPlugin_.postMessage =
-          /**
-           * @param {*} message
-           * @param {!Array<!Transferable>=} transfer
-           */
-          (message, transfer) => {
-            this.unseasonedDelayedMessages_.push({message, transfer});
-          };
+      this.unseasonedPlugin_.postMessage = (message, transfer) => {
+        this.unseasonedDelayedMessages_!.push({message, transfer});
+      };
 
       this.viewport_.setRemoteContent(this.unseasonedPlugin_);
     }
   }
 
-  /**
-   * override
-   * Note: Not using @override because it breaks TypeScript.
-   * @return {boolean}
-   */
-  get isActive() {
+  get isActive(): boolean {
     // Check whether `plugin_` is defined as a signal that `init()` was called.
     return !!this.plugin_ && this.isActive_;
   }
 
-  /**
-   * override
-   * @param {boolean} isActive
-   */
-  set isActive(isActive) {
+  set isActive(isActive: boolean) {
     const wasActive = this.isActive;
     this.isActive_ = isActive;
     if (this.isActive === wasActive) {
@@ -245,27 +164,15 @@ export class PluginController {
         PluginControllerEventType.IS_ACTIVE_CHANGED, {detail: this.isActive}));
   }
 
-  /**
-   * @return {number} A new unique ID.
-   * @private
-   */
-  createUid_() {
+  private createUid_(): number {
     return this.uidCounter_++;
   }
 
-  /**
-   * override
-   * @return {!EventTarget}
-   */
   getEventTarget() {
     return this.eventTarget_;
   }
 
-  /**
-   * @param {number} x
-   * @param {number} y
-   */
-  updateScroll(x, y) {
+  updateScroll(x: number, y: number) {
     if (this.unseasonedPlugin_) {
       // Ignore "local" scroll events in unseasoned mode, as these are synthetic
       // events generated by the remote scrolling implementation.
@@ -284,8 +191,6 @@ export class PluginController {
   /**
    * Notify the plugin to stop reacting to scroll events while zoom is taking
    * place to avoid flickering.
-   *
-   * override
    */
   beforeZoom() {
     this.postMessage_({type: 'stopScrolling'});
@@ -310,8 +215,6 @@ export class PluginController {
   /**
    * Notify the plugin of the zoom change and to continue reacting to scroll
    * events.
-   *
-   * override
    */
   afterZoom() {
     const position = this.viewport_.position;
@@ -339,56 +242,47 @@ export class PluginController {
   /**
    * Post a message to the PPAPI plugin. Some messages will cause an async reply
    * to be received through handlePluginMessage_().
-   * @param {!MessageData} message Message to post.
-   * @private
    */
-  postMessage_(message) {
-    this.plugin_.postMessage(message);
+  private postMessage_<M extends MessageData>(message: M) {
+    (this.plugin_ as UnseasonedPdfPluginElement).postMessage(message);
   }
 
   /**
    * Post a message to the PPAPI plugin, for cases where direct response is
    * expected from the PPAPI plugin.
-   * @param {!MessageData} message
-   * @return {!Promise} A promise holding the response from the PPAPI plugin.
-   * @private
+   * @return A promise holding the response from the PPAPI plugin.
    */
-  postMessageWithReply_(message) {
-    const promiseResolver = new PromiseResolver();
+  private postMessageWithReply_<T, M extends MessageData>(message: M):
+      Promise<T> {
+    const promiseResolver = new PromiseResolver<T>();
     message.messageId = `${message.type}_${this.createUid_()}`;
     this.requestResolverMap_.set(message.messageId, promiseResolver);
     this.postMessage_(message);
     return promiseResolver.promise;
   }
 
-
-  // override
   rotateClockwise() {
     this.postMessage_({type: 'rotateClockwise'});
   }
 
-  // override
   rotateCounterclockwise() {
     this.postMessage_({type: 'rotateCounterclockwise'});
   }
 
-  // override
-  setDisplayAnnotations(displayAnnotations) {
+  setDisplayAnnotations(displayAnnotations: boolean) {
     this.postMessage_({
       type: 'displayAnnotations',
       display: displayAnnotations,
     });
   }
 
-  // override
-  setTwoUpView(enableTwoUpView) {
+  setTwoUpView(enableTwoUpView: boolean) {
     this.postMessage_({
       type: 'setTwoUpView',
       enableTwoUpView: enableTwoUpView,
     });
   }
 
-  // override
   print() {
     this.postMessage_({type: 'print'});
   }
@@ -397,17 +291,15 @@ export class PluginController {
     this.postMessage_({type: 'selectAll'});
   }
 
-  getSelectedText() {
+  getSelectedText(): Promise<{selectedText: string}> {
     return this.postMessageWithReply_({type: 'getSelectedText'});
   }
 
   /**
    * Post a thumbnail request message to the plugin.
-   * @param {number} page
-   * @return {!Promise<!ThumbnailMessageData>} A promise holding the thumbnail
-   *     response from the plugin.
+   * @return A promise holding the thumbnail response from the plugin.
    */
-  requestThumbnail(page) {
+  requestThumbnail(page: number): Promise<ThumbnailMessageData> {
     return this.postMessageWithReply_({
       type: 'getThumbnail',
       // The plugin references pages using zero-based indices.
@@ -415,8 +307,7 @@ export class PluginController {
     });
   }
 
-  /** @param {!PrintPreviewParams} printPreviewParams */
-  resetPrintPreviewMode(printPreviewParams) {
+  resetPrintPreviewMode(printPreviewParams: PrintPreviewParams) {
     this.postMessage_({
       type: 'resetPrintPreviewMode',
       url: printPreviewParams.url,
@@ -431,52 +322,46 @@ export class PluginController {
   }
 
   /**
-   * @param {number} color New color, as a 32-bit integer, of the PDF plugin
+   * @param color New color, as a 32-bit integer, of the PDF plugin
    *     background.
    */
-  setBackgroundColor(color) {
+  setBackgroundColor(color: number) {
     this.postMessage_({
       type: 'setBackgroundColor',
       color: color,
     });
   }
 
-  /**
-   * @param {string} url
-   * @param {number} index
-   */
-  loadPreviewPage(url, index) {
+  loadPreviewPage(url: string, index: number) {
     this.postMessage_({type: 'loadPreviewPage', url: url, index: index});
   }
 
-  /** @param {string} password */
-  getPasswordComplete(password) {
+  getPasswordComplete(password: string) {
     this.postMessage_({type: 'getPasswordComplete', password: password});
   }
 
   /**
-   * @param {string} destination
-   * @return {!Promise<!NamedDestinationMessageData>}
-   *     A promise holding the named destination information from the plugin.
+   * @return A promise holding the named destination information from the
+   *     plugin.
    */
-  getNamedDestination(destination) {
+  getNamedDestination(destination: string):
+      Promise<NamedDestinationMessageData> {
     return this.postMessageWithReply_({
       type: 'getNamedDestination',
       namedDestination: destination,
     });
   }
 
-  /** @param {boolean} enableReadOnly */
-  setReadOnly(enableReadOnly) {
+  setReadOnly(enableReadOnly: boolean) {
     this.postMessage_({
       type: 'setReadOnly',
       enableReadOnly: enableReadOnly,
     });
   }
 
-  // override
-  save(requestType) {
-    const resolver = new PromiseResolver();
+  save(requestType: SaveRequestType) {
+    const resolver =
+        new PromiseResolver<{fileName: string, dataToSave: ArrayBuffer}>();
     const newToken = createToken();
     this.pendingTokens_.set(newToken, resolver);
     this.postMessage_({
@@ -487,16 +372,14 @@ export class PluginController {
     return resolver.promise;
   }
 
-  // override
-  saveAttachment(index) {
+  saveAttachment(index: number): Promise<SaveAttachmentMessageData> {
     return this.postMessageWithReply_({
       type: 'saveAttachment',
       attachmentIndex: index,
     });
   }
 
-  // override
-  async load(fileName, data) {
+  async load(_fileName: string, data: ArrayBuffer) {
     // Load `data` into the PDF plugin. The unseasoned plugin transfers the data
     // to be loaded within the inner frame, while the Pepper plugin updates
     // `src` directly.
@@ -524,7 +407,6 @@ export class PluginController {
     }
   }
 
-  // override
   unload() {
     this.plugin_.style.display = 'none';
     this.isActive = false;
@@ -535,11 +417,10 @@ export class PluginController {
    *
    * TODO(crbug.com/1228987): Remove this method when a permanent postMessage()
    * bridge is implemented for the Unseasoned viewer.
-   *
-   * @param {!MessagePort} port The message port to bind to.
    */
-  bindUnseasonedMessageHandler(port) {
+  bindUnseasonedMessageHandler(port: MessagePort) {
     assert(this.unseasonedDelayedMessages_ !== null);
+    assert(this.unseasonedPlugin_);
     const delayedMessages = this.unseasonedDelayedMessages_;
     this.unseasonedDelayedMessages_ = null;
 
@@ -553,11 +434,9 @@ export class PluginController {
 
   /**
    * An event handler for handling message events received from the plugin.
-   * @param {!Event} messageEvent a message event.
-   * @private
    */
-  handlePluginMessage_(messageEvent) {
-    const messageData = /** @type {!MessageData} */ (messageEvent.data);
+  private handlePluginMessage_(messageEvent: MessageEvent) {
+    const messageData = messageEvent.data;
 
     // Handle case where this Plugin->Page message is a direct response
     // to a previous Page->Plugin message
@@ -572,35 +451,30 @@ export class PluginController {
 
     switch (messageData.type) {
       case 'gesture':
-        this.viewport_.dispatchGesture(
-            /** @type {{ gesture: !Gesture }} */ (messageData).gesture);
+        this.viewport_.dispatchGesture(messageData.gesture);
         break;
       case 'goToPage':
-        this.viewport_.goToPage(
-            /** @type {{type: string, page: number}} */ (messageData).page);
+        this.viewport_.goToPage(messageData.page);
         break;
       case 'setScrollPosition':
-        this.viewport_.scrollTo(/** @type {!PartialPoint} */ (messageData));
+        this.viewport_.scrollTo(messageData);
         break;
       case 'scrollBy':
-        this.viewport_.scrollBy(/** @type {!Point} */ (messageData));
+        this.viewport_.scrollBy(messageData);
         break;
       case 'syncScrollFromRemote':
-        this.viewport_.syncScrollFromRemote(
-            /** @type {!Point} */ (messageData));
+        this.viewport_.syncScrollFromRemote(messageData);
         break;
       case 'ackScrollToRemote':
-        this.viewport_.ackScrollToRemote(
-            /** @type {!Point} */ (messageData));
+        this.viewport_.ackScrollToRemote(messageData);
         break;
       case 'saveData':
-        this.saveData_(/** @type {!SaveDataMessageData} */ (messageData));
+        this.saveData_(messageData);
         break;
       case 'consumeSaveToken':
-        const saveTokenData =
-            /** @type {{ type: string, token: string }} */ (messageData);
-        const resolver = this.pendingTokens_.get(saveTokenData.token);
-        assert(this.pendingTokens_.delete(saveTokenData.token));
+        const resolver = this.pendingTokens_.get(messageData.token);
+        assert(resolver);
+        assert(this.pendingTokens_.delete(messageData.token));
         resolver.resolve(null);
         break;
       default:
@@ -609,15 +483,12 @@ export class PluginController {
     }
   }
 
-  /**
-   * Handles the pdf file buffer received from the plugin.
-   * @param {!SaveDataMessageData} messageData data of the message event.
-   * @private
-   */
-  saveData_(messageData) {
+  /** Handles the pdf file buffer received from the plugin. */
+  private saveData_(messageData: SaveDataMessageData) {
     // Verify a token that was created by this instance is included to avoid
     // being spammed.
     const resolver = this.pendingTokens_.get(messageData.token);
+    assert(resolver);
     assert(this.pendingTokens_.delete(messageData.token));
 
     if (!messageData.dataToSave) {
@@ -644,11 +515,9 @@ export class PluginController {
     resolver.resolve(messageData);
   }
 
-  /** @return {!PluginController} */
-  static getInstance() {
+  static getInstance(): PluginController {
     return instance || (instance = new PluginController());
   }
 }
 
-/** @type {?PluginController} */
-let instance = null;
+let instance: PluginController|null = null;

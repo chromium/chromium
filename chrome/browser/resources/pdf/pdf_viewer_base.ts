@@ -354,10 +354,6 @@ export abstract class PDFViewerBaseElement extends PolymerElement {
                                       DocumentDimensionsMessageData) {
     this.documentDimensions = documentDimensions;
     this.isUserInitiatedEvent = false;
-
-    // TODO(crbug.com/1260303): Remove suppression once viewport.js is migrated
-    // to TypeScript.
-    // @ts-ignore:next-line
     this.viewport_!.setDocumentDimensions(this.documentDimensions);
     this.paramsParser!.setViewportDimensions(this.viewport_!.size);
     this.isUserInitiatedEvent = true;

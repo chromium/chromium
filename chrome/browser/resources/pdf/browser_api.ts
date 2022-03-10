@@ -116,9 +116,9 @@ export class BrowserApi {
 
   /**
    * Sets the browser zoom.
-   * @param {number} zoom The zoom factor to send to the browser.
-   * @return {Promise} A promise that will be resolved when the browser zoom
-   *     has been updated.
+   * @param zoom The zoom factor to send to the browser.
+   * @return A promise that will be resolved when the browser zoom has been
+   *     updated.
    */
   setZoom(zoom: number): Promise<void> {
     assert(
@@ -243,10 +243,9 @@ function createBrowserApiForPrintPreview(): Promise<BrowserApi> {
 }
 
 /**
- * @return {!Promise<!BrowserApi>} A promise to a BrowserApi instance for the
- *     current environment.
+ * @return A promise to a BrowserApi instance for the current environment.
  */
-export function createBrowserApi() {
+export function createBrowserApi(): Promise<BrowserApi> {
   if (location.origin === 'chrome://print') {
     return createBrowserApiForPrintPreview();
   }
