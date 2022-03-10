@@ -37,7 +37,6 @@
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/geometry/vector2d.h"
 #include "ui/gfx/shadow_value.h"
-#include "ui/lottie/animation.h"
 #include "ui/views/background.h"
 #include "ui/views/border.h"
 #include "ui/views/controls/animated_image_view.h"
@@ -169,7 +168,7 @@ void AmbientAnimationView::Init(AmbientViewDelegate* view_delegate) {
       cc::SkottieWrapper::CreateSerializable(std::vector<uint8_t>(
           lottie_data_bytes.begin(), lottie_data_bytes.end())),
       cc::SkottieColorMap(), &animation_photo_provider_);
-  animation->SetAnimationObserver(this);
+  animation_observer_.Observe(animation.get());
   animated_image_view_->SetAnimatedImage(std::move(animation));
   animated_image_view_observer_.Observe(animated_image_view_);
 

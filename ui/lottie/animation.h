@@ -13,6 +13,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted_memory.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/observer_list.h"
 #include "base/time/time.h"
 #include "cc/paint/skottie_color_map.h"
 #include "cc/paint/skottie_frame_data.h"
@@ -103,7 +104,8 @@ class COMPONENT_EXPORT(UI_LOTTIE) Animation final {
   Animation& operator=(const Animation&) = delete;
   ~Animation();
 
-  void SetAnimationObserver(AnimationObserver* Observer);
+  void AddObserver(AnimationObserver* observer);
+  void RemoveObserver(AnimationObserver* observer);
 
   // Animation properties ------------------------------------------------------
   // Returns the total duration of the animation as reported by |animation_|.
@@ -238,7 +240,7 @@ class COMPONENT_EXPORT(UI_LOTTIE) Animation final {
   };
 
   void InitTimer(const base::TimeTicks& timestamp);
-  void UpdateState(const base::TimeTicks& timestamp);
+  void TryNotifyAnimationCycleEnded();
   cc::SkottieWrapper::FrameDataFetchResult LoadImageForAsset(
       gfx::Canvas* canvas,
       cc::SkottieFrameDataMap& all_frame_data,
@@ -261,7 +263,7 @@ class COMPONENT_EXPORT(UI_LOTTIE) Animation final {
   base::TimeDelta scheduled_start_offset_;
   base::TimeDelta scheduled_duration_;
 
-  raw_ptr<AnimationObserver> observer_ = nullptr;
+  base::ObserverList<AnimationObserver> observers_;
 
   scoped_refptr<cc::SkottieWrapper> skottie_;
   cc::SkottieColorMap color_map_;

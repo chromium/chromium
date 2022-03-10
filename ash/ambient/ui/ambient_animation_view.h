@@ -16,6 +16,7 @@
 #include "base/timer/timer.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/compositor/throughput_tracker.h"
+#include "ui/lottie/animation.h"
 #include "ui/lottie/animation_observer.h"
 #include "ui/views/view.h"
 #include "ui/views/view_observer.h"
@@ -69,6 +70,8 @@ class ASH_EXPORT AmbientAnimationView : public views::View,
   std::unique_ptr<AmbientAnimationShieldController> shield_view_controller_;
   base::ScopedObservation<View, ViewObserver> animated_image_view_observer_{
       this};
+  base::ScopedObservation<lottie::Animation, lottie::AnimationObserver>
+      animation_observer_{this};
 
   absl::optional<ui::ThroughputTracker> throughput_tracker_;
   base::RepeatingTimer throughput_tracker_restart_timer_;

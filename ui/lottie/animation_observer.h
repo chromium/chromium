@@ -6,11 +6,13 @@
 #define UI_LOTTIE_ANIMATION_OBSERVER_H_
 
 #include "base/component_export.h"
+#include "base/observer_list_types.h"
 
 namespace lottie {
 class Animation;
 
-class COMPONENT_EXPORT(UI_LOTTIE) AnimationObserver {
+class COMPONENT_EXPORT(UI_LOTTIE) AnimationObserver
+    : public base::CheckedObserver {
  public:
   // Called when the animation started playing.
   virtual void AnimationWillStartPlaying(const Animation* animation) {}
@@ -24,7 +26,7 @@ class COMPONENT_EXPORT(UI_LOTTIE) AnimationObserver {
   virtual void AnimationResuming(const Animation* animation) {}
 
  protected:
-  virtual ~AnimationObserver() = default;
+  ~AnimationObserver() override = default;
 };
 
 }  // namespace lottie

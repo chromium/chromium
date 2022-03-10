@@ -11,6 +11,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted_memory.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/scoped_observation.h"
 #include "base/test/simple_test_tick_clock.h"
 #include "cc/paint/display_item_list.h"
 #include "cc/paint/paint_op_buffer.h"
@@ -83,7 +84,9 @@ constexpr float kFrameTimestampToleranceSec = 0.1f;
 
 class TestAnimationObserver : public AnimationObserver {
  public:
-  TestAnimationObserver() = default;
+  explicit TestAnimationObserver(Animation* animation) {
+    observation_.Observe(animation);
+  }
   ~TestAnimationObserver() override = default;
   TestAnimationObserver(const TestAnimationObserver&) = delete;
   TestAnimationObserver& operator=(const TestAnimationObserver&) = delete;
@@ -113,6 +116,7 @@ class TestAnimationObserver : public AnimationObserver {
   bool animation_resuming() const { return animation_resuming_; }
 
  private:
+  base::ScopedObservation<Animation, AnimationObserver> observation_{this};
   bool animation_cycle_ended_ = false;
   bool animation_will_start_playing_ = false;
   bool animation_resuming_ = false;
@@ -330,8 +334,7 @@ TEST_F(AnimationTest, InitializationAndLoadingData) {
 }
 
 TEST_F(AnimationTest, PlayLinearAnimation) {
-  TestAnimationObserver observer;
-  animation_->SetAnimationObserver(&observer);
+  TestAnimationObserver observer(animation_.get());
 
   AdvanceClock(base::Milliseconds(300));
 
@@ -372,8 +375,7 @@ TEST_F(AnimationTest, PlayLinearAnimation) {
 }
 
 TEST_F(AnimationTest, StopLinearAnimation) {
-  TestAnimationObserver observer;
-  animation_->SetAnimationObserver(&observer);
+  TestAnimationObserver observer(animation_.get());
 
   AdvanceClock(base::Milliseconds(300));
 
@@ -398,9 +400,7 @@ TEST_F(AnimationTest, PlaySubsectionOfLinearAnimation) {
   constexpr auto kStartTime = base::Milliseconds(400);
   constexpr auto kDuration = base::Milliseconds(1000);
 
-  TestAnimationObserver observer;
-
-  animation_->SetAnimationObserver(&observer);
+  TestAnimationObserver observer(animation_.get());
 
   AdvanceClock(base::Milliseconds(300));
 
@@ -458,8 +458,7 @@ TEST_F(AnimationTest, PausingLinearAnimation) {
   constexpr auto kStartTime = base::Milliseconds(400);
   constexpr auto kDuration = base::Milliseconds(1000);
 
-  TestAnimationObserver observer;
-  animation_->SetAnimationObserver(&observer);
+  TestAnimationObserver observer(animation_.get());
 
   AdvanceClock(base::Milliseconds(200));
 
@@ -504,8 +503,7 @@ TEST_F(AnimationTest, PausingLinearAnimation) {
 }
 
 TEST_F(AnimationTest, PlayLoopAnimation) {
-  TestAnimationObserver observer;
-  animation_->SetAnimationObserver(&observer);
+  TestAnimationObserver observer(animation_.get());
 
   AdvanceClock(base::Milliseconds(300));
 
@@ -550,8 +548,7 @@ TEST_F(AnimationTest, PlaySubsectionOfLoopAnimation) {
   constexpr auto kStartTime = base::Milliseconds(400);
   constexpr auto kDuration = base::Milliseconds(1000);
 
-  TestAnimationObserver observer;
-  animation_->SetAnimationObserver(&observer);
+  TestAnimationObserver observer(animation_.get());
 
   AdvanceClock(base::Milliseconds(300));
 
@@ -609,8 +606,7 @@ TEST_F(AnimationTest, PausingLoopAnimation) {
   constexpr auto kStartTime = base::Milliseconds(400);
   constexpr auto kDuration = base::Milliseconds(1000);
 
-  TestAnimationObserver observer;
-  animation_->SetAnimationObserver(&observer);
+  TestAnimationObserver observer(animation_.get());
 
   AdvanceClock(base::Milliseconds(200));
 
@@ -662,8 +658,7 @@ TEST_F(AnimationTest, PausingLoopAnimation) {
 }
 
 TEST_F(AnimationTest, PlayThrobbingAnimation) {
-  TestAnimationObserver observer;
-  animation_->SetAnimationObserver(&observer);
+  TestAnimationObserver observer(animation_.get());
 
   AdvanceClock(base::Milliseconds(300));
 
@@ -718,8 +713,7 @@ TEST_F(AnimationTest, PlaySubsectionOfThrobbingAnimation) {
   constexpr auto kStartTime = base::Milliseconds(400);
   constexpr auto kDuration = base::Milliseconds(1000);
 
-  TestAnimationObserver observer;
-  animation_->SetAnimationObserver(&observer);
+  TestAnimationObserver observer(animation_.get());
 
   AdvanceClock(base::Milliseconds(300));
 
@@ -889,8 +883,7 @@ TEST_F(AnimationTest, PausingThrobbingAnimation) {
 // Test to see if the race condition is handled correctly. It may happen that we
 // pause the video before it even starts playing.
 TEST_F(AnimationTest, PauseBeforePlay) {
-  TestAnimationObserver observer;
-  animation_->SetAnimationObserver(&observer);
+  TestAnimationObserver observer(animation_.get());
 
   AdvanceClock(base::Milliseconds(300));
 
@@ -1070,6 +1063,51 @@ TEST_F(AnimationTest, HandlesTimeStepGreaterThanAnimationDuration) {
   AdvanceClock(kAnimationDuration * 5);
   animation_->Paint(canvas(), NowTicks(), animation_->GetOriginalSize());
   EXPECT_FLOAT_EQ(animation_->GetCurrentProgress(), 0.5f);
+}
+
+class AnimationRestarter : public AnimationObserver {
+ public:
+  explicit AnimationRestarter(Animation* animation) : animation_(animation) {
+    observation_.Observe(animation);
+  }
+  AnimationRestarter(const AnimationRestarter&) = delete;
+  AnimationRestarter& operator=(const AnimationRestarter&) = delete;
+  ~AnimationRestarter() override = default;
+
+  void AnimationCycleEnded(const Animation* animation) override {
+    animation_->Stop();
+    animation_->Start(Animation::Style::kLinear);
+  }
+
+ private:
+  const base::raw_ptr<Animation> animation_;
+  base::ScopedObservation<Animation, AnimationObserver> observation_{this};
+};
+
+TEST_F(AnimationTest, HandlesChangingAnimationStateWithinObserverCall) {
+  AnimationRestarter observer(animation_.get());
+
+  AdvanceClock(base::Milliseconds(300));
+
+  animation_->Start(Animation::Style::kLinear);
+  animation_->Paint(canvas(), NowTicks(), animation_->GetOriginalSize());
+
+  // Advance the clock to the end of the animation.
+  constexpr auto kAdvanceToEnd = kAnimationDuration + base::Milliseconds(1);
+  AdvanceClock(kAdvanceToEnd);
+  animation_->Paint(canvas(), NowTicks(), animation_->GetOriginalSize());
+
+  // The AnimationRestarter should have restarted the animation again from the
+  // beginning.
+  constexpr auto kAdvance = base::Milliseconds(50);
+  AdvanceClock(kAdvance);
+  animation_->Paint(canvas(), NowTicks(), animation_->GetOriginalSize());
+  EXPECT_FLOAT_EQ(animation_->GetCurrentProgress(), 0.f);
+
+  AdvanceClock(kAdvance);
+  animation_->Paint(canvas(), NowTicks(), animation_->GetOriginalSize());
+  EXPECT_FLOAT_EQ(animation_->GetCurrentProgress(),
+                  kAdvance / kAnimationDuration);
 }
 
 }  // namespace lottie
