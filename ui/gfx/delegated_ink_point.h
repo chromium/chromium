@@ -44,6 +44,12 @@ class GFX_EXPORT DelegatedInkPoint {
   std::string ToString() const;
 
   bool MatchesDelegatedInkMetadata(const DelegatedInkMetadata* metadata) const;
+  uint64_t trace_id() const {
+    // Use mask to distinguish from DelegatedInkMetadata::trace_id().
+    // Using microseconds provides uniqueness of trace_id per
+    // DelegatedInkPoint.
+    return timestamp_.since_origin().InMicroseconds() & 0x7fffffffffffffff;
+  }
 
  private:
   friend struct mojo::StructTraits<mojom::DelegatedInkPointDataView,

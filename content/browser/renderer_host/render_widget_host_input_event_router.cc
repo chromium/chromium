@@ -2056,10 +2056,11 @@ void RenderWidgetHostInputEventRouter::ForwardDelegatedInkPoint(
 
     gfx::DelegatedInkPoint delegated_ink_point(
         position, input_event.TimeStamp(), pointer_properties.id);
-    TRACE_EVENT_INSTANT1("delegated_ink_trails",
-                         "Forwarding delegated ink point from browser.",
-                         TRACE_EVENT_SCOPE_THREAD, "delegated point",
-                         delegated_ink_point.ToString());
+    TRACE_EVENT_WITH_FLOW1("delegated_ink_trails",
+                           "Forwarding delegated ink point from browser.",
+                           TRACE_ID_GLOBAL(delegated_ink_point.trace_id()),
+                           TRACE_EVENT_FLAG_FLOW_OUT, "delegated point",
+                           delegated_ink_point.ToString());
 
     // Calling this will result in IPC calls to get |delegated_ink_point| to
     // viz. The decision to do this here was made with the understanding that
