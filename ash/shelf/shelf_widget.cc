@@ -32,14 +32,18 @@
 #include "ash/shelf/shelf_view.h"
 #include "ash/shell.h"
 #include "ash/style/ash_color_provider.h"
+#include "ash/style/highlight_border.h"
 #include "ash/system/status_area_widget.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller.h"
 #include "ash/wm/work_area_insets.h"
 #include "base/bind.h"
 #include "base/command_line.h"
 #include "ui/compositor/layer.h"
+#include "ui/compositor/layer_delegate.h"
 #include "ui/compositor/layer_owner.h"
+#include "ui/compositor/paint_recorder.h"
 #include "ui/compositor/scoped_layer_animation_settings.h"
+#include "ui/gfx/canvas.h"
 #include "ui/gfx/skbitmap_operations.h"
 #include "ui/views/accessible_pane_view.h"
 #include "ui/views/focus/focus_search.h"
@@ -54,7 +58,7 @@ namespace {
 constexpr int kShelfBlurRadius = 30;
 // The maximum size of the opaque layer during an "overshoot" (drag away from
 // the screen edge).
-constexpr int kShelfMaxOvershootHeight = 40;
+constexpr int kShelfMaxOvershootHeight = 60;
 constexpr int kDragHandleCornerRadius = 2;
 
 // Return the first or last focusable child of |root|.
@@ -90,6 +94,62 @@ class HideAnimationObserver : public ui::ImplicitAnimationObserver {
   ui::Layer* const layer_;
 };
 
+class ShelfBackgroundLayerDelegate : public ui::LayerDelegate {
+ public:
+  explicit ShelfBackgroundLayerDelegate(ui::Layer* layer) : layer_(layer) {}
+  ShelfBackgroundLayerDelegate(const ShelfBackgroundLayerDelegate&) = delete;
+  ShelfBackgroundLayerDelegate& operator=(const ShelfBackgroundLayerDelegate&) =
+      delete;
+  ~ShelfBackgroundLayerDelegate() override {}
+
+  void SetBackgroundColor(SkColor color) {
+    background_color_ = color;
+    layer_->SchedulePaint(layer_->bounds());
+  }
+  void SetBorderType(HighlightBorder::Type type) {
+    highlight_border_type_ = type;
+    layer_->SchedulePaint(layer_->bounds());
+  }
+  void SetLoginShelfView(LoginShelfView* view) { login_shelf_view_ = view; }
+
+ private:
+  // views::LayerDelegate:
+  void OnPaintLayer(const ui::PaintContext& context) override {
+    ui::PaintRecorder recorder(context, layer_->size());
+    gfx::Canvas* canvas = recorder.canvas();
+
+    // Refer to the upper left corner radius of the shelf background layer to
+    // draw the border.
+    const int corner_radius = layer_->rounded_corner_radii().upper_left();
+
+    // cc::PaintFlags flags for the background.
+    cc::PaintFlags flags;
+    flags.setColor(background_color_);
+    flags.setAntiAlias(true);
+    flags.setStyle(cc::PaintFlags::kFill_Style);
+    canvas->DrawRoundRect(gfx::Rect(layer_->size()), corner_radius, flags);
+
+    // Don't draw highlight border in login screen.
+    if (login_shelf_view_ && login_shelf_view_->GetVisible())
+      return;
+
+    HighlightBorder::PaintBorderToCanvas(canvas, gfx::Rect(layer_->size()),
+                                         corner_radius, highlight_border_type_,
+                                         false);
+  }
+
+  void OnDeviceScaleFactorChanged(float old_device_scale_factor,
+                                  float new_device_scale_factor) override {
+    layer_->SchedulePaint(layer_->bounds());
+  }
+
+  ui::Layer* const layer_;
+  LoginShelfView* login_shelf_view_ = nullptr;
+  SkColor background_color_;
+  HighlightBorder::Type highlight_border_type_ =
+      HighlightBorder::Type::kHighlightBorder1;
+};
+
 }  // namespace
 
 // The contents view of the Shelf. In an active session, this is used to
@@ -120,6 +180,8 @@ class ShelfWidget::DelegateView : public views::WidgetDelegate,
   LoginShelfView* AddLoginShelfView(
       std::unique_ptr<LoginShelfView> login_shelf_view) {
     login_shelf_view_ = AddChildView(std::move(login_shelf_view));
+    if (background_delegate_)
+      background_delegate_->SetLoginShelfView(login_shelf_view_);
     return login_shelf_view_;
   }
 
@@ -170,6 +232,9 @@ class ShelfWidget::DelegateView : public views::WidgetDelegate,
   SkColor GetShelfBackgroundColor() const;
 
   ui::Layer* opaque_background() { return opaque_background_.layer(); }
+  ShelfBackgroundLayerDelegate* background_delegate() {
+    return background_delegate_.get();
+  }
   ui::Layer* animating_background() { return &animating_background_; }
   ui::Layer* animating_drag_handle() { return &animating_drag_handle_; }
   DragHandle* drag_handle() { return drag_handle_; }
@@ -189,6 +254,10 @@ class ShelfWidget::DelegateView : public views::WidgetDelegate,
   // A background layer that may be visible depending on a
   // ShelfBackgroundAnimator.
   ui::LayerOwner opaque_background_;
+
+  // The layer delegate that helps drawing the highlight border on
+  // `opaque_background_`.
+  std::unique_ptr<ShelfBackgroundLayerDelegate> background_delegate_;
 
   // A background layer used to animate hotseat transitions.
   ui::Layer animating_background_;
@@ -210,10 +279,18 @@ class ShelfWidget::DelegateView : public views::WidgetDelegate,
 
 ShelfWidget::DelegateView::DelegateView(ShelfWidget* shelf_widget, Shelf* shelf)
     : shelf_widget_(shelf_widget),
-      opaque_background_(std::make_unique<ui::Layer>(ui::LAYER_SOLID_COLOR)),
+      opaque_background_(std::make_unique<ui::Layer>(
+          features::IsDarkLightModeEnabled() ? ui::LAYER_TEXTURED
+                                             : ui::LAYER_SOLID_COLOR)),
       animating_background_(ui::LAYER_SOLID_COLOR),
       animating_drag_handle_(ui::LAYER_SOLID_COLOR) {
-  opaque_background_.layer()->SetName("shelf/Background");
+  if (features::IsDarkLightModeEnabled()) {
+    background_delegate_ =
+        std::make_unique<ShelfBackgroundLayerDelegate>(opaque_background());
+    opaque_background()->set_delegate(background_delegate_.get());
+    opaque_background()->SetFillsBoundsOpaquely(false);
+  }
+  opaque_background()->SetName("shelf/Background");
   animating_background_.SetName("shelf/Animation");
   animating_background_.Add(&animating_drag_handle_);
 
@@ -361,6 +438,8 @@ void ShelfWidget::DelegateView::UpdateOpaqueBackground() {
 
   UpdateDragHandle();
   UpdateBackgroundBlur();
+  if (background_delegate_)
+    opaque_background()->SchedulePaint(opaque_background_bounds);
   SchedulePaint();
 }
 
@@ -425,7 +504,11 @@ void ShelfWidget::DelegateView::Layout() {
 }
 
 void ShelfWidget::DelegateView::UpdateShelfBackground(SkColor color) {
-  opaque_background()->SetColor(color);
+  if (background_delegate_)
+    background_delegate_->SetBackgroundColor(color);
+  else
+    opaque_background()->SetColor(color);
+
   UpdateOpaqueBackground();
 }
 
@@ -743,6 +826,18 @@ void ShelfWidget::OnHotseatStateChanged(HotseatState old_state,
   if (!hotseat_transition_animator_)
     return;
   hotseat_transition_animator_->OnHotseatStateChanged(old_state, new_state);
+
+  // Update the highlight border color on the shelf background.
+  if (!delegate_view_->background_delegate())
+    return;
+
+  if (new_state == HotseatState::kExtended) {
+    delegate_view_->background_delegate()->SetBorderType(
+        HighlightBorder::Type::kHighlightBorder2);
+  } else {
+    delegate_view_->background_delegate()->SetBorderType(
+        HighlightBorder::Type::kHighlightBorder1);
+  }
 }
 
 void ShelfWidget::OnBackgroundTypeChanged(ShelfBackgroundType background_type,

@@ -15,23 +15,19 @@ namespace ash {
 
 constexpr int kHighlightBorderThickness = 1;
 
-HighlightBorder::HighlightBorder(int corner_radius,
-                                 Type type,
-                                 bool use_light_colors,
-                                 InsetsType insets_type)
-    : corner_radius_(corner_radius),
-      type_(type),
-      use_light_colors_(use_light_colors),
-      insets_type_(insets_type) {}
-
-void HighlightBorder::Paint(const views::View& view, gfx::Canvas* canvas) {
+// static
+void HighlightBorder::PaintBorderToCanvas(gfx::Canvas* canvas,
+                                          const gfx::Rect& bounds,
+                                          int corner_radius,
+                                          HighlightBorder::Type type,
+                                          bool use_light_colors) {
   AshColorProvider* color_provider = AshColorProvider::Get();
   const AshColorProvider::ControlsLayerType highlight_color_type =
-      type_ == HighlightBorder::Type::kHighlightBorder1
+      type == HighlightBorder::Type::kHighlightBorder1
           ? AshColorProvider::ControlsLayerType::kHighlightColor1
           : AshColorProvider::ControlsLayerType::kHighlightColor2;
   const AshColorProvider::ControlsLayerType border_color_type =
-      type_ == HighlightBorder::Type::kHighlightBorder1
+      type == HighlightBorder::Type::kHighlightBorder1
           ? AshColorProvider::ControlsLayerType::kBorderColor1
           : AshColorProvider::ControlsLayerType::kBorderColor2;
   SkColor inner_color =
@@ -39,7 +35,7 @@ void HighlightBorder::Paint(const views::View& view, gfx::Canvas* canvas) {
   SkColor outer_color =
       color_provider->GetControlsLayerColor(border_color_type);
 
-  if (use_light_colors_ && !features::IsDarkLightModeEnabled()) {
+  if (use_light_colors && !features::IsDarkLightModeEnabled()) {
     ScopedLightModeAsDefault scoped_light_mode_as_default;
     inner_color = color_provider->GetControlsLayerColor(highlight_color_type);
     outer_color = color_provider->GetControlsLayerColor(border_color_type);
@@ -52,13 +48,12 @@ void HighlightBorder::Paint(const views::View& view, gfx::Canvas* canvas) {
   flags.setAntiAlias(true);
 
   const float half_thickness = kHighlightBorderThickness / 2.0f;
-  const gfx::Rect bounds = view.GetLocalBounds();
 
   // Scale bounds and corner radius with device scale factor to make sure
   // border bounds match content bounds but keep border stroke width the same.
   const float dsf = canvas->UndoDeviceScaleFactor();
   const gfx::RectF pixel_bounds = gfx::ConvertRectToPixels(bounds, dsf);
-  const float scaled_corner_radius = dsf * corner_radius_;
+  const float scaled_corner_radius = dsf * corner_radius;
   gfx::RectF outer_border_bounds(pixel_bounds);
 
   outer_border_bounds.Inset(half_thickness, half_thickness);
@@ -69,6 +64,20 @@ void HighlightBorder::Paint(const views::View& view, gfx::Canvas* canvas) {
   inner_border_bounds.Inset(half_thickness, half_thickness);
   flags.setColor(inner_color);
   canvas->DrawRoundRect(inner_border_bounds, scaled_corner_radius, flags);
+}
+
+HighlightBorder::HighlightBorder(int corner_radius,
+                                 Type type,
+                                 bool use_light_colors,
+                                 InsetsType insets_type)
+    : corner_radius_(corner_radius),
+      type_(type),
+      use_light_colors_(use_light_colors),
+      insets_type_(insets_type) {}
+
+void HighlightBorder::Paint(const views::View& view, gfx::Canvas* canvas) {
+  PaintBorderToCanvas(canvas, view.GetLocalBounds(), corner_radius_, type_,
+                      use_light_colors_);
 }
 
 gfx::Insets HighlightBorder::GetInsets() const {

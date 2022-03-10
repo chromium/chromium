@@ -8,6 +8,10 @@
 #include "ash/ash_export.h"
 #include "ui/views/border.h"
 
+namespace gfx {
+class Rect;
+}  // namespace gfx
+
 namespace ash {
 
 // A rounded rectangle border that has inner (highlight) and outer color.
@@ -38,6 +42,15 @@ class ASH_EXPORT HighlightBorder : public views::Border {
     // overlap between content.
     kFullInsets,
   };
+
+  // Paints the highlight border onto `canvas`. Note that directly using this
+  // function won't set the insets on any view so it acts like setting kNoInsets
+  // when using HighlightBorder class.
+  static void PaintBorderToCanvas(gfx::Canvas* canvas,
+                                  const gfx::Rect& bounds,
+                                  int corner_radius,
+                                  Type type,
+                                  bool use_light_colors);
 
   HighlightBorder(int corner_radius,
                   Type type,
