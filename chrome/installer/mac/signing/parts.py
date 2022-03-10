@@ -118,7 +118,6 @@ def get_parts(config):
     }
 
     dylibs = [
-        'libaperitif.dylib',
         'libEGL.dylib',
         'libGLESv2.dylib',
         'libswiftshader_libEGL.dylib',
