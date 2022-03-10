@@ -37,106 +37,6 @@
 
 namespace blink {
 
-class DynamicsCompressorKernel {
-  DISALLOW_NEW();
-
- public:
-  DynamicsCompressorKernel(float sample_rate, unsigned number_of_channels);
-  DynamicsCompressorKernel(const DynamicsCompressorKernel&) = delete;
-  DynamicsCompressorKernel& operator=(const DynamicsCompressorKernel&) = delete;
-
-  void SetNumberOfChannels(unsigned);
-
-  // Performs stereo-linked compression.
-  void Process(const float* source_channels[],
-               float* destination_channels[],
-               unsigned number_of_channels,
-               unsigned frames_to_process,
-
-               float db_threshold,
-               float db_knee,
-               float ratio,
-               float attack_time,
-               float release_time,
-               float pre_delay_time,
-               float db_post_gain,
-               float effect_blend,
-
-               float release_zone1,
-               float release_zone2,
-               float release_zone3,
-               float release_zone4);
-
-  void Reset();
-
-  unsigned LatencyFrames() const { return last_pre_delay_frames_; }
-
-  float SampleRate() const { return sample_rate_; }
-
-  float MeteringGain() const { return metering_gain_; }
-
-  double TailTime() const;
-
- protected:
-  float sample_rate_;
-
-  float detector_average_;
-  float compressor_gain_;
-
-  // Metering
-  float metering_release_k_;
-  float metering_gain_;
-
-  // Lookahead section.
-  enum { kMaxPreDelayFrames = 1024 };
-  enum { kMaxPreDelayFramesMask = kMaxPreDelayFrames - 1 };
-  enum {
-    kDefaultPreDelayFrames = 256
-  };  // SetPreDelayTime() will override this initial value
-  unsigned last_pre_delay_frames_ = kDefaultPreDelayFrames;
-  void SetPreDelayTime(float);
-
-  Vector<std::unique_ptr<AudioFloatArray>> pre_delay_buffers_;
-  int pre_delay_read_index_ = 0;
-  int pre_delay_write_index_ = kDefaultPreDelayFrames;
-
-  float max_attack_compression_diff_db_;
-
-  // Static compression curve.
-  float KneeCurve(float x, float k) const;
-  float Saturate(float x, float k) const;
-  float SlopeAt(float x, float k) const;
-  float KAtSlope(float desired_slope) const;
-
-  float UpdateStaticCurveParameters(float db_threshold,
-                                    float db_knee,
-                                    float ratio);
-
-  // Amount of input change in dB required for 1 dB of output change.
-  // This applies to the portion of the curve above knee_threshold_db_ (see
-  // below).
-  float ratio_;
-  float slope_;  // Inverse ratio.
-
-  // The input to output change below the threshold is linear 1:1.
-  float linear_threshold_;
-  float db_threshold_;
-
-  // db_knee_ is the number of dB above the threshold before we enter the
-  // "ratio" portion of the curve.
-  // knee_threshold_db_ = db_threshold_ + db_knee_
-  // The portion between db_threshold_ and knee_threshold_db_ is the "soft knee"
-  // portion of the curve which transitions smoothly from the linear portion to
-  // the ratio portion.
-  float db_knee_;
-  float knee_threshold_;
-  float knee_threshold_db_;
-  float yknee_threshold_db_;
-
-  // Internal parameter for the knee portion of the curve.
-  float knee_;
-};
-
 class AudioBus;
 
 // DynamicsCompressor implements a flexible audio dynamics compression effect
@@ -172,6 +72,7 @@ class PLATFORM_EXPORT DynamicsCompressor {
   DynamicsCompressor(const DynamicsCompressor&) = delete;
   DynamicsCompressor& operator=(const DynamicsCompressor&) = delete;
 
+  // Performs stereo-linked compression.
   void Process(const AudioBus* source_bus,
                AudioBus* destination_bus,
                unsigned frames_to_process);
@@ -179,26 +80,35 @@ class PLATFORM_EXPORT DynamicsCompressor {
   void SetNumberOfChannels(unsigned);
 
   void SetParameterValue(unsigned parameter_id, float value);
-  float ParameterValue(unsigned parameter_id);
+  float ParameterValue(unsigned parameter_id) const;
 
-  float SampleRate() const { return sample_rate_; }
-  float Nyquist() const { return sample_rate_ / 2; }
+  float SampleRate() const;
+  float Nyquist() const;
 
   double TailTime() const;
-  double LatencyTime() const {
-    return compressor_.LatencyFrames() / static_cast<double>(SampleRate());
-  }
-  bool RequiresTailProcessing() const {
-    // Always return true even if the tail time and latency might both be zero.
-    return true;
-  }
+  double LatencyTime() const;
+
+  bool RequiresTailProcessing() const;
 
  protected:
+  void InitializeParameters();
+
+  void SetPreDelayTime(float);
+
+  // Static compression curve.
+  float KneeCurve(float x, float k) const;
+  float Saturate(float x, float k) const;
+  float SlopeAt(float x, float k) const;
+  float KAtSlope(float desired_slope) const;
+
+  float UpdateStaticCurveParameters(float db_threshold,
+                                    float db_knee,
+                                    float ratio);
+
   unsigned number_of_channels_;
 
   // parameters_ holds the tweakable compressor parameters.
   float parameters_[kParamLast];
-  void InitializeParameters();
 
   float sample_rate_;
 
@@ -210,8 +120,50 @@ class PLATFORM_EXPORT DynamicsCompressor {
   std::unique_ptr<const float*[]> source_channels_;
   std::unique_ptr<float*[]> destination_channels_;
 
-  // The core compressor.
-  DynamicsCompressorKernel compressor_;
+  float detector_average_;
+  float compressor_gain_;
+
+  // Metering
+  float metering_release_k_;
+  float metering_gain_;
+
+  // Lookahead section.
+  enum { kMaxPreDelayFrames = 1024 };
+  enum { kMaxPreDelayFramesMask = kMaxPreDelayFrames - 1 };
+  enum {
+    kDefaultPreDelayFrames = 256
+  };  // SetPreDelayTime() will override this initial value
+  unsigned last_pre_delay_frames_ = kDefaultPreDelayFrames;
+
+  Vector<std::unique_ptr<AudioFloatArray>> pre_delay_buffers_;
+  int pre_delay_read_index_ = 0;
+  int pre_delay_write_index_ = kDefaultPreDelayFrames;
+
+  float max_attack_compression_diff_db_;
+
+  // Amount of input change in dB required for 1 dB of output change.
+  // This applies to the portion of the curve above knee_threshold_db_ (see
+  // below).
+  float ratio_;
+  float slope_;  // Inverse ratio.
+
+  // The input to output change below the threshold is linear 1:1.
+  float linear_threshold_;
+  float db_threshold_;
+
+  // db_knee_ is the number of dB above the threshold before we enter the
+  // "ratio" portion of the curve.
+  // knee_threshold_db_ = db_threshold_ + db_knee_
+  // The portion between db_threshold_ and knee_threshold_db_ is the "soft knee"
+  // portion of the curve which transitions smoothly from the linear portion to
+  // the ratio portion.
+  float db_knee_;
+  float knee_threshold_;
+  float knee_threshold_db_;
+  float yknee_threshold_db_;
+
+  // Internal parameter for the knee portion of the curve.
+  float knee_;
 };
 
 }  // namespace blink

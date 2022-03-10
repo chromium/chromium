@@ -60,51 +60,27 @@ DynamicsCompressor::DynamicsCompressor(float sample_rate,
                                        unsigned number_of_channels)
     : number_of_channels_(number_of_channels),
       sample_rate_(sample_rate),
-      compressor_(sample_rate, number_of_channels) {
+      ratio_(kUninitializedValue),
+      slope_(kUninitializedValue),
+      linear_threshold_(kUninitializedValue),
+      db_threshold_(kUninitializedValue),
+      db_knee_(kUninitializedValue),
+      knee_threshold_(kUninitializedValue),
+      knee_threshold_db_(kUninitializedValue),
+      yknee_threshold_db_(kUninitializedValue),
+      knee_(kUninitializedValue) {
   // Uninitialized state - for parameter recalculation.
   last_filter_stage_ratio_ = -1;
   last_anchor_ = -1;
   last_filter_stage_gain_ = -1;
 
   SetNumberOfChannels(number_of_channels);
+  // Initializes most member variables
+  Reset();
+  metering_release_k_ =
+      static_cast<float>(audio_utilities::DiscreteTimeConstantForSampleRate(
+          kMeteringReleaseTimeConstant, sample_rate));
   InitializeParameters();
-}
-
-void DynamicsCompressor::SetParameterValue(unsigned parameter_id, float value) {
-  DCHECK_LT(parameter_id, static_cast<unsigned>(kParamLast));
-  parameters_[parameter_id] = value;
-}
-
-void DynamicsCompressor::InitializeParameters() {
-  // Initializes compressor to default values.
-
-  parameters_[kParamThreshold] = -24;    // dB
-  parameters_[kParamKnee] = 30;          // dB
-  parameters_[kParamRatio] = 12;         // unit-less
-  parameters_[kParamAttack] = 0.003f;    // seconds
-  parameters_[kParamRelease] = 0.250f;   // seconds
-  parameters_[kParamPreDelay] = 0.006f;  // seconds
-
-  // Release zone values 0 -> 1.
-  parameters_[kParamReleaseZone1] = 0.09f;
-  parameters_[kParamReleaseZone2] = 0.16f;
-  parameters_[kParamReleaseZone3] = 0.42f;
-  parameters_[kParamReleaseZone4] = 0.98f;
-
-  parameters_[kParamFilterStageGain] = 4.4f;  // dB
-  parameters_[kParamFilterStageRatio] = 2;
-  parameters_[kParamFilterAnchor] = 15000 / Nyquist();
-
-  parameters_[kParamPostGain] = 0;   // dB
-  parameters_[kParamReduction] = 0;  // dB
-
-  // Linear crossfade (0 -> 1).
-  parameters_[kParamEffectBlend] = 1;
-}
-
-float DynamicsCompressor::ParameterValue(unsigned parameter_id) {
-  DCHECK_LT(parameter_id, static_cast<unsigned>(kParamLast));
-  return parameters_[parameter_id];
 }
 
 void DynamicsCompressor::Process(const AudioBus* source_bus,
@@ -116,8 +92,8 @@ void DynamicsCompressor::Process(const AudioBus* source_bus,
   // channel up/down mix. Thus we need number_of_channels to do the loop work
   // for both source_channels_ and destination_channels_.
 
-  unsigned number_of_channels = destination_bus->NumberOfChannels();
-  unsigned number_of_source_channels = source_bus->NumberOfChannels();
+  const unsigned number_of_channels = destination_bus->NumberOfChannels();
+  const unsigned number_of_source_channels = source_bus->NumberOfChannels();
 
   DCHECK_EQ(number_of_channels, number_of_channels_);
   DCHECK(number_of_source_channels);
@@ -158,240 +134,32 @@ void DynamicsCompressor::Process(const AudioBus* source_bus,
     last_anchor_ = anchor;
   }
 
-  float db_threshold = ParameterValue(kParamThreshold);
-  float db_knee = ParameterValue(kParamKnee);
-  float ratio = ParameterValue(kParamRatio);
+  const float db_threshold = ParameterValue(kParamThreshold);
+  const float db_knee = ParameterValue(kParamKnee);
+  const float ratio = ParameterValue(kParamRatio);
   float attack_time = ParameterValue(kParamAttack);
-  float release_time = ParameterValue(kParamRelease);
-  float pre_delay_time = ParameterValue(kParamPreDelay);
+  const float release_time = ParameterValue(kParamRelease);
+  const float pre_delay_time = ParameterValue(kParamPreDelay);
 
   // This is effectively a make-up gain on the compressed signal
   // (pre-blending).
-  float db_post_gain = ParameterValue(kParamPostGain);
+  const float db_post_gain = ParameterValue(kParamPostGain);
 
   // Linear blending value from dry to completely processed (0 -> 1)
   // 0 means the signal is completely unprocessed.
   // 1 mixes in only the compressed signal.
-  float effect_blend = ParameterValue(kParamEffectBlend);
+  // equal power crossfade
+  const float effect_blend = ParameterValue(kParamEffectBlend);
 
-  float release_zone1 = ParameterValue(kParamReleaseZone1);
-  float release_zone2 = ParameterValue(kParamReleaseZone2);
-  float release_zone3 = ParameterValue(kParamReleaseZone3);
-  float release_zone4 = ParameterValue(kParamReleaseZone4);
+  const float release_zone1 = ParameterValue(kParamReleaseZone1);
+  const float release_zone2 = ParameterValue(kParamReleaseZone2);
+  const float release_zone3 = ParameterValue(kParamReleaseZone3);
+  const float release_zone4 = ParameterValue(kParamReleaseZone4);
 
   // Apply compression to the source signal.
-  compressor_.Process(source_channels_.get(), destination_channels_.get(),
-                      number_of_channels, frames_to_process,
+  const float** source_channels = source_channels_.get();
+  float** destination_channels = destination_channels_.get();
 
-                      db_threshold, db_knee, ratio, attack_time, release_time,
-                      pre_delay_time, db_post_gain, effect_blend,
-
-                      release_zone1, release_zone2, release_zone3,
-                      release_zone4);
-
-  // Update the compression amount.
-  SetParameterValue(kParamReduction, compressor_.MeteringGain());
-}
-
-void DynamicsCompressor::Reset() {
-  last_filter_stage_ratio_ = -1;  // for recalc
-  last_anchor_ = -1;
-  last_filter_stage_gain_ = -1;
-
-  compressor_.Reset();
-}
-
-void DynamicsCompressor::SetNumberOfChannels(unsigned number_of_channels) {
-  source_channels_ = std::make_unique<const float* []>(number_of_channels);
-  destination_channels_ = std::make_unique<float* []>(number_of_channels);
-
-  compressor_.SetNumberOfChannels(number_of_channels);
-  number_of_channels_ = number_of_channels;
-}
-
-double DynamicsCompressor::TailTime() const {
-  return compressor_.TailTime();
-}
-
-DynamicsCompressorKernel::DynamicsCompressorKernel(float sample_rate,
-                                                   unsigned number_of_channels)
-    : sample_rate_(sample_rate),
-      ratio_(kUninitializedValue),
-      slope_(kUninitializedValue),
-      linear_threshold_(kUninitializedValue),
-      db_threshold_(kUninitializedValue),
-      db_knee_(kUninitializedValue),
-      knee_threshold_(kUninitializedValue),
-      knee_threshold_db_(kUninitializedValue),
-      yknee_threshold_db_(kUninitializedValue),
-      knee_(kUninitializedValue) {
-  SetNumberOfChannels(number_of_channels);
-
-  // Initializes most member variables
-  Reset();
-
-  metering_release_k_ =
-      static_cast<float>(audio_utilities::DiscreteTimeConstantForSampleRate(
-          kMeteringReleaseTimeConstant, sample_rate));
-}
-
-void DynamicsCompressorKernel::SetNumberOfChannels(
-    unsigned number_of_channels) {
-  if (pre_delay_buffers_.size() == number_of_channels) {
-    return;
-  }
-
-  pre_delay_buffers_.clear();
-  for (unsigned i = 0; i < number_of_channels; ++i) {
-    pre_delay_buffers_.push_back(
-        std::make_unique<AudioFloatArray>(kMaxPreDelayFrames));
-  }
-}
-
-void DynamicsCompressorKernel::SetPreDelayTime(float pre_delay_time) {
-  // Re-configure look-ahead section pre-delay if delay time has changed.
-  unsigned pre_delay_frames = pre_delay_time * SampleRate();
-  if (pre_delay_frames > kMaxPreDelayFrames - 1) {
-    pre_delay_frames = kMaxPreDelayFrames - 1;
-  }
-
-  if (last_pre_delay_frames_ != pre_delay_frames) {
-    last_pre_delay_frames_ = pre_delay_frames;
-    for (auto& pre_delay_buffer : pre_delay_buffers_) {
-      pre_delay_buffer->Zero();
-    }
-
-    pre_delay_read_index_ = 0;
-    pre_delay_write_index_ = pre_delay_frames;
-  }
-}
-
-// Exponential curve for the knee.
-// It is 1st derivative matched at linear_threshold_ and asymptotically
-// approaches the value linear_threshold_ + 1 / k.
-float DynamicsCompressorKernel::KneeCurve(float x, float k) const {
-  // Linear up to threshold.
-  if (x < linear_threshold_) {
-    return x;
-  }
-
-  return linear_threshold_ + (1 - static_cast<float>(exp(static_cast<double>(
-                                      -k * (x - linear_threshold_))))) /
-                                 k;
-}
-
-// Full compression curve with constant ratio after knee.
-float DynamicsCompressorKernel::Saturate(float x, float k) const {
-  float y;
-
-  if (x < knee_threshold_) {
-    y = KneeCurve(x, k);
-  } else {
-    // Constant ratio after knee.
-    float x_db = audio_utilities::LinearToDecibels(x);
-    float y_db = yknee_threshold_db_ + slope_ * (x_db - knee_threshold_db_);
-
-    y = audio_utilities::DecibelsToLinear(y_db);
-  }
-
-  return y;
-}
-
-// Approximate 1st derivative with input and output expressed in dB.
-// This slope is equal to the inverse of the compression "ratio".
-// In other words, a compression ratio of 20 would be a slope of 1/20.
-float DynamicsCompressorKernel::SlopeAt(float x, float k) const {
-  if (x < linear_threshold_) {
-    return 1;
-  }
-
-  float x2 = x * 1.001;
-
-  float x_db = audio_utilities::LinearToDecibels(x);
-  float x2_db = audio_utilities::LinearToDecibels(x2);
-
-  float y_db = audio_utilities::LinearToDecibels(KneeCurve(x, k));
-  float y2_db = audio_utilities::LinearToDecibels(KneeCurve(x2, k));
-
-  float m = (y2_db - y_db) / (x2_db - x_db);
-
-  return m;
-}
-
-float DynamicsCompressorKernel::KAtSlope(float desired_slope) const {
-  float x_db = db_threshold_ + db_knee_;
-  float x = audio_utilities::DecibelsToLinear(x_db);
-
-  // Approximate k given initial values.
-  float min_k = 0.1;
-  float max_k = 10000;
-  float k = 5;
-
-  for (int i = 0; i < 15; ++i) {
-    // A high value for k will more quickly asymptotically approach a slope of
-    // 0.
-    float slope = SlopeAt(x, k);
-
-    if (slope < desired_slope) {
-      // k is too high.
-      max_k = k;
-    } else {
-      // k is too low.
-      min_k = k;
-    }
-
-    // Re-calculate based on geometric mean.
-    k = sqrtf(min_k * max_k);
-  }
-
-  return k;
-}
-
-float DynamicsCompressorKernel::UpdateStaticCurveParameters(float db_threshold,
-                                                            float db_knee,
-                                                            float ratio) {
-  if (db_threshold != db_threshold_ || db_knee != db_knee_ || ratio != ratio_) {
-    // Threshold and knee.
-    db_threshold_ = db_threshold;
-    linear_threshold_ = audio_utilities::DecibelsToLinear(db_threshold);
-    db_knee_ = db_knee;
-
-    // Compute knee parameters.
-    ratio_ = ratio;
-    slope_ = 1 / ratio_;
-
-    float k = KAtSlope(1 / ratio_);
-
-    knee_threshold_db_ = db_threshold + db_knee;
-    knee_threshold_ = audio_utilities::DecibelsToLinear(knee_threshold_db_);
-
-    yknee_threshold_db_ =
-        audio_utilities::LinearToDecibels(KneeCurve(knee_threshold_, k));
-
-    knee_ = k;
-  }
-  return knee_;
-}
-
-void DynamicsCompressorKernel::Process(
-    const float* source_channels[],
-    float* destination_channels[],
-    unsigned number_of_channels,
-    unsigned frames_to_process,
-
-    float db_threshold,
-    float db_knee,
-    float ratio,
-    float attack_time,
-    float release_time,
-    float pre_delay_time,
-    float db_post_gain,
-    float effect_blend, /* equal power crossfade */
-
-    float release_zone1,
-    float release_zone2,
-    float release_zone3,
-    float release_zone4) {
   DCHECK_EQ(pre_delay_buffers_.size(), number_of_channels);
 
   float sample_rate = SampleRate();
@@ -640,9 +408,16 @@ void DynamicsCompressorKernel::Process(
           DenormalDisabler::FlushDenormalFloatToZero(compressor_gain);
     }
   }
+
+  // Update the compression amount.
+  SetParameterValue(kParamReduction, metering_gain_);
 }
 
-void DynamicsCompressorKernel::Reset() {
+void DynamicsCompressor::Reset() {
+  last_filter_stage_ratio_ = -1;  // for recalc
+  last_anchor_ = -1;
+  last_filter_stage_gain_ = -1;
+
   detector_average_ = 0;
   compressor_gain_ = 1;
   metering_gain_ = 1;
@@ -658,7 +433,42 @@ void DynamicsCompressorKernel::Reset() {
   max_attack_compression_diff_db_ = -1;  // uninitialized state
 }
 
-double DynamicsCompressorKernel::TailTime() const {
+void DynamicsCompressor::SetNumberOfChannels(unsigned number_of_channels) {
+  source_channels_ = std::make_unique<const float*[]>(number_of_channels);
+  destination_channels_ = std::make_unique<float*[]>(number_of_channels);
+
+  if (pre_delay_buffers_.size() == number_of_channels) {
+    return;
+  }
+
+  pre_delay_buffers_.clear();
+  for (unsigned i = 0; i < number_of_channels; ++i) {
+    pre_delay_buffers_.push_back(
+        std::make_unique<AudioFloatArray>(kMaxPreDelayFrames));
+  }
+
+  number_of_channels_ = number_of_channels;
+}
+
+void DynamicsCompressor::SetParameterValue(unsigned parameter_id, float value) {
+  DCHECK_LT(parameter_id, static_cast<unsigned>(kParamLast));
+  parameters_[parameter_id] = value;
+}
+
+float DynamicsCompressor::ParameterValue(unsigned parameter_id) const {
+  DCHECK_LT(parameter_id, static_cast<unsigned>(kParamLast));
+  return parameters_[parameter_id];
+}
+
+float DynamicsCompressor::SampleRate() const {
+  return sample_rate_;
+}
+
+float DynamicsCompressor::Nyquist() const {
+  return sample_rate_ / 2;
+}
+
+double DynamicsCompressor::TailTime() const {
   // The reduction value of the compressor is computed from the gain
   // using an exponential filter with a time constant of
   // |kMeteringReleaseTimeConstant|.  We need to keep he compressor
@@ -668,6 +478,167 @@ double DynamicsCompressorKernel::TailTime() const {
   // value.  A value of 5 to 10 times the time constant is a
   // reasonable trade-off.
   return 5 * kMeteringReleaseTimeConstant;
+}
+
+double DynamicsCompressor::LatencyTime() const {
+  return last_pre_delay_frames_ / static_cast<double>(SampleRate());
+}
+
+bool DynamicsCompressor::RequiresTailProcessing() const {
+  // Always return true even if the tail time and latency might both be zero.
+  return true;
+}
+
+void DynamicsCompressor::InitializeParameters() {
+  // Initializes compressor to default values.
+
+  parameters_[kParamThreshold] = -24;    // dB
+  parameters_[kParamKnee] = 30;          // dB
+  parameters_[kParamRatio] = 12;         // unit-less
+  parameters_[kParamAttack] = 0.003f;    // seconds
+  parameters_[kParamRelease] = 0.250f;   // seconds
+  parameters_[kParamPreDelay] = 0.006f;  // seconds
+
+  // Release zone values 0 -> 1.
+  parameters_[kParamReleaseZone1] = 0.09f;
+  parameters_[kParamReleaseZone2] = 0.16f;
+  parameters_[kParamReleaseZone3] = 0.42f;
+  parameters_[kParamReleaseZone4] = 0.98f;
+
+  parameters_[kParamFilterStageGain] = 4.4f;  // dB
+  parameters_[kParamFilterStageRatio] = 2;
+  parameters_[kParamFilterAnchor] = 15000 / Nyquist();
+
+  parameters_[kParamPostGain] = 0;   // dB
+  parameters_[kParamReduction] = 0;  // dB
+
+  // Linear crossfade (0 -> 1).
+  parameters_[kParamEffectBlend] = 1;
+}
+
+void DynamicsCompressor::SetPreDelayTime(float pre_delay_time) {
+  // Re-configure look-ahead section pre-delay if delay time has changed.
+  unsigned pre_delay_frames = pre_delay_time * SampleRate();
+  if (pre_delay_frames > kMaxPreDelayFrames - 1) {
+    pre_delay_frames = kMaxPreDelayFrames - 1;
+  }
+
+  if (last_pre_delay_frames_ != pre_delay_frames) {
+    last_pre_delay_frames_ = pre_delay_frames;
+    for (auto& pre_delay_buffer : pre_delay_buffers_) {
+      pre_delay_buffer->Zero();
+    }
+
+    pre_delay_read_index_ = 0;
+    pre_delay_write_index_ = pre_delay_frames;
+  }
+}
+
+// Exponential curve for the knee.
+// It is 1st derivative matched at linear_threshold_ and asymptotically
+// approaches the value linear_threshold_ + 1 / k.
+float DynamicsCompressor::KneeCurve(float x, float k) const {
+  // Linear up to threshold.
+  if (x < linear_threshold_) {
+    return x;
+  }
+
+  return linear_threshold_ + (1 - static_cast<float>(exp(static_cast<double>(
+                                      -k * (x - linear_threshold_))))) /
+                                 k;
+}
+
+// Full compression curve with constant ratio after knee.
+float DynamicsCompressor::Saturate(float x, float k) const {
+  float y;
+
+  if (x < knee_threshold_) {
+    y = KneeCurve(x, k);
+  } else {
+    // Constant ratio after knee.
+    float x_db = audio_utilities::LinearToDecibels(x);
+    float y_db = yknee_threshold_db_ + slope_ * (x_db - knee_threshold_db_);
+
+    y = audio_utilities::DecibelsToLinear(y_db);
+  }
+
+  return y;
+}
+
+// Approximate 1st derivative with input and output expressed in dB.
+// This slope is equal to the inverse of the compression "ratio".
+// In other words, a compression ratio of 20 would be a slope of 1/20.
+float DynamicsCompressor::SlopeAt(float x, float k) const {
+  if (x < linear_threshold_) {
+    return 1;
+  }
+
+  float x2 = x * 1.001;
+
+  float x_db = audio_utilities::LinearToDecibels(x);
+  float x2_db = audio_utilities::LinearToDecibels(x2);
+
+  float y_db = audio_utilities::LinearToDecibels(KneeCurve(x, k));
+  float y2_db = audio_utilities::LinearToDecibels(KneeCurve(x2, k));
+
+  float m = (y2_db - y_db) / (x2_db - x_db);
+
+  return m;
+}
+
+float DynamicsCompressor::KAtSlope(float desired_slope) const {
+  float x_db = db_threshold_ + db_knee_;
+  float x = audio_utilities::DecibelsToLinear(x_db);
+
+  // Approximate k given initial values.
+  float min_k = 0.1;
+  float max_k = 10000;
+  float k = 5;
+
+  for (int i = 0; i < 15; ++i) {
+    // A high value for k will more quickly asymptotically approach a slope of
+    // 0.
+    float slope = SlopeAt(x, k);
+
+    if (slope < desired_slope) {
+      // k is too high.
+      max_k = k;
+    } else {
+      // k is too low.
+      min_k = k;
+    }
+
+    // Re-calculate based on geometric mean.
+    k = sqrtf(min_k * max_k);
+  }
+
+  return k;
+}
+
+float DynamicsCompressor::UpdateStaticCurveParameters(float db_threshold,
+                                                      float db_knee,
+                                                      float ratio) {
+  if (db_threshold != db_threshold_ || db_knee != db_knee_ || ratio != ratio_) {
+    // Threshold and knee.
+    db_threshold_ = db_threshold;
+    linear_threshold_ = audio_utilities::DecibelsToLinear(db_threshold);
+    db_knee_ = db_knee;
+
+    // Compute knee parameters.
+    ratio_ = ratio;
+    slope_ = 1 / ratio_;
+
+    float k = KAtSlope(1 / ratio_);
+
+    knee_threshold_db_ = db_threshold + db_knee;
+    knee_threshold_ = audio_utilities::DecibelsToLinear(knee_threshold_db_);
+
+    yknee_threshold_db_ =
+        audio_utilities::LinearToDecibels(KneeCurve(knee_threshold_, k));
+
+    knee_ = k;
+  }
+  return knee_;
 }
 
 }  // namespace blink
