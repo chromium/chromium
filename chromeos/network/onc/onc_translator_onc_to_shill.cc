@@ -286,20 +286,20 @@ void LocalTranslator::TranslateL2TP() {
   if (lcp_echo_disabled) {
     base::Value lcp_echo_disabled_value =
         ConvertVpnValueToString(*lcp_echo_disabled);
-    shill_dictionary_->SetKey(shill::kL2tpIpsecLcpEchoDisabledProperty,
+    shill_dictionary_->SetKey(shill::kL2TPIPsecLcpEchoDisabledProperty,
                               std::move(lcp_echo_disabled_value));
   }
 
-  // Set shill::kL2tpIpsecUseLoginPasswordProperty according to whether or not
+  // Set shill::kL2TPIPsecUseLoginPasswordProperty according to whether or not
   // the password substitution variable is set.
   const std::string* password =
       onc_object_->FindStringKey(::onc::l2tp::kPassword);
   if (password &&
       *password == ::onc::substitutes::kPasswordPlaceholderVerbatim) {
-    // TODO(b/147658302): shill::kL2tpIpsecUseLoginPasswordProperty is a string
+    // TODO(b/147658302): shill::kL2TPIPsecUseLoginPasswordProperty is a string
     // property containing "false" or "true". Migrate it to a bool to match
     // shill::kEapUseLoginPasswordProperty.
-    shill_dictionary_->SetKey(shill::kL2tpIpsecUseLoginPasswordProperty,
+    shill_dictionary_->SetKey(shill::kL2TPIPsecUseLoginPasswordProperty,
                               base::Value("true"));
   }
 

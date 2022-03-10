@@ -386,10 +386,10 @@ bool IsLoggableShillProperty(const std::string& key) {
     s_skip_properties->insert(shill::kEapCaCertProperty);
     s_skip_properties->insert(shill::kEapPasswordProperty);
     s_skip_properties->insert(shill::kEapPinProperty);
-    s_skip_properties->insert(shill::kL2tpIpsecCaCertPemProperty);
-    s_skip_properties->insert(shill::kL2tpIpsecPasswordProperty);
-    s_skip_properties->insert(shill::kL2tpIpsecPinProperty);
-    s_skip_properties->insert(shill::kL2tpIpsecPskProperty);
+    s_skip_properties->insert(shill::kL2TPIPsecCaCertPemProperty);
+    s_skip_properties->insert(shill::kL2TPIPsecPasswordProperty);
+    s_skip_properties->insert(shill::kL2TPIPsecPinProperty);
+    s_skip_properties->insert(shill::kL2TPIPsecPskProperty);
     s_skip_properties->insert(shill::kOpenVPNAuthUserPassProperty);
     s_skip_properties->insert(shill::kOpenVPNCaCertPemProperty);
     s_skip_properties->insert(shill::kOpenVPNExtraCertPemProperty);

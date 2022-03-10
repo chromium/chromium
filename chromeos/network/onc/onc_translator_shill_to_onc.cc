@@ -337,12 +337,12 @@ void ShillToONCTranslator::TranslateIPsec() {
   }
 
   // This is an L2TP/IPsec VPN service.
-  if (shill_dictionary_->FindKey(shill::kL2tpIpsecXauthUserProperty))
+  if (shill_dictionary_->FindKey(shill::kL2TPIPsecXauthUserProperty))
     TranslateAndAddNestedObject(::onc::ipsec::kXAUTH);
 
   std::string authentication_type;
-  if (SetPKCS11Id(shill_dictionary_, shill::kL2tpIpsecClientCertIdProperty,
-                  shill::kL2tpIpsecClientCertSlotProperty, &onc_object_)) {
+  if (SetPKCS11Id(shill_dictionary_, shill::kL2TPIPsecClientCertIdProperty,
+                  shill::kL2TPIPsecClientCertSlotProperty, &onc_object_)) {
     authentication_type = ::onc::ipsec::kCert;
   } else {
     authentication_type = ::onc::ipsec::kPSK;
@@ -355,7 +355,7 @@ void ShillToONCTranslator::TranslateL2TP() {
   CopyPropertiesAccordingToSignature();
 
   const base::Value* lcp_echo_disabled =
-      shill_dictionary_->FindKey(shill::kL2tpIpsecLcpEchoDisabledProperty);
+      shill_dictionary_->FindKey(shill::kL2TPIPsecLcpEchoDisabledProperty);
   if (lcp_echo_disabled && lcp_echo_disabled->is_string()) {
     base::Value lcp_echo_disabled_value = ConvertVpnStringToValue(
         lcp_echo_disabled->GetString(), base::Value::Type::BOOLEAN);
@@ -363,11 +363,11 @@ void ShillToONCTranslator::TranslateL2TP() {
                        std::move(lcp_echo_disabled_value));
   }
 
-  // TODO(b/147658302): shill::kL2tpIpsecUseLoginPasswordProperty is a string
+  // TODO(b/147658302): shill::kL2TPIPsecUseLoginPasswordProperty is a string
   // property containing "false" or "true". Migrate it to a bool to match
   // shill::kEapUseLoginPasswordProperty.
   const std::string* use_login_password = shill_dictionary_->FindStringKey(
-      shill::kL2tpIpsecUseLoginPasswordProperty);
+      shill::kL2TPIPsecUseLoginPasswordProperty);
   if (use_login_password && *use_login_password == "true") {
     onc_object_.SetKey(
         ::onc::l2tp::kPassword,

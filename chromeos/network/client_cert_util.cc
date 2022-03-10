@@ -134,12 +134,12 @@ void GetClientCertFromShillProperties(const base::Value& shill_properties,
 
     // Look for L2TP-IPsec specific properties.
     pkcs11_id_str = provider_properties->FindStringKey(
-        shill::kL2tpIpsecClientCertIdProperty);
+        shill::kL2TPIPsecClientCertIdProperty);
     if (pkcs11_id_str) {
       *pkcs11_id = *pkcs11_id_str;
 
       const std::string* cert_slot = provider_properties->FindStringKey(
-          shill::kL2tpIpsecClientCertSlotProperty);
+          shill::kL2TPIPsecClientCertSlotProperty);
       if (cert_slot && !cert_slot->empty() &&
           !base::StringToInt(*cert_slot, tpm_slot)) {
         LOG(ERROR) << "Cert slot is not an integer: " << *cert_slot << ".";
@@ -208,11 +208,11 @@ void SetShillProperties(const ConfigType cert_config_type,
       break;
     }
     case ConfigType::kL2tpIpsec: {
-      properties->SetKey(shill::kL2tpIpsecPinProperty,
+      properties->SetKey(shill::kL2TPIPsecPinProperty,
                          base::Value(kDefaultTPMPin));
-      properties->SetKey(shill::kL2tpIpsecClientCertSlotProperty,
+      properties->SetKey(shill::kL2TPIPsecClientCertSlotProperty,
                          base::Value(base::NumberToString(tpm_slot)));
-      properties->SetKey(shill::kL2tpIpsecClientCertIdProperty,
+      properties->SetKey(shill::kL2TPIPsecClientCertIdProperty,
                          base::Value(pkcs11_id));
       break;
     }
@@ -254,11 +254,11 @@ void SetEmptyShillProperties(const ConfigType cert_config_type,
       break;
     }
     case ConfigType::kL2tpIpsec: {
-      properties->SetKey(shill::kL2tpIpsecPinProperty,
+      properties->SetKey(shill::kL2TPIPsecPinProperty,
                          base::Value(std::string()));
-      properties->SetKey(shill::kL2tpIpsecClientCertSlotProperty,
+      properties->SetKey(shill::kL2TPIPsecClientCertSlotProperty,
                          base::Value(std::string()));
-      properties->SetKey(shill::kL2tpIpsecClientCertIdProperty,
+      properties->SetKey(shill::kL2TPIPsecClientCertIdProperty,
                          base::Value(std::string()));
       break;
     }

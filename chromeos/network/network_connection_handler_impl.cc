@@ -84,7 +84,7 @@ bool IsCertificateConfigured(const client_cert::ConfigType cert_config_type,
         return false;
 
       std::string client_cert_id = GetStringFromDictionary(
-          *provider_properties, shill::kL2tpIpsecClientCertIdProperty);
+          *provider_properties, shill::kL2TPIPsecClientCertIdProperty);
       return !client_cert_id.empty();
     }
     case client_cert::ConfigType::kEap: {
@@ -124,7 +124,7 @@ std::string VPNCheckCredentials(const std::string& service_path,
     NET_LOG(EVENT) << "OpenVPN Is Configured: " << NetworkPathId(service_path);
   } else {
     bool passphrase_required =
-        provider_properties.FindBoolKey(shill::kL2tpIpsecPskRequiredProperty)
+        provider_properties.FindBoolKey(shill::kL2TPIPsecPskRequiredProperty)
             .value_or(false);
     if (passphrase_required) {
       NET_LOG(ERROR) << "VPN: PSK Required for: "
@@ -650,7 +650,7 @@ void NetworkConnectionHandlerImpl::VerifyConfiguredAndConnect(
       vpn_provider_host =
           GetStringFromDictionary(*provider_properties, shill::kHostProperty);
       vpn_client_cert_id = GetStringFromDictionary(
-          *provider_properties, shill::kL2tpIpsecClientCertIdProperty);
+          *provider_properties, shill::kL2TPIPsecClientCertIdProperty);
     }
     if (vpn_provider_type.empty() || vpn_provider_host.empty()) {
       NET_LOG(ERROR) << "VPN Provider missing for: "

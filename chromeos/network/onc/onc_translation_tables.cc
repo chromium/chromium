@@ -46,33 +46,33 @@ const FieldTranslationEntry eap_fields[] = {
 // This group of fields are for L2TP/IPsec, see |kIPsecIKEv2Table| for IKEv2.
 const FieldTranslationEntry ipsec_fields[] = {
     // This field is converted during translation, see onc_translator_*.
-    // { ::onc::ipsec::kAuthenticationType, shill::kL2tpIpsecAuthenticationType
+    // { ::onc::ipsec::kAuthenticationType, shill::kL2TPIPsecAuthenticationType
     // },
     // {::onc::client_cert::kClientCertPKCS11Id,
-    //  shill::kL2tpIpsecClientCertIdProperty},
-    {::onc::ipsec::kGroup, shill::kL2tpIpsecTunnelGroupProperty},
+    //  shill::kL2TPIPsecClientCertIdProperty},
+    {::onc::ipsec::kGroup, shill::kL2TPIPsecTunnelGroupProperty},
     // Ignored by Shill, not necessary to synchronize.
-    // { ::onc::ipsec::kIKEVersion, shill::kL2tpIpsecIkeVersion },
-    {::onc::ipsec::kPSK, shill::kL2tpIpsecPskProperty},
+    // { ::onc::ipsec::kIKEVersion, shill::kL2TPIPsecIkeVersion },
+    {::onc::ipsec::kPSK, shill::kL2TPIPsecPskProperty},
     // This field is converted during translation, see onc_translator_*.
     // { ::onc::vpn::kSaveCredentials, shill::kSaveCredentialsProperty},
-    {::onc::ipsec::kServerCAPEMs, shill::kL2tpIpsecCaCertPemProperty},
+    {::onc::ipsec::kServerCAPEMs, shill::kL2TPIPsecCaCertPemProperty},
     {nullptr}};
 
 const FieldTranslationEntry xauth_fields[] = {
-    {::onc::vpn::kPassword, shill::kL2tpIpsecXauthPasswordProperty},
-    {::onc::vpn::kUsername, shill::kL2tpIpsecXauthUserProperty},
+    {::onc::vpn::kPassword, shill::kL2TPIPsecXauthPasswordProperty},
+    {::onc::vpn::kUsername, shill::kL2TPIPsecXauthUserProperty},
     {nullptr}};
 
 const FieldTranslationEntry l2tp_fields[] = {
-    {::onc::l2tp::kPassword, shill::kL2tpIpsecPasswordProperty},
+    {::onc::l2tp::kPassword, shill::kL2TPIPsecPasswordProperty},
     // We don't synchronize l2tp's SaveCredentials field for now, as Shill
     // doesn't support separate settings for ipsec and l2tp.
     // { ::onc::l2tp::kSaveCredentials, &kBoolSignature },
-    {::onc::l2tp::kUsername, shill::kL2tpIpsecUserProperty},
+    {::onc::l2tp::kUsername, shill::kL2TPIPsecUserProperty},
     // kLcpEchoDisabled is a bool in ONC and a string in Shill.
     // {::onc::l2tp::kLcpEchoDisabled,
-    // shill::kL2tpIpsecLcpEchoDisabledProperty},
+    // shill::kL2TPIPsecLcpEchoDisabledProperty},
     {nullptr}};
 
 const FieldTranslationEntry openvpn_fields[] = {

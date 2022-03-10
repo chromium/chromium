@@ -172,9 +172,9 @@ class NetworkCertMigratorTest : public testing::Test {
     } else {
       provider.SetKey(shill::kTypeProperty,
                       base::Value(shill::kProviderL2tpIpsec));
-      provider.SetKey(shill::kL2tpIpsecClientCertSlotProperty,
+      provider.SetKey(shill::kL2TPIPsecClientCertSlotProperty,
                       base::Value(slot_id));
-      provider.SetKey(shill::kL2tpIpsecClientCertIdProperty,
+      provider.SetKey(shill::kL2TPIPsecClientCertIdProperty,
                       base::Value(pkcs11_id));
     }
     service_test_->SetServiceProperty(kVPNStub, shill::kProviderProperty,
@@ -200,11 +200,11 @@ class NetworkCertMigratorTest : public testing::Test {
         *pkcs11_id = *pkcs11_id_value;
     } else {
       const std::string* slot_value =
-          provider->FindStringKey(shill::kL2tpIpsecClientCertSlotProperty);
+          provider->FindStringKey(shill::kL2TPIPsecClientCertSlotProperty);
       if (slot_value)
         *slot_id = *slot_value;
       const std::string* pkcs11_id_value =
-          provider->FindStringKey(shill::kL2tpIpsecClientCertIdProperty);
+          provider->FindStringKey(shill::kL2TPIPsecClientCertIdProperty);
       if (pkcs11_id_value)
         *pkcs11_id = *pkcs11_id_value;
     }
