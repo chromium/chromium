@@ -91,8 +91,6 @@ class CONTENT_EXPORT FrameTreeNode {
       FrameTree* frame_tree,
       RenderFrameHostImpl* parent,
       blink::mojom::TreeScopeType tree_scope_type,
-      const std::string& name,
-      const std::string& unique_name,
       bool is_created_by_script,
       const base::UnguessableToken& devtools_frame_token,
       const blink::mojom::FrameOwnerProperties& frame_owner_properties,
@@ -230,6 +228,9 @@ class CONTENT_EXPORT FrameTreeNode {
   const url::Origin& current_origin() const {
     return render_manager_.current_replication_state().origin;
   }
+
+  // Set the current name and notify proxies about the update.
+  void SetFrameName(const std::string& name, const std::string& unique_name);
 
   // Returns the latest frame policy (sandbox flags and container policy) for
   // this frame. This includes flags inherited from parent frames and the latest
@@ -520,7 +521,8 @@ class CONTENT_EXPORT FrameTreeNode {
   //  is implemented to utilize the new path.
   void set_frame_name_for_activation(const std::string& unique_name,
                                      const std::string& name) {
-    render_manager_.browsing_context_state()->set_frame_name(unique_name, name);
+    current_frame_host()->browsing_context_state()->set_frame_name(unique_name,
+                                                                   name);
   }
 
   // Returns true if error page isolation is enabled.

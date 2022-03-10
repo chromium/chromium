@@ -182,6 +182,11 @@ class PrerenderHost::PageHolder : public FrameTree::Delegate,
     std::vector<FrameTreeNode*> subframe_nodes(std::next(node_range.begin()),
                                                node_range.end());
 
+    // Before the root's current_frame_host is cleared, collect the replication
+    // state so that it can be used for post-activation validation.
+    blink::mojom::FrameReplicationState prior_replication_state =
+        frame_tree_->root()->current_replication_state();
+
     // NOTE: TakePrerenderedPage() clears the current_frame_host value of
     // frame_tree_->root(). Do not add any code between here and
     // frame_tree_.reset() that calls into observer functions to minimize the
@@ -200,7 +205,7 @@ class PrerenderHost::PageHolder : public FrameTree::Delegate,
             ->CloneWithoutSharing(context.get());
 
     navigation_request.SetPrerenderActivationNavigationState(
-        std::move(nav_entry), frame_tree_->root()->current_replication_state());
+        std::move(nav_entry), prior_replication_state);
 
     FrameTree& target_frame_tree = GetPrimaryFrameTree();
     DCHECK_EQ(&target_frame_tree,
@@ -217,10 +222,10 @@ class PrerenderHost::PageHolder : public FrameTree::Delegate,
     // TODO(https://crbug.com/1237091): Copying frame name here is suboptimal
     // and ideally we'd do this at the same time when transferring the proxies
     // from the StoredPage into RenderFrameHostManager. However, this is a
-    // temporary solution until we move this into BrowsingInstanceFrameState,
+    // temporary solution until we move this into BrowsingContextState,
     // along with RenderFrameProxyHost.
     page->render_frame_host->frame_tree_node()->set_frame_name_for_activation(
-        frame_tree_->root()->unique_name(), frame_tree_->root()->frame_name());
+        prior_replication_state.unique_name, prior_replication_state.name);
     for (auto& it : page->proxy_hosts) {
       it.second->set_frame_tree_node(*(target_frame_tree.root()));
     }

@@ -17,6 +17,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "content/browser/renderer_host/browsing_context_state.h"
+#include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/browser/renderer_host/should_swap_browsing_instance.h"
 #include "content/browser/renderer_host/stored_page.h"
 #include "content/browser/site_instance_group.h"
@@ -172,11 +173,7 @@ class CONTENT_EXPORT RenderFrameHostManager {
   // must outlive this class.
   //
   // You must call one of the Init*() methods before using this class.
-  RenderFrameHostManager(FrameTreeNode* frame_tree_node,
-                         Delegate* delegate,
-                         const std::string& name,
-                         const std::string& unique_name,
-                         const blink::FramePolicy& frame_policy);
+  RenderFrameHostManager(FrameTreeNode* frame_tree_node, Delegate* delegate);
 
   RenderFrameHostManager(const RenderFrameHostManager&) = delete;
   RenderFrameHostManager& operator=(const RenderFrameHostManager&) = delete;
@@ -194,7 +191,9 @@ class CONTENT_EXPORT RenderFrameHostManager {
                  int32_t frame_routing_id,
                  mojo::PendingAssociatedRemote<mojom::Frame> frame_remote,
                  const blink::LocalFrameToken& frame_token,
-                 blink::FramePolicy frame_policy);
+                 blink::FramePolicy frame_policy,
+                 std::string frame_name,
+                 std::string frame_unique_name);
 
   // Returns the currently active RenderFrameHost.
   //
@@ -326,10 +325,6 @@ class CONTENT_EXPORT RenderFrameHostManager {
   // not create the speculative RFH in the first place for Prerender
   // activations.
   void ActivatePrerender(std::unique_ptr<StoredPage>);
-
-  // Deletes any proxy hosts associated with this node. Used during destruction
-  // of WebContentsImpl.
-  void ResetProxyHosts();
 
   void ClearRFHsPendingShutdown();
   void ClearWebUIInstances();
@@ -483,7 +478,7 @@ class CONTENT_EXPORT RenderFrameHostManager {
   // SiteInstanceGroup IDs, the values are RenderFrameProxyHosts.
   const BrowsingContextState::RenderFrameProxyHostMap&
   GetAllProxyHostsForTesting() const {
-    return browsing_context_state_->proxy_hosts();
+    return render_frame_host_->browsing_context_state()->proxy_hosts();
   }
 
   // Cancels and destroys the pending or speculative RenderFrameHost if they
@@ -555,12 +550,9 @@ class CONTENT_EXPORT RenderFrameHostManager {
   // FrameTree immediately after this call.
   std::unique_ptr<StoredPage> TakePrerenderedPage();
 
-  const scoped_refptr<BrowsingContextState>& browsing_context_state() {
-    return browsing_context_state_;
-  }
-
   const blink::mojom::FrameReplicationState& current_replication_state() const {
-    return browsing_context_state_->current_replication_state();
+    return render_frame_host_->browsing_context_state()
+        ->current_replication_state();
   }
 
  private:
@@ -921,16 +913,6 @@ class CONTENT_EXPORT RenderFrameHostManager {
   // For now, RenderFrameHost keeps a RenderViewHost in its SiteInstance alive.
   // Eventually, RenderViewHost will be replaced with a page context.
   std::unique_ptr<RenderFrameHostImpl> render_frame_host_;
-
-  // Temporarily store BrowsingContextState here while it is 1:1 with
-  // FrameTreeNode and RenderFrameHostManager so we can do an in-place migration
-  // before starting to create a new BrowsingContextState for
-  // cross-BrowsingInstance navigations after transitioning the code to get the
-  // appropriate BrowsingContextState from RenderFrameHost or
-  // RenderFrameProxyHost.
-  // TODO(crbug.com/1270671): remove once legacy mode is removed. This work is
-  // intended to be deprecated quickly.
-  const scoped_refptr<BrowsingContextState> browsing_context_state_;
 
   // A set of RenderFrameHosts waiting to shut down after swapping out.
   using RFHPendingDeleteSet =

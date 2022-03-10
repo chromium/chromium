@@ -1395,8 +1395,8 @@ RenderFrameHostImpl::RenderFrameHostImpl(
       code_cache_host_receivers_(
           GetProcess()->GetStoragePartition()->GetGeneratedCodeCacheContext()),
       fenced_frame_status_(
-          frame_tree_node_->IsInFencedFrameTree()
-              ? (frame_tree_node_->IsFencedFrameRoot()
+          IsInFencedFrameTree()
+              ? (IsFencedFrameRootNoStatus()
                      ? FencedFrameStatus::kFencedFrameRoot
                      : FencedFrameStatus::kIframeNestedWithinFencedFrame)
               : FencedFrameStatus::kNotNestedInFencedFrame) {
@@ -1922,6 +1922,57 @@ bool RenderFrameHostImpl::IsDescendantOfWithinFrameTree(
 
 bool RenderFrameHostImpl::IsFencedFrameRoot() {
   return fenced_frame_status_ == FencedFrameStatus::kFencedFrameRoot;
+}
+
+bool RenderFrameHostImpl::IsFencedFrameRootNoStatus() {
+  if (!blink::features::IsFencedFramesEnabled())
+    return false;
+
+  switch (blink::features::kFencedFramesImplementationTypeParam.Get()) {
+    case blink::features::FencedFramesImplementationType::kMPArch: {
+      return is_main_frame() &&
+             frame_tree()->type() == FrameTree::Type::kFencedFrame;
+    }
+    case blink::features::FencedFramesImplementationType::kShadowDOM: {
+      // Different from the MPArch case, the ShadowDOM implementation of fenced
+      // frame lives in the same FrameTree as its parent, so we need to check
+      // its effective frame policy instead.
+      return browsing_context_state_->effective_frame_policy().is_fenced;
+    }
+    default:
+      return false;
+  }
+}
+
+bool RenderFrameHostImpl::IsInFencedFrameTree() {
+  if (!blink::features::IsFencedFramesEnabled())
+    return false;
+
+  switch (blink::features::kFencedFramesImplementationTypeParam.Get()) {
+    case blink::features::FencedFramesImplementationType::kMPArch:
+      return frame_tree()->type() == FrameTree::Type::kFencedFrame;
+    case blink::features::FencedFramesImplementationType::kShadowDOM: {
+      // FrameTreeNode may not necessarily be initialized in which case,
+      // determining fenced frame information will require a valid
+      // RenderFrameHost.
+      if (browsing_context_state_->effective_frame_policy().is_fenced) {
+        return true;
+      }
+
+      RenderFrameHostImpl* node = GetParent();
+      while (node) {
+        if (node->browsing_context_state()
+                ->effective_frame_policy()
+                .is_fenced) {
+          return true;
+        }
+        node = node->GetParent() ? node->GetParent() : nullptr;
+      }
+      return false;
+    }
+    default:
+      return false;
+  }
 }
 
 bool RenderFrameHostImpl::IsNestedWithinFencedFrame() {
@@ -3843,13 +3894,15 @@ FrameTreeNode* RenderFrameHostImpl::AddChild(
     int frame_routing_id,
     mojo::PendingAssociatedRemote<mojom::Frame> frame_remote,
     const blink::LocalFrameToken& frame_token,
-    const blink::FramePolicy& frame_policy) {
+    const blink::FramePolicy& frame_policy,
+    std::string frame_name,
+    std::string frame_unique_name) {
   // Initialize the RenderFrameHost for the new node.  We always create child
   // frames in the same SiteInstance as the current frame, and they can swap to
   // a different one if they navigate away.
-  child->render_manager()->InitChild(GetSiteInstance(), frame_routing_id,
-                                     std::move(frame_remote), frame_token,
-                                     frame_policy);
+  child->render_manager()->InitChild(
+      GetSiteInstance(), frame_routing_id, std::move(frame_remote), frame_token,
+      frame_policy, frame_name, frame_unique_name);
 
   // Other renderer processes in this BrowsingInstance may need to find out
   // about the new frame.  Create a proxy for the child frame in all
@@ -12736,11 +12789,13 @@ void RenderFrameHostImpl::IsClipboardPasteContentAllowed(
 }
 
 RenderFrameHostImpl* RenderFrameHostImpl::GetParentOrOuterDocument() {
-  return frame_tree_node()->GetParentOrOuterDocument();
+  return frame_tree_node()->GetParentOrOuterDocumentHelper(
+      /*escape_guest_view=*/false);
 }
 
 RenderFrameHostImpl* RenderFrameHostImpl::GetParentOrOuterDocumentOrEmbedder() {
-  return frame_tree_node()->GetParentOrOuterDocumentOrEmbedder();
+  return frame_tree_node()->GetParentOrOuterDocumentHelper(
+      /*escape_guest_view=*/true);
 }
 
 RenderFrameHostImpl* RenderFrameHostImpl::GetOutermostMainFrameOrEmbedder() {
@@ -13138,8 +13193,9 @@ void RenderFrameHostImpl::SetFrameTreeNode(FrameTreeNode& frame_tree_node) {
   switch (features::GetBrowsingContextMode()) {
     case (features::BrowsingContextStateImplementationType::
               kLegacyOneToOneWithFrameTreeNode):
-      browsing_context_state_ =
-          frame_tree_node_->render_manager()->browsing_context_state();
+      browsing_context_state_ = frame_tree_node_->render_manager()
+                                    ->current_frame_host()
+                                    ->browsing_context_state();
       break;
     case (features::BrowsingContextStateImplementationType::
               kSwapForCrossBrowsingInstanceNavigations):

@@ -31,8 +31,11 @@ namespace content {
 
 BrowsingContextState::BrowsingContextState(
     blink::mojom::FrameReplicationStatePtr replication_state,
-    raw_ptr<RenderFrameHostImpl> parent)
-    : replication_state_(std::move(replication_state)), parent_(parent) {}
+    raw_ptr<RenderFrameHostImpl> parent,
+    absl::optional<BrowsingInstanceId> browsing_instance_id)
+    : replication_state_(std::move(replication_state)),
+      parent_(parent),
+      browsing_instance_id_(browsing_instance_id) {}
 
 BrowsingContextState::~BrowsingContextState() = default;
 
@@ -249,6 +252,20 @@ RenderFrameProxyHost* BrowsingContextState::CreateRenderFrameProxyHost(
               frame_tree_node->current_frame_host()->browsing_context_state());
   }
 
+  if (features::GetBrowsingContextMode() ==
+      features::BrowsingContextStateImplementationType::
+          kSwapForCrossBrowsingInstanceNavigations) {
+    // CHECK to verify that the proxy is being created in the correct
+    // BrowsingContextState. BrowsingContextState in non-legacy mode is tied to
+    // the BrowsingInstance, as well as proxies (via SiteInstance) and the right
+    // BrowsingContextState is needed to be selected to be able to access the
+    // proxies. As there will be many BrowsingContextState objects, there is
+    // greater likelihood of the incorrect BrowsingContextState being selected.
+    // TODO(crbug.com/1270671): Add exception here for outer delegate proxies.
+    CHECK(browsing_instance_id_.value() ==
+          site_instance->GetBrowsingInstanceId());
+  }
+
   auto site_instance_group_id =
       static_cast<SiteInstanceImpl*>(site_instance)->group()->GetId();
   CHECK(proxy_hosts_.find(site_instance_group_id) == proxy_hosts_.end())
@@ -263,6 +280,13 @@ RenderFrameProxyHost* BrowsingContextState::CreateRenderFrameProxyHost(
       perfetto::protos::pbzero::ChromeTrackEvent::kRenderFrameProxyHost,
       *proxy_host);
   return proxy_host;
+}
+
+void BrowsingContextState::ResetProxyHosts() {
+  for (const auto& pair : proxy_hosts_) {
+    pair.second->site_instance_group()->RemoveObserver(this);
+  }
+  proxy_hosts_.clear();
 }
 
 }  // namespace content

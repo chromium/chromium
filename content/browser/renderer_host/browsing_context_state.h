@@ -73,8 +73,15 @@ class CONTENT_EXPORT BrowsingContextState
                          std::unique_ptr<RenderFrameProxyHost>,
                          SiteInstanceGroupId::Hasher>;
 
+  // Currently browsing_instance_id| will be null iff the legacy mode is
+  // enabled, as is the legacy mode BrowsingContextState is 1:1 with
+  // FrameTreeNode and therefore doesn't have a dedicated associated
+  // BrowsingInstance.
+  // TODO(crbug.com/1270671): Make |browsing_instance_id| non-optional when the
+  // legacy path is removed.
   BrowsingContextState(blink::mojom::FrameReplicationStatePtr replication_state,
-                       raw_ptr<RenderFrameHostImpl> parent);
+                       raw_ptr<RenderFrameHostImpl> parent,
+                       absl::optional<BrowsingInstanceId> browsing_instance_id);
 
   // Returns a const reference to the map of proxy hosts. The keys are
   // SiteInstanceGroup IDs, the values are RenderFrameProxyHosts.
@@ -197,6 +204,10 @@ class CONTENT_EXPORT BrowsingContextState
       const scoped_refptr<RenderViewHostImpl>& rvh,
       FrameTreeNode* frame_tree_node);
 
+  // Deletes any proxy hosts associated with this node. Used during destruction
+  // of WebContentsImpl.
+  void ResetProxyHosts();
+
  protected:
   friend class base::RefCounted<BrowsingContextState>;
 
@@ -214,6 +225,15 @@ class CONTENT_EXPORT BrowsingContextState
   // Parent document of this BrowsingContextState, might be null if this is a
   // main frame BrowsingContextState.
   const raw_ptr<RenderFrameHostImpl> parent_;
+
+  // ID of the BrowsingInstance to which this BrowsingContextState belongs.
+  // Currently browsing_instance_id| will be null iff the legacy mode is
+  // enabled, as is the legacy mode BrowsingContextState is 1:1 with
+  // FrameTreeNode and therefore doesn't have a dedicated associated
+  // BrowsingInstance.
+  // TODO(crbug.com/1270671): Make |browsing_instance_id| non-optional when the
+  // legacy path is removed.
+  const absl::optional<BrowsingInstanceId> browsing_instance_id_;
 };
 
 }  // namespace content

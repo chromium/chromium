@@ -196,8 +196,6 @@ FrameTree::FrameTree(
                               // The top-level frame must always be in a
                               // document scope.
                               blink::mojom::TreeScopeType::kDocument,
-                              std::string(),
-                              std::string(),
                               false,
                               base::UnguessableToken::Create(),
                               blink::mojom::FrameOwnerProperties(),
@@ -354,8 +352,8 @@ FrameTreeNode* FrameTree::AddFrame(
   CHECK_EQ(parent->GetProcess()->GetID(), process_id);
 
   std::unique_ptr<FrameTreeNode> new_node = base::WrapUnique(new FrameTreeNode(
-      this, parent, scope, frame_name, frame_unique_name, is_created_by_script,
-      devtools_frame_token, frame_owner_properties, owner_type, frame_policy));
+      this, parent, scope, is_created_by_script, devtools_frame_token,
+      frame_owner_properties, owner_type, frame_policy));
 
   // Set sandbox flags and container policy and make them effective immediately,
   // since initial sandbox flags and permissions policy should apply to the
@@ -371,9 +369,9 @@ FrameTreeNode* FrameTree::AddFrame(
     new_node->set_was_discarded();
 
   // Add the new node to the FrameTree, creating the RenderFrameHost.
-  FrameTreeNode* added_node =
-      parent->AddChild(std::move(new_node), new_routing_id,
-                       std::move(frame_remote), frame_token, frame_policy);
+  FrameTreeNode* added_node = parent->AddChild(
+      std::move(new_node), new_routing_id, std::move(frame_remote), frame_token,
+      frame_policy, frame_name, frame_unique_name);
 
   added_node->SetFencedFrameNonceIfNeeded();
 
@@ -640,7 +638,7 @@ void FrameTree::FrameUnloading(FrameTreeNode* frame) {
 
   // Ensure frames that are about to be deleted aren't visible from the other
   // processes anymore.
-  frame->render_manager()->ResetProxyHosts();
+  frame->GetBrowsingContextStateForSubframe()->ResetProxyHosts();
 }
 
 void FrameTree::FrameRemoved(FrameTreeNode* frame) {
@@ -844,7 +842,9 @@ void FrameTree::Shutdown() {
 
   // Destroy all subframes now. This notifies observers.
   root_manager->current_frame_host()->ResetChildren();
-  root_manager->ResetProxyHosts();
+  root_manager->current_frame_host()
+      ->browsing_context_state()
+      ->ResetProxyHosts();
 
   // Manually call the observer methods for the root FrameTreeNode. It is
   // necessary to manually delete all objects tracking navigations
