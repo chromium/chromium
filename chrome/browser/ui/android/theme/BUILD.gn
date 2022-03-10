@@ -27,25 +27,7 @@ android_library("java") {
     "//third_party/androidx:androidx_core_core_java",
     "//ui/android:ui_no_recycler_view_java",
   ]
-  public_deps = [ ":delegate_java" ]
   resources_package = "org.chromium.chrome.browser.theme"
-}
-
-android_library("delegate_java") {
-  sources = [
-    "java/src/org/chromium/chrome/browser/ui/theme/ColorDelegate.java",
-    "java/src/org/chromium/chrome/browser/ui/theme/ColorDelegateImpl.java",
-  ]
-
-  # Targets will need to add the actual implementation at a later point when
-  # downstream vs upstream has been resolved.
-  jar_excluded_patterns = [ "*/ColorDelegateImpl.class" ]
-}
-
-android_library("delegate_public_impl_java") {
-  sources =
-      [ "java/src/org/chromium/chrome/browser/ui/theme/ColorDelegateImpl.java" ]
-  deps = [ ":delegate_java" ]
 }
 
 android_resources("java_resources") {
