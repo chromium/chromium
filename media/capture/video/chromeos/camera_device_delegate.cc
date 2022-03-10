@@ -893,18 +893,33 @@ void CameraDeviceDelegate::ConfigureStreams(
 
   cros::mojom::Camera3StreamConfigurationPtr stream_config =
       cros::mojom::Camera3StreamConfiguration::New();
+  auto camera_app_device =
+      CameraAppDeviceBridgeImpl::GetInstance()->GetWeakCameraAppDevice(
+          device_descriptor_.device_id);
   for (const auto& param : chrome_capture_params_) {
     // Set up context for preview stream and record stream.
     cros::mojom::Camera3StreamPtr stream = cros::mojom::Camera3Stream::New();
     StreamType stream_type = (param.first == ClientType::kPreviewClient)
                                  ? StreamType::kPreviewOutput
                                  : StreamType::kRecordingOutput;
-    // TODO(henryhsu): PreviewClient should remove HW_VIDEO_ENCODER usage when
-    // multiple streams enabled.
-    auto usage = (param.first == ClientType::kPreviewClient)
-                     ? (cros::mojom::GRALLOC_USAGE_HW_COMPOSER |
-                        cros::mojom::GRALLOC_USAGE_HW_VIDEO_ENCODER)
-                     : cros::mojom::GRALLOC_USAGE_HW_VIDEO_ENCODER;
+    uint32_t usage;
+    switch (param.first) {
+      case ClientType::kPreviewClient:
+        usage = cros::mojom::GRALLOC_USAGE_HW_COMPOSER;
+        // TODO(henryhsu): PreviewClient should remove HW_VIDEO_ENCODER usage
+        // when multiple streams enabled.
+        if (camera_app_device && camera_app_device->GetCaptureIntent() ==
+                                     cros::mojom::CaptureIntent::VIDEO_RECORD) {
+          usage |= cros::mojom::GRALLOC_USAGE_HW_VIDEO_ENCODER;
+        }
+        break;
+      case ClientType::kVideoClient:
+        usage = cros::mojom::GRALLOC_USAGE_HW_VIDEO_ENCODER;
+        break;
+      default:
+        NOTREACHED() << "Unrecognized client type: "
+                     << static_cast<int>(param.first);
+    }
     stream->id = static_cast<uint64_t>(stream_type);
     stream->stream_type = cros::mojom::Camera3StreamType::CAMERA3_STREAM_OUTPUT;
     stream->width = param.second.requested_format.frame_size.width();
