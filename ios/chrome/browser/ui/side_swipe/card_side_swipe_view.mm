@@ -180,27 +180,53 @@ const CGFloat kResizeFactor = 4;
       toolbarSideSwipeSnapshotForWebState:webState];
   [card setBottomToolbarImage:bottomToolbarSnapshot];
 
+  __weak CardSideSwipeView* weakSelf = self;
+  web::WebState::Getter webStateGetter = webState->CreateDefaultGetter();
+  SnapshotTabHelper::FromWebState(webState)->RetrieveColorSnapshot(
+      ^(UIImage* image) {
+        [weakSelf colorSnapshotRetrieved:image
+                                    card:card
+                          webStateGetter:webStateGetter];
+      });
+}
+
+// Helper method that is invoked once the color snapshot has been fetched
+// for the WebState returned by |webStateGetter|. As the fetching is done
+// asynchronously, it is possible for the WebState to have been destroyed
+// and thus for |webStateGetter| to return nullptr.
+- (void)colorSnapshotRetrieved:(UIImage*)image
+                          card:(SwipeView*)card
+                webStateGetter:(web::WebState::Getter)webStateGetter {
+  // If the WebState has been destroyed, the card will be dropped, so
+  // the image can be dropped.
+  web::WebState* webState = webStateGetter.Run();
+  if (!webState) {
+    return;
+  }
+
   // Converting snapshotted images to grey takes too much time for single core
   // devices.  Instead, show the colored image for single core devices and the
   // grey image for multi core devices.
-  dispatch_queue_t priorityQueue =
-      dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0ul);
-  SnapshotTabHelper::FromWebState(webState)->RetrieveColorSnapshot(
-      ^(UIImage* image) {
-        if (PagePlaceholderTabHelper::FromWebState(webState)
-                ->will_add_placeholder_for_next_navigation() &&
-            !ios::device_util::IsSingleCoreDevice()) {
-          [card setImage:nil];
-          dispatch_async(priorityQueue, ^{
-            UIImage* greyImage = [self smallGreyImage:image];
-            dispatch_async(dispatch_get_main_queue(), ^{
-              [card setImage:greyImage];
-            });
-          });
-        } else {
-          [card setImage:image];
-        }
-      });
+  const bool use_color_image =
+      ios::device_util::IsSingleCoreDevice() ||
+      !PagePlaceholderTabHelper::FromWebState(webState)
+           ->will_add_placeholder_for_next_navigation();
+
+  if (use_color_image) {
+    [card setImage:image];
+    return;
+  }
+
+  __weak CardSideSwipeView* weakSelf = self;
+  dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0ul),
+                 ^{
+                   UIImage* greyImage = [weakSelf smallGreyImage:image];
+                   if (greyImage) {
+                     dispatch_async(dispatch_get_main_queue(), ^{
+                       [card setImage:greyImage];
+                     });
+                   }
+                 });
 }
 
 // Move cards according to |currentPoint_.x|. Edge cards only drag
