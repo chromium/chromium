@@ -38,6 +38,7 @@
 #include "chrome/browser/net/net_error_tab_helper.h"
 #include "chrome/browser/net/system_network_context_manager.h"
 #include "chrome/browser/predictors/loading_predictor_config.h"
+#include "chrome/browser/privacy_sandbox/privacy_sandbox_service.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_attributes_entry.h"
 #include "chrome/browser/profiles/profile_attributes_storage.h"
@@ -457,6 +458,11 @@ void InProcessBrowserTest::SetUp() {
   // Auto-redirect to the NTP, which can happen if remote content is enabled on
   // What's New for tests that simulate first run, is unexpected by most tests.
   whats_new::DisableRemoteContentForTests();
+
+  // The Privacy Sandbox service may attempt to show a modal dialog to the
+  // profile on browser start, which is unexpected by mosts tests. Tests which
+  // expect this can allow the dialog as desired.
+  PrivacySandboxService::SetDialogDisabledForTests(true);
 
   BrowserTestBase::SetUp();
 }

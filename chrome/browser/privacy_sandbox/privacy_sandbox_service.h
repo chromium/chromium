@@ -20,6 +20,7 @@
 #include "components/sync/driver/sync_service.h"
 #include "components/sync/driver/sync_service_observer.h"
 
+class Browser;
 class PrefService;
 
 namespace content {
@@ -96,7 +97,8 @@ class PrivacySandboxService : public KeyedService,
   // state of the Privacy Sandbox settings, and the current location of the
   // user, to determine the appropriate type. This is expected to be called by
   // UI code locations determining whether a dialog should be shown on startup.
-  DialogType GetRequiredDialogType();
+  // Virtual to allow mocking in tests.
+  virtual DialogType GetRequiredDialogType();
 
   // Informs the service that |action| occurred with the dialog. This allows
   // the service to record this information in preferences such that future
@@ -105,6 +107,23 @@ class PrivacySandboxService : public KeyedService,
   // between platforms will also be recorded.
   // This method is virtual for mocking in tests.
   virtual void DialogActionOccurred(DialogAction action);
+
+  // Returns whether |url| is suitable to display the Privacy Sandbox dialog
+  // over. Only about:blank and certain chrome:// URLs are considered suitable.
+  static bool IsUrlSuitableForDialog(const GURL& url);
+
+  // Informs the service that a Privacy Sandbox dialog has been opened for
+  // |browser|.
+  // Virtual to allow mocking in tests.
+  virtual void DialogOpenedForBrowser(Browser* browser);
+
+  // Disables the display of the Privacy Sandbox dialog for testing. When
+  // |disabled| is true, GetRequiredDialogType() will only ever return that no
+  // dialog is required.
+  // NOTE: This is set to true in InProcessBrowserTest::SetUp, disabling the
+  // dialog for those tests. If you set this outside of that context, you should
+  // ensure it is reset at the end of your test.
+  static void SetDialogDisabledForTests(bool disabled);
 
   // Returns a description of FLoC ready for display to the user. Correctly
   // takes into account the FLoC feature parameters when determining the number

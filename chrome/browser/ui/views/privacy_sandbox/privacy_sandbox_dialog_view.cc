@@ -6,6 +6,7 @@
 
 #include "base/metrics/histogram_functions.h"
 #include "chrome/browser/privacy_sandbox/privacy_sandbox_service.h"
+#include "chrome/browser/privacy_sandbox/privacy_sandbox_service_factory.h"
 #include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/browser/ui/privacy_sandbox/privacy_sandbox_dialog.h"
 #include "chrome/browser/ui/views/frame/app_menu_button.h"
@@ -76,6 +77,10 @@ PrivacySandboxDialogView::PrivacySandboxDialogView(
       dialog_type);
 
   SetUseDefaultFillLayout(true);
+
+  auto* privacy_sandbox_serivce =
+      PrivacySandboxServiceFactory::GetForProfile(browser->profile());
+  privacy_sandbox_serivce->DialogOpenedForBrowser(browser);
 }
 
 void PrivacySandboxDialogView::Close() {

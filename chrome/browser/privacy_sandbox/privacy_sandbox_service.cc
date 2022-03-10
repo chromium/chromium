@@ -15,6 +15,7 @@
 #include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/time/time.h"
+#include "chrome/common/webui_url_constants.h"
 #include "components/content_settings/core/browser/cookie_settings.h"
 #include "components/content_settings/core/common/pref_names.h"
 #include "components/prefs/pref_service.h"
@@ -32,6 +33,8 @@
 #include "ui/base/l10n/l10n_util.h"
 
 namespace {
+
+bool g_dialog_diabled_for_tests = false;
 
 // Returns true iff based on |cookies_settings| & |prefs| third party cookies
 // are disabled by policy. This includes disabling third party cookies via
@@ -198,6 +201,39 @@ void PrivacySandboxService::DialogActionOccurred(
       // TODO(crbug.com/1286384): Record received actions in metrics.
     }
   }
+}
+
+// static
+bool PrivacySandboxService::IsUrlSuitableForDialog(const GURL& url) {
+  // about:blank is valid.
+  if (url.IsAboutBlank())
+    return true;
+
+  // Other than about:blank, only chrome:// urls are valid. This check is early
+  // in processing to immediately exclude most URLs.
+  if (!url.SchemeIs(content::kChromeUIScheme))
+    return false;
+
+  // The welcome page is never valid.
+  if (url.host() == chrome::kChromeUIWelcomeHost)
+    return false;
+
+  // The generic new tab is never valid, only NTPs known to be Chrome controlled
+  // are valid.
+  if (url.host() == chrome::kChromeUINewTabHost)
+    return false;
+
+  // All remaining chrome:// pages are considered valid.
+  return true;
+}
+
+void PrivacySandboxService::DialogOpenedForBrowser(Browser* browser) {
+  // TODO(crbug.com/1286276): Implement logic to record this and make available
+  // to the Privacy Sandbox helper.
+}
+
+void PrivacySandboxService::SetDialogDisabledForTests(bool disabled) {
+  g_dialog_diabled_for_tests = disabled;
 }
 
 std::u16string PrivacySandboxService::GetFlocDescriptionForDisplay() const {
@@ -600,6 +636,10 @@ PrivacySandboxService::GetRequiredDialogTypeInternal(
     PrefService* pref_service,
     profile_metrics::BrowserProfileType profile_type,
     privacy_sandbox::PrivacySandboxSettings* privacy_sandbox_settings) {
+  // If the dialog is disabled for testing, never show it.
+  if (g_dialog_diabled_for_tests)
+    return DialogType::kNone;
+
   // If the profile isn't a regular profile, no dialog should ever be shown.
   if (profile_type != profile_metrics::BrowserProfileType::kRegular)
     return DialogType::kNone;
