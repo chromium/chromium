@@ -68,6 +68,8 @@ class CONTENT_EXPORT FederatedAuthRequestImpl {
       FederatedIdentityRequestPermissionContextDelegate*);
   void SetSharingPermissionDelegateForTests(
       FederatedIdentitySharingPermissionContextDelegate*);
+  void SetApiPermissionDelegateForTests(
+      FederatedIdentityApiPermissionContextDelegate*);
 
   // Rejects the pending request if it has not been resolved naturally yet.
   void OnRejectRequest();

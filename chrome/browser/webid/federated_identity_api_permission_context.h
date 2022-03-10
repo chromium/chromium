@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_WEBID_FEDERATED_IDENTITY_API_PERMISSION_CONTEXT_H_
 #define CHROME_BROWSER_WEBID_FEDERATED_IDENTITY_API_PERMISSION_CONTEXT_H_
 
+#include "components/content_settings/core/browser/cookie_settings.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "content/public/browser/federated_identity_api_permission_context_delegate.h"
@@ -30,9 +31,11 @@ class FederatedIdentityApiPermissionContext
 
   // content::FederatedIdentityApiPermissionContextDelegate:
   bool HasApiPermission() override;
+  bool AreThirdPartyCookiesBlocked() override;
 
  private:
   const raw_ptr<HostContentSettingsMap> host_content_settings_map_;
+  scoped_refptr<content_settings::CookieSettings> cookie_settings_;
 };
 
 #endif  // CHROME_BROWSER_WEBID_FEDERATED_IDENTITY_API_PERMISSION_CONTEXT_H_

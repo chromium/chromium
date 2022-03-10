@@ -345,7 +345,10 @@ std::unique_ptr<IdpNetworkRequestManager> IdpNetworkRequestManager::Create(
     return nullptr;
 
   // Use the browser process URL loader factory because it has cross-origin
-  // read blocking disabled.
+  // read blocking disabled. This is safe because even though these are
+  // renderer-initiated fetches, the browser parses the responses and does not
+  // leak the values to the renderer. The renderer should only learn information
+  // when the user selects an account to sign in.
   return std::make_unique<IdpNetworkRequestManager>(
       provider, host->GetLastCommittedOrigin(),
       host->GetStoragePartition()->GetURLLoaderFactoryForBrowserProcess(),

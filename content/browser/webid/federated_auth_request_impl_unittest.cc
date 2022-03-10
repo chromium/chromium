@@ -19,6 +19,7 @@
 #include "content/browser/webid/fedcm_metrics.h"
 #include "content/browser/webid/federated_auth_request_service.h"
 #include "content/browser/webid/test/mock_active_session_permission_delegate.h"
+#include "content/browser/webid/test/mock_api_permission_delegate.h"
 #include "content/browser/webid/test/mock_identity_request_dialog_controller.h"
 #include "content/browser/webid/test/mock_idp_network_request_manager.h"
 #include "content/browser/webid/test/mock_request_permission_delegate.h"
@@ -427,6 +428,12 @@ class FederatedAuthRequestImplTest : public RenderViewHostImplTestHarness {
     mock_active_session_permission_delegate_ =
         std::make_unique<NiceMock<MockActiveSessionPermissionDelegate>>();
 
+    mock_sharing_permission_delegate_ =
+        std::make_unique<NiceMock<MockSharingPermissionDelegate>>();
+
+    auth_request_service_->GetImplForTesting()
+        ->SetSharingPermissionDelegateForTests(
+            mock_sharing_permission_delegate_.get());
     return *auth_request_service_->GetImplForTesting();
   }
 
@@ -682,6 +689,8 @@ class FederatedAuthRequestImplTest : public RenderViewHostImplTestHarness {
       mock_request_permission_delegate_;
   std::unique_ptr<NiceMock<MockActiveSessionPermissionDelegate>>
       mock_active_session_permission_delegate_;
+  std::unique_ptr<NiceMock<MockSharingPermissionDelegate>>
+      mock_sharing_permission_delegate_;
 
   base::OnceClosure close_idp_window_callback_;
 
@@ -879,19 +888,15 @@ TEST_F(BasicFederatedAuthRequestImplTest,
 TEST_F(BasicFederatedAuthRequestImplTest,
        LoginStateShouldBeSignInForReturningUser) {
   const auto& test_case = kSuccessfulMediatedSignUpTestCase;
-  auto& auth_request = CreateAuthRequest(GURL(test_case.inputs.provider));
+  CreateAuthRequest(GURL(test_case.inputs.provider));
   SetMockExpectations(test_case);
-  // Set specific expectations for sharing permission:
-  NiceMock<MockSharingPermissionDelegate> mock_sharing_permission_delegate;
-  auth_request.SetSharingPermissionDelegateForTests(
-      &mock_sharing_permission_delegate);
 
   // Pretend the sharing permission has been granted for this account.
   //
   // TODO(majidvp): Ideally we would use the kRpTestOrigin for second argument
   // but web contents has not navigated to that URL so origin() is null in
   // tests. We should fix this.
-  EXPECT_CALL(mock_sharing_permission_delegate,
+  EXPECT_CALL(*mock_sharing_permission_delegate_,
               HasSharingPermissionForAccount(
                   url::Origin::Create(GURL(kIdpTestOrigin)), _, "1234"))
       .WillOnce(Return(true));
@@ -905,20 +910,16 @@ TEST_F(BasicFederatedAuthRequestImplTest,
 TEST_F(BasicFederatedAuthRequestImplTest,
        LoginStateSuccessfulSignUpGrantsSharingPermission) {
   const auto& test_case = kSuccessfulMediatedSignUpTestCase;
-  auto& auth_request = CreateAuthRequest(GURL(test_case.inputs.provider));
+  CreateAuthRequest(GURL(test_case.inputs.provider));
   SetMockExpectations(test_case);
-  // Set specific expectations for sharing permission.
-  NiceMock<MockSharingPermissionDelegate> mock_sharing_permission_delegate;
-  auth_request.SetSharingPermissionDelegateForTests(
-      &mock_sharing_permission_delegate);
 
-  EXPECT_CALL(mock_sharing_permission_delegate,
+  EXPECT_CALL(*mock_sharing_permission_delegate_,
               HasSharingPermissionForAccount(_, _, _))
       .WillOnce(Return(false));
   // TODO(majidvp): Ideally we would use the kRpTestOrigin for second argument
   // but web contents has not navigated to that URL so origin() is null in
   // tests. We should fix this.
-  EXPECT_CALL(mock_sharing_permission_delegate,
+  EXPECT_CALL(*mock_sharing_permission_delegate_,
               GrantSharingPermissionForAccount(
                   url::Origin::Create(GURL(kIdpTestOrigin)), _, "1234"))
       .Times(1);
@@ -931,17 +932,13 @@ TEST_F(BasicFederatedAuthRequestImplTest,
 TEST_F(BasicFederatedAuthRequestImplTest,
        LoginStateFailedSignUpNotGrantSharingPermission) {
   const auto& test_case = kFailedMediatedSignUpTestCase;
-  auto& auth_request = CreateAuthRequest(GURL(test_case.inputs.provider));
+  CreateAuthRequest(GURL(test_case.inputs.provider));
   SetMockExpectations(test_case);
-  // Set specific expectations for sharing permission.
-  NiceMock<MockSharingPermissionDelegate> mock_sharing_permission_delegate;
-  auth_request.SetSharingPermissionDelegateForTests(
-      &mock_sharing_permission_delegate);
 
-  EXPECT_CALL(mock_sharing_permission_delegate,
+  EXPECT_CALL(*mock_sharing_permission_delegate_,
               HasSharingPermissionForAccount(_, _, _))
       .WillOnce(Return(false));
-  EXPECT_CALL(mock_sharing_permission_delegate,
+  EXPECT_CALL(*mock_sharing_permission_delegate_,
               GrantSharingPermissionForAccount(_, _, _))
       .Times(0);
 
@@ -958,19 +955,15 @@ TEST_F(BasicFederatedAuthRequestImplTest, AutoSignInForReturningUser) {
 
   AccountList displayed_accounts;
   const auto& test_case = kSuccessfulMediatedAutoSignInTestCase;
-  auto& auth_request = CreateAuthRequest(GURL(test_case.inputs.provider));
+  CreateAuthRequest(GURL(test_case.inputs.provider));
   SetMockExpectations(test_case);
-  // Set specific expectations for sharing permission:
-  NiceMock<MockSharingPermissionDelegate> mock_sharing_permission_delegate;
-  auth_request.SetSharingPermissionDelegateForTests(
-      &mock_sharing_permission_delegate);
 
   // Pretend the sharing permission has been granted for this account.
   //
   // TODO(majidvp): Ideally we would use the kRpTestOrigin for second argument
   // but web contents has not navigated to that URL so origin() is null in
   // tests. We should fix this.
-  EXPECT_CALL(mock_sharing_permission_delegate,
+  EXPECT_CALL(*mock_sharing_permission_delegate_,
               HasSharingPermissionForAccount(
                   url::Origin::Create(GURL(kIdpTestOrigin)), _, "1234"))
       .WillOnce(Return(true));
@@ -1043,19 +1036,15 @@ TEST_F(BasicFederatedAuthRequestImplTest, AutoSignInWithScreenReader) {
 
   AccountList displayed_accounts;
   const auto& test_case = kSuccessfulMediatedAutoSignInTestCase;
-  auto& auth_request = CreateAuthRequest(GURL(test_case.inputs.provider));
+  CreateAuthRequest(GURL(test_case.inputs.provider));
   SetMockExpectations(test_case);
-  // Set specific expectations for sharing permission:
-  NiceMock<MockSharingPermissionDelegate> mock_sharing_permission_delegate;
-  auth_request.SetSharingPermissionDelegateForTests(
-      &mock_sharing_permission_delegate);
 
   // Pretend the sharing permission has been granted for this account.
   //
   // TODO(majidvp): Ideally we would use the kRpTestOrigin for second argument
   // but web contents has not navigated to that URL so origin() is null in
   // tests. We should fix this.
-  EXPECT_CALL(mock_sharing_permission_delegate,
+  EXPECT_CALL(*mock_sharing_permission_delegate_,
               HasSharingPermissionForAccount(
                   url::Origin::Create(GURL(kIdpTestOrigin)), _, "1234"))
       .WillOnce(Return(true));
@@ -1167,12 +1156,8 @@ TEST_F(FederatedAuthRequestImplTest, RevokeNoPermission) {
 
 TEST_F(BasicFederatedAuthRequestImplTest, MetricsForSuccessfulSignUpCase) {
   const auto& test_case = kSuccessfulMediatedSignUpTestCase;
-  auto& auth_request = CreateAuthRequest(GURL(test_case.inputs.provider));
+  CreateAuthRequest(GURL(test_case.inputs.provider));
   SetMockExpectations(test_case);
-  // Sets specific expectations for sharing permission.
-  NiceMock<MockSharingPermissionDelegate> mock_sharing_permission_delegate;
-  auth_request.SetSharingPermissionDelegateForTests(
-      &mock_sharing_permission_delegate);
 
   EXPECT_EQ(test_case.config.Mediated_conf.accounts.size(), 1u);
 
@@ -1211,15 +1196,11 @@ TEST_F(BasicFederatedAuthRequestImplTest, MetricsForSuccessfulSignUpCase) {
 
 TEST_F(BasicFederatedAuthRequestImplTest, MetricsForSuccessfulSignInCase) {
   const auto& test_case = kSuccessfulMediatedSignUpTestCase;
-  auto& auth_request = CreateAuthRequest(GURL(test_case.inputs.provider));
+  CreateAuthRequest(GURL(test_case.inputs.provider));
   SetMockExpectations(test_case);
-  // Sets specific expectations for sharing permission.
-  NiceMock<MockSharingPermissionDelegate> mock_sharing_permission_delegate;
-  auth_request.SetSharingPermissionDelegateForTests(
-      &mock_sharing_permission_delegate);
 
   // Pretends that the sharing permission has been granted for this account.
-  EXPECT_CALL(mock_sharing_permission_delegate,
+  EXPECT_CALL(*mock_sharing_permission_delegate_,
               HasSharingPermissionForAccount(
                   url::Origin::Create(GURL(kIdpTestOrigin)), _, "1234"))
       .WillOnce(Return(true));
@@ -1274,12 +1255,8 @@ TEST_F(BasicFederatedAuthRequestImplTest, MetricsForNotSelectingAccount) {
        kClientMetadataEndpoint,
        {FetchStatus::kSuccess, kAccounts, absl::nullopt,
         /*customized_dialog=*/true}}};
-  auto& auth_request = CreateAuthRequest(GURL(test_case.inputs.provider));
+  CreateAuthRequest(GURL(test_case.inputs.provider));
   SetMockExpectations(test_case);
-  // Sets specific expectations for sharing permission:
-  NiceMock<MockSharingPermissionDelegate> mock_sharing_permission_delegate;
-  auth_request.SetSharingPermissionDelegateForTests(
-      &mock_sharing_permission_delegate);
 
   EXPECT_CALL(*mock_dialog_controller(),
               ShowAccountsDialog(_, _, _, _, _, _, _))
@@ -1339,15 +1316,11 @@ TEST_F(BasicFederatedAuthRequestImplTest, MetricsForWebContentsVisible) {
   ASSERT_EQ(web_contents_impl->GetVisibility(), Visibility::VISIBLE);
 
   const auto& test_case = kSuccessfulMediatedSignUpTestCase;
-  auto& auth_request = CreateAuthRequest(GURL(test_case.inputs.provider));
+  CreateAuthRequest(GURL(test_case.inputs.provider));
   SetMockExpectations(test_case);
-  // Sets specific expectations for sharing permission.
-  NiceMock<MockSharingPermissionDelegate> mock_sharing_permission_delegate;
-  auth_request.SetSharingPermissionDelegateForTests(
-      &mock_sharing_permission_delegate);
 
   // Pretends that the sharing permission has been granted for this account.
-  EXPECT_CALL(mock_sharing_permission_delegate,
+  EXPECT_CALL(*mock_sharing_permission_delegate_,
               HasSharingPermissionForAccount(
                   url::Origin::Create(GURL(kIdpTestOrigin)), _, "1234"))
       .WillOnce(Return(true));
@@ -1393,6 +1366,23 @@ TEST_F(BasicFederatedAuthRequestImplTest, MetricsForWebContentsInvisible) {
 
   histogram_tester.ExpectBucketCount("Blink.FedCm.WebContentsVisible", 0, 1);
   histogram_tester.ExpectTotalCount("Blink.FedCm.WebContentsVisible", 1);
+}
+
+TEST_F(BasicFederatedAuthRequestImplTest,
+       DisabledWhenThirdPartyCookiesBlocked) {
+  const auto& test_case = kSuccessfulMediatedAutoSignInTestCase;
+  CreateAuthRequest(GURL(test_case.inputs.provider));
+  NiceMock<MockApiPermissionDelegate> mock_api_permission_delegate;
+  auth_request_service_->GetImplForTesting()->SetApiPermissionDelegateForTests(
+      &mock_api_permission_delegate);
+  // Not calling SetMockExpectations(test_case) because the testcase is rejected
+  // early on, before the network manager is actually created.
+  EXPECT_CALL(mock_api_permission_delegate, AreThirdPartyCookiesBlocked())
+      .WillOnce(Return(true));
+  auto auth_response =
+      PerformAuthRequest(test_case.inputs.client_id, test_case.inputs.nonce,
+                         test_case.inputs.prefer_auto_sign_in);
+  EXPECT_EQ(auth_response.first, RequestIdTokenStatus::kError);
 }
 
 }  // namespace content

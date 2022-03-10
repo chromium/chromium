@@ -16,6 +16,9 @@ class FederatedIdentityApiPermissionContextDelegate {
 
   // Returns whether the FedCM API is enabled in site settings.
   virtual bool HasApiPermission() = 0;
+
+  // Returns whether third party cookies are blocked.
+  virtual bool AreThirdPartyCookiesBlocked() = 0;
 };
 
 }  // namespace content

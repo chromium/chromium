@@ -254,6 +254,17 @@ void FederatedAuthRequestImpl::RequestIdToken(
   start_time_ = base::TimeTicks::Now();
   delay_timer_.Reset();
 
+  // TODO(npm): FedCM is currently restricted to contexts where third party
+  // cookies are not blocked.  Once the privacy improvements for the API are
+  // implemented, remove this restriction. See https://crbug.com/1304396.
+  if (GetApiPermissionContext() &&
+      GetApiPermissionContext()->AreThirdPartyCookiesBlocked()) {
+    // TODO(npm): this should probably record to a metric value, and issue a
+    // distinct console error message.
+    CompleteRequest(FederatedAuthRequestResult::kError, "",
+                    /*should_call_callback=*/false);
+    return;
+  }
   network_manager_ = CreateNetworkManager(provider);
   if (!network_manager_) {
     RecordRequestIdTokenStatus(IdTokenStatus::kNoNetworkManager,
@@ -975,8 +986,9 @@ void FederatedAuthRequestImpl::CompleteRequest(
     AddConsoleErrorMessage(result);
   }
 
-  bool should_run_callback = should_call_callback ||
-                             network_manager_->IsMockIdpNetworkRequestManager();
+  bool should_run_callback =
+      should_call_callback ||
+      (network_manager_ && network_manager_->IsMockIdpNetworkRequestManager());
   CleanUp();
 
   if (should_run_callback) {
@@ -1069,6 +1081,11 @@ void FederatedAuthRequestImpl::SetSharingPermissionDelegateForTests(
     FederatedIdentitySharingPermissionContextDelegate*
         sharing_permission_delegate) {
   sharing_permission_delegate_ = sharing_permission_delegate;
+}
+
+void FederatedAuthRequestImpl::SetApiPermissionDelegateForTests(
+    FederatedIdentityApiPermissionContextDelegate* api_permission_delegate) {
+  api_permission_delegate_ = api_permission_delegate;
 }
 
 FederatedIdentityActiveSessionPermissionContextDelegate*
