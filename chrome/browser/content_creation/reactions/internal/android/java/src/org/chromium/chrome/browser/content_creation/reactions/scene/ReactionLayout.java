@@ -202,6 +202,10 @@ public class ReactionLayout extends RelativeLayout {
                                 % 360.0;
                         ReactionLayout.this.setRotation((float) newAngle);
                         break;
+                    case MotionEvent.ACTION_UP:
+                        view.announceForAccessibility(mContext.getString(
+                                R.string.lightweight_reactions_reaction_adjusted_announcement));
+                        break;
                 }
                 return true;
             }

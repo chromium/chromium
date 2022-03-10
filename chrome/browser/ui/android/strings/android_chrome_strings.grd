@@ -5168,6 +5168,10 @@ To change this setting, <ph name="BEGIN_LINK">&lt;resetlink&gt;</ph>reset sync<p
         Resize and rotate
       </message>
 
+      <message name="IDS_LIGHTWEIGHT_REACTIONS_REACTION_ADJUSTED_ANNOUNCEMENT" is_accessibility_with_no_ui="true" desc="The accessibility text to read when a reaction is resized or rotated.">
+        Reaction adjusted
+      </message>
+
       <message name="IDS_LIGHTWEIGHT_REACTIONS_DUPLICATE_BUTTON" is_accessibility_with_no_ui="true" desc="The accessibility text to read when the duplicate editing tool is selected. The user can then dupicate the reaction on the scene.">
         Duplicate
       </message>
