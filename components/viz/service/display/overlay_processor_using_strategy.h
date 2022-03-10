@@ -13,7 +13,6 @@
 #include "base/hash/hash.h"
 #include "base/memory/raw_ptr.h"
 #include "build/build_config.h"
-#include "components/viz/common/display/overlay_strategy.h"
 #include "components/viz/common/quads/aggregated_render_pass.h"
 #include "components/viz/service/display/display_resource_provider.h"
 #include "components/viz/service/display/output_surface.h"
@@ -260,26 +259,6 @@ class VIZ_SERVICE_EXPORT OverlayProcessorUsingStrategy
   // Moves `curr_overlays` into `prev_overlays`, and updates `curr_overlays` to
   // reflect the overlays that will be promoted this frame in `candidates`.
   void UpdateOverlayStatusMap(const OverlayCandidateList& candidates);
-
-  struct ProposedCandidateKey {
-    OverlayCandidate::TrackingId tracking_id =
-        OverlayCandidate::kDefaultTrackingId;
-    OverlayStrategy strategy_id = OverlayStrategy::kUnknown;
-
-    bool operator==(const ProposedCandidateKey& other) const {
-      return (tracking_id == other.tracking_id &&
-              strategy_id == other.strategy_id);
-    }
-  };
-
-  struct ProposedCandidateKeyHasher {
-    std::size_t operator()(const ProposedCandidateKey& k) const {
-      return base::Hash(&k, sizeof(k));
-    }
-  };
-
-  static ProposedCandidateKey ToProposeKey(
-      const OverlayProposedCandidate& proposed);
 
   std::unordered_map<ProposedCandidateKey,
                      OverlayCandidateTemporalTracker,

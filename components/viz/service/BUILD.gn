@@ -308,6 +308,7 @@ viz_component("service") {
       "display/overlay_processor_strategy.h",
       "display/overlay_processor_using_strategy.cc",
       "display/overlay_processor_using_strategy.h",
+      "display/overlay_proposed_candidate.cc",
       "display/overlay_proposed_candidate.h",
       "display/overlay_strategy_fullscreen.cc",
       "display/overlay_strategy_fullscreen.h",
