@@ -274,15 +274,18 @@ class MarionettePrefsProtocolPart(PrefsProtocolPart):
         self.marionette = self.parent.marionette
 
     def set(self, name, value):
+        if not isinstance(value, str):
+            value = str(value)
+
         if value.lower() not in ("true", "false"):
             try:
                 int(value)
             except ValueError:
-                value = "'%s'" % value
+                value = f"'{value}'"
         else:
             value = value.lower()
 
-        self.logger.info("Setting pref %s (%s)" % (name, value))
+        self.logger.info(f"Setting pref {name} to {value}")
 
         script = """
             let prefInterface = Components.classes["@mozilla.org/preferences-service;1"]
@@ -325,7 +328,7 @@ class MarionettePrefsProtocolPart(PrefsProtocolPart):
             self.marionette.execute_script(script)
 
     def clear(self, name):
-        self.logger.info("Clearing pref %s" % (name))
+        self.logger.info(f"Clearing pref {name}")
         script = """
             let prefInterface = Components.classes["@mozilla.org/preferences-service;1"]
                                           .getService(Components.interfaces.nsIPrefBranch);
@@ -353,7 +356,9 @@ class MarionettePrefsProtocolPart(PrefsProtocolPart):
             }
             """ % name
         with self.marionette.using_context(self.marionette.CONTEXT_CHROME):
-            self.marionette.execute_script(script)
+            rv = self.marionette.execute_script(script)
+        self.logger.debug(f"Got pref {name} with value {rv}")
+        return rv
 
 
 class MarionetteStorageProtocolPart(StorageProtocolPart):
@@ -900,7 +905,7 @@ class MarionetteTestharnessExecutor(TestharnessExecutor):
         return (test.result_cls(extra=extra, *data), [])
 
     def do_testharness(self, protocol, url, timeout):
-        parent_window = protocol.testharness.close_old_windows(protocol)
+        parent_window = protocol.testharness.close_old_windows(self.last_environment["protocol"])
 
         if self.protocol.coverage.is_enabled:
             self.protocol.coverage.reset()
@@ -967,6 +972,8 @@ class MarionetteRefTestExecutor(RefTestExecutor):
         self.debug = debug
         self.debug_test = debug_test
 
+        self.install_extensions = browser.extensions
+
         with open(os.path.join(here, "reftest.js")) as f:
             self.script = f.read()
         with open(os.path.join(here, "test-wait.js")) as f:
@@ -978,6 +985,11 @@ class MarionetteRefTestExecutor(RefTestExecutor):
 
     def setup(self, runner):
         super(MarionetteRefTestExecutor, self).setup(runner)
+        for extension_path in self.install_extensions:
+            self.logger.info("Installing extension from %s" % extension_path)
+            addons = Addons(self.protocol.marionette)
+            addons.install(extension_path)
+
         self.implementation.setup(**self.implementation_kwargs)
 
     def teardown(self):

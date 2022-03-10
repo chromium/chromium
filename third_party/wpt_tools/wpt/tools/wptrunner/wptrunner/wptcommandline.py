@@ -38,8 +38,7 @@ def create_parser(product_choices=None):
     from . import products
 
     if product_choices is None:
-        config_data = config.load()
-        product_choices = products.products_enabled(config_data)
+        product_choices = products.product_list
 
     parser = argparse.ArgumentParser(description="""Runner for web-platform-tests tests.""",
                                      usage="""%(prog)s [OPTION]... [TEST]...
@@ -659,8 +658,7 @@ def create_parser_update(product_choices=None):
     from . import products
 
     if product_choices is None:
-        config_data = config.load()
-        product_choices = products.products_enabled(config_data)
+        product_choices = products.product_list
 
     parser = argparse.ArgumentParser("web-platform-tests-update",
                                      description="Update script for web-platform-tests tests.")

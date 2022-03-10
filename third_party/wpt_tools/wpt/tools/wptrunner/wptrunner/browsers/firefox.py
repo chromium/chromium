@@ -108,7 +108,8 @@ def browser_kwargs(logger, test_type, run_info_data, config, **kwargs):
             "browser_channel": kwargs["browser_channel"],
             "headless": kwargs["headless"],
             "preload_browser": kwargs["preload_browser"] and not kwargs["pause_after_test"] and not kwargs["num_test_groups"] == 1,
-            "specialpowers_path": kwargs["specialpowers_path"]}
+            "specialpowers_path": kwargs["specialpowers_path"],
+            "debug_test": kwargs["debug_test"]}
 
 
 def executor_kwargs(logger, test_type, test_environment, run_info_data,
@@ -552,7 +553,7 @@ class FirefoxOutputHandler(OutputHandler):
 
 class ProfileCreator:
     def __init__(self, logger, prefs_root, config, test_type, extra_prefs, e10s,
-                 enable_fission, browser_channel, binary, certutil_binary,
+                 enable_fission, debug_test, browser_channel, binary, certutil_binary,
                  ca_certificate_path):
         self.logger = logger
         self.prefs_root = prefs_root
@@ -561,6 +562,7 @@ class ProfileCreator:
         self.extra_prefs = extra_prefs
         self.e10s = e10s
         self.enable_fission = enable_fission
+        self.debug_test = debug_test
         self.browser_channel = browser_channel
         self.ca_certificate_path = ca_certificate_path
         self.binary = binary
@@ -649,6 +651,9 @@ class ProfileCreator:
             "5.1" in platform.version()):
             self.profile.set_preferences({"layers.acceleration.disabled": True})
 
+        if self.debug_test:
+            profile.set_preferences({"devtools.console.stdout.content": True})
+
     def _setup_ssl(self, profile):
         """Create a certificate database to use in the test profile. This is configured
         to trust the CA Certificate that has signed the web-platform.test server
@@ -710,7 +715,7 @@ class FirefoxBrowser(Browser):
                  stackfix_dir=None, binary_args=None, timeout_multiplier=None, leak_check=False,
                  asan=False, stylo_threads=1, chaos_mode_flags=None, config=None,
                  browser_channel="nightly", headless=None, preload_browser=False,
-                 specialpowers_path=None, **kwargs):
+                 specialpowers_path=None, debug_test=False, **kwargs):
         Browser.__init__(self, logger)
 
         self.logger = logger
@@ -737,6 +742,7 @@ class FirefoxBrowser(Browser):
                                          extra_prefs,
                                          e10s,
                                          enable_fission,
+                                         debug_test,
                                          browser_channel,
                                          binary,
                                          certutil_binary,
@@ -817,7 +823,7 @@ class FirefoxWdSpecBrowser(WebDriverBrowser):
                  certutil_binary=None, ca_certificate_path=None, e10s=False,
                  enable_fission=False, stackfix_dir=None, leak_check=False,
                  asan=False, stylo_threads=1, chaos_mode_flags=None, config=None,
-                 browser_channel="nightly", headless=None, **kwargs):
+                 browser_channel="nightly", headless=None, debug_test=False, **kwargs):
 
         super().__init__(logger, binary, webdriver_binary, webdriver_args)
         self.binary = binary
@@ -840,6 +846,7 @@ class FirefoxWdSpecBrowser(WebDriverBrowser):
                                          extra_prefs,
                                          e10s,
                                          enable_fission,
+                                         debug_test,
                                          browser_channel,
                                          binary,
                                          certutil_binary,
@@ -876,12 +883,13 @@ class FirefoxWdSpecBrowser(WebDriverBrowser):
         super().start(group_metadata, **kwargs)
 
     def stop(self, force=False):
-        # Initially wait for any WebDriver session to cleanly shutdown
-        # When this is called the executor is usually sending a end session
+        # Initially wait for any WebDriver session to cleanly shutdown if the
+        # process doesn't have to be force stopped.
+        # When this is called the executor is usually sending an end session
         # command to the browser. We don't have a synchronisation mechanism
         # that allows us to know that process is ongoing, so poll the status
         # endpoint until there isn't a session, before killing the driver.
-        if self.is_alive():
+        if self.is_alive() and not force:
             end_time = time.time() + BrowserInstance.shutdown_timeout
             while time.time() < end_time:
                 self.logger.debug("Waiting for WebDriver session to end")

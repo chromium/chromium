@@ -13,6 +13,7 @@ from urllib.parse import urlsplit
 import requests
 
 from .utils import call, get, rmtree, untar, unzip, get_download_to_descriptor, sha256sum
+from .wpt import venv_dir
 
 uname = platform.uname()
 
@@ -53,10 +54,10 @@ class Browser(object):
     def __init__(self, logger):
         self.logger = logger
 
-    def _get_dest(self, dest, channel):
+    def _get_browser_binary_dir(self, dest, channel):
         if dest is None:
             # os.getcwd() doesn't include the venv path
-            dest = os.path.join(os.getcwd(), "_venv")
+            dest = os.path.join(os.getcwd(), venv_dir())
 
         dest = os.path.join(dest, "browsers", channel)
 
@@ -175,7 +176,7 @@ class Firefox(Browser):
         os_key = (self.platform, uname[4])
 
         if dest is None:
-            dest = self._get_dest(None, channel)
+            dest = self._get_browser_binary_dir(None, channel)
 
         if channel not in product:
             raise ValueError("Unrecognised release channel: %s" % channel)
@@ -216,7 +217,7 @@ class Firefox(Browser):
         """Install Firefox."""
         import mozinstall
 
-        dest = self._get_dest(dest, channel)
+        dest = self._get_browser_binary_dir(dest, channel)
 
         filename = os.path.basename(dest)
 
@@ -240,8 +241,7 @@ class Firefox(Browser):
         """Looks for the firefox binary in the virtual environment"""
 
         if path is None:
-            # os.getcwd() doesn't include the venv path
-            path = os.path.join(os.getcwd(), "_venv", "browsers", channel)
+            path = self._get_browser_binary_dir(None, channel)
 
         binary = None
 
@@ -261,10 +261,8 @@ class Firefox(Browser):
         return binary
 
     def find_binary(self, venv_path=None, channel="nightly"):
-        if venv_path is None:
-            venv_path = os.path.join(os.getcwd(), "_venv")
 
-        path = os.path.join(venv_path, "browsers", channel)
+        path = self._get_browser_binary_dir(venv_path, channel)
         binary = self.find_binary_path(path, channel)
 
         if not binary and self.platform == "win":
@@ -538,7 +536,7 @@ class Chrome(Browser):
         if channel != "nightly":
             raise NotImplementedError("We can only download Chrome Nightly (Chromium ToT) for you.")
         if dest is None:
-            dest = self._get_dest(None, channel)
+            dest = self._get_browser_binary_dir(None, channel)
 
         filename = self._chromium_package_name() + ".zip"
         url = self._latest_chromium_snapshot_url() + filename
@@ -552,7 +550,7 @@ class Chrome(Browser):
     def install(self, dest=None, channel=None):
         if channel != "nightly":
             raise NotImplementedError("We can only install Chrome Nightly (Chromium ToT) for you.")
-        dest = self._get_dest(dest, channel)
+        dest = self._get_browser_binary_dir(dest, channel)
 
         installer_path = self.download(dest, channel)
         with open(installer_path, "rb") as f:
@@ -633,7 +631,7 @@ class Chrome(Browser):
 
     def find_binary(self, venv_path=None, channel=None):
         if channel == "nightly":
-            return self.find_nightly_binary(self._get_dest(venv_path, channel))
+            return self.find_nightly_binary(self._get_browser_binary_dir(venv_path, channel))
 
         if uname[0] == "Linux":
             name = "google-chrome"
@@ -1476,7 +1474,7 @@ class WebKitGTKMiniBrowser(WebKit):
         bundle_url = base_download_dir + bundle_filename
 
         if dest is None:
-            dest = self._get_dest(None, channel)
+            dest = self._get_browser_binary_dir(None, channel)
         bundle_file_path = os.path.join(dest, bundle_filename)
 
         self.logger.info("Downloading WebKitGTK MiniBrowser bundle from %s" % bundle_url)
@@ -1494,7 +1492,7 @@ class WebKitGTKMiniBrowser(WebKit):
         return bundle_file_path
 
     def install(self, dest=None, channel=None, prompt=True):
-        dest = self._get_dest(dest, channel)
+        dest = self._get_browser_binary_dir(dest, channel)
         bundle_path = self.download(dest, channel)
         bundle_uncompress_directory = os.path.join(dest, "webkitgtk_minibrowser")
 
@@ -1527,7 +1525,7 @@ class WebKitGTKMiniBrowser(WebKit):
 
     def _find_executable_in_channel_bundle(self, binary, venv_path=None, channel=None):
         if venv_path:
-            venv_base_path = self._get_dest(venv_path, channel)
+            venv_base_path = self._get_browser_binary_dir(venv_path, channel)
             bundle_dir = os.path.join(venv_base_path, "webkitgtk_minibrowser")
             install_ok_file = os.path.join(bundle_dir, ".installation-ok")
             if os.path.isfile(install_ok_file):

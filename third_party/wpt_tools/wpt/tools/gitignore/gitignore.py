@@ -27,7 +27,7 @@ end_space = re.compile(r"([^\\]\s)*$")
 def fnmatch_translate(pat):
     # type: (bytes) -> Tuple[bool, Pattern[bytes]]
     parts = []
-    seq = None
+    seq = None  # type: Optional[int]
     i = 0
     any_char = b"[^/]"
     if pat[0:1] == b"/":
@@ -60,10 +60,10 @@ def fnmatch_translate(pat):
             # TODO: this doesn't really handle invalid sequences in the right way
             if c == b"]":
                 seq = None
-                if parts[-1:] == b"[":
+                if parts[-1] == b"[":
                     parts = parts[:-1]
-                elif parts[-1:] == b"^" and parts[-2:-1] == b"[":
-                    parts = parts[:-2]
+                elif parts[-1] == b"^" and parts[-2] == b"[":
+                    raise ValueError
                 else:
                     parts.append(c)
             elif c == b"-":

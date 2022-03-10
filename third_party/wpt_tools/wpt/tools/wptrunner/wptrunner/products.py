@@ -4,16 +4,8 @@ import imp
 from .browsers import product_list
 
 
-def products_enabled(config):
-    names = config.get("products", {}).keys()
-    if not names:
-        return product_list
-    else:
-        return names
-
-
 def product_module(config, product):
-    if product not in products_enabled(config):
+    if product not in product_list:
         raise ValueError("Unknown product %s" % product)
 
     path = config.get("products", {}).get(product, None)

@@ -5,6 +5,7 @@ import shutil
 import subprocess
 
 import requests
+from .wpt import venv_dir
 
 android_device = None
 
@@ -36,7 +37,7 @@ def get_parser_start():
 def get_sdk_path(dest):
     if dest is None:
         # os.getcwd() doesn't include the venv path
-        dest = os.path.join(wpt_root, "_venv")
+        dest = os.path.join(wpt_root, venv_dir())
     dest = os.path.join(dest, 'android-sdk')
     return os.path.abspath(os.environ.get('ANDROID_SDK_PATH', dest))
 

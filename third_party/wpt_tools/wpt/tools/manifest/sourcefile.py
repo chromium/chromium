@@ -174,7 +174,9 @@ def _parse_html(f):
     doc = html5lib.parse(f, treebuilder="etree", useChardet=False)
     if MYPY:
         return cast(ElementTree.Element, doc)
-    return doc
+    else:
+        # (needs to be in else for mypy to believe this is reachable)
+        return doc
 
 def _parse_xml(f):
     # type: (BinaryIO) -> ElementTree.Element
@@ -714,7 +716,12 @@ class SourceFile(object):
                     rv.append(variant)
 
         for variant in rv:
-            assert variant == "" or variant[0] in ["#", "?"], variant
+            if variant != "":
+                if variant[0] not in ("#", "?"):
+                    raise ValueError("Non-empty variant must start with either a ? or a #")
+                if len(variant) == 1 or (variant[0] == "?" and variant[1] == "#"):
+                    raise ValueError("Variants must not have empty fragment or query " +
+                                     "(omit the empty part instead)")
 
         if not rv:
             rv = [""]

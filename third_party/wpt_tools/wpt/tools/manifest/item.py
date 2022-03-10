@@ -8,16 +8,7 @@ from .utils import to_os_path
 MYPY = False
 if MYPY:
     # MYPY is set to True when run under Mypy.
-    from typing import Optional
-    from typing import Text
-    from typing import Dict
-    from typing import Tuple
-    from typing import List
-    from typing import Union
-    from typing import Type
-    from typing import Any
-    from typing import Sequence
-    from typing import Hashable
+    from typing import Any, Dict, Hashable, List, Optional, Sequence, Text, Tuple, Type, Union, cast
     from .manifest import Manifest
     Fuzzy = Dict[Optional[Tuple[Text, Text, Text]], List[int]]
     PageRanges = Dict[Text, List[int]]
@@ -31,14 +22,23 @@ class ManifestItemMeta(ABCMeta):
     attribute, and otherwise behaves like an ABCMeta."""
 
     def __new__(cls, name, bases, attrs):
-        # type: (Type[ManifestItemMeta], str, Tuple[ManifestItemMeta, ...], Dict[str, Any]) -> ManifestItemMeta
-        rv = super(ManifestItemMeta, cls).__new__(cls, name, bases, attrs)
-        if not isabstract(rv):
-            assert issubclass(rv, ManifestItem)
-            assert isinstance(rv.item_type, str)
-            item_types[rv.item_type] = rv
+        # type: (Type[ManifestItemMeta], str, Tuple[type], Dict[str, Any]) -> ManifestItemMeta
+        inst = super(ManifestItemMeta, cls).__new__(cls, name, bases, attrs)
+        if isabstract(inst):
+            return inst
 
-        return rv  # type: ignore
+        assert issubclass(inst, ManifestItem)
+        if MYPY:
+            inst_ = cast(Type[ManifestItem], inst)
+            item_type = cast(str, inst_.item_type)
+        else:
+            inst_ = inst
+            assert isinstance(inst_.item_type, str)
+            item_type = inst_.item_type
+
+        item_types[item_type] = inst_
+
+        return inst_
 
 
 class ManifestItem(metaclass=ManifestItemMeta):

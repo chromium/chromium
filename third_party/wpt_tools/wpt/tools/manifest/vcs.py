@@ -102,10 +102,7 @@ class FileSystem(object):
                                                 extras=[b".git/"],
                                                 cache=self.ignore_cache)
         git = GitHasher(tests_root)
-        if git is not None:
-            self.hash_cache = git.hash_cache()
-        else:
-            self.hash_cache = {}
+        self.hash_cache = git.hash_cache()
 
     def __iter__(self):
         # type: () -> Iterator[Tuple[Text, Optional[Text], bool]]

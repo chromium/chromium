@@ -55,7 +55,9 @@ def get_loader(test_paths, product, debug=None, run_info_extras=None, chunker_kw
                                     verify=kwargs.get("verify"),
                                     debug=debug,
                                     extras=run_info_extras,
-                                    enable_webrender=kwargs.get("enable_webrender"))
+                                    enable_webrender=kwargs.get("enable_webrender"),
+                                    device_serials=kwargs.get("device_serial"),
+                                    adb_binary=kwargs.get("adb_binary"))
 
     test_manifests = testloader.ManifestLoader(test_paths, force_manifest_update=kwargs["manifest_update"],
                                                manifest_download=kwargs["manifest_download"]).load()

@@ -137,7 +137,7 @@ def create_complete_parser():
 
 
 def venv_dir():
-    return "_venv" + str(sys.version_info[0])
+    return f"_venv{sys.version_info[0]}"
 
 
 def setup_virtualenv(path, skip_venv_setup, props):

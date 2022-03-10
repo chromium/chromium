@@ -1,6 +1,6 @@
 import os
-import platform
 import subprocess
+import sys
 
 MYPY = False
 if MYPY:
@@ -31,7 +31,7 @@ def rel_path_to_url(rel_path, url_base="/"):
 
 def from_os_path(path):
     # type: (Text) -> Text
-    assert os.path.sep == u"/" or platform.system() == "Windows"
+    assert os.path.sep == u"/" or sys.platform == "win32"
     if u"/" == os.path.sep:
         rv = path
     else:
@@ -43,7 +43,7 @@ def from_os_path(path):
 
 def to_os_path(path):
     # type: (Text) -> Text
-    assert os.path.sep == u"/" or platform.system() == "Windows"
+    assert os.path.sep == u"/" or sys.platform == "win32"
     if u"\\" in path:
         raise ValueError("normalised path contains \\")
     if u"/" == os.path.sep:
@@ -59,7 +59,7 @@ def git(path):
         try:
             return subprocess.check_output(full_cmd, cwd=path, stderr=subprocess.STDOUT).decode('utf8')
         except Exception as e:
-            if platform.uname()[0] == "Windows" and isinstance(e, WindowsError):
+            if sys.platform == "win32" and isinstance(e, WindowsError):
                 full_cmd[0] = u"git.bat"
                 return subprocess.check_output(full_cmd, cwd=path, stderr=subprocess.STDOUT).decode('utf8')
             else:
