@@ -639,6 +639,11 @@ PoissonAllocationSampler* PoissonAllocationSampler::Get() {
 // static
 void PoissonAllocationSampler::SuppressRandomnessForTest(bool suppress) {
   g_deterministic = suppress;
+  // The g_tls_accumulated_bytes may contain a random value from previous
+  // test runs, which would make the behaviour of the next call to
+  // RecordAlloc unpredictable.
+  if (suppress)
+    g_tls_accumulated_bytes = 0;
 }
 
 void PoissonAllocationSampler::AddSamplesObserver(SamplesObserver* observer) {
