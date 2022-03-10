@@ -341,6 +341,8 @@ struct TestParams {
   base::flat_set<gfx::ColorSpace::PrimaryID> supported_color_primary_ids_;
   base::flat_set<gfx::ColorSpace::TransferID> supported_color_transfer_ids_;
   absl::optional<gfx::HDRStaticMetadata> hdr_static_metadata_;
+  absl::optional<uint16_t> min_vfreq;
+  absl::optional<uint16_t> max_vfreq;
 
   const unsigned char* edid_blob;
   size_t edid_blob_length;
@@ -366,6 +368,8 @@ struct TestParams {
      {},
      {},
      absl::nullopt,
+     absl::nullopt,
+     absl::nullopt,
      kBadDisplayName,
      kBadDisplayNameLength},
     {0x22f0u,
@@ -388,6 +392,8 @@ struct TestParams {
      "286C",
      {},
      {},
+     absl::nullopt,
+     absl::nullopt,
      absl::nullopt,
      kNormalDisplay,
      kNormalDisplayLength},
@@ -412,6 +418,8 @@ struct TestParams {
      {},
      {},
      absl::nullopt,
+     absl::nullopt,
+     absl::nullopt,
      kNoMaxImageSizeDisplay,
      kNoMaxImageSizeDisplayLength},
     {0x22f0u,
@@ -434,6 +442,8 @@ struct TestParams {
      "286C",
      {},
      {},
+     absl::nullopt,
+     absl::nullopt,
      absl::nullopt,
      kBlockZeroSerialNumberOnlyDisplay,
      kBlockZeroSerialNumberOnlyDisplayLength},
@@ -458,6 +468,8 @@ struct TestParams {
      {},
      {},
      absl::nullopt,
+     absl::nullopt,
+     absl::nullopt,
      kNoSerialNumberDisplay,
      kNoSerialNumberDisplayLength},
     {0x22f0u,
@@ -480,6 +492,8 @@ struct TestParams {
      "286C",
      {},
      {},
+     absl::nullopt,
+     absl::nullopt,
      absl::nullopt,
      kNoWeekOfManufactureDisplay,
      kNoWeekOfManufactureDisplayLength},
@@ -504,6 +518,8 @@ struct TestParams {
      {},
      {},
      absl::nullopt,
+     absl::nullopt,
+     absl::nullopt,
      kModelYearDisplay,
      kModelYearDisplayLength},
     {0x4ca3u,
@@ -526,6 +542,8 @@ struct TestParams {
      "3142",
      {},
      {},
+     absl::nullopt,
+     absl::nullopt,
      absl::nullopt,
      kInternalDisplay,
      kInternalDisplayLength},
@@ -550,6 +568,8 @@ struct TestParams {
      {},
      {},
      absl::nullopt,
+     24,
+     75,
      kOverscanDisplay,
      kOverscanDisplayLength},
     {0x10ACu,
@@ -573,6 +593,8 @@ struct TestParams {
      {gfx::ColorSpace::PrimaryID::BT709, gfx::ColorSpace::PrimaryID::SMPTE170M},
      {},
      absl::nullopt,
+     49,
+     86,
      kMisdetectedDisplay,
      kMisdetectedDisplayLength},
     {0x22f0u,
@@ -596,6 +618,8 @@ struct TestParams {
      {},
      {},
      absl::nullopt,
+     48,
+     85,
      kLP2565A,
      kLP2565ALength},
     {0x22f0u,
@@ -619,6 +643,8 @@ struct TestParams {
      {},
      {},
      absl::nullopt,
+     48,
+     85,
      kLP2565B,
      kLP2565BLength},
     {0x22f0u,
@@ -642,6 +668,8 @@ struct TestParams {
      {},
      {},
      absl::nullopt,
+     24,
+     60,
      kHPz32x,
      kHPz32xLength},
     {0x30E4u,
@@ -665,6 +693,8 @@ struct TestParams {
      {},
      {},
      absl::nullopt,
+     absl::nullopt,
+     absl::nullopt,
      kSamus,
      kSamusLength},
     {0x4D10u,
@@ -687,6 +717,8 @@ struct TestParams {
      "148A",
      {},
      {},
+     absl::nullopt,
+     absl::nullopt,
      absl::nullopt,
      kEve,
      kEveLength},
@@ -713,6 +745,8 @@ struct TestParams {
      {gfx::ColorSpace::TransferID::BT709, gfx::ColorSpace::TransferID::PQ,
       gfx::ColorSpace::TransferID::HLG},
      absl::make_optional<gfx::HDRStaticMetadata>(603.666, 530.095, 0.00454),
+     24,
+     75,
      kHDRMetadata,
      kHDRMetadataLength},
 
@@ -738,6 +772,8 @@ struct TestParams {
      "0000",
      {},
      {},
+     absl::nullopt,
+     absl::nullopt,
      absl::nullopt,
      nullptr,
      0u},
@@ -805,6 +841,9 @@ TEST_P(EDIDParserTest, ParseEdids) {
     EXPECT_NEAR(GetParam().hdr_static_metadata_->min, hdr_static_metadata->min,
                 epsilon);
   }
+
+  EXPECT_EQ(parser_.min_vfreq(), GetParam().min_vfreq);
+  EXPECT_EQ(parser_.max_vfreq(), GetParam().max_vfreq);
 }
 
 INSTANTIATE_TEST_SUITE_P(All, EDIDParserTest, ValuesIn(kTestCases));

@@ -67,6 +67,8 @@ class DISPLAY_UTIL_EXPORT EdidParser {
   const absl::optional<gfx::HDRStaticMetadata>& hdr_static_metadata() const {
     return hdr_static_metadata_;
   }
+  const absl::optional<uint16_t>& min_vfreq() const { return min_vfreq_; }
+  const absl::optional<uint16_t>& max_vfreq() const { return max_vfreq_; }
   // Returns a 32-bit identifier for this display |manufacturer_id_| and
   // |product_id_|.
   uint32_t GetProductCode() const;
@@ -128,6 +130,8 @@ class DISPLAY_UTIL_EXPORT EdidParser {
   base::flat_set<gfx::ColorSpace::PrimaryID> supported_color_primary_ids_;
   base::flat_set<gfx::ColorSpace::TransferID> supported_color_transfer_ids_;
   absl::optional<gfx::HDRStaticMetadata> hdr_static_metadata_;
+  absl::optional<uint16_t> min_vfreq_;
+  absl::optional<uint16_t> max_vfreq_;
 };
 
 }  // namespace display

@@ -407,6 +407,7 @@ void EdidParser::ParseEdid(const std::vector<uint8_t>& edid) {
   constexpr size_t kDescriptorLength = 18;
   // The specifier types.
   constexpr uint8_t kMonitorNameDescriptor = 0xfc;
+  constexpr uint8_t kDisplayRangeLimitsDescriptor = 0xfd;
   constexpr uint8_t kMonitorSerialNumberDescriptor = 0xff;
 
   display_name_.clear();
@@ -454,6 +455,45 @@ void EdidParser::ParseEdid(const std::vector<uint8_t>& edid) {
       std::string name(reinterpret_cast<const char*>(&edid[offset + 5]),
                        kDescriptorLength - 5);
       base::TrimWhitespaceASCII(name, base::TRIM_TRAILING, &display_name_);
+      continue;
+    }
+
+    // If the descriptor contains the display's range limits, it has the
+    // following structure:
+    //   bytes 0-2: \0
+    //   byte 3: 0xfd
+    //   byte 4: Offsets for display range limits
+    //   bytes 5-17: Display range limits and timing information
+    if (edid[offset] == 0 && edid[offset + 1] == 0 && edid[offset + 2] == 0 &&
+        edid[offset + 3] == kDisplayRangeLimitsDescriptor) {
+      // byte 4: Offsets for display range limits
+      const uint8_t kRateOffset = edid[offset + 4];
+      // bits 7-4: Reserved \0
+      if (kRateOffset & 0x10)
+        continue;
+      // bit 3: Horizontal max rate offset (not used)
+      // bit 2: Horizontal min rate offset (not used)
+      // bit 1: Vertical max rate offset
+      const uint8_t verticalMaxRateOffset = kRateOffset & (1 << 1) ? 255 : 0;
+      // bit 0: Vertical min rate offset
+      const uint8_t verticalMinRateOffset = kRateOffset & (1 << 0) ? 255 : 0;
+
+      // bytes 5-8: Rate limits
+      // Each byte must be within [1, 255].
+      if (edid[offset + 5] == 0 || edid[offset + 6] == 0 ||
+          edid[offset + 7] == 0 || edid[offset + 8] == 0)
+        continue;
+      // byte 5: Min vertical rate in Hz
+      min_vfreq_ = edid[offset + 5] + verticalMinRateOffset;
+      // byte 6: Max vertical rate in Hz
+      max_vfreq_ = edid[offset + 6] + verticalMaxRateOffset;
+      // byte 7: Min horizontal rate in kHz (not used)
+      // byte 8: Max horizontal rate in kHz (not used)
+
+      // byte 9: Maximum pixel clock rate (not used)
+      // byte 10: Extended timing information type (not used)
+      // bytes 11-17: Video timing parameters (not used)
+
       continue;
     }
 
