@@ -8,6 +8,7 @@
 
 #include "base/bind.h"
 #include "base/files/file_util.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/task/thread_pool.h"
 #include "chrome/common/safe_browsing/archive_analyzer_results.h"
 #include "chrome/services/file_util/public/mojom/safe_archive_analyzer.mojom.h"
@@ -79,9 +80,15 @@ void SandboxedZipAnalyzer::ReportFileFailure() {
 
 void SandboxedZipAnalyzer::AnalyzeFile(base::File file, base::File temp_file) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  remote_analyzer_->AnalyzeZipFile(
-      std::move(file), std::move(temp_file),
-      base::BindOnce(&SandboxedZipAnalyzer::AnalyzeFileDone, this));
+  base::UmaHistogramBoolean("SBClientDownload.ZipAnalysisRemoteValid",
+                            remote_analyzer_.is_bound());
+  if (remote_analyzer_) {
+    remote_analyzer_->AnalyzeZipFile(
+        std::move(file), std::move(temp_file),
+        base::BindOnce(&SandboxedZipAnalyzer::AnalyzeFileDone, this));
+  } else {
+    AnalyzeFileDone(safe_browsing::ArchiveAnalyzerResults());
+  }
 }
 
 void SandboxedZipAnalyzer::AnalyzeFileDone(

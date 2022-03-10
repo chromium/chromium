@@ -8,6 +8,7 @@
 
 #include "base/bind.h"
 #include "base/files/file_util.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/process/process_handle.h"
 #include "base/strings/stringprintf.h"
 #include "base/task/thread_pool.h"
@@ -48,9 +49,15 @@ SandboxedRarAnalyzer::~SandboxedRarAnalyzer() = default;
 void SandboxedRarAnalyzer::AnalyzeFile(base::File file, base::File temp_file) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   DCHECK(!file_path_.value().empty());
-  remote_analyzer_->AnalyzeRarFile(
-      std::move(file), std::move(temp_file),
-      base::BindOnce(&SandboxedRarAnalyzer::AnalyzeFileDone, this));
+  base::UmaHistogramBoolean("SBClientDownload.RarAnalysisRemoteValid",
+                            remote_analyzer_.is_bound());
+  if (remote_analyzer_) {
+    remote_analyzer_->AnalyzeRarFile(
+        std::move(file), std::move(temp_file),
+        base::BindOnce(&SandboxedRarAnalyzer::AnalyzeFileDone, this));
+  } else {
+    AnalyzeFileDone(safe_browsing::ArchiveAnalyzerResults());
+  }
 }
 
 void SandboxedRarAnalyzer::AnalyzeFileDone(

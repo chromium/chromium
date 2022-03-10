@@ -7,6 +7,7 @@
 #include <utility>
 #include "base/bind.h"
 #include "base/files/file_util.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/process/process_handle.h"
 #include "base/strings/stringprintf.h"
 #include "base/task/thread_pool.h"
@@ -67,9 +68,15 @@ void SandboxedDocumentAnalyzer::AnalyzeDocument(
     const base::FilePath& file_path) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
-  remote_analyzer_->AnalyzeDocument(
-      std::move(file), target_file_path_,
-      base::BindOnce(&SandboxedDocumentAnalyzer::AnalyzeDocumentDone, this));
+  base::UmaHistogramBoolean("SBClientDownload.DocumentAnalysisRemoteValid",
+                            remote_analyzer_.is_bound());
+  if (remote_analyzer_) {
+    remote_analyzer_->AnalyzeDocument(
+        std::move(file), target_file_path_,
+        base::BindOnce(&SandboxedDocumentAnalyzer::AnalyzeDocumentDone, this));
+  } else {
+    AnalyzeDocumentDone(safe_browsing::DocumentAnalyzerResults());
+  }
 }
 
 void SandboxedDocumentAnalyzer::AnalyzeDocumentDone(
