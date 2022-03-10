@@ -841,6 +841,10 @@ Browser* GetBrowserForTabWithId(BrowserList* browser_list,
 - (GridItem*)gridItemForCellIdentifier:(NSString*)identifier {
   web::WebState* webState = GetWebStateWithId(self.browserState, identifier);
 
+  if (!webState) {
+    return nil;
+  }
+
   GridItem* item =
       [[GridItem alloc] initWithTitle:tab_util::GetTabTitle(webState)
                                   url:webState->GetVisibleURL()];
