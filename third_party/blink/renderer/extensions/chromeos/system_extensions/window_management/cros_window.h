@@ -38,7 +38,7 @@ class CrosWindow : public ScriptWrappable {
   void maximize();
   void minimize();
   bool raise();
-  bool focus();
+  void focus();
   bool close();
 
  private:

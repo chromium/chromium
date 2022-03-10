@@ -108,8 +108,13 @@ bool CrosWindow::raise() {
   return false;
 }
 
-bool CrosWindow::focus() {
-  return false;
+void CrosWindow::focus() {
+  auto* cros_window_management =
+      window_management_->GetCrosWindowManagementOrNull();
+  if (!cros_window_management) {
+    return;
+  }
+  cros_window_management->Focus(window_->id);
 }
 
 bool CrosWindow::close() {

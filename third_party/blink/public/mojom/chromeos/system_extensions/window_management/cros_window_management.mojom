@@ -42,4 +42,7 @@ interface CrosWindowManagement {
 
   // Minimizes the window identified by id if one exists, else do nothing.
   Minimize(mojo_base.mojom.UnguessableToken id);
+
+  // Allocates focus to the CrosWindow identified by id and brings to front.
+  Focus(mojo_base.mojom.UnguessableToken id);
 };
