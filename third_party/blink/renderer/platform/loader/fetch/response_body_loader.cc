@@ -46,6 +46,9 @@ class ResponseBodyLoader::DelegatingBytesConsumer final
     if (loader_->IsSuspended()) {
       return Result::kShouldWait;
     }
+    if (state_ == State::kCancelled) {
+      return Result::kDone;
+    }
     auto result = bytes_consumer_->BeginRead(buffer, available);
     if (result == Result::kOk) {
       *available = std::min(*available, lookahead_bytes_);
@@ -124,15 +127,14 @@ class ResponseBodyLoader::DelegatingBytesConsumer final
     }
 
     state_ = State::kCancelled;
-    bytes_consumer_->Cancel();
 
     if (in_on_state_change_) {
       has_pending_state_change_signal_ = true;
       return;
     }
-    task_runner_->PostTask(
-        FROM_HERE, base::BindOnce(&ResponseBodyLoader::DidCancelLoadingBody,
-                                  WrapWeakPersistent(loader_.Get())));
+    task_runner_->PostTask(FROM_HERE,
+                           base::BindOnce(&DelegatingBytesConsumer::CancelSync,
+                                          WrapWeakPersistent(this)));
   }
   PublicState GetPublicState() const override {
     if (loader_->IsAborted())
@@ -221,7 +223,7 @@ class ResponseBodyLoader::DelegatingBytesConsumer final
           loader_->DidFailLoadingBody();
           break;
         case State::kCancelled:
-          loader_->DidCancelLoadingBody();
+          CancelSync();
           break;
       }
     }
@@ -241,6 +243,11 @@ class ResponseBodyLoader::DelegatingBytesConsumer final
     kErrored,
     kCancelled,
   };
+
+  void CancelSync() {
+    bytes_consumer_->Cancel();
+    loader_->DidCancelLoadingBody();
+  }
 
   void HandleResult(Result result) {
     if (state_ != State::kLoading) {
