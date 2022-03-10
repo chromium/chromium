@@ -12,6 +12,7 @@ import androidx.annotation.ColorInt;
 
 import org.chromium.base.Callback;
 import org.chromium.base.supplier.BooleanSupplier;
+import org.chromium.base.supplier.Supplier;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.ReadableIntPropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableBooleanPropertyKey;
@@ -35,8 +36,13 @@ public class MessageBannerProperties {
     public static final ReadableIntPropertyKey MESSAGE_IDENTIFIER = new ReadableIntPropertyKey();
     public static final WritableObjectPropertyKey<String> PRIMARY_BUTTON_TEXT =
             new WritableObjectPropertyKey<>();
-    public static final WritableObjectPropertyKey<Runnable> ON_PRIMARY_ACTION =
-            new WritableObjectPropertyKey<>();
+    /**
+     * See the documentation of PrimaryActionClickBehavior in
+     * components/messages/android/message_enums.h for more information about the return value of
+     * the primary action callback.
+     */
+    public static final WritableObjectPropertyKey<Supplier</*@PrimaryActionClickBehavior*/ Integer>>
+            ON_PRIMARY_ACTION = new WritableObjectPropertyKey<>();
     public static final WritableObjectPropertyKey<Runnable> ON_SECONDARY_ACTION =
             new WritableObjectPropertyKey<>();
     public static final WritableObjectPropertyKey<String> TITLE = new WritableObjectPropertyKey<>();

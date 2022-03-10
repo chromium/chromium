@@ -150,12 +150,14 @@ public class SingleActionMessage implements MessageStateHandler {
         }
         return true;
     }
-
     private void handlePrimaryAction(View v) {
         // Avoid running the primary action callback if the message has already been dismissed.
         if (mMessageDismissed) return;
-        mModel.get(MessageBannerProperties.ON_PRIMARY_ACTION).run();
-        mDismissHandler.invoke(mModel, DismissReason.PRIMARY_ACTION);
+
+        if (mModel.get(MessageBannerProperties.ON_PRIMARY_ACTION).get()
+                == PrimaryActionClickBehavior.DISMISS_IMMEDIATELY) {
+            mDismissHandler.invoke(mModel, DismissReason.PRIMARY_ACTION);
+        }
     }
 
     private void handleSecondaryAction() {

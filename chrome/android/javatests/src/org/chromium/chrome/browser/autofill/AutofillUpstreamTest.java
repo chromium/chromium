@@ -122,7 +122,7 @@ public class AutofillUpstreamTest {
                         .get(0);
         PropertyModel model = MessagesTestHelper.getCurrentMessage(handler);
         TestThreadUtils.runOnUiThreadBlocking(() -> {
-            model.get(MessageBannerProperties.ON_PRIMARY_ACTION).run();
+            model.get(MessageBannerProperties.ON_PRIMARY_ACTION).get();
             dispatcher.dismissMessage(model, DismissReason.PRIMARY_ACTION);
         });
     }

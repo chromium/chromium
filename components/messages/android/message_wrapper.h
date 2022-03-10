@@ -74,6 +74,10 @@ class MessageWrapper {
 
   void SetDuration(long customDuration);
 
+  // Note that the message will immediately be dismissed after the primary
+  // action callback is run. Making the message remain visible after the primary
+  // action button is clicked is supported in the messages API in Java, but not
+  // currently in here in the messages API in C++.
   void SetActionClick(base::OnceClosure callback);
   void SetDismissCallback(DismissCallback callback);
 

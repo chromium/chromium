@@ -151,8 +151,8 @@ public class ChromeSurveyControllerIntegrationTest {
         Assert.assertNotNull("Message should not be null.", message);
 
         // Simulate the message primary button click.
-        Runnable primaryActionCallback = message.get(MessageBannerProperties.ON_PRIMARY_ACTION);
-        TestThreadUtils.runOnUiThreadBlocking(primaryActionCallback);
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> { message.get(MessageBannerProperties.ON_PRIMARY_ACTION).get(); });
         // Simulate message dismissal on primary button click.
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> mMessageDispatcher.dismissMessage(message, DismissReason.PRIMARY_ACTION));

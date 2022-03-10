@@ -248,7 +248,10 @@ public class SingleActionMessageTest {
                         ApiCompatibilityUtils.getDrawable(
                                 sActivity.getResources(), android.R.drawable.ic_menu_add))
                 .with(MessageBannerProperties.ON_PRIMARY_ACTION,
-                        () -> { mPrimaryActionCallback.notifyCalled(); })
+                        () -> {
+                            mPrimaryActionCallback.notifyCalled();
+                            return PrimaryActionClickBehavior.DISMISS_IMMEDIATELY;
+                        })
                 .with(MessageBannerProperties.ON_SECONDARY_ACTION,
                         () -> { mSecondaryActionCallback.notifyCalled(); })
                 .with(MessageBannerProperties.ON_TOUCH_RUNNABLE, () -> {})
