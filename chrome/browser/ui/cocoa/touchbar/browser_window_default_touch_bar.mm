@@ -283,6 +283,16 @@ class API_AVAILABLE(macos(10.12.2)) TouchBarNotificationBridge
 
   // The starred button in the touch bar.
   base::scoped_nsobject<NSButton> _starredButton;
+
+  // The search button in the touch bar.
+  base::scoped_nsobject<NSButton> _searchButton;
+
+  // The last created BrowserWindowDefaultTouchBar (cached until it needs a
+  // rebuild).
+  base::scoped_nsobject<NSTouchBar> _touchBar;
+
+  // The existence of the Home button in the Touch Bar.
+  bool _touchBarHasHomeButton;
 }
 
 // Creates and returns a touch bar for tab non-fullscreen mode.
@@ -297,8 +307,8 @@ class API_AVAILABLE(macos(10.12.2)) TouchBarNotificationBridge
 // Updates the reload / stop button in the touch bar.
 - (void)updateReloadStopButton;
 
-// Creates and returns the search button.
-- (NSView*)searchTouchBarView;
+// Updates the search button in the touch bar.
+- (void)updateSearchTouchBarButton;
 
 @end
 
@@ -391,7 +401,8 @@ class API_AVAILABLE(macos(10.12.2)) TouchBarNotificationBridge
         setCustomizationLabel:l10n_util::GetNSString(
                                   IDS_TOUCH_BAR_BOOKMARK_CUSTOMIZATION_LABEL)];
   } else if ([identifier hasSuffix:kSearchTouchId]) {
-    [touchBarItem setView:[self searchTouchBarView]];
+    [self updateSearchTouchBarButton];
+    [touchBarItem setView:_searchButton.get()];
     [touchBarItem setCustomizationLabel:l10n_util::GetNSString(
                                             IDS_TOUCH_BAR_GOOGLE_SEARCH)];
   } else if ([identifier hasSuffix:kFullscreenOriginLabelTouchId]) {
@@ -434,37 +445,46 @@ class API_AVAILABLE(macos(10.12.2)) TouchBarNotificationBridge
 }
 
 - (NSTouchBar*)createTabTouchBar {
-  base::scoped_nsobject<NSTouchBar> touchBar([[NSTouchBar alloc] init]);
-  [touchBar
-      setCustomizationIdentifier:ui::GetTouchBarId(kBrowserWindowTouchBarId)];
-  [touchBar setDelegate:self];
+  [self updateSearchTouchBarButton];
+  bool showHomeButton = _notificationBridge->show_home_button();
 
-  NSMutableArray<NSString*>* customIdentifiers = [NSMutableArray array];
-  NSMutableArray<NSString*>* defaultIdentifiers = [NSMutableArray array];
+  if (!_touchBar || _touchBarHasHomeButton != showHomeButton) {
+    _touchBar.reset([[NSTouchBar alloc] init]);
+    [_touchBar
+        setCustomizationIdentifier:ui::GetTouchBarId(kBrowserWindowTouchBarId)];
+    [_touchBar setDelegate:self];
 
-  NSArray<NSString*>* touchBarItems = @[
-    kBackTouchId, kForwardTouchId, kReloadOrStopTouchId, kHomeTouchId,
-    kSearchTouchId, kStarTouchId, kNewTabTouchId
-  ];
+    NSMutableArray<NSString*>* customizationIdentifiers =
+        [NSMutableArray array];
+    NSMutableArray<NSString*>* defaultIdentifiers = [NSMutableArray array];
 
-  for (NSString* item in touchBarItems) {
-    NSString* itemIdentifier =
-        ui::GetTouchBarItemId(kBrowserWindowTouchBarId, item);
-    [customIdentifiers addObject:itemIdentifier];
+    NSArray<NSString*>* touchBarItemIdentifiers = @[
+      kBackTouchId, kForwardTouchId, kReloadOrStopTouchId, kHomeTouchId,
+      kSearchTouchId, kStarTouchId, kNewTabTouchId
+    ];
 
-    // Don't add the home button if it's not shown in the toolbar.
-    if (item == kHomeTouchId && !_notificationBridge->show_home_button())
-      continue;
+    for (NSString* itemIdentifier in touchBarItemIdentifiers) {
+      NSString* fullIdentifier =
+          ui::GetTouchBarItemId(kBrowserWindowTouchBarId, itemIdentifier);
+      [customizationIdentifiers addObject:fullIdentifier];
 
-    [defaultIdentifiers addObject:itemIdentifier];
+      // Don't add the home button if it's not shown in the toolbar.
+      if (itemIdentifier == kHomeTouchId && !showHomeButton) {
+        continue;
+      }
+
+      [defaultIdentifiers addObject:fullIdentifier];
+    }
+
+    [customizationIdentifiers addObject:NSTouchBarItemIdentifierFlexibleSpace];
+
+    [_touchBar setDefaultItemIdentifiers:defaultIdentifiers];
+    [_touchBar setCustomizationAllowedItemIdentifiers:customizationIdentifiers];
+
+    _touchBarHasHomeButton = showHomeButton;
   }
 
-  [customIdentifiers addObject:NSTouchBarItemIdentifierFlexibleSpace];
-
-  [touchBar setDefaultItemIdentifiers:defaultIdentifiers];
-  [touchBar setCustomizationAllowedItemIdentifiers:customIdentifiers];
-
-  return touchBar.autorelease();
+  return _touchBar.get();
 }
 
 - (NSTouchBar*)createTabFullscreenTouchBar {
@@ -531,7 +551,7 @@ class API_AVAILABLE(macos(10.12.2)) TouchBarNotificationBridge
   [_reloadStopButton setAccessibilityLabel:l10n_util::GetNSString(tooltipId)];
 }
 
-- (NSView*)searchTouchBarView {
+- (void)updateSearchTouchBarButton {
   TemplateURLService* templateUrlService =
       TemplateURLServiceFactory::GetForProfile(_browser->profile());
   const TemplateURL* defaultProvider =
@@ -550,6 +570,12 @@ class API_AVAILABLE(macos(10.12.2)) TouchBarNotificationBridge
     title = l10n_util::GetStringUTF16(IDS_TOUCH_BAR_NO_DEFAULT_SEARCH);
   }
 
+  NSString* buttonTitle = base::SysUTF16ToNSString(title);
+
+  if ([buttonTitle isEqualToString:[_searchButton title]]) {
+    return;
+  }
+
   NSImage* image = nil;
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
   if (isGoogle) {
@@ -564,20 +590,25 @@ class API_AVAILABLE(macos(10.12.2)) TouchBarNotificationBridge
   if (!image)
     image = CreateNSImageFromIcon(vector_icons::kSearchIcon);
 
-  NSButton* searchButton =
-      [NSButton buttonWithTitle:base::SysUTF16ToNSString(title)
-                          image:image
-                         target:self
-                         action:@selector(executeCommand:)];
-  searchButton.imageHugsTitle = YES;
-  searchButton.tag = IDC_FOCUS_LOCATION;
-  [searchButton.widthAnchor
-      constraintGreaterThanOrEqualToConstant:kSearchBtnMinWidth]
-      .active = YES;
-  [searchButton
-      setContentHuggingPriority:1.0
-                 forOrientation:NSLayoutConstraintOrientationHorizontal];
-  return searchButton;
+  if (!_searchButton) {
+    NSButton* searchButton =
+        [NSButton buttonWithTitle:buttonTitle
+                            image:image
+                           target:self
+                           action:@selector(executeCommand:)];
+    searchButton.imageHugsTitle = YES;
+    searchButton.tag = IDC_FOCUS_LOCATION;
+    [searchButton.widthAnchor
+        constraintGreaterThanOrEqualToConstant:kSearchBtnMinWidth]
+        .active = YES;
+    [searchButton
+        setContentHuggingPriority:1.0
+                   forOrientation:NSLayoutConstraintOrientationHorizontal];
+    _searchButton.reset([searchButton retain]);
+  } else {
+    [_searchButton setTitle:buttonTitle];
+    [_searchButton setImage:image];
+  }
 }
 
 - (void)executeCommand:(id)sender {
@@ -631,6 +662,10 @@ class API_AVAILABLE(macos(10.12.2)) TouchBarNotificationBridge
   return _starDefaultIcon->get();
 }
 
++ (NSString*)homeItemIdentifier {
+  return ui::GetTouchBarItemId(kBrowserWindowTouchBarId, kHomeTouchId);
+}
+
 + (NSImage*)starActiveIcon {
   static const base::NoDestructor<base::scoped_nsobject<NSImage>>
       _starActiveIcon([]() {
@@ -653,6 +688,10 @@ class API_AVAILABLE(macos(10.12.2)) TouchBarNotificationBridge
         return [CreateNSImageFromIcon(vector_icons::kReloadIcon) retain];
       }());
   return _reloadIcon->get();
+}
+
+- (NSButton*)searchButton {
+  return _searchButton.get();
 }
 
 - (BookmarkTabHelperObserver*)bookmarkTabObserver {

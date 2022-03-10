@@ -52,6 +52,9 @@ API_AVAILABLE(macos(10.12.2))
 @property(readonly, class) NSImage* starActiveIcon;
 @property(readonly, class) NSImage* navigateStopIcon;
 @property(readonly, class) NSImage* reloadIcon;
+@property(readonly, class) NSString* homeItemIdentifier;
+
+- (NSButton*)searchButton;
 
 // Returns the bridge object that BrowserWindowDefaultTouchBar uses to receive
 // notifications.
