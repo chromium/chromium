@@ -12,8 +12,10 @@ namespace {
 SiteInstanceGroupId::Generator site_instance_group_id_generator;
 }  // namespace
 
-SiteInstanceGroup::SiteInstanceGroup(RenderProcessHost* process)
-    : id_(site_instance_group_id_generator.GenerateNextId()) {
+SiteInstanceGroup::SiteInstanceGroup(BrowsingInstanceId browsing_instance_id,
+                                     RenderProcessHost* process)
+    : id_(site_instance_group_id_generator.GenerateNextId()),
+      browsing_instance_id_(browsing_instance_id) {
   SetProcessAndAgentSchedulingGroup(process);
 }
 

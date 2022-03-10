@@ -45,7 +45,8 @@ SiteInstanceGroupManager::GetOrCreateGroupForNewSiteInstance(
   // own SiteInstanceGroup, and we can always create a new group for each new
   // SiteInstance here. When grouping policies are introduced, this function may
   // return an existing SiteInstanceGroup for a new SiteInstance.
-  return base::WrapRefCounted(new SiteInstanceGroup(process));
+  return base::WrapRefCounted(
+      new SiteInstanceGroup(site_instance->GetBrowsingInstanceId(), process));
 }
 
 void SiteInstanceGroupManager::OnSiteInfoSet(SiteInstanceImpl* site_instance,
