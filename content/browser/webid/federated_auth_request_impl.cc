@@ -480,18 +480,25 @@ void FederatedAuthRequestImpl::OnManifestFetched(
   endpoints_.accounts = ResolveManifestUrl(endpoints.accounts);
   endpoints_.client_metadata = ResolveManifestUrl(endpoints.client_metadata);
 
-  if (endpoints_.token.is_empty() || endpoints_.accounts.is_empty() ||
-      endpoints_.client_metadata.is_empty()) {
-    RecordRequestIdTokenStatus(IdTokenStatus::kManifestInvalidResponse,
-                               render_frame_host_->GetPageUkmSourceId());
-    CompleteRequest(
-        FederatedAuthRequestResult::kErrorFetchingManifestInvalidResponse, "",
-        /*should_call_callback=*/false);
-    return;
-  }
-  if (!IsEndpointUrlValid(endpoints_.token) ||
-      !IsEndpointUrlValid(endpoints_.accounts) ||
-      !IsEndpointUrlValid(endpoints_.client_metadata)) {
+  bool is_token_valid = IsEndpointUrlValid(endpoints_.token);
+  bool is_accounts_valid = IsEndpointUrlValid(endpoints_.accounts);
+  bool is_client_metadata_valid =
+      IsEndpointUrlValid(endpoints_.client_metadata);
+  if (!is_token_valid || !is_accounts_valid || !is_client_metadata_valid) {
+    std::string message =
+        "Manifest is missing or has an invalid URL for the following "
+        "endpoints:\n";
+    if (!is_token_valid) {
+      message += "\"id_token_endpoint\"\n";
+    }
+    if (!is_accounts_valid) {
+      message += "\"accounts_endpoint\"\n";
+    }
+    if (!is_client_metadata_valid) {
+      message += "\"client_metadata_endpoint\"\n";
+    }
+    render_frame_host_->AddMessageToConsole(
+        blink::mojom::ConsoleMessageLevel::kError, message);
     RecordRequestIdTokenStatus(IdTokenStatus::kManifestInvalidResponse,
                                render_frame_host_->GetPageUkmSourceId());
     CompleteRequest(
@@ -545,6 +552,10 @@ void FederatedAuthRequestImpl::OnManifestFetchedForRevoke(
 
   GURL revocation_url = ResolveManifestUrl(endpoints.revocation);
   if (!IsEndpointUrlValid(revocation_url)) {
+    render_frame_host_->AddMessageToConsole(
+        blink::mojom::ConsoleMessageLevel::kError,
+        "Manifest is missing or has an invalid URL for the following required "
+        "endpoint: revocation_endpoint");
     RecordRevokeStatus(RevokeStatusForMetrics::kRevokeUrlIsCrossOrigin,
                        render_frame_host_->GetPageUkmSourceId());
     CompleteRevokeRequest(RevokeStatus::kError,

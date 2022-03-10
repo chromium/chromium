@@ -165,22 +165,39 @@ static const MockClientIdConfiguration kClientMetadataInvalidResponse{
 static const MockClientIdConfiguration kClientMetadataNoPrivacyPolicyUrl{
     FetchStatus::kSuccess, "", ""};
 
-static const AuthRequestTestCase kMediatedTestCases[]{
-    {"Error parsing FedCM manifest for Mediated mode missing token endpoint",
-     {kIdpTestOrigin, kClientId, kNonce},
-     {RequestIdTokenStatus::kError,
-      FederatedAuthRequestResult::kErrorFetchingManifestInvalidResponse,
-      kEmptyToken},
-     {kToken, FetchStatus::kInvalidResponseError, absl::nullopt,
-      kAccountsEndpoint, "", kClientMetadataEndpoint, kMediatedNoop}},
+static const AuthRequestTestCase kMissingTokenEndpoint{
+    "Error parsing FedCM manifest for Mediated mode missing token endpoint",
+    {kIdpTestOrigin, kClientId, kNonce},
+    {RequestIdTokenStatus::kError,
+     FederatedAuthRequestResult::kErrorFetchingManifestInvalidResponse,
+     kEmptyToken},
+    {kToken, FetchStatus::kSuccess, absl::nullopt, kAccountsEndpoint, "",
+     kClientMetadataEndpoint, kMediatedNoop}};
 
-    {"Error parsing FedCM manifest for Mediated mode missing accounts endpoint",
-     {kIdpTestOrigin, kClientId, kNonce},
-     {RequestIdTokenStatus::kError,
-      FederatedAuthRequestResult::kErrorFetchingManifestInvalidResponse,
-      kEmptyToken},
-     {kToken, FetchStatus::kSuccess, absl::nullopt, "", kTokenEndpoint,
-      kClientMetadataEndpoint, kMediatedNoop}},
+static const AuthRequestTestCase kMissingAccountsEndpoint{
+    "Error parsing FedCM manifest for Mediated mode missing accounts endpoint",
+    {kIdpTestOrigin, kClientId, kNonce},
+    {RequestIdTokenStatus::kError,
+     FederatedAuthRequestResult::kErrorFetchingManifestInvalidResponse,
+     kEmptyToken},
+    {kToken, FetchStatus::kSuccess, absl::nullopt, "", kTokenEndpoint,
+     kClientMetadataEndpoint, kMediatedNoop}};
+
+static const AuthRequestTestCase kMissingClientMetadata{
+    "Error parsing FedCM manifest for Mediated mode missing client metadata "
+    "endpoint",
+    {kIdpTestOrigin, kClientId, kNonce},
+    {RequestIdTokenStatus::kError,
+     FederatedAuthRequestResult::kErrorFetchingManifestInvalidResponse,
+     kEmptyToken},
+    {kToken, FetchStatus::kSuccess, absl::nullopt, kAccountsEndpoint,
+     kTokenEndpoint, "", kMediatedNoop}};
+
+static const AuthRequestTestCase kMediatedTestCases[]{
+    kMissingTokenEndpoint,
+    kMissingAccountsEndpoint,
+    kMissingClientMetadata,
+
     {"Error due to accounts endpoint in different origin than identity "
      "provider",
      {kIdpTestOrigin, kClientId, kNonce},
@@ -783,9 +800,92 @@ TEST_P(BasicFederatedAuthRequestImplTest, FederatedAuthRequestIssue) {
   if (!expected_message) {
     EXPECT_EQ(0u, messages.size());
   } else {
-    ASSERT_EQ(1u, messages.size());
-    EXPECT_EQ(expected_message.value(), messages[0]);
+    ASSERT_LE(1u, messages.size());
+    EXPECT_EQ(expected_message.value(), messages[messages.size() - 1]);
   }
+}
+
+TEST_F(BasicFederatedAuthRequestImplTest, MissingTokenEndpoint) {
+  const auto& test_case = kMissingTokenEndpoint;
+  CreateAuthRequest(GURL(test_case.inputs.provider));
+  SetMockExpectations(test_case);
+  auto auth_response =
+      PerformAuthRequest(test_case.inputs.client_id, test_case.inputs.nonce,
+                         test_case.inputs.prefer_auto_sign_in);
+  std::vector<std::string> messages =
+      RenderFrameHostTester::For(main_rfh())->GetConsoleMessages();
+  ASSERT_EQ(2U, messages.size());
+  EXPECT_EQ(
+      "Manifest is missing or has an invalid URL for the following "
+      "endpoints:\n"
+      "\"id_token_endpoint\"\n",
+      messages[0]);
+  EXPECT_EQ("Provider's FedCM manifest configuration is invalid.", messages[1]);
+}
+
+TEST_F(BasicFederatedAuthRequestImplTest, MissingAccountsEndpoint) {
+  const auto& test_case = kMissingAccountsEndpoint;
+  CreateAuthRequest(GURL(test_case.inputs.provider));
+  SetMockExpectations(test_case);
+  auto auth_response =
+      PerformAuthRequest(test_case.inputs.client_id, test_case.inputs.nonce,
+                         test_case.inputs.prefer_auto_sign_in);
+  std::vector<std::string> messages =
+      RenderFrameHostTester::For(main_rfh())->GetConsoleMessages();
+  ASSERT_EQ(2U, messages.size());
+  EXPECT_EQ(
+      "Manifest is missing or has an invalid URL for the following "
+      "endpoints:\n"
+      "\"accounts_endpoint\"\n",
+      messages[0]);
+  EXPECT_EQ("Provider's FedCM manifest configuration is invalid.", messages[1]);
+}
+
+TEST_F(BasicFederatedAuthRequestImplTest, MissingClientMetadataEndpoint) {
+  const auto& test_case = kMissingClientMetadata;
+  CreateAuthRequest(GURL(test_case.inputs.provider));
+  SetMockExpectations(test_case);
+  auto auth_response =
+      PerformAuthRequest(test_case.inputs.client_id, test_case.inputs.nonce,
+                         test_case.inputs.prefer_auto_sign_in);
+  std::vector<std::string> messages =
+      RenderFrameHostTester::For(main_rfh())->GetConsoleMessages();
+  ASSERT_EQ(2U, messages.size());
+  EXPECT_EQ(
+      "Manifest is missing or has an invalid URL for the following "
+      "endpoints:\n"
+      "\"client_metadata_endpoint\"\n",
+      messages[0]);
+  EXPECT_EQ("Provider's FedCM manifest configuration is invalid.", messages[1]);
+}
+
+TEST_F(BasicFederatedAuthRequestImplTest, AllInvalidEndpoints) {
+  // Both an empty url and cross origin urls are invalid endpoints.
+  AuthRequestTestCase test_case = {
+      "FedCM manifest missing all endpoints",
+      {kIdpTestOrigin, kClientId, kNonce},
+      {RequestIdTokenStatus::kError,
+       FederatedAuthRequestResult::kErrorFetchingManifestInvalidResponse,
+       kEmptyToken},
+      {kToken, FetchStatus::kSuccess, absl::nullopt,
+       "https://cross-origin-1.com", "", "https://cross-origin-2.com",
+       kMediatedNoop}};
+  CreateAuthRequest(GURL(test_case.inputs.provider));
+  SetMockExpectations(test_case);
+  auto auth_response =
+      PerformAuthRequest(test_case.inputs.client_id, test_case.inputs.nonce,
+                         test_case.inputs.prefer_auto_sign_in);
+  std::vector<std::string> messages =
+      RenderFrameHostTester::For(main_rfh())->GetConsoleMessages();
+  ASSERT_EQ(2U, messages.size());
+  EXPECT_EQ(
+      "Manifest is missing or has an invalid URL for the following "
+      "endpoints:\n"
+      "\"id_token_endpoint\"\n"
+      "\"accounts_endpoint\"\n"
+      "\"client_metadata_endpoint\"\n",
+      messages[0]);
+  EXPECT_EQ("Provider's FedCM manifest configuration is invalid.", messages[1]);
 }
 
 // Test Logout method success with multiple relying parties.
