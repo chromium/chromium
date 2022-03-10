@@ -641,7 +641,8 @@ void AppLauncherHandler::FillAppDictionary(base::DictionaryValue* dictionary) {
     // TODO(crbug.com/1065748): Remove this hack once the youtube app is fixed.
     if (IsYoutubeExtension(web_app_id))
       continue;
-    installed_extensions->Append(GetWebAppInfo(web_app_id));
+    installed_extensions->Append(
+        base::Value::FromUniquePtrValue(GetWebAppInfo(web_app_id)));
     web_app_ids.insert(web_app_id);
   }
 
@@ -653,7 +654,8 @@ void AppLauncherHandler::FillAppDictionary(base::DictionaryValue* dictionary) {
     const Extension* extension = registry->GetInstalledExtension(*it);
     if (extension &&
         extensions::ui_util::ShouldDisplayInNewTabPage(extension, profile)) {
-      installed_extensions->Append(GetExtensionInfo(extension));
+      installed_extensions->Append(
+          base::Value::FromUniquePtrValue(GetExtensionInfo(extension)));
     }
   }
 

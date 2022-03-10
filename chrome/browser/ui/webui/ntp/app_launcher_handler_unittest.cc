@@ -184,7 +184,7 @@ TEST_F(AppLauncherHandlerTest, HandleInstallAppLocally) {
       GetAppLauncherHandler(test_web_ui.get());
 
   auto args = std::make_unique<base::ListValue>();
-  args->Append(std::make_unique<base::Value>(installed_app_id));
+  args->Append(base::Value(installed_app_id));
   app_launcher_handler->HandleGetApps(/*args=*/nullptr);
   app_launcher_handler->test_web_ui()->ClearTrackedCalls();
 
@@ -210,7 +210,7 @@ TEST_F(AppLauncherHandlerTest, HandleInstallAppLocally_MultipleWebUI) {
       GetAppLauncherHandler(test_web_ui_1.get());
 
   auto args = std::make_unique<base::ListValue>();
-  args->Append(std::make_unique<base::Value>(installed_app_id));
+  args->Append(base::Value(installed_app_id));
   app_launcher_handler_1->HandleGetApps(/*args=*/nullptr);
   app_launcher_handler_1->test_web_ui()->ClearTrackedCalls();
 
