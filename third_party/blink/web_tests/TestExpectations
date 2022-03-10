@@ -7673,3 +7673,4 @@ crbug.com/1298836 virtual/plz-dedicated-worker/external/wpt/fetch/api/basic/resp
 
 # Sheriff 2022-03-10
 crbug.com/1304956 storage/indexeddb/dont-wedge.html [ Failure Pass ]
+crbug.com/1305023 [ Mac10.12 ] virtual/partitioned-cookies-first-party-sets/http/tests/inspector-protocol/network/cross-origin-isolation/coep-load-error-reporting-worker.js [ Failure Pass ]
