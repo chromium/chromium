@@ -52909,6 +52909,7 @@ from previous Chrome versions.
   <int value="-1176748003"
       label="FramebustingNeedsSameOriginOrUserGesture:disabled"/>
   <int value="-1176493523" label="enable-md-extensions"/>
+  <int value="-1175552430" label="WebViewNewInvalidateHeuristic:enabled"/>
   <int value="-1174292609" label="SystemProxyForSystemServices:disabled"/>
   <int value="-1174267639" label="ClientLoFi:disabled"/>
   <int value="-1173823468" label="FullUserAgent:enabled"/>
@@ -54430,6 +54431,7 @@ from previous Chrome versions.
   <int value="-100702864" label="PageInfoAboutThisSite:disabled"/>
   <int value="-100148609" label="EvDetailsInPageInfo:disabled"/>
   <int value="-99781021" label="disable-roboto-font-ui"/>
+  <int value="-97599565" label="WebViewNewInvalidateHeuristic:disabled"/>
   <int value="-97145978" label="DesktopPWAsStayInWindow:enabled"/>
   <int value="-94335249" label="UseAAudioDriver:enabled"/>
   <int value="-93619449" label="video-tutorials-instant-fetch"/>

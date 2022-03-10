@@ -146,6 +146,9 @@ const base::Feature kWebViewVulkanIntermediateBuffer{
 const base::Feature kUseSurfaceLayerForVideoDefault{
     "UseSurfaceLayerForVideoDefault", base::FEATURE_ENABLED_BY_DEFAULT};
 
+const base::Feature kWebViewNewInvalidateHeuristic{
+    "WebViewNewInvalidateHeuristic", base::FEATURE_DISABLED_BY_DEFAULT};
+
 // Historically media on android hardcoded SRGB color space because of lack of
 // color space support in surface control. This controls if we want to use real
 // color space in DisplayCompositor.
@@ -304,6 +307,10 @@ bool ShouldUsePlatformDelegatedInk() {
 
 #if BUILDFLAG(IS_ANDROID)
 bool UseSurfaceLayerForVideo() {
+  // SurfaceLayer video should work fine with new heuristic.
+  if (base::FeatureList::IsEnabled(kWebViewNewInvalidateHeuristic))
+    return true;
+
   // Allow enabling UseSurfaceLayerForVideo if webview is using surface control.
   if (::features::IsAndroidSurfaceControlEnabled()) {
     return true;
