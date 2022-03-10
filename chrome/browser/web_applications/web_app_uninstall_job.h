@@ -27,6 +27,7 @@ class WebAppInstallManager;
 class WebAppInstallFinalizer;
 class WebAppRegistrar;
 class WebAppSyncBridge;
+class WebAppTranslationManager;
 
 // Uninstalls a given web app by:
 // 1) Unregistering OS hooks.
@@ -47,6 +48,7 @@ class WebAppUninstallJob {
                      WebAppRegistrar* registrar,
                      WebAppInstallManager* install_manager,
                      WebAppInstallFinalizer* install_finalizer,
+                     WebAppTranslationManager* translation_manager,
                      PrefService* profile_prefs);
   ~WebAppUninstallJob();
 
@@ -75,6 +77,7 @@ class WebAppUninstallJob {
   void OnSubAppUninstalled(webapps::UninstallResultCode code);
   void OnOsHooksUninstalled(OsHooksErrors errors);
   void OnIconDataDeleted(bool success);
+  void OnTranslationDataDeleted(bool success);
   void MaybeFinishUninstall();
 
   enum class State {
@@ -89,6 +92,7 @@ class WebAppUninstallJob {
   raw_ptr<WebAppRegistrar> registrar_;
   raw_ptr<WebAppInstallManager> install_manager_;
   raw_ptr<WebAppInstallFinalizer> install_finalizer_;
+  raw_ptr<WebAppTranslationManager> translation_manager_;
   raw_ptr<PrefService> profile_prefs_;
 
   AppId app_id_;
@@ -98,6 +102,7 @@ class WebAppUninstallJob {
   size_t num_pending_sub_app_uninstalls_;
 
   bool app_data_deleted_ = false;
+  bool translation_data_deleted_ = false;
   bool hooks_uninstalled_ = false;
   bool errors_ = false;
 

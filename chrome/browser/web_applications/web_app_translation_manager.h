@@ -14,15 +14,13 @@
 #include "chrome/browser/web_applications/file_utils_wrapper.h"
 #include "chrome/browser/web_applications/proto/web_app_translations.pb.h"
 #include "chrome/browser/web_applications/web_app_id.h"
-#include "chrome/browser/web_applications/web_app_install_manager.h"
-#include "chrome/browser/web_applications/web_app_install_manager_observer.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
 
 namespace web_app {
 
 using Locale = std::u16string;
 
-class WebAppTranslationManager : public WebAppInstallManagerObserver {
+class WebAppTranslationManager {
  public:
   using ReadCallback = base::OnceCallback<void(
       const std::map<AppId, blink::Manifest::TranslationItem>& cache)>;
@@ -32,10 +30,9 @@ class WebAppTranslationManager : public WebAppInstallManagerObserver {
                            scoped_refptr<FileUtilsWrapper> utils);
   WebAppTranslationManager(const WebAppTranslationManager&) = delete;
   WebAppTranslationManager& operator=(const WebAppTranslationManager&) = delete;
-  ~WebAppTranslationManager() override;
+  ~WebAppTranslationManager();
 
-  void SetSubsystems(base::raw_ptr<WebAppInstallManager> install_manager,
-                     base::raw_ptr<WebAppRegistrar> registrar);
+  void SetSubsystems(base::raw_ptr<WebAppRegistrar> registrar);
 
   void Start();
 
@@ -51,22 +48,14 @@ class WebAppTranslationManager : public WebAppInstallManagerObserver {
   std::string GetDescription(const AppId& app_id);
   // TODO(crbug.com/1212519): Add a method to get the short_name.
 
-  // WebAppInstallManager:
-  void OnWebAppUninstalled(const AppId& app_id) override;
-  void OnWebAppInstallManagerDestroyed() override;
-
  private:
   void OnTranslationsRead(ReadCallback callback, const AllTranslations& proto);
 
-  base::raw_ptr<WebAppInstallManager> install_manager_;
   base::raw_ptr<WebAppRegistrar> registrar_;
   base::FilePath web_apps_directory_;
   scoped_refptr<FileUtilsWrapper> utils_;
   // Cache of the translations on disk for the current device language.
   std::map<AppId, blink::Manifest::TranslationItem> translation_cache_;
-
-  base::ScopedObservation<WebAppInstallManager, WebAppInstallManagerObserver>
-      install_manager_observation_{this};
 
   base::WeakPtrFactory<WebAppTranslationManager> weak_ptr_factory_{this};
 };

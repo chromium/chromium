@@ -89,6 +89,7 @@ TEST_F(WebAppUninstallJobTest, SimpleUninstall) {
   WebAppUninstallJob task(&os_integration_manager_, &controller().sync_bridge(),
                           icon_manager_.get(), &controller().registrar(),
                           &install_manager(), &install_finalizer(),
+                          &controller().translation_manager(),
                           profile()->GetPrefs());
 
   OsHooksErrors result;
@@ -125,6 +126,7 @@ TEST_F(WebAppUninstallJobTest, FailedDataDelete) {
   WebAppUninstallJob task(&os_integration_manager_, &controller().sync_bridge(),
                           icon_manager_.get(), &controller().registrar(),
                           &install_manager(), &install_finalizer(),
+                          &controller().translation_manager(),
                           profile()->GetPrefs());
 
   OsHooksErrors result;
@@ -161,6 +163,7 @@ TEST_F(WebAppUninstallJobTest, FailedOsHooks) {
   WebAppUninstallJob task(&os_integration_manager_, &controller().sync_bridge(),
                           icon_manager_.get(), &controller().registrar(),
                           &install_manager(), &install_finalizer(),
+                          &controller().translation_manager(),
                           profile()->GetPrefs());
 
   OsHooksErrors result;

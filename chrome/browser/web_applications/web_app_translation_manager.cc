@@ -88,6 +88,9 @@ bool WriteProtoBlocking(scoped_refptr<FileUtilsWrapper> utils,
 bool DeleteTranslationsBlocking(scoped_refptr<FileUtilsWrapper> utils,
                                 const base::FilePath& web_apps_directory,
                                 const AppId& app_id) {
+  if (!utils->CreateDirectory(web_apps_directory)) {
+    return false;
+  }
   AllTranslations proto = ReadProtoBlocking(utils, web_apps_directory);
 
   proto.mutable_id_to_translations_map()->erase(app_id);
@@ -134,9 +137,7 @@ WebAppTranslationManager::WebAppTranslationManager(
 WebAppTranslationManager::~WebAppTranslationManager() = default;
 
 void WebAppTranslationManager::SetSubsystems(
-    base::raw_ptr<WebAppInstallManager> install_manager,
     base::raw_ptr<WebAppRegistrar> registrar) {
-  install_manager_ = install_manager;
   registrar_ = registrar;
 }
 
@@ -144,16 +145,7 @@ void WebAppTranslationManager::Start() {
   if (base::FeatureList::IsEnabled(
           blink::features::kWebAppEnableTranslations)) {
     ReadTranslations(base::DoNothing());
-    install_manager_observation_.Observe(install_manager_.get());
   }
-}
-
-void WebAppTranslationManager::OnWebAppUninstalled(const AppId& app_id) {
-  DeleteTranslations(app_id, base::DoNothing());
-}
-
-void WebAppTranslationManager::OnWebAppInstallManagerDestroyed() {
-  install_manager_observation_.Reset();
 }
 
 void WebAppTranslationManager::WriteTranslations(
@@ -184,6 +176,12 @@ void WebAppTranslationManager::WriteTranslations(
 
 void WebAppTranslationManager::DeleteTranslations(const AppId& app_id,
                                                   WriteCallback callback) {
+  if (!base::FeatureList::IsEnabled(
+          blink::features::kWebAppEnableTranslations)) {
+    std::move(callback).Run(true);
+    return;
+  }
+
   translation_cache_.erase(app_id);
   base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE, kTaskTraits,

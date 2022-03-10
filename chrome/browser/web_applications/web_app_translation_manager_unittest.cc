@@ -25,8 +25,6 @@ class WebAppTranslationManagerTest : public WebAppTest {
         std::make_unique<FakeWebAppRegistryController>();
     fake_registry_controller_->SetUp(profile());
 
-    install_manager_ = std::make_unique<WebAppInstallManager>(profile());
-
     file_utils_ = base::MakeRefCounted<TestFileUtils>();
 
     controller().Init();
@@ -34,7 +32,7 @@ class WebAppTranslationManagerTest : public WebAppTest {
 
     translation_manager_ =
         std::make_unique<WebAppTranslationManager>(profile(), file_utils_);
-    translation_manager_->SetSubsystems(&install_manager(), registrar());
+    translation_manager_->SetSubsystems(registrar());
   }
 
  protected:

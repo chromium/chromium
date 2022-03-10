@@ -15,6 +15,7 @@
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "chrome/browser/web_applications/web_app_registry_update.h"
 #include "chrome/browser/web_applications/web_app_sync_bridge.h"
+#include "chrome/browser/web_applications/web_app_translation_manager.h"
 #include "components/webapps/browser/installable/installable_metrics.h"
 #include "components/webapps/browser/uninstall_result_code.h"
 
@@ -27,6 +28,7 @@ WebAppUninstallJob::WebAppUninstallJob(
     WebAppRegistrar* registrar,
     WebAppInstallManager* install_manager,
     WebAppInstallFinalizer* install_finalizer,
+    WebAppTranslationManager* translation_manager,
     PrefService* profile_prefs)
     : os_integration_manager_(os_integration_manager),
       sync_bridge_(sync_bridge),
@@ -34,6 +36,7 @@ WebAppUninstallJob::WebAppUninstallJob(
       registrar_(registrar),
       install_manager_(install_manager),
       install_finalizer_(install_finalizer),
+      translation_manager_(translation_manager),
       profile_prefs_(profile_prefs) {}
 
 WebAppUninstallJob::~WebAppUninstallJob() = default;
@@ -84,6 +87,10 @@ void WebAppUninstallJob::Start(const AppId& app_id,
   icon_manager_->DeleteData(
       app_id, base::BindOnce(&WebAppUninstallJob::OnIconDataDeleted,
                              weak_ptr_factory_.GetWeakPtr()));
+
+  translation_manager_->DeleteTranslations(
+      app_id, base::BindOnce(&WebAppUninstallJob::OnTranslationDataDeleted,
+                             weak_ptr_factory_.GetWeakPtr()));
 }
 
 void WebAppUninstallJob::StopAppRegistryModification() {
@@ -119,10 +126,17 @@ void WebAppUninstallJob::OnIconDataDeleted(bool success) {
   MaybeFinishUninstall();
 }
 
+void WebAppUninstallJob::OnTranslationDataDeleted(bool success) {
+  DCHECK(state_ == State::kPendingDataDeletion);
+  translation_data_deleted_ = true;
+  errors_ = errors_ || !success;
+  MaybeFinishUninstall();
+}
+
 void WebAppUninstallJob::MaybeFinishUninstall() {
   DCHECK(state_ == State::kPendingDataDeletion);
   if (!hooks_uninstalled_ || !app_data_deleted_ ||
-      num_pending_sub_app_uninstalls_ > 0) {
+      num_pending_sub_app_uninstalls_ > 0 || !translation_data_deleted_) {
     return;
   }
   DCHECK_EQ(num_pending_sub_app_uninstalls_, 0u);
