@@ -30,6 +30,12 @@ namespace test {
 //!     `false` with a Google Test failure added.
 bool FileExists(const base::FilePath& path);
 
+//! \brief Removes a file if it exists, logging a message on failure.
+//!
+//! \param[in] path The path to the file to remove.
+//! \return `true` on success. `false` on failure with a message logged.
+bool RemoveFileIfExists(const base::FilePath& path);
+
 //! \brief Determines the size of a file.
 //!
 //! \param[in] path The path of the file to check. The file must exist.

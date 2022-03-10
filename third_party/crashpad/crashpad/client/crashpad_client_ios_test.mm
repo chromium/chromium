@@ -25,6 +25,7 @@
 #include "gtest/gtest.h"
 #include "test/scoped_temp_dir.h"
 #include "testing/platform_test.h"
+#include "util/thread/thread.h"
 
 namespace crashpad {
 namespace test {
@@ -98,6 +99,37 @@ TEST_F(CrashpadIOSClient, DumpWithoutCrashAndDeferAtPath) {
   EXPECT_EQ(Database()->GetPendingReports(&reports),
             CrashReportDatabase::kNoError);
   ASSERT_EQ(reports.size(), 1u);
+}
+
+class RaceThread : public Thread {
+ public:
+  explicit RaceThread() : Thread() {}
+
+ private:
+  void ThreadMain() override {
+    for (int i = 0; i < 10; ++i) {
+      CRASHPAD_SIMULATE_CRASH();
+    }
+  }
+};
+
+TEST_F(CrashpadIOSClient, MultipleThreadsSimulateCrash) {
+  RaceThread race_threads[2];
+  for (RaceThread& race_thread : race_threads) {
+    race_thread.Start();
+  }
+
+  for (int i = 0; i < 10; ++i) {
+    CRASHPAD_SIMULATE_CRASH();
+  }
+  for (RaceThread& race_thread : race_threads) {
+    race_thread.Join();
+  }
+
+  std::vector<CrashReportDatabase::Report> reports;
+  ASSERT_EQ(Database()->GetPendingReports(&reports),
+            CrashReportDatabase::kNoError);
+  EXPECT_EQ(reports.size(), 30u);
 }
 
 // This test is covered by a similar XCUITest, but for development purposes it's

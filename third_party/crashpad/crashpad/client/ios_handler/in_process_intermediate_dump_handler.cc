@@ -647,7 +647,7 @@ void InProcessIntermediateDumpHandler::WriteProcessInfo(
                   IntermediateDumpKey::kSystemTime,
                   &task_thread_times.system_time);
   } else {
-    CRASHPAD_RAW_LOG("task_info task_basic_info");
+    CRASHPAD_RAW_LOG("task_info thread_times_info");
   }
 
   if (!annotations.empty()) {

@@ -35,6 +35,8 @@ static_library("app_host_sources") {
     "cptest_application_delegate.mm",
     "cptest_crash_view_controller.h",
     "cptest_crash_view_controller.mm",
+    "handler_forbidden_allocators.cc",
+    "handler_forbidden_allocators.h",
     "main.mm",
   ]
   configs += [ "../../..:crashpad_config" ]
@@ -43,6 +45,7 @@ static_library("app_host_sources") {
     "../../../build:ios_enable_arc",
     "../../../client",
     "../../../snapshot",
+    "../../../test",
     "../../../third_party/edo",
   ]
   frameworks = [

@@ -17,6 +17,9 @@
 #include <stdio.h>
 #include <sys/stat.h>
 
+#include <algorithm>
+
+#include "base/cxx17_backports.h"
 #include "base/logging.h"
 #include "client/ios_handler/in_process_intermediate_dump_handler.h"
 #include "client/prune_crash_reports.h"
@@ -46,6 +49,10 @@ constexpr char kLockedExtension[] = ".locked";
 // The seperator used to break the bundle id (e.g. com.chromium.ios) from the
 // uuid in the intermediate dump file name.
 constexpr char kBundleSeperator[] = "@";
+
+// Zero-ed codes used by kMachExceptionFromNSException and
+// kMachExceptionSimulated.
+constexpr mach_exception_data_type_t kEmulatedMachExceptionCodes[2] = {};
 
 }  // namespace
 
@@ -105,9 +112,16 @@ bool InProcessHandler::Initialize(
       system_data.IsExtension()));
   prune_thread_->Start();
 
-  if (!OpenNewFile())
+  base::FilePath cached_writer_path = NewLockedFilePath();
+  cached_writer_ = CreateWriterWithPath(cached_writer_path);
+  if (!cached_writer_.get())
     return false;
 
+  // Cache the locked and unlocked path here so no allocations are needed during
+  // any exceptions.
+  cached_writer_path_ = cached_writer_path.value();
+  cached_writer_unlocked_path_ =
+      cached_writer_path.RemoveFinalExtension().value();
   INITIALIZATION_STATE_SET_VALID(initialized_);
   return true;
 }
@@ -117,16 +131,16 @@ void InProcessHandler::DumpExceptionFromSignal(
     siginfo_t* siginfo,
     ucontext_t* context) {
   INITIALIZATION_STATE_DCHECK_VALID(initialized_);
-  if (!writer_) {
-    CRASHPAD_RAW_LOG("Cannot DumpExceptionFromSignal without writer_");
+  ScopedLockedWriter writer(GetCachedWriter(),
+                            cached_writer_path_.c_str(),
+                            cached_writer_unlocked_path_.c_str());
+  if (!writer.GetWriter()) {
+    CRASHPAD_RAW_LOG("Cannot DumpExceptionFromSignal without writer");
     return;
   }
-  {
-    ScopedReport report(writer_.get(), system_data, annotations_);
-    InProcessIntermediateDumpHandler::WriteExceptionFromSignal(
-        writer_.get(), system_data, siginfo, context);
-  }
-  PostReportCleanup();
+  ScopedReport report(writer.GetWriter(), system_data, annotations_);
+  InProcessIntermediateDumpHandler::WriteExceptionFromSignal(
+      writer.GetWriter(), system_data, siginfo, context);
 }
 
 void InProcessHandler::DumpExceptionFromMachException(
@@ -140,43 +154,123 @@ void InProcessHandler::DumpExceptionFromMachException(
     ConstThreadState old_state,
     mach_msg_type_number_t old_state_count) {
   INITIALIZATION_STATE_DCHECK_VALID(initialized_);
-  if (!writer_) {
-    CRASHPAD_RAW_LOG("Cannot DumpExceptionFromMachException without writer_");
+  ScopedLockedWriter writer(GetCachedWriter(),
+                            cached_writer_path_.c_str(),
+                            cached_writer_unlocked_path_.c_str());
+  if (!writer.GetWriter()) {
+    CRASHPAD_RAW_LOG("Cannot DumpExceptionFromMachException without writer");
     return;
   }
-  {
-    ScopedReport report(writer_.get(), system_data, annotations_);
-    InProcessIntermediateDumpHandler::WriteExceptionFromMachException(
-        writer_.get(),
-        behavior,
-        thread,
-        exception,
-        code,
-        code_count,
-        flavor,
-        old_state,
-        old_state_count);
+
+  if (mach_exception_callback_for_testing_) {
+    mach_exception_callback_for_testing_();
   }
-  PostReportCleanup();
+
+  ScopedReport report(writer.GetWriter(), system_data, annotations_);
+  InProcessIntermediateDumpHandler::WriteExceptionFromMachException(
+      writer.GetWriter(),
+      behavior,
+      thread,
+      exception,
+      code,
+      code_count,
+      flavor,
+      old_state,
+      old_state_count);
 }
 
-void InProcessHandler::DumpExceptionFromNSExceptionFrames(
+void InProcessHandler::DumpExceptionFromNSExceptionWithContext(
+    const IOSSystemDataCollector& system_data,
+    NativeCPUContext* context) {
+  INITIALIZATION_STATE_DCHECK_VALID(initialized_);
+  // This does not use the cached writer. NSExceptionWithContext comes from
+  // the objective-c preprocessor and uses a best-guess approach to detecting
+  // uncaught exceptions, and may be called multiple times.
+  base::FilePath writer_path = NewLockedFilePath();
+  base::FilePath writer_path_unlocked = writer_path.RemoveFinalExtension();
+  std::unique_ptr<IOSIntermediateDumpWriter> unsafe_writer =
+      CreateWriterWithPath(writer_path);
+  ScopedLockedWriter writer(unsafe_writer.get(),
+                            writer_path.value().c_str(),
+                            writer_path_unlocked.value().c_str());
+  if (!writer.GetWriter()) {
+    CRASHPAD_RAW_LOG("Cannot DumpExceptionFromNSException without writer");
+    return;
+  }
+
+  ScopedReport report(writer.GetWriter(), system_data, annotations_);
+  InProcessIntermediateDumpHandler::WriteExceptionFromMachException(
+      writer.GetWriter(),
+      MACH_EXCEPTION_CODES,
+      mach_thread_self(),
+      kMachExceptionFromNSException,
+      kEmulatedMachExceptionCodes,
+      std::size(kEmulatedMachExceptionCodes),
+      MACHINE_THREAD_STATE,
+      reinterpret_cast<ConstThreadState>(context),
+      MACHINE_THREAD_STATE_COUNT);
+}
+
+void InProcessHandler::DumpExceptionFromNSExceptionWithFrames(
     const IOSSystemDataCollector& system_data,
     const uint64_t* frames,
     const size_t num_frames) {
   INITIALIZATION_STATE_DCHECK_VALID(initialized_);
-  if (!writer_) {
+  ScopedLockedWriter writer(GetCachedWriter(),
+                            cached_writer_path_.c_str(),
+                            cached_writer_unlocked_path_.c_str());
+  if (!writer.GetWriter()) {
     CRASHPAD_RAW_LOG(
-        "Cannot DumpExceptionFromNSExceptionFrames without writer_");
+        "Cannot DumpExceptionFromNSExceptionWithFrames without writer");
     return;
   }
-  {
-    ScopedReport report(
-        writer_.get(), system_data, annotations_, frames, num_frames);
-    InProcessIntermediateDumpHandler::WriteExceptionFromNSException(
-        writer_.get());
+  ScopedReport report(
+      writer.GetWriter(), system_data, annotations_, frames, num_frames);
+  InProcessIntermediateDumpHandler::WriteExceptionFromNSException(
+      writer.GetWriter());
+}
+
+bool InProcessHandler::DumpExceptionFromSimulatedMachException(
+    const IOSSystemDataCollector& system_data,
+    const NativeCPUContext* context,
+    base::FilePath* path) {
+  base::FilePath locked_path = NewLockedFilePath();
+  *path = locked_path.RemoveFinalExtension();
+  return DumpExceptionFromSimulatedMachExceptionAtPath(
+      system_data, context, locked_path);
+}
+
+bool InProcessHandler::DumpExceptionFromSimulatedMachExceptionAtPath(
+    const IOSSystemDataCollector& system_data,
+    const NativeCPUContext* context,
+    const base::FilePath& path) {
+  // This does not use the cached writer. It's expected that simulated
+  // exceptions can be called multiple times and there is no expectation that
+  // the application is in an unsafe state, or will be terminated after this
+  // call.
+  std::unique_ptr<IOSIntermediateDumpWriter> unsafe_writer =
+      CreateWriterWithPath(path);
+  base::FilePath writer_path_unlocked = path.RemoveFinalExtension();
+  ScopedLockedWriter writer(unsafe_writer.get(),
+                            path.value().c_str(),
+                            writer_path_unlocked.value().c_str());
+  if (!writer.GetWriter()) {
+    CRASHPAD_RAW_LOG(
+        "Cannot DumpExceptionFromSimulatedMachExceptionAtPath without writer");
+    return false;
   }
-  PostReportCleanup();
+  ScopedReport report(writer.GetWriter(), system_data, annotations_);
+  InProcessIntermediateDumpHandler::WriteExceptionFromMachException(
+      writer.GetWriter(),
+      MACH_EXCEPTION_CODES,
+      mach_thread_self(),
+      kMachExceptionSimulated,
+      kEmulatedMachExceptionCodes,
+      std::size(kEmulatedMachExceptionCodes),
+      MACHINE_THREAD_STATE,
+      reinterpret_cast<ConstThreadState>(context),
+      MACHINE_THREAD_STATE_COUNT);
+  return true;
 }
 
 void InProcessHandler::ProcessIntermediateDumps(
@@ -258,6 +352,7 @@ std::vector<base::FilePath> InProcessHandler::PendingFiles() {
   // intermediate dumps into never getting processed.
   std::vector<base::FilePath> other_files;
 
+  base::FilePath cached_writer_path(cached_writer_path_);
   while ((result = reader.NextFile(&file)) ==
          DirectoryReader::Result::kSuccess) {
     // Don't try to process files marked as 'locked' from a different bundle id.
@@ -269,9 +364,9 @@ std::vector<base::FilePath> InProcessHandler::PendingFiles() {
       continue;
     }
 
-    // Never process the current file.
+    // Never process the current cached writer path.
     file = base_dir_.Append(file);
-    if (file == current_file_)
+    if (file == cached_writer_path)
       continue;
 
     // Otherwise, include any other unlocked, or locked files matching
@@ -292,35 +387,51 @@ std::vector<base::FilePath> InProcessHandler::PendingFiles() {
   return files;
 }
 
-InProcessHandler::ScopedAlternateWriter::ScopedAlternateWriter(
-    InProcessHandler* handler)
-    : handler_(handler) {}
+IOSIntermediateDumpWriter* InProcessHandler::GetCachedWriter() {
+  static_assert(
+      std::atomic<uint64_t>::is_always_lock_free,
+      "std::atomic_compare_exchange_strong uint64_t may not be signal-safe");
+  uint64_t thread_self;
+  // This is only safe when passing pthread_self(), otherwise this can lock.
+  pthread_threadid_np(pthread_self(), &thread_self);
+  uint64_t expected = 0;
+  if (!std::atomic_compare_exchange_strong(
+          &exception_thread_id_, &expected, thread_self)) {
+    if (expected == thread_self) {
+      // Another exception came in from this thread, which means it's likely
+      // that our own handler crashed. We could open up a new intermediate dump
+      // and try to save this dump, but we could end up endlessly writing dumps.
+      // Instead, give up.
+    } else {
+      // Another thread is handling a crash. Sleep forever.
+      while (1) {
+        sleep(std::numeric_limits<unsigned int>::max());
+      }
+    }
+    return nullptr;
+  }
 
-bool InProcessHandler::ScopedAlternateWriter::Open() {
+  return cached_writer_.get();
+}
+
+std::unique_ptr<IOSIntermediateDumpWriter>
+InProcessHandler::CreateWriterWithPath(const base::FilePath& writer_path) {
+  std::unique_ptr<IOSIntermediateDumpWriter> writer =
+      std::make_unique<IOSIntermediateDumpWriter>();
+  if (!writer->Open(writer_path)) {
+    DLOG(ERROR) << "Unable to open intermediate dump file: "
+                << writer_path.value();
+    return nullptr;
+  }
+  return writer;
+}
+
+const base::FilePath InProcessHandler::NewLockedFilePath() {
   UUID uuid;
   uuid.InitializeWithNew();
-  const std::string uuid_string = uuid.ToString();
-  return OpenAtPath(handler_->base_dir_.Append(uuid_string));
-}
-
-bool InProcessHandler::ScopedAlternateWriter::OpenAtPath(
-    const base::FilePath& path) {
-  path_ = path;
-  handler_->SetOpenNewFileAfterReport(false);
-  original_writer_ = handler_->GetWriter();
-  auto writer = std::make_unique<IOSIntermediateDumpWriter>();
-  if (!writer->Open(path_)) {
-    DLOG(ERROR) << "Unable to open alternate intermediate dump file: "
-                << path_.value();
-    return false;
-  }
-  handler_->SetWriter(std::move(writer));
-  return true;
-}
-
-InProcessHandler::ScopedAlternateWriter::~ScopedAlternateWriter() {
-  handler_->SetWriter(std::move(original_writer_));
-  handler_->SetOpenNewFileAfterReport(true);
+  const std::string file_string =
+      bundle_identifier_and_seperator_ + uuid.ToString() + kLockedExtension;
+  return base_dir_.Append(file_string);
 }
 
 InProcessHandler::ScopedReport::ScopedReport(
@@ -347,34 +458,24 @@ InProcessHandler::ScopedReport::~ScopedReport() {
   InProcessIntermediateDumpHandler::WriteModuleInfo(writer_);
 }
 
-bool InProcessHandler::OpenNewFile() {
-  if (!current_file_.empty()) {
-    // Remove .lock extension so this dump can be processed on next run by this
-    // client, or a client with a different bundle id that can access this dump.
-    base::FilePath new_path = current_file_.RemoveFinalExtension();
-    MoveFileOrDirectory(current_file_, new_path);
-  }
-  UUID uuid;
-  uuid.InitializeWithNew();
-  const std::string file_string =
-      bundle_identifier_and_seperator_ + uuid.ToString() + kLockedExtension;
-  current_file_ = base_dir_.Append(file_string);
-  writer_ = std::make_unique<IOSIntermediateDumpWriter>();
-  if (!writer_->Open(current_file_)) {
-    DLOG(ERROR) << "Unable to open intermediate dump file: "
-                << current_file_.value();
-    return false;
-  }
-  return true;
-}
+InProcessHandler::ScopedLockedWriter::ScopedLockedWriter(
+    IOSIntermediateDumpWriter* writer,
+    const char* writer_path,
+    const char* writer_unlocked_path)
+    : writer_path_(writer_path),
+      writer_unlocked_path_(writer_unlocked_path),
+      writer_(writer) {}
 
-void InProcessHandler::PostReportCleanup() {
-  if (writer_) {
-    writer_->Close();
-    writer_.reset();
+InProcessHandler::ScopedLockedWriter::~ScopedLockedWriter() {
+  if (!writer_)
+    return;
+
+  writer_->Close();
+  if (rename(writer_path_, writer_unlocked_path_) != 0) {
+    CRASHPAD_RAW_LOG("Could not remove locked extension.");
+    CRASHPAD_RAW_LOG(writer_path_);
+    CRASHPAD_RAW_LOG(writer_unlocked_path_);
   }
-  if (open_new_file_after_report_)
-    OpenNewFile();
 }
 
 }  // namespace internal

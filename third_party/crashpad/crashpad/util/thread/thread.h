@@ -19,9 +19,12 @@
 
 #if BUILDFLAG(IS_POSIX)
 #include <pthread.h>
+#include <stdint.h>
 #elif BUILDFLAG(IS_WIN)
 #include <windows.h>
 #endif  // BUILDFLAG(IS_POSIX)
+
+#include "build/build_config.h"
 
 namespace crashpad {
 
@@ -43,6 +46,11 @@ class Thread {
   //! \brief Block until ThreadMain() exits. This may be called from any thread.
   //!     Must paired with a call to Start().
   void Join();
+
+#if BUILDFLAG(IS_APPLE)
+  //! \brief Returns the thread id of the Thread pthread_t.
+  uint64_t GetThreadIdForTesting();
+#endif  // BUILDFLAG(IS_APPLE)
 
  private:
   //! \brief The thread entry point to be implemented by the subclass.

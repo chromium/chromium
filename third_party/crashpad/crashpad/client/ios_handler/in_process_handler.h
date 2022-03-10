@@ -12,8 +12,10 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+#include <mach/mach.h>
 #include <stdint.h>
 
+#include <atomic>
 #include <map>
 #include <string>
 #include <vector>
@@ -24,6 +26,7 @@
 #include "snapshot/ios/process_snapshot_ios_intermediate_dump.h"
 #include "util/ios/ios_intermediate_dump_writer.h"
 #include "util/ios/ios_system_data_collector.h"
+#include "util/misc/capture_context.h"
 #include "util/misc/initialization_state_dcheck.h"
 
 namespace crashpad {
@@ -55,6 +58,9 @@ class InProcessHandler {
                   const IOSSystemDataCollector& system_data);
 
   //! \brief Generate an intermediate dump from a signal handler exception.
+  //!      Writes the dump with the cached writer does not allow concurrent
+  //!      exceptions to be written. It is expected the system will terminate
+  //!      the application after this call.
   //!
   //! \param[in] system_data An object containing various system data points.
   //! \param[in] siginfo A pointer to a `siginfo_t` object received by a signal
@@ -65,7 +71,10 @@ class InProcessHandler {
                                siginfo_t* siginfo,
                                ucontext_t* context);
 
-  //! \brief Generate an intermediate dump from a mach exception.
+  //! \brief Generate an intermediate dump from a mach exception. Writes the
+  //!     dump with the cached writer does not allow concurrent exceptions to be
+  //!     written. It is expected the system will terminate the application
+  //!     after this call.
   //!
   //! \param[in] system_data An object containing various system data points.
   //! \param[in] behavior
@@ -86,20 +95,61 @@ class InProcessHandler {
                                       ConstThreadState old_state,
                                       mach_msg_type_number_t old_state_count);
 
+  //! \brief Generate an intermediate dump from a NSException caught with its
+  //!     associated CPU context. Because the method for intercepting
+  //!     exceptions is imperfect, uses a new writer for the intermediate dump,
+  //!     as it is possible for further exceptions to happen.
+  //!
+  //! \param[in] system_data An object containing various system data points.
+  //! \param[in] context
+  void DumpExceptionFromNSExceptionWithContext(
+      const IOSSystemDataCollector& system_data,
+      NativeCPUContext* context);
+
   //! \brief Generate an intermediate dump from an uncaught NSException.
   //!
   //! When the ObjcExceptionPreprocessor does not detect an NSException as it is
   //! thrown, the last-chance uncaught exception handler passes a list of call
   //! stack frame addresses.  Record them in the intermediate dump so a minidump
-  //! with a 'fake' call stack is generated.
+  //! with a 'fake' call stack is generated.  Writes the dump with the cached
+  //! writer does not allow concurrent exceptions to be written. It is expected
+  //! the system will terminate the application after this call.
+
   //!
   //! \param[in] system_data An object containing various system data points.
   //! \param[in] frames An array of call stack frame addresses.
   //! \param[in] num_frames The number of frames in |frames|.
-  void DumpExceptionFromNSExceptionFrames(
+  void DumpExceptionFromNSExceptionWithFrames(
       const IOSSystemDataCollector& system_data,
       const uint64_t* frames,
       const size_t num_frames);
+
+  //! \brief Generate a simulated intermediate dump similar to a Mach exception
+  //!     in the same base directory as other exceptions. Does not use the
+  //!     cached writer.
+  //!
+  //! \param[in] system_data An object containing various system data points.
+  //! \param[in] context A pointer to a NativeCPUContext object for this
+  //!     simulated exception.
+  //! \param[out] path The path of the intermediate dump generated.
+  //! \return `true` if the pending intermediate dump could be written.
+  bool DumpExceptionFromSimulatedMachException(
+      const IOSSystemDataCollector& system_data,
+      const NativeCPUContext* context,
+      base::FilePath* path);
+
+  //! \brief Generate a simulated intermediate dump similar to a Mach exception
+  //!     at a specific path. Does not use the cached writer.
+  //!
+  //! \param[in] system_data An object containing various system data points.
+  //! \param[in] context A pointer to a NativeCPUContext object for this
+  //!     simulated exception.
+  //! \param[in] path Path to where the intermediate dump should be written.
+  //! \return `true` if the pending intermediate dump could be written.
+  bool DumpExceptionFromSimulatedMachExceptionAtPath(
+      const IOSSystemDataCollector& system_data,
+      const NativeCPUContext* context,
+      const base::FilePath& path);
 
   //! \brief Requests that the handler convert all intermediate dumps into
   //!     minidumps and trigger an upload if possible.
@@ -121,34 +171,11 @@ class InProcessHandler {
   //!     pending reports.
   void StartProcessingPendingReports();
 
-  //! \brief Helper that swaps out the InProcessHandler's |writer_| with an
-  //!     alternate writer so DumpWithContext does not interfere with the
-  //!     |writer_| created on startup. This is useful for -DumpWithoutCrash,
-  //!     which may write to an alternate location.
-  class ScopedAlternateWriter {
-   public:
-    ScopedAlternateWriter(InProcessHandler* handler);
-    ~ScopedAlternateWriter();
-    ScopedAlternateWriter(const ScopedAlternateWriter&) = delete;
-    ScopedAlternateWriter& operator=(const ScopedAlternateWriter&) = delete;
-    //! \brief Open's an alternate dump writer in the same directory as the
-    //!     default InProcessHandler's dump writer, so the file will be
-    //!     processed with -ProcessIntermediateDumps()
-    bool Open();
-
-    //! \brief Open's an alternate dump writer in the client provided |path|.
-    //!     The file will only be processed by calling
-    //!     ProcessIntermediateDump(path)
-    bool OpenAtPath(const base::FilePath& path);
-
-    //! \brief The path of the alternate dump writer.
-    const base::FilePath& path() { return path_; }
-
-   private:
-    InProcessHandler* handler_;
-    std::unique_ptr<IOSIntermediateDumpWriter> original_writer_;
-    base::FilePath path_;
-  };
+  //! \brief Inject a callback into Mach handling. Intended to be used by
+  //!     tests to trigger a reentrant exception.
+  void SetMachExceptionCallbackForTesting(void (*callback)()) {
+    mach_exception_callback_for_testing_ = callback;
+  }
 
  private:
   //! \brief Helper to start and end intermediate reports.
@@ -170,34 +197,64 @@ class InProcessHandler {
     IOSIntermediateDumpWriter::ScopedRootMap rootMap_;
   };
 
-  std::unique_ptr<IOSIntermediateDumpWriter> GetWriter() {
-    return std::move(writer_);
-  }
+  //! \brief Helper to manage closing the intermediate dump writer and unlocking
+  //!     the dump file (renaming the file) after the report is written.
+  class ScopedLockedWriter {
+   public:
+    ScopedLockedWriter(IOSIntermediateDumpWriter* writer,
+                       const char* writer_path,
+                       const char* writer_unlocked_path);
 
-  void SetWriter(std::unique_ptr<IOSIntermediateDumpWriter> writer) {
-    writer_ = std::move(writer);
-  }
+    //! \brief Close the writer_ and rename to the file with path without the
+    //!     .locked extension.
+    ~ScopedLockedWriter();
 
-  void SetOpenNewFileAfterReport(bool open_new_file_after_report) {
-    open_new_file_after_report_ = open_new_file_after_report;
-  }
+    ScopedLockedWriter(const ScopedLockedWriter&) = delete;
+    ScopedLockedWriter& operator=(const ScopedLockedWriter&) = delete;
 
+    IOSIntermediateDumpWriter* GetWriter() { return writer_; }
+
+   private:
+    const char* writer_path_;
+    const char* writer_unlocked_path_;
+    IOSIntermediateDumpWriter* writer_;
+  };
+
+  //! \brief Writes a minidump to the Crashpad database from the
+  //!     \a process_snapshot, and triggers the upload_thread_ if started.
   void SaveSnapshot(ProcessSnapshotIOSIntermediateDump& process_snapshot);
 
-  // Process a maximum of 20 pending intermediate dumps. Dumps named with our
-  // bundle id get first priority to prevent spamming.
+  //! \brief Process a maximum of 20 pending intermediate dumps. Dumps named
+  //!     with our bundle id get first priority to prevent spamming.
   std::vector<base::FilePath> PendingFiles();
 
-  bool OpenNewFile();
-  void PostReportCleanup();
+  //! \brief Lock access to the cached intermediate dump writer from
+  //!     concurrent signal, Mach exception and uncaught NSExceptions so that
+  //!     the first exception wins. If the same thread triggers another
+  //!     reentrant exception, ignore it. If a different thread triggers a
+  //!     concurrent exception, sleep indefinitely.
+  IOSIntermediateDumpWriter* GetCachedWriter();
+
+  //! \brief Open a new intermediate dump writer from \a writer_path.
+  std::unique_ptr<IOSIntermediateDumpWriter> CreateWriterWithPath(
+      const base::FilePath& writer_path);
+
+  //! \brief Generates a new file path to be used by an intermediate dump
+  //! writer built from base_dir_,, bundle_identifier_and_seperator_, a new
+  //! UUID, with a .locked extension.
+  const base::FilePath NewLockedFilePath();
+
+  // Intended to be used by tests triggering a reentrant exception. Called
+  // in DumpExceptionFromMachException after aquiring the cached_writer_.
+  void (*mach_exception_callback_for_testing_)() = nullptr;
 
   bool upload_thread_started_ = false;
-  bool open_new_file_after_report_ = true;
   std::map<std::string, std::string> annotations_;
   base::FilePath base_dir_;
-  base::FilePath current_file_;
-  std::unique_ptr<IOSIntermediateDumpWriter> writer_;
-  std::unique_ptr<IOSIntermediateDumpWriter> alternate_mach_writer_;
+  std::string cached_writer_path_;
+  std::string cached_writer_unlocked_path_;
+  std::unique_ptr<IOSIntermediateDumpWriter> cached_writer_;
+  std::atomic<uint64_t> exception_thread_id_ = 0;
   std::unique_ptr<CrashReportUploadThread> upload_thread_;
   std::unique_ptr<PruneIntermediateDumpsAndCrashReportsThread> prune_thread_;
   std::unique_ptr<CrashReportDatabase> database_;

@@ -55,13 +55,16 @@
 // Triggers an EXC_BAD_ACCESS exception and crash.
 - (void)crashBadAccess;
 
-// Triggers a crash with a call to kill(SIGABRT).
+// Triggers a crash with a call to kill(SIGABRT). This crash runs with
+// ReplaceAllocatorsWithHandlerForbidden.
 - (void)crashKillAbort;
 
-// Trigger a crash with a __builtin_trap.
+// Trigger a crash with a __builtin_trap. This crash runs with
+// ReplaceAllocatorsWithHandlerForbidden.
 - (void)crashTrap;
 
-// Trigger a crash with an abort().
+// Trigger a crash with an abort(). This crash runs with
+// ReplaceAllocatorsWithHandlerForbidden.
 - (void)crashAbort;
 
 // Trigger a crash with an uncaught exception.
@@ -90,6 +93,24 @@
 
 // Trigger a crash after writing various annotations.
 - (void)crashWithAnnotations;
+
+// Triggers a DumpWithoutCrash |dump_count| times in each of |threads| threads.
+- (void)generateDumpWithoutCrash:(int)dump_count threads:(int)threads;
+
+// Triggers a simulataneous Mach exception and signal in different threads.
+- (void)crashConcurrentSignalAndMach;
+
+// Triggers a SIGABRT signal while handling an NSException to test reentrant
+// exceptions.
+- (void)crashInHandlerReentrant;
+
+// Runs with ReplaceAllocatorsWithHandlerForbidden and allocates memory, testing
+// that the handler forbidden allocator works.
+- (void)allocateWithForbiddenAllocators;
+
+// Return the contents of the stderr output from the previous run of the host
+// application.
+- (NSString*)stderrContents;
 
 @end
 

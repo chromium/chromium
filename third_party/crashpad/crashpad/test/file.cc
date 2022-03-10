@@ -17,9 +17,15 @@
 #include <errno.h>
 #include <sys/stat.h>
 
+#include "base/logging.h"
+#include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
 #include "gtest/gtest.h"
 #include "test/errors.h"
+
+#if BUILDFLAG(IS_WIN)
+#include <windows.h>
+#endif
 
 namespace crashpad {
 namespace test {
@@ -41,6 +47,24 @@ bool FileExists(const base::FilePath& path) {
                              << path.value();
     return false;
   }
+  return true;
+}
+
+bool RemoveFileIfExists(const base::FilePath& path) {
+#if BUILDFLAG(IS_POSIX)
+  if (unlink(path.value().c_str()) != 0 && errno != ENOENT) {
+    PLOG(ERROR) << "unlink " << path.value();
+    return false;
+  }
+#elif BUILDFLAG(IS_WIN)
+  if (!DeleteFile(path.value().c_str()) &&
+      GetLastError() != ERROR_FILE_NOT_FOUND) {
+    PLOG(ERROR) << "DeleteFile " << base::WideToUTF8(path.value());
+    return false;
+  }
+#else
+#error "Not implemented"
+#endif
   return true;
 }
 

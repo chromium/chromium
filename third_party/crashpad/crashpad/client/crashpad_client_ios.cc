@@ -84,10 +84,31 @@ class CrashHandler : public Thread,
         // generate intermediate dumps for anything manually calling
         // raise(SIG*). In practice, this doesn’t actually happen for crash
         // signals that originate as hardware faults.
-        !Signals::InstallHandler(SIGABRT, CatchSignal, 0, &old_action_)) {
+        !Signals::InstallHandler(
+            SIGABRT, CatchAndReraiseSignal, 0, &old_action_)) {
       LOG(ERROR) << "Unable to initialize Crashpad.";
       return false;
     }
+
+    // For applications that haven't ignored or set a handler for SIGPIPE:
+    // It’s OK for an application to set its own SIGPIPE handler (including
+    // SIG_IGN) before initializing Crashpad, because Crashpad will discover the
+    // existing handler and not install its own.
+    // It’s OK for Crashpad to install its own  SIGPIPE handler and for the
+    // application to subsequently install its own (including SIG_IGN)
+    // afterwards, because its handler will replace Crashpad’s.
+    // This is useful to cover the default situation where nobody installs a
+    // SIGPIPE  handler and the disposition is at SIG_DFL, because SIGPIPE is a
+    // “kill” signal (bsd/sys/signalvar.h  sigprop). In that case, without
+    // Crashpad, SIGPIPE results in a silent and unreported kill (and not even
+    // ReportCrash will record it), but developers probably want to be alerted
+    // to the conditon.
+    struct sigaction sa;
+    if (sigaction(SIGPIPE, nullptr, &sa) == 0 && sa.sa_handler == SIG_DFL) {
+      Signals::InstallHandler(
+          SIGPIPE, CatchAndReraiseSignalDefaultAction, 0, nullptr);
+    }
+
     InstallObjcExceptionPreprocessor(this);
     INITIALIZATION_STATE_SET_VALID(initialized_);
     return true;
@@ -104,35 +125,14 @@ class CrashHandler : public Thread,
     in_process_handler_.ProcessIntermediateDump(file, annotations);
   }
 
-  void DumpWithContext(NativeCPUContext* context) {
-    const mach_exception_data_type_t code[2] = {};
-    static constexpr int kSimulatedException = -1;
-    HandleMachException(MACH_EXCEPTION_CODES,
-                        mach_thread_self(),
-                        kSimulatedException,
-                        code,
-                        std::size(code),
-                        MACHINE_THREAD_STATE,
-                        reinterpret_cast<ConstThreadState>(context),
-                        MACHINE_THREAD_STATE_COUNT);
-  }
-
   void DumpWithoutCrash(NativeCPUContext* context, bool process_dump) {
     INITIALIZATION_STATE_DCHECK_VALID(initialized_);
     base::FilePath path;
-    {
-      // Ensure ScopedAlternateWriter's destructor is invoked before processing
-      // the dump, or else any crashes handled during dump processing cannot be
-      // written.
-      internal::InProcessHandler::ScopedAlternateWriter scoper(
-          &in_process_handler_);
-      if (!scoper.Open()) {
-        LOG(ERROR) << "Could not open writer, ignoring dump request.";
-        return;
-      }
-      DumpWithContext(context);
-      path = scoper.path();
+    if (!in_process_handler_.DumpExceptionFromSimulatedMachException(
+            system_data_, context, &path)) {
+      return;
     }
+
     if (process_dump) {
       in_process_handler_.ProcessIntermediateDump(path);
     }
@@ -140,16 +140,20 @@ class CrashHandler : public Thread,
 
   void DumpWithoutCrashAtPath(NativeCPUContext* context,
                               const base::FilePath& path) {
-    internal::InProcessHandler::ScopedAlternateWriter scoper(
-        &in_process_handler_);
-    if (scoper.OpenAtPath(path))
-      DumpWithContext(context);
+    in_process_handler_.DumpExceptionFromSimulatedMachExceptionAtPath(
+        system_data_, context, path);
   }
 
   void StartProcessingPendingReports() {
     INITIALIZATION_STATE_DCHECK_VALID(initialized_);
     in_process_handler_.StartProcessingPendingReports();
   }
+
+  void SetMachExceptionCallbackForTesting(void (*callback)()) {
+    in_process_handler_.SetMachExceptionCallbackForTesting(callback);
+  }
+
+  uint64_t GetThreadIdForTesting() { return Thread::GetThreadIdForTesting(); }
 
  private:
   CrashHandler() = default;
@@ -287,7 +291,7 @@ class CrashHandler : public Thread,
 
   void HandleUncaughtNSException(const uint64_t* frames,
                                  const size_t num_frames) override {
-    in_process_handler_.DumpExceptionFromNSExceptionFrames(
+    in_process_handler_.DumpExceptionFromNSExceptionWithFrames(
         system_data_, frames, num_frames);
     // After uncaught exceptions are reported, the system immediately triggers a
     // call to std::terminate()/abort(). Remove the abort handler so a second
@@ -297,17 +301,8 @@ class CrashHandler : public Thread,
 
   void HandleUncaughtNSExceptionWithContext(
       NativeCPUContext* context) override {
-    const mach_exception_data_type_t code[2] = {0, 0};
-    in_process_handler_.DumpExceptionFromMachException(
-        system_data_,
-        MACH_EXCEPTION_CODES,
-        mach_thread_self(),
-        kMachExceptionFromNSException,
-        code,
-        std::size(code),
-        MACHINE_THREAD_STATE,
-        reinterpret_cast<ConstThreadState>(context),
-        MACHINE_THREAD_STATE_COUNT);
+    in_process_handler_.DumpExceptionFromNSExceptionWithContext(system_data_,
+                                                                context);
 
     // After uncaught exceptions are reported, the system immediately triggers a
     // call to std::terminate()/abort(). Remove the abort handler so a second
@@ -316,18 +311,30 @@ class CrashHandler : public Thread,
   }
 
   // The signal handler installed at OS-level.
-  static void CatchSignal(int signo, siginfo_t* siginfo, void* context) {
+  static void CatchAndReraiseSignal(int signo,
+                                    siginfo_t* siginfo,
+                                    void* context) {
+    Get()->HandleAndReraiseSignal(signo,
+                                  siginfo,
+                                  reinterpret_cast<ucontext_t*>(context),
+                                  &(Get()->old_action_));
+  }
+
+  static void CatchAndReraiseSignalDefaultAction(int signo,
+                                                 siginfo_t* siginfo,
+                                                 void* context) {
     Get()->HandleAndReraiseSignal(
-        signo, siginfo, reinterpret_cast<ucontext_t*>(context));
+        signo, siginfo, reinterpret_cast<ucontext_t*>(context), nullptr);
   }
 
   void HandleAndReraiseSignal(int signo,
                               siginfo_t* siginfo,
-                              ucontext_t* context) {
+                              ucontext_t* context,
+                              struct sigaction* old_action) {
     in_process_handler_.DumpExceptionFromSignal(system_data_, siginfo, context);
 
     // Always call system handler.
-    Signals::RestoreHandlerAndReraiseSignalOnReturn(siginfo, &old_action_);
+    Signals::RestoreHandlerAndReraiseSignalOnReturn(siginfo, old_action);
   }
 
   base::mac::ScopedMachReceiveRight exception_port_;
@@ -410,6 +417,18 @@ void CrashpadClient::ResetForTesting() {
   CrashHandler* crash_handler = CrashHandler::Get();
   DCHECK(crash_handler);
   crash_handler->ResetForTesting();
+}
+
+void CrashpadClient::SetMachExceptionCallbackForTesting(void (*callback)()) {
+  CrashHandler* crash_handler = CrashHandler::Get();
+  DCHECK(crash_handler);
+  crash_handler->SetMachExceptionCallbackForTesting(callback);
+}
+
+uint64_t CrashpadClient::GetThreadIdForTesting() {
+  CrashHandler* crash_handler = CrashHandler::Get();
+  DCHECK(crash_handler);
+  return crash_handler->GetThreadIdForTesting();
 }
 
 }  // namespace crashpad
