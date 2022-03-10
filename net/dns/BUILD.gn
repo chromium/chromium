@@ -452,13 +452,11 @@ source_set("test_support") {
   visibility = [ "//net:test_support" ]
   testonly = true
   sources = [
-    "address_info_test_util.cc",
     "dns_test_util.cc",
     "host_resolver_results_test_util.cc",
     "mock_host_resolver.cc",
   ]
   public = [
-    "address_info_test_util.h",
     "dns_test_util.h",
     "host_resolver_results_test_util.h",
     "mock_host_resolver.h",

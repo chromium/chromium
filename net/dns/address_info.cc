@@ -4,6 +4,8 @@
 
 #include "net/dns/address_info.h"
 
+#include <memory>
+
 #include "base/logging.h"
 #include "base/notreached.h"
 #include "base/sys_byteorder.h"
@@ -59,7 +61,8 @@ AddressInfo::AddressInfoAndResult AddressInfo::Get(
     getter = std::make_unique<AddrInfoGetter>();
   int err = OK;
   int os_error = 0;
-  addrinfo* ai = getter->getaddrinfo(host, &hints, &os_error, network);
+  std::unique_ptr<addrinfo, FreeAddrInfoFunc> ai =
+      getter->getaddrinfo(host, &hints, &os_error, network);
 
   if (!ai) {
     err = ERR_NAME_NOT_RESOLVED;
@@ -82,31 +85,21 @@ AddressInfo::AddressInfoAndResult AddressInfo::Get(
     return AddressInfoAndResult(absl::optional<AddressInfo>(), err, os_error);
   }
 
-  return AddressInfoAndResult(
-      absl::optional<AddressInfo>(AddressInfo(ai, std::move(getter))), OK, 0);
+  return AddressInfoAndResult(absl::optional<AddressInfo>(AddressInfo(
+                                  std::move(ai), std::move(getter))),
+                              OK, 0);
 }
 
-AddressInfo::AddressInfo(AddressInfo&& other)
-    : ai_(other.ai_), getter_(std::move(other.getter_)) {
-  other.ai_ = nullptr;
-}
+AddressInfo::AddressInfo(AddressInfo&& other) = default;
 
-AddressInfo& AddressInfo::operator=(AddressInfo&& other) {
-  ai_ = other.ai_;
-  other.ai_ = nullptr;
-  getter_ = std::move(other.getter_);
-  return *this;
-}
+AddressInfo& AddressInfo::operator=(AddressInfo&& other) = default;
 
-AddressInfo::~AddressInfo() {
-  if (ai_)
-    getter_->freeaddrinfo(ai_);
-}
+AddressInfo::~AddressInfo() = default;
 
 //// public methods
 
 AddressInfo::const_iterator AddressInfo::begin() const {
-  return const_iterator(ai_);
+  return const_iterator(ai_.get());
 }
 
 AddressInfo::const_iterator AddressInfo::end() const {
@@ -122,7 +115,7 @@ absl::optional<std::string> AddressInfo::GetCanonicalName() const {
 bool AddressInfo::IsAllLocalhostOfOneFamily() const {
   bool saw_v4_localhost = false;
   bool saw_v6_localhost = false;
-  const auto* ai = ai_;
+  const auto* ai = ai_.get();
   for (; ai != nullptr; ai = Next(ai)) {
     switch (ai->ai_family) {
       case AF_INET: {
@@ -173,20 +166,27 @@ AddressList AddressInfo::CreateAddressList() const {
 
 //// private methods
 
-AddressInfo::AddressInfo(addrinfo* ai, std::unique_ptr<AddrInfoGetter> getter)
-    : ai_(ai), getter_(std::move(getter)) {}
+AddressInfo::AddressInfo(std::unique_ptr<addrinfo, FreeAddrInfoFunc> ai,
+                         std::unique_ptr<AddrInfoGetter> getter)
+    : ai_(std::move(ai)), getter_(std::move(getter)) {}
 
 //// AddrInfoGetter
 
 AddrInfoGetter::AddrInfoGetter() = default;
 AddrInfoGetter::~AddrInfoGetter() = default;
 
-addrinfo* AddrInfoGetter::getaddrinfo(
+std::unique_ptr<addrinfo, FreeAddrInfoFunc> AddrInfoGetter::getaddrinfo(
     const std::string& host,
     const addrinfo* hints,
     int* out_os_error,
     NetworkChangeNotifier::NetworkHandle network) {
   addrinfo* ai;
+  // We wrap freeaddrinfo() in a lambda just in case some operating systems use
+  // a different signature for it.
+  FreeAddrInfoFunc deleter = [](addrinfo* ai) { ::freeaddrinfo(ai); };
+
+  std::unique_ptr<addrinfo, FreeAddrInfoFunc> rv = {nullptr, deleter};
+
   if (network != NetworkChangeNotifier::kInvalidNetworkHandle) {
     // Currently, only Android supports lookups for a specific network.
 #if BUILDFLAG(IS_ANDROID)
@@ -194,11 +194,11 @@ addrinfo* AddrInfoGetter::getaddrinfo(
                                                    nullptr, hints, &ai);
 #elif BUILDFLAG(IS_WIN)
     *out_os_error = WSAEOPNOTSUPP;
-    return nullptr;
+    return rv;
 #else
     errno = ENOSYS;
     *out_os_error = EAI_SYSTEM;
-    return nullptr;
+    return rv;
 #endif  // BUILDFLAG(IS_ANDROID)
   } else {
     *out_os_error = ::getaddrinfo(host.c_str(), nullptr, hints, &ai);
@@ -208,14 +208,11 @@ addrinfo* AddrInfoGetter::getaddrinfo(
 #if BUILDFLAG(IS_WIN)
     *out_os_error = WSAGetLastError();
 #endif
-    return nullptr;
+    return rv;
   }
 
-  return ai;
-}
-
-void AddrInfoGetter::freeaddrinfo(addrinfo* ai) {
-  ::freeaddrinfo(ai);
+  rv.reset(ai);
+  return rv;
 }
 
 }  // namespace net
