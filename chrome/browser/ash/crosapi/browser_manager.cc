@@ -798,8 +798,11 @@ void BrowserManager::Start(
   DCHECK_EQ(state_, State::STOPPED);
   DCHECK(!lacros_path_.empty());
   DCHECK(!shutdown_requested_);
+
   // Ensure we're not trying to open a window before the shelf is initialized.
-  DCHECK(ChromeShelfController::instance());
+  // Kiosk sessions don't need this check because they don't enable the shelf.
+  DCHECK(user_manager::UserManager::Get()->IsLoggedInAsAnyKioskApp() ||
+         ChromeShelfController::instance());
 
   // Always reset the |relaunch_requested_| flag when launching Lacros.
   relaunch_requested_ = false;
