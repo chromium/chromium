@@ -188,8 +188,7 @@ class DeprecationInfo final {
   static const DeprecationInfo WithDetails(const String& id,
                                            const Milestone milestone,
                                            const String& details) {
-    return DeprecationInfo(id, milestone, String(), String(), details, String(),
-                           details);
+    return DeprecationInfo(id, details);
   }
 
   // Use this to inform developers of any `details` for the deprecation with
@@ -201,7 +200,7 @@ class DeprecationInfo final {
       const String& details,
       const String& chrome_status_id) {
     return DeprecationInfo(
-        id, milestone, String(), String(), details, chrome_status_id,
+        id,
         String::Format(
             "%s See https://www.chromestatus.com/feature/%s for more details.",
             details.Ascii().c_str(), chrome_status_id.Ascii().c_str()));
@@ -214,7 +213,7 @@ class DeprecationInfo final {
       const String& feature,
       const String& replacement) {
     return DeprecationInfo(
-        id, milestone, feature, replacement, String(), String(),
+        id,
         String::Format("%s is deprecated. Please use %s instead.",
                        feature.Ascii().c_str(), replacement.Ascii().c_str()));
   }
@@ -227,7 +226,7 @@ class DeprecationInfo final {
       const String& feature,
       const String& chrome_status_id) {
     return DeprecationInfo(
-        id, milestone, feature, String(), String(), chrome_status_id,
+        id,
         String::Format(
             "%s is deprecated and will be removed in %s. See "
             "https://www.chromestatus.com/feature/%s for more details.",
@@ -244,7 +243,7 @@ class DeprecationInfo final {
       const String& replacement,
       const String& chrome_status_id) {
     return DeprecationInfo(
-        id, milestone, feature, replacement, String(), chrome_status_id,
+        id,
         String::Format(
             "%s is deprecated and will be removed in %s. Please use %s "
             "instead. See https://www.chromestatus.com/feature/%s for more "
@@ -254,32 +253,11 @@ class DeprecationInfo final {
   }
 
   const String id_;
-  const Milestone milestone_;
-  const String feature_;
-  const String replacement_;
-  const String details_;
-  const String chrome_status_id_;
   const String message_;
 
  private:
-  DeprecationInfo(const String& id,
-                  const Milestone milestone,
-                  const String& feature,
-                  const String& replacement,
-                  const String& details,
-                  const String& chrome_status_id,
-                  const String& message)
-      : id_(id),
-        milestone_(milestone),
-        feature_(feature),
-        replacement_(replacement),
-        details_(details),
-        chrome_status_id_(chrome_status_id),
-        message_(message) {
-    for (wtf_size_t i = 0; i < chrome_status_id_.length(); ++i) {
-      DCHECK(IsASCIIDigit(chrome_status_id_[i]));
-    }
-  }
+  DeprecationInfo(const String& id, const String& message)
+      : id_(id), message_(message) {}
 };
 
 const DeprecationInfo GetDeprecationInfo(const WebFeature feature) {
@@ -762,16 +740,8 @@ const DeprecationInfo GetDeprecationInfo(const WebFeature feature) {
 
 Report* CreateReportInternal(const KURL& context_url,
                              const DeprecationInfo& info) {
-  absl::optional<base::Time> optional_removal_date;
-  if (info.milestone_ != kUnknown) {
-    base::Time removal_date;
-    bool result = base::Time::FromUTCExploded(MilestoneDate(info.milestone_),
-                                              &removal_date);
-    DCHECK(result);
-    optional_removal_date = removal_date;
-  }
   DeprecationReportBody* body = MakeGarbageCollected<DeprecationReportBody>(
-      info.id_, optional_removal_date, info.message_);
+      info.id_, absl::nullopt, info.message_);
   return MakeGarbageCollected<Report>(ReportType::kDeprecation, context_url,
                                       body);
 }
