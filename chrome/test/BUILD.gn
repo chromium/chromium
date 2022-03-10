@@ -4204,10 +4204,6 @@ if (!is_android) {
       ]
     }
 
-    if (enable_side_search) {
-      sources += [ "../browser/ui/views/side_search/side_search_browser_controller_browsertest.cc" ]
-    }
-
     if (enable_spellcheck) {
       sources +=
           [ "../browser/site_isolation/spellcheck_per_process_browsertest.cc" ]
@@ -9205,6 +9201,10 @@ if (!is_android && !is_fuchsia) {
 
     if (enable_print_preview) {
       sources += [ "../browser/window_placement/window_placement_printing_interactive_uitest.cc" ]
+    }
+
+    if (enable_side_search) {
+      sources += [ "../browser/ui/views/side_search/side_search_browser_controller_interactive_uitest.cc" ]
     }
   }
 }

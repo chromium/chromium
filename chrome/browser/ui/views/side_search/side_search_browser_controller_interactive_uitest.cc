@@ -6,6 +6,8 @@
 
 #include "base/feature_list.h"
 #include "base/files/file_util.h"
+#include "base/strings/strcat.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
@@ -22,7 +24,6 @@
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
-#include "components/google/core/common/google_util.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/result_codes.h"
@@ -40,52 +41,29 @@
 
 namespace {
 
+constexpr char kSearchMatchPath[] = "/search-match";
+constexpr char kNonMatchPath[] = "/non-match";
+
 ui::MouseEvent GetDummyEvent() {
   return ui::MouseEvent(ui::ET_MOUSE_PRESSED, gfx::PointF(), gfx::PointF(),
                         base::TimeTicks::Now(), 0, 0);
 }
 
-// Strips out the port from a given `url`. Useful when testing side search with
-// the EmbeddedTestServer.
-GURL GetFilteredURL(const GURL& url) {
-  GURL filtered_url = url;
-  if (url.has_port()) {
-    GURL::Replacements remove_port;
-    remove_port.ClearPort();
-    filtered_url = filtered_url.ReplaceComponents(remove_port);
-  }
-  return filtered_url;
-}
-
-// In the spirit of testing for the current use of side search for the Google
-// DSE set the callback to allow Google SRP urls to proceed in the side panel.
-// Note we clear away the port here since google_util::IsGoogleSearchUrl does
-// not allow arbitrary ports in the url but the EmbeddedTestServer requires us
-// to use URLs with the specific non-standard port it listens on.
-// TODO(crbug.com/1304513): Eliminate the Google specific nature of both of
-// these. We should be able to update tests to use URLs that satisfy a
-// combination of the below two checks without needing such complicated and
-// specific logic.
-bool ShouldNavigateInSidePanel(const GURL& url) {
-  return google_util::IsGoogleSearchUrl(GetFilteredURL(url));
-}
-
-bool CanShowSidePanelForURL(const GURL& url) {
-  GURL filtered_url = GetFilteredURL(url);
-  return !google_util::IsGoogleSearchUrl(filtered_url) &&
-         !google_util::IsGoogleHomePageUrl(filtered_url) &&
-         filtered_url.spec() != chrome::kChromeUINewTabURL;
+bool IsSearchURLMatch(const GURL& url) {
+  // Test via path prefix match as the embedded test server ensures that all
+  // URLs are using the same host and paths are made unique via appending a
+  // monotonically increasing value to the end of their paths.
+  return url.path().find(kSearchMatchPath) != std::string::npos;
 }
 
 }  // namespace
 
-// TODO(crbug.com/1304513): Refactor out google specific references and have
-// this apply more generically to DSEs.
 class SideSearchBrowserControllerTest : public InProcessBrowserTest {
  public:
   // InProcessBrowserTest:
   void SetUp() override {
-    scoped_feature_list_.InitWithFeatures({features::kSideSearch}, {});
+    scoped_feature_list_.InitWithFeatures({features::kSideSearch},
+                                          {features::kSideSearchDSESupport});
     ASSERT_TRUE(embedded_test_server()->InitializeAndListen());
     InProcessBrowserTest::SetUp();
   }
@@ -99,12 +77,15 @@ class SideSearchBrowserControllerTest : public InProcessBrowserTest {
 
     InProcessBrowserTest::SetUpOnMainThread();
     auto* config = SideSearchConfig::Get(browser()->profile());
-    // TODO(crbug.com/1304513): Update test to avoid Google specific behavior.
-    config->ApplyGoogleSearchConfigurationForTesting();
+    // Basic configuration for testing that allows navigations to URLs with
+    // paths prefixed with `kSearchMatchPath` to proceed within the side panel,
+    // and only allows showing the side panel on non-matching pages.
     config->SetShouldNavigateInSidePanelCallback(
-        base::BindRepeating(ShouldNavigateInSidePanel));
-    config->SetCanShowSidePanelForURLCallback(
-        base::BindRepeating(CanShowSidePanelForURL));
+        base::BindRepeating(IsSearchURLMatch));
+    config->SetCanShowSidePanelForURLCallback(base::BindRepeating(
+        [](const GURL& url) { return !IsSearchURLMatch(url); }));
+    config->SetGenerateSideSearchURLCallback(
+        base::BindRepeating([](const GURL& url) { return url; }));
     SetIsSidePanelSRPAvailableAt(browser(), 0, true);
   }
 
@@ -198,26 +179,21 @@ class SideSearchBrowserControllerTest : public InProcessBrowserTest {
     return tab_contents_helper->side_panel_contents_for_testing();
   }
 
-  void NavigateToSRPAndNonGoogleUrl(
-      Browser* browser,
-      absl::optional<GURL> google_url = absl::nullopt) {
-    // The side panel button should never be visible on the Google search page.
-    NavigateActiveTab(browser, google_url.value_or(google_search_url()));
+  void NavigateToMatchingAndNonMatchingSearchPage(Browser* browser) {
+    // The side panel button should never be visible on the matched search page.
+    NavigateActiveTab(browser, GetMatchingSearchUrl());
     EXPECT_FALSE(GetSidePanelButtonFor(browser)->GetVisible());
     EXPECT_FALSE(GetSidePanelFor(browser)->GetVisible());
 
-    // The side panel button should be visible if on a non-Google page and the
-    // current tab has previously encountered a Google search page.
-    NavigateActiveTab(browser, non_google_url());
+    // The side panel button should be visible if on a non-matched page and the
+    // current tab has previously encountered a matched search page.
+    NavigateActiveTab(browser, GetNonMatchingUrl());
     EXPECT_TRUE(GetSidePanelButtonFor(browser)->GetVisible());
     EXPECT_FALSE(GetSidePanelFor(browser)->GetVisible());
   }
 
-  void NavigateToSRPAndOpenSidePanel(
-      Browser* browser,
-      absl::optional<GURL> google_url = absl::nullopt) {
-    NavigateToSRPAndNonGoogleUrl(browser,
-                                 google_url.value_or(google_search_url()));
+  void NavigateToMatchingSearchPageAndOpenSidePanel(Browser* browser) {
+    NavigateToMatchingAndNonMatchingSearchPage(browser);
 
     NotifyButtonClick(browser);
     EXPECT_TRUE(GetSidePanelButtonFor(browser)->GetVisible());
@@ -227,16 +203,18 @@ class SideSearchBrowserControllerTest : public InProcessBrowserTest {
   }
 
  protected:
-  GURL google_search_url() {
-    return embedded_test_server()->GetURL("www.google.com", "/search?q=test");
+  GURL GetMatchingSearchUrl() {
+    // Ensure that each returned matching URL is unique.
+    static int id = 1;
+    return embedded_test_server()->GetURL(
+        base::StrCat({kSearchMatchPath, base::NumberToString(id++)}));
   }
 
-  GURL google_homepage_url() {
-    return embedded_test_server()->GetURL("www.google.com", "/");
-  }
-
-  GURL non_google_url() {
-    return embedded_test_server()->GetURL("www.test.com", "/");
+  GURL GetNonMatchingUrl() {
+    // Ensure that each returned non-matching URL is unique.
+    static int id = 1;
+    return embedded_test_server()->GetURL(
+        base::StrCat({kNonMatchPath, base::NumberToString(id++)}));
   }
 
   std::unique_ptr<net::test_server::HttpResponse> HandleRequest(
@@ -264,8 +242,8 @@ class SideSearchBrowserControllerTest : public InProcessBrowserTest {
 IN_PROC_BROWSER_TEST_F(SideSearchBrowserControllerTest,
                        SidePanelOpenedPagesInTheTabFrameAreNonSkippable) {
   // Start with the side panel in a toggled open state. The side panel will
-  // intercept non-google search URLs and redirect these to the tab contents.
-  NavigateToSRPAndOpenSidePanel(browser());
+  // intercept non-matching search URLs and redirect these to the tab contents.
+  NavigateToMatchingSearchPageAndOpenSidePanel(browser());
 
   // Always show the side panel for the duration of the navigation test.
   SideSearchConfig::Get(browser()->profile())
@@ -327,8 +305,8 @@ IN_PROC_BROWSER_TEST_F(SideSearchBrowserControllerTest,
 IN_PROC_BROWSER_TEST_F(SideSearchBrowserControllerTest,
                        RedirectedPagesOpenedFromTheSidePanelAreSkippable) {
   // Start with the side panel in a toggled open state. The side panel will
-  // intercept non-google search URLs and redirect these to the tab contents.
-  NavigateToSRPAndOpenSidePanel(browser());
+  // intercept non-matching search URLs and redirect these to the tab contents.
+  NavigateToMatchingSearchPageAndOpenSidePanel(browser());
 
   // Always show the side panel for the duration of the navigation test.
   SideSearchConfig::Get(browser()->profile())
@@ -382,79 +360,59 @@ IN_PROC_BROWSER_TEST_F(SideSearchBrowserControllerTest,
 
 IN_PROC_BROWSER_TEST_F(SideSearchBrowserControllerTest,
                        SidePanelButtonShowsCorrectlySingleTab) {
-  // The side panel button should never be visible on the Google home page.
-  NavigateActiveTab(browser(), google_homepage_url());
-  EXPECT_FALSE(GetSidePanelButtonFor(browser())->GetVisible());
-
-  // If no previous Google search page has been navigated to the button should
+  // If no previous matched search page has been navigated to the button should
   // not be visible.
-  NavigateActiveTab(browser(), non_google_url());
+  NavigateActiveTab(browser(), GetNonMatchingUrl());
   EXPECT_FALSE(GetSidePanelButtonFor(browser())->GetVisible());
 
-  // The side panel button should never be visible on the Google search page.
-  NavigateActiveTab(browser(), google_search_url());
+  // The side panel button should never be visible on a matched search page.
+  NavigateActiveTab(browser(), GetMatchingSearchUrl());
   EXPECT_FALSE(GetSidePanelButtonFor(browser())->GetVisible());
 
-  // The side panel button should be visible if on a non-Google page and the
-  // current tab has previously encountered a Google search page.
-  NavigateActiveTab(browser(), non_google_url());
+  // The side panel button should be visible if on a non-matched page and the
+  // current tab has previously encountered a matched search page.
+  NavigateActiveTab(browser(), GetNonMatchingUrl());
   EXPECT_TRUE(GetSidePanelButtonFor(browser())->GetVisible());
   histogram_tester_.ExpectBucketCount(
       "SideSearch.AvailabilityChanged",
       SideSearchAvailabilityChangeType::kBecomeAvailable, 1);
-
-  // The side panel button should never be visible on the Google home page even
-  // if it has already been navigated to a Google search page.
-  NavigateActiveTab(browser(), google_homepage_url());
-  EXPECT_FALSE(GetSidePanelButtonFor(browser())->GetVisible());
-  histogram_tester_.ExpectBucketCount(
-      "SideSearch.AvailabilityChanged",
-      SideSearchAvailabilityChangeType::kBecomeUnavailable, 1);
-
-  // The side panel button should be visible if on a non-Google page and the
-  // current tab has previously encountered a Google search page.
-  NavigateActiveTab(browser(), non_google_url());
-  EXPECT_TRUE(GetSidePanelButtonFor(browser())->GetVisible());
-  histogram_tester_.ExpectBucketCount(
-      "SideSearch.AvailabilityChanged",
-      SideSearchAvailabilityChangeType::kBecomeAvailable, 2);
 }
 
 IN_PROC_BROWSER_TEST_F(SideSearchBrowserControllerTest,
                        SidePanelButtonShowsCorrectlyMultipleTabs) {
-  // The side panel button should never be visible on the Google home page.
-  AppendTab(browser(), google_homepage_url());
+  // The side panel button should never be visible on non-matching pages.
+  AppendTab(browser(), GetNonMatchingUrl());
   ActivateTabAt(browser(), 1);
   EXPECT_FALSE(GetSidePanelButtonFor(browser())->GetVisible());
 
-  // Navigate to a Google search page and then to a non-Google search page. This
-  // should show the side panel button in the toolbar.
-  AppendTab(browser(), google_search_url());
+  // Navigate to a matched search page and then to a non-matched search page.
+  // This should show the side panel button in the toolbar.
+  AppendTab(browser(), GetMatchingSearchUrl());
   ActivateTabAt(browser(), 2);
   EXPECT_FALSE(GetSidePanelButtonFor(browser())->GetVisible());
-  NavigateActiveTab(browser(), non_google_url());
+  NavigateActiveTab(browser(), GetNonMatchingUrl());
   EXPECT_TRUE(GetSidePanelButtonFor(browser())->GetVisible());
 
-  // Switch back to the Google search page, the side panel button should no
+  // Switch back to the matched search page, the side panel button should no
   // longer be visible.
   ActivateTabAt(browser(), 1);
   EXPECT_FALSE(GetSidePanelButtonFor(browser())->GetVisible());
 
-  // When switching back to the tab on the non-Google page with a previously
-  // visited Google search page the button should be visible.
+  // When switching back to the tab on the non-matched page with a previously
+  // visited matched search page, the button should be visible.
   ActivateTabAt(browser(), 2);
   EXPECT_TRUE(GetSidePanelButtonFor(browser())->GetVisible());
 }
 
 IN_PROC_BROWSER_TEST_F(SideSearchBrowserControllerTest,
                        SidePanelTogglesCorrectlySingleTab) {
-  NavigateActiveTab(browser(), google_search_url());
+  NavigateActiveTab(browser(), GetMatchingSearchUrl());
   EXPECT_FALSE(GetSidePanelButtonFor(browser())->GetVisible());
   EXPECT_FALSE(GetSidePanelFor(browser())->GetVisible());
 
-  // The side panel button should be visible if on a non-Google page and the
-  // current tab has previously encountered a Google search page.
-  NavigateActiveTab(browser(), non_google_url());
+  // The side panel button should be visible if on a non-matched page and the
+  // current tab has previously encountered a matched search page.
+  NavigateActiveTab(browser(), GetNonMatchingUrl());
   EXPECT_TRUE(GetSidePanelButtonFor(browser())->GetVisible());
   EXPECT_FALSE(GetSidePanelFor(browser())->GetVisible());
 
@@ -478,7 +436,7 @@ IN_PROC_BROWSER_TEST_F(SideSearchBrowserControllerTest,
 IN_PROC_BROWSER_TEST_F(SideSearchBrowserControllerTest,
                        CloseButtonClosesSidePanel) {
   // The close button should be visible in the toggled state.
-  NavigateToSRPAndOpenSidePanel(browser());
+  NavigateToMatchingSearchPageAndOpenSidePanel(browser());
   EXPECT_TRUE(GetSidePanelFor(browser())->GetVisible());
   NotifyCloseButtonClick(browser());
   histogram_tester_.ExpectBucketCount(
@@ -490,8 +448,8 @@ IN_PROC_BROWSER_TEST_F(SideSearchBrowserControllerTest,
                        SideSearchNotAvailableInOTR) {
   Browser* browser2 = CreateIncognitoBrowser();
   EXPECT_TRUE(browser2->profile()->IsOffTheRecord());
-  NavigateActiveTab(browser2, google_search_url());
-  NavigateActiveTab(browser2, non_google_url());
+  NavigateActiveTab(browser2, GetMatchingSearchUrl());
+  NavigateActiveTab(browser2, GetNonMatchingUrl());
 
   EXPECT_EQ(nullptr, GetSidePanelButtonFor(browser2));
   EXPECT_EQ(nullptr, GetSidePanelFor(browser2));
@@ -502,39 +460,26 @@ IN_PROC_BROWSER_TEST_F(SideSearchBrowserControllerTest,
   // Set the side panel SRP be unavailable.
   SetIsSidePanelSRPAvailableAt(browser(), 0, false);
 
-  // The side panel button should never be visible on the Google home page.
-  NavigateActiveTab(browser(), google_homepage_url());
-  EXPECT_FALSE(GetSidePanelFor(browser())->GetVisible());
-
-  // If no previous Google search page has been navigated to the button should
+  // If no previous matched search page has been navigated to the button should
   // not be visible.
-  NavigateActiveTab(browser(), non_google_url());
+  NavigateActiveTab(browser(), GetNonMatchingUrl());
   EXPECT_FALSE(GetSidePanelFor(browser())->GetVisible());
 
-  // The side panel button should never be visible on the Google search page.
-  NavigateActiveTab(browser(), google_search_url());
+  // The side panel button should never be visible on the matched search page.
+  NavigateActiveTab(browser(), GetMatchingSearchUrl());
   EXPECT_FALSE(GetSidePanelFor(browser())->GetVisible());
 
   // The side panel button should not be visible if the side panel SRP is not
   // available.
-  NavigateActiveTab(browser(), non_google_url());
+  NavigateActiveTab(browser(), GetNonMatchingUrl());
   EXPECT_FALSE(GetSidePanelFor(browser())->GetVisible());
 }
 
-// TODO(crbug.com/1269277): Fix flakiness on Linux and Lacros then reenable.
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
-#define MAYBE_OpeningAndClosingTheSidePanelHandlesFocusCorrectly \
-  DISABLED_OpeningAndClosingTheSidePanelHandlesFocusCorrectly
-#else
-#define MAYBE_OpeningAndClosingTheSidePanelHandlesFocusCorrectly \
-  OpeningAndClosingTheSidePanelHandlesFocusCorrectly
-#endif
-IN_PROC_BROWSER_TEST_F(
-    SideSearchBrowserControllerTest,
-    MAYBE_OpeningAndClosingTheSidePanelHandlesFocusCorrectly) {
-  // Navigate to a Google SRP and then a non-Google page. The side panel will be
-  // available but closed.
-  NavigateToSRPAndNonGoogleUrl(browser());
+IN_PROC_BROWSER_TEST_F(SideSearchBrowserControllerTest,
+                       OpeningAndClosingTheSidePanelHandlesFocusCorrectly) {
+  // Navigate to a matching search page and then a non-matched page. The side
+  // panel will be available but closed.
+  NavigateToMatchingAndNonMatchingSearchPage(browser());
 
   auto* browser_view = BrowserViewFor(browser());
   auto* side_panel = GetSidePanelFor(browser());
@@ -563,10 +508,10 @@ IN_PROC_BROWSER_TEST_F(
 IN_PROC_BROWSER_TEST_F(
     SideSearchBrowserControllerTest,
     SidePanelStatePreservedWhenMovingTabsAcrossBrowserWindows) {
-  NavigateToSRPAndOpenSidePanel(browser());
+  NavigateToMatchingSearchPageAndOpenSidePanel(browser());
 
   Browser* browser2 = CreateBrowser(browser()->profile());
-  NavigateToSRPAndNonGoogleUrl(browser2);
+  NavigateToMatchingAndNonMatchingSearchPage(browser2);
 
   std::unique_ptr<content::WebContents> web_contents =
       browser2->tab_strip_model()->DetachWebContentsAtForInsertion(0);
@@ -584,24 +529,24 @@ IN_PROC_BROWSER_TEST_F(
 
 IN_PROC_BROWSER_TEST_F(SideSearchBrowserControllerTest,
                        SidePanelTogglesCorrectlyMultipleTabs) {
-  // Navigate to a Google search URL followed by a non-Google URL in two
+  // Navigate to a matching search URL followed by a non-matching URL in two
   // independent browser tabs such that both have the side panel ready. The
   // side panel should respect the state-per-tab flag.
 
   // Tab 1.
-  NavigateActiveTab(browser(), google_search_url());
+  NavigateActiveTab(browser(), GetMatchingSearchUrl());
   EXPECT_FALSE(GetSidePanelButtonFor(browser())->GetVisible());
   EXPECT_FALSE(GetSidePanelFor(browser())->GetVisible());
-  NavigateActiveTab(browser(), non_google_url());
+  NavigateActiveTab(browser(), GetNonMatchingUrl());
   EXPECT_TRUE(GetSidePanelButtonFor(browser())->GetVisible());
   EXPECT_FALSE(GetSidePanelFor(browser())->GetVisible());
 
   // Tab 2.
-  AppendTab(browser(), google_search_url());
+  AppendTab(browser(), GetMatchingSearchUrl());
   ActivateTabAt(browser(), 1);
   EXPECT_FALSE(GetSidePanelButtonFor(browser())->GetVisible());
   EXPECT_FALSE(GetSidePanelFor(browser())->GetVisible());
-  NavigateActiveTab(browser(), non_google_url());
+  NavigateActiveTab(browser(), GetNonMatchingUrl());
   EXPECT_TRUE(GetSidePanelButtonFor(browser())->GetVisible());
   EXPECT_FALSE(GetSidePanelFor(browser())->GetVisible());
 
@@ -636,16 +581,8 @@ IN_PROC_BROWSER_TEST_F(SideSearchBrowserControllerTest,
   EXPECT_TRUE(GetSidePanelFor(browser())->GetVisible());
 }
 
-// TODO(crbug.com/1303946): Fix flakiness on Lacros then reenable.
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-#define MAYBE_SwitchingTabsHandlesFocusCorrectly \
-  DISABLED_SwitchingTabsHandlesFocusCorrectly
-#else
-#define MAYBE_SwitchingTabsHandlesFocusCorrectly \
-  SwitchingTabsHandlesFocusCorrectly
-#endif
 IN_PROC_BROWSER_TEST_F(SideSearchBrowserControllerTest,
-                       MAYBE_SwitchingTabsHandlesFocusCorrectly) {
+                       SwitchingTabsHandlesFocusCorrectly) {
   auto* browser_view = BrowserViewFor(browser());
   auto* side_panel = GetSidePanelFor(browser());
   auto* contents_view = browser_view->contents_web_view();
@@ -654,16 +591,16 @@ IN_PROC_BROWSER_TEST_F(SideSearchBrowserControllerTest,
 
   // The side panel should currently have focus as it was opened via the toolbar
   // button.
-  NavigateToSRPAndOpenSidePanel(browser());
+  NavigateToMatchingSearchPageAndOpenSidePanel(browser());
   EXPECT_TRUE(side_panel->GetVisible());
   EXPECT_TRUE(side_panel->Contains(focus_manager->GetFocusedView()));
   EXPECT_FALSE(contents_view->HasFocus());
 
   // Switch to another tab and open the side panel. The side panel should still
   // have focus as it was opened via the toolbar button.
-  AppendTab(browser(), non_google_url());
+  AppendTab(browser(), GetNonMatchingUrl());
   ActivateTabAt(browser(), 1);
-  NavigateToSRPAndOpenSidePanel(browser());
+  NavigateToMatchingSearchPageAndOpenSidePanel(browser());
   EXPECT_TRUE(side_panel->GetVisible());
   EXPECT_TRUE(side_panel->Contains(focus_manager->GetFocusedView()));
   EXPECT_FALSE(contents_view->HasFocus());
@@ -684,30 +621,30 @@ IN_PROC_BROWSER_TEST_F(SideSearchBrowserControllerTest,
 
 IN_PROC_BROWSER_TEST_F(SideSearchBrowserControllerTest,
                        SidePanelTogglesClosedCorrectlyDuringNavigation) {
-  // Navigate to a Google SRP and then a non-Google page. The side panel will be
-  // available and open.
-  NavigateToSRPAndOpenSidePanel(browser());
+  // Navigate to a matching SRP and then a non-matched page. The side panel will
+  // be available and open.
+  NavigateToMatchingSearchPageAndOpenSidePanel(browser());
   auto* side_panel = GetSidePanelFor(browser());
 
-  // Navigating to a Google SRP URL should automatically hide the side panel as
-  // it should not be available.
+  // Navigating to a matching SRP URL should automatically hide the side panel
+  // as it should not be available.
   EXPECT_TRUE(side_panel->GetVisible());
-  NavigateActiveTab(browser(), google_search_url());
+  NavigateActiveTab(browser(), GetMatchingSearchUrl());
   EXPECT_FALSE(side_panel->GetVisible());
 
-  // When navigating again to a non-Google / non-NTP page the side panel will
-  // become available again but should not automatically reopen.
-  NavigateActiveTab(browser(), google_search_url());
+  // When navigating again to a non-matching page the side panel will become
+  // available again but should not automatically reopen.
+  NavigateActiveTab(browser(), GetMatchingSearchUrl());
   EXPECT_FALSE(side_panel->GetVisible());
 }
 
 IN_PROC_BROWSER_TEST_F(SideSearchBrowserControllerTest,
                        SidePanelCrashesCloseSidePanel) {
   // Open two tabs with the side panel open.
-  NavigateToSRPAndOpenSidePanel(browser());
-  AppendTab(browser(), non_google_url());
+  NavigateToMatchingSearchPageAndOpenSidePanel(browser());
+  AppendTab(browser(), GetNonMatchingUrl());
   ActivateTabAt(browser(), 1);
-  NavigateToSRPAndOpenSidePanel(browser());
+  NavigateToMatchingSearchPageAndOpenSidePanel(browser());
 
   auto* side_panel = GetSidePanelFor(browser());
 
