@@ -10,6 +10,7 @@
 #include "base/threading/thread_task_runner_handle.h"
 #import "components/remote_cocoa/app_shim/bridged_content_view.h"
 #import "components/remote_cocoa/app_shim/native_widget_ns_window_bridge.h"
+#include "components/remote_cocoa/app_shim/native_widget_ns_window_fullscreen_controller.h"
 #include "components/remote_cocoa/app_shim/native_widget_ns_window_host_helper.h"
 #include "components/remote_cocoa/common/native_widget_ns_window_host.mojom.h"
 #include "ui/gfx/geometry/resize_utils.h"
@@ -204,15 +205,15 @@
 }
 
 - (void)windowWillEnterFullScreen:(NSNotification*)notification {
-  _parent->OnFullscreenTransitionStart(true);
+  _parent->fullscreen_controller().OnWindowWillEnterFullscreen();
 }
 
 - (void)windowDidEnterFullScreen:(NSNotification*)notification {
-  _parent->OnFullscreenTransitionComplete(true);
+  _parent->fullscreen_controller().OnWindowDidEnterFullscreen();
 }
 
 - (void)windowWillExitFullScreen:(NSNotification*)notification {
-  _parent->OnFullscreenTransitionStart(false);
+  _parent->fullscreen_controller().OnWindowWillExitFullscreen();
 }
 
 - (void)windowDidExitFullScreen:(NSNotification*)notification {
@@ -227,7 +228,7 @@
                                     afterDelay:0];
   }
 
-  _parent->OnFullscreenTransitionComplete(false);
+  _parent->fullscreen_controller().OnWindowDidExitFullscreen();
 }
 
 // Allow non-resizable windows (without NSResizableWindowMask) to fill the
