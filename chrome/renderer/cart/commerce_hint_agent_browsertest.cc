@@ -26,6 +26,8 @@
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/identity_test_utils.h"
 #include "components/ukm/test_ukm_recorder.h"
+#include "content/public/common/content_features.h"
+#include "content/public/test/back_forward_cache_util.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/fenced_frame_test_util.h"
 #include "content/public/test/test_navigation_observer.h"
@@ -994,6 +996,13 @@ class CommerceHintCartPatternTest : public CommerceHintAgentTest {
 };
 
 IN_PROC_BROWSER_TEST_F(CommerceHintCartPatternTest, VisitCart) {
+  // The test is flaky with same-site back/forward cache, presumably because it
+  // doesn't expect a RenderView change on same-site navigations.
+  // TODO(https://crbug.com/1302902): Investigate and fix this.
+  content::DisableBackForwardCacheForTesting(
+      web_contents(),
+      content::BackForwardCache::TEST_ASSUMES_NO_RENDER_FRAME_CHANGE);
+
   NavigateToURL("https://www.guitarcenter.com/SpecialLoL");
   WaitForUmaCount("Commerce.Carts.VisitCart", 1);
 

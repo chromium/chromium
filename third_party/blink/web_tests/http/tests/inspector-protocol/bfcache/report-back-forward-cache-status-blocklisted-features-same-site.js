@@ -8,9 +8,7 @@
   await page.navigate(
       'https://devtools.test:8443/inspector-protocol/resources/empty.html');
 
-  // Use a blocklisted feature (Idle detector). This will not show up in the
-  // blocking reasons, because the navigation is same-site. Once the same-site
-  // is recorded, we no longer record other reasons.
+  // Use a blocklisted feature (Idle detector).
   await session.evaluate(`new Promise(async resolve => {
     let idleDetector = new IdleDetector();
     idleDetector.start();

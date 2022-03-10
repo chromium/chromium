@@ -106,7 +106,7 @@ namespace {
 
 enum class BackForwardCacheType {
   kDisabled,
-  kEnabled,
+  kEnabledCrossSiteOnly,
   kEnabledWithSameSite,
 };
 
@@ -114,7 +114,7 @@ std::string ToString(const testing::TestParamInfo<BackForwardCacheType>& info) {
   switch (info.param) {
     case BackForwardCacheType::kDisabled:
       return "Disabled";
-    case BackForwardCacheType::kEnabled:
+    case BackForwardCacheType::kEnabledCrossSiteOnly:
       return "Enabled";
     case BackForwardCacheType::kEnabledWithSameSite:
       return "EnabledWithSameSite";
@@ -4349,18 +4349,16 @@ class PrerenderWithBackForwardCacheBrowserTest
     base::FieldTrialParams feature_params;
     feature_params["TimeToLiveInBackForwardCacheInSeconds"] = "3600";
 
-    // Allow the BFCache for all devices regardless of their memory, and ensure
-    // bot flags won't enable BFCache (as we want to control BFCache
-    // enabling/disabling ourselves).
+    // Allow the BFCache for all devices regardless of their memory.
     std::vector<base::Feature> disabled_features{
-        features::kBackForwardCacheMemoryControls,
-        features::kBackForwardCacheSameSiteForBots};
+        features::kBackForwardCacheMemoryControls};
 
     switch (GetParam()) {
       case BackForwardCacheType::kDisabled:
         feature_list_.InitAndDisableFeature(features::kBackForwardCache);
         break;
-      case BackForwardCacheType::kEnabled:
+      case BackForwardCacheType::kEnabledCrossSiteOnly:
+        feature_params["enable_same_site"] = "false";
         feature_list_.InitWithFeaturesAndParameters(
             {{features::kBackForwardCache, feature_params}}, disabled_features);
         break;
@@ -4380,7 +4378,7 @@ INSTANTIATE_TEST_SUITE_P(
     All,
     PrerenderWithBackForwardCacheBrowserTest,
     testing::Values(BackForwardCacheType::kDisabled,
-                    BackForwardCacheType::kEnabled,
+                    BackForwardCacheType::kEnabledCrossSiteOnly,
                     BackForwardCacheType::kEnabledWithSameSite),
     ToString);
 
@@ -4415,12 +4413,12 @@ IN_PROC_BROWSER_TEST_P(PrerenderWithBackForwardCacheBrowserTest,
       // not cached in the BFCache.
       delete_observer.WaitUntilDeleted();
       break;
-    case BackForwardCacheType::kEnabled:
+    case BackForwardCacheType::kEnabledCrossSiteOnly:
       // Same-origin prerender activation should allow the initial page to be
-      // cached in the BFCache even if the BFCache for same-site (same-origin)
-      // is not enabled. This is because prerender activation always swaps
-      // BrowsingInstance and it makes the previous page cacheacble unlike
-      // regular same-origin navigation.
+      // cached in the BFCache even if BFCache for same-site navigations is not
+      // enabled. This is because prerender activation always swaps
+      // BrowsingInstance, making the previous page cacheable, unlike regular
+      // same-origin navigation.
       ASSERT_FALSE(IsSameSiteBackForwardCacheEnabled());
       EXPECT_TRUE(initial_frame_host->IsInBackForwardCache());
       break;
@@ -4444,7 +4442,7 @@ IN_PROC_BROWSER_TEST_P(PrerenderWithBackForwardCacheBrowserTest,
       // The frame host should be created again.
       EXPECT_NE(current_frame_host()->GetFrameToken(), initial_frame_token);
       break;
-    case BackForwardCacheType::kEnabled:
+    case BackForwardCacheType::kEnabledCrossSiteOnly:
     case BackForwardCacheType::kEnabledWithSameSite:
       // The frame host should be restored.
       EXPECT_EQ(current_frame_host()->GetFrameToken(), initial_frame_token);
@@ -4479,7 +4477,7 @@ IN_PROC_BROWSER_TEST_P(PrerenderWithBackForwardCacheBrowserTest,
       // The BFCache is disabled, so the initial page is not in the BFCache.
       ASSERT_FALSE(initial_frame_host->IsInBackForwardCache());
       break;
-    case BackForwardCacheType::kEnabled:
+    case BackForwardCacheType::kEnabledCrossSiteOnly:
       // The BFCache is enabled but the same-site BFCache is disabled. The
       // navigation was same-origin, so the initial page is not in the BFCache.
       ASSERT_FALSE(IsSameSiteBackForwardCacheEnabled());
@@ -4533,7 +4531,7 @@ IN_PROC_BROWSER_TEST_P(PrerenderWithBackForwardCacheBrowserTest,
       // The BFCache is disabled, so the next page is not in the BFCache.
       ASSERT_FALSE(next_frame_host->IsInBackForwardCache());
       break;
-    case BackForwardCacheType::kEnabled:
+    case BackForwardCacheType::kEnabledCrossSiteOnly:
       // The BFCache is enabled but the same-site BFCache is disabled. The back
       // navigation was same-origin, so the next page is not in the BFCache.
       ASSERT_FALSE(IsSameSiteBackForwardCacheEnabled());
