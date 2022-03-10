@@ -4,11 +4,12 @@
 
 #include "chrome/updater/win/protocol_parser_xml.h"
 
+#include "components/update_client/protocol_definition.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace updater {
 
-TEST(ProtocolParserXML, Parse) {
+TEST(ProtocolParserXML, Success) {
   const char kUpdateResponse[] =
       "<?xml version=\"1.0\" encoding=\"UTF-8\"?>"
       "<response protocol=\"3.0\">"
@@ -107,6 +108,68 @@ TEST(ProtocolParserXML, Parse) {
             "          \"make_chrome_default_for_user\": true"
             "        }"
             "      }");
+}
+
+TEST(ProtocolParserXML, BadXML) {
+  ProtocolParserXML xml_parser;
+  EXPECT_FALSE(
+      xml_parser.Parse("<response protocol=\"3.0\"></App></response>"));
+  EXPECT_EQ(xml_parser.errors(), "Load maniftest failed: 0x1");
+}
+
+TEST(ProtocolParserXML, ElementOutOfScope) {
+  ProtocolParserXML xml_parser;
+  EXPECT_FALSE(xml_parser.Parse(
+      "<response protocol=\"3.0\">"
+      "  <app appid=\"{8A69D345-D564-463C-AFF1-A69D9E530F96}\" status=\"ok\">"
+      "  </app>"
+      "  <updatecheck status=\"noupdate\"></updatecheck>"
+      "</response>"));
+  EXPECT_EQ(xml_parser.errors(), "Unrecognized element: updatecheck");
+}
+
+TEST(ProtocolParserXML, MissingAttribute) {
+  ProtocolParserXML xml_parser;
+  EXPECT_FALSE(xml_parser.Parse(
+      "<response protocol=\"3.0\"><app status=\"ok\"></app></response>"));
+  EXPECT_EQ(xml_parser.errors(), "Missing `appid` attribute in <app>");
+}
+
+TEST(ProtocolParserXML, UnrecognizedElement) {
+  ProtocolParserXML xml_parser;
+  EXPECT_FALSE(
+      xml_parser.Parse("<response protocol=\"3.0\"><unknown /></response>"));
+  EXPECT_EQ(xml_parser.errors(), "Unrecognized element: unknown");
+}
+
+TEST(ProtocolParserXML, BadUrlValue) {
+  ProtocolParserXML xml_parser;
+  EXPECT_FALSE(xml_parser.Parse(
+      "<response protocol=\"3.0\">"
+      "  <app appid=\"{8A69D345-D564-463C-AFF1-A69D9E530F96}\" status=\"ok\">"
+      "    <updatecheck status=\"ok\">"
+      "      <urls>"
+      "        <url codebase=\"ht@tp://dl.google.com\"/>"
+      "      </urls>"
+      "    </updatecheck>"
+      "  </app>"
+      "</response>"));
+  EXPECT_EQ(xml_parser.errors(),
+            "Invalid URL codebase in <url>: ht@tp://dl.google.com");
+}
+
+TEST(ProtocolParserXML, BadManifestVersion) {
+  ProtocolParserXML xml_parser;
+  EXPECT_FALSE(xml_parser.Parse(
+      "<response protocol=\"3.0\">"
+      "  <app appid=\"{8A69D345-D564-463C-AFF1-A69D9E530F96}\" status=\"ok\">"
+      "    <updatecheck status=\"ok\">"
+      "      <manifest version=\"100.99.0.abc\" />"
+      "    </updatecheck>"
+      "  </app>"
+      "</response>"));
+  EXPECT_EQ(xml_parser.errors(),
+            "Bad `version` attribute in <manifest>: 100.99.0.abc");
 }
 
 }  // namespace updater
