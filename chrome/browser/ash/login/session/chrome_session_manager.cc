@@ -190,8 +190,14 @@ void OnRmaIsRequiredResponse() {
     case session_manager::SessionState::RMA:
       // Already in RMA, do nothing.
       break;
-    case session_manager::SessionState::OOBE:
-    case session_manager::SessionState::LOGIN_PRIMARY: {
+    // Restart Chrome and launch RMA from any session state as the user is
+    // expecting to be in RMA.
+    case session_manager::SessionState::ACTIVE:
+    case session_manager::SessionState::LOCKED:
+    case session_manager::SessionState::LOGGED_IN_NOT_ACTIVE:
+    case session_manager::SessionState::LOGIN_PRIMARY:
+    case session_manager::SessionState::LOGIN_SECONDARY:
+    case session_manager::SessionState::OOBE: {
       auto* existing_user_controller =
           ash::ExistingUserController::current_controller();
       if (!existing_user_controller ||
@@ -207,17 +213,7 @@ void OnRmaIsRequiredResponse() {
         ash::RestartChrome(command_line, ash::RestartChromeReason::kUserless);
         break;
       }
-
-      // If signin in progress, don't launch RMA and fall through to the
-      // logged in state cases.
-      ABSL_FALLTHROUGH_INTENDED;
     }
-    case session_manager::SessionState::LOGGED_IN_NOT_ACTIVE:
-    case session_manager::SessionState::ACTIVE:
-    case session_manager::SessionState::LOCKED:
-    case session_manager::SessionState::LOGIN_SECONDARY:
-      // TODO(gavinwill): Trigger a notification to open RMA app.
-      break;
   }
 }
 
