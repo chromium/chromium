@@ -52,6 +52,13 @@ extern const base::Feature kPermissionPredictionServiceUseUrlOverride;
 COMPONENT_EXPORT(PERMISSIONS_COMMON)
 extern const base::Feature kPermissionOnDeviceNotificationPredictions;
 
+#if BUILDFLAG(IS_ANDROID)
+
+COMPONENT_EXPORT(PERMISSIONS_COMMON)
+extern const base::Feature kBlockNotificationPromptsIfDisabledOnAppLevel;
+
+#endif  // BUILDFLAG(IS_ANDROID)
+
 }  // namespace features
 namespace feature_params {
 

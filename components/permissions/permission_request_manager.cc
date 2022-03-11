@@ -12,6 +12,7 @@
 #include "base/command_line.h"
 #include "base/containers/circular_deque.h"
 #include "base/feature_list.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/metrics/user_metrics.h"
 #include "base/metrics/user_metrics_action.h"
 #include "base/observer_list.h"
@@ -38,6 +39,10 @@
 #include "content/public/browser/web_contents.h"
 #include "url/gurl.h"
 #include "url/origin.h"
+
+#if BUILDFLAG(IS_ANDROID)
+#include "components/permissions/android/android_permission_util.h"
+#endif
 
 namespace permissions {
 
@@ -174,6 +179,24 @@ void PermissionRequestManager::AddRequest(
     request->RequestFinished();
     return;
   }
+
+#if BUILDFLAG(IS_ANDROID)
+  if (request->GetContentSettingsType() == ContentSettingsType::NOTIFICATIONS) {
+    bool enabled_app_level = AreAppLevelNotificationsEnabled();
+    base::UmaHistogramBoolean(
+        "Permissions.Prompt.Notifications.EnabledAppLevel", enabled_app_level);
+
+    if (!enabled_app_level &&
+        base::FeatureList::IsEnabled(
+            features::kBlockNotificationPromptsIfDisabledOnAppLevel)) {
+      // Automatically cancel site Notification requests when Chrome is not able
+      // to send notifications in an app level.
+      request->Cancelled();
+      request->RequestFinished();
+      return;
+    }
+  }
+#endif  // BUILDFLAG(IS_ANDROID)
 
   if (is_notification_prompt_cooldown_active_ &&
       request->GetContentSettingsType() == ContentSettingsType::NOTIFICATIONS) {

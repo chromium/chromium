@@ -71,6 +71,16 @@ const base::Feature kPermissionOnDeviceNotificationPredictions{
     "PermissionOnDeviceNotificationPredictions",
     base::FEATURE_DISABLED_BY_DEFAULT};
 
+#if BUILDFLAG(IS_ANDROID)
+
+// When enabled, blocks notifications permission prompt when Chrome doesn't
+// have app level Notification permission.
+const base::Feature kBlockNotificationPromptsIfDisabledOnAppLevel{
+    "BlockNotificationPromptsIfDisabledOnAppLevel",
+    base::FEATURE_ENABLED_BY_DEFAULT};
+
+#endif  // BUILDFLAG(IS_ANDROID)
+
 }  // namespace features
 namespace feature_params {
 
