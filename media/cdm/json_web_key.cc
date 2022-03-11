@@ -47,11 +47,10 @@ static std::string ShortenTo64Characters(const std::string& input) {
   return escaped_str.substr(0, 61).append("...");
 }
 
-static std::unique_ptr<base::DictionaryValue> CreateJSONDictionary(
-    const uint8_t* key,
-    int key_length,
-    const uint8_t* key_id,
-    int key_id_length) {
+static base::Value::Dict CreateJSONDictionary(const uint8_t* key,
+                                              int key_length,
+                                              const uint8_t* key_id,
+                                              int key_id_length) {
   std::string key_string, key_id_string;
   base::Base64UrlEncode(
       base::StringPiece(reinterpret_cast<const char*>(key), key_length),
@@ -60,10 +59,10 @@ static std::unique_ptr<base::DictionaryValue> CreateJSONDictionary(
       base::StringPiece(reinterpret_cast<const char*>(key_id), key_id_length),
       base::Base64UrlEncodePolicy::OMIT_PADDING, &key_id_string);
 
-  auto jwk = std::make_unique<base::DictionaryValue>();
-  jwk->SetString(kKeyTypeTag, kKeyTypeOct);
-  jwk->SetString(kKeyTag, key_string);
-  jwk->SetString(kKeyIdTag, key_id_string);
+  base::Value::Dict jwk;
+  jwk.Set(kKeyTypeTag, kKeyTypeOct);
+  jwk.Set(kKeyTag, key_string);
+  jwk.Set(kKeyIdTag, key_id_string);
   return jwk;
 }
 
@@ -72,44 +71,44 @@ std::string GenerateJWKSet(const uint8_t* key,
                            const uint8_t* key_id,
                            int key_id_length) {
   // Create the JWK, and wrap it into a JWK Set.
-  auto list = std::make_unique<base::ListValue>();
-  list->Append(CreateJSONDictionary(key, key_length, key_id, key_id_length));
-  base::DictionaryValue jwk_set;
+  base::Value::List list;
+  list.Append(CreateJSONDictionary(key, key_length, key_id, key_id_length));
+  base::Value::Dict jwk_set;
   jwk_set.Set(kKeysTag, std::move(list));
 
   // Finally serialize |jwk_set| into a string and return it.
   std::string serialized_jwk;
   JSONStringValueSerializer serializer(&serialized_jwk);
-  serializer.Serialize(jwk_set);
+  serializer.Serialize(base::Value(std::move(jwk_set)));
   return serialized_jwk;
 }
 
 std::string GenerateJWKSet(const KeyIdAndKeyPairs& keys,
                            CdmSessionType session_type) {
-  base::ListValue list;
+  base::Value::List list;
   for (const auto& key_pair : keys) {
-    list.Append(CreateJSONDictionary(
+    list.Append(base::Value(CreateJSONDictionary(
         reinterpret_cast<const uint8_t*>(key_pair.second.data()),
         key_pair.second.length(),
         reinterpret_cast<const uint8_t*>(key_pair.first.data()),
-        key_pair.first.length()));
+        key_pair.first.length())));
   }
 
-  base::DictionaryValue jwk_set;
-  jwk_set.SetKey(kKeysTag, std::move(list));
+  base::Value::Dict jwk_set;
+  jwk_set.Set(kKeysTag, std::move(list));
   switch (session_type) {
     case CdmSessionType::kTemporary:
-      jwk_set.SetString(kTypeTag, kTemporarySession);
+      jwk_set.Set(kTypeTag, kTemporarySession);
       break;
     case CdmSessionType::kPersistentLicense:
-      jwk_set.SetString(kTypeTag, kPersistentLicenseSession);
+      jwk_set.Set(kTypeTag, kPersistentLicenseSession);
       break;
   }
 
   // Finally serialize |jwk_set| into a string and return it.
   std::string serialized_jwk;
   JSONStringValueSerializer serializer(&serialized_jwk);
-  serializer.Serialize(jwk_set);
+  serializer.Serialize(base::Value(std::move(jwk_set)));
   return serialized_jwk;
 }
 
