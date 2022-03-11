@@ -266,14 +266,15 @@ void HandleAccessibilityRequestCallback(
         BuildTargetDescriptor(rvh);
     descriptor->SetBoolKey(kNative, is_native_enabled);
     descriptor->SetBoolKey(kWeb, is_web_enabled);
-    rvh_list->Append(std::move(descriptor));
+    rvh_list->Append(base::Value::FromUniquePtrValue(std::move(descriptor)));
   }
   data.Set(kPagesField, std::move(rvh_list));
 
   std::unique_ptr<base::ListValue> browser_list(new base::ListValue());
 #if !BUILDFLAG(IS_ANDROID)
   for (Browser* browser : *BrowserList::GetInstance()) {
-    browser_list->Append(BuildTargetDescriptor(browser));
+    browser_list->Append(
+        base::Value::FromUniquePtrValue(BuildTargetDescriptor(browser)));
   }
 #endif  // !BUILDFLAG(IS_ANDROID)
   data.Set(kBrowsersField, std::move(browser_list));
@@ -285,7 +286,8 @@ void HandleAccessibilityRequestCallback(
         views::WidgetAXTreeIDMap::GetInstance();
     const std::vector<views::Widget*> widgets = manager_map.GetWidgets();
     for (views::Widget* widget : widgets) {
-      widgets_list->Append(BuildTargetDescriptor(widget));
+      widgets_list->Append(
+          base::Value::FromUniquePtrValue(BuildTargetDescriptor(widget)));
     }
   }
 #endif  // defined(USE_AURA) && !BUILDFLAG(IS_CHROMEOS_ASH)
