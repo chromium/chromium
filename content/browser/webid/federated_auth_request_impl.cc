@@ -30,6 +30,7 @@
 
 using blink::mojom::FederatedAuthRequestResult;
 using blink::mojom::LogoutRpsStatus;
+using blink::mojom::LogoutStatus;
 using blink::mojom::RequestIdTokenStatus;
 using blink::mojom::RevokeStatus;
 using LoginState = content::IdentityRequestAccount::LoginState;
@@ -356,6 +357,20 @@ void FederatedAuthRequestImpl::Revoke(
   FetchManifest(
       base::BindOnce(&FederatedAuthRequestImpl::OnManifestFetchedForRevoke,
                      weak_ptr_factory_.GetWeakPtr()));
+}
+
+void FederatedAuthRequestImpl::Logout(
+    const GURL& provider,
+    const std::string& account_id,
+    blink::mojom::FederatedAuthRequest::LogoutCallback callback) {
+  url::Origin idp_origin(url::Origin::Create(provider));
+  auto* context = GetActiveSessionPermissionContext();
+  if (!context || !context->HasActiveSession(origin_, idp_origin, account_id)) {
+    std::move(callback).Run(LogoutStatus::kNotLoggedIn);
+    return;
+  }
+  context->RevokeActiveSession(origin_, idp_origin, account_id);
+  std::move(callback).Run(LogoutStatus::kSuccess);
 }
 
 // TODO(kenrb): Depending on how this code evolves, it might make sense to

@@ -1,4 +1,4 @@
-import { RequestIdTokenStatus, LogoutRpsStatus, RevokeStatus, FederatedAuthRequest, FederatedAuthRequestReceiver } from '/gen/third_party/blink/public/mojom/webid/federated_auth_request.mojom.m.js';
+import { RequestIdTokenStatus, LogoutStatus, LogoutRpsStatus, RevokeStatus, FederatedAuthRequest, FederatedAuthRequestReceiver } from '/gen/third_party/blink/public/mojom/webid/federated_auth_request.mojom.m.js';
 
 function toMojoIdTokenStatus(status) {
   return RequestIdTokenStatus["k" + status];
@@ -15,6 +15,7 @@ export class MockFederatedAuthRequest {
     this.interceptor_.start();
     this.idToken_ = null;
     this.status_ = RequestIdTokenStatus.kError;
+    this.logoutStatus_ = LogoutStatus.kNotLoggedIn;
     this.logoutRpsStatus_ = LogoutRpsStatus.kError;
     this.revokeStatus_ = RevokeStatus.kError;
     this.returnPending_ = false;
@@ -44,6 +45,13 @@ export class MockFederatedAuthRequest {
   }
 
   logoutReturn(status) {
+    let validated = LogoutStatus[status];
+    if (validated === undefined)
+      throw new Error("Invalid status: " + status);
+    this.logoutStatus_ = validated;
+  }
+
+  logoutRpsReturn(status) {
     let validated = LogoutRpsStatus[status];
     if (validated === undefined)
       throw new Error("Invalid status: " + status);
@@ -80,6 +88,10 @@ export class MockFederatedAuthRequest {
       idToken: null
     });
     this.pendingPromiseResolve_ = null;
+  }
+
+  async logout() {
+    return Promise.resolve({status: this.logoutStatus_});
   }
 
   async logoutRps(logout_endpoints) {

@@ -36,6 +36,11 @@ enum RevokeStatus {
   kError
 };
 
+enum LogoutStatus {
+  kSuccess,
+  kNotLoggedIn
+};
+
 // The details of a single logout request from an identity provider.
 struct LogoutRpsRequest {
   // URL to which the request will be sent. The origin is validated to
@@ -70,6 +75,9 @@ interface FederatedAuthRequest {
   Revoke(url.mojom.Url provider,
          string client_id,
          string account_id) => (RevokeStatus status);
+
+  // Clear internal login state for this RP/IDP/Account triple.
+  Logout(url.mojom.Url provider, string account_id) => (LogoutStatus status);
 
   // Contact the list of Relying Party logout endpoints and account IDs to
   // attempt to initiate user logout.

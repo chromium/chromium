@@ -27,6 +27,7 @@ namespace blink {
 
 namespace {
 using mojom::blink::LogoutRpsStatus;
+using mojom::blink::LogoutStatus;
 using mojom::blink::RequestIdTokenStatus;
 using mojom::blink::RevokeStatus;
 
@@ -98,7 +99,17 @@ void OnRequestIdToken(ScriptPromiseResolver* resolver,
   }
 }
 
-void OnLogoutResponse(ScriptPromiseResolver* resolver, LogoutRpsStatus status) {
+void OnLogoutResponse(ScriptPromiseResolver* resolver, LogoutStatus status) {
+  if (status == LogoutStatus::kNotLoggedIn) {
+    resolver->Reject(MakeGarbageCollected<DOMException>(
+        DOMExceptionCode::kInvalidStateError, "User not logged in."));
+    return;
+  }
+  resolver->Resolve();
+}
+
+void OnLogoutRpsResponse(ScriptPromiseResolver* resolver,
+                         LogoutRpsStatus status) {
   // TODO(kenrb); There should be more thought put into how this API works.
   // Returning success or failure doesn't have a lot of meaning. If some
   // logout attempts fail and others succeed, and even different attempts
@@ -204,9 +215,28 @@ bool FederatedCredential::IsFederatedCredential() const {
   return true;
 }
 
-ScriptPromise FederatedCredential::logout() {
-  // TODO(https://crbug.com/1266054): Implement.
-  return ScriptPromise();
+ScriptPromise FederatedCredential::logout(ScriptState* script_state) {
+  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
+  ScriptPromise promise = resolver->Promise();
+  if (provider_url_.IsEmpty()) {
+    resolver->Reject(MakeGarbageCollected<DOMException>(
+        DOMExceptionCode::kInvalidStateError,
+        "FederatedCredential object must be created by "
+        "navigator.credentials.get for logout"));
+    return promise;
+  }
+  if (id().IsEmpty()) {
+    resolver->Reject(MakeGarbageCollected<DOMException>(
+        DOMExceptionCode::kInvalidStateError,
+        "No account hint was provided to navigator.credentials.get"));
+    return promise;
+  }
+
+  auto* auth_request =
+      CredentialManagerProxy::From(script_state)->FederatedAuthRequest();
+  auth_request->Logout(provider_url_, id(),
+                       WTF::Bind(&OnLogoutResponse, WrapPersistent(resolver)));
+  return promise;
 }
 
 ScriptPromise FederatedCredential::login(
@@ -302,7 +332,7 @@ ScriptPromise FederatedCredential::logoutRps(
       CredentialManagerProxy::From(script_state)->FedCmLogoutRpsRequest();
   fedcm_logout_request->LogoutRps(
       std::move(logout_requests),
-      WTF::Bind(&OnLogoutResponse, WrapPersistent(resolver)));
+      WTF::Bind(&OnLogoutRpsResponse, WrapPersistent(resolver)));
   return promise;
 }
 

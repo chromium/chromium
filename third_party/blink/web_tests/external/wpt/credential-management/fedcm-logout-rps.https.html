@@ -10,7 +10,7 @@
   import {fedcm_test} from './support/fedcm-helper.js';
 
   fedcm_test(async (t, mock) => {
-    mock.logoutReturn("kError");
+    mock.logoutRpsReturn("kError");
     return promise_rejects_dom(t, "NetworkError",
       FederatedCredential.logoutRps([{
         accountId: "1234",
@@ -20,7 +20,7 @@
   }, "FederatedCredential.logoutRps() error.");
 
   fedcm_test(async (t, mock) => {
-    mock.logoutReturn("kSuccess");
+    mock.logoutRpsReturn("kSuccess");
     await FederatedCredential.logoutRps([{
       accountId: "1234",
       url: "https://rp.example/logout.php"

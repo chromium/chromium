@@ -55,6 +55,9 @@ class CONTENT_EXPORT FederatedAuthRequestImpl {
               const std::string& client_id,
               const std::string& account_id,
               blink::mojom::FederatedAuthRequest::RevokeCallback);
+  void Logout(const GURL& provider,
+              const std::string& account_id,
+              blink::mojom::FederatedAuthRequest::LogoutCallback callback);
   void LogoutRps(std::vector<blink::mojom::LogoutRpsRequestPtr> logout_requests,
                  blink::mojom::FederatedAuthRequest::LogoutRpsCallback);
 

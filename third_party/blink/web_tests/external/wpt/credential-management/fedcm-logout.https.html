@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<title>Federated Credential Management logout() API.</title>
+<link rel="help" href="https://wicg.github.io/FedCM">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script type="module">
+  import {fedcm_test} from './support/fedcm-helper.js';
+
+  const test_options = {
+    federated: {
+      providers: [{
+        url: 'https://idp.test',
+        clientId: '1',
+        hint: 'foo@bar.com',
+      }]
+    }
+  };
+  const test_options_no_hint = {
+    federated: {
+      providers: [{
+        url: 'https://idp.test',
+        clientId: '1',
+      }]
+    }
+  };
+  const login_options = {
+    nonce: '2',
+  };
+
+
+  fedcm_test(async (t, mock) => {
+    mock.returnIdToken("a_token");
+    mock.logoutReturn("kSuccess");
+    const cred = await navigator.credentials.get(test_options);
+    const token = await cred.login(login_options);
+    assert_equals(token.idToken, "a_token");
+
+    await cred.logout();
+  }, "logout should not throw an exception.");
+
+  fedcm_test(async (t, mock) => {
+    mock.logoutReturn("kNotLoggedIn");
+    const cred = await navigator.credentials.get(test_options);
+
+    return promise_rejects_dom(t, "InvalidStateError", cred.logout());
+  }, "logout should throw an exception when not logged in.");
+
+  fedcm_test(async (t, mock) => {
+    mock.returnIdToken("a_token");
+    mock.logoutReturn("kSuccess");
+    const cred = await navigator.credentials.get(test_options_no_hint);
+    const token = await cred.login(login_options);
+    assert_equals(token.idToken, "a_token");
+
+    return promise_rejects_dom(t, "InvalidStateError", cred.logout());
+  }, "logout should require a hint.");
+</script>

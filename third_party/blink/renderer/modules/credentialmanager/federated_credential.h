@@ -71,7 +71,7 @@ class MODULES_EXPORT FederatedCredential final : public Credential {
   ScriptPromise login(ScriptState* script_state,
                       FederatedAccountLoginRequest* request);
 
-  ScriptPromise logout();
+  ScriptPromise logout(ScriptState* script_state);
 
   ScriptPromise revoke(ScriptState*, ExceptionState&);
 
