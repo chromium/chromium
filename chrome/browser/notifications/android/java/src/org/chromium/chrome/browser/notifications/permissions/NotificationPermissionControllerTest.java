@@ -24,11 +24,14 @@ import org.robolectric.annotation.internal.DoNotInstrument;
 import org.robolectric.shadows.ShadowSystemClock;
 
 import org.chromium.base.ContextUtils;
+import org.chromium.base.FeatureList;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.test.ShadowRecordHistogram;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.ShadowBuildInfo;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.notifications.NotificationUmaTracker.NotificationPermissionState;
+import org.chromium.chrome.browser.notifications.permissions.NotificationPermissionController.PermissionRequestMode;
 import org.chromium.chrome.browser.notifications.permissions.NotificationPermissionController.RationaleDelegate;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.ui.base.TestActivity;
@@ -60,6 +63,12 @@ public class NotificationPermissionControllerTest {
         ShadowSystemClock.reset();
         // Set a non-zero currentTimeMillis.
         ShadowSystemClock.advanceBy(Duration.ofDays(10));
+        FeatureList.TestValues testValues = new FeatureList.TestValues();
+        testValues.addFieldTrialParamOverride(ChromeFeatureList.NOTIFICATION_PERMISSION_VARIANT,
+                NotificationPermissionController
+                        .FIELD_TRIAL_ALWAYS_SHOW_RATIONALE_BEFORE_REQUESTING_PERMISSION,
+                "false");
+        FeatureList.setTestValues(testValues);
     }
 
     @After
@@ -234,6 +243,76 @@ public class NotificationPermissionControllerTest {
                     NotificationPermissionState.DENIED_NEVER_ASKED, /* expectedTimes= */ 1);
             // We should have recorded a metric indicating we requested for permission once.
             verifyPermissionRequestCountHistogram(/* expectedCount= */ 1);
+        });
+    }
+
+    @Test
+    public void testNotificationPromptShownOnStartup_alwaysShowRationale() {
+        ShadowBuildInfo.setIsAtLeastT(true);
+        FeatureList.TestValues testValues = new FeatureList.TestValues();
+        testValues.addFieldTrialParamOverride(ChromeFeatureList.NOTIFICATION_PERMISSION_VARIANT,
+                NotificationPermissionController
+                        .FIELD_TRIAL_ALWAYS_SHOW_RATIONALE_BEFORE_REQUESTING_PERMISSION,
+                "true");
+        FeatureList.setTestValues(testValues);
+
+        mActivityScenarios.getScenario().onActivity(activity -> {
+            TestRationaleDelegate rationaleDelegate = new TestRationaleDelegate();
+            TestAndroidPermissionDelegate permissionDelegate =
+                    new TestAndroidPermissionDelegate(new WeakReference<Activity>(activity));
+            NotificationPermissionController notificationPermissionController =
+                    createNotificationPermissionController(rationaleDelegate, permissionDelegate);
+
+            // Show OS prompt shown for the first time.
+            setShouldShowRequestPermissionRationale(activity, false);
+            assertEquals(PermissionRequestMode.REQUEST_PERMISSION_WITH_RATIONALE,
+                    notificationPermissionController.shouldRequestPermission());
+
+            Integer rationaleDialogAction = DialogDismissalCause.NAVIGATE_BACK_OR_TOUCH_OUTSIDE;
+            rationaleDelegate.setDialogAction(rationaleDialogAction);
+            notificationPermissionController.requestPermissionIfNeeded();
+            assertEquals(0, PermissionPrefs.getAndroidNotificationPermissionRequestTimestamp());
+            assertNotEquals(0,
+                    ContextUtils.getAppSharedPreferences().getLong(
+                            ChromePreferenceKeys.NOTIFICATION_PERMISSION_RATIONALE_TIMESTAMP_KEY,
+                            0));
+
+            // Try showing it for the second time before sufficient time has elapsed assuming user
+            // dismissed the OS prompt by touching outside.
+            setShouldShowRequestPermissionRationale(activity, false);
+            assertEquals(PermissionRequestMode.DO_NOT_REQUEST,
+                    notificationPermissionController.shouldRequestPermission());
+
+            // Try showing the second time after 10 days. This time click positive button on
+            // rationale and negative on OS prompt.
+            ShadowSystemClock.advanceBy(Duration.ofDays(10));
+            assertEquals(PermissionRequestMode.REQUEST_PERMISSION_WITH_RATIONALE,
+                    notificationPermissionController.shouldRequestPermission());
+            rationaleDelegate.setDialogAction(DialogDismissalCause.POSITIVE_BUTTON_CLICKED);
+            notificationPermissionController.requestPermissionIfNeeded();
+
+            invokeOSPermissionCallback(permissionDelegate, false);
+            assertNotEquals(0, PermissionPrefs.getAndroidNotificationPermissionRequestTimestamp());
+
+            // Cannot request permission right away.
+            assertEquals(PermissionRequestMode.DO_NOT_REQUEST,
+                    notificationPermissionController.shouldRequestPermission());
+
+            // After 10 days. Request permission again. This time again click positive button on
+            // rationale and negative on OS prompt.
+            ShadowSystemClock.advanceBy(Duration.ofDays(10));
+            setShouldShowRequestPermissionRationale(activity, true);
+            assertEquals(PermissionRequestMode.REQUEST_PERMISSION_WITH_RATIONALE,
+                    notificationPermissionController.shouldRequestPermission());
+            rationaleDelegate.setDialogAction(DialogDismissalCause.POSITIVE_BUTTON_CLICKED);
+            notificationPermissionController.requestPermissionIfNeeded();
+            invokeOSPermissionCallback(permissionDelegate, false);
+
+            // After 10 days. Request permission again. Can't request this time.
+            ShadowSystemClock.advanceBy(Duration.ofDays(10));
+            setShouldShowRequestPermissionRationale(activity, false);
+            assertEquals(PermissionRequestMode.DO_NOT_REQUEST,
+                    notificationPermissionController.shouldRequestPermission());
         });
     }
 
