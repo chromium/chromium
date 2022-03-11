@@ -142,7 +142,9 @@ id<GREYMatcher> SearchScrim() {
       @selector(testTabGridResetAfterExitingSearch),
       @selector(testScrimVisibleInSearchModeWhenSearchBarIsEmpty),
       @selector(testTapOnSearchScrimExitsSearchMode),
-      @selector(testSearchRegularOpenTabs)};
+      @selector(testSearchRegularOpenTabs),
+      @selector(testSearchRegularOpenTabsSelectResult),
+      @selector(testSearchIncognitoOpenTabsSelectResult)};
   for (SEL test : searchTests) {
     if ([self isRunningTest:test]) {
       config.features_enabled.push_back(kTabsSearch);
@@ -1360,6 +1362,59 @@ id<GREYMatcher> SearchScrim() {
       performAction:grey_tap()];
 }
 
+// Tests that selecting an open tab search result in the regular mode will
+// correctly open the expected tab.
+- (void)testSearchRegularOpenTabsSelectResult {
+  [self loadTestURLsInNewTabs];
+  [ChromeEarlGrey showTabSwitcher];
+
+  // Enter search mode.
+  [[EarlGrey selectElementWithMatcher:TabGridSearchTabsButton()]
+      performAction:grey_tap()];
+
+  NSString* title2 = base::SysUTF8ToNSString(kTitle2);
+  [[EarlGrey selectElementWithMatcher:TabGridSearchBar()]
+      performAction:grey_typeText(title2)];
+
+  [[EarlGrey selectElementWithMatcher:TabWithTitle(title2)]
+      performAction:grey_tap()];
+
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::ShowTabsButton()]
+      assertWithMatcher:grey_sufficientlyVisible()];
+
+  [ChromeEarlGrey waitForWebStateContainingText:kResponse2];
+  const GURL currentURL = [ChromeEarlGrey webStateVisibleURL];
+  GREYAssertEqual(_URL2, currentURL, @"Page navigated unexpectedly to %s",
+                  currentURL.spec().c_str());
+}
+
+// Tests that selecting an open tab search result in incognito mode will
+// correctly open the expected tab.
+- (void)testSearchIncognitoOpenTabsSelectResult {
+  [ChromeEarlGrey openNewIncognitoTab];
+  [self loadTestURLsInNewIncognitoTabs];
+  [ChromeEarlGrey showTabSwitcher];
+
+  // Enter search mode.
+  [[EarlGrey selectElementWithMatcher:TabGridSearchTabsButton()]
+      performAction:grey_tap()];
+
+  NSString* title2 = base::SysUTF8ToNSString(kTitle2);
+  [[EarlGrey selectElementWithMatcher:TabGridSearchBar()]
+      performAction:grey_typeText(title2)];
+
+  [[EarlGrey selectElementWithMatcher:TabWithTitle(title2)]
+      performAction:grey_tap()];
+
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::ShowTabsButton()]
+      assertWithMatcher:grey_sufficientlyVisible()];
+
+  [ChromeEarlGrey waitForWebStateContainingText:kResponse2];
+  const GURL currentURL = [ChromeEarlGrey webStateVisibleURL];
+  GREYAssertEqual(_URL2, currentURL, @"Page navigated unexpectedly to %s",
+                  currentURL.spec().c_str());
+}
+
 #pragma mark - Helper Methods
 
 - (void)loadTestURLs {
@@ -1386,6 +1441,23 @@ id<GREYMatcher> SearchScrim() {
   [ChromeEarlGrey waitForWebStateContainingText:kResponse3];
 
   [ChromeEarlGrey openNewTab];
+  [ChromeEarlGrey loadURL:_URL4];
+  [ChromeEarlGrey waitForWebStateContainingText:kResponse4];
+}
+
+- (void)loadTestURLsInNewIncognitoTabs {
+  [ChromeEarlGrey loadURL:_URL1];
+  [ChromeEarlGrey waitForWebStateContainingText:kResponse1];
+
+  [ChromeEarlGrey openNewIncognitoTab];
+  [ChromeEarlGrey loadURL:_URL2];
+  [ChromeEarlGrey waitForWebStateContainingText:kResponse2];
+
+  [ChromeEarlGrey openNewIncognitoTab];
+  [ChromeEarlGrey loadURL:_URL3];
+  [ChromeEarlGrey waitForWebStateContainingText:kResponse3];
+
+  [ChromeEarlGrey openNewIncognitoTab];
   [ChromeEarlGrey loadURL:_URL4];
   [ChromeEarlGrey waitForWebStateContainingText:kResponse4];
 }
