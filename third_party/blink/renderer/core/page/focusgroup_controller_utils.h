@@ -36,10 +36,19 @@ class CORE_EXPORT FocusgroupControllerUtils {
                               FocusgroupDirection direction);
   static bool WrapsInDirection(FocusgroupFlags flags,
                                FocusgroupDirection direction);
+  static bool FocusgroupExtendsInAxis(FocusgroupFlags extending_focusgroup,
+                                      FocusgroupFlags focusgroup,
+                                      FocusgroupDirection direction);
 
   static Element* FindNearestFocusgroupAncestor(const Element* element);
   static Element* NextElement(const Element* current, bool skip_subtree);
+  static Element* PreviousElement(const Element* current);
+  static Element* LastElementWithin(const Element* current);
   static bool IsFocusgroupItem(const Element* element);
+  static Element* AdjustElementOutOfUnrelatedFocusgroup(
+      Element* element,
+      Element* stop_ancestor,
+      FocusgroupDirection direction);
 };
 
 }  // namespace blink
