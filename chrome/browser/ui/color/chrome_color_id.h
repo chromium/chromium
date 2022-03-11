@@ -51,6 +51,11 @@
   E_CPONLY(kColorDownloadToolbarButtonActive) \
   E_CPONLY(kColorDownloadToolbarButtonInactive) \
   E_CPONLY(kColorDownloadToolbarButtonRingBackground) \
+  /* Eyedropper colors. */ \
+  E_CPONLY(kColorEyedropperBoundary) \
+  E_CPONLY(kColorEyedropperCentralPixelInnerRing) \
+  E_CPONLY(kColorEyedropperCentralPixelOuterRing) \
+  E_CPONLY(kColorEyedropperGrid) \
   /* Feature Promo bubble colors. */ \
   E(kColorFeaturePromoBubbleBackground, \
     ThemeProperties::COLOR_FEATURE_PROMO_BUBBLE_BACKGROUND) \

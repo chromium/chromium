@@ -227,6 +227,10 @@ void AddChromeColorMixer(ui::ColorProvider* provider,
   mixer[kColorDownloadToolbarButtonInactive] = {ui::kColorMidground};
   mixer[kColorDownloadToolbarButtonRingBackground] = {
       SkColorSetA(kColorDownloadToolbarButtonInactive, 0x33)};
+  mixer[kColorEyedropperBoundary] = {SK_ColorDKGRAY};
+  mixer[kColorEyedropperCentralPixelInnerRing] = {SK_ColorBLACK};
+  mixer[kColorEyedropperCentralPixelOuterRing] = {SK_ColorWHITE};
+  mixer[kColorEyedropperGrid] = {SK_ColorGRAY};
   mixer[kColorFeaturePromoBubbleBackground] = {gfx::kGoogleBlue700};
   mixer[kColorFeaturePromoBubbleButtonBorder] = {gfx::kGoogleGrey300};
   mixer[kColorFeaturePromoBubbleCloseButtonInkDrop] = {gfx::kGoogleBlue300};
