@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {assert} from 'chrome://resources/js/assert.m.js';
+import {assert} from 'chrome://resources/js/assert_ts.js';
 import {BigBuffer} from 'chrome://resources/mojo/mojo/public/mojom/base/big_buffer.mojom-webui.js';
 import {Url} from 'chrome://resources/mojo/url/mojom/url.mojom-webui.js';
 import {UserImage} from '../personalization_app.mojom-webui.js';
@@ -86,4 +86,21 @@ export function selectUserImageUrl(state: PersonalizationState): Url|null {
   }
 
   console.warn('Unknown image type received', key);
+}
+
+/**
+ * Derive the |Url| to display of the last external user image. This is an image
+ * from camera or file.
+ */
+export function selectLastExternalUserImageUrl(state: PersonalizationState):
+    Url|null {
+  const lastExternalUserImage = state.user.lastExternalUserImage;
+
+  if (!lastExternalUserImage) {
+    return null;
+  }
+
+  const buffer = lastExternalUserImage?.externalImage;
+  assert(!!buffer, 'externalImage must be set');
+  return bufferToPngObjectUrl(buffer);
 }

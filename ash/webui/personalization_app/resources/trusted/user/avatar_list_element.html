@@ -92,6 +92,16 @@
         on-click="onSelectImageFromDisk_" on-keypress="onSelectImageFromDisk_">
     </iron-icon>
   </div>
+  <template is="dom-if" if="[[lastExternalUserImageUrl_]]">
+    <div class="image-container"
+        aria-selected$="[[getExternalImageAriaSelected_(image_, lastExternalUserImageUrl_)]]">
+      <paper-ripple class="circle"></paper-ripple>
+      <img id="lastExternalImage" src="[[lastExternalUserImageUrl_.url]]"
+          on-click="onSelectLastExternalUserImage_"
+          on-keypress="onSelectLastExternalUserImage_">
+      <iron-icon icon="personalization:checkmark"></iron-icon>
+    </div>
+  </template>
   <template is="dom-if" if="[[profileImage_]]">
     <div class="image-container"
         aria-selected$="[[getProfileImageAriaSelected_(profileImage_, image_)]]">

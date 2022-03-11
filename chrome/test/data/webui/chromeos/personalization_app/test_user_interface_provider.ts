@@ -37,6 +37,7 @@ export class TestUserProvider extends
       'selectDefaultImage',
       'selectCameraImage',
       'selectImageFromDisk',
+      'selectLastExternalUserImage',
     ]);
   }
 
@@ -75,5 +76,9 @@ export class TestUserProvider extends
 
   selectImageFromDisk() {
     this.methodCalled('selectImageFromDisk');
+  }
+
+  selectLastExternalUserImage() {
+    this.methodCalled('selectLastExternalUserImage');
   }
 }

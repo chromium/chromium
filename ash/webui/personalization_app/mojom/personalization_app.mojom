@@ -360,6 +360,11 @@ interface UserProvider {
   // Select one of the available images on disk as user's device image.
   // This opens a file dialog box from which the user can select a file.
   SelectImageFromDisk();
+
+  // When the user has selected camera image or external file image, allow user
+  // to quickly reselect that option so it is not lost if they look at images of
+  // other types.
+  SelectLastExternalUserImage();
 };
 
 // The source of the screensaver images come from.

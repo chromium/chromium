@@ -64,6 +64,20 @@ export function isCameraPresentReducer(
   }
 }
 
+export function lastExternalUserImageReducer(
+    state: UserState['lastExternalUserImage'], action: Actions,
+    _: PersonalizationState): UserState['lastExternalUserImage'] {
+  switch (action.name) {
+    case UserActionName.SET_USER_IMAGE:
+      if (action.image.externalImage) {
+        return action.image;
+      }
+      return state;
+    default:
+      return state;
+  }
+}
+
 export const userReducers:
     {[K in keyof UserState]: ReducerFunction<UserState[K]>} = {
       defaultUserImages: defaultUserImagesReducer,
@@ -71,4 +85,5 @@ export const userReducers:
       info: infoReducer,
       profileImage: profileImageReducer,
       isCameraPresent: isCameraPresentReducer,
+      lastExternalUserImage: lastExternalUserImageReducer,
     };

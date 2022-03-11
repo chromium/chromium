@@ -14,6 +14,7 @@
 #include "base/scoped_observation.h"
 #include "chrome/browser/ash/camera_presence_notifier.h"
 #include "chrome/browser/ash/login/users/avatar/user_image_file_selector.h"
+#include "components/user_manager/user_image/user_image.h"
 #include "components/user_manager/user_manager.h"
 #include "mojo/public/cpp/base/big_buffer.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -67,6 +68,8 @@ class PersonalizationAppUserProviderImpl
 
   void SelectCameraImage(::mojo_base::BigBuffer data) override;
 
+  void SelectLastExternalUserImage() override;
+
   void OnFileSelected(const base::FilePath& path);
 
   // user_manager::UserManager::Observer:
@@ -92,6 +95,8 @@ class PersonalizationAppUserProviderImpl
 
   // Pointer to profile of user that opened personalization SWA. Not owned.
   raw_ptr<Profile> profile_ = nullptr;
+
+  std::unique_ptr<user_manager::UserImage> last_external_user_image_;
 
   base::ScopedObservation<user_manager::UserManager,
                           user_manager::UserManager::Observer>

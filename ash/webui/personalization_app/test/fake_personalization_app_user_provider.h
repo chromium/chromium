@@ -49,6 +49,7 @@ class FakePersonalizationAppUserProvider
   void SelectProfileImage() override;
   void SelectCameraImage(::mojo_base::BigBuffer data) override;
   void SelectImageFromDisk() override;
+  void SelectLastExternalUserImage() override {}
 
  private:
   mojo::Receiver<ash::personalization_app::mojom::UserProvider> user_receiver_{

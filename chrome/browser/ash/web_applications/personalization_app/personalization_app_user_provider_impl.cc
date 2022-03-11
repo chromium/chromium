@@ -171,6 +171,19 @@ void PersonalizationAppUserProviderImpl::SelectCameraImage(
                      std::move(ref_counted)));
 }
 
+void PersonalizationAppUserProviderImpl::SelectLastExternalUserImage() {
+  if (!last_external_user_image_) {
+    LOG(WARNING) << "No last external user image present";
+    return;
+  }
+
+  ash::UserImageManager* user_image_manager =
+      ash::ChromeUserManager::Get()->GetUserImageManager(
+          GetAccountId(profile_));
+
+  user_image_manager->SaveUserImage(std::move(last_external_user_image_));
+}
+
 void PersonalizationAppUserProviderImpl::OnFileSelected(
     const base::FilePath& path) {
   ash::UserImageManager* user_image_manager =
@@ -203,6 +216,10 @@ void PersonalizationAppUserProviderImpl::OnUserImageChanged(
     case user_manager::User::USER_IMAGE_EXTERNAL: {
       if (desired_user->image_format() == user_manager::UserImage::FORMAT_PNG &&
           desired_user->has_image_bytes()) {
+        last_external_user_image_ = std::make_unique<user_manager::UserImage>(
+            desired_user->GetImage(), desired_user->image_bytes(),
+            user_manager::UserImage::ImageFormat::FORMAT_PNG);
+
         // No need to re-encode a png because already have encoded bytes.
         auto image_bytes = desired_user->image_bytes();
         UpdateUserImageObserver(
@@ -210,6 +227,8 @@ void PersonalizationAppUserProviderImpl::OnUserImageChanged(
                 mojo_base::BigBuffer(base::make_span(image_bytes->front(),
                                                      image_bytes->size()))));
       } else {
+        // Defer saving |last_external_user_image| until it has been encoded to
+        // png bytes.
         DCHECK(desired_user->GetImage().IsThreadSafe())
             << "User image loader marks user images as thread safe";
         image_encoding_task_runner_->PostTaskAndReplyWithResult(
@@ -281,6 +300,15 @@ void PersonalizationAppUserProviderImpl::OnCameraImageDecoded(
 
 void PersonalizationAppUserProviderImpl::OnExternalUserImageEncoded(
     std::vector<unsigned char> encoded_png) {
+  const user_manager::User* user = GetUser(profile_);
+
+  // Since we did the work of encoding user image to png bytes, save it now.
+  // Makes a copy of |encoded_png|.
+  last_external_user_image_ = std::make_unique<user_manager::UserImage>(
+      user->GetImage(),
+      base::MakeRefCounted<base::RefCountedBytes>(encoded_png),
+      user_manager::UserImage::ImageFormat::FORMAT_PNG);
+
   UpdateUserImageObserver(
       ash::personalization_app::mojom::UserImage::NewExternalImage(
           mojo_base::BigBuffer(std::move(encoded_png))));

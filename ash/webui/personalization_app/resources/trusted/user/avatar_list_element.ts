@@ -18,6 +18,7 @@ import {WithPersonalizationStore} from '../personalization_store.js';
 import {AvatarCamera, AvatarCameraMode} from './avatar_camera_element.js';
 import {fetchDefaultUserImages} from './user_controller.js';
 import {getUserProvider} from './user_interface_provider.js';
+import {selectLastExternalUserImageUrl} from './user_selectors.js';
 
 export interface AvatarList {
   $: {avatarCamera: AvatarCamera}
@@ -60,6 +61,7 @@ export class AvatarList extends WithPersonalizationStore {
   private isCameraPresent_: boolean;
   private cameraMode_: AvatarCameraMode|null;
   private image_: UserImage|null;
+  private lastExternalUserImageUrl_: Url|null;
 
   connectedCallback() {
     super.connectedCallback();
@@ -70,6 +72,8 @@ export class AvatarList extends WithPersonalizationStore {
     this.watch<AvatarList['isCameraPresent_']>(
         'isCameraPresent_', state => state.user.isCameraPresent);
     this.watch<AvatarList['image_']>('image_', state => state.user.image);
+    this.watch<AvatarList['lastExternalUserImageUrl_']>(
+        'lastExternalUserImageUrl_', selectLastExternalUserImageUrl);
     this.updateFromStore();
     fetchDefaultUserImages(getUserProvider(), this.getStore());
   }
@@ -98,12 +102,23 @@ export class AvatarList extends WithPersonalizationStore {
     return (image.index === selectedImage?.defaultImage?.index).toString();
   }
 
+  private getExternalImageAriaSelected_(image: UserImage|null): string {
+    return (!!image?.externalImage).toString();
+  }
+
   private onSelectProfileImage_(event: Event) {
     if (!isSelectionEvent(event)) {
       return;
     }
 
     getUserProvider().selectProfileImage();
+  }
+
+  private onSelectLastExternalUserImage_(event: Event) {
+    if (!isSelectionEvent(event)) {
+      return;
+    }
+    getUserProvider().selectLastExternalUserImage();
   }
 
   private openCamera_() {
