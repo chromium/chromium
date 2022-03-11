@@ -13,6 +13,7 @@
 #include "ash/public/cpp/window_properties.h"
 #include "ash/screen_util.h"
 #include "ash/shell.h"
+#include "ash/strings/grit/ash_strings.h"
 #include "ash/wm/desks/desks_controller.h"
 #include "ash/wm/mru_window_tracker.h"
 #include "ash/wm/overview/overview_controller.h"
@@ -534,12 +535,18 @@ void TabletModeWindowState::CycleTabletSnap(
   if (window == split_view_controller->GetSnappedWindow(snap_position)) {
     UpdateWindow(window_state, window_state->GetMaximizedOrCenteredWindowType(),
                  /*animated=*/true);
+    window_state->ReadOutWindowCycleSnapAction(
+        IDS_WM_RESTORE_SNAPPED_WINDOW_ON_SHORTCUT);
     return;
   }
   // If |window| can snap in split view, then snap |window| in |snap_position|.
   if (split_view_controller->CanSnapWindow(window)) {
     window_state->RecordAndResetWindowSnapActionSource();
     split_view_controller->SnapWindow(window, snap_position);
+    window_state->ReadOutWindowCycleSnapAction(
+        snap_position == SplitViewController::LEFT
+            ? IDS_WM_SNAP_WINDOW_TO_LEFT_ON_SHORTCUT
+            : IDS_WM_SNAP_WINDOW_TO_RIGHT_ON_SHORTCUT);
     return;
   }
   // Otherwise, show the cannot snap toast.

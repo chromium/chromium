@@ -4807,6 +4807,15 @@ New install
       <message name="IDS_ENTER_PIP_A11Y_NOTIFICATION" is_accessibility_with_no_ui="true" desc="Accessibility text read by chromevox when a window starts picture-in-picture mode.">
         Picture-in-picture started, Alt+Shift+V to focus
       </message>
+      <message name="IDS_WM_SNAP_WINDOW_TO_LEFT_ON_SHORTCUT" desc="Accessibility text read by chromevox when snap a window to left through shortcut alt+[.">
+        Active window docked on left.
+      </message>
+      <message name="IDS_WM_SNAP_WINDOW_TO_RIGHT_ON_SHORTCUT" desc="Accessibility text read by chromevox when snap a window to right through shortcut alt+].">
+        Active window docked on right.
+      </message>
+      <message name="IDS_WM_RESTORE_SNAPPED_WINDOW_ON_SHORTCUT" desc="Accessibility text read by chromevox when restore a snapped window through shortcut alt+[ or alt+].">
+        Active window undocked.
+      </message>
 
       <!-- Shelf Party -->
       <message name="IDS_ASH_STATUS_TRAY_SHELF_PARTY_LABEL" desc="The text shown in the tray menu button that toggles Shelf Party mode.">

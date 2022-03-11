@@ -519,6 +519,11 @@ class ASH_EXPORT WindowState : public aura::WindowObserver {
 
   void RecordAndResetWindowSnapActionSource();
 
+  // Read out the window cycle snap action through ChromeVox. It can be snap a
+  // window to the left, right or unsnapped window. `message_id` provides the
+  // text will be read out.
+  void ReadOutWindowCycleSnapAction(int message_id);
+
   // The owner of this window settings.
   aura::Window* window_;
   std::unique_ptr<WindowStateDelegate> delegate_;

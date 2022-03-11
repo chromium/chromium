@@ -7,6 +7,7 @@
 #include <memory>
 #include <utility>
 
+#include "ash/accessibility/accessibility_controller_impl.h"
 #include "ash/constants/ash_constants.h"
 #include "ash/constants/ash_features.h"
 #include "ash/focus_cycler.h"
@@ -1194,6 +1195,13 @@ void WindowState::RecordAndResetWindowSnapActionSource() {
   base::UmaHistogramEnumeration(kWindowSnapActionSourceHistogram,
                                 snap_action_source_);
   snap_action_source_ = WindowSnapActionSource::kOthers;
+}
+
+void WindowState::ReadOutWindowCycleSnapAction(int message_id) {
+  Shell::Get()
+      ->accessibility_controller()
+      ->TriggerAccessibilityAlertWithMessage(
+          l10n_util::GetStringUTF8(message_id));
 }
 
 }  // namespace ash
