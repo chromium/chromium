@@ -179,7 +179,7 @@ void AccessibilityTreeFormatterAuraLinux::RecursiveBuildTree(
     RecursiveBuildTree(atk_child, child_dict.get());
     g_object_unref(atk_child);
 
-    children->Append(std::move(child_dict));
+    children->Append(base::Value::FromUniquePtrValue(std::move(child_dict)));
   }
 
   dict->Set(kChildrenDictAttr, std::move(children));
@@ -215,7 +215,7 @@ void AccessibilityTreeFormatterAuraLinux::RecursiveBuildTree(
 
     CHECK(child);
     RecursiveBuildTree(child, child_dict.get());
-    children->Append(std::move(child_dict));
+    children->Append(base::Value::FromUniquePtrValue(std::move(child_dict)));
   }
 
   dict->Set(kChildrenDictAttr, std::move(children));
