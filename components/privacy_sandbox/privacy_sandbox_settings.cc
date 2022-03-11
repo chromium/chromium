@@ -34,39 +34,6 @@ bool IsCookiesClearOnExitEnabled(HostContentSettingsMap* map) {
          ContentSetting::CONTENT_SETTING_SESSION_ONLY;
 }
 
-bool HasNonDefaultBlockSetting(const ContentSettingsForOneType& cookie_settings,
-                               const GURL& url,
-                               const GURL& top_frame_origin) {
-  // APIs are allowed unless there is an effective non-default cookie content
-  // setting block exception. A default cookie content setting is one that has a
-  // wildcard pattern for both primary and secondary patterns. Content
-  // settings are listed in descending order of priority such that the first
-  // that matches is the effective content setting. A default setting can appear
-  // anywhere in the list. Content settings which appear after a default content
-  // setting are completely superseded by that content setting and are thus not
-  // consulted. Default settings which appear before other settings are applied
-  // from higher precedence sources, such as policy. The value of a default
-  // content setting applied by a higher precedence provider is not consulted
-  // here. For managed policies, the state will be reflected directly in the
-  // privacy sandbox preference. Other providers (such as extensions) will have
-  // been considered for the initial value of the privacy sandbox preference.
-  for (const auto& setting : cookie_settings) {
-    if (setting.primary_pattern == ContentSettingsPattern::Wildcard() &&
-        setting.secondary_pattern == ContentSettingsPattern::Wildcard()) {
-      return false;
-    }
-    if (setting.primary_pattern.Matches(url) &&
-        setting.secondary_pattern.Matches(top_frame_origin)) {
-      return setting.GetContentSetting() ==
-             ContentSetting::CONTENT_SETTING_BLOCK;
-    }
-  }
-  // ContentSettingsForOneType should always end with a default content setting
-  // from the default provider.
-  NOTREACHED();
-  return false;
-}
-
 // Convert a stored FLEDGE block eTLD+1 into applicable content settings
 // patterns. This ensures that if Public Suffix List membership changes, the
 // stored item continues to match as when it was set. Multiple patterns are set
@@ -122,7 +89,19 @@ PrivacySandboxSettings::PrivacySandboxSettings(
 PrivacySandboxSettings::~PrivacySandboxSettings() = default;
 
 bool PrivacySandboxSettings::IsTopicsAllowed() const {
-  return IsPrivacySandboxEnabled();
+  // Topics API calculation should be prevented if the user has blocked 3PC
+  // cookies, as there will be no context specific check.
+  const auto cookie_controls_mode =
+      static_cast<content_settings::CookieControlsMode>(
+          pref_service_->GetInteger(prefs::kCookieControlsMode));
+  const auto default_content_setting =
+      cookie_settings_->GetDefaultCookieSetting(/*provider_id=*/nullptr);
+
+  const bool third_party_cookies_blocked =
+      default_content_setting == ContentSetting::CONTENT_SETTING_BLOCK ||
+      cookie_controls_mode ==
+          content_settings::CookieControlsMode::kBlockThirdParty;
+  return IsPrivacySandboxEnabled() && !third_party_cookies_blocked;
 }
 
 bool PrivacySandboxSettings::IsTopicsAllowedForContext(
@@ -333,27 +312,26 @@ bool PrivacySandboxSettings::IsFledgeJoiningAllowed(
 bool PrivacySandboxSettings::IsFledgeAllowed(
     const url::Origin& top_frame_origin,
     const url::Origin& auction_party) {
-  // If the sandbox is disabled, then FLEDGE is never allowed.
-  if (!IsPrivacySandboxEnabled())
-    return false;
-
-  // Third party cookies must also be available for this context. An empty site
-  // for cookies is provided so the context is always treated as a third party.
-  return cookie_settings_->IsFullCookieAccessAllowed(
-      auction_party.GetURL(), net::SiteForCookies(), top_frame_origin);
+  ContentSettingsForOneType cookie_settings;
+  cookie_settings_->GetCookieSettings(&cookie_settings);
+  return IsPrivacySandboxEnabledForContext(auction_party.GetURL(),
+                                           top_frame_origin, cookie_settings);
 }
 
 std::vector<GURL> PrivacySandboxSettings::FilterFledgeAllowedParties(
     const url::Origin& top_frame_origin,
     const std::vector<GURL>& auction_parties) {
-  // If the sandbox is disabled, then no parties are allowed.
+  // If the sandbox is disabled, then no parties are allowed and we can avoid
+  // even iterating over them.
   if (!IsPrivacySandboxEnabled())
     return {};
 
+  ContentSettingsForOneType cookie_settings;
+  cookie_settings_->GetCookieSettings(&cookie_settings);
   std::vector<GURL> allowed_parties;
   for (const auto& party : auction_parties) {
-    if (cookie_settings_->IsFullCookieAccessAllowed(
-            party, net::SiteForCookies(), top_frame_origin)) {
+    if (IsPrivacySandboxEnabledForContext(party, top_frame_origin,
+                                          cookie_settings)) {
       allowed_parties.push_back(party);
     }
   }
@@ -437,12 +415,10 @@ bool PrivacySandboxSettings::IsPrivacySandboxEnabledForContext(
   if (!IsPrivacySandboxEnabled())
     return false;
 
-  // TODO (crbug.com/1155504): Bypassing the CookieSettings class to access
-  // content settings directly ignores allowlisted schemes and the storage
-  // access API. These should be taken into account here.
-  return !HasNonDefaultBlockSetting(
-      cookie_settings, url,
-      top_frame_origin ? top_frame_origin->GetURL() : GURL());
+  // Third party cookies must also be available for this context. An empty site
+  // for cookies is provided so the context is always treated as a third party.
+  return cookie_settings_->IsFullCookieAccessAllowed(url, net::SiteForCookies(),
+                                                     top_frame_origin);
 }
 
 void PrivacySandboxSettings::SetTopicsDataAccessibleFromNow() const {

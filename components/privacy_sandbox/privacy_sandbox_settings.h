@@ -41,6 +41,12 @@ class PrivacySandboxSettings : public KeyedService {
    public:
     virtual void OnTopicsDataAccessibleSinceUpdated() {}
 
+    // Fired when Trust Token blocking has changed because of a change to the
+    // Privacy Sandbox preference. Does not account for changes to third-party
+    // cookie blocking, which may result in the Privacy Sandbox being disabled.
+    // Trust tokens thus additionally independently consult Cookie settings.
+    // TODO(crbug.com/1304132): Unify this so Trust Tokens only need to consult
+    // a single source of truth.
     virtual void OnTrustTokenBlockingChanged(bool blocked) {}
   };
 
@@ -143,10 +149,11 @@ class PrivacySandboxSettings : public KeyedService {
       const url::Origin& top_frame_origin,
       const std::vector<GURL>& auction_parties);
 
-  // Returns whether the Privacy Sandbox is "generally" available. A return
-  // value of false indicates that the sandbox is completely disabled. A return
-  // value of true *must* be followed up by the appropriate context specific
-  // check.
+  // Returns whether the profile has the Privacy Sandbox enabled. This directly
+  // reflects the state of the main privacy sandbox control, and does not
+  // consider any cookie settings. A return value of false means that no
+  // Privacy Sandbox operations can occur. A return value of true must be
+  // followed up with the appropriate IsXAllowed() call.
   bool IsPrivacySandboxEnabled() const;
 
   // Disables the Privacy Sandbox completely if |enabled| is false, if |enabled|
