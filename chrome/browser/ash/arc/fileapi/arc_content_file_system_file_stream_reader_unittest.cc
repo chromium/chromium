@@ -127,78 +127,110 @@ class ArcContentFileSystemFileStreamReaderTest : public testing::Test {
 }  // namespace
 
 TEST_F(ArcContentFileSystemFileStreamReaderTest, ReadRegularFile) {
-  ArcContentFileSystemFileStreamReader reader(GURL(kArcUrlFile), 0);
   auto buffer = base::MakeRefCounted<net::IOBufferWithSize>(strlen(kData));
-  EXPECT_TRUE(ReadData(&reader, buffer.get()));
+  {
+    ArcContentFileSystemFileStreamReader reader(GURL(kArcUrlFile),
+                                                /*offset=*/0);
+    EXPECT_TRUE(ReadData(&reader, buffer.get()));
+  }
+  base::RunLoop().RunUntilIdle();
   EXPECT_EQ(base::StringPiece(kData, strlen(kData)),
             base::StringPiece(buffer->data(), buffer->size()));
 }
 
 TEST_F(ArcContentFileSystemFileStreamReaderTest, ReadRegularFileWithOffset) {
   constexpr size_t kOffset = 10;
-  ArcContentFileSystemFileStreamReader reader(GURL(kArcUrlFile), kOffset);
   auto buffer =
       base::MakeRefCounted<net::IOBufferWithSize>(strlen(kData) - kOffset);
-  EXPECT_TRUE(ReadData(&reader, buffer.get()));
+  {
+    ArcContentFileSystemFileStreamReader reader(GURL(kArcUrlFile), kOffset);
+    EXPECT_TRUE(ReadData(&reader, buffer.get()));
+  }
+  base::RunLoop().RunUntilIdle();
   EXPECT_EQ(base::StringPiece(kData + kOffset, strlen(kData) - kOffset),
             base::StringPiece(buffer->data(), buffer->size()));
 }
 
 TEST_F(ArcContentFileSystemFileStreamReaderTest, ReadPipe) {
-  ArcContentFileSystemFileStreamReader reader(GURL(kArcUrlPipe), 0);
   auto buffer = base::MakeRefCounted<net::IOBufferWithSize>(strlen(kData));
-  EXPECT_TRUE(ReadData(&reader, buffer.get()));
+  {
+    ArcContentFileSystemFileStreamReader reader(GURL(kArcUrlPipe),
+                                                /*offset=*/0);
+    EXPECT_TRUE(ReadData(&reader, buffer.get()));
+  }
+  base::RunLoop().RunUntilIdle();
   EXPECT_EQ(base::StringPiece(kData, strlen(kData)),
             base::StringPiece(buffer->data(), buffer->size()));
 }
 
 TEST_F(ArcContentFileSystemFileStreamReaderTest, ReadPipeWithOffset) {
   constexpr size_t kOffset = 10;
-  ArcContentFileSystemFileStreamReader reader(GURL(kArcUrlPipe), kOffset);
   auto buffer =
       base::MakeRefCounted<net::IOBufferWithSize>(strlen(kData) - kOffset);
-  EXPECT_TRUE(ReadData(&reader, buffer.get()));
+  {
+    ArcContentFileSystemFileStreamReader reader(GURL(kArcUrlPipe), kOffset);
+    EXPECT_TRUE(ReadData(&reader, buffer.get()));
+  }
+  base::RunLoop().RunUntilIdle();
   EXPECT_EQ(base::StringPiece(kData + kOffset, strlen(kData) - kOffset),
             base::StringPiece(buffer->data(), buffer->size()));
 }
 
 TEST_F(ArcContentFileSystemFileStreamReaderTest, GetLength) {
-  ArcContentFileSystemFileStreamReader reader(GURL(kArcUrlFile), 0);
+  {
+    ArcContentFileSystemFileStreamReader reader(GURL(kArcUrlFile),
+                                                /*offset=*/0);
 
-  net::TestInt64CompletionCallback callback;
-  EXPECT_EQ(static_cast<int64_t>(strlen(kData)),
-            callback.GetResult(reader.GetLength(callback.callback())));
+    net::TestInt64CompletionCallback callback;
+    EXPECT_EQ(static_cast<int64_t>(strlen(kData)),
+              callback.GetResult(reader.GetLength(callback.callback())));
+  }
+  base::RunLoop().RunUntilIdle();
 }
 
 TEST_F(ArcContentFileSystemFileStreamReaderTest, GetLengthUnknownSizeSeekable) {
-  ArcContentFileSystemFileStreamReader reader(GURL(kArcUrlFileUnknownSize), 0);
+  {
+    ArcContentFileSystemFileStreamReader reader(GURL(kArcUrlFileUnknownSize),
+                                                /*offset=*/0);
 
-  net::TestInt64CompletionCallback callback;
-  EXPECT_EQ(static_cast<int64_t>(strlen(kData)),
-            callback.GetResult(reader.GetLength(callback.callback())));
+    net::TestInt64CompletionCallback callback;
+    EXPECT_EQ(static_cast<int64_t>(strlen(kData)),
+              callback.GetResult(reader.GetLength(callback.callback())));
+  }
+  base::RunLoop().RunUntilIdle();
 }
 
 TEST_F(ArcContentFileSystemFileStreamReaderTest,
        GetLengthUnknownSizeNotSeekable) {
-  ArcContentFileSystemFileStreamReader reader(GURL(kArcUrlPipeUnknownSize), 0);
+  {
+    ArcContentFileSystemFileStreamReader reader(GURL(kArcUrlPipeUnknownSize),
+                                                /*offset=*/0);
 
-  net::TestInt64CompletionCallback callback;
-  EXPECT_EQ(static_cast<int64_t>(net::ERR_FAILED),
-            callback.GetResult(reader.GetLength(callback.callback())));
+    net::TestInt64CompletionCallback callback;
+    EXPECT_EQ(static_cast<int64_t>(net::ERR_FAILED),
+              callback.GetResult(reader.GetLength(callback.callback())));
+  }
+  base::RunLoop().RunUntilIdle();
 }
 
 TEST_F(ArcContentFileSystemFileStreamReaderTest, ReadError) {
-  ArcContentFileSystemFileStreamReader reader(
-      GURL("content://org.chromium.foo/error"), 0);
-  auto buffer = base::MakeRefCounted<net::IOBufferWithSize>(strlen(kData));
-  EXPECT_FALSE(ReadData(&reader, buffer.get()));
+  {
+    ArcContentFileSystemFileStreamReader reader(
+        GURL("content://org.chromium.foo/error"), /*offset=*/0);
+    auto buffer = base::MakeRefCounted<net::IOBufferWithSize>(strlen(kData));
+    EXPECT_FALSE(ReadData(&reader, buffer.get()));
+  }
+  base::RunLoop().RunUntilIdle();
 }
 
 TEST_F(ArcContentFileSystemFileStreamReaderTest, GetLengthError) {
-  ArcContentFileSystemFileStreamReader reader(
-      GURL("content://org.chromium.foo/error"), 0);
-  net::TestInt64CompletionCallback callback;
-  EXPECT_LT(callback.GetResult(reader.GetLength(callback.callback())), 0);
+  {
+    ArcContentFileSystemFileStreamReader reader(
+        GURL("content://org.chromium.foo/error"), /*offset=*/0);
+    net::TestInt64CompletionCallback callback;
+    EXPECT_LT(callback.GetResult(reader.GetLength(callback.callback())), 0);
+  }
+  base::RunLoop().RunUntilIdle();
 }
 
 }  // namespace arc

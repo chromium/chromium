@@ -88,6 +88,19 @@ void OpenFileSessionToWriteOnUIThread(const GURL& url,
   runner->OpenFileSessionToWrite(url, std::move(callback));
 }
 
+void OpenFileSessionToReadOnUIThread(const GURL& url,
+                                     OpenFileSessionToReadCallback callback) {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  auto* runner = GetArcFileSystemOperationRunner();
+  if (!runner) {
+    DLOG(ERROR) << "ArcFileSystemOperationRunner unavailable. "
+                << "File system operations are dropped.";
+    std::move(callback).Run(mojom::FileSessionPtr());
+    return;
+  }
+  runner->OpenFileSessionToRead(url, std::move(callback));
+}
+
 void CloseFileSessionOnUIThread(const std::string& url_id,
                                 const CloseStatus status) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
@@ -144,6 +157,16 @@ void OpenFileSessionToWriteOnIOThread(const GURL& url,
       base::BindOnce(&OpenFileSessionToWriteOnUIThread, url,
                      base::BindPostTask(content::GetIOThreadTaskRunner({}),
                                         std::move(callback))));
+}
+
+void OpenFileSessionToReadOnIOThread(const GURL& url,
+                                     OpenFileSessionToReadCallback callback) {
+  DCHECK_CURRENTLY_ON(BrowserThread::IO);
+  content::GetUIThreadTaskRunner({})->PostTask(
+      FROM_HERE,
+      base::BindOnce(&OpenFileSessionToReadOnUIThread, url,
+                     base::BindOnce(&PostToIOThread<mojom::FileSessionPtr>,
+                                    std::move(callback))));
 }
 
 // TODO(b/222823695): Consider using a mojo interface to disconnect remote.

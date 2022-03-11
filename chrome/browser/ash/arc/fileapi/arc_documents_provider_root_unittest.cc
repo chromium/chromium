@@ -4,8 +4,6 @@
 
 #include "chrome/browser/ash/arc/fileapi/arc_documents_provider_root.h"
 
-#include <string.h>
-
 #include <memory>
 #include <string>
 #include <utility>

@@ -8,6 +8,7 @@
 #include <stdint.h>
 
 #include <memory>
+#include <string>
 
 #include "ash/components/arc/mojom/file_system.mojom-forward.h"
 #include "base/memory/ref_counted.h"

@@ -23,6 +23,8 @@ using OpenFileToWriteCallback =
     ArcFileSystemOperationRunner::OpenFileToWriteCallback;
 using OpenFileSessionToWriteCallback =
     ArcFileSystemOperationRunner::OpenFileSessionToWriteCallback;
+using OpenFileSessionToReadCallback =
+    ArcFileSystemOperationRunner::OpenFileSessionToReadCallback;
 
 enum class CloseStatus : int {
   // File operation finished successfully.
@@ -44,6 +46,8 @@ void OpenFileToWriteOnIOThread(const GURL& url,
                                OpenFileToWriteCallback callback);
 void OpenFileSessionToWriteOnIOThread(const GURL& url,
                                       OpenFileSessionToWriteCallback callback);
+void OpenFileSessionToReadOnIOThread(const GURL& url,
+                                     OpenFileSessionToWriteCallback callback);
 
 // Calls to OpenFileSession* must be followed up with a call to CloseFileSession
 // once the file is no longer in use to close the Android file descriptor.
