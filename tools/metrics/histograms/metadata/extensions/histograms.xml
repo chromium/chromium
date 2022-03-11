@@ -2280,24 +2280,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Extensions.InstallPromptExperiment.ShowDetails"
-    enum="ExtensionInstallPromptExperimentLinkAction" expires_after="M85">
-  <owner>meacer@chromium.org</owner>
-  <summary>
-    Actions on the show details link grouped by action type when the install
-    prompt trial is running.
-  </summary>
-</histogram>
-
-<histogram name="Extensions.InstallPromptExperiment.ShowPermissions"
-    enum="ExtensionInstallPromptExperimentLinkAction" expires_after="M85">
-  <owner>meacer@chromium.org</owner>
-  <summary>
-    Actions on the show permissions link grouped by action type when the install
-    prompt trial is running.
-  </summary>
-</histogram>
-
 <histogram name="Extensions.InstallSource" enum="ExtensionLocation"
     expires_after="never">
 <!-- expires-never: Monitoring core extension usage. -->
