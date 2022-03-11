@@ -29,7 +29,6 @@ source_set("chromeos") {
     "//build:chromeos_buildflags",
     "//cc",
     "//gpu/command_buffer/common",
-    "//ppapi/host",
     "//remoting/protocol",
     "//skia",
     "//third_party/webrtc_overrides:webrtc_component",

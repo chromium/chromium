@@ -1,6 +1,5 @@
 include_rules = [
   "+components/webrtc",
-  "+ppapi",
   "+mojo/core/embedder",
   "+net",
   "+ui/events/keycodes/dom",
