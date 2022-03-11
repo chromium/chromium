@@ -6,7 +6,7 @@
 import 'chrome://extensions/extensions.js';
 
 import {getSitePermissionsPatternFromSite, SitePermissionsEditUrlDialogElement} from 'chrome://extensions/extensions.js';
-import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {eventToPromise} from 'chrome://webui-test/test_util.js';
 
 import {TestService} from './test_service.js';
@@ -37,9 +37,9 @@ suite('SitePermissionsEditUrlDialog', function() {
     assertFalse(submit.disabled);
     submit.click();
 
-    const [siteSet, host] = await delegate.whenCalled('addUserSpecifiedSite');
+    const [siteSet, hosts] = await delegate.whenCalled('addUserSpecifiedSites');
     assertEquals(chrome.developerPrivate.UserSiteSet.PERMITTED, siteSet);
-    assertEquals('http://www.example.com', host);
+    assertDeepEquals(['http://www.example.com'], hosts);
   });
 
   test('invalid input', function() {
@@ -87,15 +87,15 @@ suite('SitePermissionsEditUrlDialog', function() {
     assertFalse(submit.disabled);
     submit.click();
 
-    const [removedSiteSet, removedSite] =
-        await delegate.whenCalled('removeUserSpecifiedSite');
+    const [removedSiteSet, removedSites] =
+        await delegate.whenCalled('removeUserSpecifiedSites');
     assertEquals(chrome.developerPrivate.UserSiteSet.PERMITTED, removedSiteSet);
-    assertEquals(oldSite, removedSite);
+    assertDeepEquals([oldSite], removedSites);
 
-    const [addedSiteSet, addedSite] =
-        await delegate.whenCalled('addUserSpecifiedSite');
+    const [addedSiteSet, addedSites] =
+        await delegate.whenCalled('addUserSpecifiedSites');
     assertEquals(chrome.developerPrivate.UserSiteSet.PERMITTED, addedSiteSet);
-    assertEquals(newSite, addedSite);
+    assertDeepEquals([newSite], addedSites);
 
     await whenClosed;
     assertFalse(element.$.dialog.open);

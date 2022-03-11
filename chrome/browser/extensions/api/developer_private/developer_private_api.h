@@ -890,38 +890,38 @@ class DeveloperPrivateGetUserSiteSettingsFunction
   ResponseAction Run() override;
 };
 
-class DeveloperPrivateAddUserSpecifiedSiteFunction
+class DeveloperPrivateAddUserSpecifiedSitesFunction
     : public DeveloperPrivateAPIFunction {
  public:
-  DECLARE_EXTENSION_FUNCTION("developerPrivate.addUserSpecifiedSite",
-                             DEVELOPERPRIVATE_ADDUSERSPECIFIEDSITE)
-  DeveloperPrivateAddUserSpecifiedSiteFunction();
+  DECLARE_EXTENSION_FUNCTION("developerPrivate.addUserSpecifiedSites",
+                             DEVELOPERPRIVATE_ADDUSERSPECIFIEDSITES)
+  DeveloperPrivateAddUserSpecifiedSitesFunction();
 
-  DeveloperPrivateAddUserSpecifiedSiteFunction(
-      const DeveloperPrivateAddUserSpecifiedSiteFunction&) = delete;
-  DeveloperPrivateAddUserSpecifiedSiteFunction& operator=(
-      const DeveloperPrivateAddUserSpecifiedSiteFunction&) = delete;
+  DeveloperPrivateAddUserSpecifiedSitesFunction(
+      const DeveloperPrivateAddUserSpecifiedSitesFunction&) = delete;
+  DeveloperPrivateAddUserSpecifiedSitesFunction& operator=(
+      const DeveloperPrivateAddUserSpecifiedSitesFunction&) = delete;
 
  private:
-  ~DeveloperPrivateAddUserSpecifiedSiteFunction() override;
+  ~DeveloperPrivateAddUserSpecifiedSitesFunction() override;
 
   ResponseAction Run() override;
 };
 
-class DeveloperPrivateRemoveUserSpecifiedSiteFunction
+class DeveloperPrivateRemoveUserSpecifiedSitesFunction
     : public DeveloperPrivateAPIFunction {
  public:
-  DECLARE_EXTENSION_FUNCTION("developerPrivate.removeUserSpecifiedSite",
-                             DEVELOPERPRIVATE_REMOVEUSERSPECIFIEDSITE)
-  DeveloperPrivateRemoveUserSpecifiedSiteFunction();
+  DECLARE_EXTENSION_FUNCTION("developerPrivate.removeUserSpecifiedSites",
+                             DEVELOPERPRIVATE_REMOVEUSERSPECIFIEDSITES)
+  DeveloperPrivateRemoveUserSpecifiedSitesFunction();
 
-  DeveloperPrivateRemoveUserSpecifiedSiteFunction(
-      const DeveloperPrivateRemoveUserSpecifiedSiteFunction&) = delete;
-  DeveloperPrivateRemoveUserSpecifiedSiteFunction& operator=(
-      const DeveloperPrivateRemoveUserSpecifiedSiteFunction&) = delete;
+  DeveloperPrivateRemoveUserSpecifiedSitesFunction(
+      const DeveloperPrivateRemoveUserSpecifiedSitesFunction&) = delete;
+  DeveloperPrivateRemoveUserSpecifiedSitesFunction& operator=(
+      const DeveloperPrivateRemoveUserSpecifiedSitesFunction&) = delete;
 
  private:
-  ~DeveloperPrivateRemoveUserSpecifiedSiteFunction() override;
+  ~DeveloperPrivateRemoveUserSpecifiedSitesFunction() override;
 
   ResponseAction Run() override;
 };

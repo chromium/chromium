@@ -2162,25 +2162,34 @@ DeveloperPrivateGetUserSiteSettingsFunction::Run() {
       base::Value::FromUniquePtrValue(user_site_settings.ToValue())));
 }
 
-DeveloperPrivateAddUserSpecifiedSiteFunction::
-    DeveloperPrivateAddUserSpecifiedSiteFunction() = default;
-DeveloperPrivateAddUserSpecifiedSiteFunction::
-    ~DeveloperPrivateAddUserSpecifiedSiteFunction() = default;
+DeveloperPrivateAddUserSpecifiedSitesFunction::
+    DeveloperPrivateAddUserSpecifiedSitesFunction() = default;
+DeveloperPrivateAddUserSpecifiedSitesFunction::
+    ~DeveloperPrivateAddUserSpecifiedSitesFunction() = default;
 
 ExtensionFunction::ResponseAction
-DeveloperPrivateAddUserSpecifiedSiteFunction::Run() {
-  std::unique_ptr<developer::AddUserSpecifiedSite::Params> params(
-      developer::AddUserSpecifiedSite::Params::Create(args()));
+DeveloperPrivateAddUserSpecifiedSitesFunction::Run() {
+  std::unique_ptr<developer::AddUserSpecifiedSites::Params> params(
+      developer::AddUserSpecifiedSites::Params::Create(args()));
   EXTENSION_FUNCTION_VALIDATE(params);
 
+  std::set<url::Origin> origins;
+  for (const auto& host : params->options.hosts) {
+    GURL url(host);
+    if (!url.is_valid())
+      return RespondNow(Error("Invalid host: " + host));
+    origins.insert(url::Origin::Create(url));
+  }
+
   PermissionsManager* manager = PermissionsManager::Get(browser_context());
-  const url::Origin url = url::Origin::Create(GURL(params->options.host));
   switch (params->options.site_list) {
     case developer::USER_SITE_SET_PERMITTED:
-      manager->AddUserPermittedSite(url);
+      for (const auto& origin : origins)
+        manager->AddUserPermittedSite(origin);
       break;
     case developer::USER_SITE_SET_RESTRICTED:
-      manager->AddUserRestrictedSite(url);
+      for (const auto& origin : origins)
+        manager->AddUserRestrictedSite(origin);
       break;
     case developer::USER_SITE_SET_NONE:
       NOTREACHED();
@@ -2189,25 +2198,34 @@ DeveloperPrivateAddUserSpecifiedSiteFunction::Run() {
   return RespondNow(NoArguments());
 }
 
-DeveloperPrivateRemoveUserSpecifiedSiteFunction::
-    DeveloperPrivateRemoveUserSpecifiedSiteFunction() = default;
-DeveloperPrivateRemoveUserSpecifiedSiteFunction::
-    ~DeveloperPrivateRemoveUserSpecifiedSiteFunction() = default;
+DeveloperPrivateRemoveUserSpecifiedSitesFunction::
+    DeveloperPrivateRemoveUserSpecifiedSitesFunction() = default;
+DeveloperPrivateRemoveUserSpecifiedSitesFunction::
+    ~DeveloperPrivateRemoveUserSpecifiedSitesFunction() = default;
 
 ExtensionFunction::ResponseAction
-DeveloperPrivateRemoveUserSpecifiedSiteFunction::Run() {
-  std::unique_ptr<developer::RemoveUserSpecifiedSite::Params> params(
-      developer::RemoveUserSpecifiedSite::Params::Create(args()));
+DeveloperPrivateRemoveUserSpecifiedSitesFunction::Run() {
+  std::unique_ptr<developer::RemoveUserSpecifiedSites::Params> params(
+      developer::RemoveUserSpecifiedSites::Params::Create(args()));
   EXTENSION_FUNCTION_VALIDATE(params);
 
+  std::set<url::Origin> origins;
+  for (const auto& host : params->options.hosts) {
+    GURL url(host);
+    if (!url.is_valid())
+      return RespondNow(Error("Invalid host: " + host));
+    origins.insert(url::Origin::Create(url));
+  }
+
   PermissionsManager* manager = PermissionsManager::Get(browser_context());
-  const url::Origin url = url::Origin::Create(GURL(params->options.host));
   switch (params->options.site_list) {
     case developer::USER_SITE_SET_PERMITTED:
-      manager->RemoveUserPermittedSite(url);
+      for (const auto& origin : origins)
+        manager->RemoveUserPermittedSite(origin);
       break;
     case developer::USER_SITE_SET_RESTRICTED:
-      manager->RemoveUserRestrictedSite(url);
+      for (const auto& origin : origins)
+        manager->RemoveUserRestrictedSite(origin);
       break;
     case developer::USER_SITE_SET_NONE:
       NOTREACHED();

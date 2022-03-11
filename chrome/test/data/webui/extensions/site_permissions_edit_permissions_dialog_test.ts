@@ -10,7 +10,7 @@ import 'chrome://extensions/extensions.js';
 
 import {SitePermissionsEditPermissionsDialogElement} from 'chrome://extensions/extensions.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {eventToPromise} from 'chrome://webui-test/test_util.js';
 
 import {TestService} from './test_service.js';
@@ -51,9 +51,9 @@ suite('SitePermissionsEditPermissionsDialog', function() {
     const submit = element.$.submit;
     submit.click();
 
-    const [siteSet, site] = await delegate.whenCalled('addUserSpecifiedSite');
+    const [siteSet, sites] = await delegate.whenCalled('addUserSpecifiedSites');
     assertEquals(UserSiteSet.RESTRICTED, siteSet);
-    assertEquals(element.site, site);
+    assertDeepEquals([element.site], sites);
 
     await whenClosed;
     assertFalse(element.$.dialog.open);

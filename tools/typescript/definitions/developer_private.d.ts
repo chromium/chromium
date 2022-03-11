@@ -387,7 +387,7 @@ declare global {
 
       export type UserSiteSettingsOptions = {
         siteList: UserSiteSet,
-        host: string,
+        hosts: string[],
       };
 
       type VoidCallback = () => void;
@@ -443,9 +443,9 @@ declare global {
           update: ProfileConfigurationUpdate, callback?: VoidCallback): void;
       export function getUserSiteSettings(
           callback: (result: UserSiteSettings) => void): void;
-      export function addUserSpecifiedSite(
+      export function addUserSpecifiedSites(
           options: UserSiteSettingsOptions, callback?: VoidCallback): void;
-      export function removeUserSpecifiedSite(
+      export function removeUserSpecifiedSites(
           options: UserSiteSettingsOptions, callback?: VoidCallback): void;
 
       export const onItemStateChanged: ChromeEvent<(data: EventData) => void>;

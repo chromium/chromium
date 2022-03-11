@@ -15,12 +15,12 @@ type Constructor<T> = new (...args: any[]) => T;
 
 export interface SiteSettingsDelegate {
   getUserSiteSettings(): Promise<chrome.developerPrivate.UserSiteSettings>;
-  addUserSpecifiedSite(
+  addUserSpecifiedSites(
       siteSet: chrome.developerPrivate.UserSiteSet,
-      host: string): Promise<void>;
-  removeUserSpecifiedSite(
+      hosts: string[]): Promise<void>;
+  removeUserSpecifiedSites(
       siteSet: chrome.developerPrivate.UserSiteSet,
-      host: string): Promise<void>;
+      hosts: string[]): Promise<void>;
   getUserSiteSettingsChangedTarget():
       ChromeEvent<(settings: chrome.developerPrivate.UserSiteSettings) => void>;
 }

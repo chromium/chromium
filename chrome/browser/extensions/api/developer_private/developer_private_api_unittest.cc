@@ -135,24 +135,26 @@ bool WasUserSiteSettingsChangedEventDispatched(
   return true;
 }
 
-void AddUserSpecifiedSite(Profile* profile, const char* site, bool restricted) {
-  scoped_refptr<ExtensionFunction> function =
-      base::MakeRefCounted<api::DeveloperPrivateAddUserSpecifiedSiteFunction>();
-  std::string args =
-      base::StringPrintf(R"([{"siteList":"%s","host":"%s"}])",
-                         restricted ? "RESTRICTED" : "PERMITTED", site);
+void AddUserSpecifiedSites(Profile* profile,
+                           const std::string& hosts,
+                           bool restricted) {
+  scoped_refptr<ExtensionFunction> function = base::MakeRefCounted<
+      api::DeveloperPrivateAddUserSpecifiedSitesFunction>();
+  std::string args = base::StringPrintf(R"([{"siteList":"%s","hosts":%s}])",
+                                        restricted ? "RESTRICTED" : "PERMITTED",
+                                        hosts.c_str());
   EXPECT_TRUE(api_test_utils::RunFunction(function.get(), args, profile))
       << function->GetError();
 }
 
-void RemoveUserSpecifiedSite(Profile* profile,
-                             const char* site,
-                             bool restricted) {
+void RemoveUserSpecifiedSites(Profile* profile,
+                              const std::string& hosts,
+                              bool restricted) {
   scoped_refptr<ExtensionFunction> function = base::MakeRefCounted<
-      api::DeveloperPrivateRemoveUserSpecifiedSiteFunction>();
-  std::string args =
-      base::StringPrintf(R"([{"siteList":"%s","host":"%s"}])",
-                         restricted ? "RESTRICTED" : "PERMITTED", site);
+      api::DeveloperPrivateRemoveUserSpecifiedSitesFunction>();
+  std::string args = base::StringPrintf(R"([{"siteList":"%s","hosts":%s}])",
+                                        restricted ? "RESTRICTED" : "PERMITTED",
+                                        hosts.c_str());
   EXPECT_TRUE(api_test_utils::RunFunction(function.get(), args, profile))
       << function->GetError();
 }
@@ -1892,14 +1894,17 @@ TEST_F(DeveloperPrivateApiUnitTest, DeveloperPrivateModifyUserSiteSettings) {
   const url::Origin chromium_url = url::Origin::Create(GURL(kChromium));
   const url::Origin google_url = url::Origin::Create(GURL(kGoogle));
 
+  auto get_hosts_arg = [](const char* host) {
+    return base::StringPrintf(R"(["%s"])", host);
+  };
+
   // First, add some permitted and restricted sites, and check that these sites
   // are stored in the manager.
-  EXPECT_NO_FATAL_FAILURE(
-      AddUserSpecifiedSite(profile(), kExample, /*restricted=*/false));
-  EXPECT_NO_FATAL_FAILURE(
-      AddUserSpecifiedSite(profile(), kChromium, /*restricted=*/false));
-  EXPECT_NO_FATAL_FAILURE(
-      AddUserSpecifiedSite(profile(), kGoogle, /*restricted=*/true));
+  EXPECT_NO_FATAL_FAILURE(AddUserSpecifiedSites(
+      profile(), base::StringPrintf(R"(["%s","%s"])", kExample, kChromium),
+      /*restricted=*/false));
+  EXPECT_NO_FATAL_FAILURE(AddUserSpecifiedSites(
+      profile(), get_hosts_arg(kGoogle), /*restricted=*/true));
 
   PermissionsManager* manager = PermissionsManager::Get(browser_context());
   EXPECT_THAT(manager->GetUserPermissionsSettings().permitted_sites,
@@ -1908,16 +1913,19 @@ TEST_F(DeveloperPrivateApiUnitTest, DeveloperPrivateModifyUserSiteSettings) {
               testing::UnorderedElementsAre(google_url));
 
   // Attempting to add a restricted site should remove it as a permitted site.
-  EXPECT_NO_FATAL_FAILURE(
-      AddUserSpecifiedSite(profile(), kChromium, /*restricted=*/true));
-  EXPECT_NO_FATAL_FAILURE(
-      RemoveUserSpecifiedSite(profile(), kExample, /*restricted=*/false));
-  EXPECT_NO_FATAL_FAILURE(
-      RemoveUserSpecifiedSite(profile(), kGoogle, /*restricted=*/true));
+  EXPECT_NO_FATAL_FAILURE(AddUserSpecifiedSites(
+      profile(), get_hosts_arg(kChromium), /*restricted=*/true));
+  EXPECT_NO_FATAL_FAILURE(RemoveUserSpecifiedSites(
+      profile(), get_hosts_arg(kExample), /*restricted=*/false));
 
   EXPECT_TRUE(manager->GetUserPermissionsSettings().permitted_sites.empty());
   EXPECT_THAT(manager->GetUserPermissionsSettings().restricted_sites,
-              testing::UnorderedElementsAre(chromium_url));
+              testing::UnorderedElementsAre(chromium_url, google_url));
+
+  EXPECT_NO_FATAL_FAILURE(RemoveUserSpecifiedSites(
+      profile(), base::StringPrintf(R"(["%s","%s"])", kGoogle, kChromium),
+      /*restricted=*/true));
+  EXPECT_TRUE(manager->GetUserPermissionsSettings().restricted_sites.empty());
 }
 
 // Test that the OnUserSiteSettingsChanged event is fired whenever the user
@@ -1945,8 +1953,9 @@ TEST_F(DeveloperPrivateApiUnitTest, OnUserSiteSettingsChanged) {
 
   // Add a permitted site, and check that it is contained within the event's
   // payload.
+  const std::string kExampleArg = base::StringPrintf(R"(["%s"])", kExample);
   EXPECT_NO_FATAL_FAILURE(
-      AddUserSpecifiedSite(profile(), kExample, /*restricted=*/false));
+      AddUserSpecifiedSites(profile(), kExampleArg, /*restricted=*/false));
   EXPECT_TRUE(
       WasUserSiteSettingsChangedEventDispatched(test_observer, &settings));
   EXPECT_THAT(settings.permitted_sites,
@@ -1956,7 +1965,7 @@ TEST_F(DeveloperPrivateApiUnitTest, OnUserSiteSettingsChanged) {
   // Add the same site to the restricted site, and check the event that it's
   // only contained in the restricted list.
   EXPECT_NO_FATAL_FAILURE(
-      AddUserSpecifiedSite(profile(), kExample, /*restricted=*/true));
+      AddUserSpecifiedSites(profile(), kExampleArg, /*restricted=*/true));
   EXPECT_TRUE(
       WasUserSiteSettingsChangedEventDispatched(test_observer, &settings));
   EXPECT_TRUE(settings.permitted_sites.empty());
@@ -1965,7 +1974,7 @@ TEST_F(DeveloperPrivateApiUnitTest, OnUserSiteSettingsChanged) {
 
   // Remove the site, and check the event that both lists are empty.
   EXPECT_NO_FATAL_FAILURE(
-      RemoveUserSpecifiedSite(profile(), kExample, /*restricted=*/true));
+      RemoveUserSpecifiedSites(profile(), kExampleArg, /*restricted=*/true));
   EXPECT_TRUE(
       WasUserSiteSettingsChangedEventDispatched(test_observer, &settings));
   EXPECT_TRUE(settings.permitted_sites.empty());

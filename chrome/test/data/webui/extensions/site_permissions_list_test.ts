@@ -7,7 +7,7 @@ import 'chrome://extensions/extensions.js';
 
 import {ExtensionsSitePermissionsListElement} from 'chrome://extensions/extensions.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {isVisible} from 'chrome://webui-test/test_util.js';
 
 import {TestService} from './test_service.js';
@@ -60,10 +60,10 @@ suite('SitePermissionsList', function() {
     assertTrue(!!remove);
 
     remove.click();
-    const [siteSet, host] =
-        await delegate.whenCalled('removeUserSpecifiedSite');
+    const [siteSet, hosts] =
+        await delegate.whenCalled('removeUserSpecifiedSites');
     assertEquals(chrome.developerPrivate.UserSiteSet.RESTRICTED, siteSet);
-    assertEquals('http://www.example.com', host);
+    assertDeepEquals(['http://www.example.com'], hosts);
     assertFalse(actionMenu.open);
   });
 

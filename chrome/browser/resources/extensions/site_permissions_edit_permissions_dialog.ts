@@ -84,7 +84,7 @@ export class SitePermissionsEditPermissionsDialogElement extends
       return;
     }
 
-    this.delegate.addUserSpecifiedSite(this.siteSet_, this.site).then(() => {
+    this.delegate.addUserSpecifiedSites(this.siteSet_, [this.site]).then(() => {
       this.$.dialog.close();
     });
   }

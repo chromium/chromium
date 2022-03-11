@@ -366,8 +366,8 @@ namespace developerPrivate {
     // Specifies which set of user specified sites that the host will be added
     // to or removed from.
     UserSiteSet siteList;
-    // The site to add/remove.
-    DOMString host;
+    // The sites to add/remove.
+    DOMString[] hosts;
   };
 
   dictionary UserSiteSettings {
@@ -734,16 +734,16 @@ namespace developerPrivate {
     [supportsPromises] static void getUserSiteSettings(
         optional UserSiteSettingsCallback callback);
 
-    // Adds a host to the set of user permitted or restricted sites. If the host
-    // in the other set than what's specified in `options`, then it is removed
-    // from that set.
-    [supportsPromises] static void addUserSpecifiedSite(
+    // Adds hosts to the set of user permitted or restricted sites. If any hosts
+    // are in the other set than what's specified in `options`, then they are
+    // removed from that set.
+    [supportsPromises] static void addUserSpecifiedSites(
         UserSiteSettingsOptions options,
         optional VoidCallback callback);
 
-    // Removes a host from the specified set of user permitted or restricted
+    // Removes hosts from the specified set of user permitted or restricted
     // sites.
-    [supportsPromises] static void removeUserSpecifiedSite(
+    [supportsPromises] static void removeUserSpecifiedSites(
         UserSiteSettingsOptions options,
         optional VoidCallback callback);
 

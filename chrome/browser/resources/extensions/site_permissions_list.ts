@@ -138,7 +138,7 @@ export class ExtensionsSitePermissionsListElement extends PolymerElement {
 
   private onRemoveSiteClick_() {
     assert(this.siteToEdit_, 'Site To Edit');
-    this.delegate.removeUserSpecifiedSite(this.siteSet, this.siteToEdit_)
+    this.delegate.removeUserSpecifiedSites(this.siteSet, [this.siteToEdit_])
         .then(() => {
           this.closeActionMenu_();
           this.siteToEdit_ = null;

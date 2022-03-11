@@ -146,7 +146,7 @@ export class SitePermissionsEditUrlDialogElement extends PolymerElement {
       return;
     }
 
-    this.delegate.removeUserSpecifiedSite(this.siteSet, this.siteToEdit)
+    this.delegate.removeUserSpecifiedSites(this.siteSet, [this.siteToEdit])
         .then(() => {
           this.addUserSpecifiedSite_(pattern);
         });
@@ -158,7 +158,7 @@ export class SitePermissionsEditUrlDialogElement extends PolymerElement {
   }
 
   private addUserSpecifiedSite_(pattern: string) {
-    this.delegate.addUserSpecifiedSite(this.siteSet, pattern)
+    this.delegate.addUserSpecifiedSites(this.siteSet, [pattern])
         .then(
             () => {
               this.$.dialog.close();
