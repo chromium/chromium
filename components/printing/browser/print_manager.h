@@ -50,6 +50,8 @@ class PrintManager : public content::WebContentsObserver,
   void ShowInvalidPrinterSettingsError() override;
   void PrintingFailed(int32_t cookie) override;
 
+  void ClearPrintRenderFramesForTesting();
+
  protected:
   explicit PrintManager(content::WebContents* contents);
 

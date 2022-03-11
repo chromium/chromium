@@ -485,8 +485,8 @@ void PrintViewManagerBase::ScriptedPrintReply(
 
 void PrintViewManagerBase::UpdatePrintingEnabled() {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  // The Unretained() is safe because ForEachFrame() is synchronous.
-  web_contents()->ForEachFrame(base::BindRepeating(
+  // The Unretained() is safe because ForEachRenderFrameHost() is synchronous.
+  web_contents()->GetMainFrame()->ForEachRenderFrameHost(base::BindRepeating(
       &PrintViewManagerBase::SendPrintingEnabled, base::Unretained(this),
       printing_enabled_.GetValue()));
 }
@@ -1038,8 +1038,10 @@ void PrintViewManagerBase::ReleasePrinterQuery() {
 
 void PrintViewManagerBase::SendPrintingEnabled(bool enabled,
                                                content::RenderFrameHost* rfh) {
-  if (rfh->IsRenderFrameLive())
+  if (rfh->IsRenderFrameLive() &&
+      !rfh->GetMainFrame()->GetParentOrOuterDocument()) {
     GetPrintRenderFrame(rfh)->SetPrintingEnabled(enabled);
+  }
 }
 
 }  // namespace printing

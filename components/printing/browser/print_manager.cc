@@ -55,6 +55,10 @@ void PrintManager::PrintingFailed(int32_t cookie) {
 #endif
 }
 
+void PrintManager::ClearPrintRenderFramesForTesting() {
+  print_render_frames_.clear();
+}
+
 bool PrintManager::IsPrintRenderFrameConnected(
     content::RenderFrameHost* rfh) const {
   auto it = print_render_frames_.find(rfh);
