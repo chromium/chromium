@@ -5,6 +5,7 @@
 #include "content/browser/attribution_reporting/attribution_data_host_manager_impl.h"
 
 #include <utility>
+#include <vector>
 
 #include "base/bind.h"
 #include "base/check.h"
@@ -14,12 +15,14 @@
 #include "content/browser/attribution_reporting/attribution_host_utils.h"
 #include "content/browser/attribution_reporting/attribution_manager.h"
 #include "content/browser/attribution_reporting/attribution_reporting.pb.h"
+#include "content/browser/attribution_reporting/attribution_trigger.h"
 #include "content/browser/attribution_reporting/common_source_info.h"
 #include "content/browser/attribution_reporting/storable_source.h"
 #include "content/browser/storage_partition_impl.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/content_browser_client.h"
 #include "content/public/common/content_client.h"
+#include "net/base/schemeful_site.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/attribution_reporting/constants.h"
 #include "url/origin.h"
@@ -75,9 +78,12 @@ void AttributionDataHostManagerImpl::SourceDataAvailable(
     blink::mojom::AttributionSourceDataPtr data) {
   // TODO(linnan): Log metrics for early returns.
 
-  auto result = receiver_source_destinations_.emplace(
-      receivers_.current_receiver(), data->destination);
-  if (!result.second && data->destination != result.first->second)
+  if (data->destination.opaque())
+    return;
+
+  auto [it, inserted] =
+      receiver_data_.emplace(receivers_.current_receiver(), data->destination);
+  if (!inserted && data->destination != it->second)
     return;
 
   const FrozenContext& context = receivers_.current_context();
@@ -130,11 +136,78 @@ void AttributionDataHostManagerImpl::SourceDataAvailable(
 
 void AttributionDataHostManagerImpl::TriggerDataAvailable(
     blink::mojom::AttributionTriggerDataPtr data) {
-  // TODO(johnidel): Add browser process handling for attributionsrc triggers.
+  // TODO(linnan): Log metrics for early returns.
+
+  auto [it, inserted] =
+      receiver_data_.emplace(receivers_.current_receiver(), url::Origin());
+  if (!it->second.opaque())
+    return;
+
+  const FrozenContext& context = receivers_.current_context();
+  const url::Origin& reporting_origin = data->reporting_origin;
+
+  const bool allowed =
+      GetContentClient()->browser()->IsConversionMeasurementOperationAllowed(
+          browser_context_,
+          ContentBrowserClient::ConversionMeasurementOperation::kConversion,
+          /*impression_origin=*/nullptr,
+          /*conversion_origin=*/&context.context_origin, &reporting_origin);
+  if (!allowed)
+    return;
+
+  // The API is only allowed in secure contexts.
+  if (!attribution_host_utils::IsOriginTrustworthyForAttributions(
+          context.context_origin) ||
+      !attribution_host_utils::IsOriginTrustworthyForAttributions(
+          reporting_origin)) {
+    return;
+  }
+
+  absl::optional<AttributionFilterData> filters =
+      AttributionFilterData::FromTriggerFilterValues(
+          std::move(data->filters->filter_values));
+  if (!filters.has_value())
+    return;
+
+  if (data->event_triggers.size() > blink::kMaxAttributionEventTriggerData)
+    return;
+
+  std::vector<AttributionTrigger::EventTriggerData> event_triggers;
+  event_triggers.reserve(data->event_triggers.size());
+
+  for (const auto& event_trigger : data->event_triggers) {
+    absl::optional<AttributionFilterData> filters =
+        AttributionFilterData::FromTriggerFilterValues(
+            std::move(event_trigger->filters->filter_values));
+    if (!filters.has_value())
+      return;
+
+    absl::optional<AttributionFilterData> not_filters =
+        AttributionFilterData::FromTriggerFilterValues(
+            std::move(event_trigger->not_filters->filter_values));
+    if (!not_filters.has_value())
+      return;
+
+    event_triggers.emplace_back(
+        event_trigger->data, event_trigger->priority,
+        event_trigger->dedup_key
+            ? absl::make_optional(event_trigger->dedup_key->value)
+            : absl::nullopt,
+        std::move(*filters), std::move(*not_filters));
+  }
+
+  AttributionTrigger trigger(
+      /*conversion_destination=*/net::SchemefulSite(context.context_origin),
+      reporting_origin, std::move(*filters),
+      data->debug_key ? absl::make_optional(data->debug_key->value)
+                      : absl::nullopt,
+      std::move(event_triggers));
+
+  attribution_manager_->HandleTrigger(std::move(trigger));
 }
 
 void AttributionDataHostManagerImpl::OnDataHostDisconnected() {
-  receiver_source_destinations_.erase(receivers_.current_receiver());
+  receiver_data_.erase(receivers_.current_receiver());
 }
 
 }  // namespace content

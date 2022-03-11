@@ -39,9 +39,12 @@ using ConversionMeasurementOperation =
 
 using ::testing::_;
 using ::testing::AllOf;
+using ::testing::ElementsAre;
+using ::testing::Eq;
 using ::testing::InSequence;
 using ::testing::IsNull;
 using ::testing::Mock;
+using ::testing::Optional;
 using ::testing::Pointee;
 using ::testing::Return;
 
@@ -370,6 +373,424 @@ TEST_F(AttributionDataHostManagerImplTest,
 
     Mock::VerifyAndClear(&mock_manager_);
   }
+}
+
+TEST_F(AttributionDataHostManagerImplTest, TriggerDataHost_TriggerRegistered) {
+  auto destination_origin =
+      url::Origin::Create(GURL("https://trigger.example"));
+  auto reporting_origin = url::Origin::Create(GURL("https://reporter.example"));
+  EXPECT_CALL(
+      mock_manager_,
+      HandleTrigger(AttributionTriggerMatches({
+          .conversion_destination = net::SchemefulSite(destination_origin),
+          .reporting_origin = reporting_origin,
+          .filters = *AttributionFilterData::FromTriggerFilterValues({
+              {"a", {"b"}},
+          }),
+          .debug_key = Optional(789),
+          .event_triggers = ElementsAre(
+              EventTriggerDataMatches({
+                  .data = 1,
+                  .priority = 2,
+                  .dedup_key = Optional(3),
+                  .filters = *AttributionFilterData::FromTriggerFilterValues({
+                      {"c", {"d"}},
+                  }),
+                  .not_filters =
+                      *AttributionFilterData::FromTriggerFilterValues({
+                          {"e", {"f"}},
+                      }),
+              }),
+              EventTriggerDataMatches({
+                  .data = 4,
+                  .priority = 5,
+                  .dedup_key = Eq(absl::nullopt),
+                  .filters = AttributionFilterData(),
+                  .not_filters = AttributionFilterData(),
+              })),
+      })));
+
+  mojo::Remote<blink::mojom::AttributionDataHost> data_host_remote;
+  data_host_manager_.RegisterDataHost(
+      data_host_remote.BindNewPipeAndPassReceiver(), destination_origin);
+
+  auto trigger_data = blink::mojom::AttributionTriggerData::New();
+  trigger_data->reporting_origin = reporting_origin;
+  trigger_data->debug_key = blink::mojom::AttributionDebugKey::New(789);
+
+  trigger_data->filters = blink::mojom::AttributionFilterData::New(
+      AttributionFilterData::FilterValues({{"a", {"b"}}}));
+
+  trigger_data->event_triggers.push_back(blink::mojom::EventTriggerData::New(
+      /*data=*/1,
+      /*priority=*/2, blink::mojom::AttributionTriggerDedupKey::New(3),
+      /*filters=*/
+      blink::mojom::AttributionFilterData::New(
+          AttributionFilterData::FilterValues({{"c", {"d"}}})),
+      /*not_filters=*/
+      blink::mojom::AttributionFilterData::New(
+          AttributionFilterData::FilterValues({{"e", {"f"}}}))));
+
+  trigger_data->event_triggers.push_back(blink::mojom::EventTriggerData::New(
+      /*data=*/4,
+      /*priority=*/5,
+      /*dedup_key=*/nullptr,
+      /*filters=*/blink::mojom::AttributionFilterData::New(),
+      /*not_filters=*/blink::mojom::AttributionFilterData::New()));
+
+  trigger_data->aggregatable_trigger =
+      blink::mojom::AttributionAggregatableTrigger::New();
+  trigger_data->aggregatable_values =
+      blink::mojom::AttributionAggregatableValues::New();
+
+  data_host_remote->TriggerDataAvailable(std::move(trigger_data));
+  data_host_remote.FlushForTesting();
+}
+
+TEST_F(AttributionDataHostManagerImplTest,
+       TriggerDataHost_OriginTrustworthyChecksPerformed) {
+  const char kLocalHost[] = "http://localhost";
+
+  struct {
+    const char* destination_origin;
+    const char* reporting_origin;
+    bool trigger_expected;
+  } kTestCases[] = {
+      {.destination_origin = kLocalHost,
+       .reporting_origin = kLocalHost,
+       .trigger_expected = true},
+      {.destination_origin = "http://127.0.0.1",
+       .reporting_origin = "http://127.0.0.1",
+       .trigger_expected = true},
+      {.destination_origin = kLocalHost,
+       .reporting_origin = "http://insecure.com",
+       .trigger_expected = false},
+      {.destination_origin = "http://insecure.com",
+       .reporting_origin = kLocalHost,
+       .trigger_expected = false},
+      {.destination_origin = "https://secure.com",
+       .reporting_origin = "https://secure.com",
+       .trigger_expected = true},
+  };
+
+  for (const auto& test_case : kTestCases) {
+    EXPECT_CALL(mock_manager_, HandleTrigger).Times(test_case.trigger_expected);
+
+    mojo::Remote<blink::mojom::AttributionDataHost> data_host_remote;
+    data_host_manager_.RegisterDataHost(
+        data_host_remote.BindNewPipeAndPassReceiver(),
+        url::Origin::Create(GURL(test_case.destination_origin)));
+
+    auto trigger_data = blink::mojom::AttributionTriggerData::New();
+    trigger_data->reporting_origin =
+        url::Origin::Create(GURL(test_case.reporting_origin));
+
+    trigger_data->filters = blink::mojom::AttributionFilterData::New();
+    trigger_data->aggregatable_trigger =
+        blink::mojom::AttributionAggregatableTrigger::New();
+    trigger_data->aggregatable_values =
+        blink::mojom::AttributionAggregatableValues::New();
+
+    data_host_remote->TriggerDataAvailable(std::move(trigger_data));
+    data_host_remote.FlushForTesting();
+
+    Mock::VerifyAndClear(&mock_manager_);
+  }
+}
+
+TEST_F(AttributionDataHostManagerImplTest,
+       TriggerDataHost_TopLevelFilterSizeCheckPerformed) {
+  for (const auto& test_case : kAttributionFilterSizeTestCases) {
+    SCOPED_TRACE(test_case.description);  // EXPECT_CALL doesn't support <<
+    EXPECT_CALL(mock_manager_, HandleTrigger).Times(test_case.valid);
+
+    mojo::Remote<blink::mojom::AttributionDataHost> data_host_remote;
+    data_host_manager_.RegisterDataHost(
+        data_host_remote.BindNewPipeAndPassReceiver(),
+        url::Origin::Create(GURL("https://trigger.example")));
+
+    auto trigger_data = blink::mojom::AttributionTriggerData::New();
+    trigger_data->reporting_origin =
+        url::Origin::Create(GURL("https://reporter.example"));
+
+    trigger_data->filters =
+        blink::mojom::AttributionFilterData::New(test_case.AsMap());
+
+    trigger_data->aggregatable_trigger =
+        blink::mojom::AttributionAggregatableTrigger::New();
+    trigger_data->aggregatable_values =
+        blink::mojom::AttributionAggregatableValues::New();
+
+    data_host_remote->TriggerDataAvailable(std::move(trigger_data));
+    data_host_remote.FlushForTesting();
+
+    Mock::VerifyAndClear(&mock_manager_);
+  }
+}
+
+TEST_F(AttributionDataHostManagerImplTest,
+       TriggerDataHost_EventTriggerDataFilterSizeCheckPerformed) {
+  for (const auto& test_case : kAttributionFilterSizeTestCases) {
+    SCOPED_TRACE(test_case.description);  // EXPECT_CALL doesn't support <<
+    EXPECT_CALL(mock_manager_, HandleTrigger).Times(test_case.valid);
+
+    mojo::Remote<blink::mojom::AttributionDataHost> data_host_remote;
+    data_host_manager_.RegisterDataHost(
+        data_host_remote.BindNewPipeAndPassReceiver(),
+        url::Origin::Create(GURL("https://trigger.example")));
+
+    auto trigger_data = blink::mojom::AttributionTriggerData::New();
+    trigger_data->reporting_origin =
+        url::Origin::Create(GURL("https://reporter.example"));
+
+    trigger_data->filters = blink::mojom::AttributionFilterData::New();
+
+    trigger_data->aggregatable_trigger =
+        blink::mojom::AttributionAggregatableTrigger::New();
+    trigger_data->aggregatable_values =
+        blink::mojom::AttributionAggregatableValues::New();
+
+    trigger_data->event_triggers.push_back(blink::mojom::EventTriggerData::New(
+        /*data=*/0,
+        /*priority=*/0,
+        /*dedup_key=*/nullptr,
+        /*filters=*/blink::mojom::AttributionFilterData::New(test_case.AsMap()),
+        /*not_filters=*/blink::mojom::AttributionFilterData::New()));
+
+    data_host_remote->TriggerDataAvailable(std::move(trigger_data));
+    data_host_remote.FlushForTesting();
+
+    Mock::VerifyAndClear(&mock_manager_);
+  }
+}
+
+TEST_F(AttributionDataHostManagerImplTest,
+       TriggerDataHost_EventTriggerDataNotFilterSizeCheckPerformed) {
+  for (const auto& test_case : kAttributionFilterSizeTestCases) {
+    SCOPED_TRACE(test_case.description);  // EXPECT_CALL doesn't support <<
+    EXPECT_CALL(mock_manager_, HandleTrigger).Times(test_case.valid);
+
+    mojo::Remote<blink::mojom::AttributionDataHost> data_host_remote;
+    data_host_manager_.RegisterDataHost(
+        data_host_remote.BindNewPipeAndPassReceiver(),
+        url::Origin::Create(GURL("https://trigger.example")));
+
+    auto trigger_data = blink::mojom::AttributionTriggerData::New();
+    trigger_data->reporting_origin =
+        url::Origin::Create(GURL("https://reporter.example"));
+
+    trigger_data->filters = blink::mojom::AttributionFilterData::New();
+
+    trigger_data->aggregatable_trigger =
+        blink::mojom::AttributionAggregatableTrigger::New();
+    trigger_data->aggregatable_values =
+        blink::mojom::AttributionAggregatableValues::New();
+
+    trigger_data->event_triggers.push_back(blink::mojom::EventTriggerData::New(
+        /*data=*/0,
+        /*priority=*/0,
+        /*dedup_key=*/nullptr,
+        /*filters=*/blink::mojom::AttributionFilterData::New(),
+        /*not_filters=*/
+        blink::mojom::AttributionFilterData::New(test_case.AsMap())));
+
+    data_host_remote->TriggerDataAvailable(std::move(trigger_data));
+    data_host_remote.FlushForTesting();
+
+    Mock::VerifyAndClear(&mock_manager_);
+  }
+}
+
+TEST_F(AttributionDataHostManagerImplTest,
+       TriggerDataHostEmbedderDisallow_TriggerDropped) {
+  EXPECT_CALL(mock_manager_, HandleTrigger).Times(0);
+
+  auto destination_origin =
+      url::Origin::Create(GURL("https://trigger.example"));
+  auto reporting_origin = url::Origin::Create(GURL("https://reporter.example"));
+
+  MockAttributionReportingContentBrowserClient browser_client;
+  EXPECT_CALL(browser_client,
+              IsConversionMeasurementOperationAllowed(
+                  _, ConversionMeasurementOperation::kConversion, IsNull(),
+                  Pointee(destination_origin), Pointee(reporting_origin)))
+      .WillRepeatedly(Return(false));
+  ScopedContentBrowserClientSetting setting(&browser_client);
+  mojo::Remote<blink::mojom::AttributionDataHost> data_host_remote;
+  data_host_manager_.RegisterDataHost(
+      data_host_remote.BindNewPipeAndPassReceiver(), destination_origin);
+
+  auto trigger_data = blink::mojom::AttributionTriggerData::New();
+  trigger_data->reporting_origin = reporting_origin;
+
+  trigger_data->filters = blink::mojom::AttributionFilterData::New();
+  trigger_data->aggregatable_trigger =
+      blink::mojom::AttributionAggregatableTrigger::New();
+  trigger_data->aggregatable_values =
+      blink::mojom::AttributionAggregatableValues::New();
+
+  data_host_remote->TriggerDataAvailable(std::move(trigger_data));
+  data_host_remote.FlushForTesting();
+}
+
+TEST_F(AttributionDataHostManagerImplTest,
+       TriggerDataHost_EventTriggerDataSizeCheckPerformed) {
+  const struct {
+    size_t size;
+    bool expected;
+  } kTestCases[] = {
+      {blink::kMaxAttributionEventTriggerData, true},
+      {blink::kMaxAttributionEventTriggerData + 1, false},
+  };
+
+  for (const auto& test_case : kTestCases) {
+    EXPECT_CALL(mock_manager_, HandleTrigger).Times(test_case.expected);
+
+    mojo::Remote<blink::mojom::AttributionDataHost> data_host_remote;
+    data_host_manager_.RegisterDataHost(
+        data_host_remote.BindNewPipeAndPassReceiver(),
+        url::Origin::Create(GURL("https://trigger.example")));
+
+    auto trigger_data = blink::mojom::AttributionTriggerData::New();
+    trigger_data->reporting_origin =
+        url::Origin::Create(GURL("https://reporter.example"));
+
+    for (size_t i = 0; i < test_case.size; ++i) {
+      trigger_data->event_triggers.push_back(
+          blink::mojom::EventTriggerData::New(
+              /*data=*/0,
+              /*priority=*/0,
+              /*dedup_key=*/nullptr,
+              /*filters=*/blink::mojom::AttributionFilterData::New(),
+              /*not_filters=*/blink::mojom::AttributionFilterData::New()));
+    }
+
+    trigger_data->filters = blink::mojom::AttributionFilterData::New();
+    trigger_data->aggregatable_trigger =
+        blink::mojom::AttributionAggregatableTrigger::New();
+    trigger_data->aggregatable_values =
+        blink::mojom::AttributionAggregatableValues::New();
+
+    data_host_remote->TriggerDataAvailable(std::move(trigger_data));
+    data_host_remote.FlushForTesting();
+
+    Mock::VerifyAndClear(&mock_manager_);
+  }
+}
+
+TEST_F(AttributionDataHostManagerImplTest,
+       TriggerDataHost_ReceiverModeCheckPerformed) {
+  Checkpoint checkpoint;
+  {
+    InSequence seq;
+
+    EXPECT_CALL(mock_manager_, HandleTrigger);
+    EXPECT_CALL(checkpoint, Call(1));
+    EXPECT_CALL(mock_manager_, HandleTrigger);
+    EXPECT_CALL(checkpoint, Call(2));
+    EXPECT_CALL(mock_manager_, HandleSource).Times(0);
+    EXPECT_CALL(checkpoint, Call(3));
+    EXPECT_CALL(mock_manager_, HandleTrigger);
+  }
+
+  auto destination_origin =
+      url::Origin::Create(GURL("https://trigger.example"));
+  auto reporting_origin = url::Origin::Create(GURL("https://reporter.example"));
+
+  mojo::Remote<blink::mojom::AttributionDataHost> data_host_remote;
+  data_host_manager_.RegisterDataHost(
+      data_host_remote.BindNewPipeAndPassReceiver(), destination_origin);
+
+  auto trigger_data = blink::mojom::AttributionTriggerData::New();
+  trigger_data->reporting_origin = reporting_origin;
+  trigger_data->filters = blink::mojom::AttributionFilterData::New();
+  trigger_data->aggregatable_trigger =
+      blink::mojom::AttributionAggregatableTrigger::New();
+  trigger_data->aggregatable_values =
+      blink::mojom::AttributionAggregatableValues::New();
+
+  data_host_remote->TriggerDataAvailable(trigger_data.Clone());
+  data_host_remote.FlushForTesting();
+
+  checkpoint.Call(1);
+
+  data_host_remote->TriggerDataAvailable(trigger_data.Clone());
+  data_host_remote.FlushForTesting();
+
+  checkpoint.Call(2);
+
+  auto source_data = blink::mojom::AttributionSourceData::New();
+  source_data->destination = destination_origin;
+  source_data->reporting_origin = reporting_origin;
+  source_data->filter_data = blink::mojom::AttributionFilterData::New();
+  source_data->aggregatable_sources =
+      blink::mojom::AttributionAggregatableSources::New();
+
+  data_host_remote->SourceDataAvailable(std::move(source_data));
+  data_host_remote.FlushForTesting();
+
+  checkpoint.Call(3);
+
+  data_host_remote->TriggerDataAvailable(std::move(trigger_data));
+  data_host_remote.FlushForTesting();
+}
+
+TEST_F(AttributionDataHostManagerImplTest,
+       SourceDataHost_ReceiverModeCheckPerformed) {
+  Checkpoint checkpoint;
+  {
+    InSequence seq;
+
+    EXPECT_CALL(mock_manager_, HandleSource);
+    EXPECT_CALL(checkpoint, Call(1));
+    EXPECT_CALL(mock_manager_, HandleSource);
+    EXPECT_CALL(checkpoint, Call(2));
+    EXPECT_CALL(mock_manager_, HandleTrigger).Times(0);
+    EXPECT_CALL(checkpoint, Call(3));
+    EXPECT_CALL(mock_manager_, HandleSource);
+  }
+
+  auto page_origin = url::Origin::Create(GURL("https://page.example"));
+  auto destination_origin =
+      url::Origin::Create(GURL("https://trigger.example"));
+  auto reporting_origin = url::Origin::Create(GURL("https://reporter.example"));
+
+  mojo::Remote<blink::mojom::AttributionDataHost> data_host_remote;
+  data_host_manager_.RegisterDataHost(
+      data_host_remote.BindNewPipeAndPassReceiver(), page_origin);
+
+  auto source_data = blink::mojom::AttributionSourceData::New();
+  source_data->destination = destination_origin;
+  source_data->reporting_origin = reporting_origin;
+  source_data->filter_data = blink::mojom::AttributionFilterData::New();
+  source_data->aggregatable_sources =
+      blink::mojom::AttributionAggregatableSources::New();
+
+  data_host_remote->SourceDataAvailable(source_data.Clone());
+  data_host_remote.FlushForTesting();
+
+  checkpoint.Call(1);
+
+  data_host_remote->SourceDataAvailable(source_data.Clone());
+  data_host_remote.FlushForTesting();
+
+  checkpoint.Call(2);
+
+  auto trigger_data = blink::mojom::AttributionTriggerData::New();
+  trigger_data->reporting_origin = reporting_origin;
+  trigger_data->filters = blink::mojom::AttributionFilterData::New();
+  trigger_data->aggregatable_trigger =
+      blink::mojom::AttributionAggregatableTrigger::New();
+  trigger_data->aggregatable_values =
+      blink::mojom::AttributionAggregatableValues::New();
+
+  data_host_remote->TriggerDataAvailable(std::move(trigger_data));
+  data_host_remote.FlushForTesting();
+
+  checkpoint.Call(3);
+
+  data_host_remote->SourceDataAvailable(std::move(source_data));
+  data_host_remote.FlushForTesting();
 }
 
 }  // namespace content

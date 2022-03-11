@@ -80,6 +80,7 @@ struct ExpectedReportWaiter {
   GURL expected_url;
   base::Value expected_body;
   std::string source_debug_key;
+  std::string trigger_debug_key;
   std::unique_ptr<net::test_server::ControllableHttpResponse> response;
 
   bool HasRequest() { return !!response->http_request(); }
@@ -115,6 +116,12 @@ struct ExpectedReportWaiter {
       EXPECT_FALSE(body.FindStringKey("source_debug_key"));
     } else {
       base::ExpectDictStringValue(source_debug_key, body, "source_debug_key");
+    }
+
+    if (trigger_debug_key.empty()) {
+      EXPECT_FALSE(body.FindStringKey("trigger_debug_key"));
+    } else {
+      base::ExpectDictStringValue(trigger_debug_key, body, "trigger_debug_key");
     }
 
     // Clear the port as it is assigned by the EmbeddedTestServer at runtime.
@@ -719,6 +726,53 @@ IN_PROC_BROWSER_TEST_F(AttributionsBrowserTest,
                                        origin: $1,
                                        eventSourceTriggerData: 123});)",
                                        url::Origin::Create(impression_url))));
+
+  expected_report.WaitForReport();
+}
+
+IN_PROC_BROWSER_TEST_F(AttributionsBrowserTest,
+                       AttributionSrcSourceAndTrigger_ReportSent) {
+  // Expected reports must be registered before the server starts.
+  ExpectedReportWaiter expected_report(
+      GURL("https://a.test/.well-known/attribution-reporting/"
+           "report-event-attribution"),
+      /*attribution_destination=*/"https://d.test",
+      /*source_event_id=*/"5", /*source_type=*/"event", /*trigger_data=*/"1",
+      https_server());
+  expected_report.trigger_debug_key = "789";
+  ASSERT_TRUE(https_server()->Start());
+
+  EXPECT_TRUE(NavigateToURL(
+      web_contents(),
+      https_server()->GetURL(
+          "a.test", "/set-cookie?ar_debug=1;HttpOnly;Secure;SameSite=None")));
+
+  EXPECT_TRUE(NavigateToURL(
+      web_contents(),
+      https_server()->GetURL(
+          "b.test",
+          "/attribution_reporting/page_with_impression_creator.html")));
+
+  EXPECT_TRUE(ExecJs(
+      web_contents(),
+      JsReplace("createAttributionSrcImg($1);",
+                https_server()->GetURL(
+                    "a.test",
+                    "/attribution_reporting/register_source_headers.html"))));
+
+  EXPECT_TRUE(NavigateToURL(
+      web_contents(),
+      https_server()->GetURL(
+          "d.test",
+          "/attribution_reporting/page_with_impression_creator.html")));
+
+  EXPECT_TRUE(ExecJs(
+      web_contents(),
+      JsReplace(
+          "createAttributionSrcImg($1);",
+          https_server()->GetURL("a.test",
+                                 "/attribution_reporting/"
+                                 "register_trigger_headers_all_params.html"))));
 
   expected_report.WaitForReport();
 }

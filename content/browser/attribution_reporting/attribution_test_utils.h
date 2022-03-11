@@ -776,6 +776,36 @@ MATCHER_P(NewReportsAre, matcher, "") {
   return ExplainMatchResult(matcher, arg.new_reports(), result_listener);
 }
 
+struct EventTriggerDataMatcherConfig {
+  ::testing::Matcher<uint64_t> data = ::testing::_;
+  ::testing::Matcher<int64_t> priority = ::testing::_;
+  ::testing::Matcher<absl::optional<uint64_t>> dedup_key = ::testing::_;
+  ::testing::Matcher<const AttributionFilterData&> filters = ::testing::_;
+  ::testing::Matcher<const AttributionFilterData&> not_filters = ::testing::_;
+
+  EventTriggerDataMatcherConfig() = delete;
+  ~EventTriggerDataMatcherConfig();
+};
+
+::testing::Matcher<const AttributionTrigger::EventTriggerData&>
+EventTriggerDataMatches(const EventTriggerDataMatcherConfig&);
+
+struct AttributionTriggerMatcherConfig {
+  ::testing::Matcher<const net::SchemefulSite&> conversion_destination =
+      ::testing::_;
+  ::testing::Matcher<const url::Origin&> reporting_origin = ::testing::_;
+  ::testing::Matcher<const AttributionFilterData&> filters = ::testing::_;
+  ::testing::Matcher<absl::optional<uint64_t>> debug_key = ::testing::_;
+  ::testing::Matcher<const std::vector<AttributionTrigger::EventTriggerData>&>
+      event_triggers = ::testing::_;
+
+  AttributionTriggerMatcherConfig() = delete;
+  ~AttributionTriggerMatcherConfig();
+};
+
+::testing::Matcher<AttributionTrigger> AttributionTriggerMatches(
+    const AttributionTriggerMatcherConfig&);
+
 struct AttributionFilterSizeTestCase {
   const char* description;
   bool valid;

@@ -78,11 +78,13 @@ class CONTENT_EXPORT AttributionDataHostManagerImpl
   mojo::ReceiverSet<blink::mojom::AttributionDataHost, FrozenContext>
       receivers_;
 
-  // Map which stores the attribution destination for all receivers, keyed by
-  // receiver ID.
-  // The attribution destination is required to match between calls to
-  // `SourceDataAvailable()` within a single `AttributionDataHost`.
-  base::flat_map<mojo::ReceiverId, url::Origin> receiver_source_destinations_;
+  // If the receiver is processing sources, stores
+  // the attribution destination, which is required to be non-opaque and to
+  // match between calls to `SourceDataAvailable()` within a single
+  // `AttributionDataHost`.
+  //
+  // If the receiver is processing triggers, stores an opaque origin.
+  base::flat_map<mojo::ReceiverId, url::Origin> receiver_data_;
 };
 
 }  // namespace content
