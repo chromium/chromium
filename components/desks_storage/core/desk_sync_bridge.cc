@@ -157,6 +157,13 @@ std::unique_ptr<app_restore::AppLaunchInfo> ConvertToAppLaunchInfo(
   if (app.has_display_id())
     app_launch_info->display_id = app.display_id();
 
+  // This is a short-term fix as |event_flag| is required to launch ArcApp.
+  // Currently we don't support persisting user action in template
+  // so always default to 0 which is no action.
+  // https://source.chromium.org/chromium/chromium/src/
+  // +/main:ui/base/window_open_disposition.cc;l=34
+  app_launch_info->event_flag = 0;
+
   switch (app.app().app_case()) {
     case sync_pb::WorkspaceDeskSpecifics_AppOneOf::AppCase::APP_NOT_SET:
       // This should never happen. |APP_NOT_SET| corresponds to empty |app_id|.

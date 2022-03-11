@@ -826,6 +826,31 @@ TEST_F(DeskSyncBridgeTest, GetEntryByUUIDShouldSucceed) {
   loop.Run();
 }
 
+// Verify that event_flag placeholder has been set. This is a short-term
+// fix for https://crbug.com/1301798
+TEST_F(DeskSyncBridgeTest, GetEntryByUUIDShouldFillEventFlag) {
+  InitializeBridge();
+
+  AddTwoTemplates();
+
+  base::RunLoop loop;
+  bridge()->GetEntryByUUID(
+      kTestUuid1.AsLowercaseString(),
+      base::BindLambdaForTesting([&](DeskModel::GetEntryByUuidStatus status,
+                                     std::unique_ptr<ash::DeskTemplate> entry) {
+        EXPECT_EQ(status, DeskModel::GetEntryByUuidStatus::kOk);
+        EXPECT_TRUE(entry);
+        for (const auto& [app_id, launch_list] :
+             entry->desk_restore_data()->app_id_to_launch_list()) {
+          for (const auto& [id, restore_data] : launch_list) {
+            EXPECT_EQ(restore_data->event_flag, 0);
+          }
+        }
+        loop.Quit();
+      }));
+  loop.Run();
+}
+
 TEST_F(DeskSyncBridgeTest, GetEntryByUUIDShouldReturnAdminTemplate) {
   InitializeBridge();
 
