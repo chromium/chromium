@@ -20,7 +20,9 @@
     flex-direction: row;
   }
 </style>
-<ntp-module-header icon-src="modules/recipes_v2/icons/recipes_logo.svg">
+<ntp-module-header
+    icon-src="modules/recipes_v2/icons/recipes_logo.svg"
+    show-info-button on-info-button-click="onInfoButtonClick_">
   $i18n{modulesRecipeTasksSentence}
 </ntp-module-header>
 <div id="moduleContent">
@@ -40,3 +42,9 @@
     </template>
   </div>
 </div>
+<cr-lazy-render id="infoDialogRender">
+  <template>
+    <ntp-info-dialog inner-h-t-m-l="[[i18nAdvanced('modulesRecipeInfo')]]">
+    </ntp-info-dialog>
+  </template>
+</cr-lazy-render>

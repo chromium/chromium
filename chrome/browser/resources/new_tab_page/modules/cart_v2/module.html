@@ -285,6 +285,7 @@
                                     'modulesDisableButtonText',
                                     'modulesCartLower')]]"
       on-disable-button-click="onDisableButtonClick_"
+      show-info-button on-info-button-click="onInfoButtonClick_"
       icon-src="modules/cart/icons/cart_logo.svg">
     $i18n{modulesCartSentenceV2}
   </ntp-module-header>
@@ -390,6 +391,12 @@
     </cr-icon-button>
   </div>
 </div>
+<cr-lazy-render id="infoDialogRender">
+  <template>
+    <ntp-info-dialog inner-h-t-m-l="[[i18nAdvanced('modulesCartInfo')]]">
+    </ntp-info-dialog>
+  </template>
+</cr-lazy-render>
 <cr-toast id="dismissCartToast" duration="10000">
   <div id="dismissCartToastMessage">
     [[dismissedCartData_.message]]

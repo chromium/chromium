@@ -12,12 +12,14 @@ import 'chrome://resources/cr_elements/cr_toast/cr_toast.js';
 
 import {CrActionMenuElement} from 'chrome://resources/cr_elements/cr_action_menu/cr_action_menu.js';
 import {CrIconButtonElement} from 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.m.js';
+import {CrLazyRenderElement} from 'chrome://resources/cr_elements/cr_lazy_render/cr_lazy_render.m.js';
 import {CrToastElement} from 'chrome://resources/cr_elements/cr_toast/cr_toast.js';
 import {DomIf, DomRepeat, DomRepeatEvent, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {MerchantCart} from '../../chrome_cart.mojom-webui.js';
 import {I18nMixin, loadTimeData} from '../../i18n_setup.js';
 import {ChromeCartProxy} from '../cart/chrome_cart_proxy.js';
+import {InfoDialogElement} from '../info_dialog.js';
 import {ModuleDescriptorV2, ModuleHeight} from '../module_descriptor.js';
 
 import {getTemplate} from './module.html.js';
@@ -34,6 +36,7 @@ export interface ChromeCartModuleElement {
     dismissCartToast: CrToastElement,
     dismissCartToastMessage: HTMLElement,
     hideCartButton: HTMLElement,
+    infoDialogRender: CrLazyRenderElement<InfoDialogElement>,
     leftScrollButton: CrIconButtonElement,
     removeCartButton: HTMLElement,
     rightScrollButton: CrIconButtonElement,
@@ -226,6 +229,10 @@ export class ChromeCartModuleElement extends I18nMixin
           'NewTabPage.Carts.DismissLastCartHidesModule');
     }
     return isModuleVisible;
+  }
+
+  private onInfoButtonClick_() {
+    this.$.infoDialogRender.get().showModal();
   }
 
   private onDisableButtonClick_() {

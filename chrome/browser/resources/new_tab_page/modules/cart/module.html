@@ -284,6 +284,7 @@
       disable-text="[[i18nRecursive('',
                                     'modulesDisableButtonText',
                                     'modulesCartLower')]]"
+      show-info-button on-info-button-click="onInfoButtonClick_"
       show-dismiss-button on-dismiss-button-click="onDismissButtonClick_"
       on-disable-button-click="onDisableButtonClick_">
     $i18n{modulesCartSentence}
@@ -392,6 +393,12 @@
     </template>
   </div>
 </div>
+<cr-lazy-render id="infoDialogRender">
+  <template>
+    <ntp-info-dialog inner-h-t-m-l="[[i18nAdvanced('modulesCartInfo')]]">
+    </ntp-info-dialog>
+  </template>
+</cr-lazy-render>
 <cr-toast id="dismissCartToast" duration="10000">
   <div id="dismissCartToastMessage">
     [[dismissedCartData_.message]]
