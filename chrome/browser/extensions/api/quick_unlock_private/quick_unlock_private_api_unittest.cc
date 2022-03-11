@@ -422,15 +422,15 @@ class QuickUnlockPrivateUnitTest
     auto params = std::make_unique<base::ListValue>();
     params->Append(token);
 
-    auto serialized_modes = std::make_unique<base::ListValue>();
+    base::Value::List serialized_modes;
     for (QuickUnlockMode mode : modes)
-      serialized_modes->Append(quick_unlock_private::ToString(mode));
-    params->Append(std::move(serialized_modes));
+      serialized_modes.Append(quick_unlock_private::ToString(mode));
+    params->Append(base::Value(std::move(serialized_modes)));
 
-    auto serialized_passwords = std::make_unique<base::ListValue>();
+    base::Value::List serialized_passwords;
     for (const std::string& password : passwords)
-      serialized_passwords->Append(password);
-    params->Append(std::move(serialized_passwords));
+      serialized_passwords.Append(password);
+    params->Append(base::Value(std::move(serialized_passwords)));
 
     return params;
   }
