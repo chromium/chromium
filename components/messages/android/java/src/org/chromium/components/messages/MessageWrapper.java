@@ -167,11 +167,9 @@ public final class MessageWrapper {
         return ((BitmapDrawable) drawable).getBitmap();
     }
 
-    private @PrimaryActionClickBehavior int handleActionClick() {
-        if (mNativeMessageWrapper != 0) {
-            MessageWrapperJni.get().handleActionClick(mNativeMessageWrapper);
-        }
-        return PrimaryActionClickBehavior.DISMISS_IMMEDIATELY;
+    private void handleActionClick() {
+        if (mNativeMessageWrapper == 0) return;
+        MessageWrapperJni.get().handleActionClick(mNativeMessageWrapper);
     }
 
     private void handleSecondaryActionClick() {

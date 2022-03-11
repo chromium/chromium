@@ -26,7 +26,6 @@ import org.chromium.components.messages.MessageBannerProperties;
 import org.chromium.components.messages.MessageDispatcher;
 import org.chromium.components.messages.MessageDispatcherProvider;
 import org.chromium.components.messages.MessageIdentifier;
-import org.chromium.components.messages.PrimaryActionClickBehavior;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.modelutil.PropertyModel;
 
@@ -118,10 +117,9 @@ public class SyncErrorMessage implements SyncStateChangedListener, UnownedUserDa
         }
     }
 
-    private @PrimaryActionClickBehavior int onAccepted() {
+    private void onAccepted() {
         SyncErrorPromptUtils.onUserAccepted(mType);
         recordHistogram(SyncErrorPromptAction.BUTTON_CLICKED);
-        return PrimaryActionClickBehavior.DISMISS_IMMEDIATELY;
     }
 
     private void onDismissed(@DismissReason int reason) {

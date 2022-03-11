@@ -124,7 +124,7 @@ public class InstantAppsMessageDelegateTest {
         mDelegate.showMessage();
         PropertyModel message = mDelegate.getMessageForTesting();
 
-        message.get(MessageBannerProperties.ON_PRIMARY_ACTION).get();
+        message.get(MessageBannerProperties.ON_PRIMARY_ACTION).run();
         Mockito.verify(mNativeMock).onPrimaryAction(mData.isInstantAppDefault());
     }
 

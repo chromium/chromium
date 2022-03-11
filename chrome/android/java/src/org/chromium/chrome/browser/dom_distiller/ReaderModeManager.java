@@ -51,7 +51,6 @@ import org.chromium.components.messages.MessageDispatcher;
 import org.chromium.components.messages.MessageDispatcherProvider;
 import org.chromium.components.messages.MessageIdentifier;
 import org.chromium.components.messages.MessageScopeType;
-import org.chromium.components.messages.PrimaryActionClickBehavior;
 import org.chromium.components.navigation_interception.InterceptNavigationDelegate;
 import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.content_public.browser.LoadCommittedDetails;
@@ -556,23 +555,20 @@ public class ReaderModeManager extends EmptyTabObserver implements UserData {
         // Save url for #onMessageDismissed. mDistillerUrl may have been changed and became
         // different from the url when message is enqueued.
         GURL url = mDistillerUrl;
-        mMessageModel = new PropertyModel.Builder(MessageBannerProperties.ALL_KEYS)
-                                .with(MessageBannerProperties.MESSAGE_IDENTIFIER,
-                                        MessageIdentifier.READER_MODE)
-                                .with(MessageBannerProperties.TITLE,
-                                        resources.getString(R.string.reader_mode_message_title))
-                                .with(MessageBannerProperties.ICON_RESOURCE_ID,
-                                        R.drawable.infobar_mobile_friendly)
-                                .with(MessageBannerProperties.PRIMARY_BUTTON_TEXT,
-                                        resources.getString(R.string.reader_mode_message_button))
-                                .with(MessageBannerProperties.ON_PRIMARY_ACTION,
-                                        () -> {
-                                            activateReaderMode();
-                                            return PrimaryActionClickBehavior.DISMISS_IMMEDIATELY;
-                                        })
-                                .with(MessageBannerProperties.ON_DISMISSED,
-                                        (reason) -> onMessageDismissed(url, reason))
-                                .build();
+        mMessageModel =
+                new PropertyModel.Builder(MessageBannerProperties.ALL_KEYS)
+                        .with(MessageBannerProperties.MESSAGE_IDENTIFIER,
+                                MessageIdentifier.READER_MODE)
+                        .with(MessageBannerProperties.TITLE,
+                                resources.getString(R.string.reader_mode_message_title))
+                        .with(MessageBannerProperties.ICON_RESOURCE_ID,
+                                R.drawable.infobar_mobile_friendly)
+                        .with(MessageBannerProperties.PRIMARY_BUTTON_TEXT,
+                                resources.getString(R.string.reader_mode_message_button))
+                        .with(MessageBannerProperties.ON_PRIMARY_ACTION, this::activateReaderMode)
+                        .with(MessageBannerProperties.ON_DISMISSED,
+                                (reason) -> onMessageDismissed(url, reason))
+                        .build();
         messageDispatcher.enqueueMessage(
                 mMessageModel, mTab.getWebContents(), MessageScopeType.NAVIGATION, false);
     }
