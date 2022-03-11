@@ -604,6 +604,8 @@ bool Animation::PreCommit(
        !IsWithinAnimationTimeEpsilon(compositor_state_->start_time.value(),
                                      start_time_.value().InSecondsF()));
 
+  bool compositor_property_animations_had_no_effect =
+      compositor_property_animations_have_no_effect_;
   compositor_property_animations_have_no_effect_ = false;
   animation_has_no_effect_ = false;
 
@@ -614,8 +616,12 @@ bool Animation::PreCommit(
   bool should_cancel = (!Playing() && compositor_state_) || changed;
   bool should_start = Playing() && (!compositor_state_ || changed);
 
-  if (start_on_compositor && should_cancel && should_start &&
-      compositor_state_ && compositor_state_->pending_action == kStart &&
+  // If the property nodes were removed for this animation we must
+  // cancel it. It may be running even though blink has not been
+  // notified yet.
+  if (!compositor_property_animations_had_no_effect && start_on_compositor &&
+      should_cancel && should_start && compositor_state_ &&
+      compositor_state_->pending_action == kStart &&
       !compositor_state_->effect_changed) {
     // Restarting but still waiting for a start time.
     return false;
@@ -2132,7 +2138,7 @@ void Animation::MarkPendingIfCompositorPropertyAnimationChanges(
             *target, *keyframe_effect->Model(), paint_artifact_compositor);
   }
   if (compositor_property_animations_have_no_effect_ != had_no_effect)
-    SetCompositorPending();
+    SetCompositorPending(/* effect_changed = */ true);
 }
 
 void Animation::StartAnimationOnCompositor(

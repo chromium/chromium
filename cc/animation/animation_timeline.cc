@@ -154,8 +154,8 @@ void AnimationTimeline::RemoveDetachedAnimationsFromImplThread(
 void AnimationTimeline::EraseAnimation(scoped_refptr<Animation> animation) {
   if (animation->element_animations())
     animation->DetachElement();
-  animation->SetAnimationTimeline(nullptr);
   animation->SetAnimationHost(nullptr);
+  animation->SetAnimationTimeline(nullptr);
 }
 
 void AnimationTimeline::PushPropertiesToImplThread(
