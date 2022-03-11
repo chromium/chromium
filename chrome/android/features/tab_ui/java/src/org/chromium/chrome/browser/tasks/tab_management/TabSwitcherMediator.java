@@ -505,6 +505,17 @@ class TabSwitcherMediator implements TabSwitcher.Controller, TabListRecyclerView
             return;
         }
 
+        // The polished version of the grid tab switcher for tablets translates up over top of the
+        // browser controls.
+        if (TabUiFeatureUtilities.isTabletGridTabSwitcherPolishEnabled(mContext)) {
+            final int toolbarHeight =
+                    mContext.getResources().getDimensionPixelSize(R.dimen.toolbar_height_no_shadow);
+
+            mContainerViewModel.set(TOP_MARGIN, toolbarHeight);
+            mContainerViewModel.set(SHADOW_TOP_OFFSET, toolbarHeight);
+            return;
+        }
+
         final int contentOffset = mBrowserControlsStateProvider.getContentOffset();
 
         mContainerViewModel.set(TOP_MARGIN, contentOffset);

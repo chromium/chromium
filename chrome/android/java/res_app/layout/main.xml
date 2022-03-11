@@ -122,12 +122,12 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content" />
 
-      <ViewStub
-          android:id="@+id/grid_tab_switcher_view_holder_stub"
-          android:layout_width="match_parent"
-          android:layout_height="match_parent"
-          android:inflatedId="@+id/grid_tab_switcher_view_holder"
-          android:layout="@layout/grid_tab_switcher_view_holder" />
+        <ViewStub
+            android:id="@+id/grid_tab_switcher_view_holder_stub"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:inflatedId="@+id/grid_tab_switcher_view_holder"
+            android:layout="@layout/grid_tab_switcher_view_holder" />
 
         <ViewStub
             android:id="@+id/continuous_search_container_stub"
