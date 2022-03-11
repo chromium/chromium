@@ -182,6 +182,12 @@ struct TutorialDescription {
   // The histogram data to use. Use MakeTutorialHistograms() above to create a
   // value to use, if you want to record specific histograms for this tutorial.
   std::unique_ptr<TutorialHistograms> histograms;
+
+  // The ability for the tutorial to be restarted. In some cases tutorials can
+  // leave the UI in a state where it can not re-run the tutorial. In these
+  // cases this flag should be set to false so that the restart tutorial button
+  // is not displayed.
+  bool can_be_restarted = false;
 };
 
 #endif  // CHROME_BROWSER_UI_USER_EDUCATION_TUTORIAL_TUTORIAL_DESCRIPTION_H_

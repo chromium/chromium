@@ -62,6 +62,7 @@ class Tutorial {
     BuildFromDescriptionStep(const TutorialDescription::Step& step,
                              absl::optional<std::pair<int, int>> progress,
                              bool is_last_step,
+                             bool can_be_restarted,
                              TutorialService* tutorial_service);
 
     StepBuilder& SetAnchorElementID(ui::ElementIdentifier anchor_element_id);
@@ -79,6 +80,7 @@ class Tutorial {
     StepBuilder& SetTransitionOnlyOnEvent(bool transition_only_on_event_);
     StepBuilder& SetNameElementsCallback(
         TutorialDescription::NameElementsCallback name_elements_callback_);
+    StepBuilder& SetCanBeRestarted(bool can_be_restarted_);
 
     std::unique_ptr<ui::InteractionSequence::Step> Build(
         TutorialService* tutorial_service);
@@ -86,6 +88,7 @@ class Tutorial {
    private:
     absl::optional<std::pair<int, int>> progress;
     bool is_last_step = false;
+    bool can_be_restarted = false;
 
     ui::InteractionSequence::StepStartCallback BuildStartCallback(
         TutorialService* tutorial_service);

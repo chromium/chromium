@@ -129,6 +129,7 @@ TEST_F(TutorialTest, TutorialRegistryRegistersTutorials) {
         0, IDS_TUTORIAL_TAB_GROUP_ADD_TAB_TO_GROUP,
         ui::InteractionSequence::StepType::kShown, kTestIdentifier1,
         std::string(), HelpBubbleArrow::kNone));
+    description.can_be_restarted = true;
     registry->AddTutorial(kTestTutorial1, std::move(description));
   }
 
@@ -254,6 +255,7 @@ TEST_F(TutorialTest, SingleStepRestartTutorial) {
                                 IDS_TUTORIAL_TAB_GROUP_ADD_TAB_TO_GROUP,
                                 ui::InteractionSequence::StepType::kShown,
                                 kTestIdentifier1, "", HelpBubbleArrow::kNone));
+  description.can_be_restarted = true;
   registry.AddTutorial(kTestTutorial1, std::move(description));
 
   service.StartTutorial(kTestTutorial1, element_1.context(), completed.Get());
@@ -299,6 +301,7 @@ TEST_F(TutorialTest, MultiStepRestartTutorialWithCloseOnComplete) {
                                 IDS_TUTORIAL_TAB_GROUP_ADD_TAB_TO_GROUP,
                                 ui::InteractionSequence::StepType::kShown,
                                 kTestIdentifier3, "", HelpBubbleArrow::kNone));
+  description.can_be_restarted = true;
   registry.AddTutorial(kTestTutorial1, std::move(description));
 
   service.StartTutorial(kTestTutorial1, element_1.context(), completed.Get());
@@ -351,6 +354,7 @@ TEST_F(TutorialTest, MultiStepRestartTutorialWithDismissAfterRestart) {
                                 IDS_TUTORIAL_TAB_GROUP_ADD_TAB_TO_GROUP,
                                 ui::InteractionSequence::StepType::kShown,
                                 kTestIdentifier3, "", HelpBubbleArrow::kNone));
+  description.can_be_restarted = true;
   registry.AddTutorial(kTestTutorial1, std::move(description));
 
   service.StartTutorial(kTestTutorial1, element_1.context(), completed.Get());
