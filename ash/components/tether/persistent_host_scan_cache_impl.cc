@@ -26,17 +26,16 @@ constexpr char kBatteryPercentageKey[] = "battery_percentage";
 constexpr char kSignalStrengthKey[] = "signal_strength";
 constexpr char kSetupRequiredKey[] = "setup_required";
 
-std::unique_ptr<base::DictionaryValue> HostScanCacheEntryToDictionary(
+base::Value::Dict HostScanCacheEntryToDictionary(
     const HostScanCacheEntry& entry) {
-  std::unique_ptr<base::DictionaryValue> dictionary =
-      std::make_unique<base::DictionaryValue>();
+  base::Value::Dict dictionary;
 
-  dictionary->SetStringKey(kTetherNetworkGuidKey, entry.tether_network_guid);
-  dictionary->SetStringKey(kDeviceNameKey, entry.device_name);
-  dictionary->SetStringKey(kCarrierKey, entry.carrier);
-  dictionary->SetIntKey(kBatteryPercentageKey, entry.battery_percentage);
-  dictionary->SetIntKey(kSignalStrengthKey, entry.signal_strength);
-  dictionary->SetBoolKey(kSetupRequiredKey, entry.setup_required);
+  dictionary.Set(kTetherNetworkGuidKey, entry.tether_network_guid);
+  dictionary.Set(kDeviceNameKey, entry.device_name);
+  dictionary.Set(kCarrierKey, entry.carrier);
+  dictionary.Set(kBatteryPercentageKey, entry.battery_percentage);
+  dictionary.Set(kSignalStrengthKey, entry.signal_strength);
+  dictionary.Set(kSetupRequiredKey, entry.setup_required);
 
   return dictionary;
 }
@@ -196,10 +195,7 @@ void PersistentHostScanCacheImpl::StoreCacheEntriesToPrefs(
   base::ListValue entries_list;
 
   for (const auto& it : entries) {
-    std::unique_ptr<base::DictionaryValue> entry_dict =
-        HostScanCacheEntryToDictionary(it.second);
-    DCHECK(entry_dict);
-    entries_list.Append(std::move(entry_dict));
+    entries_list.Append(base::Value(HostScanCacheEntryToDictionary(it.second)));
   }
 
   pref_service_->Set(prefs::kHostScanCache, entries_list);
