@@ -685,4 +685,14 @@
     Cancel
   </message>
 
+  <!-- Autofill credit card preferences -->
+  <if expr="is_android">
+    <message name="IDS_AUTOFILL_EDIT_CREDIT_CARD" desc="Button that allows the user to edit a card that can be automatically filled into web page forms. This can be either credit, debit, or prepaid card. [CHAR_LIMIT=32]" formatter_data="android_java">
+      Edit card
+    </message>
+    <message name="IDS_AUTOFILL_CREATE_CREDIT_CARD" desc="Button that allows the user to add a new card that will be automatically filled into web page forms. This can be either credit, debit, or prepaid card. [CHAR_LIMIT=32]" formatter_data="android_java">
+      Add card
+    </message>
+  </if>
+
 </grit-part>
