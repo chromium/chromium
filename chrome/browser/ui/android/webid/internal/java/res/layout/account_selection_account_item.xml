@@ -8,10 +8,10 @@
     android:descendantFocusability="blocksDescendants"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_marginEnd="@dimen/account_selection_sheet_horizontal_margin"
-    android:layout_marginStart="@dimen/account_selection_sheet_horizontal_margin"
-    android:layout_marginBottom="@dimen/account_selection_sheet_item_padding"
-    android:layout_marginTop="@dimen/account_selection_sheet_item_padding"
+    android:paddingEnd="@dimen/account_selection_sheet_horizontal_margin"
+    android:paddingStart="@dimen/account_selection_sheet_horizontal_margin"
+    android:paddingBottom="@dimen/account_selection_sheet_item_padding"
+    android:paddingTop="@dimen/account_selection_sheet_item_padding"
     android:gravity="center_vertical"
     android:orientation="horizontal">
 
