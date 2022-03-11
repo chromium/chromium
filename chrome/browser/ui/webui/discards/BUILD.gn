@@ -17,6 +17,6 @@ if (is_win || is_mac || is_linux || is_chromeos || is_fuchsia) {
       "//url/mojom:url_mojom_gurl",
     ]
 
-    webui_module_path = "/chrome/browser/ui/webui/discards"
+    webui_module_path = "/"
   }
 }

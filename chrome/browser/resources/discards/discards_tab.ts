@@ -5,33 +5,39 @@
 import 'chrome://resources/js/action_link.js';
 import 'chrome://resources/cr_elements/action_link_css.m.js';
 
-import {assertNotReached} from 'chrome://resources/js/assert.m.js';
+import {assertNotReached} from 'chrome://resources/js/assert_ts.js';
 import {getFaviconForPageURL} from 'chrome://resources/js/icon.js';
 import {TimeDelta} from 'chrome://resources/mojo/mojo/public/mojom/base/time.mojom-webui.js';
-import {html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {DomRepeatEvent, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {LifecycleUnitDiscardReason, LifecycleUnitLoadingState, LifecycleUnitState} from './chrome/browser/resource_coordinator/lifecycle_unit_state.mojom-webui.js';
-import {DetailsProviderRemote, LifecycleUnitVisibility, TabDiscardsInfo} from './chrome/browser/ui/webui/discards/discards.mojom-webui.js';
 import {boolToString, durationToString, getOrCreateDetailsProvider} from './discards.js';
-import {SortedTableBehavior} from './sorted_table_behavior.js';
+import {DetailsProviderRemote, LifecycleUnitVisibility, TabDiscardsInfo} from './discards.mojom-webui.js';
+import {getTemplate} from './discards_tab.html.js';
+import {LifecycleUnitDiscardReason, LifecycleUnitLoadingState, LifecycleUnitState} from './lifecycle_unit_state.mojom-webui.js';
+import {SortedTableMixin} from './sorted_table_mixin.js';
+
+type dictType = {
+  [key: string]: (boolean|number|string)
+};
 
 /**
  * Compares two TabDiscardsInfos based on the data in the provided sort-key.
- * @param {string} sortKey The key of the sort. See the "data-sort-key"
+ * @param sortKey The key of the sort. See the "data-sort-key"
  *     attribute of the table headers for valid sort-keys.
- * @param {boolean|number|string} a The first value being compared.
- * @param {boolean|number|string} b The second value being compared.
- * @return {number} A negative number if a < b, 0 if a === b, and a positive
+ * @param a The first value being compared.
+ * @param b The second value being compared.
+ * @return A negative number if a < b, 0 if a === b, and a positive
  *     number if a > b.
  */
-export function compareTabDiscardsInfos(sortKey, a, b) {
+export function compareTabDiscardsInfos(
+    sortKey: string, a: dictType, b: dictType): number {
   let val1 = a[sortKey];
   let val2 = b[sortKey];
 
   // Compares strings.
   if (sortKey === 'title' || sortKey === 'tabUrl') {
-    val1 = val1.toLowerCase();
-    val2 = val2.toLowerCase();
+    val1 = (val1 as string).toLowerCase();
+    val2 = (val2 as string).toLowerCase();
     if (val1 === val2) {
       return 0;
     }
@@ -54,7 +60,7 @@ export function compareTabDiscardsInfos(sortKey, a, b) {
       val1 = a['discardReason'];
       val2 = b['discardReason'];
     }
-    return val1 - val2;
+    return (val1 as LifecycleUnitState) - (val2 as LifecycleUnitState);
   }
 
   // Compares numeric fields.
@@ -69,78 +75,74 @@ export function compareTabDiscardsInfos(sortKey, a, b) {
         'lastActiveSeconds',
         'siteEngagementScore',
       ].includes(sortKey)) {
-    return val1 - val2;
+    return (val1 as number) - (val2 as number);
   }
 
   assertNotReached('Unsupported sort key: ' + sortKey);
-  return 0;
 }
 
+const DiscardsTabElementBase = SortedTableMixin(PolymerElement);
 
-Polymer({
-  is: 'discards-tab',
+class DiscardsTabElement extends DiscardsTabElementBase {
+  static get is() {
+    return 'discards-tab';
+  }
 
-  _template: html`{__html_template__}`,
+  static get template() {
+    return getTemplate();
+  }
 
-  behaviors: [SortedTableBehavior],
+  static get properties() {
+    return {
+      tabInfos_: Array,
+    };
+  }
 
-  properties: {
-    /**
-     * List of tabinfos.
-     * @private {?Array<!TabDiscardsInfo>}
-     */
-    tabInfos_: {
-      type: Array,
-    },
-  },
+  private tabInfos_: TabDiscardsInfo[];
 
-  /** @private The current update timer if any. */
-  updateTimer_: 0,
+  /** The current update timer if any. */
+  private updateTimer_: number = 0;
 
-  /** @private {(DetailsProviderRemote|null)} */
-  discardsDetailsProvider_: null,
+  private discardsDetailsProvider_: DetailsProviderRemote|null = null;
 
-  /** @override */
-  ready() {
+  connectedCallback() {
     this.setSortKey('utilityRank');
     this.discardsDetailsProvider_ = getOrCreateDetailsProvider();
 
     this.updateTable_();
-  },
+  }
 
   /**
    * Returns a sort function to compare tab infos based on the provided sort
    * key and a boolean reverse flag.
-   * @param {string} sortKey The sort key for the  returned function.
-   * @param {boolean} sortReverse True if sorting is reversed.
-   * @return {function({Object}, {Object}): number}
-   *     A comparison function that compares two tab infos, returns
+   * @param sortKey The sort key for the  returned function.
+   * @param sortReverse True if sorting is reversed.
+   * @return A comparison function that compares two tab infos, returns
    *     negative number if a < b, 0 if a === b, and a positive
    *     number if a > b.
    * @private
    */
-  computeSortFunction_(sortKey, sortReverse) {
+  private computeSortFunction_(sortKey: string, sortReverse: boolean):
+      (a: dictType, b: dictType) => number {
     // Polymer 2.0 may invoke multi-property observers before all properties
     // are defined.
     if (!sortKey) {
-      return (a, b) => 0;
+      return (_a: dictType, _b: dictType) => 0;
     }
 
-    return function(a, b) {
+    return function(a: dictType, b: dictType) {
       const comp = compareTabDiscardsInfos(sortKey, a, b);
       return sortReverse ? -comp : comp;
     };
-  },
+  }
 
   /**
    * Returns a string representation of a visibility enum value for display in
    * a table.
-   * @param {LifecycleUnitVisibility} visibility A visibility
-   *     value.
-   * @return {string} A string representation of the visibility.
-   * @private
+   * @param visibility A visibility value.
+   * @return A string representation of the visibility.
    */
-  visibilityToString_(visibility) {
+  private visibilityToString_(visibility: LifecycleUnitVisibility): string {
     switch (visibility) {
       case LifecycleUnitVisibility.HIDDEN:
         return 'hidden';
@@ -150,17 +152,16 @@ Polymer({
         return 'visible';
     }
     assertNotReached('Unknown visibility: ' + visibility);
-  },
+  }
 
   /**
    * Returns a string representation of a loading state enum value for display
    * in a table.
-   * @param {LifecycleUnitLoadingState} loadingState A loading state
-   *    value.
-   * @return {string} A string representation of the loading state.
-   * @private
+   * @param loadingState A loading state value.
+   * @return A string representation of the loading state.
    */
-  loadingStateToString_(loadingState) {
+  private loadingStateToString_(loadingState: LifecycleUnitLoadingState):
+      string {
     switch (loadingState) {
       case LifecycleUnitLoadingState.UNLOADED:
         return 'unloaded';
@@ -170,15 +171,14 @@ Polymer({
         return 'loaded';
     }
     assertNotReached('Unknown loadingState: ' + loadingState);
-  },
+  }
 
   /**
    * Returns a string representation of a discard reason.
-   * @param {LifecycleUnitDiscardReason} reason The discard reason.
-   * @return {string} A string representation of the discarding reason.
-   * @private
+   * @param reason The discard reason.
+   * @return A string representation of the discarding reason.
    */
-  discardReasonToString_(reason) {
+  private discardReasonToString_(reason: LifecycleUnitDiscardReason): string {
     switch (reason) {
       case LifecycleUnitDiscardReason.EXTERNAL:
         return 'external';
@@ -186,24 +186,25 @@ Polymer({
         return 'urgent';
     }
     assertNotReached('Unknown discard reason: ' + reason);
-  },
+  }
 
   /**
    * Returns a string representation of a lifecycle state.
-   * @param {LifecycleUnitState} state The lifecycle state.
-   * @param {LifecycleUnitDiscardReason} reason The discard reason. This
+   * @param state The lifecycle state.
+   * @param reason The discard reason. This
    *     is only used if the state is discard related.
-   * @param {LifecycleUnitVisibility} visibility A visibility value.
-   * @param {boolean} hasFocus Whether or not the tab has input focus.
-   * @param {TimeDelta} stateChangeTime Delta between Unix Epoch and the time at
+   * @param visibility A visibility value.
+   * @param hasFocus Whether or not the tab has input focus.
+   * @param stateChangeTime Delta between Unix Epoch and the time at
    *     which the lifecycle state has changed.
-   * @return {string} A string representation of the lifecycle state,
+   * @return A string representation of the lifecycle state,
    *     augmented with the discard reason if appropriate.
-   * @private
    */
-  lifecycleStateToString_(
-      state, reason, visibility, hasFocus, stateChangeTime) {
-    const pageLifecycleStateFromVisibilityAndFocus = function() {
+  private lifecycleStateToString_(
+      state: LifecycleUnitState, reason: LifecycleUnitDiscardReason,
+      visibility: LifecycleUnitVisibility, hasFocus: boolean,
+      stateChangeTime: TimeDelta): string {
+    function pageLifecycleStateFromVisibilityAndFocus(): string {
       switch (visibility) {
         case LifecycleUnitVisibility.HIDDEN:
         case LifecycleUnitVisibility.OCCLUDED:
@@ -213,7 +214,7 @@ Polymer({
           return hasFocus ? 'active' : 'passive';
       }
       assertNotReached('Unknown visibility: ' + visibility);
-    };
+    }
 
     switch (state) {
       case LifecycleUnitState.ACTIVE:
@@ -232,70 +233,62 @@ Polymer({
                                                               '');
     }
     assertNotReached('Unknown lifecycle state: ' + state);
-  },
+  }
 
-  /**
-   * Dispatches a request to update tabInfos_.
-   * @private
-   */
-  updateTableImpl_() {
-    this.discardsDetailsProvider_.getTabDiscardsInfo().then(response => {
+  /** Dispatches a request to update tabInfos_. */
+  private updateTableImpl_() {
+    this.discardsDetailsProvider_!.getTabDiscardsInfo().then(response => {
       this.tabInfos_ = response.infos;
     });
-  },
+  }
 
   /**
    * A wrapper to updateTableImpl_ that is called due to user action and not
    * due to the automatic timer. Cancels the existing timer  and reschedules
    * it after rendering instantaneously.
-   * @private
    */
-  updateTable_() {
+  private updateTable_() {
     if (this.updateTimer_) {
       clearInterval(this.updateTimer_);
     }
     this.updateTableImpl_();
     this.updateTimer_ = setInterval(this.updateTableImpl_.bind(this), 1000);
-  },
+  }
 
   /**
    * Formats an items reactivation for display.
-   * @param {TabDiscardsInfo} item The item in question.
-   * @return {string} The formatted reactivation score.
-   * @private
+   * @param item The item in question.
+   * @return The formatted reactivation score.
    */
-  getReactivationScore_(item) {
+  private getReactivationScore_(item: TabDiscardsInfo): string {
     return item.hasReactivationScore ? item.reactivationScore.toFixed(4) :
                                        'N/A';
-  },
+  }
 
   /**
    * Formats an items site engagement score for display.
-   * @param {TabDiscardsInfo} item The item in question.
-   * @return {string} The formatted site engagemetn score.
-   * @private
+   * @param item The item in question.
+   * @return The formatted site engagemetn score.
    */
-  getSiteEngagementScore_(item) {
+  private getSiteEngagementScore_(item: TabDiscardsInfo): string {
     return item.siteEngagementScore.toFixed(1);
-  },
+  }
 
   /**
    * Retrieves favicon style tag value for an item.
-   * @param {TabDiscardsInfo} item The item in question.
-   * @return {string} A style to retrieve and display the item's favicon.
-   * @private
+   * @param item The item in question.
+   * @return A style to retrieve and display the item's favicon.
    */
-  getFavIconStyle_(item) {
+  private getFavIconStyle_(item: TabDiscardsInfo): string {
     return 'background-image:' + getFaviconForPageURL(item.tabUrl, false);
-  },
+  }
 
   /**
    * Formats an items lifecycle state for display.
-   * @param {TabDiscardsInfo} item The item in question.
-   * @return {string} A human readable lifecycle state.
-   * @private
+   * @param item The item in question.
+   * @return A human readable lifecycle state.
    */
-  getLifeCycleState_(item) {
+  private getLifeCycleState_(item: TabDiscardsInfo): string {
     if (item.loadingState !== LifecycleUnitLoadingState.UNLOADED ||
         item.discardCount > 0) {
       return this.lifecycleStateToString_(
@@ -304,57 +297,51 @@ Polymer({
     } else {
       return '';
     }
-  },
+  }
 
   /**
    * Returns a string representation of a boolean value for display in a
    * table.
-   * @param {boolean} value A boolean value.
-   * @return {string} A string representing the bool.
-   * @private
+   * @param value A boolean value.
+   * @return A string representing the bool.
    */
-  boolToString_(value) {
+  private boolToString_(value: boolean): string {
     return boolToString(value);
-  },
+  }
 
   /**
    * Converts a |secondsAgo| duration to a user friendly string.
-   * @param {number} secondsAgo The duration to render.
-   * @return {string} An English string representing the duration.
-   * @private
+   * @param secondsAgo The duration to render.
+   * @return An English string representing the duration.
    */
-  durationToString_(secondsAgo) {
+  private durationToString_(secondsAgo: number): string {
     return durationToString(secondsAgo);
-  },
+  }
 
   /**
    * Tests whether an item has reasons why it cannot be discarded.
-   * @param {TabDiscardsInfo} item The item in question.
-   * @return {boolean} true iff there are reasons why the item cannot be
-   *     discarded.
-   * @private
+   * @param item The item in question.
+   * @return true iff there are reasons why the item cannot be discarded.
    */
-  hasCannotDiscardReasons_(item) {
+  private hasCannotDiscardReasons_(item: TabDiscardsInfo): boolean {
     return item.cannotDiscardReasons.length !== 0;
-  },
+  }
 
   /**
    * Tests whether an item can be loaded.
-   * @param {TabDiscardsInfo} item The item in question.
-   * @return {boolean} true iff the item can be loaded.
-   * @private
+   * @param item The item in question.
+   * @return true iff the item can be loaded.
    */
-  canLoad_(item) {
+  private canLoad_(item: TabDiscardsInfo): boolean {
     return item.loadingState === LifecycleUnitLoadingState.UNLOADED;
-  },
+  }
 
   /**
    * Tests whether an item can be discarded.
-   * @param {TabDiscardsInfo} item The item in question.
-   * @return {boolean} true iff the item can be discarded.
-   * @private
+   * @param item The item in question.
+   * @return true iff the item can be discarded.
    */
-  canDiscard_(item) {
+  private canDiscard_(item: TabDiscardsInfo): boolean {
     if (item.visibility === LifecycleUnitVisibility.HIDDEN ||
         item.visibility === LifecycleUnitVisibility.OCCLUDED) {
       // Only tabs that aren't visible can be discarded for now.
@@ -365,55 +352,41 @@ Polymer({
       return true;
     }
     return false;
-  },
+  }
 
   /**
    * Event handler that toggles the auto discardable flag on an item.
-   * @param {Event} e The event.
-   * @private
+   * @param e The event.
    */
-  toggleAutoDiscardable_(e) {
+  private toggleAutoDiscardable_(e: DomRepeatEvent<TabDiscardsInfo>) {
     const item = e.model.item;
-    this.discardsDetailsProvider_
+    this.discardsDetailsProvider_!
         .setAutoDiscardable(item.id, !item.isAutoDiscardable)
         .then(this.updateTable_.bind(this));
-  },
+  }
 
-  /**
-   * Event handler that loads a tab.
-   * @param {Event} e The event.
-   * @private
-   */
-  loadTab_(e) {
-    this.discardsDetailsProvider_.loadById(e.model.item.id);
-  },
+  /** Event handler that loads a tab. */
+  private loadTab_(e: DomRepeatEvent<TabDiscardsInfo>) {
+    this.discardsDetailsProvider_!.loadById(e.model.item.id);
+  }
 
-  /**
-   * Event handler that discards a given tab urgently.
-   * @param {Event} e The event.
-   * @private
-   */
-  urgentDiscardTab_(e) {
-    this.discardsDetailsProvider_.discardById(e.model.item.id)
+  /** Event handler that discards a given tab urgently. */
+  private urgentDiscardTab_(e: DomRepeatEvent<TabDiscardsInfo>) {
+    this.discardsDetailsProvider_!.discardById(e.model.item.id)
         .then(this.updateTable_.bind(this));
-  },
+  }
 
-  /**
-   * Implementation function to discard the next discardable tab.
-   * @private
-   */
-  discardImpl_: function() {
-    this.discardsDetailsProvider_.discard().then(() => {
+  /** Implementation function to discard the next discardable tab. */
+  private discardImpl_() {
+    this.discardsDetailsProvider_!.discard().then(() => {
       this.updateTable_();
     });
-  },
+  }
 
-  /**
-   * Event handler that discards the next discardable tab urgently.
-   * @param {Event} e The event.
-   * @private
-   */
-  discardUrgentNow_(e) {
+  /** Event handler that discards the next discardable tab urgently. */
+  private discardUrgentNow_(_e: Event) {
     this.discardImpl_();
-  },
-});
+  }
+}
+
+customElements.define(DiscardsTabElement.is, DiscardsTabElement);

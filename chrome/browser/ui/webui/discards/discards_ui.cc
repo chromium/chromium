@@ -28,7 +28,8 @@
 #include "chrome/browser/ui/webui/favicon_source.h"
 #include "chrome/browser/ui/webui/webui_util.h"
 #include "chrome/common/webui_url_constants.h"
-#include "chrome/grit/browser_resources.h"
+#include "chrome/grit/discards_resources.h"
+#include "chrome/grit/discards_resources_map.h"
 #include "components/favicon_base/favicon_url_parser.h"
 #include "components/performance_manager/public/performance_manager.h"
 #include "components/site_engagement/content/site_engagement_service.h"
@@ -218,26 +219,10 @@ DiscardsUI::DiscardsUI(content::WebUI* web_ui)
   source->OverrideContentSecurityPolicy(
       network::mojom::CSPDirectiveName::ScriptSrc,
       "script-src chrome://resources chrome://test 'self';");
-  source->DisableTrustedTypesCSP();
 
-  const webui::ResourcePath kResources[] = {
-      {"discards.js", IDR_DISCARDS_JS},
-      {"discards_main.js", IDR_DISCARDS_DISCARDS_MAIN_JS},
-      {"database_tab.js", IDR_DISCARDS_DATABASE_TAB_JS},
-      {"discards_tab.js", IDR_DISCARDS_DISCARDS_TAB_JS},
-      {"sorted_table_behavior.js", IDR_DISCARDS_SORTED_TABLE_BEHAVIOR_JS},
-      {"graph_tab.js", IDR_DISCARDS_GRAPH_TAB_JS},
-
-      // Full paths (relative to source) for mojom generated files.
-      {"chrome/browser/ui/webui/discards/discards.mojom-webui.js",
-       IDR_DISCARDS_MOJOM_WEBUI_JS},
-      {"chrome/browser/resource_coordinator/"
-       "lifecycle_unit_state.mojom-webui.js",
-       IDR_DISCARDS_LIFECYCLE_UNIT_STATE_MOJOM_WEBUI_JS},
-      {"chrome/browser/ui/webui/discards/site_data.mojom-webui.js",
-       IDR_DISCARDS_SITE_DATA_MOJOM_WEBUI_JS},
-  };
-  webui::SetupWebUIDataSource(source.get(), kResources, IDR_DISCARDS_HTML);
+  webui::SetupWebUIDataSource(
+      source.get(), base::make_span(kDiscardsResources, kDiscardsResourcesSize),
+      IDR_DISCARDS_DISCARDS_HTML);
 
   Profile* profile = Profile::FromWebUI(web_ui);
   content::WebUIDataSource::Add(profile, source.release());

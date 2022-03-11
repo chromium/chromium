@@ -159,6 +159,10 @@
     "META": {"sizes": {"includes": [15]}},
     "includes": [1580],
   },
+  "<(SHARED_INTERMEDIATE_DIR)/chrome/browser/resources/discards/discards_resources.grd": {
+    "META": {"sizes": {"includes": [20],}},
+    "includes": [1585],
+  },
   "<(SHARED_INTERMEDIATE_DIR)/chrome/browser/resources/downloads/downloads_resources.grd": {
     "META": {"sizes": {"includes": [50],}},
     "includes": [1590],

@@ -83,6 +83,10 @@ group("resources") {
     public_deps += [ "browser_switch:resources" ]
   }
 
+  if (is_win || is_mac || is_linux || is_chromeos || is_fuchsia) {
+    public_deps += [ "discards:resources" ]
+  }
+
   if (is_win || is_mac || is_linux || is_fuchsia) {
     public_deps += [ "app_settings:resources" ]
   }
@@ -134,7 +138,6 @@ if (enable_js_type_check) {
     if (is_linux || is_chromeos || is_win || is_mac) {
       deps += [
         "bluetooth_internals:closure_compile",
-        "discards:closure_compile",
         "feedback_webui/js:closure_compile",
         "gaia_auth_host:closure_compile",
         "image_editor:closure_compile",
