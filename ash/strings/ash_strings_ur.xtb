@@ -91,9 +91,9 @@
 <translation id="1414271762428216854"><ph name="APP_NAME" />، انسٹال کردہ ایپ</translation>
 <translation id="1419738280318246476">اطلاع کی کارروائی کرنے کیلئے آلے کو غیر مقفل کریں</translation>
 <translation id="1420408895951708260">نائٹ لائٹ ٹوگل کریں۔ <ph name="STATE_TEXT" /></translation>
+<translation id="1420732223884894666">اپنے <ph name="DEVICE_TYPE" /> پر اپنے فون کی حالیہ تصاویر اور میڈیا دیکھیں</translation>
 <translation id="1426410128494586442">ہاں</translation>
 <translation id="1438357537418863713">ایپ کی سلسلہ بندی اب تیار ہے۔ آپ کے شروع کرنے کے بعد، حالیہ میں لانچ کردہ ایپس یہاں ظاہر ہوں گی۔</translation>
-<translation id="144853431011121127">اپنے <ph name="DEVICE_TYPE" /> پر اپنے فون کی اطلاعات حاصل کریں</translation>
 <translation id="1455242230282523554">زبان کی ترتیبات دکھائیں</translation>
 <translation id="1460620680449458626">والیوم خاموش کیا ہوا ہے۔</translation>
 <translation id="1467432559032391204">بائیں</translation>
@@ -317,6 +317,7 @@
 <translation id="301282384882049174">آپ کے منتظم کے ذریعے اشتراک کردہ</translation>
 <translation id="3017687597151988916">ونڈو کو بطور سورس سیٹ کیا گیا</translation>
 <translation id="3033545621352269033">آن</translation>
+<translation id="3033912566804961911"><ph name="DESK_NAME" /> کے ساتھ یکجا کریں</translation>
 <translation id="3036649622769666520">فائلیں کھولیں</translation>
 <translation id="3038571455154067151">‏سائن ان کرنے کے لیے، اپنی Family Link کا والدین کا رسائی کوڈ درج کریں</translation>
 <translation id="3039939407102840004">اسٹائلس بیٹری <ph name="PERCENTAGE" /> فیصد پر ہے۔</translation>
@@ -342,6 +343,7 @@
 <translation id="3153444934357957346">آپ متعدد سائن ان میں صرف <ph name="MULTI_PROFILE_USER_LIMIT" /> اکاؤنٹس تک رکھ سکتے ہیں۔</translation>
 <translation id="3154351730702813399">آلہ کا منتظم آپ کی براؤزنگ سرگرمی کو مانیٹر کر سکتا ہے۔</translation>
 <translation id="316086887565479535">تمثیل میں غیر تعاون یافتہ ایپس</translation>
+<translation id="3161500364292033097">ڈیسک اور ونڈوز بند کریں</translation>
 <translation id="316356270129335934"><ph name="MANAGER" /> آپ کے <ph name="DEVICE_TYPE" /> کو واپس کر رہا ہے۔ آپ کا آلہ ری سیٹ ہو جائے گا اور تمام ڈیٹا حذف ہو جائے گا۔</translation>
 <translation id="3181441307743005334">ری سٹارٹ کرنے میں کچھ وقت لگ سکتا ہے</translation>
 <translation id="3202010236269062730">{NUM_DEVICES,plural, =1{ایک آلہ سے منسلک ہے}other{# آلات سے منسلک ہے}}</translation>
@@ -824,6 +826,7 @@
 <translation id="6165508094623778733">مزید جانیں</translation>
 <translation id="6166852626429024716">اپنا آلہ، ایپس، ترتیبات ویب تلاش کریں...</translation>
 <translation id="6179832488876878285">آپ اپنی اہم فائلز کو یہاں پن کر سکتے ہیں۔ شروع کرنے کیلئے فائلز ایپ کھولیں۔</translation>
+<translation id="619279033188484792">اپنے <ph name="DEVICE_TYPE" /> پر اپنے فون کی حالیہ تصاویر، میڈیا اور اطلاعات دیکھیں</translation>
 <translation id="6220928844947387476">اب آپ اپنے آپ کو اور اپنی اسکرین کو ایک ہی وقت میں ریکارڈ کر سکتے ہیں</translation>
 <translation id="622484624075952240">نیچے</translation>
 <translation id="6231419273573514727">پیریفیرل کی کارکردگی محدود ہو سکتی ہے</translation>
@@ -935,6 +938,7 @@
 <translation id="6921188888306725546">کی بورڈ شارٹ کٹس کو بہتر بنایا گیا ہے</translation>
 <translation id="6931576957638141829">اس میں محفوظ کریں</translation>
 <translation id="6945221475159498467">منتخب کریں</translation>
+<translation id="6960565108681981554">فعال نہیں ہے۔ اپنے کیریئر سے رابطہ کریں۔</translation>
 <translation id="6961121602502368900">دفتری پروفائل پر فون کو خاموش کرنے کی خصوصیت دستیاب نہیں ہے</translation>
 <translation id="6961840794482373852">‏Alt + 'اوپر تیر کا نشان' کی بورڈ شارٹ کٹ تبدیل ہو گیا۔ Page Up کلید کا استعمال کرنے کیلئے <ph name="LAUNCHER_KEY_NAME" /> کلید + 'اوپر تیر کا نشان' کو دبائیں۔</translation>
 <translation id="6965382102122355670">ٹھیک ہے</translation>
@@ -1049,6 +1053,7 @@
 <translation id="7649070708921625228">مدد</translation>
 <translation id="7654687942625752712">صوتی تاثرات کو غیر فعال کرنے کیلئے پانچ منٹ تک والیوم کی دونوں کلیدوں کو دبائے رکھیں۔</translation>
 <translation id="7658239707568436148">منسوخ کریں</translation>
+<translation id="7659861092419699379">ڈیسک اور ونڈوز بند کر دی گئی ہیں</translation>
 <translation id="7660160718439869192">آپ کا <ph name="NAME" /> <ph name="EMAIL" /> کے ساتھ لنک کردہ آلات پر ظاہر ہوگا</translation>
 <translation id="7662283695561029522">کنفیگر کرنے کیلئے تھپتھپائیں</translation>
 <translation id="7670953955701272011">‏Google کیلنڈر میں اس تاریخ کو کھولیں</translation>
@@ -1143,7 +1148,6 @@
 <translation id="8236042855478648955">وقفے کا وقت ہو گیا</translation>
 <translation id="8247060538831475781"><ph name="CONNECTION_STATUS" />، سگنل کی مضبوطی <ph name="SIGNAL_STRENGTH" />، فون کی بیٹری <ph name="BATTERY_STATUS" /></translation>
 <translation id="8247998213073982446"><ph name="APP_NAME" />، ایپ</translation>
-<translation id="8248728785693203669">‏ہو سکتا ہے کہ آپ کی USB-C کیبل مناسب طریقے سے ڈسپلیز سے منسلک نہ ہو</translation>
 <translation id="8255234195843591763">اپ ڈیٹ کرنے کے لیے ری سیٹ کریں</translation>
 <translation id="826107067893790409">‏<ph name="USER_EMAIL_ADDRESS" /> کی خاطر غیر مقفل کرنے کے لیے Enter دبائیں</translation>
 <translation id="8261506727792406068">حذف کریں</translation>

@@ -46,6 +46,7 @@
 <translation id="1282311502488501110">साइन इन नगर्नुहोस्</translation>
 <translation id="1283524564873030414">पछिल्ला २४ घन्टा</translation>
 <translation id="1285320974508926690">यो साइट कहिले पनि अनुवाद नगर्नुहोस्</translation>
+<translation id="1291506870746876680">तपाईं <ph name="BEGIN_BOLD" />"<ph name="SITE_NAME" />"<ph name="END_BOLD" /> बाट बाहिरिनुभयो भने यो साइटसम्बन्धी अनुमति रिसेट गरी अफ गरिने छ।</translation>
 <translation id="1321993286294231467">फोटो सुरक्षित गर्ने क्रममा त्रुटि भयो।</translation>
 <translation id="1322735045095424339">तपाईंको सङ्गठनको नीतिअनुसार तपाईंले इन्कोग्निटो मोड प्रयोग गर्नु पर्ने हुन्छ</translation>
 <translation id="1323735185997015385">मेट्नुहोस्</translation>
@@ -446,6 +447,7 @@
 <translation id="4945756290001680296">पासवर्डका सेटिङहरूमाथि पहुँच राख्नुहोस्</translation>
 <translation id="4979397965658815378">आफ्ना सबै यन्त्रहरूमा आफ्ना पुस्तक चिन्ह, इतिहास, पासवर्ड र अन्य सेटिङहरू प्राप्त गर्न आफ्नो Google खाता मार्फत साइन इन गर्नुहोस्।</translation>
 <translation id="4986678885919050584">यो डिभाइसबाट हटाउनुहोस्</translation>
+<translation id="4989542687859782284">उपलब्ध छैन</translation>
 <translation id="5005498671520578047">पासवर्ड प्रतिलिपि गर्नुहोस्</translation>
 <translation id="5017828934289857214">मलाई पछि स्मरण गराइयोस्</translation>
 <translation id="5037676449506322593">सबै चयन गर्नुहोस्</translation>
@@ -873,6 +875,7 @@
 <translation id="8750037785291841318">तपाईंका ट्याबहरू यहाँ देखिने छन्</translation>
 <translation id="8756969031206844760">पासवर्ड अद्यावधिक गर्ने हो?</translation>
 <translation id="8775144690796719618">अमान्य URL</translation>
+<translation id="8787968206789828143">वेबमा खोज्नुहोस्</translation>
 <translation id="8803639129939845298">सुरक्षित छ</translation>
 <translation id="8806823403540278281">तपाईंको सङ्गठनको नीतिअनुसार तपाईंले गोप्य रूपमा ब्राउज गर्नु पर्ने हुन्छ। इन्कोग्निटो मोडमा ब्राउज गर्दा ट्याबहरू सुरक्षित गरिँदैनन्।
 <ph name="BEGIN_LINK" />थप जान्नुहोस्<ph name="END_LINK" /></translation>

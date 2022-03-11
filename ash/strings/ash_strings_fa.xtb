@@ -86,14 +86,14 @@
 <translation id="1383597849754832576">نمی‌توان فایل‌های گفتاری را بارگیری کرد. بعداً دوباره امتحان کنید.</translation>
 <translation id="1383876407941801731">جستجو</translation>
 <translation id="1391102559483454063">روشن</translation>
-<translation id="1407069428457324124">طرح زمینه تیره</translation>
+<translation id="1407069428457324124">طرح‌زمینه تیره</translation>
 <translation id="1410568680128842168"><ph name="DATE_CELL_TOOL_TIP" />. برای پیمایش بین تاریخ‌ها، از کلیدهای جهت‌نما استفاده کنید.</translation>
 <translation id="1414271762428216854"><ph name="APP_NAME" />، برنامه نصب‌شده</translation>
 <translation id="1419738280318246476">برای اجرای کنش اعلان، قفل دستگاه را باز کنید</translation>
 <translation id="1420408895951708260">روشن/خاموش کردن «نور شب». <ph name="STATE_TEXT" /></translation>
+<translation id="1420732223884894666">رسانه و عکس‌های جدید تلفنتان را در <ph name="DEVICE_TYPE" /> مشاهده کنید</translation>
 <translation id="1426410128494586442">بله</translation>
 <translation id="1438357537418863713">جاری‌سازی برنامه اکنون راه‌اندازی شده است. به‌محض اینکه شروع‌به‌کار کنید، برنامه‌هایی که اخیراً راه‌اندازی شده‌اند اینجا نشان داده خواهند شد.</translation>
-<translation id="144853431011121127">دریافت اعلان از تلفنتان در <ph name="DEVICE_TYPE" /></translation>
 <translation id="1455242230282523554">نمایش تنظیمات زبان</translation>
 <translation id="1460620680449458626">دکمه میزان صدا صامت است.</translation>
 <translation id="1467432559032391204">چپ</translation>
@@ -377,7 +377,7 @@
 <translation id="3378442621503952303">درحال اتصال به نمایه. چند دقیقه صبر کنید.</translation>
 <translation id="3386978599540877378">ذره‌بین تمام‌صفحه</translation>
 <translation id="3400357268283240774">تنظیمات بیشتر</translation>
-<translation id="3410336247007142655">نمایش تنظیمات طرح زمینه تیره</translation>
+<translation id="3410336247007142655">نمایش تنظیمات طرح‌زمینه تیره</translation>
 <translation id="3413817803639110246">هنوز چیزی برای دیدن وجود ندارد</translation>
 <translation id="3428447136709161042">قطع ارتباط از <ph name="NETWORK_NAME" /></translation>
 <translation id="3430396595145920809">برای برگشتن به عقب از سمت چپ تند بکشید</translation>
@@ -592,7 +592,7 @@
 <translation id="4585337515783392668">توقف ارسال محتوا به گیرنده ناشناس</translation>
 <translation id="4586483766170476230">توقف دوربین خودگرفت</translation>
 <translation id="4587299710837179226">میکروفون خاموش است</translation>
-<translation id="4596144739579517758">طرح زمینه تیره خاموش است</translation>
+<translation id="4596144739579517758">طرح‌زمینه تیره خاموش است</translation>
 <translation id="4611292653554630842">ورود به سیستم</translation>
 <translation id="4614295562446151104">گسترده کردن ابزارهای نشان‌گذاری</translation>
 <translation id="4623167406982293031">به‌تأیید رساندن حساب</translation>
@@ -702,7 +702,7 @@
 <translation id="5329548388331921293">درحال اتصال...</translation>
 <translation id="5331975486040154427">‏دستگاه USB-C (درگاه عقب سمت چپ)</translation>
 <translation id="5344128444027639014"><ph name="BATTERY_PERCENTAGE" />% (راست)</translation>
-<translation id="5352250171825660495">طرح زمینه تیره روشن است</translation>
+<translation id="5352250171825660495">طرح‌زمینه تیره روشن است</translation>
 <translation id="5379115545237091094">تلاش‌های ناموفق زیادی انجام شده است</translation>
 <translation id="5393156353051693207">برای تغییر ترتیب برنامه‌ها، جایی را لمس کنید و نگه دارید</translation>
 <translation id="5395308026110844773"><ph name="DRAGGED_APP_NAME" /> موجود در بالای <ph name="IN_PLACE_APP" />، برای ایجاد پوشه رها کنید.</translation>
@@ -826,6 +826,7 @@
 <translation id="6165508094623778733">بیشتر بدانید</translation>
 <translation id="6166852626429024716">جستجوی دستگاه، برنامه‌ها، تنظیمات، وب، و غیره</translation>
 <translation id="6179832488876878285">‏می‌توانید فایل‌های مهم را اینجا پین کنید. برای شروع کار، برنامه Files را باز کنید.</translation>
+<translation id="619279033188484792">اعلان‌ها، رسانه، و عکس‌های جدید تلفنتان را در <ph name="DEVICE_TYPE" /> مشاهده کنید</translation>
 <translation id="6220928844947387476">اکنون می‌توانید هم‌زمان هم از خودتان و هم از صفحه‌نمایش فیلم‌برداری کنید</translation>
 <translation id="622484624075952240">پیکان پایین</translation>
 <translation id="6231419273573514727">عملکرد لوازم جانبی ممکن است محدود باشند</translation>
@@ -938,6 +939,7 @@
 <translation id="6921188888306725546">میان‌برهای صفحه‌کلید بهبود یافته‌اند</translation>
 <translation id="6931576957638141829">ذخیره در</translation>
 <translation id="6945221475159498467">انتخاب</translation>
+<translation id="6960565108681981554">فعال نیست. با شرکت مخابراتی‌تان تماس بگیرید.</translation>
 <translation id="6961121602502368900">«بی‌صدا کردن تلفن» در نمایه کاری دردسترس نیست</translation>
 <translation id="6961840794482373852">میان‌بر صفحه‌کلید «دگرساز + جهت‌نمای بالا» تغییر کرده است. برای استفاده از کلید «صفحه قبلی»، کلید «<ph name="LAUNCHER_KEY_NAME" /> + جهت‌نمای بالا» را فشار دهید.</translation>
 <translation id="6965382102122355670">قبول</translation>
@@ -1147,7 +1149,6 @@
 <translation id="8236042855478648955">وقت استراحت</translation>
 <translation id="8247060538831475781"><ph name="CONNECTION_STATUS" />، قدرت سیگنال <ph name="SIGNAL_STRENGTH" />، باتری تلفن<ph name="BATTERY_STATUS" /></translation>
 <translation id="8247998213073982446"><ph name="APP_NAME" />، برنامه</translation>
-<translation id="8248728785693203669">‏کابل USB-C شما ممکن است نتواند درست به نمایشگر وصل شود</translation>
 <translation id="8255234195843591763">برای به‌روزرسانی، دستگاه را بازنشانی کنید</translation>
 <translation id="826107067893790409">‏برای باز کردن قفل <ph name="USER_EMAIL_ADDRESS" />، Enter را فشار دهید</translation>
 <translation id="8261506727792406068">حذف</translation>
@@ -1239,7 +1240,7 @@
 <translation id="8850991929411075241">Search+Esc</translation>
 <translation id="8853703225951107899">همچنان نمی‌توان پین یا گذرواژه را تأیید کرد. توجه: اگر اخیراً گذرواژه‌تان را تغییر داده‌اید، از گذرواژه قدیمی‌تان استفاده کنید. گذرواژه جدیدتان بعد از خروج شما از سیستم اعمال می‌شود.</translation>
 <translation id="8870509716567206129">برنامه از تقسیم صفحه پشتیبانی نمی‌کند.</translation>
-<translation id="8871580645200179206">روشن/خاموش کردن طرح زمینه تیره. <ph name="STATE_TEXT" /></translation>
+<translation id="8871580645200179206">روشن/خاموش کردن طرح‌زمینه تیره. <ph name="STATE_TEXT" /></translation>
 <translation id="8874184842967597500">متصل نیست</translation>
 <translation id="8876661425082386199">بررسی اتصال</translation>
 <translation id="8877788021141246043">‏Set a reminder (یادآوری تنظیم کن)</translation>

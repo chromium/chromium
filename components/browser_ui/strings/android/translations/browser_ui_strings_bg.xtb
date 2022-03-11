@@ -254,6 +254,7 @@
 <translation id="7087918508125750058">Избрани: <ph name="ITEM_COUNT" />. Налице са опции близо до горната част на екрана</translation>
 <translation id="7141896414559753902">Блокиране на показването на изскачащи прозорци и пренасочвания от сайтовете (препоръчително)</translation>
 <translation id="7176368934862295254"><ph name="KILOBYTES" /> КБ</translation>
+<translation id="7180611975245234373">Опресняване</translation>
 <translation id="723171743924126238">Избиране на изображения</translation>
 <translation id="7243308994586599757">Опциите са в долната част на екрана</translation>
 <translation id="7250468141469952378">Избрани: <ph name="ITEM_COUNT" /></translation>
@@ -309,6 +310,7 @@
 <translation id="8394832520002899662">Докоснете, за да се върнете към сайта</translation>
 <translation id="8409345997656833551">Получаване на известие, когато дадена статия може да бъде показана в опростен изглед</translation>
 <translation id="8425213833346101688">Промяна</translation>
+<translation id="8428213095426709021">Настройки</translation>
 <translation id="8441146129660941386">Придвижване назад</translation>
 <translation id="8444433999583714703">За да разрешите на <ph name="APP_NAME" /> да осъществява достъп до местоположението ви, то трябва да бъде включено и от <ph name="BEGIN_LINK" />настройките на Android<ph name="END_LINK" />.</translation>
 <translation id="8447861592752582886">Отмяна на разрешението за достъп до устройството</translation>

@@ -91,9 +91,9 @@ Pour commencer, voici des exemples de ce que vous pouvez me demander.</translati
 <translation id="1414271762428216854"><ph name="APP_NAME" />, application installée</translation>
 <translation id="1419738280318246476">Déverrouiller l'appareil pour effectuer l'action de notification</translation>
 <translation id="1420408895951708260">Activer/Désactiver la fonctionnalité Éclairage nocturne. <ph name="STATE_TEXT" /></translation>
+<translation id="1420732223884894666">Afficher les photos et contenus multimédias récents de votre téléphone sur votre <ph name="DEVICE_TYPE" /></translation>
 <translation id="1426410128494586442">Oui</translation>
 <translation id="1438357537418863713">Streaming d'appli configuré. Les applis récemment lancées s'afficheront ici.</translation>
-<translation id="144853431011121127">Recevoir sur votre <ph name="DEVICE_TYPE" /> les notifications transmises sur votre téléphone</translation>
 <translation id="1455242230282523554">Afficher les paramètres de langue</translation>
 <translation id="1460620680449458626">Le volume est désactivé.</translation>
 <translation id="1467432559032391204">À gauche</translation>
@@ -317,6 +317,7 @@ Pour commencer, voici des exemples de ce que vous pouvez me demander.</translati
 <translation id="301282384882049174">Partagé par votre administrateur</translation>
 <translation id="3017687597151988916">Zone de sélection définie sur fenêtre</translation>
 <translation id="3033545621352269033">Activé</translation>
+<translation id="3033912566804961911">Associer à <ph name="DESK_NAME" /></translation>
 <translation id="3036649622769666520">Ouvrir les fichiers</translation>
 <translation id="3038571455154067151">Pour vous connecter, saisissez le code d'accès parental Family Link</translation>
 <translation id="3039939407102840004">Le stylet est chargé à <ph name="PERCENTAGE" /> %.</translation>
@@ -342,6 +343,7 @@ Pour commencer, voici des exemples de ce que vous pouvez me demander.</translati
 <translation id="3153444934357957346">Vous ne pouvez vous connecter qu'à <ph name="MULTI_PROFILE_USER_LIMIT" /> comptes au maximum dans le cadre de la connexion multicompte.</translation>
 <translation id="3154351730702813399">L'administrateur de cet appareil peut contrôler votre activité de navigation.</translation>
 <translation id="316086887565479535">Le modèle contient des applis non compatibles</translation>
+<translation id="3161500364292033097">Fermer le bureau et les fenêtres</translation>
 <translation id="316356270129335934"><ph name="MANAGER" /> effectue un rollback de votre <ph name="DEVICE_TYPE" />. Cela entraînera la réinitialisation de votre appareil et la suppression de toutes vos données.</translation>
 <translation id="3181441307743005334">Le redémarrage peut prendre du temps</translation>
 <translation id="3202010236269062730">{NUM_DEVICES,plural, =1{Connecté à un appareil}one{Connecté à # appareil}other{Connecté à # appareils}}</translation>
@@ -824,6 +826,7 @@ Pour commencer, voici des exemples de ce que vous pouvez me demander.</translati
 <translation id="6165508094623778733">En savoir plus</translation>
 <translation id="6166852626429024716">Faire des recherches sur votre appareil, dans vos applications et paramètres, sur le Web, etc.</translation>
 <translation id="6179832488876878285">Vous pouvez épingler vos fichiers importants ici. Pour commencer, ouvrez l'application Fichiers.</translation>
+<translation id="619279033188484792">Afficher les photos, contenus multimédias et notifications récents de votre téléphone sur votre <ph name="DEVICE_TYPE" /></translation>
 <translation id="6220928844947387476">Vous pouvez maintenant enregistrer votre écran et vous-même en même temps</translation>
 <translation id="622484624075952240">Bas</translation>
 <translation id="6231419273573514727">Les performances du périphérique risquent d'être limitées</translation>
@@ -936,6 +939,7 @@ Nouvelle installation</translation>
 <translation id="6921188888306725546">Les raccourcis clavier ont été améliorés</translation>
 <translation id="6931576957638141829">Enregistrer sous</translation>
 <translation id="6945221475159498467">Sélectionner</translation>
+<translation id="6960565108681981554">Désactivé. Contactez votre opérateur.</translation>
 <translation id="6961121602502368900">Couper le son du téléphone n'est pas disponible dans le profil professionnel</translation>
 <translation id="6961840794482373852">Le raccourci clavier Alt+Flèche vers le haut a été modifié. Pour utiliser la touche Page précédente, appuyez sur la touche du <ph name="LAUNCHER_KEY_NAME" />+Flèche vers le haut.</translation>
 <translation id="6965382102122355670">OK</translation>
@@ -1050,6 +1054,7 @@ Nouvelle installation</translation>
 <translation id="7649070708921625228">Aide</translation>
 <translation id="7654687942625752712">Appuyez pendant cinq secondes sur les deux touches de volume pour désactiver les commentaires audio.</translation>
 <translation id="7658239707568436148">Annuler</translation>
+<translation id="7659861092419699379">Le bureau et les fenêtres ont été fermés</translation>
 <translation id="7660160718439869192"><ph name="NAME" /> sera visible sur les appareils associés à <ph name="EMAIL" /></translation>
 <translation id="7662283695561029522">Appuyer pour configurer</translation>
 <translation id="7670953955701272011">Ouvrir cette date dans Google Agenda</translation>
@@ -1144,7 +1149,6 @@ Nouvelle installation</translation>
 <translation id="8236042855478648955">Une pause s'impose !</translation>
 <translation id="8247060538831475781"><ph name="CONNECTION_STATUS" />, force du signal : <ph name="SIGNAL_STRENGTH" />, batterie du téléphone à <ph name="BATTERY_STATUS" /></translation>
 <translation id="8247998213073982446"><ph name="APP_NAME" />, application</translation>
-<translation id="8248728785693203669">Votre câble USB-C n'est peut-être pas connecté correctement à l'écran</translation>
 <translation id="8255234195843591763">Réinitialiser pour mettre à jour</translation>
 <translation id="826107067893790409">Appuyez sur Entrée pour déverrouiller l'appareil pour <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="8261506727792406068">Supprimer</translation>

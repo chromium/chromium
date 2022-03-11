@@ -30,6 +30,7 @@
 <translation id="114825011539563458">Самые важные настройки конфиденциальности и безопасности на одной странице</translation>
 <translation id="1149401351239820326">Месяц окончания срока действия</translation>
 <translation id="1154704303112745282">Страница недоступна в офлайн-режиме: <ph name="VIOLATED_URL" />.</translation>
+<translation id="1166688006062225587">Список доступных аккаунтов.</translation>
 <translation id="1171770572613082465">Чтобы перейти к списку популярных сайтов, нажмите кнопку "Топ сайтов"</translation>
 <translation id="1173894706177603556">Переименовать</translation>
 <translation id="1177863135347784049">Персонализированные</translation>
@@ -116,7 +117,7 @@
 <translation id="1670399744444387456">Основные настройки</translation>
 <translation id="1671236975893690980">Ожидание скачивания…</translation>
 <translation id="1672586136351118594">Больше не показывать</translation>
-<translation id="1680919990519905526">Найти через Google Объектив <ph name="BEGIN_NEW" />Новинка<ph name="END_NEW" /></translation>
+<translation id="1680919990519905526">Найти в Покупках через Google Объектив <ph name="BEGIN_NEW" />Новинка<ph name="END_NEW" /></translation>
 <translation id="1682195225331129001">Попробовать</translation>
 <translation id="1697284962337958118">Куда добавить</translation>
 <translation id="1702543251015153180">Изменить настройки тёмной темы?</translation>
@@ -138,6 +139,7 @@
 <translation id="1810845389119482123">Синхронизация не настроена</translation>
 <translation id="1829244130665387512">Найти на странице</translation>
 <translation id="1832459821645506983">ОК</translation>
+<translation id="1849863543394887018">Уведомления можно отключить в настройках.</translation>
 <translation id="1877026089748256423">Версия Chrome устарела</translation>
 <translation id="1883903952484604915">Скачанные</translation>
 <translation id="189358972401248634">Другие языки</translation>
@@ -270,6 +272,7 @@
 <translation id="2567385386134582609">ИЗОБРАЖЕНИЕ</translation>
 <translation id="2567545343356994513">Более быстрая и эффективная защита от опасных сайтов, расширений и скачанных файлов.</translation>
 <translation id="2571711316400087311">Предлагать отправлять страницы на других языках в Google Переводчик</translation>
+<translation id="2573452357057307036">Узнайте, как сделать Chrome браузером по умолчанию.</translation>
 <translation id="2581165646603367611">Будет очищен кеш, а также удалены файлы cookie и другие данные, которые система сочтет маловажными.</translation>
 <translation id="2587052924345400782">Доступна новая версия</translation>
 <translation id="2593272815202181319">Моноширинный</translation>
@@ -427,6 +430,7 @@
 <translation id="3443221991560634068">Обновить страницу</translation>
 <translation id="3444179773590444986">Отправить отзыв о тёмной теме для сайтов?</translation>
 <translation id="3469665409713263828">{FILE_COUNT,plural, =1{Запланировано 1 скачивание.}one{Запланировано # скачивание.}few{Запланировано # скачивания.}many{Запланировано # скачиваний.}other{Запланировано # скачивания.}}</translation>
+<translation id="3474624961160222204">Продолжить как <ph name="NAME" /></translation>
 <translation id="3478363558367712427">Вы можете выбрать другую поисковую систему.</translation>
 <translation id="3493531032208478708">Подробнее <ph name="BEGIN_LINK" />о рекомендованном контенте<ph name="END_LINK" />…</translation>
 <translation id="3499246418971111862">chrome_qrcode_<ph name="CURRENT_TIMESTAMP_MS" /></translation>
@@ -785,6 +789,7 @@
 <translation id="5665379678064389456">Создать мероприятие в приложении "<ph name="APP_NAME" />"</translation>
 <translation id="5683547024293500885">Не удалось проверить наличие обновлений в Chrome.</translation>
 <translation id="5686790454216892815">Имя файла слишком длинное.</translation>
+<translation id="5692329390578659217">Чтобы продолжить, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> передаст ваше имя, адрес электронной почты и фото профиля на этот сайт. Ознакомьтесь с его <ph name="BEGIN_LINK1" />политикой конфиденциальности<ph name="END_LINK1" /> и <ph name="BEGIN_LINK2" />условиями использования<ph name="END_LINK2" />.</translation>
 <translation id="569536719314091526">Чтобы перевести эту страницу на какой-либо язык, нажмите кнопку "Ещё"</translation>
 <translation id="5696597120588531049">Chrome поможет защитить вас от утечки данных, подозрительных сайтов и других проблем с безопасностью.</translation>
 <translation id="5697688514913266141">Куда будет сохранен файл: <ph name="BEGIN_BOLD" /><ph name="DIRECTORY" /><ph name="END_BOLD" />. <ph name="BEGIN_LINK2" />Изменить<ph name="END_LINK2" /></translation>
@@ -893,6 +898,7 @@
 <translation id="6277522088822131679">Не удалось распечатать страницу. Повторите попытку.</translation>
 <translation id="6277722725779679269">Не удалось обновить данные для функции отслеживания цен.</translation>
 <translation id="6278428485366576908">Тема</translation>
+<translation id="6293443105724342169">Список доступных аккаунтов открыт на половину экрана.</translation>
 <translation id="6294610283659775533">Вы можете отправлять вкладки на устройства, на которых выполнен вход в тот же аккаунт Google.</translation>
 <translation id="6297765934698848803">Организация, которая управляет вашим устройством, запретила доступ к камере.</translation>
 <translation id="6301525844455696527">Загляните в свой список для чтения</translation>
@@ -1063,7 +1069,6 @@
 <translation id="7173114856073700355">Открыть настройки</translation>
 <translation id="7177466738963138057">Вы всегда можете изменить свой выбор в настройках</translation>
 <translation id="7177873915659574692">Не удалось создать QR-код. Количество символов в URL превышает <ph name="CHARACTER_LIMIT" />.</translation>
-<translation id="7180611975245234373">Обновить</translation>
 <translation id="718226107353899806">Превышено максимально допустимое число откликов: <ph name="MAX_NUM_REACTIONS" />.</translation>
 <translation id="7187993566681480880">Позволяет избегать угроз при работе в браузере Chrome и может использоваться для повышения уровня безопасности в других приложениях Google, когда выполнен вход в аккаунт.</translation>
 <translation id="718926126787620637">Список папок с закладками открыт на весь экран</translation>
@@ -1113,6 +1118,7 @@
 <translation id="7474822150871987353">С помощью этой функции можно искать картинки, определения и другую информацию, не покидая открытый сайт. Чтобы выполнить поиск, выделите одно или несколько слов на странице.</translation>
 <translation id="7475192538862203634">Если эта проблема возникает часто, узнайте, <ph name="BEGIN_LINK" />как ее решить<ph name="END_LINK" />.</translation>
 <translation id="7475688122056506577">SD-карта не найдена. Некоторые файлы могут отсутствовать.</translation>
+<translation id="7477262822945323753">Чтобы продолжить, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> передаст ваше имя, адрес электронной почты и фото профиля на этот сайт. Ознакомьтесь с его <ph name="BEGIN_LINK1" />политикой конфиденциальности<ph name="END_LINK1" />.</translation>
 <translation id="7479104141328977413">Управление вкладками</translation>
 <translation id="7481312909269577407">Вперед</translation>
 <translation id="7482656565088326534">Вкладка предпросмотра</translation>
@@ -1197,6 +1203,7 @@
 <translation id="7926975587469166629">Название карты</translation>
 <translation id="7929962904089429003">Открыть меню</translation>
 <translation id="7930998711684428189">Сообщает, если пароли были раскрыты в результате утечки данных.</translation>
+<translation id="7937772386706786623">Управление медиаконтентом, вкладками инкогнито и другими функциями с помощью уведомлений</translation>
 <translation id="7939485076072265087">Создать стилизованную карточку с выделенным текстом</translation>
 <translation id="7942131818088350342">Версия <ph name="PRODUCT_NAME" /> устарела.</translation>
 <translation id="7944772052836377867">Подтвердите личность для синхронизации</translation>
@@ -1285,6 +1292,7 @@
 <translation id="8394720698884623075">Сверяет URL со списком небезопасных сайтов в Chrome.</translation>
 <translation id="8410695015584479363">Отслеживать цены</translation>
 <translation id="8413126021676339697">Показать всю историю</translation>
+<translation id="8414396119627470038">Вход на сайт <ph name="SITE_ETLD_PLUS_ONE" /> с учетными данными <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="8419244640277402268">Да</translation>
 <translation id="8424781820952413435">Страница отправлена. Чтобы ее открыть, запустите Chrome на своем <ph name="DEVICE_TYPE" />.</translation>
 <translation id="8427875596167638501">Вкладка предпросмотра открыта на половину высоты</translation>
@@ -1300,6 +1308,7 @@
 <translation id="8461694314515752532">Задать кодовую фразу для шифрования синхронизированных данных</translation>
 <translation id="8466613982764129868">Проверьте, подключено ли устройство <ph name="TARGET_DEVICE_NAME" /> к Интернету.</translation>
 <translation id="8473863474539038330">Адреса и другие данные</translation>
+<translation id="847656914027543776">Список доступных аккаунтов закрыт.</translation>
 <translation id="8481921391193215807">Если функции Privacy Sandbox включены, сайты могут использовать представленные здесь технологии, не нарушающие конфиденциальность, в том числе альтернативы межсайтовому отслеживанию. Со временем будет доступно больше пробных функций.
 
 <ph name="BEGIN_LIST_ITEM1" />Рекламодатели и издатели могут использовать технологию FLoC.<ph name="END_LIST_ITEM1" />
@@ -1426,6 +1435,7 @@
 <translation id="9108312223223904744">Поддержка телефона в качестве электронного ключа</translation>
 <translation id="9108808586816295166">Иногда безопасный DNS-сервер может быть недоступен.</translation>
 <translation id="9133397713400217035">Офлайн-контент</translation>
+<translation id="9133523398139146080">Список доступных аккаунтов открыт на весь экран.</translation>
 <translation id="9137013805542155359">Показать оригинал</translation>
 <translation id="9148126808321036104">Повторите вход</translation>
 <translation id="9155898266292537608">Также можно выполнить поиск, нажав на слово.</translation>

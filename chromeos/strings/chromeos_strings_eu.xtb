@@ -54,6 +54,7 @@
 <translation id="1499900233129743732"><ph name="MANAGER" /> domeinuak kudeatzen du erabiltzaile hau, eta baliteke urrunetik haren ezarpenak kudeatzea eta jarduerak gainbegiratzea.</translation>
 <translation id="150962533380566081">PUK kodeak ez du balio.</translation>
 <translation id="1510238584712386396">Abiarazlea</translation>
+<translation id="152892567002884378">Igo bolumena</translation>
 <translation id="155865706765934889">Ukipen-teklatua</translation>
 <translation id="1565038567006703504">Ezin da eguneratu <ph name="DEVICE_NAME" /></translation>
 <translation id="1567064801249837505">Albumak</translation>
@@ -88,6 +89,7 @@
 <translation id="1908234395526491708">UDP bidezko eskaeren hutsegiteak</translation>
 <translation id="1930797645656624981">Chrome OS-n idazketa-metodoaren zerbitzua</translation>
 <translation id="1947737735496445907">Inprimatuta</translation>
+<translation id="1951012854035635156">Laguntzailea</translation>
 <translation id="1979103255016296513">Pasahitza iraungita dago eta aldatu egin behar da</translation>
 <translation id="1999615961760456652">Sare-zerbitzuaren ataria</translation>
 <translation id="2006864819935886708">Konexioa</translation>
@@ -152,6 +154,7 @@
 <translation id="2859243502336719778">Eguneratze garrantzitsua</translation>
 <translation id="2860473693272905224">Jarri beste orri bat eskanerrean</translation>
 <translation id="2872961005593481000">Itzali</translation>
+<translation id="2874939134665556319">Aurreko pista</translation>
 <translation id="2878387241690264070"><ph name="RATE" /> deskargatu da <ph name="NUM_SECONDS" /> segundoan.</translation>
 <translation id="291142119251986300">Osagai ez-bateragarriak</translation>
 <translation id="2926057806159140518">Idatzi erabiltzaile-izena eta pasahitza, edo eskaneatu QR kodea</translation>
@@ -233,6 +236,7 @@
 <translation id="4003384961948020559">Hutsegitea - Irteera-erretilua beteta dago</translation>
 <translation id="4034824040120875894">Inprimagailua</translation>
 <translation id="4044093238444069296">Ezin da jarri harremanetan atebidearekin</translation>
+<translation id="4046123991198612571">Hurrengo pista</translation>
 <translation id="404928562651467259">ABISUA</translation>
 <translation id="409427325554347132">Gorde probaren xehetasunak</translation>
 <translation id="4110686435123617899">Hautatu <ph name="TITLE" /> (<ph name="DESC" />) albuma</translation>
@@ -250,9 +254,11 @@
 <translation id="4238516577297848345">Ez dago inprimatze-lanik abian</translation>
 <translation id="4239069858505860023">GPRS</translation>
 <translation id="4244962993387259361">Gutxienez 500 MB eduki behar dituzu libre memoriaren proba bat egiteko. Tokia egiteko, joan Ezarpenak &gt; Biltegi-kudeatzailea atalera.</translation>
+<translation id="4250229828105606438">Pantaila-argazkia</translation>
 <translation id="4258281355379922695">HTTP eskaeren latentzia</translation>
 <translation id="4271957103967917607">Ikusi pantaila osoan</translation>
 <translation id="4275799948641988986">Konpodu ondoren, nork erabiliko du gailu hau?</translation>
+<translation id="4289540628985791613">Ikuspegi orokorra</translation>
 <translation id="4297501883039923494">Geldituta: errore ezezaguna</translation>
 <translation id="4300073214558989"><ph name="IMAGE_COUNT" /> irudi</translation>
 <translation id="4378373042927530923">Ez da exekutatu</translation>
@@ -381,6 +387,7 @@ Sakatu mikrofonoa zerbait galdetu nahi badidazu.</translation>
 <translation id="554517032089923082">GTC</translation>
 <translation id="5578477003638479617">UMTS</translation>
 <translation id="5578519639599103840">Eskaneatu berriro</translation>
+<translation id="5583640892426849032">Atzera tekla</translation>
 <translation id="5620281292257375798">Barnekoa soilik</translation>
 <translation id="5649768706273821470">Entzun</translation>
 <translation id="5669267381087807207">Aktibatzen</translation>
@@ -390,6 +397,7 @@ Sakatu mikrofonoa zerbait galdetu nahi badidazu.</translation>
 <translation id="5707900041990977207"><ph name="CURRENT_PAGE" />/<ph name="TOTAL_PAGES" /></translation>
 <translation id="5733298426544876109">Eguneratu <ph name="DEVICE_NAME" /></translation>
 <translation id="5760715441271661976">Atariaren egoera</translation>
+<translation id="57838592816432529">Desaktibatu audioa</translation>
 <translation id="5784136236926853061">HTTP eskaeren latentzia luzea da</translation>
 <translation id="5832805196449965646">Gehitu pertsona bat</translation>
 <translation id="583281660410589416">Ezezaguna</translation>
@@ -397,6 +405,7 @@ Sakatu mikrofonoa zerbait galdetu nahi badidazu.</translation>
 <translation id="5849570051105887917">Hasierako hornitzailearen kodea</translation>
 <translation id="5860033963881614850">Desaktibatuta</translation>
 <translation id="5866840822086176774">Oso indartsua</translation>
+<translation id="588258955323874662">Pantaila osoa</translation>
 <translation id="5895138241574237353">Berrabiarazi</translation>
 <translation id="5916084858004523819">Debekatuta</translation>
 <translation id="5916664084637901428">Aktibatuta</translation>
@@ -467,12 +476,15 @@ Sakatu mikrofonoa zerbait galdetu nahi badidazu.</translation>
 <translation id="6643016212128521049">Garbitu</translation>
 <translation id="6647510110698214773">Enkriptatze-algoritmoa</translation>
 <translation id="6657585470893396449">Pasahitza</translation>
+<translation id="6659594942844771486">Fitxa</translation>
 <translation id="6692996468359469499">Lortu hautatutakoari buruzko informazioa</translation>
 <translation id="6704062477274546131">DNS bidezko ebazpena</translation>
+<translation id="6723839937902243910">Bateria</translation>
 <translation id="6747215703636344499">Geldituta: irteera-erretilua beteta dago</translation>
 <translation id="6749473226660745022">Argazkiak</translation>
 <translation id="6753452347192452143">Gailua ordenagailu bat da.</translation>
 <translation id="6756731097889387912">Ezin izan da bertan behera utzi eskaneatzeko prozesua</translation>
+<translation id="6760706756348334449">Jaitsi bolumena</translation>
 <translation id="6766275201586212568">huts egin dute DNS bidezko ebazpenek</translation>
 <translation id="6768237774506518020">DNS bidezko ebazpenen hutsegite-tasa altua</translation>
 <translation id="680983167891198932">Gakoa</translation>
@@ -526,6 +538,7 @@ Sakatu mikrofonoa zerbait galdetu nahi badidazu.</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
 <translation id="7435977162516949853">{NUMBER_OF_PAGES,plural, =1{Amaitu da eskaneatzen. 1 orri eskaneatu da.}other{Amaitu da eskaneatzen. {NUMBER_OF_PAGES} orri eskaneatu dira.}}</translation>
 <translation id="7469648432129124067">Ataria hauteman da</translation>
+<translation id="7481312909269577407">Aurrera</translation>
 <translation id="7487067081878637334">Teknologia</translation>
 <translation id="7490813197707563893">MAC helbidea</translation>
 <translation id="7497215489070763236">Zerbitzariaren CA ziurtagiria</translation>
@@ -579,6 +592,7 @@ Sakatu mikrofonoa zerbait galdetu nahi badidazu.</translation>
 <translation id="8132480444149501833">Eskatu trafiko-kontagailuak</translation>
 <translation id="8138405288920084977">LTEAdvanced</translation>
 <translation id="8143951647992294073">Hautatu <ph name="TOPIC_SOURCE" /> zerbitzuko <ph name="TOPIC_SOURCE_DESC" /> aukera</translation>
+<translation id="8179976553408161302">Sartu</translation>
 <translation id="8206859287963243715">Konexio mugikorra</translation>
 <translation id="8208861521865154048">Abantailak</translation>
 <translation id="8217675307824400706">Konektatu</translation>

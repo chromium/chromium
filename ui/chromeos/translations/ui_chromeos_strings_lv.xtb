@@ -61,6 +61,7 @@
 <translation id="1497522201463361063">Failu <ph name="FILE_NAME" /> nevar pārdēvēt. <ph name="ERROR_MESSAGE" /></translation>
 <translation id="1499943022354839699">Angļu (ASV), ar Dvorak tastatūru</translation>
 <translation id="1515909359182093592"><ph name="INPUT_LABEL" /> — saimniekdators</translation>
+<translation id="1521655867290435174">Google izklājlapas</translation>
 <translation id="1538729222189715449">Notiek Linux failu atvēršana…</translation>
 <translation id="1547964879613821194">Kanādas angļu</translation>
 <translation id="1556189134700913550">Lietot visiem</translation>
@@ -184,7 +185,6 @@
 <translation id="2544853746127077729">Tīkls noraidīja autentifikācijas sertifikātu.</translation>
 <translation id="2547921442987553570">Pievienot paplašinājumam <ph name="EXTENSION_NAME" /></translation>
 <translation id="255937426064304553">ASV starptautiskā</translation>
-<translation id="2562685439590298522">Dokumenti</translation>
 <translation id="2563185590376525700">Varde</translation>
 <translation id="2578394532502990878">Tamilu, fonētiskā</translation>
 <translation id="2579959351793446050">Oriju</translation>
@@ -220,9 +220,7 @@
 <translation id="2902734494705624966">ASV paplašinātā</translation>
 <translation id="290843123675549676">Marathu</translation>
 <translation id="2923240520113693977">Igauņu valoda</translation>
-<translation id="2925966894897775835">Izklājlapas</translation>
 <translation id="2938685643439809023">Mongoļu valoda</translation>
-<translation id="2943400156390503548">Prezentācijas</translation>
 <translation id="2943503720238418293">Izmantojiet īsāku nosaukumu.</translation>
 <translation id="2949781154072577687">Notiek diska “<ph name="DRIVE_NAME" />” formatēšana...</translation>
 <translation id="2951236788251446349">Medūza</translation>
@@ -414,6 +412,7 @@
 <translation id="4656777537938206294">Padariet failus pieejamus bezsaistē</translation>
 <translation id="4658782175094886150">Persona sniegā</translation>
 <translation id="4669606053856530811">“<ph name="SOURCE_NAME" />” dalībnieki zaudēs piekļuvi šiem vienumiem, ja tie netiks kopīgoti ar viņiem.</translation>
+<translation id="467809019005607715">Google prezentācijas</translation>
 <translation id="4690246192099372265">Zviedru valoda</translation>
 <translation id="4693155481716051732">Suši</translation>
 <translation id="4694604912444486114">Pērtiķis</translation>
@@ -658,6 +657,7 @@
 <translation id="6732801395666424405">Sertifikāti netika ielādēti.</translation>
 <translation id="6736329909263487977"><ph name="ISSUED_BY" /> [<ph name="ISSUED_TO" />]</translation>
 <translation id="6751256176799620176">Atlasīta 1 mape</translation>
+<translation id="6755827872271341378">Chrome OS Flex ierīce</translation>
 <translation id="6790428901817661496">Atskaņot</translation>
 <translation id="6795884519221689054">Panda</translation>
 <translation id="6806699711453372963">Pārvaldīt kopīgošanu ar Linux</translation>
@@ -735,6 +735,7 @@
 <translation id="7343393116438664539">Vjetnamiešu, telekss</translation>
 <translation id="7359359531237882347">Notiek <ph name="NUMBER_OF_ITEMS" /> vienumu kopēšana...</translation>
 <translation id="7375951387215729722">Failu saraksts ir sakārtots pēc slejas “<ph name="COLUMN_NAME" />” dilstošā secībā.</translation>
+<translation id="7402503521691663770">Chrome OS Flex ierīces</translation>
 <translation id="7408870451288633753">Čehu</translation>
 <translation id="7417453074306512035">Gēzu rakstības tastatūra</translation>
 <translation id="7417705661718309329">Google karte</translation>
@@ -949,6 +950,7 @@
 <translation id="9172592259078059678">Gudžaratu, transliterācija</translation>
 <translation id="9173120999827300720">Angļu (ASV), ar starptautisko tastatūru</translation>
 <translation id="9174050671906956834">Atkritnē esošie vienumi tiek neatgriezeniski dzēsti pēc 30 dienām.</translation>
+<translation id="9183302530794969518">Google dokumenti</translation>
 <translation id="9189836632794948435">Kazahu</translation>
 <translation id="9213073329713032541">Instalēšana sekmīgi sākta.</translation>
 <translation id="9219103736887031265">Attēli</translation>

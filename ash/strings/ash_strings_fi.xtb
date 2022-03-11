@@ -90,9 +90,9 @@ Pääset alkuun esimerkiksi näillä tavoilla.</translation>
 <translation id="1414271762428216854"><ph name="APP_NAME" />, asennettu sovellus</translation>
 <translation id="1419738280318246476">Avaa laitteen lukitus, niin voit käyttää ilmoitustoimintoa</translation>
 <translation id="1420408895951708260">Yövalo päälle/pois. <ph name="STATE_TEXT" /></translation>
+<translation id="1420732223884894666">Katsele puhelimesi viimeisimpiä kuvia ja mediaa tällä laitteella: <ph name="DEVICE_TYPE" /></translation>
 <translation id="1426410128494586442">Kyllä</translation>
 <translation id="1438357537418863713">Sovellusstriimaus on nyt otettu käyttöön. Kun aloitat sen käytön, äskettäin käynnistetyt sovellukset näkyvät täällä.</translation>
-<translation id="144853431011121127">Saat puhelimesi ilmoitukset laitteelle (<ph name="DEVICE_TYPE" />)</translation>
 <translation id="1455242230282523554">Näytä kieliasetukset</translation>
 <translation id="1460620680449458626">Äänet on mykistetty.</translation>
 <translation id="1467432559032391204">Vasemmalla</translation>
@@ -316,6 +316,7 @@ Pääset alkuun esimerkiksi näillä tavoilla.</translation>
 <translation id="301282384882049174">Järjestelmänvalvojan jakama</translation>
 <translation id="3017687597151988916">Lähteeksi on valittu ikkuna</translation>
 <translation id="3033545621352269033">Päällä</translation>
+<translation id="3033912566804961911">Yhdistä <ph name="DESK_NAME" /></translation>
 <translation id="3036649622769666520">Avaa tiedostot</translation>
 <translation id="3038571455154067151">Voit kirjautua sisään vanhemman Family Link ‑käyttökoodilla</translation>
 <translation id="3039939407102840004">Näyttökynän akun varaus on <ph name="PERCENTAGE" /> prosenttia.</translation>
@@ -341,6 +342,7 @@ Pääset alkuun esimerkiksi näillä tavoilla.</translation>
 <translation id="3153444934357957346">Voit lisätä enintään <ph name="MULTI_PROFILE_USER_LIMIT" /> tiliä useille tileille kirjautumista varten.</translation>
 <translation id="3154351730702813399">Laitteen järjestelmänvalvoja saattaa seurata selaustoimintaasi.</translation>
 <translation id="316086887565479535">Mallissa sovelluksia, joita ei tueta</translation>
+<translation id="3161500364292033097">Sulje työpöytä ja ikkunat</translation>
 <translation id="316356270129335934"><ph name="MANAGER" /> palauttaa laitteen (<ph name="DEVICE_TYPE" />) aiempaan versioon. Laitteen tehdasasetukset palautetaan ja kaikki data poistetaan.</translation>
 <translation id="3181441307743005334">Uudelleenkäynnistys voi kestää hetken</translation>
 <translation id="3202010236269062730">{NUM_DEVICES,plural, =1{Yhdistetty 1 laitteeseen}other{Yhdistetty # laitteeseen}}</translation>
@@ -823,6 +825,7 @@ Pääset alkuun esimerkiksi näillä tavoilla.</translation>
 <translation id="6165508094623778733">Lisätietoja</translation>
 <translation id="6166852626429024716">Hae laitteelta, sovelluksista, asetuksista, verkosta…</translation>
 <translation id="6179832488876878285">Voit kiinnittää tärkeitä tiedostoja tähän. Aloita avaamalla Files-sovellus.</translation>
+<translation id="619279033188484792">Katsele puhelimesi viimeisimpiä kuvia, mediaa ja ilmoituksia <ph name="DEVICE_TYPE" />-laitteella</translation>
 <translation id="6220928844947387476">Voit nyt kuvata itseäsi ja näyttöäsi samaan aikaan</translation>
 <translation id="622484624075952240">Alas</translation>
 <translation id="6231419273573514727">Lisälaitteen toiminta voi olla rajoitettua</translation>
@@ -935,6 +938,7 @@ Uusi asennus</translation>
 <translation id="6921188888306725546">Pikanäppäimiä on parannettu</translation>
 <translation id="6931576957638141829">Tallennuspaikka:</translation>
 <translation id="6945221475159498467">Valitse</translation>
+<translation id="6960565108681981554">Ei aktivoitu. Ota yhteyttä operaattoriin.</translation>
 <translation id="6961121602502368900">Puhelimen hiljentäminen ei ole käytettävissä työprofiililla</translation>
 <translation id="6961840794482373852">Pikanäppäinyhdistelmä Alt + ylänuoli on muuttunut. Jos haluat käyttää Page Up ‑näppäintä, paina <ph name="LAUNCHER_KEY_NAME" /> + ylänuoli.</translation>
 <translation id="6965382102122355670">OK</translation>
@@ -1049,6 +1053,7 @@ Uusi asennus</translation>
 <translation id="7649070708921625228">Ohje</translation>
 <translation id="7654687942625752712">Poista äänipalaute käytöstä painamalla molempia äänenvoimakkuuspainikkeita viiden sekunnin ajan.</translation>
 <translation id="7658239707568436148">Peru</translation>
+<translation id="7659861092419699379">Työpöytä ja ikkunat on suljettu</translation>
 <translation id="7660160718439869192"><ph name="NAME" /> näkyy laitteilla, joihin <ph name="EMAIL" /> on linkitetty</translation>
 <translation id="7662283695561029522">Määritä napauttamalla.</translation>
 <translation id="7670953955701272011">Avaa tämä päivämäärä Google Kalenterissa</translation>
@@ -1143,7 +1148,6 @@ Uusi asennus</translation>
 <translation id="8236042855478648955">Tauon paikka</translation>
 <translation id="8247060538831475781"><ph name="CONNECTION_STATUS" />, signaalin vahvuus <ph name="SIGNAL_STRENGTH" />, puhelimen akun varaus <ph name="BATTERY_STATUS" /></translation>
 <translation id="8247998213073982446"><ph name="APP_NAME" />, sovellus</translation>
-<translation id="8248728785693203669">USB-C-johtosi ei ehkä yhdisty näyttöihin kunnolla</translation>
 <translation id="8255234195843591763">Nollaa päivitystä varten</translation>
 <translation id="826107067893790409">Avaa painamalla Enter: <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="8261506727792406068">Poista</translation>

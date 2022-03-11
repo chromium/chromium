@@ -61,6 +61,7 @@
 <translation id="1497522201463361063">Nije moguće preimenovati datoteku „<ph name="FILE_NAME" />“. <ph name="ERROR_MESSAGE" /></translation>
 <translation id="1499943022354839699">engleski (SAD), sa tastaturom Dvorak</translation>
 <translation id="1515909359182093592"><ph name="INPUT_LABEL" /> – host</translation>
+<translation id="1521655867290435174">Google tabele</translation>
 <translation id="1538729222189715449">Otvaraju se Linux datoteke…</translation>
 <translation id="1547964879613821194">kanadska engleska</translation>
 <translation id="1556189134700913550">Primeni na sve</translation>
@@ -184,7 +185,6 @@
 <translation id="2544853746127077729">Mreža je odbila sertifikat za potvrdu autentičnosti</translation>
 <translation id="2547921442987553570">Dodaj u <ph name="EXTENSION_NAME" /></translation>
 <translation id="255937426064304553">međunarodna američka</translation>
-<translation id="2562685439590298522">Dokumenti</translation>
 <translation id="2563185590376525700">Žaba</translation>
 <translation id="2578394532502990878">fonetski tamilski</translation>
 <translation id="2579959351793446050">orija</translation>
@@ -220,9 +220,7 @@
 <translation id="2902734494705624966">proširena američka</translation>
 <translation id="290843123675549676">marati</translation>
 <translation id="2923240520113693977">estonski</translation>
-<translation id="2925966894897775835">Tabele</translation>
 <translation id="2938685643439809023">mongolski</translation>
-<translation id="2943400156390503548">Prezentacije</translation>
 <translation id="2943503720238418293">Koristite kraći naziv</translation>
 <translation id="2949781154072577687">Formatira se <ph name="DRIVE_NAME" />...</translation>
 <translation id="2951236788251446349">Meduza</translation>
@@ -414,6 +412,7 @@
 <translation id="4656777537938206294">Učinite fajlove dostupnim oflajn</translation>
 <translation id="4658782175094886150">Osoba na snegu</translation>
 <translation id="4669606053856530811">Članovi iz „<ph name="SOURCE_NAME" />“ će izgubiti pristup ako se ove stavke ne dele sa njima.</translation>
+<translation id="467809019005607715">Google prezentacije</translation>
 <translation id="4690246192099372265">švedski</translation>
 <translation id="4693155481716051732">Suši</translation>
 <translation id="4694604912444486114">Majmun</translation>
@@ -658,6 +657,7 @@
 <translation id="6732801395666424405">Sertifikati nisu otpremljeni</translation>
 <translation id="6736329909263487977"><ph name="ISSUED_BY" /> [<ph name="ISSUED_TO" />]</translation>
 <translation id="6751256176799620176">Izabran je 1 direktorijum</translation>
+<translation id="6755827872271341378">Chrome OS Flex uređaj</translation>
 <translation id="6790428901817661496">Pusti</translation>
 <translation id="6795884519221689054">Panda</translation>
 <translation id="6806699711453372963">Upravljajte Linux deljenjem</translation>
@@ -735,6 +735,7 @@
 <translation id="7343393116438664539">vijetnamski (Telex)</translation>
 <translation id="7359359531237882347">Kopiraju se stavke (<ph name="NUMBER_OF_ITEMS" />)...</translation>
 <translation id="7375951387215729722">Lista datoteka je sortirana po opadajućem redosledu po kriterijumu <ph name="COLUMN_NAME" />.</translation>
+<translation id="7402503521691663770">Chrome OS Flex uređaji</translation>
 <translation id="7408870451288633753">češki</translation>
 <translation id="7417453074306512035">Etiopljanska tastatura</translation>
 <translation id="7417705661718309329">Google mapa</translation>
@@ -949,6 +950,7 @@
 <translation id="9172592259078059678">gudžarati, transliteracija</translation>
 <translation id="9173120999827300720">engleski (SAD) sa internacionalnom tastaturom</translation>
 <translation id="9174050671906956834">Stavke u otpadu se brišu zauvek posle 30 dana.</translation>
+<translation id="9183302530794969518">Google dokumenti</translation>
 <translation id="9189836632794948435">kazaški</translation>
 <translation id="9213073329713032541">Instalacija je započeta.</translation>
 <translation id="9219103736887031265">Slike</translation>

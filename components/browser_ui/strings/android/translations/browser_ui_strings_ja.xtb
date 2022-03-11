@@ -254,6 +254,7 @@
 <translation id="7087918508125750058"><ph name="ITEM_COUNT" /> 件選択されています。オプションは画面上部にあります</translation>
 <translation id="7141896414559753902">サイトでのポップアップ表示とリダイレクトをブロックする（推奨）</translation>
 <translation id="7176368934862295254"><ph name="KILOBYTES" /> KB</translation>
+<translation id="7180611975245234373">更新</translation>
 <translation id="723171743924126238">画像を選択</translation>
 <translation id="7243308994586599757">画面の下の方にオプションがあります</translation>
 <translation id="7250468141469952378"><ph name="ITEM_COUNT" /> 件選択されています</translation>
@@ -309,6 +310,7 @@
 <translation id="8394832520002899662">タップしてサイトに戻る</translation>
 <translation id="8409345997656833551">記事を簡易表示できる場合に通知する</translation>
 <translation id="8425213833346101688">変更</translation>
+<translation id="8428213095426709021">設定</translation>
 <translation id="8441146129660941386">後方にシーク再生</translation>
 <translation id="8444433999583714703"><ph name="APP_NAME" /> に現在地へのアクセスを許可するには、<ph name="BEGIN_LINK" />Android の設定<ph name="END_LINK" />でも位置情報をオンにしてください。</translation>
 <translation id="8447861592752582886">デバイスの許可を取り消します</translation>

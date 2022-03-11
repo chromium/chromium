@@ -91,9 +91,9 @@ Berikut ini beberapa hal yang dapat Anda coba untuk memulai.</translation>
 <translation id="1414271762428216854"><ph name="APP_NAME" />, Aplikasi yang Diinstal</translation>
 <translation id="1419738280318246476">Buka kunci perangkat untuk melakukan tindakan notifikasi</translation>
 <translation id="1420408895951708260">Beralih ke Cahaya Malam. <ph name="STATE_TEXT" /></translation>
+<translation id="1420732223884894666">Lihat foto terbaru dan media dari ponsel Anda di <ph name="DEVICE_TYPE" /></translation>
 <translation id="1426410128494586442">Ya</translation>
 <translation id="1438357537418863713">Streaming aplikasi sudah siap. Setelah memulai, aplikasi yang diluncurkan baru-baru ini akan muncul di sini.</translation>
-<translation id="144853431011121127">Dapatkan notifikasi dari ponsel di <ph name="DEVICE_TYPE" /></translation>
 <translation id="1455242230282523554">Tampilkan setelan bahasa</translation>
 <translation id="1460620680449458626">Volume dibisukan.</translation>
 <translation id="1467432559032391204">Kiri</translation>
@@ -317,6 +317,7 @@ Berikut ini beberapa hal yang dapat Anda coba untuk memulai.</translation>
 <translation id="301282384882049174">Dibagikan oleh administrator Anda</translation>
 <translation id="3017687597151988916">Area pemilihan disetel ke jendela</translation>
 <translation id="3033545621352269033">Aktif</translation>
+<translation id="3033912566804961911">Gabungkan dengan <ph name="DESK_NAME" /></translation>
 <translation id="3036649622769666520">Buka File</translation>
 <translation id="3038571455154067151">Untuk login, masukkan kode akses orang tua Family Link</translation>
 <translation id="3039939407102840004">Baterai stilus <ph name="PERCENTAGE" /> persen.</translation>
@@ -342,6 +343,7 @@ Berikut ini beberapa hal yang dapat Anda coba untuk memulai.</translation>
 <translation id="3153444934357957346">Anda hanya dapat memiliki maksimum <ph name="MULTI_PROFILE_USER_LIMIT" /> akun dalam fitur login multipel.</translation>
 <translation id="3154351730702813399">Admin perangkat dapat memantau aktivitas akses internet Anda.</translation>
 <translation id="316086887565479535">Aplikasi yang tidak didukung di template</translation>
+<translation id="3161500364292033097">Tutup desktop dan jendela</translation>
 <translation id="316356270129335934"><ph name="MANAGER" /> me-roll back <ph name="DEVICE_TYPE" />. Perangkat Anda akan direset dan semua data akan dihapus.</translation>
 <translation id="3181441307743005334">Mulai ulang dapat memerlukan waktu beberapa saat</translation>
 <translation id="3202010236269062730">{NUM_DEVICES,plural, =1{Terhubung ke satu perangkat}other{Terhubung ke # perangkat}}</translation>
@@ -824,6 +826,7 @@ Berikut ini beberapa hal yang dapat Anda coba untuk memulai.</translation>
 <translation id="6165508094623778733">Pelajari selengkapnya</translation>
 <translation id="6166852626429024716">Telusuri perangkat, aplikasi, setelan, web ...</translation>
 <translation id="6179832488876878285">Anda dapat menyematkan file penting di sini. Buka aplikasi File untuk memulai.</translation>
+<translation id="619279033188484792">Lihat foto terbaru, media, dan notifikasi dari ponsel Anda di <ph name="DEVICE_TYPE" /></translation>
 <translation id="6220928844947387476">Anda kini dapat merekam diri Anda dan layar secara bersamaan</translation>
 <translation id="622484624075952240">Bawah</translation>
 <translation id="6231419273573514727">Performa periferal mungkin dibatasi</translation>
@@ -936,6 +939,7 @@ Baru diinstal</translation>
 <translation id="6921188888306725546">Pintasan keyboard telah ditingkatkan</translation>
 <translation id="6931576957638141829">Simpan ke</translation>
 <translation id="6945221475159498467">Pilih</translation>
+<translation id="6960565108681981554">Tidak diaktifkan. Hubungi operator.</translation>
 <translation id="6961121602502368900">Fitur senyapkan ponsel tidak tersedia di profil kerja</translation>
 <translation id="6961840794482373852">Pintasan keyboard Alt + Panah Atas telah diubah. Untuk menggunakan tombol Page Up, tekan tombol <ph name="LAUNCHER_KEY_NAME" /> + Panah Atas.</translation>
 <translation id="6965382102122355670">Oke</translation>
@@ -1050,6 +1054,7 @@ Baru diinstal</translation>
 <translation id="7649070708921625228">Bantuan</translation>
 <translation id="7654687942625752712">Tekan dan tahan kedua tombol volume selama 5 detik untuk menonaktifkan respons lisan.</translation>
 <translation id="7658239707568436148">Batal</translation>
+<translation id="7659861092419699379">Desktop dan jendela telah ditutup</translation>
 <translation id="7660160718439869192"><ph name="NAME" /> Anda akan muncul di perangkat yang ditautkan dengan <ph name="EMAIL" /></translation>
 <translation id="7662283695561029522">Ketuk untuk mengonfigurasi</translation>
 <translation id="7670953955701272011">Buka tanggal ini di Google Kalender</translation>
@@ -1144,7 +1149,6 @@ Baru diinstal</translation>
 <translation id="8236042855478648955">Waktunya beristirahat</translation>
 <translation id="8247060538831475781"><ph name="CONNECTION_STATUS" />, Kekuatan Sinyal <ph name="SIGNAL_STRENGTH" />, Baterai Ponsel <ph name="BATTERY_STATUS" /></translation>
 <translation id="8247998213073982446"><ph name="APP_NAME" />, Aplikasi</translation>
-<translation id="8248728785693203669">Kabel USB-C mungkin tidak terhubung dengan benar ke layar</translation>
 <translation id="8255234195843591763">Reset untuk mengupdate</translation>
 <translation id="826107067893790409">Tekan Enter untuk membuka kunci <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="8261506727792406068">Hapus</translation>

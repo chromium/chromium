@@ -492,6 +492,7 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="2430968933669123598">Google konta pārvaldība. Lai pārvaldītu savu informāciju, konfidencialitāti un drošību savā Google kontā, nospiediet taustiņu Enter.</translation>
 <translation id="2436186046335138073">Vai atļaut <ph name="HANDLER_HOSTNAME" /> atvērt visas <ph name="PROTOCOL" /> saites?</translation>
 <translation id="2438874542388153331">Četri caurumi labajā pusē</translation>
+<translation id="2448295565072560657">Perifērijas ierīces, kas ir pievienotas šai ierīcei, kamēr esat pieteicies</translation>
 <translation id="2450021089947420533">Meklēšanas ceļi</translation>
 <translation id="2463739503403862330">Aizpildīt</translation>
 <translation id="2465402087343596252">Architecture-E</translation>
@@ -499,6 +500,7 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="2465688316154986572">Skavojums</translation>
 <translation id="2465914000209955735">Pārvaldīt pārlūkā Chrome lejupielādētos failus</translation>
 <translation id="2466004615675155314">Rādīt informāciju no tīmekļa</translation>
+<translation id="2467272921457885625">Ierīces aparatūras specifikācijas un statistika, piemēram, centrālā procesora / RAM lietojuma vēsture</translation>
 <translation id="2467694685043708798"><ph name="BEGIN_LINK" />Palaist tīkla diagnostiku<ph name="END_LINK" /></translation>
 <translation id="2469153820345007638">Secība: no 1 līdz N</translation>
 <translation id="2470767536994572628">Ja rediģēsiet piezīmes, dokuments atkal pāries vienas lapas skatā un rotācija tiks atiestatīta.</translation>
@@ -2292,7 +2294,6 @@ Papildu informācija:
 <translation id="8241712895048303527">Bloķēt šajā vietnē</translation>
 <translation id="8242426110754782860">Turpināt</translation>
 <translation id="8249296373107784235">Priekšlaikus pārtraukt</translation>
-<translation id="8249320324621329438">Pēdējās pirmsielādes laiks:</translation>
 <translation id="8253091569723639551">Jānorāda norēķinu adrese.</translation>
 <translation id="8257387598443225809">Šī lietotne ir paredzēta mobilajām ierīcēm</translation>
 <translation id="825929999321470778">Rādīt visas saglabātās paroles</translation>

@@ -493,6 +493,7 @@
 <translation id="2430968933669123598">Google Account စီမံရန်၊ သင်၏ Google Account တွင် သင့်အချက်အလက်၊ ပုဂ္ဂိုလ်ရေးနှင့် လုံခြုံရေးဆိုင်ရာများကို စီမံရန် Enter ခလုတ် နှိပ်ပါ</translation>
 <translation id="2436186046335138073">လင့် <ph name="PROTOCOL" /> အားလုံးကို <ph name="HANDLER_HOSTNAME" />အား ဖွင့်ခွင့် ပြုမလား?</translation>
 <translation id="2438874542388153331">ညာဘက်တွင် လေးချက်ဖောက်ရန်</translation>
+<translation id="2448295565072560657">သင်အကောင့်ဝင်ချိန်တွင် ဤစက်သို့ ချိတ်ဆက်ပစ္စည်းများ တွဲချိတ်ထားသည်</translation>
 <translation id="2450021089947420533">ခရီးစဉ်များ</translation>
 <translation id="2463739503403862330">ဖြည့်သွင်းရန်</translation>
 <translation id="2465402087343596252">Architecture-E</translation>
@@ -500,6 +501,7 @@
 <translation id="2465688316154986572">ချုပ်စက်ဖြင့် ချုပ်ရန်</translation>
 <translation id="2465914000209955735">Chrome တွင် သင် ဒေါင်းလုဒ်လုပ်ခဲ့သည့်ဖိုင်များကို စီမံပါ</translation>
 <translation id="2466004615675155314">ဝဘ်ပေါ်မှအချက်အလက် ပြပါ</translation>
+<translation id="2467272921457885625">CPU/RAM အသုံးပြုမှုမှတ်တမ်းကဲ့သို့ စက်၏ ကွန်ပျူတာဆိုင်ရာစက်ပစ္စည်း အသေးစိတ်ဖော်ပြချက်များနှင့် ကိန်းဂဏန်းစာရင်းများ</translation>
 <translation id="2467694685043708798"><ph name="BEGIN_LINK" />ကွန်ရက်ပြဿနာရှာဖွေမှု ပြုလုပ်ပါ<ph name="END_LINK" /></translation>
 <translation id="2469153820345007638">၁ မှ N သို့ အစီအစဉ်</translation>
 <translation id="2470767536994572628">မှတ်ချက်များတည်းဖြတ်ပါက ဤမှတ်တမ်းသည် စာမျက်နှာတစ်ခုတည်းသို့ ပြန်ပြောင်းပြီး ၎င်း၏ မူရင်းအနေအထားသို့ ပြန်လှည့်သွားမည်</translation>
@@ -589,7 +591,7 @@
 <translation id="2704283930420550640">တန်ဖိုးမှာ ပုံစံချထားမှု မကိုင်ညီပါ။</translation>
 <translation id="2704606927547763573">ကူးယူပြီးပါပြီ</translation>
 <translation id="2705137772291741111">သိမ်းဆည်းခဲ့သည့် (ယာယီသိမ်းဆည်းထားသည့်) မိတ္တူကို ဖတ်မရပါ။</translation>
-<translation id="2709516037105925701">အလိုလျောက် ဖြည့်စွက်</translation>
+<translation id="2709516037105925701">အလိုအလျောက် ဖြည့်စွက်</translation>
 <translation id="2713444072780614174">အဖြူ</translation>
 <translation id="2715612312510870559"><ph name="UPDATE_CREDIT_CARD_FOCUSED_FRIENDLY_MATCH_TEXT" />၊ Chrome ဆက်တင်များတွင် ငွေပေးချေမှုများနှင့် ခရက်ဒစ်ကတ် အချက်အလက်ကို စီမံရန် Tab နှိပ်ပြီးနောက် Enter နှိပ်ပါ</translation>
 <translation id="271663710482723385">ဖန်သားပြင်အပြည့်မှ ထွက်ရန် |<ph name="ACCELERATOR1" />| + |<ph name="ACCELERATOR2" />| နှိပ်ပါ</translation>
@@ -2295,7 +2297,6 @@
 <translation id="8241712895048303527">ဤဝဘ်ဆိုက်တွင် ပိတ်ရန်</translation>
 <translation id="8242426110754782860">ဆက်လက်လုပ်ဆောင်ပါ</translation>
 <translation id="8249296373107784235">မလုပ်တော့ပါ</translation>
-<translation id="8249320324621329438">နောက်ဆုံး ရယူခဲ့:</translation>
 <translation id="8253091569723639551">ငွေတောင်းခံလွှာပို့ရန် လိပ်စာ လိုအပ်ပါသည်</translation>
 <translation id="8257387598443225809">ဤအက်ပ်ကို မိုဘိုင်းအတွက် ထုတ်လုပ်ထားသည်</translation>
 <translation id="825929999321470778">သိမ်းထားသော စကားဝှက်များအားလုံးကို ပြခြင်း</translation>

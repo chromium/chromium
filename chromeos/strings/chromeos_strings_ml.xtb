@@ -54,6 +54,7 @@
 <translation id="1499900233129743732"><ph name="MANAGER" /> ആണ് ഈ ഉപയോക്താവിനെ മാനേജ് ചെയ്യുന്നത്, ഒപ്പം വിദൂരമായി ക്രമീകരണം മാനേജ് ചെയ്യുകയും ഉപയോക്തൃ ആക്‌റ്റിവിറ്റി നിരീക്ഷിക്കുകയും ചെയ്തേക്കാം.</translation>
 <translation id="150962533380566081">അസാധുവായ PUK.</translation>
 <translation id="1510238584712386396">ലോഞ്ചർ</translation>
+<translation id="152892567002884378">ശബ്ദം കൂട്ടുക</translation>
 <translation id="155865706765934889">ടച്ച്‌പാഡ്</translation>
 <translation id="1565038567006703504"><ph name="DEVICE_NAME" /> അപ്ഡേറ്റ് ചെയ്യാനാകുന്നില്ല</translation>
 <translation id="1567064801249837505">ആൽബങ്ങൾ</translation>
@@ -82,12 +83,14 @@
 <translation id="1807246157184219062">ലൈറ്റ്</translation>
 <translation id="1827738518074806965">ആര്‍ട്ട് ഗ്യാലറി</translation>
 <translation id="1851218745569890714">വീഡിയോ കോൺഫറൻസിംഗ്</translation>
+<translation id="1852934301711881861">ChromeOS Flex ഇൻസ്റ്റാൾ ചെയ്യുക</translation>
 <translation id="1874612839560830905">MTU</translation>
 <translation id="1887850431809612466">ഹാർഡ്‌വെയർ അവലോകനം</translation>
 <translation id="1905710495812624430">അനുവദനീയമായ പരമാവധി ശ്രമങ്ങൾ നടത്തിക്കഴിഞ്ഞു.</translation>
 <translation id="1908234395526491708">പരാജയപ്പെട്ട UDP അഭ്യർത്ഥനകൾ</translation>
 <translation id="1930797645656624981">Chrome OS ഇൻപുട്ട് രീതി സേവനം</translation>
 <translation id="1947737735496445907">പ്രിന്റ് ചെയ്‌തു</translation>
+<translation id="1951012854035635156">Assistant</translation>
 <translation id="1979103255016296513">പാസ്‌വേഡ് മാറ്റേണ്ട സമയം കഴിഞ്ഞു</translation>
 <translation id="1999615961760456652">ക്യാപ്‌റ്റീവ് പോർട്ടൽ</translation>
 <translation id="2006864819935886708">കണക്റ്റിവിറ്റി</translation>
@@ -105,6 +108,7 @@
 <translation id="2158971754079422508"><ph name="DESC_TEXT" />: വീണ്ടും ശ്രമിക്കുക</translation>
 <translation id="2161394479394250669">പ്രിന്റ് ജോലി റദ്ദാക്കുക</translation>
 <translation id="2180197493692062006">എന്തോ കുഴപ്പമുണ്ടായി. ആപ്പ് വീണ്ടും തുറക്കാൻ ശ്രമിക്കുക.</translation>
+<translation id="2201770616342964496">ലോക്കൽ ഐഡന്റിറ്റി</translation>
 <translation id="2209788852729124853">ട്രാഫിക് കൗണ്ടറുകൾ റീസെറ്റ് ചെയ്യുക</translation>
 <translation id="2212733584906323460">നെയിം റെസല്യൂഷൻ</translation>
 <translation id="2217935453350629363">നിലവിലെ വേഗത</translation>
@@ -152,6 +156,7 @@
 <translation id="2859243502336719778">നിർണ്ണായക അപ്ഡേറ്റ്</translation>
 <translation id="2860473693272905224">സ്‌കാനറിൽ മറ്റൊരു പേജ് വയ്ക്കുക</translation>
 <translation id="2872961005593481000">അടയ്ക്കുക</translation>
+<translation id="2874939134665556319">മുമ്പത്തെ ട്രാക്ക്</translation>
 <translation id="2878387241690264070"><ph name="NUM_SECONDS" /> സെക്കൻഡിൽ <ph name="RATE" /> ഡിസ്ചാർജ് ചെയ്തു.</translation>
 <translation id="291142119251986300">യോഗ്യതയില്ലാത്ത ഘടകങ്ങൾ</translation>
 <translation id="2926057806159140518">നിങ്ങളുടെ ഉപയോക്തൃനാമവും പാസ്‌വേഡും നൽകുക അല്ലെങ്കിൽ നിങ്ങളുടെ QR കോഡ് സ്‌കാൻ ചെയ്യുക</translation>
@@ -233,6 +238,7 @@
 <translation id="4003384961948020559">പ്രിന്റ് ചെയ്യാനായില്ല - ഔട്ട്പുട്ട് നിറഞ്ഞിരിക്കുന്നു</translation>
 <translation id="4034824040120875894">പ്രിന്റർ</translation>
 <translation id="4044093238444069296">ഗേറ്റ്‌വേയുമായി ബന്ധപ്പെടാനാകുന്നില്ല</translation>
+<translation id="4046123991198612571">അടുത്ത ട്രാക്ക്</translation>
 <translation id="404928562651467259">മുന്നറിയിപ്പ്</translation>
 <translation id="409427325554347132">ടെസ്‌റ്റ് വിശദാംശങ്ങൾ സംരക്ഷിക്കുക</translation>
 <translation id="4110686435123617899"><ph name="TITLE" /> <ph name="DESC" /> ആൽബം തിരഞ്ഞെടുക്കുക</translation>
@@ -250,9 +256,11 @@
 <translation id="4238516577297848345">പ്രിന്റ് ജോലികളൊന്നും പുരോഗമിക്കുന്നില്ല</translation>
 <translation id="4239069858505860023">GPRS</translation>
 <translation id="4244962993387259361">മെമ്മറി ടെസ്റ്റ് റൺ ചെയ്യണമെങ്കിൽ ഏറ്റവും കുറഞ്ഞത് 500 MB ആവശ്യമുണ്ട്. ഇടം സൃഷ്ടിക്കാൻ, ക്രമീകരണം &gt; സ്‌റ്റോറേജ് മാനേജ്മെന്റ് എന്നതിലേക്ക് പോകുക.</translation>
+<translation id="4250229828105606438">സ്‌ക്രീൻഷോട്ട്</translation>
 <translation id="4258281355379922695">HTTP പ്രതികരണ സമയം</translation>
 <translation id="4271957103967917607">പൂർണ്ണ സ്‌ക്രീനിൽ കാണുക</translation>
 <translation id="4275799948641988986">റിപ്പയറിന് ശേഷം ആരാണ് ഉപകരണം ഉപയോഗിക്കുക?</translation>
+<translation id="4289540628985791613">അവലോകനം</translation>
 <translation id="4297501883039923494">പ്രിന്റ് ജോലി നിർത്തി - അജ്ഞാതമായ പിശക്</translation>
 <translation id="4300073214558989"><ph name="IMAGE_COUNT" /> ചിത്രങ്ങൾ</translation>
 <translation id="4378373042927530923">റൺ ചെയ്‌തിട്ടില്ല</translation>
@@ -282,6 +290,7 @@
 <translation id="458794348635939462">എല്ലാ ഹോസ്‌റ്റുകളും പരിഹരിക്കാനായില്ല</translation>
 <translation id="4593212453765072419">പ്രോക്‌സി പ്രാമാണീകരണം ആവശ്യമാണ്</translation>
 <translation id="4627232916386272576"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, ആകെയുള്ള <ph name="TOTAL_PAGE_NUMBER" /> എണ്ണത്തിൽ <ph name="PRINTED_PAGE_NUMBER" /> എണ്ണം. പ്രിന്റ് ജോലി റദ്ദാക്കാൻ എന്റർ അമർത്തുക.</translation>
+<translation id="4627645661474370390">റിമോട്ട് ഐഡന്റിറ്റി</translation>
 <translation id="463791356324567266">സ്‌കാൻ ചെയ്യൽ റദ്ദാക്കുന്നു...</translation>
 <translation id="4646949265910132906">സുരക്ഷിതമായ വൈഫൈ കണക്ഷൻ</translation>
 <translation id="4654549501020883054">ദിവസേന മാറ്റുക</translation>
@@ -335,6 +344,7 @@
 <translation id="5051044138948155788">ഇത് അവസാനത്തെ പേജാണ്. ഇത് നീക്കം ചെയ്യുന്നത് നിങ്ങളെ സ്‌കാനിംഗിന്റെ ആരംഭ സ്ക്രീനിലേക്ക് കൊണ്ടുപോകും.</translation>
 <translation id="5088172560898466307">സെർവർ ഹോസ്റ്റ്‌നാമം</translation>
 <translation id="5089810972385038852">സ്റ്റേറ്റ്</translation>
+<translation id="5090362543162270857">IPsec (IKEv2)</translation>
 <translation id="5142961317498132443">പരിശോധിച്ചുറപ്പിക്കൽ</translation>
 <translation id="5154917547274118687">മെമ്മറി</translation>
 <translation id="5160857336552977725">നിങ്ങളുടെ <ph name="DEVICE_TYPE" /> എന്നതിൽ സൈൻ ഇൻ ചെയ്യുക</translation>
@@ -379,6 +389,7 @@
 <translation id="554517032089923082">GTC</translation>
 <translation id="5578477003638479617">UMTS</translation>
 <translation id="5578519639599103840">വീണ്ടും സ്‌കാൻ ചെയ്യുക</translation>
+<translation id="5583640892426849032">ബാക്ക്‌സ്പെയ്‌സ്</translation>
 <translation id="5620281292257375798">ആന്തരികം മാത്രം</translation>
 <translation id="5649768706273821470">കേൾക്കുക</translation>
 <translation id="5669267381087807207">സജീവമാക്കുന്നു</translation>
@@ -388,6 +399,7 @@
 <translation id="5707900041990977207"><ph name="TOTAL_PAGES" />-ൽ <ph name="CURRENT_PAGE" /></translation>
 <translation id="5733298426544876109"><ph name="DEVICE_NAME" /> അപ്‌ഡേറ്റ് ചെയ്യുക</translation>
 <translation id="5760715441271661976">പോര്‍ട്ടല്‍ നില</translation>
+<translation id="57838592816432529">മ്യൂട്ട് ചെയ്യുക</translation>
 <translation id="5784136236926853061">ഉയർന്ന HTTP പ്രതികരണ സമയം</translation>
 <translation id="5832805196449965646">വ്യക്തിയെ ചേർക്കുക</translation>
 <translation id="583281660410589416">അജ്ഞാതം</translation>
@@ -395,6 +407,7 @@
 <translation id="5849570051105887917">ഹോം ദാതാവിന്റെ കോഡ്</translation>
 <translation id="5860033963881614850">ഓഫാക്കുക</translation>
 <translation id="5866840822086176774">വളരെ ദൃഢമാണ്</translation>
+<translation id="588258955323874662">പൂര്‍‌ണ്ണസ്‌ക്രീന്‍</translation>
 <translation id="5895138241574237353">പുനരാരംഭിക്കുക</translation>
 <translation id="5916084858004523819">നിരോധിച്ചിരിക്കുന്നു</translation>
 <translation id="5916664084637901428">ഓൺ ചെയ്യുക</translation>
@@ -435,6 +448,7 @@
 <translation id="6319207335391420837"><ph name="DEVICE_NAME" /> എന്നതിൽ ഫേംവെയർ അപ്ഡേറ്റ് ചെയ്യുക</translation>
 <translation id="6325525973963619867">പരാജയപ്പെട്ടു</translation>
 <translation id="6340526405444716530">വ്യക്തിപരമാക്കൽ</translation>
+<translation id="6348738456043757611">ഉപയോക്തൃനാമവും പാസ്‍വേഡും</translation>
 <translation id="636850387210749493">സംരംഭ വിവരപ്പട്ടിക</translation>
 <translation id="6379086450106841622">ടച്ച്സ്ക്രീൻ</translation>
 <translation id="6388847657025262518">ഈ സ്‌കാനറിന്റെ ഡോക്യുമെന്റ് ഫീഡർ ജാമായി. ഫീഡർ പരിശോധിച്ച് വീണ്ടും ശ്രമിക്കുക.</translation>
@@ -464,12 +478,15 @@
 <translation id="6643016212128521049">മായ്‌ക്കുക</translation>
 <translation id="6647510110698214773">എൻക്രിപ്ഷൻ അൽഗോരിതം</translation>
 <translation id="6657585470893396449">പാസ്‌വേഡ്</translation>
+<translation id="6659594942844771486">ടാബ്</translation>
 <translation id="6692996468359469499">നിങ്ങളുടെ തിരഞ്ഞെടുക്കലുമായി ബന്ധപ്പെട്ട വിവരങ്ങൾ നേടുക</translation>
 <translation id="6704062477274546131">DNS റെസല്യൂഷൻ</translation>
+<translation id="6723839937902243910">പവർ</translation>
 <translation id="6747215703636344499">പ്രിന്റ് ജോലി നിർത്തി - ഔട്ട്പുട്ട് നിറഞ്ഞിരിക്കുന്നു</translation>
 <translation id="6749473226660745022">ഫോട്ടോകൾ</translation>
 <translation id="6753452347192452143">ഉപകരണം ഒരു കമ്പ്യൂട്ടറാണ്.</translation>
 <translation id="6756731097889387912">സ്‌കാൻ ചെയ്യൽ റദ്ദാക്കാനായില്ല</translation>
+<translation id="6760706756348334449">ശബ്ദം കുറയ്ക്കുക</translation>
 <translation id="6766275201586212568">പരാജയപ്പെട്ട DNS റെസല്യൂഷനുകൾ</translation>
 <translation id="6768237774506518020">ഉയർന്ന DNS റെസല്യൂഷൻ ഫെയ്‌ലിയർ നിരക്ക്</translation>
 <translation id="680983167891198932">കീ</translation>
@@ -523,6 +540,7 @@
 <translation id="7427315641433634153">MSCHAP</translation>
 <translation id="7435977162516949853">{NUMBER_OF_PAGES,plural, =1{സ്‌കാൻ ചെയ്യൽ പൂർത്തിയായി. 1 പേജ് സ്‌കാൻ ചെയ്‌തു}other{സ്‌കാൻ ചെയ്യൽ പൂർത്തിയായി. {NUMBER_OF_PAGES} പേജുകൾ സ്‌കാൻ ചെയ്‌തു}}</translation>
 <translation id="7469648432129124067">പോര്‍ട്ടല്‍ തിരിച്ചറിഞ്ഞു</translation>
+<translation id="7481312909269577407">മുന്നോട്ട്</translation>
 <translation id="7487067081878637334">സാങ്കേതികവിദ്യ</translation>
 <translation id="7490813197707563893">MAC വിലാസം</translation>
 <translation id="7497215489070763236">സെർവർ CA സർട്ടിഫിക്കറ്റ്</translation>
@@ -576,6 +594,7 @@
 <translation id="8132480444149501833">ട്രാഫിക് കൗണ്ടറുകൾ അഭ്യർത്ഥിക്കുക</translation>
 <translation id="8138405288920084977">LTEAdvanced</translation>
 <translation id="8143951647992294073"><ph name="TOPIC_SOURCE" /> <ph name="TOPIC_SOURCE_DESC" /> തിരഞ്ഞെടുക്കുക</translation>
+<translation id="8179976553408161302">Enter</translation>
 <translation id="8206859287963243715">സെല്ലുലാര്‍‌</translation>
 <translation id="8208861521865154048">പെർക്കുകൾ</translation>
 <translation id="8217675307824400706">കണക്റ്റ് ചെയ്യുക</translation>

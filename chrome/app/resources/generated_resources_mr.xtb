@@ -302,7 +302,6 @@
 <translation id="1293264513303784526">USB-C डिव्‍हाइस (डावे पोर्ट)</translation>
 <translation id="1293556467332435079">Files</translation>
 <translation id="1294807885394205587">या प्रक्रियेला काही मिनिटे लागू शकतात. कंटेनर व्यवस्थापक सुरू करत आहे.</translation>
-<translation id="1296046226918222533">काहीतरी चूक झाली आणि Linux चे अपग्रेड यशस्वी झाले नाही. यशस्वी न होण्यासंबंधित अधिक माहिती ही लॉगमध्ये पाहात येईल. लॉग हे <ph name="LOG_FILE" /> मध्ये सेव्ह केले आहेत</translation>
 <translation id="1296911687402551044">निवडलेला टॅब पिन करा</translation>
 <translation id="1297175357211070620">गंतव्य</translation>
 <translation id="129770436432446029"><ph name="EXPERIMENT_NAME" /> विषयी फीडबॅक पाठवा</translation>
@@ -616,7 +615,6 @@
 <translation id="1603411913360944381"><ph name="DEVICE_NAME" /> विसरा</translation>
 <translation id="1603914832182249871">(गुप्त)</translation>
 <translation id="1604432177629086300">प्रिंट करू शकलो नाही. प्रिंटर तपासा आणि पुन्हा प्रयत्न करा.</translation>
-<translation id="1604576689725077412">लक्षात ठेवा, की तुमच्या Chromebook वर सूचना डिसमिस केल्याने त्या तुमच्या फोनवरूनदेखील डिसमिस होतील.</translation>
 <translation id="1605744057217831567">सर्व साइट डेटा आणि परवानग्या पहा</translation>
 <translation id="1606077700029460857">माउस सेटिंग्ज बदला</translation>
 <translation id="1606566847233779212">तुम्ही जोडलेल्या विशिष्ट साइट काढून टाकायच्या आहेत का?</translation>
@@ -1036,7 +1034,6 @@
 <translation id="1987317783729300807">खाती</translation>
 <translation id="1988259784461813694">आवश्यकता</translation>
 <translation id="1989112275319619282">ब्राउझ करा</translation>
-<translation id="1989744123191450103">बॅकअप घेता आला नाही</translation>
 <translation id="1989903373608997757">नेहमी वापरा</translation>
 <translation id="1990046457226896323">स्पीच फाइल डाउनलोड केल्या आहेत</translation>
 <translation id="1990512225220753005">या पेजवर शॉर्टकट दाखवू नका</translation>
@@ -1046,11 +1043,9 @@
 <translation id="1994173015038366702">साइट URL</translation>
 <translation id="1995916364271252349">साइट कोणती माहिती वापरू आणि दाखवू शकतात ते नियंत्रित करते (स्थान, कॅमेरा, पॉप-अप आणि बरेच काही)</translation>
 <translation id="1997616988432401742">तुमची प्रमाणपत्रे</translation>
-<translation id="1997645434968427303">तुमचा Linux चा बॅकअप रिस्टोअर करता आला नाही. Linux मध्ये पुरेशी डिस्कमधील जागा नसल्यामुळे हे झालेले असू शकते. Linux मध्ये डिस्कमधील जागा किती आहे ते तुम्ही बदलू शकता आणि OS सेटिंग्ज मध्ये तुमचा बॅकअप पुन्हा रिस्टोअर करण्याचा प्रयत्न करू शकता.</translation>
 <translation id="1999115740519098545">स्टार्टअप वर</translation>
 <translation id="2000419248597011803">ॲड्रेस बार आणि सर्च बॉक्समधून तुमच्या डीफॉल्ट शोध इंजिनला काही कुकीज आणि शोध पाठवते</translation>
 <translation id="2002109485265116295">रीअल टाइम</translation>
-<translation id="200217416291116199">अपग्रेड पूर्ण करता न आल्यास, फाइलचा बॅकअप घेण्याची शिफारस केली जाते. अपग्रेड सुरू केल्यामुळे Linux बंद होईल. कृपया पुढे जाण्यापूर्वी उघड्या असलेल्या फाइल सेव्ह करा.</translation>
 <translation id="2003130567827682533">'<ph name="NAME" />' डेटा ॲक्टिव्हेट करण्यासाठी, आधी वाय-फाय नेटवर्कशी कनेक्ट करा</translation>
 <translation id="2004697686368036666">काही साइटवर वैशिष्ट्ये कदाचित काम करणार नाहीत</translation>
 <translation id="2005199804247617997">इतर प्रोफाइल</translation>
@@ -1059,7 +1054,6 @@
 <translation id="2007404777272201486">समस्या नोंदवा...</translation>
 <translation id="2009590708342941694">इमोजी टूल</translation>
 <translation id="2010501376126504057">कंपॅटिबल डिव्हाइस</translation>
-<translation id="2011968031299471357">मेसेज मिळवा आणि त्यांना प्रतिसाद द्या</translation>
 <translation id="2015232545623037616">PC आणि Chromecast एकाच वाय-फाय नेटवर्कशी कनेक्ट केले आहेत</translation>
 <translation id="2016473077102413275">इमेजची आवश्यकता असलेली वैशिष्ट्ये काम करणार नाहीत</translation>
 <translation id="2016574333161572915">तुमचे Google Meet हार्डवेअर सेट करण्यासाठी तयार आहे</translation>
@@ -1224,7 +1218,6 @@
 <translation id="2165177462441582039">प्रत्येक आयटमवर किती वेळ हायलाइट रहावे ते निवडा</translation>
 <translation id="2166369534954157698">चपळ तपकिरी कोल्ह्याने आळशी कुत्र्यावर उडी मारली</translation>
 <translation id="2169062631698640254">तरीही साइन इन करा</translation>
-<translation id="2170054054876170358">तुमचा फोन जवळपास असल्याची, अनलॉक केलेला असल्याची आणि त्याचे ब्लूटूथ व वाय-फाय सुरू असल्याची खात्री करा.</translation>
 <translation id="2173302385160625112">तुमचे इंटरनेट कनेक्शन तपासा</translation>
 <translation id="2173801458090845390">या डीव्हाइसवर मागणी आयडी जोडा</translation>
 <translation id="2175384018164129879">शोध इंजीन आणि साइट शोध व्यवस्थापित करा</translation>
@@ -1298,7 +1291,6 @@
 <translation id="2241053333139545397">अनेक वेबसाइटवर तुमचा डेटा वाचा आणि बदला</translation>
 <translation id="2241634353105152135">फक्त एकदाच</translation>
 <translation id="2242687258748107519">फाईल माहिती</translation>
-<translation id="2243381895573964397">फोनशी संबंधित सूचना मिळवणे</translation>
 <translation id="2246549592927364792">Google वरून इमेज वर्णन मिळवायचे आहे का?</translation>
 <translation id="2247738527273549923">हे डिव्हाइस तुमच्या संस्थेने व्यवस्थापित केलेले आहे</translation>
 <translation id="2249111429176737533">टॅब असलेली विंडो म्हणून उघडा</translation>
@@ -2119,7 +2111,6 @@
 <translation id="3036546437875325427">फ्लॅश सुरू करा</translation>
 <translation id="3037754279345160234">डोमेनला कॉंफिगरेशनमध्ये सामील करण्यासाठी पार्स करू शकत नाही. कृपया तुमच्या ॲडमिनिस्ट्रेटरशी संपर्क साधा.</translation>
 <translation id="3038612606416062604">एक प्रिंटर व्यक्तिचलितपणे जोडा</translation>
-<translation id="3039409644314251320">संभाषणे पहा, मेसेजवर प्रतिक्रिया द्या आणि लोकांना गट चॅटमध्ये जोडा</translation>
 <translation id="3039491566278747710">डिव्हाइसवर ऑफलाइन धोरण इंस्टॉल करता आले नाही.</translation>
 <translation id="3043218608271070212"><ph name="GROUP_NAME" /> - <ph name="GROUP_CONTENT_STRING" /></translation>
 <translation id="3043581297103810752"><ph name="ORIGIN" /> वरून</translation>
@@ -2177,7 +2168,6 @@
 <translation id="3101126716313987672">मंद लाइट</translation>
 <translation id="3101709781009526431">तारीख आणि वेळ</translation>
 <translation id="3103451787721578293">कृपया हा डेटा अपलोड करण्यासाठीचे कारण एंटर करा:</translation>
-<translation id="3103941660000130485">Linux अपग्रेड करताना एरर आली</translation>
 <translation id="3105796011181310544">Google वर परत बदलायचे आहे का?</translation>
 <translation id="310671807099593501">साइट ब्लूटूथ वापरत आहे</translation>
 <translation id="3108931485517391283">मिळवू शकत नाही</translation>
@@ -2317,7 +2307,6 @@
 <translation id="3274763671541996799">तुम्ही फुल स्‍क्रीन केली आहे</translation>
 <translation id="3275778809241512831">तुमची अंतर्गत सिक्युरिटी की सध्या असुरक्षित आहे. कृपया तुम्ही वापरलेल्या कोणत्याही सेवांमधून त्या काढून टाका. समस्येचे निराकरण करण्यासाठी, कृपया सिक्युरिटी की रीसेट करा.</translation>
 <translation id="3275778913554317645">विंडो म्हणून उघडा</translation>
-<translation id="3277691515294482687">Linux अपग्रेड करण्यापूर्वी माझ्या फाइल फोल्डरमध्ये माझ्या अ‍ॅप्सचा आणि फाइलचा बॅकअप घ्या.</translation>
 <translation id="3278001907972365362">तुमच्या Google खात्या(त्यां)कडे लक्ष देण्याची आवश्यकता आहे</translation>
 <translation id="3278928434075969895">ही प्रोफाइल Chrome OS प्रॉक्सी सेटिंग्ज वापरते.</translation>
 <translation id="3279092821516760512">निवडलेले संपर्क हे जवळपास असताना तुमच्यासोबत शेअर करू शकतात. तुम्ही स्वीकारेपर्यंत ट्रान्सफर सुरू होणार नाहीत.</translation>
@@ -2424,7 +2413,6 @@
 <translation id="3388094447051599208">आउटपुट ट्रे जवळजवळ पूर्ण भरला आहे</translation>
 <translation id="3388788256054548012">ही फाइल एंक्रिप्ट केलेली आहे. तिच्या मालकाला ती डिक्रिप्ट करण्यास सांगा.</translation>
 <translation id="3390013585654699824">अ‍ॅपचे तपशील</translation>
-<translation id="3390741581549395454">Linux अ‍ॅप्स आणि फाइलचा यशस्वीरीत्या बॅकअप घेतला. अपग्रेड लवकरच सुरू होईल.</translation>
 <translation id="3391512812407811893">प्रायव्हसी सॅंडबॉक्स चाचण्या</translation>
 <translation id="3393554941209044235">Chrome दस्तऐवज विश्लेषण</translation>
 <translation id="3394850431319394743">संरक्षित आशय प्ले करण्यासाठी आयडेंटिफायर वापरण्याची अनुमती आहे</translation>
@@ -2564,7 +2552,6 @@
 <translation id="3511307672085573050">लिंक पत्ता कॉपी करा</translation>
 <translation id="351152300840026870">निश्चित-रुंदीचा फॉंट</translation>
 <translation id="3511528412952710609">लहान</translation>
-<translation id="3514011352559420398">रिस्टोअर करता आले नाही</translation>
 <translation id="3514335087372914653">गेम नियंत्रण</translation>
 <translation id="3514373592552233661">एका पेक्षा जास्त नेटवर्क उपलब्ध असल्यास इतर ज्ञात नेटवर्क ऐवजी प्राधान्यीकृत नेटवर्कना प्राधान्य दिले जाईल</translation>
 <translation id="3515983984924808886">रीसेटची खात्री करण्यासाठी तुमच्या सिक्युरिटी कीला पुन्हा स्पर्श करा. सिक्युरिटी कीवर स्टोअर केलेली सर्व माहिती, तिच्या पिनसह, हटवली जाईल.</translation>
@@ -2655,7 +2642,6 @@
 <translation id="3612673635130633812">&lt;a href="<ph name="URL" />"&gt;<ph name="EXTENSION" />&lt;/a&gt; द्वारे डाउनलोड केले</translation>
 <translation id="3613134908380545408"><ph name="FOLDER_NAME" /> दर्शवा</translation>
 <translation id="3613422051106148727">&amp;नवीन टॅबमध्ये उघडा</translation>
-<translation id="3614974189435417452">बॅकअप घेणे पूर्ण झाले</translation>
 <translation id="3615073365085224194">तुमच्या बोटाने फिंगरप्रिंट सेन्सरला स्पर्श करा</translation>
 <translation id="3615579745882581859"><ph name="FILE_NAME" /> स्कॅन केली जात आहे.</translation>
 <translation id="3616741288025931835">ब्राउझिंग डेटा &amp;साफ करा...</translation>
@@ -3044,7 +3030,6 @@
 <translation id="3954354850384043518">प्रगतीपथावर</translation>
 <translation id="3954469006674843813"><ph name="WIDTH" /> x <ph name="HEIGHT" /> (<ph name="REFRESH_RATE" /> Hertz)</translation>
 <translation id="3954953195017194676">तुमच्याकडे नुकत्याच कॅप्चर केलेल्या कोणत्याही WebRTC कार्यक्रम नोंदी नाहीत.</translation>
-<translation id="3955163004258753966">अपग्रेडला सुरुवात करण्यात एरर आली</translation>
 <translation id="3955193568934677022">संरक्षित आशय प्ले करण्यासाठी साइटना अनुमती द्या (शिफारस केलेले)</translation>
 <translation id="3955321697524543127">साइटना USB डिव्हाइसशी कनेक्ट करण्याची अनुमती देऊ नका</translation>
 <translation id="3955896417885489542">सेटअप झाल्यानंतर Google Play पर्यायांचे पुनरावलोकन करा</translation>
@@ -3560,7 +3545,6 @@
 <translation id="4508765956121923607">स्त्रो&amp;त पहा</translation>
 <translation id="4510195992002502722">फीडबॅक पाठवता आला नाही. पुन्हा प्रयत्न करत आहे...</translation>
 <translation id="4510479820467554003">पालक खाते सूची</translation>
-<translation id="4510614391273086606">Linux फाइल आणि ॲप्स या गोष्टी बॅकअप घेतला होता त्या स्थितीमध्ये रीस्टोअर केल्या जात आहेत.</translation>
 <translation id="451102079304155829">कार्ट</translation>
 <translation id="4513872120116766993">अंदाजानुसार लिखाण</translation>
 <translation id="4513946894732546136">फीडबॅक</translation>
@@ -3572,7 +3556,6 @@
 <translation id="4519935350946509010">कनेक्शन एरर.</translation>
 <translation id="4520385623207007473">वापरात असलेल्या कुकीज</translation>
 <translation id="452039078290142656"><ph name="VENDOR_NAME" /> कडील अज्ञात डिव्हाइस</translation>
-<translation id="4522351342209941760">आणखी परवानग्यांचे पुनरावलोकन करण्यासाठी, तुमच्या फोनवर जा.</translation>
 <translation id="4522570452068850558">तपशील</translation>
 <translation id="4522600456902129422">या साइटला क्लिपबोर्ड पाहण्याची नेहमी अनुमती द्या</translation>
 <translation id="4522890784888918985">लहान मुलाच्या खात्यांना सपोर्ट नाही</translation>
@@ -3633,7 +3616,6 @@
 <translation id="4570201855944865395">या एक्स्टेंशनची विनंती करण्यासाठी कारण:</translation>
 <translation id="4572659312570518089">"<ph name="DEVICE_NAME" />" शी कनेक्ट करताना ऑथेंटिकेशन रद्द झाले.</translation>
 <translation id="4572779512957829735">तुमच्या सिक्युरिटी कीसाठी पिन एंटर करा</translation>
-<translation id="4573515936045019911">Linux अपग्रेड करण्यासाठी नेटवर्क कनेक्शन आवश्यक आहे. कृपया इंटरनेटशी कनेक्‍ट करा आणि पुन्हा प्रयत्न करा.</translation>
 <translation id="457386861538956877">अधिक...</translation>
 <translation id="4574741712540401491">•  <ph name="LIST_ITEM_TEXT" /></translation>
 <translation id="4576541033847873020">ब्लूटूथ डिव्हाइस जोडा</translation>
@@ -3688,7 +3670,6 @@
 <translation id="4634771451598206121">पुन्हा साइन इन करा...</translation>
 <translation id="4635072447747973225">Crostini अनइंस्टॉल करा</translation>
 <translation id="4635398712689569051"><ph name="PAGE_NAME" /> हे अतिथी वापरकर्त्यांसाठी उपलब्ध नाही.</translation>
-<translation id="4635444580397524003">Linux बॅकअप यशस्वीरीत्या रिस्टोअर केला गेला.</translation>
 <translation id="4636682061478263818">Drive मधील फाइल</translation>
 <translation id="4636930964841734540">माहिती</translation>
 <translation id="4637083375689622795"><ph name="EMAIL" /> मधील आणखी क्रिया</translation>
@@ -4632,7 +4613,6 @@
 <translation id="5620568081365989559">DevTools <ph name="FOLDER_PATH" /> मध्‍ये पूर्ण ॲक्सेसची विनंती करते. तुम्ही कोणतीही संवेदनशील माहिती उघड करत नाही हे निश्चित करा.</translation>
 <translation id="5620612546311710611">वापरविषयक आकडेवारी</translation>
 <translation id="5620655347161642930">पासवर्ड एक्सपोर्ट करा...</translation>
-<translation id="5621137386706841383">याला जास्तीत जास्त ३० मिनिटे लागू शकतात.</translation>
 <translation id="5623282979409330487">ही साइट तुमचा मोशन सेन्सर ॲक्सेस करत आहे.</translation>
 <translation id="5623842676595125836">लॉग</translation>
 <translation id="5624120631404540903">पासवर्ड व्यवस्थापित करा</translation>
@@ -4709,7 +4689,6 @@
 <translation id="5701080607174488915">सर्व्हरवरून धोरण मिळवताना एरर.</translation>
 <translation id="5701212929149679556">मोबाइल रोमिंग</translation>
 <translation id="5701381305118179107">मध्यभागी</translation>
-<translation id="5701441174893770082">Linux अपग्रेड केल्याने तुमची बॅटरी बऱ्यापैकी संपते. कृपया तुमचे डिव्हाइस चार्जरशी कनेक्ट करा आणि पुन्हा प्रयत्न करा.</translation>
 <translation id="5701786609538182967">इतर ॲप्स ही <ph name="APP_NAME" /> सारख्याच लिंक उघडण्यासाठी सेट केली आहेत. हे <ph name="APP_NAME_2" />, <ph name="APP_NAME_3" />, <ph name="APP_NAME_4" /> आणि आणखी एका ॲपला सपोर्ट असलेल्या लिंक उघडण्यापासून बंद करेल.</translation>
 <translation id="5702749864074810610">सूचना डिसमिस केली</translation>
 <translation id="5704875434923668958">याच्याशी सिंक करत आहे</translation>
@@ -4918,7 +4897,6 @@
 <translation id="592740088639760830">हा कंटेनर थांबवा</translation>
 <translation id="592880897588170157">पीडीएफ फाइल Chromeमध्ये आपोआप उघडण्यापेक्षा त्या डाउनलोड करा</translation>
 <translation id="592919310198008711">मी एक्स्टेंशनवर क्लिक करतो/करते तेव्हा</translation>
-<translation id="5932124097031739492">Linux यशस्वीरीत्या अपग्रेड करण्यात आले आहे.</translation>
 <translation id="5932209916647644605"><ph name="MANAGER" /> नुसार तुम्ही तुमचे <ph name="DEVICE_TYPE" /> त्वरित अपडेट करणे आवश्यक आहे.</translation>
 <translation id="5932224571077948991">साइट अनाहूत किंवा दिशाभूल करणाऱ्या जाहिराती दाखवते</translation>
 <translation id="59324397759951282"><ph name="MANUFACTURER_NAME" />चे USB डिव्हाइस</translation>
@@ -5483,7 +5461,6 @@
 <translation id="6498249116389603658">&amp;आपल्या सर्व भाषा</translation>
 <translation id="6499143127267478107">प्रॉक्सी स्क्रिप्टमध्‍ये होस्ट निराकरण करीत आहे...</translation>
 <translation id="6499764981457476645">जवळपास कोणतीही डिव्हाइस आढळली नाहीत</translation>
-<translation id="65017764184991091">Linux अ‍ॅप्स आणि फाइलचा बॅकअप घेता आला नाही. तुमच्या डिव्हाइसमध्ये पुरेशी मोकळी स्टोरेज जागा नसल्यास, असे होऊ शकते. तुमच्या डिव्हाइसवरील काही जागा मोकळी करण्याचा प्रयत्न करा किंवा बॅकअप घेण्यासाठी वेगळे स्थान निवडण्याचा प्रयत्न करा.</translation>
 <translation id="6501957628055559556">सर्व कंटनेर</translation>
 <translation id="650266656685499220">अल्बम तयार करण्यासाठी Google Photos वर जा</translation>
 <translation id="6503077044568424649">सर्वाधिक भेट दिलेले</translation>
@@ -5690,7 +5667,6 @@
 <translation id="6709133671862442373">News</translation>
 <translation id="6709357832553498500"><ph name="EXTENSIONNAME" /> वापरून कनेक्ट करा</translation>
 <translation id="6710213216561001401">मागील</translation>
-<translation id="6710973041022512889">अपग्रेड यशस्वीरीत्या पूर्ण झाले आहे. अपग्रेडसंबंधित तपशीलवार माहितीसाठी, लॉग हे <ph name="LOG_FILE" /> मध्ये सेव्ह केले आहेत</translation>
 <translation id="6711146141291425900">डाउनलोड साठी <ph name="WEB_DRIVE" /> खाते लिंक करा</translation>
 <translation id="6712943853047024245">तुम्ही <ph name="WEBSITE" /> साठी या वापरकर्ता नावासह आधीच पासवर्ड सेव्ह केला आहे</translation>
 <translation id="6713233729292711163">कार्य प्रोफाइल जोडा</translation>
@@ -5909,7 +5885,6 @@
 <translation id="6929760895658557216">Okay Google</translation>
 <translation id="6930036377490597025">बाह्य सिक्युरिटी की किंवा बिल्ट-इन सेन्सर</translation>
 <translation id="6930161297841867798">{NUM_EXTENSIONS,plural, =1{एक्स्टेंशन नाकारण्यात आले आहे}other{# एक्स्टेंशन नाकारण्यात आली आहेत}}</translation>
-<translation id="6930321203306643451">अपग्रेड पूर्ण झाले</translation>
 <translation id="6931690462168617033">क्लिकची क्षमता</translation>
 <translation id="6935286146439255109">पेपर ट्रे सापडत नाही</translation>
 <translation id="693807610556624488">लिहा ऑपरेशन यावर विशेषतांची कमाल लांबी ओलांडते: " <ph name="DEVICE_NAME" /> ".</translation>
@@ -6781,7 +6756,6 @@
 <translation id="7814458197256864873">&amp;कॉपी करा</translation>
 <translation id="7815680994978050279">धोकादायक डाउनलोड ब्लॉक केले</translation>
 <translation id="7817361223956157679">ऑन-स्क्रीन कीबोर्ड सध्या Linux ॲप्समध्ये काम करत नाही</translation>
-<translation id="7817671927108102061">तुमच्या फोनवर सेटअप पूर्ण करणे</translation>
 <translation id="7818135753970109980">नवीन थीम जोडली (<ph name="EXTENSION_NAME" />)</translation>
 <translation id="7819992334107904369">Chrome सिंक</translation>
 <translation id="7820561748632634942">अतिरिक्त स्विच असाइन करायचे आहेत का?</translation>
@@ -7472,7 +7446,6 @@
 <translation id="8523849605371521713">धोरणाने जोडले</translation>
 <translation id="8524783101666974011">तुमच्या Google खात्यात कार्डे सेव्ह करा</translation>
 <translation id="8525306231823319788">फुल स्क्रीन</translation>
-<translation id="8526666462501866815">Linux अपग्रेड रद्द करत आहे</translation>
 <translation id="8526813720153458066">SSH</translation>
 <translation id="8528074251912154910">भाषा जोडा</translation>
 <translation id="8528962588711550376">साइन इन करत आहे.</translation>
@@ -7788,7 +7761,6 @@
 <translation id="8838601485495657486">अपारदर्शक</translation>
 <translation id="8838770651474809439">हॅमबर्गर</translation>
 <translation id="8838778928843281408">फोन व्यवस्थापित करा</translation>
-<translation id="8840427996758894516">तुमचा फोन जवळपास असल्याची, तो अनलॉक केला असल्याची आणि त्याचे ब्लूटूथ व वाय-फाय सुरू केले असल्याची खात्री करा.</translation>
 <translation id="8841843049738266382">अनुमती दिलेल्या सूची मधील वापरकर्ते पहा आणि बदला</translation>
 <translation id="8842594465773264717">हे फिंगरप्रिंट हटवा</translation>
 <translation id="8845001906332463065">मदत मिळवा</translation>

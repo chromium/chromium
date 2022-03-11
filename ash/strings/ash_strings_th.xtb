@@ -88,9 +88,9 @@
 <translation id="1414271762428216854"><ph name="APP_NAME" />, ติดตั้งแอปแล้ว</translation>
 <translation id="1419738280318246476">ปลดล็อกอุปกรณ์เพื่อดำเนินการแจ้งเตือน</translation>
 <translation id="1420408895951708260">เปิด/ปิดแสงตอนกลางคืน <ph name="STATE_TEXT" /></translation>
+<translation id="1420732223884894666">ดูรูปภาพและสื่อล่าสุดของโทรศัพท์ใน <ph name="DEVICE_TYPE" /></translation>
 <translation id="1426410128494586442">ยอมรับ</translation>
 <translation id="1438357537418863713">ตั้งค่าการสตรีมแอปแล้ว เมื่อคุณเริ่มใช้งาน แอปที่เปิดล่าสุดจะปรากฏที่นี่</translation>
-<translation id="144853431011121127">รับการแจ้งเตือนจากโทรศัพท์ใน <ph name="DEVICE_TYPE" /></translation>
 <translation id="1455242230282523554">แสดงการตั้งค่าภาษา</translation>
 <translation id="1460620680449458626">ระดับเสียงปิดเสียงอยู่</translation>
 <translation id="1467432559032391204">ซ้าย</translation>
@@ -731,6 +731,7 @@
 <translation id="5597451508971090205"><ph name="SHORT_WEEKDAY" />, <ph name="DATE" /></translation>
 <translation id="5600837773213129531">กด Ctrl + Alt + Z เพื่อปิดใช้อธิบายและอ่านออกเสียง</translation>
 <translation id="5601503069213153581">PIN</translation>
+<translation id="5618148318840095371">เราสลับไปใช้เครือข่ายที่ดีกว่า</translation>
 <translation id="5619862035903135339">นโยบายของผู้ดูแลระบบปิดใช้การจับภาพหน้าจอ</translation>
 <translation id="5625955975703555628">LTE+</translation>
 <translation id="5648021990716966815">ช่องเสียบไมโครโฟน</translation>
@@ -823,6 +824,7 @@
 <translation id="6165508094623778733">ดูข้อมูลเพิ่มเติม</translation>
 <translation id="6166852626429024716">ค้นหาอุปกรณ์ แอป การตั้งค่า เว็บ...</translation>
 <translation id="6179832488876878285">คุณตรึงไฟล์สำคัญๆ ไว้ที่นี่ได้ เปิดแอป Files เพื่อเริ่มต้นใช้งาน</translation>
+<translation id="619279033188484792">ดูรูปภาพ สื่อ และการแจ้งเตือนล่าสุดของโทรศัพท์ใน <ph name="DEVICE_TYPE" /></translation>
 <translation id="6220928844947387476">ตอนนี้สามารถบันทึกตัวคุณเองไปพร้อมกับหน้าจอได้แล้ว</translation>
 <translation id="622484624075952240">ลง</translation>
 <translation id="6231419273573514727">อุปกรณ์ต่อพ่วงอาจมีประสิทธิภาพจำกัด</translation>
@@ -935,6 +937,7 @@
 <translation id="6921188888306725546">ปรับปรุงแป้นพิมพ์ลัดแล้ว</translation>
 <translation id="6931576957638141829">บันทึกไปยัง</translation>
 <translation id="6945221475159498467">เลือก</translation>
+<translation id="6960565108681981554">ไม่ได้เปิดการใช้งาน โปรดติดต่อผู้ให้บริการเครือข่าย</translation>
 <translation id="6961121602502368900">ฟีเจอร์ปิดเสียงโทรศัพท์ใช้งานไม่ได้ในโปรไฟล์งาน</translation>
 <translation id="6961840794482373852">มีการเปลี่ยนแปลงแป้นพิมพ์ลัด Alt + ลูกศรขึ้น หากต้องการใช้แป้น Page Up ให้กดแป้น <ph name="LAUNCHER_KEY_NAME" /> + ลูกศรขึ้น</translation>
 <translation id="6965382102122355670">ตกลง</translation>
@@ -1143,7 +1146,6 @@
 <translation id="8236042855478648955">ได้เวลาพักแล้ว</translation>
 <translation id="8247060538831475781"><ph name="CONNECTION_STATUS" />, ความแรงสัญญาณ <ph name="SIGNAL_STRENGTH" />, แบตเตอรี่โทรศัพท์ <ph name="BATTERY_STATUS" /></translation>
 <translation id="8247998213073982446"><ph name="APP_NAME" />, แอป</translation>
-<translation id="8248728785693203669">สาย USB-C อาจเชื่อมต่อกับจอแสดงผลอย่างไม่ถูกต้อง</translation>
 <translation id="8255234195843591763">รีเซ็ตเพื่ออัปเดต</translation>
 <translation id="826107067893790409">กด Enter เพื่อปลดล็อกสำหรับ <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="8261506727792406068">ลบ</translation>

@@ -488,6 +488,7 @@ Jeśli się nie zgodzisz, zostaną one zablokowane ze względu na Twoje ustawien
 <translation id="2430968933669123598">Zarządzaj kontem Google; naciśnij Enter, aby zarządzać swoimi danymi, prywatnością i bezpieczeństwem na koncie Google</translation>
 <translation id="2436186046335138073">Zezwolić usłudze <ph name="HANDLER_HOSTNAME" /> na otwieranie wszystkich linków <ph name="PROTOCOL" />?</translation>
 <translation id="2438874542388153331">Cztery otwory po prawej</translation>
+<translation id="2448295565072560657">Urządzenia peryferyjne podłączone do tego urządzenia, gdy jesteś zalogowany(-a)</translation>
 <translation id="2450021089947420533">Serie czynności</translation>
 <translation id="2463739503403862330">Wpisz</translation>
 <translation id="2465402087343596252">Architecture-E</translation>
@@ -495,6 +496,7 @@ Jeśli się nie zgodzisz, zostaną one zablokowane ze względu na Twoje ustawien
 <translation id="2465688316154986572">Zszywka</translation>
 <translation id="2465914000209955735">Zarządzaj pobranymi plikami w Chrome</translation>
 <translation id="2466004615675155314">Pokaż informacje z sieci</translation>
+<translation id="2467272921457885625">Specyfikacja sprzętu urządzenia i statystyki takie jak historia użycia procesora czy pamięci RAM</translation>
 <translation id="2467694685043708798"><ph name="BEGIN_LINK" />Uruchom diagnostykę sieci<ph name="END_LINK" /></translation>
 <translation id="2469153820345007638">Kolejność od 1 do N</translation>
 <translation id="2470767536994572628">Gdy zmodyfikujesz adnotacje, dokument wróci do widoku jednej strony i pierwotnej orientacji</translation>
@@ -2284,7 +2286,6 @@ Dodatkowe informacje:
 <translation id="8241712895048303527">Blokuj na tej stronie</translation>
 <translation id="8242426110754782860">Dalej</translation>
 <translation id="8249296373107784235">Przerwij</translation>
-<translation id="8249320324621329438">Ostatnie pobieranie:</translation>
 <translation id="8253091569723639551">Wymagany jest adres rozliczeniowy</translation>
 <translation id="8257387598443225809">Ta aplikacja jest przeznaczona na urządzenia mobilne</translation>
 <translation id="825929999321470778">Pokaż wszystkie zapisane hasła</translation>

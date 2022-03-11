@@ -54,6 +54,7 @@
 <translation id="1499900233129743732"><ph name="MANAGER" /> mengurus pengguna ini dan mungkin mengurus tetapan dan memantau aktiviti pengguna dari jauh.</translation>
 <translation id="150962533380566081">PUK tidak sah.</translation>
 <translation id="1510238584712386396">Pelancar</translation>
+<translation id="152892567002884378">Tambah kelantangan</translation>
 <translation id="155865706765934889">Pad sentuh</translation>
 <translation id="1565038567006703504">Tidak dapat mengemas kini <ph name="DEVICE_NAME" /></translation>
 <translation id="1567064801249837505">Album</translation>
@@ -88,6 +89,7 @@
 <translation id="1908234395526491708">Kegagalan permintaan UDP</translation>
 <translation id="1930797645656624981">Perkhidmatan Kaedah Input OS Chrome</translation>
 <translation id="1947737735496445907">Dicetak</translation>
+<translation id="1951012854035635156">Pembantu</translation>
 <translation id="1979103255016296513">Kata laluan perlu ditukar</translation>
 <translation id="1999615961760456652">Portal Terbolot</translation>
 <translation id="2006864819935886708">Kesambungan</translation>
@@ -152,6 +154,7 @@
 <translation id="2859243502336719778">Kemaskinian kritikal</translation>
 <translation id="2860473693272905224">Letakkan halaman lain di atas pengimbas</translation>
 <translation id="2872961005593481000">Mematikan</translation>
+<translation id="2874939134665556319">Lagu sebelumnya</translation>
 <translation id="2878387241690264070">Dinyahcas <ph name="RATE" /> dalam masa <ph name="NUM_SECONDS" /> saat.</translation>
 <translation id="291142119251986300">Komponen tidak layak</translation>
 <translation id="2926057806159140518">Masukkan nama pengguna dan kata laluan anda atau imbas kod QR anda</translation>
@@ -233,6 +236,7 @@
 <translation id="4003384961948020559">Gagal - Output penuh</translation>
 <translation id="4034824040120875894">Pencetak</translation>
 <translation id="4044093238444069296">Tidak dapat menghubungi get laluan</translation>
+<translation id="4046123991198612571">Lagu seterusnya</translation>
 <translation id="404928562651467259">AMARAN</translation>
 <translation id="409427325554347132">Simpan butiran ujian</translation>
 <translation id="4110686435123617899">Pilih album <ph name="TITLE" /> <ph name="DESC" /></translation>
@@ -250,9 +254,11 @@
 <translation id="4238516577297848345">Tiada tugas cetak yang sedang dijalankan</translation>
 <translation id="4239069858505860023">GPRS</translation>
 <translation id="4244962993387259361">Anda memerlukan sekurang-kurangnya 500 MB ruang kosong untuk menjalankan ujian Memori. Untuk mengosongkan ruang, pergi ke Tetapan &gt; Pengurusan storan.</translation>
+<translation id="4250229828105606438">Tangkapan skrin</translation>
 <translation id="4258281355379922695">Kependaman HTTP</translation>
 <translation id="4271957103967917607">Lihat Skrin Penuh</translation>
 <translation id="4275799948641988986">Selepas dibaiki, siapa yang akan menggunakan peranti itu?</translation>
+<translation id="4289540628985791613">Gambaran keseluruhan</translation>
 <translation id="4297501883039923494">Dihentikan - Ralat tidak diketahui</translation>
 <translation id="4300073214558989"><ph name="IMAGE_COUNT" /> Imej</translation>
 <translation id="4378373042927530923">Tidak Berjalan</translation>
@@ -335,6 +341,7 @@
 <translation id="5051044138948155788">Ini ialah satu-satunya halaman. Tindakan ini akan membawa anda ke skrin permulaan pengimbasan.</translation>
 <translation id="5088172560898466307">Nama hos pelayan</translation>
 <translation id="5089810972385038852">Negeri</translation>
+<translation id="5090362543162270857">IPsec (IKEv2)</translation>
 <translation id="5142961317498132443">Pengesahan</translation>
 <translation id="5154917547274118687">Memori</translation>
 <translation id="5160857336552977725">Log masuk ke <ph name="DEVICE_TYPE" /> anda</translation>
@@ -380,6 +387,7 @@ Cuba ketik mikrofon untuk bertanyakan sebarang perkara kepada saya.</translation
 <translation id="554517032089923082">GTC</translation>
 <translation id="5578477003638479617">UMTS</translation>
 <translation id="5578519639599103840">Imbas semula</translation>
+<translation id="5583640892426849032">Undur ruang</translation>
 <translation id="5620281292257375798">Dalaman sahaja</translation>
 <translation id="5649768706273821470">Dengar</translation>
 <translation id="5669267381087807207">Mengaktifkan</translation>
@@ -389,6 +397,7 @@ Cuba ketik mikrofon untuk bertanyakan sebarang perkara kepada saya.</translation
 <translation id="5707900041990977207"><ph name="CURRENT_PAGE" /> daripada <ph name="TOTAL_PAGES" /></translation>
 <translation id="5733298426544876109">Kemas kini <ph name="DEVICE_NAME" /></translation>
 <translation id="5760715441271661976">Keadaan Portal</translation>
+<translation id="57838592816432529">Redam</translation>
 <translation id="5784136236926853061">Kependaman HTTP tinggi</translation>
 <translation id="5832805196449965646">Tambah Orang</translation>
 <translation id="583281660410589416">Tidak diketahui</translation>
@@ -396,6 +405,7 @@ Cuba ketik mikrofon untuk bertanyakan sebarang perkara kepada saya.</translation
 <translation id="5849570051105887917">Kod penyedia tempatan</translation>
 <translation id="5860033963881614850">Dimatikan</translation>
 <translation id="5866840822086176774">Sangat kuat</translation>
+<translation id="588258955323874662">Skrin penuh</translation>
 <translation id="5895138241574237353">Mulakan Semula</translation>
 <translation id="5916084858004523819">Dilarang</translation>
 <translation id="5916664084637901428">Hidupkan</translation>
@@ -466,12 +476,15 @@ Cuba ketik mikrofon untuk bertanyakan sebarang perkara kepada saya.</translation
 <translation id="6643016212128521049">Kosongkan</translation>
 <translation id="6647510110698214773">Algoritma penyulitan</translation>
 <translation id="6657585470893396449">Kata laluan</translation>
+<translation id="6659594942844771486">Tab</translation>
 <translation id="6692996468359469499">Dapatkan maklumat yang berkaitan dengan pilihan anda</translation>
 <translation id="6704062477274546131">Peleraian DNS</translation>
+<translation id="6723839937902243910">Kuasa</translation>
 <translation id="6747215703636344499">Dihentikan - Output penuh</translation>
 <translation id="6749473226660745022">Foto</translation>
 <translation id="6753452347192452143">Peranti ialah komputer.</translation>
 <translation id="6756731097889387912">Tidak dapat membatalkan pengimbasan</translation>
+<translation id="6760706756348334449">Kurangkan kelantangan</translation>
 <translation id="6766275201586212568">Penyelesaian DNS gagal</translation>
 <translation id="6768237774506518020">Kadar kegagalan penyelesaian DNS tinggi</translation>
 <translation id="680983167891198932">Kunci</translation>
@@ -525,6 +538,7 @@ Cuba ketik mikrofon untuk bertanyakan sebarang perkara kepada saya.</translation
 <translation id="7427315641433634153">MSCHAP</translation>
 <translation id="7435977162516949853">{NUMBER_OF_PAGES,plural, =1{Pengimbasan selesai. 1 halaman diimbas}other{Pengimbasan selesai. {NUMBER_OF_PAGES} halaman diimbas}}</translation>
 <translation id="7469648432129124067">Portal dikesan</translation>
+<translation id="7481312909269577407">Majukan</translation>
 <translation id="7487067081878637334">Teknologi</translation>
 <translation id="7490813197707563893">Alamat MAC</translation>
 <translation id="7497215489070763236">Sijil CA pelayan</translation>
@@ -578,6 +592,7 @@ Cuba ketik mikrofon untuk bertanyakan sebarang perkara kepada saya.</translation
 <translation id="8132480444149501833">Minta Pembilang Trafik</translation>
 <translation id="8138405288920084977">LTEAdvanced</translation>
 <translation id="8143951647992294073">Pilih <ph name="TOPIC_SOURCE" /> <ph name="TOPIC_SOURCE_DESC" /></translation>
+<translation id="8179976553408161302">Enter</translation>
 <translation id="8206859287963243715">Selular</translation>
 <translation id="8208861521865154048">Manfaat</translation>
 <translation id="8217675307824400706">Berhubung</translation>

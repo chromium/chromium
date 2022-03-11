@@ -88,9 +88,9 @@
 <translation id="1414271762428216854"><ph name="APP_NAME" />，已安裝的應用程式</translation>
 <translation id="1419738280318246476">解鎖裝置即可執行通知動作</translation>
 <translation id="1420408895951708260">切換夜燈模式。<ph name="STATE_TEXT" /></translation>
+<translation id="1420732223884894666">透過 <ph name="DEVICE_TYPE" /> 查看手機上最近的相片和媒體</translation>
 <translation id="1426410128494586442">是</translation>
 <translation id="1438357537418863713">應用程式串流已設定完成。當你開始使用這項功能時，這裡會顯示最近啟動過的應用程式。</translation>
-<translation id="144853431011121127">在 <ph name="DEVICE_TYPE" /> 上接收手機的通知</translation>
 <translation id="1455242230282523554">顯示語言設定</translation>
 <translation id="1460620680449458626">音量已設為靜音。</translation>
 <translation id="1467432559032391204">向左</translation>
@@ -823,6 +823,7 @@
 <translation id="6165508094623778733">瞭解詳情</translation>
 <translation id="6166852626429024716">搜尋你的裝置、應用程式、設定、網路...</translation>
 <translation id="6179832488876878285">你可以將重要的檔案固定在這裡，只要開啟「檔案」應用程式即可開始使用。</translation>
+<translation id="619279033188484792">透過 <ph name="DEVICE_TYPE" /> 查看手機上最近的相片、媒體和通知</translation>
 <translation id="6220928844947387476">你現在可以同時錄製鏡頭畫面和螢幕畫面</translation>
 <translation id="622484624075952240">向下鍵</translation>
 <translation id="6231419273573514727">周邊裝置效能可能受到限制</translation>
@@ -934,6 +935,7 @@
 <translation id="6921188888306725546">我們已改善鍵盤快速鍵功能</translation>
 <translation id="6931576957638141829">儲存至</translation>
 <translation id="6945221475159498467">選取</translation>
+<translation id="6960565108681981554">未啟用。請與你的電信業者聯絡。</translation>
 <translation id="6961121602502368900">工作資料夾不支援將手機設為靜音</translation>
 <translation id="6961840794482373852">「Alt + 向上鍵」的鍵盤快速鍵已變更。如要使用 Page Up 鍵，請按下<ph name="LAUNCHER_KEY_NAME" />鍵 + 向上鍵。</translation>
 <translation id="6965382102122355670">確定</translation>
@@ -1142,7 +1144,6 @@
 <translation id="8236042855478648955">休息時間到了</translation>
 <translation id="8247060538831475781"><ph name="CONNECTION_STATUS" />，訊號強度 <ph name="SIGNAL_STRENGTH" />，手機電量：<ph name="BATTERY_STATUS" /></translation>
 <translation id="8247998213073982446"><ph name="APP_NAME" />，應用程式</translation>
-<translation id="8248728785693203669">你的 USB-C 連接線可能未妥善連接螢幕</translation>
 <translation id="8255234195843591763">重設以更新</translation>
 <translation id="826107067893790409">按下 Enter 鍵即可解除鎖定 <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="8261506727792406068">刪除</translation>

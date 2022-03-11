@@ -138,6 +138,7 @@
 <translation id="1810845389119482123">शुरुआती सिंक सेट अप पूरा नहीं हुआ</translation>
 <translation id="1829244130665387512">पेज में ढूंढें</translation>
 <translation id="1832459821645506983">हां, वॉइस सर्च करें</translation>
+<translation id="1849863543394887018">सेटिंग में जाकर सूचनाएं पाने की सुविधा को बंद किया जा सकता है</translation>
 <translation id="1877026089748256423">Chrome पुराना हो गया है</translation>
 <translation id="1883903952484604915">मेरी फ़ाइलें</translation>
 <translation id="189358972401248634">अन्य भाषाएं</translation>
@@ -270,6 +271,7 @@
 <translation id="2567385386134582609">इमेज</translation>
 <translation id="2567545343356994513">नुकसान पहुंचाने वाली वेबसाइटों, डाउनलोड, और एक्सटेंशन से तेज़ और प्रोऐक्टिव (बिना मांगे मिलने वाली) सुरक्षा</translation>
 <translation id="2571711316400087311">दूसरी भाषाओं वाले पेजों को Google Translate पर भेजने की सुविधा</translation>
+<translation id="2573452357057307036">Chrome को अपने डिफ़ॉल्ट ब्राउज़र के तौर पर सेट करने का तरीका जानें</translation>
 <translation id="2581165646603367611">यह साइट की कुकी, कैश और अन्य डेटा निकाल देगा जो Chrome के विचार में महत्वपूर्ण नहीं है.</translation>
 <translation id="2587052924345400782">नया वर्शन उपलब्ध है</translation>
 <translation id="2593272815202181319">मोनोस्पेस</translation>
@@ -427,6 +429,7 @@
 <translation id="3443221991560634068">वर्तमान पेज फिर से लोड करें</translation>
 <translation id="3444179773590444986">क्या आप साइटों के लिए गहरे रंग वाली थीम से जुड़े सुझाव, शिकायत या राय शेयर करना चाहते हैं?</translation>
 <translation id="3469665409713263828">{FILE_COUNT,plural, =1{1 डाउनलोड शेड्यूल किया गया}one{# डाउनलोड शेड्यूल किया गया}other{# डाउनलोड शेड्यूल किए गए}}</translation>
+<translation id="3474624961160222204"><ph name="NAME" /> के रूप में जारी रखें</translation>
 <translation id="3478363558367712427">आप अपना सर्च इंजन चुन सकते हैं</translation>
 <translation id="3493531032208478708">सुझाई गई सामग्री के बारे में <ph name="BEGIN_LINK" />ज़्यादा जानें<ph name="END_LINK" /></translation>
 <translation id="3499246418971111862">chrome_qrcode_<ph name="CURRENT_TIMESTAMP_MS" /></translation>
@@ -1063,7 +1066,6 @@
 <translation id="7173114856073700355">सेटिंग खोलें</translation>
 <translation id="7177466738963138057">आप इसे बाद में सेटिंग में जाकर बदल सकते हैं</translation>
 <translation id="7177873915659574692">क्यूआर कोड नहीं बनाया जा सकता. यूआरएल <ph name="CHARACTER_LIMIT" /> वर्णों से ज़्यादा का है.</translation>
-<translation id="7180611975245234373">रीफ्रेश करें</translation>
 <translation id="718226107353899806">ज़्यादा से ज़्यादा <ph name="MAX_NUM_REACTIONS" /> प्रतिक्रियाएं जोड़ी जा सकती हैं</translation>
 <translation id="7187993566681480880">अगर आप Chrome में साइन इन हैं, तो यह सुविधा आपको सुरक्षित रखती है. साथ ही, अन्य Google ऐप्लिकेशन में इसका इस्तेमाल सुरक्षा को बेहतर बनाने में भी हो सकता है.</translation>
 <translation id="718926126787620637">बुकमार्क फ़ोल्डर वाली सूची, पूरी स्क्रीन पर खोली गई</translation>
@@ -1197,6 +1199,7 @@
 <translation id="7926975587469166629">कार्ड का प्रचलित नाम</translation>
 <translation id="7929962904089429003">मेन्यू खोलें</translation>
 <translation id="7930998711684428189">डेटा का उल्लंघन होने पर अगर आपके पासवर्ड बिना अनुमति के सार्वजनिक हो जाते हैं, तो आपको चेतावनी मिलती है</translation>
+<translation id="7937772386706786623">सूचनाओं की मदद से, मीडिया कंट्रोल, गुप्त टैब वगैरह मैनेज करें</translation>
 <translation id="7939485076072265087">हाइलाइट टेक्स्ट के लिए बेहतर कार्ड बनाएं</translation>
 <translation id="7942131818088350342"><ph name="PRODUCT_NAME" /> पुराना है.</translation>
 <translation id="7944772052836377867">सिंक को आपकी पहचान की पुष्टि करनी है</translation>

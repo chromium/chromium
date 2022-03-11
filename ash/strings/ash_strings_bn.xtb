@@ -91,9 +91,9 @@
 <translation id="1414271762428216854"><ph name="APP_NAME" />, ইনস্টল করা অ্যাপ</translation>
 <translation id="1419738280318246476">বিজ্ঞপ্তি সম্পর্কিত অ্যাকশনের জন্য ডিভাইস আনলক করুন</translation>
 <translation id="1420408895951708260">নাইট লাইট ফিচারটি টগল করুন। <ph name="STATE_TEXT" /></translation>
+<translation id="1420732223884894666">আপনার <ph name="DEVICE_TYPE" />-এ আপনার ফোনের সাম্প্রতিক ফটো এবং মিডিয়া দেখুন</translation>
 <translation id="1426410128494586442">হ্যাঁ</translation>
 <translation id="1438357537418863713">অ্যাপ স্ট্রিমিং এখন সেট আপ করা আছে। আপনি চালু করলে, সাম্প্রতিক ব্যবহার করা অ্যাপ এখানে দেখা যাবে।</translation>
-<translation id="144853431011121127"><ph name="DEVICE_TYPE" />-এ আপনার ফোনের বিজ্ঞপ্তি দেখুন</translation>
 <translation id="1455242230282523554">ভাষার সেটিংস দেখুন</translation>
 <translation id="1460620680449458626">ভলিউম মিউট করা আছে।</translation>
 <translation id="1467432559032391204">বামে</translation>
@@ -826,6 +826,7 @@
 <translation id="6165508094623778733">আরও জানুন</translation>
 <translation id="6166852626429024716">আপনার ডিভাইস, অ্যাপ, সেটিংস, ওয়েবে সার্চ করুন...</translation>
 <translation id="6179832488876878285">গুরুত্বপূর্ণ ফাইলগুলি আপনি এখানে পিন করে রাখতে পারবেন। শুরু করার জন্য, Files অ্যাপ খুলুন।</translation>
+<translation id="619279033188484792">আপনার <ph name="DEVICE_TYPE" />-এ আপনার ফোনের সাম্প্রতিক ফটো, মিডিয়া এবং বিজ্ঞপ্তি দেখুন</translation>
 <translation id="6220928844947387476">আপনি এখন একই সময়ে নিজে এবং আপনার স্ক্রিন রেকর্ড করতে পারবেন</translation>
 <translation id="622484624075952240">নিচের</translation>
 <translation id="6231419273573514727">পেরিফেরাল পারফর্ম্যন্স সীমাবদ্ধ হতে পারে</translation>
@@ -938,6 +939,7 @@
 <translation id="6921188888306725546">কীবোর্ড শর্টকার্ট উন্নত করা হয়েছে</translation>
 <translation id="6931576957638141829">এখানে সেভ করুন</translation>
 <translation id="6945221475159498467">নির্বাচন</translation>
+<translation id="6960565108681981554">চালু করা নেই। আপনার পরিষেবা প্রদানকারীর সাথে যোগাযোগ করুন।</translation>
 <translation id="6961121602502368900">অফিস প্রোফাইলে 'সাইলেন্স ফোন' ফিচার উপলভ্য নেই</translation>
 <translation id="6961840794482373852">Alt + Up Arrow কীবোর্ড শর্ককার্ট পরিবর্তন করা হয়েছে। Page Up কী ব্যবহার করতে, <ph name="LAUNCHER_KEY_NAME" /> + Up Arrow কী প্রেস করুন।</translation>
 <translation id="6965382102122355670">ঠিক আছে</translation>
@@ -1147,7 +1149,6 @@
 <translation id="8236042855478648955">বিরতির সময় হয়েছে</translation>
 <translation id="8247060538831475781"><ph name="CONNECTION_STATUS" />, সিগন্যাল: <ph name="SIGNAL_STRENGTH" />, ফোনের ব্যাটারি <ph name="BATTERY_STATUS" /></translation>
 <translation id="8247998213073982446"><ph name="APP_NAME" />, অ্যাপ</translation>
-<translation id="8248728785693203669">আপনার USB-C কেবলটি ডিসপ্লেতে সঠিকভাবে কানেক্ট নাও করতে পারে</translation>
 <translation id="8255234195843591763">আপডেট করতে রিসেট করুন</translation>
 <translation id="826107067893790409"><ph name="USER_EMAIL_ADDRESS" /> আনলক করতে এন্টার বোতামে প্রেস করুন</translation>
 <translation id="8261506727792406068">মুছুন</translation>

@@ -91,9 +91,9 @@ Here are some things that you can try to get started.</translation>
 <translation id="1414271762428216854"><ph name="APP_NAME" />, installed app</translation>
 <translation id="1419738280318246476">Unlock device to perform the notification action</translation>
 <translation id="1420408895951708260">Toggle Night Light. <ph name="STATE_TEXT" /></translation>
+<translation id="1420732223884894666">View your phone's recent photos and media on your <ph name="DEVICE_TYPE" /></translation>
 <translation id="1426410128494586442">Yes</translation>
 <translation id="1438357537418863713">App streaming is now set up. Once you get started, recently launched apps will appear here.</translation>
-<translation id="144853431011121127">Get notifications from your phone on your <ph name="DEVICE_TYPE" /></translation>
 <translation id="1455242230282523554">Show language settings</translation>
 <translation id="1460620680449458626">Volume is muted.</translation>
 <translation id="1467432559032391204">Left</translation>
@@ -197,6 +197,7 @@ Here are some things that you can try to get started.</translation>
 <translation id="2132302418721800944">Record full screen</translation>
 <translation id="2135456203358955318">Docked magnifier</translation>
 <translation id="2148716181193084225">Today</translation>
+<translation id="2159930836979502091">Go to this tab</translation>
 <translation id="2170530631236737939">Swipe down with three fingers to exit Overview.</translation>
 <translation id="219905428774326614">Launcher, all apps</translation>
 <translation id="2201071101391734388">Recent photo <ph name="INDEX" /> of <ph name="TOTAL_COUNT" />.</translation>
@@ -563,6 +564,7 @@ Here are some things that you can try to get started.</translation>
 <translation id="4449692009715125625">{NUM_NOTIFICATIONS,plural, =1{1 important notification}other{# important notifications}}</translation>
 <translation id="4450893287417543264">Don't show again</translation>
 <translation id="4451374464530248585">The Alt + down arrow keyboard shortcut has changed. To use the page down key, press the <ph name="LAUNCHER_KEY_NAME" /> key + down arrow.</translation>
+<translation id="4455051983450390249">View your phone's notifications on your <ph name="DEVICE_TYPE" /></translation>
 <translation id="445864333228800152">Good evening,</translation>
 <translation id="4458688154122353284">Stop screen recording</translation>
 <translation id="4471354919263203780">Downloading speech recognition files <ph name="PERCENT" />%</translation>
@@ -734,6 +736,7 @@ Here are some things that you can try to get started.</translation>
 <translation id="5597451508971090205"><ph name="SHORT_WEEKDAY" />, <ph name="DATE" /></translation>
 <translation id="5600837773213129531">Press Ctrl + Alt + Z to disable spoken feedback.</translation>
 <translation id="5601503069213153581">PIN</translation>
+<translation id="5618148318840095371">We've switched you to a better network</translation>
 <translation id="5619862035903135339">Administrator policy disables screen capture</translation>
 <translation id="5625955975703555628">LTE+</translation>
 <translation id="5648021990716966815">Mic jack</translation>
@@ -769,6 +772,7 @@ Here are some things that you can try to get started.</translation>
 <translation id="583281660410589416">Unknown</translation>
 <translation id="5837036133683224804">Stop <ph name="ROUTE_TITLE" /> on <ph name="RECEIVER_NAME" /></translation>
 <translation id="584525477304726060">Hold to maximise</translation>
+<translation id="5856638668464565213"><ph name="NETWORK_NAME" /> is not activated.</translation>
 <translation id="5860033963881614850">Off</translation>
 <translation id="5860491529813859533">Turn on</translation>
 <translation id="5867217927013474703">Collecting network information</translation>
@@ -800,6 +804,7 @@ Here are some things that you can try to get started.</translation>
 <translation id="602472752137106327">Show windows from all desks, radio button selected</translation>
 <translation id="6025324406281560198"><ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, signal strength <ph name="SIGNAL_STRENGTH" />, managed by your administrator</translation>
 <translation id="6027518778343897451">There is no event on <ph name="CURRENT_MONTH_DAY" />. Hit Enter to open Google Calendar in the browser.</translation>
+<translation id="6027952026115023659">Access your phone's messaging apps on your <ph name="DEVICE_TYPE" /></translation>
 <translation id="6030495522958826102">Menu moved to the bottom-left corner of the screen.</translation>
 <translation id="6032620807120418574">Click anywhere to record full screen</translation>
 <translation id="6040071906258664830">Record microphone <ph name="STATE" /></translation>
@@ -826,6 +831,7 @@ Here are some things that you can try to get started.</translation>
 <translation id="6165508094623778733">Learn more</translation>
 <translation id="6166852626429024716">Search your device, apps, settings, web…</translation>
 <translation id="6179832488876878285">You can pin your important files here. Open Files app to get started.</translation>
+<translation id="619279033188484792">View your phone's recent photos, media and notifications on your <ph name="DEVICE_TYPE" /></translation>
 <translation id="6220928844947387476">You can now record yourself and your screen at the same time</translation>
 <translation id="622484624075952240">Down</translation>
 <translation id="6231419273573514727">Peripheral performance may be limited</translation>
@@ -938,9 +944,11 @@ New install</translation>
 <translation id="6921188888306725546">Keyboard shortcuts have been improved</translation>
 <translation id="6931576957638141829">Save to</translation>
 <translation id="6945221475159498467">Select</translation>
+<translation id="6960565108681981554">Not activated. Contact your operator.</translation>
 <translation id="6961121602502368900">Silence phone is not available on work profile</translation>
 <translation id="6961840794482373852">The Alt + up arrow keyboard shortcut has changed. To use the page up key, press the <ph name="LAUNCHER_KEY_NAME" /> key + up arrow.</translation>
 <translation id="6965382102122355670">OK</translation>
+<translation id="6967933908874208731">View your phone's recent photos, media, notifications and messaging apps on your <ph name="DEVICE_TYPE" /></translation>
 <translation id="6972754398087986839">Get started</translation>
 <translation id="6979158407327259162">Google Drive</translation>
 <translation id="6981982820502123353">Accessibility</translation>
@@ -1147,7 +1155,6 @@ New install</translation>
 <translation id="8236042855478648955">Time for a break</translation>
 <translation id="8247060538831475781"><ph name="CONNECTION_STATUS" />, signal strength <ph name="SIGNAL_STRENGTH" />, phone battery <ph name="BATTERY_STATUS" /></translation>
 <translation id="8247998213073982446"><ph name="APP_NAME" />, app</translation>
-<translation id="8248728785693203669">Your USB-C cable may not connect to displays properly</translation>
 <translation id="8255234195843591763">Reset to update</translation>
 <translation id="826107067893790409">Press Enter to unlock for <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="8261506727792406068">Delete</translation>

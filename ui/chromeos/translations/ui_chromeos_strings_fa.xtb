@@ -61,6 +61,7 @@
 <translation id="1497522201463361063">تغییرنام «<ph name="FILE_NAME" />» ممکن نیست.<ph name="ERROR_MESSAGE" /></translation>
 <translation id="1499943022354839699">‏انگلیسی (آمریکایی) با صفحه‌کلید Dvorak</translation>
 <translation id="1515909359182093592"><ph name="INPUT_LABEL" /> - میزبان</translation>
+<translation id="1521655867290435174">‏کاربرگ‌نگار Google</translation>
 <translation id="1538729222189715449">‏درحال باز کردن فایل‌های Linux…</translation>
 <translation id="1547964879613821194">انگلیسی کانادا</translation>
 <translation id="1556189134700913550">اعمال به همه</translation>
@@ -184,7 +185,6 @@
 <translation id="2544853746127077729">گواهینامه راستی‌آزمایی توسط شبکه رد شد</translation>
 <translation id="2547921442987553570">افزودن به <ph name="EXTENSION_NAME" /></translation>
 <translation id="255937426064304553">بین‌المللی آمریکایی</translation>
-<translation id="2562685439590298522">اسناد</translation>
 <translation id="2563185590376525700">قورباغه</translation>
 <translation id="2578394532502990878">تامیل (آوایی)</translation>
 <translation id="2579959351793446050">اوریه</translation>
@@ -220,9 +220,7 @@
 <translation id="2902734494705624966">گسترده آمریکایی</translation>
 <translation id="290843123675549676">ماراتی</translation>
 <translation id="2923240520113693977">استونیایی</translation>
-<translation id="2925966894897775835">صفحات</translation>
 <translation id="2938685643439809023">مغولی</translation>
-<translation id="2943400156390503548">اسلایدها</translation>
 <translation id="2943503720238418293">از نام کوتاه‌تری استفاده کنید</translation>
 <translation id="2949781154072577687">درحال قالب‌بندی <ph name="DRIVE_NAME" />…</translation>
 <translation id="2951236788251446349">عروس دریایی</translation>
@@ -414,6 +412,7 @@
 <translation id="4656777537938206294">تنظیم فایل برای دسترسی آفلاین</translation>
 <translation id="4658782175094886150">شخصی در برف</translation>
 <translation id="4669606053856530811">اگر این موارد با اعضای «<ph name="SOURCE_NAME" />» هم‌رسانی نشوند، دسترسی را از دست خواهند داد.</translation>
+<translation id="467809019005607715">‏اسلایدنگار Google</translation>
 <translation id="4690246192099372265">سوئدی</translation>
 <translation id="4693155481716051732">سوشی</translation>
 <translation id="4694604912444486114">میمون</translation>
@@ -658,6 +657,7 @@
 <translation id="6732801395666424405">گواهی‌ها بارگیری نشدند</translation>
 <translation id="6736329909263487977"><ph name="ISSUED_BY" /> [<ph name="ISSUED_TO" />]</translation>
 <translation id="6751256176799620176">۱ پوشه انتخاب شد</translation>
+<translation id="6755827872271341378">‏دستگاه ChromeOS Flex</translation>
 <translation id="6790428901817661496">پخش</translation>
 <translation id="6795884519221689054">پاندا</translation>
 <translation id="6806699711453372963">‏مدیریت هم‌رسانی با Linux</translation>
@@ -735,6 +735,7 @@
 <translation id="7343393116438664539">ویتنامی (تلکس)</translation>
 <translation id="7359359531237882347">در حال کپی کردن <ph name="NUMBER_OF_ITEMS" /> مورد…</translation>
 <translation id="7375951387215729722">فهرست فایل براساس <ph name="COLUMN_NAME" /> به‌ترتیب نزولی مرتب شد.</translation>
+<translation id="7402503521691663770">‏دستگاه‌های ChromeOS Flex</translation>
 <translation id="7408870451288633753">چکی</translation>
 <translation id="7417453074306512035">صفحه‌کلید اتیوپیایی</translation>
 <translation id="7417705661718309329">‏نقشه Google</translation>
@@ -949,6 +950,7 @@
 <translation id="9172592259078059678">نویسه‌گردانی گجراتی</translation>
 <translation id="9173120999827300720">انگلیسی (آمریکایی) با صفحه‌کلید بین‌المللی</translation>
 <translation id="9174050671906956834">موارد موجود در «حذف‌شده‌ها» بعداز ٣۰ روز برای همیشه حذف می‌شود.</translation>
+<translation id="9183302530794969518">‏سندنگار Google</translation>
 <translation id="9189836632794948435">قزاقی</translation>
 <translation id="9213073329713032541">نصب باموفقیت شروع شد.</translation>
 <translation id="9219103736887031265">تصاویر</translation>

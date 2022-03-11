@@ -88,9 +88,9 @@
 <translation id="1414271762428216854"><ph name="APP_NAME" />፣ የተጫነ መተግበሪያ</translation>
 <translation id="1419738280318246476">የማሳወቅ እርምጃውን ለማከናወን መሣሪያን ይክፈቱ</translation>
 <translation id="1420408895951708260">የምሽት ብርሃንን ቀያይር። <ph name="STATE_TEXT" /></translation>
+<translation id="1420732223884894666">የስልክዎን የቅርብ ጊዜ ፎቶዎች እና ሚዲያ በእርስዎ <ph name="DEVICE_TYPE" /> ላይ ይመልከቱ</translation>
 <translation id="1426410128494586442">አዎ</translation>
 <translation id="1438357537418863713">የመተግበሪያ ዥረት መልቀቅ አሁን ተዋቅሯል። አንዴ ከጀመሩ በኋላ በቅርብ ጊዜ የተጀመሩ መተግበሪያዎች እዚህ ይታያሉ።</translation>
-<translation id="144853431011121127">በእርስዎ <ph name="DEVICE_TYPE" /> ላይ ከእርስዎ ስልክ ማሳወቂያዎችን ያግኙ</translation>
 <translation id="1455242230282523554">የቋንቋ ቅንብሮችን አሳይ</translation>
 <translation id="1460620680449458626">የድምፅ መጠን ድምፀ ከል ተደርጓል።</translation>
 <translation id="1467432559032391204">ግራ</translation>
@@ -823,6 +823,7 @@
 <translation id="6165508094623778733">የበለጠ ለመረዳት</translation>
 <translation id="6166852626429024716">የእርስዎን መሣሪያ፣ መተግበሪያዎች፣ ቅንብሮች፣ ድር ይፈልጉ...</translation>
 <translation id="6179832488876878285">እዚህ አስፈላጊ ፋይሎችዎን መሰካት ይችላሉ። ለመጀመር የፋይሎች መተግበሪያን ይክፈቱ።</translation>
+<translation id="619279033188484792">የስልክዎን የቅርብ ጊዜ ፎቶዎች፣ ሚዲያ እና ማሳወቂያዎች በእርስዎ <ph name="DEVICE_TYPE" /> ላይ ይመልከቱ</translation>
 <translation id="6220928844947387476">አሁን እራስዎን እና ማያ ገጽዎን በተመሳሳይ ጊዜ መቅረጽ ይችላሉ</translation>
 <translation id="622484624075952240">ታች</translation>
 <translation id="6231419273573514727">የተቀጥላዎች አፈጻጸም የተገደበ ሊሆን ይችላል።</translation>
@@ -935,6 +936,7 @@
 <translation id="6921188888306725546">የቁልፍ ሰሌዳ አቋራጮች ተሻሽለዋል</translation>
 <translation id="6931576957638141829">አስቀምጥ ወደ</translation>
 <translation id="6945221475159498467">ይምረጡ</translation>
+<translation id="6960565108681981554">አልገበረም። የአገልግሎት አቅራቢዎን ያነጋግሩ።</translation>
 <translation id="6961121602502368900">በሥራ መገለጫ ላይ የስልክ ድምጽን ማጥፋት አይገኝም</translation>
 <translation id="6961840794482373852">የAlt + የላይ ቀስት ቁልፍ ሰሌዳ አቋራጭ ተለውጧል። የገጽ የላይ ቁልፍ ለመጠቀም የ<ph name="LAUNCHER_KEY_NAME" /> ቁልፍ + የላይ ቀስት ይጫኑ።</translation>
 <translation id="6965382102122355670">እሺ</translation>
@@ -1144,7 +1146,6 @@
 <translation id="8236042855478648955">የዕረፍት ጊዜ</translation>
 <translation id="8247060538831475781"><ph name="CONNECTION_STATUS" />፣ የሲግናል ጥንካሬ <ph name="SIGNAL_STRENGTH" />፣ የስልክ ባትሪ <ph name="BATTERY_STATUS" /></translation>
 <translation id="8247998213073982446"><ph name="APP_NAME" />፣ መተግበሪያ</translation>
-<translation id="8248728785693203669">የእርስዎ USB-C ገመድ ከማሳያዎች ጋር በትክክል ላይገናኝ ይችላል</translation>
 <translation id="8255234195843591763">ለማዘመን ዳግም ያስጀምሩ</translation>
 <translation id="826107067893790409">ለ<ph name="USER_EMAIL_ADDRESS" /> ለመክፈት አስገባን ይጫኑ</translation>
 <translation id="8261506727792406068">ሰርዝ</translation>

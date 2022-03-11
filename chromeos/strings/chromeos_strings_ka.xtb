@@ -54,6 +54,7 @@
 <translation id="1499900233129743732">ამ მომხმარებელს მართავს <ph name="MANAGER" />, რომელსაც შეუძლია პარამეტრების დისტანციურად მართვა და მომხმარებლის აქტივობის მონიტორინგი.</translation>
 <translation id="150962533380566081">PUK კოდი არასწორია.</translation>
 <translation id="1510238584712386396">გამშვები</translation>
+<translation id="152892567002884378">ხმის აწევა</translation>
 <translation id="155865706765934889">Touchpad</translation>
 <translation id="1565038567006703504"><ph name="DEVICE_NAME" /> ვერ განახლდა</translation>
 <translation id="1567064801249837505">ალბომები</translation>
@@ -82,12 +83,14 @@
 <translation id="1807246157184219062">ნათელი</translation>
 <translation id="1827738518074806965">ხელოვნების გალერეა</translation>
 <translation id="1851218745569890714">ვიდეოკონფერენცია</translation>
+<translation id="1852934301711881861">ChromeOS Flex-ის ინსტალაცია</translation>
 <translation id="1874612839560830905">MTU</translation>
 <translation id="1887850431809612466">აპარატურის ვერსია</translation>
 <translation id="1905710495812624430">გადაჭარბებულია მცდელობათა მაქსიმალური რაოდენობა.</translation>
 <translation id="1908234395526491708">წარუმატებელი UDP მოთხოვნები</translation>
 <translation id="1930797645656624981">Chrome OS-ის შეყვანის მეთოდის სერვისი</translation>
 <translation id="1947737735496445907">დაბეჭდილი</translation>
+<translation id="1951012854035635156">ასისტენტი</translation>
 <translation id="1979103255016296513">პაროლის შეცვლა დაგვიანებულია</translation>
 <translation id="1999615961760456652">ავტორიზაციის პორტალი</translation>
 <translation id="2006864819935886708">კავშირი</translation>
@@ -105,6 +108,7 @@
 <translation id="2158971754079422508"><ph name="DESC_TEXT" />: ხელახლა ცდა</translation>
 <translation id="2161394479394250669">ბეჭდვის დავალების გაუქმება</translation>
 <translation id="2180197493692062006">რაღაც შეცდომა მოხდა. ცადეთ აპის ხელახლა გახსნა.</translation>
+<translation id="2201770616342964496">ადგილობრივი იდენტობა</translation>
 <translation id="2209788852729124853">ტრაფიკის მთვლელების გადაყენება</translation>
 <translation id="2212733584906323460">სახელის გამორკვევა</translation>
 <translation id="2217935453350629363">ამჟამინდელი სიჩქარე</translation>
@@ -152,6 +156,7 @@
 <translation id="2859243502336719778">კრიტიკულად მნიშვნელოვანი განახლება</translation>
 <translation id="2860473693272905224">მოათავსეთ სხვა გვერდი სკანერზე</translation>
 <translation id="2872961005593481000">გამორთვა</translation>
+<translation id="2874939134665556319">წინა ჩანაწერი</translation>
 <translation id="2878387241690264070"><ph name="RATE" /> განიმუხტა <ph name="NUM_SECONDS" /> წამში.</translation>
 <translation id="291142119251986300">დაუდასტურებელი კომპონენტები</translation>
 <translation id="2926057806159140518">შეიყვანეთ თქვენი მომხმარებლის სახელი და პაროლი ან დაასკანირეთ თქვენი QR კოდი</translation>
@@ -233,6 +238,7 @@
 <translation id="4003384961948020559">ვერ მოხერხდა — გამომტანი სავსეა</translation>
 <translation id="4034824040120875894">პრინტერი</translation>
 <translation id="4044093238444069296">გეითვეისთან დაკავშირება ვერ ხერხდება</translation>
+<translation id="4046123991198612571">შემდეგი ჩანაწერი</translation>
 <translation id="404928562651467259">გაფრთხილება</translation>
 <translation id="409427325554347132">შემოწმების დეტალების შენახვა</translation>
 <translation id="4110686435123617899">აირჩიეთ ალბომი <ph name="TITLE" /> <ph name="DESC" /></translation>
@@ -250,9 +256,11 @@
 <translation id="4238516577297848345">ბეჭდვის მიმდინარე დავალებები არ არის</translation>
 <translation id="4239069858505860023">GPRS</translation>
 <translation id="4244962993387259361">მეხსიერების ტესტის გასაშვებად მინიმუმ 500 მბაიტი უნდა გქონდეთ თავისუფალი. მეხსიერების გასათავისუფლებლად გადადით აქ: პარამეტრები &gt; მეხსიერების მართვა.</translation>
+<translation id="4250229828105606438">ეკრანის ანაბეჭდი</translation>
 <translation id="4258281355379922695">HTTP რეაგირების დრო</translation>
 <translation id="4271957103967917607">სრულ ეკრანზე ნახვა</translation>
 <translation id="4275799948641988986">შეკეთების შემდეგ ვინ გამოიყენებს მოწყობილობას?</translation>
+<translation id="4289540628985791613">მიმოხილვა</translation>
 <translation id="4297501883039923494">გაჩერდა — უცნობი შეცდომა</translation>
 <translation id="4300073214558989"><ph name="IMAGE_COUNT" /> სურათი</translation>
 <translation id="4378373042927530923">არ არის გაშვებული</translation>
@@ -282,6 +290,7 @@
 <translation id="458794348635939462">ჰოსტების გარდაქმნა ვერ მოხერხდა</translation>
 <translation id="4593212453765072419">საჭიროა პროქსი-სერვერის ავტორიზაცია</translation>
 <translation id="4627232916386272576"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="PRINTED_PAGE_NUMBER" /> / <ph name="TOTAL_PAGE_NUMBER" />. გთხოვთ დააჭიროთ შეყვანის ღილაკს ამ ბეჭდვის დავალების გასაუქმებლად.</translation>
+<translation id="4627645661474370390">დისტანციური იდენტობა</translation>
 <translation id="463791356324567266">მიმდინარეობს სკანირების გაუქმება...</translation>
 <translation id="4646949265910132906">დაცული Wi-Fi კავშირი</translation>
 <translation id="4654549501020883054">ყოველდღიურად შეცვლა</translation>
@@ -381,6 +390,7 @@
 <translation id="554517032089923082">GTC</translation>
 <translation id="5578477003638479617">UMTS</translation>
 <translation id="5578519639599103840">ხელახლა სკანირება</translation>
+<translation id="5583640892426849032">უკუშლა</translation>
 <translation id="5620281292257375798">მხოლოდ შიდა გამოყენებისთვის</translation>
 <translation id="5649768706273821470">მოსმენა</translation>
 <translation id="5669267381087807207">გააქტიურება</translation>
@@ -390,6 +400,7 @@
 <translation id="5707900041990977207"><ph name="TOTAL_PAGES" />-ის <ph name="CURRENT_PAGE" /></translation>
 <translation id="5733298426544876109">განახლდეს <ph name="DEVICE_NAME" /></translation>
 <translation id="5760715441271661976">პორტალის მდგომარეობა</translation>
+<translation id="57838592816432529">დადუმება</translation>
 <translation id="5784136236926853061">HTTP რეაგირების დრო დიდია</translation>
 <translation id="5832805196449965646">მომხმარებლის დამატება</translation>
 <translation id="583281660410589416">უცნობი</translation>
@@ -397,6 +408,7 @@
 <translation id="5849570051105887917">ადგილობრივი პროვაიდერის კოდი</translation>
 <translation id="5860033963881614850">გამორთვა</translation>
 <translation id="5866840822086176774">ძალიან ძლიერი</translation>
+<translation id="588258955323874662">სრული ეკრანი</translation>
 <translation id="5895138241574237353">გადატვირთვა</translation>
 <translation id="5916084858004523819">აკრძალული</translation>
 <translation id="5916664084637901428">ჩართვა</translation>
@@ -437,6 +449,7 @@
 <translation id="6319207335391420837">განაახლეთ ჩაშენებული პროგრამული უზრუნველყოფა <ph name="DEVICE_NAME" />-ზე</translation>
 <translation id="6325525973963619867">ვერ შესრულდა</translation>
 <translation id="6340526405444716530">პერსონალიზება</translation>
+<translation id="6348738456043757611">მომხმარებლის სახელი და პაროლი</translation>
 <translation id="636850387210749493">ორგანიზაციის რეგისტრაცია</translation>
 <translation id="6379086450106841622">სენსორული ეკრანი</translation>
 <translation id="6388847657025262518">სკანერის დოკუმენტების მიმწოდი გაიჭედა. შეამოწმეთ მიმწოდი და ცადეთ ხელახლა.</translation>
@@ -466,12 +479,15 @@
 <translation id="6643016212128521049">გასუფთავება</translation>
 <translation id="6647510110698214773">დაშიფვრის ალგორითმი</translation>
 <translation id="6657585470893396449">პაროლი</translation>
+<translation id="6659594942844771486">ჩანართი</translation>
 <translation id="6692996468359469499">მიიღეთ თქვენს არჩევანთან დაკავშირებული ინფორმაცია</translation>
 <translation id="6704062477274546131">DNS-ის დარეგულირება</translation>
+<translation id="6723839937902243910">ენერგია</translation>
 <translation id="6747215703636344499">გაჩერდა — გამომტანი სავსეა</translation>
 <translation id="6749473226660745022">ფოტოები</translation>
 <translation id="6753452347192452143">მოწყობილობა არის კომპიუტერი.</translation>
 <translation id="6756731097889387912">სკანირება ვერ გაუქმდა</translation>
+<translation id="6760706756348334449">ხმის დაწევა</translation>
 <translation id="6766275201586212568">DNS ვერ დარეგულირდა</translation>
 <translation id="6768237774506518020">DNS-ის წარუმატებელი დარეგულირებების მაჩვენებელი მაღალია</translation>
 <translation id="680983167891198932">გასაღები</translation>
@@ -525,6 +541,7 @@
 <translation id="7427315641433634153">MSCHAP</translation>
 <translation id="7435977162516949853">{NUMBER_OF_PAGES,plural, =1{სკანირება დასრულდა. დასკანირდა 1 გვერდი.}other{სკანირება დასრულდა. დასკანირდა {NUMBER_OF_PAGES} გვერდი.}}</translation>
 <translation id="7469648432129124067">აღმოჩენილია პორტალი</translation>
+<translation id="7481312909269577407">გადამისამართება</translation>
 <translation id="7487067081878637334">ტექნოლოგია</translation>
 <translation id="7490813197707563893">MAC მისამართი</translation>
 <translation id="7497215489070763236">სერვერის CA სერტიფიკატი</translation>
@@ -578,6 +595,7 @@
 <translation id="8132480444149501833">ტრაფიკის მთვლელების მოთხოვნა</translation>
 <translation id="8138405288920084977">LTEAdvanced</translation>
 <translation id="8143951647992294073">აირჩიეთ <ph name="TOPIC_SOURCE" /> <ph name="TOPIC_SOURCE_DESC" /></translation>
+<translation id="8179976553408161302">Enter</translation>
 <translation id="8206859287963243715">ფიჭური</translation>
 <translation id="8208861521865154048">ბონუსები</translation>
 <translation id="8217675307824400706">დაამყარეთ კავშირი</translation>

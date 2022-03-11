@@ -61,6 +61,7 @@
 <translation id="1497522201463361063">"<ph name="FILE_NAME" />"නැවත නම් කළ නොහැකි විය. <ph name="ERROR_MESSAGE" /></translation>
 <translation id="1499943022354839699">Dvorak යතුරු පුවරුව සමග ඉංග්‍රීසි (එ.ජ.)</translation>
 <translation id="1515909359182093592"><ph name="INPUT_LABEL" /> - ධාරකය</translation>
+<translation id="1521655867290435174">Google පත්‍ර</translation>
 <translation id="1538729222189715449">Linux ගොනු විවෘත කරමින්...</translation>
 <translation id="1547964879613821194">කැනේඩියානු ඉංග්‍රීසි</translation>
 <translation id="1556189134700913550">සියල්ලට අදාල කරන්න</translation>
@@ -184,7 +185,6 @@
 <translation id="2544853746127077729">අවසරදීම් සහතිකය ජාලය වෙතින් ප්‍රතික්ෂේප විය</translation>
 <translation id="2547921442987553570"><ph name="EXTENSION_NAME" /> වෙත එක් කරන්න</translation>
 <translation id="255937426064304553">US ජාත්‍යන්තර</translation>
-<translation id="2562685439590298522">ලේඛ</translation>
 <translation id="2563185590376525700">ගෙම්බා</translation>
 <translation id="2578394532502990878">දෙමළ ශබ්දිම</translation>
 <translation id="2579959351793446050">ඔඩියා</translation>
@@ -220,9 +220,7 @@
 <translation id="2902734494705624966">US දිගුකළ</translation>
 <translation id="290843123675549676">මරාති</translation>
 <translation id="2923240520113693977">ඇස්ටෝනියානු</translation>
-<translation id="2925966894897775835">පත්</translation>
 <translation id="2938685643439809023">මොන්ගෝලියානු</translation>
-<translation id="2943400156390503548">ස්ලයිඩ</translation>
 <translation id="2943503720238418293">කෙටි නමක් භාවිතා කරන්න</translation>
 <translation id="2949781154072577687"><ph name="DRIVE_NAME" /> හැඩතල ගන්වමින්...</translation>
 <translation id="2951236788251446349">ජෙලිෆිෂ්</translation>
@@ -414,6 +412,7 @@
 <translation id="4656777537938206294">ගොනු නොබැඳිව ලබා ගත හැකි බවට පත් කරන්න</translation>
 <translation id="4658782175094886150">හිමේ සිටින පුද්ගලයා</translation>
 <translation id="4669606053856530811">'<ph name="SOURCE_NAME" />' හි සාමාජිකයන්ට මෙම අයිතම ඔවුන් සමග බෙදා ගන්නේ නම් මිස ප්‍රවේශය අහිමි වනු ඇත.</translation>
+<translation id="467809019005607715">Google Slides</translation>
 <translation id="4690246192099372265">ස්වීඩන</translation>
 <translation id="4693155481716051732">සුෂි</translation>
 <translation id="4694604912444486114">වඳුරා</translation>
@@ -948,6 +947,7 @@
 <translation id="9172592259078059678">ගුජරාටි අක්ෂර පරිවර්තනය</translation>
 <translation id="9173120999827300720">ජාත්‍යන්තර යතුරුපුවරුව සමග ඉංග්‍රීසි (එ.ජ.)</translation>
 <translation id="9174050671906956834">කුණු කූඩයේ ඇති අයිතම දින 30කට පසුව සදහටම මැකේ.</translation>
+<translation id="9183302530794969518">Google Docs</translation>
 <translation id="9189836632794948435">කසක්</translation>
 <translation id="9213073329713032541">ස්ථාපනය සාර්ථකව ආරම්භ විය.</translation>
 <translation id="9219103736887031265">රූප</translation>

@@ -91,9 +91,9 @@ Her er nogle af de ting, du kan prøve for at komme godt i gang.</translation>
 <translation id="1414271762428216854"><ph name="APP_NAME" />, installeret app</translation>
 <translation id="1419738280318246476">Lås enheden op for at udføre notifikationshandlingen</translation>
 <translation id="1420408895951708260">Slå Nattelys til/fra. <ph name="STATE_TEXT" /></translation>
+<translation id="1420732223884894666">Se de seneste billeder og mediefiler fra din telefon på din <ph name="DEVICE_TYPE" /></translation>
 <translation id="1426410128494586442">Ja</translation>
 <translation id="1438357537418863713">Appstreaming er nu konfigureret. Når du er kommet i gang med at bruge det, vises de apps, der er åbnet for nylig, her.</translation>
-<translation id="144853431011121127">Få notifikationer fra din telefon på din <ph name="DEVICE_TYPE" /></translation>
 <translation id="1455242230282523554">Vis sprogindstillinger</translation>
 <translation id="1460620680449458626">Lyden er slået fra.</translation>
 <translation id="1467432559032391204">Venstre</translation>
@@ -197,6 +197,7 @@ Her er nogle af de ting, du kan prøve for at komme godt i gang.</translation>
 <translation id="2132302418721800944">Optag hele skærmen</translation>
 <translation id="2135456203358955318">Fastgjort lupvindue</translation>
 <translation id="2148716181193084225">I dag</translation>
+<translation id="2159930836979502091">Gå til denne fane</translation>
 <translation id="2170530631236737939">Stryg nedad med tre fingre for at lukke oversigten</translation>
 <translation id="219905428774326614">Starter. Alle apps</translation>
 <translation id="2201071101391734388">Seneste billede <ph name="INDEX" /> af <ph name="TOTAL_COUNT" />.</translation>
@@ -563,6 +564,7 @@ Her er nogle af de ting, du kan prøve for at komme godt i gang.</translation>
 <translation id="4449692009715125625">{NUM_NOTIFICATIONS,plural, =1{1 vigtig notifikation}one{# vigtig notifikation}other{# vigtige notifikationer}}</translation>
 <translation id="4450893287417543264">Vis ikke igen</translation>
 <translation id="4451374464530248585">Tastaturgenvejen Alt+pil ned er blevet ændret. Hvis du vil bruge tasten Page Down, skal du trykke på tasten <ph name="LAUNCHER_KEY_NAME" />+pil ned.</translation>
+<translation id="4455051983450390249">Se din telefons notifikationer på din <ph name="DEVICE_TYPE" /></translation>
 <translation id="445864333228800152">Godaften</translation>
 <translation id="4458688154122353284">Stop skærmoptagelse</translation>
 <translation id="4471354919263203780">Downloader talegenkendelsesfiler... <ph name="PERCENT" /> %</translation>
@@ -769,6 +771,7 @@ Her er nogle af de ting, du kan prøve for at komme godt i gang.</translation>
 <translation id="583281660410589416">Ukendt</translation>
 <translation id="5837036133683224804">Stop <ph name="ROUTE_TITLE" /> på <ph name="RECEIVER_NAME" /></translation>
 <translation id="584525477304726060">Hold fingeren nede på vinduet for at maksimere det</translation>
+<translation id="5856638668464565213"><ph name="NETWORK_NAME" /> er ikke aktiveret.</translation>
 <translation id="5860033963881614850">Fra</translation>
 <translation id="5860491529813859533">Aktivér</translation>
 <translation id="5867217927013474703">Netværksoplysninger indsamles</translation>
@@ -800,6 +803,7 @@ Her er nogle af de ting, du kan prøve for at komme godt i gang.</translation>
 <translation id="602472752137106327">Vis vinduer fra alle skriveborde. Alternativknappen er valgt.</translation>
 <translation id="6025324406281560198"><ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, signalstyrke <ph name="SIGNAL_STRENGTH" />, administreret af din administrator</translation>
 <translation id="6027518778343897451">Der er ingen begivenhed <ph name="CURRENT_MONTH_DAY" />. Tryk på Enter for at åbne Google Kalender i browseren.</translation>
+<translation id="6027952026115023659">Få adgang til din telefons beskedapps på din <ph name="DEVICE_TYPE" /></translation>
 <translation id="6030495522958826102">Menuen blev flyttet til nederste venstre hjørne af skærmen.</translation>
 <translation id="6032620807120418574">Klik et vilkårligt sted for at tage et billede af hele skærmen</translation>
 <translation id="6040071906258664830">Optag mikrofon er slået <ph name="STATE" /></translation>
@@ -826,6 +830,7 @@ Her er nogle af de ting, du kan prøve for at komme godt i gang.</translation>
 <translation id="6165508094623778733">Flere oplysninger</translation>
 <translation id="6166852626429024716">Søg på din enhed, i dine apps, i indstillingerne, på nettet...</translation>
 <translation id="6179832488876878285">Du kan fastgøre dine vigtige filer her. Åbn appen Filer for at komme i gang.</translation>
+<translation id="619279033188484792">Se de seneste billeder, mediefiler og notifikationer fra din telefon på din <ph name="DEVICE_TYPE" /></translation>
 <translation id="6220928844947387476">Du kan nu optage dig selv og din skærm på samme tid</translation>
 <translation id="622484624075952240">Ned</translation>
 <translation id="6231419273573514727">Din eksterne enheds ydeevne kan være begrænset</translation>
@@ -938,9 +943,11 @@ Installeret for nylig</translation>
 <translation id="6921188888306725546">Tastaturgenvejene er blevet forbedret</translation>
 <translation id="6931576957638141829">Gem i</translation>
 <translation id="6945221475159498467">Vælg</translation>
+<translation id="6960565108681981554">Ikke aktiveret. Kontakt dit mobilselskab.</translation>
 <translation id="6961121602502368900">Du kan ikke sætte din telefon på lydløs med en arbejdsprofil</translation>
 <translation id="6961840794482373852">Tastaturgenvejen Alt+pil op er blevet ændret. Hvis du vil bruge tasten Side op, skal du trykke på tasten <ph name="LAUNCHER_KEY_NAME" />+pil op.</translation>
 <translation id="6965382102122355670">OK</translation>
+<translation id="6967933908874208731">Se din telefons seneste billeder, medier, notifikationer og beskedapps på din <ph name="DEVICE_TYPE" /></translation>
 <translation id="6972754398087986839">Kom godt i gang</translation>
 <translation id="6979158407327259162">Google Drev</translation>
 <translation id="6981982820502123353">Hjælpefunktioner</translation>
@@ -1147,7 +1154,6 @@ Installeret for nylig</translation>
 <translation id="8236042855478648955">Det er tid til at tage en pause</translation>
 <translation id="8247060538831475781"><ph name="CONNECTION_STATUS" />, signalstyrke <ph name="SIGNAL_STRENGTH" />, telefonbatteri <ph name="BATTERY_STATUS" /></translation>
 <translation id="8247998213073982446"><ph name="APP_NAME" />, app</translation>
-<translation id="8248728785693203669">Dit USB-C-kabel kan muligvis ikke sluttes korrekt til skærmene</translation>
 <translation id="8255234195843591763">Nulstil for at opdatere</translation>
 <translation id="826107067893790409">Tryk på Enter for at låse op for <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="8261506727792406068">Slet</translation>

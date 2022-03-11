@@ -138,6 +138,7 @@
 <translation id="1810845389119482123">Η αρχική ρύθμιση συγχρονισμού δεν ολοκληρώθηκε</translation>
 <translation id="1829244130665387512">Εύρεση στη σελίδα</translation>
 <translation id="1832459821645506983">Ναι, συμφωνώ</translation>
+<translation id="1849863543394887018">Μπορείτε να απενεργοποιήσετε τις ειδοποιήσεις μεταβαίνοντας στις ρυθμίσεις</translation>
 <translation id="1877026089748256423">Το Chrome δεν είναι ενημερωμένο</translation>
 <translation id="1883903952484604915">Τα αρχεία μου</translation>
 <translation id="189358972401248634">Άλλες γλώσσες</translation>
@@ -428,6 +429,7 @@
 <translation id="3443221991560634068">Επαναφόρτωση της τρέχουσας σελίδας</translation>
 <translation id="3444179773590444986">Θέλετε να υποβάλετε σχόλια σχετικά με το σκούρο θέμα για ιστοτόπους;</translation>
 <translation id="3469665409713263828">{FILE_COUNT,plural, =1{Προγραμματίστηκε 1 λήψη.}other{Προγραμματίστηκαν # λήψεις.}}</translation>
+<translation id="3474624961160222204">Συνέχεια <ph name="NAME" /></translation>
 <translation id="3478363558367712427">Μπορείτε να επιλέξετε τη μηχανή αναζήτησής σας</translation>
 <translation id="3493531032208478708"><ph name="BEGIN_LINK" />Μάθετε περισσότερα<ph name="END_LINK" /> σχετικά με το προτεινόμενο περιεχόμενο</translation>
 <translation id="3499246418971111862">chrome_qrcode_<ph name="CURRENT_TIMESTAMP_MS" /></translation>
@@ -1064,7 +1066,6 @@
 <translation id="7173114856073700355">Άνοιγμα ρυθμίσεων</translation>
 <translation id="7177466738963138057">Μπορείτε να αλλάξετε αργότερα αυτήν την επιλογή στην περιοχή "Ρυθμίσεις"</translation>
 <translation id="7177873915659574692">Δεν είναι δυνατή η δημιουργία κωδικού QR. Το URL περιέχει περισσότερους από <ph name="CHARACTER_LIMIT" /> χαρακτήρες.</translation>
-<translation id="7180611975245234373">Ανανέωση</translation>
 <translation id="718226107353899806">Μπορείτε να προσθέσετε έως <ph name="MAX_NUM_REACTIONS" /> αντιδράσεις.</translation>
 <translation id="7187993566681480880">Διατηρεί την ασφάλειά σας στο Chrome και μπορεί να χρησιμοποιηθεί για τη βελτίωση της ασφάλειάς σας σε άλλες εφαρμογές Google όταν είστε συνδεδεμένοι.</translation>
 <translation id="718926126787620637">Η λίστα φακέλων σελιδοδεικτών άνοιξε σε πλήρες ύψος</translation>
@@ -1198,6 +1199,7 @@
 <translation id="7926975587469166629">Ψευδώνυμο κάρτας</translation>
 <translation id="7929962904089429003">Άνοιγμα μενού</translation>
 <translation id="7930998711684428189">Σας προειδοποιεί σε περίπτωση που οι κωδικοί πρόσβασής σας αποκαλυφθούν στο πλαίσιο μιας παραβίασης δεδομένων.</translation>
+<translation id="7937772386706786623">Διαχείριση στοιχείων ελέγχου μέσων, καρτελών ανώνυμης περιήγησης κ.ά. με ειδοποιήσεις</translation>
 <translation id="7939485076072265087">Δημιουργία στιλιζαρισμένης κάρτας με επισήμανση</translation>
 <translation id="7942131818088350342">Το <ph name="PRODUCT_NAME" /> δεν είναι ενημερωμένο.</translation>
 <translation id="7944772052836377867">Ο συγχρονισμός πρέπει να επαληθεύσει την ταυτότητά σας</translation>

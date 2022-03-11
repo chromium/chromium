@@ -254,6 +254,7 @@
 <translation id="7087918508125750058"><ph name="ITEM_COUNT" /> itens selecionados. Opções disponíveis perto da parte superior da tela</translation>
 <translation id="7141896414559753902">Impedir pop-ups e redirecionamento dos sites (recomendado)</translation>
 <translation id="7176368934862295254"><ph name="KILOBYTES" /> KB</translation>
+<translation id="7180611975245234373">Atualizar</translation>
 <translation id="723171743924126238">Selecionar imagens</translation>
 <translation id="7243308994586599757">Opções disponíveis perto da parte inferior da tela</translation>
 <translation id="7250468141469952378"><ph name="ITEM_COUNT" /> itens selecionados</translation>
@@ -309,6 +310,7 @@
 <translation id="8394832520002899662">Toque para voltar ao site</translation>
 <translation id="8409345997656833551">Receber uma notificação quando um artigo puder ser mostrado na visualização simplificada</translation>
 <translation id="8425213833346101688">Alterar</translation>
+<translation id="8428213095426709021">Configurações</translation>
 <translation id="8441146129660941386">Voltar</translation>
 <translation id="8444433999583714703">Para permitir que o app <ph name="APP_NAME" /> acesse seu local, ative-o também nas <ph name="BEGIN_LINK" />configurações do Android<ph name="END_LINK" />.</translation>
 <translation id="8447861592752582886">Revogar permissão do dispositivo</translation>

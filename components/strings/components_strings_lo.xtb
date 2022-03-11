@@ -492,6 +492,7 @@
 <translation id="2430968933669123598">ຈັດການບັນຊີ Google, ກົດ Enter ເພື່ອຈັດການຂໍ້ມູນ, ຄວາມເປັນສ່ວນຕົວ ແລະ ຄວາມປອດໄພຂອງທ່ານໃນບັນຊີ Google ທ່ານ</translation>
 <translation id="2436186046335138073">ອະນຸຍາດໃຫ້ <ph name="HANDLER_HOSTNAME" /> ເປີດທຸກລິ້ງ <ph name="PROTOCOL" /> ບໍ?</translation>
 <translation id="2438874542388153331">ເຈາະຮູຢູ່ເບື້ອງຂວາສີ່ຮູ</translation>
+<translation id="2448295565072560657">ມີການເຊື່ອມຕໍ່ອຸປະກອນຕໍ່ພ່ວງເຂົ້າກັບອຸປະກອນນີ້ໃນລະຫວ່າງທີ່ທ່ານຢູ່ໃນລະບົບ</translation>
 <translation id="2450021089947420533">ບັນທຶກ</translation>
 <translation id="2463739503403862330">ຕື່ມຂໍ້ມູນ</translation>
 <translation id="2465402087343596252">Architecture-E</translation>
@@ -499,6 +500,7 @@
 <translation id="2465688316154986572">ກະຫຼັບເຟີ</translation>
 <translation id="2465914000209955735">ຈັດການໄຟລ໌ທີ່ທ່ານດາວໂຫຼດໄວ້ໃນ Chrome</translation>
 <translation id="2466004615675155314">ສະແດງຂໍ້ມູນ​ຈາກ​ເວັບ​ໄຊ</translation>
+<translation id="2467272921457885625">ຂໍ້ມູນຈຳເພາະ ແລະ ສະຖິຕິຮາດແວ ເຊັ່ນ: ປະຫວັດການນຳໃຊ້ CPU/RAM</translation>
 <translation id="2467694685043708798"><ph name="BEGIN_LINK" />ກຳລັງເປີດໃຊ້ Network Diagnostics<ph name="END_LINK" /></translation>
 <translation id="2469153820345007638">ລຳດັບ 1 ເຖິງ N</translation>
 <translation id="2470767536994572628">ເມື່ອທ່ານແກ້ໄຂຄຳອະທິບາຍຄວາມເຫັນດ ເອກະສານນີ້ຈະກັບໄປເປັນມຸມມອງແບບໜ້າດຽວ ແລະ ກັບໄປໃຊ້ການໝຸນແບບເດີມຂອງມັນ</translation>
@@ -2293,7 +2295,6 @@
 <translation id="8241712895048303527">ບລັອກໄວ້ໃນເວັບໄຊນີ້</translation>
 <translation id="8242426110754782860">ດຳ​ເນີນ​ຕໍ່</translation>
 <translation id="8249296373107784235">ຍົກເລີກ</translation>
-<translation id="8249320324621329438">ເອົາຄັ້ງສຸດທ້າຍ:</translation>
 <translation id="8253091569723639551">ຈຳເປັນຕ້ອງມີທີ່ຢູ່ຮຽກເກັບເງິນ</translation>
 <translation id="8257387598443225809">ແອັບນີ້ຖືກອອກແບບມາສຳລັບມືຖື</translation>
 <translation id="825929999321470778">ສະແດງລະຫັດຜ່ານທີ່ບັນທຶກໄວ້ທັງໝົດ</translation>

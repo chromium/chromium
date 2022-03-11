@@ -488,7 +488,7 @@
 <translation id="2430968933669123598">管理 Google 帳戶，㩒一下 Enter 鍵就可以喺 Google 帳戶度管理你嘅資料、私隱權同埋安全設定</translation>
 <translation id="2436186046335138073">要允許 <ph name="HANDLER_HOSTNAME" /> 開啟所有 <ph name="PROTOCOL" /> 連結嗎？</translation>
 <translation id="2438874542388153331">四孔 (右側)</translation>
-<translation id="2448295565072560657">登入時連接至這部裝置的周邊裝置</translation>
+<translation id="2448295565072560657">登入時連接至此裝置的周邊裝置</translation>
 <translation id="2450021089947420533">瀏覽過程</translation>
 <translation id="2463739503403862330">填寫</translation>
 <translation id="2465402087343596252">Architecture-E</translation>
@@ -496,7 +496,7 @@
 <translation id="2465688316154986572">釘書釘</translation>
 <translation id="2465914000209955735">管理您在 Chrome 中下載嘅檔案</translation>
 <translation id="2466004615675155314">顯示來自網絡的資料</translation>
-<translation id="2467272921457885625">CPU/RAM 使用率記錄等裝置硬體規格和統計資料</translation>
+<translation id="2467272921457885625">CPU/RAM 使用情況記錄等裝置硬件規格和統計資料</translation>
 <translation id="2467694685043708798"><ph name="BEGIN_LINK" />執行網絡診斷<ph name="END_LINK" /></translation>
 <translation id="2469153820345007638">1 至 N 的順序</translation>
 <translation id="2470767536994572628">在您編輯註解時，此文件將會返回單頁檢視模式及轉回原本的方向</translation>
@@ -2285,7 +2285,6 @@
 <translation id="8241712895048303527">禁止此網站顯示廣告</translation>
 <translation id="8242426110754782860">Proceed</translation>
 <translation id="8249296373107784235">取消</translation>
-<translation id="8249320324621329438">上次擷取時間：</translation>
 <translation id="8253091569723639551">必須提供帳單地址</translation>
 <translation id="8257387598443225809">此應用程式專為流動裝置而設</translation>
 <translation id="825929999321470778">顯示所有已儲存的密碼</translation>

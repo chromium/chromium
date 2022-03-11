@@ -254,6 +254,7 @@
 <translation id="7087918508125750058">არჩეულია <ph name="ITEM_COUNT" />. ვარიანტები ხელმისაწვდომია ეკრანის ზედა ნაწილთან</translation>
 <translation id="7141896414559753902">საიტებისთვის გადამისამართებისა და ამომხტარი ფანჯრების ჩვენების დაბლოკვა (რეკომენდებული)</translation>
 <translation id="7176368934862295254"><ph name="KILOBYTES" /> კბაიტი</translation>
+<translation id="7180611975245234373">განახლება</translation>
 <translation id="723171743924126238">აირჩიეთ სურათები</translation>
 <translation id="7243308994586599757">ვარიანტები ხელმისაწვდომია ეკრანის ქვედა ნაწილთან</translation>
 <translation id="7250468141469952378">არჩეულია <ph name="ITEM_COUNT" /></translation>
@@ -309,6 +310,7 @@
 <translation id="8394832520002899662">შეეხეთ საიტზე დასაბრუნებლად</translation>
 <translation id="8409345997656833551">შეტყობინების მიღება, როცა სტატიის ჩვენება შესაძლებელია გამარტივებული ხედით</translation>
 <translation id="8425213833346101688">შეცვლა</translation>
+<translation id="8428213095426709021">პარამეტრები</translation>
 <translation id="8441146129660941386">უკან ძიება</translation>
 <translation id="8444433999583714703"><ph name="APP_NAME" />-მა თქვენი მდებარეობით რომ ისარგებლოს, გაააქტიურეთ მდებარეობაზე წვდომის ნებართვაც <ph name="BEGIN_LINK" />Android-ის პარამეტრებიდან<ph name="END_LINK" />.</translation>
 <translation id="8447861592752582886">მოწყობილობაზე წვდომის ნებართვის გაუქმება</translation>

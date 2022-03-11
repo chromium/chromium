@@ -138,6 +138,7 @@
 <translation id="1810845389119482123">Првичното поставување на синхронизацијата не е завршено</translation>
 <translation id="1829244130665387512">Најди на страница</translation>
 <translation id="1832459821645506983">Да, може</translation>
+<translation id="1849863543394887018">Може да ги оневозможите известувањата во „Поставки“</translation>
 <translation id="1877026089748256423">Chrome е застарен</translation>
 <translation id="1883903952484604915">Мои датотеки</translation>
 <translation id="189358972401248634">Други јазици</translation>
@@ -428,6 +429,7 @@
 <translation id="3443221991560634068">Вчитајте ја тековната страница</translation>
 <translation id="3444179773590444986">Сакате да споделите повратни информации за темната тема за сајтови?</translation>
 <translation id="3469665409713263828">{FILE_COUNT,plural, =1{Закажано е 1 преземање}one{Закажани се # преземање}other{Закажани се # преземања}}</translation>
+<translation id="3474624961160222204">Продолжете како <ph name="NAME" /></translation>
 <translation id="3478363558367712427">Може да го изберете вашиот пребарувач</translation>
 <translation id="3493531032208478708"><ph name="BEGIN_LINK" />Дознајте повеќе<ph name="END_LINK" /> за предложените содржини</translation>
 <translation id="3499246418971111862">chrome_qrcode_<ph name="CURRENT_TIMESTAMP_MS" /></translation>
@@ -1064,7 +1066,6 @@
 <translation id="7173114856073700355">Отвори „Поставки“</translation>
 <translation id="7177466738963138057">Може да го промените ова подоцна во „Поставки“</translation>
 <translation id="7177873915659574692">Не може да се создаде QR-код. URL-адресата има повеќе од <ph name="CHARACTER_LIMIT" /> знаци.</translation>
-<translation id="7180611975245234373">Освежи</translation>
 <translation id="718226107353899806">Може да додадете најмногу <ph name="MAX_NUM_REACTIONS" /> реакции.</translation>
 <translation id="7187993566681480880">Ја чува вашата безбедност на Chrome и може да се користи за да ја подобри безбедноста на други апликации на Google кога сте најавени.</translation>
 <translation id="718926126787620637">Список со папки за обележувачи отворени на цел екран</translation>
@@ -1198,6 +1199,7 @@
 <translation id="7926975587469166629">Прекар на картичката</translation>
 <translation id="7929962904089429003">Отворете го менито</translation>
 <translation id="7930998711684428189">Ве предупредува ако лозинките се откриени при упад во податоците.</translation>
+<translation id="7937772386706786623">Управувајте со контролите за аудиовизуелни содржини, картичките „Инкогнито“ и друго преку известувањата</translation>
 <translation id="7939485076072265087">Создајте стилизирана картичка со нагласен текст</translation>
 <translation id="7942131818088350342"><ph name="PRODUCT_NAME" /> е застарен.</translation>
 <translation id="7944772052836377867">Синхронизацијата треба да потврди дека сте вие</translation>

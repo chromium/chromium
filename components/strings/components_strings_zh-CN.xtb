@@ -488,6 +488,7 @@
 <translation id="2430968933669123598">“管理 Google 帐号”，按 Enter 键即可在您的 Google 帐号中管理自己的信息、隐私和安全</translation>
 <translation id="2436186046335138073">允许<ph name="HANDLER_HOSTNAME" />打开所有<ph name="PROTOCOL" />链接？</translation>
 <translation id="2438874542388153331">四孔（右侧）</translation>
+<translation id="2448295565072560657">登录时连接至该设备的外围设备</translation>
 <translation id="2450021089947420533">历程</translation>
 <translation id="2463739503403862330">填充</translation>
 <translation id="2465402087343596252">Architecture-E</translation>
@@ -495,6 +496,7 @@
 <translation id="2465688316154986572">订书钉</translation>
 <translation id="2465914000209955735">管理您已在 Chrome 中下载的文件</translation>
 <translation id="2466004615675155314">显示来自网络的信息</translation>
+<translation id="2467272921457885625">设备硬件规格和统计信息（例如 CPU/RAM 利用率记录）</translation>
 <translation id="2467694685043708798"><ph name="BEGIN_LINK" />运行网络诊断<ph name="END_LINK" /></translation>
 <translation id="2469153820345007638">从 1 到 N 的顺序</translation>
 <translation id="2470767536994572628">当您修改注释时，此文档会恢复为单页视图和原始方向</translation>
@@ -2279,7 +2281,6 @@
 <translation id="8241712895048303527">在此网站上拦截</translation>
 <translation id="8242426110754782860">继续</translation>
 <translation id="8249296373107784235">取消</translation>
-<translation id="8249320324621329438">最后一次抓取时间：</translation>
 <translation id="8253091569723639551">账单邮寄地址是必填项</translation>
 <translation id="8257387598443225809">此应用是专为移动设备设计的</translation>
 <translation id="825929999321470778">显示所有已保存的密码</translation>

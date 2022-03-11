@@ -61,6 +61,7 @@
 <translation id="1497522201463361063">Не вдається перейменувати "<ph name="FILE_NAME" />". <ph name="ERROR_MESSAGE" /></translation>
 <translation id="1499943022354839699">Англійська (США), розкладка Дворака</translation>
 <translation id="1515909359182093592"><ph name="INPUT_LABEL" /> – хост</translation>
+<translation id="1521655867290435174">Google Таблиці</translation>
 <translation id="1538729222189715449">Відкриваються файли Linux…</translation>
 <translation id="1547964879613821194">Англійська (Канада)</translation>
 <translation id="1556189134700913550">Застосувати до всіх</translation>
@@ -184,7 +185,6 @@
 <translation id="2544853746127077729">Сертифікат автентифікації відхилений мережею</translation>
 <translation id="2547921442987553570">Додати в <ph name="EXTENSION_NAME" /></translation>
 <translation id="255937426064304553">Міжнародна (США)</translation>
-<translation id="2562685439590298522">Документи</translation>
 <translation id="2563185590376525700">Жаба</translation>
 <translation id="2578394532502990878">Тамільська, фонетична розкладка</translation>
 <translation id="2579959351793446050">Орія</translation>
@@ -220,9 +220,7 @@
 <translation id="2902734494705624966">Американська розширена</translation>
 <translation id="290843123675549676">Маратхі</translation>
 <translation id="2923240520113693977">Естонська</translation>
-<translation id="2925966894897775835">Таблиці</translation>
 <translation id="2938685643439809023">Монгольська</translation>
-<translation id="2943400156390503548">Презентації</translation>
 <translation id="2943503720238418293">Введіть коротшу назву</translation>
 <translation id="2949781154072577687">Форматування диска "<ph name="DRIVE_NAME" />"…</translation>
 <translation id="2951236788251446349">Медуза</translation>
@@ -414,6 +412,7 @@
 <translation id="4656777537938206294">Можливість роботи з файлами без підключення до Інтернету</translation>
 <translation id="4658782175094886150">Людина в снігу</translation>
 <translation id="4669606053856530811">Учасники, які мають доступ до розташування "<ph name="SOURCE_NAME" />", втратять доступ до елементів, якими з ними не поділилися.</translation>
+<translation id="467809019005607715">Google Презентації</translation>
 <translation id="4690246192099372265">Шведська</translation>
 <translation id="4693155481716051732">Суші</translation>
 <translation id="4694604912444486114">Мавпа</translation>
@@ -949,6 +948,7 @@
 <translation id="9172592259078059678">Гуджараті, транслітерація</translation>
 <translation id="9173120999827300720">Англійська (США), міжнародна розкладка</translation>
 <translation id="9174050671906956834">Файли зберігаються в кошику 30 днів, а потім видаляються назавжди.</translation>
+<translation id="9183302530794969518">Google Документи</translation>
 <translation id="9189836632794948435">Казахська</translation>
 <translation id="9213073329713032541">Встановлення розпочато.</translation>
 <translation id="9219103736887031265">Зображення</translation>

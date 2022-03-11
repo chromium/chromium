@@ -61,6 +61,7 @@
 <translation id="1497522201463361063">"<ph name="FILE_NAME" />" పేరు మార్చడం సాధ్యపడలేదు. <ph name="ERROR_MESSAGE" /></translation>
 <translation id="1499943022354839699">డ్వోరక్ కీబోర్డ్‌తో ఇంగ్లీష్ (US)</translation>
 <translation id="1515909359182093592"><ph name="INPUT_LABEL" /> - హోస్ట్</translation>
+<translation id="1521655867290435174">Google Sheets</translation>
 <translation id="1538729222189715449">Linux ఫైళ్లను తెరుస్తోంది...</translation>
 <translation id="1547964879613821194">కెనడియన్ ఆంగ్లం</translation>
 <translation id="1556189134700913550">అన్నింటికీ వర్తింపజేయి</translation>
@@ -143,7 +144,7 @@
 <translation id="22085916256174561">కొరియన్</translation>
 <translation id="2208919847696382164">Linuxతో ఇన్‌స్టాల్ చేయండి</translation>
 <translation id="2225536596944493418">మీరు <ph name="NUMBER_OF_ITEMS" /> అంశాలను ఖచ్చితంగా తొలగించాలనుకుంటున్నారా?</translation>
-<translation id="2230062665678605299">"<ph name="FOLDER_NAME" />" ఫోల్డర్‌ను సృష్టించడం సాధ్యపడలేదు. <ph name="ERROR_MESSAGE" /></translation>
+<translation id="2230062665678605299">"<ph name="FOLDER_NAME" />" ఫోల్డర్‌ను క్రియేట్ చేయడం సాధ్యపడలేదు. <ph name="ERROR_MESSAGE" /></translation>
 <translation id="2239068707900391003">కాఫీని పట్టుకుని ఉన్న వ్యక్తి</translation>
 <translation id="2251368349685848079">ట్రాష్ నుండి రీస్టోర్ చేయండి</translation>
 <translation id="2282155092769082568">ఆటోకాన్ఫిగరేషన్ URL:</translation>
@@ -184,7 +185,6 @@
 <translation id="2544853746127077729">ప్రామాణీకరణ ప్రమాణపత్రం నెట్‌వర్క్ ద్వారా తిరస్కరించబడింది</translation>
 <translation id="2547921442987553570"><ph name="EXTENSION_NAME" />కి జోడించండి</translation>
 <translation id="255937426064304553">యుఎస్ అంతర్జాతీయం</translation>
-<translation id="2562685439590298522">Docs</translation>
 <translation id="2563185590376525700">కప్ప</translation>
 <translation id="2578394532502990878">తమిళం ఫొనెటిక్</translation>
 <translation id="2579959351793446050">ఒడియా</translation>
@@ -220,9 +220,7 @@
 <translation id="2902734494705624966">యుఎస్ విస్తారితం</translation>
 <translation id="290843123675549676">మరాఠీ</translation>
 <translation id="2923240520113693977">ఈస్టోనియన్</translation>
-<translation id="2925966894897775835">Sheets</translation>
 <translation id="2938685643439809023">మంగోలియన్</translation>
-<translation id="2943400156390503548">Slides</translation>
 <translation id="2943503720238418293">కొద్దిగా చిన్న పేరును ఉపయోగించండి</translation>
 <translation id="2949781154072577687"><ph name="DRIVE_NAME" />ను ఫార్మాట్ చేస్తోంది...</translation>
 <translation id="2951236788251446349">జెల్లీఫిష్</translation>
@@ -281,7 +279,7 @@
 <translation id="3408072735282270043"><ph name="NETWORK_NAME" />, యాక్టివేట్ చేయి</translation>
 <translation id="3408236822532681288">నియో 2 కీబోర్డ్‌తో జర్మన్ (జర్మనీ)</translation>
 <translation id="3414856743105198592">తొలగించగల మీడియాను ఫార్మాట్ చేయడం వలన మొత్తం డేటా తుడిచి వేయబడుతుంది. మీరు కొనసాగించాలనుకుంటున్నారా?</translation>
-<translation id="3437801641691368414">సృష్టించిన సమయం</translation>
+<translation id="3437801641691368414">క్రియేట్ చేసిన సమయం</translation>
 <translation id="343907260260897561">ఇన్‌స్టంట్ కెమెరా</translation>
 <translation id="3455931012307786678">ఎస్టోనియన్</translation>
 <translation id="3466147780910026086">మీ మీడియా పరికరాన్ని స్కాన్ చేస్తోంది...</translation>
@@ -414,6 +412,7 @@
 <translation id="4656777537938206294">ఫైళ్లను ఆఫ్‌లైన్‌లో అందుబాటులో ఉంచండి</translation>
 <translation id="4658782175094886150">మంచు ప్రదేశంలో ఉన్న వ్యక్తి</translation>
 <translation id="4669606053856530811">'<ph name="SOURCE_NAME" />' యొక్క సభ్యులతో ఈ అంశాలను షేర్ చేస్తే మినహా వారు యాక్సెస్‌ను కోల్పోతారు.</translation>
+<translation id="467809019005607715">Google Slides</translation>
 <translation id="4690246192099372265">స్వీడిష్</translation>
 <translation id="4693155481716051732">సుషి</translation>
 <translation id="4694604912444486114">కోతి</translation>
@@ -658,6 +657,7 @@
 <translation id="6732801395666424405">ప్రమాణపత్రాలు లోడ్ కాలేదు</translation>
 <translation id="6736329909263487977"><ph name="ISSUED_BY" /> [<ph name="ISSUED_TO" />]</translation>
 <translation id="6751256176799620176">1 ఫోల్డర్ ఎంచుకోబడింది</translation>
+<translation id="6755827872271341378">ChromeOS Flex పరికరం</translation>
 <translation id="6790428901817661496">ప్లే చేయి</translation>
 <translation id="6795884519221689054">పాండా</translation>
 <translation id="6806699711453372963">Linux షేరింగ్‌ని నిర్వహించండి</translation>
@@ -735,6 +735,7 @@
 <translation id="7343393116438664539">వియత్నామీస్ టెలెక్స్</translation>
 <translation id="7359359531237882347"><ph name="NUMBER_OF_ITEMS" /> అంశాలను కాపీ చేస్తోంది...</translation>
 <translation id="7375951387215729722">ఫైల్ లిస్ట్‌ <ph name="COLUMN_NAME" /> ప్రకారం అవరోహణ క్రమంలో వర్గీకరించబడింది.</translation>
+<translation id="7402503521691663770">ChromeOS Flex పరికరాలు</translation>
 <translation id="7408870451288633753">చెక్</translation>
 <translation id="7417453074306512035">ఇథియోపిక్ కీబోర్డ్</translation>
 <translation id="7417705661718309329">Google మ్యాప్</translation>
@@ -949,6 +950,7 @@
 <translation id="9172592259078059678">గుజరాతీ ట్రాన్స్‌లిటరేషన్</translation>
 <translation id="9173120999827300720">అంతర్జాతీయ కీబోర్డ్‌తో ఇంగ్లీష్ (US)</translation>
 <translation id="9174050671906956834">ట్రాష్‌లోని ఐటెమ్‌లు 30 రోజుల తర్వాత శాశ్వతంగా తొలగించబడతాయి.</translation>
+<translation id="9183302530794969518">Google Docs</translation>
 <translation id="9189836632794948435">కజక్</translation>
 <translation id="9213073329713032541">ఇన్‌స్టాలేషన్ విజయవంతంగా ప్రారంభించబడింది.</translation>
 <translation id="9219103736887031265">ఇమేజ్‌లు</translation>

@@ -91,9 +91,9 @@ Hér eru nokkrir hlutir sem þú getur prófað til að byrja með.</translation
 <translation id="1414271762428216854"><ph name="APP_NAME" />, uppsett forrit</translation>
 <translation id="1419738280318246476">Opnaðu tækið til að framkvæma aðgerð tilkynningarinnar</translation>
 <translation id="1420408895951708260">Kveikja/slökkva á næturljósi. <ph name="STATE_TEXT" /></translation>
+<translation id="1420732223884894666">Skoðaðu nýlegar myndir, margmiðlunarefni og tilkynningar símans í <ph name="DEVICE_TYPE" /></translation>
 <translation id="1426410128494586442">Já</translation>
 <translation id="1438357537418863713">Forritastreymi er núna uppsett. Nýlega notuð forrit birtast hér þegar þú hefst handa.</translation>
-<translation id="144853431011121127">Fáðu tilkynningar úr símanum í <ph name="DEVICE_TYPE" /></translation>
 <translation id="1455242230282523554">Sýna tungumálastillingar</translation>
 <translation id="1460620680449458626">Slökkt er á hljóði.</translation>
 <translation id="1467432559032391204">Rangsælis</translation>
@@ -317,6 +317,7 @@ Hér eru nokkrir hlutir sem þú getur prófað til að byrja með.</translation
 <translation id="301282384882049174">Deilt af stjórnanda</translation>
 <translation id="3017687597151988916">Valsvæði stillt á glugga</translation>
 <translation id="3033545621352269033">Kveikt</translation>
+<translation id="3033912566804961911">Sameina með <ph name="DESK_NAME" /></translation>
 <translation id="3036649622769666520">Opna skrár</translation>
 <translation id="3038571455154067151">Til að skrá þig inn skaltu slá inn aðgangskóða foreldris fyrir Family Link</translation>
 <translation id="3039939407102840004">Rafhleðsla penna er <ph name="PERCENTAGE" /> prósent.</translation>
@@ -342,6 +343,7 @@ Hér eru nokkrir hlutir sem þú getur prófað til að byrja með.</translation
 <translation id="3153444934357957346">Þú getur aðeins verið með <ph name="MULTI_PROFILE_USER_LIMIT" /> reikninga í innskráningu á marga reikninga.</translation>
 <translation id="3154351730702813399">Stjórnandi tækisins gæti fylgst með vafravirkni þinni.</translation>
 <translation id="316086887565479535">Óstudd forrit í sniðmáti</translation>
+<translation id="3161500364292033097">Loka skrifborði og gluggum</translation>
 <translation id="316356270129335934"><ph name="MANAGER" /> niðurfærir <ph name="DEVICE_TYPE" /> í eldri útgáfu. Tækið verður endurstillt og öllum gögnum verður eytt.</translation>
 <translation id="3181441307743005334">Endurræsing gæti tekið nokkurn tíma</translation>
 <translation id="3202010236269062730">{NUM_DEVICES,plural, =1{Tengdist við tæki}one{Tengdist við # tæki}other{Tengdist við # tæki}}</translation>
@@ -824,6 +826,7 @@ Hér eru nokkrir hlutir sem þú getur prófað til að byrja með.</translation
 <translation id="6165508094623778733">Frekari upplýsingar</translation>
 <translation id="6166852626429024716">Leitaðu í tækinu þínu, forritum, stillingum, á vefnum...</translation>
 <translation id="6179832488876878285">Hér geturðu fest mikilvægar skrár. Opnaðu forritið Skrár til að hefjast handa.</translation>
+<translation id="619279033188484792">Skoðaðu nýlegar myndir, margmiðlunarefni og tilkynningar símans í <ph name="DEVICE_TYPE" /></translation>
 <translation id="6220928844947387476">Nú geturðu tekið þig og skjáinn upp á sama tíma</translation>
 <translation id="622484624075952240">Niður</translation>
 <translation id="6231419273573514727">Afköst jaðartækja gætu verið takmörkuð</translation>
@@ -936,6 +939,7 @@ Ný uppsetning</translation>
 <translation id="6921188888306725546">Flýtilyklar hafa verið endurbættir</translation>
 <translation id="6931576957638141829">Vista í</translation>
 <translation id="6945221475159498467">Velja</translation>
+<translation id="6960565108681981554">Ekki virkt. Hafðu samband við símafyrirtækið.</translation>
 <translation id="6961121602502368900">Ekki er hægt að slökkva á hljóði símans í vinnusniði</translation>
 <translation id="6961840794482373852">Flýtilyklinum „Alt + ör upp“ hefur verið breytt. Ýttu á <ph name="LAUNCHER_KEY_NAME" />-lykilinn + ör upp til að nota Page Up-lykilinn.</translation>
 <translation id="6965382102122355670">Í lagi</translation>
@@ -1050,6 +1054,7 @@ Ný uppsetning</translation>
 <translation id="7649070708921625228">Hjálp</translation>
 <translation id="7654687942625752712">Haltu báðum hljóðstyrkshnöppunum inni í fimm sekúndur til að slökkva á raddsvörun.</translation>
 <translation id="7658239707568436148">Hætta við</translation>
+<translation id="7659861092419699379">Skrifborði og gluggum hefur verið lokað</translation>
 <translation id="7660160718439869192"><ph name="NAME" /> birtast í tækjum sem tengd eru <ph name="EMAIL" /></translation>
 <translation id="7662283695561029522">Ýttu til að stilla</translation>
 <translation id="7670953955701272011">Opna þessa dagsetningu í Google dagatali</translation>
@@ -1144,7 +1149,6 @@ Ný uppsetning</translation>
 <translation id="8236042855478648955">Tími til að taka sér hlé</translation>
 <translation id="8247060538831475781"><ph name="CONNECTION_STATUS" />, <ph name="SIGNAL_STRENGTH" /> sendistyrkur, <ph name="BATTERY_STATUS" /> hleðsla á rafhlöðu símans</translation>
 <translation id="8247998213073982446"><ph name="APP_NAME" />, forrit</translation>
-<translation id="8248728785693203669">Ekki er víst að USB-C-snúran tengist skjáum á réttan hátt</translation>
 <translation id="8255234195843591763">Endurstilltu til að uppfæra</translation>
 <translation id="826107067893790409">Ýttu á Enter til að opna fyrir <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="8261506727792406068">Eyða</translation>

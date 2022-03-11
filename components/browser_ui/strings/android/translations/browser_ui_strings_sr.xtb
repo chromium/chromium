@@ -254,6 +254,7 @@
 <translation id="7087918508125750058">Изабрали сте <ph name="ITEM_COUNT" />. Опције су доступне при врху екрана</translation>
 <translation id="7141896414559753902">Блокирај приказивање искачућих прозора и преусмеравања на сајтовима (препоручено)</translation>
 <translation id="7176368934862295254"><ph name="KILOBYTES" /> kB</translation>
+<translation id="7180611975245234373">Освежи</translation>
 <translation id="723171743924126238">Изаберите слике</translation>
 <translation id="7243308994586599757">Опције су доступне у дну екрана</translation>
 <translation id="7250468141469952378">Изабрали сте <ph name="ITEM_COUNT" /></translation>
@@ -309,6 +310,7 @@
 <translation id="8394832520002899662">Додирните да бисте се вратили на сајт</translation>
 <translation id="8409345997656833551">Добијте обавештење када је поједностављени приказ доступан за чланак</translation>
 <translation id="8425213833346101688">Промени</translation>
+<translation id="8428213095426709021">Подешавања</translation>
 <translation id="8441146129660941386">Премотај уназад</translation>
 <translation id="8444433999583714703">Да бисте дозволили да <ph name="APP_NAME" /> приступа локацији, укључите локацију и у <ph name="BEGIN_LINK" />Android подешавањима<ph name="END_LINK" />.</translation>
 <translation id="8447861592752582886">Опозови дозволу за уређај</translation>

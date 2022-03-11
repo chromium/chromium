@@ -91,9 +91,9 @@
 <translation id="1414271762428216854"><ph name="APP_NAME" />, אפליקציה מותקנת</translation>
 <translation id="1419738280318246476">כדי לבצע את פעולת ההודעה יש לבטל את נעילת המכשיר</translation>
 <translation id="1420408895951708260">הפעלה או כיבוי של תאורת הלילה. <ph name="STATE_TEXT" /></translation>
+<translation id="1420732223884894666">הצגת המדיה והתמונות שבטלפון מהזמן האחרון במכשיר <ph name="DEVICE_TYPE" /></translation>
 <translation id="1426410128494586442">כן</translation>
 <translation id="1438357537418863713">הסטרימינג של האפליקציות מוגדר עכשיו. אחרי שמתחילים להשתמש בסטרימינג של אפליקציות, אפליקציות שהופעלו לאחרונה מופיעות כאן.</translation>
-<translation id="144853431011121127">קבלת התראות מהטלפון במכשיר <ph name="DEVICE_TYPE" /> שלך</translation>
 <translation id="1455242230282523554">הצגת הגדרות השפה</translation>
 <translation id="1460620680449458626">צלילים מושתקים.</translation>
 <translation id="1467432559032391204">שמאלה</translation>
@@ -826,6 +826,7 @@
 <translation id="6165508094623778733">למידע נוסף</translation>
 <translation id="6166852626429024716">חיפוש במכשיר, באפליקציות, בהגדרות, באינטרנט...</translation>
 <translation id="6179832488876878285">כאן אפשר להצמיד את הקבצים החשובים. יש לפתוח את אפליקציית 'קבצים' כדי להתחיל.</translation>
+<translation id="619279033188484792">הצגת התראות, מדיה ותמונות מהזמן האחרון במכשיר <ph name="DEVICE_TYPE" /></translation>
 <translation id="6220928844947387476">יש לך אפשרות להקליט את עצמך ואת המסך באותו הזמן</translation>
 <translation id="622484624075952240">למטה</translation>
 <translation id="6231419273573514727">ייתכן שהביצועים של הציוד ההיקפי יוגבלו</translation>
@@ -938,6 +939,7 @@
 <translation id="6921188888306725546">מקשי הקיצור השתפרו</translation>
 <translation id="6931576957638141829">שמירה ב-</translation>
 <translation id="6945221475159498467">בחירה</translation>
+<translation id="6960565108681981554">הרשת לא פעילה. עליך לפנות לספק חבילת הסלולר שלך.</translation>
 <translation id="6961121602502368900">השתקת הטלפון לא זמינה בפרופיל העבודה</translation>
 <translation id="6961840794482373852">‏מקשי הקיצור Alt + חץ למעלה הוחלפו. כדי לדמות את הפעולה של המקש Page Up, יש להקיש על <ph name="LAUNCHER_KEY_NAME" /> + החץ למעלה.</translation>
 <translation id="6965382102122355670">אישור</translation>
@@ -1149,7 +1151,6 @@
 <translation id="8236042855478648955">הגיע הזמן להפסקה</translation>
 <translation id="8247060538831475781"><ph name="CONNECTION_STATUS" />, עוצמת האות: <ph name="SIGNAL_STRENGTH" />, סוללת הטלפון <ph name="BATTERY_STATUS" /></translation>
 <translation id="8247998213073982446"><ph name="APP_NAME" />, אפליקציה</translation>
-<translation id="8248728785693203669">‏יכול להיות שכבל ה-USB-C שלך לא יתחבר למסכים כמו שצריך</translation>
 <translation id="8255234195843591763">עליך לאפס כדי לעדכן</translation>
 <translation id="826107067893790409">‏יש להקיש על Enter כדי לבטל את הנעילה בשביל <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="8261506727792406068">מחיקה</translation>

@@ -61,6 +61,7 @@
 <translation id="1497522201463361063">"<ph name="FILE_NAME" />" க்கு மறுபெயரிட முடியவில்லை. <ph name="ERROR_MESSAGE" /></translation>
 <translation id="1499943022354839699">ஆங்கிலம் (யூஎஸ்) - டிவோரக் கீபோர்டு</translation>
 <translation id="1515909359182093592"><ph name="INPUT_LABEL" /> - ஹோஸ்ட்</translation>
+<translation id="1521655867290435174">Google Sheets</translation>
 <translation id="1538729222189715449">Linux ஃபைல்களைத் திறக்கிறது...</translation>
 <translation id="1547964879613821194">கனடியன் ஆங்கிலம்</translation>
 <translation id="1556189134700913550">எல்லாவற்றிற்கும் பயன்படுத்து</translation>
@@ -184,7 +185,6 @@
 <translation id="2544853746127077729">அங்கீகரிப்புச் சான்றிதழ் நெட்வொர்க்கால் நிராகரிக்கப்பட்டது</translation>
 <translation id="2547921442987553570"><ph name="EXTENSION_NAME" /> இல் சேர்</translation>
 <translation id="255937426064304553">யு.எஸ். இன்டர்நேஷனல்</translation>
-<translation id="2562685439590298522">Docs</translation>
 <translation id="2563185590376525700">தவளை</translation>
 <translation id="2578394532502990878">தமிழ் ஒலிப்புமுறை</translation>
 <translation id="2579959351793446050">ஒடியா</translation>
@@ -220,9 +220,7 @@
 <translation id="2902734494705624966">யு.எஸ். விரிவாக்கப்பட்டது</translation>
 <translation id="290843123675549676">மராத்தி</translation>
 <translation id="2923240520113693977">எஸ்தோனியன்</translation>
-<translation id="2925966894897775835">Sheets</translation>
 <translation id="2938685643439809023">மங்கோலியன்</translation>
-<translation id="2943400156390503548">Slides</translation>
 <translation id="2943503720238418293">சிறிய பெயரைப் பயன்படுத்தவும்</translation>
 <translation id="2949781154072577687"><ph name="DRIVE_NAME" /> ஐ ஃபார்மேட் செய்கிறது...</translation>
 <translation id="2951236788251446349">ஜெல்லிஃபிஷ்</translation>
@@ -414,6 +412,7 @@
 <translation id="4656777537938206294">ஃபைல்களை ஆஃப்லைனில் பயன்படுத்தலாம்</translation>
 <translation id="4658782175094886150">பனியில் இருக்கும் நபர்</translation>
 <translation id="4669606053856530811">இந்த ஃபைல்களை '<ph name="SOURCE_NAME" />' இன் உறுப்பினர்களுடன் பகிரவில்லை எனில், அவர்கள் அவற்றுக்கான அணுகலை இழப்பார்கள்.</translation>
+<translation id="467809019005607715">Google Slides</translation>
 <translation id="4690246192099372265">ஸ்வீடிஷ்</translation>
 <translation id="4693155481716051732">சூஷி</translation>
 <translation id="4694604912444486114">குரங்கு</translation>
@@ -949,6 +948,7 @@
 <translation id="9172592259078059678">குஜராத்தி ஒலிபெயர்ப்பு</translation>
 <translation id="9173120999827300720">ஆங்கிலம் (யூஎஸ்) - சர்வதேசக் கீபோர்டு</translation>
 <translation id="9174050671906956834">‘நீக்கியவையில்’ உள்ளவை 30 நாட்களுக்குப் பின் நிரந்தரமாக நீக்கப்படும்.</translation>
+<translation id="9183302530794969518">Google Docs</translation>
 <translation id="9189836632794948435">கஸக்</translation>
 <translation id="9213073329713032541">நிறுவல் தொடங்கியது.</translation>
 <translation id="9219103736887031265">Images</translation>

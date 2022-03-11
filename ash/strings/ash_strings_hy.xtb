@@ -91,9 +91,9 @@
 <translation id="1414271762428216854"><ph name="APP_NAME" />, տեղադրված հավելված</translation>
 <translation id="1419738280318246476">Ծանուցման հետ գործողություն կատարելու համար ապակողպեք սարքը</translation>
 <translation id="1420408895951708260">Միացնել/անջատել գիշերային ռեժիմը: <ph name="STATE_TEXT" /></translation>
+<translation id="1420732223884894666">Թույլ է տալիս ձեր հեռախոսում վերջերս ավելացված լուսանկարները և մեդիա ֆայլերը դիտել <ph name="DEVICE_TYPE" /> սարքում։</translation>
 <translation id="1426410128494586442">Այո</translation>
 <translation id="1438357537418863713">Հավելվածների հեռարձակումը կարգավորված է։ Երբ դուք սկսեք, այստեղ կհայտնվեն վերջերս գործարկված հավելվածները։</translation>
-<translation id="144853431011121127">Ստացեք ծանուցումներ ձեր հեռախոսից <ph name="DEVICE_TYPE" /> սարքում</translation>
 <translation id="1455242230282523554">Ցուցադրել լեզվի կարգավորումները</translation>
 <translation id="1460620680449458626">Ձայնն անջատված է:</translation>
 <translation id="1467432559032391204">Ձախ</translation>
@@ -826,6 +826,7 @@
 <translation id="6165508094623778733">Իմանալ ավելին</translation>
 <translation id="6166852626429024716">Որոնեք սարքում, հավելվածներում, կարգավորումներում, համացանցում…</translation>
 <translation id="6179832488876878285">Դուք կարող եք այստեղ ամրացնել ձեր կարևոր ֆայլերը։ Սկսելու համար բացեք «Ֆայլեր» հավելվածը։</translation>
+<translation id="619279033188484792">Թույլ է տալիս հեռախոսում վերջերս ավելացված լուսանկարները, մեդիա ֆայլերը և ծանուցումները դիտել <ph name="DEVICE_TYPE" /> սարքում։</translation>
 <translation id="6220928844947387476">Այժմ դուք կարող եք միաժամանակ տեսագրել ձեզ և ձեր էկրանը</translation>
 <translation id="622484624075952240">Վար</translation>
 <translation id="6231419273573514727">Արտաքին սարքերի աշխատանքի արդյունավետությունը կարող է սահմանափակվել</translation>
@@ -938,6 +939,7 @@
 <translation id="6921188888306725546">Ստեղնային դյուրանցումները բարելավվել են</translation>
 <translation id="6931576957638141829">Պահել…</translation>
 <translation id="6945221475159498467">Ընտրել</translation>
+<translation id="6960565108681981554">Ակտիվացված չէ։ Դիմեք ձեր կապի օպերատորին։</translation>
 <translation id="6961121602502368900">«Ծանուցումների անջատում հեռախոսում» գործառույթը հասանելի չէ աշխատանքային պրոֆիլում</translation>
 <translation id="6961840794482373852">«Alt + վեր սլաք» ստեղնային դյուրանցումը փոփոխվել է։ Page Up ստեղնի գործողություններն օգտագործելու համար սեղմեք «<ph name="LAUNCHER_KEY_NAME" /> + վեր սլաք» ստեղնային դյուրանցումը։</translation>
 <translation id="6965382102122355670">Եղավ</translation>
@@ -1147,7 +1149,6 @@
 <translation id="8236042855478648955">Ընդմիջման ժամն է</translation>
 <translation id="8247060538831475781"><ph name="CONNECTION_STATUS" />, ազդանշանի ուժգնությունը՝ <ph name="SIGNAL_STRENGTH" />, մարտկոցի լիցքը՝ <ph name="BATTERY_STATUS" /></translation>
 <translation id="8247998213073982446"><ph name="APP_NAME" />, հավելված</translation>
-<translation id="8248728785693203669">USB-C մալուխը էկրանին միացնելիս հնարավոր է խնդիրներ լինեն։</translation>
 <translation id="8255234195843591763">Վերակայել և թարմացնել</translation>
 <translation id="826107067893790409">Սեղմեք Enter, որպեսզի ապակողպեք սարքը <ph name="USER_EMAIL_ADDRESS" /> օգտատիրոջ համար</translation>
 <translation id="8261506727792406068">Ջնջել</translation>

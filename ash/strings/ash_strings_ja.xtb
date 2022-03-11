@@ -91,9 +91,9 @@
 <translation id="1414271762428216854"><ph name="APP_NAME" />、インストール済みアプリ</translation>
 <translation id="1419738280318246476">通知に関する操作を行うには、デバイスのロックを解除してください</translation>
 <translation id="1420408895951708260">夜間モードのオンとオフを切り替えます。<ph name="STATE_TEXT" /></translation>
+<translation id="1420732223884894666"><ph name="DEVICE_TYPE" /> でスマートフォンの最近の写真やメディアを表示します</translation>
 <translation id="1426410128494586442">はい</translation>
 <translation id="1438357537418863713">アプリのストリーミングを設定しました。ご利用を開始すると、最近開いたアプリがここに表示されます。</translation>
-<translation id="144853431011121127">スマートフォンの通知を <ph name="DEVICE_TYPE" /> で確認できます</translation>
 <translation id="1455242230282523554">言語設定を表示</translation>
 <translation id="1460620680449458626">音量はミュートされています。</translation>
 <translation id="1467432559032391204">左</translation>
@@ -734,6 +734,7 @@
 <translation id="5597451508971090205"><ph name="DATE" /> (<ph name="SHORT_WEEKDAY" />)</translation>
 <translation id="5600837773213129531">音声フィードバックを無効にするには Ctrl+Alt+Z を押してください。</translation>
 <translation id="5601503069213153581">PIN</translation>
+<translation id="5618148318840095371">より安全なネットワークに切り替えました</translation>
 <translation id="5619862035903135339">管理者が設定したポリシーにより、スクリーン キャプチャは無効になっています</translation>
 <translation id="5625955975703555628">LTE+</translation>
 <translation id="5648021990716966815">マイク差込口</translation>
@@ -826,6 +827,7 @@
 <translation id="6165508094623778733">詳細</translation>
 <translation id="6166852626429024716">デバイス、アプリ、設定、ウェブを検索...</translation>
 <translation id="6179832488876878285">重要なファイルをここに固定できます。この機能を使用するには、ファイルアプリを開いてください。</translation>
+<translation id="619279033188484792"><ph name="DEVICE_TYPE" /> でスマートフォンの最近の写真、メディア、通知を表示します</translation>
 <translation id="6220928844947387476">画面と自分を同時に録画できるようになりました</translation>
 <translation id="622484624075952240">下矢印キー</translation>
 <translation id="6231419273573514727">周辺機器のパフォーマンスが制限されている可能性があります</translation>
@@ -938,6 +940,7 @@
 <translation id="6921188888306725546">キーボード ショートカットが改善されました</translation>
 <translation id="6931576957638141829">保存先</translation>
 <translation id="6945221475159498467">選択</translation>
+<translation id="6960565108681981554">無効です。ご利用の携帯通信会社にお問い合わせください。</translation>
 <translation id="6961121602502368900">スマートフォンの消音は仕事用プロファイルでは使用できません</translation>
 <translation id="6961840794482373852">キーボード ショートカット「Alt+上矢印」が変更されました。PageUp キーを使用するには、<ph name="LAUNCHER_KEY_NAME" />+上矢印キーを押してください。</translation>
 <translation id="6965382102122355670">OK</translation>
@@ -1148,7 +1151,6 @@
 <translation id="8236042855478648955">休憩の時間です</translation>
 <translation id="8247060538831475781"><ph name="CONNECTION_STATUS" />、信号強度 <ph name="SIGNAL_STRENGTH" />、電池残量 <ph name="BATTERY_STATUS" /></translation>
 <translation id="8247998213073982446"><ph name="APP_NAME" />、アプリ</translation>
-<translation id="8248728785693203669">USB-C ケーブルがディスプレイに正しく接続されていない可能性があります</translation>
 <translation id="8255234195843591763">リセットして更新してください</translation>
 <translation id="826107067893790409"><ph name="USER_EMAIL_ADDRESS" /> に対してロックを解除するには、Enter キーを押します</translation>
 <translation id="8261506727792406068">削除</translation>

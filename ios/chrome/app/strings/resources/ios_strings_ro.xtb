@@ -68,6 +68,7 @@ Motorul tău de căutare este <ph name="DSE_NAME" />. Vezi instrucțiunile pentr
 <translation id="149095475893949513">Site-ul încearcă să descarce un profil de configurare.</translation>
 <translation id="1491277525950327607">Atinge de două ori ca să comuți setarea</translation>
 <translation id="1492417797159476138">Ai salvat deja acest nume de utilizator pentru site</translation>
+<translation id="1506063256525392513">Astfel, poți să fotografiezi, să încarci fotografiile și să scanezi coduri QR</translation>
 <translation id="1509486075633541495">Conectează-te la site</translation>
 <translation id="1509960214886564027">Este posibil ca funcțiile de pe mai multe site-uri să fie întrerupte</translation>
 <translation id="152234381334907219">Nu se salvează niciodată</translation>
@@ -353,6 +354,7 @@ Urmează pașii de mai jos:</translation>
 <translation id="418156467088430727">Vezi versiunea offline într-o filă nouă</translation>
 <translation id="4181841719683918333">Limbi</translation>
 <translation id="4223967053752765281">Organizația a dezactivat conectarea. Poți vedea în continuare marcajele, istoricul, parolele și alte setări pe acest dispozitiv. Dacă faci modificări, ele nu se vor sincroniza cu contul.</translation>
+<translation id="4233831822770018312">Editează permisiunile</translation>
 <translation id="4237377247299956313">Atinge <ph name="BEGIN_BOLD" />Aplicația browser prestabilită<ph name="END_BOLD" /></translation>
 <translation id="424315890655130736">Introdu expresia de acces</translation>
 <translation id="4249955472157341256">Sortează după cele mai recente</translation>
@@ -386,6 +388,7 @@ Urmează pașii de mai jos:</translation>
 <translation id="4536418791685807335">Încearcă să te conectezi din nou.</translation>
 <translation id="4540780316273593836">A apărut o eroare</translation>
 <translation id="457386861538956877">Mai multe...</translation>
+<translation id="458449952965618888">Se acordă acces la microfon</translation>
 <translation id="4592368184551360546">Tastatură</translation>
 <translation id="461440297010471931">Căutare cu Google</translation>
 <translation id="4619564267100705184">Confirmă-ți identitatea</translation>
@@ -406,6 +409,7 @@ Datele sunt criptate cu expresia de acces pentru sincronizare. Introdu-o pentru 
 <translation id="4689564913179979534">Gestionează metodele de plată…</translation>
 <translation id="4697071790493980729">Niciun rezultat</translation>
 <translation id="470966556546083668">Nu activa sincronizarea</translation>
+<translation id="4727245048156789470">Se acordă acces la camera foto și microfon</translation>
 <translation id="4737560986434232178">Caută în filele recente</translation>
 <translation id="473775607612524610">Actualizează</translation>
 <translation id="4747097190499141774">Criptarea expresiei de acces nu include metodele de plată și adresele din Google Pay. Numai un utilizator care are expresia de acces poate citi datele tale criptate. Google nu primește și nu stochează expresia ta de acces. Dacă uiți expresia de acces sau vrei să modifici această setare, va trebui să resetezi sincronizarea. <ph name="BEGIN_LINK" />Află mai multe<ph name="END_LINK" /></translation>
@@ -433,6 +437,7 @@ Pentru a modifica această setare, <ph name="BEGIN_LINK" />resetează sincroniza
 <translation id="4860895144060829044">Apelează</translation>
 <translation id="4872323082491632254">Verifică parolele</translation>
 <translation id="4881695831933465202">Deschide</translation>
+<translation id="4894963374040315706">Astfel, cauți mai rapid folosind vocea</translation>
 <translation id="4901778704868714008">Salvează...</translation>
 <translation id="4904877109095351937">Marchează ca citite</translation>
 <translation id="4908869848243824489">Discover de la Google</translation>
@@ -442,6 +447,7 @@ Pentru a modifica această setare, <ph name="BEGIN_LINK" />resetează sincroniza
 <translation id="4945756290001680296">Accesează setările pentru parole</translation>
 <translation id="4979397965658815378">Conectează-te folosind Contul Google pentru a accesa marcajele, parolele, istoricul și alte setări pe toate dispozitivele</translation>
 <translation id="4986678885919050584">Elimină de pe acest dispozitiv</translation>
+<translation id="4989542687859782284">Indisponibile</translation>
 <translation id="5005498671520578047">Copiază parola</translation>
 <translation id="5017828934289857214">Amintește-mi mai târziu</translation>
 <translation id="5037676449506322593">Selectează tot</translation>
@@ -819,6 +825,7 @@ Site-urile pot folosi cookie-uri pentru a vedea activitatea ta de navigare de pe
 <translation id="8283172974887967105">Setează…</translation>
 <translation id="8299417921174340354">Pentru a folosi parolele, trebuie mai întâi să setezi o parolă pe dispozitiv.</translation>
 <translation id="8299613349954694191">Deschide o filă incognito pentru a naviga privat pe web.</translation>
+<translation id="8304831996890817401">Se acordă acces la camera foto</translation>
 <translation id="8319076807703933069">Căutare nouă</translation>
 <translation id="8323906514956095947">Atinge lung pentru mai multe opțiuni de file</translation>
 <translation id="8328777765163860529">Închideți toate</translation>

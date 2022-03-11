@@ -61,6 +61,7 @@
 <translation id="1497522201463361063">"<ph name="FILE_NAME" />" kann nicht umbenannt werden. <ph name="ERROR_MESSAGE" /></translation>
 <translation id="1499943022354839699">Englisch (USA) mit Dvorak-Tastatur</translation>
 <translation id="1515909359182093592"><ph name="INPUT_LABEL" /> – Host</translation>
+<translation id="1521655867290435174">Google Tabellen</translation>
 <translation id="1538729222189715449">Linux-Dateien werden geöffnet…</translation>
 <translation id="1547964879613821194">Kanadisches Englisch</translation>
 <translation id="1556189134700913550">Auf alle anwenden</translation>
@@ -184,7 +185,6 @@
 <translation id="2544853746127077729">Ablehnung des Authentifizierungszertifikats durch das Netzwerk</translation>
 <translation id="2547921442987553570">Zu <ph name="EXTENSION_NAME" /> hinzufügen</translation>
 <translation id="255937426064304553">USA – international</translation>
-<translation id="2562685439590298522">Google Docs</translation>
 <translation id="2563185590376525700">Frosch</translation>
 <translation id="2578394532502990878">Tamil (phonetisch)</translation>
 <translation id="2579959351793446050">Oriya</translation>
@@ -220,9 +220,7 @@
 <translation id="2902734494705624966">USA – erweitert</translation>
 <translation id="290843123675549676">Marathi</translation>
 <translation id="2923240520113693977">Estnisch</translation>
-<translation id="2925966894897775835">Tabellen</translation>
 <translation id="2938685643439809023">Mongolisch</translation>
-<translation id="2943400156390503548">Präsentationen</translation>
 <translation id="2943503720238418293">Verwenden Sie einen kürzeren Namen</translation>
 <translation id="2949781154072577687">"<ph name="DRIVE_NAME" />" wird formatiert...</translation>
 <translation id="2951236788251446349">Qualle</translation>
@@ -414,6 +412,7 @@
 <translation id="4656777537938206294">Dateien offline verfügbar machen</translation>
 <translation id="4658782175094886150">Person im Schnee</translation>
 <translation id="4669606053856530811">Mitglieder von "<ph name="SOURCE_NAME" />" verlieren den Zugriff, sofern Sie diese Dateien nicht mit ihnen teilen.</translation>
+<translation id="467809019005607715">Google Präsentationen</translation>
 <translation id="4690246192099372265">Schwedisch</translation>
 <translation id="4693155481716051732">Sushi</translation>
 <translation id="4694604912444486114">Affe</translation>
@@ -949,6 +948,7 @@
 <translation id="9172592259078059678">Gujarati (Transliteration)</translation>
 <translation id="9173120999827300720">Englisch (USA) mit internationaler Tastatur</translation>
 <translation id="9174050671906956834">Elemente im Papierkorb werden nach 30 Tagen endgültig gelöscht.</translation>
+<translation id="9183302530794969518">Google Docs</translation>
 <translation id="9189836632794948435">Kasachisch</translation>
 <translation id="9213073329713032541">Die Installation wurde gestartet.</translation>
 <translation id="9219103736887031265">Bilder</translation>

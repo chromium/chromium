@@ -54,6 +54,7 @@
 <translation id="1499900233129743732"><ph name="MANAGER" /> ले यो डिभाइस व्यवस्थापन गर्छ र यसले टाढैबाट सेटिङ व्यवस्थापन गर्न र प्रयोगकर्ताले गर्ने क्रियाकलाप निगरानी गर्न सक्छ।</translation>
 <translation id="150962533380566081">अमान्य PUK।</translation>
 <translation id="1510238584712386396">लन्चर</translation>
+<translation id="152892567002884378">भोल्युम बढाउनुहोस्</translation>
 <translation id="155865706765934889">टचप्याड</translation>
 <translation id="1565038567006703504"><ph name="DEVICE_NAME" /> अपडेट गर्न सकिएन</translation>
 <translation id="1567064801249837505">एल्बमहरू</translation>
@@ -82,12 +83,14 @@
 <translation id="1807246157184219062">हल्का</translation>
 <translation id="1827738518074806965">आर्ट ग्यालेरी</translation>
 <translation id="1851218745569890714">भिडियो कन्फ्रेन्स</translation>
+<translation id="1852934301711881861">ChromeOS Flex इन्स्टल गर्नुहोस्</translation>
 <translation id="1874612839560830905">MTU</translation>
 <translation id="1887850431809612466">हार्डवेयरको पुनरावृत्ति</translation>
 <translation id="1905710495812624430">अनुमति दिइएका प्रयासहरूको अधिकतम संख्या नाघ्यो।</translation>
 <translation id="1908234395526491708">UDP सम्बन्धी अनुरोध गर्न सकिएन</translation>
 <translation id="1930797645656624981">Chrome OS को इनपुट विधिसम्बन्धी सेवा</translation>
 <translation id="1947737735496445907">प्रिन्ट गरियो</translation>
+<translation id="1951012854035635156">सहायक</translation>
 <translation id="1979103255016296513">पासवर्ड परिवर्तन गर्न ढिला भइसकेको छ</translation>
 <translation id="1999615961760456652">क्याप्टिभ पोर्टल</translation>
 <translation id="2006864819935886708">कनेक्टिभिटी</translation>
@@ -105,6 +108,7 @@
 <translation id="2158971754079422508"><ph name="DESC_TEXT" />: फेरि प्रयास गर्नुहोस्</translation>
 <translation id="2161394479394250669">प्रिन्ट गर्ने कार्य रद्द गर्नुहोस्</translation>
 <translation id="2180197493692062006">केही चिज गडबड भयो। यो एप फेरि खोली हेर्नुहोस्।</translation>
+<translation id="2201770616342964496">लोकल आइडेन्टिटी</translation>
 <translation id="2209788852729124853">ट्राफिक काउन्टर रिसेट गर्नुहोस्</translation>
 <translation id="2212733584906323460">नेम रिजोल्युसन</translation>
 <translation id="2217935453350629363">हालको गति</translation>
@@ -152,6 +156,7 @@
 <translation id="2859243502336719778">अत्यावश्यक अपडेट</translation>
 <translation id="2860473693272905224">स्क्यानरमा अर्को पेज राख्नुहोस्</translation>
 <translation id="2872961005593481000">बन्द गर्नुहोस्</translation>
+<translation id="2874939134665556319">अघिल्लो ट्र्याक</translation>
 <translation id="2878387241690264070"><ph name="NUM_SECONDS" /> सेकेन्डमा <ph name="RATE" /> घट्यो।</translation>
 <translation id="291142119251986300">अयोग्य कम्पोनेन्टहरू</translation>
 <translation id="2926057806159140518">आफ्नो युजरनेम र पासवर्ड हाल्नुहोस् वा आफ्नो QR कोड स्क्यान गर्नुहोस्</translation>
@@ -233,6 +238,7 @@
 <translation id="4003384961948020559">प्रिन्ट गर्न सकिएन - ट्रे भरियो</translation>
 <translation id="4034824040120875894">प्रिन्टर</translation>
 <translation id="4044093238444069296">गेटवेमा सम्पर्क गर्न सकिएन</translation>
+<translation id="4046123991198612571">अर्को ट्र्याक</translation>
 <translation id="404928562651467259">चेतावनी</translation>
 <translation id="409427325554347132">जाँचसम्बन्धी विवरण सेभ गर्नुहोस्</translation>
 <translation id="4110686435123617899"><ph name="TITLE" /> <ph name="DESC" /> एल्बम चयन गर्नुहोस्</translation>
@@ -250,9 +256,11 @@
 <translation id="4238516577297848345">प्रिन्टसम्बन्धी कुनै पनि काम भइरहेको छैन</translation>
 <translation id="4239069858505860023">GPRS</translation>
 <translation id="4244962993387259361">मेमोरीको जाँच गर्न तपाईंको डिभाइसको भण्डारणमा कम्तीमा ५०० एम.बि. खाली ठाउँ हुनु पर्छ। ठाउँ खाली गर्न सेटिङ &gt; भण्डारण व्यवस्थापनमा जानुहोस्।</translation>
+<translation id="4250229828105606438">स्क्रिसट</translation>
 <translation id="4258281355379922695">HTTP विलम्बता</translation>
 <translation id="4271957103967917607">फुल स्क्रिनमा हेर्नुहोस्</translation>
 <translation id="4275799948641988986">मर्मत गरेपछि यो डिभाइस कसले प्रयोग गर्ने छ?</translation>
+<translation id="4289540628985791613">समीक्षा</translation>
 <translation id="4297501883039923494">रोकियो - अज्ञात त्रुटि भयो</translation>
 <translation id="4300073214558989"><ph name="IMAGE_COUNT" /> वटा फोटो</translation>
 <translation id="4378373042927530923">चलेन</translation>
@@ -282,6 +290,7 @@
 <translation id="458794348635939462">सबै होस्टहरूको समस्या समाधान गर्न सकिएन</translation>
 <translation id="4593212453765072419">प्रोक्सी प्रमाणित गर्नु पर्ने हुन्छ</translation>
 <translation id="4627232916386272576"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="TOTAL_PAGE_NUMBER" /> मध्ये <ph name="PRINTED_PAGE_NUMBER" />। प्रिन्ट गर्ने कार्य रद्द गर्न enter थिच्नुहोस्।</translation>
+<translation id="4627645661474370390">रिमोट आइडेन्टिटी</translation>
 <translation id="463791356324567266">स्क्यान गर्ने कार्य रद्द गरिँदै छ...</translation>
 <translation id="4646949265910132906">WiFi कनेक्सन सुरक्षित बनाउनुहोस्</translation>
 <translation id="4654549501020883054">दिनदिनै बदलियोस्</translation>
@@ -335,6 +344,7 @@
 <translation id="5051044138948155788">यो एउटा मात्र पेज हो। यसले तपाईंलाई स्क्यान सुरु गर्ने स्क्रिनमा लैजाने छ।</translation>
 <translation id="5088172560898466307">सर्भरको होस्टनाम</translation>
 <translation id="5089810972385038852">राज्य</translation>
+<translation id="5090362543162270857">IPsec (IKEv2)</translation>
 <translation id="5142961317498132443">प्रमाणीकरण</translation>
 <translation id="5154917547274118687">स्मरण</translation>
 <translation id="5160857336552977725">तपाईँको <ph name="DEVICE_TYPE" /> मा साइन इन गर्नुहोस्</translation>
@@ -379,6 +389,7 @@
 <translation id="554517032089923082">GTC</translation>
 <translation id="5578477003638479617">UMTS</translation>
 <translation id="5578519639599103840">पुनः स्क्यान गर्नुहोस्</translation>
+<translation id="5583640892426849032">ब्याकस्पेस</translation>
 <translation id="5620281292257375798">आन्तरिक प्रयोजनका लागि मात्र</translation>
 <translation id="5649768706273821470">सुन्नुहोस्</translation>
 <translation id="5669267381087807207">सक्रिय गर्दै</translation>
@@ -388,6 +399,7 @@
 <translation id="5707900041990977207"><ph name="TOTAL_PAGES" /> मध्ये <ph name="CURRENT_PAGE" /> औँ पेज</translation>
 <translation id="5733298426544876109"><ph name="DEVICE_NAME" /> अपडेट गर्नुहोस्</translation>
 <translation id="5760715441271661976">पोर्टलको स्थिति</translation>
+<translation id="57838592816432529">म्यूट गर्नुहोस्</translation>
 <translation id="5784136236926853061">HTTP को विलम्बता धेरै छ</translation>
 <translation id="5832805196449965646">व्यक्ति थप्नुहोस्</translation>
 <translation id="583281660410589416">अज्ञात</translation>
@@ -395,6 +407,7 @@
 <translation id="5849570051105887917">गृहपृष्ठ प्रदायकको कोड</translation>
 <translation id="5860033963881614850">बन्द</translation>
 <translation id="5866840822086176774">अत्यन्त बलियो</translation>
+<translation id="588258955323874662">पूर्णस्क्रिन</translation>
 <translation id="5895138241574237353">पुन: शुरू गर्नुहोस्</translation>
 <translation id="5916084858004523819">प्रतिबन्धित</translation>
 <translation id="5916664084637901428">अन</translation>
@@ -465,12 +478,15 @@
 <translation id="6643016212128521049">खालि गर्नुहोस्</translation>
 <translation id="6647510110698214773">इन्क्रिप्सनसम्बन्धी एल्गोरिदम</translation>
 <translation id="6657585470893396449">पासवर्ड</translation>
+<translation id="6659594942844771486">ट्याब</translation>
 <translation id="6692996468359469499">आफ्नो चयनसँग सम्बन्धित जानकारी प्राप्त गर्नुहोस्</translation>
 <translation id="6704062477274546131">DNS रिजोल्युसन</translation>
+<translation id="6723839937902243910">पावर</translation>
 <translation id="6747215703636344499">रोकियो - प्रिन्टरको आउटपुट ट्रे भरिएको छ</translation>
 <translation id="6749473226660745022">फोटोहरू</translation>
 <translation id="6753452347192452143">यो डिभाइस कम्प्युटर हो।</translation>
 <translation id="6756731097889387912">स्क्यान गर्ने कार्य रद्द गर्न सकिएन</translation>
+<translation id="6760706756348334449">भोल्युम घटाउनुहोस्</translation>
 <translation id="6766275201586212568">DNS रिजोल्युसन पूरा हुन सकेनन्</translation>
 <translation id="6768237774506518020">DNS रिजोल्युसन पूरा हुन नसक्ने दर उच्च छ</translation>
 <translation id="680983167891198932">की</translation>
@@ -524,6 +540,7 @@
 <translation id="7427315641433634153">MSCHAP</translation>
 <translation id="7435977162516949853">{NUMBER_OF_PAGES,plural, =1{स्क्यान गरिसकियो। एउटा पेज स्क्यान गरियो}other{स्क्यान गरिसकियो। {NUMBER_OF_PAGES} पेज स्क्यान गरिए}}</translation>
 <translation id="7469648432129124067">पोर्टल पत्ता लागेको छ</translation>
+<translation id="7481312909269577407">अगाडि</translation>
 <translation id="7487067081878637334">प्रविधि</translation>
 <translation id="7490813197707563893">MAC एड्रेस</translation>
 <translation id="7497215489070763236">सर्भरको CA को सर्टिफिकेट</translation>
@@ -577,6 +594,7 @@
 <translation id="8132480444149501833">ट्राफिक काउन्टरसम्बन्धी जानकारी माग्दै अनुरोध पठाउनुहोस्</translation>
 <translation id="8138405288920084977">LTEAdvanced</translation>
 <translation id="8143951647992294073"><ph name="TOPIC_SOURCE" /> <ph name="TOPIC_SOURCE_DESC" /> चयन गर्नुहोस्</translation>
+<translation id="8179976553408161302">प्रविष्टि गर्नुहोस्</translation>
 <translation id="8206859287963243715">सेल्युलर</translation>
 <translation id="8208861521865154048">लाभहरू</translation>
 <translation id="8217675307824400706">कनेक्ट गर्नुहोस्</translation>

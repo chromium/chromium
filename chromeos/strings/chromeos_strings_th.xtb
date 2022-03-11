@@ -54,6 +54,7 @@
 <translation id="1499900233129743732"><ph name="MANAGER" /> จัดการผู้ใช้รายนี้อยู่และอาจจัดการการตั้งค่าและตรวจสอบกิจกรรมของผู้ใช้จากระยะไกล</translation>
 <translation id="150962533380566081">PUK ไม่ถูกต้อง</translation>
 <translation id="1510238584712386396">ตัวเรียกใช้งาน</translation>
+<translation id="152892567002884378">เพิ่มระดับเสียง</translation>
 <translation id="155865706765934889">ทัชแพด</translation>
 <translation id="1565038567006703504">อัปเดต <ph name="DEVICE_NAME" /> ไม่ได้</translation>
 <translation id="1567064801249837505">อัลบั้ม</translation>
@@ -82,12 +83,14 @@
 <translation id="1807246157184219062">สว่าง</translation>
 <translation id="1827738518074806965">แกลเลอรีศิลปะ</translation>
 <translation id="1851218745569890714">การประชุมทางวิดีโอ</translation>
+<translation id="1852934301711881861">ติดตั้ง Chrome OS Flex</translation>
 <translation id="1874612839560830905">MTU</translation>
 <translation id="1887850431809612466">การแก้ไขฮาร์ดแวร์</translation>
 <translation id="1905710495812624430">ลองทำเกินจำนวนครั้งที่กำหนดไว้แล้ว</translation>
 <translation id="1908234395526491708">ขอ UDP ไม่สำเร็จ</translation>
 <translation id="1930797645656624981">บริการวิธีการป้อนข้อมูลของ Chrome OS</translation>
 <translation id="1947737735496445907">พิมพ์แล้ว</translation>
+<translation id="1951012854035635156">ผู้ช่วย</translation>
 <translation id="1979103255016296513">เลยเวลาเปลี่ยนรหัสผ่านแล้ว</translation>
 <translation id="1999615961760456652">แคพทีฟพอร์ทัล</translation>
 <translation id="2006864819935886708">การเชื่อมต่อ</translation>
@@ -105,6 +108,7 @@
 <translation id="2158971754079422508"><ph name="DESC_TEXT" />: ลองอีกครั้ง</translation>
 <translation id="2161394479394250669">ยกเลิกงานพิมพ์</translation>
 <translation id="2180197493692062006">เกิดข้อผิดพลาด ลองเปิดแอปอีกครั้ง</translation>
+<translation id="2201770616342964496">ข้อมูลประจำตัวในเครื่อง</translation>
 <translation id="2209788852729124853">รีเซ็ตตัวนับการรับส่งข้อมูล</translation>
 <translation id="2212733584906323460">การจำแนกชื่อ</translation>
 <translation id="2217935453350629363">ความเร็วในปัจจุบัน</translation>
@@ -152,6 +156,7 @@
 <translation id="2859243502336719778">การอัปเดตสำคัญ</translation>
 <translation id="2860473693272905224">วางอีกหน้าบนเครื่องสแกน</translation>
 <translation id="2872961005593481000">ปิด</translation>
+<translation id="2874939134665556319">แทร็กก่อนหน้า</translation>
 <translation id="2878387241690264070">คายประจุ <ph name="RATE" /> ใน <ph name="NUM_SECONDS" /> วินาที</translation>
 <translation id="291142119251986300">คอมโพเนนต์ไม่ตรงตามข้อกำหนด</translation>
 <translation id="2926057806159140518">ป้อนชื่อผู้ใช้และรหัสผ่าน หรือสแกนคิวอาร์โค้ด</translation>
@@ -233,6 +238,7 @@
 <translation id="4003384961948020559">ไม่สำเร็จ - ถาดกระดาษขาออกเต็ม</translation>
 <translation id="4034824040120875894">เครื่องพิมพ์</translation>
 <translation id="4044093238444069296">ไม่สามารถติดต่อกับเกตเวย์</translation>
+<translation id="4046123991198612571">แทร็กถัดไป</translation>
 <translation id="404928562651467259">คำเตือน</translation>
 <translation id="409427325554347132">บันทึกรายละเอียดการทดสอบ</translation>
 <translation id="4110686435123617899">เลือกอัลบั้ม <ph name="TITLE" /> <ph name="DESC" /></translation>
@@ -250,9 +256,11 @@
 <translation id="4238516577297848345">ไม่มีงานที่กำลังพิมพ์</translation>
 <translation id="4239069858505860023">GPRS</translation>
 <translation id="4244962993387259361">คุณต้องมีพื้นที่เหลืออย่างน้อย 500 MB จึงจะทดสอบหน่วยความจำได้ ไปที่การตั้งค่า &gt; การจัดการพื้นที่เก็บข้อมูลเพื่อเพิ่มพื้นที่</translation>
+<translation id="4250229828105606438">ภาพหน้าจอ</translation>
 <translation id="4258281355379922695">เวลาในตอบสนองของ HTTP</translation>
 <translation id="4271957103967917607">ดูแบบเต็มหน้าจอ</translation>
 <translation id="4275799948641988986">ใครจะเป็นผู้ใช้อุปกรณ์หลังจากซ่อมแล้ว</translation>
+<translation id="4289540628985791613">ภาพรวม</translation>
 <translation id="4297501883039923494">หยุดพิมพ์ - ข้อผิดพลาดที่ไม่รู้จัก</translation>
 <translation id="4300073214558989"><ph name="IMAGE_COUNT" /> ภาพ</translation>
 <translation id="4378373042927530923">ไม่ทำงาน</translation>
@@ -282,6 +290,7 @@
 <translation id="458794348635939462">แก้ไขทุกโฮสต์ไม่สำเร็จ</translation>
 <translation id="4593212453765072419">จำเป็นต้องมีการตรวจสอบสิทธิ์พร็อกซี</translation>
 <translation id="4627232916386272576"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="PRINTED_PAGE_NUMBER" /> จาก <ph name="TOTAL_PAGE_NUMBER" /> หน้า กด Enter เพื่อยกเลิกงานพิมพ์</translation>
+<translation id="4627645661474370390">ข้อมูลประจำตัวระยะไกล</translation>
 <translation id="463791356324567266">กำลังยกเลิกการสแกน...</translation>
 <translation id="4646949265910132906">การเชื่อมต่อ Wi-Fi ที่ปลอดภัย</translation>
 <translation id="4654549501020883054">เปลี่ยนทุกวัน</translation>
@@ -381,6 +390,7 @@
 <translation id="554517032089923082">GTC</translation>
 <translation id="5578477003638479617">UMTS</translation>
 <translation id="5578519639599103840">สแกนอีกครั้ง</translation>
+<translation id="5583640892426849032">Backspace</translation>
 <translation id="5620281292257375798">ภายในเท่านั้น</translation>
 <translation id="5649768706273821470">ฟัง</translation>
 <translation id="5669267381087807207">กำลังเปิดใช้</translation>
@@ -390,6 +400,7 @@
 <translation id="5707900041990977207"><ph name="CURRENT_PAGE" /> จาก <ph name="TOTAL_PAGES" /></translation>
 <translation id="5733298426544876109">อัปเดต <ph name="DEVICE_NAME" /></translation>
 <translation id="5760715441271661976">สถานะพอร์ทัล</translation>
+<translation id="57838592816432529">ปิดเสียง</translation>
 <translation id="5784136236926853061">เวลาในการตอบสนองของ HTTP สูง</translation>
 <translation id="5832805196449965646">เพิ่มบุคคล</translation>
 <translation id="583281660410589416">ไม่รู้จัก</translation>
@@ -397,6 +408,7 @@
 <translation id="5849570051105887917">รหัสผู้ให้บริการหน้าแรก</translation>
 <translation id="5860033963881614850">ปิด</translation>
 <translation id="5866840822086176774">แรงมาก</translation>
+<translation id="588258955323874662">เต็มหน้าจอ</translation>
 <translation id="5895138241574237353">ปิดแล้วเปิดอีกครั้ง</translation>
 <translation id="5916084858004523819">ห้ามใช้</translation>
 <translation id="5916664084637901428">เปิด</translation>
@@ -467,12 +479,15 @@
 <translation id="6643016212128521049">ล้าง</translation>
 <translation id="6647510110698214773">อัลกอริทึมการเข้ารหัส</translation>
 <translation id="6657585470893396449">รหัสผ่าน</translation>
+<translation id="6659594942844771486">แท็บ</translation>
 <translation id="6692996468359469499">ดูข้อมูลที่เกี่ยวข้องกับการเลือกของคุณ</translation>
 <translation id="6704062477274546131">การแปลง DNS</translation>
+<translation id="6723839937902243910">พลังงาน</translation>
 <translation id="6747215703636344499">หยุดพิมพ์ - ถาดกระดาษออกเต็ม</translation>
 <translation id="6749473226660745022">รูปภาพ</translation>
 <translation id="6753452347192452143">อุปกรณ์เป็นคอมพิวเตอร์</translation>
 <translation id="6756731097889387912">ยกเลิกการสแกนไม่ได้</translation>
+<translation id="6760706756348334449">ลดระดับเสียง</translation>
 <translation id="6766275201586212568">การแปลง DNS ที่ไม่สำเร็จ</translation>
 <translation id="6768237774506518020">อัตราการแปลง DNS ไม่สำเร็จสูง</translation>
 <translation id="680983167891198932">คีย์</translation>
@@ -526,6 +541,7 @@
 <translation id="7427315641433634153">MSCHAP</translation>
 <translation id="7435977162516949853">{NUMBER_OF_PAGES,plural, =1{การสแกนเสร็จสมบูรณ์ สแกนแล้ว 1 หน้า}other{การสแกนเสร็จสมบูรณ์ สแกนแล้ว {NUMBER_OF_PAGES} หน้า}}</translation>
 <translation id="7469648432129124067">ตรวจพบพอร์ทัล</translation>
+<translation id="7481312909269577407">ส่งต่อ</translation>
 <translation id="7487067081878637334">เทคโนโลยี</translation>
 <translation id="7490813197707563893">ที่อยู่ MAC</translation>
 <translation id="7497215489070763236">ใบรับรอง CA ของเซิร์ฟเวอร์</translation>
@@ -579,6 +595,7 @@
 <translation id="8132480444149501833">ขอตัวนับการรับส่งข้อมูล</translation>
 <translation id="8138405288920084977">LTEAdvanced</translation>
 <translation id="8143951647992294073">เลือก <ph name="TOPIC_SOURCE" /> <ph name="TOPIC_SOURCE_DESC" /></translation>
+<translation id="8179976553408161302">Enter</translation>
 <translation id="8206859287963243715">โทรศัพท์มือถือ</translation>
 <translation id="8208861521865154048">สิทธิประโยชน์</translation>
 <translation id="8217675307824400706">เชื่อมต่ออินเทอร์เน็ต</translation>

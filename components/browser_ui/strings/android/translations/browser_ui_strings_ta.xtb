@@ -166,7 +166,7 @@
 <translation id="5197729504361054390">நீங்கள் தேர்ந்தெடுக்கும் தொடர்புகள் <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> உடன் பகிரப்படும்.</translation>
 <translation id="5216942107514965959">கடைசியாகப் பார்த்தது: இன்று</translation>
 <translation id="5264323282659631142">'<ph name="CHIP_LABEL" />' ஐ அகற்றும்</translation>
-<translation id="528192093759286357">முழுத்திரையிலிருந்து வெளியேற, மேலிருந்து இழுத்து "முந்தையது" பொத்தானைத் தொடவும்.</translation>
+<translation id="528192093759286357">முழுத்திரையிலிருந்து வெளியேற, மேலிருந்து இழுத்து "முந்தையது" பட்டனைத் தொடவும்.</translation>
 <translation id="5300589172476337783">காண்பி</translation>
 <translation id="5301954838959518834">சரி, புரிந்தது</translation>
 <translation id="5313967007315987356">தளத்தைச் சேர்</translation>
@@ -254,6 +254,7 @@
 <translation id="7087918508125750058"><ph name="ITEM_COUNT" /> தேர்ந்தெடுக்கப்பட்டன.  திரையின் மேற்பகுதிக்கு அருகில், விருப்பங்கள் உள்ளன</translation>
 <translation id="7141896414559753902">தளங்கள் பாப்-அப்களையும் திசைதிருப்புதல்களையும் காட்டாமல் தடு (பரிந்துரைக்கப்படுகிறது)</translation>
 <translation id="7176368934862295254"><ph name="KILOBYTES" /> கி.பை.</translation>
+<translation id="7180611975245234373">புதுப்பி</translation>
 <translation id="723171743924126238">படங்களைத் தேர்ந்தெடுக்கவும்</translation>
 <translation id="7243308994586599757">திரையின் கீழ்ப்பகுதிக்கு அருகில் கிடைக்கும் விருப்பங்கள்</translation>
 <translation id="7250468141469952378"><ph name="ITEM_COUNT" /> தேர்ந்தெடுக்கப்பட்டன</translation>
@@ -309,6 +310,7 @@
 <translation id="8394832520002899662">தளத்திற்குச் செல்ல, தட்டவும்</translation>
 <translation id="8409345997656833551">எளிதாக்கப்பட்ட காட்சியில் செய்திக் கட்டுரை காட்டப்படும்போது அறிவிப்பைப் பெறலாம்</translation>
 <translation id="8425213833346101688">மாற்று</translation>
+<translation id="8428213095426709021">அமைப்புகள்</translation>
 <translation id="8441146129660941386">பின்செல்</translation>
 <translation id="8444433999583714703"><ph name="APP_NAME" /> ஆப்ஸ் உங்கள் இருப்பிடத் தகவலை அணுக அனுமதிப்பதற்கு <ph name="BEGIN_LINK" />Android அமைப்புகளிலும்<ph name="END_LINK" /> இருப்பிடத்திற்கான அனுமதியை இயக்கவும்.</translation>
 <translation id="8447861592752582886">சாதன அனுமதியை ரத்துசெய்யும்</translation>

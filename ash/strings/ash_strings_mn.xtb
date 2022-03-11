@@ -91,9 +91,9 @@
 <translation id="1414271762428216854"><ph name="APP_NAME" />, суулгасан апп</translation>
 <translation id="1419738280318246476">Мэдэгдлийн үйлдлийг гүйцэтгэхийн тулд төхөөрөмжийн түгжээг тайлна уу</translation>
 <translation id="1420408895951708260">Шөнийн гэрлийг асаах/унтраах. <ph name="STATE_TEXT" /></translation>
+<translation id="1420732223884894666"><ph name="DEVICE_TYPE" /> дээрээ утасныхаа саяхны зургууд болон медиаг харна уу</translation>
 <translation id="1426410128494586442">Тийм</translation>
 <translation id="1438357537418863713">Аппын стримингийг одоо тохируулсан. Таныг эхлүүлсний дараа саяхан эхлүүлсэн аппууд энд харагдана.</translation>
-<translation id="144853431011121127">Утасныхаа мэдэгдлийг <ph name="DEVICE_TYPE" /> дээрээ аваарай</translation>
 <translation id="1455242230282523554">Хэлний тохиргоог харуулах</translation>
 <translation id="1460620680449458626">Дууг хаасан.</translation>
 <translation id="1467432559032391204">Зүүн</translation>
@@ -197,6 +197,7 @@
 <translation id="2132302418721800944">Бүтэн дэлгэцийг бичих</translation>
 <translation id="2135456203358955318">Суурилуулсан томруулагч</translation>
 <translation id="2148716181193084225">Өнөөдөр</translation>
+<translation id="2159930836979502091">Энэ таб руу очих</translation>
 <translation id="2170530631236737939">Тоймоос гарахын тулд гурван хуруугаараа доош шударна уу</translation>
 <translation id="219905428774326614">Эхлүүлэгч, бүх апп</translation>
 <translation id="2201071101391734388">Саяхны <ph name="TOTAL_COUNT" />-с <ph name="INDEX" />-р зураг.</translation>
@@ -564,6 +565,7 @@
 <translation id="4449692009715125625">{NUM_NOTIFICATIONS,plural, =1{1 чухал мэдэгдэл}other{# чухал мэдэгдэл}}</translation>
 <translation id="4450893287417543264">Дахиж бүү харуул</translation>
 <translation id="4451374464530248585">Alt + Доош сумны товчлуурын шууд холбоосыг өөрчилсөн байна. Page Down товчлуурыг ашиглахын тулд <ph name="LAUNCHER_KEY_NAME" /> товчлуур + Доош сумыг дарна уу.</translation>
+<translation id="4455051983450390249"><ph name="DEVICE_TYPE" /> дээрээ утасныхаа мэдэгдлийг харна уу</translation>
 <translation id="445864333228800152">Оройн мэнд,</translation>
 <translation id="4458688154122353284">Дэлгэцийн үйлдэл бичихийг зогсоох</translation>
 <translation id="4471354919263203780">Яриа таних файлыг татаж байна... <ph name="PERCENT" />%</translation>
@@ -735,6 +737,7 @@
 <translation id="5597451508971090205"><ph name="SHORT_WEEKDAY" />, <ph name="DATE" /></translation>
 <translation id="5600837773213129531">Хэлсэн саналыг идэвхгүй болгохын тулд Ctrl + Alt + Z-г дарна уу.</translation>
 <translation id="5601503069213153581">ПИН</translation>
+<translation id="5618148318840095371">Бид таныг илүү сайн сүлжээ рүү сэлгэлээ</translation>
 <translation id="5619862035903135339">Администраторын бодлого нь дэлгэцийн зураг авахыг идэвхгүй болгодог</translation>
 <translation id="5625955975703555628">LTE+</translation>
 <translation id="5648021990716966815">Микрофоны чихэвчний оролт</translation>
@@ -770,6 +773,7 @@
 <translation id="583281660410589416">Үл мэдэгдэх</translation>
 <translation id="5837036133683224804"><ph name="RECEIVER_NAME" />-г <ph name="ROUTE_TITLE" />-д дамжуулахаа зогсоох</translation>
 <translation id="584525477304726060">Томруулахын тулд удаан дарна уу</translation>
+<translation id="5856638668464565213"><ph name="NETWORK_NAME" />-г идэвхжүүлээгүй.</translation>
 <translation id="5860033963881614850">Идэвхгүй байна</translation>
 <translation id="5860491529813859533">Асаах</translation>
 <translation id="5867217927013474703">Сүлжээний мэдээлэл цуглуулж байна</translation>
@@ -801,6 +805,7 @@
 <translation id="602472752137106327">Бүх дэлгэцээс цонхыг харуулах, радио товчлуурыг сонгосон</translation>
 <translation id="6025324406281560198"><ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, дохионы хүч <ph name="SIGNAL_STRENGTH" />, таны администратор удирддаг</translation>
 <translation id="6027518778343897451"><ph name="CURRENT_MONTH_DAY" />-д үйл явдал байхгүй байна. Google календарийг хөтчид нээхийн тулд enter дээр дарна уу.</translation>
+<translation id="6027952026115023659"><ph name="DEVICE_TYPE" /> дээрээ утасныхаа мессеж аппуудад хандана уу</translation>
 <translation id="6030495522958826102">Цэсийг дэлгэцийн зүүн доод булан руу зөөсөн.</translation>
 <translation id="6032620807120418574">Бүтэн дэлгэцийг бичихийн тулд дурын газар товшино уу</translation>
 <translation id="6040071906258664830">Микрофоныг бичих <ph name="STATE" /></translation>
@@ -827,6 +832,7 @@
 <translation id="6165508094623778733">Нэмэлт мэдээлэл авах</translation>
 <translation id="6166852626429024716">Төхөөрөмж, апп, тохиргоо, вебээс хайх...</translation>
 <translation id="6179832488876878285">Та чухал файлуудаа энд бэхлэх боломжтой. Эхлүүлэхийн тулд Файлс аппыг нээнэ үү.</translation>
+<translation id="619279033188484792"><ph name="DEVICE_TYPE" /> дээрээ утасныхаа саяхны зургууд, медиа болон мэдэгдлүүдийг харна уу</translation>
 <translation id="6220928844947387476">Та одоо өөрийгөө болон дэлгэцээ зэрэг бичих боломжтой</translation>
 <translation id="622484624075952240">Бууруулсан жагсаалт</translation>
 <translation id="6231419273573514727">Дагалдах төхөөрөмжийн гүйцэтгэлийг хязгаарласан байж болзошгүй</translation>
@@ -939,9 +945,11 @@
 <translation id="6921188888306725546">Товчлуурын шууд холбооснуудыг сайжруулсан</translation>
 <translation id="6931576957638141829">Дараахад хадгалах</translation>
 <translation id="6945221475159498467">Сонгох</translation>
+<translation id="6960565108681981554">Идэвхжүүлээгүй байна. Оператор компанитайгаа холбогдоно уу.</translation>
 <translation id="6961121602502368900">Ажлын профайл дээр утсыг чимээгүй болгох боломжгүй</translation>
 <translation id="6961840794482373852">Alt + Дээш сумны товчлуурын шууд холбоосыг өөрчилсөн байна. Page Up товчлуурыг ашиглахын тулд <ph name="LAUNCHER_KEY_NAME" /> товчлуур + Дээш сумыг дарна уу.</translation>
 <translation id="6965382102122355670">OK</translation>
+<translation id="6967933908874208731"><ph name="DEVICE_TYPE" /> дээрээ утасныхаа саяхны зураг, медиа, мэдэгдэл болон мессеж аппыг харна уу</translation>
 <translation id="6972754398087986839">Эхлүүлэх</translation>
 <translation id="6979158407327259162">Google Drive</translation>
 <translation id="6981982820502123353">Хандалт</translation>
@@ -1148,7 +1156,6 @@
 <translation id="8236042855478648955">Завсарлах цаг</translation>
 <translation id="8247060538831475781"><ph name="CONNECTION_STATUS" />, дохионы хүч <ph name="SIGNAL_STRENGTH" />, утасны батарей <ph name="BATTERY_STATUS" /></translation>
 <translation id="8247998213073982446"><ph name="APP_NAME" />, апп</translation>
-<translation id="8248728785693203669">Таны USB-C кабель дэлгэцүүдэд зохих ёсоор холбогдохгүй байж магадгүй</translation>
 <translation id="8255234195843591763">Шинэчлэхийн тулд дахин эхлүүлнэ үү</translation>
 <translation id="826107067893790409"><ph name="USER_EMAIL_ADDRESS" />-д зориулж түгжээг тайлахын тулд Enter дээр дарна уу</translation>
 <translation id="8261506727792406068">Устгах</translation>

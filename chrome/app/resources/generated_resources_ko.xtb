@@ -302,7 +302,6 @@
 <translation id="1293264513303784526">USB-C 기기(왼쪽 포트)</translation>
 <translation id="1293556467332435079">파일</translation>
 <translation id="1294807885394205587">이 과정은 몇 분 정도 걸릴 수 있습니다. 컨테이너 관리자를 시작합니다.</translation>
-<translation id="1296046226918222533">문제가 발생하여 Linux 업그레이드가 실패했습니다. 로그에서 자세한 실패 관련 정보를 확인할 수 있습니다. 로그는 <ph name="LOG_FILE" />에 저장되었습니다.</translation>
 <translation id="1296911687402551044">선택한 탭 고정</translation>
 <translation id="1297175357211070620">대상</translation>
 <translation id="129770436432446029"><ph name="EXPERIMENT_NAME" />에 관한 의견 보내기</translation>
@@ -440,6 +439,7 @@
 <translation id="1427269577154060167">국가</translation>
 <translation id="142758023928848008">고정키 사용(연속으로 입력하여 단축키 사용)</translation>
 <translation id="142765311413773645"><ph name="APP_NAME" /> 라이선스 만료됨</translation>
+<translation id="1428373049397869723">Finder 앱 또는 다른 앱에서 이 앱이 지원하는 파일을 열고 수정할 수 있습니다. 기본적으로 이 앱에서 열 파일을 관리하려면 <ph name="BEGIN_LINK" />기기에서 기본 앱을 설정하는 방법을 알아보세요<ph name="END_LINK" />.</translation>
 <translation id="1429300045468813835">모두 삭제됨</translation>
 <translation id="1430915738399379752">인쇄</translation>
 <translation id="1431188203598586230">마지막 소프트웨어 업데이트</translation>
@@ -616,7 +616,6 @@
 <translation id="1603411913360944381"><ph name="DEVICE_NAME" /> 삭제</translation>
 <translation id="1603914832182249871">(시크릿 모드)</translation>
 <translation id="1604432177629086300">인쇄할 수 없음: 프린터를 확인하고 다시 시도해 보세요</translation>
-<translation id="1604576689725077412">Chromebook에서 알림을 닫으면 휴대전화에서도 알림이 닫힙니다.</translation>
 <translation id="1605744057217831567">모든 사이트 데이터 및 권한 보기</translation>
 <translation id="1606077700029460857">마우스 설정 변경</translation>
 <translation id="1606566847233779212">추가한 특정 사이트를 삭제할까요?</translation>
@@ -1036,7 +1035,6 @@
 <translation id="1987317783729300807">계정</translation>
 <translation id="1988259784461813694">요건</translation>
 <translation id="1989112275319619282">찾아보기</translation>
-<translation id="1989744123191450103">백업 실패</translation>
 <translation id="1989903373608997757">항상 사용</translation>
 <translation id="1990046457226896323">음성 파일 다운로드됨</translation>
 <translation id="1990512225220753005">이 페이지에 바로가기를 표시하지 않습니다.</translation>
@@ -1046,11 +1044,9 @@
 <translation id="1994173015038366702">사이트 URL</translation>
 <translation id="1995916364271252349">사이트에서 사용하고 표시할 수 있는 정보(위치, 카메라, 팝업 등)를 제어합니다.</translation>
 <translation id="1997616988432401742">내 인증서</translation>
-<translation id="1997645434968427303">Linux 백업 복원이 실패했습니다. Linux의 디스크 공간이 부족하기 때문일 수 있습니다. OS 설정에서 Linux의 디스크 공간을 변경하고 백업 복원을 다시 시도할 수 있습니다.</translation>
 <translation id="1999115740519098545">시작 그룹</translation>
 <translation id="2000419248597011803">검색주소창 및 검색창의 검색어 및 일부 쿠키를 기본 검색엔진에 전송</translation>
 <translation id="2002109485265116295">실시간</translation>
-<translation id="200217416291116199">업그레이드를 완료할 수 없는 경우에 대비해 파일을 백업해 두는 것이 좋습니다. 업그레이드를 시작하면 Linux가 종료됩니다. 진행하기 전에 열려 있는 파일을 저장하세요.</translation>
 <translation id="2003130567827682533">'<ph name="NAME" />' 데이터를 활성화하려면 먼저 Wi-Fi 네트워크에 연결하세요.</translation>
 <translation id="2004697686368036666">일부 사이트에서 기능이 작동하지 않을 수 있음</translation>
 <translation id="2005199804247617997">기타 프로필</translation>
@@ -1059,7 +1055,6 @@
 <translation id="2007404777272201486">문제 신고...</translation>
 <translation id="2009590708342941694">그림 이모티콘 도구</translation>
 <translation id="2010501376126504057">호환 기기</translation>
-<translation id="2011968031299471357">메시지 수신 및 응답</translation>
 <translation id="2015232545623037616">PC와 Chromecast가 동일한 Wi-Fi 네트워크에 연결됨</translation>
 <translation id="2016473077102413275">이미지가 필요한 기능이 작동하지 않습니다</translation>
 <translation id="2016574333161572915">Google Meet 하드웨어 설정 준비가 완료되었습니다</translation>
@@ -1224,7 +1219,6 @@
 <translation id="2165177462441582039">강조표시가 각 항목에 유지되는 시간 선택</translation>
 <translation id="2166369534954157698">재빠른 갈색 여우가 게으른 개를 뛰어넘습니다.</translation>
 <translation id="2169062631698640254">로그인</translation>
-<translation id="2170054054876170358">휴대전화가 근처에 있고, 잠금이 해제되어 있으며, 블루투스와 Wi-Fi가 켜져 있는지 확인하세요.</translation>
 <translation id="2173302385160625112">인터넷 연결 상태를 확인하세요.</translation>
 <translation id="2173801458090845390">이 기기에 요청 ID 추가</translation>
 <translation id="2175384018164129879">검색엔진 및 사이트 검색 관리</translation>
@@ -1298,7 +1292,6 @@
 <translation id="2241053333139545397">여러 웹사이트의 데이터를 읽고 변경</translation>
 <translation id="2241634353105152135">한 번만</translation>
 <translation id="2242687258748107519">파일 정보</translation>
-<translation id="2243381895573964397">휴대전화 알림 받기</translation>
 <translation id="2246549592927364792">Google에서 이미지 설명을 가져올까요?</translation>
 <translation id="2247738527273549923">조직에서 관리하는 기기입니다</translation>
 <translation id="2249111429176737533">탭 창으로 열기</translation>
@@ -2119,7 +2112,6 @@
 <translation id="3036546437875325427">Flash 사용</translation>
 <translation id="3037754279345160234">도메인 연결 구성을 파싱할 수 없습니다. 관리자에게 문의하세요.</translation>
 <translation id="3038612606416062604">수동으로 프린터 추가</translation>
-<translation id="3039409644314251320">대화 보기, 메시지에 반응, 그룹 채팅에 사용자 추가</translation>
 <translation id="3039491566278747710">기기에 오프라인 정책을 설치하지 못했습니다.</translation>
 <translation id="3043218608271070212"><ph name="GROUP_NAME" /> - <ph name="GROUP_CONTENT_STRING" /></translation>
 <translation id="3043581297103810752">출처: <ph name="ORIGIN" /></translation>
@@ -2177,7 +2169,6 @@
 <translation id="3101126716313987672">조명 밝기 줄이기</translation>
 <translation id="3101709781009526431">날짜 및 시간</translation>
 <translation id="3103451787721578293">이 데이터를 업로드하는 이유를 입력하세요</translation>
-<translation id="3103941660000130485">Linux 업그레이드 중 오류 발생</translation>
 <translation id="3105796011181310544">Google로 되돌리시겠습니까?</translation>
 <translation id="310671807099593501">사이트에서 블루투스를 사용하고 있습니다.</translation>
 <translation id="3108931485517391283">수신할 수 없습니다.</translation>
@@ -2317,7 +2308,6 @@
 <translation id="3274763671541996799">전체화면으로 전환되었습니다.</translation>
 <translation id="3275778809241512831">현재 내부 보안 키가 안전하지 않습니다. 키를 사용한 모든 서비스에서 키를 삭제하세요. 문제를 해결하려면 보안 키를 재설정하시기 바랍니다.</translation>
 <translation id="3275778913554317645">창으로 열기</translation>
-<translation id="3277691515294482687">Linux를 업그레이드하기 전에 앱과 파일을 내 파일 폴더에 백업합니다.</translation>
 <translation id="3278001907972365362">Google 계정에 주의가 필요합니다.</translation>
 <translation id="3278928434075969895">프로필이 Chrome OS 프록시 설정을 사용합니다.</translation>
 <translation id="3279092821516760512">선택한 연락처의 사용자가 근처에 있는 경우 나와 공유할 수 있습니다. 내가 수락하지 않으면 전송이 시작되지 않습니다.</translation>
@@ -2424,7 +2414,6 @@
 <translation id="3388094447051599208">배지대가 거의 가득 찼습니다.</translation>
 <translation id="3388788256054548012">암호화된 파일입니다. 소유자에게 복호화를 요청하세요.</translation>
 <translation id="3390013585654699824">앱 세부정보</translation>
-<translation id="3390741581549395454">Linux 앱 및 파일 백업이 완료되었습니다. 업그레이드가 곧 시작됩니다.</translation>
 <translation id="3391512812407811893">개인정보 보호 샌드박스 체험판</translation>
 <translation id="3393554941209044235">Chrome 문서 분석</translation>
 <translation id="3394850431319394743">보호된 콘텐츠를 재생하기 위해 식별자를 사용하도록 허용됨</translation>
@@ -2564,7 +2553,6 @@
 <translation id="3511307672085573050">링크 주소 복사(&amp;E)</translation>
 <translation id="351152300840026870">고정폭 글꼴</translation>
 <translation id="3511528412952710609">짧게</translation>
-<translation id="3514011352559420398">복원 실패</translation>
 <translation id="3514335087372914653">게임 컨트롤</translation>
 <translation id="3514373592552233661">두 개 이상의 네트워크를 사용할 수 있는 경우 기본 설정된 네트워크가 다른 알려진 네트워크보다 우선 사용됩니다.</translation>
 <translation id="3515983984924808886">보안 키를 다시 터치하여 초기화 여부를 확인하세요. PIN을 비롯하여 보안 키에 저장된 모든 정보가 삭제됩니다.</translation>
@@ -2655,7 +2643,6 @@
 <translation id="3612673635130633812">&lt;a href="<ph name="URL" />"&gt;<ph name="EXTENSION" />&lt;/a&gt;에서 다운로드함</translation>
 <translation id="3613134908380545408"><ph name="FOLDER_NAME" /> 표시</translation>
 <translation id="3613422051106148727">새 탭에서 열기(&amp;O)</translation>
-<translation id="3614974189435417452">백업 완료</translation>
 <translation id="3615073365085224194">손가락으로 지문 센서를 터치하세요.</translation>
 <translation id="3615579745882581859"><ph name="FILE_NAME" />을(를) 스캔하는 중입니다.</translation>
 <translation id="3616741288025931835">인터넷 사용 기록 삭제(&amp;C)...</translation>
@@ -3044,7 +3031,6 @@
 <translation id="3954354850384043518">진행 중</translation>
 <translation id="3954469006674843813"><ph name="WIDTH" />x<ph name="HEIGHT" />(<ph name="REFRESH_RATE" />Hz)</translation>
 <translation id="3954953195017194676">최근 캡처한 WebRTC 이벤트 로그가 없습니다.</translation>
-<translation id="3955163004258753966">업그레이드 시작 중 오류 발생</translation>
 <translation id="3955193568934677022">사이트에서 보호된 콘텐츠를 재생하도록 허용(권장)</translation>
 <translation id="3955321697524543127">사이트에서 USB 기기에 연결하도록 허용하지 않음</translation>
 <translation id="3955896417885489542">설정 후 Google Play 옵션 검토</translation>
@@ -3064,6 +3050,7 @@
 <translation id="3971764089670057203">보안 키의 지문</translation>
 <translation id="3973005893595042880">허용되지 않은 사용자입니다.</translation>
 <translation id="3973660817924297510">비밀번호 확인 중(<ph name="CHECKED_PASSWORDS" />/<ph name="TOTAL_PASSWORDS" />)…</translation>
+<translation id="3974514184580396500">'다음'을 사용하여 화면에서 포커스를 앞으로 이동합니다.</translation>
 <translation id="3975201861340929143">설명</translation>
 <translation id="3975565978598857337">영역 서버에 연락을 취하지 못했습니다.</translation>
 <translation id="3976108569178263973">사용 가능한 프린터가 없습니다.</translation>
@@ -3558,7 +3545,6 @@
 <translation id="4508765956121923607">소스 보기(&amp;O)</translation>
 <translation id="4510195992002502722">의견을 보낼 수 없어 다시 시도하는 중입니다...</translation>
 <translation id="4510479820467554003">부모 계정 목록</translation>
-<translation id="4510614391273086606">Linux 파일 및 앱이 백업된 상태로 복원되는 중입니다</translation>
 <translation id="451102079304155829">장바구니</translation>
 <translation id="4513872120116766993">예측 입력</translation>
 <translation id="4513946894732546136">문제 신고</translation>
@@ -3570,7 +3556,6 @@
 <translation id="4519935350946509010">연결 오류입니다.</translation>
 <translation id="4520385623207007473">사용 중인 쿠키</translation>
 <translation id="452039078290142656"><ph name="VENDOR_NAME" />의 알 수 없는 기기</translation>
-<translation id="4522351342209941760">휴대전화에서 몇 가지 권한을 추가로 검토하세요.</translation>
 <translation id="4522570452068850558">세부정보</translation>
 <translation id="4522600456902129422">이 사이트에서 클립보드를 볼 수 있도록 계속 허용</translation>
 <translation id="4522890784888918985">자녀 계정은 지원되지 않습니다.</translation>
@@ -3631,7 +3616,6 @@
 <translation id="4570201855944865395">확장 프로그램을 요청하는 이유:</translation>
 <translation id="4572659312570518089">'<ph name="DEVICE_NAME" />'에 연결하는 동안 인증이 취소되었습니다.</translation>
 <translation id="4572779512957829735">보안 키의 PIN을 입력하세요.</translation>
-<translation id="4573515936045019911">Linux를 업그레이드하려면 네트워크 연결이 필요합니다. 인터넷에 연결한 다음 다시 시도해 주세요.</translation>
 <translation id="457386861538956877">더보기...</translation>
 <translation id="4574741712540401491">•  <ph name="LIST_ITEM_TEXT" /></translation>
 <translation id="4576541033847873020">블루투스 기기 페어링</translation>
@@ -3686,7 +3670,6 @@
 <translation id="4634771451598206121">다시 로그인...</translation>
 <translation id="4635072447747973225">Crostini 제거</translation>
 <translation id="4635398712689569051">게스트 사용자는 <ph name="PAGE_NAME" />을(를) 사용할 수 없음</translation>
-<translation id="4635444580397524003">Linux 백업이 복원되었습니다.</translation>
 <translation id="4636682061478263818">Drive 파일</translation>
 <translation id="4636930964841734540">정보</translation>
 <translation id="4637083375689622795">추가 작업, <ph name="EMAIL" /></translation>
@@ -3898,6 +3881,7 @@
 <translation id="4868281708609571334">Google 어시스턴트가 <ph name="SUPERVISED_USER_NAME" />님의 음성을 인식하도록 학습시키세요</translation>
 <translation id="4868284252360267853">현재 이 대화상자에 포커스가 지정되지 않았습니다. Command+Shift+Option A를 눌러 이 대화상자에 포커스를 지정하세요.</translation>
 <translation id="48704129375571883">추가 기능 추가</translation>
+<translation id="4870724079713069532">File Explorer 또는 다른 앱에서 이 앱이 지원하는 파일을 열고 수정할 수 있습니다. 기본적으로 이 앱에서 열 파일을 관리하려면 <ph name="BEGIN_LINK" />Windows 설정<ph name="END_LINK" />으로 이동하세요.</translation>
 <translation id="4870758487381879312">구성 정보를 가져오려면 관리자가 제공한 비밀번호를 입력하세요.</translation>
 <translation id="4870903493621965035">페어링된 기기가 없습니다.</translation>
 <translation id="4870995365819149457">지원되는 링크 일부는 <ph name="APP_NAME" />, <ph name="APP_NAME_2" />, <ph name="APP_NAME_3" /> 외 1개의 다른 앱에서 계속 열 수 있습니다.</translation>
@@ -4117,6 +4101,7 @@
 <translation id="5088534251099454936">PKCS #1 SHA-512(RSA 암호화 사용)</translation>
 <translation id="5090637338841444533">카메라 위치 추적이 허용되지 않음</translation>
 <translation id="5093569275467863761">시크릿 모드 뒤로-앞으로 캐시 서브프레임: <ph name="BACK_FORWARD_CACHE_INCOGNITO_PAGE_URL" /></translation>
+<translation id="5094176498302660097">파일 앱 또는 다른 앱에서 이 앱이 지원하는 파일을 열고 수정할 수 있습니다. 기본적으로 이 앱에서 열 파일을 관리하려면 <ph name="BEGIN_LINK" />기기에서 기본 앱을 설정하는 방법을 알아보세요<ph name="END_LINK" />.</translation>
 <translation id="5094721898978802975">협력 중인 기본 애플리케이션과 통신</translation>
 <translation id="5097002363526479830">'<ph name="NAME" />' 네트워크에 연결하지 못했습니다: <ph name="DETAILS" /></translation>
 <translation id="5097306410549350357">위치 사용 자세히 알아보기</translation>
@@ -4628,7 +4613,6 @@
 <translation id="5620568081365989559">DevTools에서 <ph name="FOLDER_PATH" />에 대한 완전한 액세스를 요청합니다. 민감한 정보를 노출하지 않도록 주의하시기 바랍니다.</translation>
 <translation id="5620612546311710611">사용 통계</translation>
 <translation id="5620655347161642930">비밀번호 내보내기...</translation>
-<translation id="5621137386706841383">최대 30분 정도 걸릴 수 있습니다.</translation>
 <translation id="5623282979409330487">사이트에서 움직임 감지 센서에 액세스하는 중입니다.</translation>
 <translation id="5623842676595125836">로그</translation>
 <translation id="5624120631404540903">비밀번호 관리</translation>
@@ -4705,7 +4689,6 @@
 <translation id="5701080607174488915">서버에서 정책을 가져오는 중에 오류가 발생했습니다.</translation>
 <translation id="5701212929149679556">셀룰러 로밍</translation>
 <translation id="5701381305118179107">가운데</translation>
-<translation id="5701441174893770082">Linux를 업그레이드하면 배터리가 많이 소모될 수 있습니다. 기기를 충전기에 연결한 다음 다시 시도해 주세요.</translation>
 <translation id="5701786609538182967">다른 앱이 <ph name="APP_NAME" /> 앱과 같은 링크를 열도록 설정되었습니다. <ph name="APP_NAME_2" />, <ph name="APP_NAME_3" />, <ph name="APP_NAME_4" /> 외 앱 1개는 지원되는 링크를 열지 못하게 됩니다.</translation>
 <translation id="5702749864074810610">추천 닫힘</translation>
 <translation id="5704875434923668958">다음에 동기화</translation>
@@ -4766,6 +4749,7 @@
 <translation id="577322787686508614">기기(<ph name="DEVICE_NAME" />)에서 읽기 작업이 허용되지 않습니다.</translation>
 <translation id="5774295353725270860">파일 앱 열기</translation>
 <translation id="577624874850706961">쿠키 검색</translation>
+<translation id="5776571780337000608">파일 브라우저 또는 다른 앱에서 이 앱이 지원하는 파일을 열고 수정할 수 있습니다. 기본적으로 이 앱에서 열 파일을 관리하려면 <ph name="BEGIN_LINK" />기기에서 기본 앱을 설정하는 방법을 알아보세요<ph name="END_LINK" />.</translation>
 <translation id="5777468213129569553">Chrome 열기</translation>
 <translation id="5778491106820461378">로그인된 Google 계정을 <ph name="LINK_BEGIN" />설정<ph name="LINK_END" />에서 관리할 수 있습니다. 웹사이트와 앱에 부여한 권한이 모든 계정에 적용될 수 있습니다. 사이트나 앱에서 계정 정보에 액세스하기를 원하지 않으면 게스트로 <ph name="DEVICE_TYPE" />에 로그인하세요.</translation>
 <translation id="5780011244986845107">선택한 폴더에 민감한 파일이 포함되어 있습니다. 이 폴더에 '<ph name="APP_NAME" />' 영구 읽기 액세스 권한을 부여하시겠습니까?</translation>
@@ -4912,7 +4896,6 @@
 <translation id="592740088639760830">컨테이너 중단</translation>
 <translation id="592880897588170157">Chrome에서 PDF 파일을 자동으로 여는 대신 다운로드</translation>
 <translation id="592919310198008711">확장 프로그램을 클릭할 경우</translation>
-<translation id="5932124097031739492">Linux가 업그레이드되었습니다.</translation>
 <translation id="5932209916647644605"><ph name="MANAGER" />에서 <ph name="DEVICE_TYPE" /> 기기를 즉시 업데이트할 것을 요청합니다.</translation>
 <translation id="5932224571077948991">사이트에서 방해가 되거나 사용자를 현혹하는 광고를 표시함</translation>
 <translation id="59324397759951282"><ph name="MANUFACTURER_NAME" />의 USB 기기</translation>
@@ -5477,7 +5460,6 @@
 <translation id="6498249116389603658">모든 언어(&amp;A)</translation>
 <translation id="6499143127267478107">프록시 스크립트의 호스트 확인 중...</translation>
 <translation id="6499764981457476645">근처에서 기기를 찾을 수 없음</translation>
-<translation id="65017764184991091">Linux 앱 및 파일 백업이 실패했습니다. 이 문제는 기기의 여유 저장공간이 부족한 경우 발생할 수 있습니다. 기기에서 여유 공간을 확보하거나 다른 백업 위치를 선택해 보세요.</translation>
 <translation id="6501957628055559556">모든 컨테이너</translation>
 <translation id="650266656685499220">앨범을 만들려면 Google 포토로 이동하세요.</translation>
 <translation id="6503077044568424649">자주 방문한 페이지</translation>
@@ -5684,7 +5666,6 @@
 <translation id="6709133671862442373">뉴스</translation>
 <translation id="6709357832553498500"><ph name="EXTENSIONNAME" />을(를) 사용하여 연결</translation>
 <translation id="6710213216561001401">이전</translation>
-<translation id="6710973041022512889">업그레이드가 완료되었습니다. 자세한 업그레이드 정보는 <ph name="LOG_FILE" />에 저장된 로그를 참고하세요.</translation>
 <translation id="6711146141291425900">다운로드용 <ph name="WEB_DRIVE" /> 계정 연결</translation>
 <translation id="6712943853047024245">이미 <ph name="WEBSITE" />의 사용자 이름과 비밀번호를 저장했습니다.</translation>
 <translation id="6713233729292711163">직장 프로필 추가</translation>
@@ -5903,7 +5884,6 @@
 <translation id="6929760895658557216">Ok Google</translation>
 <translation id="6930036377490597025">외장 보안 키 또는 내장 센서</translation>
 <translation id="6930161297841867798">{NUM_EXTENSIONS,plural, =1{확장 프로그램 1개 거부됨}other{확장 프로그램 #개 거부됨}}</translation>
-<translation id="6930321203306643451">업그레이드 완료</translation>
 <translation id="6931690462168617033">클릭 강도</translation>
 <translation id="6935286146439255109">용지함 없음</translation>
 <translation id="693807610556624488">기기(<ph name="DEVICE_NAME" />)의 쓰기 작업이 최대 속성 길이를 초과합니다.</translation>
@@ -6777,7 +6757,6 @@
 <translation id="7814458197256864873">복사(&amp;C)</translation>
 <translation id="7815680994978050279">위험한 다운로드가 차단됨</translation>
 <translation id="7817361223956157679">Linux 앱에서는 아직 터치 키보드가 지원되지 않습니다.</translation>
-<translation id="7817671927108102061">휴대전화에서 설정 완료</translation>
 <translation id="7818135753970109980">새 테마가 추가됨(<ph name="EXTENSION_NAME" />)</translation>
 <translation id="7819992334107904369">Chrome 동기화</translation>
 <translation id="7820561748632634942">추가 스위치를 할당하시겠습니까?</translation>
@@ -7295,6 +7274,7 @@
 <translation id="8326478304147373412">PKCS #7, 인증서 체인</translation>
 <translation id="8327676037044516220">권한 및 콘텐츠 설정</translation>
 <translation id="8330689128072902965">주변 연락처가 나와 파일을 공유할 수 있습니다. 변경하려면 클릭하세요.</translation>
+<translation id="8331323939220256760">{FILE_TYPE_COUNT,plural, =1{지원되는 파일 형식: <ph name="FILE_TYPE1" />}=2{지원되는 파일 형식: <ph name="FILE_TYPE1" />, <ph name="FILE_TYPE2" />}=3{지원되는 파일 형식: <ph name="FILE_TYPE1" />, <ph name="FILE_TYPE2" />, <ph name="FILE_TYPE3" />}=4{지원되는 파일 형식 <ph name="FILE_TYPE1" />, <ph name="FILE_TYPE2" />, <ph name="FILE_TYPE3" />, <ph name="FILE_TYPE4" />}other{지원되는 파일 형식: <ph name="FILE_TYPE1" />, <ph name="FILE_TYPE2" />, <ph name="FILE_TYPE3" />, <ph name="FILE_TYPE4" />(<ph name="LINK" />이외의 {OVERFLOW_COUNT}개 더보기<ph name="END_LINK" />)}}</translation>
 <translation id="833256022891467078">Crostini 공유 폴더</translation>
 <translation id="8335587457941836791">실행기에서 고정 해제</translation>
 <translation id="8336407002559723354"><ph name="MONTH_AND_YEAR" />에 업데이트 종료</translation>
@@ -7467,7 +7447,6 @@
 <translation id="8523849605371521713">정책에 의해 추가</translation>
 <translation id="8524783101666974011">Google 계정에 카드 추가</translation>
 <translation id="8525306231823319788">전체화면</translation>
-<translation id="8526666462501866815">Linux 업그레이드 취소 중</translation>
 <translation id="8526813720153458066">SSH</translation>
 <translation id="8528074251912154910">언어 추가</translation>
 <translation id="8528962588711550376">로그인 중입니다.</translation>
@@ -7782,7 +7761,6 @@
 <translation id="8838601485495657486">불투명</translation>
 <translation id="8838770651474809439">햄버거</translation>
 <translation id="8838778928843281408">휴대전화 관리</translation>
-<translation id="8840427996758894516">휴대전화가 근처에 있고 잠금 해제되어 있으며 블루투스와 Wi-Fi가 켜져 있는지 확인하세요.</translation>
 <translation id="8841843049738266382">허용 목록에 있는 사용자를 읽고 변경하기</translation>
 <translation id="8842594465773264717">이 지문 삭제</translation>
 <translation id="8845001906332463065">도움말 보기</translation>

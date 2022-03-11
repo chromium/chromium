@@ -91,9 +91,9 @@
 <translation id="1414271762428216854"><ph name="APP_NAME" />, инсталирана апликација</translation>
 <translation id="1419738280318246476">Отклучете го уредот за да се изврши дејството од известувањето</translation>
 <translation id="1420408895951708260">Вклучи/исклучи „Ноќно светло“: <ph name="STATE_TEXT" /></translation>
+<translation id="1420732223884894666">Прегледувајте ги неодамнешните фотографии и аудиовизуелни содржини од телефонот на вашиот <ph name="DEVICE_TYPE" /></translation>
 <translation id="1426410128494586442">Да</translation>
 <translation id="1438357537418863713">Стримингот на апликации е поставен. Штом ќе започнете, неодамна отворените апликации ќе се појавуваат тука.</translation>
-<translation id="144853431011121127">Добивајте известувања од телефонот на вашиот <ph name="DEVICE_TYPE" /></translation>
 <translation id="1455242230282523554">Прикажи ги поставките за јазикот</translation>
 <translation id="1460620680449458626">Звукот е исклучен.</translation>
 <translation id="1467432559032391204">Лево</translation>
@@ -735,6 +735,7 @@
 <translation id="5597451508971090205"><ph name="SHORT_WEEKDAY" />, <ph name="DATE" /></translation>
 <translation id="5600837773213129531">Притиснете Ctrl + Alt + Z за да ги оневозможите говорните повратни информации.</translation>
 <translation id="5601503069213153581">PIN</translation>
+<translation id="5618148318840095371">Ве префрливме на подобра мрежа</translation>
 <translation id="5619862035903135339">Администраторското правило оневозможува снимање на екранот</translation>
 <translation id="5625955975703555628">LTE+</translation>
 <translation id="5648021990716966815">Приклучок за микрофон</translation>
@@ -827,6 +828,7 @@
 <translation id="6165508094623778733">Дознајте повеќе</translation>
 <translation id="6166852626429024716">Пребарувајте низ уредот, апликациите, поставките, на интернет…</translation>
 <translation id="6179832488876878285">Може да ги закачите вашите важни датотеки тука. Отворете ја апликацијата Files за да започнете.</translation>
+<translation id="619279033188484792">Прегледувајте ги неодамнешните фотографии, аудиовизуелни содржини и известувања од телефонот на вашиот <ph name="DEVICE_TYPE" /></translation>
 <translation id="6220928844947387476">Сега можете истовремено да се снимате себеси и екранот</translation>
 <translation id="622484624075952240">Долу</translation>
 <translation id="6231419273573514727">Перформансите на периферните уреди може да бидат ограничени</translation>
@@ -939,6 +941,7 @@
 <translation id="6921188888306725546">Кратенките од тастатура се подобрени</translation>
 <translation id="6931576957638141829">Зачувај во</translation>
 <translation id="6945221475159498467">Избери</translation>
+<translation id="6960565108681981554">Не е активирана. Контактирајте со вашиот оператор.</translation>
 <translation id="6961121602502368900">Стишувањето на телефонот не е достапно на работен профил</translation>
 <translation id="6961840794482373852">Кратенката од тастатура Alt + Стрелка нагоре се промени. За да го користите копчето Page Up, притиснете го копчето <ph name="LAUNCHER_KEY_NAME" /> + Стрелка нагоре.</translation>
 <translation id="6965382102122355670">Во ред</translation>
@@ -1148,7 +1151,6 @@
 <translation id="8236042855478648955">Време за пауза</translation>
 <translation id="8247060538831475781"><ph name="CONNECTION_STATUS" />, јачина на сигналот: <ph name="SIGNAL_STRENGTH" />, батерија на телефонот: <ph name="BATTERY_STATUS" /></translation>
 <translation id="8247998213073982446"><ph name="APP_NAME" />, апликација</translation>
-<translation id="8248728785693203669">Кабелот USB-C не може да поврзува екрани правилно</translation>
 <translation id="8255234195843591763">Ресетирајте за ажурирање</translation>
 <translation id="826107067893790409">Притиснете Enter за да се отклучи за <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="8261506727792406068">Избриши</translation>

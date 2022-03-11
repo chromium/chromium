@@ -61,6 +61,7 @@
 <translation id="1497522201463361063">Unable to rename "<ph name="FILE_NAME" />". <ph name="ERROR_MESSAGE" /></translation>
 <translation id="1499943022354839699">English (US) with Dvorak keyboard</translation>
 <translation id="1515909359182093592"><ph name="INPUT_LABEL" /> – host</translation>
+<translation id="1521655867290435174">Google Sheets</translation>
 <translation id="1538729222189715449">Opening Linux files...</translation>
 <translation id="1547964879613821194">Canadian English</translation>
 <translation id="1556189134700913550">Apply to all</translation>
@@ -184,7 +185,6 @@
 <translation id="2544853746127077729">Authentication certificate rejected by network</translation>
 <translation id="2547921442987553570">Add to <ph name="EXTENSION_NAME" /></translation>
 <translation id="255937426064304553">US international</translation>
-<translation id="2562685439590298522">Docs</translation>
 <translation id="2563185590376525700">Frog</translation>
 <translation id="2578394532502990878">Tamil phonetic</translation>
 <translation id="2579959351793446050">Odia</translation>
@@ -220,9 +220,7 @@
 <translation id="2902734494705624966">US extended</translation>
 <translation id="290843123675549676">Marathi</translation>
 <translation id="2923240520113693977">Estonian</translation>
-<translation id="2925966894897775835">Sheets</translation>
 <translation id="2938685643439809023">Mongolian</translation>
-<translation id="2943400156390503548">Slides</translation>
 <translation id="2943503720238418293">Use a shorter name</translation>
 <translation id="2949781154072577687">Formatting <ph name="DRIVE_NAME" />…</translation>
 <translation id="2951236788251446349">Jellyfish</translation>
@@ -414,6 +412,7 @@
 <translation id="4656777537938206294">Make files available offline</translation>
 <translation id="4658782175094886150">Person in snow</translation>
 <translation id="4669606053856530811">Members of '<ph name="SOURCE_NAME" />' will lose access unless these items are shared with them.</translation>
+<translation id="467809019005607715">Google Slides</translation>
 <translation id="4690246192099372265">Swedish</translation>
 <translation id="4693155481716051732">Sushi</translation>
 <translation id="4694604912444486114">Monkey</translation>
@@ -949,6 +948,7 @@
 <translation id="9172592259078059678">Gujarati (transliteration)</translation>
 <translation id="9173120999827300720">English (US) with International keyboard</translation>
 <translation id="9174050671906956834">Items in the bin are deleted forever after 30 days.</translation>
+<translation id="9183302530794969518">Google Docs</translation>
 <translation id="9189836632794948435">Kazakh</translation>
 <translation id="9213073329713032541">Installation successfully started.</translation>
 <translation id="9219103736887031265">Images</translation>

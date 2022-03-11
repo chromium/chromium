@@ -61,6 +61,7 @@
 <translation id="1497522201463361063">Hindi mapalatan ang pangalan "<ph name="FILE_NAME" />". <ph name="ERROR_MESSAGE" /></translation>
 <translation id="1499943022354839699">English (US) na may Dvorak keyboard</translation>
 <translation id="1515909359182093592"><ph name="INPUT_LABEL" /> - Host</translation>
+<translation id="1521655867290435174">Google Sheets</translation>
 <translation id="1538729222189715449">Binubuksan ang mga Linux file...</translation>
 <translation id="1547964879613821194">Canadian English</translation>
 <translation id="1556189134700913550">Ilapat sa lahat</translation>
@@ -184,7 +185,6 @@
 <translation id="2544853746127077729">Tinanggihan ng network ang certificate sa pagpapatunay</translation>
 <translation id="2547921442987553570">Idagdag sa <ph name="EXTENSION_NAME" /></translation>
 <translation id="255937426064304553">US international</translation>
-<translation id="2562685439590298522">Docs</translation>
 <translation id="2563185590376525700">Palaka</translation>
 <translation id="2578394532502990878">Tamil Phonetic</translation>
 <translation id="2579959351793446050">Odia</translation>
@@ -220,9 +220,7 @@
 <translation id="2902734494705624966">US extended</translation>
 <translation id="290843123675549676">Marathi</translation>
 <translation id="2923240520113693977">Estonian</translation>
-<translation id="2925966894897775835">Sheets</translation>
 <translation id="2938685643439809023">Mongolian</translation>
-<translation id="2943400156390503548">Slides</translation>
 <translation id="2943503720238418293">Gumamit ng mas maikling pangalan</translation>
 <translation id="2949781154072577687">Fino-format ang <ph name="DRIVE_NAME" />...</translation>
 <translation id="2951236788251446349">Jellyfish</translation>
@@ -414,6 +412,7 @@
 <translation id="4656777537938206294">Gawing available offline ang mga file</translation>
 <translation id="4658782175094886150">Tao sa snow</translation>
 <translation id="4669606053856530811">Mawawalan ng access ang mga miyembro ng '<ph name="SOURCE_NAME" />' maliban na lang kung ibinahagi sa kanila ang mga item na ito.</translation>
+<translation id="467809019005607715">Google Slides</translation>
 <translation id="4690246192099372265">Swedish</translation>
 <translation id="4693155481716051732">Sushi</translation>
 <translation id="4694604912444486114">Unggoy</translation>
@@ -658,6 +657,7 @@
 <translation id="6732801395666424405">Hindi na-load ang mga certificate</translation>
 <translation id="6736329909263487977"><ph name="ISSUED_BY" /> [<ph name="ISSUED_TO" />]</translation>
 <translation id="6751256176799620176">1 folder ang napili</translation>
+<translation id="6755827872271341378">ChromeOS Flex device</translation>
 <translation id="6790428901817661496">I-play</translation>
 <translation id="6795884519221689054">Panda</translation>
 <translation id="6806699711453372963">Pamahalaan ang pagbabahagi ng Linux</translation>
@@ -735,6 +735,7 @@
 <translation id="7343393116438664539">Vietnamese Telex</translation>
 <translation id="7359359531237882347">Kinokopya ang <ph name="NUMBER_OF_ITEMS" /> (na) item...</translation>
 <translation id="7375951387215729722">Nakabukud-bukod ang listahan ng file ayon sa <ph name="COLUMN_NAME" /> sa pababang pagkakasunud-sunod.</translation>
+<translation id="7402503521691663770">Mga ChromeOS Flex device</translation>
 <translation id="7408870451288633753">Czech</translation>
 <translation id="7417453074306512035">Ethiopic keyboard</translation>
 <translation id="7417705661718309329">Google map</translation>
@@ -949,6 +950,7 @@
 <translation id="9172592259078059678">Gujarati Transliteration</translation>
 <translation id="9173120999827300720">English (US) na may International keyboard</translation>
 <translation id="9174050671906956834">Tuluyang made-delete ang mga item sa trash pagkalipas ng 30 araw.</translation>
+<translation id="9183302530794969518">Google Docs</translation>
 <translation id="9189836632794948435">Kazakh</translation>
 <translation id="9213073329713032541">Matagumpay na nasimulan ang pag-install.</translation>
 <translation id="9219103736887031265">Mga Larawan</translation>

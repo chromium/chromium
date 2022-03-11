@@ -300,7 +300,6 @@
 <translation id="1293264513303784526">USB-C-Gerät (Port links)</translation>
 <translation id="1293556467332435079">Dateien</translation>
 <translation id="1294807885394205587">Der Vorgang kann einige Minuten dauern. Container-Manager wird gestartet.</translation>
-<translation id="1296046226918222533">Ein Fehler ist aufgetreten. Das Linux-Upgrade ist fehlgeschlagen. Weitere Informationen zu dem Fehler finden Sie in den Protokollen. Die Protokolle wurden in <ph name="LOG_FILE" /> gespeichert.</translation>
 <translation id="1296911687402551044">Ausgewählten Tab anpinnen</translation>
 <translation id="1297175357211070620">Ziel</translation>
 <translation id="129770436432446029">Feedback geben zu „<ph name="EXPERIMENT_NAME" />“</translation>
@@ -438,6 +437,7 @@ Diese Aktion wirkt sich nicht auf Lesezeichen, Passwörter und den Verlauf aus.<
 <translation id="1427269577154060167">Land</translation>
 <translation id="142758023928848008">Sticky Keys aktivieren, um Tastenkombinationen nacheinander eingeben zu können</translation>
 <translation id="142765311413773645"><ph name="APP_NAME" />-Lizenz ist abgelaufen</translation>
+<translation id="1428373049397869723">Sie können unterstützte Dateien mit dieser App aus dem Finder oder anderen Apps öffnen und bearbeiten. Wenn Sie festlegen möchten, welche Dateien standardmäßig in dieser App geöffnet werden sollen, <ph name="BEGIN_LINK" />lesen Sie diesen Artikel<ph name="END_LINK" />. Darin erfahren Sie, wie Sie Standard-Apps auf Ihrem Gerät einrichten.</translation>
 <translation id="1429300045468813835">Alle gelöscht</translation>
 <translation id="1430915738399379752">Drucken</translation>
 <translation id="1431188203598586230">Letztes Softwareupdate</translation>
@@ -610,7 +610,6 @@ Berechtigungen, die Sie Apps bereits gewährt haben, gelten möglicherweise für
 <translation id="1603411913360944381"><ph name="DEVICE_NAME" /> entfernen</translation>
 <translation id="1603914832182249871">(Anonym)</translation>
 <translation id="1604432177629086300">Drucken nicht möglich. Überprüfen Sie den Drucker und versuchen Sie es noch einmal.</translation>
-<translation id="1604576689725077412">Hinweis: Wenn Sie Benachrichtigungen auf dem Chromebook schließen, werden sie auch auf dem Smartphone geschlossen.</translation>
 <translation id="1605744057217831567">Alle Websitedaten und -berechtigungen ansehen</translation>
 <translation id="1606077700029460857">Mauseinstellungen ändern</translation>
 <translation id="1606566847233779212">Die bestimmten Websites entfernen, die Sie hinzugefügt haben?</translation>
@@ -1021,7 +1020,6 @@ Berechtigungen, die Sie Apps bereits gewährt haben, gelten möglicherweise für
 <translation id="1987317783729300807">Konten</translation>
 <translation id="1988259784461813694">Voraussetzung</translation>
 <translation id="1989112275319619282">Durchsuchen</translation>
-<translation id="1989744123191450103">Sicherung fehlgeschlagen</translation>
 <translation id="1989903373608997757">Immer verwenden</translation>
 <translation id="1990046457226896323">Sprachdateien heruntergeladen</translation>
 <translation id="1990512225220753005">Keine Verknüpfungen auf dieser Seite anzeigen</translation>
@@ -1031,11 +1029,9 @@ Berechtigungen, die Sie Apps bereits gewährt haben, gelten möglicherweise für
 <translation id="1994173015038366702">Website-URL</translation>
 <translation id="1995916364271252349">Welche Informationen Websites nutzen und anzeigen dürfen (z. B. Standort, Kamera, Pop-ups)</translation>
 <translation id="1997616988432401742">Meine Zertifikate</translation>
-<translation id="1997645434968427303">Die Wiederherstellung Ihrer Linux-Sicherung ist fehlgeschlagen. Das liegt möglicherweise daran, dass Linux nicht über ausreichend Speicherplatz verfügt. Sie können Speicherplatz für Linux freigeben und dann über die Einstellungen des Betriebssystems noch einmal versuchen, die Sicherung wiederherzustellen.</translation>
 <translation id="1999115740519098545">Beim Start</translation>
 <translation id="2000419248597011803">Suchanfragen, die in die Adressleiste und das Suchfeld eingegeben wurden, sowie einige Cookies werden an Ihre Standardsuchmaschine gesendet</translation>
 <translation id="2002109485265116295">Echtzeit</translation>
-<translation id="200217416291116199">Wir empfehlen, Ihre Dateien vor diesem Upgrade zu sichern, für den Fall, dass es nicht abgeschlossen werden kann. Beim Start des Upgrades wird Linux heruntergefahren. Speichern Sie bitte die geöffneten Dateien, bevor Sie fortfahren.</translation>
 <translation id="2003130567827682533">Damit Sie "<ph name="NAME" />"-Daten aktivieren können, müssen Sie zuerst eine Verbindung zu einem WLAN herstellen</translation>
 <translation id="2004697686368036666">Einige Websites funktionieren dann möglicherweise nicht mehr richtig</translation>
 <translation id="2005199804247617997">Weitere Profile</translation>
@@ -1044,7 +1040,6 @@ Berechtigungen, die Sie Apps bereits gewährt haben, gelten möglicherweise für
 <translation id="2007404777272201486">Problem melden...</translation>
 <translation id="2009590708342941694">Emojitool</translation>
 <translation id="2010501376126504057">Kompatible Geräte</translation>
-<translation id="2011968031299471357">Nachrichten empfangen und beantworten</translation>
 <translation id="2015232545623037616">Der PC und Chromecast befinden sich im gleichen WLAN</translation>
 <translation id="2016473077102413275">Funktionen, die Bilder erfordern, funktionieren dann nicht</translation>
 <translation id="2016574333161572915">Ihre Google Meet-Hardware kann eingerichtet werden</translation>
@@ -1209,7 +1204,6 @@ Wenn Sie die Family Link App auf Ihrem Gerät installieren, können Sie die Eins
 <translation id="2165177462441582039">Sie können festlegen, wie lange ein Element markiert bleiben soll</translation>
 <translation id="2166369534954157698">Zwölf Boxkämpfer jagen Viktor quer über den großen Sylter Deich</translation>
 <translation id="2169062631698640254">Trotzdem anmelden</translation>
-<translation id="2170054054876170358">Ihr Smartphone muss sich in der Nähe befinden, entsperrt sein und Bluetooth und WLAN müssen aktiviert sein.</translation>
 <translation id="2173302385160625112">Bitte überprüfen Sie Ihre Internetverbindung</translation>
 <translation id="2173801458090845390">Diesem Gerät eine Anforderungs-ID hinzufügen</translation>
 <translation id="2175384018164129879">Suchmaschinen und die Websitesuche verwalten</translation>
@@ -1283,7 +1277,6 @@ Wenn Sie die Family Link App auf Ihrem Gerät installieren, können Sie die Eins
 <translation id="2241053333139545397">Eigene Daten auf verschiedenen Websites lesen und ändern</translation>
 <translation id="2241634353105152135">Nur einmal</translation>
 <translation id="2242687258748107519">Dateiinformationen</translation>
-<translation id="2243381895573964397">Smartphone-Benachrichtigungen erhalten</translation>
 <translation id="2246549592927364792">Bildbeschreibungen von Google verwenden?</translation>
 <translation id="2247738527273549923">Dein Gerät wird von deiner Organisation verwaltet</translation>
 <translation id="2249111429176737533">Als Tab-Fenster öffnen</translation>
@@ -2101,7 +2094,6 @@ Servernachricht: <ph name="SERVER_MSG" /></translation>
 <translation id="3036546437875325427">Flash aktivieren</translation>
 <translation id="3037754279345160234">Die Konfiguration zum Domainbeitritt kann nicht geparst werden. Bitte wenden Sie sich an Ihren Administrator.</translation>
 <translation id="3038612606416062604">Drucker manuell hinzufügen</translation>
-<translation id="3039409644314251320">Unterhaltungen ansehen, auf Nachrichten reagieren und Personen zu Gruppenchats hinzufügen</translation>
 <translation id="3039491566278747710">Fehler beim Installieren der Offlinerichtlinie auf dem Gerät.</translation>
 <translation id="3043218608271070212"><ph name="GROUP_NAME" /> – <ph name="GROUP_CONTENT_STRING" /></translation>
 <translation id="3043581297103810752">Von <ph name="ORIGIN" /></translation>
@@ -2159,7 +2151,6 @@ Servernachricht: <ph name="SERVER_MSG" /></translation>
 <translation id="3101126716313987672">Schwaches Licht</translation>
 <translation id="3101709781009526431">Datum und Uhrzeit</translation>
 <translation id="3103451787721578293">Bitte geben Sie einen Grund für das Hochladen dieser Daten an:</translation>
-<translation id="3103941660000130485">Fehler beim Aktualisieren von Linux</translation>
 <translation id="3105796011181310544">Wieder zu Google wechseln?</translation>
 <translation id="310671807099593501">Die Website verwendet Bluetooth</translation>
 <translation id="3108931485517391283">Empfang nicht möglich</translation>
@@ -2299,7 +2290,6 @@ Servernachricht: <ph name="SERVER_MSG" /></translation>
 <translation id="3274763671541996799">Sie befinden sich im Vollbildmodus.</translation>
 <translation id="3275778809241512831">Ihr interner Sicherheitsschlüssel ist momentan nicht sicher. Bitte entfernen Sie den Schlüssel aus allen Diensten, für die Sie ihn verwendet haben, und setzen Sie ihn zurück, um das Problem zu beheben.</translation>
 <translation id="3275778913554317645">In neuem Fenster öffnen</translation>
-<translation id="3277691515294482687">Meine Apps und Dateien vor dem Upgrade von Linux im Ordner "Meine Dateien" sichern.</translation>
 <translation id="3278001907972365362">Ihre Google-Konten erfordern Aufmerksamkeit</translation>
 <translation id="3278928434075969895">Dieses Profil verwendet die Chrome OS-Proxy-Einstellungen.</translation>
 <translation id="3279092821516760512">Ausgewählte Kontakte können Daten mit Ihnen teilen, wenn Sie in der Nähe sind. Die Übertragung beginnt erst, nachdem Sie die Einladung angenommen haben.</translation>
@@ -2406,7 +2396,6 @@ Servernachricht: <ph name="SERVER_MSG" /></translation>
 <translation id="3388094447051599208">Ausgabefach fast voll</translation>
 <translation id="3388788256054548012">Diese Datei ist verschlüsselt. Bitten Sie den Inhaber, sie zu entschlüsseln.</translation>
 <translation id="3390013585654699824">App-Details</translation>
-<translation id="3390741581549395454">Linux-Apps und -Dateien wurden gesichert. Das Upgrade beginnt demnächst.</translation>
 <translation id="3391512812407811893">Privacy Sandbox-Probenutzung</translation>
 <translation id="3393554941209044235">Chrome-Dokumentenanalyse</translation>
 <translation id="3394850431319394743">Darf Kennungen verwenden, um geschützte Inhalte wiederzugeben</translation>
@@ -2546,7 +2535,6 @@ Servernachricht: <ph name="SERVER_MSG" /></translation>
 <translation id="3511307672085573050">Adr&amp;esse des Links kopieren</translation>
 <translation id="351152300840026870">Schriftart mit fester Breite</translation>
 <translation id="3511528412952710609">Kurz</translation>
-<translation id="3514011352559420398">Wiederherstellung fehlgeschlagen</translation>
 <translation id="3514335087372914653">Spielsteuerung</translation>
 <translation id="3514373592552233661">Bevorzugte Netzwerke werden gegenüber anderen bekannten Netzwerken vorgezogen, wenn mehr als eines verfügbar ist</translation>
 <translation id="3515983984924808886">Tippen Sie noch einmal auf Ihren Sicherheitsschlüssel, um das Zurücksetzen zu bestätigen. Damit werden alle auf dem Sicherheitsschlüssel gespeicherten Informationen und die zugehörige PIN gelöscht.</translation>
@@ -2637,7 +2625,6 @@ Servernachricht: <ph name="SERVER_MSG" /></translation>
 <translation id="3612673635130633812">Heruntergeladen von &lt;a href="<ph name="URL" />"&gt;<ph name="EXTENSION" />&lt;/a&gt;</translation>
 <translation id="3613134908380545408">"<ph name="FOLDER_NAME" />" anzeigen</translation>
 <translation id="3613422051106148727">In &amp;neuem Tab öffnen</translation>
-<translation id="3614974189435417452">Sicherung abgeschlossen</translation>
 <translation id="3615073365085224194">Berühren Sie den Fingerabdrucksensor mit dem Finger</translation>
 <translation id="3615579745882581859"><ph name="FILE_NAME" /> wird gegenwärtig gescannt</translation>
 <translation id="3616741288025931835">&amp;Browserdaten löschen...</translation>
@@ -3026,7 +3013,6 @@ Möchten Sie <ph name="CONTROL_PANEL_APPLET_NAME" /> starten?</translation>
 <translation id="3954354850384043518">In Arbeit</translation>
 <translation id="3954469006674843813"><ph name="WIDTH" /> x <ph name="HEIGHT" /> (<ph name="REFRESH_RATE" /> Hertz)</translation>
 <translation id="3954953195017194676">Es sind keine kürzlich erfassten WebRTC-Ereignisprotokolle vorhanden.</translation>
-<translation id="3955163004258753966">Fehler beim Starten des Upgrades</translation>
 <translation id="3955193568934677022">Wiedergabe geschützter Inhalte auf Websites zulassen (empfohlen)</translation>
 <translation id="3955321697524543127">Websites dürfen keine Verbindung mit USB-Geräten herstellen</translation>
 <translation id="3955896417885489542">Nach Einrichtung Google Play-Optionen überprüfen</translation>
@@ -3046,6 +3032,7 @@ Möchten Sie <ph name="CONTROL_PANEL_APPLET_NAME" /> starten?</translation>
 <translation id="3971764089670057203">Fingerabdrücke für diesen Sicherheitsschlüssel</translation>
 <translation id="3973005893595042880">Nutzer nicht zulässig</translation>
 <translation id="3973660817924297510">Passwörter werden geprüft (<ph name="CHECKED_PASSWORDS" /> von <ph name="TOTAL_PASSWORDS" />)…</translation>
+<translation id="3974514184580396500">Mit „Weiter“ bewegen Sie den Fokus auf dem Bildschirm nach vorn</translation>
 <translation id="3975201861340929143">Erklärung</translation>
 <translation id="3975565978598857337">Fehler bei Verbindungsaufbau mit Server für diesen Bereich</translation>
 <translation id="3976108569178263973">Es sind keine Drucker verfügbar.</translation>
@@ -3542,7 +3529,6 @@ Möchten Sie <ph name="CONTROL_PANEL_APPLET_NAME" /> starten?</translation>
 <translation id="4508765956121923607">Q&amp;uelle anzeigen</translation>
 <translation id="4510195992002502722">Feedback wurde nicht gesendet. Neuer Versuch…</translation>
 <translation id="4510479820467554003">Liste der Elternkonten</translation>
-<translation id="4510614391273086606">Linux-Dateien und ‑Apps werden auf den Stand des letzten Back-ups zurückgesetzt.</translation>
 <translation id="451102079304155829">Einkaufswagen</translation>
 <translation id="4513872120116766993">Wortvorschläge</translation>
 <translation id="4513946894732546136">Feedback</translation>
@@ -3554,7 +3540,6 @@ Möchten Sie <ph name="CONTROL_PANEL_APPLET_NAME" /> starten?</translation>
 <translation id="4519935350946509010">Verbindungsfehler.</translation>
 <translation id="4520385623207007473">Verwendete Cookies</translation>
 <translation id="452039078290142656">unbekannte Geräte von <ph name="VENDOR_NAME" /></translation>
-<translation id="4522351342209941760">Überprüfen Sie weitere Berechtigungen auf Ihrem Smartphone.</translation>
 <translation id="4522570452068850558">Details</translation>
 <translation id="4522600456902129422">Weiterhin zulassen, dass diese Website die Zwischenablage abruft</translation>
 <translation id="4522890784888918985">Untergeordnete Konten werden nicht unterstützt</translation>
@@ -3615,7 +3600,6 @@ Möchten Sie <ph name="CONTROL_PANEL_APPLET_NAME" /> starten?</translation>
 <translation id="4570201855944865395">Grund für die Anfrage dieser Erweiterung:</translation>
 <translation id="4572659312570518089">Beim Herstellen der Verbindung zu "<ph name="DEVICE_NAME" />" wurde die Authentifizierung abgebrochen.</translation>
 <translation id="4572779512957829735">Geben Sie die PIN für Ihren Sicherheitsschlüssel ein</translation>
-<translation id="4573515936045019911">Eine Netzwerkverbindung ist erforderlich, um das Linux-Upgrade durchzuführen. Stellen Sie eine Verbindung zum Internet her und versuchen Sie es noch einmal.</translation>
 <translation id="457386861538956877">Mehr...</translation>
 <translation id="4574741712540401491">•  <ph name="LIST_ITEM_TEXT" /></translation>
 <translation id="4576541033847873020">Bluetooth-Gerät koppeln</translation>
@@ -3670,7 +3654,6 @@ Möchten Sie <ph name="CONTROL_PANEL_APPLET_NAME" /> starten?</translation>
 <translation id="4634771451598206121">Erneut anmelden...</translation>
 <translation id="4635072447747973225">Crostini deinstallieren</translation>
 <translation id="4635398712689569051"><ph name="PAGE_NAME" /> ist für Gastnutzer nicht verfügbar.</translation>
-<translation id="4635444580397524003">Die Linux-Sicherung wurde erfolgreich wiederhergestellt.</translation>
 <translation id="4636682061478263818">Drive-Dateien</translation>
 <translation id="4636930964841734540">Info</translation>
 <translation id="4637083375689622795">Weitere Aktionen, <ph name="EMAIL" /></translation>
@@ -3882,6 +3865,7 @@ Möchten Sie <ph name="CONTROL_PANEL_APPLET_NAME" /> starten?</translation>
 <translation id="4868281708609571334">Google Assistant beibringen, die Stimme von <ph name="SUPERVISED_USER_NAME" /> zu erkennen</translation>
 <translation id="4868284252360267853">Dieses Dialogfeld ist aktuell nicht aktiv. Drücken Sie die Befehlstaste-Umschalt-Optionstaste-A, um dieses Dialogfeld hervorzuheben.</translation>
 <translation id="48704129375571883">Zusätzliche Funktionen hinzufügen</translation>
+<translation id="4870724079713069532">Sie können unterstützte Dateien mit dieser App aus dem Datei-Explorer oder anderen Apps öffnen und bearbeiten. Wenn Sie festlegen möchten, welche Dateien standardmäßig in dieser App geöffnet werden sollen, gehen Sie zu den <ph name="BEGIN_LINK" />Windows-Einstellungen<ph name="END_LINK" />.</translation>
 <translation id="4870758487381879312">Zum Abrufen von Konfigurationsinformationen das vom Administrator vergebene Passwort eingeben</translation>
 <translation id="4870903493621965035">Keine gekoppelten Geräte</translation>
 <translation id="4870995365819149457">Einige unterstützte Links werden weiterhin in <ph name="APP_NAME" />, <ph name="APP_NAME_2" />, <ph name="APP_NAME_3" /> und 1 anderen App geöffnet.</translation>
@@ -4099,6 +4083,7 @@ Möchten Sie <ph name="CONTROL_PANEL_APPLET_NAME" /> starten?</translation>
 <translation id="5088534251099454936">PKCS #1 SHA-512 mit RSA-Verschlüsselung</translation>
 <translation id="5090637338841444533">Dürfen meine Kameraposition nicht erfassen</translation>
 <translation id="5093569275467863761">Inkognito-Subframe im Back-Forward-Cache: <ph name="BACK_FORWARD_CACHE_INCOGNITO_PAGE_URL" /></translation>
+<translation id="5094176498302660097">Sie können unterstützte Dateien mit dieser App aus „Dateien“ oder anderen Apps öffnen und bearbeiten. Wenn Sie festlegen möchten, welche Dateien standardmäßig in dieser App geöffnet werden sollen, <ph name="BEGIN_LINK" />lesen Sie diesen Artikel<ph name="END_LINK" />. Darin erfahren Sie, wie Sie Standard-Apps auf Ihrem Gerät einrichten.</translation>
 <translation id="5094721898978802975">Mit zusammenarbeitenden nativen Anwendungen kommunizieren</translation>
 <translation id="5097002363526479830">Verbinden mit dem Netzwerk "<ph name="NAME" />" fehlgeschlagen: <ph name="DETAILS" /></translation>
 <translation id="5097306410549350357">Weitere Informationen zur Standortnutzung</translation>
@@ -4610,7 +4595,6 @@ Sie können dieser Aktion mehrere Schalter zuweisen.</translation>
 <translation id="5620568081365989559">DevTools erfordert Vollzugriff auf <ph name="FOLDER_PATH" />. Achten Sie darauf, dass dadurch keine vertraulichen Informationen offengelegt werden.</translation>
 <translation id="5620612546311710611">Nutzungsstatistiken</translation>
 <translation id="5620655347161642930">Passwörter exportieren…</translation>
-<translation id="5621137386706841383">Dies kann bis zu 30 Minuten dauern.</translation>
 <translation id="5623282979409330487">Diese Website greift auf Ihre Bewegungssensoren zu.</translation>
 <translation id="5623842676595125836">Protokoll</translation>
 <translation id="5624120631404540903">Passwörter verwalten</translation>
@@ -4687,7 +4671,6 @@ Sie können dieser Aktion mehrere Schalter zuweisen.</translation>
 <translation id="5701080607174488915">Fehler beim Abrufen der Richtlinie vom Server.</translation>
 <translation id="5701212929149679556">Mobilfunk-Roaming</translation>
 <translation id="5701381305118179107">Zentrieren</translation>
-<translation id="5701441174893770082">Wenn Sie Linux aktualisieren, kann dies den Akku stark beanspruchen. Bitte verbinden Sie Ihr Gerät mit einem Ladegerät und versuchen Sie es noch einmal.</translation>
 <translation id="5701786609538182967">Für andere Apps ist festgelegt, dass bei ihnen die gleichen Links wie bei <ph name="APP_NAME" /> geöffnet werden. Dadurch wird deaktiviert, dass bei <ph name="APP_NAME_2" />, <ph name="APP_NAME_3" />, <ph name="APP_NAME_4" /> und 1 weiteren App unterstützte Links geöffnet werden.</translation>
 <translation id="5702749864074810610">Vorschlag abgelehnt</translation>
 <translation id="5704875434923668958">Synchronisierung mit</translation>
@@ -4748,6 +4731,7 @@ Sie können dieser Aktion mehrere Schalter zuweisen.</translation>
 <translation id="577322787686508614">Der Lesevorgang ist auf folgendem Gerät nicht erlaubt: "<ph name="DEVICE_NAME" />".</translation>
 <translation id="5774295353725270860">App "Dateien" öffnen</translation>
 <translation id="577624874850706961">Cookies suchen</translation>
+<translation id="5776571780337000608">Sie können unterstützte Dateien mit dieser App aus Ihrem Dateibrowser oder anderen Apps öffnen und bearbeiten. Wenn Sie festlegen möchten, welche Dateien standardmäßig in dieser App geöffnet werden sollen, <ph name="BEGIN_LINK" />lesen Sie diesen Artikel<ph name="END_LINK" />. Darin erfahren Sie, wie Sie Standard-Apps auf Ihrem Gerät einrichten.</translation>
 <translation id="5777468213129569553">Chrome öffnen</translation>
 <translation id="5778491106820461378">Sie können angemeldete Google-Konten in den <ph name="LINK_BEGIN" />Einstellungen<ph name="LINK_END" /> verwalten. Berechtigungen, die Sie Websites und Apps gewährt haben, gelten möglicherweise für alle Konten. Wenn Sie nicht möchten, dass Websites oder Apps Zugriff auf Ihre Kontoinformationen haben, können Sie sich auf Ihrem Gerät (<ph name="DEVICE_TYPE" />) als Gast anmelden.</translation>
 <translation id="5780011244986845107">Der ausgewählte Ordner enthält vertrauliche Dateien. Möchten Sie <ph name="APP_NAME" /> wirklich dauerhaft Lesezugriff auf diesen Ordner gewähren?</translation>
@@ -4894,7 +4878,6 @@ Sie können dieser Aktion mehrere Schalter zuweisen.</translation>
 <translation id="592740088639760830">Diesen Container anhalten</translation>
 <translation id="592880897588170157">PDF-Dateien herunterladen, anstatt sie automatisch in Chrome zu öffnen</translation>
 <translation id="592919310198008711">Wenn ich die Erweiterung anklicke</translation>
-<translation id="5932124097031739492">Linux wurde aktualisiert.</translation>
 <translation id="5932209916647644605"><ph name="MANAGER" /> erfordert, dass das Gerät (<ph name="DEVICE_TYPE" />) sofort aktualisiert wird.</translation>
 <translation id="5932224571077948991">Website zeigt aufdringliche oder irreführende Werbung an</translation>
 <translation id="59324397759951282">USB-Gerät von <ph name="MANUFACTURER_NAME" /></translation>
@@ -5459,7 +5442,6 @@ Sie können dieser Aktion mehrere Schalter zuweisen.</translation>
 <translation id="6498249116389603658">&amp;Alle Ihre Sprachen</translation>
 <translation id="6499143127267478107">Host in Proxy-Skript wird aufgelöst...</translation>
 <translation id="6499764981457476645">Es wurden keine Geräte in der Nähe gefunden</translation>
-<translation id="65017764184991091">Das Sichern von Linux-Apps und -Dateien ist fehlgeschlagen. Dies kann passieren, wenn auf Ihrem Gerät nicht ausreichend freier Speicherplatz verfügbar ist. Sie können versuchen, Speicherplatz auf Ihrem Gerät freizugeben, oder einen anderen Speicherort für die Sicherung auswählen.</translation>
 <translation id="6501957628055559556">Alle Container</translation>
 <translation id="650266656685499220">Gehen Sie zu Google Fotos, um Alben zu erstellen</translation>
 <translation id="6503077044568424649">Meistbesucht</translation>
@@ -5666,7 +5648,6 @@ Sie können dieser Aktion mehrere Schalter zuweisen.</translation>
 <translation id="6709133671862442373">Nachrichten</translation>
 <translation id="6709357832553498500">Über <ph name="EXTENSIONNAME" /> verbinden</translation>
 <translation id="6710213216561001401">Zurück</translation>
-<translation id="6710973041022512889">Das Upgrade ist abgeschlossen. Detaillierte Informationen zum Upgrade finden Sie in den Protokollen, die in <ph name="LOG_FILE" /> gespeichert wurden.</translation>
 <translation id="6711146141291425900"><ph name="WEB_DRIVE" />-Konto für Downloads verknüpfen</translation>
 <translation id="6712943853047024245">Sie haben bereits ein Passwort zu diesem Nutzernamen für <ph name="WEBSITE" /> gespeichert</translation>
 <translation id="6713233729292711163">Arbeitsprofil hinzufügen</translation>
@@ -5885,7 +5866,6 @@ Sie können dieser Aktion mehrere Schalter zuweisen.</translation>
 <translation id="6929760895658557216">Ok Google</translation>
 <translation id="6930036377490597025">Externer Sicherheitsschlüssel oder integrierter Sensor</translation>
 <translation id="6930161297841867798">{NUM_EXTENSIONS,plural, =1{Eine Erweiterung wurde abgelehnt}other{# Erweiterungen wurden abgelehnt}}</translation>
-<translation id="6930321203306643451">Upgrade abgeschlossen</translation>
 <translation id="6931690462168617033">Klickempfindlichkeit</translation>
 <translation id="6935286146439255109">Papierfach fehlt</translation>
 <translation id="693807610556624488">Der Schreibvorgang auf das folgende Gerät überschreitet die maximal zulässige Attributlänge: "<ph name="DEVICE_NAME" />".</translation>
@@ -6759,7 +6739,6 @@ Drücken Sie zum Entfernen der Zuweisung einen bereits zugewiesenen Schalter ode
 <translation id="7814458197256864873">&amp;Kopieren</translation>
 <translation id="7815680994978050279">Gefährlicher Download blockiert</translation>
 <translation id="7817361223956157679">Die Bildschirmtastatur funktioniert noch nicht in Linux-Apps</translation>
-<translation id="7817671927108102061">Einrichtung auf dem Smartphone abschließen</translation>
 <translation id="7818135753970109980">Neues Design hinzugefügt (<ph name="EXTENSION_NAME" />)</translation>
 <translation id="7819992334107904369">Chrome-Synchronisierung</translation>
 <translation id="7820561748632634942">Weitere Schalter zuweisen?</translation>
@@ -6890,6 +6869,7 @@ Drücken Sie zum Entfernen der Zuweisung einen bereits zugewiesenen Schalter ode
 <translation id="7946586320617670168">Quelle muss sicher sein</translation>
 <translation id="794676567536738329">Berechtigungen bestätigen</translation>
 <translation id="7947962633355574091">Videoadresse k&amp;opieren</translation>
+<translation id="7947964080535614577">Websites zeigen normalerweise Werbung an, um Inhalte oder Dienste kostenlos anbieten zu können. Allerdings gibt es auch Websites, auf denen bekanntermaßen aufdringliche oder irreführende Werbung erscheint.</translation>
 <translation id="7948407723851303488">Alle Seiten von <ph name="DOMAIN_NAME" /></translation>
 <translation id="7951265006188088697">Google Pay-Zahlungsmethoden lassen sich in Ihrem <ph name="BEGIN_LINK" />Google-Konto<ph name="END_LINK" /> hinzufügen oder verwalten</translation>
 <translation id="7952708427581814389">Websites dürfen nachfragen, wenn sie auf Text und Bilder in meiner Zwischenablage zugreifen möchten</translation>
@@ -7276,6 +7256,7 @@ Speichern Sie Ihre Schlüsseldatei an einem sicheren Ort. Sie benötigen die Dat
 <translation id="8326478304147373412">PKCS #7, Zertifikatkette</translation>
 <translation id="8327676037044516220">Berechtigungen und Inhaltseinstellungen</translation>
 <translation id="8330689128072902965">Kontakte in der Nähe können Inhalte mit Ihnen teilen. Zum Ändern klicken.</translation>
+<translation id="8331323939220256760">{FILE_TYPE_COUNT,plural, =1{Unterstützter Dateityp: <ph name="FILE_TYPE1" />}=2{Unterstützte Dateitypen: <ph name="FILE_TYPE1" />, <ph name="FILE_TYPE2" />}=3{Unterstützte Dateitypen: <ph name="FILE_TYPE1" />, <ph name="FILE_TYPE2" />, <ph name="FILE_TYPE3" />}=4{Unterstützte Dateitypen: <ph name="FILE_TYPE1" />, <ph name="FILE_TYPE2" />, <ph name="FILE_TYPE3" />, <ph name="FILE_TYPE4" />}other{Unterstützte Dateitypen: <ph name="FILE_TYPE1" />, <ph name="FILE_TYPE2" />, <ph name="FILE_TYPE3" />, <ph name="FILE_TYPE4" /> (<ph name="LINK" />und {OVERFLOW_COUNT} weitere<ph name="END_LINK" />)}}</translation>
 <translation id="833256022891467078">Freigegebene Crostini-Ordner</translation>
 <translation id="8335587457941836791">Von Ablage loslösen</translation>
 <translation id="8336407002559723354">Updates bis <ph name="MONTH_AND_YEAR" /></translation>
@@ -7448,7 +7429,6 @@ Unter <ph name="BEGIN_LINK" />photos.google.com/settings<ph name="END_LINK" /> k
 <translation id="8523849605371521713">Per Richtlinie hinzugefügt</translation>
 <translation id="8524783101666974011">Karten in Ihrem Google-Konto speichern</translation>
 <translation id="8525306231823319788">Vollbildmodus</translation>
-<translation id="8526666462501866815">Linux-Upgrade wird abgebrochen</translation>
 <translation id="8526813720153458066">SSH</translation>
 <translation id="8528074251912154910">Sprachen hinzufügen</translation>
 <translation id="8528962588711550376">Anmeldung läuft...</translation>
@@ -7763,7 +7743,6 @@ Unter <ph name="BEGIN_LINK" />photos.google.com/settings<ph name="END_LINK" /> k
 <translation id="8838601485495657486">Opak</translation>
 <translation id="8838770651474809439">Hamburger</translation>
 <translation id="8838778928843281408">Smartphones verwalten</translation>
-<translation id="8840427996758894516">Ihr Smartphone muss sich in der Nähe befinden, entsperrt sein und Bluetooth und WLAN müssen aktiviert sein.</translation>
 <translation id="8841843049738266382">Nutzer auf der Zulassungsliste ansehen und ändern</translation>
 <translation id="8842594465773264717">Diesen Fingerabdruck löschen</translation>
 <translation id="8845001906332463065">Hilfe aufrufen</translation>

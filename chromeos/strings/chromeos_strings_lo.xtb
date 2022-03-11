@@ -54,6 +54,7 @@
 <translation id="1499900233129743732"><ph name="MANAGER" /> ຈັດການຜູ້ໃຊ້ນີ້ ແລະ ອາດຈະຈັດການການຕັ້ງຄ່າ ແລະ ຕິດຕາມເບິ່ງການເຄື່ອນໄຫວຂອງຜູ້ໃຊ້ຈາກທາງໄກໄດ້.</translation>
 <translation id="150962533380566081">PUK ທີ່ຖືກຕ້ອງ.</translation>
 <translation id="1510238584712386396">ຕົວ​ເປີດ​ໃຊ້</translation>
+<translation id="152892567002884378">ເປີດສຽງຂຶ້ນ</translation>
 <translation id="155865706765934889">ແຜ່ນສໍາຜັດ</translation>
 <translation id="1565038567006703504">ບໍ່ສາມາດອັບເດດ <ph name="DEVICE_NAME" /> ໄດ້</translation>
 <translation id="1567064801249837505">ອະລະບ້ຳ</translation>
@@ -88,6 +89,7 @@
 <translation id="1908234395526491708">ຂໍ UDP ບໍ່ສຳເລັດ</translation>
 <translation id="1930797645656624981">ການບໍລິການວິທີການປ້ອນຂໍ້ມູນຂອງ Chrome OS</translation>
 <translation id="1947737735496445907">ພິມແລ້ວ</translation>
+<translation id="1951012854035635156">ຜູ້ຊ່ວຍ</translation>
 <translation id="1979103255016296513">ກາຍກຳນົດປ່ຽນລະຫັດຜ່ານແລ້ວ</translation>
 <translation id="1999615961760456652">ຊ່ອງທາງເຂົ້າຮັກສາໄວ້</translation>
 <translation id="2006864819935886708">ການເຊື່ອມຕໍ່</translation>
@@ -152,6 +154,7 @@
 <translation id="2859243502336719778">ອັບເດດວິກິດ</translation>
 <translation id="2860473693272905224">ວາງໜ້າອື່ນໃສ່ເຄື່ອງສະແກນ</translation>
 <translation id="2872961005593481000">ມອດ</translation>
+<translation id="2874939134665556319">ເພງກ່ອນນີ້</translation>
 <translation id="2878387241690264070">ຄາຍປະຈຸ <ph name="RATE" /> ໃນ <ph name="NUM_SECONDS" /> ວິນາທີ.</translation>
 <translation id="291142119251986300">ອົງປະກອບທີ່ບໍ່ຜ່ານເງື່ອນໄຂ</translation>
 <translation id="2926057806159140518">ລະບຸຊື່ຜູ້ໃຊ້ ແລະ ລະຫັດຜ່ານຂອງທ່ານ ຫຼື ສະແກນລະຫັດ QR ທ່ານ</translation>
@@ -233,6 +236,7 @@
 <translation id="4003384961948020559">ບໍ່ສຳເລັດ, ເອົ້າພຸດເຕັມ</translation>
 <translation id="4034824040120875894">ເຄື່ອງພິມ</translation>
 <translation id="4044093238444069296">ບໍ່ສາມາດຕິດຕໍ່ຫາເກດເວໄດ້</translation>
+<translation id="4046123991198612571">ເພງຕໍ່ໄປ</translation>
 <translation id="404928562651467259">ຄໍາເຕືອນ</translation>
 <translation id="409427325554347132">ບັນທຶກລາຍລະອຽດຜົນທົດສອບ</translation>
 <translation id="4110686435123617899">ເລືອກອະລະບ້ຳ <ph name="TITLE" /> <ph name="DESC" /></translation>
@@ -250,9 +254,11 @@
 <translation id="4238516577297848345">ບໍ່ມີວຽກການພິມທີ່ພວມດຳເນີນຢູ່</translation>
 <translation id="4239069858505860023">GPRS</translation>
 <translation id="4244962993387259361">ທ່ານຕ້ອງມີພື້ນທີ່ຫວ່າງຢ່າງໜ້ອຍ 500 MB ເພື່ອເປີດໃຊ້ການທົດສອບໜ່ວຍຄວາມຈຳ. ເພື່ອສ້າງພື້ນທີ່ຫວ່າງ, ໃຫ້ເຂົ້າໄປການຕັ້ງຄ່າ &gt; ການຈັດການບ່ອນຈັດເກັບຂໍ້ມູນ.</translation>
+<translation id="4250229828105606438">ຮູບຖ່າຍໜ້າຈໍ</translation>
 <translation id="4258281355379922695">ການຕອບສະໜອງ HTTP</translation>
 <translation id="4271957103967917607">ເບິ່ງແບບເຕັມຈໍ</translation>
 <translation id="4275799948641988986">ຫຼັງຈາກການສ້ອມແປງ, ໃຜຈະເປັນຄົນໃຊ້ອຸປະກອນ?</translation>
+<translation id="4289540628985791613">ພາບ​ລວມ</translation>
 <translation id="4297501883039923494">ຢຸດພິມ, ບໍ່ຮູ້ຈັກຂໍ້ຜິດພາດ</translation>
 <translation id="4300073214558989"><ph name="IMAGE_COUNT" /> ຮູບ</translation>
 <translation id="4378373042927530923">ບໍ່ໄດ້ເອີ້ນໃຊ້</translation>
@@ -335,6 +341,7 @@
 <translation id="5051044138948155788">ນີ້ແມ່ນໜ້າດຽວເທົ່ານັ້ນ. ນີ້ຈະພາທ່ານໄປໜ້າຈໍເລີ່ມຕົ້ນການສະແກນ.</translation>
 <translation id="5088172560898466307">ຊື່ໂຮ​ສເຊີບເວີ</translation>
 <translation id="5089810972385038852">ລັດ</translation>
+<translation id="5090362543162270857">IPsec (IKEv2)</translation>
 <translation id="5142961317498132443">ການຮັບຮອງຄວາມຖືກຕ້ອງ</translation>
 <translation id="5154917547274118687">ຄວາມ​ຈໍາ</translation>
 <translation id="5160857336552977725">ລົງຊື່ເຂົ້າ <ph name="DEVICE_TYPE" /> ຂອງ​ທ່ານ</translation>
@@ -380,6 +387,7 @@
 <translation id="554517032089923082">GTC</translation>
 <translation id="5578477003638479617">UMTS</translation>
 <translation id="5578519639599103840">ສະແກນຄືນໃໝ່</translation>
+<translation id="5583640892426849032">ລຶບຄືນຫຼັງ</translation>
 <translation id="5620281292257375798">ສະ​ເພາະ​ພາຍ​ໃນ​ເທົ່າ​ນັ້ນ</translation>
 <translation id="5649768706273821470">​ຟັງ</translation>
 <translation id="5669267381087807207">ກຳລັງເປີດນຳໃຊ້</translation>
@@ -389,6 +397,7 @@
 <translation id="5707900041990977207"><ph name="CURRENT_PAGE" /> ຈາກທັງໝົດ <ph name="TOTAL_PAGES" /></translation>
 <translation id="5733298426544876109">ອັບເດດ <ph name="DEVICE_NAME" /></translation>
 <translation id="5760715441271661976">ສະຖານະຜອດໂທລ</translation>
+<translation id="57838592816432529">ປິດສຽງ</translation>
 <translation id="5784136236926853061">ການຕອບສະໜອງ HTTP ສູງ</translation>
 <translation id="5832805196449965646">ເພີ່ມບຸກຄົນ</translation>
 <translation id="583281660410589416">ບໍ່​ຮູ້ຈັກ</translation>
@@ -396,6 +405,7 @@
 <translation id="5849570051105887917">ລະຫັດຜູ້ໃຫ້ບໍລິການ Home</translation>
 <translation id="5860033963881614850">ປິດ</translation>
 <translation id="5866840822086176774">ແຮງທີ່ສຸດ</translation>
+<translation id="588258955323874662">ເຕັມໜ້າຈໍ</translation>
 <translation id="5895138241574237353">ເລີ່ມຕົ້ນໃໝ່</translation>
 <translation id="5916084858004523819">ຫ້າມໃຊ້</translation>
 <translation id="5916664084637901428">ເປີດ</translation>
@@ -436,6 +446,7 @@
 <translation id="6319207335391420837">ອັບເດດເຟີມແວຢູ່ <ph name="DEVICE_NAME" /></translation>
 <translation id="6325525973963619867">ບໍ່ສຳເລັດ</translation>
 <translation id="6340526405444716530">ການປັບແຕ່ງໃຫ້ເປັນແບບສ່ວນຕົວ</translation>
+<translation id="6348738456043757611">ຊື່ຜູ້ໃຊ້ ແລະ ລະຫັດຜ່ານ</translation>
 <translation id="636850387210749493">ການລົງທະບຽນວິສາຫະກິດ</translation>
 <translation id="6379086450106841622">ໜ້າຈໍສຳຜັດ</translation>
 <translation id="6388847657025262518">ຕົວປ້ອນເອກະສານຂອງເຄື່ອງສະແກນຕິດຂັດ. ກະລຸນາກວດສອບຕົວປ້ອນເອກະສານແລ້ວລອງໃໝ່.</translation>
@@ -465,12 +476,15 @@
 <translation id="6643016212128521049">ລຶບ</translation>
 <translation id="6647510110698214773">ອະກໍຣິທຶມການເຂົ້າລະຫັດ</translation>
 <translation id="6657585470893396449">ລະຫັດຜ່ານ</translation>
+<translation id="6659594942844771486">ແຖບ</translation>
 <translation id="6692996468359469499">ຮັບຂໍ້ມູນທີ່ກ່ຽວຂ້ອງກັບການເລືອກຂອງທ່ານ</translation>
 <translation id="6704062477274546131">ຄວາມລະອຽດ DNS</translation>
+<translation id="6723839937902243910">ໄຟ</translation>
 <translation id="6747215703636344499">ຢຸດພິມ, ຖາດເຈ້ຍອອກເຕັມແລ້ວ</translation>
 <translation id="6749473226660745022">ຮູບພາບ</translation>
 <translation id="6753452347192452143">ອຸປະກອນແມ່ນຄອມພິວເຕີ.</translation>
 <translation id="6756731097889387912">ບໍ່ສາມາດຍົກເລີກການສະແກນໄດ້</translation>
+<translation id="6760706756348334449">ຜ່ອນສຽງລົງ</translation>
 <translation id="6766275201586212568">ຄວາມລະອຽດ DNS ບໍ່ສຳເລັດ</translation>
 <translation id="6768237774506518020">ອັດຕາຄວາມບໍ່ສຳເລັດຂອງຄວາມລະອຽດ DNS ສູງ</translation>
 <translation id="680983167891198932">ກະແຈ</translation>
@@ -525,6 +539,7 @@
 <translation id="7427315641433634153">MSCHAP</translation>
 <translation id="7435977162516949853">{NUMBER_OF_PAGES,plural, =1{ສຳເລັດການສະແກນແລ້ວ. ສະແກນ 1 ໜ້າແລ້ວ}other{ສຳເລັດການສະແກນແລ້ວ. ສະແກນ {NUMBER_OF_PAGES} ໜ້າແລ້ວ}}</translation>
 <translation id="7469648432129124067">ກວດພົບໜ້າເວັບ</translation>
+<translation id="7481312909269577407">ສົ່ງຕໍ່</translation>
 <translation id="7487067081878637334">​ເທັກ​ໂນ​ໂລ​ຢີ</translation>
 <translation id="7490813197707563893">ທີ່ຢູ່ MAC</translation>
 <translation id="7497215489070763236">ໃບຢັ້ງຢືນ CA ຂອງເຊີບເວີ</translation>
@@ -578,6 +593,7 @@
 <translation id="8132480444149501833">ຮ້ອງຂໍຕົວນັບທຣາບຟິກ</translation>
 <translation id="8138405288920084977">LTEAdvanced</translation>
 <translation id="8143951647992294073">ເລືອກ <ph name="TOPIC_SOURCE" /> <ph name="TOPIC_SOURCE_DESC" /></translation>
+<translation id="8179976553408161302">ປ້ອນເຂົ້າ</translation>
 <translation id="8206859287963243715">ເຊວລູລາ</translation>
 <translation id="8208861521865154048">ສິດທິປະໂຫຍດຕ່າງໆ</translation>
 <translation id="8217675307824400706">ເລີ່ມການເຊື່ອມຕໍ່</translation>

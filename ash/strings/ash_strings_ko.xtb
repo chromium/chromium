@@ -91,9 +91,9 @@
 <translation id="1414271762428216854"><ph name="APP_NAME" />, 설치된 앱</translation>
 <translation id="1419738280318246476">알림 작업을 실행하려면 기기의 잠금을 해제하세요.</translation>
 <translation id="1420408895951708260">야간 조명을 전환합니다. <ph name="STATE_TEXT" /></translation>
+<translation id="1420732223884894666"><ph name="DEVICE_TYPE" />에서 휴대전화의 최근 사진 및 미디어를 봅니다.</translation>
 <translation id="1426410128494586442">예</translation>
 <translation id="1438357537418863713">앱 스트리밍이 설정되었습니다. 앱 스트리밍을 시작하면 최근에 실행한 앱이 여기 표시됩니다.</translation>
-<translation id="144853431011121127"><ph name="DEVICE_TYPE" />에서 휴대전화 알림을 확인합니다.</translation>
 <translation id="1455242230282523554">언어 설정 표시</translation>
 <translation id="1460620680449458626">음소거되어 있습니다.</translation>
 <translation id="1467432559032391204">왼쪽</translation>
@@ -317,6 +317,7 @@
 <translation id="301282384882049174">관리자가 공유함</translation>
 <translation id="3017687597151988916">선택 영역이 창으로 설정됨</translation>
 <translation id="3033545621352269033">사용</translation>
+<translation id="3033912566804961911"><ph name="DESK_NAME" /> 합치기</translation>
 <translation id="3036649622769666520">파일 열기</translation>
 <translation id="3038571455154067151">로그인하려면 Family Link 부모 액세스 코드를 입력하세요</translation>
 <translation id="3039939407102840004">스타일러스 배터리 잔량이 <ph name="PERCENTAGE" />%입니다.</translation>
@@ -342,6 +343,7 @@
 <translation id="3153444934357957346">멀티 로그인에는 계정을 <ph name="MULTI_PROFILE_USER_LIMIT" />개까지만 사용할 수 있습니다.</translation>
 <translation id="3154351730702813399">기기 관리자가 탐색 활동을 모니터링할 수 있습니다.</translation>
 <translation id="316086887565479535">템플릿에 지원되지 않는 앱이 있습니다</translation>
+<translation id="3161500364292033097">데스크 및 창 닫기</translation>
 <translation id="316356270129335934"><ph name="MANAGER" />에서 <ph name="DEVICE_TYPE" /> 기기를 롤백 중입니다. 기기가 재설정되고 모든 데이터가 삭제됩니다.</translation>
 <translation id="3181441307743005334">다시 시작하는 데 시간이 다소 걸릴 수 있습니다</translation>
 <translation id="3202010236269062730">{NUM_DEVICES,plural, =1{기기 1개에 연결됨}other{기기 #개에 연결됨}}</translation>
@@ -824,6 +826,7 @@
 <translation id="6165508094623778733">자세히 알아보기</translation>
 <translation id="6166852626429024716">기기, 앱, 설정, 웹에서 검색...</translation>
 <translation id="6179832488876878285">여기에 중요한 파일을 고정할 수 있습니다. 시작하려면 파일 앱을 여세요.</translation>
+<translation id="619279033188484792">휴대전화의 최근 사진, 미디어, 알림을 <ph name="DEVICE_TYPE" />에서 봅니다.</translation>
 <translation id="6220928844947387476">이제 내 모습과 화면을 동시에 녹화할 수 있습니다.</translation>
 <translation id="622484624075952240">아래</translation>
 <translation id="6231419273573514727">주변기기 성능이 제한될 수 있습니다</translation>
@@ -936,6 +939,7 @@
 <translation id="6921188888306725546">단축키 개선됨</translation>
 <translation id="6931576957638141829">저장 위치</translation>
 <translation id="6945221475159498467">선택</translation>
+<translation id="6960565108681981554">활성화되지 않았습니다. 이동통신사에 문의하세요.</translation>
 <translation id="6961121602502368900">직장 프로필에서는 휴대전화 무음 설정을 사용할 수 없음</translation>
 <translation id="6961840794482373852">Alt + 위쪽 화살표 단축키가 변경되었습니다. Page Up 키를 사용하려면 <ph name="LAUNCHER_KEY_NAME" /> 키 + 위쪽 화살표 키를 누르세요.</translation>
 <translation id="6965382102122355670">확인</translation>
@@ -1050,6 +1054,7 @@
 <translation id="7649070708921625228">도움말</translation>
 <translation id="7654687942625752712">음성 피드백을 사용 중지하려면 두 볼륨 키를 5초 동안 길게 누르세요.</translation>
 <translation id="7658239707568436148">취소</translation>
+<translation id="7659861092419699379">데스크와 창을 닫았습니다.</translation>
 <translation id="7660160718439869192"><ph name="EMAIL" />에 연결된 기기에 <ph name="NAME" /> 기기가 표시됩니다.</translation>
 <translation id="7662283695561029522">설정하려면 탭하세요.</translation>
 <translation id="7670953955701272011">Google Calendar에서 이 날짜를 엽니다.</translation>
@@ -1144,7 +1149,6 @@
 <translation id="8236042855478648955">휴식 시간</translation>
 <translation id="8247060538831475781"><ph name="CONNECTION_STATUS" />, 신호 강도 <ph name="SIGNAL_STRENGTH" />, 휴대전화 배터리 <ph name="BATTERY_STATUS" /></translation>
 <translation id="8247998213073982446"><ph name="APP_NAME" />, 앱</translation>
-<translation id="8248728785693203669">사용 중인 USB-C 케이블이 디스플레이에 제대로 연결되지 않을 수 있습니다.</translation>
 <translation id="8255234195843591763">재설정하여 업데이트</translation>
 <translation id="826107067893790409">Enter 키를 눌러서 <ph name="USER_EMAIL_ADDRESS" /> 잠금 해제</translation>
 <translation id="8261506727792406068">삭제</translation>

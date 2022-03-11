@@ -254,6 +254,7 @@
 <translation id="7087918508125750058"><ph name="ITEM_COUNT" /> élément(s) sélectionné(s). Options disponibles vers le haut de l'écran</translation>
 <translation id="7141896414559753902">Bloquer l'affichage de fenêtres contextuelles et de redirections à partir des sites (recommandé)</translation>
 <translation id="7176368934862295254"><ph name="KILOBYTES" /> ko</translation>
+<translation id="7180611975245234373">Actualiser</translation>
 <translation id="723171743924126238">Sélectionner des images</translation>
 <translation id="7243308994586599757">Options disponibles vers le bas de l’écran</translation>
 <translation id="7250468141469952378"><ph name="ITEM_COUNT" /> élément(s) sélectionné(s)</translation>
@@ -309,6 +310,7 @@
 <translation id="8394832520002899662">Touchez pour revenir au site</translation>
 <translation id="8409345997656833551">Recevez une notification lorsqu'un élément prend en charge l'affichage simplifié</translation>
 <translation id="8425213833346101688">Modifier</translation>
+<translation id="8428213095426709021">Paramètres</translation>
 <translation id="8441146129660941386">Rechercher vers l'arrière</translation>
 <translation id="8444433999583714703">Pour autoriser <ph name="APP_NAME" /> à accéder à votre position, activez aussi la localisation dans les <ph name="BEGIN_LINK" />paramètres d'Android<ph name="END_LINK" />.</translation>
 <translation id="8447861592752582886">Révoquer l'autorisation de l'appareil</translation>

@@ -46,6 +46,7 @@ Sie haben <ph name="DSE_NAME" /> als Suchmaschine festgelegt. Informationen zum 
 <translation id="1282311502488501110">Nicht anmelden</translation>
 <translation id="1283524564873030414">Letzte 24 Stunden</translation>
 <translation id="1285320974508926690">Diese Website nie übersetzen</translation>
+<translation id="1291506870746876680">Die Berechtigungen für <ph name="BEGIN_BOLD" /><ph name="SITE_NAME" /><ph name="END_BOLD" /> werden zurückgesetzt und damit deaktiviert, wenn Sie diese Website verlassen.</translation>
 <translation id="1321993286294231467">Beim Speichern des Bilds ist ein Fehler aufgetreten.</translation>
 <translation id="1322735045095424339">Ihre Organisation verlangt, dass Sie den Inkognitomodus verwenden</translation>
 <translation id="1323735185997015385">Löschen</translation>
@@ -446,6 +447,7 @@ Wenn Sie diese Einstellung ändern möchten, <ph name="BEGIN_LINK" />setzen Sie 
 <translation id="4945756290001680296">Auf Passworteinstellungen zugreifen</translation>
 <translation id="4979397965658815378">Melden Sie sich mit Ihrem Google-Konto an, um Ihre Lesezeichen, Ihre Passwörter, Ihren Verlauf und Ihre anderen Einstellungen auf allen Geräten abrufen zu können</translation>
 <translation id="4986678885919050584">Von diesem Gerät entfernen</translation>
+<translation id="4989542687859782284">Nicht verfügbar</translation>
 <translation id="5005498671520578047">Passwort kopieren</translation>
 <translation id="5017828934289857214">Später erinnern</translation>
 <translation id="5037676449506322593">Alles auswählen</translation>
@@ -713,7 +715,7 @@ Wenn der Inkognitomodus aktiviert ist, können Websites keine Cookies verwenden,
 <translation id="7203585745079012652">Gesprochene Antworten</translation>
 <translation id="7207383424303353046">Neu: Websites werden automatisch in Chrome geöffnet, wenn Sie es als Standard-Browser-App festlegen. <ph name="BEGIN_LINK" />Zu den Einstellungen<ph name="END_LINK" /></translation>
 <translation id="721597782417389033">Ungültiger Kartenalias</translation>
-<translation id="722454870747268814">Neuer Inkognito-Tab</translation>
+<translation id="722454870747268814">Neuer Inkognitotab</translation>
 <translation id="7265758999917665941">Für diese Website niemals</translation>
 <translation id="7272437679830969316">Ihre Identität konnte nicht bestätigt werden. Das Passwort wurde nicht kopiert.</translation>
 <translation id="7291368939935408496">Passwörter werden zum Exportieren vorbereitet…</translation>
@@ -873,6 +875,7 @@ Websites können Cookies verwenden, um Ihre Browseraktivitäten auf anderen Webs
 <translation id="8750037785291841318">Hier werden Ihre Tabs angezeigt</translation>
 <translation id="8756969031206844760">Passwort aktualisieren?</translation>
 <translation id="8775144690796719618">Ungültige URL</translation>
+<translation id="8787968206789828143">Im Internet suchen</translation>
 <translation id="8803639129939845298">Sicher</translation>
 <translation id="8806823403540278281">Ihre Organisation verlangt, dass Sie im privaten Modus surfen. Tabs werden im Inkognitomodus nicht gespeichert.
 <ph name="BEGIN_LINK" />Weitere Informationen<ph name="END_LINK" /></translation>

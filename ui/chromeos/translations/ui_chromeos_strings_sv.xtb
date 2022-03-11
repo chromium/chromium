@@ -61,6 +61,7 @@
 <translation id="1497522201463361063">Det gick inte att byta namn på <ph name="FILE_NAME" />. <ph name="ERROR_MESSAGE" /></translation>
 <translation id="1499943022354839699">engelska (USA) med Dvorak-tangentbord</translation>
 <translation id="1515909359182093592"><ph name="INPUT_LABEL" /> – Värd</translation>
+<translation id="1521655867290435174">Google Kalkylark</translation>
 <translation id="1538729222189715449">Linux-filerna öppnas …</translation>
 <translation id="1547964879613821194">Kanadensisk engelska</translation>
 <translation id="1556189134700913550">Ersätt alla</translation>
@@ -184,7 +185,6 @@
 <translation id="2544853746127077729">Autentiseringscertifikatet godkändes inte av nätverket</translation>
 <translation id="2547921442987553570">Lägg till i <ph name="EXTENSION_NAME" /></translation>
 <translation id="255937426064304553">USA (internationell)</translation>
-<translation id="2562685439590298522">Dokument</translation>
 <translation id="2563185590376525700">Groda</translation>
 <translation id="2578394532502990878">tamil, fonetiskt</translation>
 <translation id="2579959351793446050">odia</translation>
@@ -220,9 +220,7 @@
 <translation id="2902734494705624966">USA (utökat)</translation>
 <translation id="290843123675549676">marathi</translation>
 <translation id="2923240520113693977">estniska</translation>
-<translation id="2925966894897775835">Kalkylark</translation>
 <translation id="2938685643439809023">mongoliska</translation>
-<translation id="2943400156390503548">Presentationer</translation>
 <translation id="2943503720238418293">Ange ett kortare namn</translation>
 <translation id="2949781154072577687">Formaterar <ph name="DRIVE_NAME" /> …</translation>
 <translation id="2951236788251446349">Manet</translation>
@@ -414,6 +412,7 @@
 <translation id="4656777537938206294">Gör filer tillgängliga offline</translation>
 <translation id="4658782175094886150">Person i snön</translation>
 <translation id="4669606053856530811">De som använder <ph name="SOURCE_NAME" /> förlorar åtkomsten till objekten såvida de inte delas med dem.</translation>
+<translation id="467809019005607715">Google Presentationer</translation>
 <translation id="4690246192099372265">svenska</translation>
 <translation id="4693155481716051732">Sushi</translation>
 <translation id="4694604912444486114">Apa</translation>
@@ -949,6 +948,7 @@
 <translation id="9172592259078059678">gujarati, translitterering</translation>
 <translation id="9173120999827300720">engelska (USA) med internationellt tangentbord</translation>
 <translation id="9174050671906956834">Objekt i papperskorgen raderas permanent efter 30 dagar.</translation>
+<translation id="9183302530794969518">Google Dokument</translation>
 <translation id="9189836632794948435">kazakiska</translation>
 <translation id="9213073329713032541">Installationen har påbörjats.</translation>
 <translation id="9219103736887031265">Bilder</translation>

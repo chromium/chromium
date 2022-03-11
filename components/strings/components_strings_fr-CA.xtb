@@ -488,6 +488,7 @@
 <translation id="2430968933669123598">Gérer le compte Google, appuyez sur Entrée pour gérer vos renseignements, la confidentialité et la sécurité de votre compte Google</translation>
 <translation id="2436186046335138073">Autoriser <ph name="HANDLER_HOSTNAME" /> à ouvrir tous les liens <ph name="PROTOCOL" />?</translation>
 <translation id="2438874542388153331">Quadruple perforation à droite</translation>
+<translation id="2448295565072560657">Périphériques branchés à cet appareil pendant que vous êtes connecté</translation>
 <translation id="2450021089947420533">Explorations</translation>
 <translation id="2463739503403862330">Remplir</translation>
 <translation id="2465402087343596252">Architecture E</translation>
@@ -495,6 +496,7 @@
 <translation id="2465688316154986572">Agrafe</translation>
 <translation id="2465914000209955735">Gérez les fichiers que vous avez téléchargés dans Chrome</translation>
 <translation id="2466004615675155314">Afficher les informations provenant du Web</translation>
+<translation id="2467272921457885625">Spécifications matérielles de l'appareil et statistiques telles que l'historique d'utilisation du processeur et de la mémoire vive</translation>
 <translation id="2467694685043708798"><ph name="BEGIN_LINK" />d'exécuter Network Diagnostics<ph name="END_LINK" /></translation>
 <translation id="2469153820345007638">Ordre 1 sur N</translation>
 <translation id="2470767536994572628">Lorsque vous modifiez des annotations, ce document s'affiche au format de vue par page, dans son orientation d'origine</translation>
@@ -2284,7 +2286,6 @@ Détails supplémentaires :
 <translation id="8241712895048303527">Bloquer sur ce site</translation>
 <translation id="8242426110754782860">Continuer</translation>
 <translation id="8249296373107784235">Interrompre</translation>
-<translation id="8249320324621329438">Dernière récupération :</translation>
 <translation id="8253091569723639551">Adresse de facturation requise</translation>
 <translation id="8257387598443225809">Cette application est conçue pour les appareils mobiles</translation>
 <translation id="825929999321470778">Afficher tous les mots de passe enregistrés</translation>

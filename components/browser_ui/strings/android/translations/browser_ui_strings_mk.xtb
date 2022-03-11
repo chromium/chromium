@@ -254,6 +254,7 @@
 <translation id="7087918508125750058">Избрани ставки: <ph name="ITEM_COUNT" />. Достапни се опции во горниот дел од екранот</translation>
 <translation id="7141896414559753902">Блокирај го прикажувањето скокачки прозорци и пренасочувања на сајтовите (се препорачува)</translation>
 <translation id="7176368934862295254"><ph name="KILOBYTES" /> KB</translation>
+<translation id="7180611975245234373">Освежи</translation>
 <translation id="723171743924126238">Изберете слики</translation>
 <translation id="7243308994586599757">Достапни се опции на дното на екранот</translation>
 <translation id="7250468141469952378">Избрани ставки: <ph name="ITEM_COUNT" /></translation>
@@ -309,6 +310,7 @@
 <translation id="8394832520002899662">Допрете за да се вратите на сајтот</translation>
 <translation id="8409345997656833551">Добивајте известувања кога статија може да се прикажува во поедноставен преглед</translation>
 <translation id="8425213833346101688">Промени</translation>
+<translation id="8428213095426709021">Поставки</translation>
 <translation id="8441146129660941386">Барај поназад</translation>
 <translation id="8444433999583714703">За да овозможите <ph name="APP_NAME" /> да пристапува до вашата локација, вклучете ја дозволата за локацијата и во <ph name="BEGIN_LINK" />Поставки за Android<ph name="END_LINK" />.</translation>
 <translation id="8447861592752582886">Отповикај ја дозволата за пристап до уредот</translation>

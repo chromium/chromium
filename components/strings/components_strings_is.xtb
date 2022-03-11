@@ -492,6 +492,7 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="2430968933669123598">Stjórnaðu Google reikningnum þínum, ýttu á Enter til að stjórna upplýsingum, persónuvernd og öryggi á Google reikningnum þínum</translation>
 <translation id="2436186046335138073">Leyfa <ph name="HANDLER_HOSTNAME" /> að opna alla <ph name="PROTOCOL" />-tengla?</translation>
 <translation id="2438874542388153331">Fjögur göt hægra megin</translation>
+<translation id="2448295565072560657">Jaðartæki tengd þessu tæki þegar þú ert innskráð(ur)</translation>
 <translation id="2450021089947420533">Ferðir</translation>
 <translation id="2463739503403862330">Fylla út</translation>
 <translation id="2465402087343596252">Architecture-E</translation>
@@ -499,6 +500,7 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="2465688316154986572">Hefti</translation>
 <translation id="2465914000209955735">Stjórna skrám sem þú hefur sótt í Chrome</translation>
 <translation id="2466004615675155314">Birta upplýsingar af vefnum</translation>
+<translation id="2467272921457885625">Tæknilýsing vélbúnaðar tækis og talnagögn á borð við notkunarferil örgjörva/vinnsluminnis</translation>
 <translation id="2467694685043708798"><ph name="BEGIN_LINK" />Keyrir netgreiningu<ph name="END_LINK" /></translation>
 <translation id="2469153820345007638">Röðun 1 til N</translation>
 <translation id="2470767536994572628">Þegar þú breytir textaskýringum fer þetta skjal aftur í einnar síðu snið og upprunalega stöðu</translation>
@@ -2293,7 +2295,6 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="8241712895048303527">Útiloka á þessu vefsvæði</translation>
 <translation id="8242426110754782860">Halda áfram</translation>
 <translation id="8249296373107784235">Hætta</translation>
-<translation id="8249320324621329438">Síðast sótt:</translation>
 <translation id="8253091569723639551">Heimilisfangs greiðanda er krafist</translation>
 <translation id="8257387598443225809">Þetta forrit er hannað fyrir farsíma</translation>
 <translation id="825929999321470778">Sýna öll vistuð aðgangsorð</translation>

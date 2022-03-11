@@ -54,6 +54,7 @@
 <translation id="1499900233129743732"><ph name="MANAGER" /> या वापरकर्त्याला व्यवस्थापित करतो आणि तो रिमोट पद्धतीने सेटिंग्ज व्यवस्थापित करू शकतो तसेच वापरकर्ता अ‍ॅक्टिव्हिटीचे निरीक्षण करू शकतो.</translation>
 <translation id="150962533380566081">चुकीची PUK.</translation>
 <translation id="1510238584712386396">लाँचर</translation>
+<translation id="152892567002884378">आवाज मोठा करा</translation>
 <translation id="155865706765934889">Touchpad</translation>
 <translation id="1565038567006703504"><ph name="DEVICE_NAME" /> अपडेट करू शकत नाही</translation>
 <translation id="1567064801249837505">अल्बम</translation>
@@ -88,6 +89,7 @@
 <translation id="1908234395526491708">UDP विनंती पूर्ण करता आली नाही</translation>
 <translation id="1930797645656624981">Chrome OS इनपुट पद्धत सेवा</translation>
 <translation id="1947737735496445907">प्रिंट केले</translation>
+<translation id="1951012854035635156">Assistant</translation>
 <translation id="1979103255016296513">पासवर्ड बदलण्याची मुदत संपली आहे</translation>
 <translation id="1999615961760456652">कॅप्टिव्ह पोर्टल</translation>
 <translation id="2006864819935886708">कनेक्टिव्हिटी</translation>
@@ -152,6 +154,7 @@
 <translation id="2859243502336719778">महत्त्वाचे अपडेट</translation>
 <translation id="2860473693272905224">स्कॅनरवर दुसरे पेज ठेवा</translation>
 <translation id="2872961005593481000">बंद करा</translation>
+<translation id="2874939134665556319">मागील ट्रॅक</translation>
 <translation id="2878387241690264070"><ph name="NUM_SECONDS" /> सेकंदामध्ये <ph name="RATE" /> डिस्चार्ज झाले.</translation>
 <translation id="291142119251986300">अपात्र घटक</translation>
 <translation id="2926057806159140518">तुमचे वापरकर्ता नाव आणि पासवर्ड एंटर करा किंवा तुमचा QR कोड स्कॅन करा</translation>
@@ -233,6 +236,7 @@
 <translation id="4003384961948020559">अयशस्वी झाले - आउटपुट भरले आहे</translation>
 <translation id="4034824040120875894">प्रिंटर</translation>
 <translation id="4044093238444069296">गेटवेशी संपर्क साधू शकत नाही</translation>
+<translation id="4046123991198612571">पुढील ट्रॅक</translation>
 <translation id="404928562651467259">चेतावणी:</translation>
 <translation id="409427325554347132">चाचणीचे तपशील सेव्ह करा</translation>
 <translation id="4110686435123617899"><ph name="TITLE" /><ph name="DESC" /> अल्बम निवडा</translation>
@@ -250,9 +254,11 @@
 <translation id="4238516577297848345">कोणतेही प्रिंट जॉब प्रगतीपथावर नाहीत</translation>
 <translation id="4239069858505860023">GPRS</translation>
 <translation id="4244962993387259361">मेमरीसंबंधित चाचणी रन करण्यासाठी तुमच्याकडे किमान ५०० MB जागा मोकळी असणे आवश्यक आहे. जागा मोकळी करण्यासाठी, सेटिंग्ज &gt; स्टोरेज व्यवस्थापन वर जा.</translation>
+<translation id="4250229828105606438">स्क्रीनशॉट</translation>
 <translation id="4258281355379922695">HTTP लेटन्सी</translation>
 <translation id="4271957103967917607">फुल स्क्रीन पहा</translation>
 <translation id="4275799948641988986">दुरूस्त केल्यानंतर, डिव्हाइस कोण वापरणार आहे?</translation>
+<translation id="4289540628985791613">विहंगावलोकन</translation>
 <translation id="4297501883039923494">थांबले - अज्ञात एरर</translation>
 <translation id="4300073214558989"><ph name="IMAGE_COUNT" /> इमेज</translation>
 <translation id="4378373042927530923">रन झाले नाही</translation>
@@ -381,6 +387,7 @@
 <translation id="554517032089923082">GTC</translation>
 <translation id="5578477003638479617">UMTS</translation>
 <translation id="5578519639599103840">पुन्हा स्कॅन करा</translation>
+<translation id="5583640892426849032">Backspace</translation>
 <translation id="5620281292257375798">फक्त अंतर्गत</translation>
 <translation id="5649768706273821470">ऐका</translation>
 <translation id="5669267381087807207">सक्रिय करत आहे</translation>
@@ -390,6 +397,7 @@
 <translation id="5707900041990977207"><ph name="TOTAL_PAGES" /> पैकी <ph name="CURRENT_PAGE" /></translation>
 <translation id="5733298426544876109"><ph name="DEVICE_NAME" /> अपडेट करा</translation>
 <translation id="5760715441271661976">पोर्टलची स्थिती</translation>
+<translation id="57838592816432529">म्यूट करा</translation>
 <translation id="5784136236926853061">उच्च HTTP लेटन्सी</translation>
 <translation id="5832805196449965646">व्यक्ती जोडा</translation>
 <translation id="583281660410589416">अज्ञात</translation>
@@ -397,6 +405,7 @@
 <translation id="5849570051105887917">होम प्रोव्हाइडर कोड</translation>
 <translation id="5860033963881614850">बंद</translation>
 <translation id="5866840822086176774">खूप मजबूत</translation>
+<translation id="588258955323874662">क्षेत्रे</translation>
 <translation id="5895138241574237353">रीस्टार्ट करा</translation>
 <translation id="5916084858004523819">प्रतिबंधित</translation>
 <translation id="5916664084637901428">सुरू</translation>
@@ -467,12 +476,15 @@
 <translation id="6643016212128521049">साफ करा</translation>
 <translation id="6647510110698214773">एंक्रिप्शन अल्गोरिदम</translation>
 <translation id="6657585470893396449">पासवर्ड</translation>
+<translation id="6659594942844771486">टॅब</translation>
 <translation id="6692996468359469499">तुमच्या निवडीशी संबंधित माहिती मिळवा</translation>
 <translation id="6704062477274546131">DNS रिझोल्युशन</translation>
+<translation id="6723839937902243910">सामर्थ्य</translation>
 <translation id="6747215703636344499">थांबले - आउटपुट भरले आहे</translation>
 <translation id="6749473226660745022">फोटो</translation>
 <translation id="6753452347192452143">डिव्हाइस हे कॉंप्युटर आहे.</translation>
 <translation id="6756731097889387912">स्कॅनिंग रद्द करता आले नाही</translation>
+<translation id="6760706756348334449">आवाज कमी करा</translation>
 <translation id="6766275201586212568">अयशस्वी DNS रिझोल्युशन</translation>
 <translation id="6768237774506518020">उच्च DNS रिझोल्युशन अयशस्वी रेट</translation>
 <translation id="680983167891198932">की</translation>
@@ -526,6 +538,7 @@
 <translation id="7427315641433634153">MSCHAP</translation>
 <translation id="7435977162516949853">{NUMBER_OF_PAGES,plural, =1{स्कॅन करणे पूर्ण झाले. एक पेज स्कॅन केले}other{स्कॅन करणे पूर्ण झाले. {NUMBER_OF_PAGES} पेज स्कॅन केली}}</translation>
 <translation id="7469648432129124067">पोर्टल डिटेक्ट केले</translation>
+<translation id="7481312909269577407">पुढील</translation>
 <translation id="7487067081878637334">तंत्रज्ञान</translation>
 <translation id="7490813197707563893">MAC पत्ता</translation>
 <translation id="7497215489070763236">सर्व्हर CA सर्टिफिकेट</translation>
@@ -579,6 +592,7 @@
 <translation id="8132480444149501833">ट्रॅफिक काउंटरची विनंती करा</translation>
 <translation id="8138405288920084977">LTEAdvanced</translation>
 <translation id="8143951647992294073"><ph name="TOPIC_SOURCE" /> <ph name="TOPIC_SOURCE_DESC" /> निवडा</translation>
+<translation id="8179976553408161302">Enter</translation>
 <translation id="8206859287963243715">सेल्यूलर</translation>
 <translation id="8208861521865154048">लाभ</translation>
 <translation id="8217675307824400706">कनेक्ट व्हा</translation>

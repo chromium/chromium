@@ -54,6 +54,7 @@
 <translation id="1499900233129743732"><ph name="MANAGER" /> bestuur hierdie gebruiker en kan oor 'n afstand instellings bestuur en gebruikeraktiwiteit monitor.</translation>
 <translation id="150962533380566081">Ongeldige PUK.</translation>
 <translation id="1510238584712386396">Lanseerder</translation>
+<translation id="152892567002884378">Volume harder</translation>
 <translation id="155865706765934889">Raakpaneel</translation>
 <translation id="1565038567006703504">Kan nie <ph name="DEVICE_NAME" /> opdateer nie</translation>
 <translation id="1567064801249837505">Albums</translation>
@@ -82,12 +83,14 @@
 <translation id="1807246157184219062">Lig</translation>
 <translation id="1827738518074806965">Kunsgalery</translation>
 <translation id="1851218745569890714">Videokonferensies</translation>
+<translation id="1852934301711881861">Installeer Chrome OS Flex</translation>
 <translation id="1874612839560830905">MTU</translation>
 <translation id="1887850431809612466">Hardewarehersiening</translation>
 <translation id="1905710495812624430">Maksimum toegelate pogings is oorskry.</translation>
 <translation id="1908234395526491708">Mislukte UDP-versoeke</translation>
 <translation id="1930797645656624981">Chrome-bedryfstelsel se invoermetodediens</translation>
 <translation id="1947737735496445907">Gedruk</translation>
+<translation id="1951012854035635156">Assistent</translation>
 <translation id="1979103255016296513">Wagwoord moes al verander geword het</translation>
 <translation id="1999615961760456652">Kontroleringsportaal</translation>
 <translation id="2006864819935886708">Konnektiwiteit</translation>
@@ -105,6 +108,7 @@
 <translation id="2158971754079422508"><ph name="DESC_TEXT" />: herprobeer</translation>
 <translation id="2161394479394250669">Kanselleer druktaak</translation>
 <translation id="2180197493692062006">Iets was fout. Probeer om die program weer oop te maak.</translation>
+<translation id="2201770616342964496">Plaaslike identiteit</translation>
 <translation id="2209788852729124853">Stel verkeertellers terug</translation>
 <translation id="2212733584906323460">Naamresolusie</translation>
 <translation id="2217935453350629363">Huidige spoed</translation>
@@ -152,6 +156,7 @@
 <translation id="2859243502336719778">Kritieke opdatering</translation>
 <translation id="2860473693272905224">Plaas 'n ander bladsy op die skandeerder</translation>
 <translation id="2872961005593481000">Skakel af</translation>
+<translation id="2874939134665556319">Vorige snit</translation>
 <translation id="2878387241690264070">Het <ph name="RATE" /> ontlaai binne <ph name="NUM_SECONDS" /> sekondes.</translation>
 <translation id="291142119251986300">Ongekwalifiseerde komponente</translation>
 <translation id="2926057806159140518">Voer jou gebruikernaam en wagwoord in of skandeer jou QR-kode</translation>
@@ -233,6 +238,7 @@
 <translation id="4003384961948020559">Misluk – Uitvoer is vol</translation>
 <translation id="4034824040120875894">Drukker</translation>
 <translation id="4044093238444069296">Kan nie deurgang kontak nie</translation>
+<translation id="4046123991198612571">Volgende snit</translation>
 <translation id="404928562651467259">WAARSKUWING</translation>
 <translation id="409427325554347132">Stoor toetsbesonderhede</translation>
 <translation id="4110686435123617899">Kies album <ph name="TITLE" /> <ph name="DESC" /></translation>
@@ -250,9 +256,11 @@
 <translation id="4238516577297848345">Geen druktake aan die gang nie</translation>
 <translation id="4239069858505860023">GPRS</translation>
 <translation id="4244962993387259361">Jy het minstens 500 MB nodig om 'n geheuetoets uit te voer. Gaan na Instellings &gt; Bergingbestuur om spasie beskikbaar te maak.</translation>
+<translation id="4250229828105606438">Skermkiekie</translation>
 <translation id="4258281355379922695">HTTP-traagheid</translation>
 <translation id="4271957103967917607">Bekyk volskerm</translation>
 <translation id="4275799948641988986">Wie sal die toestel gebruik nadat dit herstel is?</translation>
+<translation id="4289540628985791613">Oorsig</translation>
 <translation id="4297501883039923494">Gestop – onbekende fout</translation>
 <translation id="4300073214558989"><ph name="IMAGE_COUNT" /> prente</translation>
 <translation id="4378373042927530923">Nie laat loop nie</translation>
@@ -282,6 +290,7 @@
 <translation id="458794348635939462">Kon nie alle gashere bepaal nie</translation>
 <translation id="4593212453765072419">Instaanstawing word vereis</translation>
 <translation id="4627232916386272576"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="PRINTED_PAGE_NUMBER" /> van <ph name="TOTAL_PAGE_NUMBER" />. Druk om die druktaak te kanselleer.</translation>
+<translation id="4627645661474370390">Afstandidentiteit</translation>
 <translation id="463791356324567266">Kanselleer tans skandering …</translation>
 <translation id="4646949265910132906">Veilige wi-fi-verbinding</translation>
 <translation id="4654549501020883054">Verander daagliks</translation>
@@ -381,6 +390,7 @@ Probeer die mikrofoon tik om my enigiets te vra.</translation>
 <translation id="554517032089923082">GTC</translation>
 <translation id="5578477003638479617">UMTS</translation>
 <translation id="5578519639599103840">Herskandeer</translation>
+<translation id="5583640892426849032">Backspace</translation>
 <translation id="5620281292257375798">Slegs intern</translation>
 <translation id="5649768706273821470">Luister</translation>
 <translation id="5669267381087807207">Aktiveer tans</translation>
@@ -390,6 +400,7 @@ Probeer die mikrofoon tik om my enigiets te vra.</translation>
 <translation id="5707900041990977207"><ph name="CURRENT_PAGE" /> van <ph name="TOTAL_PAGES" /></translation>
 <translation id="5733298426544876109">Dateer <ph name="DEVICE_NAME" /> op</translation>
 <translation id="5760715441271661976">Portaalstatus</translation>
+<translation id="57838592816432529">Demp</translation>
 <translation id="5784136236926853061">Hoë HTTP-traagheid</translation>
 <translation id="5832805196449965646">Voeg persoon by</translation>
 <translation id="583281660410589416">Onbekend</translation>
@@ -397,6 +408,7 @@ Probeer die mikrofoon tik om my enigiets te vra.</translation>
 <translation id="5849570051105887917">Tuisverskafferkode</translation>
 <translation id="5860033963881614850">Af</translation>
 <translation id="5866840822086176774">Baie sterk</translation>
+<translation id="588258955323874662">Volskerm</translation>
 <translation id="5895138241574237353">Herbegin</translation>
 <translation id="5916084858004523819">Verbode</translation>
 <translation id="5916664084637901428">Aan</translation>
@@ -467,12 +479,15 @@ Probeer die mikrofoon tik om my enigiets te vra.</translation>
 <translation id="6643016212128521049">Vee uit</translation>
 <translation id="6647510110698214773">Enkripsie-algoritme</translation>
 <translation id="6657585470893396449">Wagwoord</translation>
+<translation id="6659594942844771486">Oortjie</translation>
 <translation id="6692996468359469499">Kry inligting wat met jou keuse verband hou</translation>
 <translation id="6704062477274546131">DNS-ontbinding</translation>
+<translation id="6723839937902243910">Intensiteit</translation>
 <translation id="6747215703636344499">Gestop – uitvoer is vol</translation>
 <translation id="6749473226660745022">Foto's</translation>
 <translation id="6753452347192452143">Toestel is 'n rekenaar.</translation>
 <translation id="6756731097889387912">Kon nie skandering kanselleer nie</translation>
+<translation id="6760706756348334449">Volume sagter</translation>
 <translation id="6766275201586212568">Mislukte DNS-resolusies</translation>
 <translation id="6768237774506518020">Hoë DNS-resolusiemislukkingkoers</translation>
 <translation id="680983167891198932">Sleutel</translation>
@@ -526,6 +541,7 @@ Probeer die mikrofoon tik om my enigiets te vra.</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
 <translation id="7435977162516949853">{NUMBER_OF_PAGES,plural, =1{Skandering is voltooi. 1 bladsy is geskandeer}other{Skandering is voltooi. {NUMBER_OF_PAGES} bladsye is geskandeer}}</translation>
 <translation id="7469648432129124067">Portaal is bespeur</translation>
+<translation id="7481312909269577407">Vorentoe</translation>
 <translation id="7487067081878637334">Tegnologie</translation>
 <translation id="7490813197707563893">MAC-adres</translation>
 <translation id="7497215489070763236">Bediener se CA-sertifikaat</translation>
@@ -579,6 +595,7 @@ Probeer die mikrofoon tik om my enigiets te vra.</translation>
 <translation id="8132480444149501833">Versoek verkeertellers</translation>
 <translation id="8138405288920084977">LTEAdvanced</translation>
 <translation id="8143951647992294073">Kies <ph name="TOPIC_SOURCE" /> <ph name="TOPIC_SOURCE_DESC" /></translation>
+<translation id="8179976553408161302">Enter</translation>
 <translation id="8206859287963243715">Sellulêr</translation>
 <translation id="8208861521865154048">Byvoordele</translation>
 <translation id="8217675307824400706">Verbind</translation>

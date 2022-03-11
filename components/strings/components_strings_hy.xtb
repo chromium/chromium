@@ -492,6 +492,7 @@
 <translation id="2430968933669123598">Կառավարել Google հաշիվը։ Google հաշվում ձեր տվյալները, գաղտնիությունն ու անվտանգությունը կառավարելու համար սեղմեք Enter։</translation>
 <translation id="2436186046335138073">Թույլատրե՞լ <ph name="HANDLER_HOSTNAME" />-ին բացել <ph name="PROTOCOL" /> հաղորդակարգի բոլոր հղումները:</translation>
 <translation id="2438874542388153331">Չորս անցք աջ կողմում</translation>
+<translation id="2448295565072560657">Երբ դուք մուտք գործեցիք համակարգ, այս սարքին կցվեցին արտաքին սարքեր։</translation>
 <translation id="2450021089947420533">Այցելություններ</translation>
 <translation id="2463739503403862330">Լրացնել</translation>
 <translation id="2465402087343596252">Architecture-E</translation>
@@ -2295,7 +2296,6 @@
 <translation id="8241712895048303527">Արգելափակել այս կայքում</translation>
 <translation id="8242426110754782860">Շարունակել</translation>
 <translation id="8249296373107784235">Ընդհատել</translation>
-<translation id="8249320324621329438">Վերջին անգամ քաշվել է՝</translation>
 <translation id="8253091569723639551">Անհրաժեշտ է նշել վճարային հասցեն</translation>
 <translation id="8257387598443225809">Այս հավելվածը նախատեսված է բջջային սարքերի համար</translation>
 <translation id="825929999321470778">Ցուցադրել բոլոր պահված գաղտնաբառերը</translation>

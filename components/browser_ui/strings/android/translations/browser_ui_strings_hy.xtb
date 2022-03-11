@@ -254,6 +254,7 @@
 <translation id="7087918508125750058">Ընտրված է <ph name="ITEM_COUNT" /> տարր։ Ընտրանքները հասանելի են էկրանի վերին հատվածում</translation>
 <translation id="7141896414559753902">Արգելափակել ելնող պատուհանները և վերահասցեավորումը կայքերում (խորհուրդ է տրվում)</translation>
 <translation id="7176368934862295254"><ph name="KILOBYTES" /> ԿԲ</translation>
+<translation id="7180611975245234373">Թարմացնել</translation>
 <translation id="723171743924126238">Ընտրեք պատկերներ</translation>
 <translation id="7243308994586599757">Ընտրանքները հասանելի են էկրանի ստորին հատվածում</translation>
 <translation id="7250468141469952378">Ընտրված է <ph name="ITEM_COUNT" /> տարր</translation>
@@ -309,6 +310,7 @@
 <translation id="8394832520002899662">Հպեք՝ կայք վերադառնալու համար</translation>
 <translation id="8409345997656833551">Ստանալ ծանուցում, երբ հոդվածը հնարավոր լինի դիտել պարզեցված տեսքով</translation>
 <translation id="8425213833346101688">Փոխել</translation>
+<translation id="8428213095426709021">Կարգավորումներ</translation>
 <translation id="8441146129660941386">Որոնել դեպի հետ</translation>
 <translation id="8444433999583714703">Որպեսզի ձեր տեղադրությունը հասանելի դառնա <ph name="APP_NAME" />-ին, միացրեք այն <ph name="BEGIN_LINK" />Android-ի կարգավորումներում<ph name="END_LINK" />։</translation>
 <translation id="8447861592752582886">Արգելել սարքի օգտագործումը</translation>

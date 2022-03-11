@@ -46,6 +46,7 @@ O teu motor de busca é <ph name="DSE_NAME" />. En caso aplicable, consulta as s
 <translation id="1282311502488501110">Non iniciar sesión</translation>
 <translation id="1283524564873030414">Últimas 24 horas</translation>
 <translation id="1285320974508926690">Non traducir nunca este sitio</translation>
+<translation id="1291506870746876680">Os permisos de <ph name="BEGIN_BOLD" /><ph name="SITE_NAME" /><ph name="END_BOLD" /> volverán desactivarse cando saias deste sitio.</translation>
 <translation id="1321993286294231467">Produciuse un erro ao gardar a imaxe.</translation>
 <translation id="1322735045095424339">A túa organización esixe o uso do modo de incógnito</translation>
 <translation id="1323735185997015385">Eliminar</translation>
@@ -67,6 +68,7 @@ O teu motor de busca é <ph name="DSE_NAME" />. En caso aplicable, consulta as s
 <translation id="149095475893949513">Este sitio web está tentando descargar un perfil de configuración.</translation>
 <translation id="1491277525950327607">Toca dúas veces para activar ou desactivar a configuración</translation>
 <translation id="1492417797159476138">Xa gardaches este nome de usuario para este sitio</translation>
+<translation id="1506063256525392513">Permíteche tirar e cargar fotos, así como escanear códigos QR</translation>
 <translation id="1509486075633541495">Iniciar sesión no sitio web</translation>
 <translation id="1509960214886564027">As funcións de moitos sitios poden deixar de funcionar</translation>
 <translation id="152234381334907219">Contrasinais que non se gardan nunca</translation>
@@ -352,6 +354,7 @@ Sigue os pasos indicados a continuación:</translation>
 <translation id="418156467088430727">Ver versión sen conexión nunha nova pestana</translation>
 <translation id="4181841719683918333">Idiomas</translation>
 <translation id="4223967053752765281">A túa organización desactivou o inicio de sesión. Podes seguir vendo os marcadores, o historial, os contrasinais e o resto das opcións de configuración que teñas neste dispositivo. Se fas cambios, non se sincronizarán coa túa conta.</translation>
+<translation id="4233831822770018312">Modificar permisos</translation>
 <translation id="4237377247299956313">Toca <ph name="BEGIN_BOLD" />Default Browser App<ph name="END_BOLD" /> (Aplicación de navegador predeterminada)</translation>
 <translation id="424315890655130736">Introducir contrasinal</translation>
 <translation id="4249955472157341256">Ordenar por máis recente</translation>
@@ -385,6 +388,7 @@ Sigue os pasos indicados a continuación:</translation>
 <translation id="4536418791685807335">Proba a volver iniciar sesión.</translation>
 <translation id="4540780316273593836">Produciuse un erro</translation>
 <translation id="457386861538956877">Máis...</translation>
+<translation id="458449952965618888">Permítese o acceso ao micrófono</translation>
 <translation id="4592368184551360546">Teclado</translation>
 <translation id="461440297010471931">Realizando buscas con Google</translation>
 <translation id="4619564267100705184">Verificar a túa identidade</translation>
@@ -405,6 +409,7 @@ Os teus datos están encriptados co teu contrasinal de sincronización. Introdú
 <translation id="4689564913179979534">Xestionar métodos de pago...</translation>
 <translation id="4697071790493980729">Non se encontraron resultados</translation>
 <translation id="470966556546083668">Non activar sincronización</translation>
+<translation id="4727245048156789470">Permítese o acceso á cámara e ao micrófono</translation>
 <translation id="4737560986434232178">Realiza buscas nas pestanas recentes</translation>
 <translation id="473775607612524610">Actualizar</translation>
 <translation id="4747097190499141774">A encriptación mediante frase de acceso non inclúe métodos de pago nin enderezos de Google Pay. Só alguén coa túa frase de acceso pode ler os teus datos encriptados. A frase de acceso non se envía nin se almacena en Google. Se a esqueces ou se queres cambiar esta opción de configuración, deberás restablecer a sincronización. <ph name="BEGIN_LINK" />Máis información<ph name="END_LINK" /></translation>
@@ -432,6 +437,7 @@ Para cambiar esta opción de configuración, deberás <ph name="BEGIN_LINK" />re
 <translation id="4860895144060829044">Chamar</translation>
 <translation id="4872323082491632254">Comprobar contrasinais</translation>
 <translation id="4881695831933465202">Abrir</translation>
+<translation id="4894963374040315706">Permíteche buscar de forma máis rápida usando a voz</translation>
 <translation id="4901778704868714008">Gardar…</translation>
 <translation id="4904877109095351937">Marcar como lidos</translation>
 <translation id="4908869848243824489">Discover, de Google</translation>
@@ -441,6 +447,7 @@ Para cambiar esta opción de configuración, deberás <ph name="BEGIN_LINK" />re
 <translation id="4945756290001680296">Acceder á configuración do contrasinal</translation>
 <translation id="4979397965658815378">Inicia sesión na túa conta de Google para ter os marcadores, os contrasinais, o historial e o resto das opcións de configuración en todos os teus dispositivos.</translation>
 <translation id="4986678885919050584">Quitar deste dispositivo</translation>
+<translation id="4989542687859782284">Experimentos non dispoñibles</translation>
 <translation id="5005498671520578047">Copiar contrasinal</translation>
 <translation id="5017828934289857214">Lembrarmo máis tarde</translation>
 <translation id="5037676449506322593">Seleccionar todo</translation>
@@ -818,6 +825,7 @@ Tamén poden utilizalas para ver a túa actividade de navegación en varios siti
 <translation id="8283172974887967105">Definir…</translation>
 <translation id="8299417921174340354">Para usar os contrasinais, en primeiro lugar debes definir un contrasinal no teu dispositivo.</translation>
 <translation id="8299613349954694191">Abre unha pestana do modo de incógnito para navegar pola Web de forma privada.</translation>
+<translation id="8304831996890817401">Permítese o acceso á cámara</translation>
 <translation id="8319076807703933069">Nova busca</translation>
 <translation id="8323906514956095947">Mantén premido o botón para ver máis opcións da pestana</translation>
 <translation id="8328777765163860529">Pechar todo</translation>
@@ -867,6 +875,7 @@ Tamén poden utilizalas para ver a túa actividade de navegación en varios siti
 <translation id="8750037785291841318">Aquí atoparás as túas pestanas</translation>
 <translation id="8756969031206844760">Queres actualizar o contrasinal?</translation>
 <translation id="8775144690796719618">URL non válido</translation>
+<translation id="8787968206789828143">Busca na Web</translation>
 <translation id="8803639129939845298">Seguro</translation>
 <translation id="8806823403540278281">A túa organización esixe que navegues de forma privada. As pestanas do modo de incógnito non se gardan.
 <ph name="BEGIN_LINK" />Máis información<ph name="END_LINK" /></translation>

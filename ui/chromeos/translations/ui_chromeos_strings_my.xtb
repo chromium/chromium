@@ -61,6 +61,7 @@
 <translation id="1497522201463361063">"<ph name="FILE_NAME" />"ကို အမည်ပြောင်း မရပါ။ <ph name="ERROR_MESSAGE" /></translation>
 <translation id="1499943022354839699">Dvorak ကီးဘုတ်ဖြင့် အင်္ဂလိပ် (ယူအက်စ်)</translation>
 <translation id="1515909359182093592"><ph name="INPUT_LABEL" /> - ဆာဗာပင်ရင်း</translation>
+<translation id="1521655867290435174">Google Sheets</translation>
 <translation id="1538729222189715449">Linux ဖိုင်များကို ဖွင့်နေသည်...</translation>
 <translation id="1547964879613821194">ကနေဒါ အင်္ဂလိပ်</translation>
 <translation id="1556189134700913550">အားလုံး အတွက် အသုံးပြုရန်</translation>
@@ -184,7 +185,6 @@
 <translation id="2544853746127077729">ကွန်ရက်မှ စစ်မှန်ကြောင်းသက်သေပြချက်လက်မှတ်ကို ငြင်းပယ်ခဲ့သည်</translation>
 <translation id="2547921442987553570"><ph name="EXTENSION_NAME" /> သို့ထည့်ပါ</translation>
 <translation id="255937426064304553">US international</translation>
-<translation id="2562685439590298522">စာရွက်များ</translation>
 <translation id="2563185590376525700">ဖား</translation>
 <translation id="2578394532502990878">တမီးလ် အသံထွက်</translation>
 <translation id="2579959351793446050">အိုဒီယာ</translation>
@@ -220,9 +220,7 @@
 <translation id="2902734494705624966">တိုးချဲ့ US</translation>
 <translation id="290843123675549676">မာရာသီ</translation>
 <translation id="2923240520113693977">အက်စ်တိုနီယမ်</translation>
-<translation id="2925966894897775835">စာရွက်များ</translation>
 <translation id="2938685643439809023">မွန်ဂိုဘာသာ</translation>
-<translation id="2943400156390503548">ဆလိုက်များ</translation>
 <translation id="2943503720238418293">ပိုတိုသောအမည်ကို အသုံးပြုပါ</translation>
 <translation id="2949781154072577687"><ph name="DRIVE_NAME" /> ကို ဖော်မက်ချနေသည်...</translation>
 <translation id="2951236788251446349">ငါးထီး</translation>
@@ -414,6 +412,7 @@
 <translation id="4656777537938206294">ဖိုင်များကို အော့ဖ်လိုင်းသုံးနိုင်ရန် ပြုလုပ်ခြင်း</translation>
 <translation id="4658782175094886150">နှင်းတောထဲကလူ</translation>
 <translation id="4669606053856530811">ဤအရာများကို '<ph name="SOURCE_NAME" />' ၏ အဖွဲ့ဝင်များနှင့် မျှဝေထားခြင်း မရှိလျင် ၎င်းတို့သည် အသုံးပြုခွင့် ဆုံးရှုံးနိုင်ပါသည်။</translation>
+<translation id="467809019005607715">Google Slides</translation>
 <translation id="4690246192099372265">ဆွီဒင်</translation>
 <translation id="4693155481716051732">ဆူရှီ</translation>
 <translation id="4694604912444486114">မျောက်</translation>
@@ -657,6 +656,7 @@
 <translation id="6732801395666424405">လက်မှတ်ကို တင်မပေးခဲ့</translation>
 <translation id="6736329909263487977"><ph name="ISSUED_BY" /> [<ph name="ISSUED_TO" />]</translation>
 <translation id="6751256176799620176">ဖိုင်တွဲ ၁ ခု ရွေးချယ်ထားသည်</translation>
+<translation id="6755827872271341378">ChromeOS Flex စက်</translation>
 <translation id="6790428901817661496">ဖွင့်ရန်</translation>
 <translation id="6795884519221689054">ပန်ဒါဝက်ဝံ</translation>
 <translation id="6806699711453372963">Linux မျှဝေခြင်းကို စီမံရန်</translation>
@@ -734,6 +734,7 @@
 <translation id="7343393116438664539">ဗီယက်နမ် Telex</translation>
 <translation id="7359359531237882347">ဖိုင် <ph name="NUMBER_OF_ITEMS" /> ခု မိတ္တူကူးနေသည်…</translation>
 <translation id="7375951387215729722"><ph name="COLUMN_NAME" /> အရ ကြီးစဉ်ငယ်လိုက် စီထားသော ဖိုင်စာရင်း။</translation>
+<translation id="7402503521691663770">ChromeOS Flex စက်များ</translation>
 <translation id="7408870451288633753">ချက်</translation>
 <translation id="7417453074306512035">အီသီယိုးပီးယား ကီးဘုတ်</translation>
 <translation id="7417705661718309329">Google မြေပုံ</translation>
@@ -948,6 +949,7 @@
 <translation id="9172592259078059678">ဂူဂျာရသီ အက္ခရာဖလှယ်ခြင်း</translation>
 <translation id="9173120999827300720">နိုင်ငံတကာကီးဘုတ်ဖြင့် အင်္ဂလိပ် (ယူအက်စ်)</translation>
 <translation id="9174050671906956834">အမှိုက်ပုံးရှိ ဖိုင်များကို ရက် ၃၀ ကြာပြီးနောက် အပြီးဖျက်သည်။</translation>
+<translation id="9183302530794969518">Google Docs</translation>
 <translation id="9189836632794948435">ကာဇာခ်</translation>
 <translation id="9213073329713032541">စတင်ထည့်သွင်းနေပါပြီ။</translation>
 <translation id="9219103736887031265">ပုံများ</translation>

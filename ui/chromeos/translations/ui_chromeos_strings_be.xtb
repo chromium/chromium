@@ -61,6 +61,7 @@
 <translation id="1497522201463361063">Не ўдалося перайменаваць файл "<ph name="FILE_NAME" />". <ph name="ERROR_MESSAGE" /></translation>
 <translation id="1499943022354839699">Англійская (ЗША) з раскладкай Дворака</translation>
 <translation id="1515909359182093592"><ph name="INPUT_LABEL" /> – хост</translation>
+<translation id="1521655867290435174">Табліцы Google</translation>
 <translation id="1538729222189715449">Адкрываюцца файлы Linux...</translation>
 <translation id="1547964879613821194">Англійская (Канада)</translation>
 <translation id="1556189134700913550">Прымяніць да ўсяго</translation>
@@ -184,7 +185,6 @@
 <translation id="2544853746127077729">Сертыфікат аўтэнтыфікацыі адхілены сеткай</translation>
 <translation id="2547921442987553570">Дадаць у пашырэнне "<ph name="EXTENSION_NAME" />"</translation>
 <translation id="255937426064304553">ЗША, міжнародная</translation>
-<translation id="2562685439590298522">Дакументы</translation>
 <translation id="2563185590376525700">Жаба</translation>
 <translation id="2578394532502990878">Тамільская (фанетычная раскладка)</translation>
 <translation id="2579959351793446050">Орыя</translation>
@@ -220,9 +220,7 @@
 <translation id="2902734494705624966">ЗША, пашыраная</translation>
 <translation id="290843123675549676">Маратхі</translation>
 <translation id="2923240520113693977">Эстонская</translation>
-<translation id="2925966894897775835">Табліцы</translation>
 <translation id="2938685643439809023">Мангольская</translation>
-<translation id="2943400156390503548">Прэзентацыі</translation>
 <translation id="2943503720238418293">Выкарыстайце карацейшую назву</translation>
 <translation id="2949781154072577687">Фармаціруецца дыск "<ph name="DRIVE_NAME" />"...</translation>
 <translation id="2951236788251446349">Медуза</translation>
@@ -414,6 +412,7 @@
 <translation id="4656777537938206294">Доступ да файлаў у пазасеткавым рэжыме</translation>
 <translation id="4658782175094886150">Чалавек у снезе</translation>
 <translation id="4669606053856530811">Удзельнікі дыска "<ph name="SOURCE_NAME" />" страцяць доступ да гэтых элементаў, калі гэтыя элементы не абагулены з імі.</translation>
+<translation id="467809019005607715">Прэзентацыі Google</translation>
 <translation id="4690246192099372265">Шведская</translation>
 <translation id="4693155481716051732">Сушы</translation>
 <translation id="4694604912444486114">Малпа</translation>
@@ -948,6 +947,7 @@
 <translation id="9172592259078059678">Гуджараці (транслітарацыя)</translation>
 <translation id="9173120999827300720">Англійская (ЗША) з міжнароднай клавіятурай</translation>
 <translation id="9174050671906956834">Элементы выдаляюцца са сметніцы назаўсёды праз 30 дзён.</translation>
+<translation id="9183302530794969518">Дакументы Google</translation>
 <translation id="9189836632794948435">Казахская</translation>
 <translation id="9213073329713032541">Пачалося ўсталяванне.</translation>
 <translation id="9219103736887031265">Відарысы</translation>

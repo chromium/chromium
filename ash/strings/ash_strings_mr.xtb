@@ -91,9 +91,9 @@
 <translation id="1414271762428216854"><ph name="APP_NAME" />, इंस्टॉल केलेले अ‍ॅप</translation>
 <translation id="1419738280318246476">सूचनेशी संबंधित क्रिया पार पाडण्यासाठी डिव्हाइस अनलॉक करा</translation>
 <translation id="1420408895951708260">रात्रीचा प्रकाश टॉगल करा. <ph name="STATE_TEXT" /></translation>
+<translation id="1420732223884894666">तुमच्या <ph name="DEVICE_TYPE" /> वर तुमच्या फोनमधील अलीकडील फोटो आणि मीडिया पहा</translation>
 <translation id="1426410128494586442">होय</translation>
 <translation id="1438357537418863713">ॲप स्ट्रीमिंग आता सेट केले आहे. तुम्ही सुरुवात केल्यावर, अलीकडे लाँच केलेली अ‍ॅप्स येथे दिसतील.</translation>
-<translation id="144853431011121127">तुमच्या फोनमधील सूचना तुमच्या <ph name="DEVICE_TYPE" /> वर मिळवा</translation>
 <translation id="1455242230282523554">भाषा सेटिंग्ज दर्शवा</translation>
 <translation id="1460620680449458626">व्हॉल्यूम म्यूट केलेला आहे.</translation>
 <translation id="1467432559032391204">डावे</translation>
@@ -826,6 +826,7 @@
 <translation id="6165508094623778733">अधिक जाणून घ्या</translation>
 <translation id="6166852626429024716">तुमच्या डिव्हाइस, अ‍ॅप्स, सेटिंग्ज, वेबवर शोधा...</translation>
 <translation id="6179832488876878285">तुम्ही तुमच्या महत्त्वाच्या फाइल येथे पिन करू शकता. सुरुवात करण्यासाठी Files अ‍ॅप उघडा.</translation>
+<translation id="619279033188484792">तुमच्या <ph name="DEVICE_TYPE" /> वर तुमच्या फोनमधील अलीकडील फोटो, मीडिया आणि सूचना पहा</translation>
 <translation id="6220928844947387476">तुम्ही आता एकाच वेळी स्वतःला आणि तुमची स्क्रीन रेकॉर्ड करू शकता</translation>
 <translation id="622484624075952240">Down</translation>
 <translation id="6231419273573514727">पेरिफेरल परफॉर्मन्स मर्यादित असू शकतो</translation>
@@ -938,6 +939,7 @@
 <translation id="6921188888306725546">कीबोर्ड शॉर्टकटमध्ये सुधारणा करण्यात आली आहे</translation>
 <translation id="6931576957638141829">येथे सेव्ह करा</translation>
 <translation id="6945221475159498467">निवडा</translation>
+<translation id="6960565108681981554">अ‍ॅक्टिव्हेट केलेले नाही. तुमच्या वाहकाशी संपर्क साधा.</translation>
 <translation id="6961121602502368900">कार्य प्रोफाइलवर सायलन्स फोन उपलब्ध नाही</translation>
 <translation id="6961840794482373852">Alt + Up Arrow कीबोर्ड शॉर्टकट बदलला आहे. पेज अप की वापरण्यासाठी, <ph name="LAUNCHER_KEY_NAME" /> की + अप अ‍ॅरो दाबा.</translation>
 <translation id="6965382102122355670">ठीक आहे</translation>
@@ -1147,7 +1149,6 @@
 <translation id="8236042855478648955">विश्रांतीची वेळ</translation>
 <translation id="8247060538831475781"><ph name="CONNECTION_STATUS" />, सिग्नल क्षमता <ph name="SIGNAL_STRENGTH" />, फोन बॅटरी <ph name="BATTERY_STATUS" /></translation>
 <translation id="8247998213073982446"><ph name="APP_NAME" />, ॲप</translation>
-<translation id="8248728785693203669">तुमची USB-C केबल ही कदाचित डिस्प्लेला योग्यरीत्या कनेक्ट होणार नाही</translation>
 <translation id="8255234195843591763">अपडेट करण्यासाठी रीसेट करा</translation>
 <translation id="826107067893790409"><ph name="USER_EMAIL_ADDRESS" /> अनलॉक करण्यासाठी एंटर दाबा</translation>
 <translation id="8261506727792406068">हटवा</translation>

@@ -138,6 +138,7 @@
 <translation id="1810845389119482123">未完成初始同步處理設定</translation>
 <translation id="1829244130665387512">在網頁中尋找</translation>
 <translation id="1832459821645506983">是，我同意使用</translation>
+<translation id="1849863543394887018">您可前往設定以停用通知</translation>
 <translation id="1877026089748256423">Chrome 版本過舊</translation>
 <translation id="1883903952484604915">我的檔案</translation>
 <translation id="189358972401248634">其他語言</translation>
@@ -270,7 +271,7 @@
 <translation id="2567385386134582609">圖片</translation>
 <translation id="2567545343356994513">對危險網站、下載檔案及擴充程式提供更快速的主動式保護功能</translation>
 <translation id="2571711316400087311">詢問是否將其他語言的網頁傳送至「Google 翻譯」</translation>
-<translation id="2573452357057307036">瞭解如何將 Chrome 設為預設瀏覽器</translation>
+<translation id="2573452357057307036">瞭解如何將 Chrome 設定為預設瀏覽器</translation>
 <translation id="2581165646603367611">這會清除 Chrome 認為不重要的網站內的 Cookie、快取和其他資料。</translation>
 <translation id="2587052924345400782">全新版本現已推出</translation>
 <translation id="2593272815202181319">等寬</translation>
@@ -428,6 +429,7 @@
 <translation id="3443221991560634068">重新載入目前網頁</translation>
 <translation id="3444179773590444986">要就網站深色主題背景提供意見嗎？</translation>
 <translation id="3469665409713263828">{FILE_COUNT,plural, =1{已預定 1 項下載}other{已預定 # 項下載}}</translation>
+<translation id="3474624961160222204">以「<ph name="NAME" />」的身分繼續</translation>
 <translation id="3478363558367712427">您可以選擇搜尋引擎</translation>
 <translation id="3493531032208478708"><ph name="BEGIN_LINK" />進一步瞭解<ph name="END_LINK" />建議的內容</translation>
 <translation id="3499246418971111862">chrome_qrcode_<ph name="CURRENT_TIMESTAMP_MS" /></translation>
@@ -458,7 +460,7 @@
 <translation id="363596933471559332">使用儲存的憑證自動登入網站。關閉功能時，每次登入網站之前都會要求您驗證。</translation>
 <translation id="3653111872753786013"><ph name="WEBSITE_TITLE" />：<ph name="WEBSITE_URL" /></translation>
 <translation id="3677911431265050325">切換至流動網站</translation>
-<translation id="3685860403008476208">這部裝置的所有使用者都能看到你在無痕模式下載的檔案</translation>
+<translation id="3685860403008476208">此裝置的所有使用者都能看到您在無痕模式下載的檔案</translation>
 <translation id="3687645719033307815">您正在預覽此網頁的預覽畫面</translation>
 <translation id="3690369331356918524">密碼因資料外洩而被洩露時接收警告</translation>
 <translation id="3692944402865947621">無法存取儲存位置，因此無法下載 <ph name="FILE_NAME" />。</translation>
@@ -1064,7 +1066,6 @@
 <translation id="7173114856073700355">開啟設定</translation>
 <translation id="7177466738963138057">您稍後可在「設定」中作出變更</translation>
 <translation id="7177873915659574692">無法建立 QR 碼。網址超過 <ph name="CHARACTER_LIMIT" /> 個字元。</translation>
-<translation id="7180611975245234373">重新整理</translation>
 <translation id="718226107353899806">您可新增最多 <ph name="MAX_NUM_REACTIONS" /> 個反應</translation>
 <translation id="7187993566681480880">確保您登入使用 Chrome 的安全，並可提升您在其他 Google 應用程式的安全性。</translation>
 <translation id="718926126787620637">書籤資料夾清單宜家顯示喺成個畫面</translation>
@@ -1198,6 +1199,7 @@
 <translation id="7926975587469166629">信用卡暱稱</translation>
 <translation id="7929962904089429003">開啟選單</translation>
 <translation id="7930998711684428189">密碼因資料外洩而被洩露時接收警告</translation>
+<translation id="7937772386706786623">透過通知管理媒體控制項、無痕式分頁等項目</translation>
 <translation id="7939485076072265087">建立精選內容嘅風格資訊卡</translation>
 <translation id="7942131818088350342"><ph name="PRODUCT_NAME" /> 版本過舊。</translation>
 <translation id="7944772052836377867">同步功能需要驗證您的身分</translation>

@@ -54,6 +54,7 @@
 <translation id="1499900233129743732"><ph name="MANAGER" /> керує цим користувачем і може віддалено змінювати налаштування та відстежувати його дії.</translation>
 <translation id="150962533380566081">Недійсний PUK-код.</translation>
 <translation id="1510238584712386396">Панель запуску</translation>
+<translation id="152892567002884378">Збільшити гучність</translation>
 <translation id="155865706765934889">Сенсорна панель</translation>
 <translation id="1565038567006703504"><ph name="DEVICE_NAME" />: не вдалось оновити</translation>
 <translation id="1567064801249837505">Альбоми</translation>
@@ -88,6 +89,7 @@
 <translation id="1908234395526491708">Не виконано запити за протоколом UDP</translation>
 <translation id="1930797645656624981">Сервіс методів введення в ОС Chrome</translation>
 <translation id="1947737735496445907">Надруковано</translation>
+<translation id="1951012854035635156">Асистент</translation>
 <translation id="1979103255016296513">Час для зміни пароля минув</translation>
 <translation id="1999615961760456652">Адаптивний портал</translation>
 <translation id="2006864819935886708">Підключення</translation>
@@ -152,6 +154,7 @@
 <translation id="2859243502336719778">Критичне оновлення</translation>
 <translation id="2860473693272905224">Розмістіть на сканері ще одну сторінку</translation>
 <translation id="2872961005593481000">Завершити роботу</translation>
+<translation id="2874939134665556319">Попередня композиція</translation>
 <translation id="2878387241690264070">Акумулятор розрядився на <ph name="RATE" /> за <ph name="NUM_SECONDS" /> с.</translation>
 <translation id="291142119251986300">Неналежні компоненти</translation>
 <translation id="2926057806159140518">Введіть ім’я користувача та пароль або зіскануйте QR-код</translation>
@@ -233,6 +236,7 @@
 <translation id="4003384961948020559">Не надруковано – вихідний лоток заповнений</translation>
 <translation id="4034824040120875894">Принтер</translation>
 <translation id="4044093238444069296">Не вдається зв’язатися зі шлюзом</translation>
+<translation id="4046123991198612571">Наступна композиція</translation>
 <translation id="404928562651467259">ЗАСТЕРЕЖЕННЯ</translation>
 <translation id="409427325554347132">Зберегти дані перевірки</translation>
 <translation id="4110686435123617899">Вибрати альбом "<ph name="TITLE" />" з описом "<ph name="DESC" />"</translation>
@@ -250,9 +254,11 @@
 <translation id="4238516577297848345">Немає активних завдань друку</translation>
 <translation id="4239069858505860023">GPRS</translation>
 <translation id="4244962993387259361">Щоб виконати перевірку пам’яті, потрібно принаймні 500 МБ вільного місця. Щоб звільнити пам’ять, перейдіть у розділ "Налаштування" &gt; "Керування пам’яттю".</translation>
+<translation id="4250229828105606438">Знімок екрана</translation>
 <translation id="4258281355379922695">Затримка HTTP</translation>
 <translation id="4271957103967917607">Переглянути в повноекранному режимі</translation>
 <translation id="4275799948641988986">Хто використовуватиме пристрій після ремонту?</translation>
+<translation id="4289540628985791613">Огляд</translation>
 <translation id="4297501883039923494">Зупинено – невідома помилка</translation>
 <translation id="4300073214558989">Зображень: <ph name="IMAGE_COUNT" /></translation>
 <translation id="4378373042927530923">Не виконано</translation>
@@ -335,6 +341,7 @@
 <translation id="5051044138948155788">Це єдина сторінка. Ви перейдете на екран початку сканування.</translation>
 <translation id="5088172560898466307">Ім’я хосту сервера</translation>
 <translation id="5089810972385038852">Штат/провінція</translation>
+<translation id="5090362543162270857">IPsec (IKEv2)</translation>
 <translation id="5142961317498132443">Автентифікація</translation>
 <translation id="5154917547274118687">Пам’ять</translation>
 <translation id="5160857336552977725">Увійдіть в обліковий запис на пристрої <ph name="DEVICE_TYPE" /></translation>
@@ -380,6 +387,7 @@
 <translation id="554517032089923082">GTC</translation>
 <translation id="5578477003638479617">Технологія UMTS</translation>
 <translation id="5578519639599103840">Сканувати ще раз</translation>
+<translation id="5583640892426849032">Backspace</translation>
 <translation id="5620281292257375798">Лише для внутрішнього використання</translation>
 <translation id="5649768706273821470">Слухати</translation>
 <translation id="5669267381087807207">Активація</translation>
@@ -389,6 +397,7 @@
 <translation id="5707900041990977207"><ph name="CURRENT_PAGE" /> з <ph name="TOTAL_PAGES" /></translation>
 <translation id="5733298426544876109">Оновити пристрій: <ph name="DEVICE_NAME" /></translation>
 <translation id="5760715441271661976">Стан порталу</translation>
+<translation id="57838592816432529">Вимкнути звук</translation>
 <translation id="5784136236926853061">Велика затримка HTTP</translation>
 <translation id="5832805196449965646">Додати користувача</translation>
 <translation id="583281660410589416">Невідомий</translation>
@@ -396,6 +405,7 @@
 <translation id="5849570051105887917">Код локального постачальника</translation>
 <translation id="5860033963881614850">Вимк.</translation>
 <translation id="5866840822086176774">Дуже потужний</translation>
+<translation id="588258955323874662">Повноекранний режим</translation>
 <translation id="5895138241574237353">Перезапустити</translation>
 <translation id="5916084858004523819">Заборонено</translation>
 <translation id="5916664084637901428">Увімкнено</translation>
@@ -436,6 +446,7 @@
 <translation id="6319207335391420837"><ph name="DEVICE_NAME" />: оновіть мікропрограму на пристрої</translation>
 <translation id="6325525973963619867">Помилка</translation>
 <translation id="6340526405444716530">Персоналізація</translation>
+<translation id="6348738456043757611">Ім’я користувача та пароль</translation>
 <translation id="636850387210749493">Реєстрація підприємства</translation>
 <translation id="6379086450106841622">Сенсорний екран</translation>
 <translation id="6388847657025262518">Автоподавач документів заклинило. Перевірте його та повторіть спробу.</translation>
@@ -465,12 +476,15 @@
 <translation id="6643016212128521049">Очистити</translation>
 <translation id="6647510110698214773">Алгоритм шифрування</translation>
 <translation id="6657585470893396449">Пароль</translation>
+<translation id="6659594942844771486">Вкладка</translation>
 <translation id="6692996468359469499">Отримати інформацію, пов'язану з виділеним текстом</translation>
 <translation id="6704062477274546131">Розпізнавання DNS</translation>
+<translation id="6723839937902243910">Заряд</translation>
 <translation id="6747215703636344499">Зупинено – вихідний лоток заповнений</translation>
 <translation id="6749473226660745022">Фото</translation>
 <translation id="6753452347192452143">Це комп’ютер.</translation>
 <translation id="6756731097889387912">Не вдалося скасувати сканування</translation>
+<translation id="6760706756348334449">Зменшити гучність</translation>
 <translation id="6766275201586212568">невдалі перетворення DNS</translation>
 <translation id="6768237774506518020">велика частка збоїв під час перетворення DNS</translation>
 <translation id="680983167891198932">Ключ</translation>
@@ -524,6 +538,7 @@
 <translation id="7427315641433634153">MSCHAP</translation>
 <translation id="7435977162516949853">{NUMBER_OF_PAGES,plural, =1{Сканування завершено. Відскановано 1 сторінку}one{Сканування завершено. Відскановано {NUMBER_OF_PAGES} сторінку}few{Сканування завершено. Відскановано {NUMBER_OF_PAGES} сторінки}many{Сканування завершено. Відскановано {NUMBER_OF_PAGES} сторінок}other{Сканування завершено. Відскановано {NUMBER_OF_PAGES} сторінки}}</translation>
 <translation id="7469648432129124067">Виявлено портал</translation>
+<translation id="7481312909269577407">Переслати</translation>
 <translation id="7487067081878637334">Технології</translation>
 <translation id="7490813197707563893">MAC-адреса</translation>
 <translation id="7497215489070763236">Сертифікат ЦС для сервера</translation>
@@ -577,6 +592,7 @@
 <translation id="8132480444149501833">Надіслати запит на лічильники трафіку</translation>
 <translation id="8138405288920084977">LTEAdvanced</translation>
 <translation id="8143951647992294073">Вибрати тему "<ph name="TOPIC_SOURCE" />" з описом "<ph name="TOPIC_SOURCE_DESC" />"</translation>
+<translation id="8179976553408161302">Enter</translation>
 <translation id="8206859287963243715">Мобільний</translation>
 <translation id="8208861521865154048">Бонуси</translation>
 <translation id="8217675307824400706">Підключіться до Інтернету</translation>

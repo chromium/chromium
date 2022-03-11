@@ -61,6 +61,7 @@
 <translation id="1497522201463361063">"<ph name="FILE_NAME" />" નું નામ બદલવામાં અક્ષમ. <ph name="ERROR_MESSAGE" /></translation>
 <translation id="1499943022354839699">અંગ્રેજી (યુએસ), Dvorak કીબોર્ડ સાથે</translation>
 <translation id="1515909359182093592"><ph name="INPUT_LABEL" /> - હોસ્ટ</translation>
+<translation id="1521655867290435174">Google Sheets</translation>
 <translation id="1538729222189715449">Linux ફાઇલો ખોલી રહ્યાં છીએ...</translation>
 <translation id="1547964879613821194">કેનેડિયન અંગ્રેજી</translation>
 <translation id="1556189134700913550">બધા પર લાગુ કરો</translation>
@@ -184,7 +185,6 @@
 <translation id="2544853746127077729">નેટવર્ક દ્વારા પ્રમાણીકરણ પ્રમાણપત્ર નકારવામાં આવ્યું</translation>
 <translation id="2547921442987553570"><ph name="EXTENSION_NAME" /> માં ઉમેરો</translation>
 <translation id="255937426064304553">યુએસ આંતરરાષ્ટ્રીય</translation>
-<translation id="2562685439590298522">Docs</translation>
 <translation id="2563185590376525700">દેડકો</translation>
 <translation id="2578394532502990878">તમિળ ફોનેટિક</translation>
 <translation id="2579959351793446050">ઉડિયા</translation>
@@ -220,9 +220,7 @@
 <translation id="2902734494705624966">યુએસ વિસ્તૃત</translation>
 <translation id="290843123675549676">મરાઠી</translation>
 <translation id="2923240520113693977">એસ્ટોનિયન</translation>
-<translation id="2925966894897775835">Sheets</translation>
 <translation id="2938685643439809023">મોંગોલિયન</translation>
-<translation id="2943400156390503548">Slides</translation>
 <translation id="2943503720238418293">વધુ ટૂંકા નામનો ઉપયોગ કરો</translation>
 <translation id="2949781154072577687"><ph name="DRIVE_NAME" />ને ફોર્મેટ કરી રહ્યાં છીએ…</translation>
 <translation id="2951236788251446349">જેલીફીશ</translation>
@@ -414,6 +412,7 @@
 <translation id="4656777537938206294">ફાઇલોને ઑફલાઇન ઉપલબ્ધ કરાવો</translation>
 <translation id="4658782175094886150">હિમવર્ષામાં ઉભેલી વ્યક્તિ</translation>
 <translation id="4669606053856530811">'<ph name="SOURCE_NAME" />'ના સભ્યો ઍક્સેસ ગુમાવશે સિવાય કે આ આઇટમને તેમની સાથે શેર કરવામાં ન આવી હોય.</translation>
+<translation id="467809019005607715">Google Slides</translation>
 <translation id="4690246192099372265">સ્વીડિશ</translation>
 <translation id="4693155481716051732">સુશી - માછલીની એક જાપાની વાનગી</translation>
 <translation id="4694604912444486114">વાનર</translation>
@@ -658,6 +657,7 @@
 <translation id="6732801395666424405">પ્રમાણપત્રો લોડ કર્યાં નથી</translation>
 <translation id="6736329909263487977"><ph name="ISSUED_BY" /> [<ph name="ISSUED_TO" />]</translation>
 <translation id="6751256176799620176">1 ફોલ્ડર પસંદ કર્યું</translation>
+<translation id="6755827872271341378">ChromeOS Flex ડિવાઇસ</translation>
 <translation id="6790428901817661496">ચલાવો</translation>
 <translation id="6795884519221689054">પાંડા</translation>
 <translation id="6806699711453372963">Linux શેરિંગ મેનેજ કરો</translation>
@@ -735,6 +735,7 @@
 <translation id="7343393116438664539">વિયેતનામીઝ ટેલેક્સ</translation>
 <translation id="7359359531237882347"><ph name="NUMBER_OF_ITEMS" /> આઇટમ કૉપિ કરી રહ્યું છે...</translation>
 <translation id="7375951387215729722">ફાઇલ સૂચિને <ph name="COLUMN_NAME" /> દ્વારા ઉતરતા ક્રમમાં સૉર્ટ કરેલી છે.</translation>
+<translation id="7402503521691663770">ChromeOS Flex ડિવાઇસ</translation>
 <translation id="7408870451288633753">ચેક</translation>
 <translation id="7417453074306512035">ઇથિઓપિક કીબોર્ડ</translation>
 <translation id="7417705661718309329">Google નકશો</translation>
@@ -947,6 +948,7 @@
 <translation id="9172592259078059678">ગુજરાતી લિપ્યંતર</translation>
 <translation id="9173120999827300720">અંગ્રેજી (યુએસ), આંતરરાષ્ટ્રીય કીબોર્ડ સાથે</translation>
 <translation id="9174050671906956834">30 દિવસ પછી ટ્રેશમાંની આઇટમ કાયમ માટે ડિલીટ કરવામાં આવે છે.</translation>
+<translation id="9183302530794969518">Google Docs</translation>
 <translation id="9189836632794948435">કઝાક</translation>
 <translation id="9213073329713032541">ઇન્સ્ટૉલેશન સફળતાપૂર્વક શરૂ થયું.</translation>
 <translation id="9219103736887031265">છબીઓ</translation>

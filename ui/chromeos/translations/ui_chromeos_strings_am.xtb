@@ -61,6 +61,7 @@
 <translation id="1497522201463361063">«<ph name="FILE_NAME" />»ን ዳግም መሰየም አልተቻለም። <ph name="ERROR_MESSAGE" /></translation>
 <translation id="1499943022354839699">እንግሊዝኛ (አሜሪካ) ከድቮራክ ቁልፍ ሰሌዳ ጋር</translation>
 <translation id="1515909359182093592"><ph name="INPUT_LABEL" /> - አስተናጋጅ</translation>
+<translation id="1521655867290435174">Google ሉሆች</translation>
 <translation id="1538729222189715449">የLinux ፋይሎችን በመክፈት ላይ...</translation>
 <translation id="1547964879613821194">የካናዳ እንግሊዝኛ</translation>
 <translation id="1556189134700913550">ሁሉም ላይ ተግብር</translation>
@@ -184,7 +185,6 @@
 <translation id="2544853746127077729">የማረጋገጫ ምስክር ወረቀት በአውታረ መረቡ ተቀባይነት አላገኘም</translation>
 <translation id="2547921442987553570">ወደ <ph name="EXTENSION_NAME" /> አክል</translation>
 <translation id="255937426064304553">አሜሪካ ዓለምአቀፍ</translation>
-<translation id="2562685439590298522">ሰነዶች</translation>
 <translation id="2563185590376525700">እንቁራሪት</translation>
 <translation id="2578394532502990878">ታሚልኛ ፎነቲክ</translation>
 <translation id="2579959351793446050">ኦዲያ</translation>
@@ -220,9 +220,7 @@
 <translation id="2902734494705624966">የአሜሪካ ተቀጥሎ</translation>
 <translation id="290843123675549676">ማራቲኛ</translation>
 <translation id="2923240520113693977">ኤስቶኒአን</translation>
-<translation id="2925966894897775835">ሉሆች</translation>
 <translation id="2938685643439809023">ሞንጎልኛ</translation>
-<translation id="2943400156390503548">ስላይድ</translation>
 <translation id="2943503720238418293">ያጠረ ስም ይጠቀሙ</translation>
 <translation id="2949781154072577687"><ph name="DRIVE_NAME" /> ላይ ቅርጸት በመስራት ላይ...</translation>
 <translation id="2951236788251446349">ዝልግልግ አሳ</translation>
@@ -414,6 +412,7 @@
 <translation id="4656777537938206294">ፋይሎችን ከመስመር ውጭ እንዲገኙ ያድርጉ</translation>
 <translation id="4658782175094886150">በበረዶ ውስጥ ያለ ሰው</translation>
 <translation id="4669606053856530811">እነዚህ ንጥሎች ለእነሱ ካልተጋሩ በስተቀር የ«<ph name="SOURCE_NAME" />» አባላት መዳረሻ ያጣሉ።</translation>
+<translation id="467809019005607715">Google ስላይዶች</translation>
 <translation id="4690246192099372265">ስዊድንኛ</translation>
 <translation id="4693155481716051732">ሱሺ</translation>
 <translation id="4694604912444486114">ጦጣ</translation>
@@ -949,6 +948,7 @@
 <translation id="9172592259078059678">በጉጃራቲ ቋንቋ ፊደል መጻፍ</translation>
 <translation id="9173120999827300720">እንግሊዝኛ (አሜሪካ) በዓለም አቀፍ ቁልፍ ሰሌዳ</translation>
 <translation id="9174050671906956834">በመጣያው ውስጥ ያሉ ንጥሎች ከ30 ቀኖች በኋላ ለዘለዓለም ይሰረዛሉ።</translation>
+<translation id="9183302530794969518">Google ሰነድ</translation>
 <translation id="9189836632794948435">ካዛክኛ</translation>
 <translation id="9213073329713032541">ጭነት በተሳካ ሁኔታ ጀምሯል።</translation>
 <translation id="9219103736887031265">ምስሎች</translation>

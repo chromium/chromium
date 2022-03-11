@@ -254,6 +254,7 @@
 <translation id="7087918508125750058">تم اختيار <ph name="ITEM_COUNT" /> عنصر، ويمكنك الاطّلاع على الخيارات في الجزء العلوي من الشاشة.</translation>
 <translation id="7141896414559753902">منع المواقع الإلكترونية من عرض النوافذ المنبثقة وعمليات إعادة التوجيه (مُوصى به)</translation>
 <translation id="7176368934862295254"><ph name="KILOBYTES" /> كيلوبايت</translation>
+<translation id="7180611975245234373">إعادة التحميل</translation>
 <translation id="723171743924126238">اختيار الصور</translation>
 <translation id="7243308994586599757">الخيارات المتاحة بالقرب من الجزء السفلي من الشاشة</translation>
 <translation id="7250468141469952378">تم اختيار <ph name="ITEM_COUNT" /> عنصراً</translation>
@@ -310,6 +311,7 @@
 <translation id="8394832520002899662">يُرجى النقر للرجوع إلى الموقع الإلكتروني.</translation>
 <translation id="8409345997656833551">تلقّي إشعارات في حال كان خيار العرض المبسَّط متاحًا لمقالة</translation>
 <translation id="8425213833346101688">تغيير</translation>
+<translation id="8428213095426709021">الإعدادات</translation>
 <translation id="8441146129660941386">الرجوع للوراء</translation>
 <translation id="8444433999583714703">‏للسماح لتطبيق <ph name="APP_NAME" /> بالوصول إلى موقعك الجغرافي، يُرجى أيضًا تفعيل الموقع الجغرافي في <ph name="BEGIN_LINK" />إعدادات Android<ph name="END_LINK" />.</translation>
 <translation id="8447861592752582886">إبطال إذن الجهاز</translation>

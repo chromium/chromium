@@ -254,6 +254,7 @@
 <translation id="7087918508125750058">Elementos seleccionados: <ph name="ITEM_COUNT" />. Hay opciones disponibles en la parte superior de la pantalla</translation>
 <translation id="7141896414559753902">Impide que los sitios muestren ventanas emergentes y redirecciones (recomendado)</translation>
 <translation id="7176368934862295254"><ph name="KILOBYTES" /> kB</translation>
+<translation id="7180611975245234373">Actualizar</translation>
 <translation id="723171743924126238">Seleccionar imágenes</translation>
 <translation id="7243308994586599757">Opciones disponibles cerca de la parte inferior de la pantalla</translation>
 <translation id="7250468141469952378">Elementos seleccionados: <ph name="ITEM_COUNT" /></translation>
@@ -309,6 +310,7 @@
 <translation id="8394832520002899662">Toca para volver al sitio web</translation>
 <translation id="8409345997656833551">Recibir una notificación cuando un artículo pueda mostrarse en vista simplificada</translation>
 <translation id="8425213833346101688">Cambiar</translation>
+<translation id="8428213095426709021">Configuración</translation>
 <translation id="8441146129660941386">Buscar hacia atrás</translation>
 <translation id="8444433999583714703">Para que <ph name="APP_NAME" /> tenga acceso a tu ubicación, actívala también en los <ph name="BEGIN_LINK" />ajustes de Android<ph name="END_LINK" />.</translation>
 <translation id="8447861592752582886">Revocar permiso de dispositivo</translation>

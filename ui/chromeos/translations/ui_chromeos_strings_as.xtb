@@ -61,6 +61,7 @@
 <translation id="1497522201463361063">"<ph name="FILE_NAME" />"ৰ নাম সলনি কৰিব পৰা নগ'ল।<ph name="ERROR_MESSAGE" /></translation>
 <translation id="1499943022354839699">Dvorak কীব’ৰ্ডৰ সৈতে ইংৰাজী (যুক্তৰাষ্ট্ৰ)</translation>
 <translation id="1515909359182093592"><ph name="INPUT_LABEL" /> - হ’ষ্ট</translation>
+<translation id="1521655867290435174">Google Sheets</translation>
 <translation id="1538729222189715449">Linux ফাইল খুলি থকা হৈছে...</translation>
 <translation id="1547964879613821194">কানাডিয়ান ইংৰাজী</translation>
 <translation id="1556189134700913550">সকলোতে প্ৰয়োগ কৰক</translation>
@@ -184,7 +185,6 @@
 <translation id="2544853746127077729">নেটৱৰ্কে বিশ্বাসযোগ্যতাৰ প্ৰমাণপত্ৰ অগ্ৰাহ্য কৰিছে</translation>
 <translation id="2547921442987553570"><ph name="EXTENSION_NAME" />ত যোগ কৰক</translation>
 <translation id="255937426064304553">US আন্তৰ্জাতিক</translation>
-<translation id="2562685439590298522">Docs</translation>
 <translation id="2563185590376525700">ভেকুলী</translation>
 <translation id="2578394532502990878">তামিল ফ’নেটিক</translation>
 <translation id="2579959351793446050">ওড়িয়া</translation>
@@ -220,9 +220,7 @@
 <translation id="2902734494705624966">ইউ.এছ.ৰ বিস্তাৰিত</translation>
 <translation id="290843123675549676">মাৰাঠী</translation>
 <translation id="2923240520113693977">ইষ্ট’নিয়া</translation>
-<translation id="2925966894897775835">Sheets</translation>
 <translation id="2938685643439809023">Mongolian</translation>
-<translation id="2943400156390503548">Slides</translation>
 <translation id="2943503720238418293">কোনো চুটি নাম ব্যৱহাৰ কৰক</translation>
 <translation id="2949781154072577687"><ph name="DRIVE_NAME" /> ফৰ্মেট কৰি থকা হৈছে...</translation>
 <translation id="2951236788251446349">জেলীফিশ্ব</translation>
@@ -414,6 +412,7 @@
 <translation id="4656777537938206294">ফাইলসমূহ অনলাইনত উপলব্ধ কৰক</translation>
 <translation id="4658782175094886150">বৰফৰ মাজত থকা ব্যক্তিৰ ছবি</translation>
 <translation id="4669606053856530811">’<ph name="SOURCE_NAME" />’ৰ সদস্যসকলে তেতিয়ালৈকে এক্সেছ নাপাব যেতিয়ালৈকে তেওঁলোকৰ সৈতে এই বস্তুবোৰ শ্বেয়াৰ কৰা নহয়।</translation>
+<translation id="467809019005607715">Google Slides</translation>
 <translation id="4690246192099372265">ছুইডিশ্ব</translation>
 <translation id="4693155481716051732">ছুশ্বি</translation>
 <translation id="4694604912444486114">বান্দৰ</translation>
@@ -657,6 +656,7 @@
 <translation id="6732801395666424405">প্ৰমাণপত্ৰসমূহ ল’ড হোৱা নাই</translation>
 <translation id="6736329909263487977"><ph name="ISSUED_BY" /> [<ph name="ISSUED_TO" />]</translation>
 <translation id="6751256176799620176">১টা ফ’ল্ডাৰ বাছনি কৰা হ’ল</translation>
+<translation id="6755827872271341378">ChromeOS Flex ডিভাইচ</translation>
 <translation id="6790428901817661496">প্লে’ কৰক</translation>
 <translation id="6795884519221689054">পাণ্ডা</translation>
 <translation id="6806699711453372963">Linuxৰ শ্বেয়াৰিং পৰিচালনা কৰক</translation>
@@ -734,6 +734,7 @@
 <translation id="7343393116438664539">ভিয়েটনামিজ টেলেক্স</translation>
 <translation id="7359359531237882347"><ph name="NUMBER_OF_ITEMS" />টা বস্তু প্ৰতিলিপি কৰি থকা হৈছে...</translation>
 <translation id="7375951387215729722">ফাইলৰ সূচী <ph name="COLUMN_NAME" /> অনুসৰি অধোগামীভাৱে সজোৱা হৈছে।</translation>
+<translation id="7402503521691663770">ChromeOS Flex ডিভাইচ</translation>
 <translation id="7408870451288633753">ছেক</translation>
 <translation id="7417453074306512035">ইথিঅ’পিক কীব’র্ড</translation>
 <translation id="7417705661718309329">Google মেপ</translation>
@@ -948,6 +949,7 @@
 <translation id="9172592259078059678">গুজৰাটী লিপ্যন্তৰণ</translation>
 <translation id="9173120999827300720">আন্তঃৰাষ্ট্ৰীয় কীব’ৰ্ডৰ সৈতে ইংৰাজী (যুক্তৰাষ্ট্ৰ)</translation>
 <translation id="9174050671906956834">ট্ৰেশ্বত থকা বস্তু ৩০ দিনৰ পাছত চিৰদিনৰ বাবে মচা হয়।</translation>
+<translation id="9183302530794969518">Google Docs</translation>
 <translation id="9189836632794948435">কাজাখ</translation>
 <translation id="9213073329713032541">ইনষ্টলেশ্বন সফলতাৰে আৰম্ভ কৰা হ’ল৷</translation>
 <translation id="9219103736887031265">Images</translation>

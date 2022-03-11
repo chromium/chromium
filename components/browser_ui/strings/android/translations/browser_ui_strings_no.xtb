@@ -254,6 +254,7 @@
 <translation id="7087918508125750058"><ph name="ITEM_COUNT" /> er valgt. Du finner alternativer oppe på skjermen</translation>
 <translation id="7141896414559753902">Blokkér nettsteder fra å vise forgrunnsvinduer og viderekoblinger (anbefales)</translation>
 <translation id="7176368934862295254"><ph name="KILOBYTES" /> kB</translation>
+<translation id="7180611975245234373">Last inn på nytt</translation>
 <translation id="723171743924126238">Velg bilder</translation>
 <translation id="7243308994586599757">Du finner alternativer ved bunnen av skjermen</translation>
 <translation id="7250468141469952378"><ph name="ITEM_COUNT" /> er valgt</translation>
@@ -309,6 +310,7 @@
 <translation id="8394832520002899662">Trykk for å gå tilbake til nettstedet</translation>
 <translation id="8409345997656833551">Bli varslet når artikler kan vises i forenklet visning</translation>
 <translation id="8425213833346101688">Endre</translation>
+<translation id="8428213095426709021">Innstillinger</translation>
 <translation id="8441146129660941386">Spol bakover</translation>
 <translation id="8444433999583714703">For å gi <ph name="APP_NAME" /> tilgang til posisjonen din må du også slå på posisjon i <ph name="BEGIN_LINK" />Android-innstillingene<ph name="END_LINK" />.</translation>
 <translation id="8447861592752582886">Opphev tillatelsen til enhetstilgang</translation>

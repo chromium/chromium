@@ -54,6 +54,7 @@
 <translation id="1499900233129743732"><ph name="MANAGER" /> quản lý người dùng này và có thể quản lý từ xa các tùy chọn cài đặt cũng như giám sát hoạt động của người dùng.</translation>
 <translation id="150962533380566081">PUK không hợp lệ.</translation>
 <translation id="1510238584712386396">Trình chạy</translation>
+<translation id="152892567002884378">Tăng âm lượng</translation>
 <translation id="155865706765934889">Ô di chuột</translation>
 <translation id="1565038567006703504">Không thể cập nhật <ph name="DEVICE_NAME" /></translation>
 <translation id="1567064801249837505">Album</translation>
@@ -88,6 +89,7 @@
 <translation id="1908234395526491708">Không gửi được yêu cầu UDP</translation>
 <translation id="1930797645656624981">Dịch vụ cung cấp phương thức nhập trên Chrome OS</translation>
 <translation id="1947737735496445907">Đã in</translation>
+<translation id="1951012854035635156">Trợ lý</translation>
 <translation id="1979103255016296513">Đã quá hạn thay đổi mật khẩu</translation>
 <translation id="1999615961760456652">Trang xác thực</translation>
 <translation id="2006864819935886708">Kết nối</translation>
@@ -152,6 +154,7 @@
 <translation id="2859243502336719778">Bản cập nhật quan trọng</translation>
 <translation id="2860473693272905224">Đặt một trang khác lên máy quét</translation>
 <translation id="2872961005593481000">Tắt</translation>
+<translation id="2874939134665556319">Bản nhạc trước</translation>
 <translation id="2878387241690264070">Đã xả <ph name="RATE" /> pin sau <ph name="NUM_SECONDS" /> giây.</translation>
 <translation id="291142119251986300">Thành phần không đủ tiêu chuẩn</translation>
 <translation id="2926057806159140518">Nhập tên người dùng và mật khẩu hoặc quét mã QR</translation>
@@ -233,6 +236,7 @@
 <translation id="4003384961948020559">Không thành công – Khay đầu ra đã đầy</translation>
 <translation id="4034824040120875894">Máy in</translation>
 <translation id="4044093238444069296">Không thể kết nối với cổng vào</translation>
+<translation id="4046123991198612571">Bản nhạc tiếp theo</translation>
 <translation id="404928562651467259">CẢNH BÁO</translation>
 <translation id="409427325554347132">Lưu thông tin chi tiết của quá trình kiểm tra</translation>
 <translation id="4110686435123617899">Chọn album <ph name="TITLE" /> <ph name="DESC" /></translation>
@@ -250,9 +254,11 @@
 <translation id="4238516577297848345">Không có lệnh in nào đang xử lý</translation>
 <translation id="4239069858505860023">GPRS</translation>
 <translation id="4244962993387259361">Bạn cần ít nhất 500 MB trống để chạy tính năng kiểm tra Bộ nhớ. Để giải phóng dung lượng, hãy chuyển đến phần Cài đặt &gt; Trình quản lý bộ nhớ.</translation>
+<translation id="4250229828105606438">Ảnh chụp màn hình</translation>
 <translation id="4258281355379922695">Độ trễ của yêu cầu HTTP</translation>
 <translation id="4271957103967917607">Xem toàn màn hình</translation>
 <translation id="4275799948641988986">Sau khi sửa chữa, ai sẽ là người dùng thiết bị?</translation>
+<translation id="4289540628985791613">Tổng quan</translation>
 <translation id="4297501883039923494">Đã dừng – Lỗi không xác định</translation>
 <translation id="4300073214558989"><ph name="IMAGE_COUNT" /> hình ảnh</translation>
 <translation id="4378373042927530923">Không chạy</translation>
@@ -335,6 +341,7 @@
 <translation id="5051044138948155788">Đây là trang duy nhất. Thao tác này sẽ đưa bạn đến màn hình bắt đầu quét.</translation>
 <translation id="5088172560898466307">Tên máy chủ</translation>
 <translation id="5089810972385038852">Tỉnh</translation>
+<translation id="5090362543162270857">IPsec (IKEv2)</translation>
 <translation id="5142961317498132443">Xác thực</translation>
 <translation id="5154917547274118687">Bộ nhớ</translation>
 <translation id="5160857336552977725">Đăng nhập vào <ph name="DEVICE_TYPE" /> của bạn</translation>
@@ -380,6 +387,7 @@ Hãy thử nhấn vào micrô để hỏi tôi bất cứ điều gì.</translat
 <translation id="554517032089923082">GTC</translation>
 <translation id="5578477003638479617">UMTS</translation>
 <translation id="5578519639599103840">Quét lại</translation>
+<translation id="5583640892426849032">Backspace</translation>
 <translation id="5620281292257375798">Chỉ sử dụng nội bộ</translation>
 <translation id="5649768706273821470">Nghe</translation>
 <translation id="5669267381087807207">Đang kích hoạt</translation>
@@ -389,6 +397,7 @@ Hãy thử nhấn vào micrô để hỏi tôi bất cứ điều gì.</translat
 <translation id="5707900041990977207"><ph name="CURRENT_PAGE" />/<ph name="TOTAL_PAGES" /></translation>
 <translation id="5733298426544876109">Cập nhật <ph name="DEVICE_NAME" /></translation>
 <translation id="5760715441271661976">Trạng thái trang xác thực</translation>
+<translation id="57838592816432529">Tắt tiếng</translation>
 <translation id="5784136236926853061">Yêu cầu HTTP có độ trễ cao</translation>
 <translation id="5832805196449965646">Thêm người</translation>
 <translation id="583281660410589416">Không xác định</translation>
@@ -396,6 +405,7 @@ Hãy thử nhấn vào micrô để hỏi tôi bất cứ điều gì.</translat
 <translation id="5849570051105887917">Mã của nhà cung cấp Home</translation>
 <translation id="5860033963881614850">Tắt</translation>
 <translation id="5866840822086176774">Rất mạnh</translation>
+<translation id="588258955323874662">Toàn màn hình</translation>
 <translation id="5895138241574237353">Khởi động lại</translation>
 <translation id="5916084858004523819">Bị cấm</translation>
 <translation id="5916664084637901428">Bật</translation>
@@ -436,6 +446,7 @@ Hãy thử nhấn vào micrô để hỏi tôi bất cứ điều gì.</translat
 <translation id="6319207335391420837">Cập nhật chương trình cơ sở cho <ph name="DEVICE_NAME" /></translation>
 <translation id="6325525973963619867">Lỗi</translation>
 <translation id="6340526405444716530">Cá nhân hóa</translation>
+<translation id="6348738456043757611">Tên người dùng và mật khẩu</translation>
 <translation id="636850387210749493">Đăng ký doanh nghiệp</translation>
 <translation id="6379086450106841622">Màn hình cảm ứng</translation>
 <translation id="6388847657025262518">Khay nạp tài liệu của máy quét bị kẹt. Hãy kiểm tra khay nạp rồi thử lại.</translation>
@@ -465,12 +476,15 @@ Hãy thử nhấn vào micrô để hỏi tôi bất cứ điều gì.</translat
 <translation id="6643016212128521049">Xóa</translation>
 <translation id="6647510110698214773">Thuật toán mã hoá</translation>
 <translation id="6657585470893396449">Mật khẩu</translation>
+<translation id="6659594942844771486">Thẻ</translation>
 <translation id="6692996468359469499">Nhận thông tin liên quan đến lựa chọn của bạn</translation>
 <translation id="6704062477274546131">Phân giải DNS</translation>
+<translation id="6723839937902243910">Nguồn</translation>
 <translation id="6747215703636344499">Đã dừng – Khay giấy ra đã đầy</translation>
 <translation id="6749473226660745022">Ảnh</translation>
 <translation id="6753452347192452143">Thiết bị là máy tính.</translation>
 <translation id="6756731097889387912">Không thể hủy quá trình quét</translation>
+<translation id="6760706756348334449">Giảm âm lượng</translation>
 <translation id="6766275201586212568">Quá trình phân giải DNS không thành công</translation>
 <translation id="6768237774506518020">Tỷ lệ lỗi cao trong quá trình phân giải DNS</translation>
 <translation id="680983167891198932">Khóa</translation>
@@ -524,6 +538,7 @@ Hãy thử nhấn vào micrô để hỏi tôi bất cứ điều gì.</translat
 <translation id="7427315641433634153">MSCHAP</translation>
 <translation id="7435977162516949853">{NUMBER_OF_PAGES,plural, =1{Đã quét xong. Đã quét 1 trang}other{Đã quét xong. Đã quét {NUMBER_OF_PAGES} trang}}</translation>
 <translation id="7469648432129124067">Đã phát hiện thấy cổng</translation>
+<translation id="7481312909269577407">Chuyển tiếp</translation>
 <translation id="7487067081878637334">Công nghệ</translation>
 <translation id="7490813197707563893">Địa chỉ MAC</translation>
 <translation id="7497215489070763236">Chứng chỉ CA máy chủ</translation>
@@ -577,6 +592,7 @@ Hãy thử nhấn vào micrô để hỏi tôi bất cứ điều gì.</translat
 <translation id="8132480444149501833">Yêu cầu Bộ đếm lưu lượng truy cập</translation>
 <translation id="8138405288920084977">LTEAdvanced</translation>
 <translation id="8143951647992294073">Chọn <ph name="TOPIC_SOURCE" /> <ph name="TOPIC_SOURCE_DESC" /></translation>
+<translation id="8179976553408161302">Enter</translation>
 <translation id="8206859287963243715">Di động</translation>
 <translation id="8208861521865154048">Đặc quyền</translation>
 <translation id="8217675307824400706">Kết nối</translation>

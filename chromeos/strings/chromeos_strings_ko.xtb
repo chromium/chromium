@@ -54,6 +54,7 @@
 <translation id="1499900233129743732"><ph name="MANAGER" />에서 이 사용자를 관리하며, 원격으로 설정을 관리하고 사용자 활동을 모니터링할 수 있습니다.</translation>
 <translation id="150962533380566081">잘못된 PUK입니다.</translation>
 <translation id="1510238584712386396">런처</translation>
+<translation id="152892567002884378">볼륨 크게</translation>
 <translation id="155865706765934889">터치패드</translation>
 <translation id="1565038567006703504"><ph name="DEVICE_NAME" /> 업데이트할 수 없음</translation>
 <translation id="1567064801249837505">앨범</translation>
@@ -88,6 +89,7 @@
 <translation id="1908234395526491708">UDP 요청 실패</translation>
 <translation id="1930797645656624981">Chrome OS 입력 방법 서비스</translation>
 <translation id="1947737735496445907">인쇄됨</translation>
+<translation id="1951012854035635156">어시스턴트</translation>
 <translation id="1979103255016296513">비밀번호 변경 기한 지남</translation>
 <translation id="1999615961760456652">종속 포털</translation>
 <translation id="2006864819935886708">연결</translation>
@@ -152,6 +154,7 @@
 <translation id="2859243502336719778">중요 업데이트</translation>
 <translation id="2860473693272905224">스캐너에 다른 페이지를 올리세요.</translation>
 <translation id="2872961005593481000">종료</translation>
+<translation id="2874939134665556319">이전 트랙</translation>
 <translation id="2878387241690264070"><ph name="NUM_SECONDS" />초 내에 <ph name="RATE" /> 방전됨</translation>
 <translation id="291142119251986300">자격 없는 구성요소</translation>
 <translation id="2926057806159140518">사용자 이름과 비밀번호를 입력하거나 QR 코드를 스캔하세요.</translation>
@@ -233,6 +236,7 @@
 <translation id="4003384961948020559">실패 - 출력 가득 참</translation>
 <translation id="4034824040120875894">프린터</translation>
 <translation id="4044093238444069296">게이트웨이에 접근할 수 없습니다.</translation>
+<translation id="4046123991198612571">다음 트랙</translation>
 <translation id="404928562651467259">경고</translation>
 <translation id="409427325554347132">테스트 세부정보 저장</translation>
 <translation id="4110686435123617899">앨범 <ph name="TITLE" /> <ph name="DESC" /> 선택</translation>
@@ -250,9 +254,11 @@
 <translation id="4238516577297848345">진행 중인 인쇄 작업 없음</translation>
 <translation id="4239069858505860023">GPRS</translation>
 <translation id="4244962993387259361">메모리 테스트를 실행하려면 500MB 이상의 용량이 남아 있어야 합니다. 공간을 확보하려면 설정 &gt; 스토리지 관리로 이동하세요.</translation>
+<translation id="4250229828105606438">스크린샷</translation>
 <translation id="4258281355379922695">HTTP 지연 시간</translation>
 <translation id="4271957103967917607">전체 화면 보기</translation>
 <translation id="4275799948641988986">수리 후 누가 기기를 사용하나요?</translation>
+<translation id="4289540628985791613">개요</translation>
 <translation id="4297501883039923494">중지됨 - 알 수 없는 오류</translation>
 <translation id="4300073214558989">이미지 <ph name="IMAGE_COUNT" />개</translation>
 <translation id="4378373042927530923">실행되지 않음</translation>
@@ -335,6 +341,7 @@
 <translation id="5051044138948155788">이 페이지만 삭제합니다. 스캔 시작 화면으로 이동합니다.</translation>
 <translation id="5088172560898466307">서버 호스트 이름</translation>
 <translation id="5089810972385038852">시/도</translation>
+<translation id="5090362543162270857">IPsec(IKEv2)</translation>
 <translation id="5142961317498132443">인증</translation>
 <translation id="5154917547274118687">메모리</translation>
 <translation id="5160857336552977725"><ph name="DEVICE_TYPE" />에 로그인</translation>
@@ -380,6 +387,7 @@
 <translation id="554517032089923082">GTC</translation>
 <translation id="5578477003638479617">UMTS</translation>
 <translation id="5578519639599103840">다시 스캔</translation>
+<translation id="5583640892426849032">Backspace</translation>
 <translation id="5620281292257375798">내부용</translation>
 <translation id="5649768706273821470">듣기</translation>
 <translation id="5669267381087807207">활성화 중</translation>
@@ -389,6 +397,7 @@
 <translation id="5707900041990977207"><ph name="CURRENT_PAGE" />/<ph name="TOTAL_PAGES" /></translation>
 <translation id="5733298426544876109"><ph name="DEVICE_NAME" /> 업데이트</translation>
 <translation id="5760715441271661976">포털 상태</translation>
+<translation id="57838592816432529">음소거</translation>
 <translation id="5784136236926853061">HTTP 지연 시간 높음</translation>
 <translation id="5832805196449965646">사용자 추가</translation>
 <translation id="583281660410589416">알 수 없음</translation>
@@ -396,6 +405,7 @@
 <translation id="5849570051105887917">홈 공급자 코드</translation>
 <translation id="5860033963881614850">사용 안함</translation>
 <translation id="5866840822086176774">매우 강함</translation>
+<translation id="588258955323874662">전체화면</translation>
 <translation id="5895138241574237353">다시 시작</translation>
 <translation id="5916084858004523819">금지됨</translation>
 <translation id="5916664084637901428">사용</translation>
@@ -466,12 +476,15 @@
 <translation id="6643016212128521049">삭제</translation>
 <translation id="6647510110698214773">암호화 알고리즘</translation>
 <translation id="6657585470893396449">비밀번호</translation>
+<translation id="6659594942844771486">탭</translation>
 <translation id="6692996468359469499">선택 항목과 관련된 정보 얻기</translation>
 <translation id="6704062477274546131">DNS 변환</translation>
+<translation id="6723839937902243910">전원</translation>
 <translation id="6747215703636344499">중지됨 - 배지대 가득 참</translation>
 <translation id="6749473226660745022">사진</translation>
 <translation id="6753452347192452143">컴퓨터 기기입니다.</translation>
 <translation id="6756731097889387912">스캔을 취소할 수 없음</translation>
+<translation id="6760706756348334449">볼륨 작게</translation>
 <translation id="6766275201586212568">DNS 변환 실패함</translation>
 <translation id="6768237774506518020">DNS 변환 실패율 높음</translation>
 <translation id="680983167891198932">키</translation>
@@ -525,6 +538,7 @@
 <translation id="7427315641433634153">MSCHAP</translation>
 <translation id="7435977162516949853">{NUMBER_OF_PAGES,plural, =1{스캔이 완료되었습니다. 1페이지가 스캔되었습니다}other{스캔이 완료되었습니다. {NUMBER_OF_PAGES}페이지가 스캔되었습니다}}</translation>
 <translation id="7469648432129124067">포털 감지됨</translation>
+<translation id="7481312909269577407">앞으로</translation>
 <translation id="7487067081878637334">테크놀로지</translation>
 <translation id="7490813197707563893">MAC 주소</translation>
 <translation id="7497215489070763236">서버 CA 인증서</translation>
@@ -578,6 +592,7 @@
 <translation id="8132480444149501833">트래픽 카운터 요청</translation>
 <translation id="8138405288920084977">LTEAdvanced</translation>
 <translation id="8143951647992294073"><ph name="TOPIC_SOURCE" /> <ph name="TOPIC_SOURCE_DESC" /> 선택</translation>
+<translation id="8179976553408161302">Enter</translation>
 <translation id="8206859287963243715">휴대전화</translation>
 <translation id="8208861521865154048">혜택</translation>
 <translation id="8217675307824400706">연결</translation>

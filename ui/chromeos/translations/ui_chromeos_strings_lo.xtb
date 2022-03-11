@@ -61,6 +61,7 @@
 <translation id="1497522201463361063">ບໍ່ສາມາດປ່ຽນຊື່ໄດ້ "<ph name="FILE_NAME" />". <ph name="ERROR_MESSAGE" /></translation>
 <translation id="1499943022354839699">ພາສາອັງກິດ (ສະຫະລັດ) ທີ່ໃຊ້ແປ້ນພິມ Dvorak</translation>
 <translation id="1515909359182093592"><ph name="INPUT_LABEL" /> - ໂຮສ</translation>
+<translation id="1521655867290435174">Google Sheets</translation>
 <translation id="1538729222189715449">ກຳລັງເປີດໄຟລ໌ Linux...</translation>
 <translation id="1547964879613821194">ພາ​ສາ​ອັງ​ກິດກາ​ນາ​ດາ​</translation>
 <translation id="1556189134700913550">ໃຊ້ກັບ​ທັງ​ຫມົດ</translation>
@@ -184,7 +185,6 @@
 <translation id="2544853746127077729">ໃບ​ຢັ້ງ​ຢືນ​ການ​ຮັບຮອງຖືກ​ເຄືອ​ຂ່າຍ​ປະ​ຕິ​ເສດ</translation>
 <translation id="2547921442987553570">ເພີ່ມໃສ່ <ph name="EXTENSION_NAME" /></translation>
 <translation id="255937426064304553">US ສາ​ກົນ</translation>
-<translation id="2562685439590298522">ເອກະສານ</translation>
 <translation id="2563185590376525700">ກົບ</translation>
 <translation id="2578394532502990878">ພາສາທາມິລ (ຕາມການອອກສຽງ)</translation>
 <translation id="2579959351793446050">ພາສາໂອເດຍ</translation>
@@ -220,9 +220,7 @@
 <translation id="2902734494705624966">US ຂະ​ຫຍາຍ</translation>
 <translation id="290843123675549676">ພາສາມາຣາທີ</translation>
 <translation id="2923240520113693977">ພາສາເອສໂຕ​ເນຍ</translation>
-<translation id="2925966894897775835">ແຜ່ນ</translation>
 <translation id="2938685643439809023">ພາສາມົງໂກລີ</translation>
-<translation id="2943400156390503548">ສະໄລດ໌</translation>
 <translation id="2943503720238418293">ກະ​ລຸ​ນາໃຊ້ຊື່ທີ່ສັ້ນກວ່າ</translation>
 <translation id="2949781154072577687">ກຳລັງຟໍແມັດ <ph name="DRIVE_NAME" />...</translation>
 <translation id="2951236788251446349">ແມງກະພຸນ</translation>
@@ -414,6 +412,7 @@
 <translation id="4656777537938206294">ເຮັດໃຫ້ໄຟລ໌ສາມາດໃຊ້ໄດ້ອອບລາຍ</translation>
 <translation id="4658782175094886150">ຄົນໃນຫິມະ</translation>
 <translation id="4669606053856530811">ສະມາຊິກ '<ph name="SOURCE_NAME" />' ຈະສູນເສຍການເຂົ້າເຖິງ ເວັ້ນເສຍແຕ່ວ່າມີການແບ່ງປັນລາຍການເຫຼົ່ານີ້ກັບເຂົາເຈົ້າ.</translation>
+<translation id="467809019005607715">Google Slides</translation>
 <translation id="4690246192099372265">ພາສາຊູແອດ</translation>
 <translation id="4693155481716051732">ຊູຊິ</translation>
 <translation id="4694604912444486114">ລີງ</translation>
@@ -948,6 +947,7 @@
 <translation id="9172592259078059678">ການແປທັບສັບພາສາກູຈາຣາຕິ</translation>
 <translation id="9173120999827300720">ພາສາອັງກິດ (ສະຫະລັດ) ທີ່ໃຊ້ແປ້ນພິມສາກົນ</translation>
 <translation id="9174050671906956834">ລາຍການຢູ່ໃນຖັງຂີ້ເຫຍື້ອຈະຖືກລຶບຖາວອນຫຼັງຈາກ 30 ມື້.</translation>
+<translation id="9183302530794969518">Google Docs</translation>
 <translation id="9189836632794948435">ພາສາຄາຊັກ</translation>
 <translation id="9213073329713032541">ເລີ່ມການຕິດຕັ້ງສຳເລັດແລ້ວ.</translation>
 <translation id="9219103736887031265">ຮູບ</translation>

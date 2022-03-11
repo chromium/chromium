@@ -91,9 +91,9 @@
 <translation id="1414271762428216854"><ph name="APP_NAME" />, инсталирана апликација</translation>
 <translation id="1419738280318246476">Откључајте уређај да бисте добили обавештење</translation>
 <translation id="1420408895951708260">Укључите или искључите ноћно светло. <ph name="STATE_TEXT" /></translation>
+<translation id="1420732223884894666">Прегледајте недавне слике и медијски садржај са телефона на уређају <ph name="DEVICE_TYPE" /></translation>
 <translation id="1426410128494586442">Да</translation>
 <translation id="1438357537418863713">Стримовање апликација је подешено. Када почнете, недавно покренуте апликације приказују се овде.</translation>
-<translation id="144853431011121127">Добијајте обавештења са телефона на уређају <ph name="DEVICE_TYPE" /></translation>
 <translation id="1455242230282523554">Прегледајте подешавања језика</translation>
 <translation id="1460620680449458626">Звук је искључен.</translation>
 <translation id="1467432559032391204">Улево</translation>
@@ -734,6 +734,7 @@
 <translation id="5597451508971090205"><ph name="SHORT_WEEKDAY" /> <ph name="DATE" /></translation>
 <translation id="5600837773213129531">Притисните Ctrl + Alt + Z да бисте онемогућили говорне повратне информације.</translation>
 <translation id="5601503069213153581">PIN</translation>
+<translation id="5618148318840095371">Пребацили смо вас на бољу мрежу</translation>
 <translation id="5619862035903135339">Смернице администратора онемогућавају снимање екрана</translation>
 <translation id="5625955975703555628">LTE+</translation>
 <translation id="5648021990716966815">Утикач за микрофон</translation>
@@ -826,6 +827,7 @@
 <translation id="6165508094623778733">Сазнајте више</translation>
 <translation id="6166852626429024716">Претражујте уређај, апликације, подешавања, веб...</translation>
 <translation id="6179832488876878285">Овде можете да закачите најважније фајлове. Отворите апликацију Фајлови да бисте започели.</translation>
+<translation id="619279033188484792">Прегледајте недавне слике, медијски садржај и обавештења телефона на уређају <ph name="DEVICE_TYPE" /></translation>
 <translation id="6220928844947387476">Сада истовремено можете да снимате себе и екран</translation>
 <translation id="622484624075952240">Надоле</translation>
 <translation id="6231419273573514727">Учинак периферних уређаја ће можда бити ограничен</translation>
@@ -938,6 +940,7 @@
 <translation id="6921188888306725546">Тастерске пречице су побољшане</translation>
 <translation id="6931576957638141829">Сачувајте у</translation>
 <translation id="6945221475159498467">Изабери</translation>
+<translation id="6960565108681981554">Није активирано. Обратите се мобилном оператеру.</translation>
 <translation id="6961121602502368900">Искључивање звука телефона није доступно на пословном профилу</translation>
 <translation id="6961840794482373852">Тастерска пречица Ctrl + стрелица нагоре је промењена. Да бисте користили тастер Page Up, притисните тастер <ph name="LAUNCHER_KEY_NAME" /> + стрелица нагоре.</translation>
 <translation id="6965382102122355670">Потврди</translation>
@@ -1147,7 +1150,6 @@
 <translation id="8236042855478648955">Време је за паузу</translation>
 <translation id="8247060538831475781"><ph name="CONNECTION_STATUS" />, јачина сигнала <ph name="SIGNAL_STRENGTH" />, батерија телефона <ph name="BATTERY_STATUS" /></translation>
 <translation id="8247998213073982446"><ph name="APP_NAME" />, апликација</translation>
-<translation id="8248728785693203669">USB-C кабл се не повезује правилно са екранима</translation>
 <translation id="8255234195843591763">Ресетујте ради ажурирања</translation>
 <translation id="826107067893790409">Притисните Enter да бисте откључали за <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="8261506727792406068">Избриши</translation>

@@ -54,6 +54,7 @@
 <translation id="1499900233129743732"><ph name="MANAGER" /> administra a este usuario y es posible que administre la configuración y supervise la actividad del usuario de forma remota.</translation>
 <translation id="150962533380566081">PUK no válida.</translation>
 <translation id="1510238584712386396">Selector</translation>
+<translation id="152892567002884378">Subir el volumen</translation>
 <translation id="155865706765934889">Panel táctil</translation>
 <translation id="1565038567006703504">No se puede actualizar <ph name="DEVICE_NAME" /></translation>
 <translation id="1567064801249837505">Álbumes</translation>
@@ -88,6 +89,7 @@
 <translation id="1908234395526491708">Fallos de solicitudes de UDP</translation>
 <translation id="1930797645656624981">Servicio de método de entrada del Sistema operativo Chrome</translation>
 <translation id="1947737735496445907">Impreso</translation>
+<translation id="1951012854035635156">Asistente</translation>
 <translation id="1979103255016296513">Está pendiente el cambio de contraseña</translation>
 <translation id="1999615961760456652">Portal cautivo</translation>
 <translation id="2006864819935886708">Conectividad</translation>
@@ -152,6 +154,7 @@
 <translation id="2859243502336719778">Actualización crítica</translation>
 <translation id="2860473693272905224">Coloca otra página en el escáner.</translation>
 <translation id="2872961005593481000">Apagar</translation>
+<translation id="2874939134665556319">Pista anterior</translation>
 <translation id="2878387241690264070">Se descargó el <ph name="RATE" /> en <ph name="NUM_SECONDS" /> segundos.</translation>
 <translation id="291142119251986300">Componentes no calificados</translation>
 <translation id="2926057806159140518">Ingresa tu nombre de usuario y contraseña, o bien, escanea tu código QR</translation>
@@ -233,6 +236,7 @@
 <translation id="4003384961948020559">Error: La bandeja de salida está llena</translation>
 <translation id="4034824040120875894">Impresora</translation>
 <translation id="4044093238444069296">No se puede establecer contacto con la puerta de enlace</translation>
+<translation id="4046123991198612571">Siguiente pista</translation>
 <translation id="404928562651467259">ADVERTENCIA</translation>
 <translation id="409427325554347132">Guardar los detalles de la prueba</translation>
 <translation id="4110686435123617899">Seleccionar álbum <ph name="TITLE" /> <ph name="DESC" /></translation>
@@ -250,9 +254,11 @@
 <translation id="4238516577297848345">No hay trabajos de impresión en curso</translation>
 <translation id="4239069858505860023">GPRS</translation>
 <translation id="4244962993387259361">Necesitas al menos 500 MB libres para ejecutar una prueba de memoria. Para liberar espacio, ve a Configuración &gt; Administración de almacenamiento.</translation>
+<translation id="4250229828105606438">Captura de pantalla</translation>
 <translation id="4258281355379922695">Latencia de HTTP</translation>
 <translation id="4271957103967917607">Ver en pantalla completa</translation>
 <translation id="4275799948641988986">Después de la reparación, ¿quién utilizará el dispositivo?</translation>
+<translation id="4289540628985791613">Descripción general</translation>
 <translation id="4297501883039923494">Se detuvo: error desconocido</translation>
 <translation id="4300073214558989"><ph name="IMAGE_COUNT" /> Imágenes</translation>
 <translation id="4378373042927530923">No se ejecutó la rutina</translation>
@@ -335,6 +341,7 @@
 <translation id="5051044138948155788">Esta es la única página. Esta acción te llevará a la pantalla de inicio de escaneo.</translation>
 <translation id="5088172560898466307">Nombre de host del servidor</translation>
 <translation id="5089810972385038852">Estado</translation>
+<translation id="5090362543162270857">IPsec (IKEv2)</translation>
 <translation id="5142961317498132443">Autenticación</translation>
 <translation id="5154917547274118687">Memoria</translation>
 <translation id="5160857336552977725">Accede a tu <ph name="DEVICE_TYPE" />.</translation>
@@ -380,6 +387,7 @@ Intenta presionar el micrófono para hacerme una pregunta.</translation>
 <translation id="554517032089923082">GTC</translation>
 <translation id="5578477003638479617">UMTS</translation>
 <translation id="5578519639599103840">Volver a escanear</translation>
+<translation id="5583640892426849032">Tecla de retroceso</translation>
 <translation id="5620281292257375798">Solo para uso interno</translation>
 <translation id="5649768706273821470">Escuchar</translation>
 <translation id="5669267381087807207">Activando</translation>
@@ -389,6 +397,7 @@ Intenta presionar el micrófono para hacerme una pregunta.</translation>
 <translation id="5707900041990977207"><ph name="CURRENT_PAGE" /> de <ph name="TOTAL_PAGES" /></translation>
 <translation id="5733298426544876109">Actualizar <ph name="DEVICE_NAME" /></translation>
 <translation id="5760715441271661976">Estado del portal</translation>
+<translation id="57838592816432529">Silenciar</translation>
 <translation id="5784136236926853061">Latencia de HTTP alta</translation>
 <translation id="5832805196449965646">Agregar a una persona</translation>
 <translation id="583281660410589416">Desconocido</translation>
@@ -396,6 +405,7 @@ Intenta presionar el micrófono para hacerme una pregunta.</translation>
 <translation id="5849570051105887917">Código del proveedor de origen</translation>
 <translation id="5860033963881614850">Desactivado</translation>
 <translation id="5866840822086176774">Muy fuerte</translation>
+<translation id="588258955323874662">Pantalla completa</translation>
 <translation id="5895138241574237353">Reiniciar</translation>
 <translation id="5916084858004523819">Prohibido</translation>
 <translation id="5916664084637901428">Activado</translation>
@@ -436,6 +446,7 @@ Intenta presionar el micrófono para hacerme una pregunta.</translation>
 <translation id="6319207335391420837">Actualizar el firmware en <ph name="DEVICE_NAME" /></translation>
 <translation id="6325525973963619867">Se ha producido un error.</translation>
 <translation id="6340526405444716530">Personalización</translation>
+<translation id="6348738456043757611">Nombre de usuario y contraseña</translation>
 <translation id="636850387210749493">Registro de empresa</translation>
 <translation id="6379086450106841622">Pantalla táctil</translation>
 <translation id="6388847657025262518">Se atascó el alimentador de documentos del escáner. Revisa el alimentador y vuelve a intentarlo.</translation>
@@ -465,12 +476,15 @@ Intenta presionar el micrófono para hacerme una pregunta.</translation>
 <translation id="6643016212128521049">Borrar</translation>
 <translation id="6647510110698214773">Algoritmo de encriptación</translation>
 <translation id="6657585470893396449">Contraseña</translation>
+<translation id="6659594942844771486">Pestaña</translation>
 <translation id="6692996468359469499">Obtén información relacionada con tu selección</translation>
 <translation id="6704062477274546131">Resolución de DNS</translation>
+<translation id="6723839937902243910">Alimentación</translation>
 <translation id="6747215703636344499">Se detuvo: la bandeja de salida está llena</translation>
 <translation id="6749473226660745022">Fotos</translation>
 <translation id="6753452347192452143">El dispositivo es una computadora.</translation>
 <translation id="6756731097889387912">No se pudo cancelar el escaneo</translation>
+<translation id="6760706756348334449">Bajar el volumen</translation>
 <translation id="6766275201586212568">Resoluciones DNS con error</translation>
 <translation id="6768237774506518020">Tasa alta de errores para la resolución de DNS</translation>
 <translation id="680983167891198932">Clave</translation>
@@ -524,6 +538,7 @@ Intenta presionar el micrófono para hacerme una pregunta.</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
 <translation id="7435977162516949853">{NUMBER_OF_PAGES,plural, =1{Se completó el escaneo. Se escaneó 1 página}other{Se completó el escaneo. Se escanearon {NUMBER_OF_PAGES} páginas}}</translation>
 <translation id="7469648432129124067">Se detectó un portal</translation>
+<translation id="7481312909269577407">Reenviar</translation>
 <translation id="7487067081878637334">Tecnología</translation>
 <translation id="7490813197707563893">Dirección MAC</translation>
 <translation id="7497215489070763236">Certificado de CA del servidor</translation>
@@ -577,6 +592,7 @@ Intenta presionar el micrófono para hacerme una pregunta.</translation>
 <translation id="8132480444149501833">Solicitar contadores de tráfico</translation>
 <translation id="8138405288920084977">LTEAdvanced</translation>
 <translation id="8143951647992294073">Seleccionar <ph name="TOPIC_SOURCE" /> <ph name="TOPIC_SOURCE_DESC" /></translation>
+<translation id="8179976553408161302">Intro</translation>
 <translation id="8206859287963243715">Celular</translation>
 <translation id="8208861521865154048">Beneficios</translation>
 <translation id="8217675307824400706">Conéctate</translation>

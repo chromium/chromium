@@ -116,7 +116,7 @@
 <translation id="1670399744444387456">Основні параметри</translation>
 <translation id="1671236975893690980">Очікується завантаження…</translation>
 <translation id="1672586136351118594">Більше не показувати</translation>
-<translation id="1680919990519905526">Купити продукт на фото через Об'єктив <ph name="BEGIN_NEW" />Нове<ph name="END_NEW" /></translation>
+<translation id="1680919990519905526">Купівля через Об'єктив <ph name="BEGIN_NEW" />Нове<ph name="END_NEW" /></translation>
 <translation id="1682195225331129001">Спробувати</translation>
 <translation id="1697284962337958118">Додати в</translation>
 <translation id="1702543251015153180">Змінити налаштування темної теми?</translation>
@@ -270,6 +270,7 @@
 <translation id="2567385386134582609">ЗОБРАЖЕННЯ</translation>
 <translation id="2567545343356994513">Швидший активний захист від небезпечних веб-сайтів, завантажень і розширень</translation>
 <translation id="2571711316400087311">Пропонувати надсилати на переклад сторінки іншими мовами в Google Перекладач</translation>
+<translation id="2573452357057307036">Дізнайтеся, як зробити Chrome веб-переглядачем за умовчанням</translation>
 <translation id="2581165646603367611">Буде видалено файли cookie, кеш та інші дані сайтів, які Chrome визначив як неважливі.</translation>
 <translation id="2587052924345400782">Доступна новіша версія</translation>
 <translation id="2593272815202181319">Однакової ширини</translation>
@@ -427,6 +428,7 @@
 <translation id="3443221991560634068">Оновити поточну сторінку</translation>
 <translation id="3444179773590444986">Надіслати відгук про темну тему для сайтів?</translation>
 <translation id="3469665409713263828">{FILE_COUNT,plural, =1{Заплановано 1 завантаження}one{Заплановано # завантаження}few{Заплановано # завантаження}many{Заплановано # завантажень}other{Заплановано # завантаження}}</translation>
+<translation id="3474624961160222204">Продовжити як <ph name="NAME" /></translation>
 <translation id="3478363558367712427">Ви можете вибрати пошукову систему</translation>
 <translation id="3493531032208478708"><ph name="BEGIN_LINK" />Докладніше<ph name="END_LINK" /> про рекомендований контент</translation>
 <translation id="3499246418971111862">chrome_qrcode_<ph name="CURRENT_TIMESTAMP_MS" /></translation>
@@ -457,6 +459,7 @@
 <translation id="363596933471559332">Автоматично входити в облікові записи на веб-сайтах за допомогою збережених даних. Якщо цю функцію вимкнено, потрібно вводити облікові дані під час кожного входу.</translation>
 <translation id="3653111872753786013">"<ph name="WEBSITE_TITLE" />": <ph name="WEBSITE_URL" /></translation>
 <translation id="3677911431265050325">Мобільний сайт</translation>
+<translation id="3685860403008476208">Будь-хто з доступом до цього пристрою може бачити файли, які ви завантажуєте в анонімному режимі</translation>
 <translation id="3687645719033307815">Ви попередньо переглядаєте цю сторінку</translation>
 <translation id="3690369331356918524">Попереджає, якщо паролі розкрито через порушення безпеки даних</translation>
 <translation id="3692944402865947621">Не вдалося завантажити файл <ph name="FILE_NAME" />. Місце зберігання недоступне.</translation>
@@ -735,7 +738,7 @@
 <translation id="5355191726083956201">Покращений захист увімкнено</translation>
 <translation id="5368227114232678694">Щоб працювати на цьому пристрої в Інтернеті приватно, спробуйте анонімний режим</translation>
 <translation id="5368958499335451666">{OPEN_TABS,plural, =1{<ph name="OPEN_TABS_ONE" /> відкрита вкладка: натисніть, щоб перейти на іншу вкладку}one{<ph name="OPEN_TABS_MANY" /> відкрита вкладка: натисніть, щоб перейти на іншу вкладку}few{<ph name="OPEN_TABS_MANY" /> відкриті вкладки: натисніть, щоб перейти на іншу вкладку}many{<ph name="OPEN_TABS_MANY" /> відкритих вкладок: натисніть, щоб перейти на іншу вкладку}other{<ph name="OPEN_TABS_MANY" /> відкритої вкладки: натисніть, щоб перейти на іншу вкладку}}</translation>
-<translation id="5375577065097716013">Пошук через Об'єктив <ph name="BEGIN_NEW" />Новинка<ph name="END_NEW" /></translation>
+<translation id="5375577065097716013">Пошук через Об'єктив <ph name="BEGIN_NEW" />Нове<ph name="END_NEW" /></translation>
 <translation id="5403644198645076998">Дозволити лише певні сайти</translation>
 <translation id="5409881200985013443">Надіслати код <ph name="ONE_TIME_CODE" /> на пристрій "<ph name="CLIENT_NAME" />"?</translation>
 <translation id="5414836363063783498">Підтвердження…</translation>
@@ -1062,7 +1065,6 @@
 <translation id="7173114856073700355">Відкрити налаштування</translation>
 <translation id="7177466738963138057">Це можна змінити пізніше в налаштуваннях</translation>
 <translation id="7177873915659574692">Не вдається створити QR-код. URL-адреса перевищує ліміт символів (<ph name="CHARACTER_LIMIT" />).</translation>
-<translation id="7180611975245234373">Оновити</translation>
 <translation id="718226107353899806">Можна додати до стількох реакцій: <ph name="MAX_NUM_REACTIONS" /></translation>
 <translation id="7187993566681480880">Захищає вас у Chrome і може покращувати безпеку в інших додатках Google після входу в обліковий запис.</translation>
 <translation id="718926126787620637">Список папок із закладками відкрито на всю висоту</translation>
@@ -1125,7 +1127,7 @@
 <translation id="7514365320538308">Завантажити</translation>
 <translation id="751961395872307827">Немає з’єднання із сайтом</translation>
 <translation id="752220631458524187">Коли завершите, відключіть телефон</translation>
-<translation id="7523960634226602883">Шукати за допомогою камери через Google Об'єктив</translation>
+<translation id="7523960634226602883">Пошук за допомогою камери через Google Об'єктив</translation>
 <translation id="753225086557513863">Заплановано на пізніше</translation>
 <translation id="7562080006725997899">Очищення даних веб-перегляду</translation>
 <translation id="756809126120519699">Дані Chrome видалено</translation>

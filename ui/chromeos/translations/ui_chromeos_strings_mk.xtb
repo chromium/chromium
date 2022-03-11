@@ -61,6 +61,7 @@
 <translation id="1497522201463361063">Не може да преименува „<ph name="FILE_NAME" />“. <ph name="ERROR_MESSAGE" /></translation>
 <translation id="1499943022354839699">англиски (САД) со тастатура Dvorak</translation>
 <translation id="1515909359182093592"><ph name="INPUT_LABEL" /> - домаќин</translation>
+<translation id="1521655867290435174">Табели на Google</translation>
 <translation id="1538729222189715449">Се отвораат датотеките на Linux…</translation>
 <translation id="1547964879613821194">канадско англиска</translation>
 <translation id="1556189134700913550">Примени на сите</translation>
@@ -184,7 +185,6 @@
 <translation id="2544853746127077729">Мрежата го отфрли сертификатот за автентикација</translation>
 <translation id="2547921442987553570">Додајте во <ph name="EXTENSION_NAME" /></translation>
 <translation id="255937426064304553">Меѓународен англиски (САД)</translation>
-<translation id="2562685439590298522">Документи</translation>
 <translation id="2563185590376525700">Жаба</translation>
 <translation id="2578394532502990878">фонетски тамилски</translation>
 <translation id="2579959351793446050">одија</translation>
@@ -220,9 +220,7 @@
 <translation id="2902734494705624966">САД продолжена</translation>
 <translation id="290843123675549676">марати</translation>
 <translation id="2923240520113693977">естонски</translation>
-<translation id="2925966894897775835">Табели</translation>
 <translation id="2938685643439809023">монголски</translation>
-<translation id="2943400156390503548">Слајдови</translation>
 <translation id="2943503720238418293">Користете пократко име</translation>
 <translation id="2949781154072577687">Се форматира <ph name="DRIVE_NAME" />…</translation>
 <translation id="2951236788251446349">Медуза</translation>
@@ -414,6 +412,7 @@
 <translation id="4656777537938206294">Направете датотеките да се достапни офлајн</translation>
 <translation id="4658782175094886150">Човек во снег</translation>
 <translation id="4669606053856530811">Членовите на „<ph name="SOURCE_NAME" />“ ќе изгубат пристап освен ако ставкиве се споделени со нив.</translation>
+<translation id="467809019005607715">Google Slides</translation>
 <translation id="4690246192099372265">шведски</translation>
 <translation id="4693155481716051732">Суши</translation>
 <translation id="4694604912444486114">Мајмун</translation>
@@ -657,6 +656,7 @@
 <translation id="6732801395666424405">Нема вчитано сертификати</translation>
 <translation id="6736329909263487977"><ph name="ISSUED_BY" /> [<ph name="ISSUED_TO" />]</translation>
 <translation id="6751256176799620176">Избрана е 1 папка</translation>
+<translation id="6755827872271341378">Уред со ChromeOS Flex</translation>
 <translation id="6790428901817661496">Репродуцирај</translation>
 <translation id="6795884519221689054">Панда</translation>
 <translation id="6806699711453372963">Управувајте со споделувањето на Linux</translation>
@@ -734,6 +734,7 @@
 <translation id="7343393116438664539">виетнамски телекс</translation>
 <translation id="7359359531237882347">Се копираат <ph name="NUMBER_OF_ITEMS" /> ставки…</translation>
 <translation id="7375951387215729722">Списокот со датотеки е подреден според <ph name="COLUMN_NAME" /> по опаѓачки редослед.</translation>
+<translation id="7402503521691663770">Уреди со ChromeOS Flex</translation>
 <translation id="7408870451288633753">чешки</translation>
 <translation id="7417453074306512035">етиопска тастатура</translation>
 <translation id="7417705661718309329">Карта на Google</translation>
@@ -948,6 +949,7 @@
 <translation id="9172592259078059678">транслитерација на гуџарати</translation>
 <translation id="9173120999827300720">англиски (САД) со меѓународна тастатура</translation>
 <translation id="9174050671906956834">Ставките од корпата се бришат засекогаш по 30 дена.</translation>
+<translation id="9183302530794969518">Документи на Google</translation>
 <translation id="9189836632794948435">казашки</translation>
 <translation id="9213073329713032541">Инсталирањето успешно започна.</translation>
 <translation id="9219103736887031265">Слики</translation>

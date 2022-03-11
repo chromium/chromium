@@ -88,9 +88,9 @@ Hier zijn wat voorbeelden van wat je kunt proberen om aan de slag te gaan.</tran
 <translation id="1414271762428216854"><ph name="APP_NAME" />, geïnstalleerde app</translation>
 <translation id="1419738280318246476">Ontgrendel het apparaat om de meldingsactie uit te voeren</translation>
 <translation id="1420408895951708260">Nachtverlichting aan- of uitzetten. <ph name="STATE_TEXT" /></translation>
+<translation id="1420732223884894666">Recente foto's en media van je telefoon bekijken op je <ph name="DEVICE_TYPE" /></translation>
 <translation id="1426410128494586442">Ja</translation>
 <translation id="1438357537418863713">App-streaming is nu ingesteld. Als je aan de slag gaat, zie je hier recent gelanceerde apps.</translation>
-<translation id="144853431011121127">Meldingen van je telefoon krijgen op je <ph name="DEVICE_TYPE" /></translation>
 <translation id="1455242230282523554">Taalinstellingen bekijken</translation>
 <translation id="1460620680449458626">Volume staat uit.</translation>
 <translation id="1467432559032391204">Links</translation>
@@ -823,6 +823,7 @@ Hier zijn wat voorbeelden van wat je kunt proberen om aan de slag te gaan.</tran
 <translation id="6165508094623778733">Meer informatie</translation>
 <translation id="6166852626429024716">Zoek op je apparaat, in apps en instellingen en op internet...</translation>
 <translation id="6179832488876878285">Je kunt hier je belangrijke bestanden vastzetten. Open de app Bestanden om aan de slag te gaan.</translation>
+<translation id="619279033188484792">Recente foto's, media en meldingen van je telefoon bekijken op je <ph name="DEVICE_TYPE" /></translation>
 <translation id="6220928844947387476">Je kunt jezelf en je scherm nu tegelijkertijd opnemen</translation>
 <translation id="622484624075952240">Omlaag</translation>
 <translation id="6231419273573514727">De prestaties van randapparaten kunnen beperkt zijn</translation>
@@ -935,6 +936,7 @@ Nieuwe installatie</translation>
 <translation id="6921188888306725546">Sneltoetsen zijn verbeterd</translation>
 <translation id="6931576957638141829">Opslaan in</translation>
 <translation id="6945221475159498467">Selecteren</translation>
+<translation id="6960565108681981554">Niet geactiveerd. Neem contact op met je provider.</translation>
 <translation id="6961121602502368900">Geluid van telefoon kan niet worden uitgezet in je werkprofiel</translation>
 <translation id="6961840794482373852">De sneltoets Alt + pijl-omhoog is veranderd. Als je de toets Page Up wilt gebruiken, druk je op de <ph name="LAUNCHER_KEY_NAME" />-toets + pijl-omhoog.</translation>
 <translation id="6965382102122355670">OK</translation>
@@ -1143,7 +1145,6 @@ Nieuwe installatie</translation>
 <translation id="8236042855478648955">Tijd voor een pauze</translation>
 <translation id="8247060538831475781"><ph name="CONNECTION_STATUS" />, signaalsterkte <ph name="SIGNAL_STRENGTH" />, telefoonbatterij <ph name="BATTERY_STATUS" /></translation>
 <translation id="8247998213073982446"><ph name="APP_NAME" />, app</translation>
-<translation id="8248728785693203669">Je USB-C-kabel sluit misschien niet goed aan op schermen</translation>
 <translation id="8255234195843591763">Reset om te updaten</translation>
 <translation id="826107067893790409">Druk op Enter om te ontgrendelen voor <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="8261506727792406068">Verwijderen</translation>

@@ -40,6 +40,7 @@
 <translation id="1041175011127912238">Denne side svarer ikke</translation>
 <translation id="1041263367839475438">Tilgængelige enheder</translation>
 <translation id="1042174272890264476">Computeren leveres også med <ph name="SHORT_PRODUCT_NAME" />s RLZ-samling indbygget. RLZ tildeler et ikke-unikt, ikke-personligt identificerbart tag til at måle søgninger og <ph name="SHORT_PRODUCT_NAME" />-brug, der er drevet af en bestemt kampagne. Disse etiketter vises nogle gange i Googles søgeforespørgsler i <ph name="PRODUCT_NAME" />.</translation>
+<translation id="1043505821207197890">Noget gik galt. Linux er muligvis kun blevet opgraderet delvist. Få flere oplysninger i loggerne. Loggerne er blevet gemt under Filer &gt; Mine filer &gt; <ph name="LOG_FILE" /></translation>
 <translation id="1043818413152647937">Vil du også rydde dataene fra disse apps?</translation>
 <translation id="1043824690776631483">Du skal have tilladelse til at besøge dette website. Det kan have upassende indhold.</translation>
 <translation id="104710386808485638">Vil du genstarte Linux?</translation>
@@ -229,6 +230,7 @@
 <translation id="121384500095351701">Denne fil kan ikke downloades sikkert</translation>
 <translation id="1215411991991485844">Der er tilføjet en ny baggrunds-app</translation>
 <translation id="1216542092748365687">Fjern fingeraftryk</translation>
+<translation id="1217114730239853757">Vil du aktivere ChromeVox, som er den indbyggede skærmlæser til ChromeOS Flex? Tryk på mellemrumstasten for at aktivere.</translation>
 <translation id="1217483152325416304">Dine lokale data slettes snart</translation>
 <translation id="1217668622537098248">Vend tilbage til venstreklik efter handling</translation>
 <translation id="121783623783282548">Adgangskoderne stemmer ikke overens.</translation>
@@ -272,6 +274,7 @@
 <translation id="1258491128795710625">Nyheder</translation>
 <translation id="1259152067760398571">Sikkerhedstjekket blev udført i går</translation>
 <translation id="1260451001046713751">Tillad altid pop op-vinduer og omdirigeringer fra <ph name="HOST" /></translation>
+<translation id="1260810365552581339">Linux har muligvis ikke nok diskplads. Du kan øge din Linux-diskplads og prøve at gendanne igen under <ph name="LINK_START" />Indstillinger<ph name="LINK_END" />.</translation>
 <translation id="1261380933454402672">Moderat</translation>
 <translation id="126156426083987769">Der opstod et problem med enhedslicenser i demotilstand.</translation>
 <translation id="1263231323834454256">Læseliste</translation>
@@ -279,6 +282,7 @@
 <translation id="126387934568812801">Medtag dette screenshot og titlerne på de åbne faner</translation>
 <translation id="1264083566674525434">Rediger websitetilladelser</translation>
 <translation id="1264337193001759725">Du kan se logs for netværksbrugerflader på <ph name="DEVICE_LOG_LINK" /></translation>
+<translation id="1265279736024499987">Dine apps og indstillinger synkroniseres på tværs af alle de ChromeOS Flex-enheder, hvor du er logget ind med din Google-konto. Du kan se muligheder for synkronisering af browseren i <ph name="LINK_BEGIN" />indstillingerne for Chrome<ph name="LINK_END" />.</translation>
 <translation id="126710816202626562">Sprog, der skal oversættes til:</translation>
 <translation id="126768002343224824">16x</translation>
 <translation id="1272079795634619415">Stop</translation>
@@ -303,7 +307,6 @@
 <translation id="1293264513303784526">USB-C-enhed (venstre port)</translation>
 <translation id="1293556467332435079">Filer</translation>
 <translation id="1294807885394205587">Denne proces kan tage et par minutter. Starter containeradministration.</translation>
-<translation id="1296046226918222533">Noget gik galt, og Linux-opgraderingen mislykkedes. Du kan få flere oplysninger om problemet i de relevante logs. Disse logs er gemt i <ph name="LOG_FILE" /></translation>
 <translation id="1296911687402551044">Fastgør den valgte fane</translation>
 <translation id="1297175357211070620">Destination</translation>
 <translation id="129770436432446029">Send feedback om <ph name="EXPERIMENT_NAME" /></translation>
@@ -332,6 +335,7 @@
 <translation id="1327272175893960498">Kerberos-billetter</translation>
 <translation id="1327495825214193325">Hvis du vil aktivere ADB-fejlretning, skal du genstarte denne <ph name="DEVICE_TYPE" />. Du skal gendanne fabriksindstillingerne på den for at deaktivere det.</translation>
 <translation id="1327794256477341646">Funktioner, der skal bruge din lokation, fungerer ikke</translation>
+<translation id="1329191040029425999">Tjek, at din enhed er opdateret, og prøv igen</translation>
 <translation id="1330145147221172764">Aktivér skærmtastatur</translation>
 <translation id="1331977651797684645">Det var mig.</translation>
 <translation id="1333489022424033687">Visse funktioner på <ph name="ORIGIN" /> fungerer muligvis ikke, før du har ryddet data, som andre websites har gemt på enheden</translation>
@@ -373,6 +377,7 @@
 <translation id="1373176046406139583">Din enheds synlighed styrer, hvem der kan dele indhold med dig, når din skærm er låst op. <ph name="LINK_BEGIN" />Få flere oplysninger<ph name="LINK_END" /></translation>
 <translation id="1374844444528092021">Det certifikat, som netværket "<ph name="NETWORK_NAME" />" kræver, er enten ikke installeret eller ikke længere gyldigt.  Få fat i et nyt certifikat, og prøv at oprette forbindelse igen.</translation>
 <translation id="1375321115329958930">Gemte adgangskoder</translation>
+<translation id="1375557162880614858">Vil du aktivere ChromeVox, som er den indbyggede skærmlæser til ChromeOS Flex?</translation>
 <translation id="137651782282853227">Dine gemte adresser vises her</translation>
 <translation id="1376771218494401509">Navngiv vindue...</translation>
 <translation id="1377600615067678409">Vent til senere</translation>
@@ -618,7 +623,7 @@ De tilladelser, du har givet til apps, gælder muligvis for denne konto. Du kan 
 <translation id="1603411913360944381">Glem <ph name="DEVICE_NAME" /></translation>
 <translation id="1603914832182249871">(Inkognito)</translation>
 <translation id="1604432177629086300">Kunne ikke udskrive. Tjek printeren, og prøv igen.</translation>
-<translation id="1604576689725077412">Vær opmærksom på, at hvis du lukker en notifikation på din Chromebook, lukkes den også på din telefon.</translation>
+<translation id="1604774728851271529">Du skal have en netværksforbindelse for at opgradere Linux. Opret forbindelse til internettet, og prøv igen.</translation>
 <translation id="1605744057217831567">Se alle data og tilladelser for websites</translation>
 <translation id="1606077700029460857">Skift indstillinger for musen</translation>
 <translation id="1606566847233779212">Vil du fjerne de specifikke websites, du har tilføjet?</translation>
@@ -795,8 +800,10 @@ De tilladelser, du har givet til apps, gælder muligvis for denne konto. Du kan 
 <translation id="175196451752279553">G&amp;enåbn lukket fane</translation>
 <translation id="1753067873202720523">Din Chromebook oplades muligvis ikke, når den er tændt.</translation>
 <translation id="1753905327828125965">Mest besøgte</translation>
+<translation id="1755395545337105369">Synkronisering af indstillinger for ChromeOS Flex</translation>
 <translation id="1755601632425835748">Tekststørrelse</translation>
 <translation id="1755872274219796698">Flyt adgangskoder</translation>
+<translation id="1757132445735080748">Opdater ChromeOS Flex, og prøv at afslutte konfigurationen af Linux igen.</translation>
 <translation id="1757301747492736405">Afinstallation afventer</translation>
 <translation id="175772926354468439">Aktivér tema</translation>
 <translation id="17584710573359123">Se i Chrome Webshop</translation>
@@ -843,6 +850,7 @@ De tilladelser, du har givet til apps, gælder muligvis for denne konto. Du kan 
 <translation id="1794791083288629568">Send feedback for at hjælpe os med at løse problemet.</translation>
 <translation id="1795214765651529549">Brug Klassisk</translation>
 <translation id="1796588414813960292">Funktioner, der skal bruge lyd, fungerer ikke</translation>
+<translation id="1800502858278951817">Ingen udvidelser har anmodet om tilladelse til at læse og ændre <ph name="SITE_NAME" /></translation>
 <translation id="1801418420130173017">Deaktiver Mørkt tema</translation>
 <translation id="1802624026913571222">Gå i dvale, når etuiet er lukket</translation>
 <translation id="1802687198411089702">Siden svarer ikke. Du kan vente på den eller afslutte.</translation>
@@ -1038,21 +1046,19 @@ De tilladelser, du har givet til apps, gælder muligvis for denne konto. Du kan 
 <translation id="1987317783729300807">Konti</translation>
 <translation id="1988259784461813694">Krav</translation>
 <translation id="1989112275319619282">Gennemse</translation>
-<translation id="1989744123191450103">Sikkerhedskopieringen mislykkedes</translation>
 <translation id="1989903373608997757">Brug altid</translation>
 <translation id="1990046457226896323">Talefilerne blev downloadet</translation>
 <translation id="1990512225220753005">Vis ikke genveje på denne side</translation>
+<translation id="1990727803345673966">Dine sikkerhedskopierede Linux-filer og -apps gendannes</translation>
 <translation id="199191324030140441">Deaktiver Forstyr ikke</translation>
 <translation id="1992397118740194946">Ikke angivet</translation>
 <translation id="1992924914582925289">Fjern fra enhed</translation>
 <translation id="1994173015038366702">Webadresse</translation>
 <translation id="1995916364271252349">Styrer, hvilke oplysninger websites kan anvende og vise (placering, kamera, pop op-vinduer m.m.)</translation>
 <translation id="1997616988432401742">Dine certifikater</translation>
-<translation id="1997645434968427303">Gendannelsen af din Linux-backup mislykkedes. Dette kan skyldes, at Linux ikke har nok diskplads. Du kan ændre, hvor meget diskplads Linux har, og prøve at gendanne dine backup igen i indstillingerne for operativsystemet.</translation>
 <translation id="1999115740519098545">Ved opstart</translation>
 <translation id="2000419248597011803">Sender visse cookies og søgninger fra adresselinjen og søgefeltet til din standardsøgemaskine</translation>
 <translation id="2002109485265116295">Realtid</translation>
-<translation id="200217416291116199">Det anbefales at sikkerhedskopiere filer, i tilfælde af at opgraderingen ikke kan fuldføres. Når du starter opgraderingen, lukker Linux ned. Gem åbne filer, før du fortsætter.</translation>
 <translation id="2003130567827682533">Hvis du vil aktivere data fra "<ph name="NAME" />", skal du først oprette forbindelse til et Wi-Fi-netværk</translation>
 <translation id="2004697686368036666">Funktionerne på visse websites virker muligvis ikke</translation>
 <translation id="2005199804247617997">Andre profiler</translation>
@@ -1061,7 +1067,6 @@ De tilladelser, du har givet til apps, gælder muligvis for denne konto. Du kan 
 <translation id="2007404777272201486">Rapportér et problem...</translation>
 <translation id="2009590708342941694">Emojiværktøj</translation>
 <translation id="2010501376126504057">Kompatible enheder</translation>
-<translation id="2011968031299471357">Modtag og besvar beskeder</translation>
 <translation id="2015232545623037616">Computer og Chromecast er på samme Wi-Fi-netværk</translation>
 <translation id="2016473077102413275">Funktioner, der skal bruge billeder, fungerer ikke</translation>
 <translation id="2016574333161572915">Din Google Meet-hardware er klar til konfiguration</translation>
@@ -1119,6 +1124,7 @@ Du kan administrere indstillingerne for denne konto ved at installere Family Lin
 <translation id="2071393345806050157">Ingen lokal logfil.</translation>
 <translation id="2071692954027939183">Der blev automatisk blokeret notifikationer, da du som regel ikke tillader notifikationer</translation>
 <translation id="2073148037220830746">{NUM_EXTENSIONS,plural, =1{Klik for at installere udvidelsen}one{Klik for at installere udvidelsen}other{Klik for at installere disse udvidelser}}</translation>
+<translation id="2073496667646280609">Du har muligvis ikke nok ledig lagerplads på din enhed eller din valgte lokation til backups. Prøv at frigøre plads eller vælge en anden lokation.</translation>
 <translation id="2073505299004274893">Brug højst <ph name="CHARACTER_LIMIT" /> tegn</translation>
 <translation id="2075474481720804517"><ph name="BATTERY_PERCENTAGE" /> % batteri</translation>
 <translation id="2075959085554270910">Giver dig mulighed for at aktivere/deaktivere tryk-hurtigt-for-at-klikke og Tryk og træk-funktionen</translation>
@@ -1226,7 +1232,6 @@ Du kan administrere indstillingerne for denne konto ved at installere Family Lin
 <translation id="2165177462441582039">Vælg, hvor længe hvert element skal fremhæves</translation>
 <translation id="2166369534954157698">Quizdeltagerne spiste jordbær med fløde, mens cirkusklovnen Walther spillede på xylofon</translation>
 <translation id="2169062631698640254">Log ind alligevel</translation>
-<translation id="2170054054876170358">Sørg for, at din telefon er i nærheden, at den er låst op, og at Bluetooth og Wi-Fi er aktiveret.</translation>
 <translation id="2173302385160625112">Tjek din internetforbindelse</translation>
 <translation id="2173801458090845390">Føj rekvisitions-id til denne enhed</translation>
 <translation id="2175384018164129879">&amp;Administrer søgemaskiner og Site Search</translation>
@@ -1234,6 +1239,7 @@ Du kan administrere indstillingerne for denne konto ved at installere Family Lin
 <translation id="217576141146192373">Printeren kunne ikke tilføjes. Tjek din printers konfiguration, og prøv igen.</translation>
 <translation id="2175927920773552910">QR-kode</translation>
 <translation id="2177950615300672361">Inkognitofane: <ph name="TAB_NAME" /></translation>
+<translation id="2178585470774851578">Du er ved at aktivere ChromeOS Flex-fejlretningsfunktioner, som konfigurerer sshd daemon og aktiverer systemgenstart via USB-drev.</translation>
 <translation id="2178614541317717477">Sammensat nøglecenter</translation>
 <translation id="2179416702468739594">Søger efter tilgængelige profiler. Dette kan afbryde forbindelsen til dit mobilnetværk i et par minutter.</translation>
 <translation id="2180620921879609685">Bloker indhold på alle sider</translation>
@@ -1300,7 +1306,6 @@ Du kan administrere indstillingerne for denne konto ved at installere Family Lin
 <translation id="2241053333139545397">Læse og redigere dine data på en række websites</translation>
 <translation id="2241634353105152135">Kun én gang</translation>
 <translation id="2242687258748107519">Filoplysninger</translation>
-<translation id="2243381895573964397">Få telefonnotifikationer</translation>
 <translation id="2246549592927364792">Vil du hente billedbeskrivelser fra Google?</translation>
 <translation id="2247738527273549923">Dini enhed administreres af din organisation</translation>
 <translation id="2249111429176737533">Åbn som fanevindue</translation>
@@ -1463,6 +1468,7 @@ Du kan administrere indstillingerne for denne konto ved at installere Family Lin
 <translation id="2379281330731083556">Dialogboks til Udskriv via system... <ph name="SHORTCUT_KEY" /></translation>
 <translation id="2381499968174336913">Forhåndsvisning af delt fane</translation>
 <translation id="2381756643783702095">Spørg inden afsendelse (anbefales)</translation>
+<translation id="2386202302581016807">Den tilgængelige lagerplads på din enhed er for lille til at fuldføre konfigurationen</translation>
 <translation id="2387052489799050037">Gå til startskærmen</translation>
 <translation id="2387602571959163792"><ph name="DESK_NAME" /> (aktiv)</translation>
 <translation id="2389775852302560582">IP</translation>
@@ -1472,6 +1478,7 @@ Du kan administrere indstillingerne for denne konto ved at installere Family Lin
 <translation id="2392163307141705938">Du har nået den grænse, din forælder har angivet for <ph name="IDS_SHORT_PRODUCT_NAME" />.</translation>
 <translation id="2392369802118427583">Aktivér</translation>
 <translation id="2393136602862631930">Konfigurer <ph name="APP_NAME" /> på din Chromebook</translation>
+<translation id="2393313392064891208">Indhold i vilkårene for Google ChromeOS Flex</translation>
 <translation id="2395616325548404795">Din <ph name="DEVICE_TYPE" /> er tilmeldt virksomhedsadministration, men den har ikke tilsendt oplysninger om aktiver og placering. Angiv disse oplysninger manuelt i administrationskonsollen for denne enhed.</translation>
 <translation id="2396783860772170191">Angiv den firecifrede pinkode (0000-9999)</translation>
 <translation id="2398546389094871088">Dine eSIM-profiler fjernes ikke, når du udfører en powerwash på din enhed. Gå til <ph name="LINK_BEGIN" />Mobilindstillinger<ph name="LINK_END" /> for at fjerne disse profiler manuelt.</translation>
@@ -1502,6 +1509,7 @@ Du kan administrere indstillingerne for denne konto ved at installere Family Lin
 <translation id="2433836460518180625">Lås kun denne enhed op</translation>
 <translation id="2434449159125086437">Printeren kunne ikke konfigureres. Tjek konfigurationen, og prøv igen.</translation>
 <translation id="2434758125294431199">Vælg, hvem der kan dele med dig</translation>
+<translation id="2435137177546457207">Yderligere vilkår for Google Chrome og ChromeOS Flex</translation>
 <translation id="2435248616906486374">Forbindelsen til netværket blev afbrudt</translation>
 <translation id="2435457462613246316">Vis adgangskode</translation>
 <translation id="2439626940657133600"><ph name="WINDOW_TITLE" /> indlæses</translation>
@@ -1613,6 +1621,7 @@ Du kan administrere indstillingerne for denne konto ved at installere Family Lin
 <translation id="2530166226437958497">Fejlfinding</translation>
 <translation id="2531530485656743109"><ph name="BEGIN_PARAGRAPH1" />Der opstod en fejl, og <ph name="DEVICE_OS" /> kunne ikke installeres.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Du kan få yderligere hjælp på g.co/flex/InstallErrors.<ph name="END_PARAGRAPH2" /></translation>
+<translation id="2532198298278778531">Administrer Sikkert DNS i indstillingerne for ChromeOS Flex</translation>
 <translation id="2532589005999780174">Tilstanden Høj kontrast</translation>
 <translation id="2533649878691950253">Dette websites adgang til din præcise placering blev blokeret, fordi du normalt ikke tillader denne adgang</translation>
 <translation id="253434972992662860">&amp;Pause</translation>
@@ -1647,6 +1656,7 @@ Du kan administrere indstillingerne for denne konto ved at installere Family Lin
 <translation id="2568774940984945469">Container til oplysningsbjælke</translation>
 <translation id="2571655996835834626">Skift de indstillinger, der styrer websites' adgang til funktioner som f.eks. cookies, JavaScript, plugins, geoplacering, mikrofon og kamera.</translation>
 <translation id="2572032849266859634">Skrivebeskyttet adgang til <ph name="VOLUME_NAME" /> er blevet tildelt.</translation>
+<translation id="2573417407488272418">Sikkerhedskopiér apps og filer til Filer &gt; Mine filer, inden opgraderingen gennemføres.</translation>
 <translation id="2573831315551295105">Tildel kontakt for handlingen "<ph name="ACTION" />"</translation>
 <translation id="2575247648642144396">Dette ikon vil være synligt, når udvidelsen fungerer på den aktuelle side. Brug denne udvidelse ved at klikke på ikonet eller ved at trykke på <ph name="EXTENSION_SHORTCUT" />.</translation>
 <translation id="2575441894380764255">Har ikke tilladelse til at vise påtrængende eller vildledende annoncer</translation>
@@ -1963,6 +1973,7 @@ og tryk på Ctrl+Alt+lysstyrke ned for at zoome ud.</translation>
 <translation id="2882943222317434580"><ph name="IDS_SHORT_PRODUCT_NAME" /> Genstart og nulstilling påbegyndes om et øjeblik</translation>
 <translation id="2885378588091291677">Jobliste</translation>
 <translation id="2885729872133513017">Der opstod et problem under afkodningen af serversvaret.</translation>
+<translation id="2886119409731773154">Dette kan tage op til 30 minutter</translation>
 <translation id="2886771036282400576">• <ph name="PERMISSION" /></translation>
 <translation id="288734198558082692"><ph name="DEVICE" /> og <ph name="NUMBER_OF_DEVICES" /> andre</translation>
 <translation id="2889064240420137087">Åbn link med...</translation>
@@ -2117,11 +2128,11 @@ og tryk på Ctrl+Alt+lysstyrke ned for at zoome ud.</translation>
 <translation id="3031557471081358569">Vælg at importere følgende:</translation>
 <translation id="3032587662022429783">Få flere oplysninger om diagnostik- og brugsdata.</translation>
 <translation id="3033348223765101500">Administrer dine data</translation>
+<translation id="3034627908241330765">En anden Steam-konfiguration er i gang. Vent, indtil den er fuldført, før du starter konfigurationen igen.</translation>
 <translation id="3036327949511794916">Fristen for at returnere denne <ph name="DEVICE_TYPE" /> er overskredet.</translation>
 <translation id="3036546437875325427">Aktivér Flash</translation>
 <translation id="3037754279345160234">Konfigurationen for domænetilmelding kunne ikke parses. Kontakt din administrator.</translation>
 <translation id="3038612606416062604">Tilføj en printer manuelt</translation>
-<translation id="3039409644314251320">Se samtaler, reager på beskeder, og føj brugere til gruppechats</translation>
 <translation id="3039491566278747710">Offlinepolitikken kunne ikke installeres på enheden.</translation>
 <translation id="3043218608271070212"><ph name="GROUP_NAME" /> – <ph name="GROUP_CONTENT_STRING" /></translation>
 <translation id="3043581297103810752">Fra <ph name="ORIGIN" /></translation>
@@ -2179,7 +2190,6 @@ og tryk på Ctrl+Alt+lysstyrke ned for at zoome ud.</translation>
 <translation id="3101126716313987672">Dæmp belysning</translation>
 <translation id="3101709781009526431">Dato og klokkeslæt</translation>
 <translation id="3103451787721578293">Angiv en årsag til upload af disse data:</translation>
-<translation id="3103941660000130485">Linux kunne ikke opgraderes</translation>
 <translation id="3105796011181310544">Vil du skifte tilbage til Google?</translation>
 <translation id="310671807099593501">Websitet anvender Bluetooth</translation>
 <translation id="3108931485517391283">Kan ikke modtage</translation>
@@ -2226,6 +2236,7 @@ og tryk på Ctrl+Alt+lysstyrke ned for at zoome ud.</translation>
 <translation id="3151562827395986343">Ryd historik, cookies, cache m.m.</translation>
 <translation id="3151616662954589507">Kamera til selfies</translation>
 <translation id="3151786313568798007">Retning</translation>
+<translation id="3152356229013609796">Se, afvis og reager på notifikationer fra din telefon</translation>
 <translation id="3154429428035006212">Offline i mere end en måned</translation>
 <translation id="3157387275655328056">Føj til læseliste</translation>
 <translation id="3157931365184549694">Gendan</translation>
@@ -2319,7 +2330,6 @@ og tryk på Ctrl+Alt+lysstyrke ned for at zoome ud.</translation>
 <translation id="3274763671541996799">Du er nu i fuld skærm.</translation>
 <translation id="3275778809241512831">Din interne sikkerhedsnøgle er i øjeblikket ikke sikker. Fjern den fra alle de enheder, som du har brugt den med. Nulstil sikkerhedsnøglen for at løse problemet.</translation>
 <translation id="3275778913554317645">Åbn som vindue</translation>
-<translation id="3277691515294482687">Sikkerhedskopiér mine apps og filer i mappen My files [Mine filer], før Linux opgraderes.</translation>
 <translation id="3278001907972365362">Din Google-konto kræver handling</translation>
 <translation id="3278928434075969895">Denne profil anvender proxyindstillingerne for Chrome OS.</translation>
 <translation id="3279092821516760512">Dine valgte kontakter kan dele med dig, når de er i nærheden. Overførsler starter først, når du har accepteret dem.</translation>
@@ -2426,7 +2436,6 @@ og tryk på Ctrl+Alt+lysstyrke ned for at zoome ud.</translation>
 <translation id="3388094447051599208">Papirbakken er næsten fuld</translation>
 <translation id="3388788256054548012">Denne fil er krypteret. Bed ejeren af filen om at dekryptere den.</translation>
 <translation id="3390013585654699824">Info om appen</translation>
-<translation id="3390741581549395454">Linux-applikationerne og -filerne blev sikkerhedskopieret. Opgraderingen begynder om lidt.</translation>
 <translation id="3391512812407811893">Prøveperioder til Privacy Sandbox</translation>
 <translation id="3393554941209044235">Chrome Document Analysis</translation>
 <translation id="3394850431319394743">Har tilladelse til at bruge id'er til at afspille beskyttet indhold</translation>
@@ -2515,6 +2524,7 @@ og tryk på Ctrl+Alt+lysstyrke ned for at zoome ud.</translation>
 <translation id="3462311546193741693">Logger dig ud af de fleste websites. Du forbliver logget ind på din Google-konto, så dine synkroniserede data kan ryddes.</translation>
 <translation id="3462413494201477527">Vil du annullere konfigurationen af kontoen?</translation>
 <translation id="346298925039590474">Dette mobilnetværk vil være tilgængeligt for alle brugere på denne enhed</translation>
+<translation id="3463015289462934089">Tjek, at din enhed har internetforbindelse.</translation>
 <translation id="3464145797867108663">Tilføj arbejdsprofil</translation>
 <translation id="346431825526753">Dette er en børnekonto, som administreres af <ph name="CUSTODIAN_EMAIL" />.</translation>
 <translation id="346546413339447252">Få rabatter til <ph name="MERCHANT_NAME_1" />, <ph name="MERCHANT_NAME_2" /> og andre</translation>
@@ -2566,7 +2576,6 @@ og tryk på Ctrl+Alt+lysstyrke ned for at zoome ud.</translation>
 <translation id="3511307672085573050">Kopier linkadr&amp;esse</translation>
 <translation id="351152300840026870">Skrifttype med fast bredde</translation>
 <translation id="3511528412952710609">Kort</translation>
-<translation id="3514011352559420398">Gendannelse mislykkedes</translation>
 <translation id="3514335087372914653">Spilstyring</translation>
 <translation id="3514373592552233661">Favoritter netværk prioriteres frem for andre kendte netværk, hvis der er mere end ét tilgængeligt netværk</translation>
 <translation id="3515983984924808886">Tryk på din sikkerhedsnøgle igen for at bekræfte nulstillingen. Alle de oplysninger, der er gemt på sikkerhedsnøglen, bl.a. pinkoden, slettes.</translation>
@@ -2657,7 +2666,6 @@ og tryk på Ctrl+Alt+lysstyrke ned for at zoome ud.</translation>
 <translation id="3612673635130633812">Downloadet af &lt;a href="<ph name="URL" />"&gt;<ph name="EXTENSION" />&lt;/a&gt;</translation>
 <translation id="3613134908380545408">Vis <ph name="FOLDER_NAME" /></translation>
 <translation id="3613422051106148727">&amp;Åbn på ny fane</translation>
-<translation id="3614974189435417452">Sikkerhedskopieringen blev fuldført</translation>
 <translation id="3615073365085224194">Tryk på fingeraftrykslæseren med din finger</translation>
 <translation id="3615579745882581859"><ph name="FILE_NAME" /> scannes.</translation>
 <translation id="3616741288025931835">&amp;Slet browserdata...</translation>
@@ -2913,6 +2921,7 @@ og tryk på Ctrl+Alt+lysstyrke ned for at zoome ud.</translation>
 <translation id="3831436149286513437">Google Drev-søgeforslag</translation>
 <translation id="3834728400518755610">Ændringen af mikrofonindstillingen kræver, at Linux skal lukkes ned. Luk Linux ned for at fortsætte.</translation>
 <translation id="3834775135533257713">Appen "<ph name="TO_INSTALL_APP_NAME" />" kunne ikke tilføjes, da den er i strid med "<ph name="INSTALLED_APP_NAME" />".</translation>
+<translation id="3835904559946595746">Din Linux-backup kunne ikke gendannes</translation>
 <translation id="383669374481694771">Dette er generelle oplysninger om denne enhed og brugen af den (f.eks. batteriniveau, system- og appaktivitet samt fejl). Dataene bruges til at forbedre Android, og visse samlede oplysninger kan også hjælpe partnere som f.eks. Android-udviklere med at forbedre deres apps og produkter.</translation>
 <translation id="3838085852053358637">Udvidelsen kunne ikke indlæses</translation>
 <translation id="3838486795898716504">Flere <ph name="PAGE_TITLE" /></translation>
@@ -3046,7 +3055,6 @@ Vil du starte <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="3954354850384043518">I gang</translation>
 <translation id="3954469006674843813"><ph name="WIDTH" /> x <ph name="HEIGHT" /> (<ph name="REFRESH_RATE" /> hertz)</translation>
 <translation id="3954953195017194676">Du har ingen nyligt registrerede WebRTC-hændelseslogfiler.</translation>
-<translation id="3955163004258753966">Der opstod en fejl under opstarten af opgraderingen</translation>
 <translation id="3955193568934677022">Tillad, at websites afspiller beskyttet indhold (anbefales)</translation>
 <translation id="3955321697524543127">Tillad ikke, at websites opretter forbindelse til USB-enheder</translation>
 <translation id="3955896417885489542">Gennemgå valgmulighederne for Google Play efter konfigurationen</translation>
@@ -3096,6 +3104,7 @@ Vil du starte <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="3988996860813292272">Vælg tidszone</translation>
 <translation id="399179161741278232">Importeret</translation>
 <translation id="3993887353483242788">Synkroniser din <ph name="DEVICE_TYPE" />, så dine præferencer anvendes på enhver enhed, hvor du logger ind med din Google-konto. Præferencer omfatter apps, indstillinger, Wi-Fi-adgangskoder, sprog, baggrund, tastaturgenveje og meget mere.</translation>
+<translation id="3994318741694670028">Din computer er desværre konfigureret med et hardware-id i forkert format. Dette forhindrer ChromeOS Flex i at opdatere med de nyeste sikkerhedsrettelser, og din computer <ph name="BEGIN_BOLD" />kan være sårbar over for ondartede angreb<ph name="END_BOLD" />.</translation>
 <translation id="3994374631886003300">Lås din telefon op, og flyt den tættere på din <ph name="DEVICE_TYPE" /> for at låse den op.</translation>
 <translation id="3994878504415702912">&amp;Zoom</translation>
 <translation id="3995138139523574647">USB-C-enhed (porten bagpå i højre side)</translation>
@@ -3369,6 +3378,7 @@ Vil du starte <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
     <ph name="BEGIN_PARAGRAPH2" />Du kan til enhver tid tillade eller fjerne tilladelsen for disse rapporter i indstillingerne på dit barns Chrome OS-enhed. Hvis du er domæneadministrator, kan du ændre denne indstilling i Administrationskonsol.<ph name="END_PARAGRAPH2" />
     <ph name="BEGIN_PARAGRAPH3" />Deaktivering af denne funktion påvirker ikke denne enheds evne til at sende oplysninger, der skal bruges til vigtige tjenester som f.eks. systemopdateringer og sikkerhed.<ph name="END_PARAGRAPH3" /></translation>
 <translation id="4301671483919369635">Denne side har tilladelse til at redigere filer</translation>
+<translation id="4302577930366020750">Genstart enheden for at bruge Steam</translation>
 <translation id="4303079906735388947">Opret en ny pinkode til din sikkerhedsnøgle</translation>
 <translation id="4305402730127028764">Kopiér til <ph name="DEVICE_NAME" /></translation>
 <translation id="4305817255990598646">Skift</translation>
@@ -3491,6 +3501,7 @@ Vil du starte <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="4427306783828095590">Forbedret beskyttelse gør mere end at blokere phishing og malware</translation>
 <translation id="4427365070557649936">Godkender bekræftelseskode...</translation>
 <translation id="4429163740524851942">Fysisk tastaturlayout</translation>
+<translation id="4429239357082509581">Steam har ikke tilladelse til at køre</translation>
 <translation id="4430019312045809116">Lydstyrke</translation>
 <translation id="4430369329743628066">Bogmærket er tilføjet</translation>
 <translation id="4432621511648257259">Adgangskoden er forkert</translation>
@@ -3557,6 +3568,7 @@ Vil du starte <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="450099669180426158">Ikon for udråbstegn</translation>
 <translation id="4501530680793980440">Bekræft fjernelse</translation>
 <translation id="4502423230170890588">Fjern fra denne enhed</translation>
+<translation id="4503748371388753124">Computeren indeholder en sikkerhedsenhed for TPM (Trusted Platform Module), som bruges til at implementere mange vigtige sikkerhedsfunktioner i ChromeOS Flex. Du kan få flere oplysninger i Hjælp til Chromebook: https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="4504374760782163539">{COUNT,plural, =0{Cookies er tilladt}=1{Cookies er tilladt, 1 undtagelse}one{Cookies er tilladt, {COUNT} undtagelse}other{Cookies er tilladt, {COUNT} undtagelser}}</translation>
 <translation id="4504940961672722399">Brug denne udvidelse ved at klikke på dette ikon eller ved at trykke på <ph name="EXTENSION_SHORTCUT" />.</translation>
 <translation id="450552327874992444">Ordet er allerede tilføjet</translation>
@@ -3564,7 +3576,6 @@ Vil du starte <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="4508765956121923607">Vis k&amp;ilde</translation>
 <translation id="4510195992002502722">Din feedback kunne ikke indsendes. Prøver igen...</translation>
 <translation id="4510479820467554003">Liste over forældrekonti</translation>
-<translation id="4510614391273086606">Linux-filer og -apps gendannes til den tilstand, de sidst blev sikkerhedskopieret fra.</translation>
 <translation id="451102079304155829">indkøbskurve</translation>
 <translation id="4513872120116766993">Skriveforslag</translation>
 <translation id="4513946894732546136">Feedback</translation>
@@ -3576,7 +3587,6 @@ Vil du starte <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="4519935350946509010">Der opstod en fejl med forbindelsen.</translation>
 <translation id="4520385623207007473">Cookies i brug</translation>
 <translation id="452039078290142656">ukendte enheder fra <ph name="VENDOR_NAME" /></translation>
-<translation id="4522351342209941760">Gennemgå et par tilladelser mere på din telefon.</translation>
 <translation id="4522570452068850558">Detaljer</translation>
 <translation id="4522600456902129422">Tillad fortsat, at dette website kan se udklipsholderen</translation>
 <translation id="4522890784888918985">Underordnede konti understøttes ikke</translation>
@@ -3624,6 +3634,7 @@ Vil du starte <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="4562155214028662640">Tilføj fingeraftryk</translation>
 <translation id="4563210852471260509">Det oprindelige indtastningssprog er kinesisk</translation>
 <translation id="4563880231729913339">Finger 3</translation>
+<translation id="4564245002465020751">Afslut konfigurationen på din telefon</translation>
 <translation id="4565377596337484307">Skjul adgangskode</translation>
 <translation id="4565917129334815774">Gem systemlogs</translation>
 <translation id="4566417217121906555">Slå mikrofon fra</translation>
@@ -3637,7 +3648,6 @@ Vil du starte <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="4570201855944865395">Begrundelse for anmodning om forlængelse:</translation>
 <translation id="4572659312570518089">Godkendelsen blev annulleret under tilslutning til "<ph name="DEVICE_NAME" />".</translation>
 <translation id="4572779512957829735">Angiv pinkoden til din sikkerhedsnøgle</translation>
-<translation id="4573515936045019911">Du skal have internetforbindelse for at opgradere Linux. Opret forbindelse til internettet, og prøv igen.</translation>
 <translation id="457386861538956877">Flere...</translation>
 <translation id="4574741712540401491">•  <ph name="LIST_ITEM_TEXT" /></translation>
 <translation id="4576541033847873020">Par Bluetooth-enhed</translation>
@@ -3692,7 +3702,6 @@ Vil du starte <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="4634771451598206121">Log ind igen...</translation>
 <translation id="4635072447747973225">Afinstaller Crostini</translation>
 <translation id="4635398712689569051"><ph name="PAGE_NAME" /> er ikke tilgængelig for gæstebrugere</translation>
-<translation id="4635444580397524003">Linux-sikkerhedskopien er nu gendannet.</translation>
 <translation id="4636682061478263818">Drev-filer</translation>
 <translation id="4636930964841734540">Oplysninger</translation>
 <translation id="4637083375689622795">Flere handlinger, <ph name="EMAIL" /></translation>
@@ -3797,6 +3806,7 @@ Vil du starte <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="474609389162964566">Få adgang til Google Assistent med "Hey Google"</translation>
 <translation id="4746351372139058112">Beskeder</translation>
 <translation id="4748783296226936791">Websites opretter normalt forbindelse til HID-enheder i forbindelse med funktioner, der anvender ualmindelige tastaturer, spilcontrollere og andre enheder</translation>
+<translation id="4750185073185658673">Gennemgå et par tilladelser mere på din telefon. Sørg for, at Bluetooth og Wi-Fi er aktiveret på din telefon.</translation>
 <translation id="4750394297954878236">Forslag</translation>
 <translation id="475088594373173692">Første bruger</translation>
 <translation id="4756378406049221019">Stop/genindlæs</translation>
@@ -3917,6 +3927,7 @@ Vil du starte <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="4876273079589074638">Hjælp vores softwareudviklere med at undersøge og løse dette nedbrud. Angiv så vidt muligt præcist, hvad du gjorde. Alle detaljer er vigtige.</translation>
 <translation id="4876895919560854374">Låse skærmen/låse skærmen op</translation>
 <translation id="4877276003880815204">Inspect Elements (Undersøg elementer)</translation>
+<translation id="4877652723592270843">Vil du aktivere ChromeVox, som er den indbyggede skærmlæser til ChromeOS Flex? Hold begge lydstyrkeknapper nede i fem sekunder for at aktivere.</translation>
 <translation id="4878634973244289103">Din feedback kunne ikke indsendes. Prøv igen senere.</translation>
 <translation id="4878653975845355462">Tilpassede baggrunde er blevet deaktiveret af din administrator</translation>
 <translation id="4878718769565915065">Der blev ikke føjet et fingeraftryk til denne sikkerhedsnøgle</translation>
@@ -3980,6 +3991,8 @@ Vil du starte <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="4929386379796360314">Udskriftsdestinationer</translation>
 <translation id="4930447554870711875">Udviklere</translation>
 <translation id="4930714375720679147">Aktivér</translation>
+<translation id="4930776995592629647">Hvis problemet fortsætter, kan du prøve at genstarte din enhed 
+    Fejlkode: <ph name="ERROR_CODE" />.</translation>
 <translation id="4932733599132424254">Dato</translation>
 <translation id="4933484234309072027">indlejret på <ph name="URL" /></translation>
 <translation id="4936042273057045735">Synkronisering af notifikationer understøttes ikke for telefoner med en arbejdsprofil</translation>
@@ -4031,6 +4044,7 @@ Vil du starte <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="4989966318180235467">Undersøg &amp;baggrundsside</translation>
 <translation id="4991420928586866460">Brug tasterne på øverste række som funktionstaster</translation>
 <translation id="499165176004408815">Brug tilstanden Høj kontrast</translation>
+<translation id="4991858732577603540">Vent et øjeblik, og prøv derefter at køre Steam igen</translation>
 <translation id="4992458225095111526">Bekræft Powerwash</translation>
 <translation id="4992473555164495036">Din administrator har begrænset de tilgængelige indtastningsmetoder.</translation>
 <translation id="4994474651455208930">Tillad, at websites beder om at håndtere protokoller som standard</translation>
@@ -4048,6 +4062,7 @@ Vil du starte <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="5008936837313706385">Aktivitetsnavn</translation>
 <translation id="5009463889040999939">Profilen omdøbes. Dette kan tage et par minutter.</translation>
 <translation id="5010043101506446253">Certificeringsautoritet</translation>
+<translation id="501057610015570208">Appen med manifestattributten "kiosk_only" skal installeres i ChromeOS Flex-terminaltilstand</translation>
 <translation id="5015344424288992913">Identificerer proxy...</translation>
 <translation id="5016491575926936899">Du kan sende sms-beskeder fra din computer, dele din internetforbindelse, svare i samtalenotifikationer og låse din <ph name="DEVICE_TYPE" /> op med din telefon.<ph name="FOOTNOTE_POINTER" /> <ph name="LINK_BEGIN" />Få flere oplysninger<ph name="LINK_END" /></translation>
 <translation id="5017643436812738274">Du kan navigere på sider med en tekstmarkør. Tryk på Ctrl+søgetasten+7 for at deaktivere.</translation>
@@ -4306,6 +4321,24 @@ Vil du starte <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="5282733140964383898">Hvis du aktiverer "Do Not Track", medtages der en anmodning i din browsertrafik. Anmodningens virkning afhænger af, om et website reagerer på den, og hvordan anmodningen fortolkes. Nogle websites kan f.eks. reagere på denne anmodning ved at vise dig annoncer, der ikke er baseret på andre websites, du har besøgt. Mange websites vil stadig indsamle og bruge dine browserdata, f.eks. for at forbedre sikkerheden, for at levere indhold, tjenester, annoncer og anbefalinger på websitene og for at generere statistik til rapportering. <ph name="BEGIN_LINK" />Få flere oplysninger<ph name="END_LINK" /></translation>
 <translation id="5283677936944177147">Ups! Systemet kunne ikke bestemme enhedsmodellen eller serienummeret.</translation>
 <translation id="5284445933715251131">Fortsæt download</translation>
+<translation id="5284787925725379414"><ph name="BEGIN_H3" />Fejlretningsfunktioner<ph name="END_H3" />
+    <ph name="BR" />
+    Du kan aktivere fejlretningsfunktionerne på din ChromeOS Flex-enhed for at installere og teste tilpasset kode på din enhed. Dette giver dig mulighed for at:<ph name="BR" />
+    <ph name="BEGIN_LIST" />
+      <ph name="LIST_ITEM" />Fjerne rootfs-bekræftelse, så du kan ændre OS-filer
+      <ph name="LIST_ITEM" />Aktivere SSH-adgang til enheden ved hjælp af standardtestnøgler, så du kan få adgang til enheden ved hjælp af værktøjer som f.eks. <ph name="BEGIN_CODE" />"cros flash"<ph name="END_CODE" />
+      <ph name="LIST_ITEM" />Aktivere opstart via USB, så du kan installere en afbildning af operativsystemet fra et USB-drev
+      <ph name="LIST_ITEM" />Konfigurere en tilpasset værdi for adgangskoden til både login for udviklere og til systemroden, så du manuelt kan få adgang til enheden via SSH
+    <ph name="END_LIST" />
+    <ph name="BR" />
+    Når fejlretningsfunktionerne er aktiveret, forbliver de fleste af dem aktiveret – selv efter powerwash eller datasletning på en virksomhedsadministreret enhed. Hvis du vil deaktivere alle fejlretningsfunktioner helt, skal du udføre gendannelsesprocessen for Chrome OS (https://support.google.com/chromebook/answer/1080595).
+    <ph name="BR" />
+    <ph name="BR" />
+    Få flere oplysninger om fejlretningsfunktionerne på:<ph name="BR" />
+    https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-features
+    <ph name="BR" />
+    <ph name="BR" />
+    <ph name="BEGIN_BOLD" />Bemærk!<ph name="END_BOLD" /> Systemet genstarter under processen.</translation>
 <translation id="5285635972691565180">Skærm <ph name="DISPLAY_ID" /></translation>
 <translation id="5286194356314741248">Søger</translation>
 <translation id="5287425679749926365">Dine konti</translation>
@@ -4461,6 +4494,7 @@ Flere kontakter kan tildeles denne handling.</translation>
 <translation id="5449716055534515760">Luk vin&amp;due</translation>
 <translation id="5452976525201205853"><ph name="LANGUAGE" /> (fungerer offline)</translation>
 <translation id="5454166040603940656">med <ph name="PROVIDER" /></translation>
+<translation id="5455603387986949153">Læs serienumre for ChromeOS Flex-enheder og -komponenter.</translation>
 <translation id="5457113250005438886">Ugyldig</translation>
 <translation id="5457459357461771897">Læs og slet billeder, musik og andre medier på din computer</translation>
 <translation id="5458214261780477893">Dvorak</translation>
@@ -4469,6 +4503,7 @@ Flere kontakter kan tildeles denne handling.</translation>
 <translation id="5461050611724244538">Vi har mistet forbindelsen til din telefon</translation>
 <translation id="5463275305984126951">Indeks over <ph name="LOCATION" /></translation>
 <translation id="5463625433003343978">Finder enheder...</translation>
+<translation id="5463845647891602726">Du kan frigøre plads ved at slette filer fra enheden</translation>
 <translation id="5463856536939868464">Menu med skjulte bogmærker</translation>
 <translation id="5464632865477611176">Kør nu</translation>
 <translation id="5464660706533281090">Denne indstilling kan ikke ændres af en bruger, som er et barn.</translation>
@@ -4636,7 +4671,6 @@ Flere kontakter kan tildeles denne handling.</translation>
 <translation id="5620568081365989559">DevTools anmoder om fuld adgang til <ph name="FOLDER_PATH" />. Sørg for, at du ikke afslører nogen følsomme oplysninger.</translation>
 <translation id="5620612546311710611">brugsstatistikker</translation>
 <translation id="5620655347161642930">Eksportér adgangskoder...</translation>
-<translation id="5621137386706841383">Dette kan tage op til 30 minutter.</translation>
 <translation id="5623282979409330487">Dette website har adgang til dine bevægelsessensorer.</translation>
 <translation id="5623842676595125836">Log</translation>
 <translation id="5624120631404540903">Administrer adgangskoder</translation>
@@ -4713,7 +4747,6 @@ Flere kontakter kan tildeles denne handling.</translation>
 <translation id="5701080607174488915">Politikken kunne ikke hentes fra serveren.</translation>
 <translation id="5701212929149679556">Roaming på mobilnetværk</translation>
 <translation id="5701381305118179107">Centrér</translation>
-<translation id="5701441174893770082">Opgradering af Linux kan dræne dit batteri betydeligt hurtigere. Slut din enhed til en oplader, og prøv igen.</translation>
 <translation id="5701786609538182967">Andre apps er konfigureret til at åbne de samme links som <ph name="APP_NAME" />. Dette gør, at <ph name="APP_NAME_2" />, <ph name="APP_NAME_3" />, <ph name="APP_NAME_4" /> og 1 anden app ikke kan åbne understøttede links.</translation>
 <translation id="5702749864074810610">Forslaget blev afvist</translation>
 <translation id="5704875434923668958">Der synkroniseres med</translation>
@@ -4779,6 +4812,8 @@ Flere kontakter kan tildeles denne handling.</translation>
 <translation id="5778491106820461378">I <ph name="LINK_BEGIN" />Indstillinger<ph name="LINK_END" /> kan du administrere de Google-konti, du er logget ind på. De tilladelser, du har givet til websites og apps, gælder muligvis for alle konti. Hvis du ikke vil have, at websites eller apps kan få adgang til dine kontooplysninger, kan du logge ind på din <ph name="DEVICE_TYPE" /> som gæst.</translation>
 <translation id="5780011244986845107">Den valgte mappe indeholder følsomme filer. Er du sikker på, at du vil give "<ph name="APP_NAME" />" permanent læseadgang til denne mappe?</translation>
 <translation id="5780973441651030252">Procesprioritet</translation>
+<translation id="5781014777846460847">Steam er ikke tilladt på denne enhed. Kontakt din administrator for at få tilladelse 
+    Fejlkode: <ph name="ERROR_CODE" />.</translation>
 <translation id="5781092003150880845">Synkroniser som <ph name="ACCOUNT_FULL_NAME" /></translation>
 <translation id="5781865261247219930">Send kommandoer til <ph name="EXTENSION_NAME" /></translation>
 <translation id="5782227691023083829">Oversætter ...</translation>
@@ -4885,6 +4920,7 @@ Flere kontakter kan tildeles denne handling.</translation>
 <translation id="5889282057229379085">Maksimalt antal mellemliggende CA'er: <ph name="NUM_INTERMEDIATE_CA" /></translation>
 <translation id="5891688036610113830">Foretrukne Wi-Fi-netværk</translation>
 <translation id="5895138241574237353">Genstart</translation>
+<translation id="5895335062901455404">Dine gemte præferencer og din aktivitet anvendes på alle de ChromeOS Flex-enheder, hvor du logger ind med din Google-konto. Du kan vælge, hvad der skal synkroniseres, i indstillingerne.</translation>
 <translation id="5896436821193322561">Tillad ikke</translation>
 <translation id="5900302528761731119">Google-profilbillede</translation>
 <translation id="590036993063074298">Oplysninger om spejlingskvaliteten</translation>
@@ -4921,7 +4957,6 @@ Flere kontakter kan tildeles denne handling.</translation>
 <translation id="592740088639760830">Stop denne container</translation>
 <translation id="592880897588170157">Download PDF-filer, i stedet for at de åbnes automatisk i Chrome</translation>
 <translation id="592919310198008711">Når jeg klikker på udvidelsen</translation>
-<translation id="5932124097031739492">Linux er blevet opgraderet.</translation>
 <translation id="5932209916647644605"><ph name="MANAGER" /> kræver, at du opdaterer din <ph name="DEVICE_TYPE" /> med det samme.</translation>
 <translation id="5932224571077948991">Websitet viser påtrængende eller vildledende annoncer</translation>
 <translation id="59324397759951282">USB-enhed fra <ph name="MANUFACTURER_NAME" /></translation>
@@ -4958,6 +4993,7 @@ Flere kontakter kan tildeles denne handling.</translation>
 <translation id="5957987129450536192">Tryk på ikonet for tekstoplæsning i nærheden af dit profilbillede, og vælg derefter det, der skal læses højt.</translation>
 <translation id="5959471481388474538">Netværket er ikke tilgængeligt</translation>
 <translation id="595959584676692139">Genindlæs siden for at bruge denne udvidelse</translation>
+<translation id="5960410286721553511">Se de seneste billeder og mediefiler fra din telefon</translation>
 <translation id="5963453369025043595"><ph name="NUM_HANDLES" /> (maks. <ph name="NUM_KILOBYTES_LIVE" />)</translation>
 <translation id="5964113968897211042">{COUNT,plural, =0{Åbn alle i &amp;nyt vindue}=1{Åbn i &amp;nyt vindue}one{Åbn ({COUNT}) i &amp;nyt vindue}other{Åbn alle ({COUNT}) i &amp;nyt vindue}}</translation>
 <translation id="5965661248935608907">Den styrer også, hvilken side der vises, når du klikker på knappen Startside eller søger via omnifeltet.</translation>
@@ -5340,6 +5376,7 @@ Flere kontakter kan tildeles denne handling.</translation>
 <translation id="6345878117466430440">Markér som læst</translation>
 <translation id="6347010704471250799">Vis notifikation</translation>
 <translation id="6349101878882523185">Installer <ph name="APP_NAME" /></translation>
+<translation id="6351383110065274390">Få glæde af dine spil på din Chromebook</translation>
 <translation id="6354918092619878358">SECG elliptisk kurve secp256r1 (også kaldet ANSI X9.62 prime256v1, NIST P-256)</translation>
 <translation id="6355789186038748882">Eksperimentel browser (i alfakvalitet). Nogle funktioner mangler eller er ufuldstændige. Du kan rapportere problemer ved at gå til Hjælp &gt; "Rapportér et problem...".</translation>
 <translation id="635609604405270300">Lad enheden være tændt</translation>
@@ -5486,7 +5523,6 @@ Flere kontakter kan tildeles denne handling.</translation>
 <translation id="6498249116389603658">&amp;Alle dine sprog</translation>
 <translation id="6499143127267478107">Værtsløsning i proxyscript...</translation>
 <translation id="6499764981457476645">Der blev ikke fundet nogen enheder i nærheden</translation>
-<translation id="65017764184991091">Sikkerhedskopieringen af Linux-apps og -filer mislykkedes. Dette kan skyldes, at din enhed ikke har nok ledig lagerplads. Prøv at frigøre noget plads på din enhed eller vælge en anden lokation, der skal sikkerhedskopieres til.</translation>
 <translation id="6501957628055559556">Alle containere</translation>
 <translation id="650266656685499220">Gå til Google Fotos for at oprette album</translation>
 <translation id="6503077044568424649">Mest besøgte</translation>
@@ -5503,6 +5539,7 @@ Flere kontakter kan tildeles denne handling.</translation>
 <translation id="6514565641373682518">Denne side har deaktiveret din musemarkør.</translation>
 <translation id="6518014396551869914">Ko&amp;pier billede</translation>
 <translation id="6518133107902771759">Bekræft</translation>
+<translation id="6519304021460270639">Dine apps, indstillinger og andre tilpasninger synkroniseres med alle de ChromeOS Flex-enheder, hvor du er logget ind med din Google-konto.</translation>
 <translation id="651942933739530207">Må <ph name="APP_NAME" /> dele din skærm og dit lydoutput?</translation>
 <translation id="6519437681804756269">[<ph name="TIMESTAMP" />]
         <ph name="FILE_INFO" />
@@ -5533,6 +5570,7 @@ Flere kontakter kan tildeles denne handling.</translation>
 <translation id="6541638731489116978">Der er blokeret for adgang til dine bevægelsessensorer på dette website.</translation>
 <translation id="6545665334409411530">Gentagelseshastighed</translation>
 <translation id="6545867563032584178">Mikrofonen er deaktiveret i Systemindstillinger for Mac</translation>
+<translation id="6546856949879953071">Du kan få flere oplysninger om opgraderingen i de relevante logs, som er gemt under Filer &gt; Mine filer &gt; <ph name="LOG_FILE" /></translation>
 <translation id="6547354035488017500">Din enhed holder op med at svare, hvis du ikke frigør mindst 512 MB. Slet filer fra lageret på enheden for at frigøre plads.</translation>
 <translation id="6547854317475115430"><ph name="BEGIN_PARAGRAPH1" />Googles lokationstjeneste bruger kilder som f.eks. Wi-Fi, mobilnetværk og sensorer for at hjælpe med at estimere din enheds lokation.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Du kan til enhver tid deaktivere Android-lokation på din enhed ved at gå til Indstillinger &gt; Apps &gt; Google Play Butik &gt; Administrer Android-præferencer &gt; Sikkerhed og lokation &gt; Lokation. Du kan også deaktivere brugen af Wi-Fi, mobilnetværk og sensorer i forbindelse med Android-lokation ved at slå "Google Lokationsnøjagtighed" fra i den samme menu.<ph name="END_PARAGRAPH2" /></translation>
@@ -5547,6 +5585,7 @@ Flere kontakter kan tildeles denne handling.</translation>
 <translation id="655384502888039633"><ph name="USER_COUNT" /> brugere</translation>
 <translation id="655483977608336153">Prøv igen</translation>
 <translation id="6555432686520421228">Fjern alle brugerkonti, og nulstil din <ph name="IDS_SHORT_PRODUCT_NAME" />-enhed, så den er som ny.</translation>
+<translation id="6555604601707417276">Din Linux-backup er gendannet</translation>
 <translation id="6555810572223193255">Det er i øjeblikket ikke muligt at rydde indhold</translation>
 <translation id="6556477848444788999">Denne pinkode eller adgangskode beskytter dine data på denne <ph name="DEVICE_TYPE" />, herunder eventuelt indhold, du streamer fra din telefon.</translation>
 <translation id="6556866813142980365">Gør det igen</translation>
@@ -5652,6 +5691,7 @@ Flere kontakter kan tildeles denne handling.</translation>
 <translation id="6663190258859265334">Powerwash din <ph name="DEVICE_TYPE" />, og vend tilbage til den forrige version.</translation>
 <translation id="6664237456442406323">Din computer er desværre konfigureret med et hardware-id i forkert format. Dette forhindrer Chrome OS i at opdatere med de nyeste sikkerhedsrettelser, og din computer <ph name="BEGIN_BOLD" />kan være sårbar over for ondartede angreb<ph name="END_BOLD" />.</translation>
 <translation id="6664774537677393800">Noget gik galt ved åbningen af din profil. Nogle funktioner er muligvis ikke tilgængelige.</translation>
+<translation id="6666559645296300656">Annullerer Linux-opgradering</translation>
 <translation id="666731172850799929">Åbn i <ph name="APP_NAME" /></translation>
 <translation id="6670142487971298264"><ph name="APP_NAME" /> er nu tilgængelig</translation>
 <translation id="6670767097276846646">Nogle udvidelser kan føje søgemaskiner til Chrome</translation>
@@ -5679,6 +5719,7 @@ Flere kontakter kan tildeles denne handling.</translation>
 <translation id="6691541770654083180">Jorden</translation>
 <translation id="6691936601825168937">&amp;Frem</translation>
 <translation id="6693745645188488741">{COUNT,plural, =1{1 side}one{{COUNT} side}other{{COUNT} sider}}</translation>
+<translation id="6694430008315398925">Konfiguration af Steam</translation>
 <translation id="6697492270171225480">Se forslag til lignende sider, når en side ikke kan findes</translation>
 <translation id="6697690052557311665">Hvis du vil dele, skal du højreklikke på en mappe i appen Filer og derefter vælge "Del med Linux".</translation>
 <translation id="6698810901424468597">Læse og redigere dine data på <ph name="WEBSITE_1" /> og <ph name="WEBSITE_2" /></translation>
@@ -5687,13 +5728,13 @@ Flere kontakter kan tildeles denne handling.</translation>
 <translation id="6700480081846086223">Cast <ph name="HOST_NAME" /></translation>
 <translation id="6701535245008341853">Profilen kunne ikke hentes.</translation>
 <translation id="6702639462873609204">&amp;Rediger...</translation>
+<translation id="6703254819490889819">Gendan sikkerhedskopi</translation>
 <translation id="6706210727756204531">Omfang</translation>
 <translation id="6707389671160270963">SSL-klientcertifikat</translation>
 <translation id="6709002550153567782">{NUM_PAGES,plural, =0{<ph name="PAGE_TITLE" />}=1{<ph name="PAGE_TITLE" /> og 1 anden fane}one{<ph name="PAGE_TITLE" /> og # anden fane}other{<ph name="PAGE_TITLE" /> og # andre faner}}</translation>
 <translation id="6709133671862442373">Nyheder</translation>
 <translation id="6709357832553498500">Opret forbindelse ved hjælp af <ph name="EXTENSIONNAME" /></translation>
 <translation id="6710213216561001401">Forrige</translation>
-<translation id="6710973041022512889">Opgraderingen er nu gennemført. Du kan få flere oplysninger om opgraderingen i de relevante logs, som er gemt i <ph name="LOG_FILE" /></translation>
 <translation id="6711146141291425900">Tilknyt en <ph name="WEB_DRIVE" />-konto til downloads</translation>
 <translation id="6712943853047024245">Du har allerede gemt en adgangskode for dette brugernavn til <ph name="WEBSITE" /></translation>
 <translation id="6713233729292711163">Tilføj arbejdsprofil</translation>
@@ -5781,6 +5822,7 @@ Flere kontakter kan tildeles denne handling.</translation>
 <translation id="6805647936811177813">Log ind på <ph name="TOKEN_NAME" /> for at importere klientcertifikatet fra <ph name="HOST_NAME" />.</translation>
 <translation id="680572642341004180">Aktivér RLZ-sporing i <ph name="SHORT_PRODUCT_OS_NAME" />.</translation>
 <translation id="6808039367995747522">Indsæt og tryk på din sikkerhedsnøgle for at fortsætte</translation>
+<translation id="6808166974213191158">Værktøj til skrivning af systembillede i ChromeOS Flex</translation>
 <translation id="6808193438228982088">Ræv</translation>
 <translation id="6809470175540814047">Åbn i inkognitovindue</translation>
 <translation id="6809656734323672573">Hvis du accepterer, venter Google Assistent i standbytilstand på at registrere "Hey Google", og den anvender Voice Match til at genkende din stemme.
@@ -5868,6 +5910,7 @@ Flere kontakter kan tildeles denne handling.</translation>
 <translation id="6883319974225028188">Ups! Systemet kunne ikke gemme enhedskonfigurationen.</translation>
 <translation id="6884474387073389421">Er du sikker på, at du vil slette de valgte logindata?</translation>
 <translation id="6885771755599377173">Forhåndsvisning af systemoplysninger</translation>
+<translation id="6886380424988777998">Linux kunne ikke opgraderes</translation>
 <translation id="6886871292305414135">Åbn link i ny &amp;fane</translation>
 <translation id="6889957081990109136">Handlingen er endnu ikke tildelt nogen kontakter</translation>
 <translation id="689007770043972343">Prøv at trække andre åbne faner til din gruppe</translation>
@@ -5912,7 +5955,6 @@ Flere kontakter kan tildeles denne handling.</translation>
 <translation id="6929760895658557216">Okay Google</translation>
 <translation id="6930036377490597025">Ekstern sikkerhedsnøgle eller indbygget sensor</translation>
 <translation id="6930161297841867798">{NUM_EXTENSIONS,plural, =1{En udvidelse blev afvist}one{# udvidelse blev afvist}other{# udvidelse blev afvist}}</translation>
-<translation id="6930321203306643451">Opgraderingen er fuldført</translation>
 <translation id="6931690462168617033">Klikstyrke</translation>
 <translation id="6935286146439255109">Der mangler en papirbakke</translation>
 <translation id="693807610556624488">Skrivehandlingen overskrider den maksimale længde af attributten på: "<ph name="DEVICE_NAME" />".</translation>
@@ -6011,6 +6053,7 @@ Flere kontakter kan tildeles denne handling.</translation>
 <translation id="7017219178341817193">Tilføj en ny side</translation>
 <translation id="7017354871202642555">Tilstanden kan ikke indstilles, når vinduet er indstillet.</translation>
 <translation id="7018275672629230621">Læs og rediger din browserhistorik</translation>
+<translation id="7019546817926942979">Din enhed skal være tilsluttet en oplader. Opgradering af Linux kan dræne dit batteri betydeligt hurtigere. Slut din enhed til en oplader, og prøv igen.</translation>
 <translation id="7019805045859631636">Hurtig</translation>
 <translation id="7022562585984256452">Din startside er blevet konfigureret.</translation>
 <translation id="7025082428878635038">En ny måde at navigere på ved hjælp af bevægelser</translation>
@@ -6064,6 +6107,7 @@ Flere kontakter kan tildeles denne handling.</translation>
 <translation id="7072010813301522126">Navn på genvejen</translation>
 <translation id="7075513071073410194">PKCS #1 MD5 med RSA-kryptering</translation>
 <translation id="7075625805486468288">Administrer HTTPS-/SSL-certifikater og -indstillinger</translation>
+<translation id="7076875098323397992">Opgraderingen kan ikke startes</translation>
 <translation id="7077829361966535409">Loginsiden kunne ikke indlæses med de aktuelle proxyindstillinger. <ph name="GAIA_RELOAD_LINK_START" />Prøv at logge ind igen<ph name="GAIA_RELOAD_LINK_END" />, eller brug nogle andre <ph name="PROXY_SETTINGS_LINK_START" />proxyindstillinger<ph name="PROXY_SETTINGS_LINK_END" />.</translation>
 <translation id="7078120482318506217">Alle netværk</translation>
 <translation id="708060913198414444">K&amp;opiér webadressen til lyden</translation>
@@ -6327,6 +6371,7 @@ Flere kontakter kan tildeles denne handling.</translation>
 <translation id="7377481913241237033">Opret forbindelse med en kode</translation>
 <translation id="7378611153938412599">Svage adgangskoder er nemme at gætte. Sørg for at oprette en stærk adgangskode. <ph name="BEGIN_LINK" />Se flere sikkerhedstips<ph name="END_LINK" />.</translation>
 <translation id="73786666777299047">Åbn Chrome Webshop</translation>
+<translation id="7380459290951585794">Sørg for, at din telefon er i nærheden, at den er låst op, og at Bluetooth og Wi-Fi er aktiveret</translation>
 <translation id="7380622428988553498">Enhedsnavnet indeholder ugyldige tegn</translation>
 <translation id="7380768571499464492"><ph name="PRINTER_NAME" /> blev opdateret</translation>
 <translation id="73843634555824551">Indtastningsmetoder og tastaturer</translation>
@@ -6630,6 +6675,7 @@ Flere kontakter kan tildeles denne handling.</translation>
 <translation id="7668002322287525834">{NUM_WEEKS,plural, =1{Returner <ph name="DEVICE_TYPE" /> inden for {NUM_WEEKS} uge}one{Returner <ph name="DEVICE_TYPE" /> inden for {NUM_WEEKS} uge}other{Returner <ph name="DEVICE_TYPE" /> inden for {NUM_WEEKS} uger}}</translation>
 <translation id="7668423670802040666">I Google Adgangskodeadministrator for <ph name="ACCOUNT" /></translation>
 <translation id="7669825497510425694">{NUM_ATTEMPTS,plural, =1{Pinkoden er forkert. Du har ét forsøg tilbage.}one{Pinkoden er forkert. Du har # forsøg tilbage.}other{Pinkoden er forkert. Du har # forsøg tilbage.}}</translation>
+<translation id="7670434942695515800">Opgrader til den nyeste version for at få optimal ydeevne. Det anbefales at sikkerhedskopiere dine filer, i tilfælde af at opgraderingen ikke kan gennemføres. Når opgraderingen starter, lukker Linux ned. Gem åbne filer, inden du fortsætter. <ph name="LINK_START" />Få flere oplysninger<ph name="LINK_END" /></translation>
 <translation id="7671130400130574146">Brug systemets titellinje og rammer</translation>
 <translation id="767127784612208024">Tryk for at bekræfte nulstilling</translation>
 <translation id="767147716926917172">Diagnostik og brugsdata sendes automatisk til Google</translation>
@@ -6735,6 +6781,7 @@ Tryk på en kontakt eller tast, der er tildelt en handling, for at fjerne tildel
 <translation id="7768526219335215384"><ph name="ORIGIN" /> vil kunne se filer i <ph name="FOLDERNAME" /></translation>
 <translation id="7768770796815395237">Skift</translation>
 <translation id="7768784765476638775">Tekstoplæsning</translation>
+<translation id="7770406201819593386">Kør ChromeOS Flex-diagnostiktest.</translation>
 <translation id="7770612696274572992">Billede kopieret fra en anden enhed</translation>
 <translation id="7771452384635174008">Layout</translation>
 <translation id="7772032839648071052">Bekræft adgangssætning</translation>
@@ -6785,7 +6832,6 @@ Tryk på en kontakt eller tast, der er tildelt en handling, for at fjerne tildel
 <translation id="7814458197256864873">&amp;Kopier</translation>
 <translation id="7815680994978050279">En farlig download blev blokeret</translation>
 <translation id="7817361223956157679">Skærmtastaturet fungerer endnu ikke i Linux-apps</translation>
-<translation id="7817671927108102061">Afslut konfigurationen på din telefon</translation>
 <translation id="7818135753970109980">Nyt tema er tilføjet (<ph name="EXTENSION_NAME" />)</translation>
 <translation id="7819992334107904369">Chrome-synkronisering</translation>
 <translation id="7820561748632634942">Vil du tildele flere kontakter?</translation>
@@ -6827,6 +6873,7 @@ Tryk på en kontakt eller tast, der er tildelt en handling, for at fjerne tildel
 <translation id="7853747251428735">Flere værktø&amp;jer</translation>
 <translation id="7855678561139483478">Flyt fanen til et nyt vindue</translation>
 <translation id="7856654138655787862">Kør Chrome OS-diagnostiktest.</translation>
+<translation id="7857004848504343806">Computeren indeholder et sikkerhedsmodul, som bruges til at implementere mange vigtige sikkerhedsfunktioner i ChromeOS Flex. Du kan få flere oplysninger i Hjælp til Chromebook: https://support.google.com/chromebook/?p=sm</translation>
 <translation id="7857093393627376423">Tekstforslag</translation>
 <translation id="7857949311770343000">Er dette den forventede side Ny fane?</translation>
 <translation id="7858328180167661092"><ph name="APP_NAME" /> (Windows)</translation>
@@ -6890,6 +6937,7 @@ Tryk på en kontakt eller tast, der er tildelt en handling, for at fjerne tildel
 <translation id="7920363873148656176"><ph name="ORIGIN" /> kan se <ph name="FILENAME" /></translation>
 <translation id="7920482456679570420">Tilføj ord, som stavekontrollen skal springe over</translation>
 <translation id="7922935920104868876">Vis oplysninger om blokering af tredjepartscookies i inkognito</translation>
+<translation id="7923564237306226146">Linux-opgraderingen er gennemført</translation>
 <translation id="7924358170328001543">Fejl i forbindelse med omdirigering af port</translation>
 <translation id="7925108652071887026">AutoFyld-data</translation>
 <translation id="792514962475806987">Zoomniveau i fastgjort lupvindue</translation>
@@ -6943,6 +6991,7 @@ Tryk på en kontakt eller tast, der er tildelt en handling, for at fjerne tildel
 <translation id="7969046989155602842">Kommando</translation>
 <translation id="7970673414865679092">Info om Ethernet</translation>
 <translation id="7970882136539140748">Kortet kan ikke gemmes lige nu</translation>
+<translation id="7972354851134703743">Slå hurtige kommandoer til/fra</translation>
 <translation id="7972714317346275248">PKCS #1 SHA-384 med RSA-kryptering</translation>
 <translation id="7973776233567882054">Hvilket af følgende udsagn beskriver bedst dit netværk?</translation>
 <translation id="797394244396603170">Vælg den enhed, du vil dele filer med</translation>
@@ -6992,6 +7041,7 @@ Opbevar din nøglefil på et sikkert sted. Du skal bruge den til at oprette nye 
 <translation id="8017679124341497925">Genvejen blev redigeret</translation>
 <translation id="8018298733481692628">Vil du slette denne profil?</translation>
 <translation id="8018313076035239964">Kontrollér, hvilke oplysninger websites kan bruge, og hvilket indhold de kan vise dig</translation>
+<translation id="8023133589013344428">Administrer sprog i indstillingerne for ChromeOS Flex</translation>
 <translation id="8023801379949507775">Opdater udvidelser nu</translation>
 <translation id="8025151549289123443">Låseskærm og login</translation>
 <translation id="8026334261755873520">Ryd browserdata</translation>
@@ -7044,6 +7094,7 @@ Opbevar din nøglefil på et sikkert sted. Du skal bruge den til at oprette nye 
 <translation id="8062844841289846053">{COUNT,plural, =1{1 ark papir}one{{COUNT} ark papir}other{{COUNT} ark papir}}</translation>
 <translation id="8063235345342641131">Grøn standardavatar</translation>
 <translation id="8063535366119089408">Se fil</translation>
+<translation id="8064015586118426197">ChromeOS Flex</translation>
 <translation id="8064279191081105977">Gruppe <ph name="GROUP_NAME" /> – <ph name="GROUP_CONTENTS" /> – <ph name="COLLAPSED_STATE" /></translation>
 <translation id="8066444921260601116">Dialogboks for forbindelse</translation>
 <translation id="8070662218171013510">Feedback ved berøring</translation>
@@ -7063,6 +7114,7 @@ Opbevar din nøglefil på et sikkert sted. Du skal bruge den til at oprette nye 
 <translation id="8084510406207562688">G&amp;endan alle faner</translation>
 <translation id="8086015605808120405">Konfigurerer <ph name="PRINTER_NAME" />...</translation>
 <translation id="8086442853986205778">Konfigurer <ph name="PRINTER_NAME" /></translation>
+<translation id="8086610718778464681">Dine Linux-apps og -filer kunne ikke sikkerhedskopieres</translation>
 <translation id="80866457114322936">{NUM_FILES,plural, =1{Denne fil er krypteret. Bed ejeren af filen om at dekryptere den.}one{En af disse filer er krypteret. Bed ejeren af den om at dekryptere den.}other{Nogle af disse filer er krypteret. Bed ejeren af dem om at dekryptere dem.}}</translation>
 <translation id="808894953321890993">Skift adgangskode</translation>
 <translation id="8090234456044969073">Se en liste over dine mest besøgte websites</translation>
@@ -7140,6 +7192,7 @@ Opbevar din nøglefil på et sikkert sted. Du skal bruge den til at oprette nye 
 <translation id="8157248655669507702">Aktivér mobildata for at installere en eSIM-profil</translation>
 <translation id="8157704005178149728">Konfigurerer forældrestyring</translation>
 <translation id="8158117992543756526">Denne enhed stoppede med at modtage automatiske software- og sikkerhedsopdateringer i <ph name="MONTH_AND_YEAR" />. <ph name="LINK_BEGIN" />Få flere oplysninger<ph name="LINK_END" /></translation>
+<translation id="8159652640256729753">Få vibrationsfeedback ved handlinger, f.eks. opdeling af skærm og skift mellem skriveborde. <ph name="LINK_BEGIN" />Få flere oplysninger<ph name="LINK_END" /></translation>
 <translation id="816055135686411707">Fejl under konfiguration af certifikattillid</translation>
 <translation id="8160775796528709999">Få undertekster til dit lyd- og videoindhold ved at aktivere Livetekstning i indstillingerne</translation>
 <translation id="816095449251911490"><ph name="SPEED" /> - <ph name="RECEIVED_AMOUNT" />, <ph name="TIME_REMAINING" /></translation>
@@ -7408,6 +7461,7 @@ Opbevar din nøglefil på et sikkert sted. Du skal bruge den til at oprette nye 
 <translation id="8438566539970814960">Gør søgninger og browsing endnu bedre</translation>
 <translation id="8439506636278576865">Tilbyd at oversætte sider på dette sprog</translation>
 <translation id="8440630305826533614">Linux-apps</translation>
+<translation id="8443795068008423036">Tjek, at din enhed er opdateret, og prøv igen</translation>
 <translation id="8445046761938045900">Seneste billeder, notifikationer og beskedapps</translation>
 <translation id="8446884382197647889">Få flere oplysninger</translation>
 <translation id="8447409163267621480">Skal indeholde enten Ctrl eller Alt</translation>
@@ -7476,7 +7530,6 @@ Opbevar din nøglefil på et sikkert sted. Du skal bruge den til at oprette nye 
 <translation id="8523849605371521713">Tilføjet af politik</translation>
 <translation id="8524783101666974011">Gem kort på din Google-konto</translation>
 <translation id="8525306231823319788">Fuld skærm</translation>
-<translation id="8526666462501866815">Annullerer Linux-opgraderingen</translation>
 <translation id="8526813720153458066">SSH</translation>
 <translation id="8528074251912154910">Tilføj sprog</translation>
 <translation id="8528962588711550376">Logger ind...</translation>
@@ -7593,6 +7646,7 @@ Opbevar din nøglefil på et sikkert sted. Du skal bruge den til at oprette nye 
 <translation id="8648252583955599667"><ph name="GET_HELP_LINK" /> eller <ph name="RE_SCAN_LINK" /></translation>
 <translation id="8648408795949963811">Farvetemperatur for Nattelys</translation>
 <translation id="8648544143274677280"><ph name="SITE_NAME" /> vil gerne have tilladelse til at: <ph name="FIRST_PERMISSION" />, <ph name="SECOND_PERMISSION" /> og andre ting</translation>
+<translation id="864892689521194669">Vær med til at forbedre funktionerne og ydeevnen i ChromeOS Flex</translation>
 <translation id="8650543407998814195">Du kan godt fjerne din gamle profil, selvom du ikke længere har adgang til den.</translation>
 <translation id="8651585100578802546">Gennemtving genindlæsning af denne side</translation>
 <translation id="8652400352452647993">Fejl i pakkeudvidelse</translation>
@@ -7688,6 +7742,7 @@ Opbevar din nøglefil på et sikkert sted. Du skal bruge den til at oprette nye 
 <translation id="8737709691285775803">Shill</translation>
 <translation id="8737914367566358838">Vælg det sprog, du vil oversætte siden til</translation>
 <translation id="8740247629089392745">Nu er denne Chromebook klar til <ph name="SUPERVISED_USER_NAME" />. Konfigurationen er næsten gennemført, og det er snart tid til at gå på opdagelse.</translation>
+<translation id="8740672167979365981">ChromeOS Flex skal opdateres</translation>
 <translation id="8741944563400125534">Konfigurationsvejledning til Kontaktadgang</translation>
 <translation id="8742998548129056176">Dette er generelle oplysninger om din enhed og din brug af den (f.eks. batteriniveau, system- og appaktivitet samt fejl). Dataene bruges til at forbedre Android, og visse samlede oplysninger kan også hjælpe Google-apps og -partnere som f.eks. Android-udviklere med at forbedre deres apps og produkter.</translation>
 <translation id="8746654918629346731">Du har allerede anmodet om "<ph name="EXTENSION_NAME" />"</translation>
@@ -7699,6 +7754,7 @@ Opbevar din nøglefil på et sikkert sted. Du skal bruge den til at oprette nye 
 <translation id="8750346984209549530">Adgangspunkt for mobilnetværk</translation>
 <translation id="8752451679755290210">Gå automatisk frem og tilbage mellem elementer</translation>
 <translation id="8753868764580670305">Se og administrer adgangskoder, der er gemt på denne enhed</translation>
+<translation id="8753948258138515839">Appen Filer giver hurtig adgang til filer, som du har gemt i Google Drev, på et eksternt lager eller på din ChromeOS Flex-enhed.</translation>
 <translation id="8754200782896249056">&lt;p&gt;Når <ph name="PRODUCT_NAME" /> kører i et understøttet computermiljø, anvendes systemets proxyindstillinger. Dit system understøttes imidlertid ikke, eller også er der opstået et problem ved opstart af din systemkonfiguration.
 &lt;/p&gt;
 
@@ -7718,6 +7774,7 @@ Opbevar din nøglefil på et sikkert sted. Du skal bruge den til at oprette nye 
 <translation id="87646919272181953">Google Fotos-album</translation>
 <translation id="8767621466733104912">Opdater Chrome automatisk for alle brugere</translation>
 <translation id="8767765348545497220">Luk hjælp-boble</translation>
+<translation id="8769901904650373714">Der opstod et problem ved konfigurationen af Steam</translation>
 <translation id="8770406935328356739">Udvidelsens rodmappe</translation>
 <translation id="8771300903067484968">Baggrunden for startsiden er nulstillet til standardbaggrunden.</translation>
 <translation id="8773302562181397928">Gem <ph name="PRINTER_NAME" /></translation>
@@ -7793,7 +7850,6 @@ Opbevar din nøglefil på et sikkert sted. Du skal bruge den til at oprette nye 
 <translation id="8838601485495657486">Uigennemsigtig</translation>
 <translation id="8838770651474809439">Hamburger</translation>
 <translation id="8838778928843281408">Administrer telefoner</translation>
-<translation id="8840427996758894516">Sørg for, at din telefon er i nærheden, at den er låst op, og at Bluetooth og Wi-Fi er aktiveret.</translation>
 <translation id="8841843049738266382">Se og rediger brugere på tilladelseslisten</translation>
 <translation id="8842594465773264717">Slet dette fingeraftryk</translation>
 <translation id="8845001906332463065">Få hjælp</translation>
@@ -7936,6 +7992,7 @@ Opbevar din nøglefil på et sikkert sted. Du skal bruge den til at oprette nye 
 <translation id="8981825781894055334">Lavt papirniveau</translation>
 <translation id="8983632908660087688"><ph name="ORIGIN" /> kan redigere <ph name="FILENAME" /></translation>
 <translation id="8984694057134206124">Du vil være synlig for alle i <ph name="MINUTES" /> minutter. <ph name="LINK_BEGIN" />Få flere oplysninger<ph name="LINK_END" /></translation>
+<translation id="8985191021574400965">Her er Steam til Chromebook</translation>
 <translation id="8985264973231822211">Aktiv for <ph name="DEVICE_LAST_ACTIVATED_TIME" /> dag siden</translation>
 <translation id="8985661493893822002">Du skal oprette forbindelse til internettet for at kunne logge ind på din <ph name="DEVICE_TYPE" />.</translation>
 <translation id="8986362086234534611">Glem</translation>
@@ -8134,6 +8191,7 @@ Opbevar din nøglefil på et sikkert sted. Du skal bruge den til at oprette nye 
 <translation id="917510707618656279">Spørg, når et website vil have adgang til Bluetooth-enheder</translation>
 <translation id="9176476835295860688">Send brugs- og diagnosticeringsdata. Denne enhed sender i øjeblikket automatisk diagnosticerings- og enhedsdata samt data om brug af apps til Google. Dataene bruges til forbedring af bl.a. systemets og appens stabilitet. Visse samlede data hjælper også Google-apps og -partnere, f.eks. Android-udviklere. Denne <ph name="BEGIN_LINK1" />indstilling<ph name="END_LINK1" /> håndhæves af ejeren. Hvis indstillingen til yderligere web- og appaktivitet er aktiveret, gemmes disse data muligvis på din Google-konto. <ph name="BEGIN_LINK2" />Få flere oplysninger<ph name="END_LINK2" /></translation>
 <translation id="9176611096776448349"><ph name="WINDOW_TITLE" /> – en Bluetooth-enhed er forbundet</translation>
+<translation id="9177949831069307748">Læs ChromeOS Flex-enhedsoplysninger og -enhedsdata.</translation>
 <translation id="9178061802301856367">Slet logindata</translation>
 <translation id="9179524979050048593">Brugernavn på loginskærm</translation>
 <translation id="9180281769944411366">Denne proces kan tage et par minutter. Linux-containeren startes.</translation>
@@ -8241,6 +8299,7 @@ Opbevar din nøglefil på et sikkert sted. Du skal bruge den til at oprette nye 
 <translation id="992778845837390402">Linux er i øjeblikket ved at blive sikkerhedskopieret</translation>
 <translation id="993540765962421562">Installationen er i gang</translation>
 <translation id="994289308992179865">&amp;Sløjfe</translation>
+<translation id="995571563161129624">Vær opmærksom på, at hvis du lukker en notifikation på din Chromebook, lukkes den også på din telefon</translation>
 <translation id="995782501881226248">YouTube</translation>
 <translation id="996250603853062861">Etablerer sikker forbindelse...</translation>
 <translation id="996803490569799917">Se minder med dine yndlingspersoner og meget mere</translation>

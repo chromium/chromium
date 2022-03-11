@@ -61,6 +61,7 @@
 <translation id="1497522201463361063">Ayikwazi ukuqamba kabusha i-"<ph name="FILE_NAME" />". <ph name="ERROR_MESSAGE" /></translation>
 <translation id="1499943022354839699">I-English (US) enekhibhodi ye-Dvorak</translation>
 <translation id="1515909359182093592"><ph name="INPUT_LABEL" /> - Umsingathi</translation>
+<translation id="1521655867290435174">Amashidi we-Google</translation>
 <translation id="1538729222189715449">Ivula amafayela e-Linux...</translation>
 <translation id="1547964879613821194">I-Canadian English</translation>
 <translation id="1556189134700913550">Sebenzisa kukho konke</translation>
@@ -184,7 +185,6 @@
 <translation id="2544853746127077729">Isitifiketi sokuqinisekisa sinqatshelwe yinethiwekhi</translation>
 <translation id="2547921442987553570">Engeza ku-<ph name="EXTENSION_NAME" /></translation>
 <translation id="255937426064304553">I-US yamazwe ngamazwe</translation>
-<translation id="2562685439590298522">Amadokhumenti</translation>
 <translation id="2563185590376525700">Ixoxo</translation>
 <translation id="2578394532502990878">I-Tamil Phonetic</translation>
 <translation id="2579959351793446050">Isi-Odia</translation>
@@ -220,9 +220,7 @@
 <translation id="2902734494705624966">Inwetshwelwe i-US</translation>
 <translation id="290843123675549676">Isi-Marathi</translation>
 <translation id="2923240520113693977">Isi-Estonian</translation>
-<translation id="2925966894897775835">Amashidi</translation>
 <translation id="2938685643439809023">Isi-Mongolian</translation>
-<translation id="2943400156390503548">Amaslayidi</translation>
 <translation id="2943503720238418293">Sebenzisa igama elifushane</translation>
 <translation id="2949781154072577687">Ifometha i-<ph name="DRIVE_NAME" />...</translation>
 <translation id="2951236788251446349">I-Jellyfish</translation>
@@ -414,6 +412,7 @@
 <translation id="4656777537938206294">Yenza amafayela atholakala ngokungaxhunyiwe kwi-inthanethi</translation>
 <translation id="4658782175094886150">Umuntu okwisthwathwa</translation>
 <translation id="4669606053856530811">Amalungu e-'<ph name="SOURCE_NAME" />' azolahlekelwa ukufinyelela ngaphandle kokuthi lezi zinto zabiwe nabo.</translation>
+<translation id="467809019005607715">Google Amaslayidi</translation>
 <translation id="4690246192099372265">Isi-Swedish</translation>
 <translation id="4693155481716051732">I-Sushi</translation>
 <translation id="4694604912444486114">Inkawu</translation>
@@ -657,6 +656,7 @@
 <translation id="6732801395666424405">Izitifiketi azilayishiwe</translation>
 <translation id="6736329909263487977"><ph name="ISSUED_BY" /> [<ph name="ISSUED_TO" />]</translation>
 <translation id="6751256176799620176">1 ifolda ekhethiwe</translation>
+<translation id="6755827872271341378">Idivayisi ye-ChromeOS Flex</translation>
 <translation id="6790428901817661496">Dlala</translation>
 <translation id="6795884519221689054">I-Panda</translation>
 <translation id="6806699711453372963">Phatha ukwabelana kwe-Linux</translation>
@@ -734,6 +734,7 @@
 <translation id="7343393116438664539">Isi-Vietnamese Telex</translation>
 <translation id="7359359531237882347">Ukukopisha izinto ezingu-<ph name="NUMBER_OF_ITEMS" />...</translation>
 <translation id="7375951387215729722">Uhlu lwefayela luhlungwe nge-<ph name="COLUMN_NAME" /> nge-oda eyehlayo.</translation>
+<translation id="7402503521691663770">Amadivayisi we-ChromeOS Flex</translation>
 <translation id="7408870451288633753">Isi-Czech</translation>
 <translation id="7417453074306512035">Ikhibhodi ye-Ethiopic</translation>
 <translation id="7417705661718309329">Imephu ye-Google</translation>
@@ -948,6 +949,7 @@
 <translation id="9172592259078059678">Ukuguqulwa kwamaletha kwesi-Gujarati</translation>
 <translation id="9173120999827300720">I-English (US enekhibhodi yamazwe ngamazwe</translation>
 <translation id="9174050671906956834">Izinto ezikudoti zisuswa ingunaphakade ngemva kwezinsuku ezingama-30.</translation>
+<translation id="9183302530794969518">Google Amadokhumenti</translation>
 <translation id="9189836632794948435">Isi-Kazakh</translation>
 <translation id="9213073329713032541">Ukufaka kuqaliswe ngempumelelo.</translation>
 <translation id="9219103736887031265">Izithombe</translation>

@@ -61,6 +61,7 @@
 <translation id="1497522201463361063">تعذرت إعادة تسمية "<ph name="FILE_NAME" />". <ph name="ERROR_MESSAGE" /></translation>
 <translation id="1499943022354839699">‏الإنجليزية (الولايات المتحدة) باستخدام لوحة مفاتيح Dvorak</translation>
 <translation id="1515909359182093592"><ph name="INPUT_LABEL" /> - مضيف</translation>
+<translation id="1521655867290435174">‏جداول بيانات Google</translation>
 <translation id="1538729222189715449">‏جارٍ فتح ملفات نظام التشغيل Linux...</translation>
 <translation id="1547964879613821194">الإنجليزية الكندية</translation>
 <translation id="1556189134700913550">تطبيق على الكل</translation>
@@ -184,7 +185,6 @@
 <translation id="2544853746127077729">تمّ رفض شهادة المصادقة بواسطة الشبكة</translation>
 <translation id="2547921442987553570">إضافة إلى <ph name="EXTENSION_NAME" /></translation>
 <translation id="255937426064304553">الأمريكية الدولية</translation>
-<translation id="2562685439590298522">المستندات</translation>
 <translation id="2563185590376525700">ضفدع</translation>
 <translation id="2578394532502990878">التاميلية الصوتية</translation>
 <translation id="2579959351793446050">الأوديا</translation>
@@ -220,9 +220,7 @@
 <translation id="2902734494705624966">أمريكية موسعة</translation>
 <translation id="290843123675549676">المراثية</translation>
 <translation id="2923240520113693977">الإستونية</translation>
-<translation id="2925966894897775835">جداول البيانات</translation>
 <translation id="2938685643439809023">المنغولية</translation>
-<translation id="2943400156390503548">الشرائح</translation>
 <translation id="2943503720238418293">استخدم اسم أقصر</translation>
 <translation id="2949781154072577687">جارٍ ضبط <ph name="DRIVE_NAME" />...</translation>
 <translation id="2951236788251446349">قنديل البحر</translation>
@@ -414,6 +412,7 @@
 <translation id="4656777537938206294">إتاحة الوصول إلى الملفات بلا اتصال بالإنترنت</translation>
 <translation id="4658782175094886150">شخص مغطّى بالثلج</translation>
 <translation id="4669606053856530811">سيفقد أعضاء '<ph name="SOURCE_NAME" />' إمكانية الوصول ما لم تتم مشاركة هذه العناصر معهم.</translation>
+<translation id="467809019005607715">‏العروض التقديمية من Google</translation>
 <translation id="4690246192099372265">السويدية</translation>
 <translation id="4693155481716051732">سوشي</translation>
 <translation id="4694604912444486114">قرد</translation>
@@ -659,6 +658,7 @@
 <translation id="6732801395666424405">لم يتم تحميل الشهادات</translation>
 <translation id="6736329909263487977"><ph name="ISSUED_BY" /> [<ph name="ISSUED_TO" />]</translation>
 <translation id="6751256176799620176">تم اختيار مجلد واحد</translation>
+<translation id="6755827872271341378">‏جهاز ChromeOS Flex</translation>
 <translation id="6790428901817661496">التشغيل</translation>
 <translation id="6795884519221689054">باندا</translation>
 <translation id="6806699711453372963">‏إدارة المشاركة في Linux</translation>
@@ -736,6 +736,7 @@
 <translation id="7343393116438664539">‏الفيتنامية باستخدام لوحة مفاتيح Telex</translation>
 <translation id="7359359531237882347">جارٍ نسخ <ph name="NUMBER_OF_ITEMS" /> من العناصر...</translation>
 <translation id="7375951387215729722">تم ترتيب قائمة الملف تنازليًا حسب <ph name="COLUMN_NAME" />.</translation>
+<translation id="7402503521691663770">‏أجهزة ChromeOS Flex</translation>
 <translation id="7408870451288633753">التشيكية</translation>
 <translation id="7417453074306512035">لوحة المفاتيح الإثيوبية</translation>
 <translation id="7417705661718309329">‏خريطة Google</translation>
@@ -950,6 +951,7 @@
 <translation id="9172592259078059678">تحويل صوتي إلى اللغة الغوجاراتية</translation>
 <translation id="9173120999827300720">الإنجليزية (الولايات المتحدة) باستخدام لوحة المفاتيح الدولية</translation>
 <translation id="9174050671906956834">يتم حذف العناصر من المهملات نهائيًا بعد 30 يومًا.</translation>
+<translation id="9183302530794969518">‏مستندات Google</translation>
 <translation id="9189836632794948435">الكازاخية</translation>
 <translation id="9213073329713032541">بدأ التثبيت بنجاح.</translation>
 <translation id="9219103736887031265">الصور</translation>

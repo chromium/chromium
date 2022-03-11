@@ -91,9 +91,9 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="1414271762428216854"><ph name="APP_NAME" />, installerad app</translation>
 <translation id="1419738280318246476">Lås upp enheten så att aviseringen kan göras</translation>
 <translation id="1420408895951708260">Aktivera och inaktivera nattljus. <ph name="STATE_TEXT" /></translation>
+<translation id="1420732223884894666">Visa de senaste bilderna och mediefilerna från telefonen på din <ph name="DEVICE_TYPE" /></translation>
 <translation id="1426410128494586442">Ja</translation>
 <translation id="1438357537418863713">Appstreaming har konfigurerats. När du kommer igång med det visas de appar som öppnats nyligen här.</translation>
-<translation id="144853431011121127">Få aviseringar från telefonen på din <ph name="DEVICE_TYPE" /></translation>
 <translation id="1455242230282523554">Visa språkinställningar</translation>
 <translation id="1460620680449458626">Ljudet är av.</translation>
 <translation id="1467432559032391204">Vänster</translation>
@@ -317,6 +317,7 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="301282384882049174">Delas av administratören</translation>
 <translation id="3017687597151988916">Markeringsområdet har ställts in på fönster</translation>
 <translation id="3033545621352269033">På</translation>
+<translation id="3033912566804961911">Kombinera med <ph name="DESK_NAME" /></translation>
 <translation id="3036649622769666520">Öppna filer</translation>
 <translation id="3038571455154067151">Ange föräldraåtkomstkoden för Family Link om du vill logga in</translation>
 <translation id="3039939407102840004">E-pennan har <ph name="PERCENTAGE" /> procent batteri.</translation>
@@ -342,6 +343,7 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="3153444934357957346">Du kan högst använda <ph name="MULTI_PROFILE_USER_LIMIT" /> konton för multiinloggning.</translation>
 <translation id="3154351730702813399">Enhetsadministratören kan övervaka din webbaktivitet.</translation>
 <translation id="316086887565479535">Appar som inte stöds i mallen</translation>
+<translation id="3161500364292033097">Stäng skrivbord och fönster</translation>
 <translation id="316356270129335934"><ph name="MANAGER" /> återställer din <ph name="DEVICE_TYPE" /> till en tidigare version. Enheten återställs och all data raderas.</translation>
 <translation id="3181441307743005334">Det kan ta en stund att starta om</translation>
 <translation id="3202010236269062730">{NUM_DEVICES,plural, =1{Ansluten till en enhet}other{Ansluten till # enheter}}</translation>
@@ -824,6 +826,7 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="6165508094623778733">Läs mer</translation>
 <translation id="6166852626429024716">Sök på enheten, i appar, inställningar och på webben …</translation>
 <translation id="6179832488876878285">Du kan fästa viktiga filer här. Börja med att öppna appen Filer.</translation>
+<translation id="619279033188484792">Visa de senaste bilderna, mediefilerna och aviseringar från telefonen på din <ph name="DEVICE_TYPE" /></translation>
 <translation id="6220928844947387476">Nu kan du spela in dig själv och skärmen på samma gång</translation>
 <translation id="622484624075952240">Ner</translation>
 <translation id="6231419273573514727">Kringutrustningens prestanda kan vara begränsad</translation>
@@ -936,6 +939,7 @@ Nyligen installerad</translation>
 <translation id="6921188888306725546">Förbättrade kortkommandon</translation>
 <translation id="6931576957638141829">Spara i</translation>
 <translation id="6945221475159498467">Välj</translation>
+<translation id="6960565108681981554">Inte aktiverat. Kontakta operatören.</translation>
 <translation id="6961121602502368900">Funktionen Inga telefonljud är inte tillgänglig i jobbprofilen</translation>
 <translation id="6961840794482373852">Kortkommandot Alt + uppåtpil har ändrats. Tryck på <ph name="LAUNCHER_KEY_NAME" />-tangenten + uppåtpil för att använda Page Up-tangenten.</translation>
 <translation id="6965382102122355670">OK</translation>
@@ -1050,6 +1054,7 @@ Nyligen installerad</translation>
 <translation id="7649070708921625228">Hjälp</translation>
 <translation id="7654687942625752712">Inaktivera talad feedback genom att hålla båda volymknapparna nedtryckta i fem sekunder.</translation>
 <translation id="7658239707568436148">Avbryt</translation>
+<translation id="7659861092419699379">Skrivbordet och dess fönster har stängts</translation>
 <translation id="7660160718439869192"><ph name="NAME" /> visas på enheter som har länkats till <ph name="EMAIL" /></translation>
 <translation id="7662283695561029522">Tryck om du vill konfigurera</translation>
 <translation id="7670953955701272011">Öppna det här datumet i Google Kalender</translation>
@@ -1144,7 +1149,6 @@ Nyligen installerad</translation>
 <translation id="8236042855478648955">Dags för en paus</translation>
 <translation id="8247060538831475781"><ph name="CONNECTION_STATUS" />, signalstyrka <ph name="SIGNAL_STRENGTH" />, telefonens batterinivå <ph name="BATTERY_STATUS" /></translation>
 <translation id="8247998213073982446"><ph name="APP_NAME" />, app</translation>
-<translation id="8248728785693203669">Det kanske inte går att ansluta skärmar korrekt med den här USB-C-kabeln</translation>
 <translation id="8255234195843591763">Återställ för att uppdatera</translation>
 <translation id="826107067893790409">Tryck på Retur för att låsa upp för <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="8261506727792406068">Radera</translation>

@@ -61,6 +61,7 @@
 <translation id="1497522201463361063">No se puede cambiar el nombre del archivo "<ph name="FILE_NAME" />". <ph name="ERROR_MESSAGE" /></translation>
 <translation id="1499943022354839699">Inglés (EE. UU.) con teclado Dvorak</translation>
 <translation id="1515909359182093592"><ph name="INPUT_LABEL" /> (host)</translation>
+<translation id="1521655867290435174">Hojas de cálculo de Google</translation>
 <translation id="1538729222189715449">Abriendo archivos de Linux...</translation>
 <translation id="1547964879613821194">Inglés canadiense</translation>
 <translation id="1556189134700913550">Aplicar a todo</translation>
@@ -184,7 +185,6 @@
 <translation id="2544853746127077729">Certificado de autenticación rechazado por la red</translation>
 <translation id="2547921442987553570">Añadir a <ph name="EXTENSION_NAME" /></translation>
 <translation id="255937426064304553">Estados Unidos (internacional)</translation>
-<translation id="2562685439590298522">Docs</translation>
 <translation id="2563185590376525700">Rana</translation>
 <translation id="2578394532502990878">Tamil (fonético)</translation>
 <translation id="2579959351793446050">Oriya</translation>
@@ -220,9 +220,7 @@
 <translation id="2902734494705624966">Estados Unidos (ampliado)</translation>
 <translation id="290843123675549676">Maratí</translation>
 <translation id="2923240520113693977">Estonio</translation>
-<translation id="2925966894897775835">Hojas de cálculo de Google</translation>
 <translation id="2938685643439809023">Mongol</translation>
-<translation id="2943400156390503548">Presentaciones</translation>
 <translation id="2943503720238418293">Utiliza un nombre más corto</translation>
 <translation id="2949781154072577687">Formateando <ph name="DRIVE_NAME" />...</translation>
 <translation id="2951236788251446349">Medusa</translation>
@@ -414,6 +412,7 @@
 <translation id="4656777537938206294">Hacer que los archivos estén disponibles sin conexión</translation>
 <translation id="4658782175094886150">Persona en la nieve</translation>
 <translation id="4669606053856530811">Los miembros de "<ph name="SOURCE_NAME" />" dejarán de tener acceso a menos que estos elementos se compartan con ellos.</translation>
+<translation id="467809019005607715">Presentaciones de Google</translation>
 <translation id="4690246192099372265">Sueco</translation>
 <translation id="4693155481716051732">Sushi</translation>
 <translation id="4694604912444486114">Mono</translation>
@@ -949,6 +948,7 @@
 <translation id="9172592259078059678">Guyaratí (transliteración)</translation>
 <translation id="9173120999827300720">Inglés (EE. UU.) con teclado internacional</translation>
 <translation id="9174050671906956834">Los elementos de la papelera se eliminan definitivamente después de 30 días.</translation>
+<translation id="9183302530794969518">Documentos de Google</translation>
 <translation id="9189836632794948435">Kazajo</translation>
 <translation id="9213073329713032541">Se ha iniciado la instalación correctamente.</translation>
 <translation id="9219103736887031265">Imágenes</translation>

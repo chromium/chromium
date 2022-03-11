@@ -2961,17 +2961,6 @@ Se esta política for definida como "Falsa", o <ph name="PRODUCT_NAME" /> não u
       A partir da versão 92 do <ph name="PRODUCT_NAME" />, esta política também será compatível com o modo headless.
 
       No <ph name="MS_WIN_NAME" />, essa funcionalidade está disponível apenas em instâncias associadas a um domínio do <ph name="MS_AD_NAME" />, executadas no Windows 10 Pro ou registradas no <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />. No <ph name="MAC_OS_NAME" />, essa funcionalidade está disponível apenas em instâncias gerenciadas por MDM ou associadas a um domínio via MCX.</translation>
-<translation id="4268014245533736105">O Chrome vai bloquear a navegação para protocolos externos no
-      iframe dentro do sandbox. Consulte https://chromestatus.com/features/5680742077038592.
-
-      Se esta política for definida como verdadeira, o Chrome vai bloquear esse tipo de navegação.
-
-      Se ela for definida como falsa, o Chrome não vai bloquear esse tipo de navegação.
-
-      Por padrão, a política é definida como verdadeira, com o recurso de segurança ativado.
-
-      Ela pode ser usada por administradores que precisam de mais tempo para atualizar os sites internos afetados pela nova restrição. A política corporativa é temporária e será removida após a versão 104 do <ph name="PRODUCT_NAME" />.
-      </translation>
 <translation id="4268586991084547853">Mais compatível com as listas de sites do modo empresarial do Microsoft IE/Edge.</translation>
 <translation id="4269798992490176617">Se esta política for ativada, a <ph name="CHROME_REMOTE_DESKTOP_PRODUCT_NAME" /> poderá executar solicitações de API do WebAuthn originadas de uma sessão de navegação em um host remoto.
 
@@ -7097,12 +7086,6 @@ O modo recomendado para configurar políticas no Windows é por meio de GPO, emb
       Esta política é usada apenas para usuários do Family Link.</translation>
 <translation id="8947415621777543415">Informar a localização do dispositivo</translation>
 <translation id="8948062138228904066">Lista de permissões do servidor de autenticação</translation>
-<translation id="8949511380888040821">Quando esta configuração estiver ativada, o <ph name="PRODUCT_NAME" /> vai verificar os certificados do servidor usando o verificador integrado de certificados.
-      Quando ela estiver desativada, o <ph name="PRODUCT_NAME" /> vai verificar os certificados do servidor usando o verificador legado disponibilizado pela plataforma.
-      Quando esta configuração não for definida, tanto o verificador de certificados integrado quanto o legado vão poder ser usados.
-
-      Esta política será removida no <ph name="PRODUCT_NAME" /> para <ph name="MAC_OS_NAME" /> versão 104, quando o suporte para o verificador de certificados legado no <ph name="MAC_OS_NAME" /> também será removido.
-      </translation>
 <translation id="8951350807133946005">Definir o diretório de cache de disco</translation>
 <translation id="8955719471735800169">Voltar ao início</translation>
 <translation id="8956312248048980644">Permite o clustering do agente com origin-key por padrão.</translation>

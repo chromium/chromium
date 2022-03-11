@@ -61,6 +61,7 @@
 <translation id="1497522201463361063">"<ph name="FILE_NAME" />" पुन: नामकरण गर्न असक्षम। <ph name="ERROR_MESSAGE" /></translation>
 <translation id="1499943022354839699">अङ्ग्रेजी (सं. रा. अमेरिकी) ड्भोराक किबोर्ड</translation>
 <translation id="1515909359182093592"><ph name="INPUT_LABEL" /> - होस्ट</translation>
+<translation id="1521655867290435174">Google पाना</translation>
 <translation id="1538729222189715449">Linux का फाइलहरू खोल्दै...</translation>
 <translation id="1547964879613821194">क्यानाडाली अंग्रेजी</translation>
 <translation id="1556189134700913550">सबैमा लागू गर्नुहोस्</translation>
@@ -184,7 +185,6 @@
 <translation id="2544853746127077729">प्रमाणीकरण प्रमाणपत्र नेटवर्क अस्विकार</translation>
 <translation id="2547921442987553570"><ph name="EXTENSION_NAME" /> मा थप्नुहोस्</translation>
 <translation id="255937426064304553">यु.एस. अन्तर्राष्ट्रिय</translation>
-<translation id="2562685439590298522">कागजातहरू</translation>
 <translation id="2563185590376525700">भ्यागुतो</translation>
 <translation id="2578394532502990878">तमिल फोनेटिक</translation>
 <translation id="2579959351793446050">ओडिया</translation>
@@ -220,9 +220,7 @@
 <translation id="2902734494705624966">युएस विस्तारित</translation>
 <translation id="290843123675549676">मराठी</translation>
 <translation id="2923240520113693977">इस्टोनिया</translation>
-<translation id="2925966894897775835">पानाहरू</translation>
 <translation id="2938685643439809023">मङ्गोलियन</translation>
-<translation id="2943400156390503548">स्लाइड गर्छ</translation>
 <translation id="2943503720238418293">अझ छोटो नाम प्रयोग गर्नुहोस्</translation>
 <translation id="2949781154072577687"><ph name="DRIVE_NAME" /> फर्म्याट गर्दै...</translation>
 <translation id="2951236788251446349">जेलिफिस</translation>
@@ -414,6 +412,7 @@
 <translation id="4656777537938206294">फाइलहरू अफलाइन उपलब्ध गराउनुहोस्</translation>
 <translation id="4658782175094886150">हिउँमा उभिरहेका व्यक्ति</translation>
 <translation id="4669606053856530811">यी वस्तुहरूलाई '<ph name="SOURCE_NAME" />' का सदस्यहरूसँग आदान प्रदान नगरेसम्म तिनीहरू ले यी वस्तुहरूमाथिको पहुँच गुमाउनुहुनेछन्।</translation>
+<translation id="467809019005607715">Google स्लाइड</translation>
 <translation id="4690246192099372265">&amp;#2360;&amp;#2381;&amp;#2357;&amp;#2367;&amp;#2337;&amp;#2367;&amp;#2358;</translation>
 <translation id="4693155481716051732">सुसी</translation>
 <translation id="4694604912444486114">बाँदर</translation>
@@ -657,6 +656,7 @@
 <translation id="6732801395666424405">प्रमाणपत्रहरू लोड भएन</translation>
 <translation id="6736329909263487977"><ph name="ISSUED_BY" /> [<ph name="ISSUED_TO" />]</translation>
 <translation id="6751256176799620176">१ फोल्डरलाई चयन गरियो</translation>
+<translation id="6755827872271341378">ChromeOS Flex चल्ने डिभाइस</translation>
 <translation id="6790428901817661496">प्ले गर्नुहोस्</translation>
 <translation id="6795884519221689054">पान्डा</translation>
 <translation id="6806699711453372963">Linux सँग आदान प्रदान गरिने कुराहरू व्यवस्थापन गर्नुहोस्</translation>
@@ -734,6 +734,7 @@
 <translation id="7343393116438664539">भियतनामी टेलेक्स</translation>
 <translation id="7359359531237882347"><ph name="NUMBER_OF_ITEMS" /> वस्तुहरू प्रतिलिपि गर्दै...</translation>
 <translation id="7375951387215729722"><ph name="COLUMN_NAME" /> का आधारमा घट्दो क्रममा क्रमबद्ध गरिएको फाइलको सूची।</translation>
+<translation id="7402503521691663770">ChromeOS Flex चल्ने डिभाइसहरू</translation>
 <translation id="7408870451288633753">चेक</translation>
 <translation id="7417453074306512035">इथियोपिक किबोर्ड</translation>
 <translation id="7417705661718309329">Google नक्सा</translation>
@@ -948,6 +949,7 @@
 <translation id="9172592259078059678">गुजराती लिपि रूपान्तरण</translation>
 <translation id="9173120999827300720">अन्तर्राष्ट्रिय ढाँचाको अङ्ग्रेजी (सं. रा. अमेरिकी) किबोर्ड</translation>
 <translation id="9174050671906956834">ट्र्यासमा रहेका वस्तुहरू ३० दिनपछि सदाका लागि मेटाइन्छन्।</translation>
+<translation id="9183302530794969518">Google कागजात</translation>
 <translation id="9189836632794948435">काजाख</translation>
 <translation id="9213073329713032541">स्थापना गर्ने कार्य सफलतापूर्वक सुरु भयो।</translation>
 <translation id="9219103736887031265">फोटो</translation>

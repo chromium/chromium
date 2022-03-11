@@ -54,6 +54,7 @@
 <translation id="1499900233129743732"><ph name="MANAGER" /> administrerer denne bruger, og vedkommende kan administrere indstillinger og overvåge brugeraktivitet via fjernadgang.</translation>
 <translation id="150962533380566081">Ugyldig PUK-kode.</translation>
 <translation id="1510238584712386396">Appliste</translation>
+<translation id="152892567002884378">Lydstyrke op</translation>
 <translation id="155865706765934889">Touchplade</translation>
 <translation id="1565038567006703504"><ph name="DEVICE_NAME" /> kan ikke opdateres</translation>
 <translation id="1567064801249837505">Album</translation>
@@ -82,12 +83,14 @@
 <translation id="1807246157184219062">Lys</translation>
 <translation id="1827738518074806965">Kunstgalleri</translation>
 <translation id="1851218745569890714">Videomøder</translation>
+<translation id="1852934301711881861">Installer ChromeOS Flex</translation>
 <translation id="1874612839560830905">MTU</translation>
 <translation id="1887850431809612466">Hardwarerevision</translation>
 <translation id="1905710495812624430">Det maksimale antal forsøg er overskredet.</translation>
 <translation id="1908234395526491708">Mislykkede UDP-anmodninger</translation>
 <translation id="1930797645656624981">Indtastningsmetodetjeneste for Chrome OS</translation>
 <translation id="1947737735496445907">Udskrevet</translation>
+<translation id="1951012854035635156">Assistent</translation>
 <translation id="1979103255016296513">Adgangskoden mangler at blive ændret</translation>
 <translation id="1999615961760456652">Loginportal</translation>
 <translation id="2006864819935886708">Forbindelse</translation>
@@ -105,6 +108,7 @@
 <translation id="2158971754079422508"><ph name="DESC_TEXT" />: Prøv igen</translation>
 <translation id="2161394479394250669">Annuller udskriftsjob</translation>
 <translation id="2180197493692062006">Der opstod en fejl. Prøv at åbne appen igen.</translation>
+<translation id="2201770616342964496">Lokal identitet</translation>
 <translation id="2209788852729124853">Nulstil trafiktællere</translation>
 <translation id="2212733584906323460">Navneløsning</translation>
 <translation id="2217935453350629363">Nuværende hastighed</translation>
@@ -152,6 +156,7 @@
 <translation id="2859243502336719778">Kritisk opdatering</translation>
 <translation id="2860473693272905224">Placer en ny side i scanneren</translation>
 <translation id="2872961005593481000">Sluk</translation>
+<translation id="2874939134665556319">Forrige nummer</translation>
 <translation id="2878387241690264070">Batteriet blev afladet <ph name="RATE" /> på <ph name="NUM_SECONDS" /> sekunder.</translation>
 <translation id="291142119251986300">Ukvalificerede komponenter</translation>
 <translation id="2926057806159140518">Angiv dit brugernavn og din adgangskode, eller scan din QR-kode</translation>
@@ -233,6 +238,7 @@
 <translation id="4003384961948020559">Handlingen mislykkedes – Fuld udskriftsbakke</translation>
 <translation id="4034824040120875894">Printer</translation>
 <translation id="4044093238444069296">Gateway kan ikke kontaktes</translation>
+<translation id="4046123991198612571">Næste nummer</translation>
 <translation id="404928562651467259">ADVARSEL</translation>
 <translation id="409427325554347132">Gem testoplysninger</translation>
 <translation id="4110686435123617899">Vælg albummet <ph name="TITLE" /> <ph name="DESC" /></translation>
@@ -250,9 +256,11 @@
 <translation id="4238516577297848345">Ingen udskriftsjobs er i gang</translation>
 <translation id="4239069858505860023">GPRS</translation>
 <translation id="4244962993387259361">Du skal have mindst 500 MB ledig hukommelse for at køre en hukommelsestest. Du kan frigøre plads ved at gå til Indstillinger &gt; Administration af lagerplads.</translation>
+<translation id="4250229828105606438">Screenshot</translation>
 <translation id="4258281355379922695">HTTP-forsinkelse</translation>
 <translation id="4271957103967917607">Se i fuld skærm</translation>
 <translation id="4275799948641988986">Hvem kommer til at bruge enheden efter reparationen?</translation>
+<translation id="4289540628985791613">Oversigt</translation>
 <translation id="4297501883039923494">Stoppet – Ukendt fejl</translation>
 <translation id="4300073214558989"><ph name="IMAGE_COUNT" /> billeder</translation>
 <translation id="4378373042927530923">Kørte ikke</translation>
@@ -282,6 +290,7 @@
 <translation id="458794348635939462">Ikke alle hosts kunne identificeres</translation>
 <translation id="4593212453765072419">Proxygodkendelse påkrævet</translation>
 <translation id="4627232916386272576"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="PRINTED_PAGE_NUMBER" /> ud af <ph name="TOTAL_PAGE_NUMBER" />. Tryk på Enter for at annullere udskriftsjobbet.</translation>
+<translation id="4627645661474370390">Identitet ved fjernadgang</translation>
 <translation id="463791356324567266">Annullerer scanning...</translation>
 <translation id="4646949265910132906">Sikker Wi-Fi-forbindelse</translation>
 <translation id="4654549501020883054">Skift på daglig basis</translation>
@@ -380,6 +389,7 @@
 <translation id="554517032089923082">GTC</translation>
 <translation id="5578477003638479617">UMTS</translation>
 <translation id="5578519639599103840">Scan igen</translation>
+<translation id="5583640892426849032">Backspace</translation>
 <translation id="5620281292257375798">Kun internt</translation>
 <translation id="5649768706273821470">Lyt</translation>
 <translation id="5669267381087807207">Aktiverer</translation>
@@ -389,6 +399,7 @@
 <translation id="5707900041990977207"><ph name="CURRENT_PAGE" /> af <ph name="TOTAL_PAGES" /></translation>
 <translation id="5733298426544876109">Opdater <ph name="DEVICE_NAME" /></translation>
 <translation id="5760715441271661976">Tilstand for portal</translation>
+<translation id="57838592816432529">Slå lyden fra</translation>
 <translation id="5784136236926853061">Stor HTTP-forsinkelse</translation>
 <translation id="5832805196449965646">Tilføj person</translation>
 <translation id="583281660410589416">Ukendt</translation>
@@ -396,6 +407,7 @@
 <translation id="5849570051105887917">Kode til udbyder til hjem</translation>
 <translation id="5860033963881614850">Fra</translation>
 <translation id="5866840822086176774">Meget stærk</translation>
+<translation id="588258955323874662">Fuld skærm</translation>
 <translation id="5895138241574237353">Genstart</translation>
 <translation id="5916084858004523819">Forbudt</translation>
 <translation id="5916664084637901428">Til</translation>
@@ -466,12 +478,15 @@
 <translation id="6643016212128521049">Ryd</translation>
 <translation id="6647510110698214773">Algoritme til kryptering</translation>
 <translation id="6657585470893396449">Adgangskode</translation>
+<translation id="6659594942844771486">Fane</translation>
 <translation id="6692996468359469499">Få oplysninger om det, du har markeret</translation>
 <translation id="6704062477274546131">DNS-udførelse</translation>
+<translation id="6723839937902243910">Strøm</translation>
 <translation id="6747215703636344499">Stoppet – Fuld udskriftsbakke</translation>
 <translation id="6749473226660745022">Billeder</translation>
 <translation id="6753452347192452143">Enheden er en computer.</translation>
 <translation id="6756731097889387912">Scanningen kunne ikke annulleres</translation>
+<translation id="6760706756348334449">Lydstyrke ned</translation>
 <translation id="6766275201586212568">Mislykkede DNS-opslag</translation>
 <translation id="6768237774506518020">Høj fejlrate for DNS-opslag</translation>
 <translation id="680983167891198932">Nøgle</translation>
@@ -525,6 +540,7 @@
 <translation id="7427315641433634153">MSCHAP</translation>
 <translation id="7435977162516949853">{NUMBER_OF_PAGES,plural, =1{Scanningen er gennemført. 1 side blev scannet}one{Scanningen er gennemført. {NUMBER_OF_PAGES} side blev scannet}other{Scanningen er gennemført. {NUMBER_OF_PAGES} sider blev scannet}}</translation>
 <translation id="7469648432129124067">En portal blev registreret</translation>
+<translation id="7481312909269577407">Frem</translation>
 <translation id="7487067081878637334">Teknologi</translation>
 <translation id="7490813197707563893">MAC-adresse</translation>
 <translation id="7497215489070763236">Serverens CA-certifikat</translation>
@@ -578,6 +594,7 @@
 <translation id="8132480444149501833">Anmod om trafiktællere</translation>
 <translation id="8138405288920084977">LTEAdvanced</translation>
 <translation id="8143951647992294073">Vælg <ph name="TOPIC_SOURCE" /> <ph name="TOPIC_SOURCE_DESC" /></translation>
+<translation id="8179976553408161302">Enter</translation>
 <translation id="8206859287963243715">Mobil</translation>
 <translation id="8208861521865154048">Fordele</translation>
 <translation id="8217675307824400706">Få forbindelse</translation>

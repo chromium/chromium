@@ -17,7 +17,7 @@
 <translation id="1066060668811609597">Синкийг удирдах</translation>
 <translation id="1076421457278169141">Кодыг скан хийсэн</translation>
 <translation id="1084365883616172403">Facebook дээр постолж дууслаа.</translation>
-<translation id="1086486568852410168">Google Дурангаар хайх</translation>
+<translation id="1086486568852410168">Google Lens-р хайх</translation>
 <translation id="1103523840287552314"><ph name="LANGUAGE" />-ийг үргэлж орчуулах</translation>
 <translation id="1104948393051856124">Хүлээн авах &amp; Үргэлжлүүлэх</translation>
 <translation id="110724200315609752">Нээлттэй цонх руу сэлгэх</translation>
@@ -446,6 +446,7 @@
 <translation id="4945756290001680296">Нууц үгний тохиргооны хэсэгт хандах</translation>
 <translation id="4979397965658815378">Хавчуурга, нууц үг, түүх болон бусад тохиргоог бүх төхөөрөмждөө авахын тулд Google Бүртгэлээрээ нэвтэрнэ үү</translation>
 <translation id="4986678885919050584">Энэ төхөөрөмжөөс хасах</translation>
+<translation id="4989542687859782284">Боломжгүй</translation>
 <translation id="5005498671520578047">Нууц үг хуулах</translation>
 <translation id="5017828934289857214">Надад дараа сануулна уу</translation>
 <translation id="5037676449506322593">Бүгдийг сонгох</translation>
@@ -584,7 +585,7 @@ Handoff-ыг Тохиргооны ерөнхий хэсэгт идэвхижүү
 <translation id="6223816392543092032">Хавчуурга, түүх, нууц үг болон бусад тохиргоогоо бүх төхөөрөмж дээрээ аваарай.</translation>
 <translation id="6231782223312638214">Зөвлөсөн</translation>
 <translation id="6232329973559504466">Нууцлалтай хайлт</translation>
-<translation id="6232736989810857397">Энэ нь танд Google Дуранг ашиглан календарийн үйл явдлыг хялбархан үүсгэх боломж олгоно.</translation>
+<translation id="6232736989810857397">Энэ нь танд Google Lens-г ашиглан календарийн үйл явдлыг хялбархан үүсгэх боломж олгоно.</translation>
 <translation id="6254066287920239840">Апп-д хөтчийн оронд холбоосыг нээнэ үү.</translation>
 <translation id="6255097610484507482">Зээлийн картыг засварлах</translation>
 <translation id="6284652193729350524"><ph name="LANGUAGE" />-г орчуулахыг санал болгох</translation>

@@ -91,9 +91,9 @@ Tu je nekaj stvari, ki jih lahko poskusite za začetek.</translation>
 <translation id="1414271762428216854"><ph name="APP_NAME" />, aplikacija je že nameščena</translation>
 <translation id="1419738280318246476">Odklenite napravo zaradi izvedbe dejanja v obvestilu</translation>
 <translation id="1420408895951708260">Preklop Nočne svetlobe. <ph name="STATE_TEXT" /></translation>
+<translation id="1420732223884894666">Oglejte si nedavne fotografije in predstavnost telefona v napravi <ph name="DEVICE_TYPE" />.</translation>
 <translation id="1426410128494586442">Da</translation>
 <translation id="1438357537418863713">Pretočno izvajanje aplikacije je zdaj nastavljeno. Ko začnete, bodo tu prikazane nedavno zagnane aplikacije.</translation>
-<translation id="144853431011121127">Prejmite obvestila iz telefona v napravi <ph name="DEVICE_TYPE" />.</translation>
 <translation id="1455242230282523554">Pokaži jezikovne nastavitve</translation>
 <translation id="1460620680449458626">Glasnost je utišana.</translation>
 <translation id="1467432559032391204">V levo</translation>
@@ -317,6 +317,7 @@ Tu je nekaj stvari, ki jih lahko poskusite za začetek.</translation>
 <translation id="301282384882049174">Deli skrbnik</translation>
 <translation id="3017687597151988916">Območje izbire je nastavljeno na okno</translation>
 <translation id="3033545621352269033">Vklopljeno</translation>
+<translation id="3033912566804961911">Združi z namizjem <ph name="DESK_NAME" /></translation>
 <translation id="3036649622769666520">Odpri datoteke</translation>
 <translation id="3038571455154067151">Če se želite prijaviti, vnesite kodo za starševski dostop za Family Link</translation>
 <translation id="3039939407102840004">Raven napolnjenosti baterije pisala je <ph name="PERCENTAGE" /> %.</translation>
@@ -342,6 +343,7 @@ Tu je nekaj stvari, ki jih lahko poskusite za začetek.</translation>
 <translation id="3153444934357957346">S prijavo z več računi lahko uporabljate največ toliko računov: <ph name="MULTI_PROFILE_USER_LIMIT" />.</translation>
 <translation id="3154351730702813399">Skrbnik naprave morda nadzira vašo dejavnost brskanja.</translation>
 <translation id="316086887565479535">Nepodprte aplikacije v predlogi</translation>
+<translation id="3161500364292033097">Zapri namizje in okna</translation>
 <translation id="316356270129335934"><ph name="MANAGER" /> vrača napravo <ph name="DEVICE_TYPE" /> na prejšnjo različico. Naprava se bo ponastavila in vaši podatki bodo izbrisani.</translation>
 <translation id="3181441307743005334">Vnovičen zagon lahko traja nekaj časa</translation>
 <translation id="3202010236269062730">{NUM_DEVICES,plural, =1{Vzpostavljena je povezava z eno napravo}one{Vzpostavljena je povezava z # napravo}two{Vzpostavljena je povezava z # napravama}few{Vzpostavljena je povezava s # napravami}other{Vzpostavljena je povezava s # napravami}}</translation>
@@ -824,6 +826,7 @@ Tu je nekaj stvari, ki jih lahko poskusite za začetek.</translation>
 <translation id="6165508094623778733">Več o tem</translation>
 <translation id="6166852626429024716">Iščite v napravi, aplikacijah, nastavitvah, spletu …</translation>
 <translation id="6179832488876878285">Tukaj lahko pripnete pomembne datoteke. Če želite začeti, odprite aplikacijo Datoteke.</translation>
+<translation id="619279033188484792">Oglejte si nedavne fotografije, predstavnost in obvestila telefona v napravi <ph name="DEVICE_TYPE" />.</translation>
 <translation id="6220928844947387476">Sebe in zaslon lahko zdaj posnamete istočasno.</translation>
 <translation id="622484624075952240">Dol</translation>
 <translation id="6231419273573514727">Delovanje zunanje dodatne opreme bo morda omejeno</translation>
@@ -936,6 +939,7 @@ Nova namestitev</translation>
 <translation id="6921188888306725546">Bližnjične tipke so izboljšane</translation>
 <translation id="6931576957638141829">Shrani v</translation>
 <translation id="6945221475159498467">Izberi</translation>
+<translation id="6960565108681981554">Ni aktivirano. Obrnite se na operaterja.</translation>
 <translation id="6961121602502368900">Utišanje telefona ni na voljo v delovnem profilu</translation>
 <translation id="6961840794482373852">Bližnjica na tipkovnici alt + puščica gor je spremenjena. Če želite uporabiti tipko za stran navzgor, pritisnite tipko za <ph name="LAUNCHER_KEY_NAME" /> in puščico gor.</translation>
 <translation id="6965382102122355670">V redu</translation>
@@ -1050,6 +1054,7 @@ Nova namestitev</translation>
 <translation id="7649070708921625228">Pomoč</translation>
 <translation id="7654687942625752712">Če želite onemogočiti glasovni odziv, pridržite obe tipki za glasnost za pet sekund.</translation>
 <translation id="7658239707568436148">Prekliči</translation>
+<translation id="7659861092419699379">Namizje in okna so zaprta.</translation>
 <translation id="7660160718439869192">Naprava <ph name="NAME" /> bo prikazana pri napravah, povezanih z naslovom <ph name="EMAIL" />.</translation>
 <translation id="7662283695561029522">Dotaknite se, če želite konfigurirati</translation>
 <translation id="7670953955701272011">Odpiranje tega datuma v Google Koledarju</translation>
@@ -1144,7 +1149,6 @@ Nova namestitev</translation>
 <translation id="8236042855478648955">Čas je za premor</translation>
 <translation id="8247060538831475781"><ph name="CONNECTION_STATUS" />, moč signala je <ph name="SIGNAL_STRENGTH" />, stanje baterije telefona je <ph name="BATTERY_STATUS" /></translation>
 <translation id="8247998213073982446"><ph name="APP_NAME" />, aplikacija</translation>
-<translation id="8248728785693203669">Kabel USB-C se morda ne utegne ustrezno povezati z zasloni.</translation>
 <translation id="8255234195843591763">Ponastavite, če želite posodobiti</translation>
 <translation id="826107067893790409">Pritisnite Enter, če želite odkleniti za uporabnika <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="8261506727792406068">Izbriši</translation>

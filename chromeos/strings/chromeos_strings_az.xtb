@@ -54,6 +54,7 @@
 <translation id="1499900233129743732"><ph name="MANAGER" /> bu istifadəçini idarə edir və ayarları məsafədən idarə edə və istifadəçinin fəaliyyətini izləyə bilər.</translation>
 <translation id="150962533380566081">Yanlış PUK.</translation>
 <translation id="1510238584712386396">Başladıcı</translation>
+<translation id="152892567002884378">Səsi artırın</translation>
 <translation id="155865706765934889">Taçped</translation>
 <translation id="1565038567006703504"><ph name="DEVICE_NAME" /> cihazını güncəlləmək mümkün deyil</translation>
 <translation id="1567064801249837505">Albomlar</translation>
@@ -82,12 +83,14 @@
 <translation id="1807246157184219062">Yüngül</translation>
 <translation id="1827738518074806965">İncəsənət qalereyası</translation>
 <translation id="1851218745569890714">Video Konfrans</translation>
+<translation id="1852934301711881861">ChromeOS Flex'i quraşdırın</translation>
 <translation id="1874612839560830905">MTU</translation>
 <translation id="1887850431809612466">Avadanlıq versiyası</translation>
 <translation id="1905710495812624430">Maksimum icazə verilən cəhdlər bitdi</translation>
 <translation id="1908234395526491708">Alınmayan UDP sorğuları</translation>
 <translation id="1930797645656624981">Chrome OS Daxiletmə Metodu Xidməti</translation>
 <translation id="1947737735496445907">Çap edilib</translation>
+<translation id="1951012854035635156">Assistent</translation>
 <translation id="1979103255016296513">Parol dəyişikliyinin gecikməsi</translation>
 <translation id="1999615961760456652">Giriş Portalı</translation>
 <translation id="2006864819935886708">Bağlantı</translation>
@@ -105,6 +108,7 @@
 <translation id="2158971754079422508"><ph name="DESC_TEXT" />: Yenidən cəhd edin</translation>
 <translation id="2161394479394250669">Çap işini ləğv edin</translation>
 <translation id="2180197493692062006">Xəta oldu. Tətbiqi yenidən açmağa çalışın.</translation>
+<translation id="2201770616342964496">Lokal kimlik</translation>
 <translation id="2209788852729124853">Nəqliyyat Sayğaclarını sıfırlayın</translation>
 <translation id="2212733584906323460">Ad Həlli</translation>
 <translation id="2217935453350629363">Cari sürət</translation>
@@ -152,6 +156,7 @@
 <translation id="2859243502336719778">Önəmli güncəlləmə</translation>
 <translation id="2860473693272905224">Başqa bir səhifəni skanerə yerləşdirin</translation>
 <translation id="2872961005593481000">Qapadın</translation>
+<translation id="2874939134665556319">Öncəki trek</translation>
 <translation id="2878387241690264070"><ph name="NUM_SECONDS" /> saniyədə <ph name="RATE" /> deşarj edilib.</translation>
 <translation id="291142119251986300">Uyğun olmayan komponentlər</translation>
 <translation id="2926057806159140518">İstifadəçi adınızı və parolunuzu daxil edin və ya QR kodunuzu skan edin</translation>
@@ -233,6 +238,7 @@
 <translation id="4003384961948020559">Alınmadı - Çap xidməti doludur</translation>
 <translation id="4034824040120875894">Printer</translation>
 <translation id="4044093238444069296">Giriş ilə əlaqə saxlamaq olmur</translation>
+<translation id="4046123991198612571">Növbəti trek</translation>
 <translation id="404928562651467259">XƏBƏRDARLIQ</translation>
 <translation id="409427325554347132">Test məlumatlarını yadda saxlayın</translation>
 <translation id="4110686435123617899"><ph name="TITLE" /> <ph name="DESC" /> albomunu seçin</translation>
@@ -250,9 +256,11 @@
 <translation id="4238516577297848345">Hazırda davam edən çap işləri yoxdur</translation>
 <translation id="4239069858505860023">GPRS</translation>
 <translation id="4244962993387259361">Yaddaş testi etmək üçün minimum 500 MB boş yaddaşınız olmalıdır. Yaddaşda yer boşaltmaq üçün Ayarlar &gt; Yaddaş menecerinə daxil olun.</translation>
+<translation id="4250229828105606438">Skrinşot</translation>
 <translation id="4258281355379922695">HTTP Gecikməsi</translation>
 <translation id="4271957103967917607">Tam Ekranda BAxın</translation>
 <translation id="4275799948641988986">Təmirdən sonra cihazdan kim istifadə edəcək?</translation>
+<translation id="4289540628985791613">Baxış</translation>
 <translation id="4297501883039923494">Dayanıb - Naməlum xəta</translation>
 <translation id="4300073214558989"><ph name="IMAGE_COUNT" /> şəkil</translation>
 <translation id="4378373042927530923">İşə salınmayıb</translation>
@@ -282,6 +290,7 @@
 <translation id="458794348635939462">Bütün hostları həll etmək alınmadı</translation>
 <translation id="4593212453765072419">Proksi doğrulama tələb olunur</translation>
 <translation id="4627232916386272576"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="PRINTED_PAGE_NUMBER" />/<ph name="TOTAL_PAGE_NUMBER" />. Çap işini ləğv etmək üçün Enter düyməsinə basın.</translation>
+<translation id="4627645661474370390">Məsafədən kimlik</translation>
 <translation id="463791356324567266">Skanlama ləğv edilir...</translation>
 <translation id="4646949265910132906">Güvənli WiFi Bağlantısı</translation>
 <translation id="4654549501020883054">Gündəlik dəyişdirin</translation>
@@ -380,6 +389,7 @@
 <translation id="554517032089923082">GTC</translation>
 <translation id="5578477003638479617">UMTS</translation>
 <translation id="5578519639599103840">Yenidən skan edin</translation>
+<translation id="5583640892426849032">Geri silmə</translation>
 <translation id="5620281292257375798">Yalnız daxili</translation>
 <translation id="5649768706273821470">Dinləyin</translation>
 <translation id="5669267381087807207">Aktivləşir</translation>
@@ -389,6 +399,7 @@
 <translation id="5707900041990977207"><ph name="CURRENT_PAGE" />/<ph name="TOTAL_PAGES" /></translation>
 <translation id="5733298426544876109"><ph name="DEVICE_NAME" /> cihazını güncəlləyin</translation>
 <translation id="5760715441271661976">Portal Vəziyyəti</translation>
+<translation id="57838592816432529">Səssiz</translation>
 <translation id="5784136236926853061">Yüksək HTTP gecikməsi</translation>
 <translation id="5832805196449965646">Şəxs əlavə edin</translation>
 <translation id="583281660410589416">Naməlum</translation>
@@ -396,6 +407,7 @@
 <translation id="5849570051105887917">Əsas səhifə provayder kodu</translation>
 <translation id="5860033963881614850">Deaktiv</translation>
 <translation id="5866840822086176774">Çox güclü</translation>
+<translation id="588258955323874662">Tam ekran</translation>
 <translation id="5895138241574237353">Yenidən başladın</translation>
 <translation id="5916084858004523819">Qadağan olunub</translation>
 <translation id="5916664084637901428">Aktiv</translation>
@@ -466,12 +478,15 @@
 <translation id="6643016212128521049">Silin</translation>
 <translation id="6647510110698214773">Şifrələmə alqoritmi</translation>
 <translation id="6657585470893396449">Parol</translation>
+<translation id="6659594942844771486">Panel</translation>
 <translation id="6692996468359469499">Seçiminizlə bağlı məlumat əldə edin</translation>
 <translation id="6704062477274546131">DNS Həlli</translation>
+<translation id="6723839937902243910">Enerji</translation>
 <translation id="6747215703636344499">Dayanıb - Çıxış doludur</translation>
 <translation id="6749473226660745022">Foto</translation>
 <translation id="6753452347192452143">Cihaz kompüterdir.</translation>
 <translation id="6756731097889387912">Skanlamanı ləğv etmək mümkün olmadı</translation>
+<translation id="6760706756348334449">Səsi azaldın</translation>
 <translation id="6766275201586212568">DNS həlləri alınmadı</translation>
 <translation id="6768237774506518020">DNS həllinin alınmama faizi yüksəkdir</translation>
 <translation id="680983167891198932">Açar</translation>
@@ -525,6 +540,7 @@
 <translation id="7427315641433634153">MSCHAP</translation>
 <translation id="7435977162516949853">{NUMBER_OF_PAGES,plural, =1{Skanlama tamamlanıb. 1 səhifə skanlanıb}other{Skanlama tamamlanıb. {NUMBER_OF_PAGES} səhifə skanlanıb}}</translation>
 <translation id="7469648432129124067">Portal aşkarlanıb</translation>
+<translation id="7481312909269577407">İrəli</translation>
 <translation id="7487067081878637334">Texnologiya</translation>
 <translation id="7490813197707563893">MAC ünvanı</translation>
 <translation id="7497215489070763236">Server CA sertifikatı</translation>
@@ -578,6 +594,7 @@
 <translation id="8132480444149501833">Nəqliyyat Sayğacları Sorğulayın</translation>
 <translation id="8138405288920084977">LTEAdvanced</translation>
 <translation id="8143951647992294073"><ph name="TOPIC_SOURCE" /> <ph name="TOPIC_SOURCE_DESC" /> seçin</translation>
+<translation id="8179976553408161302">Enter</translation>
 <translation id="8206859287963243715">Mobil</translation>
 <translation id="8208861521865154048">İmtiyazlar</translation>
 <translation id="8217675307824400706">Qoşulun</translation>

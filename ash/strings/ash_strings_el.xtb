@@ -91,9 +91,9 @@
 <translation id="1414271762428216854"><ph name="APP_NAME" />, Εγκατεστημένη εφαρμογή</translation>
 <translation id="1419738280318246476">Ξεκλειδώστε τη συσκευή για εκτέλεση της ενέργειας ειδοποίησης</translation>
 <translation id="1420408895951708260">Εναλλαγή νυχτερινού φωτισμού. <ph name="STATE_TEXT" /></translation>
+<translation id="1420732223884894666">Δείτε τις πρόσφατες φωτογραφίες και τα μέσα του τηλεφώνου σας στη συσκευή <ph name="DEVICE_TYPE" /></translation>
 <translation id="1426410128494586442">Ναι</translation>
 <translation id="1438357537418863713">Η ροή εφαρμογής έχει ρυθμιστεί. Μόλις ξεκινήσετε, οι εφαρμογές που κυκλοφόρησαν πρόσφατα θα εμφανίζονται εδώ.</translation>
-<translation id="144853431011121127">Λάβετε ειδοποιήσεις από το τηλέφωνό σας στη συσκευή <ph name="DEVICE_TYPE" /></translation>
 <translation id="1455242230282523554">Εμφάνιση ρυθμίσεων γλώσσας</translation>
 <translation id="1460620680449458626">Η ένταση ήχου είναι σε σίγαση.</translation>
 <translation id="1467432559032391204">Αριστερά</translation>
@@ -826,6 +826,7 @@
 <translation id="6165508094623778733">Μάθετε περισσότερα</translation>
 <translation id="6166852626429024716">Κάντε αναζήτηση στη συσκευή, στις εφαρμογές, στις ρυθμίσεις και στον ιστό…</translation>
 <translation id="6179832488876878285">Μπορείτε να καρφιτσώσετε εδώ σημαντικά αρχεία. Ανοίξτε την εφαρμογή Αρχεία για να ξεκινήσετε.</translation>
+<translation id="619279033188484792">Δείτε τις πρόσφατες φωτογραφίες, τα μέσα και τις ειδοποιήσεις του τηλεφώνου σας στη συσκευή <ph name="DEVICE_TYPE" />.</translation>
 <translation id="6220928844947387476">Μπορείτε πλέον να κάνετε ταυτόχρονη εγγραφή του εαυτού σας και της οθόνης σας.</translation>
 <translation id="622484624075952240">Κάτω</translation>
 <translation id="6231419273573514727">Η απόδοση των περιφερειακών ενδέχεται να είναι περιορισμένη</translation>
@@ -938,6 +939,7 @@
 <translation id="6921188888306725546">Οι συντομεύσεις πληκτρολογίου έχουν βελτιωθεί</translation>
 <translation id="6931576957638141829">Αποθήκευση σε</translation>
 <translation id="6945221475159498467">Επιλογή</translation>
+<translation id="6960565108681981554">Δεν έχει ενεργοποιηθεί. Επικοινωνήστε με την εταιρεία κινητής τηλεφωνίας που χρησιμοποιείτε.</translation>
 <translation id="6961121602502368900">Η Σίγαση τηλεφώνου δεν είναι διαθέσιμη στο προφίλ εργασίας</translation>
 <translation id="6961840794482373852">Η συντόμευση πληκτρολογίου Alt + Επάνω βέλος άλλαξε. Για να χρησιμοποιήσετε το πλήκτρο Page Up, πατήστε το πλήκτρο <ph name="LAUNCHER_KEY_NAME" /> + Επάνω βέλος.</translation>
 <translation id="6965382102122355670">OK</translation>
@@ -1147,7 +1149,6 @@
 <translation id="8236042855478648955">Ώρα για διάλειμμα</translation>
 <translation id="8247060538831475781"><ph name="CONNECTION_STATUS" />, Ισχύς σήματος <ph name="SIGNAL_STRENGTH" />, Μπαταρία τηλεφώνου <ph name="BATTERY_STATUS" /></translation>
 <translation id="8247998213073982446"><ph name="APP_NAME" />, Εφαρμογή</translation>
-<translation id="8248728785693203669">Το καλώδιο USB-C που έχετε δεν μπορεί να συνδεθεί σωστά σε οθόνες</translation>
 <translation id="8255234195843591763">Επαναφορά στην ενημέρωση</translation>
 <translation id="826107067893790409">Πατήστε το Enter για να ξεκλειδώσετε το <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="8261506727792406068">Διαγραφή</translation>

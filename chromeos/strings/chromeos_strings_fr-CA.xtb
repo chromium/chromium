@@ -54,6 +54,7 @@
 <translation id="1499900233129743732"><ph name="MANAGER" /> gère cet utilisateur et peut gérer ses paramètres et faire le suivi de son activité à distance.</translation>
 <translation id="150962533380566081">Clé PUK non valide.</translation>
 <translation id="1510238584712386396">Lanceur</translation>
+<translation id="152892567002884378">Augmenter le volume</translation>
 <translation id="155865706765934889">Pavé tactile</translation>
 <translation id="1565038567006703504">Impossible de mettre à jour <ph name="DEVICE_NAME" /></translation>
 <translation id="1567064801249837505">Albums</translation>
@@ -82,12 +83,14 @@
 <translation id="1807246157184219062">Clair</translation>
 <translation id="1827738518074806965">Galerie d'art</translation>
 <translation id="1851218745569890714">Vidéoconférence</translation>
+<translation id="1852934301711881861">Installer Chrome OS Flex</translation>
 <translation id="1874612839560830905">MTU</translation>
 <translation id="1887850431809612466">Révision du matériel</translation>
 <translation id="1905710495812624430">Nombre maximal autorisé de tentatives atteint.</translation>
 <translation id="1908234395526491708">Échecs des demandes UDP</translation>
 <translation id="1930797645656624981">Service de méthode d'entrée Chrome OS</translation>
 <translation id="1947737735496445907">Imprimée</translation>
+<translation id="1951012854035635156">Assistant</translation>
 <translation id="1979103255016296513">Le mot de passe est expiré; vous devez le changer</translation>
 <translation id="1999615961760456652">Portail captif</translation>
 <translation id="2006864819935886708">Connectivité</translation>
@@ -105,6 +108,7 @@
 <translation id="2158971754079422508"><ph name="DESC_TEXT" /> : réessayer</translation>
 <translation id="2161394479394250669">Annuler la tâche d'impression</translation>
 <translation id="2180197493692062006">Un problème est survenu. Essayer de rouvrir l'application.</translation>
+<translation id="2201770616342964496">Identité locale</translation>
 <translation id="2209788852729124853">Réinitialiser les compteurs de trafic</translation>
 <translation id="2212733584906323460">Résolution des noms</translation>
 <translation id="2217935453350629363">Vitesse actuelle</translation>
@@ -152,6 +156,7 @@
 <translation id="2859243502336719778">Mise à jour critique</translation>
 <translation id="2860473693272905224">Placez une autre page sur le numériseur</translation>
 <translation id="2872961005593481000">Arrêter</translation>
+<translation id="2874939134665556319">Chanson précédente</translation>
 <translation id="2878387241690264070">Déchargée de <ph name="RATE" /> en <ph name="NUM_SECONDS" /> secondes.</translation>
 <translation id="291142119251986300">Composants non qualifiés</translation>
 <translation id="2926057806159140518">Entrez votre nom d'utilisateur et votre mot de passe ou numérisez votre code QR</translation>
@@ -233,6 +238,7 @@
 <translation id="4003384961948020559">Échec : bac de sortie plein</translation>
 <translation id="4034824040120875894">Imprimante</translation>
 <translation id="4044093238444069296">Impossible de communiquer avec la passerelle</translation>
+<translation id="4046123991198612571">Chanson suivante</translation>
 <translation id="404928562651467259">AVERTISSEMENT</translation>
 <translation id="409427325554347132">Enregistrer les détails du test</translation>
 <translation id="4110686435123617899">Sélectionner un album <ph name="TITLE" /> <ph name="DESC" /></translation>
@@ -250,9 +256,11 @@
 <translation id="4238516577297848345">Aucune tâche d'impression en cours</translation>
 <translation id="4239069858505860023">GPRS</translation>
 <translation id="4244962993387259361">Vous avez besoin d'au moins 500 Mo d'espace libre pour exécuter un test de mémoire. Pour libérer de l'espace, accédez à Paramètres &gt; Gestionnaire de stockage.</translation>
+<translation id="4250229828105606438">Saisie d'écran</translation>
 <translation id="4258281355379922695">Latence HTTP</translation>
 <translation id="4271957103967917607">Afficher en plein écran</translation>
 <translation id="4275799948641988986">Après la réparation de l'appareil, qui l'utilisera?</translation>
+<translation id="4289540628985791613">Aperçu</translation>
 <translation id="4297501883039923494">Tâche arrêtée : erreur inconnue</translation>
 <translation id="4300073214558989"><ph name="IMAGE_COUNT" /> images</translation>
 <translation id="4378373042927530923">Routine non exécutée</translation>
@@ -282,6 +290,7 @@
 <translation id="458794348635939462">Impossible de résoudre tous les hôtes</translation>
 <translation id="4593212453765072419">Authentification requise du mandataire</translation>
 <translation id="4627232916386272576"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="PRINTED_PAGE_NUMBER" /> sur <ph name="TOTAL_PAGE_NUMBER" />. Appuyez sur Entrée pour annuler la tâche d'impression.</translation>
+<translation id="4627645661474370390">Identité distante</translation>
 <translation id="463791356324567266">Annulation de la numérisation en cours…</translation>
 <translation id="4646949265910132906">Connexion Wi-Fi sécurisée</translation>
 <translation id="4654549501020883054">Changer tous les jours</translation>
@@ -335,6 +344,7 @@
 <translation id="5051044138948155788">C'est la seule page. Cette action vous redirigera vers l'écran du lancement de la numérisation.</translation>
 <translation id="5088172560898466307">Nom d'hôte du serveur</translation>
 <translation id="5089810972385038852">État/province</translation>
+<translation id="5090362543162270857">IPsec (IKEv2)</translation>
 <translation id="5142961317498132443">Authentification</translation>
 <translation id="5154917547274118687">Mémoire</translation>
 <translation id="5160857336552977725">Connexion à votre <ph name="DEVICE_TYPE" /></translation>
@@ -380,6 +390,7 @@ Essayez de toucher le micro pour me demander ce que vous souhaitez.</translation
 <translation id="554517032089923082">GTC</translation>
 <translation id="5578477003638479617">UMTS</translation>
 <translation id="5578519639599103840">Numériser de nouveau</translation>
+<translation id="5583640892426849032">Effacement arrière</translation>
 <translation id="5620281292257375798">Pour usage interne seulement</translation>
 <translation id="5649768706273821470">Écouter</translation>
 <translation id="5669267381087807207">Activation…</translation>
@@ -389,6 +400,7 @@ Essayez de toucher le micro pour me demander ce que vous souhaitez.</translation
 <translation id="5707900041990977207"><ph name="CURRENT_PAGE" /> sur <ph name="TOTAL_PAGES" /></translation>
 <translation id="5733298426544876109">Mettre à jour <ph name="DEVICE_NAME" /></translation>
 <translation id="5760715441271661976">État du portail</translation>
+<translation id="57838592816432529">Désactiver le son</translation>
 <translation id="5784136236926853061">Latence HTTP élevée</translation>
 <translation id="5832805196449965646">Ajouter une personne</translation>
 <translation id="583281660410589416">Inconnu</translation>
@@ -396,6 +408,7 @@ Essayez de toucher le micro pour me demander ce que vous souhaitez.</translation
 <translation id="5849570051105887917">Code de propriétaire</translation>
 <translation id="5860033963881614850">Désactivé</translation>
 <translation id="5866840822086176774">Très fort</translation>
+<translation id="588258955323874662">Plein écran</translation>
 <translation id="5895138241574237353">Redémarrer</translation>
 <translation id="5916084858004523819">Interdit</translation>
 <translation id="5916664084637901428">Activé</translation>
@@ -436,6 +449,7 @@ Essayez de toucher le micro pour me demander ce que vous souhaitez.</translation
 <translation id="6319207335391420837">Mettre à jour le micrologiciel de <ph name="DEVICE_NAME" /></translation>
 <translation id="6325525973963619867">Échec</translation>
 <translation id="6340526405444716530">Personnalisation</translation>
+<translation id="6348738456043757611">Nom d'utilisateur et mot de passe</translation>
 <translation id="636850387210749493">Inscription d'entreprise</translation>
 <translation id="6379086450106841622">Écran tactile</translation>
 <translation id="6388847657025262518">Le chargeur de documents du numériseur est bloqué. Vérifiez le chargeur de documents et réessayez.</translation>
@@ -465,12 +479,15 @@ Essayez de toucher le micro pour me demander ce que vous souhaitez.</translation
 <translation id="6643016212128521049">Effacer</translation>
 <translation id="6647510110698214773">Algorithme de chiffrement</translation>
 <translation id="6657585470893396449">Mot de passe</translation>
+<translation id="6659594942844771486">Onglet</translation>
 <translation id="6692996468359469499">Obtenir de l'information sur votre sélection</translation>
 <translation id="6704062477274546131">Résolution DNS</translation>
+<translation id="6723839937902243910">Alimentation</translation>
 <translation id="6747215703636344499">Tâche arrêtée : le plateau de sortie est plein</translation>
 <translation id="6749473226660745022">Photos</translation>
 <translation id="6753452347192452143">L'appareil est un ordinateur.</translation>
 <translation id="6756731097889387912">Impossible d'annuler la numérisation</translation>
+<translation id="6760706756348334449">Diminuer le volume</translation>
 <translation id="6766275201586212568">Échec de résolutions DNS</translation>
 <translation id="6768237774506518020">Taux d'échec élevé des résolutions DNS</translation>
 <translation id="680983167891198932">Clé</translation>
@@ -524,6 +541,7 @@ Essayez de toucher le micro pour me demander ce que vous souhaitez.</translation
 <translation id="7427315641433634153">MSCHAP</translation>
 <translation id="7435977162516949853">{NUMBER_OF_PAGES,plural, =1{Numérisation terminée. 1 page a été numérisée.}one{Numérisation terminée. {NUMBER_OF_PAGES} page a été numérisée.}other{Numérisation terminée. {NUMBER_OF_PAGES} pages ont été numérisées.}}</translation>
 <translation id="7469648432129124067">Portail détecté</translation>
+<translation id="7481312909269577407">Suivant</translation>
 <translation id="7487067081878637334">Technologie</translation>
 <translation id="7490813197707563893">Adresse MAC</translation>
 <translation id="7497215489070763236">Certificat de l'autorité de certification du serveur</translation>
@@ -577,6 +595,7 @@ Essayez de toucher le micro pour me demander ce que vous souhaitez.</translation
 <translation id="8132480444149501833">Demander des compteurs de trafic</translation>
 <translation id="8138405288920084977">LTEAdvanced</translation>
 <translation id="8143951647992294073">Sélectionner <ph name="TOPIC_SOURCE" /> (<ph name="TOPIC_SOURCE_DESC" />)</translation>
+<translation id="8179976553408161302">Entrée</translation>
 <translation id="8206859287963243715">Cellulaire</translation>
 <translation id="8208861521865154048">Avantages</translation>
 <translation id="8217675307824400706">Se connecter</translation>

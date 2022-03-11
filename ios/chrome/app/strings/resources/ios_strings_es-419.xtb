@@ -46,6 +46,7 @@ Tu motor de búsqueda es <ph name="DSE_NAME" />. Consulta las instrucciones para
 <translation id="1282311502488501110">No acceder</translation>
 <translation id="1283524564873030414">Últimas 24 horas</translation>
 <translation id="1285320974508926690">Nunca traducir este sitio</translation>
+<translation id="1291506870746876680">Los permisos de <ph name="BEGIN_BOLD" />"<ph name="SITE_NAME" />"<ph name="END_BOLD" /> se desactivarán cuando abandones este sitio.</translation>
 <translation id="1321993286294231467">Se produjo un error al guardar la imagen.</translation>
 <translation id="1322735045095424339">Tu organización requiere que utilices el modo Incógnito</translation>
 <translation id="1323735185997015385">Borrar</translation>
@@ -67,6 +68,7 @@ Tu motor de búsqueda es <ph name="DSE_NAME" />. Consulta las instrucciones para
 <translation id="149095475893949513">Este sitio web intenta descargar un perfil de configuración.</translation>
 <translation id="1491277525950327607">Presiona dos veces para activar o desactivar la configuración</translation>
 <translation id="1492417797159476138">Ya guardaste este nombre de usuario en este sitio</translation>
+<translation id="1506063256525392513">Te permite tomar fotos, subirlas y escanear códigos QR</translation>
 <translation id="1509486075633541495">Acceder al sitio web</translation>
 <translation id="1509960214886564027">Es posible que las características de muchos sitios no funcionen de forma correcta</translation>
 <translation id="152234381334907219">Nunca guardado</translation>
@@ -352,6 +354,7 @@ Realiza los siguientes pasos:</translation>
 <translation id="418156467088430727">Ver la versión sin conexión en una nueva pestaña</translation>
 <translation id="4181841719683918333">Idiomas</translation>
 <translation id="4223967053752765281">Tu organización desactivó el acceso. Podrás seguir viendo tus favoritos, el historial, las contraseñas y otras opciones de configuración en este dispositivo. Si realizas cambios, no se sincronizarán con tu cuenta.</translation>
+<translation id="4233831822770018312">Modificar permisos</translation>
 <translation id="4237377247299956313">Presiona <ph name="BEGIN_BOLD" />App de navegador predeterminada<ph name="END_BOLD" />.</translation>
 <translation id="424315890655130736">Ingresar frase de contraseña</translation>
 <translation id="4249955472157341256">Ordenar por más recientes</translation>
@@ -385,6 +388,7 @@ Realiza los siguientes pasos:</translation>
 <translation id="4536418791685807335">Intenta volver a acceder.</translation>
 <translation id="4540780316273593836">Se produjo un error</translation>
 <translation id="457386861538956877">Más...</translation>
+<translation id="458449952965618888">Acceso al micrófono permitido</translation>
 <translation id="4592368184551360546">Teclado</translation>
 <translation id="461440297010471931">Búsqueda con Google</translation>
 <translation id="4619564267100705184">Verificar tu identidad</translation>
@@ -405,6 +409,7 @@ Tus datos están encriptados con tu frase de contraseña para sincronización. D
 <translation id="4689564913179979534">Administrar formas de pago…</translation>
 <translation id="4697071790493980729">No se encontraron resultados</translation>
 <translation id="470966556546083668">No activar la sincronización</translation>
+<translation id="4727245048156789470">Acceso a la cámara y al micrófono permitido</translation>
 <translation id="4737560986434232178">Buscar pestañas recientes</translation>
 <translation id="473775607612524610">Actualizar</translation>
 <translation id="4747097190499141774">La encriptación de la frase de contraseña no incluye formas de pago ni direcciones de Google Pay. Solo las personas que tengan tu frase de contraseña pueden leer los datos encriptados. Google no envía ni almacena la frase de contraseña. Si la olvidas o quieres cambiar esta configuración, deberás restablecer la sincronización. <ph name="BEGIN_LINK" />Más información<ph name="END_LINK" /></translation>
@@ -432,6 +437,7 @@ Para cambiar esta configuración, <ph name="BEGIN_LINK" />restablece la sincroni
 <translation id="4860895144060829044">Llamar</translation>
 <translation id="4872323082491632254">Revisar contraseñas</translation>
 <translation id="4881695831933465202">Abrir</translation>
+<translation id="4894963374040315706">Te permite realizar búsquedas con tu voz</translation>
 <translation id="4901778704868714008">Guardar…</translation>
 <translation id="4904877109095351937">Marcar como leídas</translation>
 <translation id="4908869848243824489">Descubre de Google</translation>
@@ -441,6 +447,7 @@ Para cambiar esta configuración, <ph name="BEGIN_LINK" />restablece la sincroni
 <translation id="4945756290001680296">Accede a la configuración de contraseñas</translation>
 <translation id="4979397965658815378">Accede con tu cuenta de Google para obtener tus favoritos, contraseñas, historial y otras opciones de configuración en todos tus dispositivos</translation>
 <translation id="4986678885919050584">Quitar de este dispositivo</translation>
+<translation id="4989542687859782284">No disponible</translation>
 <translation id="5005498671520578047">Copiar contraseña</translation>
 <translation id="5017828934289857214">Recordarme más tarde</translation>
 <translation id="5037676449506322593">Seleccionar todo</translation>
@@ -818,6 +825,7 @@ También pueden usar cookies para ver la actividad de navegación en diferentes 
 <translation id="8283172974887967105">Establecer…</translation>
 <translation id="8299417921174340354">Para usar contraseñas, primero debes establecer una en tu dispositivo.</translation>
 <translation id="8299613349954694191">Abre una pestaña de incógnito para navegar por la Web de forma privada.</translation>
+<translation id="8304831996890817401">Acceso a la cámara permitido</translation>
 <translation id="8319076807703933069">Nueva búsqueda</translation>
 <translation id="8323906514956095947">Mantén presionado el botón para ver más opciones de pestañas</translation>
 <translation id="8328777765163860529">Cerrar todas</translation>
@@ -867,6 +875,7 @@ También pueden usar cookies para ver la actividad de navegación en diferentes 
 <translation id="8750037785291841318">Aquí encontrarás tus pestañas</translation>
 <translation id="8756969031206844760">¿Quieres actualizar la contraseña?</translation>
 <translation id="8775144690796719618">URL no válida</translation>
+<translation id="8787968206789828143">Buscar en la Web</translation>
 <translation id="8803639129939845298">Seguro</translation>
 <translation id="8806823403540278281">Tu organización requiere que navegues de forma privada. Las pestañas no se guardan en el modo Incógnito.
 <ph name="BEGIN_LINK" />Más información<ph name="END_LINK" /></translation>

@@ -492,6 +492,7 @@
 <translation id="2430968933669123598">"Керувати обліковим записом Google"; натисніть Enter, щоб керувати своєю інформацією, конфіденційністю й безпекою в обліковому записі Google</translation>
 <translation id="2436186046335138073">Дозволити обробнику <ph name="HANDLER_HOSTNAME" /> відкривати всі посилання протоколу <ph name="PROTOCOL" />?</translation>
 <translation id="2438874542388153331">Пробити чотири отвори праворуч</translation>
+<translation id="2448295565072560657">Периферійні пристрої, які підключені до цього пристрою, коли ви ввійшли в обліковий запис</translation>
 <translation id="2450021089947420533">Сеанси</translation>
 <translation id="2463739503403862330">Заповнити</translation>
 <translation id="2465402087343596252">Architecture-E</translation>
@@ -499,6 +500,7 @@
 <translation id="2465688316154986572">Скріпити</translation>
 <translation id="2465914000209955735">Керувати завантаженими файлами в Chrome</translation>
 <translation id="2466004615675155314">Показати інформацію з Інтернету</translation>
+<translation id="2467272921457885625">Характеристики та статистика апаратного забезпечення пристрою (наприклад, історія використання ЦП чи оперативної пам’яті)</translation>
 <translation id="2467694685043708798"><ph name="BEGIN_LINK" />провести діагностику мережі<ph name="END_LINK" /></translation>
 <translation id="2469153820345007638">Порядок від 1 до N</translation>
 <translation id="2470767536994572628">Коли ви редагуєте примітки, документ переходить у режим перегляду по одній сторінці, а також відновлюється його початкова орієнтація</translation>
@@ -2293,7 +2295,6 @@
 <translation id="8241712895048303527">Блокувати на цьому сайті</translation>
 <translation id="8242426110754782860">Продовжити</translation>
 <translation id="8249296373107784235">Скасувати</translation>
-<translation id="8249320324621329438">Востаннє отримано:</translation>
 <translation id="8253091569723639551">Потрібно вказати платіжну адресу</translation>
 <translation id="8257387598443225809">Цей додаток створено для мобільних пристроїв</translation>
 <translation id="825929999321470778">Показати всі збережені паролі</translation>

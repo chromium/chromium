@@ -61,6 +61,7 @@
 <translation id="1497522201463361063">Impossibile ridenominare "<ph name="FILE_NAME" />". <ph name="ERROR_MESSAGE" /></translation>
 <translation id="1499943022354839699">Inglese (USA) con tastiera Dvorak</translation>
 <translation id="1515909359182093592"><ph name="INPUT_LABEL" /> - Host</translation>
+<translation id="1521655867290435174">Fogli Google</translation>
 <translation id="1538729222189715449">Apertura di file Linux…</translation>
 <translation id="1547964879613821194">Inglese canadese</translation>
 <translation id="1556189134700913550">Applica a tutti</translation>
@@ -184,7 +185,6 @@
 <translation id="2544853746127077729">Certificato di autenticazione rifiutato dalla rete</translation>
 <translation id="2547921442987553570">Aggiungi all'estensione <ph name="EXTENSION_NAME" /></translation>
 <translation id="255937426064304553">Internazionale USA</translation>
-<translation id="2562685439590298522">Documenti</translation>
 <translation id="2563185590376525700">Rana</translation>
 <translation id="2578394532502990878">Tamil fonetica</translation>
 <translation id="2579959351793446050">Odia</translation>
@@ -220,9 +220,7 @@
 <translation id="2902734494705624966">Tastiera estesa USA</translation>
 <translation id="290843123675549676">Marathi</translation>
 <translation id="2923240520113693977">Estone</translation>
-<translation id="2925966894897775835">Fogli</translation>
 <translation id="2938685643439809023">Mongolo</translation>
-<translation id="2943400156390503548">Presentazioni</translation>
 <translation id="2943503720238418293">Utilizza un nome più corto</translation>
 <translation id="2949781154072577687">Formattazione di <ph name="DRIVE_NAME" />…</translation>
 <translation id="2951236788251446349">Medusa</translation>
@@ -414,6 +412,7 @@
 <translation id="4656777537938206294">Rendi i file disponibili offline</translation>
 <translation id="4658782175094886150">Persona nella neve</translation>
 <translation id="4669606053856530811">I membri di "<ph name="SOURCE_NAME" />" non avranno più accesso, a meno che questi elementi vengano condivisi con loro.</translation>
+<translation id="467809019005607715">Presentazioni Google</translation>
 <translation id="4690246192099372265">Svedese</translation>
 <translation id="4693155481716051732">Sushi</translation>
 <translation id="4694604912444486114">Scimmia</translation>
@@ -657,6 +656,7 @@
 <translation id="6732801395666424405">Certificati non caricati</translation>
 <translation id="6736329909263487977"><ph name="ISSUED_BY" /> [<ph name="ISSUED_TO" />]</translation>
 <translation id="6751256176799620176">1 cartella selezionata</translation>
+<translation id="6755827872271341378">Dispositivo Chrome OS Flex</translation>
 <translation id="6790428901817661496">Riproduci</translation>
 <translation id="6795884519221689054">Panda</translation>
 <translation id="6806699711453372963">Gestisci condivisione con Linux</translation>
@@ -734,6 +734,7 @@
 <translation id="7343393116438664539">Vietnamita Telex</translation>
 <translation id="7359359531237882347">Copia di <ph name="NUMBER_OF_ITEMS" /> elementi...</translation>
 <translation id="7375951387215729722">Elenco di file ordinato per <ph name="COLUMN_NAME" /> in ordine decrescente.</translation>
+<translation id="7402503521691663770">Dispositivi Chrome OS Flex</translation>
 <translation id="7408870451288633753">Ceco</translation>
 <translation id="7417453074306512035">Tastiera Etiope</translation>
 <translation id="7417705661718309329">Mappa Google</translation>
@@ -948,6 +949,7 @@
 <translation id="9172592259078059678">Traslitterazione gujarati</translation>
 <translation id="9173120999827300720">Inglese (USA) con tastiera internazionale</translation>
 <translation id="9174050671906956834">Gli elementi nel cestino vengono eliminati definitivamente dopo 30 giorni.</translation>
+<translation id="9183302530794969518">Documenti Google</translation>
 <translation id="9189836632794948435">Kazako</translation>
 <translation id="9213073329713032541">Installazione eseguita correttamente.</translation>
 <translation id="9219103736887031265">Immagini</translation>

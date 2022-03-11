@@ -61,6 +61,7 @@
 <translation id="1497522201463361063">Faili „<ph name="FILE_NAME" />” ei saa ümber nimetada. <ph name="ERROR_MESSAGE" /></translation>
 <translation id="1499943022354839699">inglise (USA), Dvoraki klaviatuuriga</translation>
 <translation id="1515909359182093592"><ph name="INPUT_LABEL" /> – host</translation>
+<translation id="1521655867290435174">Google'i arvutustabelid</translation>
 <translation id="1538729222189715449">Linuxi failide avamine …</translation>
 <translation id="1547964879613821194">Kanada inglise</translation>
 <translation id="1556189134700913550">Rakenda kõigil</translation>
@@ -184,7 +185,6 @@
 <translation id="2544853746127077729">Võrk lükkas autentimissertifikaadi tagasi</translation>
 <translation id="2547921442987553570">Lisa laiendusse <ph name="EXTENSION_NAME" /></translation>
 <translation id="255937426064304553">USA rahvusvaheline</translation>
-<translation id="2562685439590298522">Dokumendid</translation>
 <translation id="2563185590376525700">Konn</translation>
 <translation id="2578394532502990878">tamili, foneetiline</translation>
 <translation id="2579959351793446050">odia</translation>
@@ -220,9 +220,7 @@
 <translation id="2902734494705624966">USA laiendatud</translation>
 <translation id="290843123675549676">marathi</translation>
 <translation id="2923240520113693977">eesti keel</translation>
-<translation id="2925966894897775835">Arvutustabelid</translation>
 <translation id="2938685643439809023">mongoolia keel</translation>
-<translation id="2943400156390503548">Esitlused</translation>
 <translation id="2943503720238418293">Kasutage lühemat nime</translation>
 <translation id="2949781154072577687">Ketta <ph name="DRIVE_NAME" /> vormindamine …</translation>
 <translation id="2951236788251446349">Millimallikas</translation>
@@ -414,6 +412,7 @@
 <translation id="4656777537938206294">Muutke failid võrguühenduseta kättesaadavaks</translation>
 <translation id="4658782175094886150">Inimene lumes</translation>
 <translation id="4669606053856530811">Üksuse „<ph name="SOURCE_NAME" />” liikmed kaotavad juurdepääsu, kui neid üksusi nendega ei jagata.</translation>
+<translation id="467809019005607715">Google Slides</translation>
 <translation id="4690246192099372265">rootsi keel</translation>
 <translation id="4693155481716051732">Sushi</translation>
 <translation id="4694604912444486114">Pärdik</translation>
@@ -949,6 +948,7 @@
 <translation id="9172592259078059678">gudžarati, transliteratsioon</translation>
 <translation id="9173120999827300720">inglise (USA), rahvusvahelise klaviatuuriga</translation>
 <translation id="9174050671906956834">Prügikastis olevad üksused kustutatakse lõplikult 30 päeva pärast.</translation>
+<translation id="9183302530794969518">Google'i dokumendid</translation>
 <translation id="9189836632794948435">kasahhi</translation>
 <translation id="9213073329713032541">Installimise alustamine õnnestus.</translation>
 <translation id="9219103736887031265">Pildid</translation>

@@ -428,6 +428,7 @@
 <translation id="3443221991560634068">वर्तमान पृष्‍ठ रीलोड करा</translation>
 <translation id="3444179773590444986">साइटसाठीच्या गडद थीमबाबत फीडबॅक शेअर करायचा आहे का?</translation>
 <translation id="3469665409713263828">{FILE_COUNT,plural, =1{एक डाउनलोड शेड्युल केला}other{# डाउनलोड शेड्युल केले}}</translation>
+<translation id="3474624961160222204"><ph name="NAME" /> म्हणून सुरू ठेवा</translation>
 <translation id="3478363558367712427">तुम्ही तुमचे शोध इंजीन निवडू शकता</translation>
 <translation id="3493531032208478708">सूचित केलेल्या आशयविषयी <ph name="BEGIN_LINK" />अधिक जाणून घ्या<ph name="END_LINK" /></translation>
 <translation id="3499246418971111862">chrome_qrcode_<ph name="CURRENT_TIMESTAMP_MS" /></translation>
@@ -1064,7 +1065,6 @@
 <translation id="7173114856073700355">सेटिंग्ज उघडा</translation>
 <translation id="7177466738963138057">तुम्ही हे नंतर सेटिंग्ज मध्ये बदलू शकता.</translation>
 <translation id="7177873915659574692">QR कोड तयार करू शकत नाही. URL मध्ये <ph name="CHARACTER_LIMIT" /> पेक्षा जास्त वर्ण आहेत.</translation>
-<translation id="7180611975245234373">रिफ्रेश करा</translation>
 <translation id="718226107353899806">तुम्ही कमाल <ph name="MAX_NUM_REACTIONS" /> प्रतिक्रिया जोडू शकता</translation>
 <translation id="7187993566681480880">तुम्हाला Chrome वर सुरक्षित ठेवते आणि तुम्ही साइन इन केलेले असताना इतर Google अ‍ॅप्समध्ये तुमच्या सुरक्षेत सुधारणा करण्यासाठी वापरले जाऊ शकते.</translation>
 <translation id="718926126787620637">पूर्ण उंचीवर उघडलेल्या बुकमार्क फोल्डरची सूची</translation>

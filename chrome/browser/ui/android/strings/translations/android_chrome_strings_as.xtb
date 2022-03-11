@@ -138,6 +138,7 @@
 <translation id="1810845389119482123">প্ৰাৰম্ভিক ছিংক ছেট আপ সমাপ্ত হোৱা নাই</translation>
 <translation id="1829244130665387512">পৃষ্ঠাত বিচাৰক</translation>
 <translation id="1832459821645506983">হয়, মই সন্মত</translation>
+<translation id="1849863543394887018">আপুনি ছেটিঙলৈ গৈ জাননী অক্ষম কৰিব পাৰে</translation>
 <translation id="1877026089748256423">Chromeৰ ম্যাদ উকলিছে</translation>
 <translation id="1883903952484604915">মোৰ ফাইল</translation>
 <translation id="189358972401248634">অন্য ভাষা</translation>
@@ -270,6 +271,7 @@
 <translation id="2567385386134582609">প্ৰতিচ্ছবি</translation>
 <translation id="2567545343356994513">বিপজ্জনক ৱেবছাইট, ডাউনল’ড আৰু এক্সটেনশ্বনসমূহৰ পৰা ক্ষিপ্ৰ, আগতীয়া সুৰক্ষা</translation>
 <translation id="2571711316400087311">অন্য ভাষাত থকা পৃষ্ঠাসমূহ Google Translateলৈ পঠিওৱাৰ সুবিধা দিয়ক</translation>
+<translation id="2573452357057307036">Chromeক আপোনাৰ ডিফ’ল্ট হিচাপে কেনেকৈ ছেট কৰিব লাগে জানক</translation>
 <translation id="2581165646603367611">ই কুকি, কেশ্ব আৰু Chromeএ গুৰুত্বপূর্ণ বুলি নভবা ছাইটসমূহৰ অন্য ডেটা মচিব।</translation>
 <translation id="2587052924345400782">নতুন সংস্কৰণ উপলব্ধ</translation>
 <translation id="2593272815202181319">ম'ন'স্পেছ</translation>
@@ -427,6 +429,7 @@
 <translation id="3443221991560634068">বর্তমানৰ পৃষ্ঠাটো পুনৰ ল’ড কৰক</translation>
 <translation id="3444179773590444986">ছাইটৰ বাবে গাঢ় ৰঙৰ থীম সম্পৰ্কে মতামত শ্বেয়াৰ কৰিব নেকি?</translation>
 <translation id="3469665409713263828">{FILE_COUNT,plural, =1{১ টা ডাউনল’ডৰ সময়সূচী নিৰ্ধাৰণ কৰা হৈছে}one{# টা ডাউনল’ডৰ সময়সূচী নিৰ্ধাৰণ কৰা হৈছে}other{# টা ডাউনল’ডৰ সময়সূচী নিৰ্ধাৰণ কৰা হৈছে}}</translation>
+<translation id="3474624961160222204"><ph name="NAME" /> হিচাপে অব্যাহত ৰাখক</translation>
 <translation id="3478363558367712427">আপুনি নিজৰ সন্ধান ইঞ্জিন বাছনি কৰিব পাৰে</translation>
 <translation id="3493531032208478708">পৰামৰ্শ দিয়া সমলৰ বিষয়ে <ph name="BEGIN_LINK" />অধিক জানক<ph name="END_LINK" /></translation>
 <translation id="3499246418971111862">chrome_qrcode_<ph name="CURRENT_TIMESTAMP_MS" /></translation>
@@ -457,6 +460,7 @@
 <translation id="363596933471559332">সঞ্চয় কৰি থোৱা বিশ্বাসযোগ্যতাৰ প্ৰমাণপত্ৰ ব্যৱহাৰ কৰি স্বয়ংক্ৰিয়ভাৱে ৱেবছাইটসমূহত ছাইন ইন কৰক। এই সুবিধাটো অফ কৰি থোৱা থাকিলে আপুনি কোনো এটা ৱেবছাইটত ছাইন ইন কৰাৰ পূর্বে প্ৰতিবাৰে আপোনাৰ পৰিচয় সত্যাপন কৰিবলৈ কোৱা হ’ব।</translation>
 <translation id="3653111872753786013"><ph name="WEBSITE_TITLE" />: <ph name="WEBSITE_URL" /></translation>
 <translation id="3677911431265050325">ম’বাইল ছাইটৰ বাবে অনুৰোধ কৰক</translation>
+<translation id="3685860403008476208">এই ডিভাইচটো ব্যৱহাৰ কৰা সকলোৱে আপুনি ইনক’গনিট’ত ডাউনল’ড কৰা ফাইল চাব পাৰে</translation>
 <translation id="3687645719033307815">আপুনি এই পৃষ্ঠাখনৰ পূৰ্বদৰ্শন চাই আছে</translation>
 <translation id="3690369331356918524">কোনো ডেটা উলংঘনৰ ফলত পাছৱৰ্ডসমূহ ফাদিল হ’লে আপোনাক সকীয়নি দিয়ে</translation>
 <translation id="3692944402865947621"><ph name="FILE_NAME" /> ডাউনল'ড কৰিব পৰা নগ'ল কিয়নো ষ্ট'ৰেজৰ অৱস্থান ঢুকি পাব পৰাত নাই।</translation>
@@ -1062,7 +1066,6 @@
 <translation id="7173114856073700355">ছেটিংসমূহ খোলক</translation>
 <translation id="7177466738963138057">আপুনি এইটো পিছত ছেটিংসমূহ-লৈ গৈ সলনি কৰিব পাৰে</translation>
 <translation id="7177873915659574692">কিউআৰ ক’ড সৃষ্টি কৰিব নোৱাৰি। URLটোত <ph name="CHARACTER_LIMIT" /> টাতকৈ অধিক বৰ্ণ আছে।</translation>
-<translation id="7180611975245234373">ৰিফ্ৰেশ্ব কৰক</translation>
 <translation id="718226107353899806">আপুনি <ph name="MAX_NUM_REACTIONS" /> টা পৰ্যন্ত প্ৰতিক্ৰিয়া যোগ দিব পাৰে</translation>
 <translation id="7187993566681480880">আপোনাক Chromeত সুৰক্ষিত কৰি ৰাখে আৰু আপুনি ছাইন ইন হৈ থকা অৱস্থাত Googleৰ অন্য এপ্‌সমূহত আপোনাৰ সুৰক্ষা উন্নত কৰিবলৈ ব্যৱহাৰ কৰা হ’ব পাৰে।</translation>
 <translation id="718926126787620637">পূৰ্ণ উচ্চতাত খোলা বুকমাৰ্ক ফ'ল্ডাৰৰ সূচী</translation>
@@ -1196,6 +1199,7 @@
 <translation id="7926975587469166629">কার্ডৰ উপনাম</translation>
 <translation id="7929962904089429003">মেনু খোলক</translation>
 <translation id="7930998711684428189">ডেটা উলংঘনৰ ফলত পাছৱৰ্ডসমূহ ফাদিল হ’লে আপোনাক সকীয়নি দিয়ে।</translation>
+<translation id="7937772386706786623">জাননীৰ জৰিয়তে মিডিয়া নিয়ন্ত্ৰণ, ইনক’গনিট’ টেব আৰু অধিক পৰিচালনা কৰক</translation>
 <translation id="7939485076072265087">হাইলাইটৰ সৈতে শৈলীগত কাৰ্ড সৃষ্টি কৰক</translation>
 <translation id="7942131818088350342"><ph name="PRODUCT_NAME" />ৰ ম্যাদ উকলিল।</translation>
 <translation id="7944772052836377867">ছিংক কৰিবলৈ এইগৰাকী আপুনিয়েই বুলি সত্যাপন কৰিব লাগে</translation>

@@ -138,6 +138,7 @@
 <translation id="1810845389119482123">ตั้งค่าการซิงค์เริ่มต้นไม่สำเร็จ</translation>
 <translation id="1829244130665387512">ค้นหาในหน้าเว็บ</translation>
 <translation id="1832459821645506983">เอาสิ ตกลง</translation>
+<translation id="1849863543394887018">คุณปิดใช้การแจ้งเตือนได้โดยไปที่การตั้งค่า</translation>
 <translation id="1877026089748256423">Chrome ล้าสมัย</translation>
 <translation id="1883903952484604915">ไฟล์ของฉัน</translation>
 <translation id="189358972401248634">ภาษาอื่นๆ</translation>
@@ -428,6 +429,7 @@
 <translation id="3443221991560634068">โหลดหน้าปัจจุบันอีกครั้ง</translation>
 <translation id="3444179773590444986">ต้องการแชร์ความคิดเห็นเกี่ยวกับธีมมืดสำหรับเว็บไซต์ไหม</translation>
 <translation id="3469665409713263828">{FILE_COUNT,plural, =1{กำหนดเวลาการดาวน์โหลด 1 รายการแล้ว}other{กำหนดเวลาการดาวน์โหลด # รายการแล้ว}}</translation>
+<translation id="3474624961160222204">ดำเนินการต่อในชื่อ <ph name="NAME" /></translation>
 <translation id="3478363558367712427">คุณเลือกเครื่องมือค้นหาได้</translation>
 <translation id="3493531032208478708"><ph name="BEGIN_LINK" />ดูข้อมูลเพิ่มเติม<ph name="END_LINK" />เกี่ยวกับเนื้อหาที่แนะนำ</translation>
 <translation id="3499246418971111862">chrome_qrcode_<ph name="CURRENT_TIMESTAMP_MS" /></translation>
@@ -1064,7 +1066,6 @@
 <translation id="7173114856073700355">เปิดการตั้งค่า</translation>
 <translation id="7177466738963138057">คุณสามารถเปลี่ยนค่านี้ภายหลังใน "การตั้งค่า"</translation>
 <translation id="7177873915659574692">สร้างคิวอาร์โค้ดไม่ได้ URL มีจำนวนอักขระมากกว่า <ph name="CHARACTER_LIMIT" /> ตัว</translation>
-<translation id="7180611975245234373">รีเฟรช</translation>
 <translation id="718226107353899806">คุณเพิ่มความรู้สึกได้สูงสุด <ph name="MAX_NUM_REACTIONS" /> รายการ</translation>
 <translation id="7187993566681480880">รักษาความปลอดภัยของคุณใน Chrome และอาจใช้เพื่อปรับปรุงความปลอดภัยในแอปอื่นๆ ของ Google เมื่อลงชื่อเข้าใช้</translation>
 <translation id="718926126787620637">รายการโฟลเดอร์บุ๊กมาร์กเปิดอยู่ที่ระดับเต็มความสูงของหน้าจอ</translation>
@@ -1198,6 +1199,7 @@
 <translation id="7926975587469166629">ชื่อเล่นของบัตร</translation>
 <translation id="7929962904089429003">เปิดเมนู</translation>
 <translation id="7930998711684428189">เตือนคุณในกรณีที่รหัสผ่านรั่วไหลจากการละเมิดข้อมูล</translation>
+<translation id="7937772386706786623">จัดการการควบคุมสื่อ แท็บที่ไม่ระบุตัวตน และอื่นๆ จากการแจ้งเตือน</translation>
 <translation id="7939485076072265087">สร้างการ์ดที่ปรับแต่งสไตล์ด้วยการไฮไลต์ข้อความ</translation>
 <translation id="7942131818088350342"><ph name="PRODUCT_NAME" /> ล้าสมัย</translation>
 <translation id="7944772052836377867">การซิงค์จะต้องยืนยันว่าเป็นคุณ</translation>

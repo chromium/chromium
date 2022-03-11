@@ -54,6 +54,7 @@
 <translation id="1499900233129743732"><ph name="MANAGER" /> upravlja ovim korisnikom i može daljinski da upravlja podešavanjima i nadgleda aktivnosti korisnika.</translation>
 <translation id="150962533380566081">Nevažeći PUK.</translation>
 <translation id="1510238584712386396">Pokretač</translation>
+<translation id="152892567002884378">Pojačajte zvuk</translation>
 <translation id="155865706765934889">Dodirna tabla</translation>
 <translation id="1565038567006703504">Ažuriranje uređaja <ph name="DEVICE_NAME" /> nije uspelo</translation>
 <translation id="1567064801249837505">Albumi</translation>
@@ -82,12 +83,14 @@
 <translation id="1807246157184219062">Svetla</translation>
 <translation id="1827738518074806965">Likovna galerija</translation>
 <translation id="1851218745569890714">Video konferencije</translation>
+<translation id="1852934301711881861">Instaliraj Chrome OS Flex</translation>
 <translation id="1874612839560830905">MTU</translation>
 <translation id="1887850431809612466">Revizija hardvera</translation>
 <translation id="1905710495812624430">Premašen je maksimalni broj pokušaja.</translation>
 <translation id="1908234395526491708">Neuspeli UDP zahtevi</translation>
 <translation id="1930797645656624981">Usluga metoda unosa za Chrome OS</translation>
 <translation id="1947737735496445907">Odštampano</translation>
+<translation id="1951012854035635156">Pomoćnik</translation>
 <translation id="1979103255016296513">Rok za promenu lozinke je istekao</translation>
 <translation id="1999615961760456652">Ulazni portal</translation>
 <translation id="2006864819935886708">Uspostavljanje veze</translation>
@@ -105,6 +108,7 @@
 <translation id="2158971754079422508"><ph name="DESC_TEXT" />: Probaj ponovo</translation>
 <translation id="2161394479394250669">Otkaži zadatak štampanja</translation>
 <translation id="2180197493692062006">Došlo je do greške. Probajte da ponovo otvorite aplikaciju.</translation>
+<translation id="2201770616342964496">Lokalni identitet</translation>
 <translation id="2209788852729124853">Resetuj brojače saobraćaja</translation>
 <translation id="2212733584906323460">Razrešavanje imena</translation>
 <translation id="2217935453350629363">Trenutna brzina</translation>
@@ -152,6 +156,7 @@
 <translation id="2859243502336719778">Važno ažuriranje</translation>
 <translation id="2860473693272905224">Postavite još jednu stranicu na skener</translation>
 <translation id="2872961005593481000">Isključi</translation>
+<translation id="2874939134665556319">Prethodna pesma</translation>
 <translation id="2878387241690264070">Ispražnjeno <ph name="RATE" /> za <ph name="NUM_SECONDS" /> sek.</translation>
 <translation id="291142119251986300">Nekvalifikovane komponente</translation>
 <translation id="2926057806159140518">Unesite korisničko ime i lozinku ili skenirajte QR kôd</translation>
@@ -233,6 +238,7 @@
 <translation id="4003384961948020559">Nije uspelo – izlaz je pun</translation>
 <translation id="4034824040120875894">Štampač</translation>
 <translation id="4044093238444069296">Kontakt sa mrežnim prolazom ne uspeva</translation>
+<translation id="4046123991198612571">Sledeća pesma</translation>
 <translation id="404928562651467259">UPOZORENJE</translation>
 <translation id="409427325554347132">Sačuvaj detalje testa</translation>
 <translation id="4110686435123617899">Izaberite album <ph name="TITLE" /> <ph name="DESC" /></translation>
@@ -250,9 +256,11 @@
 <translation id="4238516577297848345">Nijedan zadatak štampanja nije u toku</translation>
 <translation id="4239069858505860023">GPRS</translation>
 <translation id="4244962993387259361">Treba da imate slobodno barem 500 MB da biste pokrenuli test memorije. Da biste oslobodili prostor, idite u Podešavanja &gt; Upravljanje memorijskim prostorom.</translation>
+<translation id="4250229828105606438">Snimak ekrana</translation>
 <translation id="4258281355379922695">HTTP kašnjenje</translation>
 <translation id="4271957103967917607">Prikaži preko celog ekrana</translation>
 <translation id="4275799948641988986">Ko će koristiti uređaj posle popravke?</translation>
+<translation id="4289540628985791613">Pregled</translation>
 <translation id="4297501883039923494">Zaustavljeno – nepoznata greška</translation>
 <translation id="4300073214558989"><ph name="IMAGE_COUNT" /> slika</translation>
 <translation id="4378373042927530923">Nije pokrenuto</translation>
@@ -282,6 +290,7 @@
 <translation id="458794348635939462">Razrešenje svih hostova nije uspelo</translation>
 <translation id="4593212453765072419">Potrebna je potvrda autentičnosti proksija</translation>
 <translation id="4627232916386272576"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="PRINTED_PAGE_NUMBER" /> od <ph name="TOTAL_PAGE_NUMBER" />. Pritisnite taster Enter da biste otkazali zadatak štampanja.</translation>
+<translation id="4627645661474370390">Udaljeni identitet</translation>
 <translation id="463791356324567266">Otkazuje se skeniranje...</translation>
 <translation id="4646949265910132906">Bezbedna WiFi veza</translation>
 <translation id="4654549501020883054">Menjaj svakog dana</translation>
@@ -381,6 +390,7 @@ Probajte da dodirnete mikrofon da biste me pitali nešto.</translation>
 <translation id="554517032089923082">GTC</translation>
 <translation id="5578477003638479617">UMTS</translation>
 <translation id="5578519639599103840">Skeniraj ponovo</translation>
+<translation id="5583640892426849032">Backspace</translation>
 <translation id="5620281292257375798">Samo interno</translation>
 <translation id="5649768706273821470">Slušaj</translation>
 <translation id="5669267381087807207">Aktiviranje</translation>
@@ -390,6 +400,7 @@ Probajte da dodirnete mikrofon da biste me pitali nešto.</translation>
 <translation id="5707900041990977207"><ph name="CURRENT_PAGE" /> od <ph name="TOTAL_PAGES" /></translation>
 <translation id="5733298426544876109">Ažurirajte <ph name="DEVICE_NAME" /></translation>
 <translation id="5760715441271661976">Status portala</translation>
+<translation id="57838592816432529">Isključi zvuk</translation>
 <translation id="5784136236926853061">Veliko HTTP kašnjenje</translation>
 <translation id="5832805196449965646">Dodaj osobu</translation>
 <translation id="583281660410589416">Nepoznato</translation>
@@ -397,6 +408,7 @@ Probajte da dodirnete mikrofon da biste me pitali nešto.</translation>
 <translation id="5849570051105887917">Kôd dobavljača za Home</translation>
 <translation id="5860033963881614850">Isključeno</translation>
 <translation id="5866840822086176774">Veoma jak</translation>
+<translation id="588258955323874662">Ceo ekran</translation>
 <translation id="5895138241574237353">Pokreni ponovo</translation>
 <translation id="5916084858004523819">Zabranjeno</translation>
 <translation id="5916664084637901428">Uključeno</translation>
@@ -467,12 +479,15 @@ Probajte da dodirnete mikrofon da biste me pitali nešto.</translation>
 <translation id="6643016212128521049">Obriši</translation>
 <translation id="6647510110698214773">Algoritam šifrovanja</translation>
 <translation id="6657585470893396449">Lozinka</translation>
+<translation id="6659594942844771486">Kartica</translation>
 <translation id="6692996468359469499">Pronađite informacije u vezi sa vašim izborom</translation>
 <translation id="6704062477274546131">DNS razrešavanje</translation>
+<translation id="6723839937902243910">Energija</translation>
 <translation id="6747215703636344499">Zaustavljeno – posuda za odštampani materijal je puna</translation>
 <translation id="6749473226660745022">Slike</translation>
 <translation id="6753452347192452143">Uređaj je računar.</translation>
 <translation id="6756731097889387912">Otkazivanje skeniranja nije uspelo</translation>
+<translation id="6760706756348334449">Utišajte zvuk</translation>
 <translation id="6766275201586212568">Neuspešna DNS razrešavanja</translation>
 <translation id="6768237774506518020">Velika stopa neuspeha DNS razrešavanja</translation>
 <translation id="680983167891198932">Ključ</translation>
@@ -526,6 +541,7 @@ Probajte da dodirnete mikrofon da biste me pitali nešto.</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
 <translation id="7435977162516949853">{NUMBER_OF_PAGES,plural, =1{Skeniranje je završeno. Skenirana je 1 stranica}one{Skeniranje je završeno. Skenirana je {NUMBER_OF_PAGES} stranica}few{Skeniranje je završeno. Skenirane su {NUMBER_OF_PAGES} stranice}other{Skeniranje je završeno. Skenirano je {NUMBER_OF_PAGES} stranica}}</translation>
 <translation id="7469648432129124067">Otkriven je portal</translation>
+<translation id="7481312909269577407">Prosledi</translation>
 <translation id="7487067081878637334">Tehnologija</translation>
 <translation id="7490813197707563893">MAC adresa</translation>
 <translation id="7497215489070763236">CA sertifikat servera</translation>
@@ -579,6 +595,7 @@ Probajte da dodirnete mikrofon da biste me pitali nešto.</translation>
 <translation id="8132480444149501833">Zatraži brojače saobraćaja</translation>
 <translation id="8138405288920084977">LTEAdvanced</translation>
 <translation id="8143951647992294073">Izaberite <ph name="TOPIC_SOURCE" /> <ph name="TOPIC_SOURCE_DESC" /></translation>
+<translation id="8179976553408161302">Enter</translation>
 <translation id="8206859287963243715">Mobilni uređaj</translation>
 <translation id="8208861521865154048">Pogodnosti</translation>
 <translation id="8217675307824400706">Povežite se</translation>

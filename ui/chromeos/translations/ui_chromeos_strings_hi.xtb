@@ -61,6 +61,7 @@
 <translation id="1497522201463361063">"<ph name="FILE_NAME" />" का नाम बदलने में असमर्थ. <ph name="ERROR_MESSAGE" /></translation>
 <translation id="1499943022354839699">ड्वोराक कीबोर्ड के साथ अंग्रेज़ी (यूएस)</translation>
 <translation id="1515909359182093592"><ph name="INPUT_LABEL" /> - होस्ट</translation>
+<translation id="1521655867290435174">Google Sheets</translation>
 <translation id="1538729222189715449">Linux फ़ाइलें खुल रही हैं...</translation>
 <translation id="1547964879613821194">कनाडाई अंग्रेज़ी</translation>
 <translation id="1556189134700913550">सभी के लिए लागू करें</translation>
@@ -184,7 +185,6 @@
 <translation id="2544853746127077729">नेटवर्क द्वारा प्रमाणीकरण प्रमाणपत्र अस्वीकार किया गया</translation>
 <translation id="2547921442987553570"><ph name="EXTENSION_NAME" /> में जोड़ें</translation>
 <translation id="255937426064304553">यूएस अंतर्राष्ट्रीय</translation>
-<translation id="2562685439590298522">Docs</translation>
 <translation id="2563185590376525700">मेढक</translation>
 <translation id="2578394532502990878">तमिल फ़ोनेटिक</translation>
 <translation id="2579959351793446050">ओडिया</translation>
@@ -220,9 +220,7 @@
 <translation id="2902734494705624966">यूएस विस्तारित</translation>
 <translation id="290843123675549676">मराठी</translation>
 <translation id="2923240520113693977">एस्टोनियाई</translation>
-<translation id="2925966894897775835">Sheets</translation>
 <translation id="2938685643439809023">मंगोलियाई</translation>
-<translation id="2943400156390503548">Slides</translation>
 <translation id="2943503720238418293">थोड़े छोटे नाम का इस्तेमाल करें</translation>
 <translation id="2949781154072577687"><ph name="DRIVE_NAME" /> को फ़ॉर्मैट किया जा रहा है...</translation>
 <translation id="2951236788251446349">जेलीफ़िश</translation>
@@ -414,6 +412,7 @@
 <translation id="4656777537938206294">फ़ाइलों को ऑफ़लाइन उपलब्ध कराएं</translation>
 <translation id="4658782175094886150">गिरती हुई बर्फ़ में खड़ा व्यक्ति</translation>
 <translation id="4669606053856530811">'<ph name="SOURCE_NAME" />' के सदस्यों को तब तक एक्सेस नहीं मिलेगा जब तक कि ये आइटम उनके साथ शेयर नहीं किए जाते.</translation>
+<translation id="467809019005607715">Google Slides</translation>
 <translation id="4690246192099372265">स्वीडिश</translation>
 <translation id="4693155481716051732">सुशी</translation>
 <translation id="4694604912444486114">बंदर</translation>
@@ -658,6 +657,7 @@
 <translation id="6732801395666424405">प्रमाणपत्र लोड नहीं किए गए हैं</translation>
 <translation id="6736329909263487977"><ph name="ISSUED_BY" /> [<ph name="ISSUED_TO" />]</translation>
 <translation id="6751256176799620176">1 फ़ोल्डर चयनित</translation>
+<translation id="6755827872271341378">ChromeOS Flex वाला डिवाइस</translation>
 <translation id="6790428901817661496">चलाएं</translation>
 <translation id="6795884519221689054">पांडा</translation>
 <translation id="6806699711453372963">Linux के साथ शेयर करना प्रबंधित करें</translation>
@@ -735,6 +735,7 @@
 <translation id="7343393116438664539">वियतनामीज़ टेलेक्स</translation>
 <translation id="7359359531237882347"><ph name="NUMBER_OF_ITEMS" /> आइटम कॉपी किए जा रहे हैं...</translation>
 <translation id="7375951387215729722">फ़ाइल की सूची <ph name="COLUMN_NAME" /> के हिसाब से घटते क्रम में लगाई गई है.</translation>
+<translation id="7402503521691663770">ChromeOS Flex वाले डिवाइस</translation>
 <translation id="7408870451288633753">चेक</translation>
 <translation id="7417453074306512035">इथिओपियाई कीबोर्ड</translation>
 <translation id="7417705661718309329">Google मैप</translation>
@@ -949,6 +950,7 @@
 <translation id="9172592259078059678">गुजराती ट्रांसलिट्रेशन</translation>
 <translation id="9173120999827300720">इंटरनैशनल कीबोर्ड के साथ अंग्रेज़ी (यूएस)</translation>
 <translation id="9174050671906956834">ट्रैश में मौजूद आइटम, 30 दिनों के बाद हमेशा के लिए मिटा दिए जाते हैं.</translation>
+<translation id="9183302530794969518">Google Docs</translation>
 <translation id="9189836632794948435">कज़ाक़</translation>
 <translation id="9213073329713032541">ठीक से इंस्टॉल होना शुरू हो गया है.</translation>
 <translation id="9219103736887031265">Images</translation>

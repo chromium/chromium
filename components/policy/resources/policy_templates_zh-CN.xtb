@@ -2906,16 +2906,6 @@
       从 <ph name="PRODUCT_NAME" /> 92 版开始，此政策在无头模式中也受支持。
 
       在 <ph name="MS_WIN_NAME" /> 上，此功能仅适用于已加入 <ph name="MS_AD_NAME" /> 网域的实例、在 Windows 10 专业版上运行的实例，或已注册 <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />的实例。在 <ph name="MAC_OS_NAME" /> 上，此功能仅适用于移动设备管理 (MDM) 下的实例或通过 MCX 加入某个网域的实例。</translation>
-<translation id="4268014245533736105">Chrome 会阻止在沙盒化 iframe 内导航到外部协议。请参阅 https://chromestatus.com/features/5680742077038592。
-
-      如果此政策设为 True，Chrome 会阻止此类导航。
-
-      如果此政策设为 False，Chrome 将无法阻止此类导航。
-
-      此政策默认设为 True：安全功能已启用。
-
-      如果管理员需要更多时间来更新受这项新限制影响的内部网站，则可以使用此政策。这项企业政策只是暂时性政策，预计将于 <ph name="PRODUCT_NAME" /> 104 版之后移除。
-      </translation>
 <translation id="4268586991084547853">更好地兼容 Microsoft IE/Edge 企业模式 sitelist。</translation>
 <translation id="4269798992490176617">如果此政策已启用，<ph name="CHROME_REMOTE_DESKTOP_PRODUCT_NAME" /> 会执行来自远程主机浏览会话的 WebAuthn API 请求。
 
@@ -7007,12 +6997,6 @@
       此政策仅适用于 Family Link 用户。</translation>
 <translation id="8947415621777543415">报告设备位置</translation>
 <translation id="8948062138228904066">身份验证服务器许可名单</translation>
-<translation id="8949511380888040821">如果此设置已启用，<ph name="PRODUCT_NAME" /> 将会使用内置的证书验证程序来验证服务器证书。
-      如果此设置已停用，<ph name="PRODUCT_NAME" /> 将会使用平台提供的旧版证书验证程序来验证服务器证书。
-      如果此设置未配置，系统既可能会使用内置的证书验证程序，也可能会使用旧版证书验证程序。
-
-      按照我们的计划，此政策将会从适用于 <ph name="MAC_OS_NAME" /> 104 版的 <ph name="PRODUCT_NAME" /> 中移除，该版本将不再支持在 <ph name="MAC_OS_NAME" /> 上使用旧版证书验证程序。
-      </translation>
 <translation id="8951350807133946005">设置磁盘缓存目录</translation>
 <translation id="8955719471735800169">返回页首</translation>
 <translation id="8956312248048980644">默认允许使用以源为键的代理集群。</translation>

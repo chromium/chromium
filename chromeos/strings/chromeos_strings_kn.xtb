@@ -54,6 +54,7 @@
 <translation id="1499900233129743732">ಈ ಬಳಕೆದಾರರನ್ನು <ph name="MANAGER" /> ನಿರ್ವಹಿಸುತ್ತದೆ ಮತ್ತು ರಿಮೋಟ್ ಆಗಿ ಸೆಟ್ಟಿಂಗ್‌ಗಳನ್ನು ನಿರ್ವಹಿಸಬಹುದು ಹಾಗೂ ಬಳಕೆದಾರರ ಚಟುವಟಿಕೆಯನ್ನು ಮಾನಿಟರ್ ಮಾಡಬಹುದು.</translation>
 <translation id="150962533380566081">ಅಮಾನ್ಯ PUK.</translation>
 <translation id="1510238584712386396">ಲಾಂಚರ್</translation>
+<translation id="152892567002884378">ವಾಲ್ಯೂಮ್ ಹೆಚ್ಚು ಮಾಡಿ</translation>
 <translation id="155865706765934889">ಟಚ್‌ಪ್ಯಾಡ್</translation>
 <translation id="1565038567006703504"><ph name="DEVICE_NAME" /> ಅನ್ನು ಅಪ್‌ಡೇಟ್‌ ಮಾಡಲು ಸಾಧ್ಯವಿಲ್ಲ</translation>
 <translation id="1567064801249837505">ಆಲ್ಬಮ್‌‌ಗಳು</translation>
@@ -88,6 +89,7 @@
 <translation id="1908234395526491708">UDP ವಿನಂತಿ ವೈಫಲ್ಯಗಳು</translation>
 <translation id="1930797645656624981">Chrome OS ಇನ್‌ಪುಟ್ ವಿಧಾನ ಸೇವೆ</translation>
 <translation id="1947737735496445907">ಮುದ್ರಿಸಲಾಗಿದೆ</translation>
+<translation id="1951012854035635156">Assistant</translation>
 <translation id="1979103255016296513">ಪಾಸ್‌ವರ್ಡ್ ಬದಲಾವಣೆ ಮಾಡಲು ತೀರಾ ತಡವಾಗಿದೆ</translation>
 <translation id="1999615961760456652">ವೈ-ಫೈ ಪ್ರಾರಂಭ ಪೋರ್ಟಲ್</translation>
 <translation id="2006864819935886708">ಸಂಪರ್ಕತೆ</translation>
@@ -152,6 +154,7 @@
 <translation id="2859243502336719778">ನಿರ್ಣಾಯಕ ಅಪ್‌ಡೇಟ್‌</translation>
 <translation id="2860473693272905224">ಸ್ಕ್ಯಾನರ್‌ನ ಮೇಲೆ ಮತ್ತೊಂದು ಪುಟವನ್ನು ಇರಿಸಿ</translation>
 <translation id="2872961005593481000">ಮುಚ್ಚಿಬಿಡಿ </translation>
+<translation id="2874939134665556319">ಹಿಂದಿನ ಟ್ರ್ಯಾಕ್</translation>
 <translation id="2878387241690264070"><ph name="NUM_SECONDS" /> ಸೆಕೆಂಡ್‌ಗಳಲ್ಲಿ <ph name="RATE" /> ಡಿಸ್‌ಚಾರ್ಜ್ ಆಗಿದೆ.</translation>
 <translation id="291142119251986300">ಅನರ್ಹ ಘಟಕಗಳು</translation>
 <translation id="2926057806159140518">ನಿಮ್ಮ ಬಳಕೆದಾರರ ಹೆಸರು ಮತ್ತು ಪಾಸ್‌ವರ್ಡ್ ಅನ್ನು ನಮೂದಿಸಿ ಅಥವಾ ನಿಮ್ಮ QR ಕೋಡ್ ಅನ್ನು ಸ್ಕ್ಯಾನ್ ಮಾಡಿ</translation>
@@ -233,6 +236,7 @@
 <translation id="4003384961948020559">ವಿಫಲವಾಗಿದೆ - ಔಟ್‌ಪುಟ್ ಭರ್ತಿಯಾಗಿದೆ</translation>
 <translation id="4034824040120875894">ಪ್ರಿಂಟರ್</translation>
 <translation id="4044093238444069296">ಗೇಟ್‌ವೇ ಸಂಪರ್ಕಿಸಲು ಸಾಧ್ಯವಾಗಿಲ್ಲ</translation>
+<translation id="4046123991198612571">ಮುಂದಿನ ಟ್ರ್ಯಾಕ್</translation>
 <translation id="404928562651467259">ಎಚ್ಚರಿಕೆ</translation>
 <translation id="409427325554347132">ಪರೀಕ್ಷಾ ವಿವರಗಳನ್ನು ಉಳಿಸಿ</translation>
 <translation id="4110686435123617899">ಆಲ್ಬಮ್ ಆಯ್ಕೆ ಮಾಡಿ <ph name="TITLE" /> <ph name="DESC" /></translation>
@@ -250,9 +254,11 @@
 <translation id="4238516577297848345">ಯಾವುದೇ ಮುದ್ರಣ ಕಾರ್ಯಗಳು ಪ್ರಗತಿಯಲ್ಲಿಲ್ಲ</translation>
 <translation id="4239069858505860023">GPRS</translation>
 <translation id="4244962993387259361">ಮೆಮೊರಿ ಪರೀಕ್ಷೆಯನ್ನು ನಡೆಸಲು ನಿಮಗೆ ಕನಿಷ್ಠ 500 MB ಉಚಿತವಾಗಿರಬೇಕು. ಸ್ಥಳಾವಕಾಶವನ್ನು ತೆರವುಗೊಳಿಸಲು, ಸೆಟ್ಟಿಂಗ್‌ಗಳು &gt; ಸಂಗ್ರಹಣೆ ನಿರ್ವಾಹಕಕ್ಕೆ ಹೋಗಿ.</translation>
+<translation id="4250229828105606438">ಸ್ಕ್ರೀನ್‌ಶಾಟ್</translation>
 <translation id="4258281355379922695">HTTP ವಿಳಂಬ</translation>
 <translation id="4271957103967917607">ಪೂರ್ಣ ಸ್ಕ್ರೀನ್ ವೀಕ್ಷಣೆ</translation>
 <translation id="4275799948641988986">ರಿಪೇರಿಯ ನಂತರ, ಯಾರು ಸಾಧನವನ್ನು ಬಳಸುತ್ತಾರೆ?</translation>
+<translation id="4289540628985791613">ಅವಲೋಕನ</translation>
 <translation id="4297501883039923494">ನಿಲ್ಲಿಸಲಾಗಿದೆ - ಅಪರಿಚಿತ ದೋಷ</translation>
 <translation id="4300073214558989"><ph name="IMAGE_COUNT" /> ಚಿತ್ರಗಳು</translation>
 <translation id="4378373042927530923">ರನ್ ಆಗಲಿಲ್ಲ</translation>
@@ -380,6 +386,7 @@
 <translation id="554517032089923082">GTC</translation>
 <translation id="5578477003638479617">UMTS</translation>
 <translation id="5578519639599103840">ಪುನಃ ಸ್ಕ್ಯಾನ್ ಮಾಡಿ</translation>
+<translation id="5583640892426849032">Backspace</translation>
 <translation id="5620281292257375798">ಆಂತರಿಕ ಮಾತ್ರ</translation>
 <translation id="5649768706273821470">ಆಲಿಸು</translation>
 <translation id="5669267381087807207">ಸಕ್ರಿಯವಾಗುತ್ತಿದೆ</translation>
@@ -389,6 +396,7 @@
 <translation id="5707900041990977207"><ph name="TOTAL_PAGES" /> ರಲ್ಲಿ <ph name="CURRENT_PAGE" /></translation>
 <translation id="5733298426544876109"><ph name="DEVICE_NAME" /> ಅನ್ನು ಅಪ್‌ಡೇಟ್ ಮಾಡಿ</translation>
 <translation id="5760715441271661976">ಪೋರ್ಟಲ್ ಸ್ಥಿತಿ</translation>
+<translation id="57838592816432529">ಮ್ಯೂಟ್</translation>
 <translation id="5784136236926853061">ಅಧಿಕ HTTP ವಿಳಂಬ</translation>
 <translation id="5832805196449965646">ವ್ಯಕ್ತಿಯನ್ನು ಸೇರಿಸು</translation>
 <translation id="583281660410589416">ಅಪರಿಚಿತ</translation>
@@ -396,6 +404,7 @@
 <translation id="5849570051105887917">ಹೋಮ್ ಪೂರೈಕೆದಾರರ ಕೋಡ್</translation>
 <translation id="5860033963881614850">ಆಫ್</translation>
 <translation id="5866840822086176774">ತುಂಬಾ ಪ್ರಬಲವಾಗಿದೆ</translation>
+<translation id="588258955323874662">ಪೂರ್ಣಪರದೆ</translation>
 <translation id="5895138241574237353">ಮರುಪ್ರಾರಂಭಿಸಿ</translation>
 <translation id="5916084858004523819">ನಿಷೇಧಿಸಲಾಗಿದೆ</translation>
 <translation id="5916664084637901428">ಆನ್‌</translation>
@@ -466,12 +475,15 @@
 <translation id="6643016212128521049">ತೆರವುಗೊಳಿಸಿ</translation>
 <translation id="6647510110698214773">ಎನ್‌ಕ್ರಿಪ್ಶನ್ ಅಲ್ಗಾರಿದಮ್</translation>
 <translation id="6657585470893396449">ಪಾಸ್‌ವರ್ಡ್</translation>
+<translation id="6659594942844771486">ಟ್ಯಾಬ್</translation>
 <translation id="6692996468359469499">ನಿಮ್ಮ ಆಯ್ಕೆಗೆ ಸಂಬಂಧಿಸಿದ ಮಾಹಿತಿ ಪಡೆಯಿರಿ</translation>
 <translation id="6704062477274546131">DNS ರೆಸಲ್ಯೂಷನ್‌‌</translation>
+<translation id="6723839937902243910">ಪವರ್‌</translation>
 <translation id="6747215703636344499">ನಿಲ್ಲಿಸಲಾಗಿದೆ - ಔಟ್‌ಪುಟ್ ಭರ್ತಿಯಾಗಿದೆ</translation>
 <translation id="6749473226660745022">ಫೋಟೋಗಳು</translation>
 <translation id="6753452347192452143">ಸಾಧನವು ಕಂಪ್ಯೂಟರ್ ಆಗಿದೆ.</translation>
 <translation id="6756731097889387912">ಸ್ಕ್ಯಾನಿಂಗ್ ರದ್ದು ಮಾಡಲಾಗಲಿಲ್ಲ</translation>
+<translation id="6760706756348334449">ವಾಲ್ಯೂಮ್ ಕಡಿಮೆ ಮಾಡಿ</translation>
 <translation id="6766275201586212568">DNS ರೆಸಲ್ಯೂಷನ್‌ಗಳು ವಿಫಲವಾಗಿವೆ</translation>
 <translation id="6768237774506518020">ಅಧಿಕ DNS ರೆಸಲ್ಯೂಷನ್ ವೈಫಲ್ಯ ದರ</translation>
 <translation id="680983167891198932">ಕೀ</translation>
@@ -525,6 +537,7 @@
 <translation id="7427315641433634153">MSCHAP</translation>
 <translation id="7435977162516949853">{NUMBER_OF_PAGES,plural, =1{ಸ್ಕ್ಯಾನಿಂಗ್ ಪೂರ್ಣಗೊಂಡಿದೆ. 1 ಪುಟವನ್ನು ಸ್ಕ್ಯಾನ್ ಮಾಡಲಾಗಿದೆ}one{ಸ್ಕ್ಯಾನಿಂಗ್ ಪೂರ್ಣಗೊಂಡಿದೆ. {NUMBER_OF_PAGES} ಪುಟಗಳನ್ನು ಸ್ಕ್ಯಾನ್ ಮಾಡಲಾಗಿದೆ}other{ಸ್ಕ್ಯಾನಿಂಗ್ ಪೂರ್ಣಗೊಂಡಿದೆ. {NUMBER_OF_PAGES} ಪುಟಗಳನ್ನು ಸ್ಕ್ಯಾನ್ ಮಾಡಲಾಗಿದೆ}}</translation>
 <translation id="7469648432129124067">ಪೋರ್ಟಲ್ ಅನ್ನು ಅಳಿಸಲಾಗಿದೆ</translation>
+<translation id="7481312909269577407">ಫಾರ್ವರ್ಡ್</translation>
 <translation id="7487067081878637334">ತಂತ್ರಜ್ಞಾನ</translation>
 <translation id="7490813197707563893">MAC ವಿಳಾಸ</translation>
 <translation id="7497215489070763236">ಸರ್ವರ್ CA ಪ್ರಮಾಣಪತ್ರ</translation>
@@ -578,6 +591,7 @@
 <translation id="8132480444149501833">ಟ್ರಾಫಿಕ್ ಕೌಂಟರ್‌ಗಳನ್ನು ವಿನಂತಿಸಿ</translation>
 <translation id="8138405288920084977">LTEAdvanced</translation>
 <translation id="8143951647992294073"><ph name="TOPIC_SOURCE" /> <ph name="TOPIC_SOURCE_DESC" /> ಆಯ್ಕೆಮಾಡಿ</translation>
+<translation id="8179976553408161302">Enter</translation>
 <translation id="8206859287963243715">ಸೆಲ್ಯುಲಾರ್</translation>
 <translation id="8208861521865154048">ಪರ್ಕ್‌ಗಳು</translation>
 <translation id="8217675307824400706">ಕನೆಕ್ಟ್ ಆಗಿರಿ</translation>

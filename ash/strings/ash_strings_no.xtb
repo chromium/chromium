@@ -91,9 +91,9 @@ Her er noen ting du kan prøve til å begynne med.</translation>
 <translation id="1414271762428216854"><ph name="APP_NAME" /> – installert app</translation>
 <translation id="1419738280318246476">Lås opp enheten for å utføre varselhandlingen</translation>
 <translation id="1420408895951708260">Slå av/på nattlys. <ph name="STATE_TEXT" /></translation>
+<translation id="1420732223884894666">Se nylige bilder og medier fra telefonen din på <ph name="DEVICE_TYPE" /></translation>
 <translation id="1426410128494586442">Ja</translation>
 <translation id="1438357537418863713">Strømming av apper er nå konfigurert. Når du har begynt å bruke denne funksjonen, vises nylig åpnede apper her.</translation>
-<translation id="144853431011121127">Få varsler fra telefonen din på <ph name="DEVICE_TYPE" /></translation>
 <translation id="1455242230282523554">Vis språkinnstillinger</translation>
 <translation id="1460620680449458626">Lyden er dempet.</translation>
 <translation id="1467432559032391204">Venstre</translation>
@@ -826,6 +826,7 @@ Her er noen ting du kan prøve til å begynne med.</translation>
 <translation id="6165508094623778733">Finn ut mer</translation>
 <translation id="6166852626429024716">Søk på enheten, i apper, i innstillinger og på nettet.</translation>
 <translation id="6179832488876878285">Du kan feste viktige filer her. Åpne Filer-appen for å komme i gang.</translation>
+<translation id="619279033188484792">Se nylige bilder, medier og varsler fra telefonen din på <ph name="DEVICE_TYPE" /></translation>
 <translation id="6220928844947387476">Nå kan du ta opp deg selv og skjermen din samtidig</translation>
 <translation id="622484624075952240">Ned</translation>
 <translation id="6231419273573514727">Ytelsen til eksterne enheter kan være begrenset</translation>
@@ -938,6 +939,7 @@ Nylig installert</translation>
 <translation id="6921188888306725546">Tastatursnarveier er forbedret</translation>
 <translation id="6931576957638141829">Lagre i</translation>
 <translation id="6945221475159498467">Velg</translation>
+<translation id="6960565108681981554">Ikke aktivert. Kontakt operatøren din.</translation>
 <translation id="6961121602502368900">Demp telefonen er ikke tilgjengelig for jobbprofiler</translation>
 <translation id="6961840794482373852">Hurtigtasten Alt + oppoverpil er endret. For å bruke Page Up-tasten, trykk på <ph name="LAUNCHER_KEY_NAME" />-tasten + oppoverpilen.</translation>
 <translation id="6965382102122355670">OK</translation>
@@ -1147,7 +1149,6 @@ Nylig installert</translation>
 <translation id="8236042855478648955">På tide med en pause</translation>
 <translation id="8247060538831475781"><ph name="CONNECTION_STATUS" /> – signalstyrke <ph name="SIGNAL_STRENGTH" /> – telefonbatterinivå <ph name="BATTERY_STATUS" /></translation>
 <translation id="8247998213073982446"><ph name="APP_NAME" /> – app</translation>
-<translation id="8248728785693203669">USB-C-kabelen din kobler seg kanskje ikke til skjermer på riktig måte</translation>
 <translation id="8255234195843591763">Tilbakestill for å oppdatere</translation>
 <translation id="826107067893790409">Trykk på Enter for å låse opp for <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="8261506727792406068">Slett</translation>

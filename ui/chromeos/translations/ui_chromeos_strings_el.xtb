@@ -62,6 +62,7 @@
 <translation id="1497522201463361063">Δεν είναι δυνατή η μετονομασία του "<ph name="FILE_NAME" />". <ph name="ERROR_MESSAGE" /></translation>
 <translation id="1499943022354839699">Αγγλικά (ΗΠΑ) με πληκτρολόγιο Dvorak</translation>
 <translation id="1515909359182093592"><ph name="INPUT_LABEL" /> - Κεντρικός υπολογιστής</translation>
+<translation id="1521655867290435174">Υπολογιστικά φύλλα Google</translation>
 <translation id="1538729222189715449">Άνοιγμα αρχείων Linux…</translation>
 <translation id="1547964879613821194">Αγγλικά Καναδά</translation>
 <translation id="1556189134700913550">Εφαρμογή σε όλα</translation>
@@ -186,7 +187,6 @@
 <translation id="2544853746127077729">Το πιστοποιητικό ελέγχου ταυτότητας απορρίφθηκε από το δίκτυο</translation>
 <translation id="2547921442987553570">Προσθήκη στην επέκταση <ph name="EXTENSION_NAME" /></translation>
 <translation id="255937426064304553">Διεθνές ΗΠΑ</translation>
-<translation id="2562685439590298522">Έγγραφα</translation>
 <translation id="2563185590376525700">Βάτραχος</translation>
 <translation id="2578394532502990878">Φωνητική εισαγωγή Ταμίλ</translation>
 <translation id="2579959351793446050">Όντια</translation>
@@ -224,9 +224,7 @@
 <translation id="290843123675549676">Μαραθικά</translation>
 <translation id="2923240520113693977">Εσθονικά
 </translation>
-<translation id="2925966894897775835">Υπολογιστικά φύλλα</translation>
 <translation id="2938685643439809023">Μογγολικά</translation>
-<translation id="2943400156390503548">Διαφάνειες</translation>
 <translation id="2943503720238418293">Χρησιμοποιήστε πιο σύντομο όνομα</translation>
 <translation id="2949781154072577687">Μορφοποίηση <ph name="DRIVE_NAME" />…</translation>
 <translation id="2951236788251446349">Μέδουσα</translation>
@@ -422,6 +420,7 @@
 <translation id="4656777537938206294">Κάντε τα αρχεία διαθέσιμα εκτός σύνδεσης</translation>
 <translation id="4658782175094886150">Άτομο στο χιόνι</translation>
 <translation id="4669606053856530811">Τα μέλη του "<ph name="SOURCE_NAME" />" θα χάσουν την πρόσβαση, εκτός εάν αυτά τα στοιχεία είναι κοινόχρηστα για τα συγκεκριμένα μέλη.</translation>
+<translation id="467809019005607715">Παρουσιάσεις Google</translation>
 <translation id="4690246192099372265">Σουηδικά</translation>
 <translation id="4693155481716051732">Σούσι</translation>
 <translation id="4694604912444486114">Πίθηκος</translation>
@@ -671,6 +670,7 @@
 <translation id="6732801395666424405">Δεν έχουν φορτωθεί τα πιστοποιητικά</translation>
 <translation id="6736329909263487977"><ph name="ISSUED_BY" /> [<ph name="ISSUED_TO" />]</translation>
 <translation id="6751256176799620176">Επιλέχθηκε 1 φάκελος</translation>
+<translation id="6755827872271341378">Συσκευή ChromeOS Flex</translation>
 <translation id="6790428901817661496">Αναπαραγωγή</translation>
 <translation id="6795884519221689054">Πάντα</translation>
 <translation id="6806699711453372963">Διαχείριση κοινοποίησης Linux</translation>
@@ -749,6 +749,7 @@
 <translation id="7343393116438664539">Βιετναμικά Telex</translation>
 <translation id="7359359531237882347">Αντιγραφή <ph name="NUMBER_OF_ITEMS" /> στοιχείων…</translation>
 <translation id="7375951387215729722">Η λίστα αρχείων ταξινομήθηκε κατά <ph name="COLUMN_NAME" /> σε φθίνουσα σειρά.</translation>
+<translation id="7402503521691663770">Συσκευές ChromeOS Flex</translation>
 <translation id="7408870451288633753">Τσεχικά</translation>
 <translation id="7417453074306512035">Πληκτρολόγιο Αιθιοπικών</translation>
 <translation id="7417705661718309329">Χάρτης Google</translation>
@@ -972,6 +973,7 @@
 <translation id="9172592259078059678">Μεταγραφή Γκουγιαράτι</translation>
 <translation id="9173120999827300720">Αγγλικά (ΗΠΑ) με Διεθνές πληκτρολόγιο</translation>
 <translation id="9174050671906956834">Τα στοιχεία στον Κάδο απορριμμάτων διαγράφονται μόνιμα μετά από 30 ημέρες.</translation>
+<translation id="9183302530794969518">Έγγραφα Google</translation>
 <translation id="9189836632794948435">Καζαχστανικά</translation>
 <translation id="9213073329713032541">Η εγκατάσταση ξεκίνησε με επιτυχία.</translation>
 <translation id="9219103736887031265">Εικόνες</translation>

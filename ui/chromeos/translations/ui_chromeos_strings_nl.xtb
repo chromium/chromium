@@ -61,6 +61,7 @@
 <translation id="1497522201463361063">Kan de naam van '<ph name="FILE_NAME" />' niet wijzigen. <ph name="ERROR_MESSAGE" /></translation>
 <translation id="1499943022354839699">Engels (VS) met Dvorak-toetsenbord</translation>
 <translation id="1515909359182093592"><ph name="INPUT_LABEL" />: host</translation>
+<translation id="1521655867290435174">Google Spreadsheets</translation>
 <translation id="1538729222189715449">Linux-bestanden openen…</translation>
 <translation id="1547964879613821194">Canadees Engels</translation>
 <translation id="1556189134700913550">Op alles toepassen</translation>
@@ -184,7 +185,6 @@
 <translation id="2544853746127077729">Verificatiecertificaat geweigerd door netwerk</translation>
 <translation id="2547921442987553570">Toevoegen aan <ph name="EXTENSION_NAME" /></translation>
 <translation id="255937426064304553">Verenigde Staten (internationaal)</translation>
-<translation id="2562685439590298522">Documenten</translation>
 <translation id="2563185590376525700">Kikker</translation>
 <translation id="2578394532502990878">Tamil (fonetisch)</translation>
 <translation id="2579959351793446050">Odia</translation>
@@ -220,9 +220,7 @@
 <translation id="2902734494705624966">Uitgebreid Amerikaans</translation>
 <translation id="290843123675549676">Marathi</translation>
 <translation id="2923240520113693977">Estlands</translation>
-<translation id="2925966894897775835">Bladen</translation>
 <translation id="2938685643439809023">Mongools</translation>
-<translation id="2943400156390503548">Presentaties</translation>
 <translation id="2943503720238418293">Gebruik een kortere naam</translation>
 <translation id="2949781154072577687"><ph name="DRIVE_NAME" /> formatteren…</translation>
 <translation id="2951236788251446349">Kwal</translation>
@@ -414,6 +412,7 @@
 <translation id="4656777537938206294">Bestanden offline beschikbaar maken</translation>
 <translation id="4658782175094886150">Persoon in de sneeuw</translation>
 <translation id="4669606053856530811">Leden van '<ph name="SOURCE_NAME" />' hebben geen toegang meer, tenzij deze items met ze zijn gedeeld.</translation>
+<translation id="467809019005607715">Google Presentaties</translation>
 <translation id="4690246192099372265">Zweeds</translation>
 <translation id="4693155481716051732">Sushi</translation>
 <translation id="4694604912444486114">Aap</translation>
@@ -659,6 +658,7 @@
 <translation id="6732801395666424405">Certificaten niet geladen</translation>
 <translation id="6736329909263487977"><ph name="ISSUED_BY" /> [<ph name="ISSUED_TO" />]</translation>
 <translation id="6751256176799620176">1 map geselecteerd</translation>
+<translation id="6755827872271341378">Chrome OS Flex-apparaat</translation>
 <translation id="6790428901817661496">Spelen</translation>
 <translation id="6795884519221689054">Panda</translation>
 <translation id="6806699711453372963">Delen met Linux beheren</translation>
@@ -736,6 +736,7 @@
 <translation id="7343393116438664539">Vietnamees (Telex)</translation>
 <translation id="7359359531237882347"><ph name="NUMBER_OF_ITEMS" /> items kopiëren...</translation>
 <translation id="7375951387215729722">Lijst met bestanden gesorteerd op <ph name="COLUMN_NAME" /> in aflopende volgorde.</translation>
+<translation id="7402503521691663770">Chrome OS Flex-apparaten</translation>
 <translation id="7408870451288633753">Tsjechië</translation>
 <translation id="7417453074306512035">Ethiopisch toetsenbord</translation>
 <translation id="7417705661718309329">Google-kaart</translation>
@@ -950,6 +951,7 @@
 <translation id="9172592259078059678">Gujarati (transliteratie)</translation>
 <translation id="9173120999827300720">Engels (VS) met internationaal toetsenbord</translation>
 <translation id="9174050671906956834">Items in de prullenbak worden na 30 dagen definitief verwijderd.</translation>
+<translation id="9183302530794969518">Google Documenten</translation>
 <translation id="9189836632794948435">Kazaks</translation>
 <translation id="9213073329713032541">De installatie is gestart.</translation>
 <translation id="9219103736887031265">Afbeeldingen</translation>

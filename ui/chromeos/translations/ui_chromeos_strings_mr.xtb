@@ -61,6 +61,7 @@
 <translation id="1497522201463361063">"<ph name="FILE_NAME" />" पुनर्नामित करण्‍यात अक्षम. <ph name="ERROR_MESSAGE" /></translation>
 <translation id="1499943022354839699">ड्वोझॅक कीबोर्डसह इंग्रजी (यूएस)</translation>
 <translation id="1515909359182093592"><ph name="INPUT_LABEL" /> - होस्ट</translation>
+<translation id="1521655867290435174">Google Sheets</translation>
 <translation id="1538729222189715449">Linux फाइल सुरू करत आहे...</translation>
 <translation id="1547964879613821194">कॅनेडियन इंग्रजी</translation>
 <translation id="1556189134700913550">सर्वांवर लागू करा</translation>
@@ -184,7 +185,6 @@
 <translation id="2544853746127077729">ऑथेंटिकेशन प्रमाणपत्र नेटवर्कद्वारे नाकारले</translation>
 <translation id="2547921442987553570"><ph name="EXTENSION_NAME" /> मध्ये जोडा</translation>
 <translation id="255937426064304553">यूएस आंतरराष्ट्रीय</translation>
-<translation id="2562685439590298522">Docs</translation>
 <translation id="2563185590376525700">बेडूक</translation>
 <translation id="2578394532502990878">तमिळ फोनेटिक</translation>
 <translation id="2579959351793446050">ओडिया</translation>
@@ -220,9 +220,7 @@
 <translation id="2902734494705624966">यूएस विस्तारित</translation>
 <translation id="290843123675549676">मराठी</translation>
 <translation id="2923240520113693977">एस्टोनियन</translation>
-<translation id="2925966894897775835">Sheets</translation>
 <translation id="2938685643439809023">मंगोलियन</translation>
-<translation id="2943400156390503548">Slides</translation>
 <translation id="2943503720238418293">लहान नाव वापरा</translation>
 <translation id="2949781154072577687"><ph name="DRIVE_NAME" /> फॉरमॅट करत आहे...</translation>
 <translation id="2951236788251446349">जेलिफिश</translation>
@@ -414,6 +412,7 @@
 <translation id="4656777537938206294">फाइल ऑफलाइन उपलब्ध करा</translation>
 <translation id="4658782175094886150">हिमवर्षावात उभी व्यक्ती</translation>
 <translation id="4669606053856530811">'<ph name="SOURCE_NAME" />' च्या सदस्यांशी हे आयटम शेअर केले जात नाही तोवर त्यांना ॲक्सेस असणार नाही.</translation>
+<translation id="467809019005607715">Google Slides</translation>
 <translation id="4690246192099372265">स्वीडिश</translation>
 <translation id="4693155481716051732">सुशी</translation>
 <translation id="4694604912444486114">माकड</translation>
@@ -949,6 +948,7 @@ Google ड्राइव्ह मधील फाइल अपडेट के
 <translation id="9172592259078059678">गुजराती लिप्यंतरण</translation>
 <translation id="9173120999827300720">आंतरराष्ट्रीय कीबोर्डसह इंग्रजी (यूएस)</translation>
 <translation id="9174050671906956834">ट्रॅशमधील आयटम ३० दिवसांनंतर कायमचे हटवले जातात.</translation>
+<translation id="9183302530794969518">Google Docs</translation>
 <translation id="9189836632794948435">कझाख</translation>
 <translation id="9213073329713032541">इंस्टॉलेशनला यशस्वीरीत्या सुरुवात झाली.</translation>
 <translation id="9219103736887031265">इमेज</translation>

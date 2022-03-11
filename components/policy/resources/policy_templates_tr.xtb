@@ -2940,17 +2940,6 @@ Bu politika Yanlış değerine ayarlanırsa <ph name="PRODUCT_NAME" /> yerel bil
       Bu politika, <ph name="PRODUCT_NAME" /> 92 sürümünden itibaren gözetimsiz modda da desteklenir.
 
       <ph name="MS_WIN_NAME" /> işletim sisteminde bu işlev yalnızca Windows 10 Pro üzerinde çalışan bir <ph name="MS_AD_NAME" /> alan adına katılmış veya <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" /> öğesine kaydolmuş örneklerde kullanılabilir. <ph name="MAC_OS_NAME" /> işletim sisteminde bu işlev yalnızca MDM ile çalışan veya MCX aracılığıyla bir alan adına katılmış örneklerde kullanılabilir.</translation>
-<translation id="4268014245533736105">Chrome, korumalı alana alınmış iframe içerisindeki harici protokollere
-      yönelik gezinmeleri engeller. https://chromestatus.com/features/5680742077038592 adresine bakın.
-
-      Politika, Doğru değerine ayarlandığında Chrome bu gezinmeleri engeller.
-
-      Politika, Yanlış değerine ayarlandığında Chrome'un bu gezinmeleri engellemesi önlenir.
-
-      Politika varsayılan olarak Doğru değerindeyse: Güvenlik özelliği etkindir.
-
-      Bu özellik, bu yeni kısıtlamadan etkilenen dahili web sitelerini güncellemek için daha fazla zamana ihtiyaç duyan yöneticiler tarafından kullanılabilir. Bu Kurumsal politika geçici olup <ph name="PRODUCT_NAME" /> 104 sürümünden sonra kaldırılması planlanmaktadır.
-      </translation>
 <translation id="4268586991084547853">Microsoft IE/Edge kurumsal mod site listeleriyle daha uyumlu.</translation>
 <translation id="4269798992490176617">Etkin olarak ayarlanırsa <ph name="CHROME_REMOTE_DESKTOP_PRODUCT_NAME" /> uzak bir ana makinedeki tarayıcı oturumundan gelen WebAuthn API isteklerini yürütebilir.
 
@@ -7067,12 +7056,6 @@ Bu politika "true" (doğru) olarak ayarlanırsa kullanıcının tarayıcıyı ku
       Bu politika yalnızca Family Link kullanıcıları içindir.</translation>
 <translation id="8947415621777543415">Cihaz konumunu bildir</translation>
 <translation id="8948062138228904066">Kimlik doğrulama sunucusu izin verilenler listesi</translation>
-<translation id="8949511380888040821">Bu ayar etkinleştirildiğinde <ph name="PRODUCT_NAME" /> sunucu sertifikalarının doğrulamasını yerleşik sertifika doğrulayıcıyı kullanarak yerine getirir.
-      Bu ayar devre dışı bırakıldığında <ph name="PRODUCT_NAME" /> sunucu sertifikalarının doğrulamasını platform tarafından sağlanan eski sertifika doğrulayıcıyı kullanarak yerine getirir.
-      Bu ayar belirtilmezse yerleşik veya eski sertifika doğrulayıcı kullanılabilir.
-
-      <ph name="MAC_OS_NAME" /> işletim sisteminde eski sertifika doğrulayıcı desteğinin kaldırılması planlandığından, bu politikanın da <ph name="MAC_OS_NAME" /> sürüm 104 için <ph name="PRODUCT_NAME" /> ürününden kaldırılması planlanmıştır.
-      </translation>
 <translation id="8951350807133946005">Disk önbellek dizinini ayarla</translation>
 <translation id="8955719471735800169">Başa dön</translation>
 <translation id="8956312248048980644">Varsayılan olarak kaynak içeren veya kaynaklarla ilişkili aracı kümelemeye izin verir.</translation>

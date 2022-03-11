@@ -2836,8 +2836,6 @@
       <ph name="PRODUCT_NAME" /> バージョン 92 以降、このポリシーはヘッドレス モードでもサポートされるようになりました。
 
       <ph name="MS_WIN_NAME" /> では、この機能は <ph name="MS_AD_NAME" /> ドメインに追加されたインスタンス、Windows 10 Pro で実行されているインスタンス、<ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" /> に登録されているインスタンスでのみ使用できます。<ph name="MAC_OS_NAME" /> では、MDM を介して管理されるインスタンスまたは MCX を介してドメインに追加されたインスタンスでのみこの機能を使用できます。</translation>
-<translation id="4268014245533736105">Chrome はサンドボックス化された iframe 内で外部プロトコルへの移動をブロックします。https://chromestatus.com/features/5680742077038592 をご覧ください。True の場合は、該当する移動を Chrome がブロックできるようになります。False の場合は、該当する移動を Chrome がブロックするのを防ぎます。このデフォルトは True で、セキュリティ機能が有効になっています。このポリシーは、新しい制限の影響を受ける社内ウェブサイトの更新に時間がかかる場合に使用できます。このエンタープライズ ポリシーは一時的なものであり、<ph name="PRODUCT_NAME" /> バージョン 104 以降で削除される予定です。
-      </translation>
 <translation id="4268586991084547853">Microsoft IE / Edge エンタープライズ モードのサイトリストとの互換性を高める。</translation>
 <translation id="4269798992490176617">有効に設定した場合、<ph name="CHROME_REMOTE_DESKTOP_PRODUCT_NAME" /> ではリモートホストのブラウジング セッションから送信された WebAuthn API リクエストを実行できます。
 
@@ -6813,12 +6811,6 @@
       このポリシーは、ファミリー リンクのユーザーにのみ適用されます。</translation>
 <translation id="8947415621777543415">デバイスの位置をレポート</translation>
 <translation id="8948062138228904066">認証サーバーの許可リスト</translation>
-<translation id="8949511380888040821">有効な場合、<ph name="PRODUCT_NAME" /> は組み込みの証明書確認機能を使用してサーバー証明書の確認を行います。
-      無効な場合、<ph name="PRODUCT_NAME" /> はプラットフォームから提供される従来の証明書確認機能を使用してサーバー証明書の確認を行います。
-      未設定の場合、組み込みまたは従来の証明書確認機能が使用される可能性があります。
-
-      このポリシーは <ph name="MAC_OS_NAME" /> バージョン 104 の <ph name="PRODUCT_NAME" /> で削除される予定です（<ph name="MAC_OS_NAME" /> での従来の証明書確認機能のサポートがバージョン 104 で削除されるため）。
-      </translation>
 <translation id="8951350807133946005">ディスクのキャッシュ ディレクトリの設定</translation>
 <translation id="8955719471735800169">トップへ戻る</translation>
 <translation id="8956312248048980644">オリジンキー エージェント クラスタリングをデフォルトで許可します。</translation>

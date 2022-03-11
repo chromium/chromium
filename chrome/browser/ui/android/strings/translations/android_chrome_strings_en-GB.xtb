@@ -30,6 +30,7 @@
 <translation id="114825011539563458">The most important privacy and security controls in one place</translation>
 <translation id="1149401351239820326">Expiry month</translation>
 <translation id="1154704303112745282">Page unavailable offline: <ph name="VIOLATED_URL" /></translation>
+<translation id="1166688006062225587">List of accounts to be selected.</translation>
 <translation id="1171770572613082465">See popular websites by tapping the 'Top sites' button</translation>
 <translation id="1173894706177603556">Rename</translation>
 <translation id="1177863135347784049">Customised</translation>
@@ -428,6 +429,7 @@ Touch and hold any word to search. To refine your search, select more or fewer w
 <translation id="3443221991560634068">Reload the current page</translation>
 <translation id="3444179773590444986">Share feedback on Dark theme for sites?</translation>
 <translation id="3469665409713263828">{FILE_COUNT,plural, =1{1 download scheduled}other{# downloads scheduled}}</translation>
+<translation id="3474624961160222204">Continue as <ph name="NAME" /></translation>
 <translation id="3478363558367712427">You can choose your search engine</translation>
 <translation id="3493531032208478708"><ph name="BEGIN_LINK" />Find out more<ph name="END_LINK" /> about suggested content</translation>
 <translation id="3499246418971111862">chrome_qrcode_<ph name="CURRENT_TIMESTAMP_MS" /></translation>
@@ -786,6 +788,7 @@ To change this setting, <ph name="BEGIN_LINK" />reset sync<ph name="END_LINK" />
 <translation id="5665379678064389456">Create event in <ph name="APP_NAME" /></translation>
 <translation id="5683547024293500885">Chrome can’t check for updates</translation>
 <translation id="5686790454216892815">File name too long</translation>
+<translation id="5692329390578659217">To continue, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> will share your name, email, address and profile picture with this site. See this site's <ph name="BEGIN_LINK1" />privacy policy<ph name="END_LINK1" /> and <ph name="BEGIN_LINK2" />Terms of Service<ph name="END_LINK2" />.</translation>
 <translation id="569536719314091526">Translate this page to any language from the More options button</translation>
 <translation id="5696597120588531049">Chrome can help keep you safe from data breaches, unsafe websites and more</translation>
 <translation id="5697688514913266141">Your file will be saved to <ph name="BEGIN_BOLD" /><ph name="DIRECTORY" /><ph name="END_BOLD" />. <ph name="BEGIN_LINK2" />Edit<ph name="END_LINK2" />.</translation>
@@ -894,6 +897,7 @@ For example, some websites may respond to this request by showing you ads that a
 <translation id="6277522088822131679">There was a problem printing the page. Please try again.</translation>
 <translation id="6277722725779679269">Couldn’t update track price</translation>
 <translation id="6278428485366576908">Theme</translation>
+<translation id="6293443105724342169">List of accounts to be selected opened at half height.</translation>
 <translation id="6294610283659775533">You can send tabs between devices that are signed in with the same Google Account</translation>
 <translation id="6297765934698848803">The organisation that manages your device has turned off your camera.</translation>
 <translation id="6301525844455696527">Catch up on your reading list</translation>
@@ -1064,7 +1068,6 @@ For example, some websites may respond to this request by showing you ads that a
 <translation id="7173114856073700355">Open settings</translation>
 <translation id="7177466738963138057">You can change this later in Settings</translation>
 <translation id="7177873915659574692">Can't create QR code. URL is more than <ph name="CHARACTER_LIMIT" /> characters.</translation>
-<translation id="7180611975245234373">Refresh</translation>
 <translation id="718226107353899806">You can add up to <ph name="MAX_NUM_REACTIONS" /> reactions</translation>
 <translation id="7187993566681480880">Keeps you safe on Chrome and may be used to improve your security in other Google apps when you are signed in.</translation>
 <translation id="718926126787620637">List of bookmark folders opened at full height</translation>
@@ -1114,6 +1117,7 @@ For example, some websites may respond to this request by showing you ads that a
 <translation id="7474822150871987353">Learn about topics on websites without leaving the page. Select one or more words on the page to search for them.</translation>
 <translation id="7475192538862203634">If you’re seeing this frequently, try these <ph name="BEGIN_LINK" />suggestions<ph name="END_LINK" />.</translation>
 <translation id="7475688122056506577">SD card not found. Some of your files may be missing.</translation>
+<translation id="7477262822945323753">To continue, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> will share your name, email, address and profile picture with this site. See this site's <ph name="BEGIN_LINK1" />privacy policy<ph name="END_LINK1" />.</translation>
 <translation id="7479104141328977413">Tab management</translation>
 <translation id="7481312909269577407">Forward</translation>
 <translation id="7482656565088326534">Preview tab</translation>
@@ -1286,6 +1290,7 @@ For example, some websites may respond to this request by showing you ads that a
 <translation id="8394720698884623075">Checks URLs with a list of unsafe sites stored in Chrome</translation>
 <translation id="8410695015584479363">Track prices</translation>
 <translation id="8413126021676339697">Show full history</translation>
+<translation id="8414396119627470038">Sign in to <ph name="SITE_ETLD_PLUS_ONE" /> with <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="8419244640277402268">Include</translation>
 <translation id="8424781820952413435">Page sent. To see it, open Chrome on your <ph name="DEVICE_TYPE" /></translation>
 <translation id="8427875596167638501">Preview tab is half-opened</translation>
@@ -1301,6 +1306,7 @@ For example, some websites may respond to this request by showing you ads that a
 <translation id="8461694314515752532">Encrypt synced data with your own sync passphrase</translation>
 <translation id="8466613982764129868">Make sure that <ph name="TARGET_DEVICE_NAME" /> is connected to the Internet</translation>
 <translation id="8473863474539038330">Addresses and more</translation>
+<translation id="847656914027543776">List of accounts to be selected is closed.</translation>
 <translation id="8481921391193215807">When on, sites may use the privacy-preserving techniques shown here to provide their content and services. These include alternatives to cross-site tracking. More trials may be added over time.
 
 <ph name="BEGIN_LIST_ITEM1" />Advertisers and publishers can use FLoC.<ph name="END_LIST_ITEM1" />
@@ -1427,6 +1433,7 @@ For example, some websites may respond to this request by showing you ads that a
 <translation id="9108312223223904744">Phone as a security key support</translation>
 <translation id="9108808586816295166">Secure DNS may not be available all the time</translation>
 <translation id="9133397713400217035">Explore offline</translation>
+<translation id="9133523398139146080">List of accounts to be selected opened at full height.</translation>
 <translation id="9137013805542155359">Show original</translation>
 <translation id="9148126808321036104">Sign in again</translation>
 <translation id="9155898266292537608">You can also search with a quick tap on a word</translation>

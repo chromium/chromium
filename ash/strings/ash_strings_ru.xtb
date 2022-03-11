@@ -91,9 +91,9 @@
 <translation id="1414271762428216854"><ph name="APP_NAME" />, установленное приложение</translation>
 <translation id="1419738280318246476">Чтобы выполнить действие, предложенное в уведомлении, разблокируйте устройство.</translation>
 <translation id="1420408895951708260">Включить или отключить ночную подсветку (<ph name="STATE_TEXT" />)</translation>
+<translation id="1420732223884894666">Позволяет просматривать на устройстве <ph name="DEVICE_TYPE" /> недавно добавленные на телефон фотографии и медиафайлы</translation>
 <translation id="1426410128494586442">Да</translation>
 <translation id="1438357537418863713">Стриминг приложений настроен. Когда вы начнете его использовать, здесь появятся недавно запущенные приложения.</translation>
-<translation id="144853431011121127">Получайте уведомления с телефона на устройстве <ph name="DEVICE_TYPE" />.</translation>
 <translation id="1455242230282523554">Показать языковые настройки</translation>
 <translation id="1460620680449458626">Сейчас звук выключен.</translation>
 <translation id="1467432559032391204">Слева</translation>
@@ -197,6 +197,7 @@
 <translation id="2132302418721800944">Запись видео со всего экрана</translation>
 <translation id="2135456203358955318">Закрепленная лупа</translation>
 <translation id="2148716181193084225">Сегодня</translation>
+<translation id="2159930836979502091">Перейти на эту вкладку</translation>
 <translation id="2170530631236737939">Чтобы выйти из режима обзора, проведите тремя пальцами вниз.</translation>
 <translation id="219905428774326614">Панель запуска, все приложения</translation>
 <translation id="2201071101391734388">Недавнее фото <ph name="INDEX" /> из <ph name="TOTAL_COUNT" /></translation>
@@ -563,6 +564,7 @@
 <translation id="4449692009715125625">{NUM_NOTIFICATIONS,plural, =1{1 важное уведомление}one{# важное уведомление}few{# важных уведомления}many{# важных уведомлений}other{# важного уведомления}}</translation>
 <translation id="4450893287417543264">Больше не показывать</translation>
 <translation id="4451374464530248585">Функция сочетания клавиш Alt + Стрелка вниз изменилась. Чтобы выполнить действие клавиши Page Down, нажмите <ph name="LAUNCHER_KEY_NAME" /> + Стрелка вниз.</translation>
+<translation id="4455051983450390249">Просмотр уведомлений с телефона на устройстве <ph name="DEVICE_TYPE" />.</translation>
 <translation id="445864333228800152">Добрый вечер!</translation>
 <translation id="4458688154122353284">Остановить запись с экрана</translation>
 <translation id="4471354919263203780">Скачивание файлов распознавания речи: <ph name="PERCENT" /> %…</translation>
@@ -769,6 +771,7 @@
 <translation id="583281660410589416">Неизвестно</translation>
 <translation id="5837036133683224804">Остановить трансляцию <ph name="ROUTE_TITLE" /> на устройство "<ph name="RECEIVER_NAME" />"</translation>
 <translation id="584525477304726060">Чтобы развернуть окно, удерживайте его</translation>
+<translation id="5856638668464565213">Сеть "<ph name="NETWORK_NAME" />" не активирована.</translation>
 <translation id="5860033963881614850">ВЫКЛ</translation>
 <translation id="5860491529813859533">Включить</translation>
 <translation id="5867217927013474703">Сбор информации о сети</translation>
@@ -800,6 +803,7 @@
 <translation id="602472752137106327">Показ окон всех рабочих столов. Выбран переключатель.</translation>
 <translation id="6025324406281560198">Статус защиты – "<ph name="SECURITY_STATUS" />", статус подключения – "<ph name="CONNECTION_STATUS" />", уровень сигнала – <ph name="SIGNAL_STRENGTH" />, под управлением администратора</translation>
 <translation id="6027518778343897451">Мероприятий <ph name="CURRENT_MONTH_DAY" /> нет. Нажмите Ввод, чтобы открыть Google Календарь в браузере.</translation>
+<translation id="6027952026115023659">Доступ к приложениям для обмена сообщениями на устройстве <ph name="DEVICE_TYPE" />.</translation>
 <translation id="6030495522958826102">Меню перемещено в левый нижний угол экрана.</translation>
 <translation id="6032620807120418574">Нажмите в любом месте, чтобы включить запись видео со всего экрана.</translation>
 <translation id="6040071906258664830">Запись микрофона <ph name="STATE" /></translation>
@@ -826,6 +830,7 @@
 <translation id="6165508094623778733">Подробнее</translation>
 <translation id="6166852626429024716">Поиск на устройстве, в приложениях, настройках и Интернете…</translation>
 <translation id="6179832488876878285">Вы можете закрепить здесь важные документы. Чтобы начать, откройте приложение "Файлы".</translation>
+<translation id="619279033188484792">Позволяет просматривать на устройстве <ph name="DEVICE_TYPE" /> уведомления с телефона, а также недавно добавленные на телефон фотографии и медиафайлы</translation>
 <translation id="6220928844947387476">Теперь можно вести запись экрана и изображения с веб-камеры одновременно.</translation>
 <translation id="622484624075952240">Вниз</translation>
 <translation id="6231419273573514727">Производительность периферийных устройств может быть ограничена</translation>
@@ -938,9 +943,11 @@
 <translation id="6921188888306725546">Сочетания клавиш улучшены</translation>
 <translation id="6931576957638141829">Сохранить в</translation>
 <translation id="6945221475159498467">Выбрать</translation>
+<translation id="6960565108681981554">Сеть не активирована. Свяжитесь с оператором.</translation>
 <translation id="6961121602502368900">Отключение звука на телефоне недоступно в рабочем профиле</translation>
 <translation id="6961840794482373852">Функция сочетания клавиш Alt + Стрелка вверх изменилась. Чтобы выполнить действие клавиши Page Up, нажмите <ph name="LAUNCHER_KEY_NAME" /> + Стрелка вверх.</translation>
 <translation id="6965382102122355670">ОК</translation>
+<translation id="6967933908874208731">Просмотр недавно добавленных на телефон фотографий, медиафайлов, уведомлений и приложений для обмена сообщениями на устройстве <ph name="DEVICE_TYPE" />.</translation>
 <translation id="6972754398087986839">Начать</translation>
 <translation id="6979158407327259162">Google Диск</translation>
 <translation id="6981982820502123353">Спец. возможности</translation>
@@ -1147,7 +1154,6 @@
 <translation id="8236042855478648955">Пора сделать перерыв</translation>
 <translation id="8247060538831475781">Статус подключения – "<ph name="CONNECTION_STATUS" />", уровень сигнала – <ph name="SIGNAL_STRENGTH" />, заряд батареи – <ph name="BATTERY_STATUS" /></translation>
 <translation id="8247998213073982446"><ph name="APP_NAME" />, приложение</translation>
-<translation id="8248728785693203669">Возможно, кабель USB-C неправильно подключен к экрану.</translation>
 <translation id="8255234195843591763">Сбросить настройки и обновить ОС</translation>
 <translation id="826107067893790409">Чтобы разблокировать устройство для пользователя <ph name="USER_EMAIL_ADDRESS" />, нажмите Ввод</translation>
 <translation id="8261506727792406068">Удалить</translation>

@@ -254,6 +254,7 @@
 <translation id="7087918508125750058">已選取 <ph name="ITEM_COUNT" /> 個項目。選項位於畫面頂端</translation>
 <translation id="7141896414559753902">禁止網站顯示彈出式視窗及重新導向 (建議)</translation>
 <translation id="7176368934862295254"><ph name="KILOBYTES" /> KB</translation>
+<translation id="7180611975245234373">重新整理</translation>
 <translation id="723171743924126238">選取圖片</translation>
 <translation id="7243308994586599757">選項在接近畫面底部的位置</translation>
 <translation id="7250468141469952378">已選取 <ph name="ITEM_COUNT" /> 個項目</translation>
@@ -309,6 +310,7 @@
 <translation id="8394832520002899662">輕觸即可返回網站</translation>
 <translation id="8409345997656833551">在文章能以簡易檢視模式顯示時通知我</translation>
 <translation id="8425213833346101688">變更</translation>
+<translation id="8428213095426709021">設定</translation>
 <translation id="8441146129660941386">倒轉到特定的播放時間點</translation>
 <translation id="8444433999583714703">如要允許 <ph name="APP_NAME" /> 存取你的位置，請一併在 <ph name="BEGIN_LINK" />Android 設定<ph name="END_LINK" />中開啟定位功能。</translation>
 <translation id="8447861592752582886">撤銷裝置權限</translation>

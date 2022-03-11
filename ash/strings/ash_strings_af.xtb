@@ -91,9 +91,9 @@ Hier is 'n paar dinge wat jy kan probeer om aan die gang te kom.</translation>
 <translation id="1414271762428216854"><ph name="APP_NAME" />, geïnstalleerde program</translation>
 <translation id="1419738280318246476">Ontsluit toestel om die kennisgewinghandeling uit te voer</translation>
 <translation id="1420408895951708260">Wissel Aandbeligting. <ph name="STATE_TEXT" /></translation>
+<translation id="1420732223884894666">Bekyk jou foon se onlangse foto's en media op jou <ph name="DEVICE_TYPE" /></translation>
 <translation id="1426410128494586442">Ja</translation>
 <translation id="1438357537418863713">Programstroming is nou opgestel. Sodra jy begin, sal programme wat onlangs oopgemaak is hier verskyn.</translation>
-<translation id="144853431011121127">Kry kennisgewings vanaf jou foon op jou <ph name="DEVICE_TYPE" /></translation>
 <translation id="1455242230282523554">Wys taalinstellings</translation>
 <translation id="1460620680449458626">Volume is gedemp.</translation>
 <translation id="1467432559032391204">Links</translation>
@@ -827,6 +827,7 @@ Alle gebruikers moet afmeld om voort te gaan.</translation>
 <translation id="6165508094623778733">Kom meer te wete</translation>
 <translation id="6166852626429024716">Deursoek jou toestel, programme, instellings en die web …</translation>
 <translation id="6179832488876878285">Jy kan jou belangrike lêers hier vasspeld. Maak Lêers-program oop om te begin.</translation>
+<translation id="619279033188484792">Bekyk jou foon se onlangse foto's, media en kennisgewings op jou <ph name="DEVICE_TYPE" /></translation>
 <translation id="6220928844947387476">Jy kan jouself en jou skerm nou op dieselfde tyd opneem</translation>
 <translation id="622484624075952240">Af</translation>
 <translation id="6231419273573514727">Randtoestelwerkverrigting kan beperk wees</translation>
@@ -939,6 +940,7 @@ Nuwe installasie</translation>
 <translation id="6921188888306725546">Sleutelbordkortpaaie is verbeter</translation>
 <translation id="6931576957638141829">Stoor in</translation>
 <translation id="6945221475159498467">Kies</translation>
+<translation id="6960565108681981554">Nie geaktiveer nie. Kontak jou diensverskaffer.</translation>
 <translation id="6961121602502368900">Maak Foon Stil is nie op werkprofiel beskikbaar nie</translation>
 <translation id="6961840794482373852">Die kortpadsleutel Alt + oppyl het verander. Om die Page Up-sleutel te gebruik, moet jy die <ph name="LAUNCHER_KEY_NAME" />-sleutel + oppyl druk.</translation>
 <translation id="6965382102122355670">OK</translation>
@@ -1148,7 +1150,6 @@ Nuwe installasie</translation>
 <translation id="8236042855478648955">Tyd vir 'n blaaskans</translation>
 <translation id="8247060538831475781"><ph name="CONNECTION_STATUS" />, seinsterkte <ph name="SIGNAL_STRENGTH" />, foonbattery <ph name="BATTERY_STATUS" /></translation>
 <translation id="8247998213073982446"><ph name="APP_NAME" />, program</translation>
-<translation id="8248728785693203669">Jou USB-C-kabel koppel dalk nie behoorlik aan skerms nie</translation>
 <translation id="8255234195843591763">Stel terug na opdatering</translation>
 <translation id="826107067893790409">Druk Enter om <ph name="USER_EMAIL_ADDRESS" /> te ontsluit</translation>
 <translation id="8261506727792406068">Vee uit</translation>

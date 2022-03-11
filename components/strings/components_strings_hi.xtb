@@ -493,6 +493,7 @@
 <translation id="2430968933669123598">Google खाते को मैनेज करें, Google खाते में अपनी जानकारी, निजता, और सुरक्षा को मैनेज करने के लिए Enter बनाएं</translation>
 <translation id="2436186046335138073"><ph name="HANDLER_HOSTNAME" /> को सभी <ph name="PROTOCOL" /> लिंक खोलने दें?</translation>
 <translation id="2438874542388153331">दाईं ओर क्वाड पंच</translation>
+<translation id="2448295565072560657">आपके लॉग इन रहने के दौरान, इस डिवाइस के साथ अटैच सहायक डिवाइस (जैसे, कीबोर्ड, माउस, मॉनिटर, वेबकैम वगैरह)</translation>
 <translation id="2450021089947420533">'Chrome इतिहास' में आपकी गतिविधियां</translation>
 <translation id="2463739503403862330">भरें</translation>
 <translation id="2465402087343596252">आर्किटेक्चर-ई</translation>
@@ -2294,7 +2295,6 @@
 <translation id="8241712895048303527">इस साइट पर ब्लॉक करें</translation>
 <translation id="8242426110754782860">आगे बढ़ें</translation>
 <translation id="8249296373107784235">रद्द करें</translation>
-<translation id="8249320324621329438">इससे पहले कब रीफ़्रेश हुआ था:</translation>
 <translation id="8253091569723639551">बिलिंग पता आवश्यक</translation>
 <translation id="8257387598443225809">यह ऐप्लिकेशन, मोबाइल के लिए डिज़ाइन किया गया है</translation>
 <translation id="825929999321470778">सेव किए गए सभी पासवर्ड दिखाएं</translation>

@@ -61,6 +61,7 @@
 <translation id="1497522201463361063">"<ph name="FILE_NAME" />" کا نام بدلنے سے قاصر۔ <ph name="ERROR_MESSAGE" /></translation>
 <translation id="1499943022354839699">ڈوراک کی بورڈ کے ساتھ انگریزی (امریکہ)</translation>
 <translation id="1515909359182093592"><ph name="INPUT_LABEL" /> - میزبان</translation>
+<translation id="1521655867290435174">Google Sheets</translation>
 <translation id="1538729222189715449">‏Linux فائلز کھل رہی ہیں…</translation>
 <translation id="1547964879613821194">کینیڈین انگریزی</translation>
 <translation id="1556189134700913550">سبھی پر لاگو کریں</translation>
@@ -184,7 +185,6 @@
 <translation id="2544853746127077729">نیٹ ورک نے توثیق کا سرٹیفکیٹ مسترد کر دیا گیا</translation>
 <translation id="2547921442987553570"><ph name="EXTENSION_NAME" /> میں شامل کریں</translation>
 <translation id="255937426064304553">امریکی بین الاقوامی</translation>
-<translation id="2562685439590298522">Docs</translation>
 <translation id="2563185590376525700">مینڈک</translation>
 <translation id="2578394532502990878">تمل فونیٹک</translation>
 <translation id="2579959351793446050">اڑیہ</translation>
@@ -220,9 +220,7 @@
 <translation id="2902734494705624966">‏US توسیع شدہ</translation>
 <translation id="290843123675549676">مراٹهی</translation>
 <translation id="2923240520113693977">اسٹونين</translation>
-<translation id="2925966894897775835">Sheets</translation>
 <translation id="2938685643439809023">منگؤلی</translation>
-<translation id="2943400156390503548">Slides</translation>
 <translation id="2943503720238418293">اس سے چھوٹا نام استعمال کریں</translation>
 <translation id="2949781154072577687"><ph name="DRIVE_NAME" /> کو فارمیٹ کیا جا رہا ہے...</translation>
 <translation id="2951236788251446349">جیلی فش</translation>
@@ -414,6 +412,7 @@
 <translation id="4656777537938206294">فائلز کو آف لائن دستیاب کرائیں</translation>
 <translation id="4658782175094886150">برف سے ڈھکا ہوا شخص</translation>
 <translation id="4669606053856530811">جب تک ان آئٹمز کا ان کے ساتھ اشتراک نہیں کیا جاتا ہے، <ph name="SOURCE_NAME" /> کے اراکین کی رسائی منقطع ہو جائے گي۔</translation>
+<translation id="467809019005607715">Google Slides</translation>
 <translation id="4690246192099372265">سويڈش</translation>
 <translation id="4693155481716051732">سشی</translation>
 <translation id="4694604912444486114">بندر</translation>
@@ -948,6 +947,7 @@
 <translation id="9172592259078059678">گجراتی نقل حرفی</translation>
 <translation id="9173120999827300720">بین الاقوامی کی بورڈ کے ساتھ انگریزی (امریکہ)</translation>
 <translation id="9174050671906956834">کوڑے دان میں موجود آئٹمز کو 30 دن کے بعد ہمیشہ کے لیے حذف کر دیا جاتا ہے۔</translation>
+<translation id="9183302530794969518">Google Docs</translation>
 <translation id="9189836632794948435">قزاخ</translation>
 <translation id="9213073329713032541">انسٹالیشن کامیابی کے ساتھ شروع ہو گئی۔</translation>
 <translation id="9219103736887031265">تصاویر</translation>

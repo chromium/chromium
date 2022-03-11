@@ -54,6 +54,7 @@
 <translation id="1499900233129743732"><ph name="MANAGER" /> 负责管理此用户，而且可能会远程管理设置并监控用户活动。</translation>
 <translation id="150962533380566081">PUK 无效。</translation>
 <translation id="1510238584712386396">启动器</translation>
+<translation id="152892567002884378">调高音量</translation>
 <translation id="155865706765934889">触控板</translation>
 <translation id="1565038567006703504">无法更新<ph name="DEVICE_NAME" /></translation>
 <translation id="1567064801249837505">影集</translation>
@@ -82,12 +83,14 @@
 <translation id="1807246157184219062">浅色调</translation>
 <translation id="1827738518074806965">画廊</translation>
 <translation id="1851218745569890714">视频会议</translation>
+<translation id="1852934301711881861">安装 ChromeOS Flex</translation>
 <translation id="1874612839560830905">MTU</translation>
 <translation id="1887850431809612466">硬件版本</translation>
 <translation id="1905710495812624430">已超过允许的尝试次数上限。</translation>
 <translation id="1908234395526491708">UDP 请求失败</translation>
 <translation id="1930797645656624981">Chrome 操作系统输入法服务</translation>
 <translation id="1947737735496445907">已打印</translation>
+<translation id="1951012854035635156">智能助理</translation>
 <translation id="1979103255016296513">密码更改期限已过</translation>
 <translation id="1999615961760456652">强制门户</translation>
 <translation id="2006864819935886708">连接</translation>
@@ -105,6 +108,7 @@
 <translation id="2158971754079422508"><ph name="DESC_TEXT" />：重试</translation>
 <translation id="2161394479394250669">取消打印任务</translation>
 <translation id="2180197493692062006">出了点问题。请尝试重新打开此应用。</translation>
+<translation id="2201770616342964496">本地身份</translation>
 <translation id="2209788852729124853">重置流量计数器</translation>
 <translation id="2212733584906323460">域名解析</translation>
 <translation id="2217935453350629363">当前速度</translation>
@@ -152,6 +156,7 @@
 <translation id="2859243502336719778">重要更新</translation>
 <translation id="2860473693272905224">将另一个页面放置在扫描仪上</translation>
 <translation id="2872961005593481000">关机</translation>
+<translation id="2874939134665556319">上一首</translation>
 <translation id="2878387241690264070"><ph name="NUM_SECONDS" /> 秒内释放了 <ph name="RATE" /> 的电量。</translation>
 <translation id="291142119251986300">不支持的组件</translation>
 <translation id="2926057806159140518">输入您的用户名和密码，或扫描您的二维码</translation>
@@ -233,6 +238,7 @@
 <translation id="4003384961948020559">失败 - 出纸盘已满</translation>
 <translation id="4034824040120875894">打印机</translation>
 <translation id="4044093238444069296">无法连接网关</translation>
+<translation id="4046123991198612571">下一曲</translation>
 <translation id="404928562651467259">警告</translation>
 <translation id="409427325554347132">保存测试详细信息</translation>
 <translation id="4110686435123617899">选择影集“<ph name="TITLE" />”，<ph name="DESC" /></translation>
@@ -250,9 +256,11 @@
 <translation id="4238516577297848345">没有正在进行的打印任务</translation>
 <translation id="4239069858505860023">GPRS</translation>
 <translation id="4244962993387259361">您需要有至少 500 MB 的可用空间才能运行内存测试。若要释放空间，请依次转到“设置”&gt;“存储空间管理”。</translation>
+<translation id="4250229828105606438">屏幕截图</translation>
 <translation id="4258281355379922695">HTTP 延迟时间</translation>
 <translation id="4271957103967917607">全屏查看</translation>
 <translation id="4275799948641988986">修理之后，这部设备将由谁使用？</translation>
+<translation id="4289540628985791613">概述</translation>
 <translation id="4297501883039923494">已停止 - 未知错误</translation>
 <translation id="4300073214558989"><ph name="IMAGE_COUNT" /> 张图片</translation>
 <translation id="4378373042927530923">未运行</translation>
@@ -282,6 +290,7 @@
 <translation id="458794348635939462">未能解析所有主机</translation>
 <translation id="4593212453765072419">需要验证代理身份</translation>
 <translation id="4627232916386272576"><ph name="DOCUMENT_TITLE" />，<ph name="PRINTER_NAME" />，<ph name="CREATION_TIME" />，已打印 <ph name="PRINTED_PAGE_NUMBER" /> 页，共 <ph name="TOTAL_PAGE_NUMBER" /> 页。按 Enter 键即可取消这项打印任务。</translation>
+<translation id="4627645661474370390">远程身份</translation>
 <translation id="463791356324567266">正在取消扫描…</translation>
 <translation id="4646949265910132906">安全的 Wi-Fi 连接</translation>
 <translation id="4654549501020883054">每日更换一次</translation>
@@ -335,6 +344,7 @@
 <translation id="5051044138948155788">这是目前仅有的一个页面了。此操作会将您转到扫描开始屏幕。</translation>
 <translation id="5088172560898466307">服务器主机名</translation>
 <translation id="5089810972385038852">州/省/直辖市/自治区</translation>
+<translation id="5090362543162270857">IPsec (IKEv2)</translation>
 <translation id="5142961317498132443">身份验证</translation>
 <translation id="5154917547274118687">内存</translation>
 <translation id="5160857336552977725">登录您的<ph name="DEVICE_TYPE" /></translation>
@@ -380,6 +390,7 @@
 <translation id="554517032089923082">GTC</translation>
 <translation id="5578477003638479617">UMTS</translation>
 <translation id="5578519639599103840">重新扫描</translation>
+<translation id="5583640892426849032">退格</translation>
 <translation id="5620281292257375798">仅供内部使用</translation>
 <translation id="5649768706273821470">收听</translation>
 <translation id="5669267381087807207">正在激活</translation>
@@ -389,6 +400,7 @@
 <translation id="5707900041990977207"><ph name="CURRENT_PAGE" /> / <ph name="TOTAL_PAGES" /></translation>
 <translation id="5733298426544876109">更新“<ph name="DEVICE_NAME" />”</translation>
 <translation id="5760715441271661976">门户状态</translation>
+<translation id="57838592816432529">静音</translation>
 <translation id="5784136236926853061">HTTP 延迟时间较长</translation>
 <translation id="5832805196449965646">添加用户</translation>
 <translation id="583281660410589416">未知</translation>
@@ -396,6 +408,7 @@
 <translation id="5849570051105887917">家用移动网络提供商代码</translation>
 <translation id="5860033963881614850">关闭</translation>
 <translation id="5866840822086176774">非常强</translation>
+<translation id="588258955323874662">全屏</translation>
 <translation id="5895138241574237353">重新启动</translation>
 <translation id="5916084858004523819">已禁止</translation>
 <translation id="5916664084637901428">启用</translation>
@@ -436,6 +449,7 @@
 <translation id="6319207335391420837">更新“<ph name="DEVICE_NAME" />”上的固件</translation>
 <translation id="6325525973963619867">失败</translation>
 <translation id="6340526405444716530">个性化</translation>
+<translation id="6348738456043757611">用户名和密码</translation>
 <translation id="636850387210749493">企业注册</translation>
 <translation id="6379086450106841622">触摸屏</translation>
 <translation id="6388847657025262518">扫描仪的文件馈送器卡纸了。请检查馈送器，然后重试。</translation>
@@ -465,12 +479,15 @@
 <translation id="6643016212128521049">清除</translation>
 <translation id="6647510110698214773">加密算法</translation>
 <translation id="6657585470893396449">密码</translation>
+<translation id="6659594942844771486">Tab 键</translation>
 <translation id="6692996468359469499">获取与您的所选项相关的信息</translation>
 <translation id="6704062477274546131">DNS 解析</translation>
+<translation id="6723839937902243910">电源</translation>
 <translation id="6747215703636344499">已停止 - 出纸盘已满</translation>
 <translation id="6749473226660745022">照片</translation>
 <translation id="6753452347192452143">设备类型是计算机。</translation>
 <translation id="6756731097889387912">无法取消扫描</translation>
+<translation id="6760706756348334449">调低音量</translation>
 <translation id="6766275201586212568">DNS 解析失败</translation>
 <translation id="6768237774506518020">DNS 解析失败比率较高</translation>
 <translation id="680983167891198932">密钥</translation>
@@ -524,6 +541,7 @@
 <translation id="7427315641433634153">MSCHAP</translation>
 <translation id="7435977162516949853">{NUMBER_OF_PAGES,plural, =1{已完成扫描。扫描了 1 页}other{已完成扫描。扫描了 {NUMBER_OF_PAGES} 页}}</translation>
 <translation id="7469648432129124067">检测到门户</translation>
+<translation id="7481312909269577407">前进</translation>
 <translation id="7487067081878637334">技术</translation>
 <translation id="7490813197707563893">MAC 地址</translation>
 <translation id="7497215489070763236">服务器 CA 证书</translation>
@@ -577,6 +595,7 @@
 <translation id="8132480444149501833">请求流量计数器</translation>
 <translation id="8138405288920084977">LTEAdvanced</translation>
 <translation id="8143951647992294073">选择 <ph name="TOPIC_SOURCE" /> - <ph name="TOPIC_SOURCE_DESC" /></translation>
+<translation id="8179976553408161302">Enter</translation>
 <translation id="8206859287963243715">蜂窝网络设备</translation>
 <translation id="8208861521865154048">福利</translation>
 <translation id="8217675307824400706">连接到网络</translation>

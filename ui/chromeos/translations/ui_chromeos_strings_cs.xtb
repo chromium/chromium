@@ -61,6 +61,7 @@
 <translation id="1497522201463361063">Soubor „<ph name="FILE_NAME" />“ se nepodařilo přejmenovat. <ph name="ERROR_MESSAGE" /></translation>
 <translation id="1499943022354839699">angličtina (USA) s klávesnicí Dvorak</translation>
 <translation id="1515909359182093592"><ph name="INPUT_LABEL" /> – hostitelský server</translation>
+<translation id="1521655867290435174">Tabulky Google</translation>
 <translation id="1538729222189715449">Otevírání souborů systému Linux...</translation>
 <translation id="1547964879613821194">Kanadská anglická klávesnice</translation>
 <translation id="1556189134700913550">Použít na vše</translation>
@@ -184,7 +185,6 @@
 <translation id="2544853746127077729">Ověřovací certifikát byl sítí odmítnut</translation>
 <translation id="2547921442987553570">Přidat do rozšíření <ph name="EXTENSION_NAME" /></translation>
 <translation id="255937426064304553">Americká klávesnice (mezinárodní)</translation>
-<translation id="2562685439590298522">Dokumenty</translation>
 <translation id="2563185590376525700">Žába</translation>
 <translation id="2578394532502990878">tamilština (fonetická)</translation>
 <translation id="2579959351793446050">urijština</translation>
@@ -220,9 +220,7 @@
 <translation id="2902734494705624966">Americká klávesnice (rozšířená)</translation>
 <translation id="290843123675549676">maráthština</translation>
 <translation id="2923240520113693977">estonština</translation>
-<translation id="2925966894897775835">Tabulky</translation>
 <translation id="2938685643439809023">mongolština</translation>
-<translation id="2943400156390503548">Prezentace</translation>
 <translation id="2943503720238418293">Použijte kratší název</translation>
 <translation id="2949781154072577687">Formátování disku <ph name="DRIVE_NAME" />...</translation>
 <translation id="2951236788251446349">Medúza</translation>
@@ -414,6 +412,7 @@
 <translation id="4656777537938206294">Dostupnost souborů v režimu offline</translation>
 <translation id="4658782175094886150">Člověk ve sněhu</translation>
 <translation id="4669606053856530811">Pokud s nimi tyto položky nejsou sdíleny, ztratí k nim členové týmu <ph name="SOURCE_NAME" /> přístup.</translation>
+<translation id="467809019005607715">Prezentace Google</translation>
 <translation id="4690246192099372265">švédština</translation>
 <translation id="4693155481716051732">Suši</translation>
 <translation id="4694604912444486114">Opice</translation>
@@ -948,6 +947,7 @@
 <translation id="9172592259078059678">gudžarátština (přepis)</translation>
 <translation id="9173120999827300720">angličtina (USA) s mezinárodní klávesnicí</translation>
 <translation id="9174050671906956834">Položky jsou z koše po 30 dnech navždy smazány.</translation>
+<translation id="9183302530794969518">Dokumenty Google</translation>
 <translation id="9189836632794948435">kazaština</translation>
 <translation id="9213073329713032541">Instalace byla úspěšně spuštěna.</translation>
 <translation id="9219103736887031265">Obrázky</translation>

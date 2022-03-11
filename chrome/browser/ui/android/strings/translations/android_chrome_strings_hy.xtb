@@ -270,6 +270,7 @@
 <translation id="2567385386134582609">ՊԱՏԿԵՐ</translation>
 <translation id="2567545343356994513">Ավելի արագ և արդյունավետ պաշտպանություն վտանգավոր կայքերից, ընդլայնումներից և ներբեռնումներից</translation>
 <translation id="2571711316400087311">Առաջարկել այլ լեզուներով էջերն ուղարկել Google Translate ծառայությանը</translation>
+<translation id="2573452357057307036">Իմացեք՝ ինչպես Chrome-ը դարձնել կանխադրված դիտարկիչ</translation>
 <translation id="2581165646603367611">Բոլոր քուքիները, քեշը և այլ տվյալները, որոնք Chrome-ին անհրաժեշտ չեն, կջնջվեն:</translation>
 <translation id="2587052924345400782">Հասանելի է նոր տարբերակ</translation>
 <translation id="2593272815202181319">Միալայն</translation>
@@ -427,6 +428,7 @@
 <translation id="3443221991560634068">Վերաբեռնել ընթացիկ էջը</translation>
 <translation id="3444179773590444986">Կարծիք հայտնե՞լ կայքերի մուգ թեմայի մասին</translation>
 <translation id="3469665409713263828">{FILE_COUNT,plural, =1{Պլանավորված է 1 ներբեռնում}one{Պլանավորված է # ներբեռնում}other{Պլանավորված է # ներբեռնում}}</translation>
+<translation id="3474624961160222204">Շարունակել <ph name="NAME" /> հաշվով</translation>
 <translation id="3478363558367712427">Ընտրեք այլ որոնման համակարգ</translation>
 <translation id="3493531032208478708"><ph name="BEGIN_LINK" />Իմացեք ավելին<ph name="END_LINK" /> առաջարկվող բովանդակության վերաբերյալ</translation>
 <translation id="3499246418971111862">chrome_qrcode_<ph name="CURRENT_TIMESTAMP_MS" /></translation>
@@ -1063,7 +1065,6 @@ Privacy Sandbox տեխնոլոգիան դեռևս մշակման փուլում 
 <translation id="7173114856073700355">Բացել կարգավորումները</translation>
 <translation id="7177466738963138057">Կարող եք սա հետագայում փոխել կարգավորումներում</translation>
 <translation id="7177873915659574692">Չհաջողվեց ստեղծել QR կոդ։ URL-ը կարող է պարունակել առավելագույնը <ph name="CHARACTER_LIMIT" /> նիշ։</translation>
-<translation id="7180611975245234373">Թարմացնել</translation>
 <translation id="718226107353899806">Դուք կարող եք ավելացնել առավելագույնը <ph name="MAX_NUM_REACTIONS" /> արձագանք</translation>
 <translation id="7187993566681480880">Ապահովում է ձեր անվտանգությունը Chrome-ում և Google հավելվածներում, երբ մտել եք ձեր հաշիվ։</translation>
 <translation id="718926126787620637">Էջանիշներով պանակների ցանկը բացված է ամբողջությամբ</translation>

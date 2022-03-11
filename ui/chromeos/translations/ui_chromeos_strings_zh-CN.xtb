@@ -61,6 +61,7 @@
 <translation id="1497522201463361063">无法重命名“<ph name="FILE_NAME" />”。<ph name="ERROR_MESSAGE" /></translation>
 <translation id="1499943022354839699">英语（美国）Dvorak 键盘</translation>
 <translation id="1515909359182093592"><ph name="INPUT_LABEL" /> - 主机</translation>
+<translation id="1521655867290435174">Google 表格</translation>
 <translation id="1538729222189715449">正在打开 Linux 文件…</translation>
 <translation id="1547964879613821194">加拿大英语</translation>
 <translation id="1556189134700913550">全部应用</translation>
@@ -184,7 +185,6 @@
 <translation id="2544853746127077729">身份验证证书遭到网络拒绝</translation>
 <translation id="2547921442987553570">添加到“<ph name="EXTENSION_NAME" />”</translation>
 <translation id="255937426064304553">美国英语（国际）</translation>
-<translation id="2562685439590298522">文档</translation>
 <translation id="2563185590376525700">青蛙</translation>
 <translation id="2578394532502990878">泰米尔语注音</translation>
 <translation id="2579959351793446050">奥里亚语</translation>
@@ -220,9 +220,7 @@
 <translation id="2902734494705624966">美国英语（扩展）</translation>
 <translation id="290843123675549676">马拉地语</translation>
 <translation id="2923240520113693977">爱沙尼亚语</translation>
-<translation id="2925966894897775835">表格</translation>
 <translation id="2938685643439809023">蒙古语</translation>
-<translation id="2943400156390503548">幻灯片</translation>
 <translation id="2943503720238418293">请使用一个较短的名称</translation>
 <translation id="2949781154072577687">正在将“<ph name="DRIVE_NAME" />”格式化…</translation>
 <translation id="2951236788251446349">海蜇</translation>
@@ -414,6 +412,7 @@
 <translation id="4656777537938206294">将文件设为“可离线使用”</translation>
 <translation id="4658782175094886150">一个人站在雪地里</translation>
 <translation id="4669606053856530811">“<ph name="SOURCE_NAME" />”的成员将不再能够访问这些内容（除非与他们共享了这些内容）。</translation>
+<translation id="467809019005607715">Google 幻灯片</translation>
 <translation id="4690246192099372265">瑞典语</translation>
 <translation id="4693155481716051732">寿司</translation>
 <translation id="4694604912444486114">猴子</translation>
@@ -653,6 +652,7 @@
 <translation id="6732801395666424405">未加载证书</translation>
 <translation id="6736329909263487977"><ph name="ISSUED_BY" /> [<ph name="ISSUED_TO" />]</translation>
 <translation id="6751256176799620176">已选择 1 个文件夹</translation>
+<translation id="6755827872271341378">ChromeOS Flex 设备</translation>
 <translation id="6790428901817661496">播放</translation>
 <translation id="6795884519221689054">熊猫</translation>
 <translation id="6806699711453372963">管理 Linux 共享设置</translation>
@@ -730,6 +730,7 @@
 <translation id="7343393116438664539">越南语电传机键盘</translation>
 <translation id="7359359531237882347">正在复制 <ph name="NUMBER_OF_ITEMS" /> 项内容…</translation>
 <translation id="7375951387215729722">文件列表按<ph name="COLUMN_NAME" />降序排列。</translation>
+<translation id="7402503521691663770">ChromeOS Flex 设备</translation>
 <translation id="7408870451288633753">捷克语</translation>
 <translation id="7417453074306512035">埃塞俄比亚语键盘</translation>
 <translation id="7417705661718309329">Google 地图</translation>
@@ -944,6 +945,7 @@
 <translation id="9172592259078059678">古吉拉特语音译</translation>
 <translation id="9173120999827300720">英语（美国）国际键盘</translation>
 <translation id="9174050671906956834">移至回收站 30 天后，所移动的内容将被永久删除。</translation>
+<translation id="9183302530794969518">Google 文档</translation>
 <translation id="9189836632794948435">哈萨克语</translation>
 <translation id="9213073329713032541">安装已成功启动。</translation>
 <translation id="9219103736887031265">图片</translation>

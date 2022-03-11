@@ -61,6 +61,7 @@
 <translation id="1497522201463361063">“<ph name="FILE_NAME" />” faylini qayta nomlab bo‘lmadi. <ph name="ERROR_MESSAGE" /></translation>
 <translation id="1499943022354839699">Ingliz (AQSH) va Dvorak klaviaturasi</translation>
 <translation id="1515909359182093592"><ph name="INPUT_LABEL" /> – host</translation>
+<translation id="1521655867290435174">Google Sheets</translation>
 <translation id="1538729222189715449">Linux fayllari ochilmoqda...</translation>
 <translation id="1547964879613821194">Kanada (Ingliz)</translation>
 <translation id="1556189134700913550">Barchasiga qo‘llash</translation>
@@ -184,7 +185,6 @@
 <translation id="2544853746127077729">Haqiqiylikni tekshirish sertifikati tarmoq tomonidan rad etildi</translation>
 <translation id="2547921442987553570">“<ph name="EXTENSION_NAME" />” kengaytmasiga qo‘shish</translation>
 <translation id="255937426064304553">AQSH (xalqaro)</translation>
-<translation id="2562685439590298522">Hujjatlar</translation>
 <translation id="2563185590376525700">Qurbaqa</translation>
 <translation id="2578394532502990878">Tamil (fonetik)</translation>
 <translation id="2579959351793446050">Oriya</translation>
@@ -220,9 +220,7 @@
 <translation id="2902734494705624966">Kengaytirilgan AQSH klaviaturasi</translation>
 <translation id="290843123675549676">Marathi</translation>
 <translation id="2923240520113693977">Estoncha</translation>
-<translation id="2925966894897775835">Jadvallar</translation>
 <translation id="2938685643439809023">Mo`g`ul tili</translation>
-<translation id="2943400156390503548">Slaydlar</translation>
 <translation id="2943503720238418293">Nomni qisqartiring</translation>
 <translation id="2949781154072577687"><ph name="DRIVE_NAME" /> formatlanmoqda...</translation>
 <translation id="2951236788251446349">Meduza</translation>
@@ -414,6 +412,7 @@
 <translation id="4656777537938206294">Fayllarni oflaynga nusxalash</translation>
 <translation id="4658782175094886150">Qordagi odam</translation>
 <translation id="4669606053856530811">“<ph name="SOURCE_NAME" />” foydalanuvchilariga ulashmasangiz, ular bu obyektlardan foydalana olmasliklari mumkin.</translation>
+<translation id="467809019005607715">Google Slides</translation>
 <translation id="4690246192099372265">Shved tili</translation>
 <translation id="4693155481716051732">Sushi</translation>
 <translation id="4694604912444486114">Maymun</translation>
@@ -657,6 +656,7 @@ Amal bajarilishini kuting va qurilmani “Fayllar” ilovasida chiqarib oling. A
 <translation id="6732801395666424405">Sertifikatlar yuklanmadi</translation>
 <translation id="6736329909263487977"><ph name="ISSUED_BY" /> [<ph name="ISSUED_TO" />]</translation>
 <translation id="6751256176799620176">1 ta jild tanlandi</translation>
+<translation id="6755827872271341378">ChromeOS Flex qurilmasi</translation>
 <translation id="6790428901817661496">Ijro etish</translation>
 <translation id="6795884519221689054">Panda</translation>
 <translation id="6806699711453372963">Linux bilan ulashuvni boshqarish</translation>
@@ -734,6 +734,7 @@ Amal bajarilishini kuting va qurilmani “Fayllar” ilovasida chiqarib oling. A
 <translation id="7343393116438664539">Vyetnam (Telex)</translation>
 <translation id="7359359531237882347"><ph name="NUMBER_OF_ITEMS" /> ta fayl nusxalanmoqda...</translation>
 <translation id="7375951387215729722"><ph name="COLUMN_NAME" /> ustunidagi fayllar roʻyxati kamayishi boʻyicha tartiblangan.</translation>
+<translation id="7402503521691663770">ChromeOS Flex qurilmalari</translation>
 <translation id="7408870451288633753">Chex</translation>
 <translation id="7417453074306512035">Efiop klaviaturasi</translation>
 <translation id="7417705661718309329">Google xaritasi</translation>
@@ -948,6 +949,7 @@ Amal bajarilishini kuting va qurilmani “Fayllar” ilovasida chiqarib oling. A
 <translation id="9172592259078059678">Gujarot tili transliteratsiyasi</translation>
 <translation id="9173120999827300720">Ingliz (AQSH) va xalqaro klaviatura</translation>
 <translation id="9174050671906956834">Chiqitdondagi fayllar 30 kundan keyin butunlay tozalab tashlanadi.</translation>
+<translation id="9183302530794969518">Google Docs</translation>
 <translation id="9189836632794948435">Qozoq</translation>
 <translation id="9213073329713032541">O‘rnatish muvaffaqiyatli boshlandi.</translation>
 <translation id="9219103736887031265">Rasmlar</translation>

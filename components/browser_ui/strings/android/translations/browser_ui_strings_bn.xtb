@@ -254,6 +254,7 @@
 <translation id="7087918508125750058"><ph name="ITEM_COUNT" /> বেছে নেওয়া হয়েছে।  স্ক্রিনের উপরে বিকল্পগুলি পাওয়া যাবে</translation>
 <translation id="7141896414559753902">সাইটগুলিকে পপ-আপ দেখাতে এবং রিডাইরেক্ট করা থেকে বাধা দিন (প্রস্তাবিত)</translation>
 <translation id="7176368934862295254"><ph name="KILOBYTES" /> কেবি</translation>
+<translation id="7180611975245234373">রিফ্রেশ করুন</translation>
 <translation id="723171743924126238">ছবি বেছে নিন</translation>
 <translation id="7243308994586599757">স্ক্রীনের প্রায় নীচের দিকে বিকল্পগুলি উপলব্ধ</translation>
 <translation id="7250468141469952378"><ph name="ITEM_COUNT" />টি বেছে নেওয়া হয়েছে</translation>
@@ -309,6 +310,7 @@
 <translation id="8394832520002899662">সাইটে ফিরে যেতে ট্যাপ করুন</translation>
 <translation id="8409345997656833551">কোনও নিবন্ধে সিমপ্লিফায়েড ভিউ কাজ করলে সেই বিষয়ে বিজ্ঞপ্তি পান</translation>
 <translation id="8425213833346101688">পরিবর্তন</translation>
+<translation id="8428213095426709021">সেটিংস</translation>
 <translation id="8441146129660941386">পেছনে যান</translation>
 <translation id="8444433999583714703">তাছাড়া, যাতে <ph name="APP_NAME" /> আপনার লোকেশন অ্যাক্সেস করতে পারে, তার জন্য <ph name="BEGIN_LINK" />Android সেটিংসে<ph name="END_LINK" /> গিয়েও লোকেশন চালু করে দিন।</translation>
 <translation id="8447861592752582886">ডিভাইসের অনুমতি প্রত্যাহার করুন</translation>

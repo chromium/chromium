@@ -2973,17 +2973,6 @@ Si se le asigna el valor False, <ph name="PRODUCT_NAME" /> no utilizará notific
       A partir la versión 92 de <ph name="PRODUCT_NAME" />, esta política también está admitida en el modo sin interfaz gráfica.
 
       En <ph name="MS_WIN_NAME" />, esta función solo está disponible en instancias que estén vinculadas a un dominio de <ph name="MS_AD_NAME" /> que se ejecuten en Windows 10 Pro o que se hayan registrado en <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />. En <ph name="MAC_OS_NAME" />, esta función solo está disponible en instancias que se gestionen mediante MDM o que estén vinculadas a un dominio a través de MCX.</translation>
-<translation id="4268014245533736105">Chrome bloqueará el acceso a protocolos externos dentro de iframes en
-      entornos aislados. Consulta https://chromestatus.com/features/5680742077038592.
-
-      Si se le asigna el valor True, Chrome podrá bloquear esos accesos.
-
-      Si se le asigna el valor False, Chrome no podrá bloquear esos accesos.
-
-      El valor predeterminado es True (función de seguridad habilitada).
-
-      Esta opción la pueden utilizar los administradores que necesitan más tiempo para actualizar su sitio web interno afectado por esta nueva restricción. Esta política de Enterprise es temporal. Está previsto que se retire a partir de la versión 104 de <ph name="PRODUCT_NAME" />.
-      </translation>
 <translation id="4268586991084547853">Más compatibles con las listas de sitios del modo empresarial de Microsoft IE/Edge.</translation>
 <translation id="4269798992490176617">Si se habilita, <ph name="CHROME_REMOTE_DESKTOP_PRODUCT_NAME" /> puede ejecutar las solicitudes a la API WebAuthn que se originan en una sesión de navegador en un host remoto.
 
@@ -7133,12 +7122,6 @@ Si se configura la política, los usuarios no podrán cambiar esta función. Si 
       Esta política solo se usa para usuarios de Family Link.</translation>
 <translation id="8947415621777543415">Informar de ubicación del dispositivo</translation>
 <translation id="8948062138228904066">Lista de permitidos de servidores de autenticación</translation>
-<translation id="8949511380888040821">Si se habilita esta opción, <ph name="PRODUCT_NAME" /> verificará los certificados de los servidores utilizando el verificador de certificados integrado.
-      Si se inhabilita esta opción, <ph name="PRODUCT_NAME" /> verificará los certificados de los servidores utilizando el verificador de certificados antiguo proporcionado por la plataforma.
-      Si no se configura esta opción, se podrá utilizar el verificador de certificados integrado o el antiguo.
-
-      Se prevé que esta política se elimine en la versión 104 de <ph name="PRODUCT_NAME" /> para <ph name="MAC_OS_NAME" />, en la que el verificador de certificados antiguo dejará de ser compatible con <ph name="MAC_OS_NAME" />.
-      </translation>
 <translation id="8951350807133946005">Establecer directorio de caché de disco</translation>
 <translation id="8955719471735800169">Volver al principio</translation>
 <translation id="8956312248048980644">Permite los clústeres de agentes con clave de origen de forma predeterminada.</translation>
