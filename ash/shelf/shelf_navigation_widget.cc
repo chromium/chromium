@@ -17,6 +17,7 @@
 #include "ash/shelf/shelf_widget.h"
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
+#include "ash/style/highlight_border.h"
 #include "ash/system/status_area_widget.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller.h"
 #include "base/bind.h"
@@ -28,9 +29,12 @@
 #include "ui/compositor/compositor.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/layer_animation_observer.h"
+#include "ui/compositor/layer_delegate.h"
+#include "ui/compositor/paint_recorder.h"
 #include "ui/compositor/scoped_animation_duration_scale_mode.h"
 #include "ui/compositor/scoped_layer_animation_settings.h"
 #include "ui/compositor/throughput_tracker.h"
+#include "ui/gfx/canvas.h"
 #include "ui/gfx/geometry/transform_util.h"
 #include "ui/views/animation/bounds_animator.h"
 #include "ui/views/background.h"
@@ -137,6 +141,54 @@ class BoundsAnimationReporter : public gfx::AnimationDelegate {
 
  private:
   ui::ThroughputTracker tracker_;
+};
+
+class BackgroundLayerDelegate : public ui::LayerDelegate {
+ public:
+  explicit BackgroundLayerDelegate(ui::Layer* layer) : layer_(layer) {}
+  BackgroundLayerDelegate(const BackgroundLayerDelegate&) = delete;
+  BackgroundLayerDelegate& operator=(const BackgroundLayerDelegate&) = delete;
+  ~BackgroundLayerDelegate() override {}
+
+  void SetBackgroundColor(SkColor color) {
+    background_color_ = color;
+    layer_->SchedulePaint(layer_->bounds());
+  }
+
+ private:
+  // views::LayerDelegate:
+  void OnPaintLayer(const ui::PaintContext& context) override {
+    ui::PaintRecorder recorder(context, layer_->size());
+    gfx::Canvas* canvas = recorder.canvas();
+
+    // Get the corner radius from `layer_`.
+    const int corner_radius = layer_->rounded_corner_radii().upper_left();
+
+    // cc::PaintFlags flags for the background.
+    cc::PaintFlags flags;
+    flags.setColor(background_color_);
+    flags.setAntiAlias(true);
+    flags.setStyle(cc::PaintFlags::kFill_Style);
+    canvas->DrawRoundRect(gfx::Rect(layer_->size()), corner_radius, flags);
+
+    // Don't draw highlight border if the shelf widget is showing.
+    if (!Shell::Get()->IsInTabletMode() || ShelfConfig::Get()->is_in_app())
+      return;
+
+    HighlightBorder::PaintBorderToCanvas(
+        canvas, gfx::Rect(layer_->size()), corner_radius,
+        HighlightBorder::Type::kHighlightBorder2, false);
+  }
+
+  void OnDeviceScaleFactorChanged(float old_device_scale_factor,
+                                  float new_device_scale_factor) override {
+    layer_->SchedulePaint(layer_->bounds());
+  }
+
+  ui::Layer* const layer_;
+  // The background color of `layer_`. Note that this value has to be updated by
+  // SetBackgroundColor() and the default value should never be drawn.
+  SkColor background_color_ = SK_ColorRED;
 };
 
 }  // namespace
@@ -294,12 +346,26 @@ class ShelfNavigationWidget::Delegate : public views::AccessiblePaneView,
   // A background layer that may be visible depending on shelf state.
   ui::Layer opaque_background_;
 
+  // The layer delegate that helps drawing the highlight border on
+  // `opaque_background_`.
+  std::unique_ptr<BackgroundLayerDelegate> background_delegate_;
+
   Shelf* shelf_ = nullptr;
 };
 
 ShelfNavigationWidget::Delegate::Delegate(Shelf* shelf, ShelfView* shelf_view)
-    : opaque_background_(ui::LAYER_SOLID_COLOR), shelf_(shelf) {
+    : opaque_background_(features::IsDarkLightModeEnabled()
+                             ? ui::LAYER_TEXTURED
+                             : ui::LAYER_SOLID_COLOR),
+      shelf_(shelf) {
   SetOwnedByWidget(true);
+
+  if (features::IsDarkLightModeEnabled()) {
+    background_delegate_ =
+        std::make_unique<BackgroundLayerDelegate>(&opaque_background_);
+    opaque_background_.set_delegate(background_delegate_.get());
+    opaque_background_.SetFillsBoundsOpaquely(false);
+  }
 
   set_allow_deactivate_on_esc(true);
 
@@ -338,7 +404,11 @@ void ShelfNavigationWidget::Delegate::Init(ui::Layer* parent_layer) {
 }
 
 void ShelfNavigationWidget::Delegate::UpdateOpaqueBackground() {
-  opaque_background_.SetColor(ShelfConfig::Get()->GetShelfControlButtonColor());
+  SkColor background_color = ShelfConfig::Get()->GetShelfControlButtonColor();
+  if (background_delegate_)
+    background_delegate_->SetBackgroundColor(background_color);
+  else
+    opaque_background_.SetColor(background_color);
 
   // Hide background if no buttons should be shown.
   if (!IsHomeButtonShown() &&
