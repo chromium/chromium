@@ -354,9 +354,6 @@ extern const char kChromeWhatsNewInMainMenuNewBadgeName[];
 extern const char kChromeWhatsNewInMainMenuNewBadgeDescription[];
 #endif
 
-extern const char kCompositingBasedThrottling[];
-extern const char kCompositingBasedThrottlingDescription[];
-
 extern const char kDarkLightTestName[];
 extern const char kDarkLightTestDescription[];
 

@@ -6,7 +6,6 @@
 
 #include <memory>
 
-#include "ash/constants/ash_features.h"
 #include "ash/constants/ash_switches.h"
 #include "ash/host/ash_window_tree_host_init_params.h"
 #include "ash/host/ash_window_tree_host_mirroring_unified.h"
@@ -78,8 +77,7 @@ std::unique_ptr<AshWindowTreeHost> AshWindowTreeHost::Create(
         init_params.compositor_memory_limit_mb);
   }
   ui::PlatformWindowInitProperties properties{init_params.initial_bounds};
-  properties.enable_compositing_based_throttling =
-      features::IsCompositingBasedThrottlingEnabled();
+  properties.enable_compositing_based_throttling = true;
   properties.compositor_memory_limit_mb =
       init_params.compositor_memory_limit_mb;
   return std::make_unique<AshWindowTreeHostPlatform>(std::move(properties),
