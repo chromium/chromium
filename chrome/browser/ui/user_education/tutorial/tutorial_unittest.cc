@@ -3,6 +3,8 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/ui/user_education/tutorial/tutorial.h"
+
+#include "base/logging.h"
 #include "base/test/bind.h"
 #include "base/test/mock_callback.h"
 #include "chrome/browser/ui/user_education/help_bubble_factory_registry.h"
@@ -20,9 +22,12 @@
 #include "ui/base/interaction/element_tracker.h"
 #include "ui/base/interaction/expect_call_in_scope.h"
 #include "ui/base/interaction/interaction_sequence.h"
+#include "ui/base/l10n/l10n_util.h"
 
 namespace {
 DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kTestIdentifier1);
+DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kTestIdentifier2);
+DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kTestIdentifier3);
 DEFINE_LOCAL_CUSTOM_ELEMENT_EVENT_TYPE(kCustomEventType1);
 
 const char kTestElementName1[] = "ELEMENT_NAME_1";
@@ -37,10 +42,37 @@ CreateTestTutorialBubbleFactoryRegistry() {
   return bubble_factory_registry;
 }
 
+void ClickDismissButton(HelpBubble* bubble) {
+  TestHelpBubble* help_bubble = static_cast<TestHelpBubble*>(bubble);
+  help_bubble->SimulateDismiss();
+}
+
+void ClickCloseButton(HelpBubble* bubble) {
+  LOG(INFO) << "BUBBLE: " << bubble;
+  TestHelpBubble* help_bubble = static_cast<TestHelpBubble*>(bubble);
+  int button_index = help_bubble->GetIndexOfButtonWithText(
+      l10n_util::GetStringUTF16(IDS_TUTORIAL_CLOSE_TUTORIAL));
+  LOG(INFO) << "BUBBLE: " << button_index;
+
+  EXPECT_TRUE(button_index != TestHelpBubble::kNoButtonWithTextIndex);
+  help_bubble->SimulateButtonPress(button_index);
+}
+
+void ClickRestartButton(HelpBubble* bubble) {
+  TestHelpBubble* help_bubble = static_cast<TestHelpBubble*>(bubble);
+  int button_index = help_bubble->GetIndexOfButtonWithText(
+      l10n_util::GetStringUTF16(IDS_TUTORIAL_RESTART_TUTORIAL));
+
+  EXPECT_TRUE(button_index != TestHelpBubble::kNoButtonWithTextIndex);
+  help_bubble->SimulateButtonPress(button_index);
+}
+
 const TutorialIdentifier kTestTutorial1{"kTestTutorial1"};
 }  // namespace
 
-TEST(TutorialTest, TutorialBuilder) {
+class TutorialTest : public testing::Test {};
+
+TEST_F(TutorialTest, TutorialBuilder) {
   const auto bubble_factory_registry =
       CreateTestTutorialBubbleFactoryRegistry();
   TutorialRegistry registry;
@@ -87,7 +119,7 @@ TEST(TutorialTest, TutorialBuilder) {
       .Build();
 }
 
-TEST(TutorialTest, TutorialRegistryRegistersTutorials) {
+TEST_F(TutorialTest, TutorialRegistryRegistersTutorials) {
   std::unique_ptr<TutorialRegistry> registry =
       std::make_unique<TutorialRegistry>();
 
@@ -106,7 +138,7 @@ TEST(TutorialTest, TutorialRegistryRegistersTutorials) {
   registry->GetTutorialIdentifiers();
 }
 
-TEST(TutorialTest, SingleInteractionTutorialRuns) {
+TEST_F(TutorialTest, SingleInteractionTutorialRuns) {
   UNCALLED_MOCK_CALLBACK(TutorialService::CompletedCallback, completed);
 
   const auto bubble_factory_registry =
@@ -127,13 +159,14 @@ TEST(TutorialTest, SingleInteractionTutorialRuns) {
                                 kTestIdentifier1, "", HelpBubbleArrow::kNone));
   registry.AddTutorial(kTestTutorial1, std::move(description));
 
-  EXPECT_CALL_IN_SCOPE(
-      completed, Run,
-      service.StartTutorial(kTestTutorial1, element_1.context(),
-                            completed.Get()));
+  service.StartTutorial(kTestTutorial1, element_1.context(), completed.Get());
+
+  EXPECT_TRUE(service.currently_displayed_bubble());
+  EXPECT_CALL_IN_SCOPE(completed, Run,
+                       ClickCloseButton(service.currently_displayed_bubble()));
 }
 
-TEST(TutorialTest, TutorialWithCustomEvent) {
+TEST_F(TutorialTest, TutorialWithCustomEvent) {
   UNCALLED_MOCK_CALLBACK(TutorialService::CompletedCallback, completed);
 
   const auto bubble_factory_registry =
@@ -155,15 +188,15 @@ TEST(TutorialTest, TutorialWithCustomEvent) {
   registry.AddTutorial(kTestTutorial1, std::move(description));
 
   service.StartTutorial(kTestTutorial1, element_1.context(), completed.Get());
-  EXPECT_CALL_IN_SCOPE(
-      completed, Run,
-      ui::ElementTracker::GetFrameworkDelegate()->NotifyCustomEvent(
-          &element_1, kCustomEventType1));
+  ui::ElementTracker::GetFrameworkDelegate()->NotifyCustomEvent(
+      &element_1, kCustomEventType1);
+
+  EXPECT_CALL_IN_SCOPE(completed, Run,
+                       ClickCloseButton(service.currently_displayed_bubble()));
 }
 
-TEST(TutorialTest, BuildAndRunTutorial) {
-  UNCALLED_MOCK_CALLBACK(ui::InteractionSequence::CompletedCallback, completed);
-  UNCALLED_MOCK_CALLBACK(ui::InteractionSequence::AbortedCallback, aborted);
+TEST_F(TutorialTest, TutorialWithNamedElement) {
+  UNCALLED_MOCK_CALLBACK(TutorialService::CompletedCallback, completed);
   static constexpr char kElementName[] = "Element Name";
 
   const auto bubble_factory_registry =
@@ -172,36 +205,165 @@ TEST(TutorialTest, BuildAndRunTutorial) {
   TutorialService service(&registry, bubble_factory_registry.get());
 
   // build elements and keep them for triggering show/hide
-  ui::test::TestElement element(kTestIdentifier1, kTestContext1);
-  element.Show();
+  ui::test::TestElement element_1(kTestIdentifier1, kTestContext1);
+  element_1.Show();
 
-  Tutorial::Builder builder;
-  builder.SetCompletedCallback(completed.Get());
-  builder.SetAbortedCallback(aborted.Get());
-  builder.SetContext(element.context());
-  builder.AddStep(Tutorial::StepBuilder()
-                      .SetStepType(ui::InteractionSequence::StepType::kShown)
-                      .SetAnchorElementID(element.identifier())
-                      .SetNameElementsCallback(base::BindLambdaForTesting(
-                          [](ui::InteractionSequence* sequence,
-                             ui::TrackedElement* element) {
-                            sequence->NameElement(element, kElementName);
-                            return true;
-                          }))
-                      .SetArrow(HelpBubbleArrow::kTopCenter)
-                      .SetBodyTextID(IDS_TUTORIAL_TAB_GROUP_ADD_TAB_TO_GROUP)
-                      .SetProgress(std::make_pair(0, 2))
-                      .Build(&service));
-  builder.AddStep(
-      Tutorial::StepBuilder()
-          .SetStepType(ui::InteractionSequence::StepType::kActivated)
-          .SetAnchorElementName(kElementName)
-          .SetArrow(HelpBubbleArrow::kLeftCenter)
-          .SetProgress(std::make_pair(1, 2))
-          .Build(&service));
+  // Build the tutorial Description
+  TutorialDescription description;
+  description.steps.emplace_back(TutorialDescription::Step(
+      IDS_TUTORIAL_TAB_GROUP_ADD_TAB_TO_GROUP,
+      IDS_TUTORIAL_TAB_GROUP_ADD_TAB_TO_GROUP,
+      ui::InteractionSequence::StepType::kShown, kTestIdentifier1,
+      std::string(), HelpBubbleArrow::kNone, ui::CustomElementEventType(),
+      /* must_remain_visible =*/true,
+      /* transition_only_on_event =*/false,
+      base::BindLambdaForTesting(
+          [](ui::InteractionSequence* sequence, ui::TrackedElement* element) {
+            sequence->NameElement(element, base::StringPiece(kElementName));
+            return true;
+          })));
+  description.steps.emplace_back(TutorialDescription::Step(
+      IDS_TUTORIAL_TAB_GROUP_SUCCESS_TITLE,
+      IDS_TUTORIAL_TAB_GROUP_SUCCESS_DESCRIPTION,
+      ui::InteractionSequence::StepType::kShown, ui::ElementIdentifier(),
+      kElementName, HelpBubbleArrow::kNone));
+  registry.AddTutorial(kTestTutorial1, std::move(description));
 
-  auto tutorial = builder.Build();
+  service.StartTutorial(kTestTutorial1, element_1.context(), completed.Get());
 
-  tutorial->Start();
-  EXPECT_CALL_IN_SCOPE(completed, Run, element.Activate());
+  EXPECT_CALL_IN_SCOPE(completed, Run,
+                       ClickCloseButton(service.currently_displayed_bubble()));
+}
+
+TEST_F(TutorialTest, SingleStepRestartTutorial) {
+  UNCALLED_MOCK_CALLBACK(TutorialService::CompletedCallback, completed);
+
+  const auto bubble_factory_registry =
+      CreateTestTutorialBubbleFactoryRegistry();
+  TutorialRegistry registry;
+  TutorialService service(&registry, bubble_factory_registry.get());
+
+  // build elements and keep them for triggering show/hide
+  ui::test::TestElement element_1(kTestIdentifier1, kTestContext1);
+  element_1.Show();
+
+  // Build the tutorial Description
+  TutorialDescription description;
+  description.steps.emplace_back(
+      TutorialDescription::Step(IDS_TUTORIAL_TAB_GROUP_ADD_TAB_TO_GROUP,
+                                IDS_TUTORIAL_TAB_GROUP_ADD_TAB_TO_GROUP,
+                                ui::InteractionSequence::StepType::kShown,
+                                kTestIdentifier1, "", HelpBubbleArrow::kNone));
+  registry.AddTutorial(kTestTutorial1, std::move(description));
+
+  service.StartTutorial(kTestTutorial1, element_1.context(), completed.Get());
+
+  ClickRestartButton(service.currently_displayed_bubble());
+
+  EXPECT_CALL_IN_SCOPE(completed, Run,
+                       ClickCloseButton(service.currently_displayed_bubble()));
+}
+
+// Starts a tutorial with 3 steps, completes steps, then clicks restart tutorial
+// then completes the tutorial again and closes it from the close button.
+// Expects to call the completed callback.
+TEST_F(TutorialTest, MultiStepRestartTutorialWithCloseOnComplete) {
+  UNCALLED_MOCK_CALLBACK(TutorialService::CompletedCallback, completed);
+
+  const auto bubble_factory_registry =
+      CreateTestTutorialBubbleFactoryRegistry();
+  TutorialRegistry registry;
+  TutorialService service(&registry, bubble_factory_registry.get());
+
+  // build elements and keep them for triggering show/hide
+  ui::test::TestElement element_1(kTestIdentifier1, kTestContext1);
+  ui::test::TestElement element_2(kTestIdentifier2, kTestContext1);
+  ui::test::TestElement element_3(kTestIdentifier3, kTestContext1);
+
+  element_1.Show();
+
+  // Build the tutorial Description
+  TutorialDescription description;
+  description.steps.emplace_back(
+      TutorialDescription::Step(IDS_TUTORIAL_TAB_GROUP_ADD_TAB_TO_GROUP,
+                                IDS_TUTORIAL_TAB_GROUP_ADD_TAB_TO_GROUP,
+                                ui::InteractionSequence::StepType::kShown,
+                                kTestIdentifier1, "", HelpBubbleArrow::kNone));
+  description.steps.emplace_back(
+      TutorialDescription::Step(IDS_TUTORIAL_TAB_GROUP_ADD_TAB_TO_GROUP,
+                                IDS_TUTORIAL_TAB_GROUP_ADD_TAB_TO_GROUP,
+                                ui::InteractionSequence::StepType::kShown,
+                                kTestIdentifier2, "", HelpBubbleArrow::kNone));
+  description.steps.emplace_back(
+      TutorialDescription::Step(IDS_TUTORIAL_TAB_GROUP_ADD_TAB_TO_GROUP,
+                                IDS_TUTORIAL_TAB_GROUP_ADD_TAB_TO_GROUP,
+                                ui::InteractionSequence::StepType::kShown,
+                                kTestIdentifier3, "", HelpBubbleArrow::kNone));
+  registry.AddTutorial(kTestTutorial1, std::move(description));
+
+  service.StartTutorial(kTestTutorial1, element_1.context(), completed.Get());
+  element_2.Show();
+  element_3.Show();
+
+  element_2.Hide();
+
+  ClickRestartButton(service.currently_displayed_bubble());
+
+  EXPECT_TRUE(service.IsRunningTutorial());
+  element_2.Show();
+
+  EXPECT_CALL_IN_SCOPE(completed, Run,
+                       ClickCloseButton(service.currently_displayed_bubble()));
+}
+
+// Starts a tutorial with 3 steps, completes steps, then clicks restart tutorial
+// then closes the tutorial on the first step. Expects to call the completed
+// callback.
+TEST_F(TutorialTest, MultiStepRestartTutorialWithDismissAfterRestart) {
+  UNCALLED_MOCK_CALLBACK(TutorialService::CompletedCallback, completed);
+
+  const auto bubble_factory_registry =
+      CreateTestTutorialBubbleFactoryRegistry();
+  TutorialRegistry registry;
+  TutorialService service(&registry, bubble_factory_registry.get());
+
+  // build elements and keep them for triggering show/hide
+  ui::test::TestElement element_1(kTestIdentifier1, kTestContext1);
+  ui::test::TestElement element_2(kTestIdentifier2, kTestContext1);
+  ui::test::TestElement element_3(kTestIdentifier3, kTestContext1);
+
+  element_1.Show();
+
+  // Build the tutorial Description
+  TutorialDescription description;
+  description.steps.emplace_back(
+      TutorialDescription::Step(IDS_TUTORIAL_TAB_GROUP_ADD_TAB_TO_GROUP,
+                                IDS_TUTORIAL_TAB_GROUP_ADD_TAB_TO_GROUP,
+                                ui::InteractionSequence::StepType::kShown,
+                                kTestIdentifier1, "", HelpBubbleArrow::kNone));
+  description.steps.emplace_back(
+      TutorialDescription::Step(IDS_TUTORIAL_TAB_GROUP_ADD_TAB_TO_GROUP,
+                                IDS_TUTORIAL_TAB_GROUP_ADD_TAB_TO_GROUP,
+                                ui::InteractionSequence::StepType::kShown,
+                                kTestIdentifier2, "", HelpBubbleArrow::kNone));
+  description.steps.emplace_back(
+      TutorialDescription::Step(IDS_TUTORIAL_TAB_GROUP_ADD_TAB_TO_GROUP,
+                                IDS_TUTORIAL_TAB_GROUP_ADD_TAB_TO_GROUP,
+                                ui::InteractionSequence::StepType::kShown,
+                                kTestIdentifier3, "", HelpBubbleArrow::kNone));
+  registry.AddTutorial(kTestTutorial1, std::move(description));
+
+  service.StartTutorial(kTestTutorial1, element_1.context(), completed.Get());
+  element_2.Show();
+  element_3.Show();
+
+  element_2.Hide();
+
+  ClickRestartButton(service.currently_displayed_bubble());
+
+  EXPECT_TRUE(service.IsRunningTutorial());
+  EXPECT_TRUE(service.currently_displayed_bubble() != nullptr);
+
+  EXPECT_CALL_IN_SCOPE(
+      completed, Run, ClickDismissButton(service.currently_displayed_bubble()));
 }

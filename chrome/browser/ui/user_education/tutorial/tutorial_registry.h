@@ -28,13 +28,9 @@ class TutorialRegistry {
   // If RegisterTutorials has not been called this returns an empty vector.
   const std::vector<TutorialIdentifier> GetTutorialIdentifiers();
 
-  // Constructs the tutorial from the TutorialDescription at a given ID.
-  // If no TutorialIdentifier can be found that matches the ID, a nullptr
-  // is returned. The TutorialService is passed in order to allow Tutorials
-  // to be constructed with access to the BubbleOwnerRegistry.
-  std::unique_ptr<Tutorial> CreateTutorial(TutorialIdentifier id,
-                                           TutorialService* tutorial_service,
-                                           ui::ElementContext context);
+  // Gets the TutorialDescription from the registry. Returns nullptr if
+  // there is no registered tutorial under the given ID.
+  TutorialDescription* GetTutorialDescription(TutorialIdentifier id);
 
   // Adds a TutorialID, TutorialDescription pair to the registry. This should
   // be used by the RegisterTutorials method to Add Tutorials.

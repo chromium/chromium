@@ -19,6 +19,8 @@ class TrackedElement;
 
 class TestHelpBubble : public HelpBubble {
  public:
+  static constexpr int kNoButtonWithTextIndex = -1;
+
   TestHelpBubble(ui::ElementContext context, HelpBubbleParams params);
   ~TestHelpBubble() override;
 
@@ -35,6 +37,10 @@ class TestHelpBubble : public HelpBubble {
   // Simualtes the user pressing one of the bubble buttons.
   void SimulateButtonPress(int button_index);
 
+  // Provides the index of a button with a given string value as its text
+  // property. If one does not exist, returns -1.
+  int GetIndexOfButtonWithText(std::u16string text);
+
   // Get the number of times this bubble has has ToggleFocusForAccessibility()
   // called.
   int focus_count() const { return focus_count_; }
@@ -49,6 +55,8 @@ class TestHelpBubble : public HelpBubble {
   ui::ElementContext context_;
   HelpBubbleParams params_;
   int focus_count_ = 0;
+
+  base::WeakPtrFactory<TestHelpBubble> weak_ptr_factory_{this};
 };
 
 class TestHelpBubbleFactory : public HelpBubbleFactory {

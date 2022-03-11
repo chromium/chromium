@@ -13,6 +13,7 @@
 #include "chrome/browser/ui/user_education/help_bubble_params.h"
 #include "chrome/browser/ui/user_education/tutorial/tutorial_description.h"
 #include "chrome/browser/ui/user_education/tutorial/tutorial_service.h"
+#include "chrome/grit/generated_resources.h"
 #include "components/vector_icons/vector_icons.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/interaction/element_identifier.h"
@@ -183,22 +184,48 @@ Tutorial::StepBuilder::BuildMaybeShowBubbleCallback(
 
         tutorial_service->HideCurrentBubbleIfShowing();
 
-        base::RepeatingClosure abort_callback = base::BindRepeating(
-            [](TutorialService* tutorial_service) {
-              tutorial_service->AbortTutorial();
-            },
-            base::Unretained(tutorial_service));
-
         HelpBubbleParams params;
         params.title_text = title_text_;
         params.body_text = body_text_;
         params.tutorial_progress = progress_;
         params.arrow = arrow_;
-        if (!is_last_step_) {
-          params.timeout = base::TimeDelta();
-          params.dismiss_callback = abort_callback;
-        } else {
+        params.timeout = base::TimeDelta();
+        params.dismiss_callback = base::BindOnce(
+            [](TutorialService* tutorial_service) {
+              tutorial_service->AbortTutorial();
+            },
+            base::Unretained(tutorial_service));
+
+        if (is_last_step_) {
           params.body_icon = &vector_icons::kCelebrationIcon;
+          params.dismiss_callback = base::BindOnce(
+              [](TutorialService* tutorial_service) {
+                tutorial_service->CompleteTutorial();
+              },
+              base::Unretained(tutorial_service));
+
+          HelpBubbleButtonParams restart_button;
+          restart_button.text =
+              l10n_util::GetStringUTF16(IDS_TUTORIAL_RESTART_TUTORIAL);
+          restart_button.is_default = false;
+          restart_button.callback = base::BindOnce(
+              [](TutorialService* tutorial_service) {
+                tutorial_service->RestartTutorial();
+              },
+              base::Unretained(tutorial_service));
+
+          HelpBubbleButtonParams close_button;
+          close_button.text =
+              l10n_util::GetStringUTF16(IDS_TUTORIAL_CLOSE_TUTORIAL);
+          close_button.is_default = true;
+          close_button.callback = base::BindOnce(
+              [](TutorialService* tutorial_service) {
+                tutorial_service->CompleteTutorial();
+              },
+              base::Unretained(tutorial_service));
+
+          params.buttons.emplace_back(std::move(restart_button));
+          params.buttons.emplace_back(std::move(close_button));
         }
 
         std::unique_ptr<HelpBubble> bubble =
@@ -251,27 +278,13 @@ std::unique_ptr<Tutorial> Tutorial::Builder::BuildFromDescription(
   DCHECK_EQ(current_step, max_progress);
 
   builder.SetAbortedCallback(base::BindOnce(
-      [](TutorialService* tutorial_service, TutorialHistograms* histograms,
-         ui::TrackedElement* last_element, ui::ElementIdentifier last_id,
+      [](TutorialService* tutorial_service, ui::TrackedElement* last_element,
+         ui::ElementIdentifier last_id,
          ui::InteractionSequence::StepType last_step_type,
          ui::InteractionSequence::AbortedReason aborted_reason) {
         tutorial_service->AbortTutorial();
-        // TODO:(crbug.com/1295165) provide step number information from the
-        // interaction sequence into the abort callback.
-        if (histograms)
-          histograms->RecordComplete(false);
-        UMA_HISTOGRAM_BOOLEAN("Tutorial.Completion", false);
       },
-      tutorial_service, description.histograms.get()));
-
-  builder.SetCompletedCallback(base::BindOnce(
-      [](TutorialService* tutorial_service, TutorialHistograms* histograms) {
-        tutorial_service->CompleteTutorial();
-        if (histograms)
-          histograms->RecordComplete(true);
-        UMA_HISTOGRAM_BOOLEAN("Tutorial.Completion", true);
-      },
-      tutorial_service, description.histograms.get()));
+      tutorial_service));
 
   return builder.Build();
 }

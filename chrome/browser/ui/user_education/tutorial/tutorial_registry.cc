@@ -19,16 +19,13 @@ bool TutorialRegistry::IsTutorialRegistered(TutorialIdentifier id) const {
   return base::Contains(tutorial_registry_, id);
 }
 
-std::unique_ptr<Tutorial> TutorialRegistry::CreateTutorial(
-    TutorialIdentifier id,
-    TutorialService* tutorial_service,
-    ui::ElementContext context) {
+TutorialDescription* TutorialRegistry::GetTutorialDescription(
+    TutorialIdentifier id) {
   DCHECK(tutorial_registry_.size() > 0);
   auto pair = tutorial_registry_.find(id);
   if (pair == tutorial_registry_.end())
     return nullptr;
-  return Tutorial::Builder::BuildFromDescription(pair->second, tutorial_service,
-                                                 context);
+  return &pair->second;
 }
 
 const std::vector<TutorialIdentifier>

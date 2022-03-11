@@ -6860,6 +6860,12 @@ Keep your key file in a safe place. You will need it to create new versions of y
       </message>
 
       <!-- User Education Tutorial Strings -->
+      <message name="IDS_TUTORIAL_RESTART_TUTORIAL" desc="The text shown on the button for restarting a tutorial">
+        Restart tutorial
+      </message>
+      <message name="IDS_TUTORIAL_CLOSE_TUTORIAL" desc="The text shown on the button for closing a tutorial">
+        Close
+      </message>
       <message name="IDS_TUTORIAL_TAB_GROUP_ADD_TAB_TO_GROUP" desc="The description of the add tab step in the tab group tutorial">
         Right-Click on a Tab and select "Add Tab To New Group"
       </message>

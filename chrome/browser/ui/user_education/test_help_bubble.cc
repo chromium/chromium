@@ -4,12 +4,16 @@
 
 #include "chrome/browser/ui/user_education/test_help_bubble.h"
 
+#include "base/memory/weak_ptr.h"
 #include "ui/base/interaction/element_test_util.h"
 #include "ui/base/interaction/element_tracker.h"
 #include "ui/base/interaction/framework_specific_implementation.h"
 
 DEFINE_FRAMEWORK_SPECIFIC_METADATA(TestHelpBubble)
 DEFINE_FRAMEWORK_SPECIFIC_METADATA(TestHelpBubbleFactory)
+
+// static
+constexpr int TestHelpBubble::kNoButtonWithTextIndex;
 
 TestHelpBubble::TestHelpBubble(ui::ElementContext context,
                                HelpBubbleParams params)
@@ -28,21 +32,38 @@ bool TestHelpBubble::ToggleFocusForAccessibility() {
 
 // Simulates the user dismissing the bubble.
 void TestHelpBubble::SimulateDismiss() {
+  auto weak_ptr = weak_ptr_factory_.GetWeakPtr();
   std::move(params_.dismiss_callback).Run();
-  Close();
+  if (weak_ptr)
+    weak_ptr->Close();
 }
 
 // Simulates the bubble timing out.
 void TestHelpBubble::SimulateTimeout() {
+  auto weak_ptr = weak_ptr_factory_.GetWeakPtr();
   std::move(params_.timeout_callback).Run();
-  Close();
+  if (weak_ptr)
+    weak_ptr->Close();
 }
 
 // Simualtes the user pressing one of the bubble buttons.
 void TestHelpBubble::SimulateButtonPress(int button_index) {
   CHECK_LT(button_index, static_cast<int>(params_.buttons.size()));
+  auto weak_ptr = weak_ptr_factory_.GetWeakPtr();
   std::move(params_.buttons[button_index].callback).Run();
-  Close();
+  if (weak_ptr)
+    weak_ptr->Close();
+}
+
+// Provides the index of a button with a given string value as its text
+// property. If one does not exist, returns -1.
+int TestHelpBubble::GetIndexOfButtonWithText(std::u16string text) {
+  for (size_t i = 0; i < params_.buttons.size(); i++) {
+    if (params_.buttons[i].text == text) {
+      return static_cast<int>(i);
+    }
+  }
+  return kNoButtonWithTextIndex;
 }
 
 void TestHelpBubble::CloseBubbleImpl() {
