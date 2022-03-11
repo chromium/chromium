@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/policy/messaging_layer/upload/upload_client.h"
+#include "chrome/browser/policy/messaging_layer/upload/test_util.h"
 
 #include <tuple>
 
@@ -10,6 +11,7 @@
 #include "base/bind.h"
 #include "base/files/file_path.h"
 #include "base/json/json_writer.h"
+#include "base/strings/stringprintf.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_mock_time_task_runner.h"
 #include "base/values.h"
@@ -197,7 +199,38 @@ TEST_P(UploadClientTest, CreateUploadClientAndUploadRecords) {
       policy::DMToken::CreateValidTokenForTesting("FAKE_DM_TOKEN").value());
 
   const bool force_confirm_flag = force_confirm();
-  EXPECT_CALL(*client, UploadEncryptedReport(_, _, _))
+  static constexpr char matched_record_template[] =
+      R"JSON(
+{
+  "sequenceInformation": {
+    "generationId": "1234",
+    "priority": 1,
+    "sequencingId": "%d"
+  }
+}
+)JSON";
+  EXPECT_CALL(*client, UploadEncryptedReport(
+                           AllOf(DoesRequestContainRecord(base::StringPrintf(
+                                     matched_record_template, 0)),
+                                 DoesRequestContainRecord(base::StringPrintf(
+                                     matched_record_template, 1)),
+                                 DoesRequestContainRecord(base::StringPrintf(
+                                     matched_record_template, 2)),
+                                 DoesRequestContainRecord(base::StringPrintf(
+                                     matched_record_template, 3)),
+                                 DoesRequestContainRecord(base::StringPrintf(
+                                     matched_record_template, 4)),
+                                 DoesRequestContainRecord(base::StringPrintf(
+                                     matched_record_template, 5)),
+                                 DoesRequestContainRecord(base::StringPrintf(
+                                     matched_record_template, 6)),
+                                 DoesRequestContainRecord(base::StringPrintf(
+                                     matched_record_template, 7)),
+                                 DoesRequestContainRecord(base::StringPrintf(
+                                     matched_record_template, 8)),
+                                 DoesRequestContainRecord(base::StringPrintf(
+                                     matched_record_template, 9))),
+                           _, _))
       .WillOnce(WithArgs<0, 2>(
           Invoke([&force_confirm_flag](
                      base::Value::Dict request,
@@ -226,10 +259,10 @@ TEST_P(UploadClientTest, CreateUploadClientAndUploadRecords) {
       encryption_key_attached_cb);
   EXPECT_TRUE(enqueue_result.ok());
 
-  auto upload_succes_result = upload_success.result();
-  EXPECT_THAT(std::get<0>(upload_succes_result),
+  auto upload_success_result = upload_success.result();
+  EXPECT_THAT(std::get<0>(upload_success_result),
               EqualsProto(last_record_seq_info));
-  EXPECT_THAT(std::get<1>(upload_succes_result), Eq(force_confirm()));
+  EXPECT_THAT(std::get<1>(upload_success_result), Eq(force_confirm()));
 }
 
 INSTANTIATE_TEST_SUITE_P(
