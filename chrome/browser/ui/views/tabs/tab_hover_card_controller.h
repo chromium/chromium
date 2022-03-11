@@ -9,6 +9,7 @@
 
 #include "base/callback_list.h"
 #include "base/gtest_prod_util.h"
+#include "base/memory/memory_pressure_listener.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
@@ -108,6 +109,9 @@ class TabHoverCardController : public views::ViewObserver,
   void OnPreviewImageAvaialble(TabHoverCardThumbnailObserver* observer,
                                gfx::ImageSkia thumbnail_image);
 
+  void OnMemoryPressureChanged(
+      base::MemoryPressureListener::MemoryPressureLevel memory_pressure_level);
+
   TabHoverCardMetrics* metrics_for_testing() const { return metrics_.get(); }
 
   bool waiting_for_preview() const {
@@ -145,6 +149,12 @@ class TabHoverCardController : public views::ViewObserver,
   base::CallbackListSubscription fade_complete_subscription_;
   base::CallbackListSubscription slide_progressed_subscription_;
   base::CallbackListSubscription slide_complete_subscription_;
+
+  // Track memory pressure on the system. We'll delay or stop requesting
+  // previews if memory pressure gets too high.
+  base::MemoryPressureListener::MemoryPressureLevel memory_pressure_level_ =
+      base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_NONE;
+  std::unique_ptr<base::MemoryPressureListener> memory_pressure_listener_;
 
   // Ensure that this timer is destroyed before anything else is cleaned up.
   base::OneShotTimer delayed_show_timer_;

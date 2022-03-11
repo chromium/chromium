@@ -6,7 +6,9 @@
 
 #include "base/bind.h"
 #include "base/callback_list.h"
+#include "base/command_line.h"
 #include "base/feature_list.h"
+#include "base/memory/memory_pressure_listener.h"
 #include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
@@ -32,6 +34,36 @@
 #include "ui/views/widget/widget_observer.h"
 
 namespace {
+
+constexpr base::TimeDelta kMemoryPressureCaptureDelay = base::Milliseconds(500);
+
+// Provides the ability to simulate memory pressure other than the current
+// pressure on the system for testing purposes via an [undocumented]
+// command-line switch.
+absl::optional<base::MemoryPressureListener::MemoryPressureLevel>
+GetMemoryPressureOverride() {
+  constexpr char kHoverCardMemoryPressureSwitch[] =
+      "hover-card-memory-pressure";
+
+  absl::optional<base::MemoryPressureListener::MemoryPressureLevel> value;
+  const base::CommandLine* const command_line =
+      base::CommandLine::ForCurrentProcess();
+  if (command_line->HasSwitch(kHoverCardMemoryPressureSwitch)) {
+    auto arg =
+        command_line->GetSwitchValueASCII(kHoverCardMemoryPressureSwitch);
+    if (arg == "none") {
+      value = base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_NONE;
+    } else if (arg == "moderate") {
+      value = base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_MODERATE;
+    } else if (arg == "critical") {
+      value = base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_CRITICAL;
+    } else {
+      NOTREACHED() << "Usage: --hover-card-memory-pressure=<value>"
+                      " where <value> is one of [ none | moderate | critical ]";
+    }
+  }
+  return value;
+}
 
 // Fetches the Omnibox drop-down widget, or returns null if the drop-down is
 // not visible.
@@ -182,7 +214,18 @@ bool TabHoverCardController::disable_animations_for_testing_ = false;
 
 TabHoverCardController::TabHoverCardController(TabStrip* tab_strip)
     : tab_strip_(tab_strip),
-      metrics_(std::make_unique<TabHoverCardMetrics>(this)) {}
+      metrics_(std::make_unique<TabHoverCardMetrics>(this)) {
+  // Possibly apply memory pressure override for testing.
+  auto override = GetMemoryPressureOverride();
+  if (override) {
+    memory_pressure_level_ = override.value();
+  } else {
+    memory_pressure_listener_ = std::make_unique<base::MemoryPressureListener>(
+        FROM_HERE,
+        base::BindRepeating(&TabHoverCardController::OnMemoryPressureChanged,
+                            base::Unretained(this)));
+  }
+}
 
 TabHoverCardController::~TabHoverCardController() = default;
 
@@ -485,7 +528,11 @@ void TabHoverCardController::MaybeStartThumbnailObservation(
   if (thumbnail == thumbnail_observer_->current_image())
     return;
 
-  // We're definitely going to wait for an image at some point.
+  // We're probably going ask for a preview image, so figure out whether we
+  // want to capture now, later, or at all, and whether to show a placeholder
+  // in the meantime.
+
+  // The crossfade parameter determines when a placeholder image is displayed.
   const auto crossfade_at =
       TabHoverCardBubbleView::GetPreviewImageCrossfadeStart();
   if (crossfade_at.has_value() && crossfade_at.value() == 0.0) {
@@ -494,28 +541,54 @@ void TabHoverCardController::MaybeStartThumbnailObservation(
   } else {
     thumbnail_wait_state_ = ThumbnailWaitState::kWaitingWithoutPlaceholder;
   }
+
   // For the first show there has already been a delay, so it's fine to ask for
   // the image immediately; same is true if we already have a thumbnail.
-  //  Otherwise the delay is based on the capture readiness.
-  const base::TimeDelta capture_delay =
+  // Otherwise the delay is based on the capture readiness.
+  base::TimeDelta capture_delay =
       is_initial_show || thumbnail->has_data()
           ? base::TimeDelta()
           : GetPreviewImageCaptureDelay(thumbnail->GetCaptureReadiness());
+
+  // Under memory pressure, we will additionally delay the initial capture, so
+  // that generating the image is a more deliberate choice from the user.
+  switch (memory_pressure_level_) {
+    case base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_CRITICAL:
+      capture_delay = base::TimeDelta::Max();
+      break;
+    case base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_MODERATE:
+      capture_delay += kMemoryPressureCaptureDelay;
+      break;
+    case base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_NONE:
+      break;
+  }
+
   if (capture_delay.is_zero()) {
     thumbnail_observer_->Observe(thumbnail);
-  } else if (!delayed_show_timer_.IsRunning()) {
-    // Stop updating the preview image unless/until we re-enable capture.
-    thumbnail_observer_->Observe(nullptr);
-    if (thumbnail_wait_state_ ==
-        ThumbnailWaitState::kWaitingWithoutPlaceholder) {
-      hover_card_->SetPlaceholderImage();
-      thumbnail_wait_state_ = ThumbnailWaitState::kWaitingWithPlaceholder;
-    }
-    delayed_show_timer_.Start(
-        FROM_HERE, capture_delay,
-        base::BindOnce(&TabHoverCardController::StartThumbnailObservation,
-                       base::Unretained(this), tab));
+    return;
   }
+
+  // If we've already waiting on this tab, we're done.
+  if (delayed_show_timer_.IsRunning())
+    return;
+
+  // Stop updating the preview image unless/until we re-enable capture.
+  thumbnail_observer_->Observe(nullptr);
+  if (thumbnail_wait_state_ == ThumbnailWaitState::kWaitingWithoutPlaceholder) {
+    hover_card_->SetPlaceholderImage();
+    thumbnail_wait_state_ = ThumbnailWaitState::kWaitingWithPlaceholder;
+  }
+
+  // If we've elected to put off capture indefinitely (likely due to memory
+  // pressure), there's no additional work to do.
+  if (capture_delay.is_inf())
+    return;
+
+  // Start a delayed capture.
+  delayed_show_timer_.Start(
+      FROM_HERE, capture_delay,
+      base::BindOnce(&TabHoverCardController::StartThumbnailObservation,
+                     base::Unretained(this), tab));
 }
 
 void TabHoverCardController::StartThumbnailObservation(Tab* tab) {
@@ -525,6 +598,19 @@ void TabHoverCardController::StartThumbnailObservation(Tab* tab) {
   DCHECK(tab);
   DCHECK(hover_card_);
   DCHECK(waiting_for_preview());
+
+  // Do not capture thumbnails during critical memory pressure.
+  if (memory_pressure_level_ ==
+      base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_CRITICAL) {
+    // Because we're blocked, we'll show a placeholder instead of nothing or
+    // the wrong image.
+    if (thumbnail_wait_state_ ==
+        ThumbnailWaitState::kWaitingWithoutPlaceholder) {
+      hover_card_->SetPlaceholderImage();
+      thumbnail_wait_state_ = ThumbnailWaitState::kWaitingWithPlaceholder;
+    }
+    return;
+  }
 
   auto thumbnail = tab->data().thumbnail;
   if (!thumbnail || thumbnail == thumbnail_observer_->current_image())
@@ -643,4 +729,26 @@ void TabHoverCardController::OnPreviewImageAvaialble(
   // Can still set image on a fading-out hover card (we can change this behavior
   // later if we want).
   hover_card_->SetTargetTabImage(thumbnail_image);
+}
+
+void TabHoverCardController::OnMemoryPressureChanged(
+    base::MemoryPressureListener::MemoryPressureLevel memory_pressure_level) {
+  memory_pressure_level_ = memory_pressure_level;
+
+  // The following code is about stopping or restarting thumbnail capture due
+  // to memory pressure so if there's no capture there's no reason to continue.
+  if (!thumbnail_observer_)
+    return;
+
+  if (memory_pressure_level ==
+      base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_CRITICAL) {
+    // If we're at critical memory pressure, abandon any current effort to
+    // capture thumbnails.
+    thumbnail_observer_->Observe(nullptr);
+  }
+
+  // TODO(dfried): consider restarting capture for the current hover card if
+  // memory pressure drops back to zero; however, the user is unlikely to be
+  // hovering a card through an entire CRITICAL -> NORMAL transition so as a
+  // simplification we simply don't care.
 }
