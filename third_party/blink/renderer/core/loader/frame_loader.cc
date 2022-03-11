@@ -1347,8 +1347,10 @@ String FrameLoader::ApplyUserAgentOverrideAndLog(
           UserAgentOverrideSubstring;
     }
 
-    document_loader_->GetUseCounter().CountUserAgentOverride(histogram,
-                                                             frame_.Get());
+    if (document_loader_) {
+      document_loader_->GetUseCounter().CountUserAgentOverride(histogram,
+                                                               frame_.Get());
+    }
   }
 
   return user_agent_override;
