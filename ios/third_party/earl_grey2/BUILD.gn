@@ -426,7 +426,7 @@ ios_framework_bundle("app_framework") {
 
   public_deps = [ ":app_framework_shared_headers" ]
 
-  public_headers = [ "src/AppFramework/EarlGreyApp/EarlGreyApp.h" ]
+  public_headers = [ "src/AppFramework/EarlGreyApp.h" ]
 
   frameworks = [
     "CoreData.framework",
