@@ -18,6 +18,7 @@
 #include "remoting/protocol/video_channel_state_observer.h"
 #include "remoting/protocol/video_stream.h"
 #include "remoting/protocol/webrtc_video_track_source.h"
+#include "third_party/webrtc/api/rtp_transceiver_interface.h"
 #include "third_party/webrtc/api/scoped_refptr.h"
 #include "third_party/webrtc/api/video_codecs/sdp_video_format.h"
 #include "third_party/webrtc/modules/desktop_capture/desktop_capturer.h"
@@ -94,6 +95,9 @@ class WebrtcVideoStream : public VideoStream,
 
   // Used to send captured frames to the encoder.
   rtc::scoped_refptr<WebrtcVideoTrackSource> video_track_source_;
+
+  // The transceiver created for this video-stream.
+  rtc::scoped_refptr<webrtc::RtpTransceiverInterface> transceiver_;
 
   scoped_refptr<InputEventTimestampsSource> event_timestamps_source_;
 

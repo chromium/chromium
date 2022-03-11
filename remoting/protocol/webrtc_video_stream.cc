@@ -45,6 +45,12 @@ WebrtcVideoStream::WebrtcVideoStream(const std::string& stream_name,
 
 WebrtcVideoStream::~WebrtcVideoStream() {
   DCHECK(thread_checker_.CalledOnValidThread());
+
+  if (peer_connection_ && transceiver_) {
+    // Ignore any error here, as this may return an error if the
+    // peer-connection has been closed.
+    peer_connection_->RemoveTrackOrError(transceiver_->sender());
+  }
 }
 
 void WebrtcVideoStream::Start(
@@ -77,10 +83,9 @@ void WebrtcVideoStream::Start(
 
   // value() DCHECKs if AddTransceiver() fails, which only happens if a track
   // was already added with the stream label.
-  auto transceiver =
-      peer_connection_->AddTransceiver(video_track, init).value();
+  transceiver_ = peer_connection_->AddTransceiver(video_track, init).value();
 
-  webrtc_transport->OnVideoTransceiverCreated(transceiver);
+  webrtc_transport->OnVideoTransceiverCreated(transceiver_);
 
   video_encoder_factory->SetVideoChannelStateObserver(
       weak_factory_.GetWeakPtr());
