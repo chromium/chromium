@@ -556,7 +556,7 @@ void AppListBubbleView::Layout() {
 
 void AppListBubbleView::QueryChanged(SearchBoxViewBase* sender) {
   DCHECK_EQ(sender, search_box_view_);
-  if (search_box_view_->HasValidQuery())
+  if (search_box_view_->HasSearch())
     ShowPage(AppListBubblePage::kSearch);
   else
     ShowPage(AppListBubblePage::kApps);

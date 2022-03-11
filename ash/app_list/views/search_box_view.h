@@ -146,9 +146,6 @@ class ASH_EXPORT SearchBoxView : public SearchBoxViewBase,
   // Update search box view background when result container visibility changes.
   void OnResultContainerVisibilityChanged(bool visible);
 
-  // Whether the search box has a non-empty, non-whitespace query.
-  bool HasValidQuery();
-
  private:
   // Updates the text field text color.
   void UpdateTextColor();
