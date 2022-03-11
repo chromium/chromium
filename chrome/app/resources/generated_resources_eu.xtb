@@ -2150,7 +2150,7 @@ Txartel adimenduna sartuta edukitzea eskatzen du <ph name="DOMAIN" /> domeinuak.
 <translation id="3162899666601560689">Webguneek cookieak erabil ditzakete arakatze-zerbitzua hobetzeko; adibidez, saioa hasita mantentzeko edo erosketa-saskiko produktuak gogoratzeko.</translation>
 <translation id="3163201441334626963"><ph name="VENDOR_ID" /> saltzailearen <ph name="PRODUCT_ID" /> produktu ezezaguna</translation>
 <translation id="3163254451837720982">Zerbitzu hauekin, zure datuak babesten eta seguru mantentzen dira. Edonoiz desaktiba ditzakezu.</translation>
-<translation id="3163511056918491211">Leheneratu datuak erraz edo aldatu gailuz edozein unetan. Babeskopiak Google-ra kargatzen dira, eta Google-ko kontuaren pasahitza erabilita enkriptatzen.</translation>
+<translation id="3163511056918491211">Leheneratu datuak erraz edo aldatu gailuz edozein unetan. Babeskopiak Google-ra kargatzen dira, eta Google-ko kontuko pasahitza erabilita enkriptatzen.</translation>
 <translation id="3164329792803560526">Fitxa hau <ph name="APP_NAME" /> aplikazioarekin dago partekatuta</translation>
 <translation id="3165390001037658081">Operadore batzuek blokeatuta izan dezakete eginbide hau.</translation>
 <translation id="316652501498554287">G Suite for Education-eko kontuak</translation>
@@ -3309,7 +3309,7 @@ Txartel adimenduna sartuta edukitzea eskatzen du <ph name="DOMAIN" /> domeinuak.
 <translation id="4400632832271803360">Goiko errenkadako teklen portaera aldatzeko, eduki sakatuta Abiarazlea tekla</translation>
 <translation id="4400963414856942668">Fitxen laster-markak egiteko, egin klik izarrean</translation>
 <translation id="4402755511846832236">Ez utzi jakiten webguneei gailua noiz erabiltzen ari zaren</translation>
-<translation id="4403266582403435904">Leheneratu datuak erraz edo aldatu gailuz edozein unetan. Babeskopiak Google-ra kargatzen dira eta enkriptatu egiten dira haurraren Google-ko kontuaren pasahitza erabilita.</translation>
+<translation id="4403266582403435904">Leheneratu datuak erraz edo aldatu gailuz edozein unetan. Babeskopiak Google-ra kargatzen dira eta enkriptatu egiten dira haurraren Google-ko kontuko pasahitza erabilita.</translation>
 <translation id="4403775189117163360">Aukeratu beste karpeta bat</translation>
 <translation id="4404136731284211429">Aztertu berriro</translation>
 <translation id="4404843640767531781">Guraso batek <ph name="APP_NAME" /> blokeatu du. Eska iezaiozu baimena aplikazioa erabiltzeko.</translation>
@@ -3613,7 +3613,7 @@ Haurrak ikastetxean ez badu Chromebook-ik erabiltzen, edo nahiago baduzu etxean 
 <translation id="4711638718396952945">Berrezarri ezarpenak</translation>
 <translation id="4716483597559580346">Segurtasun handiagoa izateko, berrezarri fabrikako ezarpenak Powerwash bidez</translation>
 <translation id="471880041731876836">Ez daukazu webgunean sartzeko baimenik</translation>
-<translation id="4722735765955348426"><ph name="USERNAME" /> kontuaren pasahitza</translation>
+<translation id="4722735765955348426"><ph name="USERNAME" /> kontuko pasahitza</translation>
 <translation id="4722920479021006856"><ph name="APP_NAME" /> zure pantaila partekatzen ari da.</translation>
 <translation id="4723140812774948886">Aldatu hurrengoarekin</translation>
 <translation id="4724450788351008910">Bazkidetza aldatu egin da</translation>
@@ -7532,7 +7532,7 @@ Txartel adimenduna sartuta edukitzea eskatzen du <ph name="DOMAIN" /> domeinuak.
 <translation id="8824701697284169214">Gehitu &amp;orria…</translation>
 <translation id="8827125715368568315">Blokeatutako <ph name="PERMISSION" /> eta beste <ph name="COUNT" /></translation>
 <translation id="8827289157496676362">Ainguratu luzapena</translation>
-<translation id="8827752199525959199">Ekintza gehiago. <ph name="USERNAME" /> kontuaren pasahitza <ph name="DOMAIN" /> domeinuan.</translation>
+<translation id="8827752199525959199">Ekintza gehiago. <ph name="USERNAME" /> kontuko pasahitza <ph name="DOMAIN" /> domeinuan.</translation>
 <translation id="882854468542856424">Ez baimendu inongo webguneri inguruko Bluetooth bidezko gailuak bilatzea</translation>
 <translation id="8828933418460119530">DNS izena</translation>
 <translation id="883062543841130884">Ordezkapenak</translation>

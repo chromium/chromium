@@ -346,7 +346,7 @@
 <translation id="3223701887221307104"><ph name="NAME" />, தாவல்</translation>
 <translation id="3223779237381380437">அடிக்கப்பட்ட எழுத்து அல்ல</translation>
 <translation id="3226035351387556942">chk</translation>
-<translation id="3232388865800379423">பாப்-அப் பொத்தான்</translation>
+<translation id="3232388865800379423">பாப் அப் பட்டன்</translation>
 <translation id="3241052487511142956">முந்தையதாக பார்வையிட்ட இணைப்பு</translation>
 <translation id="3241638166094654466">ஒவ்வொரு வரியிலும் உள்ள கலங்கள்:</translation>
 <translation id="3244209481693235975"><ph name="LANGUAGE" />: <ph name="CONTENT" /></translation>
@@ -467,7 +467,7 @@
 <translation id="4053520724192563562">லைம் க்ரீன்</translation>
 <translation id="4054936709456751127">sts</translation>
 <translation id="4058278702844053247">பக்கம் ஏற்றப்படுகிறது</translation>
-<translation id="4065205963140826639">அடுத்துப் பொத்தானைக் கண்டறிய, தேடல் + வலது அம்புக்குறியைப் பயன்படுத்தவும். பின் அதனைக் கிளிக் செய்ய, தேடல் + இடைவெளி விசைகளை அழுத்தவும்.</translation>
+<translation id="4065205963140826639">அடுத்துப் பட்டனைக் கண்டறிய, தேடல் + வலது அம்புக்குறியைப் பயன்படுத்தவும். பின் அதனைக் கிளிக் செய்ய, தேடல் + இடைவெளி விசைகளை அழுத்தவும்.</translation>
 <translation id="4081085052247739398">{COUNT,plural, =1{தலை பெய் குறி}other{# தலை பெய் குறிகள்}}</translation>
 <translation id="409334809956508737">முந்தைய பொருள்</translation>
 <translation id="4099274309791143834">துணைமெனுவுடன்</translation>
@@ -481,7 +481,7 @@
 <translation id="4176463684765177261">முடக்கப்பட்டது</translation>
 <translation id="4187322598335821254">ஒவ்வொரு வரியாகச் செல்ல, மேலே அல்லது கீழே ஸ்வைப் செய்யவும்</translation>
 <translation id="4188530942454211480">முந்தைய வாக்கியம்</translation>
-<translation id="4191918948604314587">பொத்தான்</translation>
+<translation id="4191918948604314587">பட்டன்</translation>
 <translation id="419265409837491189">முந்தைய நெடுவரிசைக்குச் செல்லும்</translation>
 <translation id="4202186506458631436">வலப்புறமாக நகர்த்து</translation>
 <translation id="4204126831294769023">அஸர்</translation>
@@ -584,7 +584,7 @@
 <translation id="4953585991029886728">உரையைத் திருத்து</translation>
 <translation id="4973717656530883744">குறைந்தபட்சம் <ph name="X" /></translation>
 <translation id="4974612477719259470">முந்தைய பட்டன் எதுவும் இல்லை</translation>
-<translation id="4979404613699303341">முந்தைய பொத்தான்</translation>
+<translation id="4979404613699303341">முந்தைய பட்டன்</translation>
 <translation id="4982917827052020884">நீங்கள் வழக்கமாகப் பயன்படுத்தும் சில விசைகளிலிருந்து தொடங்குவோம். தற்போது வாசித்துக் காட்டப்படுவதை நிறுத்த Ctrl விசையைப் பயன்படுத்தலாம். Ctrl விசை, கீபோர்டின் கீழ் இடது மூலையில் இருக்கும். தொடர, Ctrl விசையை அழுத்தவும்.</translation>
 <translation id="4983588134362688868">பக்கத்தின் மேல்பகுதிக்குச் செல்லவும்</translation>
 <translation id="4986606102545753256"><ph name="NAME" />, சாளரம்</translation>
@@ -667,7 +667,7 @@
 <translation id="5534303576632885660">hdr</translation>
 <translation id="5539820223028224601">கெய்ன்ஸ்பரா</translation>
 <translation id="5549179427201066174">ஒலிக் கருத்தை (இயர்கான்கள்) இயக்கும் அல்லது முடக்கும்</translation>
-<translation id="556042886152191864">பொத்தான்</translation>
+<translation id="556042886152191864">பட்டன்</translation>
 <translation id="5561345396546889625">அடுத்த பட்டியல்</translation>
 <translation id="5562645715554321347">hdnggrp</translation>
 <translation id="5574412348552378458">ChromeVox கற்றல் பயன்முறை</translation>
@@ -793,7 +793,7 @@
 <translation id="641759969622533235">{COUNT,plural, =1{முக்காற்புள்ளி}other{# முக்காற்புள்ளிகள்}}</translation>
 <translation id="6444046323172968959">விழிப்பூட்டல் செய்தி</translation>
 <translation id="6452403590345320472">உள்ளடக்க அட்டவணை</translation>
-<translation id="6468049171101508116">அடுத்த பொத்தான்</translation>
+<translation id="6468049171101508116">அடுத்த பட்டன்</translation>
 <translation id="646954774886932461">பொருளடக்கம்</translation>
 <translation id="6475604559827479857">சொல்லைத் தனிப்படுத்திக் காட்டுவதற்கான வண்ணம்:</translation>
 <translation id="6493991254603208962">ஒளிர்வைக் குறைக்கும்</translation>
@@ -885,7 +885,7 @@
 <translation id="7143207342074048698">இணைத்தல்</translation>
 <translation id="7153618581592392745">லாவெண்டர் நிறம்</translation>
 <translation id="7157306005867877619">சுருக்கம்</translation>
-<translation id="7161771961008409533">பாப்-அப் பொத்தான்</translation>
+<translation id="7161771961008409533">பாப்-அப் பட்டன்</translation>
 <translation id="7167657087543110">எழுத்து எதிரொலி</translation>
 <translation id="7173102181852295013">மிட்நைட் புளூ</translation>
 <translation id="7203150201908454328">விரிவாக்கப்பட்டது</translation>
@@ -1076,7 +1076,7 @@
 <translation id="8476508772960940536">சாளரத்தின் மேலோட்டம்</translation>
 <translation id="8480873377842220259">இப்போது சில அடிப்படை வழிசெலுத்தல் பற்றி அறிந்துகொள்வோம். திரையில் எங்கேனும் செல்ல, Search விசையை அழுத்திப் பிடித்துக்கொண்டே அம்புக்குறி விசைகளை அழுத்தலாம். தொடர, Search + வலது அம்புக்குறி விசைகளை அழுத்தவும்.</translation>
 <translation id="8503360654911991865">வழிசெலுத்தும் நுணுக்கத்தைக் குறை</translation>
-<translation id="8520472399088452386">சுழல் பொத்தான்</translation>
+<translation id="8520472399088452386">சுழல் பட்டன்</translation>
 <translation id="8534394844575788431">வடிவமைத்தல்</translation>
 <translation id="8542271685829952264">எல்லா ChromeVox கட்டளைகளையும் குறுக்குவழிகளையும் பார்க்க, தேடு மற்றும் முற்றுப்புள்ளி விசைகளை ஒன்றாக அழுத்தவும். பின்னர், மெனுக்களில் உலாவ, அம்புக்குறி விசைகளைப் பயன்படுத்தவும். கட்டளையை இயக்க, என்டர் விசையை அழுத்தவும். தேடு மற்றும் o விசைகளை அழுத்தி, பின்னர் tயை அழுத்துவதன் மூலம் இங்கே திரும்பவும் வரலாம்.</translation>
 <translation id="8548973727659841685">எழுத்து</translation>
