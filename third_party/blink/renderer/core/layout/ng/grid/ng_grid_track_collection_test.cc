@@ -124,7 +124,7 @@ TEST_F(NGGridTrackCollectionTest, TestNGGridTrackList) {
   EXPECT_TRUE(track_list.AddRepeater(
       CreateTrackSizes(2), NGGridTrackRepeater::RepeatType::kInteger, 4));
   ASSERT_EQ(1u, track_list.RepeaterCount());
-  EXPECT_EQ(8u, track_list.TotalTrackCount());
+  EXPECT_EQ(8u, track_list.TrackCountWithoutAutoRepeat());
   EXPECT_EQ(4u, track_list.RepeatCount(0, 4));
   EXPECT_EQ(2u, track_list.RepeatSize(0));
   EXPECT_FALSE(track_list.HasAutoRepeater());
@@ -140,7 +140,7 @@ TEST_F(NGGridTrackCollectionTest, TestNGGridTrackList) {
                                      NGGridTrackRepeater::RepeatType::kInteger,
                                      kNotFound - 20));
   ASSERT_EQ(2u, track_list.RepeaterCount());
-  EXPECT_EQ(kNotFound - 12u, track_list.TotalTrackCount());
+  EXPECT_EQ(kNotFound - 12u, track_list.TrackCountWithoutAutoRepeat());
   EXPECT_EQ(kNotFound - 20u, track_list.RepeatCount(1, 4));
   EXPECT_EQ(1u, track_list.RepeatSize(1));
   EXPECT_FALSE(track_list.HasAutoRepeater());
@@ -157,7 +157,7 @@ TEST_F(NGGridTrackCollectionTest, TestNGGridTrackList) {
   EXPECT_TRUE(track_list.AddRepeater(
       CreateTrackSizes(3), NGGridTrackRepeater::RepeatType::kAutoFit));
   ASSERT_EQ(3u, track_list.RepeaterCount());
-  EXPECT_EQ(kNotFound - 9u, track_list.TotalTrackCount());
+  EXPECT_EQ(kNotFound - 12u, track_list.TrackCountWithoutAutoRepeat());
   EXPECT_EQ(4u, track_list.RepeatCount(2, 4));
   EXPECT_EQ(3u, track_list.RepeatSize(2));
   EXPECT_TRUE(track_list.HasAutoRepeater());

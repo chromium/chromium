@@ -40,55 +40,28 @@ void LayoutNGGrid::RemoveChild(LayoutObject* child) {
 
 namespace {
 
-using WTFSizeTStyleFunc = WTF::wtf_size_t (blink::ComputedStyleBase::*)() const;
-
-bool StyleChanged(const ComputedStyle& new_style,
-                  const ComputedStyle& old_style,
-                  WTFSizeTStyleFunc style_func) {
-  auto new_style_binding = WTF::Bind(style_func, WTF::Unretained(&new_style));
-  auto old_style_binding = WTF::Bind(style_func, WTF::Unretained(&old_style));
-  return std::move(new_style_binding).Run() !=
-         std::move(old_style_binding).Run();
-}
-
-bool WTFSizeTChanged(wtf_size_t old_value, wtf_size_t new_value) {
-  return old_value != new_value;
-}
-
 bool ExplicitGridDidResize(const ComputedStyle& new_style,
                            const ComputedStyle& old_style) {
-  const ComputedGridTrackList& old_computed_grid_columns_track_list =
-      old_style.GridTemplateColumns();
-  const ComputedGridTrackList& new_computed_grid_columns_track_list =
-      new_style.GridTemplateColumns();
-  const ComputedGridTrackList& old_computed_grid_rows_track_list =
-      old_style.GridTemplateRows();
-  const ComputedGridTrackList& new_computed_grid_rows_track_list =
-      new_style.GridTemplateRows();
+  const NGGridTrackList& old_ng_columns_track_list =
+      old_style.GridTemplateColumns().track_sizes.NGTrackList();
+  const NGGridTrackList& new_ng_columns_track_list =
+      new_style.GridTemplateColumns().track_sizes.NGTrackList();
+  const NGGridTrackList& old_ng_rows_track_list =
+      old_style.GridTemplateRows().track_sizes.NGTrackList();
+  const NGGridTrackList& new_ng_rows_track_list =
+      new_style.GridTemplateRows().track_sizes.NGTrackList();
 
-  return WTFSizeTChanged(
-             old_computed_grid_columns_track_list.track_sizes.LegacyTrackList()
-                 .size(),
-             new_computed_grid_columns_track_list.track_sizes.LegacyTrackList()
-                 .size()) ||
-         WTFSizeTChanged(
-             old_computed_grid_rows_track_list.track_sizes.LegacyTrackList()
-                 .size(),
-             new_computed_grid_rows_track_list.track_sizes.LegacyTrackList()
-                 .size()) ||
-         WTFSizeTChanged(old_computed_grid_columns_track_list
-                             .auto_repeat_track_sizes.size(),
-                         new_computed_grid_columns_track_list
-                             .auto_repeat_track_sizes.size()) ||
-         WTFSizeTChanged(
-             old_computed_grid_rows_track_list.auto_repeat_track_sizes.size(),
-             new_computed_grid_rows_track_list.auto_repeat_track_sizes.size() ||
-                 StyleChanged(new_style, old_style,
-                              &ComputedStyle::NamedGridAreaColumnCount) ||
-                 StyleChanged(new_style, old_style,
-                              &ComputedStyle::NamedGridAreaColumnCount) ||
-                 StyleChanged(new_style, old_style,
-                              &ComputedStyle::NamedGridAreaRowCount));
+  return old_ng_columns_track_list.TrackCountWithoutAutoRepeat() !=
+             new_ng_columns_track_list.TrackCountWithoutAutoRepeat() ||
+         old_ng_rows_track_list.TrackCountWithoutAutoRepeat() !=
+             new_ng_rows_track_list.TrackCountWithoutAutoRepeat() ||
+         old_ng_columns_track_list.AutoRepeatTrackCount() !=
+             new_ng_columns_track_list.AutoRepeatTrackCount() ||
+         old_ng_rows_track_list.AutoRepeatTrackCount() !=
+             new_ng_rows_track_list.AutoRepeatTrackCount() ||
+         old_style.NamedGridAreaColumnCount() !=
+             new_style.NamedGridAreaColumnCount() ||
+         old_style.NamedGridAreaRowCount() != new_style.NamedGridAreaRowCount();
 }
 
 bool NamedGridLinesDefinitionDidChange(const ComputedStyle& new_style,
@@ -113,10 +86,14 @@ void LayoutNGGrid::StyleDidChange(StyleDifference diff,
     return;
 
   const ComputedStyle& new_style = StyleRef();
-  if (new_style.GridTemplateColumns().track_sizes !=
+  const GridTrackList& new_grid_columns_track_sizes =
+      new_style.GridTemplateColumns().track_sizes;
+  const GridTrackList& new_grid_rows_track_sizes =
+      new_style.GridTemplateRows().track_sizes;
+
+  if (new_grid_columns_track_sizes !=
           old_style->GridTemplateColumns().track_sizes ||
-      new_style.GridTemplateRows().track_sizes !=
-          old_style->GridTemplateRows().track_sizes ||
+      new_grid_rows_track_sizes != old_style->GridTemplateRows().track_sizes ||
       new_style.GridAutoColumns() != old_style->GridAutoColumns() ||
       new_style.GridAutoRows() != old_style->GridAutoRows() ||
       new_style.GetGridAutoFlow() != old_style->GetGridAutoFlow()) {
@@ -126,8 +103,8 @@ void LayoutNGGrid::StyleDidChange(StyleDifference diff,
   if (ExplicitGridDidResize(new_style, *old_style) ||
       NamedGridLinesDefinitionDidChange(new_style, *old_style) ||
       (diff.NeedsLayout() &&
-       (new_style.GridTemplateColumns().auto_repeat_track_sizes.size() ||
-        new_style.GridTemplateRows().auto_repeat_track_sizes.size()))) {
+       (new_grid_columns_track_sizes.NGTrackList().AutoRepeatTrackCount() ||
+        new_grid_rows_track_sizes.NGTrackList().AutoRepeatTrackCount()))) {
     SetGridPlacementDirty(true);
   }
 }
@@ -172,11 +149,11 @@ wtf_size_t LayoutNGGrid::AutoRepeatCountForDirection(
                                           ? StyleRef()
                                                 .GridTemplateColumns()
                                                 .track_sizes.NGTrackList()
-                                                .AutoRepeatSize()
+                                                .AutoRepeatTrackCount()
                                           : StyleRef()
                                                 .GridTemplateRows()
                                                 .track_sizes.NGTrackList()
-                                                .AutoRepeatSize();
+                                                .AutoRepeatTrackCount();
 
   return auto_repeat_size *
          (is_for_columns ? cached_placement_data_->column_auto_repetitions
@@ -203,9 +180,11 @@ wtf_size_t LayoutNGGrid::ExplicitGridEndForDirection(
       start_offset +
       ((track_direction == kForColumns)
            ? GridPositionsResolver::ExplicitGridColumnCount(
-                 StyleRef(), AutoRepeatCountForDirection(kForColumns))
+                 StyleRef(), AutoRepeatCountForDirection(kForColumns),
+                 /* is_ng_grid */ true)
            : GridPositionsResolver::ExplicitGridRowCount(
-                 StyleRef(), AutoRepeatCountForDirection(kForRows))));
+                 StyleRef(), AutoRepeatCountForDirection(kForRows),
+                 /* is_ng_grid */ true)));
 }
 
 LayoutUnit LayoutNGGrid::GridGap(

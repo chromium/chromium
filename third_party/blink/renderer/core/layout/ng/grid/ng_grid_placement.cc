@@ -48,11 +48,11 @@ NGGridPlacement::NGGridPlacement(const ComputedStyle& grid_style,
                                                                : kForRows),
       column_auto_repeat_track_count_(grid_style.GridTemplateColumns()
                                           .track_sizes.NGTrackList()
-                                          .AutoRepeatSize() *
+                                          .AutoRepeatTrackCount() *
                                       placement_data.column_auto_repetitions),
       row_auto_repeat_track_count_(grid_style.GridTemplateRows()
                                        .track_sizes.NGTrackList()
-                                       .AutoRepeatSize() *
+                                       .AutoRepeatTrackCount() *
                                    placement_data.row_auto_repetitions),
       column_auto_repetitions_(placement_data.column_auto_repetitions),
       row_auto_repetitions_(placement_data.row_auto_repetitions),
@@ -138,12 +138,12 @@ bool NGGridPlacement::PlaceNonAutoGridItems(
     GridArea position;
     position.columns = GridPositionsResolver::ResolveGridPositionsFromStyle(
         grid_style_, item_style, kForColumns, column_auto_repeat_track_count_,
-        is_parent_grid_container_);
+        /* is_ng_grid */ true, is_parent_grid_container_);
     DCHECK(!position.columns.IsTranslatedDefinite());
 
     position.rows = GridPositionsResolver::ResolveGridPositionsFromStyle(
         grid_style_, item_style, kForRows, row_auto_repeat_track_count_,
-        is_parent_grid_container_);
+        /* is_ng_grid */ true, is_parent_grid_container_);
     DCHECK(!position.rows.IsTranslatedDefinite());
 
     // When we have negative indices that go beyond the start of the explicit
@@ -162,14 +162,15 @@ bool NGGridPlacement::PlaceNonAutoGridItems(
     resolved_positions->emplace_back(position);
   }
 
-  minor_max_end_line_ =
-      (minor_direction_ == kForColumns)
-          ? GridPositionsResolver::ExplicitGridColumnCount(
-                grid_style_, column_auto_repeat_track_count_) +
-                column_start_offset_
-          : GridPositionsResolver::ExplicitGridRowCount(
-                grid_style_, row_auto_repeat_track_count_) +
-                row_start_offset_;
+  minor_max_end_line_ = (minor_direction_ == kForColumns)
+                            ? GridPositionsResolver::ExplicitGridColumnCount(
+                                  grid_style_, column_auto_repeat_track_count_,
+                                  /* is_ng_grid */ true) +
+                                  column_start_offset_
+                            : GridPositionsResolver::ExplicitGridRowCount(
+                                  grid_style_, row_auto_repeat_track_count_,
+                                  /* is_ng_grid */ true) +
+                                  row_start_offset_;
 
   placed_items->needs_to_sort_item_vector = false;
   auto& non_auto_placed_items = placed_items->item_vector;
@@ -627,7 +628,8 @@ void NGGridPlacement::ResolveOutOfFlowItemGridLines(
   const GridTrackSizingDirection track_direction = track_collection.Direction();
   GridSpan span = GridPositionsResolver::ResolveGridPositionsFromStyle(
       grid_style_, out_of_flow_item_style, track_direction,
-      AutoRepeatTrackCount(track_direction), is_parent_grid_container_);
+      AutoRepeatTrackCount(track_direction), /* is_ng_grid */ true,
+      is_parent_grid_container_);
 
   if (span.IsIndefinite()) {
     *start_line = kNotFound;

@@ -30,6 +30,7 @@ class NamedLineCollection {
                       GridTrackSizingDirection,
                       wtf_size_t last_line,
                       wtf_size_t auto_repeat_tracks_count,
+                      bool is_ng_grid,
                       bool is_parent_grid_container = false);
 
   bool HasNamedLines();
@@ -62,12 +63,11 @@ class GridPositionsResolver {
  public:
   static wtf_size_t ExplicitGridColumnCount(
       const ComputedStyle&,
-      wtf_size_t auto_repeat_columns_count);
+      wtf_size_t auto_repeat_columns_count,
+      bool is_ng_grid = false);
   static wtf_size_t ExplicitGridRowCount(const ComputedStyle&,
-                                         wtf_size_t auto_repeat_rows_count);
-
-  static GridPositionSide InitialPositionSide(GridTrackSizingDirection);
-  static GridPositionSide FinalPositionSide(GridTrackSizingDirection);
+                                         wtf_size_t auto_repeat_rows_count,
+                                         bool is_ng_grid = false);
 
   static wtf_size_t SpanSizeForAutoPlacedItem(const ComputedStyle&,
                                               GridTrackSizingDirection);
@@ -76,6 +76,7 @@ class GridPositionsResolver {
       const ComputedStyle&,
       GridTrackSizingDirection,
       wtf_size_t auto_repeat_tracks_count,
+      bool is_ng_grid = false,
       bool is_parent_grid_container = false);
 };
 

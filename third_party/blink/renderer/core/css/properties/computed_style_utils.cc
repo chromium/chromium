@@ -1338,16 +1338,28 @@ void AddValuesForNamedGridLinesAtIndex(
     list.Append(*line_names);
 }
 
-CSSValue* ComputedStyleUtils::ValueForGridTrackSizeList(
-    GridTrackSizingDirection direction,
+CSSValue* ComputedStyleUtils::ValueForGridAutoTrackList(
+    GridTrackSizingDirection track_direction,
+    const LayoutObject* layout_object,
     const ComputedStyle& style) {
-  const Vector<GridTrackSize, 1>& auto_track_sizes =
-      direction == kForColumns ? style.GridAutoColumns().LegacyTrackList()
-                               : style.GridAutoRows().LegacyTrackList();
-
+  const GridTrackList& grid_auto_track_list = track_direction == kForColumns
+                                                  ? style.GridAutoColumns()
+                                                  : style.GridAutoRows();
   CSSValueList* list = CSSValueList::CreateSpaceSeparated();
-  for (auto& track_size : auto_track_sizes) {
-    list->Append(*SpecifiedValueForGridTrackSize(track_size, style));
+
+  if (layout_object && layout_object->IsLayoutNGGrid()) {
+    const NGGridTrackList& auto_track_list = grid_auto_track_list.NGTrackList();
+    if (auto_track_list.RepeaterCount() == 1) {
+      for (wtf_size_t i = 0; i < auto_track_list.RepeatSize(0); ++i) {
+        list->Append(*SpecifiedValueForGridTrackSize(
+            auto_track_list.RepeatTrackSize(0, i), style));
+      }
+    }
+  } else {
+    const Vector<GridTrackSize, 1>& auto_track_sizes =
+        grid_auto_track_list.LegacyTrackList();
+    for (auto& track_size : auto_track_sizes)
+      list->Append(*SpecifiedValueForGridTrackSize(track_size, style));
   }
   return list;
 }
@@ -1362,6 +1374,7 @@ void PopulateGridTrackList(CSSValueList* list,
                            int offset = 0) {
   DCHECK_LE(start, end);
   DCHECK_LE(end, tracks.size());
+
   for (wtf_size_t i = start; i < end; ++i) {
     if (offset >= 0 || i >= static_cast<wtf_size_t>(-offset))
       AddValuesForNamedGridLinesAtIndex(collector, i + offset, *list);
