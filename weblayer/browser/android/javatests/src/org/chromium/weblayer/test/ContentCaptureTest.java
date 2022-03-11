@@ -16,7 +16,6 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.test.util.CallbackHelper;
-import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.net.test.util.TestWebServer;
 import org.chromium.weblayer.TestWebLayer;
 import org.chromium.weblayer.shell.InstrumentationActivity;
@@ -29,7 +28,6 @@ import java.util.concurrent.TimeoutException;
  * testing its functionality.
  */
 @RunWith(WebLayerJUnit4ClassRunner.class)
-@CommandLineFlags.Add("enable-features=ContentCaptureInWebLayer")
 public class ContentCaptureTest {
     @Rule
     public InstrumentationActivityTestRule mActivityTestRule =
