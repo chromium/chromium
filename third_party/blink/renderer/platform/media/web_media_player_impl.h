@@ -40,19 +40,18 @@
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/media_session/public/cpp/media_position.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
-#include "third_party/blink/public/platform/media/buffered_data_source_host_impl.h"
-#include "third_party/blink/public/platform/media/learning_experiment_helper.h"
-#include "third_party/blink/public/platform/media/multi_buffer_data_source.h"
-#include "third_party/blink/public/platform/media/smoothness_helper.h"
 #include "third_party/blink/public/platform/media/video_frame_compositor.h"
 #include "third_party/blink/public/platform/media/web_media_player_builder.h"
 #include "third_party/blink/public/platform/media/webmediaplayer_delegate.h"
 #include "third_party/blink/public/platform/web_audio_source_provider.h"
-#include "third_party/blink/public/platform/web_common.h"
 #include "third_party/blink/public/platform/web_content_decryption_module_result.h"
 #include "third_party/blink/public/platform/web_media_player.h"
 #include "third_party/blink/public/platform/web_surface_layer_bridge.h"
 #include "third_party/blink/public/web/modules/media/webmediaplayer_util.h"
+#include "third_party/blink/renderer/platform/media/learning_experiment_helper.h"
+#include "third_party/blink/renderer/platform/media/multi_buffer_data_source.h"
+#include "third_party/blink/renderer/platform/media/smoothness_helper.h"
+#include "third_party/blink/renderer/platform/platform_export.h"
 #include "url/gurl.h"
 
 namespace base {
@@ -75,6 +74,7 @@ class LearningTaskController;
 namespace media {
 class CdmContextRef;
 class ChunkDemuxer;
+class DataSource;
 class Demuxer;
 class MediaLog;
 class MemoryDumpProviderProxy;
@@ -87,6 +87,7 @@ class RasterContextProvider;
 }
 
 namespace blink {
+class BufferedDataSourceHostImpl;
 class PowerStatusHelper;
 class ThreadSafeBrowserInterfaceBrokerProxy;
 class UrlIndex;
@@ -102,7 +103,7 @@ class WebMediaPlayerEncryptedMediaClient;
 // The canonical implementation of WebMediaPlayer that's backed by
 // Pipeline. Handles normal resource loading, Media Source, and
 // Encrypted Media.
-class BLINK_PLATFORM_EXPORT WebMediaPlayerImpl
+class PLATFORM_EXPORT WebMediaPlayerImpl
     : public WebMediaPlayer,
       public WebMediaPlayerDelegate::Observer,
       public media::Pipeline::Client,

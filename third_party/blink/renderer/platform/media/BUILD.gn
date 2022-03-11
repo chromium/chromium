@@ -16,7 +16,6 @@ component("media") {
   ]
   output_name = "blink_platform_media"
   sources = [
-    "buffered_data_source_host_impl.cc",
     "cache_util.cc",
     "cache_util.h",
     "cdm_result_promise.h",
@@ -72,7 +71,6 @@ component("media") {
   ]
   deps = [
     "//build:chromeos_buildflags",
-    "//cc",
     "//components/viz/common",
     "//media:media_buildflags",
     "//media:shared_memory_support",
@@ -84,15 +82,23 @@ component("media") {
 
   if (media_use_ffmpeg || !is_android) {
     sources += [
+      "buffered_data_source_host_impl.cc",
+      "buffered_data_source_host_impl.h",
       "learning_experiment_helper.cc",
+      "learning_experiment_helper.h",
       "multi_buffer_data_source.cc",
+      "multi_buffer_data_source.h",
       "smoothness_helper.cc",
+      "smoothness_helper.h",
       "web_media_player_impl.cc",
       "web_media_player_impl.h",
     ]
-    public_deps += [ "//services/media_session/public/cpp:base_cpp" ]
-    deps += [
+    public_deps += [
       "//media/learning/common",
+      "//services/media_session/public/cpp:base_cpp",
+    ]
+    deps += [
+      "//cc",
       "//media/learning/mojo/public/cpp",
       "//media/remoting:remoting_constants",
       "//third_party/blink/public/strings:strings_grit",
@@ -110,7 +116,6 @@ source_set("unit_tests") {
   # to Blink code conventions.
   #configs += [ "//third_party/blink/renderer/platform:blink_platform_config" ]
   sources = [
-    "buffered_data_source_host_impl_unittest.cc",
     "cache_util_unittest.cc",
     "interval_map_unittest.cc",
     "key_system_config_selector_unittest.cc",
@@ -143,6 +148,7 @@ source_set("unit_tests") {
 
   if (media_use_ffmpeg || !is_android) {
     sources += [
+      "buffered_data_source_host_impl_unittest.cc",
       "learning_experiment_helper_unittest.cc",
       "multi_buffer_data_source_unittest.cc",
       "smoothness_helper_unittest.cc",

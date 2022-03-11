@@ -87,6 +87,7 @@
 #include "third_party/blink/public/web/web_frame.h"
 #include "third_party/blink/public/web/web_local_frame.h"
 #include "third_party/blink/public/web/web_view.h"
+#include "third_party/blink/renderer/platform/media/buffered_data_source_host_impl.h"
 #include "third_party/blink/renderer/platform/media/power_status_helper.h"
 #include "third_party/blink/renderer/platform/media/text_track_impl.h"
 #include "third_party/blink/renderer/platform/media/video_decode_stats_reporter.h"

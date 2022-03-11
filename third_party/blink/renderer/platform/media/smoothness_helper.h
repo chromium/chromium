@@ -2,15 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef THIRD_PARTY_BLINK_PUBLIC_PLATFORM_MEDIA_SMOOTHNESS_HELPER_H_
-#define THIRD_PARTY_BLINK_PUBLIC_PLATFORM_MEDIA_SMOOTHNESS_HELPER_H_
+#ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_MEDIA_SMOOTHNESS_HELPER_H_
+#define THIRD_PARTY_BLINK_RENDERER_PLATFORM_MEDIA_SMOOTHNESS_HELPER_H_
 
 #include <memory>
 
 #include "media/base/buffering_state.h"
 #include "media/base/pipeline_status.h"
 #include "media/learning/common/labelled_example.h"
-#include "third_party/blink/public/platform/web_common.h"
+#include "third_party/blink/renderer/platform/platform_export.h"
 
 namespace media {
 namespace learning {
@@ -23,7 +23,7 @@ namespace blink {
 // Helper class to construct learning observations about the smoothness of a
 // video playback.  Currently measures the worst-case frame drop ratio observed
 // among fixed-length segments.
-class BLINK_PLATFORM_EXPORT SmoothnessHelper {
+class PLATFORM_EXPORT SmoothnessHelper {
  public:
   // Callback that provides the number of dropped / decoded frames since some
   // point in the past.  We assume that these values are comparable during
@@ -66,4 +66,4 @@ class BLINK_PLATFORM_EXPORT SmoothnessHelper {
 
 }  // namespace blink
 
-#endif  // THIRD_PARTY_BLINK_PUBLIC_PLATFORM_MEDIA_SMOOTHNESS_HELPER_H_
+#endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_MEDIA_SMOOTHNESS_HELPER_H_

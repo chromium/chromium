@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "third_party/blink/public/platform/media/multi_buffer_data_source.h"
+#include "third_party/blink/renderer/platform/media/multi_buffer_data_source.h"
 
 #include <utility>
 
@@ -14,7 +14,7 @@
 #include "base/task/single_thread_task_runner.h"
 #include "media/base/media_log.h"
 #include "net/base/net_errors.h"
-#include "third_party/blink/public/platform/media/buffered_data_source_host_impl.h"
+#include "third_party/blink/renderer/platform/media/buffered_data_source_host_impl.h"
 #include "third_party/blink/renderer/platform/media/multi_buffer_reader.h"
 #include "url/gurl.h"
 

@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef THIRD_PARTY_BLINK_PUBLIC_PLATFORM_MEDIA_BUFFERED_DATA_SOURCE_HOST_IMPL_H_
-#define THIRD_PARTY_BLINK_PUBLIC_PLATFORM_MEDIA_BUFFERED_DATA_SOURCE_HOST_IMPL_H_
+#ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_MEDIA_BUFFERED_DATA_SOURCE_HOST_IMPL_H_
+#define THIRD_PARTY_BLINK_RENDERER_PLATFORM_MEDIA_BUFFERED_DATA_SOURCE_HOST_IMPL_H_
 
 #include <stdint.h>
 
@@ -14,12 +14,12 @@
 #include "base/time/time.h"
 #include "media/base/ranges.h"
 #include "third_party/blink/public/platform/media/interval_map.h"
-#include "third_party/blink/public/platform/web_common.h"
+#include "third_party/blink/renderer/platform/platform_export.h"
 
 namespace blink {
 
 // Interface for testing purposes.
-class BLINK_PLATFORM_EXPORT BufferedDataSourceHost {
+class BufferedDataSourceHost {
  public:
   // Notify the host of the total size of the media file.
   virtual void SetTotalBytes(int64_t total_bytes) = 0;
@@ -35,7 +35,7 @@ class BLINK_PLATFORM_EXPORT BufferedDataSourceHost {
 
 // Provides an implementation of BufferedDataSourceHost that translates the
 // buffered byte ranges into estimated time ranges.
-class BLINK_PLATFORM_EXPORT BufferedDataSourceHostImpl
+class PLATFORM_EXPORT BufferedDataSourceHostImpl
     : public BufferedDataSourceHost {
  public:
   BufferedDataSourceHostImpl(base::RepeatingClosure progress_cb,
@@ -99,4 +99,4 @@ class BLINK_PLATFORM_EXPORT BufferedDataSourceHostImpl
 
 }  // namespace blink
 
-#endif  // THIRD_PARTY_BLINK_PUBLIC_PLATFORM_MEDIA_BUFFERED_DATA_SOURCE_HOST_IMPL_H_
+#endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_MEDIA_BUFFERED_DATA_SOURCE_HOST_IMPL_H_

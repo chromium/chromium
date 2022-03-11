@@ -71,6 +71,7 @@
 #include "third_party/blink/public/web/web_view.h"
 #include "third_party/blink/public/web/web_widget.h"
 #include "third_party/blink/renderer/core/frame/frame_test_helpers.h"
+#include "third_party/blink/renderer/platform/media/buffered_data_source_host_impl.h"
 #include "third_party/blink/renderer/platform/media/power_status_helper.h"
 #include "third_party/blink/renderer/platform/media/resource_multi_buffer_data_provider.h"
 #include "third_party/blink/renderer/platform/media/testing/mock_resource_fetch_context.h"

@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef THIRD_PARTY_BLINK_PUBLIC_PLATFORM_MEDIA_MULTI_BUFFER_DATA_SOURCE_H_
-#define THIRD_PARTY_BLINK_PUBLIC_PLATFORM_MEDIA_MULTI_BUFFER_DATA_SOURCE_H_
+#ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_MEDIA_MULTI_BUFFER_DATA_SOURCE_H_
+#define THIRD_PARTY_BLINK_RENDERER_PLATFORM_MEDIA_MULTI_BUFFER_DATA_SOURCE_H_
 
 #include <stdint.h>
 
@@ -17,7 +17,7 @@
 #include "media/base/ranges.h"
 #include "media/base/tuneable.h"
 #include "third_party/blink/public/platform/media/url_index.h"
-#include "third_party/blink/public/platform/web_common.h"
+#include "third_party/blink/renderer/platform/platform_export.h"
 
 class GURL;
 
@@ -38,7 +38,7 @@ class MultiBufferReader;
 //
 // MultiBufferDataSource must be created and destroyed on the thread associated
 // with the |task_runner| passed in the constructor.
-class BLINK_PLATFORM_EXPORT MultiBufferDataSource : public media::DataSource {
+class PLATFORM_EXPORT MultiBufferDataSource : public media::DataSource {
  public:
   using DownloadingCB = base::RepeatingCallback<void(bool)>;
   using RedirectCB = base::RepeatingCallback<void()>;
@@ -298,4 +298,4 @@ class BLINK_PLATFORM_EXPORT MultiBufferDataSource : public media::DataSource {
 
 }  // namespace blink
 
-#endif  // THIRD_PARTY_BLINK_PUBLIC_PLATFORM_MEDIA_MULTI_BUFFER_DATA_SOURCE_H_
+#endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_MEDIA_MULTI_BUFFER_DATA_SOURCE_H_

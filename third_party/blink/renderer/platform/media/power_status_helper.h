@@ -13,7 +13,7 @@
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/device/public/mojom/battery_monitor.mojom-blink.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
-#include "third_party/blink/public/platform/web_common.h"
+#include "third_party/blink/renderer/platform/platform_export.h"
 #include "ui/gfx/geometry/size.h"
 
 namespace media {
@@ -23,7 +23,7 @@ struct PipelineMetadata;
 namespace blink {
 
 // Class to monitor for power events during playback and record them to UMA/UKM.
-class BLINK_PLATFORM_EXPORT PowerStatusHelper {
+class PLATFORM_EXPORT PowerStatusHelper {
  public:
   using CreateBatteryMonitorCB = base::RepeatingCallback<
       mojo::PendingRemote<device::mojom::blink::BatteryMonitor>()>;

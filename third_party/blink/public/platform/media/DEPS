@@ -1,13 +1,9 @@
 include_rules = [
   "+base/bind.h",
-  "+base/compiler_specific.h",
-  "+base/containers/circular_deque.h",
-  "+base/gtest_prod_util.h",
   "+base/hash/hash.h",
   "+base/thread_annotations.h",
   "+base/timer/timer.h",
   "+media/base",
-  "+media/learning/common",
   "+media/mojo/mojom/media_metrics_provider.mojom-forward.h",
   "+media/renderers",
   "+third_party/blink/public/web",

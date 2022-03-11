@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "third_party/blink/public/platform/media/buffered_data_source_host_impl.h"
+#include "third_party/blink/renderer/platform/media/buffered_data_source_host_impl.h"
 
 #include "media/base/timestamp_constants.h"
 
