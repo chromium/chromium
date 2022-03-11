@@ -156,7 +156,7 @@ std::unique_ptr<base::ListValue> HidDeviceManager::GetApiDevicesFromList(
     hid::HidDeviceInfo device_info;
     device_info.device_id = device_entry->second;
     PopulateHidDeviceInfo(&device_info, *device);
-    device_list->Append(device_info.ToValue());
+    device_list->Append(base::Value::FromUniquePtrValue(device_info.ToValue()));
   }
   return device_list;
 }
@@ -354,7 +354,8 @@ std::unique_ptr<base::ListValue> HidDeviceManager::CreateApiDeviceList(
 
     // Expose devices with which user can communicate.
     if (api_device_info.collections.size() > 0) {
-      api_devices->Append(api_device_info.ToValue());
+      api_devices->Append(
+          base::Value::FromUniquePtrValue(api_device_info.ToValue()));
     }
   }
 
