@@ -1,0 +1,1 @@
+[{"trigger_data":"1","priority":"2","dedup_key":"3","filters":{"a":["x"],"b":["y","z"]},"not_filters":{"c":["d"]}}]
