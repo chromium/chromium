@@ -49,6 +49,9 @@ struct MEDIA_EXPORT CdmCapability {
   base::flat_set<CdmSessionType> session_types;
 };
 
+bool MEDIA_EXPORT operator==(const CdmCapability& lhs,
+                             const CdmCapability& rhs);
+
 }  // namespace media
 
 #endif  // MEDIA_CDM_CDM_CAPABILITY_H_

@@ -24,4 +24,11 @@ CdmCapability::CdmCapability(const CdmCapability& other) = default;
 
 CdmCapability::~CdmCapability() = default;
 
+bool operator==(const CdmCapability& lhs, const CdmCapability& rhs) {
+  return lhs.audio_codecs == rhs.audio_codecs &&
+         lhs.video_codecs == rhs.video_codecs &&
+         lhs.encryption_schemes == rhs.encryption_schemes &&
+         lhs.session_types == rhs.session_types;
+}
+
 }  // namespace media

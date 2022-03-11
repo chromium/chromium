@@ -9,14 +9,23 @@
 #include <vector>
 
 #include "base/base_paths.h"
+#include "base/callback_helpers.h"
+#include "base/containers/contains.h"
 #include "base/containers/flat_set.h"
 #include "base/files/file_path.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/gmock_callback_support.h"
+#include "base/test/mock_callback.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/token.h"
 #include "base/version.h"
+#include "content/browser/gpu/gpu_data_manager_impl.h"
 #include "content/public/common/cdm_info.h"
+#include "content/public/test/browser_task_environment.h"
+#include "gpu/config/gpu_feature_info.h"
+#include "media/base/media_switches.h"
 #include "media/base/video_codecs.h"
 #include "media/cdm/cdm_capability.h"
 #include "media/cdm/cdm_type.h"
@@ -31,6 +40,9 @@ using AudioCodec = media::AudioCodec;
 using VideoCodec = media::VideoCodec;
 using EncryptionScheme = media::EncryptionScheme;
 using CdmSessionType = media::CdmSessionType;
+using Robustness = CdmInfo::Robustness;
+using base::test::RunOnceCallback;
+using testing::_;
 
 const char kTestCdmName[] = "Test CDM";
 const char kAlternateCdmName[] = "Alternate CDM";
@@ -77,6 +89,32 @@ class CdmRegistryImplTest : public testing::Test {
   CdmRegistryImplTest() {}
   ~CdmRegistryImplTest() override {}
 
+  void SetUp() final {
+    DVLOG(1) << __func__;
+
+    // Simulate GPU process initialization completing with GL unavailable.
+    gpu::GpuFeatureInfo gpu_feature_info = GetGpuFeatureInfoWithOneDisabled(
+        gpu::GpuFeatureType::GPU_FEATURE_TYPE_ACCELERATED_GL);
+    GpuDataManagerImpl::GetInstance()->UpdateGpuFeatureInfo(gpu_feature_info,
+                                                            absl::nullopt);
+
+    cdm_registry_.SetHardwareSecureCapabilityCBForTesting(
+        hw_secure_capability_cb_.Get());
+  }
+
+  void OnKeySystemCapabilitiesUpdated(
+      base::OnceClosure done_cb,
+      KeySystemCapabilities key_system_capabilities) {
+    if (number_key_system_capabilities_ == 0) {
+      key_system_capabilities_ = std::move(key_system_capabilities);
+    } else {
+      EXPECT_EQ(key_system_capabilities_, key_system_capabilities);
+    }
+
+    number_key_system_capabilities_++;
+    std::move(done_cb).Run();
+  }
+
  protected:
   media::CdmCapability GetTestCdmCapability() {
     return media::CdmCapability(
@@ -98,12 +136,21 @@ class CdmRegistryImplTest : public testing::Test {
     cdm_registry_.RegisterCdm(std::move(cdm_info));
   }
 
+  void Register(const std::string& key_system,
+                absl::optional<media::CdmCapability> capability,
+                Robustness robustness = Robustness::kSoftwareSecure) {
+    Register(CdmInfo(key_system, robustness, std::move(capability),
+                     /*supports_sub_key_systems=*/true, kTestCdmName,
+                     kTestCdmType, base::Version(kVersion1),
+                     base::FilePath::FromUTF8Unsafe(kTestPath)));
+  }
+
   void RegisterForLazyInitialization() {
     // Register a CdmInfo without CdmCapability to allow lazy initialization.
-    Register(CdmInfo(kTestKeySystem, CdmInfo::Robustness::kSoftwareSecure,
+    Register(CdmInfo(kTestKeySystem, CdmInfo::Robustness::kHardwareSecure,
                      absl::nullopt, kTestCdmType));
     auto cdm_info = cdm_registry_.GetCdmInfo(
-        kTestKeySystem, CdmInfo::Robustness::kSoftwareSecure);
+        kTestKeySystem, CdmInfo::Robustness::kHardwareSecure);
     ASSERT_TRUE(cdm_info);
     ASSERT_FALSE(cdm_info->capability);
   }
@@ -125,8 +172,51 @@ class CdmRegistryImplTest : public testing::Test {
     return versions;
   }
 
- protected:
+  void GetKeySystemCapabilities() {
+    base::RunLoop run_loop;
+    cdm_registry_.ObserveKeySystemCapabilities(base::BindRepeating(
+        &CdmRegistryImplTest::OnKeySystemCapabilitiesUpdated,
+        base::Unretained(this), run_loop.QuitClosure()));
+    run_loop.Run();
+  }
+
+  [[maybe_unused]] gpu::GpuFeatureInfo GetGpuFeatureInfoWithOneDisabled(
+      gpu::GpuFeatureType disabled_feature) {
+    gpu::GpuFeatureInfo gpu_feature_info;
+    for (auto& status : gpu_feature_info.status_values)
+      status = gpu::GpuFeatureStatus::kGpuFeatureStatusEnabled;
+    gpu_feature_info.status_values[disabled_feature] =
+        gpu::GpuFeatureStatus::kGpuFeatureStatusDisabled;
+    return gpu_feature_info;
+  }
+
+  void SelectHardwareSecureDecryption(bool enabled) {
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+    if (enabled) {
+      base::CommandLine::ForCurrentProcess()->AppendSwitch(
+          switches::kLacrosUseChromeosProtectedMedia);
+    } else {
+      base::CommandLine::ForCurrentProcess()->RemoveSwitch(
+          switches::kLacrosUseChromeosProtectedMedia);
+    }
+#else
+    if (enabled) {
+      scoped_feature_list_.InitAndEnableFeature(
+          media::kHardwareSecureDecryption);
+    } else {
+      scoped_feature_list_.InitAndDisableFeature(
+          media::kHardwareSecureDecryption);
+    }
+#endif
+  }
+
+  base::test::ScopedFeatureList scoped_feature_list_;
+  BrowserTaskEnvironment task_environment_;
   CdmRegistryImpl cdm_registry_;
+  base::MockCallback<CdmRegistryImpl::HardwareSecureCapabilityCB>
+      hw_secure_capability_cb_;
+  int number_key_system_capabilities_ = 0;
+  KeySystemCapabilities key_system_capabilities_;
 };
 
 TEST_F(CdmRegistryImplTest, Register) {
@@ -198,6 +288,23 @@ TEST_F(CdmRegistryImplTest, DifferentNames) {
   EXPECT_TRUE(IsRegistered(kAlternateCdmName, kVersion1));
 }
 
+TEST_F(CdmRegistryImplTest, Profiles) {
+  Register(kTestKeySystem,
+           media::CdmCapability(
+               {AudioCodec::kVorbis},
+               {{VideoCodec::kVP9,
+                 {media::VP9PROFILE_PROFILE0, media::VP9PROFILE_PROFILE2}}},
+               {EncryptionScheme::kCenc}, {CdmSessionType::kTemporary}));
+  auto cdm_info = cdm_registry_.GetCdmInfo(
+      kTestKeySystem, CdmInfo::Robustness::kSoftwareSecure);
+  CdmInfo& cdm = *cdm_info;
+  EXPECT_VIDEO_CODECS(VideoCodec::kVP9);
+  EXPECT_TRUE(base::Contains(cdm.capability->video_codecs[VideoCodec::kVP9],
+                             media::VP9PROFILE_PROFILE0));
+  EXPECT_TRUE(base::Contains(cdm.capability->video_codecs[VideoCodec::kVP9],
+                             media::VP9PROFILE_PROFILE2));
+}
+
 TEST_F(CdmRegistryImplTest, SupportedEncryptionSchemes) {
   auto cdm_info = GetTestCdmInfo();
   cdm_info.capability->encryption_schemes = {EncryptionScheme::kCenc,
@@ -238,42 +345,157 @@ TEST_F(CdmRegistryImplTest, GetCdmInfo_Fail) {
   ASSERT_FALSE(cdm_info);
 }
 
-TEST_F(CdmRegistryImplTest, FinalizeCdmCapability_Success) {
-  RegisterForLazyInitialization();
-  EXPECT_TRUE(cdm_registry_.FinalizeCdmCapability(
-      kTestKeySystem, CdmInfo::Robustness::kSoftwareSecure,
-      GetTestCdmCapability()));
-  auto cdm_info = cdm_registry_.GetCdmInfo(
-      kTestKeySystem, CdmInfo::Robustness::kSoftwareSecure);
-  EXPECT_TRUE(cdm_info && cdm_info->capability);
-}
-
-TEST_F(CdmRegistryImplTest, FinalizeCdmCapability_Unregistered) {
-  RegisterForLazyInitialization();
-  // Trying to finalize for `kHardwareSecure` which was not registered.
-  EXPECT_FALSE(cdm_registry_.FinalizeCdmCapability(
-      kTestKeySystem, CdmInfo::Robustness::kHardwareSecure,
-      GetTestCdmCapability()));
-  EXPECT_TRUE(cdm_registry_.GetCdmInfo(kTestKeySystem,
-                                       CdmInfo::Robustness::kSoftwareSecure));
-}
-
-TEST_F(CdmRegistryImplTest, FinalizeCdmCapability_AlreadyFinalized) {
+TEST_F(CdmRegistryImplTest, KeySystemCapabilities_SoftwareSecure) {
   Register(GetTestCdmInfo());
-  EXPECT_FALSE(cdm_registry_.FinalizeCdmCapability(
-      kTestKeySystem, CdmInfo::Robustness::kSoftwareSecure,
-      GetTestCdmCapability()));
-  auto cdm_info = cdm_registry_.GetCdmInfo(
-      kTestKeySystem, CdmInfo::Robustness::kSoftwareSecure);
-  EXPECT_TRUE(cdm_info && cdm_info->capability);
+  GetKeySystemCapabilities();
+  ASSERT_EQ(key_system_capabilities_.size(), 1u);
+  ASSERT_TRUE(key_system_capabilities_.count(kTestKeySystem));
+  const auto& support = key_system_capabilities_[kTestKeySystem];
+  ASSERT_EQ(support.sw_secure_capability.value(), GetTestCdmCapability());
+  ASSERT_FALSE(support.hw_secure_capability);
 }
 
-TEST_F(CdmRegistryImplTest, FinalizeCdmCapability_RemoveCdmInfo) {
+TEST_F(CdmRegistryImplTest, KeySystemCapabilities_HardwareSecure) {
+  Register(kTestKeySystem, GetTestCdmCapability(), Robustness::kHardwareSecure);
+  SelectHardwareSecureDecryption(true);
+
+  GetKeySystemCapabilities();
+  ASSERT_EQ(key_system_capabilities_.size(), 1u);
+  ASSERT_TRUE(key_system_capabilities_.count(kTestKeySystem));
+  const auto& support = key_system_capabilities_[kTestKeySystem];
+  ASSERT_FALSE(support.sw_secure_capability);
+  ASSERT_EQ(support.hw_secure_capability.value(), GetTestCdmCapability());
+}
+
+TEST_F(CdmRegistryImplTest, KeySystemCapabilities_LazyInitialize_Supported) {
   RegisterForLazyInitialization();
-  EXPECT_FALSE(cdm_registry_.FinalizeCdmCapability(
-      kTestKeySystem, CdmInfo::Robustness::kSoftwareSecure, absl::nullopt));
-  EXPECT_FALSE(cdm_registry_.GetCdmInfo(kTestKeySystem,
-                                        CdmInfo::Robustness::kSoftwareSecure));
+  SelectHardwareSecureDecryption(true);
+
+  EXPECT_CALL(hw_secure_capability_cb_, Run(kTestKeySystem, _))
+      .WillOnce(RunOnceCallback<1>(GetTestCdmCapability()));
+  GetKeySystemCapabilities();
+  ASSERT_EQ(key_system_capabilities_.size(), 1u);
+  ASSERT_TRUE(key_system_capabilities_.count(kTestKeySystem));
+  const auto& support = key_system_capabilities_[kTestKeySystem];
+  ASSERT_FALSE(support.sw_secure_capability);
+  ASSERT_EQ(support.hw_secure_capability.value(), GetTestCdmCapability());
+}
+
+TEST_F(CdmRegistryImplTest, KeySystemCapabilities_LazyInitialize_NotSupported) {
+  RegisterForLazyInitialization();
+  SelectHardwareSecureDecryption(true);
+
+  EXPECT_CALL(hw_secure_capability_cb_, Run(kTestKeySystem, _))
+      .WillOnce(RunOnceCallback<1>(absl::nullopt));
+  GetKeySystemCapabilities();
+  ASSERT_TRUE(key_system_capabilities_.empty());
+
+  auto cdm_info = cdm_registry_.GetCdmInfo(
+      kTestKeySystem, CdmInfo::Robustness::kHardwareSecure);
+  ASSERT_FALSE(cdm_info);
+}
+
+TEST_F(CdmRegistryImplTest, KeySystemCapabilities_HardwareSecureDisabled) {
+  RegisterForLazyInitialization();
+  SelectHardwareSecureDecryption(false);
+  GetKeySystemCapabilities();
+  ASSERT_TRUE(key_system_capabilities_.empty());
+
+  auto cdm_info = cdm_registry_.GetCdmInfo(
+      kTestKeySystem, CdmInfo::Robustness::kHardwareSecure);
+  ASSERT_FALSE(cdm_info);
+}
+
+TEST_F(CdmRegistryImplTest, KeySystemCapabilities_SoftwareAndHardwareSecure) {
+  Register(GetTestCdmInfo());
+  RegisterForLazyInitialization();
+  SelectHardwareSecureDecryption(true);
+
+  EXPECT_CALL(hw_secure_capability_cb_, Run(kTestKeySystem, _))
+      .WillOnce(RunOnceCallback<1>(GetTestCdmCapability()));
+  GetKeySystemCapabilities();
+  ASSERT_EQ(key_system_capabilities_.size(), 1u);
+  ASSERT_TRUE(key_system_capabilities_.count(kTestKeySystem));
+  const auto& support = key_system_capabilities_[kTestKeySystem];
+  ASSERT_EQ(support.sw_secure_capability.value(), GetTestCdmCapability());
+  ASSERT_EQ(support.hw_secure_capability.value(), GetTestCdmCapability());
+}
+
+TEST_F(CdmRegistryImplTest, KeySystemCapabilities_MultipleObservers) {
+  Register(GetTestCdmInfo());
+
+  base::RunLoop run_loop;
+  cdm_registry_.ObserveKeySystemCapabilities(
+      base::BindRepeating(&CdmRegistryImplTest::OnKeySystemCapabilitiesUpdated,
+                          base::Unretained(this), base::DoNothing()));
+  cdm_registry_.ObserveKeySystemCapabilities(
+      base::BindRepeating(&CdmRegistryImplTest::OnKeySystemCapabilitiesUpdated,
+                          base::Unretained(this), run_loop.QuitClosure()));
+  run_loop.Run();
+
+  ASSERT_EQ(number_key_system_capabilities_, 2);
+  ASSERT_EQ(key_system_capabilities_.size(), 1u);
+  ASSERT_TRUE(key_system_capabilities_.count(kTestKeySystem));
+  const auto& support = key_system_capabilities_[kTestKeySystem];
+  ASSERT_EQ(support.sw_secure_capability.value(), GetTestCdmCapability());
+}
+
+TEST_F(CdmRegistryImplTest,
+       KeySystemCapabilities_MultipleObservers_PendingLazyInitialize) {
+  Register(GetTestCdmInfo());
+  RegisterForLazyInitialization();
+  SelectHardwareSecureDecryption(true);
+
+  EXPECT_CALL(hw_secure_capability_cb_, Run(kTestKeySystem, _))
+      .WillOnce(RunOnceCallback<1>(GetTestCdmCapability()));
+
+  base::RunLoop run_loop;
+  cdm_registry_.ObserveKeySystemCapabilities(
+      base::BindRepeating(&CdmRegistryImplTest::OnKeySystemCapabilitiesUpdated,
+                          base::Unretained(this), base::DoNothing()));
+  cdm_registry_.ObserveKeySystemCapabilities(
+      base::BindRepeating(&CdmRegistryImplTest::OnKeySystemCapabilitiesUpdated,
+                          base::Unretained(this), run_loop.QuitClosure()));
+  run_loop.Run();
+
+  ASSERT_EQ(number_key_system_capabilities_, 2);
+  ASSERT_EQ(key_system_capabilities_.size(), 1u);
+  ASSERT_TRUE(key_system_capabilities_.count(kTestKeySystem));
+  const auto& support = key_system_capabilities_[kTestKeySystem];
+  ASSERT_EQ(support.sw_secure_capability.value(), GetTestCdmCapability());
+  ASSERT_EQ(support.hw_secure_capability.value(), GetTestCdmCapability());
+}
+
+TEST_F(CdmRegistryImplTest,
+       KeySystemCapabilities_MultipleObservers_AfterLazyInitialize) {
+  Register(GetTestCdmInfo());
+  RegisterForLazyInitialization();
+  SelectHardwareSecureDecryption(true);
+
+  EXPECT_CALL(hw_secure_capability_cb_, Run(kTestKeySystem, _))
+      .WillOnce(RunOnceCallback<1>(GetTestCdmCapability()));
+
+  {
+    base::RunLoop run_loop;
+    cdm_registry_.ObserveKeySystemCapabilities(base::BindRepeating(
+        &CdmRegistryImplTest::OnKeySystemCapabilitiesUpdated,
+        base::Unretained(this), run_loop.QuitClosure()));
+    run_loop.Run();
+  }
+  {
+    base::RunLoop run_loop;
+    cdm_registry_.ObserveKeySystemCapabilities(base::BindRepeating(
+        &CdmRegistryImplTest::OnKeySystemCapabilitiesUpdated,
+        base::Unretained(this), run_loop.QuitClosure()));
+    run_loop.Run();
+  }
+
+  ASSERT_EQ(number_key_system_capabilities_, 2);
+  ASSERT_EQ(key_system_capabilities_.size(), 1u);
+  ASSERT_TRUE(key_system_capabilities_.count(kTestKeySystem));
+  const auto& support = key_system_capabilities_[kTestKeySystem];
+  ASSERT_EQ(support.sw_secure_capability.value(), GetTestCdmCapability());
+  ASSERT_EQ(support.hw_secure_capability.value(), GetTestCdmCapability());
 }
 
 }  // namespace content

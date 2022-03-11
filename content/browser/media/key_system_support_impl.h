@@ -5,14 +5,15 @@
 #ifndef CONTENT_BROWSER_MEDIA_KEY_SYSTEM_SUPPORT_IMPL_H_
 #define CONTENT_BROWSER_MEDIA_KEY_SYSTEM_SUPPORT_IMPL_H_
 
-#include <memory>
 #include <string>
+#include <utility>
+#include <vector>
 
+#include "base/callback_helpers.h"
 #include "base/memory/weak_ptr.h"
 #include "base/no_destructor.h"
+#include "content/browser/media/cdm_registry_impl.h"
 #include "content/common/content_export.h"
-#include "content/public/common/cdm_info.h"
-#include "media/cdm/cdm_capability.h"
 #include "media/mojo/mojom/key_system_support.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
@@ -44,31 +45,31 @@ class CONTENT_EXPORT KeySystemSupportImpl final
   friend class base::NoDestructor<KeySystemSupportImpl>;
   friend class KeySystemSupportImplTest;
 
-  KeySystemSupportImpl();
+  using GetKeySystemCapabilitiesUpdateCB =
+      base::RepeatingCallback<void(KeySystemCapabilitiesUpdateCB)>;
+
+  // `get_support_cb_for_testing` is used to get support update for testing.
+  // If null, we'll use `CdmRegistryImpl` to get the update.
+  explicit KeySystemSupportImpl(
+      GetKeySystemCapabilitiesUpdateCB get_support_cb_for_testing =
+          base::NullCallback());
   ~KeySystemSupportImpl() final;
 
-  using CdmCapabilityCB =
-      base::OnceCallback<void(absl::optional<media::CdmCapability>)>;
-  using HardwareSecureCapabilityCB =
-      base::RepeatingCallback<void(const std::string&, CdmCapabilityCB)>;
-
-  // Sets a callback to query for hardware secure capability for testing.
-  void SetHardwareSecureCapabilityCBForTesting(HardwareSecureCapabilityCB cb);
-
-  void LazyInitializeHardwareSecureCapability(
+  void OnKeySystemCapabilitiesUpdated(
+      KeySystemCapabilities key_system_capabilities);
+  void NotifyIsKeySystemSupportedCallback(
       const std::string& key_system,
-      CdmCapabilityCB cdm_capability_cb);
+      IsKeySystemSupportedCallback callback);
 
-  void OnHardwareSecureCapability(
-      const std::string& key_system,
-      IsKeySystemSupportedCallback callback,
-      bool lazy_initialize,
-      absl::optional<media::CdmCapability> hw_secure_capability);
-
-  HardwareSecureCapabilityCB hw_secure_capability_cb_for_testing_;
+  absl::optional<KeySystemCapabilities> key_system_capabilities_;
 
   mojo::ReceiverSet<media::mojom::KeySystemSupport>
       key_system_support_receivers_;
+
+  // Key system to IsKeySystemSupportedCallback map.
+  using PendingCallbacks =
+      std::vector<std::pair<std::string, IsKeySystemSupportedCallback>>;
+  PendingCallbacks pending_callbacks_;
 
   base::WeakPtrFactory<KeySystemSupportImpl> weak_ptr_factory_{this};
 };
