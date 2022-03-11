@@ -13,6 +13,7 @@ import androidx.annotation.Nullable;
 
 import org.chromium.base.ApplicationStatus;
 import org.chromium.base.library_loader.LibraryLoader;
+import org.chromium.chrome.browser.app.notifications.ContextualNotificationPermissionRequesterImpl;
 import org.chromium.chrome.browser.background_task_scheduler.ChromeBackgroundTaskFactory;
 import org.chromium.chrome.browser.base.SplitCompatApplication;
 import org.chromium.chrome.browser.crash.ChromePureJavaExceptionReporter;
@@ -75,6 +76,7 @@ public class ChromeApplicationImpl extends SplitCompatApplication.Impl {
 
             // Set Chrome factory for mapping BackgroundTask classes to TaskIds.
             ChromeBackgroundTaskFactory.setAsDefault();
+            ContextualNotificationPermissionRequesterImpl.initialize();
             PartitionResolverSupplier.setInstance(new ProfileResolver());
 
             AppHooks.get().getChimeDelegate().initialize();

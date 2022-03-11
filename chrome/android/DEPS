@@ -96,6 +96,9 @@ specific_include_rules = {
   "AssistantDependenciesChrome\.java": [
     "+chrome/android/java/src/org/chromium/chrome/browser/app/ChromeActivity.java",
   ],
+  "ContextualNotificationPermissionRequesterImpl\.java": [
+    "+chrome/android/java/src/org/chromium/chrome/browser/ChromeTabbedActivity.java"
+  ],
   "ManualFillingMediator\.java": [
     "+chrome/android/java/src/org/chromium/chrome/browser/app/ChromeActivity.java",
   ],

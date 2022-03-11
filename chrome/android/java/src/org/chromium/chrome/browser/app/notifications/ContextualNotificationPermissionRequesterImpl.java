@@ -1,0 +1,52 @@
+// Copyright 2022 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+package org.chromium.chrome.browser.app.notifications;
+
+import android.app.Activity;
+
+import org.chromium.base.ApplicationStatus;
+import org.chromium.chrome.browser.ChromeTabbedActivity;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.notifications.permissions.NotificationPermissionController;
+import org.chromium.ui.permissions.ContextualNotificationPermissionRequester;
+
+/**
+ * Implementation of {@link ContextualNotificationPermissionRequester}. Contains the necessary
+ * hookups to request permission using the last focused chrome activity.
+ */
+public class ContextualNotificationPermissionRequesterImpl
+        extends ContextualNotificationPermissionRequester {
+    private static final String FIELD_TRIAL_ENABLE_CONTEXTUAL_PERMISSION_REQUESTS =
+            "enable_contextual_permission_requests";
+
+    private static class LazyHolder {
+        static final ContextualNotificationPermissionRequesterImpl INSTANCE =
+                new ContextualNotificationPermissionRequesterImpl();
+    }
+
+    /**
+     * Called to initialize the singleton instance.
+     */
+    public static void initialize() {
+        ContextualNotificationPermissionRequester.setInstance(LazyHolder.INSTANCE);
+    }
+
+    @Override
+    public void requestPermissionIfNeeded() {
+        boolean isContextualPermissionRequestEnabled =
+                ChromeFeatureList.getFieldTrialParamByFeatureAsBoolean(
+                        ChromeFeatureList.NOTIFICATION_PERMISSION_VARIANT,
+                        FIELD_TRIAL_ENABLE_CONTEXTUAL_PERMISSION_REQUESTS, false);
+        if (!isContextualPermissionRequestEnabled) return;
+        Activity activity = ApplicationStatus.getLastTrackedFocusedActivity();
+        if (!(activity instanceof ChromeTabbedActivity)) return;
+
+        ChromeTabbedActivity chromeTabbedActivity = (ChromeTabbedActivity) activity;
+        NotificationPermissionController permissionController =
+                NotificationPermissionController.from(chromeTabbedActivity.getWindowAndroid());
+        if (permissionController == null) return;
+        permissionController.requestPermissionIfNeeded(true /* contextual */);
+    }
+}

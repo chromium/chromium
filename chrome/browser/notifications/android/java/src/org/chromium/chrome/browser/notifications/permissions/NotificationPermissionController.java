@@ -5,14 +5,18 @@
 package org.chromium.chrome.browser.notifications.permissions;
 
 import androidx.annotation.IntDef;
+import androidx.annotation.Nullable;
 
 import org.chromium.base.BuildInfo;
 import org.chromium.base.Callback;
+import org.chromium.base.UnownedUserData;
+import org.chromium.base.UnownedUserDataKey;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.notifications.NotificationUmaTracker;
 import org.chromium.chrome.browser.notifications.NotificationUmaTracker.NotificationPermissionState;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
+import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.permissions.AndroidPermissionDelegate;
 import org.chromium.ui.permissions.PermissionConstants;
 import org.chromium.ui.permissions.PermissionPrefs;
@@ -25,7 +29,7 @@ import java.util.concurrent.TimeUnit;
  * Central class containing the logic for when to trigger notification permission request optionally
  * with a rationale.
  */
-public class NotificationPermissionController {
+public class NotificationPermissionController implements UnownedUserData {
     /** Field trial param controlling rationale behavior. */
     public static final String FIELD_TRIAL_ALWAYS_SHOW_RATIONALE_BEFORE_REQUESTING_PERMISSION =
             "always_show_rationale_before_requesting_permission";
@@ -59,11 +63,16 @@ public class NotificationPermissionController {
 
     private static final long PERMISSION_REQUEST_RETRIGGER_INTERVAL = TimeUnit.DAYS.toMillis(7);
 
+    private static final UnownedUserDataKey<NotificationPermissionController> KEY =
+            new UnownedUserDataKey<>(NotificationPermissionController.class);
+
     private final AndroidPermissionDelegate mAndroidPermissionDelegate;
     private final RationaleDelegate mRationaleDelegate;
 
     /**
-     * Constructor.
+     * Constructor. Should only be called by {@link ChromeTabbedActivity}. Features looking to
+     * request this permission in context should instead use {@link
+     * ContextualNotificationPermissionRequester}.
      * @param androidPermissionDelegate The delegate to request Android permissions.
      * @param rationaleDelegate The delegate to show the rationale UI.
      */
@@ -74,10 +83,48 @@ public class NotificationPermissionController {
     }
 
     /**
-     * Called on startup to request notification permission. Internally handles the logic for when
-     * to make permission request and when to show a rationale.
+     * Get the activity's {@link NotificationPermissionController} from the provided {@link
+     * WindowAndroid}.
+     * @param window The window to get the manager from.
+     * @return The {@link NotificationPermissionController} associated with the activity.
      */
+    public static @Nullable NotificationPermissionController from(WindowAndroid window) {
+        if (window == null) return null;
+        return KEY.retrieveDataFromHost(window.getUnownedUserDataHost());
+    }
+
+    /**
+     * Make this instance of NotificationPermissionController available through the activity's
+     * {@link WindowAndroid} for ease of access.
+     * @param window A {@link WindowAndroid} to attach to.
+     * @param controller The {@link NotificationPermissionController} to attach.
+     */
+    public static void attach(WindowAndroid window, NotificationPermissionController controller) {
+        KEY.attachToHost(window.getUnownedUserDataHost(), controller);
+    }
+
+    /**
+     * Detach the provided NotificationPermissionController from any {@link WindowAndroid} it is
+     * attached with.
+     * @param controller The {@link NotificationPermissionController} to detach.
+     */
+    public static void detach(NotificationPermissionController controller) {
+        KEY.detachFromAllHosts(controller);
+    }
+
+    /** Called on startup to request permission. See next method for more details. */
     public void requestPermissionIfNeeded() {
+        requestPermissionIfNeeded(false);
+    }
+
+    /**
+     * Called to request notification permission if not granted. Called on startup and contextually
+     * by some features using notifications. Internally handles the logic for when to make
+     * permission request directly and when to show a rationale beforehand.
+     * @param contextual Whether this request is made in context. True for requesting from features
+     *        using notifications, false for invoking on startup.
+     */
+    public void requestPermissionIfNeeded(boolean contextual) {
         // Notifications only require permission starting at Android T.
         if (!BuildInfo.isAtLeastT()) {
             return;

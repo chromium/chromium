@@ -18,6 +18,7 @@ import org.chromium.components.offline_items_collection.OfflineItemVisuals;
 import org.chromium.components.offline_items_collection.OpenParams;
 import org.chromium.components.offline_items_collection.UpdateDelta;
 import org.chromium.components.offline_items_collection.VisualsCallback;
+import org.chromium.ui.permissions.ContextualNotificationPermissionRequester;
 
 import java.util.HashMap;
 import java.util.List;
@@ -160,6 +161,9 @@ public class OfflineContentAggregatorNotificationBridgeUi
             mUi.notifyDownloadCanceled(item.id);
             return;
         }
+
+        // Request notification permission if needed.
+        ContextualNotificationPermissionRequester.getInstance().requestPermissionIfNeeded();
 
         DownloadInfo info = DownloadInfo.fromOfflineItem(item, visuals);
         switch (item.state) {

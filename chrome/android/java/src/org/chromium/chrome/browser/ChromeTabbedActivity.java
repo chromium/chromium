@@ -371,6 +371,7 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
     private TabbedModeTabDelegateFactory mTabDelegateFactory;
 
     private final AppLaunchDrawBlocker mAppLaunchDrawBlocker;
+    private NotificationPermissionController mNotificationPermissionController;
 
     // ID assigned to each ChromeTabbedActivity instance in Android S+ where multi-instance feature
     // is supported. This can be explicitly set in the incoming Intent or internally assigned.
@@ -957,11 +958,11 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
         ChromeAccessibilityUtil.get().addObserver(mLayoutManager);
         if (isTablet()) ChromeAccessibilityUtil.get().addObserver(mCompositorViewHolder);
 
-        NotificationPermissionController notificationPermissionController =
-                new NotificationPermissionController(getWindowAndroid(),
-                        new NotificationPermissionRationaleDialogController(
-                                this, getModalDialogManager()));
-        notificationPermissionController.requestPermissionIfNeeded();
+        mNotificationPermissionController = new NotificationPermissionController(getWindowAndroid(),
+                new NotificationPermissionRationaleDialogController(this, getModalDialogManager()));
+        NotificationPermissionController.attach(
+                getWindowAndroid(), mNotificationPermissionController);
+        mNotificationPermissionController.requestPermissionIfNeeded(false /* contextual */);
     }
 
     @Override
@@ -2517,6 +2518,11 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
 
     @Override
     public void onDestroyInternal() {
+        if (mNotificationPermissionController != null) {
+            NotificationPermissionController.detach(mNotificationPermissionController);
+            mNotificationPermissionController = null;
+        }
+
         if (mCallbackController != null) {
             mCallbackController.destroy();
             mCallbackController = null;
