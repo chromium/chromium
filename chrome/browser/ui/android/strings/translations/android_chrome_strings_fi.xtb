@@ -73,7 +73,7 @@
 <translation id="1376578503827013741">Lasketaan…</translation>
 <translation id="1382912999714108023">Eivätkö tietosi ole ajan tasalla? Ota yhteyttä pankkiin ja päivitä ne.</translation>
 <translation id="1383876407941801731">Haku</translation>
-<translation id="1384704387250346179">Käännä kuva Google Lensillä <ph name="BEGIN_NEW" />Uusi<ph name="END_NEW" /></translation>
+<translation id="1384704387250346179">Käännä kuva Google Lensilla <ph name="BEGIN_NEW" />Uusi<ph name="END_NEW" /></translation>
 <translation id="1386674309198842382">Aktiivinen <ph name="LAST_UPDATED" /> päivää sitten</translation>
 <translation id="1397811292916898096">Hae nimellä <ph name="PRODUCT_NAME" /></translation>
 <translation id="1406000523432664303">Do Not Track</translation>
@@ -116,7 +116,7 @@
 <translation id="1670399744444387456">Perusasetukset</translation>
 <translation id="1671236975893690980">Lataus odottaa…</translation>
 <translation id="1672586136351118594">Älä näytä uudelleen</translation>
-<translation id="1680919990519905526">Osta kuvasta Lensillä <ph name="BEGIN_NEW" />Uusi<ph name="END_NEW" /></translation>
+<translation id="1680919990519905526">Osta kuvasta Lensilla <ph name="BEGIN_NEW" />Uusi<ph name="END_NEW" /></translation>
 <translation id="1682195225331129001">Kokeile nyt</translation>
 <translation id="1697284962337958118">Lisää…</translation>
 <translation id="1702543251015153180">Muutetaanko tumman teeman asetuksia?</translation>
@@ -760,7 +760,7 @@ Jos haluat muokata asetusta, <ph name="BEGIN_LINK" />nollaa synkronointi<ph name
 <translation id="5342314432463739672">Käyttöoikeuspyynnöt</translation>
 <translation id="5355191726083956201">Parannettu suojaus on päällä</translation>
 <translation id="5368958499335451666">{OPEN_TABS,plural, =1{<ph name="OPEN_TABS_ONE" /> avoin välilehti, vaihda välilehteä napauttamalla}other{<ph name="OPEN_TABS_MANY" /> avointa välilehteä, vaihda välilehteä napauttamalla}}</translation>
-<translation id="5375577065097716013">Hae kuvaa Google Lensillä <ph name="BEGIN_NEW" />Uusi<ph name="END_NEW" /></translation>
+<translation id="5375577065097716013">Hae kuvaa Google Lensilla <ph name="BEGIN_NEW" />Uusi<ph name="END_NEW" /></translation>
 <translation id="5403644198645076998">Salli vain tietyt sivustot</translation>
 <translation id="5409881200985013443">Lähetetäänkö <ph name="ONE_TIME_CODE" /> (<ph name="CLIENT_NAME" />)?</translation>
 <translation id="5414836363063783498">Vahvistetaan…</translation>
@@ -1174,7 +1174,7 @@ Jotkin verkkosivustot voivat vastata tähän pyyntöön esimerkiksi näyttämäl
 <translation id="7514365320538308">Lataa</translation>
 <translation id="751961395872307827">Yhteyden muodostaminen sivustoon epäonnistui</translation>
 <translation id="752220631458524187">Katkaise yhteys, kun olet valmis</translation>
-<translation id="7523960634226602883">Hae kameran avulla Google Lensissä</translation>
+<translation id="7523960634226602883">Hae kameran avulla Google Lensissa</translation>
 <translation id="753225086557513863">Ajoitettu myöhemmäksi</translation>
 <translation id="7560448309733608642">Tyhjentää kaikkien synkronoitujen laitteiden historian. Google-tililläsi voi olla muita selaushistoriatietoja osoitteessa <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" />.</translation>
 <translation id="7562080006725997899">Selaustietoja poistetaan</translation>

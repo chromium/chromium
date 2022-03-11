@@ -141,7 +141,7 @@
 <translation id="22085916256174561">కొరియన్</translation>
 <translation id="2208919847696382164">Linuxతో ఇన్‌స్టాల్ చేయండి</translation>
 <translation id="2225536596944493418">మీరు <ph name="NUMBER_OF_ITEMS" /> అంశాలను ఖచ్చితంగా తొలగించాలనుకుంటున్నారా?</translation>
-<translation id="2230062665678605299">"<ph name="FOLDER_NAME" />" ఫోల్డర్‌ను సృష్టించడం సాధ్యపడలేదు. <ph name="ERROR_MESSAGE" /></translation>
+<translation id="2230062665678605299">"<ph name="FOLDER_NAME" />" ఫోల్డర్‌ను క్రియేట్ చేయడం సాధ్యపడలేదు. <ph name="ERROR_MESSAGE" /></translation>
 <translation id="2239068707900391003">కాఫీని పట్టుకుని ఉన్న వ్యక్తి</translation>
 <translation id="2251368349685848079">ట్రాష్ నుండి రీస్టోర్ చేయండి</translation>
 <translation id="2282155092769082568">ఆటోకాన్ఫిగరేషన్ URL:</translation>
@@ -278,7 +278,7 @@
 <translation id="3408072735282270043"><ph name="NETWORK_NAME" />, యాక్టివేట్ చేయి</translation>
 <translation id="3408236822532681288">నియో 2 కీబోర్డ్‌తో జర్మన్ (జర్మనీ)</translation>
 <translation id="3414856743105198592">తొలగించగల మీడియాను ఫార్మాట్ చేయడం వలన మొత్తం డేటా తుడిచి వేయబడుతుంది. మీరు కొనసాగించాలనుకుంటున్నారా?</translation>
-<translation id="3437801641691368414">సృష్టించిన సమయం</translation>
+<translation id="3437801641691368414">క్రియేట్ చేసిన సమయం</translation>
 <translation id="343907260260897561">ఇన్‌స్టంట్ కెమెరా</translation>
 <translation id="3455931012307786678">ఎస్టోనియన్</translation>
 <translation id="3466147780910026086">మీ మీడియా పరికరాన్ని స్కాన్ చేస్తోంది...</translation>

@@ -396,7 +396,7 @@
 <translation id="3593039967545720377">మీ క్లిప్‌బోర్డ్‌ను చూడడానికి, <ph name="SHORTCUT_KEY_NAME" /> + V నొక్కడం ద్వారా మీ క్లిప్‌బోర్డ్ హిస్టరీని యాక్సెస్ చేయండి. ప్రారంభించడానికి, ఐటెమ్‌ను కాపీ చేయండి.</translation>
 <translation id="3593646411856133110">తెరిచి ఉన్న యాప్‌లను చూడటానికి పైకి స్వైప్ చేసి, పట్టుకోండి</translation>
 <translation id="3595596368722241419">బ్యాటరీ నిండింది</translation>
-<translation id="3604801046548457007">"<ph name="DESK_TITILE" />" డెస్క్ సృష్టించబడింది</translation>
+<translation id="3604801046548457007">"<ph name="DESK_TITILE" />" డెస్క్ క్రియేట్ చేయబడింది</translation>
 <translation id="3606978283550408104">బ్రెయిలీ డిస్‌ప్లే కనెక్ట్ చేయబడింది.</translation>
 <translation id="3615926715408477684">మొబైల్ డేటాను ఎనేబుల్ చేస్తే బ్లూటూత్ ఎనేబుల్ అవుతుంది</translation>
 <translation id="3616883743181209306">స్క్రీన్‌లో పైన కుడి వైపు మూలకు మెనూ తరలించబడింది.</translation>
@@ -638,7 +638,7 @@
 <translation id="5170568018924773124">ఫోల్డర్‌లో చూపించు</translation>
 <translation id="5176318573511391780">పాక్షిక స్క్రీన్‌ను రికార్డ్ చేయండి</translation>
 <translation id="5198413532174090167"><ph name="DATE" />, <ph name="NUMBER" /> ఈవెంట్‌లు</translation>
-<translation id="5198715732953550718">కొత్త ఫోల్డర్‌ను సృష్టించడం కోసం <ph name="MOVED_APP_NAME" /> అనేది <ph name="IN_PLACE_APP" />తో కలపబడింది.</translation>
+<translation id="5198715732953550718">కొత్త ఫోల్డర్‌ను క్రియేట్ చేయడం కోసం <ph name="MOVED_APP_NAME" /> అనేది <ph name="IN_PLACE_APP" />తో కలపబడింది.</translation>
 <translation id="5206028654245650022"><ph name="APP_NAME" />, <ph name="NOTIFICATION_TITLE" />: <ph name="MESSAGE" />, <ph name="PHONE_NAME" /></translation>
 <translation id="5206057955438543357">{NUM_NOTIFICATIONS,plural, =1{మరో 1 నోటిఫికేషన్}other{మరో # నోటిఫికేషన్‌లు}}</translation>
 <translation id="5207949376430453814">వచన కర్సర్ గుర్తును హైలైట్ చేయి</translation>
@@ -668,7 +668,7 @@
 <translation id="5344128444027639014"><ph name="BATTERY_PERCENTAGE" />% (కుడి)</translation>
 <translation id="5352250171825660495">ముదురు రంగు రూపం ఆన్‌లో ఉంది</translation>
 <translation id="5379115545237091094">అనేకసార్లు ప్రయత్నించారు</translation>
-<translation id="5395308026110844773"><ph name="IN_PLACE_APP" />పై భాగాన <ph name="DRAGGED_APP_NAME" /> ఉంది, ఫోల్డర్ సృష్టించడానికి రిలీజ్ చేయండి.</translation>
+<translation id="5395308026110844773"><ph name="IN_PLACE_APP" />పై భాగాన <ph name="DRAGGED_APP_NAME" /> ఉంది, ఫోల్డర్ క్రియేట్ చేయడానికి రిలీజ్ చేయండి.</translation>
 <translation id="5397578532367286026">ఈ వినియోగదారు యొక్క వినియోగం మరియు చరిత్రను chrome.comలో నిర్వాహకుడు (<ph name="MANAGER_EMAIL" />) సమీక్షించవచ్చు.</translation>
 <translation id="5400461572260843123">త్వరిత సెట్టింగ్‌లు, నోటిఫికేషన్ సెంటర్‌ను యాక్సెస్ చేయడానికి శోధన + ఎడమకు నొక్కండి.</translation>
 <translation id="5426063383988017631">సెట్టింగ్‌ల మెనూ మూసివేయబడింది</translation>

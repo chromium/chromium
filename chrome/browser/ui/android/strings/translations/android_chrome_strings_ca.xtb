@@ -374,7 +374,7 @@ Mantén premuda qualsevol paraula per cercar-la. Per definir millor la cerca, se
 <translation id="3037517125981011456">Mostra sol·licituds per iniciar la sessió a Chrome</translation>
 <translation id="3046945242843292318">Arriba a aquest lloc web més ràpidament la propera vegada</translation>
 <translation id="3055259925215945098">S'ha mogut l'adreça d'interès</translation>
-<translation id="3055841435094910999">S'envia informació a Google sobre l'ús que fas de Chrome, però no es relaciona amb tu\n\nSi Chrome falla, els detalls corresponents poden incloure informació personal\n\nSi actives la sincronització, les mètriques també poden incloure informació sobre els URL que visites</translation>
+<translation id="3055841435094910999">S'envia informació a Google sobre l'ús que fas de Chrome, però no es relaciona amb tu\n\nSi Chrome falla, els detalls sobre el bloqueig poden incloure informació personal\n\nSi actives la sincronització, les mètriques també poden incloure informació sobre els URL que visites</translation>
 <translation id="3060635849835183725">{BOOKMARKS_COUNT,plural, =1{<ph name="BOOKMARKS_COUNT_ONE" /> adreça d'interès}other{<ph name="BOOKMARKS_COUNT_MANY" /> adreces d'interès}}</translation>
 <translation id="3062802207422175757">Articles relacionats amb els teus interessos a Chrome</translation>
 <translation id="3066573403916685335">Mou cap avall</translation>
@@ -1470,7 +1470,7 @@ Per exemple, és possible que alguns llocs web responguin a aquesta sol·licitud
 <translation id="9081543426177426948">Els llocs web que visites no es desen en mode d'incògnit</translation>
 <translation id="9086302186042011942">Sincronització</translation>
 <translation id="9086455579313502267">No es pot accedir a la xarxa</translation>
-<translation id="9100505651305367705">Proposa mostrar articles en visualització simplificada, quan s'admeti</translation>
+<translation id="9100505651305367705">Proposa mostrar els articles en visualització simplificada, si està disponible</translation>
 <translation id="9100610230175265781">S'ha d'introduir una frase de contrasenya </translation>
 <translation id="9101137867221042551">Gestió</translation>
 <translation id="9102803872260866941">La pestanya de previsualització està oberta</translation>
