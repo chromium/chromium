@@ -84,20 +84,26 @@ TEST(AttributionResponseParsingTest, ParseAttributionAggregatableSources) {
   const struct {
     String description;
     AtomicString header;
-    bool valid;
-    mojom::blink::AttributionAggregatableSourcesPtr sources;
+    ResponseParseStatus status;
+    mojom::blink::AttributionAggregatableSourcesPtr value;
   } kTestCases[] = {
-      {"Empty header", "", false,
+      {"No header", AtomicString(), ResponseParseStatus::kNotFound,
        mojom::blink::AttributionAggregatableSources::New()},
-      {"Invalid JSON", "{", false,
+      {"Empty header", "", ResponseParseStatus::kParseError,
        mojom::blink::AttributionAggregatableSources::New()},
-      {"Missing id field", R"([{"key_piece":"0x159"}])", false,
+      {"Invalid JSON", "{", ResponseParseStatus::kParseError,
        mojom::blink::AttributionAggregatableSources::New()},
-      {"Missing key_piece field", R"([{"id":"key"}])", false,
+      {"Missing id field", R"([{"key_piece":"0x159"}])",
+       ResponseParseStatus::kInvalidFormat,
        mojom::blink::AttributionAggregatableSources::New()},
-      {"Invalid key", R"([{"id":"key","key_piece":"0xG59"}])", false,
+      {"Missing key_piece field", R"([{"id":"key"}])",
+       ResponseParseStatus::kInvalidFormat,
        mojom::blink::AttributionAggregatableSources::New()},
-      {"One valid key", R"([{"id":"key","key_piece":"0x159"}])", true,
+      {"Invalid key", R"([{"id":"key","key_piece":"0xG59"}])",
+       ResponseParseStatus::kInvalidFormat,
+       mojom::blink::AttributionAggregatableSources::New()},
+      {"One valid key", R"([{"id":"key","key_piece":"0x159"}])",
+       ResponseParseStatus::kSuccess,
        AggregatableSourcesBuilder()
            .AddKey(/*key_id=*/"key",
                    mojom::blink::AttributionAggregatableKey::New(
@@ -106,7 +112,7 @@ TEST(AttributionResponseParsingTest, ParseAttributionAggregatableSources) {
       {"Two valid keys",
        AtomicString(R"([{"id":"key1","key_piece":"0x159"},)") +
            R"({"id":"key2","key_piece":"0x50000000000000159"}])",
-       true,
+       ResponseParseStatus::kSuccess,
        AggregatableSourcesBuilder()
            .AddKey(/*key_id=*/"key1",
                    mojom::blink::AttributionAggregatableKey::New(
@@ -118,16 +124,14 @@ TEST(AttributionResponseParsingTest, ParseAttributionAggregatableSources) {
       {"Second key invalid",
        AtomicString(R"([{"id":"key1","key_piece":"0x159"},)") +
            R"({"id":"key2","key_piece":""}])",
-       false, mojom::blink::AttributionAggregatableSources::New()},
+       ResponseParseStatus::kInvalidFormat,
+       mojom::blink::AttributionAggregatableSources::New()},
   };
 
   for (const auto& test_case : kTestCases) {
-    auto sources = mojom::blink::AttributionAggregatableSources::New();
-    bool valid =
-        ParseAttributionAggregatableSources(test_case.header, *sources);
-    EXPECT_EQ(test_case.valid, valid) << test_case.description;
-    if (test_case.valid)
-      EXPECT_EQ(test_case.sources, sources) << test_case.description;
+    auto result = ParseAttributionAggregatableSources(test_case.header);
+    EXPECT_EQ(test_case.status, result.status) << test_case.description;
+    EXPECT_EQ(test_case.value, result.value) << test_case.description;
   }
 }
 
@@ -154,7 +158,7 @@ TEST(AttributionResponseParsingTest,
       return "[" + builder.ToAtomicString() + "]";
     }
 
-    mojom::blink::AttributionAggregatableSourcesPtr GetSources() const {
+    mojom::blink::AttributionAggregatableSourcesPtr GetValue() const {
       AggregatableSourcesBuilder builder;
       if (!valid)
         return builder.Build();
@@ -190,12 +194,12 @@ TEST(AttributionResponseParsingTest,
   };
 
   for (const auto& test_case : kTestCases) {
-    auto sources = mojom::blink::AttributionAggregatableSources::New();
-    bool valid =
-        ParseAttributionAggregatableSources(test_case.GetHeader(), *sources);
-    EXPECT_EQ(test_case.valid, valid) << test_case.description;
-    if (test_case.valid)
-      EXPECT_EQ(test_case.GetSources(), sources) << test_case.description;
+    auto result = ParseAttributionAggregatableSources(test_case.GetHeader());
+    EXPECT_EQ(result.status, test_case.valid
+                                 ? ResponseParseStatus::kSuccess
+                                 : ResponseParseStatus::kInvalidFormat)
+        << test_case.description;
+    EXPECT_EQ(result.value, test_case.GetValue()) << test_case.description;
   }
 }
 
@@ -203,21 +207,26 @@ TEST(AttributionResponseParsingTest, ParseAttributionAggregatableTrigger) {
   const struct {
     String description;
     AtomicString header;
-    bool valid;
-    mojom::blink::AttributionAggregatableTriggerPtr trigger;
+    ResponseParseStatus status;
+    mojom::blink::AttributionAggregatableTriggerPtr value;
   } kTestCases[] = {
-      {"Empty header", "", false,
+      {"No header", AtomicString(), ResponseParseStatus::kNotFound,
        mojom::blink::AttributionAggregatableTrigger::New()},
-      {"Invalid JSON", "{", false,
+      {"Empty header", "", ResponseParseStatus::kParseError,
        mojom::blink::AttributionAggregatableTrigger::New()},
-      {"Missing source_keys field", R"([{"key_piece":"0x400"}])", false,
+      {"Invalid JSON", "{", ResponseParseStatus::kParseError,
        mojom::blink::AttributionAggregatableTrigger::New()},
-      {"Missing key_piece field", R"([{"source_keys":["key"]}])", false,
+      {"Missing source_keys field", R"([{"key_piece":"0x400"}])",
+       ResponseParseStatus::kInvalidFormat,
        mojom::blink::AttributionAggregatableTrigger::New()},
-      {"Invalid key", R"([{"key_piece":"0xG00","source_keys":["key"]}])", false,
+      {"Missing key_piece field", R"([{"source_keys":["key"]}])",
+       ResponseParseStatus::kInvalidFormat,
+       mojom::blink::AttributionAggregatableTrigger::New()},
+      {"Invalid key", R"([{"key_piece":"0xG00","source_keys":["key"]}])",
+       ResponseParseStatus::kInvalidFormat,
        mojom::blink::AttributionAggregatableTrigger::New()},
       {"Valid trigger", R"([{"key_piece":"0x400","source_keys":["key"]}])",
-       true,
+       ResponseParseStatus::kSuccess,
        AggregatableTriggerBuilder()
            .AddTriggerData(
                mojom::blink::AttributionAggregatableTriggerData::New(
@@ -230,7 +239,7 @@ TEST(AttributionResponseParsingTest, ParseAttributionAggregatableTrigger) {
       {"Valid trigger with filters",
        AtomicString(R"([{"key_piece":"0x400","source_keys":["key"],)") +
            R"("filters":{"filter":["value1"]},"not_filters":{"filter":["value2"]}}])",
-       true,
+       ResponseParseStatus::kSuccess,
        AggregatableTriggerBuilder()
            .AddTriggerData(
                mojom::blink::AttributionAggregatableTriggerData::New(
@@ -249,7 +258,7 @@ TEST(AttributionResponseParsingTest, ParseAttributionAggregatableTrigger) {
       {"Two valid trigger data",
        AtomicString(R"([{"key_piece":"0x400","source_keys":["key1"]},)") +
            R"({"key_piece":"0xA80","source_keys":["key2"]}])",
-       true,
+       ResponseParseStatus::kSuccess,
        AggregatableTriggerBuilder()
            .AddTriggerData(
                mojom::blink::AttributionAggregatableTriggerData::New(
@@ -269,15 +278,9 @@ TEST(AttributionResponseParsingTest, ParseAttributionAggregatableTrigger) {
   };
 
   for (const auto& test_case : kTestCases) {
-    WTF::Vector<mojom::blink::AttributionAggregatableTriggerDataPtr>
-        trigger_data;
-    bool valid =
-        ParseAttributionAggregatableTriggerData(test_case.header, trigger_data);
-    EXPECT_EQ(test_case.valid, valid) << test_case.description;
-    if (test_case.valid) {
-      EXPECT_EQ(test_case.trigger->trigger_data, trigger_data)
-          << test_case.description;
-    }
+    auto result = ParseAttributionAggregatableTrigger(test_case.header);
+    EXPECT_EQ(test_case.status, result.status) << test_case.description;
+    EXPECT_EQ(test_case.value, result.value) << test_case.description;
   }
 }
 
@@ -315,11 +318,10 @@ TEST(AttributionResponseParsingTest,
       return "[" + builder.ToAtomicString() + "]";
     }
 
-    WTF::Vector<mojom::blink::AttributionAggregatableTriggerDataPtr>
-    GetTriggerData() const {
+    mojom::blink::AttributionAggregatableTriggerPtr GetValue() const {
       AggregatableTriggerBuilder builder;
       if (!valid)
-        return {};
+        return builder.Build();
 
       for (wtf_size_t i = 0u; i < trigger_data_count; ++i) {
         builder.AddTriggerData(
@@ -330,7 +332,7 @@ TEST(AttributionResponseParsingTest,
                 /*filters=*/mojom::blink::AttributionFilterData::New(),
                 /*not_filters=*/mojom::blink::AttributionFilterData::New()));
       }
-      return std::move(builder.Build()->trigger_data);
+      return builder.Build();
     }
 
    private:
@@ -353,16 +355,13 @@ TEST(AttributionResponseParsingTest,
   };
 
   for (const auto& test_case : kTestCases) {
-    WTF::Vector<mojom::blink::AttributionAggregatableTriggerDataPtr>
-        trigger_data;
-    bool valid = ParseAttributionAggregatableTriggerData(test_case.GetHeader(),
-                                                         trigger_data);
+    auto result = ParseAttributionAggregatableTrigger(test_case.GetHeader());
 
-    EXPECT_EQ(test_case.valid, valid) << test_case.description;
-    if (test_case.valid) {
-      EXPECT_EQ(test_case.GetTriggerData(), trigger_data)
-          << test_case.description;
-    }
+    EXPECT_EQ(result.status, test_case.valid
+                                 ? ResponseParseStatus::kSuccess
+                                 : ResponseParseStatus::kInvalidFormat)
+        << test_case.description;
+    EXPECT_EQ(result.value, test_case.GetValue()) << test_case.description;
   }
 }
 
@@ -370,25 +369,30 @@ TEST(AttributionResponseParsingTest, ParseAttributionAggregatableValues) {
   const struct {
     AtomicString description;
     AtomicString header;
-    bool valid;
-    WTF::HashMap<String, uint32_t> values;
+    ResponseParseStatus status;
+    mojom::blink::AttributionAggregatableValuesPtr value;
   } kTestCases[] = {
-      {"Empty header", "", false, {}},
-      {"Invalid JSON", "{", false, {}},
-      {"Invalid value", R"({"key":-1})", false, {}},
-      {"Valid value", R"({"key":123})", true, {{"key", 123}}},
-      {"Two valid values",
-       R"({"key1":123,"key2":456})",
-       true,
-       {{"key1", 123}, {"key2", 456}}},
+      {"No header", AtomicString(), ResponseParseStatus::kNotFound,
+       mojom::blink::AttributionAggregatableValues::New()},
+      {"Empty header", "", ResponseParseStatus::kParseError,
+       mojom::blink::AttributionAggregatableValues::New()},
+      {"Invalid JSON", "{", ResponseParseStatus::kParseError,
+       mojom::blink::AttributionAggregatableValues::New()},
+      {"Invalid value", R"({"key":-1})", ResponseParseStatus::kInvalidFormat,
+       mojom::blink::AttributionAggregatableValues::New()},
+      {"Valid value", R"({"key":123})", ResponseParseStatus::kSuccess,
+       mojom::blink::AttributionAggregatableValues::New(
+           HashMap<String, uint32_t>{{"key", 123}})},
+      {"Two valid values", R"({"key1":123,"key2":456})",
+       ResponseParseStatus::kSuccess,
+       mojom::blink::AttributionAggregatableValues::New(
+           HashMap<String, uint32_t>{{"key1", 123}, {"key2", 456}})},
   };
 
   for (const auto& test_case : kTestCases) {
-    WTF::HashMap<String, uint32_t> values;
-    bool valid = ParseAttributionAggregatableValues(test_case.header, values);
-    EXPECT_EQ(test_case.valid, valid) << test_case.description;
-    if (test_case.valid)
-      EXPECT_EQ(test_case.values, values) << test_case.description;
+    auto result = ParseAttributionAggregatableValues(test_case.header);
+    EXPECT_EQ(test_case.status, result.status) << test_case.description;
+    EXPECT_EQ(test_case.value, result.value) << test_case.description;
   }
 }
 
@@ -414,15 +418,16 @@ TEST(AttributionResponseParsingTest,
       return "{" + builder.ToAtomicString() + "}";
     }
 
-    WTF::HashMap<String, uint32_t> GetValues() const {
+    mojom::blink::AttributionAggregatableValuesPtr GetValue() const {
+      auto aggregatable_values =
+          mojom::blink::AttributionAggregatableValues::New();
       if (!valid)
-        return {};
+        return aggregatable_values;
 
-      WTF::HashMap<String, uint32_t> values;
       for (wtf_size_t i = 0u; i < key_count; ++i) {
-        values.insert(GetKey(i), i + 1);
+        aggregatable_values->values.insert(GetKey(i), i + 1);
       }
-      return values;
+      return aggregatable_values;
     }
 
    private:
@@ -448,13 +453,13 @@ TEST(AttributionResponseParsingTest,
   };
 
   for (const auto& test_case : kTestCases) {
-    WTF::HashMap<String, uint32_t> values;
-    bool valid =
-        ParseAttributionAggregatableValues(test_case.GetHeader(), values);
+    auto result = ParseAttributionAggregatableValues(test_case.GetHeader());
 
-    EXPECT_EQ(test_case.valid, valid) << test_case.description;
-    if (test_case.valid)
-      EXPECT_EQ(test_case.GetValues(), values) << test_case.description;
+    EXPECT_EQ(result.status, test_case.valid
+                                 ? ResponseParseStatus::kSuccess
+                                 : ResponseParseStatus::kInvalidFormat)
+        << test_case.description;
+    EXPECT_EQ(result.value, test_case.GetValue()) << test_case.description;
   }
 }
 

@@ -391,6 +391,8 @@ source_set("browser") {
     "attribution_reporting/attribution_aggregatable_sources.h",
     "attribution_reporting/attribution_aggregatable_trigger.cc",
     "attribution_reporting/attribution_aggregatable_trigger.h",
+    "attribution_reporting/attribution_aggregatable_values.cc",
+    "attribution_reporting/attribution_aggregatable_values.h",
     "attribution_reporting/attribution_cookie_checker.h",
     "attribution_reporting/attribution_cookie_checker_impl.cc",
     "attribution_reporting/attribution_cookie_checker_impl.h",

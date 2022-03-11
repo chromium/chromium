@@ -119,47 +119,61 @@ bool ParseAttributionFilterData(
 
 }  // namespace
 
-bool ParseAttributionAggregatableSources(
-    const AtomicString& json_string,
-    mojom::blink::AttributionAggregatableSources& sources) {
+ResponseParseResult<mojom::blink::AttributionAggregatableSources>
+ParseAttributionAggregatableSources(const AtomicString& json_string) {
+  if (json_string.IsNull()) {
+    return ResponseParseResult<mojom::blink::AttributionAggregatableSources>(
+        ResponseParseStatus::kNotFound);
+  }
+
   std::unique_ptr<JSONValue> json = ParseJSON(json_string);
-  if (!json)
-    return false;
+  if (!json) {
+    return ResponseParseResult<mojom::blink::AttributionAggregatableSources>(
+        ResponseParseStatus::kParseError);
+  }
 
   const auto* array = JSONArray::Cast(json.get());
   if (!array ||
       array->size() > kMaxAttributionAggregatableKeysPerSourceOrTrigger) {
-    return false;
+    return ResponseParseResult<mojom::blink::AttributionAggregatableSources>(
+        ResponseParseStatus::kInvalidFormat);
   }
 
   const wtf_size_t num_keys = array->size();
 
-  sources.sources.ReserveCapacityForSize(num_keys);
+  auto sources = mojom::blink::AttributionAggregatableSources::New();
+  sources->sources.ReserveCapacityForSize(num_keys);
 
   for (wtf_size_t i = 0; i < num_keys; ++i) {
     JSONValue* value = array->at(i);
     DCHECK(value);
 
     const auto* object = JSONObject::Cast(value);
-    if (!object)
-      return false;
+    if (!object) {
+      return ResponseParseResult<mojom::blink::AttributionAggregatableSources>(
+          ResponseParseStatus::kInvalidFormat);
+    }
 
     String key_id;
     if (!object->GetString("id", &key_id) ||
         key_id.CharactersSizeInBytes() >
             kMaxBytesPerAttributionAggregatableKeyId) {
-      return false;
+      return ResponseParseResult<mojom::blink::AttributionAggregatableSources>(
+          ResponseParseStatus::kInvalidFormat);
     }
 
     mojom::blink::AttributionAggregatableKeyPtr key =
         ParseAttributionAggregatableKey(object);
-    if (!key)
-      return false;
+    if (!key) {
+      return ResponseParseResult<mojom::blink::AttributionAggregatableSources>(
+          ResponseParseStatus::kInvalidFormat);
+    }
 
-    sources.sources.insert(std::move(key_id), std::move(key));
+    sources->sources.insert(std::move(key_id), std::move(key));
   }
 
-  return true;
+  return ResponseParseResult<mojom::blink::AttributionAggregatableSources>(
+      ResponseParseStatus::kSuccess, std::move(sources));
 }
 
 mojom::blink::AttributionDebugKeyPtr ParseDebugKey(const String& string) {
@@ -327,48 +341,61 @@ bool ParseFilters(const AtomicString& json_string,
   return ParseAttributionFilterData(json.get(), filter_data);
 }
 
-bool ParseAttributionAggregatableTriggerData(
-    const AtomicString& json_string,
-    WTF::Vector<mojom::blink::AttributionAggregatableTriggerDataPtr>&
-        trigger_data) {
+ResponseParseResult<mojom::blink::AttributionAggregatableTrigger>
+ParseAttributionAggregatableTrigger(const AtomicString& json_string) {
+  if (json_string.IsNull()) {
+    return ResponseParseResult<mojom::blink::AttributionAggregatableTrigger>(
+        ResponseParseStatus::kNotFound);
+  }
+
   std::unique_ptr<JSONValue> json = ParseJSON(json_string);
-  if (!json)
-    return false;
+  if (!json) {
+    return ResponseParseResult<mojom::blink::AttributionAggregatableTrigger>(
+        ResponseParseStatus::kParseError);
+  }
 
   const auto* array = JSONArray::Cast(json.get());
   if (!array ||
       array->size() > kMaxAttributionAggregatableTriggerDataPerTrigger) {
-    return false;
+    return ResponseParseResult<mojom::blink::AttributionAggregatableTrigger>(
+        ResponseParseStatus::kInvalidFormat);
   }
 
   const wtf_size_t num_trigger_data = array->size();
-  trigger_data.ReserveInitialCapacity(num_trigger_data);
+
+  auto trigger = mojom::blink::AttributionAggregatableTrigger::New();
+  trigger->trigger_data.ReserveInitialCapacity(num_trigger_data);
 
   for (wtf_size_t i = 0; i < num_trigger_data; ++i) {
     JSONValue* value = array->at(i);
     DCHECK(value);
 
     const auto* object = JSONObject::Cast(value);
-    if (!object)
-      return false;
+    if (!object) {
+      return ResponseParseResult<mojom::blink::AttributionAggregatableTrigger>(
+          ResponseParseStatus::kInvalidFormat);
+    }
 
-    auto data = mojom::blink::AttributionAggregatableTriggerData::New();
+    auto trigger_data = mojom::blink::AttributionAggregatableTriggerData::New();
 
-    data->key = ParseAttributionAggregatableKey(object);
-    if (!data->key)
-      return false;
+    trigger_data->key = ParseAttributionAggregatableKey(object);
+    if (!trigger_data->key) {
+      return ResponseParseResult<mojom::blink::AttributionAggregatableTrigger>(
+          ResponseParseStatus::kInvalidFormat);
+    }
 
     JSONArray* source_keys_val = object->GetArray("source_keys");
     if (!source_keys_val ||
         source_keys_val->size() >
             kMaxAttributionAggregatableKeysPerSourceOrTrigger) {
-      return false;
+      return ResponseParseResult<mojom::blink::AttributionAggregatableTrigger>(
+          ResponseParseStatus::kInvalidFormat);
     }
 
-    const wtf_size_t num_source_keys = source_keys_val->size();
-    data->source_keys.ReserveInitialCapacity(num_source_keys);
+    const wtf_size_t num_sources_keys = source_keys_val->size();
+    trigger_data->source_keys.ReserveInitialCapacity(num_sources_keys);
 
-    for (wtf_size_t j = 0; j < num_source_keys; ++j) {
+    for (wtf_size_t j = 0; j < num_sources_keys; ++j) {
       JSONValue* source_key_val = source_keys_val->at(j);
       DCHECK(source_key_val);
 
@@ -376,43 +403,58 @@ bool ParseAttributionAggregatableTriggerData(
       if (!source_key_val->AsString(&source_key) ||
           source_key.CharactersSizeInBytes() >
               kMaxBytesPerAttributionAggregatableKeyId) {
-        return false;
+        return ResponseParseResult<
+            mojom::blink::AttributionAggregatableTrigger>(
+            ResponseParseStatus::kInvalidFormat);
       }
-      data->source_keys.push_back(std::move(source_key));
+      trigger_data->source_keys.push_back(std::move(source_key));
     }
 
-    data->filters = mojom::blink::AttributionFilterData::New();
-    if (!ParseAttributionFilterData(object->Get("filters"), *data->filters)) {
-      return false;
+    trigger_data->filters = mojom::blink::AttributionFilterData::New();
+    if (!ParseAttributionFilterData(object->Get("filters"),
+                                    *trigger_data->filters)) {
+      return ResponseParseResult<mojom::blink::AttributionAggregatableTrigger>(
+          ResponseParseStatus::kInvalidFormat);
     }
 
-    data->not_filters = mojom::blink::AttributionFilterData::New();
+    trigger_data->not_filters = mojom::blink::AttributionFilterData::New();
     if (!ParseAttributionFilterData(object->Get("not_filters"),
-                                    *data->not_filters)) {
-      return false;
+                                    *trigger_data->not_filters)) {
+      return ResponseParseResult<mojom::blink::AttributionAggregatableTrigger>(
+          ResponseParseStatus::kInvalidFormat);
     }
 
-    trigger_data.push_back(std::move(data));
+    trigger->trigger_data.push_back(std::move(trigger_data));
   }
 
-  return true;
+  return ResponseParseResult<mojom::blink::AttributionAggregatableTrigger>(
+      ResponseParseStatus::kSuccess, std::move(trigger));
 }
 
-bool ParseAttributionAggregatableValues(
-    const AtomicString& json_string,
-    WTF::HashMap<String, uint32_t>& values) {
+ResponseParseResult<mojom::blink::AttributionAggregatableValues>
+ParseAttributionAggregatableValues(const AtomicString& json_string) {
+  if (json_string.IsNull()) {
+    return ResponseParseResult<mojom::blink::AttributionAggregatableValues>(
+        ResponseParseStatus::kNotFound);
+  }
+
   std::unique_ptr<JSONValue> json = ParseJSON(json_string);
-  if (!json)
-    return false;
+  if (!json) {
+    return ResponseParseResult<mojom::blink::AttributionAggregatableValues>(
+        ResponseParseStatus::kParseError);
+  }
 
   const auto* object = JSONObject::Cast(json.get());
   if (!object ||
       object->size() > kMaxAttributionAggregatableKeysPerSourceOrTrigger) {
-    return false;
+    return ResponseParseResult<mojom::blink::AttributionAggregatableValues>(
+        ResponseParseStatus::kInvalidFormat);
   }
 
   const wtf_size_t num_values = object->size();
-  values.ReserveCapacityForSize(num_values);
+
+  auto values = mojom::blink::AttributionAggregatableValues::New();
+  values->values.ReserveCapacityForSize(num_values);
 
   for (wtf_size_t i = 0; i < num_values; ++i) {
     JSONObject::Entry entry = object->at(i);
@@ -422,17 +464,21 @@ bool ParseAttributionAggregatableValues(
 
     if (key_id.CharactersSizeInBytes() >
         kMaxBytesPerAttributionAggregatableKeyId) {
-      return false;
+      return ResponseParseResult<mojom::blink::AttributionAggregatableValues>(
+          ResponseParseStatus::kInvalidFormat);
     }
 
     int key_value;
-    if (!value->AsInteger(&key_value) || key_value <= 0)
-      return false;
+    if (!value->AsInteger(&key_value) || key_value <= 0) {
+      return ResponseParseResult<mojom::blink::AttributionAggregatableValues>(
+          ResponseParseStatus::kInvalidFormat);
+    }
 
-    values.insert(std::move(key_id), key_value);
+    values->values.insert(std::move(key_id), key_value);
   }
 
-  return true;
+  return ResponseParseResult<mojom::blink::AttributionAggregatableValues>(
+      ResponseParseStatus::kSuccess, std::move(values));
 }
 
 }  // namespace blink::attribution_response_parsing

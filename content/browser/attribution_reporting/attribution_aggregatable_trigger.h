@@ -5,12 +5,9 @@
 #ifndef CONTENT_BROWSER_ATTRIBUTION_REPORTING_ATTRIBUTION_AGGREGATABLE_TRIGGER_H_
 #define CONTENT_BROWSER_ATTRIBUTION_REPORTING_ATTRIBUTION_AGGREGATABLE_TRIGGER_H_
 
-#include <stdint.h>
-
 #include <string>
 #include <vector>
 
-#include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
 #include "content/browser/attribution_reporting/attribution_aggregatable_key.h"
 #include "content/browser/attribution_reporting/attribution_filter_data.h"
@@ -60,8 +57,6 @@ class CONTENT_EXPORT AttributionAggregatableTriggerData {
 
 class CONTENT_EXPORT AttributionAggregatableTrigger {
  public:
-  using Values = base::flat_map<std::string, uint32_t>;
-
   static absl::optional<AttributionAggregatableTrigger> FromMojo(
       blink::mojom::AttributionAggregatableTriggerPtr mojo);
 
@@ -79,15 +74,11 @@ class CONTENT_EXPORT AttributionAggregatableTrigger {
     return trigger_data_;
   }
 
-  const Values& values() const { return values_; }
-
  private:
   explicit AttributionAggregatableTrigger(
-      std::vector<AttributionAggregatableTriggerData> trigger_data,
-      Values values);
+      std::vector<AttributionAggregatableTriggerData> trigger_data);
 
   std::vector<AttributionAggregatableTriggerData> trigger_data_;
-  Values values_;
 };
 
 }  // namespace content

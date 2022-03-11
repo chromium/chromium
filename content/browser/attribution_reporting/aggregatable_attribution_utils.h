@@ -14,13 +14,15 @@ namespace content {
 class AggregatableHistogramContribution;
 class AttributionAggregatableSources;
 class AttributionAggregatableTrigger;
+class AttributionAggregatableValues;
 class AttributionFilterData;
 
 // Creates histograms from the specified source and trigger data.
 CONTENT_EXPORT std::vector<AggregatableHistogramContribution>
 CreateAggregatableHistogram(const AttributionFilterData& source_filter_data,
                             const AttributionAggregatableSources& sources,
-                            const AttributionAggregatableTrigger& trigger);
+                            const AttributionAggregatableTrigger& trigger,
+                            const AttributionAggregatableValues& values);
 
 }  // namespace content
 

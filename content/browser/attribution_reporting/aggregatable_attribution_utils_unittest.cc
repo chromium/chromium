@@ -11,6 +11,7 @@
 #include "content/browser/attribution_reporting/aggregatable_histogram_contribution.h"
 #include "content/browser/attribution_reporting/attribution_aggregatable_sources.h"
 #include "content/browser/attribution_reporting/attribution_aggregatable_trigger.h"
+#include "content/browser/attribution_reporting/attribution_aggregatable_values.h"
 #include "content/browser/attribution_reporting/attribution_filter_data.h"
 #include "content/browser/attribution_reporting/attribution_reporting.pb.h"
 #include "content/browser/attribution_reporting/attribution_test_utils.h"
@@ -25,6 +26,8 @@ namespace {
 using ::testing::ElementsAre;
 
 using FilterValues = base::flat_map<std::string, std::vector<std::string>>;
+
+using Values = base::flat_map<std::string, uint32_t>;
 
 }  // namespace
 
@@ -91,7 +94,8 @@ TEST(AggregatableAttributionUtilsTest, CreateAggregatableHistogram) {
           blink::mojom::AttributionFilterData::New(
               FilterValues{{"filter", {"value"}}})));
 
-  trigger_mojo->values = {{"key1", 32768}, {"key2", 1664}};
+  auto values_mojo = blink::mojom::AttributionAggregatableValues::New(
+      Values{{"key1", 32768}, {"key2", 1664}});
 
   absl::optional<AttributionFilterData> source_filter_data =
       AttributionFilterData::FromSourceFilterValues({{"filter", {"value"}}});
@@ -105,8 +109,13 @@ TEST(AggregatableAttributionUtilsTest, CreateAggregatableHistogram) {
       AttributionAggregatableTrigger::FromMojo(std::move(trigger_mojo));
   ASSERT_TRUE(trigger.has_value());
 
+  absl::optional<AttributionAggregatableValues> values =
+      AttributionAggregatableValues::FromMojo(std::move(values_mojo));
+  ASSERT_TRUE(values.has_value());
+
   std::vector<AggregatableHistogramContribution> contributions =
-      CreateAggregatableHistogram(*source_filter_data, *sources, *trigger);
+      CreateAggregatableHistogram(*source_filter_data, *sources, *trigger,
+                                  *values);
 
   // "key3" is not present as no value is found.
   EXPECT_THAT(
