@@ -64,6 +64,7 @@ import org.chromium.url.GURL;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -193,6 +194,17 @@ public class FeedStream implements Stream {
                 if (focusedView != null) return focusedView;
             }
             return null;
+        }
+
+        @Override
+        public void updateUserProfileOnLinkClick(String url, List<Long> entityMids) {
+            assert ThreadUtils.runningOnUiThread();
+            long[] entityArray = new long[entityMids.size()];
+            for (int i = 0; i < entityMids.size(); ++i) {
+                entityArray[i] = entityMids.get(i);
+            }
+            FeedStreamJni.get().updateUserProfileOnLinkClick(
+                    mNativeFeedStream, mMakeGURL.apply(url), entityArray);
         }
 
         private void openSuggestionUrl(String url, int disposition) {
@@ -1127,6 +1139,7 @@ public class FeedStream implements Stream {
                 long nativeFeedStream, FeedStream caller, @FeedUserActionType int userAction);
         void reportStreamScrolled(long nativeFeedStream, FeedStream caller, int distanceDp);
         void reportStreamScrollStart(long nativeFeedStream, FeedStream caller);
+        void updateUserProfileOnLinkClick(long nativeFeedStream, GURL url, long[] mids);
         void loadMore(long nativeFeedStream, FeedStream caller, Callback<Boolean> callback);
         void manualRefresh(long nativeFeedStream, FeedStream caller, Callback<Boolean> callback);
         void processThereAndBackAgain(

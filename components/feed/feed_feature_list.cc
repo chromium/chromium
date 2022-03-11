@@ -104,4 +104,7 @@ std::string GetFeedReferrerUrl() {
   return referrer.empty() ? kDefaultReferrerUrl : referrer;
 }
 
+const base::Feature kPersonalizeFeedUnsignedUsers{
+    "PersonalizeFeedUnsignedUsers", base::FEATURE_ENABLED_BY_DEFAULT};
+
 }  // namespace feed

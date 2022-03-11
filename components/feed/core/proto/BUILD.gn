@@ -15,6 +15,7 @@ proto_library("proto_v2") {
     "v2/packing.proto",
     "v2/store.proto",
     "v2/ui.proto",
+    "v2/user_actions_store.proto",
     "v2/wire/action_diagnostic_info.proto",
     "v2/wire/action_payload.proto",
     "v2/wire/action_surface.proto",

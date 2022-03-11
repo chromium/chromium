@@ -80,6 +80,14 @@ struct Config {
   // follow accelerator.
   int webfeed_accelerator_recent_visit_history_days = 14;
 
+  // Configuration for PersistentKeyValueStore (personalizing feed for unsigned
+  // users). How many MID entities to persist per URL.
+  size_t max_mid_entities_per_url_entry = 5;
+  // How many URL entries to store in the cache. The size of the cache is
+  // enforced at browser startup, but can exceed |max_url_entries_in_cache|
+  // temporarily while the browser is running.
+  size_t max_url_entries_in_cache = 50;
+
   // Configuration for `PersistentKeyValueStore`.
 
   // Maximum total database size before items are evicted.

@@ -36,6 +36,7 @@
 #include "components/feed/core/v2/tasks/load_more_task.h"
 #include "components/feed/core/v2/tasks/load_stream_task.h"
 #include "components/feed/core/v2/tasks/wait_for_store_initialize_task.h"
+#include "components/feed/core/v2/user_actions_collector.h"
 #include "components/feed/core/v2/web_feed_subscription_coordinator.h"
 #include "components/feed/core/v2/wire_response_translator.h"
 #include "components/offline_pages/task/task_queue.h"
@@ -104,6 +105,9 @@ class FeedStream : public FeedApi,
   std::string GetSessionId() const override;
   void AttachSurface(FeedStreamSurface*) override;
   void DetachSurface(FeedStreamSurface*) override;
+  void UpdateUserProfileOnLinkClick(
+      const GURL& url,
+      const std::vector<int64_t>& entity_mids) override;
   void AddUnreadContentObserver(const StreamType& stream_type,
                                 UnreadContentObserver* observer) override;
   void RemoveUnreadContentObserver(const StreamType& stream_type,
@@ -438,6 +442,7 @@ class FeedStream : public FeedApi,
   bool clear_all_in_progress_ = false;
 
   std::vector<GURL> recent_feed_navigations_;
+  UserActionsCollector user_actions_collector_;
 
   base::WeakPtrFactory<FeedStream> weak_ptr_factory_{this};
 };

@@ -161,6 +161,11 @@ feedwire::Request CreateFeedQueryRequest(
     feed_request.add_client_capability(feedwire::Capability::DOWNLOAD_LINK);
   }
 
+  if (base::FeatureList::IsEnabled(kPersonalizeFeedUnsignedUsers)) {
+    feed_request.add_client_capability(
+        feedwire::Capability::ON_DEVICE_USER_PROFILE);
+  }
+
   *feed_request.mutable_client_info() = CreateClientInfo(request_metadata);
   feedwire::FeedQuery& query = *feed_request.mutable_feed_query();
   query.set_reason(request_reason);

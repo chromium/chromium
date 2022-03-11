@@ -134,7 +134,8 @@ FeedStream::FeedStream(RefreshTaskScheduler* refresh_task_scheduler,
       chrome_info_(chrome_info),
       task_queue_(this),
       request_throttler_(profile_prefs),
-      privacy_notice_card_tracker_(profile_prefs) {
+      privacy_notice_card_tracker_(profile_prefs),
+      user_actions_collector_(profile_prefs) {
   DCHECK(persistent_key_value_store_);
   DCHECK(feed_network_);
   DCHECK(profile_prefs_);
@@ -1193,6 +1194,12 @@ void FeedStream::UnloadModels() {
 LaunchReliabilityLogger& FeedStream::GetLaunchReliabilityLogger(
     const StreamType& stream_type) {
   return GetStream(stream_type).surface_updater->launch_reliability_logger();
+}
+
+void FeedStream::UpdateUserProfileOnLinkClick(
+    const GURL& url,
+    const std::vector<int64_t>& entity_mids) {
+  user_actions_collector_.UpdateUserProfileOnLinkClick(url, entity_mids);
 }
 
 void FeedStream::ReportOpenAction(const GURL& url,

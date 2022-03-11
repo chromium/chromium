@@ -84,6 +84,10 @@ class FeedStream : public ::feed::FeedStreamSurface {
                         const base::android::JavaParamRef<jobject>& obj,
                         const base::android::JavaParamRef<jobject>& j_url,
                         const base::android::JavaParamRef<jstring>& slice_id);
+  void UpdateUserProfileOnLinkClick(
+      JNIEnv* env,
+      const base::android::JavaParamRef<jobject>& j_url,
+      const base::android::JavaParamRef<jlongArray>& entity_mids);
   void ReportOpenInNewTabAction(
       JNIEnv* env,
       const base::android::JavaParamRef<jobject>& obj,

@@ -1056,6 +1056,34 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram
+    name="ContentSuggestions.Feed.UnsignedUserPersonalization.CountValuesDuringStoreInitialization"
+    units="count" expires_after="2023-03-01">
+  <owner>tbansal@chromium.org</owner>
+  <owner>harringtond@chromium.org</owner>
+  <owner>feed@chromium.org</owner>
+  <summary>
+    Records count of entries in the pref store after the store is initialized
+    (which happens during the feed service intiialization). The metric is
+    recorded after the store is cleaned up and conpacted (as part of store
+    initialization).
+  </summary>
+</histogram>
+
+<histogram
+    name="ContentSuggestions.Feed.UnsignedUserPersonalization.LinkClicked"
+    units="count" expires_after="2023-03-01">
+  <owner>tbansal@chromium.org</owner>
+  <owner>harringtond@chromium.org</owner>
+  <owner>feed@chromium.org</owner>
+  <summary>
+    Recorded everytime when the user clicks a feed link article and an entry is
+    recorded to the user actions collector. The entry may not be recorded in
+    certain cases (not a complete list): the URL of the clicked link was not
+    valid, the MIDs was missing etc.
+  </summary>
+</histogram>
+
 <histogram name="ContentSuggestions.Feed.UploadActionsBatchStatus"
     enum="FeedUploadActionsBatchStatus" expires_after="2023-03-01">
   <owner>iwells@chromium.org</owner>

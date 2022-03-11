@@ -144,6 +144,14 @@ void OverrideWithFinch(Config* config) {
 
   // Erase any capabilities with "enable_CAPABILITY = false" set.
   base::EraseIf(config->experimental_capabilities, CapabilityDisabled);
+
+  config->max_mid_entities_per_url_entry =
+      base::GetFieldTrialParamByFeatureAsInt(
+          kPersonalizeFeedUnsignedUsers, "max_mid_entities_per_url_entry",
+          config->max_mid_entities_per_url_entry);
+  config->max_url_entries_in_cache = GetFieldTrialParamByFeatureAsInt(
+      kPersonalizeFeedUnsignedUsers, "max_url_entries_in_cache",
+      config->max_url_entries_in_cache);
 }
 
 }  // namespace

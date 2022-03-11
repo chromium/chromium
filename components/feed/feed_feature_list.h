@@ -103,6 +103,9 @@ extern const base::FeatureParam<bool> kWebUiDisableContentSecurityPolicy;
 
 std::string GetFeedReferrerUrl();
 
+// Personalize feed for unsigned users.
+extern const base::Feature kPersonalizeFeedUnsignedUsers;
+
 }  // namespace feed
 
 #endif  // COMPONENTS_FEED_FEED_FEATURE_LIST_H_
