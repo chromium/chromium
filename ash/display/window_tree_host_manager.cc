@@ -27,7 +27,6 @@
 #include "ash/system/unified/unified_system_tray.h"
 #include "ash/wm/window_util.h"
 #include "base/bind.h"
-#include "base/command_line.h"
 #include "base/metrics/histogram.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
@@ -46,7 +45,6 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/compositor/compositor.h"
-#include "ui/compositor/compositor_switches.h"
 #include "ui/display/display.h"
 #include "ui/display/display_layout.h"
 #include "ui/display/display_transform.h"
@@ -73,9 +71,6 @@ constexpr int kUICompositorLargeMemoryLimitMB = 1024;
 // The display size threshold, above which the larger memory limit is used.
 // Pixel size was chosen to trigger for 4K+ displays. See: crbug.com/1261776
 constexpr int kUICompositorMemoryLimitDisplaySizeThreshold = 3500;
-// Command line switch for setting a custom compositor memory limit.
-constexpr char kUiCompositorMemoryLimitWhenVisibleMB[] =
-    "ui-compositor-memory-limit-when-visible-mb";
 
 // An UMA signal for the current effective resolution is sent at this rate. This
 // keeps track of the effective resolution most used on internal display by the
@@ -886,22 +881,12 @@ AshWindowTreeHost* WindowTreeHostManager::AddWindowTreeHostForDisplay(
   params_with_bounds.display_id = display.id();
   params_with_bounds.device_scale_factor = display.device_scale_factor();
 
-  // Used to configure ui compositor memory limit for chromeos devices.
-  // See crbug.com/923141.
-  base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
-  if (command_line->HasSwitch(kUiCompositorMemoryLimitWhenVisibleMB)) {
-    std::string value_str = command_line->GetSwitchValueASCII(
-        kUiCompositorMemoryLimitWhenVisibleMB);
-    unsigned value_in_mb;
-    if (base::StringToUint(value_str, &value_in_mb)) {
-      params_with_bounds.compositor_memory_limit_mb = value_in_mb;
-    }
-    // TODO(crbug/1261776): Temporarily increase compositor memory limit for
-    // 4K+ displays to avoid rendering corruption.
-    // Check both width and height in case of rotated display.
-  } else if (std::max(display.GetSizeInPixel().width(),
-                      display.GetSizeInPixel().height()) >
-             kUICompositorMemoryLimitDisplaySizeThreshold) {
+  // TODO(crbug/1261776): Temporarily increase compositor memory limit for
+  // 4K+ displays to avoid rendering corruption.
+  // Check both width and height in case of rotated display.
+  if (std::max(display.GetSizeInPixel().width(),
+               display.GetSizeInPixel().height()) >
+      kUICompositorMemoryLimitDisplaySizeThreshold) {
     params_with_bounds.compositor_memory_limit_mb =
         kUICompositorLargeMemoryLimitMB;
   }
