@@ -98,6 +98,7 @@ class HistoryClusterElement extends PolymerElement {
   private onVisitsRemovedListenerId_: number|null = null;
   private expanded_: boolean;
   private hiddenRelatedVisits_: Array<URLVisit>;
+  private visibleRelatedVisits_: Array<URLVisit>;
 
   //============================================================================
   // Overridden methods
@@ -139,6 +140,21 @@ class HistoryClusterElement extends PolymerElement {
   private onVisitClicked_() {
     MetricsProxyImpl.getInstance().recordClusterAction(
         ClusterAction.VISIT_CLICKED, this.index);
+  }
+
+  private onOpenAllVisits_() {
+    const visitsToOpen = [this.cluster.visit, ...this.visibleRelatedVisits_];
+    // Only try to open the hidden related visits if the user actually has
+    // expanded the cluster by clicking "Show More".
+    if (this.expanded_) {
+      visitsToOpen.push(...this.hiddenRelatedVisits_);
+    }
+
+    BrowserProxyImpl.getInstance().handler.openVisitUrlsInTabGroup(
+        visitsToOpen);
+
+    MetricsProxyImpl.getInstance().recordClusterAction(
+        ClusterAction.OPENED_IN_TAB_GROUP, this.index);
   }
 
   private onToggleButtonKeyDown_(e: KeyboardEvent) {

@@ -91,13 +91,14 @@
     transform: rotate(180deg);
   }
 </style>
-<div id="container" on-visit-clicked="onVisitClicked_">
+<div id="container" on-visit-clicked="onVisitClicked_"
+    on-open-all-visits="onOpenAllVisits_">
   <div id="cluster-label">[[cluster.label]]</div>
-  <url-visit visit="[[cluster.visit]]" cluster-index="[[index]]" index="0"
+  <url-visit visit="[[cluster.visit]]" index="0"
       is-top-visit$="[[!cluster.label]]" show-menu>
   </url-visit>
   <template is="dom-repeat" items="[[visibleRelatedVisits_]]">
-    <url-visit visit="[[item]]" cluster-index="[[index]]"
+    <url-visit visit="[[item]]"
         index="[[getVisitIndex_(item, cluster.visit.relatedVisits.*)]]"
         indented$="[[!cluster.label]]">
     </url-visit>
@@ -106,7 +107,7 @@
        easily handle it. -->
   <iron-collapse opened="[[expanded_]]" no-animation>
     <template is="dom-repeat" items="[[hiddenRelatedVisits_]]">
-      <url-visit visit="[[item]]" cluster-index="[[index]]"
+      <url-visit visit="[[item]]"
           index="[[getVisitIndex_(item, cluster.visit.relatedVisits.*)]]"
           indented$="[[!cluster.label]]">
       </url-visit>
