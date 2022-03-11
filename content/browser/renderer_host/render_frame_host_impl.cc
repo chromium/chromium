@@ -8732,24 +8732,26 @@ void RenderFrameHostImpl::SetUpMojoConnection() {
       },
       base::Unretained(this)));
 
-  associated_registry_->AddInterface(base::BindRepeating(
-      [](RenderFrameHostImpl* impl,
-         mojo::PendingAssociatedReceiver<
-             blink::mojom::SharedStorageDocumentService> receiver) {
-        if (SharedStorageDocumentServiceImpl::GetForCurrentDocument(impl)) {
-          // The renderer somehow requested two shared storage worklets
-          // associated with the same document. This could indicate a
-          // compromised renderer, so let's terminate it.
-          mojo::ReportBadMessage(
-              "Attempted to request two shared storage worklets associated "
-              "with the same document.");
-          return;
-        }
+  if (base::FeatureList::IsEnabled(blink::features::kSharedStorageAPI)) {
+    associated_registry_->AddInterface(base::BindRepeating(
+        [](RenderFrameHostImpl* impl,
+           mojo::PendingAssociatedReceiver<
+               blink::mojom::SharedStorageDocumentService> receiver) {
+          if (SharedStorageDocumentServiceImpl::GetForCurrentDocument(impl)) {
+            // The renderer somehow requested two shared storage worklets
+            // associated with the same document. This could indicate a
+            // compromised renderer, so let's terminate it.
+            mojo::ReportBadMessage(
+                "Attempted to request two shared storage worklets associated "
+                "with the same document.");
+            return;
+          }
 
-        SharedStorageDocumentServiceImpl::GetOrCreateForCurrentDocument(impl)
-            ->Bind(std::move(receiver));
-      },
-      base::Unretained(this)));
+          SharedStorageDocumentServiceImpl::GetOrCreateForCurrentDocument(impl)
+              ->Bind(std::move(receiver));
+        },
+        base::Unretained(this)));
+  }
 
   if (is_main_frame()) {
     associated_registry_->AddInterface(base::BindRepeating(
