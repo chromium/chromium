@@ -28,6 +28,7 @@ class BoxLayoutView;
 
 namespace ash {
 
+class AmbientAnimationAttributionProvider;
 class AmbientAnimationStaticResources;
 class AmbientAnimationShieldController;
 class AmbientViewDelegate;
@@ -63,6 +64,8 @@ class ASH_EXPORT AmbientAnimationView : public views::View,
   const std::unique_ptr<const AmbientAnimationStaticResources>
       static_resources_;
   AmbientAnimationPhotoProvider animation_photo_provider_;
+  std::unique_ptr<AmbientAnimationAttributionProvider>
+      animation_attribution_provider_;
 
   views::AnimatedImageView* animated_image_view_ = nullptr;
   views::BoxLayoutView* glanceable_info_container_ = nullptr;

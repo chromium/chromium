@@ -14,10 +14,16 @@ namespace ambient {
 namespace resources {
 
 // Free the breeze.
+inline constexpr base::StringPiece kClipBottomAssetId = "clip_bottom.png";
+inline constexpr base::StringPiece kClipTopAssetId = "clip_top.png";
+inline constexpr base::StringPiece kFrameImage1AssetId = "frame_image_1.png";
+inline constexpr base::StringPiece kFrameImage2AssetId = "frame_image_2.png";
 inline constexpr base::StringPiece kTreeShadowAssetId = "tree_shadow.png";
-inline constexpr int kFeelTheBreeezeNumStaticAssets = 1;
-inline constexpr std::array<base::StringPiece, kFeelTheBreeezeNumStaticAssets>
-    kAllFeelTheBreeezeStaticAssets = {kTreeShadowAssetId};
+inline constexpr int kFeelTheBreezeNumStaticAssets = 5;
+inline constexpr std::array<base::StringPiece, kFeelTheBreezeNumStaticAssets>
+    kAllFeelTheBreezeStaticAssets = {kClipBottomAssetId, kClipTopAssetId,
+                                     kFrameImage1AssetId, kFrameImage2AssetId,
+                                     kTreeShadowAssetId};
 
 }  // namespace resources
 }  // namespace ambient

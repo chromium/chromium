@@ -39,8 +39,16 @@ AssetIdToResourceIdMap GetAssetIdToResourceIdMapForTheme(
           AmbientAnimationTheme::kFeelTheBreeze,
           {
               // Assets
+              {ambient::resources::kClipBottomAssetId,
+               IDR_ASH_AMBIENT_LOTTIE_LOTTIE_FEEL_THE_BREEZE_CLIP_BOTTOM_PNG},
+              {ambient::resources::kClipTopAssetId,
+               IDR_ASH_AMBIENT_LOTTIE_LOTTIE_FEEL_THE_BREEZE_CLIP_TOP_PNG},
+              {ambient::resources::kFrameImage1AssetId,
+               IDR_ASH_AMBIENT_LOTTIE_LOTTIE_FEEL_THE_BREEZE_FRAME_IMAGE_1_PNG},
+              {ambient::resources::kFrameImage2AssetId,
+               IDR_ASH_AMBIENT_LOTTIE_LOTTIE_FEEL_THE_BREEZE_FRAME_IMAGE_2_PNG},
               {ambient::resources::kTreeShadowAssetId,
-               IDR_ASH_AMBIENT_LOTTIE_LOTTIE_FEEL_THE_BREEZE_TREE_SHADOW_PNG}
+               IDR_ASH_AMBIENT_LOTTIE_LOTTIE_FEEL_THE_BREEZE_TREE_SHADOW_PNG},
               // End Assets
           }
           // End Theme: Feel the Breeze

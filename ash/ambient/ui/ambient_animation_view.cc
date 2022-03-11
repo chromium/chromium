@@ -10,6 +10,7 @@
 #include <utility>
 #include <vector>
 
+#include "ash/ambient/model/ambient_animation_attribution_provider.h"
 #include "ash/ambient/model/ambient_backend_model.h"
 #include "ash/ambient/model/ambient_photo_config.h"
 #include "ash/ambient/resources/ambient_animation_static_resources.h"
@@ -171,6 +172,9 @@ void AmbientAnimationView::Init(AmbientViewDelegate* view_delegate) {
   animation_observer_.Observe(animation.get());
   animated_image_view_->SetAnimatedImage(std::move(animation));
   animated_image_view_observer_.Observe(animated_image_view_);
+  animation_attribution_provider_ =
+      std::make_unique<AmbientAnimationAttributionProvider>(
+          &animation_photo_provider_, animated_image_view_->animated_image());
 
   // SetPaintToLayer() causes a view to be painted above its non-layer-backed
   // siblings, irrespective of the order they were added in. Using an

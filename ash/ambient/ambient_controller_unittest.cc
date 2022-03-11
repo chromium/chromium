@@ -640,9 +640,7 @@ TEST_P(AmbientControllerTestForAnyTheme, ShouldDismissAndThenComesBack) {
 
 TEST_P(AmbientControllerTestForAnyTheme, ShouldDismissContainerViewOnKeyEvent) {
   // Without user interaction, should show ambient mode.
-  ambient_controller()->ShowUi();
-  EXPECT_FALSE(WidgetsVisible());
-  FastForwardTiny();
+  ShowAmbientScreen();
   EXPECT_TRUE(WidgetsVisible());
   CloseAmbientScreen();
 
