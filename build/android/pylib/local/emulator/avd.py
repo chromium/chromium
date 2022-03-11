@@ -17,6 +17,7 @@ import threading
 from google.protobuf import text_format  # pylint: disable=import-error
 
 from devil.android import device_utils
+from devil.android import settings
 from devil.android.sdk import adb_wrapper
 from devil.android.tools import system_app
 from devil.utils import cmd_helper
@@ -48,8 +49,13 @@ _DEFAULT_GPU_MODE = 'swiftshader_indirect'
 # This is the default name used by the emulator binary.
 _DEFAULT_SNAPSHOT_NAME = 'default_boot'
 
-# Set long press timeout for clicking to 1000ms.
-_LONG_PRESS_TIMEOUT = '1000'
+# crbug.com/1275767: Set long press timeout to 1000ms to reduce the flakiness
+# caused by click being incorrectly interpreted as longclick.
+_LONG_PRESS_TIMEOUT_SETTINGS = [
+    ('settings/secure', [
+        ('long_press_timeout', 1000),
+    ]),
+]
 
 # The snapshot name to load/save when writable_system=True
 _SYSTEM_SNAPSHOT_NAME = 'boot_with_system'
@@ -363,22 +369,16 @@ class AvdConfig:
       if privileged_apk_tuples:
         system_app.InstallPrivilegedApps(instance.device, privileged_apk_tuples)
 
-      # Skip network disabling on pre-N for now since the svc commands fail
-      # on Marshmallow.
-      if instance.device.build_version_sdk > 23:
-        # Always disable the network to prevent built-in system apps from
-        # updating themselves, which could take over package manager and
-        # cause shell command timeout.
-        # Use svc as this also works on the images with build type "user".
-        logging.info('Disabling the network in emulator.')
-        instance.device.RunShellCommand(['svc', 'wifi', 'disable'],
-                                        as_root=True,
-                                        check_return=True)
-        instance.device.RunShellCommand(['svc', 'data', 'disable'],
-                                        as_root=True,
-                                        check_return=True)
+      # Always disable the network to prevent built-in system apps from
+      # updating themselves, which could take over package manager and
+      # cause shell command timeout.
+      logging.info('Disabling the network.')
+      settings.ConfigureContentSettings(instance.device,
+                                        settings.NETWORK_DISABLED_SETTINGS)
 
       if snapshot:
+        # Reboot so that changes like disabling network can take effect.
+        instance.device.Reboot()
         instance.SaveSnapshot()
 
       instance.Stop()
@@ -752,7 +752,8 @@ class _AvdInstance:
     if ensure_system_settings:
       assert self.device is not None, '`instance.device` not initialized.'
       self.device.WaitUntilFullyBooted(timeout=120 if is_slow_start else 30)
-      _EnsureSystemSettings(self.device)
+      settings.ConfigureContentSettings(self.device,
+                                        _LONG_PRESS_TIMEOUT_SETTINGS)
 
   def Stop(self):
     """Stops the emulator process."""
@@ -805,22 +806,3 @@ class _AvdInstance:
     if not self._emulator_device and self._emulator_serial:
       self._emulator_device = device_utils.DeviceUtils(self._emulator_serial)
     return self._emulator_device
-
-
-# TODO(crbug.com/1275767): Refactor it to a dict-based approach.
-def _EnsureSystemSettings(device):
-  set_long_press_timeout_cmd = [
-      'settings', 'put', 'secure', 'long_press_timeout', _LONG_PRESS_TIMEOUT
-  ]
-  device.RunShellCommand(set_long_press_timeout_cmd, check_return=True)
-
-  # Verify if long_press_timeout is set correctly.
-  get_long_press_timeout_cmd = [
-      'settings', 'get', 'secure', 'long_press_timeout'
-  ]
-  adb_output = device.RunShellCommand(get_long_press_timeout_cmd,
-                                      check_return=True)
-  if _LONG_PRESS_TIMEOUT in adb_output:
-    logging.info('long_press_timeout set to %r', _LONG_PRESS_TIMEOUT)
-  else:
-    logging.warning('long_press_timeout is not set correctly')
