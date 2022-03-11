@@ -362,19 +362,19 @@
       'linux-chromeos-code-coverage': 'chromeos_with_codecs_release_bot_coverage',
       'linux-chromeos-js-code-coverage': 'chromeos_with_codecs_release_bot_javascript_coverage',
       'linux-code-coverage': 'clang_code_coverage',
-      'linux-example-builder': 'release_bot',
+      'linux-example-builder': 'release_bot_reclient',
       'linux-fieldtrial-rel': 'release_bot_minimal_symbols',
-      'linux-headless-shell-rel': 'headless_shell_release_bot',
+      'linux-headless-shell-rel': 'headless_shell_release_bot_reclient',
       'linux-backuprefptr-x64-fyi-rel': 'release_trybot_backuprefptr_x64_reclient',
       'linux-lacros-builder-rel (goma cache silo)': 'lacros_on_linux_release_bot',
       'linux-lacros-builder-rel (reclient)': 'lacros_on_linux_release_bot_reclient',
       'linux-lacros-code-coverage': 'lacros_on_linux_clang_code_coverage',
       'linux-lacros-version-skew-fyi': 'lacros_on_linux_release_not_build_ash_bot',
-      'linux-perfetto-rel': 'perfetto_release_bot',
+      'linux-perfetto-rel': 'perfetto_release_bot_reclient',
       'linux-upload-perfetto': 'release_bot_perfetto_zlib_reclient',
-      'linux-wpt-fyi-rel': 'release_bot_minimal_symbols_dcheck_always_on',
-      'linux-wpt-identity-fyi-rel': 'release_bot_minimal_symbols',
-      'linux-wpt-input-fyi-rel': 'release_bot_minimal_symbols',
+      'linux-wpt-fyi-rel': 'release_bot_minimal_symbols_dcheck_always_on_reclient',
+      'linux-wpt-identity-fyi-rel': 'release_bot_minimal_symbols_reclient',
+      'linux-wpt-input-fyi-rel': 'release_bot_minimal_symbols_reclient',
       # TODO(crbug.com/1252626): remove this after the migration.
       'mac-arm64-on-arm64-rel-reclient': 'mac_arm64_release_bot_reclient',
       'mac-code-coverage': 'clang_code_coverage',
@@ -2620,6 +2620,10 @@
       'headless_shell', 'release', 'static', 'goma',
     ],
 
+    'headless_shell_release_bot_reclient': [
+      'headless_shell', 'release', 'static', 'reclient',
+    ],
+
     'ios_catalyst_debug_static_bot_compile_only_libfuzzer_no_dsyms_no_lld_no_remoting': [
         'compile_only', 'debug_static_bot', 'ios', 'ios_catalyst', 'ios_cpu_x64', 'ios_disable_xcode_project_generation', 'libfuzzer', 'no_dsyms', 'no_lld', 'no_remoting',
     ],
@@ -3004,8 +3008,8 @@
       'gpu_tests', 'ozone_linux', 'ozone_linux_non_x11', 'release_trybot_minimal_symbols',
     ],
 
-    'perfetto_release_bot': [
-      'perfetto', 'release_bot',
+    'perfetto_release_bot_reclient': [
+      'perfetto', 'release_bot_reclient',
     ],
 
     'perfetto_release_trybot': [
@@ -3091,8 +3095,12 @@
       'release_bot', 'minimal_symbols',
     ],
 
-    'release_bot_minimal_symbols_dcheck_always_on': [
-      'release_bot', 'minimal_symbols', 'dcheck_always_on',
+    'release_bot_minimal_symbols_reclient': [
+      'release_bot_reclient', 'minimal_symbols',
+    ],
+
+    'release_bot_minimal_symbols_dcheck_always_on_reclient': [
+      'release_bot_reclient', 'minimal_symbols', 'dcheck_always_on',
     ],
 
     'release_bot_x86_minimal_symbols': [

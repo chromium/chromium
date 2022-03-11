@@ -1022,7 +1022,8 @@
       "dcheck_always_on": false,
       "is_component_build": false,
       "is_debug": false,
-      "use_goma": true
+      "use_rbe": true,
+      "use_remoteexec": true
     }
   },
   "linux-fieldtrial-rel": {
@@ -1044,7 +1045,8 @@
       "media_use_ffmpeg": false,
       "media_use_libvpx": false,
       "proprietary_codecs": false,
-      "use_goma": true
+      "use_rbe": true,
+      "use_remoteexec": true
     }
   },
   "linux-lacros-builder-fyi-rel": {
@@ -1143,8 +1145,9 @@
       "dcheck_always_on": false,
       "is_component_build": false,
       "is_debug": false,
-      "use_goma": true,
-      "use_perfetto_client_library": true
+      "use_perfetto_client_library": true,
+      "use_rbe": true,
+      "use_remoteexec": true
     }
   },
   "linux-upload-perfetto": {
@@ -1163,7 +1166,8 @@
       "is_component_build": false,
       "is_debug": false,
       "symbol_level": 1,
-      "use_goma": true
+      "use_rbe": true,
+      "use_remoteexec": true
     }
   },
   "linux-wpt-identity-fyi-rel": {
@@ -1172,7 +1176,8 @@
       "is_component_build": false,
       "is_debug": false,
       "symbol_level": 1,
-      "use_goma": true
+      "use_rbe": true,
+      "use_remoteexec": true
     }
   },
   "linux-wpt-input-fyi-rel": {
@@ -1181,7 +1186,8 @@
       "is_component_build": false,
       "is_debug": false,
       "symbol_level": 1,
-      "use_goma": true
+      "use_rbe": true,
+      "use_remoteexec": true
     }
   },
   "mac-arm64-on-arm64-rel-reclient": {
