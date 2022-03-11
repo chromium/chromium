@@ -639,12 +639,12 @@ void WebRuntimeFeatures::EnableWebAppManifestId(bool enable) {
   RuntimeEnabledFeatures::SetWebAppManifestIdEnabled(enable);
 }
 
-void WebRuntimeFeatures::EnableWebID(bool enable) {
-  RuntimeEnabledFeatures::SetWebIDEnabled(enable);
+void WebRuntimeFeatures::EnableFedCm(bool enable) {
+  RuntimeEnabledFeatures::SetFedCmEnabled(enable);
 }
 
-void WebRuntimeFeatures::EnableWebIdIdpSignout(bool enable) {
-  RuntimeEnabledFeatures::SetWebIdIdpSignoutEnabled(enable);
+void WebRuntimeFeatures::EnableFedCmIdpSignout(bool enable) {
+  RuntimeEnabledFeatures::SetFedCmIdpSignoutEnabled(enable);
 }
 
 void WebRuntimeFeatures::EnableTargetBlankImpliesNoOpener(bool enable) {

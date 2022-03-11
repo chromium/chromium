@@ -1073,6 +1073,16 @@
       status: "experimental"
     },
     {
+      name: "FedCm",
+      origin_trial_feature_name: "FedCM",
+      origin_trial_allows_third_party: true,
+      status: "test",
+    },
+    {
+      name: "FedCmIdpSignout",
+      status: "test",
+    },
+    {
       name: "FencedFrames",
       // This helps enable and expose the <fencedframe> element, but note that
       // blink::features::kFencedFrames must be enabled as well, similar to
@@ -2614,16 +2624,6 @@
     {
       name: "WebHID",
       status: {"Android": "", "default": "stable"},
-    },
-    {
-      name: "WebID",
-      origin_trial_feature_name: "FedCM",
-      origin_trial_allows_third_party: true,
-      status: "test",
-    },
-    {
-      name: "WebIdIdpSignout",
-      status: "test",
     },
     {
       name: "WebNFC",

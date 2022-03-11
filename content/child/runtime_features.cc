@@ -215,6 +215,7 @@ void SetRuntimeFeaturesFromChromiumFeatures() {
     {wf::EnableDevicePosture, features::kDevicePosture},
     {wf::EnableDocumentPolicy, features::kDocumentPolicy},
     {wf::EnableDocumentPolicyNegotiation, features::kDocumentPolicyNegotiation},
+    {wf::EnableFedCm, features::kFedCm, kSetOnlyIfOverridden},
     {wf::EnableFencedFrames, blink::features::kFencedFrames,
      kSetOnlyIfOverridden},
     {wf::EnableSharedStorageAPI, blink::features::kSharedStorageAPI},
@@ -288,7 +289,6 @@ void SetRuntimeFeaturesFromChromiumFeatures() {
      features::kWebBluetoothNewPermissionsBackend, kSetOnlyIfOverridden},
     {wf::EnableWebBluetoothWatchAdvertisements,
      features::kWebBluetoothNewPermissionsBackend, kSetOnlyIfOverridden},
-    {wf::EnableWebID, features::kFedCm, kSetOnlyIfOverridden},
 #if BUILDFLAG(IS_ANDROID)
     {wf::EnableWebNfc, features::kWebNfc, kSetOnlyIfOverridden},
 #endif
@@ -568,7 +568,7 @@ void SetCustomizedRuntimeFeaturesFromCombinedArgs(
       base::GetFieldTrialParamByFeatureAsBool(
           features::kFedCm, features::kFedCmIdpSignoutFieldTrialParamName,
           false)) {
-    WebRuntimeFeatures::EnableWebIdIdpSignout(true);
+    WebRuntimeFeatures::EnableFedCmIdpSignout(true);
   }
 }
 

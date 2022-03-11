@@ -252,7 +252,7 @@ ScriptPromise FederatedCredential::logoutRps(
     ScriptState* script_state,
     const HeapVector<Member<FederatedCredentialLogoutRpsRequest>>&
         logout_endpoints) {
-  if (!RuntimeEnabledFeatures::WebIdIdpSignoutEnabled(
+  if (!RuntimeEnabledFeatures::FedCmIdpSignoutEnabled(
           ExecutionContext::From(script_state))) {
     return ScriptPromise::RejectWithDOMException(
         script_state, MakeGarbageCollected<DOMException>(
@@ -260,9 +260,9 @@ ScriptPromise FederatedCredential::logoutRps(
                           "FedCM IdpSignout flag in about:flags not enabled."));
   }
 
-  // |WebIDEnabled| is not implied by |WebIdIdpSignoutEnabled| when the latter
+  // |FedCmEnabled| is not implied by |FedCmIdpSignoutEnabled| when the latter
   // is set via runtime flags (rather than about:flags).
-  if (!RuntimeEnabledFeatures::WebIDEnabled(
+  if (!RuntimeEnabledFeatures::FedCmEnabled(
           ExecutionContext::From(script_state))) {
     return ScriptPromise::RejectWithDOMException(
         script_state, MakeGarbageCollected<DOMException>(
