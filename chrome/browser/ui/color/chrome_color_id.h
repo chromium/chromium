@@ -51,6 +51,19 @@
   E_CPONLY(kColorDownloadToolbarButtonActive) \
   E_CPONLY(kColorDownloadToolbarButtonInactive) \
   E_CPONLY(kColorDownloadToolbarButtonRingBackground) \
+  /* Feature Promo bubble colors. */ \
+  E(kColorFeaturePromoBubbleBackground, \
+    ThemeProperties::COLOR_FEATURE_PROMO_BUBBLE_BACKGROUND) \
+  E(kColorFeaturePromoBubbleButtonBorder, \
+    ThemeProperties::COLOR_FEATURE_PROMO_BUBBLE_BUTTON_BORDER) \
+  E(kColorFeaturePromoBubbleCloseButtonInkDrop, \
+    ThemeProperties::COLOR_FEATURE_PROMO_BUBBLE_CLOSE_BUTTON_INK_DROP) \
+  E(kColorFeaturePromoBubbleDefaultButtonBackground, \
+    ThemeProperties::COLOR_FEATURE_PROMO_BUBBLE_DEFAULT_BUTTON_BACKGROUND) \
+  E(kColorFeaturePromoBubbleDefaultButtonForeground, \
+    ThemeProperties::COLOR_FEATURE_PROMO_BUBBLE_DEFAULT_BUTTON_FOREGROUND) \
+  E(kColorFeaturePromoBubbleForeground, \
+    ThemeProperties::COLOR_FEATURE_PROMO_BUBBLE_FOREGROUND) \
   /* Flying Indicator colors. */ \
   E(kColorFlyingIndicatorBackground, \
     ThemeProperties::COLOR_FLYING_INDICATOR_BACKGROUND) \

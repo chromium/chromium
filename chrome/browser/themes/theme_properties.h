@@ -281,8 +281,12 @@ class ThemeProperties {
     SHOULD_FILL_BACKGROUND_TAB_COLOR,
 
     // Colors for in-product help promo bubbles.
-    COLOR_FEATURE_PROMO_BUBBLE_TEXT,
     COLOR_FEATURE_PROMO_BUBBLE_BACKGROUND,
+    COLOR_FEATURE_PROMO_BUBBLE_BUTTON_BORDER,
+    COLOR_FEATURE_PROMO_BUBBLE_CLOSE_BUTTON_INK_DROP,
+    COLOR_FEATURE_PROMO_BUBBLE_DEFAULT_BUTTON_BACKGROUND,
+    COLOR_FEATURE_PROMO_BUBBLE_DEFAULT_BUTTON_FOREGROUND,
+    COLOR_FEATURE_PROMO_BUBBLE_FOREGROUND,
 
     // /!\ If you make any changes to this enum, you must also increment
     // kThemePackVersion in browser_theme_pack.cc, or else themes will display

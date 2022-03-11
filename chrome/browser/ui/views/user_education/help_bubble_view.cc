@@ -14,6 +14,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/time/time.h"
 #include "chrome/browser/themes/theme_properties.h"
+#include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/user_education/help_bubble_params.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/chrome_typography.h"
@@ -78,15 +79,6 @@ constexpr gfx::Insets kBubbleContentsInsets(16, 20);
 // The insets from the button border to the text inside.
 constexpr gfx::Insets kBubbleButtonPadding(6, 16);
 
-// The text color of the button.
-constexpr SkColor kBubbleButtonTextColor = SK_ColorWHITE;
-
-// The outline color of the button.
-constexpr SkColor kBubbleButtonBorderColor = gfx::kGoogleGrey300;
-
-// The background color of the button when highlighted.
-constexpr SkColor kBubbleButtonHighlightColor = gfx::kGoogleBlue300;
-
 // Translates from HelpBubbleArrow to the Views equivalent.
 views::BubbleBorder::Arrow TranslateArrow(HelpBubbleArrow arrow) {
   switch (arrow) {
@@ -129,18 +121,9 @@ class MdIPHBubbleButton : public views::MdTextButton {
       : MdTextButton(callback,
                      text,
                      ChromeTextContext::CONTEXT_IPH_BUBBLE_BUTTON),
-        button_colors_(ComputeButtonColors(is_default_button)) {
+        is_default_button_(is_default_button) {
     // Prominent style gives a button hover highlight.
     SetProminent(true);
-    // TODO(kerenzhu): IPH bubble uses blue600 as the background color
-    // for both regular and dark mode. We might want to use a
-    // dark-mode-appropriate background color so that overriding text color
-    // is not needed.
-    SetEnabledTextColors(button_colors_.text_color);
-    // TODO(crbug/1112244): Temporary fix for Mac. Bubble shouldn't be in
-    // inactive style when the bubble loses focus.
-    SetTextColor(ButtonState::STATE_DISABLED, button_colors_.text_color);
-    views::FocusRing::Get(this)->SetColor(button_colors_.focus_ring_color);
     GetViewAccessibility().OverrideIsLeaf(true);
   }
   MdIPHBubbleButton(const MdIPHBubbleButton&) = delete;
@@ -151,39 +134,52 @@ class MdIPHBubbleButton : public views::MdTextButton {
     // Prominent MD button does not have a border.
     // Override this method to draw a border.
     // Adapted from MdTextButton::UpdateBackgroundColor()
-    SkColor bg_color = button_colors_.background_color;
-    if (GetState() == STATE_PRESSED)
-      bg_color = GetNativeTheme()->GetSystemButtonPressedColor(bg_color);
-
+    const auto* theme_provider = GetThemeProvider();
+    if (!theme_provider)
+      return;
+    SkColor background_color = theme_provider->GetColor(
+        ThemeProperties::COLOR_FEATURE_PROMO_BUBBLE_BACKGROUND);
+    if (is_default_button_) {
+      background_color = theme_provider->GetColor(
+          ThemeProperties::
+              COLOR_FEATURE_PROMO_BUBBLE_DEFAULT_BUTTON_BACKGROUND);
+    }
+    if (GetState() == STATE_PRESSED) {
+      background_color =
+          GetNativeTheme()->GetSystemButtonPressedColor(background_color);
+    }
+    const SkColor stroke_color = theme_provider->GetColor(
+        is_default_button_
+            ? ThemeProperties::
+                  COLOR_FEATURE_PROMO_BUBBLE_DEFAULT_BUTTON_BACKGROUND
+            : ThemeProperties::COLOR_FEATURE_PROMO_BUBBLE_BUTTON_BORDER);
     SetBackground(CreateBackgroundFromPainter(
         views::Painter::CreateRoundRectWith1PxBorderPainter(
-            bg_color, button_colors_.background_stroke_color,
-            GetCornerRadius())));
+            background_color, stroke_color, GetCornerRadius())));
+  }
+
+  void OnThemeChanged() override {
+    views::MdTextButton::OnThemeChanged();
+
+    const auto* theme_provider = GetThemeProvider();
+    const SkColor background_color = theme_provider->GetColor(
+        ThemeProperties::COLOR_FEATURE_PROMO_BUBBLE_BACKGROUND);
+    views::FocusRing::Get(this)->SetColor(background_color);
+
+    const SkColor foreground_color = theme_provider->GetColor(
+        is_default_button_
+            ? ThemeProperties::
+                  COLOR_FEATURE_PROMO_BUBBLE_DEFAULT_BUTTON_FOREGROUND
+            : ThemeProperties::COLOR_FEATURE_PROMO_BUBBLE_FOREGROUND);
+    SetEnabledTextColors(foreground_color);
+
+    // TODO(crbug/1112244): Temporary fix for Mac. Bubble shouldn't be in
+    // inactive style when the bubble loses focus.
+    SetTextColor(ButtonState::STATE_DISABLED, foreground_color);
   }
 
  private:
-  struct ButtonColors {
-    SkColor text_color;
-    SkColor background_color;
-    SkColor background_stroke_color;
-    SkColor focus_ring_color;
-  };
-
-  static ButtonColors ComputeButtonColors(bool is_default_button) {
-    const SkColor kBubbleBackgroundColor = ThemeProperties::GetDefaultColor(
-        ThemeProperties::COLOR_FEATURE_PROMO_BUBBLE_BACKGROUND, false);
-    ButtonColors button_colors;
-    button_colors.text_color =
-        is_default_button ? kBubbleBackgroundColor : kBubbleButtonTextColor;
-    button_colors.background_color =
-        is_default_button ? kBubbleButtonTextColor : kBubbleBackgroundColor;
-    button_colors.background_stroke_color =
-        is_default_button ? kBubbleButtonTextColor : kBubbleButtonBorderColor;
-    button_colors.focus_ring_color = kBubbleBackgroundColor;
-    return button_colors;
-  }
-
-  ButtonColors button_colors_;
+  bool is_default_button_;
 };
 
 BEGIN_METADATA(MdIPHBubbleButton, views::MdTextButton)
@@ -197,15 +193,24 @@ class ClosePromoButton : public views::ImageButton {
   METADATA_HEADER(ClosePromoButton);
   ClosePromoButton(int accessible_name_id, PressedCallback callback) {
     SetCallback(callback);
-    SetImage(
-        views::ImageButton::STATE_NORMAL,
-        gfx::CreateVectorIcon(views::kIcCloseIcon, 16, kBubbleButtonTextColor));
     views::ConfigureVectorImageButton(this);
     views::HighlightPathGenerator::Install(
         this,
         std::make_unique<views::CircleHighlightPathGenerator>(gfx::Insets()));
-    views::InkDrop::Get(this)->SetBaseColor(kBubbleButtonHighlightColor);
     SetAccessibleName(l10n_util::GetStringUTF16(accessible_name_id));
+  }
+
+  void OnThemeChanged() override {
+    views::ImageButton::OnThemeChanged();
+
+    const auto* theme_provider = GetThemeProvider();
+    SetImage(views::ImageButton::STATE_NORMAL,
+             gfx::CreateVectorIcon(
+                 views::kIcCloseIcon, 16,
+                 theme_provider->GetColor(
+                     ThemeProperties::COLOR_FEATURE_PROMO_BUBBLE_FOREGROUND)));
+    views::InkDrop::Get(this)->SetBaseColor(theme_provider->GetColor(
+        ThemeProperties::COLOR_FEATURE_PROMO_BUBBLE_CLOSE_BUTTON_INK_DROP));
   }
 };
 
@@ -215,8 +220,8 @@ END_METADATA
 class DotView : public views::View {
  public:
   METADATA_HEADER(DotView);
-  DotView(gfx::Size size, SkColor fill_color, SkColor stroke_color)
-      : size_(size), fill_color_(fill_color), stroke_color_(stroke_color) {
+  DotView(gfx::Size size, bool should_fill)
+      : size_(size), should_fill_(should_fill) {
     // In order to anti-alias properly, we'll grow by the stroke width and then
     // have the excess space be subtracted from the margins by the layout.
     SetProperty(views::kInternalPaddingKey, gfx::Insets(kStrokeWidth));
@@ -238,17 +243,21 @@ class DotView : public views::View {
     const gfx::PointF center_point = local_bounds.CenterPoint();
     const float radius = (size_.width() - kStrokeWidth) / 2.0f;
 
-    cc::PaintFlags fill_flags;
-    fill_flags.setStyle(cc::PaintFlags::kFill_Style);
-    fill_flags.setAntiAlias(true);
-    fill_flags.setColor(fill_color_);
-    canvas->DrawCircle(center_point, radius, fill_flags);
+    const SkColor color = GetThemeProvider()->GetColor(
+        ThemeProperties::COLOR_FEATURE_PROMO_BUBBLE_FOREGROUND);
+    if (should_fill_) {
+      cc::PaintFlags fill_flags;
+      fill_flags.setStyle(cc::PaintFlags::kFill_Style);
+      fill_flags.setAntiAlias(true);
+      fill_flags.setColor(color);
+      canvas->DrawCircle(center_point, radius, fill_flags);
+    }
 
     cc::PaintFlags stroke_flags;
     stroke_flags.setStyle(cc::PaintFlags::kStroke_Style);
     stroke_flags.setStrokeWidth(kStrokeWidth);
     stroke_flags.setAntiAlias(true);
-    stroke_flags.setColor(stroke_color_);
+    stroke_flags.setColor(color);
     canvas->DrawCircle(center_point, radius, stroke_flags);
   }
 
@@ -256,8 +265,7 @@ class DotView : public views::View {
   static constexpr int kStrokeWidth = 1;
 
   const gfx::Size size_;
-  const SkColor fill_color_;
-  const SkColor stroke_color_;
+  const bool should_fill_;
 };
 
 constexpr int DotView::kStrokeWidth;
@@ -298,20 +306,6 @@ HelpBubbleView::HelpBubbleView(views::View* anchor_view,
   // an information bubble), override our role to kAlert.
   SetAccessibleRole(ax::mojom::Role::kAlert);
 
-  // We get the theme provider from the anchor view since our widget hasn't
-  // been created yet. This didn't work correctly for bubbles anchored to menu
-  // items before crbug.com/1295896 was fixed; if this breaks again that change
-  // might have gotten undone.
-  const ui::ThemeProvider* theme_provider = anchor_view->GetThemeProvider();
-  const views::LayoutProvider* layout_provider = views::LayoutProvider::Get();
-  DCHECK(theme_provider);
-  DCHECK(layout_provider);
-
-  const SkColor background_color = theme_provider->GetColor(
-      ThemeProperties::COLOR_FEATURE_PROMO_BUBBLE_BACKGROUND);
-  const SkColor text_color = theme_provider->GetColor(
-      ThemeProperties::COLOR_FEATURE_PROMO_BUBBLE_TEXT);
-
   // Layout structure:
   //
   // [***ooo      x]  <--- progress container
@@ -339,53 +333,45 @@ HelpBubbleView::HelpBubbleView(views::View* anchor_view,
     DCHECK(params.tutorial_progress->second);
     // TODO(crbug.com/1197208): surface progress information in a11y tree
     for (int i = 0; i < params.tutorial_progress->second; ++i) {
-      SkColor fill_color = i < params.tutorial_progress->first
-                               ? SK_ColorWHITE
-                               : SK_ColorTRANSPARENT;
       // TODO(crbug.com/1197208): formalize dot size
       progress_container->AddChildView(std::make_unique<DotView>(
-          gfx::Size(8, 8), fill_color, SK_ColorWHITE));
+          gfx::Size(8, 8), i < params.tutorial_progress->first));
     }
   } else {
     progress_container->SetVisible(false);
   }
 
   // Add the body icon (optional).
-  views::ImageView* icon_view = nullptr;
   constexpr int kBodyIconSize = 20;
   constexpr int kBodyIconBackgroundSize = 24;
   if (params.body_icon) {
-    icon_view = top_text_container->AddChildViewAt(
+    icon_view_ = top_text_container->AddChildViewAt(
         std::make_unique<views::ImageView>(ui::ImageModel::FromVectorIcon(
-            *params.body_icon, background_color, kBodyIconSize)),
+            *params.body_icon, kColorFeaturePromoBubbleBackground,
+            kBodyIconSize)),
         0);
-    icon_view->SetPreferredSize(
+    icon_view_->SetPreferredSize(
         gfx::Size(kBodyIconBackgroundSize, kBodyIconBackgroundSize));
-    icon_view->SetBackground(views::CreateRoundedRectBackground(
-        text_color, kBodyIconBackgroundSize / 2));
-    icon_view->SetAccessibleName(l10n_util::GetStringUTF16(IDS_CHROME_TIP));
+    icon_view_->SetAccessibleName(l10n_util::GetStringUTF16(IDS_CHROME_TIP));
   }
 
-  std::vector<views::Label*> labels;
   // Add title (optional) and body label.
   if (!params.title_text.empty()) {
-    labels.push_back(
+    labels_.push_back(
         top_text_container->AddChildView(std::make_unique<views::Label>(
             params.title_text, ChromeTextContext::CONTEXT_IPH_BUBBLE_TITLE)));
-    labels.push_back(
+    labels_.push_back(
         AddChildViewAt(std::make_unique<views::Label>(params.body_text,
                                                       CONTEXT_IPH_BUBBLE_BODY),
                        GetIndexOf(button_container)));
   } else {
-    labels.push_back(
+    labels_.push_back(
         top_text_container->AddChildView(std::make_unique<views::Label>(
             params.body_text, CONTEXT_IPH_BUBBLE_BODY)));
   }
 
   // Set common label properties.
-  for (views::Label* label : labels) {
-    label->SetBackgroundColor(background_color);
-    label->SetEnabledColor(text_color);
+  for (views::Label* label : labels_) {
     label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
     label->SetMultiLine(true);
     label->SetElideBehavior(gfx::NO_ELIDE);
@@ -457,6 +443,7 @@ HelpBubbleView::HelpBubbleView(views::View* anchor_view,
   // separate progress indicators for symmetry.
   // TODO(dfried): consider whether we could take font ascender and descender
   // height and factor them into margin calculations.
+  const views::LayoutProvider* layout_provider = views::LayoutProvider::Get();
   const int default_spacing = layout_provider->GetDistanceMetric(
       views::DISTANCE_RELATED_CONTROL_VERTICAL);
 
@@ -496,9 +483,9 @@ HelpBubbleView::HelpBubbleView(views::View* anchor_view,
   }
 
   // Icon view should have padding between it and the title or body label.
-  if (icon_view) {
-    icon_view->SetProperty(views::kMarginsKey,
-                           gfx::Insets(0, 0, 0, default_spacing));
+  if (icon_view_) {
+    icon_view_->SetProperty(views::kMarginsKey,
+                            gfx::Insets(0, 0, 0, default_spacing));
   }
 
   // Set label flex properties. This ensures that if the width of the bubble
@@ -511,7 +498,7 @@ HelpBubbleView::HelpBubbleView(views::View* anchor_view,
       /* adjust_height_for_width = */ true,
       views::MinimumFlexSizeRule::kScaleToMinimum);
 
-  for (views::Label* label : labels)
+  for (views::Label* label : labels_)
     label->SetProperty(views::kFlexBehaviorKey, text_flex);
 
   auto& top_text_layout =
@@ -527,11 +514,11 @@ HelpBubbleView::HelpBubbleView(views::View* anchor_view,
   // If the body icon is present, labels after the first are not parented to
   // the top text container, but still need to be inset to align with the
   // title.
-  if (icon_view) {
+  if (icon_view_) {
     const int indent = kBubbleContentsInsets.left() + kBodyIconBackgroundSize +
                        default_spacing;
-    for (size_t i = 1; i < labels.size(); ++i)
-      labels[i]->SetProperty(views::kMarginsKey, gfx::Insets(0, indent, 0, 0));
+    for (size_t i = 1; i < labels_.size(); ++i)
+      labels_[i]->SetProperty(views::kMarginsKey, gfx::Insets(0, indent, 0, 0));
   }
 
   // Set up button container layout.
@@ -567,8 +554,6 @@ HelpBubbleView::HelpBubbleView(views::View* anchor_view,
   set_margins(gfx::Insets());
   set_title_margins(gfx::Insets());
   SetButtons(ui::DIALOG_BUTTON_NONE);
-
-  set_color(background_color);
 
   views::Widget* widget = views::BubbleDialogDelegateView::CreateBubble(this);
 
@@ -627,6 +612,27 @@ void HelpBubbleView::OnWidgetActivationChanged(views::Widget* widget,
     } else {
       MaybeStartAutoCloseTimer();
     }
+  }
+}
+
+void HelpBubbleView::OnThemeChanged() {
+  views::BubbleDialogDelegateView::OnThemeChanged();
+
+  const auto* theme_provider = GetThemeProvider();
+  const SkColor background_color = theme_provider->GetColor(
+      ThemeProperties::COLOR_FEATURE_PROMO_BUBBLE_BACKGROUND);
+  set_color(background_color);
+
+  const SkColor foreground_color = theme_provider->GetColor(
+      ThemeProperties::COLOR_FEATURE_PROMO_BUBBLE_FOREGROUND);
+  if (icon_view_) {
+    icon_view_->SetBackground(views::CreateRoundedRectBackground(
+        foreground_color, icon_view_->GetPreferredSize().height() / 2));
+  }
+
+  for (auto* label : labels_) {
+    label->SetBackgroundColor(background_color);
+    label->SetEnabledColor(foreground_color);
   }
 }
 

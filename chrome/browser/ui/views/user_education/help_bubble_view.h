@@ -7,6 +7,7 @@
 
 #include <cstddef>
 #include <memory>
+#include <vector>
 
 #include "base/memory/raw_ptr.h"
 #include "base/timer/timer.h"
@@ -23,6 +24,8 @@ class MouseEvent;
 }  // namespace ui
 
 namespace views {
+class ImageView;
+class Label;
 class MdTextButton;
 }  // namespace views
 
@@ -60,6 +63,7 @@ class HelpBubbleView : public views::BubbleDialogDelegateView {
     // Do nothing: the anchor for promo bubbles should not highlight.
   }
   void OnWidgetActivationChanged(views::Widget* widget, bool active) override;
+  void OnThemeChanged() override;
   gfx::Size CalculatePreferredSize() const override;
   gfx::Rect GetAnchorRect() const override;
 
@@ -67,6 +71,9 @@ class HelpBubbleView : public views::BubbleDialogDelegateView {
   // If an artificial anchor rect is used, we assume the exact target cannot be
   // localized, and a visible arrow is not shown.
   absl::optional<gfx::Rect> force_anchor_rect_;
+
+  views::ImageView* icon_view_ = nullptr;
+  std::vector<views::Label*> labels_;
 
   // If the bubble has buttons, it must be focusable.
   std::vector<views::MdTextButton*> non_default_buttons_;
