@@ -96,10 +96,10 @@ class COMPONENT_EXPORT(COLOR) ColorProviderManager {
 
     bool operator<(const Key& other) const {
       return std::make_tuple(color_mode, contrast_mode, elevation_mode,
-                             system_theme, custom_theme) <
+                             system_theme, frame_type, custom_theme) <
              std::make_tuple(other.color_mode, other.contrast_mode,
                              other.elevation_mode, other.system_theme,
-                             other.custom_theme);
+                             other.frame_type, other.custom_theme);
     }
   };
 
