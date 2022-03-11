@@ -5,9 +5,11 @@
 import './shared-css.js';
 import './viewer-bookmark.js';
 
-import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {Bookmark} from '../bookmark_type.js';
+
+import {getTemplate} from './viewer-document-outline.html.js';
 
 export class ViewerDocumentOutlineElement extends PolymerElement {
   static get is() {
@@ -15,7 +17,7 @@ export class ViewerDocumentOutlineElement extends PolymerElement {
   }
 
   static get template() {
-    return html`{__html_template__}`;
+    return getTemplate();
   }
 
   static get properties() {

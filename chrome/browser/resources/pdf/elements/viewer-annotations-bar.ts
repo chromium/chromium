@@ -11,10 +11,12 @@ import './viewer-toolbar-dropdown.js';
 
 import {assert} from 'chrome://resources/js/assert.m.js';
 import {EventTracker} from 'chrome://resources/js/event_tracker.m.js';
-import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {AnnotationTool} from '../annotation_tool.js';
 import {InkController, InkControllerEventType} from '../ink_controller.js';
+
+import {getTemplate} from './viewer-annotations-bar.html.js';
 import {ViewerPenOptionsElement} from './viewer-pen-options.js';
 import {ViewerToolbarDropdownElement} from './viewer-toolbar-dropdown.js';
 
@@ -24,7 +26,7 @@ export class ViewerAnnotationsBarElement extends PolymerElement {
   }
 
   static get template() {
-    return html`{__html_template__}`;
+    return getTemplate();
   }
 
   static get properties() {

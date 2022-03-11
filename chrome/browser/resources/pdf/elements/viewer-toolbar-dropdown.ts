@@ -7,7 +7,8 @@ import 'chrome://resources/cr_elements/icons.m.js';
 import 'chrome://resources/cr_elements/shared_vars_css.m.js';
 import 'chrome://resources/polymer/v3_0/paper-styles/shadow.js';
 
-import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {getTemplate} from './viewer-toolbar-dropdown.html.js';
 
 /**
  * Size of additional padding in the inner scrollable section of the dropdown.
@@ -33,7 +34,7 @@ export class ViewerToolbarDropdownElement extends PolymerElement {
   }
 
   static get template() {
-    return html`{__html_template__}`;
+    return getTemplate();
   }
 
   static get properties() {

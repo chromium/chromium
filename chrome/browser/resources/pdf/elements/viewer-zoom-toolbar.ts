@@ -8,11 +8,12 @@ import './icons.js';
 import './viewer-zoom-button.js';
 
 import {isRTL} from 'chrome://resources/js/util.m.js';
-import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {FittingType} from '../constants.js';
 
 import {ViewerZoomButtonElement} from './viewer-zoom-button.js';
+import {getTemplate} from './viewer-zoom-toolbar.html.js';
 
 const FIT_TO_PAGE_BUTTON_STATE = 0;
 const FIT_TO_WIDTH_BUTTON_STATE = 1;
@@ -29,7 +30,7 @@ export class ViewerZoomToolbarElement extends PolymerElement {
   }
 
   static get template() {
-    return html`{__html_template__}`;
+    return getTemplate();
   }
 
   static get properties() {

@@ -8,9 +8,11 @@ import {assert} from 'chrome://resources/js/assert.m.js';
 import {FocusOutlineManager} from 'chrome://resources/js/cr/ui/focus_outline_manager.m.js';
 import {EventTracker} from 'chrome://resources/js/event_tracker.m.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
-import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {PluginController, PluginControllerEventType} from '../controller.js';
+
+import {getTemplate} from './viewer-thumbnail-bar.html.js';
 import {ViewerThumbnailElement} from './viewer-thumbnail.js';
 
 export class ViewerThumbnailBarElement extends PolymerElement {
@@ -19,7 +21,7 @@ export class ViewerThumbnailBarElement extends PolymerElement {
   }
 
   static get template() {
-    return html`{__html_template__}`;
+    return getTemplate();
   }
 
   static get properties() {

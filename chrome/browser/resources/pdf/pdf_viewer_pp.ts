@@ -10,7 +10,6 @@ import './pdf_viewer_shared_style.js';
 
 import {assertNotReached} from 'chrome://resources/js/assert_ts.js';
 import {isRTL} from 'chrome://resources/js/util.m.js';
-import {html} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {BrowserApi} from './browser_api.js';
 import {ExtendedKeyEvent, FittingType} from './constants.js';
@@ -19,6 +18,7 @@ import {ViewerPageIndicatorElement} from './elements/viewer-page-indicator.js';
 import {ViewerZoomToolbarElement} from './elements/viewer-zoom-toolbar.js';
 import {DeserializeKeyEvent, LoadState, SerializeKeyEvent} from './pdf_scripting_api.js';
 import {KeyEventData, PDFViewerBaseElement} from './pdf_viewer_base.js';
+import {getTemplate} from './pdf_viewer_pp.html.js';
 import {DestinationMessageData, DocumentDimensionsMessageData, hasCtrlModifier, shouldIgnoreKeyEvents} from './pdf_viewer_utils.js';
 import {ToolbarManager} from './toolbar_manager.js';
 
@@ -37,7 +37,7 @@ export class PDFViewerPPElement extends PDFViewerBaseElement {
   }
 
   static get template() {
-    return html`{__html_template__}`;
+    return getTemplate();
   }
 
   private isPrintPreviewLoadingFinished_: boolean = false;

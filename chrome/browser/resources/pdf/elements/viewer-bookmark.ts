@@ -9,9 +9,11 @@ import 'chrome://resources/polymer/v3_0/paper-styles/color.js';
 import './shared-css.js';
 
 import {CrIconButtonElement} from 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.m.js';
-import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {Bookmark} from '../bookmark_type.js';
+
+import {getTemplate} from './viewer-bookmark.html.js';
 
 /** Amount that each level of bookmarks is indented by (px). */
 const BOOKMARK_INDENT: number = 20;
@@ -43,7 +45,7 @@ export class ViewerBookmarkElement extends PolymerElement {
   }
 
   static get template() {
-    return html`{__html_template__}`;
+    return getTemplate();
   }
 
   static get properties() {

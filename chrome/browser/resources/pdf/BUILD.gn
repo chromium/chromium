@@ -7,6 +7,7 @@ import("//pdf/features.gni")
 import("//tools/grit/grit_rule.gni")
 import("//tools/grit/preprocess_if_expr.gni")
 import("//tools/polymer/html_to_js.gni")
+import("//tools/polymer/html_to_wrapper.gni")
 import("//tools/typescript/ts_library.gni")
 import("//ui/webui/resources/tools/generate_grd.gni")
 import("../tools/optimize_webui.gni")
@@ -18,27 +19,32 @@ preprocess_folder = "preprocessed"
 tsc_folder = "tsc"
 
 preprocess_if_expr("preprocess") {
-  in_folder = "./"
+  in_folder = "."
   out_folder = "$target_gen_dir/$preprocess_folder"
   defines = [ "enable_ink=$enable_ink" ]
-  in_files = pdf_non_webcomponents_files + shared_non_webcomponents_files +
-             print_preview_non_webcomponents_files
+  in_files = ts_files
 }
 
 preprocess_if_expr("preprocess_generated") {
-  deps = [ ":web_components" ]
+  deps = [
+    ":css_wrapper_files",
+    ":html_wrapper_files",
+  ]
   in_folder = target_gen_dir
   out_folder = "$target_gen_dir/$preprocess_folder"
   defines = [ "enable_ink=$enable_ink" ]
-  in_files = pdf_webcomponents_files + shared_webcomponents_files +
-             print_preview_webcomponents_files
+  in_files = html_wrapper_files + css_wrapper_files
+}
+
+html_to_wrapper("html_wrapper_files") {
+  in_files = html_files
 }
 
 # Preprocess and build a manifest file for the Print Preview HTML/CSS files,
 # which aren't passed to ts_library().
 print_preview_html_css_manifest = "print_preview_html_css_manifest.json"
 preprocess_if_expr("preprocess_print_preview_html_css") {
-  in_folder = "./"
+  in_folder = "."
   out_folder = "$target_gen_dir/$preprocess_folder"
   out_manifest = "$target_gen_dir/$print_preview_html_css_manifest"
   in_files = [
@@ -188,9 +194,8 @@ grit("resources") {
   output_dir = "$root_gen_dir/chrome"
 }
 
-html_to_js("web_components") {
-  js_files = pdf_webcomponents_files + print_preview_webcomponents_files +
-             shared_webcomponents_files
+html_to_js("css_wrapper_files") {
+  js_files = css_wrapper_files
 }
 
 ts_library("build_ts") {
@@ -199,13 +204,10 @@ ts_library("build_ts") {
   tsconfig_base = "tsconfig_base.json"
   composite = true
 
-  in_files =
-      pdf_non_webcomponents_files + pdf_webcomponents_files +
-      shared_non_webcomponents_files + shared_webcomponents_files +
-      print_preview_non_webcomponents_files + print_preview_webcomponents_files
+  in_files = ts_files + html_wrapper_files + css_wrapper_files
+
   manifest_excludes =
-      [ "pdf_internal_plugin_wrapper.js" ] +
-      print_preview_non_webcomponents_files + print_preview_webcomponents_files
+      [ "pdf_internal_plugin_wrapper.js" ] + print_preview_only_files
   definitions = [
     "//tools/typescript/definitions/chrome_event.d.ts",
     "//tools/typescript/definitions/content_settings.d.ts",

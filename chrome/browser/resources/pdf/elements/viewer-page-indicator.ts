@@ -4,9 +4,11 @@
 
 import {assert} from 'chrome://resources/js/assert_ts.js';
 import {isRTL} from 'chrome://resources/js/util.m.js';
-import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {Viewport} from '../viewport.js';
+
+import {getTemplate} from './viewer-page-indicator.html.js';
 
 export class ViewerPageIndicatorElement extends PolymerElement {
   static get is() {
@@ -14,7 +16,7 @@ export class ViewerPageIndicatorElement extends PolymerElement {
   }
 
   static get template() {
-    return html`{__html_template__}`;
+    return getTemplate();
   }
 
   static get properties() {

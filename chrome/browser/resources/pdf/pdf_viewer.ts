@@ -18,7 +18,6 @@ import 'chrome://resources/cr_elements/shared_vars_css.m.js';
 import {assert, assertNotReached} from 'chrome://resources/js/assert.m.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {listenOnce} from 'chrome://resources/js/util.m.js';
-import {html} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {Bookmark} from './bookmark_type.js';
 import {BrowserApi} from './browser_api.js';
@@ -35,6 +34,7 @@ import {LocalStorageProxyImpl} from './local_storage_proxy.js';
 import {record, UserAction} from './metrics.js';
 import {NavigatorDelegateImpl, PdfNavigator, WindowOpenDisposition} from './navigator.js';
 import {DeserializeKeyEvent, LoadState} from './pdf_scripting_api.js';
+import {getTemplate} from './pdf_viewer.html.js';
 import {KeyEventData, PDFViewerBaseElement} from './pdf_viewer_base.js';
 import {DestinationMessageData, DocumentDimensionsMessageData, hasCtrlModifier, shouldIgnoreKeyEvents} from './pdf_viewer_utils.js';
 
@@ -105,7 +105,7 @@ export class PDFViewerElement extends PDFViewerBaseElement {
   }
 
   static get template() {
-    return html`{__html_template__}`;
+    return getTemplate();
   }
 
   static get properties() {

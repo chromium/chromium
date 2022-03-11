@@ -2,12 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {AnnotationTool} from '../annotation_tool.js';
 import {InkAPI} from '../ink/ink_api.js';
 import {record, UserAction} from '../metrics.js';
 import {PAGE_SHADOW, Viewport} from '../viewport.js';
+
+import {getTemplate} from './viewer-ink-host.html.js';
 
 enum State {
   LOADING = 'loading',
@@ -33,7 +35,7 @@ export class ViewerInkHostElement extends PolymerElement {
   }
 
   static get template() {
-    return html`{__html_template__}`;
+    return getTemplate();
   }
 
   private tool_: AnnotationTool|null = null;

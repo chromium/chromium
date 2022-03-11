@@ -15,13 +15,16 @@ import './shared-vars.js';
 // <if expr="enable_ink">
 import './viewer-annotations-bar.js';
 import './viewer-annotations-mode-dialog.js';
+
 // </if>
 
 import {AnchorAlignment, CrActionMenuElement} from 'chrome://resources/cr_elements/cr_action_menu/cr_action_menu.js';
-import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {FittingType} from '../constants.js';
 import {record, UserAction} from '../metrics.js';
+
+import {getTemplate} from './viewer-toolbar.html.js';
 
 export interface ViewerToolbarElement {
   $: {
@@ -35,7 +38,7 @@ export class ViewerToolbarElement extends PolymerElement {
   }
 
   static get template() {
-    return html`{__html_template__}`;
+    return getTemplate();
   }
 
   static get properties() {
