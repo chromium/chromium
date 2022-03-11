@@ -120,7 +120,7 @@ Status VerifyElementClickable(
     return status;
   base::ListValue args;
   args.Append(CreateElement(element_id));
-  args.Append(CreateValueFrom(location));
+  args.Append(base::Value::FromUniquePtrValue(CreateValueFrom(location)));
   std::unique_ptr<base::Value> result;
   status = CallAtomsJs(
       frame, web_view, webdriver::atoms::IS_ELEMENT_CLICKABLE,
@@ -162,7 +162,7 @@ Status ScrollElementRegionIntoViewHelper(
   base::ListValue args;
   args.Append(CreateElement(element_id));
   args.Append(center);
-  args.Append(CreateValueFrom(region));
+  args.Append(base::Value::FromUniquePtrValue(CreateValueFrom(region)));
   std::unique_ptr<base::Value> result;
   status = web_view->CallFunction(
       frame, webdriver::atoms::asString(webdriver::atoms::GET_LOCATION_IN_VIEW),
@@ -398,7 +398,7 @@ Status FindElementCommon(int interval_ms,
   std::unique_ptr<base::DictionaryValue> locator(new base::DictionaryValue());
   locator->SetString(strategy, target);
   base::ListValue arguments;
-  arguments.Append(std::move(locator));
+  arguments.Append(base::Value::FromUniquePtrValue(std::move(locator)));
   if (root_element_id) {
     if (isShadowRoot)
       arguments.Append(CreateShadowRoot(*root_element_id));

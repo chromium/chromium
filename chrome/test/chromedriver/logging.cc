@@ -8,6 +8,7 @@
 #include <stdint.h>
 #include <stdio.h>
 
+#include <cmath>
 #include <memory>
 #include <utility>
 
@@ -243,23 +244,18 @@ void WebDriverLog::AddEntryTimestamped(const base::Time& timestamp,
   if (level < min_level_)
     return;
 
-  std::unique_ptr<base::DictionaryValue> log_entry_dict(
-      new base::DictionaryValue());
-  log_entry_dict->SetDoubleKey("timestamp",
-                               static_cast<int64_t>(timestamp.ToJsTime()));
-  log_entry_dict->SetString("level", LevelToName(level));
+  base::Value::Dict log_entry_dict;
+  log_entry_dict.Set("timestamp", std::trunc(timestamp.ToJsTime()));
+  log_entry_dict.Set("level", LevelToName(level));
   if (!source.empty())
-    log_entry_dict->SetString("source", source);
-  log_entry_dict->SetString("message", message);
+    log_entry_dict.Set("source", source);
+  log_entry_dict.Set("message", message);
   if (batches_of_entries_.empty() ||
       batches_of_entries_.back()->GetListDeprecated().size() >=
           internal::kMaxReturnedEntries) {
-    std::unique_ptr<base::ListValue> list(new base::ListValue());
-    list->Append(std::move(log_entry_dict));
-    batches_of_entries_.push_back(std::move(list));
-  } else {
-    batches_of_entries_.back()->Append(std::move(log_entry_dict));
+    batches_of_entries_.push_back(std::make_unique<base::ListValue>());
   }
+  batches_of_entries_.back()->Append(base::Value(std::move(log_entry_dict)));
 }
 
 bool WebDriverLog::Emptied() const {

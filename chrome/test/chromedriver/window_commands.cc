@@ -889,7 +889,7 @@ Status ExecuteSwitchToFrame(Session* session,
     if (status.IsError())
       return status;
     script = "function(elem) { return elem; }";
-    args.Append(id_dict->CreateDeepCopy());
+    args.Append(id_dict->Clone());
   } else {
     script =
         "function(xpath) {"
@@ -937,7 +937,7 @@ Status ExecuteSwitchToFrame(Session* session,
       "  frame.setAttribute('cd_frame_id_', id);"
       "}";
   base::ListValue new_args;
-  new_args.Append(element->CreateDeepCopy());
+  new_args.Append(element->Clone());
   new_args.Append(chrome_driver_id);
   result.reset(NULL);
   status = web_view->CallFunction(
@@ -1314,16 +1314,16 @@ Status ProcessInputActionSequence(
   }
 
   // if we found no matching active input source
-  std::unique_ptr<base::DictionaryValue> tmp_source(new base::DictionaryValue);
   if (!found) {
+    base::Value::Dict tmp_source;
     // create input source
-    tmp_source->SetString("id", id);
-    tmp_source->SetString("type", type);
+    tmp_source.Set("id", id);
+    tmp_source.Set("type", type);
     if (type == "pointer") {
-      tmp_source->SetString("pointerType", pointer_type);
+      tmp_source.Set("pointerType", pointer_type);
     }
 
-    session->active_input_sources.Append(std::move(tmp_source));
+    session->active_input_sources.Append(base::Value(std::move(tmp_source)));
 
     base::Value* tmp_state = session->input_state_table.SetPath(
         id, base::Value(base::Value::Type::DICTIONARY));

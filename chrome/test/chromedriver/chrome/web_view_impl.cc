@@ -582,7 +582,8 @@ Status WebViewImpl::DispatchTouchEventsForMouseEvents(
           new base::DictionaryValue);
       touchPoint->SetInteger("x", it->x);
       touchPoint->SetInteger("y", it->y);
-      touchPoints->Append(std::move(touchPoint));
+      touchPoints->Append(
+          base::Value::FromUniquePtrValue(std::move(touchPoint)));
     }
     params.SetList("touchPoints", std::move(touchPoints));
     params.SetInteger("modifiers", it->modifiers);
@@ -644,7 +645,7 @@ Status WebViewImpl::DispatchTouchEvent(const TouchEvent& event,
   Status status(kOk);
   if (type == "touchStart" || type == "touchMove") {
     std::unique_ptr<base::DictionaryValue> point = GenerateTouchPoint(event);
-    point_list.Append(std::move(point));
+    point_list.Append(base::Value::FromUniquePtrValue(std::move(point)));
   }
   params.SetKey("touchPoints", std::move(point_list));
   if (async_dispatch_events) {
@@ -687,7 +688,8 @@ Status WebViewImpl::DispatchTouchEventWithMultiPoints(
     if (type == "touchCancel")
       continue;
 
-    point_list.Append(GenerateTouchPoint(event));
+    point_list.Append(
+        base::Value::FromUniquePtrValue(GenerateTouchPoint(event)));
     params.SetKey("touchPoints", std::move(point_list));
 
     if (async_dispatch_events || touch_count < events.size()) {
