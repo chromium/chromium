@@ -12,6 +12,8 @@
 #include "third_party/blink/public/platform/web_content_settings_client.h"
 #include "third_party/blink/public/platform/web_security_origin.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_core.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_throw_dom_exception.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_lock_granted_callback.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_lock_info.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_lock_manager_snapshot.h"
@@ -114,11 +116,19 @@ class LockManager::LockRequestImpl final
     manager_->RemovePendingRequest(this);
     receiver_.reset();
 
-    if (!resolver_->GetScriptState()->ContextIsValid())
-      return;
+    DCHECK(resolver_);
 
-    resolver_->Reject(MakeGarbageCollected<DOMException>(
-        DOMExceptionCode::kAbortError, reason));
+    ScriptState* const script_state = resolver_->GetScriptState();
+
+    if (!IsInParallelAlgorithmRunnable(resolver_->GetExecutionContext(),
+                                       script_state)) {
+      return;
+    }
+
+    ScriptState::Scope script_state_scope(script_state);
+
+    resolver_->Reject(V8ThrowDOMException::CreateOrDie(
+        script_state->GetIsolate(), DOMExceptionCode::kAbortError, reason));
   }
 
   void Failed() override {

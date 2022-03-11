@@ -7,6 +7,8 @@
 #include "third_party/blink/renderer/bindings/core/v8/script_function.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_core.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_throw_dom_exception.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/modules/locks/lock_manager.h"
@@ -149,9 +151,21 @@ void Lock::ReleaseIfHeld() {
 }
 
 void Lock::OnConnectionError() {
+  DCHECK(resolver_);
+
   ReleaseIfHeld();
-  resolver_->Reject(MakeGarbageCollected<DOMException>(
-      DOMExceptionCode::kAbortError,
+
+  ScriptState* const script_state = resolver_->GetScriptState();
+
+  if (!IsInParallelAlgorithmRunnable(resolver_->GetExecutionContext(),
+                                     script_state)) {
+    return;
+  }
+
+  ScriptState::Scope script_state_scope(script_state);
+
+  resolver_->Reject(V8ThrowDOMException::CreateOrDie(
+      script_state->GetIsolate(), DOMExceptionCode::kAbortError,
       "Lock broken by another request with the 'steal' option."));
 }
 
