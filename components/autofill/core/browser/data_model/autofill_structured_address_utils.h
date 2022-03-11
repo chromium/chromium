@@ -61,8 +61,9 @@ struct SortedTokenComparisonResult {
   explicit SortedTokenComparisonResult(
       SortedTokenComparisonStatus status,
       std::vector<AddressToken> additional_tokens = {});
+  SortedTokenComparisonResult(SortedTokenComparisonResult&& other);
+  SortedTokenComparisonResult& operator=(SortedTokenComparisonResult&& other);
   ~SortedTokenComparisonResult();
-  SortedTokenComparisonResult(const SortedTokenComparisonResult& other);
   // The status of the token comparison.
   SortedTokenComparisonStatus status = DISTINCT;
   // The additional elements in the super/subsets.

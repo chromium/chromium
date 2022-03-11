@@ -27,18 +27,20 @@
 #include "components/autofill/core/browser/data_model/borrowed_transliterator.h"
 #include "components/autofill/core/common/autofill_features.h"
 
-namespace autofill {
-namespace structured_address {
+namespace autofill::structured_address {
 
 SortedTokenComparisonResult::SortedTokenComparisonResult(
     SortedTokenComparisonStatus status,
     std::vector<AddressToken> additional_tokens)
     : status(status), additional_tokens(additional_tokens) {}
 
-SortedTokenComparisonResult::~SortedTokenComparisonResult() = default;
-
 SortedTokenComparisonResult::SortedTokenComparisonResult(
-    const SortedTokenComparisonResult& other) = default;
+    SortedTokenComparisonResult&& other) = default;
+
+SortedTokenComparisonResult& SortedTokenComparisonResult::operator=(
+    SortedTokenComparisonResult&& other) = default;
+
+SortedTokenComparisonResult::~SortedTokenComparisonResult() = default;
 
 bool SortedTokenComparisonResult::IsSingleTokenSubset() const {
   return status == SUBSET && additional_tokens.size() == 1;
@@ -451,5 +453,4 @@ std::vector<AddressToken> TokenizeValue(const std::u16string value) {
   return tokens;
 }
 
-}  // namespace structured_address
-}  // namespace autofill
+}  // namespace autofill::structured_address
