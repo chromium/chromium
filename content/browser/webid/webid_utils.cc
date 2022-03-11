@@ -10,7 +10,7 @@ namespace content {
 
 bool IsSameOriginWithAncestors(RenderFrameHost* host,
                                const url::Origin& origin) {
-  RenderFrameHost* parent = host->GetParent();
+  RenderFrameHost* parent = host->GetParentOrOuterDocument();
   while (parent) {
     if (!parent->GetLastCommittedOrigin().IsSameOriginWith(origin)) {
       return false;
