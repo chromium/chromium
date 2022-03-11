@@ -45,4 +45,7 @@ interface CrosWindowManagement {
 
   // Allocates focus to the CrosWindow identified by id and brings to front.
   Focus(mojo_base.mojom.UnguessableToken id);
+
+  // Closes the window identified by id if it exists, else do nothing.
+  Close(mojo_base.mojom.UnguessableToken id);
 };

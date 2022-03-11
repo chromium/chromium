@@ -98,6 +98,14 @@ void WindowManagementImpl::Focus(const base::UnguessableToken& id) {
   }
 }
 
+void WindowManagementImpl::Close(const base::UnguessableToken& id) {
+  aura::Window* target = GetWindow(id);
+  // TODO(b/223320570): Add error handling for stale ids.
+  if (target) {
+    views::Widget::GetWidgetForNativeWindow(target)->Close();
+  }
+}
+
 aura::Window* WindowManagementImpl::GetWindow(
     const base::UnguessableToken& id) {
   aura::Window* target = nullptr;

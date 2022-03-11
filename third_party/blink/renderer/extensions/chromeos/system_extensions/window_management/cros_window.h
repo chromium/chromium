@@ -39,7 +39,7 @@ class CrosWindow : public ScriptWrappable {
   void minimize();
   bool raise();
   void focus();
-  bool close();
+  void close();
 
  private:
   Member<CrosWindowManagement> window_management_;

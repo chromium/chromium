@@ -24,5 +24,6 @@ interface CrosWindow {
   boolean raise();
   // Allocates focus to the CrosWindow identified by id and brings to front.
   void focus();
-  boolean close();
+  // Closes the window.
+  void close();
 };

@@ -117,8 +117,13 @@ void CrosWindow::focus() {
   cros_window_management->Focus(window_->id);
 }
 
-bool CrosWindow::close() {
-  return false;
+void CrosWindow::close() {
+  auto* cros_window_management =
+      window_management_->GetCrosWindowManagementOrNull();
+  if (!cros_window_management) {
+    return;
+  }
+  cros_window_management->Close(window_->id);
 }
 
 }  // namespace blink

@@ -37,6 +37,8 @@ class WindowManagementImpl : public blink::mojom::CrosWindowManagement {
 
   void Focus(const base::UnguessableToken& id) override;
 
+  void Close(const base::UnguessableToken& id) override;
+
  private:
   aura::Window* GetWindow(const base::UnguessableToken& id);
 
