@@ -129,7 +129,7 @@ ExtensionFunction::ResponseAction SignedInDevicesGetFunction::Run() {
         GetLocalDeviceInfo(extension_id(), profile);
     std::unique_ptr<base::ListValue> result(new base::ListValue());
     if (device.get()) {
-      result->Append(device->ToValue());
+      result->Append(base::Value::FromUniquePtrValue(device->ToValue()));
     }
     return RespondNow(
         OneArgument(base::Value::FromUniquePtrValue(std::move(result))));
@@ -141,7 +141,7 @@ ExtensionFunction::ResponseAction SignedInDevicesGetFunction::Run() {
   std::unique_ptr<base::ListValue> result(new base::ListValue());
 
   for (const std::unique_ptr<DeviceInfo>& device : devices)
-    result->Append(device->ToValue());
+    result->Append(base::Value::FromUniquePtrValue(device->ToValue()));
 
   return RespondNow(
       OneArgument(base::Value::FromUniquePtrValue(std::move(result))));

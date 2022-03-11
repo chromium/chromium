@@ -218,9 +218,10 @@ void WindowsEventRouter::OnWindowControllerAdded(
   constexpr ExtensionTabUtil::PopulateTabBehavior populate_behavior =
       ExtensionTabUtil::kDontPopulateTabs;
   constexpr Feature::Context context_type = Feature::UNSPECIFIED_CONTEXT;
-  args->Append(ExtensionTabUtil::CreateWindowValueForExtension(
-      *window_controller->GetBrowser(), nullptr, populate_behavior,
-      context_type));
+  args->Append(base::Value::FromUniquePtrValue(
+      ExtensionTabUtil::CreateWindowValueForExtension(
+          *window_controller->GetBrowser(), nullptr, populate_behavior,
+          context_type)));
   DispatchEvent(events::WINDOWS_ON_CREATED, windows::OnCreated::kEventName,
                 window_controller, std::move(args));
 }
@@ -257,9 +258,10 @@ void WindowsEventRouter::OnWindowBoundsChanged(
   constexpr ExtensionTabUtil::PopulateTabBehavior populate_behavior =
       ExtensionTabUtil::kDontPopulateTabs;
   constexpr Feature::Context context_type = Feature::UNSPECIFIED_CONTEXT;
-  args->Append(ExtensionTabUtil::CreateWindowValueForExtension(
-      *window_controller->GetBrowser(), nullptr, populate_behavior,
-      context_type));
+  args->Append(base::Value::FromUniquePtrValue(
+      ExtensionTabUtil::CreateWindowValueForExtension(
+          *window_controller->GetBrowser(), nullptr, populate_behavior,
+          context_type)));
   DispatchEvent(events::WINDOWS_ON_BOUNDS_CHANGED,
                 windows::OnBoundsChanged::kEventName, window_controller,
                 std::move(args));
