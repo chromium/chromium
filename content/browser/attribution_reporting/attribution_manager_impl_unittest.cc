@@ -46,11 +46,14 @@
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_browser_context.h"
 #include "content/public/test/test_utils.h"
+#include "net/base/schemeful_site.h"
 #include "services/network/test/test_network_connection_tracker.h"
 #include "storage/browser/test/mock_special_storage_policy.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "url/gurl.h"
+#include "url/origin.h"
 
 namespace content {
 
@@ -1222,6 +1225,44 @@ TEST_F(AttributionManagerImplTest, EmbedderDisallowsReporting_ReportNotSent) {
 
   // kDropped = 2.
   histograms.ExpectBucketCount("Conversions.ReportSendOutcome", 2, 1);
+}
+
+TEST_F(AttributionManagerImplTest,
+       EmbedderDisallowsReporting_DebugReportNotSent) {
+  const auto source_origin = url::Origin::Create(GURL("https://i.test"));
+  const auto destination_origin = url::Origin::Create(GURL("https://d.test"));
+  const auto reporting_origin = url::Origin::Create(GURL("https://r.test"));
+
+  cookie_checker_->AddOriginWithDebugCookieSet(reporting_origin);
+
+  MockAttributionReportingContentBrowserClient browser_client;
+  EXPECT_CALL(
+      browser_client,
+      IsConversionMeasurementOperationAllowed(
+          _, ContentBrowserClient::ConversionMeasurementOperation::kReport,
+          Pointee(source_origin), Pointee(destination_origin),
+          Pointee(reporting_origin)))
+      .WillOnce(Return(false));
+  ScopedContentBrowserClientSetting setting(&browser_client);
+
+  attribution_manager_->HandleSource(
+      SourceBuilder()
+          .SetImpressionOrigin(source_origin)
+          .SetConversionOrigin(destination_origin)
+          .SetReportingOrigin(reporting_origin)
+          .SetDebugKey(123)
+          .SetExpiry(kImpressionExpiry)
+          .Build());
+
+  attribution_manager_->HandleTrigger(
+      TriggerBuilder()
+          .SetConversionDestination(net::SchemefulSite(destination_origin))
+          .SetReportingOrigin(reporting_origin)
+          .SetDebugKey(456)
+          .Build());
+
+  EXPECT_THAT(StoredReports(), SizeIs(1));
+  EXPECT_THAT(report_sender_->debug_calls(), IsEmpty());
 }
 
 TEST_F(AttributionManagerImplTest, Offline_NoReportSent) {

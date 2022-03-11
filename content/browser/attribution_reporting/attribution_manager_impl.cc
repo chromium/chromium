@@ -456,7 +456,8 @@ void AttributionManagerImpl::OnReportStored(CreateReportResult result) {
 void AttributionManagerImpl::MaybeSendDebugReport(AttributionReport&& report) {
   const AttributionInfo& attribution_info = report.attribution_info();
   if (!attribution_info.debug_key ||
-      !attribution_info.source.common_info().debug_key()) {
+      !attribution_info.source.common_info().debug_key() ||
+      !is_report_allowed_callback_.Run(report)) {
     return;
   }
 
