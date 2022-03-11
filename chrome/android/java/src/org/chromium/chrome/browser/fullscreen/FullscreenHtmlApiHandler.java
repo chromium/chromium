@@ -15,6 +15,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnLayoutChangeListener;
 import android.view.ViewGroup;
+import android.view.ViewPropertyAnimator;
 import android.view.Window;
 import android.view.WindowManager;
 
@@ -92,6 +93,7 @@ public class FullscreenHtmlApiHandler implements ActivityStateListener, WindowFo
     private long mNotificationStartTimestamp;
     private long mNotificationRemainingTimeMs;
     private final Runnable mHideNotificationToastRunnable;
+    private ViewPropertyAnimator mToastFadeAnimation;
 
     private OnLayoutChangeListener mFullscreenOnLayoutChangeListener;
 
@@ -522,12 +524,17 @@ public class FullscreenHtmlApiHandler implements ActivityStateListener, WindowFo
     private void showNotificationToast() {
         assert mTab != null && mTab.getContentView() != null;
         ViewGroup parent = mTab.getContentView();
-        if (mNotificationToast != null) parent.removeView(mNotificationToast);
+        if (mNotificationToast != null) {
+            assert mToastFadeAnimation != null;
+            mToastFadeAnimation.cancel();
+            parent.removeView(mNotificationToast);
+        }
         mNotificationToast =
                 LayoutInflater.from(mActivity).inflate(R.layout.fullscreen_notification, null);
         mNotificationToast.setAlpha(0);
         parent.addView(mNotificationToast);
-        mNotificationToast.animate().alpha(1).setDuration(TOAST_FADE_MS).start();
+        mToastFadeAnimation = mNotificationToast.animate();
+        mToastFadeAnimation.alpha(1).setDuration(TOAST_FADE_MS).start();
         mNotificationRemainingTimeMs = 5000;
         if (parent.hasWindowFocus()) {
             mNotificationStartTimestamp = System.currentTimeMillis();
@@ -540,12 +547,14 @@ public class FullscreenHtmlApiHandler implements ActivityStateListener, WindowFo
      */
     private void hideNotificationToast() {
         if (mNotificationToast == null) return;
-        mNotificationToast.animate().alpha(0).setDuration(TOAST_FADE_MS).withEndAction(() -> {
+        assert mToastFadeAnimation != null;
+        mToastFadeAnimation.alpha(0).setDuration(TOAST_FADE_MS).withEndAction(() -> {
             // The Tab might have been destroyed while the toast is on.
             if (mTab != null && mTab.getContentView() != null) {
                 mTab.getContentView().removeView(mNotificationToast);
             }
             mNotificationToast = null;
+            mToastFadeAnimation = null;
         });
     }
 
