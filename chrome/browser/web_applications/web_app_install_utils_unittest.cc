@@ -586,20 +586,21 @@ TEST(WebAppInstallUtils, UpdateWebAppInfoFromManifestTooManyShortcutIcons) {
 // Tests that we limit the size of icons declared by a site.
 TEST(WebAppInstallUtils, UpdateWebAppInfoFromManifestIconsTooLarge) {
   blink::mojom::Manifest manifest;
-  for (int i = 1; i <= 20; ++i) {
+  for (int size = 1023; size <= 1026; ++size) {
     blink::Manifest::ImageResource icon;
     icon.src = GURL("fav1.png");
     icon.purpose.push_back(Purpose::ANY);
-    const int size = i * 100;
     icon.sizes.emplace_back(size, size);
     manifest.icons.push_back(std::move(icon));
   }
 
   WebAppInstallInfo web_app_info;
+  // Icons exceeding size 1024 are discarded.
   UpdateWebAppInfoFromManifest(
       manifest, GURL("http://www.chromium.org/manifest.json"), &web_app_info);
 
-  EXPECT_EQ(10U, web_app_info.manifest_icons.size());
+  // Only the early icons are within the size limit.
+  EXPECT_EQ(2U, web_app_info.manifest_icons.size());
   for (const apps::IconInfo& icon : web_app_info.manifest_icons) {
     EXPECT_LE(icon.square_size_px, 1024);
   }
@@ -608,21 +609,22 @@ TEST(WebAppInstallUtils, UpdateWebAppInfoFromManifestIconsTooLarge) {
 // Tests that we limit the size of shortcut icons declared by a site.
 TEST(WebAppInstallUtils, UpdateWebAppInfoFromManifestShortcutIconsTooLarge) {
   blink::mojom::Manifest manifest;
-  for (int i = 1; i <= 20; ++i) {
+  for (int size = 1023; size <= 1026; ++size) {
     blink::Manifest::ShortcutItem shortcut_item;
-    shortcut_item.name = kShortcutItemTestName + base::NumberToString16(i);
+    shortcut_item.name = kShortcutItemTestName + base::NumberToString16(size);
     shortcut_item.url = GURL("http://www.chromium.org/shortcuts/action");
 
     blink::Manifest::ImageResource icon;
     icon.src = GURL("http://www.chromium.org/shortcuts/icon1.png");
     icon.purpose.push_back(Purpose::ANY);
-    const int size = i * 100;
     icon.sizes.emplace_back(size, size);
     shortcut_item.icons.push_back(std::move(icon));
 
     manifest.shortcuts.push_back(shortcut_item);
   }
+
   WebAppInstallInfo web_app_info;
+  // Icons exceeding size 1024 are discarded.
   UpdateWebAppInfoFromManifest(
       manifest, GURL("http://www.chromium.org/manifest.json"), &web_app_info);
 
@@ -633,7 +635,8 @@ TEST(WebAppInstallUtils, UpdateWebAppInfoFromManifestShortcutIconsTooLarge) {
       all_icons.push_back(icon_info);
     }
   }
-  EXPECT_EQ(10U, all_icons.size());
+  // Only the early icons are within the size limit.
+  EXPECT_EQ(2U, all_icons.size());
 }
 
 // Tests that SkBitmaps associated with shortcut item icons are populated in
