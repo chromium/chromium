@@ -153,7 +153,9 @@ TEST(StringNumberConversionsTest, StringToInt) {
   // One additional test to verify that conversion of numbers in strings with
   // embedded NUL characters.  The NUL and extra data after it should be
   // interpreted as junk after the number.
-  const char input[] = "6\06";
+  const char input[] =
+      "6\0"
+      "6";
   std::string input_string(input, std::size(input) - 1);
   int output;
   EXPECT_FALSE(StringToInt(input_string, &output));
@@ -219,7 +221,9 @@ TEST(StringNumberConversionsTest, StringToUint) {
   // One additional test to verify that conversion of numbers in strings with
   // embedded NUL characters.  The NUL and extra data after it should be
   // interpreted as junk after the number.
-  const char input[] = "6\06";
+  const char input[] =
+      "6\0"
+      "6";
   std::string input_string(input, std::size(input) - 1);
   unsigned output;
   EXPECT_FALSE(StringToUint(input_string, &output));
@@ -289,7 +293,9 @@ TEST(StringNumberConversionsTest, StringToInt64) {
   // One additional test to verify that conversion of numbers in strings with
   // embedded NUL characters.  The NUL and extra data after it should be
   // interpreted as junk after the number.
-  const char input[] = "6\06";
+  const char input[] =
+      "6\0"
+      "6";
   std::string input_string(input, std::size(input) - 1);
   int64_t output;
   EXPECT_FALSE(StringToInt64(input_string, &output));
@@ -356,7 +362,9 @@ TEST(StringNumberConversionsTest, StringToUint64) {
   // One additional test to verify that conversion of numbers in strings with
   // embedded NUL characters.  The NUL and extra data after it should be
   // interpreted as junk after the number.
-  const char input[] = "6\06";
+  const char input[] =
+      "6\0"
+      "6";
   std::string input_string(input, std::size(input) - 1);
   uint64_t output;
   EXPECT_FALSE(StringToUint64(input_string, &output));
@@ -425,7 +433,9 @@ TEST(StringNumberConversionsTest, StringToSizeT) {
   // One additional test to verify that conversion of numbers in strings with
   // embedded NUL characters.  The NUL and extra data after it should be
   // interpreted as junk after the number.
-  const char input[] = "6\06";
+  const char input[] =
+      "6\0"
+      "6";
   std::string input_string(input, std::size(input) - 1);
   size_t output;
   EXPECT_FALSE(StringToSizeT(input_string, &output));
