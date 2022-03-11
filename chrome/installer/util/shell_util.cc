@@ -712,7 +712,7 @@ bool ElevateAndRegisterChrome(
 // Returns the target used as a activate parameter when opening the settings
 // pointing to the page that is the most relevant to a user trying to change the
 // default handler for |protocol|.
-std::wstring GetTargetForDefaultAppsSettings(const wchar_t* protocol) {
+std::wstring GetTargetForDefaultAppsSettings(const std::wstring& protocol) {
   static const wchar_t kSystemSettingsDefaultAppsFormat[] =
       L"SystemSettings_DefaultApps_%ls";
 
@@ -721,45 +721,6 @@ std::wstring GetTargetForDefaultAppsSettings(const wchar_t* protocol) {
   if (base::EqualsCaseInsensitiveASCII(protocol, L"mailto"))
     return base::StringPrintf(kSystemSettingsDefaultAppsFormat, L"Email");
   return L"SettingsPageAppsDefaultsProtocolView";
-}
-
-// Launches the Windows 'settings' modern app with the 'default apps' view
-// focused. This only works for Windows 8 and Windows 10. The appModelId
-// looks arbitrary but it is the same in Win8 and Win10. There is no easy way to
-// retrieve the appModelId from the registry.
-bool LaunchDefaultAppsSettingsModernDialog(const wchar_t* protocol) {
-  DCHECK(protocol);
-  static const wchar_t kControlPanelAppModelId[] =
-      L"windows.immersivecontrolpanel_cw5n1h2txyewy"
-      L"!microsoft.windows.immersivecontrolpanel";
-
-  static constexpr base::Feature kHighlightProtocolInWindowsSettings{
-      "HighlightProtocolInWindowsSettings", base::FEATURE_ENABLED_BY_DEFAULT};
-
-  Microsoft::WRL::ComPtr<IApplicationActivationManager> activator;
-  HRESULT hr = ::CoCreateInstance(CLSID_ApplicationActivationManager, nullptr,
-                                  CLSCTX_ALL, IID_PPV_ARGS(&activator));
-  if (SUCCEEDED(hr)) {
-    DWORD pid = 0;
-    CoAllowSetForegroundWindow(activator.Get(), nullptr);
-    hr = activator->ActivateApplication(kControlPanelAppModelId,
-                                        L"page=SettingsPageAppsDefaults",
-                                        AO_NONE, &pid);
-    if (SUCCEEDED(hr) &&
-        base::FeatureList::IsEnabled(kHighlightProtocolInWindowsSettings)) {
-      hr = activator->ActivateApplication(
-          kControlPanelAppModelId,
-          base::StringPrintf(L"page=SettingsPageAppsDefaults&target=%ls",
-                             GetTargetForDefaultAppsSettings(protocol).c_str())
-              .c_str(),
-          AO_NONE, &pid);
-    }
-    if (SUCCEEDED(hr))
-      return true;
-    base::UmaHistogramSparse("DefaultBrowser.ActivateSettings.ErrorHresult",
-                             hr);
-  }
-  return false;
 }
 
 // Launches the Windows 7 and Windows 8 dialog for picking the application to
@@ -2355,6 +2316,46 @@ bool ShellUtil::MakeChromeDefaultProtocolClient(
     ret = false;
 
   return ret;
+}
+
+bool ShellUtil::LaunchDefaultAppsSettingsModernDialog(
+    const std::wstring& protocol) {
+  // The appModelId looks arbitrary but it is the same in Win8 and Win10. There
+  // is no easy way to retrieve the appModelId from the registry.
+  static const wchar_t kControlPanelAppModelId[] =
+      L"windows.immersivecontrolpanel_cw5n1h2txyewy"
+      L"!microsoft.windows.immersivecontrolpanel";
+
+  static constexpr base::Feature kHighlightProtocolInWindowsSettings{
+      "HighlightProtocolInWindowsSettings", base::FEATURE_ENABLED_BY_DEFAULT};
+
+  if (base::win::GetVersion() < base::win::Version::WIN8)
+    return false;
+
+  Microsoft::WRL::ComPtr<IApplicationActivationManager> activator;
+  HRESULT hr = ::CoCreateInstance(CLSID_ApplicationActivationManager, nullptr,
+                                  CLSCTX_ALL, IID_PPV_ARGS(&activator));
+  if (SUCCEEDED(hr)) {
+    DWORD pid = 0;
+    CoAllowSetForegroundWindow(activator.Get(), nullptr);
+    hr = activator->ActivateApplication(kControlPanelAppModelId,
+                                        L"page=SettingsPageAppsDefaults",
+                                        AO_NONE, &pid);
+    if (!protocol.empty() && SUCCEEDED(hr) &&
+        base::FeatureList::IsEnabled(kHighlightProtocolInWindowsSettings)) {
+      hr = activator->ActivateApplication(
+          kControlPanelAppModelId,
+          base::StringPrintf(L"page=SettingsPageAppsDefaults&target=%ls",
+                             GetTargetForDefaultAppsSettings(protocol).c_str())
+              .c_str(),
+          AO_NONE, &pid);
+    }
+    if (SUCCEEDED(hr))
+      return true;
+    base::UmaHistogramSparse("DefaultBrowser.ActivateSettings.ErrorHresult",
+                             hr);
+  }
+  return false;
 }
 
 bool ShellUtil::ShowMakeChromeDefaultProtocolClientSystemUI(
