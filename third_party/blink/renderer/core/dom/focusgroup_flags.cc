@@ -180,10 +180,34 @@ FocusgroupFlags ParseFocusgroup(const Element* element,
   // 6. Determine in what axis a focusgroup should wrap. This needs to be
   // performed once the supported axes are final.
   if (has_wrap) {
-    if (flags & FocusgroupFlags::kHorizontal)
-      flags |= FocusgroupFlags::kWrapHorizontally;
-    if (flags & FocusgroupFlags::kVertical)
-      flags |= FocusgroupFlags::kWrapVertically;
+    if (flags & FocusgroupFlags::kExtend) {
+      bool extends_horizontally = flags & FocusgroupFlags::kHorizontal &&
+                                  ancestor_flags & FocusgroupFlags::kHorizontal;
+      if (!extends_horizontally && flags & FocusgroupFlags::kHorizontal) {
+        flags |= FocusgroupFlags::kWrapHorizontally;
+      }
+      bool extends_vertically = flags & FocusgroupFlags::kVertical &&
+                                ancestor_flags & FocusgroupFlags::kVertical;
+      if (!extends_vertically && flags & FocusgroupFlags::kVertical) {
+        flags |= FocusgroupFlags::kWrapVertically;
+      }
+
+      if (extends_horizontally && extends_vertically) {
+        element->GetDocument().AddConsoleMessage(MakeGarbageCollected<
+                                                 ConsoleMessage>(
+            mojom::blink::ConsoleMessageSource::kOther,
+            mojom::blink::ConsoleMessageLevel::kWarning,
+            WebString::FromUTF8(
+                "Focusgroup attribute value 'wrap' present but ignored. 'wrap' "
+                "has no effect when set on a focusgroup that extends another "
+                "one in both axes.")));
+      }
+    } else {
+      if (flags & FocusgroupFlags::kHorizontal)
+        flags |= FocusgroupFlags::kWrapHorizontally;
+      if (flags & FocusgroupFlags::kVertical)
+        flags |= FocusgroupFlags::kWrapVertically;
+    }
   }
 
   // When a focusgroup extends another one, inherit the ancestor's wrap behavior

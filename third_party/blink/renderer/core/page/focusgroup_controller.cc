@@ -66,9 +66,8 @@ bool FocusgroupController::AdvanceForward(Element* initial_element,
   DCHECK(utils::IsDirectionForward(direction));
   DCHECK(utils::IsFocusgroupItem(initial_element));
 
-  Element* initial_focusgroup =
+  Element* nearest_focusgroup =
       utils::FindNearestFocusgroupAncestor(initial_element);
-  Element* nearest_focusgroup = initial_focusgroup;
   // We only allow focusgroup navigation when we are inside of a focusgroup that
   // supports the direction.
   if (!nearest_focusgroup ||
@@ -116,8 +115,7 @@ bool FocusgroupController::AdvanceForward(Element* initial_element,
     // we were in an extending focusgroup, we should advance to the next item in
     // the parent focusgroup if the axis is supported.
     if (current && current == first_element_after_focusgroup) {
-      if (CanExitFocusgroupForward(nearest_focusgroup, current,
-                                   initial_focusgroup, direction)) {
+      if (CanExitFocusgroupForward(nearest_focusgroup, current, direction)) {
         nearest_focusgroup = utils::FindNearestFocusgroupAncestor(current);
         first_element_after_focusgroup =
             utils::NextElement(nearest_focusgroup, /* skip_subtree */ true);
@@ -128,7 +126,7 @@ bool FocusgroupController::AdvanceForward(Element* initial_element,
 
     // 4. When |current| is null, try to wrap.
     if (!current) {
-      current = WrapForward(nearest_focusgroup, initial_focusgroup, direction);
+      current = WrapForward(nearest_focusgroup, direction);
 
       if (!current) {
         // We couldn't wrap and we're out of options.
@@ -166,7 +164,6 @@ bool FocusgroupController::AdvanceForward(Element* initial_element,
 bool FocusgroupController::CanExitFocusgroupForward(
     const Element* exiting_focusgroup,
     const Element* next_element,
-    const Element* initial_focusgroup,
     FocusgroupDirection direction) {
   DCHECK(exiting_focusgroup);
   DCHECK(next_element);
@@ -178,32 +175,10 @@ bool FocusgroupController::CanExitFocusgroupForward(
   if (!next_element_focusgroup)
     return false;
 
-  // When we're exiting a focusgroup that can wrap, we only want to allow the
-  // wrapping behavior when that focusgroup we're exiting is the same as the
-  // |initial_focusgroup| or an ancestor. Otherwise, we're risking falling in an
-  // infinite loop within a descendant focusgroup that wraps.
-  //
-  // Example:
-  // <div id=root focusgroup>
-  //    <span id=item1 tabindex=0></span>
-  //    <div focusgroup="extend wrap">
-  //      <span id=item2></span> <!--NOT FOCUSABLE-->
-  //      <span id=item3></span> <!--NOT FOCUSABLE-->
-  //    </div>
-  //    <span id=item4 tabindex=-1></span>
-  // </div>
-  //
-  // Without this condition, we would treat the wrapping behavior on the inner
-  // focusgroup as legit and iterate for ever between the two non-focusable
-  // items ever though the focus never actually landed in that descendant
-  // focusgroup.
-  bool wraps =
+  return CanExitFocusgroupForwardRecursive(
+      exiting_focusgroup, next_element, direction,
       utils::WrapsInDirection(exiting_focusgroup->GetFocusgroupFlags(),
-                              direction) &&
-      FlatTreeTraversal::CommonAncestor(
-          *exiting_focusgroup, *initial_focusgroup) == exiting_focusgroup;
-  return CanExitFocusgroupForwardRecursive(exiting_focusgroup, next_element,
-                                           direction, wraps);
+                              direction));
 }
 
 // static
@@ -251,7 +226,6 @@ bool FocusgroupController::CanExitFocusgroupForwardRecursive(
 
 // static
 Element* FocusgroupController::WrapForward(Element* nearest_focusgroup,
-                                           const Element* initial_focusgroup,
                                            FocusgroupDirection direction) {
   // 1. Get the focusgroup that initiates the wrapping scope in this axis. We
   // need to go up to the root-most focusgroup in order to be able to get the
@@ -276,16 +250,7 @@ Element* FocusgroupController::WrapForward(Element* nearest_focusgroup,
   if (!focusgroup_wrap_root)
     return nullptr;
 
-  // 3. Only allow wrapping when the |focusgroup_wrap_root| is the initial
-  // focusgroup or an ancestor of it - prevent wrapping in a descendant
-  // focusgroup, as this could lead in an infinite loop if that descendant
-  // focusgroup doesn't have an focusgroup item.
-  if (FlatTreeTraversal::CommonAncestor(
-          *focusgroup_wrap_root, *initial_focusgroup) != focusgroup_wrap_root) {
-    return nullptr;
-  }
-
-  // 4. Set the focus on the first element within the subtree of the
+  // 3. Set the focus on the first element within the subtree of the
   // current focusgroup.
   return utils::NextElement(focusgroup_wrap_root, /* skip_subtree */ false);
 }
@@ -340,8 +305,7 @@ bool FocusgroupController::AdvanceBackward(Element* initial_element,
     bool ascended = false;
     if (current == parent) {
       // Case (iii).
-      Element* wrap_result =
-          WrapBackward(current, initial_focusgroup, direction);
+      Element* wrap_result = WrapBackward(current, direction);
       if (wrap_result) {
         current = utils::AdjustElementOutOfUnrelatedFocusgroup(
             wrap_result, parent, direction);
@@ -407,10 +371,8 @@ bool FocusgroupController::AdvanceBackward(Element* initial_element,
 
 // static
 Element* FocusgroupController::WrapBackward(Element* current,
-                                            const Element* initial_focusgroup,
                                             FocusgroupDirection direction) {
   DCHECK(current);
-  DCHECK(initial_focusgroup);
   DCHECK(utils::IsDirectionBackward(direction));
 
   FocusgroupFlags current_flags = current->GetFocusgroupFlags();
@@ -431,13 +393,6 @@ Element* FocusgroupController::WrapBackward(Element* current,
   if (current_flags & FocusgroupFlags::kExtend && parent_focusgroup &&
       utils::WrapsInDirection(parent_focusgroup->GetFocusgroupFlags(),
                               direction)) {
-    return nullptr;
-  }
-
-  // Prevent wrapping in a descendant focusgroup, as this could lead in an
-  // infinite loop if that descendant focusgroup doesn't have a focusgroup item.
-  if (FlatTreeTraversal::CommonAncestor(*current, *initial_focusgroup) !=
-      current) {
     return nullptr;
   }
 

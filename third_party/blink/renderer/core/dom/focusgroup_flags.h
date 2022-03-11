@@ -50,7 +50,6 @@ namespace focusgroup {
 // https://github.com/MicrosoftEdge/MSEdgeExplainers/blob/main/Focusgroup/explainer.md
 FocusgroupFlags ParseFocusgroup(const Element* element,
                                 const AtomicString& input);
-
 }  // namespace focusgroup
 
 }  // namespace blink

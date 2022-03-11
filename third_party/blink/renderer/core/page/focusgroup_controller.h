@@ -32,7 +32,6 @@ class CORE_EXPORT FocusgroupController {
                              FocusgroupDirection direction);
   static bool CanExitFocusgroupForward(const Element* exiting_focusgroup,
                                        const Element* entering_focusgroup,
-                                       const Element* initial_focusgroup,
                                        FocusgroupDirection direction);
   static bool CanExitFocusgroupForwardRecursive(
       const Element* exiting_focusgroup,
@@ -40,12 +39,10 @@ class CORE_EXPORT FocusgroupController {
       FocusgroupDirection direction,
       bool check_wrap);
   static Element* WrapForward(Element* nearest_focusgroup,
-                              const Element* initial_focusgroup,
                               FocusgroupDirection direction);
   static bool AdvanceBackward(Element* initial_element,
                               FocusgroupDirection direction);
   static Element* WrapBackward(Element* nearest_focusgroup,
-                               const Element* initial_focusgroup,
                                FocusgroupDirection direction);
   static void Focus(Element* element, FocusgroupDirection direction);
 };
