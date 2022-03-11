@@ -199,6 +199,15 @@ class CC_EXPORT TransformTree final : public PropertyTree<TransformNode> {
   }
   float page_scale_factor() const { return page_scale_factor_; }
 
+  void set_overscroll_node_id(int id) { overscroll_node_id_ = id; }
+  int overscroll_node_id() const { return overscroll_node_id_; }
+  void set_fixed_elements_dont_overscroll(bool value) {
+    fixed_elements_dont_overscroll_ = value;
+  }
+  bool fixed_elements_dont_overscroll() const {
+    return fixed_elements_dont_overscroll_;
+  }
+
   void set_device_scale_factor(float device_scale_factor) {
     device_scale_factor_ = device_scale_factor;
   }
@@ -236,6 +245,8 @@ class CC_EXPORT TransformTree final : public PropertyTree<TransformNode> {
   const std::vector<TransformCachedNodeData>& cached_data() const {
     return cached_data_;
   }
+
+  bool ShouldUndoOverscroll(const TransformNode* node) const;
 
   const StickyPositionNodeData* GetStickyPositionData(int node_id) const {
     return const_cast<TransformTree*>(this)->MutableStickyPositionData(node_id);
@@ -277,6 +288,8 @@ class CC_EXPORT TransformTree final : public PropertyTree<TransformNode> {
   // scale is calculated using page scale factor, device scale factor and the
   // scale factor of device transform. So we need to store them explicitly.
   float page_scale_factor_;
+  int overscroll_node_id_;
+  bool fixed_elements_dont_overscroll_;
   float device_scale_factor_;
   float device_transform_scale_factor_;
   std::vector<int> nodes_affected_by_outer_viewport_bounds_delta_;

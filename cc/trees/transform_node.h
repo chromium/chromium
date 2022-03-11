@@ -90,6 +90,8 @@ struct CC_EXPORT TransformNode {
 
   bool scrolls : 1;
 
+  bool is_fixed_position : 1;
+
   bool should_be_snapped : 1;
 
   // Used by the compositor to determine which layers need to be repositioned by

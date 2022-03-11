@@ -380,6 +380,14 @@ void PropertyTreeManager::SetCurrentEffectRenderSurfaceReason(
   effect->render_surface_reason = reason;
 }
 
+void PropertyTreeManager::SetOverscrollNodeId(const int id) {
+  transform_tree_.set_overscroll_node_id(id);
+}
+
+void PropertyTreeManager::SetFixedElementsDontOverscroll(const bool value) {
+  transform_tree_.set_fixed_elements_dont_overscroll(value);
+}
+
 int PropertyTreeManager::EnsureCompositorTransformNode(
     const TransformPaintPropertyNode& transform_node) {
   int id = transform_node.CcNodeId(new_sequence_number_);
@@ -407,6 +415,9 @@ int PropertyTreeManager::EnsureCompositorTransformNode(
 
   cc::TransformNode& compositor_node = *transform_tree_.Node(id);
   UpdateCcTransformLocalMatrix(compositor_node, transform_node);
+
+  compositor_node.is_fixed_position =
+      transform_node.RequiresCompositingForFixedPosition();
   compositor_node.transform_changed = transform_node.NodeChangeAffectsRaster();
   compositor_node.flattens_inherited_transform =
       transform_node.FlattensInheritedTransform();

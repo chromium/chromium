@@ -610,6 +610,11 @@ static void UpdateCompositorViewportProperties(
     }
   }
 
+  if (RuntimeEnabledFeatures::FixedElementsDontOverscrollEnabled()) {
+    property_tree_manager.SetOverscrollNodeId(
+        ids.overscroll_elasticity_transform);
+    property_tree_manager.SetFixedElementsDontOverscroll(true);
+  }
   layer_tree_host->RegisterViewportPropertyIds(ids);
 }
 

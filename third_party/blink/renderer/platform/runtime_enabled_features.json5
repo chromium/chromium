@@ -1133,6 +1133,10 @@
       name: "FirstPartySets",
     },
     {
+      name: "FixedElementsDontOverscroll",
+      status: "experimental",
+    },
+    {
       name: "Fledge",
       origin_trial_feature_name: "Fledge",
     },

@@ -28,6 +28,7 @@ TransformNode::TransformNode()
       flattens_inherited_transform(true),
       node_and_ancestors_are_flat(true),
       scrolls(false),
+      is_fixed_position(false),
       should_be_snapped(false),
       moved_by_outer_viewport_bounds_delta_y(false),
       in_subtree_of_page_scale_layer(false),
@@ -61,6 +62,7 @@ bool TransformNode::operator==(const TransformNode& other) const {
          flattens_inherited_transform == other.flattens_inherited_transform &&
          node_and_ancestors_are_flat == other.node_and_ancestors_are_flat &&
          scrolls == other.scrolls &&
+         is_fixed_position == other.is_fixed_position &&
          should_be_snapped == other.should_be_snapped &&
          moved_by_outer_viewport_bounds_delta_y ==
              other.moved_by_outer_viewport_bounds_delta_y &&
