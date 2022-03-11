@@ -221,10 +221,11 @@ class LayerTreeHostImplForTesting : public LayerTreeHostImpl {
         this, reason, scroll_and_viewport_changes_synced);
   }
 
-  void ReadyToCommit(
-      const viz::BeginFrameArgs& commit_args,
-      const BeginMainFrameMetrics* begin_main_frame_metrics) override {
-    LayerTreeHostImpl::ReadyToCommit(commit_args, begin_main_frame_metrics);
+  void ReadyToCommit(const viz::BeginFrameArgs& commit_args,
+                     const BeginMainFrameMetrics* begin_main_frame_metrics,
+                     bool commit_timeout) override {
+    LayerTreeHostImpl::ReadyToCommit(commit_args, begin_main_frame_metrics,
+                                     commit_timeout);
     test_hooks_->ReadyToCommitOnThread(this);
   }
 

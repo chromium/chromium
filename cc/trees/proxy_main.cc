@@ -208,8 +208,11 @@ void ProxyMain::BeginMainFrame(
   // Check now if we should stop deferring commits due to a timeout. We
   // may also stop deferring in layer_tree_host_->BeginMainFrame, but update
   // the status at this point to keep scroll in sync.
-  if (IsDeferringCommits() && base::TimeTicks::Now() > commits_restart_time_)
+  bool commit_timeout = false;
+  if (IsDeferringCommits() && base::TimeTicks::Now() > commits_restart_time_) {
     StopDeferringCommits(ReasonToTimeoutTrigger(*paint_holding_reason_));
+    commit_timeout = true;
+  }
   bool skip_commit = IsDeferringCommits();
   bool scroll_and_viewport_changes_synced = false;
 
@@ -390,7 +393,8 @@ void ProxyMain::BeginMainFrame(
                                   completion_event, std::move(commit_state),
                                   &unsafe_state, begin_main_frame_start_time,
                                   begin_main_frame_state->begin_frame_args,
-                                  blocking ? &commit_timestamps : nullptr));
+                                  blocking ? &commit_timestamps : nullptr,
+                                  commit_timeout));
     if (blocking)
       layer_tree_host_->WaitForProtectedSequenceCompletion();
   }
