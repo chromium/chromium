@@ -25,7 +25,7 @@ class WifiNetworkConfigurationHandler {
 
   // We guarantee that |callback| will not be invoked after the
   // WifiNetworkConfigurationHandler instance is destroyed.
-  void ConfigureWifiNetwork(
+  virtual void ConfigureWifiNetwork(
       const WifiCredentialsAttachment& wifi_credentials_attachment,
       chromeos::network_config::mojom::CrosNetworkConfig::
           ConfigureNetworkCallback callback);

@@ -5,10 +5,12 @@
 #include "chrome/browser/nearby_sharing/payload_tracker.h"
 
 #include "base/callback.h"
+#include "chrome/browser/nearby_sharing/common/nearby_share_features.h"
 #include "chrome/browser/nearby_sharing/constants.h"
 #include "chrome/browser/nearby_sharing/logging/logging.h"
 #include "chrome/browser/nearby_sharing/nearby_share_metrics_logger.h"
 #include "chrome/browser/nearby_sharing/transfer_metadata_builder.h"
+#include "chromeos/constants/chromeos_features.h"
 
 PayloadTracker::PayloadTracker(
     const ShareTarget& share_target,
@@ -39,7 +41,7 @@ PayloadTracker::PayloadTracker(
     if (it == attachment_info_map.end() || !it->second.payload_id) {
       NS_LOG(WARNING)
           << __func__
-          << ": Failed to retrieve payload for text  attachment id - "
+          << ": Failed to retrieve payload for text attachment id - "
           << text.id();
       continue;
     }
@@ -47,6 +49,23 @@ PayloadTracker::PayloadTracker(
     payload_state_.emplace(*it->second.payload_id, State(text.size()));
     ++num_text_attachments_;
     total_transfer_size_ += text.size();
+  }
+
+  for (const auto& wifi_credentials :
+       share_target.wifi_credentials_attachments) {
+    DCHECK(base::FeatureList::IsEnabled(
+        features::kNearbySharingReceiveWifiCredentials));
+    auto it = attachment_info_map.find(wifi_credentials.id());
+    if (it == attachment_info_map.end() || !it->second.payload_id) {
+      NS_LOG(WARNING) << __func__
+                      << ": Failed to retrieve payload for Wi-Fi Credentials "
+                      << "attachment id - " << wifi_credentials.id();
+      continue;
+    }
+
+    payload_state_.emplace(*it->second.payload_id, State(0));
+    ++num_wifi_credentials_attachments_;
+    total_transfer_size_ += wifi_credentials.size();
   }
 }
 

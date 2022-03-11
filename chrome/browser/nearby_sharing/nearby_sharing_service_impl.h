@@ -43,6 +43,7 @@
 #include "chrome/browser/nearby_sharing/power_client.h"
 #include "chrome/browser/nearby_sharing/share_target.h"
 #include "chrome/browser/nearby_sharing/transfer_metadata.h"
+#include "chrome/browser/nearby_sharing/wifi_network_configuration/wifi_network_configuration_handler.h"
 #include "chrome/browser/ui/webui/nearby_share/public/mojom/nearby_share_settings.mojom.h"
 #include "chrome/services/sharing/public/proto/wire_format.pb.h"
 #include "components/prefs/pref_change_registrar.h"
@@ -86,7 +87,8 @@ class NearbySharingServiceImpl
       Profile* profile,
       std::unique_ptr<NearbyConnectionsManager> nearby_connections_manager,
       ash::nearby::NearbyProcessManager* process_manager,
-      std::unique_ptr<PowerClient> power_client);
+      std::unique_ptr<PowerClient> power_client,
+      std::unique_ptr<WifiNetworkConfigurationHandler> wifi_network_handler);
   ~NearbySharingServiceImpl() override;
 
   // NearbySharingService:
@@ -428,6 +430,7 @@ class NearbySharingServiceImpl
   std::unique_ptr<ash::nearby::NearbyProcessManager::NearbyProcessReference>
       process_reference_;
   std::unique_ptr<PowerClient> power_client_;
+  std::unique_ptr<WifiNetworkConfigurationHandler> wifi_network_handler_;
   scoped_refptr<device::BluetoothAdapter> bluetooth_adapter_;
   // Advertiser which is non-null when we are attempting to share and
   // broadcasting Fast Initiation advertisements.

@@ -48,6 +48,7 @@
 #include "chrome/browser/nearby_sharing/paired_key_verification_runner.h"
 #include "chrome/browser/nearby_sharing/transfer_metadata.h"
 #include "chrome/browser/nearby_sharing/transfer_metadata_builder.h"
+#include "chrome/browser/nearby_sharing/wifi_network_configuration/wifi_network_configuration_handler.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/ui/browser_tabstrip.h"
@@ -289,12 +290,14 @@ NearbySharingServiceImpl::NearbySharingServiceImpl(
     Profile* profile,
     std::unique_ptr<NearbyConnectionsManager> nearby_connections_manager,
     ash::nearby::NearbyProcessManager* process_manager,
-    std::unique_ptr<PowerClient> power_client)
+    std::unique_ptr<PowerClient> power_client,
+    std::unique_ptr<WifiNetworkConfigurationHandler> wifi_network_handler)
     : prefs_(prefs),
       profile_(profile),
       nearby_connections_manager_(std::move(nearby_connections_manager)),
       process_manager_(process_manager),
       power_client_(std::move(power_client)),
+      wifi_network_handler_(std::move(wifi_network_handler)),
       http_client_factory_(std::make_unique<NearbyShareClientFactoryImpl>(
           IdentityManagerFactory::GetForProfile(profile),
           profile->GetURLLoaderFactory(),
@@ -3414,6 +3417,32 @@ void NearbySharingServiceImpl::OnReceivedIntroduction(
     share_target.text_attachments.push_back(std::move(attachment));
   }
 
+  if (base::FeatureList::IsEnabled(
+          features::kNearbySharingReceiveWifiCredentials)) {
+    for (const auto& wifi_credentials :
+         introduction_frame->wifi_credentials_metadata) {
+      if (wifi_credentials->ssid.empty()) {
+        Fail(share_target,
+             TransferMetadata::Status::kUnsupportedAttachmentType);
+        NS_LOG(WARNING) << __func__
+                        << ": Ignore introduction, due to invalid Wi-Fi SSID";
+        return;
+      }
+
+      NS_LOG(VERBOSE) << __func__ << ": Found Wi-Fi Credentials: id="
+                      << wifi_credentials->id
+                      << ", payload_id=" << wifi_credentials->payload_id
+                      << ", security_type=" << wifi_credentials->security_type;
+
+      WifiCredentialsAttachment attachment(wifi_credentials->id,
+                                           wifi_credentials->security_type,
+                                           wifi_credentials->ssid);
+      SetAttachmentPayloadId(attachment, wifi_credentials->payload_id);
+      share_target.wifi_credentials_attachments.push_back(
+          std::move(attachment));
+    }
+  }
+
   if (!share_target.has_attachments()) {
     NS_LOG(WARNING) << __func__
                     << ": No attachment is found for this share target. It can "
@@ -3915,6 +3944,64 @@ bool NearbySharingServiceImpl::OnIncomingPayloadsComplete(
     text.set_text_body(text_body);
 
     attachment_info.text_body = std::move(text_body);
+  }
+
+  if (base::FeatureList::IsEnabled(
+          features::kNearbySharingReceiveWifiCredentials)) {
+    for (auto& wifi_credentials : share_target.wifi_credentials_attachments) {
+      AttachmentInfo& attachment_info =
+          attachment_info_map_[wifi_credentials.id()];
+      absl::optional<int64_t> payload_id = attachment_info.payload_id;
+      if (!payload_id) {
+        NS_LOG(WARNING) << __func__
+                        << ": No payload id found for wifi credentials - "
+                        << wifi_credentials.id();
+        return false;
+      }
+
+      location::nearby::connections::mojom::Payload* incoming_payload =
+          nearby_connections_manager_->GetIncomingPayload(*payload_id);
+      if (!incoming_payload || !incoming_payload->content ||
+          !incoming_payload->content->is_bytes()) {
+        NS_LOG(WARNING) << __func__
+                        << ": No payload found for Wi-Fi credentials - "
+                        << wifi_credentials.id();
+        return false;
+      }
+
+      const std::vector<uint8_t>& bytes =
+          incoming_payload->content->get_bytes()->bytes;
+      if (bytes.empty()) {
+        NS_LOG(WARNING)
+            << __func__
+            << ": Incoming bytes is empty for Wi-Fi password with payload_id - "
+            << *payload_id;
+        return false;
+      }
+
+      sharing::nearby::WifiCredentials credentials_proto;
+      if (!credentials_proto.ParseFromArray(bytes.data(), bytes.size())) {
+        NS_LOG(WARNING) << __func__
+                        << ": Failed to parse Wi-Fi credentials proto";
+        return false;
+      }
+
+      if (credentials_proto.password().empty()) {
+        NS_LOG(WARNING) << __func__ << ": No Wi-Fi password found";
+        return false;
+      }
+
+      std::string wifi_password(credentials_proto.password());
+      wifi_credentials.set_wifi_password(wifi_password);
+
+      // Automatically set up the Wi-Fi network for the user.
+      wifi_network_handler_->ConfigureWifiNetwork(
+          wifi_credentials,
+          base::BindOnce([](const absl::optional<std::string>& network_guid,
+                            const std::string& error_message) {
+            // TODO(crisrael): Add metrics
+          }));
+    }
   }
   return true;
 }

@@ -19,6 +19,7 @@
 #include "chrome/browser/nearby_sharing/nearby_connections_manager_impl.h"
 #include "chrome/browser/nearby_sharing/nearby_sharing_service_impl.h"
 #include "chrome/browser/nearby_sharing/power_client_chromeos.h"
+#include "chrome/browser/nearby_sharing/wifi_network_configuration/wifi_network_configuration_handler.h"
 #include "chrome/browser/notifications/notification_display_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
@@ -118,7 +119,8 @@ KeyedService* NearbySharingServiceFactory::BuildServiceInstanceFor(
   return new NearbySharingServiceImpl(
       pref_service, notification_display_service, profile,
       std::move(nearby_connections_manager), process_manager,
-      std::make_unique<PowerClientChromeos>());
+      std::make_unique<PowerClientChromeos>(),
+      std::make_unique<WifiNetworkConfigurationHandler>());
 }
 
 content::BrowserContext* NearbySharingServiceFactory::GetBrowserContextToUse(

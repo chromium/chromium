@@ -6901,6 +6901,8 @@ test("unit_tests") {
       "../browser/nearby_sharing/webrtc_request_builder_unittest.cc",
       "../browser/nearby_sharing/webrtc_signaling_messenger_unittest.cc",
       "../browser/nearby_sharing/wifi_credentials_attachment_unittest.cc",
+      "../browser/nearby_sharing/wifi_network_configuration/fake_wifi_network_configuration_handler.cc",
+      "../browser/nearby_sharing/wifi_network_configuration/fake_wifi_network_configuration_handler.h",
       "../browser/nearby_sharing/wifi_network_configuration/wifi_network_configuration_handler_unittest.cc",
       "../browser/notifications/chrome_ash_message_center_client_unittest.cc",
       "../browser/notifications/web_page_notifier_controller_unittest.cc",

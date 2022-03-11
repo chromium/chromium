@@ -67,6 +67,7 @@ class PayloadTracker : public NearbyConnectionsManager::PayloadStatusListener {
   // For metrics.
   size_t num_text_attachments_ = 0;
   size_t num_file_attachments_ = 0;
+  size_t num_wifi_credentials_attachments_ = 0;
   uint64_t num_first_update_bytes_ = 0;
   absl::optional<base::TimeTicks> first_update_timestamp_;
   absl::optional<Medium> last_upgraded_medium_;
