@@ -39,13 +39,9 @@ struct AttributionAggregatableTriggerData {
   AttributionFilterData not_filters;
 };
 
-// Struct containing all the aggregatable trigger data.
+// Struct containing all the aggregatable trigger data and values.
 struct AttributionAggregatableTrigger {
   array<AttributionAggregatableTriggerData> trigger_data;
-};
-
-// Struct containing the aggregatable values.
-struct AttributionAggregatableValues {
   map<string, uint32> values;
 };
 
@@ -129,11 +125,8 @@ struct AttributionTriggerData {
   AttributionFilterData filters;
 
   // Contains a list of trigger data that generates trigger-side aggregatable
-  // key pieces.
+  // key pieces and the values.
   AttributionAggregatableTrigger aggregatable_trigger;
-
-  // Lists an amount of an abstract "value" to contribute to each key.
-  AttributionAggregatableValues aggregatable_values;
 
   // A key that is propagated through the Attribution Reporting API for
   // debugging purposes.

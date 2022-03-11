@@ -426,7 +426,7 @@ IN_PROC_BROWSER_TEST_F(AttributionSrcBrowserTest,
       IsEmpty());
   EXPECT_THAT(trigger_data.front()->aggregatable_trigger->trigger_data,
               IsEmpty());
-  EXPECT_THAT(trigger_data.front()->aggregatable_values->values, IsEmpty());
+  EXPECT_THAT(trigger_data.front()->aggregatable_trigger->values, IsEmpty());
 }
 
 IN_PROC_BROWSER_TEST_F(AttributionSrcBrowserTest,
@@ -491,7 +491,7 @@ IN_PROC_BROWSER_TEST_F(AttributionSrcBrowserTest,
                                                 AggregatableKeyLowBitsIs(1)))),
                 SourceKeysAre(ElementsAre("key"))))));
 
-  EXPECT_THAT(trigger_data.front()->aggregatable_values->values,
+  EXPECT_THAT(trigger_data.front()->aggregatable_trigger->values,
               ElementsAre(Pair("key", 123)));
 }
 
@@ -547,7 +547,7 @@ IN_PROC_BROWSER_TEST_F(
                   FilterValuesAre(ElementsAre(Pair("d", ElementsAre("e", "f")),
                                               Pair("g", IsEmpty())))))))));
 
-  EXPECT_THAT(trigger_data.front()->aggregatable_values->values,
+  EXPECT_THAT(trigger_data.front()->aggregatable_trigger->values,
               ElementsAre(Pair("key1", 123), Pair("key2", 456)));
 }
 
@@ -641,7 +641,7 @@ IN_PROC_BROWSER_TEST_F(AttributionSrcBrowserTest,
   EXPECT_EQ(trigger_data.size(), 1u);
   EXPECT_THAT(trigger_data.front()->aggregatable_trigger->trigger_data,
               SizeIs(2));
-  EXPECT_THAT(trigger_data.front()->aggregatable_values->values, SizeIs(2));
+  EXPECT_THAT(trigger_data.front()->aggregatable_trigger->values, SizeIs(2));
 }
 
 IN_PROC_BROWSER_TEST_F(AttributionSrcBrowserTest,

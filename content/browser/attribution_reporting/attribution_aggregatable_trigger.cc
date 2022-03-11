@@ -99,14 +99,29 @@ AttributionAggregatableTrigger::FromMojo(
     trigger_data.push_back(std::move(*data));
   }
 
-  return AttributionAggregatableTrigger(std::move(trigger_data));
+  if (mojo->values.size() >
+      blink::kMaxAttributionAggregatableKeysPerSourceOrTrigger) {
+    return absl::nullopt;
+  }
+
+  bool is_valid = base::ranges::all_of(mojo->values, [](const auto& value) {
+    return value.first.size() <=
+               blink::kMaxBytesPerAttributionAggregatableKeyId &&
+           value.second > 0;
+  });
+  if (!is_valid)
+    return absl::nullopt;
+
+  return AttributionAggregatableTrigger(std::move(trigger_data),
+                                        std::move(mojo->values));
 }
 
 AttributionAggregatableTrigger::AttributionAggregatableTrigger() = default;
 
 AttributionAggregatableTrigger::AttributionAggregatableTrigger(
-    std::vector<AttributionAggregatableTriggerData> trigger_data)
-    : trigger_data_(std::move(trigger_data)) {}
+    std::vector<AttributionAggregatableTriggerData> trigger_data,
+    Values values)
+    : trigger_data_(std::move(trigger_data)), values_(std::move(values)) {}
 
 AttributionAggregatableTrigger::~AttributionAggregatableTrigger() = default;
 
