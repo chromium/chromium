@@ -89,7 +89,7 @@
 <translation id="1243027604378859286">రచయిత:</translation>
 <translation id="1246424317317450637">బోల్డ్</translation>
 <translation id="1248573052514400575"><ph name="MANAGE_CHROMEOS_ACCESSIBILITY_FOCUSED_FRIENDLY_MATCH_TEXT" />, Chrome OS సెట్టింగ్‌లలో మీ యాక్సెసిబిలిటీ టూల్స్‌ను వ్యక్తిగతీకరించడానికి 'Tab'ను నొక్కి, ఆపై 'Enter'ను నొక్కండి</translation>
-<translation id="1250759482327835220">తర్వాతిసారి మరింత వేగంగా చెల్లించడానికి, మీ కార్డ్, పేరు మరియు బిల్లింగ్ అడ్రస్‌ను మీ Google ఖాతాకు సేవ్ చేయండి.</translation>
+<translation id="1250759482327835220">తర్వాతిసారి మరింత వేగంగా పేమెంట్ చేయడానికి, మీ కార్డ్, పేరు మరియు బిల్లింగ్ అడ్రస్‌ను మీ Google ఖాతాకు సేవ్ చేయండి.</translation>
 <translation id="1252799212227771492">'షీట్‌ను క్రియేట్ చేయండి' బటన్, కొత్త Google షీట్‌ను త్వరగా క్రియేట్ చేయడానికి Enterను నొక్కండి</translation>
 <translation id="1253921432148366685"><ph name="TYPE_1" />, <ph name="TYPE_2" /> (సమకాలీకరించబడ్డాయి)</translation>
 <translation id="1256368399071562588">&lt;p&gt;మీరు ఏదైనా వెబ్‌సైట్‌ను తెరవడానికి ప్రయత్నించినప్పుడు, అది తెరవబడకుంటే, ముందుగా ఈ సమస్య నివారణ ప్రక్రియ దశలను ఉపయోగించి ఎర్రర్‌ను పరిష్కరించడానికి ప్రయత్నించండి:&lt;/p&gt;
@@ -621,7 +621,7 @@
 <translation id="2859806420264540918">ఈ సైట్ అనుచితమైన లేదా తప్పుదారి పట్టించే ప్రకటనలను చూపుతుంది.</translation>
 <translation id="286512204874376891">మోసం జరిగే అవకాశమున్న సందర్భంలో మిమ్మల్ని రక్షించడంలో సహాయపడటానికి వర్చువల్ కార్డ్ మీ అసలు కార్డ్‌లా వ్యవహరిస్తుంది. <ph name="IDS_AUTOFILL_VIRTUAL_CARD_ENROLLMENT_LEARN_MORE_LINK_LABEL" /></translation>
 <translation id="287596039013813457">స్నేహపూర్వకమైనది</translation>
-<translation id="2876489322757410363">వెలుపలి అప్లికేషన్ ద్వారా చెల్లించడానికి అజ్ఞాత మోడ్ నుండి నిష్క్రమిస్తోంది. కొనసాగించాలా?</translation>
+<translation id="2876489322757410363">వెలుపలి అప్లికేషన్ ద్వారా పేమెంట్ చేయడానికి అజ్ఞాత మోడ్ నుండి నిష్క్రమిస్తోంది. కొనసాగించాలా?</translation>
 <translation id="2876949457278336305"><ph name="MANAGE_SECURITY_SETTINGS_FOCUSED_FRIENDLY_MATCH_TEXT" />, Chrome సెట్టింగ్‌లలో మీ సురక్షిత బ్రౌజింగ్‌ను, ఇంకా మరిన్నింటిని మేనేజ్ చేయడానికి 'Tab'ను నొక్కి, ఆపై 'Enter'ను నొక్కండి</translation>
 <translation id="2878197950673342043">పోస్టర్ ఫోల్డ్</translation>
 <translation id="2878424575911748999">A1</translation>
@@ -923,7 +923,7 @@
 <translation id="3789841737615482174">ఇన్‌స్టాల్ చేయి</translation>
 <translation id="3793574014653384240">ఇటీవల ఏర్పడిన క్రాష్‌ల సంఖ్యలు, వాటికి గల కారణాలు</translation>
 <translation id="3797522431967816232">Prc3 (ఎన్వలప్)</translation>
-<translation id="3799805948399000906">అభ్యర్థించిన ఫాంట్</translation>
+<translation id="3799805948399000906">రిక్వెస్ట్ చేసిన ఫాంట్</translation>
 <translation id="380329542618494757">పేరు</translation>
 <translation id="3807366285948165054">చిత్రాన్ని X అక్షంలో జరపు</translation>
 <translation id="3807873520724684969">హానికర కంటెంట్ బ్లాక్ చేయబడింది.</translation>
@@ -1111,7 +1111,7 @@
 <translation id="4351175281479794167">వెరిఫికేషన్ కోడ్‌ను ఎంటర్ చేయండి</translation>
 <translation id="4356973930735388585">ఈ సైట్‌లోని దాడి చేసేవారు మీ సమాచారాన్ని (ఉదాహరణకు, ఫోటోలు, పాస్‌వర్డ్‌లు, మెసేజ్‌లు మరియు క్రెడిట్ కార్డ్‌లు) దొంగిలించడం కోసం లేదా తొలగించడం కోసం మీ కంప్యూటర్‌లో ప్రమాదకరమైన ప్రోగ్రామ్‌లను ఇన్‌స్టాల్ చేయడానికి ప్రయత్నించవచ్చు.</translation>
 <translation id="4358059973562876591">DnsOverHttpsMode విధానానికి సంబంధించి ఏర్పడిన ఎర్రర్ కారణంగా మీరు పేర్కొన్న టెంప్లేట్‌లను వర్తింపజేయడం వీలు కాకపోవచ్చు.</translation>
-<translation id="4358461427845829800">చెల్లింపు పద్ధతులను నిర్వహించండి...</translation>
+<translation id="4358461427845829800">పేమెంట్ ఆప్షన్‌లను నిర్వహించండి...</translation>
 <translation id="4359160567981085931">మీరు మోసపూరితమైన సైట్‌లో మీ పాస్‌వర్డ్‌ను ఎంటర్ చేశారు. Chrome సహాయపడగలదు. మీ పాస్‌వర్డ్‌‌ను మార్చి, మీ ఖాతా ప్రమాదంలో ఉండవచ్చని Googleకు తెలియజేయడానికి, 'ఖాతాను సంరక్షించు'ను క్లిక్ చేయండి.</translation>
 <translation id="4367563149485757821">నంబర్-12 (ఎన్వలప్)</translation>
 <translation id="437040971055499437">సెక్యూరిటీ ఈవెంట్ జరిగినప్పుడు</translation>
@@ -1382,7 +1382,7 @@
 <translation id="5205222826937269299">పేరు ఆవశ్యకం</translation>
 <translation id="5209518306177824490">SHA-1 వేలిముద్ర</translation>
 <translation id="5209670883520018268">ట్రే 20</translation>
-<translation id="5215116848420601511">Google Payని ఉపయోగిస్తున్న చెల్లింపు పద్ధతులు మరియు అడ్రస్‌లు</translation>
+<translation id="5215116848420601511">Google Payని ఉపయోగిస్తున్న పేమెంట్ ఆప్షన్‌లు మరియు అడ్రస్‌లు</translation>
 <translation id="5215363486134917902">ఫోలియో-Sp</translation>
 <translation id="521659676233207110">ట్రే 13</translation>
 <translation id="5216942107514965959">చివరిగా ఈరోజు సందర్శించారు</translation>
@@ -1481,7 +1481,7 @@
 <translation id="5535133333442455806">'బ్రౌజింగ్ డేటాను క్లియర్ చేయి' బటన్, Chrome సెట్టింగ్‌లలో మీ బ్రౌజింగ్ హిస్టరీ, కుక్కీలు, కాష్ ఇంకా మరిన్నింటిని క్లియర్ చేయడానికి 'Enter' నొక్కండి</translation>
 <translation id="5536214594743852365">"<ph name="SECTION" />" విభాగాన్ని చూపించు</translation>
 <translation id="5539243836947087108">రాఫ్ట్</translation>
-<translation id="5540224163453853">అభ్యర్థించిన కథనాన్ని కనుగొనడం సాధ్యపడలేదు.</translation>
+<translation id="5540224163453853">రిక్వెస్ట్ చేసిన కథనాన్ని కనుగొనడం సాధ్యపడలేదు.</translation>
 <translation id="5541086400771735334">మెయిల్‌బాక్స్ 7</translation>
 <translation id="5541546772353173584">ఈమెయిల్‌ను జోడించండి</translation>
 <translation id="5545756402275714221">మీ కోసం కథనాలు</translation>
@@ -1498,7 +1498,7 @@
 <translation id="5587987780934666589">ప్లాట్‌ఫామ్ యూజర్</translation>
 <translation id="5593349413089863479">కనెక్షన్ పూర్తిగా సురక్షితమైనది కాదు</translation>
 <translation id="5595485650161345191">అడ్రస్‌ను సవరించు</translation>
-<translation id="5598944008576757369">చెల్లింపు పద్ధతిని ఎంచుకోండి</translation>
+<translation id="5598944008576757369">పేమెంట్ ఆప్షన్‌ను ఎంచుకోండి</translation>
 <translation id="560412284261940334">నిర్వహణకు మద్దతు లేదు</translation>
 <translation id="5605670050355397069">లెడ్జర్</translation>
 <translation id="5607240918979444548">ఆర్కిటెక్చర్-C</translation>
@@ -1685,7 +1685,7 @@
 <translation id="6272088941196661550">మీ Chrome హిస్టరీలో మీ సందర్భోచితమైన యాక్టివిటీని చూడటానికి మీ సెర్చ్‌ను కొనసాగించండి</translation>
 <translation id="6272383483618007430">Google అప్‌డేట్</translation>
 <translation id="6276112860590028508">మీ పఠన లిస్ట్‌లో ఉన్న పేజీలు ఇక్కడ కనిపిస్తాయి</translation>
-<translation id="627746635834430766">తర్వాతిసారి మరింత వేగంగా చెల్లించడానికి, మీ కార్డ్, బిల్లింగ్ అడ్రస్‌ను మీ Google ఖాతాకు సేవ్ చేయండి.</translation>
+<translation id="627746635834430766">తర్వాతిసారి మరింత వేగంగా పేమెంట్ చేయడానికి, మీ కార్డ్, బిల్లింగ్ అడ్రస్‌ను మీ Google ఖాతాకు సేవ్ చేయండి.</translation>
 <translation id="6279183038361895380">మీ కర్సర్‌ను చూపడానికి |<ph name="ACCELERATOR" />| నొక్కండి</translation>
 <translation id="6280223929691119688">ఈ అడ్రస్‌కు బట్వాడా చేయడం సాధ్యం కాదు. వేరే అడ్రస్‌ను ఎంచుకోండి.</translation>
 <translation id="6282194474023008486">పోస్టల్ కోడ్</translation>
@@ -1752,7 +1752,7 @@
 <translation id="6465306955648956876">పాస్‌వర్డ్‌లను నిర్వహించండి...</translation>
 <translation id="6468485451923838994">ఫాంట్‌లు</translation>
 <translation id="647261751007945333">పరికర విధానాలు</translation>
-<translation id="6476284679642588870">చెల్లింపు పద్ధతులను నిర్వహించండి</translation>
+<translation id="6476284679642588870">పేమెంట్ ఆప్షన్‌లను నిర్వహించండి</translation>
 <translation id="6489534406876378309">క్రాష్‌లను అప్‌లోడ్ చేయడాన్ని ప్రారంభించండి</translation>
 <translation id="6493924760403974580">ఈ యాప్ ఈ పరిమాణాన్ని మాత్రమే సపోర్ట్ చేస్తుంది.</translation>
 <translation id="6494750904506170417">పాప్-అప్‌లు, మళ్లింపులు</translation>
@@ -1804,14 +1804,14 @@
 <translation id="6665553082534466207">కుడివైపు మూడు రంధ్రాలు</translation>
 <translation id="6671697161687535275">Chromium నుండి ఫారమ్ సూచనను తీసివేయాలా?</translation>
 <translation id="6685834062052613830">సైన్ అవుట్ చేసి, సెటప్‌ను పూర్తి చేయండి</translation>
-<translation id="6687335167692595844">అభ్యర్థించబడిన ఫాంట్ పరిమాణం</translation>
+<translation id="6687335167692595844">రిక్వెస్ట్ చేయబడిన ఫాంట్ పరిమాణం</translation>
 <translation id="6688743156324860098">అప్‌డేట్ చేయి…</translation>
 <translation id="6688775486821967877">ప్రస్తుతానికి వర్చువల్ కార్డ్ అందుబాటులో లేదు, దయచేసి తర్వాత మళ్లీ ట్రై చేయండి</translation>
 <translation id="6689249931105087298">సంబంధిత బ్లాక్ పాయింట్ కంప్రెషన్</translation>
 <translation id="6689271823431384964">మీరు సైన్ ఇన్ చేసి ఉన్నందున, మీ కార్డ్‌లను మీ Google ఖాతాలో సేవ్ చేసుకోగల అవకాశాన్ని Chrome మీకు అందిస్తోంది. మీరు సెట్టింగ్‌లలో ఈ ప్రవర్తనను మార్చవచ్చు. కార్డుదారుడి పేరు మీ ఖాతా నుండి అందించబడింది.</translation>
 <translation id="6694681292321232194"><ph name="FIND_MY_PHONE_FOCUSED_FRIENDLY_MATCH_TEXT" />, Google ఖాతాలో మీ పరికరాన్ని కనుగొనడానికి Tabను నొక్కి, ఆపై Enterను నొక్కండి</translation>
 <translation id="6696588630955820014">'ఈ ట్యాబ్‌ను షేర్ చేయండి' బటన్, 'లింక్‌ను షేర్ చేయడం', 'QR కోడ్‌ను క్రియేట్ చేయడం', 'కాస్ట్ చేయడం' ఇంకా మరెన్నో ఆప్షన్‌ల ద్వారా ఈ ట్యాబ్‌ను షేర్ చేయడానికి 'Enter'ను నొక్కండి</translation>
-<translation id="6698381487523150993">సృష్టించబడింది:</translation>
+<translation id="6698381487523150993">క్రియేట్ చేయబడింది:</translation>
 <translation id="6702919718839027939">పిన్ చేయండి</translation>
 <translation id="6710213216561001401">మునుపటి</translation>
 <translation id="6710594484020273272">&lt;శోధన పదాన్ని టైప్ చేయండి&gt;</translation>
@@ -1917,7 +1917,7 @@
 <translation id="7079718277001814089">ఈ సైట్‌లో మాల్వేర్ ఉంది</translation>
 <translation id="7081308185095828845">మీ పరికరంలో ఈ ఫీచర్ అందుబాటులో లేదు</translation>
 <translation id="7083258188081898530">ట్రే 9</translation>
-<translation id="7086090958708083563">అప్‌లోడ్‌ను యూజర్ అభ్యర్థించారు</translation>
+<translation id="7086090958708083563">అప్‌లోడ్‌ను యూజర్ రిక్వెస్ట్ చేశారు</translation>
 <translation id="7087282848513945231">కౌంటి</translation>
 <translation id="7095139009144195559"><ph name="MANAGE_SITE_SETTINGS_FOCUSED_FRIENDLY_MATCH_TEXT" />, Chrome సెట్టింగ్‌లలో అనుమతులను మేనేజ్ చేయడానికి, అలాగే సైట్‌ల అంతటా స్టోర్ చేయబడిన డేటాను మేనేజ్ చేయడానికి 'Tab'ను నొక్కి, ఆపై 'Enter'ను నొక్కండి</translation>
 <translation id="7096937462164235847">ఈ వెబ్‍సైట్‌కు సంబంధించిన గుర్తింపు వెరిఫై చేయబడలేదు.</translation>
@@ -2258,12 +2258,12 @@
 <translation id="8094917007353911263">మీరు ఉపయోగిస్తున్న నెట్‌వర్క్‌కు మీరు <ph name="BEGIN_BOLD" /><ph name="LOGIN_URL" /><ph name="END_BOLD" />ను సందర్శించడం అవసరం.</translation>
 <translation id="809898108652741896">A6</translation>
 <translation id="8100588592594801589">చెల్లని కార్డ్‌లు తీసివేయబడ్డాయి</translation>
-<translation id="8103161714697287722">చెల్లింపు పద్ధతి</translation>
+<translation id="8103161714697287722">పేమెంట్ ఆప్షన్‌</translation>
 <translation id="8103643211515685474">ఏదేమైనా ప్రింట్ చేయండి</translation>
 <translation id="8105368624971345109">ఆఫ్ చేయి</translation>
 <translation id="810875025413331850">సమీప పరికరాలు ఏవీ కనుగొనబడలేదు.</translation>
 <translation id="8116925261070264013">మ్యూట్ చేసినవి</translation>
-<translation id="8118489163946903409">చెల్లింపు పద్ధతి</translation>
+<translation id="8118489163946903409">పేమెంట్ ఆప్షన్‌</translation>
 <translation id="8124639700796374294">'Chromeను అనుకూలీకరించండి' బటన్, మీ బ్రౌజర్ రూపాన్ని అనుకూలీకరించడానికి 'Enter'ను నొక్కండి</translation>
 <translation id="8127301229239896662">మీ కంప్యూటర్ లేదా నెట్‌వర్క్‌లో "<ph name="SOFTWARE_NAME" />" సరిగ్గా ఇన్‌స్టాల్ కాలేదు. ఈ సమస్యను పరిష్కరించమని మీ IT నిర్వాహకులను కోరండి.</translation>
 <translation id="8131740175452115882">నిర్ధారించు</translation>
@@ -2498,7 +2498,7 @@
 <translation id="8975012916872825179">ఫోన్ నంబర్‌లు, ఈమెయిల్‌ అడ్రస్‌లు మరియు బట్వాడా అడ్రస్‌లు లాంటి సమాచారం ఉంటుంది</translation>
 <translation id="8975263830901772334">మీరు ముద్రించే ఫైళ్ల పేర్లు</translation>
 <translation id="8978053250194585037">Google సురక్షిత బ్రౌజింగ్ ఇటీవల <ph name="SITE" />లో <ph name="BEGIN_LINK" />ఫిషింగ్‌ని గుర్తించింది<ph name="END_LINK" />. ఫిషింగ్ సైట్‌లు వేరే వెబ్‌సైట్‌ల వలె ప్రవర్తించడం ద్వారా మిమ్మల్ని మాయ చేయవచ్చు.</translation>
-<translation id="8983003182662520383">Google Payని ఉపయోగిస్తున్న చెల్లింపు పద్ధతులు మరియు అడ్రస్‌లు</translation>
+<translation id="8983003182662520383">Google Payని ఉపయోగిస్తున్న పేమెంట్ ఆప్షన్‌లు మరియు అడ్రస్‌లు</translation>
 <translation id="8983369100812962543">మీరు ఇప్పుడు యాప్ పరిమాణం మార్చవచ్చు</translation>
 <translation id="8987245424886630962"><ph name="VIEW_CHROME_HISTORY_FOCUSED_FRIENDLY_MATCH_TEXT" />, Chromeలో మీ బ్రౌజింగ్ హిస్టరీని చూడడానికి Tabను నొక్కి, ఆపై Enterను నొక్కండి</translation>
 <translation id="8987927404178983737">నెల</translation>

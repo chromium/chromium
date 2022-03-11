@@ -1151,7 +1151,7 @@
 <translation id="9099429023611373837">knippen</translation>
 <translation id="9108370397979208512">wiskunde</translation>
 <translation id="9108589040018540527">scbr</translation>
-<translation id="911476240645808512">{COUNT,plural, =1{procentteken}other{# procenttekens}}</translation>
+<translation id="911476240645808512">{COUNT,plural, =1{procent}other{# procenttekens}}</translation>
 <translation id="9128414153595658330">dialoogvenster</translation>
 <translation id="9133928141873682933">Kaki</translation>
 <translation id="9149560530563164529">sctn</translation>
