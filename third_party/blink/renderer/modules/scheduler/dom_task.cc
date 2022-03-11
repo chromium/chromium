@@ -9,6 +9,8 @@
 #include "base/check_op.h"
 #include "base/metrics/histogram_macros.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_value.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_core.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_throw_dom_exception.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_scheduler_post_task_callback.h"
 #include "third_party/blink/renderer/core/dom/abort_signal.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
@@ -147,9 +149,28 @@ void DOMTask::OnAbort() {
   if (!callback_)
     return;
 
-  task_handle_.Cancel();
-  resolver_->Reject(
-      MakeGarbageCollected<DOMException>(DOMExceptionCode::kAbortError));
+  DCHECK(resolver_);
+
+  ScriptState* resolver_script_state = resolver_->GetScriptState();
+
+  if (!IsInParallelAlgorithmRunnable(resolver_->GetExecutionContext(),
+                                     resolver_script_state)) {
+    task_handle_.Cancel();
+    async_task_context_.Cancel();
+    return;
+  }
+
+  // switch to the resolver's context to let DOMException pick up the resolver's
+  // JS stack
+  {
+    ScriptState::Scope script_state_scope(resolver_script_state);
+
+    task_handle_.Cancel();
+    // TODO(crbug.com/1293949): Add an error message.
+    resolver_->Reject(
+        V8ThrowDOMException::CreateOrDie(resolver_script_state->GetIsolate(),
+                                         DOMExceptionCode::kAbortError, ""));
+  }
 
   ScriptState* script_state =
       callback_->CallbackRelevantScriptStateOrReportError("DOMTask", "Abort");
