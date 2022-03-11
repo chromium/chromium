@@ -448,8 +448,7 @@ are exported to translation interchange files (e.g. XMB files), etc.
     # Print out any fallback warnings, and missing translation errors, and
     # exit with an error code if there are missing translations in a non-pseudo
     # and non-official build.
-    warnings = (self.res.UberClique().MissingTranslationsReport().
-        encode('ascii', 'replace'))
+    warnings = self.res.UberClique().MissingTranslationsReport()
     if warnings:
       self.VerboseOut(warnings)
     if self.res.UberClique().HasMissingTranslations():
