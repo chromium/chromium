@@ -408,13 +408,14 @@ void NetworkService::ReplaceSystemDnsConfigForTesting() {
 }
 
 void NetworkService::SetTestDohConfigForTesting(
+    net::SecureDnsMode secure_dns_mode,
     const net::DnsOverHttpsConfig& doh_config) {
   DCHECK_EQ(dns_config_overrides_set_by_, FunctionTag::None);
   dns_config_overrides_set_by_ = FunctionTag::SetTestDohConfigForTesting;
 
   // Overlay DoH settings on top of the system config, whenever it is received.
   net::DnsConfigOverrides overrides;
-  overrides.secure_dns_mode = net::SecureDnsMode::kSecure;
+  overrides.secure_dns_mode = secure_dns_mode;
   overrides.dns_over_https_config = doh_config;
   host_resolver_manager_->SetDnsConfigOverrides(std::move(overrides));
 

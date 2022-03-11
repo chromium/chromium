@@ -7,6 +7,7 @@
 
 #include <memory>
 #include <string>
+#include <utility>
 
 #include "base/callback.h"
 #include "base/memory/raw_ptr.h"
@@ -18,6 +19,7 @@
 #include "content/public/test/test_host_resolver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "net/dns/public/dns_over_https_config.h"
+#include "net/dns/public/secure_dns_mode.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "services/network/public/mojom/network_service_test.mojom.h"
 #include "storage/browser/quota/quota_settings.h"
@@ -123,7 +125,8 @@ class BrowserTestBase : public ::testing::Test {
   void SetReplaceSystemDnsConfig();
 
   // Sets DoH configuration for use during tests.
-  void SetTestDohConfig(net::DnsOverHttpsConfig config);
+  void SetTestDohConfig(net::SecureDnsMode secure_dns_mode,
+                        net::DnsOverHttpsConfig config);
 
   // This is invoked from main after browser_init/browser_main have completed.
   // This prepares for the test by creating a new browser and doing any other
@@ -220,7 +223,8 @@ class BrowserTestBase : public ::testing::Test {
 
   // DoH configuration used during tests. When it contains a value,
   // `InitializeNetworkProcess` will pass it to the network service.
-  absl::optional<net::DnsOverHttpsConfig> test_doh_config_;
+  absl::optional<std::pair<net::SecureDnsMode, net::DnsOverHttpsConfig>>
+      test_doh_config_;
 
   // A field trial list that's used to support field trials activated prior to
   // browser start.

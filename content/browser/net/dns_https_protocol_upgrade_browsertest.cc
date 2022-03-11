@@ -18,6 +18,7 @@
 #include "net/dns/mock_host_resolver.h"
 #include "net/dns/public/dns_over_https_config.h"
 #include "net/dns/public/dns_over_https_server_config.h"
+#include "net/dns/public/secure_dns_mode.h"
 #include "net/dns/public/util.h"
 #include "net/test/embedded_test_server/default_handlers.h"
 #include "net/test/test_doh_server.h"
@@ -59,7 +60,8 @@ class DohHttpsProtocolUpgradeBrowserTest : public content::ContentBrowserTest {
     // When the network service runs out-of-process, use `BrowserTestBase`
     // methods to poke the DNS configuration.
     if (content::IsOutOfProcessNetworkService()) {
-      SetTestDohConfig(std::move(doh_config).value());
+      SetTestDohConfig(net::SecureDnsMode::kSecure,
+                       std::move(doh_config).value());
       SetReplaceSystemDnsConfig();
       return;
     }
@@ -78,7 +80,8 @@ class DohHttpsProtocolUpgradeBrowserTest : public content::ContentBrowserTest {
           network::NetworkService* network_service =
               network::NetworkService::GetNetworkServiceForTesting();
           ASSERT_TRUE(network_service);
-          network_service->SetTestDohConfigForTesting(doh_config.value());
+          network_service->SetTestDohConfigForTesting(
+              net::SecureDnsMode::kSecure, doh_config.value());
           network_service->ReplaceSystemDnsConfigForTesting();
         }),
         run_loop.QuitClosure());

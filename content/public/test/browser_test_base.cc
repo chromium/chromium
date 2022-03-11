@@ -79,6 +79,7 @@
 #include "mojo/public/cpp/platform/platform_channel.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/dns/public/dns_over_https_server_config.h"
+#include "net/dns/public/secure_dns_mode.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "services/network/public/cpp/features.h"
 #include "services/network/public/mojom/network_service_test.mojom.h"
@@ -930,9 +931,10 @@ void BrowserTestBase::SetReplaceSystemDnsConfig() {
   replace_system_dns_config_ = true;
 }
 
-void BrowserTestBase::SetTestDohConfig(net::DnsOverHttpsConfig config) {
+void BrowserTestBase::SetTestDohConfig(net::SecureDnsMode secure_dns_mode,
+                                       net::DnsOverHttpsConfig config) {
   DCHECK(!test_doh_config_.has_value());
-  test_doh_config_ = std::move(config);
+  test_doh_config_ = std::make_pair(secure_dns_mode, std::move(config));
 }
 
 void BrowserTestBase::CreateTestServer(const base::FilePath& test_server_base) {
@@ -1032,7 +1034,8 @@ void BrowserTestBase::InitializeNetworkProcess() {
 
   if (test_doh_config_.has_value()) {
     mojo::ScopedAllowSyncCallForTesting allow_sync_call;
-    network_service_test_->SetTestDohConfig(*test_doh_config_);
+    network_service_test_->SetTestDohConfig(test_doh_config_->first,
+                                            test_doh_config_->second);
   }
 
   std::vector<network::mojom::RulePtr> mojo_rules;

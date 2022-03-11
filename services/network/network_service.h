@@ -107,7 +107,8 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkService
   // changes that occur while tests run.
   void ReplaceSystemDnsConfigForTesting();
 
-  void SetTestDohConfigForTesting(const net::DnsOverHttpsConfig& doh_config);
+  void SetTestDohConfigForTesting(net::SecureDnsMode secure_dns_mode,
+                                  const net::DnsOverHttpsConfig& doh_config);
 
   // Creates a NetworkService instance on the current thread.
   static std::unique_ptr<NetworkService> Create(

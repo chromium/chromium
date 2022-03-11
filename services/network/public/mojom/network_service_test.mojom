@@ -102,7 +102,8 @@ interface NetworkServiceTest {
 
   // Set the DoH configuration to be used during tests.
   [Sync]
-  SetTestDohConfig(DnsOverHttpsConfig doh_config) => ();
+  SetTestDohConfig(SecureDnsMode secure_dns_mode,
+                   DnsOverHttpsConfig doh_config) => ();
 
   // Causes the next host resolve to the given hostname to crash the process.
   CrashOnResolveHost(string host);
