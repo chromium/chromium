@@ -18,6 +18,7 @@
 #include "components/search_engines/search_engine_type.h"
 #include "components/search_engines/template_url_data.h"
 #include "components/search_engines/template_url_id.h"
+#include "third_party/metrics_proto/chrome_searchbox_stats.pb.h"
 #include "third_party/metrics_proto/omnibox_event.pb.h"
 #include "third_party/metrics_proto/omnibox_input_type.pb.h"
 #include "ui/gfx/geometry/size.h"
@@ -197,8 +198,16 @@ class TemplateURLRef {
     // at the query submission time.  For privacy reasons, we require the
     // search provider to support HTTPS protocol in order to receive the AQS
     // param.
-    // For more details, see http://goto.google.com/binary-clients-logging .
+    // For more details, see go/chrome-suggest-logging.
     std::string assisted_query_stats;
+
+    // The optional searchbox stats, reported as gs_lcrp for logging purposes.
+    // This proto message contains information such as impressions of all
+    // autocomplete matches shown at the query submission time.
+    // For privacy reasons, we require the search provider to support HTTPS
+    // protocol in order to receive the gs_lcrp param.
+    // For more details, see go/chrome-suggest-logging-improvement.
+    metrics::ChromeSearchboxStats searchbox_stats;
 
     // TODO: Remove along with "aq" CGI param.
     int accepted_suggestion = NO_SUGGESTIONS_AVAILABLE;
@@ -414,6 +423,7 @@ class TemplateURLRef {
     GOOGLE_SEARCH_CLIENT,
     GOOGLE_SEARCH_FIELDTRIAL_GROUP,
     GOOGLE_SEARCH_VERSION,
+    GOOGLE_SEARCHBOX_STATS,
     GOOGLE_SESSION_TOKEN,
     GOOGLE_SUGGEST_CLIENT,
     GOOGLE_SUGGEST_REQUEST_ID,

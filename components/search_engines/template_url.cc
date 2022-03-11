@@ -729,6 +729,8 @@ bool TemplateURLRef::ParseParameter(size_t start,
     replacements->push_back(Replacement(GOOGLE_PREFETCH_SOURCE, start));
   } else if (parameter == "google:RLZ") {
     replacements->push_back(Replacement(GOOGLE_RLZ, start));
+  } else if (parameter == "google:searchboxStats") {
+    replacements->push_back(Replacement(GOOGLE_SEARCHBOX_STATS, start));
   } else if (parameter == "google:searchClient") {
     replacements->push_back(Replacement(GOOGLE_SEARCH_CLIENT, start));
   } else if (parameter == "google:searchFieldtrialParameter") {
@@ -1058,12 +1060,43 @@ std::string TemplateURLRef::HandleReplacements(
           search_terms_args_without_aqs.assisted_query_stats.clear();
           GURL base_url(ReplaceSearchTerms(search_terms_args_without_aqs,
                                            search_terms_data, nullptr));
-          if (base_url.SchemeIsCryptographic()) {
+          if (base_url.SchemeIsCryptographic() &&
+              base::FeatureList::IsEnabled(
+                  omnibox::kReportAssistedQueryStats)) {
             HandleReplacement("aqs", search_terms_args.assisted_query_stats,
                               replacement, &url);
           }
         }
         break;
+
+      case GOOGLE_SEARCHBOX_STATS: {
+        DCHECK(!replacement.is_post_param);
+        if (search_terms_args.searchbox_stats.ByteSizeLong() > 0) {
+          // Get the base URL without substituting gs_lcrp to avoid infinite
+          // recursion. We need the URL to find out if it meets all
+          // gs_lcrp requirements (e.g. HTTPS protocol check).
+          // See TemplateURLRef::SearchTermsArgs for more details.
+          SearchTermsArgs search_terms_args_without_gs_lcrp(search_terms_args);
+          // Clear the proto. Its empty state has a serialized size of zero.
+          search_terms_args_without_gs_lcrp.searchbox_stats.Clear();
+          GURL base_url(ReplaceSearchTerms(search_terms_args_without_gs_lcrp,
+                                           search_terms_data, nullptr));
+          if (base_url.SchemeIsCryptographic() &&
+              base::FeatureList::IsEnabled(omnibox::kReportSearchboxStats)) {
+            std::string serialized_searchbox_stats;
+            search_terms_args.searchbox_stats.SerializeToString(
+                &serialized_searchbox_stats);
+            if (!serialized_searchbox_stats.empty()) {
+              std::string encoded_searchbox_stats;
+              base::Base64Encode(serialized_searchbox_stats,
+                                 &encoded_searchbox_stats);
+              HandleReplacement("gs_lcrp", encoded_searchbox_stats, replacement,
+                                &url);
+            }
+          }
+        }
+        break;
+      }
 
       case GOOGLE_BASE_URL:
         DCHECK(!replacement.is_post_param);

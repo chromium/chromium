@@ -14,6 +14,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/scoped_feature_list.h"
 #include "components/google/core/common/google_util.h"
 #include "components/omnibox/common/omnibox_features.h"
 #include "components/search_engines/search_engines_switches.h"
@@ -21,6 +22,7 @@
 #include "components/search_engines/testing_search_terms_data.h"
 #include "net/base/url_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/metrics_proto/chrome_searchbox_stats.pb.h"
 #include "third_party/metrics_proto/omnibox_event.pb.h"
 #include "third_party/metrics_proto/omnibox_input_type.pb.h"
 
@@ -602,6 +604,9 @@ TEST_F(TemplateURLTest, ReplaceSearchTermsMultipleEncodings) {
 
 // Tests replacing assisted query stats (AQS) in various scenarios.
 TEST_F(TemplateURLTest, ReplaceAssistedQueryStats) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures({omnibox::kReportAssistedQueryStats}, {});
+
   struct TestData {
     const std::u16string search_term;
     const std::string aqs;
@@ -644,6 +649,118 @@ TEST_F(TemplateURLTest, ReplaceAssistedQueryStats) {
                                                  search_terms_data_));
     ASSERT_TRUE(result.is_valid());
     EXPECT_EQ(test_data[i].expected_result, result.spec());
+  }
+}
+
+// Tests replacing searchbox stats (gs_lcrp) in various scenarios.
+TEST_F(TemplateURLTest, ReplaceSearchboxStats) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures({omnibox::kReportSearchboxStats}, {});
+
+  metrics::ChromeSearchboxStats empty_searchbox_stats;
+  metrics::ChromeSearchboxStats non_empty_searchbox_stats;
+  non_empty_searchbox_stats.set_client_name("chrome");
+
+  struct TestData {
+    const std::u16string search_term;
+    const metrics::ChromeSearchboxStats searchbox_stats;
+    const std::string base_url;
+    const std::string url;
+    const std::string expected_result;
+  } test_data[] = {
+      // No HTTPS: no gs_lcrp.
+      {u"foo", non_empty_searchbox_stats, "http://foo/",
+       "{google:baseURL}?q={searchTerms}&{google:searchboxStats}",
+       "http://foo/?q=foo&"},
+      // HTTPS and empty gs_lcrp: no gs_lcrp.
+      {u"foo", empty_searchbox_stats, "https://foo/",
+       "{google:baseURL}?q={searchTerms}&{google:searchboxStats}",
+       "https://foo/?q=foo&"},
+      // HTTPS and non-empty gs_lcrp: replace gs_lcrp.
+      {u"foo", non_empty_searchbox_stats, "https://foo/",
+       "{google:baseURL}?q={searchTerms}&{google:searchboxStats}",
+       "https://foo/?q=foo&gs_lcrp=EgZjaHJvbWU=&"},
+      // HTTPS and non-empty gs_lcrp but no google:searchboxStats: no gs_lcrp.
+      {u"foo", non_empty_searchbox_stats, "https://foo/",
+       "{google:baseURL}?q={searchTerms}", "https://foo/?q=foo"},
+      // Non-Google search provider, No HTTPS: no gs_lcrp.
+      {u"foo", non_empty_searchbox_stats, "https://foo/",
+       "http://foo/?{searchTerms}&{google:searchboxStats}", "http://foo/?foo&"},
+      // Non-Google search provider, HTTPS and empty gs_lcrp: no gs_lcrp.
+      {u"foo", empty_searchbox_stats, "https://foo/",
+       "https://foo/?{searchTerms}&{google:searchboxStats}",
+       "https://foo/?foo&"},
+      // Non-Google search provider, HTTPS and non-empty gs_lcrp: replace
+      // gs_lcrp.
+      {u"foo", non_empty_searchbox_stats, "https://foo/",
+       "https://foo/?{searchTerms}&{google:searchboxStats}",
+       "https://foo/?foo&gs_lcrp=EgZjaHJvbWU=&"},
+      // Non-Google search provider, HTTPS and non-empty gs_lcrp but no
+      // google:searchboxStats: no gs_lcrp.
+      {u"foo", non_empty_searchbox_stats, "https://foo/",
+       "https://foo/?{searchTerms}", "https://foo/?foo"},
+  };
+  TemplateURLData data;
+  data.input_encodings.push_back("UTF-8");
+  for (const auto& entry : test_data) {
+    data.SetURL(entry.url);
+    TemplateURL url(data);
+    EXPECT_TRUE(url.url_ref().IsValid(search_terms_data_));
+    ASSERT_TRUE(url.url_ref().SupportsReplacement(search_terms_data_));
+    TemplateURLRef::SearchTermsArgs search_terms_args(entry.search_term);
+    search_terms_args.searchbox_stats.MergeFrom(entry.searchbox_stats);
+    search_terms_data_.set_google_base_url(entry.base_url);
+    GURL result(url.url_ref().ReplaceSearchTerms(search_terms_args,
+                                                 search_terms_data_));
+    ASSERT_TRUE(result.is_valid());
+    EXPECT_EQ(entry.expected_result, result.spec());
+  }
+}
+
+// Tests replacing searchbox stats (gs_lcrp) and assisted query stats (AQS).
+TEST_F(TemplateURLTest, ReplaceSearchboxStatsAndAssistedQueryStats) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      {omnibox::kReportSearchboxStats, omnibox::kReportAssistedQueryStats}, {});
+
+  metrics::ChromeSearchboxStats non_empty_searchbox_stats;
+  non_empty_searchbox_stats.set_client_name("chrome");
+
+  struct TestData {
+    const std::u16string search_term;
+    const std::string aqs;
+    const metrics::ChromeSearchboxStats searchbox_stats;
+    const std::string base_url;
+    const std::string url;
+    const std::string expected_result;
+  } test_data[] = {
+      // HTTPS and non-empty gs_lcrp and AQS: replace both.
+      {u"foo", "chrome.0.0l6", non_empty_searchbox_stats, "https://foo/",
+       "{google:baseURL}?q={searchTerms}&{google:searchboxStats}{google:"
+       "assistedQueryStats}",
+       "https://foo/?q=foo&gs_lcrp=EgZjaHJvbWU=&aqs=chrome.0.0l6&"},
+      // Non-Google search provider, HTTPS and non-empty gs_lcrp and AQS:
+      // replace both.
+      {u"foo", "chrome.0.0l6", non_empty_searchbox_stats, "https://foo/",
+       "https://foo/"
+       "?{searchTerms}&{google:searchboxStats}{google:assistedQueryStats}",
+       "https://foo/?foo&gs_lcrp=EgZjaHJvbWU=&aqs=chrome.0.0l6&"},
+  };
+  TemplateURLData data;
+  data.input_encodings.push_back("UTF-8");
+  for (const auto& entry : test_data) {
+    data.SetURL(entry.url);
+    TemplateURL url(data);
+    EXPECT_TRUE(url.url_ref().IsValid(search_terms_data_));
+    ASSERT_TRUE(url.url_ref().SupportsReplacement(search_terms_data_));
+    TemplateURLRef::SearchTermsArgs search_terms_args(entry.search_term);
+    search_terms_args.assisted_query_stats = entry.aqs;
+    search_terms_args.searchbox_stats.MergeFrom(entry.searchbox_stats);
+    search_terms_data_.set_google_base_url(entry.base_url);
+    GURL result(url.url_ref().ReplaceSearchTerms(search_terms_args,
+                                                 search_terms_data_));
+    ASSERT_TRUE(result.is_valid());
+    EXPECT_EQ(entry.expected_result, result.spec());
   }
 }
 

@@ -340,4 +340,15 @@ const char kDefaultTypedNavigationsToHttpsTimeoutParam[] = "timeout";
 // Spare renderer warmup for faster website loading.
 const base::Feature kOmniboxSpareRenderer{"OmniboxSpareRenderer",
                                           base::FEATURE_ENABLED_BY_DEFAULT};
+
+// If enabled, Omnibox reports the Assisted Query Stats in the aqs= param in the
+// Search Results Page URL.
+const base::Feature kReportAssistedQueryStats{"OmniboxReportAssistedQueryStats",
+                                              base::FEATURE_ENABLED_BY_DEFAULT};
+
+// If enabled, Omnibox reports the Searchbox Stats in the gs_lcrp= param in the
+// Search Results Page URL.
+extern const base::Feature kReportSearchboxStats{
+    "OmniboxReportSearchboxStats", base::FEATURE_DISABLED_BY_DEFAULT};
+
 }  // namespace omnibox

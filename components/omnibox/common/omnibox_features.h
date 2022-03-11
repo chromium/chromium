@@ -103,6 +103,10 @@ extern const base::Feature kDefaultTypedNavigationsToHttps;
 extern const char kDefaultTypedNavigationsToHttpsTimeoutParam[];
 extern const base::Feature kOmniboxSpareRenderer;
 
+// Omnibox Logging.
+extern const base::Feature kReportAssistedQueryStats;
+extern const base::Feature kReportSearchboxStats;
+
 }  // namespace omnibox
 
 #endif  // COMPONENTS_OMNIBOX_COMMON_OMNIBOX_FEATURES_H_
