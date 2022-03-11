@@ -368,19 +368,16 @@ bool DesksTemplatesGridView::IntersectsWithGridItem(
   return false;
 }
 
-DesksTemplatesItemView* DesksTemplatesGridView::RequestFocusForUUID(
+DesksTemplatesItemView* DesksTemplatesGridView::GetItemForUUID(
     const base::GUID& uuid) {
   if (!uuid.is_valid())
     return nullptr;
 
-  for (auto* item_view : grid_items_) {
-    if (uuid == item_view->desk_template()->uuid()) {
-      DCHECK(!item_view->name_view()->GetReadOnly());
-      item_view->name_view()->RequestFocus();
-      return item_view;
-    }
-  }
-  return nullptr;
+  auto it = std::find_if(grid_items_.begin(), grid_items_.end(),
+                         [&uuid](DesksTemplatesItemView* item_view) {
+                           return uuid == item_view->desk_template()->uuid();
+                         });
+  return it == grid_items_.end() ? nullptr : *it;
 }
 
 void DesksTemplatesGridView::OnLocatedEvent(ui::LocatedEvent* event,

@@ -2521,7 +2521,8 @@ TEST_F(DesksTemplatesTest, SaveDeskRecordsWindowAndTabCountMetrics) {
 
   // Mocks saving templates with some browsers.
   DesksTemplatesPresenter::Get()->SaveOrUpdateDeskTemplate(
-      /*is_update=*/false, std::move(desk_template));
+      /*is_update=*/false, Shell::GetPrimaryRootWindow(),
+      std::move(desk_template));
 
   histogram_tester.ExpectBucketCount(kWindowCountHistogramName, 2, 1);
   histogram_tester.ExpectBucketCount(kTabCountHistogramName, 6, 1);
@@ -3059,6 +3060,51 @@ TEST_F(DesksTemplatesTest, NoDuplicateDisplayedName) {
   // Cancel on replace dialog will revert view name to template name.
   dialog_widget->widget_delegate()->AsDialogDelegate()->CancelDialog();
   EXPECT_EQ(u"Desk 1", name_view->GetText());
+}
+
+// Tests that if there is a duplicate template name, saving a new template will
+// select all the text. Regression test for https://crbug.com/1303924.
+TEST_F(DesksTemplatesTest, SelectAllAfterSavingDuplicateTemplate) {
+  // First add a template that has the same name as the active desk.
+  ASSERT_EQ(u"Desk 1", DesksController::Get()->active_desk()->name());
+  AddEntry(base::GUID::GenerateRandomV4(), "Desk 1", base::Time::Now());
+
+  auto test_window = CreateAppWindow();
+  ToggleOverview();
+  WaitForDesksTemplatesUI();
+
+  // Click on `save_desk_as_template_widget` button.
+  views::Widget* save_desk_as_template_widget =
+      GetSaveDeskAsTemplateButtonForRoot(Shell::GetPrimaryRootWindow());
+  ClickOnView(save_desk_as_template_widget->GetContentsView());
+  WaitForDesksTemplatesUI();
+
+  // Expect that the entire text of the new template is selected.
+  EXPECT_EQ(u"Desk 1", GetItemViewFromTemplatesGrid(0)->name_view()->GetText());
+  EXPECT_EQ(u"Desk 1", GetItemViewFromTemplatesGrid(1)->name_view()->GetText());
+  EXPECT_TRUE(GetItemViewFromTemplatesGrid(1)->name_view()->HasFocus());
+  EXPECT_EQ(u"Desk 1",
+            GetItemViewFromTemplatesGrid(1)->name_view()->GetSelectedText());
+}
+
+TEST_F(DesksTemplatesTest, NudgeOnTheCorrectDisplay) {
+  UpdateDisplay("800x700,801+0-800x700");
+  ASSERT_EQ(2u, Shell::GetAllRootWindows().size());
+
+  auto test_window = CreateAppWindow();
+  ToggleOverview();
+  WaitForDesksTemplatesUI();
+
+  // Click on `save_desk_as_template_widget` button on the primary display.
+  views::Widget* save_desk_as_template_widget =
+      GetSaveDeskAsTemplateButtonForRoot(Shell::GetAllRootWindows()[0]);
+  ClickOnView(save_desk_as_template_widget->GetContentsView());
+  WaitForDesksTemplatesUI();
+
+  // The desks templates widget associated with the primary display should be
+  // active.
+  EXPECT_EQ(Shell::GetAllRootWindows()[0],
+            window_util::GetActiveWindow()->GetRootWindow());
 }
 
 }  // namespace ash

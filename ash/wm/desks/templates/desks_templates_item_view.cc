@@ -465,7 +465,8 @@ void DesksTemplatesItemView::UpdateTemplateName() {
   OnTemplateNameChanged(desk_template_->template_name());
 
   DesksTemplatesPresenter::Get()->SaveOrUpdateDeskTemplate(
-      /*is_update=*/true, desk_template_->Clone());
+      /*is_update=*/true, GetWidget()->GetNativeWindow()->GetRootWindow(),
+      desk_template_->Clone());
 }
 
 void DesksTemplatesItemView::ContentsChanged(

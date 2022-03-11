@@ -1016,7 +1016,8 @@ bool OverviewSession::IsWindowActiveWindowBeforeOverview(
 }
 
 void OverviewSession::ShowDesksTemplatesGrids(bool was_zero_state,
-                                              const base::GUID& item_to_focus) {
+                                              const base::GUID& item_to_focus,
+                                              aura::Window* const root_window) {
   if (IsShowingDesksTemplatesGrid())
     return;
 
@@ -1032,7 +1033,7 @@ void OverviewSession::ShowDesksTemplatesGrids(bool was_zero_state,
   // Only ask for all entries if it is the first time creating the grid widgets.
   // Otherwise, add or update the entries one at a time.
   if (created_grid_widgets)
-    desks_templates_presenter_->GetAllEntries(item_to_focus);
+    desks_templates_presenter_->GetAllEntries(item_to_focus, root_window);
   UpdateNoWindowsWidgetOnEachGrid();
 }
 
@@ -1285,7 +1286,7 @@ void OverviewSession::OnKeyEvent(ui::KeyEvent* event) {
 
       DCHECK(!grid_list_.empty());
       ShowDesksTemplatesGrids(grid_list_[0]->desks_bar_view()->IsZeroState(),
-                              base::GUID());
+                              base::GUID(), Shell::GetPrimaryRootWindow());
       break;
 #else
       return;

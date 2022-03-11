@@ -67,9 +67,8 @@ class DesksTemplatesGridView : public views::View, public aura::WindowObserver {
   // Returns whether the given `point_in_screen` intersect with any grid item.
   bool IntersectsWithGridItem(const gfx::Point& point_in_screen);
 
-  // Requests focus on the textfield of the item associated with `uuid`. Returns
-  // the item if it exists.
-  DesksTemplatesItemView* RequestFocusForUUID(const base::GUID& uuid);
+  // Returns the item view associated with `uuid`.
+  DesksTemplatesItemView* GetItemForUUID(const base::GUID& uuid);
 
   // views::View:
   void Layout() override;

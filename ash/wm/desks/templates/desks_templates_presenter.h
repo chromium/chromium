@@ -49,7 +49,8 @@ class ASH_EXPORT DesksTemplatesPresenter : desks_storage::DeskModelObserver {
 
   // Calls the DeskModel to get all the template entries, with a callback to
   // `OnGetAllEntries`.
-  void GetAllEntries(const base::GUID& item_to_focus);
+  void GetAllEntries(const base::GUID& item_to_focus,
+                     aura::Window* const root_window);
 
   // Calls the DeskModel to delete the template with the provided uuid.
   void DeleteEntry(const std::string& template_uuid);
@@ -68,6 +69,7 @@ class ASH_EXPORT DesksTemplatesPresenter : desks_storage::DeskModelObserver {
 
   // Saves or updates the `desk_template` to the model.
   void SaveOrUpdateDeskTemplate(bool is_update,
+                                aura::Window* const root_window,
                                 std::unique_ptr<DeskTemplate> desk_template);
 
   // desks_storage::DeskModelObserver:
@@ -86,6 +88,7 @@ class ASH_EXPORT DesksTemplatesPresenter : desks_storage::DeskModelObserver {
   // Callback ran after querying the model for a list of entries. This function
   // also contains logic for updating the UI.
   void OnGetAllEntries(const base::GUID& item_to_focus,
+                       aura::Window* const root_window,
                        desks_storage::DeskModel::GetAllEntriesStatus status,
                        const std::vector<DeskTemplate*>& entries);
 
@@ -98,7 +101,7 @@ class ASH_EXPORT DesksTemplatesPresenter : desks_storage::DeskModelObserver {
   void OnGetTemplateForDeskLaunch(
       base::Time time_launch_started,
       base::TimeDelta delay,
-      aura::Window* root_window,
+      aura::Window* const root_window,
       desks_storage::DeskModel::GetEntryByUuidStatus status,
       std::unique_ptr<DeskTemplate> entry);
 
@@ -106,6 +109,7 @@ class ASH_EXPORT DesksTemplatesPresenter : desks_storage::DeskModelObserver {
   // `AddOrUpdateUIEntries` to update the UI by adding or updating the template.
   void OnAddOrUpdateEntry(
       bool was_update,
+      aura::Window* const root_window,
       std::unique_ptr<DeskTemplate> desk_template,
       desks_storage::DeskModel::AddOrUpdateEntryStatus status);
 
