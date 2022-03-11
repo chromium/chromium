@@ -79,6 +79,22 @@ class LinkHighlightImplTest : public testing::Test,
         WebString::FromUTF8("http://www.test.com/"), test::CoreTestDataPath(),
         WebString::FromUTF8("test_touch_link_highlight.html"));
     web_view_helper_.InitializeAndLoad(url.GetString().Utf8());
+
+    int page_width = 640;
+    int page_height = 480;
+    WebViewImpl* web_view_impl = web_view_helper_.GetWebView();
+    web_view_impl->MainFrameViewWidget()->Resize(
+        gfx::Size(page_width, page_height));
+    UpdateAllLifecyclePhases();
+  }
+
+  GestureEventWithHitTestResults GestureShowPress(const gfx::PointF& point) {
+    WebGestureEvent touch_event(WebInputEvent::Type::kGestureShowPress,
+                                WebInputEvent::kNoModifiers,
+                                WebInputEvent::GetStaticTimeStampForTests(),
+                                WebGestureDevice::kTouchscreen);
+    touch_event.SetPositionInWidget(point);
+    return GetTargetedEvent(touch_event);
   }
 
   void TearDown() override {
@@ -135,29 +151,17 @@ INSTANTIATE_PAINT_TEST_SUITE_P(LinkHighlightImplTest);
 TEST_P(LinkHighlightImplTest, verifyWebViewImplIntegration) {
   WebViewImpl* web_view_impl = web_view_helper_.GetWebView();
   size_t animation_count_before_highlight = AnimationCount();
-  int page_width = 640;
-  int page_height = 480;
-  web_view_impl->MainFrameViewWidget()->Resize(
-      gfx::Size(page_width, page_height));
-  UpdateAllLifecyclePhases();
 
-  WebGestureEvent touch_event(WebInputEvent::Type::kGestureShowPress,
-                              WebInputEvent::kNoModifiers,
-                              WebInputEvent::GetStaticTimeStampForTests(),
-                              WebGestureDevice::kTouchscreen);
+  GestureEventWithHitTestResults targeted_event =
+      GestureShowPress(gfx::PointF(20, 20));
+  ASSERT_TRUE(web_view_impl->BestTapNode(targeted_event));
 
-  // The coordinates below are linked to absolute positions in the referenced
-  // .html file.
-  touch_event.SetPositionInWidget(gfx::PointF(20, 20));
+  targeted_event = GestureShowPress(gfx::PointF(20, 40));
+  EXPECT_FALSE(web_view_impl->BestTapNode(targeted_event));
 
-  ASSERT_TRUE(web_view_impl->BestTapNode(GetTargetedEvent(touch_event)));
-
-  touch_event.SetPositionInWidget(gfx::PointF(20, 40));
-  EXPECT_FALSE(web_view_impl->BestTapNode(GetTargetedEvent(touch_event)));
-
-  touch_event.SetPositionInWidget(gfx::PointF(20, 20));
+  targeted_event = GestureShowPress(gfx::PointF(20, 20));
   // Shouldn't crash.
-  web_view_impl->EnableTapHighlightAtPoint(GetTargetedEvent(touch_event));
+  web_view_impl->EnableTapHighlightAtPoint(targeted_event);
 
   const auto* highlight = GetLinkHighlightImpl();
   EXPECT_TRUE(highlight);
@@ -165,8 +169,8 @@ TEST_P(LinkHighlightImplTest, verifyWebViewImplIntegration) {
   EXPECT_TRUE(highlight->LayerForTesting(0));
 
   // Find a target inside a scrollable div
-  touch_event.SetPositionInWidget(gfx::PointF(20, 100));
-  web_view_impl->EnableTapHighlightAtPoint(GetTargetedEvent(touch_event));
+  targeted_event = GestureShowPress(gfx::PointF(20, 100));
+  web_view_impl->EnableTapHighlightAtPoint(targeted_event);
   GetLinkHighlight().UpdateOpacityAndRequestAnimation();
   UpdateAllLifecyclePhases();
   ASSERT_TRUE(highlight);
@@ -176,34 +180,23 @@ TEST_P(LinkHighlightImplTest, verifyWebViewImplIntegration) {
   EXPECT_EQ(animation_count_before_highlight + 1, AnimationCount());
 
   // Don't highlight if no "hand cursor"
-  touch_event.SetPositionInWidget(
+  targeted_event = GestureShowPress(
       gfx::PointF(20, 220));  // An A-link with cross-hair cursor.
-  web_view_impl->EnableTapHighlightAtPoint(GetTargetedEvent(touch_event));
+  web_view_impl->EnableTapHighlightAtPoint(targeted_event);
   EXPECT_FALSE(GetLinkHighlightImpl());
   // Expect animation to have been removed.
   EXPECT_EQ(animation_count_before_highlight, AnimationCount());
 
-  touch_event.SetPositionInWidget(gfx::PointF(20, 260));  // A text input box.
-  web_view_impl->EnableTapHighlightAtPoint(GetTargetedEvent(touch_event));
+  targeted_event = GestureShowPress(gfx::PointF(20, 260));  // A text input box.
+  web_view_impl->EnableTapHighlightAtPoint(targeted_event);
   EXPECT_FALSE(GetLinkHighlightImpl());
 }
 
 TEST_P(LinkHighlightImplTest, resetDuringNodeRemoval) {
   WebViewImpl* web_view_impl = web_view_helper_.GetWebView();
 
-  int page_width = 640;
-  int page_height = 480;
-  web_view_impl->MainFrameViewWidget()->Resize(
-      gfx::Size(page_width, page_height));
-  UpdateAllLifecyclePhases();
-
-  WebGestureEvent touch_event(WebInputEvent::Type::kGestureShowPress,
-                              WebInputEvent::kNoModifiers,
-                              WebInputEvent::GetStaticTimeStampForTests(),
-                              WebGestureDevice::kTouchscreen);
-  touch_event.SetPositionInWidget(gfx::PointF(20, 20));
-
-  GestureEventWithHitTestResults targeted_event = GetTargetedEvent(touch_event);
+  GestureEventWithHitTestResults targeted_event =
+      GestureShowPress(gfx::PointF(20, 20));
   Node* touch_node = web_view_impl->BestTapNode(targeted_event);
   ASSERT_TRUE(touch_node);
 
@@ -224,19 +217,8 @@ TEST_P(LinkHighlightImplTest, resetDuringNodeRemoval) {
 TEST_P(LinkHighlightImplTest, resetLayerTreeView) {
   WebViewImpl* web_view_impl = web_view_helper_.GetWebView();
 
-  int page_width = 640;
-  int page_height = 480;
-  web_view_impl->MainFrameViewWidget()->Resize(
-      gfx::Size(page_width, page_height));
-  UpdateAllLifecyclePhases();
-
-  WebGestureEvent touch_event(WebInputEvent::Type::kGestureShowPress,
-                              WebInputEvent::kNoModifiers,
-                              WebInputEvent::GetStaticTimeStampForTests(),
-                              WebGestureDevice::kTouchscreen);
-  touch_event.SetPositionInWidget(gfx::PointF(20, 20));
-
-  GestureEventWithHitTestResults targeted_event = GetTargetedEvent(touch_event);
+  GestureEventWithHitTestResults targeted_event =
+      GestureShowPress(gfx::PointF(20, 20));
   Node* touch_node = web_view_impl->BestTapNode(targeted_event);
   ASSERT_TRUE(touch_node);
 
@@ -247,23 +229,12 @@ TEST_P(LinkHighlightImplTest, resetLayerTreeView) {
 TEST_P(LinkHighlightImplTest, HighlightLayerEffectNode) {
   // We need to test highlight animation which is disabled in web test mode.
   ScopedWebTestMode web_test_mode(false);
-
-  int page_width = 640;
-  int page_height = 480;
   WebViewImpl* web_view_impl = web_view_helper_.GetWebView();
-  web_view_impl->MainFrameViewWidget()->Resize(
-      gfx::Size(page_width, page_height));
 
-  UpdateAllLifecyclePhases();
   size_t layer_count_before_highlight = LayerCount();
 
-  WebGestureEvent touch_event(WebInputEvent::Type::kGestureShowPress,
-                              WebInputEvent::kNoModifiers,
-                              WebInputEvent::GetStaticTimeStampForTests(),
-                              WebGestureDevice::kTouchscreen);
-  touch_event.SetPositionInWidget(gfx::PointF(20, 20));
-
-  GestureEventWithHitTestResults targeted_event = GetTargetedEvent(touch_event);
+  GestureEventWithHitTestResults targeted_event =
+      GestureShowPress(gfx::PointF(20, 20));
   Node* touch_node = web_view_impl->BestTapNode(targeted_event);
   ASSERT_TRUE(touch_node);
 
@@ -322,24 +293,13 @@ TEST_P(LinkHighlightImplTest, HighlightLayerEffectNode) {
 TEST_P(LinkHighlightImplTest, RemoveNodeDuringHighlightAnimation) {
   // We need to test highlight animation which is disabled in web test mode.
   ScopedWebTestMode web_test_mode(false);
-
-  int page_width = 640;
-  int page_height = 480;
   WebViewImpl* web_view_impl = web_view_helper_.GetWebView();
-  web_view_impl->MainFrameViewWidget()->Resize(
-      gfx::Size(page_width, page_height));
 
-  UpdateAllLifecyclePhases();
   size_t layer_count_before_highlight = LayerCount();
   size_t animation_count_before_highlight = AnimationCount();
 
-  WebGestureEvent touch_event(WebInputEvent::Type::kGestureShowPress,
-                              WebInputEvent::kNoModifiers,
-                              WebInputEvent::GetStaticTimeStampForTests(),
-                              WebGestureDevice::kTouchscreen);
-  touch_event.SetPositionInWidget(gfx::PointF(20, 20));
-
-  GestureEventWithHitTestResults targeted_event = GetTargetedEvent(touch_event);
+  GestureEventWithHitTestResults targeted_event =
+      GestureShowPress(gfx::PointF(20, 20));
   Node* touch_node = web_view_impl->BestTapNode(targeted_event);
   ASSERT_TRUE(touch_node);
 
@@ -362,24 +322,14 @@ TEST_P(LinkHighlightImplTest, RemoveNodeDuringHighlightAnimation) {
 }
 
 TEST_P(LinkHighlightImplTest, MultiColumn) {
-  int page_width = 640;
-  int page_height = 480;
   WebViewImpl* web_view_impl = web_view_helper_.GetWebView();
-  web_view_impl->MainFrameViewWidget()->Resize(
-      gfx::Size(page_width, page_height));
-  UpdateAllLifecyclePhases();
 
   UpdateAllLifecyclePhases();
   size_t layer_count_before_highlight = LayerCount();
 
-  WebGestureEvent touch_event(WebInputEvent::Type::kGestureShowPress,
-                              WebInputEvent::kNoModifiers,
-                              WebInputEvent::GetStaticTimeStampForTests(),
-                              WebGestureDevice::kTouchscreen);
   // This will touch the link under multicol.
-  touch_event.SetPositionInWidget(gfx::PointF(20, 300));
-
-  GestureEventWithHitTestResults targeted_event = GetTargetedEvent(touch_event);
+  GestureEventWithHitTestResults targeted_event =
+      GestureShowPress(gfx::PointF(20, 300));
   Node* touch_node = web_view_impl->BestTapNode(targeted_event);
   ASSERT_TRUE(touch_node);
 
@@ -454,20 +404,8 @@ TEST_P(LinkHighlightImplTest, MultiColumn) {
 TEST_P(LinkHighlightImplTest, DisplayContents) {
   WebViewImpl* web_view_impl = web_view_helper_.GetWebView();
 
-  int page_width = 640;
-  int page_height = 480;
-  web_view_impl->MainFrameViewWidget()->Resize(
-      gfx::Size(page_width, page_height));
-  UpdateAllLifecyclePhases();
-
-  WebGestureEvent touch_event(WebInputEvent::Type::kGestureShowPress,
-                              WebInputEvent::kNoModifiers,
-                              WebInputEvent::GetStaticTimeStampForTests(),
-                              WebGestureDevice::kTouchscreen);
-  // This will touch the div with display:contents and cursor:pointer.
-  touch_event.SetPositionInWidget(gfx::PointF(20, 400));
-
-  GestureEventWithHitTestResults targeted_event = GetTargetedEvent(touch_event);
+  GestureEventWithHitTestResults targeted_event =
+      GestureShowPress(gfx::PointF(20, 400));
   const Node* touched_node = targeted_event.GetHitTestResult().InnerNode();
   EXPECT_TRUE(touched_node->IsTextNode());
   EXPECT_FALSE(web_view_impl->BestTapNode(targeted_event));
