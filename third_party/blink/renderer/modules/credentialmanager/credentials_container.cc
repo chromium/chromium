@@ -1087,7 +1087,7 @@ ScriptPromise CredentialsContainer::get(
         // should refactor the logic to make it generic.
         if (!RuntimeEnabledFeatures::WebIDEnabled(context)) {
           resolver->Reject(MakeGarbageCollected<DOMException>(
-              DOMExceptionCode::kNotSupportedError, "Invalid provider entry"));
+              DOMExceptionCode::kNotSupportedError, "FedCM is not supported"));
           return promise;
         }
         // Log the UseCounter only when the WebID flag is enabled.
@@ -1103,7 +1103,7 @@ ScriptPromise CredentialsContainer::get(
         if (!provider_url.IsValid() || client_id == "") {
           resolver->Reject(MakeGarbageCollected<DOMException>(
               DOMExceptionCode::kInvalidStateError,
-              "Provided provider information is incomplete."));
+              "Provider information is incomplete."));
           return promise;
         }
         // We disallow redirects (in idp_network_request_manager.cc), so it is
