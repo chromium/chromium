@@ -543,21 +543,30 @@ TEST(WebAppInstallUtils, UpdateWebAppInfoFromManifestTooManyIcons) {
   EXPECT_EQ(20U, web_app_info.manifest_icons.size());
 }
 
-// Tests that we limit the number of shortcut icons declared by a site.
+// Tests that we limit the number of shortcut icons, verifying that at most 20
+// shortcut icons are stored per web app.
+//
+// The test previously created 30 shortcuts, each with 1 icon. Due to the new
+// limit of 10 shortcuts per web app, we now create 5 shortcuts, with 6 icons
+// each.
 TEST(WebAppInstallUtils, UpdateWebAppInfoFromManifestTooManyShortcutIcons) {
   blink::mojom::Manifest manifest;
-  for (unsigned int i = 0; i < kNumTestIcons; ++i) {
+  const unsigned kNumShortcuts = 5;
+
+  for (unsigned int i = 0; i < kNumShortcuts; ++i) {
     blink::Manifest::ShortcutItem shortcut_item;
     shortcut_item.name = kShortcutItemTestName + base::NumberToString16(i);
     shortcut_item.url = GURL("http://www.chromium.org/shortcuts/action");
 
-    blink::Manifest::ImageResource icon;
-    icon.src = GURL("http://www.chromium.org/shortcuts/icon1.png");
-    icon.sizes.emplace_back(i, i);
-    icon.purpose.emplace_back(IconPurpose::ANY);
-    shortcut_item.icons.push_back(std::move(icon));
+    for (unsigned int j = 1; j <= kNumTestIcons / kNumShortcuts; ++j) {
+      blink::Manifest::ImageResource icon;
+      icon.src = GURL("http://www.chromium.org/shortcuts/icon1.png");
+      icon.sizes.emplace_back(j, j);
+      icon.purpose.emplace_back(IconPurpose::ANY);
+      shortcut_item.icons.push_back(std::move(icon));
+    }
 
-    manifest.shortcuts.push_back(shortcut_item);
+    manifest.shortcuts.push_back(std::move(shortcut_item));
   }
   WebAppInstallInfo web_app_info;
   UpdateWebAppInfoFromManifest(
