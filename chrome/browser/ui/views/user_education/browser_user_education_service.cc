@@ -21,6 +21,7 @@
 #include "components/feature_engagement/public/feature_constants.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/vector_icons/vector_icons.h"
+#include "ui/base/interaction/element_identifier.h"
 #include "ui/base/interaction/element_tracker.h"
 #include "ui/base/interaction/interaction_sequence.h"
 #include "ui/views/interaction/element_tracker_views.h"
@@ -238,11 +239,16 @@ void MaybeRegisterChromeTutorials(TutorialRegistry& tutorial_registry) {
         kTabGroupHeaderElementName, HelpBubbleArrow::kTopCenter);
     description.steps.emplace_back(std::move(collapse_step));
 
+    TutorialDescription::Step detect_collapse_step(
+        0, 0, ui::InteractionSequence::StepType::kActivated,
+        kTabGroupHeaderElementId, std::string(), HelpBubbleArrow::kNone);
+    description.steps.emplace_back(std::move(detect_collapse_step));
+
     // Completion of the tutorial.
     TutorialDescription::Step success_step(
         IDS_TUTORIAL_TAB_GROUP_SUCCESS_TITLE,
         IDS_TUTORIAL_TAB_GROUP_SUCCESS_DESCRIPTION,
-        ui::InteractionSequence::StepType::kActivated, kTabGroupHeaderElementId,
+        ui::InteractionSequence::StepType::kShown, kTabStripRegionElementId,
         std::string(), HelpBubbleArrow::kTopCenter);
     description.steps.emplace_back(std::move(success_step));
 
