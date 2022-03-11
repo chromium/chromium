@@ -195,11 +195,10 @@ void OverlayProcessorOzone::CheckOverlaySupportImpl(
       // to not display it at all).
       // TODO(b/181974042): plumb the color space all the way to the ozone DRM
       // backend when we get an API for per-plane color management.
-      DCHECK(primary_plane);
       if (!surface_iterator->requires_overlay &&
           !AllowColorSpaceCombination(
               /*source_color_space=*/surface_iterator->color_space,
-              /*destination_color_space=*/primary_plane->color_space)) {
+              /*destination_color_space=*/primary_plane_color_space_)) {
         *ozone_surface_iterator = ui::OverlaySurfaceCandidate();
         ozone_surface_iterator->plane_z_order = surface_iterator->plane_z_order;
         continue;
