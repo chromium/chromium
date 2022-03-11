@@ -23,13 +23,6 @@ constexpr base::FeatureParam<FeaturePromoSnoozeService::NonClickerPolicy>::
         {FeaturePromoSnoozeService::NonClickerPolicy::kLongSnooze,
          "long_snooze"}};
 
-// Finch parameter to control the snooze duration.
-// If this parameter is not specified or is zero, the default duration at the
-// client side will be used.
-constexpr base::FeatureParam<base::TimeDelta> kOverriddenDuration{
-    &feature_engagement::kIPHDesktopSnoozeFeature,
-    "x_iph_snooze_overridden_duration", base::Hours(0)};
-
 // Used in UMA histogram to track if the user snoozes for once or more.
 enum class SnoozeType {
   // The user snoozes the IPH for the first time.
@@ -53,9 +46,6 @@ void FeaturePromoSnoozeService::OnUserSnooze(const base::Feature& iph_feature,
 
   if (!snooze_data)
     snooze_data = SnoozeData();
-
-  if (!kOverriddenDuration.Get().is_zero())
-    snooze_duration = kOverriddenDuration.Get();
 
   base::UmaHistogramEnumeration(
       "InProductHelp.Promos.Snooze." + std::string(iph_feature.name),

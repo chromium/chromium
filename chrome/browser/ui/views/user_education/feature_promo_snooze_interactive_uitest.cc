@@ -50,9 +50,6 @@ base::Feature kSnoozeTestFeature("SnoozeTestFeature",
 class FeaturePromoSnoozeInteractiveTest : public InProcessBrowserTest {
  public:
   FeaturePromoSnoozeInteractiveTest() {
-    scoped_feature_list_.InitAndEnableFeature(
-        feature_engagement::kIPHDesktopSnoozeFeature);
-
     subscription_ = BrowserContextDependencyManager::GetInstance()
                         ->RegisterCreateServicesCallbackForTesting(
                             base::BindRepeating(RegisterMockTracker));
