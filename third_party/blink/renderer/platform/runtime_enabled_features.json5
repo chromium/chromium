@@ -543,6 +543,13 @@
       status: "stable",
     },
     {
+      // Support CSS Values Level 4 calc simplification and serialization
+      // as specified in the specs below.
+      // https://drafts.csswg.org/css-values-4/#calc-simplification
+      // https://drafts.csswg.org/css-values-4/#calc-serialize
+      name: "CSSCalcSimplificationAndSerialization"
+    },
+    {
       // https://drafts.csswg.org/css-cascade-5/#layering
       name: "CSSCascadeLayers",
       status: "stable",
