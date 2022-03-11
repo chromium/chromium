@@ -69,32 +69,6 @@ const enterprise_management::PolicyData* GetPolicyData(Profile* profile) {
   return store->policy();
 }
 
-// Returns User DMToken for a given |profile| if:
-// * |profile| is NOT incognito profile.
-// * |profile| is NOT sign-in screen profile
-// * user corresponding to a |profile| is managed.
-// Otherwise returns empty string. More about DMToken:
-// go/dmserver-domain-model#dmtoken.
-std::string GetUserDmToken(Profile* profile) {
-  if (!profile)
-    return std::string();
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  if (profile->IsMainProfile()) {
-    const enterprise_management::PolicyData* policy =
-        policy::PolicyLoaderLacros::main_user_policy_data();
-    if (policy)
-      return policy->request_token();
-  }
-#endif
-
-  const enterprise_management::PolicyData* policy = GetPolicyData(profile);
-  if (!policy || !policy->has_request_token())
-    return std::string();
-
-  return policy->request_token();
-}
-
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 // A callback which fetches device dm_token based on user affiliation.
 using DeviceDMTokenCallback = base::RepeatingCallback<std::string(
@@ -155,22 +129,19 @@ base::Value::Dict GetContext(Profile* profile) {
   context.SetByDottedPath("profile.profilePath",
                           profile->GetPath().AsUTF8Unsafe());
 
-  const enterprise_management::PolicyData* policy = GetPolicyData(profile);
-
-  if (policy) {
-    if (policy->has_device_id())
-      context.SetByDottedPath("profile.clientId", policy->device_id());
+  absl::optional<std::string> client_id = GetUserClientId(profile);
+  if (client_id)
+    context.SetByDottedPath("profile.clientId", *client_id);
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-    std::string device_dm_token = GetDeviceDmToken(profile);
-    if (!device_dm_token.empty())
-      context.SetByDottedPath("device.dmToken", device_dm_token);
+  std::string device_dm_token = GetDeviceDmToken(profile);
+  if (!device_dm_token.empty())
+    context.SetByDottedPath("device.dmToken", device_dm_token);
 #endif
 
-    std::string user_dm_token = GetUserDmToken(profile);
-    if (!user_dm_token.empty())
-      context.SetByDottedPath("profile.dmToken", user_dm_token);
-  }
+  absl::optional<std::string> user_dm_token = GetUserDmToken(profile);
+  if (user_dm_token)
+    context.SetByDottedPath("profile.dmToken", *user_dm_token);
 
   return context;
 }
@@ -197,24 +168,47 @@ enterprise_connectors::ClientMetadata GetContextAsClientMetadata(
   metadata.mutable_profile()->set_profile_path(
       profile->GetPath().AsUTF8Unsafe());
 
-  const enterprise_management::PolicyData* policy = GetPolicyData(profile);
-
-  if (policy) {
-    if (policy->has_device_id())
-      metadata.mutable_profile()->set_client_id(policy->device_id());
+  absl::optional<std::string> client_id = GetUserClientId(profile);
+  if (client_id)
+    metadata.mutable_profile()->set_client_id(*client_id);
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-    std::string device_dm_token = GetDeviceDmToken(profile);
-    if (!device_dm_token.empty())
-      metadata.mutable_device()->set_dm_token(device_dm_token);
+  std::string device_dm_token = GetDeviceDmToken(profile);
+  if (!device_dm_token.empty())
+    metadata.mutable_device()->set_dm_token(device_dm_token);
 #endif
 
-    std::string user_dm_token = GetUserDmToken(profile);
-    if (!user_dm_token.empty())
-      metadata.mutable_profile()->set_dm_token(user_dm_token);
-  }
+  absl::optional<std::string> user_dm_token = GetUserDmToken(profile);
+  if (user_dm_token)
+    metadata.mutable_profile()->set_dm_token(*user_dm_token);
 
   return metadata;
+}
+
+// Returns User DMToken for a given |profile| if:
+// * |profile| is NOT incognito profile.
+// * |profile| is NOT sign-in screen profile
+// * user corresponding to a |profile| is managed.
+// Otherwise returns empty string. More about DMToken:
+// go/dmserver-domain-model#dmtoken.
+absl::optional<std::string> GetUserDmToken(Profile* profile) {
+  if (!profile)
+    return absl::nullopt;
+
+  const enterprise_management::PolicyData* policy_data = GetPolicyData(profile);
+  if (!policy_data || !policy_data->has_request_token())
+    return absl::nullopt;
+  return policy_data->request_token();
+}
+
+absl::optional<std::string> GetUserClientId(Profile* profile) {
+  if (!profile)
+    return absl::nullopt;
+
+  const enterprise_management::PolicyData* policy_data = GetPolicyData(profile);
+  if (!policy_data || !policy_data->has_device_id())
+    return absl::nullopt;
+  return policy_data->device_id();
 }
 
 }  // namespace reporting

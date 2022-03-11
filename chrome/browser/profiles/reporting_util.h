@@ -7,6 +7,7 @@
 
 #include "base/values.h"
 #include "components/enterprise/common/proto/connectors.pb.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class Profile;
 
@@ -21,6 +22,15 @@ base::Value::Dict GetContext(Profile* profile);
 // Value.
 enterprise_connectors::ClientMetadata GetContextAsClientMetadata(
     Profile* profile);
+
+// Returns User DMToken or client id for a given `profile` if:
+// * `profile` is NOT incognito profile.
+// * `profile` is NOT sign-in screen profile
+// * user corresponding to a `profile` is managed.
+// Otherwise returns empty optional. More about DMToken:
+// go/dmserver-domain-model#dmtoken.
+absl::optional<std::string> GetUserDmToken(Profile* profile);
+absl::optional<std::string> GetUserClientId(Profile* profile);
 
 }  // namespace reporting
 
