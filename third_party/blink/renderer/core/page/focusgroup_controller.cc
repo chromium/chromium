@@ -41,6 +41,10 @@ bool FocusgroupController::HandleArrowKeyboardEvent(KeyboardEvent* event,
     return false;
   }
 
+  // Only allow focusgroup navigation when the focus is on a focusgroup item.
+  if (!utils::IsFocusgroupItem(focused))
+    return false;
+
   return Advance(focused, direction);
 }
 
@@ -60,6 +64,7 @@ bool FocusgroupController::AdvanceForward(Element* initial_element,
                                           FocusgroupDirection direction) {
   DCHECK(initial_element);
   DCHECK(utils::IsDirectionForward(direction));
+  DCHECK(utils::IsFocusgroupItem(initial_element));
 
   Element* initial_focusgroup =
       utils::FindNearestFocusgroupAncestor(initial_element);
@@ -290,6 +295,7 @@ bool FocusgroupController::AdvanceBackward(Element* initial_element,
                                            FocusgroupDirection direction) {
   DCHECK(initial_element);
   DCHECK(utils::IsDirectionBackward(direction));
+  DCHECK(utils::IsFocusgroupItem(initial_element));
 
   // 1. Validate that we're in a focusgroup. Keep the reference to the current
   // focusgroup we're in since we'll use it if we need to wrap.

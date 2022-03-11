@@ -44,6 +44,7 @@ class FocusgroupControllerTest : public PageTestBase {
 
   void AssertForwardDoesntMoveFocusWhenOutOfFocusgroup(int key);
   void AssertForwardDoesntMoveFocusWhenOnFocusgroupRoot(int key);
+  void AssertForwardDoesntMoveWhenOnNonFocusgroupItem(int key);
   void AssertForwardMovesToNextItem(int key);
   void AssertForwardDoesntMoveWhenOnlyOneItem(int key);
   void AssertForwardDoesntMoveWhenOnlyOneItemAndWraps(int key);
@@ -66,6 +67,7 @@ class FocusgroupControllerTest : public PageTestBase {
 
   void AssertBackwardDoesntMoveFocusWhenOutOfFocusgroup(int key);
   void AssertBackwardDoesntMoveFocusWhenOnFocusgroupRoot(int key);
+  void AssertBackwardDoesntMoveWhenOnNonFocusgroupItem(int key);
   void AssertBackwardMovesFocusToPreviousItem(int key);
   void AssertBackwardSkipsNonFocusableItems(int key);
   void AssertBackwardDoesntMoveWhenOnlyOneItem(int key);
@@ -731,6 +733,40 @@ TEST_F(FocusgroupControllerTest, ArrowDownDoesntMoveFocusWhenOnFocusgroupRoot) {
 TEST_F(FocusgroupControllerTest,
        ArrowRightDoesntMoveFocusWhenOnFocusgroupRoot) {
   AssertForwardDoesntMoveFocusWhenOnFocusgroupRoot(ui::DomKey::ARROW_RIGHT);
+}
+
+// When the focus is set on a focusable element that isn't a focusgroup item, an
+// arrow key press shouldn't move the focus at all.
+void FocusgroupControllerTest::AssertForwardDoesntMoveWhenOnNonFocusgroupItem(
+    int key) {
+  ASSERT_TRUE(key == ui::DomKey::ARROW_DOWN || key == ui::DomKey::ARROW_RIGHT);
+  GetDocument().body()->setInnerHTML(R"HTML(
+    <div tabindex=-1 focusgroup>
+      <div>
+        <span id=nonitem1 tabindex=0></span>
+      </div>
+      <span id=item1 tabindex=0></span>
+      <span id=item2 tabindex=-1></span>
+    </div>
+  )HTML");
+  auto* nonitem1 = GetElementById("nonitem1");
+  ASSERT_TRUE(nonitem1);
+  nonitem1->focus();
+
+  // Send the key pressed event from that element.
+  auto* event = KeyDownEvent(key, nonitem1);
+  SendEvent(event);
+
+  // The focus shouldn't have moved.
+  ASSERT_EQ(GetDocument().FocusedElement(), nonitem1);
+}
+
+TEST_F(FocusgroupControllerTest, ArrowDownDoesntMoveWhenOnNonFocusgroupItem) {
+  AssertForwardDoesntMoveWhenOnNonFocusgroupItem(ui::DomKey::ARROW_DOWN);
+}
+
+TEST_F(FocusgroupControllerTest, ArrowRightDoesntMoveWhenOnNonFocusgroupItem) {
+  AssertForwardDoesntMoveWhenOnNonFocusgroupItem(ui::DomKey::ARROW_RIGHT);
 }
 
 // When the focus is set on a focusgroup item, an arrow key press should move
@@ -1596,6 +1632,40 @@ TEST_F(FocusgroupControllerTest, ArrowUpDoesntMoveFocusWhenOnFocusgroupRoot) {
 
 TEST_F(FocusgroupControllerTest, ArrowLeftDoesntMoveFocusWhenOnFocusgroupRoot) {
   AssertBackwardDoesntMoveFocusWhenOnFocusgroupRoot(ui::DomKey::ARROW_LEFT);
+}
+
+// When the focus is set on a focusable element that isn't a focusgroup item, an
+// arrow key press shouldn't move the focus at all.
+void FocusgroupControllerTest::AssertBackwardDoesntMoveWhenOnNonFocusgroupItem(
+    int key) {
+  ASSERT_TRUE(key == ui::DomKey::ARROW_UP || key == ui::DomKey::ARROW_LEFT);
+  GetDocument().body()->setInnerHTML(R"HTML(
+    <div tabindex=-1 focusgroup>
+      <div>
+        <span id=nonitem1 tabindex=0></span>
+      </div>
+      <span id=item1 tabindex=0></span>
+      <span id=item2 tabindex=-1></span>
+    </div>
+  )HTML");
+  auto* nonitem1 = GetElementById("nonitem1");
+  ASSERT_TRUE(nonitem1);
+  nonitem1->focus();
+
+  // Send the key pressed event from that element.
+  auto* event = KeyDownEvent(key, nonitem1);
+  SendEvent(event);
+
+  // The focus shouldn't have moved.
+  ASSERT_EQ(GetDocument().FocusedElement(), nonitem1);
+}
+
+TEST_F(FocusgroupControllerTest, ArrowUpDoesntMoveWhenOnNonFocusgroupItem) {
+  AssertBackwardDoesntMoveWhenOnNonFocusgroupItem(ui::DomKey::ARROW_UP);
+}
+
+TEST_F(FocusgroupControllerTest, ArrowLeftDoesntMoveWhenOnNonFocusgroupItem) {
+  AssertBackwardDoesntMoveWhenOnNonFocusgroupItem(ui::DomKey::ARROW_LEFT);
 }
 
 // When the focus is set on the last element of a focusgroup, a backward key
