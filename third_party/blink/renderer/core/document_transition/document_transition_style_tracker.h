@@ -156,14 +156,17 @@ class DocumentTransitionStyleTracker
   Member<Document> document_;
   State state_ = State::kIdle;
   int captured_tag_count_ = 0;
-  int set_element_sequence_id_ = 0;
-  HeapHashMap<Member<Element>, HashSet<std::pair<AtomicString, int>>>
-      pending_shared_element_tags_;
   HeapHashMap<AtomicString, Member<ElementData>> element_data_map_;
   viz::SharedElementResourceId old_root_snapshot_id_;
   viz::SharedElementResourceId new_root_snapshot_id_;
   scoped_refptr<EffectPaintPropertyNode> root_effect_node_;
   absl::optional<String> ua_style_sheet_;
+
+  // The following state is buffered until the capture phase and populated again
+  // by script for the start phase.
+  int set_element_sequence_id_ = 0;
+  HeapHashMap<Member<Element>, HashSet<std::pair<AtomicString, int>>>
+      pending_shared_element_tags_;
 };
 
 }  // namespace blink

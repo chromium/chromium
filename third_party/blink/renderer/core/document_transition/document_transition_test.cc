@@ -20,6 +20,7 @@
 #include "third_party/blink/renderer/core/document_transition/document_transition_supplement.h"
 #include "third_party/blink/renderer/core/document_transition/document_transition_utils.h"
 #include "third_party/blink/renderer/core/dom/abort_signal.h"
+#include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/element.h"
 #include "third_party/blink/renderer/core/dom/node_computed_style.h"
 #include "third_party/blink/renderer/core/dom/pseudo_element.h"
@@ -403,21 +404,21 @@ TEST_P(DocumentTransitionTest, StartSharedElementsWantToBeComposited) {
     Data(DocumentTransition* transition,
          ScriptState* script_state,
          ExceptionState& exception_state,
-         Element* e3,
+         Element* e1,
          Element* e2)
         : transition(transition),
           script_state(script_state),
           exception_state(exception_state),
-          e3(e3),
+          e1(e1),
           e2(e2) {}
 
     DocumentTransition* transition;
     ScriptState* script_state;
     ExceptionState& exception_state;
-    Element* e3;
+    Element* e1;
     Element* e2;
   };
-  Data data(transition, script_state, exception_state, e3, e2);
+  Data data(transition, script_state, exception_state, e1, e2);
 
   // This callback sets the elements for the start phase of the transition.
   auto start_setup_lambda =
@@ -426,14 +427,9 @@ TEST_P(DocumentTransitionTest, StartSharedElementsWantToBeComposited) {
             static_cast<Data*>(info.Data().As<v8::External>()->Value());
 
         // Set two different elements as shared.
-        // Unset e3.
-        data->transition->setElement(data->script_state, data->e3,
-                                     AtomicString(), nullptr,
-                                     data->exception_state);
-        // Set e2 to be the same tag as "e3".
-        // TODO(vmpstr): We should be able to support new tags for entry
-        // transitions.
-        data->transition->setElement(data->script_state, data->e2, "e3",
+        data->transition->setElement(data->script_state, data->e1, "e1",
+                                     nullptr, data->exception_state);
+        data->transition->setElement(data->script_state, data->e2, "e2",
                                      nullptr, data->exception_state);
       };
   auto start_setup_callback =
@@ -664,14 +660,54 @@ TEST_P(DocumentTransitionTest, DocumentTransitionPseudoTree) {
   ScriptState* script_state = v8_scope.GetScriptState();
   ExceptionState& exception_state = v8_scope.GetExceptionState();
 
-  MockFunctionScope funcs(script_state);
-  auto* document_transition_callback =
-      V8DocumentTransitionCallback::Create(funcs.ExpectCall());
-
   transition->setElement(script_state, e1, "e1", nullptr, exception_state);
   transition->setElement(script_state, e2, "e2", nullptr, exception_state);
   transition->setElement(script_state, e3, "e3", nullptr, exception_state);
-  transition->start(script_state, document_transition_callback,
+
+  struct Data {
+    STACK_ALLOCATED();
+
+   public:
+    Data(DocumentTransition* transition,
+         ScriptState* script_state,
+         ExceptionState& exception_state,
+         Document& document)
+        : transition(transition),
+          script_state(script_state),
+          exception_state(exception_state),
+          document(document) {}
+
+    DocumentTransition* transition;
+    ScriptState* script_state;
+    ExceptionState& exception_state;
+    Document& document;
+  };
+  Data data(transition, script_state, exception_state, GetDocument());
+
+  // This callback sets the elements for the start phase of the transition.
+  auto start_setup_lambda =
+      [](const v8::FunctionCallbackInfo<v8::Value>& info) {
+        auto* data =
+            static_cast<Data*>(info.Data().As<v8::External>()->Value());
+
+        auto* e1 = data->document.getElementById("e1");
+        auto* e2 = data->document.getElementById("e2");
+        auto* e3 = data->document.getElementById("e3");
+
+        data->transition->setElement(data->script_state, e1, "e1", nullptr,
+                                     data->exception_state);
+        data->transition->setElement(data->script_state, e2, "e2", nullptr,
+                                     data->exception_state);
+        data->transition->setElement(data->script_state, e3, "e3", nullptr,
+                                     data->exception_state);
+      };
+  auto start_setup_callback =
+      v8::Function::New(v8_scope.GetContext(), start_setup_lambda,
+                        v8::External::New(v8_scope.GetIsolate(), &data))
+          .ToLocalChecked();
+
+  transition->start(script_state,
+                    V8DocumentTransitionCallback::Create(start_setup_callback),
                     exception_state);
   ASSERT_FALSE(exception_state.HadException());
   UpdateAllLifecyclePhasesForTest();

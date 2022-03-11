@@ -34,7 +34,6 @@ async function runTest() {
   let t = document.createDocumentTransition();
   t.setElement(first, "shared");
   let promise = t.start(() => {
-    t.setElement(first, null);
     t.setElement(second, "shared");
   });
 

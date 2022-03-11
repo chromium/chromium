@@ -57,7 +57,6 @@ async function runTest() {
   t.setElement(hidden, "hidden");
   t.setElement(before, "before");
   t.start(() => {
-    t.setElement(before, null);
     before.remove();
     t.setElement(after, "after");
 

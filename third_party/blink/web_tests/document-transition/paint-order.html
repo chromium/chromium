@@ -35,6 +35,7 @@ async function doTransition() {
   let t = document.createDocumentTransition();
   t.setElement(elem, "shared");
   await t.start(() => {
+    t.setElement(elem, "shared");
     elem.style.backgroundColor = "red";
   });
   if (window.testRunner) {

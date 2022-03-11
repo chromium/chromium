@@ -43,6 +43,7 @@ promise_test(async t => {
     let transition = document.createDocumentTransition();
     transition.setElement(first, "target");
     transition.start(() => {
+      transition.setElement(first, "target");
       transition.setElement(second, "target");
     }).then(reject, resolve);
   });

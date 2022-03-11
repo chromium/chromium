@@ -267,6 +267,9 @@ bool DocumentTransitionStyleTracker::Capture() {
   // We need a style invalidation to generate the pseudo element tree.
   InvalidateStyle();
 
+  set_element_sequence_id_ = 0;
+  pending_shared_element_tags_.clear();
+
   return true;
 }
 

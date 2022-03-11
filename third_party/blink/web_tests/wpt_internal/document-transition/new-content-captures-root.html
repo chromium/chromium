@@ -40,6 +40,7 @@ async function runTest() {
   let t = document.createDocumentTransition();
   t.setElement(shared, "shared");
   t.start(() => {
+    t.setElement(shared, "shared");
     e1.classList.add("dst");
     requestAnimationFrame(() => requestAnimationFrame(takeScreenshot));
   });

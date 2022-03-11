@@ -54,6 +54,7 @@ async function runTest() {
   let t = document.createDocumentTransition();
   t.setElement(hide, "hide");
   t.start(() => {
+    t.setElement(hide, "hide");
     requestAnimationFrame(() => requestAnimationFrame(takeScreenshot));
   });
 }
