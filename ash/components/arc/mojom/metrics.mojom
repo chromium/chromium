@@ -188,6 +188,7 @@ enum ArcNetworkError {
   kNetdTetheringStopError = 21,
   kNetdSnatStartError = 22,
   kNetdSnatStopError = 23,
+  [MinVersion=19] kPasspointInvalidConfigurationError = 24,
 };
 
 // Describes the type of app kill being reported.
