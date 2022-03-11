@@ -77,6 +77,7 @@ inline StringImpl::~StringImpl() {
 
 void StringImpl::DestroyIfNeeded() const {
   if (hash_and_flags_.load(std::memory_order_acquire) & kIsAtomic) {
+    // TODO: Remove const_cast
     if (AtomicStringTable::Instance().ReleaseAndRemoveIfNeeded(
             const_cast<StringImpl*>(this))) {
       delete this;

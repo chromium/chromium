@@ -268,10 +268,6 @@ class WTF_EXPORT StringImpl {
     return ref_count_.load(std::memory_order_acquire) == 1;
   }
 
-  ALWAYS_INLINE bool HasZeroRefRelaxed() const {
-    return ref_count_.load(std::memory_order_relaxed) == 0;
-  }
-
   ALWAYS_INLINE void AddRef() const {
     if (!IsStatic()) {
       uint32_t previous_ref_count =
@@ -283,20 +279,55 @@ class WTF_EXPORT StringImpl {
     }
   }
 
+  // We explicitly remove the AddRef and Release operations from the tsan
+  // bots because even though all data races in the C++ memory model sense
+  // are undefined behavior, the use of atomics prevents a data race on
+  // ref_count_ itself.
+
+  // Sharing the AtomicStringTable causes other races outside of ref_count_
+  // that could lead to an early deletion of the StringImpl while other
+  // threads are still holding references to it.
+  // Possible races:
+  // 1. Races where ref_count_ doesn't reach zero are not harmful.
+  // 2. Races involving only release calls are not harmful. The
+  //    atomicity of the operations guarantee that only the last subtraction to
+  //    be executed will trigger the deletion of the StringImpl.
+  // 3. A fetch_add on thread A is ordered after a fetch_sub on thread B that
+  //    reaches 0. This can only happen on an AddRef() reached through the
+  //    AtomicStringTable::Add* methods, otherwise there should be another
+  //    reference on thread A, and the Release() on thread B could not have
+  //    reached 0. This race is mitigated by the fact that the Atomic String
+  //    Table Add and Removal operations (including the fetch_sub to 0) are
+  //    done under a lock.
+
   ALWAYS_INLINE void Release() const {
     if (!IsStatic()) {
-      uint32_t previous_ref_count =
-          ref_count_.fetch_sub(1, std::memory_order_acq_rel);
+      // This can be a relaxed load as long as the subtraction is performed
+      // with acq_rel order. Any modification to `ref_count_` reordered after
+      // this load will be caught by the while loop or the fetch_sub inside
+      // DestroyIfNeeded().
+      uint32_t current_ref = ref_count_.load(std::memory_order_relaxed);
 #if DCHECK_IS_ON()
       // In non-DCHECK builds, we can save a bit of time in micro-benchmarks by
       // not checking the arithmetic. We hope that checking in DCHECK builds is
       // enough to catch implementation bugs, and that implementation bugs are
       // the only way we'd experience underflow.
-      DCHECK_NE(previous_ref_count, 0u);
+      DCHECK_NE(current_ref, 0u);
       ref_count_change_count_++;
 #endif
-      if (previous_ref_count == 1)
-        DestroyIfNeeded();
+      // This is a fancy fetch_sub() that allows the actual decrement to 0 to
+      // be delegated to the DestroyIfNeeded() function. The result of this
+      // compare_exchange_weak() will never be 0. Without this, there would be
+      // a potential race by reaching 0 and calling AddRef and Release on
+      // another thread before the deletion of the string in this thread,
+      // triggering the removal and destruction of the string twice.
+      do {
+        if (current_ref == 1) {
+          DestroyIfNeeded();
+          return;
+        }
+      } while (!ref_count_.compare_exchange_weak(current_ref, current_ref - 1,
+                                                 std::memory_order_acq_rel));
     }
   }
 
@@ -464,6 +495,7 @@ class WTF_EXPORT StringImpl {
   static const UChar kLatin1CaseFoldTable[256];
 
  private:
+  friend class AtomicStringTable;
   enum Flags {
     // These two fields are never modified for the lifetime of the StringImpl.
     // It is therefore safe to read them with a relaxed operation.

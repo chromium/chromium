@@ -130,6 +130,10 @@ char kTSanDefaultSuppressions[] =
     // https://crbug.com/1158622
     "race:absl::synchronization_internal::Waiter::Post\n"
 
+    // Harmless data races, see WTF::StringImpl::Release code comments.
+    "race:scoped_refptr<WTF::StringImpl>::AddRef\n"
+    "race:scoped_refptr<WTF::StringImpl>::Release\n"
+
     // End of suppressions.
     ;  // Please keep this semicolon.
 
