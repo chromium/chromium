@@ -91,8 +91,8 @@ std::string GetConsoleErrorMessage(FederatedAuthRequestResult status) {
       return "The provider's FedCM manifest configuration cannot be found.";
     }
     case FederatedAuthRequestResult::kErrorFetchingManifestNoResponse: {
-      return "The response body is empty when fetching the provider's "
-             "FedCM manifest configuration.";
+      return "The provider's FedCM manifest configuration fetch resulted in an "
+             "error response code.";
     }
     case FederatedAuthRequestResult::kErrorFetchingManifestInvalidResponse: {
       return "Provider's FedCM manifest configuration is invalid.";
@@ -101,8 +101,8 @@ std::string GetConsoleErrorMessage(FederatedAuthRequestResult status) {
       return "The provider's client metadata endpoint cannot be found.";
     }
     case FederatedAuthRequestResult::kErrorFetchingClientMetadataNoResponse: {
-      return "The response body is empty when fetching the provider's client "
-             "metadata.";
+      return "The provider's client metadata fetch resulted in an error "
+             "response code.";
     }
     case FederatedAuthRequestResult::
         kErrorFetchingClientMetadataInvalidResponse: {
@@ -123,18 +123,20 @@ std::string GetConsoleErrorMessage(FederatedAuthRequestResult status) {
       return "The provider's accounts list endpoint cannot be found.";
     }
     case FederatedAuthRequestResult::kErrorFetchingAccountsNoResponse: {
-      return "The response body is empty when fetching the provider's accounts "
-             "list.";
+      return "The provider's accounts list fetch resulted in an error response "
+             "code.";
     }
     case FederatedAuthRequestResult::kErrorFetchingAccountsInvalidResponse: {
-      return "Provider's accounts list is invalid.";
+      return "Provider's accounts list is invalid. Should have received an "
+             "\"accounts\" list, where each account must have at least \"id\", "
+             "\"name\", and \"email\".";
     }
     case FederatedAuthRequestResult::kErrorFetchingIdTokenHttpNotFound: {
       return "The provider's id token endpoint cannot be found.";
     }
     case FederatedAuthRequestResult::kErrorFetchingIdTokenNoResponse: {
-      return "The response body is empty when fetching the provider's id "
-             "token.";
+      return "The provider's id token fetch resulted in an error response "
+             "code.";
     }
     case FederatedAuthRequestResult::kErrorFetchingIdTokenInvalidResponse: {
       return "Provider's id token is invalid.";
@@ -560,7 +562,7 @@ void FederatedAuthRequestImpl::OnManifestFetchedForRevoke(
     render_frame_host_->AddMessageToConsole(
         blink::mojom::ConsoleMessageLevel::kError,
         "Manifest is missing or has an invalid URL for the following required "
-        "endpoint: revocation_endpoint");
+        "endpoint: \"revocation_endpoint\"");
     RecordRevokeStatus(RevokeStatusForMetrics::kRevokeUrlIsCrossOrigin,
                        render_frame_host_->GetPageUkmSourceId());
     CompleteRevokeRequest(RevokeStatus::kError,

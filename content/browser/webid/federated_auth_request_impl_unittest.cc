@@ -767,8 +767,8 @@ TEST_P(BasicFederatedAuthRequestImplTest, FederatedAuthRequestIssue) {
           {FederatedAuthRequestResult::kErrorFetchingManifestHttpNotFound,
            "The provider's FedCM manifest configuration cannot be found."},
           {FederatedAuthRequestResult::kErrorFetchingManifestNoResponse,
-           "The response body is empty when fetching the provider's "
-           "FedCM manifest configuration."},
+           "The provider's FedCM manifest configuration fetch resulted in an "
+           "error response code."},
           {FederatedAuthRequestResult::kErrorFetchingManifestInvalidResponse,
            "Provider's FedCM manifest configuration is invalid."},
           {FederatedAuthRequestResult::kErrorFetchingSignin,
@@ -777,15 +777,17 @@ TEST_P(BasicFederatedAuthRequestImplTest, FederatedAuthRequestIssue) {
            "Provider's sign-in response is invalid."},
           {FederatedAuthRequestResult::kError, "Error retrieving an id token."},
           {FederatedAuthRequestResult::kErrorFetchingAccountsNoResponse,
-           "The response body is empty when fetching the provider's accounts "
-           "list."},
+           "The provider's accounts list fetch resulted in an error response "
+           "code."},
           {FederatedAuthRequestResult::kErrorFetchingAccountsInvalidResponse,
-           "Provider's accounts list is invalid."},
+           "Provider's accounts list is invalid. Should have received an "
+           "\"accounts\" list, where each account must "
+           "have at least \"id\", \"name\", and \"email\"."},
           {FederatedAuthRequestResult::kErrorFetchingClientMetadataHttpNotFound,
            "The provider's client metadata endpoint cannot be found."},
           {FederatedAuthRequestResult::kErrorFetchingClientMetadataNoResponse,
-           "The response body is empty when fetching the provider's client "
-           "metadata."},
+           "The provider's client metadata fetch resulted in an error response "
+           "code."},
           {FederatedAuthRequestResult::
                kErrorFetchingClientMetadataInvalidResponse,
            "Provider's client metadata is invalid."},
