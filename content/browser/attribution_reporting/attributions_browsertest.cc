@@ -693,6 +693,42 @@ IN_PROC_BROWSER_TEST_F(AttributionsBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_F(AttributionsBrowserTest,
+                       SourceAndDebugCookieRegisteredInSameResponse) {
+  // Expected reports must be registered before the server starts.
+  ExpectedReportWaiter expected_report(
+      GURL("https://a.test/.well-known/attribution-reporting/"
+           "report-event-attribution"),
+      /*attribution_destination=*/"https://b.test",
+      /*source_event_id=*/"5", /*source_type=*/"event", /*trigger_data=*/"1",
+      https_server());
+  expected_report.source_debug_key = "789";
+  ASSERT_TRUE(https_server()->Start());
+
+  GURL impression_url = https_server()->GetURL(
+      "a.test", "/attribution_reporting/page_with_impression_creator.html");
+  EXPECT_TRUE(NavigateToURL(web_contents(), impression_url));
+
+  GURL register_url = https_server()->GetURL(
+      "a.test",
+      "/attribution_reporting/register_source_headers_debug_key_cookie.html");
+
+  EXPECT_TRUE(ExecJs(web_contents(),
+                     JsReplace("createAttributionSrcImg($1);", register_url)));
+
+  GURL conversion_url = https_server()->GetURL(
+      "b.test", "/attribution_reporting/page_with_conversion_redirect.html");
+  EXPECT_TRUE(NavigateToURL(web_contents(), conversion_url));
+
+  EXPECT_TRUE(
+      ExecJs(web_contents(), JsReplace(R"(registerConversion({data: 0,
+                                       origin: $1,
+                                       eventSourceTriggerData: 1});)",
+                                       url::Origin::Create(impression_url))));
+
+  expected_report.WaitForReport();
+}
+
+IN_PROC_BROWSER_TEST_F(AttributionsBrowserTest,
                        EventSourceImpressionConversionFromJS_ReportSent) {
   // Expected reports must be registered before the server starts.
   // 123 in the `registerConversion` call below is sanitized to 1 in
