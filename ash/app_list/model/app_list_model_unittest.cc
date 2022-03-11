@@ -675,4 +675,48 @@ TEST_F(AppListModelFolderTest, DisableFolders) {
   EXPECT_EQ(std::string("folder1,") + kOemFolderId, GetModelContents());
 }
 
+TEST_F(AppListModelFolderTest, IsNewInstall) {
+  AppListFolderItem* folder = CreateFolderWithApps("folder1", 2);
+  AppListItem* item0 = model_->FindItem("Item 0");
+  ASSERT_TRUE(item0);
+  AppListItem* item1 = model_->FindItem("Item 1");
+  ASSERT_TRUE(item1);
+
+  // If both children are new installs, the folder contains a new install.
+  item0->SetIsNewInstall(true);
+  item1->SetIsNewInstall(true);
+  EXPECT_TRUE(item0->is_new_install());
+  EXPECT_TRUE(item1->is_new_install());
+  EXPECT_TRUE(folder->is_new_install());
+
+  // If one child is a new install, the folder contains a new install.
+  item0->SetIsNewInstall(false);
+  EXPECT_FALSE(item0->is_new_install());
+  EXPECT_TRUE(item1->is_new_install());
+  EXPECT_TRUE(folder->is_new_install());
+
+  // If no child is a new install, the folder does not contain a new install.
+  item1->SetIsNewInstall(false);
+  EXPECT_FALSE(item0->is_new_install());
+  EXPECT_FALSE(item1->is_new_install());
+  EXPECT_FALSE(folder->is_new_install());
+}
+
+TEST_F(AppListModelFolderTest, IsNewInstallClearedOnDeleteItem) {
+  AppListFolderItem* folder = CreateFolderWithApps("folder1", 2);
+  AppListItem* item0 = model_->FindItem("Item 0");
+  ASSERT_TRUE(item0);
+  AppListItem* item1 = model_->FindItem("Item 1");
+  ASSERT_TRUE(item1);
+
+  // If the second item is a new install, the folder contains a new install.
+  item1->SetIsNewInstall(true);
+  EXPECT_TRUE(folder->is_new_install());
+
+  // Deleting the item means the folder no longer contains a new install.
+  model_->DeleteItem("Item 1");
+  item1 = nullptr;
+  EXPECT_FALSE(folder->is_new_install());
+}
+
 }  // namespace ash

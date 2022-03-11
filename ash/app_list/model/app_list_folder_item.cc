@@ -22,6 +22,10 @@ AppListFolderItem::AppListFolderItem(
     : AppListItem(id),
       folder_type_(id == kOemFolderId ? FOLDER_TYPE_OEM : FOLDER_TYPE_NORMAL),
       item_list_(std::make_unique<AppListItemList>(app_list_model_delegate)) {
+  // `item_list_` is initially empty, so there are no items to observe.
+  // Item observers are added later in OnListItemAdded().
+  item_list_->AddObserver(this);
+
   std::vector<AppListConfigType> configs;
   if (features::IsProductivityLauncherEnabled()) {
     configs = {AppListConfigType::kRegular, AppListConfigType::kDense};
@@ -37,6 +41,9 @@ AppListFolderItem::AppListFolderItem(
 AppListFolderItem::~AppListFolderItem() {
   for (auto& image : folder_images_)
     image.second->RemoveObserver(this);
+  for (size_t i = 0; i < item_list_->item_count(); ++i)
+    item_list_->item_at(i)->RemoveObserver(this);
+  item_list_->RemoveObserver(this);
 }
 
 gfx::Rect AppListFolderItem::GetTargetIconRectInFolderForItem(
@@ -73,6 +80,20 @@ void AppListFolderItem::OnAppListConfigCreated(AppListConfigType config_type) {
   // might have missed |item_list_| updates).
   EnsureIconsForAvailableConfigTypes({config_type},
                                      true /*request_icon_update*/);
+}
+
+void AppListFolderItem::OnListItemAdded(size_t index, AppListItem* item) {
+  item->AddObserver(this);
+  UpdateIsNewInstall();
+}
+
+void AppListFolderItem::OnListItemRemoved(size_t index, AppListItem* item) {
+  item->RemoveObserver(this);
+  UpdateIsNewInstall();
+}
+
+void AppListFolderItem::ItemIsNewInstallChanged() {
+  UpdateIsNewInstall();
 }
 
 bool AppListFolderItem::IsPersistent() const {
@@ -136,6 +157,19 @@ void AppListFolderItem::EnsureIconsForAvailableConfigTypes(
       image_ptr->UpdateIcon();
     }
   }
+}
+
+void AppListFolderItem::UpdateIsNewInstall() {
+  bool contains_new_install_item = false;
+  for (size_t i = 0; i < item_list_->item_count(); ++i) {
+    if (item_list_->item_at(i)->is_new_install()) {
+      contains_new_install_item = true;
+      break;
+    }
+  }
+  // The folder is marked with the "new install" dot if it contains an item that
+  // is a new install.
+  SetIsNewInstall(contains_new_install_item);
 }
 
 }  // namespace ash

@@ -1025,7 +1025,7 @@ std::u16string AppListItemView::GetTooltipText(const gfx::Point& p) const {
   title_->SetTooltipText(tooltip_text_);
   std::u16string tooltip = title_->GetTooltipText(p);
   title_->SetHandlesTooltips(false);
-  if (new_install_dot_ && new_install_dot_->GetVisible()) {
+  if (new_install_dot_ && new_install_dot_->GetVisible() && !is_folder_) {
     // Tooltip becomes two lines: "App Name" + "New install".
     tooltip = l10n_util::GetStringFUTF16(IDS_APP_LIST_NEW_INSTALL, tooltip);
   }
@@ -1235,8 +1235,10 @@ void AppListItemView::ItemBadgeColorChanged() {
 
 void AppListItemView::ItemIsNewInstallChanged() {
   DCHECK(item_weak_);
-  if (new_install_dot_)
+  if (new_install_dot_) {
     new_install_dot_->SetVisible(item_weak_->is_new_install());
+    InvalidateLayout();
+  }
 }
 
 void AppListItemView::ItemBeingDestroyed() {

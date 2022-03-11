@@ -122,7 +122,7 @@ class ChromeAppListModelUpdaterTest
  public:
   ChromeAppListModelUpdaterTest()
       : ChromeAppListModelUpdaterTestBase(
-            /*enable_productiviy_launcher=*/GetParam()) {}
+            /*enable_productivity_launcher=*/GetParam()) {}
   ~ChromeAppListModelUpdaterTest() override = default;
 };
 
@@ -521,6 +521,58 @@ IN_PROC_BROWSER_TEST_F(ChromeAppListModelUpdaterProductivityLauncherTest,
 
   // Second app is still a new install.
   EXPECT_TRUE(item2->CloneMetadata()->is_new_install);
+}
+
+IN_PROC_BROWSER_TEST_F(ChromeAppListModelUpdaterProductivityLauncherTest,
+                       IsNewInstallInFolder) {
+  AppListClientImpl* client = AppListClientImpl::GetInstance();
+  ASSERT_TRUE(client);
+  AppListModelUpdater* model_updater = test::GetModelUpdater(client);
+  ASSERT_TRUE(model_updater);
+
+  // Install 2 apps.
+  const std::string app1_id =
+      LoadExtension(test_data_dir_.AppendASCII("app1"))->id();
+  ASSERT_FALSE(app1_id.empty());
+  const std::string app2_id =
+      LoadExtension(test_data_dir_.AppendASCII("app2"))->id();
+  ASSERT_FALSE(app2_id.empty());
+
+  ShowAppList();
+
+  // Put the apps in a folder.
+  const std::string folder_id =
+      app_list_test_api_.CreateFolderWithApps({app1_id, app2_id});
+
+  // Both apps are new installs.
+  ash::AppListModel* model = app_list_test_api_.GetAppListModel();
+  ash::AppListItem* app1_item = model->FindItem(app1_id);
+  ASSERT_TRUE(app1_item);
+  EXPECT_TRUE(app1_item->is_new_install());
+
+  ash::AppListItem* app2_item = model->FindItem(app2_id);
+  ASSERT_TRUE(app2_item);
+  EXPECT_TRUE(app2_item->is_new_install());
+
+  // The folder is considered a "new install" because it contains an item that
+  // is a new install.
+  ash::AppListItem* folder_item = model->FindItem(folder_id);
+  ASSERT_TRUE(folder_item);
+  EXPECT_TRUE(folder_item->is_new_install());
+
+  // Launching one item clears its new install status, but the folder still
+  // contains a new install.
+  model_updater->FindItem(app1_id)->Activate(ui::EF_NONE);
+  EXPECT_FALSE(app1_item->is_new_install());
+  EXPECT_TRUE(app2_item->is_new_install());
+  EXPECT_TRUE(folder_item->is_new_install());
+
+  // Launching them other item clears its new install status, and the folder
+  // no longer contains a new install.
+  model_updater->FindItem(app2_id)->Activate(ui::EF_NONE);
+  EXPECT_FALSE(app1_item->is_new_install());
+  EXPECT_FALSE(app2_item->is_new_install());
+  EXPECT_FALSE(folder_item->is_new_install());
 }
 
 IN_PROC_BROWSER_TEST_F(ChromeAppListModelUpdaterLegacyLauncherTest,

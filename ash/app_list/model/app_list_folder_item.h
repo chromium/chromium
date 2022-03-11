@@ -31,11 +31,15 @@ class AppListConfig;
 class AppListItemList;
 class AppListModelDelegate;
 
-// AppListFolderItem implements the model/controller for folders.
+// AppListFolderItem implements the model/controller for folders. It observes
+// all the items in its list to watch for property changes (e.g. whether a child
+// item is a new install).
 class APP_LIST_MODEL_EXPORT AppListFolderItem
     : public AppListItem,
       public FolderImageObserver,
-      public AppListConfigProvider::Observer {
+      public AppListConfigProvider::Observer,
+      public AppListItemListObserver,
+      public AppListItemObserver {
  public:
   // The folder type affects folder behavior.
   enum FolderType {
@@ -80,6 +84,13 @@ class APP_LIST_MODEL_EXPORT AppListFolderItem
   // AppListConfigProvider::Observer override:
   void OnAppListConfigCreated(AppListConfigType config_type) override;
 
+  // AppListItemListObserver:
+  void OnListItemAdded(size_t index, AppListItem* item) override;
+  void OnListItemRemoved(size_t index, AppListItem* item) override;
+
+  // AppListItemObserver:
+  void ItemIsNewInstallChanged() override;
+
   // Persistent folders will be retained even if there is 1 app in them.
   bool IsPersistent() const;
   void SetIsPersistent(bool is_persistent);
@@ -109,6 +120,10 @@ class APP_LIST_MODEL_EXPORT AppListFolderItem
   void EnsureIconsForAvailableConfigTypes(
       const std::vector<AppListConfigType>& config_types,
       bool request_icon_update);
+
+  // Sets the "new install" property on this folder item if any of the items
+  // inside the folder are new installs.
+  void UpdateIsNewInstall();
 
   // The type of folder; may affect behavior of folder views.
   const FolderType folder_type_;
