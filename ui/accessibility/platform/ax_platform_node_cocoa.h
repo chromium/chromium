@@ -40,7 +40,7 @@ AX_EXPORT
 
 // Returns true if this object should expose its accessible name using
 // accessibilityLabel (legacy AXDescription attribute).
-- (BOOL)isLabelable;
+- (BOOL)isNameFromLabel;
 
 // Returns an accessible element serving as a title UI element, an element
 // representing the accessible name of the object and which is exposed via

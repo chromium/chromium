@@ -481,7 +481,7 @@ bool IsAXSetter(SEL selector) {
   return label->GetNativeViewAccessible();
 }
 
-- (BOOL)isLabelable {
+- (BOOL)isNameFromLabel {
   // Image annotations are not visible text, so they should be exposed
   // as a description and not a title.
   switch (_node->GetData().GetImageAnnotationStatus()) {
@@ -513,8 +513,21 @@ bool IsAXSetter(SEL selector) {
     case ax::mojom::Role::kRadioGroup:
       return true;
     default:
-      return false;
+      break;
   }
+
+  // On Mac OS X, the accessible name of an object is exposed as its
+  // title if it comes from visible text, and as its description
+  // otherwise, but never both.
+  ax::mojom::NameFrom nameFrom = _node->GetNameFrom();
+  if (nameFrom == ax::mojom::NameFrom::kCaption ||
+      nameFrom == ax::mojom::NameFrom::kContents ||
+      nameFrom == ax::mojom::NameFrom::kRelatedElement ||
+      nameFrom == ax::mojom::NameFrom::kValue) {
+    return false;
+  }
+
+  return true;
 }
 
 + (NSString*)nativeRoleFromAXRole:(ax::mojom::Role)role {
@@ -1666,6 +1679,9 @@ bool IsAXSetter(SEL selector) {
   if ([self titleUIElement])
     return @"";
 
+  if (![self isNameFromLabel])
+    return @"";
+
   std::string name = _node->GetName();
   std::string extraText;
   ax::mojom::ImageAnnotationStatus status =
@@ -1700,22 +1716,8 @@ bool IsAXSetter(SEL selector) {
     name += extraText;
   }
 
-  if (!name.empty()) {
-    // On Mac OS X, the accessible name of an object is exposed as its
-    // title if it comes from visible text, and as its description
-    // otherwise, but never both.
-    if ([self isLabelable])
-      return base::SysUTF8ToNSString(name);
-
-    ax::mojom::NameFrom nameFrom = _node->GetNameFrom();
-    if (nameFrom == ax::mojom::NameFrom::kCaption ||
-        nameFrom == ax::mojom::NameFrom::kContents ||
-        nameFrom == ax::mojom::NameFrom::kRelatedElement ||
-        nameFrom == ax::mojom::NameFrom::kValue) {
-      return @"";
-    }
+  if (!name.empty())
     return base::SysUTF8ToNSString(name);
-  }
 
   // Given an image where there's no other title, return the base part
   // of the filename as the description.

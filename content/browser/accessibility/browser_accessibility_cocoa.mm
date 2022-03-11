@@ -1535,7 +1535,7 @@ bool content::IsNSRange(id value) {
   if (ui::IsNameExposedInAXValueForRole([self internalRole]))
     return @"";
 
-  if ([self isLabelable])
+  if ([self isNameFromLabel])
     return @"";
 
   // If we're exposing the title in TitleUIElement, don't also redundantly
@@ -1552,18 +1552,7 @@ bool content::IsNSRange(id value) {
       nameFrom == ax::mojom::NameFrom::kContents)
     return @"";
 
-  // On Mac OS X, the accessible name of an object is exposed as its
-  // title if it comes from visible text, and as its description
-  // otherwise, but never both.
-  if (nameFrom == ax::mojom::NameFrom::kCaption ||
-      nameFrom == ax::mojom::NameFrom::kContents ||
-      nameFrom == ax::mojom::NameFrom::kRelatedElement ||
-      nameFrom == ax::mojom::NameFrom::kValue) {
-    return NSStringForStringAttribute(_owner,
-                                      ax::mojom::StringAttribute::kName);
-  }
-
-  return @"";
+  return base::SysUTF8ToNSString(_owner->GetName());
 }
 
 - (id)AXValue {
