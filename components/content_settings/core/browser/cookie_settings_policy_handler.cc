@@ -31,15 +31,18 @@ void CookieSettingsPolicyHandler::ApplyPolicySettings(
         static_cast<int>(third_party_cookie_blocking->GetBool()
                              ? CookieControlsMode::kBlockThirdParty
                              : CookieControlsMode::kOff));
-    // Copy only the disabled managed state of cookie controls to privacy
-    // sandbox while privacy sandbox is an experiment.
-    if (third_party_cookie_blocking->GetBool()) {
-      prefs->SetBoolean(prefs::kPrivacySandboxApisEnabled, false);
-      prefs->SetBoolean(prefs::kPrivacySandboxApisEnabledV2, false);
-    }
+    // Copy only the managed state of cookie controls to privacy sandbox while
+    // privacy sandbox is an experiment.
+    // TODO(crbug.com/1304044): Create a dedicated policy.
+    prefs->SetBoolean(prefs::kPrivacySandboxApisEnabled,
+                      !third_party_cookie_blocking->GetBool());
+    prefs->SetBoolean(prefs::kPrivacySandboxApisEnabledV2,
+                      !third_party_cookie_blocking->GetBool());
   }
-  // Also check against the default cookie content settings policy and disable
-  // privacy sandbox if it is set to BLOCK.
+
+  // If there is a Cookie BLOCK default content setting, then Privacy Sandbox
+  // APIs should be disabled, regardless of whether they were enabled along
+  // with third party cookies.
   const base::Value* default_cookie_setting =
       policies.GetValue(policy::key::kDefaultCookiesSetting);
   if (default_cookie_setting && default_cookie_setting->is_int() &&

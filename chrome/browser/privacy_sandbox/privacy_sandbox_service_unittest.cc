@@ -1712,6 +1712,24 @@ TEST_F(PrivacySandboxServiceDialogTest, RestrictedDialog) {
                 privacy_sandbox_settings()));
 }
 
+TEST_F(PrivacySandboxServiceDialogTest, ManagedNoDialog) {
+  // Confirm that when the Privacy Sandbox is managed, that no dialog is
+  // shown.
+  prefs()->SetManagedPref(prefs::kPrivacySandboxApisEnabledV2,
+                          base::Value(true));
+  EXPECT_EQ(PrivacySandboxService::DialogType::kNone,
+            PrivacySandboxService::GetRequiredDialogTypeInternal(
+                prefs(), profile_metrics::BrowserProfileType::kRegular,
+                privacy_sandbox_settings()));
+
+  // This should persist even if the preference becomes unmanaged.
+  prefs()->RemoveManagedPref(prefs::kPrivacySandboxApisEnabledV2);
+  EXPECT_EQ(PrivacySandboxService::DialogType::kNone,
+            PrivacySandboxService::GetRequiredDialogTypeInternal(
+                prefs(), profile_metrics::BrowserProfileType::kRegular,
+                privacy_sandbox_settings()));
+}
+
 class PrivacySandboxServiceDeathTest
     : public PrivacySandboxServiceDialogTestBase,
       public testing::TestWithParam<int> {};

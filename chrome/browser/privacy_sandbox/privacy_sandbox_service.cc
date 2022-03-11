@@ -673,6 +673,21 @@ PrivacySandboxService::GetRequiredDialogTypeInternal(
     return DialogType::kNone;
   }
 
+  // If the Privacy Sandbox is managed, no dialog is shown.
+  if (pref_service->FindPreference(prefs::kPrivacySandboxApisEnabledV2)
+          ->IsManaged()) {
+    pref_service->SetBoolean(prefs::kPrivacySandboxNoConfirmationSandboxManaged,
+                             true);
+    return DialogType::kNone;
+  }
+
+  // If a user wasn't shown a dialog previously because the Privacy Sandbox
+  // was managed, do not show them one.
+  if (pref_service->GetBoolean(
+          prefs::kPrivacySandboxNoConfirmationSandboxManaged)) {
+    return DialogType::kNone;
+  }
+
   // If a user wasn't shown a confirmation because they previously turned the
   // Privacy Sandbox off, we do not attempt to re-show one.
   if (pref_service->GetBoolean(

@@ -271,6 +271,7 @@ class PrivacySandboxService : public KeyedService,
   FRIEND_TEST_ALL_PREFIXES(PrivacySandboxServiceTestNonRegularProfile,
                            NoMetricsRecorded);
   FRIEND_TEST_ALL_PREFIXES(PrivacySandboxServiceDialogTest, RestrictedDialog);
+  FRIEND_TEST_ALL_PREFIXES(PrivacySandboxServiceDialogTest, ManagedNoDialog);
   FRIEND_TEST_ALL_PREFIXES(PrivacySandboxServiceDeathTest,
                            GetRequiredDialogType);
 

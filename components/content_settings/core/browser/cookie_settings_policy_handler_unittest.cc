@@ -88,11 +88,13 @@ TEST_F(CookieSettingsPolicyHandlerTest,
 }
 
 TEST_F(CookieSettingsPolicyHandlerTest,
-       ThirdPartyCookieBlockingSetFalsePrivacySandboxNotSet) {
+       ThirdPartyCookieBlockingSetFalsePrivacySandboxEnabled) {
   SetThirdPartyCookiePolicy(false);
   const base::Value* value;
-  EXPECT_FALSE(store_->GetValue(prefs::kPrivacySandboxApisEnabled, &value));
-  EXPECT_FALSE(store_->GetValue(prefs::kPrivacySandboxApisEnabledV2, &value));
+  EXPECT_TRUE(store_->GetValue(prefs::kPrivacySandboxApisEnabled, &value));
+  EXPECT_EQ(value->GetBool(), true);
+  EXPECT_TRUE(store_->GetValue(prefs::kPrivacySandboxApisEnabledV2, &value));
+  EXPECT_EQ(value->GetBool(), true);
 }
 
 TEST_F(CookieSettingsPolicyHandlerTest,
@@ -111,6 +113,26 @@ TEST_F(CookieSettingsPolicyHandlerTest,
   const base::Value* value;
   EXPECT_FALSE(store_->GetValue(prefs::kPrivacySandboxApisEnabled, &value));
   EXPECT_FALSE(store_->GetValue(prefs::kPrivacySandboxApisEnabledV2, &value));
+}
+
+TEST_F(CookieSettingsPolicyHandlerTest,
+       DefaultCookieContentBlockOverridesThirdPartyForPrivacySandbox) {
+  // A policy which sets the default cookie content setting to block should
+  // override a policy enabling 3P cookies, w.r.t the Privacy Sandbox.
+  policy::PolicyMap policy;
+  policy.Set(policy::key::kBlockThirdPartyCookies,
+             policy::POLICY_LEVEL_MANDATORY, policy::POLICY_SCOPE_USER,
+             policy::POLICY_SOURCE_CLOUD, base::Value(false), nullptr);
+  policy.Set(policy::key::kDefaultCookiesSetting,
+             policy::POLICY_LEVEL_MANDATORY, policy::POLICY_SCOPE_USER,
+             policy::POLICY_SOURCE_CLOUD, base::Value(CONTENT_SETTING_BLOCK),
+             nullptr);
+  UpdateProviderPolicy(policy);
+  const base::Value* value;
+  EXPECT_TRUE(store_->GetValue(prefs::kPrivacySandboxApisEnabled, &value));
+  EXPECT_EQ(value->GetBool(), false);
+  EXPECT_TRUE(store_->GetValue(prefs::kPrivacySandboxApisEnabledV2, &value));
+  EXPECT_EQ(value->GetBool(), false);
 }
 
 }  // namespace content_settings
