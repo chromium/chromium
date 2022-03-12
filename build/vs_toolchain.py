@@ -442,7 +442,7 @@ def _CopyDebugger(target_dir, target_cpu):
       if is_optional:
         continue
       else:
-        raise Exception('%s not found in "%s"\r\nYou must install'
+        raise Exception('%s not found in "%s"\r\nYou must install '
                         'Windows 10 SDK version 10.0.19041.0 including the '
                         '"Debugging Tools for Windows" feature.' %
                         (debug_file, full_path))
