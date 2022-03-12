@@ -149,33 +149,25 @@ void DOMTask::OnAbort() {
   if (!callback_)
     return;
 
+  task_handle_.Cancel();
+  async_task_context_.Cancel();
+
   DCHECK(resolver_);
 
-  ScriptState* resolver_script_state = resolver_->GetScriptState();
+  ScriptState* const resolver_script_state = resolver_->GetScriptState();
 
   if (!IsInParallelAlgorithmRunnable(resolver_->GetExecutionContext(),
                                      resolver_script_state)) {
-    task_handle_.Cancel();
-    async_task_context_.Cancel();
     return;
   }
 
   // switch to the resolver's context to let DOMException pick up the resolver's
   // JS stack
-  {
-    ScriptState::Scope script_state_scope(resolver_script_state);
+  ScriptState::Scope script_state_scope(resolver_script_state);
 
-    task_handle_.Cancel();
-    // TODO(crbug.com/1293949): Add an error message.
-    resolver_->Reject(
-        V8ThrowDOMException::CreateOrDie(resolver_script_state->GetIsolate(),
-                                         DOMExceptionCode::kAbortError, ""));
-  }
-
-  ScriptState* script_state =
-      callback_->CallbackRelevantScriptStateOrReportError("DOMTask", "Abort");
-  DCHECK(script_state && script_state->ContextIsValid());
-  async_task_context_.Cancel();
+  // TODO(crbug.com/1293949): Add an error message.
+  resolver_->Reject(V8ThrowDOMException::CreateOrDie(
+      resolver_script_state->GetIsolate(), DOMExceptionCode::kAbortError, ""));
 }
 
 void DOMTask::RecordTaskStartMetrics() {
