@@ -5,7 +5,7 @@ guides](https://chromium.googlesource.com/chromium/src/+/main/styleguide/stylegu
 
 As of 2021-05-12, Chromium is transitioning from Python 2 to Python 3 (follow
 [crbug.com/941669](https://crbug.com/941669) for updates). See
-[//docs/python3_migration.md](../docs/python3_migration.md) for more on
+[//docs/python3_migration.md](../../docs/python3_migration.md) for more on
 how to migrate code.
 
 For new (Python 3) code, you can assume Python 3.8 (and that's what the bots
