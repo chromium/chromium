@@ -50,6 +50,13 @@ namespace {
 
 bool enable_mmap_by_default_ = true;
 
+// The name of the main database associated with a sqlite3* connection.
+//
+// SQLite has the ability to ATTACH multiple databases to the same connection.
+// As a consequence, some SQLite APIs require the connection-specific database
+// name. This is the right name to be passed to such APIs.
+static constexpr char kSqliteMainDatabaseName[] = "main";
+
 // Spin for up to a second waiting for the lock to clear when setting
 // up the database.
 // TODO(shess): Better story on this.  http://crbug.com/56559
@@ -1587,16 +1594,30 @@ bool Database::OpenInternal(const std::string& file_name,
       return false;
   }
 
-  // sqlite3_open() does not actually read the database file (unless a hot
-  // journal is found).  Successfully executing this pragma on an existing
-  // database requires a valid header on page 1.  ExecuteAndReturnErrorCode() to
-  // get the error code before error callback (potentially) overwrites.
-  // TODO(shess): For now, just probing to see what the lay of the
-  // land is.  If it's mostly SQLITE_NOTADB, then the database should
-  // be razed.
-  err = ExecuteAndReturnErrorCode("PRAGMA auto_vacuum");
+  // sqlite3_open*() methods only perform I/O on the database file if a hot
+  // journal is found. Force SQLite to parse the header and database schema, so
+  // we can signal irrecoverable corruption early.
+  //
+  // sqlite3_table_column_metadata() causes SQLite to parse the database schema.
+  // Since the schema is stored inside a table B-tree, parsing the schema
+  // implies parsing the database header.
+  //
+  // sqlite3_table_column_metadata() can be used with a null database name, but
+  // that will cause it to search for the table in all databases that are
+  // ATTACHed to the connection. While Chrome features (almost) never use
+  // ATTACHed databases, we prefer to be explicit here.
+  //
+  // sqlite3_table_column_metadata() can be used with a null column name, and
+  // will report on the existence of the table with the given name. This is
+  // sufficient for the purpose of getting SQLite to parse the database schema.
+  // See https://www.sqlite.org/c3ref/table_column_metadata.html for details.
+  static constexpr char kSqliteSchemaTable[] = "sqlite_schema";
+  err = sqlite3_table_column_metadata(
+      db_, kSqliteMainDatabaseName, kSqliteSchemaTable, /*zColumnName=*/nullptr,
+      /*pzDataType=*/nullptr, /*pzCollSeq=*/nullptr, /*pNotNull=*/nullptr,
+      /*pPrimaryKey=*/nullptr, /*pAutoinc=*/nullptr);
   if (err != SQLITE_OK) {
-    OnSqliteError(err, nullptr, "PRAGMA auto_vacuum");
+    OnSqliteError(err, nullptr, "-- sqlite3_table_column_metadata()");
 
     // Retry or bail out if the error handler poisoned the handle.
     // TODO(shess): Move this handling to one place (see also sqlite3_open).
