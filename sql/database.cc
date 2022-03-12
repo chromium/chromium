@@ -366,16 +366,14 @@ void Database::Preload() {
 
   // Maximum number of bytes that will be prefetched from the database.
   //
-  // This limit is very aggressive. Here are the trade-offs involved.
-  // 1) Accessing bytes that weren't preread is very expensive on
-  //    performance-critical databases, so the limit must exceed the expected
-  //    sizes of feature databases.
-  // 2) On some platforms (Windows 7 and, currently, macOS), base::PreReadFile()
-  //    falls back to a synchronous read, and blocks until the entire file is
-  //    read into memory. So, there's a tangible cost to reading data that would
-  //    get evicted before base::PreReadFile() completes. This cost needs to be
-  //    balanced with the benefit reading the entire database at once, and
-  //    avoiding seeks on spinning disks.
+  // This limit is very aggressive. The main trade-off involved is that having
+  // SQLite block on reading from disk has a high impact on Chrome startup cost
+  // for the databases that are on the critical path to startup. So, the limit
+  // must exceed the expected sizes of databases on the critical path.
+  //
+  // On Windows 7, base::PreReadFile() falls back to a synchronous read, and
+  // blocks until the entire file is read into memory. This is a minor factor at
+  // this point, because Chrome has very limited support for Windows 7.
   constexpr int kPreReadSize = 128 * 1024 * 1024;  // 128 MB
   base::PreReadFile(DbPath(), /*is_executable=*/false, kPreReadSize);
 }

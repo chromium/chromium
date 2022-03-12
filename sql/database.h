@@ -293,17 +293,17 @@ class COMPONENT_EXPORT(SQL) Database {
   // an uninitialized or already-closed database.
   void Close();
 
-  // Reads the first <cache-size>*<page-size> bytes of the file to prime the
-  // filesystem cache.  This can be more efficient than faulting pages
-  // individually.  Since this involves blocking I/O, it should only be used if
-  // the caller will immediately read a substantial amount of data from the
-  // database.
+  // Hints the file system that the database will be accessed soon.
   //
-  // TODO(shess): Design a set of histograms or an experiment to inform this
-  // decision.  Preloading should almost always improve later performance
-  // numbers for this database simply because it pulls operations forward, but
-  // if the data isn't actually used soon then preloading just slows down
-  // everything else.
+  // This method should be called on databases that are on the critical path to
+  // Chrome startup. Informing the filesystem about our expected access pattern
+  // early on reduces the likelihood that we'll be blocked on disk I/O. This has
+  // a high impact on startup time.
+  //
+  // This method should not be used for non-critical databases. While using it
+  // will likely improve micro-benchmarks involving one specific database,
+  // overuse risks randomizing the disk I/O scheduler, slowing down Chrome
+  // startup.
   void Preload();
 
   // Release all non-essential memory associated with this database connection.
