@@ -58,7 +58,8 @@
                         continue;
                     // Ok to invalidate the IFC of block-in-inline.
                     // See |LayoutBox::ForegroundIsKnownToBeOpaqueInRect|.
-                    if (invalidation.object.includes("id='target4'"))
+                    if (invalidation.object.includes("id='target4'") ||
+                        invalidation.object.includes("id='imgInBlockInInline'"))
                         continue;
                     invalidatedObjects[invalidation.object] = true;
                 }
@@ -115,7 +116,7 @@
         <a>
             <div></div>
             <div>
-                <img src="../resources/apple.jpg">
+                <img id="imgInBlockInInline" src="../resources/apple.jpg">
             </div>
         </a>
     </div>
