@@ -83,6 +83,7 @@
 <translation id="1807246157184219062">Hele</translation>
 <translation id="1827738518074806965">Kunstigalerii</translation>
 <translation id="1851218745569890714">Videokonverents</translation>
+<translation id="1852934301711881861">Installi Chrome OS Flex</translation>
 <translation id="1874612839560830905">MTU</translation>
 <translation id="1887850431809612466">Riistvara redaktsioon</translation>
 <translation id="1905710495812624430">Katsete maksimaalne arv on ületatud.</translation>
@@ -107,6 +108,7 @@
 <translation id="2158971754079422508"><ph name="DESC_TEXT" />: proovige uuesti</translation>
 <translation id="2161394479394250669">Tühista prinditöö</translation>
 <translation id="2180197493692062006">Midagi läks valesti. Proovige rakendus uuesti avada.</translation>
+<translation id="2201770616342964496">Kohalik identiteet</translation>
 <translation id="2209788852729124853">Liiklusloendurite lähtestamine</translation>
 <translation id="2212733584906323460">Nime lahendamine</translation>
 <translation id="2217935453350629363">Praegune kiirus</translation>
@@ -288,6 +290,7 @@
 <translation id="458794348635939462">Kõikide hostide lahendamine ebaõnnestus</translation>
 <translation id="4593212453765072419">Vajalik on puhverserveri autentimine</translation>
 <translation id="4627232916386272576"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="PRINTED_PAGE_NUMBER" />/<ph name="TOTAL_PAGE_NUMBER" />. Prinditöö tühistamiseks vajutage sisestusklahvi.</translation>
+<translation id="4627645661474370390">Kaugidentiteet</translation>
 <translation id="463791356324567266">Skannimise tühistamine …</translation>
 <translation id="4646949265910132906">Turvaline WiFi-ühendus</translation>
 <translation id="4654549501020883054">Muuda iga päev</translation>

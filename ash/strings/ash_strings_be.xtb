@@ -197,6 +197,7 @@
 <translation id="2132302418721800944">Запіс усяго экрана</translation>
 <translation id="2135456203358955318">Прыстыкаваная лупа</translation>
 <translation id="2148716181193084225">Сёння</translation>
+<translation id="2159930836979502091">Перайсці на гэту ўкладку</translation>
 <translation id="2170530631236737939">Каб выйсці з рэжыму Агляду, правядзіце трыма пальцамі ўніз</translation>
 <translation id="219905428774326614">Панэль запуску, усе праграмы</translation>
 <translation id="2201071101391734388">Нядаўняе фота <ph name="INDEX" /> з <ph name="TOTAL_COUNT" />.</translation>
@@ -563,6 +564,7 @@
 <translation id="4449692009715125625">{NUM_NOTIFICATIONS,plural, =1{1 важнае апавяшчэнне}one{# важнае апавяшчэнне}few{# важныя апавяшчэнні}many{# важных апавяшчэнняў}other{# важнага апавяшчэння}}</translation>
 <translation id="4450893287417543264">Больш не паказваць</translation>
 <translation id="4451374464530248585">Змянілася прызначэнне спалучэння клавіш Alt + стрэлка ўніз. Каб выканаць дзеянне клавішы Page Down, націсніце <ph name="LAUNCHER_KEY_NAME" /> + стрэлка ўніз.</translation>
+<translation id="4455051983450390249">Прагляд апавяшчэнняў з тэлефона на прыладзе <ph name="DEVICE_TYPE" /></translation>
 <translation id="445864333228800152">Добры вечар,</translation>
 <translation id="4458688154122353284">Спыніць запіс экрана</translation>
 <translation id="4471354919263203780">Ідзе спампоўванне файлаў распазнавання маўлення... <ph name="PERCENT" />%</translation>
@@ -769,6 +771,7 @@
 <translation id="583281660410589416">Невядома</translation>
 <translation id="5837036133683224804">Спыніць трансляцыю <ph name="ROUTE_TITLE" /> на <ph name="RECEIVER_NAME" /></translation>
 <translation id="584525477304726060">Утрымлівайце, каб разгарнуць</translation>
+<translation id="5856638668464565213">Сетка "<ph name="NETWORK_NAME" />" не актывавана.</translation>
 <translation id="5860033963881614850">Выключана</translation>
 <translation id="5860491529813859533">Уключыць</translation>
 <translation id="5867217927013474703">Ідзе збор інфармацыі пра сетку</translation>
@@ -800,6 +803,7 @@
 <translation id="602472752137106327">Паказ вокнаў усіх працоўных сталоў, выбраны пераключальнік</translation>
 <translation id="6025324406281560198"><ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, магутнасць сігналу – <ph name="SIGNAL_STRENGTH" />, знаходзіцца пад кіраваннем адміністратара</translation>
 <translation id="6027518778343897451"><ph name="CURRENT_MONTH_DAY" /> падзей няма. Каб адкрыць Google Каляндар, націсніце Увод.</translation>
+<translation id="6027952026115023659">Доступ да праграм абмену паведамленнямі, усталяваных на тэлефоне, з прылады <ph name="DEVICE_TYPE" /></translation>
 <translation id="6030495522958826102">Меню перамешчана ў левы ніжні вугал экрана.</translation>
 <translation id="6032620807120418574">Каб запісаць увесь экран, націсніце ў любым яго месцы</translation>
 <translation id="6040071906258664830">Запіс з мікрафона <ph name="STATE" /></translation>
@@ -943,6 +947,7 @@
 <translation id="6961121602502368900">Функцыя "Тэлефон без гуку" недаступная пры выкарыстанні працоўнага профілю</translation>
 <translation id="6961840794482373852">Змянілася прызначэнне спалучэння клавіш Alt + стрэлка ўверх. Каб выканаць дзеянне клавішы Page Up, націсніце <ph name="LAUNCHER_KEY_NAME" /> + стрэлка ўверх.</translation>
 <translation id="6965382102122355670">ОК</translation>
+<translation id="6967933908874208731">Прагляд на прыладзе <ph name="DEVICE_TYPE" /> нядаўніх апавяшчэнняў з тэлефона, а таксама медыяфайлаў, фота і змесціва з праграм абмену паведамленнямі</translation>
 <translation id="6972754398087986839">Пачатак працы</translation>
 <translation id="6979158407327259162">Google Дыск</translation>
 <translation id="6981982820502123353">Спец. магчымасці</translation>

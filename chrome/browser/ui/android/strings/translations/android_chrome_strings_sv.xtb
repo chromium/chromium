@@ -138,6 +138,7 @@
 <translation id="1810845389119482123">Konfigurationen av synkronisering har inte slutförts</translation>
 <translation id="1829244130665387512">Hitta på sida</translation>
 <translation id="1832459821645506983">Ja</translation>
+<translation id="1849863543394887018">Du kan inaktivera aviseringar i inställningarna</translation>
 <translation id="1877026089748256423">Den här versionen av Chrome är inaktuell</translation>
 <translation id="1883903952484604915">Mina filer</translation>
 <translation id="189358972401248634">Övriga språk</translation>
@@ -655,6 +656,7 @@ Det kan finnas andra former av webbhistorik i Google-kontot på <ph name="BEGIN_
 <translation id="4860895144060829044">Ring</translation>
 <translation id="4864369630010738180">Loggar in ...</translation>
 <translation id="4866368707455379617">Det gick inte att installera <ph name="MODULE" /> i Chrome</translation>
+<translation id="4871568871368204250">Inaktivera synkronisering</translation>
 <translation id="4875775213178255010">Förslag på innehåll</translation>
 <translation id="4877678010818027629">Starta inkognitoläget</translation>
 <translation id="4878404682131129617">Det gick inte att upprätta en tunnel via proxyserver</translation>
@@ -1199,6 +1201,7 @@ Vissa webbplatser kan till exempel svara på begäran genom att visa annonser so
 <translation id="7926975587469166629">Kortets namn</translation>
 <translation id="7929962904089429003">Öppna menyn</translation>
 <translation id="7930998711684428189">En varning visas om lösenord har läckt ut vid ett dataintrång.</translation>
+<translation id="7937772386706786623">Hantera mediastyrning, inkognitoflikar med mera via aviseringar</translation>
 <translation id="7939485076072265087">Skapa stiliserat kort med markerad text</translation>
 <translation id="7942131818088350342"><ph name="PRODUCT_NAME" /> är inaktuell.</translation>
 <translation id="7944772052836377867">Verifiera din identitet för synkronisering</translation>

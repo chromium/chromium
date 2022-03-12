@@ -231,6 +231,7 @@
 <translation id="121384500095351701">Не вдається безпечно завантажити файл</translation>
 <translation id="1215411991991485844">Додано нову фонову програму</translation>
 <translation id="1216542092748365687">Видалити відбиток</translation>
+<translation id="1217114730239853757">Активувати ChromeVox, вбудовану програму зчитування з екрана для ОС Chrome Flex? Щоб зробити це, натисніть пробіл.</translation>
 <translation id="1217483152325416304">Ваші локальні дані невдовзі буде видалено</translation>
 <translation id="1217668622537098248">Після дії повернутися до натискання лівою кнопкою</translation>
 <translation id="121783623783282548">Паролі не збігаються.</translation>
@@ -281,6 +282,7 @@
 <translation id="126387934568812801">Включити цей знімок екрана та назви відкритих вкладок</translation>
 <translation id="1264083566674525434">Змінити дозволи для сайту</translation>
 <translation id="1264337193001759725">Щоб переглянути журнали мережевого інтерфейсу, перейдіть на сторінку <ph name="DEVICE_LOG_LINK" /></translation>
+<translation id="1265279736024499987">Ваші додатки та налаштування буде синхронізовано на всіх пристроях з ОС Chrome Flex, де ви ввійшли в обліковий запис Google. Щоб переглянути параметри синхронізації веб-переглядача, відкрийте <ph name="LINK_BEGIN" />налаштування Chrome<ph name="LINK_END" />.</translation>
 <translation id="126710816202626562">Мова перекладу:</translation>
 <translation id="126768002343224824">16x</translation>
 <translation id="1272079795634619415">Зупинити</translation>
@@ -333,6 +335,7 @@
 <translation id="1327272175893960498">Квитки Kerberos</translation>
 <translation id="1327495825214193325">Щоб увімкнути налагодження ADB, потрібно перезапустити пристрій <ph name="DEVICE_TYPE" />. Якщо вимкнути ADB, доведеться відновити заводські налаштування.</translation>
 <translation id="1327794256477341646">Функції, яким потрібен доступ до геоданих, не працюватимуть</translation>
+<translation id="1329191040029425999">Переконайтеся, що пристрій оновлений, і повторіть спробу</translation>
 <translation id="1330145147221172764">Увімкнути екранну клавіатуру</translation>
 <translation id="1331977651797684645">Це я.</translation>
 <translation id="1333489022424033687">Деякі функції на сайті <ph name="ORIGIN" /> можуть не працювати, доки ви не видалите дані, які інші сайти зберегли на вашому пристрої</translation>
@@ -374,6 +377,7 @@
 <translation id="1373176046406139583">Видимість пристрою визначає, хто може надсилати вам дані, коли ваш екран розблоковано. <ph name="LINK_BEGIN" />Докладніше<ph name="LINK_END" /></translation>
 <translation id="1374844444528092021">Сертифікат, який вимагає мережа "<ph name="NETWORK_NAME" />", не встановлено або він більше не дійсний. Отримайте новий сертифікат і повторіть спробу під’єднатися.</translation>
 <translation id="1375321115329958930">Збережені паролі</translation>
+<translation id="1375557162880614858">Активувати ChromeVox, вбудовану програму зчитування з екрана для ОС Chrome Flex?</translation>
 <translation id="137651782282853227">Тут відображатимуться збережені адреси</translation>
 <translation id="1376771218494401509">Додати &amp;назву вікна…</translation>
 <translation id="1377600615067678409">Наразі пропустити</translation>
@@ -795,8 +799,10 @@
 <translation id="175196451752279553">В&amp;ідкрити закриту вкладку знову</translation>
 <translation id="1753067873202720523">Ваш Chromebook може не заряджатися, поки він увімкнений.</translation>
 <translation id="1753905327828125965">Часто відвідувані</translation>
+<translation id="1755395545337105369">Синхронізація налаштувань ОС Chrome Flex</translation>
 <translation id="1755601632425835748">Розмір тексту</translation>
 <translation id="1755872274219796698">Перенести паролі</translation>
+<translation id="1757132445735080748">Щоб завершити налаштування Linux, оновіть ОС Chrome Flex і повторіть спробу.</translation>
 <translation id="1757301747492736405">Очікується видалення</translation>
 <translation id="175772926354468439">Увімкнути тему</translation>
 <translation id="17584710573359123">Переглянути у Веб-магазині Chrome</translation>
@@ -843,6 +849,7 @@
 <translation id="1794791083288629568">Надіслати відгук, щоб допомогти нам вирішити цю проблему.</translation>
 <translation id="1795214765651529549">Вибрати класичну тему</translation>
 <translation id="1796588414813960292">Функції, яким потрібен звук, не працюватимуть</translation>
+<translation id="1800502858278951817">Жодне розширення не подавало запит на читання й зміну сайту <ph name="SITE_NAME" /></translation>
 <translation id="1801418420130173017">Вимкнути темну тему</translation>
 <translation id="1802624026913571222">Переходити в режим сну, коли кришка закрита</translation>
 <translation id="1802687198411089702">Сторінка не відповідає. Зачекайте або закрийте її.</translation>
@@ -1229,6 +1236,7 @@
 <translation id="217576141146192373">Не вдається додати принтер. Перевірте його налаштування й повторіть спробу.</translation>
 <translation id="2175927920773552910">QR-код</translation>
 <translation id="2177950615300672361">Анонімна вкладка: <ph name="TAB_NAME" /></translation>
+<translation id="2178585470774851578">Ви ввімкнули функції налагодження ОС Chrome Flex, які встановлять daemon SSHD та ввімкнуть запуск із носіїв USB.</translation>
 <translation id="2178614541317717477">Дискредитація ЦС</translation>
 <translation id="2179416702468739594">Пошук доступних профілів. Можливо, пристрій на кілька хвилин від’єднається від мобільної мережі.</translation>
 <translation id="2180620921879609685">Блокувати контент на всіх сторінках</translation>
@@ -1457,6 +1465,7 @@
 <translation id="2379281330731083556">Друкувати за допомогою діалогового вікна системи... <ph name="SHORTCUT_KEY" /></translation>
 <translation id="2381499968174336913">Попередній перегляд спільної вкладки</translation>
 <translation id="2381756643783702095">Запитувати, перш ніж надсилати (рекомендується)</translation>
+<translation id="2386202302581016807">На пристрої замало пам’яті, щоб завершити налаштування</translation>
 <translation id="2387052489799050037">На головний екран</translation>
 <translation id="2387602571959163792">"<ph name="DESK_NAME" />" (поточний робочий стіл)</translation>
 <translation id="2389775852302560582">IP-адреса</translation>
@@ -1466,6 +1475,7 @@
 <translation id="2392163307141705938">Ви перевищили ліміт часу використання, який ваші батьки встановили для <ph name="IDS_SHORT_PRODUCT_NAME" />.</translation>
 <translation id="2392369802118427583">Активувати</translation>
 <translation id="2393136602862631930">Налаштуйте додаток "<ph name="APP_NAME" />" на Chromebook</translation>
+<translation id="2393313392064891208">Зміст Умов використання ОС Google Chrome Flex</translation>
 <translation id="2395616325548404795">Ваш пристрій <ph name="DEVICE_TYPE" /> зареєстровано для корпоративного керування, однак ми не отримали інформацію про його об’єкти та місцезнаходження. Введіть ці дані вручну на Консолі адміністратора.</translation>
 <translation id="2396783860772170191">Введіть 4-значний PIN-код (0000–9999)</translation>
 <translation id="2398546389094871088">Під час виконання Powerwash на пристрої профілі eSIM-карти не видаляються. Це можна зробити вручну в розділі <ph name="LINK_BEGIN" />налаштування мобільних пристроїв<ph name="LINK_END" />.</translation>
@@ -1496,6 +1506,7 @@
 <translation id="2433836460518180625">Розблокувати лише пристрій</translation>
 <translation id="2434449159125086437">Не вдалося налаштувати принтер. Перевірте конфігурацію й повторіть спробу.</translation>
 <translation id="2434758125294431199">Виберіть, хто може надсилати вам дані</translation>
+<translation id="2435137177546457207">Додаткові умови використання Google Chrome і ОС Chrome Flex</translation>
 <translation id="2435248616906486374">Немає з’єднання з мережею</translation>
 <translation id="2435457462613246316">Показати пароль</translation>
 <translation id="2439626940657133600">Завантажується сервіс <ph name="WINDOW_TITLE" /></translation>
@@ -1607,6 +1618,7 @@
 <translation id="2530166226437958497">Вирішення проблем</translation>
 <translation id="2531530485656743109"><ph name="BEGIN_PARAGRAPH1" />Сталася помилка. Не вдалося встановити <ph name="DEVICE_OS" />.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Щоб дізнатися більше, перейдіть на сторінку g.co/flex/InstallErrors.<ph name="END_PARAGRAPH2" /></translation>
+<translation id="2532198298278778531">Керувати захищеним DNS-сервером у налаштуваннях ОС Chrome Flex</translation>
 <translation id="2532589005999780174">Режим високого контрасту</translation>
 <translation id="2533649878691950253">Цьому сайту заблоковано доступ до даних про ваше точне місцезнаходження, оскільки ви зазвичай вибираєте такі налаштування</translation>
 <translation id="253434972992662860">&amp;Пауза</translation>
@@ -2111,6 +2123,7 @@
 <translation id="3031557471081358569">Виберіть елементи для імпорту:</translation>
 <translation id="3032587662022429783">Докладніше про дані про використання та діагностику.</translation>
 <translation id="3033348223765101500">Керуйте своїми даними</translation>
+<translation id="3034627908241330765">Виконується інше налаштування додатка Steam. Зачекайте, доки цей процес завершиться, перш ніж починати новий.</translation>
 <translation id="3036327949511794916">Кінцевий термін повернення пристрою <ph name="DEVICE_TYPE" /> минув.</translation>
 <translation id="3036546437875325427">Увімкнути Flash</translation>
 <translation id="3037754279345160234">Неможливо виконати синтаксичний аналіз конфігурації приєднання домену. Зв’яжіться з адміністратором.</translation>
@@ -2343,7 +2356,6 @@
 <translation id="3304212451103136496">Знижка <ph name="DISCOUNT_AMOUNT" /></translation>
 <translation id="3305389145870741612">Процес форматування може зайняти декілька секунд. Зачекайте.</translation>
 <translation id="3305661444342691068">Відкрити файл PDF у вікні попереднього перегляду</translation>
-<translation id="3306992216458434072">Назвіть групу та виберіть колір</translation>
 <translation id="3307176291962384345">Отримуйте знижки в магазині "<ph name="MERCHANT_NAME" />"</translation>
 <translation id="3308116878371095290">Цій сторінці було відмовлено в збереженні файлів cookie.</translation>
 <translation id="3308134619352333507">Кнопка "Сховати"</translation>
@@ -2505,6 +2517,7 @@
 <translation id="3462311546193741693">Ви вийдете з більшості сайтів, але не з облікового запису Google. Тому синхронізовані дані можуть бути очищені.</translation>
 <translation id="3462413494201477527">Скасувати створення облікового запису?</translation>
 <translation id="346298925039590474">Усі користувачі пристрою матимуть доступ до цієї мобільної мережі</translation>
+<translation id="3463015289462934089">Переконайтеся, що пристрій підключено до Інтернету.</translation>
 <translation id="3464145797867108663">Додати робочий профіль</translation>
 <translation id="346431825526753"><ph name="CUSTODIAN_EMAIL" /> керує цим обліковим записом для дітей.</translation>
 <translation id="346546413339447252">Отримуйте знижки в магазинах "<ph name="MERCHANT_NAME_1" />", "<ph name="MERCHANT_NAME_2" />" та інших</translation>
@@ -3083,6 +3096,7 @@
 <translation id="3988996860813292272">Вибір часового поясу</translation>
 <translation id="399179161741278232">Імпортовано</translation>
 <translation id="3993887353483242788">Синхронізуйте свій <ph name="DEVICE_TYPE" />, щоб параметри (такі як додатки, налаштування, паролі Wi-Fi, мови, комбінації клавіш тощо) починали діяти на будь-якому пристрої, коли ви ввійдете в обліковий запис Google.</translation>
+<translation id="3994318741694670028">На жаль, ваш комп’ютер налаштовано за допомогою ідентифікатора апаратного забезпечення з неправильною структурою. Через це в ОС Chrome Flex не вдається встановити найновіші виправлення системи безпеки, а тому ваш комп’ютер <ph name="BEGIN_BOLD" />може бути вразливим до атак<ph name="END_BOLD" />.</translation>
 <translation id="3994374631886003300">Щоб розблокувати пристрій <ph name="DEVICE_TYPE" />, розблокуйте свій телефон і розташуйте його ближче до пристрою.</translation>
 <translation id="3994878504415702912">&amp;Масштаб</translation>
 <translation id="3995138139523574647">пристрій, під’єднаний до порту USB-C (праворуч на задній панелі)</translation>
@@ -3356,6 +3370,7 @@
     <ph name="BEGIN_PARAGRAPH2" />Ви можете будь-коли ввімкнути чи вимкнути надсилання цих звітів у налаштуваннях пристрою з ОС Chrome дитини. Якщо ви адміністратор домену, це налаштування можна змінити в Консолі адміністратора.<ph name="END_PARAGRAPH2" />
     <ph name="BEGIN_PARAGRAPH3" />Якщо вимкнути цю функцію, пристрій усе одно зможе надсилати інформацію, потрібну для отримання важливих послуг, наприклад оновлень системи та засобів безпеки.<ph name="END_PARAGRAPH3" /></translation>
 <translation id="4301671483919369635">Ця сторінка може змінювати файли</translation>
+<translation id="4302577930366020750">Щоб скористатися додатком Steam, перезапустіть пристрій</translation>
 <translation id="4303079906735388947">Налаштуйте новий PIN-код для ключа безпеки</translation>
 <translation id="4305402730127028764">Копіювати на пристрій <ph name="DEVICE_NAME" /></translation>
 <translation id="4305817255990598646">Перейти</translation>
@@ -3478,6 +3493,7 @@
 <translation id="4427306783828095590">Покращений захист ще ефективніше блокує фішинг і зловмисне програмне забезпечення</translation>
 <translation id="4427365070557649936">Перевірка коду підтвердження…</translation>
 <translation id="4429163740524851942">Розкладка фізичної клавіатури</translation>
+<translation id="4429239357082509581">Немає дозволу на запуск додатка Steam</translation>
 <translation id="4430019312045809116">Гучність</translation>
 <translation id="4430369329743628066">Закладку додано</translation>
 <translation id="4432621511648257259">Неправильний пароль</translation>
@@ -3544,6 +3560,7 @@
 <translation id="450099669180426158">Значок знака оклику</translation>
 <translation id="4501530680793980440">Підтвердити видалення</translation>
 <translation id="4502423230170890588">Видалити з цього пристрою</translation>
+<translation id="4503748371388753124">Ваш комп’ютер оснащено пристроєм Trusted Platform Module (TPM), який виконує багато важливих функцій безпеки в ОС Chrome Flex. Щоб дізнатися більше, відвідайте Довідковий центр Chromebook: https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="4504374760782163539">{COUNT,plural, =0{Файли cookie дозволено}=1{Файли cookie дозволено, 1 виняток}one{Файли cookie дозволено, {COUNT} виняток}few{Файли cookie дозволено, {COUNT} винятки}many{Файли cookie дозволено, {COUNT} винятків}other{Файли cookie дозволено, {COUNT} винятку}}</translation>
 <translation id="4504940961672722399">Запустіть розширення, натиснувши цей значок або комбінацію клавіш <ph name="EXTENSION_SHORTCUT" />.</translation>
 <translation id="450552327874992444">Слово вже додано</translation>
@@ -3900,6 +3917,7 @@
 <translation id="4876273079589074638">Допоможіть нашим розробникам вивчити та виправити аварійне завершення роботи. Опишіть усі свої дії. Кожна деталь важлива.</translation>
 <translation id="4876895919560854374">Блокувати чи розблоковувати екран</translation>
 <translation id="4877276003880815204">Перевірити елементи</translation>
+<translation id="4877652723592270843">Активувати ChromeVox, вбудовану програму зчитування з екрана для ОС Chrome Flex? Щоб зробити це, утримуйте обидві клавіші гучності впродовж п’яти секунд.</translation>
 <translation id="4878634973244289103">Не вдається надіслати відгук. Повторіть спробу пізніше.</translation>
 <translation id="4878653975845355462">Адміністратор вимкнув можливість встановлення власних фонів</translation>
 <translation id="4878718769565915065">Не вдалося додати відбиток пальця для цього ключа безпеки</translation>
@@ -3963,6 +3981,8 @@
 <translation id="4929386379796360314">Місця друку</translation>
 <translation id="4930447554870711875">Розробники</translation>
 <translation id="4930714375720679147">Увімкнути</translation>
+<translation id="4930776995592629647">Якщо проблема не зникне, перезапустіть пристрій. 
+    Код помилки: <ph name="ERROR_CODE" />.</translation>
 <translation id="4932733599132424254">Дата</translation>
 <translation id="4933484234309072027">вбудовано на сайті <ph name="URL" /></translation>
 <translation id="4936042273057045735">Синхронізація сповіщень не підтримується для телефонів у робочих профілях</translation>
@@ -4014,6 +4034,7 @@
 <translation id="4989966318180235467">Перевірити &amp;фонову сторінку</translation>
 <translation id="4991420928586866460">Використовувати клавіші вгорі клавіатури як функціональні клавіші</translation>
 <translation id="499165176004408815">Використовувати режим високого контрасту</translation>
+<translation id="4991858732577603540">Зачекайте кілька хвилин і запустіть додаток Steam ще раз</translation>
 <translation id="4992458225095111526">Підтвердити Powerwash</translation>
 <translation id="4992473555164495036">Адміністратор обмежив доступні методи введення.</translation>
 <translation id="4994474651455208930">Дозволити сайтам запитувати встановлення обробників протоколів за умовчанням.</translation>
@@ -4031,6 +4052,7 @@
 <translation id="5008936837313706385">Назва дії</translation>
 <translation id="5009463889040999939">Триває перейменування профілю. Це може зайняти кілька хвилин.</translation>
 <translation id="5010043101506446253">Центр сертифікації</translation>
+<translation id="501057610015570208">Додаток з атрибутом маніфесту kiosk_only потрібно встановлювати в режимі термінала ОС Chrome Flex</translation>
 <translation id="5015344424288992913">-...</translation>
 <translation id="5016491575926936899">Ви зможете надсилати SMS із комп'ютера й користуватися на ньому мобільним Інтернетом, а також відповідати на сповіщення чатів і розблоковувати пристрій <ph name="DEVICE_TYPE" /> через телефон.<ph name="FOOTNOTE_POINTER" /> <ph name="LINK_BEGIN" />Докладніше<ph name="LINK_END" /></translation>
 <translation id="5017643436812738274">Ви можете оглядати сторінки за допомогою текстового курсора. Щоб вимкнути цей режим, натисніть Ctrl + Search + 7.</translation>
@@ -4289,6 +4311,24 @@
 <translation id="5282733140964383898">Якщо ввімкнути параметр "Не відстежувати", запит додається в трафік веб-перегляду. Результат залежить від того, чи реагує веб-сайт на цей запит і як тлумачиться запит. Наприклад, деякі веб-сайти можуть реагувати на такий запит, показуючи вам рекламу, не пов’язану з іншими веб-сайтами, які ви відвідали. Багато веб-сайтів будуть і надалі збирати й використовувати ваші дані веб-перегляду, наприклад щоб покращувати систему безпеки, пропонувати вміст, служби, рекламу та рекомендації, а також генерувати статистику для звітів. <ph name="BEGIN_LINK" />Докладніше<ph name="END_LINK" /></translation>
 <translation id="5283677936944177147">На жаль, системі не вдалося визначити модель та серійний номер пристрою.</translation>
 <translation id="5284445933715251131">Продовжити завантаження</translation>
+<translation id="5284787925725379414"><ph name="BEGIN_H3" />Функції налагодження<ph name="END_H3" />
+      <ph name="BR" />
+      Ви можете ввімкнути функції налагодження на своєму пристрої з ОС Chrome Flex, щоб установити й перевірити на ньому спеціальний код. Після цього ви зможете:<ph name="BR" />
+      <ph name="BEGIN_LIST" />
+        <ph name="LIST_ITEM" />видалити перевірку rootfs, щоб змінювати файли ОС;
+        <ph name="LIST_ITEM" />увімкнути протоколу SSH доступ до пристрою за допомогою стандартних тестових ключів, щоб використовувати інструменти, такі як <ph name="BEGIN_CODE" />cros flash<ph name="END_CODE" />, для доступу до пристрою;
+        <ph name="LIST_ITEM" />увімкнути запуск з USB, щоб встановлювати образ ОС із носія USB;
+        <ph name="LIST_ITEM" />установити власні значення паролів для входу в режим розробника та головний каталог системи, щоб вручну використовувати SSH на пристрої.
+      <ph name="END_LIST" />
+      <ph name="BR" />
+      Після ввімкнення більшість функцій налагодження не вимикатимуться, навіть якщо скинути налаштування за допомогою функції Powerwash або очистити дані на корпоративному керованому пристрої. Щоб повністю вимкнути всі функції налагодження, виконайте процедуру відновлення ОС Chrome (https://support.google.com/chromebook/answer/1080595).
+      <ph name="BR" />
+      <ph name="BR" />
+      Докладніше про функції налагодження читайте на сторінці<ph name="BR" />
+      https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-features
+      <ph name="BR" />
+      <ph name="BR" />
+      <ph name="BEGIN_BOLD" />Примітка<ph name="END_BOLD" />: під час цього процесу система перезапуститься.</translation>
 <translation id="5285635972691565180">Екран <ph name="DISPLAY_ID" /></translation>
 <translation id="5286194356314741248">Сканування</translation>
 <translation id="5287425679749926365">Ваші облікові записи</translation>
@@ -4444,6 +4484,7 @@
 <translation id="5449716055534515760">Закрити вік&amp;но</translation>
 <translation id="5452976525201205853"><ph name="LANGUAGE" /> (доступно в режимі офлайн)</translation>
 <translation id="5454166040603940656">за допомогою <ph name="PROVIDER" /></translation>
+<translation id="5455603387986949153">Переглядати серійні номери пристрою з ОС Chrome Flex і компонентів.</translation>
 <translation id="5457113250005438886">Недійсні дані</translation>
 <translation id="5457459357461771897">Читати й видаляти фотографії, музику та інші медіафайли на комп’ютері</translation>
 <translation id="5458214261780477893">Дворак</translation>
@@ -4452,6 +4493,7 @@
 <translation id="5461050611724244538">Немає з'єднання з телефоном</translation>
 <translation id="5463275305984126951">Індекс <ph name="LOCATION" /></translation>
 <translation id="5463625433003343978">Пошук пристроїв…</translation>
+<translation id="5463845647891602726">Щоб звільнити місце, видаліть файли з пристрою</translation>
 <translation id="5463856536939868464">Меню, яке містить сховані закладки</translation>
 <translation id="5464632865477611176">Запустити цього разу</translation>
 <translation id="5464660706533281090">Дитина не може змінювати це налаштування.</translation>
@@ -4760,6 +4802,8 @@
 <translation id="5778491106820461378">Усіма обліковими записами Google, у які ви ввійшли, можна керувати в <ph name="LINK_BEGIN" />Налаштуваннях<ph name="LINK_END" />. Дозволи, надані веб-сайтам і додаткам, можуть діяти для всіх облікових записів. Якщо ви не хочете, щоб сайти чи додатки мали доступ до даних облікового запису, можете ввійти на пристрої <ph name="DEVICE_TYPE" /> як гість.</translation>
 <translation id="5780011244986845107">Вибрана папка містить файли з конфіденційною інформацією. Надати додатку <ph name="APP_NAME" /> постійний дозвіл на перегляд цієї папки?</translation>
 <translation id="5780973441651030252">Пріоритет обробки</translation>
+<translation id="5781014777846460847">На цьому пристрої не дозволено встановлювати додаток Steam. Щоб отримати дозвіл, зверніться до адміністратора. 
+    Код помилки: <ph name="ERROR_CODE" />.</translation>
 <translation id="5781092003150880845">Синхронізувати як <ph name="ACCOUNT_FULL_NAME" /></translation>
 <translation id="5781865261247219930">Надіслати команди в розширення "<ph name="EXTENSION_NAME" />"</translation>
 <translation id="5782227691023083829">Виконується переклад сторінки...</translation>
@@ -4866,6 +4910,7 @@
 <translation id="5889282057229379085">Максимальна кількість проміжних ЦС: <ph name="NUM_INTERMEDIATE_CA" /></translation>
 <translation id="5891688036610113830">Основні мережі Wi-Fi</translation>
 <translation id="5895138241574237353">Перезапустити</translation>
+<translation id="5895335062901455404">Ваші збережені параметри та дії будуть готові на будь-якому пристрої з ОС Chrome Flex, коли ви ввійдете в обліковий запис Google. Ви можете вибрати дані для синхронізації в налаштуваннях.</translation>
 <translation id="5896436821193322561">Не дозволяти</translation>
 <translation id="5900302528761731119">Фото профілю Google</translation>
 <translation id="590036993063074298">Відомості про якість трансляції</translation>
@@ -5320,6 +5365,7 @@
 <translation id="6345878117466430440">Позначити як прочитане</translation>
 <translation id="6347010704471250799">Показувати сповіщення</translation>
 <translation id="6349101878882523185">Установіть додаток <ph name="APP_NAME" /></translation>
+<translation id="6351383110065274390">Насолоджуйтесь іграми на Chromebook</translation>
 <translation id="6354918092619878358">Еліптична крива SECG secp256r1 (також відома як ANSI X9.62 prime256v1, NIST P-256)</translation>
 <translation id="6355789186038748882">Експериментальний веб-переглядач (альфа-версія). Деякі функції відсутні або неповні. Щоб повідомити про проблему, натисніть "Довідка" &gt; "Повідомити про проблему…".</translation>
 <translation id="635609604405270300">Не вимикайте пристрій</translation>
@@ -5482,6 +5528,7 @@
 <translation id="6514565641373682518">Ця сторінка вимкнула курсор миші.</translation>
 <translation id="6518014396551869914">Копіюват&amp;и зображення</translation>
 <translation id="6518133107902771759">Підтвердити</translation>
+<translation id="6519304021460270639">Додатки, налаштування й інші параметри синхронізуватимуться між усіма пристроями з ОС Chrome Flex, на яких ви ввійшли в обліковий запис Google.</translation>
 <translation id="651942933739530207">Надати програмі <ph name="APP_NAME" /> доступ до вашого екрана й аудіовиходу?</translation>
 <translation id="6519437681804756269">[<ph name="TIMESTAMP" />]
         <ph name="FILE_INFO" />
@@ -5658,6 +5705,7 @@
 <translation id="6691541770654083180">Земля</translation>
 <translation id="6691936601825168937">&amp;Переслати</translation>
 <translation id="6693745645188488741">{COUNT,plural, =1{1 сторінка}one{{COUNT} сторінка}few{{COUNT} сторінки}many{{COUNT} сторінок}other{{COUNT} сторінки}}</translation>
+<translation id="6694430008315398925">Налаштування додатка Steam</translation>
 <translation id="6697492270171225480">Показувати пропозиції схожих сторінок, коли не вдається знайти сторінку</translation>
 <translation id="6697690052557311665">Щоб надіслати папку, натисніть її в додатку Файли правою кнопкою миші та виберіть "Надіслати за допомогою Linux".</translation>
 <translation id="6698810901424468597">Читати та змінювати свої дані на веб-сайтах <ph name="WEBSITE_1" /> і <ph name="WEBSITE_2" /></translation>
@@ -5759,6 +5807,7 @@
 <translation id="6805647936811177813">Увійдіть у <ph name="TOKEN_NAME" />, щоб імпортувати сертифікат клієнта з <ph name="HOST_NAME" />.</translation>
 <translation id="680572642341004180">Увімкнути відстеження RLZ в <ph name="SHORT_PRODUCT_OS_NAME" />.</translation>
 <translation id="6808039367995747522">Щоб продовжити, вставте ключ безпеки й торкніться його</translation>
+<translation id="6808166974213191158">Інструмент створення образів системи ОС Chrome Flex</translation>
 <translation id="6808193438228982088">Лисиця</translation>
 <translation id="6809470175540814047">Відкрити у вікні в режимі анонімного перегляду</translation>
 <translation id="6809656734323672573">Якщо ви погодитеся, Google Асистент виявлятиме фразу "Ok Google" у режимі очікування. За допомогою Voice Match він розпізнаватиме, що говорите саме ви.
@@ -6712,6 +6761,7 @@
 <translation id="7768526219335215384">Сайт <ph name="ORIGIN" /> зможе переглядати файли в папці <ph name="FOLDERNAME" /></translation>
 <translation id="7768770796815395237">Змінити</translation>
 <translation id="7768784765476638775">Читання з екрана</translation>
+<translation id="7770406201819593386">Виконувати діагностичні перевірки ОС Chrome Flex.</translation>
 <translation id="7770612696274572992">Зображення скопійовано з іншого пристрою</translation>
 <translation id="7771452384635174008">Орієнтація</translation>
 <translation id="7772032839648071052">Підтвердити парольну фразу</translation>
@@ -6804,6 +6854,7 @@
 <translation id="7853747251428735">Інші інструменти</translation>
 <translation id="7855678561139483478">Перемістити вкладку в нове вікно</translation>
 <translation id="7856654138655787862">Виконувати діагностичні перевірки ОС Chrome.</translation>
+<translation id="7857004848504343806">Ваш комп’ютер містить модуль безпеки, який виконує багато важливих функцій захисту в ОС Chrome Flex. Щоб дізнатися більше, відвідайте Довідковий центр Chromebook: https://support.google.com/chromebook/?p=sm</translation>
 <translation id="7857093393627376423">Підказки тексту</translation>
 <translation id="7857949311770343000">Це сторінка нової вкладки, яку ви очікували?</translation>
 <translation id="7858328180167661092"><ph name="APP_NAME" /> (Windows)</translation>
@@ -6920,6 +6971,7 @@
 <translation id="7969046989155602842">Клавіша Command</translation>
 <translation id="7970673414865679092">Дані про мережу Ethernet</translation>
 <translation id="7970882136539140748">Не вдається зберегти картку</translation>
+<translation id="7972354851134703743">Перемикач швидких команд</translation>
 <translation id="7972714317346275248">PKCS #1 SHA-384 із шифруванням RSA</translation>
 <translation id="7973776233567882054">Що з переліченого нижче найточніше описує Вашу мережу?</translation>
 <translation id="797394244396603170">Виберіть пристрій, якому хочете надіслати файли</translation>
@@ -6969,6 +7021,7 @@
 <translation id="8017679124341497925">Ярлик змінено</translation>
 <translation id="8018298733481692628">Видалити цей профіль?</translation>
 <translation id="8018313076035239964">Налаштуйте, яку інформацію можуть використовувати веб-сайти та який вміст вони можуть показувати</translation>
+<translation id="8023133589013344428">Керувати мовами в налаштуваннях ОС Chrome Flex</translation>
 <translation id="8023801379949507775">Оновити розширення зараз</translation>
 <translation id="8025151549289123443">Блокування екрана та вхід</translation>
 <translation id="8026334261755873520">Очистити історію</translation>
@@ -7021,6 +7074,7 @@
 <translation id="8062844841289846053">{COUNT,plural, =1{1 аркуш паперу}one{{COUNT} аркуш паперу}few{{COUNT} аркуші паперу}many{{COUNT} аркушів паперу}other{{COUNT} аркуша паперу}}</translation>
 <translation id="8063235345342641131">Стандартний зелений аватар</translation>
 <translation id="8063535366119089408">Переглянути файл</translation>
+<translation id="8064015586118426197">ОС Chrome Flex</translation>
 <translation id="8064279191081105977">Група <ph name="GROUP_NAME" /> - <ph name="GROUP_CONTENTS" /> - <ph name="COLLAPSED_STATE" /></translation>
 <translation id="8066444921260601116">Діалогове вікно з’єднання</translation>
 <translation id="8070662218171013510">Вібровідгук</translation>
@@ -7117,6 +7171,7 @@
 <translation id="8157248655669507702">Щоб установити профіль eSIM-карти, увімкніть мобільний Інтернет</translation>
 <translation id="8157704005178149728">Налаштування батьківського контролю</translation>
 <translation id="8158117992543756526"><ph name="MONTH_AND_YEAR" />: цей пристрій перестав отримувати автоматичні оновлення програмного забезпечення й системи безпеки. <ph name="LINK_BEGIN" />Докладніше<ph name="LINK_END" /></translation>
+<translation id="8159652640256729753">Отримуйте вібропідтвердження для різних дій, наприклад розділення екрана й переходу між робочими столами. <ph name="LINK_BEGIN" />Докладніше<ph name="LINK_END" /></translation>
 <translation id="816055135686411707">Помилка під час налаштування довіри сертифікату</translation>
 <translation id="8160775796528709999">Щоб переглядати живі субтитри до аудіо чи відео, увімкніть їх у налаштуваннях</translation>
 <translation id="816095449251911490"><ph name="SPEED" /> - <ph name="RECEIVED_AMOUNT" />, <ph name="TIME_REMAINING" /></translation>
@@ -7385,6 +7440,7 @@
 <translation id="8438566539970814960">Покращувати пошук і веб-перегляд</translation>
 <translation id="8439506636278576865">Пропонувати переклад сторінок цією мовою</translation>
 <translation id="8440630305826533614">Додатки Linux</translation>
+<translation id="8443795068008423036">Переконайтеся, що пристрій оновлений, і повторіть спробу</translation>
 <translation id="8445046761938045900">Нещодавні фотографії, сповіщення та додатки для обміну повідомленнями</translation>
 <translation id="8446884382197647889">Докладніше</translation>
 <translation id="8447409163267621480">Натискайте Ctrl або Alt</translation>
@@ -7569,6 +7625,7 @@
 <translation id="8648252583955599667"><ph name="GET_HELP_LINK" /> або <ph name="RE_SCAN_LINK" /></translation>
 <translation id="8648408795949963811">Температура кольору нічного екрана</translation>
 <translation id="8648544143274677280">Сайту <ph name="SITE_NAME" /> потрібен дозвіл, щоб <ph name="FIRST_PERMISSION" />, <ph name="SECOND_PERMISSION" /> та інше</translation>
+<translation id="864892689521194669">Допомагати покращувати функції й ефективність ОС Chrome Flex</translation>
 <translation id="8650543407998814195">Хоча у вас більше немає доступу до старого профілю, ви можете видалити його.</translation>
 <translation id="8651585100578802546">Примусово перезавантажити цю сторінку</translation>
 <translation id="8652400352452647993">Помилка пакування розширення</translation>
@@ -7664,6 +7721,7 @@
 <translation id="8737709691285775803">Shill</translation>
 <translation id="8737914367566358838">Виберіть, якою мовою перекласти сторінку</translation>
 <translation id="8740247629089392745"><ph name="SUPERVISED_USER_NAME" /> може отримати цей пристрій Chromebook. Налаштування майже завершено.</translation>
+<translation id="8740672167979365981">Оновіть ОС Chrome Flex</translation>
 <translation id="8741944563400125534">Налаштування кнопкового доступу</translation>
 <translation id="8742998548129056176">Це загальна інформація про пристрій і його використання (як-от дані про рівень заряду акумулятора, систему, історію додатків і помилки). Ці відомості використовуватимуться, щоб покращити Android, а деякі зведені дані корисні для додатків і партнерів Google, як-от розробників Android.</translation>
 <translation id="8746654918629346731">Ви вже надіслали запит на розширення "<ph name="EXTENSION_NAME" />"</translation>
@@ -7675,6 +7733,7 @@
 <translation id="8750346984209549530">Мобільна точка доступу</translation>
 <translation id="8752451679755290210">Автоматичне переміщення між елементами</translation>
 <translation id="8753868764580670305">Переглядайте паролі, збережені на цьому пристрої, і керуйте ними</translation>
+<translation id="8753948258138515839">Додаток Файли надає швидкий доступ до файлів, збережених на Google Диску, у зовнішньому сховищі або на пристрої з ОС Chrome Flex.</translation>
 <translation id="8754200782896249056">&lt;p&gt;Коли <ph name="PRODUCT_NAME" /> працює в підтримуваному середовищі настільного комп’ютера використовуються налаштування проксі-сервера системи.  Однак ваша система не підтримується або виникла проблема із запуском її конфігурації.&lt;/p&gt;
 
           &lt;p&gt;Проте ви можете виконати конфігурацію за допомогою командного рядка.  Щоб отримати докладнішу інформацію про прапорці та змінні середовища, відвідайте &lt;code&gt;man <ph name="PRODUCT_BINARY_NAME" />&lt;/code&gt;.&lt;/p&gt;</translation>
@@ -7693,6 +7752,7 @@
 <translation id="87646919272181953">Альбом Google Фото</translation>
 <translation id="8767621466733104912">Автоматично оновлювати Chrome для всіх користувачів</translation>
 <translation id="8767765348545497220">Закрити спливаючу підказку</translation>
+<translation id="8769901904650373714">Не вдалося налаштувати додаток Steam</translation>
 <translation id="8770406935328356739">Кореневий каталог розширення</translation>
 <translation id="8771300903067484968">Фон початкової сторінки було скинуто. Тепер це фон за умовчанням.</translation>
 <translation id="8773302562181397928">Зберегти принтер <ph name="PRINTER_NAME" /></translation>
@@ -7912,6 +7972,7 @@
 <translation id="8981825781894055334">Недостатньо паперу</translation>
 <translation id="8983632908660087688">Сайт <ph name="ORIGIN" /> може змінювати файл "<ph name="FILENAME" />"</translation>
 <translation id="8984694057134206124">Пристрій зможуть бачити всі користувачі впродовж <ph name="MINUTES" /> хв. <ph name="LINK_BEGIN" />Докладніше<ph name="LINK_END" /></translation>
+<translation id="8985191021574400965">Вітаємо в додатку Steam для Chromebook</translation>
 <translation id="8985264973231822211">У мережі <ph name="DEVICE_LAST_ACTIVATED_TIME" /> дн. тому</translation>
 <translation id="8985661493893822002">Щоб увійти на пристрої <ph name="DEVICE_TYPE" />, підключіться до Інтернету.</translation>
 <translation id="8986362086234534611">Видалити</translation>
@@ -8110,6 +8171,7 @@
 <translation id="917510707618656279">Запитувати, коли сайт хоче отримати доступ до пристроїв Bluetooth</translation>
 <translation id="9176476835295860688">Надсилати дані про використання й діагностику. Цей пристрій наразі автоматично надсилає в Google дані про діагностику та використання пристрою і додатків. Ця інформація допоможе покращити стабільність системи, додатків тощо. Деякі зведені дані також корисні для додатків і партнерів Google, як-от розробників Android. Це <ph name="BEGIN_LINK1" />налаштування<ph name="END_LINK1" /> застосовує власник. Якщо ввімкнено додаткову Історію додатків і веб-пошуку, ці дані зберігаються в обліковому записі Google. <ph name="BEGIN_LINK2" />Докладніше<ph name="END_LINK2" /></translation>
 <translation id="9176611096776448349"><ph name="WINDOW_TITLE" /> – під’єднано пристрій Bluetooth</translation>
+<translation id="9177949831069307748">Переглядати інформацію з пристроїв з ОС Chrome Flex і даних пристрою.</translation>
 <translation id="9178061802301856367">Видалити дані для входу</translation>
 <translation id="9179524979050048593">Ім'я користувача на екрані входу</translation>
 <translation id="9180281769944411366">Це може тривати кілька хвилин. Запускається контейнер Linux.</translation>

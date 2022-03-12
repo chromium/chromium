@@ -12,10 +12,12 @@
 <translation id="1125124144982679672">Quen está utilizando Chrome?</translation>
 <translation id="1142745911746664600">Non se puido actualizar Chrome</translation>
 <translation id="1154147086299354128">&amp;Abrir en Chrome</translation>
+<translation id="1178374936842835197">Se non se mostra algunha opción de configuración nesta páxina, accede á <ph name="LINK_BEGIN" />configuración de Chrome OS Flex<ph name="LINK_END" /></translation>
 <translation id="1182414570724401860">Chrome recomenda que non descargues nin abras este ficheiro</translation>
 <translation id="1278833599417554002">Reiniciar para actualizar &amp;Chrome</translation>
 <translation id="1293325835983155583"><ph name="MANAGER" /> require que leas e aceptes as seguintes Condicións de servizo antes de utilizar este dispositivo. Estas condicións non amplían, modifican nin limitan as de Google Chrome OS.</translation>
 <translation id="1302523850133262269">Espera a que Chrome instale as actualizacións do sistema máis recentes.</translation>
+<translation id="1335640173511558774"><ph name="MANAGER" /> require que leas e aceptes as seguintes Condicións de servizo antes de utilizar este dispositivo. Estas condicións non amplían, modifican nin limitan as de Google Chrome OS Flex.</translation>
 <translation id="137466361146087520">Google Chrome Beta</translation>
 <translation id="1399397803214730675">Este ordenador ten instalada unha versión máis recente de Google Chrome. Se o software non funciona, desinstala Google Chrome e téntao de novo.</translation>
 <translation id="1434626383986940139">Aplicacións de valores controlados de Chrome</translation>
@@ -28,6 +30,7 @@
 <translation id="1597911401261118146">Para comprobar se os teus contrasinais están protexidos fronte a violacións da seguranza dos datos e outros problemas de seguranza, debes <ph name="BEGIN_LINK" />iniciar sesión en Chrome<ph name="END_LINK" />.</translation>
 <translation id="1619887657840448962">Para conseguir que Chrome resulte máis seguro, desactivamos a seguinte extensión que non aparece en <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> e que quizais se engadise sen o teu coñecemento.</translation>
 <translation id="1628000112320670027">Obter axuda sobre Chrome</translation>
+<translation id="1662146548738125461">Acerca de Chrome OS Flex</translation>
 <translation id="1674870198290878346">Abrir ligazón nunha ventá do modo de incó&amp;gnito de Chrome</translation>
 <translation id="1682634494516646069">Google Chrome non pode ler nin escribir no seu directorio de datos:
 
@@ -46,7 +49,9 @@
 <translation id="1919130412786645364">Permitir inicio de sesión en Chrome</translation>
 <translation id="2018528049276128029">En cada perfil gárdase a información de Chrome que lle corresponde (por exemplo, os marcadores, o historial ou os contrasinais)</translation>
 <translation id="2063848847527508675">É necesario reiniciar Chrome OS para aplicar a actualización.</translation>
+<translation id="2094648590148273905">Condicións de Chrome OS Flex</translation>
 <translation id="2094919256425865063">Queres saír de Chrome de todas formas?</translation>
+<translation id="2106831557840787829">Chrome OS Flex é posible grazas a <ph name="BEGIN_LINK_CROS_OSS" />software de código aberto<ph name="END_LINK_CROS_OSS" /> adicional, igual que o <ph name="BEGIN_LINK_LINUX_OSS" />contorno de programación de Linux<ph name="END_LINK_LINUX_OSS" />.</translation>
 <translation id="2120620239521071941">Esta acción eliminará <ph name="ITEMS_COUNT" /> elementos deste dispositivo. Para recuperar os teus datos máis tarde, inicia sesión en Chrome como <ph name="USER_EMAIL" />.</translation>
 <translation id="2121284319307530122">Reiniciar para actualizar &amp;Chrome</translation>
 <translation id="2123055963409958220">Informa da <ph name="BEGIN_LINK" />configuración actual<ph name="END_LINK" /> para axudar a mellorar Chrome</translation>
@@ -89,6 +94,7 @@
 <translation id="2926952073016206995">Chrome necesita permiso de acceso á cámara para este sitio</translation>
 <translation id="2929907241665500097">Chrome non se actualizou, xa que se produciu un erro. <ph name="BEGIN_LINK" />Soluciona os problemas de actualización de Chrome e as actualizacións que non se puidesen realizar<ph name="END_LINK" />.</translation>
 <translation id="2969728957078202736"><ph name="PAGE_TITLE" /> (inicio de sesión de rede, Chrome)</translation>
+<translation id="3019382870990049182">Reiniciar para actualizar Chrome OS Flex</translation>
 <translation id="303514781271618814">Chrome está explorando novas funcións que lles permiten aos sitios ofrecer a mesma experiencia de navegación usando menos datos</translation>
 <translation id="3037838751736561277">Google Chrome está no modo de segundo plano.</translation>
 <translation id="3059710691562604940">A opción Navegación segura está desactivada. Chrome recomenda activala.</translation>
@@ -97,6 +103,7 @@
 <translation id="3080151273017101988">Continuar executando aplicacións en segundo plano cando se peche Google Chrome</translation>
 <translation id="3089968997497233615">Está dispoñible unha versión nova e máis segura de Google Chrome.</translation>
 <translation id="3100998948628680988">Asígnalle un nome ao teu perfil de Chrome</translation>
+<translation id="3103390129666310801">Para comprobar se o teu dispositivo está actualizado, vai a <ph name="LINK_BEGIN" />Configuración de Chrome OS Flex<ph name="LINK_END" /></translation>
 <translation id="3114643501466072395">Para comprobar se os teus outros contrasinais están protexidos fronte a violacións da seguranza dos datos e outros problemas de seguranza, debes <ph name="BEGIN_LINK" />iniciar sesión en Chrome<ph name="END_LINK" />.</translation>
 <translation id="3140883423282498090">Os cambios terán efecto a próxima vez que reinicies Google Chrome.</translation>
 <translation id="3149510190863420837">Aplicacións de Chrome</translation>
@@ -118,10 +125,12 @@
 <translation id="3596080736082218006">{COUNT,plural, =0{O teu administrador require que reinicies Chrome para aplicar unha actualización}=1{O teu administrador require que reinicies Chrome para aplicar unha actualización. A ventá do modo de incógnito non se volverá abrir.}other{O teu administrador require que reinicies Chrome para aplicar unha actualización. As # ventás do modo de incógnito non se volverán abrir.}}</translation>
 <translation id="3622797965165704966">Agora é máis fácil utilizar Chrome coa túa conta de Google e en ordenadores compartidos.</translation>
 <translation id="3673813398384385993">Chrome detectou que "<ph name="EXTENSION_NAME" />" contén software malicioso</translation>
+<translation id="3716540481907974026">Versión de Chrome OS Flex</translation>
 <translation id="3718181793972440140">Esta acción eliminará 1 elemento deste dispositivo. Para recuperar os teus datos máis tarde, inicia sesión en Chrome como <ph name="USER_EMAIL" />.</translation>
 <translation id="3735758079232443276">A extensión "<ph name="EXTENSION_NAME" />" cambiou a páxina que se mostra ao iniciar Chrome.</translation>
 <translation id="3779473566290487688">Se queres recibir actualizacións de Google Chrome no futuro, debes instalar o sistema operativo OS X 10.11 ou unha versión posterior. Este ordenador ten instalada a versión OS X 10.10.</translation>
 <translation id="3780814664026482060">Chrome: <ph name="PAGE_TITLE" /></translation>
+<translation id="3785324443014631273">Chrome OS Flex non puido sincronizar os teus datos por mor dun erro durante o inicio de sesión.</translation>
 <translation id="3835168907083856002">Con esta acción crearase un novo perfil de Chrome para <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="386202838227397562">Pecha todas as ventás de Google Chrome e téntao de novo.</translation>
 <translation id="3865754807470779944">Tes instalada a versión <ph name="PRODUCT_VERSION" /> de Chrome</translation>
@@ -156,16 +165,19 @@
 <translation id="4571503333518166079">Ir á configuración de notificacións de Chrome</translation>
 <translation id="459622048091363950">Unha vez que Chrome teña acceso, os sitios web poderán solicitalo tamén.</translation>
 <translation id="4600710005438004015">Chrome non se puido actualizar á última versión, polo que non gozas das novas funcións e solucións de seguranza.</translation>
+<translation id="4627412468266359539">Opcional: Axudar a mellorar o rendemento e as funcións de Chrome OS Flex mediante o envío automático de datos de uso e diagnóstico a Google.</translation>
 <translation id="4633000520311261472">Para que Chrome resulte máis seguro, desactivamos algunhas extensións que non están enumeradas en <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> e que é posible que se engadisen sen o teu coñecemento.</translation>
 <translation id="4728575227883772061">Non se puido efectuar a instalación debido a un erro non especificado. Se Google Chrome se está executando nestes momentos, péchao e téntao de novo.</translation>
 <translation id="4754614261631455953">Google Chrome Canary (mDNS-In)</translation>
 <translation id="4771048833395599659">Este ficheiro pode ser perigoso, así que Chrome bloqueouno.</translation>
 <translation id="479167709087336770">Esta función utiliza o mesmo corrector ortográfico que o usado na busca de Google. O texto que escribas no navegador enviarase a Google. Podes cambiar esta opción na configuración cando queiras.</translation>
+<translation id="4842397268809523050">Chrome OS Flex non puido sincronizar os teus datos porque esta función non está dispoñible para o teu dominio.</translation>
 <translation id="4873783916118289636">Revisa os controis clave de privacidade e seguranza en Chrome</translation>
 <translation id="4891791193823137474">Permitir que Google Chrome se execute en segundo plano</translation>
 <translation id="4895437082222824641">Abrir ligazón nunha nova &amp;pestana de Chrome</translation>
 <translation id="4953650215774548573">Establecer Google Chrome como navegador predeterminado</translation>
 <translation id="495931528404527476">En Chrome</translation>
+<translation id="4969674060580488087">Chrome OS Flex non puido sincronizar os teus datos porque a información de inicio de sesión da túa conta está desactualizada.</translation>
 <translation id="4970761609246024540">Dámosche a benvida aos perfís de Chrome</translation>
 <translation id="4990567037958725628">Google Chrome Canary</translation>
 <translation id="5062123544085870375">Reinicia Chrome OS</translation>
@@ -178,6 +190,7 @@
 <translation id="521447420733633466">Se compartes un dispositivo, as túas amizades e os membros da túa familia poden navegar cun perfil independente e configurar Chrome como prefiran</translation>
 <translation id="5251420635869119124">Os invitados poden utilizar Chrome sen perder información.</translation>
 <translation id="5334487786912937552">Chrome necesita permiso de acceso ao almacenamento para descargar ficheiros</translation>
+<translation id="5357889879764279201">Obter axuda con Chrome OS Flex</translation>
 <translation id="5386244825306882791">Tamén controla a páxina que se mostra ao iniciar Chrome ou ao realizar unha busca desde Omnibox.</translation>
 <translation id="5394833366792865639">Compartir unha pestana de Chrome</translation>
 <translation id="5430073640787465221">O teu ficheiro de preferencias está danado ou non é válido.
@@ -216,9 +229,11 @@ Google Chrome non pode recuperar a túa configuración.</translation>
 <translation id="6506909944137591434">Chrome necesita permiso de acceso á cámara para crear un mapa 3D do que te rodea</translation>
 <translation id="6515495397637126556"><ph name="PAGE_TITLE" /> (Google Chrome para programadores)</translation>
 <translation id="6568793831116033768">Sistema Chrome OS</translation>
+<translation id="6632473616050862500">Chrome OS Flex é posible grazas a <ph name="BEGIN_LINK_CROS_OSS" />software de código aberto<ph name="END_LINK_CROS_OSS" /> adicional.</translation>
 <translation id="6676384891291319759">Accede a Internet</translation>
 <translation id="6679975945624592337">Permitir que Google Chrome se execute en segundo plano</translation>
 <translation id="6696915334902295848">Chrome necesita permiso de acceso ao micrófono para este sitio</translation>
+<translation id="6735387454586646204">Sistema Chrome OS Flex</translation>
 <translation id="6739177684496155661">Queres continuar nun perfil de Chrome novo?</translation>
 <translation id="6750954913813541382">Para corrixir erros ortográficos, Chrome enviaralle a Google o texto que escribas no navegador</translation>
 <translation id="677276454032249905">Queres saír de Chrome de todas formas?</translation>
@@ -257,6 +272,7 @@ Pódense aplicar a esta conta os permisos que xa lles concedeses aos sitios web 
 <translation id="7535429826459677826">Google Chrome Dev</translation>
 <translation id="7573289029918943991">Para ver ser o teu dispositivo está actualizado, accede á <ph name="LINK_BEGIN" />configuración de Chrome OS<ph name="LINK_END" /></translation>
 <translation id="7592736734348559088">Google Chrome non puido sincronizar os teus datos debido a que os detalles de inicio de sesión da túa conta están caducados.</translation>
+<translation id="7606334485649076285">Google Chrome OS Flex</translation>
 <translation id="7626032353295482388">Dámosche a benvida a Chrome</translation>
 <translation id="7629695634924605473">Chrome permíteche saber se os teus contrasinais están en risco nalgún momento</translation>
 <translation id="7641148173327520642">O teu administrador do sistema configurou Google Chrome para abrir o navegador <ph name="TARGET_URL_HOSTNAME" /> co obxectivo de acceder a <ph name="ALTERNATIVE_BROWSER_NAME" />.</translation>
@@ -276,10 +292,12 @@ Pódense aplicar a esta conta os permisos que xa lles concedeses aos sitios web 
 <translation id="7896673875602241923">Anteriormente, alguén iniciou sesión como <ph name="ACCOUNT_EMAIL_LAST" /> en Chrome neste ordenador. Crea un novo usuario de Chrome para manter a túa información por separado.</translation>
 <translation id="7917876797003313048">Podes xestionar as Contas de Google nas que teñas a sesión iniciada. As túas Contas de Google úsanse para o navegador Chrome, Play Store, Gmail e moito máis. Se queres engadir unha conta para outra persoa, como un familiar, engade unha persoa nova ao teu dispositivo (<ph name="DEVICE_TYPE" />). <ph name="LINK_BEGIN" />Máis información<ph name="LINK_END" /></translation>
 <translation id="7930071585467473040">Google Chrome está tentando copiar os contrasinais.</translation>
+<translation id="7951272445806340501">Chrome OS Flex debe reiniciarse para aplicar a actualización.</translation>
 <translation id="7962410387636238736">Este ordenador deixará de recibir actualizacións de Google Chrome porque xa non se admiten Windows XP nin Windows Vista.</translation>
 <translation id="79947657522496226">Chrome OS é posible grazas a <ph name="BEGIN_LINK_CROS_OSS" />software de código aberto<ph name="END_LINK_CROS_OSS" /> adicional, igual que o <ph name="BEGIN_LINK_LINUX_OSS" />contorno de programación de Linux<ph name="END_LINK_LINUX_OSS" />.</translation>
 <translation id="8008534537613507642">Reinstalar Chrome</translation>
 <translation id="8013993649590906847">Se unha imaxe non ten unha descrición útil, Chrome tentará proporcionarche unha. Para crear descricións, envíanse imaxes a Google.</translation>
+<translation id="8064015586118426197">Chrome OS Flex</translation>
 <translation id="8129812357326543296">Acerca de &amp;Google Chrome</translation>
 <translation id="8255190535488645436">Google Chrome está utilizando a túa cámara e micrófono.</translation>
 <translation id="8286862437124483331">Google Chrome está tentando mostrar contrasinais. Escribe o teu contrasinal de Windows para permitir esta acción.</translation>
@@ -316,11 +334,13 @@ Pódense aplicar a esta conta os permisos que xa lles concedeses aos sitios web 
 <translation id="8986207147630327271">Estás a piques de engadir un perfil de traballo a este navegador e de permitir que o teu administrador controle só o perfil de traballo.</translation>
 <translation id="8999208279178790196">{0,plural, =0{Hai unha actualización de Chrome dispoñible}=1{Hai unha actualización de Chrome dispoñible}other{Hai unha actualización de Chrome que leva dispoñible # días}}</translation>
 <translation id="9026991721384951619">Chrome OS non puido sincronizar os teus datos debido a que a información de inicio de sesión na túa conta está caducada.</translation>
+<translation id="9053892488859122171">Sistema Chrome OS Flex</translation>
 <translation id="9067395829937117663">Google Chrome require Windows 7 ou unha versión posterior.</translation>
 <translation id="911206726377975832">Queres eliminar tamén os teus datos de navegación?</translation>
 <translation id="9138603949443464873">Para aplicar os cambios, reinicia Chrome</translation>
 <translation id="919706545465235479">Actualiza Chrome para iniciar a sincronización</translation>
 <translation id="922152298093051471">Personalizar Chrome</translation>
+<translation id="93760716455950538">Reiniciar Chrome OS Flex</translation>
 <translation id="940313311831216333">Se queres acceder ás túas cousas de Chrome desde calquera dos teus dispositivos, inicia sesión e activa a sincronización.</translation>
 <translation id="989369509083708165">Google Chrome é o teu navegador predeterminado</translation>
 <translation id="989816563149873169">O atallo <ph name="SHORTCUT" /> permite cambiar entre perfís de Chrome</translation>

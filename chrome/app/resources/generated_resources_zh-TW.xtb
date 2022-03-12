@@ -2337,7 +2337,6 @@
 <translation id="3304212451103136496">現折 <ph name="DISCOUNT_AMOUNT" /></translation>
 <translation id="3305389145870741612">格式化程序可能需要幾秒鐘，請稍候。</translation>
 <translation id="3305661444342691068">在預覽中開啟 PDF</translation>
-<translation id="3306992216458434072">為群組命名並選擇顏色</translation>
 <translation id="3307176291962384345">取得 <ph name="MERCHANT_NAME" /> 的折扣</translation>
 <translation id="3308116878371095290">無法為這個網頁設定 Cookie。</translation>
 <translation id="3308134619352333507">隱藏按鈕</translation>
@@ -6923,6 +6922,7 @@
 <translation id="7946586320617670168">來源必須是安全來源</translation>
 <translation id="794676567536738329">確認權限</translation>
 <translation id="7947962633355574091">複製影片位址(&amp;O)</translation>
+<translation id="7947964080535614577">為了提供免付費的內容或服務，網站通常會放送廣告。不過，某些網站會放送干擾性或誤導性的廣告。</translation>
 <translation id="7948407723851303488"><ph name="DOMAIN_NAME" /> 的所有頁面</translation>
 <translation id="7951265006188088697">如要新增或管理 Google Pay 付款方式，請前往你的 <ph name="BEGIN_LINK" />Google 帳戶<ph name="END_LINK" /></translation>
 <translation id="7952708427581814389">網站可以要求查看剪貼簿上的文字和圖片</translation>

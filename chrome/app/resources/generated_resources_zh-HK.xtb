@@ -1339,6 +1339,7 @@
 <translation id="2278562042389100163">開啟瀏覽器視窗</translation>
 <translation id="2278668501808246459">正在啟動容器管理員</translation>
 <translation id="2280486287150724112">右邊界</translation>
+<translation id="2281863813036651454">點擊滑鼠左鍵</translation>
 <translation id="2282146716419988068">GPU 處理程序</translation>
 <translation id="2285109769884538519">{COUNT,plural, =0{在新分頁群組中開啟所有網址(&amp;N)}=1{在新分頁群組中開啟所有網址(&amp;N)}other{在新分頁群組中開啟所有 ({COUNT} 個) 網址(&amp;N)}}</translation>
 <translation id="2285942871162473373">無法識別您的指紋。請再試一次。</translation>
@@ -2353,7 +2354,6 @@
 <translation id="3304212451103136496"><ph name="DISCOUNT_AMOUNT" /> 折扣</translation>
 <translation id="3305389145870741612">格式化程序可能需要幾秒鐘，請稍候。</translation>
 <translation id="3305661444342691068">在預覽中開啟 PDF</translation>
-<translation id="3306992216458434072">為群組命名並選擇顏色</translation>
 <translation id="3307176291962384345">取得 <ph name="MERCHANT_NAME" /> 的折扣</translation>
 <translation id="3308116878371095290">無法為這個網頁設定 Cookie。</translation>
 <translation id="3308134619352333507">隱藏按鈕</translation>
@@ -5154,6 +5154,7 @@
 <translation id="6129938384427316298">Netscape 憑證評論</translation>
 <translation id="6129953537138746214">空格</translation>
 <translation id="6130692320435119637">新增 Wi-Fi</translation>
+<translation id="6130887916931372608">鍵盤按鍵</translation>
 <translation id="6136114942382973861">閂下載內容列</translation>
 <translation id="6136287496450963112">您的安全密鑰並未受 PIN 保護。請先建立 PIN 以管理指紋。</translation>
 <translation id="6138680304137685902">使用 SHA-384 的 X9.62 ECDSA 簽名</translation>
@@ -6760,6 +6761,7 @@
 <translation id="7768770796815395237">變更</translation>
 <translation id="7768784765476638775">選取以朗讀</translation>
 <translation id="7770406201819593386">執行 ChromeOS Flex 診斷測試。</translation>
+<translation id="7770450735129978837">點擊滑鼠右鍵</translation>
 <translation id="7770612696274572992">從其他裝置複製的圖片</translation>
 <translation id="7771452384635174008">版面配置</translation>
 <translation id="7772032839648071052">確認複雜密碼</translation>

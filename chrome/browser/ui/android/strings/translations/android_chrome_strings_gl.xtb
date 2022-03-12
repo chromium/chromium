@@ -138,6 +138,7 @@
 <translation id="1810845389119482123">Non se completou a configuración de sincronización inicial</translation>
 <translation id="1829244130665387512">Buscar na páxina</translation>
 <translation id="1832459821645506983">Si, acepto</translation>
+<translation id="1849863543394887018">Podes desactivar as notificacións desde a configuración</translation>
 <translation id="1877026089748256423">Chromium está desactualizado</translation>
 <translation id="1883903952484604915">Os meus ficheiros</translation>
 <translation id="189358972401248634">Outros idiomas</translation>
@@ -654,6 +655,7 @@ Para cambiar esta opción de configuración, deberás <ph name="BEGIN_LINK" />re
 <translation id="4860895144060829044">Chamar</translation>
 <translation id="4864369630010738180">Iniciando sesión...</translation>
 <translation id="4866368707455379617">Non se puido instalar o módulo <ph name="MODULE" /> para Chrome</translation>
+<translation id="4871568871368204250">Desactivar sincronización</translation>
 <translation id="4875775213178255010">Suxestións de contido</translation>
 <translation id="4877678010818027629">Entrar no modo de incógnito</translation>
 <translation id="4878404682131129617">Produciuse un erro ao establecer un túnel a través do servidor proxy</translation>
@@ -1198,6 +1200,7 @@ Por exemplo, algúns sitios web poden responder a esta solicitude mostrándoche 
 <translation id="7926975587469166629">Alcume da tarxeta</translation>
 <translation id="7929962904089429003">Abrir o menú</translation>
 <translation id="7930998711684428189">Móstrache unha advertencia se os teus contrasinais están en risco debido a unha violación da seguranza dos datos.</translation>
+<translation id="7937772386706786623">Xestionar os controis do contido multimedia, as pestanas do modo de incógnito e moito máis con notificacións</translation>
 <translation id="7939485076072265087">Crear tarxeta estilizada con texto destacado</translation>
 <translation id="7942131818088350342"><ph name="PRODUCT_NAME" /> está desactualizado.</translation>
 <translation id="7944772052836377867">A sincronización necesita verificar a túa identidade</translation>

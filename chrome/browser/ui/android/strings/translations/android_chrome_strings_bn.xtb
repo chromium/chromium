@@ -30,6 +30,7 @@
 <translation id="114825011539563458">গোপনীয়তা এবং সুরক্ষার সবথেকে গুরুত্বপূর্ণ সেটিং, একই জায়গায়</translation>
 <translation id="1149401351239820326">মেয়াদ শেষের মাস</translation>
 <translation id="1154704303112745282">পৃষ্ঠাটি অফলাইনে লোড করা যাবে না: <ph name="VIOLATED_URL" /></translation>
+<translation id="1166688006062225587">বেছে নেওয়া অ্যাকাউন্টের তালিকা।</translation>
 <translation id="1171770572613082465">"সেরা সাইট" বোতামে ট্যাপ করে জনপ্রিয় ওয়েবসাইটগুলি দেখুন</translation>
 <translation id="1173894706177603556">পুনঃনামকরণ</translation>
 <translation id="1177863135347784049">কাস্টম</translation>
@@ -657,6 +658,7 @@
 <translation id="4860895144060829044">কল করুন</translation>
 <translation id="4864369630010738180">প্রবেশ করা হচ্ছে...</translation>
 <translation id="4866368707455379617">Chrome-এর জন্য <ph name="MODULE" /> ইনস্টল করা যাচ্ছে না</translation>
+<translation id="4871568871368204250">সিঙ্ক করা বন্ধ করুন</translation>
 <translation id="4875775213178255010">কন্টেন্টের প্রস্তাবনা</translation>
 <translation id="4877678010818027629">ছদ্মবেশী মোড চালু করুন</translation>
 <translation id="4878404682131129617">প্রক্সি সার্ভারের মাধ্যমে টানেল তৈরি করা যায়নি</translation>
@@ -790,6 +792,7 @@
 <translation id="5665379678064389456"><ph name="APP_NAME" /> এ ইভেন্ট তৈরি করুন</translation>
 <translation id="5683547024293500885">কোনও আপডেট আছে কিনা, Chrome তা চেক করে দেখতে পারছে না</translation>
 <translation id="5686790454216892815">ফাইলের নামটি খুব বড়</translation>
+<translation id="5692329390578659217">চালিয়ে যেতে, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> আপনার নাম, ইমেল আইডি ও প্রোফাইল ছবি এই সাইটের সাথে শেয়ার করবে। এই সাইটের <ph name="BEGIN_LINK1" />গোপনীয়তা নীতি<ph name="END_LINK1" /> ও <ph name="BEGIN_LINK2" />পরিষেবার শর্তাবলী<ph name="END_LINK2" /> দেখুন।</translation>
 <translation id="569536719314091526">আরও বিকল্প বোতাম থেকে এই পৃষ্ঠাটিকে যেকোনও ভাষায় অনুবাদ করুন</translation>
 <translation id="5696597120588531049">Chrome আপনাকে ডেটার নিরাপত্তা লঙ্ঘন, ক্ষতিকর ওয়েবসাইট ও আরও অনেক কিছু থেকে সুরক্ষিত থাকতে সাহায্য করে</translation>
 <translation id="5697688514913266141">আপনার ফাইল <ph name="BEGIN_BOLD" /><ph name="DIRECTORY" /><ph name="END_BOLD" /> ডিরেক্টরিতে সেভ করা হবে। <ph name="BEGIN_LINK2" />এডিট করুন<ph name="END_LINK2" />।</translation>
@@ -898,6 +901,7 @@
 <translation id="6277522088822131679">পৃষ্ঠাটি প্রিন্ট করার সময় একটি সমস্যা হয়েছিল৷ দয়া করে আবার চেষ্টা করুন৷</translation>
 <translation id="6277722725779679269">দাম ট্র্যাক করার ফিচার আপডেট করা যায়নি</translation>
 <translation id="6278428485366576908">থীম</translation>
+<translation id="6293443105724342169">অর্ধেক স্ক্রিন খোলা হয়েছে এমন বেছে নেওয়া অ্যাকাউন্টের তালিকা।</translation>
 <translation id="6294610283659775533">আপনি একই Google অ্যাকাউন্টের মাধ্যমে সাইন-ইন করা ডিভাইসের মধ্যে ট্যাব পাঠাতে পারেন</translation>
 <translation id="6297765934698848803">যে সংস্থাটি আপনার ডিভাইস ম্যানেজ করে সেটি আপনার ক্যামেরা বন্ধ করে দিয়েছে।</translation>
 <translation id="6301525844455696527">আপনি যা পড়তে চান সেগুলি দেখুন</translation>
@@ -1117,6 +1121,7 @@
 <translation id="7474822150871987353">পৃষ্ঠা থেকে না বেরিয়েই ওয়েবসাইটের বিষয়গুলির সম্পর্কে জানুন। পৃষ্ঠায় এক বা একাধিক শব্দ সার্চ করতে সেগুলি বেছে নিন।</translation>
 <translation id="7475192538862203634">আপনি যদি এটি প্রায়ই দেখতে পান, তাহলে <ph name="BEGIN_LINK" />প্রস্তাবনাগুলি<ph name="END_LINK" /> চেষ্টা করে দেখুন৷</translation>
 <translation id="7475688122056506577">এসডি কার্ড পাওয়া যায়নি। আপনার কিছু ফাইল নাও থাকতে পারে।</translation>
+<translation id="7477262822945323753">চালিয়ে যেতে, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> আপনার নাম, ইমেল আইডি ও প্রোফাইল ছবি এই সাইটের সাথে শেয়ার করবে। এই সাইটের <ph name="BEGIN_LINK1" />গোপনীয়তা নীতি<ph name="END_LINK1" /> দেখুন।</translation>
 <translation id="7479104141328977413">ট্যাব ম্যানেজমেন্ট</translation>
 <translation id="7481312909269577407">ফরওয়ার্ড</translation>
 <translation id="7482656565088326534">প্রিভিউ ট্যাব</translation>
@@ -1290,6 +1295,7 @@
 <translation id="8394720698884623075">Chrome-এ স্টোর করা নিরাপদ নয় এমন সাইটের তালিকা থেকে সাইটগুলির URL পরীক্ষা করে দেখে</translation>
 <translation id="8410695015584479363">দাম ট্র্যাক করুন</translation>
 <translation id="8413126021676339697">সম্পূর্ণ ইতিহাস দেখান</translation>
+<translation id="8414396119627470038"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />-এর মাধ্যমে <ph name="SITE_ETLD_PLUS_ONE" />-এ সাইন-ইন করুন</translation>
 <translation id="8419244640277402268">অন্তর্ভুক্ত করুন</translation>
 <translation id="8424781820952413435">পৃষ্ঠা পাঠানো হয়েছে। এটি দেখতে, আপনার <ph name="DEVICE_TYPE" />-এ Chrome খুলুন</translation>
 <translation id="8427875596167638501">প্রিভিউ ট্যাব অর্ধেক খোলা আছে</translation>
@@ -1305,6 +1311,7 @@
 <translation id="8461694314515752532">আপনার নিজস্ব সিঙ্ক পাসফ্রেজ দিয়ে সিঙ্ক করা ডেটা এনক্রিপ্ট করুন</translation>
 <translation id="8466613982764129868"><ph name="TARGET_DEVICE_NAME" /> ডিভাইসটি ইন্টারনেটের সাথে কানেক্ট করা আছে কিনা দেখে নিন</translation>
 <translation id="8473863474539038330">ঠিকানা ও আরও অনেককিছু</translation>
+<translation id="847656914027543776">বন্ধ করা হয়েছে এমন বেছে নেওয়া অ্যাকাউন্টের তালিকা।</translation>
 <translation id="8481921391193215807">চালু করা থাকলে, সাইটগুলি নিজের কন্টেন্ট এবং পরিষেবা প্রদান করতে এখানে উল্লেখ করা গোপনীয়তা-রক্ষা করার বিভিন্ন কৌশল অবলম্বন করতে পারে। এর মধ্যে ক্রস-সাইট ট্র্যাকিংয়ের বিকল্পও অন্তর্ভুক্ত রয়েছে। সময়ে সময়ে আরও ট্রায়াল যোগ করা হতে পারে।
 
 <ph name="BEGIN_LIST_ITEM1" />বিজ্ঞাপনদাতা এবং প্রকাশকরা FLoC ব্যবহার করতে পারেন।<ph name="END_LIST_ITEM1" />
@@ -1431,6 +1438,7 @@
 <translation id="9108312223223904744">নিরাপত্তা কী হিসেবে ফোনের ব্যবহার</translation>
 <translation id="9108808586816295166">নিরাপদ ডিএনএস সবসময় উপলভ্য নাও থাকতে পারে</translation>
 <translation id="9133397713400217035">অফলাইন কন্টেন্ট দেখুন</translation>
+<translation id="9133523398139146080">সম্পূর্ণ স্ক্রিন জুড়ে খোলা হয়েছে এমন বেছে নেওয়া অ্যাকাউন্টের তালিকা।</translation>
 <translation id="9137013805542155359">প্রকৃত রূপ দেখান</translation>
 <translation id="9148126808321036104">আবার সাইন-ইন করুন</translation>
 <translation id="9155898266292537608">এছাড়াও কোনও শব্দের উপরে ট্যাপ করেও খুঁজতে পারেন</translation>

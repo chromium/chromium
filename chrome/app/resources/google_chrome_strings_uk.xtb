@@ -10,10 +10,13 @@
 <translation id="1125124144982679672">Хто користується веб-переглядачем Chrome?</translation>
 <translation id="1142745911746664600">Не вдається оновити Chrome</translation>
 <translation id="1154147086299354128">&amp;Відкрити в Chrome</translation>
+<translation id="1178374936842835197">Якщо налаштування не з’явиться на цій сторінці, пошукайте його в <ph name="LINK_BEGIN" />
+        налаштуваннях ОС Chrome Flex<ph name="LINK_END" /></translation>
 <translation id="1182414570724401860">Chrome радить не завантажувати й не відкривати цей файл</translation>
 <translation id="1278833599417554002">Перезапустити, щоб оновити &amp;Chrome</translation>
 <translation id="1293325835983155583">Перш ніж використовувати цей пристрій, потрібно прочитати й прийняти наведені нижче Умови використання домену <ph name="MANAGER" />. Вони не розширюють, не змінюють і не обмежують Умови використання ОС Google Chrome.</translation>
 <translation id="1302523850133262269">Зачекайте, доки Chrome установить найновіші оновлення системи.</translation>
+<translation id="1335640173511558774">Перш ніж використовувати цей пристрій, потрібно прочитати й прийняти наведені нижче Умови використання домену <ph name="MANAGER" />. Вони не розширюють, не змінюють і не обмежують Умови використання ОС Google Chrome Flex.</translation>
 <translation id="137466361146087520">Бета-версія Google Chrome</translation>
 <translation id="1399397803214730675">На комп’ютері вже встановлено новішу версію Google Chrome. Якщо програмне забезпечення не працює, видаліть Google Chrome і повторіть спробу.</translation>
 <translation id="1434626383986940139">Програми Chrome для версії Canary</translation>
@@ -27,6 +30,7 @@
 <translation id="1597911401261118146">Щоб перевірити, чи відомі порушення безпеки даних або інші проблеми не заторкнули ваші паролі, <ph name="BEGIN_LINK" />увійдіть у Chrome<ph name="END_LINK" />.</translation>
 <translation id="1619887657840448962">Щоб зробити Chrome безпечнішим, ми вимкнули наведене нижче розширення, установлене не із сайту <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> і, можливо, додане без вашого відома.</translation>
 <translation id="1628000112320670027">Довідка щодо Chrome</translation>
+<translation id="1662146548738125461">Про ОС Chrome Flex</translation>
 <translation id="1674870198290878346">Відкрити посилання в аноні&amp;мному вікні Chrome</translation>
 <translation id="1682634494516646069">Google Chrome не може читати та записувати у свій каталог даних: <ph name="USER_DATA_DIRECTORY" /></translation>
 <translation id="1698376642261615901">Google Chrome – це веб-переглядач, який запускає веб-сторінки та програми з блискавичною швидкістю. Він швидкий, надійний і зручний у користуванні. Вбудований у Google Chrome захист від шкідливих програм і фішингу гарантує ще більшу безпеку під час перегляду веб-сторінок.</translation>
@@ -43,7 +47,9 @@
 <translation id="1919130412786645364">Дозволити вхід у Chrome</translation>
 <translation id="2018528049276128029">У кожному профілі Chrome зберігається власна інформація, як-от закладки, історія, паролі тощо</translation>
 <translation id="2063848847527508675">Щоб застосувати це оновлення, потрібно перезапустити ОС Chrome.</translation>
+<translation id="2094648590148273905">Умови використання ОС Chrome Flex</translation>
 <translation id="2094919256425865063">Усе одно вийти з Chrome?</translation>
+<translation id="2106831557840787829">ОС Chrome Flex і <ph name="BEGIN_LINK_LINUX_OSS" />середовище для розробки Linux<ph name="END_LINK_LINUX_OSS" /> працюють завдяки додатковому <ph name="BEGIN_LINK_CROS_OSS" />програмному забезпеченню з відкритим кодом<ph name="END_LINK_CROS_OSS" />.</translation>
 <translation id="2120620239521071941">З цього пристрою буде видалено стільки елементів: <ph name="ITEMS_COUNT" />. Щоб відновити дані пізніше, увійдіть в обліковий запис Chrome як <ph name="USER_EMAIL" />.</translation>
 <translation id="2121284319307530122">Перезапустити, щоб оновити &amp;Chrome</translation>
 <translation id="2123055963409958220">Допоможіть покращити Chrome, надсилаючи звіти про <ph name="BEGIN_LINK" />поточні налаштування<ph name="END_LINK" /></translation>
@@ -86,6 +92,7 @@
 <translation id="2926952073016206995">Веб-переглядачу Chrome потрібен доступ до камери для цього сайту</translation>
 <translation id="2929907241665500097">Не вдалось оновити веб-переглядач Chrome. <ph name="BEGIN_LINK" />Вирішіть проблеми з оновленням Chrome.<ph name="END_LINK" /></translation>
 <translation id="2969728957078202736"><ph name="PAGE_TITLE" /> – Вхід у мережу – Chrome</translation>
+<translation id="3019382870990049182">Перезапустити, щоб оновити &amp;ОС Chrome Flex</translation>
 <translation id="303514781271618814">Chrome досліджує нові функції, за допомогою яких сайти забезпечуватимуть ту саму роботу, використовуючи менше ваших даних</translation>
 <translation id="3037838751736561277">Google Chrome у фоновому режимі.</translation>
 <translation id="3059710691562604940">Безпечний перегляд вимкнено. Chrome радить увімкнути його.</translation>
@@ -94,6 +101,7 @@
 <translation id="3080151273017101988">Продовжувати роботу фонових програм, коли Google Chrome закрито</translation>
 <translation id="3089968997497233615">Доступна нова, безпечніша версія Google Chrome.</translation>
 <translation id="3100998948628680988">Додайте назву свого профілю Chrome</translation>
+<translation id="3103390129666310801">Щоб дізнатися, чи пристрій використовує актуальну версію операційної системи, перейдіть у <ph name="LINK_BEGIN" />налаштування ОС Chrome Flex<ph name="LINK_END" /></translation>
 <translation id="3114643501466072395">Щоб перевірити, чи відомі порушення безпеки даних або інші проблеми не заторкнули інші ваші паролі, <ph name="BEGIN_LINK" />увійдіть у Chrome<ph name="END_LINK" />.</translation>
 <translation id="3140883423282498090">Ваші зміни почнуть діяти після наступного перезапуску Google Chrome.</translation>
 <translation id="3149510190863420837">Додатки Chrome</translation>
@@ -115,10 +123,12 @@
 <translation id="3596080736082218006">{COUNT,plural, =0{Адміністратор вимагає перезапустити Chrome, щоб застосувати оновлення}=1{Адміністратор вимагає перезапустити Chrome, щоб застосувати оновлення. Вікно в режимі анонімного перегляду не відновиться й не відкриється знову.}one{Адміністратор вимагає перезапустити Chrome, щоб застосувати оновлення. # вікно в режимі анонімного перегляду не відновиться й не відкриється знову.}few{Адміністратор вимагає перезапустити Chrome, щоб застосувати оновлення. # вікна в режимі анонімного перегляду не відновляться й не відкриються знову.}many{Адміністратор вимагає перезапустити Chrome, щоб застосувати оновлення. # вікон в режимі анонімного перегляду не відновляться й не відкриються знову.}other{Адміністратор вимагає перезапустити Chrome, щоб застосувати оновлення. # вікна в режимі анонімного перегляду не відновиться й не відкриється знову.}}</translation>
 <translation id="3622797965165704966">Користуватися Chrome у своєму обліковому записі Google на спільних комп’ютерах стало легше.</translation>
 <translation id="3673813398384385993">Веб-переглядач Chrome виявив, що розширення "<ph name="EXTENSION_NAME" />" містить зловмисне програмне забезпечення</translation>
+<translation id="3716540481907974026">Версія ОС Chrome Flex</translation>
 <translation id="3718181793972440140">1 елемент буде видалено з цього пристрою. Щоб відновити дані пізніше, увійдіть в обліковий запис Chrome як <ph name="USER_EMAIL" />.</translation>
 <translation id="3735758079232443276">Розширення "<ph name="EXTENSION_NAME" />" змінило сторінку, яка відкривається під час запуску Chrome.</translation>
 <translation id="3779473566290487688">Щоб отримувати майбутні оновлення Google Chrome, потрібна операційна система OS X 10.11 або новішої версії. На цьому комп'ютері встановлено OS X 10.10.</translation>
 <translation id="3780814664026482060">Chrome – <ph name="PAGE_TITLE" /></translation>
+<translation id="3785324443014631273">ОС Chrome Flex не змогла синхронізувати ваші дані через помилку входу в систему.</translation>
 <translation id="3835168907083856002">Буде створено новий профіль Chrome для <ph name="USER_EMAIL_ADDRESS" />.</translation>
 <translation id="386202838227397562">Закрийте всі вікна Google Chrome і повторіть спробу.</translation>
 <translation id="3865754807470779944">Chrome версії <ph name="PRODUCT_VERSION" /> встановлено</translation>
@@ -153,16 +163,19 @@
 <translation id="4571503333518166079">Перейти до налаштувань сповіщень Chrome</translation>
 <translation id="459622048091363950">Коли Chrome отримає доступ, веб-сайти зможуть надсилати вам запити на доступ.</translation>
 <translation id="4600710005438004015">Не вдалось оновити Chrome до останньої версії. Ви не зможете скористатися новими функціями та застосувати виправлення системи безпеки.</translation>
+<translation id="4627412468266359539">Необов’язково: допоможіть нам покращувати функції та підвищувати продуктивність ОС Chrome Flex, автоматично надсилаючи компанії Google дані про використання й діагностику.</translation>
 <translation id="4633000520311261472">Щоб зробити Chrome безпечнішим, ми вимкнули деякі розширення, установлені не із сайту <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> і, можливо, додані без вашого відома.</translation>
 <translation id="4728575227883772061">Не вдалося здійснити встановлення через невизначену помилку. Якщо наразі Google Chrome запущено, закрийте його та повторіть спробу.</translation>
 <translation id="4754614261631455953">Google Chrome Canary (mDNS-In)</translation>
 <translation id="4771048833395599659">Цей файл може бути небезпечним, тому Chrome заблокував його.</translation>
 <translation id="479167709087336770">Використовується та сама технологія перевірки правопису, що й у Пошуку Google. Текст, який ви вводите у веб-переглядачі, надсилається в Google. Це завжди можна змінити в налаштуваннях.</translation>
+<translation id="4842397268809523050">ОС Chrome Flex не змогла синхронізувати дані, оскільки ця функція недоступна для вашого домену.</translation>
 <translation id="4873783916118289636">Перевірте основні елементи керування конфіденційністю та безпекою в Chrome</translation>
 <translation id="4891791193823137474">Дозволити Google Chrome працювати у фоновому режимі</translation>
 <translation id="4895437082222824641">Відкрити посилання в новій &amp;вкладці Chrome</translation>
 <translation id="4953650215774548573">Зробити Google Chrome веб-переглядачем за умовчанням</translation>
 <translation id="495931528404527476">У Chrome</translation>
+<translation id="4969674060580488087">ОС Chrome Flex не змогла синхронізувати вашу інформацію, оскільки облікові дані застаріли.</translation>
 <translation id="4970761609246024540">Представляємо профілі Chrome</translation>
 <translation id="4990567037958725628">Google Chrome Canary</translation>
 <translation id="5062123544085870375">Перезапустіть ОС Chrome</translation>
@@ -173,6 +186,7 @@
 <translation id="521447420733633466">Якщо ви користуєтеся пристроєм спільно з друзями та рідними, вони зможуть переглядати веб-сторінки окремо та налаштовувати Chrome на свій смак.</translation>
 <translation id="5251420635869119124">Гості можуть анонімно користуватися Chrome.</translation>
 <translation id="5334487786912937552">Веб-переглядачу Chrome потрібен доступ до пам’яті, щоб завантажувати файли</translation>
+<translation id="5357889879764279201">Допомога з ОС Chrome Flex</translation>
 <translation id="5386244825306882791">Розширення також змінило сторінку, яка відкривається під час запуску Chrome або пошуку в універсальному вікні пошуку.</translation>
 <translation id="5394833366792865639">Поділитися вкладкою Chrome</translation>
 <translation id="5430073640787465221">Ваш файл налаштувань пошкоджений або недійсний. Google Chrome не може відновити ваші налаштування.</translation>
@@ -209,9 +223,11 @@
 <translation id="6506909944137591434">Веб-переглядачу Chrome потрібен доступ до камери, щоб створити 3D-карту вашого оточення</translation>
 <translation id="6515495397637126556"><ph name="PAGE_TITLE" /> – Версія Google Chrome для розробників</translation>
 <translation id="6568793831116033768">ОС Chrome</translation>
+<translation id="6632473616050862500">ОС Chrome Flex працює завдяки додатковому <ph name="BEGIN_LINK_CROS_OSS" />програмному забезпеченню з відкритим кодом<ph name="END_LINK_CROS_OSS" />.</translation>
 <translation id="6676384891291319759">Доступ до Інтернету</translation>
 <translation id="6679975945624592337">Дозволити Google Chrome працювати у фоновому режимі</translation>
 <translation id="6696915334902295848">Веб-переглядачу Chrome потрібен доступ до мікрофона для цього сайту</translation>
+<translation id="6735387454586646204">Операційна система Chrome Flex</translation>
 <translation id="6739177684496155661">Продовжити в новому профілі Chrome?</translation>
 <translation id="6750954913813541382">Щоб виправляти орфографічні помилки, Chrome надсилає в Google текст, який ви вводите у веб-переглядачі</translation>
 <translation id="677276454032249905">Усе одно вийти з Chrome?</translation>
@@ -251,6 +267,7 @@
 <translation id="7535429826459677826">Версія Google Chrome для розробників</translation>
 <translation id="7573289029918943991">Щоб дізнатися, чи пристрій використовує актуальну версію операційної системи, перейдіть у <ph name="LINK_BEGIN" />налаштування ОС Chrome<ph name="LINK_END" /></translation>
 <translation id="7592736734348559088">Google Chrome не вдалося синхронізувати ваші дані, оскільки дані для входу в обліковий запис застаріли.</translation>
+<translation id="7606334485649076285">ОС Google Chrome Flex</translation>
 <translation id="7626032353295482388">Вітаємо у Chrome!</translation>
 <translation id="7629695634924605473">Якщо ваші паролі колись викрадуть, Chrome повідомить вас про це</translation>
 <translation id="7641148173327520642">Ваш системний адміністратор налаштував Google Chrome відкривати сторінку <ph name="TARGET_URL_HOSTNAME" /> в <ph name="ALTERNATIVE_BROWSER_NAME" />.</translation>
@@ -270,10 +287,12 @@
 <translation id="7896673875602241923">Хтось раніше входив у Chrome на цьому комп’ютері як <ph name="ACCOUNT_EMAIL_LAST" />. Створіть нового користувача Chrome, щоб зберігати свою інформацію окремо.</translation>
 <translation id="7917876797003313048">Ви можете керувати обліковими записами Google, у які ввійшли. Через них ви входите у веб-переглядач Chrome, Google Play, Gmail тощо. Якщо ви хочете додати обліковий запис для іншого користувача (наприклад, учасника сімейної групи), зробіть це натомість на пристрої <ph name="DEVICE_TYPE" />. <ph name="LINK_BEGIN" />Докладніше<ph name="LINK_END" /></translation>
 <translation id="7930071585467473040">Google Chrome намагається скопіювати паролі.</translation>
+<translation id="7951272445806340501">Щоб застосувати це оновлення, потрібно перезапустити ОС Chrome Flex.</translation>
 <translation id="7962410387636238736">На цей комп’ютер не надходитимуть оновлення Google Chrome, оскільки Windows XP та Windows Vista більше не підтримуються</translation>
 <translation id="79947657522496226">ОС Chrome і <ph name="BEGIN_LINK_LINUX_OSS" />середовище для розробки Linux<ph name="END_LINK_LINUX_OSS" /> працюють завдяки додатковому <ph name="BEGIN_LINK_CROS_OSS" />програмному забезпеченню з відкритим кодом<ph name="END_LINK_CROS_OSS" />.</translation>
 <translation id="8008534537613507642">Перевстановити Chrome</translation>
 <translation id="8013993649590906847">Якщо зображення не має корисного опису, Chrome спробує додати його. Для цього зображення надсилаються в Google.</translation>
+<translation id="8064015586118426197">ОС Chrome Flex</translation>
 <translation id="8129812357326543296">Про &amp;Google Chrome</translation>
 <translation id="8255190535488645436">Google Chrome використовує вашу камеру та мікрофон.</translation>
 <translation id="8286862437124483331">Google Chrome намагається показати паролі. Щоб дозволити, введіть свій пароль Windows.</translation>
@@ -310,11 +329,13 @@
 <translation id="8986207147630327271">Ви додаєте в цей веб-переглядач робочий профіль і дозволяєте адміністратору керувати лише ним.</translation>
 <translation id="8999208279178790196">{0,plural, =0{Доступне оновлення Chrome}=1{Доступне оновлення Chrome}one{Оновлення Chrome доступне вже # день}few{Оновлення Chrome доступне вже # дні}many{Оновлення Chrome доступне вже # днів}other{Оновлення Chrome доступне вже # дня}}</translation>
 <translation id="9026991721384951619">ОС Chrome не вдалося синхронізувати ваші дані, оскільки дані для входу в обліковий запис застаріли.</translation>
+<translation id="9053892488859122171">Операційна система Chrome Flex</translation>
 <translation id="9067395829937117663">Для роботи Google Chrome потрібно мати ОС Windows 7 або новішої версії.</translation>
 <translation id="911206726377975832">Також видалити дані веб-перегляду?</translation>
 <translation id="9138603949443464873">Щоб застосувати зміни, перезапустіть Chrome</translation>
 <translation id="919706545465235479">Щоб почати синхронізацію, оновіть Chrome</translation>
 <translation id="922152298093051471">Налаштувати Chrome</translation>
+<translation id="93760716455950538">Перезапустіть ОС Chrome Flex</translation>
 <translation id="940313311831216333">Щоб мати доступ до своїх даних Chrome на всіх пристроях, увійдіть в обліковий запис і ввімкніть синхронізацію.</translation>
 <translation id="989369509083708165">Google Chrome – ваш веб-переглядач за умовчанням</translation>
 <translation id="989816563149873169">Комбінація клавіш <ph name="SHORTCUT" /> перемикає профілі Chrome</translation>

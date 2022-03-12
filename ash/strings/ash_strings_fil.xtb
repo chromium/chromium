@@ -197,6 +197,7 @@ Narito ang ilang bagay na puwede mong subukang simulan.</translation>
 <translation id="2132302418721800944">I-record ang full screen</translation>
 <translation id="2135456203358955318">Naka-dock na magnifier</translation>
 <translation id="2148716181193084225">Ngayon</translation>
+<translation id="2159930836979502091">Pumunta sa tab na ito</translation>
 <translation id="2170530631236737939">Mag-swipe pababa gamit ang tatlong daliri para lumabas sa Overview</translation>
 <translation id="219905428774326614">Launcher, lahat ng app</translation>
 <translation id="2201071101391734388">Kamakailang larawan <ph name="INDEX" /> ng <ph name="TOTAL_COUNT" />.</translation>
@@ -563,6 +564,7 @@ Narito ang ilang bagay na puwede mong subukang simulan.</translation>
 <translation id="4449692009715125625">{NUM_NOTIFICATIONS,plural, =1{1 mahalagang notification}one{# mahalagang notification}other{# na mahalagang notification}}</translation>
 <translation id="4450893287417543264">Huwag ipakitang muli</translation>
 <translation id="4451374464530248585">Nagbago ang keyboard shortcut na Alt + Pababang Arrow. Para magamit ang Page Down key, pindutin ang <ph name="LAUNCHER_KEY_NAME" /> key + Pababang Arrow.</translation>
+<translation id="4455051983450390249">Tingnan ang mga notification ng iyong telepono sa <ph name="DEVICE_TYPE" /> mo</translation>
 <translation id="445864333228800152">Magandang gabi,</translation>
 <translation id="4458688154122353284">Ihinto ang pag-record ng screen</translation>
 <translation id="4471354919263203780">Dina-download ang mga file ng pagkilala sa speech... <ph name="PERCENT" />%</translation>
@@ -770,6 +772,7 @@ Narito ang ilang bagay na puwede mong subukang simulan.</translation>
 <translation id="583281660410589416">Hindi-alam</translation>
 <translation id="5837036133683224804">Ihinto ang <ph name="ROUTE_TITLE" /> sa <ph name="RECEIVER_NAME" /></translation>
 <translation id="584525477304726060">I-hold para i-maximize</translation>
+<translation id="5856638668464565213">Hindi na-activate ang <ph name="NETWORK_NAME" />.</translation>
 <translation id="5860033963881614850">Naka-off</translation>
 <translation id="5860491529813859533">I-on</translation>
 <translation id="5867217927013474703">Kinokolekta ang impormasyon ng network</translation>
@@ -801,6 +804,7 @@ Narito ang ilang bagay na puwede mong subukang simulan.</translation>
 <translation id="602472752137106327">Ipakita ang mga window mula sa lahat ng desk at piniling radio button</translation>
 <translation id="6025324406281560198"><ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, Lakas ng Signal <ph name="SIGNAL_STRENGTH" />, Pinapamahalaan ng iyong Administrator</translation>
 <translation id="6027518778343897451">Walang event sa <ph name="CURRENT_MONTH_DAY" />. Pindutin ang enter para buksan ang Google Calendar sa browser.</translation>
+<translation id="6027952026115023659">I-access ang mga app sa pagmemensahe ng iyong telepono sa <ph name="DEVICE_TYPE" /> mo</translation>
 <translation id="6030495522958826102">Inilipat ang menu sa kaliwang sulok sa ibaba ng screen.</translation>
 <translation id="6032620807120418574">Mag-click kahit saan para i-record ang full screen</translation>
 <translation id="6040071906258664830">I-record ang mikropono <ph name="STATE" /></translation>
@@ -944,6 +948,7 @@ Kaka-install lang</translation>
 <translation id="6961121602502368900">Hindi available ang Pag-silent ng telepono sa profile sa trabaho</translation>
 <translation id="6961840794482373852">Nagbago ang keyboard shortcut na Alt + Pataas na Arrow. Para magamit ang Page Up key, pindutin ang <ph name="LAUNCHER_KEY_NAME" /> key + Pataas na Arrow.</translation>
 <translation id="6965382102122355670">OK</translation>
+<translation id="6967933908874208731">Tingnan ang mga pinakabagong larawan, media, notification, at app sa pagmemensahe ng iyong telepono sa <ph name="DEVICE_TYPE" /> mo</translation>
 <translation id="6972754398087986839">Magsimula</translation>
 <translation id="6979158407327259162">Google Drive</translation>
 <translation id="6981982820502123353">Accessibility</translation>

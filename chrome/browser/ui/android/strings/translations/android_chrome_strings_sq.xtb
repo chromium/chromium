@@ -138,6 +138,7 @@
 <translation id="1810845389119482123">Konfigurimi i sinkronizimit fillestar nuk ka përfunduar</translation>
 <translation id="1829244130665387512">Gjej në faqe</translation>
 <translation id="1832459821645506983">Po, jam dakord</translation>
+<translation id="1849863543394887018">Mund t'i çaktivizosh njoftimet duke vizituar cilësimet</translation>
 <translation id="1877026089748256423">Chrome nuk është i përditësuar</translation>
 <translation id="1883903952484604915">Skedarët e mi</translation>
 <translation id="189358972401248634">Gjuhë të tjera</translation>
@@ -654,6 +655,7 @@ Për të ndryshuar këtë cilësim, <ph name="BEGIN_LINK" />rivendos sinkronizim
 <translation id="4860895144060829044">Telefono</translation>
 <translation id="4864369630010738180">Po identifikohet...</translation>
 <translation id="4866368707455379617"><ph name="MODULE" /> nuk mund të instalohet për Chrome</translation>
+<translation id="4871568871368204250">Çaktivizo sinkronizimin</translation>
 <translation id="4875775213178255010">Sugjerimet e përmbajtjes</translation>
 <translation id="4877678010818027629">Hyr në modalitetin "e fshehtë"</translation>
 <translation id="4878404682131129617">Dështoi krijimi i një tuneli përmes serverit përfaqësues</translation>
@@ -1198,6 +1200,7 @@ Për shembull, disa sajte uebi mund t'i përgjigjen kësaj kërkese duke të tre
 <translation id="7926975587469166629">Pseudonimi i kartës</translation>
 <translation id="7929962904089429003">Hap menynë</translation>
 <translation id="7930998711684428189">Të paralajmëron nëse fjalëkalimet janë ekspozuar në një nxjerrje të paautorizuar të të dhënave.</translation>
+<translation id="7937772386706786623">Menaxho kontrollet e medias, skedat "e fshehta" dhe të tjera me njoftimet</translation>
 <translation id="7939485076072265087">Krijo kartë të stilizuar me theksim</translation>
 <translation id="7942131818088350342"><ph name="PRODUCT_NAME" /> është i vjetruar.</translation>
 <translation id="7944772052836377867">Sinkronizimi ka nevojë të verifikojë që je ti</translation>

@@ -2005,6 +2005,16 @@ Als je dit beleid niet instelt, geldt de standaardwaarde 'niet toegestaan' voor 
       Als je het beleid niet toepast, kan deze software dergelijke code in de processen van <ph name="PRODUCT_NAME" /> injecteren.</translation>
 <translation id="3182503302060513467">De pagina Nieuw tabblad toont de aankondiging in de middelste ruimte als die beschikbaar is</translation>
 <translation id="3184161739683646075">Hiermee wordt de modus voor DNS-over-HTTPS bepaald</translation>
+<translation id="3184638144755436350">Chrome blokkeert navigatie naar externe protocollen in iframes in sandboxes. Zie https://chromestatus.com/features/5680742077038592.
+
+      Als dit is ingesteld op True, kan Chrome die navigatie blokkeren.
+
+      Als dit is ingesteld op False, wordt voorkomen dat Chrome die navigatie blokkeert.
+
+      Dit is standaard ingesteld op True: beveiligingsfunctie aan.
+
+      Dit kan worden gebruikt door beheerders die meer tijd nodig hebben om hun interne website te updaten waarop deze nieuwe beperking van invloed is. Dit zakelijke beleid is tijdelijk. Het is de bedoeling het te verwijderen na <ph name="PRODUCT_NAME" /> versie 117.
+      </translation>
 <translation id="3185009703220253572">sinds versie <ph name="SINCE_VERSION" /></translation>
 <translation id="3185895671618336039">Hiermee configureer je de instellingen voor de levensduur van browsergegevens voor <ph name="PRODUCT_NAME" />. Met dit beleid kunnen beheerders instellen (per gegevenstype) wanneer gegevens door de browser moeten worden verwijderd. Dit is handig voor klanten die met gevoelige klantgegevens werken. Het beleid wordt alleen van kracht als <ph name="SYNC_DISABLED_POLICY_NAME" /> is ingesteld op True.
 
@@ -4661,6 +4671,12 @@ Als je dit beleid instelt, worden afhankelijk van de waarde verschillende van de
       Als dit beleid niet is toegepast of niet is ingesteld, wordt het zwevende toegankelijkheidsmenu nooit getoond.</translation>
 <translation id="6424485010103067949"><ph name="OMA_URI" />:</translation>
 <translation id="6424486395812679373">Safe Browsing-checks uitvoeren op alle gedownloade bestanden</translation>
+<translation id="6435570845618943258">Als je deze instelling aanzet, verifieert <ph name="PRODUCT_NAME" /> servercertificaten met de ingebouwde certificaatverificatie.
+      Als je deze instelling uitzet, verifieert <ph name="PRODUCT_NAME" /> servercertificaten met de verouderde certificaatverificatie die door het platform wordt geleverd.
+      Als je deze instelling niet instelt, kan de ingebouwde of de verouderde certificaatverificatie worden gebruikt.
+
+      Dit beleid wordt verwijderd in <ph name="PRODUCT_NAME" /> versie 107 voor <ph name="MAC_OS_NAME" />, wanneer de support voor de verouderde certificaatverificatie in <ph name="MAC_OS_NAME" /> ook wordt verwijderd.
+      </translation>
 <translation id="6436052172226685535">Standaardgedrag voor LBS.</translation>
 <translation id="6438364096042399634">Als je het beleid instelt, wordt de lijst met USB-apparaten gedefinieerd die door gebruikers mogen worden ontkoppeld van hun kernel-driver, zodat ze via de chrome.usb API rechtstreeks kunnen worden gebruikt in een web-app. Items zijn paren van de ID van de USB-leverancier en de ID van het product, zodat specifieke hardware kan worden geïdentificeerd.
 

@@ -138,6 +138,7 @@
 <translation id="1810845389119482123">İlk senkronizasyon kurulumu tamamlanmadı</translation>
 <translation id="1829244130665387512">Sayfada bul</translation>
 <translation id="1832459821645506983">Evet, kabul ediyorum</translation>
+<translation id="1849863543394887018">Ayarlara giderek bildirimleri devre dışı bırakabilirsiniz</translation>
 <translation id="1877026089748256423">Chrome sürümü eski</translation>
 <translation id="1883903952484604915">Dosyalarım</translation>
 <translation id="189358972401248634">Diğer diller</translation>
@@ -654,6 +655,7 @@ Bu ayarı değiştirmek için <ph name="BEGIN_LINK" />senkronizasyonu sıfırlay
 <translation id="4860895144060829044">Telefon et</translation>
 <translation id="4864369630010738180">Oturum açılıyor...</translation>
 <translation id="4866368707455379617">Chrome için <ph name="MODULE" /> yüklenemiyor</translation>
+<translation id="4871568871368204250">Senkronizasyonu kapatma</translation>
 <translation id="4875775213178255010">İçerik Önerileri</translation>
 <translation id="4877678010818027629">Gizli moda geç</translation>
 <translation id="4878404682131129617">Proxy sunucu üzerinden tünel oluşturulamadı</translation>
@@ -1198,6 +1200,7 @@ Privacy Sandbox denemeleri, hâlâ aktif geliştirme aşamasında olup belirli b
 <translation id="7926975587469166629">Kart için takma ad</translation>
 <translation id="7929962904089429003">Menüyü açar</translation>
 <translation id="7930998711684428189">Şifreleriniz veri ihlali nedeniyle ifşa olursa sizi uyarır.</translation>
+<translation id="7937772386706786623">Bildirimler aracılığıyla medya denetimlerini, gizli sekmeleri ve daha fazlasını yönetin</translation>
 <translation id="7939485076072265087">Vurgu içeren, stil eklenmiş kart oluşturun</translation>
 <translation id="7942131818088350342"><ph name="PRODUCT_NAME" /> güncel değil.</translation>
 <translation id="7944772052836377867">Senkronizasyonun, kimliğinizi doğrulaması gerekiyor</translation>

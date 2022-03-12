@@ -138,6 +138,7 @@
 <translation id="1810845389119482123">La configuración de sincronización inicial no ha terminado</translation>
 <translation id="1829244130665387512">Buscar en la página</translation>
 <translation id="1832459821645506983">Sí, acepto</translation>
+<translation id="1849863543394887018">Puedes inhabilitar las notificaciones en los ajustes</translation>
 <translation id="1877026089748256423">Chrome no está actualizado</translation>
 <translation id="1883903952484604915">Mis archivos</translation>
 <translation id="189358972401248634">Otros idiomas</translation>
@@ -654,6 +655,7 @@ Para cambiar esta opción, <ph name="BEGIN_LINK" />restablece la sincronización
 <translation id="4860895144060829044">Llamar</translation>
 <translation id="4864369630010738180">Iniciando sesión...</translation>
 <translation id="4866368707455379617">No se puede instalar <ph name="MODULE" /> para Chrome</translation>
+<translation id="4871568871368204250">Desactivar la sincronización</translation>
 <translation id="4875775213178255010">Sugerencias de contenido</translation>
 <translation id="4877678010818027629">Navegar en modo de incógnito</translation>
 <translation id="4878404682131129617">No se ha podido establecer conexión a través del servidor proxy</translation>
@@ -1198,6 +1200,7 @@ Por ejemplo, algunos sitios web pueden responder a la solicitud mostrándote anu
 <translation id="7926975587469166629">Nombre de la tarjeta</translation>
 <translation id="7929962904089429003">Abre el menú</translation>
 <translation id="7930998711684428189">Te avisa si tus contraseñas se ven expuestas en una quiebra de seguridad de datos.</translation>
+<translation id="7937772386706786623">Gestionar mandos multimedia, pestañas de incógnito y más con notificaciones</translation>
 <translation id="7939485076072265087">Crear tarjeta estilizada con texto resaltado</translation>
 <translation id="7942131818088350342"><ph name="PRODUCT_NAME" /> está obsoleto.</translation>
 <translation id="7944772052836377867">Verifica tu identidad para usar la sincronización</translation>

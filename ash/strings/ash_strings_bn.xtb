@@ -197,6 +197,7 @@
 <translation id="2132302418721800944">ফুল স্ক্রিন রেকর্ড করুন</translation>
 <translation id="2135456203358955318">ডক করা ম্যাগনিফায়ার</translation>
 <translation id="2148716181193084225">আজ</translation>
+<translation id="2159930836979502091">এই ট্যাবে যান</translation>
 <translation id="2170530631236737939">'এক নজরে' মোড থেকে বেরিয়ে আসতে তিনটি আঙুল দিয়ে নিচের দিকে সোয়াইপ করুন</translation>
 <translation id="219905428774326614">লঞ্চার, সমস্ত অ্যাপ</translation>
 <translation id="2201071101391734388"><ph name="TOTAL_COUNT" />-এর মধ্যে <ph name="INDEX" /> নম্বরের সাম্প্রতিক ফটো</translation>
@@ -563,6 +564,7 @@
 <translation id="4449692009715125625">{NUM_NOTIFICATIONS,plural, =1{১টি গুরুত্বপূর্ণ বিজ্ঞপ্তি}one{#টি গুরুত্বপূর্ণ বিজ্ঞপ্তি}other{#টি গুরুত্বপূর্ণ বিজ্ঞপ্তি}}</translation>
 <translation id="4450893287417543264">আর দেখতে চাই না</translation>
 <translation id="4451374464530248585">Alt + Down Arrow কীবোর্ড শর্ককার্ট পরিবর্তন করা হয়েছে। Page Down কী ব্যবহার করতে, <ph name="LAUNCHER_KEY_NAME" /> + Down Arrow কী প্রেস করুন।</translation>
+<translation id="4455051983450390249"><ph name="DEVICE_TYPE" />-এ ফোনের বিজ্ঞপ্তি দেখুন</translation>
 <translation id="445864333228800152">শুভ সন্ধ্যা,</translation>
 <translation id="4458688154122353284">স্ক্রিন রেকর্ডিং বন্ধ করুন</translation>
 <translation id="4471354919263203780">স্পিচ শনাক্তকরণ ফাইল ডাউনলোড করা হচ্ছে... <ph name="PERCENT" />%</translation>
@@ -769,6 +771,7 @@
 <translation id="583281660410589416">অজানা</translation>
 <translation id="5837036133683224804"><ph name="RECEIVER_NAME" />-এ <ph name="ROUTE_TITLE" /> বন্ধ করুন</translation>
 <translation id="584525477304726060">বড় করে দেখার জন্য ধরে থাকুন</translation>
+<translation id="5856638668464565213"><ph name="NETWORK_NAME" /> অ্যাক্টিভেট করা হয়নি।</translation>
 <translation id="5860033963881614850">বন্ধ করুন</translation>
 <translation id="5860491529813859533">চালু করুন</translation>
 <translation id="5867217927013474703">নেটওয়ার্ক সংক্রান্ত তথ্য সংগ্রহ করা হচ্ছে</translation>
@@ -800,6 +803,7 @@
 <translation id="602472752137106327">সব ডেস্ক থেকে উইন্ডো দেখুন, রেডিও বোতাম বেছে নেওয়া হয়েছে</translation>
 <translation id="6025324406281560198"><ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, সিগন্যাল: <ph name="SIGNAL_STRENGTH" />, আপনার অ্যাডমিনিস্ট্রেটর ম্যানেজ করে</translation>
 <translation id="6027518778343897451"><ph name="CURRENT_MONTH_DAY" />-এ কোনও ইভেন্ট নেই। ব্রাউজারে Google Calendar খোলার জন্য Enter প্রেস করুন।</translation>
+<translation id="6027952026115023659"><ph name="DEVICE_TYPE" />-এ আপনার ফোনের মেসেজিং অ্যাপ অ্যাক্সেস করুন</translation>
 <translation id="6030495522958826102">স্ক্রিনের নিচে বাঁদিকের কোণায় মেনু সরে গেছে।</translation>
 <translation id="6032620807120418574">ফুল স্ক্রিন ছবি রেকর্ড করতে, যেকোনও জায়গায় ক্লিক করুন</translation>
 <translation id="6040071906258664830">মাইক্রোফোনে রেকর্ড করুন <ph name="STATE" /></translation>
@@ -943,6 +947,7 @@
 <translation id="6961121602502368900">অফিস প্রোফাইলে 'সাইলেন্স ফোন' ফিচার উপলভ্য নেই</translation>
 <translation id="6961840794482373852">Alt + Up Arrow কীবোর্ড শর্ককার্ট পরিবর্তন করা হয়েছে। Page Up কী ব্যবহার করতে, <ph name="LAUNCHER_KEY_NAME" /> + Up Arrow কী প্রেস করুন।</translation>
 <translation id="6965382102122355670">ঠিক আছে</translation>
+<translation id="6967933908874208731"><ph name="DEVICE_TYPE" />-এ আপনার ফোনের সাম্প্রতিক ফটো, মিডিয়া, বিজ্ঞপ্তি ও মেসেজিং অ্যাপ দেখুন</translation>
 <translation id="6972754398087986839">শুরু করুন</translation>
 <translation id="6979158407327259162">Google Drive</translation>
 <translation id="6981982820502123353">ব্যবহারযোগ্যতা</translation>

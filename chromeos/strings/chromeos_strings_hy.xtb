@@ -83,6 +83,7 @@
 <translation id="1807246157184219062">Բաց</translation>
 <translation id="1827738518074806965">Ցուցասրահ</translation>
 <translation id="1851218745569890714">Տեսակոնֆերանս</translation>
+<translation id="1852934301711881861">Տեղադրել ChromeOS Flex-ը</translation>
 <translation id="1874612839560830905">MTU</translation>
 <translation id="1887850431809612466">Սարքի տարբերակը</translation>
 <translation id="1905710495812624430">Փորձերի առավելագույն թույլատրելի քանակը սպառվել է:</translation>
@@ -107,6 +108,7 @@
 <translation id="2158971754079422508"><ph name="DESC_TEXT" />՝ նորից փորձել</translation>
 <translation id="2161394479394250669">Չեղարկել տպման առաջադրանքը</translation>
 <translation id="2180197493692062006">Սխալ առաջացավ։ Փորձեք նորից բացել հավելվածը։</translation>
+<translation id="2201770616342964496">Լոկալ ինքնություն</translation>
 <translation id="2209788852729124853">Զրոյացնել թրաֆիկի հաշվիչները</translation>
 <translation id="2212733584906323460">Անվանել լուծաչափը</translation>
 <translation id="2217935453350629363">Ընթացիկ արագությունը</translation>
@@ -288,6 +290,7 @@
 <translation id="458794348635939462">Չհաջողվեց կապ հաստատել բոլոր խնամորդների հետ</translation>
 <translation id="4593212453765072419">Պահանջվում է միջնորդ սերվերի նույնականացում</translation>
 <translation id="4627232916386272576"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="PRINTED_PAGE_NUMBER" />/<ph name="TOTAL_PAGE_NUMBER" />։ Հպեք Enter՝ տպումը չեղարկելու համար։</translation>
+<translation id="4627645661474370390">Հեռակա ինքնություն</translation>
 <translation id="463791356324567266">Սկանավորումը չեղարկվում է...</translation>
 <translation id="4646949265910132906">Ապահով Wi-Fi կապ</translation>
 <translation id="4654549501020883054">Փոխել ամեն օր</translation>

@@ -138,6 +138,7 @@
 <translation id="1810845389119482123">초기 동기화 설정이 완료되지 않음</translation>
 <translation id="1829244130665387512">페이지에서 찾기</translation>
 <translation id="1832459821645506983">예</translation>
+<translation id="1849863543394887018">설정에서 알림을 사용 중지할 수 있습니다.</translation>
 <translation id="1877026089748256423">Chrome이 이전 버전임</translation>
 <translation id="1883903952484604915">내 파일</translation>
 <translation id="189358972401248634">다른 언어</translation>
@@ -654,6 +655,7 @@
 <translation id="4860895144060829044">전화걸기</translation>
 <translation id="4864369630010738180">로그인 중...</translation>
 <translation id="4866368707455379617">Chrome에 <ph name="MODULE" />을(를) 설치할 수 없습니다.</translation>
+<translation id="4871568871368204250">동기화 사용 중지</translation>
 <translation id="4875775213178255010">콘텐츠 추천</translation>
 <translation id="4877678010818027629">시크릿 모드 시작</translation>
 <translation id="4878404682131129617">프록시 서버를 통한 터널 설정에 실패했습니다</translation>
@@ -1198,6 +1200,7 @@
 <translation id="7926975587469166629">카드 닉네임</translation>
 <translation id="7929962904089429003">메뉴 열기</translation>
 <translation id="7930998711684428189">데이터 유출로 인해 비밀번호가 노출된 경우 알립니다.</translation>
+<translation id="7937772386706786623">알림으로 미디어 컨트롤, 시크릿 탭 등 관리하기</translation>
 <translation id="7939485076072265087">강조표시한 텍스트에 사용할 스타일 카드 만들기</translation>
 <translation id="7942131818088350342"><ph name="PRODUCT_NAME" />이(가) 이전 버전입니다.</translation>
 <translation id="7944772052836377867">동기화를 위해 본인 인증 필요</translation>

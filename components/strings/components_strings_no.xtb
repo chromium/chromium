@@ -458,6 +458,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="2310021320168182093">Chou2 (konvolutt)</translation>
 <translation id="2316887270356262533">Frigjør mindre enn 1 MB. Det kan hende enkelte nettsteder lastes inn tregere neste gang du besøker dem.</translation>
 <translation id="2317259163369394535"><ph name="DOMAIN" /> krever brukernavn og passord.</translation>
+<translation id="2318594867107319532">Siste tidsstempel for regel:</translation>
 <translation id="2328651992442742497">Tillatt (standard)</translation>
 <translation id="2329182534073751090">vindusplassering</translation>
 <translation id="2330137317877982892"><ph name="CREDIT_CARD" /> – utløper <ph name="EXPIRATION_DATE_ABBR" /></translation>
@@ -1661,6 +1662,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="6157754950574419155">Fjern alt fra loggen</translation>
 <translation id="6157877588268064908">For å se fraktmetoder og -krav, velg en adresse</translation>
 <translation id="6165508094623778733">Finn ut mer</translation>
+<translation id="6167577165590485365">Forrige forsøk på henting:</translation>
 <translation id="6169916984152623906">Nå kan du surfe privat. Andre som bruker denne enheten, ser ikke aktiviteten din, men nedlastinger og bokmerker blir lagret.</translation>
 <translation id="6177128806592000436">Tilkoblingen til dette nettstedet er ikke sikker</translation>
 <translation id="6180316780098470077">Forsøksintervall</translation>

@@ -83,6 +83,7 @@
 <translation id="1807246157184219062">밝게</translation>
 <translation id="1827738518074806965">아트 갤러리</translation>
 <translation id="1851218745569890714">화상 회의</translation>
+<translation id="1852934301711881861">ChromeOS Flex 설치</translation>
 <translation id="1874612839560830905">MTU</translation>
 <translation id="1887850431809612466">하드웨어 버전</translation>
 <translation id="1905710495812624430">허용되는 최대 시도 횟수를 초과했습니다.</translation>
@@ -107,6 +108,7 @@
 <translation id="2158971754079422508"><ph name="DESC_TEXT" />: 다시 시도</translation>
 <translation id="2161394479394250669">인쇄 작업 취소</translation>
 <translation id="2180197493692062006">문제가 발생했습니다. 앱을 다시 열어 보세요.</translation>
+<translation id="2201770616342964496">로컬 ID</translation>
 <translation id="2209788852729124853">트래픽 카운터 재설정</translation>
 <translation id="2212733584906323460">이름 결정</translation>
 <translation id="2217935453350629363">현재 속도</translation>
@@ -288,6 +290,7 @@
 <translation id="458794348635939462">모든 호스트를 확인할 수 없습니다.</translation>
 <translation id="4593212453765072419">프록시 인증이 필요합니다.</translation>
 <translation id="4627232916386272576"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="PRINTED_PAGE_NUMBER" />/<ph name="TOTAL_PAGE_NUMBER" /> 인쇄 작업을 취소하려면 Enter를 누릅니다.</translation>
+<translation id="4627645661474370390">원격 ID</translation>
 <translation id="463791356324567266">스캔 취소 중…</translation>
 <translation id="4646949265910132906">보안 Wi-Fi 연결</translation>
 <translation id="4654549501020883054">매일 변경</translation>

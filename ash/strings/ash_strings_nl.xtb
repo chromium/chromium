@@ -194,6 +194,7 @@ Hier zijn wat voorbeelden van wat je kunt proberen om aan de slag te gaan.</tran
 <translation id="2132302418721800944">Opname van volledig scherm maken</translation>
 <translation id="2135456203358955318">Vastgezet vergrootglas</translation>
 <translation id="2148716181193084225">Vandaag</translation>
+<translation id="2159930836979502091">Naar dit tabblad gaan</translation>
 <translation id="2170530631236737939">Swipe met 3 vingers omlaag om het overzicht te sluiten</translation>
 <translation id="219905428774326614">Launcher, alle apps</translation>
 <translation id="2201071101391734388">Recente foto <ph name="INDEX" /> van <ph name="TOTAL_COUNT" />.</translation>
@@ -560,6 +561,7 @@ Hier zijn wat voorbeelden van wat je kunt proberen om aan de slag te gaan.</tran
 <translation id="4449692009715125625">{NUM_NOTIFICATIONS,plural, =1{1 belangrijke melding}other{# belangrijke meldingen}}</translation>
 <translation id="4450893287417543264">Niet meer bekijken</translation>
 <translation id="4451374464530248585">De sneltoets Alt + pijl-omlaag is veranderd. Als je de toets Page Down wilt gebruiken, druk je op de <ph name="LAUNCHER_KEY_NAME" />-toets + pijl-omlaag.</translation>
+<translation id="4455051983450390249">De meldingen van je telefoon bekijken op je <ph name="DEVICE_TYPE" /></translation>
 <translation id="445864333228800152">Goedenavond,</translation>
 <translation id="4458688154122353284">Schermopname stoppen</translation>
 <translation id="4471354919263203780">Bestanden voor spraakherkenning downloaden... <ph name="PERCENT" />%</translation>
@@ -731,6 +733,7 @@ Hier zijn wat voorbeelden van wat je kunt proberen om aan de slag te gaan.</tran
 <translation id="5597451508971090205"><ph name="SHORT_WEEKDAY" />, <ph name="DATE" /></translation>
 <translation id="5600837773213129531">Druk op Ctrl+Alt+Z om gesproken feedback uit te zetten.</translation>
 <translation id="5601503069213153581">Pincode</translation>
+<translation id="5618148318840095371">Je bent overgeschakeld naar een beter netwerk</translation>
 <translation id="5619862035903135339">Op basis van het beheerdersbeleid wordt schermopname uitgezet</translation>
 <translation id="5625955975703555628">LTE+</translation>
 <translation id="5648021990716966815">Microfoonaansluiting</translation>
@@ -766,6 +769,7 @@ Hier zijn wat voorbeelden van wat je kunt proberen om aan de slag te gaan.</tran
 <translation id="583281660410589416">Onbekend</translation>
 <translation id="5837036133683224804"><ph name="ROUTE_TITLE" /> in <ph name="RECEIVER_NAME" /> stopzetten</translation>
 <translation id="584525477304726060">Vasthouden om te maximaliseren</translation>
+<translation id="5856638668464565213"><ph name="NETWORK_NAME" /> is niet geactiveerd.</translation>
 <translation id="5860033963881614850">Uit</translation>
 <translation id="5860491529813859533">Aanzetten</translation>
 <translation id="5867217927013474703">Netwerkinformatie ophalen</translation>
@@ -797,6 +801,7 @@ Hier zijn wat voorbeelden van wat je kunt proberen om aan de slag te gaan.</tran
 <translation id="602472752137106327">Vensters van alle bureaus bekijken, keuzerondje geselecteerd</translation>
 <translation id="6025324406281560198"><ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, signaalsterkte <ph name="SIGNAL_STRENGTH" />, beheerd door je beheerder</translation>
 <translation id="6027518778343897451">Er staat geen afspraak op <ph name="CURRENT_MONTH_DAY" />. Druk op Enter om Google Agenda te openen in de browser.</translation>
+<translation id="6027952026115023659">De berichten-apps van je telefoon openen op je <ph name="DEVICE_TYPE" /></translation>
 <translation id="6030495522958826102">Menu verplaatst naar linksonder in het scherm.</translation>
 <translation id="6032620807120418574">Klik ergens om het volledige scherm op te nemen</translation>
 <translation id="6040071906258664830">Microfoon opnemen <ph name="STATE" /></translation>
@@ -940,6 +945,7 @@ Nieuwe installatie</translation>
 <translation id="6961121602502368900">Geluid van telefoon kan niet worden uitgezet in je werkprofiel</translation>
 <translation id="6961840794482373852">De sneltoets Alt + pijl-omhoog is veranderd. Als je de toets Page Up wilt gebruiken, druk je op de <ph name="LAUNCHER_KEY_NAME" />-toets + pijl-omhoog.</translation>
 <translation id="6965382102122355670">OK</translation>
+<translation id="6967933908874208731">Recente foto's, media, meldingen en berichten-apps van je telefoon bekijken op je <ph name="DEVICE_TYPE" /></translation>
 <translation id="6972754398087986839">Aan de slag</translation>
 <translation id="6979158407327259162">Google Drive</translation>
 <translation id="6981982820502123353">Toegankelijkheid</translation>

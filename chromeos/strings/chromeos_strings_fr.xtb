@@ -83,6 +83,7 @@
 <translation id="1807246157184219062">Clair</translation>
 <translation id="1827738518074806965">Galerie d'art</translation>
 <translation id="1851218745569890714">Visioconférence</translation>
+<translation id="1852934301711881861">Installer Chrome OS Flex</translation>
 <translation id="1874612839560830905">MTU</translation>
 <translation id="1887850431809612466">Version du matériel</translation>
 <translation id="1905710495812624430">Vous avez atteint le nombre maximal autorisé de tentatives.</translation>
@@ -107,6 +108,7 @@
 <translation id="2158971754079422508"><ph name="DESC_TEXT" /> : Réessayez</translation>
 <translation id="2161394479394250669">Annuler la tâche d'impression</translation>
 <translation id="2180197493692062006">Un problème est survenu. Essayez de rouvrir l'appli.</translation>
+<translation id="2201770616342964496">Identité locale</translation>
 <translation id="2209788852729124853">Réinitialiser les compteurs de trafic</translation>
 <translation id="2212733584906323460">Résolution des noms</translation>
 <translation id="2217935453350629363">Vitesse actuelle</translation>
@@ -288,6 +290,7 @@
 <translation id="458794348635939462">Impossible de résoudre tous les hôtes</translation>
 <translation id="4593212453765072419">L'authentification du proxy est requise.</translation>
 <translation id="4627232916386272576"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="PRINTED_PAGE_NUMBER" /> sur <ph name="TOTAL_PAGE_NUMBER" />. Appuyez sur Entrée pour annuler la tâche d'impression.</translation>
+<translation id="4627645661474370390">Identité à distance</translation>
 <translation id="463791356324567266">Annulation de la numérisation…</translation>
 <translation id="4646949265910132906">Connexion Wi-Fi sécurisée</translation>
 <translation id="4654549501020883054">Modifier tous les jours</translation>

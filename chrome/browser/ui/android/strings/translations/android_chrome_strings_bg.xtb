@@ -138,6 +138,7 @@
 <translation id="1810845389119482123">Първоначалното настройване на синхронизирането не завърши</translation>
 <translation id="1829244130665387512">Търсене в страницата</translation>
 <translation id="1832459821645506983">Да, ще участвам</translation>
+<translation id="1849863543394887018">Можете да деактивирате известията, като отворите настройките</translation>
 <translation id="1877026089748256423">Chrome не е актуален</translation>
 <translation id="1883903952484604915">Моите файлове</translation>
 <translation id="189358972401248634">Други езици</translation>
@@ -654,6 +655,7 @@
 <translation id="4860895144060829044">Обаждане</translation>
 <translation id="4864369630010738180">Извършва се влизане...</translation>
 <translation id="4866368707455379617">Модулът „<ph name="MODULE" />“ за Chrome не може да се инсталира</translation>
+<translation id="4871568871368204250">Изключване на синхронизирането</translation>
 <translation id="4875775213178255010">Предложения за съдържание</translation>
 <translation id="4877678010818027629">Влизане в режим „инкогнито“</translation>
 <translation id="4878404682131129617">Създаването на тунел през прокси сървъра не бе успешно</translation>
@@ -1198,6 +1200,7 @@
 <translation id="7926975587469166629">Псевдоним на картата</translation>
 <translation id="7929962904089429003">Отваряне на менюто</translation>
 <translation id="7930998711684428189">Предупреждава ви, ако пароли са разкрити при нарушение на сигурността на данните.</translation>
+<translation id="7937772386706786623">Управление на контроли за мултимедия, раздели в режим „инкогнито“ и др. с помощта на известия</translation>
 <translation id="7939485076072265087">Създаване на стилизирана карта с открояване</translation>
 <translation id="7942131818088350342"><ph name="PRODUCT_NAME" /> не е актуален.</translation>
 <translation id="7944772052836377867">Синхронизирането трябва да потвърди, че това сте вие</translation>

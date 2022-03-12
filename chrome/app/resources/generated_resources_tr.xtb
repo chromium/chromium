@@ -226,6 +226,7 @@
 <translation id="121384500095351701">Bu dosya güvenli bir şekilde indirilemiyor</translation>
 <translation id="1215411991991485844">Yeni arka plan uygulaması eklendi</translation>
 <translation id="1216542092748365687">Parmak izini kaldır</translation>
+<translation id="1217114730239853757">ChromeOS Flex'in yerleşik ekran okuyucusu olan ChromeVox'u etkinleştirmek istiyor musunuz? Cevabınız evet ise boşluk çubuğuna basın.</translation>
 <translation id="1217483152325416304">Yerel verileriniz yakında silinecek</translation>
 <translation id="1217668622537098248">İşlemden sonra sol tıklamaya geri döndürür</translation>
 <translation id="121783623783282548">Şifreler eşleşmiyor.</translation>
@@ -276,6 +277,7 @@
 <translation id="126387934568812801">Bu ekran görüntüsünü ve açık sekmelerin başlıklarını ekleyin</translation>
 <translation id="1264083566674525434">Site izinlerini düzenle</translation>
 <translation id="1264337193001759725">Ağ kullanıcı arayüzü günlüklerini görmek için: <ph name="DEVICE_LOG_LINK" /></translation>
+<translation id="1265279736024499987">Uygulamalarınız ve ayarlarınız, Google hesabınızla oturum açtığınız tüm ChromeOS Flex cihazlarda senkronize edilir. Tarayıcı senkronizasyon seçenekleri için <ph name="LINK_BEGIN" />Chrome ayarlarına<ph name="LINK_END" /> gidin.</translation>
 <translation id="126710816202626562">Çeviri dili:</translation>
 <translation id="126768002343224824">16x</translation>
 <translation id="1272079795634619415">Durdur</translation>
@@ -328,6 +330,7 @@
 <translation id="1327272175893960498">Kerberos biletleri</translation>
 <translation id="1327495825214193325">ADB hata ayıklama işlevini etkinleştirmek için bu <ph name="DEVICE_TYPE" /> cihazının yeniden başlatılması gerekir. Bu işlevi devre dışı bırakmak fabrika ayarlarına sıfırlama yapılmasını gerektirir.</translation>
 <translation id="1327794256477341646">Konumunuza erişilmesini gerektiren özellikler çalışmaz</translation>
+<translation id="1329191040029425999">Lütfen cihazınızın güncel olduğundan emin olup tekrar deneyin</translation>
 <translation id="1330145147221172764">Ekran klavyesini etkinleştir</translation>
 <translation id="1331977651797684645">Bu kişi bendim.</translation>
 <translation id="1333489022424033687">Diğer sitelerin cihazınızda depoladığı veriler temizlenmeden, bazı <ph name="ORIGIN" /> özellikleri düzgün bir şekilde çalışmayabilir</translation>
@@ -369,6 +372,7 @@
 <translation id="1373176046406139583">Görünürlük ayarınız, ekranınızın kilidi açıkken kimlerin sizinle içerik paylaşabileceğini denetlemenizi sağlar. <ph name="LINK_BEGIN" />Daha fazla bilgi<ph name="LINK_END" /></translation>
 <translation id="1374844444528092021">"<ph name="NETWORK_NAME" />" ağı için gereken sertifika yüklenmemiş veya artık geçerli değil. Lütfen yeni bir sertifika alın ve tekrar bağlanmayı deneyin.</translation>
 <translation id="1375321115329958930">Kayıtlı şifreler</translation>
+<translation id="1375557162880614858">ChromeOS Flex'in yerleşik ekran okuyucusu olan ChromeVox'u etkinleştirmek istiyor musunuz?</translation>
 <translation id="137651782282853227">Kayıtlı adresler burada görünür</translation>
 <translation id="1376771218494401509">&amp;Pencereye ad ver...</translation>
 <translation id="1377600615067678409">Şimdilik atla</translation>
@@ -781,8 +785,10 @@ Uygulamalara vermiş olduğunuz izinler bu hesap için geçerli olabilir. Androi
 <translation id="175196451752279553">&amp;Kapatılan sekmeyi yeniden aç</translation>
 <translation id="1753067873202720523">Chromebook'unuz açıkken şarj olmayabilir.</translation>
 <translation id="1753905327828125965">En Çok Ziyaret Edilenler</translation>
+<translation id="1755395545337105369">ChromeOS Flex ayar senkronizasyonu</translation>
 <translation id="1755601632425835748">Metin boyutu</translation>
 <translation id="1755872274219796698">Şifreleri taşı</translation>
+<translation id="1757132445735080748">Linux kurulumunu tamamlamak için ChromeOS Flex'i güncelleyip tekrar deneyin.</translation>
 <translation id="1757301747492736405">Yüklemeyi kaldırma işlemi beklemede</translation>
 <translation id="175772926354468439">Temayı etkinleştir</translation>
 <translation id="17584710573359123">Chrome Web Mağazası'nda göster</translation>
@@ -829,6 +835,7 @@ Uygulamalara vermiş olduğunuz izinler bu hesap için geçerli olabilir. Androi
 <translation id="1794791083288629568">Bu sorunu düzeltmemize yardımcı olmak için geri bildirim gönderin.</translation>
 <translation id="1795214765651529549">Klasik Temayı Kullan</translation>
 <translation id="1796588414813960292">Ses kullanılmasını gerektiren özellikler çalışmaz</translation>
+<translation id="1800502858278951817">Hiçbir uzantı <ph name="SITE_NAME" /> sitesini okuyup değiştirmek istemedi</translation>
 <translation id="1801418420130173017">Koyu temayı devre dışı bırak</translation>
 <translation id="1802624026913571222">Kapak kapatıldığında uyku moduna geç</translation>
 <translation id="1802687198411089702">Sayfa yanıt vermiyor. Sayfanın yanıt vermesini bekleyebilir veya sayfadan çıkabilirsiniz.</translation>
@@ -1214,6 +1221,7 @@ Cihazınızda Family Link uygulamasını yükleyerek bu hesabın ayarlarını y�
 <translation id="217576141146192373">Yazıcı eklenemiyor. Lütfen yazıcınızın yapılandırmasını kontrol edip tekrar deneyin.</translation>
 <translation id="2175927920773552910">QR Kodu</translation>
 <translation id="2177950615300672361">Gizli Sekmesi: <ph name="TAB_NAME" /></translation>
+<translation id="2178585470774851578">ChromeOS Flex hata ayıklama özelliklerini etkinleştiriyorsunuz. Bu işlem sshd arka plan programını kurar ve USB sürücüden başlatmayı etkinleştirir.</translation>
 <translation id="2178614541317717477">CA Uzlaşması</translation>
 <translation id="2179416702468739594">Mevcut profiller aranıyor. Bu işlem, mobil ağınızın birkaç dakikalığına kopmasına neden olabilir.</translation>
 <translation id="2180620921879609685">Herhangi bir sayfadaki içeriği engelleme</translation>
@@ -1439,6 +1447,7 @@ Cihazınızda Family Link uygulamasını yükleyerek bu hesabın ayarlarını y�
 <translation id="2379281330731083556">Sistem iletişim kutusunu kullanarak yazdır... <ph name="SHORTCUT_KEY" /></translation>
 <translation id="2381499968174336913">Paylaşılan sekmenin önizlemesi</translation>
 <translation id="2381756643783702095">Göndermeden önce sor (önerilir)</translation>
+<translation id="2386202302581016807">Kullanılabilir cihaz depolama alanınız kurulumu tamamlamak için yeterli değil</translation>
 <translation id="2387052489799050037">Ana sayfaya git</translation>
 <translation id="2387602571959163792"><ph name="DESK_NAME" /> (Geçerli)</translation>
 <translation id="2389775852302560582">IP</translation>
@@ -1448,6 +1457,7 @@ Cihazınızda Family Link uygulamasını yükleyerek bu hesabın ayarlarını y�
 <translation id="2392163307141705938">Ebeveyninizin <ph name="IDS_SHORT_PRODUCT_NAME" /> için belirlediği süre sınırına ulaştınız.</translation>
 <translation id="2392369802118427583">Etkinleştir</translation>
 <translation id="2393136602862631930"><ph name="APP_NAME" /> uygulamasını Chromebook'unuzda kurun</translation>
+<translation id="2393313392064891208">Google ChromeOS Flex şartları içeriği</translation>
 <translation id="2395616325548404795"><ph name="DEVICE_TYPE" /> cihazınız kurumsal yönetim için başarıyla kaydettirildi, ancak öğe ve konum bilgilerini gönderemedi. Lütfen bu cihaza ilişkin bu bilgileri Yönetici konsolunuzdan manuel olarak girin.</translation>
 <translation id="2396783860772170191">4 basamaklı PIN'i girin (0000-9999)</translation>
 <translation id="2398546389094871088">Cihazınızda Powerwash işlemini gerçekleştirdiğinizde eSIM profilleriniz kaldırılmaz. Bu profilleri manuel olarak kaldırmak için <ph name="LINK_BEGIN" />Mobil Ayarlar<ph name="LINK_END" />'a gidin.</translation>
@@ -1478,6 +1488,7 @@ Cihazınızda Family Link uygulamasını yükleyerek bu hesabın ayarlarını y�
 <translation id="2433836460518180625">Yalnızca cihazın kilidini aç</translation>
 <translation id="2434449159125086437">Yazıcı kurulamıyor. Lütfen yapılandırmayı kontrol edip tekrar deneyin.</translation>
 <translation id="2434758125294431199">Sizinle kimlerin içerik paylaşabileceğini seçin</translation>
+<translation id="2435137177546457207">Google Chrome ve ChromeOS Flex Ek Şartları</translation>
 <translation id="2435248616906486374">Ağ bağlantısı kesildi</translation>
 <translation id="2435457462613246316">Şifreyi göster</translation>
 <translation id="2439626940657133600"><ph name="WINDOW_TITLE" /> yükleniyor</translation>
@@ -1589,6 +1600,7 @@ Cihazınızda Family Link uygulamasını yükleyerek bu hesabın ayarlarını y�
 <translation id="2530166226437958497">Sorun giderme</translation>
 <translation id="2531530485656743109"><ph name="BEGIN_PARAGRAPH1" />Bir sorun oluştuğu için <ph name="DEVICE_OS" /> yüklenemedi.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Daha fazla yardım için g.co/flex/InstallErrors sayfasını ziyaret edin.<ph name="END_PARAGRAPH2" /></translation>
+<translation id="2532198298278778531">ChromeOS Flex ayarlarında güvenli DNS'yi yönetin</translation>
 <translation id="2532589005999780174">Yüksek kontrast modu</translation>
 <translation id="2533649878691950253">Genellikle bu izni vermediğiniz için bu sitenin tam konumunuzu öğrenmesi engellendi</translation>
 <translation id="253434972992662860">&amp;Duraklat</translation>
@@ -2092,6 +2104,7 @@ Sunucunun mesajı: <ph name="SERVER_MSG" /></translation>
 <translation id="3031557471081358569">İçe aktarılacak öğeleri seçin:</translation>
 <translation id="3032587662022429783">Teşhis ve kullanım verileri hakkında daha fazla bilgi edinin.</translation>
 <translation id="3033348223765101500">Verilerinizi kontrol edin</translation>
+<translation id="3034627908241330765">Başka bir Steam kurulumu çalışıyor. Kurulumu yeniden çalıştırmadan önce lütfen diğerinin tamamlanmasını bekleyin.</translation>
 <translation id="3036327949511794916">Bu <ph name="DEVICE_TYPE" /> cihazı iade etmek için son tarih geçti.</translation>
 <translation id="3036546437875325427">Flash'ı etkinleştir</translation>
 <translation id="3037754279345160234">Alana katılmak için yapılandırma ayrıştırılamıyor. Lütfen yöneticinizle iletişime geçin.</translation>
@@ -2324,7 +2337,6 @@ Sunucunun mesajı: <ph name="SERVER_MSG" /></translation>
 <translation id="3304212451103136496"><ph name="DISCOUNT_AMOUNT" /> indirim</translation>
 <translation id="3305389145870741612">Biçimlendirme işlemi birkaç saniye sürebilir. Lütfen bekleyin.</translation>
 <translation id="3305661444342691068">PDF'yi Önizlemede Aç</translation>
-<translation id="3306992216458434072">Grubunuza ad verip bir renk seçin</translation>
 <translation id="3307176291962384345"><ph name="MERCHANT_NAME" /> satıcısından indirimli alışveriş yapın</translation>
 <translation id="3308116878371095290">Bu sayfanın çerezleri ayarlaması engellenmiştir.</translation>
 <translation id="3308134619352333507">Düğmeyi Gizle</translation>
@@ -2486,6 +2498,7 @@ Sunucunun mesajı: <ph name="SERVER_MSG" /></translation>
 <translation id="3462311546193741693">Bu işlem, çoğu sitedeki oturumunuzu kapatır. Google Hesabınızda oturumunuz açık kalacağından senkronize edilmiş verileriniz temizlenebilecektir.</translation>
 <translation id="3462413494201477527">Hesap kurulumu iptal edilsin mi?</translation>
 <translation id="346298925039590474">Bu mobil ağ, bu cihazdaki tüm kullanıcılar tarafından kullanılabilir</translation>
+<translation id="3463015289462934089">Lütfen cihazınızın internete bağlı olduğundan emin olun</translation>
 <translation id="3464145797867108663">Çalışma profili ekle</translation>
 <translation id="346431825526753">Bu hesap çocuklar içindir ve <ph name="CUSTODIAN_EMAIL" /> tarafından yönetilmektedir</translation>
 <translation id="346546413339447252"><ph name="MERCHANT_NAME_1" />, <ph name="MERCHANT_NAME_2" /> ve diğer satıcılardan indirimli alışveriş yapın</translation>
@@ -3063,6 +3076,7 @@ Sunucunun mesajı: <ph name="SERVER_MSG" /></translation>
 <translation id="3988996860813292272">Saat dilimi seçin</translation>
 <translation id="399179161741278232">İçe aktarılanlar</translation>
 <translation id="3993887353483242788"><ph name="DEVICE_TYPE" /> cihazınızı senkronize ederseniz Google Hesabınızla oturum açtığınızda tercihleriniz tüm cihazlarda hazır olur. Uygulamalar, ayarlar, kablosuz ağ şifreleri, diller, duvar kağıdı, klavye kısayolları ve daha fazlası bu tercihlere dahildir.</translation>
+<translation id="3994318741694670028">Maalesef bilgisayarınız, hatalı oluşturulmuş bir donanım kimliğiyle yapılandırılmış. Bu durum ChromeOS Flex'in en son güvenlik düzeltmeleriyle güncellenmesini engeller ve bilgisayarınız <ph name="BEGIN_BOLD" />kötü niyetli saldırılara<ph name="END_BOLD" /> açık duruma gelebilir.</translation>
 <translation id="3994374631886003300"><ph name="DEVICE_TYPE" /> cihazınızın kilidini açmak için telefonunuzun kilidini açın ve cihaza yaklaştırın.</translation>
 <translation id="3994878504415702912">Y&amp;aklaştır</translation>
 <translation id="3995138139523574647">USB-C cihaz (sağ arka bağlantı noktası)</translation>
@@ -3336,6 +3350,7 @@ Sunucunun mesajı: <ph name="SERVER_MSG" /></translation>
     <ph name="BEGIN_PARAGRAPH2" />Çocuğunuzun ChromeOS cihaz ayarlarından istediğiniz zaman bu raporlara izin verebilir veya izni iptal edebilirsiniz. Alan adı yöneticisiyseniz bu ayarı yönetici konsolunda değiştirebilirsiniz.<ph name="END_PARAGRAPH2" />
     <ph name="BEGIN_PARAGRAPH3" />Bu özelliğin kapatılması, bu cihazın sistem güncellemeleri ve güvenlik gibi önemli hizmetler için gereken bilgileri gönderme özelliğini etkilemez.<ph name="END_PARAGRAPH3" /></translation>
 <translation id="4301671483919369635">Bu sayfanın dosyaları düzenlemesine izin verilir</translation>
+<translation id="4302577930366020750">Steam'i kullanmak için lütfen cihazınızı yeniden başlatın.</translation>
 <translation id="4303079906735388947">Güvenlik anahtarınız için yeni bir PIN oluşturun</translation>
 <translation id="4305402730127028764"><ph name="DEVICE_NAME" /> cihazına kopyala</translation>
 <translation id="4305817255990598646">Anahtar</translation>
@@ -3458,6 +3473,7 @@ Sunucunun mesajı: <ph name="SERVER_MSG" /></translation>
 <translation id="4427306783828095590">Gelişmiş koruma, kimlik avını ve kötü amaçlı yazılımları engellemek için daha fazla özellik sunar</translation>
 <translation id="4427365070557649936">Onay kodu doğrulanıyor...</translation>
 <translation id="4429163740524851942">Fiziksel klavye düzeni</translation>
+<translation id="4429239357082509581">Steam'in çalıştırma izni yok</translation>
 <translation id="4430019312045809116">Ses</translation>
 <translation id="4430369329743628066">Yer işareti eklendi</translation>
 <translation id="4432621511648257259">Şifre yanlış</translation>
@@ -3523,6 +3539,7 @@ Sunucunun mesajı: <ph name="SERVER_MSG" /></translation>
 <translation id="450099669180426158">Ünlem işareti simgesi</translation>
 <translation id="4501530680793980440">Kaldırmayı Onaylayın</translation>
 <translation id="4502423230170890588">Bu cihazdan kaldır</translation>
+<translation id="4503748371388753124">Bilgisayarınızda, ChromeOS Flex'teki pek çok kritik güvenlik özelliğini uygulamak için kullanılan bir Güvenilir Platform Modülü (TPM) güvenlik cihazı bulunmaktadır. Daha fazla bilgi edinmek için Chromebook Yardım Merkezi'ni ziyaret edin: https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="4504374760782163539">{COUNT,plural, =0{Çerezlere izin veriliyor}=1{Çerezlere izin veriliyor, 1 istisna}other{Çerezlere izin veriliyor, {COUNT} istisna}}</translation>
 <translation id="4504940961672722399">Bu simgeyi tıklayarak veya <ph name="EXTENSION_SHORTCUT" /> tuşuna basarak bu uzantıyı kullanın.</translation>
 <translation id="450552327874992444">Kelime zaten eklendi</translation>
@@ -3879,6 +3896,7 @@ Sunucunun mesajı: <ph name="SERVER_MSG" /></translation>
 <translation id="4876273079589074638">Mühendislerimizin kilitlenme olayı araştırmalarına ve düzeltmelerine yardımcı olun. Yapabilirseniz adımları tam olarak listeleyin. Hiçbir ayrıntıyı atlamayın!</translation>
 <translation id="4876895919560854374">Ekranı kilitleme ve kilidini açma</translation>
 <translation id="4877276003880815204">Öğeleri İncele</translation>
+<translation id="4877652723592270843">ChromeOS Flex'in yerleşik ekran okuyucusu olan ChromeVox'u etkinleştirmek istiyor musunuz? Cevabınız evet ise ses seviyesi tuşlarının ikisini birden beş saniyeliğine basılı tutun.</translation>
 <translation id="4878634973244289103">Geri bildirim gönderilemedi. Lütfen daha sonra tekrar deneyin.</translation>
 <translation id="4878653975845355462">Özel arka planlar yöneticiniz tarafından kapatıldı</translation>
 <translation id="4878718769565915065">Bu güvenlik anahtarına parmak izi ekleme işlemi başarısız oldu</translation>
@@ -3942,6 +3960,8 @@ Sunucunun mesajı: <ph name="SERVER_MSG" /></translation>
 <translation id="4929386379796360314">Yazdırma Hedefleri</translation>
 <translation id="4930447554870711875">Geliştiriciler</translation>
 <translation id="4930714375720679147">Etkinleştir</translation>
+<translation id="4930776995592629647">Sorun devam ederse cihazınızı yeniden başlatmayı deneyin 
+    Hata kodu: <ph name="ERROR_CODE" />.</translation>
 <translation id="4932733599132424254">Tarih</translation>
 <translation id="4933484234309072027"><ph name="URL" /> adresinde yerleşik</translation>
 <translation id="4936042273057045735">İş profiline sahip telefonlarda bildirim senkronizasyonu desteklenmiyor</translation>
@@ -3993,6 +4013,7 @@ Sunucunun mesajı: <ph name="SERVER_MSG" /></translation>
 <translation id="4989966318180235467">&amp;Arka plan sayfasını incele</translation>
 <translation id="4991420928586866460">Üst satırdaki tuşları işlev tuşları olarak kullan</translation>
 <translation id="499165176004408815">Yüksek kontrast modunu kullan</translation>
+<translation id="4991858732577603540">Lütfen birkaç dakika bekleyip Steam'i tekrar çalıştırın.</translation>
 <translation id="4992458225095111526">Powerwash'ı onaylayın</translation>
 <translation id="4992473555164495036">Yöneticiniz kullanılıabilir giriş yöntemlerini sınırladı.</translation>
 <translation id="4994474651455208930">Sitelerin, protokoller için varsayılan işleyiciler olmasını sormasına izin ver</translation>
@@ -4010,6 +4031,7 @@ Sunucunun mesajı: <ph name="SERVER_MSG" /></translation>
 <translation id="5008936837313706385">Aktivite Adı</translation>
 <translation id="5009463889040999939">Profil yeniden adlandırılıyor. Bu işlem birkaç dakika sürebilir.</translation>
 <translation id="5010043101506446253">Sertifika yetkilisi</translation>
+<translation id="501057610015570208">"kiosk_only" manifest özelliğine sahip uygulama ChromeOS Flex kiosk modunda yüklenmelidir.</translation>
 <translation id="5015344424288992913">Proxy çözümleniyor...</translation>
 <translation id="5016491575926936899">Telefonunuzu kullanarak bilgisayarınızdan kısa mesaj gönderebilir, internet bağlantınızı paylaşabilir, ileti dizisi bildirimlere yanıt verebilir ve <ph name="DEVICE_TYPE" /> cihazınızın kilidini açabilirsiniz.<ph name="FOOTNOTE_POINTER" /> <ph name="LINK_BEGIN" />Daha fazla bilgi<ph name="LINK_END" /></translation>
 <translation id="5017643436812738274">Sayfalarda metin imleciyle gezinebilirsiniz. Kapatmak için Ctrl+Arama+7 tuşlarına basın.</translation>
@@ -4268,6 +4290,23 @@ Sunucunun mesajı: <ph name="SERVER_MSG" /></translation>
 <translation id="5282733140964383898">"Do Not Track" seçeneğinin etkinleştirilmesi, göz atma trafiğinize bir isteğin ekleneceği anlamına gelir. Bunun etkileri, bir web sitesinin bu isteğe yanıt verip vermemesine ve isteği ne şekilde yorumladığına bağlıdır. Örneğin bazı web siteleri bu isteğe yanıt olarak, daha önce ziyaret ettiğiniz diğer web sitelerine dayalı olmayan reklamlar gösterebilir. Pek çok web sitesi yine de göz atma verilerinizi toplamaya ve kullanmaya devam edecektir. Bunu örneğin, güvenliği artırmak, kendi web sitelerinde içerik, hizmet, reklam ve öneriler sunmak ve raporlama istatistikleri oluşturmak için yaparlar. <ph name="BEGIN_LINK" />Daha fazla bilgi edinin<ph name="END_LINK" /></translation>
 <translation id="5283677936944177147">Hata! Sistem, cihaz modelini veya seri numarasını belirleyemedi.</translation>
 <translation id="5284445933715251131">İndirmeye Devam Et</translation>
+<translation id="5284787925725379414"><ph name="BEGIN_H3" />Hata Ayıklama Özellikleri<ph name="END_H3" />
+      <ph name="BR" />
+      ChromeOS Flex cihazınızda özel kodları yüklemek ve test edebilmek için hata ayıklama özelliklerini etkinleştirebilirsiniz. Bu işlev, şunları yapmanıza olanak sağlar:<ph name="BR" />
+      <ph name="BEGIN_LIST" />
+        <ph name="LIST_ITEM" />OS dosyaları üzerinde değişiklik yapabilmeniz için rootfs doğrulamasını kaldırabilirsiniz
+        <ph name="LIST_ITEM" />Standart test anahtarlarını kullanarak cihaza SSH erişimini etkinleştirebilirsiniz. Bu şekilde, cihaza erişmek için <ph name="BEGIN_CODE" />"cros flash"<ph name="END_CODE" /> gibi araçları kullanabilirsiniz
+        <ph name="LIST_ITEM" />USB sürücüsünden OS görüntüsü yükleyebilmeniz için USB'den önyüklemeyi etkinleştirebilirsiniz
+        <ph name="LIST_ITEM" />Cihaza SSH ile manuel olarak bağlanabilmek için hem dev hem de sistem kök girişi şifresini özel bir değere ayarlayabilirsiniz
+      <ph name="END_LIST" />
+      <ph name="BR" />Etkinleştirildiğinde, kuruluş tarafından yönetilen bir cihazda Powerwash veya veri temizleme işlemleri gerçekleştirildikten sonra bile çoğu hata ayıklama özelliği etkin olarak kalmaya devam eder. Tüm hata ayıklama özelliklerini tamamen devre dışı bırakmak için Chrome OS kurtarma işlemini uygulayın (https://support.google.com/chromebook/answer/1080595).
+      <ph name="BR" />
+      <ph name="BR" />
+      Hata ayıklama özellikleriyle ilgili daha fazla bilgi için şu adrese bakın:<ph name="BR" />
+      https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-features
+      <ph name="BR" />
+      <ph name="BR" />
+      <ph name="BEGIN_BOLD" />Not:<ph name="END_BOLD" /> İşlem sırasında sistem yeniden başlatılacaktır.</translation>
 <translation id="5285635972691565180">Ekran <ph name="DISPLAY_ID" /></translation>
 <translation id="5286194356314741248">Taranıyor</translation>
 <translation id="5287425679749926365">Hesaplarınız</translation>
@@ -4423,6 +4462,7 @@ Bu işleme birden fazla anahtar atayabilirsiniz.</translation>
 <translation id="5449716055534515760">Pencereyi &amp;Kapat</translation>
 <translation id="5452976525201205853"><ph name="LANGUAGE" /> (çevrimdışı çalışır)</translation>
 <translation id="5454166040603940656"><ph name="PROVIDER" /> ile</translation>
+<translation id="5455603387986949153">ChromeOS Flex cihaz ve bileşen seri numaralarını okuma.</translation>
 <translation id="5457113250005438886">Geçersiz</translation>
 <translation id="5457459357461771897">Bilgisayarınızdaki fotoğrafları, müzikleri ve diğer medyaları okuma ve silme</translation>
 <translation id="5458214261780477893">Dvorak</translation>
@@ -4431,6 +4471,7 @@ Bu işleme birden fazla anahtar atayabilirsiniz.</translation>
 <translation id="5461050611724244538">Telefonunuzla bağlantı kesildi</translation>
 <translation id="5463275305984126951"><ph name="LOCATION" /> dizini</translation>
 <translation id="5463625433003343978">Cihazlar bulunuyor...</translation>
+<translation id="5463845647891602726">Boş alanı artırmak için cihazdan bazı dosyaları silin</translation>
 <translation id="5463856536939868464">Gizlenmiş yer işaretlerini içeren menü</translation>
 <translation id="5464632865477611176">Bu seferlik çalıştır</translation>
 <translation id="5464660706533281090">Bu ayar, çocuk kullanıcılar tarafından değiştirilemez.</translation>
@@ -4740,6 +4781,8 @@ Hassas bilgileri vermediğinizden emin olun.</translation>
 <translation id="5778491106820461378">Oturum açılmış Google Hesaplarınızı <ph name="LINK_BEGIN" />Ayarlar<ph name="LINK_END" />'dan yönetebilirsiniz. Web sitelerine ve uygulamalara verdiğiniz izinler, tüm hesaplar için geçerli olabilir. Sitelerin veya uygulamaların hesap bilgilerinize erişmesini istemiyorsanız <ph name="DEVICE_TYPE" /> cihazınızda misafir olarak oturum açabilirsiniz.</translation>
 <translation id="5780011244986845107">Seçtiğiniz klasör hassas dosyalar içeriyor. "<ph name="APP_NAME" />" uygulamasına bu klasör için kalıcı okuma erişimi vermek istediğinizden emin misiniz?</translation>
 <translation id="5780973441651030252">Süreç önceliği</translation>
+<translation id="5781014777846460847">Bu cihazda Steam'e izin verilmiyor. İzin almak için yöneticinizle iletişime geçin 
+    Hata kodu: <ph name="ERROR_CODE" />.</translation>
 <translation id="5781092003150880845"><ph name="ACCOUNT_FULL_NAME" /> olarak senkronize et</translation>
 <translation id="5781865261247219930">Komutları <ph name="EXTENSION_NAME" /> uygulamasına gönder</translation>
 <translation id="5782227691023083829">Çevriliyor...</translation>
@@ -4846,6 +4889,7 @@ Hassas bilgileri vermediğinizden emin olun.</translation>
 <translation id="5889282057229379085">Ara CA sayısı üst sınırı: <ph name="NUM_INTERMEDIATE_CA" /></translation>
 <translation id="5891688036610113830">Tercih edilen kablosuz ağlar</translation>
 <translation id="5895138241574237353">Yeniden başlat</translation>
+<translation id="5895335062901455404">Google Hesabınızla oturum açtığınızda kayıtlı tercihleriniz herhangi bir ChromeOS Flex cihazda hazır olur. Neyin senkronize edileceğini Ayarlar'dan seçebilirsiniz.</translation>
 <translation id="5896436821193322561">İzin Verme</translation>
 <translation id="5900302528761731119">Google Profil fotoğrafı</translation>
 <translation id="590036993063074298">Yansıtma Kalitesi Ayrıntıları</translation>
@@ -5300,6 +5344,7 @@ Hassas bilgileri vermediğinizden emin olun.</translation>
 <translation id="6345878117466430440">Okundu olarak işaretle</translation>
 <translation id="6347010704471250799">Bildirimi göster</translation>
 <translation id="6349101878882523185"><ph name="APP_NAME" /> uygulamasını yükle</translation>
+<translation id="6351383110065274390">Chromebook'unuzda oyun oynamanın tadını çıkarın</translation>
 <translation id="6354918092619878358">SECG eliptik eğri secp256r1 (önceki adları ANSI X9.62 prime256v1, NIST P-256)</translation>
 <translation id="6355789186038748882">Deneysel (alfa kalite) tarayıcı Bazı özellikler eksik Sorunları Yardım &gt; "Sorun bildir..." bölümünden bildirin.</translation>
 <translation id="635609604405270300">Cihazı kapatmayın</translation>
@@ -5462,6 +5507,7 @@ Hassas bilgileri vermediğinizden emin olun.</translation>
 <translation id="6514565641373682518">Bu sayfa fare imlecinizi devre dışı bıraktı.</translation>
 <translation id="6518014396551869914">Resmi Kop&amp;yala</translation>
 <translation id="6518133107902771759">Doğrula</translation>
+<translation id="6519304021460270639">Uygulamalarınız, ayarlarınız ve diğer özelleştirmeleriniz, Google Hesabınızla oturum açtığınız tüm ChromeOS Flex cihazlarında senkronize edilir.</translation>
 <translation id="651942933739530207"><ph name="APP_NAME" /> adlı uygulamanın ekranınızı ve ses çıkışınızı paylaşmasını istiyor musunuz?</translation>
 <translation id="6519437681804756269">[<ph name="TIMESTAMP" />]
         <ph name="FILE_INFO" />
@@ -5638,6 +5684,7 @@ Hassas bilgileri vermediğinizden emin olun.</translation>
 <translation id="6691541770654083180">Dünya</translation>
 <translation id="6691936601825168937">İle&amp;ri</translation>
 <translation id="6693745645188488741">{COUNT,plural, =1{1 sayfa}other{{COUNT} sayfa}}</translation>
+<translation id="6694430008315398925">Steam kuruluyor</translation>
 <translation id="6697492270171225480">Bir sayfa bulunamadığında benzer sayfalar için önerileri göster</translation>
 <translation id="6697690052557311665">Paylaşmak için Dosyalar uygulamasındaki bir klasörü sağ tıklayın, ardından "Linux ile paylaş"ı seçin.</translation>
 <translation id="6698810901424468597"><ph name="WEBSITE_1" /> ve <ph name="WEBSITE_2" /> web sitelerinde verilerinizi okuma ve değiştirme</translation>
@@ -5739,6 +5786,7 @@ Hassas bilgileri vermediğinizden emin olun.</translation>
 <translation id="6805647936811177813"><ph name="HOST_NAME" /> adresinden istemci sertifikasını içe aktarmak için lütfen <ph name="TOKEN_NAME" /> cihazında oturum açın.</translation>
 <translation id="680572642341004180"><ph name="SHORT_PRODUCT_OS_NAME" /> üzerinde RLZ izlemeyi etkinleştir.</translation>
 <translation id="6808039367995747522">Devam etmek için güvenlik anahtarınızı takıp dokunun</translation>
+<translation id="6808166974213191158">ChromeOS Flex Sistemi Görüntüsü Yazıcı</translation>
 <translation id="6808193438228982088">Tilki</translation>
 <translation id="6809470175540814047">Gizli pencerede aç</translation>
 <translation id="6809656734323672573">Kabul ederseniz Google Asistan "Ok Google" ifadesini algılamak için bekleme modunda kalır ve Voice Match ile konuşanın siz olduğunu anlar.
@@ -6692,6 +6740,7 @@ Atamayı kaldırmak için atanmış bir anahtara veya tuşa basın.</translation
 <translation id="7768526219335215384"><ph name="ORIGIN" />, <ph name="FOLDERNAME" /> klasöründeki dosyaları görüntüleyebilir</translation>
 <translation id="7768770796815395237">Değiştir</translation>
 <translation id="7768784765476638775">Seç ve Dinle</translation>
+<translation id="7770406201819593386">ChromeOS Flex teşhis testlerini çalıştırma.</translation>
 <translation id="7770612696274572992">Resim diğer cihazdan kopyalandı</translation>
 <translation id="7771452384635174008">Düzen</translation>
 <translation id="7772032839648071052">Parolayı onayla</translation>
@@ -6784,6 +6833,7 @@ Atamayı kaldırmak için atanmış bir anahtara veya tuşa basın.</translation
 <translation id="7853747251428735">&amp;Diğer Araçlar</translation>
 <translation id="7855678561139483478">Sekmeyi yeni pencereye taşı</translation>
 <translation id="7856654138655787862">Chrome OS teşhis testlerini çalıştırır.</translation>
+<translation id="7857004848504343806">Bilgisayarınızda, ChromeOS Flex'teki pek çok kritik güvenlik özelliğini uygulamak için kullanılan bir güvenli modül bulunmaktadır. Daha fazla bilgi edinmek için Chromebook Yardım Merkezi'ni ziyaret edin: https://support.google.com/chromebook/?p=sm</translation>
 <translation id="7857093393627376423">Metin önerileri</translation>
 <translation id="7857949311770343000">Bu, beklediğiniz yeni sekme sayfası mı?</translation>
 <translation id="7858328180167661092"><ph name="APP_NAME" /> (Windows)</translation>
@@ -6899,6 +6949,7 @@ Atamayı kaldırmak için atanmış bir anahtara veya tuşa basın.</translation
 <translation id="7969046989155602842">Komut</translation>
 <translation id="7970673414865679092">Ethernet ayrıntıları</translation>
 <translation id="7970882136539140748">Kart şu anda kaydedilemiyor</translation>
+<translation id="7972354851134703743">Hızlı Komutları Aç/Kapat</translation>
 <translation id="7972714317346275248">PKCS #1 RSA Şifrelemeli SHA-384</translation>
 <translation id="7973776233567882054">Ağınızı aşağıdakilerden hangisi en iyi şekilde tanımlar?</translation>
 <translation id="797394244396603170">Dosya paylaşmak için kullanmak istediğiniz cihazı seçin</translation>
@@ -6948,6 +6999,7 @@ Anahtar dosyanızı güvenli bir yerde saklayın. Uzantınızın yeni sürümler
 <translation id="8017679124341497925">Kısayol düzenlendi</translation>
 <translation id="8018298733481692628">Bu profili silinsin mi?</translation>
 <translation id="8018313076035239964">Web sitelerinin kullanabilecekleri bilgileri ve size gösterebilecekleri içerikleri kontrol edin</translation>
+<translation id="8023133589013344428">ChromeOS Flex ayarlarında dilleri yönetin</translation>
 <translation id="8023801379949507775">Uzantıları şimdi güncelle</translation>
 <translation id="8025151549289123443">Kilit ekranı ve oturum açma</translation>
 <translation id="8026334261755873520">Tarama verilerini temizle</translation>
@@ -7000,6 +7052,7 @@ Anahtar dosyanızı güvenli bir yerde saklayın. Uzantınızın yeni sürümler
 <translation id="8062844841289846053">{COUNT,plural, =1{1 kağıt}other{{COUNT} kağıt}}</translation>
 <translation id="8063235345342641131">Varsayılan yeşil avatar</translation>
 <translation id="8063535366119089408">Dosyayı göster</translation>
+<translation id="8064015586118426197">ChromeOS Flex</translation>
 <translation id="8064279191081105977"><ph name="GROUP_NAME" /> grubu - <ph name="GROUP_CONTENTS" /> - <ph name="COLLAPSED_STATE" /></translation>
 <translation id="8066444921260601116">Bağlantı İletişim Kutusu</translation>
 <translation id="8070662218171013510">Dokunsal geribildirim</translation>
@@ -7096,6 +7149,7 @@ Anahtar dosyanızı güvenli bir yerde saklayın. Uzantınızın yeni sürümler
 <translation id="8157248655669507702">eSIM profili yüklemek için mobil veriyi etkinleştirin</translation>
 <translation id="8157704005178149728">Gözetim kuruluyor</translation>
 <translation id="8158117992543756526">Bu cihaz, <ph name="MONTH_AND_YEAR" /> tarihinde otomatik yazılım ve güvenlik güncellemelerini almayı durdurdu. <ph name="LINK_BEGIN" />Daha fazla bilgi<ph name="LINK_END" /></translation>
+<translation id="8159652640256729753">Bölünmüş ekran ve masa değiştirme gibi işlemler için titreşim onayı alın. <ph name="LINK_BEGIN" />Daha fazla bilgi<ph name="LINK_END" /></translation>
 <translation id="816055135686411707">Sertifika Güveni Ayarlanırken Hata Oluştu</translation>
 <translation id="8160775796528709999">Ayarlarda Canlı Altyazı özelliğini etkinleştirerek ses ve videolarınıza altyazı ekleyin</translation>
 <translation id="816095449251911490"><ph name="SPEED" /> - <ph name="RECEIVED_AMOUNT" />, <ph name="TIME_REMAINING" /></translation>
@@ -7364,6 +7418,7 @@ Anahtar dosyanızı güvenli bir yerde saklayın. Uzantınızın yeni sürümler
 <translation id="8438566539970814960">Aramaları ve göz atmayı daha iyi yap</translation>
 <translation id="8439506636278576865">Bu dildeki sayfaları çevirmeyi öner</translation>
 <translation id="8440630305826533614">Linux uygulamaları</translation>
+<translation id="8443795068008423036">Lütfen cihazınızın güncel olduğundan emin olup tekrar deneyin</translation>
 <translation id="8445046761938045900">Son fotoğraflar, bildirimler ve mesajlaşma uygulamaları</translation>
 <translation id="8446884382197647889">Daha Fazla Bilgi Edinin</translation>
 <translation id="8447409163267621480">Ctrl veya Alt tuşunu ekleyin</translation>
@@ -7548,6 +7603,7 @@ Anahtar dosyanızı güvenli bir yerde saklayın. Uzantınızın yeni sürümler
 <translation id="8648252583955599667"><ph name="GET_HELP_LINK" /> veya <ph name="RE_SCAN_LINK" /></translation>
 <translation id="8648408795949963811">Gece Işığı renk sıcaklığı</translation>
 <translation id="8648544143274677280"><ph name="SITE_NAME" /> şunu yapmak istiyor: <ph name="FIRST_PERMISSION" />, <ph name="SECOND_PERMISSION" /> ve daha fazlası</translation>
+<translation id="864892689521194669">ChromeOS Flex'in özelliklerini ve performansını iyileştirmeye yardımcı olun</translation>
 <translation id="8650543407998814195">Artık eski profilinize erişemeseniz de onu yine de kaldırabilirsiniz.</translation>
 <translation id="8651585100578802546">Bu Sayfayı Tekrar Yüklemeye Zorla</translation>
 <translation id="8652400352452647993">Uzantı paketleme hatası</translation>
@@ -7643,6 +7699,7 @@ Anahtar dosyanızı güvenli bir yerde saklayın. Uzantınızın yeni sürümler
 <translation id="8737709691285775803">Shill</translation>
 <translation id="8737914367566358838">Sayfanın çevrileceği dili seçin</translation>
 <translation id="8740247629089392745">Bu Chromebook'u <ph name="SUPERVISED_USER_NAME" /> adlı kullanıcıya verebilirsiniz. Kurulum tamamlanmak üzere, ardından keşfetmeye başlayabilirsiniz.</translation>
+<translation id="8740672167979365981">ChromeOS Flex güncellemesi gerekli</translation>
 <translation id="8741944563400125534">Anahtar Erişimi kurulum kılavuzu</translation>
 <translation id="8742998548129056176">Buradaki bilgiler (pil seviyesi, uygulama etkinliği ve hatalar gibi) cihazınızla ve cihazınızı nasıl kullandığınızla ilgili genel bilgilerdir. Bu bilgiler, Android'i daha iyi hale getirmek amacıyla kullanılır. Bazı birleştirilmiş bilgiler, Google uygulamalarının ve Android geliştiricileri gibi iş ortaklarına ait uygulama ve ürünlerin iyileştirilmesine de yardımcı olur.</translation>
 <translation id="8746654918629346731">"<ph name="EXTENSION_NAME" />" zaten istendi</translation>
@@ -7654,6 +7711,7 @@ Anahtar dosyanızı güvenli bir yerde saklayın. Uzantınızın yeni sürümler
 <translation id="8750346984209549530">Hücresel APN</translation>
 <translation id="8752451679755290210">Öğeler arasında otomatik olarak gezinin</translation>
 <translation id="8753868764580670305">Bu cihaza kaydedilen şifreleri inceleyip yönetin</translation>
+<translation id="8753948258138515839">Files uygulaması; Google Drive'a, harici depolama birimine veya ChromeOS Flex cihazınıza kaydettiğiniz dosyalara hızlı bir şekilde erişebilmenizi sağlar.</translation>
 <translation id="8754200782896249056">&lt;p&gt;<ph name="PRODUCT_NAME" />, desteklenen bir masaüstü ortamında çalışırken sistem proxy ayarları kullanılır. Ancak, ya sisteminiz desteklenmiyor ya da sistem yapılandırmanız başlatılırken bir hata oluştu.&lt;/p&gt;
 
         &lt;p&gt;Yine de, yapılandırmayı komut satırını kullanarak yapabilirsiniz. Bayraklar ve ortam değişkenleri için lütfen &lt;code&gt;man <ph name="PRODUCT_BINARY_NAME" />&lt;/code&gt; içeriğine bakın.&lt;/p&gt;</translation>
@@ -7672,6 +7730,7 @@ Anahtar dosyanızı güvenli bir yerde saklayın. Uzantınızın yeni sürümler
 <translation id="87646919272181953">Google Fotoğraflar albümü</translation>
 <translation id="8767621466733104912">Tüm kullanıcılar için Chrome'u otomatik olarak güncelle</translation>
 <translation id="8767765348545497220">Yardım balonunu kapat</translation>
+<translation id="8769901904650373714">Steam kurulumuyla ilgili bir sorun oluştu</translation>
 <translation id="8770406935328356739">Uzantı kök dizini</translation>
 <translation id="8771300903067484968">Başlangıç sayfası arka planı, varsayılan arka plana sıfırlandı.</translation>
 <translation id="8773302562181397928"><ph name="PRINTER_NAME" /> cihazını kaydet</translation>
@@ -7888,6 +7947,7 @@ Anahtar dosyanızı güvenli bir yerde saklayın. Uzantınızın yeni sürümler
 <translation id="8981825781894055334">Kağıt az</translation>
 <translation id="8983632908660087688"><ph name="ORIGIN" />, <ph name="FILENAME" /> adlı dosyayı düzenleyebilir</translation>
 <translation id="8984694057134206124"><ph name="MINUTES" /> dakika süreyle herkes tarafından görülebileceksiniz. <ph name="LINK_BEGIN" />Daha fazla bilgi<ph name="LINK_END" /></translation>
+<translation id="8985191021574400965">Chromebook için Steam'e hoş geldiniz</translation>
 <translation id="8985264973231822211"><ph name="DEVICE_LAST_ACTIVATED_TIME" /> gün önce etkinleştirildi</translation>
 <translation id="8985661493893822002"><ph name="DEVICE_TYPE" /> cihazınızda oturum açmak için lütfen internete bağlanın.</translation>
 <translation id="8986362086234534611">Unut</translation>
@@ -8086,6 +8146,7 @@ Anahtar dosyanızı güvenli bir yerde saklayın. Uzantınızın yeni sürümler
 <translation id="917510707618656279">Bir site Bluetooth cihazlara erişmek istediğinde sor</translation>
 <translation id="9176476835295860688">Kullanım ve teşhis verilerini gönder. Bu cihaz şu anda teşhis, cihaz ve uygulama kullanımı verilerini otomatik olarak Google'a gönderiyor. Bu veriler, sistem ve uygulama kararlılığı ile diğer özellikleri iyileştirmeye yardımcı olur. Bazı birleştirilmiş veriler, Google uygulamalarına ve iş ortaklarına da (ör. Android geliştiricileri) yardımcı olur. Bu <ph name="BEGIN_LINK1" />ayar<ph name="END_LINK1" />, cihazın sahibi tarafından zorunlu kılınmıştır. Ek Web ve Uygulama Etkinliği açıksa bu veriler Google hesabınıza kaydedilebilir. <ph name="BEGIN_LINK2" />Daha Fazla Bilgi<ph name="END_LINK2" /></translation>
 <translation id="9176611096776448349"><ph name="WINDOW_TITLE" /> - Bluetooth cihaz bağlı</translation>
+<translation id="9177949831069307748">ChromeOS Flex cihaz bilgilerini ve cihaz verilerini okuma.</translation>
 <translation id="9178061802301856367">Oturum açma verilerini silin</translation>
 <translation id="9179524979050048593">Oturum açma ekranı kullanıcı adı</translation>
 <translation id="9180281769944411366">Bu işlem birkaç dakika sürebilir. Linux kapsayıcısı başlatılıyor.</translation>

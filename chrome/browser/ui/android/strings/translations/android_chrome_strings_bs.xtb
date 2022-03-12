@@ -138,7 +138,7 @@
 <translation id="1810845389119482123">Početno postavljanje sinhronizacije nije završeno</translation>
 <translation id="1829244130665387512">Pronađi na stranici</translation>
 <translation id="1832459821645506983">Pristajem</translation>
-<translation id="1849863543394887018">Obavijesti možete onemogućiti u postavkama</translation>
+<translation id="1849863543394887018">Ako posjetite postavke, možete onemogućiti obavještenja</translation>
 <translation id="1877026089748256423">Chrome je zastario</translation>
 <translation id="1883903952484604915">Moji fajlovi</translation>
 <translation id="189358972401248634">Drugi jezici</translation>
@@ -655,6 +655,7 @@ Da biste promijenili tu postavku, <ph name="BEGIN_LINK" />poništite sinkronizac
 <translation id="4860895144060829044">Pozovi</translation>
 <translation id="4864369630010738180">Prijavljivanje…</translation>
 <translation id="4866368707455379617">Nije moguće instalirati modul <ph name="MODULE" /> za Chrome</translation>
+<translation id="4871568871368204250">Isključivanje sinkronizacije</translation>
 <translation id="4875775213178255010">Prijedlozi za sadržaj</translation>
 <translation id="4877678010818027629">Uđite u anonimni način rada</translation>
 <translation id="4878404682131129617">Uspostavljanje tunela putem proksi servera nije uspjelo</translation>
@@ -1199,7 +1200,7 @@ Naprimjer, neke web lokacije mogu reagirati na ovaj zahtjev prikazivanjem oglasa
 <translation id="7926975587469166629">Nadimak kartice</translation>
 <translation id="7929962904089429003">Otvorite meni</translation>
 <translation id="7930998711684428189">Upozorava vas ako su lozinke izložene prilikom narušavanja podataka.</translation>
-<translation id="7937772386706786623">Upravljanje medijskim kontrolama, anonimnim karticama i još više s obavijestima</translation>
+<translation id="7937772386706786623">Pomoću obavještenja upravljajte kontrolama medija, anonimnim karticama i drugim opcijama</translation>
 <translation id="7939485076072265087">Kreiranje stilizirane kartice s istaknutim stavkama</translation>
 <translation id="7942131818088350342">Proizvod <ph name="PRODUCT_NAME" /> je zastario.</translation>
 <translation id="7944772052836377867">Sinhronizacija mora potvrditi da ste to vi</translation>

@@ -197,6 +197,7 @@ Jei norite pradėti, pabandykite atlikti nurodytus veiksmus.</translation>
 <translation id="2132302418721800944">Įrašyti viso ekrano režimu</translation>
 <translation id="2135456203358955318">Prie doko prijungtas didintuvas</translation>
 <translation id="2148716181193084225">Šiandien</translation>
+<translation id="2159930836979502091">Eiti į šį skirtuką</translation>
 <translation id="2170530631236737939">Perbraukite žemyn trimis pirštais, kad išeitumėte iš „Apžvalgos“ skilties</translation>
 <translation id="219905428774326614">Paleidimo priemonė, visos programos</translation>
 <translation id="2201071101391734388">Naujausia <ph name="INDEX" /> nuotrauka iš <ph name="TOTAL_COUNT" />.</translation>
@@ -563,6 +564,7 @@ Jei norite pradėti, pabandykite atlikti nurodytus veiksmus.</translation>
 <translation id="4449692009715125625">{NUM_NOTIFICATIONS,plural, =1{1 svarbus pranešimas}one{# svarbus pranešimas}few{# svarbūs pranešimai}many{# svarbaus pranešimo}other{# svarbių pranešimų}}</translation>
 <translation id="4450893287417543264">Daugiau neberodyti</translation>
 <translation id="4451374464530248585">Pakeistas spartusis klavišas „Alt“ + rodyklė žemyn. Jei norite naudoti klavišą „Page Down“, paspauskite <ph name="LAUNCHER_KEY_NAME" /> klavišą + rodyklę žemyn.</translation>
+<translation id="4455051983450390249">Peržiūrėkite telefono pranešimus „<ph name="DEVICE_TYPE" />“ įrenginyje</translation>
 <translation id="445864333228800152">Labas vakaras,</translation>
 <translation id="4458688154122353284">Sustabdyti ekrano įrašymą</translation>
 <translation id="4471354919263203780">Atsisiunčiami kalbos atpažinimo failai... <ph name="PERCENT" /> proc.</translation>
@@ -770,6 +772,7 @@ Jei norite pradėti, pabandykite atlikti nurodytus veiksmus.</translation>
 <translation id="583281660410589416">Nežinoma</translation>
 <translation id="5837036133683224804">Sustabdyti „<ph name="ROUTE_TITLE" />“ („<ph name="RECEIVER_NAME" />“)</translation>
 <translation id="584525477304726060">Laikykite, kad padidintumėte</translation>
+<translation id="5856638668464565213">„<ph name="NETWORK_NAME" />“ nesuaktyvintas.</translation>
 <translation id="5860033963881614850">Išjungta</translation>
 <translation id="5860491529813859533">Įjungti</translation>
 <translation id="5867217927013474703">Renkama tinklo informacija</translation>
@@ -801,6 +804,7 @@ Jei norite pradėti, pabandykite atlikti nurodytus veiksmus.</translation>
 <translation id="602472752137106327">Rodyti visų darbalaukių langus, pasirinkta akutė</translation>
 <translation id="6025324406281560198"><ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, signalo stiprumas <ph name="SIGNAL_STRENGTH" />, tvarko administratorius</translation>
 <translation id="6027518778343897451">Nėra jokių įvykių <ph name="CURRENT_MONTH_DAY" />. Paspauskite „Enter“, kad atidarytumėte „Google“ kalendorių naršyklėje.</translation>
+<translation id="6027952026115023659">Pasiekite telefono pranešimų programas „<ph name="DEVICE_TYPE" />“ įrenginyje</translation>
 <translation id="6030495522958826102">Meniu perkeltas į apatinį kairįjį ekrano kampą.</translation>
 <translation id="6032620807120418574">Spustelėkite bet kur, kad įrašytumėte visą ekraną</translation>
 <translation id="6040071906258664830">Įrašyti mikrofoną: <ph name="STATE" /></translation>
@@ -944,6 +948,7 @@ Naujas įdiegimas</translation>
 <translation id="6961121602502368900">Telefono nutildymo funkcija nepasiekiama darbo profilyje</translation>
 <translation id="6961840794482373852">Pakeistas spartusis klavišas „Alt“ + rodyklė aukštyn. Jei norite naudoti klavišą „Page Up“, paspauskite <ph name="LAUNCHER_KEY_NAME" /> klavišą + rodyklę aukštyn.</translation>
 <translation id="6965382102122355670">Gerai</translation>
+<translation id="6967933908874208731">Peržiūrėkite telefono naujausias nuotraukas, mediją, pranešimus ir pranešimų programas „<ph name="DEVICE_TYPE" />“ įrenginyje</translation>
 <translation id="6972754398087986839">Darbo pradžia</translation>
 <translation id="6979158407327259162">„Google“ diskas</translation>
 <translation id="6981982820502123353">Pritaikymas neįgaliesiems</translation>

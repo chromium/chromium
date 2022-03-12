@@ -197,6 +197,7 @@
 <translation id="2132302418721800944">Сними цео екран</translation>
 <translation id="2135456203358955318">Монтирана лупа екрана</translation>
 <translation id="2148716181193084225">Данас</translation>
+<translation id="2159930836979502091">Идите на ову картицу</translation>
 <translation id="2170530631236737939">Превуците надоле помоћу три прста да бисте изашли из Прегледа</translation>
 <translation id="219905428774326614">Покретач, све апликације</translation>
 <translation id="2201071101391734388"><ph name="INDEX" />. недавна слика од <ph name="TOTAL_COUNT" />.</translation>
@@ -563,6 +564,7 @@
 <translation id="4449692009715125625">{NUM_NOTIFICATIONS,plural, =1{1 важно обавештење}one{# важно обавештење}few{# важна обавештења}other{# важних обавештења}}</translation>
 <translation id="4450893287417543264">Не приказуј поново</translation>
 <translation id="4451374464530248585">Тастерска пречица Alt + стрелица надоле је промењена. Да бисте користили тастер Page Down, притисните тастер <ph name="LAUNCHER_KEY_NAME" /> + стрелица надоле.</translation>
+<translation id="4455051983450390249">Прегледајте обавештења са телефона на <ph name="DEVICE_TYPE" /></translation>
 <translation id="445864333228800152">Добро вече,</translation>
 <translation id="4458688154122353284">Зауставите снимање екрана</translation>
 <translation id="4471354919263203780">Преузимају се датотеке за препознавање говора... <ph name="PERCENT" />%</translation>
@@ -770,6 +772,7 @@
 <translation id="583281660410589416">Непознато</translation>
 <translation id="5837036133683224804">Заустави <ph name="ROUTE_TITLE" /> на уређају <ph name="RECEIVER_NAME" /></translation>
 <translation id="584525477304726060">Задржите да бисте увећали</translation>
+<translation id="5856638668464565213">Мрежа <ph name="NETWORK_NAME" /> није активирана.</translation>
 <translation id="5860033963881614850">Искључено</translation>
 <translation id="5860491529813859533">Укључи</translation>
 <translation id="5867217927013474703">Прикупљају се информације о мрежи</translation>
@@ -801,6 +804,7 @@
 <translation id="602472752137106327">Приказујте прозоре са свих радних површина, дугме за избор је изабрано</translation>
 <translation id="6025324406281560198"><ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, јачина сигнала <ph name="SIGNAL_STRENGTH" />, управља администратор</translation>
 <translation id="6027518778343897451">Нема догађаја у: <ph name="CURRENT_MONTH_DAY" />. Притисните Enter да бисте отворили Google календар у прегледачу.</translation>
+<translation id="6027952026115023659">Приступите апликацијама за размену порука са телефона на <ph name="DEVICE_TYPE" /></translation>
 <translation id="6030495522958826102">Мени је премештен у доњи леви угао екрана.</translation>
 <translation id="6032620807120418574">Кликните било где да бисте снимили цео екран</translation>
 <translation id="6040071906258664830">Подешавање Снимај помоћу микрофона је <ph name="STATE" /></translation>
@@ -944,6 +948,7 @@
 <translation id="6961121602502368900">Искључивање звука телефона није доступно на пословном профилу</translation>
 <translation id="6961840794482373852">Тастерска пречица Ctrl + стрелица нагоре је промењена. Да бисте користили тастер Page Up, притисните тастер <ph name="LAUNCHER_KEY_NAME" /> + стрелица нагоре.</translation>
 <translation id="6965382102122355670">Потврди</translation>
+<translation id="6967933908874208731">Прегледајте недавне слике, медије, обавештења и апликације за размену порука са телефона на <ph name="DEVICE_TYPE" /></translation>
 <translation id="6972754398087986839">Започнимо</translation>
 <translation id="6979158407327259162">Google диск</translation>
 <translation id="6981982820502123353">Приступачност</translation>

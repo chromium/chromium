@@ -656,6 +656,7 @@ Para alterar essa configuração, <ph name="BEGIN_LINK" />redefina a sincroniza�
 <translation id="4860895144060829044">Ligar</translation>
 <translation id="4864369630010738180">Fazendo login...</translation>
 <translation id="4866368707455379617">Não é possível instalar <ph name="MODULE" /> para o Chrome</translation>
+<translation id="4871568871368204250">Desativar a sincronização</translation>
 <translation id="4875775213178255010">Sugestões de conteúdo</translation>
 <translation id="4877678010818027629">Entrar no modo de navegação anônima</translation>
 <translation id="4878404682131129617">Falha ao estabelecer encapsulamento via servidor proxy</translation>
@@ -1129,7 +1130,7 @@ Por exemplo, alguns sites podem responder a esse pedido mostrando anúncios que 
 <translation id="7514365320538308">Fazer o download</translation>
 <translation id="751961395872307827">Não foi possível se conectar ao site</translation>
 <translation id="752220631458524187">Desconecte o smartphone quando terminar</translation>
-<translation id="7523960634226602883">Pesquisar com a câmera usando o Google Lens</translation>
+<translation id="7523960634226602883">Pesquisar com a câmera usando o Lens</translation>
 <translation id="753225086557513863">Programado para mais tarde</translation>
 <translation id="7562080006725997899">Limpando dados de navegação</translation>
 <translation id="756809126120519699">Dados do Chrome apagados</translation>

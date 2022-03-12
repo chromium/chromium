@@ -138,6 +138,7 @@
 <translation id="1810845389119482123">Počáteční nastavení synchronizace nebylo dokončeno</translation>
 <translation id="1829244130665387512">Najít na stránce</translation>
 <translation id="1832459821645506983">Ano, souhlasím</translation>
+<translation id="1849863543394887018">Oznámení můžete deaktivovat v nastavení</translation>
 <translation id="1877026089748256423">Chrome je zastaralý</translation>
 <translation id="1883903952484604915">Moje soubory</translation>
 <translation id="189358972401248634">Ostatní jazyky</translation>
@@ -654,6 +655,7 @@ Chcete-toto nastavení změnit, <ph name="BEGIN_LINK" />resetujte synchronizaci<
 <translation id="4860895144060829044">Volat</translation>
 <translation id="4864369630010738180">Přihlašování...</translation>
 <translation id="4866368707455379617">Modul <ph name="MODULE" /> pro Chrome se nepodařilo nainstalovat</translation>
+<translation id="4871568871368204250">Vypnutí synchronizace</translation>
 <translation id="4875775213178255010">Návrhy obsahu</translation>
 <translation id="4877678010818027629">Přejít do anonymního režimu</translation>
 <translation id="4878404682131129617">Vytvoření tunelu prostřednictvím proxy serveru se nezdařilo</translation>
@@ -1198,6 +1200,7 @@ Některé weby mohou například na tento požadavek reagovat tak, že vám zobr
 <translation id="7926975587469166629">Přezdívka karty</translation>
 <translation id="7929962904089429003">Otevřít nabídku</translation>
 <translation id="7930998711684428189">Upozorňovat v případě vyzrazení hesel při porušení zabezpečení.</translation>
+<translation id="7937772386706786623">Ovládejte média, anonymní karty a další funkce pomocí oznámení</translation>
 <translation id="7939485076072265087">Vytvořit stylizovanou kartu se zvýrazněním</translation>
 <translation id="7942131818088350342">Aplikace <ph name="PRODUCT_NAME" /> je zastaralá.</translation>
 <translation id="7944772052836377867">Synchronizace potřebuje ověřit vaši identitu</translation>

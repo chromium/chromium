@@ -138,6 +138,7 @@
 <translation id="1810845389119482123">Համաժամացման սկզբնական կարգավորումը չի ավարտվել</translation>
 <translation id="1829244130665387512">Գտնել էջում</translation>
 <translation id="1832459821645506983">Այո, թույլատրել</translation>
+<translation id="1849863543394887018">Ծանուցումները կարող եք անջատել կարգավորումներում</translation>
 <translation id="1877026089748256423">Chrome-ը հնացած է</translation>
 <translation id="1883903952484604915">Իմ ֆայլերը</translation>
 <translation id="189358972401248634">Այլ լեզուներ</translation>
@@ -654,6 +655,7 @@
 <translation id="4860895144060829044">Զանգեք</translation>
 <translation id="4864369630010738180">Մուտք...</translation>
 <translation id="4866368707455379617">Չհաջողվեց տեղադրել «<ph name="MODULE" />» բաղադրիչը Chrome-ի համար</translation>
+<translation id="4871568871368204250">Անջատել համաժամացումը</translation>
 <translation id="4875775213178255010">Բովանդակության առաջարկներ</translation>
 <translation id="4877678010818027629">Մտնել ինկոգնիտո ռեժիմ</translation>
 <translation id="4878404682131129617">Չհաջողվեց կապ հաստատել միջնորդ սերվերի միջոցով</translation>
@@ -1198,6 +1200,7 @@ Privacy Sandbox տեխնոլոգիան դեռևս մշակման փուլում 
 <translation id="7926975587469166629">Քարտի այլանունը</translation>
 <translation id="7929962904089429003">Բացել ընտրացանկը</translation>
 <translation id="7930998711684428189">Զգուշացնում է, եթե տվյալների արտահոսքի արդյունքում գաղտնաբառերը հայտնի են դարձել կողմնակի անձանց։</translation>
+<translation id="7937772386706786623">Մեդիա բովանդակության, ինկոգնիտո ներդիրների և այլ գործառույթների կառավարում ծանուցումների միջոցով</translation>
 <translation id="7939485076072265087">Ստեղծել ոճավորված քարտ ընդգծումով</translation>
 <translation id="7942131818088350342"><ph name="PRODUCT_NAME" />-ը հնացած է:</translation>
 <translation id="7944772052836377867">Համաժամացման համար անհրաժեշտ է հաստատել ձեր ինքնությունը</translation>

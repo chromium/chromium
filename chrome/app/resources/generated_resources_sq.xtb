@@ -226,6 +226,7 @@
 <translation id="121384500095351701">Ky skedar nuk mund të shkarkohet në mënyrë të sigurt</translation>
 <translation id="1215411991991485844">U shtua një aplikacion i ri i sfondit</translation>
 <translation id="1216542092748365687">Hiq gjurmën e gishtit</translation>
+<translation id="1217114730239853757">Dëshiron të aktivizosh ChromeVox, lexuesin e integruar të ekranit për Chrome OS Flex? Nëse po, shtyp tastin e hapësirës.</translation>
 <translation id="1217483152325416304">Të dhënat e tua lokale do të fshihen së shpejti</translation>
 <translation id="1217668622537098248">Kthehu prapa te klikimi me butonin majtas pas veprimit</translation>
 <translation id="121783623783282548">Fjalëkalimet nuk përputhen.</translation>
@@ -276,6 +277,7 @@
 <translation id="126387934568812801">Përfshi këtë pamje ekrani dhe titujt e skedave të hapura</translation>
 <translation id="1264083566674525434">Modifiko lejet e sajtit</translation>
 <translation id="1264337193001759725">Për të shikuar evidencat e ndërfaqes së përdoruesit të rrjetit, shiko: <ph name="DEVICE_LOG_LINK" /></translation>
+<translation id="1265279736024499987">Aplikacionet dhe cilësimet e tua do të sinkronizohen në të gjitha pajisjet Chrome OS Flex ku je identifikuar me "Llogarinë tënde të Google". Për opsionet e sinkronizimit të shfletuesit, shko te <ph name="LINK_BEGIN" />cilësimet e Chrome<ph name="LINK_END" />.</translation>
 <translation id="126710816202626562">Gjuha e përkthimit:</translation>
 <translation id="126768002343224824">16x</translation>
 <translation id="1272079795634619415">Ndalo</translation>
@@ -328,6 +330,7 @@
 <translation id="1327272175893960498">Biletat e Kerberos</translation>
 <translation id="1327495825214193325">Për të aktivizuar korrigjimin e ADB-së, kërkohet një rinisje e kësaj pajisjeje <ph name="DEVICE_TYPE" />. Çaktivizimi i saj kërkon një rivendosje në cilësimet e fabrikës.</translation>
 <translation id="1327794256477341646">Veçoritë që kanë nevojë për vendndodhjen tënde nuk do të funksionojnë</translation>
+<translation id="1329191040029425999">Sigurohu që pajisja jote të jetë e përditësuar dhe provo përsëri</translation>
 <translation id="1330145147221172764">Aktivizo tastierën në ekran</translation>
 <translation id="1331977651797684645">Isha unë.</translation>
 <translation id="1333489022424033687">Disa veçori në <ph name="ORIGIN" /> mund të mos funksionojnë deri sa të pastrosh të dhënat që sajtet e tjera kanë ruajtur në pajisjen tënde</translation>
@@ -369,6 +372,7 @@
 <translation id="1373176046406139583">Dukshmëria e pajisjes sate kontrollon se kush mund të ndajë me ty kur ekrani yt është i shkyçur. <ph name="LINK_BEGIN" />Mëso më shumë<ph name="LINK_END" /></translation>
 <translation id="1374844444528092021">Certifikata që kërkohet nga rrjeti "<ph name="NETWORK_NAME" />" nuk është e instaluar ose nuk është më e vlefshme. Merr një certifikatë tjetër dhe provo sërish lidhjen.</translation>
 <translation id="1375321115329958930">Fjalëkalimet e ruajtura</translation>
+<translation id="1375557162880614858">Dëshiron të aktivizosh ChromeVox, lexuesin e integruar të ekranit për Chrome OS Flex?</translation>
 <translation id="137651782282853227">Adresat e ruajtura do të shfaqen këtu</translation>
 <translation id="1376771218494401509">Dritarja e &amp;emrit...</translation>
 <translation id="1377600615067678409">Kapërceje tani</translation>
@@ -778,8 +782,10 @@ Lejet që u ke dhënë tashmë sajteve të uebit dhe aplikacioneve mund të zbat
 <translation id="175196451752279553">&amp;Hap përsëri skedën e mbyllur</translation>
 <translation id="1753067873202720523">Chromebook mund të mos ngarkohet kur është i ndezur.</translation>
 <translation id="1753905327828125965">Më të vizituara</translation>
+<translation id="1755395545337105369">Sinkronizimi i cilësimeve të Chrome OS Flex</translation>
 <translation id="1755601632425835748">Madhësia e tekstit</translation>
 <translation id="1755872274219796698">Zhvendos fjalëkalimet</translation>
+<translation id="1757132445735080748">Për të përfunduar konfigurimin e Linux, përditëso Chrome OS Flex dhe provo përsëri.</translation>
 <translation id="1757301747492736405">Çinstalimi në pritje</translation>
 <translation id="175772926354468439">Aktivizo temën</translation>
 <translation id="17584710573359123">Shikoje në "Dyqanin e uebit" të Chrome</translation>
@@ -826,6 +832,7 @@ Lejet që u ke dhënë tashmë sajteve të uebit dhe aplikacioneve mund të zbat
 <translation id="1794791083288629568">Dërgo komente për të na ndihmuar ta rregullojmë këtë problem.</translation>
 <translation id="1795214765651529549">Përdor temën klasike</translation>
 <translation id="1796588414813960292">Veçoritë që kanë nevojë për tingujt nuk do të funksionojnë</translation>
+<translation id="1800502858278951817">Asnjë shtesë nuk ka kërkuar që të lexojë dhe të ndryshojë <ph name="SITE_NAME" /></translation>
 <translation id="1801418420130173017">Çaktivizo temën e errët</translation>
 <translation id="1802624026913571222">Në gjumë kur mbyllet kapaku</translation>
 <translation id="1802687198411089702">Faqja nuk po përgjigjet. Mund të presësh ose mund të dalësh.</translation>
@@ -1211,6 +1218,7 @@ Cilësimet e kësaj llogarie mund t'i menaxhosh duke instaluar aplikacionin Fami
 <translation id="217576141146192373">Printeri nuk mund të shtohet. Kontrollo konfigurimin e printerit dhe provo përsëri.</translation>
 <translation id="2175927920773552910">Kodi QR</translation>
 <translation id="2177950615300672361">Skedë "e fshehtë": <ph name="TAB_NAME" /></translation>
+<translation id="2178585470774851578">Po aktivizon veçoritë e korrigjimit në pajisjet Chrome OS Flex që do të konfigurojnë sshd daemon dhe do të aktivizojnë ndezjen nga njësitë USB.</translation>
 <translation id="2178614541317717477">Komprometim i autoritetit të certifikimit</translation>
 <translation id="2179416702468739594">Po kërkon për profilet e disponueshme. Kjo mund të bëjë që rrjeti yt celular të shkëputet për disa minuta.</translation>
 <translation id="2180620921879609685">Blloko përmbajtjen në çdo faqe</translation>
@@ -1437,6 +1445,7 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="2379281330731083556">Printo me dialogun e sistemit... <ph name="SHORTCUT_KEY" /></translation>
 <translation id="2381499968174336913">Pamja paraprake e skedës së ndarë</translation>
 <translation id="2381756643783702095">Pyet para dërgimit (rekomandohet)</translation>
+<translation id="2386202302581016807">Hapësira ruajtëse e disponueshme në pajisjen tënde është shumë e vogël për të përfunduar konfigurimin</translation>
 <translation id="2387052489799050037">Shko tek ekrani bazë</translation>
 <translation id="2387602571959163792"><ph name="DESK_NAME" /> (aktual)</translation>
 <translation id="2389775852302560582">IP</translation>
@@ -1446,6 +1455,7 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="2392163307141705938">Ke arritur kufirin kohor që ka caktuar prindi yt për <ph name="IDS_SHORT_PRODUCT_NAME" />.</translation>
 <translation id="2392369802118427583">Aktivizoje</translation>
 <translation id="2393136602862631930">Konfiguro <ph name="APP_NAME" /> në pajisjen tënde Chromebook</translation>
+<translation id="2393313392064891208">Përmbajtja e kushteve të Google Chrome OS Flex</translation>
 <translation id="2395616325548404795">Pajisja jote <ph name="DEVICE_TYPE" /> është regjistruar me sukses për menaxhimin e sipërmarrjes, por dështoi në dërgimin e burimit të saj dhe informacionit të vendndodhjes. Fute manualisht këtë informacion nga paneli i Administratorit tënd në këtë pajisje.</translation>
 <translation id="2396783860772170191">Vendos kodin 4-shifror (0000-9999)</translation>
 <translation id="2398546389094871088">Kryerja e Powerwash për pajisjen tënde nuk do t'i heqë profilet e kartës eSIM. Shko te <ph name="LINK_BEGIN" />Cilësimet e celularit<ph name="LINK_END" /> për t'i hequr këto profile në mënyrë manuale.</translation>
@@ -1476,6 +1486,7 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="2433836460518180625">Shkyç vetëm pajisjen</translation>
 <translation id="2434449159125086437">Printeri nuk mund të konfigurohet. Kontrollo konfigurimin dhe provo përsëri.</translation>
 <translation id="2434758125294431199">Zgjidh se kush mund të ndajë me ty</translation>
+<translation id="2435137177546457207">Kushtet shtesë të Google Chrome dhe Chrome OS Flex</translation>
 <translation id="2435248616906486374">Rrjeti u shkëput</translation>
 <translation id="2435457462613246316">Shfaq fjalëkalimin</translation>
 <translation id="2439626940657133600"><ph name="WINDOW_TITLE" /> po ngarkohet</translation>
@@ -1587,6 +1598,7 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="2530166226437958497">Zgjidhja e problemeve</translation>
 <translation id="2531530485656743109"><ph name="BEGIN_PARAGRAPH1" />Ndodhi një gabim dhe <ph name="DEVICE_OS" /> nuk mund të instalohej.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Për më shumë ndihmë, vizito: g.co/flex/InstallErrors.<ph name="END_PARAGRAPH2" /></translation>
+<translation id="2532198298278778531">Menaxho DNS-në e sigurt në cilësimet e Chrome OS Flex</translation>
 <translation id="2532589005999780174">Modaliteti i kontrastit të lartë</translation>
 <translation id="2533649878691950253">Ky sajt u bllokua nga zbulimi i vendndodhjes sate të saktë pasi ti zakonisht nuk e lejon këtë</translation>
 <translation id="253434972992662860">&amp;Ndërprit</translation>
@@ -2090,6 +2102,7 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="3031557471081358569">Përzgjidh artikujt për të importuar:</translation>
 <translation id="3032587662022429783">Mëso më shumë rreth të dhënave diagnostike dhe të përdorimit.</translation>
 <translation id="3033348223765101500">Kontrollo të dhënat e tua</translation>
+<translation id="3034627908241330765">Po ekzekutohet një konfigurim tjetër i Steam. Prit të përfundojë përpara se të ekzekutosh konfigurimin përsëri.</translation>
 <translation id="3036327949511794916">Afati për ta kthyer këtë pajisje <ph name="DEVICE_TYPE" /> ka kaluar.</translation>
 <translation id="3036546437875325427">Aktivizo Flash</translation>
 <translation id="3037754279345160234">Nuk mund të paraqitet konfigurimi i bashkimit me domenin. Kontakto administratorin.</translation>
@@ -2322,7 +2335,6 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="3304212451103136496"><ph name="DISCOUNT_AMOUNT" /> ulje</translation>
 <translation id="3305389145870741612">Procesi i formatimit mund të zgjasë disa sekonda. Qëndro në pritje.</translation>
 <translation id="3305661444342691068">Hap PDF-në në pamjen paraprake</translation>
-<translation id="3306992216458434072">Emërto grupin dhe zgjidh një ngjyrë</translation>
 <translation id="3307176291962384345">Merr zbritje për <ph name="MERCHANT_NAME" /></translation>
 <translation id="3308116878371095290">Kjo faqe u parandalua që të vendosë kuki.</translation>
 <translation id="3308134619352333507">Fshihe butonin</translation>
@@ -2484,6 +2496,7 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="3462311546193741693">Të nxjerr nga shumica e sajteve. Do të qëndrosh i identifikuar në "Llogarinë e Google" në mënyrë që të dhënat e tua të sinkronizuara të mund të pastrohen.</translation>
 <translation id="3462413494201477527">Të anulohet konfigurimi i llogarisë?</translation>
 <translation id="346298925039590474">Ky rrjet celular do të ofrohet për të gjithë përdoruesit e kësaj pajisjeje</translation>
+<translation id="3463015289462934089">Sigurohu që pajisja të jetë e lidhur me internetin.</translation>
 <translation id="3464145797867108663">Shto profilin e punës</translation>
 <translation id="346431825526753">Kjo është një llogari për fëmijë, e menaxhuar nga <ph name="CUSTODIAN_EMAIL" />.</translation>
 <translation id="346546413339447252">Merr zbritje për <ph name="MERCHANT_NAME_1" />, <ph name="MERCHANT_NAME_2" /> dhe të tjera</translation>
@@ -3062,6 +3075,7 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="3988996860813292272">Zgjidh zonën orare</translation>
 <translation id="399179161741278232">Të importuara</translation>
 <translation id="3993887353483242788">Sinkronizo <ph name="DEVICE_TYPE" /> në mënyrë që preferencat e tua të jenë gati në çdo pajisje kur identifikohesh me "Llogarinë tënde të Google". Te preferencat përfshihen aplikacionet, cilësimet, fjalëkalimet e Wi-Fi, gjuhët, imazhi i sfondit, shkurtoret e tastierës dhe të tjera.</translation>
+<translation id="3994318741694670028">Fatkeqësisht, kompjuteri yt është konfiguruar me një ID hardueri të keqformuar. Kjo parandalon përditësimin e Chrome OS Flex me rregullimet më të fundit të sigurisë dhe kompjuteri yt <ph name="BEGIN_BOLD" />mund të jetë i cenueshëm ndaj sulmeve keqdashëse<ph name="END_BOLD" />.</translation>
 <translation id="3994374631886003300">Shkyçe telefonin dhe afroje më shumë për të shkyçur pajisjen tënde <ph name="DEVICE_TYPE" />.</translation>
 <translation id="3994878504415702912">&amp;Zmadho</translation>
 <translation id="3995138139523574647">Pajisja USB-C (porta e pasme, djathtas)</translation>
@@ -3335,6 +3349,7 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
     <ph name="BEGIN_PARAGRAPH2" />Këto raporte mund t'i lejosh ose mos i lejosh në çdo kohë në cilësimet e pajisjes me ChromeOS të fëmijës. Nëse je administrator domeni, mund ta ndryshosh këtë cilësim në panelin komandues të administratorit.<ph name="END_PARAGRAPH2" />
     <ph name="BEGIN_PARAGRAPH3" />Çaktivizimi i kësaj veçorie nuk ndikon në aftësinë e kësaj pajisjeje për të dërguar informacionet e nevojshme për shërbimet bazë, si p.sh. përditësimet dhe siguria e sistemit.<ph name="END_PARAGRAPH3" /></translation>
 <translation id="4301671483919369635">Kjo faqe lejohet të modifikojë skedarët</translation>
+<translation id="4302577930366020750">Rinis pajisjen tënde për të përdorur Steam</translation>
 <translation id="4303079906735388947">Konfiguro një kod të ri PIN për çelësin e sigurisë</translation>
 <translation id="4305402730127028764">Kopjo te <ph name="DEVICE_NAME" /></translation>
 <translation id="4305817255990598646">Ndërro</translation>
@@ -3457,6 +3472,7 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="4427306783828095590">Mbrojtja e përmirësuar bën edhe më shumë për bllokimin e mashtrimeve dhe softuerëve keqdashës</translation>
 <translation id="4427365070557649936">Po verifikon kodin e konfirmimit...</translation>
 <translation id="4429163740524851942">Struktura e tastierës fizike</translation>
+<translation id="4429239357082509581">Steam nuk ka leje për t'u ekzekutuar</translation>
 <translation id="4430019312045809116">Volumi</translation>
 <translation id="4430369329743628066">Faqeshënuesi u shtua</translation>
 <translation id="4432621511648257259">Fjalëkalimi i pasaktë</translation>
@@ -3522,6 +3538,7 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="450099669180426158">Ikona e pikëçuditëses</translation>
 <translation id="4501530680793980440">Konfirmo heqjen</translation>
 <translation id="4502423230170890588">Hiq nga kjo pajisje</translation>
+<translation id="4503748371388753124">Kompjuteri yt përmban një pajisje sigurie të "Modulit të platformës së besuar" (TPM), e cila përdoret për të zbatuar shumë veçori kritike të sigurisë në Chrome OS Flex. Vizito "Qendrën e ndihmës të Chromebook" për të mësuar më shumë: https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="4504374760782163539">{COUNT,plural, =0{Kukit lejohen}=1{Kukit lejohen, 1 përjashtim}other{Kukit lejohen, {COUNT} përjashtime}}</translation>
 <translation id="4504940961672722399">Përdore këtë shtesë duke klikuar këtë ikonë ose duke shtypur <ph name="EXTENSION_SHORTCUT" />.</translation>
 <translation id="450552327874992444">Fjala është shtuar tashmë</translation>
@@ -3878,6 +3895,7 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="4876273079589074638">Ndihmo inxhinierët tanë të hetojnë dhe të rregullojnë këtë ndërprerje aksidentale. Rendit hapat e saktë nëse është e mundur. Nuk ka detaje të tepërta!</translation>
 <translation id="4876895919560854374">Kyç dhe shkyç ekranin</translation>
 <translation id="4877276003880815204">Inspekto elementet</translation>
+<translation id="4877652723592270843">Dëshiron të aktivizosh ChromeVox, lexuesin e integruar të ekranit për Chrome OS Flex? Nëse po, shtyp dhe mbaj shtypur të dy tastet e volumit për pesë sekonda.</translation>
 <translation id="4878634973244289103">Nuk mund të dërgohen përshtypje. Provo sërish më vonë</translation>
 <translation id="4878653975845355462">Sfondet e personalizuara janë çaktivizuar nga administratori yt</translation>
 <translation id="4878718769565915065">Shtimi i një gjurme gishti te ky çelës sigurie dështoi</translation>
@@ -3941,6 +3959,8 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="4929386379796360314">Vendmbërritjet e printimit</translation>
 <translation id="4930447554870711875">Zhvilluesit</translation>
 <translation id="4930714375720679147">Aktivizo</translation>
+<translation id="4930776995592629647">Nëse problemi vazhdon, provo të rinisësh pajisjen tënde 
+    Kodi i gabimit: <ph name="ERROR_CODE" />.</translation>
 <translation id="4932733599132424254">Data</translation>
 <translation id="4933484234309072027">integruar në <ph name="URL" /></translation>
 <translation id="4936042273057045735">Sinkronizimi i njoftimeve nuk mbështetet për telefonat në një profil pune</translation>
@@ -3992,6 +4012,7 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="4989966318180235467">Inspekto &amp;faqen e sfondit</translation>
 <translation id="4991420928586866460">Trajtoji tastet e rreshtit të sipërm si taste të funksioneve</translation>
 <translation id="499165176004408815">Përdor modalitetin "kontrast i lartë"</translation>
+<translation id="4991858732577603540">Prit disa minuta dhe ekzekutoje Steam përsëri</translation>
 <translation id="4992458225095111526">Konfirmo Powerwash</translation>
 <translation id="4992473555164495036">Administratori yt ka kufizuar mënyrat e mundshme të shkrimit.</translation>
 <translation id="4994474651455208930">Lejo faqet të pyesin dhe të bëhen përpunues të parazgjedhur për protokollet</translation>
@@ -4009,6 +4030,7 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="5008936837313706385">Emri i aktivitetit</translation>
 <translation id="5009463889040999939">Profili po riemërtohet. Kjo mund të zgjasë disa minuta.</translation>
 <translation id="5010043101506446253">Autoriteti i certifikatës</translation>
+<translation id="501057610015570208">Aplikacioni me atributin e manifestimit "kiosk_only" duhet të instalohet në modalitetin "kioskë" të Chrome OS Flex</translation>
 <translation id="5015344424288992913">Po zgjidh përfaqësuesin...</translation>
 <translation id="5016491575926936899">Mund të dërgosh mesazhe me tekst nga kompjuteri yt, të ndash lidhjen tënde të internetit, t'u përgjigjesh njoftimeve të bisedës dhe ta shkyçësh <ph name="DEVICE_TYPE" /> me telefonin tënd.<ph name="FOOTNOTE_POINTER" /> <ph name="LINK_BEGIN" />Mëso më shumë<ph name="LINK_END" /></translation>
 <translation id="5017643436812738274">Mund t'i navigosh faqet me një kursor teksti. Shtyp "Ctrl+Kërko+7" për ta çaktivizuar.</translation>
@@ -4267,6 +4289,24 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="5282733140964383898">Aktivizimi i "Mos gjurmo" do të thotë që një kërkesë do të përfshihet me trafikun tënd të shfletimit. Çdo efekt varet nëse një sajt uebi reagon ndaj kërkesës dhe nga mënyra se si interpretohet kërkesa. Për shembull, disa sajte uebi mund të përgjigjen ndaj kësaj kërkese duke shfaqur reklamat e tua që nuk bazohen në sajte të tjera të uebit që ke vizituar. Shumë sajte uebi do të vazhdojnë të mbledhin dhe të përdorin të dhënat e tua të shfletimit - për shembull, për të përmirësuar sigurinë, për të ofruar përmbajtje, shërbime, reklama dhe rekomandime në sajtet e tyre të uebit, si dhe për të krijuar statistika raportimi. <ph name="BEGIN_LINK" />Mëso më shumë<ph name="END_LINK" /></translation>
 <translation id="5283677936944177147">Mos! Sistemi nuk arriti të përcaktonte modelin e pajisjes ose numrin e serisë.</translation>
 <translation id="5284445933715251131">Vazhdo shkarkimin</translation>
+<translation id="5284787925725379414"><ph name="BEGIN_H3" />Veçoritë e korrigjimit<ph name="END_H3" />
+      <ph name="BR" />
+      Mund të aktivizosh veçoritë e korrigjimit në pajisjen tënde Chrome OS Flex për të instaluar dhe për të testuar kodin e personalizuar në pajisjen tënde.  Kjo do të të lejojë që:<ph name="BR" />
+      <ph name="BEGIN_LIST" />
+        <ph name="LIST_ITEM" />Të heqësh verifikimin e rrënjëve që të mund të modifikosh skedarët e sistemit operativ
+        <ph name="LIST_ITEM" />Të aktivizosh qasjen e SSH-së te pajisja duke përdorur çelësat standardë të testimit që të mund të përdorësh vegla si <ph name="BEGIN_CODE" />"rishkrimi i kryqëzuar"<ph name="END_CODE" /> për të pasur qasje te pajisja
+        <ph name="LIST_ITEM" />Të aktivizosh ndezjen nga USB-ja, që të mund të instalosh një imazh të sistemit operativ nga një njësi USB
+        <ph name="LIST_ITEM" />Të caktosh fjalëkalimin për identifikim në rrënjën e sistemit dhe atë të zhvilluesit në një vlerë të personalizuar që të mund të kryesh në mënyrë manuale SSH-në te pajisja
+      <ph name="END_LIST" />
+      <ph name="BR" />
+      Pasi të aktivizohen, pjesa më e madhe e veçorive të korrigjimit do të qëndrojnë të aktivizuara edhe pas kryerjes së funksionit Powerwash ose fshirjes së të dhënave në një pajisje të menaxhuar nga ndërmarrja. Për të çaktivizuar plotësisht të gjitha funksionet e korrigjimit, përfundo procesin e rikuperimit të Chrome OS (https://support.google.com/chromebook/answer/1080595).
+      <ph name="BR" />
+      <ph name="BR" />
+      Për më shumë informacione rreth veçorive të korrigjimit, shiko:<ph name="BR" />
+      https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-features
+      <ph name="BR" />
+      <ph name="BR" />
+      <ph name="BEGIN_BOLD" />Shënim.<ph name="END_BOLD" />  Sistemi do të rindizet gjatë procesit.</translation>
 <translation id="5285635972691565180">Ekrani <ph name="DISPLAY_ID" /></translation>
 <translation id="5286194356314741248">Po skanon</translation>
 <translation id="5287425679749926365">Llogaritë e tua</translation>
@@ -4422,6 +4462,7 @@ Mund të caktosh shumë çelësa për këtë veprim.</translation>
 <translation id="5449716055534515760">Mbyll dri&amp;taren</translation>
 <translation id="5452976525201205853"><ph name="LANGUAGE" /> (funksionon jashtë linje)</translation>
 <translation id="5454166040603940656">me <ph name="PROVIDER" /></translation>
+<translation id="5455603387986949153">Lexo numrat e serisë të pajisjes Chrome OS Flex dhe të komponentit.</translation>
 <translation id="5457113250005438886">E pavlefshme</translation>
 <translation id="5457459357461771897">Lexo dhe fshi fotografitë, muzikën dhe media të tjera nga kompjuteri</translation>
 <translation id="5458214261780477893">Dvorak</translation>
@@ -4430,6 +4471,7 @@ Mund të caktosh shumë çelësa për këtë veprim.</translation>
 <translation id="5461050611724244538">Humbi lidhja me telefonin tënd</translation>
 <translation id="5463275305984126951">Indeksi i <ph name="LOCATION" /></translation>
 <translation id="5463625433003343978">Po gjen pajisje...</translation>
+<translation id="5463845647891602726">Për të rritur hapësirën e lirë, fshi skedarë nga pajisja</translation>
 <translation id="5463856536939868464">Menyja përmban faqeshënues të fshehur</translation>
 <translation id="5464632865477611176">Ekzekutoje këtë herë</translation>
 <translation id="5464660706533281090">Ky cilësim nuk mund të ndryshohet nga një përdorues fëmijë.</translation>
@@ -4738,6 +4780,8 @@ Mund të caktosh shumë çelësa për këtë veprim.</translation>
 <translation id="5778491106820461378">Mund t'i menaxhosh "Llogaritë e Google" ku je identifikuar nga <ph name="LINK_BEGIN" />Cilësimet<ph name="LINK_END" />. Lejet që u ke dhënë sajteve të uebit dhe aplikacioneve mund të zbatohen për të gjitha llogaritë. Nëse nuk dëshiron që sajtet ose aplikacionet të kenë qasje tek informacionet e llogarisë sate, mund të identifikohesh në <ph name="DEVICE_TYPE" /> si vizitor</translation>
 <translation id="5780011244986845107">Dosja që zgjodhe përmban skedarë delikatë. Je i sigurt që dëshiron t'i japësh "<ph name="APP_NAME" />" qasje të përhershme leximi në këtë dosje?</translation>
 <translation id="5780973441651030252">Përparësia e procesit</translation>
+<translation id="5781014777846460847">Transmetimi nuk lejohet në këtë pajisje. Kontakto administratorin për të marrë leje
+    Kodi i gabimit: <ph name="ERROR_CODE" />.</translation>
 <translation id="5781092003150880845">Sinkronizo si <ph name="ACCOUNT_FULL_NAME" /></translation>
 <translation id="5781865261247219930">Dërgo komanda te <ph name="EXTENSION_NAME" /></translation>
 <translation id="5782227691023083829">Po përkthen...</translation>
@@ -4844,6 +4888,7 @@ Mund të caktosh shumë çelësa për këtë veprim.</translation>
 <translation id="5889282057229379085">Numri maksimal i autoriteteve ndërmjetëse të certifikatave: <ph name="NUM_INTERMEDIATE_CA" /></translation>
 <translation id="5891688036610113830">Rrjetet e preferuara Wi-Fi</translation>
 <translation id="5895138241574237353">Rinis</translation>
+<translation id="5895335062901455404">Aktiviteti dhe preferencat e tua të ruajtura do të jenë gati në çdo pajisje Chrome OS Flex kur identifikohesh me "Llogarinë tënde të Google". Mund të zgjedhësh çfarë të sinkronizosh te "Cilësimet".</translation>
 <translation id="5896436821193322561">Mos lejo</translation>
 <translation id="5900302528761731119">Fotografia e profilit të Google</translation>
 <translation id="590036993063074298">Detajet e cilësisë së pasqyrimit</translation>
@@ -5298,6 +5343,7 @@ Mund të caktosh shumë çelësa për këtë veprim.</translation>
 <translation id="6345878117466430440">Shëno si të lexuar</translation>
 <translation id="6347010704471250799">Shfaq njoftimin</translation>
 <translation id="6349101878882523185">Instalo <ph name="APP_NAME" /></translation>
+<translation id="6351383110065274390">Shijo lojërat e tua në Chromebook</translation>
 <translation id="6354918092619878358">Kurba eliptike SECG secp256r1 (e njohur edhe si ANSI X9.62 prime256v1, NIST P-256)</translation>
 <translation id="6355789186038748882">Shfletuesi eksperimental (cilësia alfa)! Disa veçori mungojnë ose nuk janë të plota. Raporto problemet me: Ndihma &gt; "Raporto një problem...".</translation>
 <translation id="635609604405270300">Mbaje pajisjen të aktivizuar</translation>
@@ -5460,6 +5506,7 @@ Mund të caktosh shumë çelësa për këtë veprim.</translation>
 <translation id="6514565641373682518">Kjo faqe ka çaktivizuar kursorin e miut.</translation>
 <translation id="6518014396551869914">Kopj&amp;o imazhin</translation>
 <translation id="6518133107902771759">Verifiko</translation>
+<translation id="6519304021460270639">Aplikacionet, cilësimet dhe personalizimet e tua të tjera do të sinkronizohen nëpër të gjitha pajisjet me Chrome OS Flex ku je identifikuar me "Llogarinë tënde të Google".</translation>
 <translation id="651942933739530207">Dëshiron që <ph name="APP_NAME" /> të ndajë ekranin tënd dhe daljet audio?</translation>
 <translation id="6519437681804756269">[<ph name="TIMESTAMP" />]
         <ph name="FILE_INFO" />
@@ -5636,6 +5683,7 @@ Mund të caktosh shumë çelësa për këtë veprim.</translation>
 <translation id="6691541770654083180">Toka</translation>
 <translation id="6691936601825168937">&amp;Përpara</translation>
 <translation id="6693745645188488741">{COUNT,plural, =1{1 faqe}other{{COUNT} faqe}}</translation>
+<translation id="6694430008315398925">Duke konfiguruar Steam</translation>
 <translation id="6697492270171225480">Lejo sugjerimet për faqet e ngjashme kur nuk mund të gjendet një faqe</translation>
 <translation id="6697690052557311665">Për ta ndarë, kliko me të djathtën mbi një dosje tek aplikacioni "Skedarët", më pas zgjidh "Ndaj me Linux".</translation>
 <translation id="6698810901424468597">Lexo dhe ndrysho të dhënat e tua në <ph name="WEBSITE_1" /> dhe <ph name="WEBSITE_2" /></translation>
@@ -5737,6 +5785,7 @@ Mund të caktosh shumë çelësa për këtë veprim.</translation>
 <translation id="6805647936811177813">Identifikohu te <ph name="TOKEN_NAME" /> për të importuar certifikatën e klientit nga <ph name="HOST_NAME" />.</translation>
 <translation id="680572642341004180">Aktivizo gjurmimin RLZ në <ph name="SHORT_PRODUCT_OS_NAME" />.</translation>
 <translation id="6808039367995747522">Për të vazhduar, fut dhe prek çelësin tënd të sigurisë</translation>
+<translation id="6808166974213191158">Shkruesi i imazheve të sistemit të Chrome OS Flex</translation>
 <translation id="6808193438228982088">Dhelpër</translation>
 <translation id="6809470175540814047">Hape në dritare "të fshehtë"</translation>
 <translation id="6809656734323672573">Nëse je dakord, "Asistenti i Google" do të presë në modalitetin e gatishmërisë për të zbuluar “Ok Google” dhe mund të dallojë që je ti duke folur me Voice Match.
@@ -6690,6 +6739,7 @@ Shtyp një çelës ose tast të caktuar për të hequr detyrën.</translation>
 <translation id="7768526219335215384"><ph name="ORIGIN" /> do të mund t'i shikojë skedarët në <ph name="FOLDERNAME" /></translation>
 <translation id="7768770796815395237">Ndrysho</translation>
 <translation id="7768784765476638775">Zgjidh që të thuhet</translation>
+<translation id="7770406201819593386">Ekzekuto testet diagnostikuese të Chrome OS Flex.</translation>
 <translation id="7770612696274572992">Imazhi u kopjua nga pajisja tjetër</translation>
 <translation id="7771452384635174008">Struktura</translation>
 <translation id="7772032839648071052">Konfirmo shprehjen e kalimit</translation>
@@ -6781,6 +6831,7 @@ Shtyp një çelës ose tast të caktuar për të hequr detyrën.</translation>
 <translation id="7853747251428735">Vegla të tj&amp;era</translation>
 <translation id="7855678561139483478">Lëvize skedën në dritare të re</translation>
 <translation id="7856654138655787862">Ekzekuto testet diagnostikuese të Chrome OS.</translation>
+<translation id="7857004848504343806">Kompjuteri yt përmban një modul sigurie që përdoret për të zbatuar shumë funksione kritike të sigurisë në Chrome OS Flex. Vizito "Qendrën e ndihmës të Chromebook" për të mësuar më shumë: https://support.google.com/chromebook/?p=sm</translation>
 <translation id="7857093393627376423">Sugjerimet e tekstit</translation>
 <translation id="7857949311770343000">A është kjo faqja e skedës së re që po prisje?</translation>
 <translation id="7858328180167661092"><ph name="APP_NAME" /> (Windows)</translation>
@@ -6896,6 +6947,7 @@ Shtyp një çelës ose tast të caktuar për të hequr detyrën.</translation>
 <translation id="7969046989155602842">Komanda</translation>
 <translation id="7970673414865679092">Detajet e eternetit</translation>
 <translation id="7970882136539140748">Karta nuk mund të ruhet për momentin</translation>
+<translation id="7972354851134703743">Aktivizo/çaktivizo komandat e shpejta</translation>
 <translation id="7972714317346275248">PKCS #1 SHA-384 me enkriptim RSA</translation>
 <translation id="7973776233567882054">Cilat nga të mëposhtmet e përshkruan më mirë rrjetin tënd?</translation>
 <translation id="797394244396603170">Zgjidh pajisjen me të cilën dëshiron të ndash skedarë</translation>
@@ -6944,6 +6996,7 @@ Mbaje skedarin e çelësit tënd në një vend të sigurt. Do të të duhet për
 <translation id="8017679124341497925">Shkurtorja u modifikua</translation>
 <translation id="8018298733481692628">Të fshihet ky profil?</translation>
 <translation id="8018313076035239964">Kontrollo se çfarë informacioni mund të përdorin sajtet e uebit dhe çfarë përmbajtjeje mund të të shfaqin</translation>
+<translation id="8023133589013344428">Menaxho gjuhët në cilësimet e Chrome OS Flex</translation>
 <translation id="8023801379949507775">Përditëso shtesat tani</translation>
 <translation id="8025151549289123443">Ekrani i kyçjes dhe identifikimi</translation>
 <translation id="8026334261755873520">Pastro të dhënat e shfletimit</translation>
@@ -6996,6 +7049,7 @@ Mbaje skedarin e çelësit tënd në një vend të sigurt. Do të të duhet për
 <translation id="8062844841289846053">{COUNT,plural, =1{1 fletë letre}other{{COUNT} fletë letre}}</translation>
 <translation id="8063235345342641131">Avatari i parazgjedhur i gjelbër</translation>
 <translation id="8063535366119089408">Shiko skedarin</translation>
+<translation id="8064015586118426197">Chrome OS Flex</translation>
 <translation id="8064279191081105977">Grupi <ph name="GROUP_NAME" /> - <ph name="GROUP_CONTENTS" /> - <ph name="COLLAPSED_STATE" /></translation>
 <translation id="8066444921260601116">Dialogu i lidhjes</translation>
 <translation id="8070662218171013510">Reagimi me prekje</translation>
@@ -7092,6 +7146,7 @@ Mbaje skedarin e çelësit tënd në një vend të sigurt. Do të të duhet për
 <translation id="8157248655669507702">Aktivizo të dhënat celulare për të instaluar një profil të kartës eSIM</translation>
 <translation id="8157704005178149728">Po konfiguron mbikëqyrjen</translation>
 <translation id="8158117992543756526">Marrja e përditësimeve automatike të sigurisë dhe softuerëve për këtë pajisje ka ndaluar në <ph name="MONTH_AND_YEAR" />. <ph name="LINK_BEGIN" />Mëso më shumë<ph name="LINK_END" /></translation>
+<translation id="8159652640256729753">Merr konfirmim me dridhje për veprimet si ekrani i ndarë dhe ndryshimi i tavolinave të punës. <ph name="LINK_BEGIN" />Mëso më shumë<ph name="LINK_END" /></translation>
 <translation id="816055135686411707">Gabim në vendosjen e besimit të certifikatës</translation>
 <translation id="8160775796528709999">Merr titrat për audion dhe videon tënde duke aktivizuar "Titrat në çast" te cilësimet</translation>
 <translation id="816095449251911490"><ph name="SPEED" /> - <ph name="RECEIVED_AMOUNT" />, <ph name="TIME_REMAINING" /></translation>
@@ -7360,6 +7415,7 @@ Mbaje skedarin e çelësit tënd në një vend të sigurt. Do të të duhet për
 <translation id="8438566539970814960">Përmirëson kërkimet dhe shfletimin</translation>
 <translation id="8439506636278576865">Ofro të përkthesh faqet në këtë gjuhë</translation>
 <translation id="8440630305826533614">Aplikacionet për Linux</translation>
+<translation id="8443795068008423036">Sigurohu që pajisja jote të jetë e përditësuar dhe provo përsëri</translation>
 <translation id="8445046761938045900">Fotografitë, njoftimet dhe aplikacionet më të fundit të mesazheve</translation>
 <translation id="8446884382197647889">Mëso më shumë</translation>
 <translation id="8447409163267621480">Përfshi ose Ctrl, ose Alt</translation>
@@ -7544,6 +7600,7 @@ Mbaje skedarin e çelësit tënd në një vend të sigurt. Do të të duhet për
 <translation id="8648252583955599667"><ph name="GET_HELP_LINK" /> ose <ph name="RE_SCAN_LINK" /></translation>
 <translation id="8648408795949963811">Temperatura e ngjyrës së "Dritës së natës"</translation>
 <translation id="8648544143274677280"><ph name="SITE_NAME" /> kërkon që: <ph name="FIRST_PERMISSION" />, <ph name="SECOND_PERMISSION" /> dhe më shumë</translation>
+<translation id="864892689521194669">Ndihmo në përmirësimin e veçorive dhe të cilësisë së funksionimit të Chrome OS Flex</translation>
 <translation id="8650543407998814195">Megjithëse nuk mund të qasesh më te profili yt i vjetër, mund ta heqësh atë përsëri.</translation>
 <translation id="8651585100578802546">Ringarkoje me detyrim këtë faqe</translation>
 <translation id="8652400352452647993">Gabim i shtesës së paketës</translation>
@@ -7639,6 +7696,7 @@ Mbaje skedarin e çelësit tënd në një vend të sigurt. Do të të duhet për
 <translation id="8737709691285775803">Promovuesi</translation>
 <translation id="8737914367566358838">Zgjidh gjuhën në të cilën do të përkthesh faqen</translation>
 <translation id="8740247629089392745">Këtë Chromebook mund t'ia dorëzosh <ph name="SUPERVISED_USER_NAME" />. Konfigurimi pothuajse mbaroi, më pas është koha për eksplorim.</translation>
+<translation id="8740672167979365981">Kërkohet përditësimi i Chrome OS Flex</translation>
 <translation id="8741944563400125534">Udhëzuesi i konfigurimit të "Qasjes me çelës"</translation>
 <translation id="8742998548129056176">Këto janë informacione të përgjithshme për pajisjen tënde dhe se si e përdor ti atë (si p.sh. niveli i baterisë, aktiviteti i sistemit dhe aplikacioneve dhe gabimet). Të dhënat do të përdoren për të përmirësuar Android dhe disa informacionet të përmbledhura do të ndihmojnë po ashtu aplikacionet dhe partnerët e Google, si p.sh. zhvilluesit e Android, të përmirësojnë aplikacionet dhe produktet e tyre.</translation>
 <translation id="8746654918629346731">Ke kërkuar tashmë "<ph name="EXTENSION_NAME" />"</translation>
@@ -7650,6 +7708,7 @@ Mbaje skedarin e çelësit tënd në një vend të sigurt. Do të të duhet për
 <translation id="8750346984209549530">APN-ja e rrjetit celular</translation>
 <translation id="8752451679755290210">Kalo automatikisht mes artikujve</translation>
 <translation id="8753868764580670305">Shiko dhe menaxho fjalëkalimet e ruajtura në këtë pajisje</translation>
+<translation id="8753948258138515839">Aplikacioni "Skedarët" siguron qasje të shpejtë te skedarët që ke ruajtur në "Diskun e Google", në hapësirën ruajtëse të jashtme ose në pajisjen tënde Chrome OS Flex.</translation>
 <translation id="8754200782896249056">&lt;p&gt;Kur <ph name="PRODUCT_NAME" /> ekzekutohet në një mjedis të mbështetur për desktop, do të përdoren cilësimet e përfaqësuesit të sistemit. Megjithatë, sistemi yt nuk mbështetet ose pati një problem në nisjen e konfigurimit të sistemit.&lt;/p&gt;
 
           &lt;p&gt;Por, mund të vazhdosh konfigurimin përmes rreshtit të komandës. Shiko &lt;code&gt;man <ph name="PRODUCT_BINARY_NAME" />&lt;/code&gt; për më shumë informacion rreth flamujve dhe ndryshoreve të mjedisit.&lt;/p&gt;</translation>
@@ -7668,6 +7727,7 @@ Mbaje skedarin e çelësit tënd në një vend të sigurt. Do të të duhet për
 <translation id="87646919272181953">Albumi i "Fotografive të Google"</translation>
 <translation id="8767621466733104912">Përditësoje automatikisht Chrome për të gjithë përdoruesit</translation>
 <translation id="8767765348545497220">Mbyll flluskën e ndihmës</translation>
+<translation id="8769901904650373714">Ndodhi një problem me konfigurimin e Steam</translation>
 <translation id="8770406935328356739">Direktoria rrënjë e shtesës</translation>
 <translation id="8771300903067484968">Sfondi i faqes së nisjes është rivendosur në sfondin e parazgjedhur.</translation>
 <translation id="8773302562181397928">Ruaje <ph name="PRINTER_NAME" /></translation>
@@ -7884,6 +7944,7 @@ Mbaje skedarin e çelësit tënd në një vend të sigurt. Do të të duhet për
 <translation id="8981825781894055334">Ka pak letër</translation>
 <translation id="8983632908660087688"><ph name="ORIGIN" /> mund të modifikojë <ph name="FILENAME" /></translation>
 <translation id="8984694057134206124">Do të jesh i dukshëm për të gjithë për <ph name="MINUTES" /> minuta. <ph name="LINK_BEGIN" />Mëso më shumë<ph name="LINK_END" /></translation>
+<translation id="8985191021574400965">Mirë se vjen në Steam për Chromebook</translation>
 <translation id="8985264973231822211">Aktiv <ph name="DEVICE_LAST_ACTIVATED_TIME" /> ditë më parë</translation>
 <translation id="8985661493893822002">Lidhu me internetin për t'u identifikuar në pajisjen tënde <ph name="DEVICE_TYPE" />.</translation>
 <translation id="8986362086234534611">Harro</translation>
@@ -8082,6 +8143,7 @@ Mbaje skedarin e çelësit tënd në një vend të sigurt. Do të të duhet për
 <translation id="917510707618656279">Pyet kur një sajt dëshiron të ketë qasje te pajisjet Bluetooth</translation>
 <translation id="9176476835295860688">Dërgo të dhënat e përdorimit dhe të diagnostikimit. Aktualisht kjo pajisje po dërgon automatikisht te Google të dhënat e diagnostikimit dhe të përdorimit të pajisjes dhe të aplikacioneve. Këto do të ndihmojnë për qëndrueshmërinë e sistemit dhe të aplikacioneve dhe për përmirësime të tjera. Disa të dhëna të përmbledhura do të ndihmojnë po ashtu aplikacionet dhe partnerët e Google, si p.sh. zhvilluesit e Android. Ky <ph name="BEGIN_LINK1" />cilësim<ph name="END_LINK1" /> zbatohet nga zotëruesi. Nëse cilësimi i "Aktivitetit shtesë të uebit dhe të aplikacioneve" është i aktivizuar, këto të dhëna mund të ruhen në "Llogarinë tënde të Google". <ph name="BEGIN_LINK2" />Mëso më shumë<ph name="END_LINK2" /></translation>
 <translation id="9176611096776448349"><ph name="WINDOW_TITLE" /> - u lidh një pajisje Bluetooth</translation>
+<translation id="9177949831069307748">Lexo informacionin e pajisjes Chrome OS Flex dhe të dhënat e pajisjes.</translation>
 <translation id="9178061802301856367">Fshi të dhënat e identifikimit</translation>
 <translation id="9179524979050048593">Emri i përdoruesit të ekranit të identifikimit</translation>
 <translation id="9180281769944411366">Procesi mund të zgjasë disa minuta. Po hapet kontejneri i Linux.</translation>

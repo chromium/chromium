@@ -226,6 +226,7 @@
 <translation id="121384500095351701">اس فائل کو محفوظ طریقے سے ڈاؤن لوڈ نہیں کیا جا سکتا ہے</translation>
 <translation id="1215411991991485844">نئی پس منظر ایپ شامل کی گئی</translation>
 <translation id="1216542092748365687">فنگر پرنٹ ہٹائیں</translation>
+<translation id="1217114730239853757">‏کیا آپ ChromeOS Flex کے لئے پہلے سے موجود اسکرین ریڈر، ChromeVox کو فعال کرنا چاہتے ہیں؟ اگر ایسا ہے تو اسپیس بار کو دبائیں۔</translation>
 <translation id="1217483152325416304">آپ کا مقامی ڈیٹا جلد ہی حذف ہو جائے گا</translation>
 <translation id="1217668622537098248">کارروائی کے بعد بائیں کلک پر واپس جائیں</translation>
 <translation id="121783623783282548">پاس ورڈز مماثل نہیں ہیں۔</translation>
@@ -276,6 +277,7 @@
 <translation id="126387934568812801">اس اسکرین شاٹ اور کھلے ٹیبز کے عنوانات شامل کریں</translation>
 <translation id="1264083566674525434">سائٹ کی اجازتوں میں ترمیم کریں</translation>
 <translation id="1264337193001759725">‏نیٹ ورک UI لاگز کا ملاحظہ کرنے کیلئے، دیکھیں: <ph name="DEVICE_LOG_LINK" /></translation>
+<translation id="1265279736024499987">‏آپ کی ایپس اور ترتیبات ان تمام ChromeOS Flex آلات پر مطابقت پذیر ہوں گی جہاں آپ اپنے Google اکاؤنٹ کے ساتھ سائن ان ہیں۔ براؤزر کی مطابقت پذیری کے اختیارات کے ليے <ph name="LINK_BEGIN" />Chrome کی ترتیبات<ph name="LINK_END" /> پر جائیں۔</translation>
 <translation id="126710816202626562">ترجمہ کی زبان:</translation>
 <translation id="126768002343224824">16x</translation>
 <translation id="1272079795634619415">روکیں</translation>
@@ -328,6 +330,7 @@
 <translation id="1327272175893960498">‏Kerberos ٹکٹس</translation>
 <translation id="1327495825214193325">‏ADB ڈیبگنگ کو فعال کرنے کے لیے، اس <ph name="DEVICE_TYPE" /> کو ری سٹارٹ کرنے کی ضرورت ہے۔ اسے غیر فعال کرنے کے لیے فیکٹری کی ترتیبات کو ری سیٹ کرنا ہوگا۔</translation>
 <translation id="1327794256477341646">وہ خصوصیات کام نہیں کریں گی جن کے لیے آپ کے مقام کی ضرورت ہوتی ہے</translation>
+<translation id="1329191040029425999">یقینی بنائیں کہ آپ کا آلہ اپ ٹو ڈیٹ ہے اور براہ کرم دوبارہ کوشش کریں</translation>
 <translation id="1330145147221172764">آن اسکرین کی بورڈ فعال کریں</translation>
 <translation id="1331977651797684645">یہ میں تھا۔</translation>
 <translation id="1333489022424033687">ہو سکتا ہے <ph name="ORIGIN" /> پر کچھ خصوصیات اس وقت تک کام نہ کریں جب تک آپ اپنے آلے پر دیگر سائٹس کے ذریعے اسٹور کردہ ڈیٹا کو صاف نہیں کرتے ہیں</translation>
@@ -369,6 +372,7 @@
 <translation id="1373176046406139583">آپ کے آلے کی مرئیت اس چیز کو کنٹرول کرتی ہے کہ آپ کی اسکرین کے غیر مقفل ہونے کی صورت میں کون آپ کے ساتھ اشتراک کر سکتا ہے۔ <ph name="LINK_BEGIN" />مزید جانیں<ph name="LINK_END" /></translation>
 <translation id="1374844444528092021">نیٹ ورک "<ph name="NETWORK_NAME" />" کے ذریعے مطلوب سرٹیفکیٹ یا تو انسٹال نہیں ہے یا اب درست نہیں ہے۔ براہ کرم ایک نیا سرٹیفکیٹ حاصل کریں اور دوبارہ منسلک کرنے کی کوشش کریں۔</translation>
 <translation id="1375321115329958930">محفوظ کردہ پاس ورڈز</translation>
+<translation id="1375557162880614858">‏کیا آپ ChromeOS Flex کے لئے پہلے سے موجود اسکرین ریڈر، ChromeVox کو فعال کرنا چاہتے ہیں؟</translation>
 <translation id="137651782282853227">محفوظ کردہ پتے یہاں ظاہر ہوں گے</translation>
 <translation id="1376771218494401509">ونڈو کا نام رکھیں...</translation>
 <translation id="1377600615067678409">ابھی نظر انداز کریں</translation>
@@ -781,8 +785,10 @@
 <translation id="175196451752279553">بند ٹیب کو &amp;دوبارہ کھولیں</translation>
 <translation id="1753067873202720523">‏آن ہونے پر ممکن ہے آپ کی Chromebook چارج نہ ہو۔</translation>
 <translation id="1753905327828125965">سب سے زیادہ ملاحظہ کردہ</translation>
+<translation id="1755395545337105369">‏ChromeOS Flex کی ترتیبات کی مطابقت پذیری</translation>
 <translation id="1755601632425835748">متن کا سائز</translation>
 <translation id="1755872274219796698">پاس ورڈز منتقل کریں</translation>
+<translation id="1757132445735080748">‏Linux کا سیٹ اپ مکمل کرنے کیلئے، ChromeOS Flex کو اپ ڈیٹ کریں اور دوبارہ کوشش کریں۔</translation>
 <translation id="1757301747492736405">اَن انسٹال کا عمل زیر التواء ہے</translation>
 <translation id="175772926354468439">تھیم فعال کریں</translation>
 <translation id="17584710573359123">‏Chrome ویب اسٹور میں دیکھیں</translation>
@@ -829,6 +835,7 @@
 <translation id="1794791083288629568">اس مسئلے کو حل کرنے میں ہماری مدد کیلئے تاثرات بھیجیں۔</translation>
 <translation id="1795214765651529549">کلاسک استعمال کریں</translation>
 <translation id="1796588414813960292">وہ خصوصیات کام نہیں کریں گی جن کیلئے آواز کی ضرورت ہوتی ہے</translation>
+<translation id="1800502858278951817">کسی بھی ایکسٹینشن نے <ph name="SITE_NAME" /> کو پڑھنے اور تبدیل کرنے کی درخواست نہیں کی ہے</translation>
 <translation id="1801418420130173017">گہری تھیم غیر فعال کریں</translation>
 <translation id="1802624026913571222">کوَر بند ہونے پر سلیپ وضع میں بھیجیں</translation>
 <translation id="1802687198411089702">صفحہ کھل نہیں رہا ہے۔ آپ اس کے کھلنے انتظار کر سکتے ہیں یا باہر نکل سکتے ہیں۔</translation>
@@ -1214,6 +1221,7 @@
 <translation id="217576141146192373">پرنٹر شامل کرنے سے قاصر۔ براہ کرم اپنے پرنٹر کی کنفیگریشن چیک کریں اور دوبارہ کوشش کریں۔</translation>
 <translation id="2175927920773552910">‏QR کوڈ</translation>
 <translation id="2177950615300672361">پوشیدگی ٹیب: <ph name="TAB_NAME" /></translation>
+<translation id="2178585470774851578">‏آپ ChromeOS Flex کی ڈیبگنگ خصوصیات کو فعال کر رہے ہیں جو sshd daemon سیٹ اپ کریں گی اور USB ڈرائیوز سے بوٹنگ کو فعال کریں گی۔</translation>
 <translation id="2178614541317717477">‏CA سمجھوتہ</translation>
 <translation id="2179416702468739594">دستیاب پروفائلز کو تلاش کیا جا رہا ہے۔ اس سے آپ کا موبائل نیٹ ورک کچھ منٹ کے لیے منقطع ہو سکتا ہے۔</translation>
 <translation id="2180620921879609685">کسی بھی صفحے پر مواد کو مسدود کریں</translation>
@@ -1439,6 +1447,7 @@
 <translation id="2379281330731083556">سسٹم ڈائیلاگ کا استعمال کر کے پرنٹ کریں… <ph name="SHORTCUT_KEY" /></translation>
 <translation id="2381499968174336913">اشتراک کردہ ٹیب کا پیش منظر</translation>
 <translation id="2381756643783702095">بھیجنے سے پہلے پوچھیں (تجویز کردہ)</translation>
+<translation id="2386202302581016807">سیٹ اپ مکمل کرنے کے لیے آپ کے پاس دستیاب ڈیوائس کا اسٹوریج بہت کم ہے</translation>
 <translation id="2387052489799050037">ہوم پر جائیں</translation>
 <translation id="2387602571959163792"><ph name="DESK_NAME" /> (حالیہ)</translation>
 <translation id="2389775852302560582">IP</translation>
@@ -1448,6 +1457,7 @@
 <translation id="2392163307141705938"><ph name="IDS_SHORT_PRODUCT_NAME" /> کے لیے آپ کے والدین کی سیٹ کی ہوئی آپ کی وقت کی حد پوری ہو گئی۔</translation>
 <translation id="2392369802118427583">فعال کریں</translation>
 <translation id="2393136602862631930">‏اپنے Chromebook پر <ph name="APP_NAME" /> سیٹ اپ کریں</translation>
+<translation id="2393313392064891208">‏Google ChromeOS Flex کی شرائط کے مواد</translation>
 <translation id="2395616325548404795">‏انٹرپرائز مینیجمنٹ کیلئے آپ کے <ph name="DEVICE_TYPE" /> کا کامیابی کے ساتھ اندراج کر لیا گیا ہے، لیکن اس کے اثاثہ اور مقام کی معلومات بھیجنے میں ناکامی ہوئی۔ براہ کرم اس آلہ کیلئے اپنے Admin console سے یہ معلومات دستی طور پر درج کریں۔</translation>
 <translation id="2396783860772170191">‏4 ہندسے کا پن درج کریں (‎0000-9999)</translation>
 <translation id="2398546389094871088">‏آپ کے آلے کی پاور واشنگ سے آپ کی eSIM پروفائلز کو ہٹایا نہیں جائے گا۔ دستی طور پر ان پروفائلز کو ہٹانے کے لیے <ph name="LINK_BEGIN" />موبائل ترتیبات<ph name="LINK_END" /> پر جائیں۔</translation>
@@ -1478,6 +1488,7 @@
 <translation id="2433836460518180625">صرف آلہ غیر مقفل کریں</translation>
 <translation id="2434449159125086437">پرنٹر سیٹ اپ نہیں ہو سکتا۔ براہ کرم کنفیگریشن چیک کریں اور دوبارہ کوشش کریں۔</translation>
 <translation id="2434758125294431199">منتخب کریں کہ کون آپ کے ساتھ اشتراک کرسکتا ہے</translation>
+<translation id="2435137177546457207">‏Google Chrome اور ChromeOS Flex کی اضافی شرائط</translation>
 <translation id="2435248616906486374">نیٹ ورک منقطع ہوگیا</translation>
 <translation id="2435457462613246316">پاس ورڈ دکھائیں</translation>
 <translation id="2439626940657133600"><ph name="WINDOW_TITLE" /> لوڈ ہو رہی ہے</translation>
@@ -1589,6 +1600,7 @@
 <translation id="2530166226437958497">ٹربل شوٹنگ</translation>
 <translation id="2531530485656743109">‏<ph name="BEGIN_PARAGRAPH1" />کچھ غلط ہو گیا اور <ph name="DEVICE_OS" /> انسٹال نہیں کیا جا سکا۔<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />مزید مدد کے ليے، ملاحظہ کریں: g.co/flex/InstallErrors۔<ph name="END_PARAGRAPH2" /></translation>
+<translation id="2532198298278778531">‏ChromeOS Flex کی ترتیبات میں محفوظ DNS کا نظم کریں</translation>
 <translation id="2532589005999780174">زیادہ تضاد وضع</translation>
 <translation id="2533649878691950253">اس سائٹ کو آپ کا قطعی مقام جاننے سے روک دیا گیا تھا کیونکہ آپ عام طور پر اس کی اجازت نہیں دیتے ہیں</translation>
 <translation id="253434972992662860">&amp;موقوف کریں</translation>
@@ -2092,6 +2104,7 @@
 <translation id="3031557471081358569">درآمد کرنے کیلئے آئٹمز منتخب کریں:</translation>
 <translation id="3032587662022429783">ڈائیگناسٹک اور استعمال کے ڈیٹا کے بارے میں مزید جانیں۔</translation>
 <translation id="3033348223765101500">اپنا ڈيٹا کنٹرول کریں</translation>
+<translation id="3034627908241330765">‏دوسرا Steam سیٹ اپ چل رہا ہے۔ براہ کرم سیٹ اپ دوبارہ چلانے سے پہلے اس کے مکمل ہونے کا انتظار کریں۔</translation>
 <translation id="3036327949511794916">اس <ph name="DEVICE_TYPE" /> کو واپس کرنے کی آخری تاریخ گزر چکی ہے۔</translation>
 <translation id="3036546437875325427">‏Flash کو فعال کریں</translation>
 <translation id="3037754279345160234">ڈومین میں شمولیت کے لیے کنفیگریشن کو پارس نہیں کیا جا سکتا۔ براہ کرم اپنے منتظم سے رابطہ کریں۔</translation>
@@ -2324,7 +2337,6 @@
 <translation id="3304212451103136496"><ph name="DISCOUNT_AMOUNT" /> کی رعایت</translation>
 <translation id="3305389145870741612">فارمیٹنگ کی کارروائی میں کچھ سیکنڈ لگ سکتے ہیں۔ براہ کرم انتظار کریں۔</translation>
 <translation id="3305661444342691068">‏PDF کو پیش منظر میں کھولیں</translation>
-<translation id="3306992216458434072">اپنے گروپ کو نام دیں اور رنگ منتخب کریں</translation>
 <translation id="3307176291962384345"><ph name="MERCHANT_NAME" /> کیلئے رعایتیں حاصل کریں</translation>
 <translation id="3308116878371095290">اس صفحہ کو کوکیز سیٹ کرنے سے روک دیا گیا تھا۔</translation>
 <translation id="3308134619352333507">چھپائیں بٹن</translation>
@@ -2486,6 +2498,7 @@
 <translation id="3462311546193741693">‏ایسا کرنے پر آپ اکثر سائٹس سے سائن آؤٹ ہو جاتے ہیں۔ آپ اپنے Google اکاؤنٹ میں سائن ان رہیں گے تاکہ آپ کے مطابقت پذیر ڈیٹا کو صاف کیا جا سکے۔</translation>
 <translation id="3462413494201477527">اکاؤنٹ سیٹ اپ منسوخ کریں؟</translation>
 <translation id="346298925039590474">یہ موبائل نیٹ ورک اس آلہ پر سبھی صارفین کیلئے دستیاب ہوگا</translation>
+<translation id="3463015289462934089">براہ کرم یقینی بنائیں کہ آپ کا آلہ انٹرنیٹ سے منسلک ہے۔</translation>
 <translation id="3464145797867108663">دفتری پروفائل شامل کریں</translation>
 <translation id="346431825526753">یہ <ph name="CUSTODIAN_EMAIL" /> کے زیر انتظام بچوں کیلئے ایک اکاؤنٹ ہے۔</translation>
 <translation id="346546413339447252"><ph name="MERCHANT_NAME_1" />، <ph name="MERCHANT_NAME_2" /> اور مزید کیلئے رعایتیں حاصل کریں</translation>
@@ -3065,6 +3078,7 @@
 <translation id="3988996860813292272">ٹائم زون منتخب کریں</translation>
 <translation id="399179161741278232">درآمد کردہ</translation>
 <translation id="3993887353483242788">‏اپنے <ph name="DEVICE_TYPE" /> کو مطابقت پذیر بنائیں تاکہ جب آپ اپنے Google اکاؤنٹ سے سائن ان کریں تو آپ کی ترجیحات کسی بھی آلہ پر تیار ہوں گی۔ ترجیحات میں ایپس، ترتیبات، Wi-Fi پاس ورڈز، زبانیں، وال پیپر، کی بورڈ شارٹ کٹس وغیرہ شامل ہیں۔</translation>
+<translation id="3994318741694670028">‏بدقسمتی سے، آپ کا کمپیوٹر خراب ہارڈ ویئر ID کے ساتھ کنفیگر کیا ہوا ہے۔ یہ ChromeOS Flex کو تازہ ترین سیکیورٹی اصلاحات کے ساتھ اپ ڈیٹ ہونے سے روکتا ہے اور آپ کے کمپیوٹر کو <ph name="BEGIN_BOLD" />نقصان دہ حملوں سے خطرہ ہو سکتا ہے<ph name="END_BOLD" />۔</translation>
 <translation id="3994374631886003300">اپنا فون غیر مقفل کریں اور اپنا <ph name="DEVICE_TYPE" /> غیر مقفل کرنے کیلئے اسے قریب کریں۔</translation>
 <translation id="3994878504415702912">&amp;زوم</translation>
 <translation id="3995138139523574647">‏USB-C آلہ (دائیں طرف کا پچھلا پورٹ)</translation>
@@ -3338,6 +3352,7 @@
     <ph name="BEGIN_PARAGRAPH2" />آپ اپنے بچے کے ChromeOS آلے کی ترتیبات میں کسی بھی وقت ان رپورٹس کی اجازت کو شروع یا بند کر سکتے ہیں۔ اگر آپ ڈومین کے منتظم ہیں تو آپ منتظم کونسول میں اس ترتیب کو تبدیل کر سکتے ہیں۔<ph name="END_PARAGRAPH2" />
     <ph name="BEGIN_PARAGRAPH3" />اس خصوصیت کو آف کرنے سے سسٹم اپ ڈیٹس اور سیکیورٹی جیسی لازمی سروسز کے لیے درکار معلومات بھیجنے کی آپ کے آلے کی اہلیت متاثر نہیں ہوتی ہے۔<ph name="END_PARAGRAPH3" /></translation>
 <translation id="4301671483919369635">اس صفحہ کو فائلز میں ترمیم کرنے کی اجازت ہے</translation>
+<translation id="4302577930366020750">‏Steam کو استعمال کرنے کے لیے براہ کرم اپنا آلہ ری سٹارٹ کریں</translation>
 <translation id="4303079906735388947">‏اپنی سیکورٹی کلید کے لئے نیا PIN سیٹ کریں</translation>
 <translation id="4305402730127028764"><ph name="DEVICE_NAME" /> میں کاپی کریں</translation>
 <translation id="4305817255990598646">سوئچ کریں</translation>
@@ -3460,6 +3475,7 @@
 <translation id="4427306783828095590">فریب دہی اور میلوئیر کو مسدود کرنے کیلئے بہتر کردہ حفاظت مزید کام کرتی ہے</translation>
 <translation id="4427365070557649936">توثیقی کوڈ کی توثیق کی جا رہی ہے...</translation>
 <translation id="4429163740524851942">جسمانی کی بورڈ لے آؤٹ</translation>
+<translation id="4429239357082509581">‏Steam کو چلنے کے لیے اجازت نہیں ہے</translation>
 <translation id="4430019312045809116">والیوم</translation>
 <translation id="4430369329743628066">بُک مارک شامل کر دیا گیا</translation>
 <translation id="4432621511648257259">پاس ورڈ غلط ہے</translation>
@@ -3525,6 +3541,7 @@
 <translation id="450099669180426158">فجائیہ نشان کا آئیکن</translation>
 <translation id="4501530680793980440">ہٹانے کی توثیق کریں</translation>
 <translation id="4502423230170890588">اس آلہ سے ہٹائيں</translation>
+<translation id="4503748371388753124">‏آپ کا کمپیوٹر ایک بھروسہ مند پلیٹ فارم ماڈیول (TPM) سیکیورٹی آلہ پر مشتمل ہے، جو سیکیورٹی کی متعدد اہم خصوصیات کو ChromeOS Flex میں نافذ کرنے کیلئے استعمال کیا جاتا ہے۔ مزید جاننے کیلئے Chromebook کا مرکز امداد ملاحظہ کریں: https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="4504374760782163539">{COUNT,plural, =0{کوکیز کو اجازت ہے}=1{سوائے 1 کے، کوکیز کو اجازت ہے}other{سوائے {COUNT} کے، کوکیز کو اجازت ہے}}</translation>
 <translation id="4504940961672722399">اس آئیکن پر کلک کر کے یا <ph name="EXTENSION_SHORTCUT" /> کو دبا کر یہ ایکسٹینشن استعمال کریں۔</translation>
 <translation id="450552327874992444">پہلے ہی شامل کردہ لفظ</translation>
@@ -3881,6 +3898,7 @@
 <translation id="4876273079589074638">ہمارے انجینئروں کو تفتیش اور اس ناکامی کو حل کرنے میں مدد کریں۔ اگر آپ قطعی مراحل کی فہرست بنا سکتے ہیں تو بنائیں۔ کوئی بھی تفصیل بہت چھوٹی نہیں ہے!</translation>
 <translation id="4876895919560854374">اسکرین کو مقفل اور غیر مقفل کریں</translation>
 <translation id="4877276003880815204">عناصر کا معائنہ کریں</translation>
+<translation id="4877652723592270843">‏کیا آپ ChromeOS Flex کے لئے پہلے سے موجود اسکرین ریڈر، ChromeVox کو فعال کرنا چاہتے ہیں؟ اگر ایسا ہے تو والیوم کی دونوں کلیدوں کو 5 سیکنڈ کے لئے چھوئیں اور دبائے رکھیں۔</translation>
 <translation id="4878634973244289103">تاثرات بھیجنے سے قاصر۔ براہ کرم بعد میں دوبارہ کوشش کریں۔</translation>
 <translation id="4878653975845355462">آپ کے منتظم نے حسب ضرورت کے پس مناظر کو آف کر دیا ہے</translation>
 <translation id="4878718769565915065">اس حفاظتی کلید میں فنگر پرنٹ شامل کرنے میں ناکام ہو گیا</translation>
@@ -3944,6 +3962,8 @@
 <translation id="4929386379796360314">پرنٹ کی منزلیں</translation>
 <translation id="4930447554870711875">ڈویلپرز</translation>
 <translation id="4930714375720679147">آن کریں</translation>
+<translation id="4930776995592629647">اگر مسئلہ برقرار رہتا ہے تو اپنے آلہ کو ری سٹارٹ کرنے کی کوشش کریں 
+    خرابی کا کوڈ: <ph name="ERROR_CODE" />.</translation>
 <translation id="4932733599132424254">تاریخ</translation>
 <translation id="4933484234309072027"><ph name="URL" /> پر سرایت کردہ</translation>
 <translation id="4936042273057045735">دفتری پروفائل میں فونز کے لیے اطلاع کی مطابقت پذیری تعاون یافتہ نہیں ہے</translation>
@@ -3995,6 +4015,7 @@
 <translation id="4989966318180235467">&amp;پس منظر کے صفحہ کا معائنہ کریں</translation>
 <translation id="4991420928586866460">سر فہرست قطار کی کلیدوں کو فنکشن کلیدوں کے بطور خیال کریں</translation>
 <translation id="499165176004408815">زیادہ تضاد کی وضع استعمال کریں</translation>
+<translation id="4991858732577603540">‏براہ کرم کچھ منٹس انتظار کریں اور Steam کو دوبارہ چلائیں</translation>
 <translation id="4992458225095111526">پاور واش کی توثیق کریں</translation>
 <translation id="4992473555164495036">آپ کے منتظم نے اندراج کے دستیاب طریقوں کو محدود کیا ہوا ہے۔</translation>
 <translation id="4994474651455208930">سائٹس کو پروٹوکولز کیلئے ڈیفالٹ ہینڈلرز بننے کیلئے پوچھنے کی اجازت دیں</translation>
@@ -4012,6 +4033,7 @@
 <translation id="5008936837313706385">سرگرمی کا نام</translation>
 <translation id="5009463889040999939">پروفائل کا نام تبدیل ہو رہا ہے۔ اس میں چند منٹ لگ سکتے ہیں۔</translation>
 <translation id="5010043101506446253">سرٹیفکیٹ اتھارٹی</translation>
+<translation id="501057610015570208">‏'kiosk_only' مینی فیسٹ انتساب والی ایپ کا ChromeOS Flex کیوسک وضع میں انسٹال ہونا ضروری ہے</translation>
 <translation id="5015344424288992913">پراکسی کو حل کیا جا رہا ہے…</translation>
 <translation id="5016491575926936899">آپ اپنے کمپیوٹر سے ٹیکسٹ بھیج، اپنے انٹرنیٹ کنکشن کا اشتراک، گفتگو کی اطلاعات کا جواب اور اپنے فون کے ساتھ اپنا <ph name="DEVICE_TYPE" /> غیر مقفل کر سکتے ہیں۔<ph name="FOOTNOTE_POINTER" /> <ph name="LINK_BEGIN" />مزید جانیں<ph name="LINK_END" /></translation>
 <translation id="5017643436812738274">‏آپ اپنے صفحات کو ٹیکسٹ کرسر سے نیویگیٹ کر سکتے ہیں۔ آف کرنے کے لیے Ctrl+Search+7 دبائیں۔</translation>
@@ -4270,6 +4292,25 @@
 <translation id="5282733140964383898">"ٹریک نہ کریں" کو فعال کرنے کا مطلب ہے کہ آپ کی براؤزنگ ٹریفک کے ساتھ ایک درخواست شامل کی جائے گی۔ کسی بھی اثر کا انحصار اس بات پر ہوتا ہے کہ آیا کوئی ویب سائٹ درخواست کا جواب دیتی ہے اور درخواست کی کیسے ترجمانی کی جاتی ہے۔ مثلاً، کچھ ویب سائٹس اس درخواست کا جواب آپ کو ایسے اشتہارات دکھا کر دے سکتی ہیں جو آپ کی ملاحظہ کردہ دوسری ویب سائٹس پر مبنی نہ ہوں۔ بہت سی ویب سائٹس ابھی بھی آپ کا براؤزنگ ڈیٹا جمع اور استعمال کریں گی - مثلاً سیکیورٹی کو بہتر بنانے، مواد، سروسز، اشتہارات اور تجاویز کو ان کی ویب سائٹس پر فراہم کرنے اور رپورٹنگ کے اعداد و شمار تخلیق کرنے کیلئے۔ <ph name="BEGIN_LINK" />مزید جانیں<ph name="END_LINK" /></translation>
 <translation id="5283677936944177147">افوہ! سسٹم آلہ کے ماڈل یا نمبر شمار کا تعین کرنے میں ناکام ہوگیا۔</translation>
 <translation id="5284445933715251131">ڈاؤن لوڈ کرنا جاری رکھیں</translation>
+<translation id="5284787925725379414">‏<ph name="BEGIN_H3" />ڈیبگ کرنے کی خصوصیات<ph name="END_H3" />
+      <ph name="BR" />
+      اپنے آلے پر حسب ضرورت کوڈ انسٹال اور ٹیسٹ کرنے کے لیے، آپ اپنے ChromeOS Flex آلے پر ڈیبگ کرنے کی خصوصیات کو فعال کر سکتے ہیں۔ اس سے آپ کو ان چیزوں کی اجازت مل جائے گی:<ph name="BR" />
+      <ph name="BEGIN_LIST" />
+        <ph name="LIST_ITEM" />rootfs کی توثیق ہٹائیں تاکہ آپ OS فائلوں میں ترمیم کر سکیں
+        <ph name="LIST_ITEM" />معیاری ٹیسٹ کی کلیدوں کا استعمال کر کے آلے پر SSH رسائی فعال کریں تاکہ آپ آلے تک رسائی حاصل کرنے کے لیے <ph name="BEGIN_CODE" />'cros flash'<ph name="END_CODE" /> جیسے ٹولز کا استعمال کر سکیں
+        <ph name="LIST_ITEM" />USB سے بوٹ کرنے کو فعال کریں تاکہ آپ ایک USB ڈرائیو سے OS امیج انسٹال کر سکیں
+      <ph name="LIST_ITEM" />dev اور سسٹم root لاگ ان پاس ورڈ دونوں کو ایک حسب ضرورت قدر پر سیٹ کریں تاکہ آپ دستی طور پر آلے میں SSH کر سکیں
+      <ph name="END_LIST" />
+      <ph name="BR" />
+      فعال ہونے پر، ڈیبگ کرنے کی زیادہ تر خصوصیات powerwash انجام دینے یا انٹرپرائز کے ذریعے نظم کردہ کسی آلے پر ڈیٹا صاف کرنے کے بعد بھی فعال رہیں گی۔ ڈیبگ کرنے کی تمام خصوصیات کو مکمل طور پر غیر فعال کرنے کے لیے، Chrome OS کی بازيابی کی کارروائی مکمل کریں (https://support.google.com/chromebook/answer/1080595)۔
+
+      <ph name="BR" />
+      <ph name="BR" />
+      ڈیبگ کرنے کی خصوصیات کے بارے میں مزید معلومات کے لیے دیکھیں:<ph name="BR" />
+      https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-features
+      <ph name="BR" />
+      <ph name="BR" />
+      <ph name="BEGIN_BOLD" />نوٹ:<ph name="END_BOLD" />  کاروائی کے دوران سسٹم ریبوٹ کرے گا۔</translation>
 <translation id="5285635972691565180">ڈسپلے <ph name="DISPLAY_ID" /></translation>
 <translation id="5286194356314741248">اسکین کی جا رہی ہیں</translation>
 <translation id="5287425679749926365">آپ کے اکاؤنٹس</translation>
@@ -4424,6 +4465,7 @@
 <translation id="5449716055534515760">&amp;ونڈو بند کردیں</translation>
 <translation id="5452976525201205853"><ph name="LANGUAGE" /> (آف لائن کام کرتی ہے)</translation>
 <translation id="5454166040603940656"><ph name="PROVIDER" /> کے ساتھ</translation>
+<translation id="5455603387986949153">‏ChromeOS Flex آلہ اور جزو کے نمبر شمار پڑھیں۔</translation>
 <translation id="5457113250005438886">غلط</translation>
 <translation id="5457459357461771897">اپنے کمپیوٹر سے تصاویر، موسیقی اور دیگر میڈیا پڑھیں اور حذف کریں</translation>
 <translation id="5458214261780477893">ڈوراک</translation>
@@ -4432,6 +4474,7 @@
 <translation id="5461050611724244538">آپ کے فون کا کنکشن منقطع ہو گیا</translation>
 <translation id="5463275305984126951"><ph name="LOCATION" /> کا انڈیکس</translation>
 <translation id="5463625433003343978">آلات تلاش کئے جا رہے ہیں...</translation>
+<translation id="5463845647891602726">خالی جگہ میں اضافہ کرنے کے لیے، آلہ سے فائلز حذف کریں</translation>
 <translation id="5463856536939868464">مخفی بُک مارکس پر مشتمل مینو</translation>
 <translation id="5464632865477611176">اس بار چلائیں</translation>
 <translation id="5464660706533281090">بچہ صارف اس ترتیب کو تبدیل نہیں کر سکتا۔</translation>
@@ -4740,6 +4783,8 @@
 <translation id="5778491106820461378">‏آپ <ph name="LINK_BEGIN" />ترتیبات<ph name="LINK_END" /> سے سائن ان کردہ Google اکاؤنٹس کا نظم کر سکتے ہیں۔ ویب سائٹس اور ایپس کو آپ کی دی گئی اجازتیں سبھی اکاؤنٹس پر لاگو ہو سکتی ہیں۔ اگر آپ نہیں چاہتے کہ سائٹس یا ایپس کو آپ کے اکاؤنٹ کی معلومات تک رسائی حاصل ہو تو آپ مہمان کے بطور اپنے <ph name="DEVICE_TYPE" /> میں سائن ان کر سکتے ہیں۔</translation>
 <translation id="5780011244986845107">آپ کے منتخب کردہ فولڈر میں حساس فائلز شامل ہیں۔ کیا آپ واقعی "<ph name="APP_NAME" />" کو اس فولڈر میں پڑھنے کی مستقل رسائی دینا چاہتے ہیں؟</translation>
 <translation id="5780973441651030252">کارروائی کی ترجیح</translation>
+<translation id="5781014777846460847">‏اس آلے پر Steam کی اجازت نہیں ہے۔ اجازت حاصل کرنے کے لیے اپنے منتظم سے رابطہ کریں
+    خرابی کا کوڈ: <ph name="ERROR_CODE" />۔</translation>
 <translation id="5781092003150880845"><ph name="ACCOUNT_FULL_NAME" /> کے بطور مطابقت پذیر بنائیں</translation>
 <translation id="5781865261247219930"><ph name="EXTENSION_NAME" /> کو کمانڈز بھیجیں</translation>
 <translation id="5782227691023083829">ترجمہ کیا جا رہا ہے...</translation>
@@ -4846,6 +4891,7 @@
 <translation id="5889282057229379085">‏انٹر میڈیٹ CAs کی زیادہ سے زیادہ تعداد: <ph name="NUM_INTERMEDIATE_CA" /></translation>
 <translation id="5891688036610113830">‏ترجیحی Wi-Fi نیٹ ورکس</translation>
 <translation id="5895138241574237353">دوبارہ شروع کریں</translation>
+<translation id="5895335062901455404">‏جب آپ اپنے Google اکاؤنٹ کے ساتھ سائن ان کریں گے تو آپ کی محفوظ کردہ ترجیحات اور سرگرمی کسی بھی ChromeOS Flex آلہ پر تیار ہوں گی۔ آپ اس بات کا انتخاب کر سکتے ہیں کہ ترتیبات میں کس چیز کی مطابقت پذیری کرنی ہے۔</translation>
 <translation id="5896436821193322561">اجازت نہ دیں</translation>
 <translation id="5900302528761731119">‏Google پروفائل تصویر</translation>
 <translation id="590036993063074298">معکوس بندی کے معیار کی تفصیلات</translation>
@@ -5300,6 +5346,7 @@
 <translation id="6345878117466430440">بطور پڑھا ہوا مارک کریں</translation>
 <translation id="6347010704471250799">اطلاع دکھائیں</translation>
 <translation id="6349101878882523185"><ph name="APP_NAME" /> انسٹال کریں</translation>
+<translation id="6351383110065274390">‏اپنے Chromebook پر اپنی گیمنگ کا لطف اٹھائیں</translation>
 <translation id="6354918092619878358">‏SECG elliptic curve secp256r1 (المعروف ANSI X9.62 prime256v1, NIST P-256)</translation>
 <translation id="6355789186038748882">تجرباتی (الفا کوالٹی) براؤزر! کچھ خصوصیات غائب یا نامکمل ہیں۔ مسئلے کی اطلاع یہاں دیں: مدد &gt; "مسئلہ کی اطلاع دیں..."۔</translation>
 <translation id="635609604405270300">آلے کو آن رکھیں</translation>
@@ -5462,6 +5509,7 @@
 <translation id="6514565641373682518">اس صفحہ نے آپ کے ماؤس کرسر کو غیر فعال کر دیا ہے۔</translation>
 <translation id="6518014396551869914">تصویر &amp;کاپی کریں</translation>
 <translation id="6518133107902771759">توثیق کریں</translation>
+<translation id="6519304021460270639">‏آپ کی ایپس، ترتیبات، اور دیگر کسٹمائزیشنز آپ کے Google اکاؤنٹ کے ساتھ سائن ان کردہ تمام ChromeOS Flex آلات پر مطابقت پذیر ہو جائیں گے۔</translation>
 <translation id="651942933739530207">کیا آپ چاہتے ہیں کہ <ph name="APP_NAME" /> آپ کی اسکرین اور آڈیو آؤٹ پٹ کا اشتراک کرے؟</translation>
 <translation id="6519437681804756269">[<ph name="TIMESTAMP" />]
         <ph name="FILE_INFO" />
@@ -5638,6 +5686,7 @@
 <translation id="6691541770654083180">زمین</translation>
 <translation id="6691936601825168937">&amp;فارورڈ کریں</translation>
 <translation id="6693745645188488741">{COUNT,plural, =1{1 صفحہ}other{{COUNT} صفحات}}</translation>
+<translation id="6694430008315398925">‏Steam سیٹ اپ کیا جا رہا ہے</translation>
 <translation id="6697492270171225480">صفحہ نہ مل پانے کی صورت میں ملتے جلتے صفحات کے لیے تجاویز دکھائیں</translation>
 <translation id="6697690052557311665">‏اشتراک کرنے کیلئے، فائلز ایپ میں کسی فولڈر پر دایاں کلک کریں، پھر "Linux کے ساتھ اشتراک کریں" منتخب کریں۔</translation>
 <translation id="6698810901424468597"><ph name="WEBSITE_1" /> اور <ph name="WEBSITE_2" /> پر اپنا ڈیٹا پڑھیں اوراسے تبدیل کریں</translation>
@@ -5739,6 +5788,7 @@
 <translation id="6805647936811177813"><ph name="HOST_NAME" /> سے کلائنٹ سرٹیفیکیٹ درآمد کرنے کیلئے براہ کرم <ph name="TOKEN_NAME" /> میں سائن ان کریں۔</translation>
 <translation id="680572642341004180">‏<ph name="SHORT_PRODUCT_OS_NAME" /> پر RLZ ٹریکنگ فعال کریں۔</translation>
 <translation id="6808039367995747522">جاری رکھنے کے لیے، اپنی سیکیورٹی کلید درج اور ٹچ کریں</translation>
+<translation id="6808166974213191158">‏ChromeOS Flex سسٹم امیج رائٹر</translation>
 <translation id="6808193438228982088">لومڑی</translation>
 <translation id="6809470175540814047">پوشیدگی ونڈو میں کھولیں</translation>
 <translation id="6809656734323672573">‏اگر آپ متفق ہیں تو Google اسسٹنٹ "Ok Google" کا پتا لگانے کے لیے اسٹینڈ بائی وضع میں انتظار کرے گی اور Voice Match کے ساتھ یہ شناخت کر سکتی ہے کہ آپ ہی بات کر رہے ہیں۔
@@ -6692,6 +6742,7 @@
 <translation id="7768526219335215384"><ph name="ORIGIN" /> <ph name="FOLDERNAME" /> میں سبھی فائلز کو دیکھ سکے گا</translation>
 <translation id="7768770796815395237">تبدیل کریں</translation>
 <translation id="7768784765476638775">سننے کیلئے منتخب کریں</translation>
+<translation id="7770406201819593386">‏ChromeOS Flex تشخیصی ٹیسٹس چلائیں۔</translation>
 <translation id="7770612696274572992">دوسرے آلے سے تصویر کاپی کی گئی</translation>
 <translation id="7771452384635174008">لے آؤٹ</translation>
 <translation id="7772032839648071052">پاس فریز کی توثیق کریں</translation>
@@ -6784,6 +6835,7 @@
 <translation id="7853747251428735">مزید ٹولز</translation>
 <translation id="7855678561139483478">ٹیب کو نئی ونڈو میں منتقل کریں</translation>
 <translation id="7856654138655787862">‏Chrome OS تشخیصی ٹیسٹس چلائیں۔</translation>
+<translation id="7857004848504343806">‏آپ کے کمپیوٹر میں ایک محفوظ ماڈیول شامل ہے جو سیکیورٹی کی کئی اہم خصوصیات کو ChromeOS Flex میں لاگو کرنے کیلئے استعمال ہوتا ہے۔ مزید جاننے کیلئے Chromebook کا مرکز امداد ملاحظہ کریں: https://support.google.com/chromebook/?p=sm</translation>
 <translation id="7857093393627376423">متنی تجاویز</translation>
 <translation id="7857949311770343000">کیا یہی وہ نیا ٹیب صفحہ ہے جس کی آپ توقع کر رہے تھے؟</translation>
 <translation id="7858328180167661092">‎<ph name="APP_NAME" /> (Windows)‎</translation>
@@ -6899,6 +6951,7 @@
 <translation id="7969046989155602842">کمانڈ</translation>
 <translation id="7970673414865679092">ایتھرنیٹ کی تفصیلات</translation>
 <translation id="7970882136539140748">ابھی کارڈ محفوظ نہیں کیا جا سکا</translation>
+<translation id="7972354851134703743">فوری ہدایات کو ٹوگل کریں</translation>
 <translation id="7972714317346275248">‏PKCS #1 SHA-384 مع RSA مرموز کاری</translation>
 <translation id="7973776233567882054">درج ذیل میں سے کون آپ کے نیٹ ورک کی بہترین وضاحت کرتا ہے؟</translation>
 <translation id="797394244396603170">وہ آلہ منتخب کریں جس کے ساتھ آپ فائلز کا اشتراک کرنا چاہتے ہیں</translation>
@@ -6947,6 +7000,7 @@
 <translation id="8017679124341497925">شارٹ کٹ میں ترمیم کی گئی</translation>
 <translation id="8018298733481692628">اس پروفائل کو حذف کریں؟</translation>
 <translation id="8018313076035239964">کنٹرول کریں کہ ویب سائٹس کس طرح کی معلومات استعمال کر سکتی ہیں اور آپ کو کس طرح کے مواد دکھا سکتی ہیں</translation>
+<translation id="8023133589013344428">‏ChromeOS Flex کی ترتیبات میں زبانوں کا نظم کریں</translation>
 <translation id="8023801379949507775">ایکسٹینشنز کو ابھی اپ ڈیٹ کریں</translation>
 <translation id="8025151549289123443">مقفل اسکرین اور سائن ان</translation>
 <translation id="8026334261755873520">براؤزنگ ڈیٹا صاف کریں</translation>
@@ -6999,6 +7053,7 @@
 <translation id="8062844841289846053">{COUNT,plural, =1{پیپر کی 1 شیٹ}other{پیپر کی {COUNT} شیٹس}}</translation>
 <translation id="8063235345342641131">ڈیفالٹ سبز اوتار</translation>
 <translation id="8063535366119089408">فائل دیکھیں</translation>
+<translation id="8064015586118426197">ChromeOS Flex</translation>
 <translation id="8064279191081105977">گروپ <ph name="GROUP_NAME" /> - <ph name="GROUP_CONTENTS" /> - <ph name="COLLAPSED_STATE" /></translation>
 <translation id="8066444921260601116">کنکشن کا ڈائیلاگ</translation>
 <translation id="8070662218171013510">تاثرات بذریعہ تھپتھپاہٹ</translation>
@@ -7095,6 +7150,7 @@
 <translation id="8157248655669507702">‏eSIM پروفائل انسٹال کرنے کے لیے موبائل ڈیٹا فعال کریں</translation>
 <translation id="8157704005178149728">نگرانی ترتیب دی جا رہی ہے</translation>
 <translation id="8158117992543756526">اس آلہ نے <ph name="MONTH_AND_YEAR" /> میں خود کار سوفٹ ویئر اور سیکیورٹی اپ ڈیٹ حاصل کرنا بند کر دیا۔ <ph name="LINK_BEGIN" />مزید جانیں<ph name="LINK_END" /></translation>
+<translation id="8159652640256729753">اسپلٹ اسکرین اور ڈیسکس سوئچ کرنے جیسی کاروائیوں کے لیے وائبریشن کی توثیق موصول کریں۔ <ph name="LINK_BEGIN" />مزید جانیں<ph name="LINK_END" /></translation>
 <translation id="816055135686411707">سرٹیفیکیٹ ٹرسٹ کو ترتیب دینے میں خرابی</translation>
 <translation id="8160775796528709999">ترتیبات میں لائیو کیپشن فعال کر کے اپنی آڈیو اور ویڈیو کیلئے کیپشنز حاصل کریں</translation>
 <translation id="816095449251911490">‎<ph name="SPEED" /> - <ph name="RECEIVED_AMOUNT" />، <ph name="TIME_REMAINING" />‎</translation>
@@ -7363,6 +7419,7 @@
 <translation id="8438566539970814960">تلاشوں اور براؤزنگ کو بہتر بنائیں</translation>
 <translation id="8439506636278576865">اس زبان میں صفحات کا ترجمہ کرنے کی پیشکش کریں</translation>
 <translation id="8440630305826533614">‏Linux ایپس</translation>
+<translation id="8443795068008423036">براہ کرم یقینی بنائیں کہ آپ کا آلہ اپ ٹو ڈیٹ ہے اور دوبارہ کوشش کریں</translation>
 <translation id="8445046761938045900">حالیہ تصاویر، اطلاعات اور پیغام رسانی ایپس</translation>
 <translation id="8446884382197647889">مزید جانیں</translation>
 <translation id="8447409163267621480">‏Ctrl یا Alt شامل کریں</translation>
@@ -7547,6 +7604,7 @@
 <translation id="8648252583955599667"><ph name="GET_HELP_LINK" /> یا <ph name="RE_SCAN_LINK" /></translation>
 <translation id="8648408795949963811">نائٹ لائٹ کے رنگ کا درجہ حرارت</translation>
 <translation id="8648544143274677280"><ph name="SITE_NAME" /> کو درکار ہے: <ph name="FIRST_PERMISSION" />، <ph name="SECOND_PERMISSION" />، اور مزید بہت کچھ</translation>
+<translation id="864892689521194669">‏ChromeOS Flex کی خصوصیات اور کارکردگی کو بہتر بنانے میں مدد کریں</translation>
 <translation id="8650543407998814195">اگرچہ آپ اپنے پرانے پروفائل تک مزید رسائی حاصل نہیں کر سکتے لیکن آپ اسے اب بھی ہٹا سکتے ہیں۔</translation>
 <translation id="8651585100578802546">یہ صفحہ زبردستی دوبارہ لوڈ کریں</translation>
 <translation id="8652400352452647993">پیک ایکسٹینشن کی خرابی</translation>
@@ -7642,6 +7700,7 @@
 <translation id="8737709691285775803">Shill</translation>
 <translation id="8737914367566358838">صفحے کا ترجمہ کرنے کے لیے زبان منتخب کریں</translation>
 <translation id="8740247629089392745">‏آپ اس Chromebook کو <ph name="SUPERVISED_USER_NAME" /> کو دے سکتے ہیں۔ سیٹ اپ تقریباً مکمل ہو گیا ہے، اب اسے دریافت کرنے کا وقت ہے۔</translation>
+<translation id="8740672167979365981">‏ChromeOS Flex اپ ڈیٹ درکار ہے</translation>
 <translation id="8741944563400125534">سوئچ رسائی کی سیٹ اپ گائیڈ</translation>
 <translation id="8742998548129056176">‏یہ آپ کے آلہ اور آپ کے طریقۂ استعمال (جیسے بیٹری کی سطح، سسٹم، ایپ کی سرگرمی اور خرابیوں) کے بارے میں ایک عام معلومات ہے۔ Android کو بہتر بنانے کی خاطر ڈیٹا کا استعمال کیا جائے گا، اور کچھ مجموعی معلومات سے Google ایپس اور پارٹنرز، جیسے کہ Android ڈیولپرز، کو ان کی ایپس اور پروڈکٹس کو بہتر بنانے میں بھی مدد ملے گی۔</translation>
 <translation id="8746654918629346731">آپ نے پہلے ہی "<ph name="EXTENSION_NAME" />" کی درخواست کی ہے</translation>
@@ -7653,6 +7712,7 @@
 <translation id="8750346984209549530">‏سیلولر APN</translation>
 <translation id="8752451679755290210">خودکار طور پر ایک آئٹم سے دوسرے آئٹم پر جائیں</translation>
 <translation id="8753868764580670305">اس آلے پر محفوظ کردہ پاس ورڈز دیکھیں اور ان کا نظم کریں</translation>
+<translation id="8753948258138515839">‏فائلز ایپ ان فائلوں تک فوری رسائی فراہم کرتی ہے جنہیں آپ نے Google Drive، خارجی اسٹوریج یا اپنے ChromeOS Flex آلے پر محفوظ کیا ہے۔</translation>
 <translation id="8754200782896249056">‏&lt;p&gt;تعاون یافتہ ڈیسک ٹاپ ماحول کے تحت <ph name="PRODUCT_NAME" /> کو چلانے پر، سسٹم کی پراکسی ترتیبات استعمال کی جائیں گی۔  تاہم، یا تو آپ کا سسٹم تعاون یافتہ نہیں ہے یا آپ کے سسٹم کا کنفیگریشن شروع کرنے میں ایک مسئلہ پیش آ گیا۔&lt;/p&gt;
 
           &lt;p&gt;لیکن آپ اب بھی کمانڈ لائن کے ذریعے کنفیگر کر سکتے ہیں۔ پرچموں اور ماحول کے تغیرات پر مزید معلومات کیلئے براہ کرم &lt;code&gt;man <ph name="PRODUCT_BINARY_NAME" />&lt;/code&gt; دیکھیں۔&lt;/p&gt;</translation>
@@ -7671,6 +7731,7 @@
 <translation id="87646919272181953">‏Google تصاویر کا البم</translation>
 <translation id="8767621466733104912">‏سبھی صارفین کیلئے Chrome کو خودکار طور پر اپ ڈیٹ کریں</translation>
 <translation id="8767765348545497220">بلبلے کی مدد بند کریں</translation>
+<translation id="8769901904650373714">‏Steam سیٹ اپ میں ایک مسئلہ تھا</translation>
 <translation id="8770406935328356739">ایکسٹینشن روٹ ڈائرکٹری</translation>
 <translation id="8771300903067484968">ابتدائی صفحہ کے پس منظر کو ڈیفالٹ پس منظر پر دوبارہ ترتیب دے دیا گیا ہے۔</translation>
 <translation id="8773302562181397928"><ph name="PRINTER_NAME" /> محفوظ کریں</translation>
@@ -7887,6 +7948,7 @@
 <translation id="8981825781894055334">کاغذ کم ہے</translation>
 <translation id="8983632908660087688"><ph name="ORIGIN" /> <ph name="FILENAME" /> میں ترمیم کر سکتا ہے</translation>
 <translation id="8984694057134206124">آپ ہر ایک کو <ph name="MINUTES" /> منٹ کیلئے مرئی ہوں گے۔ <ph name="LINK_BEGIN" />مزید جانیں<ph name="LINK_END" /></translation>
+<translation id="8985191021574400965">‏Steam برائے Chromebook میں خوش آمدید</translation>
 <translation id="8985264973231822211"><ph name="DEVICE_LAST_ACTIVATED_TIME" /> دن پہلے فعال کیا گیا</translation>
 <translation id="8985661493893822002">براہ کرم اپنے <ph name="DEVICE_TYPE" /> میں سائن ان کرنے کے لیے انٹرنیٹ سے منسلک ہوں۔</translation>
 <translation id="8986362086234534611">بھول جائیں</translation>
@@ -8085,6 +8147,7 @@
 <translation id="917510707618656279">جب کوئی سائٹ بلوٹوتھ آلات تک رسائی حاصل کرنا چاہے تو پوچھیں</translation>
 <translation id="9176476835295860688">‏استعمال اور ڈائیگناسٹک کا ڈیٹا بھیجیں۔ فی الوقت یہ آلہ خود کار طور پر ڈائیگناسٹک، آلے اور ایپ کے استعمال کا ڈیٹا Google کو بھیج رہا ہے۔ اس سے سسٹم اور ایپ کے استحکام اور دیگر بہتریوں میں مدد ملے گی۔ کچھ مجموعی ڈیٹا Google ایپس اور پارٹنرز، جیسے Android ڈیولپرز، کی مدد بھی کرے گا۔ اس <ph name="BEGIN_LINK1" />ترتیب<ph name="END_LINK1" /> کو مالک نافذ کرتا ہے۔ اگر آپ کی ویب اور ایپ کی اضافی سرگرمی کی ترتیب آن ہے تو اس ڈیٹا کو آپ کے Google اکاؤنٹ میں محفوظ کیا جا سکتا ہے۔ <ph name="BEGIN_LINK2" />مزید جانیں<ph name="END_LINK2" /></translation>
 <translation id="9176611096776448349"><ph name="WINDOW_TITLE" /> - بلوٹوتھ آلہ منسلک ہے</translation>
+<translation id="9177949831069307748">‏ChromeOS Flex آلے کی معلومات اور آلے کا ڈیٹا پڑھیں۔</translation>
 <translation id="9178061802301856367">سائن ان کا ڈیٹا حذف کریں</translation>
 <translation id="9179524979050048593">سائن ان اسکرین کے لیے صارف کا نام</translation>
 <translation id="9180281769944411366">‏اس کارروائی میں کچھ منٹ لگ سکتے ہيں۔ Linux کنٹینر شروع ہو رہا ہے۔</translation>

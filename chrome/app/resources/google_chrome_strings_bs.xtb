@@ -12,13 +12,12 @@ Neke funkcije možda neće biti dostupne i promjene postavki se neće sačuvati.
 <translation id="1125124144982679672">Ko koristi Chrome?</translation>
 <translation id="1142745911746664600">Nije moguće ažurirati Chrome</translation>
 <translation id="1154147086299354128">&amp;Otvori u Chromeu</translation>
-<translation id="1178374936842835197">Ako se postavka ne prikazuje na ovoj stranici, pogledajte <ph name="LINK_BEGIN" />
-        postavke ChromeOS Flexa<ph name="LINK_END" /></translation>
+<translation id="1178374936842835197">Ako se postavka ne prikazuje na ovoj stranici, pogledajte u <ph name="LINK_BEGIN" />postavkama ChromeOS Flexa<ph name="LINK_END" /></translation>
 <translation id="1182414570724401860">Chrome preporučuje da ne preuzimate niti otvarate ovaj fajl</translation>
 <translation id="1278833599417554002">Ponovo pokrenite da ažurirate Chrome</translation>
 <translation id="1293325835983155583"><ph name="MANAGER" /> zahtijeva da prije korištenja uređaja pročitate i prihvatite sljedeće Uslove korištenja usluge. Ovi uslovi ne predstavljaju dodatak, izmjenu ili ograničenje uslova za Google Chrome OS.</translation>
 <translation id="1302523850133262269">Sačekajte dok Chrome instalira najnovija sistemska ažuriranja.</translation>
-<translation id="1335640173511558774"><ph name="MANAGER" /> zahtijeva da pročitate i prihvatite sljedeće uvjete pružanja usluge prije upotrebe ovog uređaja. Ti uvjeti ne predstavljaju proširenje, izmjenu ili ograničenje uvjeta ChromeOS Flexa.</translation>
+<translation id="1335640173511558774"><ph name="MANAGER" /> zahtijeva da prije korištenja uređaja pročitate i prihvatite sljedeće Uslove korištenja usluge. Ovi uslovi ne predstavljaju dodatak, izmjenu ili ograničenje Uslova za Google ChromeOS Flex.</translation>
 <translation id="137466361146087520">Google Chrome Beta</translation>
 <translation id="1399397803214730675">Na ovom računaru je već instalirana novija verzija Google Chromea. Ako softver ne bude funkcionirao, deinstalirajte Google Chrome i pokušajte ponovo.</translation>
 <translation id="1434626383986940139">Aplikacije Chrome Canary</translation>
@@ -51,9 +50,9 @@ uparivanjem. <ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" />
 <translation id="1919130412786645364">Omogući prijavu na Chrome</translation>
 <translation id="2018528049276128029">Svaki profil sadrži svoje Chrome informacije, poput oznaka, historije, lozinki i još mnogo toga</translation>
 <translation id="2063848847527508675">Chrome OS se mora ponovo pokrenuti da se ažuriranje primijeni.</translation>
-<translation id="2094648590148273905">Uvjeti za ChromeOS Flex</translation>
+<translation id="2094648590148273905">Uslovi za ChromeOS Flex</translation>
 <translation id="2094919256425865063">Ipak želite napustiti Chrome?</translation>
-<translation id="2106831557840787829">ChromeOS Flex omogućuje dodatni <ph name="BEGIN_LINK_CROS_OSS" />softver otvorenog izvornog koda<ph name="END_LINK_CROS_OSS" />, isto kao i <ph name="BEGIN_LINK_LINUX_OSS" />razvojno okruženje Linux<ph name="END_LINK_LINUX_OSS" />.</translation>
+<translation id="2106831557840787829">ChromeOS Flex je moguć zahvaljujući dodatnom <ph name="BEGIN_LINK_CROS_OSS" />softveru otvorenog koda<ph name="END_LINK_CROS_OSS" />, kao što je <ph name="BEGIN_LINK_LINUX_OSS" />Linuxovo okruženje za razvoj<ph name="END_LINK_LINUX_OSS" />.</translation>
 <translation id="2120620239521071941">Ovim će se s ovog uređaja izbrisati sljedeći broj stavki: <ph name="ITEMS_COUNT" />. Da preuzmete svoje podatke kasnije, prijavite se u Chrome kao <ph name="USER_EMAIL" />.</translation>
 <translation id="2121284319307530122">Ponovo pokrenite da ažurirate &amp;Chrome</translation>
 <translation id="2123055963409958220">Pomozite nam da poboljšamo Chrome izvještavanjem o <ph name="BEGIN_LINK" />trenutnim postavkama<ph name="END_LINK" /></translation>
@@ -96,7 +95,7 @@ uparivanjem. <ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" />
 <translation id="2926952073016206995">Chromeu je za ovu web lokaciju potrebno odobrenje za kameru</translation>
 <translation id="2929907241665500097">Ažuriranje Chromea nije uspjelo. Nešto nije uredu. <ph name="BEGIN_LINK" />Ispravite probleme s ažuriranjem Chromea i neuspjela ažuriranja.<ph name="END_LINK" /></translation>
 <translation id="2969728957078202736"><ph name="PAGE_TITLE" /> – prijava na mrežu – Chrome</translation>
-<translation id="3019382870990049182">Ponovo pokrenite da biste ažurirali &amp;ChromeOS Flex</translation>
+<translation id="3019382870990049182">Ponovo pokrenite da ažurirate &amp;ChromeOS Flex</translation>
 <translation id="303514781271618814">Chrome istražuje nove funkcije koje dozvoljavaju web lokacijama da pružaju isto iskustvo pregledanja korištenjem manje količine vaših podataka</translation>
 <translation id="3037838751736561277">Google Chrome radi u pozadinskom načinu rada.</translation>
 <translation id="3059710691562604940">Sigurno pregledanje je isključeno. Chrome preporučuje da ga uključite.</translation>
@@ -105,7 +104,7 @@ uparivanjem. <ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" />
 <translation id="3080151273017101988">Ostavi aplikacije da rade u pozadini kada se Google Chrome zatvori</translation>
 <translation id="3089968997497233615">Dostupna je nova, sigurnija verzija Google Chromea.</translation>
 <translation id="3100998948628680988">Dajte naziv Chrome profilu</translation>
-<translation id="3103390129666310801">Da biste vidjeli je li vaš uređaj ažuriran, otvorite <ph name="LINK_BEGIN" />postavke ChromeOS Flexa<ph name="LINK_END" /></translation>
+<translation id="3103390129666310801">Da vidite je li uređaj ažuriran, idite u <ph name="LINK_BEGIN" />Postavke ChromeOS Flexa<ph name="LINK_END" /></translation>
 <translation id="3114643501466072395">Da provjerite jesu li vaše ostale lozinke zaštićene od narušavanja podataka i drugih sigurnosnih problema, <ph name="BEGIN_LINK" />prijavite se u Chrome<ph name="END_LINK" />.</translation>
 <translation id="3140883423282498090">Promjene će stupiti na snagu kada sljedeći put pokrenete Google Chrome.</translation>
 <translation id="3149510190863420837">Chromeove aplikacije</translation>
@@ -132,7 +131,7 @@ uparivanjem. <ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" />
 <translation id="3735758079232443276">Ekstenzija "<ph name="EXTENSION_NAME" />" je promijenila stranicu koja se prikazuje kada pokrenete Chrome.</translation>
 <translation id="3779473566290487688">Da primate buduća ažuriranja za Google Chrome, trebat će vam OS X 10.11 ili novija verzija. Ovaj računar koristi OS X 10.10.</translation>
 <translation id="3780814664026482060">Chrome – <ph name="PAGE_TITLE" /></translation>
-<translation id="3785324443014631273">ChromeOS Flex nije mogao sinkronizirati vaše podatke zbog pogreške prilikom prijave.</translation>
+<translation id="3785324443014631273">ChromeOS Flex nije sinhronizirao vaše podatke zbog greške prilikom prijave.</translation>
 <translation id="3835168907083856002">Ovim će se kreirati novi Chrome profil za korisnika <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="386202838227397562">Zatvorite sve prozore Google Chromea i pokušajte ponovo.</translation>
 <translation id="3865754807470779944">Verzija Chromea <ph name="PRODUCT_VERSION" /> je instalirana</translation>
@@ -167,19 +166,19 @@ uparivanjem. <ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" />
 <translation id="4571503333518166079">Otvori postavke obavijesti za Chrome</translation>
 <translation id="459622048091363950">Kada Chrome dobije pristup, web lokacije će od vas moći tražiti pristup.</translation>
 <translation id="4600710005438004015">Chrome se nije mogao ažurirati na najnoviju verziju, tako da nemate nove značajke i sigurnosne popravke.</translation>
-<translation id="4627412468266359539">Neobavezno: pomozite poboljšati značajke i izvedbu ChromeOS Flexa automatskim slanjem podataka o upotrebi i dijagnostici Googleu.</translation>
+<translation id="4627412468266359539">Nije obavezno: pomozite da poboljšamo funkcije i performanse operativnog sistema ChromeOS Flexa automatskim slanjem podataka o dijagnostici i korištenju Googleu.</translation>
 <translation id="4633000520311261472">Kako bi Chrome bio sigurniji, onemogućili smo neke ekstenzije koje nisu navedene u <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> i koje su možda dodane bez vašeg znanja.</translation>
 <translation id="4728575227883772061">Instalacija nije uspjela zbog neodređene greške. Ako je Google Chrome trenutno pokrenut, zatvorite ga i pokušajte ponovo.</translation>
 <translation id="4754614261631455953">Google Chrome Canary (mDNS-In)</translation>
 <translation id="4771048833395599659">Ovaj fajl može biti opasan pa ga je Chrome blokirao.</translation>
 <translation id="479167709087336770">Ova usluga koristi isti alat za provjeru pravopisa koji se koristi u Google Pretraživanju. Tekst koji pišete u pregledniku šalje se Googleu. Ovo ponašanje možete uvijek promijeniti u postavkama.</translation>
-<translation id="4842397268809523050">ChromeOS Flex nije mogao sinkronizirati vaše podatke jer sinkronizacija nije dostupna za vašu domenu.</translation>
+<translation id="4842397268809523050">ChromeOS Flex nije mogao sinhronizirati vaše podatke jer sinhronizacija nije dostupna za vašu domenu.</translation>
 <translation id="4873783916118289636">Pregledajte ključne kontrole privatnosti i sigurnosti na Chromeu</translation>
 <translation id="4891791193823137474">Neka Google Chrome radi u pozadini</translation>
 <translation id="4895437082222824641">Otvori link u novoj &amp;kartici Chromea</translation>
 <translation id="4953650215774548573">Postavi Google Chrome kao zadani preglednik</translation>
 <translation id="495931528404527476">Iz Chromea</translation>
-<translation id="4969674060580488087">ChromeOS Flex nije mogao sinkronizirati vaše podatke jer su vaši podaci za prijavu na račun zastarjeli.</translation>
+<translation id="4969674060580488087">ChromeOS Flex nije mogao sinhronizirati vaše podatke jer su detalji za prijavu na vaš račun zastarjeli.</translation>
 <translation id="4970761609246024540">Dobro došli u Chrome profile</translation>
 <translation id="4990567037958725628">Google Chrome Canary</translation>
 <translation id="5062123544085870375">Ponovo pokrenite Chrome OS</translation>
@@ -192,7 +191,7 @@ Moguće je da neke funkcije neće biti dostupne. Odredite drugi direktorij profi
 <translation id="521447420733633466">Ako dijelite uređaj, prijatelji i porodica mogu odvojeno pregledati i postavljati Chrome na način koji njima odgovara</translation>
 <translation id="5251420635869119124">Gosti mogu koristiti Chrome, a da pritom ne ostave tragove o korištenju.</translation>
 <translation id="5334487786912937552">Chromeu je potrebno odobrenje za pristup pohrani radi preuzimanja fajlova</translation>
-<translation id="5357889879764279201">Zatražite pomoć za ChromeOS Flex</translation>
+<translation id="5357889879764279201">Potražite pomoć za ChromeOS Flex</translation>
 <translation id="5386244825306882791">Također kontrolira koja stranica će se prikazati kada pokrenete Chrome ili budete pretraživali iz višenamjenskog okvira.</translation>
 <translation id="5394833366792865639">Dijelite Chrome karticu</translation>
 <translation id="5430073640787465221">Datoteka vaših postavki oštećena je ili nevažeća. Google Chrome nema mogućnost oporavka vaših postavki.</translation>
@@ -229,11 +228,11 @@ Moguće je da neke funkcije neće biti dostupne. Odredite drugi direktorij profi
 <translation id="6506909944137591434">Chromeu je potrebno odobrenje za kameru radi kreiranja 3D mape vašeg okruženja</translation>
 <translation id="6515495397637126556"><ph name="PAGE_TITLE" /> – Google Chrome Dev</translation>
 <translation id="6568793831116033768">Sistem Chrome OS</translation>
-<translation id="6632473616050862500">ChromeOS Flex omogućuje dodatni <ph name="BEGIN_LINK_CROS_OSS" />softver otvorenog izvornog koda<ph name="END_LINK_CROS_OSS" />.</translation>
+<translation id="6632473616050862500">ChromeOS Flex je moguć zahvaljujući dodatnom <ph name="BEGIN_LINK_CROS_OSS" />softveru otvorenog koda<ph name="END_LINK_CROS_OSS" />.</translation>
 <translation id="6676384891291319759">Pristupite internetu</translation>
 <translation id="6679975945624592337">Neka Google Chrome radi u pozadini</translation>
 <translation id="6696915334902295848">Chromeu je za ovu web lokaciju potrebno odobrenje za mikrofon</translation>
-<translation id="6735387454586646204">Sustav ChromeOS Flex</translation>
+<translation id="6735387454586646204">Sistem ChromeOS Flex</translation>
 <translation id="6739177684496155661">Želite li nastaviti na novi Chrome profil?</translation>
 <translation id="6750954913813541382">Za ispravak pravopisnih grešaka, Chrome šalje Googleu tekst koji napišete u pregledniku</translation>
 <translation id="677276454032249905">Ipak želite napustiti Chrome?</translation>
@@ -293,7 +292,7 @@ Odobrenja koja ste već dali web lokacijama i aplikacijama se mogu primjenjivati
 <translation id="7896673875602241923">Netko se prethodno prijavio u Chrome na ovom računalu kao <ph name="ACCOUNT_EMAIL_LAST" />. Izradite novog korisnika Chromea kako bi vaši podaci bili odvojeni.</translation>
 <translation id="7917876797003313048">Možete upravljati Google računima na koje ste prijavljeni. Google računi se koriste za preglednik Chrome, Play trgovinu, Gmail i drugo. Ako želite dodati račun za nekog drugog, kao što je član porodice, umjesto računa dodajte novu osobu na svoj uređaj <ph name="DEVICE_TYPE" />. <ph name="LINK_BEGIN" />Saznajte više<ph name="LINK_END" /></translation>
 <translation id="7930071585467473040">Google Chrome pokušava kopirati lozinke.</translation>
-<translation id="7951272445806340501">Potrebno je ponovo pokrenuti ChromeOS Flex kako bi se ažuriranje primijenilo.</translation>
+<translation id="7951272445806340501">ChromeOS Flex je potrebno ponovo pokrenuti da se primijeni ažuriranje.</translation>
 <translation id="7962410387636238736">Ovaj računar više neće primati ažuriranja za Google Chrome jer sistemi Windows XP i Windows Vista više nisu podržani</translation>
 <translation id="79947657522496226">Chrome OS je moguć zahvaljujući dodatnom <ph name="BEGIN_LINK_CROS_OSS" />softveru otvorenog koda<ph name="END_LINK_CROS_OSS" />, isto kao i <ph name="BEGIN_LINK_LINUX_OSS" />Linuxovo okruženje za razvoj<ph name="END_LINK_LINUX_OSS" />.</translation>
 <translation id="8008534537613507642">Ponovo instaliraj Chrome</translation>
@@ -335,13 +334,13 @@ Odobrenja koja ste već dali web lokacijama i aplikacijama se mogu primjenjivati
 <translation id="8986207147630327271">Dodajete radni profil na ovaj preglednik i dajte administratoru kontrolu samo nad radnim profilom.</translation>
 <translation id="8999208279178790196">{0,plural, =0{Dostupno je ažuriranje Chromea}=1{Dostupno je ažuriranje Chromea}one{Ažuriranje Chromea je dostupno # dan}few{Ažuriranje Chromea je dostupno # dana}other{Ažuriranje Chromea je dostupno # dana}}</translation>
 <translation id="9026991721384951619">Chrome OS nije mogao sinhronizirati vaše podatke jer su podaci o prijavi računa zastarjeli.</translation>
-<translation id="9053892488859122171">Sustav ChromeOS Flex</translation>
+<translation id="9053892488859122171">Sistem ChromeOS Flex</translation>
 <translation id="9067395829937117663">Za Google Chrome je potreban Windows 7 ili novija verzija.</translation>
 <translation id="911206726377975832">Također izbrisati podatke pregledanja?</translation>
 <translation id="9138603949443464873">Da primijenite promjene, ponovo pokrenite Chrome</translation>
 <translation id="919706545465235479">Ažurirajte Chrome da započnete sinhronizaciju</translation>
 <translation id="922152298093051471">Prilagodite Chrome</translation>
-<translation id="93760716455950538">Ponovo pokretanje ChromeOS Flexa</translation>
+<translation id="93760716455950538">Ponovo pokrenite ChromeOS Flex</translation>
 <translation id="940313311831216333">Prijavite se, a zatim uključite sinhronizaciju da pristupite svojim Chrome stvarima na svim svojim uređajima.</translation>
 <translation id="989369509083708165">Google Chrome je vaš zadani preglednik</translation>
 <translation id="989816563149873169">Prečicom <ph name="SHORTCUT" /> možete prebacivati između Chrome profila</translation>

@@ -138,6 +138,7 @@
 <translation id="1810845389119482123">Erste Einrichtung der Synchronisierung nicht abgeschlossen</translation>
 <translation id="1829244130665387512">Auf Seite suchen</translation>
 <translation id="1832459821645506983">Ok</translation>
+<translation id="1849863543394887018">Sie können die Benachrichtigungen in den Einstellungen deaktivieren</translation>
 <translation id="1877026089748256423">Chrome ist veraltet.</translation>
 <translation id="1883903952484604915">Meine Dateien</translation>
 <translation id="189358972401248634">Sonstige Sprachen</translation>
@@ -654,6 +655,7 @@ Wenn Sie diese Einstellung ändern möchten, <ph name="BEGIN_LINK" />setzen Sie 
 <translation id="4860895144060829044">Anrufen</translation>
 <translation id="4864369630010738180">Anmeldung erfolgt...</translation>
 <translation id="4866368707455379617"><ph name="MODULE" /> kann nicht für Chrome installiert werden</translation>
+<translation id="4871568871368204250">Synchronisierung ausschalten</translation>
 <translation id="4875775213178255010">Inhaltsvorschläge</translation>
 <translation id="4877678010818027629">Inkognitomodus aktivieren</translation>
 <translation id="4878404682131129617">Tunnelerstellung via Proxyserver ist fehlgeschlagen</translation>
@@ -1198,6 +1200,7 @@ Einige Websites schalten möglicherweise Werbeanzeigen, deren Auswahl nicht dara
 <translation id="7926975587469166629">Kartenalias</translation>
 <translation id="7929962904089429003">Menü öffnen</translation>
 <translation id="7930998711684428189">Sie werden gewarnt, wenn Passwörter durch eine Datenpanne preisgegeben werden.</translation>
+<translation id="7937772386706786623">Mit Benachrichtigungen können Sie beispielsweise die Mediensteuerung und Inkognitotabs verwalten</translation>
 <translation id="7939485076072265087">Stilisierte Karte mit markiertem Text erstellen</translation>
 <translation id="7942131818088350342"><ph name="PRODUCT_NAME" /> ist veraltet.</translation>
 <translation id="7944772052836377867">Zur Synchronisierung muss Ihre Identität bestätigt werden</translation>

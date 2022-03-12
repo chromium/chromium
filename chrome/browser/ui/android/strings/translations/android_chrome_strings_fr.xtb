@@ -138,6 +138,7 @@
 <translation id="1810845389119482123">Configuration de la synchronisation initiale non terminée</translation>
 <translation id="1829244130665387512">Rechercher sur la page</translation>
 <translation id="1832459821645506983">Oui, j'accepte</translation>
+<translation id="1849863543394887018">Vous pouvez désactiver les notifications en accédant aux paramètres</translation>
 <translation id="1877026089748256423">Version de Chrome obsolète</translation>
 <translation id="1883903952484604915">Mes fichiers</translation>
 <translation id="189358972401248634">Autres langues</translation>
@@ -654,6 +655,7 @@ Pour modifier ce paramètre, <ph name="BEGIN_LINK" />réinitialisez la synchroni
 <translation id="4860895144060829044">Appeler</translation>
 <translation id="4864369630010738180">Connexion...</translation>
 <translation id="4866368707455379617">Impossible d'installer le module <ph name="MODULE" /> pour Chrome</translation>
+<translation id="4871568871368204250">Désactiver la synchronisation</translation>
 <translation id="4875775213178255010">Recommandations de contenus</translation>
 <translation id="4877678010818027629">Entrer en mode navigation privée</translation>
 <translation id="4878404682131129617">Échec de l'établissement d'un tunnel via un serveur proxy</translation>
@@ -1198,6 +1200,7 @@ Par exemple, certains sites Web peuvent répondre à cette demande en diffusant 
 <translation id="7926975587469166629">Pseudo associé à la carte</translation>
 <translation id="7929962904089429003">Ouvrir le menu</translation>
 <translation id="7930998711684428189">Il vous avertit en cas de divulgation de mots de passe suite à une violation des données.</translation>
+<translation id="7937772386706786623">Gérer les commandes multimédias, les onglets de navigation privée et plus avec les notifications</translation>
 <translation id="7939485076072265087">Créer une fiche stylisée avec le texte en surbrillance</translation>
 <translation id="7942131818088350342"><ph name="PRODUCT_NAME" /> est obsolète.</translation>
 <translation id="7944772052836377867">La synchronisation doit confirmer votre identité</translation>

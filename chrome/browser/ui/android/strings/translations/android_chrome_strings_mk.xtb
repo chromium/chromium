@@ -30,6 +30,7 @@
 <translation id="114825011539563458">Најважните контроли за приватност и безбедност на едно место</translation>
 <translation id="1149401351239820326">Месец на истекување</translation>
 <translation id="1154704303112745282">Страницата е недостапна офлајн: <ph name="VIOLATED_URL" /></translation>
+<translation id="1166688006062225587">Список со сметки за избор.</translation>
 <translation id="1171770572613082465">Допрете го копчето „Популарни“ за да ги разгледате популарните веб-сајтови</translation>
 <translation id="1173894706177603556">Преименувај</translation>
 <translation id="1177863135347784049">Приспособено</translation>
@@ -655,6 +656,7 @@
 <translation id="4860895144060829044">Повикајте</translation>
 <translation id="4864369630010738180">Се најавува…</translation>
 <translation id="4866368707455379617">Не може да се инсталира <ph name="MODULE" /> за Chrome</translation>
+<translation id="4871568871368204250">Исклучување синхронизација</translation>
 <translation id="4875775213178255010">Предлози за содржина</translation>
 <translation id="4877678010818027629">Влезете во режим „Инкогнито“</translation>
 <translation id="4878404682131129617">Воспоставувањето тунел преку прокси-сервер не успеа</translation>
@@ -788,6 +790,7 @@
 <translation id="5665379678064389456">Создаjте настан во <ph name="APP_NAME" /></translation>
 <translation id="5683547024293500885">Chrome не може да провери за ажурирања</translation>
 <translation id="5686790454216892815">Името на датотеката е предолго</translation>
+<translation id="5692329390578659217">За да продолжите, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> ќе го сподели вашето име, е-поштата, адресата и профилната слика со сајтов. Погледнете ја <ph name="BEGIN_LINK1" />Политиката за приватност<ph name="END_LINK1" /> и <ph name="BEGIN_LINK2" />Условите за користење<ph name="END_LINK2" /> на сајтов.</translation>
 <translation id="569536719314091526">Преведете ја страницава на кој било јазик со копчето „Повеќе опции“</translation>
 <translation id="5696597120588531049">Chrome може да ве штити од упад во податоците, небезбедни веб-сајтови и друго</translation>
 <translation id="5697688514913266141">Датотеката ќе се зачува во <ph name="BEGIN_BOLD" /><ph name="DIRECTORY" /><ph name="END_BOLD" />. <ph name="BEGIN_LINK2" />Измени<ph name="END_LINK2" />.</translation>
@@ -896,6 +899,7 @@
 <translation id="6277522088822131679">Настана проблем при печатење на страницата. Обидете се повторно.</translation>
 <translation id="6277722725779679269">Не може да се ажурира „Следете ја цената“</translation>
 <translation id="6278428485366576908">Тема</translation>
+<translation id="6293443105724342169">Списокот со сметки за избор е отворен на половина екран.</translation>
 <translation id="6294610283659775533">Може да испраќате картички меѓу уредите што се најавени со истата сметка на Google</translation>
 <translation id="6297765934698848803">Организацијата што управува со вашиот уред ви ја исклучила камерата.</translation>
 <translation id="6301525844455696527">Надоместете за пропуштеното од списокот за читање</translation>
@@ -1115,6 +1119,7 @@
 <translation id="7474822150871987353">Дознајте повеќе за темите на веб-сајтовите без да ја напуштите страницата. Изберете еден или повеќе зборови на страницата за да ги пребарате.</translation>
 <translation id="7475192538862203634">Ако често го гледате ова, обидете се со овие <ph name="BEGIN_LINK" />предлози<ph name="END_LINK" />.</translation>
 <translation id="7475688122056506577">SD-картичката не е најдена. Дел од вашите датотеки може да недостасуваат.</translation>
+<translation id="7477262822945323753">За да продолжите, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> ќе го сподели вашето име, е-поштата, адресата и профилната слика со сајтов. Погледнете ја <ph name="BEGIN_LINK1" />Политиката за приватност<ph name="END_LINK1" /> на сајтов.</translation>
 <translation id="7479104141328977413">Управување со картички</translation>
 <translation id="7481312909269577407">Напред</translation>
 <translation id="7482656565088326534">Картичка за преглед</translation>
@@ -1288,6 +1293,7 @@
 <translation id="8394720698884623075">Ги проверува URL-адресите во список со небезбедни сајтови меморирани во Chrome</translation>
 <translation id="8410695015584479363">Следете ги цените</translation>
 <translation id="8413126021676339697">Прикажи ја целата историја</translation>
+<translation id="8414396119627470038">Најавете се на <ph name="SITE_ETLD_PLUS_ONE" /> со <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="8419244640277402268">Вклучи</translation>
 <translation id="8424781820952413435">Страницата е испратена. За да ја видите, отворете ја Chrome на вашиот <ph name="DEVICE_TYPE" /></translation>
 <translation id="8427875596167638501">Картичката за преглед е отворена на половина екран</translation>
@@ -1303,6 +1309,7 @@
 <translation id="8461694314515752532">Шифрирајте ги синхронизираните податоци со сопствената лозинка за синхронизација</translation>
 <translation id="8466613982764129868">Проверете дали <ph name="TARGET_DEVICE_NAME" /> е поврзан на интернет</translation>
 <translation id="8473863474539038330">Адреси и друго</translation>
+<translation id="847656914027543776">Списокот со сметки за избор е затворен.</translation>
 <translation id="8481921391193215807">Кога е вклучено, сајтовите може да ги користат техниките за зачувување на приватноста што се прикажани тука за обезбедување на нивните содржини и услуги. Тие вклучуваат алтернативи за следење на повеќе сајтови. Можеби ќе се додадат повеќе пробни верзии со тек на време.
 
 <ph name="BEGIN_LIST_ITEM1" />Огласувачите и издавачите може да ја користат техниката FLoC.<ph name="END_LIST_ITEM1" />
@@ -1429,6 +1436,7 @@
 <translation id="9108312223223904744">Телефонот како поддршка во вид на безбедносен клуч</translation>
 <translation id="9108808586816295166">Безбедниот DNS можеби не е достапен во секое време</translation>
 <translation id="9133397713400217035">Истражете офлајн</translation>
+<translation id="9133523398139146080">Списокот со сметки за избор е отворен на цел екран.</translation>
 <translation id="9137013805542155359">Покажи оригинална страница</translation>
 <translation id="9148126808321036104">Најави се повторно</translation>
 <translation id="9155898266292537608">Може да пребарувате и со брзо допирање збор</translation>

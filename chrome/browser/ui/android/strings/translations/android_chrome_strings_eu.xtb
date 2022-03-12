@@ -138,6 +138,7 @@
 <translation id="1810845389119482123">Ez da amaitu hasierako sinkronizazioa konfiguratzen</translation>
 <translation id="1829244130665387512">Bilatu orrian</translation>
 <translation id="1832459821645506983">Ados</translation>
+<translation id="1849863543394887018">Jakinarazpenak desgaitzeko, joan ezarpenetara</translation>
 <translation id="1877026089748256423">Chrome zaharkituta dago</translation>
 <translation id="1883903952484604915">Nire fitxategiak</translation>
 <translation id="189358972401248634">Beste hizkuntzak</translation>
@@ -654,6 +655,7 @@ Ezarpena aldatzeko, <ph name="BEGIN_LINK" />berrezarri sinkronizazioa<ph name="E
 <translation id="4860895144060829044">Deitu</translation>
 <translation id="4864369630010738180">Saioa hasten…</translation>
 <translation id="4866368707455379617">Ezin da instalatu <ph name="MODULE" /> Chrome-rako</translation>
+<translation id="4871568871368204250">Desaktibatu sinkronizazioa</translation>
 <translation id="4875775213178255010">Iradokitako edukiak</translation>
 <translation id="4877678010818027629">Sartu ezkutuko moduan</translation>
 <translation id="4878404682131129617">Ezin izan da eratu tunel bat proxy-zerbitzariaren bidez</translation>
@@ -1198,6 +1200,7 @@ Esaterako, bisitatu dituzun webguneetan oinarritzen ez diren iragarkiak bidalita
 <translation id="7926975587469166629">Txartelaren goitizena</translation>
 <translation id="7929962904089429003">Ireki menua</translation>
 <translation id="7930998711684428189">Abisatu egiten dizu pasahitzak arriskuan badaude datuen isilpekotasuna urratu delako.</translation>
+<translation id="7937772386706786623">Jakinarazpenen bidez, kudeatu multimedia-edukia kontrolatzeko aukerak, ezkutuko moduko fitxak eta abar.</translation>
 <translation id="7939485076072265087">Sortu txartel estilizatu bat nabarmendutako testuarekin</translation>
 <translation id="7942131818088350342">Zaharkituta dago <ph name="PRODUCT_NAME" />.</translation>
 <translation id="7944772052836377867">Sinkronizazioak zure identitatea egiaztatu behar du</translation>

@@ -138,6 +138,7 @@
 <translation id="1810845389119482123">Початкове налаштування синхронізації не завершено</translation>
 <translation id="1829244130665387512">Знайти на сторінці</translation>
 <translation id="1832459821645506983">Гаразд</translation>
+<translation id="1849863543394887018">Ви можете вимкнути сповіщення в налаштуваннях</translation>
 <translation id="1877026089748256423">Версія Chrome застаріла</translation>
 <translation id="1883903952484604915">Мої файли</translation>
 <translation id="189358972401248634">Інші мови</translation>
@@ -654,6 +655,7 @@
 <translation id="4860895144060829044">Зателефонувати</translation>
 <translation id="4864369630010738180">Вхід…</translation>
 <translation id="4866368707455379617">Не вдалося встановити модуль <ph name="MODULE" /> для Chrome</translation>
+<translation id="4871568871368204250">Вимкніть синхронізацію</translation>
 <translation id="4875775213178255010">Пропозиції вмісту</translation>
 <translation id="4877678010818027629">Увімкнути режим анонімного перегляду</translation>
 <translation id="4878404682131129617">Не вдалося налагодити зв’язок через проксі-сервер</translation>
@@ -1198,6 +1200,7 @@
 <translation id="7926975587469166629">Псевдонім картки</translation>
 <translation id="7929962904089429003">Відкрити меню</translation>
 <translation id="7930998711684428189">Попереджає, якщо паролі розкрито через порушення безпеки даних.</translation>
+<translation id="7937772386706786623">Керувати медіаконтентом, анонімними вкладками й іншими функціями за допомогою сповіщень</translation>
 <translation id="7939485076072265087">Створити стилізовану картку з виділеним текстом</translation>
 <translation id="7942131818088350342">Застаріла версія <ph name="PRODUCT_NAME" />.</translation>
 <translation id="7944772052836377867">Для синхронізації потрібно підтвердити вашу особу</translation>

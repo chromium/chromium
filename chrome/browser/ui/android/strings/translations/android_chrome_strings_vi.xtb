@@ -138,6 +138,7 @@
 <translation id="1810845389119482123">Chưa hoàn tất quá trình thiết lập đồng bộ hóa ban đầu</translation>
 <translation id="1829244130665387512">Tìm trong trang</translation>
 <translation id="1832459821645506983">Có, tôi đồng ý</translation>
+<translation id="1849863543394887018">Bạn có thể tắt thông báo trong phần cài đặt</translation>
 <translation id="1877026089748256423">Chrome đã lỗi thời</translation>
 <translation id="1883903952484604915">Tệp của tôi</translation>
 <translation id="189358972401248634">Ngôn ngữ khác</translation>
@@ -654,6 +655,7 @@ Tài khoản Google của bạn có thể có các dạng lịch sử duyệt we
 <translation id="4860895144060829044">Gọi</translation>
 <translation id="4864369630010738180">Đang đăng nhập...</translation>
 <translation id="4866368707455379617">Không thể cài đặt <ph name="MODULE" /> cho Chrome</translation>
+<translation id="4871568871368204250">Tắt đồng bộ hóa</translation>
 <translation id="4875775213178255010">Đề xuất nội dung</translation>
 <translation id="4877678010818027629">Chuyển sang chế độ Ẩn danh</translation>
 <translation id="4878404682131129617">Thiết lập đường hầm qua máy chủ proxy không thành công</translation>
@@ -1198,6 +1200,7 @@ Ví dụ: một số trang web có thể phản hồi yêu cầu này bằng cá
 <translation id="7926975587469166629">Biệt hiệu của thẻ</translation>
 <translation id="7929962904089429003">Mở menu</translation>
 <translation id="7930998711684428189">Cảnh báo bạn nếu mật khẩu bị lộ trong một sự cố rò rỉ dữ liệu.</translation>
+<translation id="7937772386706786623">Dùng thông báo để quản lý trình điều khiển nội dung nghe nhìn, thẻ ẩn danh, v.v.</translation>
 <translation id="7939485076072265087">Tạo thẻ cách điệu cho văn bản nổi bật</translation>
 <translation id="7942131818088350342"><ph name="PRODUCT_NAME" /> đã lỗi thời.</translation>
 <translation id="7944772052836377867">Tính năng đồng bộ hóa cần xác minh danh tính của bạn</translation>

@@ -2352,7 +2352,6 @@ I-<ph name="DOMAIN" /> idinga ukuba ugcine ikhadi lakho elimsathi lifakiwe.</tra
 <translation id="3304212451103136496">isaphulelo sika-<ph name="DISCOUNT_AMOUNT" /></translation>
 <translation id="3305389145870741612">Inqubo yokufometha ingathatha amasekhondi ambalwa. Sicela ulinde.</translation>
 <translation id="3305661444342691068">Vula i-PDF ekubukeni kuqala</translation>
-<translation id="3306992216458434072">Qamba iqembu lakho igama bese ukhetha umbala</translation>
 <translation id="3307176291962384345">Thola izaphulelo ze-<ph name="MERCHANT_NAME" /></translation>
 <translation id="3308116878371095290">Leli khasi livinjelwe kusuka ekusetheni amakhukhi.</translation>
 <translation id="3308134619352333507">Fihla inkinobho</translation>
@@ -6945,6 +6944,7 @@ I-<ph name="EXTENSION_NAME" /></translation>
 <translation id="7946586320617670168">Okoqobo kufanele kuvikelwe</translation>
 <translation id="794676567536738329">Qinisekisa izimvume</translation>
 <translation id="7947962633355574091">K&amp;opisha ikheli levidiyo</translation>
+<translation id="7947964080535614577">Ngokuvamile amasayithi abonisa izikhangiso ukuze ahlinzeke ngokuqukethwe noma amasevisi mahhala. Kodwa, amanye amasayithi aziwa ngokubonisa izikhangiso ezisongelayo noma ezilahlekisayo.</translation>
 <translation id="7948407723851303488">Wonke amakhasi we-<ph name="DOMAIN_NAME" /></translation>
 <translation id="7951265006188088697">Ukuze ungeze noma uphathe izindlela zokukhokha ze-Google Pay, vakashela ku-<ph name="BEGIN_LINK" />akhawunti yakho ye-Google<ph name="END_LINK" /></translation>
 <translation id="7952708427581814389">Amasayithi angacela ukubona umbhalo nezithombe kubhodi lakho lokunamathisela</translation>

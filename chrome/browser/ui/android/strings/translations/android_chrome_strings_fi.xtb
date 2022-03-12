@@ -655,6 +655,7 @@ Jos haluat muokata asetusta, <ph name="BEGIN_LINK" />nollaa synkronointi<ph name
 <translation id="4860895144060829044">Soita</translation>
 <translation id="4864369630010738180">Kirjaudutaan...</translation>
 <translation id="4866368707455379617">Kohteen <ph name="MODULE" /> asennus Chromeen epäonnistui</translation>
+<translation id="4871568871368204250">Poista synkronointi käytöstä</translation>
 <translation id="4875775213178255010">Sisältöehdotukset</translation>
 <translation id="4877678010818027629">Siirry incognito-tilaan</translation>
 <translation id="4878404682131129617">Tunnelin muodostaminen välityspalvelimen kautta epäonnistui</translation>

@@ -83,6 +83,7 @@
 <translation id="1807246157184219062">Šviesi</translation>
 <translation id="1827738518074806965">Meno galerija</translation>
 <translation id="1851218745569890714">Vaizdo konferencijos</translation>
+<translation id="1852934301711881861">Įdiegti „ChromeOS Flex“</translation>
 <translation id="1874612839560830905">MTU</translation>
 <translation id="1887850431809612466">Aparatinės įrangos taisymas</translation>
 <translation id="1905710495812624430">Viršytas didžiausias bandymų skaičius.</translation>
@@ -107,6 +108,7 @@
 <translation id="2158971754079422508"><ph name="DESC_TEXT" />: bandyti dar kartą</translation>
 <translation id="2161394479394250669">Atšaukti spausdinimo užduotį</translation>
 <translation id="2180197493692062006">Kažkas nepavyko. Pabandykite iš naujo atidaryti programą.</translation>
+<translation id="2201770616342964496">Vietinio ryšio tapatybė</translation>
 <translation id="2209788852729124853">Iš naujo nustatyti srauto skaitiklius</translation>
 <translation id="2212733584906323460">Pavadinimo skyra</translation>
 <translation id="2217935453350629363">Dabartinė sparta</translation>
@@ -288,6 +290,7 @@
 <translation id="458794348635939462">Nepavyko nustatyti jokių prieglobų pavadinimų</translation>
 <translation id="4593212453765072419">Būtina autentifikuoti įgaliotąjį serverį</translation>
 <translation id="4627232916386272576"><ph name="DOCUMENT_TITLE" />, „<ph name="PRINTER_NAME" />“, <ph name="CREATION_TIME" />, <ph name="PRINTED_PAGE_NUMBER" /> iš <ph name="TOTAL_PAGE_NUMBER" /> psl. Paspauskite „Enter“, jei norite atšaukti spausdinimo užduotį.</translation>
+<translation id="4627645661474370390">Nuotolinio ryšio tapatybė</translation>
 <translation id="463791356324567266">Atšaukiamas nuskaitymas...</translation>
 <translation id="4646949265910132906">Saugus „Wi-Fi“ ryšys</translation>
 <translation id="4654549501020883054">Keisti kasdien</translation>

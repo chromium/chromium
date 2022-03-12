@@ -83,6 +83,7 @@
 <translation id="1807246157184219062">फिकट</translation>
 <translation id="1827738518074806965">आर्ट गॅलरी</translation>
 <translation id="1851218745569890714">व्हिडिओ कॉंफरन्सिंग</translation>
+<translation id="1852934301711881861">ChromeOS Flex इंस्टॉल करा</translation>
 <translation id="1874612839560830905">MTU</translation>
 <translation id="1887850431809612466">हार्डवेअर पुनरावृत्ती</translation>
 <translation id="1905710495812624430">कमाल अनुमती असलेले प्रयत्न ओलांडले.</translation>
@@ -107,6 +108,7 @@
 <translation id="2158971754079422508"><ph name="DESC_TEXT" />: पुन्हा प्रयत्न करा</translation>
 <translation id="2161394479394250669">प्रिंट कार्य रद्द करा</translation>
 <translation id="2180197493692062006">काहीतरी चूक झाली. अ‍ॅप पुन्हा उघडण्याचा प्रयत्न करा.</translation>
+<translation id="2201770616342964496">लोकल आयडेंटिटी</translation>
 <translation id="2209788852729124853">ट्रॅफिक काउंटर रीसेट करा</translation>
 <translation id="2212733584906323460">नाव रेझोल्यूशन</translation>
 <translation id="2217935453350629363">सध्याचा वेग</translation>
@@ -288,6 +290,7 @@
 <translation id="458794348635939462">सर्व होस्टचे निराकरण करता आले नाही</translation>
 <translation id="4593212453765072419">प्रॉक्सी प्रमाणीकरण आवश्यक</translation>
 <translation id="4627232916386272576"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="TOTAL_PAGE_NUMBER" /> पैकी <ph name="PRINTED_PAGE_NUMBER" />. प्रिंट कार्य रद्द करण्यासाठी एंटर दाबा.</translation>
+<translation id="4627645661474370390">रिमोट आयडेंटिटी</translation>
 <translation id="463791356324567266">स्कॅनिंग रद्द करत आहे...</translation>
 <translation id="4646949265910132906">सुरक्षित वायफाय कनेक्शन</translation>
 <translation id="4654549501020883054">दररोज बदला</translation>

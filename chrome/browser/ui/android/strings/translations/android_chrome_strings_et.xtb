@@ -138,6 +138,7 @@
 <translation id="1810845389119482123">Sünkroonimise algseadistus ei jõudnud lõpule</translation>
 <translation id="1829244130665387512">Otsi leheküljelt</translation>
 <translation id="1832459821645506983">Jah, sobib</translation>
+<translation id="1849863543394887018">Saate märguanded keelata, kui avate seaded</translation>
 <translation id="1877026089748256423">Chrome on aegunud</translation>
 <translation id="1883903952484604915">Minu failid</translation>
 <translation id="189358972401248634">Teised keeled</translation>
@@ -654,6 +655,7 @@ Seade muutmiseks <ph name="BEGIN_LINK" />lähtestage sünkroonimine<ph name="END
 <translation id="4860895144060829044">Helistage</translation>
 <translation id="4864369630010738180">Sisselogimine ...</translation>
 <translation id="4866368707455379617">Moodulit <ph name="MODULE" /> ei saa Chrome'i jaoks installida</translation>
+<translation id="4871568871368204250">Sünkroonimise väljalülitamine</translation>
 <translation id="4875775213178255010">Sisu soovitused</translation>
 <translation id="4877678010818027629">Sisenemine inkognito režiimi</translation>
 <translation id="4878404682131129617">Puhverserveri kaudu tunneli loomine ebaõnnestus</translation>
@@ -1198,6 +1200,7 @@ Näiteks võivad mõned veebisaidid taotlusele reageerida nii, et näitavad teil
 <translation id="7926975587469166629">Kaardi hüüdnimi</translation>
 <translation id="7929962904089429003">Menüü avamine</translation>
 <translation id="7930998711684428189">Teid hoiatatakse, kui paroolid andmetega seotud rikkumise käigus avalikustatakse.</translation>
+<translation id="7937772386706786623">Meedia juhtnuppude, inkognito vahelehtede ja muu haldamine märguannetega</translation>
 <translation id="7939485076072265087">Esiletõstuga stiliseeritud kaardi loomine</translation>
 <translation id="7942131818088350342">Teenus <ph name="PRODUCT_NAME" /> on aegunud.</translation>
 <translation id="7944772052836377867">Sünkroonimisfunktsioon peab teie isiku kinnitama</translation>

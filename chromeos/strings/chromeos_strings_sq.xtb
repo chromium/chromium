@@ -83,6 +83,7 @@
 <translation id="1807246157184219062">I lehtë</translation>
 <translation id="1827738518074806965">Galeri arti</translation>
 <translation id="1851218745569890714">Videokonferenca</translation>
+<translation id="1852934301711881861">Instalo Chrome OS Flex</translation>
 <translation id="1874612839560830905">MTU</translation>
 <translation id="1887850431809612466">Rishikimi i harduerit</translation>
 <translation id="1905710495812624430">U kaluan përpjekjet maksimale të lejuara.</translation>
@@ -107,6 +108,7 @@
 <translation id="2158971754079422508"><ph name="DESC_TEXT" />: Riprovo</translation>
 <translation id="2161394479394250669">Anulo printimin</translation>
 <translation id="2180197493692062006">Ndodhi një gabim. Provo të rihapësh aplikacionin.</translation>
+<translation id="2201770616342964496">Identiteti lokal</translation>
 <translation id="2209788852729124853">Rivendos matësit e trafikut</translation>
 <translation id="2212733584906323460">Zgjidhja e emrit</translation>
 <translation id="2217935453350629363">Shpejtësia aktuale</translation>
@@ -288,6 +290,7 @@
 <translation id="458794348635939462">Zgjidhja e të gjithë pritësve dështoi</translation>
 <translation id="4593212453765072419">Kërkohet vërtetimi i serverit përfaqësues</translation>
 <translation id="4627232916386272576"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="PRINTED_PAGE_NUMBER" /> nga <ph name="TOTAL_PAGE_NUMBER" />. Shtyp Enter për të anuluar printimin.</translation>
+<translation id="4627645661474370390">Identiteti në distancë</translation>
 <translation id="463791356324567266">Skanimi po anulohet...</translation>
 <translation id="4646949265910132906">Lidhja e sigurt WiFi</translation>
 <translation id="4654549501020883054">Ndrysho çdo ditë</translation>

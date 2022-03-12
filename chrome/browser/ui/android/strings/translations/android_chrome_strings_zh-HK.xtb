@@ -655,6 +655,7 @@
 <translation id="4860895144060829044">撥號</translation>
 <translation id="4864369630010738180">正在登入…</translation>
 <translation id="4866368707455379617">無法為 Chrome 安裝 <ph name="MODULE" /></translation>
+<translation id="4871568871368204250">關閉同步處理功能</translation>
 <translation id="4875775213178255010">內容建議</translation>
 <translation id="4877678010818027629">進入無痕模式</translation>
 <translation id="4878404682131129617">透過 Proxy 伺服器建立通道失敗</translation>
@@ -684,6 +685,7 @@
 <translation id="4988526792673242964">網頁</translation>
 <translation id="5001388021414335527">按一下這裡追蹤此網站</translation>
 <translation id="5004416275253351869">Google 活動控制項</translation>
+<translation id="5005141133360250920">已經刪除咗反應</translation>
 <translation id="5005498671520578047">複製密碼</translation>
 <translation id="5011311129201317034"><ph name="SITE" /> 要求連接至</translation>
 <translation id="5016205925109358554">Serif</translation>
@@ -740,6 +742,7 @@
 <translation id="5368227114232678694">如要在此裝置上私密瀏覽，請使用「無痕模式」</translation>
 <translation id="5368958499335451666">{OPEN_TABS,plural, =1{<ph name="OPEN_TABS_ONE" /> 個開啟的分頁，輕按即可切換分頁}other{<ph name="OPEN_TABS_MANY" /> 個開啟的分頁，輕按即可切換分頁}}</translation>
 <translation id="5375577065097716013">使用「Google 智能鏡頭」搜尋圖片 <ph name="BEGIN_NEW" />新功能<ph name="END_NEW" /></translation>
+<translation id="5376898820269806588">已經變更咗反應</translation>
 <translation id="5403644198645076998">只允許瀏覽部分網站</translation>
 <translation id="5409881200985013443">要在「<ph name="CLIENT_NAME" />」上提交 <ph name="ONE_TIME_CODE" /> 嗎？</translation>
 <translation id="5414836363063783498">正在驗證…</translation>
@@ -1071,6 +1074,7 @@
 <translation id="718926126787620637">書籤資料夾清單宜家顯示喺成個畫面</translation>
 <translation id="7191430249889272776">已在背景開啟分頁。</translation>
 <translation id="7196215469483532480">私隱權指南說明宜家顯示喺成個畫面</translation>
+<translation id="7208109991155904980">已經移動咗反應</translation>
 <translation id="7227218174981371415">{FILE_COUNT,plural, =1{1 項下載操作尚待處理}other{# 項下載操作尚待處理}}</translation>
 <translation id="7237045078887540010">使用 Chrome 即表示您同意《<ph name="BEGIN_TOS_LINK" />Google 服務條款<ph name="END_TOS_LINK" />》以及 <ph name="BEGIN_ATOS_LINK" />Google Chrome 和 Chrome OS 的《附加服務條款》<ph name="END_ATOS_LINK" />。須同時受《<ph name="BEGIN_PRIVACY_LINK" />私隱權政策<ph name="END_PRIVACY_LINK" />》約束。</translation>
 <translation id="7242755609445462077">風格化突顯內容 (日期：<ph name="CURRENT_DATE" />)</translation>

@@ -30,6 +30,7 @@
 <translation id="114825011539563458">એક જ જગ્યાએ પ્રાઇવસી અને સુરક્ષાના સૌથી મહત્ત્વપૂર્ણ નિયંત્રણો</translation>
 <translation id="1149401351239820326">સમય સમાપ્તિ મહિનો</translation>
 <translation id="1154704303112745282">પેજ ઑફલાઇન ઉપલબ્ધ નથી: <ph name="VIOLATED_URL" /></translation>
+<translation id="1166688006062225587">પસંદ કરવા માટે એકાઉન્ટની સૂચિ.</translation>
 <translation id="1171770572613082465">"લોકપ્રિય સાઇટ" બટન પર ટૅપ કરીને લોકપ્રિય વેબસાઇટ જુઓ</translation>
 <translation id="1173894706177603556">નામ બદલો</translation>
 <translation id="1177863135347784049">કસ્ટમ</translation>
@@ -655,6 +656,7 @@
 <translation id="4860895144060829044">કૉલ કરો</translation>
 <translation id="4864369630010738180">સાઇન ઇન થઈ રહ્યું છે...</translation>
 <translation id="4866368707455379617">Chrome માટે <ph name="MODULE" /> ઇન્સ્ટૉલ કરવામાં અસમર્થ</translation>
+<translation id="4871568871368204250">સિંક બંધ કરો</translation>
 <translation id="4875775213178255010">કન્ટેન્ટ માટે સૂચનો</translation>
 <translation id="4877678010818027629">છૂપો મોડમાં દાખલ થાઓ</translation>
 <translation id="4878404682131129617">પ્રૉક્સી સર્વર મારફતે એક ટનલને સ્થાપિત કરવું નિષ્ફળ થયું</translation>
@@ -788,6 +790,7 @@
 <translation id="5665379678064389456"><ph name="APP_NAME" /> માં ઇવેન્ટ બનાવો</translation>
 <translation id="5683547024293500885">Chrome અપડેટ ચેક કરી શકતું નથી</translation>
 <translation id="5686790454216892815">ફાઇલનું નામ ખૂબ લાંબું છે</translation>
+<translation id="5692329390578659217">આગળ વધવા માટે, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> તમારું નામ, ઇમેઇલ ઍડ્રેસ અને પ્રોફાઇલ ફોટો આ સાઇટ સાથે શેર કરશે. આ સાઇટની <ph name="BEGIN_LINK1" />પ્રાઇવસી પૉલિસી<ph name="END_LINK1" /> અને <ph name="BEGIN_LINK2" />સેવાની શરતો<ph name="END_LINK2" /> જુઓ.</translation>
 <translation id="569536719314091526">વધુ વિકલ્પો બટનમાંથી આ પેજનો અનુવાદ કોઈપણ ભાષામાં કરો</translation>
 <translation id="5696597120588531049">ડેટા ઉલ્લંઘનો, અસુરક્ષિત વેબસાઇટ જેવી બીજી ઘણી બાબતોથી તમને સુરક્ષિત રાખવામાં Chrome તમારી સહાય કરી શકે છે</translation>
 <translation id="5697688514913266141">તમારી ફાઇલ <ph name="BEGIN_BOLD" /><ph name="DIRECTORY" /><ph name="END_BOLD" />માં સચવાશે. <ph name="BEGIN_LINK2" />ફેરફાર કરો<ph name="END_LINK2" />.</translation>
@@ -896,6 +899,7 @@
 <translation id="6277522088822131679">પેજને પ્રિન્ટ કરવામાં સમસ્યા હતી. કૃપા કરીને ફરીથી પ્રયાસ કરો.</translation>
 <translation id="6277722725779679269">કિંમત ટ્રૅક કરી શક્યા નથી</translation>
 <translation id="6278428485366576908">થીમ</translation>
+<translation id="6293443105724342169">પસંદ કરવામાં આવનારા એકાઉન્ટની સૂચિ અડધી સ્ક્રીન પર ખોલવામાં આવશે.</translation>
 <translation id="6294610283659775533">તમે સમાન Google એકાઉન્ટ વડે સાઇન ઇન કરેલા ડિવાઇસ વચ્ચે ટૅબ મોકલી શકો છો</translation>
 <translation id="6297765934698848803">જે સંસ્થા તમારા ડિવાઇસને મેનેજ કરે છે તેણે તમારો કૅમેરા બંધ કર્યો છે.</translation>
 <translation id="6301525844455696527">વાંચવાની સૂચિમાં બાકી હોય તે વાંચી લો</translation>
@@ -1115,6 +1119,7 @@
 <translation id="7474822150871987353">પેજને છોડ્યા વિના વેબસાઇટ પરના વિષયો વિશે જાણો. પેજ પરના એક કે તેનાથી વધુ શબ્દોની શોધ કરવા માટે તેમને પસંદ કરો.</translation>
 <translation id="7475192538862203634">જો તમે આ વારંવાર જોઈ રહ્યાં છો, તો આ <ph name="BEGIN_LINK" />સૂચનો<ph name="END_LINK" />ને અજમાવી જુઓ.</translation>
 <translation id="7475688122056506577">SD કાર્ડ મળ્યું નથી. તમારી અમુક ફાઇલો ખૂટતી હોઈ શકે છે.</translation>
+<translation id="7477262822945323753">આગળ વધવા માટે, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> તમારું નામ, ઇમેઇલ ઍડ્રેસ અને પ્રોફાઇલ ફોટો આ સાઇટ સાથે શેર કરશે. આ સાઇટની <ph name="BEGIN_LINK1" />પ્રાઇવસી પૉલિસી<ph name="END_LINK1" /> જુઓ.</translation>
 <translation id="7479104141328977413">ટૅબ મેનેજમેન્ટ</translation>
 <translation id="7481312909269577407">ફોર્વર્ડ કરો</translation>
 <translation id="7482656565088326534">પ્રીવ્યૂ ટૅબ</translation>
@@ -1288,6 +1293,7 @@
 <translation id="8394720698884623075">URLsને Chromeમાં સ્ટોર કરેલી અસુરક્ષિત સાઇટની સૂચિ સાથે સરખાવીને ચેક કરે છે</translation>
 <translation id="8410695015584479363">કિંમત ટ્રૅક કરો</translation>
 <translation id="8413126021676339697">પૂર્ણ ઇતિહાસ બતાવો</translation>
+<translation id="8414396119627470038"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> વડે <ph name="SITE_ETLD_PLUS_ONE" />માં સાઇન ઇન કરો</translation>
 <translation id="8419244640277402268">શામેલ કરો</translation>
 <translation id="8424781820952413435">પેજ મોકલ્યું. તેને જોવા માટે, તમારા <ph name="DEVICE_TYPE" /> પર Chrome ખોલો</translation>
 <translation id="8427875596167638501">પ્રીવ્યૂ ટૅબ અડધી ઊંચાઈએ ખુલી</translation>
@@ -1303,6 +1309,7 @@
 <translation id="8461694314515752532">તમારા પોતાના સિંક પાસફ્રેઝ સાથે સિંક કરેલા ડેટાને એન્ક્રિપ્ટ કરો</translation>
 <translation id="8466613982764129868">ખાતરી કરો કે <ph name="TARGET_DEVICE_NAME" />ને ઇન્ટરનેટ સાથે કનેક્ટ કરેલું છે</translation>
 <translation id="8473863474539038330">સરનામા અને વધુ</translation>
+<translation id="847656914027543776">પસંદ કરવામાં આવનારા એકાઉન્ટની સૂચિ બંધ છે.</translation>
 <translation id="8481921391193215807">જ્યારે ચાલુ હોય, ત્યારે સાઇટ તેમાંનું કન્ટેન્ટ અને સેવાઓ પ્રદાન કરવા માટે, અહીં બતાવેલી પ્રાઇવસીની જાળવણી કરતી ટેક્નોલોજીનો ઉપયોગ કરી શકે છે. આમાં ક્રોસ-સાઇટ ટ્રૅકિંગ માટેના વિકલ્પોનો સમાવેશ છે. સમયાંતરે વધુ અજમાયશો ઉમેરવામાં આવી શકે છે.
 
 <ph name="BEGIN_LIST_ITEM1" />જાહેરાતકર્તાઓ અને પ્રકાશકો FLoCનો ઉપયોગ કરી શકે છે.<ph name="END_LIST_ITEM1" />
@@ -1429,6 +1436,7 @@
 <translation id="9108312223223904744">સિક્યુરિટી કી તરીકે ફોનનો ઉપયોગ</translation>
 <translation id="9108808586816295166">સુરક્ષિત DNS હંમેશાં ઉપલબ્ધ ન હોઈ શકે</translation>
 <translation id="9133397713400217035">ઑફલાઇનમાં શોધખોળ કરો</translation>
+<translation id="9133523398139146080">પસંદ કરવામાં આવનારા એકાઉન્ટની સૂચિ સંપૂર્ણ સ્ક્રીન પર ખોલવામાં આવશે.</translation>
 <translation id="9137013805542155359">મૂળ બતાવો</translation>
 <translation id="9148126808321036104">ફરીથી સાઇન ઇન કરો </translation>
 <translation id="9155898266292537608">તમે કોઈ એક શબ્દ પર ટૅપ કરીને પણ શોધી શકો છો</translation>

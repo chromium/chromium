@@ -83,6 +83,7 @@
 <translation id="1807246157184219062">Светло</translation>
 <translation id="1827738518074806965">Художествена галерия</translation>
 <translation id="1851218745569890714">Видеоконференции</translation>
+<translation id="1852934301711881861">Инсталиране на ChromeOS Flex</translation>
 <translation id="1874612839560830905">MTU</translation>
 <translation id="1887850431809612466">Версия на хардуера</translation>
 <translation id="1905710495812624430">Максималният брой опити е надвишен.</translation>
@@ -107,6 +108,7 @@
 <translation id="2158971754079422508"><ph name="DESC_TEXT" />: Нов опит</translation>
 <translation id="2161394479394250669">Анулиране на заданието за отпечатване</translation>
 <translation id="2180197493692062006">Нещо се обърка. Опитайте да отворите приложението отново.</translation>
+<translation id="2201770616342964496">Локална самоличност</translation>
 <translation id="2209788852729124853">Нулиране на броячите за трафика</translation>
 <translation id="2212733584906323460">Преобразуване на името</translation>
 <translation id="2217935453350629363">Текуща скорост</translation>
@@ -288,6 +290,7 @@
 <translation id="458794348635939462">Името на нито един хост не бе преобразувано</translation>
 <translation id="4593212453765072419">Изисква се удостоверяване в прокси сървъра</translation>
 <translation id="4627232916386272576"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="PRINTED_PAGE_NUMBER" /> от <ph name="TOTAL_PAGE_NUMBER" />. Натиснете Enter, за да откажете заданието за отпечатване</translation>
+<translation id="4627645661474370390">Отдалечена самоличност</translation>
 <translation id="463791356324567266">Сканирането се отменя...</translation>
 <translation id="4646949265910132906">Сигурна Wi-Fi връзка</translation>
 <translation id="4654549501020883054">Промяна всеки ден</translation>

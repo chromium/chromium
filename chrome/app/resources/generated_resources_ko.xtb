@@ -228,6 +228,7 @@
 <translation id="121384500095351701">이 파일은 안전하게 다운로드할 수 없습니다.</translation>
 <translation id="1215411991991485844">새 백그라운드 앱을 추가함</translation>
 <translation id="1216542092748365687">지문 삭제</translation>
+<translation id="1217114730239853757">ChromeOS Flex의 내장 스크린 리더인 ChromeVox를 활성화하시겠습니까? 활성화하려면 스페이스바를 누르세요.</translation>
 <translation id="1217483152325416304">로컬 데이터가 곧 삭제됩니다</translation>
 <translation id="1217668622537098248">작업 후 왼쪽 클릭으로 되돌리기</translation>
 <translation id="121783623783282548">비밀번호가 일치하지 않습니다.</translation>
@@ -278,6 +279,7 @@
 <translation id="126387934568812801">이 스크린샷 및 열려 있는 탭의 제목 포함</translation>
 <translation id="1264083566674525434">사이트 권한 수정</translation>
 <translation id="1264337193001759725">네트워크 UI 로그를 확인하려면 <ph name="DEVICE_LOG_LINK" /> 페이지로 이동하세요.</translation>
+<translation id="1265279736024499987">Google 계정으로 로그인한 모든 ChromeOS Flex 기기에서 앱 및 설정이 동기화됩니다. 브라우저 동기화 옵션을 보려면 <ph name="LINK_BEGIN" />Chrome 설정<ph name="LINK_END" />으로 이동하세요.</translation>
 <translation id="126710816202626562">번역 언어:</translation>
 <translation id="126768002343224824">16배</translation>
 <translation id="1272079795634619415">중지</translation>
@@ -330,6 +332,7 @@
 <translation id="1327272175893960498">Kerberos 티켓</translation>
 <translation id="1327495825214193325">ADB 디버깅을 사용 설정하려면 이 <ph name="DEVICE_TYPE" /> 기기를 다시 시작해야 합니다. ADB 디버깅을 사용 중지하려면 초기화해야 합니다.</translation>
 <translation id="1327794256477341646">위치가 필요한 기능이 작동하지 않음</translation>
+<translation id="1329191040029425999">기기가 최신 상태인지 확인하고 다시 시도해 보세요</translation>
 <translation id="1330145147221172764">터치 키보드 사용</translation>
 <translation id="1331977651797684645">본인이 맞습니다.</translation>
 <translation id="1333489022424033687">기기에 저장된 다른 사이트의 데이터를 삭제할 때까지 <ph name="ORIGIN" />의 일부 기능을 사용하지 못할 수 있습니다.</translation>
@@ -371,6 +374,7 @@
 <translation id="1373176046406139583">화면이 잠금 해제되어 있을 때 나와 파일을 공유할 수 있는 사람은 기기 공개 범위에 따라 다릅니다. <ph name="LINK_BEGIN" />자세히 알아보기<ph name="LINK_END" /></translation>
 <translation id="1374844444528092021">네트워크 '<ph name="NETWORK_NAME" />'에 필요한 인증서가 설치되지 않았거나 더 이상 유효하지 않습니다. 새로운 인증서를 받아 다시 연결하세요.</translation>
 <translation id="1375321115329958930">저장된 비밀번호</translation>
+<translation id="1375557162880614858">ChromeOS Flex의 내장 스크린 리더인 ChromeVox를 활성화하시겠습니까?</translation>
 <translation id="137651782282853227">저장한 주소가 여기 표시됩니다.</translation>
 <translation id="1376771218494401509">창 이름 지정...</translation>
 <translation id="1377600615067678409">건너뛰기</translation>
@@ -792,8 +796,10 @@
 <translation id="175196451752279553">닫은 탭 다시 열기(&amp;E)</translation>
 <translation id="1753067873202720523">Chromebook이 켜져 있으면 충전되지 않을 수 있습니다.</translation>
 <translation id="1753905327828125965">자주 방문한 페이지</translation>
+<translation id="1755395545337105369">ChromeOS Flex 설정 동기화</translation>
 <translation id="1755601632425835748">텍스트 크기</translation>
 <translation id="1755872274219796698">비밀번호 이동</translation>
+<translation id="1757132445735080748">Linux 설정을 완료하려면 ChromeOS Flex를 업데이트하고 다시 시도하세요.</translation>
 <translation id="1757301747492736405">제거 대기 중</translation>
 <translation id="175772926354468439">테마 사용</translation>
 <translation id="17584710573359123">Chrome 웹 스토어에서 보기</translation>
@@ -840,6 +846,7 @@
 <translation id="1794791083288629568">이 문제를 해결하는 데 도움이 되도록 의견 전송</translation>
 <translation id="1795214765651529549">기본 테마 사용</translation>
 <translation id="1796588414813960292">소리가 필요한 기능이 작동하지 않습니다</translation>
+<translation id="1800502858278951817"><ph name="SITE_NAME" /> 사이트를 읽고 변경하도록 요청한 확장 프로그램이 없음</translation>
 <translation id="1801418420130173017">어두운 테마 사용 안함</translation>
 <translation id="1802624026913571222">커버를 닫으면 절전 모드 진입</translation>
 <translation id="1802687198411089702">페이지가 응답하지 않습니다. 페이지가 응답할 때까지 기다리거나 종료할 수 있습니다.</translation>
@@ -1226,6 +1233,7 @@
 <translation id="217576141146192373">프린터를 추가할 수 없습니다. 프린터 설정을 확인하고 다시 시도해 보세요.</translation>
 <translation id="2175927920773552910">QR 코드</translation>
 <translation id="2177950615300672361">시크릿 탭: <ph name="TAB_NAME" /></translation>
+<translation id="2178585470774851578">sshd 데몬을 설정하고 USB 드라이브에서 부팅할 수 있도록 하는 ChromeOS Flex 디버깅 기능을 사용 설정합니다.</translation>
 <translation id="2178614541317717477">CA 손상</translation>
 <translation id="2179416702468739594">사용 가능한 프로필을 찾는 중입니다. 이로 인해 모바일 네트워크의 연결이 몇 분간 해제될 수 있습니다.</translation>
 <translation id="2180620921879609685">모든 페이지에서 콘텐츠 차단</translation>
@@ -1454,6 +1462,7 @@
 <translation id="2379281330731083556">시스템 대화상자를 사용하여 인쇄... <ph name="SHORTCUT_KEY" /></translation>
 <translation id="2381499968174336913">공유 탭 미리보기</translation>
 <translation id="2381756643783702095">보내기 전에 확인(권장)</translation>
+<translation id="2386202302581016807">사용 가능한 기기의 저장용량이 부족하여 설정을 완료할 수 없음</translation>
 <translation id="2387052489799050037">홈으로 이동</translation>
 <translation id="2387602571959163792"><ph name="DESK_NAME" />(현재)</translation>
 <translation id="2389775852302560582">IP</translation>
@@ -1463,6 +1472,7 @@
 <translation id="2392163307141705938">부모님이 설정한 <ph name="IDS_SHORT_PRODUCT_NAME" /> 사용 제한 시간에 도달했습니다.</translation>
 <translation id="2392369802118427583">활성화</translation>
 <translation id="2393136602862631930">Chromebook에 <ph name="APP_NAME" /> 설정</translation>
+<translation id="2393313392064891208">Google ChromeOS Flex 약관 내용</translation>
 <translation id="2395616325548404795"><ph name="DEVICE_TYPE" /> 기기가 엔터프라이즈 관리용으로 등록되었지만 애셋과 위치 정보를 전송하지 못했습니다. 기기의 관리 콘솔에서 애셋과 위치 정보를 직접 입력하세요.</translation>
 <translation id="2396783860772170191">4자리 PIN(0000~9999) 입력</translation>
 <translation id="2398546389094871088">기기를 파워워시해도 eSIM 프로필이 삭제되지는 않습니다. <ph name="LINK_BEGIN" />모바일 설정<ph name="LINK_END" />으로 이동하여 프로필을 직접 삭제하세요.</translation>
@@ -1493,6 +1503,7 @@
 <translation id="2433836460518180625">기기만 잠금 해제</translation>
 <translation id="2434449159125086437">프린터를 설정할 수 없습니다. 설정을 확인하고 다시 시도해 보세요.</translation>
 <translation id="2434758125294431199">나에게 공유할 수 있는 사람을 선택하세요.</translation>
+<translation id="2435137177546457207">Chrome 및 ChromeOS Flex 추가 약관</translation>
 <translation id="2435248616906486374">네트워크 연결 끊김</translation>
 <translation id="2435457462613246316">비밀번호 표시</translation>
 <translation id="2439626940657133600"><ph name="WINDOW_TITLE" /> 로드 중</translation>
@@ -1604,6 +1615,7 @@
 <translation id="2530166226437958497">문제 해결</translation>
 <translation id="2531530485656743109"><ph name="BEGIN_PARAGRAPH1" />문제가 발생하여 <ph name="DEVICE_OS" /> 운영체제를 설치할 수 없습니다.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />도움이 필요하면 다음 페이지를 참고하세요. g.co/flex/InstallErrors<ph name="END_PARAGRAPH2" /></translation>
+<translation id="2532198298278778531">ChromeOS Flex 설정에서 보안 DNS 관리</translation>
 <translation id="2532589005999780174">고대비 모드</translation>
 <translation id="2533649878691950253">내가 일반적으로 이 옵션을 허용하지 않으므로 사이트에서 나의 정확한 위치를 확인하지 못하도록 차단했습니다.</translation>
 <translation id="253434972992662860">일시중지(&amp;P)</translation>
@@ -2108,6 +2120,7 @@
 <translation id="3031557471081358569">가져올 항목 선택:</translation>
 <translation id="3032587662022429783">진단 및 사용 데이터 자세히 알아보기</translation>
 <translation id="3033348223765101500">데이터 관리</translation>
+<translation id="3034627908241330765">다른 Steam 설정이 실행 중입니다. 실행 중인 설정이 완료될 때까지 기다렸다가 다시 실행하세요.</translation>
 <translation id="3036327949511794916"><ph name="DEVICE_TYPE" /> 반납 기한이 지났습니다.</translation>
 <translation id="3036546437875325427">Flash 사용</translation>
 <translation id="3037754279345160234">도메인 연결 구성을 파싱할 수 없습니다. 관리자에게 문의하세요.</translation>
@@ -2340,7 +2353,6 @@
 <translation id="3304212451103136496"><ph name="DISCOUNT_AMOUNT" /> 할인</translation>
 <translation id="3305389145870741612">포맷하는 데 몇 초 정도 걸립니다. 잠시 기다려 주세요.</translation>
 <translation id="3305661444342691068">미리보기에서 PDF 열기</translation>
-<translation id="3306992216458434072">그룹 이름을 지정하고 색상을 선택합니다.</translation>
 <translation id="3307176291962384345"><ph name="MERCHANT_NAME" />에서 할인받기</translation>
 <translation id="3308116878371095290">이 페이지에서 쿠키를 설정할 수 없습니다.</translation>
 <translation id="3308134619352333507">버튼 숨기기</translation>
@@ -2502,6 +2514,7 @@
 <translation id="3462311546193741693">대부분의 사이트에서 로그아웃됩니다. 동기화된 데이터를 삭제할 수 있도록 Google 계정에서는 로그아웃되지 않습니다.</translation>
 <translation id="3462413494201477527">계정 설정을 취소하시겠습니까?</translation>
 <translation id="346298925039590474">기기의 모든 사용자가 이 모바일 네트워크를 사용할 수 있습니다.</translation>
+<translation id="3463015289462934089">기기가 인터넷에 연결되어 있는지 확인하세요.</translation>
 <translation id="3464145797867108663">직장 프로필 추가</translation>
 <translation id="346431825526753"><ph name="CUSTODIAN_EMAIL" />님이 관리하는 어린이용 계정입니다.</translation>
 <translation id="346546413339447252"><ph name="MERCHANT_NAME_1" />, <ph name="MERCHANT_NAME_2" /> 등에서 할인받기</translation>
@@ -3080,6 +3093,7 @@
 <translation id="3988996860813292272">시간대 선택</translation>
 <translation id="399179161741278232">가져온 북마크</translation>
 <translation id="3993887353483242788">Google 계정으로 로그인했을 때 모든 기기에서 환경설정을 사용할 수 있도록 <ph name="DEVICE_TYPE" /> 기기를 동기화하세요. 환경설정에는 앱, 설정, Wi-Fi 비밀번호, 언어, 배경화면, 단축키 등이 포함됩니다.</translation>
+<translation id="3994318741694670028">컴퓨터가 잘못된 형식의 하드웨어 ID로 구성되어 있습니다. 이렇게 하면 ChromeOS Flex가 최신 보안 수정사항으로 업데이트되지 않으며 컴퓨터가 <ph name="BEGIN_BOLD" />악의적인 공격에 취약해질 수 있습니다<ph name="END_BOLD" />.</translation>
 <translation id="3994374631886003300"><ph name="DEVICE_TYPE" />을(를) 잠금 해제하려면 휴대전화를 잠금 해제하고 더 가까이 가져오세요.</translation>
 <translation id="3994878504415702912">글꼴 크기(&amp;Z)</translation>
 <translation id="3995138139523574647">USB-C 기기(우측 후면 포트)</translation>
@@ -3351,6 +3365,7 @@
     <ph name="BEGIN_PARAGRAPH2" />자녀의 ChromeOS 기기 설정에서 언제든지 보고서 전송 기능을 시작하거나 중지할 수 있습니다. 도메인 관리자인 경우 관리 콘솔에서 이 설정을 변경할 수 있습니다.<ph name="END_PARAGRAPH2" />
     <ph name="BEGIN_PARAGRAPH3" />기능을 사용 중지해도 이 기기에서 시스템 업데이트 및 보안과 같은 필수 서비스에 필요한 정보를 전송하는 데는 영향을 미치지 않습니다.<ph name="END_PARAGRAPH3" /></translation>
 <translation id="4301671483919369635">이 페이지에서 파일을 수정할 수 있습니다.</translation>
+<translation id="4302577930366020750">Steam을 사용하려면 기기를 다시 시작하세요.</translation>
 <translation id="4303079906735388947">보안 키의 새로운 PIN을 설정하세요.</translation>
 <translation id="4305402730127028764"><ph name="DEVICE_NAME" />(으)로 복사</translation>
 <translation id="4305817255990598646">전환</translation>
@@ -3473,6 +3488,7 @@
 <translation id="4427306783828095590">향상된 보호 기능이 피싱 및 멀웨어를 더욱 효과적으로 차단합니다.</translation>
 <translation id="4427365070557649936">확인 코드 확인 중…</translation>
 <translation id="4429163740524851942">실제 키보드 레이아웃</translation>
+<translation id="4429239357082509581">Steam에 실행 권한이 없음</translation>
 <translation id="4430019312045809116">볼륨</translation>
 <translation id="4430369329743628066">북마크 추가됨</translation>
 <translation id="4432621511648257259">비밀번호가 잘못됨</translation>
@@ -3538,6 +3554,8 @@
 <translation id="450099669180426158">느낌표 아이콘</translation>
 <translation id="4501530680793980440">삭제 확인</translation>
 <translation id="4502423230170890588">기기에서 삭제</translation>
+<translation id="4503748371388753124">컴퓨터에 신뢰할 수 있는 플랫폼 모듈(TPM) 보안 기기가 있습니다. 이 기기는 ChromeOS Flex에서 여러 중요한 보안 기능을 구현하는 데 사용됩니다. 자세히 알아보려면 Chromebook 고객센터의 다음 페이지를 방문하세요.
+https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="4504374760782163539">{COUNT,plural, =0{쿠키가 허용됨}=1{쿠키가 허용됨, 예외 1개}other{쿠키가 허용됨, 예외 {COUNT}개}}</translation>
 <translation id="4504940961672722399">아이콘을 클릭하거나 <ph name="EXTENSION_SHORTCUT" />을(를) 눌러 확장 프로그램을 사용합니다.</translation>
 <translation id="450552327874992444">이미 추가된 단어입니다.</translation>
@@ -3894,6 +3912,7 @@
 <translation id="4876273079589074638">Google 엔지니어가 이 비정상 종료를 조사하고 해결할 수 있도록 도와주세요. 가능한 경우 단계를 정확히 나열해 주세요. 자세히 설명해 주시면 큰 도움이 됩니다.</translation>
 <translation id="4876895919560854374">화면 잠금 및 잠금 해제</translation>
 <translation id="4877276003880815204">요소 검사</translation>
+<translation id="4877652723592270843">ChromeOS Flex의 내장 스크린 리더인 ChromeVox를 활성화하시겠습니까? 활성화하려면 볼륨 키 2개를 5초 동안 길게 누르세요.</translation>
 <translation id="4878634973244289103">의견을 보낼 수 없습니다. 나중에 다시 시도해 주세요.</translation>
 <translation id="4878653975845355462">관리자가 맞춤 백그라운드를 사용 중지했습니다.</translation>
 <translation id="4878718769565915065">보안 키에 지문을 추가할 수 없습니다.</translation>
@@ -3957,6 +3976,8 @@
 <translation id="4929386379796360314">인쇄 대상</translation>
 <translation id="4930447554870711875">개발자</translation>
 <translation id="4930714375720679147">사용 설정</translation>
+<translation id="4930776995592629647">문제가 계속되면 기기를 다시 시작해 보세요. 
+    오류 코드: <ph name="ERROR_CODE" />.</translation>
 <translation id="4932733599132424254">날짜</translation>
 <translation id="4933484234309072027"><ph name="URL" />에 삽입됨</translation>
 <translation id="4936042273057045735">직장 프로필을 사용하는 경우 휴대전화에서 알림 동기화가 지원되지 않습니다.</translation>
@@ -4008,6 +4029,7 @@
 <translation id="4989966318180235467">백그라운드 페이지 검사(&amp;B)</translation>
 <translation id="4991420928586866460">맨 위 키를 기능 키로 사용</translation>
 <translation id="499165176004408815">고대비 모드 사용</translation>
+<translation id="4991858732577603540">잠시 후 Steam 앱을 다시 실행해 주세요.</translation>
 <translation id="4992458225095111526">Powerwash 확인</translation>
 <translation id="4992473555164495036">관리자가 사용 가능한 입력 방법을 제한했습니다.</translation>
 <translation id="4994474651455208930">사이트에서 프로토콜 기본 핸들러로 사용할지 여부를 묻도록 허용</translation>
@@ -4025,6 +4047,7 @@
 <translation id="5008936837313706385">활동 이름</translation>
 <translation id="5009463889040999939">프로필 이름을 변경하는 중입니다. 몇 분 정도 소요될 수 있습니다.</translation>
 <translation id="5010043101506446253">인증 기관</translation>
+<translation id="501057610015570208">'kiosk_only' 매니페스트 속성을 사용하는 앱은 ChromeOS Flex 키오스크 모드에 설치되어야 합니다.</translation>
 <translation id="5015344424288992913">프록시 알아내는 중...</translation>
 <translation id="5016491575926936899">컴퓨터에서 문자 메시지를 보내고, 인터넷 연결을 공유하고, 대화 알림에 답장을 보내고, 휴대전화로 <ph name="DEVICE_TYPE" /> 기기의 잠금을 해제할 수 있습니다.<ph name="FOOTNOTE_POINTER" /> <ph name="LINK_BEGIN" />자세히 알아보기<ph name="LINK_END" /></translation>
 <translation id="5017643436812738274">텍스트 커서로 페이지를 탐색할 수 있습니다. 사용 중지하려면 Ctrl+Search+7을 누르세요.</translation>
@@ -4283,6 +4306,25 @@
 <translation id="5282733140964383898">'추적 안함'을 사용 설정하면 요청이 탐색 트래픽에 포함됩니다. 웹사이트가 요청에 응답하는지와 요청이 어떻게 해석되는가에 따라 결과가 달라집니다. 예를 들어, 어떤 웹사이트는 사용자의 웹사이트 방문 기록과 관계없는 광고를 표시하는 방식으로 요청에 응답할 수 있습니다. 이 설정을 사용해도 대부분의 웹사이트에서는 보안을 강화하거나 웹사이트에서 콘텐츠, 서비스, 광고 및 추천 정보를 제공하거나 보고서 통계를 생성하는 등의 목적으로 사용자의 인터넷 사용 기록을 수집하고 사용됩니다. <ph name="BEGIN_LINK" />자세히 알아보기<ph name="END_LINK" /></translation>
 <translation id="5283677936944177147">시스템이 기기 모델 또는 일련번호를 확인하는 데 실패했습니다.</translation>
 <translation id="5284445933715251131">다운로드 계속</translation>
+<translation id="5284787925725379414"><ph name="BEGIN_H3" />디버깅 기능<ph name="END_H3" />
+    <ph name="BR" />
+    기기에 맞춤 코드를 설치하고 테스트하기 위해 ChromeOS Flex 기기에서 디버깅 기능을 사용 설정할 수 있습니다. 이를 통해 다음 작업을 할 수 있습니다.<ph name="BR" />
+    <ph name="BEGIN_LIST" />
+      <ph name="LIST_ITEM" />OS 파일을 수정하기 위해 rootfs 인증 삭제
+      <ph name="LIST_ITEM" /><ph name="BEGIN_CODE" />'cros flash'<ph name="END_CODE" /> 같은 도구로 기기에 액세스할 수 있도록 표준 테스트 키를 이용한 기기 SSH 액세스 사용 설정
+      <ph name="LIST_ITEM" />USB 드라이브의 OS 이미지를 설치할 수 있도록 USB 부팅 사용 설정
+      <ph name="LIST_ITEM" />기기에 직접 SSH로 액세스할 수 있도록 개발자 및 시스템 루트 로그인 비밀번호를 맞춤 값으로 설정
+    <ph name="END_LIST" />
+    <ph name="BR" />
+    디버깅 기능을 사용 설정하면 기업 관리 기기에서 파워워시를 실행하거나 데이터를 완전 삭제한 후에도 디버깅 기능은 대부분 사용 설정 상태로 유지됩니다. 모든 디버깅 기능을 완전히 사용 중지하려면 Chrome OS 복구 프로세스를 완료하세요.
+(https://support.google.com/chromebook/answer/1080595)
+    <ph name="BR" />
+    <ph name="BR" />
+    디버깅 기능에 관한 자세한 내용은 다음 페이지를 참고하세요.<ph name="BR" />
+    https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-features
+    <ph name="BR" />
+    <ph name="BR" />
+    <ph name="BEGIN_BOLD" />참고:<ph name="END_BOLD" /> 프로세스를 진행하는 동안 시스템이 재부팅됩니다.</translation>
 <translation id="5285635972691565180"><ph name="DISPLAY_ID" /> 표시</translation>
 <translation id="5286194356314741248">검색 중</translation>
 <translation id="5287425679749926365">내 계정</translation>
@@ -4438,6 +4480,7 @@
 <translation id="5449716055534515760">창 닫기(&amp;D)</translation>
 <translation id="5452976525201205853"><ph name="LANGUAGE" />(오프라인에서 사용 가능)</translation>
 <translation id="5454166040603940656">제공업체: <ph name="PROVIDER" /></translation>
+<translation id="5455603387986949153">ChromeOS Flex 기기와 구성요소의 일련번호를 읽습니다.</translation>
 <translation id="5457113250005438886">잘못된 데이터</translation>
 <translation id="5457459357461771897">컴퓨터에서 사진, 음악, 기타 미디어 조회 및 삭제</translation>
 <translation id="5458214261780477893">드보락</translation>
@@ -4446,6 +4489,7 @@
 <translation id="5461050611724244538">휴대전화와 연결 끊김</translation>
 <translation id="5463275305984126951"><ph name="LOCATION" />의 색인</translation>
 <translation id="5463625433003343978">기기를 찾는 중...</translation>
+<translation id="5463845647891602726">여유 공간을 늘리려면 기기에서 파일을 삭제하세요.</translation>
 <translation id="5463856536939868464">숨은 북마크를 포함하는 메뉴</translation>
 <translation id="5464632865477611176">이번만 실행</translation>
 <translation id="5464660706533281090">이 설정은 자녀 사용자가 변경할 수 없습니다.</translation>
@@ -4754,6 +4798,8 @@
 <translation id="5778491106820461378">로그인된 Google 계정을 <ph name="LINK_BEGIN" />설정<ph name="LINK_END" />에서 관리할 수 있습니다. 웹사이트와 앱에 부여한 권한이 모든 계정에 적용될 수 있습니다. 사이트나 앱에서 계정 정보에 액세스하기를 원하지 않으면 게스트로 <ph name="DEVICE_TYPE" />에 로그인하세요.</translation>
 <translation id="5780011244986845107">선택한 폴더에 민감한 파일이 포함되어 있습니다. 이 폴더에 '<ph name="APP_NAME" />' 영구 읽기 액세스 권한을 부여하시겠습니까?</translation>
 <translation id="5780973441651030252">프로세스 우선순위</translation>
+<translation id="5781014777846460847">Steam을 이 기기에 설치할 수 없습니다. 권한을 얻으려면 관리자에게 문의하세요. 
+    오류 코드: <ph name="ERROR_CODE" />.</translation>
 <translation id="5781092003150880845"><ph name="ACCOUNT_FULL_NAME" />님의 계정에 동기화</translation>
 <translation id="5781865261247219930"><ph name="EXTENSION_NAME" />에 명령어 보내기</translation>
 <translation id="5782227691023083829">번역 중...</translation>
@@ -4860,6 +4906,7 @@
 <translation id="5889282057229379085">중간 인증기관(CA)의 최대 개수: <ph name="NUM_INTERMEDIATE_CA" />개</translation>
 <translation id="5891688036610113830">선호하는 Wi-Fi 네트워크</translation>
 <translation id="5895138241574237353">다시 시작</translation>
+<translation id="5895335062901455404">Google 계정으로 로그인할 경우 모든 ChromeOS Flex 기기에서 저장된 환경설정 및 활동을 사용할 수 있습니다. 설정에서 동기화할 항목을 선택하세요.</translation>
 <translation id="5896436821193322561">허용 안함</translation>
 <translation id="5900302528761731119">Google 프로필 사진</translation>
 <translation id="590036993063074298">미러링 품질 세부정보</translation>
@@ -5314,6 +5361,7 @@
 <translation id="6345878117466430440">읽음으로 표시</translation>
 <translation id="6347010704471250799">알림 표시</translation>
 <translation id="6349101878882523185"><ph name="APP_NAME" /> 설치</translation>
+<translation id="6351383110065274390">Chromebook에서 게임 즐기기</translation>
 <translation id="6354918092619878358">SECG 타원 곡선 secp256r1(또는 ANSI X9.62 prime256v1, NIST P-256)</translation>
 <translation id="6355789186038748882">실험(알파 등급) 브라우저입니다. 일부 기능이 누락되거나 완전하지 않을 수 있습니다. 문제가 발생하면 도움말 &gt; '문제 신고...'에서 신고해 주세요.</translation>
 <translation id="635609604405270300">기기를 계속 켜두세요.</translation>
@@ -5476,6 +5524,7 @@
 <translation id="6514565641373682518">이 페이지에서 마우스 커서를 사용 중지했습니다.</translation>
 <translation id="6518014396551869914">이미지 복사(&amp;Y)</translation>
 <translation id="6518133107902771759">확인</translation>
+<translation id="6519304021460270639">앱, 설정, 기타 맞춤설정이 내 Google 계정으로 로그인한 모든 ChromeOS Flex 기기에서 동기화됩니다.</translation>
 <translation id="651942933739530207"><ph name="APP_NAME" />에서 화면 및 오디오 출력을 공유하도록 하시겠습니까?</translation>
 <translation id="6519437681804756269">[<ph name="TIMESTAMP" />]
         <ph name="FILE_INFO" />
@@ -5652,6 +5701,7 @@
 <translation id="6691541770654083180">지구</translation>
 <translation id="6691936601825168937">앞으로(&amp;F)</translation>
 <translation id="6693745645188488741">{COUNT,plural, =1{페이지 1쪽}other{페이지 {COUNT}쪽}}</translation>
+<translation id="6694430008315398925">Steam 설정하기</translation>
 <translation id="6697492270171225480">페이지를 찾을 수 없을 때 비슷한 페이지 제안 표시</translation>
 <translation id="6697690052557311665">공유하려면 Files 앱에서 마우스 오른쪽 버튼으로 폴더를 클릭한 다음 'Linux와 공유'를 선택하세요.</translation>
 <translation id="6698810901424468597"><ph name="WEBSITE_1" /> 및 <ph name="WEBSITE_2" />의 데이터를 읽고 변경</translation>
@@ -5753,6 +5803,7 @@
 <translation id="6805647936811177813"><ph name="TOKEN_NAME" />에 로그인하여 <ph name="HOST_NAME" />에서 클라이언트 인증서를 가져오세요.</translation>
 <translation id="680572642341004180"><ph name="SHORT_PRODUCT_OS_NAME" />에서 RLZ 추적을 사용합니다.</translation>
 <translation id="6808039367995747522">계속하려면 보안 키를 삽입하고 터치하세요.</translation>
+<translation id="6808166974213191158">ChromeOS Flex 시스템 이미지 작성기</translation>
 <translation id="6808193438228982088">여우</translation>
 <translation id="6809470175540814047">시크릿 창으로 열기</translation>
 <translation id="6809656734323672573">동의하는 경우 Google 어시스턴트가 대기 모드로 기다리다가 'Hey Google'을 감지하며 Voice Match를 사용해 말하는 사람이 나임을 인식할 수 있습니다.
@@ -6706,6 +6757,7 @@
 <translation id="7768526219335215384"><ph name="ORIGIN" />에서 <ph name="FOLDERNAME" />에 있는 파일을 볼 수 있게 됩니다.</translation>
 <translation id="7768770796815395237">변경</translation>
 <translation id="7768784765476638775">텍스트 읽어주기</translation>
+<translation id="7770406201819593386">ChromeOS Flex 진단 테스트를 실행합니다.</translation>
 <translation id="7770612696274572992">다른 기기에서 이미지가 복사됨</translation>
 <translation id="7771452384635174008">레이아웃</translation>
 <translation id="7772032839648071052">암호 확인</translation>
@@ -6798,6 +6850,8 @@
 <translation id="7853747251428735">도구 더보기(&amp;L)</translation>
 <translation id="7855678561139483478">탭을 새 창으로 이동</translation>
 <translation id="7856654138655787862">Chrome OS 진단 테스트를 실행합니다.</translation>
+<translation id="7857004848504343806">컴퓨터에 보안 모듈이 있습니다. 이 모듈은 ChromeOS Flex에서 여러 중요한 보안 기능을 구현하는 데 사용됩니다. 자세히 알아보려면 Chromebook 고객센터의 다음 페이지를 방문하세요.
+https://support.google.com/chromebook/?p=sm</translation>
 <translation id="7857093393627376423">텍스트 추천</translation>
 <translation id="7857949311770343000">설정한 새 탭 페이지가 맞습니까?</translation>
 <translation id="7858328180167661092"><ph name="APP_NAME" />(Windows)</translation>
@@ -6914,6 +6968,7 @@
 <translation id="7969046989155602842">Command</translation>
 <translation id="7970673414865679092">이더넷 세부정보</translation>
 <translation id="7970882136539140748">지금은 카드를 저장할 수 없음</translation>
+<translation id="7972354851134703743">빠른 명령어 전환</translation>
 <translation id="7972714317346275248">PKCS #1 SHA-384(RSA 암호화 사용)</translation>
 <translation id="7973776233567882054">다음 중 사용 중인 네트워크를 가장 잘 설명하는 항목은 무엇인가요?</translation>
 <translation id="797394244396603170">파일을 공유할 기기를 선택하세요.</translation>
@@ -6963,6 +7018,7 @@
 <translation id="8017679124341497925">바로가기 수정됨</translation>
 <translation id="8018298733481692628">프로필을 삭제하시겠습니까?</translation>
 <translation id="8018313076035239964">웹사이트에서 사용할 수 있는 정보와 나에게 표시할 수 있는 콘텐츠를 컨트롤합니다.</translation>
+<translation id="8023133589013344428">ChromeOS Flex 설정에서 언어 관리</translation>
 <translation id="8023801379949507775">지금 확장 프로그램 업데이트</translation>
 <translation id="8025151549289123443">잠금 화면 및 로그인</translation>
 <translation id="8026334261755873520">인터넷 사용 기록 삭제</translation>
@@ -7015,6 +7071,7 @@
 <translation id="8062844841289846053">{COUNT,plural, =1{용지 1장}other{용지 {COUNT}장}}</translation>
 <translation id="8063235345342641131">기본 녹색 아바타</translation>
 <translation id="8063535366119089408">파일 보기</translation>
+<translation id="8064015586118426197">ChromeOS Flex</translation>
 <translation id="8064279191081105977">그룹 <ph name="GROUP_NAME" /> - <ph name="GROUP_CONTENTS" /> - <ph name="COLLAPSED_STATE" /></translation>
 <translation id="8066444921260601116">연결 대화상자</translation>
 <translation id="8070662218171013510">햅틱 반응</translation>
@@ -7111,6 +7168,7 @@
 <translation id="8157248655669507702">eSIM 프로필을 설치하려면 모바일 데이터 사용 설정</translation>
 <translation id="8157704005178149728">감독 기능 설정 중</translation>
 <translation id="8158117992543756526"><ph name="MONTH_AND_YEAR" />부터 이 기기의 자동 소프트웨어 및 보안 업데이트가 중단되었습니다. <ph name="LINK_BEGIN" />자세히 알아보기<ph name="LINK_END" /></translation>
+<translation id="8159652640256729753">화면 분할, 데스크 전환 등의 작업을 진동으로 확인할 수 있습니다. <ph name="LINK_BEGIN" />자세히 알아보기<ph name="LINK_END" /></translation>
 <translation id="816055135686411707">인증서 신뢰를 설정하던 중 오류 발생</translation>
 <translation id="8160775796528709999">설정에서 실시간 자막을 사용 설정하여 음성 및 영상 자막 생성하기</translation>
 <translation id="816095449251911490"><ph name="SPEED" /> - <ph name="RECEIVED_AMOUNT" />, <ph name="TIME_REMAINING" /></translation>
@@ -7379,6 +7437,7 @@
 <translation id="8438566539970814960">검색 및 탐색 기능 개선</translation>
 <translation id="8439506636278576865">이 언어로 된 페이지에 대한 번역 옵션 제공</translation>
 <translation id="8440630305826533614">Linux 앱</translation>
+<translation id="8443795068008423036">기기가 최신 상태인지 확인하고 다시 시도해 보세요</translation>
 <translation id="8445046761938045900">최근 사진, 알림, 메시지 앱</translation>
 <translation id="8446884382197647889">자세히 알아보기</translation>
 <translation id="8447409163267621480">Ctrl 또는 Alt 중 하나를 포함해야 합니다</translation>
@@ -7563,6 +7622,7 @@
 <translation id="8648252583955599667"><ph name="GET_HELP_LINK" /> 또는 <ph name="RE_SCAN_LINK" /></translation>
 <translation id="8648408795949963811">야간 조명 색상 온도</translation>
 <translation id="8648544143274677280"><ph name="SITE_NAME" />의 권한 요청: <ph name="FIRST_PERMISSION" />, <ph name="SECOND_PERMISSION" /> 등</translation>
+<translation id="864892689521194669">ChromeOS Flex 기능 및 성능 개선 참여</translation>
 <translation id="8650543407998814195">더 이상 기존 프로필에 액세스할 수 없지만 삭제할 수는 있습니다.</translation>
 <translation id="8651585100578802546">캐시를 무시하고 페이지 새로고침</translation>
 <translation id="8652400352452647993">확장 프로그램 패키지 오류</translation>
@@ -7658,6 +7718,7 @@
 <translation id="8737709691285775803">Shill</translation>
 <translation id="8737914367566358838">페이지를 번역할 언어 선택</translation>
 <translation id="8740247629089392745">이 Chromebook을 <ph name="SUPERVISED_USER_NAME" />님에게 전달할 수 있습니다. 설정이 거의 끝났습니다. 기기를 살펴보세요.</translation>
+<translation id="8740672167979365981">ChromeOS Flex 업데이트 필요</translation>
 <translation id="8741944563400125534">스위치 제어 설정 가이드</translation>
 <translation id="8742998548129056176">기기 및 기기 사용 방식에 관한 일반적인 정보(배터리 수준, 시스템 및 앱 활동, 오류 등)입니다. 데이터는 Android를 개선하는 데 사용되며 일부 수집 정보는 Google 앱과 파트너(Android 개발자 등)가 앱 및 제품을 개선하는 데도 도움이 됩니다.</translation>
 <translation id="8746654918629346731">이미 '<ph name="EXTENSION_NAME" />'을(를) 요청하셨습니다</translation>
@@ -7669,6 +7730,7 @@
 <translation id="8750346984209549530">셀룰러 APN</translation>
 <translation id="8752451679755290210">항목 간 자동 이동</translation>
 <translation id="8753868764580670305">기기에 저장된 비밀번호 확인 및 관리</translation>
+<translation id="8753948258138515839">파일 앱을 사용하면 Google 드라이브, 외부 저장소, ChromeOS Flex 기기에 저장한 파일에 신속하게 액세스할 수 있습니다.</translation>
 <translation id="8754200782896249056">&lt;p&gt;지원되는 데스크톱 환경에서 <ph name="PRODUCT_NAME" />을(를) 실행하는 경우 시스템 프록시 설정이 사용됩니다.  하지만 시스템이 지원되지 않거나 시스템 설정을 실행하는 데 문제가 있었습니다.&lt;/p&gt;
 
         &lt;p&gt;이 경우 명령줄을 사용하여 설정할 수 있습니다.  플래그와 환경 변수에 대한 자세한 내용은 &lt;code&gt;man <ph name="PRODUCT_BINARY_NAME" />&lt;/code&gt;을(를) 참조하세요.&lt;/p&gt;</translation>
@@ -7687,6 +7749,7 @@
 <translation id="87646919272181953">Google 포토 앨범</translation>
 <translation id="8767621466733104912">모든 사용자의 Chrome 자동 업데이트</translation>
 <translation id="8767765348545497220">도움말 풍선 닫기</translation>
+<translation id="8769901904650373714">Steam 설정에 문제 발생</translation>
 <translation id="8770406935328356739">확장 프로그램 루트 디렉터리</translation>
 <translation id="8771300903067484968">시작 페이지 배경화면이 기본 배경화면으로 재설정되었습니다.</translation>
 <translation id="8773302562181397928"><ph name="PRINTER_NAME" /> 저장</translation>
@@ -7903,6 +7966,7 @@
 <translation id="8981825781894055334">용지 부족</translation>
 <translation id="8983632908660087688"><ph name="ORIGIN" />에서 <ph name="FILENAME" />을(를) 수정할 수 있습니다.</translation>
 <translation id="8984694057134206124"><ph name="MINUTES" />분 동안 모든 사용자에게 공개됩니다. <ph name="LINK_BEGIN" />자세히 알아보기<ph name="LINK_END" /></translation>
+<translation id="8985191021574400965">Chromebook용 Steam 시작하기</translation>
 <translation id="8985264973231822211"><ph name="DEVICE_LAST_ACTIVATED_TIME" />일 전에 사용</translation>
 <translation id="8985661493893822002"><ph name="DEVICE_TYPE" /> 기기에 로그인하려면 인터넷에 연결하세요</translation>
 <translation id="8986362086234534611">저장 안함</translation>
@@ -8101,6 +8165,7 @@
 <translation id="917510707618656279">사이트에서 블루투스 기기에 액세스하려고 할 때 확인</translation>
 <translation id="9176476835295860688">사용 및 진단 데이터를 보냅니다. 이 기기는 현재 진단, 기기 및 앱 사용 데이터를 Google에 자동으로 보내고 있습니다. 이 데이터는 시스템 및 앱 안정성 등을 개선하는 데 활용됩니다. 일부 수집 데이터는 Google 앱과 파트너(Android 개발자 등)에게도 도움을 줍니다. 이 <ph name="BEGIN_LINK1" />설정<ph name="END_LINK1" />은 소유자가 지정합니다. 추가 웹 및 앱 활동이 사용 설정되어 있다면 이 데이터가 Google 계정에 저장될 수 있습니다. <ph name="BEGIN_LINK2" />자세히 알아보기<ph name="END_LINK2" /></translation>
 <translation id="9176611096776448349"><ph name="WINDOW_TITLE" /> - 블루투스 기기 연결됨</translation>
+<translation id="9177949831069307748">ChromeOS Flex 기기 정보와 기기 데이터를 읽습니다.</translation>
 <translation id="9178061802301856367">로그인 데이터 삭제</translation>
 <translation id="9179524979050048593">로그인 화면 사용자 이름</translation>
 <translation id="9180281769944411366">이 과정은 몇 분 정도 걸릴 수 있습니다. Linux 컨테이너를 시작합니다.</translation>

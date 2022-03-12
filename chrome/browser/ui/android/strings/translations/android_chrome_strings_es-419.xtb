@@ -138,6 +138,7 @@
 <translation id="1810845389119482123">No se completó la configuración de la sincronización inicial</translation>
 <translation id="1829244130665387512">Buscar en la página</translation>
 <translation id="1832459821645506983">Sí, acepto</translation>
+<translation id="1849863543394887018">Para desactivar las notificaciones, ve a la configuración</translation>
 <translation id="1877026089748256423">Chrome no está actualizado.</translation>
 <translation id="1883903952484604915">Mis archivos</translation>
 <translation id="189358972401248634">Otros idiomas</translation>
@@ -654,6 +655,7 @@ Para cambiar esta configuración, <ph name="BEGIN_LINK" />restablece la sincroni
 <translation id="4860895144060829044">Llamar</translation>
 <translation id="4864369630010738180">Accediendo</translation>
 <translation id="4866368707455379617">No es posible instalar <ph name="MODULE" /> para Chrome</translation>
+<translation id="4871568871368204250">Desactivar la sincronización</translation>
 <translation id="4875775213178255010">Sugerencias de contenido</translation>
 <translation id="4877678010818027629">Acceder al modo Incógnito</translation>
 <translation id="4878404682131129617">Se produjo un error al establecer conexión a través del servidor proxy</translation>
@@ -738,7 +740,7 @@ Para cambiar esta configuración, <ph name="BEGIN_LINK" />restablece la sincroni
 <translation id="5355191726083956201">Se activó la protección mejorada</translation>
 <translation id="5368227114232678694">Para navegar de forma privada en este dispositivo, prueba el modo Incógnito</translation>
 <translation id="5368958499335451666">{OPEN_TABS,plural, =1{<ph name="OPEN_TABS_ONE" /> pestaña abierta; presiona para cambiar de pestaña}other{<ph name="OPEN_TABS_MANY" /> pestañas abiertas; presiona para cambiar de pestaña}}</translation>
-<translation id="5375577065097716013">Buscar imagen con Google Lens <ph name="BEGIN_NEW" />Nuevo<ph name="END_NEW" /></translation>
+<translation id="5375577065097716013">Buscar imagen con Lens <ph name="BEGIN_NEW" />Nuevo<ph name="END_NEW" /></translation>
 <translation id="5403644198645076998">Permitir solo algunos sitios</translation>
 <translation id="5409881200985013443">¿Deseas enviar <ph name="ONE_TIME_CODE" /> a <ph name="CLIENT_NAME" />?</translation>
 <translation id="5414836363063783498">Verificando…</translation>
@@ -1198,6 +1200,7 @@ Por ejemplo, algunos sitios web pueden responder a la solicitud mediante anuncio
 <translation id="7926975587469166629">Sobrenombre de la tarjeta</translation>
 <translation id="7929962904089429003">Abrir el menú</translation>
 <translation id="7930998711684428189">Te advierte si quedan expuestas las contraseñas ante una violación de la seguridad de los datos.</translation>
+<translation id="7937772386706786623">Administrar los controles multimedia, las pestañas de incógnito y más con las notificaciones</translation>
 <translation id="7939485076072265087">Crear tarjeta con estilo para texto destacado</translation>
 <translation id="7942131818088350342"><ph name="PRODUCT_NAME" /> no está actualizado.</translation>
 <translation id="7944772052836377867">La Sincronización necesita verificar tu identidad</translation>

@@ -226,6 +226,7 @@
 <translation id="121384500095351701">Diese Datei kann nicht sicher heruntergeladen werden</translation>
 <translation id="1215411991991485844">Neue Hintergrund-App hinzugefügt</translation>
 <translation id="1216542092748365687">Fingerabdruck entfernen</translation>
+<translation id="1217114730239853757">Möchten Sie ChromeVox, den integrierten Screenreader für Chrome OS Flex, aktivieren? Falls ja, drücken Sie die Leertaste.</translation>
 <translation id="1217483152325416304">Ihre lokalen Daten werden bald gelöscht</translation>
 <translation id="1217668622537098248">Nach Aktion zu Linksklick zurückkehren</translation>
 <translation id="121783623783282548">Die Passwörter stimmen nicht überein.</translation>
@@ -276,6 +277,7 @@
 <translation id="126387934568812801">Diesen Screenshot und Titel der offenen Tabs mitsenden</translation>
 <translation id="1264083566674525434">Websiteberechtigungen bearbeiten</translation>
 <translation id="1264337193001759725">Wenn Sie Netzwerk-UI-Protokolle anzeigen möchten, gehen Sie zu: <ph name="DEVICE_LOG_LINK" /></translation>
+<translation id="1265279736024499987">Ihre Apps und Einstellungen werden auf allen Chrome OS Flex-Geräten synchronisiert, auf denen Sie mit Ihrem Google-Konto angemeldet sind. Die Optionen zur Browsersynchronisation finden Sie in den <ph name="LINK_BEGIN" />Chrome-Einstellungen<ph name="LINK_END" />.</translation>
 <translation id="126710816202626562">Zielsprache:</translation>
 <translation id="126768002343224824">16-fach</translation>
 <translation id="1272079795634619415">Stoppen</translation>
@@ -328,6 +330,7 @@
 <translation id="1327272175893960498">Kerberos-Tickets</translation>
 <translation id="1327495825214193325">Das Aktivieren der ADB-Fehlerbehebung erfordert einen Neustart von <ph name="DEVICE_TYPE" />. Zum Deaktivieren der ADB-Fehlerbehebung ist das Zurücksetzen auf die Werkseinstellungen erforderlich.</translation>
 <translation id="1327794256477341646">Funktionen, die Ihren Standort benötigen, funktionieren dann nicht</translation>
+<translation id="1329191040029425999">Achten Sie darauf, dass Ihr Gerät auf dem neuesten Stand ist, und versuchen Sie es noch einmal</translation>
 <translation id="1330145147221172764">Bildschirmtastatur aktivieren</translation>
 <translation id="1331977651797684645">Das war ich.</translation>
 <translation id="1333489022424033687">Einige Funkionen auf <ph name="ORIGIN" /> funktionierten möglicherweise erst, wenn Sie Daten löschen, die durch andere Websites auf Ihrem Gerät gespeichert wurden</translation>
@@ -369,6 +372,7 @@
 <translation id="1373176046406139583">Über die Sichtbarkeit Ihres Geräts legen Sie fest, wer Dateien mit Ihnen teilen kann, während Ihr Display entsperrt ist. <ph name="LINK_BEGIN" />Weitere Informationen<ph name="LINK_END" /></translation>
 <translation id="1374844444528092021">Das vom Netzwerk "<ph name="NETWORK_NAME" />" benötigte Zertifikat ist entweder nicht installiert oder nicht mehr gültig. Bitte fordern Sie ein neues Zertifikat an und versuchen Sie es erneut.</translation>
 <translation id="1375321115329958930">Gespeicherte Passwörter</translation>
+<translation id="1375557162880614858">Möchten Sie ChromeVox, den integrierten Screenreader für Chrome OS Flex, aktivieren?</translation>
 <translation id="137651782282853227">Hier werden gespeicherte Adressen angezeigt</translation>
 <translation id="1376771218494401509">Fenster &amp;benennen…</translation>
 <translation id="1377600615067678409">Zunächst überspringen</translation>
@@ -778,8 +782,10 @@ Berechtigungen, die Sie Apps bereits gewährt haben, gelten möglicherweise für
 <translation id="175196451752279553">Geschlossenen Tab wieder öffn&amp;en</translation>
 <translation id="1753067873202720523">Ihr Chromebook wird möglicherweise nicht geladen, während es eingeschaltet ist.</translation>
 <translation id="1753905327828125965">Meistbesucht</translation>
+<translation id="1755395545337105369">Chrome OS Flex-Einstellungen synchronisieren</translation>
 <translation id="1755601632425835748">Textgröße</translation>
 <translation id="1755872274219796698">Passwörter verschieben</translation>
+<translation id="1757132445735080748">Aktualisieren Sie Chrome OS Flex und versuchen Sie es noch einmal, um die Einrichtung von Linux abzuschließen.</translation>
 <translation id="1757301747492736405">Deinstallation ausstehend</translation>
 <translation id="175772926354468439">Design aktivieren</translation>
 <translation id="17584710573359123">Im Chrome Web Store ansehen</translation>
@@ -826,6 +832,7 @@ Berechtigungen, die Sie Apps bereits gewährt haben, gelten möglicherweise für
 <translation id="1794791083288629568">Helfen Sie uns, dieses Problem zu beheben, indem Sie uns Feedback senden.</translation>
 <translation id="1795214765651529549">Klassisches Design verwenden</translation>
 <translation id="1796588414813960292">Funktionen, die Ton erfordern, funktionieren dann nicht</translation>
+<translation id="1800502858278951817">Keine Erweiterungen haben angefragt, Daten auf <ph name="SITE_NAME" /> abzurufen und zu ändern</translation>
 <translation id="1801418420130173017">Dunkles Design deaktivieren</translation>
 <translation id="1802624026913571222">Beim Zuklappen in den Ruhemodus wechseln</translation>
 <translation id="1802687198411089702">Die Seite reagiert nicht. Sie können warten, bis sie wieder reagiert, oder sie schließen.</translation>
@@ -1211,6 +1218,7 @@ Wenn Sie die Family Link App auf Ihrem Gerät installieren, können Sie die Eins
 <translation id="217576141146192373">Drucker kann nicht hinzugefügt werden. Prüfen Sie bitte die Konfiguration des Druckers und versuchen Sie es noch einmal.</translation>
 <translation id="2175927920773552910">QR-Code</translation>
 <translation id="2177950615300672361">Inkognitotab: <ph name="TAB_NAME" /></translation>
+<translation id="2178585470774851578">Sie aktivieren Chrome OS Flex-Funktionen zur Fehlerbehebung. Dadurch wird der SSHD-Daemon eingerichtet und das Starten über USB-Speicher aktiviert.</translation>
 <translation id="2178614541317717477">Kompromittierung der Zertifizierungsstelle</translation>
 <translation id="2179416702468739594">Es wird nach verfügbaren Profilen gesucht. Das kann dazu führen, dass Ihre Mobilfunkverbindung einige Minuten getrennt wird.</translation>
 <translation id="2180620921879609685">Inhalte auf jeder Seite blockieren</translation>
@@ -1436,6 +1444,7 @@ Wenn Sie die Family Link App auf Ihrem Gerät installieren, können Sie die Eins
 <translation id="2379281330731083556">Über das Systemdialogfeld drucken... <ph name="SHORTCUT_KEY" /></translation>
 <translation id="2381499968174336913">Vorschau des geteilten Tabs</translation>
 <translation id="2381756643783702095">Vor dem Senden nachfragen (empfohlen)</translation>
+<translation id="2386202302581016807">Der verfügbare Speicherplatz auf dem Gerät reicht nicht aus, um die Einrichtung abzuschließen</translation>
 <translation id="2387052489799050037">Zum Startbildschirm</translation>
 <translation id="2387602571959163792"><ph name="DESK_NAME" /> (aktiv)</translation>
 <translation id="2389775852302560582">IP</translation>
@@ -1445,6 +1454,7 @@ Wenn Sie die Family Link App auf Ihrem Gerät installieren, können Sie die Eins
 <translation id="2392163307141705938">Du hast das Zeitlimit erreicht, das deine Eltern für <ph name="IDS_SHORT_PRODUCT_NAME" /> festgelegt haben.</translation>
 <translation id="2392369802118427583">Aktivieren</translation>
 <translation id="2393136602862631930">"<ph name="APP_NAME" />" auf Ihrem Chromebook einrichten</translation>
+<translation id="2393313392064891208">Inhalt der Google Chrome OS Flex-Nutzungsbedingungen</translation>
 <translation id="2395616325548404795">Ihr <ph name="DEVICE_TYPE" /> wurde erfolgreich für die Unternehmensverwaltung angemeldet, aber es wurden keine Asset- und Standortinformationen gesendet. Bitte geben Sie diese Informationen für das Gerät manuell über Ihre Admin-Konsole ein.</translation>
 <translation id="2396783860772170191">Geben Sie die 4-stellige PIN ein (0000–9999)</translation>
 <translation id="2398546389094871088">Ein Powerwash des Geräts löscht nicht Ihre eSIM-Profile. Öffnen Sie die <ph name="LINK_BEGIN" />Einstellungen für mobile Nutzung<ph name="LINK_END" />, um diese Profile manuell zu entfernen.</translation>
@@ -1475,6 +1485,7 @@ Wenn Sie die Family Link App auf Ihrem Gerät installieren, können Sie die Eins
 <translation id="2433836460518180625">Gerät nur entsperren</translation>
 <translation id="2434449159125086437">Der Drucker kann nicht eingerichtet werden. Prüfen Sie die Konfiguration und probieren Sie es dann noch einmal.</translation>
 <translation id="2434758125294431199">Wähle aus, wer Inhalte mit dir teilen kann</translation>
+<translation id="2435137177546457207">Google Chrome und Chrome OS Flex – zusätzliche Nutzungsbedingungen</translation>
 <translation id="2435248616906486374">Netzwerkverbindung getrennt</translation>
 <translation id="2435457462613246316">Passwort anzeigen</translation>
 <translation id="2439626940657133600"><ph name="WINDOW_TITLE" /> wird geladen</translation>
@@ -1586,6 +1597,7 @@ Wenn Sie die Family Link App auf Ihrem Gerät installieren, können Sie die Eins
 <translation id="2530166226437958497">Fehlerbehebung</translation>
 <translation id="2531530485656743109"><ph name="BEGIN_PARAGRAPH1" />Bei der Installation von <ph name="DEVICE_OS" /> ist ein Fehler aufgetreten.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Hier finden Sie Hilfestellung: g.co/flex/InstallErrors.<ph name="END_PARAGRAPH2" /></translation>
+<translation id="2532198298278778531">Sicheres DNS in den Chrome OS Flex-Einstellungen verwalten</translation>
 <translation id="2532589005999780174">Modus mit hohem Kontrast</translation>
 <translation id="2533649878691950253">Diese Website darf nicht auf Ihren genauen Standort zugreifen, weil Sie das meist nicht erlauben</translation>
 <translation id="253434972992662860">&amp;Anhalten</translation>
@@ -2090,6 +2102,7 @@ Servernachricht: <ph name="SERVER_MSG" /></translation>
 <translation id="3031557471081358569">Zu importierende Daten wählen:</translation>
 <translation id="3032587662022429783">Weitere Informationen über Diagnose und Nutzungsdaten.</translation>
 <translation id="3033348223765101500">Sie bestimmen über Ihre Daten</translation>
+<translation id="3034627908241330765">Es läuft bereits eine Einrichtung für Steam. Bitte warten Sie, bis der Vorgang abgeschlossen ist, bevor Sie die Einrichtung neu starten.</translation>
 <translation id="3036327949511794916">Die Rückgabefrist für dieses <ph name="DEVICE_TYPE" /> ist abgelaufen.</translation>
 <translation id="3036546437875325427">Flash aktivieren</translation>
 <translation id="3037754279345160234">Die Konfiguration zum Domainbeitritt kann nicht geparst werden. Bitte wenden Sie sich an Ihren Administrator.</translation>
@@ -2322,7 +2335,6 @@ Servernachricht: <ph name="SERVER_MSG" /></translation>
 <translation id="3304212451103136496"><ph name="DISCOUNT_AMOUNT" /> Rabatt</translation>
 <translation id="3305389145870741612">Die Formatierung kann einige Sekunden dauern. Bitte warten...</translation>
 <translation id="3305661444342691068">PDF-Vorschau</translation>
-<translation id="3306992216458434072">Geben Sie der Gruppe einen Namen und wählen Sie eine Farbe aus</translation>
 <translation id="3307176291962384345">Rabatte für <ph name="MERCHANT_NAME" /> erhalten</translation>
 <translation id="3308116878371095290">Diese Seite konnte keine Cookies setzen.</translation>
 <translation id="3308134619352333507">Schaltfläche ausblenden</translation>
@@ -2484,6 +2496,7 @@ Servernachricht: <ph name="SERVER_MSG" /></translation>
 <translation id="3462311546193741693">Hiermit werden Sie von den meisten Websites abgemeldet. Sie bleiben jedoch in Ihrem Google-Konto angemeldet, sodass Ihre synchronisierten Daten gelöscht werden können.</translation>
 <translation id="3462413494201477527">Kontoeinrichtung abbrechen?</translation>
 <translation id="346298925039590474">Dieses Mobilfunknetz steht nun allen Nutzern auf diesem Gerät zur Verfügung</translation>
+<translation id="3463015289462934089">Achten Sie darauf, dass Ihr Gerät mit dem Internet verbunden ist.</translation>
 <translation id="3464145797867108663">Arbeitsprofil hinzufügen</translation>
 <translation id="346431825526753">Dies ist ein Konto für Kinder, das von <ph name="CUSTODIAN_EMAIL" /> verwaltet wird.</translation>
 <translation id="346546413339447252">Rabatte für <ph name="MERCHANT_NAME_1" />, <ph name="MERCHANT_NAME_2" /> und weitere Händler erhalten</translation>
@@ -3062,6 +3075,7 @@ Möchten Sie <ph name="CONTROL_PANEL_APPLET_NAME" /> starten?</translation>
 <translation id="3988996860813292272">Zeitzone auswählen</translation>
 <translation id="399179161741278232">Importiert</translation>
 <translation id="3993887353483242788">Wenn Sie Ihr <ph name="DEVICE_TYPE" /> synchronisieren, stehen Ihre Einstellungen auf jedem Gerät zur Verfügung, auf dem Sie sich in Ihrem Google-Konto anmelden. Das schließt u. a. Apps, Einstellungen, WLAN-Passwörter, Sprachen, Hintergründe und Tastenkombinationen ein.</translation>
+<translation id="3994318741694670028">Ihr Computer wurde mit einer ungültigen Hardware-ID konfiguriert. Daher kann Chrome OS Flex keine aktuellen Sicherheitsupdates installieren und Ihr Computer ist <ph name="BEGIN_BOLD" />möglicherweise anfällig für schädliche Angriffe<ph name="END_BOLD" />.</translation>
 <translation id="3994374631886003300">Entsperren Sie Ihr Smartphone und verringern Sie den Abstand zu Ihrem <ph name="DEVICE_TYPE" />.</translation>
 <translation id="3994878504415702912">&amp;Zoom</translation>
 <translation id="3995138139523574647">USB-C-Gerät (Port hinten rechts)</translation>
@@ -3335,6 +3349,7 @@ Möchten Sie <ph name="CONTROL_PANEL_APPLET_NAME" /> starten?</translation>
     <ph name="BEGIN_PARAGRAPH2" />Das Teilen dieser Berichte können Sie jederzeit in den Einstellungen des Chrome OS-Geräts Ihres Kindes aktivieren oder deaktivieren. Als Domainadministrator können Sie diese Einstellungen auch in der Admin-Konsole ändern.<ph name="END_PARAGRAPH2" />
     <ph name="BEGIN_PARAGRAPH3" />Wenn Sie diese Funktion deaktivieren, kann das Gerät weiterhin Informationen senden, die für grundlegende Dienste wie Systemupdates und -sicherheit erforderlich sind.<ph name="END_PARAGRAPH3" /></translation>
 <translation id="4301671483919369635">Diese Website ist berechtigt, Dateien zu bearbeiten</translation>
+<translation id="4302577930366020750">Bitte starten Sie Ihr Gerät neu, um Steam verwenden zu können</translation>
 <translation id="4303079906735388947">Richten Sie eine neue PIN für Ihren Sicherheitsschlüssel ein</translation>
 <translation id="4305402730127028764">Auf <ph name="DEVICE_NAME" /> kopieren</translation>
 <translation id="4305817255990598646">Wechseln</translation>
@@ -3457,6 +3472,7 @@ Möchten Sie <ph name="CONTROL_PANEL_APPLET_NAME" /> starten?</translation>
 <translation id="4427306783828095590">Besserer Schutz vor Phishing und Malware durch erweitertes Safe Browsing</translation>
 <translation id="4427365070557649936">Bestätigungscode wird geprüft…</translation>
 <translation id="4429163740524851942">Belegung der physischen Tastatur</translation>
+<translation id="4429239357082509581">Steam benötigt die Berechtigung zur Ausführung</translation>
 <translation id="4430019312045809116">Lautstärke</translation>
 <translation id="4430369329743628066">Lesezeichen hinzugefügt</translation>
 <translation id="4432621511648257259">Falsches Passwort</translation>
@@ -3522,6 +3538,7 @@ Möchten Sie <ph name="CONTROL_PANEL_APPLET_NAME" /> starten?</translation>
 <translation id="450099669180426158">Ausrufezeichensymbol</translation>
 <translation id="4501530680793980440">Entfernen bestätigen</translation>
 <translation id="4502423230170890588">Von diesem Gerät entfernen</translation>
+<translation id="4503748371388753124">Ihr Computer enthält einen TPM-Sicherheitschip (Trusted Platform Module), über den viele wichtige Sicherheitsfunktionen in Chrome OS Flex implementiert sind. Weitere Informationen dazu finden Sie in der Chromebook-Hilfe unter https://support.google.com/chromebook/?p=tpm.</translation>
 <translation id="4504374760782163539">{COUNT,plural, =0{Cookies sind erlaubt}=1{Cookies sind erlaubt, 1 Ausnahme}other{Cookies sind erlaubt, {COUNT} Ausnahmen}}</translation>
 <translation id="4504940961672722399">Klicken Sie auf dieses Symbol oder drücken Sie <ph name="EXTENSION_SHORTCUT" />, um diese Erweiterung zu verwenden.</translation>
 <translation id="450552327874992444">Wort bereits hinzugefügt</translation>
@@ -3878,6 +3895,7 @@ Möchten Sie <ph name="CONTROL_PANEL_APPLET_NAME" /> starten?</translation>
 <translation id="4876273079589074638">Unterstützen Sie unsere Entwickler beim Untersuchen und Beheben dieses Absturzes. Beschreiben Sie möglichst genau alle Schritte. Kein noch so kleines Detail ist überflüssig!</translation>
 <translation id="4876895919560854374">Bildschirm sperren und entsperren</translation>
 <translation id="4877276003880815204">Elemente untersuchen</translation>
+<translation id="4877652723592270843">Möchten Sie ChromeVox, den integrierten Screenreader für Chrome OS Flex, aktivieren? Falls ja, halten Sie beide Lautstärketasten fünf Sekunden gedrückt.</translation>
 <translation id="4878634973244289103">Feedback kann nicht gesendet werden. Bitte versuchen Sie es später noch einmal.</translation>
 <translation id="4878653975845355462">Benutzerdefinierte Hintergründe wurden von Ihrem Administrator deaktiviert</translation>
 <translation id="4878718769565915065">Fehler beim Hinzufügen eines Fingerabdrucks zu diesem Sicherheitsschlüssel</translation>
@@ -3939,6 +3957,8 @@ Möchten Sie <ph name="CONTROL_PANEL_APPLET_NAME" /> starten?</translation>
 <translation id="4929386379796360314">Druckziele</translation>
 <translation id="4930447554870711875">Entwickler</translation>
 <translation id="4930714375720679147">Aktivieren</translation>
+<translation id="4930776995592629647">Falls das Problem weiterhin auftritt, starten Sie das Gerät neu. 
+    Fehlercode: <ph name="ERROR_CODE" />.</translation>
 <translation id="4932733599132424254">Datum</translation>
 <translation id="4933484234309072027">auf <ph name="URL" /> eingebettet</translation>
 <translation id="4936042273057045735">Benachrichtigungssynchronisierung wird nicht unterstützt, wenn auf einem Smartphone aktuell ein Arbeitsprofil verwendet wird</translation>
@@ -3990,6 +4010,7 @@ Möchten Sie <ph name="CONTROL_PANEL_APPLET_NAME" /> starten?</translation>
 <translation id="4989966318180235467">&amp;Hintergrundseite prüfen</translation>
 <translation id="4991420928586866460">Tasten der obersten Reihe als Funktionstasten nutzen</translation>
 <translation id="499165176004408815">Modus mit hohem Kontrast verwenden</translation>
+<translation id="4991858732577603540">Bitte warten Sie ein paar Minuten und führen Sie Steam dann noch einmal aus</translation>
 <translation id="4992458225095111526">Powerwash bestätigen</translation>
 <translation id="4992473555164495036">Ihr Administrator hat die verfügbaren Eingabemethoden eingeschränkt.</translation>
 <translation id="4994474651455208930">Registrierung von Websites als Standard-Handler für Protokolle zulassen</translation>
@@ -4007,6 +4028,7 @@ Möchten Sie <ph name="CONTROL_PANEL_APPLET_NAME" /> starten?</translation>
 <translation id="5008936837313706385">Aktivitätsname</translation>
 <translation id="5009463889040999939">Profil wird umbenannt. Das kann einige Minuten dauern.</translation>
 <translation id="5010043101506446253">Zertifizierungsstelle</translation>
+<translation id="501057610015570208">App mit Manifest-Attribut „kiosk_only“ muss im Chrome OS Flex-Kioskmodus installiert werden</translation>
 <translation id="5015344424288992913">Proxy auflösen...</translation>
 <translation id="5016491575926936899">Sie können SMS von Ihrem Computer senden, Ihre Internetverbindung teilen, auf Unterhaltungsbenachrichtigungen antworten und Ihr <ph name="DEVICE_TYPE" /> mit Ihrem Smartphone entsperren.<ph name="FOOTNOTE_POINTER" /> <ph name="LINK_BEGIN" />Weitere Informationen<ph name="LINK_END" /></translation>
 <translation id="5017643436812738274">Sie können sich mit einem Textcursor auf den Seiten bewegen. Drücken Sie die Tastenkombination Strg + Suchtaste + 7, um die Tastaturnavigation zu deaktivieren.</translation>
@@ -4265,6 +4287,24 @@ Möchten Sie <ph name="CONTROL_PANEL_APPLET_NAME" /> starten?</translation>
 <translation id="5282733140964383898">Wenn Sie „Do Not Track“ aktivieren, wird eine Anfrage in Ihre Browseraufrufe aufgenommen. Welche Auswirkungen dies hat, hängt davon ab, ob eine Website auf die Anfrage reagiert und wie diese interpretiert wird. Einige Websites reagieren möglicherweise auf die Anfrage, indem sie Anzeigen einblenden, die nicht auf anderen von Ihnen besuchten Websites basieren. Viele Websites erfassen und nutzen dennoch Ihre Browserdaten, etwa zur Verbesserung der Sicherheit, zur Bereitstellung von Inhalten, Diensten, Anzeigen und Empfehlungen auf der Website sowie zur Erstellung von Berichtsstatistiken. <ph name="BEGIN_LINK" />Weitere Informationen<ph name="END_LINK" /></translation>
 <translation id="5283677936944177147">Hoppla! Das System konnte das Gerätemodell oder die Seriennummer nicht erkennen.</translation>
 <translation id="5284445933715251131">Download fortsetzen</translation>
+<translation id="5284787925725379414"><ph name="BEGIN_H3" />Funktionen zur Fehlerbehebung<ph name="END_H3" />
+      <ph name="BR" />
+      Sie können die Funktionen zur Fehlerbehebung auf Ihrem Chrome OS Flex-Gerät aktivieren, um benutzerdefinierten Code auf dem Gerät zu installieren und zu testen. Dadurch können Sie<ph name="BR" />
+      <ph name="BEGIN_LIST" />
+        <ph name="LIST_ITEM" />die rootfs-Überprüfung entfernen, sodass Sie Dateien des Betriebssystems ändern können,
+        <ph name="LIST_ITEM" />den SSH-Zugriff auf das Gerät anhand der Standard-Testschlüssel ermöglichen, sodass Sie Tools wie <ph name="BEGIN_CODE" />cros flash<ph name="END_CODE" /> für den Gerätezugriff verwenden können,
+        <ph name="LIST_ITEM" />das Starten über USB aktivieren, sodass Sie ein Betriebssystem-Image über einen USB-Speicher installieren können, und
+        <ph name="LIST_ITEM" />für das Dev- und System-Root-Passwort einen benutzerdefinierten Wert festlegen, sodass Sie sich manuell per SSH mit dem Gerät verbinden können.
+      <ph name="END_LIST" />
+      <ph name="BR" />
+      Nach der Aktivierung bleiben die meisten Funktionen zur Fehlerbehebung auch dann aktiviert, wenn Sie einen Powerwash durchführen oder die Daten auf einem verwalteten Unternehmensgerät löschen. Führen Sie zur vollständigen Deaktivierung aller Funktionen zur Fehlerbehebung den Chrome OS-Wiederherstellungsprozess aus: https://support.google.com/chromebook/answer/1080595.
+      <ph name="BR" />
+      <ph name="BR" />
+      Weitere Informationen zu den Funktionen zur Fehlerbehebung finden Sie unter folgendem Link:<ph name="BR" />
+      https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-features
+      <ph name="BR" />
+      <ph name="BR" />
+      <ph name="BEGIN_BOLD" />Hinweis<ph name="END_BOLD" />: Das System wird während des Vorgangs neu gestartet.</translation>
 <translation id="5285635972691565180">Bildschirm <ph name="DISPLAY_ID" /></translation>
 <translation id="5286194356314741248">Durchsuchen</translation>
 <translation id="5287425679749926365">Meine Konten</translation>
@@ -4420,6 +4460,7 @@ Sie können dieser Aktion mehrere Schalter zuweisen.</translation>
 <translation id="5449716055534515760">Fen&amp;ster schließen</translation>
 <translation id="5452976525201205853"><ph name="LANGUAGE" /> (funktioniert im Offlinemodus)</translation>
 <translation id="5454166040603940656">mit <ph name="PROVIDER" /></translation>
+<translation id="5455603387986949153">Seriennummern von Chrome OS Flex-Geräten und Komponenten lesen.</translation>
 <translation id="5457113250005438886">Ungültig</translation>
 <translation id="5457459357461771897">Fotos, Musik und andere Medien auf Ihrem Computer lesen und löschen</translation>
 <translation id="5458214261780477893">Dvorak</translation>
@@ -4428,6 +4469,7 @@ Sie können dieser Aktion mehrere Schalter zuweisen.</translation>
 <translation id="5461050611724244538">Die Verbindung zu Ihrem Smartphone wurde unterbrochen</translation>
 <translation id="5463275305984126951">Index von <ph name="LOCATION" /></translation>
 <translation id="5463625433003343978">Geräte werden gesucht…</translation>
+<translation id="5463845647891602726">Löschen Sie Dateien vom Gerät, um Speicherplatz freizugeben</translation>
 <translation id="5463856536939868464">Menü enthält ausgeblendete Lesezeichen</translation>
 <translation id="5464632865477611176">Dieses Mal ausführen</translation>
 <translation id="5464660706533281090">Diese Einstellung kann nicht von einem Kind geändert werden.</translation>
@@ -4736,6 +4778,8 @@ Sie können dieser Aktion mehrere Schalter zuweisen.</translation>
 <translation id="5778491106820461378">Sie können angemeldete Google-Konten in den <ph name="LINK_BEGIN" />Einstellungen<ph name="LINK_END" /> verwalten. Berechtigungen, die Sie Websites und Apps gewährt haben, gelten möglicherweise für alle Konten. Wenn Sie nicht möchten, dass Websites oder Apps Zugriff auf Ihre Kontoinformationen haben, können Sie sich auf Ihrem Gerät (<ph name="DEVICE_TYPE" />) als Gast anmelden.</translation>
 <translation id="5780011244986845107">Der ausgewählte Ordner enthält vertrauliche Dateien. Möchten Sie <ph name="APP_NAME" /> wirklich dauerhaft Lesezugriff auf diesen Ordner gewähren?</translation>
 <translation id="5780973441651030252">Prozesspriorität</translation>
+<translation id="5781014777846460847">Steam ist auf diesem Gerät nicht erlaubt. Wenden Sie sich an Ihren Administrator, um die entsprechende Berechtigung zu erhalten.
+    Fehlercode: <ph name="ERROR_CODE" />.</translation>
 <translation id="5781092003150880845">Synchronisieren als <ph name="ACCOUNT_FULL_NAME" /></translation>
 <translation id="5781865261247219930">Befehle an <ph name="EXTENSION_NAME" /> senden</translation>
 <translation id="5782227691023083829">Wird übersetzt...</translation>
@@ -4842,6 +4886,7 @@ Sie können dieser Aktion mehrere Schalter zuweisen.</translation>
 <translation id="5889282057229379085">Maximal zulässige Anzahl an Zwischenzertifizierungsstellen: <ph name="NUM_INTERMEDIATE_CA" /></translation>
 <translation id="5891688036610113830">Bevorzugte WLANs</translation>
 <translation id="5895138241574237353">Neu starten</translation>
+<translation id="5895335062901455404">Ihre gespeicherten Einstellungen und Aktivitäten stehen auf jedem Chrome OS Flex-Gerät zur Verfügung, auf dem Sie sich mit Ihrem Google-Konto anmelden. In den Einstellungen können Sie festlegen, was synchronisiert werden soll.</translation>
 <translation id="5896436821193322561">Nicht zulassen</translation>
 <translation id="5900302528761731119">Google Profile-Foto</translation>
 <translation id="590036993063074298">Details zur Qualität der Spiegelung</translation>
@@ -5296,6 +5341,7 @@ Sie können dieser Aktion mehrere Schalter zuweisen.</translation>
 <translation id="6345878117466430440">Als gelesen markieren</translation>
 <translation id="6347010704471250799">Benachrichtigung einblenden</translation>
 <translation id="6349101878882523185"><ph name="APP_NAME" /> installieren</translation>
+<translation id="6351383110065274390">Viel Spaß beim Spielen auf Ihrem Chromebook</translation>
 <translation id="6354918092619878358">Elliptische SECG-Kurve secp256r1 (ANSI X9.62 prime256v1, NIST P-256)</translation>
 <translation id="6355789186038748882">Dies ist ein experimenteller Browser (Alpha). Einige Funktionen sind möglicherweise nicht verfügbar oder unvollständig. Melden Sie Probleme über „Hilfe“ &gt; „Problem melden…“.</translation>
 <translation id="635609604405270300">Gerät eingeschaltet lassen</translation>
@@ -5458,6 +5504,7 @@ Sie können dieser Aktion mehrere Schalter zuweisen.</translation>
 <translation id="6514565641373682518">Diese Seite hat den Cursor deaktiviert.</translation>
 <translation id="6518014396551869914">Bild ko&amp;pieren</translation>
 <translation id="6518133107902771759">Bestätigen</translation>
+<translation id="6519304021460270639">Ihre Apps, Einstellungen und anderen Anpassungen werden auf allen Chrome OS Flex-Geräten synchronisiert, auf denen Sie mit Ihrem Google-Konto angemeldet sind.</translation>
 <translation id="651942933739530207">Soll <ph name="APP_NAME" /> Ihren Bildschirm und Ihre Audioausgabe freigeben?</translation>
 <translation id="6519437681804756269">[<ph name="TIMESTAMP" />]
         <ph name="FILE_INFO" />
@@ -5634,6 +5681,7 @@ Sie können dieser Aktion mehrere Schalter zuweisen.</translation>
 <translation id="6691541770654083180">Erde</translation>
 <translation id="6691936601825168937">&amp;Vorwärts</translation>
 <translation id="6693745645188488741">{COUNT,plural, =1{1 Seite}other{{COUNT} Seiten}}</translation>
+<translation id="6694430008315398925">Steam einrichten</translation>
 <translation id="6697492270171225480">Vorschläge für ähnliche Seiten anzeigen, wenn eine Seite nicht gefunden werden kann</translation>
 <translation id="6697690052557311665">Zur Freigabe eines Ordners rechtsklicken Sie ihn in der App "Dateien" und wählen "Mit Linux teilen" aus.</translation>
 <translation id="6698810901424468597">Eigene Daten auf <ph name="WEBSITE_1" /> und <ph name="WEBSITE_2" /> lesen und ändern</translation>
@@ -5735,6 +5783,7 @@ Sie können dieser Aktion mehrere Schalter zuweisen.</translation>
 <translation id="6805647936811177813">Melden Sie sich in <ph name="TOKEN_NAME" /> an, um das Clientzertifikat von <ph name="HOST_NAME" /> herunterzuladen.</translation>
 <translation id="680572642341004180">RLZ-Nachverfolgung für <ph name="SHORT_PRODUCT_OS_NAME" /> aktivieren</translation>
 <translation id="6808039367995747522">Stecken Sie Ihren Sicherheitsschlüssel ein und tippen Sie darauf, um fortzufahren</translation>
+<translation id="6808166974213191158">Chrome OS Flex-Systemimage-Writer</translation>
 <translation id="6808193438228982088">Fuchs</translation>
 <translation id="6809470175540814047">In &amp;Inkognitofenster öffnen</translation>
 <translation id="6809656734323672573">Sofern Sie zustimmen, wartet Google Assistant im Stand-by-Modus auf „Hey Google“ und kann dann mit Voice Match Ihre Stimme erkennen.
@@ -6688,6 +6737,7 @@ Drücken Sie zum Entfernen der Zuweisung einen bereits zugewiesenen Schalter ode
 <translation id="7768526219335215384"><ph name="ORIGIN" /> kann Dateien in <ph name="FOLDERNAME" /> aufrufen</translation>
 <translation id="7768770796815395237">Ändern</translation>
 <translation id="7768784765476638775">Vorlesen</translation>
+<translation id="7770406201819593386">Chrome OS Flex-Diagnose durchführen.</translation>
 <translation id="7770612696274572992">Bild wurde von einem anderen Gerät kopiert</translation>
 <translation id="7771452384635174008">Ausrichtung</translation>
 <translation id="7772032839648071052">Passphrase bestätigen</translation>
@@ -6780,6 +6830,7 @@ Drücken Sie zum Entfernen der Zuweisung einen bereits zugewiesenen Schalter ode
 <translation id="7853747251428735">Weitere Too&amp;ls</translation>
 <translation id="7855678561139483478">Tab in ein neues Fenster verschieben</translation>
 <translation id="7856654138655787862">Chrome OS-Diagnose durchführen.</translation>
+<translation id="7857004848504343806">Ihr Computer enthält ein Sicherheitsmodul, über das viele wichtige Sicherheitsfunktionen in Chrome OS Flex implementiert werden. Weitere Informationen dazu finden Sie in der Chromebook-Hilfe unter https://support.google.com/chromebook/?p=sm.</translation>
 <translation id="7857093393627376423">Textvorschläge</translation>
 <translation id="7857949311770343000">Ist das die "Neuer Tab"-Seite, die Sie erwartet hatten?</translation>
 <translation id="7858328180167661092"><ph name="APP_NAME" /> (Windows)</translation>
@@ -6896,6 +6947,7 @@ Drücken Sie zum Entfernen der Zuweisung einen bereits zugewiesenen Schalter ode
 <translation id="7969046989155602842">Befehl</translation>
 <translation id="7970673414865679092">Ethernet-Details</translation>
 <translation id="7970882136539140748">Karte kann momentan nicht gespeichert werden</translation>
+<translation id="7972354851134703743">Schnellbefehle aktivieren bzw. deaktivieren</translation>
 <translation id="7972714317346275248">PKCS #1 SHA-384 mit RSA-Verschlüsselung</translation>
 <translation id="7973776233567882054">Welche dieser Aussagen beschreibt Ihr Netzwerk am besten?</translation>
 <translation id="797394244396603170">Wähle das Gerät aus, mit dem du Dateien teilen möchtest</translation>
@@ -6945,6 +6997,7 @@ Speichern Sie Ihre Schlüsseldatei an einem sicheren Ort. Sie benötigen die Dat
 <translation id="8017679124341497925">Verknüpfung bearbeitet</translation>
 <translation id="8018298733481692628">Dieses Profil löschen?</translation>
 <translation id="8018313076035239964">Festlegen, welche Informationen von Websites genutzt werden dürfen und welche Inhalte Websites präsentieren dürfen</translation>
+<translation id="8023133589013344428">Sprachen in den Chrome OS Flex-Einstellungen verwalten</translation>
 <translation id="8023801379949507775">Erweiterungen jetzt aktualisieren</translation>
 <translation id="8025151549289123443">Sperrbildschirm und Anmeldung</translation>
 <translation id="8026334261755873520">Browserdaten löschen</translation>
@@ -6997,6 +7050,7 @@ Speichern Sie Ihre Schlüsseldatei an einem sicheren Ort. Sie benötigen die Dat
 <translation id="8062844841289846053">{COUNT,plural, =1{1 Blatt Papier}other{{COUNT} Blätter Papier}}</translation>
 <translation id="8063235345342641131">Grüner Standardavatar</translation>
 <translation id="8063535366119089408">Datei ansehen</translation>
+<translation id="8064015586118426197">Chrome OS Flex</translation>
 <translation id="8064279191081105977">Gruppe <ph name="GROUP_NAME" /> – <ph name="GROUP_CONTENTS" /> – <ph name="COLLAPSED_STATE" /></translation>
 <translation id="8066444921260601116">Dialogfeld für die Verbindung</translation>
 <translation id="8070662218171013510">Haptisches Feedback</translation>
@@ -7093,6 +7147,7 @@ Speichern Sie Ihre Schlüsseldatei an einem sicheren Ort. Sie benötigen die Dat
 <translation id="8157248655669507702">Damit Sie ein eSIM-Profil installieren können, müssen Sie mobile Daten aktivieren</translation>
 <translation id="8157704005178149728">Elternaufsicht wird eingerichtet</translation>
 <translation id="8158117992543756526">Dieses Gerät erhält seit <ph name="MONTH_AND_YEAR" /> keine automatischen Software- und Sicherheitsupdates mehr. <ph name="LINK_BEGIN" />Weitere Informationen<ph name="LINK_END" /></translation>
+<translation id="8159652640256729753">Wenn diese Option aktiviert ist, vibriert das Gerät, wenn Sie beispielsweise zwischen Desktops wechseln oder den geteilten Bildschirmmodus aktivieren. <ph name="LINK_BEGIN" />Weitere Informationen<ph name="LINK_END" /></translation>
 <translation id="816055135686411707">Fehler beim Festlegen der Vertrauenswürdigkeit des Zertifikats</translation>
 <translation id="8160775796528709999">Aktivieren Sie „Automatische Untertitel“ in den Einstellungen, um Ihre Audioinhalte und Videos zu untertiteln</translation>
 <translation id="816095449251911490"><ph name="SPEED" /> - <ph name="RECEIVED_AMOUNT" />, <ph name="TIME_REMAINING" /></translation>
@@ -7361,6 +7416,7 @@ Unter <ph name="BEGIN_LINK" />photos.google.com/settings<ph name="END_LINK" /> k
 <translation id="8438566539970814960">Suchanfragen und das Surfen verbessern</translation>
 <translation id="8439506636278576865">Übersetzung für Seiten in dieser Sprache anbieten</translation>
 <translation id="8440630305826533614">Linux-Apps</translation>
+<translation id="8443795068008423036">Achten Sie darauf, dass Ihr Gerät auf dem neuesten Stand ist, und versuchen Sie es noch einmal</translation>
 <translation id="8445046761938045900">Letzte Fotos, Benachrichtigungen und Messaging-Apps</translation>
 <translation id="8446884382197647889">Weitere Informationen</translation>
 <translation id="8447409163267621480">Entweder Strg oder Alt integrieren</translation>
@@ -7545,6 +7601,7 @@ Unter <ph name="BEGIN_LINK" />photos.google.com/settings<ph name="END_LINK" /> k
 <translation id="8648252583955599667"><ph name="GET_HELP_LINK" /> oder <ph name="RE_SCAN_LINK" /></translation>
 <translation id="8648408795949963811">Farbtemperatur des Nachtlichts</translation>
 <translation id="8648544143274677280"><ph name="SITE_NAME" /> möchte: <ph name="FIRST_PERMISSION" />, <ph name="SECOND_PERMISSION" /> und mehr</translation>
+<translation id="864892689521194669">Ich möchte dabei helfen, die Funktionen und die Leistung von Chrome OS Flex zu verbessern</translation>
 <translation id="8650543407998814195">Sie können zwar nicht mehr auf Ihr altes Profil zugreifen, aber Sie können es noch entfernen.</translation>
 <translation id="8651585100578802546">Erneutes Laden dieser Seite erzwingen</translation>
 <translation id="8652400352452647993">Erweiterung packen: Fehler</translation>
@@ -7640,6 +7697,7 @@ Unter <ph name="BEGIN_LINK" />photos.google.com/settings<ph name="END_LINK" /> k
 <translation id="8737709691285775803">Shill</translation>
 <translation id="8737914367566358838">Wählen Sie die Sprache aus, in die die Seite übersetzt werden soll</translation>
 <translation id="8740247629089392745">Sie können dieses Chromebook nun <ph name="SUPERVISED_USER_NAME" /> geben. Die Einrichtung ist fast abgeschlossen, jetzt ist es an der Zeit, auf Entdeckungstour zu gehen.</translation>
+<translation id="8740672167979365981">Chrome OS Flex-Update erforderlich</translation>
 <translation id="8741944563400125534">Einrichtung des Schalterzugriffs</translation>
 <translation id="8742998548129056176">Dies sind allgemeine Informationen zu Ihrem Gerät und dessen Nutzung, zum Beispiel der Akkustand, System- und App-Aktivitäten und Fehler. Die Daten werden dazu verwendet, Android zu verbessern. Einige aggregierte Daten helfen auch Apps und Partnern von Google, beispielsweise Android-Entwicklern, ihre Apps und Produkte weiter zu verbessern.</translation>
 <translation id="8746654918629346731">Sie haben bereits "<ph name="EXTENSION_NAME" />" angefordert</translation>
@@ -7651,6 +7709,7 @@ Unter <ph name="BEGIN_LINK" />photos.google.com/settings<ph name="END_LINK" /> k
 <translation id="8750346984209549530">Mobilfunk-APN</translation>
 <translation id="8752451679755290210">Automatisch zwischen Elementen wechseln</translation>
 <translation id="8753868764580670305">Auf diesem Gerät gespeicherte Passwörter anzeigen und verwalten</translation>
+<translation id="8753948258138515839">Mit der App „Dateien“ erhalten Sie schnellen Zugriff auf Dateien, die Sie in Google Drive, auf externen Speichermedien oder auf Ihrem Chrome OS Flex-Gerät gespeichert haben.</translation>
 <translation id="8754200782896249056">&lt;p&gt;Bei der Ausführung von <ph name="PRODUCT_NAME" /> in einer unterstützten Desktop-Umgebung werden die Proxy-Einstellungen des Systems verwendet. Allerdings wird entweder Ihr System nicht unterstützt oder Ihre Systemkonfiguration konnte nicht gestartet werden.&lt;/p&gt;
 
           &lt;p&gt;Sie können die Konfiguration dennoch über die Befehlszeile vornehmen. Weitere Informationen zu Markierungen und Umgebungsvariablen finden Sie unter &lt;code&gt;man <ph name="PRODUCT_BINARY_NAME" />&lt;/code&gt;.&lt;/p&gt;</translation>
@@ -7669,6 +7728,7 @@ Unter <ph name="BEGIN_LINK" />photos.google.com/settings<ph name="END_LINK" /> k
 <translation id="87646919272181953">Google Fotos-Album</translation>
 <translation id="8767621466733104912">Chrome automatisch für alle Nutzer aktualisieren</translation>
 <translation id="8767765348545497220">Infofeld schließen</translation>
+<translation id="8769901904650373714">Bei der Einrichtung von Steam ist ein Problem aufgetreten</translation>
 <translation id="8770406935328356739">Stammverzeichnis der Erweiterung</translation>
 <translation id="8771300903067484968">Der Hintergrund der Startseite wurde auf den standardmäßigen Hintergrund zurückgesetzt.</translation>
 <translation id="8773302562181397928"><ph name="PRINTER_NAME" /> speichern</translation>
@@ -7885,6 +7945,7 @@ Unter <ph name="BEGIN_LINK" />photos.google.com/settings<ph name="END_LINK" /> k
 <translation id="8981825781894055334">Fast kein Papier mehr</translation>
 <translation id="8983632908660087688"><ph name="ORIGIN" /> kann "<ph name="FILENAME" />" bearbeiten</translation>
 <translation id="8984694057134206124">Sie werden <ph name="MINUTES" /> Minuten lang für alle sichtbar sein. <ph name="LINK_BEGIN" />Weitere Informationen<ph name="LINK_END" /></translation>
+<translation id="8985191021574400965">Willkommen bei Steam für Chromebook</translation>
 <translation id="8985264973231822211">Vor <ph name="DEVICE_LAST_ACTIVATED_TIME" /> Tagen aktiv</translation>
 <translation id="8985661493893822002">Stellen Sie eine Internetverbindung her, um sich auf Ihrem Gerät (<ph name="DEVICE_TYPE" />) anzumelden.</translation>
 <translation id="8986362086234534611">Entfernen</translation>
@@ -8083,6 +8144,7 @@ Informationen dazu, welche Daten von Google erhoben werden und warum, finden Sie
 <translation id="917510707618656279">Nachfragen, wenn eine Website auf Bluetooth-Geräte zugreifen möchte</translation>
 <translation id="9176476835295860688">Sie haben die Möglichkeit, Nutzungsdaten &amp; Fehlerberichte zu senden. Dieses Gerät sendet momentan automatisch Diagnose- sowie Geräte- und App-Nutzungsdaten an Google. Die Daten helfen unter anderem dabei, die Stabilität des Systems und der Apps zu verbessern. Einige aggregierte Daten sind auch für Apps und Partner von Google, beispielsweise Android-Entwickler, nützlich. Diese <ph name="BEGIN_LINK1" />Einstellung<ph name="END_LINK1" /> wird vom Inhaber erzwungen. Wenn zusätzlich die Einstellung "Web- &amp; App-Aktivitäten" aktiviert ist, werden diese Daten eventuell in Ihrem Google-Konto gespeichert. <ph name="BEGIN_LINK2" />Weitere Informationen<ph name="END_LINK2" /></translation>
 <translation id="9176611096776448349"><ph name="WINDOW_TITLE" /> – Bluetooth-Gerät verbunden</translation>
+<translation id="9177949831069307748">Die Chrome OS Flex-Geräteinformationen und -Gerätedaten auslesen.</translation>
 <translation id="9178061802301856367">Anmeldedaten löschen</translation>
 <translation id="9179524979050048593">Nutzername auf Anmeldebildschirm</translation>
 <translation id="9180281769944411366">Der Vorgang kann einige Minuten dauern. Linux-Container wird gestartet.</translation>
