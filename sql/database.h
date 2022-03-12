@@ -826,7 +826,7 @@ class COMPONENT_EXPORT(SQL) Database {
 
   // Used by ReleaseCacheMemoryIfNeeded() to track if new changes have happened
   // since memory was last released.
-  int total_changes_at_last_release_ = 0;
+  int64_t total_changes_at_last_release_ = 0;
 
   // Called when a SQLite error occurs.
   //

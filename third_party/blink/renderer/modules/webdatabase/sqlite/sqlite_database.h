@@ -74,7 +74,7 @@ class SQLiteDatabase {
   bool TransactionInProgress() const { return transaction_in_progress_; }
 
   int64_t LastInsertRowID();
-  int LastChanges();
+  int64_t LastChanges();
 
   void SetBusyTimeout(int ms);
 
@@ -133,26 +133,26 @@ class SQLiteDatabase {
 
   int PageSize();
 
-  sqlite3* db_;
-  int page_size_;
+  sqlite3* db_ = nullptr;
+  int page_size_ = -1;
 
-  bool transaction_in_progress_;
+  bool transaction_in_progress_ = false;
 
   Mutex authorizer_lock_;
 
   // The raw pointer usage is safe because the DatabaseAuthorizer is guaranteed
   // to outlive this instance. The DatabaseAuthorizer is owned by the same
   // Database that owns this instance.
-  DatabaseAuthorizer* authorizer_;
+  DatabaseAuthorizer* authorizer_ = nullptr;
 
-  base::PlatformThreadId opening_thread_;
+  base::PlatformThreadId opening_thread_ = 0;
 
   Mutex database_closing_mutex_;
 
   int open_error_;
   std::string open_error_message_;
 
-  int last_changes_count_;
+  int64_t last_changes_count_ = 0;
 };
 
 }  // namespace blink

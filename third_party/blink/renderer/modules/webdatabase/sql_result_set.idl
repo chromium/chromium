@@ -33,5 +33,5 @@
     readonly attribute SQLResultSetRowList rows;
 
     [RaisesException=Getter] readonly attribute long long insertId;
-    readonly attribute long rowsAffected;
+    readonly attribute long long rowsAffected;
 };

@@ -71,15 +71,7 @@ const int kSQLResultConstraint = SQLITE_CONSTRAINT;
 
 static const char kNotOpenErrorMessage[] = "database is not open";
 
-SQLiteDatabase::SQLiteDatabase()
-    : db_(nullptr),
-      page_size_(-1),
-      transaction_in_progress_(false),
-      opening_thread_(0),
-      open_error_(SQLITE_ERROR),
-      open_error_message_(),
-      last_changes_count_(0) {
-}
+SQLiteDatabase::SQLiteDatabase() : open_error_(SQLITE_ERROR) {}
 
 SQLiteDatabase::~SQLiteDatabase() {
   Close();
@@ -273,14 +265,14 @@ void SQLiteDatabase::UpdateLastChangesCount() {
   if (!db_)
     return;
 
-  last_changes_count_ = sqlite3_total_changes(db_);
+  last_changes_count_ = sqlite3_total_changes64(db_);
 }
 
-int SQLiteDatabase::LastChanges() {
+int64_t SQLiteDatabase::LastChanges() {
   if (!db_)
     return 0;
 
-  return sqlite3_total_changes(db_) - last_changes_count_;
+  return sqlite3_total_changes64(db_) - last_changes_count_;
 }
 
 int SQLiteDatabase::LastError() {

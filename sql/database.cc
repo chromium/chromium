@@ -442,7 +442,7 @@ void Database::ReleaseCacheMemoryIfNeeded(bool implicit_change_performed) {
 
   // If no changes have been made, skip flushing.  This allows the first page of
   // the database to remain in cache across multiple reads.
-  const int total_changes = sqlite3_total_changes(db_);
+  const int64_t total_changes = sqlite3_total_changes64(db_);
   if (total_changes == total_changes_at_last_release_)
     return;
 
