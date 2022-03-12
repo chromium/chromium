@@ -70,8 +70,20 @@ void XDGSurfaceWrapperImpl::Configure(void* data,
   auto* surface = static_cast<XDGSurfaceWrapperImpl*>(data);
   DCHECK(surface);
 
-  surface->wayland_window_->HandleSurfaceConfigure(serial);
-  surface->wayland_window_->OnSurfaceConfigureEvent();
+  surface->OnConfigure(serial);
+}
+
+void XDGSurfaceWrapperImpl::OnConfigure(uint32_t serial) {
+  // Calls to HandleSurfaceConfigure() might end up hiding the enclosing
+  // toplevel window, and deleting this object.
+  auto alive = weak_ptr_factory_.GetWeakPtr();
+
+  wayland_window_->HandleSurfaceConfigure(serial);
+
+  if (!alive)
+    return;
+
+  wayland_window_->OnSurfaceConfigureEvent();
 }
 
 xdg_surface* XDGSurfaceWrapperImpl::xdg_surface() const {
