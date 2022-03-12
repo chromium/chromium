@@ -346,7 +346,7 @@ int CurrentTimeInt64(sqlite3_vfs* vfs, sqlite3_int64* now) {
 }  // namespace
 
 sqlite3_vfs* VFSWrapper() {
-  const char* kVFSName = "VFSWrapper";
+  static constexpr char kVFSName[] = "VFSWrapper";
 
   // Return existing version if already registered.
   {
@@ -356,11 +356,13 @@ sqlite3_vfs* VFSWrapper() {
   }
 
   // Get the default VFS on all platforms except Fuchsia.
-  const char* base_vfs_name = nullptr;
+  static constexpr const char* kBaseVfsName =
 #if BUILDFLAG(IS_FUCHSIA)
-  base_vfs_name = "unix-none";
+      "unix-none";
+#else
+      nullptr;
 #endif
-  sqlite3_vfs* wrapped_vfs = sqlite3_vfs_find(base_vfs_name);
+  sqlite3_vfs* wrapped_vfs = sqlite3_vfs_find(kBaseVfsName);
 
   // Give up if there is no VFS implementation for the current platform.
   if (!wrapped_vfs) {
