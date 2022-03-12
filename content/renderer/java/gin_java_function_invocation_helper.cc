@@ -66,10 +66,11 @@ v8::Local<v8::Value> GinJavaFunctionInvocationHelper::Invoke(
     v8::Local<v8::Value> val;
     while (args->GetNext(&val)) {
       std::unique_ptr<base::Value> arg(converter_->FromV8Value(val, context));
-      if (arg.get())
-        arguments.Append(std::move(arg));
-      else
-        arguments.Append(std::make_unique<base::Value>());
+      if (arg) {
+        arguments.Append(base::Value::FromUniquePtrValue(std::move(arg)));
+      } else {
+        arguments.Append(base::Value());
+      }
     }
   }
 

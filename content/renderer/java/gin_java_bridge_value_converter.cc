@@ -91,9 +91,10 @@ class TypedArraySerializerImpl : public TypedArraySerializer {
       // supports only int for the integer type, and the uint8 and the uint16
       // with Base::Value since they fit into int.
       if (std::is_same<ElementType, uint32_t>::value) {
-        out->Append(GinJavaBridgeValue::CreateUInt32Value(*element));
+        out->Append(base::Value::FromUniquePtrValue(
+            GinJavaBridgeValue::CreateUInt32Value(*element)));
       } else {
-        out->Append(std::make_unique<base::Value>(ListType(*element)));
+        out->Append(base::Value(ListType(*element)));
       }
     }
   }
