@@ -6514,21 +6514,6 @@
             ]
         }
     ],
-    "TailoredSecurityIntegrationAndroid": [
-        {
-            "platforms": [
-                "android"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled_20220302",
-                    "enable_features": [
-                        "TailoredSecurityIntegration"
-                    ]
-                }
-            ]
-        }
-    ],
     "ThreadingOptimizationsOnIO": [
         {
             "platforms": [
