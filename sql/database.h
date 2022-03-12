@@ -43,7 +43,6 @@ class ProcessMemoryDump;
 namespace sql {
 
 class DatabaseMemoryDumpProvider;
-class Recovery;
 class Statement;
 
 namespace test {
@@ -236,12 +235,6 @@ class COMPONENT_EXPORT(SQL) Database {
     error_callback_ = std::move(callback);
   }
   void reset_error_callback() { error_callback_.Reset(); }
-
-#if DCHECK_IS_ON()
-  bool HasErrorCallback(base::PassKey<Recovery>) const {
-    return !error_callback_.is_null();
-  }
-#endif  // DCHECK_IS_ON()
 
   // Developer-friendly database ID used in logging output and memory dumps.
   void set_histogram_tag(const std::string& tag);

@@ -12,6 +12,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/bind.h"
 #include "base/check_op.h"
 #include "base/dcheck_is_on.h"
 #include "base/files/file_path.h"
@@ -92,9 +93,15 @@ Recovery::~Recovery() {
 
 bool Recovery::Init(const base::FilePath& db_path) {
 #if DCHECK_IS_ON()
-  // Prevent the possibility of re-entering this code due to errors
-  // which happen while executing this code.
-  DCHECK(!db_->HasErrorCallback(base::PassKey<Recovery>()));
+  // set_error_callback() will DCHECK if the database already has an error
+  // callback. The recovery process is likely to result in SQLite errors, and
+  // those shouldn't get surfaced to any callback.
+  db_->set_error_callback(base::BindRepeating(
+      [](int sqlite_error_code, sql::Statement* statement) {}));
+
+  // Undo the set_error_callback() above. We only used it for its DCHECK
+  // behavior.
+  db_->reset_error_callback();
 #endif  // DCHECK_IS_ON()
 
   // Break any outstanding transactions on the original database to
