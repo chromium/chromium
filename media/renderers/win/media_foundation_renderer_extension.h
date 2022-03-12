@@ -12,6 +12,14 @@
 
 namespace media {
 
+// This C++ enum is the equivalent to mojom::RenderingMode
+enum class RenderingMode : int32_t {
+  DirectComposition = 0,
+  FrameServer = 1,
+  kMinValue = 0,
+  kMaxValue = 1,
+};
+
 // C++ interface equivalent to mojom::MediaFoundationRendererExtension.
 // This interface allows MediaFoundationRenderer to support video rendering
 // using Direct Compositon.
@@ -35,6 +43,18 @@ class MEDIA_EXPORT MediaFoundationRendererExtension {
   using SetOutputRectCB = base::OnceCallback<void(bool)>;
   virtual void SetOutputRect(const ::gfx::Rect& rect,
                              SetOutputRectCB callback) = 0;
+
+  // Notify that the frame has been displayed and can be reused.
+  virtual void NotifyFrameReleased(
+      const base::UnguessableToken& frame_token) = 0;
+
+  // Request a new frame to be provided to the client.
+  virtual void RequestNextFrameBetweenTimestamps(
+      base::TimeTicks deadline_min,
+      base::TimeTicks deadline_max) = 0;
+
+  // Change which mode we are using for video frame rendering.
+  virtual void SetRenderingMode(RenderingMode mode) = 0;
 };
 
 }  // namespace media

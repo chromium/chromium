@@ -243,4 +243,30 @@ TEST_F(MediaFoundationRendererTest, DirectCompositionHandle) {
   task_environment_.RunUntilIdle();
 }
 
+TEST_F(MediaFoundationRendererTest, ClearStartsInFrameServer) {
+  if (!MediaFoundationRenderer::IsSupported())
+    return;
+
+  AddStream(DemuxerStream::AUDIO, /*encrypted=*/false);
+  AddStream(DemuxerStream::VIDEO, /*encrypted=*/false);
+
+  mf_renderer_->Initialize(&media_resource_, &renderer_client_,
+                           renderer_init_cb_.Get());
+
+  EXPECT_TRUE(mf_renderer_->InFrameServerMode());
+}
+
+TEST_F(MediaFoundationRendererTest, EncryptedStaysInDirectComposition) {
+  if (!MediaFoundationRenderer::IsSupported())
+    return;
+
+  AddStream(DemuxerStream::AUDIO, /*encrypted=*/true);
+  AddStream(DemuxerStream::VIDEO, /*encrypted=*/true);
+
+  mf_renderer_->Initialize(&media_resource_, &renderer_client_,
+                           renderer_init_cb_.Get());
+
+  EXPECT_FALSE(mf_renderer_->InFrameServerMode());
+}
+
 }  // namespace media

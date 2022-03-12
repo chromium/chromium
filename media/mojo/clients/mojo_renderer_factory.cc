@@ -50,6 +50,8 @@ MojoRendererFactory::CreateMediaFoundationRenderer(
     mojo::PendingRemote<mojom::MediaLog> media_log_remote,
     mojo::PendingReceiver<mojom::MediaFoundationRendererExtension>
         renderer_extension_receiver,
+    mojo::PendingRemote<mojom::MediaFoundationRendererClientExtension>
+        client_extension_remote,
     const scoped_refptr<base::SingleThreadTaskRunner>& media_task_runner,
     VideoRendererSink* video_renderer_sink) {
   DCHECK(interface_factory_);
@@ -57,7 +59,8 @@ MojoRendererFactory::CreateMediaFoundationRenderer(
   interface_factory_->CreateMediaFoundationRenderer(
       std::move(media_log_remote),
       renderer_remote.InitWithNewPipeAndPassReceiver(),
-      std::move(renderer_extension_receiver));
+      std::move(renderer_extension_receiver),
+      std::move(client_extension_remote));
 
   return std::make_unique<MojoRenderer>(
       media_task_runner, /*video_overlay_factory=*/nullptr, video_renderer_sink,

@@ -13,10 +13,10 @@ using Microsoft::WRL::ComPtr;
 
 // The Texture Count was determined empirically initially having a count of 30
 // and running many different video presentations in frame server mode and
-// recording the number of textures in use and the count never exceeded 2.
-// Therefore for a max of 2 in flight with the 3 being written requires that
-// we allocate 3 textures.
-constexpr int kTexturePoolCount = 3;
+// recording the number of textures in use and the count never exceeded 3.
+// Therefore for a max of 3 in flight with the 3 being written requires that
+// we allocate 4 textures.
+constexpr int kTexturePoolCount = 4;
 
 }  // namespace
 

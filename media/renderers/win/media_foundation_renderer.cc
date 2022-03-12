@@ -145,6 +145,25 @@ void MediaFoundationRenderer::Initialize(MediaResource* media_resource,
 
   renderer_client_ = client;
 
+  // If the content is not protected then we need to start off in
+  // frame server mode so that the first frame's image data is
+  // available to Chromium, quite a few web tests need that image.
+  bool start_in_dcomp_mode = false;
+  for (DemuxerStream* stream : media_resource->GetAllStreams()) {
+    if (stream->type() == DemuxerStream::Type::VIDEO &&
+        stream->video_decoder_config().is_encrypted()) {
+      // This conditional must match the conditional in
+      // MediaFoundationRendererClient::Initialize
+      start_in_dcomp_mode = true;
+    }
+  }
+
+  if (!start_in_dcomp_mode) {
+    rendering_mode_ = RenderingMode::FrameServer;
+  } else {
+    rendering_mode_ = RenderingMode::DirectComposition;
+  }
+
   HRESULT hr = CreateMediaEngine(media_resource);
   if (FAILED(hr)) {
     DLOG(ERROR) << "Failed to create media engine: " << PrintHr(hr);
@@ -208,7 +227,7 @@ HRESULT MediaFoundationRenderer::CreateMediaEngine(
 
     // TODO(crbug.com/1276067): We'll investigate scenarios to see if we can use
     // the on-screen video window size and not the native video size.
-    if (in_frame_server_mode_) {
+    if (rendering_mode_ == RenderingMode::FrameServer) {
       gfx::Size max_video_size;
       bool has_video = false;
       for (auto* stream : media_resource->GetAllStreams()) {
@@ -425,6 +444,40 @@ void MediaFoundationRenderer::Flush(base::OnceClosure flush_cb) {
   std::move(flush_cb).Run();
 }
 
+void MediaFoundationRenderer::SetRenderingMode(RenderingMode render_mode) {
+  ComPtr<IMFMediaEngineEx> mf_media_engine_ex;
+  HRESULT hr = mf_media_engine_.As(&mf_media_engine_ex);
+
+  if (mf_media_engine_->HasVideo()) {
+    if (render_mode == RenderingMode::FrameServer) {
+      // Make sure we reinitialize the texture pool
+      hr = InitializeTexturePool(native_video_size_);
+    } else if (render_mode == RenderingMode::DirectComposition) {
+      // If needed renegotiate the DComp visual and send it to the client for
+      // presentation
+    } else {
+      DVLOG(1) << "Rendering mode: " << static_cast<int>(render_mode)
+               << " is unsupported";
+      MEDIA_LOG(ERROR, media_log_)
+          << "MediaFoundationRenderer SetRenderingMode: " << (int)render_mode
+          << " is not defined. No change to the rendering mode.";
+      hr = E_NOT_SET;
+    }
+
+    if (SUCCEEDED(hr)) {
+      hr = mf_media_engine_ex->EnableWindowlessSwapchainMode(
+          render_mode == RenderingMode::DirectComposition);
+      if (SUCCEEDED(hr)) {
+        rendering_mode_ = render_mode;
+      }
+    }
+  }
+}
+
+bool MediaFoundationRenderer::InFrameServerMode() {
+  return rendering_mode_ == RenderingMode::FrameServer;
+}
+
 void MediaFoundationRenderer::StartPlayingFrom(base::TimeDelta time) {
   double current_time = time.InSecondsF();
   DVLOG_FUNC(2) << "current_time=" << current_time;
@@ -550,11 +603,8 @@ HRESULT MediaFoundationRenderer::InitializeTexturePool(const gfx::Size& size) {
   // However we also need to investigate the scenario of WebGL and 360 video
   // where they need the original frame size instead of the window size due
   // to later image processing.
-  auto callback = [](std::vector<MediaFoundationFrameInfo> frame_textures,
-                     const gfx::Size& texture_size) {};
-
-  RETURN_IF_FAILED(texture_pool_.Initialize(
-      d3d11_device.Get(), base::BindRepeating(callback), size));
+  RETURN_IF_FAILED(texture_pool_.Initialize(d3d11_device.Get(),
+                                            initialized_frame_pool_cb_, size));
 
   return S_OK;
 }
@@ -565,6 +615,9 @@ HRESULT MediaFoundationRenderer::UpdateVideoStream(const gfx::Rect& rect) {
   RECT dest_rect = {0, 0, rect.width(), rect.height()};
   RETURN_IF_FAILED(mf_media_engine_ex->UpdateVideoStream(
       /*pSrc=*/nullptr, &dest_rect, /*pBorderClr=*/nullptr));
+  if (rendering_mode_ == RenderingMode::FrameServer) {
+    RETURN_IF_FAILED(InitializeTexturePool(native_video_size_));
+  }
   return S_OK;
 }
 
@@ -653,6 +706,13 @@ void MediaFoundationRenderer::SetVolume(float volume) {
 
   HRESULT hr = mf_media_engine_->SetVolume(volume_);
   DVLOG_IF(1, FAILED(hr)) << "Failed to set volume: " << PrintHr(hr);
+}
+
+void MediaFoundationRenderer::SetFrameReturnCallbacks(
+    FrameReturnCallback frame_available_cb,
+    FramePoolInitializedCallback initialized_frame_pool_cb) {
+  frame_available_cb_ = std::move(frame_available_cb);
+  initialized_frame_pool_cb_ = std::move(initialized_frame_pool_cb);
 }
 
 base::TimeDelta MediaFoundationRenderer::GetMediaTime() {
@@ -796,7 +856,7 @@ void MediaFoundationRenderer::OnVideoNaturalSizeChange() {
     std::ignore = UpdateVideoStream(test_rect);
   }
 
-  if (in_frame_server_mode_) {
+  if (rendering_mode_ == RenderingMode::FrameServer) {
     InitializeTexturePool(native_video_size_);
   }
 
@@ -813,6 +873,63 @@ void MediaFoundationRenderer::OnError(PipelineStatus status,
   MEDIA_LOG(ERROR, media_log_) << error;
   ReportErrorReason(reason);
   renderer_client_->OnError(status);
+}
+
+void MediaFoundationRenderer::RequestNextFrameBetweenTimestamps(
+    base::TimeTicks deadline_min,
+    base::TimeTicks deadline_max) {
+  DCHECK(task_runner_->RunsTasksInCurrentSequence());
+  if (rendering_mode_ != RenderingMode::FrameServer) {
+    return;
+  }
+
+  LONGLONG presentation_timestamp_in_hns = 0;
+  // OnVideoStreamTick can return S_FALSE if there is no frame available.
+  if (dxgi_device_manager_ == nullptr ||
+      mf_media_engine_->OnVideoStreamTick(&presentation_timestamp_in_hns) !=
+          S_OK) {
+    return;
+  }
+
+  // TODO(crbug.com/1276067): Change the |native_video_size_| to get the correct
+  // output video size as determined by the output texture requirements.
+  gfx::Size video_size = native_video_size_;
+
+  base::UnguessableToken frame_token;
+  auto d3d11_video_frame = texture_pool_.AcquireTexture(&frame_token);
+  if (d3d11_video_frame.Get() == nullptr)
+    return;
+
+  RECT destination_frame_size = {0, 0, video_size.width(), video_size.height()};
+
+  ComPtr<IDXGIKeyedMutex> texture_mutex;
+  d3d11_video_frame.As(&texture_mutex);
+
+  if (texture_mutex->AcquireSync(0, INFINITE) != S_OK) {
+    texture_pool_.ReleaseTexture(frame_token);
+    return;
+  }
+
+  if (FAILED(mf_media_engine_->TransferVideoFrame(
+          d3d11_video_frame.Get(), nullptr, &destination_frame_size,
+          nullptr))) {
+    texture_mutex->ReleaseSync(0);
+    texture_pool_.ReleaseTexture(frame_token);
+    return;
+  }
+  texture_mutex->ReleaseSync(0);
+
+// Need access to GetCurrentTime on the Media Engine.
+#undef GetCurrentTime
+  auto frame_timestamp = base::Seconds(mf_media_engine_->GetCurrentTime());
+// Restore previous definition
+#define GetCurrentTime() GetTickCount()
+  frame_available_cb_.Run(frame_token, video_size, frame_timestamp);
+}
+
+void MediaFoundationRenderer::NotifyFrameReleased(
+    const base::UnguessableToken& frame_token) {
+  texture_pool_.ReleaseTexture(frame_token);
 }
 
 }  // namespace media

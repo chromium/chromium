@@ -30,12 +30,14 @@ class MediaFoundationRendererWrapper final
       public mojom::MuteStateObserver {
  public:
   using RendererExtension = mojom::MediaFoundationRendererExtension;
+  using ClientExtension = mojom::MediaFoundationRendererClientExtension;
 
   MediaFoundationRendererWrapper(
       scoped_refptr<base::SequencedTaskRunner> task_runner,
       mojom::FrameInterfaceFactory* frame_interfaces,
       mojo::PendingRemote<mojom::MediaLog> media_log_remote,
-      mojo::PendingReceiver<RendererExtension> renderer_extension_receiver);
+      mojo::PendingReceiver<RendererExtension> renderer_extension_receiver,
+      mojo::PendingRemote<ClientExtension> client_extension_remote);
   MediaFoundationRendererWrapper(const MediaFoundationRendererWrapper&) =
       delete;
   MediaFoundationRendererWrapper operator=(
@@ -59,6 +61,10 @@ class MediaFoundationRendererWrapper final
   void SetVideoStreamEnabled(bool enabled) override;
   void SetOutputRect(const gfx::Rect& output_rect,
                      SetOutputRectCallback callback) override;
+  void NotifyFrameReleased(const base::UnguessableToken& frame_token) override;
+  void RequestNextFrameBetweenTimestamps(base::TimeTicks deadline_min,
+                                         base::TimeTicks deadline_max) override;
+  void SetRenderingMode(media::RenderingMode mode) override;
 
   // mojom::MuteStateObserver implementation.
   void OnMuteStateChange(bool muted) override;
@@ -70,10 +76,19 @@ class MediaFoundationRendererWrapper final
   void OnDCOMPSurfaceHandleRegistered(
       GetDCOMPSurfaceCallback callback,
       const absl::optional<base::UnguessableToken>& token);
+  void OnFrameGeneratedByMediaFoundation(
+      const base::UnguessableToken& frame_token,
+      const gfx::Size& frame_size,
+      base::TimeDelta frame_timestamp);
+  void OnFramePoolInitialized(
+      std::vector<MediaFoundationFrameInfo> frame_textures,
+      const gfx::Size& texture_size);
 
   raw_ptr<mojom::FrameInterfaceFactory> frame_interfaces_;
   std::unique_ptr<MediaFoundationRenderer> renderer_;
   mojo::Receiver<MediaFoundationRendererExtension> renderer_extension_receiver_;
+  mojo::Remote<media::mojom::MediaFoundationRendererClientExtension>
+      client_extension_remote_;
   mojo::Receiver<mojom::MuteStateObserver> site_mute_observer_;
 
   float volume_ = 1.0;

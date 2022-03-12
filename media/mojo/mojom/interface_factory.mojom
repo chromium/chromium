@@ -55,10 +55,13 @@ interface InterfaceFactory {
   // Creates a MediaFoundationRenderer (MediaFoundationRendererClientFactory).
   // - |renderer_extension| is bound in MediaFoundationRenderer, and receives
   //   calls from MediaFoundationRendererClient.
+  // - |client_extension| is bound in MediaFoundationRendererClient, and
+  //   received calls from MediaFoundationRenderer.
   CreateMediaFoundationRenderer(
       pending_remote<MediaLog> media_log,
       pending_receiver<Renderer> renderer,
-      pending_receiver<MediaFoundationRendererExtension> renderer_extension);
+      pending_receiver<MediaFoundationRendererExtension> renderer_extension,
+      pending_remote<MediaFoundationRendererClientExtension> client_extension);
 
   [EnableIf=is_android]
   // Creates a FlingingRenderer (FlingingRendererClientFactory).

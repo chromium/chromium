@@ -88,6 +88,19 @@ class MEDIA_EXPORT MediaFoundationRenderer
   void SetOutputRect(const gfx::Rect& output_rect,
                      SetOutputRectCB callback) override;
 
+  using FrameReturnCallback = base::RepeatingCallback<
+      void(const base::UnguessableToken&, const gfx::Size&, base::TimeDelta)>;
+  void SetFrameReturnCallbacks(
+      FrameReturnCallback frame_available_cb,
+      FramePoolInitializedCallback initialized_frame_pool_cb);
+  void NotifyFrameReleased(const base::UnguessableToken& frame_token) override;
+  void RequestNextFrameBetweenTimestamps(base::TimeTicks deadline_min,
+                                         base::TimeTicks deadline_max) override;
+  void SetRenderingMode(RenderingMode render_mode) override;
+
+  // Testing verification
+  bool InFrameServerMode();
+
  private:
   HRESULT CreateMediaEngine(MediaResource* media_resource);
   HRESULT InitializeDXGIDeviceManager();
@@ -137,6 +150,8 @@ class MEDIA_EXPORT MediaFoundationRenderer
   const bool force_dcomp_mode_for_testing_;
 
   raw_ptr<RendererClient> renderer_client_;
+  FrameReturnCallback frame_available_cb_;
+  FramePoolInitializedCallback initialized_frame_pool_cb_;
 
   Microsoft::WRL::ComPtr<IMFMediaEngine> mf_media_engine_;
   Microsoft::WRL::ComPtr<MediaEngineNotifyImpl> mf_media_engine_notify_;
@@ -181,10 +196,8 @@ class MEDIA_EXPORT MediaFoundationRenderer
   // Composition mode.
   MediaFoundationTexturePool texture_pool_;
 
-  // When in frame server mode we need to manage the DX textures and provide
-  // frames to the renderer.
-  // Disabled until we move
-  bool in_frame_server_mode_ = false;
+  // The represents the rendering mode of the Media Engine.
+  RenderingMode rendering_mode_ = RenderingMode::DirectComposition;
 
   // NOTE: Weak pointers must be invalidated before all other member variables.
   base::WeakPtrFactory<MediaFoundationRenderer> weak_factory_{this};

@@ -45,11 +45,9 @@ class DCOMPTextureWrapper {
                                 CreateVideoFrameCB create_video_frame_cb) = 0;
 
   using CreateDXVideoFrameCB =
-      base::OnceCallback<void(scoped_refptr<VideoFrame>,
-                              const base::UnguessableToken& token)>;
+      base::OnceCallback<void(scoped_refptr<VideoFrame>)>;
   virtual void CreateVideoFrame(const gfx::Size& natural_size,
                                 gfx::GpuMemoryBufferHandle dx_handle,
-                                const base::UnguessableToken& token,
                                 CreateDXVideoFrameCB create_video_frame_cb) = 0;
 };
 

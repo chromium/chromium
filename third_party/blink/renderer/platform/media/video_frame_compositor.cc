@@ -358,8 +358,8 @@ bool VideoFrameCompositor::ProcessNewFrame(
     bool repaint_duplicate_frame) {
   DCHECK(task_runner_->BelongsToCurrentThread());
 
-  if (frame && GetCurrentFrame() && !repaint_duplicate_frame &&
-      frame->unique_id() == GetCurrentFrame()->unique_id()) {
+  if (!frame || (GetCurrentFrame() && !repaint_duplicate_frame &&
+                 frame->unique_id() == GetCurrentFrame()->unique_id())) {
     return false;
   }
 

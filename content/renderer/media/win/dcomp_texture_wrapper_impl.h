@@ -56,7 +56,6 @@ class CONTENT_EXPORT DCOMPTextureWrapperImpl
                         CreateVideoFrameCB create_video_frame_cb) override;
   void CreateVideoFrame(const gfx::Size& natural_size,
                         gfx::GpuMemoryBufferHandle dx_handle,
-                        const base::UnguessableToken& token,
                         CreateDXVideoFrameCB create_video_frame_cb) override;
 
  private:

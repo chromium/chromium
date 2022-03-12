@@ -73,7 +73,9 @@ std::unique_ptr<Renderer> MojoMediaClient::CreateMediaFoundationRenderer(
     mojom::FrameInterfaceFactory* frame_interfaces,
     mojo::PendingRemote<mojom::MediaLog> media_log_remote,
     mojo::PendingReceiver<mojom::MediaFoundationRendererExtension>
-        renderer_extension_receiver) {
+        renderer_extension_receiver,
+    mojo::PendingRemote<media::mojom::MediaFoundationRendererClientExtension>
+        client_extension_remote) {
   return nullptr;
 }
 #endif  // BUILDFLAG(IS_WIN)

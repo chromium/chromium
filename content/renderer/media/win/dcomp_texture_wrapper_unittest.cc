@@ -114,22 +114,18 @@ void DCOMPTextureWrapperTest::CreateDXBackedVideoFrameTestTask(
       base::win::ScopedHandle(CreateEvent(nullptr, FALSE, FALSE, nullptr));
   dx_handle.dxgi_token = gfx::DXGIHandleToken();
   dx_handle.type = gfx::GpuMemoryBufferType::DXGI_SHARED_HANDLE;
-  base::UnguessableToken token = base::UnguessableToken::Create();
   gfx::Size frame_size(1920, 1080);
 
   dcomp_texture_wrapper->CreateVideoFrame(
-      frame_size, std::move(dx_handle), token,
+      frame_size, std::move(dx_handle),
       base::BindRepeating(
-          [](gfx::Size orig_frame_size, base::UnguessableToken orig_token,
-             base::WaitableEvent* wait_event,
-             scoped_refptr<media::VideoFrame> frame,
-             const base::UnguessableToken& token) {
+          [](gfx::Size orig_frame_size, base::WaitableEvent* wait_event,
+             scoped_refptr<media::VideoFrame> frame) {
             EXPECT_EQ(frame->coded_size().width(), orig_frame_size.width());
             EXPECT_EQ(frame->coded_size().height(), orig_frame_size.height());
-            EXPECT_EQ(token, orig_token);
             wait_event->Signal();
           },
-          frame_size, token, &wait_event));
+          frame_size, &wait_event));
   wait_event.Wait();
   std::move(closure).Run();
 }

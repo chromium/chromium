@@ -189,7 +189,6 @@ void DCOMPTextureWrapperImpl::CreateVideoFrame(
 void DCOMPTextureWrapperImpl::CreateVideoFrame(
     const gfx::Size& natural_size,
     gfx::GpuMemoryBufferHandle dx_handle,
-    const base::UnguessableToken& token,
     CreateDXVideoFrameCB create_video_frame_cb) {
   DCHECK(media_task_runner_->BelongsToCurrentThread());
   gpu::SharedImageInterface* sii = factory_->SharedImageInterface();
@@ -229,7 +228,7 @@ void DCOMPTextureWrapperImpl::CreateVideoFrame(
                      weak_factory_.GetWeakPtr(), sync_token, mailbox),
       FROM_HERE));
 
-  std::move(create_video_frame_cb).Run(video_frame_texture, token);
+  std::move(create_video_frame_cb).Run(video_frame_texture);
 }
 
 void DCOMPTextureWrapperImpl::OnDXVideoFrameDestruction(

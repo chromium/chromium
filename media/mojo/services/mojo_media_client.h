@@ -98,7 +98,9 @@ class MEDIA_MOJO_EXPORT MojoMediaClient {
       mojom::FrameInterfaceFactory* frame_interfaces,
       mojo::PendingRemote<mojom::MediaLog> media_log_remote,
       mojo::PendingReceiver<mojom::MediaFoundationRendererExtension>
-          renderer_extension_receiver);
+          renderer_extension_receiver,
+      mojo::PendingRemote<media::mojom::MediaFoundationRendererClientExtension>
+          client_extension_remote);
 #endif  // BUILDFLAG(IS_WIN)
 
   // Returns the CdmFactory to be used by MojoCdmService. |frame_interfaces|

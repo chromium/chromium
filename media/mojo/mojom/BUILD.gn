@@ -722,6 +722,16 @@ mojom("mojom") {
         traits_sources = [ "media_foundation_cdm_data_mojom_traits.cc" ]
         traits_public_deps = [ "//media" ]
       },
+      {
+        types = [
+          {
+            mojom = "media.mojom.RenderingMode"
+            cpp = "::media::RenderingMode"
+          },
+        ]
+        traits_headers = [ "media_foundation_rendering_mode_mojom_traits.h" ]
+        traits_public_deps = [ "//media" ]
+      },
     ]
   }
 
