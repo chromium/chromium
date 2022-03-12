@@ -69,7 +69,7 @@
 <translation id="1376578503827013741">Calculando…</translation>
 <translation id="1382912999714108023">Suas informações estão desatualizadas? Entre em contato com seu banco para atualizá-las.</translation>
 <translation id="1383876407941801731">Pesquisar</translation>
-<translation id="1384704387250346179">Traduzir imagem com o Lens <ph name="BEGIN_NEW" />Novo<ph name="END_NEW" /></translation>
+<translation id="1384704387250346179">Traduzir imagem com Lens <ph name="BEGIN_NEW" />Novo<ph name="END_NEW" /></translation>
 <translation id="1386674309198842382">Ativado há <ph name="LAST_UPDATED" /> dias</translation>
 <translation id="1397811292916898096">Pesquisar com o <ph name="PRODUCT_NAME" /></translation>
 <translation id="1406000523432664303">"Não rastrear"</translation>
@@ -1096,7 +1096,7 @@ Por exemplo, alguns sites podem responder a esse pedido mostrando anúncios que 
 <translation id="7514365320538308">Fazer o download</translation>
 <translation id="751961395872307827">Não foi possível se conectar ao site</translation>
 <translation id="752220631458524187">Desconecte o smartphone quando terminar</translation>
-<translation id="7523960634226602883">Pesquisar com a câmera usando o Google Lens</translation>
+<translation id="7523960634226602883">Pesquisar com a câmera usando o Lens</translation>
 <translation id="753225086557513863">Programado para mais tarde</translation>
 <translation id="7559975015014302720">Modo Lite desativado</translation>
 <translation id="7560448309733608642">Limpa o histórico de todos os dispositivos sincronizados. Sua Conta do Google pode ter outras formas de histórico de navegação em <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" />.</translation>
