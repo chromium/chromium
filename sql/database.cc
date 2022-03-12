@@ -1575,6 +1575,8 @@ bool Database::OpenInternal(const std::string& file_name,
     return false;
   }
 
+  ConfigureSqliteDatabaseObject();
+
   // If indicated, enable shared mode ("NORMAL") on the database, so it can be
   // opened by multiple processes. This needs to happen before WAL mode is
   // enabled.
@@ -1584,27 +1586,6 @@ bool Database::OpenInternal(const std::string& file_name,
     if (!Execute("PRAGMA locking_mode=NORMAL"))
       return false;
   }
-
-  // The use of SQLite's non-standard string quoting is not allowed in Chrome.
-  //
-  // Allowing double-quoted string literals is now considered a misfeature by
-  // SQLite authors. See https://www.sqlite.org/quirks.html#dblquote
-  err = sqlite3_db_config(db_, SQLITE_DBCONFIG_DQS_DDL, 0, nullptr);
-  DCHECK_EQ(err, SQLITE_OK)
-      << "sqlite3_db_config(SQLITE_DBCONFIG_DQS_DDL) should not fail";
-  err = sqlite3_db_config(db_, SQLITE_DBCONFIG_DQS_DML, 0, nullptr);
-  DCHECK_EQ(err, SQLITE_OK)
-      << "sqlite3_db_config(SQLITE_DBCONFIG_DQS_DML) should not fail";
-
-  // The use of triggers is discouraged for Chrome code. Thanks to this
-  // configuration change, triggers are not executed. CREATE TRIGGER and DROP
-  // TRIGGER still succeed.
-  err = sqlite3_db_config(db_, SQLITE_DBCONFIG_ENABLE_TRIGGER, 0, nullptr);
-  DCHECK_EQ(err, SQLITE_OK) << "sqlite3_db_config() should not fail";
-
-  err = sqlite3_db_config(db_, SQLITE_DBCONFIG_ENABLE_VIEW,
-                          options_.enable_views_discouraged ? 1 : 0, nullptr);
-  DCHECK_EQ(err, SQLITE_OK) << "sqlite3_db_config() should not fail";
 
   // sqlite3_open() does not actually read the database file (unless a hot
   // journal is found).  Successfully executing this pragma on an existing
@@ -1717,6 +1698,35 @@ bool Database::OpenInternal(const std::string& file_name,
       memory_dump_provider_.get(), "sql::Database", nullptr);
 
   return true;
+}
+
+void Database::ConfigureSqliteDatabaseObject() {
+  // The use of SQLite's non-standard string quoting is not allowed in Chrome.
+  //
+  // Allowing double-quoted string literals is now considered a misfeature by
+  // SQLite authors. See https://www.sqlite.org/quirks.html#dblquote
+  int sqlite_result_code =
+      sqlite3_db_config(db_, SQLITE_DBCONFIG_DQS_DDL, 0, nullptr);
+  DCHECK_EQ(sqlite_result_code, SQLITE_OK)
+      << "sqlite3_db_config(SQLITE_DBCONFIG_DQS_DDL) should not fail";
+  sqlite_result_code =
+      sqlite3_db_config(db_, SQLITE_DBCONFIG_DQS_DML, 0, nullptr);
+  DCHECK_EQ(sqlite_result_code, SQLITE_OK)
+      << "sqlite3_db_config(SQLITE_DBCONFIG_DQS_DML) should not fail";
+
+  // The use of triggers is discouraged for Chrome code. Thanks to this
+  // configuration change, triggers are not executed. CREATE TRIGGER and DROP
+  // TRIGGER still succeed.
+  sqlite_result_code =
+      sqlite3_db_config(db_, SQLITE_DBCONFIG_ENABLE_TRIGGER, 0, nullptr);
+  DCHECK_EQ(sqlite_result_code, SQLITE_OK)
+      << "sqlite3_db_config() should not fail";
+
+  sqlite_result_code =
+      sqlite3_db_config(db_, SQLITE_DBCONFIG_ENABLE_VIEW,
+                        options_.enable_views_discouraged ? 1 : 0, nullptr);
+  DCHECK_EQ(sqlite_result_code, SQLITE_OK)
+      << "sqlite3_db_config() should not fail";
 }
 
 void Database::DoRollback() {

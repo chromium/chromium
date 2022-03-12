@@ -612,6 +612,14 @@ class COMPONENT_EXPORT(SQL) Database {
   enum Retry { NO_RETRY = 0, RETRY_ON_POISON };
   bool OpenInternal(const std::string& file_name, Retry retry_flag);
 
+  // Configures the underlying sqlite3* object via sqlite3_db_config().
+  //
+  // To minimize the number of possible SQLite code paths executed in Chrome,
+  // this method must be called right after the underlying sqlite3* object is
+  // obtained from sqlite3_open*(), before any other sqlite3_*() methods are
+  // called on the object.
+  void ConfigureSqliteDatabaseObject();
+
   // Internal close function used by Close() and RazeAndClose().
   // |forced| indicates that orderly-shutdown checks should not apply.
   void CloseInternal(bool forced);
