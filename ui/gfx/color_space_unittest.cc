@@ -184,7 +184,6 @@ TEST(ColorSpace, Blending) {
 }
 
 TEST(ColorSpace, ConversionToAndFromSkColorSpace) {
-  const size_t kNumTests = 5;
   skcms_Matrix3x3 primary_matrix = {{
       {0.205276f, 0.625671f, 0.060867f},
       {0.149185f, 0.063217f, 0.744553f},
@@ -192,26 +191,32 @@ TEST(ColorSpace, ConversionToAndFromSkColorSpace) {
   }};
   skcms_TransferFunction transfer_fn = {2.1f, 1.f, 0.f, 0.f, 0.f, 0.f, 0.f};
 
-  ColorSpace color_spaces[kNumTests] = {
+  ColorSpace color_spaces[] = {
       ColorSpace(ColorSpace::PrimaryID::BT709, ColorSpace::TransferID::SRGB),
       ColorSpace(ColorSpace::PrimaryID::ADOBE_RGB,
                  ColorSpace::TransferID::SRGB),
       ColorSpace(ColorSpace::PrimaryID::P3, ColorSpace::TransferID::LINEAR),
       ColorSpace(ColorSpace::PrimaryID::BT2020, ColorSpace::TransferID::SRGB),
       ColorSpace::CreateCustom(primary_matrix, transfer_fn),
+      // HDR
+      ColorSpace::CreateSCRGBLinear(),
   };
-  sk_sp<SkColorSpace> sk_color_spaces[kNumTests] = {
+  sk_sp<SkColorSpace> sk_color_spaces[] = {
       SkColorSpace::MakeSRGB(),
       SkColorSpace::MakeRGB(SkNamedTransferFn::kSRGB, SkNamedGamut::kAdobeRGB),
       SkColorSpace::MakeRGB(SkNamedTransferFn::kLinear,
                             SkNamedGamut::kDisplayP3),
       SkColorSpace::MakeRGB(SkNamedTransferFn::kSRGB, SkNamedGamut::kRec2020),
       SkColorSpace::MakeRGB(transfer_fn, primary_matrix),
+      // HDR
+      SkColorSpace::MakeSRGBLinear(),
   };
+
+  static_assert(std::size(color_spaces) == std::size(sk_color_spaces), "");
 
   // Test that converting from ColorSpace to SkColorSpace is producing an
   // equivalent representation.
-  for (size_t i = 0; i < kNumTests; ++i) {
+  for (size_t i = 0; i < std::size(color_spaces); ++i) {
     EXPECT_TRUE(SkColorSpace::Equals(color_spaces[i].ToSkColorSpace().get(),
                                      sk_color_spaces[i].get()))
         << " on iteration i = " << i;
@@ -221,8 +226,9 @@ TEST(ColorSpace, ConversionToAndFromSkColorSpace) {
   // producing an equivalent representation; and then converting the converted
   // ColorSpace back to SkColorSpace is also producing an equivalent
   // representation.
-  for (size_t i = 0; i < kNumTests; ++i) {
-    const ColorSpace from_sk_color_space(*sk_color_spaces[i]);
+  for (size_t i = 0; i < std::size(color_spaces); ++i) {
+    const ColorSpace from_sk_color_space(*sk_color_spaces[i],
+                                         color_spaces[i].IsHDR());
     EXPECT_EQ(color_spaces[i], from_sk_color_space);
     EXPECT_TRUE(SkColorSpace::Equals(
         sk_color_spaces[i].get(), from_sk_color_space.ToSkColorSpace().get()));

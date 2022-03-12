@@ -123,7 +123,8 @@ ColorSpace::ColorSpace(PrimaryID primaries,
                        MatrixID matrix,
                        RangeID range,
                        const skcms_Matrix3x3* custom_primary_matrix,
-                       const skcms_TransferFunction* custom_transfer_fn)
+                       const skcms_TransferFunction* custom_transfer_fn,
+                       bool is_hdr)
     : primaries_(primaries),
       transfer_(transfer),
       matrix_(matrix),
@@ -133,10 +134,10 @@ ColorSpace::ColorSpace(PrimaryID primaries,
     SetCustomPrimaries(*custom_primary_matrix);
   }
   if (custom_transfer_fn)
-    SetCustomTransferFunction(*custom_transfer_fn);
+    SetCustomTransferFunction(*custom_transfer_fn, is_hdr);
 }
 
-ColorSpace::ColorSpace(const SkColorSpace& sk_color_space)
+ColorSpace::ColorSpace(const SkColorSpace& sk_color_space, bool is_hdr)
     : ColorSpace(PrimaryID::INVALID,
                  TransferID::INVALID,
                  MatrixID::RGB,
@@ -144,7 +145,7 @@ ColorSpace::ColorSpace(const SkColorSpace& sk_color_space)
   skcms_TransferFunction fn;
   if (sk_color_space.isNumericalTransferFn(&fn)) {
     transfer_ = TransferID::CUSTOM;
-    SetCustomTransferFunction(fn);
+    SetCustomTransferFunction(fn, is_hdr);
   } else if (skcms_TransferFunction_isHLGish(&fn)) {
     transfer_ = TransferID::HLG;
     transfer_params_[0] = GetSDRWhiteLevelFromHLGSkTransferFunction(fn);
@@ -261,7 +262,8 @@ void ColorSpace::SetCustomPrimaries(const skcms_Matrix3x3& to_XYZD50) {
   primaries_ = PrimaryID::CUSTOM;
 }
 
-void ColorSpace::SetCustomTransferFunction(const skcms_TransferFunction& fn) {
+void ColorSpace::SetCustomTransferFunction(const skcms_TransferFunction& fn,
+                                           bool is_hdr) {
   DCHECK(transfer_ == TransferID::CUSTOM ||
          transfer_ == TransferID::CUSTOM_HDR);
   // These are all TransferIDs that will return a transfer function from
@@ -276,13 +278,29 @@ void ColorSpace::SetCustomTransferFunction(const skcms_TransferFunction& fn) {
         TransferID::SMPTE240M,    TransferID::BT709_APPLE,
         TransferID::SMPTEST428_1,
     };
-    for (TransferID id : kIDsToCheck) {
+    const TransferID kIDsToCheckNoHDR[] = {
+        TransferID::SRGB,
+        TransferID::LINEAR,
+    };
+    const TransferID kIDsToCheckHDR[] = {
+        TransferID::SRGB_HDR,
+        TransferID::LINEAR_HDR,
+    };
+    auto check_transfer_fn = [this, &fn](TransferID id) {
       skcms_TransferFunction id_fn;
       GetTransferFunction(id, &id_fn);
-      if (FloatsEqualWithinTolerance(&fn.g, &id_fn.g, 7, 0.001f)) {
-        transfer_ = id;
+      if (!FloatsEqualWithinTolerance(&fn.g, &id_fn.g, 7, 0.001f))
+        return false;
+      transfer_ = id;
+      return true;
+    };
+    for (TransferID id : is_hdr ? kIDsToCheckHDR : kIDsToCheckNoHDR) {
+      if (check_transfer_fn(id))
         return;
-      }
+    }
+    for (TransferID id : kIDsToCheck) {
+      if (check_transfer_fn(id))
+        return;
     }
   }
   transfer_params_[0] = fn.a;
@@ -658,7 +676,7 @@ ColorSpace ColorSpace::GetWithSDRWhiteLevel(float sdr_white_level) const {
     skcms_TransferFunction fn = {0};
     fn.g = 1.f;
     fn.a = kDefaultScrgbLinearSdrWhiteLevel / sdr_white_level;
-    result.SetCustomTransferFunction(fn);
+    result.SetCustomTransferFunction(fn, false);
   }
   return result;
 }
