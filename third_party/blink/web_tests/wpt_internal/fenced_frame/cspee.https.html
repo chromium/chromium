@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<title>Test fenced frame in CSPEE</title>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/common/utils.js"></script>
+<script src="/common/dispatcher/dispatcher.js"></script>
+<script src="resources/utils.js"></script>
+
+<body>
+<script>
+promise_test(async(t) => {
+  const iframe = attachIFrameContext({attributes:[["csp", "frame-src 'self'"]]});
+  t.step_timeout(() => t.done(), 1000);
+  await iframe.execute(async (t) => {
+    const fencedframe = attachFencedFrameContext();
+    await fencedframe.execute(() => {});
+  });
+  assert_unreached("fenced frame should not be loaded.");
+}, 'fenced frame should not be loaded in CSPEE');
+</script>
+</body>

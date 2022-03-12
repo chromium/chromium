@@ -41,7 +41,7 @@ function getRemoteOriginURL(url, https=true) {
 // then resolves to the RemoteContext if the property isn't found.
 // The proxy also has an extra attribute `execute`, which is an alias for the
 // remote context's `execute_script(fn, args=[])`.
-function attachFrameContext(element_name, html, headers) {
+function attachFrameContext(element_name, html, headers, attributes) {
 
   // Create the frame, passing the unique id for the parent/child channel.
   const frame = document.createElement(element_name);
@@ -61,6 +61,10 @@ function attachFrameContext(element_name, html, headers) {
     return `header(${header[0]}, ${header[1]})`;
   });
   url.searchParams.append('pipe', formatted_headers.join("|"));
+
+  attributes.forEach(attribute => {
+    frame.setAttribute(attribute[0], attribute[1]);
+  });
 
   frame.src = url;
   document.body.append(frame);
@@ -104,16 +108,17 @@ function attachFrameContext(element_name, html, headers) {
 // Takes as input a(n optional) dictionary of configs:
 // - html: extra HTML source code to inject into the loaded frame
 // - headers: an array of header pairs [[key, value], ...]
+// - attributes: an array of attribute pairs to set on the frame [[key, value], ...]
 // Returns a proxy that acts like the frame HTML element, but with an extra
 // function `execute`. See `attachFrameContext` or the README for more details.
-function attachFencedFrameContext({html = "", headers=[]} = {}) {
-  return attachFrameContext('fencedframe', html, headers);
+function attachFencedFrameContext({html = "", headers=[], attributes=[]} = {}) {
+  return attachFrameContext('fencedframe', html, headers, attributes);
 }
 
 // Attach an iframe that waits for scripts to execute.
 // See `attachFencedFrameContext` for more details.
-function attachIFrameContext({html = "", headers=[]} = {}) {
-  return attachFrameContext('iframe', html, headers);
+function attachIFrameContext({html = "", headers=[], attributes=[]} = {}) {
+  return attachFrameContext('iframe', html, headers, attributes);
 }
 
 // Converts a key string into a key uuid using a cryptographic hash function.

@@ -77,11 +77,20 @@ For test examples, see
 or [web-usb.https.html](web-usb.https.html).
 
 Some tips to keep in mind while writing tests using remote execution:
-* The function `attachFencedFrameContext()` optionally takes a dictionary of
-  configs as an argument. You can use it to pass:
+* The functions `attachFencedFrameContext()` and `attachIFrameContext()`
+  optionally take a dictionary of configs as an argument. You can use it to
+  pass:
   * HTML source code to inject into the frame's DOM tree. For example:
     ```
     attachFencedFrameContext({html: '<button id="Button">Click me!</button>'};
+    ```
+  * Response headers. For example:
+    ```
+    attachFencedFrameContext({headers: [["Content-Security-Policy", "frame-src 'self'"]]});
+    ```
+  * Attributes to set on the frame. For example:
+    ```
+    attachIFrameContext({attributes: [["csp", "frame-src 'self'"]]})
     ```
 * There is also a helper `attachIFrameContext()`, which does the same thing
   but for iframes instead of fencedframes.

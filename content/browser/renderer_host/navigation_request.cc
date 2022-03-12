@@ -1784,6 +1784,30 @@ void NavigationRequest::BeginNavigation() {
 
   MaybeAssignInvalidPrerenderFrameTreeNodeId();
 
+  // Fenced frames are not allowed to load if nested in iframes with CSPEE.
+  if (frame_tree_node_->IsFencedFrameRoot()) {
+    DCHECK(!frame_tree_node_->csp_attribute());
+    if (GetParentFrameOrOuterDocument()->required_csp()) {
+      GURL sanitized_blocked_url =
+          common_params_->url.DeprecatedGetOriginAsURL();
+      AddDeferredConsoleMessage(
+          blink::mojom::ConsoleMessageLevel::kError,
+          base::StringPrintf(
+              "Refused to frame '%s' as a fenced frame because "
+              "CSP Embedded Enforcement is specified by the embedder",
+              sanitized_blocked_url.spec().c_str()));
+
+      StartNavigation();
+      OnRequestFailedInternal(
+          network::URLLoaderCompletionStatus(net::ERR_BLOCKED_BY_CSP),
+          false /*skip_throttles*/, absl::nullopt /*error_page_content*/,
+          false /*collapse_frame*/);
+      // DO NOT ADD CODE after this. The previous call to
+      // OnRequestFailedInternal has destroyed the NavigationRequest.
+      return;
+    }
+  }
+
   bool need_url_mapping = NeedFencedFrameURLMapping();
   frame_tree_node_->SetFencedFrameModeIfNeeded(
       need_url_mapping ? FrameTreeNode::FencedFrameMode::kOpaque
