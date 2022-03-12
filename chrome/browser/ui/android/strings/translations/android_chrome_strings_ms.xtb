@@ -74,7 +74,7 @@
 <translation id="1376578503827013741">Mengira...</translation>
 <translation id="1382912999714108023">Maklumat yang dipaparkan telah lapuk? Sila hubungi bank anda untuk mengemas kini maklumat.</translation>
 <translation id="1383876407941801731">Carian</translation>
-<translation id="1384704387250346179">Terjemahkan imej dengan Google Lens <ph name="BEGIN_NEW" />Baharu<ph name="END_NEW" /></translation>
+<translation id="1384704387250346179">Terjemah imej dgn Lens <ph name="BEGIN_NEW" />Baharu<ph name="END_NEW" /></translation>
 <translation id="1386674309198842382">Aktif <ph name="LAST_UPDATED" /> hari lalu</translation>
 <translation id="1397811292916898096">Cari dengan <ph name="PRODUCT_NAME" /></translation>
 <translation id="1406000523432664303">“Jangan Kesan”</translation>
@@ -116,7 +116,7 @@
 <translation id="1670399744444387456">Asas</translation>
 <translation id="1671236975893690980">Muat turun belum selesai...</translation>
 <translation id="1672586136351118594">Jangan tunjukkan lagi</translation>
-<translation id="1680919990519905526">Beli-belah dgn Google Lens <ph name="BEGIN_NEW" />Baharu<ph name="END_NEW" /></translation>
+<translation id="1680919990519905526">Beli-belah dgn Lens <ph name="BEGIN_NEW" />Baharu<ph name="END_NEW" /></translation>
 <translation id="1682195225331129001">Cuba sekarang</translation>
 <translation id="1697284962337958118">Tambahkan pada</translation>
 <translation id="1702543251015153180">Tukar tetapan tema gelap anda?</translation>
@@ -736,7 +736,7 @@ Untuk menukar tetapan ini, <ph name="BEGIN_LINK" />tetapkan semula penyegerakan<
 <translation id="5355191726083956201">Perlindungan Dipertingkat dihidupkan</translation>
 <translation id="5368227114232678694">Untuk menyemak imbas secara peribadi pada peranti ini, cubalah Inkognito</translation>
 <translation id="5368958499335451666">{OPEN_TABS,plural, =1{<ph name="OPEN_TABS_ONE" /> tab terbuka, ketik untuk beralih antara tab}other{<ph name="OPEN_TABS_MANY" /> tab terbuka, ketik untuk beralih antara tab}}</translation>
-<translation id="5375577065097716013">Cari imej dengan Google Lens <ph name="BEGIN_NEW" />Baharu<ph name="END_NEW" /></translation>
+<translation id="5375577065097716013">Cari imej dengan Lens <ph name="BEGIN_NEW" />Baharu<ph name="END_NEW" /></translation>
 <translation id="5403644198645076998">Benarkan tapak tertentu sahaja</translation>
 <translation id="5409881200985013443">Serahkan <ph name="ONE_TIME_CODE" /> pada <ph name="CLIENT_NAME" />?</translation>
 <translation id="5414836363063783498">Mengesahkan…</translation>
