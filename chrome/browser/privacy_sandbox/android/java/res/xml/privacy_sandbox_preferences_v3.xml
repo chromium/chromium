@@ -6,7 +6,6 @@
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
-    <!-- TODO(crbug.com/1286276): Replace icon placeholders. -->
     <org.chromium.components.browser_ui.settings.ChromeSwitchPreference
         android:key="privacy_sandbox_toggle"
         android:title="@string/privacy_sandbox_trials_title"

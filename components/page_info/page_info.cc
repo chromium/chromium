@@ -440,8 +440,6 @@ void PageInfo::RecordPageInfoAction(PageInfoAction action) {
           "Security.SafetyTips.PageInfo.Action", safety_tip_info_.status),
       action, PAGE_INFO_COUNT);
 
-  // TODO(crbug.com/1286276): Add more user actions.
-  // Log user actions for metrics related to "Ad personalization".
   auto* settings = GetPageSpecificContentSettings();
   if (!settings)
     return;

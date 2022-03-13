@@ -569,7 +569,6 @@ PageInfoMainView::CreateAdPersonalizationSection() {
   ads_personalization_section
       ->SetLayoutManager(std::make_unique<views::FlexLayout>())
       ->SetOrientation(views::LayoutOrientation::kVertical);
-  // TODO(crbug.com/1286276): Use correct strings (tooltip).
   ads_personalization_section->AddChildView(
       std::make_unique<PageInfoHoverButton>(
           base::BindRepeating(
@@ -580,8 +579,8 @@ PageInfoMainView::CreateAdPersonalizationSection() {
           PageInfoViewFactory::GetAdPersonalizationIcon(),
           IDS_PAGE_INFO_AD_PERSONALIZATION_HEADER, std::u16string(),
           PageInfoViewFactory::VIEW_ID_PAGE_INFO_AD_PERSONALIZATION_BUTTON,
-          /*tooltip_text=*/std::u16string(), std::u16string(),
-          PageInfoViewFactory::GetOpenSubpageIcon()));
+          l10n_util::GetStringUTF16(IDS_PAGE_INFO_AD_PERSONALIZATION_TOOLTIP),
+          std::u16string(), PageInfoViewFactory::GetOpenSubpageIcon()));
 
   return ads_personalization_section;
 }

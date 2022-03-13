@@ -109,8 +109,6 @@ JNI_PrivacySandboxBridge_GetFlocResetExplanationString(JNIEnv* env) {
       env, GetPrivacySandboxService()->GetFlocResetExplanationForDisplay());
 }
 
-// TODO(crbug.com/1286276): Remove this fake implementation and call
-// PrivacySandboxService.
 static ScopedJavaLocalRef<jobjectArray>
 JNI_PrivacySandboxBridge_GetCurrentTopTopics(JNIEnv* env) {
   return ToJavaTopicsArray(env,
