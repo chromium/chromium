@@ -73,8 +73,8 @@ int Statement::StepInternal() {
   absl::optional<base::ScopedBlockingCall> scoped_blocking_call;
   ref_->InitScopedBlockingCall(FROM_HERE, &scoped_blocking_call);
 
-  int ret = sqlite3_step(ref_->stmt());
-  return CheckError(ret);
+  int sqlite_result_code = sqlite3_step(ref_->stmt());
+  return CheckSqliteResultCode(sqlite_result_code);
 }
 
 bool Statement::Run() {
@@ -146,8 +146,8 @@ void Statement::BindNull(int param_index) {
   DCHECK_GE(param_index, 0);
   DCHECK_LT(param_index, sqlite3_bind_parameter_count(ref_->stmt()))
       << "Invalid parameter index";
-  int sqlite_error_code = sqlite3_bind_null(ref_->stmt(), param_index + 1);
-  DCHECK_EQ(sqlite_error_code, SQLITE_OK);
+  int sqlite_result_code = sqlite3_bind_null(ref_->stmt(), param_index + 1);
+  DCHECK_EQ(sqlite_result_code, SQLITE_OK);
 }
 
 void Statement::BindBool(int param_index, bool val) {
@@ -170,8 +170,8 @@ void Statement::BindInt(int param_index, int val) {
   DCHECK_GE(param_index, 0);
   DCHECK_LT(param_index, sqlite3_bind_parameter_count(ref_->stmt()))
       << "Invalid parameter index";
-  int sqlite_error_code = sqlite3_bind_int(ref_->stmt(), param_index + 1, val);
-  DCHECK_EQ(sqlite_error_code, SQLITE_OK);
+  int sqlite_result_code = sqlite3_bind_int(ref_->stmt(), param_index + 1, val);
+  DCHECK_EQ(sqlite_result_code, SQLITE_OK);
 }
 
 void Statement::BindInt64(int param_index, int64_t val) {
@@ -188,9 +188,9 @@ void Statement::BindInt64(int param_index, int64_t val) {
   DCHECK_GE(param_index, 0);
   DCHECK_LT(param_index, sqlite3_bind_parameter_count(ref_->stmt()))
       << "Invalid parameter index";
-  int sqlite_error_code =
+  int sqlite_result_code =
       sqlite3_bind_int64(ref_->stmt(), param_index + 1, val);
-  DCHECK_EQ(sqlite_error_code, SQLITE_OK);
+  DCHECK_EQ(sqlite_result_code, SQLITE_OK);
 }
 
 void Statement::BindDouble(int param_index, double val) {
@@ -207,9 +207,9 @@ void Statement::BindDouble(int param_index, double val) {
   DCHECK_GE(param_index, 0);
   DCHECK_LT(param_index, sqlite3_bind_parameter_count(ref_->stmt()))
       << "Invalid parameter index";
-  int sqlite_error_code =
+  int sqlite_result_code =
       sqlite3_bind_double(ref_->stmt(), param_index + 1, val);
-  DCHECK_EQ(sqlite_error_code, SQLITE_OK);
+  DCHECK_EQ(sqlite_result_code, SQLITE_OK);
 }
 
 void Statement::BindTime(int param_index, base::Time val) {
@@ -227,9 +227,9 @@ void Statement::BindTime(int param_index, base::Time val) {
   DCHECK_LT(param_index, sqlite3_bind_parameter_count(ref_->stmt()))
       << "Invalid parameter index";
   int64_t int_value = val.ToDeltaSinceWindowsEpoch().InMicroseconds();
-  int sqlite_error_code =
+  int sqlite_result_code =
       sqlite3_bind_int64(ref_->stmt(), param_index + 1, int_value);
-  DCHECK_EQ(sqlite_error_code, SQLITE_OK);
+  DCHECK_EQ(sqlite_result_code, SQLITE_OK);
 }
 
 void Statement::BindCString(int param_index, const char* val) {
@@ -255,9 +255,9 @@ void Statement::BindCString(int param_index, const char* val) {
   // default (1 billion bytes) in Chrome's SQLite build, so this is an unlilely
   // issue.
 
-  int sqlite_error_code = sqlite3_bind_text(ref_->stmt(), param_index + 1, val,
-                                            -1, SQLITE_TRANSIENT);
-  DCHECK_EQ(sqlite_error_code, SQLITE_OK);
+  int sqlite_result_code = sqlite3_bind_text(ref_->stmt(), param_index + 1, val,
+                                             -1, SQLITE_TRANSIENT);
+  DCHECK_EQ(sqlite_result_code, SQLITE_OK);
 }
 
 void Statement::BindString(int param_index, base::StringPiece value) {
@@ -291,9 +291,9 @@ void Statement::BindString(int param_index, base::StringPiece value) {
   // default (1 billion bytes) in Chrome's SQLite build, so this is an unlilely
   // issue.
 
-  int sqlite_error_code = sqlite3_bind_text(ref_->stmt(), param_index + 1, data,
-                                            value.size(), SQLITE_TRANSIENT);
-  DCHECK_EQ(sqlite_error_code, SQLITE_OK);
+  int sqlite_result_code = sqlite3_bind_text(
+      ref_->stmt(), param_index + 1, data, value.size(), SQLITE_TRANSIENT);
+  DCHECK_EQ(sqlite_result_code, SQLITE_OK);
 }
 
 void Statement::BindString16(int param_index, base::StringPiece16 value) {
@@ -337,9 +337,9 @@ void Statement::BindBlob(int param_index, base::span<const uint8_t> value) {
   // default (1 billion bytes) in Chrome's SQLite build, so this is an unlilely
   // issue.
 
-  int sqlite_error_code = sqlite3_bind_blob(ref_->stmt(), param_index + 1, data,
-                                            value.size(), SQLITE_TRANSIENT);
-  DCHECK_EQ(sqlite_error_code, SQLITE_OK);
+  int sqlite_result_code = sqlite3_bind_blob(
+      ref_->stmt(), param_index + 1, data, value.size(), SQLITE_TRANSIENT);
+  DCHECK_EQ(sqlite_result_code, SQLITE_OK);
 }
 
 int Statement::ColumnCount() const {
@@ -578,14 +578,19 @@ const char* Statement::GetSQLStatement() {
   return sqlite3_sql(ref_->stmt());
 }
 
-int Statement::CheckError(int err) {
+int Statement::CheckSqliteResultCode(int sqlite_result_code) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  // Please don't add DCHECKs here, OnSqliteError() already has them.
-  succeeded_ = (err == SQLITE_OK || err == SQLITE_ROW || err == SQLITE_DONE);
+  // https://www.sqlite.org/rescode.html lists the result codes that are not'
+  // errors.
+  succeeded_ =
+      (sqlite_result_code == SQLITE_OK || sqlite_result_code == SQLITE_ROW ||
+       sqlite_result_code == SQLITE_DONE);
+
+  // Database::OnSqliteError() DCHECKs for
   if (!succeeded_ && ref_.get() && ref_->database())
-    ref_->database()->OnSqliteError(err, this, nullptr);
-  return err;
+    ref_->database()->OnSqliteError(sqlite_result_code, this, nullptr);
+  return sqlite_result_code;
 }
 
 }  // namespace sql
