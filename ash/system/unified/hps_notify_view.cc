@@ -8,12 +8,14 @@
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
+#include "ash/strings/grit/ash_strings.h"
 #include "ash/style/ash_color_provider.h"
 #include "ash/system/tray/tray_constants.h"
 #include "ash/system/tray/tray_utils.h"
 #include "base/logging.h"
 #include "components/session_manager/session_manager_types.h"
 #include "third_party/skia/include/core/SkColor.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "ui/gfx/image/image_skia.h"
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/gfx/vector_icon_types.h"
@@ -33,6 +35,8 @@ HpsNotifyView::HpsNotifyView(Shelf* shelf) : TrayItemView(shelf) {
 
   SetVisible(controller->SnooperPresent());
   UpdateIconColor(session_controller->GetSessionState());
+  image_view()->SetTooltipText(l10n_util::GetStringUTF16(
+      IDS_ASH_SMART_PRIVACY_SNOOPING_NOTIFICATION_SYSTEM_TRAY_TOOLTIP_TEXT));
 }
 
 HpsNotifyView::~HpsNotifyView() = default;

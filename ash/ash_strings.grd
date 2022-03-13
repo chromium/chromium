@@ -4892,6 +4892,10 @@ New install
         Privacy settings
       </message>
 
+      <message name="IDS_ASH_SMART_PRIVACY_SNOOPING_NOTIFICATION_SYSTEM_TRAY_TOOLTIP_TEXT" desc="Tooltip text explaining the smart privacy icon at the system tray.">
+        Someone is looking at your screen
+      </message>
+
       <!-- USB-C cable notifications - version 2 -->
       <message name="IDS_ASH_USB_NOTIFICATION_V2_LEARN_MORE" desc="Notification button text. If the user clicks on it, it will send them to a relevant webpage.">
         Learn More
