@@ -8,6 +8,7 @@
 
 #include "ash/accessibility/accessibility_controller_impl.h"
 #include "ash/constants/ash_pref_names.h"
+#include "ash/public/cpp/system_tray_test_api.h"
 #include "ash/shell.h"
 #include "base/bind.h"
 #include "base/hash/hash.h"
@@ -1085,6 +1086,14 @@ IN_PROC_BROWSER_TEST_P(DictationExtensionTest, Metrics) {
               histogram_tester_.GetAllSamples(kOnDeviceListeningDurationMetric)
                   .size());
   }
+}
+
+IN_PROC_BROWSER_TEST_P(DictationExtensionTest,
+                       DictationStopsWhenSystemTrayBecomesVisible) {
+  ToggleDictationWithKeystroke();
+  WaitForRecognitionStarted();
+  SystemTrayTestApi::Create()->ShowBubble();
+  WaitForRecognitionStopped();
 }
 
 class DictationCommandsExtensionTest : public DictationExtensionTest {

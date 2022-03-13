@@ -254,8 +254,10 @@ TrayBubbleView::TrayBubbleView(const InitParams& init_params)
   DCHECK((init_params.anchor_mode != TrayBubbleView::AnchorMode::kView) ||
          anchor_widget());
   set_parent_window(params_.parent_window);
-  SetCanActivate(
-      Shell::Get()->accessibility_controller()->spoken_feedback().enabled());
+  AccessibilityControllerImpl* controller =
+      Shell::Get()->accessibility_controller();
+  SetCanActivate(controller->spoken_feedback().enabled() ||
+                 controller->dictation().enabled());
   SetNotifyEnterExitOnChild(true);
   set_close_on_deactivate(init_params.close_on_deactivate);
   set_margins(init_params.margin.has_value() ? init_params.margin.value()
