@@ -35,22 +35,19 @@ using content::BrowserThread;
 
 namespace custom_handlers {
 
-std::unique_ptr<base::DictionaryValue> GetProtocolHandlerValue(
-    const std::string& protocol,
-    const std::string& url) {
-  auto value = std::make_unique<base::DictionaryValue>();
-  value->SetString("protocol", protocol);
-  value->SetString("url", url);
-  return value;
+base::Value GetProtocolHandlerValue(const std::string& protocol,
+                                    const std::string& url) {
+  base::Value::Dict value;
+  value.Set("protocol", protocol);
+  value.Set("url", url);
+  return base::Value(std::move(value));
 }
 
-std::unique_ptr<base::DictionaryValue> GetProtocolHandlerValueWithDefault(
-    const std::string& protocol,
-    const std::string& url,
-    bool is_default) {
-  std::unique_ptr<base::DictionaryValue> value =
-      GetProtocolHandlerValue(protocol, url);
-  value->SetBoolean("default", is_default);
+base::Value GetProtocolHandlerValueWithDefault(const std::string& protocol,
+                                               const std::string& url,
+                                               bool is_default) {
+  base::Value value = GetProtocolHandlerValue(protocol, url);
+  value.GetDict().Set("default", is_default);
   return value;
 }
 

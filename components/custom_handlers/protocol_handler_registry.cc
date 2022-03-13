@@ -551,7 +551,7 @@ void ProtocolHandlerRegistry::InsertHandler(const ProtocolHandler& handler) {
 
 base::Value::List ProtocolHandlerRegistry::EncodeRegisteredHandlers() {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  auto encoded_handlers = base::Value::List();
+  base::Value::List encoded_handlers;
   for (const auto& [protocol, handlers_list] : user_protocol_handlers_) {
     for (const auto& handler : handlers_list) {
       base::Value::Dict encoded = handler.Encode();
@@ -566,7 +566,7 @@ base::Value::List ProtocolHandlerRegistry::EncodeRegisteredHandlers() {
 
 base::Value::List ProtocolHandlerRegistry::EncodeIgnoredHandlers() {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  base::Value::List encoded_handlers = base::Value::List();
+  base::Value::List encoded_handlers;
   for (const auto& handler : user_ignored_protocol_handlers_) {
     encoded_handlers.Append(handler.Encode());
   }
