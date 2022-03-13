@@ -44,7 +44,7 @@ class D3D11VP9Accelerator : public VP9Decoder::VP9Accelerator {
 
   bool OutputPicture(scoped_refptr<VP9Picture> picture) override;
 
-  bool IsFrameContextRequired() const override;
+  bool NeedsCompressedHeaderParsed() const override;
 
   bool GetFrameContext(scoped_refptr<VP9Picture> picture,
                        Vp9FrameContext* frame_context) override;

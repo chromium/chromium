@@ -55,7 +55,8 @@ DecodeStatus VP9VaapiVideoDecoderDelegate::SubmitDecode(
     base::OnceClosure done_cb) {
   TRACE_EVENT0("media,gpu", "VP9VaapiVideoDecoderDelegate::SubmitDecode");
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  // |done_cb| should be null as we return false from IsFrameContextRequired().
+  // |done_cb| should be null as we return false from
+  // NeedsCompressedHeaderParsed().
   DCHECK(!done_cb);
 
   const Vp9FrameHeader* frame_hdr = pic->frame_hdr.get();
@@ -286,7 +287,7 @@ bool VP9VaapiVideoDecoderDelegate::OutputPicture(
   return true;
 }
 
-bool VP9VaapiVideoDecoderDelegate::IsFrameContextRequired() const {
+bool VP9VaapiVideoDecoderDelegate::NeedsCompressedHeaderParsed() const {
   return false;
 }
 

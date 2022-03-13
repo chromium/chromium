@@ -40,14 +40,17 @@ class V4L2VideoDecoderDelegateVP9Chromium : public VP9Decoder::VP9Accelerator {
   bool GetFrameContext(scoped_refptr<VP9Picture> pic,
                        Vp9FrameContext* frame_ctx) override;
 
-  bool IsFrameContextRequired() const override;
+  bool NeedsCompressedHeaderParsed() const override;
   bool SupportsContextProbabilityReadback() const override { return true; }
 
  private:
   V4L2DecodeSurfaceHandler* const surface_handler_;
   V4L2Device* const device_;
 
-  bool device_needs_frame_context_ = false;
+  // True if |device_| exposes the V4L2_CID_STATELESS_VP9_FRAME control
+  // (indicating that the driver needs the entropy tables from the compressed
+  // header).
+  const bool device_needs_compressed_header_parsed_;
 };
 
 }  // namespace media

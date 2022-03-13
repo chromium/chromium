@@ -522,7 +522,7 @@ void VaapiVideoDecodeAccelerator::DecodeTask() {
 
       case AcceleratedVideoDecoder::kNeedContextUpdate:
         // This should not happen as we return false from
-        // IsFrameContextRequired().
+        // NeedsCompressedHeaderParsed().
         NOTREACHED() << "Context updates not supported";
         return;
 

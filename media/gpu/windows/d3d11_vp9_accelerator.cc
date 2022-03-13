@@ -403,7 +403,7 @@ bool D3D11VP9Accelerator::OutputPicture(scoped_refptr<VP9Picture> picture) {
   return client_->OutputResult(picture.get(), pic->picture_buffer());
 }
 
-bool D3D11VP9Accelerator::IsFrameContextRequired() const {
+bool D3D11VP9Accelerator::NeedsCompressedHeaderParsed() const {
   return false;
 }
 
