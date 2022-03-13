@@ -18,10 +18,8 @@ FencedFrameShadowDOMDelegate::FencedFrameShadowDOMDelegate(
     : HTMLFencedFrameElement::FencedFrameDelegate(outer_element) {
   DCHECK_EQ(features::kFencedFramesImplementationTypeParam.Get(),
             features::FencedFramesImplementationType::kShadowDOM);
-  GetElement().CreateUserAgentShadowRoot();
-}
+  GetElement().EnsureUserAgentShadowRoot();
 
-void FencedFrameShadowDOMDelegate::DidGetInserted() {
   // Only create and append a new internal <iframe> element if it doesn't
   // already exist.
   ShadowRoot* root = GetElement().UserAgentShadowRoot();

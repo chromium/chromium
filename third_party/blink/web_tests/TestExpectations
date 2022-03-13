@@ -7619,12 +7619,6 @@ crbug.com/1299946 [ Mac ] external/wpt/css/css-sizing/min-content-negative-margi
 crbug.com/1299948 [ Mac ] external/wpt/css/css-tables/crashtests/textarea-intrinsic-size-crash.html [ Pass Timeout ]
 crbug.com/1299972 [ Linux ] screen_orientation/screenorientation-unsupported-no-crash.html [ Failure Pass Timeout ]
 
-# Temporarily disable fenced frame tests until they are fixed
-crbug.com/1123606 virtual/fenced-frame-shadow-dom/wpt_internal/fenced_frame/maxframes.https.html [ Crash ]
-crbug.com/1123606 virtual/fenced-frame-mparch/wpt_internal/fenced_frame/maxframes.https.html [ Crash ]
-crbug.com/1123606 virtual/fenced-frame-shadow-dom/wpt_internal/fenced_frame/create-in-sandbox-and-adopt-outside-sandbox.https.html [ Timeout ]
-crbug.com/1123606 virtual/fenced-frame-mparch/wpt_internal/fenced_frame/create-in-sandbox-and-adopt-outside-sandbox.https.html [ Timeout ]
-
 # Disable flaky test for further investigation
 crbug.com/1229801 http/tests/devtools/elements/css-rule-hover-highlights-selectors.js [ Failure Pass ]
 

@@ -39,20 +39,32 @@ const base::Value* GetFencedFrameUserAgentShadowRoot(const base::Value& node) {
   return nullptr;
 }
 
+// An "incomplete" fenced frame based on ShadowDOM is one that either:
+//   a.) Doesn't have a content frame and doesn't have a ShadowRoot, or...
+//   b.) Does have a ShadowRoot that itself does not have any children attached
 bool IsFencedFrameNodeWithIncompleteShadowDom(const base::Value& node) {
   if (!IsFencedFrameNode(node))
     return false;
 
   const base::Value* ua_shadow_root = GetFencedFrameUserAgentShadowRoot(node);
-  // Fenced frame doesn't have a shadow root, which means it uses MPArch.
-  if (!ua_shadow_root)
+  // Fenced frame has a content frame, which means it uses MPArch.
+  if (node.FindStringKey("frameId"))
     return false;
 
+  // A fenced frame that has been inserted but does not yet have a user agent
+  // ShadowRoot may be an incomplete fenced frame based on ShadowDOM, but we
+  // don't yet have enough information to know. We'll assume it is an incomplete
+  // ShadowDOM fenced frame out of caution.
+  if (!ua_shadow_root)
+    return true;
+
+  // At this point we know that this is a fenced frame based on ShadowDOM, so
+  // now we'll see if it is "incomplete".
   size_t childNodeCount =
       ua_shadow_root->FindIntKey("childNodeCount").value_or(0);
   const base::Value* shadow_root_children =
       ua_shadow_root->FindListKey("children");
-  return childNodeCount == 0 || !shadow_root_children ||
+  return !shadow_root_children ||
          shadow_root_children->GetList().size() != childNodeCount;
 }
 }  // namespace

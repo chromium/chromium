@@ -24,9 +24,8 @@ class CORE_EXPORT FencedFrameMPArchDelegate
  public:
   explicit FencedFrameMPArchDelegate(HTMLFencedFrameElement* outer_element);
 
-  void DidGetInserted() override;
   void Navigate(const KURL&) override;
-  void DidGetRemoved() override;
+  void Dispose() override;
 
  private:
   mojo::AssociatedRemote<mojom::blink::FencedFrameOwnerHost> remote_;

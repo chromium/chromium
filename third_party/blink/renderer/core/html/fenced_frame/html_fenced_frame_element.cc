@@ -14,7 +14,6 @@
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/geometry/dom_rect_read_only.h"
-#include "third_party/blink/renderer/core/html/fenced_frame/document_fenced_frames.h"
 #include "third_party/blink/renderer/core/html/fenced_frame/fenced_frame_mparch_delegate.h"
 #include "third_party/blink/renderer/core/html/fenced_frame/fenced_frame_shadow_dom_delegate.h"
 #include "third_party/blink/renderer/core/html/html_iframe_element.h"
@@ -42,8 +41,7 @@ PhysicalRect ToPhysicalRect(const DOMRectReadOnly& rect) {
 }  // namespace
 
 HTMLFencedFrameElement::HTMLFencedFrameElement(Document& document)
-    : HTMLFrameOwnerElement(html_names::kFencedframeTag, document),
-      frame_delegate_(FencedFrameDelegate::Create(this)) {
+    : HTMLFrameOwnerElement(html_names::kFencedframeTag, document) {
   DCHECK(RuntimeEnabledFeatures::FencedFramesEnabled(GetExecutionContext()));
   UseCounter::Count(document, WebFeature::kHTMLFencedFrameElement);
   if (!features::IsFencedFramesMPArchBased())
@@ -59,8 +57,13 @@ void HTMLFencedFrameElement::Trace(Visitor* visitor) const {
 }
 
 void HTMLFencedFrameElement::DisconnectContentFrame() {
+  // The `frame_delegate_` will not exist if the element was not allowed to
+  // create its underlying frame at insertion-time.
+  if (frame_delegate_)
+    frame_delegate_->Dispose();
+  frame_delegate_ = nullptr;
+
   HTMLFrameOwnerElement::DisconnectContentFrame();
-  DocumentFencedFrames::From(GetDocument()).DeregisterFencedFrame(this);
 }
 
 void HTMLFencedFrameElement::SetCollapsed(bool collapse) {
@@ -130,6 +133,10 @@ Node::InsertionNotificationRequest HTMLFencedFrameElement::InsertedInto(
 }
 
 void HTMLFencedFrameElement::DidNotifySubtreeInsertionsToDocument() {
+  // This method is the only place that sets `frame_delegate_`, and it cannot be
+  // called twice before removal.
+  DCHECK(!frame_delegate_);
+
   if (!SubframeLoadingDisabler::CanLoadFrame(*this))
     return;
 
@@ -139,19 +146,15 @@ void HTMLFencedFrameElement::DidNotifySubtreeInsertionsToDocument() {
   if (!IsCurrentlyWithinFrameLimit())
     return;
 
-  if (!frame_delegate_)
-    return;
-
-  frame_delegate_->DidGetInserted();
-  DocumentFencedFrames::From(GetDocument()).RegisterFencedFrame(this);
+  frame_delegate_ = FencedFrameDelegate::Create(this);
   Navigate();
 }
 
 void HTMLFencedFrameElement::RemovedFrom(ContainerNode& node) {
-  // We should verify that the underlying frame has already been disconnected.
+  // Verify that the underlying frame has already been disconnected via
+  // `DisconnectContentFrame()`. This is only relevant for the MPArch
+  // implementation.
   DCHECK_EQ(ContentFrame(), nullptr);
-  if (frame_delegate_)
-    frame_delegate_->DidGetRemoved();
   HTMLFrameOwnerElement::RemovedFrom(node);
 }
 

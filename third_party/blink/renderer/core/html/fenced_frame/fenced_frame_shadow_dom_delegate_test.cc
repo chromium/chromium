@@ -80,8 +80,8 @@ TEST_F(FencedFrameShadowDOMDelegateTest, CreateRaw) {
       MakeGarbageCollected<HTMLFencedFrameElement>(GetDocument());
 
   EXPECT_FALSE(fenced_frame->isConnected());
-  EXPECT_NE(nullptr, fenced_frame->UserAgentShadowRoot());
-  EXPECT_EQ("", fenced_frame->UserAgentShadowRoot()->innerHTML());
+  // The ShadowRoot isn't created until the element is connected.
+  EXPECT_EQ(nullptr, fenced_frame->UserAgentShadowRoot());
 
   GetDocument().body()->AppendChild(fenced_frame);
   EXPECT_TRUE(fenced_frame->isConnected());
@@ -106,7 +106,7 @@ TEST_F(FencedFrameShadowDOMDelegateTest, CreateViasetInnerHTML) {
 TEST_F(FencedFrameShadowDOMDelegateTest, AppendRemoveAppend) {
   HTMLFencedFrameElement* fenced_frame =
       MakeGarbageCollected<HTMLFencedFrameElement>(GetDocument());
-  EXPECT_EQ(0u, fenced_frame->UserAgentShadowRoot()->CountChildren());
+  EXPECT_EQ(nullptr, fenced_frame->UserAgentShadowRoot());
 
   // Upon insertion of an HTMLFencedFrameElement, its
   // FencedFrameShadowDOMDelegate creates an internal <iframe>.
@@ -197,13 +197,13 @@ TEST_F(FencedFrameShadowDOMDelegateTest, PresentationAttributes) {
 TEST_F(FencedFrameShadowDOMDelegateTest, NavigationWithInsertionAndRemoval) {
   HTMLFencedFrameElement* fenced_frame =
       MakeGarbageCollected<HTMLFencedFrameElement>(GetDocument());
-  EXPECT_EQ(0u, fenced_frame->UserAgentShadowRoot()->CountChildren());
+  EXPECT_EQ(nullptr, fenced_frame->UserAgentShadowRoot());
   EXPECT_FALSE(fenced_frame->ShouldFreezeFrameSizeOnNextLayoutForTesting());
   EXPECT_FALSE(fenced_frame->FrozenFrameSize());
 
   // Navigation before insertion has no effect.
   fenced_frame->setAttribute(html_names::kSrcAttr, "https://example.com");
-  EXPECT_EQ(0u, fenced_frame->UserAgentShadowRoot()->CountChildren());
+  EXPECT_EQ(nullptr, fenced_frame->UserAgentShadowRoot());
   EXPECT_FALSE(fenced_frame->ShouldFreezeFrameSizeOnNextLayoutForTesting());
   EXPECT_FALSE(fenced_frame->FrozenFrameSize());
 

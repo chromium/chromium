@@ -10,6 +10,7 @@
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/local_frame_client.h"
 #include "third_party/blink/renderer/core/frame/remote_frame.h"
+#include "third_party/blink/renderer/core/html/fenced_frame/document_fenced_frames.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
 
 namespace blink {
@@ -19,9 +20,9 @@ FencedFrameMPArchDelegate::FencedFrameMPArchDelegate(
     : HTMLFencedFrameElement::FencedFrameDelegate(outer_element) {
   DCHECK_EQ(features::kFencedFramesImplementationTypeParam.Get(),
             features::FencedFramesImplementationType::kMPArch);
-}
 
-void FencedFrameMPArchDelegate::DidGetInserted() {
+  DocumentFencedFrames::From(GetElement().GetDocument())
+      .RegisterFencedFrame(&GetElement());
   mojo::PendingAssociatedRemote<mojom::blink::FencedFrameOwnerHost> remote;
   mojo::PendingAssociatedReceiver<mojom::blink::FencedFrameOwnerHost> receiver =
       remote.InitWithNewEndpointAndPassReceiver();
@@ -39,8 +40,11 @@ void FencedFrameMPArchDelegate::Navigate(const KURL& url) {
   remote_->Navigate(url, navigation_start_time);
 }
 
-void FencedFrameMPArchDelegate::DidGetRemoved() {
+void FencedFrameMPArchDelegate::Dispose() {
+  DCHECK(remote_);
   remote_.reset();
+  DocumentFencedFrames::From(GetElement().GetDocument())
+      .DeregisterFencedFrame(&GetElement());
 }
 
 }  // namespace blink

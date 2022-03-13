@@ -45,9 +45,11 @@ class CORE_EXPORT HTMLFencedFrameElement : public HTMLFrameOwnerElement {
     virtual ~FencedFrameDelegate();
     void Trace(Visitor* visitor) const;
 
-    virtual void DidGetInserted() = 0;
     virtual void Navigate(const KURL&) = 0;
-    virtual void DidGetRemoved() {}
+    // This method is used to clean up all state in preparation for destruction,
+    // even though the destruction may happen arbitrarily later during garbage
+    // collection.
+    virtual void Dispose() {}
 
    protected:
     HTMLFencedFrameElement& GetElement() const { return *outer_element_; }
