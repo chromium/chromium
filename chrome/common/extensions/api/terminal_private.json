@@ -231,6 +231,65 @@
           ]
         }
       },
+      // TODO(b/223076712): getPrefs(), setPrefs(), onPrefChanged() will replace
+      // {get,set}{Settings,A11yStatus}() and on{Settings,A11yStatus}Changed().
+      // Introduced in M101/nassh0.45.  Old functions can be removed once JS
+      // client code is updated to use new code.
+      {
+        "name": "getPrefs",
+        "type": "function",
+        "description": "Returns specified pref values, ignoring any not in allowlist.",
+        "parameters": [
+          {
+            "name": "paths",
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "Paths of prefs to fetch."
+          }
+        ],
+        "returns_async": {
+          "name": "callback",
+          "description": "Callback that will be called with prefs.",
+          "parameters": [
+            {
+              "name": "prefs",
+              "type": "object",
+              "additionalProperties":
+                {
+                  "type": "any" ,
+                  "preserveNull": true
+                },
+              "description": "prefs keyed by paths.",
+              "preserveNull": true
+            }
+          ]
+        }
+      },
+      {
+        "name": "setPrefs",
+        "type": "function",
+        "description": "Sets specified prefs, ignoring any not in allowlist.",
+        "parameters": [
+          {
+            "name": "prefs",
+            "type": "object",
+            "description": "Prefs to update keyed by paths.",
+            "additionalProperties":
+              {
+                "type": "any" ,
+                "preserveNull": true
+              },
+            "preserveNull": true
+          }
+        ],
+        "returns_async": {
+          "name": "callback",
+          "description": "Callback that will be called when complete.",
+          "parameters": []
+        }
+      },
       {
         "name": "getSettings",
         "type": "function",
@@ -315,6 +374,24 @@
             "name": "data",
             "type": "binary",
             "description": "Data that was written to the output stream."
+          }
+        ]
+      },
+      {
+        "name": "onPrefChanged",
+        "type": "function",
+        "description": "Fired when pref changes.",
+        "parameters": [
+          {
+            "name": "prefs",
+            "type": "object",
+            "description": "Prefs keyed by paths.",
+            "additionalProperties":
+              {
+                "type": "any" ,
+                "preserveNull": true
+              },
+            "preserveNull": true
           }
         ]
       },

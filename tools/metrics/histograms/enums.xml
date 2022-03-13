@@ -30152,6 +30152,7 @@ Called by update_extension_histograms.py.-->
   <int value="487" label="WEB_AUTHENTICATION_PROXY_REQUEST_CANCELLED"/>
   <int value="488" label="WEB_AUTHENTICATION_PROXY_ON_GET_REQUEST"/>
   <int value="489" label="DEVELOPER_PRIVATE_ON_USER_SITE_SETTINGS_CHANGED"/>
+  <int value="490" label="TERMINAL_PRIVATE_ON_PREF_CHANGED"/>
 </enum>
 
 <enum name="ExtensionFileWriteResult">
@@ -31866,6 +31867,8 @@ Called by update_extension_histograms.py.-->
   <int value="1634" label="AUTOTESTPRIVATE_ISLACROSPRIMARYBROWSER"/>
   <int value="1635" label="INPUTMETHODPRIVATE_SWITCHTOLASTUSEDINPUTMETHOD"/>
   <int value="1636" label="AUTOTESTPRIVATE_LOADSMARTDIMCOMPONENT"/>
+  <int value="1637" label="TERMINALPRIVATE_GETPREFS"/>
+  <int value="1638" label="TERMINALPRIVATE_SETPREFS"/>
 </enum>
 
 <enum name="ExtensionIconState">

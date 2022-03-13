@@ -210,6 +210,28 @@ class TerminalPrivateGetOSInfoFunction : public ExtensionFunction {
   ExtensionFunction::ResponseAction Run() override;
 };
 
+class TerminalPrivateGetPrefsFunction : public ExtensionFunction {
+ public:
+  DECLARE_EXTENSION_FUNCTION("terminalPrivate.getPrefs",
+                             TERMINALPRIVATE_GETPREFS)
+
+ protected:
+  ~TerminalPrivateGetPrefsFunction() override;
+
+  ExtensionFunction::ResponseAction Run() override;
+};
+
+class TerminalPrivateSetPrefsFunction : public ExtensionFunction {
+ public:
+  DECLARE_EXTENSION_FUNCTION("terminalPrivate.setPrefs",
+                             TERMINALPRIVATE_SETPREFS)
+
+ protected:
+  ~TerminalPrivateSetPrefsFunction() override;
+
+  ExtensionFunction::ResponseAction Run() override;
+};
+
 class TerminalPrivateGetSettingsFunction : public ExtensionFunction {
  public:
   DECLARE_EXTENSION_FUNCTION("terminalPrivate.getSettings",

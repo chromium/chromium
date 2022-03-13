@@ -108,6 +108,22 @@ chrome.terminalPrivate.openOptionsPage = function(callback) {};
 chrome.terminalPrivate.getOSInfo = function(callback) {};
 
 /**
+ * Returns specified pref values.
+ * @param {!Array<string>} paths Paths of prefs to fetch.
+ * @param {function(Object): void} callback Callback that will be called with
+ *     prefs.
+ */
+chrome.terminalPrivate.getPrefs = function(paths, callback) {};
+
+/**
+ * Sets specified prefs.
+ * @param {Object} prefs Prefs to update keyed by paths.
+ * @param {function(): void} callback Callback that will be called when
+ *     complete.
+ */
+chrome.terminalPrivate.setPrefs = function(prefs, callback) {};
+
+/**
  * Returns an object (DictionaryValue) containing UI settings such as font style
  * and colors used by terminal and stored as a syncable pref.  The UI currently
  * has ~70 properties and we wish to allow flexibility for these to change in
@@ -141,6 +157,12 @@ chrome.terminalPrivate.getA11yStatus = function(callback) {};
  * @type {!ChromeEvent}
  */
 chrome.terminalPrivate.onProcessOutput;
+
+/**
+ * Fired when pref changes.
+ * @type {!ChromeEvent}
+ */
+chrome.terminalPrivate.onPrefChanged;
 
 /**
  * Fired when terminal UI settings change.
