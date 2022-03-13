@@ -824,6 +824,7 @@ Amal bajarilishini kuting va qurilmani “Fayllar” ilovasida chiqarib oling. A
 <translation id="8042602468072383151"><ph name="AUDIO_TYPE" /> audio</translation>
 <translation id="8045462269890919536">Roman tili</translation>
 <translation id="8049184478152619004">Shaxsiy qulfdan yechish kalitini (PUK) kiriting</translation>
+<translation id="807187749540895545"><ph name="FILE_NAME" /> fayli arxivdan chiqarilmoqda...</translation>
 <translation id="8079530767338315840">Takrorlash</translation>
 <translation id="8087576439476816834">Yuklab olish: <ph name="PROFILE_NAME" /></translation>
 <translation id="8106045200081704138">Menga ulashilgan</translation>
@@ -875,6 +876,7 @@ Amal bajarilishini kuting va qurilmani “Fayllar” ilovasida chiqarib oling. A
 <translation id="8484284835977497781">Oxirgi rasmlaringizdan tanlang.</translation>
 <translation id="8487700953926739672">Internetsiz foydalanish mumkin</translation>
 <translation id="8492972329130824181">Uydagi tarmoq ishlamayapti. Ulanish uchun mobil internet-roumingni yoqing.</translation>
+<translation id="8499098729323186194"><ph name="NUMBER_OF_ITEMS" /> ta fayl arxivdan chiqarilmoqda...</translation>
 <translation id="8521441079177373948">UK</translation>
 <translation id="8525306231823319788">To‘liq ekran rejimi</translation>
 <translation id="853494022971700746">Fransuz (Fransiya)</translation>

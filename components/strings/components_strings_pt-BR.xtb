@@ -454,6 +454,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="2310021320168182093">Chou2 (Envelope)</translation>
 <translation id="2316887270356262533">Libera menos de 1 MB. O carregamento de alguns sites pode ficar mais lento no seu próximo acesso.</translation>
 <translation id="2317259163369394535"><ph name="DOMAIN" /> exige um nome de usuário e uma senha.</translation>
+<translation id="2318594867107319532">Último carimbo de data/hora da política:</translation>
 <translation id="2328651992442742497">Com permissão (padrão)</translation>
 <translation id="2329182534073751090">posicionamento de janelas</translation>
 <translation id="2330137317877982892"><ph name="CREDIT_CARD" />, expira em <ph name="EXPIRATION_DATE_ABBR" /></translation>
@@ -1652,6 +1653,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="6157754950574419155">Remover todos do histórico</translation>
 <translation id="6157877588268064908">Para ver métodos e requisitos de envio, selecione um endereço</translation>
 <translation id="6165508094623778733">Saiba mais</translation>
+<translation id="6167577165590485365">Última tentativa de busca:</translation>
 <translation id="6169916984152623906">Agora você pode navegar com privacidade. Outras pessoas que usarem este dispositivo não verão sua atividade, mas os downloads e favoritos serão salvos.</translation>
 <translation id="6177128806592000436">Sua conexão com esse site não é segura</translation>
 <translation id="6180316780098470077">Intervalo entre novas tentativas</translation>

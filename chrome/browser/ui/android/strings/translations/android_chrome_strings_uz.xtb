@@ -685,6 +685,7 @@ Bu sozlamani almashtirish uchun <ph name="BEGIN_LINK" />sinxronizatsiyani tiklan
 <translation id="4988526792673242964">Sahifalar</translation>
 <translation id="5001388021414335527">Bu saytni shu yerda kuzatish</translation>
 <translation id="5004416275253351869">Google hisobidagi harakatlarni kuzatish</translation>
+<translation id="5005141133360250920">Munosabat olindi</translation>
 <translation id="5005498671520578047">Parolni nusxalash</translation>
 <translation id="5011311129201317034"><ph name="SITE" /> qurilmangiz bilan aloqa o‘rnatmoqchi</translation>
 <translation id="5016205925109358554">Serif</translation>
@@ -741,6 +742,7 @@ Bu sozlamani almashtirish uchun <ph name="BEGIN_LINK" />sinxronizatsiyani tiklan
 <translation id="5368227114232678694">Bu qurilmada maxfiy kezish uchun Inkognito rejimidan foydalaning</translation>
 <translation id="5368958499335451666">{OPEN_TABS,plural, =1{<ph name="OPEN_TABS_ONE" /> ta varaq ochiq, varaqlarni almashtirish uchun ustiga bosing}other{<ph name="OPEN_TABS_MANY" /> ta varaq ochiq, varaqlarni almashtirish uchun ustiga bosing}}</translation>
 <translation id="5375577065097716013">Google Lens orqali rasm qidiring <ph name="BEGIN_NEW" />Yangi<ph name="END_NEW" /></translation>
+<translation id="5376898820269806588">Munosabat oʻzgardi</translation>
 <translation id="5403644198645076998">Faqat ayrim saytlarni ochishga ruxsat berish</translation>
 <translation id="5409881200985013443"><ph name="ONE_TIME_CODE" /> <ph name="CLIENT_NAME" /> qurilmasiga yuborilsinmi?</translation>
 <translation id="5414836363063783498">Tekshirilmoqda...</translation>
@@ -1072,6 +1074,7 @@ Masalan, qaysi sahifalarga kirganligingizdan qat’i nazar, ba’zi saytlarda re
 <translation id="718926126787620637">Bukmark jildlari roʻyxati toʻliq hajmda ochildi</translation>
 <translation id="7191430249889272776">Ichki oyna orqa fonda ochildi.</translation>
 <translation id="7196215469483532480">Maxfiylik qoʻllanmasi bildirgisi toʻliq hajmda ochildi</translation>
+<translation id="7208109991155904980">Munosabat koʻchdi</translation>
 <translation id="7227218174981371415">{FILE_COUNT,plural, =1{1 ta fayl yuklab olinishi kutilmoqda...}other{# ta fayl yuklab olinishi kutilmoqda...}}</translation>
 <translation id="7237045078887540010">Siz Chrome brauzeridan foydalanish orqali <ph name="BEGIN_TOS_LINK" />Google Xizmat shartlari<ph name="END_TOS_LINK" /> hamda <ph name="BEGIN_ATOS_LINK" />Google Chrome va Chrome OS Qoʻshimcha xizmat shartlari<ph name="END_ATOS_LINK" /> uchun rozilik berasiz. <ph name="BEGIN_PRIVACY_LINK" />Maxfiylik siyosati<ph name="END_PRIVACY_LINK" /> ham tatbiq etiladi.</translation>
 <translation id="7242755609445462077"><ph name="CURRENT_DATE" /> uslubiy belgilovi</translation>

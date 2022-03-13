@@ -30,6 +30,7 @@
 <translation id="114825011539563458">Todos os controles de privacidade e segurança mais importantes em um só lugar</translation>
 <translation id="1149401351239820326">Mês de expiração</translation>
 <translation id="1154704303112745282">Página indisponível off-line: <ph name="VIOLATED_URL" /></translation>
+<translation id="1166688006062225587">Lista de contas a serem selecionadas.</translation>
 <translation id="1171770572613082465">Toque no botão "Sites famosos" para ver os sites muito acessados</translation>
 <translation id="1173894706177603556">Renomear</translation>
 <translation id="1177863135347784049">Personalizado</translation>
@@ -790,6 +791,7 @@ Para alterar essa configuração, <ph name="BEGIN_LINK" />redefina a sincroniza�
 <translation id="5665379678064389456">Criar evento no <ph name="APP_NAME" /></translation>
 <translation id="5683547024293500885">O Chrome não pode verificar se há atualizações</translation>
 <translation id="5686790454216892815">Nome do arquivo muito longo</translation>
+<translation id="5692329390578659217">Para continuar, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> vai compartilhar seu nome, e-mail, endereço e foto do perfil com esse site. Consulte a <ph name="BEGIN_LINK1" />Política de Privacidade<ph name="END_LINK1" /> e os <ph name="BEGIN_LINK2" />Termos de Serviço<ph name="END_LINK2" /> do site.</translation>
 <translation id="569536719314091526">Traduza esta página para qualquer idioma com o botão "Mais opções"</translation>
 <translation id="5696597120588531049">O Chrome pode ajudar a proteger você de violações de dados, sites perigosos e muito mais</translation>
 <translation id="5697688514913266141">O arquivo será salvo em <ph name="BEGIN_BOLD" /><ph name="DIRECTORY" /><ph name="END_BOLD" />. <ph name="BEGIN_LINK2" />Editar<ph name="END_LINK2" />.</translation>
@@ -898,6 +900,7 @@ Por exemplo, alguns sites podem responder a esse pedido mostrando anúncios que 
 <translation id="6277522088822131679">Ocorreu um problema ao imprimir a página. Tente novamente.</translation>
 <translation id="6277722725779679269">Não foi possível atualizar o recurso Monitorar preço</translation>
 <translation id="6278428485366576908">Tema</translation>
+<translation id="6293443105724342169">Lista de contas a serem selecionadas aberta na metade da altura.</translation>
 <translation id="6294610283659775533">Você pode compartilhar guias entre dispositivos conectados à mesma Conta do Google</translation>
 <translation id="6297765934698848803">A organização que gerencia seu dispositivo desativou a câmera.</translation>
 <translation id="6301525844455696527">Veja sua lista de leitura</translation>
@@ -1117,6 +1120,7 @@ Por exemplo, alguns sites podem responder a esse pedido mostrando anúncios que 
 <translation id="7474822150871987353">Saiba mais sobre assuntos específicos em sites sem sair da página. Selecione uma ou mais palavras na página para fazer uma pesquisa.</translation>
 <translation id="7475192538862203634">Se estiver vendo isso com frequência, tente estas <ph name="BEGIN_LINK" />sugestões<ph name="END_LINK" />.</translation>
 <translation id="7475688122056506577">Cartão SD não encontrado. Alguns arquivos podem estar faltando.</translation>
+<translation id="7477262822945323753">Para continuar, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> vai compartilhar seu nome, e-mail, endereço e foto do perfil com esse site. Consulte a <ph name="BEGIN_LINK1" />Política de Privacidade<ph name="END_LINK1" /> do site.</translation>
 <translation id="7479104141328977413">Gerenciamento de guias</translation>
 <translation id="7481312909269577407">Avançar</translation>
 <translation id="7482656565088326534">Guia "Visualizar"</translation>
@@ -1290,6 +1294,7 @@ Por exemplo, alguns sites podem responder a esse pedido mostrando anúncios que 
 <translation id="8394720698884623075">Confere se os URLs estão em uma lista de sites não seguros armazenada no Chrome</translation>
 <translation id="8410695015584479363">Monitorar preços</translation>
 <translation id="8413126021676339697">Mostrar histórico completo</translation>
+<translation id="8414396119627470038">Fazer login no <ph name="SITE_ETLD_PLUS_ONE" /> com <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="8419244640277402268">Incluir</translation>
 <translation id="8424781820952413435">Página enviada. Para vê-la, abra o Chrome no seu <ph name="DEVICE_TYPE" /></translation>
 <translation id="8427875596167638501">A guia "Visualizar" está parcialmente aberta</translation>
@@ -1305,6 +1310,7 @@ Por exemplo, alguns sites podem responder a esse pedido mostrando anúncios que 
 <translation id="8461694314515752532">Criptografar dados sincronizados com sua própria senha longa de sincronização</translation>
 <translation id="8466613982764129868">Verifique se o <ph name="TARGET_DEVICE_NAME" /> está conectado à Internet</translation>
 <translation id="8473863474539038330">Endereços e mais</translation>
+<translation id="847656914027543776">A lista de contas a serem selecionadas está fechada.</translation>
 <translation id="8481921391193215807">Quando esse recurso estiver ativado, os sites poderão usar as técnicas de preservação de privacidade mostradas aqui para exibir conteúdo e serviços. Isso inclui alternativas ao rastreamento entre sites. Ao longo do tempo, é possível que outros testes sejam adicionados.
 
 <ph name="BEGIN_LIST_ITEM1" />Anunciantes e editores podem usar o FLoC.<ph name="END_LIST_ITEM1" />
@@ -1431,6 +1437,7 @@ Por exemplo, alguns sites podem responder a esse pedido mostrando anúncios que 
 <translation id="9108312223223904744">Smartphone como um suporte de chave de segurança</translation>
 <translation id="9108808586816295166">DNS seguro pode não estar disponível o tempo todo</translation>
 <translation id="9133397713400217035">Navegar off-line</translation>
+<translation id="9133523398139146080">Lista de contas a serem selecionadas aberta no tamanho máximo.</translation>
 <translation id="9137013805542155359">Mostrar original</translation>
 <translation id="9148126808321036104">Faça login novamente</translation>
 <translation id="9155898266292537608">Você também pode pesquisar com um toque rápido em uma palavra</translation>

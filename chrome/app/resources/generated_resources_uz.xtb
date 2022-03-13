@@ -1326,6 +1326,7 @@ Oʻz qurilmangizda Family Link ilovasini oʻrnatib, bu hisob sozlamalarini boshq
 <translation id="2278562042389100163">Brauzer oynasini ochish</translation>
 <translation id="2278668501808246459">Konteynerlar menejeri ishga tushirilmoqda</translation>
 <translation id="2280486287150724112">O‘ng hoshiya</translation>
+<translation id="2281863813036651454">Sichqonchadagi chap klik</translation>
 <translation id="2282146716419988068">GPU jarayoni</translation>
 <translation id="2285109769884538519">{COUNT,plural, =0{Barchasini &amp;yangi varaqlar guruhida ochish}=1{&amp;Yangi varaqlar guruhida ochish}other{Barchasini ({COUNT}) &amp;yangi varaqlar guruhida ochish}}</translation>
 <translation id="2285942871162473373">Barmoq izingiz qabul qilinmadi. Qayta urining.</translation>
@@ -5140,6 +5141,7 @@ Ochiq eksponenta (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bit):
 <translation id="6129938384427316298">Netscape sertifikatiga fikr</translation>
 <translation id="6129953537138746214">Bo‘shliq</translation>
 <translation id="6130692320435119637">Wi-Fi kiritish</translation>
+<translation id="6130887916931372608">Klaviatura tugmasi</translation>
 <translation id="6136114942382973861">Yuklanmalar panelini yopish</translation>
 <translation id="6136287496450963112">Elektron kalit PIN kod bilan himoyalanmagan. Barmoq izlarini boshqarish uchun avval PIN kod yarating.</translation>
 <translation id="6138680304137685902">SHA-384 algoritmli X9.62 ECDSA imzosi</translation>
@@ -6747,6 +6749,7 @@ Tayinlovni bekor qilish uchun belgilangan kalit yoki tugmani bosing.</translatio
 <translation id="7768770796815395237">Oʻzgartirish</translation>
 <translation id="7768784765476638775">Teginib tinglash</translation>
 <translation id="7770406201819593386">ChromeOS Flex diagnostika testlarini ishga tushirish.</translation>
+<translation id="7770450735129978837">Sichqonchadagi oʻng klik</translation>
 <translation id="7770612696274572992">Rasm boshqa qurilmadan nusxalandi</translation>
 <translation id="7771452384635174008">Tugmalar tartibi</translation>
 <translation id="7772032839648071052">Kodli iborani tasdiqlang</translation>

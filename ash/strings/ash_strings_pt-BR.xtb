@@ -197,6 +197,7 @@ Veja o que você pode fazer para começar.</translation>
 <translation id="2132302418721800944">Gravar tela cheia</translation>
 <translation id="2135456203358955318">Lupa em área fixa</translation>
 <translation id="2148716181193084225">Hoje</translation>
+<translation id="2159930836979502091">Ir para esta guia</translation>
 <translation id="2170530631236737939">Deslize com três dedos para baixo para fechar a Visão geral</translation>
 <translation id="219905428774326614">Tela de início, todos os apps</translation>
 <translation id="2201071101391734388">Foto recente <ph name="INDEX" /> de <ph name="TOTAL_COUNT" />.</translation>
@@ -563,6 +564,7 @@ Veja o que você pode fazer para começar.</translation>
 <translation id="4449692009715125625">{NUM_NOTIFICATIONS,plural, =1{1 notificação importante}one{# notificação importante}other{# notificações importantes}}</translation>
 <translation id="4450893287417543264">Não mostrar novamente</translation>
 <translation id="4451374464530248585">O atalho de teclado Alt + seta para baixo mudou. Para usar a tecla Page Down, pressione <ph name="LAUNCHER_KEY_NAME" /> + seta para baixo.</translation>
+<translation id="4455051983450390249">Veja as notificações do smartphone no seu <ph name="DEVICE_TYPE" /></translation>
 <translation id="445864333228800152">Boa noite,</translation>
 <translation id="4458688154122353284">Parar gravação da tela</translation>
 <translation id="4471354919263203780">Fazendo o download dos arquivos de reconhecimento de fala… <ph name="PERCENT" />%</translation>
@@ -770,6 +772,7 @@ Veja o que você pode fazer para começar.</translation>
 <translation id="583281660410589416">Desconhecido</translation>
 <translation id="5837036133683224804">Parar <ph name="ROUTE_TITLE" /> para <ph name="RECEIVER_NAME" /></translation>
 <translation id="584525477304726060">Para maximizar a janela, mantenha-a pressionada</translation>
+<translation id="5856638668464565213">A rede <ph name="NETWORK_NAME" /> não está ativada.</translation>
 <translation id="5860033963881614850">Desativado</translation>
 <translation id="5860491529813859533">Ativar</translation>
 <translation id="5867217927013474703">Coletando informações da rede</translation>
@@ -801,6 +804,7 @@ Veja o que você pode fazer para começar.</translation>
 <translation id="602472752137106327">Mostrar janelas de todos os espaços de trabalho, botão de opção selecionado</translation>
 <translation id="6025324406281560198"><ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, intensidade do sinal em <ph name="SIGNAL_STRENGTH" />, gerenciada pelo seu administrador</translation>
 <translation id="6027518778343897451">Não há nenhum evento em <ph name="CURRENT_MONTH_DAY" />. Toque em "Enter" para abrir o Google Agenda no navegador.</translation>
+<translation id="6027952026115023659">Acesse os apps de mensagens do smartphone no seu <ph name="DEVICE_TYPE" /></translation>
 <translation id="6030495522958826102">O menu foi movido para o canto inferior esquerdo da tela.</translation>
 <translation id="6032620807120418574">Clique em qualquer lugar para gravar em tela cheia</translation>
 <translation id="6040071906258664830">Gravação do microfone <ph name="STATE" /></translation>
@@ -944,6 +948,7 @@ Nova instalação</translation>
 <translation id="6961121602502368900">O recurso "Silenciar smartphone" não está disponível no perfil de trabalho</translation>
 <translation id="6961840794482373852">O atalho de teclado Alt + seta para cima mudou. Para usar a tecla Page Up, pressione <ph name="LAUNCHER_KEY_NAME" /> + seta para cima.</translation>
 <translation id="6965382102122355670">OK</translation>
+<translation id="6967933908874208731">Veja fotos, mídias, notificações e apps de mensagens recentes do smartphone no seu <ph name="DEVICE_TYPE" /></translation>
 <translation id="6972754398087986839">Primeiros passos</translation>
 <translation id="6979158407327259162">Google Drive</translation>
 <translation id="6981982820502123353">Acessibilidade</translation>
