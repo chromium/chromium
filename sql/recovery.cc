@@ -130,7 +130,7 @@ bool Recovery::Init(const base::FilePath& db_path) {
   // possible to fall back to a memory database.  But it probably
   // implies that the SQLite tmpdir logic is busted, which could cause
   // a variety of other random issues in our code.
-  if (!recover_db_.OpenTemporary())
+  if (!recover_db_.OpenTemporary(base::PassKey<Recovery>()))
     return false;
 
   // Enable the recover virtual table for this connection.
