@@ -315,9 +315,9 @@ void MediaDialogView::Init() {
               kLiveCaptionBetweenChildSpacing));
 
   auto live_caption_image = std::make_unique<views::ImageView>();
-  live_caption_image->SetImage(gfx::CreateVectorIcon(
-      vector_icons::kLiveCaptionOnIcon, kLiveCaptionImageWidthDip,
-      SkColor(gfx::kGoogleGrey700)));
+  live_caption_image->SetImage(ui::ImageModel::FromVectorIcon(
+      vector_icons::kLiveCaptionOnIcon, ui::kColorIcon,
+      kLiveCaptionImageWidthDip));
   live_caption_container->AddChildView(std::move(live_caption_image));
 
   std::u16string live_caption_title_message =
@@ -337,10 +337,6 @@ void MediaDialogView::Init() {
   live_caption_button->SetIsOn(
       profile_->GetPrefs()->GetBoolean(prefs::kLiveCaptionEnabled));
   live_caption_button->SetAccessibleName(live_caption_title_->GetText());
-  live_caption_button->SetThumbOnColor(SkColor(gfx::kGoogleBlue600));
-  live_caption_button->SetTrackOnColor(SkColorSetA(gfx::kGoogleBlue600, 128));
-  live_caption_button->SetThumbOffColor(SK_ColorWHITE);
-  live_caption_button->SetTrackOffColor(SkColor(gfx::kGoogleGrey400));
   live_caption_button_ =
       live_caption_container->AddChildView(std::move(live_caption_button));
 
