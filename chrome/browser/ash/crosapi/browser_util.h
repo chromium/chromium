@@ -56,11 +56,12 @@ enum class LacrosLaunchSwitchSource {
   kForcedByPolicy = 3
 };
 
-// Represents different options for how to launch Lacros browser. The values
-// shall be consistent with the controlling policy.
-enum class LacrosLaunchSwitch {
+// Represents the policy indicating how to launch Lacros browser, named
+// LacrosAvailability. The values shall be consistent with the controlling
+// policy.
+enum class LacrosAvailability {
   // Indicates that the user decides whether to enable Lacros (if allowed) and
-  // make it the primary browser.
+  // make it the primary/only browser.
   kUserChoice = 0,
   // Indicates that Lacros is not allowed to be enabled.
   kLacrosDisallowed = 1,
@@ -69,8 +70,7 @@ enum class LacrosLaunchSwitch {
   kSideBySide = 2,
   // Similar to kSideBySide but Lacros is the primary browser.
   kLacrosPrimary = 3,
-  // Indicates that Lacros (if allowed) is the only available browser. The value
-  // is preserved for future use and is not supported yet.
+  // Indicates that Lacros (if allowed) is the only available browser.
   kLacrosOnly = 4
 };
 
@@ -252,9 +252,9 @@ bool IsDataWipeRequiredForTesting(base::Version data_version,
 base::Version GetRootfsLacrosVersionMayBlock(
     const base::FilePath& version_file_path);
 
-// To be called at primary user login, to cache the policy value for launch
-// switch.
-void CacheLacrosLaunchSwitch(const policy::PolicyMap& map);
+// To be called at primary user login, to cache the policy value for lacros
+// availability.
+void CacheLacrosAvailability(const policy::PolicyMap& map);
 
 // Returns the ComponentInfo associated with the stateful lacros instance.
 ComponentInfo GetLacrosComponentInfo();
@@ -265,10 +265,10 @@ version_info::Channel GetLacrosSelectionUpdateChannel(
 
 // Exposed for testing. Returns the lacros integration suggested by the policy
 // lacros-availability, modified by Finch flags and user flags as appropriate.
-LacrosLaunchSwitch GetLaunchSwitchForTesting();
+LacrosAvailability GetCachedLacrosAvailabilityForTesting();
 
-// Clears the cached values for policy data.
-void ClearLacrosLaunchSwitchCacheForTest();
+// Clears the cached values for lacros availability policy.
+void ClearLacrosAvailabilityCacheForTest();
 
 bool IsProfileMigrationEnabled(const AccountId& account_id);
 
@@ -305,7 +305,7 @@ bool IsAshBrowserSyncEnabled();
 LacrosLaunchSwitchSource GetLacrosLaunchSwitchSource();
 
 // Returns the policy value name from the given value.
-base::StringPiece GetLacrosAvailabilityPolicyName(LacrosLaunchSwitch value);
+base::StringPiece GetLacrosAvailabilityPolicyName(LacrosAvailability value);
 
 }  // namespace browser_util
 }  // namespace crosapi

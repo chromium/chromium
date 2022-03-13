@@ -135,7 +135,7 @@ void Preferences::RegisterPrefs(PrefRegistrySimple* registry) {
   registry->RegisterStringPref(::prefs::kMinimumAllowedChromeVersion, "");
   registry->RegisterIntegerPref(
       ::prefs::kLacrosLaunchSwitch,
-      static_cast<int>(crosapi::browser_util::LacrosLaunchSwitch::kUserChoice));
+      static_cast<int>(crosapi::browser_util::LacrosAvailability::kUserChoice));
   registry->RegisterBooleanPref(prefs::kDeviceSystemWideTracingEnabled, true);
   registry->RegisterBooleanPref(
       prefs::kLocalStateDevicePeripheralDataAccessEnabled, false);

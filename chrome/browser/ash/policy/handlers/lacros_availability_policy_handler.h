@@ -38,11 +38,12 @@ class LacrosAvailabilityPolicyHandler : public TypeCheckingPolicyHandler {
                            PrefValueMap* prefs) override;
 
  private:
-  absl::optional<crosapi::browser_util::LacrosLaunchSwitch> GetValue(
+  absl::optional<crosapi::browser_util::LacrosAvailability> GetValue(
       const PolicyMap& policies,
       PolicyErrorMap* errors);
-
-  const base::flat_map<std::string, crosapi::browser_util::LacrosLaunchSwitch>
+  // TODO(crbug.com/1293250): Remove this map by merging into
+  // kLacrosAvailabilityMap in browser_util.cc
+  const base::flat_map<std::string, crosapi::browser_util::LacrosAvailability>
       policy_value_to_enum_;
 };
 

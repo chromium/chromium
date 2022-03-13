@@ -21,15 +21,15 @@ LacrosAvailabilityPolicyHandler::LacrosAvailabilityPolicyHandler()
                                 base::Value::Type::STRING),
       policy_value_to_enum_{
           {"user_choice",
-           crosapi::browser_util::LacrosLaunchSwitch::kUserChoice},
+           crosapi::browser_util::LacrosAvailability::kUserChoice},
           {"lacros_disallowed",
-           crosapi::browser_util::LacrosLaunchSwitch::kLacrosDisallowed},
+           crosapi::browser_util::LacrosAvailability::kLacrosDisallowed},
           {"side_by_side",
-           crosapi::browser_util::LacrosLaunchSwitch::kSideBySide},
+           crosapi::browser_util::LacrosAvailability::kSideBySide},
           {"lacros_primary",
-           crosapi::browser_util::LacrosLaunchSwitch::kLacrosPrimary},
+           crosapi::browser_util::LacrosAvailability::kLacrosPrimary},
           {"lacros_only",
-           crosapi::browser_util::LacrosLaunchSwitch::kLacrosOnly},
+           crosapi::browser_util::LacrosAvailability::kLacrosOnly},
       } {}
 
 LacrosAvailabilityPolicyHandler::~LacrosAvailabilityPolicyHandler() = default;
@@ -50,7 +50,7 @@ void LacrosAvailabilityPolicyHandler::ApplyPolicySettings(
   }
 }
 
-absl::optional<crosapi::browser_util::LacrosLaunchSwitch>
+absl::optional<crosapi::browser_util::LacrosAvailability>
 LacrosAvailabilityPolicyHandler::GetValue(const PolicyMap& policies,
                                           PolicyErrorMap* errors) {
   const base::Value* value;

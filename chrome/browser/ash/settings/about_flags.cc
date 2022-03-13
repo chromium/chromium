@@ -210,7 +210,7 @@ void FeatureFlagsUpdate::UpdateSessionManager() {
     // If there's the value, convert it into the feature name.
     base::StringPiece value =
         crosapi::browser_util::GetLacrosAvailabilityPolicyName(
-            static_cast<crosapi::browser_util::LacrosLaunchSwitch>(
+            static_cast<crosapi::browser_util::LacrosAvailability>(
                 lacros_launch_switch_pref->GetValue()->GetInt()));
     DCHECK(!value.empty())
         << "The unexpect value is set to LacrosAvailability: "
