@@ -279,6 +279,10 @@ void AddChromeColorMixer(ui::ColorProvider* provider,
   mixer[kColorNewTabPageTextUnthemed] = {gfx::kGoogleGrey050};
   mixer[kColorNewTabPageTextLight] =
       IncreaseLightness(kColorNewTabPageText, 0.40);
+  mixer[kColorOmniboxAnswerIconBackground] = {
+      ui::kColorButtonBackgroundProminent};
+  mixer[kColorOmniboxAnswerIconForeground] = {
+      ui::kColorButtonForegroundProminent};
   mixer[kColorOmniboxBackground] = {dark_mode ? gfx::kGoogleGrey900
                                               : gfx::kGoogleGrey100};
   mixer[kColorOmniboxChipBackgroundLowVisibility] = {

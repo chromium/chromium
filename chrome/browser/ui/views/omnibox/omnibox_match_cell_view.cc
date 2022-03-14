@@ -7,6 +7,7 @@
 #include <algorithm>
 
 #include "base/metrics/field_trial_params.h"
+#include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/layout_constants.h"
 #include "chrome/browser/ui/omnibox/omnibox_theme.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
@@ -22,8 +23,8 @@
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/pointer/touch_ui_controller.h"
+#include "ui/color/color_provider.h"
 #include "ui/gfx/canvas.h"
-#include "ui/gfx/color_palette.h"
 #include "ui/gfx/geometry/skia_conversions.h"
 #include "ui/gfx/image/canvas_image_source.h"
 #include "ui/gfx/image/image_skia_operations.h"
@@ -210,12 +211,16 @@ void OmniboxMatchCellView::OnMatchUpdate(const OmniboxResultView* result_view,
                                           : icon_view_->GetPreferredSize());
 
   const auto apply_vector_icon = [=](const gfx::VectorIcon& vector_icon) {
-    const auto& icon = gfx::CreateVectorIcon(vector_icon, SK_ColorWHITE);
+    const auto* color_provider = GetColorProvider();
+    const auto& icon = gfx::CreateVectorIcon(
+        vector_icon,
+        color_provider->GetColor(kColorOmniboxAnswerIconForeground));
     answer_image_view_->SetImageSize(
         gfx::Size(kAnswerImageSize, kAnswerImageSize));
     answer_image_view_->SetImage(
         gfx::ImageSkiaOperations::CreateImageWithCircleBackground(
-            kAnswerImageSize / 2, gfx::kGoogleBlue600, icon));
+            kAnswerImageSize / 2,
+            color_provider->GetColor(kColorOmniboxAnswerIconBackground), icon));
   };
   if (match.type == AutocompleteMatchType::CALCULATOR) {
     apply_vector_icon(omnibox::kAnswerCalculatorIcon);

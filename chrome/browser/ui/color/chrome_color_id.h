@@ -105,6 +105,8 @@
   E_CPONLY(kColorNewTabPageTextUnthemed) \
   E(kColorNewTabPageTextLight, ThemeProperties::COLOR_NTP_TEXT_LIGHT) \
   /* Omnibox colors. */ \
+  E_CPONLY(kColorOmniboxAnswerIconBackground) \
+  E_CPONLY(kColorOmniboxAnswerIconForeground) \
   E(kColorOmniboxBackground, ThemeProperties::COLOR_OMNIBOX_BACKGROUND) \
   E(kColorOmniboxBackgroundHovered, \
     ThemeProperties::COLOR_OMNIBOX_BACKGROUND_HOVERED) \
