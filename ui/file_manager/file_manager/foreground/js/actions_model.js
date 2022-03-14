@@ -105,13 +105,13 @@ class DriveShareAction {
             return;
           }
           if (results.length != 1) {
-            console.error(
+            console.warn(
                 'getEntryProperties for shareUrl should return 1 entry ' +
                 '(returned ' + results.length + ')');
             return;
           }
           if (results[0].shareUrl === undefined) {
-            console.error('getEntryProperties shareUrl is undefined');
+            console.warn('getEntryProperties shareUrl is undefined');
             return;
           }
           util.visitURL(assert(results[0].shareUrl));
@@ -535,13 +535,13 @@ class DriveManageAction {
             return;
           }
           if (results.length != 1) {
-            console.error(
+            console.warn(
                 'getEntryProperties for alternateUrl should return 1 entry ' +
                 '(returned ' + results.length + ')');
             return;
           }
           if (results[0].alternateUrl === undefined) {
-            console.error('getEntryProperties alternateUrl is undefined');
+            console.warn('getEntryProperties alternateUrl is undefined');
             return;
           }
           util.visitURL(assert(results[0].alternateUrl));

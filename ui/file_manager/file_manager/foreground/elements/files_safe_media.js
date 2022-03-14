@@ -51,7 +51,7 @@ const FilesSafeMedia = Polymer({
         return toSandboxedURL('untrusted_resources/files_text_content.html')
             .toString();
       default:
-        console.error('Unsupported type: ' + this.type);
+        console.warn('Unsupported type: ' + this.type);
         return '';
     }
   },
@@ -129,7 +129,7 @@ const FilesSafeMedia = Polymer({
     });
     window.addEventListener('message', event => {
       if (event.origin !== toSandboxedURL().origin) {
-        console.error('Unknown origin: ' + event.origin);
+        console.warn('Unknown origin: ' + event.origin);
         return;
       }
       if (event.data === 'tap-inside') {

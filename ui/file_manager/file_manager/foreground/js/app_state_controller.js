@@ -77,7 +77,7 @@ export class AppStateController {
       }
     } catch (error) {
       this.viewOptions_ = {};
-      console.error(error);
+      console.warn(error);
     }
   }
 

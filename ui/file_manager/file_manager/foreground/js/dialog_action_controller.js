@@ -136,7 +136,7 @@ export class DialogActionController {
       });
     } catch (error) {
       if (!(error instanceof UserCanceledError)) {
-        console.error(error);
+        console.warn(error);
       }
     }
   }
@@ -185,7 +185,7 @@ export class DialogActionController {
     for (let i = 0; i < selectedIndexes.length; i++) {
       const entry = dm.item(selectedIndexes[i]);
       if (!entry) {
-        console.error('Error locating selected file at index: ' + i);
+        console.warn('Error locating selected file at index: ' + i);
         continue;
       }
 

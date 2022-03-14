@@ -134,7 +134,7 @@ export class DriveSearchContentScanner extends ContentScanner {
 
             // TODO(tbarzic): Improve error handling.
             if (!entries) {
-              console.error('Drive search encountered an error.');
+              console.warn('Drive search encountered an error.');
               errorCallback(
                   util.createDOMError(util.FileError.INVALID_MODIFICATION_ERR));
               return;
@@ -234,7 +234,7 @@ export class DriveMetadataSearchContentScanner extends ContentScanner {
           }
 
           if (!results) {
-            console.error('Drive search encountered an error.');
+            console.warn('Drive search encountered an error.');
             errorCallback(
                 util.createDOMError(util.FileError.INVALID_MODIFICATION_ERR));
             return;
@@ -395,7 +395,6 @@ export class GuestOsMounter extends ContentScanner {
       await mountGuest(this.guest_id_);
       successCallback();
     } catch (error) {
-      console.error('mountGuest error: ', error);
       errorCallback(util.createDOMError(
           // TODO(crbug/1293229): Strings
           constants.CROSTINI_CONNECT_ERR, error));

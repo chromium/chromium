@@ -361,7 +361,7 @@ export class DirectoryModel extends EventTarget {
             this.partialUpdate_(result.entries, deletedFileUrls);
           })
           .catch(error => {
-            console.error(
+            console.warn(
                 'Error in proceeding the changed event.', error,
                 'Fallback to force-refresh');
             this.rescanAggregator_.run();
@@ -929,7 +929,7 @@ export class DirectoryModel extends EventTarget {
 
           this.partialUpdate_(entriesToAdd, []);
         } catch (error) {
-          console.error(error.stack || error);
+          console.warn(error.stack || error);
         }
         break;
 

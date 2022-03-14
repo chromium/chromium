@@ -704,7 +704,7 @@ export class BannerController extends EventTarget {
    */
   async setLocalStorage_(key, value) {
     if (!this.localStorageCache_.hasOwnProperty(key)) {
-      console.error(`Key ${key} not found in localStorage cache`);
+      console.warn(`Key ${key} not found in localStorage cache`);
       return;
     }
     this.localStorageCache_[key] = value;
