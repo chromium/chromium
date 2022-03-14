@@ -1064,6 +1064,21 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="IOS.Process.ActivePrewarm" enum="Boolean"
+    expires_after="2022-09-12">
+  <owner>justincohen@google.com</owner>
+  <owner>olivierrobin@google.com</owner>
+  <summary>
+    Whether or not the process was started with ActivePrewarm, an Apple
+    triggered launch of a nonrunning application processes to reduce the amount
+    of time the user waits before the app is usable. A significant change in
+    this metric may indicate a change from Apple outside Chromium's control, or
+    that Chromium has a reduced 'Duet' score in the system, which merits
+    investigation. See the UIKit documentation &quot;Prepare Your App for
+    Prewarming&quot; for more details.
+  </summary>
+</histogram>
+
 <histogram name="IOS.ReadingList.ImageTooLargeFailure" units="KB"
     expires_after="2022-08-14">
   <owner>olivierrobin@chromium.org</owner>

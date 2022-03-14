@@ -12,6 +12,7 @@
 #include "base/mac/bundle_locations.h"
 #include "base/mac/foundation_util.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/metrics/histogram_macros.h"
 #include "base/path_service.h"
 #include "base/strings/sys_string_conversions.h"
 #include "components/breadcrumbs/core/breadcrumb_manager_keyed_service.h"
@@ -395,6 +396,10 @@ void MainControllerAuthenticationServiceDelegate::ClearBrowsingData(
 - (void)startUpBrowserBasicInitialization {
   _appLaunchTime = IOSChromeMain::StartTime();
   _isColdStart = YES;
+  if (@available(iOS 15, *)) {
+    UMA_HISTOGRAM_BOOLEAN("IOS.Process.ActivePrewarm",
+                          base::ios::IsApplicationPreWarmed());
+  }
 
   [SetupDebugging setUpDebuggingOptions];
 
