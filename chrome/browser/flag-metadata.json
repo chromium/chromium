@@ -5420,12 +5420,12 @@
   {
     "name": "sharing-desktop-screenshots",
     "owners": ["skare", "kmilka", "chrome-sharing-eng@google.com" ],
-    "expiry_milestone": 99
+    "expiry_milestone": 102
   },
   {
     "name": "sharing-desktop-screenshots-edit",
     "owners": ["skare", "jeffreycohen", "chrome-sharing-eng@google.com" ],
-    "expiry_milestone": 100
+    "expiry_milestone": 102
   },
   {
     "name": "sharing-hub-desktop-app-menu",
