@@ -105,7 +105,7 @@ export class InfiniteList extends PolymerElement {
     this.selectableIndexToItemIndex_ = null;
   }
 
-  ready() {
+  override ready() {
     super.ready();
     this.ensureTemplatized_();
     this.addEventListener('scroll', () => this.onScroll_());

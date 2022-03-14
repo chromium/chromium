@@ -56,7 +56,7 @@ export class BookmarksListElement extends PolymerElement {
   hoverVisible: boolean;
   private openFolders_: string[];
 
-  ready() {
+  override ready() {
     super.ready();
     this.addEventListener(
         FOLDER_OPEN_CHANGED_EVENT,
@@ -67,7 +67,7 @@ export class BookmarksListElement extends PolymerElement {
     this.addEventListener('pointerleave', () => this.hoverVisible = false);
   }
 
-  connectedCallback() {
+  override connectedCallback() {
     super.connectedCallback();
     this.setAttribute('role', 'tree');
     this.focusOutlineManager_ = FocusOutlineManager.forDocument(document);
@@ -105,7 +105,7 @@ export class BookmarksListElement extends PolymerElement {
     });
   }
 
-  disconnectedCallback() {
+  override disconnectedCallback() {
     for (const [eventName, callback] of this.listeners_.entries()) {
       this.bookmarksApi_.callbackRouter[eventName]!.removeListener(callback);
     }

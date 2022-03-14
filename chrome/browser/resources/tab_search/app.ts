@@ -162,7 +162,7 @@ export class TabSearchAppElement extends PolymerElement {
         true /*expanded*/);
   }
 
-  ready() {
+  override ready() {
     super.ready();
 
     // Update option values for fuzzy search from feature params.
@@ -188,7 +188,7 @@ export class TabSearchAppElement extends PolymerElement {
     });
   }
 
-  connectedCallback() {
+  override connectedCallback() {
     super.connectedCallback();
 
     document.addEventListener(
@@ -206,7 +206,7 @@ export class TabSearchAppElement extends PolymerElement {
     }
   }
 
-  disconnectedCallback() {
+  override disconnectedCallback() {
     super.disconnectedCallback();
 
     this.listenerIds_.forEach(

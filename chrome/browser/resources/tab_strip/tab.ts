@@ -39,7 +39,7 @@ function getPaddingInlineEndProperty(): string {
 }
 
 export class TabElement extends CustomElement {
-  static get template() {
+  static override get template() {
     return `{__html_template__}`;
   }
 
@@ -179,7 +179,7 @@ export class TabElement extends CustomElement {
     this.onTabActivating_ = callback;
   }
 
-  focus() {
+  override focus() {
     this.tabEl_.focus();
   }
 

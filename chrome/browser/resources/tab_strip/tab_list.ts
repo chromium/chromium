@@ -147,7 +147,7 @@ export class TabListElement extends CustomElement implements
   private scrollingTimeoutId_: number;
   private scrollListener_: (e: Event) => void;
 
-  static get template() {
+  static override get template() {
     return `{__html_template__}`;
   }
 

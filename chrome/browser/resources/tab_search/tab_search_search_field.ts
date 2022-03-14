@@ -63,12 +63,12 @@ export class TabSearchSearchField extends TabSearchSearchFieldBase {
     };
   }
 
-  autofocus: boolean;
+  override autofocus: boolean;
   searchResultText: string;
   private shortcut_: string;
   private announceText_: string;
 
-  getSearchInput(): HTMLInputElement {
+  override getSearchInput(): HTMLInputElement {
     return this.$.searchInput;
   }
 
@@ -105,7 +105,7 @@ export class TabSearchSearchField extends TabSearchSearchFieldBase {
    * Do not schedule the timer from CrSearchFieldBehavior to make search more
    * responsive.
    */
-  onSearchTermInput() {
+  override onSearchTermInput() {
     this.hasSearchText = this.$.searchInput.value !== '';
     this.getSearchInput().dispatchEvent(
         new CustomEvent('search', {composed: true, detail: this.getValue()}));

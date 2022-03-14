@@ -9,7 +9,7 @@ import {TabGroupVisualData} from './tab_strip.mojom-webui.js';
 import {TabsApiProxy, TabsApiProxyImpl} from './tabs_api_proxy.js';
 
 export class TabGroupElement extends CustomElement {
-  static get template() {
+  static override get template() {
     return `{__html_template__}`;
   }
 

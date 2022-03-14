@@ -96,7 +96,7 @@ export class ReadLaterAppElement extends PolymerElement {
     };
   }
 
-  connectedCallback() {
+  override connectedCallback() {
     super.connectedCallback();
 
     document.addEventListener(
@@ -121,7 +121,7 @@ export class ReadLaterAppElement extends PolymerElement {
     }
   }
 
-  disconnectedCallback() {
+  override disconnectedCallback() {
     super.disconnectedCallback();
 
     this.listenerIds_.forEach(

@@ -10,7 +10,7 @@ import {AlertIndicatorElement} from './alert_indicator.js';
 import {TabAlertState} from './tabs.mojom-webui.js';
 
 export class AlertIndicatorsElement extends CustomElement {
-  static get template() {
+  static override get template() {
     return `{__html_template__}`;
   }
 

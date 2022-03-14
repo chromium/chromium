@@ -33,7 +33,7 @@ export class ReaderModeElement extends ReaderModeElementBase {
   private listenerIds_: number[];
   private paragraphs_: string[];
 
-  connectedCallback() {
+  override connectedCallback() {
     super.connectedCallback();
 
     const callbackRouter = this.apiProxy_.getCallbackRouter();
@@ -44,7 +44,7 @@ export class ReaderModeElement extends ReaderModeElementBase {
     this.apiProxy_.showUI();
   }
 
-  disconnectedCallback() {
+  override disconnectedCallback() {
     super.disconnectedCallback();
 
     this.listenerIds_.forEach(

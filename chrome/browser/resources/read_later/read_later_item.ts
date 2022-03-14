@@ -54,7 +54,7 @@ export class ReadLaterItemElement extends ReadLaterItemElementBase {
   buttonRipples: boolean;
   private apiProxy_: ReadLaterApiProxy = ReadLaterApiProxyImpl.getInstance();
 
-  ready() {
+  override ready() {
     super.ready();
     this.addEventListener('click', this.onClick_);
     this.addEventListener('auxclick', this.onAuxClick_.bind(this));

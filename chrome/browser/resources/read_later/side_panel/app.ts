@@ -51,14 +51,14 @@ export class SidePanelAppElement extends PolymerElement {
   private selectedTab_: number;
   private tabs_: {[key: string]: string};
 
-  ready() {
+  override ready() {
     if (loadTimeData.getBoolean('readerModeSidePanelEnabled')) {
       this.tabs_['readerMode'] = loadTimeData.getString('readerModeTabTitle');
     }
     super.ready();
   }
 
-  connectedCallback() {
+  override connectedCallback() {
     super.connectedCallback();
     const lastActiveTab = window.localStorage[LOCAL_STORAGE_TAB_ID_KEY];
     if (loadTimeData.getBoolean('hasUnseenReadingListEntries')) {
