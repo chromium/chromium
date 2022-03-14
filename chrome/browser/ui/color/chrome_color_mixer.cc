@@ -298,6 +298,8 @@ void AddChromeColorMixer(ui::ColorProvider* provider,
   mixer[kColorPaymentRequestRowBackgroundHighlighted] = {
       SkColorSetA(SK_ColorBLACK, 0x0D)};
   mixer[kColorReadLaterButtonHighlight] = {kColorAvatarButtonHighlightNormal};
+  mixer[kColorScreenshotCapturedImageBackground] = {ui::kColorBubbleBackground};
+  mixer[kColorScreenshotCapturedImageBorder] = {ui::kColorMidground};
   mixer[kColorSidePanelContentAreaSeparator] = {
       kColorToolbarContentAreaSeparator};
   mixer[kColorStatusBubbleBackgroundFrameActive] = {

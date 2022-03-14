@@ -42,6 +42,8 @@ class ScreenshotCapturedBubble : public LocationBarBubbleDelegateView {
   ScreenshotCapturedBubble& operator=(const ScreenshotCapturedBubble&) = delete;
   ~ScreenshotCapturedBubble() override;
 
+  void OnThemeChanged() override;
+
   void Show();
 
  private:

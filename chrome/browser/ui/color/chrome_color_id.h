@@ -169,6 +169,9 @@
   /* Read Later button colors. */ \
   E(kColorReadLaterButtonHighlight, \
     ThemeProperties::COLOR_READ_LATER_BUTTON_HIGHLIGHT) \
+  /* Screenshot captured bubble colors. */ \
+  E_CPONLY(kColorScreenshotCapturedImageBackground) \
+  E_CPONLY(kColorScreenshotCapturedImageBorder) \
   /* Side panel colors. */ \
   E(kColorSidePanelContentAreaSeparator, \
     ThemeProperties::COLOR_SIDE_PANEL_CONTENT_AREA_SEPARATOR) \
