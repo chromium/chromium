@@ -263,8 +263,8 @@ void CSSComputedStyleDeclaration::UpdateStyleAndLayoutIfNeeded(
     return;
 
   bool is_for_layout_dependent_property =
-      property &&
-      property->IsLayoutDependent(ComputeComputedStyle(), StyledLayoutObject());
+      property && property->IsLayoutDependent(styled_node->GetComputedStyle(),
+                                              StyledLayoutObject());
 
   if (is_for_layout_dependent_property) {
     styled_node->GetDocument().UpdateStyleAndLayoutForNode(
