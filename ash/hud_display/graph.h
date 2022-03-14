@@ -13,6 +13,8 @@
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/rect.h"
 
+struct SkPoint;
+
 namespace gfx {
 class Canvas;
 }
