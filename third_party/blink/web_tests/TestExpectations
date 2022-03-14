@@ -3365,6 +3365,10 @@ crbug.com/626703 virtual/prerender/external/wpt/speculation-rules/prerender/work
 crbug.com/626703 [ Win ] external/wpt/preload/avoid-delaying-onload-link-modulepreload.html [ Failure ]
 crbug.com/626703 [ Win ] virtual/prerender/external/wpt/speculation-rules/prerender/restriction-presentation-request.https.html [ Failure ]
 crbug.com/626703 [ Win ] virtual/prerender/external/wpt/speculation-rules/prerender/storage-foundation.https.html [ Failure ]
+crbug.com/626703 [ Win ] external/wpt/css/css-masking/animations/clip-path-interpolation-shape.html [ Failure ]
+crbug.com/626703 [ Win ] external/wpt/css/css-masking/parsing/clip-path-shape-parsing.html [ Failure ]
+crbug.com/626703 [ Win ] external/wpt/wasm/serialization/arraybuffer/transfer.window.html [ Failure ]
+crbug.com/626703 [ Win ] virtual/partitioned-cookies/http/tests/inspector-protocol/network/disabled-cache-navigation.js [ Failure ]
 
 # ====== New tests from wpt-importer added here ======
 crbug.com/626703 [ Mac10.12 ] virtual/fenced-frame-mparch/wpt_internal/fenced_frame/navigate-ancestor-nested-fenced-frame.https.html [ Timeout ]
