@@ -1213,32 +1213,32 @@ void NativeWidgetNSWindowBridge::SetVisibleOnAllSpaces(bool always_visible) {
   gfx::SetNSWindowVisibleOnAllWorkspaces(window_, always_visible);
 }
 
-void NativeWidgetNSWindowBridge::EnterFullscreen(int64_t target_display_id) {
-  // Going fullscreen implicitly makes the window visible. AppKit does this.
-  // That is, -[NSWindow isVisible] is always true after a call to -[NSWindow
-  // toggleFullScreen:]. Unfortunately, this change happens after AppKit calls
-  // -[NSWindowDelegate windowWillEnterFullScreen:], and AppKit doesn't send
-  // an orderWindow message. So intercepting the implicit change is hard.
-  // Luckily, to trigger externally, the window typically needs to be visible
-  // in the first place. So we can just ensure the window is visible here
-  // instead of relying on AppKit to do it, and not worry that
-  // OnVisibilityChanged() won't be called for externally triggered fullscreen
-  // requests.
-  if (!window_visible_)
-    SetVisibilityState(WindowVisibilityState::kShowInactive);
+void NativeWidgetNSWindowBridge::SetFullscreen(bool fullscreen) {
+  if (fullscreen) {
+    // Going fullscreen implicitly makes the window visible. AppKit does this.
+    // That is, -[NSWindow isVisible] is always true after a call to -[NSWindow
+    // toggleFullScreen:]. Unfortunately, this change happens after AppKit calls
+    // -[NSWindowDelegate windowWillEnterFullScreen:], and AppKit doesn't send
+    // an orderWindow message. So intercepting the implicit change is hard.
+    // Luckily, to trigger externally, the window typically needs to be visible
+    // in the first place. So we can just ensure the window is visible here
+    // instead of relying on AppKit to do it, and not worry that
+    // OnVisibilityChanged() won't be called for externally triggered fullscreen
+    // requests.
+    if (!window_visible_)
+      SetVisibilityState(WindowVisibilityState::kShowInactive);
 
-  // Enable fullscreen collection behavior because:
-  // 1: -[NSWindow toggleFullscreen:] would otherwise be ignored,
-  // 2: the fullscreen button must be enabled so the user can leave
-  // fullscreen. This will be reset when a transition out of fullscreen
-  // completes.
-  gfx::SetNSWindowCanFullscreen(window_, true);
+    // Enable fullscreen collection behavior because:
+    // 1: -[NSWindow toggleFullscreen:] would otherwise be ignored,
+    // 2: the fullscreen button must be enabled so the user can leave
+    // fullscreen. This will be reset when a transition out of fullscreen
+    // completes.
+    gfx::SetNSWindowCanFullscreen(window_, true);
 
-  fullscreen_controller_.EnterFullscreen();
-}
-
-void NativeWidgetNSWindowBridge::ExitFullscreen() {
-  fullscreen_controller_.ExitFullscreen();
+    fullscreen_controller_.EnterFullscreen();
+  } else {
+    fullscreen_controller_.ExitFullscreen();
+  }
 }
 
 void NativeWidgetNSWindowBridge::SetCanAppearInExistingFullscreenSpaces(

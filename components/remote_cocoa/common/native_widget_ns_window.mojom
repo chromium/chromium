@@ -171,13 +171,9 @@ interface NativeWidgetNSWindow {
   // on all spaces.
   SetVisibleOnAllSpaces(bool always_visible);
 
-  // Initiate a transition to fullscreen on the specified display.  If
-  // `target_display_id` is invalid, then fullscreen should be entered on the
-  // current display.
-  EnterFullscreen(int64 target_display_id);
-
-  // Initiate a transition out of fullscreen.
-  ExitFullscreen();
+  // Called by NativeWidgetMac to initiate a transition to the specified target
+  // fullscreen state.
+  SetFullscreen(bool fullscreen);
 
   // Called by NativeWidgetMac; sets whether the window can share fullscreen
   // windows' spaces by changing the NSWindow's collectionBehavior.
