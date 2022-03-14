@@ -51,7 +51,7 @@ void PageTimingMetadataRecorder::UpdateMetadata(const MonotonicTiming& timing) {
     base::ApplyMetadataToPastSamples(
         *timing.navigation_start, *timing.first_contentful_paint,
         "PageLoad.PaintTiming.NavigationToFirstContentfulPaint", instance_id_,
-        1);
+        1, base::SampleMetadataScope::kProcess);
   }
 
   timing_ = timing;

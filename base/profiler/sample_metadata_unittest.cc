@@ -17,7 +17,7 @@ TEST(SampleMetadataTest, ScopedSampleMetadata) {
                     .GetItems(&items));
 
   {
-    ScopedSampleMetadata m("myname", 100);
+    ScopedSampleMetadata m("myname", 100, SampleMetadataScope::kProcess);
 
     ASSERT_EQ(1u, MetadataRecorder::MetadataProvider(
                       GetSampleMetadataRecorder(), PlatformThread::CurrentId())
@@ -39,7 +39,7 @@ TEST(SampleMetadataTest, ScopedSampleMetadataWithKey) {
                     .GetItems(&items));
 
   {
-    ScopedSampleMetadata m("myname", 10, 100);
+    ScopedSampleMetadata m("myname", 10, 100, SampleMetadataScope::kProcess);
 
     ASSERT_EQ(1u, MetadataRecorder::MetadataProvider(
                       GetSampleMetadataRecorder(), PlatformThread::CurrentId())
@@ -61,7 +61,7 @@ TEST(SampleMetadataTest, SampleMetadata) {
                                                    PlatformThread::CurrentId())
                     .GetItems(&items));
 
-  SampleMetadata metadata("myname");
+  SampleMetadata metadata("myname", SampleMetadataScope::kProcess);
   metadata.Set(100);
   ASSERT_EQ(1u, MetadataRecorder::MetadataProvider(GetSampleMetadataRecorder(),
                                                    PlatformThread::CurrentId())
@@ -82,7 +82,7 @@ TEST(SampleMetadataTest, SampleMetadataWithKey) {
                                                    PlatformThread::CurrentId())
                     .GetItems(&items));
 
-  SampleMetadata metadata("myname");
+  SampleMetadata metadata("myname", SampleMetadataScope::kProcess);
   metadata.Set(10, 100);
   ASSERT_EQ(1u, MetadataRecorder::MetadataProvider(GetSampleMetadataRecorder(),
                                                    PlatformThread::CurrentId())

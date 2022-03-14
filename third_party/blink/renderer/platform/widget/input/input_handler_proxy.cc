@@ -293,16 +293,18 @@ void InputHandlerProxy::HandleInputEventWithLatencyInfo(
   // through the queue, but we believe it's OK to do so.
   if (!IsGestureScrollOrPinch(event_with_callback->event().GetType())) {
     base::ScopedSampleMetadata metadata("Input.GestureScrollOrPinch",
-                                        NO_SCROLL_PINCH);
+                                        NO_SCROLL_PINCH,
+                                        base::SampleMetadataScope::kProcess);
     DispatchSingleInputEvent(std::move(event_with_callback),
                              tick_clock_->NowTicks());
     return;
   }
 
   base::ScopedSampleMetadata metadata(
-      "Input.GestureScrollOrPinch", currently_active_gesture_device_.has_value()
-                                        ? ONGOING_SCROLL_PINCH
-                                        : SCROLL_PINCH);
+      "Input.GestureScrollOrPinch",
+      currently_active_gesture_device_.has_value() ? ONGOING_SCROLL_PINCH
+                                                   : SCROLL_PINCH,
+      base::SampleMetadataScope::kProcess);
   const auto& gesture_event =
       static_cast<const WebGestureEvent&>(event_with_callback->event());
   const bool is_first_gesture_scroll_update =

@@ -67,9 +67,7 @@ enum class SampleMetadataScope {
 class BASE_EXPORT SampleMetadata {
  public:
   // Set the metadata value associated with |name| to be recorded for |scope|.
-  explicit SampleMetadata(
-      StringPiece name,
-      SampleMetadataScope scope = SampleMetadataScope::kProcess);
+  explicit SampleMetadata(StringPiece name, SampleMetadataScope scope);
 
   SampleMetadata(const SampleMetadata&) = default;
   ~SampleMetadata() = default;
@@ -116,10 +114,9 @@ class BASE_EXPORT SampleMetadata {
 class BASE_EXPORT ScopedSampleMetadata {
  public:
   // Set the metadata value associated with |name| for |scope|.
-  ScopedSampleMetadata(
-      StringPiece name,
-      int64_t value,
-      SampleMetadataScope scope = SampleMetadataScope::kProcess);
+  ScopedSampleMetadata(StringPiece name,
+                       int64_t value,
+                       SampleMetadataScope scope);
 
   // Set the metadata value associated with the pair (|name|, |key|) for
   // |scope|. This constructor allows the metadata to be associated with an
@@ -128,11 +125,10 @@ class BASE_EXPORT ScopedSampleMetadata {
   // different frames. Prefer the previous constructor if no user-defined
   // metadata is required. Note: values specified for a name and key are stored
   // separately from values specified with only a name.
-  ScopedSampleMetadata(
-      StringPiece name,
-      int64_t key,
-      int64_t value,
-      SampleMetadataScope scope = SampleMetadataScope::kProcess);
+  ScopedSampleMetadata(StringPiece name,
+                       int64_t key,
+                       int64_t value,
+                       SampleMetadataScope scope);
 
   ScopedSampleMetadata(const ScopedSampleMetadata&) = delete;
   ~ScopedSampleMetadata();
@@ -154,19 +150,17 @@ class BASE_EXPORT ScopedSampleMetadata {
 // metadata scope (i.e. because the start or end of execution was missed), at
 // the cost of missing execution that are longer than the profiling period, or
 // extend before or after it. |period_end| must be <= TimeTicks::Now().
-BASE_EXPORT void ApplyMetadataToPastSamples(
-    TimeTicks period_start,
-    TimeTicks period_end,
-    StringPiece name,
-    int64_t value,
-    SampleMetadataScope scope = SampleMetadataScope::kProcess);
-BASE_EXPORT void ApplyMetadataToPastSamples(
-    TimeTicks period_start,
-    TimeTicks period_end,
-    StringPiece name,
-    int64_t key,
-    int64_t value,
-    SampleMetadataScope scope = SampleMetadataScope::kProcess);
+BASE_EXPORT void ApplyMetadataToPastSamples(TimeTicks period_start,
+                                            TimeTicks period_end,
+                                            StringPiece name,
+                                            int64_t value,
+                                            SampleMetadataScope scope);
+BASE_EXPORT void ApplyMetadataToPastSamples(TimeTicks period_start,
+                                            TimeTicks period_end,
+                                            StringPiece name,
+                                            int64_t key,
+                                            int64_t value,
+                                            SampleMetadataScope scope);
 
 // Returns the process-global metadata recorder instance used for tracking
 // sampling profiler metadata.

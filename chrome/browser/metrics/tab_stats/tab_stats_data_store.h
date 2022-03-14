@@ -173,7 +173,7 @@ class TabStatsDataStore : public TabStatsObserver {
 
   // Used to asssociate sampling profiler samples to the number of tabs.
   base::SampleMetadata tab_number_sample_meta_data_ =
-      base::SampleMetadata("NumberOfTabs");
+      base::SampleMetadata("NumberOfTabs", base::SampleMetadataScope::kProcess);
 
   // A raw pointer to the PrefService used to read and write the statistics.
   raw_ptr<PrefService> pref_service_;

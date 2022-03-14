@@ -1491,9 +1491,11 @@ PROFILER_TEST_F(StackSamplingProfilerTest,
             // samples 2 and 3, and likewise [times[2], times[4]] is guaranteed
             // to include only samples 3 and 4.
             ApplyMetadataToPastSamples(sample_times[1], sample_times[3],
-                                       "TestMetadata1", 10);
+                                       "TestMetadata1", 10,
+                                       base::SampleMetadataScope::kProcess);
             ApplyMetadataToPastSamples(sample_times[2], sample_times[4],
-                                       "TestMetadata2", 100, 11);
+                                       "TestMetadata2", 100, 11,
+                                       base::SampleMetadataScope::kProcess);
             profiler.Stop();
           }));
 

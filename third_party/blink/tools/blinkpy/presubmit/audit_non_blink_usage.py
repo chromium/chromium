@@ -44,6 +44,7 @@ _CONFIG = [
             # //base constructs that are allowed everywhere
             'base::AdoptRef',
             'base::ApplyMetadataToPastSamples',
+            'base::SampleMetadataScope',
             'base::AutoReset',
             'base::Contains',
             'base::CpuReductionExperimentFilter',

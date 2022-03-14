@@ -51,7 +51,8 @@ const base::RepeatingClosure GetApplyPerSampleMetadataCallback(
     CallStackProfileParams::Process process) {
   if (process != CallStackProfileParams::Process::kRenderer)
     return base::RepeatingClosure();
-  static const base::SampleMetadata process_backgrounded("ProcessBackgrounded");
+  static const base::SampleMetadata process_backgrounded(
+      "ProcessBackgrounded", base::SampleMetadataScope::kProcess);
   return base::BindRepeating(
       [](base::SampleMetadata process_backgrounded) {
         process_backgrounded.Set(IsCurrentProcessBackgrounded());

@@ -295,8 +295,8 @@ void InteractiveDetector::HandleForInputDelay(
     // Apply metadata on stack samples.
     base::ApplyMetadataToPastSamples(
         event_timestamp, event_timestamp + delay,
-        "PageLoad.InteractiveTiming.LongInputDelay", g_num_long_input_events,
-        1);
+        "PageLoad.InteractiveTiming.LongInputDelay", g_num_long_input_events, 1,
+        base::SampleMetadataScope::kProcess);
     g_num_long_input_events++;
   }
 
