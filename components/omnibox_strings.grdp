@@ -129,12 +129,12 @@
   </message>
   <if expr="use_titlecase">
     <then>
-      <message name="IDS_ACCURACY_CHECK_VERBOSE_STATE" desc="Text for the Accuracy Check Omnibox Verbose state. Displayed when the current page is showing an accuracy tip.">
+      <message name="IDS_ACCURACY_CHECK_VERBOSE_STATE" meaning="Text for feature that encourages the user to think about how accurate the content is" desc="This text appears in the address bar chip, which states the title of the feature shown in the page info bubble below (see screenshot). With this feature, the user will see a reminder on the page they're visiting that encourages the user to think about how accurate the content is. You may translate 'Accuracy' as 'Trustworthiness' or 'Reliability,' if those terms work better in your language. The 'Accuracy Check' is a noun; avoid translating this as an imperative command. Chrome does not verify accuracy by providing this feature; avoid any translation that implies Google or Chrome verification.">
         Accuracy Check
       </message>
     </then>
     <else>
-      <message name="IDS_ACCURACY_CHECK_VERBOSE_STATE" desc="Text for the Accuracy Check Omnibox Verbose state. Displayed when the current page is showing an accuracy tip.">
+      <message name="IDS_ACCURACY_CHECK_VERBOSE_STATE" meaning="Text for feature that encourages the user to think about how accurate the content is" desc="This text appears in the  address bar chip, which states the title of the feature shown in the page info bubble below (see screenshot). With this feature, the user will see a reminder on the page they're visiting that encourages the user to think about how accurate the content is. You may translate 'Accuracy' as 'Trustworthiness' or 'Reliability,' if those terms work better in your language. The 'Accuracy Check' is a noun; avoid translating this as an imperative command. Chrome does not verify accuracy by providing this feature; avoid any translation that implies Google or Chrome verification.">
         Accuracy check
       </message>
     </else>
