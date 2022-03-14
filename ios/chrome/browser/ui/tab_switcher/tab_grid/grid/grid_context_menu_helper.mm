@@ -95,6 +95,9 @@
 
   GridItem* item = [self.actionsDataSource
       gridItemForCellIdentifier:gridCell.itemIdentifier];
+  if (!item) {
+    return @[];
+  }
 
   NSMutableArray<UIMenuElement*>* menuElements = [[NSMutableArray alloc] init];
 
