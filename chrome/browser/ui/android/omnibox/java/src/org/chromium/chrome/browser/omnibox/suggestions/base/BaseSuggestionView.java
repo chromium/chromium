@@ -66,7 +66,6 @@ public class BaseSuggestionView<T extends View> extends SimpleHorizontalLayoutVi
     /**
      * @return List of Action views.
      */
-    @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
     public List<ImageView> getActionButtons() {
         return mActionButtons;
     }

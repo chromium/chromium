@@ -6,10 +6,12 @@ package org.chromium.chrome.browser.omnibox.suggestions.pedal;
 
 import android.content.Context;
 import android.view.KeyEvent;
+import android.view.ViewGroup.MarginLayoutParams;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.core.content.res.ResourcesCompat;
+import androidx.core.view.MarginLayoutParamsCompat;
 
 import com.google.android.material.color.MaterialColors;
 
@@ -73,7 +75,10 @@ public class PedalView extends SimpleHorizontalLayoutView {
 
     @Override
     protected void onMeasure(int widthSpec, int heightSpec) {
-        final int widthPx = MeasureSpec.getSize(widthSpec);
+        MarginLayoutParams marginLayoutParams = (MarginLayoutParams) getLayoutParams();
+
+        final int widthPx = MeasureSpec.getSize(widthSpec)
+                - MarginLayoutParamsCompat.getMarginEnd(marginLayoutParams);
         int chipViewWidth = widthPx - getPaddingLeft() - getPaddingRight();
 
         // Measure height of the content view given the width constraint.
