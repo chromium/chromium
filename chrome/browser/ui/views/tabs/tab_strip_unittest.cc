@@ -187,7 +187,7 @@ class TabStripTestBase : public ChromeViewsTestBase {
 
   void CompleteAnimationAndLayout() {
     // Complete animations and lay out *within the current tabstrip width*.
-    tab_strip_->CompleteAnimationAndLayout();
+    tab_strip_->StopAnimating(true);
     // Resize the tabstrip based on the current tab states.
     tab_strip_parent_->Layout();
   }

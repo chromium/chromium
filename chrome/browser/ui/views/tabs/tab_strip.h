@@ -426,9 +426,6 @@ class TabStrip : public views::View,
   // Returns whether the window background behind the tabstrip is transparent.
   bool TitlebarBackgroundIsTransparent() const;
 
-  // Invoked from Layout if the size changes or layout is really needed.
-  void CompleteAnimationAndLayout();
-
   // Returns the current width of the active tab.
   int GetActiveTabWidth() const;
 
@@ -502,14 +499,6 @@ class TabStrip : public views::View,
 
   // -- Animations ------------------------------------------------------------
 
-  // Invoked prior to starting a new animation.
-  void PrepareForAnimation();
-
-  // Generates and sets the ideal bounds for each of the tabs as well as the new
-  // tab button. Note: Does not animate the tabs to those bounds so callers can
-  // use this information for other purposes - see AnimateToIdealBounds.
-  void UpdateIdealBounds();
-
   // Starts various types of TabStrip animations.
   void StartResizeLayoutAnimation();
   void StartPinnedTabAnimation();
@@ -576,12 +565,6 @@ class TabStrip : public views::View,
 
   // MouseWatcher is used when a tab is closed to reset the layout.
   std::unique_ptr<views::MouseWatcher> mouse_watcher_;
-
-  // Size we last layed out at.
-  gfx::Size last_layout_size_;
-
-  // The width available for tabs at the time of last layout.
-  int last_available_width_ = 0;
 
   // Location of the mouse at the time of the last move.
   gfx::Point last_mouse_move_location_;

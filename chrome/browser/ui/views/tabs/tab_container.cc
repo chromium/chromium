@@ -10,6 +10,7 @@
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/tabs/tab.h"
 #include "chrome/browser/ui/views/tabs/tab_drag_context.h"
+#include "chrome/browser/ui/views/tabs/tab_drag_controller.h"
 #include "chrome/browser/ui/views/tabs/tab_group_header.h"
 #include "chrome/browser/ui/views/tabs/tab_group_highlight.h"
 #include "chrome/browser/ui/views/tabs/tab_group_underline.h"
@@ -299,6 +300,10 @@ TabContainer::TabContainer(TabStripController* controller,
 }
 
 TabContainer::~TabContainer() {
+  // The animations may reference the tabs or group views. Shut down the
+  // animation before we destroy any animated views.
+  StopAnimating(false);
+
   // Since TabGroupViews expects be able to remove the views it creates, clear
   // |group_views_| before removing the remaining children below.
   group_views_.clear();
@@ -529,6 +534,27 @@ void TabContainer::OnTabSlotAnimationProgressed(TabSlotView* view) {
     UpdateTabGroupVisuals(view->group().value());
 }
 
+void TabContainer::PrepareForAnimation() {
+  if (drag_context_ && !drag_context_->IsDragSessionActive() &&
+      !TabDragController::IsAttachedTo(drag_context_)) {
+    for (int i = 0; i < GetTabCount(); ++i)
+      GetTabAtModelIndex(i)->set_dragging(false);
+  }
+}
+
+void TabContainer::UpdateIdealBounds() {
+  if (GetTabCount() == 0)
+    return;  // Should only happen during creation/destruction, ignore.
+
+  // Update |last_available_width_| in case there is a different amount of
+  // available width than there was in the last layout (e.g. if the tabstrip
+  // is currently hidden).
+  last_available_width_ = GetAvailableWidthForTabContainer();
+
+  const int available_width_for_tabs = CalculateAvailableWidthForTabs();
+  layout_helper()->UpdateIdealBounds(available_width_for_tabs);
+}
+
 void TabContainer::AnimateToIdealBounds() {
   UpdateHoverCard(nullptr, TabController::HoverCardUpdateType::kAnimating);
 
@@ -585,6 +611,33 @@ void TabContainer::AnimateToIdealBounds() {
   // existing preferred size and layout (which may now be incorrect), we need to
   // signal this explicitly.
   PreferredSizeChanged();
+}
+
+void TabContainer::InvalidateIdealBounds() {
+  last_layout_size_ = gfx::Size();
+}
+
+void TabContainer::StopAnimating(bool layout) {
+  if (!bounds_animator_.IsAnimating())
+    return;
+
+  bounds_animator_.Cancel();
+
+  if (layout)
+    CompleteAnimationAndLayout();
+}
+
+void TabContainer::CompleteAnimationAndLayout() {
+  last_available_width_ = GetAvailableWidthForTabContainer();
+  last_layout_size_ = size();
+
+  bounds_animator().Cancel();
+
+  UpdateIdealBounds();
+  SnapToIdealBounds();
+
+  SetTabSlotVisibility();
+  SchedulePaint();
 }
 
 int TabContainer::CalculateAvailableWidthForTabs() const {
@@ -738,6 +791,37 @@ void TabContainer::OnTabWillBeRemovedAt(int model_index, bool was_active) {
   }
 }
 
+void TabContainer::Layout() {
+  if (base::FeatureList::IsEnabled(features::kScrollableTabStrip)) {
+    // With tab scrolling, the tab container is solely responsible for its own
+    // width.
+    // It should never be larger than its preferred width.
+    const int max_width = CalculatePreferredSize().width();
+    // It should never be smaller than its minimum width.
+    const int min_width = GetMinimumSize().width();
+    // If it can, it should fit within the tab strip region.
+    const int available_width = GetAvailableWidthForTabContainer();
+    // It should be as wide as possible subject to the above constraints.
+    const int width = std::min(max_width, std::max(min_width, available_width));
+    SetBounds(0, 0, width, GetLayoutConstant(TAB_HEIGHT));
+    SetTabSlotVisibility();
+  }
+
+  if (bounds_animator_.IsAnimating()) {
+    // Hide tabs that have animated at least partially out of the clip region.
+    SetTabSlotVisibility();
+    return;
+  }
+
+  // Only do a layout if our size or the available width changed.
+  const int available_width = GetAvailableWidthForTabContainer();
+  if (last_layout_size_ == size() && last_available_width_ == available_width)
+    return;
+  if (drag_context_->IsDragSessionActive())
+    return;
+  CompleteAnimationAndLayout();
+}
+
 void TabContainer::PaintChildren(const views::PaintInfo& paint_info) {
   // Groups that are being dragged by their header, or that contain the dragged
   // tabs, need an adjusted z-value. Find that group, if it exists.
@@ -776,6 +860,32 @@ gfx::Size TabContainer::GetMinimumSize() const {
   int minimum_width = layout_helper_->CalculateMinimumWidth();
 
   return gfx::Size(minimum_width, GetLayoutConstant(TAB_HEIGHT));
+}
+
+gfx::Size TabContainer::CalculatePreferredSize() const {
+  int preferred_width;
+  // The tab container needs to always exactly fit the bounds of the tabs so
+  // that NTB can be laid out just to the right of the rightmost tab. When the
+  // tabs aren't at their ideal bounds (i.e. during animation or a drag), we
+  // need to size ourselves to exactly fit wherever the tabs *currently* are.
+  if (bounds_animator_.IsAnimating() || drag_context_->IsDragSessionActive()) {
+    // The visual order of the tabs can be out of sync with the logical order,
+    // so we have to check all of them to find the visually trailing-most one.
+    int max_x = 0;
+    for (auto* child : children()) {
+      max_x = std::max(max_x, child->bounds().right());
+    }
+    // The tabs span from 0 to |max_x|, so |max_x| is the current width
+    // occupied by tabs. We report the current width as our preferred width so
+    // that the tab strip is sized to exactly fit the current position of the
+    // tabs.
+    preferred_width = max_x;
+  } else {
+    preferred_width = override_available_width_for_tabs_.value_or(
+        layout_helper_->CalculatePreferredWidth());
+  }
+
+  return gfx::Size(preferred_width, GetLayoutConstant(TAB_HEIGHT));
 }
 
 views::View* TabContainer::GetTooltipHandlerForPoint(const gfx::Point& point) {
