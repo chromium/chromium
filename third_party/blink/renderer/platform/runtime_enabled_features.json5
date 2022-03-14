@@ -580,7 +580,7 @@
     {
       // https://drafts.csswg.org/css-contain-3/#container-queries
       name: "CSSContainerQueries",
-      status: "test"
+      status: "experimental"
     },
     {
       // https://drafts.csswg.org/css-contain-3/#container-lengths
@@ -596,7 +596,7 @@
       implied_by: ["CSSContainerQueries"]
     },
     {
-      // Support for contain:inline-size and contain:block-size
+      // Support for contain:inline-size
       name: "CSSContainSize1D",
       implied_by: ["CSSContainerQueries"]
     },
