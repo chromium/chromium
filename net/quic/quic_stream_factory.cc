@@ -2030,8 +2030,12 @@ void QuicStreamFactory::InitializeMigrationOptions() {
   // not be simultaneously set.
   DCHECK(!allow_port_migration || !migrate_sessions_early);
 
-  if (allow_port_migration)
+  if (allow_port_migration) {
     params_.allow_port_migration = true;
+    if (migrate_idle_sessions) {
+      params_.migrate_idle_sessions = true;
+    }
+  }
 
   if (!NetworkChangeNotifier::AreNetworkHandlesSupported())
     return;
@@ -2047,8 +2051,7 @@ void QuicStreamFactory::InitializeMigrationOptions() {
   params_.migrate_sessions_on_network_change_v2 = true;
 
   if (!migrate_sessions_early) {
-    DCHECK(!migrate_idle_sessions &&
-           !retry_on_alternate_network_before_handshake);
+    DCHECK(!retry_on_alternate_network_before_handshake);
     return;
   }
 
