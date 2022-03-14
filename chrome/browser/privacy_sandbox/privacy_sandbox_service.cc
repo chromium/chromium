@@ -183,23 +183,63 @@ void PrivacySandboxService::DialogActionOccurred(
       // the old Privacy Sandbox pref.
       pref_service_->SetBoolean(prefs::kPrivacySandboxApisEnabledV2, true);
       pref_service_->SetBoolean(prefs::kPrivacySandboxNoticeDisplayed, true);
+      base::RecordAction(
+          base::UserMetricsAction("Settings.PrivacySandbox.Notice.Shown"));
+      break;
+    }
+    case (DialogAction::kNoticeOpenSettings): {
+      base::RecordAction(base::UserMetricsAction(
+          "Settings.PrivacySandbox.Notice.OpenedSettings"));
+      break;
+    }
+    case (DialogAction::kNoticeAcknowledge): {
+      base::RecordAction(base::UserMetricsAction(
+          "Settings.PrivacySandbox.Notice.Acknowledged"));
+      break;
+    }
+    case (DialogAction::kNoticeDismiss): {
+      base::RecordAction(
+          base::UserMetricsAction("Settings.PrivacySandbox.Notice.Dismissed"));
+      break;
+    }
+    case (DialogAction::kNoticeClosedNoInteraction): {
+      base::RecordAction(base::UserMetricsAction(
+          "Settings.PrivacySandbox.Notice.ClosedNoInteraction"));
+      break;
+    }
+    case (DialogAction::kConsentShown): {
+      base::RecordAction(
+          base::UserMetricsAction("Settings.PrivacySandbox.Consent.Shown"));
       break;
     }
     case (DialogAction::kConsentAccepted): {
       pref_service_->SetBoolean(prefs::kPrivacySandboxApisEnabledV2, true);
       pref_service_->SetBoolean(prefs::kPrivacySandboxConsentDecisionMade,
                                 true);
+      base::RecordAction(
+          base::UserMetricsAction("Settings.PrivacySandbox.Consent.Accepted"));
       break;
     }
     case (DialogAction::kConsentDeclined): {
       pref_service_->SetBoolean(prefs::kPrivacySandboxApisEnabledV2, false);
       pref_service_->SetBoolean(prefs::kPrivacySandboxConsentDecisionMade,
                                 true);
+      base::RecordAction(
+          base::UserMetricsAction("Settings.PrivacySandbox.Consent.Declined"));
       break;
     }
-    default: {
-      // TODO(crbug.com/1286384): Record received actions in metrics.
+    case (DialogAction::kConsentMoreInfoOpened): {
+      base::RecordAction(base::UserMetricsAction(
+          "Settings.PrivacySandbox.Consent.LearnMoreExpanded"));
+      break;
     }
+    case (DialogAction::kConsentClosedNoDecision): {
+      base::RecordAction(base::UserMetricsAction(
+          "Settings.PrivacySandbox.Consent.ClosedNoInteraction"));
+      break;
+    }
+    default:
+      break;
   }
 }
 
