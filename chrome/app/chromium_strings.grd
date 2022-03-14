@@ -1389,6 +1389,48 @@ Permissions you've already given to websites and apps may apply to this account.
       <message name="IDS_TAILORED_SECURITY_UNCONSENTED_PROMOTION_MESSAGE_ACCEPT" desc="Accept button shown in the message shown when a user changes their account-level tailored security setting encouraging them to enable Enhanced Safe Browsing">
         Continue
       </message>
+
+      <!-- Privacy Sandbox Dialog strings -->
+      <!-- TODO(crbug.com/1286276) These strings are not final yet and therefore marked as translateable="false" -->
+      <message name="IDS_PRIVACY_SANDBOX_DIALOG_CONSENT_SUBTITLE" translateable="false" desc="Subtitle of the Privacy Sandbox Dialog.">
+        Chromium is exploring new features that allow sites to deliver the same browsing experience using less of your info
+      </message>
+      <message name="IDS_PRIVACY_SANDBOX_DIALOG_CONSENT_BODY_DESCRIPTION_2" translateable="false" desc="Description of the second section in the body of the Privacy Sandbox Dialog.">
+        During the experiment, Chromium will estimate topics you may be interested in, based on your recent browsing history. Then, without learning who you are, sites you visit may use this info to show you relevant ads.
+      </message>
+      <message name="IDS_PRIVACY_SANDBOX_DIALOG_CONSENT_LEARN_MORE_SECTION_1_HEADER" translateable="false" desc="Header of the first section in the collapsable section of the Privacy Sandbox Dialog.">
+        Your interests as estimated by Chromium
+      </message>
+      <message name="IDS_PRIVACY_SANDBOX_DIALOG_CONSENT_LEARN_MORE_SECTION_1_BULLET_POINT_1" translateable="false" desc="First bullet point of the first section in the collapsable section of the Privacy Sandbox Dialog.">
+        <ph name="BEGIN_BOLD">&lt;b&gt;</ph>What data is used:<ph name="END_BOLD">&lt;/b&gt;</ph> Your browsing history, a record of sites you’ve visited using Chromium on this device.
+      </message>
+      <message name="IDS_PRIVACY_SANDBOX_DIALOG_CONSENT_LEARN_MORE_SECTION_1_BULLET_POINT_2" translateable="false" desc="Second bullet point of the first section in the collapsable section of the Privacy Sandbox Dialog.">
+        <ph name="BEGIN_BOLD">&lt;b&gt;</ph>How we use this data:<ph name="END_BOLD">&lt;/b&gt;</ph> Chromium can estimate your interests. Later, a site you visit can ask Chromium to see your interests in order to personalize the ads you see.
+      </message>
+      <message name="IDS_PRIVACY_SANDBOX_DIALOG_CONSENT_LEARN_MORE_SECTION_1_BULLET_POINT_3" translateable="false" desc="Third bullet point of the first section in the collapsable section of the Privacy Sandbox Dialog.">
+        <ph name="BEGIN_BOLD">&lt;b&gt;</ph>How you can manage your data:<ph name="END_BOLD">&lt;/b&gt;</ph> To protect your privacy, we auto-delete your interests that are older than 3 weeks. Interests can refresh. Or you can remove interests you don’t want Chromium to consider.
+      </message>
+      <message name="IDS_PRIVACY_SANDBOX_DIALOG_CONSENT_LEARN_MORE_SECTION_2_BULLET_POINT_1" translateable="false" desc="First bullet point of the second section in the collapsable section of the Privacy Sandbox Dialog.">
+        <ph name="BEGIN_BOLD">&lt;b&gt;</ph>What data is used:<ph name="END_BOLD">&lt;/b&gt;</ph>Your browsing history, a record of sites you’ve visited using Chromium on this device.
+      </message>
+      <message name="IDS_PRIVACY_SANDBOX_DIALOG_CONSENT_LEARN_MORE_SECTION_2_BULLET_POINT_2" translateable="false" desc="Second bullet point of the second section in the collapsable section of the Privacy Sandbox Dialog.">
+        <ph name="BEGIN_BOLD">&lt;b&gt;</ph>How we use this data:<ph name="END_BOLD">&lt;/b&gt;</ph> Sites can store information with Chromium about your interests. For example, if you visit a site to buy shoes for a marathon, the site might define your interest as running marathons. Later, if you visit a different site to register for a race, that site can see this interest and show you an ads for running shoes.
+      </message>
+      <message name="IDS_PRIVACY_SANDBOX_DIALOG_CONSENT_BOTTOM_SUMMARY" translateable="false" desc="Summary text in the bottom of the Privacy Sandbox Dialog.">
+        You can change your mind at any time in Chromium settings. During trials, your interaction with sites may not be more private than it is without these new features.
+      </message>
+      <message name="IDS_PRIVACY_SANDBOX_DIALOG_NOTICE_BODY_DESCRIPTION_1" translateable="false" desc="Description of the first section in the body of the Privacy Sandbox Dialog.">
+        Chromium is exploring ways to restrict cross-site tracking while enabling sites to stop ad spam and fraud.
+      </message>
+      <message name="IDS_PRIVACY_SANDBOX_DIALOG_NOTICE_BODY_HEADER_2" translateable="false" desc="Header of the second section in the body of the Privacy Sandbox Dialog.">
+        Try more transparent ads
+      </message>
+      <message name="IDS_PRIVACY_SANDBOX_DIALOG_NOTICE_BODY_DESCRIPTION_2" translateable="false" desc="Description of the second section in the body of the Privacy Sandbox Dialog.">
+        Chromium can estimate your topics of interest based on your recent browsing history. Then, without learning who you are, sites who are helping us test these features can use this info to show you relevant ads.
+      </message>
+      <message name="IDS_PRIVACY_SANDBOX_DIALOG_NOTICE_BOTTOM_SUMMARY" translateable="false" desc="Summary text in the bottom of the Privacy Sandbox Dialog.">
+        You can learn more about these features in Chromium settings. During trials, your interaction with sites may not be more private than it is without these new features.
+      </message>
     </messages>
   </release>
 </grit>
