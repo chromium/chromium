@@ -615,7 +615,7 @@ bool AutofillProfile::MergeStructuredDataFrom(const AutofillProfile& profile,
       structured_address::AreStringTokenEquivalent(
           GetRawInfo(NAME_FULL), profile.GetRawInfo(NAME_FULL))) {
     NameInfo name;
-    if (!comparator.MergeNames(profile, *this, &name)) {
+    if (!comparator.MergeNames(profile, *this, name)) {
       NOTREACHED();
       return false;
     }
@@ -630,7 +630,7 @@ bool AutofillProfile::MergeStructuredDataFrom(const AutofillProfile& profile,
           GetRawInfo(ADDRESS_HOME_STREET_ADDRESS),
           profile.GetRawInfo(ADDRESS_HOME_STREET_ADDRESS))) {
     Address address;
-    if (!comparator.MergeAddresses(profile, *this, &address)) {
+    if (!comparator.MergeAddresses(profile, *this, address)) {
       NOTREACHED();
       return false;
     }
@@ -668,11 +668,11 @@ bool AutofillProfile::MergeDataFrom(const AutofillProfile& profile,
   // accepting updates instead of preserving the original data. I.e., passing
   // the incoming profile first accepts case and diacritic changes, for example,
   // the other ways does not.
-  if (!comparator.MergeNames(profile, *this, &name) ||
-      !comparator.MergeEmailAddresses(profile, *this, &email) ||
-      !comparator.MergeCompanyNames(profile, *this, &company) ||
-      !comparator.MergePhoneNumbers(profile, *this, &phone_number) ||
-      !comparator.MergeAddresses(profile, *this, &address)) {
+  if (!comparator.MergeNames(profile, *this, name) ||
+      !comparator.MergeEmailAddresses(profile, *this, email) ||
+      !comparator.MergeCompanyNames(profile, *this, company) ||
+      !comparator.MergePhoneNumbers(profile, *this, phone_number) ||
+      !comparator.MergeAddresses(profile, *this, address)) {
     NOTREACHED();
     return false;
   }
@@ -1009,15 +1009,15 @@ void AutofillProfile::CreateInferredLabelsHelper(
 
     std::vector<ServerFieldType> label_fields;
     bool found_differentiating_field = false;
-    for (auto field = fields.begin(); field != fields.end(); ++field) {
+    for (auto field : fields) {
       // Skip over empty fields.
       std::u16string field_text =
-          profile->GetInfo(AutofillType(*field), app_locale);
+          profile->GetInfo(AutofillType(field), app_locale);
       if (field_text.empty())
         continue;
 
       std::map<std::u16string, size_t>& field_text_frequencies =
-          field_text_frequencies_by_field[*field];
+          field_text_frequencies_by_field[field];
       found_differentiating_field |=
           !field_text_frequencies.count(std::u16string()) &&
           (field_text_frequencies[field_text] == 1);
@@ -1028,7 +1028,7 @@ void AutofillProfile::CreateInferredLabelsHelper(
           (field_text_frequencies.size() == 1))
         continue;
 
-      label_fields.push_back(*field);
+      label_fields.push_back(field);
 
       // If we've (1) found a differentiating field and (2) found at least
       // |num_fields_to_include| non-empty fields, we're done!

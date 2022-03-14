@@ -197,7 +197,7 @@ class AutofillProfileComparatorTest
                            const AutofillProfile& b,
                            const NameInfo& expected) {
     NameInfo actual;
-    ASSERT_TRUE(comparator_.MergeNames(a, b, &actual));
+    ASSERT_TRUE(comparator_.MergeNames(a, b, actual));
 
     // Is the "processed" data correct?
     EXPECT_EQ(expected.GetInfo(AutofillType(NAME_FULL), kLocale),
@@ -220,7 +220,7 @@ class AutofillProfileComparatorTest
                                     const AutofillProfile& b,
                                     const EmailInfo& expected) {
     EmailInfo actual;
-    ASSERT_TRUE(comparator_.MergeEmailAddresses(a, b, &actual));
+    ASSERT_TRUE(comparator_.MergeEmailAddresses(a, b, actual));
     EXPECT_EQ(expected.GetRawInfo(EMAIL_ADDRESS),
               actual.GetRawInfo(EMAIL_ADDRESS));
   }
@@ -229,7 +229,7 @@ class AutofillProfileComparatorTest
                                   const AutofillProfile& b,
                                   const CompanyInfo& expected) {
     CompanyInfo actual;
-    ASSERT_TRUE(comparator_.MergeCompanyNames(a, b, &actual));
+    ASSERT_TRUE(comparator_.MergeCompanyNames(a, b, actual));
     EXPECT_EQ(expected.GetRawInfo(COMPANY_NAME),
               actual.GetRawInfo(COMPANY_NAME));
   }
@@ -241,7 +241,7 @@ class AutofillProfileComparatorTest
 
     // Merge the phone numbers.
     PhoneNumber actual(&dummy);
-    ASSERT_TRUE(comparator_.MergePhoneNumbers(a, b, &actual));
+    ASSERT_TRUE(comparator_.MergePhoneNumbers(a, b, actual));
 
     // Construct the expected value.
     PhoneNumber expected(&dummy);
@@ -270,7 +270,7 @@ class AutofillProfileComparatorTest
                                const Address& expected,
                                bool check_structured_address_tokens = false) {
     Address actual;
-    ASSERT_TRUE(comparator_.MergeAddresses(a, b, &actual));
+    ASSERT_TRUE(comparator_.MergeAddresses(a, b, actual));
 
     EXPECT_EQ(expected.GetInfo(AutofillType(ADDRESS_HOME_LINE1), kLocale),
               actual.GetInfo(AutofillType(ADDRESS_HOME_LINE1), kLocale));
@@ -800,7 +800,7 @@ TEST_P(AutofillProfileComparatorTest, MergeStructuredNames_WithPermutation) {
   profile2.FinalizeAfterImport();
 
   NameInfo merged_name;
-  comparator_.MergeNames(profile1, profile2, &merged_name);
+  comparator_.MergeNames(profile1, profile2, merged_name);
 
   // The merged name should maintain the structure but use the observation of
   // the custom-formatted full name.

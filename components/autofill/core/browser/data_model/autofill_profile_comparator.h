@@ -153,7 +153,7 @@ class AutofillProfileComparator {
   // prefer the latter.
   bool MergeNames(const AutofillProfile& p1,
                   const AutofillProfile& p2,
-                  NameInfo* name_info) const;
+                  NameInfo& name_info) const;
 
   // Returns true if |full_name_2| is a variant of |full_name_1|.
   //
@@ -176,7 +176,7 @@ class AutofillProfileComparator {
   // the most recently used version of the email address.
   bool MergeEmailAddresses(const AutofillProfile& p1,
                            const AutofillProfile& p2,
-                           EmailInfo* email_info) const;
+                           EmailInfo& email_info) const;
 
   // Populates |company_info| with the result of merging the company names in
   // |p1| and |p2|. Returns true if successful. Expects that |p1| and |p2| have
@@ -187,7 +187,7 @@ class AutofillProfileComparator {
   // as a tiebreaker, prefer the most recently used version of the company name.
   bool MergeCompanyNames(const AutofillProfile& p1,
                          const AutofillProfile& p2,
-                         CompanyInfo* company_info) const;
+                         CompanyInfo& company_info) const;
 
   // Populates |phone_number| with the result of merging the phone numbers in
   // |p1| and |p2|. Returns true if successful. Expects that |p1| and |p2| have
@@ -196,7 +196,7 @@ class AutofillProfileComparator {
   // Heuristic: Populate the missing parts of each number from the other.
   bool MergePhoneNumbers(const AutofillProfile& p1,
                          const AutofillProfile& p2,
-                         PhoneNumber* phone_number) const;
+                         PhoneNumber& phone_number) const;
 
   // Populates |address| with the result of merging the addresses in |p1| and
   // |p2|. Returns true if successful. Expects that |p1| and |p2| have already
@@ -207,7 +207,7 @@ class AutofillProfileComparator {
   // more verbost city, dependent locality, and address.
   bool MergeAddresses(const AutofillProfile& p1,
                       const AutofillProfile& p2,
-                      Address* address) const;
+                      Address& address) const;
 
   // App locale used when this comparator instance was created.
   const std::string app_locale() const { return app_locale_; }
@@ -314,7 +314,7 @@ class AutofillProfileComparator {
   // |p1| and |p2| have already been found to be mergeable, and have CJK names.
   bool MergeCJKNames(const AutofillProfile& p1,
                      const AutofillProfile& p2,
-                     NameInfo* info) const;
+                     NameInfo& info) const;
 
  private:
   l10n::CaseInsensitiveCompare case_insensitive_compare_;
