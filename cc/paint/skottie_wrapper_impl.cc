@@ -133,6 +133,27 @@ class PropertyHandler final : public skottie::PropertyObserver {
   SkottieTextPropertyValueMap current_text_values_;
 };
 
+class MarkerStore : public skottie::MarkerObserver {
+ public:
+  MarkerStore() = default;
+  MarkerStore(const MarkerStore&) = delete;
+  MarkerStore& operator=(const MarkerStore&) = delete;
+  ~MarkerStore() override = default;
+
+  // skottie::MarkerObserver implementation:
+  void onMarker(const char name[], float t0, float t1) override {
+    if (!name)
+      return;
+
+    all_markers_.push_back({std::string(name), t0, t1});
+  }
+
+  const std::vector<SkottieMarker>& all_markers() const { return all_markers_; }
+
+ private:
+  std::vector<SkottieMarker> all_markers_;
+};
+
 class SkottieWrapperImpl : public SkottieWrapper {
  public:
   SkottieWrapperImpl(base::span<const uint8_t> data,
@@ -172,6 +193,10 @@ class SkottieWrapperImpl : public SkottieWrapper {
       LOCKS_EXCLUDED(lock_) {
     base::AutoLock lock(lock_);
     return property_handler_->current_text_values();
+  }
+
+  const std::vector<SkottieMarker>& GetAllMarkers() const override {
+    return marker_store_->all_markers();
   }
 
   void Seek(float t, FrameDataCallback frame_data_cb) override
@@ -216,12 +241,14 @@ class SkottieWrapperImpl : public SkottieWrapper {
       std::vector<uint8_t> raw_data,
       const sk_sp<SkottieMRUResourceProvider>& mru_resource_provider)
       : property_handler_(sk_make_sp<PropertyHandler>()),
+        marker_store_(sk_make_sp<MarkerStore>()),
         animation_(
             skottie::Animation::Builder()
                 .setLogger(sk_make_sp<SkottieLogWriter>())
                 .setPropertyObserver(property_handler_)
                 .setResourceProvider(skresources::CachingResourceProvider::Make(
                     mru_resource_provider))
+                .setMarkerObserver(marker_store_)
                 .make(reinterpret_cast<const char*>(data.data()), data.size())),
         raw_data_(std::move(raw_data)),
         id_(base::FastHash(data)),
@@ -247,6 +274,7 @@ class SkottieWrapperImpl : public SkottieWrapper {
   mutable base::Lock lock_;
   FrameDataCallback current_frame_data_cb_ GUARDED_BY(lock_);
   sk_sp<PropertyHandler> property_handler_ GUARDED_BY(lock_);
+  const sk_sp<MarkerStore> marker_store_;
   sk_sp<skottie::Animation> animation_;
 
   // The raw byte data is stored for serialization across OOP-R. This is only

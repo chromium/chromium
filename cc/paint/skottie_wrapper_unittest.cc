@@ -30,6 +30,7 @@ using ::testing::_;
 using ::testing::Contains;
 using ::testing::Eq;
 using ::testing::FieldsAre;
+using ::testing::FloatNear;
 using ::testing::IsEmpty;
 using ::testing::Key;
 using ::testing::Mock;
@@ -39,6 +40,8 @@ using ::testing::Optional;
 using ::testing::Pair;
 using ::testing::SizeIs;
 using ::testing::UnorderedElementsAre;
+
+constexpr float kMarkerEpsilon = .01f;
 
 class MockFrameDataCallback {
  public:
@@ -228,6 +231,22 @@ TEST(SkottieWrapperTest, SetsTextNodesWithDraw) {
                        SkottieTextPropertyValue("new-test-text-1")),
                   Pair(HashSkottieResourceId(kLottieDataWith2TextNode2),
                        SkottieTextPropertyValue("new-test-text-2b"))));
+}
+
+TEST(SkottieWrapperTest, Marker) {
+  auto skottie = CreateSkottieFromString(kLottieDataWith2Markers);
+  ASSERT_TRUE(skottie->is_valid());
+  EXPECT_THAT(
+      skottie->GetAllMarkers(),
+      UnorderedElementsAre(
+          FieldsAre(
+              kLottieDataWith2MarkersMarker1,
+              FloatNear(kLottieDataWith2MarkersMarker1Time, kMarkerEpsilon),
+              FloatNear(kLottieDataWith2MarkersMarker1Time, kMarkerEpsilon)),
+          FieldsAre(
+              kLottieDataWith2MarkersMarker2,
+              FloatNear(kLottieDataWith2MarkersMarker2Time, kMarkerEpsilon),
+              FloatNear(kLottieDataWith2MarkersMarker2Time, kMarkerEpsilon))));
 }
 
 }  // namespace

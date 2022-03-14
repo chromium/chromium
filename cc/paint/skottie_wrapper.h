@@ -14,6 +14,7 @@
 #include "base/memory/ref_counted.h"
 #include "cc/paint/paint_export.h"
 #include "cc/paint/skottie_color_map.h"
+#include "cc/paint/skottie_marker.h"
 #include "cc/paint/skottie_resource_metadata.h"
 #include "cc/paint/skottie_text_property_value.h"
 #include "third_party/skia/include/core/SkRefCnt.h"
@@ -65,6 +66,10 @@ class CC_PAINT_EXPORT SkottieWrapper
   // corresponding current values. The nodes' values can only be updated via
   // the |text_map| argument in Draw().
   virtual SkottieTextPropertyValueMap GetCurrentTextPropertyValues() const = 0;
+
+  // Returns all markers present in the animation. The returned list is
+  // immutable and does not change during SkottieWrapper's lifetime.
+  virtual const std::vector<SkottieMarker>& GetAllMarkers() const = 0;
 
   // FrameDataCallback is implemented by the caller and invoked
   // synchronously during calls to Seek() and Draw(). The callback is used by
