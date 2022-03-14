@@ -48,11 +48,19 @@ TEST_F(AccountCapabilitiesTest, AreAllCapabilitiesKnown_Empty) {
   EXPECT_FALSE(capabilities.AreAllCapabilitiesKnown());
 }
 
-TEST_F(AccountCapabilitiesTest, AreAllCapabilitiesKnown_Filled) {
+TEST_F(AccountCapabilitiesTest, AreAllCapabilitiesKnown_PartiallyFilled) {
   AccountCapabilities capabilities;
 
   AccountCapabilitiesTestMutator mutator(&capabilities);
   mutator.set_can_offer_extended_chrome_sync_promos(true);
+  EXPECT_FALSE(capabilities.AreAllCapabilitiesKnown());
+}
+
+TEST_F(AccountCapabilitiesTest, AreAllCapabilitiesKnown_Filled) {
+  AccountCapabilities capabilities;
+
+  AccountCapabilitiesTestMutator mutator(&capabilities);
+  mutator.SetAllSupportedCapabilities(true);
   EXPECT_TRUE(capabilities.AreAllCapabilitiesKnown());
 }
 

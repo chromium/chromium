@@ -39,7 +39,13 @@ AccountCapabilities::GetSupportedAccountCapabilityNames() {
 }
 
 bool AccountCapabilities::AreAllCapabilitiesKnown() const {
-  return can_offer_extended_chrome_sync_promos() != signin::Tribool::kUnknown;
+  for (const std::string& capability_name :
+       GetSupportedAccountCapabilityNames()) {
+    if (GetCapabilityByName(capability_name) == signin::Tribool::kUnknown) {
+      return false;
+    }
+  }
+  return true;
 }
 
 signin::Tribool AccountCapabilities::GetCapabilityByName(
