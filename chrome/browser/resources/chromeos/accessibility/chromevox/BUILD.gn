@@ -87,7 +87,6 @@ chromevox_modules = [
   "common/key_util.js",
   "common/keyboard_handler.js",
   "common/msgs.js",
-  "common/nav_description.js",
   "common/spannable.js",
   "common/tts_background.js",
   "common/tts_base.js",
