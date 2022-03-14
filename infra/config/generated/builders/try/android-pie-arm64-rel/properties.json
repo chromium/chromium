@@ -3,6 +3,9 @@
     "compilator": "android-pie-arm64-rel-compilator",
     "compilator_watcher_git_revision": "7809a690bbd935bcb3b4d922e24cabe168aaabc8"
   },
+  "$build/flakiness": {
+    "check_for_flakiness": true
+  },
   "$recipe_engine/resultdb/test_presentation": {
     "column_keys": [],
     "grouping_keys": [
