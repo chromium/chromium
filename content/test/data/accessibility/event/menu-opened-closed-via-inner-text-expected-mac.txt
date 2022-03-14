@@ -1,7 +1,0 @@
-AXMenuOpened on AXMenu
-=== Start Continuation ===
-AXMenuClosed on AXWebArea
-=== Start Continuation ===
-AXMenuOpened on AXMenu
-=== Start Continuation ===
-AXMenuClosed on AXWebArea
