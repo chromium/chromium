@@ -262,8 +262,8 @@ void FederatedAuthRequestImpl::RequestIdToken(
   // implemented, remove this restriction. See https://crbug.com/1304396.
   if (GetApiPermissionContext() &&
       GetApiPermissionContext()->AreThirdPartyCookiesBlocked()) {
-    // TODO(npm): this should probably record to a metric value, and issue a
-    // distinct console error message.
+    RecordRequestIdTokenStatus(IdTokenStatus::kThirdPartyCookiesBlocked,
+                               render_frame_host_->GetPageUkmSourceId());
     CompleteRequest(FederatedAuthRequestResult::kError, "",
                     /*should_call_callback=*/false);
     return;
@@ -281,6 +281,8 @@ void FederatedAuthRequestImpl::RequestIdToken(
 
   if (GetApiPermissionContext() &&
       !GetApiPermissionContext()->HasApiPermission()) {
+    RecordRequestIdTokenStatus(IdTokenStatus::kDisabledInSettings,
+                               render_frame_host_->GetPageUkmSourceId());
     CompleteRequest(FederatedAuthRequestResult::kErrorDisabledInSettings, "",
                     /*should_call_callback=*/false);
     return;
@@ -298,6 +300,8 @@ void FederatedAuthRequestImpl::CancelTokenRequest() {
 
   if (GetApiPermissionContext() &&
       !GetApiPermissionContext()->HasApiPermission()) {
+    RecordRequestIdTokenStatus(IdTokenStatus::kDisabledInSettings,
+                               render_frame_host_->GetPageUkmSourceId());
     CompleteRequest(FederatedAuthRequestResult::kErrorDisabledInSettings, "",
                     /*should_call_callback=*/false);
     return;
@@ -340,6 +344,8 @@ void FederatedAuthRequestImpl::Revoke(
 
   if (GetApiPermissionContext() &&
       !GetApiPermissionContext()->HasApiPermission()) {
+    RecordRevokeStatus(RevokeStatusForMetrics::kDisabledInSettings,
+                       render_frame_host_->GetPageUkmSourceId());
     CompleteRevokeRequest(RevokeStatus::kError, /*should_call_callback=*/false);
     return;
   }
