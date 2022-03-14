@@ -74,8 +74,8 @@ void ValidateTraceEvents(std::unique_ptr<TraceAnalyzer> analyzer) {
 
 }  // namespace
 
-// Flaky on Linux: https://crbug.com/1223602.
-#if BUILDFLAG(IS_LINUX)
+// TODO(crbug.com/1223602): Flaky on Linux, ChromeOS and Mac.
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_MAC)
 #define MAYBE_LargestContentfulPaint DISABLED_LargestContentfulPaint
 #else
 #define MAYBE_LargestContentfulPaint LargestContentfulPaint
