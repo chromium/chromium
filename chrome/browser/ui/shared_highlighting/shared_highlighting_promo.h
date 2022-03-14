@@ -6,9 +6,9 @@
 #define CHROME_BROWSER_UI_SHARED_HIGHLIGHTING_SHARED_HIGHLIGHTING_PROMO_H_
 
 #include "base/memory/raw_ptr.h"
-#include "chrome/browser/ui/browser.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/browser/web_contents_user_data.h"
+#include "mojo/public/cpp/bindings/remote.h"
 #include "third_party/blink/public/mojom/link_to_text/link_to_text.mojom.h"
 
 namespace content {
@@ -33,13 +33,11 @@ class SharedHighlightingPromo
  private:
   friend class content::WebContentsUserData<SharedHighlightingPromo>;
 
-  SharedHighlightingPromo(content::WebContents* web_contents, Browser* browser);
+  explicit SharedHighlightingPromo(content::WebContents* web_contents);
 
   void CheckExistingSelectors(content::RenderFrameHost* render_frame_host);
 
   bool HasTextFragment(std::string url);
-
-  const raw_ptr<Browser> browser_;
 
   mojo::Remote<blink::mojom::TextFragmentReceiver> remote_;
 

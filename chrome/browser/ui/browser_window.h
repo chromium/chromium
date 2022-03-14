@@ -156,7 +156,7 @@ class BrowserWindow : public ui::BaseWindow {
 
   // Returns the browser window currently hosting `web_contents`. If no browser
   // window exists this returns null.
-  static const BrowserWindow* FindBrowserWindowWithWebContents(
+  static BrowserWindow* FindBrowserWindowWithWebContents(
       content::WebContents* web_contents);
 
   // Returns true if the browser window is on the current workspace (a.k.a.

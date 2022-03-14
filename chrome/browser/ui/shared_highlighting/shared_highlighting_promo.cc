@@ -30,11 +30,9 @@ void OnGetExistingSelectorsComplete(
 }  // namespace
 
 SharedHighlightingPromo::SharedHighlightingPromo(
-    content::WebContents* web_contents,
-    Browser* browser)
+    content::WebContents* web_contents)
     : content::WebContentsObserver(web_contents),
-      content::WebContentsUserData<SharedHighlightingPromo>(*web_contents),
-      browser_(browser) {}
+      content::WebContentsUserData<SharedHighlightingPromo>(*web_contents) {}
 
 SharedHighlightingPromo::~SharedHighlightingPromo() = default;
 
@@ -60,11 +58,14 @@ void SharedHighlightingPromo::CheckExistingSelectors(
   // Make sure that all the relevant things still exist - and then still use a
   // weak pointer to ensure we don't tear down the browser and its promo
   // controller before the callback returns.
-  if (browser_ && browser_->window() &&
-      browser_->window()->GetFeaturePromoController()) {
-    remote_->GetExistingSelectors(base::BindOnce(
-        &OnGetExistingSelectorsComplete,
-        browser_->window()->GetFeaturePromoController()->GetAsWeakPtr()));
+  auto* const window =
+      BrowserWindow::FindBrowserWindowWithWebContents(web_contents());
+  if (window) {
+    auto* const controller = window->GetFeaturePromoController();
+    if (controller) {
+      remote_->GetExistingSelectors(base::BindOnce(
+          &OnGetExistingSelectorsComplete, controller->GetAsWeakPtr()));
+    }
   }
 }
 
