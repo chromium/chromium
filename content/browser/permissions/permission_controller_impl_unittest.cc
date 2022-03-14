@@ -261,54 +261,6 @@ TEST_F(PermissionControllerImplTest,
 }
 
 TEST_F(PermissionControllerImplTest,
-       GetPermissionStatusDelegatesIffNoOverrides) {
-  GURL kUrl = GURL(kTestUrl);
-  url::Origin kTestOrigin = url::Origin::Create(kUrl);
-  EXPECT_CALL(*mock_manager(),
-              GetPermissionStatus(PermissionType::GEOLOCATION, kUrl, kUrl))
-      .WillOnce(testing::Return(blink::mojom::PermissionStatus::DENIED));
-
-  blink::mojom::PermissionStatus status =
-      permission_controller()->GetPermissionStatus(PermissionType::GEOLOCATION,
-                                                   kUrl, kUrl);
-  EXPECT_EQ(status, blink::mojom::PermissionStatus::DENIED);
-
-  permission_controller()->SetOverrideForDevTools(
-      kTestOrigin, PermissionType::GEOLOCATION,
-      blink::mojom::PermissionStatus::GRANTED);
-  EXPECT_CALL(*mock_manager(),
-              GetPermissionStatus(PermissionType::GEOLOCATION, kUrl, kUrl))
-      .Times(0);
-  status = permission_controller()->GetPermissionStatus(
-      PermissionType::GEOLOCATION, kUrl, kUrl);
-  EXPECT_EQ(status, blink::mojom::PermissionStatus::GRANTED);
-}
-
-TEST_F(PermissionControllerImplTest,
-       GetPermissionStatusForFrameDelegatesIffNoOverrides) {
-  GURL kUrl = GURL(kTestUrl);
-  url::Origin kTestOrigin = url::Origin::Create(kUrl);
-  EXPECT_CALL(*mock_manager(), GetPermissionStatusForFrame(
-                                   PermissionType::GEOLOCATION, nullptr, kUrl))
-      .WillOnce(testing::Return(blink::mojom::PermissionStatus::DENIED));
-
-  blink::mojom::PermissionStatus status =
-      permission_controller()->GetPermissionStatusForFrame(
-          PermissionType::GEOLOCATION, nullptr, kUrl);
-  EXPECT_EQ(status, blink::mojom::PermissionStatus::DENIED);
-
-  permission_controller()->SetOverrideForDevTools(
-      kTestOrigin, PermissionType::GEOLOCATION,
-      blink::mojom::PermissionStatus::GRANTED);
-  EXPECT_CALL(*mock_manager(), GetPermissionStatusForFrame(
-                                   PermissionType::GEOLOCATION, nullptr, kUrl))
-      .Times(0);
-  status = permission_controller()->GetPermissionStatusForFrame(
-      PermissionType::GEOLOCATION, nullptr, kUrl);
-  EXPECT_EQ(status, blink::mojom::PermissionStatus::GRANTED);
-}
-
-TEST_F(PermissionControllerImplTest,
        NotifyChangedSubscriptionsCallsOnChangeOnly) {
   using PermissionStatusCallback =
       base::RepeatingCallback<void(blink::mojom::PermissionStatus)>;
