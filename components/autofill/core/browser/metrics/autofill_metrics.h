@@ -1928,6 +1928,13 @@ class AutofillMetrics {
       size_t number_of_accepted_fields,
       size_t number_of_corrected_fields);
 
+  // Logs the number of autofilled fields with unrecognized autocomplete
+  // attribute at submission time.
+  static void
+  LogNumberOfAutofilledFieldsWithAutocompleteUnrecognizedAtSubmission(
+      size_t number_of_accepted_fields,
+      size_t number_of_corrected_fields);
+
   // Logs the type of a profile import.
   static void LogProfileImportType(AutofillProfileImportType import_type);
 

@@ -135,10 +135,20 @@ AutofillType AutofillField::ComputedType() const {
     }
   }
 
-  // Use the html type specified by the website unless it is unrecognized and
-  // autofill predicts a credit card type.
+  // If the autocomplete attribute is unrecognized, it is used to effectively
+  // return an UNKNOWN_TYPE predition, unless either the heuristic or server
+  // prediction suggest that the field is credit-card related, or if the
+  // |kAutofillFillAndImportFromMoreFields| feature is enabled.
+  if (html_type_ == HTML_TYPE_UNRECOGNIZED && !IsCreditCardPrediction() &&
+      !base::FeatureList::IsEnabled(
+          features::kAutofillFillAndImportFromMoreFields)) {
+    return AutofillType(html_type_, html_mode_);
+  }
+
+  // If the autocomplete attribute is neither empty or unrecognized, use it
+  // unconditionally.
   if (html_type_ != HTML_TYPE_UNSPECIFIED &&
-      !(html_type_ == HTML_TYPE_UNRECOGNIZED && IsCreditCardPrediction())) {
+      html_type_ != HTML_TYPE_UNRECOGNIZED) {
     return AutofillType(html_type_, html_mode_);
   }
 
@@ -229,6 +239,13 @@ bool AutofillField::IsFieldFillable() const {
 
   ServerFieldType field_type = Type().GetStorableType();
   return IsFillableFieldType(field_type);
+}
+
+bool AutofillField::ShouldSuppressPromptDueToUnrecognizedAutocompleteAttribute()
+    const {
+  return html_type_ == HTML_TYPE_UNRECOGNIZED && !IsCreditCardPrediction() &&
+         base::FeatureList::IsEnabled(
+             features::kAutofillFillAndImportFromMoreFields);
 }
 
 void AutofillField::SetPasswordRequirements(PasswordRequirementsSpec spec) {

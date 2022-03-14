@@ -102,6 +102,14 @@ const base::Feature kAutofillConsiderVariationCountryCodeForPhoneNumbers{
 const base::Feature kAutofillCreateDataForTest{
     "AutofillCreateDataForTest", base::FEATURE_DISABLED_BY_DEFAULT};
 
+// If enabled, we try to fill and import from fields based on available
+// heuristic or server suggestions even if the autocomplete attribute is not
+// specified by the web standard. This does not affect the moments when the UI
+// is shown.
+// TODO(crbug.com/1295728): Remove the feature when the experiment is completed.
+const base::Feature kAutofillFillAndImportFromMoreFields{
+    "AutofillFillAndImportFromMoreFields", base::FEATURE_DISABLED_BY_DEFAULT};
+
 // If enabled, AutofillPopupControllerImpl is destructed not immediately in its
 // HideViewAndDie() function, but as a delayed task.
 // TODO(crbug.com/1277218): Cleanup when launched.

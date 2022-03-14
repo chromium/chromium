@@ -760,6 +760,93 @@ TEST_F(AutofillMetricsTest, NumberOfAutofilledFieldsAtSubmission) {
   }
 }
 
+// Test that we log the right number of autofilled fields with an unrecognized
+// autocomplete attribute at submission time.
+TEST_F(AutofillMetricsTest,
+       NumberOfAutofilledFieldsWithAutocompleteUnrecognizedAtSubmission) {
+  scoped_feature_list_.InitAndEnableFeature(
+      features::kAutofillFillAndImportFromMoreFields);
+  // Set up our form data with two autofilled fields.
+  FormData form =
+      test::GetFormData({.description_for_logging = "NumberOfAutofilledFields",
+                         .fields = {{.label = u"Autofilled",
+                                     .name = u"autofilled",
+                                     .value = u"Elvis Aaron Presley",
+                                     .autocomplete_attribute = "garbage",
+                                     .is_autofilled = true},
+                                    {.label = u"Autofilled but corrected",
+                                     .name = u"autofillfailed",
+                                     .value = u"buddy@gmail.com",
+                                     .autocomplete_attribute = "garbage",
+                                     .is_autofilled = true},
+                                    {.label = u"Empty",
+                                     .name = u"empty",
+                                     .value = u"",
+                                     .is_autofilled = false},
+                                    {.label = u"Unknown",
+                                     .name = u"unknown",
+                                     .value = u"garbage",
+                                     .is_autofilled = false},
+                                    {.label = u"Select",
+                                     .name = u"select",
+                                     .value = u"USA",
+                                     .form_control_type = "select-one",
+                                     .is_autofilled = false},
+                                    {.role = ServerFieldType::PHONE_HOME_NUMBER,
+                                     .value = u"2345678901",
+                                     .form_control_type = "tel",
+                                     .is_autofilled = true}},
+                         .unique_renderer_id = test::MakeFormRendererId(),
+                         .main_frame_origin = url::Origin::Create(
+                             autofill_client_.form_origin())});
+
+  std::vector<ServerFieldType> heuristic_types = {
+      NAME_FULL,         PHONE_HOME_NUMBER, NAME_FULL,
+      PHONE_HOME_NUMBER, UNKNOWN_TYPE,      PHONE_HOME_CITY_AND_NUMBER};
+  std::vector<ServerFieldType> server_types = {
+      NAME_FIRST,    EMAIL_ADDRESS,  NAME_FIRST,
+      EMAIL_ADDRESS, NO_SERVER_DATA, PHONE_HOME_CITY_AND_NUMBER};
+
+  // Simulate having seen this form on page load.
+  browser_autofill_manager_->AddSeenForm(form, heuristic_types, server_types);
+
+  // Simulate user changing the second and forth field of the form.
+  browser_autofill_manager_->OnTextFieldDidChange(form, form.fields[1],
+                                                  gfx::RectF(), TimeTicks());
+  form.fields.at(1).is_autofilled = false;
+
+  // Simulate form submission.
+  base::HistogramTester histogram_tester;
+  browser_autofill_manager_->OnFormSubmitted(form, /*known_success=*/false,
+                                             SubmissionSource::FORM_SUBMISSION);
+
+  // Test that the correct bucket for the number of filled fields with an
+  // unrecognized autocomplete attriute received a count while the others remain
+  // at zero counts.
+  const size_t expected_number_of_accepted_fillings = 1;
+  const size_t expected_number_of_corrected_fillings = 1;
+  const size_t expected_number_of_total_fillings =
+      expected_number_of_accepted_fillings +
+      expected_number_of_corrected_fillings;
+  for (int i = 0; i < 50; i++) {
+    histogram_tester.ExpectBucketCount(
+        "Autofill."
+        "NumberOfAutofilledFieldsWithAutocompleteUnrecognizedAtSubmission."
+        "Total",
+        i, i == expected_number_of_total_fillings ? 1 : 0);
+    histogram_tester.ExpectBucketCount(
+        "Autofill."
+        "NumberOfAutofilledFieldsWithAutocompleteUnrecognizedAtSubmission."
+        "Accepted",
+        i, i == expected_number_of_accepted_fillings ? 1 : 0);
+    histogram_tester.ExpectBucketCount(
+        "Autofill."
+        "NumberOfAutofilledFieldsWithAutocompleteUnrecognizedAtSubmission."
+        "Corrected",
+        i, i == expected_number_of_corrected_fillings ? 1 : 0);
+  }
+}
+
 // Test that we log the perfect filling metric correctly for an address form in
 // which every field is autofilled.
 TEST_F(AutofillMetricsTest, PerfectFillingForAddresses_AllAutofillFilled) {
@@ -6017,7 +6104,7 @@ TEST_F(AutofillMetricsTest, CreditCardGetRealPanDuration_BadServerResponse) {
   test::CreateTestCreditCardFormData(&form,
                                      /*is_https=*/true,
                                      /*use_month_type=*/true,
-                                     /*split_name=*/false);
+                                     /*split_names=*/false);
   std::vector<ServerFieldType> field_types{
       CREDIT_CARD_NAME_FULL, CREDIT_CARD_NUMBER,
       CREDIT_CARD_EXP_DATE_2_DIGIT_YEAR, CREDIT_CARD_VERIFICATION_CODE};

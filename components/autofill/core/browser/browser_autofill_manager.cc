@@ -973,6 +973,9 @@ void BrowserAutofillManager::OnAskForValuesToFillImpl(
       case SuppressReason::kAutocompleteOff:
         LogSuppressReason(log_manager(), "autocomplete=off");
         return;
+      case SuppressReason::kAutocompleteUnrecognized:
+        LogSuppressReason(log_manager(), "autocomplete=unrecognized");
+        return;
     }
 
     if (!suggestions.empty()) {
@@ -992,23 +995,49 @@ void BrowserAutofillManager::OnAskForValuesToFillImpl(
     }
   }
 
-  // If there are no Autofill suggestions, consider showing Autocomplete
-  // suggestions. We will not show Autocomplete suggestions for a field that
-  // specifies autocomplete=off (or an unrecognized type), a field for which we
-  // will show the credit card signin promo, a field that we think is a
-  // credit card expiration, cvc or number, or on forms displayed on secure
-  // (i.e. HTTPS) sites that submit insecurely (over HTTP).
-  if (suggestions.empty() && !ShouldShowCreditCardSigninPromo(form, field) &&
-      field.should_autocomplete &&
-      !(context.focused_field &&
-        (autofill::data_util::IsCreditCardExpirationType(
-             context.focused_field->Type().GetStorableType()) ||
-         context.focused_field->Type().html_type() == HTML_TYPE_UNRECOGNIZED ||
-         context.focused_field->Type().GetStorableType() ==
-             CREDIT_CARD_NUMBER ||
-         context.focused_field->Type().GetStorableType() ==
-             CREDIT_CARD_VERIFICATION_CODE)) &&
-      context.suppress_reason != SuppressReason::kInsecureForm) {
+  auto ShouldOfferAutocomplete = [&] {
+    // Do not offer autocomplete if one of the following:
+    //  * There are already suggestions.
+    //  * Credit card sign-in promo is offered.
+    //  * Autocomplete for the field is disabled.
+    if (!suggestions.empty() || ShouldShowCreditCardSigninPromo(form, field) ||
+        !field.should_autocomplete) {
+      return false;
+    }
+
+    // Do not offer autocomplete suggestions for credit card number, cvc and
+    // expiration date related fields.
+    ServerFieldType server_type =
+        context.focused_field ? context.focused_field->Type().GetStorableType()
+                              : UNKNOWN_TYPE;
+    if (data_util::IsCreditCardExpirationType(server_type) ||
+        server_type == CREDIT_CARD_VERIFICATION_CODE ||
+        server_type == CREDIT_CARD_NUMBER) {
+      return false;
+    }
+
+    // Do not offer autocomplete suggestions if popups are suppressed due to an
+    // unrecognized autocomplete attribute. Note that in the context of
+    // Autofill, the popup for credit card related fields is not getting
+    // suppressed due to an unrecognized autocomplete attribute.
+    if (context.suppress_reason == SuppressReason::kAutocompleteUnrecognized) {
+      return false;
+    }
+
+    // Therefore, we check the attribute explicitly.
+    if (context.focused_field &&
+        context.focused_field->Type().html_type() == HTML_TYPE_UNRECOGNIZED) {
+      return false;
+    }
+
+    // Finally, check that the scheme is secure.
+    if (context.suppress_reason == SuppressReason::kInsecureForm) {
+      return false;
+    }
+    return true;
+  };
+
+  if (ShouldOfferAutocomplete()) {
     // Suggestions come back asynchronously, so the SingleFieldFormFillRouter
     // will handle sending the results back to the renderer.
     single_field_form_fill_router_->OnGetSingleFieldSuggestions(
@@ -2595,6 +2624,16 @@ void BrowserAutofillManager::GetAvailableSuggestions(
                             &context->focused_field) &&
       // Don't send suggestions or track forms that should not be parsed.
       context->form_structure->ShouldBeParsed();
+
+  // Do not offer suggestions for fields that have an unrecognized autocomplete
+  // attribute, unless those are credit card fields.
+  if (context->focused_field &&
+      context->focused_field
+          ->ShouldSuppressPromptDueToUnrecognizedAutocompleteAttribute()) {
+    context->suppress_reason = SuppressReason::kAutocompleteUnrecognized;
+    suggestions->clear();
+    return;
+  }
 
   // Log interactions of forms that are autofillable.
   if (got_autofillable_form) {

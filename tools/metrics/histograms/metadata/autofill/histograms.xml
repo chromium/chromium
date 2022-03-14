@@ -1879,6 +1879,22 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
+<histogram
+    name="Autofill.NumberOfAutofilledFieldsWithAutocompleteUnrecognizedAtSubmission.{AcceptanceStatus}"
+    units="fields" expires_after="M104">
+  <owner>koerber@google.com</owner>
+  <owner>chrome-autofill-alerts@google.com</owner>
+  <summary>
+    The {AcceptanceStatus} of autofilled fields with an unrecognized
+    autocomplete attribute in a form after receiving a form submission event.
+  </summary>
+  <token key="AcceptanceStatus">
+    <variant name="Accepted" summary="number of accepted"/>
+    <variant name="Corrected" summary="number of corrected"/>
+    <variant name="Total" summary="total number of"/>
+  </token>
+</histogram>
+
 <histogram name="Autofill.NumberOfEditedAutofilledFieldsAtSubmission"
     units="fields" expires_after="2022-12-12">
   <owner>battre@chromium.org</owner>

@@ -3064,6 +3064,27 @@ void AutofillMetrics::LogNumberOfAutofilledFieldsAtSubmission(
       number_of_corrected_fields, 50);
 }
 
+// static
+void AutofillMetrics::
+    LogNumberOfAutofilledFieldsWithAutocompleteUnrecognizedAtSubmission(
+        size_t number_of_accepted_fields,
+        size_t number_of_corrected_fields) {
+  base::UmaHistogramExactLinear(
+      "Autofill."
+      "NumberOfAutofilledFieldsWithAutocompleteUnrecognizedAtSubmission.Total",
+      number_of_accepted_fields + number_of_corrected_fields, 50);
+  base::UmaHistogramExactLinear(
+      "Autofill."
+      "NumberOfAutofilledFieldsWithAutocompleteUnrecognizedAtSubmission."
+      "Accepted",
+      number_of_accepted_fields, 50);
+  base::UmaHistogramExactLinear(
+      "Autofill."
+      "NumberOfAutofilledFieldsWithAutocompleteUnrecognizedAtSubmission."
+      "Corrected",
+      number_of_corrected_fields, 50);
+}
+
 void AutofillMetrics::LogProfileImportType(
     AutofillProfileImportType import_type) {
   base::UmaHistogramEnumeration("Autofill.ProfileImport.ProfileImportType",

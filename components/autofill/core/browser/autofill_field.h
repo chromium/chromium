@@ -146,6 +146,11 @@ class AutofillField : public FormFieldData {
   // field).
   bool IsFieldFillable() const;
 
+  // Returns true if suggestion prompts should not be shown for this field.
+  // Currently, prompts are suppressed if the autocomplete attribute is
+  // unrecognized unless it is a credit card form related field.
+  bool ShouldSuppressPromptDueToUnrecognizedAutocompleteAttribute() const;
+
   void set_initial_value_hash(uint32_t value) { initial_value_hash_ = value; }
   absl::optional<uint32_t> initial_value_hash() { return initial_value_hash_; }
 
