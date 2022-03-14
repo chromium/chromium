@@ -575,14 +575,14 @@ void WebUITabCounterButton::Init() {
       WEBUI_TAB_COUNTER_CXMENU_CLOSE_TAB,
       l10n_util::GetStringUTF16(
           IDS_WEBUI_TAB_STRIP_TAB_COUNTER_CXMENU_CLOSE_TAB),
-      ui::ImageModel::FromImageSkia(gfx::CreateVectorIcon(
-          vector_icons::kCloseIcon, gfx::kFaviconSize, SK_ColorGRAY)));
+      ui::ImageModel::FromVectorIcon(vector_icons::kCloseIcon,
+                                     ui::kColorMenuIcon, gfx::kFaviconSize));
   menu_model_->AddSeparator(ui::MenuSeparatorType::NORMAL_SEPARATOR);
   menu_model_->AddItemWithIcon(
       WEBUI_TAB_COUNTER_CXMENU_NEW_TAB,
       l10n_util::GetStringUTF16(IDS_WEBUI_TAB_STRIP_TAB_COUNTER_CXMENU_NEW_TAB),
-      ui::ImageModel::FromImageSkia(
-          gfx::CreateVectorIcon(kAddIcon, gfx::kFaviconSize, SK_ColorGRAY)));
+      ui::ImageModel::FromVectorIcon(kAddIcon, ui::kColorMenuIcon,
+                                     gfx::kFaviconSize));
   menu_runner_ = std::make_unique<views::MenuRunner>(
       menu_model_.get(), views::MenuRunner::HAS_MNEMONICS |
                              views::MenuRunner::CONTEXT_MENU |
