@@ -375,7 +375,7 @@ async function createCartElement(): Promise<HTMLElement> {
       'NewTabPage.Carts.CartCount', carts.length);
   const element = new ChromeCartModuleElement();
   if (welcomeVisible) {
-    element.headerChipText = loadTimeData.getString('modulesCartHeaderNew');
+    element.headerChipText = loadTimeData.getString('modulesNewTagLabel');
     element.headerDescriptionText =
         loadTimeData.getString('modulesCartWarmWelcome');
   }

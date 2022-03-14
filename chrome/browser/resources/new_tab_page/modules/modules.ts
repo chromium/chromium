@@ -71,6 +71,16 @@ export class ModulesElement extends PolymerElement {
         value: null,
       },
 
+      /**
+       * When the first run experience (FRE) is disabled and modules are
+       * enabled, we show the modules without a FRE.
+       */
+      showFre_: {
+        reflectToAttribute: true,
+        type: Boolean,
+        computed: `computeShowFre_(modulesLoaded_)`,
+      },
+
       modulesLoaded_: Boolean,
       modulesVisibilityDetermined_: Boolean,
 
@@ -104,6 +114,8 @@ export class ModulesElement extends PolymerElement {
   private dismissedModules_: string[];
   private disabledModules_: {all: boolean, ids: string[]};
   private removedModuleData_: {message: string, undo: () => void}|null;
+  private modulesFirstRunExperienceEnabled_: boolean;
+  private showFre_: boolean;
   private modulesLoaded_: boolean;
   private modulesVisibilityDetermined_: boolean;
   private modulesLoadedAndVisibilityDetermined_: boolean;
@@ -135,6 +147,12 @@ export class ModulesElement extends PolymerElement {
   override ready() {
     super.ready();
     this.renderModules_();
+  }
+
+  private computeShowFre_(): boolean {
+    return (
+        loadTimeData.getBoolean('modulesFirstRunExperienceEnabled') &&
+        this.modulesLoaded_);
   }
 
   private appendModuleContainers_(moduleContainers: HTMLElement[]) {

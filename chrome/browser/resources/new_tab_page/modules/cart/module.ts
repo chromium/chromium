@@ -489,7 +489,7 @@ async function createCartElement(): Promise<HTMLElement|null> {
 
   const element = new ChromeCartModuleElement();
   if (welcomeVisible) {
-    element.headerChipText = loadTimeData.getString('modulesCartHeaderNew');
+    element.headerChipText = loadTimeData.getString('modulesNewTagLabel');
     element.headerDescriptionText =
         loadTimeData.getString('modulesCartWarmWelcome');
   }

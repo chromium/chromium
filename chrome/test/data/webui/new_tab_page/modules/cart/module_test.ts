@@ -182,8 +182,7 @@ suite('NewTabPageModulesChromeCartModuleTest', () => {
           moduleElement.shadowRoot!.querySelector('ntp-module-header')!
               .shadowRoot!.querySelector<HTMLElement>('#description');
       assertEquals(
-          loadTimeData.getString('modulesCartHeaderNew'),
-          headerChip!.innerText);
+          loadTimeData.getString('modulesNewTagLabel'), headerChip!.innerText);
       assertEquals(
           loadTimeData.getString('modulesCartWarmWelcome'),
           headerDescription!.innerText);

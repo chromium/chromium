@@ -86,6 +86,7 @@ generate_grd("build_grd") {
   input_files = [
     "new_tab_page.html",
     "shared_vars.css",
+    "modules/chromefetti.svg",
     "untrusted/background_image.html",
     "untrusted/background_image.js",
     "untrusted/image.html",

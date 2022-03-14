@@ -347,7 +347,6 @@ content::WebUIDataSource* CreateNewTabPageUiHtmlSource(Profile* profile) {
       {"modulesPhotosNew", IDS_NTP_MODULES_PHOTOS_NEW},
       {"modulesTasksInfoTitle", IDS_NTP_MODULES_SHOPPING_TASKS_INFO_TITLE},
       {"modulesTasksInfoClose", IDS_NTP_MODULES_SHOPPING_TASKS_INFO_CLOSE},
-      {"modulesCartHeaderNew", IDS_NTP_MODULES_CART_HEADER_CHIP_NEW},
       {"modulesCartWarmWelcome", IDS_NTP_MODULES_CART_WARM_WELCOME},
       {"modulesCartModuleMenuHideToastMessage",
        IDS_NTP_MODULES_CART_MODULE_MENU_HIDE_TOAST_MESSAGE},
@@ -381,6 +380,17 @@ content::WebUIDataSource* CreateNewTabPageUiHtmlSource(Profile* profile) {
        IDS_NTP_MODULES_CART_DISCOUNT_CONSENT_CONTENT_V3},
       {"modulesCartDiscountConentTitle",
        IDS_NTP_MODULES_CART_DISCOUNT_CONSENT_TITLE},
+      {"modulesNewTagLabel", IDS_NTP_MODULES_NEW_TAG_LABEL},
+      {"modulesFirstRunExperienceTitle",
+       IDS_NTP_MODULES_FIRST_RUN_EXPERIENCE_TITLE},
+      {"modulesFirstRunExperienceBodyLine1",
+       IDS_NTP_MODULES_FIRST_RUN_EXPERIENCE_BODY_LINE_1},
+      {"modulesFirstRunExperienceBodyLine2",
+       IDS_NTP_MODULES_FIRST_RUN_EXPERIENCE_BODY_LINE_2},
+      {"modulesFirstRunOptInButton",
+       IDS_NTP_MODULES_FIRST_RUN_EXPERIENCE_OPT_IN_BUTTON},
+      {"modulesFirstRunOptOutButton",
+       IDS_NTP_MODULES_FIRST_RUN_EXPERIENCE_OPT_OUT_BUTTON},
   };
   source->AddLocalizedStrings(kStrings);
 
