@@ -55,11 +55,9 @@ testing::AssertionResult SharedInfoEqual(
     const AggregatableReportSharedInfo& actual);
 
 // Returns an example report request, using the given parameters.
-// TODO(crbug.com/1303041): Switch default aggregation mode to `kDefault`.
 AggregatableReportRequest CreateExampleRequest(
     AggregationServicePayloadContents::AggregationMode aggregation_mode =
-        AggregationServicePayloadContents::AggregationMode::
-            kExperimentalPoplar);
+        AggregationServicePayloadContents::AggregationMode::kDefault);
 
 AggregatableReportRequest CloneReportRequest(
     const AggregatableReportRequest& request);

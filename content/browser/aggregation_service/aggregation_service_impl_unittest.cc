@@ -170,9 +170,6 @@ TEST_F(AggregationServiceImplTest, AssembleReport_Succeed) {
   payloads.emplace_back(/*payload=*/kABCD1234AsBytes,
                         /*key_id=*/"key_1",
                         /*debug_cleartext_payload=*/absl::nullopt);
-  payloads.emplace_back(/*payload=*/kEFGH5678AsBytes,
-                        /*key_id=*/"key_2",
-                        /*debug_cleartext_payload=*/absl::nullopt);
 
   AggregatableReport report(std::move(payloads), "example_shared_info");
   assembler()->TriggerResponse(
@@ -205,9 +202,6 @@ TEST_F(AggregationServiceImplTest, SendReport) {
   std::vector<AggregatableReport::AggregationServicePayload> payloads;
   payloads.emplace_back(/*payload=*/kABCD1234AsBytes,
                         /*key_id=*/"key_1",
-                        /*debug_cleartext_payload=*/absl::nullopt);
-  payloads.emplace_back(/*payload=*/kEFGH5678AsBytes,
-                        /*key_id=*/"key_2",
                         /*debug_cleartext_payload=*/absl::nullopt);
 
   AggregatableReport report(std::move(payloads), "example_shared_info");

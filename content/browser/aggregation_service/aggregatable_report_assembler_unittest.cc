@@ -113,8 +113,8 @@ class AggregatableReportAssemblerTest : public testing::Test {
 TEST_F(AggregatableReportAssemblerTest, BothKeyFetchesFail_ErrorReturned) {
   base::HistogramTester histograms;
 
-  AggregatableReportRequest request =
-      aggregation_service::CreateExampleRequest();
+  AggregatableReportRequest request = aggregation_service::CreateExampleRequest(
+      AggregationServicePayloadContents::AggregationMode::kExperimentalPoplar);
   std::vector<GURL> processing_urls = request.processing_urls();
 
   EXPECT_CALL(*fetcher(), GetPublicKey(processing_urls[0], _))
@@ -139,8 +139,8 @@ TEST_F(AggregatableReportAssemblerTest, BothKeyFetchesFail_ErrorReturned) {
 TEST_F(AggregatableReportAssemblerTest, FirstKeyFetchFails_ErrorReturned) {
   base::HistogramTester histograms;
 
-  AggregatableReportRequest request =
-      aggregation_service::CreateExampleRequest();
+  AggregatableReportRequest request = aggregation_service::CreateExampleRequest(
+      AggregationServicePayloadContents::AggregationMode::kExperimentalPoplar);
   std::vector<GURL> processing_urls = request.processing_urls();
 
   EXPECT_CALL(*fetcher(), GetPublicKey(processing_urls[0], _))
@@ -166,8 +166,8 @@ TEST_F(AggregatableReportAssemblerTest, FirstKeyFetchFails_ErrorReturned) {
 TEST_F(AggregatableReportAssemblerTest, SecondKeyFetchFails_ErrorReturned) {
   base::HistogramTester histograms;
 
-  AggregatableReportRequest request =
-      aggregation_service::CreateExampleRequest();
+  AggregatableReportRequest request = aggregation_service::CreateExampleRequest(
+      AggregationServicePayloadContents::AggregationMode::kExperimentalPoplar);
   std::vector<GURL> processing_urls = request.processing_urls();
 
   EXPECT_CALL(*fetcher(), GetPublicKey(processing_urls[0], _))
@@ -194,8 +194,8 @@ TEST_F(AggregatableReportAssemblerTest,
        BothKeyFetchesSucceed_ValidReportReturned) {
   base::HistogramTester histograms;
 
-  AggregatableReportRequest request =
-      aggregation_service::CreateExampleRequest();
+  AggregatableReportRequest request = aggregation_service::CreateExampleRequest(
+      AggregationServicePayloadContents::AggregationMode::kExperimentalPoplar);
 
   std::vector<GURL> processing_urls = request.processing_urls();
   std::vector<PublicKey> public_keys = {
@@ -233,7 +233,7 @@ TEST_F(AggregatableReportAssemblerTest,
 }
 
 TEST_F(AggregatableReportAssemblerTest,
-       SingleServerKeyFetchSucceeds_ValidReportReturned) {
+       OnlyKeyFetchSucceeds_ValidReportReturned) {
   base::HistogramTester histograms;
 
   AggregatableReportRequest request = aggregation_service::CreateExampleRequest(
@@ -268,8 +268,7 @@ TEST_F(AggregatableReportAssemblerTest,
       AggregatableReportAssembler::AssemblyStatus::kOk, 1);
 }
 
-TEST_F(AggregatableReportAssemblerTest,
-       SingleServerKeyFetchFails_ErrorReturned) {
+TEST_F(AggregatableReportAssemblerTest, OnlyKeyFetchFails_ErrorReturned) {
   base::HistogramTester histograms;
 
   AggregatableReportRequest request = aggregation_service::CreateExampleRequest(
@@ -292,11 +291,11 @@ TEST_F(AggregatableReportAssemblerTest,
 }
 
 TEST_F(AggregatableReportAssemblerTest,
-       KeyFetchesReturnInSwappedOrder_ValidReportReturned) {
+       TwoKeyFetchesReturnInSwappedOrder_ValidReportReturned) {
   base::HistogramTester histograms;
 
-  AggregatableReportRequest request =
-      aggregation_service::CreateExampleRequest();
+  AggregatableReportRequest request = aggregation_service::CreateExampleRequest(
+      AggregationServicePayloadContents::AggregationMode::kExperimentalPoplar);
 
   std::vector<GURL> processing_urls = request.processing_urls();
   std::vector<PublicKey> public_keys = {
@@ -344,6 +343,7 @@ TEST_F(AggregatableReportAssemblerTest,
   std::vector<GURL> processing_urls = request.processing_urls();
 
   EXPECT_CALL(callback(), Run).Times(0);
+  EXPECT_CALL(*fetcher(), GetPublicKey);
   assembler()->AssembleReport(std::move(request), callback().Get());
 
   ResetAssembler();
@@ -359,31 +359,24 @@ TEST_F(AggregatableReportAssemblerTest,
       aggregation_service::CreateExampleRequest();
 
   std::vector<GURL> processing_urls = request.processing_urls();
-  std::vector<PublicKey> public_keys = {
-      aggregation_service::GenerateKey("id123").public_key,
-      aggregation_service::GenerateKey("456abc").public_key};
+  PublicKey public_key = aggregation_service::GenerateKey("id123").public_key;
 
   absl::optional<AggregatableReport> report =
       AggregatableReport::Provider().CreateFromRequestAndPublicKeys(
-          aggregation_service::CloneReportRequest(request), public_keys);
+          aggregation_service::CloneReportRequest(request), {public_key});
   ASSERT_TRUE(report.has_value());
 
-  std::vector<FetchCallback> pending_callbacks_1(2);
+  std::vector<FetchCallback> pending_callbacks(2);
   EXPECT_CALL(*fetcher(), GetPublicKey(processing_urls[0], _))
-      .WillOnce(MoveArg<1>(&pending_callbacks_1.front()))
-      .WillOnce(MoveArg<1>(&pending_callbacks_1.back()));
-
-  std::vector<FetchCallback> pending_callbacks_2(2);
-  EXPECT_CALL(*fetcher(), GetPublicKey(processing_urls[1], _))
-      .WillOnce(MoveArg<1>(&pending_callbacks_2.front()))
-      .WillOnce(MoveArg<1>(&pending_callbacks_2.back()));
+      .WillOnce(MoveArg<1>(&pending_callbacks.front()))
+      .WillOnce(MoveArg<1>(&pending_callbacks.back()));
 
   EXPECT_CALL(callback(), Run(report, AssemblyStatus::kOk)).Times(2);
 
   absl::optional<AggregatableReportRequest> first_request;
   absl::optional<AggregatableReportRequest> second_request;
-  EXPECT_CALL(*report_provider(),
-              CreateFromRequestAndPublicKeys(_, public_keys))
+  EXPECT_CALL(*report_provider(), CreateFromRequestAndPublicKeys(
+                                      _, std::vector<PublicKey>{public_key}))
       .WillOnce(MoveRequestAndReturnReport(&first_request, report.value()))
       .WillOnce(MoveRequestAndReturnReport(&second_request,
                                            std::move(report.value())));
@@ -393,15 +386,10 @@ TEST_F(AggregatableReportAssemblerTest,
   assembler()->AssembleReport(aggregation_service::CloneReportRequest(request),
                               callback().Get());
 
-  std::move(pending_callbacks_1.front())
-      .Run(public_keys[0], PublicKeyFetchStatus::kOk);
-  std::move(pending_callbacks_1.back())
-      .Run(public_keys[0], PublicKeyFetchStatus::kOk);
-
-  std::move(pending_callbacks_2.front())
-      .Run(public_keys[1], PublicKeyFetchStatus::kOk);
-  std::move(pending_callbacks_2.back())
-      .Run(public_keys[1], PublicKeyFetchStatus::kOk);
+  std::move(pending_callbacks.front())
+      .Run(public_key, PublicKeyFetchStatus::kOk);
+  std::move(pending_callbacks.back())
+      .Run(public_key, PublicKeyFetchStatus::kOk);
 
   ASSERT_TRUE(first_request.has_value());
   EXPECT_TRUE(
@@ -419,12 +407,10 @@ TEST_F(AggregatableReportAssemblerTest,
        TooManySimultaneousRequests_ErrorCausedForNewRequests) {
   base::HistogramTester histograms;
 
-  std::vector<PublicKey> public_keys = {
-      aggregation_service::GenerateKey("id123").public_key,
-      aggregation_service::GenerateKey("456abc").public_key};
+  PublicKey public_key = aggregation_service::GenerateKey("id123").public_key;
   absl::optional<AggregatableReport> report =
       AggregatableReport::Provider().CreateFromRequestAndPublicKeys(
-          aggregation_service::CreateExampleRequest(), std::move(public_keys));
+          aggregation_service::CreateExampleRequest(), {std::move(public_key)});
   ASSERT_TRUE(report.has_value());
 
   std::vector<FetchCallback> pending_callbacks;
@@ -437,7 +423,7 @@ TEST_F(AggregatableReportAssemblerTest,
     int current_check = 1;
 
     EXPECT_CALL(*fetcher(), GetPublicKey)
-        .Times(2 * AggregatableReportAssembler::kMaxSimultaneousRequests)
+        .Times(AggregatableReportAssembler::kMaxSimultaneousRequests)
         .WillRepeatedly(Invoke([&](const GURL& url, FetchCallback callback) {
           pending_callbacks.push_back(std::move(callback));
         }));
@@ -474,12 +460,10 @@ TEST_F(AggregatableReportAssemblerTest,
 
   checkpoint.Call(current_call++);
 
-  for (size_t i = 0; i < pending_callbacks.size(); ++i) {
-    // Every request has 2 pending fetch callbacks.
-    if (i % 2 == 0)
-      checkpoint.Call(current_call++);
+  for (FetchCallback& pending_callback : pending_callbacks) {
+    checkpoint.Call(current_call++);
 
-    std::move(pending_callbacks[i])
+    std::move(pending_callback)
         .Run(aggregation_service::GenerateKey("id123").public_key,
              PublicKeyFetchStatus::kOk);
   }

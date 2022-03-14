@@ -191,9 +191,10 @@ void VerifyReport(
   }
 }
 
-TEST(AggregatableReportTest, ValidTwoPartyRequest_ValidReportReturned) {
-  AggregatableReportRequest request =
-      aggregation_service::CreateExampleRequest();
+TEST(AggregatableReportTest,
+     ValidExperimentalPoplarRequest_ValidReportReturned) {
+  AggregatableReportRequest request = aggregation_service::CreateExampleRequest(
+      AggregationServicePayloadContents::AggregationMode::kExperimentalPoplar);
 
   AggregationServicePayloadContents expected_payload_contents =
       request.payload_contents();
@@ -213,7 +214,7 @@ TEST(AggregatableReportTest, ValidTwoPartyRequest_ValidReportReturned) {
                    expected_num_processing_urls, hpke_keys));
 }
 
-TEST(AggregatableReportTest, ValidSingleServerRequest_ValidReportReturned) {
+TEST(AggregatableReportTest, ValidTeeBasedRequest_ValidReportReturned) {
   AggregatableReportRequest request = aggregation_service::CreateExampleRequest(
       AggregationServicePayloadContents::AggregationMode::kTeeBased);
 
@@ -284,18 +285,16 @@ TEST(AggregatableReportTest, ValidDebugModeEnabledRequest_ValidReportReturned) {
       request->payload_contents();
   size_t expected_num_processing_urls = request->processing_urls().size();
 
-  std::vector<aggregation_service::TestHpkeKey> hpke_keys = {
-      aggregation_service::GenerateKey("id123"),
-      aggregation_service::GenerateKey("456abc")};
+  aggregation_service::TestHpkeKey hpke_key =
+      aggregation_service::GenerateKey("id123");
 
   absl::optional<AggregatableReport> report =
       AggregatableReport::Provider().CreateFromRequestAndPublicKeys(
-          std::move(request.value()),
-          {hpke_keys[0].public_key, hpke_keys[1].public_key});
+          std::move(request.value()), {hpke_key.public_key});
 
   ASSERT_NO_FATAL_FAILURE(
       VerifyReport(report, expected_payload_contents, expected_shared_info,
-                   expected_num_processing_urls, hpke_keys));
+                   expected_num_processing_urls, {hpke_key}));
 }
 
 TEST(AggregatableReportTest,
@@ -351,8 +350,7 @@ TEST(AggregatableReportTest, RequestCreatedWithInvalidPrivacyBudgetKey_Failed) {
 
 TEST(AggregatableReportTest, RequestCreatedWithZeroContributions) {
   AggregatableReportRequest example_request =
-      aggregation_service::CreateExampleRequest(
-          AggregationServicePayloadContents::AggregationMode::kTeeBased);
+      aggregation_service::CreateExampleRequest();
 
   AggregationServicePayloadContents payload_contents =
       example_request.payload_contents();
