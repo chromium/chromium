@@ -109,15 +109,45 @@ crypto::SymmetricKey* GetEncryptionKey() {
 
 }  // namespace
 
+namespace OSCrypt {
+bool EncryptString16(const std::u16string& plaintext, std::string* ciphertext) {
+  return OSCryptImpl::EncryptString16(plaintext, ciphertext);
+}
+bool DecryptString16(const std::string& ciphertext, std::u16string* plaintext) {
+  return OSCryptImpl::DecryptString16(ciphertext, plaintext);
+}
+bool EncryptString(const std::string& plaintext, std::string* ciphertext) {
+  return OSCryptImpl::EncryptString(plaintext, ciphertext);
+}
+bool DecryptString(const std::string& ciphertext, std::string* plaintext) {
+  return OSCryptImpl::DecryptString(ciphertext, plaintext);
+}
+void UseMockKeychainForTesting(bool use_mock) {
+  OSCryptImpl::UseMockKeychainForTesting(use_mock);
+}
+void UseLockedMockKeychainForTesting(bool use_locked) {
+  OSCryptImpl::UseLockedMockKeychainForTesting(use_locked);
+}
+std::string GetRawEncryptionKey() {
+  return OSCryptImpl::GetRawEncryptionKey();
+}
+void SetRawEncryptionKey(const std::string& key) {
+  OSCryptImpl::SetRawEncryptionKey(key);
+}
+bool IsEncryptionAvailable() {
+  return OSCryptImpl::IsEncryptionAvailable();
+}
+}  // namespace OSCrypt
+
 // static
-std::string OSCrypt::GetRawEncryptionKey() {
+std::string OSCryptImpl::GetRawEncryptionKey() {
   if (crypto::SymmetricKey* key = GetEncryptionKey())
     return key->key();
   return std::string();
 }
 
 // static
-void OSCrypt::SetRawEncryptionKey(const std::string& raw_key) {
+void OSCryptImpl::SetRawEncryptionKey(const std::string& raw_key) {
   base::AutoLock auto_lock(g_lock.Get());
   DCHECK(!g_key_is_cached) << "Encryption key already set.";
   if (!raw_key.empty()) {
@@ -127,12 +157,12 @@ void OSCrypt::SetRawEncryptionKey(const std::string& raw_key) {
   g_key_is_cached = true;
 }
 
-bool OSCrypt::EncryptString16(const std::u16string& plaintext,
+bool OSCryptImpl::EncryptString16(const std::u16string& plaintext,
                               std::string* ciphertext) {
   return EncryptString(base::UTF16ToUTF8(plaintext), ciphertext);
 }
 
-bool OSCrypt::DecryptString16(const std::string& ciphertext,
+bool OSCryptImpl::DecryptString16(const std::string& ciphertext,
                               std::u16string* plaintext) {
   std::string utf8;
   if (!DecryptString(ciphertext, &utf8))
@@ -142,7 +172,7 @@ bool OSCrypt::DecryptString16(const std::string& ciphertext,
   return true;
 }
 
-bool OSCrypt::EncryptString(const std::string& plaintext,
+bool OSCryptImpl::EncryptString(const std::string& plaintext,
                             std::string* ciphertext) {
   if (plaintext.empty()) {
     *ciphertext = std::string();
@@ -166,7 +196,7 @@ bool OSCrypt::EncryptString(const std::string& plaintext,
   return true;
 }
 
-bool OSCrypt::DecryptString(const std::string& ciphertext,
+bool OSCryptImpl::DecryptString(const std::string& ciphertext,
                             std::string* plaintext) {
   if (ciphertext.empty()) {
     *plaintext = std::string();
@@ -206,17 +236,17 @@ bool OSCrypt::DecryptString(const std::string& ciphertext,
   return true;
 }
 
-bool OSCrypt::IsEncryptionAvailable() {
+bool OSCryptImpl::IsEncryptionAvailable() {
   return GetEncryptionKey() != nullptr;
 }
 
-void OSCrypt::UseMockKeychainForTesting(bool use_mock) {
+void OSCryptImpl::UseMockKeychainForTesting(bool use_mock) {
   use_mock_keychain = use_mock;
   if (!use_mock_keychain)
     use_locked_mock_keychain = false;
 }
 
-void OSCrypt::UseLockedMockKeychainForTesting(bool use_locked) {
+void OSCryptImpl::UseLockedMockKeychainForTesting(bool use_locked) {
   use_locked_mock_keychain = use_locked;
   if (use_locked_mock_keychain)
     use_mock_keychain = true;
