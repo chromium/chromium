@@ -43,7 +43,7 @@ CommonSourceInfo::CommonSourceInfo(
     int64_t priority,
     AttributionFilterData filter_data,
     absl::optional<uint64_t> debug_key,
-    AttributionAggregatableSources aggregatable_sources)
+    AttributionAggregatableSource aggregatable_source)
     : source_event_id_(source_event_id),
       impression_origin_(std::move(impression_origin)),
       conversion_origin_(std::move(conversion_origin)),
@@ -54,7 +54,7 @@ CommonSourceInfo::CommonSourceInfo(
       priority_(priority),
       filter_data_(std::move(filter_data)),
       debug_key_(debug_key),
-      aggregatable_sources_(std::move(aggregatable_sources)) {
+      aggregatable_source_(std::move(aggregatable_source)) {
   // 30 days is the max allowed expiry for an impression.
   DCHECK_GE(base::Days(30), expiry_time - impression_time);
   // The impression must expire strictly after it occurred.

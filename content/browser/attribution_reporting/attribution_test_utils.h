@@ -21,7 +21,7 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
 #include "content/browser/attribution_reporting/aggregatable_histogram_contribution.h"
-#include "content/browser/attribution_reporting/attribution_aggregatable_sources.h"
+#include "content/browser/attribution_reporting/attribution_aggregatable_source.h"
 #include "content/browser/attribution_reporting/attribution_data_host_manager.h"
 #include "content/browser/attribution_reporting/attribution_filter_data.h"
 #include "content/browser/attribution_reporting/attribution_host.h"
@@ -362,8 +362,8 @@ class SourceBuilder {
 
   SourceBuilder& SetDedupKeys(std::vector<uint64_t> dedup_keys);
 
-  SourceBuilder& SetAggregatableSources(
-      AttributionAggregatableSources aggregatable_sources);
+  SourceBuilder& SetAggregatableSource(
+      AttributionAggregatableSource aggregatable_source);
 
   StorableSource Build() const;
 
@@ -389,7 +389,7 @@ class SourceBuilder {
   // Ensure that we don't use uninitialized memory.
   StoredSource::Id source_id_{0};
   std::vector<uint64_t> dedup_keys_;
-  AttributionAggregatableSources aggregatable_sources_;
+  AttributionAggregatableSource aggregatable_source_;
 };
 
 // Returns a AttributionTrigger with default data which matches the default
@@ -508,38 +508,37 @@ class AggregatableKeyProtoBuilder {
   proto::AttributionAggregatableKey key_;
 };
 
-// Helper class to construct a `proto::AttributionAggregatableSources` for
+// Helper class to construct a `proto::AttributionAggregatableSource` for
 // testing.
-class AggregatableSourcesProtoBuilder {
+class AggregatableSourceProtoBuilder {
  public:
-  AggregatableSourcesProtoBuilder();
-  ~AggregatableSourcesProtoBuilder();
+  AggregatableSourceProtoBuilder();
+  ~AggregatableSourceProtoBuilder();
 
-  AggregatableSourcesProtoBuilder& AddKey(
-      std::string key_id,
-      proto::AttributionAggregatableKey key);
+  AggregatableSourceProtoBuilder& AddKey(std::string key_id,
+                                         proto::AttributionAggregatableKey key);
 
-  proto::AttributionAggregatableSources Build() const;
+  proto::AttributionAggregatableSource Build() const;
 
  private:
-  proto::AttributionAggregatableSources aggregatable_sources_;
+  proto::AttributionAggregatableSource aggregatable_source_;
 };
 
-// Helper class to construct a `blink::mojom::AttributionAggregatableSources`
+// Helper class to construct a `blink::mojom::AttributionAggregatableSource`
 // for testing.
-class AggregatableSourcesMojoBuilder {
+class AggregatableSourceMojoBuilder {
  public:
-  AggregatableSourcesMojoBuilder();
-  ~AggregatableSourcesMojoBuilder();
+  AggregatableSourceMojoBuilder();
+  ~AggregatableSourceMojoBuilder();
 
-  AggregatableSourcesMojoBuilder& AddKey(
+  AggregatableSourceMojoBuilder& AddKey(
       std::string key_id,
       blink::mojom::AttributionAggregatableKeyPtr key);
 
-  blink::mojom::AttributionAggregatableSourcesPtr Build() const;
+  blink::mojom::AttributionAggregatableSourcePtr Build() const;
 
  private:
-  blink::mojom::AttributionAggregatableSources sources_;
+  blink::mojom::AttributionAggregatableSource aggregatable_source_;
 };
 
 bool operator==(const AttributionTrigger::EventTriggerData& a,
@@ -636,12 +635,12 @@ std::ostream& operator<<(std::ostream& out,
 
 std::ostream& operator<<(std::ostream& out, StorableSource::Result status);
 
-bool operator==(const AttributionAggregatableSources& a,
-                const AttributionAggregatableSources& b);
+bool operator==(const AttributionAggregatableSource& a,
+                const AttributionAggregatableSource& b);
 
 std::ostream& operator<<(
     std::ostream& out,
-    const AttributionAggregatableSources& aggregatable_sources);
+    const AttributionAggregatableSource& aggregatable_source);
 
 std::vector<AttributionReport> GetAttributionReportsForTesting(
     AttributionManagerImpl* manager,
@@ -697,8 +696,8 @@ MATCHER_P(DedupKeysAre, matcher, "") {
   return ExplainMatchResult(matcher, arg.dedup_keys(), result_listener);
 }
 
-MATCHER_P(AggregatableSourcesAre, matcher, "") {
-  return ExplainMatchResult(matcher, arg.common_info().aggregatable_sources(),
+MATCHER_P(AggregatableSourceAre, matcher, "") {
+  return ExplainMatchResult(matcher, arg.common_info().aggregatable_source(),
                             result_listener);
 }
 

@@ -25,7 +25,7 @@
 #include "base/ranges/algorithm.h"
 #include "base/time/time.h"
 #include "content/browser/attribution_reporting/aggregatable_histogram_contribution.h"
-#include "content/browser/attribution_reporting/attribution_aggregatable_sources.h"
+#include "content/browser/attribution_reporting/attribution_aggregatable_source.h"
 #include "content/browser/attribution_reporting/attribution_filter_data.h"
 #include "content/browser/attribution_reporting/attribution_info.h"
 #include "content/browser/attribution_reporting/attribution_observer_types.h"
@@ -54,18 +54,18 @@
 namespace content {
 
 // Version number of the database.
-const int AttributionStorageSql::kCurrentVersionNumber = 31;
+const int AttributionStorageSql::kCurrentVersionNumber = 32;
 
 // Earliest version which can use a |kCurrentVersionNumber| database
 // without failing.
-const int AttributionStorageSql::kCompatibleVersionNumber = 31;
+const int AttributionStorageSql::kCompatibleVersionNumber = 32;
 
 // Latest version of the database that cannot be upgraded to
 // |kCurrentVersionNumber| without razing the database.
 //
 // Note that all versions >=15 were introduced during the transitional state of
 // the Attribution Reporting API and can be removed when done.
-const int AttributionStorageSql::kDeprecatedVersionNumber = 30;
+const int AttributionStorageSql::kDeprecatedVersionNumber = 31;
 
 namespace {
 
@@ -117,7 +117,7 @@ const base::FilePath::CharType kDatabasePath[] =
   prefix "debug_key," \
   prefix "num_conversions," \
   prefix "aggregatable_budget_consumed," \
-  prefix "aggregatable_sources," \
+  prefix "aggregatable_source," \
   prefix "filter_data," \
   prefix "event_level_active," \
   prefix "aggregatable_active"
@@ -222,14 +222,13 @@ absl::optional<uint64_t> ColumnUint64OrNull(sql::Statement& statement,
                    DeserializeUint64(statement.ColumnInt64(col)));
 }
 
-absl::optional<AttributionAggregatableSources> ParseAggregatableSources(
+absl::optional<AttributionAggregatableSource> ParseAggregatableSource(
     const std::string& str) {
-  proto::AttributionAggregatableSources aggregatable_sources;
-  if (!aggregatable_sources.ParseFromString(str))
+  proto::AttributionAggregatableSource aggregatable_source;
+  if (!aggregatable_source.ParseFromString(str))
     return absl::nullopt;
 
-  return AttributionAggregatableSources::Create(
-      std::move(aggregatable_sources));
+  return AttributionAggregatableSource::Create(std::move(aggregatable_source));
 }
 
 struct StoredSourceData {
@@ -266,12 +265,12 @@ absl::optional<StoredSourceData> ReadSourceFromStatement(
   absl::optional<uint64_t> debug_key = ColumnUint64OrNull(statement, col++);
   int num_conversions = statement.ColumnInt(col++);
   int64_t aggregatable_budget_consumed = statement.ColumnInt64(col++);
-  absl::optional<AttributionAggregatableSources> aggregatable_sources =
-      ParseAggregatableSources(statement.ColumnString(col++));
+  absl::optional<AttributionAggregatableSource> aggregatable_source =
+      ParseAggregatableSource(statement.ColumnString(col++));
 
   if (!source_type.has_value() || !attribution_logic.has_value() ||
       num_conversions < 0 || aggregatable_budget_consumed < 0 ||
-      !aggregatable_sources.has_value()) {
+      !aggregatable_source.has_value()) {
     return absl::nullopt;
   }
 
@@ -295,7 +294,7 @@ absl::optional<StoredSourceData> ReadSourceFromStatement(
                            std::move(reporting_origin), impression_time,
                            expiry_time, *source_type, priority,
                            std::move(*filter_data), debug_key,
-                           std::move(*aggregatable_sources)),
+                           std::move(*aggregatable_source)),
           *attribution_logic, *active_state, source_id),
       .num_conversions = num_conversions,
       .aggregatable_budget_consumed = aggregatable_budget_consumed};
@@ -519,7 +518,7 @@ AttributionStorage::StoreSourceResult AttributionStorageSql::StoreSource(
       "reporting_origin,impression_time,expiry_time,source_type,"
       "attributed_truthfully,priority,impression_site,"
       "num_conversions,event_level_active,aggregatable_active,debug_key,"
-      "aggregatable_budget_consumed,aggregatable_sources,filter_data)"
+      "aggregatable_budget_consumed,aggregatable_source,filter_data)"
       "VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,0,?,?)";
   sql::Statement statement(
       db_->GetCachedStatement(SQL_FROM_HERE, kInsertImpressionSql));
@@ -546,7 +545,7 @@ AttributionStorage::StoreSourceResult AttributionStorageSql::StoreSource(
   DCHECK(active_state.has_value());
 
   statement.BindBlob(
-      15, common_info.aggregatable_sources().proto().SerializeAsString());
+      15, common_info.aggregatable_source().proto().SerializeAsString());
   statement.BindBlob(16, common_info.filter_data().Serialize());
 
   if (!statement.Run())
@@ -1926,7 +1925,7 @@ bool AttributionStorageSql::CreateSchema() {
       "impression_site TEXT NOT NULL,"
       "debug_key INTEGER,"
       "aggregatable_budget_consumed INTEGER NOT NULL,"
-      "aggregatable_sources BLOB NOT NULL,"
+      "aggregatable_source BLOB NOT NULL,"
       "filter_data BLOB NOT NULL)";
   if (!db_->Execute(kImpressionTableSql))
     return false;

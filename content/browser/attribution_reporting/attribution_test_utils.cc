@@ -467,9 +467,9 @@ SourceBuilder& SourceBuilder::SetDedupKeys(std::vector<uint64_t> dedup_keys) {
   return *this;
 }
 
-SourceBuilder& SourceBuilder::SetAggregatableSources(
-    AttributionAggregatableSources aggregatable_sources) {
-  aggregatable_sources_ = std::move(aggregatable_sources);
+SourceBuilder& SourceBuilder::SetAggregatableSource(
+    AttributionAggregatableSource aggregatable_source) {
+  aggregatable_source_ = std::move(aggregatable_source);
   return *this;
 }
 
@@ -478,7 +478,7 @@ CommonSourceInfo SourceBuilder::BuildCommonInfo() const {
       source_event_id_, impression_origin_, conversion_origin_,
       reporting_origin_, impression_time_,
       /*expiry_time=*/impression_time_ + expiry_, source_type_, priority_,
-      filter_data_, debug_key_, aggregatable_sources_);
+      filter_data_, debug_key_, aggregatable_source_);
 }
 
 StorableSource SourceBuilder::Build() const {
@@ -654,37 +654,36 @@ proto::AttributionAggregatableKey AggregatableKeyProtoBuilder::Build() const {
   return key_;
 }
 
-AggregatableSourcesProtoBuilder::AggregatableSourcesProtoBuilder() = default;
+AggregatableSourceProtoBuilder::AggregatableSourceProtoBuilder() = default;
 
-AggregatableSourcesProtoBuilder::~AggregatableSourcesProtoBuilder() = default;
+AggregatableSourceProtoBuilder::~AggregatableSourceProtoBuilder() = default;
 
-AggregatableSourcesProtoBuilder& AggregatableSourcesProtoBuilder::AddKey(
+AggregatableSourceProtoBuilder& AggregatableSourceProtoBuilder::AddKey(
     std::string key_id,
     proto::AttributionAggregatableKey key) {
-  (*aggregatable_sources_.mutable_sources())[std::move(key_id)] =
-      std::move(key);
+  (*aggregatable_source_.mutable_keys())[std::move(key_id)] = std::move(key);
   return *this;
 }
 
-proto::AttributionAggregatableSources AggregatableSourcesProtoBuilder::Build()
+proto::AttributionAggregatableSource AggregatableSourceProtoBuilder::Build()
     const {
-  return aggregatable_sources_;
+  return aggregatable_source_;
 }
 
-AggregatableSourcesMojoBuilder::AggregatableSourcesMojoBuilder() = default;
+AggregatableSourceMojoBuilder::AggregatableSourceMojoBuilder() = default;
 
-AggregatableSourcesMojoBuilder::~AggregatableSourcesMojoBuilder() = default;
+AggregatableSourceMojoBuilder::~AggregatableSourceMojoBuilder() = default;
 
-AggregatableSourcesMojoBuilder& AggregatableSourcesMojoBuilder::AddKey(
+AggregatableSourceMojoBuilder& AggregatableSourceMojoBuilder::AddKey(
     std::string key_id,
     blink::mojom::AttributionAggregatableKeyPtr key) {
-  sources_.sources.emplace(std::move(key_id), std::move(key));
+  aggregatable_source_.keys.emplace(std::move(key_id), std::move(key));
   return *this;
 }
 
-blink::mojom::AttributionAggregatableSourcesPtr
-AggregatableSourcesMojoBuilder::Build() const {
-  return sources_.Clone();
+blink::mojom::AttributionAggregatableSourcePtr
+AggregatableSourceMojoBuilder::Build() const {
+  return aggregatable_source_.Clone();
 }
 
 bool operator==(const AttributionTrigger::EventTriggerData& a,
@@ -716,7 +715,7 @@ bool operator==(const CommonSourceInfo& a, const CommonSourceInfo& b) {
                            source.reporting_origin(), source.impression_time(),
                            source.expiry_time(), source.source_type(),
                            source.priority(), source.filter_data(),
-                           source.debug_key(), source.aggregatable_sources());
+                           source.debug_key(), source.aggregatable_source());
   };
   return tie(a) == tie(b);
 }
@@ -980,8 +979,7 @@ std::ostream& operator<<(std::ostream& out, const CommonSourceInfo& source) {
              << ",filter_data=" << source.filter_data() << ",debug_key="
              << (source.debug_key() ? base::NumberToString(*source.debug_key())
                                     : "null")
-             << ",aggregatable_sources=" << source.aggregatable_sources()
-             << "}";
+             << ",aggregatable_source=" << source.aggregatable_source() << "}";
 }
 
 std::ostream& operator<<(std::ostream& out,
@@ -1142,14 +1140,14 @@ bool operator==(const AttributionAggregatableKey& a,
   return tie(a) == tie(b);
 }
 
-bool operator==(const AttributionAggregatableSources& a,
-                const AttributionAggregatableSources& b) {
-  if (a.sources().size() != b.sources().size())
+bool operator==(const AttributionAggregatableSource& a,
+                const AttributionAggregatableSource& b) {
+  if (a.keys().size() != b.keys().size())
     return false;
 
-  return base::ranges::all_of(a.sources(), [&](const auto& source) {
-    auto iter = b.sources().find(source.first);
-    return iter != b.sources().end() && iter->second == source.second;
+  return base::ranges::all_of(a.keys(), [&](const auto& key) {
+    auto iter = b.keys().find(key.first);
+    return iter != b.keys().end() && iter->second == key.second;
   });
 }
 
@@ -1166,11 +1164,11 @@ std::ostream& operator<<(std::ostream& out,
 
 std::ostream& operator<<(
     std::ostream& out,
-    const AttributionAggregatableSources& aggregatable_sources) {
-  out << "{sources=[";
+    const AttributionAggregatableSource& aggregatable_source) {
+  out << "{keys=[";
 
   const char* separator = "";
-  for (const auto& [key_id, key] : aggregatable_sources.sources()) {
+  for (const auto& [key_id, key] : aggregatable_source.keys()) {
     out << separator << key_id << ":" << key;
     separator = ", ";
   }
@@ -1179,15 +1177,15 @@ std::ostream& operator<<(
 
 }  // namespace proto
 
-bool operator==(const AttributionAggregatableSources& a,
-                const AttributionAggregatableSources& b) {
+bool operator==(const AttributionAggregatableSource& a,
+                const AttributionAggregatableSource& b) {
   return a.proto() == b.proto();
 }
 
 std::ostream& operator<<(
     std::ostream& out,
-    const AttributionAggregatableSources& aggregatable_sources) {
-  return out << "{proto=" << aggregatable_sources.proto() << "}";
+    const AttributionAggregatableSource& aggregatable_source) {
+  return out << "{proto=" << aggregatable_source.proto() << "}";
 }
 
 EventTriggerDataMatcherConfig::~EventTriggerDataMatcherConfig() = default;

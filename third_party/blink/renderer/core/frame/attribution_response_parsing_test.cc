@@ -19,24 +19,24 @@ namespace blink::attribution_response_parsing {
 
 namespace {
 
-class AggregatableSourcesBuilder {
+class AggregatableSourceBuilder {
  public:
-  AggregatableSourcesBuilder() = default;
-  ~AggregatableSourcesBuilder() = default;
+  AggregatableSourceBuilder() = default;
+  ~AggregatableSourceBuilder() = default;
 
-  AggregatableSourcesBuilder& AddKey(
+  AggregatableSourceBuilder& AddKey(
       String key_id,
       mojom::blink::AttributionAggregatableKeyPtr key) {
-    sources_.sources.insert(std::move(key_id), std::move(key));
+    source_.keys.insert(std::move(key_id), std::move(key));
     return *this;
   }
 
-  mojom::blink::AttributionAggregatableSourcesPtr Build() const {
-    return sources_.Clone();
+  mojom::blink::AttributionAggregatableSourcePtr Build() const {
+    return source_.Clone();
   }
 
  private:
-  mojom::blink::AttributionAggregatableSources sources_;
+  mojom::blink::AttributionAggregatableSource source_;
 };
 
 class AttributionFilterDataBuilder {
@@ -80,25 +80,25 @@ class AggregatableTriggerBuilder {
 
 }  // namespace
 
-TEST(AttributionResponseParsingTest, ParseAttributionAggregatableSources) {
+TEST(AttributionResponseParsingTest, ParseAttributionAggregatableSource) {
   const struct {
     String description;
     AtomicString header;
     bool valid;
-    mojom::blink::AttributionAggregatableSourcesPtr sources;
+    mojom::blink::AttributionAggregatableSourcePtr source;
   } kTestCases[] = {
       {"Empty header", "", false,
-       mojom::blink::AttributionAggregatableSources::New()},
+       mojom::blink::AttributionAggregatableSource::New()},
       {"Invalid JSON", "{", false,
-       mojom::blink::AttributionAggregatableSources::New()},
+       mojom::blink::AttributionAggregatableSource::New()},
       {"Missing id field", R"([{"key_piece":"0x159"}])", false,
-       mojom::blink::AttributionAggregatableSources::New()},
+       mojom::blink::AttributionAggregatableSource::New()},
       {"Missing key_piece field", R"([{"id":"key"}])", false,
-       mojom::blink::AttributionAggregatableSources::New()},
+       mojom::blink::AttributionAggregatableSource::New()},
       {"Invalid key", R"([{"id":"key","key_piece":"0xG59"}])", false,
-       mojom::blink::AttributionAggregatableSources::New()},
+       mojom::blink::AttributionAggregatableSource::New()},
       {"One valid key", R"([{"id":"key","key_piece":"0x159"}])", true,
-       AggregatableSourcesBuilder()
+       AggregatableSourceBuilder()
            .AddKey(/*key_id=*/"key",
                    mojom::blink::AttributionAggregatableKey::New(
                        /*high_bits=*/0, /*low_bits=*/345))
@@ -107,7 +107,7 @@ TEST(AttributionResponseParsingTest, ParseAttributionAggregatableSources) {
        AtomicString(R"([{"id":"key1","key_piece":"0x159"},)") +
            R"({"id":"key2","key_piece":"0x50000000000000159"}])",
        true,
-       AggregatableSourcesBuilder()
+       AggregatableSourceBuilder()
            .AddKey(/*key_id=*/"key1",
                    mojom::blink::AttributionAggregatableKey::New(
                        /*high_bits=*/0, /*low_bits=*/345))
@@ -118,22 +118,21 @@ TEST(AttributionResponseParsingTest, ParseAttributionAggregatableSources) {
       {"Second key invalid",
        AtomicString(R"([{"id":"key1","key_piece":"0x159"},)") +
            R"({"id":"key2","key_piece":""}])",
-       false, mojom::blink::AttributionAggregatableSources::New()},
+       false, mojom::blink::AttributionAggregatableSource::New()},
   };
 
   for (const auto& test_case : kTestCases) {
-    auto sources = mojom::blink::AttributionAggregatableSources::New();
-    bool valid =
-        ParseAttributionAggregatableSources(test_case.header, *sources);
+    auto source = mojom::blink::AttributionAggregatableSource::New();
+    bool valid = ParseAttributionAggregatableSource(test_case.header, *source);
     EXPECT_EQ(test_case.valid, valid) << test_case.description;
     if (test_case.valid)
-      EXPECT_EQ(test_case.sources, sources) << test_case.description;
+      EXPECT_EQ(test_case.source, source) << test_case.description;
   }
 }
 
 TEST(AttributionResponseParsingTest,
-     ParseAttributionAggregatableSources_CheckSize) {
-  struct AttributionAggregatableSourcesSizeTestCase {
+     ParseAttributionAggregatableSource_CheckSize) {
+  struct AttributionAggregatableSourceSizeTestCase {
     String description;
     bool valid;
     wtf_size_t key_count;
@@ -154,8 +153,8 @@ TEST(AttributionResponseParsingTest,
       return "[" + builder.ToAtomicString() + "]";
     }
 
-    mojom::blink::AttributionAggregatableSourcesPtr GetSources() const {
-      AggregatableSourcesBuilder builder;
+    mojom::blink::AttributionAggregatableSourcePtr GetSource() const {
+      AggregatableSourceBuilder builder;
       if (!valid)
         return builder.Build();
 
@@ -177,7 +176,7 @@ TEST(AttributionResponseParsingTest,
     }
   };
 
-  const AttributionAggregatableSourcesSizeTestCase kTestCases[] = {
+  const AttributionAggregatableSourceSizeTestCase kTestCases[] = {
       {"empty", true, 0, 0},
       {"max_keys", true,
        blink::kMaxAttributionAggregatableKeysPerSourceOrTrigger, 1},
@@ -190,12 +189,12 @@ TEST(AttributionResponseParsingTest,
   };
 
   for (const auto& test_case : kTestCases) {
-    auto sources = mojom::blink::AttributionAggregatableSources::New();
+    auto source = mojom::blink::AttributionAggregatableSource::New();
     bool valid =
-        ParseAttributionAggregatableSources(test_case.GetHeader(), *sources);
+        ParseAttributionAggregatableSource(test_case.GetHeader(), *source);
     EXPECT_EQ(test_case.valid, valid) << test_case.description;
     if (test_case.valid)
-      EXPECT_EQ(test_case.GetSources(), sources) << test_case.description;
+      EXPECT_EQ(test_case.GetSource(), source) << test_case.description;
   }
 }
 
@@ -514,7 +513,7 @@ TEST(AttributionResponseParsingTest, ParseSourceRegistrationHeader) {
               /*priority=*/0,
               /*debug_key=*/nullptr,
               /*filter_data=*/AttributionFilterDataBuilder().Build(),
-              /*aggregatable_sources=*/AggregatableSourcesBuilder().Build()),
+              /*aggregatable_source=*/AggregatableSourceBuilder().Build()),
       },
       {
           "valid_filter_data",
@@ -535,7 +534,7 @@ TEST(AttributionResponseParsingTest, ParseSourceRegistrationHeader) {
               AttributionFilterDataBuilder()
                   .AddFilter("SOURCE_TYPE", {})
                   .Build(),
-              /*aggregatable_sources=*/AggregatableSourcesBuilder().Build()),
+              /*aggregatable_source=*/AggregatableSourceBuilder().Build()),
       },
       {
           "invalid_source_type_key_in_filter_data",

@@ -19,7 +19,7 @@
 #include "base/test/bind.h"
 #include "base/time/time.h"
 #include "base/values.h"
-#include "content/browser/attribution_reporting/attribution_aggregatable_sources.h"
+#include "content/browser/attribution_reporting/attribution_aggregatable_source.h"
 #include "content/browser/attribution_reporting/attribution_filter_data.h"
 #include "content/browser/attribution_reporting/attribution_source_type.h"
 #include "content/browser/attribution_reporting/attribution_trigger.h"
@@ -210,7 +210,7 @@ class AttributionSimulatorInputParser {
             source_time,
             CommonSourceInfo::GetExpiryTime(expiry, source_time, *source_type),
             *source_type, priority, std::move(filter_data), debug_key,
-            AttributionAggregatableSources())),
+            AttributionAggregatableSource())),
         std::move(source));
   }
 

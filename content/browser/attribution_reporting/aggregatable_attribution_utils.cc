@@ -11,7 +11,7 @@
 #include "base/check.h"
 #include "base/containers/flat_map.h"
 #include "content/browser/attribution_reporting/aggregatable_histogram_contribution.h"
-#include "content/browser/attribution_reporting/attribution_aggregatable_sources.h"
+#include "content/browser/attribution_reporting/attribution_aggregatable_source.h"
 #include "content/browser/attribution_reporting/attribution_aggregatable_trigger.h"
 #include "content/browser/attribution_reporting/attribution_filter_data.h"
 #include "content/browser/attribution_reporting/attribution_utils.h"
@@ -22,14 +22,14 @@ namespace content {
 
 std::vector<AggregatableHistogramContribution> CreateAggregatableHistogram(
     const AttributionFilterData& source_filter_data,
-    const AttributionAggregatableSources& sources,
+    const AttributionAggregatableSource& source,
     const AttributionAggregatableTrigger& trigger) {
   // TODO(linnan): Log metrics for early returns.
 
   // Pairs of key id and bucket key.
   std::vector<std::pair<std::string, absl::uint128>> buckets;
-  buckets.reserve(sources.proto().sources().size());
-  for (const auto& [key_id, key] : sources.proto().sources()) {
+  buckets.reserve(source.proto().keys().size());
+  for (const auto& [key_id, key] : source.proto().keys()) {
     buckets.emplace_back(key_id,
                          absl::MakeUint128(key.high_bits(), key.low_bits()));
   }

@@ -9,7 +9,7 @@
 
 #include "base/strings/string_number_conversions.h"
 #include "base/time/time.h"
-#include "content/browser/attribution_reporting/attribution_aggregatable_sources.h"
+#include "content/browser/attribution_reporting/attribution_aggregatable_source.h"
 #include "content/browser/attribution_reporting/attribution_filter_data.h"
 #include "content/browser/attribution_reporting/attribution_manager.h"
 #include "content/browser/attribution_reporting/common_source_info.h"
@@ -68,7 +68,7 @@ VerifyResult VerifyAndStoreImpression(AttributionSourceType source_type,
           CommonSourceInfo::GetExpiryTime(impression.expiry, impression_time,
                                           source_type),
           source_type, impression.priority, AttributionFilterData(),
-          /*debug_key=*/absl::nullopt, AttributionAggregatableSources()));
+          /*debug_key=*/absl::nullopt, AttributionAggregatableSource()));
 
   // TODO(apaseltiner): It would be nice to be able to report an issue in
   // DevTools in the event that a debug key is present but the corresponding

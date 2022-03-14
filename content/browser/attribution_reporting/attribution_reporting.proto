@@ -14,9 +14,9 @@ message AttributionAggregatableKey {
   optional uint64 low_bits = 2;
 }
 
-// Proto equivalent of `blink::mojom::AttributionAggregatableSources`.
-message AttributionAggregatableSources {
-  map<string, AttributionAggregatableKey> sources = 1;
+// Proto equivalent of `blink::mojom::AttributionAggregatableSource`.
+message AttributionAggregatableSource {
+  map<string, AttributionAggregatableKey> keys = 1;
 }
 
 message AttributionFilterValues {

@@ -119,9 +119,9 @@ bool ParseAttributionFilterData(
 
 }  // namespace
 
-bool ParseAttributionAggregatableSources(
+bool ParseAttributionAggregatableSource(
     const AtomicString& json_string,
-    mojom::blink::AttributionAggregatableSources& sources) {
+    mojom::blink::AttributionAggregatableSource& source) {
   std::unique_ptr<JSONValue> json = ParseJSON(json_string);
   if (!json)
     return false;
@@ -134,7 +134,7 @@ bool ParseAttributionAggregatableSources(
 
   const wtf_size_t num_keys = array->size();
 
-  sources.sources.ReserveCapacityForSize(num_keys);
+  source.keys.ReserveCapacityForSize(num_keys);
 
   for (wtf_size_t i = 0; i < num_keys; ++i) {
     JSONValue* value = array->at(i);
@@ -156,7 +156,7 @@ bool ParseAttributionAggregatableSources(
     if (!key)
       return false;
 
-    sources.sources.insert(std::move(key_id), std::move(key));
+    source.keys.insert(std::move(key_id), std::move(key));
   }
 
   return true;

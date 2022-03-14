@@ -265,14 +265,14 @@ void AttributionSrcLoader::ResourceClient::HandleSourceRegistration(
     return;
   }
 
-  source_data->aggregatable_sources =
-      mojom::blink::AttributionAggregatableSources::New();
+  source_data->aggregatable_source =
+      mojom::blink::AttributionAggregatableSource::New();
 
-  const AtomicString& aggregatable_sources_json = response.HttpHeaderField(
+  const AtomicString& aggregatable_source_json = response.HttpHeaderField(
       http_names::kAttributionReportingRegisterAggregatableSource);
-  if (!aggregatable_sources_json.IsNull() &&
-      !attribution_response_parsing::ParseAttributionAggregatableSources(
-          aggregatable_sources_json, *source_data->aggregatable_sources)) {
+  if (!aggregatable_source_json.IsNull() &&
+      !attribution_response_parsing::ParseAttributionAggregatableSource(
+          aggregatable_source_json, *source_data->aggregatable_source)) {
     return;
   }
 

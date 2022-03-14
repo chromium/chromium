@@ -10,7 +10,7 @@
 #include "base/bind.h"
 #include "base/check.h"
 #include "base/time/time.h"
-#include "content/browser/attribution_reporting/attribution_aggregatable_sources.h"
+#include "content/browser/attribution_reporting/attribution_aggregatable_source.h"
 #include "content/browser/attribution_reporting/attribution_filter_data.h"
 #include "content/browser/attribution_reporting/attribution_host_utils.h"
 #include "content/browser/attribution_reporting/attribution_manager.h"
@@ -32,17 +32,17 @@ namespace content {
 
 namespace {
 
-proto::AttributionAggregatableSources ConvertToProto(
-    const blink::mojom::AttributionAggregatableSources& aggregatable_sources) {
-  proto::AttributionAggregatableSources result;
+proto::AttributionAggregatableSource ConvertToProto(
+    const blink::mojom::AttributionAggregatableSource& aggregatable_source) {
+  proto::AttributionAggregatableSource result;
 
-  for (const auto& [key_id, key_ptr] : aggregatable_sources.sources) {
+  for (const auto& [key_id, key_ptr] : aggregatable_source.keys) {
     DCHECK(key_ptr);
     proto::AttributionAggregatableKey key;
     key.set_high_bits(key_ptr->high_bits);
     key.set_low_bits(key_ptr->low_bits);
 
-    (*result.mutable_sources())[key_id] = std::move(key);
+    (*result.mutable_keys())[key_id] = std::move(key);
   }
 
   return result;
@@ -117,10 +117,10 @@ void AttributionDataHostManagerImpl::SourceDataAvailable(
   if (!filter_data.has_value())
     return;
 
-  absl::optional<AttributionAggregatableSources> aggregatable_sources =
-      AttributionAggregatableSources::Create(
-          ConvertToProto(*data->aggregatable_sources));
-  if (!aggregatable_sources.has_value())
+  absl::optional<AttributionAggregatableSource> aggregatable_source =
+      AttributionAggregatableSource::Create(
+          ConvertToProto(*data->aggregatable_source));
+  if (!aggregatable_source.has_value())
     return;
 
   StorableSource storable_source(CommonSourceInfo(
@@ -131,7 +131,7 @@ void AttributionDataHostManagerImpl::SourceDataAvailable(
       context.source_type, data->priority, std::move(*filter_data),
       data->debug_key ? absl::make_optional(data->debug_key->value)
                       : absl::nullopt,
-      std::move(*aggregatable_sources)));
+      std::move(*aggregatable_source)));
 
   attribution_manager_->HandleSource(std::move(storable_source));
 }

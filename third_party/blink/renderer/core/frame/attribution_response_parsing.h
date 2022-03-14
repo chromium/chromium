@@ -33,9 +33,9 @@ namespace blink::attribution_response_parsing {
 // }]
 //
 // Returns whether parsing was successful.
-CORE_EXPORT bool ParseAttributionAggregatableSources(
+CORE_EXPORT bool ParseAttributionAggregatableSource(
     const AtomicString& json_string,
-    mojom::blink::AttributionAggregatableSources& sources);
+    mojom::blink::AttributionAggregatableSource& source);
 
 // Parses a debug key, which is a 64-bit unsigned integer encoded as a base-10
 // string. Returns `nullptr` on failure.

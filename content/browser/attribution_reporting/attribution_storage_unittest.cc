@@ -26,7 +26,7 @@
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "content/browser/attribution_reporting/aggregatable_histogram_contribution.h"
-#include "content/browser/attribution_reporting/attribution_aggregatable_sources.h"
+#include "content/browser/attribution_reporting/attribution_aggregatable_source.h"
 #include "content/browser/attribution_reporting/attribution_filter_data.h"
 #include "content/browser/attribution_reporting/attribution_observer_types.h"
 #include "content/browser/attribution_reporting/attribution_report.h"
@@ -1812,21 +1812,21 @@ TEST_F(AttributionStorageTest, TriggerDebugKey_RoundTrips) {
                                 TriggerDebugKeyIs(33))));
 }
 
-TEST_F(AttributionStorageTest, AttributionAggregatableSources_RoundTrips) {
-  proto::AttributionAggregatableSources proto =
-      AggregatableSourcesProtoBuilder()
+TEST_F(AttributionStorageTest, AttributionAggregatableSource_RoundTrips) {
+  proto::AttributionAggregatableSource proto =
+      AggregatableSourceProtoBuilder()
           .AddKey("key", AggregatableKeyProtoBuilder()
                              .SetHighBits(5)
                              .SetLowBits(345)
                              .Build())
           .Build();
-  absl::optional<AttributionAggregatableSources> aggregatable_sources =
-      AttributionAggregatableSources::Create(std::move(proto));
-  EXPECT_TRUE(aggregatable_sources.has_value());
+  absl::optional<AttributionAggregatableSource> aggregatable_source =
+      AttributionAggregatableSource::Create(std::move(proto));
+  EXPECT_TRUE(aggregatable_source.has_value());
   storage()->StoreSource(
-      SourceBuilder().SetAggregatableSources(*aggregatable_sources).Build());
+      SourceBuilder().SetAggregatableSource(*aggregatable_source).Build());
   EXPECT_THAT(storage()->GetActiveSources(),
-              ElementsAre(AggregatableSourcesAre(*aggregatable_sources)));
+              ElementsAre(AggregatableSourceAre(*aggregatable_source)));
 }
 
 TEST_F(AttributionStorageTest, MaybeCreateAndStoreReport_ReturnsNewReport) {
