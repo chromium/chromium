@@ -21,12 +21,11 @@ MonthlyUseCaseImpl::MonthlyUseCaseImpl(
     const std::string& psm_device_active_secret,
     version_info::Channel chromeos_channel,
     PrefService* local_state)
-    : DeviceActiveUseCase(
-          psm_device_active_secret,
-          chromeos_channel,
-          prefs::kDeviceActiveLastKnownMonthlyPingTimestamp,
-          private_membership::rlwe::RlweUseCase::CROS_FRESNEL_MONTHLY,
-          local_state) {}
+    : DeviceActiveUseCase(psm_device_active_secret,
+                          chromeos_channel,
+                          prefs::kDeviceActiveLastKnownMonthlyPingTimestamp,
+                          psm_rlwe::RlweUseCase::CROS_FRESNEL_MONTHLY,
+                          local_state) {}
 
 MonthlyUseCaseImpl::~MonthlyUseCaseImpl() = default;
 

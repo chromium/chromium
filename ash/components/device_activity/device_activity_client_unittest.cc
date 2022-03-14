@@ -93,6 +93,30 @@ base::TimeDelta TimeUntilNextUTCMidnight() {
   return (now.UTCMidnight() + base::Hours(base::Time::kHoursPerDay) - now);
 }
 
+base::TimeDelta TimeUntilNewUTCMonth() {
+  const auto current_ts = base::Time::Now();
+
+  base::Time::Exploded exploded_current_ts;
+  current_ts.UTCExplode(&exploded_current_ts);
+
+  // Exploded structure uses 1-based month (values 1 = January, etc.)
+  // Increment current ts to be the new month/year.
+  if (exploded_current_ts.month == 12) {
+    exploded_current_ts.month = 1;
+    exploded_current_ts.year += 1;
+  } else {
+    exploded_current_ts.month += 1;
+  }
+
+  // New timestamp should reflect first day of new month.
+  exploded_current_ts.day_of_month = 1;
+
+  base::Time new_ts;
+  EXPECT_TRUE(base::Time::FromUTCExploded(exploded_current_ts, &new_ts));
+
+  return new_ts - current_ts;
+}
+
 }  // namespace
 
 class FakePsmDelegate : public PsmDelegate {
@@ -137,14 +161,27 @@ class FakeDailyUseCaseImpl : public DailyUseCaseImpl {
   ~FakeDailyUseCaseImpl() override = default;
 };
 
+class FakeMonthlyUseCaseImpl : public MonthlyUseCaseImpl {
+ public:
+  FakeMonthlyUseCaseImpl(const std::string& psm_device_active_secret,
+                         version_info::Channel chromeos_channel,
+                         PrefService* local_state)
+      : MonthlyUseCaseImpl(psm_device_active_secret,
+                           chromeos_channel,
+                           local_state) {}
+  FakeMonthlyUseCaseImpl(const FakeMonthlyUseCaseImpl&) = delete;
+  FakeMonthlyUseCaseImpl& operator=(const FakeMonthlyUseCaseImpl&) = delete;
+  ~FakeMonthlyUseCaseImpl() override = default;
+};
+
 class DeviceActivityClientTest : public testing::Test {
  public:
   DeviceActivityClientTest()
       : task_environment_(base::test::TaskEnvironment::TimeSource::MOCK_TIME) {
-    // Start base::Time::Now() at least after epoch time by forwarding 24h.
+    // Start base::Time::Now() at least after epoch time by forwarding 365 days.
     // DeviceActivityClient assumes epoch as a date in the past.
     // Remote env. runs unit tests assuming base::Time::Now() is epoch.
-    task_environment_.FastForwardBy(base::Hours(base::Time::kHoursPerDay));
+    task_environment_.FastForwardBy(base::Days(365));
     task_environment_.RunUntilIdle();
   }
   DeviceActivityClientTest(const DeviceActivityClientTest&) = delete;
@@ -220,6 +257,8 @@ class DeviceActivityClientTest : public testing::Test {
     std::vector<std::unique_ptr<DeviceActiveUseCase>> use_cases;
     use_cases.push_back(std::make_unique<FakeDailyUseCaseImpl>(
         kFakePsmDeviceActiveSecret, kFakeChromeOSChannel, &local_state_));
+    use_cases.push_back(std::make_unique<FakeMonthlyUseCaseImpl>(
+        kFakePsmDeviceActiveSecret, kFakeChromeOSChannel, &local_state_));
 
     device_activity_client_ = std::make_unique<DeviceActivityClient>(
         network_state_test_helper_->network_state_handler(),
@@ -233,6 +272,14 @@ class DeviceActivityClientTest : public testing::Test {
   }
 
   void TearDown() override {}
+
+  void SimulateLocalStateOnPowerwash() {
+    // Simulate powerwashing device by removing the local state prefs.
+    local_state_.RemoveUserPref(
+        prefs::kDeviceActiveLastKnownDailyPingTimestamp);
+    local_state_.RemoveUserPref(
+        prefs::kDeviceActiveLastKnownMonthlyPingTimestamp);
+  }
 
   void CreateWifiNetworkConfig() {
     ASSERT_TRUE(wifi_network_service_path_.empty());
@@ -286,9 +333,15 @@ class DeviceActivityClientTest : public testing::Test {
 TEST_F(DeviceActivityClientTest, DefaultStatesAreInitializedProperly) {
   EXPECT_EQ(device_activity_client_->GetState(),
             DeviceActivityClient::State::kIdle);
-  EXPECT_EQ(
-      local_state_.GetTime(prefs::kDeviceActiveLastKnownDailyPingTimestamp),
-      base::Time::UnixEpoch());
+
+  for (auto* use_case : device_activity_client_->GetUseCases()) {
+    SCOPED_TRACE(testing::Message()
+                 << "PSM use case: "
+                 << psm_rlwe::RlweUseCase_Name(use_case->GetPsmUseCase()));
+
+    EXPECT_EQ(use_case->GetLastKnownPingTimestamp(), base::Time::UnixEpoch());
+  }
+
   EXPECT_TRUE(device_activity_client_->GetReportTimer()->IsRunning());
 }
 
@@ -321,23 +374,26 @@ TEST_F(DeviceActivityClientTest, PerformSuccessfulCheckIn) {
   // Device active reporting starts checking in on network connect.
   SetWifiNetworkState(shill::kStateOnline);
 
-  EXPECT_EQ(device_activity_client_->GetState(),
-            DeviceActivityClient::State::kCheckingIn);
+  // Return well formed Import response body for every use case.
+  for (auto* use_case : device_activity_client_->GetUseCases()) {
+    SCOPED_TRACE(testing::Message()
+                 << "PSM use case: "
+                 << psm_rlwe::RlweUseCase_Name(use_case->GetPsmUseCase()));
 
-  base::Time prev_time =
-      local_state_.GetTime(prefs::kDeviceActiveLastKnownDailyPingTimestamp);
+    EXPECT_EQ(device_activity_client_->GetState(),
+              DeviceActivityClient::State::kCheckingIn);
+    base::Time prev_time = use_case->GetLastKnownPingTimestamp();
 
-  test_url_loader_factory_.SimulateResponseForPendingRequest(
-      GetFresnelTestEndpoint(kPsmImportRequestEndpoint), std::string(),
-      net::HTTP_OK);
-  task_environment_.RunUntilIdle();
+    test_url_loader_factory_.SimulateResponseForPendingRequest(
+        GetFresnelTestEndpoint(kPsmImportRequestEndpoint), std::string(),
+        net::HTTP_OK);
+    task_environment_.RunUntilIdle();
 
-  base::Time new_time =
-      local_state_.GetTime(prefs::kDeviceActiveLastKnownDailyPingTimestamp);
+    base::Time new_time = use_case->GetLastKnownPingTimestamp();
 
-  // After a PSM identifier is checked in, the |local_state_|
-  // |kDeviceActiveLastKnownDailyPingTimestamp| should be updated.
-  EXPECT_LT(prev_time, new_time);
+    // After a PSM identifier is checked in, local state prefs is updated.
+    EXPECT_LT(prev_time, new_time);
+  }
 
   EXPECT_EQ(device_activity_client_->GetState(),
             DeviceActivityClient::State::kIdle);
@@ -347,30 +403,70 @@ TEST_F(DeviceActivityClientTest, NetworkReconnectsAfterSuccessfulCheckIn) {
   // Device active reporting starts checking in on network connect.
   SetWifiNetworkState(shill::kStateOnline);
 
-  // Return well formed Import response body.
-  test_url_loader_factory_.SimulateResponseForPendingRequest(
-      GetFresnelTestEndpoint(kPsmImportRequestEndpoint), std::string(),
-      net::HTTP_OK);
-  task_environment_.RunUntilIdle();
+  // Return well formed Import response body for every use case.
+  for (auto* use_case : device_activity_client_->GetUseCases()) {
+    SCOPED_TRACE(testing::Message()
+                 << "PSM use case: "
+                 << psm_rlwe::RlweUseCase_Name(use_case->GetPsmUseCase()));
+
+    test_url_loader_factory_.SimulateResponseForPendingRequest(
+        GetFresnelTestEndpoint(kPsmImportRequestEndpoint), std::string(),
+        net::HTTP_OK);
+    task_environment_.RunUntilIdle();
+  }
 
   // Reconnecting network connection triggers |TransitionOutOfIdle|.
   SetWifiNetworkState(shill::kStateOffline);
   SetWifiNetworkState(shill::kStateOnline);
 
-  // Check that no additional network requests are pending since the PSM id
-  // has already been imported.
+  // Check that no additional network requests are pending since all use cases
+  // have already been imported.
   EXPECT_EQ(test_url_loader_factory_.NumPending(), 0);
+}
+
+TEST_F(DeviceActivityClientTest, NetworkDisconnectsWhileWaitingForResponse) {
+  // Device active reporting starts checking in on network connect.
+  SetWifiNetworkState(shill::kStateOnline);
+
+  // We expect the size of the use cases to be greater than 0.
+  EXPECT_GT(device_activity_client_->GetUseCases().size(), 0);
+
+  EXPECT_EQ(device_activity_client_->GetState(),
+            DeviceActivityClient::State::kCheckingIn);
+
+  // Currently there is at least 1 pending request that has not received it's
+  // response.
+  EXPECT_GT(test_url_loader_factory_.NumPending(), 0);
+
+  // Disconnect network.
+  SetWifiNetworkState(shill::kStateOffline);
+
+  // All pending requests should be cancelled, and our device activity client
+  // should get set back to |kIdle|.
+  EXPECT_EQ(test_url_loader_factory_.NumPending(), 0);
+
+  EXPECT_EQ(device_activity_client_->GetState(),
+            DeviceActivityClient::State::kIdle);
 }
 
 TEST_F(DeviceActivityClientTest, CheckInAfterNextUtcMidnight) {
   // Device active reporting starts membership check on network connect.
   SetWifiNetworkState(shill::kStateOnline);
 
-  // Return well formed Import response body.
-  test_url_loader_factory_.SimulateResponseForPendingRequest(
-      GetFresnelTestEndpoint(kPsmImportRequestEndpoint), std::string(),
-      net::HTTP_OK);
-  task_environment_.RunUntilIdle();
+  // Return well formed Import response body for every use case.
+  for (auto* use_case : device_activity_client_->GetUseCases()) {
+    SCOPED_TRACE(testing::Message()
+                 << "PSM use case: "
+                 << psm_rlwe::RlweUseCase_Name(use_case->GetPsmUseCase()));
+
+    EXPECT_EQ(device_activity_client_->GetState(),
+              DeviceActivityClient::State::kCheckingIn);
+
+    test_url_loader_factory_.SimulateResponseForPendingRequest(
+        GetFresnelTestEndpoint(kPsmImportRequestEndpoint), std::string(),
+        net::HTTP_OK);
+    task_environment_.RunUntilIdle();
+  }
 
   // Return back to |kIdle| state after a successful check-in.
   EXPECT_EQ(device_activity_client_->GetState(),
@@ -381,22 +477,27 @@ TEST_F(DeviceActivityClientTest, CheckInAfterNextUtcMidnight) {
 
   FireTimer();
 
-  // Check that additional network requests are pending since the PSM id
-  // has NOT been imported for the new UTC day.
+  // Check that at least 1 network request is pending since the PSM id
+  // has NOT been imported for the new UTC period.
   EXPECT_GT(test_url_loader_factory_.NumPending(), 0);
 
-  // Verify state goes directly to |kCheckingIn| since local state is updated
-  // with the last check in timestamp.
+  // Verify state is |kCheckingIn| since local state was updated
+  // with the last check in timestamp during the previous day check ins.
   EXPECT_EQ(device_activity_client_->GetState(),
             DeviceActivityClient::State::kCheckingIn);
 
-  // Mock Successful |kCheckingIn|.
+  EXPECT_EQ(device_activity_client_->GetState(),
+            DeviceActivityClient::State::kCheckingIn);
+
+  // Return well formed Import response body for the DAILY use case.
+  // The time was forwarded by 1 day, which means only the daily use case will
+  // report actives again.
   test_url_loader_factory_.SimulateResponseForPendingRequest(
       GetFresnelTestEndpoint(kPsmImportRequestEndpoint), std::string(),
       net::HTTP_OK);
   task_environment_.RunUntilIdle();
 
-  // Return back to |kIdle| state after second successful check-in.
+  // Return back to |kIdle| state after successful check-in of daily use case.
   EXPECT_EQ(device_activity_client_->GetState(),
             DeviceActivityClient::State::kIdle);
 }
@@ -405,11 +506,20 @@ TEST_F(DeviceActivityClientTest, DoNotCheckInTwiceBeforeNextUtcDay) {
   // Device active reporting starts checking in on network connect.
   SetWifiNetworkState(shill::kStateOnline);
 
-  // Return well formed Import response body.
-  test_url_loader_factory_.SimulateResponseForPendingRequest(
-      GetFresnelTestEndpoint(kPsmImportRequestEndpoint), std::string(),
-      net::HTTP_OK);
-  task_environment_.RunUntilIdle();
+  // Return well formed Import response body for every use case.
+  for (auto* use_case : device_activity_client_->GetUseCases()) {
+    SCOPED_TRACE(testing::Message()
+                 << "PSM use case: "
+                 << psm_rlwe::RlweUseCase_Name(use_case->GetPsmUseCase()));
+
+    EXPECT_EQ(device_activity_client_->GetState(),
+              DeviceActivityClient::State::kCheckingIn);
+
+    test_url_loader_factory_.SimulateResponseForPendingRequest(
+        GetFresnelTestEndpoint(kPsmImportRequestEndpoint), std::string(),
+        net::HTTP_OK);
+    task_environment_.RunUntilIdle();
+  }
 
   // Return back to |kIdle| state after the first successful check-in.
   EXPECT_EQ(device_activity_client_->GetState(),
@@ -432,40 +542,134 @@ TEST_F(DeviceActivityClientTest, DoNotCheckInTwiceBeforeNextUtcDay) {
             DeviceActivityClient::State::kIdle);
 }
 
-// Powerwashing a device resets the |local_state_|. This will result in the
+TEST_F(DeviceActivityClientTest, CheckInAfterNextUtcMonth) {
+  // Device active reporting starts membership check on network connect.
+  SetWifiNetworkState(shill::kStateOnline);
+
+  // Return well formed Import response body for every use case.
+  for (auto* use_case : device_activity_client_->GetUseCases()) {
+    SCOPED_TRACE(testing::Message()
+                 << "PSM use case: "
+                 << psm_rlwe::RlweUseCase_Name(use_case->GetPsmUseCase()));
+
+    EXPECT_EQ(device_activity_client_->GetState(),
+              DeviceActivityClient::State::kCheckingIn);
+
+    test_url_loader_factory_.SimulateResponseForPendingRequest(
+        GetFresnelTestEndpoint(kPsmImportRequestEndpoint), std::string(),
+        net::HTTP_OK);
+    task_environment_.RunUntilIdle();
+  }
+
+  // Return back to |kIdle| state after a successful check-in.
+  EXPECT_EQ(device_activity_client_->GetState(),
+            DeviceActivityClient::State::kIdle);
+
+  task_environment_.FastForwardBy(TimeUntilNewUTCMonth());
+  task_environment_.RunUntilIdle();
+
+  FireTimer();
+
+  // Check that at least 1 network request is pending since the PSM id
+  // has NOT been imported for the new UTC period.
+  EXPECT_GT(test_url_loader_factory_.NumPending(), 0);
+
+  // Verify state is |kCheckingIn| since local state was updated
+  // with the last check in timestamp during the previous day check ins.
+  EXPECT_EQ(device_activity_client_->GetState(),
+            DeviceActivityClient::State::kCheckingIn);
+
+  EXPECT_EQ(device_activity_client_->GetState(),
+            DeviceActivityClient::State::kCheckingIn);
+
+  // Return well formed Import response body for daily and monthly use case.
+  // The time was forwarded to a new month, which means the daily and monthly
+  // use cases will report active again.
+  for (auto* use_case : device_activity_client_->GetUseCases()) {
+    psm_rlwe::RlweUseCase psm_use_case = use_case->GetPsmUseCase();
+    SCOPED_TRACE(testing::Message()
+                 << "PSM use case: "
+                 << psm_rlwe::RlweUseCase_Name(psm_use_case));
+
+    if (psm_use_case == psm_rlwe::RlweUseCase::CROS_FRESNEL_DAILY ||
+        psm_use_case == psm_rlwe::RlweUseCase::CROS_FRESNEL_MONTHLY) {
+      EXPECT_EQ(device_activity_client_->GetState(),
+                DeviceActivityClient::State::kCheckingIn);
+
+      test_url_loader_factory_.SimulateResponseForPendingRequest(
+          GetFresnelTestEndpoint(kPsmImportRequestEndpoint), std::string(),
+          net::HTTP_OK);
+      task_environment_.RunUntilIdle();
+    }
+  }
+
+  // Return back to |kIdle| state after successful check-in of daily use case.
+  EXPECT_EQ(device_activity_client_->GetState(),
+            DeviceActivityClient::State::kIdle);
+}
+
+// Powerwashing a device resets the local state. This will result in the
 // client re-importing a PSM ID, on the same day.
 TEST_F(DeviceActivityClientTest, CheckInAgainOnLocalStateReset) {
   // Device active reporting starts membership check on network connect.
   SetWifiNetworkState(shill::kStateOnline);
 
-  base::Time prev_time =
-      local_state_.GetTime(prefs::kDeviceActiveLastKnownDailyPingTimestamp);
+  for (auto* use_case : device_activity_client_->GetUseCases()) {
+    SCOPED_TRACE(testing::Message()
+                 << "PSM use case: "
+                 << psm_rlwe::RlweUseCase_Name(use_case->GetPsmUseCase()));
 
-  // Mock Successful |kCheckingIn|.
-  test_url_loader_factory_.SimulateResponseForPendingRequest(
-      GetFresnelTestEndpoint(kPsmImportRequestEndpoint), std::string(),
-      net::HTTP_OK);
-  task_environment_.RunUntilIdle();
+    base::Time prev_time = use_case->GetLastKnownPingTimestamp();
 
-  base::Time new_time =
-      local_state_.GetTime(prefs::kDeviceActiveLastKnownDailyPingTimestamp);
+    // Mock Successful |kCheckingIn|.
+    test_url_loader_factory_.SimulateResponseForPendingRequest(
+        GetFresnelTestEndpoint(kPsmImportRequestEndpoint), std::string(),
+        net::HTTP_OK);
+    task_environment_.RunUntilIdle();
 
-  // After a PSM identifier is checked in, the |local_state_|
-  // |kDeviceActiveLastKnownDailyPingTimestamp| should be updated.
-  EXPECT_LT(prev_time, new_time);
+    base::Time new_time = use_case->GetLastKnownPingTimestamp();
 
-  // Simulate powerwashing device by resetting the |local_state_|.
-  local_state_.RemoveUserPref(prefs::kDeviceActiveLastKnownDailyPingTimestamp);
+    // After a PSM identifier is checked in, local state prefs is updated.
+    EXPECT_LT(prev_time, new_time);
+  }
+
+  // Simulate powerwashing device by removing related local state prefs.
+  SimulateLocalStateOnPowerwash();
 
   // Retrigger |TransitionOutOfIdle| codepath by either firing timer or
   // reconnecting network.
   FireTimer();
 
-  // Verify that the |kCheckingIn| state is reached.
-  // Indicator is used to verify that we are checking the PSM ID again after
-  // powerwash/recovery scenario.
+  // Verify each use case performs check in successfully after local state prefs
+  // is reset.
+  for (auto* use_case : device_activity_client_->GetUseCases()) {
+    SCOPED_TRACE(testing::Message()
+                 << "PSM use case: "
+                 << psm_rlwe::RlweUseCase_Name(use_case->GetPsmUseCase()));
+
+    // Verify that the |kCheckingIn| state is reached.
+    // Indicator is used to verify that we are checking in the PSM ID again
+    // after powerwash/recovery scenario.
+    EXPECT_EQ(device_activity_client_->GetState(),
+              DeviceActivityClient::State::kCheckingIn);
+
+    base::Time prev_time = use_case->GetLastKnownPingTimestamp();
+
+    // Mock Successful |kCheckingIn|.
+    test_url_loader_factory_.SimulateResponseForPendingRequest(
+        GetFresnelTestEndpoint(kPsmImportRequestEndpoint), std::string(),
+        net::HTTP_OK);
+    task_environment_.RunUntilIdle();
+
+    base::Time new_time = use_case->GetLastKnownPingTimestamp();
+
+    // After a PSM identifier is checked in, local state prefs is updated.
+    EXPECT_LT(prev_time, new_time);
+  }
+
+  // Transitions back to |kIdle| state.
   EXPECT_EQ(device_activity_client_->GetState(),
-            DeviceActivityClient::State::kCheckingIn);
+            DeviceActivityClient::State::kIdle);
 }
 
 TEST_F(DeviceActivityClientTest, InitialUmaHistogramStateCount) {
@@ -484,15 +688,24 @@ TEST_F(DeviceActivityClientTest, UmaHistogramStateCountAfterFirstCheckIn) {
   // Device active reporting starts membership check on network connect.
   SetWifiNetworkState(shill::kStateOnline);
 
-  // Mock successful |kCheckingIn| requests.
-  test_url_loader_factory_.SimulateResponseForPendingRequest(
-      GetFresnelTestEndpoint(kPsmImportRequestEndpoint), std::string(),
-      net::HTTP_OK);
-  task_environment_.RunUntilIdle();
+  std::vector<DeviceActiveUseCase*> use_cases =
+      device_activity_client_->GetUseCases();
+
+  // Return well formed Import response body for every use case.
+  for (auto* use_case : use_cases) {
+    SCOPED_TRACE(testing::Message()
+                 << "PSM use case: "
+                 << psm_rlwe::RlweUseCase_Name(use_case->GetPsmUseCase()));
+
+    test_url_loader_factory_.SimulateResponseForPendingRequest(
+        GetFresnelTestEndpoint(kPsmImportRequestEndpoint), std::string(),
+        net::HTTP_OK);
+    task_environment_.RunUntilIdle();
+  }
 
   histogram_tester_.ExpectBucketCount("Ash.DeviceActiveClient.StateCount",
                                       DeviceActivityClient::State::kCheckingIn,
-                                      1);
+                                      use_cases.size());
 }
 
 }  // namespace device_activity

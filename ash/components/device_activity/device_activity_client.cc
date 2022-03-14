@@ -6,6 +6,7 @@
 
 #include "ash/components/device_activity/device_active_use_case.h"
 #include "ash/components/device_activity/fresnel_service.pb.h"
+#include "ash/constants/ash_features.h"
 #include "base/check.h"
 // TODO(https://crbug.com/1269900): Migrate to use SFUL library.
 #include "base/metrics/histogram_functions.h"
@@ -181,16 +182,32 @@ void DeviceActivityClient::DefaultNetworkChanged(const NetworkState* network) {
 
   if (network_connected_ == was_connected)
     return;
+
   if (network_connected_)
     OnNetworkOnline();
+  else
+    OnNetworkOffline();
 }
 
 DeviceActivityClient::State DeviceActivityClient::GetState() const {
   return state_;
 }
 
+std::vector<DeviceActiveUseCase*> DeviceActivityClient::GetUseCases() const {
+  std::vector<DeviceActiveUseCase*> use_cases_ptr;
+
+  for (auto& use_case : use_cases_) {
+    use_cases_ptr.push_back(use_case.get());
+  }
+  return use_cases_ptr;
+}
+
 void DeviceActivityClient::OnNetworkOnline() {
   ReportUseCases();
+}
+
+void DeviceActivityClient::OnNetworkOffline() {
+  CancelUseCases();
 }
 
 GURL DeviceActivityClient::GetFresnelURL() const {
@@ -238,10 +255,30 @@ void DeviceActivityClient::ReportUseCases() {
     pending_use_cases_.push(use_case.get());
   }
 
-  DeviceActiveUseCase* current_use_case = pending_use_cases_.front();
-  pending_use_cases_.pop();
+  // Pop from |pending_use_cases_| queue in |TransitionToIdle|, after the
+  // use case has tried to be reported.
+  TransitionOutOfIdle(pending_use_cases_.front());
+}
 
-  TransitionOutOfIdle(current_use_case);
+void DeviceActivityClient::CancelUseCases() {
+  // Use RAII to reset |url_loader_| after current function scope.
+  // Delete |url_loader_| before the callback is invoked cancels the sent out
+  // request.
+  // No callback will be invoked in the case a network request is sent,
+  // and the device internet disconnects.
+  auto url_loader = std::move(url_loader_);
+
+  // Use RAII to clear the queue.
+  std::queue<DeviceActiveUseCase*> pending_use_cases;
+  std::swap(pending_use_cases_, pending_use_cases);
+
+  // Calling std::queue.front() on empty queue results in undefined behaviour.
+  // Safety check queue is not empty before |TransitionToIdle|.
+  if (pending_use_cases.empty()) {
+    return;
+  }
+
+  TransitionToIdle(pending_use_cases.front());
 }
 
 void DeviceActivityClient::TransitionOutOfIdle(
@@ -277,10 +314,36 @@ void DeviceActivityClient::TransitionOutOfIdle(
 
     current_use_case->SetPsmRlweClient(std::move(status_or_client.value()));
 
-    // During rollout, we perform CheckIn without CheckMembership for
-    // powerwash, recovery, or RMA devices.
-    TransitionToCheckIn(current_use_case);
-    return;
+    switch (current_use_case->GetPsmUseCase()) {
+      case psm_rlwe::RlweUseCase::CROS_FRESNEL_DAILY:
+        if (base::FeatureList::IsEnabled(
+                features::kDeviceActiveClientDailyCheckMembership)) {
+          TransitionToCheckMembershipOprf(current_use_case);
+          return;
+        } else {
+          // During rollout, we perform CheckIn without CheckMembership for
+          // powerwash, recovery, or RMA devices.
+          TransitionToCheckIn(current_use_case);
+          return;
+        }
+      case psm_rlwe::RlweUseCase::CROS_FRESNEL_MONTHLY:
+        if (base::FeatureList::IsEnabled(
+                features::kDeviceActiveClientMonthlyCheckMembership)) {
+          TransitionToCheckMembershipOprf(current_use_case);
+          return;
+        } else {
+          // During rollout, we perform CheckIn without CheckMembership for
+          // powerwash, recovery, or RMA devices.
+          TransitionToCheckIn(current_use_case);
+          return;
+        }
+      default:
+        VLOG(1) << "Use case is not supported yet. "
+                << psm_rlwe::RlweUseCase_Name(
+                       current_use_case->GetPsmUseCase());
+        TransitionToIdle(current_use_case);
+        return;
+    }
   }
 
   TransitionToIdle(current_use_case);
@@ -529,6 +592,7 @@ void DeviceActivityClient::OnCheckMembershipQueryDone(
   if (!is_psm_id_member) {
     RecordDurationStateMetric(state_, state_timer_.Elapsed());
     TransitionToCheckIn(current_use_case);
+    return;
   } else {
     // Update local state to signal ping has already been sent for use case
     // window.
@@ -536,6 +600,7 @@ void DeviceActivityClient::OnCheckMembershipQueryDone(
         last_transition_out_of_idle_time_);
     RecordDurationStateMetric(state_, state_timer_.Elapsed());
     TransitionToIdle(current_use_case);
+    return;
   }
 }
 
@@ -567,7 +632,6 @@ void DeviceActivityClient::TransitionToCheckIn(
                                                  MISSING_TRAFFIC_ANNOTATION);
   url_loader_->AttachStringForUpload(request_body, "application/x-protobuf");
   url_loader_->SetTimeoutDuration(kImportRequestTimeout);
-
   url_loader_->DownloadToString(
       url_loader_factory_.get(),
       base::BindOnce(&DeviceActivityClient::OnCheckInDone,
@@ -606,15 +670,16 @@ void DeviceActivityClient::TransitionToIdle(
   if (current_use_case) {
     // This will also reset the |current_use_case| psm_id field.
     current_use_case->SetWindowIdentifier(absl::nullopt);
-
     current_use_case = nullptr;
+
+    // Pop the front of the queue since the use case has tried reporting.
+    if (!pending_use_cases_.empty())
+      pending_use_cases_.pop();
   }
 
+  // Try to report the remaining pending use cases.
   if (!pending_use_cases_.empty()) {
-    DeviceActiveUseCase* current_use_case = pending_use_cases_.front();
-    pending_use_cases_.pop();
-
-    TransitionOutOfIdle(current_use_case);
+    TransitionOutOfIdle(pending_use_cases_.front());
     return;
   }
 

@@ -113,11 +113,11 @@ void DeviceActivityController::OnMachineStatisticsLoaded(
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
     const std::string& psm_device_active_secret) {
   // Initialize all device active use cases, sorted by
-  // smallest to largest window. i.e. Daily > Monthly> First Active.
-  // TODO(hirthanan): Add |MonthlyUseCaseImpl| to vector when ready to support
-  // monthly use case.
+  // smallest to largest window. i.e. Daily > Monthly > First Active.
   std::vector<std::unique_ptr<DeviceActiveUseCase>> use_cases;
   use_cases.push_back(std::make_unique<DailyUseCaseImpl>(
+      psm_device_active_secret, chromeos_channel, local_state));
+  use_cases.push_back(std::make_unique<MonthlyUseCaseImpl>(
       psm_device_active_secret, chromeos_channel, local_state));
 
   if (trigger == Trigger::kNetwork) {

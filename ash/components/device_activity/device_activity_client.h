@@ -102,9 +102,15 @@ class COMPONENT_EXPORT(ASH_DEVICE_ACTIVITY) DeviceActivityClient
 
   State GetState() const;
 
+  // Used for testing.
+  std::vector<DeviceActiveUseCase*> GetUseCases() const;
+
  private:
   // Handles device network connecting successfully.
   void OnNetworkOnline();
+
+  // Handle device network disconnecting successfully.
+  void OnNetworkOffline();
 
   // Return Fresnel server network request endpoints determined by the |state_|.
   GURL GetFresnelURL() const;
@@ -112,6 +118,12 @@ class COMPONENT_EXPORT(ASH_DEVICE_ACTIVITY) DeviceActivityClient
   // Called when device network comes online or |report_timer_| executing.
   // Reports each use case in a sequenced order.
   void ReportUseCases();
+
+  // Called when device network goes offline.
+  // Since the network connection is severed, any pending network requests will
+  // be cleaned up.
+  // After calling this method: |state_| set to |kIdle|.
+  void CancelUseCases();
 
   // Callback from |ReportUseCases()| handling whether a use case needs
   // to be reported for the time window.
@@ -209,6 +221,7 @@ class COMPONENT_EXPORT(ASH_DEVICE_ACTIVITY) DeviceActivityClient
   const std::vector<std::unique_ptr<DeviceActiveUseCase>> use_cases_;
 
   // Contains the use cases to report active for.
+  // The front of the queue represents the use case trying to be reported.
   // |ReportUseCases| initializes this field using the |use_cases_|.
   // |TransitionToIdle| pops from this field to report each pending use case.
   std::queue<DeviceActiveUseCase*> pending_use_cases_;

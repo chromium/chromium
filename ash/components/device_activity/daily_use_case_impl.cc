@@ -20,12 +20,11 @@ namespace psm_rlwe = private_membership::rlwe;
 DailyUseCaseImpl::DailyUseCaseImpl(const std::string& psm_device_active_secret,
                                    version_info::Channel chromeos_channel,
                                    PrefService* local_state)
-    : DeviceActiveUseCase(
-          psm_device_active_secret,
-          chromeos_channel,
-          prefs::kDeviceActiveLastKnownDailyPingTimestamp,
-          private_membership::rlwe::RlweUseCase::CROS_FRESNEL_DAILY,
-          local_state) {}
+    : DeviceActiveUseCase(psm_device_active_secret,
+                          chromeos_channel,
+                          prefs::kDeviceActiveLastKnownDailyPingTimestamp,
+                          psm_rlwe::RlweUseCase::CROS_FRESNEL_DAILY,
+                          local_state) {}
 
 DailyUseCaseImpl::~DailyUseCaseImpl() = default;
 

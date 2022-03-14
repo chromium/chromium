@@ -13,6 +13,7 @@ component("device_activity") {
 
   deps = [
     ":fresnel_service_proto",
+    "//ash/constants:constants",
     "//base",
     "//base:i18n",
     "//chromeos/dbus/session_manager",
