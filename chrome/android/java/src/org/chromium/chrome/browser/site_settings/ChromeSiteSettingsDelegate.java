@@ -37,6 +37,7 @@ import org.chromium.components.content_settings.ContentSettingsType;
 import org.chromium.components.embedder_support.util.Origin;
 import org.chromium.content_public.browser.BrowserContextHandle;
 import org.chromium.content_public.browser.ContentFeatureList;
+import org.chromium.content_public.common.ContentFeatures;
 import org.chromium.content_public.common.ContentSwitches;
 import org.chromium.url.GURL;
 
@@ -160,6 +161,8 @@ public class ChromeSiteSettingsDelegate implements SiteSettingsDelegate {
             case SiteSettingsCategory.Type.BLUETOOTH_SCANNING:
                 return CommandLine.getInstance().hasSwitch(
                         ContentSwitches.ENABLE_EXPERIMENTAL_WEB_PLATFORM_FEATURES);
+            case SiteSettingsCategory.Type.FEDERATED_IDENTITY_API:
+                return ContentFeatureList.isEnabled(ContentFeatures.FED_CM);
             case SiteSettingsCategory.Type.REQUEST_DESKTOP_SITE:
                 return ContentFeatureList.isEnabled(ContentFeatureList.REQUEST_DESKTOP_SITE_GLOBAL);
             case SiteSettingsCategory.Type.NFC:

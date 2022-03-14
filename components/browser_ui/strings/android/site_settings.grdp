@@ -39,6 +39,9 @@
   <message name="IDS_WEBSITE_SETTINGS_DEVICE_LOCATION" desc="Title for Location settings, which control which websites can access your location." meaning="Geolocation">
     Location
   </message>
+  <message name="IDS_WEBSITE_SETTINGS_FEDERATED_IDENTITY" desc="Title for Third-Party Sign In settings, which control whether websites can access browser third-party sign in API.">
+    Third-party sign-in
+  </message>
   <message name="IDS_WEBSITE_SETTINGS_USE_MIC" desc="The category filter 'Mic' for site settings.">
     Microphone
   </message>
@@ -362,6 +365,14 @@
   </message>
   <message name="IDS_WEBSITE_SETTINGS_CATEGORY_DESKTOP_SITE_BLOCKED_LIST" desc="Summary text explaining that mobile view of sites will be requested by default. To be shown in the list of permission categories.">
     Off
+  </message>
+
+  <!-- Federated Identity -->
+  <message name="IDS_WEBSITE_SETTINGS_CATEGORY_FEDERATED_IDENTITY_ALLOWED" desc="The description for the option to allow sites to use the browser Third-Party Sign In API.">
+    Sites can show sign-in prompts from identity services.
+  </message>
+  <message name="IDS_WEBSITE_SETTINGS_CATEGORY_FEDERATED_IDENTITY_BLOCKED" desc="The description for the option to block sites from using the browser Third-Party Sign In API.">
+    Block sign-in prompts from identity services.
   </message>
 
   <!-- Idle Detection -->

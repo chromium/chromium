@@ -62,10 +62,11 @@ public class WebsitePermissionsFetcher {
             case ContentSettingsType.BACKGROUND_SYNC:
             case ContentSettingsType.BLUETOOTH_SCANNING:
             case ContentSettingsType.COOKIES:
-            case ContentSettingsType.REQUEST_DESKTOP_SITE:
+            case ContentSettingsType.FEDERATED_IDENTITY_API:
             case ContentSettingsType.JAVASCRIPT:
             case ContentSettingsType.JAVASCRIPT_JIT:
             case ContentSettingsType.POPUPS:
+            case ContentSettingsType.REQUEST_DESKTOP_SITE:
             case ContentSettingsType.SOUND:
                 return WebsitePermissionsType.CONTENT_SETTING_EXCEPTION;
             case ContentSettingsType.AR:

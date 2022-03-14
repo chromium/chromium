@@ -767,9 +767,10 @@ static void JNI_WebsitePreferenceBridge_SetContentSettingEnabled(
       case ContentSettingsType::AUTO_DARK_WEB_CONTENT:
       case ContentSettingsType::BACKGROUND_SYNC:
       case ContentSettingsType::COOKIES:
-      case ContentSettingsType::REQUEST_DESKTOP_SITE:
+      case ContentSettingsType::FEDERATED_IDENTITY_API:
       case ContentSettingsType::JAVASCRIPT:
       case ContentSettingsType::POPUPS:
+      case ContentSettingsType::REQUEST_DESKTOP_SITE:
       case ContentSettingsType::SENSORS:
       case ContentSettingsType::SOUND:
         value = CONTENT_SETTING_ALLOW;

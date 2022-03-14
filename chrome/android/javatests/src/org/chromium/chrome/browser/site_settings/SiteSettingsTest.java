@@ -1276,6 +1276,26 @@ public class SiteSettingsTest {
     @Test
     @SmallTest
     @Feature({"Preferences"})
+    public void testAllowFederatedIdentityApi() {
+        new TwoStatePermissionTestCase("FederatedIdentityApi",
+                SiteSettingsCategory.Type.FEDERATED_IDENTITY_API,
+                ContentSettingsType.FEDERATED_IDENTITY_API, true)
+                .run();
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"Preferences"})
+    public void testBlockFederatedIdentityApi() {
+        new TwoStatePermissionTestCase("FederatedIdentityApi",
+                SiteSettingsCategory.Type.FEDERATED_IDENTITY_API,
+                ContentSettingsType.FEDERATED_IDENTITY_API, false)
+                .run();
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"Preferences"})
     @DisableIf.
     Build(message = "Flaky, see crbug.com/1170671", sdk_is_less_than = Build.VERSION_CODES.Q)
     public void testEmbargoedNotificationSiteSettings() throws Exception {

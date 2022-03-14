@@ -42,7 +42,8 @@ public class SiteSettingsCategory {
             Type.CLIPBOARD, Type.COOKIES, Type.IDLE_DETECTION, Type.DEVICE_LOCATION,
             Type.JAVASCRIPT, Type.MICROPHONE, Type.NFC, Type.NOTIFICATIONS, Type.POPUPS,
             Type.PROTECTED_MEDIA, Type.SENSORS, Type.SOUND, Type.USB, Type.VIRTUAL_REALITY,
-            Type.USE_STORAGE, Type.AUTO_DARK_WEB_CONTENT, Type.REQUEST_DESKTOP_SITE})
+            Type.USE_STORAGE, Type.AUTO_DARK_WEB_CONTENT, Type.REQUEST_DESKTOP_SITE,
+            Type.FEDERATED_IDENTITY_API})
     @Retention(RetentionPolicy.SOURCE)
     public @interface Type {
         // All updates here must also be reflected in {@link #preferenceKey(int)
@@ -72,10 +73,11 @@ public class SiteSettingsCategory {
         int USE_STORAGE = 22;
         int AUTO_DARK_WEB_CONTENT = 23;
         int REQUEST_DESKTOP_SITE = 24;
+        int FEDERATED_IDENTITY_API = 25;
         /**
          * Number of handled categories used for calculating array sizes.
          */
-        int NUM_ENTRIES = 25;
+        int NUM_ENTRIES = 26;
     }
 
     private final BrowserContextHandle mBrowserContextHandle;
@@ -176,6 +178,8 @@ public class SiteSettingsCategory {
                 return ContentSettingsType.REQUEST_DESKTOP_SITE;
             case Type.DEVICE_LOCATION:
                 return ContentSettingsType.GEOLOCATION;
+            case Type.FEDERATED_IDENTITY_API:
+                return ContentSettingsType.FEDERATED_IDENTITY_API;
             case Type.IDLE_DETECTION:
                 return ContentSettingsType.IDLE_DETECTION;
             case Type.JAVASCRIPT:
@@ -252,6 +256,8 @@ public class SiteSettingsCategory {
                 return "request_desktop_site";
             case Type.DEVICE_LOCATION:
                 return "device_location";
+            case Type.FEDERATED_IDENTITY_API:
+                return "federated_identity_api";
             case Type.IDLE_DETECTION:
                 return "idle_detection";
             case Type.JAVASCRIPT:

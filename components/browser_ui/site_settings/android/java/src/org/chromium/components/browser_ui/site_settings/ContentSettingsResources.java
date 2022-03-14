@@ -155,6 +155,13 @@ public class ContentSettingsResources {
                         R.string.website_settings_category_desktop_site_allowed,
                         R.string.website_settings_category_desktop_site_blocked);
 
+            case ContentSettingsType.FEDERATED_IDENTITY_API:
+                return new ResourceItem(R.drawable.ic_account_circle_24dp,
+                        R.string.website_settings_federated_identity, ContentSettingValues.ALLOW,
+                        ContentSettingValues.BLOCK,
+                        R.string.website_settings_category_federated_identity_allowed,
+                        R.string.website_settings_category_federated_identity_blocked);
+
             case ContentSettingsType.GEOLOCATION:
                 return new ResourceItem(R.drawable.gm_filled_location_on_24,
 
