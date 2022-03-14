@@ -102,9 +102,17 @@ config("compiler") {
     }
 
     if (current_cpu == "x86") {
-      cflags += [ "-m32" ]
+      if (host_cpu == "x86" || host_cpu == "x64") {
+        cflags += [ "-m32" ]
+      } else {
+        cflags += [ "--target=i386-windows" ]
+      }
     } else if (current_cpu == "x64") {
-      cflags += [ "-m64" ]
+      if (host_cpu == "x86" || host_cpu == "x64") {
+        cflags += [ "-m64" ]
+      } else {
+        cflags += [ "--target=x86_64-windows" ]
+      }
     } else if (current_cpu == "arm64") {
       cflags += [ "--target=arm64-windows" ]
     } else {
