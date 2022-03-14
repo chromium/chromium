@@ -161,6 +161,14 @@ void NGSimplifiedOOFLayoutAlgorithm::AdvanceChildIterator() {
         // token must belong to an OOF positioned element that has not yet been
         // added via AppendOutOfFlowResult().
         DCHECK(break_token->InputNode().IsOutOfFlowPositioned());
+        // We don't force OOF breaks, unless the preceding block has a forced
+        // break and we need to break to get the correct static position.
+        // However, the break token that is created for this case should be
+        // skipped.
+        if (To<NGBlockBreakToken>(break_token.Get())->IsForcedBreak()) {
+          break_token_iterator_++;
+          continue;
+        }
         break;
       }
     } else {
