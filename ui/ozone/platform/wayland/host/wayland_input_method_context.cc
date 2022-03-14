@@ -525,8 +525,9 @@ void WaylandInputMethodContext::OnKeysym(uint32_t keysym,
   if (!layout_engine)
     return;
 
+  // TODO(crbug.com/1079353): Handle modifiers.
   DomCode dom_code = static_cast<XkbKeyboardLayoutEngine*>(layout_engine)
-                         ->GetDomCodeByKeysym(keysym, modifiers);
+                         ->GetDomCodeByKeysym(keysym);
   if (dom_code == DomCode::NONE)
     return;
 

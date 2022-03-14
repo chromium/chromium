@@ -6,7 +6,6 @@
 
 #include <stddef.h>
 #include <stdint.h>
-#include <xkbcommon/xkbcommon-names.h>
 
 #include <tuple>
 
@@ -938,35 +937,20 @@ TEST_F(XkbLayoutEngineVkTest, GetDomCodeByKeysym) {
                                                std::strlen(layout.get()));
   }
 
-  constexpr uint32_t kShiftMask = 1;
   constexpr struct {
     uint32_t keysym;
-    uint32_t modifiers;
-    DomCode expected_dom_code;
+    DomCode dom_code;
   } kTestCases[] = {
-      {65307, 0, ui::DomCode::ESCAPE},
-      {65288, 0, ui::DomCode::BACKSPACE},
-      {65293, 0, ui::DomCode::ENTER},
-      {65289, 0, ui::DomCode::TAB},
-      {65056, kShiftMask, ui::DomCode::TAB},
-
-      // Test conflict keysym case. We use '<' as a testing example.
-      // On pc101 layout, intl_backslash is expected without SHIFT modifier.
-      {60, 0, ui::DomCode::INTL_BACKSLASH},
-      // And, if SHIFT is pressed, comma key is expected.
-      {60, kShiftMask, ui::DomCode::COMMA},
-
-      // Test for space key. The keysym mapping has only one keycode entry.
-      // It expects all modifiers are ignored. Used SHIFT as testing example.
-      {32, 0, ui::DomCode::SPACE},
-      {32, kShiftMask, ui::DomCode::SPACE},
+      {65307, ui::DomCode::ESCAPE}, {65288, ui::DomCode::BACKSPACE},
+      {65293, ui::DomCode::ENTER},  {65289, ui::DomCode::TAB},
+      {65056, ui::DomCode::TAB},  // SHIFT+TAB.
+      {65289, ui::DomCode::TAB},  // CTRL+TAB.
   };
 
   for (const auto& test_case : kTestCases) {
-    EXPECT_EQ(test_case.expected_dom_code,
-              layout_engine_->GetDomCodeByKeysym(test_case.keysym,
-                                                 test_case.modifiers))
-        << "input: " << test_case.keysym << ", " << test_case.modifiers;
+    SCOPED_TRACE(test_case.keysym);
+    EXPECT_EQ(test_case.dom_code,
+              layout_engine_->GetDomCodeByKeysym(test_case.keysym));
   }
 }
 
