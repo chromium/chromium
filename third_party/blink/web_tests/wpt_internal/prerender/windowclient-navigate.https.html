@@ -4,12 +4,15 @@
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
 <script src="/common/get-host-info.sub.js"></script>
+<script src="/common/utils.js"></script>
 <script src="/service-workers/service-worker/resources/test-helpers.sub.js"></script>
-<script src="resources/utils.js"></script>
+<script src="/speculation-rules/prerender/resources/utils.js"></script>
 <body>
 <script>
-const PAGE_URL = 'resources/prerendered-page.html';
-const WORKER_URL = 'resources/windowclient-navigate-worker.js';
+const uid = token();
+
+const PAGE_URL = `resources/prerendered-page.html?uid=${uid}`;
+const WORKER_URL = `resources/windowclient-navigate-worker.js?uid=${uid}`;
 const SAME_ORIGIN_DESTINATION =
     get_host_info()['HTTPS_ORIGIN'] + base_path() + 'resources/empty.html';
 
@@ -19,7 +22,7 @@ promise_test(async t => {
   t.add_cleanup(() => registration.unregister());
   await wait_for_state(t, get_newest_worker(registration), 'activated');
 
-  const readyChannel = new BroadcastChannel('prerender-channel');
+  const readyChannel = new PrerenderChannel('prerender-channel', uid);
   t.add_cleanup(_ => readyChannel.close());
 
   const readyPromise = new Promise(resolve => {
@@ -36,7 +39,7 @@ promise_test(async t => {
   assert_equals(prerenderResult, 'prerender success',
                 'should succeed to prerender a page');
 
-  const resultChannel = new BroadcastChannel('test-channel');
+  const resultChannel = new PrerenderChannel('test-channel', uid);
   t.add_cleanup(_ => resultChannel.close());
 
   const navigationPromise = new Promise(resolve => {

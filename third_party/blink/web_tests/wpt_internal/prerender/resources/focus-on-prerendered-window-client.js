@@ -1,3 +1,8 @@
+importScripts("/speculation-rules/prerender/resources/utils.js");
+
+const params = new URLSearchParams(location.search);
+const uid = params.get('uid');
+
 self.addEventListener('message', e => {
   // WindowClient::focus() should be called after user activation
   // like notificationclick so we show notification here.
@@ -14,7 +19,7 @@ self.addEventListener('notificationclick', e => {
   const promise = clients.matchAll()
     .then(clients => {
       // Try to focus on prerendered page.
-      const bc = new BroadcastChannel('result-channel');
+      const bc = new PrerenderChannel('result-channel', uid);
       const client = clients.find(c => c.url.includes('prerendered-page.html'));
       // The prerendered client should not already be focused.
       if (client.focused) {

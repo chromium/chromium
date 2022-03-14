@@ -3,14 +3,16 @@
 <meta name="timeout" content="long">
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
-<script src="resources/utils.js"></script>
+<script src="/common/utils.js"></script>
 <script src="/service-workers/service-worker/resources/test-helpers.sub.js"></script>
+<script src="/speculation-rules/prerender/resources/utils.js"></script>
 <body>
 <script>
 
 promise_test(async t => {
+  const uid = token();
   const workerUrl = 'resources/clients-matchall-service-worker.js';
-  const pageUrl = 'resources/prerendered-page.html';
+  const pageUrl = `resources/prerendered-page.html?uid=${uid}`;
 
   // Start a service worker.
   const registration =
@@ -18,7 +20,7 @@ promise_test(async t => {
   t.add_cleanup(_ => registration.unregister());
 
   // Observe the message from a prerendered page.
-  const bc = new BroadcastChannel('prerender-channel');
+  const bc = new PrerenderChannel('prerender-channel', uid);
   t.add_cleanup(_ => bc.close());
   const messagePromise = new Promise(resolve => {
     bc.addEventListener('message', e => {

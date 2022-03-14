@@ -1,3 +1,8 @@
+importScripts("/speculation-rules/prerender/resources/utils.js");
+
+const params = new URLSearchParams(location.search);
+const uid = params.get('uid');
+
 self.onmessage = e => {
   const navigationUrl = e.data.navigationUrl;
   const clientUrl = e.data.clientUrl;
@@ -8,7 +13,7 @@ self.onmessage = e => {
     const clients = await self.clients.matchAll();
     const client = clients.find(c => c.url == clientUrl);
     if (!client) {
-      const bc = new BroadcastChannel(respondTo);
+      const bc = new PrerenderChannel(respondTo, uid);
       bc.postMessage('Client was not found');
       bc.close();
       return;
@@ -25,7 +30,7 @@ self.onmessage = e => {
         result = 'navigate() failed with unknown error';
       }
     } finally {
-      const bc = new BroadcastChannel(respondTo);
+      const bc = new PrerenderChannel(respondTo, uid);
       bc.postMessage(result);
       bc.close();
     }
