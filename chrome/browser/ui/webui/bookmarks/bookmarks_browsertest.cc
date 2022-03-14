@@ -33,16 +33,17 @@ void BookmarksBrowserTest::SetupExtensionAPITest() {
       ManagedBookmarkServiceFactory::GetForProfile(profile);
   bookmarks::test::WaitForBookmarkModelToLoad(model);
 
-  base::ListValue list;
-  std::unique_ptr<base::DictionaryValue> node(new base::DictionaryValue());
-  node->SetStringKey("name", "Managed Bookmark");
-  node->SetStringKey("url", "http://www.chromium.org");
+  base::Value::List list;
+  base::Value::Dict node;
+  node.Set("name", "Managed Bookmark");
+  node.Set("url", "http://www.chromium.org");
+  list.Append(node.Clone());
+  node.clear();
+  node.Set("name", "Managed Folder");
+  node.Set("children", base::Value::List());
   list.Append(std::move(node));
-  node = std::make_unique<base::DictionaryValue>();
-  node->SetStringKey("name", "Managed Folder");
-  node->Set("children", std::make_unique<base::ListValue>());
-  list.Append(std::move(node));
-  profile->GetPrefs()->Set(bookmarks::prefs::kManagedBookmarks, list);
+  profile->GetPrefs()->Set(bookmarks::prefs::kManagedBookmarks,
+                           base::Value(std::move(list)));
   ASSERT_EQ(2u, managed->managed_node()->children().size());
 }
 
