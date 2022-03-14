@@ -99,13 +99,20 @@ MouseEventBuilder& MouseEventBuilder::AddTime(zx_time_t time) {
 MouseEventBuilder& MouseEventBuilder::AddSample(
     uint32_t id,
     std::array<float, 2> position,
-    std::vector<uint8_t> pressed_buttons) {
+    std::vector<uint8_t> pressed_buttons,
+    std::array<int64_t, 2> scroll) {
   sample_ = absl::make_optional<fup::MousePointerSample>();
   sample_->set_device_id(id);
   if (!pressed_buttons.empty()) {
     sample_->set_pressed_buttons(pressed_buttons);
   }
   sample_->set_position_in_viewport(position);
+  if (scroll[0] != 0) {
+    sample_->set_scroll_h(scroll[0]);
+  }
+  if (scroll[1] != 0) {
+    sample_->set_scroll_v(scroll[1]);
+  }
   return *this;
 }
 

@@ -52,7 +52,8 @@ class MouseEventBuilder {
   MouseEventBuilder& AddTime(zx_time_t time);
   MouseEventBuilder& AddSample(uint32_t id,
                                std::array<float, 2> position,
-                               std::vector<uint8_t> pressed_buttons);
+                               std::vector<uint8_t> pressed_buttons,
+                               std::array<int64_t, 2> scroll);
   MouseEventBuilder& AddViewParameters(
       std::array<std::array<float, 2>, 2> view,
       std::array<std::array<float, 2>, 2> viewport,

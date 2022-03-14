@@ -6,6 +6,7 @@
 
 #include <cmath>
 #include <limits>
+#include <memory>
 
 #include "base/logging.h"
 #include "base/notreached.h"
@@ -201,12 +202,13 @@ TouchEvent CreateTouchEventDraft(const fup::TouchEvent& event,
 // The gestures expect a gesture to start within the logical view space, and
 // is not tolerant of floating point drift. This function coerces just the DOWN
 // event's coordinate to start within the logical view.
-MouseEvent CreateMouseEventDraft(const fup::MouseEvent& event,
-                                 const EventType event_type,
-                                 const int pressed_buttons_flags,
-                                 const int changed_buttons_flags,
-                                 const fup::ViewParameters& view_parameters,
-                                 const fup::MouseDeviceInfo& device_info) {
+std::unique_ptr<MouseEvent> CreateMouseEventDraft(
+    const fup::MouseEvent& event,
+    const EventType event_type,
+    const int pressed_buttons_flags,
+    const int changed_buttons_flags,
+    const fup::ViewParameters& view_parameters,
+    const fup::MouseDeviceInfo& device_info) {
   DCHECK(HasValidMouseSample(event)) << "precondition";
   const auto& sample = event.pointer_sample();
 
@@ -222,13 +224,27 @@ MouseEvent CreateMouseEventDraft(const fup::MouseEvent& event,
     logical = ClampToViewSpace(logical[0], logical[1], view_parameters);
   }
 
-  // TODO(fxbug.dev/88580): Use ui::MouseWheelEvent to signal scroll.
+  auto location = gfx::PointF(logical[0], logical[1]);
+  auto root_location = gfx::PointF(sample.position_in_viewport()[0],
+                                   sample.position_in_viewport()[1]);
 
-  return MouseEvent(event_type, gfx::PointF(logical[0], logical[1]),
-                    gfx::PointF(sample.position_in_viewport()[0],
-                                sample.position_in_viewport()[1]),
-                    timestamp, pressed_buttons_flags, changed_buttons_flags,
-                    pointer_details);
+  if (event_type == ET_MOUSEWHEEL) {
+    // TODO(fxbug.dev/92938): Maybe also support ctrl+wheel event here.
+
+    const int offset_x =
+        sample.has_scroll_h() ? static_cast<int>(sample.scroll_h()) : 0;
+    const int offset_y =
+        sample.has_scroll_v() ? static_cast<int>(sample.scroll_v()) : 0;
+
+    // TODO(fxbug.dev/85388): If mouse wheel has by detent(tick) scroll offset,
+    // we can fill them into |tick_120ths|.
+    return std::make_unique<MouseWheelEvent>(
+        gfx::Vector2d(offset_x, offset_y), location, root_location, timestamp,
+        pressed_buttons_flags, changed_buttons_flags);
+  }
+  return std::make_unique<MouseEvent>(event_type, location, root_location,
+                                      timestamp, pressed_buttons_flags,
+                                      changed_buttons_flags, pointer_details);
 }
 
 }  // namespace
@@ -360,16 +376,17 @@ void PointerEventsHandler::OnMouseSourceWatchResult(
       // Update mouse_down_ for the next Fuchsia event.
       mouse_down_[id] = pressed_buttons;
 
-      // Handle the default case: moved buttons.
-      // This is when there are no buttons pressed either previously or
-      // currently.
-      if (changed_buttons == 0 && pressed_buttons == 0) {
-        // Handle the moved case.
-        auto draft = CreateMouseEventDraft(
-            event, ET_MOUSE_MOVED, pressed_buttons, changed_buttons,
-            mouse_view_parameters_.value(), mouse_device_info_[id]);
-        event_callback_.Run(&draft);
-      } else {
+      const bool is_wheel_event =
+          sample.has_scroll_v() || sample.has_scroll_h();
+      // Do not filterout mouse wheel here, because the wheel event may be
+      // bundled with button down and button up event. Chromium will need to
+      // split it to 2 events.
+      const bool is_button_or_drag_event =
+          (changed_buttons != 0 || pressed_buttons != 0);
+      // If button is down, use drag event instead of move event.
+      const bool is_move_event = !is_button_or_drag_event && !is_wheel_event;
+
+      if (is_button_or_drag_event) {
         // Iterate through possible mouse buttons and potentially emit an event
         // for each one.
         for (int button = EF_LEFT_MOUSE_BUTTON; button <= EF_RIGHT_MOUSE_BUTTON;
@@ -389,21 +406,44 @@ void PointerEventsHandler::OnMouseSourceWatchResult(
             auto draft = CreateMouseEventDraft(
                 event, event_type, button, changed_buttons,
                 mouse_view_parameters_.value(), mouse_device_info_[id]);
-            event_callback_.Run(&draft);
+            event_callback_.Run(draft.get());
           } else if (prev_down && curr_down) {
+            if (is_wheel_event) {
+              // Skip the drag event when wheel event dispatch.
+              continue;
+            }
             auto event_type = ET_MOUSE_DRAGGED;
             auto draft = CreateMouseEventDraft(
                 event, event_type, button, changed_buttons,
                 mouse_view_parameters_.value(), mouse_device_info_[id]);
-            event_callback_.Run(&draft);
+            event_callback_.Run(draft.get());
           } else if (prev_down && !curr_down) {
             auto event_type = ET_MOUSE_RELEASED;
             auto draft = CreateMouseEventDraft(
                 event, event_type, button, changed_buttons,
                 mouse_view_parameters_.value(), mouse_device_info_[id]);
-            event_callback_.Run(&draft);
+            event_callback_.Run(draft.get());
           }
         }
+      }
+
+      if (is_wheel_event) {
+        // Handle the mouse scroll.
+        auto draft = CreateMouseEventDraft(
+            event, ET_MOUSEWHEEL, pressed_buttons, changed_buttons,
+            mouse_view_parameters_.value(), mouse_device_info_[id]);
+        event_callback_.Run(draft.get());
+      }
+
+      // Handle the default case: moved pointer.
+      // This is when there are no buttons pressed either previously or
+      // currently.
+      if (is_move_event) {
+        // Handle the moved case.
+        auto draft = CreateMouseEventDraft(
+            event, ET_MOUSE_MOVED, pressed_buttons, changed_buttons,
+            mouse_view_parameters_.value(), mouse_device_info_[id]);
+        event_callback_.Run(draft.get());
       }
     }
   }
