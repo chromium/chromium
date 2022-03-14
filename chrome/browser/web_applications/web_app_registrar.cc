@@ -60,11 +60,11 @@ bool WebAppRegistrar::IsLocallyInstalled(const GURL& start_url) const {
       GenerateAppId(/*manifest_id=*/absl::nullopt, start_url));
 }
 
-std::vector<PermissionsPolicyDeclaration> WebAppRegistrar::GetPermissionsPolicy(
+blink::ParsedPermissionsPolicy WebAppRegistrar::GetPermissionsPolicy(
     const AppId& app_id) const {
   auto* web_app = GetAppById(app_id);
   return web_app ? web_app->permissions_policy()
-                 : std::vector<PermissionsPolicyDeclaration>();
+                 : blink::ParsedPermissionsPolicy();
 }
 
 bool WebAppRegistrar::IsPlaceholderApp(const AppId& app_id) const {

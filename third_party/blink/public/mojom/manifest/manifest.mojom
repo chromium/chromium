@@ -9,6 +9,7 @@ import "mojo/public/mojom/base/string16.mojom";
 import "third_party/blink/public/mojom/manifest/display_mode.mojom";
 import "third_party/blink/public/mojom/manifest/capture_links.mojom";
 import "third_party/blink/public/mojom/manifest/handle_links.mojom";
+import "third_party/blink/public/mojom/permissions_policy/permissions_policy.mojom";
 import "ui/gfx/geometry/mojom/geometry.mojom";
 import "url/mojom/url.mojom";
 import "url/mojom/origin.mojom";
@@ -98,7 +99,7 @@ struct Manifest {
   // https://github.com/robbiemc/pwa-isolated-storage/blob/main/explainer.md
   bool isolated_storage;
 
-  array<ManifestPermissionsPolicyDeclaration> permissions_policy;
+  array<ParsedPermissionsPolicyDeclaration> permissions_policy;
 
   // TODO(crbug.com/1231886): This field is non-standard and part of a Chrome
   // experiment. See:
@@ -314,14 +315,6 @@ struct ManifestUserPreferenceOverrides {
 
   bool has_background_color;
   uint32 background_color;
-};
-
-// Used by Isolated Apps to declare a permissions policy.
-// TODO(crbug.com/1275708): Add a link to the explainer when it becomes
-// available.
-struct ManifestPermissionsPolicyDeclaration {
-  string feature;
-  array<string> allowlist;
 };
 
 // Debug information for a parsed manifest.

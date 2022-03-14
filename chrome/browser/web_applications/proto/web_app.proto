@@ -84,7 +84,7 @@ message DownloadedShortcutsMenuIconSizesProto {
 
 message WebAppPermissionsPolicy {
   optional string feature = 1;
-  repeated string allowlist = 2;
+  repeated string allowed_origins = 2;
   optional bool matches_all_origins = 3;
   optional bool matches_opaque_src = 4;
 }

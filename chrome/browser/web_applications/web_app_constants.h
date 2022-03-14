@@ -223,8 +223,6 @@ enum class OsIntegrationState {
 };
 
 using LaunchHandler = blink::Manifest::LaunchHandler;
-using PermissionsPolicyDeclaration =
-    blink::Manifest::PermissionsPolicyDeclaration;
 
 // A result how `WebAppIconDownloader` processed the list of icon urls.
 //

@@ -9,7 +9,9 @@
 
 #include "base/types/strong_alias.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/blink/public/common/permissions_policy/permissions_policy.h"
 #include "third_party/blink/public/mojom/manifest/manifest.mojom-blink.h"
+#include "third_party/blink/public/mojom/permissions_policy/permissions_policy.mojom-blink.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/blink/renderer/platform/graphics/color.h"
@@ -433,8 +435,10 @@ class MODULES_EXPORT ManifestParser {
   bool ParseIsolatedStorage(const JSONObject* object);
 
   // Parses the 'permissions_policy' field of the manifest.
-  Vector<mojom::blink::ManifestPermissionsPolicyDeclarationPtr>
-  ParseIsolatedAppPermissions(const JSONObject* object);
+  // This outsources semantic parsing of the policy to the
+  // PermissionsPolicyParser.
+  Vector<blink::ParsedPermissionsPolicyDeclaration> ParseIsolatedAppPermissions(
+      const JSONObject* object);
   Vector<String> ParseOriginAllowlist(const JSONArray* allowlist,
                                       const String& feature);
 

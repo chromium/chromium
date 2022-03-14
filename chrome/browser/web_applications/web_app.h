@@ -23,6 +23,7 @@
 #include "components/sync/model/string_ordinal.h"
 #include "components/webapps/browser/installable/installable_metrics.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/blink/public/common/permissions_policy/permissions_policy.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "url/gurl.h"
 
@@ -246,7 +247,7 @@ class WebApp {
 
   const absl::optional<AppId>& parent_app_id() const { return parent_app_id_; }
 
-  const std::vector<PermissionsPolicyDeclaration>& permissions_policy() const {
+  const blink::ParsedPermissionsPolicy& permissions_policy() const {
     return permissions_policy_;
   }
 
@@ -331,8 +332,7 @@ class WebApp {
   void SetStorageIsolated(bool is_storage_isolated);
   void SetLaunchHandler(absl::optional<LaunchHandler> launch_handler);
   void SetParentAppId(const absl::optional<AppId>& parent_app_id);
-  void SetPermissionsPolicy(
-      std::vector<PermissionsPolicyDeclaration> permissions_policy);
+  void SetPermissionsPolicy(blink::ParsedPermissionsPolicy permissions_policy);
   void SetInstallSourceForMetrics(
       absl::optional<webapps::WebappInstallSource> install_source);
 
@@ -416,7 +416,7 @@ class WebApp {
   bool is_storage_isolated_ = false;
   absl::optional<LaunchHandler> launch_handler_;
   absl::optional<AppId> parent_app_id_;
-  std::vector<PermissionsPolicyDeclaration> permissions_policy_;
+  blink::ParsedPermissionsPolicy permissions_policy_;
   // The source of the latest install, used for logging metrics. WebAppRegistrar
   // provides range validation. Optional only to support legacy installations,
   // since this used to be tracked as a pref. It might also be null if the value

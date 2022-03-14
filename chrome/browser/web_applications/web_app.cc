@@ -19,6 +19,7 @@
 #include "chrome/browser/web_applications/web_app_utils.h"
 #include "components/sync/base/time.h"
 #include "third_party/blink/public/common/manifest/manifest_util.h"
+#include "third_party/blink/public/common/permissions_policy/policy_helper_public.h"
 #include "third_party/blink/public/mojom/manifest/manifest.mojom.h"
 #include "ui/gfx/color_utils.h"
 
@@ -378,7 +379,7 @@ void WebApp::SetParentAppId(const absl::optional<AppId>& parent_app_id) {
 }
 
 void WebApp::SetPermissionsPolicy(
-    std::vector<PermissionsPolicyDeclaration> permissions_policy) {
+    blink::ParsedPermissionsPolicy permissions_policy) {
   permissions_policy_ = std::move(permissions_policy);
 }
 
@@ -652,13 +653,21 @@ base::Value WebApp::AsDebugValue() const {
   if (!permissions_policy_.empty()) {
     base::Value& policy_list = *root.SetKey(
         "permissions_policy", base::Value(base::Value::Type::LIST));
+    const auto& feature_to_name_map =
+        blink::GetPermissionsPolicyFeatureToNameMap();
     for (const auto& decl : permissions_policy_) {
       base::Value json_decl(base::Value::Type::DICTIONARY);
-      json_decl.SetStringKey("feature", decl.feature);
-      base::Value& allowlist_json =
-          *json_decl.SetKey("allowlist", base::Value(base::Value::Type::LIST));
-      for (const std::string& origin : decl.allowlist)
-        allowlist_json.Append(origin);
+      const auto& feature_name = feature_to_name_map.find(decl.feature);
+      if (feature_name == feature_to_name_map.end()) {
+        continue;
+      }
+      json_decl.SetStringKey("feature", feature_name->second);
+      base::Value& allowlist_json = *json_decl.SetKey(
+          "allowed_origins", base::Value(base::Value::Type::LIST));
+      for (const auto& origin : decl.allowed_origins)
+        allowlist_json.Append(origin.Serialize().c_str());
+      json_decl.SetBoolKey("matches_all_origins", decl.matches_all_origins);
+      json_decl.SetBoolKey("matches_opaque_src", decl.matches_opaque_src);
       policy_list.Append(std::move(json_decl));
     }
   }

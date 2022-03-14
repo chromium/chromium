@@ -27,6 +27,7 @@
 #include "content/public/browser/service_worker_context.h"
 #include "content/public/browser/storage_partition.h"
 #include "third_party/blink/public/common/manifest/manifest.h"
+#include "third_party/blink/public/common/permissions_policy/policy_helper_public.h"
 #include "url/gurl.h"
 
 namespace {
@@ -129,7 +130,7 @@ apps::ShareTarget CreateRandomShareTarget(uint32_t suffix) {
   return share_target;
 }
 
-std::vector<PermissionsPolicyDeclaration> CreateRandomPermissionsPolicy(
+blink::ParsedPermissionsPolicy CreateRandomPermissionsPolicy(
     RandomHelper& random) {
   const int num_permissions_policy_declarations =
       random.next_uint(features.size());
@@ -140,17 +141,18 @@ std::vector<PermissionsPolicyDeclaration> CreateRandomPermissionsPolicy(
   std::default_random_engine rng;
   std::shuffle(available_features.begin(), available_features.end(), rng);
 
-  std::vector<PermissionsPolicyDeclaration> permissions_policy(
+  blink::ParsedPermissionsPolicy permissions_policy(
       num_permissions_policy_declarations);
+  const auto& feature_name_map = blink::GetPermissionsPolicyNameToFeatureMap();
   for (int i = 0; i < num_permissions_policy_declarations; ++i) {
-    permissions_policy[i].feature = available_features[i];
+    permissions_policy[i].feature = feature_name_map.begin()->second;
     for (unsigned int j = 0; j < 5; ++j) {
       std::string suffix_str =
           base::NumberToString(suffix) + base::NumberToString(j);
 
       const auto origin =
           url::Origin::Create(GURL("https://app-" + suffix_str + ".com/"));
-      permissions_policy[i].allowlist.push_back(origin.Serialize());
+      permissions_policy[i].allowed_origins.push_back(origin);
     }
   }
   return permissions_policy;

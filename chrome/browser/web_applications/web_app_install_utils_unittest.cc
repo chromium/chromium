@@ -22,6 +22,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/mojom/manifest/manifest.mojom.h"
+#include "third_party/blink/public/mojom/permissions_policy/permissions_policy.mojom.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/gfx/image/image_unittest_util.h"
 #include "ui/gfx/skia_util.h"
@@ -117,10 +118,13 @@ TEST(WebAppInstallUtils, UpdateWebAppInfoFromManifest) {
   }
 
   {
-    auto declaration =
-        blink::mojom::ManifestPermissionsPolicyDeclaration::New();
-    declaration->feature = "bluetooth";
-    declaration->allowlist = {"*"};
+    blink::ParsedPermissionsPolicyDeclaration declaration;
+    declaration.feature = blink::mojom::PermissionsPolicyFeature::kFullscreen;
+    declaration.allowed_origins = {
+        url::Origin::Create(GURL("https://www.example.com"))};
+    declaration.matches_all_origins = false;
+    declaration.matches_opaque_src = false;
+
     manifest.permissions_policy.push_back(std::move(declaration));
   }
 
@@ -216,9 +220,13 @@ TEST(WebAppInstallUtils, UpdateWebAppInfoFromManifest) {
   // Check permissions policy was updated.
   EXPECT_EQ(1u, web_app_info.permissions_policy.size());
   auto declaration = web_app_info.permissions_policy[0];
-  EXPECT_EQ(declaration.feature, "bluetooth");
-  EXPECT_EQ(1u, declaration.allowlist.size());
-  EXPECT_EQ("*", declaration.allowlist[0]);
+  EXPECT_EQ(declaration.feature,
+            blink::mojom::PermissionsPolicyFeature::kFullscreen);
+  EXPECT_EQ(1u, declaration.allowed_origins.size());
+  EXPECT_EQ("https://www.example.com",
+            declaration.allowed_origins[0].Serialize());
+  EXPECT_FALSE(declaration.matches_all_origins);
+  EXPECT_FALSE(declaration.matches_opaque_src);
 }
 
 TEST(WebAppInstallUtils, UpdateWebAppInfoFromManifest_EmptyName) {

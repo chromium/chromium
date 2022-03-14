@@ -39,6 +39,7 @@
 #include "net/http/http_util.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/manifest/manifest.h"
+#include "third_party/blink/public/common/permissions_policy/permissions_policy.h"
 #include "third_party/blink/public/mojom/manifest/display_mode.mojom-shared.h"
 #include "third_party/blink/public/mojom/manifest/manifest.mojom.h"
 #include "third_party/skia/include/core/SkBitmap.h"
@@ -493,10 +494,12 @@ void UpdateWebAppInfoFromManifest(const blink::mojom::Manifest& manifest,
 
   web_app_info->permissions_policy.clear();
   for (const auto& decl : manifest.permissions_policy) {
-    PermissionsPolicyDeclaration copy;
-    copy.feature = decl->feature;
-    for (const auto& origin : decl->allowlist)
-      copy.allowlist.push_back(origin);
+    blink::ParsedPermissionsPolicyDeclaration copy;
+    copy.feature = decl.feature;
+    for (const auto& origin : decl.allowed_origins)
+      copy.allowed_origins.push_back(origin);
+    copy.matches_all_origins = decl.matches_all_origins;
+    copy.matches_opaque_src = decl.matches_opaque_src;
     web_app_info->permissions_policy.push_back(std::move(copy));
   }
 }

@@ -23,6 +23,7 @@
 #include "components/services/app_service/public/cpp/protocol_handler_info.h"
 #include "components/services/app_service/public/cpp/url_handler_info.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/blink/public/common/permissions_policy/permissions_policy.h"
 #include "third_party/skia/include/core/SkColor.h"
 
 namespace apps {
@@ -91,7 +92,7 @@ class WebAppRegistrar : public ProfileManagerObserver {
   // the app with |app_id|. This permissions policy is not yet parsed by the
   // PermissionsPolicyParser, and thus may contain invalid permissions and/or
   // origin allowlists.
-  std::vector<PermissionsPolicyDeclaration> GetPermissionsPolicy(
+  blink::ParsedPermissionsPolicy GetPermissionsPolicy(
       const AppId& app_id) const;
 
   // Returns true if the app was preinstalled and NOT installed via any other

@@ -85,19 +85,6 @@ bool Manifest::LaunchHandler::operator!=(const LaunchHandler& other) const {
   return !(*this == other);
 }
 
-bool Manifest::PermissionsPolicyDeclaration::operator==(
-    const PermissionsPolicyDeclaration& other) const {
-  auto AsTuple = [](const auto& item) {
-    return std::tie(item.feature, item.allowlist);
-  };
-  return AsTuple(*this) == AsTuple(other);
-}
-
-bool Manifest::PermissionsPolicyDeclaration::operator!=(
-    const PermissionsPolicyDeclaration& other) const {
-  return !(*this == other);
-}
-
 Manifest::TranslationItem::TranslationItem() = default;
 
 Manifest::TranslationItem::~TranslationItem() = default;

@@ -21,6 +21,7 @@
 #include "components/services/app_service/public/cpp/url_handler_info.h"
 #include "components/webapps/common/web_page_metadata.mojom-forward.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/blink/public/common/permissions_policy/permissions_policy.h"
 #include "third_party/blink/public/mojom/manifest/display_mode.mojom.h"
 #include "third_party/blink/public/mojom/manifest/manifest.mojom.h"
 #include "third_party/skia/include/core/SkBitmap.h"
@@ -305,7 +306,7 @@ struct WebAppInstallInfo {
 
   // The declared permissions policy to apply as the baseline policy for all
   // documents belonging to the application.
-  std::vector<blink::Manifest::PermissionsPolicyDeclaration> permissions_policy;
+  blink::ParsedPermissionsPolicy permissions_policy;
 };
 
 bool operator==(const IconSizes& icon_sizes1, const IconSizes& icon_sizes2);

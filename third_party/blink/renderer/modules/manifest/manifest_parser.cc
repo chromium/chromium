@@ -11,12 +11,18 @@
 #include "net/base/mime_util.h"
 #include "net/base/registry_controlled_domains/registry_controlled_domain.h"
 #include "third_party/blink/public/common/features.h"
+#include "third_party/blink/public/common/manifest/manifest.h"
 #include "third_party/blink/public/common/manifest/manifest_util.h"
 #include "third_party/blink/public/common/mime_util/mime_util.h"
+#include "third_party/blink/public/common/permissions_policy/permissions_policy.h"
 #include "third_party/blink/public/common/security/protocol_handler_security_level.h"
+#include "third_party/blink/public/mojom/manifest/manifest.mojom-blink-forward.h"
+#include "third_party/blink/public/mojom/permissions_policy/permissions_policy.mojom-blink.h"
+#include "third_party/blink/public/platform/url_conversion.h"
 #include "third_party/blink/public/platform/web_icon_sizes_parser.h"
 #include "third_party/blink/public/platform/web_string.h"
 #include "third_party/blink/renderer/core/css/parser/css_parser.h"
+#include "third_party/blink/renderer/core/permissions_policy/permissions_policy_parser.h"
 #include "third_party/blink/renderer/modules/manifest/manifest_uma_util.h"
 #include "third_party/blink/renderer/modules/navigatorcontentutils/navigator_content_utils.h"
 #include "third_party/blink/renderer/platform/json/json_parser.h"
@@ -1495,19 +1501,19 @@ bool ManifestParser::ParseIsolatedStorage(const JSONObject* object) {
   return is_storage_isolated;
 }
 
-Vector<mojom::blink::ManifestPermissionsPolicyDeclarationPtr>
+Vector<blink::ParsedPermissionsPolicyDeclaration>
 ManifestParser::ParseIsolatedAppPermissions(const JSONObject* object) {
-  Vector<mojom::blink::ManifestPermissionsPolicyDeclarationPtr> out;
+  PermissionsPolicyParser::Node policy;
 
   JSONValue* json_value = object->Get("permissions_policy");
   if (!json_value)
-    return out;
+    return Vector<blink::ParsedPermissionsPolicyDeclaration>();
 
   JSONObject* permissions_dict = object->GetJSONObject("permissions_policy");
   if (!permissions_dict) {
     AddErrorInfo(
         "property 'permissions_policy' ignored, type object expected.");
-    return out;
+    return Vector<blink::ParsedPermissionsPolicyDeclaration>();
   }
 
   for (wtf_size_t i = 0; i < permissions_dict->size(); ++i) {
@@ -1524,8 +1530,27 @@ ManifestParser::ParseIsolatedAppPermissions(const JSONObject* object) {
     Vector<String> allowlist = ParseOriginAllowlist(origin_allowlist, feature);
     if (!allowlist.size())
       continue;
-    out.push_back(mojom::blink::ManifestPermissionsPolicyDeclaration::New(
-        feature, allowlist));
+    PermissionsPolicyParser::Declaration new_policy;
+    new_policy.feature_name = feature;
+    for (const auto& origin : allowlist) {
+      // PermissionsPolicyParser expects origin strings to be wrapped in single
+      // quotes, as they would be in the header's permissions policy string.
+      String wrapped_origin = "'" + origin + "'";
+      new_policy.allowlist.push_back(wrapped_origin);
+    }
+    policy.push_back(new_policy);
+  }
+
+  PolicyParserMessageBuffer logger(
+      "Error with permissions_policy manifest field: ");
+  blink::ParsedPermissionsPolicy parsed_policy =
+      PermissionsPolicyParser::ParsePolicyFromNode(
+          policy, SecurityOrigin::Create(manifest_url_), logger,
+          execution_context_);
+
+  Vector<blink::ParsedPermissionsPolicyDeclaration> out;
+  for (const auto& decl : parsed_policy) {
+    out.push_back(std::move(decl));
   }
   return out;
 }
