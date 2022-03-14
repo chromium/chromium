@@ -462,38 +462,8 @@
 
 namespace {
 
-// Deprecated 02/2022
-const char kFlocIdValuePrefKey[] = "federated_learning.floc_id.value";
-const char kFlocIdStatusPrefKey[] = "federated_learning.floc_id.status";
-const char kFlocIdHistoryBeginTimePrefKey[] =
-    "federated_learning.floc_id.history_begin_time";
-const char kFlocIdHistoryEndTimePrefKey[] =
-    "federated_learning.floc_id.history_end_time";
-const char kFlocIdFinchConfigVersionPrefKey[] =
-    "federated_learning.floc_id.finch_config_version";
-const char kFlocIdSortingLshVersionPrefKey[] =
-    "federated_learning.floc_id.sorting_lsh_version";
-const char kFlocIdComputeTimePrefKey[] =
-    "federated_learning.floc_id.compute_time";
-
-// Deprecated 10/2021
-const char kTabStripStackedLayout[] = "tab-strip-stacked-layout";
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-// Deprecated 5/2021
-const char kFeatureUsageDailySampleESim[] = "feature_usage.daily_sample.ESim";
-const char kFeatureUsageDailySampleFingerprint[] =
-    "feature_usage.daily_sample.Fingerprint";
-
-// Deprecated 10/2021
-const char kHasCameraAppMigratedToSWA[] = "camera.has_migrated_to_swa";
-
-// Deprecated 10/2021
-const char kTimesHIDDialogShown[] = "HIDDialog.shown_how_many_times";
-
-// Deprecated 10/2021
-const char kSplitSettingsSyncTrialGroup[] = "split_settings_sync.trial_group";
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+// Please keep the list of deprecated prefs in chronological order. i.e. Add to
+// the bottom of the list, not here at the top.
 
 // Deprecated 04/2021.
 const char kSessionStatisticFCPMean[] =
@@ -528,6 +498,13 @@ const char kSessionExitedCleanly[] = "profile.exited_cleanly";
 // Deprecated 05/2021
 const char kSpellCheckBlacklistedDictionaries[] =
     "spellcheck.blacklisted_dictionaries";
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+// Deprecated 05/2021
+const char kFeatureUsageDailySampleESim[] = "feature_usage.daily_sample.ESim";
+const char kFeatureUsageDailySampleFingerprint[] =
+    "feature_usage.daily_sample.Fingerprint";
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 // Deprecated 06/2021.
 const char kDataReductionProxy[] = "auth.spdyproxy.origin";
@@ -624,6 +601,20 @@ const char kNearbySharingFastInitiationNotificationEnabledPrefName[] =
 // Deprecated 10/2021.
 const char kAppCacheForceEnabled[] = "app_cache_force_enabled";
 
+// Deprecated 10/2021
+const char kTabStripStackedLayout[] = "tab-strip-stacked-layout";
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+// Deprecated 10/2021
+const char kHasCameraAppMigratedToSWA[] = "camera.has_migrated_to_swa";
+
+// Deprecated 10/2021
+const char kTimesHIDDialogShown[] = "HIDDialog.shown_how_many_times";
+
+// Deprecated 10/2021
+const char kSplitSettingsSyncTrialGroup[] = "split_settings_sync.trial_group";
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
 // Deprecated 11/2021.
 const char kWasPreviouslySetUpPrefName[] = "android_sms.was_previously_set_up";
 
@@ -716,6 +707,20 @@ const char kWebSQLInThirdPartyContextEnabled[] =
 const char kPhoneHubCameraRollPendingStatePrefName[] =
     "multidevice_setup.phone_hub_camera_roll_pending_state";
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
+// Deprecated 02/2022
+const char kFlocIdValuePrefKey[] = "federated_learning.floc_id.value";
+const char kFlocIdStatusPrefKey[] = "federated_learning.floc_id.status";
+const char kFlocIdHistoryBeginTimePrefKey[] =
+    "federated_learning.floc_id.history_begin_time";
+const char kFlocIdHistoryEndTimePrefKey[] =
+    "federated_learning.floc_id.history_end_time";
+const char kFlocIdFinchConfigVersionPrefKey[] =
+    "federated_learning.floc_id.finch_config_version";
+const char kFlocIdSortingLshVersionPrefKey[] =
+    "federated_learning.floc_id.sorting_lsh_version";
+const char kFlocIdComputeTimePrefKey[] =
+    "federated_learning.floc_id.compute_time";
 
 // Deprecated 03/2022.
 const char kStabilityChildProcessCrashCount[] =
@@ -1537,10 +1542,6 @@ void MigrateObsoleteLocalStatePrefs(PrefService* local_state) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   // Added 5/2021
   local_state->ClearPref(kFeatureUsageDailySampleESim);
-
-  // Added 10/2021
-  local_state->ClearPref(kTimesHIDDialogShown);
-  local_state->ClearPref(kSplitSettingsSyncTrialGroup);
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   // Added 07/2021
@@ -1556,6 +1557,12 @@ void MigrateObsoleteLocalStatePrefs(PrefService* local_state) {
 
   // Added 10/2021.
   local_state->ClearPref(kTabStripStackedLayout);
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  // Added 10/2021
+  local_state->ClearPref(kTimesHIDDialogShown);
+  local_state->ClearPref(kSplitSettingsSyncTrialGroup);
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   // Added 12/2021.
   local_state->ClearPref(kStabilityRendererHangCount);
@@ -1613,11 +1620,6 @@ void MigrateObsoleteProfilePrefs(Profile* profile) {
   // is fully launched.
   chrome_browser_net::secure_dns::MigrateProbesSettingToOrFromBackup(
       profile_prefs);
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  // Added 10/2021
-  profile_prefs->ClearPref(kHasCameraAppMigratedToSWA);
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if !BUILDFLAG(IS_ANDROID)
   // Added 04/2021
@@ -1763,6 +1765,11 @@ void MigrateObsoleteProfilePrefs(Profile* profile) {
 
   // Added 10/2021.
   profile_prefs->ClearPref(kAppCacheForceEnabled);
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  // Added 10/2021
+  profile_prefs->ClearPref(kHasCameraAppMigratedToSWA);
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   // Added 11/2021.
   syncer::ClearObsoleteKeystoreBootstrapTokenPref(profile_prefs);
