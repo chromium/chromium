@@ -144,7 +144,11 @@ id<GREYMatcher> SearchScrim() {
       @selector(testTapOnSearchScrimExitsSearchMode),
       @selector(testSearchRegularOpenTabs),
       @selector(testSearchRegularOpenTabsSelectResult),
-      @selector(testSearchIncognitoOpenTabsSelectResult)};
+      @selector(testSearchIncognitoOpenTabsSelectResult),
+      @selector(testSearchOpenTabsContextMenuShare),
+      @selector(testSearchOpenTabsContextMenuAddToReadingList),
+      @selector(testSearchOpenTabsContextMenuAddToBookmarks),
+      @selector(testSearchOpenTabsContextMenuCloseTab)};
   for (SEL test : searchTests) {
     if ([self isRunningTest:test]) {
       config.features_enabled.push_back(kTabsSearch);
@@ -1413,6 +1417,94 @@ id<GREYMatcher> SearchScrim() {
   const GURL currentURL = [ChromeEarlGrey webStateVisibleURL];
   GREYAssertEqual(_URL2, currentURL, @"Page navigated unexpectedly to %s",
                   currentURL.spec().c_str());
+}
+
+- (void)testSearchOpenTabsContextMenuShare {
+  [self loadTestURLsInNewTabs];
+  [ChromeEarlGrey showTabSwitcher];
+
+  // Enter search mode.
+  [[EarlGrey selectElementWithMatcher:TabGridSearchTabsButton()]
+      performAction:grey_tap()];
+
+  NSString* title2 = base::SysUTF8ToNSString(kTitle2);
+  [[EarlGrey selectElementWithMatcher:TabGridSearchBar()]
+      performAction:grey_typeText(title2)];
+
+  [self longPressTabWithTitle:title2];
+
+  [ChromeEarlGrey verifyShareActionWithURL:_URL1 pageTitle:title2];
+}
+
+- (void)testSearchOpenTabsContextMenuAddToReadingList {
+  [self loadTestURLsInNewTabs];
+  [ChromeEarlGrey showTabSwitcher];
+
+  // Enter search mode.
+  [[EarlGrey selectElementWithMatcher:TabGridSearchTabsButton()]
+      performAction:grey_tap()];
+
+  NSString* title2 = base::SysUTF8ToNSString(kTitle2);
+  [[EarlGrey selectElementWithMatcher:TabGridSearchBar()]
+      performAction:grey_typeText(title2)];
+
+  [self longPressTabWithTitle:title2];
+
+  [self waitForSnackBarMessage:IDS_IOS_READING_LIST_SNACKBAR_MESSAGE
+      triggeredByTappingItemWithMatcher:AddToReadingListButton()];
+}
+
+- (void)testSearchOpenTabsContextMenuAddToBookmarks {
+  [self loadTestURLsInNewTabs];
+  [ChromeEarlGrey showTabSwitcher];
+
+  // Enter search mode.
+  [[EarlGrey selectElementWithMatcher:TabGridSearchTabsButton()]
+      performAction:grey_tap()];
+
+  NSString* title2 = base::SysUTF8ToNSString(kTitle2);
+  [[EarlGrey selectElementWithMatcher:TabGridSearchBar()]
+      performAction:grey_typeText(title2)];
+
+  [self longPressTabWithTitle:title2];
+
+  [self waitForSnackBarMessage:IDS_IOS_BOOKMARK_PAGE_SAVED
+      triggeredByTappingItemWithMatcher:AddToBookmarksButton()];
+
+  [self longPressTabWithTitle:title2];
+
+  [[EarlGrey
+      selectElementWithMatcher:chrome_test_util::ButtonWithAccessibilityLabelId(
+                                   IDS_IOS_TOOLS_MENU_EDIT_BOOKMARK)]
+      performAction:grey_tap()];
+
+  [[EarlGrey selectElementWithMatcher:
+                 chrome_test_util::NavigationBarTitleWithAccessibilityLabelId(
+                     IDS_IOS_BOOKMARK_EDIT_SCREEN_TITLE)]
+      assertWithMatcher:grey_notNil()];
+}
+
+- (void)testSearchOpenTabsContextMenuCloseTab {
+  [self loadTestURLsInNewTabs];
+  [ChromeEarlGrey showTabSwitcher];
+
+  // Enter search mode.
+  [[EarlGrey selectElementWithMatcher:TabGridSearchTabsButton()]
+      performAction:grey_tap()];
+
+  NSString* title2 = base::SysUTF8ToNSString(kTitle2);
+  [[EarlGrey selectElementWithMatcher:TabGridSearchBar()]
+      performAction:grey_typeText(title2)];
+
+  [self longPressTabWithTitle:title2];
+
+  // Close Tab.
+  [[EarlGrey selectElementWithMatcher:CloseTabMenuButton()]
+      performAction:grey_tap()];
+
+  // Make sure that the tab is no longer present.
+  [[EarlGrey selectElementWithMatcher:TabWithTitle(title2)]
+      assertWithMatcher:grey_nil()];
 }
 
 #pragma mark - Helper Methods
