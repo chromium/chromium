@@ -55,8 +55,8 @@
       'fuchsia-official': 'fuchsia_official_optimize_goma',
       'linux-archive-rel': 'release_bot_reclient',
       'linux-archive-dbg': 'debug_bot_reclient',
-      'linux-archive-tagged': 'official_optimize_goma',
-      'linux-official': 'official_optimize_goma',
+      'linux-archive-tagged': 'official_optimize_reclient',
+      'linux-official': 'official_optimize_reclient',
       'mac-archive-rel': 'release_bot_mac_strip_minimal_symbols',
       'mac-archive-dbg': 'debug_bot',
       'mac-archive-tagged': 'official_optimize_goma',
@@ -2984,6 +2984,10 @@
 
     'official_optimize_goma': [
       'official_optimize_goma',
+    ],
+
+    'official_optimize_reclient': [
+      'official_optimize_reclient',
     ],
 
     'official_optimize_goma_trybot': [

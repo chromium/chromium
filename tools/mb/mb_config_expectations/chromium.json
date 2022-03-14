@@ -57,13 +57,15 @@
   "linux-archive-tagged": {
     "gn_args": {
       "is_official_build": true,
-      "use_goma": true
+      "use_rbe": true,
+      "use_remoteexec": true
     }
   },
   "linux-official": {
     "gn_args": {
       "is_official_build": true,
-      "use_goma": true
+      "use_rbe": true,
+      "use_remoteexec": true
     }
   },
   "mac-archive-dbg": {
