@@ -1471,7 +1471,8 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="NewTabPage.RecipeTasks.RelatedSearchDownloadCount"
-    units="count" expires_after="2022-03-06">
+    units="count" expires_after="2022-07-01">
+  <owner>danpeng@google.com</owner>
   <owner>tiborg@chromium.org</owner>
   <owner>yyushkina@chromium.org</owner>
   <owner>chrome-desktop-ntp@google.com</owner>
