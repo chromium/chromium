@@ -201,9 +201,11 @@ bool IsErrorCatastrophic(int sqlite_error_code) {
       // the user if we run our recovery code or delete our databases.
       [[fallthrough]];
     case SQLITE_PROTOCOL:
-      // Timed out while attempting to grab a lock on the database. This should
-      // not be a problem for exclusive databases, which are strongly
-      // recommended for Chrome features.
+      // Gave up while attempting to grab a lock on a WAL database at the
+      // beginning of a transaction. In theory, this should not be a problem in
+      // Chrome, because we'll only allow enabling WAL on databases with
+      // exclusive locking. However, other software on the user's system may
+      // lock our databases in a way that triggers this error.
       [[fallthrough]];
     case SQLITE_SCHEMA:
       // The database schema was changed between the time when a prepared
