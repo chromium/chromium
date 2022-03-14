@@ -1749,7 +1749,6 @@ void OverviewGrid::ShowDesksTemplatesGrid(bool was_zero_state) {
                                         /*expanded_desks_bar_button=*/true);
   }
   desks_bar_view_->UpdateButtonsForDesksTemplatesGrid();
-  overview_session_->UpdateAccessibilityFocus();
 }
 
 void OverviewGrid::HideDesksTemplatesGrid(bool exit_overview) {
@@ -1795,7 +1794,6 @@ void OverviewGrid::HideDesksTemplatesGrid(bool exit_overview) {
       /*animate=*/true,
       base::BindOnce(&OverviewGrid::OnDesksTemplatesGridFadedOut,
                      weak_ptr_factory_.GetWeakPtr()));
-  overview_session_->UpdateAccessibilityFocus();
 }
 
 bool OverviewGrid::IsShowingDesksTemplatesGrid() const {

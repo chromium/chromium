@@ -1035,6 +1035,8 @@ void OverviewSession::ShowDesksTemplatesGrids(bool was_zero_state,
   if (created_grid_widgets)
     desks_templates_presenter_->GetAllEntries(item_to_focus, root_window);
   UpdateNoWindowsWidgetOnEachGrid();
+
+  UpdateAccessibilityFocus();
 }
 
 void OverviewSession::HideDesksTemplatesGrids() {
@@ -1045,6 +1047,8 @@ void OverviewSession::HideDesksTemplatesGrids() {
 
   for (auto& grid : grid_list_)
     grid->HideDesksTemplatesGrid(/*exit_overview=*/false);
+
+  UpdateAccessibilityFocus();
 }
 
 bool OverviewSession::IsShowingDesksTemplatesGrid() const {

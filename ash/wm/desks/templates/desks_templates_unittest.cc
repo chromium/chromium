@@ -2208,6 +2208,30 @@ TEST_F(DesksTemplatesTest, AccessibilityFocusAnnotatorInViewingTemplate) {
   CheckA11yOverrides("desk", desk_widget, template_widget, focus_widget);
 }
 
+// Tests that accessibility overrides are set as expected after entering
+// templates view when no window opens.
+TEST_F(DesksTemplatesTest, AccessibilityFocusAnnotatorWhenNoWindowOpen) {
+  AddEntry(base::GUID::GenerateRandomV4(), "test_template", base::Time::Now());
+
+  OpenOverviewAndShowTemplatesGrid();
+
+  auto* focus_widget = views::Widget::GetWidgetForNativeWindow(
+      GetOverviewSession()->GetOverviewFocusWindow());
+  DCHECK(focus_widget);
+
+  OverviewGrid* overview_grid = GetOverviewGridList()[0].get();
+  views::Widget* desk_widget =
+      const_cast<views::Widget*>(overview_grid->desks_widget());
+  DCHECK(desk_widget);
+  views::Widget* template_widget = overview_grid->desks_templates_grid_widget();
+  DCHECK(template_widget);
+
+  // Order should be [focus_widget, template_widget, desk_widget].
+  CheckA11yOverrides("focus", focus_widget, desk_widget, template_widget);
+  CheckA11yOverrides("template", template_widget, focus_widget, desk_widget);
+  CheckA11yOverrides("desk", desk_widget, template_widget, focus_widget);
+}
+
 // Tests that the children of the overview grid matches the order they are
 // displayed so accessibility traverses it correctly.
 TEST_F(DesksTemplatesTest, AccessibilityGridItemTraversalOrder) {
