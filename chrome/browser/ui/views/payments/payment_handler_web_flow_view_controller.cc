@@ -199,7 +199,6 @@ void PaymentHandlerWebFlowViewController::FillContentView(
     // separator as the initially-visible one.
     progress_bar_ = header_content_separator_container()->AddChildView(
         std::make_unique<views::ProgressBar>(/*preferred_height=*/2));
-    progress_bar_->SetForegroundColor(gfx::kGoogleBlue500);
     progress_bar_->SetBackgroundColor(SK_ColorTRANSPARENT);
     progress_bar_->SetVisible(false);
     separator_ = header_content_separator_container()->AddChildView(
