@@ -23,7 +23,8 @@ enum class ASH_PUBLIC_EXPORT AmbientAnimationTheme {
   // It is currently implemented entirely as a native UI view.
   kSlideshow = 0,
   kFeelTheBreeze = 1,
-  kMaxValue = kFeelTheBreeze,
+  kFloatOnBy = 2,
+  kMaxValue = kFloatOnBy,
 };
 
 static constexpr AmbientAnimationTheme kDefaultAmbientAnimationTheme =

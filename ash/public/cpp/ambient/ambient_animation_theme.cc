@@ -12,6 +12,8 @@ std::ostream& operator<<(std::ostream& os, AmbientAnimationTheme theme) {
       return os << "SLIDESHOW";
     case AmbientAnimationTheme::kFeelTheBreeze:
       return os << "FEEL_THE_BREZE";
+    case AmbientAnimationTheme::kFloatOnBy:
+      return os << "FLOAT_ON_BY";
   }
 }
 
