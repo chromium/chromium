@@ -6,6 +6,7 @@
 
 #include "base/format_macros.h"
 #include "base/strings/sys_string_conversions.h"
+#import "ios/chrome/browser/ui/table_view/cells/table_view_cells_constants.h"
 #include "ios/chrome/grit/ios_strings.h"
 #include "ui/base/l10n/l10n_util_mac.h"
 
@@ -23,6 +24,7 @@
         imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
     self.title = l10n_util::GetNSString(
         IDS_IOS_TABS_SEARCH_SUGGESTED_ACTION_SEARCH_HISTORY_UNKNOWN_RESULT_COUNT);
+    self.accessibilityIdentifier = kTableViewTabsSearchSuggestedHistoryItemId;
   }
   return self;
 }

@@ -64,6 +64,9 @@ extern NSString* const kMaskedPassword;
 // TableViewInfoButtonCell.
 extern NSString* const kTableViewCellInfoButtonViewId;
 
+// The accessibility identifier of the TableViewTabsSearchSuggestedHistoryItem.
+extern NSString* const kTableViewTabsSearchSuggestedHistoryItemId;
+
 // Returns a padding according to the width of the current device.
 extern CGFloat HorizontalPadding();
 
