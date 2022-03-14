@@ -267,7 +267,13 @@ TEST_P(HeapProfilerControllerFeatureTest, StableChannel) {
   EXPECT_EQ(sample_received_, GetParam().expect_stable_sample);
 }
 
-TEST_P(HeapProfilerControllerFeatureTest, CanaryChannel) {
+// TODO(crbug.com/1302007): This test hangs on iPad device.
+#if BUILDFLAG(IS_IOS)
+#define MAYBE_CanaryChannel DISABLED_CanaryChannel
+#else
+#define MAYBE_CanaryChannel CanaryChannel
+#endif
+TEST_P(HeapProfilerControllerFeatureTest, MAYBE_CanaryChannel) {
   StartHeapProfiling(
       version_info::Channel::CANARY,
       base::BindRepeating(&HeapProfilerControllerTest::RecordSampleReceived,
