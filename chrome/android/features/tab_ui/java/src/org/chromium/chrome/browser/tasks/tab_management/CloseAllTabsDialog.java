@@ -77,7 +77,7 @@ public class CloseAllTabsDialog {
                                 context.getString(R.string.cancel))
                         .with(ModalDialogProperties.CANCEL_ON_TOUCH_OUTSIDE, true)
                         .with(ModalDialogProperties.BUTTON_STYLES,
-                                ModalDialogProperties.ButtonStyles.PRIMARY_OUTLINE_NEGATIVE_OUTLINE)
+                                ModalDialogProperties.ButtonStyles.PRIMARY_FILLED_NEGATIVE_OUTLINE)
                         .build();
 
         manager.showDialog(model, ModalDialogManager.ModalDialogType.APP, true);

@@ -118,7 +118,7 @@ public class CloseAllTabsDialogUnitTest {
         assertEquals(mContext.getString(R.string.cancel),
                 model.get(ModalDialogProperties.NEGATIVE_BUTTON_TEXT));
         assertTrue(model.get(ModalDialogProperties.CANCEL_ON_TOUCH_OUTSIDE));
-        assertEquals(ModalDialogProperties.ButtonStyles.PRIMARY_OUTLINE_NEGATIVE_OUTLINE,
+        assertEquals(ModalDialogProperties.ButtonStyles.PRIMARY_FILLED_NEGATIVE_OUTLINE,
                 model.get(ModalDialogProperties.BUTTON_STYLES));
     }
 
