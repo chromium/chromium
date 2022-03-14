@@ -8,20 +8,23 @@ This file cannot be upstreamed to WPT until:
 <meta name="timeout" content="long">
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
-<script src="resources/utils.js"></script>
+<script src="/common/utils.js"></script>
+<script src="/speculation-rules/prerender/resources/utils.js"></script>
 <script src="resources/session-storage-utils.js"></script>
 <body>
 <script>
-session_storage_test(
-  'session-storage-carry-over-to-prerender-page.html');
+const uid = token();
 
 session_storage_test(
-  'session-storage-no-leak-to-initiator-page.html');
+  'session-storage-carry-over-to-prerender-page.html', uid);
 
 session_storage_test(
-  'session-storage-isolated-while-prerendering.html');
+  'session-storage-no-leak-to-initiator-page.html', uid);
 
 session_storage_test(
-  'session-storage-swap-after-activate.html');
+  'session-storage-isolated-while-prerendering.html', uid);
+
+session_storage_test(
+  'session-storage-swap-after-activate.html', uid);
 </script>
 </body>

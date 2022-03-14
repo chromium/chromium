@@ -24,14 +24,14 @@ function getNextMessage(channel) {
 
 // session_storage_test() is a utility function for running session storage
 // related tests that open a initiator page using window.open().
-function session_storage_test(testPath) {
+function session_storage_test(testPath, uid) {
   promise_test(async t => {
-    const testChannel = new BroadcastChannel('test-channel');
+    const testChannel = new PrerenderChannel('test-channel', uid);
     t.add_cleanup(() => {
       testChannel.close();
     });
     const gotMessage = getNextMessage(testChannel);
-    const url = 'resources/' + testPath;
+    const url = 'resources/' + testPath + '?uid=' + uid;
     window.open(url, '_blank', 'noopener');
     assert_equals(await gotMessage, 'Done');
   }, testPath);
@@ -45,19 +45,19 @@ function session_storage_test(testPath) {
 //   - url: The URL of the prerendering page. |func| should call
 //     startPrerendering(url) when |isPrerendering| is false to start the
 //     prerendering.
-//   - channel: A Broadcast Channel which can be used to coordinate the code
+//   - channel: A PrerenderChannel which can be used to coordinate the code
 //     execution on the initiator page and the prerendering page.
 //   - done: A function that should be called when the test completes
 //     successfully.
-async function RunSessionStorageTest(func) {
+async function RunSessionStorageTest(func, uid) {
   const url = new URL(document.URL);
   url.searchParams.set('prerendering', '');
   const params = new URLSearchParams(location.search);
   // The main test page loads the initiator page, then the initiator page will
   // prerender itself with the `prerendering` parameter.
   const isPrerendering = params.has('prerendering');
-  const prerenderChannel = new BroadcastChannel('prerender-channel');
-  const testChannel = new BroadcastChannel('test-channel');
+  const prerenderChannel = new PrerenderChannel('prerender-channel', uid);
+  const testChannel = new PrerenderChannel('test-channel', uid);
   window.addEventListener('unload', () => {
     prerenderChannel.close();
     testChannel.close();
