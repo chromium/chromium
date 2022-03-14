@@ -6,16 +6,11 @@ import("//third_party/closure_compiler/compile_js.gni")
 
 js_type_check("closure_compile") {
   deps = [
-    ":assistant_logs_info",
     ":feedback",
     ":feedback_util",
     ":sys_info",
     ":take_screenshot",
   ]
-}
-
-js_library("assistant_logs_info") {
-  deps = [ "//ui/webui/resources/js:util.m" ]
 }
 
 js_library("feedback") {
