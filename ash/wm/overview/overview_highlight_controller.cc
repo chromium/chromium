@@ -180,6 +180,15 @@ OverviewItem* OverviewHighlightController::GetHighlightedItem() const {
   return nullptr;
 }
 
+void OverviewHighlightController::ResetHighlightedView() {
+  if (!highlighted_view_)
+    return;
+
+  deleted_index_.reset();
+  highlighted_view_->SetHighlightVisibility(false);
+  highlighted_view_ = nullptr;
+}
+
 void OverviewHighlightController::HideTabDragHighlight() {
   if (tab_dragged_view_)
     tab_dragged_view_->SetHighlightVisibility(false);

@@ -35,12 +35,12 @@ class ASH_EXPORT OverviewHighlightController {
   };
 
   explicit OverviewHighlightController(OverviewSession* overview_session);
-
   OverviewHighlightController(const OverviewHighlightController&) = delete;
   OverviewHighlightController& operator=(const OverviewHighlightController&) =
       delete;
-
   ~OverviewHighlightController();
+
+  OverviewHighlightableView* highlighted_view() { return highlighted_view_; }
 
   // Moves the focus ring to the next traversable view.
   void MoveHighlight(bool reverse);
@@ -78,6 +78,12 @@ class ASH_EXPORT OverviewHighlightController {
   // Tries to get the item that is currently highlighted. Returns null if there
   // is no highlight, or if the highlight is on a desk view.
   OverviewItem* GetHighlightedItem() const;
+
+  // If `highlighted_view_` is not null, remove the highlight. The next tab will
+  // start at the beginning of the tab order. This can be used when a lot of
+  // views are getting removed or hidden, such as when the desks bar goes from
+  // expanded to zero state.
+  void ResetHighlightedView();
 
   // Hides or shows the tab dragging highlight.
   void HideTabDragHighlight();

@@ -1024,6 +1024,12 @@ void DesksBarView::SwitchToZeroState() {
   std::vector<DeskMiniView*> removed_mini_views = mini_views_;
   mini_views_.clear();
 
+  auto* highlight_controller = GetHighlightController();
+  OverviewHighlightableView* view = highlight_controller->highlighted_view();
+  // Reset the highlight if it is highlighted on a descendant of `this`.
+  if (view && Contains(view->GetView()))
+    highlight_controller->ResetHighlightedView();
+
   // Keep current layout until the animation is completed since the animation
   // for going back to zero state is based on the expanded bar's current
   // layout.
