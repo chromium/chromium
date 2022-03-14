@@ -112,7 +112,13 @@ TEST_F(InSessionPasswordChangeManagerTest, MaybeShow_PolicyDisabled) {
   EXPECT_FALSE(Notification().has_value());
 }
 
-TEST_F(InSessionPasswordChangeManagerTest, MaybeShow_WillNotExpire) {
+// Timing out on ASan LSan: http://crbug.com/1306035.
+#if defined(ADDRESS_SANITIZER) && defined(LEAK_SANITIZER)
+#define MAYBE_MaybeShow_WillNotExpire DISABLED_MaybeShow_WillNotExpire
+#else
+#define MAYBE_MaybeShow_WillNotExpire MaybeShow_WillNotExpire
+#endif
+TEST_F(InSessionPasswordChangeManagerTest, MAYBE_MaybeShow_WillNotExpire) {
   SamlPasswordAttributes::DeleteFromPrefs(profile_->GetPrefs());
   manager_->MaybeShowExpiryNotification();
 
@@ -153,7 +159,15 @@ TEST_F(InSessionPasswordChangeManagerTest, MaybeShow_WillEventuallyExpire) {
   EXPECT_EQ(utf16("Password expires in 14 days"), Notification()->title());
 }
 
-TEST_F(InSessionPasswordChangeManagerTest, MaybeShow_DeleteExpirationTime) {
+// Timing out on ASan LSan: http://crbug.com/1306035.
+#if defined(ADDRESS_SANITIZER) && defined(LEAK_SANITIZER)
+#define MAYBE_MaybeShow_DeleteExpirationTime \
+  DISABLED_MaybeShow_DeleteExpirationTime
+#else
+#define MAYBE_MaybeShow_DeleteExpirationTime MaybeShow_DeleteExpirationTime
+#endif
+TEST_F(InSessionPasswordChangeManagerTest,
+       MAYBE_MaybeShow_DeleteExpirationTime) {
   SetExpirationTime(base::Time::Now() + kOneYear);
   manager_->MaybeShowExpiryNotification();
 
@@ -166,7 +180,13 @@ TEST_F(InSessionPasswordChangeManagerTest, MaybeShow_DeleteExpirationTime) {
   EXPECT_FALSE(Notification().has_value());
 }
 
-TEST_F(InSessionPasswordChangeManagerTest, MaybeShow_PasswordChanged) {
+// Timing out on ASan LSan: http://crbug.com/1306035.
+#if defined(ADDRESS_SANITIZER) && defined(LEAK_SANITIZER)
+#define MAYBE_MaybeShow_PasswordChanged DISABLED_MaybeShow_PasswordChanged
+#else
+#define MAYBE_MaybeShow_PasswordChanged MaybeShow_PasswordChanged
+#endif
+TEST_F(InSessionPasswordChangeManagerTest, MAYBE_MaybeShow_PasswordChanged) {
   SetExpirationTime(base::Time::Now() + (kAdvanceWarningTime / 2) - kOneHour);
   manager_->MaybeShowExpiryNotification();
 
@@ -236,7 +256,15 @@ TEST_F(InSessionPasswordChangeManagerTest, TimePasses_NoUserActionTaken) {
   EXPECT_EQ(utf16("Choose a new one now"), Notification()->message());
 }
 
-TEST_F(InSessionPasswordChangeManagerTest, TimePasses_NotificationDismissed) {
+// Timing out on ASan LSan: http://crbug.com/1306035.
+#if defined(ADDRESS_SANITIZER) && defined(LEAK_SANITIZER)
+#define MAYBE_TimePasses_NotificationDismissed \
+  DISABLED_TimePasses_NotificationDismissed
+#else
+#define MAYBE_TimePasses_NotificationDismissed TimePasses_NotificationDismissed
+#endif
+TEST_F(InSessionPasswordChangeManagerTest,
+       MAYBE_TimePasses_NotificationDismissed) {
   SetExpirationTime(base::Time::Now() + kOneYear + kAdvanceWarningTime / 2);
   manager_->MaybeShowExpiryNotification();
 
