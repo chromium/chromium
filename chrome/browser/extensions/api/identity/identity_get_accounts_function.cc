@@ -34,11 +34,10 @@ ExtensionFunction::ResponseAction IdentityGetAccountsFunction::Run() {
       IdentityManagerFactory::GetForProfile(
           Profile::FromBrowserContext(browser_context()))
           ->GetAccountsWithRefreshTokens();
-  std::unique_ptr<base::ListValue> infos(new base::ListValue());
+  base::ListValue infos;
 
   if (accounts.empty()) {
-    return RespondNow(
-        OneArgument(base::Value::FromUniquePtrValue(std::move(infos))));
+    return RespondNow(OneArgument(std::move(infos)));
   }
 
   Profile* profile = Profile::FromBrowserContext(browser_context());
@@ -57,7 +56,7 @@ ExtensionFunction::ResponseAction IdentityGetAccountsFunction::Run() {
     account_info.id =
         identity_manager->GetPrimaryAccountInfo(signin::ConsentLevel::kSync)
             .gaia;
-    infos->Append(account_info.ToValue());
+    infos.Append(base::Value::FromUniquePtrValue(account_info.ToValue()));
   }
 
   // If secondary accounts are supported, add all the secondary accounts as
@@ -68,12 +67,11 @@ ExtensionFunction::ResponseAction IdentityGetAccountsFunction::Run() {
           identity_manager->GetPrimaryAccountId(signin::ConsentLevel::kSync))
         continue;
       account_info.id = account.gaia;
-      infos->Append(account_info.ToValue());
+      infos.Append(base::Value::FromUniquePtrValue(account_info.ToValue()));
     }
   }
 
-  return RespondNow(
-      OneArgument(base::Value::FromUniquePtrValue(std::move(infos))));
+  return RespondNow(OneArgument(std::move(infos)));
 }
 
 }  // namespace extensions
