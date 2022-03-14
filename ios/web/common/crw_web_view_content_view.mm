@@ -37,19 +37,6 @@ const CGFloat kBackgroundRGBComponents[] = {0.75f, 0.74f, 0.76f};
 @synthesize fullscreenState = _fullscreenState;
 
 - (instancetype)initWithWebView:(UIView*)webView
-                     scrollView:(UIScrollView*)scrollView {
-  self = [super initWithFrame:CGRectZero];
-  if (self) {
-    DCHECK(webView);
-    DCHECK(scrollView);
-    DCHECK([scrollView isDescendantOfView:webView]);
-    _webView = webView;
-    _scrollView = scrollView;
-  }
-  return self;
-}
-
-- (instancetype)initWithWebView:(UIView*)webView
                      scrollView:(UIScrollView*)scrollView
                 fullscreenState:(CrFullscreenState)fullscreenState {
   self = [super initWithFrame:CGRectZero];

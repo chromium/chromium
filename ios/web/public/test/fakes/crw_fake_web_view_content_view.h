@@ -17,7 +17,10 @@
 // TestWebViewContentViews should be initialized via |-initWithMockWebView:
 // scrollView:|.
 - (instancetype)initWithWebView:(UIView*)webView
-                     scrollView:(UIScrollView*)scrollView NS_UNAVAILABLE;
+                     scrollView:(UIScrollView*)scrollView
+                fullscreenState:(CrFullscreenState)fullscreenState
+    NS_UNAVAILABLE;
+
 @end
 
 #endif  // IOS_WEB_PUBLIC_TEST_FAKES_CRW_FAKE_WEB_VIEW_CONTENT_VIEW_H_

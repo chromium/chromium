@@ -27,11 +27,6 @@
                 fullscreenState:(CrFullscreenState)fullscreenState
     NS_DESIGNATED_INITIALIZER;
 
-// Initializes the CRWWebViewContentView to display |webView|.
-- (instancetype)initWithWebView:(UIView*)webView
-                     scrollView:(UIScrollView*)scrollView
-    NS_DESIGNATED_INITIALIZER;
-
 // Available only for testing.
 - (instancetype)initForTesting NS_DESIGNATED_INITIALIZER;
 
