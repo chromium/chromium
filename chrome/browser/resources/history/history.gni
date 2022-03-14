@@ -7,6 +7,7 @@ web_component_files = [
   "app.ts",
   "history_clusters/cluster.ts",
   "history_clusters/clusters.ts",
+  "history_clusters/menu_container.ts",
   "history_clusters/page_favicon.ts",
   "history_clusters/search_query.ts",
   "history_clusters/url_visit.ts",

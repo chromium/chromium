@@ -26,10 +26,19 @@
     padding: var(--cluster-padding-vertical) 0;
   }
 
-  #cluster-label {
+  #label-row {
+    align-items: center;
+    display: flex;
+    flex-grow: 1;
+    justify-content: space-between;
+    min-width: 0;
+    padding-inline-start: var(--cluster-padding-horizontal);
+    user-select: none;
+  }
+
+  #label {
     color: var(--cr-secondary-text-color);
     font-weight: 500;
-    padding: 4px var(--cluster-padding-horizontal);
   }
 
   #related-searches {
@@ -93,9 +102,16 @@
 </style>
 <div id="container" on-visit-clicked="onVisitClicked_"
     on-open-all-visits="onOpenAllVisits_">
-  <div id="cluster-label">[[cluster.label]]</div>
+  <div id="label-row" hidden="[[!cluster.label]]">
+    <div id="label">[[cluster.label]]</div>
+    <div class="timestamp-and-menu">
+      <div class="timestamp">[[cluster.visit.relativeDate]]</div>
+      <menu-container is-top-menu is-cluster-menu visit="[[cluster.visit]]">
+      </menu-container>
+    </div>
+  </div>
   <url-visit visit="[[cluster.visit]]" index="0"
-      is-top-visit$="[[!cluster.label]]" show-menu>
+      is-top-visit$="[[!cluster.label]]">
   </url-visit>
   <template is="dom-repeat" items="[[visibleRelatedVisits_]]">
     <url-visit visit="[[item]]"

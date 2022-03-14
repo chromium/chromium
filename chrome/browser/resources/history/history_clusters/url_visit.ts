@@ -2,13 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import './menu_container.js';
 import './page_favicon.js';
 import './shared_style.js';
 import 'chrome://resources/cr_elements/cr_action_menu/cr_action_menu.js';
 import 'chrome://resources/cr_elements/cr_lazy_render/cr_lazy_render.m.js';
 
-import {CrActionMenuElement} from 'chrome://resources/cr_elements/cr_action_menu/cr_action_menu.js';
-import {CrLazyRenderElement} from 'chrome://resources/cr_elements/cr_lazy_render/cr_lazy_render.m.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
@@ -35,13 +34,6 @@ declare global {
   interface HTMLElementTagNameMap {
     'url-visit': VisitRowElement;
   }
-}
-
-interface VisitRowElement {
-  $: {
-    actionMenu: CrLazyRenderElement<CrActionMenuElement>,
-    actionMenuButton: Element,
-  };
 }
 
 class VisitRowElement extends PolymerElement {
@@ -106,11 +98,6 @@ class VisitRowElement extends PolymerElement {
   // Event handlers
   //============================================================================
 
-  private onActionMenuButtonClick_(event: MouseEvent) {
-    this.$.actionMenu.get().showAt(this.$.actionMenuButton);
-    event.preventDefault();  // Prevent default browser action (navigation).
-  }
-
   private onAuxClick_() {
     MetricsProxyImpl.getInstance().recordVisitAction(
         VisitAction.CLICKED, this.index, this.getVisitType_());
@@ -146,38 +133,6 @@ class VisitRowElement extends PolymerElement {
     this.onAuxClick_();
 
     OpenWindowProxyImpl.getInstance().open(this.visit.normalizedUrl.url);
-  }
-
-  private onOpenAllButtonClick_() {
-    this.dispatchEvent(new CustomEvent('open-all-visits', {
-      bubbles: true,
-      composed: true,
-    }));
-
-    this.$.actionMenu.get().close();
-  }
-
-  private onRemoveAllButtonClick_() {
-    this.dispatchEvent(new CustomEvent('remove-visits', {
-      bubbles: true,
-      composed: true,
-      detail: [this.visit, ...this.visit.relatedVisits],
-    }));
-
-    this.$.actionMenu.get().close();
-  }
-
-  private onRemoveSelfButtonClick_() {
-    this.dispatchEvent(new CustomEvent('remove-visits', {
-      bubbles: true,
-      composed: true,
-      detail: [this.visit],
-    }));
-
-    this.$.actionMenu.get().close();
-
-    MetricsProxyImpl.getInstance().recordVisitAction(
-        VisitAction.DELETED, this.index, this.getVisitType_());
   }
 
   //============================================================================

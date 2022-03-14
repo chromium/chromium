@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import './menu_container.js';
 import './search_query.js';
 import './shared_style.js';
 import './shared_vars.js';
