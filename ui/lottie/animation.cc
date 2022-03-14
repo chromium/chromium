@@ -209,6 +209,8 @@ void Animation::Paint(gfx::Canvas* canvas,
       timer_control_->Step(timestamp);
       int new_num_cycles = timer_control_->completed_cycles();
       animation_cycle_ended = new_num_cycles != previous_num_cycles;
+      if (animation_cycle_ended && style_ == Style::kLinear)
+        state_ = PlayState::kEnded;
     } break;
     case PlayState::kPaused:
       break;
@@ -277,7 +279,7 @@ void Animation::InitTimer(const base::TimeTicks& timestamp) {
       timestamp, style_ == Style::kThrobbing);
 }
 
-void Animation::TryNotifyAnimationCycleEnded() {
+void Animation::TryNotifyAnimationCycleEnded() const {
   DCHECK(timer_control_);
   bool inform_observer = true;
   switch (style_) {
@@ -291,7 +293,6 @@ void Animation::TryNotifyAnimationCycleEnded() {
         inform_observer = false;
       break;
     case Style::kLinear:
-      state_ = PlayState::kEnded;
       break;
   }
 

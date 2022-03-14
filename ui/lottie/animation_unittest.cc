@@ -351,6 +351,7 @@ TEST_F(AnimationTest, PlayLinearAnimation) {
   EXPECT_FLOAT_EQ(animation_->GetCurrentProgress(), 0);
   EXPECT_FLOAT_EQ(GetTimerStartOffset(), 0);
   EXPECT_FLOAT_EQ(GetTimerEndOffset(), 1.f);
+  IsAllSameColor(SK_ColorGREEN, canvas()->GetBitmap());
 
   EXPECT_EQ(GetTimerTotalDuration(), kAnimationDuration);
 
@@ -362,6 +363,7 @@ TEST_F(AnimationTest, PlayLinearAnimation) {
   EXPECT_FLOAT_EQ(animation_->GetCurrentProgress(),
                   kAdvance / kAnimationDuration);
   EXPECT_EQ(TimeDeltaSince(GetTimerPreviousTick()), base::TimeDelta());
+  IsAllSameColor(SK_ColorGREEN, canvas()->GetBitmap());
 
   // Advance the clock to the end of the animation.
   constexpr auto kAdvanceToEnd =
@@ -372,6 +374,7 @@ TEST_F(AnimationTest, PlayLinearAnimation) {
   EXPECT_FLOAT_EQ(animation_->GetCurrentProgress(), 1.f);
   EXPECT_TRUE(HasAnimationEnded());
   EXPECT_TRUE(observer.animation_cycle_ended());
+  IsAllSameColor(SK_ColorBLUE, canvas()->GetBitmap());
 }
 
 TEST_F(AnimationTest, StopLinearAnimation) {
