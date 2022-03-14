@@ -154,10 +154,12 @@ public class WebFeedFollowIntroController {
                 // interactive.
                 GURL url = tab.getUrl();
                 // TODO(crbug/1152592): Also check for certificate errors or SafeBrowser warnings.
-                if (tab.isIncognito()
-                        || !(url.getScheme().equals("http") || url.getScheme().equals("https"))) {
+                if (tab.isIncognito()) {
+                    Log.i(TAG, "No intro: tab is incognito");
+                    return;
+                } else if (!(url.getScheme().equals("http") || url.getScheme().equals("https"))) {
                     Log.i(TAG,
-                            "No intro: tab is incognito, or URL scheme is not HTTP or HTTPS"
+                            "No intro: URL scheme is not HTTP or HTTPS: "
                                     + url.getValidSpecOrEmpty());
                     return;
                 }
