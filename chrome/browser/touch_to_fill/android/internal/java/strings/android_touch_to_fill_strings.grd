@@ -187,6 +187,12 @@
       <message name="IDS_TOUCH_TO_FILL_SHEET_SUBTITLE_NOT_SECURE" desc="Subtitle for Touch To Fill sheet when the website is not secure. Note that similarly to the omnibox 'not secure' in this case primarily refers to HTTPS connection security. So prefer translations with a connotation of 'not private' (someone can intercept your communication with the site) rather than 'not trustworthy' (which would be a judgment of site reputation).">
         <ph name="SITE_NAME">%1$s<ex>airbnb.com</ex> (not secure)</ph>
       </message>
+      <message name="IDS_TOUCH_TO_FILL_SHEET_SUBTITLE_SUBMISSION" desc="Subtitle for Touch To Fill sheet when a form is going to be submitted after filling">
+        You'll sign in to <ph name="SITE_NAME">%1$s<ex>airbnb.com</ex></ph>
+      </message>
+      <message name="IDS_TOUCH_TO_FILL_SHEET_SUBTITLE_INSECURE_SUBMISSION" desc="Subtitle for Touch To Fill sheet when a form is going to be submitted after filling and the website is not secure. This is a combination of SUBTITLE_SUBMISSION and SUBTITLE_NOT_SECURE">
+        You'll sign in to <ph name="SITE_NAME">%1$s<ex>airbnb.com</ex> (not secure)</ph>
+      </message>
       <message name="IDS_TOUCH_TO_FILL_CONTENT_DESCRIPTION" desc="Accessibility string read when the Touch To Fill bottom sheet is opened. It describes the bottom sheet where a user can pick a credential to fill into a password form.">
         List of credentials to be filled on touch.
       </message>

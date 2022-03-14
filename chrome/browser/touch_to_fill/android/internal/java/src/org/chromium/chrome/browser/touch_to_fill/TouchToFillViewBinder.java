@@ -12,12 +12,14 @@ import static org.chromium.chrome.browser.touch_to_fill.TouchToFillProperties.Cr
 import static org.chromium.chrome.browser.touch_to_fill.TouchToFillProperties.DISMISS_HANDLER;
 import static org.chromium.chrome.browser.touch_to_fill.TouchToFillProperties.HeaderProperties.FORMATTED_URL;
 import static org.chromium.chrome.browser.touch_to_fill.TouchToFillProperties.HeaderProperties.ORIGIN_SECURE;
+import static org.chromium.chrome.browser.touch_to_fill.TouchToFillProperties.HeaderProperties.SHOW_SUBMIT_SUBTITLE;
 import static org.chromium.chrome.browser.touch_to_fill.TouchToFillProperties.HeaderProperties.SINGLE_CREDENTIAL;
 import static org.chromium.chrome.browser.touch_to_fill.TouchToFillProperties.ON_CLICK_MANAGE;
 import static org.chromium.chrome.browser.touch_to_fill.TouchToFillProperties.SHEET_ITEMS;
 import static org.chromium.chrome.browser.touch_to_fill.TouchToFillProperties.VISIBLE;
 import static org.chromium.components.embedder_support.util.UrlUtilities.stripScheme;
 
+import android.content.Context;
 import android.text.method.PasswordTransformationMethod;
 import android.view.View;
 import android.view.ViewGroup;
@@ -182,22 +184,45 @@ class TouchToFillViewBinder {
     /**
      * Helper function to infer the title of Touch To Fill sheet.
      * @param model The observed {@link PropertyModel}. Its data need to be reflected in the view.
-     * @param view The {@link View} of the header to update.
+     * @param context The {@link Context} of the header to update.
      * @return The title of Touch To Fill sheet.
      */
-    private static String getTitle(PropertyModel model, View view) {
+    private static String getTitle(PropertyModel model, Context context) {
         if (ChromeFeatureList.isEnabled(ChromeFeatureList.TOUCH_TO_FILL_PASSWORD_SUBMISSION)) {
-            return view.getContext().getString(R.string.touch_to_fill_sheet_uniform_title);
-        }
-
-        @StringRes
-        int titleStringId;
-        if (model.get(SINGLE_CREDENTIAL)) {
-            titleStringId = R.string.touch_to_fill_sheet_title_single;
+            return context.getString(R.string.touch_to_fill_sheet_uniform_title);
         } else {
-            titleStringId = R.string.touch_to_fill_sheet_title;
+            @StringRes
+            int titleStringId;
+            if (model.get(SINGLE_CREDENTIAL)) {
+                titleStringId = R.string.touch_to_fill_sheet_title_single;
+            } else {
+                titleStringId = R.string.touch_to_fill_sheet_title;
+            }
+            return context.getString(titleStringId);
         }
-        return view.getContext().getString(titleStringId);
+    }
+
+    /**
+     * Helper function to infer the subtitle of Touch To Fill sheet.
+     * @param model The observed {@link PropertyModel}. Its data need to be reflected in the view.
+     * @param context The {@link Context} of the header to update.
+     * @return The title of Touch To Fill sheet.
+     */
+    private static String getSubtitle(PropertyModel model, Context context) {
+        if (model.get(SHOW_SUBMIT_SUBTITLE)) {
+            assert ChromeFeatureList.isEnabled(ChromeFeatureList.TOUCH_TO_FILL_PASSWORD_SUBMISSION);
+            return String.format(
+                    context.getString(model.get(ORIGIN_SECURE)
+                                    ? R.string.touch_to_fill_sheet_subtitle_submission
+                                    : R.string.touch_to_fill_sheet_subtitle_insecure_submission),
+                    model.get(FORMATTED_URL));
+        } else {
+            return model.get(ORIGIN_SECURE)
+                    ? model.get(FORMATTED_URL)
+                    : String.format(
+                            context.getString(R.string.touch_to_fill_sheet_subtitle_not_secure),
+                            model.get(FORMATTED_URL));
+        }
     }
 
     /**
@@ -207,21 +232,13 @@ class TouchToFillViewBinder {
      * @param key The {@link PropertyKey} which changed.
      */
     private static void bindHeaderView(PropertyModel model, View view, PropertyKey key) {
-        if (key == SINGLE_CREDENTIAL || key == FORMATTED_URL || key == ORIGIN_SECURE) {
+        if (key == SHOW_SUBMIT_SUBTITLE || key == SINGLE_CREDENTIAL || key == FORMATTED_URL
+                || key == ORIGIN_SECURE) {
             TextView sheetTitleText = view.findViewById(R.id.touch_to_fill_sheet_title);
-            sheetTitleText.setText(getTitle(model, view));
+            sheetTitleText.setText(getTitle(model, view.getContext()));
 
             TextView sheetSubtitleText = view.findViewById(R.id.touch_to_fill_sheet_subtitle);
-            // TODO(crbug.com/1283004): Variate the subtitle if auto-submission is going to be
-            // triggered.
-            if (model.get(ORIGIN_SECURE)) {
-                sheetSubtitleText.setText(model.get(FORMATTED_URL));
-            } else {
-                sheetSubtitleText.setText(
-                        String.format(view.getContext().getString(
-                                              R.string.touch_to_fill_sheet_subtitle_not_secure),
-                                model.get(FORMATTED_URL)));
-            }
+            sheetSubtitleText.setText(getSubtitle(model, view.getContext()));
         } else {
             assert false : "Unhandled update to property:" + key;
         }

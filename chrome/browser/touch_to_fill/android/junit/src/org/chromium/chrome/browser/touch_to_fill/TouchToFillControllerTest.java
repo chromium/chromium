@@ -23,6 +23,7 @@ import static org.chromium.chrome.browser.touch_to_fill.TouchToFillProperties.Cr
 import static org.chromium.chrome.browser.touch_to_fill.TouchToFillProperties.DISMISS_HANDLER;
 import static org.chromium.chrome.browser.touch_to_fill.TouchToFillProperties.HeaderProperties.FORMATTED_URL;
 import static org.chromium.chrome.browser.touch_to_fill.TouchToFillProperties.HeaderProperties.ORIGIN_SECURE;
+import static org.chromium.chrome.browser.touch_to_fill.TouchToFillProperties.HeaderProperties.SHOW_SUBMIT_SUBTITLE;
 import static org.chromium.chrome.browser.touch_to_fill.TouchToFillProperties.HeaderProperties.SINGLE_CREDENTIAL;
 import static org.chromium.chrome.browser.touch_to_fill.TouchToFillProperties.ON_CLICK_MANAGE;
 import static org.chromium.chrome.browser.touch_to_fill.TouchToFillProperties.SHEET_ITEMS;
@@ -134,7 +135,7 @@ public class TouchToFillControllerTest {
 
     @Test
     public void testShowCredentialsWithMultipleEntries() {
-        mMediator.showCredentials(TEST_URL, true, Arrays.asList(ANA, CARL), false);
+        mMediator.showCredentials(TEST_URL, true, Arrays.asList(ANA, CARL), true);
         ListModel<MVCListAdapter.ListItem> itemList = mModel.get(SHEET_ITEMS);
         assertThat(itemList.size(), is(3)); // Header + 2 credentials
 
@@ -143,6 +144,7 @@ public class TouchToFillControllerTest {
         assertThat(
                 itemList.get(0).model.get(FORMATTED_URL), is(formatForSecurityDisplay(TEST_URL)));
         assertThat(itemList.get(0).model.get(ORIGIN_SECURE), is(true));
+        assertThat(itemList.get(0).model.get(SHOW_SUBMIT_SUBTITLE), is(true));
 
         assertThat(itemList.get(1).type, is(ItemType.CREDENTIAL));
         assertThat(itemList.get(1).model.get(CREDENTIAL), is(ANA));
@@ -181,6 +183,10 @@ public class TouchToFillControllerTest {
         mMediator.showCredentials(TEST_URL, true, Arrays.asList(ANA), true);
         ListModel<MVCListAdapter.ListItem> itemList = mModel.get(SHEET_ITEMS);
         assertThat(itemList.size(), is(3)); // Header + 1 credential + Button
+
+        assertThat(itemList.get(0).type, is(ItemType.HEADER));
+        // Don't show a special subtitle - the button's text is enough.
+        assertThat(itemList.get(0).model.get(SHOW_SUBMIT_SUBTITLE), is(false));
 
         assertThat(itemList.get(2).type, is(ItemType.FILL_BUTTON));
         assertThat(itemList.get(2).model.get(SHOW_SUBMIT_BUTTON), is(true));

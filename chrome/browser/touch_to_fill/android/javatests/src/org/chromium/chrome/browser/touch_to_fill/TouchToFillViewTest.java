@@ -19,6 +19,7 @@ import static org.chromium.chrome.browser.touch_to_fill.TouchToFillProperties.Cr
 import static org.chromium.chrome.browser.touch_to_fill.TouchToFillProperties.CredentialProperties.SHOW_SUBMIT_BUTTON;
 import static org.chromium.chrome.browser.touch_to_fill.TouchToFillProperties.HeaderProperties.FORMATTED_URL;
 import static org.chromium.chrome.browser.touch_to_fill.TouchToFillProperties.HeaderProperties.ORIGIN_SECURE;
+import static org.chromium.chrome.browser.touch_to_fill.TouchToFillProperties.HeaderProperties.SHOW_SUBMIT_SUBTITLE;
 import static org.chromium.chrome.browser.touch_to_fill.TouchToFillProperties.HeaderProperties.SINGLE_CREDENTIAL;
 import static org.chromium.chrome.browser.touch_to_fill.TouchToFillProperties.ON_CLICK_MANAGE;
 import static org.chromium.chrome.browser.touch_to_fill.TouchToFillProperties.SHEET_ITEMS;
@@ -247,7 +248,49 @@ public class TouchToFillViewTest {
         TextView subtitle =
                 mTouchToFillView.getContentView().findViewById(R.id.touch_to_fill_sheet_subtitle);
 
-        assertThat(subtitle.getText(), is(getFormattedNotSecureSubtitle("m.example.org")));
+        assertThat(subtitle.getText(), is("m.example.org (not secure)"));
+    }
+
+    @Test
+    @MediumTest
+    @EnableFeatures({ChromeFeatureList.TOUCH_TO_FILL_PASSWORD_SUBMISSION})
+    public void testSubmissionSubtitleUrlDisplayed() {
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            mModel.get(SHEET_ITEMS)
+                    .add(new MVCListAdapter.ListItem(TouchToFillProperties.ItemType.HEADER,
+                            new PropertyModel.Builder(HeaderProperties.ALL_KEYS)
+                                    .with(SHOW_SUBMIT_SUBTITLE, true)
+                                    .with(FORMATTED_URL, "m.example.org")
+                                    .with(ORIGIN_SECURE, true)
+                                    .build()));
+            mModel.set(VISIBLE, true);
+        });
+        BottomSheetTestSupport.waitForOpen(mBottomSheetController);
+        TextView subtitle =
+                mTouchToFillView.getContentView().findViewById(R.id.touch_to_fill_sheet_subtitle);
+
+        assertThat(subtitle.getText(), is("You'll sign in to m.example.org"));
+    }
+
+    @Test
+    @MediumTest
+    @EnableFeatures({ChromeFeatureList.TOUCH_TO_FILL_PASSWORD_SUBMISSION})
+    public void testNonSecureSubmissionSubtitleUrlDisplayed() {
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            mModel.get(SHEET_ITEMS)
+                    .add(new MVCListAdapter.ListItem(TouchToFillProperties.ItemType.HEADER,
+                            new PropertyModel.Builder(HeaderProperties.ALL_KEYS)
+                                    .with(SHOW_SUBMIT_SUBTITLE, true)
+                                    .with(FORMATTED_URL, "m.example.org")
+                                    .with(ORIGIN_SECURE, false)
+                                    .build()));
+            mModel.set(VISIBLE, true);
+        });
+        BottomSheetTestSupport.waitForOpen(mBottomSheetController);
+        TextView subtitle =
+                mTouchToFillView.getContentView().findViewById(R.id.touch_to_fill_sheet_subtitle);
+
+        assertThat(subtitle.getText(), is("You'll sign in to m.example.org (not secure)"));
     }
 
     @Test
@@ -389,10 +432,6 @@ public class TouchToFillViewTest {
 
     private ChromeActivity getActivity() {
         return mActivityTestRule.getActivity();
-    }
-
-    private String getFormattedNotSecureSubtitle(String url) {
-        return getActivity().getString(R.string.touch_to_fill_sheet_subtitle_not_secure, url);
     }
 
     private @SheetState int getBottomSheetState() {
