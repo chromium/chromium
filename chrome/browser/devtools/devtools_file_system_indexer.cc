@@ -8,6 +8,7 @@
 
 #include <iterator>
 #include <memory>
+#include <set>
 
 #include "base/bind.h"
 #include "base/callback.h"

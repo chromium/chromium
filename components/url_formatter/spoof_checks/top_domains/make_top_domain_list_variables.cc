@@ -21,6 +21,7 @@
 
 #include <cctype>
 #include <iostream>
+#include <set>
 #include <sstream>
 #include <string>
 #include <vector>

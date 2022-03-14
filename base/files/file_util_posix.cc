@@ -76,6 +76,7 @@ namespace base {
 
 namespace {
 
+#if BUILDFLAG(IS_MAC)
 // Helper for VerifyPathControlledByUser.
 bool VerifySpecificPathControlledByUser(const FilePath& path,
                                         uid_t owner_uid,
@@ -111,6 +112,7 @@ bool VerifySpecificPathControlledByUser(const FilePath& path,
 
   return true;
 }
+#endif
 
 base::FilePath GetTempTemplate() {
   return FormatTemporaryFileName("XXXXXX");
@@ -1012,6 +1014,7 @@ bool SetCurrentDirectory(const FilePath& path) {
   return chdir(path.value().c_str()) == 0;
 }
 
+#if BUILDFLAG(IS_MAC)
 bool VerifyPathControlledByUser(const FilePath& base,
                                 const FilePath& path,
                                 uid_t owner_uid,
@@ -1047,7 +1050,6 @@ bool VerifyPathControlledByUser(const FilePath& base,
   return true;
 }
 
-#if BUILDFLAG(IS_MAC)
 bool VerifyPathControlledByAdmin(const FilePath& path) {
   const unsigned kRootUid = 0;
   const FilePath kFileSystemRoot("/");

@@ -7,6 +7,8 @@
 
 #import <UIKit/UIKit.h>
 
+#include <set>
+
 #include "base/base_paths.h"
 #include "base/bind.h"
 #include "base/containers/contains.h"

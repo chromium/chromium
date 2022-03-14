@@ -4,6 +4,7 @@
 
 #include "chrome/browser/extensions/external_pref_loader.h"
 
+#include <set>
 #include <utility>
 
 #include "base/bind.h"

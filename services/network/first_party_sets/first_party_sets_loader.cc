@@ -4,6 +4,7 @@
 
 #include "services/network/first_party_sets/first_party_sets_loader.h"
 
+#include <set>
 #include <utility>
 #include <vector>
 
