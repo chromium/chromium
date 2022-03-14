@@ -15,7 +15,6 @@
 #include "base/metrics/user_metrics.h"
 #include "base/metrics/user_metrics_action.h"
 #include "base/strings/sys_string_conversions.h"
-#include "base/task/post_task.h"
 #include "base/time/time.h"
 #include "components/breadcrumbs/core/breadcrumb_manager_keyed_service.h"
 #include "components/breadcrumbs/core/breadcrumb_persistent_storage_manager.h"
@@ -126,6 +125,7 @@
 #import "ios/public/provider/chrome/browser/ui_utils/ui_utils_api.h"
 #import "ios/public/provider/chrome/browser/user_feedback/user_feedback_provider.h"
 #include "ios/web/public/thread/web_task_traits.h"
+#include "ios/web/public/thread/web_thread.h"
 #import "ios/web/public/web_state.h"
 #import "net/base/mac/url_conversions.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -2847,8 +2847,8 @@ bool IsSigninForcedByPolicy() {
       }
     };
 
-    base::PostTaskAndReply(FROM_HERE, {web::WebThread::IO}, base::DoNothing(),
-                           base::BindRepeating(cleanup));
+    web::GetIOThreadTaskRunner({})->PostTaskAndReply(
+        FROM_HERE, base::DoNothing(), base::BindRepeating(cleanup));
   }
 
   // a) The first condition can happen when the last incognito tab is closed

@@ -110,8 +110,7 @@ void CleanCertificatePolicyCache(
   // Evict all the certificate policies except for the current entries of the
   // active sessions, for the regular and incognito browsers.
   CleanCertificatePolicyCache(
-      &_clearPoliciesTaskTracker,
-      base::CreateSingleThreadTaskRunner({web::WebThread::IO}),
+      &_clearPoliciesTaskTracker, web::GetIOThreadTaskRunner({}),
       web::BrowserState::GetCertificatePolicyCache(browserState), browserList,
       /*incognito=*/false);
 
@@ -119,8 +118,7 @@ void CleanCertificatePolicyCache(
     ChromeBrowserState* incognitoBrowserState =
         browserState->GetOffTheRecordChromeBrowserState();
     CleanCertificatePolicyCache(
-        &_clearPoliciesTaskTracker,
-        base::CreateSingleThreadTaskRunner({web::WebThread::IO}),
+        &_clearPoliciesTaskTracker, web::GetIOThreadTaskRunner({}),
         web::BrowserState::GetCertificatePolicyCache(incognitoBrowserState),
         browserList, /*incognito=*/true);
   }

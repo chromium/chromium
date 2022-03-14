@@ -13,6 +13,7 @@
 #include "base/task/post_task.h"
 #include "base/values.h"
 #include "ios/web/public/thread/web_task_traits.h"
+#include "ios/web/public/thread/web_thread.h"
 
 namespace web {
 
@@ -117,9 +118,8 @@ bool FakeWebFrameImpl::CallJavaScriptFunction(
   }
 
   if (force_timeout_) {
-    base::PostDelayedTask(FROM_HERE, {web::WebThread::UI},
-                          base::BindOnce(std::move(callback), nullptr),
-                          timeout);
+    web::GetUIThreadTaskRunner({})->PostDelayedTask(
+        FROM_HERE, base::BindOnce(std::move(callback), nullptr), timeout);
   } else {
     base::PostTask(FROM_HERE, {WebThread::UI},
                    base::BindOnce(std::move(callback), result_map_[name]));

@@ -7,7 +7,6 @@
 #include "base/base_paths.h"
 #include "base/files/file_path.h"
 #include "base/path_service.h"
-#include "base/task/post_task.h"
 #include "base/threading/thread_restrictions.h"
 #include "ios/web/public/thread/web_task_traits.h"
 #include "ios/web/public/thread/web_thread.h"
@@ -23,8 +22,7 @@ ShellBrowserState::ShellBrowserState() : BrowserState() {
   CHECK(base::PathService::Get(base::DIR_APP_DATA, &path_));
 
   request_context_getter_ = new ShellURLRequestContextGetter(
-      GetStatePath(), this,
-      base::CreateSingleThreadTaskRunner({web::WebThread::IO}));
+      GetStatePath(), this, web::GetIOThreadTaskRunner({}));
 }
 
 ShellBrowserState::~ShellBrowserState() {

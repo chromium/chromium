@@ -13,7 +13,6 @@
 
 #include "base/bind.h"
 #include "base/check_op.h"
-#include "base/task/post_task.h"
 #import "ios/chrome/browser/snapshots/snapshot_cache.h"
 #import "ios/chrome/browser/snapshots/snapshot_generator_delegate.h"
 #import "ios/chrome/browser/ui/util/uikit_ui_util.h"
@@ -132,9 +131,9 @@ BOOL ViewHierarchyContainsWKWebView(UIView* view) {
 
   if (![self canTakeSnapshot]) {
     if (completion) {
-      base::PostTask(FROM_HERE, {web::WebThread::UI}, base::BindOnce(^{
-                       completion(nil);
-                     }));
+      web::GetUIThreadTaskRunner({})->PostTask(FROM_HERE, base::BindOnce(^{
+                                                 completion(nil);
+                                               }));
     }
     return;
   }

@@ -4,12 +4,12 @@
 
 #include "ios/chrome/browser/ios_chrome_io_thread.h"
 
-#include "base/task/post_task.h"
 #include "components/variations/net/variations_http_headers.h"
 #include "ios/chrome/browser/net/ios_chrome_network_delegate.h"
 #include "ios/chrome/common/channel_info.h"
 #include "ios/web/public/init/network_context_owner.h"
 #include "ios/web/public/thread/web_task_traits.h"
+#include "ios/web/public/thread/web_thread.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
@@ -69,7 +69,7 @@ void IOSChromeIOThread::NetworkTearDown() {
     shared_url_loader_factory_->Detach();
 
   if (network_context_) {
-    base::DeleteSoon(FROM_HERE, {web::WebThread::IO},
-                     network_context_owner_.release());
+    web::GetIOThreadTaskRunner({})->DeleteSoon(
+        FROM_HERE, network_context_owner_.release());
   }
 }

@@ -521,7 +521,7 @@ bool URLDataManagerIOSBackend::StartRequest(const net::URLRequest* request,
   // message loop before request for data. And correspondingly their
   // replies are put on the IO thread in the same order.
   scoped_refptr<base::SingleThreadTaskRunner> target_runner =
-      base::CreateSingleThreadTaskRunner({web::WebThread::UI});
+      web::GetUIThreadTaskRunner({});
   target_runner->PostTask(
       FROM_HERE, base::BindOnce(&GetMimeTypeOnUI, base::RetainedRef(source),
                                 path, job->weak_factory_.GetWeakPtr()));

@@ -14,7 +14,6 @@
 #include "base/mac/foundation_util.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
-#include "base/task/post_task.h"
 #include "components/feature_engagement/public/event_constants.h"
 #include "components/feature_engagement/public/tracker.h"
 #include "components/metrics/metrics_service.h"
@@ -59,6 +58,7 @@
 #include "ios/public/provider/chrome/browser/signin/chrome_identity_service.h"
 #import "ios/public/provider/chrome/browser/user_feedback/user_feedback_provider.h"
 #include "ios/web/public/thread/web_task_traits.h"
+#include "ios/web/public/thread/web_thread.h"
 #include "net/url_request/url_request_context.h"
 #include "net/url_request/url_request_context_getter.h"
 #include "ui/base/device_form_factor.h"
@@ -70,7 +70,7 @@
 namespace {
 // Helper method to post |closure| on the UI thread.
 void PostTaskOnUIThread(base::OnceClosure closure) {
-  base::PostTask(FROM_HERE, {web::WebThread::UI}, std::move(closure));
+  web::GetUIThreadTaskRunner({})->PostTask(FROM_HERE, std::move(closure));
 }
 NSString* const kStartupAttemptReset = @"StartupAttemptReset";
 
@@ -286,8 +286,8 @@ initWithBrowserLauncher:(id<BrowserLauncher>)browserLauncher
           if (strongSelf)
             strongSelf->_savingCookies = NO;
         }));
-    base::PostTask(
-        FROM_HERE, {web::WebThread::IO}, base::BindOnce(^{
+    web::GetIOThreadTaskRunner({})->PostTask(
+        FROM_HERE, base::BindOnce(^{
           net::CookieStoreIOS* store = static_cast<net::CookieStoreIOS*>(
               getter->GetURLRequestContext()->cookie_store());
           // FlushStore() runs its callback on any thread. Jump back to UI.

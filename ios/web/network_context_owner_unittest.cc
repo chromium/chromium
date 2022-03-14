@@ -12,6 +12,7 @@
 #include "base/task/post_task.h"
 #include "ios/web/public/test/web_task_environment.h"
 #include "ios/web/public/thread/web_task_traits.h"
+#include "ios/web/public/thread/web_thread.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "net/url_request/url_request_context.h"
 #include "net/url_request/url_request_context_getter.h"
@@ -61,8 +62,8 @@ TEST_F(NetworkContextOwnerTest, Basic) {
   base::RunLoop().RunUntilIdle();
   EXPECT_FALSE(saw_connection_error_);
 
-  base::DeleteSoon(FROM_HERE, {web::WebThread::IO},
-                   network_context_owner_.release());
+  web::GetIOThreadTaskRunner({})->DeleteSoon(FROM_HERE,
+                                             network_context_owner_.release());
   base::RunLoop().RunUntilIdle();
   EXPECT_TRUE(saw_connection_error_);  // other end gone
 }
@@ -80,8 +81,8 @@ TEST_F(NetworkContextOwnerTest, ShutdownHandling) {
   base::RunLoop().RunUntilIdle();
   EXPECT_FALSE(saw_connection_error_);
 
-  base::PostTask(
-      FROM_HERE, {web::WebThread::IO},
+  web::GetIOThreadTaskRunner({})->PostTask(
+      FROM_HERE,
       base::BindOnce(
           &net::TestURLRequestContextGetter::NotifyContextShuttingDown,
           context_getter_));
@@ -89,8 +90,8 @@ TEST_F(NetworkContextOwnerTest, ShutdownHandling) {
   base::RunLoop().RunUntilIdle();
   EXPECT_TRUE(saw_connection_error_);  // other end gone post-shutdown.
 
-  base::DeleteSoon(FROM_HERE, {web::WebThread::IO},
-                   network_context_owner_.release());
+  web::GetIOThreadTaskRunner({})->DeleteSoon(FROM_HERE,
+                                             network_context_owner_.release());
 }
 
 }  // namespace web

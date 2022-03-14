@@ -13,7 +13,6 @@
 #include "base/callback_helpers.h"
 #include "base/check.h"
 #include "base/memory/ref_counted.h"
-#include "base/task/post_task.h"
 #include "base/task/thread_pool.h"
 #include "ios/chrome/browser/browser_state/chrome_browser_state.h"
 #import "ios/net/cookies/cookie_store_ios.h"
@@ -46,7 +45,7 @@ scoped_refptr<net::SQLitePersistentCookieStore> CreatePersistentCookieStore(
     net::CookieCryptoDelegate* crypto_delegate) {
   return scoped_refptr<net::SQLitePersistentCookieStore>(
       new net::SQLitePersistentCookieStore(
-          path, base::CreateSingleThreadTaskRunner({web::WebThread::IO}),
+          path, web::GetIOThreadTaskRunner({}),
           base::ThreadPool::CreateSequencedTaskRunner(
               {base::MayBlock(), base::TaskPriority::BEST_EFFORT,
                base::TaskShutdownBehavior::BLOCK_SHUTDOWN}),
@@ -126,7 +125,8 @@ bool ShouldClearSessionCookies() {
 void ClearSessionCookies(ChromeBrowserState* browser_state) {
   scoped_refptr<net::URLRequestContextGetter> getter =
       browser_state->GetRequestContext();
-  base::PostTask(FROM_HERE, {web::WebThread::IO}, base::BindOnce(^{
+  web::GetIOThreadTaskRunner({})
+      ->PostTask(FROM_HERE, base::BindOnce(^{
                    getter->GetURLRequestContext()
                        ->cookie_store()
                        ->DeleteSessionCookiesAsync(base::DoNothing());

@@ -10,7 +10,6 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
-#include "base/task/post_task.h"
 #include "base/values.h"
 #include "components/image_fetcher/core/image_data_fetcher.h"
 #include "ios/chrome/browser/web/image_fetch/image_fetch_java_script_feature.h"
@@ -129,8 +128,8 @@ void ImageFetchTabHelper::GetImageDataByJs(const GURL& url,
   DCHECK_EQ(js_callbacks_.count(call_id_), 0UL);
   js_callbacks_.insert({call_id_, std::move(callback)});
 
-  base::PostDelayedTask(
-      FROM_HERE, {web::WebThread::UI},
+  web::GetUIThreadTaskRunner({})->PostDelayedTask(
+      FROM_HERE,
       base::BindRepeating(&ImageFetchTabHelper::OnJsTimeout,
                           weak_ptr_factory_.GetWeakPtr(), call_id_),
       timeout);

@@ -6,7 +6,6 @@
 
 #include "base/bind.h"
 #import "base/ios/block_types.h"
-#include "base/task/post_task.h"
 #import "ios/net/cookies/cookie_creation_time_manager.h"
 #include "ios/net/cookies/system_cookie_util.h"
 #include "ios/web/public/thread/web_task_traits.h"
@@ -29,7 +28,7 @@ namespace {
 // SystemCookieStore should operate on IO thread.
 void RunBlockOnIOThread(ProceduralBlock block) {
   DCHECK(block != nil);
-  base::PostTask(FROM_HERE, {web::WebThread::IO}, base::BindOnce(block));
+  web::GetIOThreadTaskRunner({})->PostTask(FROM_HERE, base::BindOnce(block));
 }
 
 // Returns wether |cookie| should be included for queries about |url|.
@@ -101,8 +100,8 @@ void WKHTTPSystemCookieStore::DeleteCookieAsync(NSHTTPCookie* cookie,
       creation_time_manager_->GetWeakPtr();
   NSHTTPCookie* block_cookie = cookie;
   __weak __typeof(crw_cookie_store_) block_cookie_store = crw_cookie_store_;
-  base::PostTask(
-      FROM_HERE, {web::WebThread::UI}, base::BindOnce(^{
+  web::GetUIThreadTaskRunner({})->PostTask(
+      FROM_HERE, base::BindOnce(^{
         [block_cookie_store
                  deleteCookie:block_cookie
             completionHandler:^{
@@ -130,8 +129,8 @@ void WKHTTPSystemCookieStore::SetCookieAsync(
   if (optional_creation_time && !optional_creation_time->is_null())
     cookie_time = *optional_creation_time;
   __weak __typeof(crw_cookie_store_) block_cookie_store = crw_cookie_store_;
-  base::PostTask(
-      FROM_HERE, {web::WebThread::UI}, base::BindOnce(^{
+  web::GetUIThreadTaskRunner({})->PostTask(
+      FROM_HERE, base::BindOnce(^{
         [block_cookie_store
                     setCookie:block_cookie
             completionHandler:^{
@@ -153,8 +152,8 @@ void WKHTTPSystemCookieStore::ClearStoreAsync(SystemCookieCallback callback) {
   base::WeakPtr<net::CookieCreationTimeManager> weak_time_manager =
       creation_time_manager_->GetWeakPtr();
   __weak __typeof(crw_cookie_store_) block_cookie_store = crw_cookie_store_;
-  base::PostTask(
-      FROM_HERE, {web::WebThread::UI}, base::BindOnce(^{
+  web::GetUIThreadTaskRunner({})->PostTask(
+      FROM_HERE, base::BindOnce(^{
         [block_cookie_store getAllCookies:^(NSArray<NSHTTPCookie*>* cookies) {
           ProceduralBlock completionHandler = ^{
             RunBlockOnIOThread(^{
@@ -212,8 +211,8 @@ void WKHTTPSystemCookieStore::GetCookiesAsyncInternal(
       creation_time_manager_->GetWeakPtr();
   __weak __typeof(crw_cookie_store_) weak_cookie_store = crw_cookie_store_;
   GURL block_url = include_url;
-  base::PostTask(
-      FROM_HERE, {web::WebThread::UI}, base::BindOnce(^{
+  web::GetUIThreadTaskRunner({})->PostTask(
+      FROM_HERE, base::BindOnce(^{
         __typeof(weak_cookie_store) strong_cookie_store = weak_cookie_store;
         if (strong_cookie_store) {
           [strong_cookie_store

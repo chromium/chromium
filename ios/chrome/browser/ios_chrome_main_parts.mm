@@ -15,7 +15,6 @@
 #include "base/metrics/user_metrics.h"
 #include "base/path_service.h"
 #include "base/strings/sys_string_conversions.h"
-#include "base/task/post_task.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/thread_pool.h"
 #include "base/time/default_tick_clock.h"
@@ -387,8 +386,7 @@ void IOSChromeMainParts::PostDestroyThreads() {
 
 // This will be called after the command-line has been mutated by about:flags
 void IOSChromeMainParts::SetUpFieldTrials() {
-  base::SetRecordActionTaskRunner(
-      base::CreateSingleThreadTaskRunner({web::WebThread::UI}));
+  base::SetRecordActionTaskRunner(web::GetUIThreadTaskRunner({}));
 
   // FeatureList requires VariationsIdsProvider to be created.
   variations::VariationsIdsProvider::Create(

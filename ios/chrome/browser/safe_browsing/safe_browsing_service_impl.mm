@@ -7,7 +7,6 @@
 #include "base/bind.h"
 #include "base/files/file_path.h"
 #include "base/path_service.h"
-#include "base/task/post_task.h"
 #include "build/branding_buildflags.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "components/prefs/pref_service.h"
@@ -58,9 +57,8 @@ void SafeBrowsingServiceImpl::Initialize(
   base::FilePath safe_browsing_data_path =
       user_data_path.Append(safe_browsing::kSafeBrowsingBaseFilename);
   safe_browsing_db_manager_ = safe_browsing::V4LocalDatabaseManager::Create(
-      safe_browsing_data_path,
-      base::CreateSingleThreadTaskRunner({web::WebThread::UI}),
-      base::CreateSingleThreadTaskRunner({web::WebThread::IO}),
+      safe_browsing_data_path, web::GetUIThreadTaskRunner({}),
+      web::GetIOThreadTaskRunner({}),
       safe_browsing::ExtendedReportingLevelCallback());
 
   url_checker_delegate_ =
@@ -69,8 +67,8 @@ void SafeBrowsingServiceImpl::Initialize(
   io_thread_enabler_ =
       base::MakeRefCounted<IOThreadEnabler>(safe_browsing_db_manager_);
 
-  base::PostTask(
-      FROM_HERE, {web::WebThread::IO},
+  web::GetIOThreadTaskRunner({})->PostTask(
+      FROM_HERE,
       base::BindOnce(&IOThreadEnabler::Initialize, io_thread_enabler_,
                      base::WrapRefCounted(this),
                      network_context_client_.BindNewPipeAndPassReceiver(),
@@ -107,8 +105,8 @@ void SafeBrowsingServiceImpl::ShutDown() {
   DCHECK_CURRENTLY_ON(web::WebThread::UI);
 
   pref_change_registrar_.reset();
-  base::PostTask(
-      FROM_HERE, {web::WebThread::IO},
+  web::GetIOThreadTaskRunner({})->PostTask(
+      FROM_HERE,
       base::BindOnce(&IOThreadEnabler::ShutDown, io_thread_enabler_));
   network_context_client_.reset();
 }
@@ -127,8 +125,7 @@ SafeBrowsingServiceImpl::CreateUrlChecker(
   return std::make_unique<safe_browsing::SafeBrowsingUrlCheckerImpl>(
       request_destination, url_checker_delegate_,
       web_state->CreateDefaultGetter(), can_perform_full_url_lookup,
-      can_realtime_check_subresource_url,
-      base::CreateSingleThreadTaskRunner({web::WebThread::UI}),
+      can_realtime_check_subresource_url, web::GetUIThreadTaskRunner({}),
       url_lookup_service ? url_lookup_service->GetWeakPtr() : nullptr);
 }
 
@@ -151,13 +148,12 @@ void SafeBrowsingServiceImpl::ClearCookies(
     base::OnceClosure callback) {
   if (creation_range.start() == base::Time() &&
       creation_range.end() == base::Time::Max()) {
-    base::PostTask(
-        FROM_HERE,
-        {web::WebThread::IO, base::TaskShutdownBehavior::BLOCK_SHUTDOWN},
-        base::BindOnce(&IOThreadEnabler::ClearAllCookies, io_thread_enabler_,
-                       std::move(callback)));
+    web::GetIOThreadTaskRunner({base::TaskShutdownBehavior::BLOCK_SHUTDOWN})
+        ->PostTask(FROM_HERE,
+                   base::BindOnce(&IOThreadEnabler::ClearAllCookies,
+                                  io_thread_enabler_, std::move(callback)));
   } else {
-    base::PostTask(FROM_HERE, {web::WebThread::IO}, std::move(callback));
+    web::GetIOThreadTaskRunner({})->PostTask(FROM_HERE, std::move(callback));
   }
 }
 
@@ -170,8 +166,8 @@ void SafeBrowsingServiceImpl::SetUpURLLoaderFactory(
 void SafeBrowsingServiceImpl::UpdateSafeBrowsingEnabledState() {
   bool enabled =
       pref_change_registrar_->prefs()->GetBoolean(prefs::kSafeBrowsingEnabled);
-  base::PostTask(FROM_HERE, {web::WebThread::IO},
-                 base::BindOnce(&IOThreadEnabler::SetSafeBrowsingEnabled,
+  web::GetIOThreadTaskRunner({})->PostTask(
+      FROM_HERE, base::BindOnce(&IOThreadEnabler::SetSafeBrowsingEnabled,
                                 io_thread_enabler_, enabled));
 }
 
@@ -270,8 +266,8 @@ void SafeBrowsingServiceImpl::IOThreadEnabler::SetUpURLRequestContext(
 void SafeBrowsingServiceImpl::IOThreadEnabler::SetUpURLLoaderFactory(
     scoped_refptr<SafeBrowsingServiceImpl> safe_browsing_service) {
   DCHECK_CURRENTLY_ON(web::WebThread::IO);
-  base::PostTask(
-      FROM_HERE, {web::WebThread::UI},
+  web::GetUIThreadTaskRunner({})->PostTask(
+      FROM_HERE,
       base::BindOnce(&SafeBrowsingServiceImpl::SetUpURLLoaderFactory,
                      safe_browsing_service,
                      url_loader_factory_.BindNewPipeAndPassReceiver()));

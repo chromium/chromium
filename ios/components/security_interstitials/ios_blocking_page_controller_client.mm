@@ -7,7 +7,6 @@
 #include "base/bind.h"
 #include "base/check_op.h"
 #include "base/notreached.h"
-#include "base/task/post_task.h"
 #include "components/security_interstitials/core/metrics_helper.h"
 #import "ios/web/public/navigation/navigation_manager.h"
 #include "ios/web/public/navigation/reload_type.h"
@@ -60,8 +59,8 @@ void IOSBlockingPageControllerClient::GoBack() {
     // Closing the tab synchronously is problematic since web state is heavily
     // involved in the operation and CloseWebState interrupts it, so call
     // CloseWebState asynchronously.
-    base::PostTask(FROM_HERE, {web::WebThread::UI},
-                   base::BindOnce(&IOSBlockingPageControllerClient::Close,
+    web::GetUIThreadTaskRunner({})->PostTask(
+        FROM_HERE, base::BindOnce(&IOSBlockingPageControllerClient::Close,
                                   weak_factory_.GetWeakPtr()));
   }
 }

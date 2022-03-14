@@ -4,7 +4,6 @@
 
 #include "ios/chrome/browser/net/chrome_cookie_store_ios_client.h"
 
-#include "base/task/post_task.h"
 #include "ios/web/public/thread/web_task_traits.h"
 #include "ios/web/public/thread/web_thread.h"
 
@@ -16,5 +15,5 @@ ChromeCookieStoreIOSClient::ChromeCookieStoreIOSClient() {}
 
 scoped_refptr<base::SequencedTaskRunner>
 ChromeCookieStoreIOSClient::GetTaskRunner() const {
-  return base::CreateSingleThreadTaskRunner({web::WebThread::IO});
+  return web::GetIOThreadTaskRunner({});
 }

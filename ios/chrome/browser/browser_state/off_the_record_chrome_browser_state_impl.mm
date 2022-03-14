@@ -7,7 +7,6 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/user_metrics.h"
 #include "base/notreached.h"
-#include "base/task/post_task.h"
 #include "base/task/sequenced_task_runner.h"
 #include "components/keyed_service/ios/browser_state_dependency_manager.h"
 #include "components/profile_metrics/browser_profile_type.h"
@@ -127,6 +126,6 @@ void OffTheRecordChromeBrowserStateImpl::ClearNetworkingHistorySince(
   // BrowsingDataRemover will never be destroyed and the dialog will never be
   // closed. We must do this asynchronously in order to avoid reentrancy issues.
   if (!completion.is_null()) {
-    base::PostTask(FROM_HERE, {web::WebThread::UI}, std::move(completion));
+    web::GetUIThreadTaskRunner({})->PostTask(FROM_HERE, std::move(completion));
   }
 }

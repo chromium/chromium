@@ -11,7 +11,6 @@
 #include "base/check_op.h"
 #include "base/command_line.h"
 #include "base/notreached.h"
-#include "base/task/post_task.h"
 #include "components/autofill/core/browser/webdata/autofill_profile_sync_bridge.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/invalidation/impl/profile_invalidation_provider.h"
@@ -102,8 +101,7 @@ WebViewSyncClient::WebViewSyncClient(
       sync_invalidations_service_(sync_invalidations_service) {
   component_factory_ =
       std::make_unique<browser_sync::SyncApiComponentFactoryImpl>(
-          this, version_info::Channel::STABLE,
-          base::CreateSingleThreadTaskRunner({web::WebThread::UI}),
+          this, version_info::Channel::STABLE, web::GetUIThreadTaskRunner({}),
           profile_web_data_service_->GetDBTaskRunner(),
           profile_web_data_service_, account_web_data_service_,
           profile_password_store_, account_password_store_,

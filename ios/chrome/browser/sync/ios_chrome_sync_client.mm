@@ -9,7 +9,6 @@
 #include "base/bind.h"
 #include "base/feature_list.h"
 #include "base/logging.h"
-#include "base/task/post_task.h"
 #include "components/autofill/core/browser/webdata/autocomplete_sync_bridge.h"
 #include "components/autofill/core/browser/webdata/autofill_profile_sync_bridge.h"
 #include "components/autofill/core/browser/webdata/autofill_wallet_metadata_sync_bridge.h"
@@ -81,8 +80,7 @@ IOSChromeSyncClient::IOSChromeSyncClient(ChromeBrowserState* browser_state)
 
   component_factory_ =
       std::make_unique<browser_sync::SyncApiComponentFactoryImpl>(
-          this, ::GetChannel(),
-          base::CreateSingleThreadTaskRunner({web::WebThread::UI}), db_thread_,
+          this, ::GetChannel(), web::GetUIThreadTaskRunner({}), db_thread_,
           profile_web_data_service_, account_web_data_service_, password_store_,
           /*account_password_store=*/nullptr,
           ios::BookmarkSyncServiceFactory::GetForBrowserState(browser_state_));

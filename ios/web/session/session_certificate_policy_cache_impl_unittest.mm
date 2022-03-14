@@ -5,7 +5,6 @@
 #import "ios/web/session/session_certificate_policy_cache_impl.h"
 
 #include "base/bind.h"
-#include "base/task/post_task.h"
 #import "base/test/ios/wait_util.h"
 #include "ios/web/public/security/certificate_policy_cache.h"
 #import "ios/web/public/session/crw_session_certificate_policy_cache_storage.h"
@@ -37,10 +36,11 @@ web::CertPolicy::Judgment GetJudgmenet(
   __block web::CertPolicy::Judgment judgement =
       web::CertPolicy::Judgment::UNKNOWN;
   __block bool completed = false;
-  base::PostTask(FROM_HERE, {web::WebThread::IO}, base::BindOnce(^{
-                   completed = true;
-                   judgement = cache->QueryPolicy(cert.get(), host, status);
-                 }));
+  web::GetIOThreadTaskRunner({})->PostTask(FROM_HERE, base::BindOnce(^{
+                                             completed = true;
+                                             judgement = cache->QueryPolicy(
+                                                 cert.get(), host, status);
+                                           }));
   EXPECT_TRUE(WaitUntilConditionOrTimeout(1.0, ^{
     return completed;
   }));

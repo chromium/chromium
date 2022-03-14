@@ -8,7 +8,6 @@
 #include "base/memory/ptr_util.h"
 #include "base/memory/ref_counted.h"
 #include "base/no_destructor.h"
-#include "base/task/post_task.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/thread_pool.h"
 #include "components/gcm_driver/gcm_client_factory.h"
@@ -52,8 +51,8 @@ void RequestProxyResolvingSocketFactory(
     base::WeakPtr<gcm::GCMProfileService> service,
     mojo::PendingReceiver<network::mojom::ProxyResolvingSocketFactory>
         receiver) {
-  base::PostTask(
-      FROM_HERE, {web::WebThread::UI},
+  web::GetUIThreadTaskRunner({})->PostTask(
+      FROM_HERE,
       base::BindOnce(&RequestProxyResolvingSocketFactoryOnUIThread, context,
                      std::move(service), std::move(receiver)));
 }
@@ -107,8 +106,7 @@ WebViewGCMProfileServiceFactory::BuildServiceInstanceFor(
       version_info::Channel::STABLE, GetProductCategoryForSubtypes(),
       WebViewIdentityManagerFactory::GetForBrowserState(browser_state),
       base::WrapUnique(new gcm::GCMClientFactory),
-      base::CreateSingleThreadTaskRunner({web::WebThread::UI}),
-      base::CreateSingleThreadTaskRunner({web::WebThread::IO}),
+      web::GetUIThreadTaskRunner({}), web::GetIOThreadTaskRunner({}),
       blocking_task_runner);
 }
 }  // namespace ios_web_view

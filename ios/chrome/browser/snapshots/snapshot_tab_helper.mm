@@ -7,7 +7,6 @@
 #include "base/bind.h"
 #include "base/memory/ptr_util.h"
 #include "base/metrics/histogram_macros.h"
-#include "base/task/post_task.h"
 #import "ios/chrome/browser/snapshots/snapshot_cache.h"
 #import "ios/chrome/browser/snapshots/snapshot_generator.h"
 #include "ios/chrome/browser/ui/util/ui_util.h"
@@ -145,8 +144,8 @@ void SnapshotTabHelper::PageLoaded(
         break;
 
       bool was_loading = was_loading_during_last_snapshot_;
-      base::PostDelayedTask(
-          FROM_HERE, {web::WebThread::UI},
+      web::GetUIThreadTaskRunner({})->PostDelayedTask(
+          FROM_HERE,
           base::BindOnce(
               &SnapshotTabHelper::UpdateSnapshotWithCallback,
               weak_ptr_factory_.GetWeakPtr(),

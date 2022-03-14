@@ -10,7 +10,6 @@
 #include "base/files/file_path.h"
 #include "base/memory/ptr_util.h"
 #include "base/path_service.h"
-#include "base/task/post_task.h"
 #include "base/threading/thread_restrictions.h"
 #include "components/autofill/core/common/autofill_prefs.h"
 #include "components/history/core/common/pref_names.h"
@@ -98,7 +97,7 @@ WebViewBrowserState::WebViewBrowserState(
 
     request_context_getter_ = new WebViewURLRequestContextGetter(
         GetStatePath(), this, ApplicationContext::GetInstance()->GetNetLog(),
-        base::CreateSingleThreadTaskRunner({web::WebThread::IO}));
+        web::GetIOThreadTaskRunner({}));
 
     // Initialize prefs.
     scoped_refptr<user_prefs::PrefRegistrySyncable> pref_registry =
@@ -125,8 +124,8 @@ WebViewBrowserState::~WebViewBrowserState() {
   BrowserStateDependencyManager::GetInstance()->DestroyBrowserStateServices(
       this);
 
-  base::PostTask(FROM_HERE, {web::WebThread::IO},
-                 base::BindOnce(&WebViewURLRequestContextGetter::ShutDown,
+  web::GetIOThreadTaskRunner({})->PostTask(
+      FROM_HERE, base::BindOnce(&WebViewURLRequestContextGetter::ShutDown,
                                 request_context_getter_));
 }
 

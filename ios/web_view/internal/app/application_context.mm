@@ -8,7 +8,6 @@
 #include "base/command_line.h"
 #include "base/no_destructor.h"
 #include "base/path_service.h"
-#include "base/task/post_task.h"
 #include "components/component_updater/component_updater_service.h"
 #include "components/component_updater/timer_update_scheduler.h"
 #include "components/flags_ui/pref_service_flags_storage.h"
@@ -79,8 +78,8 @@ void ApplicationContext::SaveState() {
     shared_url_loader_factory_->Detach();
 
   if (network_context_) {
-    base::DeleteSoon(FROM_HERE, {web::WebThread::IO},
-                     network_context_owner_.release());
+    web::GetIOThreadTaskRunner({})->DeleteSoon(
+        FROM_HERE, network_context_owner_.release());
   }
 }
 

@@ -20,7 +20,6 @@
 #include "base/strings/sys_string_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/system/sys_info.h"
-#include "base/task/post_task.h"
 #include "base/time/time.h"
 #include "base/values.h"
 #include "build/branding_buildflags.h"
@@ -370,8 +369,8 @@ void OmahaService::Start(std::unique_ptr<network::PendingSharedURLLoaderFactory>
          !service->url_loader_factory_);
   service->pending_url_loader_factory_ = std::move(pending_url_loader_factory);
   service->locale_lang_ = GetApplicationContext()->GetApplicationLocale();
-  base::PostTask(FROM_HERE, {web::WebThread::IO},
-                 base::BindOnce(&OmahaService::SendOrScheduleNextPing,
+  web::GetIOThreadTaskRunner({})->PostTask(
+      FROM_HERE, base::BindOnce(&OmahaService::SendOrScheduleNextPing,
                                 base::Unretained(service)));
 }
 
@@ -497,16 +496,16 @@ void OmahaService::GetDebugInformation(
     base::OnceCallback<void(base::DictionaryValue*)> callback) {
   if (OmahaService::IsEnabled()) {
     OmahaService* service = GetInstance();
-    base::PostTask(
-        FROM_HERE, {web::WebThread::IO},
+    web::GetIOThreadTaskRunner({})->PostTask(
+        FROM_HERE,
         base::BindOnce(&OmahaService::GetDebugInformationOnIOThread,
                        base::Unretained(service), std::move(callback)));
 
   } else {
     auto result = std::make_unique<base::DictionaryValue>();
     // Invoke the callback with an empty response.
-    base::PostTask(
-        FROM_HERE, {web::WebThread::UI},
+    web::GetUIThreadTaskRunner({})->PostTask(
+        FROM_HERE,
         base::BindOnce(std::move(callback), base::Owned(result.release())));
   }
 }
@@ -776,16 +775,16 @@ void OmahaService::OnURLLoadComplete(
   if (details) {
     // Use the correct callback based on if a one-off check is ongoing.
     if (!one_off_check_callback_.is_null()) {
-      base::PostTask(
-          FROM_HERE, {web::WebThread::UI},
+      web::GetUIThreadTaskRunner({})->PostTask(
+          FROM_HERE,
           base::BindOnce(std::move(one_off_check_callback_), *details));
       // Do not schedule another ping for one-off checks, unless
       // it canceled a scheduled ping.
       need_to_schedule_ping = scheduled_ping_canceled_;
       scheduled_ping_canceled_ = false;
     } else if (!details->is_up_to_date) {
-      base::PostTask(FROM_HERE, {web::WebThread::UI},
-                     base::BindOnce(upgrade_recommended_callback_, *details));
+      web::GetUIThreadTaskRunner({})->PostTask(
+          FROM_HERE, base::BindOnce(upgrade_recommended_callback_, *details));
     }
   }
 
@@ -820,8 +819,8 @@ void OmahaService::GetDebugInformationOnIOThread(
                         (timer_.desired_run_time() - base::TimeTicks::Now())));
 
   // Sending the value to the callback.
-  base::PostTask(
-      FROM_HERE, {web::WebThread::UI},
+  web::GetUIThreadTaskRunner({})->PostTask(
+      FROM_HERE,
       base::BindOnce(std::move(callback), base::Owned(result.release())));
 }
 

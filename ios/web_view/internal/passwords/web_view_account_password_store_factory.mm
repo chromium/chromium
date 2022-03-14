@@ -10,7 +10,6 @@
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/no_destructor.h"
-#include "base/task/post_task.h"
 #include "components/keyed_service/ios/browser_state_dependency_manager.h"
 #include "components/password_manager/core/browser/login_database.h"
 #include "components/password_manager/core/browser/password_manager_constants.h"
@@ -48,8 +47,8 @@ void UpdateFormManager(WebViewBrowserState* browser_state) {
 }
 
 void SyncEnabledOrDisabled(WebViewBrowserState* browser_state) {
-  base::PostTask(FROM_HERE, {web::WebThread::UI},
-                 base::BindOnce(&UpdateFormManager, browser_state));
+  web::GetUIThreadTaskRunner({})->PostTask(
+      FROM_HERE, base::BindOnce(&UpdateFormManager, browser_state));
 }
 
 }  // namespace

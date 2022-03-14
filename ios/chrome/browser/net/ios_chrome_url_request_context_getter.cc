@@ -6,7 +6,6 @@
 
 #include "base/bind.h"
 #include "base/compiler_specific.h"
-#include "base/task/post_task.h"
 #include "ios/chrome/browser/browser_state/chrome_browser_state_io_data.h"
 #include "ios/chrome/browser/ios_chrome_io_thread.h"
 #include "ios/web/public/thread/web_task_traits.h"
@@ -97,7 +96,7 @@ void IOSChromeURLRequestContextGetter::NotifyContextShuttingDown() {
 
 scoped_refptr<base::SingleThreadTaskRunner>
 IOSChromeURLRequestContextGetter::GetNetworkTaskRunner() const {
-  return base::CreateSingleThreadTaskRunner({web::WebThread::IO});
+  return web::GetIOThreadTaskRunner({});
 }
 
 // static

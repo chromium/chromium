@@ -4,7 +4,6 @@
 
 #include "ios/chrome/browser/safe_browsing/url_checker_delegate_impl.h"
 
-#include "base/task/post_task.h"
 #include "components/safe_browsing/core/browser/db/database_manager.h"
 #include "components/safe_browsing/core/browser/db/v4_protocol_manager_util.h"
 #import "components/safe_browsing/ios/browser/safe_browsing_url_allow_list.h"
@@ -101,8 +100,8 @@ void UrlCheckerDelegateImpl::StartDisplayingBlockingPageHelper(
     bool has_user_gesture) {
   // Query the allow list on the UI thread to determine whether the navigation
   // can proceed.
-  base::PostTask(
-      FROM_HERE, {web::WebThread::UI},
+  web::GetUIThreadTaskRunner({})->PostTask(
+      FROM_HERE,
       base::BindOnce(&HandleBlockingPageRequestOnUIThread, resource));
 }
 

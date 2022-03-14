@@ -14,7 +14,6 @@
 #include "base/logging.h"
 #include "base/metrics/histogram.h"
 #include "base/path_service.h"
-#include "base/task/post_task.h"
 #include "components/content_settings/core/common/content_settings.h"
 #include "components/prefs/pref_member.h"
 #include "components/prefs/pref_service.h"
@@ -57,8 +56,7 @@ void IOSChromeNetworkDelegate::InitializePrefsOnUIThread(
   DCHECK_CURRENTLY_ON(web::WebThread::UI);
   if (enable_do_not_track) {
     enable_do_not_track->Init(prefs::kEnableDoNotTrack, pref_service);
-    enable_do_not_track->MoveToSequence(
-        base::CreateSingleThreadTaskRunner({web::WebThread::IO}));
+    enable_do_not_track->MoveToSequence(web::GetIOThreadTaskRunner({}));
   }
 }
 

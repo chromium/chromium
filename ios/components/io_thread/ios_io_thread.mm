@@ -19,7 +19,6 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
-#include "base/task/post_task.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread.h"
 #include "base/time/time.h"
@@ -127,8 +126,7 @@ class SystemURLRequestContextGetter : public net::URLRequestContextGetter {
 SystemURLRequestContextGetter::SystemURLRequestContextGetter(
     IOSIOThread* io_thread)
     : io_thread_(io_thread),
-      network_task_runner_(
-          base::CreateSingleThreadTaskRunner({web::WebThread::IO})) {}
+      network_task_runner_(web::GetIOThreadTaskRunner({})) {}
 
 SystemURLRequestContextGetter::~SystemURLRequestContextGetter() {}
 
@@ -207,8 +205,8 @@ net::NetLog* IOSIOThread::net_log() {
 
 void IOSIOThread::ChangedToOnTheRecord() {
   DCHECK_CURRENTLY_ON(web::WebThread::UI);
-  base::PostTask(FROM_HERE, {web::WebThread::IO},
-                 base::BindOnce(&IOSIOThread::ChangedToOnTheRecordOnIOThread,
+  web::GetIOThreadTaskRunner({})->PostTask(
+      FROM_HERE, base::BindOnce(&IOSIOThread::ChangedToOnTheRecordOnIOThread,
                                 base::Unretained(this)));
 }
 

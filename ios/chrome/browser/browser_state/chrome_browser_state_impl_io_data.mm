@@ -109,8 +109,8 @@ void ChromeBrowserStateImplIOData::Handle::ClearNetworkingHistorySince(
   DCHECK_CURRENTLY_ON(web::WebThread::UI);
   LazyInitialize();
 
-  base::PostTask(
-      FROM_HERE, {web::WebThread::IO},
+  web::GetIOThreadTaskRunner({})->PostTask(
+      FROM_HERE,
       base::BindOnce(
           &ChromeBrowserStateImplIOData::ClearNetworkingHistorySinceOnIOThread,
           base::Unretained(io_data_), time, std::move(completion)));

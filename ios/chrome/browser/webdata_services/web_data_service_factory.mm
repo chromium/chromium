@@ -9,7 +9,6 @@
 #include "base/check.h"
 #include "base/files/file_path.h"
 #include "base/no_destructor.h"
-#include "base/task/post_task.h"
 #include "components/autofill/core/browser/webdata/autofill_webdata_service.h"
 #include "components/keyed_service/core/service_access_type.h"
 #include "components/keyed_service/ios/browser_state_dependency_manager.h"
@@ -106,8 +105,7 @@ std::unique_ptr<KeyedService> WebDataServiceFactory::BuildServiceInstanceFor(
   const base::FilePath& browser_state_path = context->GetStatePath();
   return std::make_unique<WebDataServiceWrapper>(
       browser_state_path, GetApplicationContext()->GetApplicationLocale(),
-      base::CreateSingleThreadTaskRunner({web::WebThread::UI}),
-      base::DoNothing());
+      web::GetUIThreadTaskRunner({}), base::DoNothing());
 }
 
 web::BrowserState* WebDataServiceFactory::GetBrowserStateToUse(

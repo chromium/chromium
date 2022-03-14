@@ -16,13 +16,13 @@
 #include "base/strings/stringprintf.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/strings/utf_string_conversions.h"
-#include "base/task/post_task.h"
 #include "base/values.h"
 #include "crypto/aead.h"
 #include "crypto/random.h"
 #import "ios/web/js_messaging/java_script_content_world.h"
 #import "ios/web/js_messaging/web_view_js_utils.h"
 #include "ios/web/public/thread/web_task_traits.h"
+#include "ios/web/public/thread/web_thread.h"
 #include "url/gurl.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
@@ -244,9 +244,9 @@ bool WebFrameImpl::CallJavaScriptFunctionInContentWorld(
       std::move(callback), std::move(timeout_callback));
   pending_requests_[message_id] = std::move(callbacks);
 
-  base::PostDelayedTask(
-      FROM_HERE, {web::WebThread::UI},
-      pending_requests_[message_id]->timeout_callback->callback(), timeout);
+  web::GetUIThreadTaskRunner({})->PostDelayedTask(
+      FROM_HERE, pending_requests_[message_id]->timeout_callback->callback(),
+      timeout);
   bool called =
       CallJavaScriptFunctionInContentWorld(name, parameters, content_world,
                                            /*reply_with_result=*/true);

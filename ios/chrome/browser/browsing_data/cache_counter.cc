@@ -4,7 +4,6 @@
 
 #include "ios/chrome/browser/browsing_data/cache_counter.h"
 #include "base/bind.h"
-#include "base/task/post_task.h"
 #include "components/browsing_data/core/pref_names.h"
 #include "ios/chrome/browser/browser_state/chrome_browser_state.h"
 #include "ios/web/public/browser_state.h"
@@ -33,8 +32,8 @@ class IOThreadCacheCounter {
         backend_(nullptr) {}
 
   void Count() {
-    base::PostTask(FROM_HERE, {web::WebThread::IO},
-                   base::BindRepeating(&IOThreadCacheCounter::CountInternal,
+    web::GetIOThreadTaskRunner({})->PostTask(
+        FROM_HERE, base::BindRepeating(&IOThreadCacheCounter::CountInternal,
                                        base::Unretained(this), net::OK));
   }
 
@@ -84,8 +83,8 @@ class IOThreadCacheCounter {
         case STEP_CALLBACK: {
           result_ = rv;
 
-          base::PostTask(
-              FROM_HERE, {web::WebThread::UI},
+          web::GetUIThreadTaskRunner({})->PostTask(
+              FROM_HERE,
               base::BindOnce(&IOThreadCacheCounter::OnCountingFinished,
                              base::Unretained(this)));
 

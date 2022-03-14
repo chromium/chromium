@@ -21,7 +21,6 @@
 #include "base/path_service.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
-#include "base/task/post_task.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/task/thread_pool.h"
 #include "base/threading/thread_task_runner_handle.h"
@@ -106,7 +105,7 @@ void ChromeBrowserStateIOData::InitializeOnUIThread(
                                                       pref_service);
 
   scoped_refptr<base::SingleThreadTaskRunner> io_task_runner =
-      base::CreateSingleThreadTaskRunner({web::WebThread::IO});
+      web::GetIOThreadTaskRunner({});
 
   chrome_http_user_agent_settings_.reset(
       new IOSChromeHttpUserAgentSettings(pref_service));
@@ -256,8 +255,7 @@ void ChromeBrowserStateIOData::InitializeMetricsEnabledStateOnUIThread() {
   // read from there.
   enable_metrics_.Init(metrics::prefs::kMetricsReportingEnabled,
                        GetApplicationContext()->GetLocalState());
-  enable_metrics_.MoveToSequence(
-      base::CreateSingleThreadTaskRunner({web::WebThread::IO}));
+  enable_metrics_.MoveToSequence(web::GetIOThreadTaskRunner({}));
 }
 
 bool ChromeBrowserStateIOData::GetMetricsEnabledStateOnIOThread() const {
@@ -385,13 +383,13 @@ void ChromeBrowserStateIOData::ShutdownOnUIThread(
 
   if (!context_getters->empty()) {
     if (web::WebThread::IsThreadInitialized(web::WebThread::IO)) {
-      base::PostTask(FROM_HERE, {web::WebThread::IO},
-                     base::BindOnce(&NotifyContextGettersOfShutdownOnIO,
+      web::GetIOThreadTaskRunner({})->PostTask(
+          FROM_HERE, base::BindOnce(&NotifyContextGettersOfShutdownOnIO,
                                     std::move(context_getters)));
     }
   }
 
-  bool posted = base::DeleteSoon(FROM_HERE, {web::WebThread::IO}, this);
+  bool posted = web::GetIOThreadTaskRunner({})->DeleteSoon(FROM_HERE, this);
   if (!posted)
     delete this;
 }

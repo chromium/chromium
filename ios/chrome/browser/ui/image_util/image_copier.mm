@@ -9,7 +9,6 @@
 #include "base/bind.h"
 #include "base/metrics/histogram_macros.h"
 #import "base/strings/sys_string_conversions.h"
-#include "base/task/post_task.h"
 #include "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/main/browser.h"
 #import "ios/chrome/browser/ui/alert_coordinator/alert_coordinator.h"
@@ -148,8 +147,8 @@ const int kNoActiveCopy = 0;
                  style:UIAlertActionStyleCancel];
 
   // Delays launching alert by |kAlertDelayInMs|.
-  base::PostDelayedTask(
-      FROM_HERE, {web::WebThread::UI}, base::BindOnce(^{
+  web::GetUIThreadTaskRunner({})->PostDelayedTask(
+      FROM_HERE, base::BindOnce(^{
         // Checks that the copy has not finished yet.
         if (callbackID == weakSelf.activeID) {
           [weakSelf.alertCoordinator start];

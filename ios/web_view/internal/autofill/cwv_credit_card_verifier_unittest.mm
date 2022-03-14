@@ -15,7 +15,6 @@
 #include "base/path_service.h"
 #include "base/run_loop.h"
 #include "base/strings/sys_string_conversions.h"
-#include "base/task/post_task.h"
 #import "base/test/ios/wait_util.h"
 #include "components/autofill/core/browser/autofill_test_utils.h"
 #include "components/autofill/core/browser/data_model/credit_card.h"
@@ -59,12 +58,12 @@ class FakeCardUnmaskDelegate : public autofill::CardUnmaskDelegate {
       const UserProvidedUnmaskDetails& unmask_details) override {
     unmask_details_ = unmask_details;
     // Fake the actual verification and just respond with success.
-    base::PostTask(FROM_HERE, {web::WebThread::UI}, base::BindOnce(^{
-                     autofill::AutofillClient::PaymentsRpcResult result =
-                         autofill::AutofillClient::PaymentsRpcResult::kSuccess;
-                     [credit_card_verifier_
-                         didReceiveUnmaskVerificationResult:result];
-                   }));
+    web::GetUIThreadTaskRunner({})->PostTask(
+        FROM_HERE, base::BindOnce(^{
+          autofill::AutofillClient::PaymentsRpcResult result =
+              autofill::AutofillClient::PaymentsRpcResult::kSuccess;
+          [credit_card_verifier_ didReceiveUnmaskVerificationResult:result];
+        }));
   }
   void OnUnmaskPromptClosed() override {}
   bool ShouldOfferFidoAuth() const override { return false; }

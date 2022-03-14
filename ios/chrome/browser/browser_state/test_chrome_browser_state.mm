@@ -15,7 +15,6 @@
 #include "base/memory/ptr_util.h"
 #include "base/path_service.h"
 #include "base/run_loop.h"
-#include "base/task/post_task.h"
 #include "base/task/thread_pool.h"
 #include "base/test/test_file_util.h"
 #include "base/threading/thread_task_runner_handle.h"
@@ -45,8 +44,7 @@ std::unique_ptr<KeyedService> BuildWebDataService(web::BrowserState* context) {
   const base::FilePath& browser_state_path = context->GetStatePath();
   return std::make_unique<WebDataServiceWrapper>(
       browser_state_path, GetApplicationContext()->GetApplicationLocale(),
-      base::CreateSingleThreadTaskRunner({web::WebThread::UI}),
-      base::DoNothing());
+      web::GetUIThreadTaskRunner({}), base::DoNothing());
 }
 
 }  // namespace
@@ -239,8 +237,7 @@ void TestChromeBrowserState::ClearNetworkingHistorySince(
 
 net::URLRequestContextGetter* TestChromeBrowserState::CreateRequestContext(
     ProtocolHandlerMap* protocol_handlers) {
-  return new net::TestURLRequestContextGetter(
-      base::CreateSingleThreadTaskRunner({web::WebThread::IO}));
+  return new net::TestURLRequestContextGetter(web::GetIOThreadTaskRunner({}));
 }
 
 void TestChromeBrowserState::CreateWebDataService() {

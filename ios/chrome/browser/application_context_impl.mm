@@ -16,7 +16,6 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/path_service.h"
 #include "base/strings/sys_string_conversions.h"
-#include "base/task/post_task.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/thread_pool.h"
 #include "base/time/default_clock.h"
@@ -100,8 +99,8 @@ void RequestProxyResolvingSocketFactory(
     ApplicationContextImpl* app_context,
     mojo::PendingReceiver<network::mojom::ProxyResolvingSocketFactory>
         receiver) {
-  base::PostTask(FROM_HERE, {web::WebThread::UI},
-                 base::BindOnce(&RequestProxyResolvingSocketFactoryOnUIThread,
+  web::GetUIThreadTaskRunner({})->PostTask(
+      FROM_HERE, base::BindOnce(&RequestProxyResolvingSocketFactoryOnUIThread,
                                 app_context, std::move(receiver)));
 }
 
@@ -534,7 +533,6 @@ void ApplicationContextImpl::CreateGCMDriver() {
       GetSharedURLLoaderFactory(),
       GetApplicationContext()->GetNetworkConnectionTracker(), ::GetChannel(),
       IOSChromeGCMProfileServiceFactory::GetProductCategoryForSubtypes(),
-      base::CreateSingleThreadTaskRunner({web::WebThread::UI}),
-      base::CreateSingleThreadTaskRunner({web::WebThread::IO}),
+      web::GetUIThreadTaskRunner({}), web::GetIOThreadTaskRunner({}),
       blocking_task_runner);
 }

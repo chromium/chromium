@@ -9,7 +9,6 @@
 #include "base/bind.h"
 #include "base/notreached.h"
 #include "base/strings/sys_string_conversions.h"
-#include "base/task/post_task.h"
 #include "components/autofill/core/browser/personal_data_manager.h"
 #include "components/autofill/core/browser/personal_data_manager_observer.h"
 #include "components/password_manager/core/browser/password_manager_util.h"
@@ -227,9 +226,9 @@ class WebViewPasswordStoreObserver
   // |personalDataDidChange| to be invoked.
   if (_personalDataManager->IsDataLoaded()) {
     NSArray<CWVAutofillProfile*>* profiles = [self profiles];
-    base::PostTask(FROM_HERE, {web::WebThread::UI}, base::BindOnce(^{
-                     completionHandler(profiles);
-                   }));
+    web::GetUIThreadTaskRunner({})->PostTask(FROM_HERE, base::BindOnce(^{
+                                               completionHandler(profiles);
+                                             }));
   } else {
     [_fetchProfilesCompletionHandlers addObject:completionHandler];
   }
@@ -250,9 +249,9 @@ class WebViewPasswordStoreObserver
   // |personalDataDidChange| to be invoked.
   if (_personalDataManager->IsDataLoaded()) {
     NSArray<CWVCreditCard*>* creditCards = [self creditCards];
-    base::PostTask(FROM_HERE, {web::WebThread::UI}, base::BindOnce(^{
-                     completionHandler(creditCards);
-                   }));
+    web::GetUIThreadTaskRunner({})->PostTask(FROM_HERE, base::BindOnce(^{
+                                               completionHandler(creditCards);
+                                             }));
   } else {
     [_fetchCreditCardsCompletionHandlers addObject:completionHandler];
   }

@@ -12,7 +12,6 @@
 #include "base/callback_helpers.h"
 #include "base/check_op.h"
 #include "base/command_line.h"
-#include "base/task/post_task.h"
 #include "components/net_log/chrome_net_log.h"
 #include "components/prefs/pref_service.h"
 #include "ios/chrome/browser/browser_state/chrome_browser_state.h"
@@ -55,8 +54,8 @@ void OffTheRecordChromeBrowserStateIOData::Handle::DoomIncognitoCache() {
   // The cache for the incognito profile is in RAM.
   scoped_refptr<net::URLRequestContextGetter> getter =
       main_request_context_getter_;
-  base::PostTask(
-      FROM_HERE, {web::WebThread::IO}, base::BindOnce(^{
+  web::GetIOThreadTaskRunner({})->PostTask(
+      FROM_HERE, base::BindOnce(^{
         DCHECK_CURRENTLY_ON(web::WebThread::IO);
         net::HttpCache* cache = getter->GetURLRequestContext()
                                     ->http_transaction_factory()

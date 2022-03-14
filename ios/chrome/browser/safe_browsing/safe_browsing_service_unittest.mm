@@ -7,7 +7,6 @@
 #include "base/files/scoped_temp_dir.h"
 #include "base/path_service.h"
 #include "base/run_loop.h"
-#include "base/task/post_task.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
 #include "components/prefs/pref_service.h"
@@ -84,8 +83,8 @@ class TestUrlCheckerClient {
     result_pending_ = true;
     url_checker_ = safe_browsing_service_->CreateUrlChecker(
         network::mojom::RequestDestination::kDocument, &web_state_);
-    base::PostTask(FROM_HERE, {web::WebThread::IO},
-                   base::BindOnce(&TestUrlCheckerClient::CheckUrlOnIOThread,
+    web::GetIOThreadTaskRunner({})->PostTask(
+        FROM_HERE, base::BindOnce(&TestUrlCheckerClient::CheckUrlOnIOThread,
                                   base::Unretained(this), url));
   }
 
@@ -93,8 +92,8 @@ class TestUrlCheckerClient {
     result_pending_ = true;
     url_checker_ = safe_browsing_service_->CreateUrlChecker(
         network::mojom::RequestDestination::kIframe, &web_state_);
-    base::PostTask(FROM_HERE, {web::WebThread::IO},
-                   base::BindOnce(&TestUrlCheckerClient::CheckUrlOnIOThread,
+    web::GetIOThreadTaskRunner({})->PostTask(
+        FROM_HERE, base::BindOnce(&TestUrlCheckerClient::CheckUrlOnIOThread,
                                   base::Unretained(this), url));
   }
 
@@ -184,16 +183,16 @@ class SafeBrowsingServiceTest : public PlatformTest {
   }
 
   void MarkUrlAsMalware(const GURL& bad_url) {
-    base::PostTask(
-        FROM_HERE, {web::WebThread::IO},
+    web::GetIOThreadTaskRunner({})->PostTask(
+        FROM_HERE,
         base::BindOnce(&SafeBrowsingServiceTest::MarkUrlAsMalwareOnIOThread,
                        base::Unretained(this), bad_url));
   }
 
   // Adds the given |safe_url| to the allowlist used by real-time checks.
   void MarkUrlAsRealTimeSafe(const GURL& safe_url) {
-    base::PostTask(
-        FROM_HERE, {web::WebThread::IO},
+    web::GetIOThreadTaskRunner({})->PostTask(
+        FROM_HERE,
         base::BindOnce(&SafeBrowsingServiceTest::MarkUrlAsSafeOnIOThread,
                        base::Unretained(this), safe_url));
   }
