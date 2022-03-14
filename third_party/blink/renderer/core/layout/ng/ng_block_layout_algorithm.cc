@@ -718,7 +718,17 @@ inline const NGLayoutResult* NGBlockLayoutAlgorithm::Layout(
           // layout of the fragment. No more siblings should be processed.
           break;
         }
-        has_processed_first_child_ = true;
+
+        // Once we have added a child, there'll be a valid class A/B breakpoint
+        // [1] before consecutive siblings, which implies that we have container
+        // separation, which means that we may break before such siblings.
+        // Exclude children in parallel flows, since they shouldn't affect this
+        // flow.
+        //
+        // [1] https://www.w3.org/TR/css-break-3/#possible-breaks
+        has_processed_first_child_ =
+            !child_break_token || !child_break_token->IsBlockType() ||
+            !To<NGBlockBreakToken>(child_break_token)->IsAtBlockEnd();
       }
     }
   }
