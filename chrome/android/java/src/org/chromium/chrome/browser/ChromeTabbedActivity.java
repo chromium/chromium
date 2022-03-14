@@ -464,7 +464,7 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
         mAppLaunchDrawBlocker = new AppLaunchDrawBlocker(getLifecycleDispatcher(),
                 () -> findViewById(android.R.id.content),
                 this::getIntent, this::shouldIgnoreIntent, this::isTablet,
-                this::shouldShowOverviewPageOnStart);
+                this::shouldShowOverviewPageOnStart, this::isInstantStartEnabled);
         // clang-format on
     }
 
@@ -829,7 +829,7 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
             getToolbarManager().initializeWithNative(mLayoutManager, tabSwitcherClickHandler,
                     newTabClickHandler, bookmarkClickHandler, null, showStartSurfaceSupplier);
 
-            if (!TabUiFeatureUtilities.supportInstantStart(isTablet(), this)) {
+            if (!isInstantStartEnabled()) {
                 assert !(mOverviewModeController != null
                         && mOverviewModeController.overviewVisible());
             }
@@ -1145,6 +1145,8 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
             // be the first thing shown after startup.
             setTrackColdStartupMetrics(false);
             showOverview(StartSurfaceState.SHOWING_START);
+            mAppLaunchDrawBlocker.onOverviewPageAvailable(
+                    mOverviewShownOnStart && !isInstantStartEnabled());
             return;
         }
 
@@ -1160,6 +1162,8 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
                 && mOverviewModeController.overviewVisible()) {
             RecordUserAction.record("MobileStartup.UserEnteredTabSwitcher");
         }
+        mAppLaunchDrawBlocker.onOverviewPageAvailable(
+                mOverviewShownOnStart && !isInstantStartEnabled());
     }
 
     private boolean shouldRefreshAndShowOverview(boolean isOverviewVisible) {
@@ -1778,8 +1782,8 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
         // tablet), a view-only start page created on Java will be shown before native is
         // initialized. The {@link prepareToShowStartPagePreNative()} is only called in a cold
         // start.
-        if (ReturnToChromeExperimentsUtil.isStartSurfaceEnabled(this)
-                && TabUiFeatureUtilities.supportInstantStart(isTablet(), this) && !hadWarmStart()) {
+        if (ReturnToChromeExperimentsUtil.isStartSurfaceEnabled(this) && isInstantStartEnabled()
+                && !hadWarmStart()) {
             prepareToShowStartPagePreNative();
         }
     }
@@ -1789,7 +1793,7 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
      * an LayoutManagerChrome object, add overview mode observer and so on.
      */
     private void prepareToShowStartPagePreNative() {
-        assert TabUiFeatureUtilities.supportInstantStart(isTablet() && !hadWarmStart(), this);
+        assert isInstantStartEnabled() && !hadWarmStart();
         try (TraceEvent e =
                         TraceEvent.scoped("ChromeTabbedActivity.prepareToShowStartPagePreNative")) {
             setupCompositorContentPreNativeForPhone();
@@ -2485,7 +2489,7 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
             ReturnToChromeExperimentsUtil.handleLoadUrlFromStartSurfaceAsNewTab(null,
                     PageTransition.AUTO_TOPLEVEL, incognito, parentTab, getCurrentTabModel(),
                     emptyTabCloseCallback);
-        } else if (TabUiFeatureUtilities.supportInstantStart(isTablet(), this)
+        } else if (isInstantStartEnabled()
                 || (getTabModelSelector().isTabStateInitialized() && isLayoutManagerCreated())) {
             showOverview(StartSurfaceState.SHOWING_HOMEPAGE, launchOrigin);
         }

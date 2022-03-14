@@ -14,7 +14,8 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import static org.chromium.chrome.browser.ui.AppLaunchDrawBlocker.APP_LAUNCH_BLOCK_DRAW_ACCURACY_UMA;
-import static org.chromium.chrome.browser.ui.AppLaunchDrawBlocker.APP_LAUNCH_BLOCK_DRAW_DURATION_UMA;
+import static org.chromium.chrome.browser.ui.AppLaunchDrawBlocker.APP_LAUNCH_BLOCK_INITIAL_TAB_DRAW_DURATION_UMA;
+import static org.chromium.chrome.browser.ui.AppLaunchDrawBlocker.APP_LAUNCH_BLOCK_OVERVIEW_PAGE_DRAW_DURATION_UMA;
 
 import android.content.Intent;
 import android.net.Uri;
@@ -97,6 +98,8 @@ public class AppLaunchDrawBlockerUnitTest {
     private Supplier<Boolean> mIsTabletSupplier;
     @Mock
     private Supplier<Boolean> mShouldShowTabSwitcherOnStartSupplier;
+    @Mock
+    private Supplier<Boolean> mIsInstantStartEnabledSupplier;
     @Captor
     private ArgumentCaptor<OnPreDrawListener> mOnPreDrawListenerArgumentCaptor;
     @Captor
@@ -118,9 +121,10 @@ public class AppLaunchDrawBlockerUnitTest {
         when(mShouldIgnoreIntentSupplier.get()).thenReturn(false);
         when(mIsTabletSupplier.get()).thenReturn(false);
         when(mShouldShowTabSwitcherOnStartSupplier.get()).thenReturn(false);
+        when(mIsInstantStartEnabledSupplier.get()).thenReturn(false);
         mAppLaunchDrawBlocker = new AppLaunchDrawBlocker(mActivityLifecycleDispatcher,
                 mViewSupplier, mIntentSupplier, mShouldIgnoreIntentSupplier, mIsTabletSupplier,
-                mShouldShowTabSwitcherOnStartSupplier);
+                mShouldShowTabSwitcherOnStartSupplier, mIsInstantStartEnabledSupplier);
         validateConstructorAndCaptureObservers();
         ShadowRecordHistogram.reset();
         SystemClock.setCurrentTimeMillis(INITIAL_TIME);
@@ -280,11 +284,40 @@ public class AppLaunchDrawBlockerUnitTest {
     }
 
     @Test
-    public void testLastTabNtp_phone_searchEngineHasLogo_noIntent_tabSwitcherOnStart() {
+    public void
+    testLastTabNtp_phone_searchEngineHasLogo_noIntent_tabSwitcherOnStartWithoutInstantStart() {
         SharedPreferencesManager.getInstance().writeInt(
                 ChromePreferenceKeys.APP_LAUNCH_LAST_KNOWN_ACTIVE_TAB_STATE, ActiveTabState.NTP);
         setSearchEngineHasLogo(true);
         when(mShouldShowTabSwitcherOnStartSupplier.get()).thenReturn(true);
+
+        mInflationObserver.onPostInflationStartup();
+        verify(mViewTreeObserver).addOnPreDrawListener(mOnPreDrawListenerArgumentCaptor.capture());
+        assertFalse(
+                "Draw is not blocked.", mOnPreDrawListenerArgumentCaptor.getValue().onPreDraw());
+
+        SystemClock.setCurrentTimeMillis(INITIAL_TIME + 10);
+        mAppLaunchDrawBlocker.onOverviewPageAvailable(true);
+
+        assertTrue(
+                "Draw is still blocked.", mOnPreDrawListenerArgumentCaptor.getValue().onPreDraw());
+        verify(mViewTreeObserver)
+                .removeOnPreDrawListener(mOnPreDrawListenerArgumentCaptor.getValue());
+
+        assertAccuracyHistogram(true, true);
+        final String histogram = APP_LAUNCH_BLOCK_OVERVIEW_PAGE_DRAW_DURATION_UMA;
+        assertEquals(histogram + " isn't recorded correctly.", 1,
+                ShadowRecordHistogram.getHistogramValueCountForTesting(histogram, 10));
+    }
+
+    @Test
+    public void
+    testLastTabNtp_phone_searchEngineHasLogo_noIntent_tabSwitcherOnStartWithInstantStart() {
+        SharedPreferencesManager.getInstance().writeInt(
+                ChromePreferenceKeys.APP_LAUNCH_LAST_KNOWN_ACTIVE_TAB_STATE, ActiveTabState.NTP);
+        setSearchEngineHasLogo(true);
+        when(mShouldShowTabSwitcherOnStartSupplier.get()).thenReturn(true);
+        when(mIsInstantStartEnabledSupplier.get()).thenReturn(true);
 
         mInflationObserver.onPostInflationStartup();
         verify(mViewTreeObserver, never())
@@ -417,7 +450,7 @@ public class AppLaunchDrawBlockerUnitTest {
      * @param duration The duration the view was blocked, if it was.
      */
     private void assertDurationHistogram(boolean shouldBeBlocked, int duration) {
-        final String histogram = APP_LAUNCH_BLOCK_DRAW_DURATION_UMA;
+        final String histogram = APP_LAUNCH_BLOCK_INITIAL_TAB_DRAW_DURATION_UMA;
         if (shouldBeBlocked) {
             assertEquals(histogram + " isn't recorded correctly.", 1,
                     ShadowRecordHistogram.getHistogramValueCountForTesting(histogram, duration));

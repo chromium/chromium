@@ -59,8 +59,11 @@ public class AppLaunchDrawBlocker {
     static final String APP_LAUNCH_BLOCK_DRAW_ACCURACY_UMA =
             "Android.AppLaunch.BlockDrawForInitialTabAccuracy";
     @VisibleForTesting
-    static final String APP_LAUNCH_BLOCK_DRAW_DURATION_UMA =
-            "Android.AppLaunch.DurationDrawWasBlocked";
+    static final String APP_LAUNCH_BLOCK_INITIAL_TAB_DRAW_DURATION_UMA =
+            "Android.AppLaunch.DurationDrawWasBlocked.OnInitialTab";
+    @VisibleForTesting
+    static final String APP_LAUNCH_BLOCK_OVERVIEW_PAGE_DRAW_DURATION_UMA =
+            "Android.AppLaunch.DurationDrawWasBlocked.OnOverviewPage";
 
     private final ActivityLifecycleDispatcher mActivityLifecycleDispatcher;
     private final InflationObserver mInflationObserver;
@@ -69,13 +72,15 @@ public class AppLaunchDrawBlocker {
     private final Supplier<Intent> mIntentSupplier;
     private final Supplier<Boolean> mShouldIgnoreIntentSupplier;
     private final Supplier<Boolean> mIsTabletSupplier;
-    private final Supplier<Boolean> mShouldShowTabSwitcherOnStartSupplier;
+    private final Supplier<Boolean> mShouldShowOverviewPageOnStartSupplier;
+    private final Supplier<Boolean> mIsInstantStartEnabledSupplier;
 
     /**
      * Whether to return false from #onPreDraw of the content view to prevent drawing the browser UI
      * before the tab is ready.
      */
     private boolean mBlockDrawForInitialTab;
+    private boolean mBlockDrawForOverviewPage;
     private long mTimeStartedBlockingDrawForInitialTab;
 
     /**
@@ -94,7 +99,8 @@ public class AppLaunchDrawBlocker {
             @NonNull Supplier<View> viewSupplier, @NonNull Supplier<Intent> intentSupplier,
             @NonNull Supplier<Boolean> shouldIgnoreIntentSupplier,
             @NonNull Supplier<Boolean> isTabletSupplier,
-            @NonNull Supplier<Boolean> shouldShowTabSwitcherOnStartSupplier) {
+            @NonNull Supplier<Boolean> shouldShowTabSwitcherOnStartSupplier,
+            @NonNull Supplier<Boolean> isInstantStartEnabledSupplier) {
         mActivityLifecycleDispatcher = activityLifecycleDispatcher;
         mViewSupplier = viewSupplier;
         mInflationObserver = new InflationObserver() {
@@ -103,7 +109,7 @@ public class AppLaunchDrawBlocker {
 
             @Override
             public void onPostInflationStartup() {
-                maybeBlockDrawForInitialTab();
+                maybeBlockDraw();
             }
         };
         mActivityLifecycleDispatcher.register(mInflationObserver);
@@ -120,7 +126,8 @@ public class AppLaunchDrawBlocker {
         mIntentSupplier = intentSupplier;
         mShouldIgnoreIntentSupplier = shouldIgnoreIntentSupplier;
         mIsTabletSupplier = isTabletSupplier;
-        mShouldShowTabSwitcherOnStartSupplier = shouldShowTabSwitcherOnStartSupplier;
+        mShouldShowOverviewPageOnStartSupplier = shouldShowTabSwitcherOnStartSupplier;
+        mIsInstantStartEnabledSupplier = isInstantStartEnabledSupplier;
     }
 
     /** Unregister lifecycle observers. */
@@ -131,8 +138,22 @@ public class AppLaunchDrawBlocker {
 
     /** Should be called when the initial tab is available. */
     public void onActiveTabAvailable(boolean isTabNtp) {
-        recordBlockDrawForInitialTabHistograms(isTabNtp);
+        // If the draw is blocked because of overview, the histograms would be recorded in
+        // #onOverviewPageAvailable.
+        if (!mBlockDrawForOverviewPage) {
+            recordBlockDrawForInitialTabHistograms(
+                    isTabNtp, /*isOverviewShownWithoutInstantStart=*/false);
+        }
         mBlockDrawForInitialTab = false;
+    }
+
+    /** Should be called when the overview page is available. */
+    public void onOverviewPageAvailable(boolean isOverviewShownWithoutInstantStart) {
+        if (mBlockDrawForOverviewPage) {
+            recordBlockDrawForInitialTabHistograms(
+                    /*isTabRegularNtp=*/false, isOverviewShownWithoutInstantStart);
+        }
+        mBlockDrawForOverviewPage = false;
     }
 
     private void writeSearchEngineHadLogoPref() {
@@ -143,8 +164,16 @@ public class AppLaunchDrawBlocker {
     }
 
     /** Only block the draw if we believe the initial tab will be the NTP. */
-    private void maybeBlockDrawForInitialTab() {
-        if (mShouldShowTabSwitcherOnStartSupplier.get()) return;
+    private void maybeBlockDraw() {
+        if (mShouldShowOverviewPageOnStartSupplier.get()) {
+            if (!mIsInstantStartEnabledSupplier.get()) {
+                mTimeStartedBlockingDrawForInitialTab = SystemClock.elapsedRealtime();
+                mBlockDrawForOverviewPage = true;
+                ViewDrawBlocker.blockViewDrawUntilReady(
+                        mViewSupplier.get(), () -> !mBlockDrawForOverviewPage);
+            }
+            return;
+        }
 
         @ActiveTabState
         int tabState = TabPersistentStore.readLastKnownActiveTabStatePref();
@@ -216,28 +245,38 @@ public class AppLaunchDrawBlocker {
      * whether the prediction for blocking the view draw was accurate and the duration the draw was
      * blocked for.
      * @param isTabRegularNtp Whether the tab is regular NTP, not incognito.
+     * @param isOverviewShownWithoutInstantStart Whether it's on overview page without Instant Start
+     *         enabled.
      */
-    private void recordBlockDrawForInitialTabHistograms(boolean isTabRegularNtp) {
-        boolean searchEngineHasLogo =
-                TemplateUrlServiceFactory.get().doesDefaultSearchEngineHaveLogo();
-        boolean singleUrlBarMode =
-                NewTabPage.isInSingleUrlBarMode(mIsTabletSupplier.get(), searchEngineHasLogo);
+    private void recordBlockDrawForInitialTabHistograms(
+            boolean isTabRegularNtp, boolean isOverviewShownWithoutInstantStart) {
         boolean focusedOmnibox =
                 IntentHandler.shouldIntentShowNewTabOmniboxFocused(mIntentSupplier.get());
-        boolean singleUrlBarNtp = isTabRegularNtp && singleUrlBarMode;
         long durationDrawBlocked =
                 SystemClock.elapsedRealtime() - mTimeStartedBlockingDrawForInitialTab;
 
+        boolean singleUrlBarNtp = false;
+        if (!isOverviewShownWithoutInstantStart) {
+            boolean searchEngineHasLogo =
+                    TemplateUrlServiceFactory.get().doesDefaultSearchEngineHaveLogo();
+            boolean singleUrlBarMode =
+                    NewTabPage.isInSingleUrlBarMode(mIsTabletSupplier.get(), searchEngineHasLogo);
+            singleUrlBarNtp = isTabRegularNtp && singleUrlBarMode;
+        }
+
         @BlockDrawForInitialTabAccuracy
         int enumEntry;
-        boolean shouldBlockDraw = singleUrlBarNtp && !focusedOmnibox;
-        if (mBlockDrawForInitialTab) {
+        boolean shouldBlockDraw =
+                (singleUrlBarNtp && !focusedOmnibox) || isOverviewShownWithoutInstantStart;
+        if (mBlockDrawForInitialTab || mBlockDrawForOverviewPage) {
             enumEntry = shouldBlockDraw
                     ? BlockDrawForInitialTabAccuracy.BLOCKED_CORRECTLY
                     : BlockDrawForInitialTabAccuracy.BLOCKED_BUT_SHOULD_NOT_HAVE;
 
-            RecordHistogram.recordTimesHistogram(
-                    APP_LAUNCH_BLOCK_DRAW_DURATION_UMA, durationDrawBlocked);
+            RecordHistogram.recordTimesHistogram(mBlockDrawForInitialTab
+                            ? APP_LAUNCH_BLOCK_INITIAL_TAB_DRAW_DURATION_UMA
+                            : APP_LAUNCH_BLOCK_OVERVIEW_PAGE_DRAW_DURATION_UMA,
+                    durationDrawBlocked);
         } else {
             enumEntry = shouldBlockDraw
                     ? BlockDrawForInitialTabAccuracy.DID_NOT_BLOCK_BUT_SHOULD_HAVE

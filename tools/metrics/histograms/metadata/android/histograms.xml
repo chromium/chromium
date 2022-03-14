@@ -186,6 +186,10 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Android.AppLaunch.DurationDrawWasBlocked" units="ms"
     expires_after="2022-08-21">
+  <obsolete>
+    Removed 03/2022. Superseded by
+    Android.AppLaunch.DurationDrawWasBlocked.OnInitialTab
+  </obsolete>
   <owner>sinansahin@google.com</owner>
   <owner>twellington@chromium.org</owner>
   <owner>skym@chromium.org</owner>
@@ -194,6 +198,34 @@ chromium-metrics-reviews@google.com.
     Records how long the initial tab's draw was blocked, if it was. Recorded
     when the active tab is restored or an initial tab is created in
     ChromeTabbedActivity.
+  </summary>
+</histogram>
+
+<histogram name="Android.AppLaunch.DurationDrawWasBlocked.OnInitialTab"
+    units="ms" expires_after="2022-08-21">
+  <owner>sinansahin@google.com</owner>
+  <owner>twellington@chromium.org</owner>
+  <owner>skym@chromium.org</owner>
+  <owner>clank-app-team@google.com</owner>
+  <summary>
+    Records how long the initial tab's draw was blocked, if it was. Recorded no
+    more than once per cold start. Recorded when the active tab is restored or
+    an initial tab is created in ChromeTabbedActivity. Recorded always except
+    when the overview page is shown during startup.
+  </summary>
+</histogram>
+
+<histogram name="Android.AppLaunch.DurationDrawWasBlocked.OnOverviewPage"
+    units="ms" expires_after="2022-08-21">
+  <owner>sinansahin@google.com</owner>
+  <owner>twellington@chromium.org</owner>
+  <owner>skym@chromium.org</owner>
+  <owner>clank-app-team@google.com</owner>
+  <summary>
+    Records how long the overview page's draw was blocked, if it was. Recorded
+    no more than once per cold start. Recorded when the overview page state is
+    initialized in ChromeTabbedActivity and only when overview page was shown
+    during startup.
   </summary>
 </histogram>
 
