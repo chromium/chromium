@@ -59,7 +59,7 @@ function webDriveOfficePowerPointDescriptor() {
  *
  * @param {string} appId Window ID.
  * @param {number} expectedCount
- * @return {!chrome.fileManagerPrivate.FileTaskDescriptor}
+ * @return {!Promise<!chrome.fileManagerPrivate.FileTaskDescriptor>}
  */
 async function getExecutedTask(appId, expectedCount = 1) {
   const caller = getCaller();

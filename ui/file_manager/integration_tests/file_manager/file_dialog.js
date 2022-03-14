@@ -265,7 +265,9 @@ async function checkFeedbackDisplayHidden(type) {
  * @return {!string}
  */
 function getTestFileName() {
-  return BASIC_LOCAL_ENTRY_SET[0].targetPath;
+  // Type TestEntryInfo's targetPath can be undefined, but the first item
+  // from BASIC_LOCAL_ENTRY_SET has value, we need to do type casting here.
+  return /** @type {!string} */ (BASIC_LOCAL_ENTRY_SET[0].targetPath);
 }
 
 /**
