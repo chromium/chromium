@@ -5,7 +5,7 @@
 <script src="/common/utils.js"></script>
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
-<script src="resources/utils.js"></script>
+<script src="/speculation-rules/prerender/resources/utils.js"></script>
 <script src="resources/referrer-test.js"></script>
 <body>
 <script>
@@ -13,7 +13,7 @@
 // Tests that the referrer on the prerendering navigation request is not sent
 // when the triggering page's referrer policy is set to no-referrer.
 promise_test(async t => {
-  await referrer_test('(none)');
+  await referrer_test('(none)', token());
 }, 'no referrer');
 
 </script>

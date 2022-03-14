@@ -4,6 +4,7 @@
 
 def main(request, response):
     referrer = request.headers.get(b"referer")
+    uid = request.GET.first(b"uid")
 
     if referrer is None:
         referrer = b"(none)"
@@ -13,13 +14,14 @@ def main(request, response):
 <head>
 <title>Echo referrer</title>
 </head>
+<script src="/speculation-rules/prerender/resources/utils.js"></script>
 <body>
 <script>
-const bc = new BroadcastChannel('prerender-channel');
+const bc = new PrerenderChannel('prerender-channel', '%s');
 bc.postMessage({referrer: '%s'});
 </script>
 </body>
 </html>
 '''
     return (200, [("Content-Type", b"text/html")],
-            html % referrer.decode("utf-8"))
+            html % (uid.decode("utf-8"), referrer.decode("utf-8")))

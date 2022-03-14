@@ -1,5 +1,5 @@
-async function referrer_test(expected) {
-  const bc = new BroadcastChannel('prerender-channel');
+async function referrer_test(expected, uid) {
+  const bc = new PrerenderChannel('prerender-channel', uid);
 
   const gotMessage = new Promise(resolve => {
     bc.addEventListener('message', e => {
@@ -8,7 +8,7 @@ async function referrer_test(expected) {
   });
 
   // Start prerendering a page that will echo its referrer.
-  startPrerendering(`resources/echo-referrer.py`);
+  startPrerendering(`resources/echo-referrer.py?uid=${uid}`);
 
   const result = await gotMessage;
   assert_equals(result.referrer, expected, 'referrer');

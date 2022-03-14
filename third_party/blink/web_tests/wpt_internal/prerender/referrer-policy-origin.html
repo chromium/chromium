@@ -5,7 +5,7 @@
 <script src="/common/utils.js"></script>
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
-<script src="resources/utils.js"></script>
+<script src="/speculation-rules/prerender/resources/utils.js"></script>
 <script src="resources/referrer-test.js"></script>
 <body>
 <script>
@@ -14,7 +14,7 @@
 // triggering page's origin when the referrer policy is set to origin.
 promise_test(async t => {
   const expected = new URL('', window.origin).href;
-  await referrer_test(expected);
+  await referrer_test(expected, token());
 }, 'origin referrer');
 
 </script>
