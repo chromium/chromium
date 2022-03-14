@@ -392,7 +392,8 @@ class VIZ_SERVICE_EXPORT FrameSinkVideoCapturerImpl final
   bool video_capture_started_ = false;
   // Our consumer-preferred VideoBufferHandle type. Valid only when
   // |video_capture_started_| is true.
-  mojom::BufferFormatPreference buffer_format_preference_;
+  mojom::BufferFormatPreference buffer_format_preference_ =
+      mojom::BufferFormatPreference::kDefault;
 
   // These are sequence counters used to ensure that the frames are being
   // delivered in the same order they are captured.

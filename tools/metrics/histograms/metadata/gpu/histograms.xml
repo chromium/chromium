@@ -1786,24 +1786,71 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Viz.FrameSinkVideoCapturer.I420.CaptureDuration" units="ms"
-    expires_after="2021-03-07">
-  <owner>samans@chromium.org</owner>
-  <owner>sadrul@chromium.org</owner>
-  <owner>viz-team-wat@google.com</owner>
+    expires_after="2023-03-01">
+  <owner>bialpio@chromium.org</owner>
+  <owner>media-capture-dev@chromium.org</owner>
   <summary>
     The time it took from when FrameSinkVideoCapturerImpl sent a request for an
     I420 readback until the result comes back and ReadI420Planes successfully
     finishes.
+
+    Warning: this histogram was expired from 2021-03-07 to 2022-03-10; data may
+    be missing.
   </summary>
 </histogram>
 
 <histogram name="Viz.FrameSinkVideoCapturer.I420.CaptureSucceeded"
-    enum="BooleanSuccess" expires_after="2020-12-31">
-  <owner>samans@chromium.org</owner>
-  <owner>sadrul@chromium.org</owner>
-  <owner>viz-team-wat@google.com</owner>
+    enum="BooleanSuccess" expires_after="2023-03-01">
+  <owner>bialpio@chromium.org</owner>
+  <owner>media-capture-dev@chromium.org</owner>
   <summary>
     Whether an I420 readback initiated by FrameSinkVideoCapturerImpl succeeded.
+
+    Warning: this histogram was expired from 2020-12-31 to 2022-03-10; data may
+    be missing.
+  </summary>
+</histogram>
+
+<histogram name="Viz.FrameSinkVideoCapturer.I420.TotalDuration" units="ms"
+    expires_after="2023-03-01">
+  <owner>bialpio@chromium.org</owner>
+  <owner>media-capture-dev@chromium.org</owner>
+  <summary>
+    The time it took from when FrameSinkVideoCapturerImpl decided that a new
+    I420 frame needs to be produced to the moment when it was ready to deliver
+    it. This encompasses the `Viz.FrameSinkVideoCapturer.I420.CaptureDuration`
+    time, but also includes time taken to render video capture overlays.
+  </summary>
+</histogram>
+
+<histogram name="Viz.FrameSinkVideoCapturer.NV12.CaptureDuration" units="ms"
+    expires_after="2023-03-01">
+  <owner>bialpio@chromium.org</owner>
+  <owner>media-capture-dev@chromium.org</owner>
+  <summary>
+    The time it took from when FrameSinkVideoCapturerImpl sent a request for an
+    NV12 copy until the result comes back.
+  </summary>
+</histogram>
+
+<histogram name="Viz.FrameSinkVideoCapturer.NV12.CaptureSucceeded"
+    enum="BooleanSuccess" expires_after="2023-03-01">
+  <owner>bialpio@chromium.org</owner>
+  <owner>media-capture-dev@chromium.org</owner>
+  <summary>
+    Whether an NV12 capture initiated by FrameSinkVideoCapturerImpl succeeded.
+  </summary>
+</histogram>
+
+<histogram name="Viz.FrameSinkVideoCapturer.NV12.TotalDuration" units="ms"
+    expires_after="2023-03-01">
+  <owner>bialpio@chromium.org</owner>
+  <owner>media-capture-dev@chromium.org</owner>
+  <summary>
+    The time it took from when FrameSinkVideoCapturerImpl decided that a new
+    NV12 frame needs to be produced to the moment when it was ready to deliver
+    it. This encompasses the `Viz.FrameSinkVideoCapturer.NV12.CaptureDuration`
+    time.
   </summary>
 </histogram>
 
