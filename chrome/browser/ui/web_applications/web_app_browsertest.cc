@@ -1711,11 +1711,6 @@ IN_PROC_BROWSER_TEST_F(WebAppBrowserTest, PopupLocationBar) {
 
   EXPECT_TRUE(
       popup_browser->CanSupportWindowFeature(Browser::FEATURE_LOCATIONBAR));
-
-#if BUILDFLAG(IS_MAC)
-  // Let the message loop run so that `fake_fullscreen` finishes its transition.
-  base::RunLoop().RunUntilIdle();
-#endif
 }
 
 // Make sure chrome://web-app-internals page loads fine.

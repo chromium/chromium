@@ -175,11 +175,6 @@ IN_PROC_BROWSER_TEST_F(ZoomBubbleBrowserTest,
     chrome::ToggleFullscreenMode(browser());
     waiter.Wait();
   }
-
-#if BUILDFLAG(IS_MAC)
-  // Let the message loop run so that `fake_fullscreen` finishes its transition.
-  base::RunLoop().RunUntilIdle();
-#endif
 }
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
