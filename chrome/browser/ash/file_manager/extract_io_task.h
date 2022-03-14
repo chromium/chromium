@@ -50,6 +50,9 @@ class ExtractIOTask : public IOTask {
   ProgressCallback progress_callback_;
   CompleteCallback complete_callback_;
 
+  // Counter of the number of archives needing extraction.
+  size_t extractCount_;
+
   base::WeakPtrFactory<ExtractIOTask> weak_ptr_factory_{this};
 };
 
