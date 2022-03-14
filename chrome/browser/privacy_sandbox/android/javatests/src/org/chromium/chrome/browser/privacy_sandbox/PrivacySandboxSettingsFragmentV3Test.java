@@ -147,7 +147,7 @@ public final class PrivacySandboxSettingsFragmentV3Test {
         mFakePrivacySandboxBridge.setCurrentTopTopics("Generated sample data", "More made up data");
         openPrivacySandboxSettings();
         onView(withText(R.string.privacy_sandbox_ad_personalization_title)).perform(click());
-        mRenderTestRule.render(getRootView(R.string.privacy_sandbox_topic_interests_category),
+        mRenderTestRule.render(getRootView(R.string.privacy_sandbox_topic_interests_subtitle),
                 "privacy_sandbox_ad_personalization_view");
     }
 
@@ -158,7 +158,7 @@ public final class PrivacySandboxSettingsFragmentV3Test {
         openPrivacySandboxSettings();
         onView(withText(R.string.privacy_sandbox_ad_personalization_title)).perform(click());
         onView(withText(R.string.privacy_sandbox_remove_interest_title)).perform(click());
-        mRenderTestRule.render(getRootView(R.string.privacy_sandbox_topic_interests_category),
+        mRenderTestRule.render(getRootView(R.string.privacy_sandbox_topic_interests_subtitle),
                 "privacy_sandbox_removed_interests_view");
     }
 

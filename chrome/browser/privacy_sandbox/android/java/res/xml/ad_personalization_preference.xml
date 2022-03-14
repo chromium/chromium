@@ -13,7 +13,7 @@
 
     <PreferenceCategory
         android:key="topic_interests"
-        android:title="@string/privacy_sandbox_topic_interests_category" />
+        android:title="@string/privacy_sandbox_topic_interests_subtitle" />
 
     <Preference
         android:key="empty_topics"

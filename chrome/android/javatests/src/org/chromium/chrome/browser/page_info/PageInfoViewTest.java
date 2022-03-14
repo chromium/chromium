@@ -799,11 +799,11 @@ public class PageInfoViewTest {
         onViewWaiting(allOf(withText(R.string.page_info_ad_manage_interests), isDisplayed()))
                 .perform(click());
         // Check that settings are displayed.
-        onView(withText(R.string.privacy_sandbox_topic_interests_category))
+        onView(withText(R.string.privacy_sandbox_topic_interests_subtitle))
                 .check(matches(isDisplayed()));
         // Leave settings view.
         onView(withContentDescription("Navigate up")).perform(click());
-        onView(withText(R.string.privacy_sandbox_topic_interests_category)).check(doesNotExist());
+        onView(withText(R.string.privacy_sandbox_topic_interests_subtitle)).check(doesNotExist());
     }
 
     // TODO(1071762): Add tests for preview pages, offline pages, offline state and other states.

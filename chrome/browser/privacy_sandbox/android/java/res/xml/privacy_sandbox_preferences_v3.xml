@@ -16,7 +16,6 @@
     <org.chromium.components.browser_ui.settings.ChromeBasePreference
         android:fragment="org.chromium.chrome.browser.privacy_sandbox.LearnMoreFragment"
         android:key="privacy_sandbox_learn_more"
-        android:summary="@string/privacy_sandbox_learn_more_link"
         app:userAction="Settings.PrivacySandbox.AdPersonalization.LearnMoreClicked"/>
 
     <org.chromium.components.browser_ui.settings.ChromeBasePreference

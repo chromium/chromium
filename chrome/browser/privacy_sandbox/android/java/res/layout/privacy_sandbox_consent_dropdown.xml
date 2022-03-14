@@ -19,24 +19,24 @@
         style="@style/TextAppearance.TextMedium.Primary" />
 
     <TextView
+        android:id="@+id/privacy_sandbox_consent_dropdown_one"
         android:layout_marginBottom="@dimen/promo_between_text_margin"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="@string/privacy_sandbox_consent_dropdown_one"
         style="@style/TextAppearance.TextMedium.Secondary" />
 
     <TextView
+        android:id="@+id/privacy_sandbox_consent_dropdown_two"
         android:layout_marginBottom="@dimen/promo_between_text_margin"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="@string/privacy_sandbox_consent_dropdown_two"
         style="@style/TextAppearance.TextMedium.Secondary" />
 
     <TextView
+        android:id="@+id/privacy_sandbox_consent_dropdown_three"
         android:layout_marginBottom="@dimen/list_item_default_margin"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="@string/privacy_sandbox_consent_dropdown_three"
         style="@style/TextAppearance.TextMedium.Secondary" />
 
 </LinearLayout>

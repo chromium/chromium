@@ -7,14 +7,21 @@ package org.chromium.chrome.browser.privacy_sandbox;
 import android.app.Dialog;
 import android.content.Context;
 import android.graphics.drawable.Drawable;
+import android.text.style.ForegroundColorSpan;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.LinearLayout;
+import android.widget.TextView;
 
+import androidx.annotation.IdRes;
+import androidx.annotation.StringRes;
 import androidx.appcompat.content.res.AppCompatResources;
 import androidx.core.graphics.drawable.DrawableCompat;
 
+import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.ui.drawable.StateListDrawableBuilder;
+import org.chromium.ui.text.SpanApplier;
 import org.chromium.ui.widget.ButtonCompat;
 import org.chromium.ui.widget.CheckableImageView;
 
@@ -77,10 +84,26 @@ public class PrivacySandboxDialogConsent extends Dialog implements View.OnClickL
                 dropdownContainer.setVisibility(View.VISIBLE);
                 mLayoutInflater.inflate(
                         R.layout.privacy_sandbox_consent_dropdown, dropdownContainer);
+                setDropdownDescription(dropdownContainer, R.id.privacy_sandbox_consent_dropdown_one,
+                        R.string.privacy_sandbox_learn_more_description_1);
+                setDropdownDescription(dropdownContainer, R.id.privacy_sandbox_consent_dropdown_two,
+                        R.string.privacy_sandbox_learn_more_description_2);
+                setDropdownDescription(dropdownContainer,
+                        R.id.privacy_sandbox_consent_dropdown_three,
+                        R.string.privacy_sandbox_learn_more_description_3);
             }
             mDropdownExpanded = !mDropdownExpanded;
             mExpandArrowView.setChecked(mDropdownExpanded);
         }
+    }
+
+    private void setDropdownDescription(
+            ViewGroup container, @IdRes int viewId, @StringRes int stringRes) {
+        TextView view = container.findViewById(viewId);
+        view.setText(SpanApplier.applySpans(getContext().getResources().getString(stringRes),
+                new SpanApplier.SpanInfo("<b>", "</b>",
+                        new ForegroundColorSpan(
+                                SemanticColorUtils.getDefaultTextColor(getContext())))));
     }
 
     private static Drawable createExpandDrawable(Context context) {
