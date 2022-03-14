@@ -215,7 +215,7 @@ export class FileOperationManagerImpl {
               }
             },
             error => {
-              console.error(error.stack || error);
+              console.warn(error.stack || error);
               resolve(null);
             });
       });
@@ -261,7 +261,7 @@ export class FileOperationManagerImpl {
           this.queueCopy_(targetEntry, entries, isMove, opt_taskId);
         })
         .catch(error => {
-          console.error(error.stack || error);
+          console.warn(error.stack || error);
         });
   }
 

@@ -139,7 +139,7 @@ volumeManagerUtil.createVolumeInfo = async volumeMetadata => {
       .catch(
           /** @param {*} error */
           error => {
-            console.error(`Cannot mount file system '${
+            console.warn(`Cannot mount file system '${
                 volumeMetadata.volumeId}': ${error.stack || error}`);
 
             // TODO(crbug/847729): Report a mount error via UMA.

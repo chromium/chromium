@@ -134,7 +134,7 @@ launcher.launchFileManager = async (
           return Promise.resolve(key);
         }
       } catch (e) {
-        console.error(e);
+        console.warn(e);
       }
     }
 

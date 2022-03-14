@@ -196,7 +196,7 @@ export class AppWindowWrapper {
   async launch(appState, reopen) {
     // Check if the window is opened or not.
     if (this.openingOrOpened_) {
-      console.error('The window is already opened.');
+      console.warn('The window is already opened.');
       return Promise.resolve();
     }
     this.openingOrOpened_ = true;
@@ -401,7 +401,7 @@ export class SingletonAppWindowWrapper extends AppWindowWrapper {
         // creating window. Therefore contentWindow might not have the reload()
         // function ready yet. This happens when launching the same app twice
         // quickly. See crbug.com/789226.
-        console.error('Window reload requested before loaded. Skiping.');
+        console.warn('Window reload requested before loaded. Skiping.');
       } else {
         this.window_.contentWindow.reload();
       }

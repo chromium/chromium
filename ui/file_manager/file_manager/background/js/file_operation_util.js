@@ -783,7 +783,7 @@ fileOperationUtil.CopyTask = class extends fileOperationUtil.Task {
               callback();
             },
             error => {
-              console.error('Failed to resolve for copy: %s', error.name);
+              console.warn('Failed to resolve for copy: %s', error.name);
               callback();
             });
       }.bind(this, i));

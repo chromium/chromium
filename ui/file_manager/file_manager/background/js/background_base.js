@@ -87,7 +87,7 @@ export class BackgroundBaseImpl {
       urls = util.entriesToURLs(externalEntries);
     } catch (error) {
       // Just log the error and default no file/URL so we spawn the app window.
-      console.error(error);
+      console.warn(error);
       urls = [];
     }
 
@@ -141,7 +141,7 @@ async function retryResolveIsolatedEntries(isolatedEntries) {
     count += 1;
   }
 
-  console.error(
+  console.warn(
       `Failed to resolve: Requested ${isolatedEntries.length},` +
       ` resolved: ${externalEntries.length}.`);
   return [];

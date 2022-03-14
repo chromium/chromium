@@ -607,7 +607,7 @@ mediaScanner.DefaultDirectoryWatcher = class {
     for (const url in this.watchedDirectories_) {
       window.webkitResolveLocalFileSystemURL(url, entry => {
         if (chrome.runtime.lastError) {
-          console.error(chrome.runtime.lastError.name);
+          console.warn(chrome.runtime.lastError.name);
           return;
         }
         chrome.fileManagerPrivate.removeFileWatch(entry, () => {});

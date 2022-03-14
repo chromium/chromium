@@ -586,7 +586,7 @@ importerHistory.FileBasedRecordStorage = class {
                         * @return {string}
                         */
                        () => {
-                         console.error(
+                         console.warn(
                              'Unable to read from one of history files.');
                          return '';
                        })
@@ -625,7 +625,7 @@ importerHistory.FileBasedRecordStorage = class {
 
              reader.onloadend = () => {
                if (reader.error) {
-                 console.error(reader.error);
+                 console.warn(reader.error);
                  reject();
                } else {
                  resolve(reader.result);
@@ -633,7 +633,7 @@ importerHistory.FileBasedRecordStorage = class {
              };
 
              reader.onerror = error => {
-               console.error(error);
+               console.warn(error);
                reject(error);
              };
 

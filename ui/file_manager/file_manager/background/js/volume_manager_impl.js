@@ -161,7 +161,7 @@ export class VolumeManagerImpl extends EventTarget {
       let volumeMetadataList = await new Promise(
           resolve => chrome.fileManagerPrivate.getVolumeMetadataList(resolve));
       if (!volumeMetadataList) {
-        console.error('Cannot get volumes');
+        console.warn('Cannot get volumes');
         finishInitialization();
         return;
       }
@@ -184,8 +184,7 @@ export class VolumeManagerImpl extends EventTarget {
           await this.addVolumeInfo_(volumeInfo);
           console.debug(`Initialized volume #${idx} ${volumeId}'`);
         } catch (error) {
-          console.warn(`Error initiliazing #${idx} ${volumeId}`);
-          console.error(error);
+          console.warn(`Error initiliazing #${idx} ${volumeId}: ${error}`);
         } finally {
           counter += 1;
           // Finish after all volumes have been processed, or at least Downloads
@@ -269,7 +268,7 @@ export class VolumeManagerImpl extends EventTarget {
           }
 
           default:
-            console.error(`Cannot mount '${sourcePath}': ${status}`);
+            console.warn(`Cannot mount '${sourcePath}': ${status}`);
             this.finishRequest_(requestKey, status);
             return;
         }
@@ -299,7 +298,7 @@ export class VolumeManagerImpl extends EventTarget {
           }
 
           default:
-            console.error(`Cannot unmount '${volumeId}': ${status}`);
+            console.warn(`Cannot unmount '${volumeId}': ${status}`);
             this.finishRequest_(requestKey, status);
             return;
         }
@@ -354,7 +353,7 @@ export class VolumeManagerImpl extends EventTarget {
   /** @override */
   getVolumeInfo(entry) {
     if (!entry) {
-      console.error(`Invalid entry passed to getVolumeInfo: ${entry}`);
+      console.warn(`Invalid entry passed to getVolumeInfo: ${entry}`);
       return null;
     }
 
@@ -391,7 +390,7 @@ export class VolumeManagerImpl extends EventTarget {
   /** @override */
   getLocationInfo(entry) {
     if (!entry) {
-      console.error(`Invalid entry passed to getLocationInfo: ${entry}`);
+      console.warn(`Invalid entry passed to getLocationInfo: ${entry}`);
       return null;
     }
 
@@ -536,7 +535,7 @@ export class VolumeManagerImpl extends EventTarget {
 
   /** @override */
   getDefaultDisplayRoot(callback) {
-    console.error('Unexpected call to VolumeManagerImpl.getDefaultDisplayRoot');
+    console.warn('Unexpected call to VolumeManagerImpl.getDefaultDisplayRoot');
     callback(null);
   }
 
