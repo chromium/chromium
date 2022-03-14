@@ -110,7 +110,13 @@ class WPTTestAdapter(wpt_common.BaseWptScriptAdapter):
             "--processes=" + self.options.child_processes,
             "--mojojs-path=" + MOJO_JS_PATH.format(self.options.target),
             "--tests=" + wpt_common.TESTS_ROOT_DIR,
+            "--repeat=" + str(self.options.repeat),
         ])
+
+        if self.options.test_filter:
+          for pattern in self.options.test_filter.split(":"):
+            rest_args.extend(["--include", pattern])
+
         return rest_args
 
     def add_extra_arguments(self, parser):
@@ -120,6 +126,16 @@ class WPTTestAdapter(wpt_common.BaseWptScriptAdapter):
         child_processes_help = "Number of drivers to run in parallel"
         parser.add_argument("-j", "--child-processes", dest="child_processes",
                             default="1", help=child_processes_help)
+        parser.add_argument("--repeat", "--gtest_repeat", type=int, default=1,
+                            help="Number of times to run the tests")
+        parser.add_argument("--test-filter", "--gtest_filter",
+                            help="Colon-separated list of test names "
+                                 "(URL prefixes)")
+        # TODO(crbug/1306222): wptrunner currently cannot rerun individual
+        # failed tests, so this flag is unused.
+        parser.add_argument("--test-launcher-retry-limit", type=int, default=0,
+                            help="Maximum number of times to rerun "
+                                 "a failed test")
         parser.add_argument("test_list", nargs="*",
                             help="List of tests or test directories to run")
 

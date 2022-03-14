@@ -130,6 +130,7 @@ class WPTAndroidAdapter(wpt_common.BaseWptScriptAdapter):
       '--binary-arg=--force-fieldtrials=DownloadServiceStudy/Enabled',
       '--binary-arg=--force-fieldtrial-params=DownloadServiceStudy.Enabled:'
       'start_up_delay_ms/0',
+      '--repeat=' + str(self.options.repeat),
     ])
 
     for device in self._devices:
@@ -154,6 +155,10 @@ class WPTAndroidAdapter(wpt_common.BaseWptScriptAdapter):
                                     self._wpt_report())
       rest_args.extend(['--log-wptreport',
                         self.wptreport])
+
+    if self.options.test_filter:
+      for pattern in self.options.test_filter.split(':'):
+        rest_args.extend(['--include', pattern])
 
     rest_args.extend(self.pass_through_wpt_args)
 
@@ -238,9 +243,15 @@ class WPTAndroidAdapter(wpt_common.BaseWptScriptAdapter):
                         help='Ignore browser specific expectation files.')
     parser.add_argument('--verbose', '-v', action='count', default=0,
                         help='Verbosity level.')
-    parser.add_argument('--repeat',
-                        action=WPTPassThroughArgs, type=int,
+    parser.add_argument('--repeat', '--gtest_repeat', type=int, default=1,
                         help='Number of times to run the tests.')
+    parser.add_argument('--test-filter', '--gtest_filter',
+                        help='Colon-separated list of test names '
+                             '(URL prefixes)')
+    # TODO(crbug/1306222): wptrunner currently cannot rerun individual failed
+    # tests, so this flag is unused.
+    parser.add_argument('--test-launcher-retry-limit', type=int, default=0,
+                        help='Maximum number of times to rerun a failed test')
     parser.add_argument('--include', metavar='TEST_OR_DIR',
                         action=WPTPassThroughArgs,
                         help='Test(s) to run, defaults to run all tests.')
