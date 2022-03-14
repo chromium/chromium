@@ -51,11 +51,7 @@ _DEFAULT_SNAPSHOT_NAME = 'default_boot'
 
 # crbug.com/1275767: Set long press timeout to 1000ms to reduce the flakiness
 # caused by click being incorrectly interpreted as longclick.
-_LONG_PRESS_TIMEOUT_SETTINGS = [
-    ('settings/secure', [
-        ('long_press_timeout', 1000),
-    ]),
-]
+_LONG_PRESS_TIMEOUT = '1000'
 
 # The snapshot name to load/save when writable_system=True
 _SYSTEM_SNAPSHOT_NAME = 'boot_with_system'
@@ -752,8 +748,7 @@ class _AvdInstance:
     if ensure_system_settings:
       assert self.device is not None, '`instance.device` not initialized.'
       self.device.WaitUntilFullyBooted(timeout=120 if is_slow_start else 30)
-      settings.ConfigureContentSettings(self.device,
-                                        _LONG_PRESS_TIMEOUT_SETTINGS)
+      _EnsureSystemSettings(self.device)
 
   def Stop(self):
     """Stops the emulator process."""
@@ -806,3 +801,22 @@ class _AvdInstance:
     if not self._emulator_device and self._emulator_serial:
       self._emulator_device = device_utils.DeviceUtils(self._emulator_serial)
     return self._emulator_device
+
+
+# TODO(crbug.com/1275767): Refactor it to a dict-based approach.
+def _EnsureSystemSettings(device):
+  set_long_press_timeout_cmd = [
+      'settings', 'put', 'secure', 'long_press_timeout', _LONG_PRESS_TIMEOUT
+  ]
+  device.RunShellCommand(set_long_press_timeout_cmd, check_return=True)
+
+  # Verify if long_press_timeout is set correctly.
+  get_long_press_timeout_cmd = [
+      'settings', 'get', 'secure', 'long_press_timeout'
+  ]
+  adb_output = device.RunShellCommand(get_long_press_timeout_cmd,
+                                      check_return=True)
+  if _LONG_PRESS_TIMEOUT in adb_output:
+    logging.info('long_press_timeout set to %r', _LONG_PRESS_TIMEOUT)
+  else:
+    logging.warning('long_press_timeout is not set correctly')
