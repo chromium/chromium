@@ -52,17 +52,17 @@ export class LandingViewElement extends LandingViewElementBase {
     this.signinAllowed_ = loadTimeData.getBoolean('signinAllowed');
   }
 
-  onRouteEnter() {
+  override onRouteEnter() {
     this.finalized_ = false;
     this.landingViewProxy_.recordPageShown();
     this.$.background.play();
   }
 
-  onRouteExit() {
+  override onRouteExit() {
     this.$.background.pause();
   }
 
-  onRouteUnload() {
+  override onRouteUnload() {
     // Clicking on 'Returning user' will change the URL.
     if (this.finalized_) {
       return;

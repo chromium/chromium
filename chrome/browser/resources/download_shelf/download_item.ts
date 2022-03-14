@@ -27,7 +27,7 @@ enum DisplayMode {
 }
 
 export class DownloadItemElement extends CustomElement {
-  static get template() {
+  static override get template() {
     return `{__html_template__}`;
   }
 

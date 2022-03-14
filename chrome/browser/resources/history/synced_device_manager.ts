@@ -107,14 +107,13 @@ export class HistorySyncedDeviceManagerElement extends PolymerElement {
   searchTerm: string;
   sessionList: Array<ForeignSession>;
 
-  ready() {
+  override ready() {
     super.ready();
     this.addEventListener('synced-device-card-open-menu', this.onOpenMenu_);
     this.addEventListener('update-focus-grid', this.updateFocusGrid_);
   }
 
-  /** @override */
-  connectedCallback() {
+  override connectedCallback() {
     super.connectedCallback();
     this.focusGrid_ = new FocusGrid();
 
@@ -125,8 +124,7 @@ export class HistorySyncedDeviceManagerElement extends PolymerElement {
         SyncedTabsHistogram.LIMIT);
   }
 
-  /** @override */
-  disconnectedCallback() {
+  override disconnectedCallback() {
     super.disconnectedCallback();
     this.focusGrid_!.destroy();
   }
@@ -141,8 +139,7 @@ export class HistorySyncedDeviceManagerElement extends PolymerElement {
     this.guestSession_ = data.guestSession;
   }
 
-  /** @return {HTMLElement} */
-  getContentScrollTarget() {
+  getContentScrollTarget(): HTMLElement {
     return this;
   }
 

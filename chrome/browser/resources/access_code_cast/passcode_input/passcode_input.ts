@@ -62,7 +62,7 @@ export class PasscodeInputElement extends PolymerElement {
     });
   }
 
-  ready() {
+  override ready() {
     super.ready();
     this.charDisplayBoxes = Array(this.length).fill('');
     const boxWithMarginWidth = PasscodeInputElement.PASSCODE_INPUT_SIZE +

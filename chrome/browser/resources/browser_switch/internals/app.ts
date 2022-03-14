@@ -84,8 +84,7 @@ class BrowserSwitchInternalsAppElement extends
   private lastFetch_: string;
   private nextFetch_: string;
 
-  /** @override */
-  ready() {
+  override ready() {
     super.ready();
 
     this.updateEverything();

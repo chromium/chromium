@@ -254,8 +254,7 @@ export class HistoryAppElement extends HistoryAppElementBase {
     listenForPrivilegedLinkClicks();
   }
 
-  /** @override */
-  connectedCallback() {
+  override connectedCallback() {
     super.connectedCallback();
 
     this.eventTracker_.add(
@@ -277,7 +276,7 @@ export class HistoryAppElement extends HistoryAppElementBase {
         sessionList => this.setForeignSessions_(sessionList));
   }
 
-  ready() {
+  override ready() {
     super.ready();
 
     this.addEventListener('cr-toolbar-menu-tap', this.onCrToolbarMenuTap_);
@@ -288,8 +287,7 @@ export class HistoryAppElement extends HistoryAppElementBase {
     this.addEventListener('unselect-all', this.unselectAll);
   }
 
-  /** @override */
-  disconnectedCallback() {
+  override disconnectedCallback() {
     super.disconnectedCallback();
     this.eventTracker_.removeAll();
   }
@@ -332,7 +330,7 @@ export class HistoryAppElement extends HistoryAppElementBase {
   }
 
   /** Overridden from IronScrollTargetBehavior */
-  _scrollHandler() {
+  override _scrollHandler() {
     if (this.scrollTarget) {
       // When the tabs are visible, show the toolbar shadow for the synced
       // devices page only.
@@ -555,7 +553,7 @@ export class HistoryAppElement extends HistoryAppElementBase {
   }
 
   // Override FindShortcutMixin methods.
-  handleFindShortcut(modalContextOpen: boolean): boolean {
+  override handleFindShortcut(modalContextOpen: boolean): boolean {
     if (modalContextOpen) {
       return false;
     }
@@ -564,7 +562,7 @@ export class HistoryAppElement extends HistoryAppElementBase {
   }
 
   // Override FindShortcutMixin methods.
-  searchInputHasFocus(): boolean {
+  override searchInputHasFocus(): boolean {
     return this.$.toolbar.searchField.isSearchFocused();
   }
 

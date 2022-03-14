@@ -66,8 +66,7 @@ class BrowserSwitchAppElement extends BrowserSwitchAppElementBase {
   private error_: string;
   private secondCounter_: number;
 
-  /** @override */
-  connectedCallback() {
+  override connectedCallback() {
     super.connectedCallback();
 
     // If '?done=...' is specified in the URL, this tab was-reopened, or the

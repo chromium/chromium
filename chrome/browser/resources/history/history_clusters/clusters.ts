@@ -136,7 +136,7 @@ class HistoryClustersElement extends PolymerElement {
     this.callbackRouter_ = BrowserProxyImpl.getInstance().callbackRouter;
   }
 
-  connectedCallback() {
+  override connectedCallback() {
     super.connectedCallback();
 
     // Register a per-document singleton focus outline manager. Some of our
@@ -155,7 +155,7 @@ class HistoryClustersElement extends PolymerElement {
             this.onVisitsRemoved_.bind(this));
   }
 
-  disconnectedCallback() {
+  override disconnectedCallback() {
     super.disconnectedCallback();
     assert(this.onClustersQueryResultListenerId_);
     this.callbackRouter_.removeListener(this.onClustersQueryResultListenerId_);

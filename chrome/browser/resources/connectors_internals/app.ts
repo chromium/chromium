@@ -15,7 +15,7 @@ class ConnectorsInternalsAppElement extends CustomElement {
     return 'connectors-internals-app';
   }
 
-  static get template() {
+  static override get template() {
     return `{__html_template__}`;
   }
 

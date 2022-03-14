@@ -47,7 +47,7 @@ export class WebAppSettingsAppElement extends PolymerElement {
   private iconUrl_: string;
   private showSearch_: boolean;
 
-  connectedCallback() {
+  override connectedCallback() {
     super.connectedCallback();
     const urlPath = new URL(document.URL).pathname;
     if (urlPath.length <= 1) {

@@ -97,18 +97,18 @@ class AccessCodeCastElement extends AccessCodeCastElementBase {
     });
   }
 
-  ready() {
+  override ready() {
     super.ready();
     this.setState(PageState.CODE_INPUT);
     this.$.errorMessage.setNoError();
     this.$.dialog.showModal();
   }
 
-  connectedCallback() {
+  override connectedCallback() {
     super.connectedCallback();
   }
 
-  disconnectedCallback() {
+  override disconnectedCallback() {
     super.disconnectedCallback();
     this.listenerIds.forEach(id => this.router.removeListener(id));
   }

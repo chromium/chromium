@@ -85,7 +85,7 @@ export class WelcomeAppElement extends WelcomeAppElementBase {
     };
   }
 
-  ready() {
+  override ready() {
     super.ready();
     this.setAttribute('role', 'main');
     this.addEventListener(
@@ -96,7 +96,7 @@ export class WelcomeAppElement extends WelcomeAppElementBase {
     this.shadowRoot!.querySelector('cr-toast')!.show();
   }
 
-  onRouteChange(route: Routes, step: number) {
+  override onRouteChange(route: Routes, step: number) {
     const setStep = () => {
       // If the specified step doesn't exist, that means there are no more
       // steps. In that case, replace this page with NTP.

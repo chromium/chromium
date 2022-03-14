@@ -56,7 +56,7 @@ class CommanderAppElement extends PolymerElement {
     this.browserProxy_ = BrowserProxy.getInstance();
   }
 
-  ready() {
+  override ready() {
     super.ready();
     addWebUIListener('view-model-updated', this.onViewModelUpdated_.bind(this));
     addWebUIListener('initialize', this.initialize_.bind(this));

@@ -68,8 +68,7 @@ export class HistoryRouterElement extends PolymerElement {
   private path_: string;
   private urlQuery_: string;
 
-  /** @override */
-  connectedCallback() {
+  override connectedCallback() {
     super.connectedCallback();
 
     // Redirect legacy search URLs to URLs compatible with History.

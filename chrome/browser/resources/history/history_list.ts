@@ -118,8 +118,7 @@ export class HistoryListElement extends HistoryListElementBase {
   lastSelectedIndex: number;
   queryState: QueryState;
 
-  /** @override */
-  connectedCallback() {
+  override connectedCallback() {
     super.connectedCallback();
 
     // It is possible (eg, when middle clicking the reload button) for all other
@@ -133,7 +132,7 @@ export class HistoryListElement extends HistoryListElementBase {
     this.addWebUIListener('history-deleted', () => this.onHistoryDeleted_());
   }
 
-  ready() {
+  override ready() {
     super.ready();
 
     this.setAttribute('role', 'application');

@@ -123,8 +123,7 @@ export class HistoryItemElement extends HistoryItemElementBase {
   numberOfItems: number;
   selected: boolean;
 
-  /** @override */
-  connectedCallback() {
+  override connectedCallback() {
     super.connectedCallback();
 
     afterNextRender(this, () => {
@@ -136,8 +135,7 @@ export class HistoryItemElement extends HistoryItemElementBase {
     });
   }
 
-  /** @override */
-  disconnectedCallback() {
+  override disconnectedCallback() {
     super.disconnectedCallback();
     this.eventTracker_.remove(this.$.checkbox, 'keydown');
   }

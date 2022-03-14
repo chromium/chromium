@@ -113,7 +113,7 @@ class ManagementUiElement extends ManagementUiElementBase {
   private browserProxy_: ManagementBrowserProxy|null = null;
 
   /** @override */
-  connectedCallback() {
+  override connectedCallback() {
     super.connectedCallback();
 
     document.documentElement.classList.remove('loading');

@@ -47,13 +47,13 @@ export class SigninViewElement extends SigninViewElementBase {
     this.welcomeBrowserProxy_ = WelcomeBrowserProxyImpl.getInstance();
   }
 
-  onRouteEnter() {
+  override onRouteEnter() {
     this.finalized_ = false;
     this.signinViewProxy_.recordPageShown();
     this.$.background.play();
   }
 
-  onRouteExit() {
+  override onRouteExit() {
     if (this.finalized_) {
       return;
     }
@@ -62,7 +62,7 @@ export class SigninViewElement extends SigninViewElementBase {
     this.$.background.pause();
   }
 
-  onRouteUnload() {
+  override onRouteUnload() {
     // URL is expected to change when signing in or skipping.
     if (this.finalized_) {
       return;

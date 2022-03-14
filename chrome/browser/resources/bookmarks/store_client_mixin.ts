@@ -22,12 +22,12 @@ export const StoreClientMixin = dedupingMixin(
           StoreClientMixinInterface {
         private watches_: Watch[] = [];
 
-        connectedCallback() {
+        override connectedCallback() {
           super.connectedCallback();
           this.getStore().addObserver(this);
         }
 
-        disconnectedCallback() {
+        override disconnectedCallback() {
           super.disconnectedCallback();
           this.getStore().removeObserver(this);
         }

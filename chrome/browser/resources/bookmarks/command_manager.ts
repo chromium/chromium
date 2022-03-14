@@ -95,7 +95,7 @@ export class BookmarksCommandManagerElement extends
   private shortcuts_: Map<Command, KeyboardShortcutList>;
   private eventTracker_: EventTracker = new EventTracker();
 
-  connectedCallback() {
+  override connectedCallback() {
     super.connectedCallback();
     assert(instance === null);
     instance = this;
@@ -156,7 +156,7 @@ export class BookmarksCommandManagerElement extends
     });
   }
 
-  disconnectedCallback() {
+  override disconnectedCallback() {
     super.disconnectedCallback();
     instance = null;
     this.eventTracker_.removeAll();

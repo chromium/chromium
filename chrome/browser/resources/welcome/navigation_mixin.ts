@@ -132,7 +132,7 @@ export const NavigationMixin = dedupingMixin(
 
         subtitle?: string;
 
-        connectedCallback() {
+        override connectedCallback() {
           super.connectedCallback();
 
           assert(!routeObservers.has(this));
@@ -179,7 +179,7 @@ export const NavigationMixin = dedupingMixin(
           document.title = title;
         }
 
-        disconnectedCallback() {
+        override disconnectedCallback() {
           super.disconnectedCallback();
           assert(routeObservers.delete(this));
         }

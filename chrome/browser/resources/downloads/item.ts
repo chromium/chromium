@@ -181,7 +181,7 @@ export class DownloadsItemElement extends DownloadsItemElementBase {
   }
 
   /** @override */
-  ready() {
+  override ready() {
     super.ready();
 
     this.setAttribute('role', 'row');

@@ -17,7 +17,7 @@ generate_grd("build_grd") {
   input_files = [ "commander.html" ]
   input_files_base_dir = rebase_path(".", "//")
 
-  deps = [ ":build" ]
+  deps = [ ":build_ts" ]
   manifest_files = [ "$target_gen_dir/tsconfig.manifest" ]
 }
 
@@ -65,7 +65,7 @@ html_to_js("web_components") {
   ]
 }
 
-ts_library("build") {
+ts_library("build_ts") {
   root_dir = "$target_gen_dir/$preprocess_folder"
   out_dir = "$target_gen_dir/tsc"
   tsconfig_base = "tsconfig_base.json"

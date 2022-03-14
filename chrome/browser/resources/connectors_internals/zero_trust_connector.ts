@@ -23,7 +23,7 @@ export class ZeroTrustConnectorElement extends CustomElement {
     return 'zero-trust-connector';
   }
 
-  static get template() {
+  static override get template() {
     return `{__html_template__}`;
   }
 

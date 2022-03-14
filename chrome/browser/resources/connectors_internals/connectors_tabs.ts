@@ -35,7 +35,7 @@ export class ConnectorsTabsElement extends CustomElement {
     return 'connectors-tabs';
   }
 
-  static get template() {
+  static override get template() {
     return `{__html_template__}`;
   }
 

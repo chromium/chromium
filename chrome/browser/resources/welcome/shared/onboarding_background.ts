@@ -22,7 +22,7 @@ export class OnboardingBackgroundElement extends PolymerElement {
 
   private animations_: Animation[] = [];
 
-  connectedCallback() {
+  override connectedCallback() {
     super.connectedCallback();
     const details: Array<[string, number]> = [
       ['blue-line', 60],

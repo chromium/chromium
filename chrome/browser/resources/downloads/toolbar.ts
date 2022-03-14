@@ -65,7 +65,7 @@ export class DownloadsToolbarElement extends PolymerElement {
   items: Array<MojomData> = [];
 
   /** @override */
-  ready() {
+  override ready() {
     super.ready();
     this.mojoHandler_ = BrowserProxy.getInstance().handler;
   }

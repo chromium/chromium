@@ -65,7 +65,7 @@ export class BookmarksRouterElement extends BookmarksRouterElementBase {
     ];
   }
 
-  connectedCallback() {
+  override connectedCallback() {
     super.connectedCallback();
     this.watch('selectedId_', state => state.selectedFolder);
     this.watch('searchTerm_', state => state.search.term);

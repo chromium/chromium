@@ -69,7 +69,7 @@ export class BookmarksToolbarElement extends BookmarksToolbarElementBase {
   private selectedItems_: Set<string>;
   private globalCanEdit_: boolean;
 
-  connectedCallback() {
+  override connectedCallback() {
     super.connectedCallback();
     this.watch('searchTerm_', state => state.search.term);
     this.watch('selectedItems_', state => state.selection.items);

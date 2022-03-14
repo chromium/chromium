@@ -28,7 +28,7 @@ export class AppServiceInternalsElement extends PolymerElement {
   /** List containing preferred app debug information for installed apps. */
   preferredAppList_: Array<PreferredAppInfo> = [];
 
-  ready() {
+  override ready() {
     super.ready();
     (async () => {
       const remote = AppServiceInternalsPageHandler.getRemote();
@@ -42,7 +42,7 @@ export class AppServiceInternalsElement extends PolymerElement {
     })();
   }
 
-  disconnectedCallback() {
+  override disconnectedCallback() {
     window.removeEventListener('hashchange', this.hashChangeListener_);
   }
 

@@ -75,7 +75,7 @@ export class BookmarksItemElement extends BookmarksItemElementBase {
     ];
   }
 
-  ready() {
+  override ready() {
     super.ready();
 
     this.addEventListener('click', e => this.onClick_(e as MouseEvent));
@@ -92,7 +92,7 @@ export class BookmarksItemElement extends BookmarksItemElementBase {
         'touchstart', e => this.onTouchStart_(e as TouchEvent));
   }
 
-  connectedCallback() {
+  override connectedCallback() {
     super.connectedCallback();
     this.watch('item_', state => state.nodes[this.itemId]);
     this.watch(

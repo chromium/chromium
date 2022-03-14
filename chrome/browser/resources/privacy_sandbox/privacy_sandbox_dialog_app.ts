@@ -52,7 +52,7 @@ export class PrivacySandboxDialogAppElement extends
   private fitIntoDialogClass_: String;
   private didStartWithScrollbar_: boolean;
 
-  connectedCallback() {
+  override connectedCallback() {
     super.connectedCallback();
 
     afterNextRender(this, () => {

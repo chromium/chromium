@@ -78,7 +78,7 @@ export class NuxNtpBackgroundElement extends NuxNtpBackgroundElementBase {
         new ModuleMetricsManager(NtpBackgroundMetricsProxyImpl.getInstance());
   }
 
-  onRouteEnter() {
+  override onRouteEnter() {
     this.finalized_ = false;
     const defaultBackground = {
       id: -1,
@@ -100,7 +100,7 @@ export class NuxNtpBackgroundElement extends NuxNtpBackgroundElementBase {
     this.metricsManager_.recordPageInitialized();
   }
 
-  onRouteExit() {
+  override onRouteExit() {
     if (this.imageIsLoading_) {
       this.ntpBackgroundProxy_.recordBackgroundImageNeverLoaded();
     }
@@ -111,7 +111,7 @@ export class NuxNtpBackgroundElement extends NuxNtpBackgroundElementBase {
     this.metricsManager_.recordBrowserBackOrForward();
   }
 
-  onRouteUnload() {
+  override onRouteUnload() {
     if (this.imageIsLoading_) {
       this.ntpBackgroundProxy_.recordBackgroundImageNeverLoaded();
     }

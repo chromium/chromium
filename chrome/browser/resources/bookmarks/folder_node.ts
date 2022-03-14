@@ -100,14 +100,14 @@ export class BookmarksFolderNodeElement extends BookmarksFolderNodeElementBase {
     ];
   }
 
-  ready() {
+  override ready() {
     super.ready();
 
     this.addEventListener('keydown', e => this.onKeydown_(e));
   }
 
   /** @override */
-  connectedCallback() {
+  override connectedCallback() {
     super.connectedCallback();
     this.watch('item_', state => {
       return state.nodes[this.itemId];

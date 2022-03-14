@@ -118,8 +118,7 @@ export class HistorySideBarElement extends PolymerElement {
   private showFooter_: boolean;
   private showHistoryClusters_: boolean;
 
-  /** @override */
-  ready() {
+  override ready() {
     super.ready();
     this.addEventListener('keydown', e => this.onKeydown_(e));
   }

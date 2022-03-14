@@ -100,18 +100,18 @@ export class NuxGoogleAppsElement extends NuxGoogleAppsElementBase {
     this.bookmarkBarManager_ = BookmarkBarManager.getInstance();
   }
 
-  connectedCallback() {
+  override connectedCallback() {
     super.connectedCallback();
     afterNextRender(this, () => IronA11yAnnouncer.requestAvailability());
   }
 
-  onRouteEnter() {
+  override onRouteEnter() {
     this.finalized_ = false;
     this.metricsManager_.recordPageInitialized();
     this.populateAllBookmarks_();
   }
 
-  onRouteExit() {
+  override onRouteExit() {
     if (this.finalized_) {
       return;
     }
@@ -119,7 +119,7 @@ export class NuxGoogleAppsElement extends NuxGoogleAppsElementBase {
     this.metricsManager_.recordBrowserBackOrForward();
   }
 
-  onRouteUnload() {
+  override onRouteUnload() {
     if (this.finalized_) {
       return;
     }

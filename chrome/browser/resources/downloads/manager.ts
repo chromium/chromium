@@ -129,7 +129,7 @@ export class DownloadsManagerElement extends DownloadsManagerElementBase {
   }
 
   /** @override */
-  connectedCallback() {
+  override connectedCallback() {
     super.connectedCallback();
 
     // TODO(dbeam): this should use a class instead.
@@ -167,7 +167,7 @@ export class DownloadsManagerElement extends DownloadsManagerElementBase {
   }
 
   /** @override */
-  disconnectedCallback() {
+  override disconnectedCallback() {
     super.disconnectedCallback();
 
     this.listenerIds_.forEach(
@@ -362,7 +362,7 @@ export class DownloadsManagerElement extends DownloadsManagerElementBase {
   }
 
   // Override FindShortcutMixin methods.
-  handleFindShortcut(modalContextOpen: boolean): boolean {
+  override handleFindShortcut(modalContextOpen: boolean): boolean {
     if (modalContextOpen) {
       return false;
     }
@@ -371,7 +371,7 @@ export class DownloadsManagerElement extends DownloadsManagerElementBase {
   }
 
   // Override FindShortcutMixin methods.
-  searchInputHasFocus() {
+  override searchInputHasFocus() {
     return this.$.toolbar.isSearchFocused();
   }
 }

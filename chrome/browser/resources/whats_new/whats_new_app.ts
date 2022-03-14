@@ -55,14 +55,14 @@ export class WhatsNewAppElement extends PolymerElement {
     window.history.replaceState(undefined /* stateObject */, '', '/');
   }
 
-  connectedCallback() {
+  override connectedCallback() {
     super.connectedCallback();
 
     WhatsNewProxyImpl.getInstance().initialize().then(
         url => this.handleUrlResult_(url));
   }
 
-  disconnectedCallback() {
+  override disconnectedCallback() {
     super.disconnectedCallback();
     this.eventTracker_.removeAll();
   }

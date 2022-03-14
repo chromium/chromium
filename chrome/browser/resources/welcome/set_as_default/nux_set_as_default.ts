@@ -70,7 +70,7 @@ export class NuxSetAsDefaultElement extends NuxSetAsDefaultElementBase {
     this.browserProxy_ = NuxSetAsDefaultProxyImpl.getInstance();
   }
 
-  ready() {
+  override ready() {
     super.ready();
 
     this.addWebUIListener(
@@ -78,12 +78,12 @@ export class NuxSetAsDefaultElement extends NuxSetAsDefaultElementBase {
         this.onDefaultBrowserChange_.bind(this));
   }
 
-  onRouteEnter() {
+  override onRouteEnter() {
     this.finalized_ = false;
     this.browserProxy_.recordPageShown();
   }
 
-  onRouteExit() {
+  override onRouteExit() {
     if (this.finalized_) {
       return;
     }
@@ -91,7 +91,7 @@ export class NuxSetAsDefaultElement extends NuxSetAsDefaultElementBase {
     this.browserProxy_.recordNavigatedAwayThroughBrowserHistory();
   }
 
-  onRouteUnload() {
+  override onRouteUnload() {
     if (this.finalized_) {
       return;
     }

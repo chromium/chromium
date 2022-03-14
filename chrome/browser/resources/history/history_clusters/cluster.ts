@@ -114,14 +114,14 @@ class HistoryClusterElement extends PolymerElement {
     this.attachShadow({mode: 'open', delegatesFocus: true});
   }
 
-  connectedCallback() {
+  override connectedCallback() {
     super.connectedCallback();
     this.onVisitsRemovedListenerId_ =
         this.callbackRouter_.onVisitsRemoved.addListener(
             this.onVisitsRemoved_.bind(this));
   }
 
-  disconnectedCallback() {
+  override disconnectedCallback() {
     super.disconnectedCallback();
     assert(this.onVisitsRemovedListenerId_);
     this.callbackRouter_.removeListener(this.onVisitsRemovedListenerId_);
