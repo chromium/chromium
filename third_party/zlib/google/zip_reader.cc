@@ -527,9 +527,9 @@ void FileWriterDelegate::SetPosixFilePermissions(int mode) {
 
 // FilePathWriterDelegate ------------------------------------------------------
 
-FilePathWriterDelegate::FilePathWriterDelegate(
-    const base::FilePath& output_file_path)
-    : output_file_path_(output_file_path) {}
+FilePathWriterDelegate::FilePathWriterDelegate(base::FilePath output_file_path)
+    : FileWriterDelegate(base::File()),
+      output_file_path_(std::move(output_file_path)) {}
 
 FilePathWriterDelegate::~FilePathWriterDelegate() {}
 
@@ -539,24 +539,9 @@ bool FilePathWriterDelegate::PrepareOutput() {
   if (!base::CreateDirectory(output_file_path_.DirName()))
     return false;
 
-  file_.Initialize(output_file_path_,
-                   base::File::FLAG_CREATE_ALWAYS | base::File::FLAG_WRITE);
-  return file_.IsValid();
-}
-
-bool FilePathWriterDelegate::WriteBytes(const char* data, int num_bytes) {
-  return num_bytes == file_.WriteAtCurrentPos(data, num_bytes);
-}
-
-void FilePathWriterDelegate::SetTimeModified(const base::Time& time) {
-  file_.Close();
-  base::TouchFile(output_file_path_, base::Time::Now(), time);
-}
-
-void FilePathWriterDelegate::SetPosixFilePermissions(int mode) {
-#if defined(OS_POSIX)
-  zip::SetPosixFilePermissions(file_.GetPlatformFile(), mode);
-#endif
+  owned_file_.Initialize(output_file_path_, base::File::FLAG_CREATE_ALWAYS |
+                                                base::File::FLAG_WRITE);
+  return FileWriterDelegate::PrepareOutput();
 }
 
 }  // namespace zip
