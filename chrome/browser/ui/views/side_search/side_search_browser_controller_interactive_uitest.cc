@@ -816,8 +816,17 @@ IN_PROC_BROWSER_TEST_F(SideSearchExtensionsTest,
   NavigateInSideContents(third_url, third_url);
 }
 
-IN_PROC_BROWSER_TEST_F(SideSearchExtensionsTest,
-                       DeclarativeNetRequestInterceptsSidePanelNavigations) {
+#if BUILDFLAG(IS_MAC)
+// TODO(crbug.com/1305891): Test is flaky on Mac bots.
+#define MAYBE_DeclarativeNetRequestInterceptsSidePanelNavigations \
+  DISABLED_DeclarativeNetRequestInterceptsSidePanelNavigations
+#else
+#define MAYBE_DeclarativeNetRequestInterceptsSidePanelNavigations \
+  DeclarativeNetRequestInterceptsSidePanelNavigations
+#endif
+IN_PROC_BROWSER_TEST_F(
+    SideSearchExtensionsTest,
+    MAYBE_DeclarativeNetRequestInterceptsSidePanelNavigations) {
   const GURL first_url = embedded_test_server()->GetURL("first.example", "/");
   const GURL second_url = embedded_test_server()->GetURL("second.example", "/");
   const GURL third_url = embedded_test_server()->GetURL("third.example", "/");
