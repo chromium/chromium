@@ -38,6 +38,7 @@ ExtractIOTask::~ExtractIOTask() {}
 void ExtractIOTask::ZipExtractCallback(bool success) {
   progress_.state = success ? State::kSuccess : State::kError;
   progress_callback_.Run(progress_);
+  DCHECK_GT(extractCount_, 0);
   if (--extractCount_ == 0) {
     Complete();
   }
@@ -62,6 +63,7 @@ void ExtractIOTask::Execute(IOTask::ProgressCallback progress_callback,
     } else {
       progress_.state = State::kError;
       // We won't get a callback so reduce the count and maybe finalise.
+      DCHECK_GT(extractCount_, 0);
       if (--extractCount_ == 0) {
         Complete();
       }
