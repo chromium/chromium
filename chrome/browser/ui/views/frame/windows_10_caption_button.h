@@ -41,7 +41,7 @@ class Windows10CaptionButton : public views::Button {
 
   // The base color to use for the button symbols and background blending. Uses
   // the more readable of black and white.
-  SkColor GetBaseColor() const;
+  SkColor GetBaseForegroundColor() const;
 
   // Paints the minimize/maximize/restore/close icon for the button.
   void PaintSymbol(gfx::Canvas* canvas);

@@ -19,6 +19,7 @@
 #include "ui/color/color_mixer.h"
 #include "ui/color/color_provider.h"
 #include "ui/color/color_provider_manager.h"
+#include "ui/color/color_provider_utils.h"
 #include "ui/color/color_recipe.h"
 #include "ui/color/color_transform.h"
 #include "ui/color/win/accent_color_observer.h"
@@ -201,6 +202,24 @@ void FrameColorHelper::FetchAccentColors() {
   }
 }
 
+ui::ColorTransform GetCaptionForegroundColor(
+    ui::ColorTransform input_transform) {
+  const auto generator = [](ui::ColorTransform input_transform,
+                            SkColor input_color, const ui::ColorMixer& mixer) {
+    const SkColor background_color = input_transform.Run(input_color, mixer);
+    const float windows_luma = 0.25f * SkColorGetR(background_color) +
+                               0.625f * SkColorGetG(background_color) +
+                               0.125f * SkColorGetB(background_color);
+    const SkColor result_color =
+        (windows_luma <= 128.0f) ? SK_ColorWHITE : SK_ColorBLACK;
+    DVLOG(2) << "ColorTransform GetCaptionForegroundColor:"
+             << " Background Color: " << ui::SkColorName(background_color)
+             << " Result Color: " << ui::SkColorName(result_color);
+    return result_color;
+  };
+  return base::BindRepeating(generator, std::move(input_transform));
+}
+
 }  // namespace
 
 void AddNativeChromeColorMixer(ui::ColorProvider* provider,
@@ -211,6 +230,15 @@ void AddNativeChromeColorMixer(ui::ColorProvider* provider,
   // the color provider redirection tests function. Win7 callers should never
   // actually pass in these IDs.
   FrameColorHelper::Get()->AddBorderAccentColors(mixer);
+
+  mixer[kColorCaptionButtonForegroundActive] =
+      GetCaptionForegroundColor(kColorWindowControlButtonBackgroundActive);
+  mixer[kColorCaptionButtonForegroundInactive] =
+      GetCaptionForegroundColor(kColorWindowControlButtonBackgroundInactive);
+  mixer[kColorCaptionForegroundActive] =
+      GetCaptionForegroundColor(ui::kColorFrameActive);
+  mixer[kColorCaptionForegroundInactive] =
+      SetAlpha(GetCaptionForegroundColor(ui::kColorFrameInactive), 0x66);
 
   if (key.color_mode == ui::ColorProviderManager::ColorMode::kLight) {
     mixer[kColorNewTabPageBackground] = {ui::kColorNativeWindow};

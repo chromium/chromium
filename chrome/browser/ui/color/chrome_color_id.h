@@ -322,7 +322,12 @@
 #define CHROME_NATIVE_COLOR_IDS \
     /* The colors of the 1px border around the window on Windows 10. */ \
     E(kColorAccentBorderActive, ThemeProperties::COLOR_ACCENT_BORDER_ACTIVE) \
-    E(kColorAccentBorderInactive, ThemeProperties::COLOR_ACCENT_BORDER_INACTIVE)
+    E(kColorAccentBorderInactive, \
+      ThemeProperties::COLOR_ACCENT_BORDER_INACTIVE) \
+    E_CPONLY(kColorCaptionButtonForegroundActive) \
+    E_CPONLY(kColorCaptionButtonForegroundInactive) \
+    E_CPONLY(kColorCaptionForegroundActive) \
+    E_CPONLY(kColorCaptionForegroundInactive)
 #else
 #define CHROME_NATIVE_COLOR_IDS
 #endif  // BUILDFLAG(IS_WIN)

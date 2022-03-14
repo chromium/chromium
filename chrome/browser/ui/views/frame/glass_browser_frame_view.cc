@@ -16,6 +16,7 @@
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/app/chrome_dll_resource.h"
 #include "chrome/browser/themes/theme_properties.h"
+#include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/view_ids.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/glass_browser_caption_button_container.h"
@@ -71,19 +72,6 @@ base::win::ScopedHICON CreateHICONFromSkBitmapSizedTo(
 
 ///////////////////////////////////////////////////////////////////////////////
 // GlassBrowserFrameView, public:
-
-SkColor GlassBrowserFrameView::GetReadableFeatureColor(
-    SkColor background_color) {
-  // color_utils::GetColorWithMaxContrast()/IsDark() aren't used here because
-  // they switch based on the Chrome light/dark endpoints, while we want to use
-  // the system native behavior below.
-  const auto windows_luma = [](SkColor c) {
-    return 0.25f * SkColorGetR(c) + 0.625f * SkColorGetG(c) +
-           0.125f * SkColorGetB(c);
-  };
-  return windows_luma(background_color) <= 128.0f ? SK_ColorWHITE
-                                                  : SK_ColorBLACK;
-}
 
 GlassBrowserFrameView::GlassBrowserFrameView(BrowserFrame* frame,
                                              BrowserView* browser_view)
@@ -196,11 +184,9 @@ bool GlassBrowserFrameView::CanDrawStrokes() const {
 
 SkColor GlassBrowserFrameView::GetCaptionColor(
     BrowserFrameActiveState active_state) const {
-  const SkAlpha title_alpha = ShouldPaintAsActive(active_state)
-                                  ? SK_AlphaOPAQUE
-                                  : kInactiveTitlebarFeatureAlpha;
-  return SkColorSetA(GetReadableFeatureColor(GetFrameColor(active_state)),
-                     title_alpha);
+  return GetColorProvider()->GetColor(ShouldPaintAsActive(active_state)
+                                          ? kColorCaptionForegroundActive
+                                          : kColorCaptionForegroundInactive);
 }
 
 void GlassBrowserFrameView::UpdateThrobber(bool running) {

@@ -22,11 +22,6 @@ class GlassBrowserFrameView : public BrowserNonClientFrameView,
                               public TabIconViewModel {
  public:
   METADATA_HEADER(GlassBrowserFrameView);
-  // Alpha to use for features in the titlebar (the window title and caption
-  // buttons) when the window is inactive. They are opaque when active.
-  static constexpr SkAlpha kInactiveTitlebarFeatureAlpha = 0x66;
-
-  static SkColor GetReadableFeatureColor(SkColor background_color);
 
   // Constructs a non-client view for an BrowserFrame.
   GlassBrowserFrameView(BrowserFrame* frame, BrowserView* browser_view);
