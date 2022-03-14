@@ -23,7 +23,11 @@
     'hsla(-120, -200%, -200%, -5)',  // clipped to hsla(0,0%,0%,0)
     'hsla(240,100%,50%,0.05)', 'hsl(200.5,0%,50%)', 'hsla(200,1.5%,50%,1)', 'rgba(0,0,0,.5)', 'hsla(.5,.5%,.5%,.5)',
     'hsla(100.5,50.5%,50.5%,.5)',
-
+    'hwb(-120 200% 200%)',         // clipped to hwb(240 100% 100%) = hwb(0 50% 50%)
+    'hwb(-120 -200% -200%)',       // clipped to hwb(240 100% 100%)
+    'hwb(-120 -200% -200% / -5)',  // clipped to hwb(0 0% 0% / 0%)
+    'hwb(240 100% 50% / 0.05)', 'hwb(200.5 0% 50%)', 'hwb(200 1.5% 50% / 1)', 'hwb(0 0 0 /.5)', 'hwb(.5 .5% .5% .5)',
+    'hwb(100grad 20% 30%)', 'hwb(1rad 5% 15%)', 'hwb(1turn 25% 15%)',
     // Each of these has their alpha clipped [0.0, 1.0].
     'rgba(255, 0, 0, -5)',  // clipped to rgba(255,0,0,0)
     'rgba(255, 0, 0, 5)',   // clipped to rgba(255,0,0,1)
@@ -33,7 +37,8 @@
     // An invalid color, eg a value for a shorthand like 'border' which can have a color
     'none', '#00000', '#ggg', 'rgb(a,b,c)', 'rgb(a,b,c,d)', 'rgba(0 0 0 1%)', 'rgba(0,0,0,)',
     'rgba(0 0, 0)', 'rgba(1 1 1 / )', 'rgb(1 1 / 1)', 'rgb(1 1/1)', 'hsl(0,0,0)', 'hsl(0%, 0%, 0%)',
-    'hsla(0,,0,1)', 'hsl(0, 0%, 0)', 'hsl(a,b,c)', 'hsla(0,0,0,0)', 'hsla(0 0% 0% 0)', 'hsla(0 turn, 0, 0, 0)', 'hsla'
+    'hsla(0,,0,1)', 'hsl(0, 0%, 0)', 'hsl(a,b,c)', 'hsla(0,0,0,0)', 'hsla(0 0% 0% 0)', 'hsla(0 turn, 0, 0, 0)', 'hsla',
+    'hwb(0,0,1)', 'hwb(0 0% 0)', 'hwb(a b c)', 'hwb(0 0 0 / 0)', 'hwb(0 0% 0% 0)', 'hwb(0 turn 0 0 0)', 'hwb'
   ];
 
   TestRunner.runTestSuite([
@@ -73,6 +78,9 @@
       var colorFormat = cf[colorFormatKey];
       // Simple colors do not have RGBA and HSLA representations.
       if (!color.hasAlpha() && (colorFormat === cf.RGBA || colorFormat === cf.HSLA))
+        continue;
+      // Skip alpha representation for HWB - only exists internally
+      if (colorFormat === cf.HWBA)
         continue;
       // Advanced colors do not have HEX representations.
       if (color.hasAlpha() && (colorFormat === cf.ShortHEX || colorFormat === cf.HEX))
