@@ -63,14 +63,8 @@ bool IsSupportedLocaleForFeature(const std::string locale,
 
 // Enables the syncing of the Optimization Hints component, which provides
 // hints for what optimizations can be applied on a page load.
-const base::Feature kOptimizationHints {
-  "OptimizationHints",
-#if BUILDFLAG(IS_IOS)
-      base::FEATURE_DISABLED_BY_DEFAULT
-#else   // !BUILDFLAG(IS_IOS)
-      base::FEATURE_ENABLED_BY_DEFAULT
-#endif  // BUILDFLAG(IS_IOS)
-};
+const base::Feature kOptimizationHints{"OptimizationHints",
+                                       base::FEATURE_ENABLED_BY_DEFAULT};
 
 // Feature flag that contains a feature param that specifies the field trials
 // that are allowed to be sent up to the Optimization Guide Server.
@@ -83,9 +77,9 @@ const base::Feature kRemoteOptimizationGuideFetching{
 
 const base::Feature kRemoteOptimizationGuideFetchingAnonymousDataConsent {
   "OptimizationHintsFetchingAnonymousDataConsent",
-#if BUILDFLAG(IS_ANDROID)
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
       base::FEATURE_ENABLED_BY_DEFAULT
-#else   // !BUILDFLAG(IS_ANDROID)
+#else   // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
       base::FEATURE_DISABLED_BY_DEFAULT
 #endif  // BUILDFLAG(IS_ANDROID)
 };
