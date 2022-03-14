@@ -8,19 +8,21 @@ This file cannot be upstreamed to WPT until:
 -->
 <title>Load a prerendered iframe with sandbox attributes</title>
 <meta name="timeout" content="long">
-<script src="resources/utils.js"></script>
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
 <script src="/common/get-host-info.sub.js"></script>
+<script src="/common/utils.js"></script>
+<script src="/speculation-rules/prerender/resources/utils.js"></script>
 <body>
 <script>
 
 promise_test(async t => {
-  const bc = new BroadcastChannel('test-channel');
+  const uid = token();
+  const bc = new PrerenderChannel('test-channel', uid);
   const messageQueue = new BroadcastMessageQueue(bc);
   t.add_cleanup(_ => bc.close());
 
-  const url = `resources/sandbox-iframe.html`;
+  const url = `resources/sandbox-iframe.html?uid=${uid}`;
   window.open(url, '_blank', 'noopener');
 
   const result = await messageQueue.nextMessage();
@@ -44,6 +46,9 @@ promise_test(async t => {
     assert_equals(result[i].prerendering, expected[i].prerendering,
        `prerendering[${i}]`);
   }
+
+  // Send a close signal to PrerenderEventCollector on the prerendered page.
+  new PrerenderChannel('close', uid).postMessage('');
 }, `same-origin sandbox iframes should not load until activation`);
 
 </script>
