@@ -50,7 +50,7 @@ export class ViewerZoomToolbarElement extends PolymerElement {
   private keyboardNavigationActive_: boolean;
   private visible_: boolean;
 
-  ready() {
+  override ready() {
     super.ready();
     this.addEventListener('focus', this.onFocus_);
     this.addEventListener('keyup', this.onKeyUp_);

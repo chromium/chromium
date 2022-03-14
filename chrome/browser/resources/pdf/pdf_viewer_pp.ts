@@ -46,7 +46,7 @@ export class PDFViewerPPElement extends PDFViewerBaseElement {
   private pluginController_: PluginController|undefined = undefined;
   private toolbarManager_: ToolbarManager|null = null;
 
-  isNewUiEnabled() {
+  override isNewUiEnabled() {
     return false;
   }
 
@@ -154,7 +154,7 @@ export class PDFViewerPPElement extends PDFViewerBaseElement {
     this.pluginController_!.viewportChanged();
   }
 
-  handleScriptingMessage(message: MessageEvent) {
+  override handleScriptingMessage(message: MessageEvent) {
     if (super.handleScriptingMessage(message)) {
       return true;
     }
@@ -241,14 +241,14 @@ export class PDFViewerPPElement extends PDFViewerBaseElement {
     return false;
   }
 
-  setLoadState(loadState: LoadState) {
+  override setLoadState(loadState: LoadState) {
     super.setLoadState(loadState);
     if (loadState === LoadState.FAILED) {
       this.isPrintPreviewLoadingFinished_ = true;
     }
   }
 
-  handlePluginMessage(e: CustomEvent) {
+  override handlePluginMessage(e: CustomEvent) {
     const data = e.detail;
     switch (data.type.toString()) {
       case 'documentDimensions':
@@ -310,7 +310,7 @@ export class PDFViewerPPElement extends PDFViewerBaseElement {
     this.sendDocumentLoadedMessage();
   }
 
-  readyToSendLoadMessage() {
+  override readyToSendLoadMessage() {
     return this.isPrintPreviewLoadingFinished_;
   }
 
@@ -320,7 +320,7 @@ export class PDFViewerPPElement extends PDFViewerBaseElement {
 
   protected afterZoom(_viewportZoom: number) {}
 
-  handleStrings(strings: {[key: string]: string}) {
+  override handleStrings(strings: {[key: string]: string}) {
     super.handleStrings(strings);
     if (!strings) {
       return;
@@ -328,7 +328,7 @@ export class PDFViewerPPElement extends PDFViewerBaseElement {
     this.setBackgroundColorForPrintPreview_();
   }
 
-  updateProgress(progress: number) {
+  override updateProgress(progress: number) {
     super.updateProgress(progress);
     if (progress === 100) {
       this.toolbarManager_!.hideToolbarAfterTimeout();

@@ -75,7 +75,7 @@ export class ViewerBookmarkElement extends PolymerElement {
   private childDepth_: number;
   private childrenShown_: boolean;
 
-  ready() {
+  override ready() {
     super.ready();
 
     this.$.item.addEventListener('keydown', e => {

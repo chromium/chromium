@@ -168,7 +168,7 @@ class ActiveZoomManager extends ZoomManager {
    * @param internalZoom the zoom level internal to the viewer.
    * @return the total zoom level.
    */
-  applyBrowserZoom(internalZoom: number): number {
+  override applyBrowserZoom(internalZoom: number): number {
     // The internal zoom and browser zoom are changed together, so the
     // browser zoom is already applied.
     return internalZoom;
@@ -180,7 +180,7 @@ class ActiveZoomManager extends ZoomManager {
    * @param totalZoom the total zoom level.
    * @return the zoom level internal to the viewer.
    */
-  internalZoomComponent(totalZoom: number): number {
+  override internalZoomComponent(totalZoom: number): number {
     // The internal zoom and browser zoom are changed together, so the
     // internal zoom is the total zoom.
     return totalZoom;

@@ -35,7 +35,7 @@ export class ViewerPageIndicatorElement extends PolymerElement {
   timerId?: number;
   private viewport_: Viewport|null = null;
 
-  ready() {
+  override ready() {
     super.ready();
     const callback = this.fadeIn_.bind(this);
     window.addEventListener('scroll', function() {

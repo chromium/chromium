@@ -145,7 +145,7 @@ export class ViewerPenOptionsElement extends PolymerElement {
     }
   }
 
-  connectedCallback() {
+  override connectedCallback() {
     super.connectedCallback();
     beforeNextRender(this, () => {
       this.updateExpandedStateAndFinishAnimations_();

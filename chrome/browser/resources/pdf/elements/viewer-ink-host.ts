@@ -61,7 +61,7 @@ export class ViewerInkHostElement extends PolymerElement {
   private pointerGesture_: boolean = false;
   private state_: State = State.IDLE;
 
-  ready() {
+  override ready() {
     super.ready();
     this.addEventListener('pointerdown', this.onPointerDown_.bind(this));
     this.addEventListener('pointerup', this.onPointerUpOrCancel_.bind(this));

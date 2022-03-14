@@ -22,7 +22,7 @@ import {listenOnce} from 'chrome://resources/js/util.m.js';
 import {Bookmark} from './bookmark_type.js';
 import {BrowserApi} from './browser_api.js';
 import {Attachment, DocumentMetadata, ExtendedKeyEvent, FittingType, Point, SaveRequestType} from './constants.js';
-import {ContentController, MessageData, PluginController} from './controller.js';
+import {MessageData, PluginController} from './controller.js';
 import {ViewerErrorDialogElement} from './elements/viewer-error-dialog.js';
 import {ViewerPasswordDialogElement} from './elements/viewer-password-dialog.js';
 import {ViewerPdfSidenavElement} from './elements/viewer-pdf-sidenav.js';
@@ -108,7 +108,7 @@ export class PDFViewerElement extends PDFViewerBaseElement {
     return getTemplate();
   }
 
-  static get properties() {
+  static override get properties() {
     return {
       annotationAvailable_: {
         type: Boolean,
@@ -228,7 +228,6 @@ export class PDFViewerElement extends PDFViewerBaseElement {
   }
 
   beepCount: number = 0;
-  currentController: ContentController;
   private annotationAvailable_: boolean;
   private annotationMode_: boolean;
   private attachments_: Attachment[];
@@ -383,6 +382,7 @@ export class PDFViewerElement extends PDFViewerBaseElement {
   // <if expr="enable_ink">
   private onResetView_() {
     if (this.twoUpViewEnabled_) {
+      assert(this.currentController);
       this.currentController.setTwoUpView(false);
     }
 
@@ -491,6 +491,7 @@ export class PDFViewerElement extends PDFViewerBaseElement {
   // </if>
 
   private onDisplayAnnotationsChanged_(e: CustomEvent<boolean>) {
+    assert(this.currentController);
     this.currentController.setDisplayAnnotations(e.detail);
   }
 
@@ -542,6 +543,7 @@ export class PDFViewerElement extends PDFViewerBaseElement {
    */
   private onTwoUpViewChanged_(e: CustomEvent<boolean>) {
     const twoUpViewEnabled = e.detail;
+    assert(this.currentController);
     this.currentController.setTwoUpView(twoUpViewEnabled);
     record(
         twoUpViewEnabled ? UserAction.TWO_UP_VIEW_ENABLE :
@@ -568,14 +570,14 @@ export class PDFViewerElement extends PDFViewerBaseElement {
     return this.bookmarks_;
   }
 
-  setLoadState(loadState: LoadState) {
+  override setLoadState(loadState: LoadState) {
     super.setLoadState(loadState);
     if (loadState === LoadState.FAILED) {
       this.closePasswordDialog_();
     }
   }
 
-  updateProgress(progress: number) {
+  override updateProgress(progress: number) {
     if (this.toolbarEnabled_) {
       this.loadProgress_ = progress;
     }
@@ -624,10 +626,11 @@ export class PDFViewerElement extends PDFViewerBaseElement {
     this.pageNo_ = this.viewport.getMostVisiblePage() + 1;
     this.twoUpViewEnabled_ = this.viewport.twoUpViewEnabled();
 
+    assert(this.currentController);
     this.currentController.viewportChanged();
   }
 
-  handleStrings(strings: {[key: string]: string}) {
+  override handleStrings(strings: {[key: string]: string}) {
     super.handleStrings(strings);
 
     this.pdfAnnotationsEnabled_ =
@@ -639,7 +642,7 @@ export class PDFViewerElement extends PDFViewerBaseElement {
         Math.round(presetZoomFactors[presetZoomFactors.length - 1] * 100);
   }
 
-  handleScriptingMessage(message: MessageEvent<any>) {
+  override handleScriptingMessage(message: MessageEvent<any>) {
     if (super.handleScriptingMessage(message)) {
       return true;
     }
@@ -763,8 +766,8 @@ export class PDFViewerElement extends PDFViewerBaseElement {
     this.viewportZoom_ = viewportZoom;
   }
 
-  setDocumentDimensions(documentDimensions: DocumentDimensionsMessageData):
-      void {
+  override setDocumentDimensions(documentDimensions:
+                                     DocumentDimensionsMessageData): void {
     super.setDocumentDimensions(documentDimensions);
 
     // If the document dimensions are received, the password was correct and the
@@ -838,6 +841,7 @@ export class PDFViewerElement extends PDFViewerBaseElement {
     // If the attachment size is 0, skip requesting the backend to fetch the
     // attachment data.
     if (size !== 0) {
+      assert(this.currentController);
       const result = await this.currentController.saveAttachment(index);
 
       // Cap the PDF attachment size at 100 MB. This cap should be kept in sync
@@ -960,6 +964,7 @@ export class PDFViewerElement extends PDFViewerBaseElement {
     // ink controller. The ink controller always saves the edited document.
     // TODO(dstockwell): Report an error to user if this fails.
     let result: {fileName: string, dataToSave: ArrayBuffer}|null = null;
+    assert(this.currentController);
     if (requestType !== SaveRequestType.ORIGINAL || !this.annotationMode_) {
       result = await this.currentController.save(requestType);
     } else {
@@ -1038,6 +1043,7 @@ export class PDFViewerElement extends PDFViewerBaseElement {
     // <if expr="enable_ink">
     await this.exitAnnotationMode_();
     // </if>
+    assert(this.currentController);
     this.currentController.print();
   }
 

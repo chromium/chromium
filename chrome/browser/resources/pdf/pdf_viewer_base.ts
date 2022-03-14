@@ -36,10 +36,6 @@ function getScrollbarWidth(): number {
 export type KeyEventData = MessageData&{keyEvent: SerializedKeyEvent};
 
 export abstract class PDFViewerBaseElement extends PolymerElement {
-  static get is() {
-    return 'pdf-viewer-base';
-  }
-
   static get properties(): any {
     return {
       showErrorDialog: {

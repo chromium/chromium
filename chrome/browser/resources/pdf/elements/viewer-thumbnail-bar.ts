@@ -68,7 +68,7 @@ export class ViewerThumbnailBarElement extends PolymerElement {
         (e: CustomEvent<boolean>) => this.isPluginActive_ = e.detail);
   }
 
-  ready() {
+  override ready() {
     super.ready();
 
     this.addEventListener('focus', this.onFocus_);
