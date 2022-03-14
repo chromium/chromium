@@ -303,6 +303,7 @@ android_library("junit") {
   ]
 
   deps = [
+    ":feed_java_resources",
     ":java",
     "//base:base_java",
     "//base:base_java_test_support",
@@ -323,6 +324,7 @@ android_library("junit") {
     "//chrome/test/android:chrome_java_test_support",
     "//components/browser_ui/bottomsheet/android:java",
     "//components/browser_ui/settings/android:java",
+    "//components/browser_ui/styles/android:java_resources",
     "//components/browser_ui/widget/android:java",
     "//components/embedder_support/android:junit_test_support",
     "//components/favicon/android:java",
@@ -358,4 +360,5 @@ android_library("junit") {
     "//url:gurl_junit_shadows",
     "//url:gurl_junit_test_support",
   ]
+  resources_package = "org.chromium.chrome.browser.feed.test"
 }
