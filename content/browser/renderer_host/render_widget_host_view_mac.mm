@@ -315,14 +315,16 @@ void RenderWidgetHostViewMac::MigrateNSViewBridge(
 }
 
 void RenderWidgetHostViewMac::SetParentUiLayer(ui::Layer* parent_ui_layer) {
-  if (parent_ui_layer && !display_only_using_parent_ui_layer_) {
+  if (parent_ui_layer) {
     // The first time that we display using a parent ui::Layer, permanently
     // switch from drawing using Cocoa to only drawing using ui::Views. Erase
     // the existing content being drawn by Cocoa (which may have been set due
     // to races, e.g, in https://crbug.com/845807). Note that this transition
     // must be done lazily because not all code has been updated to use
-    // ui::Views (e.g, content_shell).
-    display_only_using_parent_ui_layer_ = true;
+    // ui::Views (e.g, content_shell). Also note that this call must be done
+    // every time the RenderWidgetHostNSViewBridge that `ns_view` points to
+    // changes (e.g, due to MigrateNSViewBridge), see
+    // https://crbug.com/1222976#c49.
     ns_view_->DisableDisplay();
   }
   if (browser_compositor_)

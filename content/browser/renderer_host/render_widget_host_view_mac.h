@@ -564,10 +564,6 @@ class CONTENT_EXPORT RenderWidgetHostViewMac
   // State tracked by Show/Hide/IsShowing.
   bool is_visible_ = false;
 
-  // Set to true if |this| has ever been displayed via a parent ui::Layer (in
-  // which case its NSView will only ever be used for input, not display).
-  bool display_only_using_parent_ui_layer_ = false;
-
   // The bounds of the view in its NSWindow's coordinate system (with origin
   // in the upper-left).
   gfx::Rect view_bounds_in_window_dip_;
