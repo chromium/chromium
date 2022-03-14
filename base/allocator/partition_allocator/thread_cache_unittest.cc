@@ -29,8 +29,7 @@
 #if !defined(MEMORY_TOOL_REPLACES_ALLOCATOR) && \
     defined(PA_THREAD_CACHE_SUPPORTED)
 
-namespace base {
-namespace internal {
+namespace base::internal {
 
 namespace {
 
@@ -975,6 +974,27 @@ TEST_P(PartitionAllocThreadCacheTest, MAYBE_Bookkeeping) {
             GetBucketSizeForThreadCache());
 }
 
+TEST_P(PartitionAllocThreadCacheTest, TryPurgeNoAllocs) {
+  auto* tcache = root_->thread_cache_for_testing();
+  tcache->TryPurge();
+}
+
+TEST_P(PartitionAllocThreadCacheTest, TryPurgeMultipleCorrupted) {
+  auto* tcache = root_->thread_cache_for_testing();
+
+  void* ptr = root_->Alloc(kMediumSize, "");
+
+  auto* medium_bucket =
+      &root_->buckets[root_->SizeToBucketIndex(kMediumSize, GetParam())];
+
+  auto* curr = medium_bucket->active_slot_spans_head->get_freelist_head();
+  curr = curr->GetNextForThreadCache<true>(kMediumSize);
+  curr->CorruptNextForTesting(0x12345678);
+  tcache->TryPurge();
+  curr->SetNext(nullptr);
+  root_->Free(ptr);
+}
+
 TEST(AlternateBucketDistributionTest, SizeToIndex) {
   using internal::BucketIndexLookup;
 
@@ -1088,8 +1108,7 @@ TEST(AlternateBucketDistributionTest, SwitchAfterAlloc) {
     internal::ThreadCache::RemoveTombstoneForTesting();
 }
 
-}  // namespace internal
-}  // namespace base
+}  // namespace base::internal
 
 #endif  // !defined(MEMORY_TOOL_REPLACES_ALLOCATOR) &&
         // defined(PA_THREAD_CACHE_SUPPORTED)

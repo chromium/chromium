@@ -283,6 +283,10 @@ class BASE_EXPORT ThreadCache {
   // The Partition lock must *not* be held when calling this.
   // Must be called from the thread this cache is for.
   void Purge();
+  // |TryPurge| is the same as |Purge|, except that |TryPurge| will
+  // not crash if the thread cache is inconsistent. Normally inconsistency
+  // is a sign of a bug somewhere, so |Purge| should be preferred in most cases.
+  void TryPurge();
   // Amount of cached memory for this thread's cache, in bytes.
   size_t CachedMemory() const;
   void AccumulateStats(ThreadCacheStats* stats) const;
@@ -330,14 +334,21 @@ class BASE_EXPORT ThreadCache {
 
   explicit ThreadCache(PartitionRoot<>* root);
   static void Delete(void* thread_cache_ptr);
+
   void PurgeInternal();
+  template <bool crash_on_corruption>
+  void PurgeInternalHelper();
+
   // Fills a bucket from the central allocator.
   void FillBucket(size_t bucket_index);
   // Empties the |bucket| until there are at most |limit| objects in it.
+  template <bool crash_on_corruption>
+  void ClearBucketHelper(Bucket& bucket, size_t limit);
   void ClearBucket(Bucket& bucket, size_t limit);
   ALWAYS_INLINE void PutInBucket(Bucket& bucket, uintptr_t slot_start);
   void ResetForTesting();
   // Releases the entire freelist starting at |head| to the root.
+  template <bool crash_on_corruption>
   void FreeAfter(PartitionFreelistEntry* head, size_t slot_size);
   static void SetGlobalLimits(PartitionRoot<>* root, float multiplier);
 
@@ -491,7 +502,7 @@ ALWAYS_INLINE uintptr_t ThreadCache::GetFromCache(size_t bucket_index,
   // corruption, we know the bucket size that lead to the crash, helping to
   // narrow down the search for culprit. |bucket| was touched just now, so this
   // does not introduce another cache miss.
-  auto* next = result->GetNextForThreadCache(bucket.slot_size);
+  auto* next = result->GetNextForThreadCache<true>(bucket.slot_size);
   PA_DCHECK(result != next);
   bucket.count--;
   PA_DCHECK(bucket.count != 0 || !next);

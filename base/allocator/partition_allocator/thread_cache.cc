@@ -186,7 +186,7 @@ void ThreadCacheRegistry::ForcePurgeAllThreadAfterForkUnsafe() {
     // passes. See crbug.com/1216964.
     tcache->cached_memory_ = tcache->CachedMemory();
 
-    tcache->Purge();
+    tcache->TryPurge();
     tcache = tcache->next_;
   }
 }
@@ -598,7 +598,12 @@ void ThreadCache::FillBucket(size_t bucket_index) {
   cached_memory_ += allocated_slots * bucket.slot_size;
 }
 
-void ThreadCache::ClearBucket(ThreadCache::Bucket& bucket, size_t limit) {
+void ThreadCache::ClearBucket(Bucket& bucket, size_t limit) {
+  ClearBucketHelper<true>(bucket, limit);
+}
+
+template <bool crash_on_corruption>
+void ThreadCache::ClearBucketHelper(Bucket& bucket, size_t limit) {
   // Avoids acquiring the lock needlessly.
   if (!bucket.count || bucket.count <= limit)
     return;
@@ -614,11 +619,13 @@ void ThreadCache::ClearBucket(ThreadCache::Bucket& bucket, size_t limit) {
   //    triggers a major page fault, and we are running on a low-priority
   //    thread, we don't want the thread to be blocked while holding the lock,
   //    causing a priority inversion.
-  bucket.freelist_head->CheckFreeListForThreadCache(bucket.slot_size);
+  if constexpr (crash_on_corruption) {
+    bucket.freelist_head->CheckFreeListForThreadCache(bucket.slot_size);
+  }
 
   uint8_t count_before = bucket.count;
   if (limit == 0) {
-    FreeAfter(bucket.freelist_head, bucket.slot_size);
+    FreeAfter<crash_on_corruption>(bucket.freelist_head, bucket.slot_size);
     bucket.freelist_head = nullptr;
   } else {
     // Free the *end* of the list, not the head, since the head contains the
@@ -626,10 +633,12 @@ void ThreadCache::ClearBucket(ThreadCache::Bucket& bucket, size_t limit) {
     auto* head = bucket.freelist_head;
     size_t items = 1;  // Cannot free the freelist head.
     while (items < limit) {
-      head = head->GetNextForThreadCache(bucket.slot_size);
+      head = head->GetNextForThreadCache<crash_on_corruption>(bucket.slot_size);
       items++;
     }
-    FreeAfter(head->GetNextForThreadCache(bucket.slot_size), bucket.slot_size);
+    FreeAfter<crash_on_corruption>(
+        head->GetNextForThreadCache<crash_on_corruption>(bucket.slot_size),
+        bucket.slot_size);
     head->SetNext(nullptr);
   }
   bucket.count = limit;
@@ -641,6 +650,7 @@ void ThreadCache::ClearBucket(ThreadCache::Bucket& bucket, size_t limit) {
   PA_DCHECK(cached_memory_ == CachedMemory());
 }
 
+template <bool crash_on_corruption>
 void ThreadCache::FreeAfter(PartitionFreelistEntry* head, size_t slot_size) {
   // Acquire the lock once. Deallocation from the same bucket are likely to be
   // hitting the same cache lines in the central allocator, and lock
@@ -648,7 +658,7 @@ void ThreadCache::FreeAfter(PartitionFreelistEntry* head, size_t slot_size) {
   ::partition_alloc::internal::ScopedGuard guard(root_->lock_);
   while (head) {
     uintptr_t slot_start = reinterpret_cast<uintptr_t>(head);
-    head = head->GetNextForThreadCache(slot_size);
+    head = head->GetNextForThreadCache<crash_on_corruption>(slot_size);
     root_->RawFreeLocked(slot_start);
   }
 }
@@ -719,6 +729,11 @@ void ThreadCache::Purge() {
   PurgeInternal();
 }
 
+void ThreadCache::TryPurge() {
+  PA_REENTRANCY_GUARD(is_in_thread_cache_);
+  PurgeInternalHelper<false>();
+}
+
 // static
 void ThreadCache::PurgeCurrentThread() {
   auto* tcache = Get();
@@ -727,14 +742,21 @@ void ThreadCache::PurgeCurrentThread() {
 }
 
 void ThreadCache::PurgeInternal() {
+  PurgeInternalHelper<true>();
+}
+
+template <bool crash_on_corruption>
+void ThreadCache::PurgeInternalHelper() {
   should_purge_.store(false, std::memory_order_relaxed);
-  // TODO(lizeb): Investigate whether lock acquisition should be less frequent.
+  // TODO(lizeb): Investigate whether lock acquisition should be less
+  // frequent.
   //
   // Note: iterate over all buckets, even the inactive ones. Since
   // |largest_active_bucket_index_| can be lowered at runtime, there may be
-  // memory already cached in the inactive buckets. They should still be purged.
+  // memory already cached in the inactive buckets. They should still be
+  // purged.
   for (auto& bucket : buckets_)
-    ClearBucket(bucket, 0);
+    ClearBucketHelper<crash_on_corruption>(bucket, 0);
 }
 
 }  // namespace base::internal

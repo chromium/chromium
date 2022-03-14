@@ -149,8 +149,14 @@ class PartitionFreelistEntry {
         PartitionFreelistEntry(next, make_shadow_match);
   }
 
+  void CorruptNextForTesting(uintptr_t v) {
+    // We just need a value that can never be a valid pointer here.
+    encoded_next_.Override(EncodedPartitionFreelistEntryPtr::Transform(v));
+  }
+
   // Puts |extra| on the stack before crashing in case of memory
   // corruption. Meant to be used to report the failed allocation size.
+  template <bool crash_on_corruption>
   ALWAYS_INLINE PartitionFreelistEntry* GetNextForThreadCache(
       size_t extra) const;
   ALWAYS_INLINE PartitionFreelistEntry* GetNext(size_t extra) const;
@@ -163,7 +169,7 @@ class PartitionFreelistEntry {
 
   NOINLINE void CheckFreeListForThreadCache(size_t extra) const {
     for (auto* entry = this; entry;
-         entry = entry->GetNextForThreadCache(extra)) {
+         entry = entry->GetNextForThreadCache<true>(extra)) {
       // |GetNextForThreadCache()| checks freelist integrity.
     }
   }
@@ -206,6 +212,7 @@ class PartitionFreelistEntry {
   }
 
  private:
+  template <bool crash_on_corruption>
   ALWAYS_INLINE PartitionFreelistEntry* GetNextInternal(
       size_t extra,
       bool for_thread_cache) const;
@@ -268,6 +275,7 @@ static_assert(kSmallestUsedBucket >=
               "smallest *used* slot");
 #endif  // BUILDFLAG(PUT_REF_COUNT_IN_PREVIOUS_SLOT)
 
+template <bool crash_on_corruption>
 ALWAYS_INLINE PartitionFreelistEntry* PartitionFreelistEntry::GetNextInternal(
     size_t extra,
     bool for_thread_cache) const {
@@ -279,8 +287,13 @@ ALWAYS_INLINE PartitionFreelistEntry* PartitionFreelistEntry::GetNextInternal(
   auto* ret = encoded_next_.Decode();
   // We rely on constant propagation to remove the branches coming from
   // |for_thread_cache|, since the argument is always a compile-time constant.
-  if (UNLIKELY(!IsSane(this, ret, for_thread_cache)))
-    FreelistCorruptionDetected(extra);
+  if (UNLIKELY(!IsSane(this, ret, for_thread_cache))) {
+    if constexpr (crash_on_corruption) {
+      FreelistCorruptionDetected(extra);
+    } else {
+      return nullptr;
+    }
+  }
 
   // In real-world profiles, the load of |encoded_next_| above is responsible
   // for a large fraction of the allocation cost. However, we cannot anticipate
@@ -293,14 +306,15 @@ ALWAYS_INLINE PartitionFreelistEntry* PartitionFreelistEntry::GetNextInternal(
   return ret;
 }
 
+template <bool crash_on_corruption>
 ALWAYS_INLINE PartitionFreelistEntry*
 PartitionFreelistEntry::GetNextForThreadCache(size_t extra) const {
-  return GetNextInternal(extra, true);
+  return GetNextInternal<crash_on_corruption>(extra, true);
 }
 
 ALWAYS_INLINE PartitionFreelistEntry* PartitionFreelistEntry::GetNext(
     size_t extra) const {
-  return GetNextInternal(extra, false);
+  return GetNextInternal<true>(extra, false);
 }
 
 }  // namespace partition_alloc::internal
