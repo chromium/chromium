@@ -186,7 +186,7 @@ bool CharacterData::ContainsOnlyWhitespaceOrEmpty() const {
   return data().ContainsOnlyWhitespaceOrEmpty();
 }
 
-void CharacterData::setNodeValue(const String& node_value) {
+void CharacterData::setNodeValue(const String& node_value, ExceptionState&) {
   setData(!node_value.IsNull() ? node_value : g_empty_string);
 }
 

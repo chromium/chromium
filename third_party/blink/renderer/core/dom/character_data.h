@@ -94,7 +94,7 @@ class CORE_EXPORT CharacterData : public Node {
 
  private:
   String nodeValue() const final;
-  void setNodeValue(const String&) final;
+  void setNodeValue(const String&, ExceptionState&) final;
   bool IsCharacterDataNode() const final { return true; }
   void SetDataAndUpdate(const String&,
                         unsigned offset_of_replaced_data,

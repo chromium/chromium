@@ -199,7 +199,8 @@ class CORE_EXPORT Node : public EventTarget {
   bool HasTagName(const SVGQualifiedName&) const;
   virtual String nodeName() const = 0;
   virtual String nodeValue() const;
-  virtual void setNodeValue(const String&);
+  virtual void setNodeValue(const String&,
+                            ExceptionState& = ASSERT_NO_EXCEPTION);
   virtual NodeType getNodeType() const = 0;
   ContainerNode* parentNode() const;
   Element* parentElement() const;

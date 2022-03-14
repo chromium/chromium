@@ -369,7 +369,7 @@ String Node::nodeValue() const {
   return String();
 }
 
-void Node::setNodeValue(const String&) {
+void Node::setNodeValue(const String&, ExceptionState&) {
   // By default, setting nodeValue has no effect.
 }
 
