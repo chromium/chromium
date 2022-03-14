@@ -74,7 +74,7 @@ void DlpWarnNotifier::ShowDlpWarningDialog(
     OnDlpRestrictionCheckedCallback callback,
     DlpWarnDialog::DlpWarnDialogOptions options) {
   views::Widget* widget = views::DialogDelegate::CreateDialogWidget(
-      new DlpWarnDialog(std::move(callback), options),
+      std::make_unique<DlpWarnDialog>(std::move(callback), options),
       /*context=*/nullptr, /*parent=*/nullptr);
   widget->Show();
   // We disable the dialog's hide animations after showing it so that it doesn't

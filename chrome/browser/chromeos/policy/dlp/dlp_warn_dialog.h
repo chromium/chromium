@@ -57,24 +57,11 @@ class DlpWarnDialog : public views::DialogDelegateView {
   };
 
   DlpWarnDialog() = delete;
+  DlpWarnDialog(OnDlpRestrictionCheckedCallback callback,
+                DlpWarnDialogOptions options);
   DlpWarnDialog(const DlpWarnDialog& other) = delete;
   DlpWarnDialog& operator=(const DlpWarnDialog& other) = delete;
   ~DlpWarnDialog() override = default;
-
- private:
-  // DlpWarnNotifier is used to create and show DlpWarnDialogs and should be the
-  // only way to do that. Therefore it needs access to some private members of
-  // the DlpWarnDialog class, such as the options and restriction types, as well
-  // as the constructor.
-  friend class DlpWarnNotifier;
-
-  // Helper method to create and show a warning dialog for a given
-  // |restriction|.
-  static void ShowDlpWarningDialog(OnDlpRestrictionCheckedCallback callback,
-                                   DlpWarnDialogOptions options);
-
-  DlpWarnDialog(OnDlpRestrictionCheckedCallback callback,
-                DlpWarnDialogOptions options);
 };
 
 }  // namespace policy
