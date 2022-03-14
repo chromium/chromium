@@ -7,10 +7,10 @@
 #include "ash/constants/ash_features.h"
 #include "ash/public/cpp/projector/annotator_tool.h"
 #include "ash/public/cpp/projector/projector_controller.h"
+#include "ash/public/cpp/projector/projector_new_screencast_precondition.h"
 #include "ash/webui/projector_app/annotator_message_handler.h"
 #include "ash/webui/projector_app/projector_app_client.h"
 #include "ash/webui/projector_app/public/cpp/projector_app_constants.h"
-#include "chrome/browser/ash/drive/drive_integration_service.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/download/download_prefs.h"
 #include "chrome/browser/profiles/profile.h"
@@ -26,7 +26,6 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui.h"
 #include "media/base/media_switches.h"
-#include "projector_client_impl.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/display/display.h"
 #include "ui/display/screen.h"
@@ -51,6 +50,14 @@ void ProjectorClientImpl::InitForProjectorAnnotator(views::WebView* web_view) {
 ProjectorClientImpl::ProjectorClientImpl(ash::ProjectorController* controller)
     : controller_(controller) {
   controller_->SetClient(this);
+  session_manager::SessionManager* session_manager =
+      session_manager::SessionManager::Get();
+  if (session_manager)
+    session_observation_.Observe(session_manager);
+
+  user_manager::UserManager* user_manager = user_manager::UserManager::Get();
+  if (user_manager)
+    session_state_observation_.Observe(user_manager);
 }
 
 ProjectorClientImpl::ProjectorClientImpl()
@@ -200,4 +207,44 @@ void ProjectorClientImpl::Redo() {}
 
 void ProjectorClientImpl::Clear() {
   message_handler_->Clear();
+}
+
+void ProjectorClientImpl::OnFileSystemMounted() {
+  OnNewScreencastPreconditionChanged(
+      controller_->GetNewScreencastPrecondition());
+}
+
+void ProjectorClientImpl::OnFileSystemBeingUnmounted() {
+  OnNewScreencastPreconditionChanged(
+      controller_->GetNewScreencastPrecondition());
+}
+
+void ProjectorClientImpl::OnFileSystemMountFailed() {
+  OnNewScreencastPreconditionChanged(
+      controller_->GetNewScreencastPrecondition());
+}
+
+void ProjectorClientImpl::OnUserProfileLoaded(const AccountId& account_id) {
+  MaybeSwitchDriveIntegrationServiceObservation();
+}
+
+void ProjectorClientImpl::ActiveUserChanged(user_manager::User* active_user) {
+  // After user login, the first ActiveUserChanged() might be called before
+  // profile is loaded.
+  if (active_user->is_profile_created())
+    MaybeSwitchDriveIntegrationServiceObservation();
+}
+
+void ProjectorClientImpl::MaybeSwitchDriveIntegrationServiceObservation() {
+  auto* profile = ProfileManager::GetActiveUserProfile();
+  if (!IsProjectorAllowedForProfile(profile))
+    return;
+
+  drive::DriveIntegrationService* drive_service =
+      GetDriveIntegrationServiceForActiveProfile();
+  if (!drive_service || drive_observation_.IsObservingSource(drive_service))
+    return;
+
+  drive_observation_.Reset();
+  drive_observation_.Observe(drive_service);
 }

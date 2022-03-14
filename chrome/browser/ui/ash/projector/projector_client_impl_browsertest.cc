@@ -7,12 +7,18 @@
 #include <memory>
 
 #include "ash/constants/ash_features.h"
+#include "ash/projector/test/mock_projector_client.h"
 #include "ash/public/cpp/projector/projector_client.h"
+#include "ash/public/cpp/projector/projector_new_screencast_precondition.h"
 #include "ash/webui/projector_app/public/cpp/projector_app_constants.h"
+#include "base/bind.h"
+#include "base/callback_forward.h"
+#include "base/run_loop.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/ash/drive/drive_integration_service.h"
 #include "chrome/browser/ash/drive/drivefs_test_support.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/ash/projector/projector_app_client_impl.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
@@ -31,6 +37,47 @@
 #include "url/gurl.h"
 
 namespace ash {
+
+// A class helps to verify enable/disable Drive could invoke
+// ProjectorAppClient::Observer::OnDriveFsMountStatusChanged().
+class DriveFsMountStatusWaiter : public ProjectorAppClient::Observer {
+ public:
+  explicit DriveFsMountStatusWaiter(drive::DriveIntegrationService* service)
+      : service_(service) {
+    GetProjectorAppClientImpl()->AddObserver(this);
+  }
+
+  DriveFsMountStatusWaiter(const DriveFsMountStatusWaiter&) = delete;
+  DriveFsMountStatusWaiter& operator=(const DriveFsMountStatusWaiter&) = delete;
+
+  ~DriveFsMountStatusWaiter() override {
+    GetProjectorAppClientImpl()->RemoveObserver(this);
+  }
+
+  // ProjectorAppClient::Observer:
+  void OnNewScreencastPreconditionChanged(
+      const NewScreencastPrecondition& condition) override {
+    std::move(quit_closure_).Run();
+  }
+  MOCK_METHOD1(OnScreencastsPendingStatusChanged,
+               void(const PendingScreencastSet&));
+  MOCK_METHOD1(OnSodaProgress, void(int));
+  MOCK_METHOD0(OnSodaError, void());
+  MOCK_METHOD0(OnSodaInstalled, void());
+
+  void SetDriveEnabled(bool enabled_drive, base::OnceClosure quit_closure) {
+    quit_closure_ = std::move(quit_closure);
+    service_->SetEnabled(enabled_drive);
+  }
+
+  ProjectorAppClientImpl* GetProjectorAppClientImpl() {
+    return static_cast<ProjectorAppClientImpl*>(ash::ProjectorAppClient::Get());
+  }
+
+ private:
+  base::OnceClosure quit_closure_;
+  drive::DriveIntegrationService* service_;
+};
 
 class ProjectorClientTest : public InProcessBrowserTest {
  public:
@@ -162,6 +209,28 @@ IN_PROC_BROWSER_TEST_F(ProjectorClientTest, GetDriveFsMountPointPath) {
   base::FilePath mounted_path;
   ASSERT_TRUE(client()->GetDriveFsMountPointPath(&mounted_path));
   ASSERT_EQ(browser()->profile()->GetPath().Append("drivefs"), mounted_path);
+}
+
+IN_PROC_BROWSER_TEST_F(ProjectorClientTest, DriveUnmountedAndRemounted) {
+  drive::DriveIntegrationService* service =
+      drive::DriveIntegrationServiceFactory::FindForProfile(
+          browser()->profile());
+  EXPECT_TRUE(service->is_enabled());
+
+  DriveFsMountStatusWaiter observer{service};
+
+  {
+    base::RunLoop run_loop;
+    observer.SetDriveEnabled(
+        /*enabled_drive=*/false, run_loop.QuitClosure());
+    run_loop.Run();
+  }
+  {
+    base::RunLoop run_loop;
+    observer.SetDriveEnabled(
+        /*enabled_drive=*/true, run_loop.QuitClosure());
+    run_loop.Run();
+  }
 }
 
 }  // namespace ash
