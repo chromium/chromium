@@ -7,13 +7,15 @@ This file cannot be upstreamed to WPT until:
 <meta name="timeout" content="long">
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
-<script src="resources/utils.js"></script>
+<script src="/common/utils.js"></script>
 <script src="/service-workers/service-worker/resources/test-helpers.sub.js"></script>
+<script src="/speculation-rules/prerender/resources/utils.js"></script>
 <body>
 <script>
 
 promise_test(async t => {
-  const bc = new BroadcastChannel('test-channel');
+  const uid = token();
+  const bc = new PrerenderChannel('test-channel', uid);
   t.add_cleanup(_ => bc.close());
 
   // We grant the permission here to make a more discerning test because
@@ -40,7 +42,7 @@ promise_test(async t => {
   t.add_cleanup(() => registration.unregister());
   await wait_for_state(t, registration.installing, 'activated');
 
-  const url = `resources/background-fetch.https.html`;
+  const url = `resources/background-fetch.https.html?uid=${uid}`;
   window.open(url, '_blank', 'noopener');
 
   const result = await gotMessage;
@@ -55,6 +57,9 @@ promise_test(async t => {
     assert_equals(result[i].prerendering, expected[i].prerendering,
       `prerendering[${i}]`);
   }
+
+  // Send a close signal to PrerenderEventCollector on the prerendered page.
+  new PrerenderChannel('close', uid).postMessage('');
 }, `The access to the Background Fetch API should be deferred until the
     prerendered page is activated`);
 

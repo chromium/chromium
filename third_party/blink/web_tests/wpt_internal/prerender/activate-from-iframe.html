@@ -3,15 +3,17 @@
 <meta name="timeout" content="long">
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
-<script src="resources/utils.js"></script>
+<script src="/common/utils.js"></script>
+<script src="/speculation-rules/prerender/resources/utils.js"></script>
 <script>
 
 promise_test(async t => {
-  const channel = new BroadcastChannel('result-channel');
+  const uid = token();
+  const channel = new PrerenderChannel('result-channel', uid);
   const messageQueue = new BroadcastMessageQueue(channel);
   t.add_cleanup(_ => channel.close());
 
-  const url = `resources/activate-from-iframe.html?mode=triggering`;
+  const url = `resources/activate-from-iframe.html?mode=triggering&uid=${uid}`;
   window.open(url, '_blank', 'noopener');
 
   const gotActivationMessage = await messageQueue.nextMessage();

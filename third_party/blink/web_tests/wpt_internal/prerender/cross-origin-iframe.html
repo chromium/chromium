@@ -11,11 +11,14 @@ This file cannot be upstreamed to WPT until:
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
 <script src="/common/get-host-info.sub.js"></script>
+<script src="/common/utils.js"></script>
+<script src="/speculation-rules/prerender/resources/utils.js"></script>
 <body>
 <script>
 
 promise_test(async t => {
-  const bc = new BroadcastChannel('test-channel');
+  const uid = token();
+  const bc = new PrerenderChannel('test-channel', uid);
 
   const gotMessage = new Promise(resolve => {
     bc.addEventListener('message', e => {
@@ -24,7 +27,7 @@ promise_test(async t => {
       once: true
     });
   });
-  const url = `resources/cross-origin-iframe.html`;
+  const url = `resources/cross-origin-iframe.html?uid=${uid}`;
   window.open(url, '_blank', 'noopener');
 
   const result = await gotMessage;
@@ -49,6 +52,9 @@ promise_test(async t => {
        `prerendering[${i}]`);
   }
   bc.close();
+
+  // Send a close signal to PrerenderEventCollector on the prerendered page.
+  new PrerenderChannel('close', uid).postMessage('');
 }, `cross-origin iframes should not load until activation`);
 
 </script>

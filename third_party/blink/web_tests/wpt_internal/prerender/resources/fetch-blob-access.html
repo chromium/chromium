@@ -1,7 +1,11 @@
 <!DOCTYPE html>
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
+<script src="/speculation-rules/prerender/resources/utils.js"></script>
 <script>
+
+const params = new URLSearchParams(location.search);
+const uid = params.get('uid');
 
 async function fileReaderReady(reader) {
   return new Promise(function(resolve, reject) {
@@ -21,7 +25,7 @@ function readBlobAsText(blob) {
 }
 
 async function fetchBlob() {
-  const bc = new BroadcastChannel('prerender-channel');
+  const bc = new PrerenderChannel('prerender-channel', uid);
   assert_true(document.prerendering);
 
   const response = await fetch('cache.txt');
