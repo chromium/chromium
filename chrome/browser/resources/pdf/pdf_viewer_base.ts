@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {assert} from 'chrome://resources/js/assert.m.js';
+import {assert} from 'chrome://resources/js/assert_ts.js';
 import {EventTracker} from 'chrome://resources/js/event_tracker.m.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {PromiseResolver} from 'chrome://resources/js/promise_resolver.m.js';
@@ -211,7 +211,7 @@ export abstract class PDFViewerBaseElement extends PolymerElement {
         this.browserApi!.getZoomBehavior(), () => this.viewport_!.getZoom(),
         zoom => this.browserApi!.setZoom(zoom),
         this.browserApi!.getInitialZoom());
-    this.viewport_!.setZoomManager(assert(this.zoomManager_));
+    this.viewport_!.setZoomManager(this.zoomManager_);
     this.browserApi!.addZoomEventListener(
         (zoom: number) => this.zoomManager_!.onBrowserZoomChange(zoom));
 
@@ -371,7 +371,8 @@ export abstract class PDFViewerBaseElement extends PolymerElement {
   }
 
   get viewport(): Viewport {
-    return assert(this.viewport_!);
+    assert(this.viewport_);
+    return this.viewport_;
   }
 
   /**

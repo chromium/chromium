@@ -15,7 +15,7 @@ import './pdf_viewer_shared_style.js';
 import 'chrome://resources/cr_elements/hidden_style_css.m.js';
 import 'chrome://resources/cr_elements/shared_vars_css.m.js';
 
-import {assert, assertNotReached} from 'chrome://resources/js/assert.m.js';
+import {assert, assertNotReached} from 'chrome://resources/js/assert_ts.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {listenOnce} from 'chrome://resources/js/util.m.js';
 
@@ -301,15 +301,15 @@ export class PDFViewerElement extends PDFViewerBaseElement {
     this.fileName_ = getFilenameFromURL(this.originalUrl);
     this.title_ = this.fileName_;
 
-    assert(this.paramsParser!);
+    assert(this.paramsParser);
     this.toolbarEnabled_ =
-        this.paramsParser!.shouldShowToolbar(this.originalUrl);
+        this.paramsParser.shouldShowToolbar(this.originalUrl);
     if (this.toolbarEnabled_) {
       this.$.toolbar.hidden = false;
     }
 
     this.navigator_ = new PdfNavigator(
-        this.originalUrl, this.viewport, this.paramsParser!,
+        this.originalUrl, this.viewport, this.paramsParser,
         new NavigatorDelegateImpl(browserApi));
 
     // Listen for save commands from the browser.
@@ -402,7 +402,6 @@ export class PDFViewerElement extends PDFViewerBaseElement {
         break;
       default:
         assertNotReached('Invalid rotations count: ' + rotations);
-        break;
     }
   }
 
