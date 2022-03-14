@@ -456,15 +456,15 @@ TEST(DeviceLocalAccountManagementPolicyProviderTest, PublicSession) {
   // Verify that a platform app with socket dictionary permission can be
   // installed.
   {
-    auto socket = std::make_unique<base::DictionaryValue>();
-    base::ListValue tcp_list;
+    base::Value::Dict socket;
+    base::Value::List tcp_list;
     tcp_list.Append("tcp-connect");
-    socket->SetKey("socket", std::move(tcp_list));
-    base::ListValue permissions;
+    socket.Set("socket", std::move(tcp_list));
+    base::Value::List permissions;
     permissions.Append(std::move(socket));
     base::DictionaryValue values;
     values.SetKey(extensions::manifest_keys::kPermissions,
-                  std::move(permissions));
+                  base::Value(std::move(permissions)));
 
     extension = CreatePlatformAppWithExtraValues(
         &values, ManifestLocation::kExternalPolicy,
@@ -479,15 +479,15 @@ TEST(DeviceLocalAccountManagementPolicyProviderTest, PublicSession) {
   // Verify that a platform app with unknown dictionary permission cannot be
   // installed.
   {
-    auto socket = std::make_unique<base::DictionaryValue>();
-    base::ListValue tcp_list;
+    base::Value::Dict socket;
+    base::Value::List tcp_list;
     tcp_list.Append("unknown_value");
-    socket->SetKey("unknown_key", std::move(tcp_list));
-    base::ListValue permissions;
+    socket.Set("unknown_key", std::move(tcp_list));
+    base::Value::List permissions;
     permissions.Append(std::move(socket));
     base::DictionaryValue values;
     values.SetKey(extensions::manifest_keys::kPermissions,
-                  std::move(permissions));
+                  base::Value(std::move(permissions)));
 
     extension = CreatePlatformAppWithExtraValues(
         &values, ManifestLocation::kExternalPolicy,

@@ -71,23 +71,25 @@ void ExtensionDictionaryEventRouter::OnCustomDictionaryChanged(
     return;
   }
 
-  std::unique_ptr<base::ListValue> added_words(new base::ListValue());
+  base::Value::List added_words;
+  added_words.reserve(dictionary_change.to_add().size());
   for (const std::string& word : dictionary_change.to_add())
-    added_words->Append(word);
+    added_words.Append(word);
 
-  std::unique_ptr<base::ListValue> removed_words(new base::ListValue());
+  base::Value::List removed_words;
+  removed_words.reserve(dictionary_change.to_remove().size());
   for (const std::string& word : dictionary_change.to_remove())
-    removed_words->Append(word);
+    removed_words.Append(word);
 
-  std::unique_ptr<base::ListValue> args(new base::ListValue());
-  args->Append(std::move(added_words));
-  args->Append(std::move(removed_words));
+  base::Value::List args;
+  args.Append(std::move(added_words));
+  args.Append(std::move(removed_words));
 
   // The router will only send the event to extensions that are listening.
   auto event = std::make_unique<extensions::Event>(
       extensions::events::INPUT_METHOD_PRIVATE_ON_DICTIONARY_CHANGED,
-      OnDictionaryChanged::kEventName, std::move(*args).TakeListDeprecated(),
-      context_);
+      OnDictionaryChanged::kEventName,
+      base::Value(std::move(args)).TakeListDeprecated(), context_);
   router->BroadcastEvent(std::move(event));
 }
 
