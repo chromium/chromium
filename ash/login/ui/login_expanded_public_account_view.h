@@ -81,12 +81,14 @@ class ASH_EXPORT LoginExpandedPublicAccountView : public NonAccessibleView {
 
   // views::View:
   void OnPaint(gfx::Canvas* canvas) override;
+  int GetHeightForWidth(int w) const override;
 
   // ui::EventHandler:
   void OnKeyEvent(ui::KeyEvent* event) override;
 
  private:
   LoginUserView* user_view_ = nullptr;
+  views::View* left_pane_ = nullptr;
   RightPaneView* right_pane_ = nullptr;
   OnPublicSessionViewDismissed on_dismissed_;
   PublicAccountMonitoringInfoDialog* learn_more_dialog_ = nullptr;

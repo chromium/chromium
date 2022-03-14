@@ -1930,7 +1930,12 @@ void LockContentsView::LayoutUserAddingScreenIndicator() {
 
 void LockContentsView::LayoutPublicSessionView() {
   gfx::Rect bounds = GetContentsBounds();
-  bounds.ClampToCenteredSize(expanded_view_->GetPreferredSize());
+  gfx::Size pref_size = expanded_view_->GetPreferredSize();
+  if (bounds.width() < pref_size.width()) {
+    int height = expanded_view_->GetHeightForWidth(bounds.width());
+    pref_size = {bounds.width(), height};
+  }
+  bounds.ClampToCenteredSize(pref_size);
   expanded_view_->SetBoundsRect(bounds);
 }
 

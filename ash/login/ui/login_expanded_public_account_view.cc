@@ -66,6 +66,7 @@ constexpr int kSpacingBetweenSelectionTitleAndButtonDp = 3;
 constexpr int kSpacingBetweenLanguageMenuAndAdvancedViewButtonDp = 4;
 constexpr int kSpacingBetweenAdvancedViewButtonAndLabelDp = 32;
 constexpr int kTopSpacingForUserViewDp = 62;
+constexpr int kArrowButtonMarginDp = kSpacingBetweenLabelsDp;
 
 constexpr int kNonEmptyWidth = 1;
 constexpr int kNonEmptyHeight = 1;
@@ -221,16 +222,13 @@ class SelectionButtonView : public LoginButton {
   views::View* right_margin_view_ = nullptr;
 };
 
-// Container for the device monitoring warning.
+// Container for the device monitoring warning. Composed of an optional warning
+// icon on the left and a label to the right.
 class MonitoringWarningView : public NonAccessibleView {
  public:
   MonitoringWarningView()
       : NonAccessibleView(kMonitoringWarningClassName),
         warning_type_(WarningType::kNone) {
-    SetLayoutManager(std::make_unique<views::BoxLayout>(
-        views::BoxLayout::Orientation::kHorizontal, gfx::Insets(),
-        kSpacingBetweenMonitoringWarningIconAndLabelDp));
-
     image_ = new views::ImageView();
     image_->SetImage(gfx::CreateVectorIcon(
         vector_icons::kWarningIcon, kMonitoringWarningIconSizeDp,
@@ -268,6 +266,38 @@ class MonitoringWarningView : public NonAccessibleView {
 
   ~MonitoringWarningView() override = default;
 
+  // MonitoringWarningview is effectively laid out as BoxLayout with
+  // kSpacingBetweenMonitoringWarningIconAndLabelDp spacing between its two
+  // child views. However, horizontal BoxLayout and FlexLayout do not handle
+  // views that override GetHeightForWidth well, so it's implemented ad-hoc
+  // here.
+  int GetHeightForWidth(int w) const override {
+    int image_height = image_->GetPreferredSize().height();
+    w -= image_->GetPreferredSize().width();
+    w -= kSpacingBetweenMonitoringWarningIconAndLabelDp;
+    int label_height = label_->GetHeightForWidth(w);
+    return std::max(image_height, label_height);
+  }
+
+  void Layout() override {
+    const gfx::Rect b = GetContentsBounds();
+    int x = b.x();
+
+    image_->SizeToPreferredSize();
+    // image_ is vertically centered. Thus its top right coordinate is given by
+    // moving up half the image height from the left midpoint of the bounding
+    // rect of `this`.
+    int image_y = b.y() + (b.height() - image_->size().height()) / 2;
+    image_->SetPosition(gfx::Point(x, image_y));
+
+    x += image_->size().width();
+    x += kSpacingBetweenMonitoringWarningIconAndLabelDp;
+
+    int label_width = b.right() - x;
+    int label_height = label_->GetHeightForWidth(label_width);
+    label_->SetBounds(x, b.y(), label_width, label_height);
+  }
+
  private:
   void UpdateLabel() {
     // Call sequence of UpdateForUser() and SetWarningType() is not clear.
@@ -288,6 +318,8 @@ class MonitoringWarningView : public NonAccessibleView {
       image_->SetVisible(false);
     }
     label_->SetText(label_text);
+    InvalidateLayout();
+    Layout();
   }
 
   friend class LoginExpandedPublicAccountView::TestApi;
@@ -404,6 +436,56 @@ class RightPaneView : public NonAccessibleView {
 
   ~RightPaneView() override = default;
 
+  int GetHeightForWidth(int w) const override {
+    if (w >= GetPreferredSize().width()) {
+      // We're not shrunk horizontally, so take preferred height.
+      return GetPreferredSize().height();
+    }
+
+    int result = 0;
+
+    // Remove left and right margins from width.
+    w -= 2 * kHorizontalMarginPaneDp;
+
+    // Top and bottom margins.
+    // TODO(crbug.com/1305982): The name suggests that this is meant only for
+    // horizontal padding, but it's really applied on all sides. Is it
+    // intentional?
+    result += 2 * kHorizontalMarginPaneDp;
+
+    // Additional top spacing.
+    result += show_advanced_view_ ? kTopSpacingForLabelInAdvancedViewDp
+                                  : kTopSpacingForLabelInRegularViewDp;
+
+    // TODO(crbug.com/1305982): Why is there a further right margin for the
+    // labels view in addition to the general padding of RightPane?
+    // Intentional?
+    const int label_width = w - kLabelMarginDp;
+    result += labels_view_->GetHeightForWidth(label_width);
+
+    // Spacing above advanced view button.
+    result += show_advanced_view_ ? kSpacingBetweenLabelsDp
+                                  : kSpacingBetweenAdvancedViewButtonAndLabelDp;
+    // Advanced view button is always rendered at preferred size.
+    result += advanced_view_button_->GetPreferredSize().height();
+
+    if (show_advanced_view_) {
+      // Spacing above advanced view.
+      result += kSpacingBetweenLanguageMenuAndAdvancedViewButtonDp;
+      // Advanced view is always rendered at preferred size.
+      result += advanced_view_->GetPreferredSize().height();
+    }
+
+    // Add space for submit button in final row.
+    result += kArrowButtonMarginDp;
+    result += kArrowButtonSizeDp;
+
+    // We shouldn't end up smaller than preferred height.
+    result = std::max(result, GetPreferredSize().height());
+
+    return result;
+  }
+
   void Layout() override {
     const gfx::Rect bounds = GetContentsBounds();
     // Place the labels.
@@ -457,6 +539,7 @@ class RightPaneView : public NonAccessibleView {
     if (!show_advanced_changed_by_user_)
       show_advanced_view_ = user.public_account_info->show_advanced_view;
 
+    InvalidateLayout();
     Layout();
   }
 
@@ -573,6 +656,7 @@ class RightPaneView : public NonAccessibleView {
   void AdvancedViewButtonPressed() {
     show_advanced_view_ = !show_advanced_view_;
     show_advanced_changed_by_user_ = true;
+    InvalidateLayout();
     Layout();
   }
 
@@ -732,8 +816,9 @@ LoginExpandedPublicAccountView::LoginExpandedPublicAccountView(
       on_dismissed_(on_dismissed),
       event_handler_(
           std::make_unique<LoginExpandedPublicAccountEventHandler>(this)) {
-  SetLayoutManager(std::make_unique<views::BoxLayout>(
+  auto* layout = SetLayoutManager(std::make_unique<views::BoxLayout>(
       views::BoxLayout::Orientation::kHorizontal));
+  layout->SetDefaultFlex(1);
   SetPreferredSize(gfx::Size(kExpandedViewWidthDp, kExpandedViewHeightDp));
 
   user_view_ = new LoginUserView(
@@ -742,19 +827,19 @@ LoginExpandedPublicAccountView::LoginExpandedPublicAccountView(
   user_view_->SetForceOpaque(true);
   user_view_->SetTapEnabled(false);
 
-  auto* left_pane = new NonAccessibleView();
-  AddChildView(left_pane);
-  left_pane->SetLayoutManager(std::make_unique<views::BoxLayout>(
+  left_pane_ = new NonAccessibleView();
+  AddChildView(left_pane_);
+  left_pane_->SetLayoutManager(std::make_unique<views::BoxLayout>(
       views::BoxLayout::Orientation::kVertical));
-  left_pane->SetPreferredSize(
+  left_pane_->SetPreferredSize(
       gfx::Size(kExpandedViewWidthDp / 2, kExpandedViewHeightDp));
 
   auto* top_spacing = new NonAccessibleView();
   top_spacing->SetPreferredSize(
       gfx::Size(kNonEmptyWidth, kTopSpacingForUserViewDp));
-  left_pane->AddChildView(top_spacing);
-  left_pane->AddChildView(user_view_);
-  left_pane->SetBorder(views::CreateSolidSidedBorder(
+  left_pane_->AddChildView(top_spacing);
+  left_pane_->AddChildView(user_view_);
+  left_pane_->SetBorder(views::CreateSolidSidedBorder(
       0, 0, 0, kBorderThicknessDp,
       AshColorProvider::Get()->GetContentLayerColor(
           AshColorProvider::ContentLayerType::kSeparatorColor)));
@@ -851,6 +936,12 @@ void LoginExpandedPublicAccountView::OnPaint(gfx::Canvas* canvas) {
       AshColorProvider::ShieldLayerType::kShield80));
   flags.setAntiAlias(true);
   canvas->DrawRoundRect(GetContentsBounds(), kRoundRectCornerRadiusDp, flags);
+}
+
+int LoginExpandedPublicAccountView::GetHeightForWidth(int w) const {
+  int left_height = left_pane_->GetHeightForWidth(w / 2);
+  int right_height = right_pane_->GetHeightForWidth(w / 2);
+  return std::max(left_height, right_height);
 }
 
 void LoginExpandedPublicAccountView::OnKeyEvent(ui::KeyEvent* event) {
