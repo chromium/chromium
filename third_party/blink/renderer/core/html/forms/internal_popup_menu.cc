@@ -583,6 +583,7 @@ void InternalPopupMenu::SetValueAndClosePopup(int num_value,
     event.SetFrameScale(1);
     PhysicalRect bounding_box = owner_element_->BoundingBox();
     event.SetPositionInWidget(bounding_box.X(), bounding_box.Y());
+    event.SetTimeStamp(base::TimeTicks::Now());
     Element* owner = &OwnerElement();
     if (LocalFrame* frame = owner->GetDocument().GetFrame()) {
       frame->GetEventHandler().HandleTargetedMouseEvent(
