@@ -1336,6 +1336,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="2278562042389100163">Open browser window</translation>
 <translation id="2278668501808246459">Starting the container manager</translation>
 <translation id="2280486287150724112">Right margin</translation>
+<translation id="2281863813036651454">Left mouse click</translation>
 <translation id="2282146716419988068">GPU Process</translation>
 <translation id="2285109769884538519">{COUNT,plural, =0{Open all in &amp;new tab group}=1{Open in &amp;new tab group}other{Open all ({COUNT}) in &amp;new tab group}}</translation>
 <translation id="2285942871162473373">Your fingerprint couldn't be recognised. Try again.</translation>
@@ -5119,6 +5120,7 @@ You can assign multiple switches to this action.</translation>
 <translation id="6129938384427316298">Netscape Certificate Comment</translation>
 <translation id="6129953537138746214">Space</translation>
 <translation id="6130692320435119637">Add Wi-Fi</translation>
+<translation id="6130887916931372608">Keyboard key</translation>
 <translation id="6136114942382973861">Close downloads bar</translation>
 <translation id="6136287496450963112">Your security key is not protected with a PIN. To manage fingerprints, first create a PIN.</translation>
 <translation id="6138680304137685902">X9.62 ECDSA Signature with SHA-384</translation>
@@ -6729,6 +6731,7 @@ Press an assigned switch or key to remove assignment.</translation>
 <translation id="7768526219335215384"><ph name="ORIGIN" /> will be able to view files in <ph name="FOLDERNAME" /></translation>
 <translation id="7768770796815395237">Change</translation>
 <translation id="7768784765476638775">Select to Speak</translation>
+<translation id="7770450735129978837">Right mouse click</translation>
 <translation id="7770612696274572992">Image copied from other device</translation>
 <translation id="7771452384635174008">Layout</translation>
 <translation id="7772032839648071052">Confirm passphrase</translation>

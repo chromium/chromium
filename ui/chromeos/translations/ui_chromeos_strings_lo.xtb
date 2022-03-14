@@ -824,6 +824,7 @@
 <translation id="8042602468072383151">ສຽງ <ph name="AUDIO_TYPE" /></translation>
 <translation id="8045462269890919536">ພາສາໂຣມານີ</translation>
 <translation id="8049184478152619004">ລະບຸ Personal Unblocking Key (PUK)</translation>
+<translation id="807187749540895545">ກຳລັງແຕກໄຟລ໌ <ph name="FILE_NAME" />...</translation>
 <translation id="8079530767338315840">ຫຼິ້ນຊໍ້າ</translation>
 <translation id="8087576439476816834">ດາວໂຫຼດ, <ph name="PROFILE_NAME" /></translation>
 <translation id="8106045200081704138">ແຊຣ໌ກັບຂ້ອຍ</translation>
@@ -875,6 +876,7 @@
 <translation id="8484284835977497781">ເລືອກຈາກຮູບຫຼ້າສຸດຂອງທ່ານ.</translation>
 <translation id="8487700953926739672">ມີອອຟລາຍນ໌ຢູ່</translation>
 <translation id="8492972329130824181">ເຄືອຂ່າຍເຮືອນບໍ່ພ້ອມນຳໃຊ້. ຕ້ອງເປີດການນຳໃຊ້ການໂຣມມິງອິນເຕີເນັດມືຖືເພື່ອເຊື່ອມຕໍ່.</translation>
+<translation id="8499098729323186194">ກຳລັງແຕກ <ph name="NUMBER_OF_ITEMS" /> ລາຍການ...</translation>
 <translation id="8521441079177373948">ສະຫະ​ລາຊະ​ອານາຈັກ</translation>
 <translation id="8525306231823319788">ເຕັມຫນ້າ​ຈໍ​</translation>
 <translation id="853494022971700746">ພາສາຝຣັ່ງ (ຝຣັ່ງ)</translation>

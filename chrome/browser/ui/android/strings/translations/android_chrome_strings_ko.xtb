@@ -30,6 +30,7 @@
 <translation id="114825011539563458">가장 중요한 개인 정보 보호 및 보안 제어 기능을 한곳에서 설정</translation>
 <translation id="1149401351239820326">유효기간 월</translation>
 <translation id="1154704303112745282">오프라인에서 사용할 수 없는 페이지: <ph name="VIOLATED_URL" /></translation>
+<translation id="1166688006062225587">선택할 수 있는 계정 목록입니다.</translation>
 <translation id="1171770572613082465">'인기 사이트' 버튼을 탭하여 인기 웹사이트를 확인하세요.</translation>
 <translation id="1173894706177603556">이름 바꾸기</translation>
 <translation id="1177863135347784049">맞춤설정</translation>
@@ -789,6 +790,7 @@
 <translation id="5665379678064389456"><ph name="APP_NAME" />에 일정 만들기</translation>
 <translation id="5683547024293500885">Chrome에서 업데이트를 확인할 수 없음</translation>
 <translation id="5686790454216892815">파일 이름이 너무 깁니다.</translation>
+<translation id="5692329390578659217">계속하려면 <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />에서 내 이름, 이메일, 주소, 프로필 사진을 이 사이트와 공유해야 합니다. 이 사이트의 <ph name="BEGIN_LINK1" />개인정보처리방침<ph name="END_LINK1" />과 <ph name="BEGIN_LINK2" />서비스 약관<ph name="END_LINK2" />을 확인하세요.</translation>
 <translation id="569536719314091526">옵션 더보기 버튼을 눌러 이 페이지를 원하는 언어로 번역하세요</translation>
 <translation id="5696597120588531049">Chrome은 정보 유출, 안전하지 않은 웹사이트 등으로부터 사용자를 보호해 줍니다.</translation>
 <translation id="5697688514913266141">파일이 <ph name="BEGIN_BOLD" /><ph name="DIRECTORY" /><ph name="END_BOLD" />에 저장됩니다. <ph name="BEGIN_LINK2" />수정<ph name="END_LINK2" /></translation>
@@ -897,6 +899,7 @@
 <translation id="6277522088822131679">페이지를 인쇄하는 중에 문제가 발생했습니다. 다시 시도해 주세요.</translation>
 <translation id="6277722725779679269">가격 추적을 업데이트할 수 없습니다</translation>
 <translation id="6278428485366576908">테마</translation>
+<translation id="6293443105724342169">선택할 수 있는 계정 목록이 절반 높이로 열렸습니다.</translation>
 <translation id="6294610283659775533">동일한 Google 계정으로 로그인한 기기 간에 탭을 보낼 수 있습니다.</translation>
 <translation id="6297765934698848803">내 기기를 관리하는 조직에서 카메라를 사용 중지했습니다.</translation>
 <translation id="6301525844455696527">잊지 말고 읽기 목록을 확인하세요</translation>
@@ -1116,6 +1119,7 @@
 <translation id="7474822150871987353">페이지에서 나가지 않고도 웹사이트의 주제에 관해 알아봅니다. 페이지에서 하나 이상의 단어를 선택하여 검색합니다.</translation>
 <translation id="7475192538862203634">이 메시지가 자주 표시된다면 다음 <ph name="BEGIN_LINK" />권장사항<ph name="END_LINK" />을 시도해 보세요.</translation>
 <translation id="7475688122056506577">SD 카드가 없습니다. 일부 파일이 누락되었을 수 있습니다.</translation>
+<translation id="7477262822945323753">계속하려면 <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />에서 내 이름, 이메일, 주소, 프로필 사진을 이 사이트와 공유해야 합니다. 이 사이트의 <ph name="BEGIN_LINK1" />개인정보처리방침<ph name="END_LINK1" />을 확인하세요.</translation>
 <translation id="7479104141328977413">탭 관리</translation>
 <translation id="7481312909269577407">앞으로</translation>
 <translation id="7482656565088326534">미리보기 탭</translation>
@@ -1289,6 +1293,7 @@
 <translation id="8394720698884623075">Chrome에 저장된 안전하지 않은 사이트 목록을 사용하여 URL을 검사합니다.</translation>
 <translation id="8410695015584479363">가격 추적</translation>
 <translation id="8413126021676339697">방문 기록 전체 보기</translation>
+<translation id="8414396119627470038"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />을(를) 통해 <ph name="SITE_ETLD_PLUS_ONE" />에 로그인하세요</translation>
 <translation id="8419244640277402268">포함</translation>
 <translation id="8424781820952413435">페이지를 전송했습니다. <ph name="DEVICE_TYPE" /> 기기에서 Chrome을 열어서 확인하세요.</translation>
 <translation id="8427875596167638501">미리보기 탭이 절반 높이로 열림</translation>
@@ -1304,6 +1309,7 @@
 <translation id="8461694314515752532">나만의 동기화 암호로 동기화된 데이터 암호화</translation>
 <translation id="8466613982764129868"><ph name="TARGET_DEVICE_NAME" />이(가) 인터넷에 연결되어 있는지 확인하세요.</translation>
 <translation id="8473863474539038330">주소 및 기타</translation>
+<translation id="847656914027543776">선택할 수 있는 계정 목록이 닫혔습니다.</translation>
 <translation id="8481921391193215807">사용 설정하면 사이트가 여기에 표시된 개인 정보 보호 기술을 이용해 콘텐츠와 서비스를 제공할 수 있습니다. 크로스 사이트 추적의 대안이 되는 기술 등이 있습니다. 시간이 지남에 따라 더 많은 무료 체험 기능이 포함될 수 있습니다.
 
 <ph name="BEGIN_LIST_ITEM1" />광고주와 게시자는 FLoC을 사용할 수 있습니다.<ph name="END_LIST_ITEM1" />
@@ -1430,6 +1436,7 @@
 <translation id="9108312223223904744">휴대전화를 보안 키로 사용 지원</translation>
 <translation id="9108808586816295166">보안 DNS가 항상 제공되지는 않을 수도 있습니다.</translation>
 <translation id="9133397713400217035">오프라인 탐색</translation>
+<translation id="9133523398139146080">선택할 수 있는 계정 목록이 전체 높이로 열렸습니다.</translation>
 <translation id="9137013805542155359">원본 보기</translation>
 <translation id="9148126808321036104">다시 로그인</translation>
 <translation id="9155898266292537608">단어를 살짝 탭하여 검색할 수도 있습니다</translation>

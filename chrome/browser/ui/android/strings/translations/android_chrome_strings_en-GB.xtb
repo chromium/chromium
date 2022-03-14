@@ -685,6 +685,7 @@ To change this setting, <ph name="BEGIN_LINK" />reset sync<ph name="END_LINK" />
 <translation id="4988526792673242964">Pages</translation>
 <translation id="5001388021414335527">Follow this site here</translation>
 <translation id="5004416275253351869">Google activity controls</translation>
+<translation id="5005141133360250920">Reaction deleted</translation>
 <translation id="5005498671520578047">Copy password</translation>
 <translation id="5011311129201317034"><ph name="SITE" /> wants to connect</translation>
 <translation id="5016205925109358554">Serif</translation>
@@ -741,6 +742,7 @@ To change this setting, <ph name="BEGIN_LINK" />reset sync<ph name="END_LINK" />
 <translation id="5368227114232678694">To browse privately on this device, try out Incognito</translation>
 <translation id="5368958499335451666">{OPEN_TABS,plural, =1{<ph name="OPEN_TABS_ONE" /> open tab, tap to switch tabs}other{<ph name="OPEN_TABS_MANY" /> open tabs, tap to switch tabs}}</translation>
 <translation id="5375577065097716013">Search image with Google Lens <ph name="BEGIN_NEW" />New<ph name="END_NEW" /></translation>
+<translation id="5376898820269806588">Reaction changed</translation>
 <translation id="5403644198645076998">Only allow certain sites</translation>
 <translation id="5409881200985013443">Submit <ph name="ONE_TIME_CODE" /> on <ph name="CLIENT_NAME" />?</translation>
 <translation id="5414836363063783498">Verifying…</translation>
@@ -1074,6 +1076,7 @@ For example, some websites may respond to this request by showing you ads that a
 <translation id="718926126787620637">List of bookmark folders opened at full height</translation>
 <translation id="7191430249889272776">Tab opened in background.</translation>
 <translation id="7196215469483532480">Privacy guide explanation opened at full height</translation>
+<translation id="7208109991155904980">Reaction moved</translation>
 <translation id="7227218174981371415">{FILE_COUNT,plural, =1{1 download pending}other{# downloads pending}}</translation>
 <translation id="7237045078887540010">By using Chrome, you agree to the <ph name="BEGIN_TOS_LINK" />Google Terms of Service<ph name="END_TOS_LINK" />, and the <ph name="BEGIN_ATOS_LINK" />Google Chrome and Chrome OS Additional Terms of Service<ph name="END_ATOS_LINK" />. The <ph name="BEGIN_PRIVACY_LINK" />privacy policy<ph name="END_PRIVACY_LINK" /> also applies.</translation>
 <translation id="7242755609445462077">Stylised highlight <ph name="CURRENT_DATE" /></translation>

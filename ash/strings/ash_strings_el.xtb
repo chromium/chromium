@@ -197,6 +197,7 @@
 <translation id="2132302418721800944">Εγγραφή ολόκληρης της οθόνης</translation>
 <translation id="2135456203358955318">Μεγεθυντικός φακός σε παράθυρο</translation>
 <translation id="2148716181193084225">Σήμερα</translation>
+<translation id="2159930836979502091">Μετάβαση σε αυτήν την καρτέλα</translation>
 <translation id="2170530631236737939">Σύρετε προς τα κάτω με τρία δάχτυλα για έξοδο από την Επισκόπηση</translation>
 <translation id="219905428774326614">Εφαρμογή εκκίνησης, όλες οι εφαρμογές</translation>
 <translation id="2201071101391734388">Πρόσφατη φωτογραφία <ph name="INDEX" /> από <ph name="TOTAL_COUNT" />.</translation>
@@ -563,6 +564,7 @@
 <translation id="4449692009715125625">{NUM_NOTIFICATIONS,plural, =1{1 σημαντική ειδοποίηση}other{# σημαντικές ειδοποιήσεις}}</translation>
 <translation id="4450893287417543264">Να μην εμφανιστεί ξανά</translation>
 <translation id="4451374464530248585">Η συντόμευση πληκτρολογίου Alt + Κάτω βέλος άλλαξε. Για να χρησιμοποιήσετε το πλήκτρο Page Down, πατήστε το πλήκτρο <ph name="LAUNCHER_KEY_NAME" /> + Κάτω βέλος.</translation>
+<translation id="4455051983450390249">Δείτε τις ειδοποιήσεις του τηλεφώνου σας στη συσκευή <ph name="DEVICE_TYPE" /></translation>
 <translation id="445864333228800152">Καλησπέρα,</translation>
 <translation id="4458688154122353284">Διακοπή εγγραφής οθόνης</translation>
 <translation id="4471354919263203780">Πραγματοποιείται λήψη των αρχείων αναγνώρισης ομιλίας… <ph name="PERCENT" />%</translation>
@@ -769,6 +771,7 @@
 <translation id="583281660410589416">Άγνωστο</translation>
 <translation id="5837036133683224804">Διακοπή <ph name="ROUTE_TITLE" /> σε <ph name="RECEIVER_NAME" /></translation>
 <translation id="584525477304726060">Κρατήστε πατημένο για μεγιστοποίηση.</translation>
+<translation id="5856638668464565213">Το δίκτυο <ph name="NETWORK_NAME" /> δεν είναι ενεργό.</translation>
 <translation id="5860033963881614850">Απενεργοποιημένη</translation>
 <translation id="5860491529813859533">Ενεργοποίηση</translation>
 <translation id="5867217927013474703">Συλλογή πληροφοριών δικτύου</translation>
@@ -800,6 +803,7 @@
 <translation id="602472752137106327">Εμφάνιση παραθύρων από όλα τα γραφεία, επιλέχτηκε το κουμπί επιλογής.</translation>
 <translation id="6025324406281560198"><ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, Ισχύς σήματος <ph name="SIGNAL_STRENGTH" />, Διαχειριζόμενο από τον διαχειριστή σας</translation>
 <translation id="6027518778343897451">Δεν υπάρχει κάποιο συμβάν για τις <ph name="CURRENT_MONTH_DAY" />. Πατήστε enter για να ανοίξετε το Ημερολόγιο Google στο πρόγραμμα περιήγησης.</translation>
+<translation id="6027952026115023659">Αποκτήστε πρόσβαση στις εφαρμογές ανταλλαγής μηνυμάτων του τηλεφώνου σας στη συσκευή <ph name="DEVICE_TYPE" /></translation>
 <translation id="6030495522958826102">Το μενού μεταφέρθηκε στην κάτω αριστερή γωνία της οθόνης.</translation>
 <translation id="6032620807120418574">Κάντε κλικ οπουδήποτε για εγγραφή ολόκληρης της οθόνης</translation>
 <translation id="6040071906258664830">Εγγραφή μικροφώνου <ph name="STATE" /></translation>
@@ -943,6 +947,7 @@
 <translation id="6961121602502368900">Η Σίγαση τηλεφώνου δεν είναι διαθέσιμη στο προφίλ εργασίας</translation>
 <translation id="6961840794482373852">Η συντόμευση πληκτρολογίου Alt + Επάνω βέλος άλλαξε. Για να χρησιμοποιήσετε το πλήκτρο Page Up, πατήστε το πλήκτρο <ph name="LAUNCHER_KEY_NAME" /> + Επάνω βέλος.</translation>
 <translation id="6965382102122355670">OK</translation>
+<translation id="6967933908874208731">Δείτε τις πρόσφατες φωτογραφίες, τα μέσα, τις ειδοποιήσεις και τις εφαρμογές ανταλλαγής μηνυμάτων στη συσκευή <ph name="DEVICE_TYPE" /></translation>
 <translation id="6972754398087986839">Έναρξη</translation>
 <translation id="6979158407327259162">Google Drive</translation>
 <translation id="6981982820502123353">Προσβασιμότητα</translation>

@@ -197,6 +197,7 @@
 <translation id="2132302418721800944">ဖန်သားပြင်အပြည့် ရိုက်ကူးရန်</translation>
 <translation id="2135456203358955318">နေရာချထားသည့် မှန်ဘီလူး</translation>
 <translation id="2148716181193084225">ယနေ့</translation>
+<translation id="2159930836979502091">ဤတဘ်သို့သွားရန်</translation>
 <translation id="2170530631236737939">'အနှစ်ချုပ်' မှထွက်ရန် လက်သုံးချောင်းဖြင့် အောက်သို့ပွတ်ဆွဲပါ</translation>
 <translation id="219905428774326614">Launcher၊ အက်ပ်များအားလုံး</translation>
 <translation id="2201071101391734388">လတ်တလောဓာတ်ပုံ <ph name="TOTAL_COUNT" /> ပုံအနက် <ph name="INDEX" /> ပုံမြောက်။</translation>
@@ -563,6 +564,7 @@
 <translation id="4449692009715125625">{NUM_NOTIFICATIONS,plural, =1{အရေးကြီးသော အကြောင်းကြားချက် 1 ခု}other{အရေးကြီးသော အကြောင်းကြားချက် # ခု}}</translation>
 <translation id="4450893287417543264">ထပ်မပြပါနှင့်</translation>
 <translation id="4451374464530248585">‘Alt + အောက်ညွှန်မြား’ လက်ကွက်ဖြတ်လမ်းကို ပြောင်းထားသည်။ ‘စာမျက်နှာ အောက်သို့’ ကီးသုံးလိုပါက <ph name="LAUNCHER_KEY_NAME" /> ကီး + ‘အောက်ညွှန်မြား’ နှိပ်ပါ။</translation>
+<translation id="4455051983450390249">သင့်ဖုန်းရှိ အကြောင်းကြားချက်များကို သင်၏ <ph name="DEVICE_TYPE" /> ၌ ကြည့်နိုင်သည်</translation>
 <translation id="445864333228800152">မင်္ဂလာ ညနေခင်းပါ၊</translation>
 <translation id="4458688154122353284">ဖန်သားပြင်ရိုက်ကူးမှု ရပ်ရန်</translation>
 <translation id="4471354919263203780">Speech recognition ဖိုင်များကို ဒေါင်းလုဒ်လုပ်နေသည်… <ph name="PERCENT" />%</translation>
@@ -770,6 +772,7 @@
 <translation id="583281660410589416">မသိရ</translation>
 <translation id="5837036133683224804"><ph name="RECEIVER_NAME" /> တွင် <ph name="ROUTE_TITLE" /> ကို ရပ်ရန်</translation>
 <translation id="584525477304726060">မျက်နှာပြင်ချဲ့ရန်အတွက် နှိပ်ထားပါ</translation>
+<translation id="5856638668464565213"><ph name="NETWORK_NAME" /> ကို ဖွင့်မထားပါ။</translation>
 <translation id="5860033963881614850">ပိတ်ထား</translation>
 <translation id="5860491529813859533">ဖွင့်ရန်</translation>
 <translation id="5867217927013474703">ကွန်ရက်အချက်အလက်ကို စုစည်းနေသည်</translation>
@@ -801,6 +804,7 @@
 <translation id="602472752137106327">ဝင်းဒိုးများကို မျက်နှာပြင်နေရာအားလုံးမှ ပြရန်၊ ရေဒီယိုခလုတ်ကို ရွေးထားသည်</translation>
 <translation id="6025324406281560198"><ph name="SECURITY_STATUS" />၊ <ph name="CONNECTION_STATUS" />၊ လိုင်းဆွဲအား <ph name="SIGNAL_STRENGTH" />၊ သင့် 'ကြီးကြပ်သူ' က စီမံပါသည်</translation>
 <translation id="6027518778343897451"><ph name="CURRENT_MONTH_DAY" /> တွင် မည်သည့်အစီအစဉ်မျှ မရှိပါ။ ဘရောင်ဇာတွင် Google ပြက္ခဒိန်ဖွင့်ရန် Enter ခလုတ်နှိပ်ပါ။</translation>
+<translation id="6027952026115023659">သင့်ဖုန်းရှိ မက်ဆေ့ဂျ်ပို့ရန်အက်ပ်များကို သင်၏ <ph name="DEVICE_TYPE" /> ၌ သုံးခွင့်ပြုနိုင်သည်</translation>
 <translation id="6030495522958826102">မီနူးကို ဖန်သားပြင်၏ ဘယ်ဘက်အောက်ခြေထောင့်သို့ ရွှေ့လိုက်သည်။</translation>
 <translation id="6032620807120418574">ဖန်သားပြင်အပြည့် ရိုက်ကူးရန် မည်သည့်နေရာကိုမဆို နှိပ်ပါ</translation>
 <translation id="6040071906258664830">မိုက်ခရိုဖုန်းအသံဖမ်းရန် <ph name="STATE" /></translation>
@@ -944,6 +948,7 @@
 <translation id="6961121602502368900">အလုပ်ပရိုဖိုင်တွင် ဖုန်းအသံတိတ်ခြင်း မရနိုင်ပါ</translation>
 <translation id="6961840794482373852">‘Alt + အပေါ်ညွှန်မြား’ လက်ကွက်ဖြတ်လမ်းကို ပြောင်းထားသည်။ ‘စာမျက်နှာ အပေါ်သို့’ ကီးသုံးလိုပါက <ph name="LAUNCHER_KEY_NAME" /> ကီး + ‘အပေါ်ညွှန်မြား’ နှိပ်ပါ။</translation>
 <translation id="6965382102122355670">OK</translation>
+<translation id="6967933908874208731">သင့်ဖုန်းရှိ မကြာသေးမီက ဓာတ်ပုံ၊ မီဒီယာ၊ အကြောင်းကြားချက်နှင့် မက်ဆေ့ဂျ်ပို့ရန်အက်ပ်များကို သင်၏ <ph name="DEVICE_TYPE" /> ၌ ကြည့်နိုင်သည်</translation>
 <translation id="6972754398087986839">စကြရအောင်</translation>
 <translation id="6979158407327259162">Google Drive</translation>
 <translation id="6981982820502123353">ရယူအသုံးချနိုင်မှု</translation>

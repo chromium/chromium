@@ -197,6 +197,7 @@
 <translation id="2132302418721800944">화면 전체 녹화</translation>
 <translation id="2135456203358955318">고정 돋보기</translation>
 <translation id="2148716181193084225">오늘</translation>
+<translation id="2159930836979502091">이 탭으로 이동</translation>
 <translation id="2170530631236737939">최근 사용을 종료하려면 세 손가락을 사용해 아래로 스와이프하세요.</translation>
 <translation id="219905428774326614">런처, 모든 앱</translation>
 <translation id="2201071101391734388">최근 사진 총 <ph name="TOTAL_COUNT" />개 중 <ph name="INDEX" />번째입니다.</translation>
@@ -563,6 +564,7 @@
 <translation id="4449692009715125625">{NUM_NOTIFICATIONS,plural, =1{중요 알림 1개}other{중요 알림 #개}}</translation>
 <translation id="4450893287417543264">다시 표시하지 않음</translation>
 <translation id="4451374464530248585">Alt + 아래쪽 화살표 단축키가 변경되었습니다. Page Down 키를 사용하려면 <ph name="LAUNCHER_KEY_NAME" /> 키 + 아래쪽 화살표 키를 누르세요.</translation>
+<translation id="4455051983450390249"><ph name="DEVICE_TYPE" />에서 휴대전화의 알림을 봅니다.</translation>
 <translation id="445864333228800152">편안한 저녁 보내세요</translation>
 <translation id="4458688154122353284">화면 녹화 중지</translation>
 <translation id="4471354919263203780">음성 인식 파일 다운로드 중... <ph name="PERCENT" />%</translation>
@@ -769,6 +771,7 @@
 <translation id="583281660410589416">알 수 없음</translation>
 <translation id="5837036133683224804"><ph name="RECEIVER_NAME" />에서 <ph name="ROUTE_TITLE" /> 중지</translation>
 <translation id="584525477304726060">눌러서 최대화</translation>
+<translation id="5856638668464565213"><ph name="NETWORK_NAME" /> 네트워크가 활성화되지 않음.</translation>
 <translation id="5860033963881614850">사용 안함</translation>
 <translation id="5860491529813859533">사용</translation>
 <translation id="5867217927013474703">네트워크 정보 수집 중</translation>
@@ -800,6 +803,7 @@
 <translation id="602472752137106327">모든 데스크의 창 표시, 라디오 버튼 선택됨</translation>
 <translation id="6025324406281560198"><ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, 신호 강도 <ph name="SIGNAL_STRENGTH" />, 관리자가 관리함</translation>
 <translation id="6027518778343897451"><ph name="CURRENT_MONTH_DAY" />에 일정이 없습니다. 브라우저에서 Google Calendar를 열려면 Enter를 누르세요.</translation>
+<translation id="6027952026115023659"><ph name="DEVICE_TYPE" />에서 휴대전화의 메시지 앱에 액세스합니다.</translation>
 <translation id="6030495522958826102">메뉴가 화면 왼쪽 하단으로 이동했습니다.</translation>
 <translation id="6032620807120418574">전체 화면을 녹화하려면 아무 곳이나 클릭하세요.</translation>
 <translation id="6040071906258664830">마이크 녹음 <ph name="STATE" /></translation>
@@ -943,6 +947,7 @@
 <translation id="6961121602502368900">직장 프로필에서는 휴대전화 무음 설정을 사용할 수 없음</translation>
 <translation id="6961840794482373852">Alt + 위쪽 화살표 단축키가 변경되었습니다. Page Up 키를 사용하려면 <ph name="LAUNCHER_KEY_NAME" /> 키 + 위쪽 화살표 키를 누르세요.</translation>
 <translation id="6965382102122355670">확인</translation>
+<translation id="6967933908874208731">휴대전화의 최근 사진, 미디어, 알림, 메시지 앱을 <ph name="DEVICE_TYPE" />에서 봅니다.</translation>
 <translation id="6972754398087986839">시작하기</translation>
 <translation id="6979158407327259162">Google Drive</translation>
 <translation id="6981982820502123353">접근성</translation>

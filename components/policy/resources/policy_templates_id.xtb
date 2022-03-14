@@ -2045,6 +2045,17 @@ Jika kebijakan ini tidak ditetapkan, layar privasi mula-mula akan dinonaktifkan 
       Jika kebijakan disetel ke Nonaktif, software pihak ketiga akan diizinkan memasukkan kode tersebut ke dalam proses <ph name="PRODUCT_NAME" />.</translation>
 <translation id="3182503302060513467">Halaman Tab Baru akan menampilkan pengumuman slot tengah jika tersedia</translation>
 <translation id="3184161739683646075">Mengontrol mode DNS-over-HTTPS</translation>
+<translation id="3184638144755436350">Chrome akan memblokir navigasi ke protokol eksternal di dalam
+      iframe sandbox. Lihat https://chromestatus.com/features/5680742077038592.
+
+      Jika kebijakan disetel ke Benar (True), Chrome akan diizinkan memblokir navigasi tersebut.
+
+      Jika kebijakan disetel ke Salah (False), Chrome tidak akan diizinkan memblokir navigasi tersebut.
+
+      Setelan default untuk kebijakan ini adalah Benar (True): fitur keamanan akan diaktifkan.
+
+      Kebijakan ini dapat digunakan oleh administrator yang memerlukan waktu tambahan untuk memperbarui situs internalnya yang terpengaruh oleh pembatasan baru ini. Kebijakan Perusahaan ini bersifat sementara dan akan dihapus setelah <ph name="PRODUCT_NAME" /> versi 117.
+      </translation>
 <translation id="3185009703220253572">sejak versi <ph name="SINCE_VERSION" /></translation>
 <translation id="3185895671618336039">Mengonfigurasi setelan masa berlaku data penjelajahan untuk <ph name="PRODUCT_NAME" />. Kebijakan ini mengizinkan admin mengonfigurasi (per jenis data) kapan data akan dihapus oleh browser. Hal ini berguna bagi pelanggan yang bekerja dengan data pelanggan yang sensitif. Kebijakan akan berpengaruh jika <ph name="SYNC_DISABLED_POLICY_NAME" /> disetel ke benar (true).
 
@@ -4757,6 +4768,12 @@ Jika disetel ke Salah (False), <ph name="PRODUCT_NAME" /> tidak akan menggunakan
       Jika kebijakan ini ditetapkan ke nonaktif atau tidak ditetapkan, menu aksesibilitas mengambang tidak akan ditampilkan.</translation>
 <translation id="6424485010103067949"><ph name="OMA_URI" />:</translation>
 <translation id="6424486395812679373">Lakukan pemeriksaan Safe Browsing pada semua file yang didownload</translation>
+<translation id="6435570845618943258">Jika setelan ini diaktifkan, <ph name="PRODUCT_NAME" /> akan menjalankan verifikasi sertifikat server menggunakan pemverifikasi sertifikat bawaan.
+      Jika setelan ini dinonaktifkan, <ph name="PRODUCT_NAME" /> akan menjalankan verifikasi sertifikat server menggunakan pemverifikasi sertifikat lama yang disediakan oleh platform.
+      Jika setelan ini tidak ditetapkan, pemverifikasi sertifikat yang lama atau bawaan dapat digunakan.
+
+      Kebijakan ini akan dihapus dari <ph name="PRODUCT_NAME" /> untuk <ph name="MAC_OS_NAME" /> versi 107 dan saat ini terjadi, dukungan untuk pemverifikasi sertifikat versi lama di <ph name="MAC_OS_NAME" /> akan dihapus.
+      </translation>
 <translation id="6436052172226685535">Perilaku default untuk LBS.</translation>
 <translation id="6438364096042399634">Menyetel kebijakan akan menentukan daftar perangkat USB yang dapat dilepas pengguna dari driver kernelnya, agar dapat langsung digunakan melalui chrome.usb API dalam aplikasi web. Entri berupa pasangan ID Vendor USB dan Kode Produk untuk mengidentifikasi hardware tertentu.
 

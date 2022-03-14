@@ -40,6 +40,7 @@
 <translation id="1041175011127912238">このページは応答していません</translation>
 <translation id="1041263367839475438">使用可能なデバイス</translation>
 <translation id="1042174272890264476">お使いのパソコンには <ph name="SHORT_PRODUCT_NAME" /> の RLZ ライブラリも組み込まれています。RLZ は、個人を特定できないタグを割り当てて、特定の販促キャンペーンで生じた検索や <ph name="SHORT_PRODUCT_NAME" /> の利用状況を計測します。これらのラベルは <ph name="PRODUCT_NAME" /> で Google 検索キーワード内に表示されることがあります。</translation>
+<translation id="1043505821207197890">エラーが発生しました。Linux のアップグレードが完了していない可能性があります。詳しくはログをご確認ください。ログは [ファイル] &gt; [マイファイル] &gt; <ph name="LOG_FILE" /> に保存されています</translation>
 <translation id="1043818413152647937">次のアプリのデータも削除しますか？</translation>
 <translation id="1043824690776631483">このサイトにアクセスするには許可が必要です。不適切なコンテンツが含まれている可能性があります。</translation>
 <translation id="104710386808485638">Linux を再起動しますか？</translation>
@@ -270,6 +271,7 @@
 <translation id="1258491128795710625">最新情報</translation>
 <translation id="1259152067760398571">安全確認を昨日実行しました</translation>
 <translation id="1260451001046713751"><ph name="HOST" /> のポップアップとリダイレクトを常に許可する</translation>
+<translation id="1260810365552581339">Linux のディスク空き容量が不足している可能性があります。Linux のディスク空き容量を増やしてから、[<ph name="LINK_START" />設定<ph name="LINK_END" />] でもう一度復元をお試しください。</translation>
 <translation id="1261380933454402672">弱め</translation>
 <translation id="126156426083987769">デモモードデバイスライセンスで問題が発生しました。</translation>
 <translation id="1263231323834454256">リーディング リスト</translation>
@@ -617,6 +619,7 @@
 <translation id="1603411913360944381"><ph name="DEVICE_NAME" /> との接続を解除</translation>
 <translation id="1603914832182249871">（シークレット モード）</translation>
 <translation id="1604432177629086300">印刷できませんでした。プリンタを確認してもう一度お試しください。</translation>
+<translation id="1604774728851271529">Linux をアップグレードするにはネットワーク接続が必要です。インターネットに接続してから、もう一度お試しください。</translation>
 <translation id="1605744057217831567">すべてのサイトデータと権限を表示</translation>
 <translation id="1606077700029460857">マウスの設定を変更</translation>
 <translation id="1606566847233779212">追加したサイトを削除しますか？</translation>
@@ -1030,6 +1033,7 @@
 <translation id="1989903373608997757">常に使用</translation>
 <translation id="1990046457226896323">読み上げファイルをダウンロードしました</translation>
 <translation id="1990512225220753005">このページではショートカットを表示しません</translation>
+<translation id="1990727803345673966">バックアップした Linux のファイルとアプリを復元しています</translation>
 <translation id="199191324030140441">サイレント モードをオフにする</translation>
 <translation id="1992397118740194946">未設定</translation>
 <translation id="1992924914582925289">デバイスから削除</translation>
@@ -1104,6 +1108,7 @@
 <translation id="2071393345806050157">ローカルのログ ファイルがありません。</translation>
 <translation id="2071692954027939183">普段は通知を許可されないようですので、通知を自動的にブロックしました</translation>
 <translation id="2073148037220830746">{NUM_EXTENSIONS,plural, =1{この拡張機能をインストールするには、クリックしてください}other{これらの拡張機能をインストールするには、クリックしてください}}</translation>
+<translation id="2073496667646280609">デバイスまたは選択したバックアップの場所の空き容量が不足している可能性があります。空き容量を確保するか、別の場所を選択してください。</translation>
 <translation id="2073505299004274893">半角 <ph name="CHARACTER_LIMIT" /> 文字以内で入力してください</translation>
 <translation id="2075474481720804517">バッテリー残量: <ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="2075959085554270910">タップによるクリックとタップによるドラッグを有効化または無効化します</translation>
@@ -1629,6 +1634,7 @@
 <translation id="2568774940984945469">情報バー コンテナ</translation>
 <translation id="2571655996835834626">Cookie、JavaScript、プラグイン、位置情報、マイク、カメラといった機能へのウェブサイトからのアクセスを制御する設定を変更します。</translation>
 <translation id="2572032849266859634"><ph name="VOLUME_NAME" /> への読み取り専用アクセスが許可されました。</translation>
+<translation id="2573417407488272418">アップグレードする前に、[ファイル] &gt; [マイファイル] にアプリとファイルをバックアップしてください。</translation>
 <translation id="2573831315551295105">スイッチを「<ph name="ACTION" />」に割り当てます</translation>
 <translation id="2575247648642144396">このアイコンは、表示中のページで拡張機能が使用できる場合に表示されます。この拡張機能を使用するには、アイコンをクリックするか、<ph name="EXTENSION_SHORTCUT" /> を押します。</translation>
 <translation id="2575441894380764255">煩わしい広告や誤解を招く広告の表示を許可しないサイト</translation>
@@ -1945,6 +1951,7 @@
 <translation id="2882943222317434580"><ph name="IDS_SHORT_PRODUCT_NAME" /> の再起動とリセットを行います</translation>
 <translation id="2885378588091291677">タスク マネージャ</translation>
 <translation id="2885729872133513017">サーバーの応答をデコード中に問題が発生しました。</translation>
+<translation id="2886119409731773154">最大で 30 分ほどかかる場合があります</translation>
 <translation id="2886771036282400576">• <ph name="PERMISSION" /></translation>
 <translation id="288734198558082692"><ph name="DEVICE" /> とその他 <ph name="NUMBER_OF_DEVICES" /> 個のデバイス</translation>
 <translation id="2889064240420137087">次のプログラムでリンクを開く...</translation>
@@ -2207,6 +2214,7 @@
 <translation id="3151562827395986343">閲覧履歴、Cookie、キャッシュなどを削除します</translation>
 <translation id="3151616662954589507">自撮りカメラ</translation>
 <translation id="3151786313568798007">向き</translation>
+<translation id="3152356229013609796">スマートフォンの通知を確認する、閉じる、返信するなどの操作を行います</translation>
 <translation id="3154429428035006212">1 か月以上オフライン</translation>
 <translation id="3157387275655328056">リーディング リストに追加</translation>
 <translation id="3157931365184549694">復元</translation>
@@ -2890,6 +2898,7 @@
 <translation id="3831436149286513437">Google ドライブのファイル候補</translation>
 <translation id="3834728400518755610">マイクの設定を変更するには、Linux をシャットダウンする必要があります。続行するには Linux をシャットダウンしてください。</translation>
 <translation id="3834775135533257713">「<ph name="INSTALLED_APP_NAME" />」と競合するため、アプリケーション「<ph name="TO_INSTALL_APP_NAME" />」を追加できませんでした。</translation>
+<translation id="3835904559946595746">Linux バックアップを復元できませんでした</translation>
 <translation id="383669374481694771">このデバイスと使用状況に関する一般的な情報（電池残量、システムやアプリのアクティビティ、エラーなど）です。このデータは、Android の機能向上に使用されます。また、統計情報の一部は、Google のアプリのほか、Android デベロッパーなどのパートナーが開発するアプリやサービスの品質改善にも役立てられます。</translation>
 <translation id="3838085852053358637">拡張機能を読み込めませんでした</translation>
 <translation id="3838486795898716504"><ph name="PAGE_TITLE" /> をもっと見る</translation>
@@ -3597,6 +3606,7 @@
 <translation id="4562155214028662640">指紋を追加</translation>
 <translation id="4563210852471260509">初期の入力言語を中国語にする</translation>
 <translation id="4563880231729913339">指 3</translation>
+<translation id="4564245002465020751">スマートフォンで設定を完了</translation>
 <translation id="4565377596337484307">パスワードを表示しない</translation>
 <translation id="4565917129334815774">システムログを保存</translation>
 <translation id="4566417217121906555">マイクをミュート</translation>
@@ -3768,6 +3778,7 @@
 <translation id="474609389162964566">「OK Google」と話しかけてアシスタントにアクセス</translation>
 <translation id="4746351372139058112">メッセージ</translation>
 <translation id="4748783296226936791">一般的ではないキーボードや、ゲーム コントローラなどのデバイスを使用する機能に対応するために、多くのサイトは HID デバイスに接続します</translation>
+<translation id="4750185073185658673">スマートフォンでいくつかのアクセス許可を確認してください。スマートフォンの Bluetooth と Wi-Fi がオンになっていることをご確認ください。</translation>
 <translation id="4750394297954878236">候補</translation>
 <translation id="475088594373173692">最初のユーザー</translation>
 <translation id="4756378406049221019">停止 / 再読み込み</translation>
@@ -4952,6 +4963,7 @@
 <translation id="5957987129450536192">プロフィール画像の近くにある「選択して読み上げ」アイコンをタップして、読み上げる対象を選択します。</translation>
 <translation id="5959471481388474538">ネットワークは利用できません</translation>
 <translation id="595959584676692139">この拡張機能を使用するにはページを再読み込みします</translation>
+<translation id="5960410286721553511">スマートフォンの最近の写真やメディアを表示します</translation>
 <translation id="5963453369025043595"><ph name="NUM_HANDLES" />（最大 <ph name="NUM_KILOBYTES_LIVE" />）</translation>
 <translation id="5964113968897211042">{COUNT,plural, =0{すべてを新しいウィンドウで開く(&amp;N)}=1{新しいウィンドウで開く(&amp;N)}other{すべて（{COUNT} 個）を新しいウィンドウで開く(&amp;N)}}</translation>
 <translation id="5965661248935608907">この拡張機能では、ホーム ボタンのクリック時、またはアドレスバーからの検索時に表示されるページも制御されます。</translation>
@@ -5525,6 +5537,7 @@
 <translation id="6541638731489116978">このサイトではモーション センサーへのアクセスがブロックされています。</translation>
 <translation id="6545665334409411530">リピート回数 / 秒</translation>
 <translation id="6545867563032584178">Mac のシステム環境設定でマイクがオフになっています</translation>
+<translation id="6546856949879953071">アップグレードに関する詳しい情報は、[ファイル] &gt; [マイファイル] &gt; <ph name="LOG_FILE" /> に保存されているログで確認できます</translation>
 <translation id="6547354035488017500">デバイスの空き領域を 512 MB 以上確保してください。空き領域がこれより少なくなると、デバイスは応答しなくなります。空き領域を確保するために、デバイスのストレージからファイルを削除してください。</translation>
 <translation id="6547854317475115430"><ph name="BEGIN_PARAGRAPH1" />Google の位置情報サービスでは、デバイスの現在地を推定するために、Wi-Fi、モバイル ネットワーク、センサーなどの情報源が使用されます。<ph name="END_PARAGRAPH1" /><ph name="BEGIN_PARAGRAPH2" />[設定] &gt; [アプリ] &gt; [Google Play ストア] &gt; [Android 設定を管理] &gt; [セキュリティと現在地情報] &gt; [現在地情報] から随時、デバイスの Android 位置情報機能をオフにできます。また、同じメニューで [Google 位置情報の精度] をオフにすると、Android の位置情報機能に対して Wi-Fi、モバイル ネットワーク、センサーの使用をオフにすることもできます。<ph name="END_PARAGRAPH2" /></translation>
 <translation id="654871471440386944">カーソル ブラウジングをオンにしますか？</translation>
@@ -5538,6 +5551,7 @@
 <translation id="655384502888039633">ユーザー数: <ph name="USER_COUNT" /> 人</translation>
 <translation id="655483977608336153">再試行</translation>
 <translation id="6555432686520421228">すべてのユーザー アカウントを削除し、<ph name="IDS_SHORT_PRODUCT_NAME" /> デバイスを出荷時と同じ状態にリセットします。</translation>
+<translation id="6555604601707417276">Linux バックアップを復元しました</translation>
 <translation id="6555810572223193255">現在、クリーンアップ ツールをご利用いただけません</translation>
 <translation id="6556477848444788999">PIN またはパスワードで、この <ph name="DEVICE_TYPE" /> のデータ（スマートフォンからストリーミングするコンテンツを含む）を保護します。</translation>
 <translation id="6556866813142980365">やり直す</translation>
@@ -5643,6 +5657,7 @@
 <translation id="6663190258859265334"><ph name="DEVICE_TYPE" /> で Powerwash を実行し、以前のバージョンに戻します。</translation>
 <translation id="6664237456442406323">パソコンに設定されているハードウェア ID の形式が正しくありません。このため、Chrome OS に最新のセキュリティ修正を適用することができません。お使いのパソコンは、<ph name="BEGIN_BOLD" />悪意のある攻撃を受けやすくなる可能性があります<ph name="END_BOLD" />。</translation>
 <translation id="6664774537677393800">プロフィールを開こうとして問題が発生しました。ログアウトしてから再度ログインしてください。</translation>
+<translation id="6666559645296300656">Linux のアップグレードをキャンセルしています</translation>
 <translation id="666731172850799929"><ph name="APP_NAME" />で開く</translation>
 <translation id="6670142487971298264">「<ph name="APP_NAME" />」を利用できます</translation>
 <translation id="6670767097276846646">拡張機能によって Chrome に検索エンジンが追加される場合があります</translation>
@@ -5679,6 +5694,7 @@
 <translation id="6700480081846086223"><ph name="HOST_NAME" /> をキャストします</translation>
 <translation id="6701535245008341853">プロフィールを取得できませんでした。</translation>
 <translation id="6702639462873609204">編集(&amp;E)...</translation>
+<translation id="6703254819490889819">バックアップを復元</translation>
 <translation id="6706210727756204531">範囲</translation>
 <translation id="6707389671160270963">SSL クライアント証明書</translation>
 <translation id="6709002550153567782">{NUM_PAGES,plural, =0{<ph name="PAGE_TITLE" />}=1{<ph name="PAGE_TITLE" />、他 1 個のタブ}other{<ph name="PAGE_TITLE" />、他 # 個のタブ}}</translation>
@@ -5859,6 +5875,7 @@
 <translation id="6883319974225028188">デバイスの設定を保存できませんでした。</translation>
 <translation id="6884474387073389421">選択したログインデータを削除してもよろしいですか？</translation>
 <translation id="6885771755599377173">システム情報のプレビュー</translation>
+<translation id="6886380424988777998">Linux をアップグレードできませんでした</translation>
 <translation id="6886871292305414135">新しいタブで開く(&amp;T)</translation>
 <translation id="6889957081990109136">スイッチがまだ割り当てられていません</translation>
 <translation id="689007770043972343">別の開いたタブをグループにドラッグしてみてください</translation>
@@ -6001,6 +6018,7 @@
 <translation id="7017219178341817193">新しいページを追加</translation>
 <translation id="7017354871202642555">ウィンドウが設定されている場合はモードを設定できません。</translation>
 <translation id="7018275672629230621">閲覧履歴の読み取りと変更</translation>
+<translation id="7019546817926942979">デバイスを電源に接続する必要があります。Linux のアップグレードを行うと、電池を大幅に消耗します。デバイスを電源に接続してから、もう一度お試しください。</translation>
 <translation id="7019805045859631636">速い</translation>
 <translation id="7022562585984256452">ホームページが設定されました。</translation>
 <translation id="7025082428878635038">ジェスチャーによる新しい操作方法</translation>
@@ -6054,6 +6072,7 @@
 <translation id="7072010813301522126">ショートカット名</translation>
 <translation id="7075513071073410194">PKCS #1 MD5 with RSA 暗号化</translation>
 <translation id="7075625805486468288">HTTPS / SSL の証明書と設定を管理します</translation>
+<translation id="7076875098323397992">アップグレードを開始できません</translation>
 <translation id="7077829361966535409">現在のプロキシ設定を使用してログイン ページを読み込むことができませんでした。<ph name="GAIA_RELOAD_LINK_START" />もう一度ログイン<ph name="GAIA_RELOAD_LINK_END" />してみるか、別の<ph name="PROXY_SETTINGS_LINK_START" />プロキシ設定<ph name="PROXY_SETTINGS_LINK_END" />を使用してみてください。</translation>
 <translation id="7078120482318506217">すべてのネットワーク</translation>
 <translation id="708060913198414444">オーディオ アドレスをコピー(&amp;C)</translation>
@@ -6317,6 +6336,7 @@
 <translation id="7377481913241237033">コードを使用して接続</translation>
 <translation id="7378611153938412599">脆弱なパスワードは簡単に推測されてしまいます。安全なパスワードを作成してください。<ph name="BEGIN_LINK" />セキュリティに関する他のヒントを見る<ph name="END_LINK" /></translation>
 <translation id="73786666777299047">Chrome ウェブストアを開きます</translation>
+<translation id="7380459290951585794">Bluetooth 搭載のスマートフォンが近くにあり、Wi-Fi がオンになっていて、ロックも解除されていることを確認してください</translation>
 <translation id="7380622428988553498">デバイス名に無効な文字が含まれています</translation>
 <translation id="7380768571499464492">更新: <ph name="PRINTER_NAME" /></translation>
 <translation id="73843634555824551">入力とキーボード</translation>
@@ -6620,6 +6640,7 @@
 <translation id="7668002322287525834">{NUM_WEEKS,plural, =1{<ph name="DEVICE_TYPE" />を {NUM_WEEKS} 週間以内に返却してください}other{<ph name="DEVICE_TYPE" />を {NUM_WEEKS} 週間以内に返却してください}}</translation>
 <translation id="7668423670802040666"><ph name="ACCOUNT" /> の Google パスワード マネージャー</translation>
 <translation id="7669825497510425694">{NUM_ATTEMPTS,plural, =1{PIN が正しくありません。あと 1 回試行できます。}other{PIN が正しくありません。あと # 回試行できます。}}</translation>
+<translation id="7670434942695515800">最適なパフォーマンスで使用するには、最新バージョンにアップグレードしてください。アップグレードを完了できない場合に備えて、ファイルをバックアップしておくことをおすすめします。アップグレードが始まると、Linux はシャットダウンされます。続行する前に開いているファイルを保存してください。<ph name="LINK_START" />詳細<ph name="LINK_END" /></translation>
 <translation id="7671130400130574146">システム タイトル バーと枠線の使用</translation>
 <translation id="767127784612208024">リセットを確定するにはタップしてください</translation>
 <translation id="767147716926917172">診断と使用状況のデータを Google に自動送信します</translation>
@@ -6880,6 +6901,7 @@
 <translation id="7920363873148656176"><ph name="ORIGIN" /> は <ph name="FILENAME" /> を表示できます</translation>
 <translation id="7920482456679570420">スペルチェックしない語句を追加してください</translation>
 <translation id="7922935920104868876">シークレット モードでのサードパーティの Cookie のブロックについて詳細を表示する</translation>
+<translation id="7923564237306226146">Linux のアップグレードが完了しました</translation>
 <translation id="7924358170328001543">ポート転送エラー</translation>
 <translation id="7925108652071887026">自動入力のデータ</translation>
 <translation id="792514962475806987">ドッキング画面のズームレベル:</translation>
@@ -7057,6 +7079,7 @@
 <translation id="8084510406207562688">すべてのタブを復元(&amp;E)</translation>
 <translation id="8086015605808120405"><ph name="PRINTER_NAME" /> を設定しています...</translation>
 <translation id="8086442853986205778"><ph name="PRINTER_NAME" /> をセットアップ</translation>
+<translation id="8086610718778464681">Linux のアプリとファイルをバックアップできません</translation>
 <translation id="80866457114322936">{NUM_FILES,plural, =1{このファイルは暗号化されています。所有者に復号するよう依頼してください。}other{一部のファイルは暗号化されています。所有者に復号するよう依頼してください。}}</translation>
 <translation id="808894953321890993">パスワードの変更</translation>
 <translation id="8090234456044969073">よくアクセスするウェブサイトのリストの読み取り</translation>
@@ -8239,6 +8262,7 @@
 <translation id="992778845837390402">現在、Linux のバックアップが進行中です</translation>
 <translation id="993540765962421562">インストールしています</translation>
 <translation id="994289308992179865">ループ(&amp;L)</translation>
+<translation id="995571563161129624">Chromebook で通知を閉じると、スマートフォンでも閉じられます</translation>
 <translation id="995782501881226248">YouTube</translation>
 <translation id="996250603853062861">安全な接続を確立しています...</translation>
 <translation id="996803490569799917">大好きな人たちとの思い出などを見る</translation>

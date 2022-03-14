@@ -30,6 +30,7 @@
 <translation id="114825011539563458">การควบคุมความเป็นส่วนตัวและความปลอดภัยที่สำคัญที่สุดในที่เดียว</translation>
 <translation id="1149401351239820326">เดือนที่หมดอายุ</translation>
 <translation id="1154704303112745282">หน้าเว็บใช้งานไม่ได้ขณะออฟไลน์: <ph name="VIOLATED_URL" /></translation>
+<translation id="1166688006062225587">รายการบัญชีที่จะเลือก</translation>
 <translation id="1171770572613082465">ดูเว็บไซต์ยอดนิยมโดยการแตะปุ่ม "เว็บไซต์อันดับสูงสุด"</translation>
 <translation id="1173894706177603556">เปลี่ยนชื่อ</translation>
 <translation id="1177863135347784049">ที่กำหนดเอง</translation>
@@ -789,6 +790,7 @@
 <translation id="5665379678064389456">สร้างกิจกรรมใน <ph name="APP_NAME" /></translation>
 <translation id="5683547024293500885">Chrome ตรวจหาอัปเดตไม่ได้</translation>
 <translation id="5686790454216892815">ชื่อไฟล์ยาวเกินไป</translation>
+<translation id="5692329390578659217">หากต้องการดำเนินการต่อ <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> จะแชร์ชื่อ อีเมล และรูปโปรไฟล์ของคุณกับเว็บไซต์นี้ อ่าน<ph name="BEGIN_LINK1" />นโยบายความเป็นส่วนตัว<ph name="END_LINK1" />และ<ph name="BEGIN_LINK2" />ข้อกำหนดในการให้บริการ<ph name="END_LINK2" /></translation>
 <translation id="569536719314091526">แปลหน้านี้เป็นภาษาใดก็ได้จากปุ่มตัวเลือกเพิ่มเติม</translation>
 <translation id="5696597120588531049">Chrome ช่วยให้คุณปลอดภัยจากการละเมิดข้อมูล เว็บไซต์ที่ไม่ปลอดภัย และอื่นๆ ได้</translation>
 <translation id="5697688514913266141">ระบบจะบันทึกไฟล์ลงใน<ph name="BEGIN_BOLD" /><ph name="DIRECTORY" /><ph name="END_BOLD" /> <ph name="BEGIN_LINK2" />แก้ไข<ph name="END_LINK2" /></translation>
@@ -897,6 +899,7 @@
 <translation id="6277522088822131679">เกิดปัญหาในการพิมพ์หน้านี้ โปรดลองอีกครั้ง</translation>
 <translation id="6277722725779679269">อัปเดตการติดตามราคาไม่ได้</translation>
 <translation id="6278428485366576908">ธีม</translation>
+<translation id="6293443105724342169">รายการบัญชีที่จะเลือกนั้นเปิดแบบครึ่งหน้า</translation>
 <translation id="6294610283659775533">คุณสามารถส่งแท็บระหว่างอุปกรณ์ที่ลงชื่อเข้าใช้บัญชี Google เดียวกัน</translation>
 <translation id="6297765934698848803">องค์กรที่จัดการอุปกรณ์ของคุณปิดกล้องไว้</translation>
 <translation id="6301525844455696527">อ่านเรื่องรออ่านต่อ</translation>
@@ -1116,6 +1119,7 @@
 <translation id="7474822150871987353">ดูข้อมูลเกี่ยวกับหัวข้อในเว็บไซต์โดยไม่ต้องออกจากหน้า เลือกคำในหน้าอย่างน้อย 1 คำเพื่อใช้ค้นหา</translation>
 <translation id="7475192538862203634">หากคุณเห็นข้อความนี้บ่อยๆ โปรดลองทำตาม<ph name="BEGIN_LINK" />คำแนะนำ<ph name="END_LINK" />เหล่านี้</translation>
 <translation id="7475688122056506577">ไม่พบการ์ด SD ไฟล์บางไฟล์อาจหายไป</translation>
+<translation id="7477262822945323753">หากต้องการดำเนินการต่อ <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> จะแชร์ชื่อ อีเมล และรูปโปรไฟล์ของคุณกับเว็บไซต์นี้ ดู<ph name="BEGIN_LINK1" />นโยบายความเป็นส่วนตัว<ph name="END_LINK1" />ของเว็บไซต์</translation>
 <translation id="7479104141328977413">การจัดการแท็บ</translation>
 <translation id="7481312909269577407">ส่งต่อ</translation>
 <translation id="7482656565088326534">แท็บแสดงตัวอย่าง</translation>
@@ -1289,6 +1293,7 @@
 <translation id="8394720698884623075">ตรวจสอบ URL กับรายการเว็บไซต์ที่ไม่ปลอดภัยซึ่งจัดเก็บไว้ใน Chrome</translation>
 <translation id="8410695015584479363">ติดตามราคา</translation>
 <translation id="8413126021676339697">แสดงประวัติการเข้าชมทั้งหมด</translation>
+<translation id="8414396119627470038">ลงชื่อเข้าใช้ <ph name="SITE_ETLD_PLUS_ONE" /> ด้วย <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="8419244640277402268">รวม</translation>
 <translation id="8424781820952413435">ส่งหน้าเว็บแล้ว เปิด Chrome ใน<ph name="DEVICE_TYPE" />เพื่อดู</translation>
 <translation id="8427875596167638501">แท็บแสดงตัวอย่างเปิดอยู่ครึ่งเดียว</translation>
@@ -1304,6 +1309,7 @@
 <translation id="8461694314515752532">เข้ารหัสลับข้อมูลที่ซิงค์ด้วยรหัสผ่านการซิงค์ของคุณเอง</translation>
 <translation id="8466613982764129868">ตรวจสอบว่า <ph name="TARGET_DEVICE_NAME" /> เชื่อมต่ออินเทอร์เน็ตอยู่</translation>
 <translation id="8473863474539038330">ที่อยู่และอื่นๆ</translation>
+<translation id="847656914027543776">รายการบัญชีที่จะเลือกนั้นปิดอยู่</translation>
 <translation id="8481921391193215807">เมื่อเปิดไว้ เว็บไซต์อาจใช้เทคนิคการรักษาความเป็นส่วนตัวที่แสดงอยู่ที่นี่เพื่อจัดเตรียมเนื้อหาและให้บริการ ซึ่งรวมถึงทางเลือกในการติดตามข้ามเว็บไซต์ และอาจมีการเพิ่มช่วงทดลองใช้ในอนาคต
 
 <ph name="BEGIN_LIST_ITEM1" />ผู้ลงโฆษณาและผู้เผยแพร่โฆษณาใช้ FLoC ได้<ph name="END_LIST_ITEM1" />
@@ -1430,6 +1436,7 @@
 <translation id="9108312223223904744">โทรศัพท์เป็นการรองรับคีย์ความปลอดภัย</translation>
 <translation id="9108808586816295166">DNS ที่ปลอดภัยอาจไม่พร้อมใช้งานในบางครั้ง</translation>
 <translation id="9133397713400217035">สำรวจแบบออฟไลน์</translation>
+<translation id="9133523398139146080">รายการบัญชีที่จะเลือกนั้นเปิดแบบเต็มหน้า</translation>
 <translation id="9137013805542155359">แสดงหน้าเว็บเดิม</translation>
 <translation id="9148126808321036104">ลงชื่อเข้าใช้อีกครั้ง</translation>
 <translation id="9155898266292537608">หรือคุณจะค้นหาด้วยการแตะอย่างรวดเร็วที่คำๆ หนึ่งก็ได้เช่นกัน</translation>

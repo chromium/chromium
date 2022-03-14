@@ -197,6 +197,7 @@
 <translation id="2132302418721800944">ეკრანის სრულად ჩაწერა</translation>
 <translation id="2135456203358955318">ჩამაგრებული ლუპა</translation>
 <translation id="2148716181193084225">დღეს</translation>
+<translation id="2159930836979502091">ამ ჩანართზე გადასვლა</translation>
 <translation id="2170530631236737939">მიმოხილვიდან გასასვლელად გადაფურცლეთ ქვემოთ სამი თითით</translation>
 <translation id="219905428774326614">გამშვები, ყველა აპი</translation>
 <translation id="2201071101391734388">ბოლოდროინდელი ფოტო <ph name="INDEX" /> / <ph name="TOTAL_COUNT" />-დან.</translation>
@@ -563,6 +564,7 @@
 <translation id="4449692009715125625">{NUM_NOTIFICATIONS,plural, =1{1 მნიშვნელოვანი შეტყობინება}other{# მნიშვნელოვანი შეტყობინება}}</translation>
 <translation id="4450893287417543264">აღარ გამოჩნდეს</translation>
 <translation id="4451374464530248585">კლავიატურის მალსახმობი „Alt + ქვემოთ მიმართული ისარი“ შეიცვალა. Page Down კლავიშით სარგებლობისთვის დააჭირეთ კლავიშს <ph name="LAUNCHER_KEY_NAME" /> + ქვემოთ მიმართულ ისარს.</translation>
+<translation id="4455051983450390249">ნახეთ თქვენი ტელეფონის შეტყობინებები თქვენს <ph name="DEVICE_TYPE" />-ზე</translation>
 <translation id="445864333228800152">საღამო მშვიდობის,</translation>
 <translation id="4458688154122353284">ეკრანის ჩაწერის შეწყვეტა</translation>
 <translation id="4471354919263203780">მიმდინარეობს მეტყველების ამოცნობის ფაილების ჩამოტვირთვა... <ph name="PERCENT" />%</translation>
@@ -770,6 +772,7 @@
 <translation id="583281660410589416">უცნობი</translation>
 <translation id="5837036133683224804"><ph name="ROUTE_TITLE" />-ის შეწყვეტა „<ph name="RECEIVER_NAME" />“-ში</translation>
 <translation id="584525477304726060">გეჭიროთ გასაშლელად</translation>
+<translation id="5856638668464565213"><ph name="NETWORK_NAME" /> არ არის გააქტიურებული.</translation>
 <translation id="5860033963881614850">გამორთვა</translation>
 <translation id="5860491529813859533">ჩართვა</translation>
 <translation id="5867217927013474703">გროვდება ინფორმაცია ქსელის შესახებ</translation>
@@ -801,6 +804,7 @@
 <translation id="602472752137106327">ყველა სამუშაო მაგიდის ფანჯრების ჩვენება, არჩეულია არჩევანის ღილაკი</translation>
 <translation id="6025324406281560198"><ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, სიგნალის სიძლიერე: <ph name="SIGNAL_STRENGTH" />, მართავს თქვენი ადმინისტრატორი</translation>
 <translation id="6027518778343897451">მოვლენა არ იძებნება თარიღისთვის: <ph name="CURRENT_MONTH_DAY" />. დააჭირეთ შეყვანის ღილაკს, რათა გახსნათ Google კალენდარი ბრაუზერში.</translation>
+<translation id="6027952026115023659">იქონიეთ წვდომა თქვენი ტელეფონის შეტყობინებების აპებზე თქვენს <ph name="DEVICE_TYPE" />-ზე</translation>
 <translation id="6030495522958826102">მენიუ გადატანილია ეკრანის ქვედა მარცხენა კუთხეში.</translation>
 <translation id="6032620807120418574">სრული ეკრანის ჩასაწერად დააწკაპუნეთ ნებისმიერ ადგილზე</translation>
 <translation id="6040071906258664830">მიკროფონის ჩაწერაა <ph name="STATE" /></translation>
@@ -944,6 +948,7 @@
 <translation id="6961121602502368900">ტელეფონის ჩაჩუმება მიუწვდომელია სამსახურის პროფილში</translation>
 <translation id="6961840794482373852">კლავიატურის მალსახმობი „Alt + ზემოთ მიმართული ისარი“ შეიცვალა. Page Up კლავიშით სარგებლობისთვის დააჭირეთ კლავიშს <ph name="LAUNCHER_KEY_NAME" /> + ზემოთ მიმართულ ისარს.</translation>
 <translation id="6965382102122355670">კარგი</translation>
+<translation id="6967933908874208731">ნახეთ თქვენი ტელეფონის ბოლოდროინდელი ფოტოები, მედიაფაილები, შეტყობინებები და შეტყობინებების აპები თქვენს <ph name="DEVICE_TYPE" />-ზე</translation>
 <translation id="6972754398087986839">დაწყება</translation>
 <translation id="6979158407327259162">Google Drive</translation>
 <translation id="6981982820502123353">სპეციალური შესაძლებლობები</translation>

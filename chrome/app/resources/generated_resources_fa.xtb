@@ -40,6 +40,7 @@
 <translation id="1041175011127912238">این صفحه پاسخ نمی‌دهد</translation>
 <translation id="1041263367839475438">دستگاه‌های در دسترس</translation>
 <translation id="1042174272890264476">‏‫همچنین کتابخانه RLZ‏ <ph name="SHORT_PRODUCT_NAME" /> از قبل بر روی رایانه شما نصب شده است. RLZ یک برچسب غیرمنحصر بفرد و غیرقابل‌شناسایی برای سنجش جستجوها و استفاده از <ph name="SHORT_PRODUCT_NAME" /> اختصاص می‌دهد که توسط یک کمپین تبلیغاتی خاص ارائه می‌شود. در بعضی مواقع در <ph name="PRODUCT_NAME" /> این برچسب‌ها در عباراتی که در جستجوی Goole جستجو می‌شوند نمایان می‌شوند.</translation>
+<translation id="1043505821207197890">‏مشکلی پیش آمد. Linux ممکن است به‌صورت جزئی ارتقا یافته باشد. برای اطلاعات بیشتر، گزارش‌ها را مرور کنید. گزارش‌ها در «Files &gt; فایل‌های من &gt; <ph name="LOG_FILE" />» ذخیره شده است</translation>
 <translation id="1043818413152647937">داده‌های این برنامه‌ها نیز پاک شود؟</translation>
 <translation id="1043824690776631483">برای بازدید از این سایت، به اجازه نیاز دارید. ممکن است حاوی محتوای نامناسب باشد.</translation>
 <translation id="104710386808485638">‏Linux بازراه‌اندازی شود؟</translation>
@@ -273,6 +274,7 @@
 <translation id="1258491128795710625">ویژگی‌های جدید</translation>
 <translation id="1259152067760398571">«بررسی ایمنی» دیروز اجرا شد</translation>
 <translation id="1260451001046713751">همیشه پنجره‌های بازشو و هدایت‌ها از <ph name="HOST" /> مجاز باشد</translation>
+<translation id="1260810365552581339">‏Linux ممکن است فضای دیسک کافی نداشته باشد. می‌توانید در <ph name="LINK_START" />تنظیمات<ph name="LINK_END" /> فضای دیسک Linux را افزایش دهید و بازیابی را دوباره امتحان کنید.</translation>
 <translation id="1261380933454402672">متوسط</translation>
 <translation id="126156426083987769">مشکلی در رابطه با مجوزهای حالت نمایشی دستگاه پیش آمد.</translation>
 <translation id="1263231323834454256">فهرست خواندن</translation>
@@ -618,6 +620,7 @@
 <translation id="1603411913360944381">فراموش کردن <ph name="DEVICE_NAME" /></translation>
 <translation id="1603914832182249871">(ناشناس)</translation>
 <translation id="1604432177629086300">چاپ نشد چاپگر را بررسی کنید و دوباره امتحان کنید.</translation>
+<translation id="1604774728851271529">‏برای ارتقای Linux به اتصال شبکه نیاز دارید. به اینترنت متصل شوید و دوباره امتحان کنید.</translation>
 <translation id="1605744057217831567">دیدن همه داده‌ها و اجازه‌های سایت</translation>
 <translation id="1606077700029460857">تغییر تنظیمات موشواره</translation>
 <translation id="1606566847233779212">سایت‌های خاصی که اضافه کرده‌اید برداشته شوند؟</translation>
@@ -1042,6 +1045,7 @@
 <translation id="1989903373608997757">همیشه استفاده شود</translation>
 <translation id="1990046457226896323">فایل‌های گفتاری بارگیری شد</translation>
 <translation id="1990512225220753005">میان‌برها در این صفحه نشان داده نشود</translation>
+<translation id="1990727803345673966">‏فایل‌ها و برنامه‌های پشتیبان‌گیری‌شده Linux درحال بازیابی هستند</translation>
 <translation id="199191324030140441">خاموش کردن «مزاحم نشوید»</translation>
 <translation id="1992397118740194946">تنظیم نشده</translation>
 <translation id="1992924914582925289">حذف از دستگاه</translation>
@@ -1116,6 +1120,7 @@
 <translation id="2071393345806050157">فایل گزارش محلی وجود ندارد.</translation>
 <translation id="2071692954027939183">اعلان‌ها به‌طور خودکار مسدود شدند چون شما معمولاً اجازه نمی‌دهید نمایش داده شوند</translation>
 <translation id="2073148037220830746">{NUM_EXTENSIONS,plural, =1{برای نصب این افزونه، کلیک کنید}one{برای نصب این افزونه‌ها، کلیک کنید}other{برای نصب این افزونه‌ها، کلیک کنید}}</translation>
+<translation id="2073496667646280609">شاید فضای ذخیره‌سازی کافی در دستگاه یا مکانی که برای پشتیبان‌گیری انتخاب کرده‌اید نداشته باشید. بخشی‌از فضا را آزاد کنید یا پشتیبان‌گیری را در مکان دیگری انجام دهید.</translation>
 <translation id="2073505299004274893">از <ph name="CHARACTER_LIMIT" /> نویسه یا کمتر استفاده کنید</translation>
 <translation id="2075474481720804517"><ph name="BATTERY_PERCENTAGE" />٪ باتری</translation>
 <translation id="2075959085554270910">به شما امکان می‌دهد «کلیک با یک ضربه» و «کشیدن با ضربه زدن» را فعال/غیرفعال کنید</translation>
@@ -1647,6 +1652,7 @@
 <translation id="2568774940984945469">قسمت نوار اطلاعات</translation>
 <translation id="2571655996835834626">تنظیماتی را تغییر دهید که دسترسی وب‌سایت‌ها را به ویژگی‌هایی مثل کوکی‌ها، جاوا اسکریپت، افزایه، موقعیت جغرافیایی، میکروفون، دوربین و غیره کنترل می‌کنند.</translation>
 <translation id="2572032849266859634">مجوز دسترسی فقط خواندنی به <ph name="VOLUME_NAME" /> صادر شد.</translation>
+<translation id="2573417407488272418">‏پیش‌از ارتقا، برنامه‌ها و فایل‌ها را در «Files &gt; فایل‌های من» پشتیبان‌گیری کنید.</translation>
 <translation id="2573831315551295105">اختصاص دادن کلید به کنش «<ph name="ACTION" />»</translation>
 <translation id="2575247648642144396">وقتی برنامه افزودنی بتواند در صفحه کنونی کار کند این نماد قابل مشاهده خواهد بود. با کلیک کردن روی نماد یا با فشار دادن <ph name="EXTENSION_SHORTCUT" /> از این برنامه افزودنی استفاده کنید.</translation>
 <translation id="2575441894380764255">اجازه ندارد آگهی‌های مزاحم یا گمراه‌کننده نشان دهد</translation>
@@ -1963,6 +1969,7 @@
 <translation id="2882943222317434580"><ph name="IDS_SHORT_PRODUCT_NAME" /> راه‌اندازی مجدد و به صورت لحظه‌ای بازنشانی می‌شود</translation>
 <translation id="2885378588091291677">مدیر فعالیت‌ها</translation>
 <translation id="2885729872133513017">هنگام رمزگشایی پاسخ سرور، مشکلی پیش آمد.</translation>
+<translation id="2886119409731773154">ممکن است حداکثر ۳۰ دقیقه طول بکشد</translation>
 <translation id="2886771036282400576">• <ph name="PERMISSION" /></translation>
 <translation id="288734198558082692"><ph name="DEVICE" /> و <ph name="NUMBER_OF_DEVICES" /> مورد دیگر</translation>
 <translation id="2889064240420137087">بازکردن پیوند با...</translation>
@@ -2225,6 +2232,7 @@
 <translation id="3151562827395986343">پاک کردن سابقه، کوکی‌ها، حافظه پنهان و موارد دیگر</translation>
 <translation id="3151616662954589507">دوربین خودگرفت</translation>
 <translation id="3151786313568798007">جهت‌‌</translation>
+<translation id="3152356229013609796">مشاهده، رد کردن، و پاسخ دادن به اعلان‌های تلفن</translation>
 <translation id="3154429428035006212">آفلاین برای مدت بیش از یک ماه</translation>
 <translation id="3157387275655328056">افزودن به فهرست خواندن</translation>
 <translation id="3157931365184549694">بازیابی</translation>
@@ -2909,6 +2917,7 @@
 <translation id="3831436149286513437">‏پیشنهادهای جستجوی Google Drive</translation>
 <translation id="3834728400518755610">‏برای اعمال تغییر ایجادشده در تنظیم میکروفون، باید Linux را خاموش کنید. برای ادامه دادن، Linux را خاموش کنید.</translation>
 <translation id="3834775135533257713">برنامه «<ph name="TO_INSTALL_APP_NAME" />» اضافه نشد، چون با «<ph name="INSTALLED_APP_NAME" />» ناسازگار است.</translation>
+<translation id="3835904559946595746">‏نسخه پشتیبان Linux بازیابی نشد</translation>
 <translation id="383669374481694771">‏این اطلاعاتی کلی درباره این دستگاه و نحوه استفاده از آن است (مانند سطح شارژ باتری، فعالیت سیستم و برنامه، و خطاها). از این داده‌ها برای بهبود Android استفاده خواهد شد و بعضی از اطلاعات انبوهشی نیز به برنامه‌های Google و شریکان، مانند برنامه‌نویسان Android کمک خواهد کرد برنامه‌ها و محصولاتشان را بهتر کنند.</translation>
 <translation id="3838085852053358637">افزونه بار نشد</translation>
 <translation id="3838486795898716504"><ph name="PAGE_TITLE" /> بیشتر</translation>
@@ -3621,6 +3630,7 @@
 <translation id="4562155214028662640">افزودن اثر انگشت</translation>
 <translation id="4563210852471260509">زبان ورودی اولیه چینی است</translation>
 <translation id="4563880231729913339">انگشت ۳</translation>
+<translation id="4564245002465020751">درحال تکمیل راه‌اندازی تلفن</translation>
 <translation id="4565377596337484307">عدم نمایش گذرواژه</translation>
 <translation id="4565917129334815774">ذخیره گزارش‌های سیستم</translation>
 <translation id="4566417217121906555">بی‌صدا کردن میکروفون</translation>
@@ -3792,6 +3802,7 @@
 <translation id="474609389162964566">‏دسترسی به «دستیار» با «Ok Google»</translation>
 <translation id="4746351372139058112">پیام‌ها</translation>
 <translation id="4748783296226936791">‏سایت‌ها معمولاً برای ارائه ویژگی‌هایی که از صفحه‌کلیدها، کنترل‌کننده‌های بازی، و دیگر دستگاه‌های غیرمتداول استفاده می‌کنند، به دستگاه‌های HID متصل می‌شوند</translation>
+<translation id="4750185073185658673">‏برای مرور چند اجازه دیگر، به تلفن برگردید. مطمئن شوید بلوتوث و Wi-Fi تلفن روشن باشند.</translation>
 <translation id="4750394297954878236">پیشنهادات</translation>
 <translation id="475088594373173692">کاربر اول</translation>
 <translation id="4756378406049221019">توقف/تازه‌سازی</translation>
@@ -4979,6 +4990,7 @@
 <translation id="5957987129450536192">در کنار تصویر نمایه‌تان روی نماد «انتخاب برای شنیدن» ضربه بزنید، سپس آنچه را می‌خواهید بشنوید انتخاب کنید.</translation>
 <translation id="5959471481388474538">شبکه در دسترس نیست</translation>
 <translation id="595959584676692139">برای استفاده از این افزونه، صفحه را تازه‌سازی کنید</translation>
+<translation id="5960410286721553511">مشاهده رسانه و عکس‌های جدید تلفن</translation>
 <translation id="5963453369025043595"><ph name="NUM_HANDLES" /> (<ph name="NUM_KILOBYTES_LIVE" /> اوج مصرف)</translation>
 <translation id="5964113968897211042">{COUNT,plural, =0{باز کردن همه در پنجره جدید}=1{باز کردن در پنجره جدید}one{باز کردن همه ({COUNT}) در پنجره جدید}other{باز کردن همه ({COUNT}) در پنجره جدید}}</translation>
 <translation id="5965661248935608907">‏این برنامه افزودنی همچنین صفحه‌ای را که هنگام کلیک کردن روی دکمه صفحه اصلی یا جستجو از Omnibox نشان داده می‌شود، کنترل می‌کند.</translation>
@@ -5555,6 +5567,7 @@
 <translation id="6541638731489116978">دسترسی این سایت به حسگرهای حرکتی مسدود شده است.</translation>
 <translation id="6545665334409411530">سرعت تکرار</translation>
 <translation id="6545867563032584178">‏در «تنظیمات برگزیده سیستم Mac»، میکروفون خاموش است</translation>
+<translation id="6546856949879953071">‏برای اطلاعات دقیق ارتقا، گزارش‌های مربوطه در «Files &gt; فایل‌های من &gt; <ph name="LOG_FILE" />» ذخیره شده است</translation>
 <translation id="6547354035488017500">اگر حداقل ۵۱۲ مگابایت از حافظه دستگاه را خالی نکنید، پاسخ‌گویی دستگاه متوقف خواهد شد. برای آزاد کردن فضا، فایل‌ها را از حافظه دستگاه حذف کنید.</translation>
 <translation id="6547854317475115430">‏<ph name="BEGIN_PARAGRAPH1" />«خدمات مکان Google» از منابعی مانند Wi-Fi، شبکه‌های تلفن همراه، و حسگرها برای کمک به تخمین مکان دستگاهتان استفاده می‌کند.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />هرزمان خواستید می‌توانید با رفتن به «تنظیمات &gt; برنامه‌ها &gt; فروشگاه Google Play &gt; مدیریت اولویت‌های Android &gt; امنیت و مکان &gt; مکان»، مکان Android را در دستگاهتان خاموش کنید. همچنین می‌توانید با خاموش کردن «دقت مکان Google» در همان منو، استفاده از Wi-Fi، شبکه‌های تلفن همراه، و حسگرها را برای مکان Android خاموش کنید.<ph name="END_PARAGRAPH2" /></translation>
@@ -5569,6 +5582,7 @@
 <translation id="655384502888039633"><ph name="USER_COUNT" /> کاربر</translation>
 <translation id="655483977608336153">امتحان مجدد</translation>
 <translation id="6555432686520421228">همه حساب‌های کاربر حذف شود و دستگاه <ph name="IDS_SHORT_PRODUCT_NAME" /> شما بازنشانی شود تا جدید شود.</translation>
+<translation id="6555604601707417276">‏نسخه پشتیبان Linux بازیابی شد</translation>
 <translation id="6555810572223193255">پاک‌سازی فعلاً در دسترس نیست</translation>
 <translation id="6556477848444788999">این پین یا گذرواژه از داده‌های این <ph name="DEVICE_TYPE" /> (ازجمله محتوایی که از تلفنتان جاری‌سازی می‌کنید) محافظت می‌کند.</translation>
 <translation id="6556866813142980365">انجام مجدد</translation>
@@ -5674,6 +5688,7 @@
 <translation id="6663190258859265334">‏<ph name="DEVICE_TYPE" /> شما Powerwash می‌شود و به نسخه قبلی برمی‌گردد.</translation>
 <translation id="6664237456442406323">‏متأسفانه، رایانه شما با یک شناسه سخت‌افزار ناقص پیکربندی شده است. این موضوح Chrome OS را از به‌روزرسانی با جدیدترین اصلاحات امنیتی باز می‌دارد که <ph name="BEGIN_BOLD" />می‌تواند رایانه شما را در برابر حملات مخرب آسیب‌پذیر نماید<ph name="END_BOLD" />.</translation>
 <translation id="6664774537677393800">هنگام باز کردن نمایه‌تان مشکلی پیش آمد. لطفاً از سیستم خارج شوید و دوباره به آن وارد شوید.</translation>
+<translation id="6666559645296300656">‏درحال لغو کردن ارتقای Linux</translation>
 <translation id="666731172850799929">باز کردن در <ph name="APP_NAME" /></translation>
 <translation id="6670142487971298264">‫<ph name="APP_NAME" /> اکنون دردسترس است</translation>
 <translation id="6670767097276846646">‏بعضی‌از افزونه‌ها می‌توانند موتور جستجو به Chrome اضافه کنند</translation>
@@ -5710,6 +5725,7 @@
 <translation id="6700480081846086223">فرستادن <ph name="HOST_NAME" /></translation>
 <translation id="6701535245008341853">نمایه دریافت نشد.</translation>
 <translation id="6702639462873609204">&amp;ویرایش...</translation>
+<translation id="6703254819490889819">بازیابی نسخه پشتیبان</translation>
 <translation id="6706210727756204531">حوزه</translation>
 <translation id="6707389671160270963">‏گواهی سرویس گیرنده SSL</translation>
 <translation id="6709002550153567782">{NUM_PAGES,plural, =0{<ph name="PAGE_TITLE" />}=1{<ph name="PAGE_TITLE" /> و ۱ برگه دیگر}one{<ph name="PAGE_TITLE" /> و # برگه دیگر}other{<ph name="PAGE_TITLE" /> و # برگه دیگر}}</translation>
@@ -5891,6 +5907,7 @@
 <translation id="6883319974225028188">وای! سیستم نتوانست پیکربندی دستگاه را ذخیره کند.</translation>
 <translation id="6884474387073389421">مطمئنید می‌خواهید داده‌های ورود به سیستم انتخاب‌شده را حذف کنید؟</translation>
 <translation id="6885771755599377173">پیش‌نمایش اطلاعات سیستم</translation>
+<translation id="6886380424988777998">‏Linux ارتقا داده نشد</translation>
 <translation id="6886871292305414135">باز کردن پیوند در &amp;برگه جدید</translation>
 <translation id="6889957081990109136">هنوز کلیدی اختصاص داده نشده است</translation>
 <translation id="689007770043972343">دیگر برگه‌های باز را به‌سمت گروه بکشید</translation>
@@ -6033,6 +6050,7 @@
 <translation id="7017219178341817193">افزودن صفحه جدید</translation>
 <translation id="7017354871202642555">بعد از تنظیم پنجره، تنظیم حالت امکان‌پذیر نیست.</translation>
 <translation id="7018275672629230621">خواندن و تغییر سابقه مرورگرتان</translation>
+<translation id="7019546817926942979">‏دستگاهتان باید به برق وصل شود. ارتقای Linux می‌تواند شارژ باتری را به‌طور قابل‌توجهی تخلیه کند. دستگاه را به شارژر متصل کنید و دوباره امتحان کنید.</translation>
 <translation id="7019805045859631636">سریع</translation>
 <translation id="7022562585984256452">صفحه اصلی شما تنظیم شد.</translation>
 <translation id="7025082428878635038">معرفی روشی جدید برای پیمایش با اشاره‌ها</translation>
@@ -6086,6 +6104,7 @@
 <translation id="7072010813301522126">نام میان‌بر</translation>
 <translation id="7075513071073410194">‏PKCS #1 MD5 با رمزگذاری RSA</translation>
 <translation id="7075625805486468288">‏مدیریت گواهی‌ها و تنظیمات HTTPS/SSL</translation>
+<translation id="7076875098323397992">ارتقا شروع نشد</translation>
 <translation id="7077829361966535409">بارگیری صفحه ورود به سیستم با استفاده از تنظمیات کنونی پروکسی انجام نشد. لطفاً <ph name="GAIA_RELOAD_LINK_START" />دوباره به سیستم وارد شوید<ph name="GAIA_RELOAD_LINK_END" /> یا از <ph name="PROXY_SETTINGS_LINK_START" />تنظمیات پروکسی<ph name="PROXY_SETTINGS_LINK_END" /> متفاوتی استفاده نمایید.</translation>
 <translation id="7078120482318506217">تمام شبکه‌ها</translation>
 <translation id="708060913198414444">کپی آدرس صوت</translation>
@@ -6349,6 +6368,7 @@
 <translation id="7377481913241237033">اتصال با کد</translation>
 <translation id="7378611153938412599">گذرواژه‌های ضعیف را می‌توان به‌راحتی حدس زد. مطمئن شوید گذرواژه‌هایی که ایجاد می‌کنید قوی باشند. <ph name="BEGIN_LINK" />نکته‌های امنیتی بیشتری ببینید.<ph name="END_LINK" /></translation>
 <translation id="73786666777299047">‏باز کردن نت‌بازار Chrome</translation>
+<translation id="7380459290951585794">‏مطمئن شوید تلفنتان همین اطراف باشد، قفل آن باز، و بلوتوث و Wi-Fi در آن روشن باشد</translation>
 <translation id="7380622428988553498">نام دستگاه حاوی نویسه‌های نامعتبر است</translation>
 <translation id="7380768571499464492"><ph name="PRINTER_NAME" /> به‌روزرسانی شد</translation>
 <translation id="73843634555824551">ورودی‌ها و صفحه‌کلیدها</translation>
@@ -6652,6 +6672,7 @@
 <translation id="7668002322287525834">{NUM_WEEKS,plural, =1{<ph name="DEVICE_TYPE" /> را ظرف {NUM_WEEKS} هفته برگردانید}one{<ph name="DEVICE_TYPE" /> را ظرف {NUM_WEEKS} هفته برگردانید}other{<ph name="DEVICE_TYPE" /> را ظرف {NUM_WEEKS} هفته برگردانید}}</translation>
 <translation id="7668423670802040666">‏در «مدیر گذرواژه Google» برای <ph name="ACCOUNT" /></translation>
 <translation id="7669825497510425694">{NUM_ATTEMPTS,plural, =1{پین اشتباه است. یک بار دیگر می‌توانید امتحان کنید.}one{پین اشتباه است. # بار دیگر می‌توانید امتحان کنید.}other{پین اشتباه است. # بار دیگر می‌توانید امتحان کنید.}}</translation>
+<translation id="7670434942695515800">‏برای بهترین عملکرد، به آخرین نسخه ارتقا دهید. توصیه می‌کنیم از فایل‌هایتان پشتیبان‌گیری کنید تا اگر ارتقا باموفقیت کامل نشود با مشکل روبرو نشوید. به‌محض شروع ارتقا، Linux خاموش خواهد شد. پیش‌از ادامه دادن، فایل‌های باز را ذخیره کنید. <ph name="LINK_START" />بیشتر بدانید<ph name="LINK_END" /></translation>
 <translation id="7671130400130574146">استفاده از نوار عنوان سیستم و مرزها</translation>
 <translation id="767127784612208024">برای تأیید بازنشانی، لمس کنید</translation>
 <translation id="767147716926917172">‏ارسال خودکار داده‌های استفاده و عیب‌یابی به Google</translation>
@@ -6913,6 +6934,7 @@
 <translation id="7920363873148656176"><ph name="ORIGIN" /> می‌تواند <ph name="FILENAME" /> را مشاهده کند</translation>
 <translation id="7920482456679570420">واژه‌هایی را که نیازی به غلط‌گیری املا ندارند اضافه کنید</translation>
 <translation id="7922935920104868876">نمایش جزئیات مربوط به مسدود کردن کوکی‌های شخص ثالث در «حالت ناشناس»</translation>
+<translation id="7923564237306226146">‏ارتقای Linux کامل شد</translation>
 <translation id="7924358170328001543">خطا هنگام ارسال درگاه</translation>
 <translation id="7925108652071887026">داده‌های تکمیل خودکار</translation>
 <translation id="792514962475806987">میزان بزرگ‌نمایی متصل:</translation>
@@ -6940,6 +6962,7 @@
 <translation id="7946586320617670168">مبدأ باید امن باشد</translation>
 <translation id="794676567536738329">تأیید مجوزها</translation>
 <translation id="7947962633355574091">کپی آدرس ویدئو</translation>
+<translation id="7947964080535614577">سایت‌ها معمولاً آگهی نشان می‌دهند تا بتوانند محتوا یا سرویس‌ها را به‌طور رایگان ارائه دهند. اما برخی‌از سایت‌ها به‌عنوان سایت‌هایی شناخته شده‌اند که آگهی‌های مزاحم یا گمراه‌کننده نمایش می‌دهند.</translation>
 <translation id="7948407723851303488">همه صفحه‌های <ph name="DOMAIN_NAME" /></translation>
 <translation id="7951265006188088697">‏برای افزودن یا مدیریت روش‌های پرداخت Google Pay، به<ph name="BEGIN_LINK" />حساب Google<ph name="END_LINK" /> خود بروید</translation>
 <translation id="7952708427581814389">سایت‌ها می‌توانند دیدن نوشتار و تصاویر موجود در بریده‌دان را درخواست کنند</translation>
@@ -7089,6 +7112,7 @@
 <translation id="8084510406207562688">بازیابی همه برگه‌ها</translation>
 <translation id="8086015605808120405">درحال پیکربندی <ph name="PRINTER_NAME" />…</translation>
 <translation id="8086442853986205778">راه‌اندازی <ph name="PRINTER_NAME" /></translation>
+<translation id="8086610718778464681">‏برنامه‌ها و فایل‌های Linux پشتیبان‌گیری نشدند</translation>
 <translation id="80866457114322936">{NUM_FILES,plural, =1{این فایل رمزگذاری شده است. از مالک بخواهید آن را رمزگشایی کند.}one{بعضی از این فایل‌ها رمزگذاری شده‌اند. از مالک بخواهید آن را رمزگشایی کند.}other{بعضی از این فایل‌ها رمزگذاری شده‌اند. از مالک بخواهید آن‌ها را رمزگشایی کند.}}</translation>
 <translation id="808894953321890993">تغییر گذرواژه</translation>
 <translation id="8090234456044969073">خواندن فهرستی از وب‌سایت‌های غالباً بازدید شده شما</translation>
@@ -8272,6 +8296,7 @@
 <translation id="992778845837390402">‏درحال‌حاضر پشتیبان‌گیری Linux درحال انجام است</translation>
 <translation id="993540765962421562">نصب درحال انجام است.</translation>
 <translation id="994289308992179865">&amp;حلقه</translation>
+<translation id="995571563161129624">‏به‌یاد داشته باشید که اگر اعلان‌ها را در Chromebook رد کنید در تلفن نیز رد می‌شوند</translation>
 <translation id="995782501881226248">YouTube</translation>
 <translation id="996250603853062861">در حال برقراری اتصال ایمن...</translation>
 <translation id="996803490569799917">خاطرات افراد موردعلاقه‌تان و موارد دیگر را ببینید</translation>

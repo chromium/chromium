@@ -194,6 +194,7 @@
 <translation id="2132302418721800944">บันทึกแบบเต็มหน้าจอ</translation>
 <translation id="2135456203358955318">แว่นขยายหน้าจอบางส่วน</translation>
 <translation id="2148716181193084225">วันนี้</translation>
+<translation id="2159930836979502091">ไปที่แท็บนี้</translation>
 <translation id="2170530631236737939">ใช้ 3 นิ้วเลื่อนลงเพื่อออกจาก "ภาพรวม"</translation>
 <translation id="219905428774326614">Launcher, แอปทั้งหมด</translation>
 <translation id="2201071101391734388">รูปภาพล่าสุด <ph name="INDEX" /> จาก <ph name="TOTAL_COUNT" /></translation>
@@ -560,6 +561,7 @@
 <translation id="4449692009715125625">{NUM_NOTIFICATIONS,plural, =1{การแจ้งเตือนสำคัญ 1 รายการ}other{การแจ้งเตือนสำคัญ # รายการ}}</translation>
 <translation id="4450893287417543264">ไม่ต้องแสดงอีก</translation>
 <translation id="4451374464530248585">มีการเปลี่ยนแปลงแป้นพิมพ์ลัด Alt + ลูกศรลง หากต้องการใช้แป้น Page Down ให้กดแป้น <ph name="LAUNCHER_KEY_NAME" /> + ลูกศรลง</translation>
+<translation id="4455051983450390249">ดูการแจ้งเตือนของโทรศัพท์ใน <ph name="DEVICE_TYPE" /></translation>
 <translation id="445864333228800152">สวัสดียามเย็น</translation>
 <translation id="4458688154122353284">หยุดการอัดหน้าจอ</translation>
 <translation id="4471354919263203780">กำลังดาวน์โหลดไฟล์การจดจำคำพูด... <ph name="PERCENT" />%</translation>
@@ -767,6 +769,7 @@
 <translation id="583281660410589416">ไม่รู้จัก</translation>
 <translation id="5837036133683224804">หยุด <ph name="ROUTE_TITLE" /> ใน<ph name="RECEIVER_NAME" /></translation>
 <translation id="584525477304726060">กดค้างเพื่อขยายใหญ่สุด</translation>
+<translation id="5856638668464565213"><ph name="NETWORK_NAME" /> ไม่ได้เปิดใช้งาน</translation>
 <translation id="5860033963881614850">ปิด</translation>
 <translation id="5860491529813859533">เปิด</translation>
 <translation id="5867217927013474703">กำลังรวบรวมข้อมูลเครือข่าย</translation>
@@ -798,6 +801,7 @@
 <translation id="602472752137106327">แสดงหน้าต่างจากเดสก์ทุกตัว เลือกปุ่มตัวเลือกแล้ว</translation>
 <translation id="6025324406281560198"><ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, ความแรงสัญญาณ <ph name="SIGNAL_STRENGTH" />, จัดการโดยผู้ดูแลระบบ</translation>
 <translation id="6027518778343897451">ไม่มีกิจกรรมในวันที่ <ph name="CURRENT_MONTH_DAY" /> กด Enter เพื่อเปิด Google ปฏิทินในเบราว์เซอร์</translation>
+<translation id="6027952026115023659">เข้าถึงแอปรับส่งข้อความของโทรศัพท์ใน <ph name="DEVICE_TYPE" /></translation>
 <translation id="6030495522958826102">เมนูได้ย้ายไปอยู่ที่มุมซ้ายล่างของหน้าจอ</translation>
 <translation id="6032620807120418574">คลิกที่ใดก็ได้เพื่อบันทึกแบบเต็มหน้าจอ</translation>
 <translation id="6040071906258664830">การบันทึกเสียงจากไมโครโฟน<ph name="STATE" /></translation>
@@ -941,6 +945,7 @@
 <translation id="6961121602502368900">ฟีเจอร์ปิดเสียงโทรศัพท์ใช้งานไม่ได้ในโปรไฟล์งาน</translation>
 <translation id="6961840794482373852">มีการเปลี่ยนแปลงแป้นพิมพ์ลัด Alt + ลูกศรขึ้น หากต้องการใช้แป้น Page Up ให้กดแป้น <ph name="LAUNCHER_KEY_NAME" /> + ลูกศรขึ้น</translation>
 <translation id="6965382102122355670">ตกลง</translation>
+<translation id="6967933908874208731">ดูรูปภาพ สื่อ การแจ้งเตือน และแอปรับส่งข้อความล่าสุดของโทรศัพท์ใน <ph name="DEVICE_TYPE" /></translation>
 <translation id="6972754398087986839">เริ่มต้นใช้งาน</translation>
 <translation id="6979158407327259162">Google ไดรฟ์</translation>
 <translation id="6981982820502123353">การช่วยเหลือพิเศษ</translation>

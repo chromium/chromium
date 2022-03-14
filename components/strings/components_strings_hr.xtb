@@ -458,6 +458,7 @@ To će u suprotnom biti onemogućeno na temelju vaših postavki privatnosti. To 
 <translation id="2310021320168182093">Chou2 (omotnica)</translation>
 <translation id="2316887270356262533">Oslobodit će se manje od 1 MB. Neke bi se web-lokacije pri sljedećem otvaranju mogle sporije učitavati.</translation>
 <translation id="2317259163369394535"><ph name="DOMAIN" /> zahtijeva korisničko ime i zaporku.</translation>
+<translation id="2318594867107319532">Posljednja vremenska oznaka pravila:</translation>
 <translation id="2328651992442742497">Dopušteno (zadano)</translation>
 <translation id="2329182534073751090">postavljanje prozora</translation>
 <translation id="2330137317877982892"><ph name="CREDIT_CARD" />, istječe <ph name="EXPIRATION_DATE_ABBR" /></translation>
@@ -1661,6 +1662,7 @@ To će u suprotnom biti onemogućeno na temelju vaših postavki privatnosti. To 
 <translation id="6157754950574419155">Ukloni sve iz povijesti</translation>
 <translation id="6157877588268064908">Odaberite adresu za prikaz načina dostave i zahtjeva za dostavu</translation>
 <translation id="6165508094623778733">Saznajte više</translation>
+<translation id="6167577165590485365">Posljednji pokušaj dohvaćanja:</translation>
 <translation id="6169916984152623906">Sada možete pregledavati privatno i ostali korisnici ovog uređaja neće vidjeti vaše aktivnosti. No spremit će se preuzimanja i oznake.</translation>
 <translation id="6177128806592000436">Veza s web-lokacijom nije sigurna</translation>
 <translation id="6180316780098470077">Interval između ponovnih pokušaja</translation>

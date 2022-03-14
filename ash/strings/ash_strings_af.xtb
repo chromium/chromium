@@ -197,6 +197,7 @@ Hier is 'n paar dinge wat jy kan probeer om aan die gang te kom.</translation>
 <translation id="2132302418721800944">Neem volskerm op</translation>
 <translation id="2135456203358955318">Gedokte vergrootglas</translation>
 <translation id="2148716181193084225">Vandag</translation>
+<translation id="2159930836979502091">Gaan na hierdie oortjie</translation>
 <translation id="2170530631236737939">Swiep met drie vingers af om Oorsig te verlaat</translation>
 <translation id="219905428774326614">Lanseerder, alle programme</translation>
 <translation id="2201071101391734388">Onlangse foto <ph name="INDEX" /> van <ph name="TOTAL_COUNT" />.</translation>
@@ -564,6 +565,7 @@ Alle gebruikers moet afmeld om voort te gaan.</translation>
 <translation id="4449692009715125625">{NUM_NOTIFICATIONS,plural, =1{1 belangrike kennisgewing}other{# belangrike kennisgewings}}</translation>
 <translation id="4450893287417543264">Moenie weer wys nie</translation>
 <translation id="4451374464530248585">Die kortpadsleutel Alt + afpyl het verander. Om die Page Down-sleutel te gebruik, moet jy die <ph name="LAUNCHER_KEY_NAME" />-sleutel + afpyl druk.</translation>
+<translation id="4455051983450390249">Bekyk jou foon se kennisgewings op jou <ph name="DEVICE_TYPE" /></translation>
 <translation id="445864333228800152">Goeienaand</translation>
 <translation id="4458688154122353284">Stop skermopname</translation>
 <translation id="4471354919263203780">Laai tans spraakherkenninglêers af … <ph name="PERCENT" />%</translation>
@@ -771,6 +773,7 @@ Alle gebruikers moet afmeld om voort te gaan.</translation>
 <translation id="583281660410589416">Onbekend</translation>
 <translation id="5837036133683224804">Stop <ph name="ROUTE_TITLE" /> op <ph name="RECEIVER_NAME" /></translation>
 <translation id="584525477304726060">Hou om groot te maak</translation>
+<translation id="5856638668464565213"><ph name="NETWORK_NAME" /> is nie geaktiveer nie.</translation>
 <translation id="5860033963881614850">Af</translation>
 <translation id="5860491529813859533">Skakel aan</translation>
 <translation id="5867217927013474703">Samel tans netwerkinligting in</translation>
@@ -802,6 +805,7 @@ Alle gebruikers moet afmeld om voort te gaan.</translation>
 <translation id="602472752137106327">Wys vensters van alle lessenaars af; radioknoppie is gekies</translation>
 <translation id="6025324406281560198"><ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, seinsterkte <ph name="SIGNAL_STRENGTH" />, deur jou administrateur bestuur</translation>
 <translation id="6027518778343897451">Daar is geen geleentheid op <ph name="CURRENT_MONTH_DAY" /> nie. Druk Enter om Google Kalender in die blaaier oop te maak.</translation>
+<translation id="6027952026115023659">Kry toegang tot jou foon se boodskapprogramme op jou <ph name="DEVICE_TYPE" /></translation>
 <translation id="6030495522958826102">Kieslys is na die skerm se hoek links onder geskuif.</translation>
 <translation id="6032620807120418574">Klik enige plek om volskerm op te neem</translation>
 <translation id="6040071906258664830">Neem mikrofoon op <ph name="STATE" /></translation>
@@ -945,6 +949,7 @@ Nuwe installasie</translation>
 <translation id="6961121602502368900">Maak Foon Stil is nie op werkprofiel beskikbaar nie</translation>
 <translation id="6961840794482373852">Die kortpadsleutel Alt + oppyl het verander. Om die Page Up-sleutel te gebruik, moet jy die <ph name="LAUNCHER_KEY_NAME" />-sleutel + oppyl druk.</translation>
 <translation id="6965382102122355670">OK</translation>
+<translation id="6967933908874208731">Bekyk jou foon se onlangse foto's, media, kennisgewings en boodskapprogramme op jou <ph name="DEVICE_TYPE" /></translation>
 <translation id="6972754398087986839">Kom aan die gang</translation>
 <translation id="6979158407327259162">Google Drive</translation>
 <translation id="6981982820502123353">Toeganklikheid</translation>

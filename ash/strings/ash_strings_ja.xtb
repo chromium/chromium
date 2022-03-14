@@ -197,6 +197,7 @@
 <translation id="2132302418721800944">全画面を録画</translation>
 <translation id="2135456203358955318">ドッキング拡大鏡</translation>
 <translation id="2148716181193084225">今日</translation>
+<translation id="2159930836979502091">このタブに移動</translation>
 <translation id="2170530631236737939">概要モードを終了するには、3 本の指で下にスワイプします</translation>
 <translation id="219905428774326614">ランチャー、すべてのアプリ</translation>
 <translation id="2201071101391734388">最近の <ph name="INDEX" /> / <ph name="TOTAL_COUNT" /> 件の写真。</translation>
@@ -563,6 +564,7 @@
 <translation id="4449692009715125625">{NUM_NOTIFICATIONS,plural, =1{1 件の重要な通知}other{# 件の重要な通知}}</translation>
 <translation id="4450893287417543264">次回から表示しない</translation>
 <translation id="4451374464530248585">キーボード ショートカット「Alt+下矢印」が変更されました。PageDown キーを使用するには、<ph name="LAUNCHER_KEY_NAME" />+下矢印キーを押してください。</translation>
+<translation id="4455051983450390249"><ph name="DEVICE_TYPE" /> でスマートフォンの通知を表示します</translation>
 <translation id="445864333228800152">こんばんは</translation>
 <translation id="4458688154122353284">画面の録画を停止</translation>
 <translation id="4471354919263203780">音声認識ファイルをダウンロードしています... <ph name="PERCENT" />%</translation>
@@ -770,6 +772,7 @@
 <translation id="583281660410589416">不明</translation>
 <translation id="5837036133683224804"><ph name="RECEIVER_NAME" /> の「<ph name="ROUTE_TITLE" />」を停止します</translation>
 <translation id="584525477304726060">長押しして最大化</translation>
+<translation id="5856638668464565213"><ph name="NETWORK_NAME" /> が無効です。</translation>
 <translation id="5860033963881614850">オフ</translation>
 <translation id="5860491529813859533">オンにする</translation>
 <translation id="5867217927013474703">ネットワーク情報を収集しています</translation>
@@ -801,6 +804,7 @@
 <translation id="602472752137106327">すべてのデスクのウィンドウを表示する、ラジオボタンが選択されています</translation>
 <translation id="6025324406281560198"><ph name="SECURITY_STATUS" />、<ph name="CONNECTION_STATUS" />、信号強度 <ph name="SIGNAL_STRENGTH" />、管理者によって管理</translation>
 <translation id="6027518778343897451"><ph name="CURRENT_MONTH_DAY" /> の予定はありません。ブラウザで Google カレンダーを開くには Enter キーを押します。</translation>
+<translation id="6027952026115023659"><ph name="DEVICE_TYPE" /> でスマートフォンのメッセージ アプリにアクセスします</translation>
 <translation id="6030495522958826102">メニューは画面左下に移動しました。</translation>
 <translation id="6032620807120418574">全画面を録画するには任意の場所をクリックしてください</translation>
 <translation id="6040071906258664830">マイク録音は <ph name="STATE" /> です</translation>
@@ -944,6 +948,7 @@
 <translation id="6961121602502368900">スマートフォンの消音は仕事用プロファイルでは使用できません</translation>
 <translation id="6961840794482373852">キーボード ショートカット「Alt+上矢印」が変更されました。PageUp キーを使用するには、<ph name="LAUNCHER_KEY_NAME" />+上矢印キーを押してください。</translation>
 <translation id="6965382102122355670">OK</translation>
+<translation id="6967933908874208731"><ph name="DEVICE_TYPE" /> でスマートフォンの最近の写真、メディア、通知、メッセージ アプリを表示します</translation>
 <translation id="6972754398087986839">開始する</translation>
 <translation id="6979158407327259162">Google ドライブ</translation>
 <translation id="6981982820502123353">ユーザー補助機能</translation>

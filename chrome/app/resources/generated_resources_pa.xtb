@@ -40,6 +40,7 @@
 <translation id="1041175011127912238">ਇਹ ਪੰਨਾ ਪ੍ਰਤਿਕਿਰਿਆ ਨਹੀਂ ਦੇ ਰਿਹਾ ਹੈ</translation>
 <translation id="1041263367839475438">ਉਪਲਬਧ ਡੀਵਾਈਸਾਂ</translation>
 <translation id="1042174272890264476">ਤੁਹਾਡਾ ਕੰਪਿਊਟਰ ਵੀ <ph name="SHORT_PRODUCT_NAME" /> ਦੀ RLZ ਲਾਇਬ੍ਰੇਰੀ ਬਿਲਟ ਇਨ ਤੋਂ ਆਉਂਦਾ ਹੈ। RLZ ਖੋਜਾਂ ਅਤੇ ਇੱਕ ਖ਼ਾਸ ਪ੍ਰਚਾਰ ਮੁਹਿੰਮ ਵੱਲੋਂ ਕੀਤੀ ਗਈ <ph name="SHORT_PRODUCT_NAME" /> ਵਰਤੋਂ ਦਾ ਹਿਸਾਬ ਲਗਾਉਣ ਲਈ ਇੱਕ ਗ਼ੈਰ-ਬੇਜੋੜ, ਗ਼ੈਰ-ਨਿੱਜੀ ਪਛਾਣਯੋਗ ਟੈਗ ਅਸਾਈਨ ਕਰਦਾ ਹੈ। ਇਹ ਲੇਬਲ ਕਦੇ-ਕਦਾਈਂ <ph name="PRODUCT_NAME" /> ਵਿੱਚ Google ਖੋਜ ਪੁੱਛਗਿੱਛਾਂ ਵਿੱਚ ਪ੍ਰਗਟ ਹੁੰਦੇ ਹਨ।</translation>
+<translation id="1043505821207197890">ਕੋਈ ਗੜਬੜ ਹੋ ਗਈ। Linux ਨੂੰ ਸ਼ਾਇਦ ਸਿਰਫ਼ ਅੰਸ਼ਕ ਤੌਰ 'ਤੇ ਅੱਪਗ੍ਰੇਡ ਕੀਤਾ ਜਾਵੇ। ਹੋਰ ਜਾਣਕਾਰੀ ਲਈ ਲੌਗਾਂ ਦੀ ਸਮੀਖਿਆ ਕਰੋ। ਲੌਗਾਂ ਨੂੰ ਫ਼ਾਈਲਾਂ &gt; ਮੇਰੀਆਂ ਫ਼ਾਈਲਾਂ &gt; <ph name="LOG_FILE" /> ਵਿੱਚ ਰੱਖਿਅਤ ਕੀਤਾ ਗਿਆ ਹੈ</translation>
 <translation id="1043818413152647937">ਕੀ ਇਹਨਾਂ ਐਪਾਂ ਤੋਂ ਵੀ ਡਾਟਾ ਕਲੀਅਰ ਕਰਨਾ ਹੈ?</translation>
 <translation id="1043824690776631483">ਇਸ ਸਾਈਟ 'ਤੇ ਜਾਣ ਲਈ ਤੁਹਾਨੂੰ ਇਜਾਜ਼ਤ ਦੀ ਲੋੜ ਹੈ। ਸ਼ਾਇਦ ਇਸ ਵਿੱਚ ਅਢੁਕਵੀਂ ਸਮੱਗਰੀ ਹੋ ਸਕਦੀ ਹੈ।</translation>
 <translation id="104710386808485638">ਕੀ Linux ਨੂੰ ਮੁੜ-ਸ਼ੁਰੂ ਕਰਨਾ ਹੈ?</translation>
@@ -273,6 +274,7 @@
 <translation id="1258491128795710625">ਨਵਾਂ ਕੀ ਹੈ</translation>
 <translation id="1259152067760398571">ਸੁਰੱਖਿਆ ਜਾਂਚ ਕੱਲ੍ਹ ਚਲਾਈ ਗਈ ਸੀ</translation>
 <translation id="1260451001046713751">ਹਮੇਸ਼ਾਂ <ph name="HOST" /> ਤੋਂ ਪੌਪ-ਅੱਪ ਦਿਖਾਉਣ ਅਤੇ ਰੀਡਾਇਰੈਕਟ ਕਰਨ ਦਿਓ</translation>
+<translation id="1260810365552581339">ਸ਼ਾਇਦ Linux ਕੋਲ ਡਿਸਕ ਵਿੱਚ ਲੋੜੀਂਦੀ ਜਗ੍ਹਾ ਨਾ ਹੋਵੇ। ਤੁਸੀਂ ਆਪਣੇ Linux ਦੀ ਡਿਸਕ ਵਿੱਚ ਜਗ੍ਹਾ ਵਧਾ ਕੇ <ph name="LINK_START" />ਸੈਟਿੰਗਾਂ<ph name="LINK_END" /> ਵਿੱਚ ਦੁਬਾਰਾ ਮੁੜ-ਬਹਾਲ ਕਰਨ ਦੀ ਕੋਸ਼ਿਸ਼ ਕਰ ਸਕਦੇ ਹੋ।</translation>
 <translation id="1261380933454402672">ਸਧਾਰਨ</translation>
 <translation id="126156426083987769">ਡੈਮੋ ਮੋਡ ਡੀਵਾਈਸ ਲਾਇਸੰਸਾਂ ਵਿੱਚ ਕੋਈ ਸਮੱਸਿਆ ਆਈ।</translation>
 <translation id="1263231323834454256">ਪੜ੍ਹਤ ਸੂਚੀ</translation>
@@ -621,6 +623,7 @@
 <translation id="1603411913360944381"><ph name="DEVICE_NAME" /> ਨੂੰ ਭੁੱਲ ਜਾਓ</translation>
 <translation id="1603914832182249871">(ਗੁਮਨਾਮ)</translation>
 <translation id="1604432177629086300">ਪ੍ਰਿੰਟ ਨਹੀਂ ਕੀਤਾ ਜਾ ਸਕਿਆ। ਪ੍ਰਿੰਟਰ ਦੀ ਜਾਂਚ ਕਰਕੇ ਦੁਬਾਰਾ ਕੋਸ਼ਿਸ਼ ਕਰੋ।</translation>
+<translation id="1604774728851271529">ਤੁਹਾਨੂੰ Linux ਨੂੰ ਅੱਪਗ੍ਰੇਡ ਕਰਨ ਲਈ ਨੈੱਟਵਰਕ ਕਨੈਕਸ਼ਨ ਦੀ ਲੋੜ ਹੈ। ਇੰਟਰਨੈੱਟ ਨਾਲ ਕਨੈਕਟ ਕਰ ਕੇ ਦੁਬਾਰਾ ਕੋਸ਼ਿਸ਼ ਕਰੋ।</translation>
 <translation id="1605744057217831567">ਸਾਰੇ ਸਾਈਟ ਡਾਟੇ ਅਤੇ ਇਜਾਜ਼ਤਾਂ ਨੂੰ ਦੇਖੋ</translation>
 <translation id="1606077700029460857">ਮਾਊਸ ਸੈਟਿੰਗਾਂ ਬਦਲੋ</translation>
 <translation id="1606566847233779212">ਕੀ ਤੁਹਾਡੇ ਵੱਲੋਂ ਸ਼ਾਮਲ ਕੀਤੀਆਂ ਖਾਸ ਸਾਈਟਾਂ ਨੂੰ ਹਟਾਉਣਾ ਹੈ?</translation>
@@ -1046,6 +1049,7 @@
 <translation id="1989903373608997757">ਹਮੇਸ਼ਾਂ ਵਰਤੋ</translation>
 <translation id="1990046457226896323">ਬੋਲੀ ਵਾਲੀਆਂ ਫ਼ਾਈਲਾਂ ਨੂੰ ਡਾਊਨਲੋਡ ਕੀਤਾ ਗਿਆ</translation>
 <translation id="1990512225220753005">ਇਸ ਪੰਨੇ 'ਤੇ ਸ਼ਾਰਟਕੱਟ ਨਾ ਦਿਖਾਓ</translation>
+<translation id="1990727803345673966">ਤੁਹਾਡੇ ਵੱਲੋਂ ਬੈਕਅੱਪ ਲਈਆਂ Linux ਫ਼ਾਈਲਾਂ ਅਤੇ ਐਪਾਂ ਨੂੰ ਮੁੜ-ਬਹਾਲ ਕੀਤਾ ਜਾ ਰਿਹਾ ਹੈ</translation>
 <translation id="199191324030140441">'ਪਰੇਸ਼ਾਨ ਨਾ ਕਰੋ' ਨੂੰ ਬੰਦ ਕਰੋ</translation>
 <translation id="1992397118740194946">ਸੈੱਟ ਨਹੀਂ ਕੀਤਾ</translation>
 <translation id="1992924914582925289">ਡੀਵਾਈਸ ਤੋਂ ਹਟਾਓ</translation>
@@ -1120,6 +1124,7 @@
 <translation id="2071393345806050157">ਕੋਈ ਸਥਾਨਕ ਲੌਗ ਫ਼ਾਈਲ ਨਹੀਂ।</translation>
 <translation id="2071692954027939183">ਸੂਚਨਾਵਾਂ ਸਵੈਚਲਿਤ ਤੌਰ 'ਤੇ ਬਲਾਕ ਕੀਤੀਆਂ ਗਈਆਂ ਕਿਉਂਕਿ ਤੁਸੀਂ ਆਮ ਤੌਰ 'ਤੇ ਉਹਨਾਂ ਨੂੰ ਇਜਾਜ਼ਤ ਨਹੀਂ ਦਿੰਦੇ ਹੋ</translation>
 <translation id="2073148037220830746">{NUM_EXTENSIONS,plural, =1{ਇਸ ਐਕਸਟੈਂਸ਼ਨ ਨੂੰ ਸਥਾਪਤ ਕਰਨ ਲਈ ਕਲਿੱਕ ਕਰੋ}one{ਇਸ ਐਕਸਟੈਂਸ਼ਨ ਨੂੰ ਸਥਾਪਤ ਕਰਨ ਲਈ ਕਲਿੱਕ ਕਰੋ}other{ਇਹਨਾਂ ਐਕਸਟੈਂਸ਼ਨਾਂ ਨੂੰ ਸਥਾਪਤ ਕਰਨ ਲਈ ਕਲਿੱਕ ਕਰੋ}}</translation>
+<translation id="2073496667646280609">ਸ਼ਾਇਦ ਤੁਹਾਡੇ ਕੋਲ ਆਪਣੇ ਡੀਵਾਈਸ 'ਤੇ ਲੋੜੀਂਦੀ ਮੁਫ਼ਤ ਸਟੋਰੇਜ ਜਾਂ ਬੈਕਅੱਪ ਲਈ ਚੁਣਿਆ ਗਿਆ ਟਿਕਾਣਾ ਨਾ ਹੋਵੇ। ਡੀਵਾਈਸ 'ਤੇ ਜਗ੍ਹਾ ਖਾਲੀ ਕਰ ਕੇ ਜਾਂ ਕੋਈ ਵੱਖਰਾ ਟਿਕਾਣਾ ਚੁਣ ਕੇ ਦੇਖੋ।</translation>
 <translation id="2073505299004274893"><ph name="CHARACTER_LIMIT" /> ਜਾਂ ਘੱਟ ਅੱਖਰ-ਚਿੰਨ੍ਹ ਵਰਤੋ</translation>
 <translation id="2075474481720804517"><ph name="BATTERY_PERCENTAGE" />% ਬੈਟਰੀ</translation>
 <translation id="2075959085554270910">ਤੁਹਾਨੂੰ 'ਕਲਿੱਕ ਕਰਨ ਲਈ ਟੈਪ ਕਰੋ' ਅਤੇ 'ਘਸੀਟੋ 'ਤੇ ਟੈਪ ਕਰੋ' ਨੂੰ ਚਾਲੂ/ਬੰਦ ਕਰਨ ਦਿੰਦੀਆਂ ਹਨ</translation>
@@ -1651,6 +1656,7 @@
 <translation id="2568774940984945469">ਇੰਫੋਬਾਰ ਕੰਟੇਨਰ</translation>
 <translation id="2571655996835834626">ਆਪਣੀਆਂ ਉਹ ਸੈਟਿੰਗਾਂ ਬਦਲੋ ਜੋ ਕੁਕੀਜ਼, JavaScript, ਪਲੱਗਇਨਾਂ, ਭੂਗੋਲਿਕ-ਟਿਕਾਣਾ, ਮਾਈਕ੍ਰੋਫ਼ੋਨ, ਕੈਮਰਾ ਆਦਿ ਵਰਗੀਆਂ ਵਿਸ਼ੇਸ਼ਤਾਵਾਂ ਤੱਕ ਪਹੁੰਚ ਪ੍ਰਾਪਤ ਕਰਨ ਵਾਲੀਆਂ ਵੈੱਬਸਾਈਟਾਂ ਨੂੰ ਕੰਟਰੋਲ ਕਰਦੀਆਂ ਹਨ।</translation>
 <translation id="2572032849266859634"><ph name="VOLUME_NAME" /> ਤੱਕ ਰੀਡ-ਓਨਲੀ ਪਹੁੰਚ ਦੀ ਅਨੁਮਤੀ ਦਿੱਤੀ ਗਈ ਹੈ।</translation>
+<translation id="2573417407488272418">ਅੱਪਗ੍ਰੇਡ ਕਰਨ ਤੋਂ ਪਹਿਲਾਂ ਐਪਾਂ ਅਤੇ ਫ਼ਾਈਲਾਂ ਦਾ 'ਫ਼ਾਈਲਾਂ &gt; ਮੇਰੀਆਂ ਫ਼ਾਈਲਾਂ' 'ਤੇ ਬੈਕਅੱਪ ਲਓ।</translation>
 <translation id="2573831315551295105">“<ph name="ACTION" />” ਲਈ ਸਵਿੱਚ ਜ਼ਿੰਮੇ ਲਗਾਓ</translation>
 <translation id="2575247648642144396">ਇਹ ਪ੍ਰਤੀਕ ਉਦੋਂ ਦਿਖਾਈ ਦੇਵੇਗਾ ਜਦੋਂ ਐਕਸਟੈਂਸ਼ਨ ਮੌਜੂਦਾ ਪੰਨੇ 'ਤੇ ਕਾਰਵਾਈ ਕਰ ਸਕਦੀ ਹੈ। ਪ੍ਰਤੀਕ 'ਤੇ ਕਲਿੱਕ ਕਰਕੇ ਜਾਂ <ph name="EXTENSION_SHORTCUT" /> ਨੂੰ ਦਬਾ ਕੇ ਇਹ ਐਕਸਟੈਂਸ਼ਨ ਵਰਤੋ।</translation>
 <translation id="2575441894380764255">ਦਖਲਅੰਦਾਜ਼ੀ ਜਾਂ ਗੁਮਰਾਹ ਕਰਨ ਵਾਲੇ ਵਿਗਿਆਪਨ ਦਿਖਾਉਣ ਦੀ ਇਜਾਜ਼ਤ ਨਹੀਂ ਹੈ</translation>
@@ -1967,6 +1973,7 @@
 <translation id="2882943222317434580"><ph name="IDS_SHORT_PRODUCT_NAME" /> ਰੀਸਟਾਰਟ ਹੋਵੇਗਾ ਅਤੇ ਅਸਥਾਈ ਤੌਰ ਤੇ ਰੀਸੈਟ ਕਰੇਗਾ।</translation>
 <translation id="2885378588091291677">ਕੰਮ ਪ੍ਰਬੰਧਕ</translation>
 <translation id="2885729872133513017">ਸਰਵਰ ਦੇ ਜਵਾਬ ਨੂੰ ਡੀਕੋਡ ਕਰਨ ਵੇਲੇ ਕੋਈ ਸਮੱਸਿਆ ਆਈ।</translation>
+<translation id="2886119409731773154">ਇਸ ਵਿੱਚ 30 ਮਿੰਟਾਂ ਦਾ ਸਮਾਂ ਲੱਗ ਸਕਦਾ ਹੈ</translation>
 <translation id="2886771036282400576">• <ph name="PERMISSION" /></translation>
 <translation id="288734198558082692"><ph name="DEVICE" /> ਅਤੇ <ph name="NUMBER_OF_DEVICES" /> ਹੋਰ</translation>
 <translation id="2889064240420137087">ਇਸ ਨਾਲ ਲਿੰਕ ਖੋਲ੍ਹੇੋ...</translation>
@@ -2228,6 +2235,7 @@
 <translation id="3151562827395986343">ਇਤਿਹਾਸ, ਕੁਕੀਜ਼, ਕੈਸ਼ੇ, ਅਤੇ ਹੋਰ ਚੀਜ਼ਾਂ ਨੂੰ ਕਲੀਅਰ ਕਰੋ</translation>
 <translation id="3151616662954589507">ਸੈਲਫ਼ੀ ਕੈਮਰਾ</translation>
 <translation id="3151786313568798007">ਦਿਸ਼ਾਮਾਨ</translation>
+<translation id="3152356229013609796">ਆਪਣੇ ਫ਼ੋਨ ਦੀਆਂ ਸੂਚਨਾਵਾਂ ਨੂੰ ਦੇਖੋ, ਖਾਰਜ ਕਰੋ ਅਤੇ ਉਨ੍ਹਾਂ ਦਾ ਜਵਾਬ ਦਿਓ</translation>
 <translation id="3154429428035006212">ਇੱਕ ਮਹੀਨੇ ਤੋਂ ਵੱਧ ਸਮੇਂ ਲਈ ਆਫ਼ਲਾਈਨ</translation>
 <translation id="3157387275655328056">ਪੜ੍ਹਨ ਸੂਚੀ ਵਿੱਚ ਸ਼ਾਮਲ ਕਰੋ</translation>
 <translation id="3157931365184549694">ਰੀਸਟੋਰ ਕਰੋ</translation>
@@ -2911,6 +2919,7 @@
 <translation id="3831436149286513437">'Google ਡਰਾਈਵ' ਖੋਜ ਸੁਝਾਅ</translation>
 <translation id="3834728400518755610">ਮਾਈਕ੍ਰੋਫ਼ੋਨ ਸੈਟਿੰਗਾਂ ਨੂੰ ਬਦਲਣ ਲਈ Linux ਨੂੰ ਬੰਦ ਕਰਨਾ ਲੋੜੀਂਦਾ ਹੈ। ਜਾਰੀ ਰੱਖਣ ਲਈ Linux ਨੂੰ ਬੰਦ ਕਰੋ।</translation>
 <translation id="3834775135533257713">"<ph name="TO_INSTALL_APP_NAME" />" ਨੂੰ ਸਥਾਪਤ ਨਹੀਂ ਕੀਤਾ ਜਾ ਸਕਿਆ ਕਿਉਂਕਿ ਇਸਦੀ "<ph name="INSTALLED_APP_NAME" />" ਨਾਲ ਵਿਰੋਧਤਾ ਹੈ।</translation>
+<translation id="3835904559946595746">Linux ਬੈਕਅੱਪ ਨੂੰ ਮੁੜ-ਬਹਾਲ ਨਹੀਂ ਕੀਤਾ ਜਾ ਸਕਿਆ</translation>
 <translation id="383669374481694771">ਇਹ ਇਸ ਡੀਵਾਈਸ ਅਤੇ ਇਸਦੀ ਵਰਤੋਂ ਬਾਰੇ ਆਮ ਜਾਣਕਾਰੀ ਹੈ (ਜਿਵੇਂ ਕਿ ਬੈਟਰੀ ਪੱਧਰ, ਸਿਸਟਮ ਅਤੇ ਐਪ ਸਰਗਰਮੀ, ਅਤੇ ਗੜਬੜੀਆਂ)। ਡਾਟਾ Android ਨੂੰ ਬਿਹਤਰ ਬਣਾਉਣ ਲਈ ਵਰਤਿਆ ਜਾਵੇਗਾ ਅਤੇ ਕੁਝ ਏਕੀਕ੍ਰਿਤ ਜਾਣਕਾਰੀ Google ਐਪਾਂ ਅਤੇ ਪਾਰਟਨਰਾਂ, ਜਿਵੇਂ ਕਿ Android ਵਿਕਾਸਕਾਰਾਂ ਦੀਆਂ ਐਪਾਂ ਅਤੇ ਉਤਪਾਦਾਂ ਨੂੰ ਬਿਹਤਰ ਬਣਾਉਣ ਵਿੱਚ ਵੀ ਉਹਨਾਂ ਦੀ ਮਦਦ ਕਰੇਗੀ।</translation>
 <translation id="3838085852053358637">ਐਕਸਟੈਂਸ਼ਨ ਨੂੰ ਲੋਡ ਕਰਨਾ ਅਸਫਲ ਰਿਹਾ</translation>
 <translation id="3838486795898716504">ਹੋਰ <ph name="PAGE_TITLE" /></translation>
@@ -3623,6 +3632,7 @@
 <translation id="4562155214028662640">ਫਿੰਗਰਪ੍ਰਿੰਟ ਸ਼ਾਮਲ ਕਰੋ</translation>
 <translation id="4563210852471260509">ਅਰੰਭਿਕ ਇਨਪੁਟ ਭਾਸ਼ਾ ਚੀਨੀ ਹੈ</translation>
 <translation id="4563880231729913339">ਉਂਗਲ 3</translation>
+<translation id="4564245002465020751">ਤੁਹਾਡੇ ਫ਼ੋਨ 'ਤੇ ਸੈੱਟਅੱਪ ਪੂਰਾ ਕੀਤਾ ਜਾ ਰਿਹਾ ਹੈ</translation>
 <translation id="4565377596337484307">ਪਾਸਵਰਡ ਲੁਕਾਓ</translation>
 <translation id="4565917129334815774">ਸਿਸਟਮ ਲੌਗਾਂ ਨੂੰ ਸਟੋਰ ਕਰੋ</translation>
 <translation id="4566417217121906555">ਮਾਈਕ੍ਰੋਫ਼ੋਨ ਮਿਊਟ ਕਰੋ</translation>
@@ -3794,6 +3804,7 @@
 <translation id="474609389162964566">"Ok Google" ਬੋਲ ਕੇ ਆਪਣੀ Assistant ਤੱਕ ਪਹੁੰਚ ਕਰੋ</translation>
 <translation id="4746351372139058112">Messages</translation>
 <translation id="4748783296226936791">ਸਾਈਟਾਂ ਆਮ ਤੌਰ 'ਤੇ ਅਸਧਾਰਨ ਕੀ-ਬੋਰਡਾਂ, ਗੇਮ ਕੰਟਰੋਲਰਾਂ ਅਤੇ ਹੋਰ ਡੀਵਾਈਸਾਂ ਦੀਆਂ ਵਰਤੋਂ ਕਰਨ ਵਾਲੀਆਂ ਵਿਸ਼ੇਸ਼ਤਾਵਾਂ ਲਈ HID ਡੀਵਾਈਸਾਂ ਨਾਲ ਕਨੈਕਟ ਕਰਦੀਆਂ ਹਨ</translation>
+<translation id="4750185073185658673">ਕੁਝ ਹੋਰ ਇਜਾਜ਼ਤਾਂ ਦੀ ਸਮੀਖਿਆ ਕਰਨ ਲਈ ਆਪਣੇ ਫ਼ੋਨ 'ਤੇ ਜਾਓ। ਪੱਕਾ ਕਰੋ ਕਿ ਤੁਹਾਡੇ ਫ਼ੋਨ ਦਾ ਬਲੂਟੁੱਥ ਅਤੇ ਵਾਈ-ਫਾਈ ਚਾਲੂ ਹੈ।</translation>
 <translation id="4750394297954878236">ਸੁਝਾਅ</translation>
 <translation id="475088594373173692">ਪਹਿਲਾ ਵਰਤੋਂਕਾਰ</translation>
 <translation id="4756378406049221019">ਬੰਦ ਕਰੋ/ਮੁੜ-ਲੋਡ ਕਰੋ</translation>
@@ -4980,6 +4991,7 @@
 <translation id="5957987129450536192">ਆਪਣੇ ਪ੍ਰੋਫਾਈਲ ਚਿੱਤਰ ਦੇ ਨੇੜੇ 'ਸੁਣੋ ਅਤੇ ਚੁਣੋ' ਪ੍ਰਤੀਕ ਟੈਪ ਕਰੋ, ਫਿਰ ਜੋ ਤੁਸੀਂ ਸੁਣਨਾ ਚਾਹੁੰਦੇ ਹੋ ਉਸਨੂੰ ਚੁਣੋ।</translation>
 <translation id="5959471481388474538">ਨੈੱਟਵਰਕ ਉਪਲਬਧ ਨਹੀਂ</translation>
 <translation id="595959584676692139">ਇਸ ਐਕਸਟੈਂਸ਼ਨ ਨੂੰ ਵਰਤਣ ਲਈ ਪੰਨੇ ਨੂੰ ਰੀਲੋਡ ਕਰੋ</translation>
+<translation id="5960410286721553511">ਆਪਣੇ ਫ਼ੋਨ ਦੀਆਂ ਹਾਲੀਆ ਫ਼ੋਟੋਆਂ ਅਤੇ ਮੀਡੀਆ ਦੇਖੋ</translation>
 <translation id="5963453369025043595"><ph name="NUM_HANDLES" /> (<ph name="NUM_KILOBYTES_LIVE" /> ਪੀਕ)</translation>
 <translation id="5964113968897211042">{COUNT,plural, =0{ਸਾਰੇ &amp;ਨਵੀਂ ਵਿੰਡੋ ਵਿੱਚ ਖੋਲ੍ਹੋ}=1{&amp;ਨਵੀਂ ਵਿੰਡੋ ਵਿੱਚ ਖੋਲ੍ਹੋ}other{ਸਾਰੇ ({COUNT}) &amp;ਨਵੀਂ ਵਿੰਡੋ ਵਿੱਚ ਖੋਲ੍ਹੋ}}</translation>
 <translation id="5965661248935608907">ਇਹ ਇਸ ਨੂੰ ਵੀ ਕੰਟਰੋਲ ਕਰਦਾ ਹੈ ਕਿ ਜਦੋਂ ਤੁਸੀਂ ਹੋਮ ਬਟਨ 'ਤੇ ਕਲਿੱਕ ਕਰਦੇ ਹੋ ਜਾਂ ਓਮਨੀਬਾਕਸ ਤੋਂ ਖੋਜ ਕਰਦੇ ਹੋ ਉਸ ਵੇਲੇ ਕਿਹੜਾ ਪੰਨਾ ਦਿਖਾਇਆ ਜਾਵੇ।</translation>
@@ -5556,6 +5568,7 @@
 <translation id="6541638731489116978">ਇਸ ਸਾਈਟ ਨੂੰ ਤੁਹਾਡੇ ਗਤੀਸ਼ੀਲਤਾ ਸੈਂਸਰਾਂ ਤੱਕ ਪਹੁੰਚ ਕਰਨ ਤੋਂ ਬਲਾਕ ਕੀਤਾ ਗਿਆ ਹੈ।</translation>
 <translation id="6545665334409411530">ਦੁਹਰਾਉਣ ਦੀ ਦਰ</translation>
 <translation id="6545867563032584178">Mac ਸਿਸਟਮ ਤਰਜੀਹਾਂ ਵਿੱਚ ਮਾਈਕ੍ਰੋਫ਼ੋਨ ਬੰਦ ਕੀਤਾ ਹੋਇਆ ਹੈ</translation>
+<translation id="6546856949879953071">ਵੇਰਵੇ ਸਹਿਤ ਅੱਪਗ੍ਰੇਡ ਜਾਣਕਾਰੀ ਲਈ, ਲੌਗਾਂ ਨੂੰ ਫ਼ਾਈਲਾਂ &gt; ਮੇਰੀਆਂ ਫ਼ਾਈਲਾਂ &gt; <ph name="LOG_FILE" /> ਵਿੱਚ ਰੱਖਿਅਤ ਕੀਤਾ ਗਿਆ ਹੈ</translation>
 <translation id="6547354035488017500">ਘੱਟੋ-ਘੱਟ 512 MB ਜਗ੍ਹਾ ਖਾਲੀ ਕਰੋ ਨਹੀਂ ਤਾਂ ਤੁਹਾਡਾ ਡੀਵਾਈਸ ਪ੍ਰਤੀਕਿਰਿਆਹੀਣ ਹੋ ਜਾਵੇਗਾ। ਜਗ੍ਹਾ ਖਾਲੀ ਕਰਨ ਲਈ, ਡੀਵਾਈਸ ਸਟੋਰੇਜ ਤੋਂ ਫ਼ਾਈਲਾਂ ਮਿਟਾਓ।</translation>
 <translation id="6547854317475115430"><ph name="BEGIN_PARAGRAPH1" />Google ਦੀ ਟਿਕਾਣਾ ਸੇਵਾ ਤੁਹਾਡੇ ਡੀਵਾਈਸ ਦੇ ਟਿਕਾਣੇ ਦਾ ਅੰਦਾਜ਼ਾ ਲਗਾਉਣ ਵਿੱਚ ਮਦਦ ਕਰਨ ਲਈ ਵਾਈ‑ਫਾਈ, ਮੋਬਾਈਲ ਨੈੱਟਵਰਕਾਂ ਅਤੇ ਸੈਂਸਰਾਂ ਵਰਗੇ ਸਰੋਤਾਂ ਦੀ ਵਰਤੋਂ ਕਰਦੀ ਹੈ।<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />ਤੁਸੀਂ ਸੈਟਿੰਗਾਂ &gt; ਐਪਾਂ &gt; Google Play Store &gt; Android ਤਰਜੀਹਾਂ ਦਾ ਪ੍ਰਬੰਧਨ ਕਰੋ &gt; ਸੁਰੱਖਿਆ ਅਤੇ ਟਿਕਾਣਾ &gt; ਟਿਕਾਣਾ 'ਤੇ ਜਾ ਕੇ ਕਿਸੇ ਵੇਲੇ ਵੀ ਆਪਣੇ ਡੀਵਾਈਸ 'ਤੇ Android ਟਿਕਾਣਾ ਜਾਣਕਾਰੀ ਬੰਦ ਕਰ ਸਕਦੇ ਹੋ। ਤੁਸੀਂ ਉਸੇ ਮੀਨੂ ਵਿੱਚ "Google ਟਿਕਾਣਾ ਸਟੀਕਤਾ" ਨੂੰ ਬੰਦ ਕਰ ਕੇ Android ਟਿਕਾਣਾ ਜਾਣਕਾਰੀ ਲਈ ਵਾਈ-ਫਾਈ, ਮੋਬਾਈਲ ਨੈੱਟਵਰਕਾਂ ਅਤੇ ਸੈਂਸਰਾਂ ਦੀ ਵਰਤੋਂ ਨੂੰ ਵੀ ਬੰਦ ਕਰ ਸਕਦੇ ਹੋ।<ph name="END_PARAGRAPH2" /></translation>
@@ -5570,6 +5583,7 @@
 <translation id="655384502888039633"><ph name="USER_COUNT" /> ਉਪਭੋਗਤਾ</translation>
 <translation id="655483977608336153">ਦੁਬਾਰਾ ਕੋਸ਼ਿਸ਼ ਕਰੋ</translation>
 <translation id="6555432686520421228">ਸਾਰੇ ਵਰਤੋਂਕਾਰ ਖਾਤੇ ਹਟਾਓ ਅਤੇ ਆਪਣੀ <ph name="IDS_SHORT_PRODUCT_NAME" /> ਡੀਵਾਈਸ ਨੂੰ ਬਿਲਕੁਲ ਨਵੀਂ ਵਾਂਗ ਰੀਸੈੱਟ ਕਰੋ।</translation>
+<translation id="6555604601707417276">Linux ਬੈਕਅੱਪ ਮੁੜ-ਬਹਾਲ ਕੀਤਾ ਗਿਆ</translation>
 <translation id="6555810572223193255">ਕਲੀਨਅੱਪ ਇਸ ਸਮੇਂ ਉਪਲਬਧ ਨਹੀਂ ਹੈ</translation>
 <translation id="6556477848444788999">ਇਹ ਪਿੰਨ ਜਾਂ ਪਾਸਵਰਡ ਇਸ <ph name="DEVICE_TYPE" /> 'ਤੇ ਤੁਹਾਡੇ ਡਾਟੇ ਦੀ ਸੁਰੱਖਿਆ ਕਰਦਾ ਹੈ, ਜਿਸ ਵਿੱਚ ਤੁਹਾਡੇ ਵੱਲੋਂ ਤੁਹਾਡੇ ਫ਼ੋਨ 'ਤੇ ਸਟ੍ਰੀਮ ਕੀਤੀ ਜਾਂਦੀ ਕੋਈ ਵੀ ਸਮੱਗਰੀ ਸ਼ਾਮਲ ਹੈ।</translation>
 <translation id="6556866813142980365">ਮੁੜ-ਓਹੀ ਕਰੋ</translation>
@@ -5675,6 +5689,7 @@
 <translation id="6663190258859265334">ਆਪਣੀ <ph name="DEVICE_TYPE" /> ਨੂੰ ਪਾਵਰਵਾਸ਼ ਕਰੋ ਅਤੇ ਪਿਛਲੇ ਵਰਜਨ 'ਤੇ ਵਾਪਸ ਜਾਓ।</translation>
 <translation id="6664237456442406323">ਅਫ਼ਸੋਸ, ਤੁਹਾਡਾ ਕੰਪਿਊਟਰ ਇੱਕ ਨੁਕਸਦਾਰ ਹਾਰਡਵੇਅਰ ਆਈਡੀ ਨਾਲ ਸੰਰੂਪਿਤ ਕੀਤਾ ਗਿਆ ਹੈ। ਇਹ Chrome OS ਨੂੰ ਨਵੀਆਂ ਸੁਰੱਖਿਆ ਸੁਧਾਈਆਂ ਨਾਲ ਅੱਪਡੇਟ ਕਰਨ ਤੋਂ ਰੋਕਦਾ ਹੈ ਅਤੇ ਤੁਹਾਡਾ ਕੰਪਿਊਟਰ <ph name="BEGIN_BOLD" />ਖਰਾਬ ਹਮਲਿਆਂ ਲਈ ਕਮਜ਼ੋਰ ਹੋ ਸਕਦਾ ਹੈ<ph name="END_BOLD" />।</translation>
 <translation id="6664774537677393800">ਤੁਹਾਡੇ ਪ੍ਰੋਫ਼ਾਈਲ ਨੂੰ ਖੋਲ੍ਹਣ ਦੌਰਾਨ ਕੋਈ ਗੜਬੜ ਹੋ ਗਈ ਸੀ। ਕਿਰਪਾ ਕਰਕੇ ਸਾਈਨ-ਆਊਟ ਹੋ ਕੇ ਫਿਰ ਦੁਬਾਰਾ ਸਾਈਨ-ਇਨ ਕਰੋ।</translation>
+<translation id="6666559645296300656">Linux ਅੱਪਗ੍ਰੇਡ ਨੂੰ ਰੱਦ ਕੀਤਾ ਜਾ ਰਿਹਾ ਹੈ</translation>
 <translation id="666731172850799929"><ph name="APP_NAME" /> ਵਿੱਚ ਖੋਲ੍ਹੋ</translation>
 <translation id="6670142487971298264"><ph name="APP_NAME" /> ਹੁਣ ਉਪਲਬਧ ਹੈ</translation>
 <translation id="6670767097276846646">ਕੁਝ ਐਕਸਟੈਂਸ਼ਨਾਂ ਖੋਜ ਇੰਜਣਾਂ ਨੂੰ Chrome ਵਿੱਚ ਸ਼ਾਮਲ ਕਰ ਸਕਦੀਆਂ ਹਨ</translation>
@@ -5712,6 +5727,7 @@
 <translation id="6700480081846086223"><ph name="HOST_NAME" /> ਨੂੰ ਕਾਸਟ ਕਰੋ</translation>
 <translation id="6701535245008341853">ਪ੍ਰੋਫਾਈਲ ਪ੍ਰਾਪਤ ਨਹੀਂ ਕਰ ਸਕਿਆ।</translation>
 <translation id="6702639462873609204">&amp;ਸੰਪਾਦਿਤ ਕਰੋ...</translation>
+<translation id="6703254819490889819">ਬੈਕਅੱਪ ਨੂੰ ਮੁੜ-ਬਹਾਲ ਕਰੋ</translation>
 <translation id="6706210727756204531">ਸਕੋਪ</translation>
 <translation id="6707389671160270963">SSL ਕਲਾਇੰਟ ਪ੍ਰਮਾਣ-ਪੱਤਰ</translation>
 <translation id="6709002550153567782">{NUM_PAGES,plural, =0{<ph name="PAGE_TITLE" />}=1{<ph name="PAGE_TITLE" /> ਅਤੇ 1 ਹੋਰ ਟੈਬ}other{<ph name="PAGE_TITLE" /> ਅਤੇ # ਹੋਰ ਟੈਬਾਂ}}</translation>
@@ -5893,6 +5909,7 @@
 <translation id="6883319974225028188">ਓਹੋ! ਸਿਸਟਮ ਡੀਵਾਈਸ ਸੰਰੂਪਣ ਨੂੰ ਰੱਖਿਅਤ ਕਰਨ ਵਿੱਚ ਅਸਫਲ ਰਿਹਾ।</translation>
 <translation id="6884474387073389421">ਕੀ ਤੁਸੀਂ ਪੱਕਾ ਚੁਣੇ ਹੋਏ ਸਾਈਨ-ਇਨ ਡਾਟੇ ਨੂੰ ਮਿਟਾਉਣਾ ਚਾਹੁੰਦੇ ਹੋ?</translation>
 <translation id="6885771755599377173">ਸਿਸਟਮ ਜਾਣਕਾਰੀ ਝਲਕ</translation>
+<translation id="6886380424988777998">Linux ਨੂੰ ਅੱਪਗ੍ਰੇਡ ਨਹੀਂ ਕੀਤਾ ਜਾ ਸਕਿਆ</translation>
 <translation id="6886871292305414135">ਨਵੀਂ &amp;ਟੈਬ ਵਿੱਚ ਲਿੰਕ ਖੋਲ੍ਹੋ</translation>
 <translation id="6889957081990109136">ਹਾਲੇ ਤੱਕ ਸਵਿੱਚ ਜ਼ਿੰਮੇ ਨਹੀਂ ਲਗਾਇਆ ਗਿਆ ਹੈ</translation>
 <translation id="689007770043972343">ਹੋਰ ਖੁੱਲ੍ਹੀਆਂ ਟੈਬਾਂ ਨੂੰ ਆਪਣੇ ਗਰੁੱਪ ਵਿੱਚ ਘਸੀਟਣ ਦੀ ਕੋਸ਼ਿਸ਼ ਕਰੋ</translation>
@@ -6035,6 +6052,7 @@
 <translation id="7017219178341817193">ਇੱਕ ਨਵਾਂ ਸਫ਼ਾ ਜੋੜੋ</translation>
 <translation id="7017354871202642555">window ਦੇ ਸੈਟ ਹੋਣ ਤੋਂ ਬਾਅਦ ਮੋਡ ਸੈਟ ਨਹੀਂ ਕਰ ਸਕਦਾ।</translation>
 <translation id="7018275672629230621">ਆਪਣਾ ਬ੍ਰਾਊਜ਼ਿੰਗ ਇਤਿਹਾਸ ਪੜ੍ਹੋ ਅਤੇ ਬਦਲੋ</translation>
+<translation id="7019546817926942979">ਤੁਹਾਡੇ ਡੀਵਾਈਸ ਨੂੰ ਪਲੱਗ-ਇਨ ਕੀਤੇ ਜਾਣ ਦੀ ਲੋੜ ਹੈ। Linux ਨੂੰ ਅੱਪਗ੍ਰੇਡ ਕਰਨ ਦੌਰਾਨ ਤੁਹਾਡੀ ਬੈਟਰੀ ਬਹੁਤ ਛੇਤੀ ਖਤਮ ਹੋ ਸਕਦੀ ਹੈ। ਆਪਣੇ ਡੀਵਾਈਸ ਨੂੰ ਚਾਰਜਰ ਨਾਲ ਕਨੈਕਟ ਕਰ ਕੇ ਦੁਬਾਰਾ ਕੋਸ਼ਿਸ਼ ਕਰੋ।</translation>
 <translation id="7019805045859631636">ਤੇਜ਼</translation>
 <translation id="7022562585984256452">ਤੁਹਾਡਾ ਮੁੱਖ ਪੰਨਾ ਸੈੱਟ ਕੀਤਾ ਗਿਆ ਹੈ।</translation>
 <translation id="7025082428878635038">ਪੇਸ਼ ਹੈ ਇਸ਼ਾਰਿਆਂ ਨਾਲ ਨੈਵੀਗੇਟ ਕਰਨ ਦਾ ਇੱਕ ਨਵਾਂ ਤਰੀਕਾ</translation>
@@ -6088,6 +6106,7 @@
 <translation id="7072010813301522126">ਸ਼ਾਰਟਕੱਟ ਨਾਮ</translation>
 <translation id="7075513071073410194">RSA ਐਨਕ੍ਰਿਪਸ਼ਨ ਨਾਲ PKCS #1 MD5</translation>
 <translation id="7075625805486468288">HTTPS/SSL ਪ੍ਰਮਾਣ-ਪੱਤਰਾਂ ਅਤੇ ਸੈਟਿੰਗਾਂ ਦਾ ਪ੍ਰਬੰਧਨ ਕਰੋ</translation>
+<translation id="7076875098323397992">ਅੱਪਗ੍ਰੇਡ ਸ਼ੁਰੂ ਨਹੀਂ ਕੀਤਾ ਜਾ ਸਕਦਾ</translation>
 <translation id="7077829361966535409">ਸਾਈਨ-ਇਨ ਪੰਨਾ ਵਰਤਮਾਨ ਪ੍ਰੌਕਸੀ ਸੈਟਿੰਗਾਂ ਦੀ ਵਰਤੋਂ ਹੋਏ ਲੋਡ ਕਰਨ ਵਿੱਚ ਅਸਫਲ ਰਿਹਾ। ਕਿਰਪਾ ਕਰਕੇ <ph name="GAIA_RELOAD_LINK_START" />ਦੁਬਾਰਾ ਸਾਈਨ-ਇਨ ਕਰਨ ਦੀ ਕੋਸ਼ਿਸ਼ ਕਰੋ<ph name="GAIA_RELOAD_LINK_END" /> ਜਾਂ ਵੱਖ-ਵੱਖ <ph name="PROXY_SETTINGS_LINK_START" />ਪ੍ਰੌਕਸੀ ਸੈਟਿੰਗਾਂ<ph name="PROXY_SETTINGS_LINK_END" /> ਦੀ ਵਰਤੋਂ ਕਰੋ।</translation>
 <translation id="7078120482318506217">ਸਾਰੇ ਨੈੱਟਵਰਕ</translation>
 <translation id="708060913198414444">ਆਡੀਓ ਪਤਾ ਕਾ&amp;ਪੀ ਕਰੋ</translation>
@@ -6351,6 +6370,7 @@
 <translation id="7377481913241237033">ਕੋਡ ਨਾਲ ਕਨੈਕਟ ਕਰੋ</translation>
 <translation id="7378611153938412599">ਕਮਜ਼ੋਰ ਪਾਸਵਰਡਾਂ ਦਾ ਅੰਦਾਜ਼ਾ ਲਗਾਉਣਾ ਆਸਾਨ ਹੁੰਦਾ ਹੈ। ਇਹ ਪੱਕਾ ਕਰੋ ਕਿ ਤੁਸੀਂ ਮਜ਼ਬੂਤ ਪਾਸਵਰਡ ਬਣਾ ਰਹੇ ਹੋ। <ph name="BEGIN_LINK" />ਹੋਰ ਸੁਰੱਖਿਆ ਨੁਕਤੇ ਦੇਖੋ।<ph name="END_LINK" /></translation>
 <translation id="73786666777299047">'Chrome ਵੈੱਬ ਸਟੋਰ' ਖੋਲ੍ਹੋ</translation>
+<translation id="7380459290951585794">ਪੱਕਾ ਕਰੋ ਕਿ ਤੁਹਾਡਾ ਫ਼ੋਨ ਨਜ਼ਦੀਕ ਹੈ, ਅਣਲਾਕ ਹੈ ਅਤੇ ਉਸਦਾ ਬਲੂਟੁੱਥ ਅਤੇ ਵਾਈ-ਫਾਈ ਚਾਲੂ ਹੈ</translation>
 <translation id="7380622428988553498">ਡੀਵਾਈਸ ਨਾਮ ਵਿੱਚ ਅਵੈਧ ਅੱਖਰ-ਚਿੰਨ੍ਹ ਹਨ</translation>
 <translation id="7380768571499464492"><ph name="PRINTER_NAME" /> ਨੂੰ ਅੱਪਡੇਟ ਕੀਤਾ ਗਿਆ</translation>
 <translation id="73843634555824551">ਇਨਪੁੱਟ ਅਤੇ ਕੀਬੋਰਡ</translation>
@@ -6654,6 +6674,7 @@
 <translation id="7668002322287525834">{NUM_WEEKS,plural, =1{{NUM_WEEKS} ਹਫ਼ਤੇ ਦੇ ਅੰਦਰ <ph name="DEVICE_TYPE" /> ਨੂੰ ਵਾਪਸ ਕਰੋ}one{{NUM_WEEKS} ਹਫ਼ਤੇ ਦੇ ਅੰਦਰ <ph name="DEVICE_TYPE" /> ਨੂੰ ਵਾਪਸ ਕਰੋ}other{{NUM_WEEKS} ਹਫ਼ਤਿਆਂ ਦੇ ਅੰਦਰ <ph name="DEVICE_TYPE" /> ਨੂੰ ਵਾਪਸ ਕਰੋ}}</translation>
 <translation id="7668423670802040666"><ph name="ACCOUNT" /> ਦੇ Google ਪਾਸਵਰਡ ਪ੍ਰਬੰਧਕ ਵਿੱਚ</translation>
 <translation id="7669825497510425694">{NUM_ATTEMPTS,plural, =1{ਗਲਤ ਪਿੰਨ। ਤੁਹਾਡੇ ਕੋਲ ਇੱਕ ਕੋਸ਼ਿਸ਼ ਬਾਕੀ ਹੈ।}one{ਗਲਤ ਪਿੰਨ। ਤੁਹਾਡੇ ਕੋਲ # ਕੋਸ਼ਿਸ਼ ਬਾਕੀ ਹੈ।}other{ਗਲਤ ਪਿੰਨ। ਤੁਹਾਡੇ ਕੋਲ # ਕੋਸ਼ਿਸ਼ਾਂ ਬਾਕੀ ਹਨ।}}</translation>
+<translation id="7670434942695515800">ਬਿਹਤਰੀਨ ਕਾਰਗੁਜ਼ਾਰੀ ਲਈ, ਨਵੀਨਤਮ ਵਰਜਨ 'ਤੇ ਅੱਪਗ੍ਰੇਡ ਕਰੋ। ਅੱਪਗ੍ਰੇਡ ਪੂਰਾ ਨਾ ਹੋਣ ਦੀ ਸਥਿਤੀ ਵਿੱਚ ਤੁਹਾਡੀਆਂ ਫ਼ਾਈਲਾਂ ਦਾ ਬੈਕਅੱਪ ਲੈਣ ਦੀ ਸਿਫ਼ਾਰਸ਼ ਕੀਤੀ ਜਾਂਦੀ ਹੈ। ਅੱਪਗ੍ਰੇਡ ਸ਼ੁਰੂ ਹੋਣ ਤੋਂ ਬਾਅਦ, Linux ਬੰਦ ਹੋ ਜਾਵੇਗਾ। ਜਾਰੀ ਰੱਖਣ ਤੋਂ ਪਹਿਲਾਂ ਖੁੱਲ੍ਹੀਆਂ ਫ਼ਾਈਲਾਂ ਨੂੰ ਰੱਖਿਅਤ ਕਰੋ। <ph name="LINK_START" />ਹੋਰ ਜਾਣੋ<ph name="LINK_END" /></translation>
 <translation id="7671130400130574146">ਸਿਸਟਮ ਟਾਈਟਲ ਬਾਰ ਅਤੇ ਬੌਰਡਰ ਵਰਤੋ</translation>
 <translation id="767127784612208024">ਰੀਸੈੱਟ ਦੀ ਪੁਸ਼ਟੀ ਕਰਨ ਲਈ ਸਪਰਸ਼ ਕਰੋ</translation>
 <translation id="767147716926917172">Google ਨੂੰ ਸਵੈਚਲਿਤ ਤੌਰ 'ਤੇ ਤਸ਼ਖੀਸ ਅਤੇ ਵਰਤੋਂ ਡਾਟਾ ਭੇਜਦਾ ਹੈ</translation>
@@ -6915,6 +6936,7 @@
 <translation id="7920363873148656176"><ph name="ORIGIN" /> ਵੱਲੋਂ <ph name="FILENAME" /> ਨੂੰ ਦੇਖਿਆ ਜਾ ਸਕਦਾ ਹੈ</translation>
 <translation id="7920482456679570420">ਉਹ ਸ਼ਬਦ ਸ਼ਾਮਲ ਕਰੋ ਜਿੰਨ੍ਹਾਂ ਲਈ ਤੁਸੀਂ ਸ਼ਬਦ-ਜੋੜ ਜਾਂਚ ਨੂੰ ਛੱਡਣਾ ਚਾਹੁੰਦੇ ਹੋ</translation>
 <translation id="7922935920104868876">ਇਨਕੋਗਨਿਟੋ ਮੋਡ ਵਿੱਚ ਤੀਜੀ-ਧਿਰ ਦੀਆਂ ਕੁਕੀਜ਼ ਨੂੰ ਬਲਾਕ ਕਰਨ ਬਾਰੇ ਵੇਰਵੇ ਦਿਖਾਓ</translation>
+<translation id="7923564237306226146">Linux ਅੱਪਗ੍ਰੇਡ ਪੂਰਾ ਹੋਇਆ</translation>
 <translation id="7924358170328001543">ਪੋਰਟ ਨੂੰ ਅੱਗੇ ਭੇਜਣ ਵੇਲੇ ਗੜਬੜ</translation>
 <translation id="7925108652071887026">ਆਟੋਫਿਲ ਡਾਟਾ</translation>
 <translation id="792514962475806987">ਡੌਕ ਜ਼ੂਮ ਪੱਧਰ:</translation>
@@ -7091,6 +7113,7 @@
 <translation id="8084510406207562688">ਸਾਰੀਆਂ ਟੈਬਾਂ ਨੂੰ ਮੁੜ-ਬਹਾਲ ਕਰੋ</translation>
 <translation id="8086015605808120405"><ph name="PRINTER_NAME" /> ਦਾ ਸੰਰੂਪਣ ਕੀਤਾ ਜਾ ਰਿਹਾ ਹੈ ...</translation>
 <translation id="8086442853986205778"><ph name="PRINTER_NAME" /> ਨੂੰ ਸੈੱਟਅੱਪ ਕਰੋ</translation>
+<translation id="8086610718778464681">Linux ਐਪਾਂ ਅਤੇ ਫ਼ਾਈਲਾਂ ਦਾ ਬੈਕਅੱਪ ਨਹੀਂ ਲਿਆ ਜਾ ਸਕਦਾ</translation>
 <translation id="80866457114322936">{NUM_FILES,plural, =1{ਇਹ ਫ਼ਾਈਲ ਇਨਕ੍ਰਿਪਟਡ ਹੈ। ਇਸਦੇ ਮਾਲਕ ਨੂੰ ਡਿਕ੍ਰਿਪਟ ਕਰਨ ਲਈ ਕਹੋ।}one{ਇਹ ਫ਼ਾਈਲ ਇਨਕ੍ਰਿਪਟਡ ਹੈ। ਇਸਦੇ ਮਾਲਕ ਨੂੰ ਡਿਕ੍ਰਿਪਟ ਕਰਨ ਲਈ ਕਹੋ।}other{ਇਹਨਾਂ ਵਿੱਚੋਂ ਕੁਝ ਫ਼ਾਈਲਾਂ ਇਨਕ੍ਰਿਪਟਡ ਹਨ। ਇਹਨਾਂ ਦੇ ਮਾਲਕਾਂ ਨੂੰ ਡਿਕ੍ਰਿਪਟ ਕਰਨ ਲਈ ਕਹੋ।}}</translation>
 <translation id="808894953321890993">ਪਾਸਵਰਡ ਬਦਲੋ</translation>
 <translation id="8090234456044969073">ਤੁਹਾਡੀਆਂ ਸਭ ਤੋਂ ਵੱਧ ਵਾਰ ਵਿਜਿਟ ਕੀਤੀਆਂ ਵੈਬਸਾਈਟਾਂ ਦੀ ਇੱਕ ਸੂਚੀ ਪੜ੍ਹੋ</translation>
@@ -8274,6 +8297,7 @@
 <translation id="992778845837390402">ਇਸ ਵੇਲੇ Linux ਦਾ ਬੈਕਅੱਪ ਜਾਰੀ ਹੈ</translation>
 <translation id="993540765962421562">ਸਥਾਪਨਾ ਜਾਰੀ ਹੈ</translation>
 <translation id="994289308992179865">&amp;ਲੂਪ</translation>
+<translation id="995571563161129624">ਧਿਆਨ ਵਿੱਚ ਰੱਖੋ, ਸੂਚਨਾਵਾਂ ਨੂੰ ਆਪਣੀ Chromebook ਤੋਂ ਖਾਰਜ ਕਰਨ 'ਤੇ ਉਹ ਤੁਹਾਡੇ ਫ਼ੋਨ ਤੋਂ ਵੀ ਖਾਰਜ ਹੋ ਜਾਣਗੀਆਂ</translation>
 <translation id="995782501881226248">YouTube</translation>
 <translation id="996250603853062861">ਸੁਰੱਖਿ੍ਤ ਕਨੈਕਸ਼ਨ ਸਥਾਪਿਤ ਕਰ ਰਿਹਾ ਹੈ...</translation>
 <translation id="996803490569799917">ਆਪਣੇ ਮਨਪਸੰਦ ਲੋਕਾਂ ਦੀਆਂ ਯਾਦਾਂ ਅਤੇ ਹੋਰ ਬਹੁਤ ਕੁਝ ਦੇਖੋ</translation>

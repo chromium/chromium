@@ -454,6 +454,7 @@
 <translation id="2310021320168182093">Chou2 (信封)</translation>
 <translation id="2316887270356262533">釋出的快取不到 1 MB。在您下次瀏覽部分網站時，載入速度可能會變慢。</translation>
 <translation id="2317259163369394535"><ph name="DOMAIN" /> 要求提供使用者名稱和密碼。</translation>
+<translation id="2318594867107319532">上次政策時間戳記：</translation>
 <translation id="2328651992442742497">已允許 (預設)</translation>
 <translation id="2329182534073751090">放置視窗</translation>
 <translation id="2330137317877982892"><ph name="CREDIT_CARD" />，到期日：<ph name="EXPIRATION_DATE_ABBR" /></translation>
@@ -1651,6 +1652,7 @@
 <translation id="6157754950574419155">從記錄中移除全部項目</translation>
 <translation id="6157877588268064908">如要查看運送方式和要求，請選取一個地址</translation>
 <translation id="6165508094623778733">瞭解更多資料</translation>
+<translation id="6167577165590485365">上次嘗試擷取時間：</translation>
 <translation id="6169916984152623906">現在您可私下瀏覽了。共用此裝置的其他使用者將無法看到您的活動，但您下載的檔案和加入的書籤仍會儲存在裝置上。</translation>
 <translation id="6177128806592000436">您與此網站的連線並非完全安全</translation>
 <translation id="6180316780098470077">重試間隔</translation>

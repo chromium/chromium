@@ -197,6 +197,7 @@ Evo nekih stvari koje možete pokušati pokrenuti.</translation>
 <translation id="2132302418721800944">Snimanje cijelog zaslona</translation>
 <translation id="2135456203358955318">Usidreno povećalo</translation>
 <translation id="2148716181193084225">Danas</translation>
+<translation id="2159930836979502091">Otvorite ovu karticu</translation>
 <translation id="2170530631236737939">Prijeđite s tri prsta prema dolje da biste zatvorili Pregled</translation>
 <translation id="219905428774326614">Pokretač, sve aplikacije</translation>
 <translation id="2201071101391734388">Nedavna fotografija <ph name="INDEX" /> od <ph name="TOTAL_COUNT" />.</translation>
@@ -563,6 +564,7 @@ Evo nekih stvari koje možete pokušati pokrenuti.</translation>
 <translation id="4449692009715125625">{NUM_NOTIFICATIONS,plural, =1{Jedna važna obavijest}one{# važna obavijest}few{# važne obavijesti}other{# važnih obavijesti}}</translation>
 <translation id="4450893287417543264">Ne prikazuj ponovo</translation>
 <translation id="4451374464530248585">Promijenjen je tipkovni prečac Alt + strelica prema dolje. Da biste upotrijebili tipku stranica prema dolje, pritisnite <ph name="LAUNCHER_KEY_NAME" /> + strelica prema dolje.</translation>
+<translation id="4455051983450390249">Pogledajte obavijesti telefona na uređaju <ph name="DEVICE_TYPE" /></translation>
 <translation id="445864333228800152">Dobra večer,</translation>
 <translation id="4458688154122353284">Zaustavite snimanje zaslona</translation>
 <translation id="4471354919263203780">Preuzimaju se datoteke za prepoznavanje govora... <ph name="PERCENT" />%</translation>
@@ -770,6 +772,7 @@ Evo nekih stvari koje možete pokušati pokrenuti.</translation>
 <translation id="583281660410589416">Nepoznato</translation>
 <translation id="5837036133683224804">Zaustavite <ph name="ROUTE_TITLE" /> na uređaju <ph name="RECEIVER_NAME" /></translation>
 <translation id="584525477304726060">Zadržite da biste maksimizirali</translation>
+<translation id="5856638668464565213">Mreža <ph name="NETWORK_NAME" /> nije aktivirana.</translation>
 <translation id="5860033963881614850">Isključeno</translation>
 <translation id="5860491529813859533">Uključi</translation>
 <translation id="5867217927013474703">Prikupljanje podataka o mreži</translation>
@@ -801,6 +804,7 @@ Evo nekih stvari koje možete pokušati pokrenuti.</translation>
 <translation id="602472752137106327">Prikaži prozore sa svih radnih površina, odabran je izborni gumb</translation>
 <translation id="6025324406281560198"><ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, jačina signala <ph name="SIGNAL_STRENGTH" />, upravlja administrator</translation>
 <translation id="6027518778343897451">Nema događaja na dan <ph name="CURRENT_MONTH_DAY" />. Pritisnite Enter da biste u pregledniku otvorili Google kalendar.</translation>
+<translation id="6027952026115023659">Pristupite aplikacijama za slanje poruka telefona na uređaju <ph name="DEVICE_TYPE" /></translation>
 <translation id="6030495522958826102">Izbornik je premješten u donji lijevi kut zaslona.</translation>
 <translation id="6032620807120418574">Kliknite bilo gdje da biste snimili cijeli zaslon</translation>
 <translation id="6040071906258664830">Snimanje mikrofona <ph name="STATE" /></translation>
@@ -944,6 +948,7 @@ Novo instaliranje</translation>
 <translation id="6961121602502368900">Utišavanje telefona nije dostupno na poslovnom profilu</translation>
 <translation id="6961840794482373852">Promijenjen je tipkovni prečac Alt + strelica prema gore. Da biste upotrijebili tipku stranica prema gore, pritisnite tipku <ph name="LAUNCHER_KEY_NAME" /> + strelicu prema gore.</translation>
 <translation id="6965382102122355670">U redu</translation>
+<translation id="6967933908874208731">Pogledajte nedavne fotografije, medijske sadržaje, obavijesti i aplikacije za slanje poruka na svojem telefonskom uređaju <ph name="DEVICE_TYPE" /></translation>
 <translation id="6972754398087986839">Početak upotrebe</translation>
 <translation id="6979158407327259162">Google disk</translation>
 <translation id="6981982820502123353">Pristupačnost</translation>

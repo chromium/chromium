@@ -40,6 +40,7 @@
 <translation id="1041175011127912238">此網頁沒有回應</translation>
 <translation id="1041263367839475438">可用的裝置</translation>
 <translation id="1042174272890264476">您的電腦也內置了 <ph name="SHORT_PRODUCT_NAME" /> 的 RLZ 資料庫。RLZ 可指定非重複、非個人的可識別標記，以評估特定宣傳廣告活動所提升的搜尋數量與 <ph name="SHORT_PRODUCT_NAME" /> 使用量。這些標籤有時也會顯示在 <ph name="PRODUCT_NAME" /> 的 Google 搜尋查詢中。</translation>
+<translation id="1043505821207197890">發生錯誤，Linux 可能只完成部分升級。詳情請查看記錄。記錄已儲存至「檔案」&gt;「我的檔案」&gt; <ph name="LOG_FILE" /></translation>
 <translation id="1043818413152647937">要清除這些裝置的資料嗎？</translation>
 <translation id="1043824690776631483">您必須獲取授權，才能瀏覽此網站。此網站可能含有不當內容。</translation>
 <translation id="104710386808485638">要重新啟動 Linux 嗎？</translation>
@@ -272,6 +273,7 @@
 <translation id="1258491128795710625">新功能</translation>
 <translation id="1259152067760398571">昨天已執行安全檢查</translation>
 <translation id="1260451001046713751">一律顯示 <ph name="HOST" /> 的彈出式視窗及重新導向</translation>
+<translation id="1260810365552581339">Linux 的磁碟空間可能不足。您可增加 Linux 磁碟空間並嘗試在「<ph name="LINK_START" />設定<ph name="LINK_END" />」中再次還原。</translation>
 <translation id="1261380933454402672">普通模式</translation>
 <translation id="126156426083987769">示範模式的裝置授權發生問題。</translation>
 <translation id="1263231323834454256">閱讀清單</translation>
@@ -620,6 +622,7 @@
 <translation id="1603411913360944381">清除「<ph name="DEVICE_NAME" />」</translation>
 <translation id="1603914832182249871">(無痕模式)</translation>
 <translation id="1604432177629086300">無法列印。請檢查打印機，然後再試一次</translation>
+<translation id="1604774728851271529">您需要網絡連線才能升級 Linux。請連接互聯網，然後再試一次。</translation>
 <translation id="1605744057217831567">查看所有網站資料和權限</translation>
 <translation id="1606077700029460857">變更滑鼠設定</translation>
 <translation id="1606566847233779212">要移除您新增的特定網站嗎？</translation>
@@ -1045,6 +1048,7 @@
 <translation id="1989903373608997757">一律使用</translation>
 <translation id="1990046457226896323">已下載即時字幕檔案</translation>
 <translation id="1990512225220753005">不要在此頁面顯示捷徑</translation>
+<translation id="1990727803345673966">系統正在還原已備份的 Linux 檔案和應用程式</translation>
 <translation id="199191324030140441">關閉「請勿騷擾」</translation>
 <translation id="1992397118740194946">未設定</translation>
 <translation id="1992924914582925289">從裝置中移除</translation>
@@ -1119,6 +1123,7 @@
 <translation id="2071393345806050157">沒有本機記錄檔案。</translation>
 <translation id="2071692954027939183">由於您通常不允許通知，因此系統已自動封鎖通知</translation>
 <translation id="2073148037220830746">{NUM_EXTENSIONS,plural, =1{按一下即可安裝擴充程式}other{按一下即可安裝這些擴充程式}}</translation>
+<translation id="2073496667646280609">裝置或所選的備份位置可能沒有足夠的免費儲存空間。請嘗試騰出空間，或選擇備份至另一個位置。</translation>
 <translation id="2073505299004274893">最多只可輸入 <ph name="CHARACTER_LIMIT" /> 個字元</translation>
 <translation id="2075474481720804517">電量：<ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="2075959085554270910">讓您啟用/停用輕按點擊和輕按拖曳功能</translation>
@@ -1651,6 +1656,7 @@
 <translation id="2568774940984945469">資料列容器</translation>
 <translation id="2571655996835834626">變更設定來控制網站對 Cookie、JavaScript、外掛程式、地理位置、麥克風、相機等功能的存取權。</translation>
 <translation id="2572032849266859634">已授與「<ph name="VOLUME_NAME" />」的唯讀權限。</translation>
+<translation id="2573417407488272418">升級前將應用程式和檔案備份至「檔案」&gt;「我的檔案」。</translation>
 <translation id="2573831315551295105">指派代表「<ph name="ACTION" />」的按鈕裝置</translation>
 <translation id="2575247648642144396">畫面上顯示這個圖示時，表示擴充功能可在目前網頁上運作。如要啟用這項擴充功能，請按一下圖示或按下 <ph name="EXTENSION_SHORTCUT" />。</translation>
 <translation id="2575441894380764255">不允許顯示滋擾性或誤導廣告</translation>
@@ -1967,6 +1973,7 @@
 <translation id="2882943222317434580"><ph name="IDS_SHORT_PRODUCT_NAME" /> 即將重新啟動並重新設定。</translation>
 <translation id="2885378588091291677">工作管理員</translation>
 <translation id="2885729872133513017">解碼伺服器回應時發生問題。</translation>
+<translation id="2886119409731773154">此操作大概需時 30 分鐘</translation>
 <translation id="2886771036282400576">• <ph name="PERMISSION" /></translation>
 <translation id="288734198558082692">「<ph name="DEVICE" />」和另外 <ph name="NUMBER_OF_DEVICES" /> 部裝置</translation>
 <translation id="2889064240420137087">使用其他程式開啟連結…</translation>
@@ -2229,6 +2236,7 @@
 <translation id="3151562827395986343">清除記錄、Cookie、快取等資料</translation>
 <translation id="3151616662954589507">自拍鏡頭</translation>
 <translation id="3151786313568798007">方向</translation>
+<translation id="3152356229013609796">查看、關閉和回覆手機的通知</translation>
 <translation id="3154429428035006212">離線超過一個月</translation>
 <translation id="3157387275655328056">新增至閱讀清單</translation>
 <translation id="3157931365184549694">還原</translation>
@@ -2912,6 +2920,7 @@
 <translation id="3831436149286513437">「Google 雲端硬碟」搜尋建議</translation>
 <translation id="3834728400518755610">Linux 需要關閉，麥克風設定的變更才會生效。關閉 Linux 即可繼續。</translation>
 <translation id="3834775135533257713">「<ph name="TO_INSTALL_APP_NAME" />」應用程式和「<ph name="INSTALLED_APP_NAME" />」發生衝突，因此無法新增。</translation>
+<translation id="3835904559946595746">無法還原 Linux 備份</translation>
 <translation id="383669374481694771">這個選項會提供此裝置的一般資料和使用情况 (例如電量、系統及應用程式活動和錯誤)。這些資料將會用來改善 Android。部分彙整資料還能協助 Google 應用程式和合作夥伴 (例如 Android 開發人員) 改良應用程式和產品。</translation>
 <translation id="3838085852053358637">無法載入擴充程式</translation>
 <translation id="3838486795898716504">更多<ph name="PAGE_TITLE" /></translation>
@@ -3624,6 +3633,7 @@
 <translation id="4562155214028662640">新增指紋</translation>
 <translation id="4563210852471260509">初始輸入語言為中文</translation>
 <translation id="4563880231729913339">手指 3</translation>
+<translation id="4564245002465020751">在手機上完成設定</translation>
 <translation id="4565377596337484307">隱藏密碼</translation>
 <translation id="4565917129334815774">儲存系統記錄</translation>
 <translation id="4566417217121906555">將麥克風設定為靜音</translation>
@@ -3795,6 +3805,7 @@
 <translation id="474609389162964566">說出「Ok Google」即可存取「Google 助理」</translation>
 <translation id="4746351372139058112">Messages</translation>
 <translation id="4748783296226936791">網站通常會連接 HID 裝置，以提供使用非標準鍵盤、遊戲控制器和其他裝置等功能</translation>
+<translation id="4750185073185658673">在手機上查看其他權限。請確保手機的藍牙和 Wi-Fi 已開啟。</translation>
 <translation id="4750394297954878236">建議</translation>
 <translation id="475088594373173692">第一位使用者</translation>
 <translation id="4756378406049221019">停止/重新載入</translation>
@@ -4981,6 +4992,7 @@
 <translation id="5957987129450536192">輕按個人檔案相片附近的「選取以朗讀」圖示，然後選取您想聽到的內容。</translation>
 <translation id="5959471481388474538">網絡無法使用</translation>
 <translation id="595959584676692139">重新載入網頁即可使用此擴充程式</translation>
+<translation id="5960410286721553511">查看手機最近的相片和媒體</translation>
 <translation id="5963453369025043595"><ph name="NUM_HANDLES" /> 個 (最多 <ph name="NUM_KILOBYTES_LIVE" /> 個)</translation>
 <translation id="5964113968897211042">{COUNT,plural, =0{在新視窗中開啟所有書籤(&amp;N)}=1{在新視窗中開啟書籤(&amp;N)}other{在新視窗中開啟全部 {COUNT} 個書籤(&amp;N)}}</translation>
 <translation id="5965661248935608907">這個擴充功能也會管制您在使用 [主頁] 按鈕或網址列搜尋時所顯示的網頁。</translation>
@@ -5558,6 +5570,7 @@
 <translation id="6541638731489116978">此網站被禁止存取您的動作感應器。</translation>
 <translation id="6545665334409411530">重複頻率</translation>
 <translation id="6545867563032584178">已關閉 Mac 系統偏好設定中的麥克風</translation>
+<translation id="6546856949879953071">有關升級的詳細資訊，相關記錄已儲存至「檔案」&gt;「我的檔案」&gt; <ph name="LOG_FILE" /></translation>
 <translation id="6547354035488017500">請釋出最少 512 MB 的儲存空間，否則裝置將沒有回應。如要釋出空間，請刪除裝置儲存空間內的檔案。</translation>
 <translation id="6547854317475115430"><ph name="BEGIN_PARAGRAPH1" />Google 的定位服務會透過 Wi-Fi、流動網絡及感應器等來源協助估計裝置位置。<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />您可隨時前往 [設定] &gt; [應用程式] &gt; [Google Play 商店] &gt; [管理 Android 偏好設定] &gt; [安全性和位置] &gt; [位置]，以便在您的裝置上關閉 Android 定位服務。您亦可在同一選單中關閉「Google 定位精確度」，禁止 Android 定位服務使用 Wi-Fi、流動網絡和感應器。<ph name="END_PARAGRAPH2" /></translation>
@@ -5572,6 +5585,7 @@
 <translation id="655384502888039633"><ph name="USER_COUNT" /> 位使用者</translation>
 <translation id="655483977608336153">再試一次</translation>
 <translation id="6555432686520421228">移除所有使用者帳戶，並將您的 <ph name="IDS_SHORT_PRODUCT_NAME" /> 裝置重設為原廠狀態。</translation>
+<translation id="6555604601707417276">Linux 備份已還原</translation>
 <translation id="6555810572223193255">目前無法進行清理</translation>
 <translation id="6556477848444788999">此 PIN 或密碼會在此 <ph name="DEVICE_TYPE" /> 上保護您的資料，包括您從手機串流的任何內容。</translation>
 <translation id="6556866813142980365">重做</translation>
@@ -5677,6 +5691,7 @@
 <translation id="6663190258859265334">在 <ph name="DEVICE_TYPE" /> 上執行 Powerwash 並返回先前的版本。</translation>
 <translation id="6664237456442406323">抱歉，您的電腦是由格式錯誤的硬件 ID 所設定。這樣會防止 Chrome 作業系統更新最新的安全性修復，您的電腦也可能<ph name="BEGIN_BOLD" />容易被惡意攻擊<ph name="END_BOLD" />。</translation>
 <translation id="6664774537677393800">開啟您的設定檔時發生錯誤，請先登出，然後再次登入。</translation>
+<translation id="6666559645296300656">正在取消 Linux 升級</translation>
 <translation id="666731172850799929">在「<ph name="APP_NAME" />」中開啟</translation>
 <translation id="6670142487971298264">「<ph name="APP_NAME" />」現已推出</translation>
 <translation id="6670767097276846646">部分擴充程式可以將搜尋引擎新增至 Chrome</translation>
@@ -5713,6 +5728,7 @@
 <translation id="6700480081846086223">投放 <ph name="HOST_NAME" /></translation>
 <translation id="6701535245008341853">無法取得設定檔。</translation>
 <translation id="6702639462873609204">編輯(&amp;E)…</translation>
+<translation id="6703254819490889819">還原備份</translation>
 <translation id="6706210727756204531">範圍</translation>
 <translation id="6707389671160270963">SSL 用戶端憑證</translation>
 <translation id="6709002550153567782">{NUM_PAGES,plural, =0{<ph name="PAGE_TITLE" />}=1{<ph name="PAGE_TITLE" /> 和另外 1 個分頁}other{<ph name="PAGE_TITLE" /> 和另外 # 個分頁}}</translation>
@@ -5894,6 +5910,7 @@
 <translation id="6883319974225028188">抱歉！系統無法儲存裝置設定。</translation>
 <translation id="6884474387073389421">確定要刪除已選取的登入資料嗎？</translation>
 <translation id="6885771755599377173">預覽系統資訊</translation>
+<translation id="6886380424988777998">無法升級 Linux</translation>
 <translation id="6886871292305414135">在新分頁中開啟連結(&amp;T)</translation>
 <translation id="6889957081990109136">尚未指派按鈕裝置</translation>
 <translation id="689007770043972343">嘗試將其他開啟的分頁拖曳至群組</translation>
@@ -6036,6 +6053,7 @@
 <translation id="7017219178341817193">新增網頁</translation>
 <translation id="7017354871202642555">無法在視窗建立之後再設定模式。</translation>
 <translation id="7018275672629230621">讀取及變更您的瀏覽記錄</translation>
+<translation id="7019546817926942979">裝置需要接上電源。升級 Linux 相當耗電。請將裝置連接充電器，然後再試一次。</translation>
 <translation id="7019805045859631636">快</translation>
 <translation id="7022562585984256452">首頁已設定完成。</translation>
 <translation id="7025082428878635038">全新的手勢瀏覽功能</translation>
@@ -6089,6 +6107,7 @@
 <translation id="7072010813301522126">捷徑名稱</translation>
 <translation id="7075513071073410194">PKCS #1 MD5 (使用 RSA 加密)</translation>
 <translation id="7075625805486468288">管理 HTTPS/SSL 憑證和設定</translation>
+<translation id="7076875098323397992">無法開始升級</translation>
 <translation id="7077829361966535409">無法使用目前的 Proxy 設定載入登入頁面。請<ph name="GAIA_RELOAD_LINK_START" />重新登入<ph name="GAIA_RELOAD_LINK_END" />或使用其他<ph name="PROXY_SETTINGS_LINK_START" />Proxy 設定<ph name="PROXY_SETTINGS_LINK_END" />。</translation>
 <translation id="7078120482318506217">所有網絡</translation>
 <translation id="708060913198414444">複製音效檔案位址(&amp;O)</translation>
@@ -6352,6 +6371,7 @@
 <translation id="7377481913241237033">使用代碼進行連結</translation>
 <translation id="7378611153938412599">安全性弱的密碼很容易被猜到。請務必設定安全性強的密碼。<ph name="BEGIN_LINK" />查看更多安全提示。<ph name="END_LINK" /></translation>
 <translation id="73786666777299047">開啟 Chrome 網上應用程式商店</translation>
+<translation id="7380459290951585794">請確認您的手機在附近並已解鎖，且已開啟藍牙和 Wi-Fi</translation>
 <translation id="7380622428988553498">裝置名稱包含無效字元</translation>
 <translation id="7380768571499464492">已更新「<ph name="PRINTER_NAME" />」</translation>
 <translation id="73843634555824551">輸入方法和鍵盤</translation>
@@ -6655,6 +6675,7 @@
 <translation id="7668002322287525834">{NUM_WEEKS,plural, =1{在 {NUM_WEEKS} 星期內歸還 <ph name="DEVICE_TYPE" />}other{在 {NUM_WEEKS} 星期內歸還 <ph name="DEVICE_TYPE" />}}</translation>
 <translation id="7668423670802040666">前往 <ph name="ACCOUNT" /> 的「Google 密碼管理工具」進行更新</translation>
 <translation id="7669825497510425694">{NUM_ATTEMPTS,plural, =1{PIN 不正確。您還可再試 1 次。}other{PIN 不正確。您還可再試 # 次。}}</translation>
+<translation id="7670434942695515800">如要獲得最佳效能，請升級至最新版本。建議您在升級前先備份檔案，避免系統無法完成升級。升級開始後，Linux 將會關機。請先儲存開啟的檔案再執行後續操作。<ph name="LINK_START" />瞭解詳情<ph name="LINK_END" /></translation>
 <translation id="7671130400130574146">使用系統標題列及邊界</translation>
 <translation id="767127784612208024">輕觸即可確認重設</translation>
 <translation id="767147716926917172">將診斷和使用情況資料自動傳送給 Google</translation>
@@ -6918,6 +6939,7 @@
 <translation id="7920363873148656176"><ph name="ORIGIN" /> 可查看「<ph name="FILENAME" />」</translation>
 <translation id="7920482456679570420">新增您想拼字檢查略過的字詞</translation>
 <translation id="7922935920104868876">顯示喺無痕模式入面封鎖第三方 Cookie 嘅詳情</translation>
+<translation id="7923564237306226146">Linux 升級已完成</translation>
 <translation id="7924358170328001543">轉送連接埠時發生錯誤</translation>
 <translation id="7925108652071887026">自動填入數據</translation>
 <translation id="792514962475806987">固定放大鏡的縮放等級：</translation>
@@ -7095,6 +7117,7 @@
 <translation id="8084510406207562688">還原所有分頁</translation>
 <translation id="8086015605808120405">正在設定 <ph name="PRINTER_NAME" />…</translation>
 <translation id="8086442853986205778">設定 <ph name="PRINTER_NAME" /></translation>
+<translation id="8086610718778464681">無法備份 Linux 應用程式和檔案</translation>
 <translation id="80866457114322936">{NUM_FILES,plural, =1{此檔案已加密。請要求擁有者解密。}other{這些檔案部分已加密。請要求擁有者解密。}}</translation>
 <translation id="808894953321890993">變更密碼</translation>
 <translation id="8090234456044969073">讀取最常瀏覽的網站清單</translation>
@@ -8277,6 +8300,7 @@
 <translation id="992778845837390402">正在執行 Linux 備份</translation>
 <translation id="993540765962421562">正在安装</translation>
 <translation id="994289308992179865">循環播放(&amp;L)</translation>
+<translation id="995571563161129624">請注意，在 Chromebook 上關閉通知亦會關閉手機上的通知</translation>
 <translation id="995782501881226248">YouTube</translation>
 <translation id="996250603853062861">正在建立安全連線…</translation>
 <translation id="996803490569799917">查看親朋好友等的回憶</translation>

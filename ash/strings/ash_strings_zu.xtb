@@ -197,6 +197,7 @@ Nazi ezinye zezinto ongazama ukuziqalisa.</translation>
 <translation id="2132302418721800944">Rekhoda isikrini esigcwele</translation>
 <translation id="2135456203358955318">Isikhulisi esidokhiwe</translation>
 <translation id="2148716181193084225">Namhlanje</translation>
+<translation id="2159930836979502091">Iya kule thebhu</translation>
 <translation id="2170530631236737939">Swayiphela phansi ngeminwe emithathu ukuphuma kokuthi Buka konke</translation>
 <translation id="219905428774326614">Isiqalisi, zonke izinhlelo zokusebenza</translation>
 <translation id="2201071101391734388">Isithombe sakamuva <ph name="INDEX" /> kwezingu-<ph name="TOTAL_COUNT" />.</translation>
@@ -563,6 +564,7 @@ Nazi ezinye zezinto ongazama ukuziqalisa.</translation>
 <translation id="4449692009715125625">{NUM_NOTIFICATIONS,plural, =1{isaziso esi-1 esibalulekile}one{izaziso ezingu-# ezibalulekile}other{izaziso ezingu-# ezibalulekile}}</translation>
 <translation id="4450893287417543264">Ungabonisi futhi</translation>
 <translation id="4451374464530248585">Isifinyezo sekhibhodi sika-Alt + Umcibisholo Waphansi sishintshile. Ukuze usebenzise ukhiye we-Page Down, cindezela ukhiye we-<ph name="LAUNCHER_KEY_NAME" /> + Umcibisholo Waphansi.</translation>
+<translation id="4455051983450390249">Buka izaziso zefoni yakho ku-<ph name="DEVICE_TYPE" /> yakho</translation>
 <translation id="445864333228800152">Sawubona,</translation>
 <translation id="4458688154122353284">Misa ukuqopha isikrini</translation>
 <translation id="4471354919263203780">Ilanda amafayela okubonwa kwengxoxo... <ph name="PERCENT" />%</translation>
@@ -770,6 +772,7 @@ Nazi ezinye zezinto ongazama ukuziqalisa.</translation>
 <translation id="583281660410589416">Akwaziwa</translation>
 <translation id="5837036133683224804">Misa i-<ph name="ROUTE_TITLE" /> ku-<ph name="RECEIVER_NAME" /></translation>
 <translation id="584525477304726060">Bamba ukuze ukhulise</translation>
+<translation id="5856638668464565213">I-<ph name="NETWORK_NAME" /> ayenziwanga yasebenza.</translation>
 <translation id="5860033963881614850">Valiwe</translation>
 <translation id="5860491529813859533">Vula</translation>
 <translation id="5867217927013474703">Ukuqoqa ulwazi lwenethiwekhi</translation>
@@ -801,6 +804,7 @@ Nazi ezinye zezinto ongazama ukuziqalisa.</translation>
 <translation id="602472752137106327">Bonisa amawindi kusuka kuwo wonke amadeski, inkinobho yerediyo ikhethiwe</translation>
 <translation id="6025324406281560198">I-<ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, amandla esignali angu-<ph name="SIGNAL_STRENGTH" />, aphethwe umlawuli wakho</translation>
 <translation id="6027518778343897451">Awukho umcimbi ngo-<ph name="CURRENT_MONTH_DAY" />. Shaya u-enter ukuze uvule i-Google calendar kubhrawuza.</translation>
+<translation id="6027952026115023659">Finyelela ama-app emiyalezo yefoni yakho <ph name="DEVICE_TYPE" /></translation>
 <translation id="6030495522958826102">Imenyu iyiswe phansi ekhoneni elingakwesobunxele sesikrini.</translation>
 <translation id="6032620807120418574">Chofoza noma ikuphi ukuze urekhode isikrini esigcwele</translation>
 <translation id="6040071906258664830">Rekhoda imakforoni <ph name="STATE" /></translation>
@@ -944,6 +948,7 @@ Ukufaka okusha</translation>
 <translation id="6961121602502368900">Ukuthulisa ifoni akutholakali kwiphrofayela yomsebenzi</translation>
 <translation id="6961840794482373852">Isifinyezo sekhibhodi sika-Alt + Umcibisholo Waphezulu sishintshile. Ukuze usebenzise ukhiye we-Page Up, cindezela ukhiye we-<ph name="LAUNCHER_KEY_NAME" /> + Umcibisholo Waphezulu.</translation>
 <translation id="6965382102122355670">OK</translation>
+<translation id="6967933908874208731">Buka izithombe zakamuva zefoni yakho, imidiya, izaziso, nama-app emiyalezo ku-<ph name="DEVICE_TYPE" /></translation>
 <translation id="6972754398087986839">Qala</translation>
 <translation id="6979158407327259162">I-Google Drayivu</translation>
 <translation id="6981982820502123353">Ukufinyeleleka</translation>

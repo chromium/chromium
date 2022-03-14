@@ -30,6 +30,7 @@
 <translation id="114825011539563458">أهم عناصر التحكّم في الخصوصية والأمان من مكان واحد</translation>
 <translation id="1149401351239820326">شهر انتهاء الصلاحية</translation>
 <translation id="1154704303112745282">لا تتوفّر الصفحة بلا اتصال بالإنترنت: <ph name="VIOLATED_URL" /></translation>
+<translation id="1166688006062225587">قائمة الحسابات التي يمكن اختيارها</translation>
 <translation id="1171770572613082465">عرض المواقع الإلكترونية الشائعة من خلال النقر على الزر "أهم المواقع"</translation>
 <translation id="1173894706177603556">إعادة تسمية</translation>
 <translation id="1177863135347784049">مخصص</translation>
@@ -789,6 +790,7 @@
 <translation id="5665379678064389456">إنشاء حدث في <ph name="APP_NAME" /></translation>
 <translation id="5683547024293500885">‏يتعذّر على Chrome البحث عن تحديثات.</translation>
 <translation id="5686790454216892815">اسم الملف طويل جدًا</translation>
+<translation id="5692329390578659217">للمتابعة، سيشارك <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> اسمك وبريدك الإلكتروني وعنوانك وصورة ملفك الشخصي مع هذا الموقع الإلكتروني. يمكنك الاطّلاع على <ph name="BEGIN_LINK1" />سياسة الخصوصية<ph name="END_LINK1" /> و<ph name="BEGIN_LINK2" />بنود الخدمة<ph name="END_LINK2" /> لهذا الموقع الإلكتروني.</translation>
 <translation id="569536719314091526">ترجمة هذه الصفحة إلى أي لغة من خلال الزر "مزيد من الخيارات"</translation>
 <translation id="5696597120588531049">‏يستطيع Chrome مساعدتك في الحفاظ على أمان معلوماتك من عمليات اختراق البيانات والمواقع الإلكترونية غير الآمنة وغيرها من المشاكل.</translation>
 <translation id="5697688514913266141">سيتمّ حفظ ملفك في <ph name="BEGIN_BOLD" /><ph name="DIRECTORY" /><ph name="END_BOLD" />. <ph name="BEGIN_LINK2" />تعديل<ph name="END_LINK2" /></translation>
@@ -897,6 +899,7 @@
 <translation id="6277522088822131679">حدثت مشكلة أثناء طباعة الصفحة. يُرجى إعادة المحاولة.</translation>
 <translation id="6277722725779679269">تعذّر تحديث ميزة تتبُّع السعر</translation>
 <translation id="6278428485366576908">مظهر</translation>
+<translation id="6293443105724342169">قائمة الحسابات التي يمكن اختيارها مفتوحة في النصف السفلي من الشاشة.</translation>
 <translation id="6294610283659775533">‏يمكنك إرسال علامات التبويب من وإلى الأجهزة التي تم من خلالها تسجيل الدخول إلى حساب Google نفسه.</translation>
 <translation id="6297765934698848803">إن المؤسسة التي تدير الجهاز أوقفت الكاميرا.</translation>
 <translation id="6301525844455696527">متابعة قراءة ما فاتك في قائمة القراءة</translation>
@@ -1116,6 +1119,7 @@
 <translation id="7474822150871987353">يمكنك الاطّلاع على المواضيع المتوفّرة على المواقع الإلكترونية بدون مغادرة الصفحة. اختَر كلمة أو أكثر على الصفحة للبحث عنها.</translation>
 <translation id="7475192538862203634">إذا تكرّر هذا الخطأ، ننصحك بالاطّلاع على هذه <ph name="BEGIN_LINK" />الاقتراحات<ph name="END_LINK" />.</translation>
 <translation id="7475688122056506577">‏لم يتم العثور على بطاقة SD. قد يكون بعض الملفات مفقودًا.</translation>
+<translation id="7477262822945323753">للمتابعة، سيشارك <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> اسمك وبريدك الإلكتروني وعنوانك وصورة ملفك الشخصي مع هذا الموقع الإلكتروني. يمكنك الاطّلاع على <ph name="BEGIN_LINK1" />سياسة خصوصية<ph name="END_LINK1" /> هذا الموقع الإلكتروني.</translation>
 <translation id="7479104141328977413">إدارة علامات التبويب</translation>
 <translation id="7481312909269577407">إلى الأمام</translation>
 <translation id="7482656565088326534">علامة تبويب المعاينة</translation>
@@ -1289,6 +1293,7 @@
 <translation id="8394720698884623075">‏يعمل هذا الوضع على التحقّق من عناوين URL باستخدام قائمة بمواقع إلكترونية غير آمنة مُخزّنة في Chrome.</translation>
 <translation id="8410695015584479363">تتبُّع الأسعار</translation>
 <translation id="8413126021676339697">عرض السجلّ بكامله</translation>
+<translation id="8414396119627470038">يُرجى تسجيل الدخول إلى <ph name="SITE_ETLD_PLUS_ONE" /> باستخدام <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />.</translation>
 <translation id="8419244640277402268">تضمين</translation>
 <translation id="8424781820952413435">‏تم إرسال الصفحة. وللاطّلاع عليها، افتح متصفِّح Chrome على <ph name="DEVICE_TYPE" />.</translation>
 <translation id="8427875596167638501">علامة تبويب المعاينة مفتوحة جزئيًا</translation>
@@ -1304,6 +1309,7 @@
 <translation id="8461694314515752532">ترميز البيانات المتزامنة باستخدام عبارة مرور المزامنة الخاصة بك</translation>
 <translation id="8466613982764129868">يُرجى التأكُّد من اتصال الجهاز <ph name="TARGET_DEVICE_NAME" /> بالإنترنت.</translation>
 <translation id="8473863474539038330">العناوين والمزيد</translation>
+<translation id="847656914027543776">تم إغلاق قائمة الحسابات التي يمكن اختيارها.</translation>
 <translation id="8481921391193215807">‏عند تفعيل "مبادرة حماية الخصوصية"، قد تستخدم المواقع الإلكترونية التقنيات الموضحة هنا للحفاظ على خصوصية المستخدمين مع توفير المحتوى والخدمات لهم. وتشمل هذه التقنيات بدائل عن آليات التتبُّع في المواقع الإلكترونية. قد تتم إضافة إصدارات تجريبية بمرور الوقت.
 
 <ph name="BEGIN_LIST_ITEM1" />يمكن للمعلِنين والناشرين استخدام تقنية "التعلُّم الموحّد للمجموعات النموذجية" (FLoC).<ph name="END_LIST_ITEM1" />
@@ -1430,6 +1436,7 @@
 <translation id="9108312223223904744">إتاحة استخدام الهاتف كمفتاح أمان</translation>
 <translation id="9108808586816295166">قد لا يكون نظام أسماء النطاقات الآمن متاحًا طوال الوقت.</translation>
 <translation id="9133397713400217035">الاطّلاع بلا اتصال بالإنترنت</translation>
+<translation id="9133523398139146080">قائمة الحسابات التي يمكن اختيارها مفتوحة على طول الشاشة.</translation>
 <translation id="9137013805542155359">إظهار الصفحة الأصلية</translation>
 <translation id="9148126808321036104">تسجيل الدخول مرة أخرى</translation>
 <translation id="9155898266292537608">يمكنك أيضًا البحث بنقرة سريعة على كلمة</translation>

@@ -454,6 +454,7 @@
 <translation id="2310021320168182093">長2（封筒）</translation>
 <translation id="2316887270356262533">最大で 1 MB を解放します。サイトによっては、次回アクセスする際に読み込みに時間がかかる可能性があります。</translation>
 <translation id="2317259163369394535"><ph name="DOMAIN" /> にはユーザー名とパスワードが必要です。</translation>
+<translation id="2318594867107319532">ポリシーの最終タイムスタンプ:</translation>
 <translation id="2328651992442742497">許可（デフォルト）</translation>
 <translation id="2329182534073751090">ウィンドウの配置</translation>
 <translation id="2330137317877982892">「<ph name="CREDIT_CARD" />」の有効期限は <ph name="EXPIRATION_DATE_ABBR" /> です</translation>
@@ -1652,6 +1653,7 @@
 <translation id="6157754950574419155">履歴からすべて削除</translation>
 <translation id="6157877588268064908">配送方法と要件を確認するには、住所を選択してください</translation>
 <translation id="6165508094623778733">詳細</translation>
+<translation id="6167577165590485365">最後に取得を試行した時間:</translation>
 <translation id="6169916984152623906">現在、シークレット モードで閲覧しています。あなたのアクティビティは、このデバイスを利用する他のユーザーには表示されません。ただし、ダウンロードしたファイルとブックマークは通常どおり保存されます。</translation>
 <translation id="6177128806592000436">このサイトへの接続は保護されていません</translation>
 <translation id="6180316780098470077">再試行の間隔</translation>
