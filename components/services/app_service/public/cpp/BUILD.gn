@@ -51,6 +51,7 @@ component("app_types") {
     "app_types.h",
     "intent_filter.cc",
     "intent_filter.h",
+    "macros.h",
     "permission.cc",
     "permission.h",
   ]
@@ -187,6 +188,7 @@ component("icon_types") {
 component("run_on_os_login") {
   output_name = "LOGIN_MODE"
   sources = [
+    "macros.h",
     "run_on_os_login_types.cc",
     "run_on_os_login_types.h",
   ]

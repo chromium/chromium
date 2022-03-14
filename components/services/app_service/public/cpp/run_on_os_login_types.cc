@@ -6,6 +6,8 @@
 
 namespace apps {
 
+APP_ENUM_TO_STRING(RunOnOsLoginMode, kUnknown, kNotRun, kWindowed)
+
 RunOnOsLogin::RunOnOsLogin() = default;
 
 RunOnOsLogin::RunOnOsLogin(RunOnOsLoginMode login_mode, bool is_managed)

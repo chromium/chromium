@@ -981,9 +981,9 @@ bool AppUpdate::ShouldUseNonMojom() const {
 }
 
 std::ostream& operator<<(std::ostream& out, const AppUpdate& app) {
-  out << "AppType: " << static_cast<int>(app.AppType()) << std::endl;
+  out << "AppType: " << EnumToString(app.AppType()) << std::endl;
   out << "AppId: " << app.AppId() << std::endl;
-  out << "Readiness: " << static_cast<int>(app.Readiness()) << std::endl;
+  out << "Readiness: " << EnumToString(app.Readiness()) << std::endl;
   out << "Name: " << app.Name() << std::endl;
   out << "ShortName: " << app.ShortName() << std::endl;
   out << "PublisherId: " << app.PublisherId() << std::endl;
@@ -1004,10 +1004,8 @@ std::ostream& operator<<(std::ostream& out, const AppUpdate& app) {
     out << permission->ToString();
   }
 
-  out << "InstallReason: " << static_cast<int>(app.InstallReason())
-      << std::endl;
-  out << "InstallSource: " << static_cast<int>(app.InstallSource())
-      << std::endl;
+  out << "InstallReason: " << EnumToString(app.InstallReason()) << std::endl;
+  out << "InstallSource: " << EnumToString(app.InstallSource()) << std::endl;
   out << "PolicyId: " << app.PolicyId() << std::endl;
   out << "InstalledInternally: " << app.InstalledInternally() << std::endl;
   out << "IsPlatformApp: " << PRINT_OPTIONAL_VALUE(IsPlatformApp) << std::endl;
@@ -1031,10 +1029,10 @@ std::ostream& operator<<(std::ostream& out, const AppUpdate& app) {
   }
 
   out << "ResizeLocked: " << PRINT_OPTIONAL_VALUE(ResizeLocked) << std::endl;
-  out << "WindowMode: " << static_cast<int>(app.WindowMode()) << std::endl;
+  out << "WindowMode: " << EnumToString(app.WindowMode()) << std::endl;
   if (app.RunOnOsLogin().has_value()) {
     out << "RunOnOsLoginMode: "
-        << static_cast<int>(app.RunOnOsLogin().value().login_mode) << std::endl;
+        << EnumToString(app.RunOnOsLogin().value().login_mode) << std::endl;
   }
 
   return out;

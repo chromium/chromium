@@ -9,28 +9,24 @@
 #include <vector>
 
 #include "base/component_export.h"
+#include "components/services/app_service/public/cpp/macros.h"
 #include "components/services/app_service/public/mojom/types.mojom.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace apps {
 
 // The types of permissions in App Service.
-enum class PermissionType {
-  kUnknown = 0,
-  kCamera = 1,
-  kLocation = 2,
-  kMicrophone = 3,
-  kNotifications = 4,
-  kContacts = 5,
-  kStorage = 6,
-  kPrinting = 7,
-};
+ENUM(PermissionType,
+     kUnknown,
+     kCamera,
+     kLocation,
+     kMicrophone,
+     kNotifications,
+     kContacts,
+     kStorage,
+     kPrinting)
 
-enum class TriState {
-  kAllow,
-  kBlock,
-  kAsk,
-};
+ENUM(TriState, kAllow, kBlock, kAsk)
 
 // The permission value could be a TriState or a bool
 struct COMPONENT_EXPORT(APP_TYPES) PermissionValue {

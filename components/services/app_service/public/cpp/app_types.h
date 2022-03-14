@@ -13,6 +13,7 @@
 #include "base/time/time.h"
 #include "components/services/app_service/public/cpp/icon_types.h"
 #include "components/services/app_service/public/cpp/intent_filter.h"
+#include "components/services/app_service/public/cpp/macros.h"
 #include "components/services/app_service/public/cpp/permission.h"
 #include "components/services/app_service/public/cpp/run_on_os_login_types.h"
 #include "components/services/app_service/public/mojom/types.mojom.h"
@@ -20,94 +21,80 @@
 
 namespace apps {
 
-enum class AppType {
-  kUnknown = 0,
-  kArc = 1,                // Android app.
-  kBuiltIn = 2,            // Built-in app.
-  kCrostini = 3,           // Linux (via Crostini) app.
-  kChromeApp = 4,          // Chrome app.
-  kWeb = 5,                // Web app.
-  kMacOs = 6,              // Mac OS app.
-  kPluginVm = 7,           // Plugin VM app, see go/pluginvm.
-  kStandaloneBrowser = 8,  // Lacros browser app, see //docs/lacros.md.
-  kRemote = 9,             // Remote app.
-  kBorealis = 10,          // Borealis app, see go/borealis-app.
-  kSystemWeb = 11,         // System web app.
-  kStandaloneBrowserChromeApp = 12,  // Chrome app hosted in Lacros.
-  kExtension = 13,                   // Browser extension.
-};
+ENUM(AppType,
+     kUnknown,
+     kArc,                         // Android app.
+     kBuiltIn,                     // Built-in app.
+     kCrostini,                    // Linux (via Crostini) app.
+     kChromeApp,                   // Chrome app.
+     kWeb,                         // Web app.
+     kMacOs,                       // Mac OS app.
+     kPluginVm,                    // Plugin VM app, see go/pluginvm.
+     kStandaloneBrowser,           // Lacros browser app, see //docs/lacros.md.
+     kRemote,                      // Remote app.
+     kBorealis,                    // Borealis app, see go/borealis-app.
+     kSystemWeb,                   // System web app.
+     kStandaloneBrowserChromeApp,  // Chrome app hosted in Lacros.
+     kExtension                    // Browser extension.
+)
 
 // Whether an app is ready to launch, i.e. installed.
 // Note the enumeration is used in UMA histogram so entries should not be
 // re-ordered or removed. New entries should be added at the bottom.
-enum class Readiness {
-  kUnknown = 0,
-  kReady,                // Installed and launchable.
-  kDisabledByBlocklist,  // Disabled by SafeBrowsing.
-  kDisabledByPolicy,     // Disabled by admin policy.
-  kDisabledByUser,       // Disabled by explicit user action.
-  kTerminated,           // Renderer process crashed.
-  kUninstalledByUser,
-  // Removed apps are purged from the registry cache and have their
-  // associated memory freed. Subscribers are not notified of removed
-  // apps, so publishers must set the app as uninstalled before
-  // removing it.
-  kRemoved,
-  kUninstalledByMigration,
-
-  // Add any new values above this one, and update kMaxValue to the highest
-  // enumerator value.
-  kMaxValue = kUninstalledByMigration,
-};
+ENUM(Readiness,
+     kUnknown,
+     kReady,                // Installed and launchable.
+     kDisabledByBlocklist,  // Disabled by SafeBrowsing.
+     kDisabledByPolicy,     // Disabled by admin policy.
+     kDisabledByUser,       // Disabled by explicit user action.
+     kTerminated,           // Renderer process crashed.
+     kUninstalledByUser,
+     // Removed apps are purged from the registry cache and have their
+     // associated memory freed. Subscribers are not notified of removed
+     // apps, so publishers must set the app as uninstalled before
+     // removing it.
+     kRemoved,
+     kUninstalledByMigration)
 
 // How the app was installed.
 // This should be kept in sync with histograms.xml, and InstallReason in
 // enums.xml.
 // Note the enumeration is used in UMA histogram so entries should not be
 // re-ordered or removed. New entries should be added at the bottom.
-enum class InstallReason {
-  kUnknown = 0,
-  kSystem,   // Installed with the system and is considered a part of the OS.
-  kPolicy,   // Installed by policy.
-  kOem,      // Installed by an OEM.
-  kDefault,  // Preinstalled by default, but is not considered a system app.
-  kSync,     // Installed by sync.
-  kUser,     // Installed by user action.
-  kSubApp,   // Installed by the SubApp API call.
-
-  // Add any new values above this one, and update kMaxValue to the highest
-  // enumerator value.
-  kMaxValue = kSubApp,
-};
+ENUM(InstallReason,
+     kUnknown,
+     kSystem,   // Installed with the system and is considered a part of the OS.
+     kPolicy,   // Installed by policy.
+     kOem,      // Installed by an OEM.
+     kDefault,  // Preinstalled by default, but is not considered a system app.
+     kSync,     // Installed by sync.
+     kUser,     // Installed by user action.
+     kSubApp    // Installed by the SubApp API call.
+)
 
 // Where the app was installed from.
 // This should be kept in sync with histograms.xml, and InstallSource in
 // enums.xml.
 // Note the enumeration is used in UMA histogram so entries should not be
 // re-ordered or removed. New entries should be added at the bottom.
-enum class InstallSource {
-  kUnknown = 0,
-  kSystem,          // Installed as part of Chrome OS.
-  kSync,            // Installed from sync.
-  kPlayStore,       // Installed from Play store.
-  kChromeWebStore,  // Installed from Chrome web store.
-  kBrowser,         // Installed from browser.
-
-  // Add any new values above this one, and update kMaxValue to the highest
-  // enumerator value.
-  kMaxValue = kBrowser,
-};
+ENUM(InstallSource,
+     kUnknown,
+     kSystem,          // Installed as part of Chrome OS.
+     kSync,            // Installed from sync.
+     kPlayStore,       // Installed from Play store.
+     kChromeWebStore,  // Installed from Chrome web store.
+     kBrowser          // Installed from browser.
+)
 
 // The window mode that each app will open in.
-enum class WindowMode {
-  kUnknown = 0,
-  // Opens in a standalone window
-  kWindow,
-  // Opens in the default web browser
-  kBrowser,
-  // Opens in a tabbed app window
-  kTabbedWindow,
-};
+ENUM(WindowMode,
+     kUnknown,
+     // Opens in a standalone window
+     kWindow,
+     // Opens in the default web browser
+     kBrowser,
+     // Opens in a tabbed app window
+     kTabbedWindow)
 
 // Information about an app. See components/services/app_service/README.md.
 struct COMPONENT_EXPORT(APP_TYPES) App {

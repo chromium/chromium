@@ -9,18 +9,19 @@
 #include <vector>
 
 #include "base/component_export.h"
+#include "components/services/app_service/public/cpp/macros.h"
 #include "components/services/app_service/public/mojom/types.mojom.h"
 
 namespace apps {
 
-enum class RunOnOsLoginMode {
-  // kUnknown to be used for app_update.cc.
-  kUnknown,
-  // App won't run on OS Login.
-  kNotRun,
-  // App runs in windowed mode on OS Login.
-  kWindowed,
-};
+ENUM_FOR_COMPONENT(LOGIN_MODE,
+                   RunOnOsLoginMode,
+                   // kUnknown to be used for app_update.cc.
+                   kUnknown,
+                   // App won't run on OS Login.
+                   kNotRun,
+                   // App runs in windowed mode on OS Login.
+                   kWindowed)
 
 struct COMPONENT_EXPORT(LOGIN_MODE) RunOnOsLogin {
   RunOnOsLogin();

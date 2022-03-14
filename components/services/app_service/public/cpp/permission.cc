@@ -6,6 +6,17 @@
 
 namespace apps {
 
+APP_ENUM_TO_STRING(PermissionType,
+                   kUnknown,
+                   kCamera,
+                   kLocation,
+                   kMicrophone,
+                   kNotifications,
+                   kContacts,
+                   kStorage,
+                   kPrinting)
+APP_ENUM_TO_STRING(TriState, kAllow, kBlock, kAsk)
+
 PermissionValue::PermissionValue(bool bool_value) : bool_value(bool_value) {}
 
 PermissionValue::PermissionValue(TriState tristate_value)
@@ -80,14 +91,13 @@ bool Permission::IsPermissionEnabled() const {
 
 std::string Permission::ToString() const {
   std::stringstream out;
-  out << " permission type: " << static_cast<int>(permission_type);
+  out << " permission type: " << EnumToString(permission_type);
   out << " value: " << std::endl;
   if (value && value->bool_value.has_value()) {
     out << " bool_value: " << (value->bool_value.value() ? "true" : "false");
   }
   if (value && value->tristate_value.has_value()) {
-    out << " tristate_value: "
-        << static_cast<int>(value->tristate_value.value());
+    out << " tristate_value: " << EnumToString(value->tristate_value.value());
   }
   out << " is_managed: " << (is_managed ? "true" : "false") << std::endl;
   return out.str();
