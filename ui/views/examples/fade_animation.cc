@@ -57,7 +57,8 @@ FadingView::FadingView() {
               .CopyAddressTo(&primary_view_)
               .SetBorder(CreateRoundedRectBorder(1, kCornerRadius,
                                                  gfx::kGoogleGrey900))
-              .SetBackground(CreateRoundedRectBackground(SK_ColorWHITE, 12.0f))
+              .SetBackground(
+                  CreateRoundedRectBackground(SK_ColorWHITE, kCornerRadius, 1))
               .SetPaintToLayer()
               .SetOrientation(BoxLayout::Orientation::kVertical)
               .SetMainAxisAlignment(BoxLayout::MainAxisAlignment::kCenter)
@@ -76,7 +77,8 @@ FadingView::FadingView() {
               .CopyAddressTo(&secondary_view_)
               .SetBorder(CreateRoundedRectBorder(1, kCornerRadius,
                                                  gfx::kGoogleGrey900))
-              .SetBackground(CreateRoundedRectBackground(SK_ColorWHITE, 12.0f))
+              .SetBackground(
+                  CreateRoundedRectBackground(SK_ColorWHITE, kCornerRadius, 1))
               .SetPaintToLayer()
               .SetOrientation(BoxLayout::Orientation::kVertical)
               .SetMainAxisAlignment(BoxLayout::MainAxisAlignment::kCenter)

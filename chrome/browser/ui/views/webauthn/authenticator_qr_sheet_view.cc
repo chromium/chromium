@@ -48,7 +48,7 @@ class AuthenticatorQRViewCentered : public views::View {
     qr_code_image_->SetPreferredSize(qrCodeImageSize() +
                                      gfx::Size(kQrCodeMargin, kQrCodeMargin));
     qr_code_image_->SetBackground(
-        views::CreateRoundedRectBackground(SK_ColorWHITE, border_radius));
+        views::CreateRoundedRectBackground(SK_ColorWHITE, border_radius, 2));
 
     qrcode_generator::mojom::GenerateQRCodeRequestPtr request =
         qrcode_generator::mojom::GenerateQRCodeRequest::New();

@@ -71,9 +71,13 @@ class VIEWS_EXPORT Background {
 VIEWS_EXPORT std::unique_ptr<Background> CreateSolidBackground(SkColor color);
 
 // Creates a background that fills the canvas with rounded corners.
+// If using a rounded rect border as well, pass its radius as `radius` and its
+// thickness as `for_border_thickness`.  This will inset the background properly
+// so it doesn't bleed through the border.
 VIEWS_EXPORT std::unique_ptr<Background> CreateRoundedRectBackground(
     SkColor color,
-    float radius);
+    float radius,
+    int for_border_thickness = 0);
 
 // Creates a background that fills the canvas in the color specified by the
 // view's ColorProvider and the given color identifier.

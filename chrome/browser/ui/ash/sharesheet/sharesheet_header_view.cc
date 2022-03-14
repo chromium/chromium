@@ -106,7 +106,8 @@ class SharesheetHeaderView::SharesheetImagePreview : public views::View {
                                   color_provider->IsDarkModeEnabled(),
                                   /*use_debug_colors=*/false),
         views::LayoutProvider::Get()->GetCornerRadiusMetric(
-            views::Emphasis::kMedium)));
+            views::Emphasis::kMedium),
+        1));
     SetLayoutManager(std::make_unique<views::BoxLayout>(
         views::BoxLayout::Orientation::kVertical,
         /* inside_border_insets */ gfx::Insets(),

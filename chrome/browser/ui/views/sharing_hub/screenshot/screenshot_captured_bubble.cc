@@ -116,7 +116,7 @@ void ScreenshotCapturedBubble::Init() {
                               GetImageSize() +
                               gfx::Size(border_radius, border_radius))
                           .SetBackground(views::CreateRoundedRectBackground(
-                              SK_ColorWHITE, border_radius))
+                              SK_ColorWHITE, border_radius, 2))
                           .SetImage(image_.ToImageSkia())
                           .SetVisible(true)
                           .CopyAddressTo(&image_view_)));

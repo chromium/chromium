@@ -79,7 +79,7 @@ gfx::Size SolidSidedBorder::GetMinimumSize() const {
 class RoundedRectBorder : public Border {
  public:
   RoundedRectBorder(int thickness,
-                    int corner_radius,
+                    float corner_radius,
                     const gfx::Insets& paint_insets,
                     SkColor color);
 
@@ -93,12 +93,12 @@ class RoundedRectBorder : public Border {
 
  private:
   const int thickness_;
-  const int corner_radius_;
+  const float corner_radius_;
   const gfx::Insets paint_insets_;
 };
 
 RoundedRectBorder::RoundedRectBorder(int thickness,
-                                     int corner_radius,
+                                     float corner_radius,
                                      const gfx::Insets& paint_insets,
                                      SkColor color)
     : Border(color),
@@ -113,11 +113,11 @@ void RoundedRectBorder::Paint(const View& view, gfx::Canvas* canvas) {
   flags.setStyle(cc::PaintFlags::kStroke_Style);
   flags.setAntiAlias(true);
 
-  float half_thickness = thickness_ / 2.0f;
+  const float half_thickness = thickness_ / 2.0f;
   gfx::RectF bounds(view.GetLocalBounds());
   bounds.Inset(paint_insets_);
   bounds.Inset(half_thickness, half_thickness);
-  canvas->DrawRoundRect(bounds, corner_radius_, flags);
+  canvas->DrawRoundRect(bounds, corner_radius_ - half_thickness, flags);
 }
 
 gfx::Insets RoundedRectBorder::GetInsets() const {
@@ -249,13 +249,13 @@ std::unique_ptr<Border> CreateEmptyBorder(const gfx::Insets& insets) {
 }
 
 std::unique_ptr<Border> CreateRoundedRectBorder(int thickness,
-                                                int corner_radius,
+                                                float corner_radius,
                                                 SkColor color) {
   return CreateRoundedRectBorder(thickness, corner_radius, gfx::Insets(),
                                  color);
 }
 std::unique_ptr<Border> CreateRoundedRectBorder(int thickness,
-                                                int corner_radius,
+                                                float corner_radius,
                                                 const gfx::Insets& paint_insets,
                                                 SkColor color) {
   return std::make_unique<RoundedRectBorder>(thickness, corner_radius,

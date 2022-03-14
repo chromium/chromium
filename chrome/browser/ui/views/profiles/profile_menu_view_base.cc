@@ -1002,7 +1002,7 @@ void ProfileMenuViewBase::BuildSyncInfoCallToActionBackground(
   const int radius = views::LayoutProvider::Get()->GetCornerRadiusMetric(
       views::Emphasis::kHigh);
   sync_info_container_->SetBackground(views::CreateRoundedRectBackground(
-      color_provider->GetColor(background_color_id), radius));
+      color_provider->GetColor(background_color_id), radius, 1));
   sync_info_container_->SetBorder(views::CreatePaddedBorder(
       views::CreateRoundedRectBorder(
           1, radius, color_provider->GetColor(ui::kColorMenuSeparator)),

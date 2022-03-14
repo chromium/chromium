@@ -83,12 +83,12 @@ VIEWS_EXPORT std::unique_ptr<Border> CreateSolidBorder(int thickness,
 
 // Creates a border that is a rounded rectangle of the specified thickness and
 // color.
-VIEWS_EXPORT std::unique_ptr<Border> CreateRoundedRectBorder(int thickness,
-                                                             int corner_radius,
-                                                             SkColor color);
+// NOTE: `corner_radius` is an OUTER EDGE RADIUS, not a stroke radius!
+VIEWS_EXPORT std::unique_ptr<Border>
+CreateRoundedRectBorder(int thickness, float corner_radius, SkColor color);
 VIEWS_EXPORT std::unique_ptr<Border> CreateRoundedRectBorder(
     int thickness,
-    int corner_radius,
+    float corner_radius,
     const gfx::Insets& paint_insets,
     SkColor color);
 

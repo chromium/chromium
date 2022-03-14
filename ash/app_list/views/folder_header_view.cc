@@ -96,7 +96,8 @@ class FolderHeaderView::FolderNameView : public views::Textfield,
 
     const bool is_active = has_mouse_already_entered_ || HasFocus();
     SetBackground(views::CreateRoundedRectBackground(
-        GetFolderBackgroundColor(is_active), kFolderNameBorderRadius));
+        GetFolderBackgroundColor(is_active), kFolderNameBorderRadius,
+        kFolderNameBorderThickness));
 
     AppListColorProvider* color_provider = AppListColorProvider::Get();
     const SkColor text_color = color_provider->GetFolderTitleTextColor();

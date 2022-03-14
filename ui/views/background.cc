@@ -44,7 +44,8 @@ class SolidBackground : public Background {
 // rounded corners.
 class RoundedRectBackground : public Background {
  public:
-  RoundedRectBackground(SkColor color, float radius) : radius_(radius) {
+  RoundedRectBackground(SkColor color, float radius, int for_border_thickness)
+      : radius_(radius), half_thickness_(for_border_thickness / 2.0f) {
     SetNativeControlColor(color);
   }
 
@@ -56,11 +57,14 @@ class RoundedRectBackground : public Background {
     flags.setAntiAlias(true);
     flags.setStyle(cc::PaintFlags::kFill_Style);
     flags.setColor(get_color());
-    canvas->DrawRoundRect(gfx::RectF(view->GetLocalBounds()), radius_, flags);
+    gfx::RectF bounds(view->GetLocalBounds());
+    bounds.Inset(half_thickness_);
+    canvas->DrawRoundRect(bounds, radius_ - half_thickness_, flags);
   }
 
  private:
   float radius_;
+  float half_thickness_;
 };
 
 // ThemedVectorIconBackground is an image drawn on the view's background using
@@ -158,9 +162,12 @@ std::unique_ptr<Background> CreateSolidBackground(SkColor color) {
   return std::make_unique<SolidBackground>(color);
 }
 
-std::unique_ptr<Background> CreateRoundedRectBackground(SkColor color,
-                                                        float radius) {
-  return std::make_unique<RoundedRectBackground>(color, radius);
+std::unique_ptr<Background> CreateRoundedRectBackground(
+    SkColor color,
+    float radius,
+    int for_border_thickness) {
+  return std::make_unique<RoundedRectBackground>(color, radius,
+                                                 for_border_thickness);
 }
 
 std::unique_ptr<Background> CreateThemedVectorIconBackground(

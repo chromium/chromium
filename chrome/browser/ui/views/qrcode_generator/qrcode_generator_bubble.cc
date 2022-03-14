@@ -228,7 +228,7 @@ void QRCodeGeneratorBubble::Init() {
   qr_code_image->SetPreferredSize(GetQRCodeImageSize() +
                                   gfx::Size(border_radius, border_radius));
   qr_code_image->SetBackground(
-      views::CreateRoundedRectBackground(SK_ColorWHITE, border_radius));
+      views::CreateRoundedRectBackground(SK_ColorWHITE, border_radius, 2));
   qr_code_image->SetProperty(views::kCrossAxisAlignmentKey,
                              views::LayoutAlignment::kCenter);
 
