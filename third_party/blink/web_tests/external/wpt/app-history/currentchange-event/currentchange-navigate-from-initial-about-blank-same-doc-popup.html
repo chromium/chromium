@@ -4,7 +4,7 @@
 <script>
 promise_test(async t => {
   const w = window.open("about:blank#1");
-  w.appHistory.oncurrentchange = t.unreached_func("currentchange should not fire");
+  w.navigation.oncurrententrychange = t.unreached_func("currententrychange should not fire");
 
   assert_equals(w.location.href, "about:blank#1");
   w.location.href = "about:blank#2";

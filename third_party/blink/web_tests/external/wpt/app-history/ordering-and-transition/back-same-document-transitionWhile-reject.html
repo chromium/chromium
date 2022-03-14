@@ -2,7 +2,7 @@
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
 <meta name="variant" content="">
-<meta name="variant" content="?currentchange">
+<meta name="variant" content="?currententrychange">
 
 <script type="module">
 import { Recorder, hasVariant } from "./resources/helpers.mjs";
@@ -11,23 +11,23 @@ promise_test(async t => {
   // Wait for after the load event so that the navigation doesn't get converted
   // into a replace navigation.
   await new Promise(resolve => window.onload = () => t.step_timeout(resolve, 0));
-  await appHistory.navigate("#1").finished;
+  await navigation.navigate("#1").finished;
 
-  const from = appHistory.current;
+  const from = navigation.currentEntry;
   const expectedError = new Error("boo");
 
   const recorder = new Recorder({
-    skipCurrentChange: !hasVariant("currentchange"),
+    skipCurrentChange: !hasVariant("currententrychange"),
     finalExpectedEvent: "transition.finished rejected"
   });
 
   recorder.setUpAppHistoryListeners();
 
-  appHistory.addEventListener("navigate", e => {
+  navigation.addEventListener("navigate", e => {
     e.transitionWhile(Promise.reject(expectedError));
   });
 
-  const result = appHistory.back();
+  const result = navigation.back();
   recorder.setUpResultListeners(result);
 
   Promise.resolve().then(() => recorder.record("promise microtask"));
@@ -35,10 +35,10 @@ promise_test(async t => {
   await recorder.readyToAssert;
 
   recorder.assert([
-    /* event name, location.hash value, appHistory.transition properties */
+    /* event name, location.hash value, navigation.transition properties */
     ["promise microtask", "#1", null],
     ["navigate", "#1", null],
-    ["currentchange", "", { from, navigationType: "traverse" }],
+    ["currententrychange", "", { from, navigationType: "traverse" }],
     ["committed fulfilled", "", { from, navigationType: "traverse" }],
     ["navigateerror", "", { from, navigationType: "traverse" }],
     ["finished rejected", "", null],
@@ -46,5 +46,5 @@ promise_test(async t => {
   ]);
 
   recorder.assertErrorsAre(expectedError);
-}, "event and promise ordering for same-document appHistory.back() intercepted by passing a rejected promise to transitionWhile()");
+}, "event and promise ordering for same-document navigation.back() intercepted by passing a rejected promise to transitionWhile()");
 </script>

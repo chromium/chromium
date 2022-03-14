@@ -6,7 +6,7 @@
 <script>
 async_test(t => {
   window.onload = t.step_func(() => {
-    let key_before_replace = i.contentWindow.appHistory.current.key;
+    let key_before_replace = i.contentWindow.navigation.currentEntry.key;
     window.onmessage = t.step_func_done(e => assert_not_equals(key_before_replace, e.data));
 
     let cross_origin_url = new URL("resources/post-key-to-top.html", location.href);

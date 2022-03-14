@@ -48,7 +48,7 @@ class CORE_EXPORT AppHistory final : public EventTargetWithInlineData,
 
  public:
   static const char kSupplementName[];
-  static AppHistory* appHistory(LocalDOMWindow&);
+  static AppHistory* navigation(LocalDOMWindow&);
   // Unconditionally creates AppHistory, even if the RuntimeEnabledFeatures is
   // disabled.
   static AppHistory* From(LocalDOMWindow&);
@@ -67,9 +67,9 @@ class CORE_EXPORT AppHistory final : public EventTargetWithInlineData,
   bool HasOngoingNavigation() const { return ongoing_navigation_signal_; }
 
   // Web-exposed:
-  AppHistoryEntry* current() const;
+  AppHistoryEntry* currentEntry() const;
   HeapVector<Member<AppHistoryEntry>> entries();
-  void updateCurrent(AppHistoryUpdateCurrentOptions*, ExceptionState&);
+  void updateCurrentEntry(AppHistoryUpdateCurrentOptions*, ExceptionState&);
   AppHistoryTransition* transition() const { return transition_; }
 
   bool canGoBack() const;
@@ -80,9 +80,9 @@ class CORE_EXPORT AppHistory final : public EventTargetWithInlineData,
                              AppHistoryNavigateOptions*);
   AppHistoryResult* reload(ScriptState*, AppHistoryReloadOptions*);
 
-  AppHistoryResult* goTo(ScriptState*,
-                         const String& key,
-                         AppHistoryNavigationOptions*);
+  AppHistoryResult* traverseTo(ScriptState*,
+                               const String& key,
+                               AppHistoryNavigationOptions*);
   AppHistoryResult* back(ScriptState*, AppHistoryNavigationOptions*);
   AppHistoryResult* forward(ScriptState*, AppHistoryNavigationOptions*);
 
@@ -95,7 +95,7 @@ class CORE_EXPORT AppHistory final : public EventTargetWithInlineData,
 
   DEFINE_ATTRIBUTE_EVENT_LISTENER(navigatesuccess, kNavigatesuccess)
   DEFINE_ATTRIBUTE_EVENT_LISTENER(navigateerror, kNavigateerror)
-  DEFINE_ATTRIBUTE_EVENT_LISTENER(currentchange, kCurrentchange)
+  DEFINE_ATTRIBUTE_EVENT_LISTENER(currententrychange, kCurrententrychange)
 
   enum class DispatchResult { kContinue, kAbort, kTransitionWhile };
   DispatchResult DispatchNavigateEvent(const KURL& url,
@@ -151,7 +151,7 @@ class CORE_EXPORT AppHistory final : public EventTargetWithInlineData,
 
   HeapVector<Member<AppHistoryEntry>> entries_;
   HashMap<String, int> keys_to_indices_;
-  int current_index_ = -1;
+  int current_entry_index_ = -1;
 
   Member<AppHistoryTransition> transition_;
 

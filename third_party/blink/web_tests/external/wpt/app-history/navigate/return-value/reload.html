@@ -8,7 +8,7 @@
 promise_test(async t => {
   await new Promise(resolve => window.onload = resolve);
 
-  const result = i.contentWindow.appHistory.reload();
+  const result = i.contentWindow.navigation.reload();
   assertNeverSettles(t, result, i.contentWindow);
 
   await new Promise(resolve => i.onload = () => t.step_timeout(resolve, 0));

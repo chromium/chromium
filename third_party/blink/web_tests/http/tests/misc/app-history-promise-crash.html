@@ -8,7 +8,7 @@ if (window.testRunner)
   testRunner.dumpAsText();
 
 window.onload = () => {
-  let promise = i.contentWindow.appHistory.navigate("?1");
+  let promise = i.contentWindow.navigation.navigate("?1");
   gc();
 }
 </script>

@@ -5,11 +5,11 @@
 <script>
 async_test(t => {
   window.onload = t.step_func(() => {
-    let target_key = i.contentWindow.appHistory.current.key;
-    let target_id = i.contentWindow.appHistory.current.id;
-    i.contentWindow.appHistory.navigate("?foo");
+    let target_key = i.contentWindow.navigation.currentEntry.key;
+    let target_id = i.contentWindow.navigation.currentEntry.id;
+    i.contentWindow.navigation.navigate("?foo");
     i.onload = t.step_func(() => {
-      i.contentWindow.appHistory.onnavigate = t.step_func_done(e => {
+      i.contentWindow.navigation.onnavigate = t.step_func_done(e => {
         assert_equals(e.navigationType, "traverse");
         assert_false(e.cancelable);
         assert_false(e.canTransition);
@@ -23,9 +23,9 @@ async_test(t => {
         assert_equals(e.formData, null);
         assert_equals(e.info, "hi");
       });
-      assert_true(i.contentWindow.appHistory.canGoBack);
-      i.contentWindow.appHistory.back({ info: "hi" });
+      assert_true(i.contentWindow.navigation.canGoBack);
+      i.contentWindow.navigation.back({ info: "hi" });
     })
   });
-}, "navigate event for appHistory.back() - cross-document");
+}, "navigate event for navigation.back() - cross-document");
 </script>

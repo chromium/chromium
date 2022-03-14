@@ -3,11 +3,11 @@
 <script src="/resources/testharnessreport.js"></script>
 <script>
 test(t => {
-  const entriesBefore = appHistory.entries();
-  const currentBefore = appHistory.current;
+  const entriesBefore = navigation.entries();
+  const currentBefore = navigation.currentEntry;
 
   let disposeCalled = false;
-  appHistory.current.ondispose = t.step_func(e => {
+  navigation.currentEntry.ondispose = t.step_func(e => {
     disposeCalled = true;
 
     assert_equals(e.constructor, Event);
@@ -15,10 +15,10 @@ test(t => {
     assert_equals(e.cancelable, false);
     assert_equals(e.composed, false);
 
-    assert_not_equals(appHistory.current, currentBefore);
-    assert_array_equals(appHistory.entries(), [appHistory.current]);
-    assert_equals((new URL(appHistory.current.url)).search, "?replacement");
-    assert_equals(appHistory.transition, null);
+    assert_not_equals(navigation.currentEntry, currentBefore);
+    assert_array_equals(navigation.entries(), [navigation.currentEntry]);
+    assert_equals((new URL(navigation.currentEntry.url)).search, "?replacement");
+    assert_equals(navigation.transition, null);
     assert_equals(location.search, "?replacement");
   });
 

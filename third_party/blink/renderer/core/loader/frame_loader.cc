@@ -434,7 +434,7 @@ void FrameLoader::DidFinishNavigation(NavigationFinishState state) {
     // JS-provided promise to resolve, so check it as well.
     if (!document_loader_->SentDidFinishLoad() || HasProvisionalNavigation())
       return;
-    if (auto* app_history = AppHistory::appHistory(*frame_->DomWindow())) {
+    if (auto* app_history = AppHistory::navigation(*frame_->DomWindow())) {
       if (app_history->HasOngoingNavigation())
         return;
     }
@@ -753,7 +753,7 @@ void FrameLoader::StartNavigation(FrameLoadRequest& request,
     return;
   }
 
-  if (auto* app_history = AppHistory::appHistory(*frame_->DomWindow())) {
+  if (auto* app_history = AppHistory::navigation(*frame_->DomWindow())) {
     if (request.GetNavigationPolicy() == kNavigationPolicyCurrentTab &&
         (!origin_window || origin_window->GetSecurityOrigin()->CanAccess(
                                frame_->DomWindow()->GetSecurityOrigin()))) {
@@ -998,7 +998,7 @@ void FrameLoader::CommitNavigation(
   if (!CancelProvisionalLoaderForNewNavigation())
     return;
 
-  if (auto* app_history = AppHistory::appHistory(*frame_->DomWindow())) {
+  if (auto* app_history = AppHistory::navigation(*frame_->DomWindow())) {
     if (navigation_params->frame_load_type == WebFrameLoadType::kBackForward) {
       auto result = app_history->DispatchNavigateEvent(
           navigation_params->url, nullptr, NavigateEventType::kCrossDocument,
@@ -1159,7 +1159,7 @@ void FrameLoader::StopAllLoaders(bool abort_client) {
   }
 
   frame_->GetDocument()->CancelParsing();
-  if (auto* app_history = AppHistory::appHistory(*frame_->DomWindow()))
+  if (auto* app_history = AppHistory::navigation(*frame_->DomWindow()))
     app_history->InformAboutCanceledNavigation();
   if (document_loader_)
     document_loader_->StopLoading();
@@ -1483,7 +1483,7 @@ bool FrameLoader::ShouldClose(bool is_reload) {
         frame_->GetDocument());
     if (!frame_->GetDocument()->DispatchBeforeUnloadEvent(
             &page->GetChromeClient(), is_reload, did_allow_navigation)) {
-      if (auto* app_history = AppHistory::appHistory(*frame_->DomWindow()))
+      if (auto* app_history = AppHistory::navigation(*frame_->DomWindow()))
         app_history->InformAboutCanceledNavigation();
       return false;
     }
@@ -1507,7 +1507,7 @@ bool FrameLoader::ShouldClose(bool is_reload) {
               descendant_frame->GetDocument());
       if (!descendant_frame->GetDocument()->DispatchBeforeUnloadEvent(
               &page->GetChromeClient(), is_reload, did_allow_navigation)) {
-        if (auto* app_history = AppHistory::appHistory(*frame_->DomWindow()))
+        if (auto* app_history = AppHistory::navigation(*frame_->DomWindow()))
           app_history->InformAboutCanceledNavigation();
         return false;
       }
@@ -1580,7 +1580,7 @@ void FrameLoader::ClearClientNavigation() {
 void FrameLoader::CancelClientNavigation() {
   if (!client_navigation_)
     return;
-  if (auto* app_history = AppHistory::appHistory(*frame_->DomWindow()))
+  if (auto* app_history = AppHistory::navigation(*frame_->DomWindow()))
     app_history->InformAboutCanceledNavigation();
   ResourceError error = ResourceError::CancelledError(client_navigation_->url);
   ClearClientNavigation();

@@ -5,7 +5,7 @@
 <iframe id="i" src="/common/blank.html"></iframe>
 <script>
 async_test(t => {
-  // The navigations in each window should have only added an appHistory to
+  // The navigations in each window should have only added an navigation to
   // their own window.
   function assertExpectedEntries(entries, expected_url) {
     assert_equals(entries.length, 2);
@@ -25,10 +25,10 @@ async_test(t => {
   window.onload = () => t.step_timeout(t.step_func(() => {
     location.hash = "#1";
     i.onload = t.step_func_done(() => {
-      assertExpectedEntries(appHistory.entries(), location.href);
-      assertExpectedEntries(i.contentWindow.appHistory.entries(), i.contentWindow.location.href);
+      assertExpectedEntries(navigation.entries(), location.href);
+      assertExpectedEntries(i.contentWindow.navigation.entries(), i.contentWindow.location.href);
     });
     i.contentWindow.location = "/common/blank.html?2";
   }), 0);
-}, "appHistory.entries() behavior when multiple windows navigate.");
+}, "navigation.entries() behavior when multiple windows navigate.");
 </script>

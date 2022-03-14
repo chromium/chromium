@@ -11,18 +11,18 @@ promise_test(async t => {
 
   location.href = "#1";
 
-  assert_equals(appHistory.entries().length, 2);
-  const [entry0, entry1] = appHistory.entries();
+  assert_equals(navigation.entries().length, 2);
+  const [entry0, entry1] = navigation.entries();
   assert_equals((new URL(entry0.url)).hash, "");
   assert_equals((new URL(entry1.url)).hash, "#1");
 
-  await appHistory.back().committed;
+  await navigation.back().committed;
 
   const promise = Promise.resolve({ abc: "def" });
-  appHistory.onnavigate = e => e.transitionWhile(promise);
+  navigation.onnavigate = e => e.transitionWhile(promise);
 
-  const result = appHistory.forward();
+  const result = navigation.forward();
   await assertBothFulfill(t, result, entry1);
-  assert_equals(appHistory.current, entry1);
+  assert_equals(navigation.currentEntry, entry1);
 }, "forward() and transitionWhile() with a fulfilled promise");
 </script>

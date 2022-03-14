@@ -7,14 +7,14 @@ async_test(t => {
   // into a replace navigation.
   window.onload = () => t.step_timeout(t.step_func_done(async () => {
     let start_history_length = history.length;
-    let key1 = appHistory.current.key;
-    await appHistory.navigate("#1").committed;
-    let key2 = appHistory.current.key;
+    let key1 = navigation.currentEntry.key;
+    await navigation.navigate("#1").committed;
+    let key2 = navigation.currentEntry.key;
     assert_not_equals(key1, key2);
-    await appHistory.navigate("#2", { replace: true }).committed;
-    let key3 = appHistory.current.key;
+    await navigation.navigate("#2", { replace: true }).committed;
+    let key3 = navigation.currentEntry.key;
     assert_equals(key2, key3);
-    assert_equals(appHistory.entries().length, 2);
+    assert_equals(navigation.entries().length, 2);
     assert_equals(history.length, start_history_length + 1);
   }), 0);
 }, "navigate() with replace option");

@@ -22,11 +22,11 @@ promise_test(async t => {
   decoy.focus();
   assert_equals(document.activeElement, decoy, "focus() worked");
 
-  appHistory.addEventListener("navigate", e => {
+  navigation.addEventListener("navigate", e => {
     e.transitionWhile(Promise.resolve());
   }, { once: true });
 
-  const { committed, finished } = appHistory.navigate("#1");
+  const { committed, finished } = navigation.navigate("#1");
 
   await committed;
   assert_equals(document.activeElement, decoy, "Focus stays on the non-autofocused button during the transition");
@@ -43,11 +43,11 @@ promise_test(async t => {
   decoy.focus();
   assert_equals(document.activeElement, decoy, "focus() worked");
 
-  appHistory.addEventListener("navigate", e => {
+  navigation.addEventListener("navigate", e => {
     e.transitionWhile(Promise.resolve());
   }, { once: true });
 
-  const { committed, finished } = appHistory.navigate("#1");
+  const { committed, finished } = navigation.navigate("#1");
 
   await committed;
   assert_equals(document.activeElement, decoy, "Focus stays on the initially-focused button during the transition");
@@ -64,11 +64,11 @@ promise_test(async t => {
   decoy.focus();
   assert_equals(document.activeElement, decoy, "focus() worked");
 
-  appHistory.addEventListener("navigate", e => {
+  navigation.addEventListener("navigate", e => {
     e.transitionWhile(Promise.resolve());
   }, { once: true });
 
-  const { committed, finished } = appHistory.navigate("#1");
+  const { committed, finished } = navigation.navigate("#1");
 
   await committed;
   assert_equals(document.activeElement, decoy, "Focus stays on the non-autofocused button during the transition");
@@ -87,11 +87,11 @@ promise_test(async t => {
   decoy.focus();
   assert_equals(document.activeElement, decoy, "focus() worked");
 
-  appHistory.addEventListener("navigate", e => {
+  navigation.addEventListener("navigate", e => {
     e.transitionWhile(Promise.resolve());
   }, { once: true });
 
-  const { committed, finished } = appHistory.navigate("#1");
+  const { committed, finished } = navigation.navigate("#1");
 
   await committed;
   assert_equals(document.activeElement, decoy, "Focus stays on the non-autofocused button during the transition");
@@ -110,11 +110,11 @@ promise_test(async t => {
   decoy.focus();
   assert_equals(document.activeElement, decoy, "focus() worked");
 
-  appHistory.addEventListener("navigate", e => {
+  navigation.addEventListener("navigate", e => {
     e.transitionWhile(Promise.resolve());
   }, { once: true });
 
-  const { committed, finished } = appHistory.navigate("#1");
+  const { committed, finished } = navigation.navigate("#1");
 
   await committed;
   assert_equals(document.activeElement, decoy, "Focus stays on the initially-focused button during the transition");
@@ -133,11 +133,11 @@ promise_test(async t => {
   decoy.focus();
   assert_equals(document.activeElement, decoy, "focus() worked");
 
-  appHistory.addEventListener("navigate", e => {
+  navigation.addEventListener("navigate", e => {
     e.transitionWhile(Promise.resolve());
   }, { once: true });
 
-  const { committed, finished } = appHistory.navigate("#1");
+  const { committed, finished } = navigation.navigate("#1");
 
   await committed;
   assert_equals(document.activeElement, decoy, "Focus stays on the non-autofocused button during the transition");
@@ -155,11 +155,11 @@ promise_test(async t => {
   decoy.focus();
   assert_equals(document.activeElement, decoy, "focus() worked");
 
-  appHistory.addEventListener("navigate", e => {
+  navigation.addEventListener("navigate", e => {
     e.transitionWhile(Promise.resolve());
   }, { once: true });
 
-  const { committed, finished } = appHistory.navigate("#1");
+  const { committed, finished } = navigation.navigate("#1");
 
   await committed;
   assert_equals(document.activeElement, decoy, "Focus stays on the non-autofocused button during the transition");

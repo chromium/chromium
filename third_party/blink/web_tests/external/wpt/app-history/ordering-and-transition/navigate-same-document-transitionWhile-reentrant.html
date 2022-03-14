@@ -2,7 +2,7 @@
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
 <meta name="variant" content="">
-<meta name="variant" content="?currentchange">
+<meta name="variant" content="?currententrychange">
 
 <script type="module">
 import { Recorder, hasVariant } from "./resources/helpers.mjs";
@@ -12,28 +12,28 @@ promise_test(async t => {
   // into a replace navigation.
   await new Promise(resolve => window.onload = () => t.step_timeout(resolve, 0));
 
-  const from = appHistory.current;
+  const from = navigation.currentEntry;
   let firstNavigate = true;
 
   const recorder = new Recorder({
-    skipCurrentChange: !hasVariant("currentchange"),
+    skipCurrentChange: !hasVariant("currententrychange"),
     finalExpectedEvent: "transition.finished fulfilled"
   });
 
   recorder.setUpAppHistoryListeners();
 
-  appHistory.addEventListener("navigate", e => {
+  navigation.addEventListener("navigate", e => {
     e.transitionWhile(new Promise(resolve => t.step_timeout(resolve, 2)));
 
     if (firstNavigate) {
       firstNavigate = false;
 
-      const result2 = appHistory.navigate("#2");
+      const result2 = navigation.navigate("#2");
       recorder.setUpResultListeners(result2, " 2");
     }
   });
 
-  const result1 = appHistory.navigate("#1");
+  const result1 = navigation.navigate("#1");
   recorder.setUpResultListeners(result1, " 1");
 
   Promise.resolve().then(() => recorder.record("promise microtask"));
@@ -41,13 +41,13 @@ promise_test(async t => {
   await recorder.readyToAssert;
 
   recorder.assert([
-    /* event name, location.hash value, appHistory.transition properties */
+    /* event name, location.hash value, navigation.transition properties */
     ["navigate", "", null],
     ["AbortSignal abort", "", null],
     ["navigateerror", "", null],
 
     ["navigate", "", null],
-    ["currentchange", "#2", { from, navigationType: "push" }],
+    ["currententrychange", "#2", { from, navigationType: "push" }],
     ["committed fulfilled 2", "#2", { from, navigationType: "push" }],
     ["committed rejected 1", "#2", { from, navigationType: "push" }],
     ["finished rejected 1", "#2", { from, navigationType: "push" }],
@@ -58,5 +58,5 @@ promise_test(async t => {
   ]);
 
   recorder.assertErrorsAreAbortErrors();
-}, "event and promise ordering for same-document appHistory.navigate() inside the navigate handler");
+}, "event and promise ordering for same-document navigation.navigate() inside the navigate handler");
 </script>

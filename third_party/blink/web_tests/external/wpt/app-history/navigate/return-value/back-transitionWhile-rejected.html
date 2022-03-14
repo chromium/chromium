@@ -11,18 +11,18 @@ promise_test(async t => {
 
   location.href = "#1";
 
-  assert_equals(appHistory.entries().length, 2);
-  const [entry0, entry1] = appHistory.entries();
+  assert_equals(navigation.entries().length, 2);
+  const [entry0, entry1] = navigation.entries();
   assert_equals((new URL(entry0.url)).hash, "");
   assert_equals((new URL(entry1.url)).hash, "#1");
 
   const err = new Error("boo!");
   const promise = Promise.reject(err);
   promise.catch(() => {}); // prevent unhandled rejection testharness.js errors
-  appHistory.onnavigate = e => e.transitionWhile(promise);
+  navigation.onnavigate = e => e.transitionWhile(promise);
 
-  const result = appHistory.back();
+  const result = navigation.back();
   await assertCommittedFulfillsFinishedRejectsExactly(t, result, entry0, err);
-  assert_equals(appHistory.current, entry0);
+  assert_equals(navigation.currentEntry, entry0);
 }, "back() promise rejection with rejected transitionWhile()");
 </script>

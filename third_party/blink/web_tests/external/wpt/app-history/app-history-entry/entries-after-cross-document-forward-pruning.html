@@ -24,10 +24,10 @@ promise_test(async (t) => {
   i.contentWindow.location.search = "?fork";
   await new Promise(r => i.onload = () => t.step_timeout(r, 0));
 
-  const entries = i.contentWindow.appHistory.entries();
+  const entries = i.contentWindow.navigation.entries();
   const searches = entries.map(e => (new URL(e.url)).search);
   assert_array_equals(searches, ["", "?fork"]);
 
-  assert_equals(i.contentWindow.appHistory.entries().at(-1), i.contentWindow.appHistory.current);
-}, "appHistory.entries() behavior after forward-pruning due to cross-document navs");
+  assert_equals(i.contentWindow.navigation.entries().at(-1), i.contentWindow.navigation.currentEntry);
+}, "navigation.entries() behavior after forward-pruning due to cross-document navs");
 </script>

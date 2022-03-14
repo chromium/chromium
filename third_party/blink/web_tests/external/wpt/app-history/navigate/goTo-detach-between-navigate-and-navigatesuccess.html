@@ -12,35 +12,35 @@ async_test(t => {
     const iDOMException = iWindow.DOMException;
     const iAppHistoryEntry = iWindow.AppHistoryEntry;
 
-    i.contentWindow.appHistory.navigate("#1").finished.then(t.step_func(() => {
-      assert_equals(i.contentWindow.appHistory.entries().length, 2);
-      let key = i.contentWindow.appHistory.entries()[0].key;
+    i.contentWindow.navigation.navigate("#1").finished.then(t.step_func(() => {
+      assert_equals(i.contentWindow.navigation.entries().length, 2);
+      let key = i.contentWindow.navigation.entries()[0].key;
 
       let onnavigateerror_called = false;
       let result;
 
-      i.contentWindow.appHistory.onnavigate = t.step_func(e => {
+      i.contentWindow.navigation.onnavigate = t.step_func(e => {
         e.transitionWhile(new Promise(resolve => () => t.step_timeout(resolve, 2)));
         t.step_timeout(() => i.remove(), 1);
       });
 
-      i.contentWindow.appHistory.onnavigatesuccess = t.unreached_func("navigatesuccess must not fire");
+      i.contentWindow.navigation.onnavigatesuccess = t.unreached_func("navigatesuccess must not fire");
 
-      i.contentWindow.appHistory.onnavigateerror = t.step_func(e => {
+      i.contentWindow.navigation.onnavigateerror = t.step_func(e => {
         assert_false(onnavigateerror_called);
         onnavigateerror_called = true;
         assert_equals(e.filename, location.href);
         assert_greater_than(e.lineno, 0);
         assert_greater_than(e.colno, 0);
 
-        assertCommittedFulfillsFinishedRejectsExactly(t, result, iWindow.appHistory.current, e.error, iWindow, iDOMException, iAppHistoryEntry).then(
+        assertCommittedFulfillsFinishedRejectsExactly(t, result, iWindow.navigation.currentEntry, e.error, iWindow, iDOMException, iAppHistoryEntry).then(
           () => t.done(),
           t.step_func(err => { throw err; })
         );
       });
 
-      result = i.contentWindow.appHistory.goTo(key);
+      result = i.contentWindow.navigation.traverseTo(key);
     }));
   });
-}, "Detach a window between when a goTo() fires navigate and navigatesuccess");
+}, "Detach a window between when a traverseTo() fires navigate and navigatesuccess");
 </script>

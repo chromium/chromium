@@ -9,20 +9,20 @@ setup({ explicit_done: true });
 window.onload = () => {
   test(() => {
     assert_throws_dom("DataCloneError", iframe.contentWindow.DOMException, () => {
-      iframe.contentWindow.appHistory.updateCurrent({ state: new WritableStream() });
+      iframe.contentWindow.navigation.updateCurrentEntry({ state: new WritableStream() });
     });
-    assert_equals(appHistory.current.getState(), undefined);
-  }, "updateCurrent() must throw if state is unserializable (WritableStream)");
+    assert_equals(navigation.currentEntry.getState(), undefined);
+  }, "updateCurrentEntry() must throw if state is unserializable (WritableStream)");
 
   test(() => {
     // See https://github.com/whatwg/html/issues/5380 for why not `new SharedArrayBuffer()`
     const buffer = new WebAssembly.Memory({ shared:true, initial:1, maximum:1 }).buffer;
 
     assert_throws_dom("DataCloneError", iframe.contentWindow.DOMException, () => {
-      iframe.contentWindow.appHistory.updateCurrent({ state: buffer });
+      iframe.contentWindow.navigation.updateCurrentEntry({ state: buffer });
     });
-    assert_equals(appHistory.current.getState(), undefined);
-  }, "updateCurrent() must throw if state is unserializable (SharedArrayBuffer)");
+    assert_equals(navigation.currentEntry.getState(), undefined);
+  }, "updateCurrentEntry() must throw if state is unserializable (SharedArrayBuffer)");
 
   done();
 };

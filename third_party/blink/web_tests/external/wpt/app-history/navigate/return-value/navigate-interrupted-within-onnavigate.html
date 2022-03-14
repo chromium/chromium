@@ -10,19 +10,19 @@ promise_test(async t => {
   await new Promise(resolve => window.onload = () => t.step_timeout(resolve, 0));
 
   let result2;
-  appHistory.onnavigate = t.step_func(e => {
+  navigation.onnavigate = t.step_func(e => {
     if (e.info == 1) {
-      result2 = appHistory.navigate("#2", { info: 2 });
+      result2 = navigation.navigate("#2", { info: 2 });
       assert_true(e.defaultPrevented);
     }
   });
 
-  const result1 = appHistory.navigate("#1", { info: 1 });
+  const result1 = navigation.navigate("#1", { info: 1 });
 
-  assert_equals(appHistory.entries().length, 2);
-  assert_array_equals(appHistory.entries().map(e => (new URL(e.url)).hash), ["", "#2"]);
+  assert_equals(navigation.entries().length, 2);
+  assert_array_equals(navigation.entries().map(e => (new URL(e.url)).hash), ["", "#2"]);
 
   await assertBothRejectDOM(t, result1, "AbortError");
-  await assertBothFulfill(t, result2, appHistory.current);
+  await assertBothFulfill(t, result2, navigation.currentEntry);
 }, "if navigate() is called inside onnavigate, the previous navigation and navigate event are cancelled");
 </script>

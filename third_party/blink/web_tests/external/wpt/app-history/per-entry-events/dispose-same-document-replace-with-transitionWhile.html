@@ -8,11 +8,11 @@ promise_test(async (t) => {
   // automatically before the load event completes.
   await new Promise(r => window.onload = () => t.step_timeout(r, 0));
 
-  const entriesBefore = appHistory.entries();
-  const currentBefore = appHistory.current;
+  const entriesBefore = navigation.entries();
+  const currentBefore = navigation.currentEntry;
 
   let disposeCalled = false;
-  appHistory.current.ondispose = t.step_func(e => {
+  navigation.currentEntry.ondispose = t.step_func(e => {
     disposeCalled = true;
 
     assert_equals(e.constructor, Event);
@@ -20,17 +20,17 @@ promise_test(async (t) => {
     assert_equals(e.cancelable, false);
     assert_equals(e.composed, false);
 
-    assert_not_equals(appHistory.current, currentBefore);
-    assert_array_equals(appHistory.entries(), [appHistory.current]);
-    assert_equals((new URL(appHistory.current.url)).search, "?replacement");
-    assert_equals(appHistory.transition.navigationType, "replace");
-    assert_equals(appHistory.transition.from, entriesBefore[0]);
+    assert_not_equals(navigation.currentEntry, currentBefore);
+    assert_array_equals(navigation.entries(), [navigation.currentEntry]);
+    assert_equals((new URL(navigation.currentEntry.url)).search, "?replacement");
+    assert_equals(navigation.transition.navigationType, "replace");
+    assert_equals(navigation.transition.from, entriesBefore[0]);
     assert_equals(location.search, "?replacement");
   });
 
-  appHistory.addEventListener("navigate", e => e.transitionWhile(Promise.resolve()));
+  navigation.addEventListener("navigate", e => e.transitionWhile(Promise.resolve()));
 
-  appHistory.navigate("?replacement", { replace: true });
+  navigation.navigate("?replacement", { replace: true });
   assert_true(disposeCalled);
-}, "dispose events when doing a same-document replace using appHistory.navigate() and transitionWhile()");
+}, "dispose events when doing a same-document replace using navigation.navigate() and transitionWhile()");
 </script>

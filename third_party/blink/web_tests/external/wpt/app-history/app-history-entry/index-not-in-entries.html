@@ -8,13 +8,13 @@ async_test(t => {
   // into a replace navigation.
   window.onload = () => t.step_timeout(t.step_func_done(() => {
     // Remove the entry by replacing it.
-    let replaced_entry = appHistory.current;
+    let replaced_entry = navigation.currentEntry;
     assert_equals(replaced_entry.index, 0);
-    appHistory.navigate("#0", { replace: true });
+    navigation.navigate("#0", { replace: true });
     assert_equals(replaced_entry.index, -1);
 
     // Remove the entry by detaching its window.
-    let iframe_entry = i.contentWindow.appHistory.current;
+    let iframe_entry = i.contentWindow.navigation.currentEntry;
     assert_equals(iframe_entry.index, 0);
     i.remove();
     assert_equals(iframe_entry.index, -1);

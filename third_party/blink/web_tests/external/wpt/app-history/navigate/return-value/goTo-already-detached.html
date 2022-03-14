@@ -11,10 +11,10 @@ promise_test(async t => {
 
   const iWindow = i.contentWindow;
   const iDOMException = iWindow.DOMException;
-  const key = iWindow.appHistory.current.key;
+  const key = iWindow.navigation.currentEntry.key;
 
   i.remove();
 
-  await assertBothRejectDOM(t, iWindow.appHistory.goTo(key), "InvalidStateError", iWindow, iDOMException);
-}, "goTo() in a detached window");
+  await assertBothRejectDOM(t, iWindow.navigation.traverseTo(key), "InvalidStateError", iWindow, iDOMException);
+}, "traverseTo() in a detached window");
 </script>

@@ -17,9 +17,9 @@ promise_test(async t => {
 
   assert_equals(location.hash, "#1");
 
-  assert_equals(appHistory.current, null);
-  assert_equals(appHistory.entries().length, 0);
-  assert_false(appHistory.canGoBack);
-  assert_false(appHistory.canGoForward);
-}, "appHistory.current/entries()/canGoBack/canGoForward in an opaque origin iframe");
+  assert_equals(navigation.currentEntry, null);
+  assert_equals(navigation.entries().length, 0);
+  assert_false(navigation.canGoBack);
+  assert_false(navigation.canGoForward);
+}, "navigation.currentEntry/entries()/canGoBack/canGoForward in an opaque origin iframe");
 </script>

@@ -5,8 +5,8 @@
 
 <script>
 promise_test(async t => {
-  const result = appHistory.navigate("#1");
-  await assertBothFulfill(t, result, appHistory.current);
-  assert_equals((new URL(appHistory.current.url)).hash, "#1");
+  const result = navigation.navigate("#1");
+  await assertBothFulfill(t, result, navigation.currentEntry);
+  assert_equals((new URL(navigation.currentEntry.url)).hash, "#1");
 }, "navigate() promises");
 </script>

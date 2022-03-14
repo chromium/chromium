@@ -7,7 +7,7 @@
 async_test(t => {
   window.onload = t.step_func(() => {
     i.onload = t.step_func_done(() => {
-      let entries = i.contentWindow.appHistory.entries();
+      let entries = i.contentWindow.navigation.entries();
       assert_equals(entries.length, 2);
       assert_not_equals(entries[1].key, entries[0].key);
       assert_not_equals(entries[1].url, entries[0].url);

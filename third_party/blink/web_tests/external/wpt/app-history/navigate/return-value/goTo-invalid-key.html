@@ -5,6 +5,6 @@
 
 <script>
 promise_test(async t => {
-  await assertBothRejectDOM(t, appHistory.goTo("not a real key"), "InvalidStateError");
-}, "goTo() with invalid key");
+  await assertBothRejectDOM(t, navigation.traverseTo("not a real key"), "InvalidStateError");
+}, "traverseTo() with invalid key");
 </script>

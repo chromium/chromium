@@ -14,6 +14,6 @@ promise_test(async t => {
 
   i.remove();
 
-  await assertBothRejectDOM(t, iWindow.appHistory.reload(), "InvalidStateError", iWindow, iDOMException);
+  await assertBothRejectDOM(t, iWindow.navigation.reload(), "InvalidStateError", iWindow, iDOMException);
 }, "reload() in a detached window");
 </script>

@@ -5,7 +5,7 @@
 <script>
 test(t => {
   assert_throws_dom("InvalidStateError", () => {
-    appHistory.updateCurrent({ state: 1 });
+    navigation.updateCurrentEntry({ state: 1 });
   });
-}, "appHistory.updateCurrent() in an opaque origin iframe");
+}, "navigation.updateCurrentEntry() in an opaque origin iframe");
 </script>

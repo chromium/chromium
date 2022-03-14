@@ -5,10 +5,10 @@
 
 <script>
 promise_test(async t => {
-  appHistory.onnavigate = e => e.transitionWhile(Promise.resolve({ abc: 'def' }));
+  navigation.onnavigate = e => e.transitionWhile(Promise.resolve({ abc: 'def' }));
 
-  const result = appHistory.reload();
+  const result = navigation.reload();
 
-  await assertBothFulfill(t, result, appHistory.current);
+  await assertBothFulfill(t, result, navigation.currentEntry);
 }, "reload() and transitionWhile() with a fulfilled promise");
 </script>

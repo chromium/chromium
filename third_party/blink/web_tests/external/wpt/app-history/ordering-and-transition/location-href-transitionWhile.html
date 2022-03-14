@@ -2,7 +2,7 @@
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
 <meta name="variant" content="">
-<meta name="variant" content="?currentchange">
+<meta name="variant" content="?currententrychange">
 
 <script type="module">
 import { Recorder, hasVariant } from "./resources/helpers.mjs";
@@ -12,16 +12,16 @@ promise_test(async t => {
   // into a replace navigation.
   await new Promise(resolve => window.onload = () => t.step_timeout(resolve, 0));
 
-  const from = appHistory.current;
+  const from = navigation.currentEntry;
 
   const recorder = new Recorder({
-    skipCurrentChange: !hasVariant("currentchange"),
+    skipCurrentChange: !hasVariant("currententrychange"),
     finalExpectedEvent: "transition.finished fulfilled"
   });
 
   recorder.setUpAppHistoryListeners();
 
-  appHistory.addEventListener("navigate", e => {
+  navigation.addEventListener("navigate", e => {
     e.transitionWhile(Promise.resolve());
   });
 
@@ -32,9 +32,9 @@ promise_test(async t => {
   await recorder.readyToAssert;
 
   recorder.assert([
-    /* event name, location.hash value, appHistory.transition properties */
+    /* event name, location.hash value, navigation.transition properties */
     ["navigate", "", null],
-    ["currentchange", "#1", { from, navigationType: "push" }],
+    ["currententrychange", "#1", { from, navigationType: "push" }],
     ["promise microtask", "#1", { from, navigationType: "push" }],
     ["navigatesuccess", "#1", { from, navigationType: "push" }],
     ["transition.finished fulfilled", "#1", null],

@@ -7,9 +7,9 @@
 promise_test(async t => {
   await new Promise(resolve => window.onload = resolve);
 
-  assert_not_equals(i.contentWindow.appHistory.current, null);
-  assert_array_equals(i.contentWindow.appHistory.entries(), [i.contentWindow.appHistory.current]);
+  assert_not_equals(i.contentWindow.navigation.currentEntry, null);
+  assert_array_equals(i.contentWindow.navigation.entries(), [i.contentWindow.navigation.currentEntry]);
 
-  assert_equals(i.contentWindow.appHistory.current.url, "about:blank");
-}, "AppHistory entries() and current should be set in a new javascript: URL iframe");
+  assert_equals(i.contentWindow.navigation.currentEntry.url, "about:blank");
+}, "AppHistory entries() and currentEntry should be set in a new javascript: URL iframe");
 </script>

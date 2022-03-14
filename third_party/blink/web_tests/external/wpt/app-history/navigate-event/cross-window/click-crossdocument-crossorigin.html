@@ -24,7 +24,7 @@ async_test(t => {
     assert_equals(e.data, "DONE");
   });
 
-  appHistory.onnavigate = t.unreached_func("onnavigate must not fire in the source window");
+  navigation.onnavigate = t.unreached_func("onnavigate must not fire in the source window");
   window.onload = t.step_func(() => link.click());
 }, "clicking on an <a> element that navigates cross-document targeting a cross-origin window");
 </script>

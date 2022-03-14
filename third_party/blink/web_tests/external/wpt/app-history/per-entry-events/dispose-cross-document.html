@@ -11,25 +11,25 @@ promise_test(async (t) => {
   iframe.contentWindow.location.search = "?1";
   await new Promise(r => iframe.onload = () => t.step_timeout(r, 0));
 
-  const keyFor1 = iframe.contentWindow.appHistory.current.key;
+  const keyFor1 = iframe.contentWindow.navigation.currentEntry.key;
 
   iframe.contentWindow.location.search = "?2";
   await new Promise(r => iframe.onload = () => t.step_timeout(r, 0));
   iframe.contentWindow.location.search = "?3";
   await new Promise(r => iframe.onload = () => t.step_timeout(r, 0));
 
-  iframe.contentWindow.appHistory.goTo(keyFor1);
+  iframe.contentWindow.navigation.traverseTo(keyFor1);
   await new Promise(r => iframe.onload = () => t.step_timeout(r, 0));
 
   assert_equals((new URL(iframe.contentWindow.location.href)).search, "?1");
 
-  assert_equals(iframe.contentWindow.appHistory.entries().length, 4);
-  const [, entry2, entry3] = iframe.contentWindow.appHistory.entries();
+  assert_equals(iframe.contentWindow.navigation.entries().length, 4);
+  const [, entry2, entry3] = iframe.contentWindow.navigation.entries();
 
   entry2.ondispose = t.unreached_func("entry2 dispose must not fire");
   entry2.addEventListener("dispose", t.unreached_func("entry3 dispose must not fire"));
 
-  iframe.contentWindow.appHistory.navigate("/common/blank.html?fork");
+  iframe.contentWindow.navigation.navigate("/common/blank.html?fork");
   await new Promise(r => iframe.onload = r);
 
   // Test passes if we reached this point with no dispose events firing.

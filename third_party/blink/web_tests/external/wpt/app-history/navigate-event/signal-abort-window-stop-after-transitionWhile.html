@@ -8,20 +8,20 @@ async_test(t => {
     let abort_signal;
     let onabort_called = false;
     let navigateErrorException;
-    appHistory.onnavigateerror = t.step_func(e => {
+    navigation.onnavigateerror = t.step_func(e => {
       assert_equals(e.constructor, ErrorEvent);
       navigateErrorException = e.error;
       assert_equals(e.filename, start_url);
       assert_greater_than(e.lineno, 0);
       assert_greater_than(e.colno, 0);
     });
-    appHistory.onnavigatesuccess = t.unreached_func("onnavigatesuccess");
-    appHistory.onnavigate = t.step_func(e => {
+    navigation.onnavigatesuccess = t.unreached_func("onnavigatesuccess");
+    navigation.onnavigate = t.step_func(e => {
       abort_signal = e.signal;
       abort_signal.onabort = () => onabort_called = true;
       e.transitionWhile(new Promise(resolve => t.step_timeout(resolve, 0)));
     });
-    let result = appHistory.navigate("?1");
+    let result = navigation.navigate("?1");
     window.stop();
     assert_true(abort_signal.aborted);
     assert_true(onabort_called);

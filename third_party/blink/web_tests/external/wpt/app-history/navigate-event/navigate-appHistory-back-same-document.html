@@ -6,10 +6,10 @@ async_test(t => {
   // Wait for after the load event so that the navigation doesn't get converted
   // into a replace navigation.
   window.onload = () => t.step_timeout(() => {
-    let target_key = appHistory.current.key;
-    let target_id = appHistory.current.id;
-    appHistory.navigate("#foo").committed.then(t.step_func(() => {
-      appHistory.onnavigate = t.step_func_done(e => {
+    let target_key = navigation.currentEntry.key;
+    let target_id = navigation.currentEntry.id;
+    navigation.navigate("#foo").committed.then(t.step_func(() => {
+      navigation.onnavigate = t.step_func_done(e => {
         assert_equals(e.navigationType, "traverse");
         assert_false(e.cancelable);
         assert_true(e.canTransition);
@@ -23,9 +23,9 @@ async_test(t => {
         assert_equals(e.formData, null);
         assert_equals(e.info, "hi");
       });
-      assert_true(appHistory.canGoBack);
-      appHistory.back({ info: "hi" });
+      assert_true(navigation.canGoBack);
+      navigation.back({ info: "hi" });
     }));
   }, 0);
-}, "navigate event for appHistory.back() - same-document");
+}, "navigate event for navigation.back() - same-document");
 </script>

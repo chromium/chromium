@@ -24,7 +24,7 @@ export class Recorder {
   }
 
   setUpAppHistoryListeners() {
-    appHistory.addEventListener("navigate", e => {
+    navigation.addEventListener("navigate", e => {
       this.record("navigate");
 
       e.signal.addEventListener("abort", () => {
@@ -32,26 +32,26 @@ export class Recorder {
       });
     });
 
-    appHistory.addEventListener("navigateerror", e => {
+    navigation.addEventListener("navigateerror", e => {
       this.recordWithError("navigateerror", e.error);
 
-      appHistory.transition?.finished.then(
+      navigation.transition?.finished.then(
         () => this.record("transition.finished fulfilled"),
         err => this.recordWithError("transition.finished rejected", err)
       );
     });
 
-    appHistory.addEventListener("navigatesuccess", () => {
+    navigation.addEventListener("navigatesuccess", () => {
       this.record("navigatesuccess");
 
-      appHistory.transition?.finished.then(
+      navigation.transition?.finished.then(
         () => this.record("transition.finished fulfilled"),
         err => this.recordWithError("transition.finished rejected", err)
       );
     });
 
     if (!this.#skipCurrentChange) {
-      appHistory.addEventListener("currentchange", () => this.record("currentchange"));
+      navigation.addEventListener("currententrychange", () => this.record("currententrychange"));
     }
   }
 
@@ -68,9 +68,9 @@ export class Recorder {
   }
 
   record(name) {
-    const transitionProps = appHistory.transition === null ? null : {
-      from: appHistory.transition.from,
-      navigationType: appHistory.transition.navigationType
+    const transitionProps = navigation.transition === null ? null : {
+      from: navigation.transition.from,
+      navigationType: navigation.transition.navigationType
     };
 
     this.#events.push({ name, location: location.hash, transitionProps });
@@ -91,8 +91,8 @@ export class Recorder {
 
   // Usage:
   //   recorder.assert([
-  //     /* event name, location.hash value, appHistory.transition properties */
-  //     ["currentchange", "", null],
+  //     /* event name, location.hash value, navigation.transition properties */
+  //     ["currententrychange", "", null],
   //     ["committed fulfilled", "#1", { from, navigationType }],
   //     ...
   //   ]);
@@ -105,7 +105,7 @@ export class Recorder {
   // contents of the error objects.
   assert(expectedAsArray) {
     if (this.#skipCurrentChange) {
-      expectedAsArray = expectedAsArray.filter(expected => expected[0] !== "currentchange");
+      expectedAsArray = expectedAsArray.filter(expected => expected[0] !== "currententrychange");
     }
 
     // Doing this up front gives nicer error messages because
@@ -128,23 +128,23 @@ export class Recorder {
         assert_equals(
           recorded.transitionProps,
           null,
-          `event ${i} (${recorded.name}): appHistory.transition expected to be null`
+          `event ${i} (${recorded.name}): navigation.transition expected to be null`
         );
       } else {
         assert_not_equals(
           recorded.transitionProps,
           null,
-          `event ${i} (${recorded.name}): appHistory.transition expected not to be null`
+          `event ${i} (${recorded.name}): navigation.transition expected not to be null`
         );
         assert_equals(
           recorded.transitionProps.from,
           expected[2].from,
-          `event ${i} (${recorded.name}): appHistory.transition.from`
+          `event ${i} (${recorded.name}): navigation.transition.from`
         );
         assert_equals(
           recorded.transitionProps.navigationType,
           expected[2].navigationType,
-          `event ${i} (${recorded.name}): appHistory.transition.navigationType`
+          `event ${i} (${recorded.name}): navigation.transition.navigationType`
         );
       }
     }

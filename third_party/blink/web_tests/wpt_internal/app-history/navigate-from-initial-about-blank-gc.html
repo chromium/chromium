@@ -12,7 +12,7 @@
 
 <script>
 promise_test(t => {
-  i.contentWindow.appHistory.navigate("/common/blank.html?1");
+  i.contentWindow.navigation.navigate("/common/blank.html?1");
 
   return asyncGC();
 }, `navigate() from <iframe> with src="" but still on initial about:blank doesn't cause a crash on GC`);

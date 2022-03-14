@@ -6,8 +6,8 @@
 <script>
 test(() => {
   assert_throws_dom("InvalidStateError", iframe.contentWindow.DOMException, () => {
-    iframe.contentWindow.appHistory.updateCurrent({ state: 1 });
+    iframe.contentWindow.navigation.updateCurrentEntry({ state: 1 });
   });
-  assert_equals(appHistory.current.getState(), undefined);
-}, "updateCurrent() must throw if the document is still on the initial about:blank");
+  assert_equals(navigation.currentEntry.getState(), undefined);
+}, "updateCurrentEntry() must throw if the document is still on the initial about:blank");
 </script>

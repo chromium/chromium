@@ -5,11 +5,11 @@
 <script>
 test(() => {
   assert_throws_js(TypeError, () => {
-    appHistory.updateCurrent();
+    navigation.updateCurrentEntry();
   }, "no args");
 
   assert_throws_js(TypeError, () => {
-    appHistory.updateCurrent({});
+    navigation.updateCurrentEntry({});
   }, "empty dictionary");
-}, "updateCurrent() must throw if state is not given");
+}, "updateCurrentEntry() must throw if state is not given");
 </script>

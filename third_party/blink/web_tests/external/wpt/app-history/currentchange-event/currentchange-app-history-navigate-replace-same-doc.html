@@ -7,17 +7,17 @@ promise_test(async t => {
   // into a replace navigation.
   await new Promise(resolve => window.onload = () => t.step_timeout(resolve, 0));
 
-  let oncurrentchange_called = false;
-  let original_entry = appHistory.current;
-  appHistory.oncurrentchange = t.step_func(e => {
-    oncurrentchange_called = true;
+  let oncurrententrychange_called = false;
+  let original_entry = navigation.currentEntry;
+  navigation.oncurrententrychange = t.step_func(e => {
+    oncurrententrychange_called = true;
     assert_equals(e.from, original_entry);
     assert_equals(e.from.index, -1);
     assert_equals(e.navigationType, "replace");
-    assert_equals(appHistory.current.index, 0);
+    assert_equals(navigation.currentEntry.index, 0);
   });
-  let result = appHistory.navigate("#foo", { replace: true });
-  assert_true(oncurrentchange_called);
+  let result = navigation.navigate("#foo", { replace: true });
+  assert_true(oncurrententrychange_called);
   await result.committed;
-}, "AppHistoryCurrentChangeEvent fires for appHistory.navigate() with replace");
+}, "AppHistoryCurrentChangeEvent fires for navigation.navigate() with replace");
 </script>

@@ -4,7 +4,7 @@
 <script>
 async_test(t => {
   let start_length = history.length;
-  appHistory.onnavigate = t.step_func(e => {
+  navigation.onnavigate = t.step_func(e => {
     assert_equals(e.navigationType, "push");
     assert_true(e.cancelable);
     assert_true(e.canTransition);

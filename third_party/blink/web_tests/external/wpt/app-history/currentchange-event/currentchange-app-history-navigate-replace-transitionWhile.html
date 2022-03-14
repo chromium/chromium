@@ -6,18 +6,18 @@
 promise_test(async t => {
   await new Promise(resolve => window.onload = resolve);
 
-  let oncurrentchange_called = false;
-  let original_entry = i.contentWindow.appHistory.current;
-  i.contentWindow.appHistory.oncurrentchange = t.step_func(e => {
-    oncurrentchange_called = true;
+  let oncurrententrychange_called = false;
+  let original_entry = i.contentWindow.navigation.currentEntry;
+  i.contentWindow.navigation.oncurrententrychange = t.step_func(e => {
+    oncurrententrychange_called = true;
     assert_equals(e.from, original_entry);
     assert_equals(e.from.index, -1);
     assert_equals(e.navigationType, "replace");
-    assert_equals(i.contentWindow.appHistory.current.index, 0);
+    assert_equals(i.contentWindow.navigation.currentEntry.index, 0);
   });
-  i.contentWindow.appHistory.onnavigate = e => e.transitionWhile(Promise.resolve());
-  let result = i.contentWindow.appHistory.navigate("/common/blank.html?1", { replace: true });
-  assert_true(oncurrentchange_called);
+  i.contentWindow.navigation.onnavigate = e => e.transitionWhile(Promise.resolve());
+  let result = i.contentWindow.navigation.navigate("/common/blank.html?1", { replace: true });
+  assert_true(oncurrententrychange_called);
   await result.committed;
-}, "AppHistoryCurrentChangeEvent fires for appHistory.navigate() with replace intercepted by transitionWhile");
+}, "AppHistoryCurrentChangeEvent fires for navigation.navigate() with replace intercepted by transitionWhile");
 </script>

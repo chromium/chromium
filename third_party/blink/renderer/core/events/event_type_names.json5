@@ -92,7 +92,7 @@
     "crossoriginmessage",
     "currentscreenchange",
     "cuechange",
-    "currentchange",
+    "currententrychange",
     "cut",
     "datachannel",
     "dblclick",

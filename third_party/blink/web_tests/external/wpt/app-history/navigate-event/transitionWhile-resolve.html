@@ -3,14 +3,14 @@
 <script src="/resources/testharnessreport.js"></script>
 <script>
 async_test(t => {
-  appHistory.onnavigatesuccess = t.step_func_done(e => {
+  navigation.onnavigatesuccess = t.step_func_done(e => {
     assert_equals(location.hash, "#1");
     assert_equals(e.constructor, Event);
     assert_false(e.bubbles);
     assert_false(e.cancelable);
   });
-  appHistory.onnavigateerror = t.step_func_done(assert_unreached);
-  appHistory.onnavigate = e => {
+  navigation.onnavigateerror = t.step_func_done(assert_unreached);
+  navigation.onnavigate = e => {
     e.transitionWhile(new Promise(resolve => t.step_timeout(resolve, 0)));
   };
 

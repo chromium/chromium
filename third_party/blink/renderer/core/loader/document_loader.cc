@@ -828,7 +828,7 @@ void DocumentLoader::UpdateForSameDocumentNavigation(
   if (should_send_stop_notification)
     GetFrameLoader().Progress().ProgressCompleted();
 
-  if (auto* app_history = AppHistory::appHistory(*frame_->DomWindow()))
+  if (auto* app_history = AppHistory::navigation(*frame_->DomWindow()))
     app_history->UpdateForNavigation(*history_item_, type);
 
   // Aything except a history.pushState/replaceState is considered a new
@@ -1338,7 +1338,7 @@ mojom::CommitResult DocumentLoader::CommitSameDocumentNavigation(
 
   mojom::blink::SameDocumentNavigationType same_document_navigation_type =
       mojom::blink::SameDocumentNavigationType::kFragment;
-  if (auto* app_history = AppHistory::appHistory(*frame_->DomWindow())) {
+  if (auto* app_history = AppHistory::navigation(*frame_->DomWindow())) {
     UserNavigationInvolvement involvement = UserNavigationInvolvement::kNone;
     if (is_browser_initiated) {
       involvement = UserNavigationInvolvement::kBrowserUI;
@@ -2412,7 +2412,7 @@ void DocumentLoader::CommitNavigation() {
       !frame_->DomWindow()->GetSecurityOrigin()->IsOpaque()) {
     AppHistory::From(*frame_->DomWindow())
         ->InitializeForNewWindow(*history_item_, load_type_, commit_reason_,
-                                 AppHistory::appHistory(*previous_window),
+                                 AppHistory::navigation(*previous_window),
                                  app_history_back_entries_,
                                  app_history_forward_entries_);
     // Now that appHistory's entries array is initialized, we don't need to

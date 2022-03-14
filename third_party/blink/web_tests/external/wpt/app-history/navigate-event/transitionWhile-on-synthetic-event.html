@@ -4,7 +4,7 @@
 <script>
 async_test(t => {
   // We need to grab an AppHistoryDestination to construct the event.
-  appHistory.onnavigate = t.step_func_done(e => {
+  navigation.onnavigate = t.step_func_done(e => {
     const event = new AppHistoryNavigateEvent("navigate", {
       destination: e.destination,
       signal: (new AbortController()).signal

@@ -6,19 +6,19 @@ promise_test(async t => {
   // Wait for after the load event so that the navigation doesn't get converted
   // into a replace navigation.
   await new Promise(resolve => window.onload = () => t.step_timeout(resolve, 0));
-  await appHistory.navigate("#foo");
-  assert_equals(appHistory.entries().length, 2);
+  await navigation.navigate("#foo");
+  assert_equals(navigation.entries().length, 2);
 
-  let oncurrentchange_called = false;
-  appHistory.oncurrentchange = t.step_func(e => {
-    oncurrentchange_called = true;
-    assert_equals(e.from, appHistory.entries()[1]);
+  let oncurrententrychange_called = false;
+  navigation.oncurrententrychange = t.step_func(e => {
+    oncurrententrychange_called = true;
+    assert_equals(e.from, navigation.entries()[1]);
     assert_equals(e.navigationType, "traverse");
-    assert_equals(appHistory.current.index, 0);
+    assert_equals(navigation.currentEntry.index, 0);
   });
   history.back();
-  assert_false(oncurrentchange_called);
+  assert_false(oncurrententrychange_called);
   await new Promise(resolve => window.onpopstate = resolve);
-  assert_true(oncurrentchange_called);
+  assert_true(oncurrententrychange_called);
 }, "AppHistoryCurrentChangeEvent fires for history.back()");
 </script>

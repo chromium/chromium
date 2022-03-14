@@ -4,7 +4,7 @@
 
 <script>
 async_test(t => {
-  appHistory.addEventListener("navigate", e => {
+  navigation.addEventListener("navigate", e => {
     e.transitionWhile(Promise.reject(new Error("oh no!")));
   });
 
@@ -13,8 +13,8 @@ async_test(t => {
   location.href = "?1";
 
   // Make sure to trigger the getter to ensure the promise materializes!
-  appHistory.transition.finished;
+  navigation.transition.finished;
 
   t.step_timeout(() => t.done(), 10);
-}, "appHistory.transition.finished must not trigger unhandled rejections");
+}, "navigation.transition.finished must not trigger unhandled rejections");
 </script>

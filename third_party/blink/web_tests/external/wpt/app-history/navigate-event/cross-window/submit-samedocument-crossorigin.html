@@ -33,7 +33,7 @@ async_test(t => {
     assert_equals(e.data.destination.index, -1, "destination.index");
   });
 
-  appHistory.onnavigate = t.unreached_func("onnavigate must not fire in the source window");
+  navigation.onnavigate = t.unreached_func("onnavigate must not fire in the source window");
   window.onload = t.step_func(() => form.submit());
 }, "submitting a <form> element that navigates same-document targeting a cross-origin window");
 </script>

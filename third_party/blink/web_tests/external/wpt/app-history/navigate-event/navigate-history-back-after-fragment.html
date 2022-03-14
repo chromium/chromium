@@ -5,12 +5,12 @@
 async_test(t => {
   window.onload = () => t.step_timeout(() => {
     let start_length = history.length;
-    let target_key = appHistory.current.key;
-    let target_id = appHistory.current.id;
+    let target_key = navigation.currentEntry.key;
+    let target_id = navigation.currentEntry.id;
     location.hash = "#1";
     assert_equals(history.length, start_length + 1);
 
-    appHistory.onnavigate = t.step_func_done(e => {
+    navigation.onnavigate = t.step_func_done(e => {
       assert_equals(e.navigationType, "traverse");
       assert_false(e.cancelable);
       assert_true(e.canTransition);

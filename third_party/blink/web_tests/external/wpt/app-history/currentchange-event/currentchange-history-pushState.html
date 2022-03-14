@@ -3,14 +3,14 @@
 <script src="/resources/testharnessreport.js"></script>
 <script>
 test(t => {
-  let oncurrentchange_called = false;
-  appHistory.oncurrentchange = t.step_func(e => {
-    oncurrentchange_called = true;
-    assert_equals(e.from, appHistory.entries()[0]);
+  let oncurrententrychange_called = false;
+  navigation.oncurrententrychange = t.step_func(e => {
+    oncurrententrychange_called = true;
+    assert_equals(e.from, navigation.entries()[0]);
     assert_equals(e.navigationType, "push");
-    assert_equals(appHistory.current.index, 1);
+    assert_equals(navigation.currentEntry.index, 1);
   });
   history.pushState(1, "", "#1");
-  assert_true(oncurrentchange_called);
+  assert_true(oncurrententrychange_called);
 }, "AppHistoryCurrentChangeEvent fires for history.pushState()");
 </script>

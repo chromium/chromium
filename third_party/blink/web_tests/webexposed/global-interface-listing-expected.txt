@@ -237,8 +237,8 @@ interface AppHistory : EventTarget
     attribute @@toStringTag
     getter canGoBack
     getter canGoForward
-    getter current
-    getter oncurrentchange
+    getter currentEntry
+    getter oncurrententrychange
     getter onnavigate
     getter onnavigateerror
     getter onnavigatesuccess
@@ -247,11 +247,11 @@ interface AppHistory : EventTarget
     method constructor
     method entries
     method forward
-    method goTo
     method navigate
     method reload
-    method updateCurrent
-    setter oncurrentchange
+    method traverseTo
+    method updateCurrentEntry
+    setter oncurrententrychange
     setter onnavigate
     setter onnavigateerror
     setter onnavigatesuccess
@@ -11475,7 +11475,6 @@ namespace CSS
     attribute testRunner
     attribute textInputController
     getter anonymous
-    getter appHistory
     getter attributionReporting
     getter caches
     getter clientInformation
@@ -11504,6 +11503,7 @@ namespace CSS
     getter locationbar
     getter menubar
     getter name
+    getter navigation
     getter navigator
     getter offscreenBuffering
     getter onabort
@@ -11725,6 +11725,7 @@ namespace CSS
     setter locationbar
     setter menubar
     setter name
+    setter navigation
     setter offscreenBuffering
     setter onabort
     setter onafterprint

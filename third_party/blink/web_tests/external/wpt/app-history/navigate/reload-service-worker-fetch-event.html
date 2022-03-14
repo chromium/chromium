@@ -18,7 +18,7 @@ promise_test(async t => {
   const frame = await with_iframe(scope);
   assert_equals(frame.contentDocument.body.textContent, "method = GET, isReloadNavigation = false");
 
-  frame.contentWindow.appHistory.reload();
+  frame.contentWindow.navigation.reload();
   await new Promise(resolve => frame.addEventListener("load", resolve, { once: true }));
   assert_equals(frame.contentDocument.body.textContent, "method = GET, isReloadNavigation = true");
 

@@ -16,7 +16,7 @@ promise_test(async t => {
 
   recorder.setUpAppHistoryListeners();
 
-  appHistory.addEventListener("navigate", t.step_func(e => {
+  navigation.addEventListener("navigate", t.step_func(e => {
     e.preventDefault();
   }));
 
@@ -27,7 +27,7 @@ promise_test(async t => {
   await recorder.readyToAssert;
 
   recorder.assert([
-    /* event name, location.hash value, appHistory.transition properties */
+    /* event name, location.hash value, navigation.transition properties */
     ["navigate", "", null],
     ["AbortSignal abort", "", null],
     ["navigateerror", "", null],

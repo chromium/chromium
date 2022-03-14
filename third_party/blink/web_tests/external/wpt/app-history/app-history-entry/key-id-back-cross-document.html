@@ -8,8 +8,8 @@ async_test(t => {
     assert_equals(window.start_key, end_key);
     assert_equals(window.start_id, end_id);
     // The new history entry in the iframe should not add any entries to
-    // this window's appHistory.
-    assert_equals(appHistory.entries().length, 1);
+    // this window's navigation.
+    assert_equals(navigation.entries().length, 1);
   });
 }, "AppHistoryEntry's key and id on cross-document back navigation");
 </script>

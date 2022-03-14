@@ -25,7 +25,7 @@ String AppHistoryEntry::id() const {
 }
 
 int64_t AppHistoryEntry::index() {
-  return DomWindow() ? AppHistory::appHistory(*DomWindow())->GetIndexFor(this)
+  return DomWindow() ? AppHistory::navigation(*DomWindow())->GetIndexFor(this)
                      : -1;
 }
 

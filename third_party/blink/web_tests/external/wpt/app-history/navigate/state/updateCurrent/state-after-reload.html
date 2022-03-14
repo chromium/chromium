@@ -5,14 +5,14 @@
 <script>
 async_test(t => {
   window.onload = t.step_func(() => {
-    i.contentWindow.appHistory.updateCurrent({ state: { data: "value" } });
-    assert_equals(i.contentWindow.appHistory.entries().length, 1);
-    assert_equals(i.contentWindow.appHistory.current.getState().data, "value");
+    i.contentWindow.navigation.updateCurrentEntry({ state: { data: "value" } });
+    assert_equals(i.contentWindow.navigation.entries().length, 1);
+    assert_equals(i.contentWindow.navigation.currentEntry.getState().data, "value");
 
     i.contentWindow.location.reload();
     i.onload = t.step_func_done(() => {
-      assert_equals(i.contentWindow.appHistory.entries().length, 1);
-      assert_equals(i.contentWindow.appHistory.current.getState().data, "value");
+      assert_equals(i.contentWindow.navigation.entries().length, 1);
+      assert_equals(i.contentWindow.navigation.currentEntry.getState().data, "value");
     });
   });
 }, "appHistoryEntry.getState() after location.reload()");

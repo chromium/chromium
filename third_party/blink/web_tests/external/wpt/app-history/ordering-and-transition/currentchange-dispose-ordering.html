@@ -3,24 +3,24 @@
 <script src="/resources/testharnessreport.js"></script>
 <script>
 test(t => {
-  let oncurrentchange_called = false;
+  let oncurrententrychange_called = false;
   let ondispose_called = false;
 
-  let original_entry = appHistory.current;
+  let original_entry = navigation.currentEntry;
   original_entry.ondispose = t.step_func(() => {
-    assert_true(oncurrentchange_called);
+    assert_true(oncurrententrychange_called);
     ondispose_called = true;
   });
 
-  appHistory.oncurrentchange = t.step_func(e => {
-    oncurrentchange_called = true;
+  navigation.oncurrententrychange = t.step_func(e => {
+    oncurrententrychange_called = true;
     assert_equals(e.from, original_entry);
     assert_equals(e.from.index, -1);
     assert_equals(e.navigationType, "replace");
-    assert_equals(appHistory.current.index, 0);
+    assert_equals(navigation.currentEntry.index, 0);
   });
-  appHistory.navigate("#foo", { replace: true });
-  assert_true(oncurrentchange_called);
+  navigation.navigate("#foo", { replace: true });
+  assert_true(oncurrententrychange_called);
   assert_true(ondispose_called);
 }, "Ordering between AppHistoryCurrentChangeEvent and AppHistoryEntry dispose events");
 </script>

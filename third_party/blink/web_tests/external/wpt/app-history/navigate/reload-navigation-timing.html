@@ -5,7 +5,7 @@
 <script>
 promise_test(async t => {
   await new Promise(resolve => window.onload = resolve);
-  i.contentWindow.appHistory.reload();
+  i.contentWindow.navigation.reload();
   await new Promise(resolve => i.onload = resolve);
 
   const entries = i.contentWindow.performance.getEntriesByType("navigation");

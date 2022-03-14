@@ -5,23 +5,23 @@
   // into a replace navigation.
 window.onload = () => step_timeout(() => {
   if (location.search == "?go-back") {
-    assert_equals(appHistory.entries().length, 2);
-    assert_equals(appHistory.current.index, 1);
+    assert_equals(navigation.entries().length, 2);
+    assert_equals(navigation.currentEntry.index, 1);
     // Step 2: Navigate back.
     history.back();
     return;
   }
   if (top.start_key) {
-    assert_equals(appHistory.entries().length, 2);
-    assert_equals(appHistory.current.index, 0);
+    assert_equals(navigation.entries().length, 2);
+    assert_equals(navigation.currentEntry.index, 0);
     // Step 3: Notify parent, which will ensure the same key is used after back navigation.
-    top.finish(appHistory.current.key, appHistory.current.id);
+    top.finish(navigation.currentEntry.key, navigation.currentEntry.id);
     return;
   }
   // Step 1: Record initial key and navigate.
-  assert_equals(appHistory.entries().length, 1);
-  top.start_key = appHistory.current.key;
-  top.start_id = appHistory.current.id;
+  assert_equals(navigation.entries().length, 1);
+  top.start_key = navigation.currentEntry.key;
+  top.start_id = navigation.currentEntry.id;
   location.search = "go-back";
 }, 0);
 </script>

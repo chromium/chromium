@@ -11,8 +11,8 @@ promise_test(async (t) => {
   location.hash = "#2";
   location.hash = "#3";
 
-  assert_equals(appHistory.entries().length, 4);
-  const [entry0, entry1, entry2, entry3] = appHistory.entries();
+  assert_equals(navigation.entries().length, 4);
+  const [entry0, entry1, entry2, entry3] = navigation.entries();
   assert_equals((new URL(entry2.url)).hash, "#2");
   assert_equals((new URL(entry3.url)).hash, "#3");
 
@@ -21,12 +21,12 @@ promise_test(async (t) => {
   entry3.addEventListener("dispose", t.step_func(e => {
     ++dispose3Called;
 
-    spoonPromise = appHistory.navigate("#spoon").committed;
+    spoonPromise = navigation.navigate("#spoon").committed;
   }));
 
-  await appHistory.goTo(entry1.key).committed;
+  await navigation.traverseTo(entry1.key).committed;
 
-  const forkPromise = appHistory.navigate("#fork").committed;
+  const forkPromise = navigation.navigate("#fork").committed;
   assert_equals(dispose3Called, 1, "dispose for entry 3 must happen exactly once (first check)")
 
   // The navigation to #fork will *not* be finished by the time the navigation
@@ -37,13 +37,13 @@ promise_test(async (t) => {
 
   assert_equals(dispose3Called, 1, "dispose for entry 3 must happen exactly once (final check)");
 
-  assert_equals(appHistory.entries().length, 4);
-  const [finalEntry0, finalEntry1, finalEntry2, finalEntry3] = appHistory.entries();
+  assert_equals(navigation.entries().length, 4);
+  const [finalEntry0, finalEntry1, finalEntry2, finalEntry3] = navigation.entries();
   assert_equals(finalEntry0, entry0);
   assert_equals(finalEntry1, entry1);
   assert_not_equals(finalEntry2, entry2);
   assert_not_equals(finalEntry3, entry3);
-  assert_equals(appHistory.current, finalEntry3);
+  assert_equals(navigation.currentEntry, finalEntry3);
   assert_equals((new URL(finalEntry2.url)).hash, "#fork");
   assert_equals((new URL(finalEntry3.url)).hash, "#spoon");
 }, "navigate() during a same-document-navigation-initiated dispose works (since it's after the previous navigation)");

@@ -19,9 +19,9 @@ async_test(t => {
   link.target = iframe.name;
   document.body.append(link);
 
-  appHistory.onnavigate = t.unreached_func("onnavigate must not fire in the source window");
+  navigation.onnavigate = t.unreached_func("onnavigate must not fire in the source window");
   window.onload = t.step_func(() => {
-    iframe.contentWindow.appHistory.onnavigate = t.step_func_done(e => {
+    iframe.contentWindow.navigation.onnavigate = t.step_func_done(e => {
       assert_equals(e.navigationType, "push", "navigationType");
       assert_true(e.cancelable, "cancelable");
       assert_true(e.canTransition, "canTransition");

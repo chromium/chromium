@@ -8,14 +8,14 @@ import { testFocusWasReset, testFocusWasNotReset } from "./resources/helpers.mjs
 test(() => {
   let throwAssertionHappened = false;
 
-  appHistory.addEventListener("navigate", e => {
+  navigation.addEventListener("navigate", e => {
     assert_throws_js(TypeError, () => {
       e.transitionWhile(Promise.resolve(), { focusReset: "invalid" });
     });
     throwAssertionHappened = true;
   }, { once: true });
 
-  appHistory.navigate("#1");
+  navigation.navigate("#1");
   assert_true(throwAssertionHappened);
 }, "Invalid values for focusReset throw");
 
@@ -24,31 +24,31 @@ testFocusWasNotReset(() => {
 }, "Does not reset the focus when no navigate handler is present");
 
 testFocusWasReset(t => {
-  appHistory.addEventListener("navigate", e => {
+  navigation.addEventListener("navigate", e => {
     e.transitionWhile(Promise.resolve());
   }, { once: true });
 }, "Resets the focus when no focusReset option is provided");
 
 testFocusWasReset(t => {
-  appHistory.addEventListener("navigate", e => {
+  navigation.addEventListener("navigate", e => {
     e.transitionWhile(Promise.resolve());
   }, { once: true });
 }, "Resets the focus when focusReset is explicitly set to undefined");
 
 testFocusWasReset(t => {
-  appHistory.addEventListener("navigate", e => {
+  navigation.addEventListener("navigate", e => {
     e.transitionWhile(new Promise(r => t.step_timeout(r, 5)));
   }, { once: true });
 }, "Resets the focus when no focusReset option is provided (nontrivial fulfilled promise)");
 
 testFocusWasReset(t => {
-  appHistory.addEventListener("navigate", e => {
+  navigation.addEventListener("navigate", e => {
     e.transitionWhile(Promise.reject());
   }, { once: true });
 }, "Resets the focus when no focusReset option is provided (rejected promise)");
 
 testFocusWasReset(t => {
-  appHistory.addEventListener("navigate", e => {
+  navigation.addEventListener("navigate", e => {
     e.transitionWhile(
       Promise.resolve(),
       { focusReset: "after-transition" }
@@ -57,7 +57,7 @@ testFocusWasReset(t => {
 }, "Resets the focus when focusReset is explicitly set to 'after-transition'");
 
 testFocusWasNotReset(t => {
-  appHistory.addEventListener("navigate", e => {
+  navigation.addEventListener("navigate", e => {
     e.transitionWhile(Promise.resolve(), { focusReset: "manual" });
   });
 }, "Does not reset the focus when focusReset is set to 'manual'");

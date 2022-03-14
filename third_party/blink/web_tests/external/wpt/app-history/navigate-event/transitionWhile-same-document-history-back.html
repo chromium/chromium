@@ -8,30 +8,30 @@ async_test(t => {
   window.onload = () => t.step_timeout(() => {
     let onnavigate_calls = 0;
     let onnavigatesuccess_calls = 0;
-    appHistory.onnavigate = e => {
+    navigation.onnavigate = e => {
       onnavigate_calls++;
       e.transitionWhile(Promise.resolve());
     }
-    appHistory.onnavigatesuccess = t.step_func(e => {
+    navigation.onnavigatesuccess = t.step_func(e => {
       onnavigatesuccess_calls++;
       if (onnavigatesuccess_calls == 3) {
-        assert_equals(appHistory.entries().length, 3);
-        assert_equals(appHistory.current.index, 1);
+        assert_equals(navigation.entries().length, 3);
+        assert_equals(navigation.currentEntry.index, 1);
         assert_equals(onnavigate_calls, 3);
         history.back();
       } else if (onnavigatesuccess_calls == 4) {
-        assert_equals(appHistory.entries().length, 3);
-        assert_equals(appHistory.current.index, 0);
+        assert_equals(navigation.entries().length, 3);
+        assert_equals(navigation.currentEntry.index, 0);
         assert_equals(onnavigate_calls, 4);
         t.done();
       }
     });
 
-    appHistory.navigate("?foo").finished
-      .then(t.step_func(() => appHistory.navigate("?bar").finished))
+    navigation.navigate("?foo").finished
+      .then(t.step_func(() => navigation.navigate("?bar").finished))
       .then(t.step_func(() => {
-        assert_equals(appHistory.entries().length, 3);
-        assert_equals(appHistory.current.index, 2);
+        assert_equals(navigation.entries().length, 3);
+        assert_equals(navigation.currentEntry.index, 2);
         assert_equals(onnavigate_calls, 2);
         history.back();
       }));

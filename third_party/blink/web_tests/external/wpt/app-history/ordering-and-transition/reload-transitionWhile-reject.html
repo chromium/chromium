@@ -2,7 +2,7 @@
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
 <meta name="variant" content="">
-<meta name="variant" content="?currentchange">
+<meta name="variant" content="?currententrychange">
 
 <script type="module">
 import { Recorder, hasVariant } from "./resources/helpers.mjs";
@@ -12,21 +12,21 @@ promise_test(async t => {
   // into a replace navigation.
   await new Promise(resolve => window.onload = () => t.step_timeout(resolve, 0));
 
-  const from = appHistory.current;
+  const from = navigation.currentEntry;
   const expectedError = new Error("boo");
 
   const recorder = new Recorder({
-    skipCurrentChange: !hasVariant("currentchange"),
+    skipCurrentChange: !hasVariant("currententrychange"),
     finalExpectedEvent: "transition.finished rejected"
   });
 
   recorder.setUpAppHistoryListeners();
 
-  appHistory.addEventListener("navigate", e => {
+  navigation.addEventListener("navigate", e => {
     e.transitionWhile(Promise.reject(expectedError));
   });
 
-  const result = appHistory.reload();
+  const result = navigation.reload();
   recorder.setUpResultListeners(result);
 
   Promise.resolve().then(() => recorder.record("promise microtask"));
@@ -34,9 +34,9 @@ promise_test(async t => {
   await recorder.readyToAssert;
 
   recorder.assert([
-    /* event name, location.hash value, appHistory.transition properties */
+    /* event name, location.hash value, navigation.transition properties */
     ["navigate", "", null],
-    ["currentchange", "", { from, navigationType: "reload" }],
+    ["currententrychange", "", { from, navigationType: "reload" }],
     ["committed fulfilled", "", { from, navigationType: "reload" }],
     ["promise microtask", "", { from, navigationType: "reload" }],
     ["navigateerror", "", { from, navigationType: "reload" }],
@@ -45,5 +45,5 @@ promise_test(async t => {
   ]);
 
   recorder.assertErrorsAre(expectedError);
-}, "event and promise ordering for appHistory.reload() intercepted by transitionWhile()");
+}, "event and promise ordering for navigation.reload() intercepted by transitionWhile()");
 </script>

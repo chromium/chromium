@@ -9,9 +9,9 @@ promise_test(async t => {
   let i = document.createElement("iframe");
   document.body.append(i);
 
-  i.contentWindow.appHistory.onnavigate = t.unreached_func("onnavigate should not be called");
-  i.contentWindow.appHistory.onnavigatesuccess = t.unreached_func("onnavigatesuccess should not be called");
-  i.contentWindow.appHistory.onnavigateerror = t.unreached_func("onnavigateerror should not be called");
+  i.contentWindow.navigation.onnavigate = t.unreached_func("onnavigate should not be called");
+  i.contentWindow.navigation.onnavigatesuccess = t.unreached_func("onnavigatesuccess should not be called");
+  i.contentWindow.navigation.onnavigateerror = t.unreached_func("onnavigateerror should not be called");
 
   // Since there's no way to do a non-replacement navigation on the initial
   // about:blank, there's no way to actually get in a situation where we're on
@@ -19,7 +19,7 @@ promise_test(async t => {
   // list. So this test will almost certainly pass just because there's nothing
   // to go back/forward to. Oh well; it's still reasonable coverage.
 
-  await assertBothRejectDOM(t, i.contentWindow.appHistory.back(), "InvalidStateError", i.contentWindow);
-  await assertBothRejectDOM(t, i.contentWindow.appHistory.forward(), "InvalidStateError", i.contentWindow);
+  await assertBothRejectDOM(t, i.contentWindow.navigation.back(), "InvalidStateError", i.contentWindow);
+  await assertBothRejectDOM(t, i.contentWindow.navigation.forward(), "InvalidStateError", i.contentWindow);
 }, "back() and forward() in initial about:blank document");
 </script>

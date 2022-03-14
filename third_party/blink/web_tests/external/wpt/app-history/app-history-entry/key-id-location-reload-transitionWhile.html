@@ -7,17 +7,17 @@ promise_test(async t => {
   await new Promise(resolve => { window.onload = resolve; });
 
 
-  const original = i.contentWindow.appHistory.current;
+  const original = i.contentWindow.navigation.currentEntry;
   const { key, id } = original;
 
-  i.contentWindow.appHistory.addEventListener("navigate", e => e.transitionWhile(Promise.resolve()));
+  i.contentWindow.navigation.addEventListener("navigate", e => e.transitionWhile(Promise.resolve()));
 
   i.onload = t.unreached_func("the iframe must not reload");
 
   await i.contentWindow.location.reload();
 
-  assert_equals(i.contentWindow.appHistory.current, original);
-  assert_equals(i.contentWindow.appHistory.current.key, key);
-  assert_equals(i.contentWindow.appHistory.current.id, id);
+  assert_equals(i.contentWindow.navigation.currentEntry, original);
+  assert_equals(i.contentWindow.navigation.currentEntry.key, key);
+  assert_equals(i.contentWindow.navigation.currentEntry.id, id);
 }, "AppHistoryEntry's key and id after location.reload() intercepted by transitionWhile()");
 </script>

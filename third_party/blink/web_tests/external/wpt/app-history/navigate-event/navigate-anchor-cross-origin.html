@@ -4,7 +4,7 @@
 <a id="a" href="https://does-not-exist/foo.html"></a>
 <script>
 async_test(t => {
-  appHistory.onnavigate = t.step_func_done(e => {
+  navigation.onnavigate = t.step_func_done(e => {
     assert_equals(e.navigationType, "push");
     assert_true(e.cancelable);
     assert_false(e.canTransition);

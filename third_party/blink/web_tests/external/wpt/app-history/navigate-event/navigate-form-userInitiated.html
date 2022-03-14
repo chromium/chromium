@@ -9,7 +9,7 @@
 </form>
 <script>
 async_test(t => {
-  appHistory.onnavigate = t.step_func_done(e => {
+  navigation.onnavigate = t.step_func_done(e => {
     e.preventDefault();
 
     assert_equals(e.navigationType, "push");

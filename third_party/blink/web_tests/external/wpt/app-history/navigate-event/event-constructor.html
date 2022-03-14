@@ -24,7 +24,7 @@ test(() => {
 
 async_test(t => {
   // We need to grab an AppHistoryDestination.
-  appHistory.onnavigate = t.step_func_done(e => {
+  navigation.onnavigate = t.step_func_done(e => {
     assert_throws_js(TypeError, () => {
       new AppHistoryNavigateEvent("navigate", {
         navigationType: "push",
@@ -42,7 +42,7 @@ async_test(t => {
 
 async_test(t => {
   // We need to grab an AppHistoryDestination.
-  appHistory.onnavigate = t.step_func_done(e => {
+  navigation.onnavigate = t.step_func_done(e => {
     const info = { some: "object with identity" };
     const formData = new FormData();
     const signal = (new AbortController()).signal;
@@ -72,7 +72,7 @@ async_test(t => {
 
 async_test(t => {
   // We need to grab an AppHistoryDestination.
-  appHistory.onnavigate = t.step_func_done(e => {
+  navigation.onnavigate = t.step_func_done(e => {
     const event = new AppHistoryNavigateEvent("navigate", {
       destination: e.destination,
       signal: (new AbortController()).signal

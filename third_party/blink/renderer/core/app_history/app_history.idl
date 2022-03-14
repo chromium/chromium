@@ -7,9 +7,9 @@
   Exposed=Window,
   RuntimeEnabled=AppHistory
 ] interface AppHistory : EventTarget {
-  readonly attribute AppHistoryEntry? current;
+  readonly attribute AppHistoryEntry? currentEntry;
   sequence<AppHistoryEntry> entries();
-  [RaisesException, MeasureAs=AppHistory] void updateCurrent(AppHistoryUpdateCurrentOptions options);
+  [RaisesException, MeasureAs=AppHistory] void updateCurrentEntry(AppHistoryUpdateCurrentOptions options);
   readonly attribute AppHistoryTransition? transition;
 
   readonly attribute boolean canGoBack;
@@ -18,12 +18,12 @@
   [CallWith=ScriptState, MeasureAs=AppHistory] AppHistoryResult navigate(USVString url, optional AppHistoryNavigateOptions options = {});
   [CallWith=ScriptState, MeasureAs=AppHistory] AppHistoryResult reload(optional AppHistoryReloadOptions options = {});
 
-  [CallWith=ScriptState, MeasureAs=AppHistory] AppHistoryResult goTo(DOMString key, optional AppHistoryNavigationOptions options = {});
+  [CallWith=ScriptState, MeasureAs=AppHistory] AppHistoryResult traverseTo(DOMString key, optional AppHistoryNavigationOptions options = {});
   [CallWith=ScriptState, MeasureAs=AppHistory] AppHistoryResult back(optional AppHistoryNavigationOptions options = {});
   [CallWith=ScriptState, MeasureAs=AppHistory] AppHistoryResult forward(optional AppHistoryNavigationOptions options = {});
 
   attribute EventHandler onnavigate;
   attribute EventHandler onnavigatesuccess;
   attribute EventHandler onnavigateerror;
-  attribute EventHandler oncurrentchange;
+  attribute EventHandler oncurrententrychange;
 };

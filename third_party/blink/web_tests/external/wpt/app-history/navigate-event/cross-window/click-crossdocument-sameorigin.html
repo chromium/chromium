@@ -7,9 +7,9 @@
 
 <script>
 async_test(t => {
-  appHistory.onnavigate = t.unreached_func("onnavigate must not fire in the source window");
+  navigation.onnavigate = t.unreached_func("onnavigate must not fire in the source window");
   window.onload = t.step_func(() => {
-    i.contentWindow.appHistory.onnavigate = t.step_func_done(e => {
+    i.contentWindow.navigation.onnavigate = t.step_func_done(e => {
       assert_equals(e.navigationType, "push", "navigationType");
       assert_true(e.cancelable, "cancelable");
       assert_true(e.canTransition, "canTransition");

@@ -6,8 +6,8 @@
 <script>
 test(() => {
   assert_throws_dom("InvalidStateError", iframe.contentWindow.DOMException, () => {
-    iframe.contentWindow.appHistory.updateCurrent({ state: document.body });
+    iframe.contentWindow.navigation.updateCurrentEntry({ state: document.body });
   });
-  assert_equals(appHistory.current.getState(), undefined);
-}, `updateCurrent() with unserializable state on the initial about:blank must throw an "InvalidStateError", not a "DataCloneError"`);
+  assert_equals(navigation.currentEntry.getState(), undefined);
+}, `updateCurrentEntry() with unserializable state on the initial about:blank must throw an "InvalidStateError", not a "DataCloneError"`);
 </script>

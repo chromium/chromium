@@ -9,9 +9,9 @@ promise_test(async t => {
   // into a replace navigation.
   await new Promise(resolve => window.onload = () => t.step_timeout(resolve, 0));
 
-  appHistory.onnavigate = t.unreached_func("onnavigate should not be called");
-  appHistory.onnavigatesuccess = t.unreached_func("onnavigatesuccess should not be called");
-  appHistory.onnavigateerror = t.unreached_func("onnavigateerror should not be called");
+  navigation.onnavigate = t.unreached_func("onnavigate should not be called");
+  navigation.onnavigatesuccess = t.unreached_func("onnavigatesuccess should not be called");
+  navigation.onnavigateerror = t.unreached_func("onnavigateerror should not be called");
 
   location.hash = "#1";
   await new Promise(resolve => window.onhashchange = resolve);
@@ -22,7 +22,7 @@ promise_test(async t => {
 
   assert_equals(location.hash, "#1");
 
-  await assertBothRejectDOM(t, appHistory.back(), "InvalidStateError");
-  await assertBothRejectDOM(t, appHistory.forward(), "InvalidStateError");
-}, "appHistory.back()/forward() in an opaque origin iframe");
+  await assertBothRejectDOM(t, navigation.back(), "InvalidStateError");
+  await assertBothRejectDOM(t, navigation.forward(), "InvalidStateError");
+}, "navigation.back()/forward() in an opaque origin iframe");
 </script>

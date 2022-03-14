@@ -7,7 +7,7 @@
 <script src="resources/is_uuid.js"></script>
 
 <script>
-// This test ensures that appHistory.entries() is properly updated when a page
+// This test ensures that navigation.entries() is properly updated when a page
 // is restored from bfcache. Before navigating away and back, entries() contains
 // a single entry representing this document. When restored from bfcache,
 // entries() should now have two entries: [0] should still be this document, but
@@ -16,11 +16,11 @@
 runBfcacheTest({
   targetOrigin: originSameOrigin,
   funcBeforeNavigation: () => {
-    window.originalEntry0 = appHistory.entries()[0];
+    window.originalEntry0 = navigation.entries()[0];
   },
   async funcAfterAssertion(pageA, pageB) {
     const entryData = await pageA.execute_script(() => {
-      return appHistory.entries().map(e => ({
+      return navigation.entries().map(e => ({
         url: e.url,
         key: e.key,
         id: e.id,
@@ -50,10 +50,10 @@ runBfcacheTest({
     assert_true(entryData[0].sameDocument);
     assert_false(entryData[1].sameDocument);
 
-    const currentIsZero = await pageA.execute_script(() => appHistory.current === appHistory.entries()[0]);
+    const currentIsZero = await pageA.execute_script(() => navigation.currentEntry === navigation.entries()[0]);
     assert_true(currentIsZero);
 
-    const zeroIsSameAsOriginal = await pageA.execute_script(() => appHistory.current === window.originalEntry0);
+    const zeroIsSameAsOriginal = await pageA.execute_script(() => navigation.currentEntry === window.originalEntry0);
     assert_true(zeroIsSameAsOriginal);
   }
 }, "entries() must contain the forward-history page after navigating back to a bfcached page");

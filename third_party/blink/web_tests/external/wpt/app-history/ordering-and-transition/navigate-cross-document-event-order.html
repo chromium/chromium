@@ -12,8 +12,8 @@ async_test(t => {
 
   window.onload = t.step_func(() => {
     window.childStarted = () => {
-      i.contentWindow.appHistory.onnavigatesuccess = () => events.push("onnavigatesuccess");
-      i.contentWindow.appHistory.onnavigateerror = () => events.push("onnavigateerror");
+      i.contentWindow.navigation.onnavigatesuccess = () => events.push("onnavigatesuccess");
+      i.contentWindow.navigation.onnavigateerror = () => events.push("onnavigateerror");
       i.contentWindow.onpageshow = () => events.push("onpageshow");
       i.contentWindow.onhashchange = () => events.push("onhashchange");
       i.contentWindow.onpopstate = () => events.push("onpopstate");
@@ -24,8 +24,8 @@ async_test(t => {
       i.contentDocument.addEventListener("DOMContentLoaded", () => events.push("domcontentloaded"));
       i.contentDocument.onreadystatechange = () => events.push("readystate" + i.contentDocument.readyState);
     };
-    i.contentWindow.appHistory.onnavigate = () => events.push("onnavigate");
-    i.contentWindow.appHistory.navigate("?1").committed.then(
+    i.contentWindow.navigation.onnavigate = () => events.push("onnavigate");
+    i.contentWindow.navigation.navigate("?1").committed.then(
         () => events.push("promisefulfilled"), () => events.push("promiserejected"));
   });
 }, "navigate() event ordering for cross-document navigation");

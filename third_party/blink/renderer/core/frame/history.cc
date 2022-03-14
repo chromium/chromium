@@ -316,7 +316,7 @@ void History::StateObjectAdded(
     return;
   }
 
-  if (auto* app_history = AppHistory::appHistory(*DomWindow())) {
+  if (auto* app_history = AppHistory::navigation(*DomWindow())) {
     if (app_history->DispatchNavigateEvent(
             full_url, nullptr, NavigateEventType::kHistoryApi, type,
             UserNavigationInvolvement::kNone, data.get(),

@@ -6,16 +6,16 @@
 promise_test(async t => {
   await new Promise(resolve => window.onload = resolve);
 
-  let oncurrentchange_called = false;
-  i.contentWindow.appHistory.oncurrentchange = t.step_func(e => {
-    oncurrentchange_called = true;
-    assert_equals(e.from, i.contentWindow.appHistory.current);
+  let oncurrententrychange_called = false;
+  i.contentWindow.navigation.oncurrententrychange = t.step_func(e => {
+    oncurrententrychange_called = true;
+    assert_equals(e.from, i.contentWindow.navigation.currentEntry);
     assert_equals(e.navigationType, "reload");
-    assert_equals(i.contentWindow.appHistory.current.index, 0);
+    assert_equals(i.contentWindow.navigation.currentEntry.index, 0);
   });
-  i.contentWindow.appHistory.onnavigate = e => e.transitionWhile(Promise.resolve());
-  let result = i.contentWindow.appHistory.reload();
-  assert_true(oncurrentchange_called);
+  i.contentWindow.navigation.onnavigate = e => e.transitionWhile(Promise.resolve());
+  let result = i.contentWindow.navigation.reload();
+  assert_true(oncurrententrychange_called);
   await result.committed;
-}, "AppHistoryCurrentChangeEvent fires for appHistory.reload() intercepted by transitionWhile");
+}, "AppHistoryCurrentChangeEvent fires for navigation.reload() intercepted by transitionWhile");
 </script>

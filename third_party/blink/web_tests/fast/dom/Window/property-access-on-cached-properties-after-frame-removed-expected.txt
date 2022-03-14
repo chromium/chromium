@@ -2,14 +2,6 @@ Tests access of cached DOMWindow properties after the associated frame is no lon
 
 On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
 
-PASS window.cached_appHistory.canGoBack is false
-PASS window.cached_appHistory.canGoForward is false
-PASS window.cached_appHistory.current is null
-PASS window.cached_appHistory.oncurrentchange is null
-PASS window.cached_appHistory.onnavigate is null
-PASS window.cached_appHistory.onnavigateerror is null
-PASS window.cached_appHistory.onnavigatesuccess is null
-PASS window.cached_appHistory.transition is null
 PASS window.cached_cookieStore.onchange is null
 PASS window.cached_location.hash is undefined
 PASS window.cached_location.host is undefined
@@ -23,6 +15,14 @@ PASS window.cached_location.search is undefined
 FAIL window.cached_location_ancestorOrigins.length should be 0. Was 1.
 PASS window.cached_locationbar.visible is false
 PASS window.cached_menubar.visible is false
+PASS window.cached_navigation.canGoBack is false
+PASS window.cached_navigation.canGoForward is false
+PASS window.cached_navigation.currentEntry is null
+PASS window.cached_navigation.oncurrententrychange is null
+PASS window.cached_navigation.onnavigate is null
+PASS window.cached_navigation.onnavigateerror is null
+PASS window.cached_navigation.onnavigatesuccess is null
+PASS window.cached_navigation.transition is null
 PASS window.cached_navigator.appCodeName is window.navigator.appCodeName
 PASS window.cached_navigator.appName is window.navigator.appName
 PASS window.cached_navigator.appVersion is ''

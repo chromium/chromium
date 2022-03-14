@@ -2,7 +2,7 @@
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
 <meta name="variant" content="">
-<meta name="variant" content="?currentchange">
+<meta name="variant" content="?currententrychange">
 
 <script type="module">
 import { Recorder, hasVariant } from "./resources/helpers.mjs";
@@ -13,13 +13,13 @@ promise_test(async t => {
   await new Promise(resolve => window.onload = () => t.step_timeout(resolve, 0));
 
   const recorder = new Recorder({
-    skipCurrentChange: !hasVariant("currentchange"),
+    skipCurrentChange: !hasVariant("currententrychange"),
     finalExpectedEvent: "finished fulfilled"
   });
 
   recorder.setUpAppHistoryListeners();
 
-  const result = appHistory.navigate("#1");
+  const result = navigation.navigate("#1");
   recorder.setUpResultListeners(result);
 
   Promise.resolve().then(() => recorder.record("promise microtask"));
@@ -27,13 +27,13 @@ promise_test(async t => {
   await recorder.readyToAssert;
 
   recorder.assert([
-    /* event name, location.hash value, appHistory.transition properties */
+    /* event name, location.hash value, navigation.transition properties */
     ["navigate", "", null],
-    ["currentchange", "#1", null],
+    ["currententrychange", "#1", null],
     ["committed fulfilled", "#1", null],
     ["promise microtask", "#1", null],
     ["navigatesuccess", "#1", null],
     ["finished fulfilled", "#1", null],
   ]);
-}, "event and promise ordering for same-document appHistory.navigate()");
+}, "event and promise ordering for same-document navigation.navigate()");
 </script>

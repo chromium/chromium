@@ -4,22 +4,22 @@
 
 <script>
 async_test(t => {
-  appHistory.onnavigate = t.unreached_func("navigate must not fire");
-  appHistory.onnavigatesuccess = t.unreached_func("navigatesuccess must not fire");
-  appHistory.onnavigateerror = t.unreached_func("navigateerror must not fire");
+  navigation.onnavigate = t.unreached_func("navigate must not fire");
+  navigation.onnavigatesuccess = t.unreached_func("navigatesuccess must not fire");
+  navigation.onnavigateerror = t.unreached_func("navigateerror must not fire");
 
-  assert_equals(appHistory.current.getState(), undefined, "App history state starts out as undefined");
+  assert_equals(navigation.currentEntry.getState(), undefined, "App history state starts out as undefined");
   assert_equals(history.state, null, "history.state starts out as null");
 
   const newState = { key: "value" };
 
-  appHistory.updateCurrent({ state: newState });
+  navigation.updateCurrentEntry({ state: newState });
 
-  assert_equals(appHistory.current.getState().key, "value");
-  assert_not_equals(appHistory.current.getState(), newState);
+  assert_equals(navigation.currentEntry.getState().key, "value");
+  assert_not_equals(navigation.currentEntry.getState(), newState);
   assert_equals(history.state, null);
 
   // Wait a tick to make sure no events fire asynchronously.
   t.step_timeout(() => t.done(), 0);
-}, "updateCurrent() works as expected");
+}, "updateCurrentEntry() works as expected");
 </script>

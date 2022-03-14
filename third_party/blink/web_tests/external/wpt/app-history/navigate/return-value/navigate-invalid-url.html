@@ -5,6 +5,6 @@
 
 <script>
 promise_test(async t => {
-  await assertBothRejectDOM(t, appHistory.navigate("https://example.com\u0000mozilla.org"), "SyntaxError");
+  await assertBothRejectDOM(t, navigation.navigate("https://example.com\u0000mozilla.org"), "SyntaxError");
 }, "navigate() with an invalid URL");
 </script>

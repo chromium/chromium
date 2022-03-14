@@ -6,9 +6,9 @@
 async_test(t => {
   window.onload = t.step_func(() => {
     const startingURL = new URL(i.src);
-    i.contentWindow.appHistory.reload();
+    i.contentWindow.navigation.reload();
     i.onload = t.step_func_done(() => {
-      const iframeURL = new URL(i.contentWindow.appHistory.current.url);
+      const iframeURL = new URL(i.contentWindow.navigation.currentEntry.url);
       assert_equals(iframeURL.pathname, startingURL.pathname);
     });
   });

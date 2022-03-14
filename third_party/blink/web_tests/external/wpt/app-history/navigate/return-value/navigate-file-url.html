@@ -5,6 +5,6 @@
 
 <script>
 promise_test(async t => {
-  await assertBothRejectDOM(t, appHistory.navigate("file://"), "AbortError");
+  await assertBothRejectDOM(t, navigation.navigate("file://"), "AbortError");
 }, "navigate() to a file: URL");
 </script>

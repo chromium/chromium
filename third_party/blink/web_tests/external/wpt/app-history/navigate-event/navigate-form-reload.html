@@ -6,15 +6,15 @@
 <script>
 async_test(t => {
   window.onload = t.step_func(() => {
-    appHistory.onnavigate = t.step_func_done(() => {
+    navigation.onnavigate = t.step_func_done(() => {
       assert_unreached("onnavigate should not have fired in source window");
     });
-    iframe.contentWindow.appHistory.onnavigate = t.step_func(e => {
+    iframe.contentWindow.navigation.onnavigate = t.step_func(e => {
       assert_equals(e.navigationType, "push");
       assert_not_equals(e.formData, null);
 
       iframe.onload = t.step_func(() => {
-        iframe.contentWindow.appHistory.onnavigate = t.step_func_done(e => {
+        iframe.contentWindow.navigation.onnavigate = t.step_func_done(e => {
           assert_equals(e.navigationType, "reload");
           assert_equals(e.formData, null);
         });

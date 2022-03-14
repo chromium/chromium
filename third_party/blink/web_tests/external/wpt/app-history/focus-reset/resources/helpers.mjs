@@ -13,7 +13,7 @@ export function testFocusWasReset(setupFunc, description) {
     button.focus();
     assert_equals(document.activeElement, button, "focus() worked");
 
-    const { committed, finished } = appHistory.navigate("#" + location.hash.substring(1) + "1");
+    const { committed, finished } = navigation.navigate("#" + location.hash.substring(1) + "1");
 
     await committed;
     assert_equals(document.activeElement, button, "Focus stays on the button during the transition");
@@ -34,7 +34,7 @@ export function testFocusWasNotReset(setupFunc, description) {
     button.focus();
     assert_equals(document.activeElement, button, "focus() worked");
 
-    const { committed, finished } = appHistory.navigate("#" + location.hash.substring(1) + "1");
+    const { committed, finished } = navigation.navigate("#" + location.hash.substring(1) + "1");
 
     await committed;
     assert_equals(document.activeElement, button, "Focus stays on the button during the transition");

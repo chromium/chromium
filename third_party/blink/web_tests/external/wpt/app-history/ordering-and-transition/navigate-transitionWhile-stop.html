@@ -2,7 +2,7 @@
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
 <meta name="variant" content="">
-<meta name="variant" content="?currentchange">
+<meta name="variant" content="?currententrychange">
 
 <script type="module">
 import { Recorder, hasVariant } from "./resources/helpers.mjs";
@@ -12,20 +12,20 @@ promise_test(async t => {
   // into a replace navigation.
   await new Promise(resolve => window.onload = () => t.step_timeout(resolve, 0));
 
-  const from = appHistory.current;
+  const from = navigation.currentEntry;
 
   const recorder = new Recorder({
-    skipCurrentChange: !hasVariant("currentchange"),
+    skipCurrentChange: !hasVariant("currententrychange"),
     finalExpectedEvent: "transition.finished rejected"
   });
 
   recorder.setUpAppHistoryListeners();
 
-  appHistory.addEventListener("navigate", e => {
+  navigation.addEventListener("navigate", e => {
     e.transitionWhile(Promise.resolve());
   });
 
-  const result = appHistory.navigate("/common/blank.html#1");
+  const result = navigation.navigate("/common/blank.html#1");
   recorder.setUpResultListeners(result);
 
   Promise.resolve().then(() => recorder.record("promise microtask"));
@@ -35,9 +35,9 @@ promise_test(async t => {
   await recorder.readyToAssert;
 
   recorder.assert([
-    /* event name, location.hash value, appHistory.transition properties */
+    /* event name, location.hash value, navigation.transition properties */
     ["navigate", "", null],
-    ["currentchange", "#1", { from, navigationType: "push" }],
+    ["currententrychange", "#1", { from, navigationType: "push" }],
     ["AbortSignal abort", "#1", { from, navigationType: "push" }],
     ["navigateerror", "#1", { from, navigationType: "push" }],
     ["committed fulfilled", "#1", null],
@@ -47,5 +47,5 @@ promise_test(async t => {
   ]);
 
   recorder.assertErrorsAreAbortErrors();
-}, "event and promise ordering for appHistory.navigate() intercepted by transitionWhile() but then stopped using window.stop()");
+}, "event and promise ordering for navigation.navigate() intercepted by transitionWhile() but then stopped using window.stop()");
 </script>

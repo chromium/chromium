@@ -6,61 +6,61 @@
 import { testFocusWasReset, testFocusWasNotReset } from "./resources/helpers.mjs";
 
 testFocusWasReset(t => {
-  appHistory.addEventListener("navigate", e => {
+  navigation.addEventListener("navigate", e => {
     e.transitionWhile(Promise.resolve());
   }, { once: true });
 
-  appHistory.addEventListener("navigate", e => {
+  navigation.addEventListener("navigate", e => {
     e.transitionWhile(Promise.resolve(), { focusReset: "after-transition" });
   }, { once: true });
 }, "(not provided) + after-transition");
 
 testFocusWasNotReset(t => {
-  appHistory.addEventListener("navigate", e => {
+  navigation.addEventListener("navigate", e => {
     e.transitionWhile(Promise.resolve());
   }, { once: true });
 
-  appHistory.addEventListener("navigate", e => {
+  navigation.addEventListener("navigate", e => {
     e.transitionWhile(Promise.resolve(), { focusReset: "manual" });
   }, { once: true });
 }, "(not provided) + manual");
 
 testFocusWasNotReset(t => {
-  appHistory.addEventListener("navigate", e => {
+  navigation.addEventListener("navigate", e => {
     e.transitionWhile(Promise.resolve(), { focusReset: "after-transition" });
   }, { once: true });
 
-  appHistory.addEventListener("navigate", e => {
+  navigation.addEventListener("navigate", e => {
     e.transitionWhile(Promise.resolve(), { focusReset: "manual" });
   }, { once: true });
 }, "after-transition + manual");
 
 testFocusWasReset(t => {
-  appHistory.addEventListener("navigate", e => {
+  navigation.addEventListener("navigate", e => {
     e.transitionWhile(Promise.resolve(), { focusReset: "after-transition" });
   }, { once: true });
 
-  appHistory.addEventListener("navigate", e => {
+  navigation.addEventListener("navigate", e => {
     e.transitionWhile(Promise.resolve());
   }, { once: true });
 }, "after-transition + (not provided)");
 
 testFocusWasReset(t => {
-  appHistory.addEventListener("navigate", e => {
+  navigation.addEventListener("navigate", e => {
     e.transitionWhile(Promise.resolve(), { focusReset: "manual" });
   }, { once: true });
 
-  appHistory.addEventListener("navigate", e => {
+  navigation.addEventListener("navigate", e => {
     e.transitionWhile(Promise.resolve(), { focusReset: "after-transition" });
   }, { once: true });
 }, "manual + after-transition");
 
 testFocusWasNotReset(t => {
-  appHistory.addEventListener("navigate", e => {
+  navigation.addEventListener("navigate", e => {
     e.transitionWhile(Promise.resolve(), { focusReset: "manual" });
   }, { once: true });
 
-  appHistory.addEventListener("navigate", e => {
+  navigation.addEventListener("navigate", e => {
     e.transitionWhile(Promise.resolve());
   }, { once: true });
 }, "manual + (not provided)");

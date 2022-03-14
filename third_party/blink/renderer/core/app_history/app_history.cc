@@ -87,7 +87,7 @@ class NavigateReaction final : public ScriptFunction::Callable {
       return ScriptValue();
     }
 
-    AppHistory* app_history = AppHistory::appHistory(*window);
+    AppHistory* app_history = AppHistory::navigation(*window);
     app_history->ongoing_navigation_signal_ = nullptr;
 
     if (resolve_type_ == ResolveType::kFulfill) {
@@ -175,7 +175,7 @@ String DetermineNavigationType(WebFrameLoadType type) {
 
 const char AppHistory::kSupplementName[] = "AppHistory";
 
-AppHistory* AppHistory::appHistory(LocalDOMWindow& window) {
+AppHistory* AppHistory::navigation(LocalDOMWindow& window) {
   return RuntimeEnabledFeatures::AppHistoryEnabled(&window) ? From(window)
                                                             : nullptr;
 }
@@ -244,7 +244,7 @@ void AppHistory::InitializeForNewWindow(
         MakeGarbageCollected<AppHistoryEntry>(GetSupplementable(), entry));
   }
 
-  current_index_ = base::checked_cast<wtf_size_t>(back_entries.size());
+  current_entry_index_ = base::checked_cast<wtf_size_t>(back_entries.size());
   entries_.emplace_back(
       MakeGarbageCollected<AppHistoryEntry>(GetSupplementable(), &current));
 
@@ -274,7 +274,7 @@ void AppHistory::CloneFromPrevious(AppHistory& previous) {
     entries_.emplace_back(
         MakeGarbageCollected<AppHistoryEntry>(GetSupplementable(), new_item));
   }
-  current_index_ = previous.current_index_;
+  current_entry_index_ = previous.current_entry_index_;
   PopulateKeySet();
 }
 
@@ -285,7 +285,7 @@ void AppHistory::UpdateForNavigation(HistoryItem& item, WebFrameLoadType type) {
   if (entries_.IsEmpty())
     return;
 
-  AppHistoryEntry* old_current = current();
+  AppHistoryEntry* old_current = currentEntry();
 
   HeapVector<Member<AppHistoryEntry>> disposed_entries;
   if (type == WebFrameLoadType::kBackForward) {
@@ -293,19 +293,19 @@ void AppHistory::UpdateForNavigation(HistoryItem& item, WebFrameLoadType type) {
     // entry should already be present in entries_ and its key in
     // keys_to_indices_.
     DCHECK(keys_to_indices_.Contains(item.GetAppHistoryKey()));
-    current_index_ = keys_to_indices_.at(item.GetAppHistoryKey());
+    current_entry_index_ = keys_to_indices_.at(item.GetAppHistoryKey());
   } else if (type == WebFrameLoadType::kStandard) {
     // For a new back/forward entry, truncate any forward entries and prepare
     // to append.
-    current_index_++;
-    for (wtf_size_t i = current_index_; i < entries_.size(); i++) {
+    current_entry_index_++;
+    for (wtf_size_t i = current_entry_index_; i < entries_.size(); i++) {
       keys_to_indices_.erase(entries_[i]->key());
       disposed_entries.push_back(entries_[i]);
     }
-    entries_.resize(current_index_ + 1);
+    entries_.resize(current_entry_index_ + 1);
   } else if (type == WebFrameLoadType::kReplaceCurrentItem) {
-    DCHECK_NE(current_index_, -1);
-    disposed_entries.push_back(entries_[current_index_]);
+    DCHECK_NE(current_entry_index_, -1);
+    disposed_entries.push_back(entries_[current_entry_index_]);
   }
 
   if (type == WebFrameLoadType::kStandard ||
@@ -313,9 +313,10 @@ void AppHistory::UpdateForNavigation(HistoryItem& item, WebFrameLoadType type) {
     // current_index_ is now correctly set (for type of
     // WebFrameLoadType::kReplaceCurrentItem, it didn't change). Create the new
     // current entry.
-    entries_[current_index_] =
+    entries_[current_entry_index_] =
         MakeGarbageCollected<AppHistoryEntry>(GetSupplementable(), &item);
-    keys_to_indices_.insert(entries_[current_index_]->key(), current_index_);
+    keys_to_indices_.insert(entries_[current_entry_index_]->key(),
+                            current_entry_index_);
   }
 
   // Note how reload types don't update the current entry or dispose any
@@ -326,14 +327,14 @@ void AppHistory::UpdateForNavigation(HistoryItem& item, WebFrameLoadType type) {
   // ongoing_navigation_.
   if (ongoing_navigation_) {
     ongoing_navigation_->NotifyAboutTheCommittedToEntry(
-        entries_[current_index_]);
+        entries_[current_entry_index_]);
   }
 
   auto* init = AppHistoryCurrentChangeEventInit::Create();
   init->setNavigationType(DetermineNavigationType(type));
   init->setFrom(old_current);
   DispatchEvent(*AppHistoryCurrentChangeEvent::Create(
-      event_type_names::kCurrentchange, init));
+      event_type_names::kCurrententrychange, init));
 
   for (const auto& disposed_entry : disposed_entries) {
     disposed_entry->DispatchEvent(*Event::Create(event_type_names::kDispose));
@@ -382,12 +383,12 @@ void AppHistory::SetEntriesForRestore(
                                      entry_arrays->forward_entries.size() + 1));
   for (const auto& item : entry_arrays->back_entries)
     new_entries.emplace_back(GetEntryForRestore(item));
-  new_entries.emplace_back(current());
+  new_entries.emplace_back(currentEntry());
   for (const auto& item : entry_arrays->forward_entries)
     new_entries.emplace_back(GetEntryForRestore(item));
 
   new_entries.swap(entries_);
-  current_index_ =
+  current_entry_index_ =
       base::checked_cast<wtf_size_t>(entry_arrays->back_entries.size());
   keys_to_indices_.clear();
   PopulateKeySet();
@@ -407,12 +408,12 @@ void AppHistory::SetEntriesForRestore(
                                       WrapPersistent(disposed_entries)));
 }
 
-AppHistoryEntry* AppHistory::current() const {
+AppHistoryEntry* AppHistory::currentEntry() const {
   // current_index_ is initialized to -1 and set >= 0 when entries_ is
   // populated. It will still be negative if the appHistory of an initial empty
   // document or opaque-origin document is accessed.
-  return !HasEntriesAndEventsDisabled() && current_index_ >= 0
-             ? entries_[current_index_]
+  return !HasEntriesAndEventsDisabled() && current_entry_index_ >= 0
+             ? entries_[current_entry_index_]
              : nullptr;
 }
 
@@ -421,9 +422,9 @@ HeapVector<Member<AppHistoryEntry>> AppHistory::entries() {
                                        : entries_;
 }
 
-void AppHistory::updateCurrent(AppHistoryUpdateCurrentOptions* options,
-                               ExceptionState& exception_state) {
-  AppHistoryEntry* current_entry = current();
+void AppHistory::updateCurrentEntry(AppHistoryUpdateCurrentOptions* options,
+                                    ExceptionState& exception_state) {
+  AppHistoryEntry* current_entry = currentEntry();
 
   if (!current_entry) {
     exception_state.ThrowDOMException(
@@ -442,7 +443,7 @@ void AppHistory::updateCurrent(AppHistoryUpdateCurrentOptions* options,
   auto* init = AppHistoryCurrentChangeEventInit::Create();
   init->setFrom(current_entry);
   DispatchEvent(*AppHistoryCurrentChangeEvent::Create(
-      event_type_names::kCurrentchange, init));
+      event_type_names::kCurrententrychange, init));
 }
 
 AppHistoryResult* AppHistory::navigate(ScriptState* script_state,
@@ -501,7 +502,7 @@ AppHistoryResult* AppHistory::reload(ScriptState* script_state,
         exception_state.ClearException();
         return result;
       }
-    } else if (AppHistoryEntry* current_entry = current()) {
+    } else if (AppHistoryEntry* current_entry = currentEntry()) {
       serialized_state = current_entry->GetItem()->GetAppHistoryState();
     }
   }
@@ -542,14 +543,14 @@ AppHistoryResult* AppHistory::PerformNonTraverseNavigation(
   }
 
   if (SerializedScriptValue* state = navigation->TakeSerializedState()) {
-    current()->GetItem()->SetAppHistoryState(state);
+    currentEntry()->GetItem()->SetAppHistoryState(state);
   }
   return navigation->GetAppHistoryResult();
 }
 
-AppHistoryResult* AppHistory::goTo(ScriptState* script_state,
-                                   const String& key,
-                                   AppHistoryNavigationOptions* options) {
+AppHistoryResult* AppHistory::traverseTo(ScriptState* script_state,
+                                         const String& key,
+                                         AppHistoryNavigationOptions* options) {
   if (DOMException* maybe_ex =
           PerformSharedNavigationChecks("goTo()/back()/forward()")) {
     return EarlyErrorResult(script_state, maybe_ex);
@@ -559,8 +560,8 @@ AppHistoryResult* AppHistory::goTo(ScriptState* script_state,
     return EarlyErrorResult(script_state, DOMExceptionCode::kInvalidStateError,
                             "Invalid key");
   }
-  if (key == current()->key()) {
-    return EarlySuccessResult(script_state, current());
+  if (key == currentEntry()->key()) {
+    return EarlySuccessResult(script_state, currentEntry());
   }
 
   auto previous_navigation = upcoming_traversals_.find(key);
@@ -580,12 +581,12 @@ AppHistoryResult* AppHistory::goTo(ScriptState* script_state,
 }
 
 bool AppHistory::canGoBack() const {
-  return !HasEntriesAndEventsDisabled() && current_index_ > 0;
+  return !HasEntriesAndEventsDisabled() && current_entry_index_ > 0;
 }
 
 bool AppHistory::canGoForward() const {
-  return !HasEntriesAndEventsDisabled() && current_index_ != -1 &&
-         static_cast<size_t>(current_index_) < entries_.size() - 1;
+  return !HasEntriesAndEventsDisabled() && current_entry_index_ != -1 &&
+         static_cast<size_t>(current_entry_index_) < entries_.size() - 1;
 }
 
 AppHistoryResult* AppHistory::back(ScriptState* script_state,
@@ -594,7 +595,8 @@ AppHistoryResult* AppHistory::back(ScriptState* script_state,
     return EarlyErrorResult(script_state, DOMExceptionCode::kInvalidStateError,
                             "Cannot go back");
   }
-  return goTo(script_state, entries_[current_index_ - 1]->key(), options);
+  return traverseTo(script_state, entries_[current_entry_index_ - 1]->key(),
+                    options);
 }
 
 AppHistoryResult* AppHistory::forward(ScriptState* script_state,
@@ -603,7 +605,8 @@ AppHistoryResult* AppHistory::forward(ScriptState* script_state,
     return EarlyErrorResult(script_state, DOMExceptionCode::kInvalidStateError,
                             "Cannot go forward");
   }
-  return goTo(script_state, entries_[current_index_ + 1]->key(), options);
+  return traverseTo(script_state, entries_[current_entry_index_ + 1]->key(),
+                    options);
 }
 
 DOMException* AppHistory::PerformSharedNavigationChecks(
@@ -761,7 +764,7 @@ AppHistory::DispatchResult AppHistory::DispatchNavigateEvent(
   auto promise_list = navigate_event->GetNavigationActionPromisesList();
   if (!promise_list.IsEmpty()) {
     transition_ = MakeGarbageCollected<AppHistoryTransition>(
-        script_state, navigation_type, current());
+        script_state, navigation_type, currentEntry());
     // In the spec, the URL and history update steps are not called for reloads.
     // In our implementation, we call the corresponding function anyway, but
     // |type| being a reload type makes it do none of the spec-relevant

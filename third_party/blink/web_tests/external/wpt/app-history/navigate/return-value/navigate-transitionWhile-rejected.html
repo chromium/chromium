@@ -8,10 +8,10 @@ promise_test(async t => {
   const err = new Error("boo!");
   const promise = Promise.reject(err);
   promise.catch(() => {}); // prevent unhandled rejection testharness.js errors
-  appHistory.onnavigate = e => e.transitionWhile(promise);
+  navigation.onnavigate = e => e.transitionWhile(promise);
 
-  const result = appHistory.navigate("#1");
+  const result = navigation.navigate("#1");
 
-  await assertCommittedFulfillsFinishedRejectsExactly(t, result, appHistory.current, err);
+  await assertCommittedFulfillsFinishedRejectsExactly(t, result, navigation.currentEntry, err);
 }, "navigate() and transitionWhile() with a rejected promise");
 </script>

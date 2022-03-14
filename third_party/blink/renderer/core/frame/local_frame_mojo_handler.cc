@@ -1151,7 +1151,7 @@ void LocalFrameMojoHandler::GetCanonicalUrlForSharing(
 
 void LocalFrameMojoHandler::SetAppHistoryEntriesForRestore(
     mojom::blink::AppHistoryEntryArraysPtr entry_arrays) {
-  if (AppHistory* app_history = AppHistory::appHistory(*frame_->DomWindow()))
+  if (AppHistory* app_history = AppHistory::navigation(*frame_->DomWindow()))
     app_history->SetEntriesForRestore(entry_arrays);
 }
 

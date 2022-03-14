@@ -11,8 +11,8 @@ promise_test(async t => {
 
   const iWindow = i.contentWindow;
   const iDOMException = iWindow.DOMException;
-  i.contentWindow.appHistory.onnavigate = () => i.remove();
+  i.contentWindow.navigation.onnavigate = () => i.remove();
 
-  await assertBothRejectDOM(t, i.contentWindow.appHistory.reload(), "AbortError", iWindow, iDOMException);
+  await assertBothRejectDOM(t, i.contentWindow.navigation.reload(), "AbortError", iWindow, iDOMException);
 }, "reload() promise rejections when detaching an iframe inside onnavigate");
 </script>

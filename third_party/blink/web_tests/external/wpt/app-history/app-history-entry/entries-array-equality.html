@@ -3,6 +3,6 @@
 <script src="/resources/testharnessreport.js"></script>
 <script>
 test(() => {
-  assert_not_equals(appHistory.entries(), appHistory.entries());
-}, "appHistory.entries() should not return an identical object on repeated invocations");
+  assert_not_equals(navigation.entries(), navigation.entries());
+}, "navigation.entries() should not return an identical object on repeated invocations");
 </script>

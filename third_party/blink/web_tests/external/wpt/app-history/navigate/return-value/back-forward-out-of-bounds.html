@@ -5,12 +5,12 @@
 
 <script>
 promise_test(async t => {
-  assert_equals(appHistory.entries().length, 1);
-  assert_equals(appHistory.entries()[0], appHistory.current);
-  assert_false(appHistory.canGoBack);
-  assert_false(appHistory.canGoForward);
+  assert_equals(navigation.entries().length, 1);
+  assert_equals(navigation.entries()[0], navigation.currentEntry);
+  assert_false(navigation.canGoBack);
+  assert_false(navigation.canGoForward);
 
-  await assertBothRejectDOM(t, appHistory.back(), "InvalidStateError");
-  await assertBothRejectDOM(t, appHistory.forward(), "InvalidStateError");
+  await assertBothRejectDOM(t, navigation.back(), "InvalidStateError");
+  await assertBothRejectDOM(t, navigation.forward(), "InvalidStateError");
 }, "back() and forward() out of bounds");
 </script>

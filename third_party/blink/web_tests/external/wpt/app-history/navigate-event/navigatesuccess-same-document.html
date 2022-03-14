@@ -4,7 +4,7 @@
 <a id="a" href="#1"></a>
 <script>
 async_test(t => {
-  appHistory.onnavigatesuccess = t.step_func_done(() => assert_equals(location.hash, "#1"));
+  navigation.onnavigatesuccess = t.step_func_done(() => assert_equals(location.hash, "#1"));
   a.click();
 }, "navigatesuccess fires for a same-document navigation");
 </script>

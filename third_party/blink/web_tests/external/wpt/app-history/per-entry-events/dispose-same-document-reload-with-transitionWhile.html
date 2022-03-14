@@ -8,10 +8,10 @@ promise_test(async (t) => {
   // into a replace navigation.
   await new Promise(r => window.onload = () => t.step_timeout(r, 0));
 
-  appHistory.current.ondispose = t.unreached_func("dispose must not happen for reloads");
+  navigation.currentEntry.ondispose = t.unreached_func("dispose must not happen for reloads");
 
-  appHistory.addEventListener("navigate", e => e.transitionWhile(Promise.resolve()));
+  navigation.addEventListener("navigate", e => e.transitionWhile(Promise.resolve()));
 
-  await appHistory.reload().finished;
-}, "dispose events are not fired when doing a same-document reload using appHistory.reload() and transitionWhile()");
+  await navigation.reload().finished;
+}, "dispose events are not fired when doing a same-document reload using navigation.reload() and transitionWhile()");
 </script>

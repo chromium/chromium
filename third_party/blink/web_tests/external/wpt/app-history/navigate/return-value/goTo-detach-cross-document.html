@@ -11,19 +11,19 @@ promise_test(async t => {
   // into a replace navigation.
   await new Promise(resolve => window.onload = () => t.step_timeout(resolve, 0));
 
-  assert_equals(i.contentWindow.appHistory.entries().length, 1);
-  let key = i.contentWindow.appHistory.current.key;
+  assert_equals(i.contentWindow.navigation.entries().length, 1);
+  let key = i.contentWindow.navigation.currentEntry.key;
 
-  i.contentWindow.appHistory.navigate("?1");
+  i.contentWindow.navigation.navigate("?1");
   await new Promise(resolve => i.onload = resolve);
 
-  assert_equals(i.contentWindow.appHistory.entries().length, 2);
-  assert_equals(i.contentWindow.appHistory.current, i.contentWindow.appHistory.entries()[1]);
+  assert_equals(i.contentWindow.navigation.entries().length, 2);
+  assert_equals(i.contentWindow.navigation.currentEntry, i.contentWindow.navigation.entries()[1]);
 
   const iWindow = i.contentWindow;
   const iDOMException = iWindow.DOMException;
-  i.contentWindow.appHistory.onnavigate = () => i.remove();
+  i.contentWindow.navigation.onnavigate = () => i.remove();
 
-  await assertBothRejectDOM(t, i.contentWindow.appHistory.goTo(key), "AbortError", iWindow, iDOMException);
-}, "goTo() promise rejections when detaching an iframe inside onnavigate (cross-document)");
+  await assertBothRejectDOM(t, i.contentWindow.navigation.traverseTo(key), "AbortError", iWindow, iDOMException);
+}, "traverseTo() promise rejections when detaching an iframe inside onnavigate (cross-document)");
 </script>
