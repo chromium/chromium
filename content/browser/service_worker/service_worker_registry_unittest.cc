@@ -30,6 +30,9 @@ namespace content {
 
 namespace {
 
+using ::testing::Eq;
+using ::testing::Pointee;
+
 struct ReadResponseHeadResult {
   int result;
   network::mojom::URLResponseHeadPtr response_head;
@@ -715,13 +718,14 @@ TEST_F(ServiceWorkerRegistryTest, StoreFindUpdateDeleteRegistration) {
   blink::mojom::ServiceWorkerRegistrationOptions options;
   options.scope = kScope;
   scoped_refptr<ServiceWorkerRegistration> live_registration =
-      new ServiceWorkerRegistration(options, kKey, kRegistrationId,
-                                    context()->AsWeakPtr());
-  scoped_refptr<ServiceWorkerVersion> live_version = new ServiceWorkerVersion(
-      live_registration.get(), kResource1, blink::mojom::ScriptType::kClassic,
-      kVersionId,
-      mojo::PendingRemote<storage::mojom::ServiceWorkerLiveVersionRef>(),
-      context()->AsWeakPtr());
+      base::MakeRefCounted<ServiceWorkerRegistration>(
+          options, kKey, kRegistrationId, context()->AsWeakPtr());
+  scoped_refptr<ServiceWorkerVersion> live_version =
+      base::MakeRefCounted<ServiceWorkerVersion>(
+          live_registration.get(), kResource1,
+          blink::mojom::ScriptType::kClassic, kVersionId,
+          mojo::PendingRemote<storage::mojom::ServiceWorkerLiveVersionRef>(),
+          context()->AsWeakPtr());
   live_version->set_fetch_handler_existence(
       ServiceWorkerVersion::FetchHandlerExistence::EXISTS);
   live_version->SetStatus(ServiceWorkerVersion::INSTALLED);
@@ -757,9 +761,9 @@ TEST_F(ServiceWorkerRegistryTest, StoreFindUpdateDeleteRegistration) {
             found_registration->resources_total_size_bytes());
   EXPECT_EQ(used_features,
             found_registration->waiting_version()->used_features());
-  EXPECT_EQ(
+  EXPECT_THAT(
       found_registration->waiting_version()->cross_origin_embedder_policy(),
-      coep_require_corp);
+      Pointee(Eq(coep_require_corp)));
   found_registration = nullptr;
 
   // But FindRegistrationForScope is always async.

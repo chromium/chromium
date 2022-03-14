@@ -18,7 +18,6 @@
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/site_instance.h"
 #include "content/public/common/child_process_host.h"
-#include "services/network/public/cpp/cross_origin_embedder_policy.h"
 #include "url/gurl.h"
 
 namespace content {
@@ -85,8 +84,7 @@ blink::ServiceWorkerStatusCode
 ServiceWorkerProcessManager::AllocateWorkerProcess(
     int embedded_worker_id,
     const GURL& script_url,
-    const absl::optional<network::CrossOriginEmbedderPolicy>&
-        cross_origin_embedder_policy,
+    network::mojom::CrossOriginEmbedderPolicyValue coep_value,
     bool can_use_existing_process,
     AllocatedProcessInfo* out_info) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
@@ -120,9 +118,7 @@ ServiceWorkerProcessManager::AllocateWorkerProcess(
   DCHECK(storage_partition_);
   const bool is_guest = storage_partition_->is_guest();
   const bool is_coop_coep_cross_origin_isolated =
-      !is_guest && cross_origin_embedder_policy.has_value() &&
-      network::CompatibleWithCrossOriginIsolated(
-          cross_origin_embedder_policy->value);
+      !is_guest && network::CompatibleWithCrossOriginIsolated(coep_value);
   UrlInfo url_info(
       UrlInfoInit(script_url)
           .WithStoragePartitionConfig(storage_partition_->GetConfig())

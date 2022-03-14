@@ -46,6 +46,7 @@
 #include "net/base/test_completion_callback.h"
 #include "net/http/http_response_headers.h"
 #include "services/network/public/cpp/features.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/features.h"
@@ -58,14 +59,17 @@
 #include "third_party/blink/public/mojom/service_worker/service_worker_registration_options.mojom.h"
 #include "url/origin.h"
 
-using net::IOBuffer;
-using net::TestCompletionCallback;
-using net::WrappedIOBuffer;
-
 // Unit tests for testing all job registration tasks.
 namespace content {
 
 namespace {
+
+using net::IOBuffer;
+using net::TestCompletionCallback;
+using net::WrappedIOBuffer;
+
+using ::testing::Eq;
+using ::testing::Pointee;
 
 void SaveRegistrationCallback(
     blink::ServiceWorkerStatusCode expected_status,
@@ -2114,8 +2118,8 @@ Cross-Origin-Embedder-Policy: none
   // COEP is populated here because the worker's script is loaded as a part of
   // the start worker sequence before registration and the response header is
   // reflected to the version at that point
-  EXPECT_EQ(CrossOriginEmbedderPolicyNone(),
-            registration->active_version()->cross_origin_embedder_policy());
+  EXPECT_THAT(registration->active_version()->cross_origin_embedder_policy(),
+              Pointee(Eq(CrossOriginEmbedderPolicyNone())));
 
   registration->AddListener(update_helper_);
 
@@ -2146,8 +2150,8 @@ Cross-Origin-Embedder-Policy: none
     EXPECT_LT(kYesterday, registration->last_update_check());
     EXPECT_TRUE(update_helper_->update_found_);
     ASSERT_NE(nullptr, registration->waiting_version());
-    EXPECT_EQ(CrossOriginEmbedderPolicyRequireCorp(),
-              registration->waiting_version()->cross_origin_embedder_policy());
+    EXPECT_THAT(registration->waiting_version()->cross_origin_embedder_policy(),
+                Pointee(Eq(CrossOriginEmbedderPolicyRequireCorp())));
   }
 
   // Run an update again where the COEP value and the body has been updated. The
@@ -2163,8 +2167,8 @@ Cross-Origin-Embedder-Policy: none
     EXPECT_LT(kYesterday, registration->last_update_check());
     EXPECT_TRUE(update_helper_->update_found_);
     ASSERT_NE(nullptr, registration->waiting_version());
-    EXPECT_EQ(CrossOriginEmbedderPolicyNone(),
-              registration->waiting_version()->cross_origin_embedder_policy());
+    EXPECT_THAT(registration->waiting_version()->cross_origin_embedder_policy(),
+                Pointee(Eq(CrossOriginEmbedderPolicyNone())));
   }
 }
 

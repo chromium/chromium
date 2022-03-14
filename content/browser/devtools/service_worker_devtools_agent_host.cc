@@ -26,6 +26,7 @@
 #include "content/public/browser/browser_thread.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "net/cookies/site_for_cookies.h"
+#include "services/network/public/mojom/client_security_state.mojom.h"
 #include "services/network/public/mojom/network_context.mojom-forward.h"
 
 namespace content {
@@ -149,8 +150,7 @@ ServiceWorkerDevToolsAgentHost::ServiceWorkerDevToolsAgentHost(
     const GURL& url,
     const GURL& scope,
     bool is_installed_version,
-    absl::optional<network::CrossOriginEmbedderPolicy>
-        cross_origin_embedder_policy,
+    network::mojom::ClientSecurityStatePtr client_security_state,
     mojo::PendingRemote<network::mojom::CrossOriginEmbedderPolicyReporter>
         coep_reporter,
     const base::UnguessableToken& devtools_worker_token)
@@ -168,7 +168,7 @@ ServiceWorkerDevToolsAgentHost::ServiceWorkerDevToolsAgentHost(
       scope_(scope),
       version_installed_time_(is_installed_version ? base::Time::Now()
                                                    : base::Time()),
-      cross_origin_embedder_policy_(std::move(cross_origin_embedder_policy)),
+      client_security_state_(std::move(client_security_state)),
       coep_reporter_(std::move(coep_reporter)) {
   UpdateProcessHost();
   NotifyCreated();
@@ -273,11 +273,12 @@ void ServiceWorkerDevToolsAgentHost::WorkerReadyForInspection(
     UpdateIsAttached(true);
 }
 
-void ServiceWorkerDevToolsAgentHost::UpdateCrossOriginEmbedderPolicy(
-    network::CrossOriginEmbedderPolicy cross_origin_embedder_policy,
+void ServiceWorkerDevToolsAgentHost::UpdateClientSecurityState(
+    network::mojom::ClientSecurityStatePtr client_security_state,
     mojo::PendingRemote<network::mojom::CrossOriginEmbedderPolicyReporter>
         coep_reporter) {
-  cross_origin_embedder_policy_ = std::move(cross_origin_embedder_policy);
+  DCHECK(client_security_state);
+  client_security_state_ = std::move(client_security_state);
   coep_reporter_.Bind(std::move(coep_reporter));
 }
 
@@ -337,6 +338,9 @@ void ServiceWorkerDevToolsAgentHost::UpdateLoaderFactories(
   }
   const url::Origin origin = url::Origin::Create(url_);
 
+  // There should never be a COEP reporter without a client security state.
+  DCHECK(!coep_reporter_ || client_security_state_);
+
   mojo::PendingRemote<network::mojom::CrossOriginEmbedderPolicyReporter>
       coep_reporter_for_script_loader;
   mojo::PendingRemote<network::mojom::CrossOriginEmbedderPolicyReporter>
@@ -347,21 +351,14 @@ void ServiceWorkerDevToolsAgentHost::UpdateLoaderFactories(
     coep_reporter_->Clone(
         coep_reporter_for_subresource_loader.InitWithNewPipeAndPassReceiver());
   }
-  // Use the default CrossOriginEmbedderPolicy if
-  // |cross_origin_embedder_policy_| is nullopt. It's acceptable because the
-  // factory bundles are updated with correct COEP value before any subresource
-  // requests in that case.
+
   auto script_bundle = EmbeddedWorkerInstance::CreateFactoryBundle(
-      rph, worker_route_id_, origin,
-      cross_origin_embedder_policy_ ? cross_origin_embedder_policy_.value()
-                                    : network::CrossOriginEmbedderPolicy(),
+      rph, worker_route_id_, origin, client_security_state_.Clone(),
       std::move(coep_reporter_for_script_loader),
       ContentBrowserClient::URLLoaderFactoryType::kServiceWorkerScript,
       GetId());
   auto subresource_bundle = EmbeddedWorkerInstance::CreateFactoryBundle(
-      rph, worker_route_id_, origin,
-      cross_origin_embedder_policy_ ? cross_origin_embedder_policy_.value()
-                                    : network::CrossOriginEmbedderPolicy(),
+      rph, worker_route_id_, origin, client_security_state_.Clone(),
       std::move(coep_reporter_for_subresource_loader),
       ContentBrowserClient::URLLoaderFactoryType::kServiceWorkerSubResource,
       GetId());
@@ -403,7 +400,10 @@ RenderProcessHost* ServiceWorkerDevToolsAgentHost::GetProcessHost() {
 absl::optional<network::CrossOriginEmbedderPolicy>
 ServiceWorkerDevToolsAgentHost::cross_origin_embedder_policy(
     const std::string&) {
-  return cross_origin_embedder_policy_;
+  if (!client_security_state_) {
+    return absl::nullopt;
+  }
+  return client_security_state_->cross_origin_embedder_policy;
 }
 
 void ServiceWorkerDevToolsAgentHost::set_should_pause_on_start(

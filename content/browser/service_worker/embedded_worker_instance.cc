@@ -44,6 +44,7 @@
 #include "net/base/network_isolation_key.h"
 #include "net/cookies/site_for_cookies.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
+#include "services/network/public/mojom/client_security_state.mojom.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
@@ -272,7 +273,7 @@ void EmbeddedWorkerInstance::Start(
   blink::ServiceWorkerStatusCode status =
       process_manager->AllocateWorkerProcess(
           embedded_worker_id(), params->script_url,
-          owner_version_->cross_origin_embedder_policy(),
+          owner_version_->cross_origin_embedder_policy_value(),
           can_use_existing_process, process_info.get());
   if (status != blink::ServiceWorkerStatusCode::kOk) {
     OnSetupFailed(std::move(callback), status);
@@ -305,7 +306,15 @@ void EmbeddedWorkerInstance::Start(
         coep_reporter_for_scripts;
     mojo::PendingRemote<network::mojom::CrossOriginEmbedderPolicyReporter>
         coep_reporter_for_subresources;
-    if (owner_version_->cross_origin_embedder_policy()) {
+
+    network::mojom::ClientSecurityStatePtr client_security_state;
+    const network::CrossOriginEmbedderPolicy* coep = nullptr;
+    if (owner_version_->client_security_state()) {
+      client_security_state = owner_version_->client_security_state()->Clone();
+      coep = &client_security_state->cross_origin_embedder_policy;
+    }
+
+    if (coep) {
       mojo::PendingRemote<blink::mojom::ReportingObserver>
           reporting_observer_remote;
       owner_version_->set_reporting_observer_receiver(
@@ -314,9 +323,7 @@ void EmbeddedWorkerInstance::Start(
           static_cast<StoragePartitionImpl*>(rph->GetStoragePartition());
       coep_reporter_ = std::make_unique<CrossOriginEmbedderPolicyReporter>(
           storage_partition->GetWeakPtr(), params->script_url,
-          owner_version_->cross_origin_embedder_policy()->reporting_endpoint,
-          owner_version_->cross_origin_embedder_policy()
-              ->report_only_reporting_endpoint,
+          coep->reporting_endpoint, coep->report_only_reporting_endpoint,
           owner_version_->reporting_source(),
           // TODO(https://crbug.com/1147281): This is the NetworkIsolationKey of
           // a top-level browsing context, which shouldn't be use for
@@ -340,7 +347,7 @@ void EmbeddedWorkerInstance::Start(
     ServiceWorkerDevToolsManager::GetInstance()->WorkerStarting(
         process_id, routing_id, context_->wrapper(),
         params->service_worker_version_id, params->script_url, params->scope,
-        params->is_installed, owner_version_->cross_origin_embedder_policy(),
+        params->is_installed, client_security_state.Clone(),
         std::move(coep_reporter_for_devtools), &params->devtools_worker_token,
         &params->wait_for_debugger);
     params->service_worker_route_id = routing_id;
@@ -359,13 +366,11 @@ void EmbeddedWorkerInstance::Start(
     // the network service because it can only used until the service worker
     // reaches the 'installed' state.
     if (!params->is_installed) {
-      factory_bundle_for_new_scripts =
-          EmbeddedWorkerInstance::CreateFactoryBundle(
-              rph, routing_id, origin,
-              owner_version_->cross_origin_embedder_policy(),
-              std::move(coep_reporter_for_scripts),
-              ContentBrowserClient::URLLoaderFactoryType::kServiceWorkerScript,
-              params->devtools_worker_token.ToString());
+      factory_bundle_for_new_scripts = CreateFactoryBundle(
+          rph, routing_id, origin, client_security_state.Clone(),
+          std::move(coep_reporter_for_scripts),
+          ContentBrowserClient::URLLoaderFactoryType::kServiceWorkerScript,
+          params->devtools_worker_token.ToString());
     }
 
     // The bundle for the renderer is passed to the service worker, and
@@ -373,8 +378,8 @@ void EmbeddedWorkerInstance::Start(
     // It's OK to not support reconnection to the network service because the
     // service worker terminates itself when the connection breaks, so a new
     // instance can be started.
-    factory_bundle_for_renderer = EmbeddedWorkerInstance::CreateFactoryBundle(
-        rph, routing_id, origin, owner_version_->cross_origin_embedder_policy(),
+    factory_bundle_for_renderer = CreateFactoryBundle(
+        rph, routing_id, origin, std::move(client_security_state),
         std::move(coep_reporter_for_subresources),
         ContentBrowserClient::URLLoaderFactoryType::kServiceWorkerSubResource,
         params->devtools_worker_token.ToString());
@@ -744,8 +749,7 @@ EmbeddedWorkerInstance::CreateFactoryBundle(
     RenderProcessHost* rph,
     int routing_id,
     const url::Origin& origin,
-    const absl::optional<network::CrossOriginEmbedderPolicy>&
-        cross_origin_embedder_policy,
+    network::mojom::ClientSecurityStatePtr client_security_state,
     mojo::PendingRemote<network::mojom::CrossOriginEmbedderPolicyReporter>
         coep_reporter,
     ContentBrowserClient::URLLoaderFactoryType factory_type,
@@ -756,8 +760,14 @@ EmbeddedWorkerInstance::CreateFactoryBundle(
   mojo::PendingReceiver<network::mojom::URLLoaderFactory>
       default_factory_receiver = factory_bundle->pending_default_factory()
                                      .InitWithNewPipeAndPassReceiver();
-  // TODO(crbug.com/1231019): make sure client_security_state is no longer
-  // nullptr anywhere.
+
+  // In certain tests, the worker is started before response headers (and thus
+  // the client security state) are known. Use a default value instead.
+  if (!client_security_state) {
+    client_security_state = network::mojom::ClientSecurityState::New();
+  }
+
+  // TODO(crbug.com/1231019): Tag CL with this bug.
   network::mojom::URLLoaderFactoryParamsPtr factory_params =
       URLLoaderFactoryParamsHelper::CreateForWorker(
           rph, origin,
@@ -768,9 +778,8 @@ EmbeddedWorkerInstance::CreateFactoryBundle(
           static_cast<StoragePartitionImpl*>(rph->GetStoragePartition())
               ->CreateAuthCertObserverForServiceWorker(),
           NetworkServiceDevToolsObserver::MakeSelfOwned(devtools_worker_token),
-          /*client_security_state=*/nullptr,
+          std::move(client_security_state),
           "EmbeddedWorkerInstance::CreateFactoryBundle");
-  bool bypass_redirect_checks = false;
 
   DCHECK(factory_type ==
              ContentBrowserClient::URLLoaderFactoryType::kServiceWorkerScript ||
@@ -778,6 +787,7 @@ EmbeddedWorkerInstance::CreateFactoryBundle(
                              kServiceWorkerSubResource);
 
   // See if the default factory needs to be tweaked by the embedder.
+  bool bypass_redirect_checks = false;
   GetContentClient()->browser()->WillCreateURLLoaderFactory(
       rph->GetBrowserContext(), nullptr /* frame_host */, rph->GetID(),
       factory_type, origin, absl::nullopt /* navigation_id */,
@@ -786,17 +796,6 @@ EmbeddedWorkerInstance::CreateFactoryBundle(
       nullptr /* disable_secure_dns */, &factory_params->factory_override);
   devtools_instrumentation::WillCreateURLLoaderFactoryForServiceWorker(
       rph, routing_id, &factory_params->factory_override);
-
-  factory_params->client_security_state =
-      network::mojom::ClientSecurityState::New();
-
-  // Without PlzServiceWorker, the COEP header might no be known initially for
-  // new ServiceWorker. The default COEP header is used instead here. Later, the
-  // subresource loader factories will be updated with the correct COEP header.
-  // See: https://chromium-review.googlesource.com/c/chromium/src/+/2029403
-  factory_params->client_security_state->cross_origin_embedder_policy =
-      cross_origin_embedder_policy ? cross_origin_embedder_policy.value()
-                                   : network::CrossOriginEmbedderPolicy();
 
   rph->CreateURLLoaderFactory(std::move(default_factory_receiver),
                               std::move(factory_params));
@@ -1001,14 +1000,14 @@ EmbeddedWorkerInstance::MakeScriptLoaderFactoryRemote(
 
 void EmbeddedWorkerInstance::BindCacheStorageInternal() {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  const network::CrossOriginEmbedderPolicy* coep =
+      owner_version_->cross_origin_embedder_policy();
+
   // Without PlzServiceWorker, the COEP header might not be known initially.
   // The in-flight CacheStorage requests are kept until the main script has
   // loaded the headers and the COEP one is known.
-  if (!owner_version_->cross_origin_embedder_policy())
+  if (!coep)
     return;
-
-  network::CrossOriginEmbedderPolicy coep =
-      owner_version_->cross_origin_embedder_policy().value();
 
   for (auto& receiver : pending_cache_storage_receivers_) {
     mojo::PendingRemote<network::mojom::CrossOriginEmbedderPolicyReporter>
@@ -1022,7 +1021,7 @@ void EmbeddedWorkerInstance::BindCacheStorageInternal() {
     if (!rph)
       return;
 
-    rph->BindCacheStorage(coep, std::move(coep_reporter_remote),
+    rph->BindCacheStorage(*coep, std::move(coep_reporter_remote),
                           owner_version_->key(), std::move(receiver));
   }
   pending_cache_storage_receivers_.clear();

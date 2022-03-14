@@ -402,7 +402,7 @@ void ServiceWorkerRegistry::StoreRegistration(
   // loading the main script. This happens in many unittests.
   if (version->cross_origin_embedder_policy()) {
     data->cross_origin_embedder_policy =
-        version->cross_origin_embedder_policy().value();
+        *version->cross_origin_embedder_policy();
   }
 
   ResourceList resources;

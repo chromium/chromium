@@ -18,6 +18,7 @@
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/mock_render_process_host.h"
 #include "content/public/test/test_browser_context.h"
+#include "services/network/public/mojom/cross_origin_embedder_policy.mojom.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
@@ -132,7 +133,7 @@ TEST_F(ServiceWorkerProcessManagerTest,
   blink::ServiceWorkerStatusCode status =
       process_manager_->AllocateWorkerProcess(
           kEmbeddedWorkerId, script_url_,
-          absl::nullopt /* cross_origin_embedder_policy */,
+          network::mojom::CrossOriginEmbedderPolicyValue::kNone,
           true /* can_use_existing_process */, &process_info);
 
   // An existing process should be allocated to the worker.
@@ -176,7 +177,7 @@ TEST_F(ServiceWorkerProcessManagerTest,
   blink::ServiceWorkerStatusCode status =
       process_manager_->AllocateWorkerProcess(
           kEmbeddedWorkerId, script_url_,
-          absl::nullopt /* cross_origin_embedder_policy */,
+          network::mojom::CrossOriginEmbedderPolicyValue::kNone,
           false /* can_use_existing_process */, &process_info);
 
   // A new process should be allocated to the worker.
@@ -205,7 +206,7 @@ TEST_F(ServiceWorkerProcessManagerTest, AllocateWorkerProcess_InShutdown) {
   ServiceWorkerProcessManager::AllocatedProcessInfo process_info;
   blink::ServiceWorkerStatusCode status =
       process_manager_->AllocateWorkerProcess(
-          1, script_url_, absl::nullopt /* cross_origin_embedder_policy */,
+          1, script_url_, network::mojom::CrossOriginEmbedderPolicyValue::kNone,
           true /* can_use_existing_process */, &process_info);
 
   // Allocating a process in shutdown should abort.
@@ -231,7 +232,7 @@ TEST_F(ServiceWorkerProcessManagerTest,
     blink::ServiceWorkerStatusCode status =
         process_manager_->AllocateWorkerProcess(
             kEmbeddedWorkerId, script_url_,
-            absl::nullopt /* cross_origin_embedder_policy */,
+            network::mojom::CrossOriginEmbedderPolicyValue::kNone,
             true /* can_use_existing_process */, &process_info);
     EXPECT_EQ(blink::ServiceWorkerStatusCode::kOk, status);
     EXPECT_EQ(
@@ -274,7 +275,7 @@ TEST_F(ServiceWorkerProcessManagerTest,
     blink::ServiceWorkerStatusCode status =
         process_manager_->AllocateWorkerProcess(
             kEmbeddedWorkerId, script_url_,
-            absl::nullopt /* cross_origin_embedder_policy */,
+            network::mojom::CrossOriginEmbedderPolicyValue::kNone,
             true /* can_use_existing_process */, &process_info);
     EXPECT_EQ(blink::ServiceWorkerStatusCode::kOk, status);
     EXPECT_EQ(

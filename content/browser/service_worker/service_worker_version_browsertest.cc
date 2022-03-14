@@ -71,6 +71,9 @@ namespace content {
 
 namespace {
 
+using ::testing::Eq;
+using ::testing::Pointee;
+
 // V8ScriptRunner::setCacheTimeStamp() stores 16 byte data (marker + tag +
 // timestamp).
 const int kV8CacheTimeStampDataSize =
@@ -1447,8 +1450,8 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerVersionBrowserTest,
   // Once it's started, the worker script is read from the network and the COEP
   // value is set to the version.
   ASSERT_EQ(StartWorker(), blink::ServiceWorkerStatusCode::kOk);
-  EXPECT_EQ(CrossOriginEmbedderPolicyRequireCorp(),
-            version_->cross_origin_embedder_policy());
+  EXPECT_THAT(version_->cross_origin_embedder_policy(),
+              Pointee(Eq(CrossOriginEmbedderPolicyRequireCorp())));
 }
 
 // Tests that JS can be executed in the context of a running service worker.

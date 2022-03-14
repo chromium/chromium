@@ -488,7 +488,7 @@ void ServiceWorkerRegisterJob::OnScriptFetchCompleted(
              message);
     return;
   }
-  DCHECK(version->cross_origin_embedder_policy().has_value());
+  DCHECK(version->client_security_state());
 
   version->set_main_script_load_params(std::move(main_script_load_params));
   StartWorkerForUpdate(std::move(version));

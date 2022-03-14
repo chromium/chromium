@@ -28,6 +28,7 @@
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
+#include "services/network/public/mojom/client_security_state.mojom-forward.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/service_worker/service_worker_status_code.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
@@ -228,13 +229,15 @@ class CONTENT_EXPORT EmbeddedWorkerInstance
 
   // The below can only be called on the UI thread. The returned factory may be
   // later supplied to UpdateLoaderFactories().
+  //
+  // `client_security_state` may be nullptr, in which case a default value is
+  // set in the bundle.
   static std::unique_ptr<blink::PendingURLLoaderFactoryBundle>
   CreateFactoryBundle(
       RenderProcessHost* rph,
       int routing_id,
       const url::Origin& origin,
-      const absl::optional<network::CrossOriginEmbedderPolicy>&
-          cross_origin_embedder_policy,
+      network::mojom::ClientSecurityStatePtr client_security_state,
       mojo::PendingRemote<network::mojom::CrossOriginEmbedderPolicyReporter>
           coep_reporter,
       ContentBrowserClient::URLLoaderFactoryType factory_type,

@@ -49,6 +49,8 @@
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
 #include "services/network/public/cpp/cross_origin_embedder_policy.h"
+#include "services/network/public/mojom/client_security_state.mojom.h"
+#include "services/network/public/mojom/cross_origin_embedder_policy.mojom-forward.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/origin_trials/trial_token_validator.h"
 #include "third_party/blink/public/common/service_worker/service_worker_status_code.h"
@@ -537,11 +539,29 @@ class CONTENT_EXPORT ServiceWorkerVersion
     return used_features_;
   }
 
+  // Sets the COEP used by this service worker.
+  // Must not be called twice with different values.
+  //
+  // TODO(https://crbug.com/1239551): Replace this with
+  // `set_client_security_state()`, and try to enforce that it is only called
+  // once.
   void set_cross_origin_embedder_policy(
       network::CrossOriginEmbedderPolicy cross_origin_embedder_policy);
-  const absl::optional<network::CrossOriginEmbedderPolicy>&
-  cross_origin_embedder_policy() const {
-    return cross_origin_embedder_policy_;
+
+  // Returns the COEP value stored in `client_security_state()`.
+  // Returns `kNone` if `client_security_state()` is nullptr.
+  network::mojom::CrossOriginEmbedderPolicyValue
+  cross_origin_embedder_policy_value() const;
+
+  // Returns a pointer to the COEP stored in `client_security_state()`.
+  // Returns nullptr if `client_security_state()` is nullptr.
+  const network::CrossOriginEmbedderPolicy* cross_origin_embedder_policy()
+      const;
+
+  // Returns the client security state used by this service worker, if any.
+  // Never returns a nullptr value after returning a non-nullptr value.
+  const network::mojom::ClientSecurityState* client_security_state() const {
+    return client_security_state_.get();
   }
 
   void set_script_response_time_for_devtools(base::Time response_time) {
@@ -931,12 +951,20 @@ class CONTENT_EXPORT ServiceWorkerVersion
   // to check if the registration is already deleted or not.
   ServiceWorkerRegistration::Status registration_status_;
 
-  // Cross-Origin-Embedder-Policy for the service worker script. This persists
-  // in the disk. On brand new service workers, the COEP value is not known
-  // initially. It will be set in PrepareForUpdate() once the response headers
-  // are received.
-  absl::optional<network::CrossOriginEmbedderPolicy>
-      cross_origin_embedder_policy_;
+  // The client security state passed to the network URL loader factory used to
+  // fetch service worker subresources.
+  //
+  // For brand new service workers fetched from the network, this is set by
+  // `ServiceWorkerNewScriptLoader` once the script headers have been fetched.
+  // For service worker script updates, this is set by `PrepareForUpdate()` once
+  // the updated script headers have been fetched.
+  // For service workers loaded from disk, this is restored from disk.
+  //
+  // TODO(https://crbug.com/1239551): Set all of this, not just COEP, on script
+  // updates.
+  // TODO(https://crbug.com/1239551): Persist all of this to disk, not just the
+  // COEP field.
+  network::mojom::ClientSecurityStatePtr client_security_state_;
 
   Status status_ = NEW;
   std::unique_ptr<EmbeddedWorkerInstance> embedded_worker_;
