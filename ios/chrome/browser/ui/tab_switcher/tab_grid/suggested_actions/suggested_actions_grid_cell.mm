@@ -22,7 +22,6 @@
     self.backgroundView = [[UIView alloc] init];
     self.backgroundView.backgroundColor =
         [UIColor colorNamed:kGridBackgroundColor];
-    self.accessibilityIdentifier = kSuggestedActionsGridCellIdentifier;
   }
   return self;
 }

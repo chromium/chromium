@@ -20,12 +20,6 @@ extern NSString* const kGridCellCloseButtonIdentifier;
 // Accessibility identifier for the background of the grid.
 extern NSString* const kGridBackgroundIdentifier;
 
-// Accessibility identifier for the grid section header.
-extern NSString* const kGridSectionHeaderIdentifier;
-
-// Accessibility identifier for the suggested actions cell.
-extern NSString* const kSuggestedActionsGridCellIdentifier;
-
 // Grid styling.
 extern NSString* const kGridBackgroundColor;
 

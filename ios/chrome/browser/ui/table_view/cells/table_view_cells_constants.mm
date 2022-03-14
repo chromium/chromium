@@ -29,8 +29,6 @@ const CGFloat kTableViewTrailingContentPadding = 6;
 NSString* const kMaskedPassword = @"••••••••";
 NSString* const kTableViewCellInfoButtonViewId =
     @"kTableViewCellInfoButtonViewId";
-NSString* const kTableViewTabsSearchSuggestedHistoryItemId =
-    @"kTableViewTabsSearchSuggestedHistoryItemId";
 
 CGFloat HorizontalPadding() {
   if (!IsSmallDevice())

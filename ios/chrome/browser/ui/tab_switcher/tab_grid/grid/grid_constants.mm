@@ -18,13 +18,6 @@ NSString* const kGridCellCloseButtonIdentifier =
 // Accessibility identifier for the background of the grid.
 NSString* const kGridBackgroundIdentifier = @"GridBackgroundIdentifier";
 
-// Accessibility identifier for the grid section header.
-NSString* const kGridSectionHeaderIdentifier = @"GridSectionHeaderIdentifier";
-
-// Accessibility identifier for the suggested actions cell.
-NSString* const kSuggestedActionsGridCellIdentifier =
-    @"SuggestedActionsGridCellIdentifier";
-
 // Grid styling.
 NSString* const kGridBackgroundColor = @"grid_background_color";
 
