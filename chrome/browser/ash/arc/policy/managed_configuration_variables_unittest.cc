@@ -33,6 +33,9 @@ typedef std::pair</*input=*/base::Value, /*expected_output=*/base::Value>
     Parameter;
 typedef Parameter ParameterGetter();
 
+constexpr const char kKey1[] = "key1";
+constexpr const char kKey2[] = "key2";
+
 constexpr char kTestEmail[] = "username@somedomain.com";
 constexpr char kTestEmailName[] = "username";
 constexpr char kTestEmailDomain[] = "somedomain.com";
@@ -40,12 +43,13 @@ constexpr char kTestDeviceSerialNumber[] = "CAFE1337";
 constexpr char kTestDeviceDirectoryId[] = "85729104-ef7a-5718d62e72ca";
 constexpr char kTestDeviceAssetId[] = "admin provided test asset ID";
 constexpr char kTestDeviceAnnotatedLocation[] = "admin provided test location";
+constexpr const char kVariablePattern[] = "${%s}";
 
 Parameter SampleWithoutVariables() {
   // Set up an |input| Value without variables.
   base::Value input(base::Value::Type::DICTIONARY);
-  input.SetStringKey("key1", "value1");
-  input.SetStringKey("key2", "value2");
+  input.SetStringKey(kKey1, "value1");
+  input.SetStringKey(kKey2, "value2");
 
   // Expected |output| is the same as the input.
   base::Value output = input.Clone();
@@ -109,12 +113,9 @@ Parameter SampleWithNestedVariables() {
   constexpr const char kNestedEmailKey[] = "sub.subsub.email";
   constexpr const char kNestedSerialNumberKey[] = "sub.subsub.serial_number";
   constexpr const char kKey0[] = "key0";
-  constexpr const char kKey1[] = "key1";
-  constexpr const char kKey2[] = "key2";
   constexpr const char kValue0[] = "value0";
   constexpr const char kValue1[] = "value1";
   constexpr const char kValue2[] = "value2";
-  constexpr const char kVariablePattern[] = "${%s}";
 
   const std::string kUserEmailVariable =
       base::StringPrintf(kVariablePattern, kUserEmail);
@@ -147,8 +148,9 @@ Parameter SampleWithVariableChains() {
   constexpr const char kChain1[] = "chain1";
   constexpr const char kChain2[] = "chain2";
   constexpr const char kChain3[] = "chain3";
-  constexpr const char kChain2Pattern[] = "${%s:%s}";
-  constexpr const char kChain3Pattern[] = "${%s:%s:%s}";
+  constexpr const char kChain2Pattern[] = "chain ${%s:%s} like so";
+  constexpr const char kChain3Pattern[] = "chain ${%s:%s:%s} like so";
+  constexpr const char kChainReplacedPattern[] = "chain %s like so";
 
   const std::string kChainVariable1 =
       base::StringPrintf(kChain2Pattern, kUserEmail, kUserEmailDomain);
@@ -158,6 +160,13 @@ Parameter SampleWithVariableChains() {
   const std::string kChainVariable3 = base::StringPrintf(
       kChain2Pattern, kDeviceAnnotatedLocation, kDeviceAssetId);
 
+  const std::string kReplacedChain1 =
+      base::StringPrintf(kChainReplacedPattern, kTestEmail);
+  const std::string kReplacedChain2 =
+      base::StringPrintf(kChainReplacedPattern, kTestDeviceAssetId);
+  const std::string kReplacedChain3 =
+      base::StringPrintf(kChainReplacedPattern, kTestDeviceAnnotatedLocation);
+
   // Set up an |input| Value with some variable chains.
   base::Value input(base::Value::Type::DICTIONARY);
   input.SetStringKey(kChain1, kChainVariable1);
@@ -166,9 +175,9 @@ Parameter SampleWithVariableChains() {
 
   // Set up an |output| Value where variables have been replaced.
   base::Value output(base::Value::Type::DICTIONARY);
-  output.SetStringKey(kChain1, kTestEmail);
-  output.SetStringKey(kChain2, kTestDeviceAssetId);
-  output.SetStringKey(kChain3, kTestDeviceAnnotatedLocation);
+  output.SetStringKey(kChain1, kReplacedChain1);
+  output.SetStringKey(kChain2, kReplacedChain2);
+  output.SetStringKey(kChain3, kReplacedChain3);
 
   return std::make_pair(std::move(input), std::move(output));
 }
@@ -305,6 +314,45 @@ TEST_F(ManagedConfigurationVariablesTest, IgnoresInvalidVariables) {
   EXPECT_EQ(*dict.FindStringKey(kInvalidKey1), kInvalidChain1);
   EXPECT_EQ(*dict.FindStringKey(kInvalidKey2), kInvalidChain2);
   EXPECT_EQ(*dict.FindStringKey(kInvalidKey3), kInvalidChain3);
+}
+
+TEST_F(ManagedConfigurationVariablesTest, RespectsSpecialCharacters) {
+  // Setup a |dict| with an asset ID variable.
+  const std::string kVariable =
+      base::StringPrintf(kVariablePattern, kDeviceAssetId);
+
+  base::Value dict(base::Value::Type::DICTIONARY);
+  dict.SetStringKey(kKey1, kVariable);
+
+  // Setup a fake asset ID using special characters.
+  constexpr char kSpecialCharacters[] =
+      "`~!@#$%^&*(),_-+={[}}|\\\\:,;\"'<,>.?/{}\",";
+  device_attributes()->SetFakeDeviceAssetId(kSpecialCharacters);
+  RecursivelyReplaceManagedConfigurationVariables(profile(),
+                                                  device_attributes(), &dict);
+  // Expect special characters were replaced correctly.
+  EXPECT_EQ(*dict.FindStringKey(kKey1), kSpecialCharacters);
+}
+
+TEST_F(ManagedConfigurationVariablesTest, RecursiveValuesAreReplacedCorrectly) {
+  // Setup a |dict| with asset ID and location variables.
+  const std::string kVariable1 =
+      base::StringPrintf(kVariablePattern, kDeviceAssetId);
+  const std::string kVariable2 =
+      base::StringPrintf(kVariablePattern, kDeviceAnnotatedLocation);
+
+  base::Value dict(base::Value::Type::DICTIONARY);
+  dict.SetStringKey(kKey1, kVariable1);
+  dict.SetStringKey(kKey2, kVariable2);
+
+  // Setup fake asset ID and location that are also valid variables.
+  device_attributes()->SetFakeDeviceAssetId(kVariable2);
+  device_attributes()->SetFakeDeviceAnotatedLocation(kVariable1);
+  RecursivelyReplaceManagedConfigurationVariables(profile(),
+                                                  device_attributes(), &dict);
+  // Expect variables are replaced only once without an infinite loop.
+  EXPECT_EQ(*dict.FindStringKey(kKey1), kVariable2);
+  EXPECT_EQ(*dict.FindStringKey(kKey2), kVariable1);
 }
 
 TEST_P(ManagedConfigurationVariablesTest, ReplacesVariables) {

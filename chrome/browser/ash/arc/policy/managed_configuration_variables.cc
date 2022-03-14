@@ -9,6 +9,7 @@
 
 #include "base/bind.h"
 #include "base/callback_forward.h"
+#include "base/check.h"
 #include "base/containers/flat_map.h"
 #include "base/strings/string_piece_forward.h"
 #include "base/strings/string_util.h"
@@ -144,33 +145,42 @@ std::vector<base::StringPiece> SplitByColon(const re2::StringPiece& input) {
                                 base::SPLIT_WANT_NONEMPTY);
 }
 
-// Find all captures of |regex| in |input| and replace them in-place with the
-// output of |replacement_getter.Run(match)|.
-void SearchAndReplace(
+// Return a new string where all captures of |regex| in |search_input| have been
+// replaced with the output of |replacement_getter.Run(capture)|.
+std::string SearchAndReplace(
     const re2::RE2& regex,
     base::RepeatingCallback<std::string(const re2::StringPiece&)>
         replacement_getter,
-    std::string* input) {
-  DCHECK(input);
-
-  re2::StringPiece search_input(*input);
+    re2::StringPiece search_input) {
+  std::vector<std::string> output;
   re2::StringPiece capture;
-  // Loop as long as |regex| matches |search_input|.
-  while (re2::RE2::FindAndConsume(&search_input, regex, &capture)) {
-    // Compute a |replacement| for |capture| and replace it into |input|.
-    const std::string replacement = replacement_getter.Run(capture);
-    re2::RE2::Replace(input, regex, replacement);
 
-    // Reset |search_input| with the new |input| after replacement.
-    search_input.set(input->data(), input->size());
+  // Loop as long as |regex| matches |search_input|.
+  while (re2::RE2::PartialMatch(search_input, regex, &capture)) {
+    DCHECK(capture.data() != nullptr);
+    // Output the prefix skipped by PartialMatch until |capture| is found.
+    DCHECK(capture.begin() >= search_input.begin());
+    size_t prefix_size = capture.begin() - search_input.begin();
+    output.emplace_back(search_input.begin(), prefix_size);
+    // Output the replacement for |capture|.
+    output.emplace_back(replacement_getter.Run(capture));
+
+    // Update |search_input| to the suffix after |capture|.
+    DCHECK(search_input.length() >= prefix_size + capture.length());
+    size_t remaining_size =
+        search_input.length() - (prefix_size + capture.length());
+    search_input.set(capture.end(), remaining_size);
   }
+  // Output the remaining |search_input|.
+  output.emplace_back(search_input.data(), search_input.length());
+  return base::JoinString(output, /*separator=*/"");
 }
 
 // Returns a regular expression that matches any one variable in |resolver|.
 std::string ResolverKeyMatcher(const VariableResolver& resolver) {
-  std::vector<const std::string> keys;
+  std::vector<base::StringPiece> keys;
   for (const auto& item : resolver)
-    keys.push_back(item.first);
+    keys.emplace_back(item.first);
   return base::JoinString(keys, /*separator=*/"|");
 }
 
@@ -185,20 +195,23 @@ void ReplaceVariables(const VariableResolver& resolver,
                       std::string* configuration) {
   DCHECK(configuration);
 
-  // |match_variable| matches any of the supported variables in |resolver|.
+  // |variable_matcher| matches any of the supported variables in |resolver|.
   const std::string variable_matcher = ResolverKeyMatcher(resolver);
 
-  // |capture_chain| will match a template and capture the variable chain. E.g.
-  // "${USER_EMAIL:DEVICE_ASSET_ID}" captures "USER_EMAIL:DEVICE_ASSET_ID".
-  // This regex does not match chains with invalid variables.
-  const std::string chain_capture =
-      base::StringPrintf("\\$\\{((?:%s)(?::(?:%s))*)\\}",
+  // |variable_capture| will match and capture a variable template including a
+  // variable chain. This regex does not match templates with invalid variables.
+  const std::string variable_capture =
+      base::StringPrintf("(\\$\\{(?:%s)(?::(?:%s))*\\})",
                          variable_matcher.c_str(), variable_matcher.c_str());
-  const re2::RE2 regex(chain_capture);
+  const re2::RE2 regex(variable_capture);
+  DCHECK(regex.ok()) << "Error compiling regex: " << regex.error();
 
   // Callback to compute values of variable chains matched with |regex|.
   auto chain_resolver = base::BindRepeating(
-      [](const VariableResolver& resolver, const re2::StringPiece& chain) {
+      [](const VariableResolver& resolver, const re2::StringPiece& variable) {
+        // Remove the "${" prefix and the "}" suffix from |variable|.
+        DCHECK(variable.starts_with("${") && variable.ends_with("}"));
+        const re2::StringPiece chain = variable.substr(2, variable.size() - 3);
         const std::vector<base::StringPiece> variables = SplitByColon(chain);
 
         const std::string chain_value =
@@ -208,7 +221,9 @@ void ReplaceVariables(const VariableResolver& resolver,
       },
       resolver);
 
-  SearchAndReplace(regex, std::move(chain_resolver), configuration);
+  std::string replaced_configuration =
+      SearchAndReplace(regex, std::move(chain_resolver), *configuration);
+  *configuration = std::move(replaced_configuration);
 }
 
 void RecursivelySearchAndReplaceVariables(const VariableResolver& resolver,
