@@ -8,11 +8,11 @@
 #include <string>
 #include <vector>
 
+#include "ash/components/attestation/fake_certificate.h"
 #include "ash/components/attestation/mock_attestation_flow.h"
 #include "ash/components/settings/cros_settings_names.h"
 #include "base/bind.h"
 #include "base/run_loop.h"
-#include "chrome/browser/ash/attestation/fake_certificate.h"
 #include "chrome/browser/ash/attestation/platform_verification_flow.h"
 #include "chrome/browser/ash/login/users/mock_user_manager.h"
 #include "chrome/browser/ash/settings/scoped_cros_settings_test_helper.h"

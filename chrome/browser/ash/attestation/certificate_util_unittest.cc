@@ -6,8 +6,8 @@
 
 #include <string>
 
+#include "ash/components/attestation/fake_certificate.h"
 #include "base/time/time.h"
-#include "chrome/browser/ash/attestation/fake_certificate.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace ash {

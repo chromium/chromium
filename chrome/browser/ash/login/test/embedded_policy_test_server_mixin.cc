@@ -8,8 +8,10 @@
 #include <utility>
 
 #include "ash/components/attestation/fake_attestation_flow.h"
+#include "ash/components/attestation/fake_certificate.h"
 #include "base/guid.h"
 #include "base/json/values_util.h"
+#include "base/time/time.h"
 #include "base/values.h"
 #include "chrome/browser/ash/login/test/fake_gaia_mixin.h"
 #include "chrome/browser/ash/login/test/policy_test_server_constants.h"
@@ -162,10 +164,14 @@ void EmbeddedPolicyTestServerMixin::SetPolicyFetchError(int net_error_code) {
 }
 
 void EmbeddedPolicyTestServerMixin::SetFakeAttestationFlow() {
+  std::string valid_certificate;
+  ash::attestation::GetFakeCertificatePEM(base::Days(10), &valid_certificate);
+
   g_browser_process->platform_part()
       ->browser_policy_connector_ash()
       ->SetAttestationFlowForTesting(
-          std::make_unique<attestation::FakeAttestationFlow>());
+          std::make_unique<attestation::FakeAttestationFlow>(
+              std::move(valid_certificate)));
 }
 
 void EmbeddedPolicyTestServerMixin::SetExpectedPsmParamsInDeviceRegisterRequest(

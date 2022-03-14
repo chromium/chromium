@@ -10,3 +10,9 @@ include_rules = [
   "+third_party/abseil-cpp/absl",
   "+third_party/cros_system_api",
 ]
+
+specific_include_rules = {
+  "fake_certificate.cc": [
+    "+net/cert",
+  ],
+}

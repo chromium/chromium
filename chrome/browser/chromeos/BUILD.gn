@@ -4130,8 +4130,6 @@ source_set("unit_tests") {
     "../ash/attestation/certificate_util_unittest.cc",
     "../ash/attestation/enrollment_certificate_uploader_impl_unittest.cc",
     "../ash/attestation/enrollment_id_upload_manager_unittest.cc",
-    "../ash/attestation/fake_certificate.cc",
-    "../ash/attestation/fake_certificate.h",
     "../ash/attestation/machine_certificate_uploader_impl_unittest.cc",
     "../ash/attestation/platform_verification_flow_unittest.cc",
     "../ash/attestation/soft_bind_attestation_flow_unittest.cc",

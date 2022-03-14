@@ -14,10 +14,10 @@ class AccountId;
 namespace ash {
 namespace attestation {
 
-// This fake class always returns a fake certificate.
+// This fake class returns either a fake or supplied certificate.
 class FakeAttestationFlow : public AttestationFlow {
  public:
-  FakeAttestationFlow();
+  explicit FakeAttestationFlow(const std::string& certificate);
   ~FakeAttestationFlow() override;
 
   void GetCertificate(AttestationCertificateProfile certificate_profile,
@@ -26,6 +26,9 @@ class FakeAttestationFlow : public AttestationFlow {
                       bool force_new_key,
                       const std::string& key_name,
                       CertificateCallback callback) override;
+
+ private:
+  std::string certificate_;
 };
 
 }  // namespace attestation

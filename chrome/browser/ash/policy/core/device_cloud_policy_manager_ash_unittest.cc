@@ -10,6 +10,7 @@
 #include <memory>
 #include <utility>
 
+#include "ash/components/attestation/fake_certificate.h"
 #include "ash/components/attestation/mock_attestation_flow.h"
 #include "ash/components/cryptohome/system_salt_getter.h"
 #include "ash/constants/ash_switches.h"
@@ -21,6 +22,7 @@
 #include "base/memory/ref_counted.h"
 #include "base/run_loop.h"
 #include "base/threading/thread_task_runner_handle.h"
+#include "base/time/time.h"
 #include "chrome/browser/ash/ownership/owner_settings_service_ash.h"
 #include "chrome/browser/ash/ownership/owner_settings_service_ash_factory.h"
 #include "chrome/browser/ash/policy/core/device_cloud_policy_client_factory_ash.h"
@@ -101,10 +103,13 @@ void CopyLockResult(base::RunLoop* loop,
 
 void CertCallbackSuccess(
     ash::attestation::AttestationFlow::CertificateCallback callback) {
+  std::string certificate;
+  ash::attestation::GetFakeCertificatePEM(base::Days(10), &certificate);
+
   base::ThreadTaskRunnerHandle::Get()->PostTask(
-      FROM_HERE,
-      base::BindOnce(std::move(callback),
-                     chromeos::attestation::ATTESTATION_SUCCESS, "fake_cert"));
+      FROM_HERE, base::BindOnce(std::move(callback),
+                                chromeos::attestation::ATTESTATION_SUCCESS,
+                                std::move(certificate)));
 }
 
 class TestingDeviceCloudPolicyManagerAsh : public DeviceCloudPolicyManagerAsh {

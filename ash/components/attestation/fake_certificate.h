@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_ASH_ATTESTATION_FAKE_CERTIFICATE_H_
-#define CHROME_BROWSER_ASH_ATTESTATION_FAKE_CERTIFICATE_H_
+#ifndef ASH_COMPONENTS_ATTESTATION_FAKE_CERTIFICATE_H_
+#define ASH_COMPONENTS_ATTESTATION_FAKE_CERTIFICATE_H_
 
 #include <string>
 
@@ -27,4 +27,4 @@ bool GetFakeCertificatePEM(const base::TimeDelta& expiry,
 }  // namespace attestation
 }  // namespace ash
 
-#endif  // CHROME_BROWSER_ASH_ATTESTATION_FAKE_CERTIFICATE_H_
+#endif  // ASH_COMPONENTS_ATTESTATION_FAKE_CERTIFICATE_H_
