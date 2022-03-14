@@ -8223,6 +8223,7 @@ test("unit_tests") {
       "//chrome/browser/supervised_user:test_support",
       "//chrome/browser/supervised_user/kids_chrome_management:proto",
       "//chrome/browser/supervised_user/supervised_user_error_page:unit_tests",
+      "//chrome/browser/supervised_user/supervised_user_features",
       "//chrome/browser/supervised_user/supervised_user_features:unit_tests",
     ]
   }

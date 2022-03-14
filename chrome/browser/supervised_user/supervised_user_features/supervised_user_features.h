@@ -13,6 +13,8 @@ extern const base::Feature kWebFilterInterstitialRefresh;
 
 extern const base::Feature kLocalWebApprovals;
 
+extern const base::Feature kAllowHistoryDeletionForChildAccounts;
+
 // Returns whether refreshed version of the website filter interstitial is
 // enabled.
 bool IsWebFilterInterstitialRefreshEnabled();

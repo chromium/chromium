@@ -7,8 +7,10 @@
 
 #include "base/memory/ref_counted.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/values.h"
 #include "chrome/browser/supervised_user/supervised_user_constants.h"
+#include "chrome/browser/supervised_user/supervised_user_features/supervised_user_features.h"
 #include "chrome/browser/supervised_user/supervised_user_pref_store.h"
 #include "chrome/browser/supervised_user/supervised_user_settings_service.h"
 #include "chrome/common/net/safe_search_util.h"
@@ -95,6 +97,28 @@ void SupervisedUserPrefStoreTest::TearDown() {
   service_.Shutdown();
 }
 
+#if BUILDFLAG(ENABLE_SUPERVISED_USERS)
+TEST_F(SupervisedUserPrefStoreTest,
+       ConfigureSettingsWithHistoryDeletionAllowed) {
+  SupervisedUserPrefStoreFixture fixture(&service_);
+  EXPECT_FALSE(fixture.initialization_completed());
+
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(
+      supervised_users::kAllowHistoryDeletionForChildAccounts);
+
+  pref_store_->SetInitializationCompleted();
+  service_.SetActive(true);
+
+  // kAllowDeletingBrowserHistory is based on the state of the feature
+  // supervised_users::kAllowHistoryDeletionForChildAccounts.
+  // This is enabled in scope.
+  EXPECT_THAT(fixture.changed_prefs()->FindBoolPath(
+                  prefs::kAllowDeletingBrowserHistory),
+              Optional(true));
+}
+#endif
+
 TEST_F(SupervisedUserPrefStoreTest, ConfigureSettings) {
   SupervisedUserPrefStoreFixture fixture(&service_);
   EXPECT_FALSE(fixture.initialization_completed());
@@ -107,7 +131,9 @@ TEST_F(SupervisedUserPrefStoreTest, ConfigureSettings) {
 
   service_.SetActive(true);
 
-  // kAllowDeletingBrowserHistory is hardcoded to false for supervised users.
+  // kAllowDeletingBrowserHistory is based on the state of the feature
+  // supervised_users::kAllowHistoryDeletionForChildAccounts.
+  // This is disabled in scope.
   EXPECT_THAT(fixture.changed_prefs()->FindBoolPath(
                   prefs::kAllowDeletingBrowserHistory),
               Optional(false));
