@@ -5,7 +5,6 @@ enterprise-policy-review@google.com
 # When making changes, also update AshEnterprisePolicyOwners in the GwsQ config:
 # http://google3/chrome/enterprise/gwsq/enterprise-policy-review.gwsq
 anqing@chromium.org
-apotapchuk@chromium.org
 antrim@chromium.org
 atwilson@chromium.org
 bartfab@chromium.org
