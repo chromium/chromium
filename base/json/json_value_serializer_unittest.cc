@@ -213,7 +213,7 @@ TEST(JSONValueDeserializerTest, AllowTrailingComma) {
   std::unique_ptr<Value> root_expected;
   root_expected = deserializer_expected.Deserialize(nullptr, nullptr);
   ASSERT_TRUE(root_expected);
-  ASSERT_TRUE(root->Equals(root_expected.get()));
+  ASSERT_EQ(*root, *root_expected);
 }
 
 TEST(JSONValueSerializerTest, Roundtrip) {
