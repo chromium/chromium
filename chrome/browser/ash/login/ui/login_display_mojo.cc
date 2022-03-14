@@ -65,6 +65,7 @@ void LoginDisplayMojo::UpdateChallengeResponseAuthAvailability(
 void LoginDisplayMojo::Init(const user_manager::UserList& filtered_users,
                             bool show_guest) {
   host_->SetUserCount(filtered_users.size());
+  host_->UpdateAddUserButtonStatus();
   auto* client = LoginScreenClientImpl::Get();
 
   // ExistingUserController::DeviceSettingsChanged and others may initialize the
