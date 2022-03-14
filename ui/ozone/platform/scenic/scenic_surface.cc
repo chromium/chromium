@@ -140,7 +140,11 @@ void ScenicSurface::OnScenicEvents(
         const auto& metrics = event.gfx().metrics().metrics;
         main_shape_size_.set_width(metrics.scale_x);
         main_shape_size_.set_height(metrics.scale_y);
-        UpdateViewHolderScene();
+
+        // Update layout only if Present() was called at least once, i.e. we
+        // have a frame to display.
+        if (last_frame_present_time_ != base::TimeTicks())
+          UpdateViewHolderScene();
         break;
       }
       case fuchsia::ui::gfx::Event::kViewDetachedFromScene: {
@@ -179,7 +183,8 @@ void ScenicSurface::Present(
   TRACE_EVENT_NESTABLE_ASYNC_BEGIN1("viz", "ScenicSurface::PresentFrame",
                                     TRACE_ID_LOCAL(this), "image_id", image_id);
 
-  bool layout_update_required = false;
+  // Always update layout for the first frame.
+  bool layout_update_required = last_frame_present_time_ == base::TimeTicks();
 
   for (auto& overlay_view : overlay_views_) {
     overlay_view.second.should_be_visible = false;
