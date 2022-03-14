@@ -9,7 +9,6 @@ per-file extension_function_histogram_value.h=file://extensions/common/api/API_O
 
 # DeviceLocalAccount reviewers.
 per-file device_local_account_util*=anqing@chromium.org
-per-file device_local_account_util*=apotapchuk@chromium.org
 
 # For security review.
 per-file extensions_browser_interface_binders.*=set noparent
