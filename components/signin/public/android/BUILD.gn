@@ -115,9 +115,13 @@ android_library("signin_java_test_support") {
   resources_package = "org.chromium.components.signin.test.util"
 }
 
+android_resources("java_resources") {
+  sources = [ "java/res/drawable/logo_avatar_anonymous.xml" ]
+}
+
 android_resources("signin_test_resources") {
   testonly = true
-  sources = [ "java/res/drawable/test_profile_picture.xml" ]
+  sources = [ "javatests/res/drawable/test_profile_picture.xml" ]
 }
 
 android_library("javatests") {
