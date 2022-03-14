@@ -64,7 +64,8 @@ file://weblayer/API_OWNERS
 # cases.
 file://ash/login/LOGIN_LOCK_OWNERS
 
-# Changes to the CQ configuration can have a significant impact on the CQ cost
+# Changes to the CQ/CI configuration can have a significant impact on infra cost
 # and performance. Approval should be limited to a small subset of the users
 # that can make infra changes.
 file://infra/config/groups/cq-usage/CQ_USAGE_OWNERS
+file://infra/config/groups/sheriff-rotations/CHROMIUM_OWNERS
