@@ -16,6 +16,7 @@
 
 #include "base/barrier_closure.h"
 #include "base/bind.h"
+#include "base/bits.h"
 #include "base/callback_helpers.h"
 #include "base/containers/circular_deque.h"
 #include "base/containers/stack_container.h"
@@ -507,23 +508,25 @@ void CopyRowsToP010Buffer(int first_row,
 }
 
 void CopyRowsToNV12Buffer(int first_row,
-                          int rows,
-                          int bytes_per_row,
+                          int y_rows,
+                          int uv_rows,
+                          int y_bytes_per_row,
+                          int uv_bytes_per_row,
                           const VideoFrame* source_frame,
                           uint8_t* dest_y,
                           int dest_stride_y,
                           uint8_t* dest_uv,
                           int dest_stride_uv) {
-  TRACE_EVENT2("media", "CopyRowsToNV12Buffer", "bytes_per_row", bytes_per_row,
-               "rows", rows);
+  TRACE_EVENT2("media", "CopyRowsToNV12Buffer", "bytes_per_row",
+               y_bytes_per_row, "rows", y_rows);
 
   if (!dest_y || !dest_uv)
     return;
 
   DCHECK_NE(dest_stride_y, 0);
   DCHECK_NE(dest_stride_uv, 0);
-  DCHECK_LE(bytes_per_row, std::abs(dest_stride_y));
-  DCHECK_LE(bytes_per_row, std::abs(dest_stride_uv));
+  DCHECK_LE(y_bytes_per_row, std::abs(dest_stride_y));
+  DCHECK_LE(uv_bytes_per_row, std::abs(dest_stride_uv));
   DCHECK_EQ(0, first_row % 2);
   DCHECK(source_frame->format() == PIXEL_FORMAT_I420 ||
          source_frame->format() == PIXEL_FORMAT_YV12 ||
@@ -533,16 +536,17 @@ void CopyRowsToNV12Buffer(int first_row,
                           first_row * source_frame->stride(VideoFrame::kYPlane),
                       source_frame->stride(VideoFrame::kYPlane),
                       dest_y + first_row * dest_stride_y, dest_stride_y,
-                      bytes_per_row, rows);
+                      y_bytes_per_row, y_rows);
     libyuv::CopyPlane(
         source_frame->visible_data(VideoFrame::kUVPlane) +
             first_row / 2 * source_frame->stride(VideoFrame::kUVPlane),
         source_frame->stride(VideoFrame::kUVPlane),
-        dest_uv + first_row / 2 * dest_stride_uv, dest_stride_uv, bytes_per_row,
-        rows / 2);
+        dest_uv + first_row / 2 * dest_stride_uv, dest_stride_uv,
+        uv_bytes_per_row, uv_rows);
 
     return;
   }
+
   libyuv::I420ToNV12(
       source_frame->visible_data(VideoFrame::kYPlane) +
           first_row * source_frame->stride(VideoFrame::kYPlane),
@@ -554,8 +558,8 @@ void CopyRowsToNV12Buffer(int first_row,
           first_row / 2 * source_frame->stride(VideoFrame::kVPlane),
       source_frame->stride(VideoFrame::kVPlane),
       dest_y + first_row * dest_stride_y, dest_stride_y,
-      dest_uv + first_row / 2 * dest_stride_uv, dest_stride_uv, bytes_per_row,
-      rows);
+      dest_uv + first_row / 2 * dest_stride_uv, dest_stride_uv, y_bytes_per_row,
+      y_rows);
 }
 
 void CopyRowsToRGB10Buffer(bool is_argb,
@@ -667,28 +671,28 @@ gfx::Size CodedSize(const VideoFrame* video_frame,
                     GpuVideoAcceleratorFactories::OutputFormat output_format) {
   DCHECK(gfx::Rect(video_frame->coded_size())
              .Contains(video_frame->visible_rect()));
-  DCHECK_EQ(video_frame->visible_rect().x() % 2, 0);
+
+  size_t width = video_frame->visible_rect().width();
+  size_t height = video_frame->visible_rect().height();
   gfx::Size output;
   switch (output_format) {
     case GpuVideoAcceleratorFactories::OutputFormat::I420:
     case GpuVideoAcceleratorFactories::OutputFormat::P010:
     case GpuVideoAcceleratorFactories::OutputFormat::NV12_SINGLE_GMB:
     case GpuVideoAcceleratorFactories::OutputFormat::NV12_DUAL_GMB:
-      if (gfx::AllowOddHeightMultiPlanarBuffers()) {
-        output = gfx::Size((video_frame->visible_rect().width() + 1) & ~1,
-                           video_frame->visible_rect().height());
-      } else {
-        DCHECK((video_frame->visible_rect().y() & 1) == 0);
-        output = gfx::Size((video_frame->visible_rect().width() + 1) & ~1,
-                           (video_frame->visible_rect().height() + 1) & ~1);
-      }
+      DCHECK_EQ(video_frame->visible_rect().x() % 2, 0);
+      DCHECK_EQ(video_frame->visible_rect().y() % 2, 0);
+      if (!gfx::IsOddWidthMultiPlanarBuffersAllowed())
+        width = base::bits::AlignUp(width, 2);
+      if (!gfx::IsOddHeightMultiPlanarBuffersAllowed())
+        height = base::bits::AlignUp(height, 2);
+      output = gfx::Size(width, height);
       break;
     case GpuVideoAcceleratorFactories::OutputFormat::XR30:
     case GpuVideoAcceleratorFactories::OutputFormat::XB30:
     case GpuVideoAcceleratorFactories::OutputFormat::RGBA:
     case GpuVideoAcceleratorFactories::OutputFormat::BGRA:
-      output = gfx::Size((video_frame->visible_rect().width() + 1) & ~1,
-                         video_frame->visible_rect().height());
+      output = gfx::Size(base::bits::AlignUp(width, 2), height);
       break;
     case GpuVideoAcceleratorFactories::OutputFormat::UNDEFINED:
       NOTREACHED();
@@ -737,6 +741,7 @@ void GpuMemoryBufferVideoFramePool::PoolImpl::CreateHardwareFrame(
 
   if (output_format_ == GpuVideoAcceleratorFactories::OutputFormat::UNDEFINED)
     passthrough = true;
+
   switch (pixel_format) {
     // Supported cases.
     case PIXEL_FORMAT_YV12:
@@ -781,19 +786,19 @@ void GpuMemoryBufferVideoFramePool::PoolImpl::CreateHardwareFrame(
   }
 
   // TODO(https://crbug.com/638906): Handle odd positioned video frame input.
-  if (video_frame->visible_rect().x() % 2)
-    passthrough = true;
-  if (video_frame->visible_rect().y() % 2 &&
-      !gfx::AllowOddHeightMultiPlanarBuffers()) {
+  if (video_frame->visible_rect().x() % 2 ||
+      video_frame->visible_rect().y() % 2) {
     passthrough = true;
   }
 
   // TODO(https://crbug.com/webrtc/9033): Eliminate odd size video frame input
   // cases as they are not valid.
-  if (video_frame->coded_size().width() % 2)
+  if (video_frame->coded_size().width() % 2 &&
+      !gfx::IsOddWidthMultiPlanarBuffersAllowed()) {
     passthrough = true;
+  }
   if (video_frame->coded_size().height() % 2 &&
-      !gfx::AllowOddHeightMultiPlanarBuffers()) {
+      !gfx::IsOddHeightMultiPlanarBuffersAllowed()) {
     passthrough = true;
   }
 
@@ -1001,23 +1006,45 @@ void GpuMemoryBufferVideoFramePool::PoolImpl::CopyRowsToBuffer(
           static_cast<uint8_t*>(buffer->memory(0)), buffer->stride(0));
       break;
     }
+
     case GpuVideoAcceleratorFactories::OutputFormat::P010:
       CopyRowsToP010Buffer(
           row, rows_to_copy, coded_size.width(), video_frame,
           static_cast<uint8_t*>(buffer->memory(0)), buffer->stride(0),
           static_cast<uint8_t*>(buffer->memory(1)), buffer->stride(1));
       break;
-    case GpuVideoAcceleratorFactories::OutputFormat::NV12_SINGLE_GMB:
+
+    case GpuVideoAcceleratorFactories::OutputFormat::NV12_SINGLE_GMB: {
+      const size_t y_rows_to_copy = VideoFrame::Rows(
+          VideoFrame::kYPlane, VideoFormat(output_format), rows_to_copy);
+      const size_t uv_rows_to_copy = VideoFrame::Rows(
+          VideoFrame::kUVPlane, VideoFormat(output_format), rows_to_copy);
+      const size_t y_bytes_per_row = VideoFrame::RowBytes(
+          VideoFrame::kYPlane, VideoFormat(output_format), coded_size.width());
+      const size_t uv_bytes_per_row = VideoFrame::RowBytes(
+          VideoFrame::kUVPlane, VideoFormat(output_format), coded_size.width());
       CopyRowsToNV12Buffer(
-          row, rows_to_copy, coded_size.width(), video_frame,
+          row, y_rows_to_copy, uv_rows_to_copy, y_bytes_per_row,
+          uv_bytes_per_row, video_frame,
           static_cast<uint8_t*>(buffer->memory(0)), buffer->stride(0),
           static_cast<uint8_t*>(buffer->memory(1)), buffer->stride(1));
       break;
+    }
+
     case GpuVideoAcceleratorFactories::OutputFormat::NV12_DUAL_GMB: {
+      const size_t y_rows_to_copy = VideoFrame::Rows(
+          VideoFrame::kYPlane, VideoFormat(output_format), rows_to_copy);
+      const size_t uv_rows_to_copy = VideoFrame::Rows(
+          VideoFrame::kUVPlane, VideoFormat(output_format), rows_to_copy);
+      const size_t y_bytes_per_row = VideoFrame::RowBytes(
+          VideoFrame::kYPlane, VideoFormat(output_format), coded_size.width());
+      const size_t uv_bytes_per_row = VideoFrame::RowBytes(
+          VideoFrame::kUVPlane, VideoFormat(output_format), coded_size.width());
       gfx::GpuMemoryBuffer* buffer2 =
           frame_resources->plane_resources[1].gpu_memory_buffer.get();
       CopyRowsToNV12Buffer(
-          row, rows_to_copy, coded_size.width(), video_frame,
+          row, y_rows_to_copy, uv_rows_to_copy, y_bytes_per_row,
+          uv_bytes_per_row, video_frame,
           static_cast<uint8_t*>(buffer->memory(0)), buffer->stride(0),
           static_cast<uint8_t*>(buffer2->memory(0)), buffer2->stride(0));
       break;

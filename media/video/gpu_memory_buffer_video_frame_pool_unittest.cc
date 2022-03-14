@@ -47,6 +47,15 @@ class GpuMemoryBufferVideoFramePoolTest : public ::testing::Test {
     gpu_memory_buffer_pool_.reset();
     RunUntilIdle();
     mock_gpu_factories_.reset();
+
+    if (y_data_)
+      delete[] y_data_;
+    if (u_data_)
+      delete[] u_data_;
+    if (v_data_)
+      delete[] v_data_;
+    if (uv_data_)
+      delete[] uv_data_;
   }
 
   void RunUntilIdle() {
@@ -89,6 +98,47 @@ class GpuMemoryBufferVideoFramePoolTest : public ::testing::Test {
     return video_frame;
   }
 
+  scoped_refptr<VideoFrame> CreateTestYUVVideoFrameWithOddSize(
+      int dimension,
+      size_t bit_depth = 8,
+      int visible_rect_crop = 0) {
+    const VideoPixelFormat format =
+        (bit_depth > 8) ? PIXEL_FORMAT_YUV420P10 : PIXEL_FORMAT_I420;
+    const int multiplier = format == PIXEL_FORMAT_YUV420P10 ? 2 : 1;
+
+    int dimension_aligned = (dimension + 1) & ~1;
+    y_data_ = new uint8_t[multiplier * dimension * dimension]();
+    u_data_ =
+        new uint8_t[multiplier * dimension_aligned * dimension_aligned / 4]();
+    v_data_ =
+        new uint8_t[multiplier * dimension_aligned * dimension_aligned / 4]();
+
+    // Initialize the last pixel of each plane
+    int y_size = multiplier * dimension * dimension;
+    y_data_[y_size - multiplier] = kYValue;
+    int u_v_size = multiplier * dimension_aligned * dimension_aligned / 4;
+    u_data_[u_v_size - multiplier] = kUValue;
+    v_data_[u_v_size - multiplier] = kVValue;
+
+    const gfx::Size size(dimension, dimension);
+    scoped_refptr<VideoFrame> video_frame = VideoFrame::WrapExternalYuvData(
+        format,  // format
+        size,    // coded_size
+        gfx::Rect(visible_rect_crop, visible_rect_crop,
+                  size.width() - visible_rect_crop * 2,
+                  size.height() - visible_rect_crop * 2),  // visible_rect
+        size,                                              // natural_size
+        size.width() * multiplier,                         // y_stride
+        dimension_aligned * multiplier / 2,                // u_stride
+        dimension_aligned * multiplier / 2,                // v_stride
+        y_data_,                                           // y_data
+        u_data_,                                           // u_data
+        v_data_,                                           // v_data
+        base::TimeDelta());                                // timestamp
+    EXPECT_TRUE(video_frame);
+    return video_frame;
+  }
+
   static scoped_refptr<VideoFrame> CreateTestYUVAVideoFrame(int dimension) {
     const int kDimension = 10;
     static uint8_t y_data[kDimension * kDimension] = {0};
@@ -119,6 +169,7 @@ class GpuMemoryBufferVideoFramePoolTest : public ::testing::Test {
   }
 
   static scoped_refptr<VideoFrame> CreateTestNV12VideoFrame(int dimension) {
+    // Set the video buffer memory dimension default to 10.
     const int kDimension = 10;
     static uint8_t y_data[kDimension * kDimension] = {0};
     // Subsampled by 2x2, two components.
@@ -142,6 +193,36 @@ class GpuMemoryBufferVideoFramePoolTest : public ::testing::Test {
     return video_frame;
   }
 
+  scoped_refptr<VideoFrame> CreateTestNV12VideoFrameWithOddSize(int dimension) {
+    // Set the video buffer memory dimension to the same size of the requested
+    // dimension.
+    int dimension_aligned = (dimension + 1) & ~1;
+    y_data_ = new uint8_t[dimension * dimension]();
+    // Subsampled by 2x2, two components.
+    uv_data_ = new uint8_t[dimension_aligned * dimension_aligned / 2]();
+
+    // Initialize the last pixel of each plane
+    y_data_[dimension * dimension - 1] = kYValue;
+    uv_data_[(dimension_aligned * dimension_aligned / 2) - 2] = kUValue;
+    uv_data_[(dimension_aligned * dimension_aligned / 2) - 1] = kVValue;
+
+    const VideoPixelFormat format = PIXEL_FORMAT_NV12;
+    const gfx::Size size(dimension, dimension);
+
+    scoped_refptr<VideoFrame> video_frame =
+        VideoFrame::WrapExternalYuvData(format,              // format
+                                        size,                // coded_size
+                                        gfx::Rect(size),     // visible_rect
+                                        size,                // natural_size
+                                        size.width(),        // y_stride
+                                        dimension_aligned,   // uv_stride
+                                        y_data_,             // y_data
+                                        uv_data_,            // uv_data
+                                        base::TimeDelta());  // timestamp
+    EXPECT_TRUE(video_frame);
+    return video_frame;
+  }
+
   // Note, the X portion is set to 1 since it may use ARGB instead of
   // XRGB on some platforms.
   uint32_t as_xr30(uint32_t r, uint32_t g, uint32_t b) {
@@ -152,6 +233,15 @@ class GpuMemoryBufferVideoFramePoolTest : public ::testing::Test {
   }
 
  protected:
+  static constexpr uint8_t kYValue = 210;
+  static constexpr uint8_t kUValue = 50;
+  static constexpr uint8_t kVValue = 150;
+
+  uint8_t* y_data_ = nullptr;
+  uint8_t* u_data_ = nullptr;
+  uint8_t* v_data_ = nullptr;
+  uint8_t* uv_data_ = nullptr;
+
   base::SimpleTestTickClock test_clock_;
   std::unique_ptr<MockGpuVideoAcceleratorFactories> mock_gpu_factories_;
   std::unique_ptr<GpuMemoryBufferVideoFramePool> gpu_memory_buffer_pool_;
@@ -203,10 +293,76 @@ TEST_F(GpuMemoryBufferVideoFramePoolTest, CreateOneHardwareFrame) {
   EXPECT_EQ(3u, sii_->shared_image_count());
 }
 
+TEST_F(GpuMemoryBufferVideoFramePoolTest, CreateOneHardwareFrameWithOddSize) {
+  scoped_refptr<VideoFrame> software_frame =
+      CreateTestYUVVideoFrameWithOddSize(9);
+  scoped_refptr<VideoFrame> frame;
+  gpu_memory_buffer_pool_->MaybeCreateHardwareFrame(
+      software_frame, base::BindOnce(MaybeCreateHardwareFrameCallback, &frame));
+
+  RunUntilIdle();
+
+  if (gfx::IsOddWidthMultiPlanarBuffersAllowed() &&
+      gfx::IsOddHeightMultiPlanarBuffersAllowed()) {
+    EXPECT_NE(software_frame.get(), frame.get());
+    EXPECT_EQ(PIXEL_FORMAT_I420, frame->format());
+    EXPECT_EQ(3u, frame->NumTextures());
+    EXPECT_EQ(3u, sii_->shared_image_count());
+
+    EXPECT_EQ(3u, mock_gpu_factories_->created_memory_buffers().size());
+    mock_gpu_factories_->created_memory_buffers()[0]->Map();
+    mock_gpu_factories_->created_memory_buffers()[1]->Map();
+    mock_gpu_factories_->created_memory_buffers()[2]->Map();
+
+    const auto* y_memory = reinterpret_cast<uint8_t*>(
+        mock_gpu_factories_->created_memory_buffers()[0]->memory(0));
+    const auto* u_memory = reinterpret_cast<uint8_t*>(
+        mock_gpu_factories_->created_memory_buffers()[1]->memory(0));
+    const auto* v_memory = reinterpret_cast<uint8_t*>(
+        mock_gpu_factories_->created_memory_buffers()[2]->memory(0));
+
+    // Y plane = 9x9, U and V plan = 5x5.
+    EXPECT_EQ(kYValue, software_frame->visible_data(VideoFrame::kYPlane)[80]);
+    EXPECT_EQ(kUValue, software_frame->visible_data(VideoFrame::kUPlane)[24]);
+    EXPECT_EQ(kVValue, software_frame->visible_data(VideoFrame::kVPlane)[24]);
+
+    // Compare the last pixel of each plane in |software_frame| and |frame|.
+    auto y_stride = mock_gpu_factories_->created_memory_buffers()[0]->stride(0);
+    EXPECT_EQ(software_frame->visible_data(VideoFrame::kYPlane)[80],
+              y_memory[y_stride * 8 + 8]);
+    auto u_stride = mock_gpu_factories_->created_memory_buffers()[1]->stride(0);
+    EXPECT_EQ(software_frame->visible_data(VideoFrame::kUPlane)[24],
+              u_memory[u_stride * 4 + 4]);
+    auto v_stride = mock_gpu_factories_->created_memory_buffers()[2]->stride(0);
+    EXPECT_EQ(software_frame->visible_data(VideoFrame::kVPlane)[24],
+              v_memory[v_stride * 4 + 4]);
+
+    mock_gpu_factories_->created_memory_buffers()[0]->Unmap();
+    mock_gpu_factories_->created_memory_buffers()[1]->Unmap();
+    mock_gpu_factories_->created_memory_buffers()[2]->Unmap();
+
+  } else {
+    EXPECT_EQ(software_frame.get(), frame.get());
+  }
+}
+
 // Tests the current workaround for odd positioned video frame input. Once
 // https://crbug.com/638906 is fixed, output should be different.
 TEST_F(GpuMemoryBufferVideoFramePoolTest, CreateOneHardwareFrameWithOddOrigin) {
   scoped_refptr<VideoFrame> software_frame = CreateTestYUVVideoFrame(9, 8, 1);
+  scoped_refptr<VideoFrame> frame;
+  gpu_memory_buffer_pool_->MaybeCreateHardwareFrame(
+      software_frame, base::BindOnce(MaybeCreateHardwareFrameCallback, &frame));
+
+  RunUntilIdle();
+
+  EXPECT_EQ(software_frame.get(), frame.get());
+}
+
+TEST_F(GpuMemoryBufferVideoFramePoolTest,
+       CreateOneHardwareFrameWithOddOriginOddSize) {
+  scoped_refptr<VideoFrame> software_frame =
+      CreateTestYUVVideoFrameWithOddSize(11, 8, 1);
   scoped_refptr<VideoFrame> frame;
   gpu_memory_buffer_pool_->MaybeCreateHardwareFrame(
       software_frame, base::BindOnce(MaybeCreateHardwareFrameCallback, &frame));
@@ -228,6 +384,66 @@ TEST_F(GpuMemoryBufferVideoFramePoolTest, CreateOne10BppHardwareFrame) {
   EXPECT_EQ(PIXEL_FORMAT_I420, frame->format());
   EXPECT_EQ(3u, frame->NumTextures());
   EXPECT_EQ(3u, sii_->shared_image_count());
+}
+
+TEST_F(GpuMemoryBufferVideoFramePoolTest,
+       CreateOne10BppHardwareFrameWithOddSize) {
+  scoped_refptr<VideoFrame> software_frame =
+      CreateTestYUVVideoFrameWithOddSize(17, 10);
+  scoped_refptr<VideoFrame> frame;
+  gpu_memory_buffer_pool_->MaybeCreateHardwareFrame(
+      software_frame, base::BindOnce(MaybeCreateHardwareFrameCallback, &frame));
+
+  RunUntilIdle();
+
+  if (gfx::IsOddWidthMultiPlanarBuffersAllowed() &&
+      gfx::IsOddHeightMultiPlanarBuffersAllowed()) {
+    EXPECT_NE(software_frame.get(), frame.get());
+    EXPECT_EQ(PIXEL_FORMAT_I420, frame->format());
+    EXPECT_EQ(3u, frame->NumTextures());
+    EXPECT_EQ(3u, sii_->shared_image_count());
+
+    EXPECT_EQ(3u, mock_gpu_factories_->created_memory_buffers().size());
+    mock_gpu_factories_->created_memory_buffers()[0]->Map();
+    mock_gpu_factories_->created_memory_buffers()[1]->Map();
+    mock_gpu_factories_->created_memory_buffers()[2]->Map();
+
+    // Copy 10 bpp to I420.
+    const auto* y_memory = reinterpret_cast<uint8_t*>(
+        mock_gpu_factories_->created_memory_buffers()[0]->memory(0));
+    const auto* u_memory = reinterpret_cast<uint8_t*>(
+        mock_gpu_factories_->created_memory_buffers()[1]->memory(0));
+    const auto* v_memory = reinterpret_cast<uint8_t*>(
+        mock_gpu_factories_->created_memory_buffers()[2]->memory(0));
+
+    const uint16_t* y_plane_data = reinterpret_cast<uint16_t*>(
+        software_frame->visible_data(VideoFrame::kYPlane));
+    const uint16_t* u_plane_data = reinterpret_cast<uint16_t*>(
+        software_frame->visible_data(VideoFrame::kUPlane));
+    const uint16_t* v_plane_data = reinterpret_cast<uint16_t*>(
+        software_frame->visible_data(VideoFrame::kVPlane));
+
+    // Y plane = 17x17 = 289, U and V plan = 9x9.
+    EXPECT_EQ(kYValue, y_plane_data[288]);
+    EXPECT_EQ(kUValue, u_plane_data[80]);
+    EXPECT_EQ(kVValue, v_plane_data[80]);
+
+    // Compare the last pixel of each plane in |software_frame| and |frame|.
+    //  y_memory = 17x17, u_memory/v_memory = 9x9. scale = 10 bits - 8 bits  = 2
+    auto y_stride = mock_gpu_factories_->created_memory_buffers()[0]->stride(0);
+    EXPECT_EQ(y_plane_data[288] >> 2, y_memory[y_stride * 16 + 16]);
+    auto u_stride = mock_gpu_factories_->created_memory_buffers()[1]->stride(0);
+    EXPECT_EQ(u_plane_data[80] >> 2, u_memory[u_stride * 8 + 8]);
+    auto v_stride = mock_gpu_factories_->created_memory_buffers()[2]->stride(0);
+    EXPECT_EQ(v_plane_data[80] >> 2, v_memory[v_stride * 8 + 8]);
+
+    mock_gpu_factories_->created_memory_buffers()[0]->Unmap();
+    mock_gpu_factories_->created_memory_buffers()[1]->Unmap();
+    mock_gpu_factories_->created_memory_buffers()[2]->Unmap();
+
+  } else {
+    EXPECT_EQ(software_frame.get(), frame.get());
+  }
 }
 
 TEST_F(GpuMemoryBufferVideoFramePoolTest, ReuseFirstResource) {
@@ -318,6 +534,66 @@ TEST_F(GpuMemoryBufferVideoFramePoolTest, CreateOneHardwareNV12Frame) {
   EXPECT_TRUE(frame->metadata().read_lock_fences_enabled);
 }
 
+TEST_F(GpuMemoryBufferVideoFramePoolTest,
+       CreateOneHardwareNV12FrameWithOddSize) {
+  scoped_refptr<VideoFrame> software_frame =
+      CreateTestYUVVideoFrameWithOddSize(13);
+  scoped_refptr<VideoFrame> frame;
+  mock_gpu_factories_->SetVideoFrameOutputFormat(
+      media::GpuVideoAcceleratorFactories::OutputFormat::NV12_SINGLE_GMB);
+  gpu_memory_buffer_pool_->MaybeCreateHardwareFrame(
+      software_frame, base::BindOnce(MaybeCreateHardwareFrameCallback, &frame));
+
+  RunUntilIdle();
+
+  if (gfx::IsOddWidthMultiPlanarBuffersAllowed() &&
+      gfx::IsOddHeightMultiPlanarBuffersAllowed()) {
+    EXPECT_NE(software_frame.get(), frame.get());
+    EXPECT_EQ(PIXEL_FORMAT_NV12, frame->format());
+    if (GpuMemoryBufferVideoFramePool::MultiPlaneVideoSharedImagesEnabled()) {
+      EXPECT_EQ(2u, frame->NumTextures());
+      EXPECT_EQ(2u, sii_->shared_image_count());
+
+      EXPECT_EQ(1u, mock_gpu_factories_->created_memory_buffers().size());
+      mock_gpu_factories_->created_memory_buffers()[0]->Map();
+
+      const auto* y_memory = reinterpret_cast<uint8_t*>(
+          mock_gpu_factories_->created_memory_buffers()[0]->memory(0));
+      const auto* uv_memory = reinterpret_cast<uint8_t*>(
+          mock_gpu_factories_->created_memory_buffers()[0]->memory(1));
+
+      // Y plane = 13x13 = 169, U and V plan = 7x7 = 49.
+      EXPECT_EQ(kYValue,
+                software_frame->visible_data(VideoFrame::kYPlane)[168]);
+      EXPECT_EQ(kUValue, software_frame->visible_data(VideoFrame::kUPlane)[48]);
+      EXPECT_EQ(kVValue, software_frame->visible_data(VideoFrame::kVPlane)[48]);
+
+      // Compare the last pixel of each plane in |software_frame| and |frame|.
+      // y_memory = 13x13, uv_memory = 14x 7.
+      auto y_stride =
+          mock_gpu_factories_->created_memory_buffers()[0]->stride(0);
+      EXPECT_EQ(software_frame->visible_data(VideoFrame::kYPlane)[168],
+                y_memory[y_stride * 12 + 12]);
+      auto uv_stride =
+          mock_gpu_factories_->created_memory_buffers()[0]->stride(1);
+      EXPECT_EQ(software_frame->visible_data(VideoFrame::kUPlane)[48],
+                uv_memory[uv_stride * 6 + 12]);
+      EXPECT_EQ(software_frame->visible_data(VideoFrame::kVPlane)[48],
+                uv_memory[uv_stride * 6 + 13]);
+
+      mock_gpu_factories_->created_memory_buffers()[0]->Unmap();
+    } else {
+      EXPECT_EQ(1u, frame->NumTextures());
+      EXPECT_EQ(1u, sii_->shared_image_count());
+    }
+
+    EXPECT_TRUE(frame->metadata().read_lock_fences_enabled);
+
+  } else {
+    EXPECT_EQ(software_frame.get(), frame.get());
+  }
+}
+
 TEST_F(GpuMemoryBufferVideoFramePoolTest, CreateOneHardwareNV12Frame2) {
   scoped_refptr<VideoFrame> software_frame = CreateTestYUVVideoFrame(10);
   scoped_refptr<VideoFrame> frame;
@@ -335,6 +611,59 @@ TEST_F(GpuMemoryBufferVideoFramePoolTest, CreateOneHardwareNV12Frame2) {
   EXPECT_TRUE(frame->metadata().read_lock_fences_enabled);
 }
 
+TEST_F(GpuMemoryBufferVideoFramePoolTest,
+       CreateOneHardwareNV12Frame2WithOddSize) {
+  scoped_refptr<VideoFrame> software_frame =
+      CreateTestYUVVideoFrameWithOddSize(5);
+  scoped_refptr<VideoFrame> frame;
+  mock_gpu_factories_->SetVideoFrameOutputFormat(
+      media::GpuVideoAcceleratorFactories::OutputFormat::NV12_DUAL_GMB);
+  gpu_memory_buffer_pool_->MaybeCreateHardwareFrame(
+      software_frame, base::BindOnce(MaybeCreateHardwareFrameCallback, &frame));
+
+  RunUntilIdle();
+
+  if (gfx::IsOddWidthMultiPlanarBuffersAllowed() &&
+      gfx::IsOddHeightMultiPlanarBuffersAllowed()) {
+    EXPECT_NE(software_frame.get(), frame.get());
+    EXPECT_EQ(PIXEL_FORMAT_NV12, frame->format());
+    EXPECT_EQ(2u, frame->NumTextures());
+    EXPECT_EQ(2u, sii_->shared_image_count());
+    EXPECT_TRUE(frame->metadata().read_lock_fences_enabled);
+
+    EXPECT_EQ(2u, mock_gpu_factories_->created_memory_buffers().size());
+    mock_gpu_factories_->created_memory_buffers()[0]->Map();
+    mock_gpu_factories_->created_memory_buffers()[1]->Map();
+
+    const auto* y_memory = reinterpret_cast<uint8_t*>(
+        mock_gpu_factories_->created_memory_buffers()[0]->memory(0));
+    const auto* uv_memory = reinterpret_cast<uint8_t*>(
+        mock_gpu_factories_->created_memory_buffers()[1]->memory(0));
+
+    // Y plane = 5x5, U and V plan = 3x3.
+    EXPECT_EQ(kYValue, software_frame->visible_data(VideoFrame::kYPlane)[24]);
+    EXPECT_EQ(kUValue, software_frame->visible_data(VideoFrame::kUPlane)[8]);
+    EXPECT_EQ(kVValue, software_frame->visible_data(VideoFrame::kVPlane)[8]);
+
+    // Compare the last pixel of each plane in |software_frame| and |frame|.
+    // y_memory = 5x5, uv_memory = 6x3.
+    auto y_stride = mock_gpu_factories_->created_memory_buffers()[0]->stride(0);
+    EXPECT_EQ(software_frame->visible_data(VideoFrame::kYPlane)[24],
+              y_memory[y_stride * 4 + 4]);
+    auto uv_stride =
+        mock_gpu_factories_->created_memory_buffers()[1]->stride(0);
+    EXPECT_EQ(software_frame->visible_data(VideoFrame::kUPlane)[8],
+              uv_memory[uv_stride * 2 + 4]);
+    EXPECT_EQ(software_frame->visible_data(VideoFrame::kVPlane)[8],
+              uv_memory[uv_stride * 2 + 5]);
+
+    mock_gpu_factories_->created_memory_buffers()[0]->Unmap();
+    mock_gpu_factories_->created_memory_buffers()[1]->Unmap();
+  } else {
+    EXPECT_EQ(software_frame.get(), frame.get());
+  }
+}
+
 TEST_F(GpuMemoryBufferVideoFramePoolTest, CreateOneHardwareFrameForNV12Input) {
   scoped_refptr<VideoFrame> software_frame = CreateTestNV12VideoFrame(10);
   scoped_refptr<VideoFrame> frame;
@@ -349,6 +678,62 @@ TEST_F(GpuMemoryBufferVideoFramePoolTest, CreateOneHardwareFrameForNV12Input) {
   EXPECT_EQ(PIXEL_FORMAT_NV12, frame->format());
   EXPECT_EQ(2u, frame->NumTextures());
   EXPECT_EQ(2u, sii_->shared_image_count());
+}
+
+TEST_F(GpuMemoryBufferVideoFramePoolTest,
+       CreateOneHardwareFrameForNV12InputWithOddSize) {
+  scoped_refptr<VideoFrame> software_frame =
+      CreateTestNV12VideoFrameWithOddSize(135);
+  scoped_refptr<VideoFrame> frame;
+  mock_gpu_factories_->SetVideoFrameOutputFormat(
+      media::GpuVideoAcceleratorFactories::OutputFormat::NV12_DUAL_GMB);
+  gpu_memory_buffer_pool_->MaybeCreateHardwareFrame(
+      software_frame, base::BindOnce(MaybeCreateHardwareFrameCallback, &frame));
+
+  RunUntilIdle();
+
+  if (gfx::IsOddWidthMultiPlanarBuffersAllowed() &&
+      gfx::IsOddHeightMultiPlanarBuffersAllowed()) {
+    EXPECT_NE(software_frame.get(), frame.get());
+    EXPECT_EQ(PIXEL_FORMAT_NV12, frame->format());
+    EXPECT_EQ(2u, frame->NumTextures());
+    EXPECT_EQ(2u, sii_->shared_image_count());
+
+    EXPECT_EQ(2u, mock_gpu_factories_->created_memory_buffers().size());
+    mock_gpu_factories_->created_memory_buffers()[0]->Map();
+    mock_gpu_factories_->created_memory_buffers()[1]->Map();
+
+    const auto* y_memory = reinterpret_cast<uint8_t*>(
+        mock_gpu_factories_->created_memory_buffers()[0]->memory(0));
+    const auto* uv_memory = reinterpret_cast<uint8_t*>(
+        mock_gpu_factories_->created_memory_buffers()[1]->memory(0));
+
+    // Y plane = 135x135 = 18225, UV plan = 136x68 = 9248.
+    EXPECT_EQ(kYValue,
+              software_frame->visible_data(VideoFrame::kYPlane)[18224]);
+    EXPECT_EQ(kUValue,
+              software_frame->visible_data(VideoFrame::kUVPlane)[9246]);
+    EXPECT_EQ(kVValue,
+              software_frame->visible_data(VideoFrame::kUVPlane)[9247]);
+
+    // Compare the last pixel of each plane in |software_frame| and |frame|.
+    // y_memory = 135x135, uv_memory = 136x68.
+    auto y_stride = mock_gpu_factories_->created_memory_buffers()[0]->stride(0);
+    EXPECT_EQ(software_frame->visible_data(VideoFrame::kYPlane)[18224],
+              y_memory[y_stride * 134 + 134]);
+    auto uv_stride =
+        mock_gpu_factories_->created_memory_buffers()[1]->stride(0);
+    EXPECT_EQ(software_frame->visible_data(VideoFrame::kUVPlane)[9246],
+              uv_memory[uv_stride * 67 + 134]);
+    EXPECT_EQ(software_frame->visible_data(VideoFrame::kUVPlane)[9247],
+              uv_memory[uv_stride * 67 + 135]);
+
+    mock_gpu_factories_->created_memory_buffers()[0]->Unmap();
+    mock_gpu_factories_->created_memory_buffers()[1]->Unmap();
+
+  } else {
+    EXPECT_EQ(software_frame.get(), frame.get());
+  }
 }
 
 TEST_F(GpuMemoryBufferVideoFramePoolTest, CreateOneHardwareXR30Frame) {
@@ -403,6 +788,61 @@ TEST_F(GpuMemoryBufferVideoFramePoolTest, CreateOneHardwareP010Frame) {
             uv_memory[0]);
   EXPECT_EQ(software_frame->visible_data(VideoFrame::kVPlane)[0] << 6,
             uv_memory[1]);
+}
+
+TEST_F(GpuMemoryBufferVideoFramePoolTest,
+       CreateOneHardwareP010FrameWithOddSize) {
+  scoped_refptr<VideoFrame> software_frame =
+      CreateTestYUVVideoFrameWithOddSize(7, 10);
+  scoped_refptr<VideoFrame> frame;
+  mock_gpu_factories_->SetVideoFrameOutputFormat(
+      media::GpuVideoAcceleratorFactories::OutputFormat::P010);
+  gpu_memory_buffer_pool_->MaybeCreateHardwareFrame(
+      software_frame, base::BindOnce(MaybeCreateHardwareFrameCallback, &frame));
+
+  RunUntilIdle();
+
+  if (gfx::IsOddWidthMultiPlanarBuffersAllowed() &&
+      gfx::IsOddHeightMultiPlanarBuffersAllowed()) {
+    EXPECT_NE(software_frame.get(), frame.get());
+    EXPECT_EQ(PIXEL_FORMAT_P016LE, frame->format());
+    EXPECT_EQ(1u, frame->NumTextures());
+    EXPECT_EQ(1u, sii_->shared_image_count());
+    EXPECT_TRUE(frame->metadata().read_lock_fences_enabled);
+
+    EXPECT_EQ(1u, mock_gpu_factories_->created_memory_buffers().size());
+    mock_gpu_factories_->created_memory_buffers()[0]->Map();
+
+    // Copy I010 To P010.
+    const uint16_t* y_memory = reinterpret_cast<uint16_t*>(
+        mock_gpu_factories_->created_memory_buffers()[0]->memory(0));
+    const uint16_t* uv_memory = reinterpret_cast<uint16_t*>(
+        mock_gpu_factories_->created_memory_buffers()[0]->memory(1));
+
+    const uint16_t* y_plane_data = reinterpret_cast<uint16_t*>(
+        software_frame->visible_data(VideoFrame::kYPlane));
+    const uint16_t* u_plane_data = reinterpret_cast<uint16_t*>(
+        software_frame->visible_data(VideoFrame::kUPlane));
+    const uint16_t* v_plane_data = reinterpret_cast<uint16_t*>(
+        software_frame->visible_data(VideoFrame::kVPlane));
+
+    // Y plane = 7x7 = 49, U and V plan = 4x4 = 16.
+    EXPECT_EQ(kYValue, y_plane_data[48]);
+    EXPECT_EQ(kUValue, u_plane_data[15]);
+    EXPECT_EQ(kVValue, v_plane_data[15]);
+    // Compare the last pixel of each plane in |software_frame| and |frame|.
+    // y_memory = 7x7, uv_memory = 8x4, scale = 16-10 = 6.
+    auto y_stride = mock_gpu_factories_->created_memory_buffers()[0]->stride(0);
+    EXPECT_EQ(y_plane_data[48], y_memory[y_stride / 2 * 6 + 6] >> 6);
+    auto uv_stride =
+        mock_gpu_factories_->created_memory_buffers()[0]->stride(1);
+    EXPECT_EQ(u_plane_data[15], uv_memory[uv_stride / 2 * 3 + 6] >> 6);
+    EXPECT_EQ(v_plane_data[15], uv_memory[uv_stride / 2 * 3 + 7] >> 6);
+
+    mock_gpu_factories_->created_memory_buffers()[0]->Unmap();
+  } else {
+    EXPECT_EQ(software_frame.get(), frame.get());
+  }
 }
 
 TEST_F(GpuMemoryBufferVideoFramePoolTest, CreateOneHardwareXR30FrameBT709) {

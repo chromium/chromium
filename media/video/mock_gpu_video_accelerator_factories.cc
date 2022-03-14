@@ -39,9 +39,7 @@ class GpuMemoryBufferImpl : public gfx::GpuMemoryBuffer {
            gfx::BufferFormat::BGRA_8888 == format_);
     DCHECK(num_planes_ <= kMaxPlanes);
     for (int i = 0; i < static_cast<int>(num_planes_); ++i) {
-      bytes_[i].resize(gfx::RowSizeForBufferFormat(size_.width(), format_, i) *
-                       size_.height() /
-                       gfx::SubsamplingFactorForBufferFormat(format_, i));
+      bytes_[i].resize(gfx::PlaneSizeForBufferFormat(size_, format_, i));
     }
   }
 

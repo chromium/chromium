@@ -37,7 +37,6 @@ const char kNoXshm[] = "no-xshm";
 }  // namespace switches
 
 namespace features {
-
 const base::Feature kOddHeightMultiPlanarBuffers {
   "OddHeightMultiPlanarBuffers",
 #if BUILDFLAG(IS_MAC)
@@ -46,5 +45,8 @@ const base::Feature kOddHeightMultiPlanarBuffers {
       base::FEATURE_DISABLED_BY_DEFAULT
 #endif
 };
+
+const base::Feature kOddWidthMultiPlanarBuffers{
+    "OddWidthMultiPlanarBuffers", base::FEATURE_DISABLED_BY_DEFAULT};
 
 }  // namespace features
