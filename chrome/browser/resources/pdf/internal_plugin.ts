@@ -3,10 +3,10 @@
 // found in the LICENSE file.
 
 /**
- * @fileoverview Unseasoned PDF native API.
+ * @fileoverview PDF plugin native API.
  */
 
-/** A more specific interface for the unseasoned PDF plugin. */
-export interface UnseasonedPdfPluginElement extends HTMLEmbedElement {
+/** A more specific interface for the PDF plugin. */
+export interface PdfPluginElement extends HTMLEmbedElement {
   postMessage(message: any, transfer?: Transferable[]): void;
 }

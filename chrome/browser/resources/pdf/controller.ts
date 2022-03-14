@@ -7,7 +7,7 @@ import {NativeEventTarget as EventTarget} from 'chrome://resources/js/cr/event_t
 import {PromiseResolver} from 'chrome://resources/js/promise_resolver.m.js';
 
 import {NamedDestinationMessageData, SaveRequestType} from './constants.js';
-import {UnseasonedPdfPluginElement} from './internal_plugin.js';
+import {PdfPluginElement} from './internal_plugin.js';
 import {PinchPhase, Viewport} from './viewport.js';
 
 export type MessageData = {
@@ -109,10 +109,9 @@ export enum PluginControllerEventType {
 export class PluginController implements ContentController {
   private eventTarget_: EventTarget = new EventTarget();
   private isActive_: boolean = false;
-  private plugin_: HTMLEmbedElement;
-  private unseasonedPlugin_: UnseasonedPdfPluginElement|null = null;
-  private unseasonedDelayedMessages_:
-      Array<{message: any, transfer?: Transferable[]}>|null = null;
+  private plugin_: PdfPluginElement;
+  private delayedMessages_: Array<{message: any, transfer?: Transferable[]}>|
+      null = [];
   private viewport_: Viewport;
   private getIsUserInitiatedCallback_: () => boolean;
   private getLoadedCallback_: () => Promise<void>| null;
@@ -126,7 +125,13 @@ export class PluginController implements ContentController {
       plugin: HTMLEmbedElement, viewport: Viewport,
       getIsUserInitiatedCallback: () => boolean,
       getLoadedCallback: () => Promise<void>| null) {
-    this.plugin_ = plugin;
+    this.plugin_ = plugin as PdfPluginElement;
+    this.plugin_.addEventListener(
+        'message', e => this.handlePluginMessage_(e as MessageEvent), false);
+    this.plugin_.postMessage = (message, transfer) => {
+      this.delayedMessages_!.push({message, transfer});
+    };
+
     this.viewport_ = viewport;
     this.getIsUserInitiatedCallback_ = getIsUserInitiatedCallback;
     this.getLoadedCallback_ = getLoadedCallback;
@@ -134,18 +139,7 @@ export class PluginController implements ContentController {
     this.requestResolverMap_ = new Map();
 
     this.viewport_.setContent(this.plugin_);
-    this.plugin_.addEventListener(
-        'message', e => this.handlePluginMessage_(e as MessageEvent), false);
-    if (!(this.plugin_ as UnseasonedPdfPluginElement).postMessage) {
-      this.unseasonedPlugin_ = this.plugin_ as UnseasonedPdfPluginElement;
-      this.unseasonedDelayedMessages_ = [];
-
-      this.unseasonedPlugin_.postMessage = (message, transfer) => {
-        this.unseasonedDelayedMessages_!.push({message, transfer});
-      };
-
-      this.viewport_.setRemoteContent(this.unseasonedPlugin_);
-    }
+    this.viewport_.setRemoteContent(this.plugin_);
   }
 
   get isActive(): boolean {
@@ -230,17 +224,17 @@ export class PluginController implements ContentController {
   }
 
   /**
-   * Post a message to the PPAPI plugin. Some messages will cause an async reply
-   * to be received through handlePluginMessage_().
+   * Post a message to the plugin. Some messages will cause an async reply to be
+   * received through handlePluginMessage_().
    */
   private postMessage_<M extends MessageData>(message: M) {
-    (this.plugin_ as UnseasonedPdfPluginElement).postMessage(message);
+    this.plugin_.postMessage(message);
   }
 
   /**
-   * Post a message to the PPAPI plugin, for cases where direct response is
-   * expected from the PPAPI plugin.
-   * @return A promise holding the response from the PPAPI plugin.
+   * Post a message to the plugin, for cases where direct response is expected
+   * from the plugin.
+   * @return A promise holding the response from the plugin.
    */
   private postMessageWithReply_<T, M extends MessageData>(message: M):
       Promise<T> {
@@ -370,31 +364,14 @@ export class PluginController implements ContentController {
   }
 
   async load(_fileName: string, data: ArrayBuffer) {
-    // Load `data` into the PDF plugin. The unseasoned plugin transfers the data
-    // to be loaded within the inner frame, while the Pepper plugin updates
-    // `src` directly.
-    let url;
-    if (this.unseasonedPlugin_) {
-      assert(this.unseasonedPlugin_ === this.plugin_);
-      this.viewport_.setRemoteContent(this.unseasonedPlugin_);
-      this.unseasonedPlugin_.postMessage(
-          {type: 'loadArray', dataToLoad: data}, [data]);
-    } else {
-      this.viewport_.setContent(this.plugin_);
-      url = URL.createObjectURL(new Blob([data]));
-      this.plugin_.setAttribute('src', url);
-      this.plugin_.setAttribute('has-edits', '');
-    }
+    // Load `data` into the PDF plugin. The plugin transfers the data to be
+    // loaded within the inner frame.
+    this.viewport_.setRemoteContent(this.plugin_);
+    this.plugin_.postMessage({type: 'loadArray', dataToLoad: data}, [data]);
 
     this.plugin_.style.display = 'block';
-    try {
-      await this.getLoadedCallback_();
-      this.isActive = true;
-    } finally {
-      if (url) {
-        URL.revokeObjectURL(url);
-      }
-    }
+    await this.getLoadedCallback_();
+    this.isActive = true;
   }
 
   unload() {
@@ -403,22 +380,22 @@ export class PluginController implements ContentController {
   }
 
   /**
-   * Binds an event handler for messages received from the unseasoned plugin.
+   * Binds an event handler for messages received from the plugin.
    *
    * TODO(crbug.com/1228987): Remove this method when a permanent postMessage()
-   * bridge is implemented for the Unseasoned viewer.
+   * bridge is implemented for the viewer.
    */
-  bindUnseasonedMessageHandler(port: MessagePort) {
-    assert(this.unseasonedDelayedMessages_ !== null);
-    assert(this.unseasonedPlugin_);
-    const delayedMessages = this.unseasonedDelayedMessages_;
-    this.unseasonedDelayedMessages_ = null;
+  bindMessageHandler(port: MessagePort) {
+    assert(this.delayedMessages_ !== null);
+    assert(this.plugin_);
+    const delayedMessages = this.delayedMessages_;
+    this.delayedMessages_ = null;
 
-    this.unseasonedPlugin_.postMessage = port.postMessage.bind(port);
+    this.plugin_.postMessage = port.postMessage.bind(port);
     port.onmessage = e => this.handlePluginMessage_(e);
 
     for (const {message, transfer} of delayedMessages) {
-      this.unseasonedPlugin_.postMessage(message, transfer);
+      this.plugin_.postMessage(message, transfer);
     }
   }
 

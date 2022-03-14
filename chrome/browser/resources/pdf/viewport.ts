@@ -8,7 +8,7 @@ import {hasKeyModifiers, isRTL} from 'chrome://resources/js/util.m.js';
 
 import {ExtendedKeyEvent, FittingType, Point} from './constants.js';
 import {Gesture, GestureDetector, PinchEventDetail} from './gesture_detector.js';
-import {UnseasonedPdfPluginElement} from './internal_plugin.js';
+import {PdfPluginElement} from './internal_plugin.js';
 import {ViewportInterface} from './viewport_scroller.js';
 import {InactiveZoomManager, ZoomManager} from './zoom_manager.js';
 
@@ -185,7 +185,7 @@ export class Viewport implements ViewportInterface {
    * Sets the contents of the viewport, scrolling within the content's window.
    * @param content The new viewport contents.
    */
-  setRemoteContent(content: UnseasonedPdfPluginElement) {
+  setRemoteContent(content: PdfPluginElement) {
     this.scrollContent_.setRemoteContent(content);
   }
 
@@ -1492,7 +1492,7 @@ class ScrollContent {
   private target_: EventTarget|null = null;
   private readonly content_: HTMLElement;
   private readonly scrollbarWidth_: number;
-  private unseasonedPlugin_: UnseasonedPdfPluginElement|null = null;
+  private plugin_: PdfPluginElement|null = null;
   private width_: number = 0;
   private height_: number = 0;
   private scrollLeft_: number = 0;
@@ -1542,10 +1542,10 @@ class ScrollContent {
 
     // Switch to local content.
     this.sizer_.style.display = 'block';
-    if (!this.unseasonedPlugin_) {
+    if (!this.plugin_) {
       return;
     }
-    this.unseasonedPlugin_ = null;
+    this.plugin_ = null;
 
     // Synchronize remote state to local.
     this.updateSize_();
@@ -1556,15 +1556,15 @@ class ScrollContent {
    * Sets the contents, switching to scrolling remotely.
    * @param content The new contents.
    */
-  setRemoteContent(content: UnseasonedPdfPluginElement) {
+  setRemoteContent(content: PdfPluginElement) {
     this.attachContent_(content);
 
     // Switch to remote content.
     const previousScrollLeft = this.scrollLeft;
     const previousScrollTop = this.scrollTop;
     this.sizer_.style.display = 'none';
-    assert(!this.unseasonedPlugin_);
-    this.unseasonedPlugin_ = content;
+    assert(!this.plugin_);
+    this.plugin_ = content;
 
     // Synchronize local state to remote.
     this.updateSize_();
@@ -1635,7 +1635,7 @@ class ScrollContent {
     overlayScrollbarWidth = 16;
     // </if>
     // <if expr="not is_macosx">
-    if (this.unseasonedPlugin_) {
+    if (this.plugin_) {
       overlayScrollbarWidth = this.scrollbarWidth_;
     }
     // </if>
@@ -1659,8 +1659,8 @@ class ScrollContent {
   }
 
   private updateSize_() {
-    if (this.unseasonedPlugin_) {
-      this.unseasonedPlugin_.postMessage({
+    if (this.plugin_) {
+      this.plugin_.postMessage({
         type: 'updateSize',
         width: this.width_,
         height: this.height_,
@@ -1675,15 +1675,14 @@ class ScrollContent {
    * Gets the scroll offset from the left edge.
    */
   get scrollLeft(): number {
-    return this.unseasonedPlugin_ ? this.scrollLeft_ :
-                                    this.container_.scrollLeft;
+    return this.plugin_ ? this.scrollLeft_ : this.container_.scrollLeft;
   }
 
   /**
    * Gets the scroll offset from the top edge.
    */
   get scrollTop(): number {
-    return this.unseasonedPlugin_ ? this.scrollTop_ : this.container_.scrollTop;
+    return this.plugin_ ? this.scrollTop_ : this.container_.scrollTop;
   }
 
   /**
@@ -1691,7 +1690,7 @@ class ScrollContent {
    * @param isSmooth Whether to scroll smoothly.
    */
   scrollTo(x: number, y: number, isSmooth: boolean = false) {
-    if (this.unseasonedPlugin_) {
+    if (this.plugin_) {
       // TODO(crbug.com/1277228): Can get NaN if zoom calculations divide by 0.
       x = Number.isNaN(x) ? 0 : x;
       y = Number.isNaN(y) ? 0 : y;
@@ -1722,7 +1721,7 @@ class ScrollContent {
       this.scrollTop_ = y;
 
       ++this.unackedScrollsToRemote_;
-      this.unseasonedPlugin_.postMessage({
+      this.plugin_.postMessage({
         type: 'syncScrollToRemote',
         x: this.scrollLeft_,
         y: this.scrollTop_,

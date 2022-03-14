@@ -20,7 +20,7 @@ export {ViewerToolbarDropdownElement} from './elements/viewer-toolbar-dropdown.j
 // </if>
 export {ViewerToolbarElement} from './elements/viewer-toolbar.js';
 export {GestureDetector, PinchEventDetail} from './gesture_detector.js';
-export {UnseasonedPdfPluginElement} from './internal_plugin.js';
+export {PdfPluginElement} from './internal_plugin.js';
 export {record, recordFitTo, resetForTesting, UserAction} from './metrics.js';
 export {NavigatorDelegate, PdfNavigator, WindowOpenDisposition} from './navigator.js';
 export {OpenPdfParamsParser} from './open_pdf_params_parser.js';
