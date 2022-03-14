@@ -2,10 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {AmbientModeAlbum, AmbientProviderInterface, AnimationTheme, TemperatureUnit, TopicSource} from '../personalization_app.mojom-webui.js';
+import {AmbientModeAlbum, AmbientProviderInterface, TemperatureUnit, TopicSource} from '../personalization_app.mojom-webui.js';
 import {PersonalizationStore} from '../personalization_store.js';
 
-import {setAmbientModeEnabledAction, setAnimationThemeAction, setTemperatureUnitAction, setTopicSourceAction} from './ambient_actions.js';
+import {setAmbientModeEnabledAction, setTemperatureUnitAction, setTopicSourceAction} from './ambient_actions.js';
 
 /**
  * @fileoverview contains all of the functions to interact with ambient mode
@@ -22,15 +22,6 @@ export function setAmbientModeEnabled(
   // Dispatch action to toggle the button to indicate if the ambient mode is
   // enabled.
   store.dispatch(setAmbientModeEnabledAction(ambientModeEnabled));
-}
-
-// Set the animation theme.
-export function setAnimationTheme(
-    animationTheme: AnimationTheme, provider: AmbientProviderInterface,
-    store: PersonalizationStore): void {
-  provider.setAnimationTheme(animationTheme);
-
-  store.dispatch(setAnimationThemeAction(animationTheme));
 }
 
 // Set ambient mode topic source.

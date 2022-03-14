@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_ASH_WEB_APPLICATIONS_PERSONALIZATION_APP_PERSONALIZATION_APP_AMBIENT_PROVIDER_IMPL_H_
 #define CHROME_BROWSER_ASH_WEB_APPLICATIONS_PERSONALIZATION_APP_PERSONALIZATION_APP_AMBIENT_PROVIDER_IMPL_H_
 
-#include "ash/public/cpp/ambient/ambient_animation_theme.h"
 #include "ash/public/cpp/ambient/ambient_backend_controller.h"
 #include "ash/public/cpp/ambient/common/ambient_settings.h"
 #include "ash/webui/personalization_app/mojom/personalization_app.mojom.h"
@@ -48,7 +47,6 @@ class PersonalizationAppAmbientProviderImpl
       mojo::PendingRemote<ash::personalization_app::mojom::AmbientObserver>
           observer) override;
   void SetAmbientModeEnabled(bool enabled) override;
-  void SetAnimationTheme(ash::AmbientAnimationTheme animation_theme) override;
   void SetTopicSource(ash::AmbientModeTopicSource topic_source) override;
   void SetTemperatureUnit(
       ash::AmbientModeTemperatureUnit temperature_unit) override;
@@ -58,7 +56,6 @@ class PersonalizationAppAmbientProviderImpl
 
   // Notify WebUI the latest values.
   void OnAmbientModeEnabledChanged();
-  void OnAnimationThemeChanged();
   void OnTemperatureUnitChanged();
   void OnTopicSourceChanged();
   void OnAlbumsChanged();
@@ -68,8 +65,6 @@ class PersonalizationAppAmbientProviderImpl
   friend class PersonalizationAppAmbientProviderImplTest;
 
   bool IsAmbientModeEnabled();
-
-  ash::AmbientAnimationTheme GetCurrentAnimationTheme();
 
   // Update the local `settings_` to server.
   void UpdateSettings();

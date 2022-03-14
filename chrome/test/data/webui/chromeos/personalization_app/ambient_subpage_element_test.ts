@@ -4,16 +4,14 @@
 
 import {AlbumItem} from 'chrome://personalization/trusted/ambient/album_item_element.js';
 import {AlbumsSubpage} from 'chrome://personalization/trusted/ambient/albums_subpage_element.js';
-import {AmbientActionName, SetAlbumsAction, SetAmbientModeEnabledAction, SetAnimationThemeAction, SetTemperatureUnitAction, SetTopicSourceAction} from 'chrome://personalization/trusted/ambient/ambient_actions.js';
+import {AmbientActionName, SetAlbumsAction, SetAmbientModeEnabledAction, SetTemperatureUnitAction, SetTopicSourceAction} from 'chrome://personalization/trusted/ambient/ambient_actions.js';
 import {AmbientObserver} from 'chrome://personalization/trusted/ambient/ambient_observer.js';
 import {AmbientSubpage} from 'chrome://personalization/trusted/ambient/ambient_subpage_element.js';
-import {AnimationThemeItem} from 'chrome://personalization/trusted/ambient/animation_theme_item_element.js';
 import {TopicSourceItem} from 'chrome://personalization/trusted/ambient/topic_source_item_element.js';
-import {AnimationTheme, TemperatureUnit, TopicSource} from 'chrome://personalization/trusted/personalization_app.mojom-webui.js';
+import {TemperatureUnit, TopicSource} from 'chrome://personalization/trusted/personalization_app.mojom-webui.js';
 import {Paths, PersonalizationRouter} from 'chrome://personalization/trusted/personalization_router_element.js';
 import {emptyState} from 'chrome://personalization/trusted/personalization_state.js';
 import {CrRadioButtonElement} from 'chrome://resources/cr_elements/cr_radio_button/cr_radio_button.m.js';
-import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
 import {waitAfterNextRender} from 'chrome://webui-test/test_util.js';
@@ -45,10 +43,9 @@ export function AmbientSubpageTest() {
   });
 
   async function displayMainSettings(
-      topicSource: TopicSource|null, temperatureUnit: TemperatureUnit|null,
-      animationTheme = AnimationTheme.kSlideshow): Promise<AmbientSubpage> {
+      topicSource: TopicSource|null,
+      temperatureUnit: TemperatureUnit|null): Promise<AmbientSubpage> {
     personalizationStore.data.ambient.albums = ambientProvider.albums;
-    personalizationStore.data.ambient.animationTheme = animationTheme;
     personalizationStore.data.ambient.topicSource = topicSource;
     personalizationStore.data.ambient.temperatureUnit = temperatureUnit;
     personalizationStore.data.ambient.ambientModeEnabled = false;
@@ -193,59 +190,6 @@ export function AmbientSubpageTest() {
         SetAmbientModeEnabledAction;
     assertTrue(action.enabled);
   });
-
-  test('has correct animation theme on load', async () => {
-    personalizationStore.expectAction(AmbientActionName.SET_ANIMATION_THEME);
-    ambientSubpageElement = initElement(AmbientSubpage);
-
-    await ambientProvider.whenCalled('setAmbientObserver');
-    ambientProvider.updateAmbientObserver();
-
-    const action =
-        await personalizationStore.waitForAction(
-            AmbientActionName.SET_ANIMATION_THEME) as SetAnimationThemeAction;
-    assertEquals(AnimationTheme.kSlideshow, action.animationTheme);
-  });
-
-  test(
-      'sets animation theme when animation theme item is clicked', async () => {
-        loadTimeData.overrideValues({isAmbientModeAnimationEnabled: true});
-        ambientSubpageElement = await displayMainSettings(
-            TopicSource.kArtGallery, TemperatureUnit.kFahrenheit);
-
-        const animationThemeList =
-            ambientSubpageElement.shadowRoot!.querySelector(
-                'animation-theme-list');
-        assertTrue(!!animationThemeList);
-        const animationThemeItems =
-            animationThemeList!.shadowRoot!.querySelectorAll(
-                'animation-theme-item:not([hidden])');
-        assertEquals(2, animationThemeItems!.length);
-        const slideshow = animationThemeItems[0] as AnimationThemeItem;
-        const feelTheBreeze = animationThemeItems[1] as AnimationThemeItem;
-        assertEquals(AnimationTheme.kSlideshow, slideshow.animationTheme);
-        assertEquals(
-            AnimationTheme.kFeelTheBreeze, feelTheBreeze.animationTheme);
-
-        assertFalse(feelTheBreeze.checked);
-        assertTrue(slideshow.checked);
-
-        personalizationStore.expectAction(
-            AmbientActionName.SET_ANIMATION_THEME);
-        feelTheBreeze!.click();
-        let action = await personalizationStore.waitForAction(
-                         AmbientActionName.SET_ANIMATION_THEME) as
-            SetAnimationThemeAction;
-        assertEquals(AnimationTheme.kFeelTheBreeze, action.animationTheme);
-
-        personalizationStore.expectAction(
-            AmbientActionName.SET_ANIMATION_THEME);
-        slideshow!.click();
-        action = await personalizationStore.waitForAction(
-                     AmbientActionName.SET_ANIMATION_THEME) as
-            SetAnimationThemeAction;
-        assertEquals(AnimationTheme.kSlideshow, action.animationTheme);
-      });
 
   test('has correct topic sources on load', async () => {
     personalizationStore.expectAction(AmbientActionName.SET_TOPIC_SOURCE);

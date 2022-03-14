@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {AmbientModeAlbum, AmbientObserverInterface, AmbientObserverRemote, AmbientProviderInterface, AnimationTheme, TemperatureUnit, TopicSource} from 'chrome://personalization/trusted/personalization_app.mojom-webui.js';
+import {AmbientModeAlbum, AmbientObserverInterface, AmbientObserverRemote, AmbientProviderInterface, TemperatureUnit, TopicSource} from 'chrome://personalization/trusted/personalization_app.mojom-webui.js';
 import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
 
 export class TestAmbientProvider extends TestBrowserProxy implements
@@ -51,7 +51,6 @@ export class TestAmbientProvider extends TestBrowserProxy implements
       'isAmbientModeEnabled',
       'setAmbientObserver',
       'setAmbientModeEnabled',
-      'setAnimationTheme',
       'setTopicSource',
       'setTemperatureUnit',
       'setAlbumSelected',
@@ -76,8 +75,6 @@ export class TestAmbientProvider extends TestBrowserProxy implements
         /*ambientModeEnabled=*/ true);
 
     this.ambientObserverRemote!.onAlbumsChanged(this.albums);
-    this.ambientObserverRemote!.onAnimationThemeChanged(
-        AnimationTheme.kSlideshow);
     this.ambientObserverRemote!.onTopicSourceChanged(TopicSource.kArtGallery);
     this.ambientObserverRemote!.onTemperatureUnitChanged(
         TemperatureUnit.kFahrenheit);
@@ -85,10 +82,6 @@ export class TestAmbientProvider extends TestBrowserProxy implements
 
   setAmbientModeEnabled(ambientModeEnabled: boolean) {
     this.methodCalled('setAmbientModeEnabled', ambientModeEnabled);
-  }
-
-  setAnimationTheme(animationTheme: AnimationTheme) {
-    this.methodCalled('setAnimationTheme', animationTheme);
   }
 
   setTopicSource(topic_source: TopicSource) {

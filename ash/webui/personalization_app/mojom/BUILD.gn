@@ -50,10 +50,6 @@ mojom("mojom") {
           cpp = "ash::default_user_image::DefaultUserImage"
         },
         {
-          mojom = "ash.personalization_app.mojom.AnimationTheme"
-          cpp = "ash::AmbientAnimationTheme"
-        },
-        {
           mojom = "ash.personalization_app.mojom.TopicSource"
           cpp = "ash::AmbientModeTopicSource"
         },

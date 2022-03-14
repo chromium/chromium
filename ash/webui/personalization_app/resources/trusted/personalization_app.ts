@@ -12,8 +12,6 @@ import '/strings.m.js';
 import './ambient/album_item_element.js';
 import './ambient/album_list_element.js';
 import './ambient/albums_subpage_element.js';
-import './ambient/animation_theme_item_element.js';
-import './ambient/animation_theme_list_element.js';
 import './ambient/art_album_dialog_element.js';
 import './ambient/ambient_preview_element.js';
 import './ambient/ambient_subpage_element.js';

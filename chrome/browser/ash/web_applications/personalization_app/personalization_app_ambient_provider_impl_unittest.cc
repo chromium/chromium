@@ -10,7 +10,6 @@
 
 #include "ash/ambient/test/ambient_ash_test_helper.h"
 #include "ash/constants/ash_features.h"
-#include "ash/public/cpp/ambient/ambient_animation_theme.h"
 #include "ash/public/cpp/ambient/ambient_prefs.h"
 #include "ash/public/cpp/ambient/common/ambient_settings.h"
 #include "ash/public/cpp/ambient/fake_ambient_backend_controller_impl.h"
@@ -39,11 +38,6 @@ class TestAmbientObserver
  public:
   void OnAmbientModeEnabledChanged(bool ambient_mode_enabled) override {
     ambient_mode_enabled_ = ambient_mode_enabled;
-  }
-
-  void OnAnimationThemeChanged(
-      ash::AmbientAnimationTheme animation_theme) override {
-    animation_theme_ = animation_theme;
   }
 
   void OnTopicSourceChanged(ash::AmbientModeTopicSource topic_source) override {
@@ -75,11 +69,6 @@ class TestAmbientObserver
     return ambient_mode_enabled_;
   }
 
-  ash::AmbientAnimationTheme animation_theme() {
-    ambient_observer_receiver_.FlushForTesting();
-    return animation_theme_;
-  }
-
   ash::AmbientModeTopicSource topic_source() {
     ambient_observer_receiver_.FlushForTesting();
     return topic_source_;
@@ -100,8 +89,6 @@ class TestAmbientObserver
       ambient_observer_receiver_{this};
 
   bool ambient_mode_enabled_ = false;
-  ash::AmbientAnimationTheme animation_theme_ =
-      ash::AmbientAnimationTheme::kSlideshow;
   ash::AmbientModeTopicSource topic_source_ =
       ash::AmbientModeTopicSource::kArtGallery;
   ash::AmbientModeTemperatureUnit temperature_unit_ =
@@ -115,10 +102,8 @@ class PersonalizationAppAmbientProviderImplTest : public testing::Test {
  public:
   PersonalizationAppAmbientProviderImplTest()
       : profile_manager_(TestingBrowserProcess::GetGlobal()) {
-    scoped_feature_list_.InitWithFeatures(
-        {ash::features::kPersonalizationHub,
-         ash::features::kAmbientModeAnimationFeature},
-        {});
+    scoped_feature_list_.InitAndEnableFeature(
+        ash::features::kPersonalizationHub);
   }
   PersonalizationAppAmbientProviderImplTest(
       const PersonalizationAppAmbientProviderImplTest&) = delete;
@@ -172,11 +157,6 @@ class PersonalizationAppAmbientProviderImplTest : public testing::Test {
     return test_ambient_observer_.is_ambient_mode_enabled();
   }
 
-  ash::AmbientAnimationTheme ObservedAnimationTheme() {
-    ambient_provider_remote_.FlushForTesting();
-    return test_ambient_observer_.animation_theme();
-  }
-
   ash::AmbientModeTopicSource ObservedTopicSource() {
     ambient_provider_remote_.FlushForTesting();
     return test_ambient_observer_.topic_source();
@@ -200,10 +180,6 @@ class PersonalizationAppAmbientProviderImplTest : public testing::Test {
   void SetEnabledPref(bool enabled) {
     profile()->GetPrefs()->SetBoolean(ash::ambient::prefs::kAmbientModeEnabled,
                                       enabled);
-  }
-
-  void SetAnimationTheme(ash::AmbientAnimationTheme animation_theme) {
-    ambient_provider_->SetAnimationTheme(animation_theme);
   }
 
   void FetchSettings() { ambient_provider_->FetchSettingsAndAlbums(); }
@@ -355,7 +331,7 @@ TEST_F(PersonalizationAppAmbientProviderImplTest, SetAmbientModeEnabled) {
 }
 
 TEST_F(PersonalizationAppAmbientProviderImplTest,
-       ShouldCallOnAmbientModeEnabledChanged) {
+       houldCallOnAmbientModeEnabledChanged) {
   PrefService* pref_service = profile()->GetPrefs();
   EXPECT_TRUE(pref_service);
   pref_service->SetBoolean(ash::ambient::prefs::kAmbientModeEnabled, false);
@@ -367,18 +343,6 @@ TEST_F(PersonalizationAppAmbientProviderImplTest,
   SetAmbientObserver();
   ambient_provider_remote().FlushForTesting();
   EXPECT_TRUE(ObservedAmbientModeEnabled());
-}
-
-TEST_F(PersonalizationAppAmbientProviderImplTest,
-       ShouldCallOnAnimationThemeChanged) {
-  SetAmbientObserver();
-  ambient_provider_remote().FlushForTesting();
-  SetAnimationTheme(ash::AmbientAnimationTheme::kSlideshow);
-  EXPECT_EQ(ash::AmbientAnimationTheme::kSlideshow, ObservedAnimationTheme());
-
-  SetAnimationTheme(ash::AmbientAnimationTheme::kFeelTheBreeze);
-  EXPECT_EQ(ash::AmbientAnimationTheme::kFeelTheBreeze,
-            ObservedAnimationTheme());
 }
 
 TEST_F(PersonalizationAppAmbientProviderImplTest,

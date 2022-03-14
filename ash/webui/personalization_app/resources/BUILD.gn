@@ -73,8 +73,6 @@ polymer_js_files = [
   "trusted/ambient/ambient_preview_element.ts",
   "trusted/ambient/ambient_subpage_element.ts",
   "trusted/ambient/ambient_weather_element.ts",
-  "trusted/ambient/animation_theme_item_element.ts",
-  "trusted/ambient/animation_theme_list_element.ts",
   "trusted/ambient/toggle_row_element.ts",
   "trusted/ambient/topic_source_item_element.ts",
   "trusted/ambient/topic_source_list_element.ts",
@@ -111,11 +109,8 @@ static_resource_files = [
   "icon_192.png",
 
   "common/base.css",
-  "common/feel_the_breeze.png",
-  "common/float_on_by.png",
   "common/google_photos.svg",
   "common/no_images.svg",
-  "common/slideshow.png",
 
   "trusted/index.html",
 ]

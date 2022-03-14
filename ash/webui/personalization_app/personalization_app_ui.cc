@@ -137,12 +137,6 @@ void AddStrings(content::WebUIDataSource* source) {
        IDS_PERONSONALIZATION_APP_AMBIENT_MODE_LAST_ART_ALBUM_MESSAGE},
       {"ambientModeArtAlbumDialogCloseButtonLabel",
        IDS_PERONSONALIZATION_APP_AMBIENT_MODE_ART_ALBUM_DIALOG_CLOSE_BUTTON_LABEL},
-      {"ambientModeAnimationTitle",
-       IDS_PERSONALIZATION_APP_AMBIENT_MODE_ANIMATION_TITLE},
-      {"ambientModeAnimationSlideshowLabel",
-       IDS_PERSONALIZATION_APP_AMBIENT_MODE_ANIMATION_SLIDESHOW_LABEL},
-      {"ambientModeAnimationFeelTheBreezeLabel",
-       IDS_PERSONALIZATION_APP_AMBIENT_MODE_ANIMATION_FEEL_THE_BREEZE_LABEL},
 
       // Google Photos strings
       {"googlePhotosLabel", IDS_PERSONALIZATION_APP_GOOGLE_PHOTOS},
@@ -182,9 +176,6 @@ void AddBooleans(content::WebUIDataSource* source) {
 
   source->AddBoolean("isDarkLightModeEnabled",
                      features::IsDarkLightModeEnabled());
-
-  source->AddBoolean("isAmbientModeAnimationEnabled",
-                     features::IsAmbientModeAnimationEnabled());
 }
 
 }  // namespace

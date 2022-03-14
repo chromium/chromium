@@ -10,7 +10,6 @@
 #include <vector>
 
 #include "ash/constants/ash_features.h"
-#include "ash/public/cpp/ambient/ambient_animation_theme.h"
 #include "ash/public/cpp/ambient/ambient_client.h"
 #include "ash/public/cpp/ambient/ambient_metrics.h"
 #include "ash/public/cpp/ambient/ambient_prefs.h"
@@ -77,11 +76,6 @@ PersonalizationAppAmbientProviderImpl::PersonalizationAppAmbientProviderImpl(
       base::BindRepeating(
           &PersonalizationAppAmbientProviderImpl::OnAmbientModeEnabledChanged,
           base::Unretained(this)));
-  pref_change_registrar_.Add(
-      ash::ambient::prefs::kAmbientAnimationTheme,
-      base::BindRepeating(
-          &PersonalizationAppAmbientProviderImpl::OnAnimationThemeChanged,
-          base::Unretained(this)));
 }
 
 PersonalizationAppAmbientProviderImpl::
@@ -112,9 +106,6 @@ void PersonalizationAppAmbientProviderImpl::SetAmbientObserver(
   // Call it once to get the current ambient mode enabled status.
   OnAmbientModeEnabledChanged();
 
-  // Call it once to get the current animation theme.
-  OnAnimationThemeChanged();
-
   ResetLocalSettings();
   // Will notify WebUI when fetches successfully.
   FetchSettingsAndAlbums();
@@ -125,14 +116,6 @@ void PersonalizationAppAmbientProviderImpl::SetAmbientModeEnabled(
   PrefService* pref_service = profile_->GetPrefs();
   DCHECK(pref_service);
   pref_service->SetBoolean(ash::ambient::prefs::kAmbientModeEnabled, enabled);
-}
-
-void PersonalizationAppAmbientProviderImpl::SetAnimationTheme(
-    ash::AmbientAnimationTheme animation_theme) {
-  PrefService* pref_service = profile_->GetPrefs();
-  DCHECK(pref_service);
-  pref_service->SetInteger(ash::ambient::prefs::kAmbientAnimationTheme,
-                           static_cast<int>(animation_theme));
 }
 
 void PersonalizationAppAmbientProviderImpl::SetTopicSource(
@@ -229,13 +212,6 @@ void PersonalizationAppAmbientProviderImpl::OnAmbientModeEnabledChanged() {
   }
 }
 
-void PersonalizationAppAmbientProviderImpl::OnAnimationThemeChanged() {
-  if (!ambient_observer_remote_.is_bound())
-    return;
-
-  ambient_observer_remote_->OnAnimationThemeChanged(GetCurrentAnimationTheme());
-}
-
 void PersonalizationAppAmbientProviderImpl::OnTemperatureUnitChanged() {
   if (!ambient_observer_remote_.is_bound())
     return;
@@ -300,14 +276,6 @@ bool PersonalizationAppAmbientProviderImpl::IsAmbientModeEnabled() {
   PrefService* pref_service = profile_->GetPrefs();
   DCHECK(pref_service);
   return pref_service->GetBoolean(ash::ambient::prefs::kAmbientModeEnabled);
-}
-
-ash::AmbientAnimationTheme
-PersonalizationAppAmbientProviderImpl::GetCurrentAnimationTheme() {
-  PrefService* pref_service = profile_->GetPrefs();
-  DCHECK(pref_service);
-  return static_cast<ash::AmbientAnimationTheme>(
-      pref_service->GetInteger(ash::ambient::prefs::kAmbientAnimationTheme));
 }
 
 void PersonalizationAppAmbientProviderImpl::UpdateSettings() {
