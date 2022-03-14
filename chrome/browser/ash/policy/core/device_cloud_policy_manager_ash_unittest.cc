@@ -102,14 +102,26 @@ void CopyLockResult(base::RunLoop* loop,
 }
 
 void CertCallbackSuccess(
-    ash::attestation::AttestationFlow::CertificateCallback callback) {
-  std::string certificate;
-  ash::attestation::GetFakeCertificatePEM(base::Days(10), &certificate);
-
+    ash::attestation::AttestationFlow::CertificateCallback callback,
+    std::string certificate) {
   base::ThreadTaskRunnerHandle::Get()->PostTask(
       FROM_HERE, base::BindOnce(std::move(callback),
                                 chromeos::attestation::ATTESTATION_SUCCESS,
                                 std::move(certificate)));
+}
+
+void CertCallbackSuccessWithValidCertificate(
+    ash::attestation::AttestationFlow::CertificateCallback callback) {
+  std::string certificate;
+  ash::attestation::GetFakeCertificatePEM(base::Days(10), &certificate);
+  CertCallbackSuccess(std::move(callback), std::move(certificate));
+}
+
+void CertCallbackSuccessWithExpiredCertificate(
+    ash::attestation::AttestationFlow::CertificateCallback callback) {
+  std::string certificate;
+  ash::attestation::GetFakeCertificatePEM(base::Days(-1), &certificate);
+  CertCallbackSuccess(std::move(callback), std::move(certificate));
 }
 
 class TestingDeviceCloudPolicyManagerAsh : public DeviceCloudPolicyManagerAsh {
@@ -598,8 +610,25 @@ class DeviceCloudPolicyManagerAshEnrollmentTest
     EXPECT_TRUE(manager_->policies().Equals(bundle));
 
     if (ShouldRegisterWithCert()) {
-      EXPECT_CALL(mock_attestation_flow_, GetCertificate(_, _, _, _, _, _))
-          .WillOnce(WithArgs<5>(Invoke(CertCallbackSuccess)));
+      // TODO(crbug.com/1298989): This expectation tests implementation details
+      // of EnrollmentHandler which is not the scope of this tests. Remove it
+      // once EnrollmentHandler has its own unit tests.
+      EXPECT_CALL(
+          mock_attestation_flow_,
+          GetCertificate(
+              ash::attestation::PROFILE_ENTERPRISE_ENROLLMENT_CERTIFICATE, _, _,
+              /*force_new_key=*/false, _, _))
+          .Times(1)
+          .WillOnce(
+              WithArgs<5>(Invoke(CertCallbackSuccessWithExpiredCertificate)));
+      EXPECT_CALL(
+          mock_attestation_flow_,
+          GetCertificate(
+              ash::attestation::PROFILE_ENTERPRISE_ENROLLMENT_CERTIFICATE, _, _,
+              /*force_new_key=*/true, _, _))
+          .Times(1)
+          .WillOnce(
+              WithArgs<5>(Invoke(CertCallbackSuccessWithValidCertificate)));
     }
     AddStateKeys();
   }

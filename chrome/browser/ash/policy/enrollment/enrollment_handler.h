@@ -137,11 +137,17 @@ class EnrollmentHandler : public CloudPolicyClient::Observer,
   // Handles the response to a request for server-backed state keys.
   void HandleStateKeysResult(const std::vector<std::string>& state_keys);
 
-  // Starts attestation based enrollment flow.
-  void StartAttestationBasedEnrollmentFlow();
+  // Starts attestation based enrollment flow. If |is_initial_attempt| is true,
+  // uses existing certificate if any. Otherwise, uses a new certificate.
+  void StartAttestationBasedEnrollmentFlow(bool is_initial_attempt);
 
   // Handles the response to a request for a registration certificate.
+  // |is_initial_attempt| indicates whether it is the first attempt to obtain
+  // valid enrollment certificate. If |is_initial_attempt| is true, then
+  // |StartAttestationBasedEnrollmentFlow| attempted to fetch existing
+  // certificate if any. Otherwise, it attempted to fetch a fresh certificate.
   void HandleRegistrationCertificateResult(
+      bool is_initial_attempt,
       chromeos::attestation::AttestationStatus status,
       const std::string& pem_certificate_chain);
 
