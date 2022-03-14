@@ -172,11 +172,13 @@ def main():
   parser.add_argument('--wildcard-compress', action='store_true')
   parser.add_argument(
       '--wildcard-min-depth',
+      type=int,
       default=1,
       help="Minimum number of terms in a case before a wildcard may be " +
       "used, so that prefixes are not excessively broad.")
   parser.add_argument(
       '--wildcard-min-cases',
+      type=int,
       default=3,
       help="Minimum number of cases in a filter before folding into a " +
       "wildcard, so as to not create wildcards needlessly for small "
