@@ -6,6 +6,7 @@
 
 #include "ash/login/ui/horizontal_image_sequence_animation_decoder.h"
 #include "ash/style/ash_color_provider.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/layer_animation_sequence.h"
@@ -267,5 +268,8 @@ void AuthIconView::CircleImageSource::Draw(gfx::Canvas* canvas) {
   flags.setColor(color_);
   canvas->DrawCircle(gfx::PointF(radius, radius), radius, flags);
 }
+
+BEGIN_METADATA(AuthIconView, View)
+END_METADATA
 
 }  // namespace ash

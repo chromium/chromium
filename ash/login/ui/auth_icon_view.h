@@ -10,6 +10,7 @@
 #include "base/callback.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/gfx/image/canvas_image_source.h"
 #include "ui/views/view.h"
 
@@ -24,6 +25,8 @@ namespace ash {
 // LoginAuthFactorsView.
 class ASH_EXPORT AuthIconView : public views::View {
  public:
+  METADATA_HEADER(AuthIconView);
+
   enum class Color {
     kPrimary,
     kDisabled,
