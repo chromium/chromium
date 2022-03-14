@@ -386,12 +386,12 @@ TEST_F(RenderWidgetHostViewAndroidTest, RenderFrameSubmittedBeforeNavigation) {
   EXPECT_TRUE(post_nav_local_surface_id.IsNewerThan(initial_local_surface_id));
 }
 
-// Tests Rotation improvements, where multiple updates to VisualProperties are
-// batched.
+// Tests Rotation improvements that are behind the
+// features::kSurfaceSyncThrottling flag.
 class RenderWidgetHostViewAndroidRotationTest
     : public RenderWidgetHostViewAndroidTest {
  public:
-  RenderWidgetHostViewAndroidRotationTest() = default;
+  RenderWidgetHostViewAndroidRotationTest();
   ~RenderWidgetHostViewAndroidRotationTest() override {}
 
   void OnDidUpdateVisualPropertiesComplete(
@@ -402,7 +402,15 @@ class RenderWidgetHostViewAndroidRotationTest
   RenderWidgetHostViewAndroid* CreateRenderWidgetHostViewAndroid(
       RenderWidgetHostImpl* widget_host,
       gfx::NativeView parent_native_view) override;
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
+
+RenderWidgetHostViewAndroidRotationTest::
+    RenderWidgetHostViewAndroidRotationTest() {
+  scoped_feature_list_.InitAndEnableFeature(features::kSurfaceSyncThrottling);
+}
 
 void RenderWidgetHostViewAndroidRotationTest::
     OnDidUpdateVisualPropertiesComplete(
@@ -624,12 +632,12 @@ TEST_F(RenderWidgetHostViewAndroidRotationTest, FullscreenRotation) {
   }
 
   // When exiting rotation the order of visual property updates can differ.
+  // Though we need to always allow Surface Sync to continue, as WebView will
+  // send two OnPhysicalBackingSizeChanged in a row to exit fullscreen. While
+  // non-WebView can alternate some combination of 1-2
+  // OnPhysicalBackingSizeChanged and OnSynchronizedDisplayPropertiesChanged.
   delegate()->set_is_fullscreen(false);
   rwhva->OnPhysicalBackingSizeChanged(/* deadline_override= */ absl::nullopt);
-  EXPECT_FALSE(rwhva->CanSynchronizeVisualProperties());
-  EXPECT_EQ(post_rotation_local_surface_id, rwhva->GetLocalSurfaceId());
-
-  rwhva->OnSynchronizedDisplayPropertiesChanged(/* rotation= */ true);
   EXPECT_TRUE(rwhva->CanSynchronizeVisualProperties());
   const viz::LocalSurfaceId post_fullscreen_local_surface_id =
       rwhva->GetLocalSurfaceId();
@@ -637,6 +645,21 @@ TEST_F(RenderWidgetHostViewAndroidRotationTest, FullscreenRotation) {
   EXPECT_TRUE(post_fullscreen_local_surface_id.is_valid());
   EXPECT_TRUE(post_fullscreen_local_surface_id.IsNewerThan(
       post_rotation_local_surface_id));
+
+  // When rotation begins again it should block Surface Sync again.
+  rwhva->OnSynchronizedDisplayPropertiesChanged(/* rotation= */ true);
+  EXPECT_FALSE(rwhva->CanSynchronizeVisualProperties());
+  EXPECT_EQ(post_fullscreen_local_surface_id, rwhva->GetLocalSurfaceId());
+
+  // When rotation has completed we should begin Surface Sync again.
+  rwhva->OnPhysicalBackingSizeChanged(/* deadline_override= */ absl::nullopt);
+  const viz::LocalSurfaceId post_fullscreen_rotation_local_surface_id =
+      rwhva->GetLocalSurfaceId();
+  EXPECT_NE(post_fullscreen_local_surface_id,
+            post_fullscreen_rotation_local_surface_id);
+  EXPECT_TRUE(post_fullscreen_rotation_local_surface_id.is_valid());
+  EXPECT_TRUE(post_fullscreen_rotation_local_surface_id.IsNewerThan(
+      post_fullscreen_local_surface_id));
   EXPECT_TRUE(rwhva->CanSynchronizeVisualProperties());
 
   {
