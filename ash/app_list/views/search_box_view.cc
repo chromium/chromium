@@ -164,6 +164,7 @@ void SearchBoxView::ClearSearch() {
     app_list_view_->SetStateFromSearchBoxView(
         /*search_box_is_empty=*/true, /*triggered_by_contents_change=*/false);
   }
+  NotifyQueryChanged();
 }
 
 void SearchBoxView::HandleSearchBoxEvent(ui::LocatedEvent* located_event) {
@@ -604,6 +605,10 @@ void SearchBoxView::OnResultContainerVisibilityChanged(bool visible) {
   search_result_page_visible_ = visible;
   UpdateBackground(current_app_list_state_);
   SchedulePaint();
+}
+
+bool SearchBoxView::HasValidQuery() {
+  return !IsTrimmedQueryEmpty(current_query_);
 }
 
 void SearchBoxView::UpdateTextColor() {
