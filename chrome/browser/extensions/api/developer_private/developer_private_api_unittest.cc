@@ -291,12 +291,12 @@ void DeveloperPrivateApiUnitTest::TestExtensionPrefSetting(
   EXPECT_FALSE(has_pref.Run()) << key;
 
   {
-    auto parameters = std::make_unique<base::DictionaryValue>();
-    parameters->SetStringKey("extensionId", extension_id);
-    parameters->SetBoolKey(key, true);
+    base::Value::Dict parameters;
+    parameters.Set("extensionId", extension_id);
+    parameters.Set(key, true);
 
     base::ListValue args;
-    args.Append(std::move(parameters));
+    args.Append(base::Value(std::move(parameters)));
     EXPECT_FALSE(RunFunction(function, args)) << key;
     EXPECT_EQ("This action requires a user gesture.", function->GetError());
 
@@ -312,12 +312,12 @@ void DeveloperPrivateApiUnitTest::TestExtensionPrefSetting(
   }
 
   {
-    auto parameters = std::make_unique<base::DictionaryValue>();
-    parameters->SetStringKey("extensionId", extension_id);
-    parameters->SetBoolKey(key, false);
+    base::Value::Dict parameters;
+    parameters.Set("extensionId", extension_id);
+    parameters.Set(key, false);
 
     base::ListValue args;
-    args.Append(std::move(parameters));
+    args.Append(base::Value(std::move(parameters)));
 
     ExtensionFunction::ScopedUserGestureForTests scoped_user_gesture;
     function = new api::DeveloperPrivateUpdateExtensionConfigurationFunction();
@@ -614,9 +614,9 @@ TEST_F(DeveloperPrivateApiUnitTest, DeveloperPrivateLoadUnpacked) {
   function = new api::DeveloperPrivateLoadUnpackedFunction();
   function->SetRenderFrameHost(web_contents->GetMainFrame());
   base::ListValue unpacked_args;
-  std::unique_ptr<base::DictionaryValue> options(new base::DictionaryValue());
-  options->SetBoolKey("failQuietly", true);
-  unpacked_args.Append(std::move(options));
+  base::Value::Dict options;
+  options.Set("failQuietly", true);
+  unpacked_args.Append(base::Value(std::move(options)));
   current_ids = registry()->enabled_extensions().GetIDs();
   EXPECT_FALSE(RunFunction(function, unpacked_args));
   EXPECT_EQ(manifest_errors::kManifestUnreadable, function->GetError());
@@ -1070,7 +1070,8 @@ TEST_F(DeveloperPrivateApiUnitTest, DeveloperPrivateRequestFileSource) {
   scoped_refptr<ExtensionFunction> function(
       new api::DeveloperPrivateRequestFileSourceFunction());
   base::ListValue file_source_args;
-  file_source_args.Append(properties.ToValue());
+  file_source_args.Append(
+      base::Value::FromUniquePtrValue(properties.ToValue()));
   EXPECT_TRUE(RunFunction(function, file_source_args)) << function->GetError();
 
   const base::Value& response_value =
