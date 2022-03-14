@@ -398,7 +398,7 @@ public class AutocompleteCoordinator implements UrlFocusChangeListener, UrlTextC
      * Sends a zero suggest request to the server in order to pre-populate the result cache.
      */
     public void prefetchZeroSuggestResults() {
-        AutocompleteControllerJni.get().prefetchZeroSuggestResults();
+        mMediator.startPrefetch();
     }
 
     /** @return Suggestions Dropdown view, showing the list of suggestions. */

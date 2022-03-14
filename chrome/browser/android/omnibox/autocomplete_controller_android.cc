@@ -204,6 +204,20 @@ void AutocompleteControllerAndroid::Start(JNIEnv* env,
   autocomplete_controller_->Start(input_);
 }
 
+void AutocompleteControllerAndroid::StartPrefetch(JNIEnv* env) {
+  AutocompleteInput autocomplete_input(
+      u"", metrics::OmniboxEventProto::NTP_ZPS_PREFETCH,
+      ChromeAutocompleteSchemeClassifier(profile_));
+  autocomplete_input.set_focus_type(OmniboxFocusType::ON_FOCUS);
+
+  if (base::FeatureList::IsEnabled(omnibox::kZeroSuggestPrefetching)) {
+    autocomplete_controller_->StartPrefetch(autocomplete_input);
+  } else {
+    // ZeroSuggestPrefetcher deletes itself after it's done prefetching.
+    new ZeroSuggestPrefetcher(profile_);
+  }
+}
+
 ScopedJavaLocalRef<jobject> AutocompleteControllerAndroid::Classify(
     JNIEnv* env,
     const JavaParamRef<jstring>& j_text,
@@ -534,13 +548,4 @@ static ScopedJavaLocalRef<jobject> JNI_AutocompleteController_GetForProfile(
   if (!native_bridge)
     return {};
   return native_bridge->GetJavaObject();
-}
-
-static void JNI_AutocompleteController_PrefetchZeroSuggestResults(JNIEnv* env) {
-  Profile* profile = ProfileManager::GetActiveUserProfile();
-  if (!profile)
-    return;
-
-  // ZeroSuggestPrefetcher deletes itself after it's done prefetching.
-  new ZeroSuggestPrefetcher(profile);
 }

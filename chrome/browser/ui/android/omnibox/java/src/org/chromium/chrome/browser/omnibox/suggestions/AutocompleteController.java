@@ -93,6 +93,16 @@ public class AutocompleteController {
     }
 
     /**
+     * Issue a prefetch request for zero prefix suggestions.
+     *
+     * Prefetch is a fire-and-forget operation that yields no results.
+     */
+    void startPrefetch() {
+        if (mNativeController == 0) return;
+        AutocompleteControllerJni.get().startPrefetch(mNativeController);
+    }
+
+    /**
      * Given some string |text| that the user wants to use for navigation, determines how it should
      * be interpreted. This is a fallback in case the user didn't select a visible suggestion (e.g.
      * the user pressed enter before omnibox suggestions had been shown).
@@ -355,7 +365,7 @@ public class AutocompleteController {
         /**
          * Sends a zero suggest request to the server in order to pre-populate the result cache.
          */
-        void prefetchZeroSuggestResults();
+        void startPrefetch(long nativeAutocompleteControllerAndroid);
 
         /**
          * Acquire an instance of AutocompleteController associated with the supplied profile.

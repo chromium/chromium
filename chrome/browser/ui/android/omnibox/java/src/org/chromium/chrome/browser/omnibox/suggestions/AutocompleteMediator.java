@@ -826,6 +826,14 @@ class AutocompleteMediator implements OnSuggestionsReceivedListener,
     }
 
     /**
+     * Sends a zero suggest request to the server in order to pre-populate the result cache.
+     */
+    /* package */ void startPrefetch() {
+        postAutocompleteRequest(
+                () -> mAutocomplete.startPrefetch(), SCHEDULE_FOR_IMMEDIATE_EXECUTION);
+    }
+
+    /**
      * Make a zero suggest request if:
      * - The URL bar has focus.
      * - The the tab/overview is not incognito.

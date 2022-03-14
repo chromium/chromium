@@ -48,6 +48,7 @@ class AutocompleteControllerAndroid : public AutocompleteController::Observer,
              bool prefer_keyword,
              bool allow_exact_keyword_match,
              bool want_asynchronous_matches);
+  void StartPrefetch(JNIEnv* env);
   base::android::ScopedJavaLocalRef<jobject> Classify(
       JNIEnv* env,
       const base::android::JavaParamRef<jstring>& j_text,
