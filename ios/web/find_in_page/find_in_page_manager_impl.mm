@@ -7,7 +7,6 @@
 #include "base/metrics/user_metrics.h"
 #include "base/metrics/user_metrics_action.h"
 #import "base/strings/sys_string_conversions.h"
-#include "base/task/post_task.h"
 #include "base/values.h"
 #import "ios/web/find_in_page/find_in_page_constants.h"
 #import "ios/web/find_in_page/find_in_page_java_script_feature.h"
@@ -16,6 +15,7 @@
 #include "ios/web/public/js_messaging/web_frame_util.h"
 #import "ios/web/public/js_messaging/web_frames_manager.h"
 #include "ios/web/public/thread/web_task_traits.h"
+#include "ios/web/public/thread/web_thread.h"
 #import "ios/web/web_state/web_state_impl.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
@@ -102,8 +102,8 @@ void FindInPageManagerImpl::StartSearch(NSString* query) {
   if (all_frames.size() == 0) {
     // No frames to search in.
     // Call asyncronously to match behavior if find was successful in frames.
-    base::PostTask(
-        FROM_HERE, {WebThread::UI},
+    GetUIThreadTaskRunner({})->PostTask(
+        FROM_HERE,
         base::BindOnce(&FindInPageManagerImpl::LastFindRequestCompleted,
                        weak_factory_.GetWeakPtr()));
     return;
@@ -122,8 +122,8 @@ void FindInPageManagerImpl::StartSearch(NSString* query) {
       last_find_request_.DidReceiveFindResponseFromOneFrame();
       if (last_find_request_.AreAllFindResponsesReturned()) {
         // Call asyncronously to match behavior if find was done in frames.
-        base::PostTask(
-            FROM_HERE, {WebThread::UI},
+        GetUIThreadTaskRunner({})->PostTask(
+            FROM_HERE,
             base::BindOnce(&FindInPageManagerImpl::LastFindRequestCompleted,
                            weak_factory_.GetWeakPtr()));
       }

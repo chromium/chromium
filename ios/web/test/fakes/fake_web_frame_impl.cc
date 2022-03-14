@@ -10,7 +10,6 @@
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/json/json_writer.h"
-#include "base/task/post_task.h"
 #include "base/values.h"
 #include "ios/web/public/thread/web_task_traits.h"
 #include "ios/web/public/thread/web_thread.h"
@@ -121,8 +120,8 @@ bool FakeWebFrameImpl::CallJavaScriptFunction(
     web::GetUIThreadTaskRunner({})->PostDelayedTask(
         FROM_HERE, base::BindOnce(std::move(callback), nullptr), timeout);
   } else {
-    base::PostTask(FROM_HERE, {WebThread::UI},
-                   base::BindOnce(std::move(callback), result_map_[name]));
+    GetUIThreadTaskRunner({})->PostTask(
+        FROM_HERE, base::BindOnce(std::move(callback), result_map_[name]));
   }
   return true;
 }

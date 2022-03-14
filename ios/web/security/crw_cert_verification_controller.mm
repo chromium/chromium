@@ -141,10 +141,11 @@ using web::WebThread;
     DCHECK(cert);
   }
   DCHECK(cert->intermediate_buffers().empty());
-  base::PostTask(FROM_HERE, {WebThread::IO}, base::BindOnce(^{
-                   self->_certPolicyCache->AllowCertForHost(
-                       cert.get(), base::SysNSStringToUTF8(host), status);
-                 }));
+  web::GetIOThreadTaskRunner({})->PostTask(
+      FROM_HERE, base::BindOnce(^{
+        self->_certPolicyCache->AllowCertForHost(
+            cert.get(), base::SysNSStringToUTF8(host), status);
+      }));
 }
 
 #pragma mark - Private

@@ -17,7 +17,6 @@
 #include "base/power_monitor/power_monitor.h"
 #include "base/power_monitor/power_monitor_device_source.h"
 #include "base/process/process_metrics.h"
-#include "base/task/post_task.h"
 #include "base/task/single_thread_task_executor.h"
 #include "base/task/thread_pool/thread_pool_instance.h"
 #include "base/threading/thread_restrictions.h"
@@ -26,6 +25,7 @@
 #include "ios/web/public/init/ios_global_state.h"
 #include "ios/web/public/init/web_main_parts.h"
 #include "ios/web/public/thread/web_task_traits.h"
+#include "ios/web/public/thread/web_thread.h"
 #import "ios/web/public/web_client.h"
 #include "ios/web/web_sub_thread.h"
 #include "ios/web/web_thread_impl.h"
@@ -156,8 +156,8 @@ void WebMainLoop::ShutdownThreadsAndCleanUp() {
   // Teardown may start in PostMainMessageLoopRun, and during teardown we
   // need to be able to perform IO.
   base::PermanentThreadAllowance::AllowBlocking();
-  base::PostTask(FROM_HERE, {WebThread::IO},
-                 base::BindOnce(base::IgnoreResult(
+  GetIOThreadTaskRunner({})->PostTask(
+      FROM_HERE, base::BindOnce(base::IgnoreResult(
                      &base::PermanentThreadAllowance::AllowBlocking)));
 
   // Also allow waiting to join threads.
@@ -166,8 +166,8 @@ void WebMainLoop::ShutdownThreadsAndCleanUp() {
   // persistent work is being done after ThreadPoolInstance::Shutdown() in order
   // to move towards atomic shutdown.
   base::PermanentThreadAllowance::AllowBaseSyncPrimitives();
-  base::PostTask(
-      FROM_HERE, {WebThread::IO},
+  GetIOThreadTaskRunner({})->PostTask(
+      FROM_HERE,
       base::BindOnce(base::IgnoreResult(
           &base::PermanentThreadAllowance::AllowBaseSyncPrimitives)));
 

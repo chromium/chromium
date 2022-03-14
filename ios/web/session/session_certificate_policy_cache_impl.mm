@@ -5,7 +5,6 @@
 #import "ios/web/session/session_certificate_policy_cache_impl.h"
 
 #include "base/bind.h"
-#include "base/task/post_task.h"
 #include "ios/web/public/browser_state.h"
 #include "ios/web/public/security/certificate_policy_cache.h"
 #import "ios/web/public/session/crw_session_certificate_policy_cache_storage.h"
@@ -62,12 +61,13 @@ void SessionCertificatePolicyCacheImpl::UpdateCertificatePolicyCache(
   DCHECK(cache.get());
   NSSet* allowed_certs = [NSSet setWithSet:allowed_certs_];
   const scoped_refptr<CertificatePolicyCache> cache_copy = cache;
-  base::PostTask(FROM_HERE, {WebThread::IO}, base::BindOnce(^{
-                   for (CRWSessionCertificateStorage* cert in allowed_certs) {
-                     cache_copy->AllowCertForHost(cert.certificate, cert.host,
-                                                  cert.status);
-                   }
-                 }));
+  GetIOThreadTaskRunner({})->PostTask(
+      FROM_HERE, base::BindOnce(^{
+        for (CRWSessionCertificateStorage* cert in allowed_certs) {
+          cache_copy->AllowCertForHost(cert.certificate, cert.host,
+                                       cert.status);
+        }
+      }));
 }
 
 void SessionCertificatePolicyCacheImpl::RegisterAllowedCertificate(
@@ -93,8 +93,8 @@ void SessionCertificatePolicyCacheImpl::RegisterAllowedCertificate(
                                              status:status]];
   const scoped_refptr<CertificatePolicyCache> cache =
       GetCertificatePolicyCache();
-  base::PostTask(
-      FROM_HERE, {WebThread::IO},
+  GetIOThreadTaskRunner({})->PostTask(
+      FROM_HERE,
       base::BindOnce(&CertificatePolicyCache::AllowCertForHost, cache,
                      base::RetainedRef(certificate.get()), host, status));
 }

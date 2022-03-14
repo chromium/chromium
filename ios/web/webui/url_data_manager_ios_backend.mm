@@ -14,7 +14,6 @@
 #include "base/memory/ref_counted_memory.h"
 #include "base/memory/weak_ptr.h"
 #include "base/strings/string_util.h"
-#include "base/task/post_task.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/trace_event/trace_event.h"
 #include "ios/web/public/browser_state.h"
@@ -400,8 +399,8 @@ void GetMimeTypeOnUI(URLDataSourceIOSImpl* source,
                      const base::WeakPtr<URLRequestChromeJob>& job) {
   DCHECK_CURRENTLY_ON(WebThread::UI);
   std::string mime_type = source->source()->GetMimeType(path);
-  base::PostTask(FROM_HERE, {WebThread::IO},
-                 base::BindOnce(&URLRequestChromeJob::MimeTypeAvailable, job,
+  GetIOThreadTaskRunner({})->PostTask(
+      FROM_HERE, base::BindOnce(&URLRequestChromeJob::MimeTypeAvailable, job,
                                 base::RetainedRef(source), mime_type));
 }
 

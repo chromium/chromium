@@ -9,7 +9,6 @@
 
 #include "base/bind.h"
 #include "base/run_loop.h"
-#include "base/task/post_task.h"
 #include "ios/web/public/test/web_task_environment.h"
 #include "ios/web/public/thread/web_task_traits.h"
 #include "ios/web/public/thread/web_thread.h"
@@ -27,7 +26,7 @@ class NetworkContextOwnerTest : public PlatformTest {
   NetworkContextOwnerTest()
       : saw_connection_error_(false),
         context_getter_(base::MakeRefCounted<net::TestURLRequestContextGetter>(
-            base::CreateSingleThreadTaskRunner({WebThread::IO}))) {}
+            GetIOThreadTaskRunner({}))) {}
 
   ~NetworkContextOwnerTest() override {
     // Tests should cleanup after themselves.

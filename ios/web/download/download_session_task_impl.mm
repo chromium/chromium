@@ -8,7 +8,6 @@
 
 #import "base/mac/foundation_util.h"
 #include "base/strings/sys_string_conversions.h"
-#include "base/task/post_task.h"
 #include "base/task/thread_pool.h"
 #import "ios/net/cookies/system_cookie_util.h"
 #include "ios/web/download/download_result.h"
@@ -112,8 +111,8 @@ int GetTaskPercentComplete(NSURLSessionTask* task) {
 - (void)URLSession:(NSURLSession*)session
                     task:(NSURLSessionTask*)task
     didCompleteWithError:(NSError*)error {
-  base::PostTask(FROM_HERE, {WebThread::UI},
-                 base::BindOnce(_doneCallback, task, error));
+  web::GetUIThreadTaskRunner({})->PostTask(
+      FROM_HERE, base::BindOnce(_doneCallback, task, error));
 }
 
 - (void)URLSession:(NSURLSession*)session
@@ -125,8 +124,8 @@ int GetTaskPercentComplete(NSURLSessionTask* task) {
   // thread (in net::URLFetcherFileWriter::Write()).
   dispatch_semaphore_t semaphore = dispatch_semaphore_create(0);
 
-  base::PostTask(
-      FROM_HERE, {WebThread::UI},
+  web::GetUIThreadTaskRunner({})->PostTask(
+      FROM_HERE,
       base::BindOnce(
           [](dispatch_semaphore_t semaphore, DataCallback innerDataCallback,
              NSURLSessionTask* task, NSData* data) {
@@ -306,8 +305,8 @@ void DownloadSessionTaskImpl::GetCookies(
       web_state_->GetBrowserState()->GetRequestContext());
 
   // net::URLRequestContextGetter must be used in the IO thread.
-  base::PostTask(
-      FROM_HERE, {WebThread::IO},
+  GetIOThreadTaskRunner({})->PostTask(
+      FROM_HERE,
       base::BindOnce(&DownloadSessionTaskImpl::GetCookiesFromContextGetter,
                      context_getter, std::move(callback)));
 }
@@ -322,8 +321,8 @@ void DownloadSessionTaskImpl::GetCookiesFromContextGetter(
              const net::CookieList& cookie_list) {
             NSArray<NSHTTPCookie*>* cookies =
                 SystemCookiesFromCanonicalCookieList(cookie_list);
-            base::PostTask(FROM_HERE, {WebThread::UI},
-                           base::BindOnce(std::move(callback), cookies));
+            GetUIThreadTaskRunner({})->PostTask(
+                FROM_HERE, base::BindOnce(std::move(callback), cookies));
           },
           std::move(callback)));
 }

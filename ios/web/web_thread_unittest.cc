@@ -5,7 +5,6 @@
 #include "ios/web/public/thread/web_thread.h"
 
 #include "base/bind.h"
-#include "base/task/post_task.h"
 #include "ios/web/public/test/web_task_environment.h"
 #include "ios/web/public/thread/web_task_traits.h"
 #include "ios/web/public/thread/web_thread.h"
@@ -31,10 +30,9 @@ class WebThreadTest : public PlatformTest {
 
 TEST_F(WebThreadTest, BasePostTask) {
   base::RunLoop run_loop;
-  EXPECT_TRUE(base::PostTask(
-      FROM_HERE, {WebThread::IO},
-      base::BindOnce(&BasicFunction, run_loop.QuitWhenIdleClosure(),
-                     WebThread::IO)));
+  EXPECT_TRUE(GetIOThreadTaskRunner({})->PostTask(
+      FROM_HERE, base::BindOnce(&BasicFunction, run_loop.QuitWhenIdleClosure(),
+                                WebThread::IO)));
   run_loop.Run();
 }
 
@@ -55,8 +53,7 @@ TEST_F(WebThreadTest, GetIOTaskRunnerPostTask) {
 }
 
 TEST_F(WebThreadTest, PostTaskViaTaskRunner) {
-  scoped_refptr<base::TaskRunner> task_runner =
-      base::CreateTaskRunner({WebThread::IO});
+  scoped_refptr<base::TaskRunner> task_runner = GetIOThreadTaskRunner({});
   base::RunLoop run_loop;
   EXPECT_TRUE(task_runner->PostTask(
       FROM_HERE, base::BindOnce(&BasicFunction, run_loop.QuitWhenIdleClosure(),
@@ -66,7 +63,7 @@ TEST_F(WebThreadTest, PostTaskViaTaskRunner) {
 
 TEST_F(WebThreadTest, PostTaskViaSequencedTaskRunner) {
   scoped_refptr<base::SequencedTaskRunner> task_runner =
-      base::CreateSequencedTaskRunner({WebThread::IO});
+      GetIOThreadTaskRunner({});
   base::RunLoop run_loop;
   EXPECT_TRUE(task_runner->PostTask(
       FROM_HERE, base::BindOnce(&BasicFunction, run_loop.QuitWhenIdleClosure(),
@@ -76,7 +73,7 @@ TEST_F(WebThreadTest, PostTaskViaSequencedTaskRunner) {
 
 TEST_F(WebThreadTest, PostTaskViaSingleThreadTaskRunner) {
   scoped_refptr<base::SingleThreadTaskRunner> task_runner =
-      base::CreateSingleThreadTaskRunner({WebThread::IO});
+      GetIOThreadTaskRunner({});
   base::RunLoop run_loop;
   EXPECT_TRUE(task_runner->PostTask(
       FROM_HERE, base::BindOnce(&BasicFunction, run_loop.QuitWhenIdleClosure(),
