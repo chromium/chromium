@@ -159,32 +159,32 @@ class CSSUnitValues {
         value, CSSPrimitiveValue::UnitType::kDynamicViewportMax);
   }
 
-  static CSSUnitValue* qw(double value) {
+  static CSSUnitValue* cqw(double value) {
     return CSSUnitValue::Create(value,
                                 CSSPrimitiveValue::UnitType::kContainerWidth);
   }
 
-  static CSSUnitValue* qh(double value) {
+  static CSSUnitValue* cqh(double value) {
     return CSSUnitValue::Create(value,
                                 CSSPrimitiveValue::UnitType::kContainerHeight);
   }
 
-  static CSSUnitValue* qi(double value) {
+  static CSSUnitValue* cqi(double value) {
     return CSSUnitValue::Create(
         value, CSSPrimitiveValue::UnitType::kContainerInlineSize);
   }
 
-  static CSSUnitValue* qb(double value) {
+  static CSSUnitValue* cqb(double value) {
     return CSSUnitValue::Create(
         value, CSSPrimitiveValue::UnitType::kContainerBlockSize);
   }
 
-  static CSSUnitValue* qmin(double value) {
+  static CSSUnitValue* cqmin(double value) {
     return CSSUnitValue::Create(value,
                                 CSSPrimitiveValue::UnitType::kContainerMin);
   }
 
-  static CSSUnitValue* qmax(double value) {
+  static CSSUnitValue* cqmax(double value) {
     return CSSUnitValue::Create(value,
                                 CSSPrimitiveValue::UnitType::kContainerMax);
   }

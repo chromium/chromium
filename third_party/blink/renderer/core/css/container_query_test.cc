@@ -465,16 +465,16 @@ TEST_F(ContainerQueryTest, ContainerUnitsViewportFallback) {
 
   ScopedCSSContainerRelativeUnitsForTest feature(true);
 
-  RegisterProperty(GetDocument(), "--qw", "<length>", "0px", false);
-  RegisterProperty(GetDocument(), "--qi", "<length>", "0px", false);
-  RegisterProperty(GetDocument(), "--qh", "<length>", "0px", false);
-  RegisterProperty(GetDocument(), "--qb", "<length>", "0px", false);
-  RegisterProperty(GetDocument(), "--qmin", "<length>", "0px", false);
-  RegisterProperty(GetDocument(), "--qmax", "<length>", "0px", false);
+  RegisterProperty(GetDocument(), "--cqw", "<length>", "0px", false);
+  RegisterProperty(GetDocument(), "--cqi", "<length>", "0px", false);
+  RegisterProperty(GetDocument(), "--cqh", "<length>", "0px", false);
+  RegisterProperty(GetDocument(), "--cqb", "<length>", "0px", false);
+  RegisterProperty(GetDocument(), "--cqmin", "<length>", "0px", false);
+  RegisterProperty(GetDocument(), "--cqmax", "<length>", "0px", false);
   RegisterProperty(GetDocument(), "--fallback-h", "<length>", "0px", false);
-  RegisterProperty(GetDocument(), "--fallback-min-qi-vh", "<length>", "0px",
+  RegisterProperty(GetDocument(), "--fallback-min-cqi-vh", "<length>", "0px",
                    false);
-  RegisterProperty(GetDocument(), "--fallback-max-qi-vh", "<length>", "0px",
+  RegisterProperty(GetDocument(), "--fallback-max-cqi-vh", "<length>", "0px",
                    false);
 
   SetBodyInnerHTML(R"HTML(
@@ -490,15 +490,15 @@ TEST_F(ContainerQueryTest, ContainerUnitsViewportFallback) {
         container-type: size;
       }
       #inline_target, #size_target {
-        --qw: 10qw;
-        --qi: 10qi;
-        --qh: 10qh;
-        --qb: 10qb;
-        --qmin: 10qmin;
-        --qmax: 10qmax;
+        --cqw: 10cqw;
+        --cqi: 10cqi;
+        --cqh: 10cqh;
+        --cqb: 10cqb;
+        --cqmin: 10cqmin;
+        --cqmax: 10cqmax;
         --fallback-h: 10vh;
-        --fallback-min-qi-vh: min(10qi, 10vh);
-        --fallback-max-qi-vh: max(10qi, 10vh);
+        --fallback-min-cqi-vh: min(10cqi, 10vh);
+        --fallback-max-cqi-vh: max(10cqi, 10vh);
       }
     </style>
     <div id=inline>
@@ -511,25 +511,25 @@ TEST_F(ContainerQueryTest, ContainerUnitsViewportFallback) {
 
   Element* inline_target = GetDocument().getElementById("inline_target");
   ASSERT_TRUE(inline_target);
-  EXPECT_EQ(ComputedValueString(inline_target, "--qw"), "10px");
-  EXPECT_EQ(ComputedValueString(inline_target, "--qi"), "10px");
-  EXPECT_EQ(ComputedValueString(inline_target, "--qh"),
+  EXPECT_EQ(ComputedValueString(inline_target, "--cqw"), "10px");
+  EXPECT_EQ(ComputedValueString(inline_target, "--cqi"), "10px");
+  EXPECT_EQ(ComputedValueString(inline_target, "--cqh"),
             ComputedValueString(inline_target, "--fallback-h"));
-  EXPECT_EQ(ComputedValueString(inline_target, "--qb"),
+  EXPECT_EQ(ComputedValueString(inline_target, "--cqb"),
             ComputedValueString(inline_target, "--fallback-h"));
-  EXPECT_EQ(ComputedValueString(inline_target, "--qmin"),
-            ComputedValueString(inline_target, "--fallback-min-qi-vh"));
-  EXPECT_EQ(ComputedValueString(inline_target, "--qmax"),
-            ComputedValueString(inline_target, "--fallback-max-qi-vh"));
+  EXPECT_EQ(ComputedValueString(inline_target, "--cqmin"),
+            ComputedValueString(inline_target, "--fallback-min-cqi-vh"));
+  EXPECT_EQ(ComputedValueString(inline_target, "--cqmax"),
+            ComputedValueString(inline_target, "--fallback-max-cqi-vh"));
 
   Element* size_target = GetDocument().getElementById("size_target");
   ASSERT_TRUE(size_target);
-  EXPECT_EQ(ComputedValueString(size_target, "--qw"), "10px");
-  EXPECT_EQ(ComputedValueString(size_target, "--qi"), "10px");
-  EXPECT_EQ(ComputedValueString(size_target, "--qh"), "10px");
-  EXPECT_EQ(ComputedValueString(size_target, "--qb"), "10px");
-  EXPECT_EQ(ComputedValueString(size_target, "--qmin"), "10px");
-  EXPECT_EQ(ComputedValueString(size_target, "--qmax"), "10px");
+  EXPECT_EQ(ComputedValueString(size_target, "--cqw"), "10px");
+  EXPECT_EQ(ComputedValueString(size_target, "--cqi"), "10px");
+  EXPECT_EQ(ComputedValueString(size_target, "--cqh"), "10px");
+  EXPECT_EQ(ComputedValueString(size_target, "--cqb"), "10px");
+  EXPECT_EQ(ComputedValueString(size_target, "--cqmin"), "10px");
+  EXPECT_EQ(ComputedValueString(size_target, "--cqmax"), "10px");
 }
 
 TEST_F(ContainerQueryTest, OldStyleForTransitions) {

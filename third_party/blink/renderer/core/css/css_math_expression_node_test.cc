@@ -242,12 +242,12 @@ TEST(CSSCalculationValue, CSSLengthArrayUnits) {
   EXPECT_FALSE(AccumulateLengthArray("1dvb", unused));
   EXPECT_FALSE(AccumulateLengthArray("1dvmin", unused));
   EXPECT_FALSE(AccumulateLengthArray("1dvmax", unused));
-  EXPECT_FALSE(AccumulateLengthArray("1qw", unused));
-  EXPECT_FALSE(AccumulateLengthArray("1qh", unused));
-  EXPECT_FALSE(AccumulateLengthArray("1qi", unused));
-  EXPECT_FALSE(AccumulateLengthArray("1qb", unused));
-  EXPECT_FALSE(AccumulateLengthArray("1qmin", unused));
-  EXPECT_FALSE(AccumulateLengthArray("1qmax", unused));
+  EXPECT_FALSE(AccumulateLengthArray("1cqw", unused));
+  EXPECT_FALSE(AccumulateLengthArray("1cqh", unused));
+  EXPECT_FALSE(AccumulateLengthArray("1cqi", unused));
+  EXPECT_FALSE(AccumulateLengthArray("1cqb", unused));
+  EXPECT_FALSE(AccumulateLengthArray("1cqmin", unused));
+  EXPECT_FALSE(AccumulateLengthArray("1cqmax", unused));
 
   EXPECT_TRUE(AccumulateLengthArray("calc(1em + calc(1ex + 1px))", unused));
   EXPECT_FALSE(AccumulateLengthArray("calc(1dvh + calc(1ex + 1px))", unused));

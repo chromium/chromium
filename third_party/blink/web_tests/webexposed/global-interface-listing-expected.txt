@@ -11408,6 +11408,12 @@ namespace CSS
     method Q
     method ch
     method cm
+    method cqb
+    method cqh
+    method cqi
+    method cqmax
+    method cqmin
+    method cqw
     method deg
     method dpcm
     method dpi
@@ -11438,12 +11444,6 @@ namespace CSS
     method percent
     method pt
     method px
-    method qb
-    method qh
-    method qi
-    method qmax
-    method qmin
-    method qw
     method rad
     method registerProperty
     method rem

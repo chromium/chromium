@@ -775,17 +775,17 @@ const char* CSSPrimitiveValue::UnitTypeToString(UnitType type) {
     case UnitType::kDynamicViewportMax:
       return "dvmax";
     case UnitType::kContainerWidth:
-      return "qw";
+      return "cqw";
     case UnitType::kContainerHeight:
-      return "qh";
+      return "cqh";
     case UnitType::kContainerInlineSize:
-      return "qi";
+      return "cqi";
     case UnitType::kContainerBlockSize:
-      return "qb";
+      return "cqb";
     case UnitType::kContainerMin:
-      return "qmin";
+      return "cqmin";
     case UnitType::kContainerMax:
-      return "qmax";
+      return "cqmax";
     default:
       break;
   }

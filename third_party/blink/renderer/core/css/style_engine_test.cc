@@ -4155,13 +4155,13 @@ TEST_F(StyleEngineContainerQueryTest,
 
 TEST_F(StyleEngineTest, ContainerRelativeUnitsRuntimeFlag) {
   String css = R"CSS(
-    top: 1qw;
-    left: 1qh;
-    bottom: 1qi;
-    right: 1qb;
-    padding-top: 1qmin;
-    padding-right: 1qmax;
-    padding-bottom: calc(1qw);
+    top: 1cqw;
+    left: 1cqh;
+    bottom: 1cqi;
+    right: 1cqb;
+    padding-top: 1cqmin;
+    padding-right: 1cqmax;
+    padding-bottom: calc(1cqw);
     margin-left: 1px;
   )CSS";
 

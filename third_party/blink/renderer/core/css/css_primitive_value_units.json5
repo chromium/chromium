@@ -183,27 +183,27 @@
       unit_type: "kDynamicViewportMax",
     },
     {
-      name: "qw",
+      name: "cqw",
       unit_type: "kContainerWidth",
     },
     {
-      name: "qh",
+      name: "cqh",
       unit_type: "kContainerHeight",
     },
     {
-      name: "qi",
+      name: "cqi",
       unit_type: "kContainerInlineSize",
     },
     {
-      name: "qb",
+      name: "cqb",
       unit_type: "kContainerBlockSize",
     },
     {
-      name: "qmin",
+      name: "cqmin",
       unit_type: "kContainerMin",
     },
     {
-      name: "qmax",
+      name: "cqmax",
       unit_type: "kContainerMax",
     },
     {
