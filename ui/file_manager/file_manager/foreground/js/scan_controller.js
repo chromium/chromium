@@ -100,7 +100,7 @@ export class ScanController {
    */
   onScanCompleted_() {
     if (!this.scanInProgress_) {
-      console.error('Scan-completed event received. But scan is not started.');
+      console.warn('Scan-completed event received. But scan is not started.');
       return;
     }
 
@@ -126,7 +126,7 @@ export class ScanController {
    */
   onScanUpdated_() {
     if (!this.scanInProgress_) {
-      console.error('Scan-updated event received. But scan is not started.');
+      console.warn('Scan-updated event received. But scan is not started.');
       return;
     }
 
@@ -153,7 +153,7 @@ export class ScanController {
    */
   onScanCancelled_() {
     if (!this.scanInProgress_) {
-      console.error('Scan-cancelled event received. But scan is not started.');
+      console.warn('Scan-cancelled event received. But scan is not started.');
       return;
     }
 

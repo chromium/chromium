@@ -137,7 +137,7 @@ export class DefaultTaskDialog extends FileManagerDialogBase {
     const show = super.showTitleAndTextDialog(title, message);
 
     if (!show) {
-      console.error('DefaultTaskDialog can\'t be shown.');
+      console.warn('DefaultTaskDialog can\'t be shown.');
       return;
     }
 

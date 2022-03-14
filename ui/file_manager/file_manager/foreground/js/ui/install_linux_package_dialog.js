@@ -68,7 +68,7 @@ export class InstallLinuxPackageDialog extends FileManagerDialogBase {
     const show = super.showOkCancelDialog(title, message, null, null);
 
     if (!show) {
-      console.error('InstallLinuxPackageDialog can\'t be shown.');
+      console.warn('InstallLinuxPackageDialog can\'t be shown.');
       return;
     }
 
@@ -104,7 +104,7 @@ export class InstallLinuxPackageDialog extends FileManagerDialogBase {
     if (chrome.runtime.lastError) {
       this.resetDetailsFrame_(
           str('INSTALL_LINUX_PACKAGE_DETAILS_NOT_AVAILABLE'));
-      console.error(
+      console.warn(
           'Failed to retrieve app info: ' + chrome.runtime.lastError.message);
       return;
     }
@@ -196,6 +196,6 @@ export class InstallLinuxPackageDialog extends FileManagerDialogBase {
     // surface the provided failure reason if one is provided.
     this.title.textContent = str('INSTALL_LINUX_PACKAGE_ERROR_TITLE');
     this.text.textContent = str('INSTALL_LINUX_PACKAGE_ERROR_DESCRIPTION');
-    console.error('Failed to begin package installation: ' + failure_reason);
+    console.warn('Failed to begin package installation: ' + failure_reason);
   }
 }

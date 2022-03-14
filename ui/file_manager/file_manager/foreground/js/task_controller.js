@@ -236,7 +236,7 @@ export class TaskController {
         })
         .catch(error => {
           if (error) {
-            console.error(error.stack || error);
+            console.warn(error.stack || error);
           }
         });
   }
@@ -267,7 +267,7 @@ export class TaskController {
                 })
                 .catch(error => {
                   if (error) {
-                    console.error(error.stack || error);
+                    console.warn(error.stack || error);
                   }
                 });
           }
@@ -303,7 +303,7 @@ export class TaskController {
         })
         .catch(error => {
           if (error) {
-            console.error(error.stack || error);
+            console.warn(error.stack || error);
           }
         });
   }
@@ -379,7 +379,7 @@ export class TaskController {
           })
           .catch(error => {
             if (error) {
-              console.error(error.stack || error);
+              console.warn(error.stack || error);
             }
           });
     } else {

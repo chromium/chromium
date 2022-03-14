@@ -124,7 +124,7 @@ export class NamingController {
       }
 
       // Unexpected error.
-      console.error('File save failed: ' + error.code);
+      console.warn('File save failed: ' + error.code);
       throw error;
     }
 

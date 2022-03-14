@@ -97,7 +97,7 @@ export class PathComponent {
       if (match) {
         displayRootFullPath = match[0];
       } else {
-        console.error('Unexpected shared DriveFS path: ', entry.fullPath);
+        console.warn('Unexpected shared DriveFS path: ', entry.fullPath);
       }
       displayRootUrl = replaceRootName(displayRootUrl, displayRootFullPath);
       const sharedWithMeFakeEntry =

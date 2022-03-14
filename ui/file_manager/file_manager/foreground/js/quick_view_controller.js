@@ -441,7 +441,7 @@ export class QuickViewController {
         this.init_(quickView);
         return this.updateQuickView_();
       } catch (error) {
-        console.error(error);
+        console.warn(error);
         return;
       }
     }
@@ -468,7 +468,7 @@ export class QuickViewController {
       return this.onMetadataLoaded_(entry, items, tasks, canDelete);
     } catch (error) {
       if (error) {
-        console.error(error.stack || error);
+        console.warn(error.stack || error);
       }
     }
   }
@@ -603,7 +603,7 @@ export class QuickViewController {
         }
         return params;
       } catch (error) {
-        console.error(error);
+        console.warn(error);
       }
       return params;
     }
@@ -677,7 +677,7 @@ export class QuickViewController {
               };
               params.browsable = true;
             } catch (error) {
-              console.error(error);
+              console.warn(error);
             }
             return params;
           }
@@ -696,7 +696,7 @@ export class QuickViewController {
         };
       }
     } catch (error) {
-      console.error(error);
+      console.warn(error);
     }
     return params;
   }
