@@ -119,7 +119,6 @@ class FinchTestCase(wpt_common.BaseWptScriptAdapter):
       'dom/collections/HTMLCollection-delete.html',
       'dom/collections/HTMLCollection-supported-property-names.html',
       'dom/collections/HTMLCollection-supported-property-indices.html',
-      'svg/pservers/reftests/radialgradient-basic-002.svg',
     ]
 
   @property
@@ -182,6 +181,7 @@ class FinchTestCase(wpt_common.BaseWptScriptAdapter):
     rest_args.extend(['run',
       self.wpt_product_name(),
       '--tests=' + wpt_common.TESTS_ROOT_DIR,
+      '--test-type=' + 'testharness',
       '--device-serial',
       self._device.serial,
       '--webdriver-binary',
