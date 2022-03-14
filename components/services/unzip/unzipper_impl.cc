@@ -89,7 +89,8 @@ std::string GetRawFileNamesFromZip(const base::File& zip_file) {
   // Open ZIP archive for reading.
   zip::ZipReader reader;
   if (!reader.OpenFromPlatformFile(zip_file.GetPlatformFile())) {
-    LOG(ERROR) << "Cannot decode ZIP archive";
+    LOG(ERROR) << "Cannot decode ZIP archive from file handle "
+               << zip_file.GetPlatformFile();
     return result;
   }
 

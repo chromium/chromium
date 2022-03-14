@@ -182,10 +182,6 @@ struct UnzipOptions {
 
   // Password to decrypt the encrypted files.
   std::string password;
-
-  // If |log_skipped_files| is true, files skipped during extraction are printed
-  // to debug log.
-  bool log_skipped_files = true;
 };
 
 typedef base::RepeatingCallback<std::unique_ptr<WriterDelegate>(
