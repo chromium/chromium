@@ -30,6 +30,7 @@
 #include "ui/base/ime/input_method.h"
 #include "ui/base/ime/input_method_delegate.h"
 #include "ui/base/ime/text_input_flags.h"
+#include "ui/display/screen.h"
 #include "ui/events/base_event_utils.h"
 #include "ui/events/event.h"
 #include "ui/events/keycodes/keyboard_codes.h"
@@ -43,6 +44,7 @@ namespace arc {
 namespace {
 
 absl::optional<double> g_override_default_device_scale_factor;
+absl::optional<gfx::Point> g_override_display_origin;
 
 // Return true when a rich text editing is available on a text field with the
 // given type.
@@ -343,13 +345,14 @@ void ArcImeService::OnTextInputTypeChanged(
   }
 }
 
-void ArcImeService::OnCursorRectChanged(const gfx::Rect& rect,
-                                        bool is_screen_coordinates) {
+void ArcImeService::OnCursorRectChanged(
+    const gfx::Rect& rect,
+    mojom::CursorCoordinateSpace coordinate_space) {
   if (!ShouldSendUpdateToInputMethod())
     return;
 
   InvalidateSurroundingTextAndSelectionRange();
-  if (!UpdateCursorRect(rect, is_screen_coordinates))
+  if (!UpdateCursorRect(rect, coordinate_space))
     return;
 
   ui::InputMethod* const input_method = GetInputMethod();
@@ -382,13 +385,12 @@ void ArcImeService::OnCursorRectChangedWithSurroundingText(
     const gfx::Range& text_range,
     const std::u16string& text_in_range,
     const gfx::Range& selection_range,
-    bool is_screen_coordinates) {
+    mojom::CursorCoordinateSpace coordinate_space) {
   if (!ShouldSendUpdateToInputMethod())
     return;
 
-  if (!UpdateCursorRect(rect, is_screen_coordinates) &&
-      text_range_ == text_range && text_in_range_ == text_in_range &&
-      selection_range_ == selection_range) {
+  if (!UpdateCursorRect(rect, coordinate_space) && text_range_ == text_range &&
+      text_in_range_ == text_in_range && selection_range_ == selection_range) {
     return;
   }
 
@@ -700,27 +702,40 @@ void ArcImeService::SetOverrideDefaultDeviceScaleFactorForTesting(
   g_override_default_device_scale_factor = scale_factor;
 }
 
+// static
+void ArcImeService::SetOverrideDisplayOriginForTesting(
+    absl::optional<gfx::Point> origin) {
+  g_override_display_origin = origin;
+}
+
 void ArcImeService::InvalidateSurroundingTextAndSelectionRange() {
   text_range_ = gfx::Range::InvalidRange();
   text_in_range_ = std::u16string();
   selection_range_ = gfx::Range::InvalidRange();
 }
 
-bool ArcImeService::UpdateCursorRect(const gfx::Rect& rect,
-                                     bool is_screen_coordinates) {
+bool ArcImeService::UpdateCursorRect(
+    const gfx::Rect& rect,
+    mojom::CursorCoordinateSpace coordinate_space) {
   // Divide by the scale factor. To convert from Android pixels to Chrome DIP.
   gfx::Rect converted(gfx::ScaleToEnclosingRect(
       rect, 1 / GetDeviceScaleFactorForFocusedWindow()));
 
   // If the supplied coordinates are relative to the window, add the offset of
   // the window showing the ARC app.
-  if (!is_screen_coordinates) {
+  if (coordinate_space == mojom::CursorCoordinateSpace::WINDOW) {
     if (!focused_arc_window_)
       return false;
     converted.Offset(focused_arc_window_->GetToplevelWindow()
                          ->GetBoundsInScreen()
                          .OffsetFromOrigin());
   } else if (focused_arc_window_) {
+    if (coordinate_space == mojom::CursorCoordinateSpace::DISPLAY) {
+      // Convert into the screen coordinate.
+      const gfx::Point display_origin = GetDisplayOriginForFocusedWindow();
+      converted.Offset(display_origin.x(), display_origin.y());
+    }
+
     auto* window = focused_arc_window_->GetToplevelWindow();
     auto* widget = views::Widget::GetWidgetForNativeWindow(window);
     // Check fullscreen window as well because it's possible for ARC to request
@@ -773,6 +788,16 @@ double ArcImeService::GetDeviceScaleFactorForFocusedWindow() const {
     return 1.0;
   return exo::WMHelper::GetInstance()->GetDeviceScaleFactorForWindow(
       focused_arc_window_);
+}
+
+gfx::Point ArcImeService::GetDisplayOriginForFocusedWindow() const {
+  DCHECK(focused_arc_window_);
+  if (g_override_display_origin.has_value())
+    return g_override_display_origin.value();
+  return display::Screen::GetScreen()
+      ->GetDisplayNearestWindow(focused_arc_window_)
+      .bounds()
+      .origin();
 }
 
 }  // namespace arc

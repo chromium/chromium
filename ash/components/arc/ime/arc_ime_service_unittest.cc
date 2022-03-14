@@ -406,7 +406,7 @@ TEST_F(ArcImeServiceTest, GetTextFromRange) {
 
   instance_->OnCursorRectChangedWithSurroundingText(
       gfx::Rect(0, 0, 1, 1), text_range, text_in_range, selection_range,
-      true /* is_screen_coordinates */);
+      mojom::CursorCoordinateSpace::SCREEN);
 
   gfx::Range temp;
   instance_->GetTextRange(&temp);
@@ -446,6 +446,8 @@ TEST_F(ArcImeServiceTest, OnKeyboardAppearanceChanged) {
 }
 
 TEST_F(ArcImeServiceTest, GetCaretBounds) {
+  using Coordinate = mojom::CursorCoordinateSpace;
+
   EXPECT_EQ(gfx::Rect(), instance_->GetCaretBounds());
 
   const gfx::Rect window_rect(123, 321, 100, 100);
@@ -453,10 +455,16 @@ TEST_F(ArcImeServiceTest, GetCaretBounds) {
   instance_->OnWindowFocused(arc_win_.get(), nullptr);
 
   const gfx::Rect cursor_rect(10, 12, 2, 8);
-  instance_->OnCursorRectChanged(cursor_rect, true);  // screen coordinates
+  instance_->OnCursorRectChanged(cursor_rect, Coordinate::SCREEN);
   EXPECT_EQ(cursor_rect, instance_->GetCaretBounds());
 
-  instance_->OnCursorRectChanged(cursor_rect, false);  // window coordinates
+  const gfx::Point display_origin(200, 300);
+  instance_->SetOverrideDisplayOriginForTesting(display_origin);
+  instance_->OnCursorRectChanged(cursor_rect, Coordinate::DISPLAY);
+  EXPECT_EQ(cursor_rect + display_origin.OffsetFromOrigin(),
+            instance_->GetCaretBounds());
+
+  instance_->OnCursorRectChanged(cursor_rect, Coordinate::WINDOW);
   EXPECT_EQ(cursor_rect + window_rect.OffsetFromOrigin(),
             instance_->GetCaretBounds());
 
@@ -464,10 +472,14 @@ TEST_F(ArcImeServiceTest, GetCaretBounds) {
   const gfx::Rect new_cursor_rect(10 * new_scale_factor, 12 * new_scale_factor,
                                   2 * new_scale_factor, 8 * new_scale_factor);
   instance_->SetOverrideDefaultDeviceScaleFactorForTesting(new_scale_factor);
-  instance_->OnCursorRectChanged(new_cursor_rect, true);  // screen coordinates
+  instance_->OnCursorRectChanged(new_cursor_rect, Coordinate::SCREEN);
   EXPECT_EQ(cursor_rect, instance_->GetCaretBounds());
 
-  instance_->OnCursorRectChanged(new_cursor_rect, false);  // window coordinates
+  instance_->OnCursorRectChanged(new_cursor_rect, Coordinate::DISPLAY);
+  EXPECT_EQ(cursor_rect + display_origin.OffsetFromOrigin(),
+            instance_->GetCaretBounds());
+
+  instance_->OnCursorRectChanged(new_cursor_rect, Coordinate::WINDOW);
   EXPECT_EQ(cursor_rect + window_rect.OffsetFromOrigin(),
             instance_->GetCaretBounds());
 }
@@ -503,7 +515,8 @@ TEST_F(ArcImeServiceTest, DoNothingIfArcWindowIsNotFocused) {
   const gfx::Rect cursor_rect(10, 20, 30, 40);
   instance_->OnTextInputTypeChanged(ui::TEXT_INPUT_TYPE_TEXT, true,
                                     mojom::TEXT_INPUT_FLAG_NONE);
-  instance_->OnCursorRectChanged(cursor_rect, true);
+  instance_->OnCursorRectChanged(cursor_rect,
+                                 mojom::CursorCoordinateSpace::SCREEN);
   instance_->OnCancelComposition();
 
   EXPECT_EQ(0, fake_input_method_->count_show_ime_if_needed());
@@ -523,14 +536,14 @@ TEST_F(ArcImeServiceTest, SetComposingRegion) {
 
   instance_->OnCursorRectChangedWithSurroundingText(
       gfx::Rect(), gfx::Range(0, 100), std::u16string(100, 'a'),
-      gfx::Range(0, 0), false);
+      gfx::Range(0, 0), mojom::CursorCoordinateSpace::WINDOW);
   instance_->SetCompositionFromExistingText(composing_range, {});
   EXPECT_EQ(composing_range, fake_arc_ime_bridge_->composing_range());
 
   // Ignore it if the range is outside of text range.
   instance_->OnCursorRectChangedWithSurroundingText(
       gfx::Rect(), gfx::Range(0, 100), std::u16string(100, 'a'),
-      gfx::Range(0, 0), false);
+      gfx::Range(0, 0), mojom::CursorCoordinateSpace::WINDOW);
   instance_->SetCompositionFromExistingText(gfx::Range(50, 101), {});
   EXPECT_EQ(composing_range, fake_arc_ime_bridge_->composing_range());
 }
@@ -539,7 +552,7 @@ TEST_F(ArcImeServiceTest, ExtendSelectionAndDeleteThenSetComposingRegion) {
   instance_->OnWindowFocused(arc_win_.get(), nullptr);
   instance_->OnCursorRectChangedWithSurroundingText(
       gfx::Rect(), gfx::Range(0, 100), std::u16string(100, 'a'),
-      gfx::Range(100, 100), false);
+      gfx::Range(100, 100), mojom::CursorCoordinateSpace::WINDOW);
 
   instance_->ExtendSelectionAndDelete(1, 0);
   const gfx::Range composing_range(0, 99);

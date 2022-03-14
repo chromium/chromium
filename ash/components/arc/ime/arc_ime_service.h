@@ -9,6 +9,7 @@
 
 #include "ash/components/arc/ime/arc_ime_bridge.h"
 #include "ash/components/arc/ime/key_event_result_receiver.h"
+#include "ash/components/arc/mojom/ime.mojom-forward.h"
 #include "ash/public/cpp/keyboard/keyboard_controller_observer.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -90,8 +91,9 @@ class ArcImeService : public KeyedService,
   void OnTextInputTypeChanged(ui::TextInputType type,
                               bool is_personalized_learning_allowed,
                               int flags) override;
-  void OnCursorRectChanged(const gfx::Rect& rect,
-                           bool is_screen_coordinates) override;
+  void OnCursorRectChanged(
+      const gfx::Rect& rect,
+      mojom::CursorCoordinateSpace coordinate_space) override;
   void OnCancelComposition() override;
   void ShowVirtualKeyboardIfEnabled() override;
   void OnCursorRectChangedWithSurroundingText(
@@ -99,7 +101,7 @@ class ArcImeService : public KeyedService,
       const gfx::Range& text_range,
       const std::u16string& text_in_range,
       const gfx::Range& selection_range,
-      bool is_screen_coordinates) override;
+      mojom::CursorCoordinateSpace coordinate_space) override;
   void SendKeyEvent(std::unique_ptr<ui::KeyEvent> key_event,
                     KeyEventDoneCallback callback) override;
 
@@ -167,6 +169,9 @@ class ArcImeService : public KeyedService,
   static void SetOverrideDefaultDeviceScaleFactorForTesting(
       absl::optional<double> scale_factor);
 
+  static void SetOverrideDisplayOriginForTesting(
+      absl::optional<gfx::Point> origin);
+
  private:
   friend class ArcImeServiceTest;
 
@@ -187,7 +192,8 @@ class ArcImeService : public KeyedService,
 
   // Converts |rect| passed from the client to the host's cooridnates and
   // updates |cursor_rect_|. Returns whether or not the stored value changed.
-  bool UpdateCursorRect(const gfx::Rect& rect, bool is_screen_coordinates);
+  bool UpdateCursorRect(const gfx::Rect& rect,
+                        mojom::CursorCoordinateSpace coordinate_space);
 
   // Returns true if this TextInputClient is active and incoming input state
   // from Android is valid.
@@ -195,6 +201,8 @@ class ArcImeService : public KeyedService,
 
   double GetDeviceScaleFactorForKeyboard() const;
   double GetDeviceScaleFactorForFocusedWindow() const;
+
+  gfx::Point GetDisplayOriginForFocusedWindow() const;
 
   std::unique_ptr<ArcImeBridge> ime_bridge_;
   std::unique_ptr<ArcWindowDelegate> arc_window_delegate_;

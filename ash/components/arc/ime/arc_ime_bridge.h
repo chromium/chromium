@@ -7,6 +7,7 @@
 
 #include <string>
 
+#include "ash/components/arc/mojom/ime.mojom-forward.h"
 #include "base/callback.h"
 #include "ui/base/ime/text_input_type.h"
 #include "ui/events/event.h"
@@ -39,8 +40,9 @@ class ArcImeBridge {
     virtual void OnTextInputTypeChanged(ui::TextInputType type,
                                         bool is_personalized_learning_allowed,
                                         int flags) = 0;
-    virtual void OnCursorRectChanged(const gfx::Rect& rect,
-                                     bool is_screen_cooridnates) = 0;
+    virtual void OnCursorRectChanged(
+        const gfx::Rect& rect,
+        mojom::CursorCoordinateSpace coordinate_space) = 0;
     virtual void OnCancelComposition() = 0;
     virtual void ShowVirtualKeyboardIfEnabled() = 0;
     virtual void OnCursorRectChangedWithSurroundingText(
@@ -48,7 +50,7 @@ class ArcImeBridge {
         const gfx::Range& text_range,
         const std::u16string& text_in_range,
         const gfx::Range& selection_range,
-        bool is_screen_coordinates) = 0;
+        mojom::CursorCoordinateSpace coordinate_space) = 0;
     virtual void SendKeyEvent(std::unique_ptr<ui::KeyEvent> key_event,
                               KeyEventDoneCallback callback) = 0;
   };

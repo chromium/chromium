@@ -149,9 +149,18 @@ void ArcImeBridgeImpl::OnTextInputTypeChanged(
                                     ConvertTextInputFlags(flags));
 }
 
-void ArcImeBridgeImpl::OnCursorRectChanged(const gfx::Rect& rect,
-                                           bool is_screen_coordinates) {
-  delegate_->OnCursorRectChanged(rect, is_screen_coordinates);
+void ArcImeBridgeImpl::OnCursorRectChangedDeprecated(
+    const gfx::Rect& rect,
+    bool is_screen_coordinates) {
+  delegate_->OnCursorRectChanged(
+      rect, is_screen_coordinates ? mojom::CursorCoordinateSpace::SCREEN
+                                  : mojom::CursorCoordinateSpace::WINDOW);
+}
+
+void ArcImeBridgeImpl::OnCursorRectChanged(
+    const gfx::Rect& rect,
+    mojom::CursorCoordinateSpace coordinate_space) {
+  delegate_->OnCursorRectChanged(rect, coordinate_space);
 }
 
 void ArcImeBridgeImpl::OnCancelComposition() {
@@ -162,7 +171,7 @@ void ArcImeBridgeImpl::ShowVirtualKeyboardIfEnabled() {
   delegate_->ShowVirtualKeyboardIfEnabled();
 }
 
-void ArcImeBridgeImpl::OnCursorRectChangedWithSurroundingText(
+void ArcImeBridgeImpl::OnCursorRectChangedWithSurroundingTextDeprecated(
     const gfx::Rect& rect,
     const gfx::Range& text_range,
     const std::string& text_in_range,
@@ -170,7 +179,19 @@ void ArcImeBridgeImpl::OnCursorRectChangedWithSurroundingText(
     bool is_screen_coordinates) {
   delegate_->OnCursorRectChangedWithSurroundingText(
       rect, text_range, base::UTF8ToUTF16(text_in_range), selection_range,
-      is_screen_coordinates);
+      is_screen_coordinates ? mojom::CursorCoordinateSpace::SCREEN
+                            : mojom::CursorCoordinateSpace::WINDOW);
+}
+
+void ArcImeBridgeImpl::OnCursorRectChangedWithSurroundingText(
+    const gfx::Rect& rect,
+    const gfx::Range& text_range,
+    const std::string& text_in_range,
+    const gfx::Range& selection_range,
+    mojom::CursorCoordinateSpace coordinate_space) {
+  delegate_->OnCursorRectChangedWithSurroundingText(
+      rect, text_range, base::UTF8ToUTF16(text_in_range), selection_range,
+      coordinate_space);
 }
 
 void ArcImeBridgeImpl::SendKeyEvent(std::unique_ptr<ui::KeyEvent> key_event,
