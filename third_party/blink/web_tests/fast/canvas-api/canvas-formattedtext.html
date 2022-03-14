@@ -12,7 +12,7 @@ function getCanvas2DContext(name)
   canvas.setAttribute("style", "border: 1px solid black; display:block;");
   canvas.setAttribute("height", 30);
   document.body.appendChild(canvas);
-  var context = canvas.getContext("2d", { alpha: false });
+  var context = canvas.getContext("2d");
   context.clearRect(0,0, 100, 60);
   context.fillStyle = "#FFFFFF";
   context.fillRect(0,0,100, 60);

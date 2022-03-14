@@ -1313,8 +1313,12 @@ void BaseRenderingContext2D::clearRect(double x,
   }
 
   cc::PaintFlags clear_flags;
-  clear_flags.setBlendMode(SkBlendMode::kClear);
   clear_flags.setStyle(cc::PaintFlags::kFill_Style);
+  if (HasAlpha()) {
+    clear_flags.setBlendMode(SkBlendMode::kClear);
+  } else {
+    clear_flags.setColor(SK_ColorBLACK);
+  }
 
   // clamp to float to avoid float cast overflow when used as SkScalar
   AdjustRectForCanvas(x, y, width, height);
