@@ -522,7 +522,12 @@ class HeadlessCrashObserverTest : public HeadlessAsyncDevTooledBrowserTest,
   content::ScopedAllowRendererCrashes scoped_allow_renderer_crashes_;
 };
 
+// TODO(1272554): HeadlessCrashObserverTest.RunAsyncTest is flaky on Win debug.
+#if BUILDFLAG(IS_WIN) && !defined(NDEBUG)
+DISABLED_HEADLESS_ASYNC_DEVTOOLED_TEST_F(HeadlessCrashObserverTest);
+#else
 HEADLESS_ASYNC_DEVTOOLED_TEST_F(HeadlessCrashObserverTest);
+#endif
 
 class HeadlessDevToolsClientAttachTest
     : public HeadlessAsyncDevTooledBrowserTest {
