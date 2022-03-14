@@ -9,6 +9,22 @@ import("//tools/grit/grit_rule.gni")
 
 assert(is_chromeos, "Only Chrome OS resources in //c/b/resources//chromeos.")
 
+group("resources") {
+  public_deps = [
+    ":app_icon_resources",
+    ":multidevice_setup_resources",
+    "accessibility:build",
+    "assistant_optin:resources",
+    "audio:resources",
+    "emoji_picker:resources",
+    "launcher_internals:resources",
+    "login:conditional_resources",
+    "login:unconditional_resources",
+    "multidevice_internals:resources",
+    "network_ui:resources",
+  ]
+}
+
 grit("app_icon_resources") {
   source = "app_icon/app_icon_resources.grd"
   defines = chrome_grit_defines

@@ -109,6 +109,8 @@
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/common/url_constants.h"
+#include "chrome/grit/assistant_optin_resources.h"
+#include "chrome/grit/assistant_optin_resources_map.h"
 #include "chrome/grit/browser_resources.h"
 #include "chrome/grit/chrome_unscaled_resources.h"
 #include "chrome/grit/component_extension_resources.h"
@@ -237,6 +239,8 @@ void AddArcScreensResources(content::WebUIDataSource* source) {
 }
 
 void AddAssistantScreensResources(content::WebUIDataSource* source) {
+  source->AddResourcePaths(
+      base::make_span(kAssistantOptinResources, kAssistantOptinResourcesSize));
   source->AddResourcePath("voice_match_animation.json",
                           IDR_ASSISTANT_VOICE_MATCH_ANIMATION);
   source->OverrideContentSecurityPolicy(
