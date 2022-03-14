@@ -22,6 +22,8 @@ std::string ExecutionStatusToString(ExecutionStatus status) {
       return "ErrorEmptyOrInvalidInput";
     case ExecutionStatus::kErrorUnknown:
       return "ErrorUnknown";
+    case ExecutionStatus::kErrorCancelled:
+      return "ErrorCancelled";
   }
 }
 

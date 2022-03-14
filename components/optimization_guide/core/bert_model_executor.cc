@@ -31,6 +31,10 @@ BertModelExecutor::Execute(ModelExecutionTask* execution_task,
   auto status_or_result =
       static_cast<tflite::task::text::BertNLClassifier*>(execution_task)
           ->Classify(input);
+  if (absl::IsCancelled(status_or_result.status())) {
+    *out_status = ExecutionStatus::kErrorCancelled;
+    return absl::nullopt;
+  }
   if (!status_or_result.ok()) {
     *out_status = ExecutionStatus::kErrorUnknown;
     return absl::nullopt;

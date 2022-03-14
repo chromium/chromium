@@ -67377,6 +67377,7 @@ Called by update_net_trust_anchors.py.-->
   <int value="4" label="ErrorModelFileNotValid"/>
   <int value="5" label="ErrorEmptyOrInvalidInput"/>
   <int value="6" label="ErrorUnknown"/>
+  <int value="7" label="ErrorCancelled"/>
 </enum>
 
 <enum name="OptimizationGuideHintCacheLevelDBStoreLoadMetadataResult">

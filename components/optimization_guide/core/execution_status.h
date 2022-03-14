@@ -34,7 +34,12 @@ enum class ExecutionStatus {
   // Execution failed because of an unknown error.
   kErrorUnknown = 6,
 
-  kMaxValue = kErrorUnknown,
+  // Execution was cancelled. This can happen if the execution took too long to
+  // finish and it was automatically cancelled after an experiment-controlled
+  // timeout.
+  kErrorCancelled = 7,
+
+  kMaxValue = kErrorCancelled,
 };
 
 // Returns a string representation of |status|.
