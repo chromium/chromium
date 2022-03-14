@@ -13,8 +13,9 @@
 namespace password_manager {
 
 PasswordSyncControllerDelegateAndroid::PasswordSyncControllerDelegateAndroid(
+    std::unique_ptr<PasswordSyncControllerDelegateBridge> bridge,
     PasswordStoreBackend::SyncDelegate* sync_delegate)
-    : sync_delegate_(sync_delegate) {}
+    : bridge_(std::move(bridge)), sync_delegate_(sync_delegate) {}
 
 PasswordSyncControllerDelegateAndroid::
     ~PasswordSyncControllerDelegateAndroid() = default;
@@ -57,6 +58,8 @@ void PasswordSyncControllerDelegateAndroid::OnSyncStarting(
   is_sync_enabled_ = IsSyncEnabled(true);
   syncing_account_ = sync_delegate_->GetSyncingAccount();
 
+  NotifyCredentialManagerWhenSyncing();
+
   // Set |skip_engine_connection| to true to indicate that, actually, this sync
   // datatype doesn't depend on the built-in SyncEngine to communicate changes
   // to/from the Sync server. Instead, Android specific functionality is
@@ -74,6 +77,7 @@ void PasswordSyncControllerDelegateAndroid::OnSyncStopping(
       // Sync got temporarily paused. Just ignore.
       break;
     case syncer::CLEAR_METADATA:
+      NotifyCredentialManagerWhenNotSyncing();
       // The user (or something equivalent like an enterprise policy)
       // permanently disrabled sync, either fully or specifically for passwords.
       // This also includes more advanced cases like the user having cleared all
@@ -87,6 +91,16 @@ void PasswordSyncControllerDelegateAndroid::OnSyncStopping(
       syncing_account_ = absl::nullopt;
       break;
   }
+}
+
+void PasswordSyncControllerDelegateAndroid::
+    NotifyCredentialManagerWhenSyncing() {
+  bridge_->NotifyCredentialManagerWhenSyncing();
+}
+
+void PasswordSyncControllerDelegateAndroid::
+    NotifyCredentialManagerWhenNotSyncing() {
+  bridge_->NotifyCredentialManagerWhenNotSyncing();
 }
 
 void PasswordSyncControllerDelegateAndroid::GetAllNodesForDebugging(

@@ -14,6 +14,7 @@
 
 namespace syncer {
 class ProxyModelTypeControllerDelegate;
+class SyncService;
 }  // namespace syncer
 
 class PrefService;
@@ -153,6 +154,9 @@ class PasswordStoreBackend {
 
   // Clears all the passwords from the local storage.
   virtual void ClearAllLocalPasswords() = 0;
+
+  // Propagates sync initialization event.
+  virtual void OnSyncServiceInitialized(syncer::SyncService* sync_service) = 0;
 
   // Factory function for creating the backend. The Local backend requires the
   // provided `login_db_path` for storage and Android backend for migration

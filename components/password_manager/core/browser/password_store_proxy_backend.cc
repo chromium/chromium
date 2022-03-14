@@ -514,4 +514,9 @@ void PasswordStoreProxyBackend::ClearAllLocalPasswords() {
   NOTIMPLEMENTED();
 }
 
+void PasswordStoreProxyBackend::OnSyncServiceInitialized(
+    syncer::SyncService* sync_service) {
+  NOTIMPLEMENTED();
+}
+
 }  // namespace password_manager

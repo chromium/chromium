@@ -11,6 +11,7 @@
 #include "base/callback.h"
 #include "base/memory/weak_ptr.h"
 #include "base/types/strong_alias.h"
+#include "chrome/browser/password_manager/android/password_sync_controller_delegate_bridge.h"
 #include "components/password_manager/core/browser/password_store_backend.h"
 #include "components/sync/model/model_type_controller_delegate.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -24,7 +25,8 @@ namespace password_manager {
 class PasswordSyncControllerDelegateAndroid
     : public syncer::ModelTypeControllerDelegate {
  public:
-  explicit PasswordSyncControllerDelegateAndroid(
+  PasswordSyncControllerDelegateAndroid(
+      std::unique_ptr<PasswordSyncControllerDelegateBridge> bridge,
       PasswordStoreBackend::SyncDelegate* sync_delegate);
   PasswordSyncControllerDelegateAndroid(
       const PasswordSyncControllerDelegateAndroid&) = delete;
@@ -36,12 +38,6 @@ class PasswordSyncControllerDelegateAndroid
       PasswordSyncControllerDelegateAndroid&&) = delete;
   ~PasswordSyncControllerDelegateAndroid() override;
 
-  std::unique_ptr<syncer::ProxyModelTypeControllerDelegate>
-  CreateProxyModelControllerDelegate();
-
- private:
-  using IsSyncEnabled = base::StrongAlias<struct IsSyncEnabledTag, bool>;
-
   // syncer::ModelTypeControllerDelegate implementation
   void OnSyncStarting(const syncer::DataTypeActivationRequest& request,
                       StartCallback callback) override;
@@ -52,12 +48,26 @@ class PasswordSyncControllerDelegateAndroid
       const override;
   void RecordMemoryUsageAndCountsHistograms() override;
 
+  // Notifies CredentialManager to use syncing account.
+  void NotifyCredentialManagerWhenSyncing();
+
+  // Notifies CredentialManager that passwords are not synced.
+  void NotifyCredentialManagerWhenNotSyncing();
+
+  std::unique_ptr<syncer::ProxyModelTypeControllerDelegate>
+  CreateProxyModelControllerDelegate();
+
+ private:
+  using IsSyncEnabled = base::StrongAlias<struct IsSyncEnabledTag, bool>;
+
   // Updates |is_sync_enabled| and |syncing_account| to hold the actual syncing
   // status and syncing account. Must be called only after sync service was
   // instantiated.
   void UpdateSyncStatusOnStartUp();
 
   base::WeakPtr<syncer::ModelTypeControllerDelegate> GetWeakPtrToBaseClass();
+
+  const std::unique_ptr<PasswordSyncControllerDelegateBridge> bridge_;
 
   raw_ptr<PasswordStoreBackend::SyncDelegate> sync_delegate_;
 

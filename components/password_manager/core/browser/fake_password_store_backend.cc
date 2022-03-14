@@ -143,6 +143,11 @@ void FakePasswordStoreBackend::ClearAllLocalPasswords() {
   NOTIMPLEMENTED();
 }
 
+void FakePasswordStoreBackend::OnSyncServiceInitialized(
+    syncer::SyncService* sync_service) {
+  NOTIMPLEMENTED();
+}
+
 LoginsResult FakePasswordStoreBackend::GetAllLoginsInternal() {
   LoginsResult result;
   for (const auto& elements : stored_passwords_) {

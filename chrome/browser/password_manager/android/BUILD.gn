@@ -40,6 +40,9 @@ source_set("backend") {
     "password_store_operation_target.h",
     "password_sync_controller_delegate_android.cc",
     "password_sync_controller_delegate_android.h",
+    "password_sync_controller_delegate_bridge.h",
+    "password_sync_controller_delegate_bridge_impl.cc",
+    "password_sync_controller_delegate_bridge_impl.h",
   ]
 
   public_deps = [ "//base" ]
@@ -49,6 +52,7 @@ source_set("backend") {
     "//components/autofill/core/browser:browser",
     "//components/password_manager/core/browser:browser",
     "//components/password_manager/core/browser:password_form",
+    "//components/password_manager/core/common:features",
     "//components/sync/model:model",
     "//components/sync/protocol:protocol",
   ]
@@ -96,6 +100,7 @@ android_library("java") {
     "java/src/org/chromium/chrome/browser/password_manager/PasswordStoreAndroidBackendBridgeImpl.java",
     "java/src/org/chromium/chrome/browser/password_manager/PasswordStoreBridge.java",
     "java/src/org/chromium/chrome/browser/password_manager/PasswordStoreCredential.java",
+    "java/src/org/chromium/chrome/browser/password_manager/PasswordSyncControllerDelegateBridgeImpl.java",
     "java/src/org/chromium/chrome/browser/password_manager/settings/PasswordAccessReauthenticationHelper.java",
     "java/src/org/chromium/chrome/browser/password_manager/settings/PasswordReauthenticationFragment.java",
     "java/src/org/chromium/chrome/browser/password_manager/settings/ReauthenticationManager.java",
@@ -117,6 +122,7 @@ generate_jni("jni_headers") {
     "java/src/org/chromium/chrome/browser/password_manager/PasswordStoreAndroidBackendBridgeImpl.java",
     "java/src/org/chromium/chrome/browser/password_manager/PasswordStoreBridge.java",
     "java/src/org/chromium/chrome/browser/password_manager/PasswordStoreCredential.java",
+    "java/src/org/chromium/chrome/browser/password_manager/PasswordSyncControllerDelegateBridgeImpl.java",
   ]
 }
 
@@ -127,12 +133,14 @@ junit_binary("password_manager_junit_tests") {
     "junit/src/org/chromium/chrome/browser/password_manager/PasswordManagerHelperTest.java",
     "junit/src/org/chromium/chrome/browser/password_manager/PasswordManagerLifecycleHelperTest.java",
     "junit/src/org/chromium/chrome/browser/password_manager/PasswordStoreAndroidBackendBridgeTest.java",
+    "junit/src/org/chromium/chrome/browser/password_manager/PasswordSyncControllerDelegateBridgeTest.java",
     "junit/src/org/chromium/chrome/browser/password_manager/settings/PasswordReauthenticationFragmentTest.java",
     "junit/src/org/chromium/chrome/browser/password_manager/settings/ReauthenticationManagerTest.java",
   ]
 
   deps = [
     ":android_backend_java_enums",
+    ":backend_interface_public_impl_java",
     ":java",
     ":settings_interface_java",
     "$google_play_services_package:google_play_services_basement_java",
@@ -242,6 +250,8 @@ source_set("unit_tests") {
     "auto_signin_first_run_dialog_android_unittest.cc",
     "credential_leak_controller_android_unittest.cc",
     "generated_password_saved_message_delegate_unittest.cc",
+    "mock_password_sync_controller_delegate_bridge.cc",
+    "mock_password_sync_controller_delegate_bridge.h",
     "password_accessory_controller_impl_unittest.cc",
     "password_generation_controller_impl_unittest.cc",
     "password_store_android_backend_unittest.cc",

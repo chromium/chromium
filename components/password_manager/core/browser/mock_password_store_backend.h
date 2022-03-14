@@ -95,6 +95,10 @@ class MockPasswordStoreBackend : public PasswordStoreBackend {
               (),
               (override));
   MOCK_METHOD(void, ClearAllLocalPasswords, (), (override));
+  MOCK_METHOD(void,
+              OnSyncServiceInitialized,
+              (syncer::SyncService*),
+              (override));
 };
 
 }  // namespace password_manager

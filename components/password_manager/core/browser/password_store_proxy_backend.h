@@ -70,6 +70,7 @@ class PasswordStoreProxyBackend : public PasswordStoreBackend {
   std::unique_ptr<syncer::ProxyModelTypeControllerDelegate>
   CreateSyncControllerDelegate() override;
   void ClearAllLocalPasswords() override;
+  void OnSyncServiceInitialized(syncer::SyncService* sync_service) override;
 
   const raw_ptr<PasswordStoreBackend> main_backend_;
   const raw_ptr<PasswordStoreBackend> shadow_backend_;

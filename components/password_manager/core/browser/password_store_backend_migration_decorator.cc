@@ -190,6 +190,11 @@ void PasswordStoreBackendMigrationDecorator::ClearAllLocalPasswords() {
   NOTIMPLEMENTED();
 }
 
+void PasswordStoreBackendMigrationDecorator::OnSyncServiceInitialized(
+    syncer::SyncService* sync_service) {
+  NOTIMPLEMENTED();
+}
+
 void PasswordStoreBackendMigrationDecorator::StartMigration() {
   DCHECK(migrator_);
   migrator_->StartMigrationIfNecessary();

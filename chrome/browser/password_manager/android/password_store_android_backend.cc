@@ -21,11 +21,16 @@
 #include "chrome/browser/password_manager/android/password_store_android_backend_bridge.h"
 #include "chrome/browser/password_manager/android/password_store_operation_target.h"
 #include "chrome/browser/password_manager/android/password_sync_controller_delegate_android.h"
+#include "chrome/browser/password_manager/android/password_sync_controller_delegate_bridge_impl.h"
 #include "components/autofill/core/browser/autofill_regexes.h"
 #include "components/password_manager/core/browser/login_database.h"
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_store_backend.h"
 #include "components/password_manager/core/browser/password_store_util.h"
+#include "components/password_manager/core/common/password_manager_features.h"
+#include "components/sync/base/user_selectable_type.h"
+#include "components/sync/driver/sync_service.h"
+#include "components/sync/driver/sync_user_settings.h"
 #include "components/sync/model/proxy_model_type_controller_delegate.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -259,25 +264,26 @@ PasswordStoreAndroidBackend::PasswordStoreAndroidBackend(
     std::unique_ptr<SyncDelegate> sync_delegate)
     : lifecycle_helper_(std::make_unique<PasswordManagerLifecycleHelperImpl>()),
       bridge_(PasswordStoreAndroidBackendBridge::Create()),
-      sync_delegate_(std::move(sync_delegate)),
-      sync_controller_delegate_(
-          std::make_unique<PasswordSyncControllerDelegateAndroid>(
-              sync_delegate_.get())) {
+      sync_delegate_(std::move(sync_delegate)) {
   DCHECK(bridge_);
   bridge_->SetConsumer(weak_ptr_factory_.GetWeakPtr());
+  sync_controller_delegate_ =
+      std::make_unique<PasswordSyncControllerDelegateAndroid>(
+          std::make_unique<PasswordSyncControllerDelegateBridgeImpl>(),
+          sync_delegate_.get());
 }
 
 PasswordStoreAndroidBackend::PasswordStoreAndroidBackend(
     base::PassKey<class PasswordStoreAndroidBackendTest>,
     std::unique_ptr<PasswordStoreAndroidBackendBridge> bridge,
     std::unique_ptr<PasswordManagerLifecycleHelper> lifecycle_helper,
-    std::unique_ptr<SyncDelegate> sync_delegate)
+    std::unique_ptr<SyncDelegate> sync_delegate,
+    std::unique_ptr<PasswordSyncControllerDelegateAndroid>
+        sync_controller_delegate)
     : lifecycle_helper_(std::move(lifecycle_helper)),
       bridge_(std::move(bridge)),
       sync_delegate_(std::move(sync_delegate)),
-      sync_controller_delegate_(
-          std::make_unique<PasswordSyncControllerDelegateAndroid>(
-              sync_delegate_.get())) {
+      sync_controller_delegate_(std::move(sync_controller_delegate)) {
   DCHECK(bridge_);
   bridge_->SetConsumer(weak_ptr_factory_.GetWeakPtr());
 }
@@ -527,6 +533,15 @@ void PasswordStoreAndroidBackend::ClearAllLocalPasswords() {
 
   GetAllLoginsForAccount(PasswordStoreOperationTarget::kLocalStorage,
                          std::move(cleaning_callback));
+}
+
+void PasswordStoreAndroidBackend::OnSyncServiceInitialized(
+    syncer::SyncService* sync_service) {
+  if (!sync_service->IsSyncFeatureEnabled() ||
+      !sync_service->GetUserSettings()->GetSelectedTypes().Has(
+          syncer::UserSelectableType::kPasswords)) {
+    sync_controller_delegate_->NotifyCredentialManagerWhenNotSyncing();
+  }
 }
 
 void PasswordStoreAndroidBackend::OnCompleteWithLogins(

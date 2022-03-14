@@ -344,6 +344,12 @@ PasswordStore::CreateSyncControllerDelegate() {
   return backend_ ? backend_->CreateSyncControllerDelegate() : nullptr;
 }
 
+void PasswordStore::OnSyncServiceInitialized(
+    syncer::SyncService* sync_service) {
+  if (backend_)
+    backend_->OnSyncServiceInitialized(sync_service);
+}
+
 PasswordStoreBackend* PasswordStore::GetBackendForTesting() {
   return backend_.get();
 }

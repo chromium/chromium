@@ -69,6 +69,10 @@ class MockPasswordStoreInterface : public PasswordStoreInterface {
               (),
               (override));
   MOCK_METHOD(PasswordStoreBackend*, GetBackendForTesting, (), (override));
+  MOCK_METHOD(void,
+              OnSyncServiceInitialized,
+              (syncer::SyncService*),
+              (override));
 
   // RefcountedKeyedService:
   void ShutdownOnUIThread() override;

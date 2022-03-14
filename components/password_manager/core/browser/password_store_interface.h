@@ -15,6 +15,7 @@
 
 namespace syncer {
 class ProxyModelTypeControllerDelegate;
+class SyncService;
 }  // namespace syncer
 
 namespace password_manager {
@@ -157,6 +158,11 @@ class PasswordStoreInterface : public RefcountedKeyedService {
   // interact with PasswordSyncBridge. Must be called from the UI thread.
   virtual std::unique_ptr<syncer::ProxyModelTypeControllerDelegate>
   CreateSyncControllerDelegate() = 0;
+
+  // Propagates successful initialization of SyncService to reolve circular
+  // dependency during PasswordStore creation. |sync_service| may not
+  // have started yet but its preferences can already be queried.
+  virtual void OnSyncServiceInitialized(syncer::SyncService* sync_service) = 0;
 
   // Tests only can retrieve the backend.
   virtual PasswordStoreBackend* GetBackendForTesting() = 0;

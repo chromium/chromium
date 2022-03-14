@@ -169,6 +169,15 @@ std::unique_ptr<KeyedService> BuildSyncService(
       autofill::PersonalDataManagerFactory::GetForProfile(profile);
   pdm->OnSyncServiceInitialized(sync_service.get());
 
+  // Notify PasswordStore of complete initialisation to resolve a circular
+  // dependency.
+  auto password_store = PasswordStoreFactory::GetForProfile(
+      profile, ServiceAccessType::EXPLICIT_ACCESS);
+  // PasswordStoreInterface may be null in tests.
+  if (password_store) {
+    password_store->OnSyncServiceInitialized(sync_service.get());
+  }
+
   return sync_service;
 }
 

@@ -120,6 +120,7 @@ class PasswordStore : public PasswordStoreInterface {
   FieldInfoStore* GetFieldInfoStore() override;
   std::unique_ptr<syncer::ProxyModelTypeControllerDelegate>
   CreateSyncControllerDelegate() override;
+  void OnSyncServiceInitialized(syncer::SyncService* sync_service) override;
   PasswordStoreBackend* GetBackendForTesting() override;
 
  protected:

@@ -17,13 +17,12 @@
 #include "base/types/strong_alias.h"
 #include "chrome/browser/password_manager/android/password_manager_lifecycle_helper.h"
 #include "chrome/browser/password_manager/android/password_store_android_backend_bridge.h"
+#include "chrome/browser/password_manager/android/password_sync_controller_delegate_android.h"
 #include "components/password_manager/core/browser/password_store_backend.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
 
 namespace password_manager {
-
-class PasswordSyncControllerDelegateAndroid;
 
 // Android-specific password store backend that delegates every request to
 // Google Mobile Service.
@@ -42,7 +41,9 @@ class PasswordStoreAndroidBackend
       base::PassKey<class PasswordStoreAndroidBackendTest>,
       std::unique_ptr<PasswordStoreAndroidBackendBridge> bridge,
       std::unique_ptr<PasswordManagerLifecycleHelper> lifecycle_helper,
-      std::unique_ptr<SyncDelegate> sync_delegate);
+      std::unique_ptr<SyncDelegate> sync_delegate,
+      std::unique_ptr<PasswordSyncControllerDelegateAndroid>
+          sync_controller_delegate);
   ~PasswordStoreAndroidBackend() override;
 
  private:
@@ -160,6 +161,7 @@ class PasswordStoreAndroidBackend
   std::unique_ptr<syncer::ProxyModelTypeControllerDelegate>
   CreateSyncControllerDelegate() override;
   void ClearAllLocalPasswords() override;
+  void OnSyncServiceInitialized(syncer::SyncService* sync_service) override;
 
   // Implements PasswordStoreAndroidBackendBridge::Consumer interface.
   void OnCompleteWithLogins(PasswordStoreAndroidBackendBridge::JobId job_id,

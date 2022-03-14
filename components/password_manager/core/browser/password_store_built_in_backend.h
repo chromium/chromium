@@ -20,6 +20,10 @@ namespace base {
 class SequencedTaskRunner;
 }  // namespace base
 
+namespace syncer {
+class SyncService;
+}  // namespace syncer
+
 namespace password_manager {
 
 class LoginDatabase;
@@ -78,6 +82,7 @@ class PasswordStoreBuiltInBackend : public PasswordStoreBackend,
   std::unique_ptr<syncer::ProxyModelTypeControllerDelegate>
   CreateSyncControllerDelegate() override;
   void ClearAllLocalPasswords() override;
+  void OnSyncServiceInitialized(syncer::SyncService* sync_service) override;
 
   // SmartBubbleStatsStore:
   void AddSiteStats(const InteractionsStats& stats) override;

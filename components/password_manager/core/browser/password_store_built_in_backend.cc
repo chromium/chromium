@@ -212,6 +212,11 @@ void PasswordStoreBuiltInBackend::ClearAllLocalPasswords() {
   NOTREACHED();
 }
 
+void PasswordStoreBuiltInBackend::OnSyncServiceInitialized(
+    syncer::SyncService* sync_service) {
+  NOTIMPLEMENTED();
+}
+
 void PasswordStoreBuiltInBackend::AddSiteStats(const InteractionsStats& stats) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(helper_);
