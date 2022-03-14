@@ -57,7 +57,9 @@ suite('SettingsSchedulerSlider', function() {
     flush();
   });
 
-  test('pref value update time string', function() {
+  // TODO(crbug.com/1305868O): Skip test as it consistently fails whenever
+  // daylight savings is active.
+  test.skip('pref value update time string', function() {
     // Test that the slider time string is updated after the pref is
     // saved.
     assertTrue(!!slider.$$('#startLabel'));
@@ -104,7 +106,9 @@ suite('SettingsSchedulerSlider', function() {
     assertEquals(slider.prefEndTime.value, kDefaultEndTimeOffsetMinutes);
   });
 
-  test('pref value update aria label', function() {
+  // TODO(crbug.com/1305868): Skip test as it consistently fails whenever
+  // daylight savings is active.
+  test.skip('pref value update aria label', function() {
     // Test that the aria label is updated after the pref is saved.
     assertTrue(!!slider.$$('#startKnob'));
     assertTrue(!!slider.$$('#endKnob'));
