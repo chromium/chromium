@@ -21,30 +21,41 @@ namespace {
 // 50ms is the overall best performing value in our experiments.
 const base::TimeDelta kMaxRenderingDelay = base::Milliseconds(50);
 
-class FontPreloadFinishObserver final : public ResourceFinishObserver {
+class PreloadFinishObserver final : public ResourceFinishObserver {
  public:
-  FontPreloadFinishObserver(FontResource& font_resource, Document& document)
-      : font_resource_(font_resource), document_(document) {}
+  enum class Type { kRegular, kFontForShortPeriod };
+  PreloadFinishObserver(Resource& resource, Document& document, Type type)
+      : resource_(resource), document_(document), type_(type) {}
 
-  ~FontPreloadFinishObserver() final = default;
+  ~PreloadFinishObserver() final = default;
 
   void Trace(blink::Visitor* visitor) const final {
-    visitor->Trace(font_resource_);
+    visitor->Trace(resource_);
     visitor->Trace(document_);
     ResourceFinishObserver::Trace(visitor);
   }
 
  private:
   void NotifyFinished() final {
-    DCHECK(document_->GetRenderBlockingResourceManager());
-    document_->GetRenderBlockingResourceManager()->FontPreloadingFinished(
-        font_resource_, this);
+    RenderBlockingResourceManager* manager =
+        document_->GetRenderBlockingResourceManager();
+    DCHECK(manager);
+    switch (type_) {
+      case Type::kRegular:
+        manager->RemovePendingPreload(resource_, this);
+        break;
+      case Type::kFontForShortPeriod:
+        manager->FontPreloadingFinished(To<FontResource>(resource_.Get()),
+                                        this);
+        break;
+    }
   }
 
-  String DebugName() const final { return "FontPreloadFinishObserver"; }
+  String DebugName() const final { return "PreloadFinishObserver"; }
 
-  Member<FontResource> font_resource_;
+  Member<Resource> resource_;
   Member<Document> document_;
+  Type type_;
 };
 
 class ImperativeFontLoadFinishedCallback final
@@ -96,9 +107,9 @@ void RenderBlockingResourceManager::FontPreloadingStarted(
   if (font_preload_timer_has_fired_ || document_->body())
     return;
 
-  FontPreloadFinishObserver* observer =
-      MakeGarbageCollected<FontPreloadFinishObserver>(*font_resource,
-                                                      *document_);
+  PreloadFinishObserver* observer = MakeGarbageCollected<PreloadFinishObserver>(
+      *font_resource, *document_,
+      PreloadFinishObserver::Type::kFontForShortPeriod);
   font_resource->AddFinishObserver(
       observer, document_->GetTaskRunner(TaskType::kInternalLoading).get());
   font_preload_finish_observers_.insert(observer);
@@ -198,10 +209,35 @@ void RenderBlockingResourceManager::RemovePendingScript(
   document_->RenderBlockingResourceUnblocked();
 }
 
+void RenderBlockingResourceManager::AddPendingPreload(Resource* resource) {
+  // The resource is either already in the memory cache, or has errored out. In
+  // either case, we don't any further processing.
+  if (resource->IsLoaded())
+    return;
+
+  if (document_->body())
+    return;
+
+  PreloadFinishObserver* observer = MakeGarbageCollected<PreloadFinishObserver>(
+      *resource, *document_, PreloadFinishObserver::Type::kRegular);
+  resource->AddFinishObserver(
+      observer, document_->GetTaskRunner(TaskType::kInternalLoading).get());
+  pending_preload_finish_observers_.insert(observer);
+}
+
+void RenderBlockingResourceManager::RemovePendingPreload(
+    Resource* font_resource,
+    ResourceFinishObserver* observer) {
+  DCHECK(pending_preload_finish_observers_.Contains(observer));
+  pending_preload_finish_observers_.erase(observer);
+  document_->RenderBlockingResourceUnblocked();
+}
+
 void RenderBlockingResourceManager::Trace(Visitor* visitor) const {
   visitor->Trace(document_);
   visitor->Trace(pending_stylesheet_owner_nodes_);
   visitor->Trace(pending_scripts_);
+  visitor->Trace(pending_preload_finish_observers_);
   visitor->Trace(font_preload_finish_observers_);
   visitor->Trace(font_preload_timer_);
 }

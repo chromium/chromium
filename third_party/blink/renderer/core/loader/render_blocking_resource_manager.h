@@ -16,6 +16,7 @@ class Document;
 class FontResource;
 class FontFace;
 class Node;
+class Resource;
 class ResourceFinishObserver;
 class ScriptElementBase;
 
@@ -32,6 +33,7 @@ class CORE_EXPORT RenderBlockingResourceManager final
 
   bool HasRenderBlockingResources() const {
     return pending_stylesheet_owner_nodes_.size() || pending_scripts_.size() ||
+           pending_preload_finish_observers_.size() ||
            font_preload_finish_observers_.size() ||
            imperative_font_loading_count_;
   }
@@ -50,6 +52,9 @@ class CORE_EXPORT RenderBlockingResourceManager final
 
   void AddPendingScript(const ScriptElementBase& script);
   void RemovePendingScript(const ScriptElementBase& script);
+
+  void AddPendingPreload(Resource*);
+  void RemovePendingPreload(Resource*, ResourceFinishObserver*);
 
   // We additionally allow font preloading (via <link rel="preload"> or Font
   // Loading API) to block rendering for a short period, so that preloaded fonts
@@ -82,8 +87,14 @@ class CORE_EXPORT RenderBlockingResourceManager final
   // Tracks the currently pending render-blocking script elements.
   HeapHashSet<Member<const ScriptElementBase>> pending_scripts_;
 
+  // Tracks the currently pending render-blocking preloads.
   // Need to hold strong references here, otherwise they'll be GC-ed immediately
   // as Resource only holds weak references.
+  HeapHashSet<Member<ResourceFinishObserver>> pending_preload_finish_observers_;
+
+  // Tracks the currently pending font preloads that are not explicitly marked
+  // with blocking="render", but are still allowed to block rendering for a
+  // short period.
   HeapHashSet<Member<ResourceFinishObserver>> font_preload_finish_observers_;
 
   unsigned imperative_font_loading_count_ = 0;

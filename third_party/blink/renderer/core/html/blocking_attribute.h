@@ -16,10 +16,14 @@ namespace blink {
 // TODO(crbug.com/1271296): Add use counter.
 class BlockingAttribute final : public DOMTokenList {
  public:
+  static const char kRenderToken[];
+
   explicit BlockingAttribute(Element* element)
       : DOMTokenList(*element, html_names::kBlockingAttr) {}
 
-  bool IsRenderBlocking() const { return contains("render"); }
+  bool IsRenderBlocking() const { return contains(kRenderToken); }
+
+  static bool IsRenderBlocking(const AtomicString& attribute_value);
 
  private:
   static HashSet<AtomicString>& SupportedTokens();

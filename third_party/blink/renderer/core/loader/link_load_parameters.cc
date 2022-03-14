@@ -21,7 +21,8 @@ LinkLoadParameters::LinkLoadParameters(
     network::mojom::ReferrerPolicy referrer_policy,
     const KURL& href,
     const String& image_srcset,
-    const String& image_sizes)
+    const String& image_sizes,
+    const BlockingAttribute* blocking)
     : rel(rel),
       cross_origin(cross_origin),
       type(type),
@@ -33,7 +34,8 @@ LinkLoadParameters::LinkLoadParameters(
       referrer_policy(referrer_policy),
       href(href),
       image_srcset(image_srcset),
-      image_sizes(image_sizes) {}
+      image_sizes(image_sizes),
+      blocking(blocking) {}
 
 // TODO(domfarolino)
 // Eventually we'll want to support a |fetchpriority| value on
@@ -52,6 +54,8 @@ LinkLoadParameters::LinkLoadParameters(const LinkHeader& header,
       referrer_policy(network::mojom::ReferrerPolicy::kDefault),
       href(KURL(base_url, header.Url())),
       image_srcset(header.ImageSrcset()),
-      image_sizes(header.ImageSizes()) {}
+      image_sizes(header.ImageSizes()),
+      // TODO(crbug.com/1271296): Allow link headers to block rendering.
+      blocking(nullptr) {}
 
 }  // namespace blink
