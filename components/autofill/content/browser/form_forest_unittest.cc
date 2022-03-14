@@ -1405,9 +1405,10 @@ class FormForestTestUnflatten : public FormForestTestWithMockedTree {
       base::StringPiece form_name,
       const url::Origin& triggered_origin,
       const base::flat_map<FieldGlobalId, ServerFieldType>& field_type_map) {
-    return flattened_forms_.GetRendererFormsOfBrowserForm(
-        WithValues(GetFlattenedForm(form_name)), triggered_origin,
-        field_type_map);
+    return flattened_forms_
+        .GetRendererFormsOfBrowserForm(WithValues(GetFlattenedForm(form_name)),
+                                       triggered_origin, field_type_map)
+        .renderer_forms;
   }
 
   auto FieldTypeMap(base::StringPiece form_name) {

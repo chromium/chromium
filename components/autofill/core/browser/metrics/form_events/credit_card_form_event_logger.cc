@@ -18,18 +18,6 @@
 
 namespace autofill {
 
-namespace {
-
-ServerFieldTypeSet GetFieldTypeSet(
-    const base::flat_map<FieldGlobalId, ServerFieldType>& field_type_map) {
-  ServerFieldTypeSet set;
-  for (const auto& p : field_type_map)
-    set.insert(p.second);
-  return set;
-}
-
-}  // namespace
-
 CreditCardFormEventLogger::CreditCardFormEventLogger(
     bool is_in_any_main_frame,
     AutofillMetrics::FormInteractionsUkmLogger* form_interactions_ukm_logger,
@@ -113,10 +101,8 @@ void CreditCardFormEventLogger::OnDidFillSuggestion(
     const CreditCard& credit_card,
     const FormStructure& form,
     const AutofillField& field,
-    const base::flat_map<FieldGlobalId, ServerFieldType>&
-        field_types_to_be_filled_before_security_policy,
-    const base::flat_map<FieldGlobalId, ServerFieldType>&
-        field_types_filled_after_security_policy,
+    const base::flat_set<FieldGlobalId>& newly_filled_fields,
+    const base::flat_set<FieldGlobalId>& safe_fields,
     AutofillSyncSigninState sync_state) {
   CreditCard::RecordType record_type = credit_card.record_type();
   sync_state_ = sync_state;
@@ -125,51 +111,97 @@ void CreditCardFormEventLogger::OnDidFillSuggestion(
       record_type,
       /*is_for_credit_card=*/true, form, field);
 
-  AutofillMetrics::LogCreditCardNumberFills(
-      GetFieldTypeSet(field_types_to_be_filled_before_security_policy),
-      AutofillMetrics::MeasurementTime::kFillTimeBeforeSecurityPolicy);
-  AutofillMetrics::LogCreditCardNumberFills(
-      GetFieldTypeSet(field_types_filled_after_security_policy),
-      AutofillMetrics::MeasurementTime::kFillTimeAfterSecurityPolicy);
+  // Logs the seamless-fill metrics for credit card fields.
+  //
+  // There are four variants of the UMA metric:
+  // - Fillable vs newly filled by BrowserAutofillManager.
+  // - Before vs after the cross-frame-filling security policy.
+  //
+  // For "fillable before" and "filled after" we also record UKM metrics.
+  {
+    AutofillMetrics::LogCreditCardSeamlessnessParam param{
+        .form = form,
+        .newly_filled_fields = newly_filled_fields,
+        .safe_fields = safe_fields};
 
-  AutofillMetrics::LogCreditCardSeamlessFills(
-      GetFieldTypeSet(field_types_to_be_filled_before_security_policy),
-      AutofillMetrics::MeasurementTime::kFillTimeBeforeSecurityPolicy);
-  absl::optional<AutofillMetrics::CreditCardSeamlessFillMetric>
-      credit_card_seamlessness = AutofillMetrics::LogCreditCardSeamlessFills(
-          GetFieldTypeSet(field_types_filled_after_security_policy),
-          AutofillMetrics::MeasurementTime::kFillTimeAfterSecurityPolicy);
+    param.only_newly_filled_fields = false;
+    param.only_after_security_policy = false;
+    absl::optional<AutofillMetrics::CreditCardSeamlessFillMetric>
+        fillable_seamlessness =
+            AutofillMetrics::LogCreditCardSeamlessnessAtFillTime(param);
 
-  if (credit_card_seamlessness) {
-    FormEvent e = NUM_FORM_EVENTS;
-    switch (*credit_card_seamlessness) {
-      using M = AutofillMetrics::CreditCardSeamlessFillMetric;
-      case M::kFullFill:
-        e = FORM_EVENT_CREDIT_CARD_SEAMLESSNESS_FULL_FILL;
-        break;
-      case M::kOptionalNameMissing:
-        e = FORM_EVENT_CREDIT_CARD_SEAMLESSNESS_OPTIONAL_NAME_MISSING;
-        break;
-      case M::kFullFillButExpDateMissing:
-        e = FORM_EVENT_CREDIT_CARD_SEAMLESSNESS_FULL_FILL_BUT_EXPDATE_MISSING;
-        break;
-      case M::kOptionalNameAndCvcMissing:
-        e = FORM_EVENT_CREDIT_CARD_SEAMLESSNESS_OPTIONAL_NAME_AND_CVC_MISSING;
-        break;
-      case M::kOptionalCvcMissing:
-        e = FORM_EVENT_CREDIT_CARD_SEAMLESSNESS_OPTIONAL_CVC_MISSING;
-        break;
-      case M::kPartialFill:
-        e = FORM_EVENT_CREDIT_CARD_SEAMLESSNESS_PARTIAL_FILL;
-        break;
+    param.only_newly_filled_fields = false;
+    param.only_after_security_policy = true;
+    AutofillMetrics::LogCreditCardSeamlessnessAtFillTime(param);
+
+    param.only_newly_filled_fields = true;
+    param.only_after_security_policy = false;
+    AutofillMetrics::LogCreditCardSeamlessnessAtFillTime(param);
+
+    param.only_newly_filled_fields = true;
+    param.only_after_security_policy = true;
+    absl::optional<AutofillMetrics::CreditCardSeamlessFillMetric>
+        fill_seamlessness =
+            AutofillMetrics::LogCreditCardSeamlessnessAtFillTime(param);
+
+    if (fillable_seamlessness) {
+      switch (*fillable_seamlessness) {
+        using M = AutofillMetrics::CreditCardSeamlessFillMetric;
+        case M::kFullFill:
+          Log(FORM_EVENT_CREDIT_CARD_SEAMLESS_FILLABLE_FULL_FILL, form);
+          break;
+        case M::kOptionalNameMissing:
+          Log(FORM_EVENT_CREDIT_CARD_SEAMLESS_FILLABLE_OPTIONAL_NAME_MISSING,
+              form);
+          break;
+        case M::kFullFillButExpDateMissing:
+          Log(FORM_EVENT_CREDIT_CARD_SEAMLESS_FILLABLE_FULL_FILL_BUT_EXPDATE_MISSING,
+              form);
+          break;
+        case M::kOptionalNameAndCvcMissing:
+          Log(FORM_EVENT_CREDIT_CARD_SEAMLESS_FILLABLE_OPTIONAL_NAME_AND_CVC_MISSING,
+              form);
+          break;
+        case M::kOptionalCvcMissing:
+          Log(FORM_EVENT_CREDIT_CARD_SEAMLESS_FILLABLE_OPTIONAL_CVC_MISSING,
+              form);
+          break;
+        case M::kPartialFill:
+          Log(FORM_EVENT_CREDIT_CARD_SEAMLESS_FILLABLE_PARTIAL_FILL, form);
+          break;
+      }
     }
-    Log(e, form);
+    if (fill_seamlessness) {
+      switch (*fill_seamlessness) {
+        using M = AutofillMetrics::CreditCardSeamlessFillMetric;
+        case M::kFullFill:
+          Log(FORM_EVENT_CREDIT_CARD_SEAMLESS_FILL_FULL_FILL, form);
+          break;
+        case M::kOptionalNameMissing:
+          Log(FORM_EVENT_CREDIT_CARD_SEAMLESS_FILL_OPTIONAL_NAME_MISSING, form);
+          break;
+        case M::kFullFillButExpDateMissing:
+          Log(FORM_EVENT_CREDIT_CARD_SEAMLESS_FILL_FULL_FILL_BUT_EXPDATE_MISSING,
+              form);
+          break;
+        case M::kOptionalNameAndCvcMissing:
+          Log(FORM_EVENT_CREDIT_CARD_SEAMLESS_FILL_OPTIONAL_NAME_AND_CVC_MISSING,
+              form);
+          break;
+        case M::kOptionalCvcMissing:
+          Log(FORM_EVENT_CREDIT_CARD_SEAMLESS_FILL_OPTIONAL_CVC_MISSING, form);
+          break;
+        case M::kPartialFill:
+          Log(FORM_EVENT_CREDIT_CARD_SEAMLESS_FILL_PARTIAL_FILL, form);
+          break;
+      }
+    }
 
     // In a multi-frame form, a cross-origin field is only filled if
     // shared-autofill is enabled in the field's frame. If Autofill was
-    // triggered on the main origin, shared-autofill is even sufficient for the
-    // fill. We therefore log how often enabling shared-autofill would suffice
-    // to fix Autofill.
+    // triggered on the main origin, shared-autofill is even sufficient for
+    // the fill. We therefore log how often enabling shared-autofill would
+    // suffice to fix Autofill.
     //
     // Shared-autofill is a policy-controlled feature. As such, a parent frame
     // can enable it in a child frame with in the iframe's "allow" attribute:
@@ -179,8 +211,7 @@ void CreditCardFormEventLogger::OnDidFillSuggestion(
         base::ranges::any_of(form, [&](const auto& f) {
           FieldGlobalId id = f->global_id();
           return f->origin != form.main_frame_origin() &&
-                 field_types_to_be_filled_before_security_policy.contains(id) &&
-                 !field_types_filled_after_security_policy.contains(id);
+                 newly_filled_fields.contains(id) && !safe_fields.contains(id);
         })) {
       Log(FORM_EVENT_CREDIT_CARD_MISSING_SHARED_AUTOFILL, form);
     }

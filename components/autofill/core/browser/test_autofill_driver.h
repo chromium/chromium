@@ -47,7 +47,7 @@ class TestAutofillDriver : public ContentAutofillDriver {
 #endif
   // The return value contains the members (field, type) of `field_type_map` for
   // which `field_type_filter_.Run(triggered_origin, field, type)` is true.
-  base::flat_map<FieldGlobalId, ServerFieldType> FillOrPreviewForm(
+  std::vector<FieldGlobalId> FillOrPreviewForm(
       int query_id,
       mojom::RendererFormDataAction action,
       const FormData& data,

@@ -79,13 +79,13 @@ class AutofillDriver {
   // that may be previewed or filled; these two parameters can be taken into
   // account to decide which fields to preview or fill across frames.
   //
-  // Returns a map from actually previewed or filled fields to their type. This
-  // is a sub-map of |field_type_map|: it does not contain those fields from
-  // |field_type_map| which shall not be filled due to the security policy for
-  // cross-frame previewing and filling.
+  // Returns the ids of those fields that are safe to fill according to the
+  // security policy for cross-frame previewing and filling. This is a subset of
+  // the ids of the fields in |data|. It is not necessarily a subset of the
+  // fields in |field_type_map|.
   //
   // This method is a no-op if the renderer is not currently available.
-  virtual base::flat_map<FieldGlobalId, ServerFieldType> FillOrPreviewForm(
+  virtual std::vector<FieldGlobalId> FillOrPreviewForm(
       int query_id,
       mojom::RendererFormDataAction action,
       const FormData& data,

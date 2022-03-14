@@ -6900,6 +6900,24 @@ others/histograms.xml -->
              credit-card field from being filled. Shared-autofill is a
              policy-controlled feature by which a frame can allow a
              child-frame to be autofilled across origin."/>
+  <int value="50"
+      label="CreditCardSeamlessFillable :-D (name &amp; number &amp; exp.
+             date &amp; CVC = Full fill)"/>
+  <int value="51"
+      label="CreditCardSeamlessFillable :-) (number &amp; exp. date &amp; CVC
+             = Optional name missing)"/>
+  <int value="52"
+      label="CreditCardSeamlessFillable :-) (name &amp; number &amp; exp.
+             date = Optional CVC missing)"/>
+  <int value="53"
+      label="CreditCardSeamlessFillable :-) (number &amp; exp. date =
+             Optional name and CVC missing)"/>
+  <int value="54"
+      label="CreditCardSeamlessFillable :-| (name &amp; number &amp; CVC =
+             Full fill but exp. date missing)"/>
+  <int value="55"
+      label="CreditCardSeamlessFillable :-( (all other scenarios = Partial
+             fill)"/>
 </enum>
 
 <enum name="AutofillFormSubmittedState">

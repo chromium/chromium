@@ -197,8 +197,7 @@ net::IsolationInfo ContentAutofillDriver::IsolationInfo() {
   return render_frame_host_->GetIsolationInfoForSubresources();
 }
 
-base::flat_map<FieldGlobalId, ServerFieldType>
-ContentAutofillDriver::FillOrPreviewForm(
+std::vector<FieldGlobalId> ContentAutofillDriver::FillOrPreviewForm(
     int query_id,
     mojom::RendererFormDataAction action,
     const FormData& data,

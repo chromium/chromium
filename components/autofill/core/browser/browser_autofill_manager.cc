@@ -1742,15 +1742,10 @@ void BrowserAutofillManager::FillOrPreviewDataModelForm(
   base::flat_map<ServerFieldType, size_t> type_count;
   type_count.reserve(form_structure->field_count());
 
-  // Maps those fields to their field type that BrowserAutofillManager can and
-  // wants to fill. This is passed on to ContentAutofillRouter, which may
-  // disallow filling some fields according to the security policy for filling
-  // across frames (e.g., credit card numbers are not allowed to be filled
-  // across origins). See AutofillDriver::FillOrPreviewForm() for details.
-  base::flat_map<FieldGlobalId, ServerFieldType>
-      field_types_to_be_filled_before_security_policy;
-  field_types_to_be_filled_before_security_policy.reserve(
-      form_structure->field_count());
+  // Contains those fields that BrowserAutofillManager can and wants to fill.
+  // This is used for logging in CreditCardFormEventLogger.
+  base::flat_set<FieldGlobalId> newly_filled_fields;
+  newly_filled_fields.reserve(form_structure->field_count());
 
   for (size_t i = 0; i < form_structure->field_count(); ++i) {
     std::string field_number = base::StringPrintf("Field %zu", i);
@@ -1893,15 +1888,14 @@ void BrowserAutofillManager::FillOrPreviewDataModelForm(
     // Fill the non-empty value from |profile_or_credit_card| into the |result|
     // form, which will be sent to the renderer. FillFieldWithValue() may also
     // fill a field if it had been autofilled or manually filled before, and
-    // also returns true in such a case.
+    // also returns true in such a case; however, such fields don't reach this
+    // code.
     bool is_newly_autofilled = FillFieldWithValue(
         cached_field, profile_or_credit_card, &result.fields[i], should_notify,
         optional_cvc ? *optional_cvc : kEmptyCvc,
         data_util::DetermineGroups(*form_structure), action, &failure_to_fill);
-    if (is_newly_autofilled) {
-      FieldGlobalId field_id = result.fields[i].global_id();
-      field_types_to_be_filled_before_security_policy[field_id] = field_type;
-    }
+    if (is_newly_autofilled)
+      newly_filled_fields.insert(result.fields[i].global_id());
 
     bool has_value_after = !result.fields[i].value.empty();
     bool is_autofilled_after = result.fields[i].is_autofilled;
@@ -1929,11 +1923,13 @@ void BrowserAutofillManager::FillOrPreviewDataModelForm(
                          << std::move(buffer);
   }
 
-  base::flat_map<FieldGlobalId, ServerFieldType>
-      field_types_filled_after_security_policy;
-  field_types_filled_after_security_policy = driver()->FillOrPreviewForm(
-      query_id, action, result, field.origin,
-      field_types_to_be_filled_before_security_policy);
+  auto field_types = base::MakeFlatMap<FieldGlobalId, ServerFieldType>(
+      *form_structure, {}, [](const auto& field) {
+        return std::make_pair(field->global_id(),
+                              field->Type().GetStorableType());
+      });
+  std::vector<FieldGlobalId> safe_fields = driver()->FillOrPreviewForm(
+      query_id, action, result, field.origin, field_types);
 
   // Call OnDidFillSuggestion() to log the metrics.
   if (action == mojom::RendererFormDataAction::kFill && !is_refill) {
@@ -1943,9 +1939,8 @@ void BrowserAutofillManager::FillOrPreviewDataModelForm(
       // `absl::get<CreditCard*>(profile_or_credit_card)` to correctly indicate
       // whether the user filled the form using a masked card suggestion.
       credit_card_form_event_logger_->OnDidFillSuggestion(
-          credit_card_, *form_structure, *autofill_field,
-          field_types_to_be_filled_before_security_policy,
-          field_types_filled_after_security_policy, sync_state_);
+          credit_card_, *form_structure, *autofill_field, newly_filled_fields,
+          base::flat_set<FieldGlobalId>(std::move(safe_fields)), sync_state_);
     }
 
     if (!is_credit_card) {

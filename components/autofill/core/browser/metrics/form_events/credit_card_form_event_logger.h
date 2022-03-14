@@ -59,16 +59,28 @@ class CreditCardFormEventLogger : public FormEventLoggerBase {
                                  const FormStructure& form,
                                  AutofillSyncSigninState sync_state);
 
-  // In case of masked cards, caller must make sure this gets called before
+  // To be called whenever (by BrowserAutofillManager) whenever a form is filled
+  // (but not on preview).
+  //
+  // In case of masked cards, the caller must make sure this gets called before
   // the card is upgraded to a full card.
-  void OnDidFillSuggestion(const CreditCard& credit_card,
-                           const FormStructure& form,
-                           const AutofillField& field,
-                           const base::flat_map<FieldGlobalId, ServerFieldType>&
-                               field_types_to_be_filled_before_security_policy,
-                           const base::flat_map<FieldGlobalId, ServerFieldType>&
-                               field_types_filled_after_security_policy,
-                           AutofillSyncSigninState sync_state);
+  //
+  // The `newly_filled_fields` are all fields of `form` that are newly
+  // filled by BrowserAutofillManager. They are still subject to the security
+  // policy for cross-frame filling.
+  //
+  // The `safe_fields` are all fields of `form` that adhere to the security
+  // policy for cross-frame filling.
+  //
+  // Therefore, the intersection of `newly_filled_fields` and `safe_fields`
+  // contains the actually filled fields.
+  void OnDidFillSuggestion(
+      const CreditCard& credit_card,
+      const FormStructure& form,
+      const AutofillField& field,
+      const base::flat_set<FieldGlobalId>& newly_filled_fields,
+      const base::flat_set<FieldGlobalId>& safe_fields,
+      AutofillSyncSigninState sync_state);
 
   // Logging what type of authentication flow was prompted.
   void LogCardUnmaskAuthenticationPromptShown(UnmaskAuthFlowType flow);

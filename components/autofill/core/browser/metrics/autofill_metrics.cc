@@ -195,22 +195,35 @@ std::string GetCreditCardTypeSuffix(
   }
 }
 
-std::string AppendMeasurementTimeToMetricName(
-    base::StringPiece metric_name,
-    AutofillMetrics::MeasurementTime measurement_time) {
-  base::StringPiece measurement_time_string;
-  switch (measurement_time) {
-    case AutofillMetrics::MeasurementTime::kFillTimeBeforeSecurityPolicy:
-      measurement_time_string = "AtFillTimeBeforeSecurityPolicy";
-      break;
-    case AutofillMetrics::MeasurementTime::kFillTimeAfterSecurityPolicy:
-      measurement_time_string = "AtFillTimeAfterSecurityPolicy";
-      break;
-    case AutofillMetrics::MeasurementTime::kSubmissionTime:
-      measurement_time_string = "AtSubmissionTime";
-      break;
+absl::optional<AutofillMetrics::CreditCardSeamlessFillMetric> GetSeamlessness(
+    const ServerFieldTypeSet& filled_types) {
+  bool name = filled_types.contains(CREDIT_CARD_NAME_FULL) ||
+              (filled_types.contains(CREDIT_CARD_NAME_FIRST) &&
+               filled_types.contains(CREDIT_CARD_NAME_LAST));
+  bool number = filled_types.contains(CREDIT_CARD_NUMBER);
+  bool exp = filled_types.contains(CREDIT_CARD_EXP_DATE_2_DIGIT_YEAR) ||
+             filled_types.contains(CREDIT_CARD_EXP_DATE_4_DIGIT_YEAR) ||
+             (filled_types.contains(CREDIT_CARD_EXP_MONTH) &&
+              (filled_types.contains(CREDIT_CARD_EXP_2_DIGIT_YEAR) ||
+               filled_types.contains(CREDIT_CARD_EXP_4_DIGIT_YEAR)));
+  bool cvc = filled_types.contains(CREDIT_CARD_VERIFICATION_CODE);
+
+  using M = AutofillMetrics::CreditCardSeamlessFillMetric;
+  if (!name && !number && !exp && !cvc) {
+    return absl::nullopt;
+  } else if (name && number && exp && cvc) {
+    return M::kFullFill;
+  } else if (!name && number && exp && cvc) {
+    return M::kOptionalNameMissing;
+  } else if (name && number && exp && !cvc) {
+    return M::kOptionalCvcMissing;
+  } else if (!name && number && exp && !cvc) {
+    return M::kOptionalNameAndCvcMissing;
+  } else if (name && number && !exp && cvc) {
+    return M::kFullFillButExpDateMissing;
+  } else {
+    return M::kPartialFill;
   }
-  return base::JoinString({metric_name, measurement_time_string}, ".");
 }
 
 }  // namespace
@@ -2475,53 +2488,44 @@ void AutofillMetrics::LogNumberOfFramesWithAutofilledCreditCardFields(
 
 // static
 absl::optional<AutofillMetrics::CreditCardSeamlessFillMetric>
-AutofillMetrics::LogCreditCardSeamlessFills(
-    const ServerFieldTypeSet& autofilled_types,
-    MeasurementTime measurement_time) {
-  bool name = autofilled_types.contains(CREDIT_CARD_NAME_FULL) ||
-              (autofilled_types.contains(CREDIT_CARD_NAME_FIRST) &&
-               autofilled_types.contains(CREDIT_CARD_NAME_LAST));
-  bool number = autofilled_types.contains(CREDIT_CARD_NUMBER);
-  bool exp = autofilled_types.contains(CREDIT_CARD_EXP_DATE_2_DIGIT_YEAR) ||
-             autofilled_types.contains(CREDIT_CARD_EXP_DATE_4_DIGIT_YEAR) ||
-             (autofilled_types.contains(CREDIT_CARD_EXP_MONTH) &&
-              (autofilled_types.contains(CREDIT_CARD_EXP_2_DIGIT_YEAR) ||
-               autofilled_types.contains(CREDIT_CARD_EXP_4_DIGIT_YEAR)));
-  bool cvc = autofilled_types.contains(CREDIT_CARD_VERIFICATION_CODE);
-  if (!name && !number && !exp && !cvc)
-    return absl::nullopt;
-
-  CreditCardSeamlessFillMetric emit;
-  if (name && number && exp && cvc) {
-    emit = CreditCardSeamlessFillMetric::kFullFill;
-  } else if (!name && number && exp && cvc) {
-    emit = CreditCardSeamlessFillMetric::kOptionalNameMissing;
-  } else if (name && number && exp && !cvc) {
-    emit = CreditCardSeamlessFillMetric::kOptionalCvcMissing;
-  } else if (!name && number && exp && !cvc) {
-    emit = CreditCardSeamlessFillMetric::kOptionalNameAndCvcMissing;
-  } else if (name && number && !exp && cvc) {
-    emit = CreditCardSeamlessFillMetric::kFullFillButExpDateMissing;
-  } else {
-    emit = CreditCardSeamlessFillMetric::kPartialFill;
+AutofillMetrics::LogCreditCardSeamlessnessAtFillTime(
+    const LogCreditCardSeamlessnessParam& p) {
+  ServerFieldTypeSet autofilled_types;
+  for (const auto& field : p.form) {
+    FieldGlobalId id = field->global_id();
+    if (p.only_newly_filled_fields && !p.newly_filled_fields.contains(id))
+      continue;
+    if (p.only_after_security_policy && !p.safe_fields.contains(id))
+      continue;
+    autofilled_types.insert(field->Type().GetStorableType());
   }
+  absl::optional<CreditCardSeamlessFillMetric> metric =
+      GetSeamlessness(autofilled_types);
 
-  base::UmaHistogramEnumeration(
-      AppendMeasurementTimeToMetricName("Autofill.CreditCard.SeamlessFills",
-                                        measurement_time),
-      emit);
-  return emit;
+  std::string suffix =
+      base::StringPrintf("%s.AtFillTime%sSecurityPolicy",
+                         p.only_newly_filled_fields ? "Fills" : "Fillable",
+                         p.only_after_security_policy ? "After" : "Before");
+  if (metric) {
+    base::UmaHistogramEnumeration("Autofill.CreditCard.Seamless" + suffix,
+                                  *metric);
+  }
+  base::UmaHistogramBoolean("Autofill.CreditCard.Number" + suffix,
+                            autofilled_types.contains(CREDIT_CARD_NUMBER));
+  return metric;
 }
 
 // static
-void AutofillMetrics::LogCreditCardNumberFills(
-    const ServerFieldTypeSet& autofilled_types,
-    MeasurementTime measurement_time) {
-  bool emit = autofilled_types.contains(CREDIT_CARD_NUMBER);
-  base::UmaHistogramBoolean(
-      AppendMeasurementTimeToMetricName("Autofill.CreditCard.NumberFills",
-                                        measurement_time),
-      emit);
+void AutofillMetrics::LogCreditCardSeamlessnessAtSubmissionTime(
+    const ServerFieldTypeSet& autofilled_types) {
+  absl::optional<CreditCardSeamlessFillMetric> metric =
+      GetSeamlessness(autofilled_types);
+  if (metric) {
+    base::UmaHistogramEnumeration(
+        "Autofill.CreditCard.SeamlessFills.AtSubmissionTime", *metric);
+  }
+  base::UmaHistogramBoolean("Autofill.CreditCard.NumberFills.AtSubmissionTime",
+                            autofilled_types.contains(CREDIT_CARD_NUMBER));
 }
 
 // static

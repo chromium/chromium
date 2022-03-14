@@ -207,8 +207,19 @@ class FormForest {
   const FormData& GetBrowserFormOfRendererForm(
       const FormData& renderer_form) const;
 
-  // Returns the renderer forms of |browser_form|. The security policy depends
-  // on |triggered_origin| and |field_type_map|.
+  struct RendererForms {
+    RendererForms();
+    RendererForms(RendererForms&&);
+    RendererForms& operator=(RendererForms&&);
+    ~RendererForms();
+    std::vector<FormData> renderer_forms;
+    std::vector<FieldGlobalId> safe_fields;
+  };
+
+  // Returns the renderer forms of |browser_form| and the fields that are safe
+  // to be filled according to the security policy for cross-frame previewing
+  // and filling. The security policy depends on |triggered_origin| and
+  // |field_type_map|.
   //
   // The function reinstates each field from |browser_form| in the renderer form
   // it originates from. These reinstated fields hold the (possibly autofilled)
@@ -240,7 +251,7 @@ class FormForest {
   // A frame's *permissions policy allows shared-autofill* if that frame is a
   // main frame or its embedding <iframe> element lists "shared-autofill" in
   // its "allow" attribute (see https://www.w3.org/TR/permissions-policy-1/).
-  std::vector<FormData> GetRendererFormsOfBrowserForm(
+  RendererForms GetRendererFormsOfBrowserForm(
       const FormData& browser_form,
       const url::Origin& triggered_origin,
       const base::flat_map<FieldGlobalId, ServerFieldType>& field_type_map)

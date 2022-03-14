@@ -12,6 +12,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/containers/flat_set.h"
 #include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 #include "components/autofill/core/browser/autofill_client.h"
@@ -42,12 +43,6 @@ extern const int kMaxBucketsCount;
 
 class AutofillMetrics {
  public:
-  enum class MeasurementTime {
-    kFillTimeBeforeSecurityPolicy,
-    kFillTimeAfterSecurityPolicy,
-    kSubmissionTime,
-  };
-
   enum AutofillProfileAction {
     EXISTING_PROFILE_USED,
     EXISTING_PROFILE_UPDATED,
@@ -1795,18 +1790,27 @@ class AutofillMetrics {
   static void LogNumberOfFramesWithAutofilledCreditCardFields(
       size_t num_frames);
 
-  // Logs the Autofill.CreditCard.SeamlessFills metric. See the enum for
-  // details. Note that this function does not check whether the form contains a
-  // credit card field.
-  // Returns the emitted metric, if any.
-  static absl::optional<CreditCardSeamlessFillMetric>
-  LogCreditCardSeamlessFills(const ServerFieldTypeSet& autofilled_types,
-                             MeasurementTime measurement_time);
+  struct LogCreditCardSeamlessnessParam {
+    const FormStructure& form;
+    const base::flat_set<FieldGlobalId>& newly_filled_fields;
+    const base::flat_set<FieldGlobalId>& safe_fields;
+    bool only_newly_filled_fields = false;    // "Fillable" vs "Fills"
+    bool only_after_security_policy = false;  // "Before" vs "After"
+  };
 
-  // Logs the Autofill.CreditCard.NumberFills metric.
-  static void LogCreditCardNumberFills(
-      const ServerFieldTypeSet& autofilled_types,
-      MeasurementTime measurement_time);
+  // Logs one variant of Autofill.CreditCard.Seamless{Fillable,Fills}.
+  // AtFillTime{Before,After}SecurityPolicy metrics, depending on the parameter
+  // `p`. Returns the emitted metric, if any.
+  //
+  // In addition, logs Autofill.CreditCard.Number{Fillable,Fills}.
+  // AtFillTime{Before,After}SecurityPolicy.
+  static absl::optional<CreditCardSeamlessFillMetric>
+  LogCreditCardSeamlessnessAtFillTime(const LogCreditCardSeamlessnessParam& p);
+
+  // Logs Autofill.CreditCard.SeamlessFills.AtSubmissionTime and
+  // Autofill.CreditCard.NumberFills.AtSubmissionTime.
+  static void LogCreditCardSeamlessnessAtSubmissionTime(
+      const ServerFieldTypeSet& autofilled_types);
 
   // This should be called when determining the heuristic types for a form's
   // fields.

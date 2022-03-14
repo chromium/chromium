@@ -58,18 +58,18 @@ TestAutofillDriver::GetOrCreateCreditCardInternalAuthenticator() {
 }
 #endif
 
-base::flat_map<FieldGlobalId, ServerFieldType>
-TestAutofillDriver::FillOrPreviewForm(
+std::vector<FieldGlobalId> TestAutofillDriver::FillOrPreviewForm(
     int query_id,
     mojom::RendererFormDataAction action,
     const FormData& form_data,
     const url::Origin& triggered_origin,
     const base::flat_map<FieldGlobalId, ServerFieldType>& field_type_map) {
-  base::flat_map<FieldGlobalId, ServerFieldType> result = field_type_map;
-  if (field_type_map_filter_) {
-    base::EraseIf(result, [&](const auto& p) {
-      return !field_type_map_filter_.Run(triggered_origin, p.first, p.second);
-    });
+  std::vector<FieldGlobalId> result;
+  for (const auto& [id, type] : field_type_map) {
+    if (!field_type_map_filter_ ||
+        field_type_map_filter_.Run(triggered_origin, id, type)) {
+      result.push_back(id);
+    }
   }
   return result;
 }

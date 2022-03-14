@@ -171,13 +171,23 @@ chromium-metrics-reviews@google.com.
 </variants>
 
 <variants name="AutofillMeasurementTime">
-  <variant name=".AtFillTimeAfterSecurityPolicy"
+  <variant name="Fillable.AtFillTimeAfterSecurityPolicy"
+      summary="Recorded at filling time after applying restrictions due to
+               the cross-frame security policy under the assumption of a
+               complete profile (i.e., the profile holds data for all present
+               fields)."/>
+  <variant name="Fillable.AtFillTimeBeforeSecurityPolicy"
+      summary="Recorded at filling time before applying restrictions due to
+               the cross-frame security policy under the assumption of a
+               complete profile (i.e., the profile holds data for all present
+               fields)."/>
+  <variant name="Fills.AtFillTimeAfterSecurityPolicy"
       summary="Recorded at filling time after applying restrictions due to
                the cross-frame security policy."/>
-  <variant name=".AtFillTimeBeforeSecurityPolicy"
+  <variant name="Fills.AtFillTimeBeforeSecurityPolicy"
       summary="Recorded at filling time before applying restrictions due to
                the cross-frame security policy."/>
-  <variant name=".AtSubmissionTime"
+  <variant name="Fills.AtSubmissionTime"
       summary="Recorded at submission time. May be missed due to submission
                detection problems."/>
 </variants>
@@ -750,7 +760,7 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Autofill.CreditCard.NumberFills{AutofillMeasurementTime}"
+<histogram name="Autofill.CreditCard.Number{AutofillMeasurementTime}"
     units="Filled" expires_after="2022-10-31">
   <owner>schwering@google.com</owner>
   <owner>chrome-autofill-alerts@google.com</owner>
@@ -763,7 +773,7 @@ chromium-metrics-reviews@google.com.
   <token key="AutofillMeasurementTime" variants="AutofillMeasurementTime"/>
 </histogram>
 
-<histogram name="Autofill.CreditCard.SeamlessFills{AutofillMeasurementTime}"
+<histogram name="Autofill.CreditCard.Seamless{AutofillMeasurementTime}"
     enum="CreditCardSeamlessFill" expires_after="2022-10-31">
   <owner>schwering@google.com</owner>
   <owner>chrome-autofill-alerts@google.com</owner>

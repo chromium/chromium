@@ -1505,12 +1505,8 @@ void FormStructure::LogQualityMetrics(
         frames_of_autofilled_credit_card_fields.size());
 
     if (card_form) {
-      AutofillMetrics::LogCreditCardNumberFills(
-          autofilled_field_types,
-          AutofillMetrics::MeasurementTime::kSubmissionTime);
-      AutofillMetrics::LogCreditCardSeamlessFills(
-          autofilled_field_types,
-          AutofillMetrics::MeasurementTime::kSubmissionTime);
+      AutofillMetrics::LogCreditCardSeamlessnessAtSubmissionTime(
+          autofilled_field_types);
     }
   }
 }

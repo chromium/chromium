@@ -48,7 +48,7 @@ class AutofillDriverIOS : public AutofillDriver {
   ui::AXTreeID GetAxTreeId() const override;
   scoped_refptr<network::SharedURLLoaderFactory> GetURLLoaderFactory() override;
   bool RendererIsAvailable() override;
-  base::flat_map<FieldGlobalId, ServerFieldType> FillOrPreviewForm(
+  std::vector<FieldGlobalId> FillOrPreviewForm(
       int query_id,
       mojom::RendererFormDataAction action,
       const FormData& data,

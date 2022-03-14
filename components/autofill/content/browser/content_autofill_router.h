@@ -216,13 +216,13 @@ class ContentAutofillRouter {
                             const FormFieldData& field);
 
   // Routing of events called by the browser:
-  base::flat_map<FieldGlobalId, ServerFieldType> FillOrPreviewForm(
+  std::vector<FieldGlobalId> FillOrPreviewForm(
       ContentAutofillDriver* source_driver,
       int query_id,
       mojom::RendererFormDataAction action,
       const FormData& data,
       const url::Origin& triggered_origin,
-      base::flat_map<FieldGlobalId, ServerFieldType> field_type_map);
+      const base::flat_map<FieldGlobalId, ServerFieldType>& field_type_map);
   void SendAutofillTypePredictionsToRenderer(
       ContentAutofillDriver* source_driver,
       const std::vector<FormDataPredictions>& type_predictions);

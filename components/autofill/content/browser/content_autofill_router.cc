@@ -561,31 +561,28 @@ void ContentAutofillRouter::FillFormForAssistant(
 // The reason is that browser forms may be outdated and hence refer to frames
 // that do not exist anymore.
 
-base::flat_map<FieldGlobalId, ServerFieldType>
-ContentAutofillRouter::FillOrPreviewForm(
+std::vector<FieldGlobalId> ContentAutofillRouter::FillOrPreviewForm(
     ContentAutofillDriver* source,
     int query_id,
     mojom::RendererFormDataAction action,
     const FormData& data,
     const url::Origin& triggered_origin,
-    base::flat_map<FieldGlobalId, ServerFieldType> field_type_map) {
+    const base::flat_map<FieldGlobalId, ServerFieldType>& field_type_map) {
   if (!base::FeatureList::IsEnabled(features::kAutofillAcrossIframes)) {
     source->FillOrPreviewFormImpl(query_id, action, data);
-    return field_type_map;
+    std::vector<FieldGlobalId> safe_fields;
+    safe_fields.reserve(data.fields.size());
+    for (const auto& field : data.fields)
+      safe_fields.push_back(field.global_id());
+    return safe_fields;
   }
 
   some_rfh_for_debugging_ = source->render_frame_host()->GetGlobalId();
 
-  std::vector<FormData> renderer_forms =
+  internal::FormForest::RendererForms renderer_forms =
       form_forest_.GetRendererFormsOfBrowserForm(data, triggered_origin,
                                                  field_type_map);
-  for (const FormData& renderer_form : renderer_forms) {
-    // Erase fields that were not filled due to the security model from the
-    // to-be-returned |field_type_map|.
-    for (const FormFieldData& field : renderer_form.fields) {
-      if (field.value.empty())
-        field_type_map.erase(field.global_id());
-    }
+  for (const FormData& renderer_form : renderer_forms.renderer_forms) {
     // Sending empty fill data to the renderer is semantically a no-op but
     // causes some further mojo calls.
     if (base::ranges::all_of(renderer_form.fields, &std::u16string::empty,
@@ -596,7 +593,7 @@ ContentAutofillRouter::FillOrPreviewForm(
       target->FillOrPreviewFormImpl(kCrossFrameFill, action, renderer_form);
     }
   }
-  return field_type_map;
+  return renderer_forms.safe_fields;
 }
 
 void ContentAutofillRouter::SendAutofillTypePredictionsToRenderer(
@@ -626,8 +623,10 @@ void ContentAutofillRouter::SendAutofillTypePredictionsToRenderer(
 
     // Builds the FormDataPredictions of each renderer form and groups them by
     // the renderer form's frame in |renderer_fdps|.
-    for (FormData& renderer_form : form_forest_.GetRendererFormsOfBrowserForm(
-             browser_fdp.data, browser_fdp.data.main_frame_origin, {})) {
+    internal::FormForest::RendererForms renderer_forms =
+        form_forest_.GetRendererFormsOfBrowserForm(
+            browser_fdp.data, browser_fdp.data.main_frame_origin, {});
+    for (FormData& renderer_form : renderer_forms.renderer_forms) {
       LocalFrameToken frame = renderer_form.host_frame;
       FormDataPredictions renderer_fdp;
       renderer_fdp.data = std::move(renderer_form);
