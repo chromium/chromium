@@ -362,22 +362,23 @@ const char kOsUIAccountManagerWelcomeURL[] = "os://account-manager-welcome";
 const char kOsUIAccountMigrationWelcomeURL[] = "os://account-migration-welcome";
 const char kOsUIAddSupervisionURL[] = "os://add-supervision";
 const char kOsUIAppDisabledURL[] = "os://app-disabled";
-const char kOsUICrashesUrl[] = "os://crashes";
+const char kOsUICrashesURL[] = "os://crashes";
 const char kOsUICreditsURL[] = "os://credits";
-const char kOsUIDeviceLogUrl[] = "os://device-log";
-const char kOsUIDriveInternalsUrl[] = "os://drive-internals";
+const char kOsUIDeviceLogURL[] = "os://device-log";
+const char kOsUIDriveInternalsURL[] = "os://drive-internals";
 const char kOsUIEmojiPickerURL[] = "os://emoji-picker";
 const char kOsUIGpuURL[] = "os://gpu";
 const char kOsUIHistogramsURL[] = "os://histograms";
-const char kOsUIInvalidationsUrl[] = "os://invalidations";
+const char kOsUIInvalidationsURL[] = "os://invalidations";
 const char kOsUILockScreenNetworkURL[] = "os://lock-network";
-const char kOsUINetworkUrl[] = "os://network";
+const char kOsUINetworkURL[] = "os://network";
 const char kOsUIRestartURL[] = "os://restart";
 const char kOsUIScanningAppURL[] = "os://scanning";
 const char kOsUISettingsURL[] = "os://settings";
-const char kOsUISignInInternalsUrl[] = "os://signin-internals";
-const char kOsUISyncInternalsUrl[] = "os://sync-internals";
-const char kOsUITerms[] = "os://terms";
+const char kOsUISignInInternalsURL[] = "os://signin-internals";
+const char kOsUISyncInternalsURL[] = "os://sync-internals";
+const char kOsUISystemURL[] = "os://system";
+const char kOsUITermsURL[] = "os://terms";
 
 // Keep alphabetized.
 
@@ -431,7 +432,7 @@ const char kChromeUIAppDisabledHost[] = "app-disabled";
 const char kChromeUIOSSettingsHost[] = "os-settings";
 const char kChromeUIOSSettingsURL[] = "chrome://os-settings/";
 const char kOsUIAboutURL[] = "os://about";
-const char kOsUIComponentsUrl[] = "os://components";
+const char kOsUIComponentsURL[] = "os://components";
 const char kOsUIFlagsURL[] = "os://flags";
 const char kOsUIVersionURL[] = "os://version";
 #endif
