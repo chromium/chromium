@@ -100,7 +100,10 @@ public class StripLayoutHelper implements StripLayoutTab.StripLayoutTabDelegate 
 
     private static final int MESSAGE_RESIZE = 1;
     private static final int MESSAGE_UPDATE_SPINNER = 2;
-    public static final float TAB_WIDTH_MEDIUM = 156.f;
+    private static final float TAB_WIDTH_MEDIUM = 156.f;
+    private static final float THRESHOLD_MEDIUM = 120.f;
+    private static final float THRESHOLD_SMALL = 96.f;
+    private static final float THRESHOLD_LAST_TAB = 72.f;
 
     // External influences
     private final LayoutUpdateHost mUpdateHost;
@@ -632,11 +635,13 @@ public class StripLayoutHelper implements StripLayoutTab.StripLayoutTabDelegate 
     }
 
     /**
-     * Called to hide close tab buttons when tab width is <156dp. This is currently only used for
-     * the 108dp min tab width experiment.
+     * Called to hide close tab buttons when tab width is <156dp when min tab width is 108dp or for
+     * partially visible tabs at the edge of the tab strip when min tab width is set to >=156dp.
      */
     private void updateCloseButtons() {
-        if (TabUiFeatureUtilities.getTabMinWidth() != TAB_WIDTH_SMALL) return;
+        if (!CachedFeatureFlags.isEnabled(ChromeFeatureList.TAB_STRIP_IMPROVEMENTS)) {
+            return;
+        }
 
         Tab selectedTab = mModel.getTabAt(mModel.index());
         final int count = mModel.getCount();
@@ -644,9 +649,45 @@ public class StripLayoutHelper implements StripLayoutTab.StripLayoutTabDelegate 
 
         for (int i = 0; i < count; i++) {
             final StripLayoutTab tab = mStripTabs[i];
-            mStripTabs[i].setCanShowCloseButton(
-                    tab.getWidth() >= TAB_WIDTH_MEDIUM || tab.getId() == selectedTab.getId());
+            if (TabUiFeatureUtilities.getTabMinWidth() == TAB_WIDTH_MEDIUM) {
+                mStripTabs[i].setCanShowCloseButton(!isPartiallyHiddenEdgeTab(tab, i));
+            } else if (TabUiFeatureUtilities.getTabMinWidth() == TAB_WIDTH_SMALL) {
+                mStripTabs[i].setCanShowCloseButton(tab.getWidth() >= TAB_WIDTH_MEDIUM
+                        || (tab.getId() == selectedTab.getId()
+                                && !isPartiallyHiddenEdgeTab(tab, i)));
+            }
         }
+    }
+
+    /**
+     * Checks whether a tab at the edge of the strip is partially hidden, in which case the
+     * close button will be hidden to avoid accidental clicks.
+     * @param tab The tab to check
+     * @param index The index of the tab
+     * @return Whether the tab is a partially hidden edge tab
+     */
+    private boolean isPartiallyHiddenEdgeTab(StripLayoutTab tab, int index) {
+        boolean tabStartHidden;
+        boolean tabEndHidden;
+        boolean isLastTab = index == mStripTabs.length - 1;
+        if (LocalizationUtils.isLayoutRtl()) {
+            if (isLastTab) {
+                tabStartHidden = tab.getDrawX() + mTabOverlapWidth < THRESHOLD_LAST_TAB;
+            } else {
+                tabStartHidden = tab.getDrawX() + mTabOverlapWidth < THRESHOLD_MEDIUM;
+            }
+            tabEndHidden = tab.getDrawX() > mWidth - THRESHOLD_SMALL;
+        } else {
+            tabStartHidden = tab.getDrawX() + tab.getWidth() < THRESHOLD_SMALL;
+            if (isLastTab) {
+                tabEndHidden = tab.getDrawX() + tab.getWidth() - mTabOverlapWidth
+                        > mWidth - THRESHOLD_LAST_TAB;
+            } else {
+                tabEndHidden = tab.getDrawX() + tab.getWidth() - mTabOverlapWidth
+                        > mWidth - THRESHOLD_MEDIUM;
+            }
+        }
+        return tabStartHidden || tabEndHidden;
     }
 
     /**

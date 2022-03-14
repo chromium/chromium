@@ -61,9 +61,12 @@ public class StripLayoutHelperTest {
     private static final String IDENTIFIER_SELECTED = "Selected Tab";
     private static final String INCOGNITO_IDENTIFIER = "Incognito Tab";
     private static final String INCOGNITO_IDENTIFIER_SELECTED = "Selected Incognito Tab";
-    private static final int SCREEN_BUCKET_TABLET = 2;
-    private static final float TAB_WIDTH = 140.f;
+    private static final float SCREEN_WIDTH = 800.f;
+    private static final float SCREEN_HEIGHT = 1600.f;
+    private static final float TAB_WIDTH_1 = 140.f;
+    private static final float TAB_WIDTH_2 = 160.f;
     private static final float TAB_WIDTH_SMALL = 108.f;
+    private static final float TAB_WIDTH_MEDIUM = 156.f;
 
     /** Reset the environment before each test. */
     @Before
@@ -171,17 +174,146 @@ public class StripLayoutHelperTest {
         // Set fourth tab as selected
         TabUiFeatureUtilities.setTabMinWidthForTesting(TAB_WIDTH_SMALL);
         initializeTest(false, true, 3);
-        StripLayoutTab[] tabs = getMockedStripLayoutTabs();
+        mStripLayoutHelper.onSizeChanged(SCREEN_WIDTH, SCREEN_HEIGHT);
+        StripLayoutTab[] tabs = getMockedStripLayoutTabs(TAB_WIDTH_1);
         mStripLayoutHelper.setStripLayoutTabsForTest(tabs);
 
         mStripLayoutHelper.tabSelected(1, 3, 0);
 
-        // Close btn should be visible on the selected tab
+        // Close btn should be visible on the selected tab.
         Mockito.verify(tabs[3]).setCanShowCloseButton(true);
-        // Close btn is hidden on unselected tabs
+        // Close btn is hidden on unselected tabs.
         Mockito.verify(tabs[0]).setCanShowCloseButton(false);
         Mockito.verify(tabs[1]).setCanShowCloseButton(false);
         Mockito.verify(tabs[2]).setCanShowCloseButton(false);
+        Mockito.verify(tabs[4]).setCanShowCloseButton(false);
+    }
+
+    @Test
+    @Feature("Tab Strip Improvements")
+    public void testTabSelected_SelectedTab_EdgeTab_HideCloseBtn() {
+        // Set fourth tab as selected
+        TabUiFeatureUtilities.setTabMinWidthForTesting(TAB_WIDTH_SMALL);
+        initializeTest(false, true, 3);
+        mStripLayoutHelper.onSizeChanged(SCREEN_WIDTH, SCREEN_HEIGHT);
+        StripLayoutTab[] tabs = getMockedStripLayoutTabs(TAB_WIDTH_1);
+        mStripLayoutHelper.setStripLayoutTabsForTest(tabs);
+        when(tabs[3].getDrawX()).thenReturn(600.f);
+
+        mStripLayoutHelper.tabSelected(1, 3, 0);
+
+        // Close btn should be hidden on the selected tab as its an edge tab.
+        Mockito.verify(tabs[3]).setCanShowCloseButton(false);
+        // Close btn is hidden on unselected tabs.
+        Mockito.verify(tabs[0]).setCanShowCloseButton(false);
+        Mockito.verify(tabs[1]).setCanShowCloseButton(false);
+        Mockito.verify(tabs[2]).setCanShowCloseButton(false);
+        Mockito.verify(tabs[4]).setCanShowCloseButton(false);
+    }
+
+    @Test
+    @Feature("Tab Strip Improvements")
+    public void testTabSelected_EdgeTab_Start_Ltr_HideCloseBtn() {
+        // Arrange
+        TabUiFeatureUtilities.setTabMinWidthForTesting(TAB_WIDTH_MEDIUM);
+        initializeTest(false, true, 3);
+        StripLayoutTab[] tabs = getMockedStripLayoutTabs(TAB_WIDTH_2);
+        // Set mWidth value to 800.f
+        mStripLayoutHelper.onSizeChanged(SCREEN_WIDTH, SCREEN_HEIGHT);
+        // The leftmost tab is partially hidden
+        when(tabs[0].getDrawX()).thenReturn(-80.f);
+        mStripLayoutHelper.setStripLayoutTabsForTest(tabs);
+
+        // Act
+        mStripLayoutHelper.tabSelected(1, 3, 0);
+
+        // Assert
+        // Close btn should be hidden for the partially visible edge tab.
+        Mockito.verify(tabs[0]).setCanShowCloseButton(false);
+        // Close button is visible for the rest of the tabs.
+        Mockito.verify(tabs[1]).setCanShowCloseButton(true);
+        Mockito.verify(tabs[2]).setCanShowCloseButton(true);
+        Mockito.verify(tabs[3]).setCanShowCloseButton(true);
+        Mockito.verify(tabs[4]).setCanShowCloseButton(true);
+    }
+
+    @Test
+    @Feature("Tab Strip Improvements")
+    public void testTabSelected_EdgeTab_End_Ltr_HideCloseBtn() {
+        // Arrange
+        TabUiFeatureUtilities.setTabMinWidthForTesting(TAB_WIDTH_MEDIUM);
+        initializeTest(false, false, 3);
+        StripLayoutTab[] tabs = getMockedStripLayoutTabs(TAB_WIDTH_2);
+        // Set mWidth value to 800.f
+        mStripLayoutHelper.onSizeChanged(SCREEN_WIDTH, SCREEN_HEIGHT);
+        // To make last tab partially hidden, drawX should be greater than (SCREEN_WIDTH - 72.f -
+        // TAB_WIDTH_2).
+        when(tabs[4].getDrawX()).thenReturn(600.f);
+        mStripLayoutHelper.setStripLayoutTabsForTest(tabs);
+
+        // Act
+        mStripLayoutHelper.tabSelected(1, 3, 0);
+
+        // Assert
+        // Close button is visible for the rest of the tabs.
+        Mockito.verify(tabs[0]).setCanShowCloseButton(true);
+        Mockito.verify(tabs[1]).setCanShowCloseButton(true);
+        Mockito.verify(tabs[2]).setCanShowCloseButton(true);
+        Mockito.verify(tabs[3]).setCanShowCloseButton(true);
+        // Close btn should be hidden for the partially visible edge tab.
+        Mockito.verify(tabs[4]).setCanShowCloseButton(false);
+    }
+
+    @Test
+    @Feature("Tab Strip Improvements")
+    public void testTabSelected_EdgeTab_Start_Rtl_HideCloseBtn() {
+        // Arrange
+        TabUiFeatureUtilities.setTabMinWidthForTesting(TAB_WIDTH_MEDIUM);
+        initializeTest(true, true, 3);
+        StripLayoutTab[] tabs = getMockedStripLayoutTabs(TAB_WIDTH_2, 150.f);
+        // Set mWidth value to 800.f.
+        mStripLayoutHelper.onSizeChanged(SCREEN_WIDTH, SCREEN_HEIGHT);
+        // The leftmost tab is partially hidden.
+        when(tabs[0].getDrawX()).thenReturn(60.f);
+        mStripLayoutHelper.setStripLayoutTabsForTest(tabs);
+
+        // Act
+        mStripLayoutHelper.tabSelected(1, 3, 0);
+
+        // Assert
+        // Close btn should be hidden for the partially visible edge tab.
+        Mockito.verify(tabs[0]).setCanShowCloseButton(false);
+        // Close button is visible for the rest of the tabs.
+        Mockito.verify(tabs[1]).setCanShowCloseButton(true);
+        Mockito.verify(tabs[2]).setCanShowCloseButton(true);
+        Mockito.verify(tabs[3]).setCanShowCloseButton(true);
+        Mockito.verify(tabs[4]).setCanShowCloseButton(true);
+    }
+
+    @Test
+    @Feature("Tab Strip Improvements")
+    public void testTabSelected_EdgeTab_End_Rtl_HideCloseBtn() {
+        // Arrange
+        TabUiFeatureUtilities.setTabMinWidthForTesting(TAB_WIDTH_MEDIUM);
+        initializeTest(true, true, 3);
+        StripLayoutTab[] tabs = getMockedStripLayoutTabs(TAB_WIDTH_2, 150.f);
+        // Set mWidth value to 800.f
+        mStripLayoutHelper.onSizeChanged(SCREEN_WIDTH, SCREEN_HEIGHT);
+        // To make rightmost tab partially hidden value should be gt than (SCREEN_WIDTH - 120.f -
+        // TAB_WIDTH_2).
+        when(tabs[4].getDrawX()).thenReturn(710.f);
+        mStripLayoutHelper.setStripLayoutTabsForTest(tabs);
+
+        // Act
+        mStripLayoutHelper.tabSelected(1, 3, 0);
+
+        // Assert
+        // Close button is visible for the rest of the tabs.
+        Mockito.verify(tabs[0]).setCanShowCloseButton(true);
+        Mockito.verify(tabs[1]).setCanShowCloseButton(true);
+        Mockito.verify(tabs[2]).setCanShowCloseButton(true);
+        Mockito.verify(tabs[3]).setCanShowCloseButton(true);
+        // Close btn should be hidden for the partially visible edge tab.
         Mockito.verify(tabs[4]).setCanShowCloseButton(false);
     }
 
@@ -248,22 +380,27 @@ public class StripLayoutHelperTest {
         return expectedAccessibilityDescriptions;
     }
 
-    private StripLayoutTab[] getMockedStripLayoutTabs() {
+    private StripLayoutTab[] getMockedStripLayoutTabs(float tabWidth, float mDrawX) {
         StripLayoutTab[] tabs = new StripLayoutTab[mModel.getCount()];
 
-        tabs[0] = mockStripTab(0);
-        tabs[1] = mockStripTab(1);
-        tabs[2] = mockStripTab(2);
-        tabs[3] = mockStripTab(3);
-        tabs[4] = mockStripTab(4);
+        tabs[0] = mockStripTab(0, tabWidth, mDrawX);
+        tabs[1] = mockStripTab(1, tabWidth, mDrawX);
+        tabs[2] = mockStripTab(2, tabWidth, mDrawX);
+        tabs[3] = mockStripTab(3, tabWidth, mDrawX);
+        tabs[4] = mockStripTab(4, tabWidth, mDrawX);
 
         return tabs;
     }
 
-    private StripLayoutTab mockStripTab(int id) {
+    private StripLayoutTab[] getMockedStripLayoutTabs(float tabWidth) {
+        return getMockedStripLayoutTabs(tabWidth, 0.f);
+    }
+
+    private StripLayoutTab mockStripTab(int id, float tabWidth, float mDrawX) {
         StripLayoutTab tab = mock(StripLayoutTab.class);
-        when(tab.getWidth()).thenReturn(TAB_WIDTH);
+        when(tab.getWidth()).thenReturn(tabWidth);
         when(tab.getId()).thenReturn(id);
+        when(tab.getDrawX()).thenReturn(mDrawX);
         return tab;
     }
 
