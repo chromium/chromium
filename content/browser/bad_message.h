@@ -293,6 +293,8 @@ enum BadMessageReason {
   BIBI_BIND_GAMEPAD_HAPTICS_MANAGER_FOR_FENCED_FRAME = 266,
   BIBI_BIND_BATTERY_MONITOR_FOR_FENCED_FRAME = 267,
   RFH_CREATE_FENCED_FRAME_IN_SANDBOXED_FRAME = 268,
+  RFH_UNLOAD_HANDLER_NOT_ALLOWED_IN_FENCED_FRAME = 269,
+  RFH_BEFOREUNLOAD_HANDLER_NOT_ALLOWED_IN_FENCED_FRAME = 270,
 
   // Please add new elements here. The naming convention is abbreviated class
   // name (e.g. RenderFrameHost becomes RFH) plus a unique description of the

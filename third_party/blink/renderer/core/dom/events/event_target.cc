@@ -454,6 +454,20 @@ bool EventTarget::AddEventListenerInternal(
   if (options->hasSignal() && options->signal()->aborted())
     return false;
 
+  // Unload/Beforeunload handlers are not allowed in fenced frames.
+  if (event_type == event_type_names::kUnload ||
+      event_type == event_type_names::kBeforeunload) {
+    if (const LocalDOMWindow* window = ExecutingWindow()) {
+      if (const LocalFrame* frame = window->GetFrame()) {
+        if (frame->IsInFencedFrameTree()) {
+          window->PrintErrorMessage(
+              "unload/beforeunload handlers are prohibited in fenced frames.");
+          return false;
+        }
+      }
+    }
+  }
+
   if (event_type == event_type_names::kTouchcancel ||
       event_type == event_type_names::kTouchend ||
       event_type == event_type_names::kTouchmove ||

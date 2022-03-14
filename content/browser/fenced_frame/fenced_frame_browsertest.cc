@@ -989,6 +989,55 @@ IN_PROC_BROWSER_TEST_F(FencedFrameBrowserTest, NavigationHandleFrameType) {
   }
 }
 
+// Tests that an unload/beforeunload event handler won't be set from
+// fenced frames.
+IN_PROC_BROWSER_TEST_F(FencedFrameBrowserTest, UnloadHandler) {
+  ASSERT_TRUE(https_server()->Start());
+  const GURL main_url =
+      https_server()->GetURL("c.test", "/fenced_frames/title1.html");
+  EXPECT_TRUE(
+      NavigateToURL(shell(), https_server()->GetURL("c.test", "/title1.html")));
+  RenderFrameHostImplWrapper primary_rfh(primary_main_frame_host());
+  RenderFrameHostImplWrapper fenced_frame_rfh(
+      fenced_frame_test_helper().CreateFencedFrame(primary_rfh.get(),
+                                                   main_url));
+
+  const char* kConsolePattern =
+      "unload/beforeunload handlers are prohibited in fenced frames.";
+  {
+    WebContentsConsoleObserver console_observer(web_contents());
+    console_observer.SetPattern(kConsolePattern);
+    EXPECT_TRUE(ExecJs(fenced_frame_rfh.get(),
+                       "window.addEventListener('beforeunload', (e) => {});"));
+    console_observer.Wait();
+    EXPECT_EQ(1u, console_observer.messages().size());
+  }
+  {
+    WebContentsConsoleObserver console_observer(web_contents());
+    console_observer.SetPattern(kConsolePattern);
+    EXPECT_TRUE(ExecJs(fenced_frame_rfh.get(),
+                       "window.addEventListener('unload', (e) => {});"));
+    console_observer.Wait();
+    EXPECT_EQ(1u, console_observer.messages().size());
+  }
+  {
+    WebContentsConsoleObserver console_observer(web_contents());
+    console_observer.SetPattern(kConsolePattern);
+    EXPECT_TRUE(ExecJs(fenced_frame_rfh.get(),
+                       "window.onbeforeunload = function(e){};"));
+    console_observer.Wait();
+    EXPECT_EQ(1u, console_observer.messages().size());
+  }
+  {
+    WebContentsConsoleObserver console_observer(web_contents());
+    console_observer.SetPattern(kConsolePattern);
+    EXPECT_TRUE(
+        ExecJs(fenced_frame_rfh.get(), "window.onunload = function(e){};"));
+    console_observer.Wait();
+    EXPECT_EQ(1u, console_observer.messages().size());
+  }
+}
+
 INSTANTIATE_TEST_SUITE_P(FencedFrameNestedFrameBrowserTest,
                          FencedFrameNestedFrameBrowserTest,
                          testing::Combine(testing::ValuesIn(kTestParameters),

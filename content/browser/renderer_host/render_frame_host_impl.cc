@@ -6293,6 +6293,12 @@ void RenderFrameHostImpl::SuddenTerminationDisablerChanged(
   switch (disabler_type) {
     case blink::mojom::SuddenTerminationDisablerType::kBeforeUnloadHandler:
       DCHECK_NE(has_before_unload_handler_, present);
+      if (IsNestedWithinFencedFrame()) {
+        bad_message::ReceivedBadMessage(
+            GetProcess(),
+            bad_message::RFH_BEFOREUNLOAD_HANDLER_NOT_ALLOWED_IN_FENCED_FRAME);
+        return;
+      }
       has_before_unload_handler_ = present;
       break;
     case blink::mojom::SuddenTerminationDisablerType::kPageHideHandler:
@@ -6301,6 +6307,12 @@ void RenderFrameHostImpl::SuddenTerminationDisablerChanged(
       break;
     case blink::mojom::SuddenTerminationDisablerType::kUnloadHandler:
       DCHECK_NE(has_unload_handler_, present);
+      if (IsNestedWithinFencedFrame()) {
+        bad_message::ReceivedBadMessage(
+            GetProcess(),
+            bad_message::RFH_UNLOAD_HANDLER_NOT_ALLOWED_IN_FENCED_FRAME);
+        return;
+      }
       has_unload_handler_ = present;
       break;
     case blink::mojom::SuddenTerminationDisablerType::kVisibilityChangeHandler:
