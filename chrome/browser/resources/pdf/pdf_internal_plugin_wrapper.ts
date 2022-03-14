@@ -90,10 +90,10 @@ channel.port1.onmessage = e => {
       break;
 
     case 'syncScrollToRemote':
+      // TODO(crbug.com/1306236): Implement smooth scrolling correctly.
       window.scrollTo({
         left: e.data.x,
         top: e.data.y,
-        behavior: e.data.isSmooth ? 'smooth' : 'auto',
       });
       channel.port1.postMessage({
         type: 'ackScrollToRemote',
