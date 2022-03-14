@@ -780,14 +780,6 @@ void AXEventGenerator::OnTreeDataChanged(AXTree* tree,
 void AXEventGenerator::OnNodeWillBeDeleted(AXTree* tree, AXNode* node) {
   live_region_tracker_->OnNodeWillBeDeleted(*node);
 
-  // TODO(accessibility): This should also handle firing MENU_POPUP_END when a
-  // node with the menu role is removed. The issue to be solved is that after we
-  // add MENU_POPUP_END here, the node gets removed from the tree. Then
-  // PostprocessEvents removes the events from that now-removed node, thus
-  // MENU_POPUP_END never gets fired. We work around this issue currently by
-  // firing the event from BrowserAccessibilityManager. Adding the ability to
-  // fire generated events immediately should make it possible to fire
-  // MENU_POPUP_END here.
   DCHECK_EQ(tree_, tree);
   tree_events_.erase(node->id());
 }
@@ -808,14 +800,6 @@ void AXEventGenerator::OnSubtreeWillBeReparented(AXTree* tree, AXNode* node) {
 void AXEventGenerator::OnNodeReparented(AXTree* tree, AXNode* node) {
   DCHECK_EQ(tree_, tree);
   AddEvent(node, Event::PARENT_CHANGED);
-}
-
-void AXEventGenerator::OnNodeCreated(AXTree* tree, AXNode* node) {
-  DCHECK_EQ(tree_, tree);
-  if (node->GetRole() == ax::mojom::Role::kMenu &&
-      !node->IsInvisibleOrIgnored()) {
-    AddEvent(node, Event::MENU_POPUP_START);
-  }
 }
 
 void AXEventGenerator::OnAtomicUpdateFinished(
