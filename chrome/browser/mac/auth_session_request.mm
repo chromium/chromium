@@ -51,6 +51,12 @@ class AuthNavigationThrottle : public content::NavigationThrottle {
 
  private:
   ThrottleCheckResult HandleRequest() {
+    // Cancel any prerendering.
+    if (!navigation_handle()->IsInPrimaryMainFrame()) {
+      DCHECK(navigation_handle()->IsInPrerenderedMainFrame());
+      return CANCEL_AND_IGNORE;
+    }
+
     GURL url = navigation_handle()->GetURL();
     if (!url.SchemeIs(scheme_))
       return PROCEED;
@@ -175,8 +181,16 @@ absl::optional<std::string> AuthSessionRequest::CanonicalizeScheme(
 
 std::unique_ptr<content::NavigationThrottle> AuthSessionRequest::CreateThrottle(
     content::NavigationHandle* handle) {
-  if (!handle->IsInMainFrame())
-    return nil;
+  // Only attach a throttle to outermost main frames. Note non-primary main
+  // frames will cancel the navigation in the throttle.
+  switch (handle->GetNavigatingFrameType()) {
+    case content::FrameType::kSubframe:
+    case content::FrameType::kFencedFrameRoot:
+      return nil;
+    case content::FrameType::kPrimaryMainFrame:
+    case content::FrameType::kPrerenderMainFrame:
+      break;
+  }
 
   // base::Unretained is safe because throttles are owned by the
   // NavigationRequest, which won't outlive the WebContents, whose lifetime this
