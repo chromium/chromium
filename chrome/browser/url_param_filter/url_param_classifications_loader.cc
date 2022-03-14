@@ -4,21 +4,25 @@
 
 #include "chrome/browser/url_param_filter/url_param_classifications_loader.h"
 
+#include <string>
+#include <utility>
+
 #include "base/base64.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/no_destructor.h"
+#include "base/sequence_checker.h"
 #include "chrome/browser/url_param_filter/url_param_filter_classification.pb.h"
 #include "chrome/common/chrome_features.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/zlib/google/compression_utils.h"
 
 namespace url_param_filter {
 
 namespace {
 
-ClassificationMap GetClassifications(FilterClassification_SiteRole role) {
-  base::FieldTrialParams params;
-  base::GetFieldTrialParamsByFeature(features::kIncognitoParamFilterEnabled,
-                                     &params);
+ClassificationMap GetClassificationsFromFeature(
+    const base::FieldTrialParams& params,
+    FilterClassification_SiteRole role) {
   auto classification_arg = params.find("classifications");
   FilterClassifications classifications;
   ClassificationMap map;
@@ -39,21 +43,53 @@ ClassificationMap GetClassifications(FilterClassification_SiteRole role) {
   return map;
 }
 
+ClassificationMap GetClassificationsFromFile(
+    const std::vector<FilterClassification>& classifications) {
+  ClassificationMap map;
+  for (const FilterClassification& classification : classifications) {
+    map[classification.site()] = classification;
+  }
+  return map;
+}
+
 }  // anonymous namespace
 
-const ClassificationMap& ClassificationsLoader::GetSourceClassifications() {
-  static const base::NoDestructor<ClassificationMap> source_classifications(
-      GetClassifications(
-          FilterClassification_SiteRole::FilterClassification_SiteRole_SOURCE));
-  return *source_classifications;
+ClassificationMap ClassificationsLoader::GetSourceClassifications() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  // Classifications from field trial params override the ones from Component
+  // Updater.
+  base::FieldTrialParams params;
+  bool has_feature_params = base::GetFieldTrialParamsByFeature(
+      features::kIncognitoParamFilterEnabled, &params);
+  if (has_feature_params) {
+    return GetClassificationsFromFeature(
+        params,
+        FilterClassification_SiteRole::FilterClassification_SiteRole_SOURCE);
+  }
+
+  if (component_source_classifications_.has_value()) {
+    return GetClassificationsFromFile(*component_source_classifications_);
+  }
+  return ClassificationMap();
 }
-const ClassificationMap&
-ClassificationsLoader::GetDestinationClassifications() {
-  static const base::NoDestructor<ClassificationMap>
-      destination_classifications(
-          GetClassifications(FilterClassification_SiteRole::
-                                 FilterClassification_SiteRole_DESTINATION));
-  return *destination_classifications;
+
+ClassificationMap ClassificationsLoader::GetDestinationClassifications() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  // Classifications from field trial params override the ones from Component
+  // Updater.
+  base::FieldTrialParams params;
+  bool has_feature_params = base::GetFieldTrialParamsByFeature(
+      features::kIncognitoParamFilterEnabled, &params);
+  if (has_feature_params) {
+    return GetClassificationsFromFeature(
+        params, FilterClassification_SiteRole::
+                    FilterClassification_SiteRole_DESTINATION);
+  }
+
+  if (component_destination_classifications_.has_value()) {
+    return GetClassificationsFromFile(*component_destination_classifications_);
+  }
+  return ClassificationMap();
 }
 
 // static
@@ -64,5 +100,35 @@ ClassificationsLoader* ClassificationsLoader::GetInstance() {
 
 ClassificationsLoader::ClassificationsLoader() = default;
 ClassificationsLoader::~ClassificationsLoader() = default;
+
+void ClassificationsLoader::ReadClassifications(
+    const std::string& raw_classifications) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  FilterClassifications classification_list;
+  if (!classification_list.ParseFromString(raw_classifications))
+    return;
+
+  std::vector<FilterClassification> source_classifications,
+      destination_classifications;
+  for (const FilterClassification& fc : classification_list.classifications()) {
+    DCHECK(fc.has_site());
+    DCHECK(fc.has_site_role());
+    if (fc.site_role() == FilterClassification_SiteRole_SOURCE)
+      source_classifications.push_back(fc);
+
+    if (fc.site_role() == FilterClassification_SiteRole_DESTINATION)
+      destination_classifications.push_back(fc);
+  }
+
+  component_source_classifications_ = std::move(source_classifications);
+  component_destination_classifications_ =
+      std::move(destination_classifications);
+}
+
+void ClassificationsLoader::ResetListsForTesting() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  component_source_classifications_.reset();
+  component_destination_classifications_.reset();
+}
 
 }  // namespace url_param_filter
