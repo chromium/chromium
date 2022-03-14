@@ -93,6 +93,15 @@ class EcheAppManagerFactory : public BrowserContextKeyedServiceFactory {
       const absl::optional<std::u16string>& title,
       const absl::optional<std::u16string>& message,
       std::unique_ptr<LaunchAppHelper::NotificationInfo> info);
+  static void CloseEche(Profile* profile);
+  static void LaunchEcheApp(Profile* profile,
+                            const absl::optional<int64_t>& notification_id,
+                            const std::string& package_name,
+                            const std::u16string& visible_name,
+                            const absl::optional<int64_t>& user_id,
+                            const gfx::Image& icon);
+  static void OnStreamStateChanged(Profile* profile,
+                                   const mojom::StreamStatus status);
 
   void SetLastLaunchedAppInfo(
       std::unique_ptr<LaunchedAppInfo> last_launched_app_info);

@@ -46,6 +46,8 @@ void LaunchNotificationFunction(
     const absl::optional<std::u16string>& message,
     std::unique_ptr<LaunchAppHelper::NotificationInfo> info) {}
 
+void StreamStatusChangedFunction(const mojom::StreamStatus status) {}
+
 class FakePresenceMonitorClient : public secure_channel::PresenceMonitorClient {
  public:
   FakePresenceMonitorClient() = default;
@@ -117,7 +119,8 @@ class EcheAppManagerTest : public testing::Test {
         std::move(fake_presence_monitor_client),
         base::BindRepeating(&LaunchEcheAppFunction),
         base::BindRepeating(&CloseEcheAppFunction),
-        base::BindRepeating(&LaunchNotificationFunction));
+        base::BindRepeating(&LaunchNotificationFunction),
+        base::BindRepeating(&StreamStatusChangedFunction));
   }
 
   mojo::Remote<mojom::SignalingMessageExchanger>&

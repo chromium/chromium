@@ -4230,6 +4230,7 @@ source_set("unit_tests") {
     "../ash/drive/drive_integration_service_unittest.cc",
     "../ash/drive/drivefs_native_message_host_unittest.cc",
     "../ash/drive/file_system_util_unittest.cc",
+    "../ash/eche_app/eche_app_manager_factory_unittest.cc",
     "../ash/eche_app/eche_app_notification_controller_unittest.cc",
     "../ash/enhanced_network_tts/enhanced_network_tts_impl_unittest.cc",
     "../ash/enhanced_network_tts/enhanced_network_tts_test_utils.cc",

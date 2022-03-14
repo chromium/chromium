@@ -19,6 +19,13 @@ void EcheDisplayStreamHandler::StartStreaming() {
   NotifyStartStreaming();
 }
 
+void EcheDisplayStreamHandler::OnStreamStatusChanged(
+    mojom::StreamStatus status) {
+  PA_LOG(INFO) << "echeapi EcheDisplayStreamHandler OnStreamStatusChanged "
+               << status;
+  NotifyStreamStatusChanged(status);
+}
+
 void EcheDisplayStreamHandler::Bind(
     mojo::PendingReceiver<mojom::DisplayStreamHandler> receiver) {
   display_stream_receiver_.reset();
@@ -36,6 +43,12 @@ void EcheDisplayStreamHandler::RemoveObserver(Observer* observer) {
 void EcheDisplayStreamHandler::NotifyStartStreaming() {
   for (auto& observer : observer_list_)
     observer.OnStartStreaming();
+}
+
+void EcheDisplayStreamHandler::NotifyStreamStatusChanged(
+    mojom::StreamStatus status) {
+  for (auto& observer : observer_list_)
+    observer.OnStreamStatusChanged(status);
 }
 
 }  // namespace eche_app

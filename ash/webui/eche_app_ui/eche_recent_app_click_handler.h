@@ -12,7 +12,6 @@
 #include "ash/components/phonehub/phone_hub_manager.h"
 #include "ash/components/phonehub/recent_app_click_observer.h"
 #include "ash/components/phonehub/recent_apps_interaction_handler.h"
-#include "ash/webui/eche_app_ui/eche_display_stream_handler.h"
 #include "ash/webui/eche_app_ui/feature_status_provider.h"
 #include "base/callback.h"
 
@@ -24,13 +23,11 @@ class LaunchAppHelper;
 // Handles recent app clicks originating from Phone Hub recent apps.
 class EcheRecentAppClickHandler : public phonehub::NotificationClickHandler,
                                   public FeatureStatusProvider::Observer,
-                                  public phonehub::RecentAppClickObserver,
-                                  public EcheDisplayStreamHandler::Observer {
+                                  public phonehub::RecentAppClickObserver {
  public:
   EcheRecentAppClickHandler(phonehub::PhoneHubManager* phone_hub_manager,
                             FeatureStatusProvider* feature_status_provider,
-                            LaunchAppHelper* launch_app_helper,
-                            EcheDisplayStreamHandler* display_stream_handler);
+                            LaunchAppHelper* launch_app_helper);
   ~EcheRecentAppClickHandler() override;
 
   EcheRecentAppClickHandler(const EcheRecentAppClickHandler&) = delete;
@@ -49,14 +46,6 @@ class EcheRecentAppClickHandler : public phonehub::NotificationClickHandler,
   // FeatureStatusProvider::Observer:
   void OnFeatureStatusChanged() override;
 
-  // EcheDisplayStreamHandler::Observer:
-  void OnStartStreaming() override;
-
-  // Test helpers
-  bool waiting_for_streaming_to_show() {
-    return is_waiting_for_streaming_to_show_;
-  }
-
  private:
   bool IsClickable(FeatureStatus status);
 
@@ -64,9 +53,7 @@ class EcheRecentAppClickHandler : public phonehub::NotificationClickHandler,
   phonehub::RecentAppsInteractionHandler* recent_apps_handler_;
   FeatureStatusProvider* feature_status_provider_;
   LaunchAppHelper* launch_app_helper_;
-  EcheDisplayStreamHandler* display_stream_handler_;
   bool is_click_handler_set_ = false;
-  bool is_waiting_for_streaming_to_show_ = false;
 };
 
 }  // namespace eche_app

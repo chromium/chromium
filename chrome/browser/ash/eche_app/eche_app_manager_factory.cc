@@ -62,27 +62,6 @@ EcheTray* GetEcheTray() {
       ->eche_tray();
 }
 
-void CloseEche(Profile* profile) {
-  if (features::IsEcheCustomWidgetEnabled()) {
-    auto* eche_tray = GetEcheTray();
-    if (eche_tray) {
-      eche_tray->PurgeAndClose();
-    }
-    return;
-  }
-  for (auto* browser : *(BrowserList::GetInstance())) {
-    if (browser->profile() != profile)
-      continue;
-    if (!browser->app_controller() ||
-        !browser->app_controller()->system_app() ||
-        browser->app_controller()->system_app()->GetType() !=
-            web_app::SystemAppType::ECHE) {
-      continue;
-    }
-    browser->window()->Close();
-    return;
-  }
-}
 // Enumeration of possible interactions with a PhoneHub notification. Keep in
 // sync with corresponding enum in tools/metrics/histograms/enums.xml. These
 // values are persisted to logs. Entries should not be renumbered and numeric
@@ -102,7 +81,6 @@ void LaunchBubble(const GURL& url, const gfx::Image& icon) {
     eche_tray->SetVisiblePreferred(true);
     if (!features::IsEcheSWAInBackgroundEnabled()) {
       eche_tray->ShowBubble();
-
     } else {
       eche_tray->InitBubble();
 
@@ -160,27 +138,13 @@ void LaunchWebApp(const std::string& package_name,
                                    params);
 }
 
-void LaunchEcheApp(Profile* profile,
-                   const absl::optional<int64_t>& notification_id,
-                   const std::string& package_name,
-                   const std::u16string& visible_name,
-                   const absl::optional<int64_t>& user_id,
-                   const gfx::Image& icon) {
-  LaunchWebApp(package_name, notification_id, visible_name, user_id, icon,
-               profile);
-  base::UmaHistogramEnumeration("Eche.NotificationClicked",
-                                NotificationInteraction::kOpenAppStreaming);
-  EcheAppManagerFactory::GetInstance()
-      ->CloseConnectionOrLaunchErrorNotifications();
-}
-
 void RelaunchLast(Profile* profile) {
   std::unique_ptr<LaunchedAppInfo> last_launched_app_info =
       EcheAppManagerFactory::GetInstance()->GetLastLaunchedAppInfo();
-  LaunchEcheApp(profile, absl::nullopt, last_launched_app_info->package_name(),
-                last_launched_app_info->visible_name(),
-                last_launched_app_info->user_id(),
-                last_launched_app_info->icon());
+  EcheAppManagerFactory::LaunchEcheApp(
+      profile, absl::nullopt, last_launched_app_info->package_name(),
+      last_launched_app_info->visible_name(), last_launched_app_info->user_id(),
+      last_launched_app_info->icon());
 }
 
 }  // namespace
@@ -244,6 +208,55 @@ void EcheAppManagerFactory::ShowNotification(
   }
 }
 
+// static
+void EcheAppManagerFactory::CloseEche(Profile* profile) {
+  if (features::IsEcheCustomWidgetEnabled()) {
+    GetEcheTray()->PurgeAndClose();
+    return;
+  }
+  for (auto* browser : *(BrowserList::GetInstance())) {
+    if (browser->profile() != profile)
+      continue;
+    if (!browser->app_controller() ||
+        !browser->app_controller()->system_app() ||
+        browser->app_controller()->system_app()->GetType() !=
+            web_app::SystemAppType::ECHE) {
+      continue;
+    }
+    browser->window()->Close();
+    return;
+  }
+}
+
+// static
+void EcheAppManagerFactory::LaunchEcheApp(
+    Profile* profile,
+    const absl::optional<int64_t>& notification_id,
+    const std::string& package_name,
+    const std::u16string& visible_name,
+    const absl::optional<int64_t>& user_id,
+    const gfx::Image& icon) {
+  LaunchWebApp(package_name, notification_id, visible_name, user_id, icon,
+               profile);
+  base::UmaHistogramEnumeration("Eche.NotificationClicked",
+                                NotificationInteraction::kOpenAppStreaming);
+  EcheAppManagerFactory::GetInstance()
+      ->CloseConnectionOrLaunchErrorNotifications();
+}
+
+// static
+void EcheAppManagerFactory::OnStreamStateChanged(
+    Profile* profile,
+    const mojom::StreamStatus status) {
+  if (status == mojom::StreamStatus::kStreamStatusStarted &&
+      features::IsEcheCustomWidgetEnabled() &&
+      features::IsEcheSWAInBackgroundEnabled()) {
+    GetEcheTray()->ShowBubble();
+  } else if (status == mojom::StreamStatus::kStreamStatusStopped) {
+    CloseEche(profile);
+  }
+}
+
 EcheAppManagerFactory::EcheAppManagerFactory()
     : BrowserContextKeyedServiceFactory(
           "EcheAppManager",
@@ -299,10 +312,12 @@ KeyedService* EcheAppManagerFactory::BuildServiceInstanceFor(
       profile->GetPrefs(), GetSystemInfo(profile), phone_hub_manager,
       device_sync_client, multidevice_setup_client, secure_channel_client,
       std::move(presence_monitor_client),
-      base::BindRepeating(&LaunchEcheApp, profile),
-      base::BindRepeating(&CloseEche, profile),
+      base::BindRepeating(&EcheAppManagerFactory::LaunchEcheApp, profile),
+      base::BindRepeating(&EcheAppManagerFactory::CloseEche, profile),
       base::BindRepeating(&EcheAppManagerFactory::ShowNotification,
-                          weak_ptr_factory_.GetWeakPtr(), profile));
+                          weak_ptr_factory_.GetWeakPtr(), profile),
+      base::BindRepeating(&EcheAppManagerFactory::OnStreamStateChanged,
+                          profile));
 }
 
 std::unique_ptr<SystemInfo> EcheAppManagerFactory::GetSystemInfo(

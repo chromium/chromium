@@ -16,6 +16,7 @@
 #include "ash/services/secure_channel/public/cpp/client/presence_monitor_client_impl.h"
 // TODO(https://crbug.com/1164001): move to forward declaration.
 #include "ash/services/secure_channel/public/cpp/client/secure_channel_client.h"
+#include "ash/webui/eche_app_ui/eche_display_stream_handler.h"
 #include "ash/webui/eche_app_ui/eche_feature_status_provider.h"
 #include "ash/webui/eche_app_ui/eche_notification_click_handler.h"
 #include "ash/webui/eche_app_ui/eche_recent_app_click_handler.h"
@@ -49,8 +50,14 @@ class EcheDisplayStreamHandler;
 // Implements the core logic of the EcheApp and exposes interfaces via its
 // public API. Implemented as a KeyedService since it depends on other
 // KeyedService instances.
-class EcheAppManager : public KeyedService {
+class EcheAppManager : public KeyedService,
+                       public EcheDisplayStreamHandler::Observer {
  public:
+  using StreamStatusChangedFunction =
+      base::RepeatingCallback<void(const mojom::StreamStatus status)>;
+
+  // TODO(b/223321926): clean up callback functions from constructor to a
+  // specific class
   EcheAppManager(PrefService* pref_service,
                  std::unique_ptr<SystemInfo> system_info,
                  phonehub::PhoneHubManager*,
@@ -61,7 +68,8 @@ class EcheAppManager : public KeyedService {
                      presence_monitor_client,
                  LaunchAppHelper::LaunchEcheAppFunction,
                  LaunchAppHelper::CloseEcheAppFunction,
-                 LaunchAppHelper::LaunchNotificationFunction);
+                 LaunchAppHelper::LaunchNotificationFunction,
+                 StreamStatusChangedFunction);
   ~EcheAppManager() override;
 
   EcheAppManager(const EcheAppManager&) = delete;
@@ -87,6 +95,10 @@ class EcheAppManager : public KeyedService {
   // KeyedService:
   void Shutdown() override;
 
+  // EcheDisplayStreamHandler::Observer:
+  void OnStartStreaming() override;
+  void OnStreamStatusChanged(mojom::StreamStatus status) override;
+
  private:
   std::unique_ptr<secure_channel::ConnectionManager> connection_manager_;
   std::unique_ptr<EcheFeatureStatusProvider> feature_status_provider_;
@@ -105,6 +117,7 @@ class EcheAppManager : public KeyedService {
       remote_cros_network_config_;
   std::unique_ptr<SystemInfoProvider> system_info_provider_;
   std::unique_ptr<AppsAccessManager> apps_access_manager_;
+  StreamStatusChangedFunction stream_status_changed_function_;
 };
 
 }  // namespace eche_app

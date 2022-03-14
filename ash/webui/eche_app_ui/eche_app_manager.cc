@@ -40,7 +40,8 @@ EcheAppManager::EcheAppManager(
         presence_monitor_client,
     LaunchAppHelper::LaunchEcheAppFunction launch_eche_app_function,
     LaunchAppHelper::CloseEcheAppFunction close_eche_app_function,
-    LaunchAppHelper::LaunchNotificationFunction launch_notification_function)
+    LaunchAppHelper::LaunchNotificationFunction launch_notification_function,
+    StreamStatusChangedFunction stream_status_changed_function)
     : connection_manager_(
           std::make_unique<secure_channel::ConnectionManagerImpl>(
               multidevice_setup_client,
@@ -65,8 +66,7 @@ EcheAppManager::EcheAppManager(
           std::make_unique<EcheNotificationClickHandler>(
               phone_hub_manager,
               feature_status_provider_.get(),
-              launch_app_helper_.get(),
-              display_stream_handler_.get())),
+              launch_app_helper_.get())),
       eche_connector_(
           std::make_unique<EcheConnectorImpl>(feature_status_provider_.get(),
                                               connection_manager_.get())),
@@ -86,8 +86,7 @@ EcheAppManager::EcheAppManager(
           std::make_unique<EcheRecentAppClickHandler>(
               phone_hub_manager,
               feature_status_provider_.get(),
-              launch_app_helper_.get(),
-              display_stream_handler_.get())),
+              launch_app_helper_.get())),
       notification_generator_(std::make_unique<EcheNotificationGenerator>(
           launch_app_helper_.get())),
       apps_access_manager_(std::make_unique<AppsAccessManagerImpl>(
@@ -95,11 +94,14 @@ EcheAppManager::EcheAppManager(
           message_receiver_.get(),
           feature_status_provider_.get(),
           pref_service,
-          multidevice_setup_client)) {
+          multidevice_setup_client)),
+      stream_status_changed_function_(
+          std::move(stream_status_changed_function)) {
   ash::GetNetworkConfigService(
       remote_cros_network_config_.BindNewPipeAndPassReceiver());
   system_info_provider_ = std::make_unique<SystemInfoProvider>(
       std::move(system_info), remote_cros_network_config_.get());
+  display_stream_handler_->AddObserver(this);
 }
 
 EcheAppManager::~EcheAppManager() = default;
@@ -129,6 +131,15 @@ void EcheAppManager::BindDisplayStreamHandlerInterface(
   display_stream_handler_->Bind(std::move(receiver));
 }
 
+void EcheAppManager::OnStartStreaming() {
+  stream_status_changed_function_.Run(
+      mojom::StreamStatus::kStreamStatusStarted);
+}
+
+void EcheAppManager::OnStreamStatusChanged(mojom::StreamStatus status) {
+  stream_status_changed_function_.Run(status);
+}
+
 AppsAccessManager* EcheAppManager::GetAppsAccessManager() {
   return apps_access_manager_.get();
 }
@@ -146,6 +157,7 @@ void EcheAppManager::Shutdown() {
   signaler_.reset();
   eche_connector_.reset();
   eche_notification_click_handler_.reset();
+  display_stream_handler_->RemoveObserver(this);
   display_stream_handler_.reset();
   launch_app_helper_.reset();
   feature_status_provider_.reset();

@@ -25,11 +25,8 @@ class EcheDisplayStreamHandler : public mojom::DisplayStreamHandler {
    public:
     ~Observer() override = default;
 
-    //  Called when the streaming is ready. About another status:
-    //  OnStopStreaming, we prefer to listen to the stop signal when the bubble
-    //  is really closed.
-    // TODO(paulzchen): Using generic method `OnStreamStatusChanged`.
     virtual void OnStartStreaming() = 0;
+    virtual void OnStreamStatusChanged(mojom::StreamStatus status) = 0;
   };
 
   EcheDisplayStreamHandler();
@@ -40,6 +37,7 @@ class EcheDisplayStreamHandler : public mojom::DisplayStreamHandler {
 
   // mojom::DisplayStreamHandler:
   void StartStreaming() override;
+  void OnStreamStatusChanged(mojom::StreamStatus status) override;
 
   void AddObserver(Observer* observer);
   void RemoveObserver(Observer* observer);
@@ -48,6 +46,7 @@ class EcheDisplayStreamHandler : public mojom::DisplayStreamHandler {
 
  protected:
   void NotifyStartStreaming();
+  void NotifyStreamStatusChanged(mojom::StreamStatus status);
 
  private:
   mojo::Receiver<mojom::DisplayStreamHandler> display_stream_receiver_{this};
