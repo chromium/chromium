@@ -33,7 +33,7 @@ WallpaperInfo::WallpaperInfo(
 WallpaperInfo::WallpaperInfo(
     const GooglePhotosWallpaperParams& google_photos_wallpaper_params)
     : location(google_photos_wallpaper_params.id),
-      layout(WallpaperLayout::WALLPAPER_LAYOUT_CENTER_CROPPED),
+      layout(google_photos_wallpaper_params.layout),
       type(WallpaperType::kGooglePhotos),
       date(base::Time::Now()) {}
 

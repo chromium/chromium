@@ -8,8 +8,9 @@ namespace ash {
 
 GooglePhotosWallpaperParams::GooglePhotosWallpaperParams(
     const AccountId& account_id,
-    const std::string& id)
-    : account_id(account_id), id(id) {}
+    const std::string& id,
+    WallpaperLayout layout)
+    : account_id(account_id), id(id), layout(layout) {}
 
 GooglePhotosWallpaperParams::GooglePhotosWallpaperParams(
     const GooglePhotosWallpaperParams& other) = default;
@@ -24,6 +25,7 @@ std::ostream& operator<<(std::ostream& os,
   os << "GooglePhotosWallPaperParams:" << std::endl;
   os << "  Account Id: " << params.account_id << std::endl;
   os << "  Photo Id: " << params.id << std::endl;
+  os << "  Layout: " << params.layout << std::endl;
   return os;
 }
 

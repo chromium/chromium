@@ -424,6 +424,7 @@ void PersonalizationAppWallpaperProviderImpl::SelectLocalImage(
 
 void PersonalizationAppWallpaperProviderImpl::SelectGooglePhotosPhoto(
     const std::string& id,
+    ash::WallpaperLayout layout,
     SelectGooglePhotosPhotoCallback callback) {
   if (pending_select_google_photos_photo_callback_)
     std::move(pending_select_google_photos_photo_callback_).Run(false);
@@ -434,7 +435,7 @@ void PersonalizationAppWallpaperProviderImpl::SelectGooglePhotosPhoto(
   client->RecordWallpaperSourceUMA(ash::WallpaperType::kGooglePhotos);
 
   client->SetGooglePhotosWallpaper(
-      ash::GooglePhotosWallpaperParams(GetAccountId(profile_), id),
+      ash::GooglePhotosWallpaperParams(GetAccountId(profile_), id, layout),
       base::BindOnce(&PersonalizationAppWallpaperProviderImpl::
                          OnGooglePhotosWallpaperSelected,
                      backend_weak_ptr_factory_.GetWeakPtr()));

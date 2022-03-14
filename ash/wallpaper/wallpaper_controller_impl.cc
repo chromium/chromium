@@ -3042,7 +3042,7 @@ void WallpaperControllerImpl::HandleGooglePhotosWallpaperInfoSyncedIn(
     const AccountId& account_id,
     const WallpaperInfo& info) {
   SetGooglePhotosWallpaper(
-      GooglePhotosWallpaperParams(account_id, info.location),
+      GooglePhotosWallpaperParams(account_id, info.location, info.layout),
       base::DoNothing());
 }
 

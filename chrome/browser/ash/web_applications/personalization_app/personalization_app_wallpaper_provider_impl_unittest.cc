@@ -770,17 +770,19 @@ TEST_P(PersonalizationAppWallpaperProviderImplGooglePhotosTest,
   bool feature_enabled = GooglePhotosEnabled();
 
   wallpaper_provider_remote()->get()->SelectGooglePhotosPhoto(
-      photo_id, base::BindLambdaForTesting([&feature_enabled](bool success) {
+      photo_id, ash::WallpaperLayout::WALLPAPER_LAYOUT_CENTER_CROPPED,
+      base::BindLambdaForTesting([&feature_enabled](bool success) {
         EXPECT_EQ(success, feature_enabled);
       }));
   wallpaper_provider_remote()->FlushForTesting();
 
   EXPECT_EQ(1,
             test_wallpaper_controller()->set_google_photos_wallpaper_count());
-  EXPECT_EQ(feature_enabled,
-            ash::WallpaperInfo(
-                {AccountId::FromUserEmailGaiaId(kFakeTestEmail, kTestGaiaId),
-                 photo_id}) ==
-                test_wallpaper_controller()->wallpaper_info().value_or(
-                    ash::WallpaperInfo()));
+  EXPECT_EQ(
+      feature_enabled,
+      ash::WallpaperInfo(
+          {AccountId::FromUserEmailGaiaId(kFakeTestEmail, kTestGaiaId),
+           photo_id, ash::WallpaperLayout::WALLPAPER_LAYOUT_CENTER_CROPPED}) ==
+          test_wallpaper_controller()->wallpaper_info().value_or(
+              ash::WallpaperInfo()));
 }

@@ -8,13 +8,15 @@
 #include <string>
 
 #include "ash/public/cpp/ash_public_export.h"
+#include "ash/public/cpp/wallpaper/wallpaper_types.h"
 #include "components/account_id/account_id.h"
 
 namespace ash {
 
 struct ASH_PUBLIC_EXPORT GooglePhotosWallpaperParams {
   GooglePhotosWallpaperParams(const AccountId& account_id,
-                              const std::string& id);
+                              const std::string& id,
+                              WallpaperLayout layout);
 
   GooglePhotosWallpaperParams(const GooglePhotosWallpaperParams& other);
 
@@ -28,6 +30,9 @@ struct ASH_PUBLIC_EXPORT GooglePhotosWallpaperParams {
 
   // The unique identifier for the photo.
   std::string id;
+
+  // The layout of the wallpaper, used for wallpaper resizing.
+  WallpaperLayout layout;
 };
 
 ASH_PUBLIC_EXPORT std::ostream& operator<<(

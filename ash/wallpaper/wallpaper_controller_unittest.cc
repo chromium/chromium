@@ -4204,7 +4204,8 @@ TEST_P(WallpaperControllerGooglePhotosWallpaperTest, SetGooglePhotosWallpaper) {
   ClearWallpaperCount();
   ASSERT_EQ(0, GetWallpaperCount());
   base::test::TestFuture<bool> google_photos_future;
-  GooglePhotosWallpaperParams params(account_id_1, "foobar");
+  GooglePhotosWallpaperParams params(account_id_1, "foobar",
+                                     WallpaperLayout::WALLPAPER_LAYOUT_STRETCH);
   controller_->SetGooglePhotosWallpaper(params,
                                         google_photos_future.GetCallback());
   EXPECT_EQ(feature_enabled, google_photos_future.Get());
@@ -4245,8 +4246,9 @@ TEST_P(WallpaperControllerGooglePhotosWallpaperTest,
   ClearWallpaperCount();
   ASSERT_EQ(0, GetWallpaperCount());
   base::test::TestFuture<bool> google_photos_future;
-  controller_->SetGooglePhotosWallpaper({account_id_1, "foobar"},
-                                        google_photos_future.GetCallback());
+  controller_->SetGooglePhotosWallpaper(
+      {account_id_1, "foobar", WallpaperLayout::WALLPAPER_LAYOUT_STRETCH},
+      google_photos_future.GetCallback());
   EXPECT_FALSE(google_photos_future.Get());
   EXPECT_NE(controller_->GetWallpaperType(), WallpaperType::kGooglePhotos);
 

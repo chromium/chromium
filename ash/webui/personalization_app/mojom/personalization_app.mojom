@@ -231,7 +231,8 @@ interface WallpaperProvider {
         bool preview_mode) => (bool success);
 
     // Sets the Google Photos photo with the given id as the wallpaper.
-    SelectGooglePhotosPhoto(string id) => (bool success);
+    SelectGooglePhotosPhoto(string id, WallpaperLayout layout) =>
+        (bool success);
 
     // Sets the custom layout for current wallpaper
     SetCustomWallpaperLayout(WallpaperLayout layout);

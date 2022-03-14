@@ -127,6 +127,7 @@ class PersonalizationAppWallpaperProviderImpl
 
   void SelectGooglePhotosPhoto(
       const std::string& id,
+      ash::WallpaperLayout layout,
       SelectGooglePhotosPhotoCallback callback) override;
 
   void SetCustomWallpaperLayout(ash::WallpaperLayout layout) override;
