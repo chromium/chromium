@@ -11,6 +11,7 @@
 #include "third_party/blink/renderer/core/typed_arrays/array_buffer_view_helpers.h"
 #include "third_party/blink/renderer/modules/webgpu/dawn_object.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
+#include "third_party/blink/renderer/platform/graphics/graphics_types.h"
 
 namespace blink {
 
@@ -83,7 +84,8 @@ class GPUQueue : public DawnObject<WGPUQueue> {
                               const WGPUExtent3D& copy_size,
                               const WGPUImageCopyTexture& destination,
                               bool dst_premultiplied_alpha,
-                              bool flipY = false);
+                              WGPUPredefinedColorSpace dst_color_space,
+                              bool flipY);
   void WriteBufferImpl(GPUBuffer* buffer,
                        uint64_t buffer_offset,
                        uint64_t data_byte_length,

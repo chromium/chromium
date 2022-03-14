@@ -10,6 +10,7 @@ class String;
 namespace blink {
 
 class V8GPUIndexFormat;
+class V8GPUPredefinedColorSpace;
 
 // Convert WebGPU bitfield values to Dawn enums. These have the same value.
 template <typename DawnEnum>
@@ -21,6 +22,8 @@ DawnEnum AsDawnEnum(uint32_t webgpu_enum) {
 template <typename DawnEnum>
 DawnEnum AsDawnEnum(const WTF::String& webgpu_enum);
 WGPUIndexFormat AsDawnEnum(const V8GPUIndexFormat& webgpu_enum);
+WGPUPredefinedColorSpace AsDawnEnum(
+    const V8GPUPredefinedColorSpace& webgpu_enum);
 
 }  // namespace blink
 

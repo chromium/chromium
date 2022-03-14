@@ -7,6 +7,7 @@
 #include "base/check.h"
 #include "base/notreached.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_gpu_index_format.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_gpu_predefined_color_space.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
 namespace blink {
@@ -600,6 +601,14 @@ WGPUIndexFormat AsDawnEnum(const V8GPUIndexFormat& webgpu_enum) {
       return WGPUIndexFormat_Uint16;
     case V8GPUIndexFormat::Enum::kUint32:
       return WGPUIndexFormat_Uint32;
+  }
+}
+
+WGPUPredefinedColorSpace AsDawnEnum(
+    const V8GPUPredefinedColorSpace& webgpu_enum) {
+  switch (webgpu_enum.AsEnum()) {
+    case V8GPUPredefinedColorSpace::Enum::kSRGB:
+      return WGPUPredefinedColorSpace_Srgb;
   }
 }
 

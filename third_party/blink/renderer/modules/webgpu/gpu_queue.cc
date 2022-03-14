@@ -29,6 +29,7 @@
 #include "third_party/blink/renderer/modules/webgpu/gpu_device.h"
 #include "third_party/blink/renderer/modules/webgpu/gpu_texture.h"
 #include "third_party/blink/renderer/platform/graphics/gpu/webgpu_mailbox_texture.h"
+#include "third_party/blink/renderer/platform/graphics/graphics_types.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 
 namespace blink {
@@ -94,6 +95,17 @@ bool IsValidExternalImageDestinationFormat(
       return true;
     default:
       return false;
+  }
+}
+
+PredefinedColorSpace GetPredefinedColorSpace(
+    WGPUPredefinedColorSpace color_space) {
+  switch (color_space) {
+    case WGPUPredefinedColorSpace_Srgb:
+      return PredefinedColorSpace::kSRGB;
+    default:
+      NOTREACHED();
+      return PredefinedColorSpace::kSRGB;
   }
 }
 
@@ -495,10 +507,13 @@ void GPUQueue::copyExternalImageToTexture(
         "({width|height|depthOrArrayLayers} equals to 0).");
   }
 
+  WGPUPredefinedColorSpace dawn_predefined_color_space =
+      AsDawnEnum(destination->colorSpace());
+
   if (!UploadContentToTexture(
           static_bitmap_image.get(), origin_in_external_image, dawn_copy_size,
           dawn_destination, destination->premultipliedAlpha(),
-          copyImage->flipY())) {
+          dawn_predefined_color_space, copyImage->flipY())) {
     exception_state.ThrowTypeError(
         "Failed to copy content from external image.");
     return;
@@ -510,6 +525,7 @@ bool GPUQueue::UploadContentToTexture(StaticBitmapImage* image,
                                       const WGPUExtent3D& copy_size,
                                       const WGPUImageCopyTexture& destination,
                                       bool dst_premultiplied_alpha,
+                                      WGPUPredefinedColorSpace dst_color_space,
                                       bool flipY) {
   PaintImage paint_image = image->PaintImageForCurrentFrame();
   SkColorType source_color_type = paint_image.GetSkImageInfo().colorType();
@@ -534,17 +550,63 @@ bool GPUQueue::UploadContentToTexture(StaticBitmapImage* image,
                              ? WGPUAlphaMode_Premultiplied
                              : WGPUAlphaMode_Unpremultiplied;
 
+  // Set color space conversion params
+  sk_sp<SkColorSpace> sk_src_color_space =
+      paint_image.GetSkImageInfo().refColorSpace();
+
+  // If source input discard the color space info(e.g. ImageBitmap created with
+  // flag colorSpaceConversion: none). Treat the source color space as sRGB.
+  if (sk_src_color_space == nullptr) {
+    sk_src_color_space = SkColorSpace::MakeSRGB();
+  }
+  sk_sp<SkColorSpace> sk_dst_color_space = PredefinedColorSpaceToSkColorSpace(
+      GetPredefinedColorSpace(dst_color_space));
+  std::array<float, 7> gamma_decode_params;
+  std::array<float, 7> gamma_encode_params;
+  std::array<float, 9> conversion_matrix;
+  if (!SkColorSpace::Equals(sk_src_color_space.get(),
+                            sk_dst_color_space.get())) {
+    skcms_TransferFunction src_transfer_fn = {};
+    skcms_TransferFunction dst_transfer_fn = {};
+
+    // Row major matrix
+    skcms_Matrix3x3 transfer_matrix = {};
+
+    sk_src_color_space->transferFn(&src_transfer_fn);
+    sk_dst_color_space->invTransferFn(&dst_transfer_fn);
+    sk_src_color_space->gamutTransformTo(sk_dst_color_space.get(),
+                                         &transfer_matrix);
+    gamma_decode_params = {src_transfer_fn.g, src_transfer_fn.a,
+                           src_transfer_fn.b, src_transfer_fn.c,
+                           src_transfer_fn.d, src_transfer_fn.e,
+                           src_transfer_fn.f};
+    gamma_encode_params = {dst_transfer_fn.g, dst_transfer_fn.a,
+                           dst_transfer_fn.b, dst_transfer_fn.c,
+                           dst_transfer_fn.d, dst_transfer_fn.e,
+                           dst_transfer_fn.f};
+
+    // From row major matrix to col major matrix
+    conversion_matrix = {transfer_matrix.vals[0][0], transfer_matrix.vals[1][0],
+                         transfer_matrix.vals[2][0], transfer_matrix.vals[0][1],
+                         transfer_matrix.vals[1][1], transfer_matrix.vals[2][1],
+                         transfer_matrix.vals[0][2], transfer_matrix.vals[1][2],
+                         transfer_matrix.vals[2][2]};
+
+    options.needsColorSpaceConversion = true;
+    options.srcTransferFunctionParameters = gamma_decode_params.data();
+    options.dstTransferFunctionParameters = gamma_encode_params.data();
+    options.conversionMatrix = conversion_matrix.data();
+  }
+
   // Handling GPU resource.
   if (image->IsTextureBacked()) {
-    // TODO(crbug.com/1197369): Delegate color space conversion to
-    // copyTextureForBrowser().
     scoped_refptr<WebGPUMailboxTexture> mailbox_texture =
         WebGPUMailboxTexture::FromStaticBitmapImage(
             GetDawnControlClient(), device_->GetHandle(),
             static_cast<WGPUTextureUsage>(WGPUTextureUsage_CopyDst |
                                           WGPUTextureUsage_CopySrc |
                                           WGPUTextureUsage_TextureBinding),
-            image, PredefinedColorSpace::kSRGB, source_color_type);
+            image, source_color_type);
 
     if (mailbox_texture != nullptr) {
       WGPUImageCopyTexture src = {};
@@ -603,13 +665,6 @@ bool GPUQueue::UploadContentToTexture(StaticBitmapImage* image,
   void* data = GetProcs().bufferGetMappedRange(intermediate_buffer, 0, size);
 
   auto dest_pixels = base::span<uint8_t>(static_cast<uint8_t*>(data), size);
-
-  // TODO(crbug.com/1197369): Delegate color space conversion to
-  // copyTextureForBrowser().
-  SkImageInfo info = SkImageInfo::Make(
-      image->width(), image->height(), source_color_type,
-      image->IsPremultiplied() ? kPremul_SkAlphaType : kUnpremul_SkAlphaType,
-      SkColorSpace::MakeSRGB());
 
   bool success = paint_image.readPixels(
       paint_image.GetSkImageInfo(), dest_pixels.data(), wgpu_bytes_per_row,
