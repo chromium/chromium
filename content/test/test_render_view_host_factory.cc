@@ -45,14 +45,16 @@ RenderViewHost* TestRenderViewHostFactory::CreateRenderViewHost(
     int32_t routing_id,
     int32_t main_frame_routing_id,
     int32_t widget_routing_id,
-    bool swapped_out) {
+    bool swapped_out,
+    scoped_refptr<BrowsingContextState> main_browsing_context_state) {
   return new TestRenderViewHost(
       frame_tree, instance,
       TestRenderWidgetHost::Create(frame_tree, widget_delegate,
                                    static_cast<SiteInstanceImpl*>(instance)
                                        ->GetOrCreateAgentSchedulingGroup(),
                                    widget_routing_id, false),
-      delegate, routing_id, main_frame_routing_id, swapped_out);
+      delegate, routing_id, main_frame_routing_id, swapped_out,
+      std::move(main_browsing_context_state));
 }
 
 }  // namespace content

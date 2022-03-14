@@ -259,13 +259,15 @@ class TestRenderWidgetHostViewChildFrame
 class TestRenderViewHost : public RenderViewHostImpl,
                            public RenderViewHostTester {
  public:
-  TestRenderViewHost(FrameTree* frame_tree,
-                     SiteInstance* instance,
-                     std::unique_ptr<RenderWidgetHostImpl> widget,
-                     RenderViewHostDelegate* delegate,
-                     int32_t routing_id,
-                     int32_t main_frame_routing_id,
-                     bool swapped_out);
+  TestRenderViewHost(
+      FrameTree* frame_tree,
+      SiteInstance* instance,
+      std::unique_ptr<RenderWidgetHostImpl> widget,
+      RenderViewHostDelegate* delegate,
+      int32_t routing_id,
+      int32_t main_frame_routing_id,
+      bool swapped_out,
+      scoped_refptr<BrowsingContextState> main_browsing_context_state);
 
   TestRenderViewHost(const TestRenderViewHost&) = delete;
   TestRenderViewHost& operator=(const TestRenderViewHost&) = delete;

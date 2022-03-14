@@ -377,7 +377,8 @@ class CONTENT_EXPORT FrameTree {
       SiteInstance* site_instance,
       int32_t main_frame_routing_id,
       bool swapped_out,
-      bool renderer_initiated_creation);
+      bool renderer_initiated_creation,
+      scoped_refptr<BrowsingContextState> main_browsing_context_state);
 
   // Returns the existing RenderViewHost for a new RenderFrameHost.
   // There should always be such a RenderViewHost, because the main frame

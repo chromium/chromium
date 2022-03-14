@@ -585,11 +585,16 @@ scoped_refptr<RenderViewHostImpl> FrameTree::CreateRenderViewHost(
     SiteInstance* site_instance,
     int32_t main_frame_routing_id,
     bool swapped_out,
-    bool renderer_initiated_creation) {
+    bool renderer_initiated_creation,
+    scoped_refptr<BrowsingContextState> main_browsing_context_state) {
+  if (main_browsing_context_state) {
+    DCHECK(main_browsing_context_state->is_main_frame());
+  }
   RenderViewHostImpl* rvh =
       static_cast<RenderViewHostImpl*>(RenderViewHostFactory::Create(
           this, site_instance, render_view_delegate_, render_widget_delegate_,
-          main_frame_routing_id, swapped_out, renderer_initiated_creation));
+          main_frame_routing_id, swapped_out, renderer_initiated_creation,
+          std::move(main_browsing_context_state)));
   return base::WrapRefCounted(rvh);
 }
 

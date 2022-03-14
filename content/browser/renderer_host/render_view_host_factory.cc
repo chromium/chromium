@@ -29,7 +29,8 @@ RenderViewHost* RenderViewHostFactory::Create(
     RenderWidgetHostDelegate* widget_delegate,
     int32_t main_frame_routing_id,
     bool swapped_out,
-    bool renderer_initiated_creation) {
+    bool renderer_initiated_creation,
+    scoped_refptr<BrowsingContextState> main_browsing_context_state) {
   int32_t routing_id = instance->GetProcess()->GetNextRoutingID();
   int32_t widget_routing_id = instance->GetProcess()->GetNextRoutingID();
   DCHECK(static_cast<SiteInstanceImpl*>(instance)->group());
@@ -37,20 +38,22 @@ RenderViewHost* RenderViewHostFactory::Create(
   if (factory_) {
     return factory_->CreateRenderViewHost(
         frame_tree, instance, delegate, widget_delegate, routing_id,
-        main_frame_routing_id, widget_routing_id, swapped_out);
+        main_frame_routing_id, widget_routing_id, swapped_out,
+        std::move(main_browsing_context_state));
   }
 
-  RenderViewHostImpl* view_host = new RenderViewHostImpl(
-      frame_tree, instance,
-      RenderWidgetHostFactory::Create(frame_tree, widget_delegate,
-                                      static_cast<SiteInstanceImpl*>(instance)
-                                          ->group()
-                                          ->agent_scheduling_group(),
-                                      widget_routing_id,
-                                      /*hidden=*/true,
-                                      renderer_initiated_creation),
-      delegate, routing_id, main_frame_routing_id, swapped_out,
-      true /* has_initialized_audio_host */);
+  RenderViewHostImpl* view_host =
+      new RenderViewHostImpl(frame_tree, instance,
+                             RenderWidgetHostFactory::Create(
+                                 frame_tree, widget_delegate,
+                                 static_cast<SiteInstanceImpl*>(instance)
+                                     ->group()
+                                     ->agent_scheduling_group(),
+                                 widget_routing_id,
+                                 /*hidden=*/true, renderer_initiated_creation),
+                             delegate, routing_id, main_frame_routing_id,
+                             swapped_out, true /* has_initialized_audio_host */,
+                             std::move(main_browsing_context_state));
   return view_host;
 }
 

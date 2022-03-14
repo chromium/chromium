@@ -2644,7 +2644,12 @@ RenderFrameHostManager::CreateRenderFrameHost(
   if (!render_view_host) {
     render_view_host = frame_tree->CreateRenderViewHost(
         site_instance, frame_routing_id,
-        /*swapped_out=*/false, renderer_initiated_creation);
+        /*swapped_out=*/false, renderer_initiated_creation,
+        features::GetBrowsingContextMode() ==
+                features::BrowsingContextStateImplementationType::
+                    kSwapForCrossBrowsingInstanceNavigations
+            ? browsing_context_state
+            : nullptr);
   }
   CHECK(render_view_host);
 
@@ -2706,7 +2711,10 @@ bool RenderFrameHostManager::CreateSpeculativeRenderFrameHost(
   } else {
     // For speculative frame hosts, we will need to create a new
     // BrowsingContextState when we have a cross-BrowsingInstance navigation,
-    // as the browsing context + BrowsingInstance combination changes.
+    // as the browsing context + BrowsingInstance combination changes. An
+    // exception is when the RenderViewHost for the speculative
+    // RenderFrameHost's SiteInstance is still around, e.g. on history
+    // navigations.
     // TODO(crbug.com/1179502): FrameReplicationState is a mix of things that
     // are per-frame, per-browsing context and per-document. Currently, we pass
     // the entire FrameReplicationState to match the old behaviour of storing
@@ -2714,16 +2722,43 @@ bool RenderFrameHostManager::CreateSpeculativeRenderFrameHost(
     // FrameReplicationState into multiple structs with different lifetimes.
     // TODO(crbug.com/1270671): conditionally avoid copying the frame name here
     // if DidChangeName arrives after DidCommitNavigation.
-    browsing_context_state =
-        render_frame_host_->GetSiteInstance()->IsRelatedSiteInstance(
-            new_instance)
-            ? render_frame_host_->browsing_context_state()
-            : base::MakeRefCounted<BrowsingContextState>(
-                  render_frame_host_->browsing_context_state()
-                      ->current_replication_state()
-                      .Clone(),
-                  frame_tree_node_->parent(),
-                  new_instance->GetBrowsingInstanceId());
+    if (render_frame_host_->GetSiteInstance()->IsRelatedSiteInstance(
+            new_instance)) {
+      // We're reusing the current BrowsingInstance, so also reuse the
+      // BrowsingContextState.
+      browsing_context_state = render_frame_host_->browsing_context_state();
+    } else {
+      scoped_refptr<RenderViewHostImpl> render_view_host =
+          frame_tree_node_->frame_tree()->GetRenderViewHost(
+              static_cast<SiteInstanceImpl*>(new_instance)->group());
+      if (render_view_host) {
+        // If we reuse a RenderViewHost for a main-frame cross-BrowsingInstance
+        // navigation, we need to reuse the RenderFrameProxyHost representing
+        // its main frame and BrowsingContextState associated with this proxy.
+        // This is possible when we are performing a history navigation (which
+        // reuses existing SiteInstance associated with the corresponding
+        // FrameNavigationEntry) and there is a pending deletion RenderViewHost
+        // associated with the same SiteInstance, and we are creating a new
+        // BrowsingContextState. Both proxies and RenderViewHosts are keyed by
+        // SiteInstance(Group), and we don't want to have two different proxies
+        // in the same frame belonging to the same RenderViewHost due to these
+        // proxies belonging to different BrowsingContextStates. Since
+        // RenderViewHost is also keyed by SiteInstance, when there is an
+        // existing RenderViewHost, we want to use the correct corresponding
+        // proxy when unloading a frame and committing a navigation.
+        // TODO(crbug.com/1302242): Migrate storage of SiteInstance(Group) =>
+        // RenderViewHost to BrowsingContextState to eliminate this branch.
+        browsing_context_state =
+            render_view_host->main_browsing_context_state();
+        CHECK(frame_tree_node_->IsMainFrame());
+      } else {
+        browsing_context_state = base::MakeRefCounted<BrowsingContextState>(
+            render_frame_host_->browsing_context_state()
+                ->current_replication_state()
+                .Clone(),
+            frame_tree_node_->parent(), new_instance->GetBrowsingInstanceId());
+      }
+    }
   }
 
   CreateProxiesForNewRenderFrameHost(old_instance, new_instance,
@@ -2870,7 +2905,12 @@ void RenderFrameHostManager::CreateRenderFrameProxy(
       // exists for |instance|, as it creates the page level structure in Blink.
       render_view_host = frame_tree_node_->frame_tree()->CreateRenderViewHost(
           instance, /*main_frame_routing_id=*/MSG_ROUTING_NONE,
-          /*swapped_out=*/true, /*renderer_initiated_creation=*/false);
+          /*swapped_out=*/true, /*renderer_initiated_creation=*/false,
+          features::GetBrowsingContextMode() ==
+                  features::BrowsingContextStateImplementationType::
+                      kSwapForCrossBrowsingInstanceNavigations
+              ? render_frame_host_->browsing_context_state()
+              : nullptr);
     } else {
       TRACE_EVENT_INSTANT("navigation",
                           "RenderFrameHostManager::CreateRenderFrameProxy_RVH",

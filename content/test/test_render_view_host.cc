@@ -331,7 +331,8 @@ TestRenderViewHost::TestRenderViewHost(
     RenderViewHostDelegate* delegate,
     int32_t routing_id,
     int32_t main_frame_routing_id,
-    bool swapped_out)
+    bool swapped_out,
+    scoped_refptr<BrowsingContextState> main_browsing_context_state)
     : RenderViewHostImpl(frame_tree,
                          instance,
                          std::move(widget),
@@ -339,7 +340,8 @@ TestRenderViewHost::TestRenderViewHost(
                          routing_id,
                          main_frame_routing_id,
                          swapped_out,
-                         false /* has_initialized_audio_host */),
+                         false /* has_initialized_audio_host */,
+                         std::move(main_browsing_context_state)),
       delete_counter_(nullptr) {
   if (frame_tree->type() == FrameTree::Type::kFencedFrame) {
     // TestRenderWidgetHostViewChildFrame deletes itself in

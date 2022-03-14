@@ -20,6 +20,7 @@
 #include "base/process/kill.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
+#include "content/browser/renderer_host/browsing_context_state.h"
 #include "content/browser/renderer_host/frame_tree.h"
 #include "content/browser/renderer_host/input/input_device_change_observer.h"
 #include "content/browser/renderer_host/page_lifecycle_state_manager.h"
@@ -114,14 +115,16 @@ class CONTENT_EXPORT RenderViewHostImpl
   static bool HasNonBackForwardCachedInstancesForProcess(
       RenderProcessHost* process);
 
-  RenderViewHostImpl(FrameTree* frame_tree,
-                     SiteInstance* instance,
-                     std::unique_ptr<RenderWidgetHostImpl> widget,
-                     RenderViewHostDelegate* delegate,
-                     int32_t routing_id,
-                     int32_t main_frame_routing_id,
-                     bool swapped_out,
-                     bool has_initialized_audio_host);
+  RenderViewHostImpl(
+      FrameTree* frame_tree,
+      SiteInstance* instance,
+      std::unique_ptr<RenderWidgetHostImpl> widget,
+      RenderViewHostDelegate* delegate,
+      int32_t routing_id,
+      int32_t main_frame_routing_id,
+      bool swapped_out,
+      bool has_initialized_audio_host,
+      scoped_refptr<BrowsingContextState> main_browsing_context_state);
 
   RenderViewHostImpl(const RenderViewHostImpl&) = delete;
   RenderViewHostImpl& operator=(const RenderViewHostImpl&) = delete;
@@ -182,6 +185,19 @@ class CONTENT_EXPORT RenderViewHostImpl
   // this RenderViewHost by RenderFrameProxyHost (from Blink perspective,
   // blink::Page's main blink::Frame is remote).
   RenderFrameHostImpl* GetMainRenderFrameHost();
+
+  // // RenderViewHost is associated with a given SiteInstance(Group) and as
+  // BrowsingContextState in non-legacy BrowsingContextState mode is tied to a
+  // given BrowsingInstance, so the main BrowsingContextState stays the same
+  // during the entire lifetime of a RenderViewHost: cross-SiteInstance
+  // same-BrowsingInstance navigations might change the representation of the
+  // main frame in a given RenderView from RenderFrame to RenderFrameProxy and
+  // back, while cross-BrowsingInstances result in creating a new unrelated
+  // RenderViewHost. This is not true in the legacy BCS mode, so there the
+  // |main_browsing_context_state_| is null.
+  const scoped_refptr<BrowsingContextState>& main_browsing_context_state() {
+    return main_browsing_context_state_;
+  }
 
   // Returns the `AgentSchedulingGroupHost` this view is associated with (via
   // the widget).
@@ -431,6 +447,9 @@ class CONTENT_EXPORT RenderViewHostImpl
   mojo::AssociatedRemote<blink::mojom::PageBroadcast> page_broadcast_;
 
   raw_ptr<FrameTree> frame_tree_;
+
+  // See main_browsing_context_state() for more details.
+  const scoped_refptr<BrowsingContextState> main_browsing_context_state_;
 
   base::WeakPtrFactory<RenderViewHostImpl> weak_factory_{this};
 };

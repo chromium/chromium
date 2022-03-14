@@ -90,6 +90,10 @@ class CONTENT_EXPORT BrowsingContextState
 
   RenderFrameProxyHostMap& proxy_hosts() { return proxy_hosts_; }
 
+  // Returns true if this is a main BrowsingContextState. True if and only if
+  // this BrowsingContextState doesn't have a parent.
+  bool is_main_frame() const { return !parent_; }
+
   const blink::mojom::FrameReplicationState& current_replication_state() const {
     return *replication_state_;
   }

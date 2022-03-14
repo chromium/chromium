@@ -289,7 +289,8 @@ RenderViewHostImpl::RenderViewHostImpl(
     int32_t routing_id,
     int32_t main_frame_routing_id,
     bool swapped_out,
-    bool has_initialized_audio_host)
+    bool has_initialized_audio_host,
+    scoped_refptr<BrowsingContextState> main_browsing_context_state)
     : render_widget_host_(std::move(widget)),
       delegate_(delegate),
       render_view_host_map_id_(frame_tree->GetRenderViewHostMapId(
@@ -297,7 +298,8 @@ RenderViewHostImpl::RenderViewHostImpl(
       storage_partition_config_(instance->GetStoragePartitionConfig()),
       routing_id_(routing_id),
       main_frame_routing_id_(main_frame_routing_id),
-      frame_tree_(frame_tree) {
+      frame_tree_(frame_tree),
+      main_browsing_context_state_(std::move(main_browsing_context_state)) {
   TRACE_EVENT("navigation", "RenderViewHostImpl::RenderViewHostImpl",
               ChromeTrackEvent::kRenderViewHost, *this);
   DCHECK(delegate_);
