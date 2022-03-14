@@ -63,6 +63,9 @@ Also used in tools/metrics/histograms/metadata/others/histograms.xml
 
 <histogram name="Power.ApproxCpuTimeSecondsPerCoreTypeAndFrequency"
     units="50 MHz" expires_after="2022-06-26">
+  <obsolete>
+    Removed in March 2022 without replacement.
+  </obsolete>
   <owner>eseckler@chromium.org</owner>
   <owner>skyostil@chromium.org</owner>
   <summary>
@@ -331,6 +334,9 @@ Also used in tools/metrics/histograms/metadata/others/histograms.xml
 
 <histogram name="Power.CpuTimeSecondsPerCoreTypeAndFrequency" units="50 MHz"
     expires_after="2022-07-11">
+  <obsolete>
+    Removed in March 2022 without replacement.
+  </obsolete>
   <owner>eseckler@chromium.org</owner>
   <owner>skyostil@chromium.org</owner>
   <summary>

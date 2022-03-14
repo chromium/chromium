@@ -183,60 +183,6 @@ PowerModeForUma GetPowerModeForUma(power_scheduler::PowerMode power_mode) {
   }
 }
 
-std::string GetPerCoreCpuTimeHistogramName(ProcessTypeForUma process_type,
-                                           base::CPU::CoreType core_type,
-                                           bool is_approximate) {
-  std::string process_suffix;
-  switch (process_type) {
-    case ProcessTypeForUma::kBrowser:
-      process_suffix = "Browser";
-      break;
-    case ProcessTypeForUma::kRenderer:
-      process_suffix = "Renderer";
-      break;
-    case ProcessTypeForUma::kGpu:
-      process_suffix = "GPU";
-      break;
-    default:
-      process_suffix = "Other";
-      break;
-  }
-
-  std::string cpu_suffix;
-  switch (core_type) {
-    case base::CPU::CoreType::kUnknown:
-      cpu_suffix = "Unknown";
-      break;
-    case base::CPU::CoreType::kOther:
-      cpu_suffix = "Other";
-      break;
-    case base::CPU::CoreType::kSymmetric:
-      cpu_suffix = "Symmetric";
-      break;
-    case base::CPU::CoreType::kBigLittle_Little:
-      cpu_suffix = "BigLittle.Little";
-      break;
-    case base::CPU::CoreType::kBigLittle_Big:
-      cpu_suffix = "BigLittle.Big";
-      break;
-    case base::CPU::CoreType::kBigLittleBigger_Little:
-      cpu_suffix = "BigLittleBigger.Little";
-      break;
-    case base::CPU::CoreType::kBigLittleBigger_Big:
-      cpu_suffix = "BigLittleBigger.Big";
-      break;
-    case base::CPU::CoreType::kBigLittleBigger_Bigger:
-      cpu_suffix = "BigLittleBigger.Bigger";
-      break;
-  }
-
-  std::string prefix = std::string("Power.") +
-                       (is_approximate ? "Approx" : "") +
-                       "CpuTimeSecondsPerCoreTypeAndFrequency";
-
-  return base::JoinString({prefix, cpu_suffix, process_suffix}, ".");
-}
-
 // Keep in sync with CpuTimeMetricsThreadType in
 // //tools/metrics/histograms/enums.xml.
 enum class CpuTimeMetricsThreadType {
@@ -340,38 +286,9 @@ CpuTimeMetricsThreadType GetThreadTypeFromName(const char* const thread_name) {
   return CpuTimeMetricsThreadType::kOtherThread;
 }
 
-class TimeInStateReporter {
- public:
-  TimeInStateReporter(ProcessTypeForUma process_type,
-                      base::CPU::CoreType core_type,
-                      bool is_approximate)
-      : histogram_(GetPerCoreCpuTimeHistogramName(process_type,
-                                                  core_type,
-                                                  is_approximate),
-                   1,
-                   // ScaledLinearHistogram requires buckets of size 1. Each
-                   // bucket here represents a range of frequency values.
-                   kNumBuckets,
-                   kNumBuckets + 1,
-                   base::Time::kMicrosecondsPerSecond,
-                   base::HistogramBase::kUmaTargetedHistogramFlag) {}
-
-  void AddMicroseconds(int frequency_mhz, int cpu_time_us) {
-    int frequency_bucket = frequency_mhz / kBucketSizeMhz;
-    histogram_.AddScaledCount(frequency_bucket, cpu_time_us);
-  }
-
- private:
-  static constexpr int32_t kMaxFrequencyMhz = 10 * 1000;  // 10 GHz.
-  static constexpr int32_t kBucketSizeMhz = 50;  // one bucket for every 50 MHz.
-  static constexpr int32_t kNumBuckets = kMaxFrequencyMhz / kBucketSizeMhz;
-
-  base::ScaledLinearHistogram histogram_;
-};
-
 }  // namespace
 
-// Reports per-thread and per-core CPU time breakdowns.
+// Reports per-thread CPU time breakdowns.
 class ProcessCpuTimeMetrics::DetailedCpuTimeMetrics {
  public:
   DetailedCpuTimeMetrics(base::ProcessMetrics* process_metrics,
@@ -395,11 +312,6 @@ class ProcessCpuTimeMetrics::DetailedCpuTimeMetrics {
     // lose data at process termination (particularly in child processes).
     if (!base::GlobalHistogramAllocator::Get() &&
         !g_ignore_histogram_allocator_for_testing) {
-      // If this is the first iteration, still initialize baseline values
-      // (e.g. idle time) for the approximate per-cpu breakdown, but don't
-      // record any values into histograms.
-      if (last_time_in_state_walltime_.is_null())
-        CollectApproxTimeInState(base::TimeDelta());
       return;
     }
 
@@ -411,13 +323,6 @@ class ProcessCpuTimeMetrics::DetailedCpuTimeMetrics {
     if (process_cpu_time_delta.is_positive()) {
       reported_cpu_time_ = cumulative_cpu_time;
     }
-
-    // Approximate breakdown by CPU core type & frequency. The per-pid
-    // time_in_state used by the per-thread breakdown isn't supported by many
-    // kernels. This breakdown approximates Chrome's total per
-    // core-type/frequency usage by splitting the process's CPU time across
-    // cores/frequencies according to global per-core time_in_state values.
-    CollectApproxTimeInState(process_cpu_time_delta);
 
     // Also report a breakdown by thread type.
     base::TimeDelta unattributed_delta = process_cpu_time_delta;
@@ -456,44 +361,6 @@ class ProcessCpuTimeMetrics::DetailedCpuTimeMetrics {
         thread_details->reported_cpu_time = cumulative_time;
       }
 
-      // Breakdown by CPU core type & frequency.
-      if (process_metrics_->GetPerThreadCumulativeCPUTimeInState(
-              time_in_state_per_thread_)) {
-        auto thread_it = thread_details_.end();
-        for (const base::ProcessMetrics::ThreadTimeInState& entry :
-             time_in_state_per_thread_) {
-          DCHECK_GT(time_in_state_reporters_.size(),
-                    static_cast<size_t>(entry.core_type));
-          std::unique_ptr<TimeInStateReporter>& reporter =
-              time_in_state_reporters_[static_cast<size_t>(entry.core_type)];
-          if (!reporter) {
-            reporter = std::make_unique<TimeInStateReporter>(
-                process_type_, entry.core_type,
-                /*is_approximate=*/false);
-          }
-
-          if (thread_it == thread_details_.end() ||
-              thread_it->first != entry.thread_id) {
-            thread_it = thread_details_.find(entry.thread_id);
-            if (thread_it == thread_details_.end()) {
-              // New thread that we didn't pick up above. We'll report it in the
-              // next cycle instead.
-              continue;
-            }
-          }
-
-          uint32_t frequency_mhz = entry.core_frequency_khz / 1000;
-          base::TimeDelta& reported_time =
-              thread_it->second.reported_time_in_state[std::make_tuple(
-                  entry.core_type, entry.cluster_core_index, frequency_mhz)];
-          base::TimeDelta time_delta =
-              entry.cumulative_cpu_time - reported_time;
-          reported_time = entry.cumulative_cpu_time;
-
-          reporter->AddMicroseconds(frequency_mhz, time_delta.InMicroseconds());
-        }
-      }
-
       // Erase tracking for threads that have disappeared, as their
       // PlatformThreadId may be reused later.
       for (auto it = thread_details_.begin(); it != thread_details_.end();) {
@@ -514,16 +381,10 @@ class ProcessCpuTimeMetrics::DetailedCpuTimeMetrics {
   }
 
  private:
-  using ClusterFrequency = std::tuple<base::CPU::CoreType,
-                                      uint32_t /*cluster_core_index*/,
-                                      uint32_t /*frequency_mhz*/>;
-
   struct ThreadDetails {
     base::TimeDelta reported_cpu_time;
     uint32_t last_updated_cycle = 0;
     CpuTimeMetricsThreadType type = CpuTimeMetricsThreadType::kOtherThread;
-    base::flat_map<ClusterFrequency, base::TimeDelta /*time_in_state*/>
-        reported_time_in_state;
   };
 
   void ReportThreadCpuTimeDelta(CpuTimeMetricsThreadType type,
@@ -546,177 +407,6 @@ class ProcessCpuTimeMetrics::DetailedCpuTimeMetrics {
     return GetThreadTypeFromName(name);
   }
 
-  void CollectApproxTimeInState(base::TimeDelta process_cpu_time_delta) {
-    if (!base::CPU::GetTimeInState(time_in_state_) || time_in_state_.empty() ||
-        !base::CPU::GetCumulativeCoreIdleTimes(core_idle_times_)) {
-      return;
-    }
-
-    if (core_idle_times_.size() > reported_core_idle_times_.size())
-      reported_core_idle_times_.resize(core_idle_times_.size());
-
-    // Compute the wall time delta since the last cycle, so that we can
-    // compute active times per core type below. cpuidle and time_in_state
-    // information tick with CLOCK_MONOTONIC, so we use base::TimeTicks (also
-    // CLOCK_MONOTONIC) as a reference here.
-    base::TimeTicks now = base::TimeTicks::Now();
-    base::TimeDelta wall_time_delta = now - last_time_in_state_walltime_;
-    last_time_in_state_walltime_ = now;
-
-    // Convert core_idle_times_ to delta values.
-    for (uint32_t core_index = 0; core_index < core_idle_times_.size();
-         ++core_index) {
-      base::TimeDelta absolute_idle_time = core_idle_times_[core_index];
-      core_idle_times_[core_index] -= reported_core_idle_times_[core_index];
-      reported_core_idle_times_[core_index] = absolute_idle_time;
-    }
-
-    // Compute total active time during this cycle.
-    base::TimeDelta total_active_time;
-    for (base::TimeDelta core_idle_time : core_idle_times_) {
-      base::TimeDelta active_time = wall_time_delta - core_idle_time;
-      if (active_time.is_positive())
-        total_active_time += active_time;
-    }
-
-    // Because time_in_state_ includes idle time and reports values for a
-    // single core of each cluster, we work out how much CPU time to attribute
-    // to each cluster and frequency through the following approximation:
-    // (1) For each cluster, we compute how much of the execution happened on
-    //     cores of the cluster vs. cores on other clusters
-    //     (current_cluster_proportion).
-    // (2) We assume that the time spent in idle will be mostly in the lower
-    //     frequency band of the cluster. For that reason, we subtract the
-    //     average idle time of a cluster's core from the cluster's first
-    //     entries (lowest frequencies) in time_in_state.
-    // (3) For the remaining frequencies, we calculate the proportion of
-    //     active time the cluster spent in each frequency
-    //     (frequency_proportion).
-    // (4) Finally, we split the process's CPU time across clusters and
-    //     frequencies based on current_cluster_proportion and
-    //     frequency_proportion.
-
-    uint32_t last_core_index = -1;
-    uint32_t next_core_index = -1;
-    // Idle time of the current cluster that hasn't been attributed to a
-    // specific frequency state yet, for (2).
-    base::TimeDelta current_cluster_unattributed_idle_wall_time;
-    // Average wall time the current cluster's cores were active for, for (3).
-    base::TimeDelta current_cluster_active_wall_time;
-    // Proportion of the current cluster's core's cumulative active time of
-    // the total active time across all cores, for (1).
-    double current_cluster_proportion = 0;
-
-    for (size_t state_index = 0; state_index < time_in_state_.size();
-         ++state_index) {
-      const base::CPU::TimeInStateEntry& entry = time_in_state_[state_index];
-      DCHECK_GT(approximate_time_in_state_reporters_.size(),
-                static_cast<size_t>(entry.core_type));
-      std::unique_ptr<TimeInStateReporter>& reporter =
-          approximate_time_in_state_reporters_[static_cast<size_t>(
-              entry.core_type)];
-      if (!reporter) {
-        reporter = std::make_unique<TimeInStateReporter>(
-            process_type_, entry.core_type, /*is_approximate=*/true);
-      }
-
-      // Compute delta since last cycle per entry.
-      uint32_t frequency_mhz = entry.core_frequency_khz / 1000;
-      base::TimeDelta& reported_time = reported_time_in_state_[std::make_tuple(
-          entry.core_type, entry.cluster_core_index, frequency_mhz)];
-      base::TimeDelta time_delta = entry.cumulative_time - reported_time;
-      reported_time = entry.cumulative_time;
-
-      // In the first cycle (wall_time_delta == now), we can't really trust
-      // active_time_per_core (because we don't know the absolute time
-      // domain of cpuidle values), so skip reporting.
-      bool first_cycle = wall_time_delta == (now - base::TimeTicks());
-
-      if (first_cycle || time_delta <= base::TimeDelta() ||
-          process_cpu_time_delta <= base::TimeDelta() || time_delta.is_inf()) {
-        continue;
-      }
-
-      if (last_core_index != entry.cluster_core_index) {
-        // This is the first entry for a new cluster. Find the next
-        // cluster's first core and compute the cluster's active/idle wall
-        // time (3) and proportion of total execution time (1).
-        next_core_index = FindNextClusterCoreIndex(state_index);
-
-        base::TimeDelta cluster_active_time;
-        base::TimeDelta cluster_idle_time;
-        for (size_t core_index = entry.cluster_core_index;
-             core_index < next_core_index; ++core_index) {
-          cluster_idle_time += core_idle_times_[core_index];
-          cluster_active_time += wall_time_delta - core_idle_times_[core_index];
-        }
-
-        size_t num_cores = next_core_index - entry.cluster_core_index;
-        if (cluster_active_time.is_inf()) {
-          current_cluster_active_wall_time = cluster_active_time;
-        } else {
-          current_cluster_active_wall_time = cluster_active_time / num_cores;
-        }
-        current_cluster_unattributed_idle_wall_time =
-            cluster_idle_time / num_cores;
-
-        // (1) Proportion of execution on this cluster's cores vs others.
-        current_cluster_proportion = 0;
-        if (total_active_time.is_positive() && !total_active_time.is_inf() &&
-            !cluster_active_time.is_inf()) {
-          current_cluster_proportion = cluster_active_time / total_active_time;
-        }
-
-        last_core_index = entry.cluster_core_index;
-      }
-
-      // (2) Assign the cluster's idle wall time to the first entries, i.e.
-      // lowest frequencies.
-      if (time_delta < current_cluster_unattributed_idle_wall_time) {
-        // Attribute this frequency state entirely to idle time, skip it.
-        current_cluster_unattributed_idle_wall_time -= time_delta;
-        continue;
-      } else if (current_cluster_unattributed_idle_wall_time >
-                 base::TimeDelta()) {
-        time_delta -= current_cluster_unattributed_idle_wall_time;
-        current_cluster_unattributed_idle_wall_time = base::TimeDelta();
-      }
-
-      // (3) Proportion of active wall time that this cluster spent in the
-      // frequency state.
-      double frequency_proportion = 0;
-      if (current_cluster_active_wall_time.is_positive() &&
-          !current_cluster_active_wall_time.is_inf()) {
-        frequency_proportion = time_delta / current_cluster_active_wall_time;
-      }
-
-      // (4) Scale the process's cpu time by the cluster/frequency pair's
-      // relative proportion of execution time. Note that we calculate
-      // double values for the proportions above first to avoid integer
-      // overflow in the presence of large time_delta values.
-      uint64_t delta_us = process_cpu_time_delta.InMicroseconds() *
-                          frequency_proportion * current_cluster_proportion;
-
-      reporter->AddMicroseconds(frequency_mhz, delta_us);
-    }
-  }
-
-  // Returns the core index of the first core of the next cluster after the
-  // cluster of the given entry in |time_in_state_|. Returns max core_index + 1
-  // if no further clusters exist.
-  size_t FindNextClusterCoreIndex(size_t state_index) {
-    for (size_t next_state_index = state_index;
-         next_state_index < time_in_state_.size(); ++next_state_index) {
-      const auto& next_entry = time_in_state_[next_state_index];
-      if (next_entry.cluster_core_index !=
-          time_in_state_[state_index].cluster_core_index) {
-        return next_entry.cluster_core_index;
-      }
-    }
-    // No further clusters, return max core index + 1.
-    return core_idle_times_.size();
-  }
-
   // Accessed on |task_runner_|.
   SEQUENCE_CHECKER(thread_pool_);
   raw_ptr<base::ProcessMetrics> process_metrics_;
@@ -725,21 +415,8 @@ class ProcessCpuTimeMetrics::DetailedCpuTimeMetrics {
   base::PlatformThreadId main_thread_id_;
   base::TimeDelta reported_cpu_time_;
   base::flat_map<base::PlatformThreadId, ThreadDetails> thread_details_;
-  std::array<std::unique_ptr<TimeInStateReporter>,
-             static_cast<size_t>(base::CPU::CoreType::kMaxValue) + 1u>
-      time_in_state_reporters_ = {};
-  std::array<std::unique_ptr<TimeInStateReporter>,
-             static_cast<size_t>(base::CPU::CoreType::kMaxValue) + 1u>
-      approximate_time_in_state_reporters_ = {};
-  base::flat_map<ClusterFrequency, base::TimeDelta /*time_in_state*/>
-      reported_time_in_state_;
-  base::CPU::CoreIdleTimes reported_core_idle_times_;
-  base::TimeTicks last_time_in_state_walltime_;
-  // Stored as instance variables to avoid allocation churn.
+  // Stored as instance variable to avoid allocation churn.
   base::ProcessMetrics::CPUUsagePerThread cumulative_thread_times_;
-  base::ProcessMetrics::TimeInStatePerThread time_in_state_per_thread_;
-  base::CPU::TimeInState time_in_state_;
-  base::CPU::CoreIdleTimes core_idle_times_;
 };
 
 // static
