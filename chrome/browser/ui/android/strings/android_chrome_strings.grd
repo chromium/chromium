@@ -5403,16 +5403,16 @@ To change this setting, <ph name="BEGIN_LINK">&lt;resetlink&gt;</ph>reset sync<p
         Continue as <ph name="NAME">%1$s<ex>Albus (or Albus Dumbledore)</ex></ph>
       </message>
       <message name="IDS_ACCOUNT_SELECTION_CONTENT_DESCRIPTION" desc="Accessibility string read when the Account Selection bottom sheet is opened. It describes the bottom sheet where a user can pick an account." is_accessibility_with_no_ui="true">
-        List of accounts to be selected.
+        Sign in bottom sheet.
       </message>
       <message name="IDS_ACCOUNT_SELECTION_SHEET_HALF_HEIGHT" desc="Accessibility string read when the Account Selection bottom sheet showing a list of the user's accounts is opened at half height. The sheet will occupy the bottom half the screen." is_accessibility_with_no_ui="true">
-        List of accounts to be selected opened at half height.
+        Sign in bottom sheet opened at half height.
       </message>
       <message name="IDS_ACCOUNT_SELECTION_SHEET_FULL_HEIGHT" desc="Accessibility string read when the Account Selection bottom sheet showing a list of the user's accounts is opened at full height. The sheet will occupy the entire screen." is_accessibility_with_no_ui="true">
-        List of accounts to be selected opened at full height.
+        Sign in bottom sheet opened at full height.
       </message>
       <message name="IDS_ACCOUNT_SELECTION_SHEET_CLOSED" desc="Accessibility string read when the Account Selection bottom sheet showing a list of the user's accounts is closed." is_accessibility_with_no_ui="true">
-        List of accounts to be selected is closed.
+        Sign in bottom sheet is closed.
       </message>
       <message name="IDS_VERIFY_SHEET_TITLE" desc="Header for verify sheet.">
         Verifying…

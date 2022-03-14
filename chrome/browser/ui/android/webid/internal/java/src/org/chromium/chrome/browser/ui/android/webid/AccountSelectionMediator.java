@@ -28,6 +28,7 @@ import org.chromium.components.url_formatter.SchemeDisplay;
 import org.chromium.components.url_formatter.UrlFormatter;
 import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
+import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 
 import java.util.Arrays;
@@ -97,9 +98,9 @@ class AccountSelectionMediator {
 
     private boolean handleBackPress() {
         if (mVisible && mSelectedAccount != null && mAccounts.size() != 1) {
-            showAccountsInternal(mRpEtldPlusOne, mIdpEtldPlusOne, mAccounts,
-                    /*selectedAccount=*/null, mIdpMetadata, mClientMetadata,
-                    /*isAutoSignIn=*/false);
+            mSelectedAccount = null;
+            showAccountsInternal(mRpEtldPlusOne, mIdpEtldPlusOne, mAccounts, mIdpMetadata,
+                    mClientMetadata, /*isAutoSignIn=*/false, /*focusItem=*/ItemProperties.HEADER);
             return true;
         }
         return false;
@@ -138,15 +139,8 @@ class AccountSelectionMediator {
     }
 
     void showVerifySheet(Account account) {
-        updateSheet(HeaderType.VERIFY, Arrays.asList(account), /*areAccountsClickable=*/false);
-        showContent();
-
-        // When TalkBack is enabled, updating |mSheetItems| clears the current item's accessibility
-        // focus and TalkBack reads the bottom sheet's content description -
-        // {@link AccountSelectionBottomSheetContent#getSheetContentDescriptionStringId()}.
-        // Make TalkBack announce the verify header text to clarify to the user that the browser is
-        // not showing a second sign in prompt.
-        mBottomSheetContent.announceVerifyHeaderText();
+        updateSheet(HeaderType.VERIFY, Arrays.asList(account), /*areAccountsClickable=*/false,
+                /* focusItem=*/ItemProperties.HEADER);
     }
 
     void hideBottomSheet() {
@@ -156,32 +150,31 @@ class AccountSelectionMediator {
     void showAccounts(String rpEtldPlusOne, String idpEtldPlusOne, List<Account> accounts,
             IdentityProviderMetadata idpMetadata, ClientIdMetadata clientMetadata,
             boolean isAutoSignIn) {
-        Account selectedAccount = accounts.size() == 1 ? accounts.get(0) : null;
-        showAccountsInternal(rpEtldPlusOne, idpEtldPlusOne, accounts, selectedAccount, idpMetadata,
-                clientMetadata, isAutoSignIn);
+        mSelectedAccount = accounts.size() == 1 ? accounts.get(0) : null;
+        showAccountsInternal(rpEtldPlusOne, idpEtldPlusOne, accounts, idpMetadata, clientMetadata,
+                isAutoSignIn, /*focusItem=*/ItemProperties.HEADER);
     }
 
     private void showAccountsInternal(String rpEtldPlusOne, String idpEtldPlusOne,
-            List<Account> accounts, Account selectedAccount, IdentityProviderMetadata idpMetadata,
-            ClientIdMetadata clientMetadata, boolean isAutoSignIn) {
+            List<Account> accounts, IdentityProviderMetadata idpMetadata,
+            ClientIdMetadata clientMetadata, boolean isAutoSignIn, PropertyKey focusItem) {
         mRpEtldPlusOne = rpEtldPlusOne;
         mIdpEtldPlusOne = idpEtldPlusOne;
         mAccounts = accounts;
         mIdpMetadata = idpMetadata;
         mClientMetadata = clientMetadata;
-        mSelectedAccount = selectedAccount;
 
         if (mSelectedAccount != null) {
-            accounts = Arrays.asList(selectedAccount);
+            accounts = Arrays.asList(mSelectedAccount);
         }
 
         HeaderType headerType = isAutoSignIn ? HeaderType.AUTO_SIGN_IN : HeaderType.SIGN_IN;
-        updateSheet(headerType, accounts, /*areAccountsClickable=*/mSelectedAccount == null);
-        showContent();
+        updateSheet(
+                headerType, accounts, /*areAccountsClickable=*/mSelectedAccount == null, focusItem);
     }
 
-    private void updateSheet(
-            HeaderType headerType, List<Account> accounts, boolean areAccountsClickable) {
+    private void updateSheet(HeaderType headerType, List<Account> accounts,
+            boolean areAccountsClickable, PropertyKey focusItem) {
         updateAccounts(mIdpEtldPlusOne, accounts, areAccountsClickable);
 
         PropertyModel headerModel =
@@ -214,6 +207,9 @@ class AccountSelectionMediator {
                 isDataSharingConsentVisible
                         ? createDataSharingConsentItem(mIdpEtldPlusOne, mClientMetadata)
                         : null);
+
+        showContent();
+        mBottomSheetContent.focusForAccessibility(focusItem);
     }
 
     /**
@@ -268,10 +264,12 @@ class AccountSelectionMediator {
     void onAccountSelected(Account selectedAccount) {
         if (!mVisible) return;
 
-        if (mSelectedAccount == null && !selectedAccount.isSignIn()) {
-            showAccountsInternal(mRpEtldPlusOne, mIdpEtldPlusOne, mAccounts, selectedAccount,
-                    mIdpMetadata, mClientMetadata, /*isAutoSignIn=*/false);
-            mBottomSheetContent.focusContinueButtonForAccessibility();
+        Account oldSelectedAccount = mSelectedAccount;
+        mSelectedAccount = selectedAccount;
+        if (oldSelectedAccount == null && !mSelectedAccount.isSignIn()) {
+            showAccountsInternal(mRpEtldPlusOne, mIdpEtldPlusOne, mAccounts, mIdpMetadata,
+                    mClientMetadata, /*isAutoSignIn=*/false,
+                    /*focusItem=*/ItemProperties.CONTINUE_BUTTON);
             return;
         }
 
