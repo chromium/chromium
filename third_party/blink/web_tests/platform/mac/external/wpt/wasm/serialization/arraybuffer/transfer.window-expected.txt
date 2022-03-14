@@ -1,0 +1,7 @@
+This is a testharness.js-based test.
+FAIL Serializing a WebAssembly.Memory-backed ArrayBuffer works Failed to execute 'postMessage' on 'Window': ArrayBuffer is not detachable and could not be cloned.
+FAIL Transfering a WebAssembly.Memory-backed ArrayBuffer throws assert_throws_js: function "() => {
+    postMessage('foo', '*', [buffer]);
+  }" did not throw
+Harness: the test ran to completion.
+

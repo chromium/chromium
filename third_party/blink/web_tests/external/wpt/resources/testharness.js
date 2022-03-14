@@ -126,7 +126,7 @@
                             } catch (e) {}
                         }
                     }
-                    if (supports_post_message(w) && w !== self) {
+                    if (w !== self) {
                         w.postMessage(message_arg, "*");
                     }
                 });
@@ -4416,14 +4416,6 @@
 
     const get_stack = function() {
         var stack = new Error().stack;
-        // IE11 does not initialize 'Error.stack' until the object is thrown.
-        if (!stack) {
-            try {
-                throw new Error();
-            } catch (e) {
-                stack = e.stack;
-            }
-        }
 
         // 'Error.stack' is not supported in all browsers/versions
         if (!stack) {
@@ -4650,43 +4642,6 @@
             return location.pathname.substring(location.pathname.lastIndexOf('/') + 1, location.pathname.indexOf('.'));
         }
         return "Untitled";
-    }
-
-    function supports_post_message(w)
-    {
-        var supports;
-        var type;
-        // Given IE implements postMessage across nested iframes but not across
-        // windows or tabs, you can't infer cross-origin communication from the presence
-        // of postMessage on the current window object only.
-        //
-        // Touching the postMessage prop on a window can throw if the window is
-        // not from the same origin AND post message is not supported in that
-        // browser. So just doing an existence test here won't do, you also need
-        // to wrap it in a try..catch block.
-        try {
-            type = typeof w.postMessage;
-            if (type === "function") {
-                supports = true;
-            }
-
-            // IE8 supports postMessage, but implements it as a host object which
-            // returns "object" as its `typeof`.
-            else if (type === "object") {
-                supports = true;
-            }
-
-            // This is the case where postMessage isn't supported AND accessing a
-            // window property across origins does NOT throw (e.g. old Safari browser).
-            else {
-                supports = false;
-            }
-        } catch (e) {
-            // This is the case where postMessage isn't supported AND accessing a
-            // window property across origins throws (e.g. old Firefox browser).
-            supports = false;
-        }
-        return supports;
     }
 
     /**

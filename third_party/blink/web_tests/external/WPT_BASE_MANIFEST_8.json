@@ -348,6 +348,34 @@
        {}
       ]
      ],
+     "block-in-inline-004-crash.html": [
+      "41731a986576b7e92a825cee4aad29c9403e0d26",
+      [
+       null,
+       {}
+      ]
+     ],
+     "block-in-inline-005-crash.html": [
+      "599ac2226faaffe938934933e5a97bd613bbc7b3",
+      [
+       null,
+       {}
+      ]
+     ],
+     "block-in-inline-006-crash.html": [
+      "5bc5276a31477cf43482902c0c8ee0700cd58172",
+      [
+       null,
+       {}
+      ]
+     ],
+     "block-in-inline-007-crash.html": [
+      "a8ab007842978f5d743f32fedaba5f955ea15792",
+      [
+       null,
+       {}
+      ]
+     ],
      "break-before-with-no-fragmentation-crash.html": [
       "fb80ec45bceec093481fa54513c606c5952628b1",
       [
@@ -93204,7 +93232,7 @@
      ],
      "container-queries": {
       "canvas-as-container-001.html": [
-       "5e1d595e98b972cd97117ddec5609c8b8c0b1bef",
+       "2f0c5f4827cadd5b9d7c50a1e71f27e97a966d4a",
        [
         null,
         [
@@ -93217,7 +93245,7 @@
        ]
       ],
       "canvas-as-container-002.html": [
-       "3e817a6415acee1e9a9fb257889ef89ab6d5512a",
+       "0638d1e648656ce5cddc007663e701f7c950a49a",
        [
         null,
         [
@@ -93230,7 +93258,7 @@
        ]
       ],
       "canvas-as-container-003.html": [
-       "7e86ebc50abd4035495a20c657dedc81c3f73551",
+       "7c2651ff46915d0467b315aa21196c205ae56bf1",
        [
         null,
         [
@@ -93243,7 +93271,7 @@
        ]
       ],
       "canvas-as-container-004.html": [
-       "46918b00e8fca8afe3963b4c49c2d2e4180060ff",
+       "d9b661c0f95e998cbfe79359cfd1fa7ca10949c2",
        [
         null,
         [
@@ -93269,7 +93297,7 @@
        ]
       ],
       "chrome-legacy-skip-recalc.html": [
-       "d4a27c3d77d49540f11ee777b18ea7cf809b70a9",
+       "b86a4091a2ca4909515746b2904508908e278816",
        [
         null,
         [
@@ -93399,7 +93427,7 @@
        ]
       ],
       "svg-foreignobject-no-size-container.html": [
-       "9d23c85d00bf651bcd178ee5619e1f8721658435",
+       "38fc493a16259bec9091850aed09fbeeae313187",
        [
         null,
         [
@@ -93412,7 +93440,7 @@
        ]
       ],
       "svg-g-no-size-container.html": [
-       "652a4e24af02da687067702203b7f64c90af2542",
+       "ed9e85367676d988ebff81d60a9ab9201b6ef8d6",
        [
         null,
         [
@@ -93425,7 +93453,7 @@
        ]
       ],
       "table-inside-container-changing-display.html": [
-       "bdb99c182417fa090296fb86bc44327b915f8338",
+       "33a4f4fe721b11e6ea10b0c15b8e42465fd1f1f1",
        [
         null,
         [
@@ -93451,7 +93479,7 @@
        ]
       ],
       "whitespace-update-after-removal.html": [
-       "8bfcd6d752b543b894c7867ec4338d82007e4584",
+       "a7df55efc6eb9ce9b25646ce614cc922dcecf7ee",
        [
         null,
         [
@@ -121671,6 +121699,19 @@
         {}
        ]
       ],
+      "auto-track-sizing-002.html": [
+       "c44c9d392594a0241c8c9f8e2c5200d964ff7c62",
+       [
+        null,
+        [
+         [
+          "/css/css-grid/subgrid/auto-track-sizing-002-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
       "baseline-001.html": [
        "995b1a8d2ae1aaa7c0230379e5b799b12ac9e93c",
        [
@@ -131394,6 +131435,97 @@
         [
          [
           "/css/css-masking/clip-path/reference/clip-path-scroll-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "clip-path-shape-001.html": [
+       "6033e9743e4f4656c63cb56e591b85b7c43313ae",
+       [
+        null,
+        [
+         [
+          "/css/css-masking/clip-path/reference/clip-path-path-001-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "clip-path-shape-002-units.html": [
+       "b928876a0af353605de810bc70cd8294080bac22",
+       [
+        null,
+        [
+         [
+          "/css/css-masking/clip-path/reference/clip-path-path-002-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "clip-path-shape-002.html": [
+       "3cb39f8d44863357d9a2e93cd0b166bccd69e73b",
+       [
+        null,
+        [
+         [
+          "/css/css-masking/clip-path/reference/clip-path-path-002-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "clip-path-shape-003.html": [
+       "22e7d9aaf5374c9b7e4e3c2d50ecefbcec134b66",
+       [
+        null,
+        [
+         [
+          "/css/css-masking/clip-path/reference/clip-path-shape-003-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "clip-path-shape-004.html": [
+       "14e3ba6329d5ebca161dd20a6a8a94053704829a",
+       [
+        null,
+        [
+         [
+          "/css/css-masking/clip-path/reference/clip-path-shape-004-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "clip-path-shape-interpolation-001.html": [
+       "1d881e5bd58e070b76b87f04ff8aa61544c67e41",
+       [
+        null,
+        [
+         [
+          "/css/css-masking/clip-path/reference/clip-path-path-interpolation-001-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "clip-path-shape-interpolation-002.html": [
+       "9d8ab65b2d99b522342d1ce2a599d404474ea188",
+       [
+        null,
+        [
+         [
+          "/css/css-masking/clip-path/reference/clip-path-path-interpolation-002-ref.html",
           "=="
          ]
         ],
@@ -157850,6 +157982,19 @@
        [
         [
          "/css/css-tables/toggle-row-display-property-001-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "visibility-collapse-border-spacing.html": [
+      "738cea16d5d0d41a2990fead77e8fd1c8bc246ec",
+      [
+       null,
+       [
+        [
+         "/css/reference/ref-filled-green-100px-square.xht",
          "=="
         ]
        ],
@@ -236524,7 +236669,7 @@
      "f0d1e9f64b369dd5c46866e3008aac3f9c710215",
      []
     ],
-    "fedcm-logout.https.html.headers": [
+    "fedcm-logout-rps.https.html.headers": [
      "90454dbb227b7a3be84fe4618980ef7e74622099",
      []
     ],
@@ -236574,7 +236719,7 @@
       []
      ],
      "fedcm-mock.js": [
-      "3d2359a6dfc1552fb64b8903048bbcb0603fe650",
+      "955cb9727f4d6333336da89f7c274317c725a706",
       []
      ],
      "fedcm.json": [
@@ -247347,15 +247492,15 @@
        []
       ],
       "container-computed-expected.txt": [
-       "018b51e61ce5d31bd0db9f6f689e26d875a9a6b2",
+       "bbe86ab75b72693cf96df110ca8d00c774656d6d",
        []
       ],
       "container-parsing-expected.txt": [
-       "3803908eca0e0ba7e9e2f326d45f869682f86167",
+       "892c07ec079a25b7c3b2fd2fd6b15515e02839c8",
        []
       ],
       "container-type-parsing-expected.txt": [
-       "00429bde7e7d826357dcbbbf812b428dc8fc6d2e",
+       "e84c22962745e3dd8e2384bec9653ab264cac9cc",
        []
       ],
       "counters-ref.html": [
@@ -259948,7 +260093,7 @@
       ]
      },
      "grid-layout-properties-expected.txt": [
-      "cc24cf61c496dd541664efef4042c94f76142108",
+      "b40da75903ec12198399a8f04f2a72f066360645",
       []
      ],
      "grid-model": {
@@ -260382,6 +260527,10 @@
       ],
       "auto-track-sizing-001-ref.html": [
        "800f87e5d00a767f1cb5e5816ffd46110fbd4e80",
+       []
+      ],
+      "auto-track-sizing-002-ref.html": [
+       "5d4b9c817885d6224d63cea0e45065b8047acb79",
        []
       ],
       "baseline-001-ref.html": [
@@ -262116,6 +262265,10 @@
       []
      ],
      "animations": {
+      "clip-path-interpolation-shape-expected.txt": [
+       "ddcf708d0467d52eb01ceee285b8e72d72db0122",
+       []
+      ],
       "mask-image-interpolation-expected.txt": [
        "2ac1de9809a44d666fc616aee622bba3414acccc",
        []
@@ -262367,6 +262520,14 @@
        ],
        "clip-path-scroll-ref.html": [
         "a647e8a0c2f1d593a655e523579740fd8db57c90",
+        []
+       ],
+       "clip-path-shape-003-ref.html": [
+        "46e098c4eb6489fc44301d6bf9b243e836b2ca31",
+        []
+       ],
+       "clip-path-shape-004-ref.html": [
+        "ec8f9410795138f7a3490d7a4169b5ebd5e37474",
         []
        ],
        "clip-path-square-001-ref.html": [
@@ -262826,6 +262987,10 @@
       }
      },
      "parsing": {
+      "clip-path-shape-parsing-expected.txt": [
+       "f692716296d79f29a49054c26bbc3c6928cad784",
+       []
+      ],
       "clip-path-valid-expected.txt": [
        "60c4fb024402c9c1f5dbc24062b601ff48266451",
        []
@@ -310288,8 +310453,8 @@
      "2db45e1a047c174b9c072cddd88d6f749c59eb7c",
      []
     ],
-    "navigation-counter.helper.js": [
-     "81cf33f22fd2676fbd56c265dfd4ca948971f50b",
+    "navigation-id.helper.js": [
+     "fd6e24d5c584f0871a800e6b410e7baea8a1a559",
      []
     ],
     "performanceobservers.js": [
@@ -313817,7 +313982,7 @@
      []
     ],
     "testharness.js": [
-     "ca0a92a89d9950253ed0a5e7b2fe69afba711a3b",
+     "fcff33a59406ced4ef0b3a2da1afde19418cf5c2",
      []
     ],
     "testharness.js.headers": [
@@ -343507,6 +343672,13 @@
        {}
       ]
      ],
+     "currentchange-before-popsate-transitionWhile.html": [
+      "2a0155a6ed52bff80ce06b1a797615c2d5191e01",
+      [
+       null,
+       {}
+      ]
+     ],
      "currentchange-dispose-ordering.html": [
       "f9d23f7dd5da79afb95bd998c618685c225c9e6a",
       [
@@ -361283,7 +361455,14 @@
      ]
     ],
     "fedcm-logout-rps.https.html": [
-     "d9495266183f5bb5e4ddbd9c55d4d3848e068924",
+     "9e41d973dd3b078b4716a4a273229a0debc1dc37",
+     [
+      null,
+      {}
+     ]
+    ],
+    "fedcm-logout.https.html": [
+     "4b38e863bf4ae91f28aa48dc11df6447ae6758ed",
      [
       null,
       {}
@@ -361297,7 +361476,7 @@
      ]
     ],
     "fedcm-revoke.https.html": [
-     "f3a4eacfa563f2c839d532b69b91f4eb1b7e0976",
+     "84a20b03267301d35ae49ef0c6ad0bfbb5bc811c",
      [
       null,
       {}
@@ -365121,14 +365300,14 @@
        ]
       ],
       "canvas-as-container-005.html": [
-       "391224410ddc39c0a57bd3b78a4878c2394983f7",
+       "9132592434c53ae28894cbd00dd02c7e5d402d39",
        [
         null,
         {}
        ]
       ],
       "canvas-as-container-006.html": [
-       "4b628181b90bd4fac55efd9d3763c25271f166b6",
+       "02dbce62753961e6bb3d9a1472c2cb80626c548c",
        [
         null,
         {}
@@ -365142,7 +365321,7 @@
        ]
       ],
       "container-computed.html": [
-       "2bebfa82207618feca557b2753e7a972926b2a2e",
+       "d1aa96136f161dec2ec008bad656de506ad8ee64",
        [
         null,
         {}
@@ -365198,7 +365377,7 @@
        ]
       ],
       "container-parsing.html": [
-       "6c7213ac4a5d41cf17c46cfab6ecd2b32d38f8b2",
+       "0167c120b50bcd413e29620c90c86eee2407a462",
        [
         null,
         {}
@@ -365247,7 +365426,7 @@
        ]
       ],
       "container-type-parsing.html": [
-       "2ed93c20225b8b181e4f487b8d1be5be35bbfc65",
+       "2b28ebf1cd3c4c95821b7fe35d52e2ac18448b2d",
        [
         null,
         {}
@@ -365345,7 +365524,7 @@
        ]
       ],
       "fragmented-container-001.html": [
-       "884ab6c4cfe2eb0259151c938f6bfcfa8383cf7d",
+       "886f179054cd0511d261da1d03cf59b704110e50",
        [
         null,
         {}
@@ -365394,7 +365573,7 @@
        ]
       ],
       "multicol-container-001.html": [
-       "5e68afc52dbbd72989e5d54566b4cbb8a200d61a",
+       "3032170ac61bee9d4322d1992ab8a27af668c48e",
        [
         null,
         {}
@@ -365478,7 +365657,7 @@
        ]
       ],
       "svg-root-size-container.html": [
-       "9e8d09218f74ae37a48e519d5f999a27575c0028",
+       "70ce40c0bcefc595a7afedadf945ac6c8b19b2fc",
        [
         null,
         {}
@@ -372285,7 +372464,7 @@
        ]
       ],
       "grid-template-shorthand-areas-valid.html": [
-       "59770ed430bc5cab4c6915cbebe10694012a86d1",
+       "4a22784332f4aa95d5a2b08345dd3cde171e79e4",
        [
         null,
         {}
@@ -373623,6 +373802,13 @@
         {}
        ]
       ],
+      "clip-path-interpolation-shape.html": [
+       "ad3e2a0bdbb549c0cded96cc1da4d8be533bb5cf",
+       [
+        null,
+        {}
+       ]
+      ],
       "mask-image-interpolation.html": [
        "beb9c9eaab0344cfdbb61700f52d9ff1f033e148",
        [
@@ -373722,6 +373908,13 @@
       ],
       "clip-path-invalid.html": [
        "6b91f74ad484d4d0d70fa679db378d04e238125f",
+       [
+        null,
+        {}
+       ]
+      ],
+      "clip-path-shape-parsing.html": [
+       "5e8eb8e117eab82a5c6ada99d88a85bb46fdf954",
        [
         null,
         {}
@@ -424199,7 +424392,7 @@
    },
    "font-access": {
     "font_access_basic.tentative.https.window.js": [
-     "3ae49bc670c88008b56876a2b5634239d78744ef",
+     "7d94afc6c1778ac1eeb4195e46862c08b5ad9388",
      [
       "font-access/font_access_basic.tentative.https.window.html",
       {
@@ -424249,6 +424442,28 @@
         [
          "script",
          "resources/font-data.js"
+        ],
+        [
+         "script",
+         "resources/font-test-utils.js"
+        ]
+       ]
+      }
+     ]
+    ],
+    "font_access_detached_iframe.tentative.https.window.js": [
+     "9d0c8bc5b02743e89eed7c10424dad350d3b3ac9",
+     [
+      "font-access/font_access_detached_iframe.tentative.https.window.html",
+      {
+       "script_metadata": [
+        [
+         "script",
+         "/resources/testdriver.js"
+        ],
+        [
+         "script",
+         "/resources/testdriver-vendor.js"
         ],
         [
          "script",
@@ -452147,6 +452362,13 @@
       ],
       "parser-inserted-stylesheet-link.tentative.html": [
        "0a771448fd2d4152619f9f420e2d5c30efcd9626",
+       [
+        null,
+        {}
+       ]
+      ],
+      "remove-pending-async-render-blocking-script.html": [
+       "5f6e8b34d1ee0cb1d39595013372e80e1170cff3",
        [
         null,
         {}
@@ -484766,8 +484988,8 @@
       {}
      ]
     ],
-    "navigation-counter.tentative.html": [
-     "0ddc8033eddb0dec69ab838df8b91ccaa2566a61",
+    "navigation-id.tentative.html": [
+     "08dbd4b01b1359b8af3971e03cb33743e12d58fa",
      [
       null,
       {
@@ -518371,6 +518593,13 @@
       {}
      ]
     ],
+    "block-string-assignment-to-attribute-via-attribute-node.tentative.html": [
+     "b881e8cb37e2d020b7f07e63a39ecf157b65fb50",
+     [
+      null,
+      {}
+     ]
+    ],
     "block-text-node-insertion-into-script-element.tentative.html": [
      "819753652a975247415d85cb77b65ba9a358bfa5",
      [
@@ -524942,7 +525171,7 @@
     "serialization": {
      "arraybuffer": {
       "transfer.window.js": [
-       "b2b5697fca306a9e3fa05cc60abac172dbc4275e",
+       "0258581b1eb0ae56bd851e37ef93b1672b91182d",
        [
         "wasm/serialization/arraybuffer/transfer.window.html",
         {}
