@@ -127,13 +127,40 @@ ci.builder(
     reclient_instance = rbe_instance.DEFAULT,
 )
 
+ci.builder(
+    name = "android-nougat-x86-rel",
+    builder_spec = builder_config.builder_spec(
+        gclient_config = builder_config.gclient_config(
+            config = "chromium",
+            apply_configs = ["android", "enable_reclient", "enable_wpr_tests"],
+        ),
+        chromium_config = builder_config.chromium_config(
+            config = "android",
+            build_config = builder_config.build_config.RELEASE,
+            target_bits = 32,
+            target_platform = builder_config.target_platform.ANDROID,
+        ),
+        android_config = builder_config.android_config(
+            config = "x86_builder_mb",
+        ),
+        execution_mode = builder_config.execution_mode.COMPILE_AND_TEST,
+    ),
+    console_view_entry = consoles.console_view_entry(
+        category = "emulator|x86|rel",
+        short_name = "N",
+    ),
+    goma_backend = None,
+    reclient_instance = rbe_instance.DEFAULT,
+    reclient_jobs = rbe_jobs.DEFAULT,
+)
+
 # TODO(crbug.com/1022533#c40): Remove this builder once there are no associated
 # disabled tests.
 ci.builder(
     name = "android-pie-x86-fyi-rel",
     console_view_entry = consoles.console_view_entry(
-        category = "emulator|P|x86",
-        short_name = "rel",
+        category = "emulator|x86|rel",
+        short_name = "P",
     ),
     goma_jobs = goma.jobs.J150,
     # Set to an empty list to avoid chromium-gitiles-trigger triggering new
@@ -156,8 +183,8 @@ ci.builder(
 ci.builder(
     name = "android-11-x86-fyi-rel",
     console_view_entry = consoles.console_view_entry(
-        category = "emulator|11|x86",
-        short_name = "rel",
+        category = "emulator|x86|rel",
+        short_name = "11",
     ),
     # Set to an empty list to avoid chromium-gitiles-trigger triggering new
     # builds. Also we don't set any `schedule` since this builder is for
@@ -168,8 +195,8 @@ ci.builder(
 ci.builder(
     name = "android-12-x64-fyi-rel",
     console_view_entry = consoles.console_view_entry(
-        category = "emulator|12|x64",
-        short_name = "rel",
+        category = "emulator|x64|rel",
+        short_name = "12",
     ),
     # Set to an empty list to avoid chromium-gitiles-trigger triggering new
     # builds. Also we don't set any `schedule` since this builder is for

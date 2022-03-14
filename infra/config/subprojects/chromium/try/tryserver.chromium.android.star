@@ -231,6 +231,11 @@ try_.builder(
 )
 
 try_.builder(
+    name = "android-nougat-x86-rel",
+    mirrors = ["ci/android-nougat-x86-rel"],
+)
+
+try_.builder(
     name = "android-opus-arm-rel",
 )
 

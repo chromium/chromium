@@ -101,8 +101,8 @@
       # on the chromium.gpu waterfall, which it mirrors via trybots.pyl.
       'android-marshmallow-arm64-rel': 'gpu_tests_android_release_bot_minimal_symbols_arm64_fastbuild_reclient',
 
-      'android-marshmallow-x86-rel': 'android_release_bot_minimal_symbols_x86_fastbuild_resource_allowlisting_webview_google_reclient',
-      'android-marshmallow-x86-rel-non-cq': 'android_release_bot_minimal_symbols_x86_fastbuild_resource_allowlisting_webview_google_reclient',
+      'android-marshmallow-x86-rel': 'android_release_bot_minimal_symbols_x86_fastbuild_webview_google_reclient',
+      'android-marshmallow-x86-rel-non-cq': 'android_release_bot_minimal_symbols_x86_fastbuild_webview_google_reclient',
       # TODO(crbug/1182468) Remove android coverage bots after coverage is
       # running on CQ.
       'android-pie-arm64-coverage-experimental-rel': 'android_release_bot_arm64_webview_monochrome_expectations_reclient',
@@ -124,6 +124,7 @@
       'android-pie-arm64-wpt-rel-non-cq': 'android_release_bot_minimal_symbols_arm64_webview_monochrome_reclient',
       'android-chrome-pie-x86-wpt-fyi-rel': 'android_release_bot_minimal_symbols_x86_fastbuild_webview_monochrome_reclient',
       'android-cronet-asan-x86-rel': 'android_cronet_release_bot_minimal_symbols_x86_clang_asan_reclient',
+      'android-nougat-x86-rel': 'android_release_bot_minimal_symbols_x86_fastbuild_webview_monochrome_reclient',
       'android-weblayer-pie-x86-wpt-fyi-rel': 'android_release_bot_minimal_symbols_x86_fastbuild_webview_monochrome_reclient',
       'android-weblayer-pie-x86-wpt-smoketest': 'android_release_bot_minimal_symbols_x86_fastbuild_webview_monochrome_reclient',
       'android-webview-pie-x86-wpt-fyi-rel': 'android_release_bot_minimal_symbols_x86_fastbuild_webview_monochrome_webview_shell_reclient',
@@ -832,9 +833,10 @@
       'android-cronet-x86-dbg-oreo-tests': 'android_cronet_debug_static_bot_x86',
       'android-cronet-x86-dbg-pie-tests': 'android_cronet_debug_static_bot_x86',
       'android-inverse-fieldtrials-pie-x86-fyi-rel': 'android_release_trybot_x86_fastbuild_webview_google_invert_fieldtrials',
-      'android-marshmallow-arm64-rel': 'gpu_tests_android_release_trybot_arm64_resource_allowlisting_fastbuild_java_coverage',
-      'android-marshmallow-x86-rel': 'android_release_trybot_x86_fastbuild_resource_allowlisting_webview_google_coverage',
-      'android-marshmallow-x86-rel-non-cq': 'android_release_trybot_x86_fastbuild_resource_allowlisting_webview_google',
+      'android-marshmallow-arm64-rel': 'gpu_tests_android_release_trybot_arm64_fastbuild_java_coverage',
+      'android-marshmallow-x86-rel': 'android_release_trybot_x86_fastbuild_webview_google_coverage',
+      'android-marshmallow-x86-rel-non-cq': 'android_release_trybot_x86_fastbuild_webview_google',
+      'android-nougat-x86-rel': 'android_release_trybot_x86_fastbuild_webview_monochrome',
       'android-oreo-arm64-cts-networkservice-dbg': 'android_debug_trybot_arm64',
       # TODO(crbug/1182468) Remove android coverage bots after coverage is
       # running on CQ.
@@ -844,8 +846,8 @@
       'android-pie-arm64-wpt-rel-non-cq': 'android_release_trybot_arm64_webview_monochrome',
       'android-pie-x86-rel': 'android_release_trybot_x86_fastbuild_webview_monochrome',
       'android-chrome-pie-x86-wpt-fyi-rel': 'android_release_trybot_x86_fastbuild_webview_monochrome',
-      'android-weblayer-10-x86-rel-tests': 'android_release_trybot_minimal_symbols_x86_fastbuild_resource_allowlisting_disable_proguard_chrome_google',
-      'android-weblayer-marshmallow-x86-rel-tests': 'android_release_trybot_minimal_symbols_x86_fastbuild_resource_allowlisting_disable_proguard_chrome_google',
+      'android-weblayer-10-x86-rel-tests': 'android_release_trybot_minimal_symbols_x86_fastbuild_disable_proguard_chrome_google',
+      'android-weblayer-marshmallow-x86-rel-tests': 'android_release_trybot_minimal_symbols_x86_fastbuild_disable_proguard_chrome_google',
       'android-weblayer-pie-x86-rel-tests': 'android_release_trybot_minimal_symbols_x86_fastbuild_disable_proguard_webview_monochrome',
       'android-weblayer-pie-x86-fyi-rel': 'android_release_trybot_x86_fastbuild_webview_monochrome',
       'android-weblayer-pie-x86-wpt-fyi-rel': 'android_release_trybot_x86_fastbuild_webview_monochrome',
@@ -1552,7 +1554,7 @@
       'chrome_google'
     ],
 
-    'android_release_bot_minimal_symbols_x86_fastbuild_resource_allowlisting_webview_google_reclient': [
+    'android_release_bot_minimal_symbols_x86_fastbuild_webview_google_reclient': [
       'android', 'release_bot_reclient', 'minimal_symbols', 'x86',
       'android_fastbuild', 'strip_debug_info', 'webview_google',
     ],
@@ -1629,7 +1631,7 @@
       'disable_proguard'
     ],
 
-    'android_release_trybot_minimal_symbols_x86_fastbuild_resource_allowlisting_disable_proguard_chrome_google': [
+    'android_release_trybot_minimal_symbols_x86_fastbuild_disable_proguard_chrome_google': [
       'android', 'release_trybot', 'minimal_symbols',
       'android_fastbuild', 'x86', 'strip_debug_info', 'disable_proguard',
       'chrome_google'
@@ -1641,12 +1643,12 @@
       'no_secondary_abi',
     ],
 
-    'android_release_trybot_x86_fastbuild_resource_allowlisting_webview_google': [
+    'android_release_trybot_x86_fastbuild_webview_google': [
       'android', 'release_trybot', 'x86', 'android_fastbuild',
       'strip_debug_info', 'webview_google',
     ],
 
-    'android_release_trybot_x86_fastbuild_resource_allowlisting_webview_google_coverage': [
+    'android_release_trybot_x86_fastbuild_webview_google_coverage': [
       'android', 'release_trybot', 'x86', 'android_fastbuild',
       'strip_debug_info', 'webview_google', 'use_java_coverage',
       'partial_code_coverage_instrumentation',
@@ -2426,7 +2428,7 @@
       'android_fastbuild',
     ],
 
-    'gpu_tests_android_release_trybot_arm64_resource_allowlisting_fastbuild_java_coverage': [
+    'gpu_tests_android_release_trybot_arm64_fastbuild_java_coverage': [
       'gpu_tests', 'android', 'release_trybot', 'arm64', 'static_angle',
       'strip_debug_info', 'android_fastbuild', 'webview_google',
       'use_java_coverage', 'partial_code_coverage_instrumentation',
