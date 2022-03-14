@@ -1,10 +1,14 @@
 <!DOCTYPE html>
 <script src="/resources/testharness.js"></script>
 <script src="/service-workers/service-worker/resources/test-helpers.sub.js"></script>
+<script src="/speculation-rules/prerender/resources/utils.js"></script>
 <body>
 <script>
 const SCOPE = './';
 const WORKER_URL = './postmessage-to-client-worker.js';
+
+const params = new URLSearchParams(location.search);
+const uid = params.get('uid');
 
 // This page tests behavior of a service worker before activation, so it should
 // never be activated.
@@ -30,7 +34,7 @@ async function registerServiceWorker() {
   });
   await registration.unregister();
 
-  const bc = new BroadcastChannel('prerender-channel');
+  const bc = new PrerenderChannel('prerender-channel', uid);
   bc.postMessage(message.data);
   bc.close();
 }

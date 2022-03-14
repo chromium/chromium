@@ -1,6 +1,10 @@
 <!DOCTYPE html>
 <script src="/resources/testharness.js"></script>
+<script src="/speculation-rules/prerender/resources/utils.js"></script>
 <script>
+const params = new URLSearchParams(location.search);
+const uid = params.get('uid');
+
 async function startPostMessage() {
   assert_true(document.prerendering);
   assert_not_equals(navigator.serviceWorker.controller, null,
@@ -11,7 +15,7 @@ async function startPostMessage() {
   navigator.serviceWorker.controller.postMessage('postmessage to worker');
   const result = await messagePromise;
 
-  const bc = new BroadcastChannel('prerender-channel');
+  const bc = new PrerenderChannel('prerender-channel', uid);
   bc.postMessage(result.data);
   bc.close();
 }
