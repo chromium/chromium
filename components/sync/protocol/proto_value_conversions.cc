@@ -147,7 +147,7 @@ class ToValueVisitor {
     if (!repeated_field.empty()) {
       std::unique_ptr<base::ListValue> list(new base::ListValue());
       for (const auto& field : repeated_field) {
-        list->Append(ToValue(field));
+        list->Append(base::Value::FromUniquePtrValue(ToValue(field)));
       }
       value_->Set(field_name, std::move(list));
     }
@@ -160,7 +160,7 @@ class ToValueVisitor {
     if (!repeated_field.empty()) {
       std::unique_ptr<base::ListValue> list(new base::ListValue());
       for (const auto& field : repeated_field) {
-        list->Append(ToValue(field));
+        list->Append(base::Value::FromUniquePtrValue(ToValue(field)));
       }
       value_->Set(field_name, std::move(list));
     }
