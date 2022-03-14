@@ -144,7 +144,7 @@ export class SettingsSecureDnsElement extends SettingsSecureDnsElementBase {
   private browserProxy_: PrivacyPageBrowserProxy =
       PrivacyPageBrowserProxyImpl.getInstance();
 
-  connectedCallback() {
+  override connectedCallback() {
     super.connectedCallback();
 
     // Fetch the options for the dropdown menu before configuring the setting

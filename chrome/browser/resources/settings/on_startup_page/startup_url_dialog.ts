@@ -87,7 +87,7 @@ export class SettingsStartupUrlDialogElement extends PolymerElement {
   private browserProxy_: StartupUrlsPageBrowserProxy =
       StartupUrlsPageBrowserProxyImpl.getInstance();
 
-  connectedCallback() {
+  override connectedCallback() {
     super.connectedCallback();
 
     if (this.model) {

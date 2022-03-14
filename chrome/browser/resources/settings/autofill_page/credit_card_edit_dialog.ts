@@ -133,7 +133,7 @@ export class SettingsCreditCardEditDialogElement extends
          expirationMonth <= now.getMonth()));
   }
 
-  connectedCallback() {
+  override connectedCallback() {
     super.connectedCallback();
 
     this.title_ = this.i18n(

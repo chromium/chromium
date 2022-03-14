@@ -94,7 +94,7 @@ export class SettingsAddressEditDialogElement extends
   private countryInfo_: CountryDetailManager =
       CountryDetailManagerImpl.getInstance();
 
-  connectedCallback() {
+  override connectedCallback() {
     super.connectedCallback();
 
     this.countryInfo_.getCountryList().then(countryList => {

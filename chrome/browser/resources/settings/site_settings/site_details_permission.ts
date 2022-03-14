@@ -89,7 +89,7 @@ export class SiteDetailsPermissionElement extends
   label: string;
   icon: string;
 
-  connectedCallback() {
+  override connectedCallback() {
     super.connectedCallback();
 
     this.addWebUIListener(

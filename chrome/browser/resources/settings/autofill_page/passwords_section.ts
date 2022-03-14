@@ -316,7 +316,7 @@ export class PasswordsSectionElement extends PasswordsSectionElementBase {
     this.activeDialogAnchorStack_ = [];
   }
 
-  ready() {
+  override ready() {
     super.ready();
 
     document.addEventListener('keydown', e => {
@@ -333,7 +333,7 @@ export class PasswordsSectionElement extends PasswordsSectionElementBase {
     });
   }
 
-  connectedCallback() {
+  override connectedCallback() {
     super.connectedCallback();
 
     // Create listener functions.
@@ -400,7 +400,7 @@ export class PasswordsSectionElement extends PasswordsSectionElementBase {
         TrustSafetyInteraction.OPENED_PASSWORD_MANAGER);
   }
 
-  disconnectedCallback() {
+  override disconnectedCallback() {
     super.disconnectedCallback();
 
     this.passwordManager_.removeAccountStorageOptInStateListener(

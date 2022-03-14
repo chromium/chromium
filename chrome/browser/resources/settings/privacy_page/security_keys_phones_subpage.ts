@@ -38,7 +38,7 @@ export class SecurityKeysPhonesSubpageElement extends PolymerElement {
   private browserProxy_: SecurityKeysPhonesBrowserProxy =
       SecurityKeysPhonesBrowserProxyImpl.getInstance();
 
-  ready() {
+  override ready() {
     super.ready();
 
     this.addEventListener(

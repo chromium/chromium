@@ -31,7 +31,7 @@ export class SettingsDisableSafebrowsingDialogElement extends PolymerElement {
     return getTemplate();
   }
 
-  connectedCallback() {
+  override connectedCallback() {
     super.connectedCallback();
 
     this.$.dialog.showModal();

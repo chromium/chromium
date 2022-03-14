@@ -138,7 +138,7 @@ export class SiteDetailsElement extends SiteDetailsElementBase {
   private websiteUsageProxy_: WebsiteUsageBrowserProxy =
       WebsiteUsageBrowserProxyImpl.getInstance();
 
-  connectedCallback() {
+  override connectedCallback() {
     super.connectedCallback();
 
     this.addWebUIListener(
@@ -159,7 +159,7 @@ export class SiteDetailsElement extends SiteDetailsElementBase {
   /**
    * RouteObserverMixin
    */
-  currentRouteChanged(route: Route) {
+  override currentRouteChanged(route: Route) {
     if (route !== routes.SITE_SETTINGS_SITE_DETAILS) {
       return;
     }

@@ -194,7 +194,7 @@ export class SettingsSecurityPageElement extends
     }
   }
 
-  ready() {
+  override ready() {
     super.ready();
 
     // Expand initial pref value manually because automatic
@@ -210,7 +210,7 @@ export class SettingsSecurityPageElement extends
   /**
    * RouteObserverMixin
    */
-  currentRouteChanged(route: Route) {
+  override currentRouteChanged(route: Route) {
     if (route === routes.SECURITY) {
       this.metricsBrowserProxy_.recordSafeBrowsingInteractionHistogram(
           SafeBrowsingInteractions.SAFE_BROWSING_SHOWED);

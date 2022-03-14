@@ -60,7 +60,7 @@ export class PasswordMoveToAccountDialogElement extends PolymerElement {
 
   passwordToMove: MultiStorePasswordUiEntry;
 
-  connectedCallback() {
+  override connectedCallback() {
     super.connectedCallback();
 
     chrome.send('metricsHandler:recordInHistogram', [

@@ -79,7 +79,7 @@ export class SettingsToggleButtonElement extends
     ];
   }
 
-  ariaLabel: string;
+  override ariaLabel: string;
   elideLabel: boolean;
   learnMoreUrl: string;
 
@@ -89,7 +89,7 @@ export class SettingsToggleButtonElement extends
 
   subLabelIcon: string;
 
-  ready() {
+  override ready() {
     super.ready();
 
     this.addEventListener('click', this.onHostTap_);
@@ -100,7 +100,7 @@ export class SettingsToggleButtonElement extends
         new CustomEvent(eventName, {bubbles: true, composed: true}));
   }
 
-  focus() {
+  override focus() {
     this.$.control.focus();
   }
 

@@ -127,7 +127,7 @@ export class SettingsLiveCaptionElement extends SettingsLiveCaptionElementBase {
   private enableLiveCaptionSubtitle_: string;
   private liveCaptionLanguages_: LiveCaptionLanguageList;
 
-  ready() {
+  override ready() {
     super.ready();
 
     this.addWebUIListener(

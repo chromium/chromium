@@ -48,7 +48,7 @@ export class SettingsDefaultBrowserPageElement extends
   private browserProxy_: DefaultBrowserBrowserProxy =
       DefaultBrowserBrowserProxyImpl.getInstance();
 
-  ready() {
+  override ready() {
     super.ready();
 
     this.addWebUIListener(

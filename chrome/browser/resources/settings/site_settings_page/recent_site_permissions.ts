@@ -111,13 +111,13 @@ export class SettingsRecentSitePermissionsElement extends
    * Reload the site recent site permission list whenever the user navigates
    * to the site settings page.
    */
-  currentRouteChanged(currentRoute: Route) {
+  override currentRouteChanged(currentRoute: Route) {
     if (currentRoute.path === routes.SITE_SETTINGS.path) {
       this.populateList_();
     }
   }
 
-  ready() {
+  override ready() {
     super.ready();
 
     this.addWebUIListener(

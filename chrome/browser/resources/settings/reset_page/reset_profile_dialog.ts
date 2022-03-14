@@ -108,7 +108,7 @@ export class SettingsResetProfileDialogElement extends
     return loadTimeData.getStringF('resetDialogTitle');
   }
 
-  ready() {
+  override ready() {
     super.ready();
 
     this.addEventListener('cancel', () => {

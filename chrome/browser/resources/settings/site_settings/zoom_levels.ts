@@ -64,7 +64,7 @@ export class ZoomLevelsElement extends ZoomLevelsElementBase {
   private sites_: Array<ZoomLevelEntry>;
   private showNoSites_: boolean;
 
-  ready() {
+  override ready() {
     super.ready();
 
     this.addWebUIListener(

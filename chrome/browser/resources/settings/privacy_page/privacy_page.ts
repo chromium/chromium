@@ -251,7 +251,7 @@ export class SettingsPrivacyPageElement extends SettingsPrivacyPageElementBase {
   private metricsBrowserProxy_: MetricsBrowserProxy =
       MetricsBrowserProxyImpl.getInstance();
 
-  ready() {
+  override ready() {
     super.ready();
 
     this.onBlockAutoplayStatusChanged_({
@@ -283,7 +283,7 @@ export class SettingsPrivacyPageElement extends SettingsPrivacyPageElementBase {
         'sync-status-changed', this.onSyncStatusChanged_.bind(this));
   }
 
-  currentRouteChanged() {
+  override currentRouteChanged() {
     this.showClearBrowsingDataDialog_ =
         Router.getInstance().getCurrentRoute() === routes.CLEAR_BROWSER_DATA;
   }

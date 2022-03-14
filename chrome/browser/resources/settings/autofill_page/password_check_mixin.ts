@@ -110,7 +110,7 @@ export const PasswordCheckMixin = dedupingMixin(
         private statusChangedListener_: PasswordCheckStatusChangedListener|
             null = null;
 
-        connectedCallback() {
+        override connectedCallback() {
           super.connectedCallback();
 
           this.statusChangedListener_ = status => {
@@ -144,7 +144,7 @@ export const PasswordCheckMixin = dedupingMixin(
               this.weakCredentialsListener_);
         }
 
-        disconnectedCallback() {
+        override disconnectedCallback() {
           super.disconnectedCallback();
 
           this.passwordManager!.removePasswordCheckStatusListener(

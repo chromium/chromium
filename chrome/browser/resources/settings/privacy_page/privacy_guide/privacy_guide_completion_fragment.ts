@@ -50,7 +50,7 @@ export class PrivacyGuideCompletionFragmentElement extends
   private metricsBrowserProxy_: MetricsBrowserProxy =
       MetricsBrowserProxyImpl.getInstance();
 
-  ready() {
+  override ready() {
     super.ready();
     SyncBrowserProxyImpl.getInstance().getSyncStatus().then(
         (status: SyncStatus) => this.updateWaaLink_(status.signedIn!));

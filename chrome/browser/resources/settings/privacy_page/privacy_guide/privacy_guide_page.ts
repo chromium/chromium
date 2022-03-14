@@ -143,7 +143,7 @@ export class SettingsPrivacyGuidePageElement extends PrivacyGuideBase {
         this.computePrivacyGuideStepToComponentsMap_();
   }
 
-  ready() {
+  override ready() {
     super.ready();
 
     this.addWebUIListener(
@@ -160,7 +160,7 @@ export class SettingsPrivacyGuidePageElement extends PrivacyGuideBase {
   }
 
   /** RouteObserverBehavior */
-  currentRouteChanged(newRoute: Route) {
+  override currentRouteChanged(newRoute: Route) {
     if (newRoute !== routes.PRIVACY_GUIDE || this.exitIfNecessary()) {
       return;
     }

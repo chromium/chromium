@@ -58,7 +58,7 @@ class MediaPickerElement extends MediaPickerElementBase {
   label: string;
   devices: Array<MediaPickerEntry>;
 
-  ready() {
+  override ready() {
     super.ready();
 
     this.addWebUIListener(

@@ -108,13 +108,13 @@ export class SettingsSliderElement extends SettingsSliderElementBase {
   updateValueInstantly: boolean;
   private loaded_: boolean;
 
-  connectedCallback() {
+  override connectedCallback() {
     super.connectedCallback();
 
     this.loaded_ = true;
   }
 
-  focus() {
+  override focus() {
     this.$.slider.focus();
   }
 

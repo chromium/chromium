@@ -132,7 +132,7 @@ export class SettingsAboutPageElement extends SettingsAboutPageElementBase {
   private aboutBrowserProxy_: AboutPageBrowserProxy =
       AboutPageBrowserProxyImpl.getInstance();
 
-  connectedCallback() {
+  override connectedCallback() {
     super.connectedCallback();
 
     this.aboutBrowserProxy_.pageReady();

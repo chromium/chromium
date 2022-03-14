@@ -138,7 +138,7 @@ export class SettingsSecurityKeysCredentialManagementDialogElement extends
       SecurityKeysCredentialBrowserProxyImpl.getInstance();
   private showSetPINButton_: boolean = false;
 
-  connectedCallback() {
+  override connectedCallback() {
     super.connectedCallback();
 
     this.$.dialog.showModal();

@@ -79,7 +79,7 @@ class PasswordRemoveDialogElement extends PasswordRemoveDialogElementBase {
   private removeFromDeviceChecked_: boolean;
   private accountEmail_: string;
 
-  connectedCallback() {
+  override connectedCallback() {
     super.connectedCallback();
 
     // At creation time, the password should exist in both locations.

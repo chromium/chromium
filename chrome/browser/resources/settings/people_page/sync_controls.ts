@@ -75,7 +75,7 @@ export class SettingsSyncControlsElement extends
     };
   }
 
-  hidden: boolean;
+  override hidden: boolean;
   syncPrefs?: SyncPrefs;
   syncStatus: SyncStatus;
   private browserProxy_: SyncBrowserProxy = SyncBrowserProxyImpl.getInstance();
@@ -91,7 +91,7 @@ export class SettingsSyncControlsElement extends
     this.cachedSyncPrefs_ = null;
   }
 
-  connectedCallback() {
+  override connectedCallback() {
     super.connectedCallback();
 
     this.addWebUIListener(

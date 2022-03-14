@@ -99,7 +99,7 @@ export class SettingsTextareaElement extends PolymerElement {
     };
   }
 
-  autofocus: boolean;
+  override autofocus: boolean;
   disabled: boolean;
   rows: number;
   label: string;

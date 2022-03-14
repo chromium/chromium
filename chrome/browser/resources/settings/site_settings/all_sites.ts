@@ -209,7 +209,7 @@ export class AllSitesElement extends AllSitesElementBase {
   private localDataBrowserProxy_: LocalDataBrowserProxy =
       LocalDataBrowserProxyImpl.getInstance();
 
-  ready() {
+  override ready() {
     super.ready();
 
     this.addWebUIListener(
@@ -230,7 +230,7 @@ export class AllSitesElement extends AllSitesElementBase {
     this.sortMethod_ = this.$.sortMethod.value as (SortMethod | undefined);
   }
 
-  connectedCallback() {
+  override connectedCallback() {
     super.connectedCallback();
 
     // Set scrollOffset so the iron-list scrolling accounts for the space the
@@ -245,7 +245,7 @@ export class AllSitesElement extends AllSitesElementBase {
    *
    * RouteObserverBehavior
    */
-  currentRouteChanged(currentRoute: Route) {
+  override currentRouteChanged(currentRoute: Route) {
     super.currentRouteChanged(currentRoute);
     if (currentRoute === routes.SITE_SETTINGS_ALL) {
       this.populateList_();

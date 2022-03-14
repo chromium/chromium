@@ -84,7 +84,7 @@ export class SettingsSecurityKeysResetDialogElement extends
   private browserProxy_: SecurityKeysResetBrowserProxy =
       SecurityKeysResetBrowserProxyImpl.getInstance();
 
-  connectedCallback() {
+  override connectedCallback() {
     super.connectedCallback();
 
     this.title_ = this.i18n('securityKeysResetTitle');

@@ -135,7 +135,7 @@ class SettingsA11YPageElement extends SettingsA11YPageElementBase {
   private showAccessibilityLabelsSetting_: boolean;
   private captionSettingsOpensExternally_: boolean;
 
-  ready() {
+  override ready() {
     super.ready();
 
     this.addWebUIListener(

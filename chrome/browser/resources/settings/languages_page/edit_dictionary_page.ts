@@ -93,7 +93,7 @@ export class SettingsEditDictionaryPageElement extends
   private languageSettingsPrivate_:
       (typeof chrome.languageSettingsPrivate)|null = null;
 
-  ready() {
+  override ready() {
     super.ready();
 
     this.languageSettingsPrivate_ =

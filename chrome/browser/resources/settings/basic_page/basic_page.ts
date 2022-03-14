@@ -208,7 +208,7 @@ export class SettingsBasicPageElement extends SettingsBasicPageElementBase {
   private privacyGuideBrowserProxy_: PrivacyGuideBrowserProxy =
       PrivacyGuideBrowserProxyImpl.getInstance();
 
-  ready() {
+  override ready() {
     super.ready();
 
     this.setAttribute('role', 'main');
@@ -216,7 +216,7 @@ export class SettingsBasicPageElement extends SettingsBasicPageElementBase {
   }
 
 
-  connectedCallback() {
+  override connectedCallback() {
     super.connectedCallback();
     this.addWebUIListener(
         'is-managed-changed', this.onIsManagedChanged_.bind(this));
@@ -226,7 +226,7 @@ export class SettingsBasicPageElement extends SettingsBasicPageElementBase {
     this.currentRoute_ = Router.getInstance().getCurrentRoute();
   }
 
-  currentRouteChanged(newRoute: Route, oldRoute?: Route) {
+  override currentRouteChanged(newRoute: Route, oldRoute?: Route) {
     this.currentRoute_ = newRoute;
 
     if (routes.ADVANCED && routes.ADVANCED.contains(newRoute)) {
@@ -249,10 +249,8 @@ export class SettingsBasicPageElement extends SettingsBasicPageElementBase {
     }
   }
 
-  /**
-   * Override MainPageMixin method.
-   */
-  containsRoute(route: Route|null): boolean {
+  /** Overrides MainPageMixin method. */
+  override containsRoute(route: Route|null): boolean {
     return !route || routes.BASIC.contains(route) ||
         (routes.ADVANCED && routes.ADVANCED.contains(route));
   }

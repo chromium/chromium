@@ -57,7 +57,7 @@ export class PrivacyGuideCookiesFragmentElement extends
       MetricsBrowserProxyImpl.getInstance();
   private startStateBlock3PIncognito_: boolean;
 
-  ready() {
+  override ready() {
     super.ready();
     this.addEventListener('view-enter-start', this.onViewEnterStart_);
     this.addEventListener('view-exit-finish', this.onViewExitFinish_);

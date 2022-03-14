@@ -95,12 +95,12 @@ export class SettingsAutofillSectionElement extends
     this.activeDialogAnchor_ = null;
   }
 
-  ready() {
+  override ready() {
     super.ready();
     this.addEventListener('save-address', this.saveAddress_);
   }
 
-  connectedCallback() {
+  override connectedCallback() {
     super.connectedCallback();
 
     // Create listener functions.
@@ -128,7 +128,7 @@ export class SettingsAutofillSectionElement extends
     chrome.metricsPrivate.recordUserAction('AutofillAddressesViewed');
   }
 
-  disconnectedCallback() {
+  override disconnectedCallback() {
     super.disconnectedCallback();
 
     this.autofillManager_.removePersonalDataManagerListener(

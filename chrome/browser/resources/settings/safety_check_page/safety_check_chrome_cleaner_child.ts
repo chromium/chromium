@@ -78,7 +78,7 @@ export class SettingsSafetyCheckChromeCleanerChildElement extends
   private chromeCleanupBrowserProxy_: ChromeCleanupProxy =
       ChromeCleanupProxyImpl.getInstance();
 
-  connectedCallback() {
+  override connectedCallback() {
     super.connectedCallback();
 
     // Register for safety check status updates.

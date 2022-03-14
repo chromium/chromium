@@ -57,7 +57,7 @@ export const GlobalScrollTargetMixin = dedupingMixin(
         subpageRoute: Route;
         private active_: boolean;
 
-        connectedCallback() {
+        override connectedCallback() {
           super.connectedCallback();
 
           this.active_ =
@@ -67,6 +67,8 @@ export const GlobalScrollTargetMixin = dedupingMixin(
           });
         }
 
+        // TODO(dpapad): Figure out why adding the |override| keyword here
+        // throws an error.
         currentRouteChanged(route: Route) {
           // Immediately set the scroll target to active when this page is
           // activated, but wait a task to remove the scroll target when the

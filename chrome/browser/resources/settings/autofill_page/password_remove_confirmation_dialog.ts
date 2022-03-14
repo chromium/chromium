@@ -50,7 +50,7 @@ export class SettingsPasswordRemoveConfirmationDialogElement extends
   private passwordManager_: PasswordManagerProxy =
       PasswordManagerImpl.getInstance();
 
-  connectedCallback() {
+  override connectedCallback() {
     super.connectedCallback();
 
     this.$.dialog.showModal();

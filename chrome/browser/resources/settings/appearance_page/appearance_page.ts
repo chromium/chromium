@@ -195,7 +195,7 @@ export class SettingsAppearancePageElement extends
   private appearanceBrowserProxy_: AppearanceBrowserProxy =
       AppearanceBrowserProxyImpl.getInstance();
 
-  ready() {
+  override ready() {
     super.ready();
 
     this.$.defaultFontSize.menuOptions = this.fontSizeOptions_;

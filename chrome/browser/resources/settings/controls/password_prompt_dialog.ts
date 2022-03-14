@@ -94,7 +94,7 @@ class SettingsPasswordPromptDialogElement extends PolymerElement {
     return this.shadowRoot!.querySelector('cr-input')!;
   }
 
-  connectedCallback() {
+  override connectedCallback() {
     super.connectedCallback();
 
     this.$.dialog.showModal();

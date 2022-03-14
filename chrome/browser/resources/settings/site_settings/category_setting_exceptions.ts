@@ -46,12 +46,6 @@ export class CategorySettingExceptionsElement extends
       },
 
       /**
-       * The string ID of the category that this element is displaying data for.
-       * See site_settings/constants.js for possible values.
-       */
-      category: String,
-
-      /**
        * Some content types (like Location) do not allow the user to manually
        * edit the exception list from within Settings.
        */
@@ -102,7 +96,6 @@ export class CategorySettingExceptionsElement extends
   }
 
   description: string;
-  category: ContentSettingsTypes;
   private readOnlyList: boolean;
   private defaultManaged_: boolean;
   blockHeader: string;
@@ -110,7 +103,7 @@ export class CategorySettingExceptionsElement extends
   searchFilter: string;
   private showAllowSiteList_: boolean;
 
-  ready() {
+  override ready() {
     super.ready();
 
     this.addWebUIListener(

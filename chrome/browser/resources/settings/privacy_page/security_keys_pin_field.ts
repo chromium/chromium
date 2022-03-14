@@ -69,7 +69,7 @@ export class SettingsSecurityKeysPinFieldElement extends
   private value_: string;
   private inputVisible_: boolean;
 
-  connectedCallback() {
+  override connectedCallback() {
     super.connectedCallback();
 
     afterNextRender(this, function() {
@@ -78,7 +78,7 @@ export class SettingsSecurityKeysPinFieldElement extends
   }
 
   /** Focuses the PIN input field. */
-  focus() {
+  override focus() {
     this.$.pin.focus();
   }
 

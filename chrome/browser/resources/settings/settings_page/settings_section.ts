@@ -75,7 +75,7 @@ export class SettingsSectionElement extends PolymerElement {
     return this.pageTitle ? false : 'true';
   }
 
-  focus() {
+  override focus() {
     this.shadowRoot!.querySelector<HTMLElement>('.title')!.focus();
   }
 }

@@ -107,7 +107,7 @@ export const MainPageMixin = dedupingMixin(
           })();
         }
 
-        connectedCallback() {
+        override connectedCallback() {
           this.scroller =
               this.domHost ? this.domHost.parentElement : document.body;
 
@@ -288,6 +288,8 @@ export const MainPageMixin = dedupingMixin(
           return [classifyRoute(oldRoute), classifyRoute(newRoute)];
         }
 
+        // TODO(dpapad): Figure out why adding the |override| keyword here
+        // throws an error.
         currentRouteChanged(newRoute: Route, oldRoute: Route|null) {
           const transition = this.getStateTransition_(newRoute, oldRoute);
           if (transition === null) {

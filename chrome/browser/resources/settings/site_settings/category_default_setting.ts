@@ -142,7 +142,7 @@ class CategoryDefaultSettingElement extends CategoryDefaultSettingElementBase {
   private optionDescription_: string;
   private priorDefaultContentSetting_: DefaultContentSetting;
 
-  ready() {
+  override ready() {
     super.ready();
 
     this.addWebUIListener(

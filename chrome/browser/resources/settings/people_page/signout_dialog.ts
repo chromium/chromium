@@ -79,7 +79,7 @@ export class SettingsSignoutDialogElement extends
   private deleteProfileWarningVisible_: boolean;
   private deleteProfileWarning_: string;
 
-  connectedCallback() {
+  override connectedCallback() {
     super.connectedCallback();
 
     this.addWebUIListener(

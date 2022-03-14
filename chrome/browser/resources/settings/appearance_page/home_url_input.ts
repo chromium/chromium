@@ -79,7 +79,7 @@ export class HomeUrlInputElement extends HomeUrlInputElementBase {
   /**
    * Focuses the 'input' element.
    */
-  focus() {
+  override focus() {
     this.$.input.focus();
   }
 

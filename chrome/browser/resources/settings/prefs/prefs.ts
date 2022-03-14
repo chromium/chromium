@@ -169,7 +169,7 @@ export class SettingsPrefsElement extends PolymerElement {
     }
   }
 
-  disconnectedCallback() {
+  override disconnectedCallback() {
     super.disconnectedCallback();
 
     CrSettingsPrefs.resetForTesting();

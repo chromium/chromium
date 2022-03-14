@@ -39,7 +39,7 @@ class SettingsAvatarIconElement extends SettingsAvatarIconElementBase {
 
   private avatarUrl_: string;
 
-  connectedCallback() {
+  override connectedCallback() {
     super.connectedCallback();
 
     const setAvatarUrl = (accounts: Array<StoredAccount>) => {

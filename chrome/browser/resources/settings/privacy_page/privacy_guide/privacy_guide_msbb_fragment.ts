@@ -47,7 +47,7 @@ export class PrivacyGuideMsbbFragmentElement extends
       MetricsBrowserProxyImpl.getInstance();
   private startStateMsbbOn_: boolean;
 
-  ready() {
+  override ready() {
     super.ready();
     this.addEventListener('view-enter-start', this.onViewEnterStart_);
     this.addEventListener('view-exit-finish', this.onViewExitFinish_);

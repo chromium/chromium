@@ -290,7 +290,7 @@ export class SettingsClearBrowsingDataDialogElement extends
   private syncBrowserProxy_: SyncBrowserProxy =
       SyncBrowserProxyImpl.getInstance();
 
-  ready() {
+  override ready() {
     super.ready();
 
     this.syncBrowserProxy_.getSyncStatus().then(
@@ -307,7 +307,7 @@ export class SettingsClearBrowsingDataDialogElement extends
         'settings-boolean-control-change', this.updateClearButtonState_);
   }
 
-  connectedCallback() {
+  override connectedCallback() {
     super.connectedCallback();
 
     this.browserProxy_.initialize().then(() => {
@@ -349,7 +349,7 @@ export class SettingsClearBrowsingDataDialogElement extends
    *
    * RouteObserverMixin
    */
-  currentRouteChanged(currentRoute: Route) {
+  override currentRouteChanged(currentRoute: Route) {
     if (currentRoute === routes.CLEAR_BROWSER_DATA) {
       chrome.metricsPrivate.recordUserAction('ClearBrowsingData_DialogCreated');
     }

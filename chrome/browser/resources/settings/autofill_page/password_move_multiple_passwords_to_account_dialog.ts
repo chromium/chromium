@@ -59,7 +59,7 @@ export class PasswordMoveMultiplePasswordsToAccountDialogElement extends
     return this.$.dialog.getNative().returnValue === 'success';
   }
 
-  connectedCallback() {
+  override connectedCallback() {
     super.connectedCallback();
 
     chrome.metricsPrivate.recordEnumerationValue(

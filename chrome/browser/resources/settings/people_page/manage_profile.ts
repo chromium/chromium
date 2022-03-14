@@ -116,7 +116,7 @@ export class SettingsManageProfileElement extends
   private browserProxy_: ManageProfileBrowserProxy =
       ManageProfileBrowserProxyImpl.getInstance();
 
-  connectedCallback() {
+  override connectedCallback() {
     super.connectedCallback();
 
     const setIcons = (icons: Array<AvatarIcon>) => {
@@ -127,7 +127,7 @@ export class SettingsManageProfileElement extends
     this.browserProxy_.getAvailableIcons().then(setIcons);
   }
 
-  currentRouteChanged() {
+  override currentRouteChanged() {
     if (Router.getInstance().getCurrentRoute() === routes.MANAGE_PROFILE) {
       if (this.profileName) {
         const profileNameInput = this.$.name;

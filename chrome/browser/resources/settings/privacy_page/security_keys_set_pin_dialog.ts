@@ -209,7 +209,7 @@ export class SettingsSecurityKeysSetPinDialogElement extends
   private browserProxy_: SecurityKeysPINBrowserProxy =
       SecurityKeysPINBrowserProxyImpl.getInstance();
 
-  connectedCallback() {
+  override connectedCallback() {
     super.connectedCallback();
 
     this.title_ = this.i18n('securityKeysSetPINInitialTitle');

@@ -41,7 +41,7 @@ export const MergePasswordsStoreCopiesMixin = dedupingMixin(
             ((entries: Array<chrome.passwordsPrivate.PasswordUiEntry>) =>
                  void)|null = null;
 
-        connectedCallback() {
+        override connectedCallback() {
           super.connectedCallback();
           this.setSavedPasswordsListener_ = passwordList => {
             const mergedPasswordList =
@@ -66,7 +66,7 @@ export const MergePasswordsStoreCopiesMixin = dedupingMixin(
           this.notifySplices('savedPasswords', []);
         }
 
-        disconnectedCallback() {
+        override disconnectedCallback() {
           super.disconnectedCallback();
           PasswordManagerImpl.getInstance()
               .removeSavedPasswordListChangedListener(

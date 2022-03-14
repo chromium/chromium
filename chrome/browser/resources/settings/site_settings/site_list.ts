@@ -198,7 +198,7 @@ export class SiteListElement extends SiteListElementBase {
     this.activeDialogAnchor_ = null;
   }
 
-  ready() {
+  override ready() {
     super.ready();
 
     this.addWebUIListener(

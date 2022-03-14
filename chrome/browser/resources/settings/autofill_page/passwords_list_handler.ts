@@ -178,7 +178,7 @@ export class PasswordsListHandlerElement extends
   private passwordManager_: PasswordManagerProxy =
       PasswordManagerImpl.getInstance();
 
-  ready() {
+  override ready() {
     super.ready();
 
     this.addEventListener(
@@ -191,7 +191,7 @@ export class PasswordsListHandlerElement extends
         'password-show-password-clicked', this.onPasswordShowPasswordClicked_);
   }
 
-  connectedCallback() {
+  override connectedCallback() {
     super.connectedCallback();
 
     const extractFirstAccountEmail = (accounts: Array<StoredAccount>) => {
@@ -203,7 +203,7 @@ export class PasswordsListHandlerElement extends
     this.addWebUIListener('stored-accounts-updated', extractFirstAccountEmail);
   }
 
-  disconnectedCallback() {
+  override disconnectedCallback() {
     super.disconnectedCallback();
 
     this.hideToasts_();

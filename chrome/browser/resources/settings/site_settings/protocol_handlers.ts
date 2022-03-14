@@ -146,7 +146,7 @@ export class ProtocolHandlersElement extends ProtocolHandlersElementBase {
   ignoredProtocols: Array<HandlerEntry>;
   private handlersEnabledPref_: chrome.settingsPrivate.PrefObject;
 
-  ready() {
+  override ready() {
     super.ready();
 
     this.addWebUIListener(

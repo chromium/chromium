@@ -56,7 +56,7 @@ export class SettingsSearchEngineDeleteConfirmationDialogElement extends
   private browserProxy_: SearchEnginesBrowserProxy =
       SearchEnginesBrowserProxyImpl.getInstance();
 
-  connectedCallback() {
+  override connectedCallback() {
     super.connectedCallback();
     this.$.dialog.showModal();
   }

@@ -209,7 +209,7 @@ export class SettingsPeoplePageElement extends SettingsPeoplePageElementBase {
   private syncBrowserProxy_: SyncBrowserProxy =
       SyncBrowserProxyImpl.getInstance();
 
-  connectedCallback() {
+  override connectedCallback() {
     super.connectedCallback();
 
     let useProfileNameAndIcon = true;
@@ -248,7 +248,7 @@ export class SettingsPeoplePageElement extends SettingsPeoplePageElementBase {
     // </if>
   }
 
-  currentRouteChanged() {
+  override currentRouteChanged() {
     // <if expr="not chromeos">
     this.showImportDataDialog_ =
         Router.getInstance().getCurrentRoute() === routes.IMPORT_DATA;

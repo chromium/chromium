@@ -189,7 +189,7 @@ export class SettingsCookiesPageElement extends SettingsCookiesPageElementBase {
     }
   }
 
-  currentRouteChanged(route: Route) {
+  override currentRouteChanged(route: Route) {
     if (route !== routes.COOKIES) {
       this.$.toast.hide();
     }

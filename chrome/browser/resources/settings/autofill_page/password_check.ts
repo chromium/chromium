@@ -251,7 +251,7 @@ export class SettingsPasswordCheckElement extends
     this.setSavedPasswordsListener_ = null;
   }
 
-  connectedCallback() {
+  override connectedCallback() {
     super.connectedCallback();
 
     // <if expr="chromeos_ash or chromeos_lacros">
@@ -300,7 +300,7 @@ export class SettingsPasswordCheckElement extends
     // </if>
   }
 
-  disconnectedCallback() {
+  override disconnectedCallback() {
     super.disconnectedCallback();
 
     this.passwordManager!.removeSavedPasswordListChangedListener(
@@ -312,7 +312,7 @@ export class SettingsPasswordCheckElement extends
    * Tries to start bulk password check on page open if instructed to do so and
    * didn't start successfully before
    */
-  currentRouteChanged(currentRoute: Route) {
+  override currentRouteChanged(currentRoute: Route) {
     const router = Router.getInstance();
 
     if (currentRoute.path === routes.CHECK_PASSWORDS.path &&

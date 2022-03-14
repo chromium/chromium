@@ -100,7 +100,7 @@ export class ItemsToRemoveListElement extends PolymerElement {
     };
   }
 
-  title: string;
+  override title: string;
   itemsToShow: Array<ChromeCleanupRemovalListItem>;
   private expanded_: boolean;
   private initialItems_: Array<ChromeCleanupRemovalListItem>|null;

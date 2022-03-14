@@ -82,7 +82,7 @@ export class SettingsSearchPageElement extends SettingsSearchPageElementBase {
   private browserProxy_: SearchEnginesBrowserProxy =
       SearchEnginesBrowserProxyImpl.getInstance();
 
-  ready() {
+  override ready() {
     super.ready();
 
     // Omnibox search engine

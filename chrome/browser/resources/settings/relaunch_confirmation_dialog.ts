@@ -61,7 +61,7 @@ export class RelaunchConfirmationDialogElement extends PolymerElement {
   relaunchConfirmationDialogDesc: string|null;
   restartType: RestartType;
 
-  async connectedCallback() {
+  override async connectedCallback() {
     super.connectedCallback();
     this.relaunchConfirmationDialogDesc =
         await LifetimeBrowserProxyImpl.getInstance()

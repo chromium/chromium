@@ -150,7 +150,7 @@ export class SiteEntryElement extends SiteEntryElementBase {
       LocalDataBrowserProxyImpl.getInstance();
   private eventTracker_: EventTracker = new EventTracker();
 
-  disconnectedCallback() {
+  override disconnectedCallback() {
     super.disconnectedCallback();
 
     if (this.button_) {

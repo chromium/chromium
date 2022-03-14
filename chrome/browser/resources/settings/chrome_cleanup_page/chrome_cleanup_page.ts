@@ -299,7 +299,7 @@ export class SettingsChromeCleanupPageElement extends
     this.renderScanOfferedByDefault_ = true;
   }
 
-  connectedCallback() {
+  override connectedCallback() {
     super.connectedCallback();
 
     this.cardStateToComponentsMap_ = this.buildCardStateToComponentsMap_();

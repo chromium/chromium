@@ -57,7 +57,7 @@ export class ControlledButtonElement extends ControlledButtonElementBase {
   private actionClass_: string;
   private enforced_: boolean;
 
-  connectedCallback() {
+  override connectedCallback() {
     super.connectedCallback();
 
     if (this.classList.contains('action-button')) {
@@ -66,7 +66,7 @@ export class ControlledButtonElement extends ControlledButtonElementBase {
   }
 
   /** Focus on the inner cr-button. */
-  focus() {
+  override focus() {
     this.shadowRoot!.querySelector('cr-button')!.focus();
   }
 

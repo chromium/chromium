@@ -76,7 +76,7 @@ export class SettingsSafetyCheckSafeBrowsingChildElement extends
   private metricsBrowserProxy_: MetricsBrowserProxy =
       MetricsBrowserProxyImpl.getInstance();
 
-  connectedCallback() {
+  override connectedCallback() {
     super.connectedCallback();
 
     // Register for safety check status updates.

@@ -35,7 +35,7 @@ export class SettingsIdleLoadElement extends PolymerElement {
   private idleCallback_: number = 0;
   private loading_: Promise<Element>|null = null;
 
-  connectedCallback() {
+  override connectedCallback() {
     super.connectedCallback();
 
     this.idleCallback_ = window.requestIdleCallback(() => {
@@ -43,7 +43,7 @@ export class SettingsIdleLoadElement extends PolymerElement {
     });
   }
 
-  disconnectedCallback() {
+  override disconnectedCallback() {
     super.disconnectedCallback();
 
     // No-op if callback already fired.
@@ -85,7 +85,7 @@ export class SettingsIdleLoadElement extends PolymerElement {
   /**
    * @return Child element which has been stamped into the DOM tree.
    */
-  get(): Promise<Element> {
+  override get(): Promise<Element> {
     if (this.loading_) {
       return this.loading_;
     }

@@ -122,7 +122,7 @@ class SiteDataElement extends SiteDataElementBase {
     this.lastSelected_ = null;
   }
 
-  ready() {
+  override ready() {
     super.ready();
 
     this.addWebUIListener('on-tree-item-removed', () => this.updateSiteList_());
@@ -133,7 +133,7 @@ class SiteDataElement extends SiteDataElementBase {
    *
    * RouteObserverMixin
    */
-  currentRouteChanged(currentRoute: Route, previousRoute: Route) {
+  override currentRouteChanged(currentRoute: Route, previousRoute: Route) {
     super.currentRouteChanged(currentRoute);
     // Reload cookies on navigation to the site data page from a different
     // page. Avoid reloading on repeated navigations to the same page, as these

@@ -116,12 +116,12 @@ export class PasswordsExportDialogElement extends
     this.delayedProgress_ = null;
   }
 
-  ready() {
+  override ready() {
     super.ready();
     this.addEventListener('cancel', this.close);
   }
 
-  connectedCallback() {
+  override connectedCallback() {
     super.connectedCallback();
 
     this.switchToDialog_(States.START);

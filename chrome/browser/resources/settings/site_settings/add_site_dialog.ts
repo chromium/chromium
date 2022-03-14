@@ -51,11 +51,6 @@ export class AddSiteDialogElement extends AddSiteDialogElementBase {
   static get properties() {
     return {
       /**
-       * What kind of setting, e.g. Location, Camera, Cookies, and so on.
-       */
-      category: String,
-
-      /**
        * Whether this is about an Allow, Block, SessionOnly, or other.
        */
       contentSetting: String,
@@ -77,13 +72,12 @@ export class AddSiteDialogElement extends AddSiteDialogElementBase {
     };
   }
 
-  category: ContentSettingsTypes;
   contentSetting: ContentSetting;
   hasIncognito: boolean;
   private site_: string;
   private errorMessage_: string;
 
-  connectedCallback() {
+  override connectedCallback() {
     super.connectedCallback();
 
     assert(this.category);

@@ -165,7 +165,7 @@ export class SettingsPaymentsSectionElement extends
     this.activeDialogAnchor_ = null;
   }
 
-  ready() {
+  override ready() {
     super.ready();
 
     this.addEventListener('save-credit-card', this.saveCreditCard_);
@@ -176,7 +176,7 @@ export class SettingsPaymentsSectionElement extends
     this.addEventListener('unenroll-virtual-card', this.unenrollVirtualCard_);
   }
 
-  connectedCallback() {
+  override connectedCallback() {
     super.connectedCallback();
 
     // Create listener function.
@@ -218,7 +218,7 @@ export class SettingsPaymentsSectionElement extends
     chrome.metricsPrivate.recordUserAction('AutofillCreditCardsViewed');
   }
 
-  disconnectedCallback() {
+  override disconnectedCallback() {
     super.disconnectedCallback();
 
     this.paymentsManager_.removePersonalDataManagerListener(

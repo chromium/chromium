@@ -58,7 +58,7 @@ export class SettingsOnStartupPageElement extends
   prefs: Object;
   private ntpExtension_: NtpExtension|null;
 
-  connectedCallback() {
+  override connectedCallback() {
     super.connectedCallback();
 
     const updateNtpExtension = (ntpExtension: NtpExtension|null) => {

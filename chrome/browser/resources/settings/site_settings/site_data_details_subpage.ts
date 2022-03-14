@@ -76,7 +76,7 @@ class SiteDataDetailsSubpageElement extends SiteDataDetailsSubpageElementBase {
   private browserProxy_: LocalDataBrowserProxy =
       LocalDataBrowserProxyImpl.getInstance();
 
-  ready() {
+  override ready() {
     super.ready();
 
     this.addWebUIListener(
@@ -86,7 +86,7 @@ class SiteDataDetailsSubpageElement extends SiteDataDetailsSubpageElementBase {
   /**
    * RouteObserverMixin
    */
-  currentRouteChanged(route: Route) {
+  override currentRouteChanged(route: Route) {
     if (route !== routes.SITE_SETTINGS_DATA_DETAILS) {
       return;
     }

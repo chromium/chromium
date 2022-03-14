@@ -191,7 +191,7 @@ class SettingsAnimatedPagesElement extends SettingsAnimatedPagesElementBase {
     });
   }
 
-  currentRouteChanged(newRoute: Route, oldRoute?: Route) {
+  override currentRouteChanged(newRoute: Route, oldRoute?: Route) {
     this.previousRoute_ = oldRoute || null;
 
     if (newRoute.section === this.section && newRoute.isSubpage()) {

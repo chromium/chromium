@@ -272,7 +272,7 @@ export class SettingsSyncPageElement extends SettingsSyncPageElementBase {
     this.setupCancelConfirmed_ = false;
   }
 
-  connectedCallback() {
+  override connectedCallback() {
     super.connectedCallback();
 
     this.addWebUIListener(
@@ -286,7 +286,7 @@ export class SettingsSyncPageElement extends SettingsSyncPageElementBase {
     }
   }
 
-  disconnectedCallback() {
+  override disconnectedCallback() {
     super.disconnectedCallback();
 
     const router = Router.getInstance();
@@ -396,7 +396,7 @@ export class SettingsSyncPageElement extends SettingsSyncPageElementBase {
   }
   // </if>
 
-  currentRouteChanged() {
+  override currentRouteChanged() {
     const router = Router.getInstance();
     if (router.getCurrentRoute() === getSyncRoutes().SYNC) {
       this.onNavigateToPage_();

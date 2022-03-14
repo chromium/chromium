@@ -76,7 +76,7 @@ export class SettingsResetPageElement extends SettingsResetPageElementBase {
   /**
    * RouteObserverMixin
    */
-  currentRouteChanged(route: Route) {
+  override currentRouteChanged(route: Route) {
     const lazyRender = this.$.resetProfileDialog;
 
     if (route === routes.TRIGGERED_RESET_DIALOG ||

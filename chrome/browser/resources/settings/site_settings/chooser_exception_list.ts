@@ -83,7 +83,7 @@ export class ChooserExceptionListElement extends
   private hasIncognito_: boolean;
   private tooltipText_: string;
 
-  connectedCallback() {
+  override connectedCallback() {
     super.connectedCallback();
 
     this.addWebUIListener(

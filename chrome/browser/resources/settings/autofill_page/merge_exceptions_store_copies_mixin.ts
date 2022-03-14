@@ -39,7 +39,7 @@ export const MergeExceptionsStoreCopiesMixin = dedupingMixin(
         private setPasswordExceptionsListener_:
             PasswordExceptionListChangedListener|null = null;
 
-        connectedCallback() {
+        override connectedCallback() {
           super.connectedCallback();
 
           this.setPasswordExceptionsListener_ = list => {
@@ -52,7 +52,7 @@ export const MergeExceptionsStoreCopiesMixin = dedupingMixin(
               this.setPasswordExceptionsListener_);
         }
 
-        disconnectedCallback() {
+        override disconnectedCallback() {
           super.disconnectedCallback();
 
           PasswordManagerImpl.getInstance().removeExceptionListChangedListener(

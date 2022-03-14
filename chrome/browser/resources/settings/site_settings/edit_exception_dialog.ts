@@ -65,7 +65,7 @@ export class SettingsEditExceptionDialogElement extends PolymerElement {
   private browserProxy_: SiteSettingsPrefsBrowserProxy =
       SiteSettingsPrefsBrowserProxyImpl.getInstance();
 
-  connectedCallback() {
+  override connectedCallback() {
     super.connectedCallback();
 
     this.origin_ = this.model.origin;

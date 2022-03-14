@@ -113,7 +113,7 @@ export class SettingsCategoryDefaultRadioGroupElement extends
   blockOptionIcon: string;
   private pref_: chrome.settingsPrivate.PrefObject;
 
-  ready() {
+  override ready() {
     super.ready();
 
     this.addWebUIListener(

@@ -94,7 +94,7 @@ export class SettingsAppearanceFontsPageElement extends PolymerElement {
   private browserProxy_: FontsBrowserProxy =
       FontsBrowserProxyImpl.getInstance();
 
-  ready() {
+  override ready() {
     super.ready();
 
     this.browserProxy_.fetchFontsData().then(this.setFontsData_.bind(this));

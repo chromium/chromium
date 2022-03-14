@@ -96,7 +96,7 @@ export class SettingsIncompatibleApplicationsPageElement extends
   private subtitleNoAdminRightsText_: string;
   private listTitleText_: string;
 
-  ready() {
+  override ready() {
     super.ready();
 
     this.addWebUIListener(

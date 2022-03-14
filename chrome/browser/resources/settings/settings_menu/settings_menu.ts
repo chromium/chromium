@@ -69,7 +69,7 @@ export class SettingsMenuElement extends SettingsMenuElementBase {
   advancedOpened: boolean;
   pageVisibility: PageVisibility;
 
-  currentRouteChanged(newRoute: Route) {
+  override currentRouteChanged(newRoute: Route) {
     // Focus the initially selected path.
     const anchors = this.shadowRoot!.querySelectorAll('a');
     for (let i = 0; i < anchors.length; ++i) {

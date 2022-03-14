@@ -42,7 +42,7 @@ export class SettingsPasswordEditDisclaimerDialogElement extends
 
   origin: string;
 
-  connectedCallback() {
+  override connectedCallback() {
     super.connectedCallback();
 
     this.$.dialog.showModal();

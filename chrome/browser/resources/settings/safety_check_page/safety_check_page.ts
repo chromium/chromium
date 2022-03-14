@@ -78,7 +78,7 @@ export class SettingsSafetyCheckPageElement extends
   /** Timer ID for periodic update. */
   private updateTimerId_: number = -1;
 
-  connectedCallback() {
+  override connectedCallback() {
     super.connectedCallback();
 
     // Register for safety check status updates.

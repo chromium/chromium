@@ -174,7 +174,7 @@ export class SettingsSearchEnginesPageElement extends
   private browserProxy_: SearchEnginesBrowserProxy =
       SearchEnginesBrowserProxyImpl.getInstance();
 
-  ready() {
+  override ready() {
     super.ready();
 
     this.browserProxy_.getSearchEnginesList().then(

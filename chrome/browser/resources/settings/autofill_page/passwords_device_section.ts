@@ -220,7 +220,7 @@ export class PasswordsDeviceSectionElement extends
   private accountStorageOptInStateListener_:
       AccountStorageOptInStateChangedListener|null = null;
 
-  connectedCallback() {
+  override connectedCallback() {
     super.connectedCallback();
 
     this.addListenersForAccountStorageRequirements_();
@@ -235,7 +235,7 @@ export class PasswordsDeviceSectionElement extends
         'stored-accounts-updated', extractFirstStoredAccountEmail);
   }
 
-  ready() {
+  override ready() {
     super.ready();
 
     document.addEventListener('keydown', keyboardEvent => {
@@ -252,7 +252,7 @@ export class PasswordsDeviceSectionElement extends
     });
   }
 
-  disconnectedCallback() {
+  override disconnectedCallback() {
     super.disconnectedCallback();
 
     PasswordManagerImpl.getInstance().removeAccountStorageOptInStateListener(
@@ -313,7 +313,7 @@ export class PasswordsDeviceSectionElement extends
   /**
    * From RouteObserverMixin.
    */
-  currentRouteChanged(route: Route) {
+  override currentRouteChanged(route: Route) {
     super.currentRouteChanged(route);
     this.currentRoute_ = route || null;
   }

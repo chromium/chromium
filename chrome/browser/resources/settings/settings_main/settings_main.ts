@@ -120,7 +120,7 @@ export class SettingsMainElement extends SettingsMainElementBase {
    * Updates the hidden state of the about and settings pages based on the
    * current route.
    */
-  currentRouteChanged(newRoute: Route) {
+  override currentRouteChanged(newRoute: Route) {
     const inAbout =
         routes.ABOUT.contains(Router.getInstance().getCurrentRoute());
     this.showPages_ = {about: inAbout, settings: !inAbout};

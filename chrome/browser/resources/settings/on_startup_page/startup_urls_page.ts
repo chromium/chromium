@@ -78,7 +78,7 @@ export class SettingsStartupUrlsPageElement extends
     this.startupUrlDialogAnchor_ = null;
   }
 
-  connectedCallback() {
+  override connectedCallback() {
     super.connectedCallback();
 
     this.addWebUIListener(

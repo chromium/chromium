@@ -93,13 +93,13 @@ export class SettingsImportDataDialogElement extends
   private browserProxy_: ImportDataBrowserProxy =
       ImportDataBrowserProxyImpl.getInstance();
 
-  ready() {
+  override ready() {
     super.ready();
     this.addEventListener(
         'settings-boolean-control-change', this.updateImportDataTypesSelected_);
   }
 
-  connectedCallback() {
+  override connectedCallback() {
     super.connectedCallback();
 
     this.browserProxy_.initializeImportDialog().then(data => {

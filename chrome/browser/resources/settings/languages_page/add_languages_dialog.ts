@@ -86,14 +86,14 @@ export class SettingsAddLanguagesDialogElement extends
   private disableActionButton_: boolean;
   private filterValue_: string;
 
-  connectedCallback() {
+  override connectedCallback() {
     super.connectedCallback();
 
     this.$.dialog.showModal();
   }
 
   // Override FindShortcutMixin methods.
-  handleFindShortcut(_modalContextOpen: boolean) {
+  override handleFindShortcut(_modalContextOpen: boolean) {
     // Assumes this is the only open modal.
     const searchInput = this.$.search.getSearchInput();
     (searchInput as unknown as HTMLElementWithScroll).scrollIntoViewIfNeeded();
@@ -104,7 +104,7 @@ export class SettingsAddLanguagesDialogElement extends
   }
 
   // Override FindShortcutMixin methods.
-  searchInputHasFocus() {
+  override searchInputHasFocus() {
     return this.$.search.getSearchInput() ===
         this.$.search.shadowRoot!.activeElement;
   }

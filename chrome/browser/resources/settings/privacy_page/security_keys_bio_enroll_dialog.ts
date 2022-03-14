@@ -128,7 +128,7 @@ export class SettingsSecurityKeysBioEnrollDialogElement extends
   private recentEnrollmentId_: string = '';
   private showSetPINButton_: boolean = false;
 
-  connectedCallback() {
+  override connectedCallback() {
     super.connectedCallback();
 
     afterNextRender(this, function() {

@@ -99,7 +99,7 @@ export class SecureDnsInputElement extends PolymerElement {
   /**
    * Focus the custom dns input field.
    */
-  focus() {
+  override focus() {
     this.$.input.focus();
   }
 

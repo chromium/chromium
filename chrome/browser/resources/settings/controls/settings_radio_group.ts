@@ -68,13 +68,13 @@ export class SettingsRadioGroupElement extends SettingsRadioGroupElementBase {
   selected: string;
   selectableElements: string;
 
-  ready() {
+  override ready() {
     super.ready();
 
     this.setAttribute('role', 'none');
   }
 
-  focus() {
+  override focus() {
     this.shadowRoot!.querySelector('cr-radio-group')!.focus();
   }
 

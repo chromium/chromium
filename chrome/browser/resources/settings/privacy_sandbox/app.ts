@@ -126,7 +126,7 @@ export class PrivacySandboxAppElement extends PrivacySandboxAppElementBase {
   private showTopicsTooltip_: boolean;
   private showFledgeTooltip_: boolean;
 
-  ready() {
+  override ready() {
     super.ready();
     assert(!loadTimeData.getBoolean('isPrivacySandboxRestricted'));
 

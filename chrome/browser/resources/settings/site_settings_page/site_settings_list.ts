@@ -102,7 +102,7 @@ class SettingsSiteSettingsListElement extends
     }
   }
 
-  ready() {
+  override ready() {
     super.ready();
 
     Promise

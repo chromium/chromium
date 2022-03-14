@@ -158,7 +158,7 @@ export class SettingsSyncAccountControlElement extends
   private syncBrowserProxy_: SyncBrowserProxy =
       SyncBrowserProxyImpl.getInstance();
 
-  connectedCallback() {
+  override connectedCallback() {
     super.connectedCallback();
 
     this.syncBrowserProxy_.getStoredAccounts().then(

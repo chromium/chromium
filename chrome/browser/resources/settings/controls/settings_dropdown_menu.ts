@@ -104,7 +104,7 @@ export class SettingsDropdownMenuElement extends
   notFoundValue: string;
   label: string;
 
-  focus() {
+  override focus() {
     this.$.dropdownMenu.focus();
   }
 

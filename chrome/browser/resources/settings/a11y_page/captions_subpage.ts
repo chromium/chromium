@@ -206,7 +206,7 @@ class SettingsCaptionsElement extends SettingsCaptionsElementBase {
   private readonly textSizeOptions_: DropdownMenuOptionList;
   private enableLiveCaption_: boolean;
 
-  ready() {
+  override ready() {
     super.ready();
     FontsBrowserProxyImpl.getInstance().fetchFontsData().then(
         (response: FontsData) => this.setFontsData_(response));

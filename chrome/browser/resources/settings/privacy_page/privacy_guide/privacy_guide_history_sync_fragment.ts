@@ -91,7 +91,7 @@ export class PrivacyGuideHistorySyncFragmentElement extends
    */
   private firstSyncPrefUpdate_: boolean = true;
 
-  ready() {
+  override ready() {
     super.ready();
 
     this.addWebUIListener(
@@ -118,7 +118,7 @@ export class PrivacyGuideHistorySyncFragmentElement extends
     this.firstSyncPrefUpdate_ = true;
   }
 
-  currentRouteChanged(newRoute: Route) {
+  override currentRouteChanged(newRoute: Route) {
     if (newRoute === routes.PRIVACY_GUIDE &&
         Router.getInstance().getQueryParameters().get('step') ===
             PrivacyGuideStep.HISTORY_SYNC) {

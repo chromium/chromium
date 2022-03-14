@@ -130,7 +130,7 @@ export class SettingsPersonalizationOptionsElement extends
     return !!this.syncStatus && !!this.syncStatus.firstSetupInProgress;
   }
 
-  ready() {
+  override ready() {
     super.ready();
 
     // <if expr="_google_chrome and not chromeos">

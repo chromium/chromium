@@ -91,7 +91,7 @@ export class SettingsSearchEngineEditDialogElement extends
     this.DEFAULT_MODEL_INDEX = -1;
   }
 
-  ready() {
+  override ready() {
     super.ready();
 
     if (this.model) {
@@ -121,7 +121,7 @@ export class SettingsSearchEngineEditDialogElement extends
         'search-engines-changed', this.enginesChanged_.bind(this));
   }
 
-  connectedCallback() {
+  override connectedCallback() {
     super.connectedCallback();
 
     microTask.run(() => this.updateActionButtonState_());

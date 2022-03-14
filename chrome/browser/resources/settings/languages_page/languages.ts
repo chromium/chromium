@@ -183,7 +183,7 @@ class SettingsLanguagesElement extends SettingsLanguagesElementBase implements
         this.browserProxy_.getLanguageSettingsPrivate();
   }
 
-  connectedCallback() {
+  override connectedCallback() {
     super.connectedCallback();
 
     const promises: Array<Promise<any>> = [];
@@ -270,7 +270,7 @@ class SettingsLanguagesElement extends SettingsLanguagesElementBase implements
     });
   }
 
-  disconnectedCallback() {
+  override disconnectedCallback() {
     super.disconnectedCallback();
 
     // <if expr="not is_macosx">
