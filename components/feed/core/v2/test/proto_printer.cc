@@ -15,6 +15,7 @@
 #include "components/feed/core/proto/v2/wire/feed_action.pb.h"
 #include "components/feed/core/proto/v2/wire/upload_actions_request.pb.h"
 #include "components/feed/core/proto/v2/wire/upload_actions_response.pb.h"
+#include "components/feed/core/proto/v2/xsurface.pb.h"
 #include "components/feed/core/v2/protocol_translator.h"
 
 namespace feed {
@@ -474,6 +475,16 @@ class TextProtoPrinter {
     EndMessage();
     return *this;
   }
+  TextProtoPrinter& operator<<(
+      const feedxsurface::WebFeedFollowState::FollowState v) {
+    return *this << feedxsurface::WebFeedFollowState_FollowState_Name(v);
+  }
+  TextProtoPrinter& operator<<(const feedxsurface::WebFeedFollowState& v) {
+    BeginMessage();
+    PRINT_FIELD(follow_state);
+    EndMessage();
+    return *this;
+  }
 
   template <typename T>
   void Field(const std::string& name, const T& value) {
@@ -533,6 +544,7 @@ DECLARE_PRINTER(feedwire::webfeed, ListWebFeedsRequest)
 DECLARE_PRINTER(feedwire::webfeed, ListWebFeedsResponse)
 DECLARE_PRINTER(feedwire::webfeed, WebFeed)
 DECLARE_PRINTER(feedwire::webfeed, WebFeedMatcher)
+DECLARE_PRINTER(feedxsurface, WebFeedFollowState)
 
 #undef DECLARE_PRINTER
 

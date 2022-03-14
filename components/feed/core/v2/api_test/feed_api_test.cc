@@ -22,6 +22,7 @@
 #include "base/run_loop.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
 #include "base/test/bind.h"
 #include "components/feed/core/common/pref_names.h"
@@ -141,6 +142,17 @@ feedwire::ThereAndBackAgainData MakeThereAndBackAgainData(int64_t id) {
   *msg.mutable_action_payload() = MakeFeedAction(id).action_payload();
   return msg;
 }
+std::string DatastoreEntryToString(base::StringPiece key,
+                                   base::StringPiece value) {
+  if (base::StartsWith(key, "/app/webfeed-follow-state/")) {
+    feedxsurface::WebFeedFollowState pb;
+    if (pb.ParseFromArray(value.data(), value.size())) {
+      return feedxsurface::WebFeedFollowState_FollowState_Name(
+          pb.follow_state());
+    }
+  }
+  return static_cast<std::string>(value);
+}
 
 TestUnreadContentObserver::TestUnreadContentObserver() = default;
 TestUnreadContentObserver::~TestUnreadContentObserver() = default;
@@ -187,10 +199,14 @@ void TestSurfaceBase::StreamUpdate(const feedui::StreamUpdate& stream_update) {
 }
 void TestSurfaceBase::ReplaceDataStoreEntry(base::StringPiece key,
                                             base::StringPiece data) {
-  data_store_entries_[std::string(key)] = std::string(data);
+  described_datastore_updates_.push_back(
+      base::StrCat({"write ", key, ": ", DatastoreEntryToString(key, data)}));
+  data_store_entries_[static_cast<std::string>(key)] =
+      static_cast<std::string>(data);
 }
 void TestSurfaceBase::RemoveDataStoreEntry(base::StringPiece key) {
-  data_store_entries_.erase(std::string(key));
+  described_datastore_updates_.push_back(base::StrCat({"delete ", key}));
+  data_store_entries_.erase(static_cast<std::string>(key));
 }
 ReliabilityLoggingBridge& TestSurfaceBase::GetReliabilityLoggingBridge() {
   return reliability_logging_bridge;
@@ -200,6 +216,7 @@ void TestSurfaceBase::Clear() {
   initial_state = absl::nullopt;
   update = absl::nullopt;
   described_updates_.clear();
+  described_datastore_updates_.clear();
 }
 
 std::string TestSurfaceBase::DescribeUpdates() {
@@ -207,14 +224,26 @@ std::string TestSurfaceBase::DescribeUpdates() {
   described_updates_.clear();
   return result;
 }
+std::vector<std::string> TestSurfaceBase::DescribeDataStoreUpdates() {
+  std::vector<std::string> result;
+  std::swap(result, described_datastore_updates_);
+  return result;
+}
 
 std::string TestSurfaceBase::DescribeState() {
   return described_updates_.empty() ? "" : described_updates_.back();
 }
-
 std::map<std::string, std::string> TestSurfaceBase::GetDataStoreEntries()
     const {
   return data_store_entries_;
+}
+std::string TestSurfaceBase::DescribeDataStore() const {
+  std::stringstream ss;
+  for (std::pair<std::string, std::string> entry : data_store_entries_) {
+    ss << entry.first << ": "
+       << DatastoreEntryToString(entry.first, entry.second) << '\n';
+  }
+  return ss.str();
 }
 LoggingParameters TestSurfaceBase::GetLoggingParameters() const {
   if (update)

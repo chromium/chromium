@@ -14,6 +14,7 @@
 #include "components/feed/core/proto/v2/wire/upload_actions_response.pb.h"
 #include "components/feed/core/proto/v2/wire/web_feed_matcher.pb.h"
 #include "components/feed/core/proto/v2/wire/web_feeds.pb.h"
+#include "components/feed/core/proto/v2/xsurface.pb.h"
 
 namespace feedwire {
 class ActionPayload;
@@ -66,6 +67,7 @@ DECLARE_PRINTER(feedwire::webfeed, ListWebFeedsResponse)
 DECLARE_PRINTER(feedwire::webfeed, Image)
 DECLARE_PRINTER(feedwire::webfeed, WebFeed)
 DECLARE_PRINTER(feedwire::webfeed, WebFeedMatcher)
+DECLARE_PRINTER(feedxsurface, WebFeedFollowState)
 
 #undef DECLARE_PRINTER
 

@@ -16,6 +16,7 @@
 #include "components/feed/core/v2/public/web_feed_subscriptions.h"
 #include "components/feed/core/v2/test/callback_receiver.h"
 #include "components/feed/core/v2/test/proto_printer.h"
+#include "components/feed/core/v2/test/stream_builder.h"
 #include "components/feed/core/v2/web_feed_subscription_coordinator.h"
 #include "components/feed/feed_feature_list.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -1453,6 +1454,118 @@ TEST_F(FeedApiSubscriptionsTest, PendingOperations_RemovedOnClearAll) {
 
   EXPECT_EQ("", subscriptions().DescribeStateForTesting());
   CheckPendingOperationsAreStored();
+}
+
+TEST_F(FeedApiSubscriptionsTest, DataStoreReceivesFollowState) {
+  WriteSubscribedFeeds(*store_, {MakeWebFeedInfo("food")});
+  CreateStream();
+  TestForYouSurface surface(stream_.get());
+  WaitForIdleTaskQueue();
+  EXPECT_THAT(surface.DescribeDataStoreUpdates(),
+              testing::ElementsAre(
+                  "write /app/webfeed-follow-state/id_food: FOLLOWED"));
+
+  // Follow cats.
+  {
+    network_.InjectResponse(SuccessfulFollowResponse("cats"));
+    subscriptions().FollowWebFeed("id_cats", /*is_durable_request=*/false,
+                                  base::DoNothing());
+    WaitForIdleTaskQueue();
+    EXPECT_THAT(
+        surface.DescribeDataStoreUpdates(),
+        testing::ElementsAre(
+            "write /app/webfeed-follow-state/id_cats: FOLLOW_IN_PROGRESS",
+            "write /app/webfeed-follow-state/id_cats: FOLLOWED"));
+  }
+
+  // Follow dogs.
+  {
+    network_.InjectResponse(SuccessfulFollowResponse("dogs"));
+    subscriptions().FollowWebFeed("id_dogs", /*is_durable_request=*/false,
+                                  base::DoNothing());
+    WaitForIdleTaskQueue();
+    EXPECT_THAT(
+        surface.DescribeDataStoreUpdates(),
+        testing::ElementsAre(
+            "write /app/webfeed-follow-state/id_dogs: FOLLOW_IN_PROGRESS",
+            "write /app/webfeed-follow-state/id_dogs: FOLLOWED"));
+  }
+
+  // Unfollow dogs.
+  {
+    network_.InjectResponse(SuccessfulUnfollowResponse());
+    subscriptions().UnfollowWebFeed("id_dogs", /*is_durable_request=*/false,
+                                    base::DoNothing());
+    WaitForIdleTaskQueue();
+    EXPECT_THAT(
+        surface.DescribeDataStoreUpdates(),
+        testing::UnorderedElementsAre(
+            "write /app/webfeed-follow-state/id_dogs: UNFOLLOW_IN_PROGRESS",
+            "delete /app/webfeed-follow-state/id_dogs"));
+  }
+
+  // Unfollow cats unsuccessfully.
+  {
+    network_.InjectUnfollowResponse(MakeFailedResponse());
+    subscriptions().UnfollowWebFeed("id_cats", /*is_durable_request=*/false,
+                                    base::DoNothing());
+    WaitForIdleTaskQueue();
+    EXPECT_THAT(
+        surface.DescribeDataStoreUpdates(),
+        testing::ElementsAre(
+            "write /app/webfeed-follow-state/id_cats: UNFOLLOW_IN_PROGRESS",
+            "write /app/webfeed-follow-state/id_cats: FOLLOWED"));
+  }
+
+  // Follow fish unsuccessfully.
+  {
+    network_.InjectFollowResponse(MakeFailedResponse());
+    subscriptions().FollowWebFeed("id_fish", /*is_durable_request=*/false,
+                                  base::DoNothing());
+    WaitForIdleTaskQueue();
+    EXPECT_THAT(
+        surface.DescribeDataStoreUpdates(),
+        testing::ElementsAre(
+            "write /app/webfeed-follow-state/id_fish: FOLLOW_IN_PROGRESS",
+            "delete /app/webfeed-follow-state/id_fish"));
+  }
+
+  // Refresh subscriptions from server: following cats and birds.
+  {
+    SetupWithSubscriptions({MakeWireWebFeed("cats"), MakeWireWebFeed("birds")});
+    EXPECT_THAT(surface.DescribeDataStoreUpdates(),
+                testing::UnorderedElementsAre(
+                    "delete /app/webfeed-follow-state/id_food",
+                    "write /app/webfeed-follow-state/id_birds: FOLLOWED"));
+  }
+
+  // Follow fish unsuccessfully, with a durable request.
+  // Note that because durable requests are retried later, it can make injecting
+  // the right network responses after this point difficult, so this should
+  // probably be the last follow request.
+  {
+    network_.InjectFollowResponse(MakeFailedResponse());
+    subscriptions().FollowWebFeed("id_fish", /*is_durable_request=*/true,
+                                  base::DoNothing());
+    WaitForIdleTaskQueue();
+    EXPECT_THAT(
+        surface.DescribeDataStoreUpdates(),
+        testing::ElementsAre(
+            "write /app/webfeed-follow-state/id_fish: FOLLOW_IN_PROGRESS"));
+  }
+
+  // Attach another surface, it should receive all data.
+  {
+    TestWebFeedSurface surface2(stream_.get());
+    WaitForIdleTaskQueue();
+    EXPECT_THAT(surface.DescribeDataStoreUpdates(), testing::IsEmpty());
+    EXPECT_THAT(
+        surface2.DescribeDataStoreUpdates(),
+        testing::UnorderedElementsAre(
+            "write /app/webfeed-follow-state/id_cats: FOLLOWED",
+            "write /app/webfeed-follow-state/id_birds: FOLLOWED",
+            "write /app/webfeed-follow-state/id_fish: FOLLOW_IN_PROGRESS"));
+  }
 }
 
 }  // namespace

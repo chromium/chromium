@@ -441,7 +441,8 @@ void WebFeedIndex::Clear() {
   subscribed_feeds_update_time_ = base::Time();
 }
 
-WebFeedIndex::Entry WebFeedIndex::FindWebFeed(const std::string& web_feed_id) {
+WebFeedIndex::Entry WebFeedIndex::FindWebFeed(
+    const std::string& web_feed_id) const {
   for (const Entry& e : subscribed_->entries()) {
     if (e.web_feed_id == web_feed_id)
       return e;
@@ -481,6 +482,10 @@ int WebFeedIndex::SubscriptionCount() const {
 
 int WebFeedIndex::RecommendedWebFeedCount() const {
   return recommended_->entries().size();
+}
+
+const std::vector<Entry>& WebFeedIndex::GetSubscribedEntries() const {
+  return subscribed_->entries();
 }
 
 std::vector<WebFeedIndex::Entry> WebFeedIndex::GetRecommendedEntriesForTesting()

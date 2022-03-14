@@ -211,13 +211,20 @@ bool SurfaceUpdater::DrawState::operator==(const DrawState& rhs) const {
          std::tie(rhs.loading_more, rhs.loading_initial, rhs.zero_state_type);
 }
 
-SurfaceUpdater::SurfaceUpdater(MetricsReporter* metrics_reporter,
-                               StreamSurfaceSet* surfaces)
+SurfaceUpdater::SurfaceUpdater(
+    MetricsReporter* metrics_reporter,
+    XsurfaceDatastoreDataReader* global_datastore_slice,
+    StreamSurfaceSet* surfaces)
     : metrics_reporter_(metrics_reporter),
       surfaces_(surfaces),
-      launch_reliability_logger_(surfaces) {}
+      aggregate_data_({&surface_data_slice_, global_datastore_slice}),
+      launch_reliability_logger_(surfaces) {
+  aggregate_data_.AddObserver(this);
+}
 
-SurfaceUpdater::~SurfaceUpdater() = default;
+SurfaceUpdater::~SurfaceUpdater() {
+  aggregate_data_.RemoveObserver(this);
+}
 
 void SurfaceUpdater::SetModel(StreamModel* model) {
   if (model_ == model)
@@ -267,13 +274,28 @@ void SurfaceUpdater::SurfaceAdded(
   launch_reliability_logger_.OnStreamUpdate(update.type, *surface);
   SendUpdateToSurface(surface, update.stream_update);
 
-  for (const auto& datastore_entry : xsurface_datastore_entries_) {
+  for (std::pair<std::string, std::string> datastore_entry :
+       aggregate_data_.GetAllEntries()) {
     surface->ReplaceDataStoreEntry(datastore_entry.first,
                                    datastore_entry.second);
   }
 }
 
 void SurfaceUpdater::SurfaceRemoved(FeedStreamSurface* surface) {
+}
+
+void SurfaceUpdater::DatastoreEntryUpdated(XsurfaceDatastoreDataReader*,
+                                           const std::string& key) {
+  const std::string* value = aggregate_data_.FindEntry(key);
+  DCHECK(value);
+  for (auto& entry : *surfaces_)
+    entry.surface->ReplaceDataStoreEntry(key, *value);
+}
+
+void SurfaceUpdater::DatastoreEntryRemoved(XsurfaceDatastoreDataReader*,
+                                           const std::string& key) {
+  for (auto& entry : *surfaces_)
+    entry.surface->RemoveDataStoreEntry(key);
 }
 
 void SurfaceUpdater::LoadStreamStarted(bool manual_refreshing) {
@@ -381,23 +403,9 @@ void SurfaceUpdater::SetOfflinePageAvailability(const std::string& badge_id,
     std::string badge_serialized;
     testbadge.set_available_offline(available_offline);
     testbadge.SerializeToString(&badge_serialized);
-    InsertDatastoreEntry(badge_id, badge_serialized);
+    surface_data_slice_.UpdateDatastoreEntry(badge_id, badge_serialized);
   } else {
-    RemoveDatastoreEntry(badge_id);
-  }
-}
-
-void SurfaceUpdater::InsertDatastoreEntry(const std::string& key,
-                                          const std::string& value) {
-  xsurface_datastore_entries_[key] = value;
-  for (auto& entry : *surfaces_)
-    entry.surface->ReplaceDataStoreEntry(key, value);
-}
-
-void SurfaceUpdater::RemoveDatastoreEntry(const std::string& key) {
-  if (xsurface_datastore_entries_.erase(key) == 1) {
-    for (auto& entry : *surfaces_)
-      entry.surface->RemoveDataStoreEntry(key);
+    surface_data_slice_.RemoveDatastoreEntry(badge_id);
   }
 }
 

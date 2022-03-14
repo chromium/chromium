@@ -11,6 +11,7 @@
 #include <vector>
 
 #include "base/callback_forward.h"
+#include "base/strings/string_piece_forward.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
@@ -70,6 +71,9 @@ std::vector<feedstore::StoredAction> ReadStoredActions(FeedStore& store);
 std::string SerializedOfflineBadgeContent();
 
 feedwire::ThereAndBackAgainData MakeThereAndBackAgainData(int64_t id);
+
+std::string DatastoreEntryToString(base::StringPiece key,
+                                   base::StringPiece value);
 
 class TestReliabilityLoggingBridge : public ReliabilityLoggingBridge {
  public:
@@ -140,6 +144,9 @@ class TestSurfaceBase : public FeedStreamSurface {
   std::string DescribeState();
 
   std::map<std::string, std::string> GetDataStoreEntries() const;
+  std::string DescribeDataStore() const;
+  std::vector<std::string> DescribeDataStoreUpdates();
+
   // Returns the logging parameters last sent to the surface.
   LoggingParameters GetLoggingParameters() const;
 
@@ -160,6 +167,7 @@ class TestSurfaceBase : public FeedStreamSurface {
   base::WeakPtr<FeedStream> stream_;
   std::vector<std::string> described_updates_;
   std::map<std::string, std::string> data_store_entries_;
+  std::vector<std::string> described_datastore_updates_;
   std::string last_logging_parameters_description_;
 };
 

@@ -114,6 +114,8 @@ source_set("feed_core_v2") {
     "web_feed_subscriptions/fetch_subscribed_web_feeds_task.h",
     "web_feed_subscriptions/subscribe_to_web_feed_task.cc",
     "web_feed_subscriptions/subscribe_to_web_feed_task.h",
+    "web_feed_subscriptions/subscription_datastore_provider.cc",
+    "web_feed_subscriptions/subscription_datastore_provider.h",
     "web_feed_subscriptions/unsubscribe_from_web_feed_task.cc",
     "web_feed_subscriptions/unsubscribe_from_web_feed_task.h",
     "web_feed_subscriptions/web_feed_index.cc",
@@ -128,6 +130,8 @@ source_set("feed_core_v2") {
     "web_feed_subscriptions/wire_to_store.h",
     "wire_response_translator.cc",
     "wire_response_translator.h",
+    "xsurface_datastore.cc",
+    "xsurface_datastore.h",
   ]
   friend = [
     ":core_unit_tests",
@@ -225,6 +229,7 @@ source_set("core_unit_tests") {
     "types_unittest.cc",
     "user_actions_collector_unittest.cc",
     "web_feed_subscriptions/web_feed_index_unittest.cc",
+    "xsurface_datastore_unittest.cc",
   ]
 
   public_deps = [ ":test_helpers" ]

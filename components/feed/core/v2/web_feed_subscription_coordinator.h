@@ -16,6 +16,7 @@
 #include "components/feed/core/v2/web_feed_subscriptions/fetch_recommended_web_feeds_task.h"
 #include "components/feed/core/v2/web_feed_subscriptions/fetch_subscribed_web_feeds_task.h"
 #include "components/feed/core/v2/web_feed_subscriptions/subscribe_to_web_feed_task.h"
+#include "components/feed/core/v2/web_feed_subscriptions/subscription_datastore_provider.h"
 #include "components/feed/core/v2/web_feed_subscriptions/unsubscribe_from_web_feed_task.h"
 #include "components/feed/core/v2/web_feed_subscriptions/web_feed_index.h"
 #include "components/feed/core/v2/web_feed_subscriptions/web_feed_types.h"
@@ -85,6 +86,8 @@ class WebFeedSubscriptionCoordinator : public WebFeedSubscriptions {
       const WebFeedPageInformation& page_info);
   WebFeedSubscriptionInfo FindSubscriptionInfoById(
       const std::string& web_feed_id);
+  WebFeedSubscriptionStatus GetWebFeedSubscriptionStatus(
+      const std::string& web_feed_id) const;
 
   WebFeedIndex& index() { return index_; }
 
@@ -176,7 +179,7 @@ class WebFeedSubscriptionCoordinator : public WebFeedSubscriptions {
       absl::optional<feedstore::WebFeedInfo> info);
   const WebFeedInFlightChange* FindInflightChange(
       const std::string& web_feed_id,
-      const WebFeedPageInformation* maybe_page_info);
+      const WebFeedPageInformation* maybe_page_info) const;
   WebFeedInFlightChange DequeueInflightChange();
 
   void FetchRecommendedWebFeedsIfStale();
@@ -198,9 +201,16 @@ class WebFeedSubscriptionCoordinator : public WebFeedSubscriptions {
       WebFeedInFlightChangeStrategy strategy,
       feedstore::PendingWebFeedOperation::Kind kind);
 
+  std::vector<std::pair<std::string, WebFeedSubscriptionStatus>>
+  GetAllWebFeedSubscriptionStatus() const;
+  // Called any time GetWebFeedSubscriptionStatus() may change.
+  void SubscriptionsChanged();
+
   raw_ptr<Delegate> delegate_;       // Always non-null.
   raw_ptr<FeedStream> feed_stream_;  // Always non-null, it owns this.
   WebFeedIndex index_;
+  SubscriptionDatastoreProvider datastore_provider_;
+
   // Whether `Populate()` has been called.
   bool populated_ = false;
   std::vector<base::OnceClosure> on_populated_;
