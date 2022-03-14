@@ -68,8 +68,9 @@ AXInspectScenario AXInspectScenario::From(
   Directive directive = kNone;
   // Directives have format of @directive:value[..value], value per line.
   for (const std::string& line : lines) {
-    // Treat empty line the multiline directive end.
-    if (line.empty()) {
+    // Treat empty line the multiline directive end with exception of script
+    // directives which spans until a next directive.
+    if (line.empty() && directive != kScript) {
       directive = kNone;
     }
 
