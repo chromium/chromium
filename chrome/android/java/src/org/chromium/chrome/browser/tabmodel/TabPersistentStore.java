@@ -832,7 +832,8 @@ public class TabPersistentStore {
             int selectedModelTabCount = mTabModelSelector.getCurrentModel().getCount();
 
             TabModelUtils.setIndex(model, TabModelUtils.getTabIndexById(model, tabId),
-                    StartSurfaceUserData.getInstance().getUnusedTabRestoredAtStartup());
+                    mPersistencePolicy.allowSkipLoadingTab()
+                            && StartSurfaceUserData.getInstance().getUnusedTabRestoredAtStartup());
             boolean isIncognitoTabModelSelected = mTabModelSelector.isIncognitoSelected();
 
             // Setting the index will cause the tab's model to be selected. Set it back to the model
