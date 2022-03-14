@@ -753,16 +753,18 @@ void WallpaperControllerClientImpl::FetchGooglePhotosPhoto(
     const AccountId& account_id,
     const std::string& id,
     FetchGooglePhotosPhotoCallback callback) {
-  Profile* profile = ProfileHelper::Get()->GetProfileByAccountId(account_id);
-  if (!google_photos_photos_fetcher_) {
-    google_photos_photos_fetcher_ =
-        std::make_unique<wallpaper_handlers::GooglePhotosPhotosFetcher>(
-            profile);
+  if (google_photos_photos_fetchers_.find(account_id) ==
+      google_photos_photos_fetchers_.end()) {
+    Profile* profile = ProfileHelper::Get()->GetProfileByAccountId(account_id);
+    google_photos_photos_fetchers_.insert(
+        {account_id,
+         std::make_unique<wallpaper_handlers::GooglePhotosPhotosFetcher>(
+             profile)});
   }
   auto fetched_callback =
       base::BindOnce(&WallpaperControllerClientImpl::OnGooglePhotosPhotoFetched,
                      weak_factory_.GetWeakPtr(), std::move(callback));
-  google_photos_photos_fetcher_->AddRequestAndStartIfNecessary(
+  google_photos_photos_fetchers_[account_id]->AddRequestAndStartIfNecessary(
       id, /*album_id=*/absl::nullopt,
       /*resume_token=*/absl::nullopt, std::move(fetched_callback));
 }

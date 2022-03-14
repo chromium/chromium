@@ -208,6 +208,12 @@ class PersonalizationAppWallpaperProviderImpl
       const std::string& collection_id,
       const std::vector<backdrop::Image>& images);
 
+  void SendGooglePhotosAttribution(
+      const ash::WallpaperInfo& info,
+      const GURL& wallpaper_data_url,
+      mojo::StructPtr<ash::personalization_app::mojom::GooglePhotosPhoto>
+          photo);
+
   // Called when the user sets an image, or cancels/confirms preview wallpaper.
   // If a new image is set in preview mode, will minimize all windows except the
   // wallpaper SWA. When canceling or confirming preview mode, will restore the

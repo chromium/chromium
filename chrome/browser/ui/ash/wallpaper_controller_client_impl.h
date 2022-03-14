@@ -214,8 +214,9 @@ class WallpaperControllerClientImpl
   std::unique_ptr<wallpaper_handlers::BackdropSurpriseMeImageFetcher>
       surprise_me_image_fetcher_;
 
-  std::unique_ptr<wallpaper_handlers::GooglePhotosPhotosFetcher>
-      google_photos_photos_fetcher_;
+  std::map<AccountId,
+           std::unique_ptr<wallpaper_handlers::GooglePhotosPhotosFetcher>>
+      google_photos_photos_fetchers_;
 
   base::ScopedMultiSourceObservation<file_manager::VolumeManager,
                                      file_manager::VolumeManagerObserver>

@@ -2151,6 +2151,9 @@ void WallpaperControllerImpl::OnGooglePhotosPhotoFetched(
     const GooglePhotosWallpaperParams& params,
     SetWallpaperCallback callback,
     ash::personalization_app::mojom::GooglePhotosPhotoPtr photo) {
+  // TODO(angusmclean): Detect whether the photo doesn't exist or if the request
+  // simply failed. If the request failed, load from cache or exit as
+  // appropriate. If the photo doesn't exist, continue to below.
   if (photo.is_null()) {
     // The photo doesn't exist, or has been deleted. If this photo is the
     // current wallpaper, we need to reset to the default.
