@@ -15,6 +15,14 @@ export function albumsReducer(
   switch (action.name) {
     case AmbientActionName.SET_ALBUMS:
       return action.albums;
+    case AmbientActionName.SET_ALBUM_SELECTED:
+      if (!state) {
+        return state;
+      }
+      // An albums in AmbientState.albums is mutated by setting checked
+      // to True/False, have to return a copy of albums state so that
+      // Polymer knows there is an update.
+      return [...state];
     default:
       return state;
   }

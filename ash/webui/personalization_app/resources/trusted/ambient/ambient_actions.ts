@@ -12,17 +12,22 @@ import {AmbientModeAlbum, TemperatureUnit, TopicSource} from '../personalization
 
 export enum AmbientActionName {
   SET_ALBUMS = 'set_albums',
+  SET_ALBUM_SELECTED = 'set_album_selected',
   SET_AMBIENT_MODE_ENABLED = 'set_ambient_mode_enabled',
   SET_TEMPERATURE_UNIT = 'set_temperature_unit',
   SET_TOPIC_SOURCE = 'set_topic_source',
 }
 
-export type AmbientActions = SetAlbumsAction|SetAmbientModeEnabledAction|
-    SetTopicSourceAction|SetTemperatureUnitAction;
+export type AmbientActions = SetAlbumsAction|SetAlbumSelectedAction|
+    SetAmbientModeEnabledAction|SetTopicSourceAction|SetTemperatureUnitAction;
 
 export type SetAlbumsAction = Action&{
   name: AmbientActionName.SET_ALBUMS;
   albums: AmbientModeAlbum[];
+};
+
+export type SetAlbumSelectedAction = Action&{
+  name: AmbientActionName.SET_ALBUM_SELECTED;
 };
 
 export type SetAmbientModeEnabledAction = Action&{
@@ -45,6 +50,10 @@ export type SetTopicSourceAction = Action&{
  */
 export function setAlbumsAction(albums: AmbientModeAlbum[]): SetAlbumsAction {
   return {name: AmbientActionName.SET_ALBUMS, albums};
+}
+
+export function setAlbumSelectedAction(): SetAlbumSelectedAction {
+  return {name: AmbientActionName.SET_ALBUM_SELECTED};
 }
 
 /**

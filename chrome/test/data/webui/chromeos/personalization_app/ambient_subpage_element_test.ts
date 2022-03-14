@@ -8,7 +8,7 @@ import {AmbientActionName, SetAlbumsAction, SetAmbientModeEnabledAction, SetTemp
 import {AmbientObserver} from 'chrome://personalization/trusted/ambient/ambient_observer.js';
 import {AmbientSubpage} from 'chrome://personalization/trusted/ambient/ambient_subpage_element.js';
 import {TopicSourceItem} from 'chrome://personalization/trusted/ambient/topic_source_item_element.js';
-import {TemperatureUnit, TopicSource} from 'chrome://personalization/trusted/personalization_app.mojom-webui.js';
+import {AmbientModeAlbum, TemperatureUnit, TopicSource} from 'chrome://personalization/trusted/personalization_app.mojom-webui.js';
 import {Paths, PersonalizationRouter} from 'chrome://personalization/trusted/personalization_router_element.js';
 import {emptyState} from 'chrome://personalization/trusted/personalization_state.js';
 import {CrRadioButtonElement} from 'chrome://resources/cr_elements/cr_radio_button/cr_radio_button.m.js';
@@ -19,6 +19,13 @@ import {waitAfterNextRender} from 'chrome://webui-test/test_util.js';
 import {baseSetup, initElement, teardownElement} from './personalization_app_test_utils.js';
 import {TestAmbientProvider} from './test_ambient_interface_provider.js';
 import {TestPersonalizationStore} from './test_personalization_store.js';
+
+
+export function getSelectedAlbums(
+    albums: AmbientModeAlbum[], topicSource: TopicSource): AmbientModeAlbum[] {
+  return albums.filter(
+      album => album.topicSource === topicSource && album.checked);
+}
 
 export function AmbientSubpageTest() {
   let ambientSubpageElement: AmbientSubpage|null;
@@ -464,9 +471,23 @@ export function AmbientSubpageTest() {
     assertFalse(albums[0].album!.checked);
     assertFalse(albums[1].album!.checked);
     assertTrue(albums[2].album!.checked);
+    let selectedAlbums = getSelectedAlbums(
+        personalizationStore.data.ambient.albums,
+        personalizationStore.data.ambient.topicSource);
+    assertEquals(1, selectedAlbums!.length);
+    assertEquals('2', selectedAlbums[0]!.title);
 
+    personalizationStore.expectAction(AmbientActionName.SET_ALBUM_SELECTED);
     albums[1].$.image.click();
     assertTrue(albums[1].album!.checked);
+    await personalizationStore.waitForAction(
+        AmbientActionName.SET_ALBUM_SELECTED);
+    selectedAlbums = getSelectedAlbums(
+        personalizationStore.data.ambient.albums,
+        personalizationStore.data.ambient.topicSource);
+    assertEquals(2, selectedAlbums!.length);
+    assertEquals('1', selectedAlbums[0]!.title);
+    assertEquals('2', selectedAlbums[1]!.title);
   });
 
   test('not deselect last art album', async () => {

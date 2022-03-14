@@ -102,7 +102,7 @@ export class AlbumsSubpage extends WithPersonalizationStore {
         return;
       }
     }
-    setAlbumSelected(albumChanged, getAmbientProvider());
+    setAlbumSelected(albumChanged, getAmbientProvider(), this.getStore());
   }
 
   private onArtAlbumDialogClose_() {
