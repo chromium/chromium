@@ -414,7 +414,8 @@ void AppsContainerView::OnActiveAppListModelsChanged(
 }
 
 void AppsContainerView::ShowFolderForItemView(AppListItemView* folder_item_view,
-                                              bool focus_name_input) {
+                                              bool focus_name_input,
+                                              base::OnceClosure hide_callback) {
   // Prevent new animations from starting if there are currently animations
   // pending. This fixes crbug.com/357099.
   if (app_list_folder_view_->IsAnimationRunning())
@@ -425,7 +426,8 @@ void AppsContainerView::ShowFolderForItemView(AppListItemView* folder_item_view,
   UMA_HISTOGRAM_ENUMERATION("Apps.AppListFolderOpened",
                             kFullscreenAppListFolders, kMaxFolderOpened);
 
-  app_list_folder_view_->ConfigureForFolderItemView(folder_item_view);
+  app_list_folder_view_->ConfigureForFolderItemView(folder_item_view,
+                                                    std::move(hide_callback));
   SetShowState(SHOW_ACTIVE_FOLDER, false);
 
   // If there is no selected view in the root grid when a folder is opened,

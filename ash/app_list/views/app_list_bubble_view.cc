@@ -592,7 +592,8 @@ bool AppListBubbleView::CanSelectSearchResults() {
 }
 
 void AppListBubbleView::ShowFolderForItemView(AppListItemView* folder_item_view,
-                                              bool focus_name_input) {
+                                              bool focus_name_input,
+                                              base::OnceClosure hide_callback) {
   DVLOG(1) << __FUNCTION__;
   if (folder_view_->IsAnimationRunning())
     return;
@@ -601,7 +602,8 @@ void AppListBubbleView::ShowFolderForItemView(AppListItemView* folder_item_view,
   // Apps.AppListFolderOpened or introduce a new metric.
 
   DCHECK(folder_item_view->is_folder());
-  folder_view_->ConfigureForFolderItemView(folder_item_view);
+  folder_view_->ConfigureForFolderItemView(folder_item_view,
+                                           std::move(hide_callback));
   showing_folder_ = true;
   Layout();
   folder_background_view_->SetVisible(true);

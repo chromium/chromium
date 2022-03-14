@@ -96,6 +96,9 @@ class AppListTestHelper {
   // Run all pending in message loop to wait for animation to finish.
   void WaitUntilIdle();
 
+  // If a folder view is shown, waits until the folder animations complete.
+  void WaitForFolderAnimation();
+
   // Adds `num_apps` to the app list model.
   void AddAppItems(int num_apps);
 

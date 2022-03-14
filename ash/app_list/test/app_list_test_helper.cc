@@ -16,6 +16,7 @@
 #include "ash/app_list/views/app_list_bubble_apps_page.h"
 #include "ash/app_list/views/app_list_bubble_search_page.h"
 #include "ash/app_list/views/app_list_bubble_view.h"
+#include "ash/app_list/views/app_list_folder_view.h"
 #include "ash/app_list/views/app_list_main_view.h"
 #include "ash/app_list/views/app_list_toast_container_view.h"
 #include "ash/app_list/views/app_list_view.h"
@@ -55,6 +56,22 @@ AppListTestHelper::~AppListTestHelper() {
 
 void AppListTestHelper::WaitUntilIdle() {
   base::RunLoop().RunUntilIdle();
+}
+
+void AppListTestHelper::WaitForFolderAnimation() {
+  AppListFolderView* folder_view = nullptr;
+  if (!Shell::Get()->IsInTabletMode() &&
+      features::IsProductivityLauncherEnabled()) {
+    folder_view = GetBubbleFolderView();
+  } else {
+    folder_view = GetFullscreenFolderView();
+  }
+  if (!folder_view || !folder_view->IsAnimationRunning())
+    return;
+
+  base::RunLoop run_loop;
+  folder_view->SetAnimationDoneTestCallback(run_loop.QuitClosure());
+  run_loop.Run();
 }
 
 void AppListTestHelper::ShowAppList() {

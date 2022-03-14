@@ -85,8 +85,10 @@ class ASH_EXPORT AppListFolderView
 
   // Configures AppListFolderView to show the contents for the folder item
   // associated with `folder_item_view`. The folder view will be anchored at
-  // `folder_item_view`.
-  void ConfigureForFolderItemView(AppListItemView* folder_item_view);
+  // `folder_item_view`. `hide_callback` gets called when the folder gets
+  // hidden (after all hide animations complete).
+  void ConfigureForFolderItemView(AppListItemView* folder_item_view,
+                                  base::OnceClosure hide_callback);
 
   // Schedules an animation to show or hide the view.
   // If |show| is false, the view should be set to invisible after the
@@ -177,7 +179,8 @@ class ASH_EXPORT AppListFolderView
   void SetItemName(AppListFolderItem* item, const std::string& name) override;
 
   // Overridden from AppsGridViewFolderDelegate:
-  void ReparentItem(AppListItemView* original_drag_view,
+  void ReparentItem(AppsGridView::Pointer pointer,
+                    AppListItemView* original_drag_view,
                     const gfx::Point& drag_point_in_folder_grid) override;
   void DispatchDragEventForReparent(
       AppsGridView::Pointer pointer,
@@ -277,6 +280,10 @@ class ASH_EXPORT AppListFolderView
 
   // Whether the folder view is currently shown, or showing.
   bool shown_ = false;
+
+  // If set, the callback that will be called when the folder hides (after hide
+  // animations complete).
+  base::OnceClosure hide_callback_;
 
   // The folder item in the root apps grid associated with this folder.
   AppListItemView* folder_item_view_ = nullptr;

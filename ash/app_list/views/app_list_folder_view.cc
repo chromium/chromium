@@ -742,7 +742,8 @@ void AppListFolderView::UpdateAppListConfig(const AppListConfig* config) {
 }
 
 void AppListFolderView::ConfigureForFolderItemView(
-    AppListItemView* folder_item_view) {
+    AppListItemView* folder_item_view,
+    base::OnceClosure hide_callback) {
   DCHECK(folder_item_view->is_folder());
   DCHECK(folder_item_view->item());
   DCHECK(items_grid_view_->app_list_config());
@@ -751,6 +752,7 @@ void AppListFolderView::ConfigureForFolderItemView(
   // cancel any pending hide animations.
   ResetState(/*restore_folder_item_view_state=*/true);
 
+  hide_callback_ = std::move(hide_callback);
   folder_item_view_ = folder_item_view;
   folder_item_view_observer_.Observe(folder_item_view);
 
@@ -900,6 +902,10 @@ void AppListFolderView::OnAppListItemWillBeDeleted(AppListItem* item) {
 
 void AppListFolderView::ResetState(bool restore_folder_item_view_state) {
   DVLOG(1) << __FUNCTION__;
+
+  if (hide_callback_)
+    std::move(hide_callback_).Run();
+
   if (folder_item_) {
     items_grid_view_->ClearSelectedView();
     items_grid_view_->SetItemList(nullptr);
@@ -947,10 +953,14 @@ void AppListFolderView::OnHideAnimationDone(bool hide_for_reparent) {
   // view's liveness (so it can reset animations if the folder item
   // view gets deleted).
   // If the view is hidden for reparent, the state will be cleared
-  // when the reparent drag ends.
+  // when the reparent drag ends - close callback still needs to be called so
+  // the root apps grid knows to update its state.
   if (!hide_for_reparent) {
     ResetState(
         /*reset_folder_item_view_state=*/true);
+  } else {
+    if (hide_callback_)
+      std::move(hide_callback_).Run();
   }
 
   if (animation_done_test_callback_)
@@ -1065,6 +1075,10 @@ void AppListFolderView::OnMouseEvent(ui::MouseEvent* event) {
 
 bool AppListFolderView::IsDragPointOutsideOfFolder(
     const gfx::Point& drag_point) {
+  // Wait for the folder bound to stabilize before starting reparent drag.
+  if (IsAnimationRunning())
+    return false;
+
   gfx::Point drag_point_in_folder = drag_point;
   views::View::ConvertPointToTarget(items_grid_view_, this,
                                     &drag_point_in_folder);
@@ -1083,6 +1097,7 @@ bool AppListFolderView::IsDragPointOutsideOfFolder(
 // drag_view_ in hidden grid view will dispatch the drag and drop event to
 // the top level grid view, until the drag ends.
 void AppListFolderView::ReparentItem(
+    AppsGridView::Pointer pointer,
     AppListItemView* original_drag_view,
     const gfx::Point& drag_point_in_folder_grid) {
   // Convert the drag point relative to the root level AppsGridView.
@@ -1093,7 +1108,7 @@ void AppListFolderView::ReparentItem(
   // the drag
   folder_item_->NotifyOfDraggedItem(original_drag_view->item());
   root_apps_grid_view_->InitiateDragFromReparentItemInRootLevelGridView(
-      original_drag_view, to_root_level_grid,
+      pointer, original_drag_view, to_root_level_grid,
       base::BindOnce(&AppListFolderView::CancelReparentDragFromRootGrid,
                      weak_ptr_factory_.GetWeakPtr()));
   folder_controller_->ReparentFolderItemTransit(folder_item_);
@@ -1176,6 +1191,15 @@ bool AppListFolderView::IsOEMFolder() const {
 void AppListFolderView::HandleKeyboardReparent(AppListItemView* reparented_view,
                                                ui::KeyboardCode key_code) {
   folder_controller_->ReparentFolderItemTransit(folder_item_);
+
+  // Notify the root apps grid that folder is closing before handling keyboard
+  // reparent, to match general flow during drag reparent (where close callback
+  // gets called before reparenting the dragged view). This ensures that items
+  // are in their ideal locations when the item gets reparented (i.e. that the
+  // folder item's slot is not locked to the folder item's initial location).
+  if (hide_callback_)
+    std::move(hide_callback_).Run();
+
   root_apps_grid_view_->HandleKeyboardReparent(reparented_view,
                                                folder_item_view_, key_code);
   folder_controller_->ReparentDragEnded();
