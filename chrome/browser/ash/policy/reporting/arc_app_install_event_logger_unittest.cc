@@ -406,26 +406,26 @@ TEST_F(AppInstallEventLoggerTest, UpdatePolicy) {
 
   // Test that REQUIRED, PREINSTALLED and FORCE_INSTALLED are markers to include
   // app to the tracking. BLOCKED and AVAILABLE are excluded.
-  auto package1 = std::make_unique<base::DictionaryValue>();
-  package1->SetStringKey("installType", "REQUIRED");
-  package1->SetStringKey("packageName", kPackageName);
-  list->Append(std::move(package1));
-  auto package2 = std::make_unique<base::DictionaryValue>();
-  package2->SetStringKey("installType", "PREINSTALLED");
-  package2->SetStringKey("packageName", kPackageName2);
-  list->Append(std::move(package2));
-  auto package3 = std::make_unique<base::DictionaryValue>();
-  package3->SetStringKey("installType", "FORCE_INSTALLED");
-  package3->SetStringKey("packageName", kPackageName3);
-  list->Append(std::move(package3));
-  auto package4 = std::make_unique<base::DictionaryValue>();
-  package4->SetStringKey("installType", "BLOCKED");
-  package4->SetStringKey("packageName", kPackageName4);
-  list->Append(std::move(package4));
-  auto package5 = std::make_unique<base::DictionaryValue>();
-  package5->SetStringKey("installType", "AVAILABLE");
-  package5->SetStringKey("packageName", kPackageName5);
-  list->Append(std::move(package5));
+  base::Value::Dict package1;
+  package1.Set("installType", "REQUIRED");
+  package1.Set("packageName", kPackageName);
+  list->Append(base::Value(std::move(package1)));
+  base::Value::Dict package2;
+  package2.Set("installType", "PREINSTALLED");
+  package2.Set("packageName", kPackageName2);
+  list->Append(base::Value(std::move(package2)));
+  base::Value::Dict package3;
+  package3.Set("installType", "FORCE_INSTALLED");
+  package3.Set("packageName", kPackageName3);
+  list->Append(base::Value(std::move(package3)));
+  base::Value::Dict package4;
+  package4.Set("installType", "BLOCKED");
+  package4.Set("packageName", kPackageName4);
+  list->Append(base::Value(std::move(package4)));
+  base::Value::Dict package5;
+  package5.Set("installType", "AVAILABLE");
+  package5.Set("packageName", kPackageName5);
+  list->Append(base::Value(std::move(package5)));
   arc_policy.SetList("applications", std::move(list));
 
   std::string arc_policy_string;
