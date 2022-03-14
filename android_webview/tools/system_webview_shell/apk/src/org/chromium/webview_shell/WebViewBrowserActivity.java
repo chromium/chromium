@@ -38,6 +38,7 @@ import android.view.inputmethod.InputMethodManager;
 import android.webkit.CookieManager;
 import android.webkit.GeolocationPermissions;
 import android.webkit.PermissionRequest;
+import android.webkit.ValueCallback;
 import android.webkit.WebChromeClient;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
@@ -46,6 +47,8 @@ import android.widget.FrameLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.activity.result.ActivityResultCallback;
+import androidx.activity.result.ActivityResultLauncher;
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
@@ -125,6 +128,14 @@ public class WebViewBrowserActivity extends AppCompatActivity {
     // Permit any number of slashes, since chromium seems to canonicalize bad values.
     private static final Pattern FILE_ANDROID_ASSET_PATTERN =
             Pattern.compile("^file:///android_(asset|res)/.*");
+
+    private ActivityResultLauncher<Void> mFileContents;
+    private ValueCallback<Uri[]> mFilePathCallback;
+    private MultiFileSelector mMultiFileSelector;
+
+    public void setFilePathCallback(ValueCallback<Uri[]> inCallback) {
+        mFilePathCallback = inCallback;
+    };
 
     // Work around our wonky API by wrapping a geo permission prompt inside a regular
     // PermissionRequest.
@@ -471,8 +482,25 @@ public class WebViewBrowserActivity extends AppCompatActivity {
                 ((ViewGroup) mFullscreenView.getParent()).removeView(mFullscreenView);
                 mFullscreenView = null;
             }
+
+            @Override
+            public boolean onShowFileChooser(WebView webView, ValueCallback<Uri[]> filePathCallback,
+                    WebChromeClient.FileChooserParams fileChooserParams) {
+                setFilePathCallback(filePathCallback);
+                mMultiFileSelector.setFileChooserParams(fileChooserParams);
+                mFileContents.launch(null);
+                return true;
+            }
         });
 
+        mMultiFileSelector = new MultiFileSelector();
+        mFileContents =
+                registerForActivityResult(mMultiFileSelector, new ActivityResultCallback<Uri[]>() {
+                    @Override
+                    public void onActivityResult(Uri[] result) {
+                        mFilePathCallback.onReceiveValue(result);
+                    }
+                });
         mWebView = webview;
         getContainer().addView(
                 webview, new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT));

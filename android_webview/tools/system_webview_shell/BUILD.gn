@@ -43,6 +43,7 @@ android_library("system_webview_shell_apk_java") {
   testonly = true
   sources = [
     "apk/src/org/chromium/webview_shell/JankActivity.java",
+    "apk/src/org/chromium/webview_shell/MultiFileSelector.java",
     "apk/src/org/chromium/webview_shell/PageCyclerTestActivity.java",
     "apk/src/org/chromium/webview_shell/StartupTimeActivity.java",
     "apk/src/org/chromium/webview_shell/TelemetryActivity.java",
