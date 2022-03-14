@@ -132,16 +132,16 @@ GURL WebAppFrameToolbarTestHelper::
 base::Value::ListStorage
 WebAppFrameToolbarTestHelper::GetXYWidthHeightListValue(
     content::WebContents* web_contents,
-    std::string rect_value_list,
-    std::string rect_var_name) {
+    const std::string& rect_value_list,
+    const std::string& rect_var_name) {
   EXPECT_TRUE(ExecJs(web_contents->GetMainFrame(), rect_value_list));
   return EvalJs(web_contents, rect_var_name).ExtractList().TakeListDeprecated();
 }
 
 gfx::Rect WebAppFrameToolbarTestHelper::GetXYWidthHeightRect(
     content::WebContents* web_contents,
-    std::string rect_value_list,
-    std::string rect_var_name) {
+    const std::string& rect_value_list,
+    const std::string& rect_var_name) {
   base::Value::ListStorage rect_list =
       GetXYWidthHeightListValue(web_contents, rect_value_list, rect_var_name);
   return gfx::Rect(rect_list[0].GetInt(), rect_list[1].GetInt(),

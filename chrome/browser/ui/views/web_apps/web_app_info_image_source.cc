@@ -8,8 +8,8 @@
 
 WebAppInfoImageSource::WebAppInfoImageSource(
     int dip_size,
-    const std::map<SquareSizePx, SkBitmap>& icons)
-    : dip_size_(dip_size), icons_(icons) {}
+    std::map<SquareSizePx, SkBitmap> icons)
+    : dip_size_(dip_size), icons_(std::move(icons)) {}
 
 WebAppInfoImageSource::~WebAppInfoImageSource() {}
 

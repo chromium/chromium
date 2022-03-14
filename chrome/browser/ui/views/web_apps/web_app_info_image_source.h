@@ -14,8 +14,7 @@
 // An image source which draws from a WebAppInstallInfo icons list.
 class WebAppInfoImageSource : public gfx::ImageSkiaSource {
  public:
-  WebAppInfoImageSource(int dip_size,
-                        const std::map<SquareSizePx, SkBitmap>& icons);
+  WebAppInfoImageSource(int dip_size, std::map<SquareSizePx, SkBitmap> icons);
 
   WebAppInfoImageSource(const WebAppInfoImageSource&) = delete;
   WebAppInfoImageSource& operator=(const WebAppInfoImageSource&) = delete;

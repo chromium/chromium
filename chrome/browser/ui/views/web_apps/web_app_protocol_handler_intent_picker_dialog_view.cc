@@ -19,7 +19,7 @@
 namespace web_app {
 
 WebAppProtocolHandlerIntentPickerView::WebAppProtocolHandlerIntentPickerView(
-    const GURL& url,
+    GURL url,
     Profile* profile,
     const AppId& app_id,
     chrome::WebAppLaunchAcceptanceCallback close_callback)

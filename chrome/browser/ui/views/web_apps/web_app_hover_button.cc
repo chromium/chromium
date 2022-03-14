@@ -86,9 +86,10 @@ void WebAppHoverButton::OnIconsRead(
     return;
 
   gfx::Size image_size{web_app::kWebAppIconSmall, web_app::kWebAppIconSmall};
-  auto imageSkia = gfx::ImageSkia(std::make_unique<WebAppInfoImageSource>(
-                                      web_app::kWebAppIconSmall, icon_bitmaps),
-                                  image_size);
+  auto imageSkia =
+      gfx::ImageSkia(std::make_unique<WebAppInfoImageSource>(
+                         web_app::kWebAppIconSmall, std::move(icon_bitmaps)),
+                     image_size);
   SetImage(views::Button::ButtonState::STATE_NORMAL, imageSkia);
 }
 

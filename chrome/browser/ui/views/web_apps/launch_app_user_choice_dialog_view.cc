@@ -75,7 +75,7 @@ LaunchAppUserChoiceDialogView::LaunchAppUserChoiceDialogView(
     const web_app::AppId& app_id,
     chrome::WebAppLaunchAcceptanceCallback close_callback)
     : profile_(profile),
-      app_id_(std::move(app_id)),
+      app_id_(app_id),
       close_callback_(std::move(close_callback)) {}
 
 LaunchAppUserChoiceDialogView::~LaunchAppUserChoiceDialogView() = default;
@@ -210,9 +210,10 @@ void LaunchAppUserChoiceDialogView::OnIconsRead(
     return;
 
   gfx::Size image_size{web_app::kWebAppIconSmall, web_app::kWebAppIconSmall};
-  auto imageSkia = gfx::ImageSkia(std::make_unique<WebAppInfoImageSource>(
-                                      web_app::kWebAppIconSmall, icon_bitmaps),
-                                  image_size);
+  auto imageSkia =
+      gfx::ImageSkia(std::make_unique<WebAppInfoImageSource>(
+                         web_app::kWebAppIconSmall, std::move(icon_bitmaps)),
+                     image_size);
   icon_image_view_->SetImage(imageSkia);
 }
 

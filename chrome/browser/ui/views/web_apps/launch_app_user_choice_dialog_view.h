@@ -46,7 +46,7 @@ class LaunchAppUserChoiceDialogView : public views::DialogDelegateView {
 
   void Init();
 
-  static void SetDefaultRememberSelectionForTesting(bool remember_state);
+  static void SetDefaultRememberSelectionForTesting(bool remember_selection);
 
  protected:
   virtual std::unique_ptr<views::View> CreateAboveAppInfoView() = 0;

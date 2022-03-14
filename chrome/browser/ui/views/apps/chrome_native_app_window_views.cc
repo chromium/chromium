@@ -93,13 +93,9 @@ const std::map<ui::Accelerator, int>& GetAcceleratorTable() {
 
 }  // namespace
 
-ChromeNativeAppWindowViews::ChromeNativeAppWindowViews()
-    : has_frame_color_(false),
-      active_frame_color_(SK_ColorBLACK),
-      inactive_frame_color_(SK_ColorBLACK) {
-}
+ChromeNativeAppWindowViews::ChromeNativeAppWindowViews() = default;
 
-ChromeNativeAppWindowViews::~ChromeNativeAppWindowViews() {}
+ChromeNativeAppWindowViews::~ChromeNativeAppWindowViews() = default;
 
 void ChromeNativeAppWindowViews::OnBeforeWidgetInit(
     const AppWindow::CreateParams& create_params,
@@ -338,7 +334,7 @@ void ChromeNativeAppWindowViews::UpdateShape(
   std::unique_ptr<SkRegion> region;
   if (shape_rects_) {
     region = std::make_unique<SkRegion>();
-    for (const gfx::Rect& input_rect : *shape_rects_.get())
+    for (const gfx::Rect& input_rect : *shape_rects_)
       region->op(gfx::RectToSkIRect(input_rect), SkRegion::kUnion_Op);
   }
   shape_ = std::move(region);

@@ -25,12 +25,6 @@
 
 using extensions::AppWindow;
 
-ChromeNativeAppWindowViewsAura::ChromeNativeAppWindowViewsAura() {
-}
-
-ChromeNativeAppWindowViewsAura::~ChromeNativeAppWindowViewsAura() {
-}
-
 ui::WindowShowState
 ChromeNativeAppWindowViewsAura::GetRestorableState(
     const ui::WindowShowState restore_state) const {

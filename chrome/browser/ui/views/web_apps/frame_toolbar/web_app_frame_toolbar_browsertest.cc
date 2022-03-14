@@ -450,8 +450,7 @@ class WebAppFrameToolbarBrowserTest_WindowControlsOverlay
             embedded_test_server(), &temp_dir_);
 
     std::vector<blink::mojom::DisplayMode> display_overrides;
-    display_overrides.emplace_back(
-        web_app::DisplayMode::kWindowControlsOverlay);
+    display_overrides.push_back(web_app::DisplayMode::kWindowControlsOverlay);
     auto web_app_info = std::make_unique<WebAppInstallInfo>();
     web_app_info->start_url = start_url;
     web_app_info->scope = start_url.GetWithoutFilename();

@@ -95,7 +95,6 @@
 
 #if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
-#include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/ui/views/apps/app_dialog/app_uninstall_dialog_view.h"
 #include "components/services/app_service/public/mojom/types.mojom-shared.h"
 #else
@@ -290,7 +289,7 @@ absl::optional<TabState> GetStateForActiveTab(BrowserState browser_state) {
 
 absl::optional<AppState> GetStateForAppId(StateSnapshot* state_snapshot,
                                           Profile* profile,
-                                          web_app::AppId id) {
+                                          const web_app::AppId& id) {
   absl::optional<ProfileState> profile_state =
       GetStateForProfile(state_snapshot, profile);
   if (!profile_state) {
@@ -340,17 +339,17 @@ bool BrowserState::operator==(const BrowserState& other) const {
 }
 
 AppState::AppState(web_app::AppId app_id,
-                   const std::string app_name,
-                   const GURL app_scope,
-                   const apps::WindowMode window_mode,
-                   const apps::RunOnOsLoginMode& run_on_os_login_mode,
-                   const blink::mojom::DisplayMode& effective_display_mode,
-                   const blink::mojom::DisplayMode& user_display_mode,
+                   std::string app_name,
+                   GURL app_scope,
+                   apps::WindowMode window_mode,
+                   apps::RunOnOsLoginMode run_on_os_login_mode,
+                   blink::mojom::DisplayMode effective_display_mode,
+                   blink::mojom::DisplayMode user_display_mode,
                    bool installed_locally,
                    bool shortcut_created)
-    : id(app_id),
-      name(app_name),
-      scope(app_scope),
+    : id(std::move(app_id)),
+      name(std::move(app_name)),
+      scope(std::move(app_scope)),
       window_mode(window_mode),
       run_on_os_login_mode(run_on_os_login_mode),
       effective_display_mode(effective_display_mode),
@@ -387,11 +386,11 @@ bool StateSnapshot::operator==(const StateSnapshot& other) const {
   return profiles == other.profiles;
 }
 
-std::ostream& operator<<(std::ostream& os, const StateSnapshot& state) {
+std::ostream& operator<<(std::ostream& os, const StateSnapshot& snapshot) {
   base::Value root(base::Value::Type::DICTIONARY);
   base::Value& profiles_value =
       *root.SetKey("profiles", base::Value(base::Value::Type::DICTIONARY));
-  for (const auto& profile_pair : state.profiles) {
+  for (const auto& profile_pair : snapshot.profiles) {
     base::Value profile_value(base::Value::Type::DICTIONARY);
 
     base::Value browsers_value(base::Value::Type::DICTIONARY);
@@ -719,7 +718,7 @@ void WebAppIntegrationTestDriver::RemoveRunOnOsLoginPolicy(
     DictionaryPrefUpdate updateDict(profile()->GetPrefs(),
                                     prefs::kWebAppSettings);
     base::Value* dict = updateDict.Get();
-    dict->RemoveKey(std::move(url.spec()));
+    dict->RemoveKey(url.spec());
   }
   run_loop.Run();
   AfterStateChangeAction();
@@ -1915,7 +1914,7 @@ void WebAppIntegrationTestDriver::ApplyRunOnOsLoginPolicy(
     DictionaryPrefUpdate updateDict(profile()->GetPrefs(),
                                     prefs::kWebAppSettings);
     base::Value* dict = updateDict.Get();
-    dict->SetKey(std::move(url.spec()), std::move(dictItem));
+    dict->SetKey(url.spec(), std::move(dictItem));
   }
   run_loop.Run();
 }
@@ -1967,7 +1966,7 @@ bool WebAppIntegrationTestDriver::AreNoAppWindowsOpen(Profile* profile,
 
 void WebAppIntegrationTestDriver::ForceUpdateManifestContents(
     const std::string& site_mode,
-    GURL app_url_with_manifest_param) {
+    const GURL& app_url_with_manifest_param) {
   absl::optional<AppState> app_state = GetAppBySiteMode(
       before_state_change_action_state_.get(), profile(), site_mode);
   ASSERT_TRUE(app_state.has_value());

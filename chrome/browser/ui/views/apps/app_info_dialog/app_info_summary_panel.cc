@@ -280,7 +280,7 @@ bool AppInfoSummaryPanel::CanDisplayLicenses() const {
   return !GetLicenseUrls().empty();
 }
 
-const std::vector<GURL> AppInfoSummaryPanel::GetLicenseUrls() const {
+std::vector<GURL> AppInfoSummaryPanel::GetLicenseUrls() const {
   if (!extensions::SharedModuleInfo::ImportsModules(app_))
     return std::vector<GURL>();
 

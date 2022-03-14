@@ -108,7 +108,7 @@ class ChromeNativeAppWindowViewsAuraAsh
   bool IsFullscreen() const override;
   void EnterFullscreen(const GURL& url,
                        ExclusiveAccessBubbleType bubble_type,
-                       const int64_t display_id) override;
+                       int64_t display_id) override;
   void ExitFullscreen() override;
   void UpdateExclusiveAccessExitBubbleContent(
       const GURL& url,

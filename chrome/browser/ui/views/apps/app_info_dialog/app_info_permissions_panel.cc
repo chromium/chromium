@@ -53,7 +53,7 @@ class RevokeButton : public views::ImageButton {
  public:
   METADATA_HEADER(RevokeButton);
   explicit RevokeButton(PressedCallback callback,
-                        std::u16string permission_message)
+                        const std::u16string& permission_message)
       : views::ImageButton(std::move(callback)) {
     ui::ResourceBundle& rb = ui::ResourceBundle::GetSharedInstance();
     SetImage(views::Button::STATE_NORMAL,
@@ -133,12 +133,13 @@ class BulletedPermissionsList : public views::View {
   // provided, also adds an X button next to the bullet which calls the callback
   // when clicked.
   void AddPermissionBullets(std::u16string message,
-                            std::vector<std::u16string> submessages,
+                            const std::vector<std::u16string>& submessages,
                             gfx::ElideBehavior elide_behavior_for_submessages,
                             base::RepeatingClosure revoke_callback) {
     std::unique_ptr<RevokeButton> revoke_button;
     if (!revoke_callback.is_null())
-      revoke_button = std::make_unique<RevokeButton>(revoke_callback, message);
+      revoke_button = std::make_unique<RevokeButton>(std::move(revoke_callback),
+                                                     std::move(message));
 
     auto permission_label = std::make_unique<AppInfoLabel>(message);
     permission_label->SetMultiLine(true);
@@ -271,8 +272,8 @@ std::u16string AppInfoPermissionsPanel::GetRetainedFileHeading() const {
       IDS_APPLICATION_INFO_RETAINED_FILES, GetRetainedFileCount());
 }
 
-const std::vector<std::u16string>
-AppInfoPermissionsPanel::GetRetainedFilePaths() const {
+std::vector<std::u16string> AppInfoPermissionsPanel::GetRetainedFilePaths()
+    const {
   std::vector<std::u16string> retained_file_paths;
   if (app_->permissions_data()->HasAPIPermission(
           extensions::mojom::APIPermissionID::kFileSystem)) {
@@ -312,7 +313,7 @@ std::u16string AppInfoPermissionsPanel::GetRetainedDeviceHeading() const {
       IDS_APPLICATION_INFO_RETAINED_DEVICES, GetRetainedDeviceCount());
 }
 
-const std::vector<std::u16string> AppInfoPermissionsPanel::GetRetainedDevices()
+std::vector<std::u16string> AppInfoPermissionsPanel::GetRetainedDevices()
     const {
   return extensions::DevicePermissionsManager::Get(profile_)
       ->GetPermissionMessageStrings(app_->id());

@@ -16,18 +16,18 @@
 // ChromeOS.
 class ChromeNativeAppWindowViewsAura : public ChromeNativeAppWindowViews {
  public:
-  ChromeNativeAppWindowViewsAura();
+  ChromeNativeAppWindowViewsAura() = default;
 
   ChromeNativeAppWindowViewsAura(const ChromeNativeAppWindowViewsAura&) =
       delete;
   ChromeNativeAppWindowViewsAura& operator=(
       const ChromeNativeAppWindowViewsAura&) = delete;
 
-  ~ChromeNativeAppWindowViewsAura() override;
+  ~ChromeNativeAppWindowViewsAura() override = default;
 
  protected:
   ui::WindowShowState GetRestorableState(
-      const ui::WindowShowState restore_state) const;
+      ui::WindowShowState restore_state) const;
 
   // ChromeNativeAppWindowViews implementation.
   void OnBeforeWidgetInit(

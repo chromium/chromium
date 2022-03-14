@@ -38,7 +38,7 @@ namespace web_app {
 
 struct TabState {
   TabState(GURL tab_url, bool is_tab_installable)
-      : url(tab_url), is_installable(is_tab_installable) {}
+      : url(std::move(tab_url)), is_installable(is_tab_installable) {}
   TabState(const TabState&) = default;
   TabState& operator=(const TabState&) = default;
   bool operator==(const TabState& other) const {
@@ -71,12 +71,12 @@ struct BrowserState {
 
 struct AppState {
   AppState(AppId app_id,
-           const std::string app_name,
-           const GURL app_scope,
-           const apps::WindowMode window_mode,
-           const apps::RunOnOsLoginMode& run_on_os_login_mode,
-           const blink::mojom::DisplayMode& effective_display_mode,
-           const blink::mojom::DisplayMode& user_display_mode,
+           std::string app_name,
+           GURL app_scope,
+           apps::WindowMode window_mode,
+           apps::RunOnOsLoginMode run_on_os_login_mode,
+           blink::mojom::DisplayMode effective_display_mode,
+           blink::mojom::DisplayMode user_display_mode,
            bool is_installed_locally,
            bool is_shortcut_created);
   ~AppState();
@@ -113,7 +113,7 @@ struct StateSnapshot {
 
   base::flat_map<Profile*, ProfileState> profiles;
 };
-std::ostream& operator<<(std::ostream& out, const StateSnapshot& snapshot);
+std::ostream& operator<<(std::ostream& os, const StateSnapshot& snapshot);
 
 class WebAppIntegrationTestDriver : WebAppInstallManagerObserver {
  public:
@@ -256,7 +256,7 @@ class WebAppIntegrationTestDriver : WebAppInstallManagerObserver {
 
   void InstallPolicyAppInternal(const std::string& site_mode,
                                 base::Value default_launch_container,
-                                const bool create_shortcut);
+                                bool create_shortcut);
   void ApplyRunOnOsLoginPolicy(const std::string& site_mode,
                                const char* policy);
 
@@ -265,7 +265,7 @@ class WebAppIntegrationTestDriver : WebAppInstallManagerObserver {
   // between app installation and calls to this action.
   bool AreNoAppWindowsOpen(Profile* profile, const AppId& app_id);
   void ForceUpdateManifestContents(const std::string& site_mode,
-                                   GURL app_url_with_manifest_param);
+                                   const GURL& app_url_with_manifest_param);
   void MaybeWaitForManifestUpdates();
 
   void MaybeNavigateTabbedBrowserInScope(const std::string& site_mode);

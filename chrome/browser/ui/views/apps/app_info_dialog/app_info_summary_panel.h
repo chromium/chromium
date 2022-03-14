@@ -72,7 +72,7 @@ class AppInfoSummaryPanel : public AppInfoPanel,
   // CanDisplayLicenses() returns true.
   void DisplayLicenses();
   bool CanDisplayLicenses() const;
-  const std::vector<GURL> GetLicenseUrls() const;
+  std::vector<GURL> GetLicenseUrls() const;
 
   // UI elements on the dialog.
   raw_ptr<views::Label> size_value_ = nullptr;

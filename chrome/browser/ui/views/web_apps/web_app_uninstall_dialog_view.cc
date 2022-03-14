@@ -63,7 +63,7 @@ WebAppUninstallDialogDelegateView::WebAppUninstallDialogDelegateView(
     web_app::AppId app_id,
     webapps::WebappUninstallSource uninstall_source,
     std::map<SquareSizePx, SkBitmap> icon_bitmaps)
-    : dialog_(dialog_view), app_id_(app_id), profile_(profile) {
+    : dialog_(dialog_view), app_id_(std::move(app_id)), profile_(profile) {
   auto* provider = web_app::WebAppProvider::GetForWebApps(profile_);
   DCHECK(provider);
 
@@ -73,9 +73,9 @@ WebAppUninstallDialogDelegateView::WebAppUninstallDialogDelegateView(
 
   gfx::Size image_size{kIconSizeInDip, kIconSizeInDip};
 
-  image_ = gfx::ImageSkia(
-      std::make_unique<WebAppInfoImageSource>(kIconSizeInDip, icon_bitmaps),
-      image_size);
+  image_ = gfx::ImageSkia(std::make_unique<WebAppInfoImageSource>(
+                              kIconSizeInDip, std::move(icon_bitmaps)),
+                          image_size);
 
   SetModalType(ui::MODAL_TYPE_WINDOW);
   SetShowCloseButton(false);

@@ -52,14 +52,14 @@ class WebAppFrameToolbarTestHelper {
   // WebContents is used to run JS to parse rectangle values into a list value.
   static base::Value::ListStorage GetXYWidthHeightListValue(
       content::WebContents* web_contents,
-      std::string rect_value_list,
-      std::string rect_var_name);
+      const std::string& rect_value_list,
+      const std::string& rect_var_name);
 
   // WebContents is used to run JS to parse rectangle values into a rectangle
   // object.
   static gfx::Rect GetXYWidthHeightRect(content::WebContents* web_contents,
-                                        std::string rect_value_list,
-                                        std::string rect_var_name);
+                                        const std::string& rect_value_list,
+                                        const std::string& rect_var_name);
 
   // Add window-controls-overlay's ongeometrychange callback into the document.
   void SetupGeometryChangeCallback(content::WebContents* web_contents);

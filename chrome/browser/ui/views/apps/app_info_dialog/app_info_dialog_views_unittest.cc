@@ -194,7 +194,6 @@ class AppInfoDialogViewsTest : public BrowserWithTestWindowTest,
             nullptr);
   }
 
- protected:
   raw_ptr<views::Widget> widget_ = nullptr;
   raw_ptr<AppInfoDialog> dialog_ =
       nullptr;  // Owned by |widget_|'s views hierarchy.
