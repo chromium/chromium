@@ -325,6 +325,7 @@ if (enable_openscreen) {
   test("openscreen_unittests") {
     deps = [
       "//base/test:run_all_unittests",
+      "//components/cast_certificate:openscreen_certificate_verifier",
       "//components/openscreen_platform:openscreen_platform_network_service",
       "//testing/gmock",
       "//third_party/openscreen/src:openscreen_unittests_all",
