@@ -47,7 +47,6 @@ PermissionPromptAndroid::PermissionPromptAndroid(
 
 PermissionPromptAndroid::~PermissionPromptAndroid() {
   if (message_delegate_) {
-    message_delegate_.reset();
     return;
   }
   infobars::InfoBarManager* infobar_manager =

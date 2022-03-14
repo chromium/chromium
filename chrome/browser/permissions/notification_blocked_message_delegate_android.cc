@@ -177,7 +177,6 @@ void NotificationBlockedMessageDelegate::Delegate::Closing() {
   if (!permission_prompt_)
     return;
   permission_prompt_->Closing();
-  permission_prompt_.reset();
 }
 
 void NotificationBlockedMessageDelegate::Delegate::SetManageClicked() {
