@@ -9,6 +9,7 @@
 #include "third_party/blink/renderer/core/html/forms/html_input_element.h"
 #include "third_party/blink/renderer/core/html/html_body_element.h"
 #include "third_party/blink/renderer/core/testing/page_test_base.h"
+#include "third_party/googletest/src/googlemock/include/gmock/gmock-matchers.h"
 
 namespace blink {
 
@@ -290,6 +291,34 @@ TEST_F(HTMLFormElementTest, ListedElementsAfterIncludeShadowTrees) {
   list.push_back(input2);
   EXPECT_EQ(form1->ListedElements(/*include_shadow_trees=*/true), list);
   EXPECT_EQ(form1->ListedElements(), ListedElement::List{input1});
+}
+
+TEST_F(HTMLFormElementTest, ListedElementsIncludeShadowTreesFormAttribute) {
+  HTMLBodyElement* body = GetDocument().FirstBodyElement();
+
+  body->setInnerHTMLWithDeclarativeShadowDOMForTesting(R"HTML(
+    <form id=form1>
+      <div id=shadowhost>
+        <template shadowroot=open>
+          <input id=input2>
+          <form id=form2>
+            <input id=input3>
+          </form>
+          <input id=input4 form=form2>
+        </template>
+      </div>
+    </form>
+    <input id=input1 form=form1>
+  )HTML");
+
+  auto* form1 = To<HTMLFormElement>(GetElementById("form1"));
+  auto* input1 = ListedElement::From(*GetElementById("input1"));
+  auto* input2 = ListedElement::From(
+      *GetElementById("shadowhost")->GetShadowRoot()->getElementById("input2"));
+
+  EXPECT_THAT(form1->ListedElements(), ::testing::ElementsAre(input1));
+  EXPECT_THAT(form1->ListedElements(/*include_shadow_trees=*/true),
+              ::testing::ElementsAre(input2, input1));
 }
 
 }  // namespace blink
