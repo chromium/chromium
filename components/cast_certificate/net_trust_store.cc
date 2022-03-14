@@ -5,6 +5,8 @@
 #include "components/cast_certificate/net_trust_store.h"
 
 #include "base/check.h"
+#include "base/files/file_path.h"
+#include "base/files/file_util.h"
 #include "base/logging.h"
 #include "base/notreached.h"
 #include "components/cast_certificate/net_parsed_certificate.h"
@@ -13,6 +15,7 @@
 #include "net/cert/internal/parsed_certificate.h"
 #include "net/cert/internal/path_builder.h"
 #include "net/cert/internal/simple_path_builder_delegate.h"
+#include "net/cert/pem.h"
 #include "net/cert/x509_util.h"
 
 namespace {
@@ -52,15 +55,27 @@ std::unique_ptr<openscreen::cast::TrustStore> TrustStore::CreateInstanceForTest(
     const std::vector<uint8_t>& trust_anchor_der) {
   // TODO(issuetracker.google.com/222145200): We need to allow linking this
   // implementation into `openscreen_unittests` when in the chromium waterfall.
-  NOTREACHED();
-  return nullptr;
+  auto result = std::make_unique<cast_certificate::NetTrustStore>();
+  result->AddAnchor(trust_anchor_der);
+  return result;
 }
 
 // static
 std::unique_ptr<openscreen::cast::TrustStore>
 TrustStore::CreateInstanceFromPemFile(absl::string_view file_path) {
-  NOTREACHED();
-  return nullptr;
+  std::string pem_data;
+  CHECK(base::ReadFileToString(base::FilePath::FromASCII(base::StringPiece(
+                                   file_path.data(), file_path.size())),
+                               &pem_data));
+  net::PEMTokenizer tokenizer(pem_data, {std::string("CERTIFICATE")});
+  auto result = std::make_unique<cast_certificate::NetTrustStore>();
+  while (tokenizer.GetNext()) {
+    const std::string& data = tokenizer.data();
+    auto* data_ptr = reinterpret_cast<const uint8_t*>(data.data());
+    result->AddAnchor(
+        base::span<const uint8_t>(data_ptr, data_ptr + data.size()));
+  }
+  return result;
 }
 
 // static
@@ -108,6 +123,9 @@ openscreen::Error::Code MapToCastError(
   if (result.paths.empty()) {
     return openscreen::Error::Code::kErrCertsVerifyGeneric;
   }
+  if (!result.GetBestPathPossiblyInvalid()->GetTrustedCert()) {
+    return openscreen::Error::Code::kErrCertsVerifyUntrustedCert;
+  }
   // TODO(issuetracker.google.com/222145200): Here and elsewhere, we would like
   // to provide better error messages for logs and feedback reports.  For
   // example, collecting the certificate validity dates for a date error.
@@ -117,6 +135,9 @@ openscreen::Error::Code MapToCastError(
       path_errors.ContainsError(net::cert_errors::kValidityFailedNotBefore)) {
     return openscreen::Error::Code::kErrCertsDateInvalid;
   }
+  if (path_errors.ContainsError(net::cert_errors::kMaxPathLengthViolated)) {
+    return openscreen::Error::Code::kErrCertsPathlen;
+  }
   return openscreen::Error::Code::kErrCertsVerifyGeneric;
 }
 
@@ -125,6 +146,15 @@ openscreen::Error::Code MapToCastError(
 NetTrustStore::NetTrustStore() = default;
 
 NetTrustStore::~NetTrustStore() = default;
+
+void NetTrustStore::AddAnchor(base::span<const uint8_t> data) {
+  net::CertErrors errors;
+  scoped_refptr<net::ParsedCertificate> cert = net::ParsedCertificate::Create(
+      net::x509_util::CreateCryptoBuffer(data), {}, &errors);
+  CHECK(cert) << errors.ToDebugString();
+  // Enforce pathlen constraints and policies defined on the root certificate.
+  store_.AddTrustAnchorWithConstraints(std::move(cert));
+}
 
 openscreen::ErrorOr<NetTrustStore::CertificatePathResult>
 NetTrustStore::FindCertificatePath(const std::vector<std::string>& der_certs,
@@ -169,6 +199,14 @@ NetTrustStore::FindCertificatePath(const std::vector<std::string>& der_certs,
     return MapToCastError(result);
   }
   const net::CertPathBuilderResultPath* path = result.GetBestValidPath();
+
+  // Check that the leaf is valid as a _device_ certificate, which is not
+  // checked by path building.
+  if (!leaf_cert->has_key_usage() ||
+      !leaf_cert->key_usage().AssertsBit(
+          net::KEY_USAGE_BIT_DIGITAL_SIGNATURE)) {
+    return openscreen::Error::Code::kErrCertsRestrictions;
+  }
 
   CertificatePathResult out_path;
   out_path.reserve(path->certs.size());

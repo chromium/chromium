@@ -25,14 +25,10 @@ class NetTrustStore final : public openscreen::cast::TrustStore {
   // Adds a trust anchor given a DER-encoded certificate from static storage.
   template <size_t N>
   void AddAnchor(const uint8_t (&data)[N]) {
-    net::CertErrors errors;
-    scoped_refptr<net::ParsedCertificate> cert = net::ParsedCertificate::Create(
-        net::x509_util::CreateCryptoBuffer(base::span<const uint8_t>(data, N)),
-        {}, &errors);
-    CHECK(cert) << errors.ToDebugString();
-    // Enforce pathlen constraints and policies defined on the root certificate.
-    store_.AddTrustAnchorWithConstraints(std::move(cert));
+    AddAnchor(base::span<const uint8_t>(data, N));
   }
+
+  void AddAnchor(base::span<const uint8_t> data);
 
   openscreen::ErrorOr<CertificatePathResult> FindCertificatePath(
       const std::vector<std::string>& der_certs,
