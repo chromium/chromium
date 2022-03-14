@@ -6,8 +6,6 @@
 #include "base/strings/utf_string_conversions.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/download_manager.h"
-#include "content/public/browser/notification_service.h"
-#include "content/public/browser/notification_types.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
@@ -159,9 +157,7 @@ IN_PROC_BROWSER_TEST_F(DatabaseTest, ReloadPage) {
   CreateTable(shell());
   InsertRecord(shell(), "text");
 
-  WindowedNotificationObserver load_stop_observer(
-      NOTIFICATION_LOAD_STOP,
-      NotificationService::AllSources());
+  LoadStopObserver load_stop_observer(shell()->web_contents());
   shell()->Reload();
   load_stop_observer.Wait();
 

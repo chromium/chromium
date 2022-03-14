@@ -12,8 +12,6 @@
 #include "content/browser/web_contents/web_contents_impl.h"
 #include "content/common/content_navigation_policy.h"
 #include "content/public/browser/navigation_controller.h"
-#include "content/public/browser/notification_service.h"
-#include "content/public/browser/notification_types.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/common/url_constants.h"
@@ -128,17 +126,13 @@ class SessionHistoryTest : public ContentBrowserTest {
   }
 
   void GoBack() {
-    WindowedNotificationObserver load_stop_observer(
-        NOTIFICATION_LOAD_STOP,
-        NotificationService::AllSources());
+    LoadStopObserver load_stop_observer(shell()->web_contents());
     shell()->web_contents()->GetController().GoBack();
     load_stop_observer.Wait();
   }
 
   void GoForward() {
-    WindowedNotificationObserver load_stop_observer(
-        NOTIFICATION_LOAD_STOP,
-        NotificationService::AllSources());
+    LoadStopObserver load_stop_observer(shell()->web_contents());
     shell()->web_contents()->GetController().GoForward();
     load_stop_observer.Wait();
   }

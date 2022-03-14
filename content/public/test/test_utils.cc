@@ -417,6 +417,21 @@ void WindowedNotificationObserver::Observe(int type,
   run_loop_.Quit();
 }
 
+LoadStopObserver::LoadStopObserver(WebContents* web_contents)
+    : WebContentsObserver(web_contents) {}
+
+void LoadStopObserver::Wait() {
+  if (!seen_)
+    run_loop_.Run();
+
+  EXPECT_TRUE(seen_);
+}
+
+void LoadStopObserver::DidStopLoading() {
+  seen_ = true;
+  run_loop_.Quit();
+}
+
 InProcessUtilityThreadHelper::InProcessUtilityThreadHelper() {
   RenderProcessHost::SetRunRendererInProcess(true);
 }

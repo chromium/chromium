@@ -17,8 +17,6 @@
 #include "content/browser/web_contents/web_contents_impl.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/navigation_handle.h"
-#include "content/public/browser/notification_service.h"
-#include "content/public/browser/notification_types.h"
 #include "content/public/browser/site_isolation_policy.h"
 #include "content/public/common/content_features.h"
 #include "content/public/common/content_switches.h"
@@ -89,10 +87,7 @@ IN_PROC_BROWSER_TEST_F(FrameTreeBrowserTest, FrameTreeShape) {
   // Frame tree:
   //   Site-A Root -- Site-A frame1
   //              \-- Site-A frame2
-  WindowedNotificationObserver observer1(
-      content::NOTIFICATION_LOAD_STOP,
-      content::Source<NavigationController>(
-          &shell()->web_contents()->GetController()));
+  LoadStopObserver observer1(shell()->web_contents());
   EXPECT_TRUE(NavigateToURL(shell(), base_url.Resolve("frames-X-X.html")));
   observer1.Wait();
   ASSERT_EQ(2U, root->child_count());

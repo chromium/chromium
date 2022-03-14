@@ -13,8 +13,6 @@
 #include "content/browser/web_contents/web_contents_impl.h"
 #include "content/public/browser/host_zoom_map.h"
 #include "content/public/browser/navigation_entry.h"
-#include "content/public/browser/notification_service.h"
-#include "content/public/browser/notification_types.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/content_browser_test.h"
@@ -251,9 +249,7 @@ IN_PROC_BROWSER_TEST_F(ZoomBrowserTest, DISABLED_ZoomPreservedOnReload) {
 
   // Now the actual test: Reload the page and check that the main frame is
   // still properly zoomed.
-  WindowedNotificationObserver load_stop_observer(
-      NOTIFICATION_LOAD_STOP,
-      NotificationService::AllSources());
+  LoadStopObserver load_stop_observer(shell()->web_contents());
   shell()->Reload();
   load_stop_observer.Wait();
 

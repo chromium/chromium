@@ -90,9 +90,6 @@
 #include "content/public/browser/global_routing_id.h"
 #include "content/public/browser/javascript_dialog_manager.h"
 #include "content/public/browser/navigation_handle.h"
-#include "content/public/browser/notification_observer.h"
-#include "content/public/browser/notification_service.h"
-#include "content/public/browser/notification_types.h"
 #include "content/public/browser/site_isolation_policy.h"
 #include "content/public/common/content_client.h"
 #include "content/public/common/content_features.h"
@@ -251,86 +248,6 @@ void SimulateMouseClick(RenderWidgetHost* rwh, int x, int y) {
 // Retrieve self.origin for the frame |ftn|.
 EvalJsResult GetOriginFromRenderer(FrameTreeNode* ftn) {
   return EvalJs(ftn, "self.origin;");
-}
-
-class RedirectNotificationObserver : public NotificationObserver {
- public:
-  // Register to listen for notifications of the given type from either a
-  // specific source, or from all sources if |source| is
-  // NotificationService::AllSources().
-  RedirectNotificationObserver(int notification_type,
-                               const NotificationSource& source);
-
-  RedirectNotificationObserver(const RedirectNotificationObserver&) = delete;
-  RedirectNotificationObserver& operator=(const RedirectNotificationObserver&) =
-      delete;
-
-  ~RedirectNotificationObserver() override;
-
-  // Wait until the specified notification occurs.  If the notification was
-  // emitted between the construction of this object and this call then it
-  // returns immediately.
-  void Wait();
-
-  // Returns NotificationService::AllSources() if we haven't observed a
-  // notification yet.
-  const NotificationSource& source() const {
-    return source_;
-  }
-
-  const NotificationDetails& details() const {
-    return details_;
-  }
-
-  // NotificationObserver:
-  void Observe(int type,
-               const NotificationSource& source,
-               const NotificationDetails& details) override;
-
- private:
-  bool seen_;
-  bool seen_twice_;
-  bool running_;
-  NotificationRegistrar registrar_;
-
-  NotificationSource source_;
-  NotificationDetails details_;
-  base::RunLoop run_loop_;
-};
-
-RedirectNotificationObserver::RedirectNotificationObserver(
-    int notification_type,
-    const NotificationSource& source)
-    : seen_(false),
-      running_(false),
-      source_(NotificationService::AllSources()) {
-  registrar_.Add(this, notification_type, source);
-}
-
-RedirectNotificationObserver::~RedirectNotificationObserver() {}
-
-void RedirectNotificationObserver::Wait() {
-  if (seen_ && seen_twice_)
-    return;
-
-  running_ = true;
-  run_loop_.Run();
-  EXPECT_TRUE(seen_);
-}
-
-void RedirectNotificationObserver::Observe(
-    int type,
-    const NotificationSource& source,
-    const NotificationDetails& details) {
-  source_ = source;
-  details_ = details;
-  seen_twice_ = seen_;
-  seen_ = true;
-  if (!running_)
-    return;
-
-  run_loop_.Quit();
-  running_ = false;
 }
 
 // This observer detects when WebContents receives notification of a user
@@ -2065,9 +1982,7 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
     GURL client_redirect_http_url(
         embedded_test_server()->GetURL("/client-redirect?" + https_url.spec()));
 
-    RedirectNotificationObserver load_observer2(
-        NOTIFICATION_LOAD_STOP, Source<NavigationController>(
-                                    &shell()->web_contents()->GetController()));
+    LoadStopObserver load_observer2(shell()->web_contents());
 
     EXPECT_TRUE(NavigateIframeToURL(shell()->web_contents(), "test",
                                     client_redirect_http_url));
@@ -2098,9 +2013,7 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
     // which redirects to same-site page.
     GURL client_redirect_http_url(
         embedded_test_server()->GetURL("/client-redirect?" + http_url.spec()));
-    RedirectNotificationObserver load_observer2(
-        NOTIFICATION_LOAD_STOP, Source<NavigationController>(
-                                    &shell()->web_contents()->GetController()));
+    LoadStopObserver load_observer2(shell()->web_contents());
 
     EXPECT_TRUE(NavigateIframeToURL(shell()->web_contents(), "test",
                                     client_redirect_http_url));
@@ -2140,9 +2053,7 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
         "/client-redirect?" + client_redirect_https_url.spec()));
 
     // We should wait until second client redirect get cancelled.
-    RedirectNotificationObserver load_observer2(
-        NOTIFICATION_LOAD_STOP, Source<NavigationController>(
-                                    &shell()->web_contents()->GetController()));
+    LoadStopObserver load_observer2(shell()->web_contents());
 
     EXPECT_TRUE(NavigateIframeToURL(shell()->web_contents(), "test",
                                     client_redirect_http_url));

@@ -308,6 +308,36 @@ class WindowedNotificationObserver : public NotificationObserver {
   base::RunLoop run_loop_;
 };
 
+// Helper to wait for loading to stop on a WebContents.  It should be preferred
+// to uses of WindowedNotificationObserver for NOTIFICATION_LOAD_STOP.
+//
+// This helper class exists to avoid the following common pattern in tests:
+//   PerformAction()
+//   WaitForCompletionNotification()
+// The pattern leads to flakiness as there is a window between PerformAction
+// returning and the observers getting registered, where a notification will be
+// missed.
+//
+// Rather, one can do this:
+//   LoadStopObserver signal(web_contents)
+//   PerformAction()
+//   signal.Wait()
+class LoadStopObserver : public WebContentsObserver {
+ public:
+  explicit LoadStopObserver(WebContents* web_contents);
+
+  // Wait until at least one load stop has been observed.  Return immediately if
+  // one has been observed since construction.
+  void Wait();
+
+  // WebContentsObserver
+  void DidStopLoading() override;
+
+ private:
+  bool seen_ = false;
+  base::RunLoop run_loop_;
+};
+
 // Unit tests can use code which runs in the utility process by having it run on
 // an in-process utility thread. This eliminates having two code paths in
 // production code to deal with unit tests, and also helps with the binary
