@@ -185,7 +185,9 @@ TEST_F(PageInfoHistoryDataSourceTest, LastVisitedTimestamp) {
       base::BindOnce([](base::Time time) { EXPECT_EQ(time, kLastVisit); }));
 }
 
-TEST_F(PageInfoHistoryDataSourceTest, FormatTimestampString) {
+// Consistently failing on US bots, after daylight saving time change in the US.
+// See crbug.com/1305929.
+TEST_F(PageInfoHistoryDataSourceTest, DISABLED_FormatTimestampString) {
   CheckFormattedStringsForBaseTime(base::Time::Now());
 
   // Test strings with the start of DST as the base time.
