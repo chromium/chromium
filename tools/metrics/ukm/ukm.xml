@@ -17186,6 +17186,74 @@ be describing additional metrics about the same event.
   </metric>
 </event>
 
+<event name="Shopping.MerchantTrust.DataAvailable">
+  <owner>zhiyuancai@chromium.org</owner>
+  <owner>ayman@chromium.org</owner>
+  <summary>
+    Recorded when user finishes a navigation while the merchant trust data is
+    available.
+  </summary>
+  <metric name="DataAvailable" enum="Boolean">
+    <summary>
+      A boolean signaling that data is available. Only records true values.
+    </summary>
+  </metric>
+</event>
+
+<event name="Shopping.MerchantTrust.MessageClicked">
+  <owner>zhiyuancai@chromium.org</owner>
+  <owner>ayman@chromium.org</owner>
+  <summary>
+    Recorded when a merchant trust message is clicked by the user.
+  </summary>
+  <metric name="HasOccurred" enum="Boolean">
+    <summary>
+      A boolean signaling that message is clicked. Only records true values.
+    </summary>
+  </metric>
+</event>
+
+<event name="Shopping.MerchantTrust.MessageSeen">
+  <owner>zhiyuancai@chromium.org</owner>
+  <owner>ayman@chromium.org</owner>
+  <summary>
+    Recorded when a merchant trust message is displayed to the user.
+  </summary>
+  <metric name="HasOccurred" enum="Boolean">
+    <summary>
+      A boolean signaling that message is displayed. Only records true values.
+    </summary>
+  </metric>
+</event>
+
+<event name="Shopping.MerchantTrust.RowClicked">
+  <owner>zhiyuancai@chromium.org</owner>
+  <owner>ayman@chromium.org</owner>
+  <summary>
+    Recorded when a store info row in trusted surface is clicked by the user.
+  </summary>
+  <metric name="HasOccurred" enum="Boolean">
+    <summary>
+      A boolean signaling that store info row is clicked. Only records true
+      values.
+    </summary>
+  </metric>
+</event>
+
+<event name="Shopping.MerchantTrust.RowSeen">
+  <owner>zhiyuancai@chromium.org</owner>
+  <owner>ayman@chromium.org</owner>
+  <summary>
+    Recorded when a store info row in trusted surface is displayed to the user.
+  </summary>
+  <metric name="HasOccurred" enum="Boolean">
+    <summary>
+      A boolean signaling that store info row is displayed. Only records true
+      values.
+    </summary>
+  </metric>
+</event>
+
 <event name="Shopping.WillSendRequest">
   <owner>wychen@chromium.org</owner>
   <owner>yuezhanggg@chromium.org</owner>

@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.merchant_viewer;
 import android.text.format.DateUtils;
 
 import androidx.annotation.IntDef;
+import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.TimeUtils;
@@ -14,6 +15,8 @@ import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.StateChangeReason;
 import org.chromium.components.messages.DismissReason;
+import org.chromium.components.ukm.UkmRecorder;
+import org.chromium.content_public.browser.WebContents;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -349,5 +352,38 @@ public class MerchantTrustMetrics {
             ratingSuffix = "BelowTwo";
         }
         return ".Rating" + ratingSuffix;
+    }
+
+    /** Record ukm when merchant trust data is available. */
+    public void recordUkmOnDataAvailable(@Nullable WebContents webContents) {
+        recordBooleanUkm(webContents, "Shopping.MerchantTrust.DataAvailable", "DataAvailable");
+    }
+
+    /** Record ukm when merchant trust message is displayed. */
+    public void recordUkmOnMessageSeen(@Nullable WebContents webContents) {
+        recordBooleanUkm(webContents, "Shopping.MerchantTrust.MessageSeen", "HasOccurred");
+    }
+
+    /** Record ukm when merchant trust message is clicked. */
+    public void recordUkmOnMessageClicked(@Nullable WebContents webContents) {
+        recordBooleanUkm(webContents, "Shopping.MerchantTrust.MessageClicked", "HasOccurred");
+    }
+
+    /** Record ukm when store info row in trusted surface is displayed. */
+    public void recordUkmOnRowSeen(@Nullable WebContents webContents) {
+        recordBooleanUkm(webContents, "Shopping.MerchantTrust.RowSeen", "HasOccurred");
+    }
+
+    /** Record ukm when store info row in trusted surface is clicked. */
+    public void recordUkmOnRowClicked(@Nullable WebContents webContents) {
+        recordBooleanUkm(webContents, "Shopping.MerchantTrust.RowClicked", "HasOccurred");
+    }
+
+    private void recordBooleanUkm(
+            @Nullable WebContents webContents, String eventName, String metricsName) {
+        if (webContents != null) {
+            new UkmRecorder.Bridge().recordEventWithBooleanMetric(
+                    webContents, eventName, metricsName);
+        }
     }
 }
