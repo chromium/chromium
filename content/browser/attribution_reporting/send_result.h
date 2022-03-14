@@ -21,6 +21,9 @@ struct CONTENT_EXPORT SendResult {
     // The report was dropped without ever being sent, e.g. due to embedder
     // disabling the API.
     kDropped,
+    // The report was dropped without ever being sent because assembly failed,
+    // e.g. the aggregation service was unavailable.
+    kFailedToAssemble,
   };
 
   SendResult(Status status, int http_response_code)

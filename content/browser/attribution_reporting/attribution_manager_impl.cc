@@ -58,7 +58,18 @@ enum class ConversionReportSendOutcome {
   kSent = 0,
   kFailed = 1,
   kDropped = 2,
-  kMaxValue = kDropped
+  kFailedToAssemble = 3,
+  kMaxValue = kFailedToAssemble,
+};
+
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+enum class AssembleAggregatableReportStatus {
+  kSuccess = 0,
+  kAggregationServiceUnavailable = 1,
+  kCreateRequestFailed = 2,
+  kAssembleReportFailed = 3,
+  kMaxValue = kAssembleReportFailed,
 };
 
 // The shared-task runner for all attribution storage operations. Note that
@@ -102,45 +113,65 @@ ConversionReportSendOutcome ConvertToConversionReportSendOutcome(
       return ConversionReportSendOutcome::kFailed;
     case SendResult::Status::kDropped:
       return ConversionReportSendOutcome::kDropped;
+    case SendResult::Status::kFailedToAssemble:
+      return ConversionReportSendOutcome::kFailedToAssemble;
   }
 }
 
-// Called when |report| is to be sent over network, for logging metrics.
+void RecordAssembleAggregatableReportStatus(
+    AssembleAggregatableReportStatus status) {
+  base::UmaHistogramEnumeration(
+      "Conversions.AggregatableReport.AssembleReportStatus", status);
+}
+
+// Called when |report| is to be sent over network for event-level reports or
+// to be assembled for aggregatable reports, for logging metrics.
 void LogMetricsOnReportSend(const AttributionReport& report, base::Time now) {
-  // TODO(crbug.com/1285319): Log metrics for aggregatable reports.
-  if (!absl::holds_alternative<AttributionReport::EventLevelData>(
+  if (absl::holds_alternative<AttributionReport::EventLevelData>(
           report.data())) {
-    return;
+    // Use a large time range to capture users that might not open the browser
+    // for a long time while a conversion report is pending. Revisit this
+    // range if it is non-ideal for real world data.
+    const AttributionInfo& attribution_info = report.attribution_info();
+    base::Time original_report_time = ComputeReportTime(
+        attribution_info.source.common_info(), attribution_info.time);
+    base::TimeDelta time_since_original_report_time =
+        now - original_report_time;
+    base::UmaHistogramCustomTimes(
+        "Conversions.ExtraReportDelay2", time_since_original_report_time,
+        base::Seconds(1), base::Days(24), /*buckets=*/100);
+
+    base::TimeDelta time_from_conversion_to_report_send =
+        report.report_time() - attribution_info.time;
+    UMA_HISTOGRAM_COUNTS_1000("Conversions.TimeFromConversionToReportSend",
+                              time_from_conversion_to_report_send.InHours());
+  } else {
+    DCHECK(
+        absl::holds_alternative<AttributionReport::AggregatableAttributionData>(
+            report.data()));
+    base::TimeDelta time_from_conversion_to_report_assembly =
+        report.report_time() - report.attribution_info().time;
+    UMA_HISTOGRAM_COUNTS_1000(
+        "Conversions.AggregatableReport.TimeFromTriggerToReportAssembly",
+        time_from_conversion_to_report_assembly.InMinutes());
   }
-
-  // Use a large time range to capture users that might not open the browser for
-  // a long time while a conversion report is pending. Revisit this range if it
-  // is non-ideal for real world data.
-  const AttributionInfo& attribution_info = report.attribution_info();
-  base::Time original_report_time = ComputeReportTime(
-      attribution_info.source.common_info(), attribution_info.time);
-  base::TimeDelta time_since_original_report_time = now - original_report_time;
-  base::UmaHistogramCustomTimes(
-      "Conversions.ExtraReportDelay2", time_since_original_report_time,
-      base::Seconds(1), base::Days(24), /*buckets=*/100);
-
-  base::TimeDelta time_from_conversion_to_report_send =
-      report.report_time() - attribution_info.time;
-  UMA_HISTOGRAM_COUNTS_1000("Conversions.TimeFromConversionToReportSend",
-                            time_from_conversion_to_report_send.InHours());
 }
 
 // Called when |report| is sent, failed or dropped, for logging metrics.
 void LogMetricsOnReportCompleted(const AttributionReport& report,
                                  SendResult::Status status) {
-  // TODO(crbug.com/1285319): Log metrics for aggregatable reports.
-  if (!absl::holds_alternative<AttributionReport::EventLevelData>(
+  if (absl::holds_alternative<AttributionReport::EventLevelData>(
           report.data())) {
-    return;
+    base::UmaHistogramEnumeration("Conversions.ReportSendOutcome2",
+                                  ConvertToConversionReportSendOutcome(status));
+  } else {
+    DCHECK(
+        absl::holds_alternative<AttributionReport::AggregatableAttributionData>(
+            report.data()));
+    base::UmaHistogramEnumeration(
+        "Conversions.AggregatableReport.ReportSendOutcome",
+        ConvertToConversionReportSendOutcome(status));
   }
-
-  base::UmaHistogramEnumeration("Conversions.ReportSendOutcome",
-                                ConvertToConversionReportSendOutcome(status));
 }
 
 std::unique_ptr<AttributionStorageDelegate> MakeStorageDelegate() {
@@ -702,16 +733,16 @@ void AttributionManagerImpl::AssembleAggregatableReport(
     AttributionReport report,
     bool is_debug_report,
     ReportSentCallback callback) {
-  // TODO(crbug.com/1285319): Add metrics for early exit.
-
   AggregationServiceImpl* aggregation_service = nullptr;
   if (storage_partition_)
     aggregation_service = storage_partition_->GetAggregationService();
 
   if (!aggregation_service) {
-    std::move(callback).Run(
-        std::move(report),
-        SendResult(SendResult::Status::kDropped, /*http_response_code=*/0));
+    RecordAssembleAggregatableReportStatus(
+        AssembleAggregatableReportStatus::kAggregationServiceUnavailable);
+    std::move(callback).Run(std::move(report),
+                            SendResult(SendResult::Status::kFailedToAssemble,
+                                       /*http_response_code=*/0));
     return;
   }
 
@@ -750,9 +781,11 @@ void AttributionManagerImpl::AssembleAggregatableReport(
               attribution_info.source.common_info().reporting_origin(),
               debug_mode));
   if (!request.has_value()) {
-    std::move(callback).Run(
-        std::move(report),
-        SendResult(SendResult::Status::kDropped, /*http_response_code=*/0));
+    RecordAssembleAggregatableReportStatus(
+        AssembleAggregatableReportStatus::kCreateRequestFailed);
+    std::move(callback).Run(std::move(report),
+                            SendResult(SendResult::Status::kFailedToAssemble,
+                                       /*http_response_code=*/0));
     return;
   }
 
@@ -769,10 +802,15 @@ void AttributionManagerImpl::OnAggregatableReportAssembled(
     ReportSentCallback callback,
     absl::optional<AggregatableReport> assembled_report,
     AggregationService::AssemblyStatus status) {
+  RecordAssembleAggregatableReportStatus(
+      assembled_report.has_value()
+          ? AssembleAggregatableReportStatus::kSuccess
+          : AssembleAggregatableReportStatus::kAssembleReportFailed);
+
   if (!assembled_report.has_value()) {
-    std::move(callback).Run(
-        std::move(report),
-        SendResult(SendResult::Status::kDropped, /*http_response_code=*/0));
+    std::move(callback).Run(std::move(report),
+                            SendResult(SendResult::Status::kFailedToAssemble,
+                                       /*http_response_code=*/0));
     return;
   }
 

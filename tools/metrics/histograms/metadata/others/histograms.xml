@@ -3069,6 +3069,44 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Conversions.AggregatableReport.AssembleReportStatus"
+    enum="ConversionAssembleAggregatableReportStatus"
+    expires_after="2022-09-08">
+  <owner>linnan@chromium.org</owner>
+  <owner>johnidel@chromium.org</owner>
+  <owner>measurement-api-dev+metrics@google.com</owner>
+  <summary>
+    Measures how often aggregatable reports are assembled successfully or failed
+    and why. Recorded once for each aggregatable report processed by the
+    aggregation service on each send attempt.
+  </summary>
+</histogram>
+
+<histogram name="Conversions.AggregatableReport.ReportSendOutcome"
+    enum="ConversionReportSendOutcome" expires_after="2022-09-08">
+  <owner>linnan@chromium.org</owner>
+  <owner>johnidel@chromium.org</owner>
+  <owner>measurement-api-dev+metrics@google.com</owner>
+  <summary>
+    Records the high level request status of an aggregatable report. Recorded
+    once per aggregatable report. For aggregatable report that has been retried,
+    only the last retry will be counted.
+  </summary>
+</histogram>
+
+<histogram
+    name="Conversions.AggregatableReport.TimeFromTriggerToReportAssembly"
+    units="hours" expires_after="2022-09-08">
+  <owner>linnan@chromium.org</owner>
+  <owner>johnidel@chromium.org</owner>
+  <owner>measurement-api-dev+metrics@google.com</owner>
+  <summary>
+    Records the time between a trigger and its assembly. This is emitted
+    whenever an aggregatable report is to be assembled by the aggregation
+    service.
+  </summary>
+</histogram>
+
 <histogram name="Conversions.AppToWeb.AttributionEvents"
     enum="AttributionEvent" expires_after="2022-12-08">
   <owner>johnidel@chromium.org</owner>
@@ -3291,6 +3329,22 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Conversions.ReportSendOutcome"
     enum="ConversionReportSendOutcome" expires_after="M105">
+  <obsolete>
+    Replaced with Conversions.ReportSendOutcome2 due to enum value change,
+    03/2022.
+  </obsolete>
+  <owner>linnan@chromium.org</owner>
+  <owner>johnidel@chromium.org</owner>
+  <owner>measurement-api-dev+metrics@google.com</owner>
+  <summary>
+    Records the high level request status of a conversion report. Recorded once
+    per conversion report. For conversion report that has been retried, only the
+    last retry will be counted.
+  </summary>
+</histogram>
+
+<histogram name="Conversions.ReportSendOutcome2"
+    enum="ConversionReportSendOutcome" expires_after="2022-09-08">
   <owner>linnan@chromium.org</owner>
   <owner>johnidel@chromium.org</owner>
   <owner>measurement-api-dev+metrics@google.com</owner>

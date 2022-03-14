@@ -16670,6 +16670,13 @@ Called by update_net_error_codes.py.-->
   <int value="15" label="UI button shown"/>
 </enum>
 
+<enum name="ConversionAssembleAggregatableReportStatus">
+  <int value="0" label="Success"/>
+  <int value="1" label="Aggregation service unavailable"/>
+  <int value="2" label="Failed to create request"/>
+  <int value="3" label="Failed to assemble report"/>
+</enum>
+
 <enum name="ConversionPostSendReportDeleteEvent">
   <obsolete>
     The error rate is not high enough to merit monitoring.
@@ -16683,6 +16690,7 @@ Called by update_net_error_codes.py.-->
   <int value="0" label="Sent"/>
   <int value="1" label="Failed due to error"/>
   <int value="2" label="Dropped due to embedder disabling the API"/>
+  <int value="3" label="Failed to assemble"/>
 </enum>
 
 <enum name="ConversionReportStatus">
