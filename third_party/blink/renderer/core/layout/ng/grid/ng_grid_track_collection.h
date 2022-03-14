@@ -147,6 +147,8 @@ class CORE_EXPORT NGGridBlockTrackCollection
 
 class CORE_EXPORT NGGridLayoutTrackCollection
     : public NGGridTrackCollectionBase {
+  USING_FAST_MALLOC(NGGridLayoutTrackCollection);
+
  public:
   struct CORE_EXPORT Range {
     bool IsCollapsed() const;
@@ -169,6 +171,8 @@ class CORE_EXPORT NGGridLayoutTrackCollection
 
   explicit NGGridLayoutTrackCollection(GridTrackSizingDirection track_direction)
       : NGGridTrackCollectionBase(track_direction) {}
+
+  virtual ~NGGridLayoutTrackCollection() = default;
 
   // NGGridTrackCollectionBase overrides.
   wtf_size_t RangeCount() const override { return ranges_.size(); }
@@ -196,6 +200,9 @@ class CORE_EXPORT NGGridLayoutTrackCollection
 
   LayoutUnit MajorBaseline(wtf_size_t set_index) const;
   LayoutUnit MinorBaseline(wtf_size_t set_index) const;
+
+  // Increase by |delta| the offset of every set with index > |set_index|.
+  void AdjustSetOffsets(wtf_size_t set_index, LayoutUnit delta);
 
   // Returns the total size of all sets in the collection.
   LayoutUnit ComputeSetSpanSize() const;
@@ -296,6 +303,8 @@ struct CORE_EXPORT NGGridSet {
 
 class CORE_EXPORT NGGridSizingTrackCollection
     : public NGGridLayoutTrackCollection {
+  USING_FAST_MALLOC(NGGridSizingTrackCollection);
+
  public:
   template <bool is_const>
   class CORE_EXPORT SetIteratorBase {
@@ -342,15 +351,15 @@ class CORE_EXPORT NGGridSizingTrackCollection
   typedef SetIteratorBase<false> SetIterator;
   typedef SetIteratorBase<true> ConstSetIterator;
 
-  // TODO(ethavar): We shouldn't copy the sizing collection.
-  explicit NGGridSizingTrackCollection(GridTrackSizingDirection track_direction)
-      : NGGridLayoutTrackCollection(track_direction) {}
-
   // |is_available_size_indefinite| is used to normalize percentage track
   // sizing functions (see the constructor for |NGGridSet|).
   NGGridSizingTrackCollection(
       const NGGridBlockTrackCollection& block_track_collection,
       bool is_available_size_indefinite);
+
+  NGGridSizingTrackCollection(const NGGridSizingTrackCollection&) = delete;
+  NGGridSizingTrackCollection& operator=(const NGGridSizingTrackCollection&) =
+      delete;
 
   // Returns a reference to the set located at position |set_index|.
   NGGridSet& GetSetAt(wtf_size_t set_index);
@@ -378,8 +387,6 @@ class CORE_EXPORT NGGridSizingTrackCollection
                               LayoutUnit gutter_size);
   // Caches the final geometry required to place |NGGridSet| in the grid.
   void CacheSetsGeometry(LayoutUnit first_set_offset, LayoutUnit gutter_size);
-  // Increase by |delta| the offset of every set with index > |set_index|.
-  void AdjustSetOffsets(wtf_size_t set_index, LayoutUnit delta);
   void SetIndefiniteGrowthLimitsToBaseSize();
 
   void ResetBaselines();

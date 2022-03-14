@@ -259,21 +259,32 @@ void GridItemData::ComputeSetIndices(
   DCHECK(!IsOutOfFlow());
 
   const auto track_direction = track_collection.Direction();
-  GridItemIndices range_indices = RangeIndices(track_direction);
+  auto& range_indices = RangeIndices(track_direction);
 
 #if DCHECK_IS_ON()
-  const wtf_size_t start_line = StartLine(track_direction);
-  const wtf_size_t end_line = EndLine(track_direction);
+  if (range_indices.begin != kNotFound) {
+    // Check the range index caching was correct by running a binary search.
+    wtf_size_t computed_range_index =
+        track_collection.RangeIndexFromGridLine(StartLine(track_direction));
+    DCHECK_EQ(computed_range_index, range_indices.begin);
 
-  DCHECK_LE(end_line, track_collection.EndLineOfImplicitGrid());
-  DCHECK_LT(start_line, end_line);
-
-  // Check the range index caching was correct by running a binary search.
-  DCHECK_EQ(track_collection.RangeIndexFromGridLine(start_line),
-            range_indices.begin);
-  DCHECK_EQ(track_collection.RangeIndexFromGridLine(end_line - 1),
-            range_indices.end);
+    computed_range_index =
+        track_collection.RangeIndexFromGridLine(EndLine(track_direction)) - 1;
+    DCHECK_EQ(computed_range_index, range_indices.end);
+  }
 #endif
+
+  if (range_indices.begin == kNotFound) {
+    DCHECK_EQ(range_indices.end, kNotFound);
+
+    range_indices.begin =
+        track_collection.RangeIndexFromGridLine(StartLine(track_direction));
+    range_indices.end =
+        track_collection.RangeIndexFromGridLine(EndLine(track_direction)) - 1;
+  }
+
+  DCHECK_LT(range_indices.end, track_collection.RangeCount());
+  DCHECK_LE(range_indices.begin, range_indices.end);
 
   auto& set_indices =
       (track_direction == kForColumns) ? column_set_indices : row_set_indices;

@@ -54,27 +54,33 @@ class NGGridLayoutAlgorithmTest
     NGGridBlockTrackCollection row_block_track_collection(
         algorithm.Style(), placement_data, kForRows);
 
-    algorithm.BuildBlockTrackCollections(&items_->grid_items_,
-                                         &column_block_track_collection,
-                                         &row_block_track_collection);
+    algorithm.BuildBlockTrackCollection(&items_->grid_items_,
+                                        &column_block_track_collection);
+    algorithm.BuildBlockTrackCollection(&items_->grid_items_,
+                                        &row_block_track_collection);
 
     LayoutUnit unused_intrinsic_block_size;
-    algorithm.ComputeGridGeometry(
-        column_block_track_collection, row_block_track_collection,
-        &items_->grid_items_, &layout_data_, &unused_intrinsic_block_size);
+    algorithm.ComputeGridGeometry(placement_data, &items_->grid_items_,
+                                  &layout_data_, &unused_intrinsic_block_size);
   }
 
-  NGGridSizingTrackCollection& TrackCollection(
+  const GridItemData& GridItem(wtf_size_t index) {
+    return items_->grid_items_.item_data[index];
+  }
+
+  const NGGridSizingTrackCollection& TrackCollection(
       GridTrackSizingDirection track_direction) {
-    return (track_direction == kForColumns) ? layout_data_.columns
-                                            : layout_data_.rows;
+    const auto& track_collection = (track_direction == kForColumns)
+                                       ? *layout_data_.Columns()
+                                       : *layout_data_.Rows();
+    return To<NGGridSizingTrackCollection>(track_collection);
   }
 
   LayoutUnit BaseRowSizeForChild(const NGGridLayoutAlgorithm& algorithm,
                                  wtf_size_t index) {
     LayoutUnit offset, size;
-    algorithm.ComputeGridItemOffsetAndSize(items_->grid_items_.item_data[index],
-                                           layout_data_.rows, &offset, &size);
+    algorithm.ComputeGridItemOffsetAndSize(
+        GridItem(index), *layout_data_.Rows(), &offset, &size);
     return size;
   }
 
@@ -94,8 +100,7 @@ class NGGridLayoutAlgorithmTest
       TrackSpanProperties::PropertyId property) {
     Vector<wtf_size_t> results;
     for (wtf_size_t i = 0; i < GridItemCount(); ++i) {
-      if (items_->grid_items_.item_data[i].column_span_properties.HasProperty(
-              property))
+      if (GridItem(i).column_span_properties.HasProperty(property))
         results.push_back(i);
     }
     return results;
@@ -106,8 +111,7 @@ class NGGridLayoutAlgorithmTest
       TrackSpanProperties::PropertyId property) {
     Vector<wtf_size_t> results;
     for (wtf_size_t i = 0; i < GridItemCount(); ++i) {
-      if (items_->grid_items_.item_data[i].row_span_properties.HasProperty(
-              property))
+      if (GridItem(i).row_span_properties.HasProperty(property))
         results.push_back(i);
     }
     return results;
@@ -115,10 +119,10 @@ class NGGridLayoutAlgorithmTest
 
   Vector<LayoutUnit> BaseSizes(NGGridLayoutAlgorithm& algorithm,
                                GridTrackSizingDirection track_direction) {
-    NGGridSizingTrackCollection& collection = TrackCollection(track_direction);
+    const auto& collection = TrackCollection(track_direction);
 
     Vector<LayoutUnit> base_sizes;
-    for (auto set_iterator = collection.GetSetIterator();
+    for (auto set_iterator = collection.GetConstSetIterator();
          !set_iterator.IsAtEnd(); set_iterator.MoveToNextSet()) {
       base_sizes.push_back(set_iterator.CurrentSet().BaseSize());
     }
@@ -127,10 +131,10 @@ class NGGridLayoutAlgorithmTest
 
   Vector<LayoutUnit> GrowthLimits(NGGridLayoutAlgorithm& algorithm,
                                   GridTrackSizingDirection track_direction) {
-    NGGridSizingTrackCollection& collection = TrackCollection(track_direction);
+    const auto& collection = TrackCollection(track_direction);
 
     Vector<LayoutUnit> growth_limits;
-    for (auto set_iterator = collection.GetSetIterator();
+    for (auto set_iterator = collection.GetConstSetIterator();
          !set_iterator.IsAtEnd(); set_iterator.MoveToNextSet()) {
       growth_limits.push_back(set_iterator.CurrentSet().GrowthLimit());
     }

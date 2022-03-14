@@ -530,6 +530,13 @@ LayoutUnit NGGridLayoutTrackCollection::MinorBaseline(
   return minor_baselines_[set_index];
 }
 
+void NGGridLayoutTrackCollection::AdjustSetOffsets(wtf_size_t set_index,
+                                                   LayoutUnit delta) {
+  DCHECK_LT(set_index, sets_geometry_.size());
+  for (wtf_size_t i = set_index; i < sets_geometry_.size(); ++i)
+    sets_geometry_[i].offset += delta;
+}
+
 LayoutUnit NGGridLayoutTrackCollection::ComputeSetSpanSize() const {
   return ComputeSetSpanSize(0, GetSetCount());
 }
@@ -658,13 +665,6 @@ void NGGridSizingTrackCollection::CacheSetsGeometry(LayoutUnit first_set_offset,
     sets_geometry_.emplace_back(first_set_offset, set.track_count);
   }
   gutter_size_ = gutter_size;
-}
-
-void NGGridSizingTrackCollection::AdjustSetOffsets(wtf_size_t set_index,
-                                                   LayoutUnit delta) {
-  DCHECK_LT(set_index, sets_geometry_.size());
-  for (wtf_size_t i = set_index; i < sets_geometry_.size(); ++i)
-    sets_geometry_[i].offset += delta;
 }
 
 void NGGridSizingTrackCollection::SetIndefiniteGrowthLimitsToBaseSize() {

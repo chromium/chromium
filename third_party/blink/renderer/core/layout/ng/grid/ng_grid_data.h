@@ -6,7 +6,6 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_NG_GRID_NG_GRID_DATA_H_
 
 #include "third_party/blink/renderer/core/layout/ng/grid/ng_grid_track_collection.h"
-#include "third_party/blink/renderer/platform/geometry/layout_unit.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 
 namespace blink {
@@ -43,20 +42,40 @@ struct CORE_EXPORT NGGridPlacementData {
   wtf_size_t row_start_offset;
 };
 
-// This struct contains a bundle of the ranges from the track collection and the
-// resolved used sizes of the sets in a given track direction.
+// This struct contains the column and row data necessary to layout grid items.
+// For grid sizing, it will store |NGGridSizingTrackCollection| pointers, which
+// are able to modify the geometry of its sets. However, after sizing is done,
+// it should only copy |NGGridLayoutTrackCollection| immutable data.
 struct CORE_EXPORT NGGridLayoutData {
   USING_FAST_MALLOC(NGGridLayoutData);
 
  public:
-  NGGridLayoutData() : columns(kForColumns), rows(kForRows) {}
+  NGGridLayoutData() = default;
 
-  NGGridLayoutData(NGGridSizingTrackCollection&& columns,
-                   NGGridSizingTrackCollection&& rows)
-      : columns(std::move(columns)), rows(std::move(rows)) {}
+  NGGridLayoutData(const NGGridLayoutData& other) { CopyFrom(other); }
 
-  NGGridSizingTrackCollection columns;
-  NGGridSizingTrackCollection rows;
+  NGGridLayoutData& operator=(const NGGridLayoutData& other) {
+    CopyFrom(other);
+    return *this;
+  }
+
+  void CopyFrom(const NGGridLayoutData& other) {
+    columns = std::make_unique<NGGridLayoutTrackCollection>(*other.Columns());
+    rows = std::make_unique<NGGridLayoutTrackCollection>(*other.Rows());
+  }
+
+  NGGridLayoutTrackCollection* Columns() const {
+    DCHECK(columns);
+    return columns.get();
+  }
+
+  NGGridLayoutTrackCollection* Rows() const {
+    DCHECK(rows);
+    return rows.get();
+  }
+
+  std::unique_ptr<NGGridLayoutTrackCollection> columns;
+  std::unique_ptr<NGGridLayoutTrackCollection> rows;
 };
 
 }  // namespace blink

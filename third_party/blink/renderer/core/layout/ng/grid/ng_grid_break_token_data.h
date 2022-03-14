@@ -29,7 +29,6 @@ struct GridItemPlacementData {
 };
 
 struct NGGridBreakTokenData final : NGBlockBreakTokenData {
- public:
   NGGridBreakTokenData(
       const NGBlockBreakTokenData* break_token_data,
       const NGGridLayoutData& layout_data,

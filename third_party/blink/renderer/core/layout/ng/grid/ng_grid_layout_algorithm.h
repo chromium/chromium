@@ -66,12 +66,10 @@ class CORE_EXPORT NGGridLayoutAlgorithm
                       const GridItemData& grid_item,
                       const GridTrackSizingDirection track_direction) const;
 
-  void ComputeGridGeometry(
-      const NGGridBlockTrackCollection& column_block_track_collection,
-      const NGGridBlockTrackCollection& row_block_track_collection,
-      GridItems* grid_items,
-      NGGridLayoutData* layout_data,
-      LayoutUnit* intrinsic_block_size);
+  void ComputeGridGeometry(const NGGridPlacementData& placement_data,
+                           GridItems* grid_items,
+                           NGGridLayoutData* layout_data,
+                           LayoutUnit* intrinsic_block_size);
 
   LayoutUnit ComputeIntrinsicBlockSizeIgnoringChildren() const;
 
@@ -87,10 +85,9 @@ class CORE_EXPORT NGGridLayoutAlgorithm
   wtf_size_t ComputeAutomaticRepetitions(
       const GridTrackSizingDirection track_direction) const;
 
-  void BuildBlockTrackCollections(
+  void BuildBlockTrackCollection(
       GridItems* grid_items,
-      NGGridBlockTrackCollection* column_track_collection,
-      NGGridBlockTrackCollection* row_track_collection) const;
+      NGGridBlockTrackCollection* track_collection) const;
 
   // Determines the major/minor alignment baselines for each row/column based on
   // each item in |grid_items|, and stores the results in |track_collection|.
