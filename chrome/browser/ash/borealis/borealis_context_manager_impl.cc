@@ -85,19 +85,19 @@ void BorealisContextManagerImpl::Startup::Start(
 
 BorealisContextManagerImpl::BorealisContextManagerImpl(Profile* profile)
     : profile_(profile), weak_factory_(this) {
-  // DBusThreadManager may not be initialized in tests.
-  if (chromeos::DBusThreadManager::IsInitialized()) {
+  // ConciergeClient may not be initialized in tests.
+  if (chromeos::ConciergeClient::Get()) {
     ShutDownBorealisIfRunning();
     chromeos::ConciergeClient::Get()->AddVmObserver(this);
   }
 }
 
 BorealisContextManagerImpl::~BorealisContextManagerImpl() {
-  // Even if initialized, DBusThreadManager may be destroyed prior to
-  // BorealisService/BorealisContextManagerImpl in tests. Therefore we must not
-  // keep a pointer to the observed ConciergeClient, either directly or via
-  // ScopedObservation or similar.
-  if (chromeos::DBusThreadManager::IsInitialized()) {
+  // Even if initialized, DBusThreadManager or ConciergeClient may be destroyed
+  // prior to BorealisService/BorealisContextManagerImpl in tests. Therefore we
+  // must not keep a pointer to the observed ConciergeClient, either directly or
+  // via ScopedObservation or similar.
+  if (chromeos::ConciergeClient::Get()) {
     chromeos::ConciergeClient::Get()->RemoveVmObserver(this);
   }
 }
