@@ -204,7 +204,6 @@ source_set("unit_tests") {
     "safe_browsing_service_unittest.mm",
     "safe_browsing_tab_helper_unittest.mm",
     "safe_browsing_unsafe_resource_container_unittest.mm",
-    "safe_browsing_url_allow_list_unittest.mm",
     "url_checker_delegate_impl_unittest.mm",
     "verdict_cache_manager_factory_unittest.mm",
   ]
