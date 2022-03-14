@@ -169,7 +169,7 @@ class WebAppIntegrationTestDriver : WebAppInstallManagerObserver {
   void LaunchFromChromeApps(const std::string& site_mode);
   void LaunchFromLaunchIcon(const std::string& site_mode);
   void LaunchFromMenuOption(const std::string& site_mode);
-  void LaunchFromShortcut(const std::string& site_mode);
+  void LaunchFromPlatformShortcut(const std::string& site_mode);
   void OpenAppSettingsFromChromeApps(const std::string& site_mode);
   void OpenAppSettingsFromAppMenu(const std::string& site_mode);
   void NavigateBrowser(const std::string& site_mode);
@@ -281,6 +281,8 @@ class WebAppIntegrationTestDriver : WebAppInstallManagerObserver {
 
   void SetRunOnOsLoginMode(const std::string& site_mode,
                            apps::RunOnOsLoginMode login_mode);
+
+  void LaunchAppStartupBrowserCreator(const AppId& app_id);
 
   Browser* browser();
   const net::EmbeddedTestServer* embedded_test_server();

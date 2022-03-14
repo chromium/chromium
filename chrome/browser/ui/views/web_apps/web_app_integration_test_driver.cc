@@ -804,43 +804,33 @@ void WebAppIntegrationTestDriver::LaunchFromMenuOption(
   AfterStateChangeAction();
 }
 
-void WebAppIntegrationTestDriver::LaunchFromShortcut(
+void WebAppIntegrationTestDriver::LaunchFromPlatformShortcut(
     const std::string& site_mode) {
   BeforeStateChangeAction(__FUNCTION__);
   absl::optional<AppState> app_state = GetAppBySiteMode(
       before_state_change_action_state_.get(), profile(), site_mode);
   ASSERT_TRUE(app_state);
   auto app_id = app_state->id;
-  content::WindowedNotificationObserver app_loaded_observer(
-      content::NOTIFICATION_LOAD_COMPLETED_MAIN_FRAME,
-      content::NotificationService::AllSources());
-  BrowserAddedWaiter browser_added_waiter;
 
-#if BUILDFLAG(IS_MAC)
-  auto* provider = GetProviderForProfile(profile());
-  std::string shortcut_filename =
-      provider->registrar().GetAppShortName(app_id) + ".app";
-  base::FilePath app_shortcut_path =
-      shortcut_override_->chrome_apps_folder.GetPath().Append(
-          shortcut_filename);
-  base::CommandLine cmd_line =
-      base::CommandLine({"open", app_shortcut_path.value()});
-  ASSERT_TRUE(base::LaunchProcess(cmd_line, base::LaunchOptions()).IsValid());
-#else
-  base::CommandLine command_line(base::CommandLine::NO_PROGRAM);
-  command_line.AppendSwitchASCII(switches::kAppId, app_id);
-  ASSERT_TRUE(StartupBrowserCreator().ProcessCmdLineImpl(
-      command_line, base::FilePath(), chrome::startup::IsProcessStartup::kNo,
-      {profile(), StartupProfileMode::kBrowserWindow}, {}));
-#endif
-  browser_added_waiter.Wait();
-  app_browser_ = browser_added_waiter.browser_added();
-  app_loaded_observer.Wait();
-  content::RunAllTasksUntilIdle();
-
-  ASSERT_EQ(app_browser()->app_controller()->app_id(), app_state->id);
-  ASSERT_EQ(GetBrowserWindowTitle(app_browser()), app_state->name);
-  active_app_id_ = app_id;
+  WebAppRegistrar& app_registrar = provider()->registrar();
+  DisplayMode display_mode = app_registrar.GetAppEffectiveDisplayMode(app_id);
+  bool is_open_in_app_browser =
+      (display_mode != blink::mojom::DisplayMode::kBrowser);
+  if (is_open_in_app_browser) {
+    BrowserAddedWaiter browser_added_waiter;
+    LaunchAppStartupBrowserCreator(app_id);
+    browser_added_waiter.Wait();
+    app_browser_ = browser_added_waiter.browser_added();
+    active_app_id_ = app_id;
+    EXPECT_EQ(app_browser()->app_controller()->app_id(), app_state->id);
+    EXPECT_EQ(GetBrowserWindowTitle(app_browser()), app_state->name);
+  } else {
+    LaunchAppStartupBrowserCreator(app_id);
+    auto* app_banner_manager =
+        webapps::TestAppBannerManagerDesktop::FromWebContents(
+            GetCurrentTab(browser()));
+    app_banner_manager->WaitForInstallableCheck();
+  }
   AfterStateChangeAction();
 }
 
@@ -1718,8 +1708,8 @@ void WebAppIntegrationTestDriver::AfterStateChangeAction() {
   }
 #endif
   FlushShortcutTasks();
-  after_state_change_action_state_ = ConstructStateSnapshot();
   MaybeWaitForManifestUpdates();
+  after_state_change_action_state_ = ConstructStateSnapshot();
 }
 
 void WebAppIntegrationTestDriver::BeforeStateCheckAction(const char* function) {
@@ -2101,6 +2091,20 @@ void WebAppIntegrationTestDriver::SetRunOnOsLoginMode(
   app_management_page_handler.SetRunOnOsLoginMode(app_state->id, login_mode);
   run_loop.Run();
 #endif
+}
+
+void WebAppIntegrationTestDriver::LaunchAppStartupBrowserCreator(
+    const AppId& app_id) {
+  content::WindowedNotificationObserver app_loaded_observer(
+      content::NOTIFICATION_LOAD_COMPLETED_MAIN_FRAME,
+      content::NotificationService::AllSources());
+  base::CommandLine command_line(base::CommandLine::NO_PROGRAM);
+  command_line.AppendSwitchASCII(switches::kAppId, app_id);
+  ASSERT_TRUE(StartupBrowserCreator().ProcessCmdLineImpl(
+      command_line, base::FilePath(), chrome::startup::IsProcessStartup::kNo,
+      {browser()->profile(), StartupProfileMode::kBrowserWindow}, {}));
+  app_loaded_observer.Wait();
+  content::RunAllTasksUntilIdle();
 }
 
 Browser* WebAppIntegrationTestDriver::browser() {
