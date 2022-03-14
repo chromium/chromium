@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 # Copyright 2020 The Chromium Authors. All rights reserved.
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
@@ -26,8 +26,8 @@ def load_file(output_file, input_file, loaded_files):
     sys.exit('Recursive load of \'{}\''.format(input_file))
   loaded_files.add(input_file)
   output_file.write('\n// Loaded from \'{}\':\n'.format(input_file))
-  with open(os.path.join(load_root, input_file)) as input_file:
-    resolve_loads(output_file, input_file.readlines(), loaded_files)
+  with open(os.path.join(load_root, input_file)) as file:
+    resolve_loads(output_file, file.readlines(), loaded_files)
 
 
 def generate_content(output_file, input_file):

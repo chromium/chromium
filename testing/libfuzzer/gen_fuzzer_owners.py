@@ -1,4 +1,4 @@
-#!/usr/bin/env python2.7
+#!/usr/bin/env python3
 #
 # Copyright 2018 The Chromium Authors. All rights reserved.
 # Use of this source code is governed by a BSD-style license that can be
@@ -64,6 +64,7 @@ def GetOwnersIfThirdParty(source):
 
   return None
 
+# pylint: disable=inconsistent-return-statements
 def GetOwnersForFuzzer(sources):
   """Return owners given a list of sources as input."""
   if not sources:
@@ -101,7 +102,7 @@ def GetOwnersForFuzzer(sources):
       return GetAuthorFromGitBlame(blame_output)
 
   return None
-
+# pylint: enable=inconsistent-return-statements
 
 def FindGroupsAndDepsInDeps(deps_list, build_dir):
   """Return list of groups, as well as their deps, from a list of deps."""
@@ -192,7 +193,7 @@ def GNPath():
 
 def SubStringExistsIn(substring_list, string):
   """Return true if one of the substring in the list is found in |string|."""
-  return any([substring in string for substring in substring_list])
+  return any(substring in string for substring in substring_list)
 
 
 def main():

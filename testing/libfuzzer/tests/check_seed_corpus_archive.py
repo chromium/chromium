@@ -1,14 +1,18 @@
-#!/usr/bin/env python2
+#!/usr/bin/env python3
 # Copyright 2017 The Chromium Authors. All rights reserved.
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
 # Script that prints out number of files in given zip-archive. Used for testing.
 
-import ConfigParser
 import os
 import sys
 import zipfile
+
+if sys.version_info.major == 2:
+    from ConfigParser import ConfigParser
+else:
+    from configparser import ConfigParser
 
 seed_corpus_archive_path = os.path.join(os.path.dirname(sys.argv[0]),
                                                         sys.argv[1])
