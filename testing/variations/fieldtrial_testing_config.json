@@ -1689,6 +1689,21 @@
             ]
         }
     ],
+    "ChromeManagementPageAndroid": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "ChromeManagementPageAndroid",
+                    "enable_features": [
+                        "ChromeManagementPageAndroid"
+                    ]
+                }
+            ]
+        }
+    ],
     "ChromeOSRawPSIMetrics": [
         {
             "platforms": [
