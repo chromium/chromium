@@ -1137,7 +1137,10 @@ std::vector<AttributionReport> AttributionStorageSql::GetEventLevelReports(
   if (!LazyInit(DbCreationPolicy::kIgnoreIfAbsent))
     return {};
 
-  return GetEventLevelReportsInternal(max_report_time, limit);
+  std::vector<AttributionReport> reports =
+      GetEventLevelReportsInternal(max_report_time, limit);
+  delegate_->ShuffleReports(reports);
+  return reports;
 }
 
 std::vector<AttributionReport> AttributionStorageSql::GetAttributionReports(
@@ -1156,14 +1159,14 @@ std::vector<AttributionReport> AttributionStorageSql::GetAttributionReports(
                  std::make_move_iterator(aggregatable_reports.begin()),
                  std::make_move_iterator(aggregatable_reports.end()));
 
-  if (limit < 0 || reports.size() <= static_cast<size_t>(limit))
-    return reports;
+  if (limit >= 0 && reports.size() > static_cast<size_t>(limit)) {
+    base::ranges::partial_sort(reports, reports.begin() + limit, /*comp=*/{},
+                               &AttributionReport::report_time);
+    reports.erase(reports.begin() + limit);
+  }
 
-  base::ranges::sort(reports, /*comp=*/{}, &AttributionReport::report_time);
-
-  return std::vector<AttributionReport>(
-      std::make_move_iterator(reports.begin()),
-      std::make_move_iterator(reports.begin() + limit));
+  delegate_->ShuffleReports(reports);
+  return reports;
 }
 
 std::vector<AttributionReport>
@@ -1192,7 +1195,6 @@ AttributionStorageSql::GetEventLevelReportsInternal(base::Time max_report_time,
   if (!statement.Succeeded())
     return {};
 
-  delegate_->ShuffleReports(reports);
   return reports;
 }
 

@@ -1751,6 +1751,48 @@ TEST_F(AttributionStorageTest, GetAttributionReports_Shuffles) {
                           EventLevelDataIs(TriggerDataIs(3))));
 }
 
+TEST_F(AttributionStorageTest, GetAttributionReportsExceedLimit_Shuffles) {
+  storage()->StoreSource(SourceBuilder().Build());
+  EXPECT_EQ(AttributionTrigger::EventLevelResult::kSuccess,
+            MaybeCreateAndStoreEventLevelReport(
+                TriggerBuilder().SetTriggerData(3).Build()));
+
+  delegate()->set_report_delay(base::Hours(1));
+  EXPECT_EQ(AttributionTrigger::EventLevelResult::kSuccess,
+            MaybeCreateAndStoreEventLevelReport(
+                TriggerBuilder().SetTriggerData(1).Build()));
+
+  delegate()->set_report_delay(base::Hours(2));
+  EXPECT_EQ(AttributionTrigger::EventLevelResult::kSuccess,
+            MaybeCreateAndStoreEventLevelReport(
+                TriggerBuilder().SetTriggerData(2).Build()));
+
+  // Will be dropped as the report time is latest.
+  EXPECT_TRUE(storage()->AddAggregatableAttributionForTesting(
+      ReportBuilder(
+          AttributionInfoBuilder(
+              SourceBuilder().SetSourceId(StoredSource::Id(1)).BuildStored())
+              .Build())
+          .SetReportTime(base::Time::Now() + base::Hours(3))
+          .SetAggregatableHistogramContributions(
+              {AggregatableHistogramContribution(/*key=*/1, /*value=*/2)})
+          .BuildAggregatableAttribution()));
+
+  EXPECT_THAT(storage()->GetAttributionReports(
+                  /*max_report_time=*/base::Time::Max(), /*limit=*/3),
+              ElementsAre(EventLevelDataIs(TriggerDataIs(3)),
+                          EventLevelDataIs(TriggerDataIs(1)),
+                          EventLevelDataIs(TriggerDataIs(2))));
+
+  delegate()->set_reverse_reports_on_shuffle(true);
+
+  EXPECT_THAT(storage()->GetAttributionReports(
+                  /*max_report_time=*/base::Time::Max(), /*limit=*/3),
+              ElementsAre(EventLevelDataIs(TriggerDataIs(2)),
+                          EventLevelDataIs(TriggerDataIs(1)),
+                          EventLevelDataIs(TriggerDataIs(3))));
+}
+
 TEST_F(AttributionStorageTest, SourceDebugKey_RoundTrips) {
   storage()->StoreSource(
       SourceBuilder(base::Time::Now()).SetDebugKey(33).Build());
