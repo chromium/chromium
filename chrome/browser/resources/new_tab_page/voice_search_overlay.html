@@ -177,11 +177,7 @@
 </style>
 <dialog id="dialog" on-close="onOverlayClose_" on-click="onOverlayClick_"
     on-keydown="onOverlayKeydown_">
-  <!-- Purely exists to capture focus upon opening the dialog. -->
-  <div tabindex="-1"></div>
-  <cr-icon-button id="closeButton" class="icon-clear" title="$i18n{close}">
-  </cr-icon-button>
-  <div id="content">
+  <div id="content" tabindex="-1">
     <iron-selector id="texts" selected="[[getText_(state_)]]"
         attr-for-selected="text" fallback-selection="none" aria-live="polite"
         selected-attribute="visible" class="display-stack">
@@ -236,4 +232,6 @@
       </cr-button>
     </div>
   </div>
+  <cr-icon-button id="closeButton" class="icon-clear" title="$i18n{close}">
+  </cr-icon-button>
 </dialog>
