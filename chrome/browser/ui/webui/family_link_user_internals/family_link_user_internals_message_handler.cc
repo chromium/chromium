@@ -44,7 +44,7 @@ base::ListValue* AddSection(base::ListValue* parent_list,
   // Grab a raw pointer to the result before |Pass()|ing it on.
   base::ListValue* result =
       section->SetList("data", std::move(section_contents));
-  parent_list->Append(std::move(section));
+  parent_list->Append(base::Value::FromUniquePtrValue(std::move(section)));
   return result;
 }
 
