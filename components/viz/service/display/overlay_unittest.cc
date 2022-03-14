@@ -5431,6 +5431,55 @@ TEST_F(DelegatedTest, TestClipWithPrimary) {
   EXPECT_RECTF_NEAR(uv_rect, candidate_list[0].uv_rect, 0.01f);
 }
 
+TEST_F(DelegatedTest, ScaledBufferDamage) {
+  auto pass = CreateRenderPass();
+  const auto kSmallCandidateRect = gfx::Rect(15, 10, 32, 64);
+  const auto kResourceSize = gfx::Size(16, 16);
+  const auto kDisplayDamage = gfx::Rect(25, 0, 5, 32);
+
+  // Specify a resource size to be much smaller than the display size of this
+  // quad.
+  CreateCandidateQuadAt(resource_provider_.get(),
+                        child_resource_provider_.get(), child_provider_.get(),
+                        pass->shared_quad_state_list.back(), pass.get(),
+                        kSmallCandidateRect, gfx::ProtectedVideoType::kClear,
+                        RGBA_8888, kResourceSize);
+
+  // Here resource size and rect size on screen will match 1:1.
+  CreateCandidateQuadAt(resource_provider_.get(),
+                        child_resource_provider_.get(), child_provider_.get(),
+                        pass->shared_quad_state_list.back(), pass.get(),
+                        kSmallCandidateRect);
+
+  // Check for potential candidates.
+  OverlayCandidateList candidate_list;
+  OverlayProcessorInterface::FilterOperationsMap render_pass_filters;
+  OverlayProcessorInterface::FilterOperationsMap render_pass_backdrop_filters;
+  AggregatedRenderPassList pass_list;
+
+  AggregatedRenderPass* main_pass = pass.get();
+  SurfaceDamageRectList surface_damage_rect_list;
+  // Simplify by adding full root damage.
+  surface_damage_rect_list.push_back(kDisplayDamage);
+  pass_list.push_back(std::move(pass));
+  damage_rect_ = kDisplayDamage;
+  overlay_processor_->ProcessForOverlays(
+      resource_provider_.get(), &pass_list, GetIdentityColorMatrix(),
+      render_pass_filters, render_pass_backdrop_filters,
+      std::move(surface_damage_rect_list), nullptr, &candidate_list,
+      &damage_rect_, &content_bounds_);
+
+  // Expected damage is basically the intersection of the rect with the screen
+  // damage but relative to that rect.
+  const auto kExpectedRectRelDamage = gfx::RectF(25 - 15, 0, 5, 32 - 10);
+  const auto kExpectedScaledRelDamage =
+      gfx::ScaleRect(kExpectedRectRelDamage, 0.5f, 0.25f);
+  EXPECT_EQ(main_pass->quad_list.size(), candidate_list.size());
+  EXPECT_TRUE(damage_rect_.IsEmpty());
+  EXPECT_RECTF_EQ(candidate_list[0].damage_rect, kExpectedScaledRelDamage);
+  EXPECT_RECTF_EQ(candidate_list[1].damage_rect, kExpectedRectRelDamage);
+}
+
 TEST_F(DelegatedTest, QuadTypes) {
   auto pass = CreateRenderPass();
   const auto kSmallCandidateRect = gfx::Rect(5, 10, 57, 64);

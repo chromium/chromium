@@ -163,6 +163,7 @@ bool OverlayProcessorDelegated::AttemptWithStrategies(
         num_quads_skipped++;
       } else {
         DBG_DRAW_RECT("delegated.overlay.failed", display_rect);
+        DBG_LOG("delegated.overlay.failed", "error code %d", candidate_status);
       }
 
       if (candidate_status ==

@@ -363,6 +363,15 @@ OverlayCandidate::CandidateStatus OverlayCandidate::FromDrawQuadResource(
       !quad->ShouldDrawWithBlendingForReasonOtherThanMaskFilter();
   candidate->has_mask_filter = !sqs->mask_filter_info.IsEmpty();
 
+  if (resource_id != kInvalidResourceId) {
+    candidate->resource_size_in_pixels =
+        resource_provider->GetResourceBackedSize(resource_id);
+  } else {
+    candidate->resource_size_in_pixels =
+        gfx::Size(candidate->display_rect.size().width(),
+                  candidate->display_rect.size().height());
+  }
+
   AssignDamage(quad, surface_damage_rect_list, candidate);
   candidate->resource_id = resource_id;
 
@@ -406,9 +415,6 @@ OverlayCandidate::CandidateStatus OverlayCandidate::FromAggregateQuad(
                                   true, primary_rect);
   if (rtn == CandidateStatus::kSuccess) {
     candidate->rpdq = quad;
-    candidate->resource_size_in_pixels =
-        gfx::Size(candidate->display_rect.size().width(),
-                  candidate->display_rect.size().height());
   }
   return rtn;
 }
@@ -425,9 +431,6 @@ OverlayCandidate::CandidateStatus OverlayCandidate::FromSolidColorQuad(
                                   true, primary_rect);
 
   if (rtn == CandidateStatus::kSuccess) {
-    // TODO(https://crbug.com/1204102) : The 4x4 size is only valid for the non
-    // native color support.
-    candidate->resource_size_in_pixels = gfx::Size(4, 4);
     candidate->solid_color = quad->color;
   }
   return rtn;
@@ -511,10 +514,6 @@ OverlayCandidate::CandidateStatus OverlayCandidate::FromTextureQuad(
       resource_provider, surface_damage_rect_list, quad, quad->resource_id(),
       quad->y_flipped, candidate, is_delegated_context, primary_rect);
   if (rtn == CandidateStatus::kSuccess) {
-    // 'quad->resource_size_in_pixels()'
-    candidate->resource_size_in_pixels =
-        resource_provider->GetResourceBackedSize(quad->resource_id());
-
     // Only handle clip rect for required overlays
     if (!is_delegated_context && candidate->requires_overlay)
       HandleClipAndSubsampling(candidate, primary_rect);
@@ -629,6 +628,17 @@ void OverlayCandidate::AssignDamage(
         transformed_damage.origin() - gfx::PointF(quad->rect.origin());
     transformed_damage.set_origin(
         gfx::PointF(buffer_damage_origin.x(), buffer_damage_origin.y()));
+
+    if (!quad->rect.IsEmpty()) {
+      // A quad's |rect| is usually the same size as its buffer size with tile
+      // quads but can have scaling if it is a render pass or (more likely) a
+      // texture draw quad.
+      transformed_damage.Scale(
+          static_cast<float>(candidate->resource_size_in_pixels.width()) /
+              quad->rect.width(),
+          static_cast<float>(candidate->resource_size_in_pixels.height()) /
+              quad->rect.height());
+    }
   } else {
     // If not invertible, set to full damage.
     // TODO(https://crbug.com/1279965): |resource_size_in_pixels| might not be
