@@ -124,8 +124,6 @@ class LoginDisplayHostCommon : public LoginDisplayHost,
 
  private:
   void Cleanup();
-  // Callback invoked after the feedback is finished.
-  void OnFeedbackFinished();
   // Set screen, from which WC flow will continue after attempt to show
   // TermsOfServiceScreen.
   void SetScreenAfterManagedTos(OobeScreenId screen_id);

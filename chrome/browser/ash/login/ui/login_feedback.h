@@ -5,19 +5,13 @@
 #ifndef CHROME_BROWSER_ASH_LOGIN_UI_LOGIN_FEEDBACK_H_
 #define CHROME_BROWSER_ASH_LOGIN_UI_LOGIN_FEEDBACK_H_
 
-#include <memory>
 #include <string>
-
-#include "base/callback.h"
-#include "base/memory/weak_ptr.h"
 
 class Profile;
 
 namespace ash {
-class FeedbackExtensionLoader;
 
-// Show the feedback UI to collect a feedback on the login screen. Note that
-// it dynamically loads/unloads the feedback extension on the signin profile.
+// Show the feedback UI to collect a feedback on the login screen.
 class LoginFeedback {
  public:
   explicit LoginFeedback(Profile* signin_profile);
@@ -27,32 +21,12 @@ class LoginFeedback {
 
   ~LoginFeedback();
 
-  // Request to show the feedback UI with `description`. `finished_callback`
-  // will be invoked when the feedback UI is closed, either cancel or send the
-  // feedback.
-  void Request(const std::string& description,
-               base::OnceClosure finished_callback);
+  // Request to show the feedback UI with `description`.
+  void Request(const std::string& description);
 
  private:
-  // Makes the feedback UI windows on top of login screen and watches when
-  // all feedback windows are closed.
-  class FeedbackWindowHandler;
-
-  // Invoked by FeedbackWindowHandler when all feedback windows are closed.
-  void OnFeedbackFinished();
-
-  // Ensures feedback UI is created.
-  void EnsureFeedbackUI();
-
   Profile* const profile_;
   std::string description_;
-  base::OnceClosure finished_callback_;
-
-  std::unique_ptr<FeedbackWindowHandler> feedback_window_handler_;
-
-  std::unique_ptr<FeedbackExtensionLoader> feedback_extension_loader_;
-
-  base::WeakPtrFactory<LoginFeedback> weak_factory_{this};
 };
 
 }  // namespace ash

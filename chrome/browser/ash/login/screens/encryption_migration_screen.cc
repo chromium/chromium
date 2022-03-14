@@ -404,7 +404,7 @@ void EncryptionMigrationScreen::HandleOpenFeedbackDialog() {
       base::NumberToString(base::Time::Now().ToInternalValue()).c_str());
   login_feedback_ = std::make_unique<LoginFeedback>(Profile::FromWebUI(
       LoginDisplayHost::default_host()->GetOobeUI()->web_ui()));
-  login_feedback_->Request(description, base::OnceClosure());
+  login_feedback_->Request(description);
 }
 
 void EncryptionMigrationScreen::UpdateUIState(

@@ -80,7 +80,18 @@ FeedbackDialog::FeedbackDialog(
     : feedback_info_(info.ToValue()),
       feedback_flow_(info.flow),
       widget_(nullptr),
-      profile_keep_alive_(profile, ProfileKeepAliveOrigin::kFeedbackDialog) {
+      // We need to use GetOriginalProfile() here because `profile` may be an
+      // OTR Profile (when opening Feedback dialog on ChromeOS login screen, for
+      // example), and ScopedProfileKeepAlive only supports non-OTR Profiles.
+      // Trying to acquire a keepalive on the OTR Profile would trigger a
+      // DCHECK.
+      //
+      // TODO(crbug.com/1153922): Once OTR Profiles use refcounting, remove the
+      // call to GetOriginalProfile(). The OTR Profile will hold a keepalive on
+      // the regular Profile, so the ownership model will be more
+      // straightforward.
+      profile_keep_alive_(profile->GetOriginalProfile(),
+                          ProfileKeepAliveOrigin::kFeedbackDialog) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   set_can_resize(false);
   set_can_minimize(true);

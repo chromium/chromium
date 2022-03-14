@@ -386,10 +386,7 @@ bool LoginDisplayHostCommon::HandleAccelerator(LoginAcceleratorAction action) {
   if (action == LoginAcceleratorAction::kShowFeedback) {
     login_feedback_ = std::make_unique<LoginFeedback>(
         ProfileHelper::Get()->GetSigninProfile());
-    login_feedback_->Request(
-        std::string(),
-        base::BindOnce(&LoginDisplayHostCommon::OnFeedbackFinished,
-                       weak_factory_.GetWeakPtr()));
+    login_feedback_->Request(std::string());
     return true;
   }
 
@@ -610,10 +607,6 @@ void LoginDisplayHostCommon::Cleanup() {
   ProfileHelper::Get()->ClearSigninProfile(base::DoNothing());
   registrar_.RemoveAll();
   BrowserList::RemoveObserver(this);
-}
-
-void LoginDisplayHostCommon::OnFeedbackFinished() {
-  login_feedback_.reset();
 }
 
 }  // namespace ash
