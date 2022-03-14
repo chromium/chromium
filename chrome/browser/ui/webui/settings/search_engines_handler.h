@@ -91,9 +91,7 @@ class SearchEnginesHandler : public SettingsPageUIHandler,
   void HandleSearchEngineEditCompleted(const base::Value::List& args);
 
   // Returns a dictionary to pass to WebUI representing the given search engine.
-  std::unique_ptr<base::DictionaryValue> CreateDictionaryForEngine(
-      int index,
-      bool is_default);
+  base::Value::Dict CreateDictionaryForEngine(int index, bool is_default);
 
   // Returns a dictionary to pass to WebUI representing the extension.
   base::DictionaryValue* CreateDictionaryForExtension(

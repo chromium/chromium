@@ -494,22 +494,22 @@ base::Value GetValueForManagedState(const site_settings::ManagedState& state) {
 void AddExceptionForHostedApp(const std::string& url_pattern,
                               const extensions::Extension& app,
                               base::ListValue* exceptions) {
-  std::unique_ptr<base::DictionaryValue> exception(new base::DictionaryValue());
+  base::Value::Dict exception;
 
   std::string setting_string =
       content_settings::ContentSettingToString(CONTENT_SETTING_ALLOW);
   DCHECK(!setting_string.empty());
 
-  exception->SetStringKey(kSetting, setting_string);
-  exception->SetStringKey(kOrigin, url_pattern);
-  exception->SetStringKey(kDisplayName, url_pattern);
-  exception->SetStringKey(kEmbeddingOrigin, url_pattern);
-  exception->SetStringKey(
-      kSource, SiteSettingSourceToString(SiteSettingSource::kHostedApp));
-  exception->SetBoolKey(kIncognito, false);
-  exception->SetStringKey(kAppName, app.name());
-  exception->SetStringKey(kAppId, app.id());
-  exceptions->Append(std::move(exception));
+  exception.Set(kSetting, setting_string);
+  exception.Set(kOrigin, url_pattern);
+  exception.Set(kDisplayName, url_pattern);
+  exception.Set(kEmbeddingOrigin, url_pattern);
+  exception.Set(kSource,
+                SiteSettingSourceToString(SiteSettingSource::kHostedApp));
+  exception.Set(kIncognito, false);
+  exception.Set(kAppName, app.name());
+  exception.Set(kAppId, app.id());
+  exceptions->Append(base::Value(std::move(exception)));
 }
 
 // Create a DictionaryValue* that will act as a data source for a single row
@@ -728,7 +728,7 @@ void GetExceptionsForContentType(
 
   for (auto& one_provider_exceptions : all_provider_exceptions) {
     for (auto& exception : one_provider_exceptions)
-      exceptions->Append(std::move(exception));
+      exceptions->Append(base::Value::FromUniquePtrValue(std::move(exception)));
   }
 }
 

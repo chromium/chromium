@@ -121,7 +121,8 @@ SearchEnginesHandler::GetSearchEnginesList() {
 
   for (int i = 0; i < last_default_engine_index; ++i) {
     // Third argument is false, as the engine is not from an extension.
-    defaults.Append(CreateDictionaryForEngine(i, i == default_index));
+    defaults.Append(
+        base::Value(CreateDictionaryForEngine(i, i == default_index)));
   }
 
   // Build the second list (active search engines). This will not have any
@@ -134,7 +135,8 @@ SearchEnginesHandler::GetSearchEnginesList() {
   for (int i = std::max(last_default_engine_index, 0);
        i < last_active_engine_index; ++i) {
     // Third argument is false, as the engine is not from an extension.
-    actives.Append(CreateDictionaryForEngine(i, i == default_index));
+    actives.Append(
+        base::Value(CreateDictionaryForEngine(i, i == default_index)));
   }
 
   // Build the second list (other search engines).
@@ -147,7 +149,8 @@ SearchEnginesHandler::GetSearchEnginesList() {
 
   for (int i = std::max(last_active_engine_index, 0);
        i < last_other_engine_index; ++i) {
-    others.Append(CreateDictionaryForEngine(i, i == default_index));
+    others.Append(
+        base::Value(CreateDictionaryForEngine(i, i == default_index)));
   }
 
   // Build the third list (omnibox extensions).
@@ -158,7 +161,8 @@ SearchEnginesHandler::GetSearchEnginesList() {
   CHECK_LE(last_other_engine_index, engine_count);
 
   for (int i = std::max(last_other_engine_index, 0); i < engine_count; ++i) {
-    extensions.Append(CreateDictionaryForEngine(i, i == default_index));
+    extensions.Append(
+        base::Value(CreateDictionaryForEngine(i, i == default_index)));
   }
 
   auto search_engines_info = std::make_unique<base::DictionaryValue>();
@@ -186,8 +190,9 @@ void SearchEnginesHandler::OnItemsRemoved(int start, int length) {
   OnModelChanged();
 }
 
-std::unique_ptr<base::DictionaryValue>
-SearchEnginesHandler::CreateDictionaryForEngine(int index, bool is_default) {
+base::Value::Dict SearchEnginesHandler::CreateDictionaryForEngine(
+    int index,
+    bool is_default) {
   TemplateURLTableModel* table_model = list_controller_.table_model();
   const TemplateURL* template_url = list_controller_.GetTemplateURL(index);
 
@@ -200,38 +205,33 @@ SearchEnginesHandler::CreateDictionaryForEngine(int index, bool is_default) {
   // chrome/browser/resources/settings/search_engines_page/
   // in @typedef for SearchEngine. Please update it whenever you add or remove
   // any keys here.
-  auto dict = std::make_unique<base::DictionaryValue>();
-  dict->SetIntKey("id", template_url->id());
-  dict->SetStringKey("name", template_url->short_name());
-  dict->SetStringKey("displayName",
-                     table_model->GetText(
-                         index, IDS_SEARCH_ENGINES_EDITOR_DESCRIPTION_COLUMN));
-  dict->SetStringKey(
-      "keyword",
-      table_model->GetText(index, IDS_SEARCH_ENGINES_EDITOR_KEYWORD_COLUMN));
+  base::Value::Dict dict;
+  dict.Set("id", static_cast<int>(template_url->id()));
+  dict.Set("name", template_url->short_name());
+  dict.Set("displayName",
+           table_model->GetText(index,
+                                IDS_SEARCH_ENGINES_EDITOR_DESCRIPTION_COLUMN));
+  dict.Set("keyword", table_model->GetText(
+                          index, IDS_SEARCH_ENGINES_EDITOR_KEYWORD_COLUMN));
   Profile* profile = Profile::FromWebUI(web_ui());
-  dict->SetStringKey(
-      "url", template_url->url_ref().DisplayURL(UIThreadSearchTermsData()));
-  dict->SetBoolKey("urlLocked", template_url->prepopulate_id() > 0);
+  dict.Set("url",
+           template_url->url_ref().DisplayURL(UIThreadSearchTermsData()));
+  dict.Set("urlLocked", template_url->prepopulate_id() > 0);
   GURL icon_url = template_url->favicon_url();
   if (icon_url.is_valid())
-    dict->SetStringKey("iconURL", icon_url.spec());
-  dict->SetIntKey("modelIndex", index);
+    dict.Set("iconURL", icon_url.spec());
+  dict.Set("modelIndex", index);
 
-  dict->SetBoolKey("canBeRemoved", list_controller_.CanRemove(template_url));
-  dict->SetBoolKey("canBeDefault",
-                   list_controller_.CanMakeDefault(template_url));
-  dict->SetBoolKey("default", is_default);
-  dict->SetBoolKey("canBeEdited", list_controller_.CanEdit(template_url));
-  dict->SetBoolKey("canBeActivated",
-                   list_controller_.CanActivate(template_url));
-  dict->SetBoolKey("canBeDeactivated",
-                   list_controller_.CanDeactivate(template_url));
-  dict->SetBoolKey("shouldConfirmDeletion",
-                   list_controller_.ShouldConfirmDeletion(template_url));
+  dict.Set("canBeRemoved", list_controller_.CanRemove(template_url));
+  dict.Set("canBeDefault", list_controller_.CanMakeDefault(template_url));
+  dict.Set("default", is_default);
+  dict.Set("canBeEdited", list_controller_.CanEdit(template_url));
+  dict.Set("canBeActivated", list_controller_.CanActivate(template_url));
+  dict.Set("canBeDeactivated", list_controller_.CanDeactivate(template_url));
+  dict.Set("shouldConfirmDeletion",
+           list_controller_.ShouldConfirmDeletion(template_url));
   TemplateURL::Type type = template_url->type();
-  dict->SetBoolKey("isOmniboxExtension",
-                   type == TemplateURL::OMNIBOX_API_EXTENSION);
+  dict.Set("isOmniboxExtension", type == TemplateURL::OMNIBOX_API_EXTENSION);
   if (type == TemplateURL::NORMAL_CONTROLLED_BY_EXTENSION ||
       type == TemplateURL::OMNIBOX_API_EXTENSION) {
     const extensions::Extension* extension =
@@ -245,7 +245,8 @@ SearchEnginesHandler::CreateDictionaryForEngine(int index, bool is_default) {
                            !extensions::ExtensionSystem::Get(profile)
                                 ->management_policy()
                                 ->MustRemainEnabled(extension, nullptr));
-      dict->Set("extension", std::move(ext_info));
+      dict.Set("extension",
+               base::Value::FromUniquePtrValue(std::move(ext_info)));
     }
   }
   return dict;
