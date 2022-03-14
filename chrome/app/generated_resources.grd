@@ -2540,6 +2540,18 @@ are declared in tools/grit/grit_rule.gni.
                desc="A separator to place between download size and download time. A symbol, in this case a bullet •, with a white space before it and a white space after it, is used to separate them. If the bullet • resembles another symbol in the language, please translate the bullet • as a symbol (A) that is not easily mistaken for a number or letter in the language and (B) that is typically used to separate elements.">
         ''' • '''
       </message>
+      <message name="IDS_DOWNLOAD_BUBBLE_DOWNLOAD_SYMBOL"
+               desc="A symbol for active downloads, in this case downward arrow ↓. If the downward arrow ↓ resembles another symbol in the language, please translate the downward arrow ↓ as a symbol that indicates a downward arrow">
+        '''↓ '''
+      </message>
+      <message name="IDS_DOWNLOAD_STATUS_RESUMING"
+               desc="When resuming a download, let the user know we're resuming the download.">
+        Resuming...
+      </message>
+      <message name="IDS_DOWNLOAD_STATUS_DONE"
+               desc="When a download is finished, let the user know.">
+        Done
+      </message>
 
       <!-- Desktop omnibox PWA install icon -->
       <if expr="not is_android">

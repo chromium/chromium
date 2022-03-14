@@ -20,7 +20,15 @@ class DownloadBubbleUIController
   // AllDownloadItemNotifier::Observer
   void OnManagerGoingDown(content::DownloadManager* manager) override;
 
+  // Get the main view of the Download Bubble. The main view contains all the
+  // recent downloads (finished within the last 24 hours).
   std::unique_ptr<DownloadBubbleRowListView> GetMainView();
+
+  // Get the partial view of the Download Bubble. The partial view contains
+  // in-progress and uninteracted downloads, meant to capture the user's
+  // recent tasks. This can only be opened by the browser in the event of new
+  // downloads, and user action only creates a main view.
+  std::unique_ptr<DownloadBubbleRowListView> GetPartialView();
 
  private:
   content::DownloadManager* download_manager_;

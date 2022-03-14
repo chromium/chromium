@@ -142,8 +142,26 @@ DownloadUIModel::DownloadUIModelPtr DownloadItemModel::Wrap(
   return model;
 }
 
+// static
+DownloadUIModel::DownloadUIModelPtr DownloadItemModel::Wrap(
+    download::DownloadItem* download,
+    std::unique_ptr<DownloadUIModel::StatusTextBuilderBase>
+        status_text_builder) {
+  DownloadUIModel::DownloadUIModelPtr model(
+      new DownloadItemModel(download, std::move(status_text_builder)),
+      base::OnTaskRunnerDeleter(base::ThreadTaskRunnerHandle::Get()));
+  return model;
+}
+
 DownloadItemModel::DownloadItemModel(DownloadItem* download)
     : download_(download) {
+  download_->AddObserver(this);
+}
+
+DownloadItemModel::DownloadItemModel(
+    download::DownloadItem* download,
+    std::unique_ptr<DownloadUIModel::StatusTextBuilderBase> status_text_builder)
+    : DownloadUIModel(std::move(status_text_builder)), download_(download) {
   download_->AddObserver(this);
 }
 

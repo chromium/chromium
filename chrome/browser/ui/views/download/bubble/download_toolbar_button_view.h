@@ -46,7 +46,8 @@ class DownloadToolbarButtonView : public ToolbarButton, public DownloadDisplay {
   void PaintButtonContents(gfx::Canvas* canvas) override;
 
   void ButtonPressed();
-  std::unique_ptr<views::BubbleDialogDelegate> CreateBubbleDialogDelegate();
+  std::unique_ptr<views::BubbleDialogDelegate> CreateBubbleDialogDelegate(
+      std::unique_ptr<View> bubble_contents_view);
   void OnBubbleDelegateDeleted();
 
   raw_ptr<Browser> browser_;

@@ -24,10 +24,18 @@ class DownloadItemModel : public DownloadUIModel,
                           public download::DownloadItem::Observer {
  public:
   static DownloadUIModelPtr Wrap(download::DownloadItem* download);
+  static DownloadUIModelPtr Wrap(
+      download::DownloadItem* download,
+      std::unique_ptr<DownloadUIModel::StatusTextBuilderBase>
+          status_text_builder);
 
   // Constructs a DownloadItemModel. The caller must ensure that |download|
   // outlives this object.
   explicit DownloadItemModel(download::DownloadItem* download);
+
+  DownloadItemModel(download::DownloadItem* download,
+                    std::unique_ptr<DownloadUIModel::StatusTextBuilderBase>
+                        status_text_builder);
 
   DownloadItemModel(const DownloadItemModel&) = delete;
   DownloadItemModel& operator=(const DownloadItemModel&) = delete;

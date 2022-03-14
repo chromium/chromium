@@ -12,6 +12,10 @@
 
 #include "base/files/file_path.h"
 
+namespace {
+constexpr int kShowDownloadsInBubbleForNumDays = 1;
+}  // namespace
+
 DownloadBubbleUIController::DownloadBubbleUIController(
     content::DownloadManager* manager)
     : download_manager_(manager) {}
@@ -23,6 +27,9 @@ void DownloadBubbleUIController::OnManagerGoingDown(
   }
 }
 
+// TODO(bhatiarohit): Check the order of downloads here. They do not
+// appear chronological sometimes.
+// TODO(bhatiarohit): Include OfflineItems.
 std::unique_ptr<DownloadBubbleRowListView>
 DownloadBubbleUIController::GetMainView() {
   auto row_list_view = std::make_unique<DownloadBubbleRowListView>();
@@ -32,10 +39,36 @@ DownloadBubbleUIController::GetMainView() {
   download_manager_->GetAllDownloads(&download_items);
   for (download::DownloadItem* item : download_items) {
     base::Time end_time = item->GetEndTime();
-    if (end_time.is_null() ||
-        ((base::Time::Now() - end_time) <= base::Days(1))) {
+    if (end_time.is_null() || ((base::Time::Now() - end_time) <=
+                               base::Days(kShowDownloadsInBubbleForNumDays))) {
       row_list_view->AddChildView(std::make_unique<DownloadBubbleRowView>(
-          DownloadItemModel::Wrap(item)));
+          DownloadItemModel::Wrap(
+              item,
+              std::make_unique<DownloadUIModel::BubbleStatusTextBuilder>()),
+          row_list_view.get()));
+    }
+  }
+  return row_list_view;
+}
+
+// TODO(bhatiarohit): Refine this to remove actioned-upon items, and
+// items that have been displayed on the main view.
+std::unique_ptr<DownloadBubbleRowListView>
+DownloadBubbleUIController::GetPartialView() {
+  auto row_list_view = std::make_unique<DownloadBubbleRowListView>();
+  if (!download_manager_)
+    return row_list_view;
+  std::vector<download::DownloadItem*> download_items;
+  download_manager_->GetAllDownloads(&download_items);
+  for (download::DownloadItem* item : download_items) {
+    base::Time end_time = item->GetEndTime();
+    if (end_time.is_null() || ((base::Time::Now() - end_time) <=
+                               base::Days(kShowDownloadsInBubbleForNumDays))) {
+      row_list_view->AddChildView(std::make_unique<DownloadBubbleRowView>(
+          DownloadItemModel::Wrap(
+              item,
+              std::make_unique<DownloadUIModel::BubbleStatusTextBuilder>()),
+          row_list_view.get()));
     }
   }
   return row_list_view;

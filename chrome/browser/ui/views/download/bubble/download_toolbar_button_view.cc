@@ -106,8 +106,17 @@ void DownloadToolbarButtonView::UpdateDownloadIcon() {
   UpdateIcon();
 }
 
+// This function shows the partial view. If the main view is already showing,
+// we do not show the partial view. If the partial view is already showing,
+// there is nothing to do here, the controller should update the partial view.
 void DownloadToolbarButtonView::ShowDetails() {
-  ButtonPressed();
+  if (!bubble_delegate_) {
+    std::unique_ptr<views::BubbleDialogDelegate> bubble_delegate =
+        CreateBubbleDialogDelegate(bubble_controller_->GetPartialView());
+    bubble_delegate_ = bubble_delegate.get();
+    views::BubbleDialogDelegate::CreateBubble(std::move(bubble_delegate));
+    bubble_delegate_->GetWidget()->Show();
+  }
 }
 
 void DownloadToolbarButtonView::UpdateIcon() {
@@ -142,7 +151,8 @@ void DownloadToolbarButtonView::OnBubbleDelegateDeleted() {
 }
 
 std::unique_ptr<views::BubbleDialogDelegate>
-DownloadToolbarButtonView::CreateBubbleDialogDelegate() {
+DownloadToolbarButtonView::CreateBubbleDialogDelegate(
+    std::unique_ptr<View> bubble_contents_view) {
   std::unique_ptr<views::BubbleDialogDelegate> bubble_delegate =
       std::make_unique<views::BubbleDialogDelegate>(
           this, views::BubbleBorder::TOP_RIGHT);
@@ -154,8 +164,7 @@ DownloadToolbarButtonView::CreateBubbleDialogDelegate() {
   bubble_delegate->RegisterDeleteDelegateCallback(
       base::BindOnce(&DownloadToolbarButtonView::OnBubbleDelegateDeleted,
                      base::Unretained(this)));
-  bubble_delegate->SetContentsView(std::make_unique<DownloadDialogView>(
-      browser_, bubble_controller_->GetMainView()));
+  bubble_delegate->SetContentsView(std::move(bubble_contents_view));
 
   bubble_delegate->set_fixed_width(
       ChromeLayoutProvider::Get()->GetDistanceMetric(
@@ -166,12 +175,15 @@ DownloadToolbarButtonView::CreateBubbleDialogDelegate() {
   return bubble_delegate;
 }
 
-// We do not need to hide the bubble if it is already showing, as it will be
-// destroyed because of loss of focus.
+// If the bubble delegate is set (either the main or the partial view), the
+// button press is going to make the bubble lose focus, and will destroy
+// the bubble.
+// If the bubble delegate is not set, show the main view.
 void DownloadToolbarButtonView::ButtonPressed() {
   if (!bubble_delegate_) {
     std::unique_ptr<views::BubbleDialogDelegate> bubble_delegate =
-        CreateBubbleDialogDelegate();
+        CreateBubbleDialogDelegate(std::make_unique<DownloadDialogView>(
+            browser_, bubble_controller_->GetMainView()));
     bubble_delegate_ = bubble_delegate.get();
     views::BubbleDialogDelegate::CreateBubble(std::move(bubble_delegate));
     bubble_delegate_->GetWidget()->Show();

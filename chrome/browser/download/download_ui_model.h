@@ -13,6 +13,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/task/sequenced_task_runner.h"
+#include "base/time/default_clock.h"
 #include "build/build_config.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "components/download/public/common/download_item.h"
@@ -30,10 +31,56 @@ using offline_items_collection::ContentId;
 // with a download.
 class DownloadUIModel {
  public:
+  // Abstract base class for building StatusText
+  class StatusTextBuilderBase {
+   public:
+    virtual ~StatusTextBuilderBase() = default;
+    void SetModel(DownloadUIModel* model);
+
+    // Returns a short one-line status string for the download.
+    std::u16string GetStatusText(
+        download::DownloadItem::DownloadState state) const;
+
+    std::u16string GetCompletedRemovedOrSavedStatusText() const;
+    // Returns a string indicating the status of an in-progress download.
+    virtual std::u16string GetInProgressStatusText() const = 0;
+
+    // Returns a string indicating the status of a completed download.
+    virtual std::u16string GetCompletedStatusText() const = 0;
+
+    // Returns a string indicating the status of an interrupted download.
+    virtual std::u16string GetInterruptedStatusText(
+        offline_items_collection::FailState fail_state) const;
+
+    // Returns a short string indicating why the download failed.
+    virtual std::u16string GetFailStateMessage(
+        offline_items_collection::FailState fail_state) const;
+
+    // Unknowned model to create statuses.
+    DownloadUIModel* model_ = nullptr;
+  };
+
+  // Used in Download shelf and page, default option.
+  class StatusTextBuilder : public StatusTextBuilderBase {
+   public:
+    std::u16string GetInProgressStatusText() const override;
+    std::u16string GetCompletedStatusText() const override;
+  };
+
+  // Used in Download bubble.
+  class BubbleStatusTextBuilder : public StatusTextBuilderBase {
+   public:
+    std::u16string GetInProgressStatusText() const override;
+    std::u16string GetCompletedStatusText() const override;
+  };
+
   using DownloadUIModelPtr =
       std::unique_ptr<DownloadUIModel, base::OnTaskRunnerDeleter>;
 
   DownloadUIModel();
+
+  explicit DownloadUIModel(
+      std::unique_ptr<StatusTextBuilderBase> status_text_builder);
 
   DownloadUIModel(const DownloadUIModel&) = delete;
   DownloadUIModel& operator=(const DownloadUIModel&) = delete;
@@ -355,19 +402,16 @@ class DownloadUIModel {
   base::ObserverList<Observer>::Unchecked observers_;
 
  private:
-  // Returns a string indicating the status of an in-progress download.
-  std::u16string GetInProgressStatusText() const;
+  friend class DownloadItemModelTest;
 
-  // Returns a string indicating the status of a completed download.
-  std::u16string GetCompletedStatusText() const;
+  void set_clock_for_testing(base::Clock* clock);
 
-  // Returns a string indicating the status of an interrupted download.
-  std::u16string GetInterruptedStatusText(
-      offline_items_collection::FailState fail_state) const;
+  void set_status_text_builder_for_testing(bool for_bubble);
 
-  // Returns a short string indicating why the download failed.
-  std::u16string GetFailStateMessage(
-      offline_items_collection::FailState fail_state) const;
+  // Unowned Clock to override the time of "Now".
+  base::Clock* clock_ = base::DefaultClock::GetInstance();
+
+  std::unique_ptr<StatusTextBuilderBase> status_text_builder_;
 
   base::WeakPtrFactory<DownloadUIModel> weak_ptr_factory_{this};
 };
