@@ -307,7 +307,7 @@ template("msvc_toolchain") {
       rustc = rebase_path("${rust_sysroot}/bin/rustc", root_build_dir)
       rust_sysroot_relative_to_out = rebase_path(rust_sysroot, root_out_dir)
       tool("rust_staticlib") {
-        rust_outfile = "{{target_out_dir}}/{{crate_name}}.lib"
+        rust_outfile = "{{output_dir}}/{{target_output_name}}.lib"
         depfile = "{{output}}.d"
         rspfile = "$rust_outfile.rsp"
         rspfile_content = "{{rustdeps}} {{externs}}"
@@ -318,8 +318,9 @@ template("msvc_toolchain") {
       }
 
       tool("rust_rlib") {
-        rust_outfile = "{{target_out_dir}}/lib{{crate_name}}.rlib"
+        rust_outfile = "{{output_dir}}/lib{{target_output_name}}.rlib"
         depfile = "{{output}}.d"
+
         # Do not use rsp files in this (common) case because they occupy the
         # ninja main thread, and {{rlibs}} have shorter command lines than
         # fully linked targets.
@@ -331,7 +332,7 @@ template("msvc_toolchain") {
 
       if (toolchain_args.rustc_can_link) {
         tool("rust_bin") {
-          rust_outfile = "{{root_out_dir}}/{{crate_name}}.exe"
+          rust_outfile = "{{root_out_dir}}/{{target_output_name}}.exe"
           depfile = "{{output}}.d"
           rspfile = "$rust_outfile.rsp"
           rspfile_content = "{{rustdeps}} {{externs}}"
@@ -342,7 +343,7 @@ template("msvc_toolchain") {
         }
 
         tool("rust_cdylib") {
-          rust_outfile = "{{target_out_dir}}/lib{{crate_name}}.dll"
+          rust_outfile = "{{output_dir}}/lib{{target_output_name}}.dll"
           depfile = "{{output}}.d"
           rspfile = "$rust_outfile.rsp"
           rspfile_content = "{{rustdeps}} {{externs}}"
@@ -353,7 +354,7 @@ template("msvc_toolchain") {
         }
 
         tool("rust_macro") {
-          rust_outfile = "{{target_out_dir}}/{{crate_name}}.dll"
+          rust_outfile = "{{output_dir}}/{{target_output_name}}.dll"
           depfile = "{{output}}.d"
           rspfile = "$rust_outfile.rsp"
           rspfile_content = "{{rustdeps}} {{externs}}"
