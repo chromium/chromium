@@ -170,11 +170,11 @@ android_library("public_java") {
   resources_package = "org.chromium.components.autofill_assistant"
 
   deps = [
+    ":autofill_assistant_public_java",
     "//base:base_java",
     "//base:jni_java",
     "//components/autofill/android:autofill_payments_java_resources",
     "//components/autofill/android:main_autofill_java",
-    "//components/autofill_assistant/android:autofill_assistant_public_java",
     "//components/browser_ui/bottomsheet/android:java",
     "//components/favicon/android:java",
     "//components/image_fetcher:java",
@@ -410,9 +410,10 @@ android_resources("java_resources") {
   ]
   deps = [
     ":java_strings_grd",
-    "//chrome/android:chrome_app_java_resources",
     "//components/browser_ui/strings/android:browser_ui_strings_grd",
     "//components/browser_ui/styles/android:java_resources",
+    "//components/browser_ui/widget/android:java_resources",
+    "//components/payments/content/android:java_resources",
     "//components/signin/public/android:java_resources",
     "//components/strings:components_strings_grd",
   ]
