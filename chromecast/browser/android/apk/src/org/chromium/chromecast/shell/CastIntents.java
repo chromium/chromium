@@ -36,4 +36,7 @@ public class CastIntents {
      */
     public static final String ACTION_ON_WEB_CONTENT_STOPPED =
             "com.google.assistant.ON_WEB_CONTENT_STOPPED";
+
+    public static final String ACTION_START_CAST_BROWSER =
+            "com.google.cast.action.START_CAST_BROWSER";
 }

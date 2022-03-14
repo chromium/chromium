@@ -45,6 +45,10 @@ public class CastBrowserHelper {
         DeviceUtils.addDeviceSpecificUserAgentSwitch();
 
         LibraryLoader.getInstance().ensureInitialized();
+        if (CastBrowserModule.isInstalled()) {
+            Log.d(TAG, "Loading cast_browser native lib.");
+            CastBrowserModule.ensureNativeLoaded();
+        }
 
         Log.d(TAG, "Loading BrowserStartupController...");
         BrowserStartupController.getInstance().startBrowserProcessesSync(

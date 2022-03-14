@@ -142,6 +142,8 @@ common_android_library_deps = [
   "//components/embedder_support/android:content_view_java",
   "//components/embedder_support/android:view_java",
   "//components/minidump_uploader:minidump_uploader_java",
+  "//components/module_installer/android:module_installer_java",
+  "//components/module_installer/android:module_interface_java",
   "//content/public/android:content_java",
   "//media/base/android:media_java",
   "//net/android:net_java",
@@ -162,7 +164,9 @@ common_java_sources = [
   "$common_java_src_dir/org/chromium/chromecast/shell/AndroidAppLogcatProvider.java",
   "$common_java_src_dir/org/chromium/chromecast/shell/CastAccessibilityHelper.java",
   "$common_java_src_dir/org/chromium/chromecast/shell/CastApplication.java",
+  "$common_java_src_dir/org/chromium/chromecast/shell/CastBrowser.java",
   "$common_java_src_dir/org/chromium/chromecast/shell/CastBrowserHelper.java",
+  "$common_java_src_dir/org/chromium/chromecast/shell/CastBrowserImpl.java",
   "$common_java_src_dir/org/chromium/chromecast/shell/CastBrowserService.java",
   "$common_java_src_dir/org/chromium/chromecast/shell/CastCommandLineHelper.java",
   "$common_java_src_dir/org/chromium/chromecast/shell/CastContentWindowAndroid.java",
@@ -200,7 +204,10 @@ android_library("cast_shell_java") {
            ":cast_shell_android_resources",
            ":cast_shell_manifest",
          ]
-  annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]
+  annotation_processor_deps = [
+    "//base/android/jni_generator:jni_processor",
+    "//components/module_installer/android:module_interface_processor",
+  ]
 }
 
 android_library("cast_browser_java") {
@@ -220,7 +227,10 @@ android_library("cast_browser_java") {
            ":cast_browser_android_resources",
            ":cast_browser_manifest",
          ]
-  annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]
+  annotation_processor_deps = [
+    "//base/android/jni_generator:jni_processor",
+    "//components/module_installer/android:module_interface_processor",
+  ]
 }
 
 junit_binary("cast_shell_junit_tests") {

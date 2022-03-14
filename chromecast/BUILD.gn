@@ -19,6 +19,7 @@ if (chromecast_branding != "public") {
 
 if (is_android) {
   import("//build/config/android/rules.gni")
+  import("//components/module_installer/android/module_desc_java.gni")
 }
 
 declare_args() {
@@ -720,6 +721,11 @@ if (is_android) {
   }
 
   if (chromecast_branding != "public") {
+    module_desc_java("cast_browser_module_desc_java") {
+      module_name = "cast_browser"
+      shared_libraries = [ "//chromecast/internal/service/main/android:libmonocast_service_cast_browser" ]
+    }
+
     android_app_bundle_module("cast_browser_bundle_module") {
       is_base_module = false
       base_module_target = "//chromecast/internal/service/main/android:cast_service_bundle_module"
@@ -738,11 +744,11 @@ if (is_android) {
       # modules' ID (0x7f).
       package_id = 125
 
-      shared_libraries = [ "//chromecast/android:libcast_browser_android" ]
+      shared_libraries = [ "//chromecast/internal/service/main/android:libmonocast_service_cast_browser" ]
       product_config_java_packages = [ "org.chromium.chromecast.shell" ]
       deps = [
+        ":cast_browser_module_desc_java",
         "//base:base_java",
-        "//chromecast/android:libcast_browser_android",
         "//chromecast/browser/android:cast_browser_java",
         "//components/crash/core/app:chrome_crashpad_handler_named_as_so",
       ]
@@ -750,8 +756,8 @@ if (is_android) {
       loadable_modules = [ "$root_out_dir/libchrome_crashpad_handler.so" ]
 
       enable_multidex = true
-      
-      # TODO(b/222780347): Enable when compile errors are resolved on relase
+
+      # TODO(b/222780347): Enable when compile errors are resolved on release
       # builds.
       proguard_enabled = false
     }

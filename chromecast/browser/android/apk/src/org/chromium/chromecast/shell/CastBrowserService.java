@@ -21,6 +21,12 @@ public class CastBrowserService extends Service {
 
     @Override
     public IBinder onBind(Intent intent) {
+        CastBrowserHelper.initializeBrowser(getApplicationContext());
         return null;
+    }
+
+    @Override
+    public boolean onUnbind(Intent intent) {
+        return true;
     }
 }
