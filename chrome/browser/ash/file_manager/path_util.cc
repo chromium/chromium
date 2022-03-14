@@ -635,7 +635,7 @@ bool ConvertPathToArcUrl(const base::FilePath& path,
   }
 
   // Convert paths under MyFiles.
-  if (base::FilePath(GetMyFilesFolderForProfile(primary_profile))
+  if (GetMyFilesFolderForProfile(primary_profile)
           .AppendRelativePath(path, &relative_path)) {
     *arc_url_out = GURL(kArcMyFilesContentUrlPrefix)
                        .Resolve(net::EscapePath(relative_path.AsUTF8Unsafe()));

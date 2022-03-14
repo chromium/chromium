@@ -519,7 +519,7 @@ struct AddEntriesMessage {
 
     // Maps |value| to base::Time. Returns true on success.
     static bool MapStringToTime(base::StringPiece value, base::Time* time) {
-      return base::Time::FromString(std::string(value).c_str(), time);
+      return base::Time::FromString(value.data(), time);
     }
   };
 };
@@ -832,7 +832,7 @@ class FileManagerBrowserTestBase::MockFileTasksObserver
   MOCK_METHOD2(OnFilesOpenedImpl,
                void(const std::string& path, OpenType open_type));
 
-  void OnFilesOpened(const std::vector<FileOpenEvent>& opens) {
+  void OnFilesOpened(const std::vector<FileOpenEvent>& opens) override {
     ASSERT_TRUE(!opens.empty());
     for (auto& open : opens) {
       OnFilesOpenedImpl(open.path.value(), open.open_type);
@@ -2373,8 +2373,7 @@ void FileManagerBrowserTestBase::OnCommand(const std::string& name,
           drive::DriveIntegrationServiceFactory::GetForProfile(profile());
       if (drive_integration_service->IsMounted()) {
         const auto drive_mount_name =
-            base::FilePath(drive_integration_service->GetMountPointPath())
-                .BaseName();
+            drive_integration_service->GetMountPointPath().BaseName();
         dictionary.SetStringKey(
             "drive", base::StrCat({"/", drive_mount_name.value(), "/root"}));
       }

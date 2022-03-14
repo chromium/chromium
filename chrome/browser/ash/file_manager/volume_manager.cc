@@ -581,9 +581,9 @@ void VolumeManager::Initialize() {
 
     std::vector<ProvidedFileSystemInfo> file_system_info_list =
         file_system_provider_service_->GetProvidedFileSystemInfoList();
-    for (size_t i = 0; i < file_system_info_list.size(); ++i) {
-      std::unique_ptr<Volume> volume = Volume::CreateForProvidedFileSystem(
-          file_system_info_list[i], MOUNT_CONTEXT_AUTO);
+    for (auto& info : file_system_info_list) {
+      std::unique_ptr<Volume> volume =
+          Volume::CreateForProvidedFileSystem(info, MOUNT_CONTEXT_AUTO);
       DoMountEvent(chromeos::MOUNT_ERROR_NONE, std::move(volume));
     }
   }
@@ -1425,8 +1425,8 @@ void VolumeManager::OnDiskMountManagerRefreshed(bool success) {
 void VolumeManager::OnStorageMonitorInitialized() {
   std::vector<storage_monitor::StorageInfo> storages =
       storage_monitor::StorageMonitor::GetInstance()->GetAllAvailableStorages();
-  for (size_t i = 0; i < storages.size(); ++i)
-    OnRemovableStorageAttached(storages[i]);
+  for (auto& storage : storages)
+    OnRemovableStorageAttached(storage);
   storage_monitor::StorageMonitor::GetInstance()->AddObserver(this);
 }
 
