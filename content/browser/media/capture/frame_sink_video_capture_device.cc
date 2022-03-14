@@ -196,12 +196,17 @@ void FrameSinkVideoCaptureDevice::OnUtilizationReport(
     media::VideoCaptureFeedback feedback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  // Assumption: The mojo InterfacePtr in |frame_callbacks_| should be valid at
-  // this point because this method will always be called before the
-  // VideoFrameReceiver signals it is done consuming the frame.
   const auto index = static_cast<size_t>(frame_feedback_id);
   DCHECK_LT(index, frame_callbacks_.size());
-  frame_callbacks_[index]->ProvideFeedback(feedback);
+
+  // In most cases, we expect that the mojo InterfacePtr in |frame_callbacks_|
+  // should be valid because this method will always be called before the
+  // VideoFrameReceiver signals that it is done consuming the frame. However,
+  // some capturers (e.g. Lacros) involve some extra mojo hops that may mean
+  // we got scheduled after the VideoFrameReceiver signaled it was done.
+  const auto& callback = frame_callbacks_[index];
+  if (callback.is_bound())
+    callback->ProvideFeedback(feedback);
 }
 
 void FrameSinkVideoCaptureDevice::OnFrameCaptured(
