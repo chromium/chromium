@@ -343,6 +343,7 @@
       'fuchsia-fyi-x64-asan': 'asan_lsan_bot_fuchsia',
       'fuchsia-fyi-x64-dbg': 'debug_bot_fuchsia',
       'fuchsia-fyi-x64-rel': 'release_bot_fuchsia',
+      'fuchsia-fyi-x64-reviver': 'release_bot_fuchsia',
       'fuchsia-fyi-x64-wst': 'fuchsia_workstation_bot',
       'ios14-beta-simulator': 'ios_simulator_debug_static_bot_xctest',
       'ios14-sdk-simulator': 'ios_simulator_debug_static_bot_xctest_arm64',
