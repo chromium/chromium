@@ -60,6 +60,7 @@ source_set("unit_tests") {
   deps = [
     ":device_activity",
     ":fresnel_service_proto",
+    "//ash/constants:constants",
     "//base",
     "//base/test:test_support",
     "//chromeos/network",

@@ -9,11 +9,13 @@
 #include "ash/components/device_activity/fresnel_pref_names.h"
 #include "ash/components/device_activity/fresnel_service.pb.h"
 #include "ash/components/device_activity/monthly_use_case_impl.h"
+#include "ash/constants/ash_features.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/no_destructor.h"
 #include "base/path_service.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/timer/mock_timer.h"
 #include "chromeos/network/network_state_handler_observer.h"
@@ -236,6 +238,12 @@ class DeviceActivityClientTest : public testing::Test {
 
   // testing::Test:
   void SetUp() override {
+    scoped_feature_list_.InitWithFeatures(
+        /*enabled_features=*/{features::kDeviceActiveClientMonthlyCheckIn},
+        /*disabled_features*/ {
+            features::kDeviceActiveClientDailyCheckMembership,
+            features::kDeviceActiveClientMonthlyCheckMembership});
+
     // Initialize pointer to our fake |PsmTestData| object.
     psm_test_data_ = GetPsmTestData();
 
@@ -320,6 +328,7 @@ class DeviceActivityClientTest : public testing::Test {
   // The underlying |psm_test_data_| object will outlive this testing class.
   PsmTestData* psm_test_data_ = nullptr;
 
+  base::test::ScopedFeatureList scoped_feature_list_;
   std::unique_ptr<NetworkStateTestHelper> network_state_test_helper_;
   TestingPrefServiceSimple local_state_;
   scoped_refptr<network::SharedURLLoaderFactory> test_shared_loader_factory_;

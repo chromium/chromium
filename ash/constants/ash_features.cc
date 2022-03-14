@@ -1429,6 +1429,11 @@ const base::Feature kDeviceActiveClientDailyCheckMembership{
     "DeviceActiveClientDailyCheckMembership",
     base::FEATURE_DISABLED_BY_DEFAULT};
 
+// Enables or disables PSM CheckIn for the monthly device active pings
+// on Chrome OS.
+const base::Feature kDeviceActiveClientMonthlyCheckIn{
+    "DeviceActiveClientMonthlyCheckIn", base::FEATURE_DISABLED_BY_DEFAULT};
+
 // Enables or disables PSM CheckMembership for monthly device active pings
 // on Chrome OS.
 const base::Feature kDeviceActiveClientMonthlyCheckMembership{
