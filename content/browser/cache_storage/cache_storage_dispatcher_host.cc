@@ -675,12 +675,6 @@ class CacheStorageDispatcherHost::CacheStorageImpl final
         TRACE_ID_GLOBAL(trace_id),
         TRACE_EVENT_FLAG_FLOW_IN | TRACE_EVENT_FLAG_FLOW_OUT);
 
-    // Return error if failed to retrieve bucket from QuotaManager.
-    if (!bucket_.has_value()) {
-      std::move(callback).Run(std::vector<std::u16string>());
-      return;
-    }
-
     auto cb = base::BindOnce(
         [](base::TimeTicks start_time, int64_t trace_id,
            blink::mojom::CacheStorage::KeysCallback callback,
@@ -739,13 +733,6 @@ class CacheStorageDispatcherHost::CacheStorageImpl final
         },
         base::TimeTicks::Now(), trace_id, std::move(callback));
 
-    // Return error if failed to retrieve bucket from QuotaManager.
-    if (!bucket_.has_value()) {
-      std::move(cb).Run(
-          MakeErrorStorage(ErrorStorageType::kDefaultBucketError));
-      return;
-    }
-
     content::CacheStorage* cache_storage = GetOrCreateCacheStorage();
     if (!cache_storage) {
       std::move(cb).Run(MakeErrorStorage(ErrorStorageType::kStorageHandleNull));
@@ -784,14 +771,6 @@ class CacheStorageDispatcherHost::CacheStorageImpl final
           std::move(callback).Run(error);
         },
         base::TimeTicks::Now(), trace_id, std::move(callback));
-
-    // Return error if failed to retrieve bucket from QuotaManager.
-    if (!bucket_.has_value()) {
-      std::move(cb).Run(
-          /*has_cache=*/false,
-          MakeErrorStorage(ErrorStorageType::kDefaultBucketError));
-      return;
-    }
 
     content::CacheStorage* cache_storage = GetOrCreateCacheStorage();
     if (!cache_storage) {
@@ -879,13 +858,6 @@ class CacheStorageDispatcherHost::CacheStorageImpl final
         !match_options->cache_name, in_related_fetch_event,
         in_range_fetch_event, trace_id, std::move(callback));
 
-    // Return error if failed to retrieve bucket from QuotaManager.
-    if (!bucket_.has_value()) {
-      std::move(cb).Run(MakeErrorStorage(ErrorStorageType::kDefaultBucketError),
-                        nullptr);
-      return;
-    }
-
     content::CacheStorage* cache_storage = GetOrCreateCacheStorage();
     if (!cache_storage) {
       std::move(cb).Run(CacheStorageError::kErrorNotFound, nullptr);
@@ -964,14 +936,6 @@ class CacheStorageDispatcherHost::CacheStorageImpl final
         },
         weak_factory_.GetWeakPtr(), base::TimeTicks::Now(), trace_id,
         std::move(callback));
-
-    // Return error if failed to retrieve bucket from QuotaManager.
-    if (!bucket_.has_value()) {
-      std::move(cb).Run(
-          CacheStorageCacheHandle(),
-          MakeErrorStorage(ErrorStorageType::kDefaultBucketError));
-      return;
-    }
 
     if (!cache_storage) {
       std::move(cb).Run(CacheStorageCacheHandle(),
