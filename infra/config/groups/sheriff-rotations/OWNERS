@@ -1,0 +1,5 @@
+# TODO(1304306): Add setnoparent after getting Eng Review sign-off.
+# set noparent
+
+file://infra/config/groups/sheriff-rotations/CHROMIUM_OWNERS
+file://infra/config/groups/sheriff-rotations/ANDROID_OWNERS
