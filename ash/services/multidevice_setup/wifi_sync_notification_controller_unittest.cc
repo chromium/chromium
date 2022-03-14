@@ -24,14 +24,11 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
-namespace chromeos {
+namespace ash {
 
 namespace multidevice_setup {
 
 namespace {
-
-// TODO(https://crbug.com/1164001): remove after migrating to ash.
-namespace mojom = ::ash::multidevice_setup::mojom;
 
 const size_t kNumTestDevices = 4;
 
@@ -251,4 +248,4 @@ TEST_F(MultiDeviceSetupWifiSyncNotificationControllerTest,
 
 }  // namespace multidevice_setup
 
-}  // namespace chromeos
+}  // namespace ash

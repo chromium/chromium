@@ -8,7 +8,7 @@
 #include "ash/services/multidevice_setup/privileged_host_device_setter_base.h"
 #include "ash/services/multidevice_setup/public/mojom/multidevice_setup.mojom.h"
 
-namespace chromeos {
+namespace ash {
 
 namespace multidevice_setup {
 
@@ -53,6 +53,6 @@ class PrivilegedHostDeviceSetterImpl : public PrivilegedHostDeviceSetterBase {
 
 }  // namespace multidevice_setup
 
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // ASH_SERVICES_MULTIDEVICE_SETUP_PRIVILEGED_HOST_DEVICE_SETTER_IMPL_H_

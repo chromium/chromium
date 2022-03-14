@@ -4,7 +4,7 @@
 
 #include "ash/services/multidevice_setup/fake_host_device_timestamp_manager.h"
 
-namespace chromeos {
+namespace ash {
 
 namespace multidevice_setup {
 
@@ -45,4 +45,4 @@ FakeHostDeviceTimestampManager::GetLatestVerificationTimestamp() {
 
 }  // namespace multidevice_setup
 
-}  // namespace chromeos
+}  // namespace ash

@@ -12,7 +12,7 @@
 #include "base/timer/timer.h"
 #include "chromeos/components/multidevice/remote_device_ref.h"
 
-namespace chromeos {
+namespace ash {
 
 namespace multidevice_setup {
 
@@ -91,6 +91,6 @@ class HostStatusProviderImpl : public HostStatusProvider,
 
 }  // namespace multidevice_setup
 
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // ASH_SERVICES_MULTIDEVICE_SETUP_HOST_STATUS_PROVIDER_IMPL_H_

@@ -12,14 +12,11 @@
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 
-namespace chromeos {
+namespace ash {
 
 namespace multidevice_setup {
 
 namespace {
-
-// TODO(https://crbug.com/1164001): remove after migrating to ash.
-namespace mojom = ::ash::multidevice_setup::mojom;
 
 const char kShouldAttemptReenable[] = "android_sms.should_attempt_reenable";
 
@@ -181,4 +178,4 @@ void AndroidSmsAppInstallingStatusObserver::OnFeatureStatesChange(
 
 }  // namespace multidevice_setup
 
-}  // namespace chromeos
+}  // namespace ash

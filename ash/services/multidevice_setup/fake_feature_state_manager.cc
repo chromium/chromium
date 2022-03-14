@@ -4,14 +4,11 @@
 
 #include "ash/services/multidevice_setup/fake_feature_state_manager.h"
 
-namespace chromeos {
+namespace ash {
 
 namespace multidevice_setup {
 
 namespace {
-
-// TODO(https://crbug.com/1164001): remove after migrating to ash.
-namespace mojom = ::ash::multidevice_setup::mojom;
 
 // Each feature's default value is kUnavailableNoVerifiedHost until proven
 // otherwise.
@@ -82,4 +79,4 @@ void FakeFeatureStateManagerObserver::OnFeatureStatesChange(
 
 }  // namespace multidevice_setup
 
-}  // namespace chromeos
+}  // namespace ash

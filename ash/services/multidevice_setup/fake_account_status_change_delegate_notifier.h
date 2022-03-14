@@ -7,7 +7,7 @@
 
 #include "ash/services/multidevice_setup/account_status_change_delegate_notifier.h"
 
-namespace chromeos {
+namespace ash {
 
 namespace multidevice_setup {
 
@@ -29,6 +29,6 @@ class FakeAccountStatusChangeDelegateNotifier
 
 }  // namespace multidevice_setup
 
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // ASH_SERVICES_MULTIDEVICE_SETUP_FAKE_ACCOUNT_STATUS_CHANGE_DELEGATE_NOTIFIER_H_

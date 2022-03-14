@@ -8,7 +8,7 @@
 #include "base/time/time.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
-namespace chromeos {
+namespace ash {
 
 namespace multidevice_setup {
 
@@ -44,6 +44,6 @@ class HostDeviceTimestampManager {
 
 }  // namespace multidevice_setup
 
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // ASH_SERVICES_MULTIDEVICE_SETUP_HOST_DEVICE_TIMESTAMP_MANAGER_H_

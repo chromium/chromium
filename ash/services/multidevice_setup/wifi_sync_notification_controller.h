@@ -15,7 +15,7 @@
 class PrefRegistrySimple;
 class PrefService;
 
-namespace chromeos {
+namespace ash {
 
 namespace multidevice_setup {
 
@@ -94,6 +94,6 @@ class WifiSyncNotificationController
 
 }  // namespace multidevice_setup
 
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // ASH_SERVICES_MULTIDEVICE_SETUP_WIFI_SYNC_NOTIFICATION_CONTROLLER_H_

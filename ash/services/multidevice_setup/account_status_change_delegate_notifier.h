@@ -9,7 +9,7 @@
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/remote.h"
 
-namespace chromeos {
+namespace ash {
 
 namespace multidevice_setup {
 
@@ -28,9 +28,7 @@ class AccountStatusChangeDelegateNotifier {
   virtual ~AccountStatusChangeDelegateNotifier();
 
   void SetAccountStatusChangeDelegateRemote(
-      mojo::PendingRemote<
-          ash::multidevice_setup::mojom::AccountStatusChangeDelegate>
-          delegate_remote);
+      mojo::PendingRemote<mojom::AccountStatusChangeDelegate> delegate_remote);
 
  protected:
   AccountStatusChangeDelegateNotifier();
@@ -39,7 +37,7 @@ class AccountStatusChangeDelegateNotifier {
   // SetAccountStatusChangeDelegateRemote() is called.
   virtual void OnDelegateSet();
 
-  ash::multidevice_setup::mojom::AccountStatusChangeDelegate* delegate() {
+  mojom::AccountStatusChangeDelegate* delegate() {
     return delegate_remote_.is_bound() ? delegate_remote_.get() : nullptr;
   }
 
@@ -52,12 +50,11 @@ class AccountStatusChangeDelegateNotifier {
 
   void FlushForTesting();
 
-  mojo::Remote<ash::multidevice_setup::mojom::AccountStatusChangeDelegate>
-      delegate_remote_;
+  mojo::Remote<mojom::AccountStatusChangeDelegate> delegate_remote_;
 };
 
 }  // namespace multidevice_setup
 
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // ASH_SERVICES_MULTIDEVICE_SETUP_ACCOUNT_STATUS_CHANGE_DELEGATE_NOTIFIER_H_

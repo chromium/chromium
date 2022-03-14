@@ -7,7 +7,7 @@
 
 #include "ash/services/multidevice_setup/host_verifier.h"
 
-namespace chromeos {
+namespace ash {
 
 namespace multidevice_setup {
 
@@ -59,6 +59,6 @@ class FakeHostVerifierObserver : public HostVerifier::Observer {
 
 }  // namespace multidevice_setup
 
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // ASH_SERVICES_MULTIDEVICE_SETUP_FAKE_HOST_VERIFIER_H_

@@ -22,14 +22,11 @@
 #include "components/prefs/pref_service.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
-namespace chromeos {
+namespace ash {
 
 namespace multidevice_setup {
 
 namespace {
-
-// TODO(https://crbug.com/1164001): remove after migrating to ash.
-namespace mojom = ::ash::multidevice_setup::mojom;
 
 constexpr base::TimeDelta kFeatureStateLoggingPeriod = base::Minutes(30);
 
@@ -591,4 +588,4 @@ void FeatureStateManagerImpl::LogFeatureStates() const {
 
 }  // namespace multidevice_setup
 
-}  // namespace chromeos
+}  // namespace ash

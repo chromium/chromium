@@ -11,7 +11,7 @@
 #include "base/containers/flat_map.h"
 #include "base/observer_list.h"
 
-namespace chromeos {
+namespace ash {
 
 namespace multidevice_setup {
 
@@ -19,9 +19,7 @@ namespace multidevice_setup {
 // interface as well as a way to toggle a feature on/off when appropriate.
 class FeatureStateManager {
  public:
-  using FeatureStatesMap =
-      base::flat_map<ash::multidevice_setup::mojom::Feature,
-                     ash::multidevice_setup::mojom::FeatureState>;
+  using FeatureStatesMap = base::flat_map<mojom::Feature, mojom::FeatureState>;
 
   class Observer {
    public:
@@ -44,8 +42,7 @@ class FeatureStateManager {
   // state is mojom::FeatureState::kEnabledByUser,
   // mojom::FeatureState::kFurtherSetupRequired or
   // mojom::FeatureState::kDisabledByUser.
-  bool SetFeatureEnabledState(ash::multidevice_setup::mojom::Feature feature,
-                              bool enabled);
+  bool SetFeatureEnabledState(mojom::Feature feature, bool enabled);
 
   void AddObserver(Observer* observer);
   void RemoveObserver(Observer* observer);
@@ -55,9 +52,8 @@ class FeatureStateManager {
 
   // Enables or disables the feature; by the time this function has been called,
   // it has already been confirmed that the state is indeed able to be changed.
-  virtual void PerformSetFeatureEnabledState(
-      ash::multidevice_setup::mojom::Feature feature,
-      bool enabled) = 0;
+  virtual void PerformSetFeatureEnabledState(mojom::Feature feature,
+                                             bool enabled) = 0;
 
   void NotifyFeatureStatesChange(const FeatureStatesMap& feature_states_map);
 
@@ -70,6 +66,6 @@ std::ostream& operator<<(std::ostream& stream,
 
 }  // namespace multidevice_setup
 
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // ASH_SERVICES_MULTIDEVICE_SETUP_FEATURE_STATE_MANAGER_H_

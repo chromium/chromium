@@ -18,11 +18,14 @@
 #include "chromeos/components/multidevice/software_feature_state.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace chromeos {
+namespace ash {
 
 namespace multidevice_setup {
 
 namespace {
+
+// TODO(https://crbug.com/1164001): remove after migrating to ash.
+namespace device_sync = ::chromeos::device_sync;
 
 const size_t kNumTestDevices = 6;
 
@@ -455,4 +458,4 @@ INSTANTIATE_TEST_SUITE_P(All,
 
 }  // namespace multidevice_setup
 
-}  // namespace chromeos
+}  // namespace ash

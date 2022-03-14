@@ -6,7 +6,7 @@
 
 #include "base/callback.h"
 
-namespace chromeos {
+namespace ash {
 
 namespace multidevice_setup {
 
@@ -85,4 +85,4 @@ void FakeHostBackendDelegateObserver::OnPendingHostRequestChange() {
 
 }  // namespace multidevice_setup
 
-}  // namespace chromeos
+}  // namespace ash

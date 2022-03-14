@@ -9,7 +9,7 @@
 
 #include "ash/services/multidevice_setup/host_status_provider.h"
 
-namespace chromeos {
+namespace ash {
 
 namespace multidevice_setup {
 
@@ -24,15 +24,14 @@ class FakeHostStatusProvider : public HostStatusProvider {
   ~FakeHostStatusProvider() override;
 
   void SetHostWithStatus(
-      ash::multidevice_setup::mojom::HostStatus host_status,
+      mojom::HostStatus host_status,
       const absl::optional<multidevice::RemoteDeviceRef>& host_device);
 
   // HostStatusProvider:
   HostStatusWithDevice GetHostWithStatus() const override;
 
  private:
-  ash::multidevice_setup::mojom::HostStatus host_status_ =
-      ash::multidevice_setup::mojom::HostStatus::kNoEligibleHosts;
+  mojom::HostStatus host_status_ = mojom::HostStatus::kNoEligibleHosts;
   absl::optional<multidevice::RemoteDeviceRef> host_device_;
 };
 
@@ -63,6 +62,6 @@ class FakeHostStatusProviderObserver : public HostStatusProvider::Observer {
 
 }  // namespace multidevice_setup
 
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // ASH_SERVICES_MULTIDEVICE_SETUP_FAKE_HOST_STATUS_PROVIDER_H_

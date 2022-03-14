@@ -13,10 +13,13 @@
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 
-namespace chromeos {
+namespace ash {
 namespace multidevice_setup {
 
 namespace {
+
+// TODO(https://crbug.com/1164001): remove after migrating to ash.
+namespace device_sync = ::chromeos::device_sync;
 
 // Name of the prefs that stores the legacy device ID and Instance ID of the
 // device which still potentially needs to have kSmartLockHost disabled on it.
@@ -230,4 +233,4 @@ GrandfatheredEasyUnlockHostDisabler::GetEasyUnlockHostToDisable() {
 
 }  // namespace multidevice_setup
 
-}  // namespace chromeos
+}  // namespace ash

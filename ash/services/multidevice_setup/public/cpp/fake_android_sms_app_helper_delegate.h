@@ -66,9 +66,4 @@ class FakeAndroidSmsAppHelperDelegate
 
 }  // namespace ash
 
-// TODO(https://crbug.com/1164001): remove when the migration is finished.
-namespace chromeos::multidevice_setup {
-using ::ash::multidevice_setup::FakeAndroidSmsAppHelperDelegate;
-}
-
 #endif  // ASH_SERVICES_MULTIDEVICE_SETUP_PUBLIC_CPP_FAKE_ANDROID_SMS_APP_HELPER_DELEGATE_H_

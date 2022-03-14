@@ -7,7 +7,7 @@
 
 #include "ash/services/multidevice_setup/global_state_feature_manager.h"
 
-namespace chromeos {
+namespace ash {
 
 namespace multidevice_setup {
 
@@ -26,6 +26,6 @@ class FakeGlobalStateFeatureManager : public GlobalStateFeatureManager {
 };
 
 }  // namespace multidevice_setup
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // ASH_SERVICES_MULTIDEVICE_SETUP_FAKE_GLOBAL_STATE_FEATURE_MANAGER_H_

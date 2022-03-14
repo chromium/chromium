@@ -35,4 +35,9 @@ class FakeGcmDeviceInfoProvider : public GcmDeviceInfoProvider {
 
 }  // namespace chromeos
 
+// TODO(https://crbug.com/1164001): remove when it moved to ash.
+namespace ash::device_sync {
+using ::chromeos::device_sync::FakeGcmDeviceInfoProvider;
+}
+
 #endif  // ASH_SERVICES_DEVICE_SYNC_PUBLIC_CPP_FAKE_GCM_DEVICE_INFO_PROVIDER_H_

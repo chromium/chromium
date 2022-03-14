@@ -4,7 +4,7 @@
 
 #include "ash/services/multidevice_setup/fake_global_state_feature_manager.h"
 
-namespace chromeos {
+namespace ash {
 
 namespace multidevice_setup {
 
@@ -23,4 +23,4 @@ bool FakeGlobalStateFeatureManager::IsFeatureEnabled() {
 
 }  // namespace multidevice_setup
 
-}  // namespace chromeos
+}  // namespace ash

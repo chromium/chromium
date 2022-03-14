@@ -7,7 +7,7 @@
 
 #include "base/observer_list.h"
 
-namespace chromeos {
+namespace ash {
 
 namespace multidevice_setup {
 
@@ -61,6 +61,6 @@ class HostVerifier {
 
 }  // namespace multidevice_setup
 
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // ASH_SERVICES_MULTIDEVICE_SETUP_HOST_VERIFIER_H_

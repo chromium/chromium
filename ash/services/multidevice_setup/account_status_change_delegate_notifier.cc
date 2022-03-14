@@ -7,12 +7,9 @@
 #include "base/logging.h"
 #include "chromeos/components/multidevice/logging/logging.h"
 
-namespace chromeos {
+namespace ash {
 
 namespace multidevice_setup {
-
-// TODO(https://crbug.com/1164001): remove after migrating to ash.
-namespace mojom = ::ash::multidevice_setup::mojom;
 
 AccountStatusChangeDelegateNotifier::AccountStatusChangeDelegateNotifier() =
     default;
@@ -43,4 +40,4 @@ void AccountStatusChangeDelegateNotifier::FlushForTesting() {
 
 }  // namespace multidevice_setup
 
-}  // namespace chromeos
+}  // namespace ash

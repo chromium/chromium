@@ -1396,7 +1396,7 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry,
   ash::full_restore::RegisterProfilePrefs(registry);
   ash::KerberosCredentialsManager::RegisterProfilePrefs(registry);
   ash::login::SecurityTokenSessionController::RegisterProfilePrefs(registry);
-  chromeos::multidevice_setup::MultiDeviceSetupService::RegisterProfilePrefs(
+  ash::multidevice_setup::MultiDeviceSetupService::RegisterProfilePrefs(
       registry);
   ash::MultiProfileUserController::RegisterProfilePrefs(registry);
   chromeos::NetworkMetadataStore::RegisterPrefs(registry);

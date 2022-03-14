@@ -15,7 +15,7 @@
 class PrefRegistrySimple;
 class PrefService;
 
-namespace chromeos {
+namespace ash {
 
 namespace multidevice_setup {
 
@@ -93,7 +93,7 @@ class HostBackendDelegateImpl : public HostBackendDelegate,
   void OnSetHostNetworkRequestFinished(
       multidevice::RemoteDeviceRef device_for_request,
       bool attempted_to_enable,
-      device_sync::mojom::NetworkRequestResult result_code);
+      chromeos::device_sync::mojom::NetworkRequestResult result_code);
 
   EligibleHostDevicesProvider* eligible_host_devices_provider_;
   PrefService* pref_service_;
@@ -108,6 +108,6 @@ class HostBackendDelegateImpl : public HostBackendDelegate,
 
 }  // namespace multidevice_setup
 
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // ASH_SERVICES_MULTIDEVICE_SETUP_HOST_BACKEND_DELEGATE_IMPL_H_

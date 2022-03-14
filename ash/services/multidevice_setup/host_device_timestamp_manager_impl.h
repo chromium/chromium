@@ -19,7 +19,7 @@ namespace base {
 class Clock;
 }
 
-namespace chromeos {
+namespace ash {
 
 namespace multidevice_setup {
 
@@ -80,6 +80,6 @@ class HostDeviceTimestampManagerImpl : public HostDeviceTimestampManager,
 
 }  // namespace multidevice_setup
 
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // ASH_SERVICES_MULTIDEVICE_SETUP_HOST_DEVICE_TIMESTAMP_MANAGER_IMPL_H_

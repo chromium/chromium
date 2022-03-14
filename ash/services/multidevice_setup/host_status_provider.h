@@ -10,7 +10,7 @@
 #include "chromeos/components/multidevice/remote_device_ref.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
-namespace chromeos {
+namespace ash {
 
 namespace multidevice_setup {
 
@@ -22,7 +22,7 @@ class HostStatusProvider {
   class HostStatusWithDevice {
    public:
     HostStatusWithDevice(
-        ash::multidevice_setup::mojom::HostStatus host_status,
+        mojom::HostStatus host_status,
         const absl::optional<multidevice::RemoteDeviceRef>& host_device);
     HostStatusWithDevice(const HostStatusWithDevice& other);
     ~HostStatusWithDevice();
@@ -30,9 +30,7 @@ class HostStatusProvider {
     bool operator==(const HostStatusWithDevice& other) const;
     bool operator!=(const HostStatusWithDevice& other) const;
 
-    ash::multidevice_setup::mojom::HostStatus host_status() const {
-      return host_status_;
-    }
+    mojom::HostStatus host_status() const { return host_status_; }
 
     // If host_status() is kNoEligibleHosts or
     // kEligibleHostExistsButNoHostSet, host_device() is null.
@@ -41,7 +39,7 @@ class HostStatusProvider {
     }
 
    private:
-    ash::multidevice_setup::mojom::HostStatus host_status_;
+    mojom::HostStatus host_status_;
     absl::optional<multidevice::RemoteDeviceRef> host_device_;
   };
 
@@ -66,7 +64,7 @@ class HostStatusProvider {
   HostStatusProvider();
 
   void NotifyHostStatusChange(
-      ash::multidevice_setup::mojom::HostStatus host_status,
+      mojom::HostStatus host_status,
       const absl::optional<multidevice::RemoteDeviceRef>& host_device);
 
  private:
@@ -75,6 +73,6 @@ class HostStatusProvider {
 
 }  // namespace multidevice_setup
 
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // ASH_SERVICES_MULTIDEVICE_SETUP_HOST_STATUS_PROVIDER_H_

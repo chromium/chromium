@@ -15,6 +15,9 @@
 
 namespace ash {
 class EasyUnlockServiceRegular;
+namespace multidevice_setup {
+class MultiDeviceSetupImpl;
+}
 namespace secure_channel {
 class PresenceMonitorClientImpl;
 class SecureChannelClientImpl;
@@ -26,9 +29,6 @@ class TetherHostFetcherImplTest;
 }  // namespace ash
 
 namespace chromeos {
-namespace multidevice_setup {
-class MultiDeviceSetupImpl;
-}  // namespace multidevice_setup
 
 namespace multidevice {
 
@@ -89,7 +89,7 @@ class RemoteDeviceRef {
   bool operator<(const RemoteDeviceRef& other) const;
 
  private:
-  friend class multidevice_setup::MultiDeviceSetupImpl;
+  friend class ash::multidevice_setup::MultiDeviceSetupImpl;
   friend class ash::secure_channel::SecureChannelClientImpl;
   friend class ash::secure_channel::PresenceMonitorClientImpl;
   friend class RemoteDeviceCache;

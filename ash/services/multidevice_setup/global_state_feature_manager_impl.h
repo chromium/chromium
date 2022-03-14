@@ -15,15 +15,13 @@
 #include "ash/services/multidevice_setup/public/mojom/multidevice_setup.mojom.h"
 #include "base/memory/weak_ptr.h"
 #include "base/timer/timer.h"
+// TODO(https://crbug.com/1164001): move to forward declaration
+#include "chromeos/components/multidevice/software_feature.h"
 
 class PrefRegistrySimple;
 class PrefService;
 
-namespace chromeos {
-
-namespace multidevice {
-enum class SoftwareFeature;
-}
+namespace ash {
 
 namespace multidevice_setup {
 
@@ -79,7 +77,7 @@ class GlobalStateFeatureManagerImpl
 
  private:
   GlobalStateFeatureManagerImpl(
-      ash::multidevice_setup::mojom::Feature managed_feature,
+      mojom::Feature managed_feature,
       multidevice::SoftwareFeature managed_host_feature,
       const std::string& pending_state_pref_name,
       HostStatusProvider* host_status_provider,
@@ -139,13 +137,13 @@ class GlobalStateFeatureManagerImpl
   void AttemptSetHostStateNetworkRequest(bool is_retry);
   void OnSetHostStateNetworkRequestFinished(
       bool attempted_to_enable,
-      device_sync::mojom::NetworkRequestResult result_code);
+      chromeos::device_sync::mojom::NetworkRequestResult result_code);
   bool ShouldEnableOnVerify();
   void ProcessEnableOnVerifyAttempt();
   bool ShouldAttemptToEnableAfterHostVerified();
 
   // The feature being managed.
-  ash::multidevice_setup::mojom::Feature managed_feature_;
+  mojom::Feature managed_feature_;
   // Corresponding CryptAuth host feature for |managed_feature_|.
   multidevice::SoftwareFeature managed_host_feature_;
   const std::string pending_state_pref_name_;
@@ -161,6 +159,6 @@ class GlobalStateFeatureManagerImpl
 
 }  // namespace multidevice_setup
 
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // ASH_SERVICES_MULTIDEVICE_SETUP_GLOBAL_STATE_FEATURE_MANAGER_IMPL_H_

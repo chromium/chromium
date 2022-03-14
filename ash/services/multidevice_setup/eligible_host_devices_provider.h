@@ -8,7 +8,7 @@
 #include "ash/services/multidevice_setup/device_with_connectivity_status.h"
 #include "chromeos/components/multidevice/remote_device_ref.h"
 
-namespace chromeos {
+namespace ash {
 
 namespace multidevice_setup {
 
@@ -41,6 +41,6 @@ class EligibleHostDevicesProvider {
 
 }  // namespace multidevice_setup
 
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // ASH_SERVICES_MULTIDEVICE_SETUP_ELIGIBLE_HOST_DEVICES_PROVIDER_H_

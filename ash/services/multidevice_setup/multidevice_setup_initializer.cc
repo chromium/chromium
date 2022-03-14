@@ -13,12 +13,9 @@
 #include "base/memory/ptr_util.h"
 #include "chromeos/components/multidevice/logging/logging.h"
 
-namespace chromeos {
+namespace ash {
 
 namespace multidevice_setup {
-
-// TODO(https://crbug.com/1164001): remove after migrating to ash.
-namespace mojom = ::ash::multidevice_setup::mojom;
 
 // static
 MultiDeviceSetupInitializer::Factory*
@@ -361,4 +358,4 @@ void MultiDeviceSetupInitializer::InitializeImplementation() {
 
 }  // namespace multidevice_setup
 
-}  // namespace chromeos
+}  // namespace ash

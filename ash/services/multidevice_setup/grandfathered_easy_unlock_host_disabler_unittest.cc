@@ -14,11 +14,14 @@
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace chromeos {
+namespace ash {
 
 namespace multidevice_setup {
 
 namespace {
+
+// TODO(https://crbug.com/1164001): remove after migrating to ash.
+namespace device_sync = chromeos::device_sync;
 
 const char kEasyUnlockHostIdToDisablePrefName[] =
     "multidevice_setup.easy_unlock_host_id_to_disable";
@@ -463,4 +466,4 @@ TEST_F(MultiDeviceSetupGrandfatheredEasyUnlockHostDisablerTest,
 
 }  // namespace multidevice_setup
 
-}  // namespace chromeos
+}  // namespace ash

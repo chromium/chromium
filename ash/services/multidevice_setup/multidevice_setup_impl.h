@@ -8,18 +8,14 @@
 #include <memory>
 #include <string>
 
+// TODO(https://crbug.com/1164001): move to forward declaration
+#include "ash/services/device_sync/public/cpp/device_sync_client.h"
+// TODO(https://crbug.com/1164001): move to forward declaration
+#include "ash/services/device_sync/public/cpp/gcm_device_info_provider.h"
 #include "ash/services/multidevice_setup/feature_state_manager.h"
 #include "ash/services/multidevice_setup/global_state_feature_manager.h"
 #include "ash/services/multidevice_setup/host_status_provider.h"
 #include "ash/services/multidevice_setup/multidevice_setup_base.h"
-// TODO(https://crbug.com/1164001): move to forward declaration
-#include "ash/services/multidevice_setup/public/cpp/android_sms_app_helper_delegate.h"
-// TODO(https://crbug.com/1164001): move to forward declaration
-#include "ash/services/multidevice_setup/public/cpp/android_sms_pairing_state_tracker.h"
-// TODO(https://crbug.com/1164001): move to forward declaration
-#include "ash/services/multidevice_setup/public/cpp/auth_token_validator.h"
-// TODO(https://crbug.com/1164001): move to forward declaration
-#include "ash/services/multidevice_setup/public/cpp/oobe_completion_tracker.h"
 #include "ash/services/multidevice_setup/public/mojom/multidevice_setup.mojom.h"
 #include "ash/services/multidevice_setup/wifi_sync_notification_controller.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -28,23 +24,22 @@
 
 class PrefService;
 
-namespace chromeos {
-
-namespace device_sync {
-class DeviceSyncClient;
-class GcmDeviceInfoProvider;
-}  // namespace device_sync
+namespace ash {
 
 namespace multidevice_setup {
 
 class AccountStatusChangeDelegateNotifier;
+class AndroidSmsAppHelperDelegate;
+class AndroidSmsPairingStateTracker;
 class AndroidSmsAppInstallingStatusObserver;
+class AuthTokenValidator;
 class EligibleHostDevicesProvider;
 class GrandfatheredEasyUnlockHostDisabler;
 class HostBackendDelegate;
 class HostDeviceTimestampManager;
 class HostStatusProvider;
 class HostVerifier;
+class OobeCompletionTracker;
 
 // Concrete MultiDeviceSetup implementation.
 class MultiDeviceSetupImpl : public MultiDeviceSetupBase,
@@ -100,15 +95,12 @@ class MultiDeviceSetupImpl : public MultiDeviceSetupBase,
 
   // mojom::MultiDeviceSetup:
   void SetAccountStatusChangeDelegate(
-      mojo::PendingRemote<
-          ash::multidevice_setup::mojom::AccountStatusChangeDelegate> delegate)
+      mojo::PendingRemote<mojom::AccountStatusChangeDelegate> delegate)
       override;
   void AddHostStatusObserver(
-      mojo::PendingRemote<ash::multidevice_setup::mojom::HostStatusObserver>
-          observer) override;
+      mojo::PendingRemote<mojom::HostStatusObserver> observer) override;
   void AddFeatureStateObserver(
-      mojo::PendingRemote<ash::multidevice_setup::mojom::FeatureStateObserver>
-          observer) override;
+      mojo::PendingRemote<mojom::FeatureStateObserver> observer) override;
   void GetEligibleHostDevices(GetEligibleHostDevicesCallback callback) override;
   void GetEligibleActiveHostDevices(
       GetEligibleActiveHostDevicesCallback callback) override;
@@ -117,21 +109,21 @@ class MultiDeviceSetupImpl : public MultiDeviceSetupBase,
                      SetHostDeviceCallback callback) override;
   void RemoveHostDevice() override;
   void GetHostStatus(GetHostStatusCallback callback) override;
-  void SetFeatureEnabledState(ash::multidevice_setup::mojom::Feature feature,
+  void SetFeatureEnabledState(mojom::Feature feature,
                               bool enabled,
                               const absl::optional<std::string>& auth_token,
                               SetFeatureEnabledStateCallback callback) override;
   void GetFeatureStates(GetFeatureStatesCallback callback) override;
   void RetrySetHostNow(RetrySetHostNowCallback callback) override;
   void TriggerEventForDebugging(
-      ash::multidevice_setup::mojom::EventTypeForDebugging type,
+      mojom::EventTypeForDebugging type,
       TriggerEventForDebuggingCallback callback) override;
 
   // MultiDeviceSetupBase:
   void SetHostDeviceWithoutAuthToken(
       const std::string& host_instance_id_or_legacy_device_id,
-      ash::multidevice_setup::mojom::PrivilegedHostDeviceSetter::
-          SetHostDeviceCallback callback) override;
+      mojom::PrivilegedHostDeviceSetter::SetHostDeviceCallback callback)
+      override;
 
   // HostStatusProvider::Observer:
   void OnHostStatusChange(const HostStatusProvider::HostStatusWithDevice&
@@ -144,9 +136,8 @@ class MultiDeviceSetupImpl : public MultiDeviceSetupBase,
   // Attempts to set the host device, returning a boolean of whether the attempt
   // was successful.
   bool AttemptSetHost(const std::string& host_instance_id_or_legacy_device_id);
-  bool IsAuthTokenRequiredForFeatureStateChange(
-      ash::multidevice_setup::mojom::Feature feature,
-      bool enabled);
+  bool IsAuthTokenRequiredForFeatureStateChange(mojom::Feature feature,
+                                                bool enabled);
 
   void FlushForTesting();
 
@@ -166,14 +157,12 @@ class MultiDeviceSetupImpl : public MultiDeviceSetupBase,
       android_sms_app_installing_host_observer_;
   AuthTokenValidator* auth_token_validator_;
 
-  mojo::RemoteSet<ash::multidevice_setup::mojom::HostStatusObserver>
-      host_status_observers_;
-  mojo::RemoteSet<ash::multidevice_setup::mojom::FeatureStateObserver>
-      feature_state_observers_;
+  mojo::RemoteSet<mojom::HostStatusObserver> host_status_observers_;
+  mojo::RemoteSet<mojom::FeatureStateObserver> feature_state_observers_;
 };
 
 }  // namespace multidevice_setup
 
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // ASH_SERVICES_MULTIDEVICE_SETUP_MULTIDEVICE_SETUP_IMPL_H_

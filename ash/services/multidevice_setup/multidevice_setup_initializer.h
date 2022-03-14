@@ -10,27 +10,22 @@
 #include <vector>
 
 #include "ash/services/device_sync/public/cpp/device_sync_client.h"
+// TODO(https://crbug.com/1164001): move to forward declaration
+#include "ash/services/device_sync/public/cpp/gcm_device_info_provider.h"
 #include "ash/services/multidevice_setup/multidevice_setup_base.h"
-// TODO(https://crbug.com/1164001): move to forward declaration
-#include "ash/services/multidevice_setup/public/cpp/android_sms_app_helper_delegate.h"
-// TODO(https://crbug.com/1164001): move to forward declaration
-#include "ash/services/multidevice_setup/public/cpp/android_sms_pairing_state_tracker.h"
-// TODO(https://crbug.com/1164001): move to forward declaration
-#include "ash/services/multidevice_setup/public/cpp/auth_token_validator.h"
-// TODO(https://crbug.com/1164001): move to forward declaration
-#include "ash/services/multidevice_setup/public/cpp/oobe_completion_tracker.h"
 #include "ash/services/multidevice_setup/public/mojom/multidevice_setup.mojom.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 
 class PrefService;
 
-namespace chromeos {
-
-namespace device_sync {
-class GcmDeviceInfoProvider;
-}  // namespace device_sync
+namespace ash {
 
 namespace multidevice_setup {
+
+class AndroidSmsAppHelperDelegate;
+class AndroidSmsPairingStateTracker;
+class AuthTokenValidator;
+class OobeCompletionTracker;
 
 // Initializes the MultiDeviceSetup service. This class is responsible for
 // waiting for asynchronous initialization steps to complete before creating
@@ -85,8 +80,7 @@ class MultiDeviceSetupInitializer
     // For SetHostDeviceWithoutAuthToken().
     SetHostDeviceArgs(
         const std::string& host_instance_id_or_legacy_device_id,
-        ash::multidevice_setup::mojom::PrivilegedHostDeviceSetter::
-            SetHostDeviceCallback callback);
+        mojom::PrivilegedHostDeviceSetter::SetHostDeviceCallback callback);
 
     ~SetHostDeviceArgs();
 
@@ -108,15 +102,12 @@ class MultiDeviceSetupInitializer
 
   // mojom::MultiDeviceSetup:
   void SetAccountStatusChangeDelegate(
-      mojo::PendingRemote<
-          ash::multidevice_setup::mojom::AccountStatusChangeDelegate> delegate)
+      mojo::PendingRemote<mojom::AccountStatusChangeDelegate> delegate)
       override;
   void AddHostStatusObserver(
-      mojo::PendingRemote<ash::multidevice_setup::mojom::HostStatusObserver>
-          observer) override;
+      mojo::PendingRemote<mojom::HostStatusObserver> observer) override;
   void AddFeatureStateObserver(
-      mojo::PendingRemote<ash::multidevice_setup::mojom::FeatureStateObserver>
-          observer) override;
+      mojo::PendingRemote<mojom::FeatureStateObserver> observer) override;
   void GetEligibleHostDevices(GetEligibleHostDevicesCallback callback) override;
   void GetEligibleActiveHostDevices(
       GetEligibleActiveHostDevicesCallback callback) override;
@@ -125,21 +116,21 @@ class MultiDeviceSetupInitializer
                      SetHostDeviceCallback callback) override;
   void RemoveHostDevice() override;
   void GetHostStatus(GetHostStatusCallback callback) override;
-  void SetFeatureEnabledState(ash::multidevice_setup::mojom::Feature feature,
+  void SetFeatureEnabledState(mojom::Feature feature,
                               bool enabled,
                               const absl::optional<std::string>& auth_token,
                               SetFeatureEnabledStateCallback callback) override;
   void GetFeatureStates(GetFeatureStatesCallback callback) override;
   void RetrySetHostNow(RetrySetHostNowCallback callback) override;
   void TriggerEventForDebugging(
-      ash::multidevice_setup::mojom::EventTypeForDebugging type,
+      mojom::EventTypeForDebugging type,
       TriggerEventForDebuggingCallback callback) override;
 
   // MultiDeviceSetupBase:
   void SetHostDeviceWithoutAuthToken(
       const std::string& host_instance_id_or_legacy_device_id,
-      ash::multidevice_setup::mojom::PrivilegedHostDeviceSetter::
-          SetHostDeviceCallback callback) override;
+      mojom::PrivilegedHostDeviceSetter::SetHostDeviceCallback callback)
+      override;
 
   // device_sync::DeviceSyncClient::Observer:
   void OnReady() override;
@@ -160,20 +151,16 @@ class MultiDeviceSetupInitializer
   // If API functions are called before initialization is complete, their
   // parameters are cached here. Once asynchronous initialization is complete,
   // the parameters are passed to |multidevice_setup_impl_|.
-  mojo::PendingRemote<
-      ash::multidevice_setup::mojom::AccountStatusChangeDelegate>
-      pending_delegate_;
-  std::vector<
-      mojo::PendingRemote<ash::multidevice_setup::mojom::HostStatusObserver>>
+  mojo::PendingRemote<mojom::AccountStatusChangeDelegate> pending_delegate_;
+  std::vector<mojo::PendingRemote<mojom::HostStatusObserver>>
       pending_host_status_observers_;
-  std::vector<
-      mojo::PendingRemote<ash::multidevice_setup::mojom::FeatureStateObserver>>
+  std::vector<mojo::PendingRemote<mojom::FeatureStateObserver>>
       pending_feature_state_observers_;
   std::vector<GetEligibleHostDevicesCallback> pending_get_eligible_hosts_args_;
   std::vector<GetEligibleActiveHostDevicesCallback>
       pending_get_eligible_active_hosts_args_;
   std::vector<GetHostStatusCallback> pending_get_host_args_;
-  std::vector<std::tuple<ash::multidevice_setup::mojom::Feature,
+  std::vector<std::tuple<mojom::Feature,
                          bool,
                          absl::optional<std::string>,
                          SetFeatureEnabledStateCallback>>
@@ -191,11 +178,6 @@ class MultiDeviceSetupInitializer
 
 }  // namespace multidevice_setup
 
-}  // namespace chromeos
-
-// TODO(https://crbug.com/1164001): remove when it moved to ash.
-namespace ash::multidevice_setup {
-using ::chromeos::multidevice_setup::MultiDeviceSetupInitializer;
-}
+}  // namespace ash
 
 #endif  // ASH_SERVICES_MULTIDEVICE_SETUP_MULTIDEVICE_SETUP_INITIALIZER_H_

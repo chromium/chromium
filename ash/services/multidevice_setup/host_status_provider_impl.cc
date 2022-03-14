@@ -13,14 +13,11 @@
 #include "base/time/time.h"
 #include "chromeos/components/multidevice/logging/logging.h"
 
-namespace chromeos {
+namespace ash {
 
 namespace multidevice_setup {
 
 namespace {
-
-// TODO(https://crbug.com/1164001): remove after migrating to ash.
-namespace mojom = ::ash::multidevice_setup::mojom;
 
 constexpr base::TimeDelta kHostStatusLoggingPeriod = base::Minutes(30);
 
@@ -181,4 +178,4 @@ void HostStatusProviderImpl::RecordMultiDeviceHostStatus() {
 
 }  // namespace multidevice_setup
 
-}  // namespace chromeos
+}  // namespace ash

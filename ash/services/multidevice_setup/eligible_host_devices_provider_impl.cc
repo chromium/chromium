@@ -10,9 +10,12 @@
 #include "chromeos/components/multidevice/software_feature.h"
 #include "chromeos/components/multidevice/software_feature_state.h"
 
-namespace chromeos {
+namespace ash {
 
 namespace multidevice_setup {
+
+// TODO(https://crbug.com/1164001): remove after migrating to ash.
+namespace device_sync = ::chromeos::device_sync;
 
 // static
 constexpr base::TimeDelta
@@ -295,4 +298,4 @@ void EligibleHostDevicesProviderImpl::OnGetDevicesActivityStatus(
 
 }  // namespace multidevice_setup
 
-}  // namespace chromeos
+}  // namespace ash

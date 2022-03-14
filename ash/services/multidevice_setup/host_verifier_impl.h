@@ -18,7 +18,7 @@
 class PrefRegistrySimple;
 class PrefService;
 
-namespace chromeos {
+namespace ash {
 
 namespace multidevice_setup {
 
@@ -93,10 +93,11 @@ class HostVerifierImpl : public HostVerifier,
   void StartRetryTimer(const base::Time& time_to_fire);
   void AttemptHostVerification();
   void OnFindEligibleDevicesResult(
-      device_sync::mojom::NetworkRequestResult result,
+      chromeos::device_sync::mojom::NetworkRequestResult result,
       multidevice::RemoteDeviceRefList eligible_devices,
       multidevice::RemoteDeviceRefList ineligible_devices);
-  void OnNotifyDevicesFinished(device_sync::mojom::NetworkRequestResult result);
+  void OnNotifyDevicesFinished(
+      chromeos::device_sync::mojom::NetworkRequestResult result);
   void OnSyncTimerFired();
 
   HostBackendDelegate* host_backend_delegate_;
@@ -110,6 +111,6 @@ class HostVerifierImpl : public HostVerifier,
 
 }  // namespace multidevice_setup
 
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // ASH_SERVICES_MULTIDEVICE_SETUP_HOST_VERIFIER_IMPL_H_

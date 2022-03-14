@@ -8,7 +8,7 @@
 #include "ash/services/multidevice_setup/feature_state_manager.h"
 #include "ash/services/multidevice_setup/public/mojom/multidevice_setup.mojom.h"
 
-namespace chromeos {
+namespace ash {
 
 namespace multidevice_setup {
 
@@ -23,10 +23,8 @@ class FakeFeatureStateManager : public FeatureStateManager {
 
   ~FakeFeatureStateManager() override;
 
-  ash::multidevice_setup::mojom::FeatureState GetFeatureState(
-      ash::multidevice_setup::mojom::Feature feature);
-  void SetFeatureState(ash::multidevice_setup::mojom::Feature feature,
-                       ash::multidevice_setup::mojom::FeatureState state);
+  mojom::FeatureState GetFeatureState(mojom::Feature feature);
+  void SetFeatureState(mojom::Feature feature, mojom::FeatureState state);
   void SetFeatureStates(const FeatureStatesMap& feature_states_map);
 
   using FeatureStateManager::NotifyFeatureStatesChange;
@@ -34,9 +32,8 @@ class FakeFeatureStateManager : public FeatureStateManager {
  private:
   // FeatureStateManager:
   FeatureStatesMap GetFeatureStates() override;
-  void PerformSetFeatureEnabledState(
-      ash::multidevice_setup::mojom::Feature feature,
-      bool enabled) override;
+  void PerformSetFeatureEnabledState(mojom::Feature feature,
+                                     bool enabled) override;
 
   FeatureStatesMap feature_states_map_;
 };
@@ -68,6 +65,6 @@ class FakeFeatureStateManagerObserver : public FeatureStateManager::Observer {
 
 }  // namespace multidevice_setup
 
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // ASH_SERVICES_MULTIDEVICE_SETUP_FAKE_FEATURE_STATE_MANAGER_H_

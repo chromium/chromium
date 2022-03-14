@@ -17,7 +17,7 @@
 
 class PrefService;
 
-namespace chromeos {
+namespace ash {
 
 namespace multidevice_setup {
 
@@ -38,8 +38,7 @@ class FeatureStateManagerImpl : public FeatureStateManager,
         HostStatusProvider* host_status_provider,
         device_sync::DeviceSyncClient* device_sync_client,
         AndroidSmsPairingStateTracker* android_sms_pairing_state_tracker,
-        const base::flat_map<ash::multidevice_setup::mojom::Feature,
-                             GlobalStateFeatureManager*>&
+        const base::flat_map<mojom::Feature, GlobalStateFeatureManager*>&
             global_state_feature_managers,
         bool is_secondary_user);
     static void SetFactoryForTesting(Factory* test_factory);
@@ -51,8 +50,7 @@ class FeatureStateManagerImpl : public FeatureStateManager,
         HostStatusProvider* host_status_provider,
         device_sync::DeviceSyncClient* device_sync_client,
         AndroidSmsPairingStateTracker* android_sms_pairing_state_tracker,
-        const base::flat_map<ash::multidevice_setup::mojom::Feature,
-                             GlobalStateFeatureManager*>&
+        const base::flat_map<mojom::Feature, GlobalStateFeatureManager*>&
             global_state_feature_managers,
         bool is_secondary_user) = 0;
 
@@ -71,16 +69,14 @@ class FeatureStateManagerImpl : public FeatureStateManager,
       HostStatusProvider* host_status_provider,
       device_sync::DeviceSyncClient* device_sync_client,
       AndroidSmsPairingStateTracker* android_sms_pairing_state_tracker,
-      const base::flat_map<ash::multidevice_setup::mojom::Feature,
-                           GlobalStateFeatureManager*>&
+      const base::flat_map<mojom::Feature, GlobalStateFeatureManager*>&
           global_state_feature_managers,
       bool is_secondary_user);
 
   // FeatureStateManager:
   FeatureStatesMap GetFeatureStates() override;
-  void PerformSetFeatureEnabledState(
-      ash::multidevice_setup::mojom::Feature feature,
-      bool enabled) override;
+  void PerformSetFeatureEnabledState(mojom::Feature feature,
+                                     bool enabled) override;
 
   // HostStatusProvider::Observer,
   void OnHostStatusChange(const HostStatusProvider::HostStatusWithDevice&
@@ -94,17 +90,15 @@ class FeatureStateManagerImpl : public FeatureStateManager,
 
   void OnPrefValueChanged();
   void UpdateFeatureStateCache(bool notify_observers_of_changes);
-  ash::multidevice_setup::mojom::FeatureState ComputeFeatureState(
-      ash::multidevice_setup::mojom::Feature feature);
-  bool IsAllowedByPolicy(ash::multidevice_setup::mojom::Feature feature);
-  bool IsSupportedByChromebook(ash::multidevice_setup::mojom::Feature feature);
-  bool HasSufficientSecurity(ash::multidevice_setup::mojom::Feature feature,
+  mojom::FeatureState ComputeFeatureState(mojom::Feature feature);
+  bool IsAllowedByPolicy(mojom::Feature feature);
+  bool IsSupportedByChromebook(mojom::Feature feature);
+  bool HasSufficientSecurity(mojom::Feature feature,
                              const multidevice::RemoteDeviceRef& host_device);
-  bool HasBeenActivatedByPhone(ash::multidevice_setup::mojom::Feature feature,
+  bool HasBeenActivatedByPhone(mojom::Feature feature,
                                const multidevice::RemoteDeviceRef& host_device);
-  bool RequiresFurtherSetup(ash::multidevice_setup::mojom::Feature feature);
-  ash::multidevice_setup::mojom::FeatureState GetEnabledOrDisabledState(
-      ash::multidevice_setup::mojom::Feature feature);
+  bool RequiresFurtherSetup(mojom::Feature feature);
+  mojom::FeatureState GetEnabledOrDisabledState(mojom::Feature feature);
 
   // Log the feature states in |cached_feature_state_map_|. Called 1) on
   // sign-in, 2) when at least one feature state changes, and 3) every 30
@@ -116,8 +110,7 @@ class FeatureStateManagerImpl : public FeatureStateManager,
   HostStatusProvider* host_status_provider_;
   device_sync::DeviceSyncClient* device_sync_client_;
   AndroidSmsPairingStateTracker* android_sms_pairing_state_tracker_;
-  const base::flat_map<ash::multidevice_setup::mojom::Feature,
-                       GlobalStateFeatureManager*>
+  const base::flat_map<mojom::Feature, GlobalStateFeatureManager*>
       global_state_feature_managers_;
 
   // Certain features may be unavailable to secondary users logged into a
@@ -126,13 +119,11 @@ class FeatureStateManagerImpl : public FeatureStateManager,
 
   // Map from feature to the pref name which indicates the enabled/disabled
   // boolean state for the feature.
-  base::flat_map<ash::multidevice_setup::mojom::Feature, std::string>
-      feature_to_enabled_pref_name_map_;
+  base::flat_map<mojom::Feature, std::string> feature_to_enabled_pref_name_map_;
 
   // Same as above, except that the pref names represent whether the feature is
   // allowed by policy or not.
-  base::flat_map<ash::multidevice_setup::mojom::Feature, std::string>
-      feature_to_allowed_pref_name_map_;
+  base::flat_map<mojom::Feature, std::string> feature_to_allowed_pref_name_map_;
 
   // Map from feature to state, which is updated each time a feature's state
   // changes. This cache is used to determine when a feature's state has changed
@@ -146,6 +137,6 @@ class FeatureStateManagerImpl : public FeatureStateManager,
 
 }  // namespace multidevice_setup
 
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // ASH_SERVICES_MULTIDEVICE_SETUP_FEATURE_STATE_MANAGER_IMPL_H_

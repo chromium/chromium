@@ -9,7 +9,7 @@
 #include "ash/services/multidevice_setup/eligible_host_devices_provider.h"
 #include "chromeos/components/multidevice/remote_device_ref.h"
 
-namespace chromeos {
+namespace ash {
 
 namespace multidevice_setup {
 
@@ -59,8 +59,9 @@ class EligibleHostDevicesProviderImpl
   void UpdateEligibleDevicesSet();
 
   void OnGetDevicesActivityStatus(
-      device_sync::mojom::NetworkRequestResult,
-      absl::optional<std::vector<device_sync::mojom::DeviceActivityStatusPtr>>);
+      chromeos::device_sync::mojom::NetworkRequestResult,
+      absl::optional<
+          std::vector<chromeos::device_sync::mojom::DeviceActivityStatusPtr>>);
 
   device_sync::DeviceSyncClient* device_sync_client_;
 
@@ -71,6 +72,6 @@ class EligibleHostDevicesProviderImpl
 
 }  // namespace multidevice_setup
 
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // ASH_SERVICES_MULTIDEVICE_SETUP_ELIGIBLE_HOST_DEVICES_PROVIDER_IMPL_H_

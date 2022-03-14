@@ -4,7 +4,7 @@
 
 #include "ash/services/multidevice_setup/fake_eligible_host_devices_provider.h"
 
-namespace chromeos {
+namespace ash {
 
 namespace multidevice_setup {
 
@@ -24,4 +24,4 @@ FakeEligibleHostDevicesProvider::GetEligibleActiveHostDevices() const {
 
 }  // namespace multidevice_setup
 
-}  // namespace chromeos
+}  // namespace ash

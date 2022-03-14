@@ -5,8 +5,6 @@
 #ifndef CHROME_BROWSER_ASH_MULTIDEVICE_SETUP_MULTIDEVICE_SETUP_SERVICE_FACTORY_H_
 #define CHROME_BROWSER_ASH_MULTIDEVICE_SETUP_MULTIDEVICE_SETUP_SERVICE_FACTORY_H_
 
-// TODO(https://crbug.com/1164001): move to forward declaration.
-#include "ash/services/multidevice_setup/multidevice_setup_service.h"
 #include "base/no_destructor.h"
 #include "components/keyed_service/content/browser_context_keyed_service_factory.h"
 
@@ -14,6 +12,8 @@ class Profile;
 
 namespace ash {
 namespace multidevice_setup {
+
+class MultiDeviceSetupService;
 
 class MultiDeviceSetupServiceFactory
     : public BrowserContextKeyedServiceFactory {

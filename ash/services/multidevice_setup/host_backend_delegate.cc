@@ -4,7 +4,7 @@
 
 #include "ash/services/multidevice_setup/host_backend_delegate.h"
 
-namespace chromeos {
+namespace ash {
 
 namespace multidevice_setup {
 
@@ -37,4 +37,4 @@ void HostBackendDelegate::NotifyPendingHostRequestChange() {
 
 }  // namespace multidevice_setup
 
-}  // namespace chromeos
+}  // namespace ash

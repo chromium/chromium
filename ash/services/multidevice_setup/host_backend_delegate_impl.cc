@@ -19,11 +19,14 @@
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 
-namespace chromeos {
+namespace ash {
 
 namespace multidevice_setup {
 
 namespace {
+
+// TODO(https://crbug.com/1164001): remove after migrating to ash.
+namespace device_sync = ::chromeos::device_sync;
 
 // Name of the pref which stores the ID of the host which is pending being set
 // on the back-end.
@@ -385,4 +388,4 @@ void HostBackendDelegateImpl::OnSetHostNetworkRequestFinished(
 
 }  // namespace multidevice_setup
 
-}  // namespace chromeos
+}  // namespace ash

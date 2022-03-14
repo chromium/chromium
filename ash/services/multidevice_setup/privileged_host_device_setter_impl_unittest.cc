@@ -12,7 +12,7 @@
 #include "base/test/task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace chromeos {
+namespace ash {
 
 namespace multidevice_setup {
 
@@ -74,4 +74,4 @@ TEST_F(MultiDeviceSetupPrivilegedHostDeviceSetterImplTest, SetHostDevice) {
 
 }  // namespace multidevice_setup
 
-}  // namespace chromeos
+}  // namespace ash

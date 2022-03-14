@@ -5,7 +5,7 @@
 #ifndef ASH_SERVICES_MULTIDEVICE_SETUP_GLOBAL_STATE_FEATURE_MANAGER_H_
 #define ASH_SERVICES_MULTIDEVICE_SETUP_GLOBAL_STATE_FEATURE_MANAGER_H_
 
-namespace chromeos {
+namespace ash {
 
 namespace multidevice_setup {
 
@@ -35,6 +35,6 @@ class GlobalStateFeatureManager {
 
 }  // namespace multidevice_setup
 
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // ASH_SERVICES_MULTIDEVICE_SETUP_GLOBAL_STATE_FEATURE_MANAGER_H_

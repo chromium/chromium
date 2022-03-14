@@ -8,7 +8,7 @@
 #include "ash/services/multidevice_setup/eligible_host_devices_provider.h"
 #include "chromeos/components/multidevice/remote_device_ref.h"
 
-namespace chromeos {
+namespace ash {
 
 namespace multidevice_setup {
 
@@ -47,6 +47,6 @@ class FakeEligibleHostDevicesProvider : public EligibleHostDevicesProvider {
 
 }  // namespace multidevice_setup
 
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // ASH_SERVICES_MULTIDEVICE_SETUP_FAKE_ELIGIBLE_HOST_DEVICES_PROVIDER_H_

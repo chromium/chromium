@@ -22,11 +22,14 @@
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace chromeos {
+namespace ash {
 
 namespace multidevice_setup {
 
 namespace {
+
+// TODO(https://crbug.com/1164001): remove after migrating to ash.
+namespace device_sync = ::chromeos::device_sync;
 
 // Parameterized test types, indicating the following test scenarios:
 enum class TestType {
@@ -518,4 +521,4 @@ INSTANTIATE_TEST_SUITE_P(All,
 
 }  // namespace multidevice_setup
 
-}  // namespace chromeos
+}  // namespace ash

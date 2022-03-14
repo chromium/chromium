@@ -44,9 +44,4 @@ class OobeCompletionTracker : public KeyedService {
 
 }  // namespace ash
 
-// TODO(https://crbug.com/1164001): remove when the migration is finished.
-namespace chromeos::multidevice_setup {
-using ::ash::multidevice_setup::OobeCompletionTracker;
-}
-
 #endif  // ASH_SERVICES_MULTIDEVICE_SETUP_PUBLIC_CPP_OOBE_COMPLETION_TRACKER_H_

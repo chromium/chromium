@@ -21,12 +21,9 @@
 #include "base/bind.h"
 #include "chromeos/components/multidevice/logging/logging.h"
 
-namespace chromeos {
+namespace ash {
 
 namespace multidevice_setup {
-
-// TODO(https://crbug.com/1164001): remove after migrating to ash.
-namespace mojom = ::ash::multidevice_setup::mojom;
 
 // static
 void MultiDeviceSetupService::RegisterProfilePrefs(
@@ -84,4 +81,4 @@ void MultiDeviceSetupService::BindPrivilegedHostDeviceSetter(
 
 }  // namespace multidevice_setup
 
-}  // namespace chromeos
+}  // namespace ash

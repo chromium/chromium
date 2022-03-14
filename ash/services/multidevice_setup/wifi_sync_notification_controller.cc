@@ -23,12 +23,9 @@
 #include "components/session_manager/core/session_manager.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
-namespace chromeos {
+namespace ash {
 
 namespace multidevice_setup {
-
-// TODO(https://crbug.com/1164001): remove after migrating to ash.
-namespace mojom = ::ash::multidevice_setup::mojom;
 
 const char kCanShowWifiSyncAnnouncementPrefName[] =
     "multidevice_setup.can_show_wifi_sync_announcement";
@@ -179,4 +176,4 @@ bool WifiSyncNotificationController::IsWifiSyncSupported() {
 
 }  // namespace multidevice_setup
 
-}  // namespace chromeos
+}  // namespace ash

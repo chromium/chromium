@@ -4,12 +4,9 @@
 
 #include "ash/services/multidevice_setup/multidevice_setup_base.h"
 
-namespace chromeos {
+namespace ash {
 
 namespace multidevice_setup {
-
-// TODO(https://crbug.com/1164001): remove after migrating to ash.
-namespace mojom = ::ash::multidevice_setup::mojom;
 
 MultiDeviceSetupBase::MultiDeviceSetupBase() = default;
 
@@ -26,4 +23,4 @@ void MultiDeviceSetupBase::CloseAllReceivers() {
 
 }  // namespace multidevice_setup
 
-}  // namespace chromeos
+}  // namespace ash

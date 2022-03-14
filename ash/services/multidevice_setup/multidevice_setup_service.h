@@ -11,25 +11,21 @@
 #include "ash/services/device_sync/public/cpp/device_sync_client.h"
 // TODO(https://crbug.com/1164001): move to forward declaration
 #include "ash/services/device_sync/public/cpp/gcm_device_info_provider.h"
-// TODO(https://crbug.com/1164001): move to forward declaration
-#include "ash/services/multidevice_setup/public/cpp/android_sms_app_helper_delegate.h"
-// TODO(https://crbug.com/1164001): move to forward declaration
-#include "ash/services/multidevice_setup/public/cpp/android_sms_pairing_state_tracker.h"
-// TODO(https://crbug.com/1164001): move to forward declaration
-#include "ash/services/multidevice_setup/public/cpp/auth_token_validator.h"
-// TODO(https://crbug.com/1164001): move to forward declaration
-#include "ash/services/multidevice_setup/public/cpp/oobe_completion_tracker.h"
 #include "ash/services/multidevice_setup/public/mojom/multidevice_setup.mojom.h"
 
 class PrefService;
 class PrefRegistrySimple;
 
-namespace chromeos {
+namespace ash {
 
 namespace multidevice_setup {
 
+class AndroidSmsAppHelperDelegate;
+class AndroidSmsPairingStateTracker;
+class AuthTokenValidator;
 class MultiDeviceSetupBase;
 class PrivilegedHostDeviceSetterBase;
+class OobeCompletionTracker;
 
 // Service which provides an implementation for mojom::MultiDeviceSetup. This
 // service creates one implementation and shares it among all connection
@@ -54,11 +50,9 @@ class MultiDeviceSetupService {
   static void RegisterProfilePrefs(PrefRegistrySimple* registry);
 
   void BindMultiDeviceSetup(
-      mojo::PendingReceiver<ash::multidevice_setup::mojom::MultiDeviceSetup>
-          receiver);
+      mojo::PendingReceiver<mojom::MultiDeviceSetup> receiver);
   void BindPrivilegedHostDeviceSetter(
-      mojo::PendingReceiver<
-          ash::multidevice_setup::mojom::PrivilegedHostDeviceSetter> receiver);
+      mojo::PendingReceiver<mojom::PrivilegedHostDeviceSetter> receiver);
 
  private:
   std::unique_ptr<MultiDeviceSetupBase> multidevice_setup_;
@@ -68,13 +62,11 @@ class MultiDeviceSetupService {
 
 }  // namespace multidevice_setup
 
-}  // namespace chromeos
-
-// TODO(https://crbug.com/1164001): remove after the migration is finished.
-namespace ash {
-namespace multidevice_setup {
-using ::chromeos::multidevice_setup::MultiDeviceSetupService;
-}
 }  // namespace ash
+
+// TODO(https://crbug.com/1164001): remove when the migration is finished.
+namespace chromeos::multidevice_setup {
+using ::ash::multidevice_setup::MultiDeviceSetupService;
+}
 
 #endif  // ASH_SERVICES_MULTIDEVICE_SETUP_MULTIDEVICE_SETUP_SERVICE_H_

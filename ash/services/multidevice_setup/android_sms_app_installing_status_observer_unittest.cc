@@ -14,14 +14,11 @@
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace chromeos {
+namespace ash {
 
 namespace multidevice_setup {
 
 namespace {
-
-// TODO(https://crbug.com/1164001): remove after migrating to ash.
-namespace mojom = ::ash::multidevice_setup::mojom;
 
 const char kFakePhoneKey[] = "fake-phone-key";
 const char kFakePhoneName[] = "Phony Phone";
@@ -315,4 +312,4 @@ TEST_F(MultiDeviceSetupAndroidSmsAppInstallingStatusObserverTest,
 
 }  // namespace multidevice_setup
 
-}  // namespace chromeos
+}  // namespace ash

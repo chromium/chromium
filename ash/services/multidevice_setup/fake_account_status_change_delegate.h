@@ -9,13 +9,13 @@
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
 
-namespace chromeos {
+namespace ash {
 
 namespace multidevice_setup {
 
 // Fake mojom::AccountStatusChangeDelegate implementation for tests.
 class FakeAccountStatusChangeDelegate
-    : public ash::multidevice_setup::mojom::AccountStatusChangeDelegate {
+    : public mojom::AccountStatusChangeDelegate {
  public:
   FakeAccountStatusChangeDelegate();
 
@@ -26,9 +26,7 @@ class FakeAccountStatusChangeDelegate
 
   ~FakeAccountStatusChangeDelegate() override;
 
-  mojo::PendingRemote<
-      ash::multidevice_setup::mojom::AccountStatusChangeDelegate>
-  GenerateRemote();
+  mojo::PendingRemote<mojom::AccountStatusChangeDelegate> GenerateRemote();
 
   size_t num_new_user_potential_host_events_handled() const {
     return num_new_user_potential_host_events_handled_;
@@ -66,12 +64,11 @@ class FakeAccountStatusChangeDelegate
   size_t num_existing_user_chromebook_added_events_handled_ = 0u;
   size_t num_eligible_for_wifi_sync_events_handled_ = 0u;
 
-  mojo::ReceiverSet<ash::multidevice_setup::mojom::AccountStatusChangeDelegate>
-      receivers_;
+  mojo::ReceiverSet<mojom::AccountStatusChangeDelegate> receivers_;
 };
 
 }  // namespace multidevice_setup
 
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // ASH_SERVICES_MULTIDEVICE_SETUP_FAKE_ACCOUNT_STATUS_CHANGE_DELEGATE_H_

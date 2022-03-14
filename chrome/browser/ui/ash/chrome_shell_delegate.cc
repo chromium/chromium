@@ -181,9 +181,9 @@ void ChromeShellDelegate::BindFingerprint(
 void ChromeShellDelegate::BindMultiDeviceSetup(
     mojo::PendingReceiver<ash::multidevice_setup::mojom::MultiDeviceSetup>
         receiver) {
-  chromeos::multidevice_setup::MultiDeviceSetupService* service =
-      chromeos::multidevice_setup::MultiDeviceSetupServiceFactory::
-          GetForProfile(ProfileManager::GetPrimaryUserProfile());
+  ash::multidevice_setup::MultiDeviceSetupService* service =
+      ash::multidevice_setup::MultiDeviceSetupServiceFactory::GetForProfile(
+          ProfileManager::GetPrimaryUserProfile());
   if (service)
     service->BindMultiDeviceSetup(std::move(receiver));
 }

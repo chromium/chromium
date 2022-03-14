@@ -7,7 +7,7 @@
 #include "base/logging.h"
 #include "chromeos/components/multidevice/logging/logging.h"
 
-namespace chromeos {
+namespace ash {
 
 namespace multidevice_setup {
 
@@ -41,4 +41,4 @@ void HostVerifier::NotifyHostVerified() {
 
 }  // namespace multidevice_setup
 
-}  // namespace chromeos
+}  // namespace ash

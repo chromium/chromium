@@ -8,7 +8,7 @@
 #include "base/memory/ptr_util.h"
 #include "chromeos/components/multidevice/logging/logging.h"
 
-namespace chromeos {
+namespace ash {
 
 namespace multidevice_setup {
 
@@ -50,4 +50,4 @@ void PrivilegedHostDeviceSetterImpl::SetHostDevice(
 
 }  // namespace multidevice_setup
 
-}  // namespace chromeos
+}  // namespace ash

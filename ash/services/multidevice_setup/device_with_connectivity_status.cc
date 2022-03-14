@@ -6,7 +6,7 @@
 
 #include "base/base64.h"
 
-namespace chromeos {
+namespace ash {
 
 namespace multidevice {
 
@@ -28,4 +28,4 @@ bool DeviceWithConnectivityStatus::operator==(
 
 }  // namespace multidevice
 
-}  // namespace chromeos
+}  // namespace ash

@@ -12,7 +12,7 @@
 #include "ash/services/device_sync/public/cpp/device_sync_client.h"
 #include "chromeos/components/multidevice/remote_device.h"
 
-namespace chromeos {
+namespace ash {
 
 namespace multidevice {
 
@@ -38,6 +38,6 @@ typedef std::vector<DeviceWithConnectivityStatus>
 
 }  // namespace multidevice
 
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // ASH_SERVICES_MULTIDEVICE_SETUP_DEVICE_WITH_CONNECTIVITY_STATUS_H_
