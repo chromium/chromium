@@ -93,7 +93,7 @@ Control Panel → System and Security → System → Search for "Edit environmen
 
 Add `C:\src\depot_tools` at the front. Note: If your system PATH has a Python in it, you will be out of luck.
 
-Also, add a DEPOT_TOOLS_WIN_TOOLCHAIN system variable in the same way, and set
+Also, add a DEPOT_TOOLS_WIN_TOOLCHAIN environment variable in the same way, and set
 it to 0. This tells depot_tools to use your locally installed version of Visual
 Studio (by default, depot_tools will try to use a google-internal version).
 
