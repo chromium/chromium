@@ -159,6 +159,8 @@
     ThemeProperties::COLOR_OMNIBOX_SECURITY_CHIP_SECURE) \
   E(kColorOmniboxText, ThemeProperties::COLOR_OMNIBOX_TEXT) \
   E(kColorOmniboxTextDimmed, ThemeProperties::COLOR_OMNIBOX_TEXT_DIMMED) \
+  /* Payments colors. */ \
+  E_CPONLY(kColorPaymentRequestRowBackgroundHighlighted) \
   /* Read Later button colors. */ \
   E(kColorReadLaterButtonHighlight, \
     ThemeProperties::COLOR_READ_LATER_BUTTON_HIGHLIGHT) \

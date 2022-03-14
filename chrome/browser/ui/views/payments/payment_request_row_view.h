@@ -40,23 +40,17 @@ class PaymentRequestRowView
   }
 
  private:
-  // Sets this row's background to the theme's hovered color to indicate that
-  // it's begin hovered or it's focused.
-  void SetActiveBackground();
-
   // Show/hide the separator at the bottom of the row. This is used to hide the
   // separator when the row is hovered.
-  void ShowBottomSeparator();
-  void HideBottomSeparator();
+  void SetBottomSeparatorVisible(bool visible);
 
-  // Updates the border used for the bottom separator based on
-  // `bottom_separator_visible_`.
-  void UpdateBottomSeparator();
+  // Updates the visual state to reflect `bottom_separator_visible_`.
+  void UpdateBottomSeparatorVisualState();
 
   // Sets the row as |highlighted| or not. A row is highlighted if it's hovered
   // on or focused, in which case it hides its bottom separator and gets a light
   // colored background color.
-  void SetIsHighlighted(bool highlighted);
+  void SetHighlighted(bool highlighted);
 
   // Updates the button state to reflect the |clickable_| state.
   void UpdateButtonState();

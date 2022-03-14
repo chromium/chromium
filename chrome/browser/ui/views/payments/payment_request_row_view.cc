@@ -6,6 +6,7 @@
 
 #include <string>
 
+#include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/views/payments/payment_request_views_util.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/accessibility/ax_node_data.h"
@@ -62,7 +63,7 @@ PaymentRequestRowView::PaymentRequestRowView(PressedCallback callback,
       clickable_(clickable),
       row_insets_(insets) {
   UpdateButtonState();
-  ShowBottomSeparator();
+  SetBottomSeparatorVisible(true);
   SetFocusBehavior(views::View::FocusBehavior::ALWAYS);
 }
 
@@ -87,30 +88,17 @@ void PaymentRequestRowView::SetRowInsets(const gfx::Insets& row_insets) {
   if (row_insets == row_insets_)
     return;
   row_insets_ = row_insets;
-  UpdateBottomSeparator();
+  UpdateBottomSeparatorVisualState();
   OnPropertyChanged(&row_insets_,
                     views::PropertyEffects::kPropertyEffectsPaint);
 }
 
-void PaymentRequestRowView::SetActiveBackground() {
-  // TODO(crbug/976890): Check whether we can GetColor from a ColorId instead of
-  // hard code here.
-  SetBackground(views::CreateSolidBackground(SkColorSetA(SK_ColorBLACK, 0x0D)));
+void PaymentRequestRowView::SetBottomSeparatorVisible(bool visible) {
+  bottom_separator_visible_ = visible;
+  UpdateBottomSeparatorVisualState();
 }
 
-void PaymentRequestRowView::ShowBottomSeparator() {
-  bottom_separator_visible_ = true;
-  UpdateBottomSeparator();
-  SchedulePaint();
-}
-
-void PaymentRequestRowView::HideBottomSeparator() {
-  bottom_separator_visible_ = false;
-  UpdateBottomSeparator();
-  SchedulePaint();
-}
-
-void PaymentRequestRowView::UpdateBottomSeparator() {
+void PaymentRequestRowView::UpdateBottomSeparatorVisualState() {
   // Create an empty border even when not present in a Widget hierarchy as the
   // border is needed to correctly compute the bounds of the ScrollView in the
   // PaymentRequestSheetController which is done before this is added to its
@@ -124,17 +112,18 @@ void PaymentRequestRowView::UpdateBottomSeparator() {
           : views::CreateEmptyBorder(row_insets_));
 }
 
-void PaymentRequestRowView::SetIsHighlighted(bool highlighted) {
+void PaymentRequestRowView::SetHighlighted(bool highlighted) {
   if (highlighted) {
-    SetActiveBackground();
-    HideBottomSeparator();
+    SetBackground(views::CreateThemedSolidBackground(
+        this, kColorPaymentRequestRowBackgroundHighlighted));
+    SetBottomSeparatorVisible(false);
     if (previous_row_)
-      previous_row_->HideBottomSeparator();
+      previous_row_->SetBottomSeparatorVisible(false);
   } else {
     SetBackground(nullptr);
-    ShowBottomSeparator();
+    SetBottomSeparatorVisible(true);
     if (previous_row_)
-      previous_row_->ShowBottomSeparator();
+      previous_row_->SetBottomSeparatorVisible(true);
   }
 }
 
@@ -156,20 +145,18 @@ void PaymentRequestRowView::StateChanged(ButtonState old_state) {
   if (!GetClickable())
     return;
 
-  SetIsHighlighted(GetState() == views::Button::STATE_HOVERED ||
-                   GetState() == views::Button::STATE_PRESSED);
+  SetHighlighted(GetState() == views::Button::STATE_HOVERED ||
+                 GetState() == views::Button::STATE_PRESSED);
 }
 
 void PaymentRequestRowView::OnThemeChanged() {
   Button::OnThemeChanged();
-  UpdateBottomSeparator();
+  UpdateBottomSeparatorVisualState();
 }
 
 void PaymentRequestRowView::OnFocus() {
-  if (GetClickable()) {
-    SetIsHighlighted(true);
-    SchedulePaint();
-  }
+  if (GetClickable())
+    SetHighlighted(true);
   View::OnFocus();
   views::FocusRing* focus_ring = views::FocusRing::Get(this);
   views::TableLayout* layout =
@@ -179,10 +166,8 @@ void PaymentRequestRowView::OnFocus() {
 }
 
 void PaymentRequestRowView::OnBlur() {
-  if (GetClickable()) {
-    SetIsHighlighted(false);
-    SchedulePaint();
-  }
+  if (GetClickable())
+    SetHighlighted(false);
 }
 
 BEGIN_METADATA(PaymentRequestRowView, views::Button)

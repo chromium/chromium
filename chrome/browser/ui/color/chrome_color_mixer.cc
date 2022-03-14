@@ -289,6 +289,8 @@ void AddChromeColorMixer(ui::ColorProvider* provider,
       ui::kColorButtonForeground};
   mixer[kColorOmniboxText] =
       ui::GetColorWithMaxContrast(kColorOmniboxBackground);
+  mixer[kColorPaymentRequestRowBackgroundHighlighted] = {
+      SkColorSetA(SK_ColorBLACK, 0x0D)};
   mixer[kColorReadLaterButtonHighlight] = {kColorAvatarButtonHighlightNormal};
   mixer[kColorSidePanelContentAreaSeparator] = {
       kColorToolbarContentAreaSeparator};
