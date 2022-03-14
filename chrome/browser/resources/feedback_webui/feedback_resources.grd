@@ -37,7 +37,7 @@
       <include name="IDR_FEEDBACK_SYSINFO_CSS" file="css/sys_info.css" type="BINDATA" />
       <if expr="chromeos">
         <include name="IDR_FEEDBACK_BLUETOOTHLOGSINFO_HTML" file="html/bluetooth_logs_info.html" type="BINDATA" />
-        <include name="IDR_FEEDBACK_ASSISTANTLOGSINFO_HTML" file="html/assistant_logs_info.html" flattenhtml="true" allowexternalscript="true" type="BINDATA" />
+        <include name="IDR_FEEDBACK_ASSISTANTLOGSINFO_HTML" file="html/assistant_logs_info.html" type="BINDATA" />
         <include name="IDR_FEEDBACK_ASSISTANT_LOGS_INFO_CSS" file="css/assistant_logs_info.css" type="BINDATA" />
       </if>
     </includes>
