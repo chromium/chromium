@@ -831,10 +831,6 @@ mojom("cookies_mojom") {
           cpp = "::net::CanonicalCookie"
         },
         {
-          mojom = "network.mojom.CookieInclusionStatusWarningReason"
-          cpp = "::net::CookieInclusionStatus::WarningReason"
-        },
-        {
           mojom = "network.mojom.CookieInclusionStatus"
           cpp = "::net::CookieInclusionStatus"
           move_only = true
