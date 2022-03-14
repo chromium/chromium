@@ -200,6 +200,8 @@ component("run_on_os_login") {
 
 source_set("intents") {
   sources = [
+    "intent.cc",
+    "intent.h",
     "intent_constants.cc",
     "intent_constants.h",
     "intent_filter_util.cc",

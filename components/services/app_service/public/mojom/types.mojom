@@ -423,6 +423,8 @@ struct IntentFilter {
 };
 
 // Metadata for a single file shared through an intent.
+// Mojom IntentFile struct is DEPRECATED. When adding new fields, please use
+// the IntentFile struct in components/services/app_service/public/cpp/intent.h.
 struct IntentFile {
   // The URL of the file to share. Normally has the filesystem: scheme, but
   // could be externalfile: or a different scheme, depending on the source.
@@ -445,6 +447,8 @@ struct IntentFile {
 // Action and resource handling request. This should
 // be kept in sync with ConvertIntentToValue and ConvertValueToIntent in
 // components/services/app_service/public/cpp/intent_util.*
+// Mojom Intent struct is DEPRECATED. When adding new fields, please use
+// the Intent struct in components/services/app_service/public/cpp/intent.h.
 struct Intent {
   string action; // Intent action. e.g. view, send.
   url.mojom.Url? url; // The URL of the intent. e.g. https://www.google.com/.
