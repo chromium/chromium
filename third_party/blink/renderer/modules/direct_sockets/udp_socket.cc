@@ -15,6 +15,7 @@
 #include "third_party/blink/renderer/core/fileapi/blob.h"
 #include "third_party/blink/renderer/modules/direct_sockets/udp_readable_stream_wrapper.h"
 #include "third_party/blink/renderer/modules/direct_sockets/udp_writable_stream_wrapper.h"
+#include "third_party/blink/renderer/platform/bindings/exception_code.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/heap/persistent.h"
@@ -29,7 +30,35 @@ namespace {
 constexpr char kUDPNetworkFailuresHistogramName[] =
     "DirectSockets.UDPNetworkFailures";
 
+std::pair<DOMExceptionCode, String>
+CreateDOMExceptionCodeAndMessageFromNetErrorCode(int32_t net_error) {
+  switch (net_error) {
+    case net::ERR_NAME_NOT_RESOLVED:
+      return {DOMExceptionCode::kNetworkError,
+              "Hostname couldn't be resolved."};
+    case net::ERR_INVALID_URL:
+      return {DOMExceptionCode::kDataError, "Supplied url is not valid."};
+    case net::ERR_UNEXPECTED:
+      return {DOMExceptionCode::kUnknownError, "Unexpected error occured."};
+    case net::ERR_ACCESS_DENIED:
+      return {DOMExceptionCode::kInvalidAccessError,
+              "Access to the requested host is blocked."};
+    case net::ERR_BLOCKED_BY_RESPONSE:
+      return {
+          DOMExceptionCode::kInvalidAccessError,
+          "Access to the requested host is blocked by cross-origin policy."};
+    default:
+      return {DOMExceptionCode::kNetworkError, "Network Error."};
+  }
 }
+
+DOMException* CreateDOMExceptionFromNetErrorCode(int32_t net_error) {
+  auto [code, message] =
+      CreateDOMExceptionCodeAndMessageFromNetErrorCode(net_error);
+  return MakeGarbageCollected<DOMException>(code, std::move(message));
+}
+
+}  // namespace
 
 UDPSocket::UDPSocket(ExecutionContext* execution_context,
                      ScriptPromiseResolver& resolver)
@@ -85,9 +114,7 @@ void UDPSocket::Init(int32_t result,
       // Error codes are negative.
       base::UmaHistogramSparse(kUDPNetworkFailuresHistogramName, -result);
     }
-    // TODO(crbug/1282199): Create specific exception based on error code.
-    init_resolver_->Reject(MakeGarbageCollected<DOMException>(
-        DOMExceptionCode::kNetworkError, "Network error."));
+    init_resolver_->Reject(CreateDOMExceptionFromNetErrorCode(result));
   }
   init_resolver_ = nullptr;
 }

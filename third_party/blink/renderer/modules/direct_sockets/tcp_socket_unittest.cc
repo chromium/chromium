@@ -110,7 +110,7 @@ TEST(TCPSocketTest, CloseAfterInitWithoutResultOK) {
       scope.GetIsolate(), create_tester.Value().V8Value());
   ASSERT_TRUE(create_exception);
   EXPECT_EQ(create_exception->name(), "NetworkError");
-  EXPECT_EQ(create_exception->message(), "Network error.");
+  EXPECT_EQ(create_exception->message(), "Network Error.");
 
   close_tester.WaitUntilSettled();
   ASSERT_TRUE(close_tester.IsFulfilled());

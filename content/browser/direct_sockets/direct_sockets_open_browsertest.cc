@@ -383,7 +383,7 @@ class DirectSocketsOpenBrowserTest : public ContentBrowserTest {
         protocol == DirectSocketsServiceImpl::ProtocolType::kTcp ? "Tcp"
                                                                  : "Udp";
     const std::string expected_result = base::StringPrintf(
-        "open%s failed: NetworkError: Network error.", type.c_str());
+        "open%s failed: NetworkError: Network Error.", type.c_str());
 
     base::HistogramTester histogram_tester;
     histogram_tester.ExpectBucketCount(
@@ -576,7 +576,7 @@ IN_PROC_BROWSER_TEST_F(DirectSocketsOpenBrowserTest, OpenTcp_OptionsOne) {
   MockNetworkContext mock_network_context(net::ERR_PROXY_CONNECTION_FAILED);
   DirectSocketsServiceImpl::SetNetworkContextForTesting(&mock_network_context);
   const std::string expected_result =
-      "openTcp failed: NetworkError: Network error.";
+      "openTcp failed: NetworkError: Network Error.";
 
   const std::string script =
       R"(
@@ -728,8 +728,8 @@ IN_PROC_BROWSER_TEST_F(DirectSocketsOpenBrowserTest, OpenUdp_NotAllowedError) {
   const std::string script = base::StringPrintf(
       "openUdp({remoteAddress: '127.0.0.1', remotePort: %d})", 0);
 
-  EXPECT_EQ("openUdp failed: NetworkError: Network error.",
-            EvalJs(shell(), script));
+  EXPECT_THAT(EvalJs(shell(), script).ExtractString(),
+              ::testing::HasSubstr("NetworkError"));
 }
 
 // Remote address should be provided or TEST will fail with NotAllowedError. In
@@ -815,7 +815,7 @@ IN_PROC_BROWSER_TEST_F(DirectSocketsOpenBrowserTest, OpenUdp_OptionsOne) {
   MockNetworkContext mock_network_context(net::ERR_PROXY_CONNECTION_FAILED);
   DirectSocketsServiceImpl::SetNetworkContextForTesting(&mock_network_context);
   const std::string expected_result =
-      "openUdp failed: NetworkError: Network error.";
+      "openUdp failed: NetworkError: Network Error.";
 
   const std::string script =
       R"(
@@ -948,15 +948,15 @@ IN_PROC_BROWSER_TEST_P(DirectSocketsOpenCorsBrowserTest, OpenTcp) {
 
   bool cors_success = GetParam();
 
-  const std::string expected_verdict =
-      cors_success
-          ? base::StringPrintf(
-                "openTcp succeeded: {remoteAddress: \"127.0.0.1\", remotePort: "
-                "%d}",
-                https_server()->port())
-          : "openTcp failed: NetworkError: Network error.";
-
-  EXPECT_EQ(expected_verdict, EvalJs(shell(), script));
+  auto script_result = EvalJs(shell(), script).ExtractString();
+  if (cors_success) {
+    EXPECT_THAT(script_result, ::testing::HasSubstr("openTcp succeeded"));
+  } else {
+    EXPECT_THAT(
+        script_result,
+        ::testing::AllOf(::testing::HasSubstr("InvalidAccessError"),
+                         ::testing::HasSubstr("blocked by cross-origin")));
+  }
 
   histogram_tester.ExpectBucketCount(
       kPermissionDeniedHistogramName,
@@ -984,15 +984,15 @@ IN_PROC_BROWSER_TEST_P(DirectSocketsOpenCorsBrowserTest, OpenUdp) {
 
   bool cors_success = GetParam();
 
-  const std::string expected_verdict =
-      cors_success
-          ? base::StringPrintf(
-                "openUdp succeeded: {remoteAddress: \"127.0.0.1\", remotePort: "
-                "%d}",
-                https_server()->port())
-          : "openUdp failed: NetworkError: Network error.";
-
-  EXPECT_EQ(expected_verdict, EvalJs(shell(), script));
+  auto script_result = EvalJs(shell(), script).ExtractString();
+  if (cors_success) {
+    EXPECT_THAT(script_result, ::testing::HasSubstr("openUdp succeeded"));
+  } else {
+    EXPECT_THAT(
+        script_result,
+        ::testing::AllOf(::testing::HasSubstr("InvalidAccessError"),
+                         ::testing::HasSubstr("blocked by cross-origin")));
+  }
 
   histogram_tester.ExpectBucketCount(
       kPermissionDeniedHistogramName,

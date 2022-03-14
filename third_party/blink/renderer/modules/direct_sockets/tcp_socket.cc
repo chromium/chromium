@@ -18,6 +18,34 @@ namespace {
 constexpr char kTCPNetworkFailuresHistogramName[] =
     "DirectSockets.TCPNetworkFailures";
 
+std::pair<DOMExceptionCode, String>
+CreateDOMExceptionCodeAndMessageFromNetErrorCode(int32_t net_error) {
+  switch (net_error) {
+    case net::ERR_NAME_NOT_RESOLVED:
+      return {DOMExceptionCode::kNetworkError,
+              "Hostname couldn't be resolved."};
+    case net::ERR_INVALID_URL:
+      return {DOMExceptionCode::kDataError, "Supplied url is not valid."};
+    case net::ERR_UNEXPECTED:
+      return {DOMExceptionCode::kUnknownError, "Unexpected error occured."};
+    case net::ERR_ACCESS_DENIED:
+      return {DOMExceptionCode::kInvalidAccessError,
+              "Access to the requested host is blocked."};
+    case net::ERR_BLOCKED_BY_RESPONSE:
+      return {
+          DOMExceptionCode::kInvalidAccessError,
+          "Access to the requested host is blocked by cross-origin policy."};
+    default:
+      return {DOMExceptionCode::kNetworkError, "Network Error."};
+  }
+}
+
+DOMException* CreateDOMExceptionFromNetErrorCode(int32_t net_error) {
+  auto [code, message] =
+      CreateDOMExceptionCodeAndMessageFromNetErrorCode(net_error);
+  return MakeGarbageCollected<DOMException>(code, std::move(message));
+}
+
 }  // namespace
 
 TCPSocket::TCPSocket(ExecutionContext* execution_context,
@@ -83,9 +111,7 @@ void TCPSocket::Init(int32_t result,
       // Error codes are negative.
       base::UmaHistogramSparse(kTCPNetworkFailuresHistogramName, -result);
     }
-    // TODO(crbug/1282199): Create specific exception based on error code.
-    resolver_->Reject(MakeGarbageCollected<DOMException>(
-        DOMExceptionCode::kNetworkError, "Network error."));
+    resolver_->Reject(CreateDOMExceptionFromNetErrorCode(result));
     socket_observer_receiver_.reset();
   }
   resolver_ = nullptr;
