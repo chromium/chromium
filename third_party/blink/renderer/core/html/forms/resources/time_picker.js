@@ -87,7 +87,7 @@ class Time {
   value = (columnType, hasAMPM) => {
     switch (columnType) {
       case TimeColumnType.HOUR:
-        let hour = hasAMPM ?
+        const hour = hasAMPM ?
             (this.hour_ % Time.Maximum_Hour_AMPM || Time.Maximum_Hour_AMPM) :
             this.hour_;
         return hour.toString().padStart(2, '0');
@@ -123,22 +123,22 @@ class Time {
   };
 
   static parse = (str) => {
-    var match = Time.ISOStringRegExp.exec(str);
+    const match = Time.ISOStringRegExp.exec(str);
     if (!match)
       return null;
-    var hour = parseInt(match[1], 10);
-    var minute = parseInt(match[2], 10);
-    var second = 0;
+    const hour = parseInt(match[1], 10);
+    const minute = parseInt(match[2], 10);
+    let second = 0;
     if (match[3])
       second = parseInt(match[3], 10);
-    var millisecond = 0;
+    let millisecond = 0;
     if (match[4])
       millisecond = parseInt(match[4], 10);
     return new Time(hour, minute, second, millisecond);
   };
 
   static currentTime = () => {
-    var currentDate = new Date();
+    const currentDate = new Date();
     return new Time(
         currentDate.getHours(), currentDate.getMinutes(),
         currentDate.getSeconds(), currentDate.getMilliseconds());
@@ -465,7 +465,7 @@ class TimeColumn extends HTMLUListElement {
 
   createAndInitializeCells_ = (timePicker) => {
     const totalCells = Time.numberOfValues(this.columnType_, timePicker.hasAMPM);
-    let currentTime = timePicker.initialSelectedTime.clone();
+    const currentTime = timePicker.initialSelectedTime.clone();
 
     // The granularity of millisecond cells is once cell per 100ms.
     // But, we want to have a cell with the exact millisecond value of the
@@ -475,14 +475,14 @@ class TimeColumn extends HTMLUListElement {
     // one in the subsequent loop.
     let roundedMillisecondValue = 0;
     if (this.columnType_ === TimeColumnType.MILLISECOND) {
-      let millisecondValue =
+      const millisecondValue =
           currentTime.value(TimeColumnType.MILLISECOND, timePicker.hasAMPM);
       roundedMillisecondValue =
           (100 * Math.floor((Number(millisecondValue) + 50.0) / 100.0)) % 1000;
     }
 
-    let time = new Time(1, 1, 1, 100);
-    let cells = [];
+    const time = new Time(1, 1, 1, 100);
+    const cells = [];
     let initialCellIndex = -1;
     for (let i = 0; i < totalCells; i++) {
       let value = time.value(this.columnType_, timePicker.hasAMPM);
@@ -499,7 +499,7 @@ class TimeColumn extends HTMLUListElement {
         initialCellIndex = i;
       }
 
-      let timeCell = new TimeCell(value, localizeNumber(value));
+      const timeCell = new TimeCell(value, localizeNumber(value));
       cells.push(timeCell);
 
       timeCell.initialOffsetTop = TimeColumn.CELL_HEIGHT * i;
@@ -522,7 +522,7 @@ class TimeColumn extends HTMLUListElement {
     let lastScrollPosition = 0;
     let upcomingSnapToCellEdge = null;
     this.addEventListener('scroll', (event) => {
-      let isGoingDown = (this.scrollTop > lastScrollPosition);
+      const isGoingDown = (this.scrollTop > lastScrollPosition);
       lastScrollPosition = this.scrollTop;
 
       // Rotate cells down until there is one cell beyond the bottom
@@ -558,7 +558,7 @@ class TimeColumn extends HTMLUListElement {
   * nearest TimeCell in the given direction.
   */
   snapToCellEdge_ = (isGoingDown) => {
-    let offsetFromCellEdge =
+    const offsetFromCellEdge =
         (this.cellsInLayoutOrder[this.cellsInLayoutOrder.length - 1].offsetTop -
          this.scrollTop) %
         TimeColumn.CELL_HEIGHT;
@@ -585,7 +585,7 @@ class TimeColumn extends HTMLUListElement {
   // helpers to convert to an "absolute" position that is easier to reason
   // about when manipulating the layout position of the TimeCells.
   static getCellAbsolutePosition = (cell) => {
-    let cellOffset = parseInt(cell.style.top.substring(
+    const cellOffset = parseInt(cell.style.top.substring(
         0, cell.style.top.length - 2));  // Chop off the 'px'
     return (cellOffset + cell.initialOffsetTop);
   };
@@ -599,18 +599,18 @@ class TimeColumn extends HTMLUListElement {
   // always be visible wherever the user scrolls.
   rotateCells_ = (topToBottom) => {
     if (topToBottom) {
-      let topCell = this.cellsInLayoutOrder.shift();
-      let bottomCell =
+      const topCell = this.cellsInLayoutOrder.shift();
+      const bottomCell =
           this.cellsInLayoutOrder[this.cellsInLayoutOrder.length - 1];
-      let bottomCellAbsoluteOffset =
+      const bottomCellAbsoluteOffset =
           TimeColumn.getCellAbsolutePosition(bottomCell);
       TimeColumn.setCellAbsolutePosition(
           topCell, bottomCellAbsoluteOffset + TimeColumn.CELL_HEIGHT);
       this.cellsInLayoutOrder.push(topCell);
     } else {
-      let topCell = this.cellsInLayoutOrder[0];
-      let bottomCell = this.cellsInLayoutOrder.pop();
-      let absoluteTopCellOffset = TimeColumn.getCellAbsolutePosition(topCell);
+      const topCell = this.cellsInLayoutOrder[0];
+      const bottomCell = this.cellsInLayoutOrder.pop();
+      const absoluteTopCellOffset = TimeColumn.getCellAbsolutePosition(topCell);
       TimeColumn.setCellAbsolutePosition(
           bottomCell, absoluteTopCellOffset - TimeColumn.CELL_HEIGHT);
       this.cellsInLayoutOrder.unshift(bottomCell);
@@ -618,10 +618,10 @@ class TimeColumn extends HTMLUListElement {
   };
 
   createAndInitializeAMPMCells_ = (timePicker) => {
-    let cells = [];
+    const cells = [];
     for (let i = 0; i < 2; i++) {
-      let value = global.params.ampmLabels[i];
-      let timeCell = new TimeCell(value, value);
+      const value = global.params.ampmLabels[i];
+      const timeCell = new TimeCell(value, value);
       cells.push(timeCell);
     }
 

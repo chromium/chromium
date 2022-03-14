@@ -76,7 +76,7 @@ class SuggestionPicker extends Picker {
   }
 
   _setColors() {
-    var text = '.' + SuggestionPicker.ListEntryClass + ':focus {\
+    let text = '.' + SuggestionPicker.ListEntryClass + ':focus {\
           background-color: ' +
         this._config.suggestionHighlightColor + ';\
           color: ' +
@@ -99,15 +99,15 @@ class SuggestionPicker extends Picker {
    * @return {!Element}
    */
   _createSuggestionEntryElement(title, label, value) {
-    var entryElement = createElement('li', SuggestionPicker.ListEntryClass);
+    const entryElement = createElement('li', SuggestionPicker.ListEntryClass);
     entryElement.tabIndex = 0;
     entryElement.dataset.value = value;
-    var content = createElement('span', 'content');
+    const content = createElement('span', 'content');
     entryElement.appendChild(content);
-    var titleElement = createElement('span', 'title', title);
+    const titleElement = createElement('span', 'title', title);
     content.appendChild(titleElement);
     if (label) {
-      var labelElement = createElement('span', 'label', label);
+      const labelElement = createElement('span', 'label', label);
       content.appendChild(labelElement);
     }
     entryElement.addEventListener(
@@ -121,12 +121,12 @@ class SuggestionPicker extends Picker {
    * @return {!Element}
    */
   _createActionEntryElement(title, actionName) {
-    var entryElement = createElement('li', SuggestionPicker.ListEntryClass);
+    const entryElement = createElement('li', SuggestionPicker.ListEntryClass);
     entryElement.tabIndex = 0;
     entryElement.dataset.action = actionName;
-    var content = createElement('span', 'content');
+    const content = createElement('span', 'content');
     entryElement.appendChild(content);
-    var titleElement = createElement('span', 'title', title);
+    const titleElement = createElement('span', 'title', title);
     content.appendChild(titleElement);
     entryElement.addEventListener(
         'mouseover', this._handleEntryMouseOver.bind(this), false);
@@ -140,10 +140,10 @@ class SuggestionPicker extends Picker {
     // To measure the required width, we first set the class to "measuring-width" which
     // left aligns all the content including label.
     this._containerElement.classList.add('measuring-width');
-    var maxContentWidth = 0;
-    var contentElements =
+    let maxContentWidth = 0;
+    const contentElements =
         this._containerElement.getElementsByClassName('content');
-    for (var i = 0; i < contentElements.length; ++i) {
+    for (let i = 0; i < contentElements.length; ++i) {
       maxContentWidth = Math.max(
           maxContentWidth, contentElements[i].getBoundingClientRect().width);
     }
@@ -152,19 +152,19 @@ class SuggestionPicker extends Picker {
   }
 
   _fixWindowSize() {
-    var ListBorder = 2;
+    const ListBorder = 2;
     const ListPadding = 2 * this.Padding();
-    var zoom = this._config.zoomFactor;
-    var desiredWindowWidth =
+    const zoom = this._config.zoomFactor;
+    let desiredWindowWidth =
         (this._measureMaxContentWidth() + ListBorder + ListPadding) * zoom;
     if (typeof this._config.inputWidth === 'number')
       desiredWindowWidth =
           Math.max(this._config.inputWidth, desiredWindowWidth);
-    var totalHeight = ListBorder + ListPadding;
-    var maxHeight = 0;
-    var entryCount = 0;
-    for (var i = 0; i < this._containerElement.childNodes.length; ++i) {
-      var node = this._containerElement.childNodes[i];
+    let totalHeight = ListBorder + ListPadding;
+    let maxHeight = 0;
+    let entryCount = 0;
+    for (let i = 0; i < this._containerElement.childNodes.length; ++i) {
+      const node = this._containerElement.childNodes[i];
       if (node.classList.contains(SuggestionPicker.ListEntryClass))
         entryCount++;
       totalHeight += node.offsetHeight;
@@ -172,7 +172,7 @@ class SuggestionPicker extends Picker {
           entryCount == SuggestionPicker.NumberOfVisibleEntries)
         maxHeight = totalHeight;
     }
-    var desiredWindowHeight = totalHeight * zoom;
+    let desiredWindowHeight = totalHeight * zoom;
     if (maxHeight !== 0 && totalHeight > maxHeight * zoom) {
       this._containerElement.style.maxHeight =
           maxHeight - ListBorder - ListPadding + 'px';
@@ -180,7 +180,7 @@ class SuggestionPicker extends Picker {
       desiredWindowHeight = maxHeight * zoom;
       this._containerElement.style.overflowY = 'scroll';
     }
-    var windowRect = adjustWindowRect(
+    const windowRect = adjustWindowRect(
         desiredWindowWidth, desiredWindowHeight, desiredWindowWidth, 0);
     this._containerElement.style.height =
         windowRect.height / zoom - ListBorder - ListPadding + 'px';
@@ -198,14 +198,14 @@ class SuggestionPicker extends Picker {
     }
     this._containerElement.addEventListener(
         'click', this._handleEntryClick.bind(this), false);
-    for (var i = 0; i < this._config.suggestionValues.length; ++i) {
+    for (let i = 0; i < this._config.suggestionValues.length; ++i) {
       this._containerElement.appendChild(this._createSuggestionEntryElement(
           this._config.localizedSuggestionValues[i],
           this._config.suggestionLabels[i], this._config.suggestionValues[i]));
     }
     if (this._config.showOtherDateEntry) {
       // Add "Other..." entry
-      var otherEntry = this._createActionEntryElement(
+      const otherEntry = this._createActionEntryElement(
           this._config.otherDateLabel,
           SuggestionPicker.ActionNames.OpenCalendarPicker);
       this._containerElement.appendChild(otherEntry);
@@ -238,7 +238,7 @@ class SuggestionPicker extends Picker {
    * @param {!Event} event
    */
   _handleEntryClick(event) {
-    var entry = enclosingNodeOrSelfWithClass(
+    const entry = enclosingNodeOrSelfWithClass(
         event.target, SuggestionPicker.ListEntryClass);
     if (!entry)
       return;
@@ -250,10 +250,10 @@ class SuggestionPicker extends Picker {
    * @return {?Element}
    */
   _findFirstVisibleEntry() {
-    var scrollTop = this._containerElement.scrollTop;
-    var childNodes = this._containerElement.childNodes;
-    for (var i = 0; i < childNodes.length; ++i) {
-      var node = childNodes[i];
+    const scrollTop = this._containerElement.scrollTop;
+    const childNodes = this._containerElement.childNodes;
+    for (let i = 0; i < childNodes.length; ++i) {
+      const node = childNodes[i];
       if (node.nodeType !== Node.ELEMENT_NODE ||
           !node.classList.contains(SuggestionPicker.ListEntryClass))
         continue;
@@ -268,11 +268,11 @@ class SuggestionPicker extends Picker {
    * @return {?Element}
    */
   _findLastVisibleEntry() {
-    var scrollBottom =
+    const scrollBottom =
         this._containerElement.scrollTop + this._containerElement.offsetHeight;
-    var childNodes = this._containerElement.childNodes;
-    for (var i = childNodes.length - 1; i >= 0; --i) {
-      var node = childNodes[i];
+    const childNodes = this._containerElement.childNodes;
+    for (let i = childNodes.length - 1; i >= 0; --i) {
+      const node = childNodes[i];
       if (node.nodeType !== Node.ELEMENT_NODE ||
           !node.classList.contains(SuggestionPicker.ListEntryClass))
         continue;
@@ -287,8 +287,8 @@ class SuggestionPicker extends Picker {
    * @param {!Event} event
    */
   _handleBodyKeyDown(event) {
-    var eventHandled = false;
-    var key = event.key;
+    let eventHandled = false;
+    const key = event.key;
     if (key === 'Escape') {
       this.handleCancel();
       eventHandled = true;
@@ -296,7 +296,7 @@ class SuggestionPicker extends Picker {
       if (document.activeElement &&
           document.activeElement.classList.contains(
               SuggestionPicker.ListEntryClass)) {
-        for (var node = document.activeElement.previousElementSibling; node;
+        for (let node = document.activeElement.previousElementSibling; node;
              node = node.previousElementSibling) {
           if (node.classList.contains(SuggestionPicker.ListEntryClass)) {
             this._isFocusByMouse = false;
@@ -315,7 +315,7 @@ class SuggestionPicker extends Picker {
       if (document.activeElement &&
           document.activeElement.classList.contains(
               SuggestionPicker.ListEntryClass)) {
-        for (var node = document.activeElement.nextElementSibling; node;
+        for (let node = document.activeElement.nextElementSibling; node;
              node = node.nextElementSibling) {
           if (node.classList.contains(SuggestionPicker.ListEntryClass)) {
             this._isFocusByMouse = false;
@@ -354,7 +354,7 @@ class SuggestionPicker extends Picker {
    * @param {!Event} event
    */
   _handleEntryMouseOver(event) {
-    var entry = enclosingNodeOrSelfWithClass(
+    const entry = enclosingNodeOrSelfWithClass(
         event.target, SuggestionPicker.ListEntryClass);
     if (!entry)
       return;

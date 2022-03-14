@@ -19,7 +19,7 @@ function handleMessage(event) {
  */
 function initialize(args) {
   global.params = args;
-  var main = $('main');
+  const main = $('main');
   main.innerHTML = '';
   global.picker = new ListPicker(main, args);
 }
@@ -73,7 +73,7 @@ class ListPicker extends Picker {
 
   _handleWindowDidHide() {
     this._fixWindowSize();
-    var selectedOption =
+    const selectedOption =
         this._selectElement.options[this._selectElement.selectedIndex];
     if (selectedOption)
       selectedOption.scrollIntoView(false);
@@ -108,10 +108,10 @@ class ListPicker extends Picker {
   static ListboxSelectBorder = 1;
 
   _handleWindowMouseMove(event) {
-    var visibleTop = ListPicker.ListboxSelectBorder;
-    var visibleBottom =
+    const visibleTop = ListPicker.ListboxSelectBorder;
+    const visibleBottom =
         this._selectElement.offsetHeight - ListPicker.ListboxSelectBorder;
-    var optionBounds = event.target.getBoundingClientRect();
+    const optionBounds = event.target.getBoundingClientRect();
     if (optionBounds.height >= 1.0) {
       // If the height of the visible part of event.target is less than 1px,
       // ignore this event because it may be an error by sub-pixel layout.
@@ -146,7 +146,7 @@ class ListPicker extends Picker {
       return;
     // Enter touch select mode. In touch select mode the highlight follows the
     // finger and on touchend the highlighted item is selected.
-    var touch = event.touches[0];
+    const touch = event.touches[0];
     this._trackingTouchId = touch.identifier;
     this._highlightOption(touch.target);
     this._selectionSetByMouseHover = false;
@@ -171,7 +171,7 @@ class ListPicker extends Picker {
   _handleWindowTouchMove(event) {
     if (this._trackingTouchId === null)
       return;
-    var touch = this._getTouchForId(event.touches, this._trackingTouchId);
+    const touch = this._getTouchForId(event.touches, this._trackingTouchId);
     if (!touch)
       return;
     this._highlightOption(
@@ -182,11 +182,11 @@ class ListPicker extends Picker {
   _handleWindowTouchEnd(event) {
     if (this._trackingTouchId === null)
       return;
-    var touch =
+    const touch =
         this._getTouchForId(event.changedTouches, this._trackingTouchId);
     if (!touch)
       return;
-    var target = document.elementFromPoint(touch.clientX, touch.clientY);
+    const target = document.elementFromPoint(touch.clientX, touch.clientY);
     if (target.tagName === 'OPTION' && !target.disabled)
       window.pagePopupController.setValueAndClosePopup(
           0, this._selectElement.value);
@@ -194,7 +194,7 @@ class ListPicker extends Picker {
   }
 
   _getTouchForId(touchList, id) {
-    for (var i = 0; i < touchList.length; i++) {
+    for (let i = 0; i < touchList.length; i++) {
       if (touchList[i].identifier === id)
         return touchList[i];
     }
@@ -204,7 +204,7 @@ class ListPicker extends Picker {
   _highlightOption(target) {
     if (target.tagName !== 'OPTION' || target.selected || target.disabled)
       return;
-    var savedScrollTop = this._selectElement.scrollTop;
+    const savedScrollTop = this._selectElement.scrollTop;
     // TODO(tkent): Updating HTMLOptionElement::selected is not efficient. We
     // should optimize it, or use an alternative way.
     target.selected = true;
@@ -217,7 +217,7 @@ class ListPicker extends Picker {
   }
 
   _handleKeyDown(event) {
-    var key = event.key;
+    const key = event.key;
     if (key === 'Escape') {
       window.pagePopupController.closePopup();
       event.preventDefault();
@@ -238,19 +238,19 @@ class ListPicker extends Picker {
 
   _fixWindowSize() {
     this._selectElement.style.height = '';
-    var scale = this._config.scaleFactor;
-    var maxHeight = this._selectElement.offsetHeight;
-    var noScrollHeight =
+    const scale = this._config.scaleFactor;
+    const maxHeight = this._selectElement.offsetHeight;
+    const noScrollHeight =
         (this._calculateScrollHeight() + ListPicker.ListboxSelectBorder * 2);
-    var scrollbarWidth = getScrollbarWidth();
-    var elementOffsetWidth = this._selectElement.offsetWidth;
-    var desiredWindowHeight = noScrollHeight;
-    var desiredWindowWidth = elementOffsetWidth;
+    const scrollbarWidth = getScrollbarWidth();
+    const elementOffsetWidth = this._selectElement.offsetWidth;
+    let desiredWindowHeight = noScrollHeight;
+    let desiredWindowWidth = elementOffsetWidth;
     // If we already have a vertical scrollbar, subtract it out, it will get
     // re-added below.
     if (this._selectElement.scrollHeight > this._selectElement.clientHeight)
       desiredWindowWidth -= scrollbarWidth;
-    var expectingScrollbar = false;
+    let expectingScrollbar = false;
     if (desiredWindowHeight > maxHeight) {
       desiredWindowHeight = maxHeight;
       // Setting overflow to auto does not increase width for the scrollbar
@@ -261,7 +261,7 @@ class ListPicker extends Picker {
     // Screen coordinate for anchorRectInScreen and windowRect is DIP.
     desiredWindowWidth = Math.max(
         this._config.anchorRectInScreen.width * scale, desiredWindowWidth);
-    var windowRect = adjustWindowRect(
+    let windowRect = adjustWindowRect(
         desiredWindowWidth / scale, desiredWindowHeight / scale,
         elementOffsetWidth / scale, 0);
     // If the available screen space is smaller than maxHeight, we will get
@@ -282,10 +282,10 @@ class ListPicker extends Picker {
     // Element.scrollHeight returns an integer value but this calculate the
     // actual fractional value.
     // TODO(tkent): This can be too large? crbug.com/579863
-    var top = Infinity;
-    var bottom = -Infinity;
-    for (var i = 0; i < this._selectElement.children.length; i++) {
-      var rect = this._selectElement.children[i].getBoundingClientRect();
+    let top = Infinity;
+    let bottom = -Infinity;
+    for (let i = 0; i < this._selectElement.children.length; i++) {
+      const rect = this._selectElement.children[i].getBoundingClientRect();
       // Skip hidden elements.
       if (rect.width === 0 && rect.height === 0)
         continue;
@@ -317,14 +317,14 @@ class ListPicker extends Picker {
   }
 
   _update() {
-    var scrollPosition = this._selectElement.scrollTop;
-    var oldValue = this._selectElement.value;
+    const scrollPosition = this._selectElement.scrollTop;
+    const oldValue = this._selectElement.value;
     this._layout();
     this._selectElement.value = this._config.selectedIndex;
     this._selectElement.scrollTop = scrollPosition;
-    var optionUnderMouse = null;
+    let optionUnderMouse = null;
     if (this._selectionSetByMouseHover) {
-      var elementUnderMouse = document.elementFromPoint(
+      const elementUnderMouse = document.elementFromPoint(
           this.lastMousePositionX, this.lastMousePositionY);
       optionUnderMouse =
           elementUnderMouse && elementUnderMouse.closest('option');
@@ -344,18 +344,19 @@ class ListPicker extends Picker {
    * @param {!Object} config
    */
   _updateChildren(parent, config) {
-    var outOfDateIndex = 0;
-    var fragment = null;
-    var inGroup = parent.tagName === 'OPTGROUP';
-    var lastListIndex = -1;
-    var limit =
+    let outOfDateIndex = 0;
+    let fragment = null;
+    const inGroup = parent.tagName === 'OPTGROUP';
+    let lastListIndex = -1;
+    const limit =
         Math.max(this._config.selectedIndex, ListPicker.DelayedLayoutThreshold);
-    var i;
+    let i;
     for (i = 0; i < config.children.length; ++i) {
       if (!inGroup && lastListIndex >= limit)
         break;
-      var childConfig = config.children[i];
-      var item = this._findReusableItem(parent, childConfig, outOfDateIndex) ||
+      const childConfig = config.children[i];
+      const item =
+          this._findReusableItem(parent, childConfig, outOfDateIndex) ||
           this._createItemElement(childConfig);
       this._configureItem(item, childConfig, inGroup);
       lastListIndex = item.value ? Number(item.value) : -1;
@@ -371,8 +372,8 @@ class ListPicker extends Picker {
     if (fragment) {
       parent.appendChild(fragment);
     } else {
-      var unused = parent.children.length - outOfDateIndex;
-      for (var j = 0; j < unused; j++) {
+      const unused = parent.children.length - outOfDateIndex;
+      for (let j = 0; j < unused; j++) {
         parent.removeChild(parent.lastElementChild);
       }
     }
@@ -390,14 +391,14 @@ class ListPicker extends Picker {
   _updateChildrenLater(timeStamp) {
     if (!this._delayedChildrenConfig)
       return;
-    var fragment = document.createDocumentFragment();
-    var startIndex = this._delayedChildrenConfigIndex;
+    const fragment = document.createDocumentFragment();
+    const startIndex = this._delayedChildrenConfigIndex;
     for (;
          this._delayedChildrenConfigIndex < this._delayedChildrenConfig.length;
          ++this._delayedChildrenConfigIndex) {
-      var childConfig =
+      const childConfig =
           this._delayedChildrenConfig[this._delayedChildrenConfigIndex];
-      var item = this._createItemElement(childConfig);
+      const item = this._createItemElement(childConfig);
       this._configureItem(item, childConfig, false);
       fragment.appendChild(item);
     }
@@ -409,13 +410,13 @@ class ListPicker extends Picker {
   _findReusableItem(parent, config, startIndex) {
     if (startIndex >= parent.children.length)
       return null;
-    var tagName = 'OPTION';
+    let tagName = 'OPTION';
     if (config.type === 'optgroup')
       tagName = 'OPTGROUP';
     else if (config.type === 'separator')
       tagName = 'HR';
-    for (var i = startIndex; i < parent.children.length; i++) {
-      var child = parent.children[i];
+    for (let i = startIndex; i < parent.children.length; i++) {
+      const child = parent.children[i];
       if (tagName === child.tagName) {
         return child;
       }
@@ -424,7 +425,7 @@ class ListPicker extends Picker {
   }
 
   _createItemElement(config) {
-    var element;
+    let element;
     if (!config.type || config.type === 'option')
       element = createElement('option');
     else if (config.type === 'optgroup')
@@ -437,7 +438,7 @@ class ListPicker extends Picker {
   _applyItemStyle(element, styleConfig) {
     if (!styleConfig)
       return;
-    var style = element.style;
+    const style = element.style;
     style.visibility = styleConfig.visibility ? styleConfig.visibility : '';
     style.display = styleConfig.display ? styleConfig.display : '';
     style.direction = styleConfig.direction ? styleConfig.direction : '';
