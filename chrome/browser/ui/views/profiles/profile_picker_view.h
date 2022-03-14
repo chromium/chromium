@@ -224,8 +224,13 @@ class ProfilePickerView : public views::WidgetDelegateView,
 
   ScopedKeepAlive keep_alive_;
   std::unique_ptr<ScopedProfileKeepAlive> profile_keep_alive_;
-  ProfilePicker::Params params_;
+
   State state_ = State::kNotStarted;
+
+  // During destruction, `params_` should stay alive longer than
+  // `signed_in_flow_` (below) as the flow may want to trigger a callback owned
+  // by `params_`.
+  ProfilePicker::Params params_;
 
   // Callback that gets called (if set) when the current window has closed -
   // used to reshow the picker (with different params).

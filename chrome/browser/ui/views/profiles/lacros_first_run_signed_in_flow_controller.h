@@ -8,6 +8,8 @@
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ui/views/profiles/profile_picker_signed_in_flow_controller.h"
 
+#include "components/signin/public/identity_manager/identity_manager.h"
+
 // Class responsible for the first run (signed-in) flow for the primary profile
 // on lacros (most importantly offering sync).
 class LacrosFirstRunSignedInFlowController
@@ -33,6 +35,7 @@ class LacrosFirstRunSignedInFlowController
       const ProfilePickerSignedInFlowController&) = delete;
 
   // ProfilePickerSignedInFlowController:
+  void Init() override;
   void Cancel() override;
   void FinishAndOpenBrowser(
       ProfilePicker::BrowserOpenedCallback callback) override;
@@ -40,6 +43,8 @@ class LacrosFirstRunSignedInFlowController
  private:
   // Callback that gets called if the onboarding finishes successfully.
   OnboardingFinishedCallback onboarding_finished_callback_;
+
+  std::unique_ptr<signin::IdentityManager::Observer> can_retry_init_observer_;
 
   base::WeakPtrFactory<LacrosFirstRunSignedInFlowController> weak_ptr_factory_{
       this};
