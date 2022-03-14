@@ -294,7 +294,8 @@ void UpdateServiceImpl::RunPeriodicTasks(base::OnceClosure callback) {
   std::vector<base::OnceCallback<void(base::OnceClosure)>> new_tasks;
   new_tasks.push_back(
       base::BindOnce(&RemoveUninstalledAppsTask::Run,
-                     base::MakeRefCounted<RemoveUninstalledAppsTask>(config_)));
+                     base::MakeRefCounted<RemoveUninstalledAppsTask>(
+                         config_, GetUpdaterScope())));
   new_tasks.push_back(base::BindOnce(&UpdateUsageStatsTask::Run,
                                      base::MakeRefCounted<UpdateUsageStatsTask>(
                                          GetUpdaterScope(), persisted_data_)));

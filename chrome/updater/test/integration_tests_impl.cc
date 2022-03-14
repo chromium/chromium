@@ -4,6 +4,7 @@
 
 #include "chrome/updater/test/integration_tests_impl.h"
 
+#include <algorithm>
 #include <cstdlib>
 #include <memory>
 #include <string>
@@ -11,6 +12,7 @@
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/command_line.h"
+#include "base/containers/contains.h"
 #include "base/files/file_enumerator.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
@@ -362,13 +364,18 @@ void SetServerStarts(UpdaterScope scope, int value) {
   PrefsCommitPendingWrites(global_prefs->GetPrefService());
 }
 
-void ExpectAppUnregisteredExistenceCheckerPath(UpdaterScope scope,
-                                               const std::string& app_id) {
-  scoped_refptr<GlobalPrefs> global_prefs = CreateGlobalPrefs(scope);
-  auto persisted_data =
-      base::MakeRefCounted<PersistedData>(global_prefs->GetPrefService());
-  EXPECT_EQ(base::FilePath(FILE_PATH_LITERAL("")).value(),
-            persisted_data->GetExistenceCheckerPath(app_id).value());
+void ExpectRegistered(UpdaterScope scope, const std::string& app_id) {
+  ASSERT_TRUE(base::Contains(base::MakeRefCounted<PersistedData>(
+                                 CreateGlobalPrefs(scope)->GetPrefService())
+                                 ->GetAppIds(),
+                             app_id));
+}
+
+void ExpectNotRegistered(UpdaterScope scope, const std::string& app_id) {
+  ASSERT_FALSE(base::Contains(base::MakeRefCounted<PersistedData>(
+                                  CreateGlobalPrefs(scope)->GetPrefService())
+                                  ->GetAppIds(),
+                              app_id));
 }
 
 void ExpectAppVersion(UpdaterScope scope,

@@ -140,8 +140,9 @@ void SetExistenceCheckerPath(UpdaterScope scope,
 
 void SetServerStarts(UpdaterScope scope, int value);
 
-void ExpectAppUnregisteredExistenceCheckerPath(UpdaterScope scope,
-                                               const std::string& app_id);
+void ExpectRegistered(UpdaterScope scope, const std::string& app_id);
+
+void ExpectNotRegistered(UpdaterScope scope, const std::string& app_id);
 
 void ExpectAppVersion(UpdaterScope scope,
                       const std::string& app_id,
@@ -202,6 +203,10 @@ void RunRecoveryComponent(UpdaterScope scope,
 void ExpectLastChecked(UpdaterScope scope);
 
 void ExpectLastStarted(UpdaterScope scope);
+
+void InstallApp(UpdaterScope scope, const std::string& app_id);
+
+void UninstallApp(UpdaterScope scope, const std::string& app_id);
 
 }  // namespace test
 }  // namespace updater

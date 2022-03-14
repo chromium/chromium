@@ -957,5 +957,26 @@ void ExpectLegacyUpdaterDataMigrated(UpdaterScope scope) {
   EXPECT_TRUE(persisted_data->GetFingerprint(kChromeAppId).empty());
 }
 
+void InstallApp(UpdaterScope scope, const std::string& app_id) {
+  base::win::RegKey key;
+  ASSERT_EQ(
+      key.Create(
+          scope == UpdaterScope::kSystem ? HKEY_LOCAL_MACHINE
+                                         : HKEY_CURRENT_USER,
+          base::StrCat({CLIENTS_KEY, base::SysUTF8ToWide(app_id)}).c_str(),
+          Wow6432(KEY_WRITE)),
+      ERROR_SUCCESS);
+  RegisterApp(scope, app_id);
+}
+
+void UninstallApp(UpdaterScope scope, const std::string& app_id) {
+  base::win::RegKey key;
+  ASSERT_EQ(key.Open(scope == UpdaterScope::kSystem ? HKEY_LOCAL_MACHINE
+                                                    : HKEY_CURRENT_USER,
+                     CLIENTS_KEY, Wow6432(KEY_WRITE)),
+            ERROR_SUCCESS);
+  ASSERT_EQ(key.DeleteKey(base::SysUTF8ToWide(app_id).c_str()), ERROR_SUCCESS);
+}
+
 }  // namespace test
 }  // namespace updater

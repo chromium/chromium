@@ -194,8 +194,12 @@ class IntegrationTest : public ::testing::Test {
 
   void SetServerStarts(int value) { test_commands_->SetServerStarts(value); }
 
-  void ExpectAppUnregisteredExistenceCheckerPath(const std::string& app_id) {
-    test_commands_->ExpectAppUnregisteredExistenceCheckerPath(app_id);
+  void ExpectRegistered(const std::string& app_id) {
+    test_commands_->ExpectRegistered(app_id);
+  }
+
+  void ExpectNotRegistered(const std::string& app_id) {
+    test_commands_->ExpectNotRegistered(app_id);
   }
 
   void ExpectAppVersion(const std::string& app_id,
@@ -203,8 +207,12 @@ class IntegrationTest : public ::testing::Test {
     test_commands_->ExpectAppVersion(app_id, version);
   }
 
-  void RegisterApp(const std::string& app_id) {
-    test_commands_->RegisterApp(app_id);
+  void InstallApp(const std::string& app_id) {
+    test_commands_->InstallApp(app_id);
+  }
+
+  void UninstallApp(const std::string& app_id) {
+    test_commands_->UninstallApp(app_id);
   }
 
   void RunWake(int exit_code) { test_commands_->RunWake(exit_code); }
@@ -378,7 +386,7 @@ TEST_F(IntegrationTest, SelfUpdate) {
 TEST_F(IntegrationTest, ReportsActive) {
   // A longer than usual timeout is needed for this test because the macOS
   // UpdateServiceInternal server takes at least 10 seconds to shut down after
-  // Install, and RegisterApp cannot make progress until it shut downs and
+  // Install, and InstallApp cannot make progress until it shut downs and
   // releases the global prefs lock. We give it at most 18 seconds to be safe.
   base::test::ScopedRunLoopTimeout timeout(FROM_HERE, base::Seconds(18));
 
@@ -389,9 +397,9 @@ TEST_F(IntegrationTest, ReportsActive) {
 
   // Register apps test1 and test2. Expect registration pings for each.
   ExpectRegistrationEvent(&test_server, "test1");
-  RegisterApp("test1");
+  InstallApp("test1");
   ExpectRegistrationEvent(&test_server, "test2");
-  RegisterApp("test2");
+  InstallApp("test2");
 
   // Set test1 to be active and do a background updatecheck.
   SetActive("test1");
@@ -423,7 +431,7 @@ TEST_F(IntegrationTest, UpdateApp) {
 
   const std::string kAppId("test");
   ExpectRegistrationEvent(&test_server, kAppId);
-  RegisterApp(kAppId);
+  InstallApp(kAppId);
   base::Version v1("1");
   ExpectUpdateSequence(&test_server, kAppId, base::Version("0.1"), v1);
   RunWake(0);
@@ -476,7 +484,7 @@ TEST_F(IntegrationTest, LegacyUpdate3Web) {
 
   const char kAppId[] = "test1";
   ExpectRegistrationEvent(&test_server, kAppId);
-  RegisterApp(kAppId);
+  InstallApp(kAppId);
 
   ExpectNoUpdateSequence(&test_server, kAppId);
   ExpectLegacyUpdate3WebSucceeds(kAppId, STATE_NO_UPDATE, S_OK);
@@ -543,19 +551,20 @@ TEST_F(IntegrationTest, UninstallCmdLine) {
 TEST_F(IntegrationTest, UnregisterUninstalledApp) {
   Install();
   ExpectInstalled();
-  RegisterApp("test1");
-  RegisterApp("test2");
+  InstallApp("test1");
+  InstallApp("test2");
 
   WaitForUpdaterExit();
   ExpectVersionActive(kUpdaterVersion);
   ExpectActiveUpdater();
-  SetExistenceCheckerPath("test1", base::FilePath(FILE_PATH_LITERAL("NONE")));
+  UninstallApp("test1");
 
   RunWake(0);
 
   WaitForUpdaterExit();
   ExpectInstalled();
-  ExpectAppUnregisteredExistenceCheckerPath("test1");
+  ExpectNotRegistered("test1");
+  ExpectRegistered("test2");
 
   Uninstall();
 }
@@ -572,7 +581,7 @@ TEST_F(IntegrationTest, UninstallIfMaxServerWakesBeforeRegistrationExceeded) {
 
 TEST_F(IntegrationTest, UninstallUpdaterWhenAllAppsUninstalled) {
   Install();
-  RegisterApp("test1");
+  InstallApp("test1");
   ExpectInstalled();
   WaitForUpdaterExit();
   // TODO(crbug.com/1287235): The test is flaky without the following line.
@@ -582,7 +591,7 @@ TEST_F(IntegrationTest, UninstallUpdaterWhenAllAppsUninstalled) {
   ExpectInstalled();
   ExpectVersionActive(kUpdaterVersion);
   ExpectActiveUpdater();
-  SetExistenceCheckerPath("test1", base::FilePath(FILE_PATH_LITERAL("NONE")));
+  UninstallApp("test1");
   RunWake(0);
   WaitForUpdaterExit();
   ExpectClean();
@@ -597,15 +606,17 @@ TEST_F(IntegrationTest, UnregisterUnownedApp) {
   ExpectVersionActive(kUpdaterVersion);
   ExpectActiveUpdater();
 
-  RegisterApp("test1");
-  RegisterApp("test2");
+  InstallApp("test1");
+  InstallApp("test2");
+  WaitForUpdaterExit();
 
   SetExistenceCheckerPath("test1", GetDifferentUserPath());
 
   RunWake(0);
   WaitForUpdaterExit();
 
-  ExpectAppUnregisteredExistenceCheckerPath("test1");
+  ExpectNotRegistered("test1");
+  ExpectRegistered("test2");
 
   Uninstall();
 }
@@ -656,7 +667,7 @@ TEST_F(IntegrationTest, SameVersionUpdate) {
 
   const std::string app_id = "test-appid";
   ExpectRegistrationEvent(&test_server, app_id);
-  RegisterApp(app_id);
+  InstallApp(app_id);
 
   const std::string response = base::StringPrintf(
       ")]}'\n"

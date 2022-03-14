@@ -45,7 +45,7 @@ class IntegrationTestCommands
   virtual void ExpectVersionActive(const std::string& version) const = 0;
   virtual void ExpectVersionNotActive(const std::string& version) const = 0;
   virtual void Uninstall() const = 0;
-  virtual void RegisterApp(const std::string& app_id) const = 0;
+  virtual void InstallApp(const std::string& app_id) const = 0;
   virtual void CopyLog() const = 0;
   virtual void SetupFakeUpdaterHigherVersion() const = 0;
   virtual void SetupFakeUpdaterLowerVersion() const = 0;
@@ -53,8 +53,8 @@ class IntegrationTestCommands
   virtual void SetExistenceCheckerPath(const std::string& app_id,
                                        const base::FilePath& path) const = 0;
   virtual void SetServerStarts(int value) const = 0;
-  virtual void ExpectAppUnregisteredExistenceCheckerPath(
-      const std::string& app_id) const = 0;
+  virtual void ExpectRegistered(const std::string& app_id) const = 0;
+  virtual void ExpectNotRegistered(const std::string& app_id) const = 0;
   virtual void ExpectAppVersion(const std::string& app_id,
                                 const base::Version& version) const = 0;
   virtual void RunWake(int exit_code) const = 0;
@@ -86,6 +86,7 @@ class IntegrationTestCommands
                                     const base::Version& version) const = 0;
   virtual void ExpectLastChecked() const = 0;
   virtual void ExpectLastStarted() const = 0;
+  virtual void UninstallApp(const std::string& app_id) const = 0;
 
  protected:
   friend class base::RefCountedThreadSafe<IntegrationTestCommands>;

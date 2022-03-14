@@ -409,5 +409,14 @@ void ExpectLegacyUpdaterDataMigrated(UpdaterScope scope) {
   EXPECT_TRUE(persisted_data->GetFingerprint(kPopularApp).empty());
 }
 
+void InstallApp(UpdaterScope scope, const std::string& app_id) {
+  RegisterApp(scope, app_id);
+}
+
+void UninstallApp(UpdaterScope scope, const std::string& app_id) {
+  SetExistenceCheckerPath(scope, app_id,
+                          base::FilePath(FILE_PATH_LITERAL("NONE")));
+}
+
 }  // namespace test
 }  // namespace updater

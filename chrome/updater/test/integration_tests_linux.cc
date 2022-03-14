@@ -93,5 +93,14 @@ void ExpectLegacyUpdaterDataMigrated(UpdaterScope scope) {
   NOTREACHED();
 }
 
+void InstallApp(UpdaterScope scope, const std::string& app_id) {
+  NOTREACHED();
+}
+
+void UninstallApp(UpdaterScope scope, const std::string& app_id) {
+  // This can probably be combined with mac into integration_tests_posix.cc.
+  NOTREACHED();
+}
+
 }  // namespace test
 }  // namespace updater

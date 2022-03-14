@@ -123,10 +123,12 @@ class IntegrationTestCommandsSystem : public IntegrationTestCommands {
                {Param("value", base::NumberToString(value))});
   }
 
-  void ExpectAppUnregisteredExistenceCheckerPath(
-      const std::string& app_id) const override {
-    RunCommand("expect_app_unregistered_existence_checker_path",
-               {Param("app_id", app_id)});
+  void ExpectRegistered(const std::string& app_id) const override {
+    RunCommand("expect_registered", {Param("app_id", app_id)});
+  }
+
+  void ExpectNotRegistered(const std::string& app_id) const override {
+    RunCommand("expect_not_registered", {Param("app_id", app_id)});
   }
 
   void ExpectAppVersion(const std::string& app_id,
@@ -155,8 +157,8 @@ class IntegrationTestCommandsSystem : public IntegrationTestCommands {
 
   void UpdateAll() const override { RunCommand("update_all", {}); }
 
-  void RegisterApp(const std::string& app_id) const override {
-    RunCommand("register_app", {Param("app_id", app_id)});
+  void InstallApp(const std::string& app_id) const override {
+    RunCommand("install_app", {Param("app_id", app_id)});
   }
 
   void WaitForUpdaterExit() const override {
@@ -240,6 +242,10 @@ class IntegrationTestCommandsSystem : public IntegrationTestCommands {
   void ExpectLastChecked() const override { RunCommand("expect_last_checked"); }
 
   void ExpectLastStarted() const override { RunCommand("expect_last_started"); }
+
+  void UninstallApp(const std::string& app_id) const override {
+    RunCommand("uninstall_app", {Param("app_id", app_id)});
+  }
 
  private:
   ~IntegrationTestCommandsSystem() override = default;

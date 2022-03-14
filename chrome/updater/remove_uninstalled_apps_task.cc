@@ -27,6 +27,7 @@
 #include "chrome/updater/util.h"
 #include "components/prefs/pref_service.h"
 #include "components/update_client/update_client.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace updater {
 
@@ -56,32 +57,26 @@ std::vector<AppInfo> GetRegisteredApps(
     scoped_refptr<updater::PersistedData> persisted_data) {
   std::vector<AppInfo> apps;
   for (const std::string& app_id : persisted_data->GetAppIds()) {
-    if (app_id == kUpdaterAppId)
-      continue;
-
-    const base::FilePath ecp = persisted_data->GetExistenceCheckerPath(app_id);
-    if (!ecp.empty()) {
-      apps.emplace_back(app_id, persisted_data->GetProductVersion(app_id), ecp);
-    }
+    if (app_id != kUpdaterAppId)
+      apps.emplace_back(app_id, persisted_data->GetProductVersion(app_id),
+                        persisted_data->GetExistenceCheckerPath(app_id));
   }
   return apps;
 }
 
-std::vector<PingInfo> GetAppIDsToRemove(const std::vector<AppInfo>& apps) {
+std::vector<PingInfo> GetAppIDsToRemove(
+    const std::vector<AppInfo>& apps,
+    base::RepeatingCallback<absl::optional<int>(const std::string&,
+                                                const base::FilePath&)>
+        predicate) {
   std::vector<PingInfo> app_ids_to_remove;
   for (const auto& app : apps) {
-    if (app.app_id_ == kUpdaterAppId)
-      continue;
-
-    if (!base::PathExists(app.ecp_)) {
+    absl::optional<int> remove_reason = predicate.Run(app.app_id_, app.ecp_);
+    if (remove_reason) {
       app_ids_to_remove.emplace_back(app.app_id_, app.app_version_,
-                                     kUninstallPingReasonUninstalled);
-    } else if (!PathOwnedByUser(app.ecp_)) {
-      app_ids_to_remove.emplace_back(app.app_id_, app.app_version_,
-                                     kUninstallPingReasonUserNotAnOwner);
+                                     *remove_reason);
     }
   }
-
   return app_ids_to_remove;
 }
 
@@ -133,11 +128,13 @@ void RemoveAppIDsAndSendUninstallPings(
 }  // namespace
 
 RemoveUninstalledAppsTask::RemoveUninstalledAppsTask(
-    scoped_refptr<Configurator> config)
+    scoped_refptr<Configurator> config,
+    UpdaterScope scope)
     : config_(config),
       persisted_data_(
           base::MakeRefCounted<PersistedData>(config_->GetPrefService())),
-      update_client_(update_client::UpdateClientFactory(config_)) {}
+      update_client_(update_client::UpdateClientFactory(config_)),
+      scope_(scope) {}
 
 RemoveUninstalledAppsTask::~RemoveUninstalledAppsTask() = default;
 
@@ -145,7 +142,10 @@ void RemoveUninstalledAppsTask::Run(base::OnceClosure callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE, {base::MayBlock()},
-      base::BindOnce(GetAppIDsToRemove, GetRegisteredApps(persisted_data_)),
+      base::BindOnce(
+          GetAppIDsToRemove, GetRegisteredApps(persisted_data_),
+          base::BindRepeating(&RemoveUninstalledAppsTask::GetUnregisterReason,
+                              this)),
       base::BindOnce(&RemoveAppIDsAndSendUninstallPings, std::move(callback),
                      persisted_data_, update_client_));
 }

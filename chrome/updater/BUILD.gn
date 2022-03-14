@@ -172,6 +172,10 @@ if (is_win || is_mac || is_linux) {
       "//url",
     ]
 
+    if (is_posix) {
+      sources += [ "remove_uninstalled_apps_task_posix.cc" ]
+    }
+
     if (is_mac) {
       sources += [
         "activity_impl_mac.cc",
@@ -252,6 +256,7 @@ if (is_win || is_mac || is_linux) {
         "policy/win/group_policy_manager.cc",
         "policy/win/group_policy_manager.h",
         "prefs_win.cc",
+        "remove_uninstalled_apps_task_win.cc",
         "setup_win.cc",
         "update_block_check_win.cc",
         "update_usage_stats_task_win.cc",
