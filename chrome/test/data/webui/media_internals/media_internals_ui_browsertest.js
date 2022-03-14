@@ -24,7 +24,8 @@ MediaInternalsUIBrowserTest.prototype = {
   ],
 };
 
-TEST_F('MediaInternalsUIBrowserTest', 'Integration', function() {
+// Flaky on multiple bots: crbug.com/1305510
+TEST_F('MediaInternalsUIBrowserTest', 'DISABLED_Integration', function() {
   suite('integration_tests', function() {
     // The renderer and player ids are completely arbitrarily.
     var TEST_RENDERER = 12;
