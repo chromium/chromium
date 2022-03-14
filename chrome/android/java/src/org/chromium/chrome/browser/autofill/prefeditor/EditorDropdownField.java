@@ -23,7 +23,6 @@ import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 import androidx.vectordrawable.graphics.drawable.VectorDrawableCompat;
 
-import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.chrome.R;
 import org.chromium.components.autofill.prefeditor.EditorFieldModel;
 import org.chromium.components.autofill.prefeditor.EditorFieldModel.DropdownKeyValue;
@@ -195,14 +194,12 @@ class EditorDropdownField implements EditorFieldView {
                 drawable.setBounds(
                         0, 0, drawable.getIntrinsicWidth(), drawable.getIntrinsicHeight());
                 ((TextView) view).setError(mFieldModel.getErrorMessage(), drawable);
-                mUnderline.setBackgroundColor(ApiCompatibilityUtils.getColor(
-                        mContext.getResources(), R.color.default_text_color_error));
+                mUnderline.setBackgroundColor(mContext.getColor(R.color.default_text_color_error));
                 mErrorLabel.setText(mFieldModel.getErrorMessage());
                 mErrorLabel.setVisibility(View.VISIBLE);
             } else {
                 ((TextView) view).setError(null);
-                mUnderline.setBackgroundColor(ApiCompatibilityUtils.getColor(
-                        mContext.getResources(), R.color.modern_grey_600));
+                mUnderline.setBackgroundColor(mContext.getColor(R.color.modern_grey_600));
                 mErrorLabel.setText(null);
                 mErrorLabel.setVisibility(View.GONE);
             }

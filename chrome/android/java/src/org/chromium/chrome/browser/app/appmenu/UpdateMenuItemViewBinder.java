@@ -14,7 +14,6 @@ import android.widget.TextView;
 import androidx.appcompat.content.res.AppCompatResources;
 import androidx.core.graphics.drawable.DrawableCompat;
 
-import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.omaha.UpdateMenuItemHelper;
 import org.chromium.chrome.browser.toolbar.menu_button.MenuItemState;
@@ -105,8 +104,8 @@ class UpdateMenuItemViewBinder implements CustomViewBinder {
 
             image.setImageResource(mItemState.icon);
             if (mItemState.iconTintId != 0) {
-                DrawableCompat.setTint(image.getDrawable(),
-                        ApiCompatibilityUtils.getColor(view.getResources(), mItemState.iconTintId));
+                DrawableCompat.setTint(
+                        image.getDrawable(), view.getContext().getColor(mItemState.iconTintId));
             }
         } else if (key == AppMenuItemProperties.ENABLED) {
             view.findViewById(R.id.menu_item_text)

@@ -12,7 +12,6 @@ import android.view.LayoutInflater;
 import androidx.annotation.VisibleForTesting;
 import androidx.core.view.ViewCompat;
 
-import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.compositor.layouts.content.InvalidationAwareThumbnailProvider;
 import org.chromium.chrome.browser.feedback.HelpAndFeedbackLauncherImpl;
@@ -58,8 +57,7 @@ public class IncognitoNewTabPage
 
         mActivity = activity;
 
-        mIncognitoNTPBackgroundColor = ApiCompatibilityUtils.getColor(
-                host.getContext().getResources(), R.color.ntp_bg_incognito);
+        mIncognitoNTPBackgroundColor = host.getContext().getColor(R.color.ntp_bg_incognito);
 
         mIncognitoNewTabPageManager = new IncognitoNewTabPageManager() {
             @Override

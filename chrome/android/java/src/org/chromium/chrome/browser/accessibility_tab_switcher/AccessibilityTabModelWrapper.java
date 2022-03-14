@@ -162,8 +162,7 @@ public class AccessibilityTabModelWrapper extends LinearLayout {
 
         updateVisibilityForLayoutOrStackButton();
         if (incognitoSelected) {
-            setBackgroundColor(
-                    ApiCompatibilityUtils.getColor(getResources(), R.color.default_bg_color_dark));
+            setBackgroundColor(getContext().getColor(R.color.default_bg_color_dark));
             mStackButtonWrapper.setSelectedTabIndicatorColor(
                     mTabIconSelectedLightColor.getDefaultColor());
             ApiCompatibilityUtils.setImageTintList(mStandardButtonIcon, mTabIconLightColor);

@@ -70,7 +70,7 @@ public class FindToolbarPhone extends FindToolbar {
     protected int getStatusColor(boolean failed, boolean incognito) {
         if (incognito) {
             final int colorResourceId = failed ? R.color.default_red_light : R.color.white_alpha_50;
-            return ApiCompatibilityUtils.getColor(getContext().getResources(), colorResourceId);
+            return getContext().getColor(colorResourceId);
         }
         return super.getStatusColor(failed, incognito);
     }

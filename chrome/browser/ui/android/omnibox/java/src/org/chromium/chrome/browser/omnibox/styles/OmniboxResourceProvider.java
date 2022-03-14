@@ -16,7 +16,6 @@ import androidx.core.content.ContextCompat;
 
 import com.google.android.material.color.MaterialColors;
 
-import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.chrome.browser.night_mode.NightModeUtils;
 import org.chromium.chrome.browser.omnibox.R;
 import org.chromium.chrome.browser.theme.ThemeUtils;
@@ -179,8 +178,7 @@ public class OmniboxResourceProvider {
         // Suggestions are only shown when the omnibox is focused, hence LIGHT_THEME and DARK_THEME
         // are ignored as they don't change the result.
         return brandedColorScheme == BrandedColorScheme.INCOGNITO
-                ? ApiCompatibilityUtils.getColor(
-                        context.getResources(), R.color.default_text_color_light)
+                ? context.getColor(R.color.default_text_color_light)
                 : MaterialColors.getColor(context, R.attr.colorOnSurface, TAG);
     }
 
@@ -196,8 +194,7 @@ public class OmniboxResourceProvider {
         // Suggestions are only shown when the omnibox is focused, hence LIGHT_THEME and DARK_THEME
         // are ignored as they don't change the result.
         return brandedColorScheme == BrandedColorScheme.INCOGNITO
-                ? ApiCompatibilityUtils.getColor(
-                        context.getResources(), R.color.default_text_color_secondary_light)
+                ? context.getColor(R.color.default_text_color_secondary_light)
                 : MaterialColors.getColor(context, R.attr.colorOnSurfaceVariant, TAG);
     }
 

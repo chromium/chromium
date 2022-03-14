@@ -25,7 +25,6 @@ import androidx.recyclerview.widget.RecyclerView.AdapterDataObserver;
 import androidx.recyclerview.widget.RecyclerView.ItemAnimator;
 import androidx.recyclerview.widget.RecyclerView.OnScrollListener;
 
-import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.components.browser_ui.widget.FadingShadow;
 import org.chromium.components.browser_ui.widget.FadingShadowView;
 import org.chromium.components.browser_ui.widget.R;
@@ -212,8 +211,7 @@ public class SelectableListLayout<E>
 
         mToolbarShadow = findViewById(R.id.shadow);
         mToolbarShadow.init(
-                ApiCompatibilityUtils.getColor(getResources(), R.color.toolbar_shadow_color),
-                FadingShadow.POSITION_TOP);
+                getContext().getColor(R.color.toolbar_shadow_color), FadingShadow.POSITION_TOP);
 
         delegate.addObserver(this);
         setToolbarShadowVisibility();

@@ -20,7 +20,6 @@ import androidx.test.filters.SmallTest;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.base.test.UiThreadTest;
 import org.chromium.chrome.tab_ui.R;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
@@ -187,11 +186,9 @@ public class MessageCardViewBinderTest extends BlankUiTestActivityTestCase {
 
         mItemViewModel.set(MessageCardViewProperties.IS_INCOGNITO, true);
         assertThat(description.getCurrentTextColor(),
-                equalTo(ApiCompatibilityUtils.getColor(
-                        mItemView.getResources(), R.color.default_text_color_light_list)));
+                equalTo(mItemView.getContext().getColor(R.color.default_text_color_light_list)));
         assertThat(actionButton.getCurrentTextColor(),
-                equalTo(ApiCompatibilityUtils.getColor(
-                        mItemView.getResources(), R.color.default_text_color_link_light)));
+                equalTo(mItemView.getContext().getColor(R.color.default_text_color_link_light)));
         assertThat(closeButton.getImageTintList().getDefaultColor(),
                 equalTo(getActivity().getColor(R.color.default_icon_color_light)));
     }

@@ -94,7 +94,7 @@ public class NavigationBubble extends LinearLayout {
     public NavigationBubble(Context context, AttributeSet attrs) {
         super(context, attrs);
 
-        mBlack = ApiCompatibilityUtils.getColor(getResources(), R.color.navigation_bubble_arrow);
+        mBlack = getContext().getColor(R.color.navigation_bubble_arrow);
         mColorPrimary = SemanticColorUtils.getDefaultIconColorAccent1(getContext());
 
         mColorUpdateListener = new ColorUpdateListener();

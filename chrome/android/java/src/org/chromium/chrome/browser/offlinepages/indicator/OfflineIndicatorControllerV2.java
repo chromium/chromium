@@ -12,7 +12,6 @@ import android.os.SystemClock;
 import androidx.annotation.IntDef;
 import androidx.annotation.VisibleForTesting;
 
-import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.base.Callback;
 import org.chromium.base.CommandLine;
 import org.chromium.base.metrics.RecordHistogram;
@@ -133,13 +132,10 @@ public class OfflineIndicatorControllerV2 {
 
             setLastActionTime();
 
-            final int backgroundColor = ApiCompatibilityUtils.getColor(
-                    mContext.getResources(), R.color.offline_indicator_offline_color);
-            final int textColor = ApiCompatibilityUtils.getColor(
-                    mContext.getResources(), R.color.default_text_color_light);
+            final int backgroundColor = mContext.getColor(R.color.offline_indicator_offline_color);
+            final int textColor = mContext.getColor(R.color.default_text_color_light);
             final Drawable statusIcon = mContext.getDrawable(R.drawable.ic_cloud_offline_24dp);
-            final int iconTint = ApiCompatibilityUtils.getColor(
-                    mContext.getResources(), R.color.default_icon_color_light);
+            final int iconTint = mContext.getColor(R.color.default_icon_color_light);
             mStatusIndicator.show(mContext.getString(R.string.offline_indicator_v2_offline_text),
                     statusIcon, backgroundColor, textColor, iconTint);
         };
@@ -156,10 +152,9 @@ public class OfflineIndicatorControllerV2 {
 
             setLastActionTime();
 
-            final int backgroundColor = ApiCompatibilityUtils.getColor(
-                    mContext.getResources(), R.color.offline_indicator_back_online_color);
-            final int textColor = ApiCompatibilityUtils.getColor(
-                    mContext.getResources(), R.color.default_text_color_inverse);
+            final int backgroundColor =
+                    mContext.getColor(R.color.offline_indicator_back_online_color);
+            final int textColor = mContext.getColor(R.color.default_text_color_inverse);
             final Drawable statusIcon = mContext.getDrawable(R.drawable.ic_globe_24dp);
             final int iconTint = SemanticColorUtils.getDefaultIconColorInverse(mContext);
             mStatusIndicator.updateContent(

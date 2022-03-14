@@ -350,8 +350,7 @@ class AssistantDetailsAdapter extends RecyclerView.Adapter<AssistantDetailsAdapt
         } else if (approvalRequired) {
             // De-emphasized style.
             // TODO(b/154592651) Use setTextAppearance instead of setTextColor.
-            view.setTextColor(ApiCompatibilityUtils.getColor(
-                    mContext.getResources(), R.color.modern_grey_300));
+            view.setTextColor(mContext.getColor(R.color.modern_grey_300));
         }
     }
 

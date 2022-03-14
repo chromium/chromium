@@ -11,7 +11,6 @@ import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
-import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.chrome.R;
 import org.chromium.components.browser_ui.widget.FadingShadow;
 import org.chromium.components.browser_ui.widget.FadingShadowView;
@@ -52,9 +51,7 @@ import org.chromium.components.browser_ui.widget.FadingShadowView;
         mToolbarView.findViewById(R.id.favicon).setVisibility(View.GONE);
 
         FadingShadowView shadow = mToolbarView.findViewById(R.id.shadow);
-        shadow.init(ApiCompatibilityUtils.getColor(
-                            context.getResources(), R.color.toolbar_shadow_color),
-                FadingShadow.POSITION_TOP);
+        shadow.init(context.getColor(R.color.toolbar_shadow_color), FadingShadow.POSITION_TOP);
     }
 
     /** @return The height of the toolbar in px. */

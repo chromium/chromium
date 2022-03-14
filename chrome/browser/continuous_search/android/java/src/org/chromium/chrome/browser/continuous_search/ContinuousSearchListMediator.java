@@ -11,7 +11,6 @@ import androidx.annotation.IntDef;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
-import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.base.Callback;
 import org.chromium.base.TraceEvent;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
@@ -386,7 +385,7 @@ class ContinuousSearchListMediator implements ContinuousNavigationUserDataObserv
     }
 
     private int getColor(int id) {
-        return ApiCompatibilityUtils.getColor(mContext.getResources(), id);
+        return mContext.getColor(id);
     }
 
     void destroy() {

@@ -82,7 +82,6 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.base.test.params.ParameterAnnotations;
 import org.chromium.base.test.params.ParameterizedRunner;
 import org.chromium.base.test.util.CommandLineFlags;
@@ -1073,12 +1072,8 @@ public class TabGridDialogTest {
                 || !resources.getBoolean(R.bool.window_light_navigation_bar)) {
             return;
         }
-        @ColorInt
-        int scrimDefaultColor =
-                ApiCompatibilityUtils.getColor(resources, R.color.default_scrim_color);
-        @ColorInt
-        int navigationBarColor =
-                ApiCompatibilityUtils.getColor(resources, R.color.bottom_system_nav_color);
+        final @ColorInt int scrimDefaultColor = cta.getColor(R.color.default_scrim_color);
+        final @ColorInt int navigationBarColor = cta.getColor(R.color.bottom_system_nav_color);
         float scrimColorAlpha = (scrimDefaultColor >>> 24) / 255f;
         int scrimColorOpaque = scrimDefaultColor & 0xFF000000;
         int navigationBarColorWithScrimOverlay = ColorUtils.getColorWithOverlay(

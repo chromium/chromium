@@ -22,7 +22,6 @@ import androidx.annotation.Nullable;
 import androidx.annotation.Px;
 import androidx.core.view.animation.PathInterpolatorCompat;
 
-import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.base.MathUtils;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.components.browser_ui.widget.R;
@@ -308,8 +307,7 @@ public class PulseDrawable extends Drawable implements Animatable {
      * */
     public void setUseLightPulseColor(Context context, boolean useLightPulseColor) {
         @ColorInt
-        int color = useLightPulseColor ? ApiCompatibilityUtils.getColor(
-                            context.getResources(), R.color.default_icon_color_blue_light)
+        int color = useLightPulseColor ? context.getColor(R.color.default_icon_color_blue_light)
                                        : SemanticColorUtils.getDefaultIconColorAccent1(context);
         if (mState.color == color) return;
 

@@ -82,8 +82,8 @@ import java.util.Collection;
         // requires exploration of how interactions would work when the dialog can be sent back and
         // forth between the peeking and expanded state.
         mFullContainer = new FrameLayout(activity);
-        mFullContainer.setBackgroundColor(ApiCompatibilityUtils.getColor(
-                activity.getResources(), R.color.modal_dialog_scrim_color));
+        mFullContainer.setBackgroundColor(
+                activity.getResources().getColor(R.color.modal_dialog_scrim_color));
         mDialog = new AlwaysDismissedDialog(activity, R.style.DimmingDialog);
         mDialog.setOnDismissListener((v) -> notifyListenerDialogDismissed());
         mDialog.addContentView(mFullContainer,

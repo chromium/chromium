@@ -18,7 +18,6 @@ import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 import androidx.recyclerview.widget.RecyclerView;
 
-import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.chrome.R;
@@ -228,11 +227,9 @@ public class ExploreSitesPage extends BasicNativePage {
             iconRadius = iconSizePx / 2;
         }
 
-        RoundedIconGenerator iconGenerator =
-                new RoundedIconGenerator(iconSizePx, iconSizePx, iconRadius,
-                        ApiCompatibilityUtils.getColor(
-                                context.getResources(), R.color.default_favicon_background_color),
-                        context.getResources().getDimensionPixelSize(textSizeDimensionResource));
+        RoundedIconGenerator iconGenerator = new RoundedIconGenerator(iconSizePx, iconSizePx,
+                iconRadius, context.getColor(R.color.default_favicon_background_color),
+                context.getResources().getDimensionPixelSize(textSizeDimensionResource));
 
         NativePageNavigationDelegateImpl navDelegate = new NativePageNavigationDelegateImpl(
                 activity, mProfile, host, tabModelSelector, mTab);

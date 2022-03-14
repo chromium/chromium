@@ -19,7 +19,6 @@ import androidx.core.content.ContextCompat;
 import com.google.android.material.color.MaterialColors;
 import com.google.android.material.elevation.ElevationOverlayProvider;
 
-import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.chrome.browser.flags.CachedFeatureFlags;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.tab_ui.R;
@@ -90,7 +89,7 @@ public class TabUiThemeProvider {
             @ColorRes
             int colorRes = isSelected ? R.color.incognito_tab_tile_number_selected_color
                                       : R.color.incognito_tab_tile_number_color;
-            return ApiCompatibilityUtils.getColor(context.getResources(), colorRes);
+            return context.getColor(colorRes);
         } else {
             return isSelected ? MaterialColors.getColor(context, R.attr.colorOnPrimary, TAG)
                               : MaterialColors.getColor(context, R.attr.colorOnSurface, TAG);
@@ -118,7 +117,7 @@ public class TabUiThemeProvider {
             @ColorRes
             int colorRes = isSelected ? R.color.incognito_tab_title_selected_color
                                       : R.color.incognito_tab_title_color;
-            return ApiCompatibilityUtils.getColor(context.getResources(), colorRes);
+            return context.getColor(colorRes);
         } else {
             return isSelected ? MaterialColors.getColor(context, R.attr.colorOnPrimary, TAG)
                               : MaterialColors.getColor(context, R.attr.colorOnSurface, TAG);
@@ -222,8 +221,7 @@ public class TabUiThemeProvider {
      */
     @ColorInt
     public static int getDividerColor(Context context, boolean isIncognito) {
-        return isIncognito ? ApiCompatibilityUtils.getColor(
-                       context.getResources(), R.color.tab_grid_card_divider_tint_color_incognito)
+        return isIncognito ? context.getColor(R.color.tab_grid_card_divider_tint_color_incognito)
                            : SemanticColorUtils.getTabGridCardDividerTintColor(context);
     }
 
@@ -251,16 +249,16 @@ public class TabUiThemeProvider {
     public static int getMiniThumbnailPlaceHolderColor(
             Context context, boolean isIncognito, boolean isSelected) {
         if (!themeRefactorEnabled()) {
-            return ApiCompatibilityUtils.getColor(context.getResources(),
-                    isIncognito ? R.color.tab_list_mini_card_default_background_color_incognito
-                                : R.color.tab_list_mini_card_default_background_color);
+            return context.getColor(isIncognito
+                            ? R.color.tab_list_mini_card_default_background_color_incognito
+                            : R.color.tab_list_mini_card_default_background_color);
         }
 
         if (isIncognito) {
             @ColorRes
             int colorRes = isSelected ? R.color.incognito_tab_thumbnail_placeholder_selected_color
                                       : R.color.incognito_tab_thumbnail_placeholder_color;
-            return ApiCompatibilityUtils.getColor(context.getResources(), colorRes);
+            return context.getColor(colorRes);
         } else {
             int alpha = context.getResources().getInteger(isSelected
                             ? R.integer.tab_thumbnail_placeholder_selected_color_alpha
@@ -298,8 +296,7 @@ public class TabUiThemeProvider {
      */
     @ColorInt
     public static int getMiniThumbnailFrameColor(Context context, boolean isIncognito) {
-        return isIncognito ? ApiCompatibilityUtils.getColor(
-                       context.getResources(), R.color.tab_grid_card_divider_tint_color_incognito)
+        return isIncognito ? context.getColor(R.color.tab_grid_card_divider_tint_color_incognito)
                            : SemanticColorUtils.getTabGridCardDividerTintColor(context);
     }
 
@@ -312,9 +309,8 @@ public class TabUiThemeProvider {
      */
     @ColorInt
     public static int getFaviconBackgroundColor(Context context, boolean isIncognito) {
-        return ApiCompatibilityUtils.getColor(context.getResources(),
-                isIncognito ? R.color.favicon_background_color_incognito
-                            : R.color.favicon_background_color);
+        return context.getColor(isIncognito ? R.color.favicon_background_color_incognito
+                                            : R.color.favicon_background_color);
     }
 
     /**
@@ -329,9 +325,8 @@ public class TabUiThemeProvider {
     public static int getChromeOwnedFaviconTintColor(
             Context context, boolean isIncognito, boolean isTabSelected) {
         if (!themeRefactorEnabled()) {
-            return ApiCompatibilityUtils.getColor(context.getResources(),
-                    isIncognito ? R.color.default_icon_color_light
-                                : R.color.default_icon_color_baseline);
+            return context.getColor(isIncognito ? R.color.default_icon_color_light
+                                                : R.color.default_icon_color_baseline);
         }
         return getTitleTextColor(context, isIncognito, isTabSelected);
     }
@@ -397,8 +392,7 @@ public class TabUiThemeProvider {
         }
 
         if (isIncognito) {
-            return ApiCompatibilityUtils.getColor(
-                    context.getResources(), R.color.incognito_tab_grid_dialog_background_color);
+            return context.getColor(R.color.incognito_tab_grid_dialog_background_color);
         } else {
             return MaterialColors.getColor(context, R.attr.colorSurface, TAG);
         }
@@ -417,13 +411,13 @@ public class TabUiThemeProvider {
                 colorRes = isIncognito ? R.color.tab_grid_dialog_background_color_incognito
                                        : R.color.tab_grid_dialog_background_color;
             }
-            return ApiCompatibilityUtils.getColor(context.getResources(), colorRes);
+            return context.getColor(colorRes);
         }
 
         if (isIncognito) {
-            return ApiCompatibilityUtils.getColor(context.getResources(),
-                    isTabHovered ? R.color.incognito_tab_grid_dialog_ungroup_bar_bg_hovered_color
-                                 : R.color.incognito_tab_grid_dialog_background_color);
+            return context.getColor(isTabHovered
+                            ? R.color.incognito_tab_grid_dialog_ungroup_bar_bg_hovered_color
+                            : R.color.incognito_tab_grid_dialog_background_color);
         } else {
             return MaterialColors.getColor(
                     context, isTabHovered ? R.attr.colorPrimary : R.attr.colorSurface, TAG);
@@ -442,13 +436,13 @@ public class TabUiThemeProvider {
                 colorRes = isIncognito ? R.color.tab_grid_dialog_ungroup_button_text_color_incognito
                                        : R.color.tab_grid_dialog_ungroup_button_text_color;
             }
-            return ApiCompatibilityUtils.getColor(context.getResources(), colorRes);
+            return context.getColor(colorRes);
         }
 
         if (isIncognito) {
-            return ApiCompatibilityUtils.getColor(context.getResources(),
-                    isTabHovered ? R.color.incognito_tab_grid_dialog_ungroup_bar_text_hovered_color
-                                 : R.color.incognito_tab_grid_dialog_ungroup_bar_text_color);
+            return context.getColor(isTabHovered
+                            ? R.color.incognito_tab_grid_dialog_ungroup_bar_text_hovered_color
+                            : R.color.incognito_tab_grid_dialog_ungroup_bar_text_color);
         } else {
             return MaterialColors.getColor(
                     context, isTabHovered ? R.attr.colorOnPrimary : R.attr.colorPrimary, TAG);
@@ -517,13 +511,11 @@ public class TabUiThemeProvider {
     @ColorInt
     public static int getTabSelectionToolbarBackground(Context context, boolean isIncognito) {
         if (!themeRefactorEnabled()) {
-            return ApiCompatibilityUtils.getColor(context.getResources(),
-                    isIncognito ? R.color.default_control_color_active_dark
-                                : R.color.default_control_color_active_baseline);
+            return context.getColor(isIncognito ? R.color.default_control_color_active_dark
+                                                : R.color.default_control_color_active_baseline);
         } else {
             if (isIncognito) {
-                return ApiCompatibilityUtils.getColor(context.getResources(),
-                        R.color.incognito_tab_selection_editor_toolbar_bg_color);
+                return context.getColor(R.color.incognito_tab_selection_editor_toolbar_bg_color);
             } else {
                 return MaterialColors.getColor(context, R.attr.colorSurface, TAG);
             }

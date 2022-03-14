@@ -19,7 +19,6 @@ import androidx.appcompat.content.res.AppCompatResources;
 import androidx.recyclerview.widget.OrientationHelper;
 import androidx.recyclerview.widget.RecyclerView;
 
-import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.components.autofill_assistant.R;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 
@@ -78,8 +77,7 @@ class AssistantActionsDecoration extends RecyclerView.ItemDecoration {
                 R.dimen.autofill_assistant_actions_gradient_width);
         mLastChildBorderRadius = context.getResources().getDimensionPixelSize(
                 R.dimen.autofill_assistant_button_corner_radius);
-        mShadowColor = ApiCompatibilityUtils.getColor(
-                context.getResources(), R.color.autofill_assistant_actions_shadow_color);
+        mShadowColor = context.getColor(R.color.autofill_assistant_actions_shadow_color);
         mShadowLayerWidth =
                 context.getResources().getDimension(R.dimen.autofill_assistant_actions_shadow_width)
                 / SHADOW_LAYERS;

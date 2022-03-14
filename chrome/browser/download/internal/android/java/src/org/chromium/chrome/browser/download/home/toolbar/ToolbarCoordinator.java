@@ -10,7 +10,6 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 
-import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.chrome.browser.download.home.list.ListItem;
 import org.chromium.chrome.browser.download.home.metrics.UmaUtils;
 import org.chromium.chrome.browser.download.internal.R;
@@ -111,9 +110,7 @@ public class ToolbarCoordinator implements SelectionObserver<ListItem> {
 
         ToolbarUtils.setupTrackerForDownloadSettingsIPH(tracker, mToolbar);
 
-        mShadow.init(ApiCompatibilityUtils.getColor(
-                             context.getResources(), R.color.toolbar_shadow_color),
-                FadingShadow.POSITION_TOP);
+        mShadow.init(context.getColor(R.color.toolbar_shadow_color), FadingShadow.POSITION_TOP);
 
         if (!hasCloseButton) mToolbar.removeMenuItem(R.id.close_menu_id);
     }

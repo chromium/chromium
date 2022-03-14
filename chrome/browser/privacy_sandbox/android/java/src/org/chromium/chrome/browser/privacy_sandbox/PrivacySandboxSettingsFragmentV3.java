@@ -13,7 +13,6 @@ import android.text.style.ForegroundColorSpan;
 import androidx.preference.Preference;
 import androidx.preference.PreferenceFragmentCompat;
 
-import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -72,8 +71,8 @@ public class PrivacySandboxSettingsFragmentV3
         ChromeBasePreference learnMorePreference = findPreference(LEARN_MORE_PREFERENCE);
         SpannableString spannableString = new SpannableString(
                 getResources().getString(R.string.privacy_sandbox_consent_dropdown_button));
-        spannableString.setSpan(new ForegroundColorSpan(ApiCompatibilityUtils.getColor(
-                                        getResources(), R.color.default_text_color_link_baseline)),
+        spannableString.setSpan(new ForegroundColorSpan(getContext().getColor(
+                                        R.color.default_text_color_link_baseline)),
                 0, spannableString.length(), Spanned.SPAN_INCLUSIVE_EXCLUSIVE);
         learnMorePreference.setSummary(spannableString);
 

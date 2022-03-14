@@ -32,7 +32,6 @@ import androidx.core.view.WindowCompat;
 import androidx.core.view.WindowInsetsCompat;
 import androidx.core.view.WindowInsetsControllerCompat;
 
-import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.base.MathUtils;
 import org.chromium.base.ThreadUtils;
 import org.chromium.chrome.R;
@@ -265,8 +264,7 @@ public class PartialCustomTabHeightStrategy extends CustomTabHeightStrategy
             return false;
         }
 
-        final int color = ApiCompatibilityUtils.getColor(
-                mActivity.getResources(), R.color.resizing_background_color);
+        final int color = mActivity.getColor(R.color.resizing_background_color);
         ((GradientDrawable) background.mutate()).setColor(color);
         return true;
     }

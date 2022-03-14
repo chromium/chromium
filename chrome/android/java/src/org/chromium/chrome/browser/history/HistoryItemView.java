@@ -103,8 +103,7 @@ public class HistoryItemView extends SelectableItemView<HistoryItem> {
                         getContext().getTheme());
             }
             setStartIconDrawable(mBlockedVisitDrawable);
-            mTitleView.setTextColor(
-                    ApiCompatibilityUtils.getColor(getResources(), R.color.default_red));
+            mTitleView.setTextColor(getContext().getColor(R.color.default_red));
         } else {
             setStartIconDrawable(mFaviconHelper.getDefaultFaviconDrawable(
                     getContext().getResources(), item.getUrl(), true));

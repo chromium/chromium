@@ -46,7 +46,6 @@ import org.hamcrest.Matchers;
 import org.hamcrest.TypeSafeMatcher;
 import org.json.JSONArray;
 
-import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.base.Callback;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.Criteria;
@@ -231,8 +230,7 @@ class AutofillAssistantUiTestUtil {
                 this.mContext = imageView.getContext();
                 int imageTintColor = imageView.getImageTintList().getColorForState(
                         imageView.getDrawable().getState(), -1);
-                int expectedColor =
-                        ApiCompatibilityUtils.getColor(mContext.getResources(), colorResId);
+                int expectedColor = mContext.getColor(colorResId);
                 return imageTintColor == expectedColor;
             }
 

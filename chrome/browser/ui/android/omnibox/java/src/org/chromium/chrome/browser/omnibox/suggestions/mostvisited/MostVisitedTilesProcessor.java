@@ -16,7 +16,6 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
-import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.base.DiscardableReferencePool;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.omnibox.OmniboxSuggestionType;
@@ -86,8 +85,7 @@ public class MostVisitedTilesProcessor extends BaseCarouselSuggestionProcessor {
 
         int fallbackIconSize =
                 mContext.getResources().getDimensionPixelSize(R.dimen.tile_view_icon_size);
-        int fallbackIconColor = ApiCompatibilityUtils.getColor(
-                mContext.getResources(), R.color.default_favicon_background_color);
+        int fallbackIconColor = mContext.getColor(R.color.default_favicon_background_color);
         int fallbackIconTextSize =
                 mContext.getResources().getDimensionPixelSize(R.dimen.tile_view_icon_text_size);
         mIconGenerator = new RoundedIconGenerator(fallbackIconSize, fallbackIconSize,

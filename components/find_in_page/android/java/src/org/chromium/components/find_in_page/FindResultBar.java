@@ -19,7 +19,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
 
-import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.base.MathUtils;
 import org.chromium.ui.KeyboardVisibilityDelegate;
 import org.chromium.ui.base.LocalizationUtils;
@@ -94,16 +93,12 @@ public class FindResultBar extends View {
         super(context);
 
         Resources res = context.getResources();
-        mBackgroundColor =
-                ApiCompatibilityUtils.getColor(res, R.color.find_result_bar_background_color);
-        mBackgroundBorderColor = ApiCompatibilityUtils.getColor(
-                res, R.color.find_result_bar_background_border_color);
-        mResultColor = ApiCompatibilityUtils.getColor(res, R.color.find_result_bar_result_color);
-        mResultBorderColor =
-                ApiCompatibilityUtils.getColor(res, R.color.find_result_bar_result_border_color);
-        mActiveColor = ApiCompatibilityUtils.getColor(res, R.color.find_result_bar_active_color);
-        mActiveBorderColor =
-                ApiCompatibilityUtils.getColor(res, R.color.find_result_bar_active_border_color);
+        mBackgroundColor = context.getColor(R.color.find_result_bar_background_color);
+        mBackgroundBorderColor = context.getColor(R.color.find_result_bar_background_border_color);
+        mResultColor = context.getColor(R.color.find_result_bar_result_color);
+        mResultBorderColor = context.getColor(R.color.find_result_bar_result_border_color);
+        mActiveColor = context.getColor(R.color.find_result_bar_active_color);
+        mActiveBorderColor = context.getColor(R.color.find_result_bar_active_border_color);
         mBarTouchWidth = res.getDimensionPixelSize(R.dimen.find_result_bar_touch_width);
         mBarDrawWidth = res.getDimensionPixelSize(R.dimen.find_result_bar_draw_width)
                 + res.getDimensionPixelSize(R.dimen.find_result_bar_separator_width);

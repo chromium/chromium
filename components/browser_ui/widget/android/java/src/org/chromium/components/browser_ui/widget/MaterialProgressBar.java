@@ -17,7 +17,6 @@ import android.view.View;
 import androidx.annotation.VisibleForTesting;
 import androidx.core.view.ViewCompat;
 
-import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 
 /**
@@ -159,8 +158,7 @@ public class MaterialProgressBar extends View implements AnimatorUpdateListener 
         Resources resources = context.getResources();
         int backgroundColor = context.getColor(R.color.progress_bar_bg_color);
         int progressColor = SemanticColorUtils.getProgressBarForeground(context);
-        int secondaryProgressColor =
-                ApiCompatibilityUtils.getColor(resources, R.color.progress_bar_secondary);
+        int secondaryProgressColor = context.getColor(R.color.progress_bar_secondary);
 
         if (attrs != null) {
             TypedArray a = context.obtainStyledAttributes(

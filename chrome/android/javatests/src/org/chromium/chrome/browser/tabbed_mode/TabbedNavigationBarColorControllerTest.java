@@ -7,7 +7,7 @@ package org.chromium.chrome.browser.tabbed_mode;
 import static org.junit.Assert.assertEquals;
 
 import android.annotation.SuppressLint;
-import android.content.res.Resources;
+import android.content.Context;
 import android.os.Build;
 import android.support.test.InstrumentationRegistry;
 import android.view.Window;
@@ -22,7 +22,6 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.MinAndroidSdkLevel;
@@ -62,11 +61,9 @@ public class TabbedNavigationBarColorControllerTest {
     public void setUp() throws InterruptedException {
         mActivityTestRule.startMainActivityOnBlankPage();
         mWindow = mActivityTestRule.getActivity().getWindow();
-        final Resources resources = mActivityTestRule.getActivity().getResources();
-        mLightNavigationColor =
-                ApiCompatibilityUtils.getColor(resources, R.color.default_bg_color_light);
-        mDarkNavigationColor =
-                ApiCompatibilityUtils.getColor(resources, R.color.default_bg_color_dark);
+        Context context = mActivityTestRule.getActivity();
+        mLightNavigationColor = context.getColor(R.color.default_bg_color_light);
+        mDarkNavigationColor = context.getColor(R.color.default_bg_color_dark);
     }
 
     @Test

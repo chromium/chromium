@@ -163,8 +163,8 @@ public class PowerBookmarkShoppingItemRow extends BookmarkItemRow {
             } else {
                 ChipView chipView = new ChipView(getContext(), null);
                 chipView.setBorder(0, Color.TRANSPARENT);
-                chipView.setBackgroundColor(ApiCompatibilityUtils.getColor(
-                        getResources(), R.color.price_drop_annotation_bg_color));
+                chipView.setBackgroundColor(
+                        getContext().getColor(R.color.price_drop_annotation_bg_color));
                 primaryText = chipView.getPrimaryTextView();
                 secondaryText = chipView.getSecondaryTextView();
                 setCustomContent(chipView);
@@ -178,8 +178,7 @@ public class PowerBookmarkShoppingItemRow extends BookmarkItemRow {
             String formattedOriginalPrice, String formattedCurrentPrice) {
         // Primary text displays the current price.
         primaryText.setText(formattedCurrentPrice);
-        primaryText.setTextColor(ApiCompatibilityUtils.getColor(
-                getResources(), R.color.price_drop_annotation_text_green));
+        primaryText.setTextColor(getContext().getColor(R.color.price_drop_annotation_text_green));
 
         // Secondary text displays the original price with a strikethrough.
         secondaryText.setText(formattedOriginalPrice);

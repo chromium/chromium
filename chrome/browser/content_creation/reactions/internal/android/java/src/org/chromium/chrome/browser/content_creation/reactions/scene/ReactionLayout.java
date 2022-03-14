@@ -14,7 +14,6 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 
-import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.chrome.browser.content_creation.reactions.ReactionGifDrawable;
 import org.chromium.chrome.browser.content_creation.reactions.internal.R;
 import org.chromium.ui.widget.ChromeImageButton;
@@ -218,7 +217,7 @@ public class ReactionLayout extends RelativeLayout {
         // Programmatically tint vector icons since this is impossible in the drawable's XML. Mutate
         // is called to prevent this from affecting other drawables using the same resource.
         copyDrawable.findDrawableByLayerId(R.id.icon).mutate().setTint(
-                ApiCompatibilityUtils.getColor(getResources(), R.color.button_icon_color));
+                getContext().getColor(R.color.button_icon_color));
 
         mCopyButton.setOnClickListener(view -> {
             if (mSceneEditorDelegate.canAddReaction()) {

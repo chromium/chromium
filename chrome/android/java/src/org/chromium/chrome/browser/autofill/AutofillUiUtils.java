@@ -322,10 +322,8 @@ public class AutofillUiUtils {
      */
     public static void updateColorForInputs(@ErrorType int errorType, Context context,
             EditText monthInput, EditText yearInput, EditText cvcInput) {
-        ColorFilter filter =
-                new PorterDuffColorFilter(ApiCompatibilityUtils.getColor(context.getResources(),
-                                                  R.color.input_underline_error_color),
-                        PorterDuff.Mode.SRC_IN);
+        ColorFilter filter = new PorterDuffColorFilter(
+                context.getColor(R.color.input_underline_error_color), PorterDuff.Mode.SRC_IN);
 
         // Decide on what field(s) to apply the filter.
         boolean filterMonth = errorType == ErrorType.EXPIRATION_MONTH

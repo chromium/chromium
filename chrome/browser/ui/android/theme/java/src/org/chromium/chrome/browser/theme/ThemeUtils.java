@@ -17,7 +17,6 @@ import androidx.core.content.res.ResourcesCompat;
 
 import com.google.android.material.color.MaterialColors;
 
-import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.chrome.browser.flags.BooleanCachedFieldTrialParameter;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.tab.Tab;
@@ -89,8 +88,8 @@ public class ThemeUtils {
         // Text box color on default toolbar background in incognito mode is a pre-defined
         // color. We calculate the equivalent opaque color from the pre-defined translucent color.
         if (isIncognito) {
-            final int overlayColor = ApiCompatibilityUtils.getColor(
-                    context.getResources(), R.color.toolbar_text_box_background_incognito);
+            final int overlayColor =
+                    context.getColor(R.color.toolbar_text_box_background_incognito);
             final float overlayColorAlpha = Color.alpha(overlayColor) / 255f;
             final int overlayColorOpaque = overlayColor & 0xFF000000;
             return ColorUtils.getColorWithOverlay(color, overlayColorOpaque, overlayColorAlpha);

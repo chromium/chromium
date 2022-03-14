@@ -12,7 +12,6 @@ import android.view.ViewStub;
 import android.widget.CompoundButton.OnCheckedChangeListener;
 import android.widget.FrameLayout;
 
-import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.components.content_settings.CookieControlsEnforcement;
@@ -70,8 +69,7 @@ public class IncognitoNewTabPageView extends FrameLayout {
         super.onFinishInflate();
 
         mScrollView = (NewTabPageScrollView) findViewById(R.id.ntp_scrollview);
-        mScrollView.setBackgroundColor(
-                ApiCompatibilityUtils.getColor(getResources(), R.color.ntp_bg_incognito));
+        mScrollView.setBackgroundColor(getContext().getColor(R.color.ntp_bg_incognito));
         setContentDescription(
                 getResources().getText(R.string.accessibility_new_incognito_tab_page));
 

@@ -152,8 +152,7 @@ abstract class OverlayPanelBase {
         final Resources resources = mContext.getResources();
         mBarBackgroundColor = ChromeSemanticColorUtils.getOverlayPanelBarBackgroundColor(mContext);
         mIconColor = SemanticColorUtils.getDefaultIconColor(context);
-        mDragHandlebarColor =
-                ApiCompatibilityUtils.getColor(resources, R.color.drag_handlebar_color);
+        mDragHandlebarColor = context.getColor(R.color.drag_handlebar_color);
         mButtonPaddingDps =
                 (int) (mPxToDp * resources.getDimension(R.dimen.overlay_panel_button_padding));
     }

@@ -16,7 +16,6 @@ import android.graphics.Rect;
 import android.graphics.RectF;
 import android.graphics.drawable.Drawable;
 
-import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.base.Callback;
 import org.chromium.base.task.PostTask;
 import org.chromium.chrome.browser.compositor.layouts.content.TabContentManager;
@@ -265,8 +264,7 @@ public class MultiThumbnailCardProvider implements TabListMediator.ThumbnailProv
         mSelectedTextPaint.setColor(
                 TabUiThemeProvider.getTabGroupNumberTextColor(context, false, true));
 
-        mFaviconBackgroundPaintColor =
-                ApiCompatibilityUtils.getColor(resource, R.color.favicon_background_color);
+        mFaviconBackgroundPaintColor = context.getColor(R.color.favicon_background_color);
         mFaviconBackgroundPaint = new Paint();
         mFaviconBackgroundPaint.setAntiAlias(true);
         mFaviconBackgroundPaint.setColor(mFaviconBackgroundPaintColor);
