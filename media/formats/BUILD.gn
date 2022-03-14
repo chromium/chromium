@@ -187,8 +187,14 @@ source_set("formats") {
   sources += [
     "hls/items.cc",
     "hls/items.h",
+    "hls/media_playlist.cc",
+    "hls/media_playlist.h",
+    "hls/media_segment.cc",
+    "hls/media_segment.h",
     "hls/parse_status.cc",
     "hls/parse_status.h",
+    "hls/playlist_common.cc",
+    "hls/playlist_common.h",
     "hls/source_string.cc",
     "hls/source_string.h",
     "hls/tag_name.cc",
@@ -199,7 +205,12 @@ source_set("formats") {
     "hls/types.h",
   ]
   deps += [ "//third_party/re2" ]
-  public_deps = [ "//third_party/abseil-cpp:absl" ]
+  public_deps = [
+    "//third_party/abseil-cpp:absl",
+
+    # Needed because `hls/media_playlist.h` includes GURL in its public API.
+    "//url",
+  ]
 }
 
 static_library("test_support") {
@@ -308,6 +319,7 @@ source_set("unit_tests") {
   # TODO(https://crbug.com/1266991): This should be gated behind `enable_hls_demuxer`, once that's enabled by default.
   sources += [
     "hls/items_unittest.cc",
+    "hls/media_playlist_unittest.cc",
     "hls/tags_unittest.cc",
     "hls/types_unittest.cc",
   ]
@@ -325,6 +337,15 @@ fuzzer_test("hls_items_fuzzer") {
 # TODO(https://crbug.com/1266991): This should be gated behind `enable_hls_demuxer`, once that's enabled by default.
 fuzzer_test("hls_attribute_list_fuzzer") {
   sources = [ "hls/attribute_list_fuzzer.cc" ]
+  deps = [
+    "//base",
+    "//media",
+  ]
+}
+
+# TODO(https://crbug.com/1266991): This should be gated behind `enable_hls_demuxer`, once that's enabled by default.
+fuzzer_test("hls_media_playlist_fuzzer") {
+  sources = [ "hls/media_playlist_fuzzer.cc" ]
   deps = [
     "//base",
     "//media",

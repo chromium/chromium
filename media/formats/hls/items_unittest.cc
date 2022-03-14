@@ -22,8 +22,8 @@ void CheckSourceString(SourceString expected, SourceString actual) {
 // Calls `GetNextLineItem` for each expectation, and verifies that the result
 // matches.
 template <typename T>
-void RunTest(base::StringPiece manifest, const T& expectations) {
-  auto line_iter = SourceLineIterator(manifest);
+void RunTest(base::StringPiece source, const T& expectations) {
+  auto line_iter = SourceLineIterator(source);
 
   for (auto expectation : expectations) {
     auto result = GetNextLineItem(&line_iter);

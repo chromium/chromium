@@ -22,11 +22,12 @@ enum class ParseStatusCode : StatusCodeType {
   kMalformedAttributeList,
   kAttributeListHasDuplicateNames,
   kMalformedVariableName,
+  kInvalidUri,
   kPlaylistMissingM3uTag,
   kMediaSegmentMissingInfTag,
-  kMediaSegmentHasMultipleInfTags,
-  kPlaylistSpecifiesMultipleVersions,
+  kPlaylistHasDuplicateTags,
   kPlaylistHasUnsupportedVersion,
+  kMediaPlaylistHasMultivariantPlaylistTag,
 };
 
 struct ParseStatusTraits {

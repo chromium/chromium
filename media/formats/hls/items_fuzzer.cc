@@ -34,8 +34,8 @@ media::hls::SourceString GetItemContent(media::hls::UriItem uri) {
 
 extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
   // Create a StringPiece from the given input
-  const base::StringPiece manifest(reinterpret_cast<const char*>(data), size);
-  media::hls::SourceLineIterator iterator{manifest};
+  const base::StringPiece source(reinterpret_cast<const char*>(data), size);
+  media::hls::SourceLineIterator iterator{source};
 
   while (true) {
     const auto prev_iterator = iterator;
@@ -46,7 +46,7 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
       CHECK(result == media::hls::ParseStatusCode::kReachedEOF ||
             result == media::hls::ParseStatusCode::kInvalidEOL);
 
-      // Ensure that `manifest` is still a substring of the previous manifest
+      // Ensure that `source` is still a substring of the previous source
       CHECK(IsSubstring(iterator.SourceForTesting(),
                         prev_iterator.SourceForTesting()));
       CHECK(iterator.CurrentLineForTesting() >=

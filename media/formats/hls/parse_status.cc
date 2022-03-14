@@ -25,11 +25,12 @@ base::StringPiece ParseStatusCodeToString(ParseStatusCode code) {
     PARSE_STATUS_CODE_CASE(kMalformedAttributeList);
     PARSE_STATUS_CODE_CASE(kAttributeListHasDuplicateNames);
     PARSE_STATUS_CODE_CASE(kMalformedVariableName);
+    PARSE_STATUS_CODE_CASE(kInvalidUri);
     PARSE_STATUS_CODE_CASE(kPlaylistMissingM3uTag);
     PARSE_STATUS_CODE_CASE(kMediaSegmentMissingInfTag);
-    PARSE_STATUS_CODE_CASE(kMediaSegmentHasMultipleInfTags);
-    PARSE_STATUS_CODE_CASE(kPlaylistSpecifiesMultipleVersions);
+    PARSE_STATUS_CODE_CASE(kPlaylistHasDuplicateTags);
     PARSE_STATUS_CODE_CASE(kPlaylistHasUnsupportedVersion);
+    PARSE_STATUS_CODE_CASE(kMediaPlaylistHasMultivariantPlaylistTag);
   }
 
   NOTREACHED();
