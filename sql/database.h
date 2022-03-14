@@ -31,6 +31,7 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 struct sqlite3;
+struct sqlite3_file;
 struct sqlite3_stmt;
 
 namespace base {
@@ -608,8 +609,8 @@ class COMPONENT_EXPORT(SQL) Database {
 
   FRIEND_TEST_ALL_PREFIXES(SQLDatabaseTest, CachedStatement);
   FRIEND_TEST_ALL_PREFIXES(SQLDatabaseTest, CollectDiagnosticInfo);
-  FRIEND_TEST_ALL_PREFIXES(SQLDatabaseTest, GetAppropriateMmapSize);
-  FRIEND_TEST_ALL_PREFIXES(SQLDatabaseTest, GetAppropriateMmapSizeAltStatus);
+  FRIEND_TEST_ALL_PREFIXES(SQLDatabaseTest, ComputeMmapSizeForOpen);
+  FRIEND_TEST_ALL_PREFIXES(SQLDatabaseTest, ComputeMmapSizeForOpenAltStatus);
   FRIEND_TEST_ALL_PREFIXES(SQLDatabaseTest, OnMemoryDump);
   FRIEND_TEST_ALL_PREFIXES(SQLDatabaseTest, RegisterIntentToUpload);
   FRIEND_TEST_ALL_PREFIXES(SQLiteFeaturesTest, WALNoClose);
@@ -787,22 +788,49 @@ class COMPONENT_EXPORT(SQL) Database {
   // Helper to collect diagnostic info for errors.
   std::string CollectErrorInfo(int error, Statement* stmt) const;
 
-  // Calculates a value appropriate to pass to "PRAGMA mmap_size = ".  So errors
-  // can make it unsafe to map a file, so the file is read using regular I/O,
-  // with any errors causing 0 (don't map anything) to be returned.  If the
-  // entire file is read without error, a large value is returned which will
-  // allow the entire file to be mapped in most cases.
+  // The size of the memory mapping that SQLite should use for this database.
   //
-  // Results are recorded in the database's meta table for future reference, so
-  // the file should only be read through once.
-  size_t GetAppropriateMmapSize();
+  // The return value follows the semantics of "PRAGMA mmap_size". In
+  // particular, zero (0) means memory-mapping should be disabled, and the value
+  // is capped by SQLITE_MAX_MMAP_SIZE. More details at
+  // https://www.sqlite.org/pragma.html#pragma_mmap_size
+  //
+  // "Memory-mapped access" is usually shortened to "mmap", which is the name of
+  // the POSIX system call used to implement. The same principles apply on
+  // Windows, but its more-descriptive API names don't make for good shorthands.
+  //
+  // When mmap is enabled, SQLite attempts to use the memory-mapped area (by
+  // calling xFetch() in the VFS file API) instead of requesting a database page
+  // buffer from the pager and reading (via xRead() in the VFS API) into it.
+  // When this works out, the database page cache ends up only storing pages
+  // whose contents has been modified. More details at
+  // https://sqlite.org/mmap.html
+  //
+  // I/O errors on memory-mapped files result in crashes in Chrome. POSIX
+  // systems signal SIGSEGV or SIGBUS on I/O errors in mmap-ed files. Windows
+  // raises the EXECUTE_IN_PAGE_ERROR strucuted exception in this case. Chrome
+  // does not catch signals or structured exceptions.
+  //
+  // In order to avoid crashes, this method attempts to read the file using
+  // regular I/O, and returns 0 (no mmap) if it encounters any error.
+  size_t ComputeMmapSizeForOpen();
 
-  // Helpers for GetAppropriateMmapSize().
+  // Helpers for ComputeMmapSizeForOpen().
   bool GetMmapAltStatus(int64_t* status);
   bool SetMmapAltStatus(int64_t status);
 
   // sqlite3_prepare_v3() flags for this database.
   int SqlitePrepareFlags() const;
+
+  // Returns a SQLite VFS interface pointer to the file storing database pages.
+  //
+  // Returns null if the database is not backed by a VFS file. This is always
+  // the case for in-memory databases. Temporary databases (only used by sq
+  // ::Recovery) start without a backing VFS file, and only get a file when they
+  // outgrow their page cache.
+  //
+  // This method must only be called while the database is successfully opened.
+  sqlite3_file* GetSqliteVfsFile();
 
   // The actual sqlite database. Will be null before Init has been called or if
   // Init resulted in an error.

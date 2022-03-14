@@ -13,6 +13,7 @@
 #include <memory>
 #include <tuple>
 
+#include "base/check.h"
 #include "base/dcheck_is_on.h"
 #include "base/feature_list.h"
 #include "base/files/file_path.h"
@@ -22,6 +23,7 @@
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
 #include "base/no_destructor.h"
+#include "base/notreached.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/strcat.h"
@@ -99,30 +101,51 @@ class ScopedWritableSchema {
   raw_ptr<sqlite3> db_;
 };
 
-// Helper to wrap the sqlite3_backup_*() step of Raze().  Return
-// SQLite error code from running the backup step.
-int BackupDatabase(sqlite3* src, sqlite3* dst, const char* db_name) {
-  DCHECK_NE(src, dst);
-  sqlite3_backup* backup = sqlite3_backup_init(dst, db_name, src, db_name);
-  if (!backup) {
-    // Since this call only sets things up, this indicates a gross
-    // error in SQLite.
-    DLOG(DCHECK) << "Unable to start sqlite3_backup(): " << sqlite3_errmsg(dst);
-    return sqlite3_extended_errcode(dst);
+// Raze() helper that uses SQLite's online backup API.
+//
+// Returns the SQLite error code produced by sqlite3_backup_step(). SQLITE_DONE
+// signals success. SQLITE_OK will never be returned.
+//
+// The implementation is tailored for the Raze() use case. In particular, the
+// SQLite API use and and error handling is optimized for 1-page databases.
+int BackupDatabaseForRaze(sqlite3* source_db, sqlite3* destination_db) {
+  DCHECK(source_db);
+  DCHECK(destination_db);
+  DCHECK_NE(source_db, destination_db);
+
+  // https://www.sqlite.org/backup.html has a high-level overview of SQLite's
+  // backup support. https://www.sqlite.org/c3ref/backup_finish.html describes
+  // the API.
+  static constexpr char kMainDatabaseName[] = "main";
+  sqlite3_backup* backup = sqlite3_backup_init(
+      destination_db, kMainDatabaseName, source_db, kMainDatabaseName);
+  DCHECK(backup) << "sqlite3_backup_init() failed, ongoing transaction. Error: "
+                 << sqlite3_errmsg(destination_db);
+
+  constexpr int kUnlimitedPageCount = -1;  // Back up entire database.
+  int sqlite_result_code = sqlite3_backup_step(backup, kUnlimitedPageCount);
+  DCHECK_NE(sqlite_result_code, SQLITE_OK)
+      << "sqlite3_backup_step() returned SQLITE_OK (instead of SQLITE_DONE) "
+      << "when asked to back up the entire database";
+  DCHECK_NE(sqlite_result_code, SQLITE_LOCKED)
+      << "Unsupported concurrent SQL statement execution";
+
+#if DCHECK_IS_ON()
+  if (sqlite_result_code == SQLITE_DONE) {
+    // If successful, exactly one page should have been backed up.
+    DCHECK_EQ(sqlite3_backup_pagecount(backup), 1)
+        << __func__ << " was intended to be used with 1-page databases";
   }
+#endif  // DCHECK_IS_ON()
 
-  // -1 backs up the entire database.
-  int rc = sqlite3_backup_step(backup, -1);
-  int pages = sqlite3_backup_pagecount(backup);
-  sqlite3_backup_finish(backup);
+  // sqlite3_backup_finish() releases the sqlite3_backup object.
+  //
+  // It returns an error code only if the backup encountered a permanent error.
+  // We use the favor of the sqlite3_backup_step() result instead, because it
+  // also tells us about temporary errors, like SQLITE_BUSY.
+  std::ignore = sqlite3_backup_finish(backup);
 
-  // If successful, exactly one page should have been backed up.  If
-  // this breaks, check this function to make sure assumptions aren't
-  // being broken.
-  if (rc == SQLITE_DONE)
-    DCHECK_EQ(pages, 1);
-
-  return rc;
+  return sqlite_result_code;
 }
 
 bool ValidAttachmentPoint(base::StringPiece attachment_point) {
@@ -133,33 +156,6 @@ bool ValidAttachmentPoint(base::StringPiece attachment_point) {
   // are expected.
   return base::ranges::all_of(attachment_point,
                               [](char ch) { return base::IsAsciiLower(ch); });
-}
-
-// Helper to get the sqlite3_file* associated with the "main" database.
-int GetSqlite3File(sqlite3* db, sqlite3_file** file) {
-  *file = nullptr;
-  int rc = sqlite3_file_control(db, nullptr, SQLITE_FCNTL_FILE_POINTER, file);
-  if (rc != SQLITE_OK)
-    return rc;
-
-  // TODO(shess): null in file->pMethods has been observed on android_dbg
-  // content_unittests, even though it should not be possible.
-  // http://crbug.com/329982
-  if (!*file || !(*file)->pMethods)
-    return SQLITE_ERROR;
-
-  return rc;
-}
-
-// Convenience to get the sqlite3_file* and the size for the "main" database.
-int GetSqlite3FileAndSize(sqlite3* db,
-                          sqlite3_file** file,
-                          sqlite3_int64* db_size) {
-  int rc = GetSqlite3File(db, file);
-  if (rc != SQLITE_OK)
-    return rc;
-
-  return (*file)->pMethods->xFileSize(*file, db_size);
 }
 
 std::string AsUTF8ForSQL(const base::FilePath& path) {
@@ -665,8 +661,8 @@ bool Database::SetMmapAltStatus(int64_t status) {
   return CommitTransaction();
 }
 
-size_t Database::GetAppropriateMmapSize() {
-  TRACE_EVENT0("sql", "Database::GetAppropriateMmapSize");
+size_t Database::ComputeMmapSizeForOpen() {
+  TRACE_EVENT0("sql", "Database::ComputeMmapSizeForOpen");
 
   absl::optional<base::ScopedBlockingCall> scoped_blocking_call;
   InitScopedBlockingCall(FROM_HERE, &scoped_blocking_call);
@@ -700,18 +696,24 @@ size_t Database::GetAppropriateMmapSize() {
     // Continue reading from previous offset.
     DCHECK_GE(mmap_ofs, 0);
 
-    // TODO(shess): Could this reading code be shared with Preload()?  It would
-    // require locking twice (this code wouldn't be able to access |db_size| so
-    // the helper would have to return amount read).
+    // GetSqliteVfsFile() returns null for in-memory and temporary databases.
+    // This is fine, we don't want to enable memory-mapping in those cases
+    // anyway.
+    //
+    // First, memory-mapping is a no-op for in-memory databases.
+    //
+    // Second, temporary databases are only used for corruption recovery, which
+    // occurs in response to I/O errors. An environment with heightened I/O
+    // errors translates into a higher risk of mmap-induced Chrome crashes.
+    sqlite3_int64 db_size = 0;
+    sqlite3_file* file = GetSqliteVfsFile();
+    if (!file || file->pMethods->xFileSize(file, &db_size) != SQLITE_OK)
+      return 0;
 
     // Read more of the database looking for errors.  The VFS interface is used
     // to assure that the reads are valid for SQLite.  |g_reads_allowed| is used
     // to limit checking to 20MB per run of Chromium.
-    sqlite3_file* file = nullptr;
-    sqlite3_int64 db_size = 0;
-    if (SQLITE_OK != GetSqlite3FileAndSize(db_, &file, &db_size))
-      return 0;
-
+    //
     // Read the data left, or |g_reads_allowed|, whichever is smaller.
     // |g_reads_allowed| limits the total amount of I/O to spend verifying data
     // in a single Chromium run.
@@ -777,6 +779,42 @@ size_t Database::GetAppropriateMmapSize() {
 int Database::SqlitePrepareFlags() const {
   return options_.enable_virtual_tables_discouraged ? 0
                                                     : SQLITE_PREPARE_NO_VTAB;
+}
+
+sqlite3_file* Database::GetSqliteVfsFile() {
+  DCHECK(db_) << "Database not opened";
+
+  // sqlite3_file_control() accepts a null pointer to mean the "main" database
+  // attached to a connection. https://www.sqlite.org/c3ref/file_control.html
+  constexpr const char* kMainDatabaseName = nullptr;
+
+  sqlite3_file* result = nullptr;
+  int sqlite_result_code = sqlite3_file_control(
+      db_, kMainDatabaseName, SQLITE_FCNTL_FILE_POINTER, &result);
+
+  // SQLITE_FCNTL_FILE_POINTER is handled directly by SQLite, not by the VFS. It
+  // is only supposed to fail with SQLITE_ERROR if the database name is not
+  // recognized. However, "main" should always be recognized.
+  DCHECK_EQ(sqlite_result_code, SQLITE_OK)
+      << "sqlite3_file_control(SQLITE_FCNTL_FILE_POINTER) failed";
+
+  // SQLite does not return null when called on an in-memory or temporary
+  // database. Instead, it returns returns a VFS file object with a null
+  // pMethods member.
+  DCHECK(result)
+      << "sqlite3_file_control() succeded but returned a null sqlite3_file*";
+  if (!result->pMethods) {
+    // If this assumption fails, sql::Database will still function correctly,
+    // but will miss some configuration optimizations. The DCHECK is here to
+    // alert us (via test failures and ASAN canary builds) of such cases.
+    DCHECK_EQ(DbPath().AsUTF8Unsafe(), "")
+        << "sqlite3_file_control() returned a sqlite3_file* with null pMethods "
+        << "in a case when it shouldn't have.";
+
+    return nullptr;
+  }
+
+  return result;
 }
 
 void Database::TrimMemory() {
@@ -869,13 +907,11 @@ bool Database::Raze() {
   std::ignore = Execute("PRAGMA mmap_size = 0");
 #endif
 
-  const char* kMain = "main";
-  int rc = BackupDatabase(null_db.db_, db_, kMain);
+  int sqlite_result_code = BackupDatabaseForRaze(null_db.db_, db_);
 
   // The destination database was locked.
-  if (rc == SQLITE_BUSY) {
+  if (sqlite_result_code == SQLITE_BUSY)
     return false;
-  }
 
   // SQLITE_NOTADB can happen if page 1 of db_ exists, but is not
   // formatted correctly.  SQLITE_IOERR_SHORT_READ can happen if db_
@@ -883,27 +919,21 @@ bool Database::Raze() {
   // truncate it before trying again.
   // TODO(shess): Maybe it would be worthwhile to just truncate from
   // the get-go?
-  if (rc == SQLITE_NOTADB || rc == SQLITE_IOERR_SHORT_READ) {
-    sqlite3_file* file = nullptr;
-    rc = GetSqlite3File(db_, &file);
-    if (rc != SQLITE_OK) {
-      DLOG(DCHECK) << "Failure getting file handle.";
-      return false;
-    }
-
-    rc = file->pMethods->xTruncate(file, 0);
-    if (rc != SQLITE_OK) {
+  if (sqlite_result_code == SQLITE_NOTADB ||
+      sqlite_result_code == SQLITE_IOERR_SHORT_READ) {
+    sqlite3_file* file = GetSqliteVfsFile();
+    if (!file || file->pMethods->xTruncate(file, 0) != SQLITE_OK) {
       DLOG(DCHECK) << "Failed to truncate file.";
       return false;
     }
 
-    rc = BackupDatabase(null_db.db_, db_, kMain);
-
-    DCHECK_EQ(rc, SQLITE_DONE) << "Failed retrying Raze().";
+    sqlite_result_code = BackupDatabaseForRaze(null_db.db_, db_);
+    if (sqlite_result_code != SQLITE_DONE)
+      return false;
   }
 
   // Page size of |db_| and |null_db| differ.
-  if (rc == SQLITE_READONLY) {
+  if (sqlite_result_code == SQLITE_READONLY) {
     // Enter TRUNCATE mode to change page size.
     // TODO(shuagga@microsoft.com): Need a guarantee here that there is no other
     // database connection open.
@@ -920,24 +950,22 @@ bool Database::Raze() {
       std::ignore = Execute("PRAGMA journal_mode=WAL;");
     }
 
-    rc = BackupDatabase(null_db.db_, db_, kMain);
-
-    DCHECK_EQ(rc, SQLITE_DONE) << "Failed retrying Raze().";
+    sqlite_result_code = BackupDatabaseForRaze(null_db.db_, db_);
+    if (sqlite_result_code != SQLITE_DONE)
+      return false;
   }
 
-  // TODO(shess): Figure out which other cases can happen.
-  DCHECK_EQ(rc, SQLITE_DONE) << "Unable to copy entire null database.";
+  if (sqlite_result_code != SQLITE_DONE) {
+    NOTIMPLEMENTED() << "Unhandled sqlite3_backup_step() error: "
+                     << sqlite_result_code;
+    return false;
+  }
 
   // Checkpoint to propagate transactions to the database file and empty the WAL
   // file.
   // The database can still contain old data if the Checkpoint fails so fail the
   // Raze.
-  if (!CheckpointDatabase()) {
-    return false;
-  }
-
-  // The entire database should have been backed up.
-  return rc == SQLITE_DONE;
+  return CheckpointDatabase();
 }
 
 bool Database::RazeAndClose() {
@@ -1700,29 +1728,42 @@ bool Database::OpenInternal(const std::string& db_file_path,
   static_assert(SQLITE_SECURE_DELETE == 1,
                 "Chrome assumes secure_delete is on by default.");
 
-  // Set a reasonable chunk size for larger files.  This reduces churn from
-  // remapping memory on size changes.  It also reduces filesystem
-  // fragmentation.
-  // TODO(shess): It may make sense to have this be hinted by the client.
-  // Database sizes seem to be bimodal, some clients have consistently small
-  // databases (<20k) while other clients have a broad distribution of sizes
-  // (hundreds of kilobytes to many megabytes).
-  sqlite3_file* file = nullptr;
-  sqlite3_int64 db_size = 0;
-  sqlite_result_code = GetSqlite3FileAndSize(db_, &file, &db_size);
-  if (sqlite_result_code == SQLITE_OK && db_size > 16 * 1024) {
-    int chunk_size = 4 * 1024;
-    if (db_size > 128 * 1024)
-      chunk_size = 32 * 1024;
-    sqlite3_file_control(db_, nullptr, SQLITE_FCNTL_CHUNK_SIZE, &chunk_size);
+  // When SQLite needs to grow a database file, it uses a configurable
+  // increment. Larger values reduce filesystem fragmentation and mmap()
+  // churn, as the database file is grown less often. Smaller values waste
+  // less disk space.
+  //
+  // We currently set different values for small vs large files.
+  //
+  // TODO(crbug.com/1305778): Replace file size-based heuristic with a
+  // DatabaseOptions member. Use the DatabaseOptions value for temporary
+  // databases as well.
+  sqlite3_file* file = GetSqliteVfsFile();
+
+  // GetSqliteVfsFile() returns null for in-memory and temporary databases. This
+  // is fine, because these databases start out empty, so the heuristic below
+  // would never set a chunk size on them anyway.
+  if (file) {
+    sqlite3_int64 db_size = 0;
+    sqlite_result_code = file->pMethods->xFileSize(file, &db_size);
+    if (sqlite_result_code == SQLITE_OK && db_size > 16 * 1024) {
+      int chunk_size = 4 * 1024;
+      if (db_size > 128 * 1024)
+        chunk_size = 32 * 1024;
+
+      sqlite3_file_control(db_, /*zDbName=*/nullptr, SQLITE_FCNTL_CHUNK_SIZE,
+                           &chunk_size);
+    }
   }
 
-  // Enable memory-mapped access.  The explicit-disable case is because SQLite
-  // can be built to default-enable mmap.  GetAppropriateMmapSize() calculates a
-  // safe range to memory-map based on past regular I/O.  This value will be
-  // capped by SQLITE_MAX_MMAP_SIZE, which could be different between 32-bit and
-  // 64-bit platforms.
-  size_t mmap_size = mmap_disabled_ ? 0 : GetAppropriateMmapSize();
+  size_t mmap_size = mmap_disabled_ ? 0 : ComputeMmapSizeForOpen();
+
+  // We explicitly issue a "PRGAMA mmap_size=0" to disable memory-mapping. We
+  // could skip executing the PRAGMA in that case, and use a static_assert to
+  // ensure that SQLITE_DEFAULT_MMAP_SIZE > 0. We didn't choose this alternative
+  // because would cost us a bit more logic, and the optimization would apply to
+  // edge cases, such as in-memory databases.  More details at
+  // https://www.sqlite.org/pragma.html#pragma_mmap_size.
   std::string pragma_mmap_size_sql =
       base::StrCat({"PRAGMA mmap_size=", base::NumberToString(mmap_size)});
   std::ignore = Execute(pragma_mmap_size_sql.c_str());
