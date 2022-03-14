@@ -145,13 +145,13 @@ public class QueryTileUtilsTest {
     public void
     testShowQueryTilesSegmentationResultComparison() {
         QueryTileUtils.setSegmentationResultsForTesting(1 /*DONT_SHOW*/);
-        Assert.assertEquals(0,
+        Assert.assertEquals(1,
                 RecordHistogram.getHistogramTotalCountForTesting(
                         "Search.QueryTiles.ShowQueryTilesSegmentationResultComparison"));
 
         nextDecisionTimeReached();
         Assert.assertTrue(QueryTileUtils.shouldShowQueryTiles());
-        Assert.assertEquals(1,
+        Assert.assertEquals(2,
                 RecordHistogram.getHistogramTotalCountForTesting(
                         "Search.QueryTiles.ShowQueryTilesSegmentationResultComparison"));
         Assert.assertEquals(1,
@@ -163,7 +163,7 @@ public class QueryTileUtilsTest {
         nextDecisionTimeReached();
         QueryTileUtils.onMostVisitedTileClicked();
         Assert.assertFalse(QueryTileUtils.shouldShowQueryTiles());
-        Assert.assertEquals(2,
+        Assert.assertEquals(3,
                 RecordHistogram.getHistogramTotalCountForTesting(
                         "Search.QueryTiles.ShowQueryTilesSegmentationResultComparison"));
         Assert.assertEquals(1,

@@ -128,24 +128,21 @@ public class QueryTileUtils {
 
         boolean nextDecisionTimestampReached = System.currentTimeMillis() >= nextDecisionTimestamp;
 
-        boolean lastDecisionExpired = noPreviousHistory || nextDecisionTimestampReached;
-
         // Use segmentation model result only if finch enabled and next decision is expired or
         // unavailable. If nextDecisionTimestamp is available and hasn't been reached, continue
         // using code algorithm.
-        if (!shouldUseModelResult || !lastDecisionExpired) {
+        boolean lastDecisionExpired = noPreviousHistory || nextDecisionTimestampReached;
+        if (shouldUseModelResult && lastDecisionExpired) {
+            SharedPreferencesManager.getInstance().removeKey(
+                    ChromePreferenceKeys.QUERY_TILES_NEXT_DISPLAY_DECISION_TIME_MS);
+            return getBehaviourResultFromSegmentation(getSegmentationResult(), false);
+        }
+
+        boolean resultFromCode;
+        if (noPreviousHistory) {
             // If this is the first time we make a decision, don't show query tiles.
-            if (noPreviousHistory) {
-                updateDisplayStatusAndNextDecisionTime(false /*showQueryTiles*/);
-                return false;
-            }
-
-            // Return the current decision before the next decision timestamp.
-            if (!nextDecisionTimestampReached) {
-                return SharedPreferencesManager.getInstance().readBoolean(
-                        ChromePreferenceKeys.QUERY_TILES_SHOW_ON_NTP, false);
-            }
-
+            resultFromCode = false;
+        } else if (nextDecisionTimestampReached) {
             int recentMVClicks = SharedPreferencesManager.getInstance().readInt(
                     ChromePreferenceKeys.QUERY_TILES_NUM_RECENT_MV_TILE_CLICKS, 0);
             int recentQueryTileClicks = SharedPreferencesManager.getInstance().readInt(
@@ -153,23 +150,24 @@ public class QueryTileUtils {
 
             int mvTileClickThreshold = getFieldTrialParamValue(
                     MV_TILE_CLICKS_THRESHOLD_KEY, DEFAULT_MV_TILE_CLICKS_THRESHOLD);
+
             // If MV tiles is clicked recently, hide query tiles for a while.
             // Otherwise, show it for a period of time.
-            final boolean showQueryTiles = (recentMVClicks <= mvTileClickThreshold
+            resultFromCode = (recentMVClicks <= mvTileClickThreshold
                     || recentMVClicks <= recentQueryTileClicks);
-
-            // Used for measuring consistency of segmentation model result.
-            if (shouldCompareModelResult) {
-                recordSegmentationResultComparison(getSegmentationResult(), showQueryTiles);
-            }
-
-            updateDisplayStatusAndNextDecisionTime(showQueryTiles);
-            return showQueryTiles;
         } else {
-            SharedPreferencesManager.getInstance().removeKey(
-                    ChromePreferenceKeys.QUERY_TILES_NEXT_DISPLAY_DECISION_TIME_MS);
-            return getBehaviourResultFromSegmentation(getSegmentationResult(), false);
+            resultFromCode = SharedPreferencesManager.getInstance().readBoolean(
+                    ChromePreferenceKeys.QUERY_TILES_SHOW_ON_NTP, false);
         }
+
+        // Used for measuring consistency of segmentation model result. This is recorded for
+        // every request.
+        if (shouldCompareModelResult) {
+            recordSegmentationResultComparison(getSegmentationResult(), resultFromCode);
+        }
+
+        updateDisplayStatusAndNextDecisionTime(resultFromCode);
+        return resultFromCode;
     }
 
     /**
