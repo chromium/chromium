@@ -370,7 +370,7 @@ IN_PROC_BROWSER_TEST_F(PageContentAnnotationsServiceBrowserTest,
           [](base::RunLoop* run_loop,
              const std::vector<BatchAnnotationResult>& results) {
             ASSERT_EQ(results.size(), 1U);
-            EXPECT_EQ(results[0].input(), "www.chromium.org");
+            EXPECT_EQ(results[0].input(), "chromium org");
             EXPECT_EQ(results[0].type(), AnnotationType::kPageTopics);
             // Intentionally does not test model execution, since that is well
             // covered in the unittests for PageContentAnnotationsModelManager.

@@ -24,7 +24,14 @@ class PageContentAnnotationsServiceTest : public testing::Test {
 
 TEST_F(PageContentAnnotationsServiceTest, PageTopicsDomain) {
   std::vector<std::pair<GURL, std::string>> tests = {
-      {GURL("https://www.chromium.org"), "www.chromium.org"},
+      {GURL("https://www.chromium.org/path?q=a"), "chromium org"},
+      {GURL("https://foo-bar.com/"), "foo bar com"},
+      {GURL("https://foo_bar.com/"), "foo bar com"},
+      {GURL("https://cats.co.uk/"), "cats co uk"},
+      {GURL("https://cats+dogs.com"), "cats dogs com"},
+      {GURL("https://www.foo-bar_.baz.com"), "foo bar  baz com"},
+      {GURL("https://www.foo-bar-baz.com"), "foo bar baz com"},
+      {GURL("https://WwW.LOWER-CASE.com"), "lower case com"},
   };
 
   for (const auto& test : tests) {

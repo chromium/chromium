@@ -241,9 +241,18 @@ void PageContentAnnotationsService::OverridePageContentAnnotatorForTesting(
 // static
 std::string PageContentAnnotationsService::StringInputForPageTopicsDomain(
     const GURL& url) {
-  // TODO(crbug.com/1240822): Add whatever logic needs to be here to match the
-  // model data processing.
-  return url.host();
+  std::string domain = base::ToLowerASCII(url.host());
+
+  // Strip the 'www.' if it exists.
+  if (base::StartsWith(domain, "www.")) {
+    domain = domain.substr(4);
+  }
+
+  for (char c : std::vector<char>{'-', '_', '.', '+'}) {
+    std::replace(domain.begin(), domain.end(), c, ' ');
+  }
+
+  return domain;
 }
 
 void PageContentAnnotationsService::BatchAnnotatePageTopics(
