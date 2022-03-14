@@ -5,16 +5,11 @@
 #include "content/browser/media/media_internals_cdm_helper.h"
 
 #include <memory>
-#include <vector>
 
 #include "base/values.h"
-#include "content/browser/media/cdm_registry_impl.h"
-#include "content/browser/media/key_system_support_impl.h"
 #include "content/browser/media/media_internals.h"
 #include "content/public/browser/web_ui.h"
-#include "content/public/common/cdm_info.h"
 #include "media/base/audio_codecs.h"
-#include "media/base/bind_to_current_loop.h"
 #include "media/base/content_decryption_module.h"
 #include "media/base/encryption_scheme.h"
 #include "media/base/video_codecs.h"
@@ -114,42 +109,15 @@ MediaInternalsCdmHelper::MediaInternalsCdmHelper() = default;
 MediaInternalsCdmHelper::~MediaInternalsCdmHelper() = default;
 
 void MediaInternalsCdmHelper::GetRegisteredCdms() {
-  if (!pending_key_systems_.empty())
-    return;
-
-  auto cdms = CdmRegistryImpl::GetInstance()->GetRegisteredCdms();
-
-  // Trigger IsKeySystemSupported() for each key system so lazy initialized
-  // CdmInfo will be finalized.
-  for (const auto& cdm_info : cdms) {
-    const auto& key_system = cdm_info.key_system;
-    if (pending_key_systems_.count(key_system))
-      continue;
-
-    pending_key_systems_.insert(key_system);
-
-    // BindToCurrentLoop() is needed in case the callback called synchronously.
-    KeySystemSupportImpl::GetInstance()->IsKeySystemSupported(
-        key_system, media::BindToCurrentLoop(base::BindOnce(
-                        &MediaInternalsCdmHelper::OnCdmInfoFinalized,
-                        weak_factory_.GetWeakPtr(), key_system)));
-  }
+  CdmRegistryImpl::GetInstance()->ObserveKeySystemCapabilities(
+      base::BindRepeating(
+          &MediaInternalsCdmHelper::OnKeySystemCapabilitiesUpdated,
+          weak_factory_.GetWeakPtr()));
 }
 
 // Ignore results since we'll get them from CdmRegistryImpl directly.
-void MediaInternalsCdmHelper::OnCdmInfoFinalized(
-    const std::string& key_system,
-    bool /*success*/,
-    media::mojom::KeySystemCapabilityPtr /*capability*/) {
-  DCHECK(pending_key_systems_.count(key_system));
-  pending_key_systems_.erase(key_system);
-
-  // Send update when all registered key systems are finalized.
-  if (pending_key_systems_.empty())
-    SendCdmUpdate();
-}
-
-void MediaInternalsCdmHelper::SendCdmUpdate() {
+void MediaInternalsCdmHelper::OnKeySystemCapabilitiesUpdated(
+    KeySystemCapabilities /*capabilities*/) {
   auto cdms = CdmRegistryImpl::GetInstance()->GetRegisteredCdms();
 
   base::Value cdm_list(base::Value::Type::LIST);
