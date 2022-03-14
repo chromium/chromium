@@ -102,12 +102,23 @@ class OptimizationGuideServiceTest : public PlatformTest {
     scoped_feature_list_.InitWithFeatures(enabled_features, {});
 
     TestChromeBrowserState::Builder builder;
+    builder.AddTestingFactory(
+        OptimizationGuideServiceFactory::GetInstance(),
+        OptimizationGuideServiceFactory::GetDefaultFactory());
     builder.SetPrefService(std::move(testing_prefs));
     browser_state_ = builder.Build();
     optimization_guide_service_ =
         OptimizationGuideServiceFactory::GetForBrowserState(
             browser_state_.get());
     optimization_guide_service_->DoFinalInit();
+
+    ChromeBrowserState* otr_browser_state =
+        browser_state_->CreateOffTheRecordBrowserStateWithTestingFactories(
+            {std::make_pair(
+                OptimizationGuideServiceFactory::GetInstance(),
+                OptimizationGuideServiceFactory::GetDefaultFactory())});
+    OptimizationGuideServiceFactory::GetForBrowserState(otr_browser_state)
+        ->DoFinalInit();
   }
 
   void PushHintsComponentAndWaitForCompletion() {

@@ -108,7 +108,15 @@ class OptimizationGuideTabHelperTest : public PlatformTest {
     scoped_feature_list_.InitWithFeatures(
         {optimization_guide::features::kOptimizationHints}, {});
 
-    browser_state_ = TestChromeBrowserState::Builder().Build();
+    TestChromeBrowserState::Builder builder;
+    builder.AddTestingFactory(
+        OptimizationGuideServiceFactory::GetInstance(),
+        OptimizationGuideServiceFactory::GetDefaultFactory());
+    browser_state_ = builder.Build();
+    optimization_guide_service_ =
+        OptimizationGuideServiceFactory::GetForBrowserState(
+            browser_state_.get());
+    optimization_guide_service_->DoFinalInit();
 
     web_state_.SetBrowserState(browser_state_.get());
     optimization_guide_service_ =

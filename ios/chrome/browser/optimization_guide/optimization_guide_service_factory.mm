@@ -20,34 +20,9 @@
 #error "This file requires ARC support."
 #endif
 
-// static
-OptimizationGuideService* OptimizationGuideServiceFactory::GetForBrowserState(
-    ChromeBrowserState* context) {
-  if (!optimization_guide::features::IsOptimizationHintsEnabled())
-    return nullptr;
-  return static_cast<OptimizationGuideService*>(
-      GetInstance()->GetServiceForBrowserState(context, /*create=*/true));
-}
-
-// static
-OptimizationGuideServiceFactory*
-OptimizationGuideServiceFactory::GetInstance() {
-  static base::NoDestructor<OptimizationGuideServiceFactory> instance;
-  return instance.get();
-}
-
-OptimizationGuideServiceFactory::OptimizationGuideServiceFactory()
-    : BrowserStateKeyedServiceFactory(
-          "OptimizationGuideService",
-          BrowserStateDependencyManager::GetInstance()) {
-  DependsOn(BrowserListFactory::GetInstance());
-}
-
-OptimizationGuideServiceFactory::~OptimizationGuideServiceFactory() = default;
-
-std::unique_ptr<KeyedService>
-OptimizationGuideServiceFactory::BuildServiceInstanceFor(
-    web::BrowserState* context) const {
+namespace {
+std::unique_ptr<KeyedService> BuildOptimizationGuideService(
+    web::BrowserState* context) {
   ChromeBrowserState* chrome_browser_state =
       ChromeBrowserState::FromBrowserState(context);
   ChromeBrowserState* original_browser_state =
@@ -74,6 +49,44 @@ OptimizationGuideServiceFactory::BuildServiceInstanceFor(
       BrowserListFactory::GetForBrowserState(chrome_browser_state),
       chrome_browser_state->GetSharedURLLoaderFactory());
 }
+}
+
+// static
+OptimizationGuideService* OptimizationGuideServiceFactory::GetForBrowserState(
+    ChromeBrowserState* context) {
+  if (!optimization_guide::features::IsOptimizationHintsEnabled())
+    return nullptr;
+  return static_cast<OptimizationGuideService*>(
+      GetInstance()->GetServiceForBrowserState(context, /*create=*/true));
+}
+
+// static
+OptimizationGuideServiceFactory*
+OptimizationGuideServiceFactory::GetInstance() {
+  static base::NoDestructor<OptimizationGuideServiceFactory> instance;
+  return instance.get();
+}
+
+OptimizationGuideServiceFactory::OptimizationGuideServiceFactory()
+    : BrowserStateKeyedServiceFactory(
+          "OptimizationGuideService",
+          BrowserStateDependencyManager::GetInstance()) {
+  DependsOn(BrowserListFactory::GetInstance());
+}
+
+OptimizationGuideServiceFactory::~OptimizationGuideServiceFactory() = default;
+
+// static
+BrowserStateKeyedServiceFactory::TestingFactory
+OptimizationGuideServiceFactory::GetDefaultFactory() {
+  return base::BindRepeating(&BuildOptimizationGuideService);
+}
+
+std::unique_ptr<KeyedService>
+OptimizationGuideServiceFactory::BuildServiceInstanceFor(
+    web::BrowserState* context) const {
+  return BuildOptimizationGuideService(context);
+}
 
 bool OptimizationGuideServiceFactory::ServiceIsCreatedWithBrowserState() const {
   return optimization_guide::features::IsOptimizationHintsEnabled();
@@ -82,4 +95,8 @@ bool OptimizationGuideServiceFactory::ServiceIsCreatedWithBrowserState() const {
 web::BrowserState* OptimizationGuideServiceFactory::GetBrowserStateToUse(
     web::BrowserState* context) const {
   return GetBrowserStateOwnInstanceInIncognito(context);
+}
+
+bool OptimizationGuideServiceFactory::ServiceIsNULLWhileTesting() const {
+  return true;
 }

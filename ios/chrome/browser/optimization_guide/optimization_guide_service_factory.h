@@ -21,6 +21,10 @@ class OptimizationGuideServiceFactory : public BrowserStateKeyedServiceFactory {
       ChromeBrowserState* context);
   static OptimizationGuideServiceFactory* GetInstance();
 
+  // Returns the default factory used to build OptimizationGuideService. Can be
+  // registered with SetTestingFactory to use real instances during testing.
+  static TestingFactory GetDefaultFactory();
+
  private:
   friend class base::NoDestructor<OptimizationGuideServiceFactory>;
 
@@ -40,6 +44,7 @@ class OptimizationGuideServiceFactory : public BrowserStateKeyedServiceFactory {
   web::BrowserState* GetBrowserStateToUse(
       web::BrowserState* context) const override;
   bool ServiceIsCreatedWithBrowserState() const override;
+  bool ServiceIsNULLWhileTesting() const override;
 };
 
 #endif  // IOS_CHROME_BROWSER_OPTIMIZATION_GUIDE_OPTIMIZATION_GUIDE_SERVICE_FACTORY_H_

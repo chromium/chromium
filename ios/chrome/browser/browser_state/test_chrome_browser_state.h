@@ -65,6 +65,20 @@ class TestChromeBrowserState final : public ChromeBrowserState {
   // TestingProfile::DestroyOffTheRecordProfile().
   void DestroyOffTheRecordChromeBrowserState() override {}
 
+  // Creates an off-the-record TestChromeBrowserState for
+  // the current object, installing `testing_factories`
+  // first.
+  //
+  // This is an error to call this method if the current
+  // TestChromeBrowserState already has a off-the-record
+  // object, or is itself off-the-record.
+  //
+  // This method will be called without factories if the
+  // method `GetOffTheRecordBrowserState()` is called on
+  // this object.
+  TestChromeBrowserState* CreateOffTheRecordBrowserStateWithTestingFactories(
+      TestingFactories testing_factories = {});
+
   // Creates a WebDataService. If not invoked, the web data service is null.
   void CreateWebDataService();
 
@@ -139,8 +153,8 @@ class TestChromeBrowserState final : public ChromeBrowserState {
   friend class Builder;
 
   // Used to create the incognito TestChromeBrowserState.
-  explicit TestChromeBrowserState(
-      TestChromeBrowserState* original_browser_state);
+  TestChromeBrowserState(TestChromeBrowserState* original_browser_state,
+                         TestingFactories testing_factories);
 
   // Initialization of the TestChromeBrowserState. This is a separate method
   // as it needs to be called after the bi-directional link between original

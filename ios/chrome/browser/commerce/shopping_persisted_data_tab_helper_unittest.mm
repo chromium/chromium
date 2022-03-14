@@ -98,7 +98,14 @@ class ShoppingPersistedDataTabHelperTest : public PlatformTest {
         AuthenticationServiceFactory::GetInstance(),
         base::BindRepeating(
             &AuthenticationServiceFake::CreateAuthenticationService));
+    builder.AddTestingFactory(
+        OptimizationGuideServiceFactory::GetInstance(),
+        OptimizationGuideServiceFactory::GetDefaultFactory());
     browser_state_ = builder.Build();
+    if (optimization_guide::features::IsOptimizationHintsEnabled()) {
+      OptimizationGuideServiceFactory::GetForBrowserState(browser_state_.get())
+          ->DoFinalInit();
+    }
     browser_state_->GetPrefs()->SetBoolean(
         unified_consent::prefs::kUrlKeyedAnonymizedDataCollectionEnabled, true);
     fake_identity_ = [FakeChromeIdentity identityWithEmail:@"foo1@gmail.com"

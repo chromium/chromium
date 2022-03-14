@@ -52,7 +52,8 @@ std::unique_ptr<KeyedService> BuildWebDataService(web::BrowserState* context) {
 }  // namespace
 
 TestChromeBrowserState::TestChromeBrowserState(
-    TestChromeBrowserState* original_browser_state)
+    TestChromeBrowserState* original_browser_state,
+    TestingFactories testing_factories)
     : ChromeBrowserState(original_browser_state->GetIOTaskRunner()),
       testing_prefs_(nullptr),
       otr_browser_state_(nullptr),
@@ -61,6 +62,10 @@ TestChromeBrowserState::TestChromeBrowserState(
   // off-the-record TestChromeBrowserState must be established before this
   // method can be called.
   DCHECK(original_browser_state_);
+
+  for (const auto& pair : testing_factories) {
+    pair.first->SetTestingFactory(this, std::move(pair.second));
+  }
 
   profile_metrics::SetBrowserProfileType(
       this, profile_metrics::BrowserProfileType::kIncognito);
@@ -193,11 +198,19 @@ TestChromeBrowserState::GetOffTheRecordChromeBrowserState() {
   if (IsOffTheRecord())
     return this;
 
-  if (!otr_browser_state_) {
-    otr_browser_state_.reset(new TestChromeBrowserState(this));
-    otr_browser_state_->Init();
-  }
+  if (otr_browser_state_)
+    return otr_browser_state_.get();
 
+  return CreateOffTheRecordBrowserStateWithTestingFactories();
+}
+
+TestChromeBrowserState*
+TestChromeBrowserState::CreateOffTheRecordBrowserStateWithTestingFactories(
+    TestingFactories testing_factories) {
+  DCHECK(!IsOffTheRecord());
+  DCHECK(!otr_browser_state_);
+  otr_browser_state_.reset(new TestChromeBrowserState(this, testing_factories));
+  otr_browser_state_->Init();
   return otr_browser_state_.get();
 }
 
