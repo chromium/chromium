@@ -903,34 +903,22 @@ class FileWriterDelegateTest : public ::testing::Test {
     ASSERT_TRUE(file_.IsValid());
   }
 
-  // Writes data to the file, leaving the current position at the end of the
-  // write.
-  void PopulateFile() {
-    static const char kSomeData[] = "this sure is some data.";
-    static const size_t kSomeDataLen = sizeof(kSomeData) - 1;
-    ASSERT_NE(-1LL, file_.Write(0LL, kSomeData, kSomeDataLen));
-  }
-
   base::FilePath temp_file_path_;
   base::File file_;
 };
 
-TEST_F(FileWriterDelegateTest, WriteToStartAndTruncate) {
-  // Write stuff and advance.
-  PopulateFile();
+TEST_F(FileWriterDelegateTest, WriteToEnd) {
+  const std::string payload = "This is the actualy payload data.\n";
 
-  // This should rewind, write, then truncate.
-  static const char kSomeData[] = "short";
-  static const int kSomeDataLen = sizeof(kSomeData) - 1;
   {
     FileWriterDelegate writer(&file_);
+    EXPECT_EQ(0, writer.file_length());
     ASSERT_TRUE(writer.PrepareOutput());
-    ASSERT_TRUE(writer.WriteBytes(kSomeData, kSomeDataLen));
+    ASSERT_TRUE(writer.WriteBytes(payload.data(), payload.size()));
+    EXPECT_EQ(payload.size(), writer.file_length());
   }
-  ASSERT_EQ(kSomeDataLen, file_.GetLength());
-  char buf[kSomeDataLen] = {};
-  ASSERT_EQ(kSomeDataLen, file_.Read(0LL, buf, kSomeDataLen));
-  ASSERT_EQ(std::string(kSomeData), std::string(buf, kSomeDataLen));
+
+  EXPECT_EQ(payload.size(), file_.GetLength());
 }
 
 }  // namespace zip

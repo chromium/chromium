@@ -274,7 +274,8 @@ class ZipReader {
   base::WeakPtrFactory<ZipReader> weak_ptr_factory_{this};
 };
 
-// A writer delegate that writes to a given File.
+// A writer delegate that writes to a given File. This file is expected to be
+// initially empty.
 class FileWriterDelegate : public WriterDelegate {
  public:
   // Constructs a FileWriterDelegate that manipulates |file|. The delegate will
@@ -288,12 +289,11 @@ class FileWriterDelegate : public WriterDelegate {
   FileWriterDelegate(const FileWriterDelegate&) = delete;
   FileWriterDelegate& operator=(const FileWriterDelegate&) = delete;
 
-  // Truncates the file to the number of bytes written.
   ~FileWriterDelegate() override;
 
   // WriterDelegate methods:
 
-  // Seeks to the beginning of the file, returning false if the seek fails.
+  // Returns true if the file handle passed to the constructor is valid.
   bool PrepareOutput() override;
 
   // Writes |num_bytes| bytes of |data| to the file, returning false on error or
@@ -307,7 +307,7 @@ class FileWriterDelegate : public WriterDelegate {
   // executable.
   void SetPosixFilePermissions(int mode) override;
 
-  // Return the actual size of the file.
+  // Gets the number of bytes written into the file.
   int64_t file_length() { return file_length_; }
 
  private:

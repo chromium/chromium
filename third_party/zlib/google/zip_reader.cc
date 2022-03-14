@@ -504,14 +504,16 @@ FileWriterDelegate::FileWriterDelegate(base::File owned_file)
   DCHECK_EQ(file_, &owned_file_);
 }
 
-FileWriterDelegate::~FileWriterDelegate() {
-  if (!file_->SetLength(file_length_)) {
-    DVPLOG(1) << "Failed updating length of written file";
-  }
-}
+FileWriterDelegate::~FileWriterDelegate() {}
 
 bool FileWriterDelegate::PrepareOutput() {
-  return file_->Seek(base::File::FROM_BEGIN, 0) >= 0;
+  DCHECK(file_);
+  const bool ok = file_->IsValid();
+  if (ok) {
+    DCHECK_EQ(file_->GetLength(), 0)
+        << " The output file should be initially empty";
+  }
+  return ok;
 }
 
 bool FileWriterDelegate::WriteBytes(const char* data, int num_bytes) {
