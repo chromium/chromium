@@ -8,7 +8,7 @@ async_test(t => {
   navigation.onnavigatesuccess = t.unreached_func("navigatesuccess must not fire");
   navigation.onnavigateerror = t.unreached_func("navigateerror must not fire");
 
-  assert_equals(navigation.currentEntry.getState(), undefined, "App history state starts out as undefined");
+  assert_equals(navigation.currentEntry.getState(), undefined, "Navigation API state starts out as undefined");
   assert_equals(history.state, null, "history.state starts out as null");
 
   const newState = { key: "value" };

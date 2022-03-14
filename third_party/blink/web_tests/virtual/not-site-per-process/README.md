@@ -54,7 +54,7 @@ isolation of WPT origins.  The tests need to stay under
 - external/wpt/wasm/serialization/module/window-domain-success.sub.html
 - external/wpt/wasm/serialization/module/window-similar-but-cross-origin-success.sub.html
 - external/wpt/wasm/serialization/module/share-module-cross-origin-fails.sub.html
-- external/wpt/app-history/navigate-event/cross-window/*-sameorigindomain.sub.html
+- external/wpt/navigation-api/navigate-event/cross-window/*-sameorigindomain.sub.html
 
 ## Tests that need further investigation and/or decisions
 

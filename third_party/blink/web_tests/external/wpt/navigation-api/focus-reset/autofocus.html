@@ -7,9 +7,9 @@
 <script type="module">
 promise_setup(async () => {
   // Get the overall autofocus processed flag to flip to true, so that
-  // we only test the app history-specific stuff.
+  // we only test the navigation API-specific stuff.
   await new Promise(r => requestAnimationFrame(() => requestAnimationFrame(r)));
-  assert_equals(document.activeElement, initialAutofocusTarget, "Non-app history autofocus was processed");
+  assert_equals(document.activeElement, initialAutofocusTarget, "Non-navigation API autofocus was processed");
   initialAutofocusTarget.remove();
   assert_equals(document.activeElement, document.body);
 });

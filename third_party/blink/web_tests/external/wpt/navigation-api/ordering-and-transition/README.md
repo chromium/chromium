@@ -1,4 +1,4 @@
-# App history ordering/transition tests
+# Navigation API ordering/transition tests
 
 These are meant to test the ordering between various events and promises, as
 well as in some cases how the `navigation.transition` values changes.
@@ -6,7 +6,7 @@ well as in some cases how the `navigation.transition` values changes.
 Some of them use the `Recorder` framework in `resources/helpers.mjs`, and others
 test tricky cases (e.g. reentrancy) in a more ad-hoc way.
 
-<https://github.com/WICG/app-history/#complete-event-sequence> is a useful
+<https://github.com/WICG/navigation-api/#complete-event-sequence> is a useful
 reference for the intent of these tests.
 
 Note:

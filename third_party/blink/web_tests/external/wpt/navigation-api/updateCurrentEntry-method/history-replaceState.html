@@ -3,9 +3,9 @@
 <script src="/resources/testharnessreport.js"></script>
 <script>
 test(() => {
-  navigation.navigate("#", { replace : true, state : { data : "value" } });
+  navigation.updateCurrentEntry({ state : { data : "value" } });
   assert_equals(navigation.currentEntry.getState().data, "value");
-  history.pushState(1, "", "#push");
+  history.replaceState(1, "", "#replace");
   assert_equals(navigation.currentEntry.getState(), undefined);
-}, "appHistoryEntry.getState() after history.pushState()");
+}, "appHistoryEntry.getState() after history.replaceState()");
 </script>

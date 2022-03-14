@@ -1,7 +1,7 @@
 <!doctype html>
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
-<iframe id="i" src="resources/no-referrer-meta.html"></iframe>
+<iframe id="i" src="resources/no-referrer.html"></iframe>
 <script>
 promise_test(async (t) => {
   // Wait for after the load event so that the navigation doesn't get converted
@@ -25,8 +25,8 @@ promise_test(async (t) => {
   assert_equals(i.contentWindow.navigation.entries().length, 3);
   assert_equals(i.contentWindow.navigation.currentEntry.index, 1);
   assert_equals(new URL(i.contentWindow.navigation.entries()[0].url).pathname,
-                "/app-history/app-history-entry/resources/no-referrer-meta.html");
+                "/navigation-api/navigation-history-entry/resources/no-referrer.html");
   assert_equals(new URL(i.contentWindow.navigation.entries()[1].url).pathname,
-                "/app-history/app-history-entry/resources/no-referrer-meta.html");
-}, "The url of a document with no-referrer referrer meta tag is censored in AppHistoryEntry");
+                "/navigation-api/navigation-history-entry/resources/no-referrer.html");
+}, "The url of a document with no-referrer referrer policy is censored in AppHistoryEntry");
 </script>

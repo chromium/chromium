@@ -481,14 +481,14 @@
       "external/wpt/wasm/serialization/module/window-domain-success.sub.html",
       "external/wpt/wasm/serialization/module/window-similar-but-cross-origin-success.sub.html",
       "external/wpt/wasm/serialization/module/share-module-cross-origin-fails.sub.html",
-      "external/wpt/app-history/navigate-event/cross-window/click-crossdocument-crossorigin-sameorigindomain.sub.html",
-      "external/wpt/app-history/navigate-event/cross-window/click-samedocument-crossorigin-sameorigindomain.sub.html",
-      "external/wpt/app-history/navigate-event/cross-window/location-crossdocument-crossorigin-sameorigindomain.sub.html",
-      "external/wpt/app-history/navigate-event/cross-window/location-samedocument-crossorigin-sameorigindomain.sub.html",
-      "external/wpt/app-history/navigate-event/cross-window/open-crossdocument-crossorigin-sameorigindomain.sub.html",
-      "external/wpt/app-history/navigate-event/cross-window/open-samedocument-crossorigin-sameorigindomain.sub.html",
-      "external/wpt/app-history/navigate-event/cross-window/submit-crossdocument-crossorigin-sameorigindomain.sub.html",
-      "external/wpt/app-history/navigate-event/cross-window/submit-samedocument-crossorigin-sameorigindomain.sub.html",
+      "external/wpt/navigation-api/navigate-event/cross-window/click-crossdocument-crossorigin-sameorigindomain.sub.html",
+      "external/wpt/navigation-api/navigate-event/cross-window/click-samedocument-crossorigin-sameorigindomain.sub.html",
+      "external/wpt/navigation-api/navigate-event/cross-window/location-crossdocument-crossorigin-sameorigindomain.sub.html",
+      "external/wpt/navigation-api/navigate-event/cross-window/location-samedocument-crossorigin-sameorigindomain.sub.html",
+      "external/wpt/navigation-api/navigate-event/cross-window/open-crossdocument-crossorigin-sameorigindomain.sub.html",
+      "external/wpt/navigation-api/navigate-event/cross-window/open-samedocument-crossorigin-sameorigindomain.sub.html",
+      "external/wpt/navigation-api/navigate-event/cross-window/submit-crossdocument-crossorigin-sameorigindomain.sub.html",
+      "external/wpt/navigation-api/navigate-event/cross-window/submit-samedocument-crossorigin-sameorigindomain.sub.html",
 
       "http/tests/printing/cross-site-frame-scrolled.html",
       "http/tests/printing/cross-site-frame.html"],
@@ -498,7 +498,7 @@
     "prefix": "no-auto-wpt-origin-isolation",
     "bases": [
       "external/wpt/html/browsers/origin/origin-keyed-agent-clusters",
-      "external/wpt/app-history/navigate-event/cross-window"
+      "external/wpt/navigation-api/navigate-event/cross-window"
     ],
     "args": ["--disable-auto-wpt-origin-isolation",
              "--reset-browsing-instance-between-tests"]
@@ -747,9 +747,11 @@
   },
   {
     "prefix": "bfcache-same-site",
-    "bases": [ "external/wpt/app-history/app-history-entry/entries-after-bfcache.html",
-               "external/wpt/app-history/app-history-entry/entries-after-bfcache-in-iframe.html",
-               "external/wpt/app-history/per-entry-events/dispose-after-bfcache.html" ],
+    "bases": [
+      "external/wpt/navigation-api/navigation-history-entry/entries-after-bfcache.html",
+      "external/wpt/navigation-api/navigation-history-entry/entries-after-bfcache-in-iframe.html",
+      "external/wpt/navigation-api/per-entry-events/dispose-after-bfcache.html"
+    ],
     "args": [ "--enable-features=BackForwardCache:enable_same_site/true",
               "--disable-field-trial-config" ]
   },
