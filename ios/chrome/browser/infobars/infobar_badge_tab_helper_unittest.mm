@@ -37,8 +37,8 @@ class InfobarBadgeTabHelperTest : public PlatformTest {
 
     // Create the InfobarBadgeTabHelper for web_state_ and set its delegate.
     InfobarBadgeTabHelper::CreateForWebState(&web_state_);
-    tab_helper()->SetDelegate(delegate_);
     delegate_.badgeTabHelper = tab_helper();
+    tab_helper()->SetDelegate(delegate_);
   }
 
   // Adds a FakeInfobarIOS with specified badge support to the WebState's
