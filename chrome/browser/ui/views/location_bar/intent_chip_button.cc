@@ -27,7 +27,6 @@ IntentChipButton::IntentChipButton(Browser* browser,
                         true),
       browser_(browser),
       delegate_(delegate) {
-  SetTheme(Theme::kLowVisibility);
   SetFocusBehavior(views::View::FocusBehavior::ACCESSIBLE_ONLY);
   SetTooltipText(l10n_util::GetStringUTF16(IDS_INTENT_CHIP_LABEL));
 }
@@ -40,7 +39,9 @@ void IntentChipButton::Update() {
   SetVisible(is_visible);
 
   if (is_visible) {
-    ResetAnimation(!GetChipCollapsed());
+    bool collapsed = GetChipCollapsed();
+    ResetAnimation(!collapsed);
+    SetTheme(collapsed ? Theme::kIconStyle : Theme::kLowVisibility);
   }
 
   if (was_visible && !is_visible)

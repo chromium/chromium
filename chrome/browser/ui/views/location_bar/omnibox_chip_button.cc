@@ -4,11 +4,13 @@
 
 #include "chrome/browser/ui/views/location_bar/omnibox_chip_button.h"
 
+#include "chrome/browser/themes/theme_properties.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/layout_constants.h"
 #include "components/vector_icons/vector_icons.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/base/theme_provider.h"
 #include "ui/color/color_id.h"
 #include "ui/color/color_provider.h"
 #include "ui/gfx/color_utils.h"
@@ -95,9 +97,13 @@ void OmniboxChipButton::OnThemeChanged() {
 }
 
 void OmniboxChipButton::UpdateBackgroundColor() {
-  SetBackground(
-      CreateBackgroundFromPainter(views::Painter::CreateSolidRoundRectPainter(
-          GetBackgroundColor(), GetIconSize())));
+  if (theme_ == Theme::kIconStyle) {
+    SetBackground(nullptr);
+  } else {
+    SetBackground(
+        CreateBackgroundFromPainter(views::Painter::CreateSolidRoundRectPainter(
+            GetBackgroundColor(), GetIconSize())));
+  }
 }
 
 void OmniboxChipButton::AnimationEnded(const gfx::Animation* animation) {
@@ -133,14 +139,22 @@ void OmniboxChipButton::UpdateIconAndColors() {
                     GetTextAndIconColor(), GetIconSize(), nullptr));
 }
 
-SkColor OmniboxChipButton::GetTextAndIconColor() {
+SkColor OmniboxChipButton::GetTextAndIconColor() const {
+  if (theme_ == Theme::kIconStyle) {
+    // Use ThemeProvider rather than ColorProvider to correctly match the color
+    // used for page action icons.
+    return GetThemeProvider()->GetColor(
+        ThemeProperties::COLOR_OMNIBOX_RESULTS_ICON);
+  }
+
   return GetColorProvider()->GetColor(
       theme_ == Theme::kLowVisibility
           ? kColorOmniboxChipForegroundLowVisibility
           : kColorOmniboxChipForegroundNormalVisibility);
 }
 
-SkColor OmniboxChipButton::GetBackgroundColor() {
+SkColor OmniboxChipButton::GetBackgroundColor() const {
+  DCHECK(theme_ != Theme::kIconStyle);
   return GetColorProvider()->GetColor(
       theme_ == Theme::kLowVisibility
           ? kColorOmniboxChipBackgroundLowVisibility
