@@ -32,9 +32,6 @@ class LoginDisplay {
     // Returns true if sign in is in progress.
     virtual bool IsSigninInProgress() const = 0;
 
-    // Called when the user requests enterprise enrollment.
-    virtual void OnStartEnterpriseEnrollment() = 0;
-
     // Called when the user requests kiosk enable screen.
     virtual void OnStartKioskEnableScreen() = 0;
 

@@ -680,18 +680,6 @@ void ExistingUserController::OnGaiaScreenReady() {
   StartAutoLoginTimer();
 }
 
-void ExistingUserController::OnStartEnterpriseEnrollment() {
-  if (KioskAppManager::Get()->IsConsumerKioskDeviceWithAutoLaunch()) {
-    LOG(WARNING) << "Enterprise enrollment is not available after kiosk auto "
-                    "launch is set.";
-    return;
-  }
-
-  DeviceSettingsService::Get()->GetOwnershipStatusAsync(base::BindOnce(
-      &ExistingUserController::OnEnrollmentOwnershipCheckCompleted,
-      weak_factory_.GetWeakPtr()));
-}
-
 void ExistingUserController::OnStartKioskEnableScreen() {
   KioskAppManager::Get()->GetConsumerKioskAutoLaunchStatus(base::BindOnce(
       &ExistingUserController::OnConsumerKioskAutoLaunchCheckCompleted,
@@ -735,33 +723,6 @@ void ExistingUserController::OnConsumerKioskAutoLaunchCheckCompleted(
     KioskAppManager::ConsumerKioskAutoLaunchStatus status) {
   if (status == KioskAppManager::ConsumerKioskAutoLaunchStatus::kConfigurable)
     ShowKioskEnableScreen();
-}
-
-void ExistingUserController::OnEnrollmentOwnershipCheckCompleted(
-    DeviceSettingsService::OwnershipStatus status) {
-  VLOG(1) << "OnEnrollmentOwnershipCheckCompleted status=" << status;
-  if (status == DeviceSettingsService::OWNERSHIP_NONE) {
-    ShowEnrollmentScreen();
-  } else if (status == DeviceSettingsService::OWNERSHIP_TAKEN) {
-    // On a device that is already owned we might want to allow users to
-    // re-enroll if the policy information is invalid.
-    CrosSettingsProvider::TrustedStatus trusted_status =
-        CrosSettings::Get()->PrepareTrustedValues(base::BindOnce(
-            &ExistingUserController::OnEnrollmentOwnershipCheckCompleted,
-            weak_factory_.GetWeakPtr(), status));
-    if (trusted_status == CrosSettingsProvider::PERMANENTLY_UNTRUSTED) {
-      VLOG(1) << "Showing enrollment because device is PERMANENTLY_UNTRUSTED";
-      ShowEnrollmentScreen();
-    }
-  } else {
-    // OwnershipService::GetStatusAsync is supposed to return either
-    // OWNERSHIP_NONE or OWNERSHIP_TAKEN.
-    NOTREACHED();
-  }
-}
-
-void ExistingUserController::ShowEnrollmentScreen() {
-  GetLoginDisplayHost()->StartWizard(EnrollmentScreenView::kScreenId);
 }
 
 void ExistingUserController::ShowKioskEnableScreen() {

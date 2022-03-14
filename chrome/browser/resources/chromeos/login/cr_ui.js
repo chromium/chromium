@@ -189,7 +189,7 @@ cr.define('cr.ui', function() {
       } else {
         waitForOobeScreen('gaia-signin', function() {
           // TODO(crbug.com/1100910): migrate logic to dedicated test api.
-          chrome.send('toggleEnrollmentScreen');
+          chrome.send('OobeTestApi.advanceToScreen', ['enterprise-enrollment']);
           chrome.send('toggleFakeEnrollment');
         });
 
@@ -234,7 +234,7 @@ cr.define('cr.ui', function() {
      */
     static switchToEnterpriseEnrollmentForTesting() {
       // TODO(crbug.com/1100910): migrate logic to dedicated test api.
-      chrome.send('toggleEnrollmentScreen');
+      chrome.send('OobeTestApi.advanceToScreen', ['enterprise-enrollment']);
     }
 
     /**

@@ -255,9 +255,6 @@ void SigninScreenHandler::Initialize() {}
 void SigninScreenHandler::RegisterMessages() {
   AddCallback("launchIncognito", &SigninScreenHandler::HandleLaunchIncognito);
   AddCallback("offlineLogin", &SigninScreenHandler::HandleOfflineLogin);
-  // TODO(crbug.com/1100910): migrate logic to dedicated test api.
-  AddCallback("toggleEnrollmentScreen",
-              &SigninScreenHandler::HandleToggleEnrollmentScreen);
   AddCallback("loginVisible", &SigninScreenHandler::HandleLoginVisible);
 
   // TODO(crbug.com/1168114): This is also called by GAIA screen,
@@ -513,11 +510,6 @@ void SigninScreenHandler::HandleOfflineLogin() {
   HideOfflineMessage(NetworkStateInformer::OFFLINE,
                      NetworkError::ERROR_REASON_NONE);
   LoginDisplayHost::default_host()->StartWizard(OfflineLoginView::kScreenId);
-}
-
-void SigninScreenHandler::HandleToggleEnrollmentScreen() {
-  if (delegate_)
-    delegate_->ShowEnterpriseEnrollmentScreen();
 }
 
 void SigninScreenHandler::HandleToggleKioskAutolaunchScreen() {

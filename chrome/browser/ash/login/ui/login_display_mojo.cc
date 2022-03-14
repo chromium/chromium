@@ -148,10 +148,6 @@ bool LoginDisplayMojo::IsSigninInProgress() const {
   return false;
 }
 
-void LoginDisplayMojo::ShowEnterpriseEnrollmentScreen() {
-  NOTIMPLEMENTED();
-}
-
 void LoginDisplayMojo::ShowKioskAutolaunchScreen() {
   NOTIMPLEMENTED();
 }

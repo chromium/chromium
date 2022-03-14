@@ -67,11 +67,6 @@ void LoginDisplayWebUI::Login(const UserContext& user_context,
     delegate_->Login(user_context, specifics);
 }
 
-void LoginDisplayWebUI::ShowEnterpriseEnrollmentScreen() {
-  if (delegate_)
-    delegate_->OnStartEnterpriseEnrollment();
-}
-
 void LoginDisplayWebUI::ShowKioskAutolaunchScreen() {
   if (delegate_)
     delegate_->OnStartKioskAutolaunchScreen();

@@ -98,7 +98,6 @@ class ExistingUserController : public LoginDisplay::Delegate,
   bool IsSigninInProgress() const override;
   void Login(const UserContext& user_context,
              const SigninSpecifics& specifics) override;
-  void OnStartEnterpriseEnrollment() override;
   void OnStartKioskEnableScreen() override;
   void OnStartKioskAutolaunchScreen() override;
   void ResetAutoLoginTimer() override;
@@ -202,18 +201,10 @@ class ExistingUserController : public LoginDisplay::Delegate,
   // not localized.
   void ShowError(SigninError error, const std::string& details);
 
-  // Handles result of ownership check and starts enterprise or kiosk enrollment
-  // if applicable.
-  void OnEnrollmentOwnershipCheckCompleted(
-      DeviceSettingsService::OwnershipStatus status);
-
   // Handles result of consumer kiosk configurability check and starts
   // enable kiosk screen if applicable.
   void OnConsumerKioskAutoLaunchCheckCompleted(
       KioskAppManager::ConsumerKioskAutoLaunchStatus status);
-
-  // Enters the enterprise enrollment screen.
-  void ShowEnrollmentScreen();
 
   // Shows privacy notification in case of auto lunch managed guest session.
   void ShowAutoLaunchManagedGuestSessionNotification();
