@@ -248,7 +248,7 @@ public class NewTabPageLayout extends LinearLayout implements TileGroup.Observer
         }
         mNoSearchLogoSpacer = findViewById(R.id.no_search_logo_spacer);
 
-        if (ChromeFeatureList.isEnabled(ChromeFeatureList.SHOW_SCROLLABLE_MVT_ON_NTP)) {
+        if (ChromeFeatureList.isEnabled(ChromeFeatureList.SHOW_SCROLLABLE_MVT_ON_NTP_ANDROID)) {
             // If SHOW_SCROLLABLE_MV_ON_NTP is true, TileGroup and other logic will be handled by
             // MostVisitedListCoordinator.
             initializeMostVisitedListCoordinator(
@@ -392,7 +392,7 @@ public class NewTabPageLayout extends LinearLayout implements TileGroup.Observer
     private void initializeMostVisitedListCoordinator(
             ActivityLifecycleDispatcher activityLifecycleDispatcher,
             TileGroup.Delegate tileGroupDelegate, TouchEnabledDelegate touchEnabledDelegate) {
-        assert ChromeFeatureList.isEnabled(ChromeFeatureList.SHOW_SCROLLABLE_MVT_ON_NTP);
+        assert ChromeFeatureList.isEnabled(ChromeFeatureList.SHOW_SCROLLABLE_MVT_ON_NTP_ANDROID);
         assert mMvTilesLayout != null;
         mMostVisitedListCoordinator = new MostVisitedListCoordinator(mActivity,
                 activityLifecycleDispatcher, mMvTilesLayout.findViewById(R.id.mv_tiles_layout),
@@ -470,7 +470,7 @@ public class NewTabPageLayout extends LinearLayout implements TileGroup.Observer
     private void insertSiteSectionView() {
         int insertionPoint = indexOfChild(mMiddleSpacer) + 1;
 
-        if (ChromeFeatureList.isEnabled(ChromeFeatureList.SHOW_SCROLLABLE_MVT_ON_NTP)) {
+        if (ChromeFeatureList.isEnabled(ChromeFeatureList.SHOW_SCROLLABLE_MVT_ON_NTP_ANDROID)) {
             setClipToPadding(false);
             mMvTilesLayout = (ViewGroup) LayoutInflater.from(this.getContext())
                                      .inflate(R.layout.mv_tiles_layout, this, false);

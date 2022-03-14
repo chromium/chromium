@@ -5590,6 +5590,11 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kInstantStartDescription, kOsAndroid,
      FEATURE_VALUE_TYPE(chrome::android::kInstantStart)},
 
+    {"enable-show-scrollable-mvt-on-ntp",
+     flag_descriptions::kShowScrollableMVTOnNTPAndroidName,
+     flag_descriptions::kShowScrollableMVTOnNTPAndroidDescription, kOsAndroid,
+     FEATURE_VALUE_TYPE(chrome::android::kShowScrollableMVTOnNTPAndroid)},
+
     {"enable-close-tab-suggestions",
      flag_descriptions::kCloseTabSuggestionsName,
      flag_descriptions::kCloseTabSuggestionsDescription, kOsAndroid,

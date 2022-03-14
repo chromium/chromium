@@ -3549,6 +3549,10 @@ const char kRequestDesktopSiteForTabletsDescription[] =
     " On tablets with small screens a mobile site will be requested by "
     "default.";
 
+const char kShowScrollableMVTOnNTPAndroidName[] = "Show scrollable MVT on NTP";
+const char kShowScrollableMVTOnNTPAndroidDescription[] =
+    "Enable showing the scrollable most visited tiles on NTP.";
+
 const char kSecurePaymentConfirmationAndroidName[] =
     "Secure Payment Confirmation on Android";
 const char kSecurePaymentConfirmationAndroidDescription[] =

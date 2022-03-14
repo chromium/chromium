@@ -103,7 +103,6 @@ public class ChromeCachedFlags {
                 add(ChromeFeatureList.PAINT_PREVIEW_DEMO);
                 add(ChromeFeatureList.PAINT_PREVIEW_SHOW_ON_STARTUP);
                 add(ChromeFeatureList.READ_LATER);
-                add(ChromeFeatureList.SHOW_SCROLLABLE_MVT_ON_NTP);
                 add(ChromeFeatureList.START_SURFACE_ANDROID);
                 add(ChromeFeatureList.STORE_HOURS);
                 add(ChromeFeatureList.SWAP_PIXEL_FORMAT_TO_FIX_CONVERT_FROM_TRANSLUCENT);

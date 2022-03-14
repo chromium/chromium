@@ -365,7 +365,7 @@ public class NewTabPageTest {
     @Test
     @SmallTest
     @Feature({"NewTabPage", "FeedNewTabPage"})
-    @Features.EnableFeatures({ChromeFeatureList.SHOW_SCROLLABLE_MVT_ON_NTP})
+    @Features.EnableFeatures({ChromeFeatureList.SHOW_SCROLLABLE_MVT_ON_NTP_ANDROID})
     public void testClickMostVisitedItemOnMVTCarousel() {
         Assert.assertNotNull(mMVTCarouselLayout);
         ChromeTabUtils.waitForTabPageLoaded(
@@ -385,7 +385,7 @@ public class NewTabPageTest {
     @Test
     @SmallTest
     @Feature({"NewTabPage", "FeedNewTabPage"})
-    @Features.EnableFeatures({ChromeFeatureList.SHOW_SCROLLABLE_MVT_ON_NTP})
+    @Features.EnableFeatures({ChromeFeatureList.SHOW_SCROLLABLE_MVT_ON_NTP_ANDROID})
     public void testOpenMostVisitedItemInNewTabOnMVTCarousel() throws ExecutionException {
         Assert.assertNotNull(mMVTCarouselLayout);
         ChromeTabUtils.invokeContextMenuAndOpenInANewTab(mActivityTestRule,
@@ -400,7 +400,7 @@ public class NewTabPageTest {
     @Test
     @SmallTest
     @Feature({"NewTabPage", "FeedNewTabPage"})
-    @Features.EnableFeatures({ChromeFeatureList.SHOW_SCROLLABLE_MVT_ON_NTP})
+    @Features.EnableFeatures({ChromeFeatureList.SHOW_SCROLLABLE_MVT_ON_NTP_ANDROID})
     public void testOpenMostVisitedItemInIncognitoTabOnMVTCarousel() throws ExecutionException {
         Assert.assertNotNull(mMVTCarouselLayout);
         ChromeTabUtils.invokeContextMenuAndOpenInANewTab(mActivityTestRule,
@@ -416,7 +416,7 @@ public class NewTabPageTest {
     @SmallTest
     @Feature({"NewTabPage", "FeedNewTabPage"})
     @FlakyTest(message = "crbug.com/1075804")
-    @Features.EnableFeatures({ChromeFeatureList.SHOW_SCROLLABLE_MVT_ON_NTP})
+    @Features.EnableFeatures({ChromeFeatureList.SHOW_SCROLLABLE_MVT_ON_NTP_ANDROID})
     public void testRemoveMostVisitedItemOnMVTCarousel() throws ExecutionException {
         Assert.assertNotNull(mMVTCarouselLayout);
         SiteSuggestion testSite = mSiteSuggestions.get(0);

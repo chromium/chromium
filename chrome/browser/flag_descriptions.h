@@ -2030,6 +2030,9 @@ extern const char kRequestDesktopSiteForTabletsDescription[];
 extern const char kSecurePaymentConfirmationAndroidName[];
 extern const char kSecurePaymentConfirmationAndroidDescription[];
 
+extern const char kShowScrollableMVTOnNTPAndroidName[];
+extern const char kShowScrollableMVTOnNTPAndroidDescription[];
+
 extern const char kSendTabToSelfV2Name[];
 extern const char kSendTabToSelfV2Description[];
 
