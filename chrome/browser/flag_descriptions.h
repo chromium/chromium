@@ -232,12 +232,6 @@ extern const char kAutofillHighlightOnlyChangedValuesInPreviewModeDescription[];
 extern const char kAutofillParseMerchantPromoCodeFieldsName[];
 extern const char kAutofillParseMerchantPromoCodeFieldsDescription[];
 
-extern const char kAutofillProfileClientValidationName[];
-extern const char kAutofillProfileClientValidationDescription[];
-
-extern const char kAutofillProfileServerValidationName[];
-extern const char kAutofillProfileServerValidationDescription[];
-
 extern const char kAutofillSaveAndFillVPAName[];
 extern const char kAutofillSaveAndFillVPADescription[];
 
