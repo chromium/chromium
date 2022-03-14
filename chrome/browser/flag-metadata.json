@@ -1878,7 +1878,7 @@
   },
   {
     "name": "enable-debug-for-store-billing",
-    "owners": [ "maxlg", "web-payments-team@google.com" ],
+    "owners": [ "web-payments-team@google.com" ],
     // This flag is to allow developers to develop their app-billing capable
     // TWA apps locally, without having to upload the apps to the Play Store.
     "expiry_milestone": -1
@@ -2586,7 +2586,7 @@
   },
   {
     "name": "enable-payment-request-basic-card",
-    "owners": [ "maxlg", "web-payments-team@google.com" ],
+    "owners": [ "web-payments-team@google.com" ],
     // This flag is used by developers to disable the "basic-card" method, to
     // make sure their web pages do not break after Chrome deprecates
     // "basic-card" in M100.
@@ -2760,7 +2760,7 @@
   },
   {
     "name": "enable-secure-payment-confirmation-android",
-    "owners": [ "maxlg", "web-payments-team@google.com" ],
+    "owners": [ "web-payments-team@google.com" ],
     "expiry_milestone": 102
   },
   {

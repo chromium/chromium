@@ -2712,7 +2712,6 @@
                          'vasilii+watchlistpasswordmanager@chromium.org'],
     'payments': ['rouslan+payments@chromium.org',
                  'gogerald+paymentswatch@chromium.org',
-                 'maxlg+paymentswatch@chromium.org',
                  'nburris+paymentswatch@chromium.org'],
     'pdf': ['pdf-reviews@chromium.org'],
     'pepper_api': ['binji+watch@chromium.org',
