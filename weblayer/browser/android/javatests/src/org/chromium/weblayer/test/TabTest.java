@@ -8,6 +8,7 @@ import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.LinearLayout;
 
 import androidx.fragment.app.Fragment;
 import androidx.test.filters.SmallTest;
@@ -32,6 +33,7 @@ import org.chromium.weblayer.shell.InstrumentationActivity;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeoutException;
 
 /**
@@ -124,18 +126,19 @@ public class TabTest {
 
     private Bitmap captureScreenShot(float scale) throws TimeoutException {
         Bitmap[] bitmapHolder = new Bitmap[1];
+        int[] errorCodeHolder = new int[1];
         CallbackHelper callbackHelper = new CallbackHelper();
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             Tab tab = mActivity.getTab();
             tab.captureScreenShot(scale, (Bitmap bitmap, int errorCode) -> {
-                Assert.assertNotNull(bitmap);
-                Assert.assertEquals(0, errorCode);
+                errorCodeHolder[0] = errorCode;
                 bitmapHolder[0] = bitmap;
-                // Failure is ok here, so not checking |bitmap| or |errorCode|.
                 callbackHelper.notifyCalled();
             });
         });
         callbackHelper.waitForFirst();
+        Assert.assertNotNull(bitmapHolder[0]);
+        Assert.assertEquals(0, errorCodeHolder[0]);
         return bitmapHolder[0];
     }
 
@@ -163,6 +166,33 @@ public class TabTest {
         final int allowedError = 10;
         Assert.assertTrue(Math.abs(bitmap.getWidth() / 2 - halfBitmap.getWidth()) < allowedError);
         Assert.assertTrue(Math.abs(bitmap.getHeight() / 2 - halfBitmap.getHeight()) < allowedError);
+    }
+
+    @Test
+    @SmallTest
+    @MinWebLayerVersion(101)
+    public void testCaptureScreenShotAfterResize() throws TimeoutException, ExecutionException {
+        String url = mActivityTestRule.getTestDataURL("quadrant_colors.html");
+        mActivity = mActivityTestRule.launchShellWithUrl(url);
+
+        int newHeight = TestThreadUtils.runOnUiThreadBlocking(() -> {
+            View view = mActivity.getFragment().getView();
+            int height = view.getHeight() + 10;
+            LinearLayout.LayoutParams params =
+                    new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, height);
+            view.setLayoutParams(params);
+            view.requestLayout();
+            return height;
+        });
+
+        CriteriaHelper.pollUiThread(() -> {
+            View view = mActivity.getFragment().getView();
+            int height = view.getHeight();
+            Criteria.checkThat(height, Matchers.is(newHeight));
+        });
+
+        Bitmap bitmap = captureScreenShot(1.f);
+        checkQuadrantColors(bitmap);
     }
 
     @Test
