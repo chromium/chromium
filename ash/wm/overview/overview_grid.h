@@ -510,7 +510,7 @@ class ASH_EXPORT OverviewGrid : public SplitViewObserver,
   // Returns the the bounds of the desks widget in screen coordinates.
   gfx::Rect GetDesksWidgetBounds() const;
 
-  void UpdateCannotSnapWarningVisibility();
+  void UpdateCannotSnapWarningVisibility(bool animate);
 
   // Called back when the button to save a desk template is pressed.
   void OnSaveDeskAsTemplateButtonPressed();

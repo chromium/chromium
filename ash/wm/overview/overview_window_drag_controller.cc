@@ -320,7 +320,7 @@ void OverviewWindowDragController::StartNormalDragMode(
             /*is_dragging=*/true,
             SplitViewDragIndicators::WindowDraggingState::kFromOverview,
             SplitViewController::NONE));
-    item_->HideCannotSnapWarning();
+    item_->HideCannotSnapWarning(/*animate=*/true);
 
     // Update the split view divider bar status if necessary. If splitview is
     // active when dragging the overview window, the split divider bar should be
@@ -428,7 +428,7 @@ void OverviewWindowDragController::ResetGesture() {
       SplitViewController::Get(Shell::GetPrimaryRootWindow())
           ->OnWindowDragCanceled();
       overview_session_->ResetSplitViewDragIndicatorsWindowDraggingStates();
-      item_->UpdateCannotSnapWarningVisibility();
+      item_->UpdateCannotSnapWarningVisibility(/*animate=*/true);
     }
   }
   overview_session_->PositionWindows(/*animate=*/true);
@@ -649,7 +649,7 @@ OverviewWindowDragController::CompleteNormalDrag(
     // orientation was changed.
     UpdateDragIndicatorsAndOverviewGrid(location_in_screen);
     overview_session_->ResetSplitViewDragIndicatorsWindowDraggingStates();
-    item_->UpdateCannotSnapWarningVisibility();
+    item_->UpdateCannotSnapWarningVisibility(/*animate=*/true);
   }
 
   // This function has multiple exit positions, at each we must update the desks

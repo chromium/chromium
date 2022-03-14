@@ -231,6 +231,8 @@ void OverviewItem::HideForDesksTemplatesGrid(bool animate) {
   item_widget_event_blocker_ =
       std::make_unique<aura::ScopedWindowEventTargetingBlocker>(
           item_widget_->GetNativeWindow());
+
+  HideCannotSnapWarning(animate);
 }
 
 void OverviewItem::RevertHideForDesksTemplatesGrid(bool animate) {
@@ -244,6 +246,8 @@ void OverviewItem::RevertHideForDesksTemplatesGrid(bool animate) {
   }
 
   item_widget_event_blocker_.reset();
+
+  UpdateCannotSnapWarningVisibility(animate);
 }
 
 void OverviewItem::OnMovingWindowToAnotherDesk() {
@@ -509,7 +513,7 @@ void OverviewItem::CloseWindow() {
   transform_window_.Close();
 }
 
-void OverviewItem::UpdateCannotSnapWarningVisibility() {
+void OverviewItem::UpdateCannotSnapWarningVisibility(bool animate) {
   // Windows which can snap will never show this warning. Or if the window is
   // the drop target window, also do not show this warning.
   bool visible = true;
@@ -546,21 +550,28 @@ void OverviewItem::UpdateCannotSnapWarningVisibility() {
     GetWindow()->parent()->StackChildAbove(
         cannot_snap_widget_->GetNativeWindow(), GetWindow());
   }
-
-  DoSplitviewOpacityAnimation(cannot_snap_widget_->GetNativeWindow()->layer(),
-                              visible
-                                  ? SPLITVIEW_ANIMATION_OVERVIEW_ITEM_FADE_IN
-                                  : SPLITVIEW_ANIMATION_OVERVIEW_ITEM_FADE_OUT);
+  if (animate) {
+    DoSplitviewOpacityAnimation(
+        cannot_snap_widget_->GetLayer(),
+        visible ? SPLITVIEW_ANIMATION_OVERVIEW_ITEM_FADE_IN
+                : SPLITVIEW_ANIMATION_OVERVIEW_ITEM_FADE_OUT);
+  } else {
+    cannot_snap_widget_->GetLayer()->SetOpacity(visible ? 1.f : 0.f);
+  }
   const gfx::Rect bounds =
       ToStableSizeRoundedRect(GetWindowTargetBoundsWithInsets());
   cannot_snap_widget_->SetBoundsCenteredIn(bounds, /*animate=*/false);
 }
 
-void OverviewItem::HideCannotSnapWarning() {
+void OverviewItem::HideCannotSnapWarning(bool animate) {
   if (!cannot_snap_widget_)
     return;
-  DoSplitviewOpacityAnimation(cannot_snap_widget_->GetNativeWindow()->layer(),
-                              SPLITVIEW_ANIMATION_OVERVIEW_ITEM_FADE_OUT);
+  if (animate) {
+    DoSplitviewOpacityAnimation(cannot_snap_widget_->GetLayer(),
+                                SPLITVIEW_ANIMATION_OVERVIEW_ITEM_FADE_OUT);
+  } else {
+    cannot_snap_widget_->GetLayer()->SetOpacity(0.f);
+  }
 }
 
 void OverviewItem::OnSelectorItemDragStarted(OverviewItem* item) {
@@ -787,7 +798,7 @@ void OverviewItem::OnStartingAnimationComplete() {
   const bool show_backdrop =
       GetWindowDimensionsType() != OverviewGridWindowFillMode::kNormal;
   overview_item_view_->SetBackdropVisibility(show_backdrop);
-  UpdateCannotSnapWarningVisibility();
+  UpdateCannotSnapWarningVisibility(/*animate=*/true);
 }
 
 void OverviewItem::StopWidgetAnimation() {

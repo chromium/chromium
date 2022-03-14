@@ -43,6 +43,7 @@
 #include "ash/wm/overview/overview_session.h"
 #include "ash/wm/overview/overview_test_base.h"
 #include "ash/wm/overview/overview_test_util.h"
+#include "ash/wm/splitview/split_view_controller.h"
 #include "ash/wm/window_util.h"
 #include "ash/wm/wm_event.h"
 #include "base/callback_helpers.h"
@@ -469,6 +470,48 @@ TEST_F(DesksTemplatesTest, NoWindowsLabelOnTemplateGridShow) {
   ShowDesksTemplatesGrids();
   EXPECT_FALSE(grid_list[0]->no_windows_widget());
   EXPECT_FALSE(grid_list[1]->no_windows_widget());
+}
+
+// Tests that the "App does not support split-screen" label is hidden when the
+// desk templates grid is shown.
+TEST_F(DesksTemplatesTest, NoAppSplitScreenLabelOnTemplateGridShow) {
+  std::unique_ptr<aura::Window> unsnappable_window = CreateUnsnappableWindow();
+  auto test_window = CreateAppWindow();
+
+  // At least one entry is required for the templates grid to be shown.
+  AddEntry(base::GUID::GenerateRandomV4(), "template", base::Time::Now());
+
+  // Start overview mode.
+  ToggleOverview();
+  WaitForDesksTemplatesUI();
+  ASSERT_TRUE(GetOverviewSession());
+
+  ASSERT_TRUE(GetOverviewController()->InOverviewSession());
+
+  OverviewItem* snappable_overview_item =
+      GetOverviewItemForWindow(test_window.get());
+  OverviewItem* unsnappable_overview_item =
+      GetOverviewItemForWindow(unsnappable_window.get());
+
+  // Note: `cannot_snap_widget_` will be created on demand.
+  EXPECT_FALSE(snappable_overview_item->cannot_snap_widget_for_testing());
+  ASSERT_FALSE(unsnappable_overview_item->cannot_snap_widget_for_testing());
+
+  // Snap the extra snappable window to enter split view mode.
+  SplitViewController* split_view_controller =
+      SplitViewController::Get(Shell::GetPrimaryRootWindow());
+
+  split_view_controller->SnapWindow(test_window.get(),
+                                    SplitViewController::LEFT);
+  ASSERT_TRUE(split_view_controller->InSplitViewMode());
+  ASSERT_TRUE(unsnappable_overview_item->cannot_snap_widget_for_testing());
+  ui::Layer* unsnappable_layer =
+      unsnappable_overview_item->cannot_snap_widget_for_testing()->GetLayer();
+  EXPECT_EQ(1.f, unsnappable_layer->opacity());
+
+  // Entering the templates grid will hide the unsnappable label.
+  ShowDesksTemplatesGrids();
+  EXPECT_EQ(0.f, unsnappable_layer->opacity());
 }
 
 // Tests when user enter desk templates, a11y alert being sent.

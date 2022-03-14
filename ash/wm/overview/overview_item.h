@@ -123,11 +123,11 @@ class ASH_EXPORT OverviewItem : public aura::WindowObserver,
 
   // Shows the cannot snap warning if currently in splitview, and the associated
   // window cannot be snapped.
-  void UpdateCannotSnapWarningVisibility();
+  void UpdateCannotSnapWarningVisibility(bool animate);
 
   // Hides the cannot snap warning (if it was showing) until the next call to
   // |UpdateCannotSnapWarningVisibility|.
-  void HideCannotSnapWarning();
+  void HideCannotSnapWarning(bool animate);
 
   // Called when a OverviewItem on any grid is dragged. Hides the close button
   // when a drag is started, and reshows it when a drag is finished.
