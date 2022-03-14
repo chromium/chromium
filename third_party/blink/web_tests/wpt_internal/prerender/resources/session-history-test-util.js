@@ -1,9 +1,9 @@
 // Note: Following utility functions are expected to be used from
 // session-history-* test files.
 
-async function waitChannelMessage(testName) {
+async function waitChannelMessage(testName, uid) {
   const result = new Promise((resolve) => {
-    const testChannel = new BroadcastChannel(testName);
+    const testChannel = new PrerenderChannel(testName, uid);
     testChannel.addEventListener(
       "message",
       (e) => {
@@ -16,13 +16,13 @@ async function waitChannelMessage(testName) {
   return result;
 }
 
-async function runTestInPrerender(testName) {
-  const result = waitChannelMessage(`test-channel-${testName}`);
+async function runTestInPrerender(testName, uid) {
+  const result = waitChannelMessage(`test-channel-${testName}`, uid);
 
   // Run test in a new window for test isolation.
   const prerender = "session-history-prerender.https.html";
   window.open(
-    `./resources/session-history-initiator.https.html?prerender=${prerender}&testName=${testName}`,
+    `./resources/session-history-initiator.https.html?prerender=${prerender}&testName=${testName}&uid=${uid}`,
     "_blank",
     "noopener",
   );
@@ -31,10 +31,10 @@ async function runTestInPrerender(testName) {
 
 // This will activate the prerendered context created in runTestInPrerender
 // and then run the post-activation variation of `testName`.
-async function runTestInActivatedPage(testName) {
-  const testChannel = new BroadcastChannel(`test-channel-${testName}`);
+async function runTestInActivatedPage(testName, uid) {
+  const testChannel = new PrerenderChannel(`test-channel-${testName}`, uid);
   testChannel.postMessage("activate");
   testChannel.close();
 
-  return waitChannelMessage(`test-channel-${testName}`);
+  return waitChannelMessage(`test-channel-${testName}`, uid);
 }

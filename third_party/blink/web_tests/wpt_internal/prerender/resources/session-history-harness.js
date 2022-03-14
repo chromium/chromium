@@ -17,8 +17,9 @@ document.addEventListener("prerenderingchange", async (_) => {
 
   const urlParams = new URLSearchParams(window.location.search);
   const testName = urlParams.get("testName");
-  const testChannel = new BroadcastChannel(
-    `test-channel-${testName}`,
+  const uid = urlParams.get("uid");
+  const testChannel = new PrerenderChannel(
+    `test-channel-${testName}`, uid
   );
 
   try {
@@ -43,8 +44,9 @@ if (document.prerendering) {
   window.onload = async () => {
     const urlParams = new URLSearchParams(window.location.search);
     const testName = urlParams.get("testName");
-    const prerenderChannel = new BroadcastChannel(
-      `prerender-channel-${testName}`,
+    const uid = urlParams.get("uid");
+    const prerenderChannel = new PrerenderChannel(
+      `prerender-channel-${testName}`, uid
     );
 
     // The document load event is not finished at this point, so navigations

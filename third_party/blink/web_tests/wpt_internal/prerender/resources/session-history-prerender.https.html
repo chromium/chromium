@@ -3,6 +3,7 @@
  "Activation" suffix in these test names communicates to the test harness that
  this part of the test is run post-activation.
 -->
+<script src="/speculation-rules/prerender/resources/utils.js"></script>
 <script src="session-history-harness.js"></script>
 <script src="session-history-test-util.js"></script>
 <body>
@@ -86,8 +87,9 @@
       assert(window.parent == window, "not the top frame");
       const params = new URLSearchParams(window.location.search);
       const testName = params.get("testName");
+      const uid = params.get("uid");
       const resultPromise = waitChannelMessage(
-          `prerender-channel-${testName}InSubframeAfterNavigation`);
+          `prerender-channel-${testName}InSubframeAfterNavigation`, uid);
 
       params.set("testName", testName + "InSubframe");
       const frame = document.createElement("iframe");
@@ -121,8 +123,9 @@
       assert(window.parent == window, "not the top frame");
       const params = new URLSearchParams(window.location.search);
       const testName = params.get("testName");
+      const uid = params.get("uid");
       const resultPromise = waitChannelMessage(
-          `prerender-channel-${testName}InSubframe`);
+          `prerender-channel-${testName}InSubframe`, uid);
 
       params.set("testName", testName + "InSubframe");
       const frame = document.createElement("iframe");
@@ -132,7 +135,7 @@
       const result = await resultPromise;
       assert(result == "Passed", result);
       const second_result = await waitChannelMessage(
-          `prerender-channel-${testName}InSubframe`);
+          `prerender-channel-${testName}InSubframe`, uid);
       assert(second_result == "Passed", second_result);
     }
 

@@ -1,21 +1,22 @@
 <!DOCTYPE html>
-<script src="utils.js"></script>
+<script src="/speculation-rules/prerender/resources/utils.js"></script>
 <script src="session-history-harness.js"></script>
 <body>
   <script>
     const urlParams = new URLSearchParams(window.location.search);
     const prerender = urlParams.get("prerender");
     const testName = urlParams.get("testName");
+    const uid = urlParams.get("uid");
 
-    const prerenderChannel = new BroadcastChannel(
-      `prerender-channel-${testName}`
+    const prerenderChannel = new PrerenderChannel(
+      `prerender-channel-${testName}`, uid
     );
-    const testChannel = new BroadcastChannel(`test-channel-${testName}`);
+    const testChannel = new PrerenderChannel(`test-channel-${testName}`, uid);
 
     // Activate when a test sends a "activate" message.
     testChannel.addEventListener("message", (e) => {
       assert(e.data === "activate");
-      window.location.href = `${prerender}?testName=${testName}`;
+      window.location.href = `${prerender}?testName=${testName}&uid=${uid}`;
     });
 
     // Runs before and after the history manipulation in the prerender page to confirm
@@ -39,7 +40,7 @@
 
       assertInitialHistoryState();
 
-      startPrerendering(`${prerender}?testName=${testName}`);
+      startPrerendering(`${prerender}?testName=${testName}&uid=${uid}`);
       const testResult = await message;
 
       assertInitialHistoryState();
