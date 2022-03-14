@@ -46,12 +46,12 @@ public class EarlyTraceEventTest {
     public void testCanRecordEvent() {
         EarlyTraceEvent.enable();
         long myThreadId = Process.myTid();
-        long beforeNanos = SystemClock.elapsedRealtimeNanos();
+        long beforeNanos = System.nanoTime();
         long beforeThreadMillis = SystemClock.currentThreadTimeMillis();
         EarlyTraceEvent.begin(EVENT_NAME, false /*isToplevel*/);
         EarlyTraceEvent.end(EVENT_NAME, false /*isToplevel*/);
         Assert.assertTrue(EarlyTraceEvent.enabled());
-        long afterNanos = SystemClock.elapsedRealtimeNanos();
+        long afterNanos = System.nanoTime();
         long afterThreadMillis = SystemClock.currentThreadTimeMillis();
 
         List<Event> matchingEvents =
@@ -76,10 +76,10 @@ public class EarlyTraceEventTest {
     @Feature({"Android-AppBase"})
     public void testCanRecordAsyncEvent() {
         EarlyTraceEvent.enable();
-        long beforeNanos = SystemClock.elapsedRealtimeNanos();
+        long beforeNanos = System.nanoTime();
         EarlyTraceEvent.startAsync(EVENT_NAME, EVENT_ID);
         EarlyTraceEvent.finishAsync(EVENT_NAME, EVENT_ID);
-        long afterNanos = SystemClock.elapsedRealtimeNanos();
+        long afterNanos = System.nanoTime();
 
         List<AsyncEvent> matchingEvents = new ArrayList<AsyncEvent>();
         synchronized (EarlyTraceEvent.sLock) {
@@ -107,11 +107,11 @@ public class EarlyTraceEventTest {
     public void testCanRecordEventUsingTryWith() {
         EarlyTraceEvent.enable();
         long myThreadId = Process.myTid();
-        long beforeNanos = SystemClock.elapsedRealtimeNanos();
+        long beforeNanos = System.nanoTime();
         try (TraceEvent e = TraceEvent.scoped(EVENT_NAME)) {
             // Required comment to pass presubmit checks.
         }
-        long afterNanos = SystemClock.elapsedRealtimeNanos();
+        long afterNanos = System.nanoTime();
 
         List<Event> matchingEvents =
                 EarlyTraceEvent.getMatchingCompletedEventsForTesting(EVENT_NAME);
