@@ -33,8 +33,13 @@ class LargeIconCache;
 
 - (instancetype)init NS_UNAVAILABLE;
 
-// The consumer that will be notified when the data change.
-@property(nonatomic, weak) id<ContentSuggestionsCollectionConsumer> consumer;
+// The consumer that will be notified when the data change. |consumer| is used
+// if kContentSuggestionsUIViewControllerMigration is enabled.
+// TODO(crbug.com/1285378): remove after completion of UIViewController
+// migration.
+@property(nonatomic, weak) id<ContentSuggestionsCollectionConsumer>
+    collectionConsumer;
+@property(nonatomic, weak) id<ContentSuggestionsConsumer> consumer;
 
 // FaviconAttributesProvider to fetch the favicon for the most visited tiles.
 @property(nonatomic, strong, readonly)

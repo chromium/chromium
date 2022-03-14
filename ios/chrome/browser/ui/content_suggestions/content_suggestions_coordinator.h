@@ -12,6 +12,7 @@ class WebState;
 }
 
 @class ContentSuggestionsHeaderViewController;
+@class ContentSuggestionsViewController;
 @protocol DiscoverFeedDelegate;
 @class FeedMetricsRecorder;
 @protocol NewTabPageCommands;
@@ -36,8 +37,16 @@ class NotificationPromoWhatsNew;
 @property(nonatomic, strong, readonly)
     ContentSuggestionsHeaderViewController* headerController;
 
+// The CollectionView that this coordinator manages.
 @property(nonatomic, strong, readonly)
-    UICollectionViewController* viewController;
+    UICollectionViewController* contentSuggestionsCollectionViewController;
+
+// The ViewController that this coordinator managers if
+// kContentSuggestionsUIViewControllerMigration is enabled.
+// TODO(crbug.com/1285378): remove |contentSuggestionsCollectionViewController|
+// once migration is finished.
+@property(nonatomic, strong, readonly)
+    ContentSuggestionsViewController* viewController;
 
 // Allows for the in-flight enabling/disabling of the thumb strip.
 @property(nonatomic, weak, readonly) id<ThumbStripSupporting>

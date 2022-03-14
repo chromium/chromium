@@ -432,8 +432,15 @@ namespace {
 - (void)configureNTPViewController {
   DCHECK(self.ntpViewController);
 
-  self.ntpViewController.contentSuggestionsViewController =
-      self.contentSuggestionsCoordinator.viewController;
+  if (IsContentSuggestionsUIViewControllerMigrationEnabled()) {
+    self.ntpViewController.contentSuggestionsViewController =
+        self.contentSuggestionsCoordinator.viewController;
+  } else {
+    self.ntpViewController.contentSuggestionsCollectionViewController =
+        self.contentSuggestionsCoordinator
+            .contentSuggestionsCollectionViewController;
+  }
+
   self.ntpViewController.panGestureHandler = self.panGestureHandler;
   self.ntpViewController.feedVisible = [self isFeedVisible];
 
@@ -866,6 +873,12 @@ namespace {
 #pragma mark - NewTabPageContentDelegate
 
 - (void)reloadContentSuggestions {
+  if (IsContentSuggestionsUIViewControllerMigrationEnabled()) {
+    // No need to reload ContentSuggestions since the mediator receives all
+    // model state changes and immediately updates the consumer with the new
+    // state.
+    return;
+  }
   [self.contentSuggestionsCoordinator reload];
 }
 

@@ -66,6 +66,14 @@ const CGFloat kIconSize = 56;
   return self;
 }
 
+- (void)updateCount:(NSInteger)count {
+  self.countContainer.hidden = count == 0;
+  if (count > 0) {
+    self.countLabel.text = [@(count) stringValue];
+  }
+  self.config.count = count;
+}
+
 - (UILabel*)countLabel {
   if (!_countLabel) {
     _countContainer = [[UIView alloc] init];

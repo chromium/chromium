@@ -441,15 +441,21 @@ const char kFeedLearnMoreURL[] = "https://support.google.com/chrome/"
     return;
   }
   [self logMostVisitedOpening:item atIndex:index];
-  CGPoint cellCenter = [self cellCenterForItem:item];
+  // This is called in response to accessibility custom actions which don't
+  // need to animate the new tab from the Most Visited Tile.
+  CGPoint cellCenter = IsContentSuggestionsUIViewControllerMigrationEnabled()
+                           ? CGPointZero
+                           : [self cellCenterForItem:item];
   [self openNewTabWithURL:item.URL incognito:incognito originPoint:cellCenter];
 }
 
 - (void)openNewTabWithMostVisitedItem:(ContentSuggestionsMostVisitedItem*)item
                             incognito:(BOOL)incognito {
-  NSInteger index =
-      [self.suggestionsViewController.collectionViewModel indexPathForItem:item]
-          .item;
+  NSInteger index = IsContentSuggestionsUIViewControllerMigrationEnabled()
+                        ? item.index
+                        : [self.suggestionsViewController.collectionViewModel
+                              indexPathForItem:item]
+                              .item;
   [self openNewTabWithMostVisitedItem:item incognito:incognito atIndex:index];
 }
 

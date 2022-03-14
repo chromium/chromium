@@ -45,6 +45,7 @@
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_header_view_controller.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_mediator.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_menu_provider.h"
+#import "ios/chrome/browser/ui/content_suggestions/content_suggestions_view_controller.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_view_controller_audience.h"
 #import "ios/chrome/browser/ui/content_suggestions/ntp_home_constant.h"
 #import "ios/chrome/browser/ui/content_suggestions/ntp_home_mediator.h"
@@ -89,7 +90,9 @@
 }
 
 @property(nonatomic, strong)
-    ContentSuggestionsCollectionViewController* suggestionsViewController;
+    ContentSuggestionsCollectionViewController* collectionViewController;
+@property(nonatomic, strong)
+    ContentSuggestionsViewController* contentSuggestionsViewController;
 @property(nonatomic, strong)
     ContentSuggestionsMediator* contentSuggestionsMediator;
 @property(nonatomic, strong)
@@ -209,17 +212,32 @@
         [self.contentSuggestionsMediator notificationPromo]->CanShow();
   }
 
-  self.suggestionsViewController =
-      [[ContentSuggestionsCollectionViewController alloc]
-          initWithStyle:CollectionViewControllerStyleDefault];
-  self.suggestionsViewController.suggestionCommandHandler = self.ntpMediator;
-  self.suggestionsViewController.audience = self;
-  self.suggestionsViewController.contentSuggestionsEnabled =
-      self.contentSuggestionsEnabled;
+  if (IsContentSuggestionsUIViewControllerMigrationEnabled()) {
+    self.contentSuggestionsViewController =
+        [[ContentSuggestionsViewController alloc] init];
+    self.contentSuggestionsViewController.suggestionCommandHandler =
+        self.ntpMediator;
+    self.contentSuggestionsViewController.audience = self;
+    self.contentSuggestionsViewController.menuProvider = self;
+  } else {
+    self.collectionViewController =
+        [[ContentSuggestionsCollectionViewController alloc]
+            initWithStyle:CollectionViewControllerStyleDefault];
+    self.collectionViewController.suggestionCommandHandler = self.ntpMediator;
+    self.collectionViewController.audience = self;
+    self.collectionViewController.contentSuggestionsEnabled =
+        self.contentSuggestionsEnabled;
+    self.collectionViewController.menuProvider = self;
+  }
 
-  self.suggestionsViewController.menuProvider = self;
   if (IsContentSuggestionsHeaderMigrationEnabled()) {
-    self.contentSuggestionsMediator.consumer = self.suggestionsViewController;
+    if (IsContentSuggestionsUIViewControllerMigrationEnabled()) {
+      self.contentSuggestionsMediator.consumer =
+          self.contentSuggestionsViewController;
+    } else {
+      self.contentSuggestionsMediator.collectionConsumer =
+          self.collectionViewController;
+    }
   }
 
   if (!IsContentSuggestionsHeaderMigrationEnabled()) {
@@ -230,35 +248,47 @@
   self.ntpMediator.dispatcher =
       static_cast<id<ApplicationCommands, BrowserCommands, OmniboxCommands,
                      SnackbarCommands>>(self.browser->GetCommandDispatcher());
-  self.ntpMediator.suggestionsViewController = self.suggestionsViewController;
+  // IsContentSuggestionsUIViewControllerMigrationEnabled() doesn't need to set
+  // the suggestionsViewController since it won't be retrieving an item's index
+  // from the CollectionView model.
+  if (!IsContentSuggestionsUIViewControllerMigrationEnabled()) {
+    self.ntpMediator.suggestionsViewController = self.collectionViewController;
+  }
   self.ntpMediator.suggestionsMediator = self.contentSuggestionsMediator;
   [self.ntpMediator setUp];
   self.ntpMediator.feedMetricsRecorder = self.feedMetricsRecorder;
 
   if (!IsContentSuggestionsHeaderMigrationEnabled()) {
-    [self.suggestionsViewController
+    [self.collectionViewController
         addChildViewController:self.headerController];
     [self.headerController
-        didMoveToParentViewController:self.suggestionsViewController];
+        didMoveToParentViewController:self.collectionViewController];
 
-    // TODO(crbug.com/1114792): Remove header provider and use refactored header
-    // synchronizer instead.
-    self.suggestionsViewController.headerProvider = self.headerController;
+    // TODO(crbug.com/1114792): Remove header provider and use refactored
+    // header synchronizer instead.
+    self.collectionViewController.headerProvider = self.headerController;
 
-    // Set consumer after configuring the header to ensure that view controller
-    // has access to it when configuring its elements.
-    DCHECK(self.suggestionsViewController.headerProvider);
-    self.contentSuggestionsMediator.consumer = self.suggestionsViewController;
+    // Set consumer after configuring the header to ensure that view
+    // controller has access to it when configuring its elements.
+    DCHECK(self.collectionViewController.headerProvider);
+    self.contentSuggestionsMediator.collectionConsumer =
+        self.collectionViewController;
+
+    self.collectionViewController.collectionView.accessibilityIdentifier =
+        kContentSuggestionsCollectionIdentifier;
   }
-
-  self.suggestionsViewController.collectionView.accessibilityIdentifier =
-      kContentSuggestionsCollectionIdentifier;
 
   self.dragDropHandler = [[URLDragDropHandler alloc] init];
   self.dragDropHandler.dropDelegate = self;
-  [self.suggestionsViewController.collectionView
-      addInteraction:[[UIDropInteraction alloc]
-                         initWithDelegate:self.dragDropHandler]];
+  if (IsContentSuggestionsUIViewControllerMigrationEnabled()) {
+    [self.contentSuggestionsViewController.view
+        addInteraction:[[UIDropInteraction alloc]
+                           initWithDelegate:self.dragDropHandler]];
+  } else {
+    [self.collectionViewController.collectionView
+        addInteraction:[[UIDropInteraction alloc]
+                           initWithDelegate:self.dragDropHandler]];
+  }
 }
 
 - (void)stop {
@@ -273,7 +303,11 @@
   }
   [self.contentSuggestionsMediator disconnect];
   self.contentSuggestionsMediator = nil;
-  self.suggestionsViewController = nil;
+  if (IsContentSuggestionsUIViewControllerMigrationEnabled()) {
+    self.contentSuggestionsViewController = nil;
+  } else {
+    self.collectionViewController = nil;
+  }
   [self.sharingCoordinator stop];
   self.sharingCoordinator = nil;
   self.headerController = nil;
@@ -281,7 +315,13 @@
 }
 
 - (UIViewController*)viewController {
-  return self.suggestionsViewController;
+  DCHECK(IsContentSuggestionsUIViewControllerMigrationEnabled());
+  return self.contentSuggestionsViewController;
+}
+
+- (UICollectionViewController*)contentSuggestionsCollectionViewController {
+  DCHECK(!IsContentSuggestionsUIViewControllerMigrationEnabled());
+  return self.collectionViewController;
 }
 
 #pragma mark - ContentSuggestionsViewControllerAudience
@@ -297,6 +337,11 @@
   if (ShouldShowReturnToMostRecentTabForStartSurface()) {
     [self.contentSuggestionsMediator hideRecentTabTile];
   }
+}
+
+- (void)returnToRecentTabWasAdded {
+  [self.ntpCommandHandler updateDiscoverFeedLayout];
+  [self.ntpCommandHandler setContentOffsetToTop];
 }
 
 - (UIEdgeInsets)safeAreaInsetsForDiscoverFeed {
@@ -325,21 +370,23 @@
 #pragma mark - Public methods
 
 - (UIView*)view {
-  return self.suggestionsViewController.view;
+  return IsContentSuggestionsUIViewControllerMigrationEnabled()
+             ? self.contentSuggestionsViewController.view
+             : self.collectionViewController.view;
 }
 
 - (void)stopScrolling {
-  UIScrollView* scrollView = self.suggestionsViewController.collectionView;
+  UIScrollView* scrollView = self.collectionViewController.collectionView;
   [scrollView setContentOffset:scrollView.contentOffset animated:NO];
 }
 
 - (UIEdgeInsets)contentInset {
-  return self.suggestionsViewController.collectionView.contentInset;
+  return self.collectionViewController.collectionView.contentInset;
 }
 
 - (CGPoint)contentOffset {
   CGPoint collectionOffset =
-      self.suggestionsViewController.collectionView.contentOffset;
+      self.collectionViewController.collectionView.contentOffset;
   collectionOffset.y -=
       self.headerCollectionInteractionHandler.collectionShiftingOffset;
   return collectionOffset;
@@ -390,7 +437,7 @@
         NSInteger index =
             IsSingleCellContentSuggestionsEnabled()
                 ? item.index
-                : [self.suggestionsViewController.collectionViewModel
+                : [self.collectionViewController.collectionViewModel
                       indexPathForItem:item]
                       .item;
         CGPoint centerPoint = [view.superview convertPoint:view.center

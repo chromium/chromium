@@ -17,13 +17,16 @@
 - (instancetype)initWithConfiguration:
     (ContentSuggestionsMostVisitedActionItem*)config;
 
+// Update the number shown in badge.
+- (void)updateCount:(NSInteger)count;
+
 // View for action icon.
 @property(nonatomic, strong, readonly) UIImageView* iconView;
 
 // Container view for |countLabel|.
 @property(nonatomic, strong, readonly) UIView* countContainer;
 
-// Number shown in circle by top trailing side of cell.
+// Number shown in badge that is on the top trailing side of cell.
 @property(nonatomic, strong, readonly) UILabel* countLabel;
 
 // Configuration for this view.

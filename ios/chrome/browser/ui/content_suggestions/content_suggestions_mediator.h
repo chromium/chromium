@@ -11,6 +11,7 @@
 
 #include "components/prefs/pref_service.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_collection_consumer.h"
+#import "ios/chrome/browser/ui/content_suggestions/content_suggestions_consumer.h"
 #import "ios/chrome/browser/ui/start_surface/start_surface_recent_tab_removal_observer_bridge.h"
 
 namespace favicon {
@@ -67,7 +68,9 @@ class WebStateList;
 @property(nonatomic, weak) id<DiscoverFeedDelegate> discoverFeedDelegate;
 
 // The consumer that will be notified when the data change.
-@property(nonatomic, weak) id<ContentSuggestionsCollectionConsumer> consumer;
+@property(nonatomic, weak) id<ContentSuggestionsCollectionConsumer>
+    collectionConsumer;
+@property(nonatomic, weak) id<ContentSuggestionsConsumer> consumer;
 
 // WebStateList associated with this mediator.
 @property(nonatomic, assign) WebStateList* webStateList;

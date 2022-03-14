@@ -12,6 +12,7 @@
 
 @class BubblePresenter;
 @class ContentSuggestionsHeaderViewController;
+@class ContentSuggestionsViewController;
 @class FeedMetricsRecorder;
 @class DiscoverFeedWrapperViewController;
 @class FeedHeaderViewController;
@@ -52,9 +53,12 @@
 
 // View controller representing the NTP content suggestions. These suggestions
 // include the most visited site tiles, the shortcut tiles, the fake omnibox and
-// the Google doodle.
+// the Google doodle. |contentSuggestionsUIViewController| is used if
+// kContentSuggestionsUIViewControllerMigration is enabled.
 @property(nonatomic, strong)
-    UICollectionViewController* contentSuggestionsViewController;
+    UICollectionViewController* contentSuggestionsCollectionViewController;
+@property(nonatomic, strong)
+    ContentSuggestionsViewController* contentSuggestionsViewController;
 
 // Feed metrics recorder.
 @property(nonatomic, strong) FeedMetricsRecorder* feedMetricsRecorder;
