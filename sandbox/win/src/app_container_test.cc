@@ -466,10 +466,8 @@ SBOX_TESTS_COMMAND int AppContainerEvent_Open(int argc, wchar_t** argv) {
   if (event_open.IsValid())
     return SBOX_TEST_SUCCEEDED;
 
-  if (ERROR_ACCESS_DENIED == error_open || ERROR_BAD_PATHNAME == error_open ||
-      ERROR_FILE_NOT_FOUND == error_open) {
+  if (ERROR_ACCESS_DENIED == error_open)
     return SBOX_TEST_DENIED;
-  }
 
   return SBOX_TEST_FAILED;
 }
@@ -478,22 +476,14 @@ TEST_F(AppContainerTest, DenyOpenEventForLowBox) {
   if (!features::IsAppContainerSandboxSupported())
     return;
 
-  TestRunner runner(JOB_UNPROTECTED, USER_UNPROTECTED, USER_UNPROTECTED);
-
-  EXPECT_EQ(SBOX_ALL_OK, runner.GetPolicy()->SetLowBox(kAppContainerSid));
-  // Run test once, this ensures the app container directory exists, we
-  // ignore the result.
-  runner.RunTest(L"AppContainerEvent_Open test");
-  std::wstring event_name = L"AppContainerNamedObjects\\";
-  event_name += kAppContainerSid;
-  event_name += L"\\test";
-
   base::win::ScopedHandle event(
-      ::CreateEvent(nullptr, false, false, event_name.c_str()));
+      ::CreateEvent(nullptr, false, false, kAppContainerSid));
   ASSERT_TRUE(event.IsValid());
-
-  TestRunner runner2(JOB_UNPROTECTED, USER_UNPROTECTED, USER_UNPROTECTED);
-  EXPECT_EQ(SBOX_TEST_DENIED, runner2.RunTest(L"AppContainerEvent_Open test"));
+  TestRunner runner(JOB_UNPROTECTED, USER_UNPROTECTED, USER_UNPROTECTED);
+  EXPECT_EQ(SBOX_ALL_OK, runner.GetPolicy()->SetLowBox(kAppContainerSid));
+  std::wstring test_str = L"AppContainerEvent_Open ";
+  test_str += kAppContainerSid;
+  EXPECT_EQ(SBOX_TEST_DENIED, runner.RunTest(test_str.c_str()));
 }
 
 TEST_F(AppContainerTest, CheckIncompatibleOptions) {
