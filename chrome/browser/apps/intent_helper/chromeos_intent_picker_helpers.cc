@@ -182,7 +182,7 @@ void OnIntentPickerClosedChromeOs(
   if (entry_type == PickerEntryType::kUnknown &&
       close_reason == IntentPickerCloseReason::DIALOG_DEACTIVATED &&
       ui_auto_display_service) {
-    ui_auto_display_service->IncrementCounter(url);
+    ui_auto_display_service->IncrementPickerUICounter(url);
   }
 
   if (should_persist) {
@@ -206,6 +206,10 @@ void LaunchAppFromIntentPickerChromeOs(content::WebContents* web_contents,
   DCHECK(!launch_name.empty());
   Profile* profile =
       Profile::FromBrowserContext(web_contents->GetBrowserContext());
+
+  if (base::FeatureList::IsEnabled(features::kLinkCapturingUiUpdate)) {
+    IntentPickerAutoDisplayService::Get(profile)->ResetIntentChipCounter(url);
+  }
 
   auto* proxy = AppServiceProxyFactory::GetForProfile(profile);
 

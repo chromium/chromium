@@ -36,12 +36,17 @@ class IntentPickerAutoDisplayService : public KeyedService {
   bool ShouldAutoDisplayUi(const GURL& url);
 
   // Keep track of the |url| repetitions.
-  void IncrementCounter(const GURL& url);
+  void IncrementPickerUICounter(const GURL& url);
 
   // Returns a ChipState indicating whether the Intent Chip should be shown as
   // expanded or collapsed for a given URL. Increments an internal counter to
   // track the number of times the chip has been shown for that URL.
   ChipState GetChipStateAndIncrementCounter(const GURL& url);
+
+  // Reset the intent chip counter to 0. When this is called, it allows the
+  // GetChipStateAndIncrementCounter function will return an Expanded ChipState
+  // another 3 times for that |url|.
+  void ResetIntentChipCounter(const GURL& url);
 
   // Returns the last platform selected by the user to handle |url|.
   // If it has not been checked then it will return |Platform::kNone|

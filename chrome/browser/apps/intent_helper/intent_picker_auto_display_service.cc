@@ -59,7 +59,7 @@ bool IntentPickerAutoDisplayService::ShouldAutoDisplayUi(const GURL& url) {
   return pref_dict.FindIntKey(kAutoDisplayKey).value_or(0) < kDismissThreshold;
 }
 
-void IntentPickerAutoDisplayService::IncrementCounter(const GURL& url) {
+void IntentPickerAutoDisplayService::IncrementPickerUICounter(const GURL& url) {
   auto* settings_map = HostContentSettingsMapFactory::GetForProfile(profile_);
   base::Value pref_dict = GetAutoDisplayDictForSettings(settings_map, url);
 
@@ -89,6 +89,17 @@ IntentPickerAutoDisplayService::GetChipStateAndIncrementCounter(
       std::move(pref_dict));
 
   return ChipState::kExpanded;
+}
+
+void IntentPickerAutoDisplayService::ResetIntentChipCounter(const GURL& url) {
+  auto* settings_map = HostContentSettingsMapFactory::GetForProfile(profile_);
+  base::Value pref_dict = GetAutoDisplayDictForSettings(settings_map, url);
+
+  pref_dict.SetIntKey(kIntentChipCountKey, 0);
+
+  settings_map->SetWebsiteSettingDefaultScope(
+      url, url, ContentSettingsType::INTENT_PICKER_DISPLAY,
+      std::move(pref_dict));
 }
 
 IntentPickerAutoDisplayService::Platform

@@ -221,4 +221,16 @@ IN_PROC_BROWSER_TEST_F(IntentChipButtonBrowserTest, ShowsIntentChipCollapsed) {
   ClickLinkAndWait(web_contents, in_scope_url, LinkTarget::SELF, "");
   EXPECT_TRUE(GetIntentChip()->GetVisible());
   EXPECT_TRUE(GetIntentChip()->is_fully_collapsed());
+
+  // Click to open app and reset the counter.
+  ClickIntentChip();
+
+  // Open another browser- we should be able to see the expanded chip again.
+  NavigateToLaunchingPage(browser());
+  web_contents = browser()->tab_strip_model()->GetActiveWebContents();
+
+  // 1st appearance since intent chip counter reset: Expanded.
+  ClickLinkAndWait(web_contents, in_scope_url, LinkTarget::SELF, "");
+  EXPECT_TRUE(GetIntentChip()->GetVisible());
+  EXPECT_FALSE(GetIntentChip()->is_fully_collapsed());
 }

@@ -98,15 +98,43 @@ TEST_F(IntentPickerAutoDisplayServiceTest, ShouldAutoDisplayUi) {
       IntentPickerAutoDisplayService::Get(&profile);
 
   EXPECT_TRUE(service->ShouldAutoDisplayUi(url1));
-  service->IncrementCounter(url1);
+  service->IncrementPickerUICounter(url1);
   EXPECT_TRUE(service->ShouldAutoDisplayUi(url1));
-  service->IncrementCounter(url1);
+  service->IncrementPickerUICounter(url1);
   EXPECT_FALSE(service->ShouldAutoDisplayUi(url1));
 
   // Should return false for a different URL on the same host.
   EXPECT_FALSE(service->ShouldAutoDisplayUi(url2));
   // Should return true for a different host.
   EXPECT_TRUE(service->ShouldAutoDisplayUi(url3));
+}
+
+TEST_F(IntentPickerAutoDisplayServiceTest, ResetIntentChipCounter) {
+  GURL url("https://www.google.com/abcde");
+
+  TestingProfile profile;
+  IntentPickerAutoDisplayService* service =
+      IntentPickerAutoDisplayService::Get(&profile);
+
+  // Increment counter a few times.
+  EXPECT_EQ(service->GetChipStateAndIncrementCounter(url),
+            IntentPickerAutoDisplayService::ChipState::kExpanded);
+  EXPECT_EQ(service->GetChipStateAndIncrementCounter(url),
+            IntentPickerAutoDisplayService::ChipState::kExpanded);
+
+  // Reset the count back to 0.
+  service->ResetIntentChipCounter(url);
+
+  // Since the counter is reset, the chip is expanded another 3 times
+  // before collapsing.
+  EXPECT_EQ(service->GetChipStateAndIncrementCounter(url),
+            IntentPickerAutoDisplayService::ChipState::kExpanded);
+  EXPECT_EQ(service->GetChipStateAndIncrementCounter(url),
+            IntentPickerAutoDisplayService::ChipState::kExpanded);
+  EXPECT_EQ(service->GetChipStateAndIncrementCounter(url),
+            IntentPickerAutoDisplayService::ChipState::kExpanded);
+  EXPECT_EQ(service->GetChipStateAndIncrementCounter(url),
+            IntentPickerAutoDisplayService::ChipState::kCollapsed);
 }
 
 // Checks that calling GetChipStateAndIncrementCounter tracks views per-URL

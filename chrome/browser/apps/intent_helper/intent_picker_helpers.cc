@@ -67,6 +67,12 @@ void LaunchAppFromIntentPicker(content::WebContents* web_contents,
 #if BUILDFLAG(IS_CHROMEOS)
   LaunchAppFromIntentPickerChromeOs(web_contents, url, launch_name, app_type);
 #else
+  if (base::FeatureList::IsEnabled(features::kLinkCapturingUiUpdate)) {
+    Profile* profile =
+        Profile::FromBrowserContext(web_contents->GetBrowserContext());
+    IntentPickerAutoDisplayService::Get(profile)->ResetIntentChipCounter(url);
+  }
+
   switch (app_type) {
     case PickerEntryType::kWeb:
       web_app::ReparentWebContentsIntoAppBrowser(web_contents, launch_name);
@@ -109,7 +115,7 @@ void OnIntentPickerClosed(
     // We reach here if the picker was closed without an app being chosen, e.g.
     // due to the tab being closed. Keep count of this scenario so we can stop
     // the UI from showing after 2+ dismissals.
-    ui_auto_display_service->IncrementCounter(url);
+    ui_auto_display_service->IncrementPickerUICounter(url);
   }
 #endif  // BUILDFLAG(IS_CHROMEOS)
 }
