@@ -305,8 +305,9 @@ class PartitionAllocTest : public testing::TestWithParam<bool> {
   }
 
   size_t SizeToIndex(size_t size) {
+    bool with_denser_bucket_distribution = !GetParam();
     return PartitionRoot<base::internal::ThreadSafe>::SizeToBucketIndex(
-        size, GetParam());
+        size, with_denser_bucket_distribution);
   }
 
   void TearDown() override {
@@ -1195,12 +1196,13 @@ TEST_P(PartitionAllocTest, IsValidPtrDelta) {
   }
 }
 
-// TODO(crbug.com/1217582): Disabled since the `real_size` is never set or set incorrectly.
-TEST_P(PartitionAllocTest, DISABLED_GetSlotStartMultiplePages) {
+TEST_P(PartitionAllocTest, GetSlotStartMultiplePages) {
   // Find the smallest bucket with multiple PartitionPages.
-  size_t real_size;
+  size_t real_size = 0;
   bool init_real_size = false;
-  for (PartitionBucket<ThreadSafe>& bucket : allocator.root()->buckets) {
+  for (size_t size = 16; size < 4096; size += 1) {
+    size_t bucket_index = SizeToIndex(size);
+    const auto& bucket = allocator.root()->buckets[bucket_index];
     if (bucket.num_system_pages_per_slot_span >
         NumSystemPagesPerPartitionPage()) {
       real_size = bucket.slot_size;
@@ -1210,17 +1212,19 @@ TEST_P(PartitionAllocTest, DISABLED_GetSlotStartMultiplePages) {
   }
   ASSERT_TRUE(init_real_size);
 
-  const size_t requested_size = real_size - kExtraAllocSize;
+  const size_t requested_size =
+      allocator.root()->AdjustSizeForExtrasSubtract(real_size);
   // Double check we don't end up with 0 or negative size.
   EXPECT_GT(requested_size, 0u);
   EXPECT_LE(requested_size, real_size);
-  PartitionBucket<ThreadSafe>* bucket =
-      allocator.root()->buckets + SizeToIndex(real_size);
+  const auto& bucket =
+      allocator.root()->buckets[allocator.root()->SizeToBucketIndex(
+          real_size, !GetParam())];
   // Make sure the test is testing multiple partition pages case.
-  EXPECT_GT(bucket->num_system_pages_per_slot_span,
+  EXPECT_GT(bucket.num_system_pages_per_slot_span,
             PartitionPageSize() / SystemPageSize());
   size_t num_slots =
-      (bucket->num_system_pages_per_slot_span * SystemPageSize()) / real_size;
+      (bucket.num_system_pages_per_slot_span * SystemPageSize()) / real_size;
   std::vector<void*> ptrs;
   for (size_t i = 0; i < num_slots; ++i) {
     ptrs.push_back(allocator.root()->Alloc(requested_size, type_name));
