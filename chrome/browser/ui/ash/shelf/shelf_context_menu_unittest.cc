@@ -483,6 +483,7 @@ TEST_F(ShelfContextMenuTest, ArcLauncherSuspendAppMenu) {
 
 TEST_F(ShelfContextMenuTest, ArcDeferredShelfContextMenuItemCheck) {
   std::vector<arc::mojom::AppInfoPtr> apps;
+  apps.reserve(2);
   for (int i = 0; i < 2; i++)
     apps.emplace_back(arc_test().fake_apps()[i]->Clone());
   SendRefreshAppList(apps);

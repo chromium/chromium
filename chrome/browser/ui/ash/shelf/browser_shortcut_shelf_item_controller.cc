@@ -171,7 +171,7 @@ BrowserShortcutShelfItemController::GetAppMenuItems(
     if (!(event_flags & ui::EF_SHIFT_DOWN)) {
       base::RecordAction(base::UserMetricsAction(
           "Shelf_BrowserShortcutShelfItem_ShowWindows"));
-      app_menu_items.push_back({browser, kNoTab});
+      app_menu_items.emplace_back(browser, kNoTab);
       auto* tab = tab_strip->GetActiveWebContents();
       const gfx::Image& icon =
           ui::ResourceBundle::GetSharedInstance().GetImageNamed(
@@ -185,7 +185,7 @@ BrowserShortcutShelfItemController::GetAppMenuItems(
           base::UserMetricsAction("Shelf_BrowserShortcutShelfItem_ShowTabs"));
       for (int i = 0; i < tab_strip->count(); ++i) {
         auto* tab = tab_strip->GetWebContentsAt(i);
-        app_menu_items.push_back({browser, i});
+        app_menu_items.emplace_back(browser, i);
         items.push_back({static_cast<int>(app_menu_items.size() - 1),
                          controller->GetAppMenuTitle(tab),
                          controller->GetAppMenuIcon(tab).AsImageSkia()});

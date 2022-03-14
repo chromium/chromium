@@ -405,7 +405,7 @@ void AppServiceAppWindowShelfController::OnInstanceUpdate(
 
   // This is the first update for the given window.
   if (update.IsCreation()) {
-    std::string app_id = update.AppId();
+    const std::string& app_id = update.AppId();
     if (GetAppType(app_id) == apps::mojom::AppType::kCrostini ||
         crostini::IsUnmatchedCrostiniShelfAppId(app_id)) {
       window->SetProperty(aura::client::kAppType,

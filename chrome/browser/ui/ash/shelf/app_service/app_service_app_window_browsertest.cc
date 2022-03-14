@@ -54,8 +54,6 @@
 #include "ui/display/display.h"
 #include "ui/views/widget/widget.h"
 
-using extensions::AppWindow;
-using extensions::Extension;
 using web_app::test::CrosapiParam;
 using web_app::test::WithCrosapiParam;
 

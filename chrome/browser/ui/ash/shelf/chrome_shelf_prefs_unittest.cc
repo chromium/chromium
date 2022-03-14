@@ -146,7 +146,7 @@ class ChromeShelfPrefsTest : public testing::Test {
   std::vector<std::string> StringsFromShelfIds(
       const std::vector<ash::ShelfID>& shelf_ids) {
     std::vector<std::string> results;
-    std::vector<std::string> pinned_apps_strs;
+    results.reserve(shelf_ids.size());
     for (auto& shelf_id : shelf_ids)
       results.push_back(shelf_id.app_id);
     return results;
@@ -202,6 +202,7 @@ TEST_F(ChromeShelfPrefsTest, ProfileChanged) {
   std::vector<ash::ShelfID> pinned_apps =
       shelf_prefs_->GetPinnedAppsFromSync(nullptr);
   std::vector<std::string> pinned_apps_strs;
+  pinned_apps_strs.reserve(pinned_apps.size());
   for (auto& shelf_id : pinned_apps)
     pinned_apps_strs.push_back(shelf_id.app_id);
 

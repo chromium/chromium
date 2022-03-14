@@ -147,7 +147,6 @@
 namespace {
 
 using ::ash::AccessibilityManager;
-using ::ash::Shelf;
 using ::content::WebContents;
 using ::extensions::AppWindow;
 using ::extensions::Extension;

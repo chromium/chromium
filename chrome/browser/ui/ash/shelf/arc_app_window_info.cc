@@ -81,7 +81,7 @@ const arc::ArcAppShelfId& ArcAppWindowInfo::app_shelf_id() const {
   return app_shelf_id_;
 }
 
-const ash::ShelfID ArcAppWindowInfo::shelf_id() const {
+ash::ShelfID ArcAppWindowInfo::shelf_id() const {
   return ash::ShelfID(app_shelf_id_.ToString());
 }
 

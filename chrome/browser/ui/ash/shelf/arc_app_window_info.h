@@ -37,7 +37,7 @@ class ArcAppWindowInfo {
 
   const arc::ArcAppShelfId& app_shelf_id() const;
 
-  const ash::ShelfID shelf_id() const;
+  ash::ShelfID shelf_id() const;
 
   const std::string& launch_intent() const;
 

@@ -15,10 +15,6 @@ namespace aura {
 class Window;
 }
 
-namespace exo {
-class Permission;
-}
-
 class Profile;
 
 // AppServiceAppWindowCrostiniTracker is used to handle Crostini app window

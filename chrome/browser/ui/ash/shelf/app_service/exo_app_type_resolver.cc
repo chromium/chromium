@@ -55,8 +55,10 @@ void ExoAppTypeResolver::PopulateProperties(
         app_restore::kParentToHiddenContainerKey,
         restore_window_id == app_restore::kParentToHiddenContainer);
     return;
-  } else if (borealis::BorealisWindowManager::IsBorealisWindowId(
-                 params.app_id.empty() ? params.startup_id : params.app_id)) {
+  }
+
+  if (borealis::BorealisWindowManager::IsBorealisWindowId(
+          params.app_id.empty() ? params.startup_id : params.app_id)) {
     // TODO(b/165865831): Stop using CROSTINI_APP for borealis windows.
     out_properties_container.SetProperty(
         aura::client::kAppType, static_cast<int>(ash::AppType::CROSTINI_APP));

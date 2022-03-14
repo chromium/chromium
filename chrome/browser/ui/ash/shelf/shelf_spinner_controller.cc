@@ -144,9 +144,9 @@ class SpinningEffectSource : public gfx::CanvasImageSource {
     if (data_.IsFadingIn()) {
       return 1.0 -
              TimeProportionSince(data_.creation_time(), now, kFadeInDuration);
-    } else {
-      return TimeProportionSince(data_.removal_time(), now, kFadeOutDuration);
     }
+
+    return TimeProportionSince(data_.removal_time(), now, kFadeOutDuration);
   }
 
   ShelfSpinnerController::ShelfSpinnerData data_;

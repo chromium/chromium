@@ -117,7 +117,7 @@ class ChromeShelfPrefs : public app_list::AppListSyncableService::Observer {
   //
   // This method returns whether the consistency migrations need to be run
   // again.
-  bool ShouldPerformConsistencyMigrations();
+  bool ShouldPerformConsistencyMigrations() const;
 
   // During Lacros development, there is a period of time when we wish to deploy
   // a transparent migration to Lacros, while still allowing users to fall back

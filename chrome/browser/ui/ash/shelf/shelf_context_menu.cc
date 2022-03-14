@@ -54,7 +54,6 @@ void UninstallApp(Profile* profile, const std::string& app_id) {
   ExtensionUninstaller* extension_uninstaller =
       new ExtensionUninstaller(profile, app_id, nullptr /* parent_window */);
   extension_uninstaller->Run();
-  return;
 }
 
 }  // namespace

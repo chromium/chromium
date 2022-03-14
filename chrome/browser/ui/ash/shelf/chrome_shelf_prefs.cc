@@ -98,7 +98,7 @@ std::vector<std::string> GetActivitiesForPackage(
 }
 
 std::vector<ash::ShelfID> AppIdsToShelfIDs(
-    const std::vector<std::string> app_ids) {
+    const std::vector<std::string>& app_ids) {
   std::vector<ash::ShelfID> shelf_ids(app_ids.size());
   for (size_t i = 0; i < app_ids.size(); ++i)
     shelf_ids[i] = ash::ShelfID(app_ids[i]);
@@ -122,7 +122,7 @@ struct ComparePinInfo {
 // Helper function that returns the right pref string based on device type.
 // This is required because tablet form factor devices do not sync app
 // positions and pin preferences.
-const std::string GetShelfDefaultPinLayoutPref() {
+std::string GetShelfDefaultPinLayoutPref() {
   if (ash::switches::IsTabletFormFactor())
     return prefs::kShelfDefaultPinLayoutRollsForTabletFormFactor;
 
@@ -646,7 +646,7 @@ void ChromeShelfPrefs::AttachProfile(Profile* profile) {
   StopObservingSyncService();
 }
 
-bool ChromeShelfPrefs::ShouldPerformConsistencyMigrations() {
+bool ChromeShelfPrefs::ShouldPerformConsistencyMigrations() const {
   return needs_consistency_migrations_;
 }
 

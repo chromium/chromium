@@ -113,7 +113,6 @@
 #include "ui/resources/grit/ui_resources.h"
 
 using app_constants::kChromeAppId;
-using extension_misc::kGmailAppId;
 
 namespace {
 
@@ -395,7 +394,7 @@ bool ChromeShelfController::ShouldSyncItem(const ash::ShelfItem& item) {
   return ItemTypeIsPinned(item);
 }
 
-bool ChromeShelfController::IsPinned(const ash::ShelfID& id) {
+bool ChromeShelfController::IsPinned(const ash::ShelfID& id) const {
   const ash::ShelfItem* item = GetItem(id);
   return item && ItemTypeIsPinned(*item);
 }
@@ -420,7 +419,7 @@ void ChromeShelfController::Close(const ash::ShelfID& id) {
   delegate->Close();
 }
 
-bool ChromeShelfController::IsOpen(const ash::ShelfID& id) {
+bool ChromeShelfController::IsOpen(const ash::ShelfID& id) const {
   const ash::ShelfItem* item = GetItem(id);
   return item && item->status != ash::STATUS_CLOSED;
 }
@@ -519,7 +518,7 @@ std::string ChromeShelfController::GetAppIDForWebContents(
 }
 
 ash::ShelfID ChromeShelfController::GetShelfIDForAppId(
-    const std::string& app_id) {
+    const std::string& app_id) const {
   // If there is no dedicated app item, use the browser shortcut item.
   const ash::ShelfItem* item =
       !app_id.empty() ? GetItem(ash::ShelfID(app_id)) : nullptr;

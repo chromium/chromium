@@ -248,7 +248,7 @@ class ArcAppShelfBrowserTest : public extensions::ExtensionBrowserTest {
     shortcut.name = name;
     shortcut.package_name = kTestAppPackage;
     shortcut.intent_uri = CreateIntentUriWithShelfGroup(shelf_group);
-    const std::string shortcut_id =
+    std::string shortcut_id =
         ArcAppListPrefs::GetAppId(shortcut.package_name, shortcut.intent_uri);
     app_host()->OnInstallShortcut(arc::mojom::ShortcutInfo::From(shortcut));
     base::RunLoop().RunUntilIdle();

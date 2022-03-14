@@ -47,8 +47,6 @@
 
 using ::app_constants::kChromeAppId;
 using ::app_constants::kLacrosAppId;
-using ::testing::AnyOf;
-using ::testing::Eq;
 
 void PinApp(const std::string& app_id) {
   auto* shelf_model = ash::ShelfModel::Get();

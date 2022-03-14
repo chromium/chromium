@@ -119,7 +119,7 @@ class ChromeShelfController
   void ReplaceWithAppShortcutOrRemove(const ash::ShelfID& id);
 
   // Returns true if the item identified by |id| is pinned.
-  bool IsPinned(const ash::ShelfID& id);
+  bool IsPinned(const ash::ShelfID& id) const;
 
   // This method is only used by BrowserStatusMonitor and tests. This method
   // relies on implicit assumptions and is likely unsuitable for other use
@@ -135,7 +135,7 @@ class ChromeShelfController
   void Close(const ash::ShelfID& id);
 
   // Returns true if the specified item is open.
-  bool IsOpen(const ash::ShelfID& id);
+  bool IsOpen(const ash::ShelfID& id) const;
 
   // Returns true if the specified item is for a platform app.
   bool IsPlatformApp(const ash::ShelfID& id);
@@ -173,7 +173,7 @@ class ChromeShelfController
 
   // Returns ShelfID for |app_id|. If |app_id| is empty, or the app is not
   // pinned, returns the id of browser shrotcut.
-  ash::ShelfID GetShelfIDForAppId(const std::string& app_id);
+  ash::ShelfID GetShelfIDForAppId(const std::string& app_id) const;
 
   // Activates a |window|. If |allow_minimize| is true and the system allows
   // it, the the window will get minimized instead.

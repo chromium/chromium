@@ -17,10 +17,13 @@
 #include "base/time/time.h"
 #include "components/account_id/account_id.h"
 
-class ShelfItemDelegate;
 class ShelfSpinnerItemController;
 class ChromeShelfController;
 class Profile;
+
+namespace ash {
+class ShelfItemDelegate;
+}  // namespace ash
 
 namespace gfx {
 class ImageSkia;

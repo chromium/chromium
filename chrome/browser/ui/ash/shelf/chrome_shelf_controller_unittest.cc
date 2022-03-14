@@ -182,13 +182,8 @@ namespace content {
 class BrowserContext;
 }  // namespace content
 
-namespace extensions {
-class Manifest;
-}  // namespace extensions
-
 using base::ASCIIToUTF16;
 using extensions::Extension;
-using extensions::Manifest;
 using extensions::UnloadedExtensionReason;
 using extensions::mojom::ManifestLocation;
 
@@ -1039,7 +1034,7 @@ class ChromeShelfControllerTestBase : public BrowserWithTestWindowTest {
         false /* sticky */, true /* notifications_enabled */,
         true /* app_ready */, false /* suspended */, false /* shortcut */,
         true /* launchable */, ArcAppListPrefs::WindowLayout());
-    const std::string app_id =
+    std::string app_id =
         ArcAppListPrefs::GetAppId(app_info.package_name, app_info.activity);
     EXPECT_TRUE(prefs->GetApp(app_id));
     app_service_test().FlushMojoCalls();
