@@ -405,8 +405,16 @@ IN_PROC_BROWSER_TEST_F(KeyboardLockInteractiveBrowserTest,
   ASSERT_EQ(initial_tab_count + 1, GetTabCount());
 }
 
+// TODO(crbug.com/1305388): Flaky on mac.
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_CancelActiveKeyboardLockBeforeFullscreen \
+  DISABLED_CancelActiveKeyboardLockBeforeFullscreen
+#else
+#define MAYBE_CancelActiveKeyboardLockBeforeFullscreen \
+  CancelActiveKeyboardLockBeforeFullscreen
+#endif
 IN_PROC_BROWSER_TEST_F(KeyboardLockInteractiveBrowserTest,
-                       CancelActiveKeyboardLockBeforeFullscreen) {
+                       MAYBE_CancelActiveKeyboardLockBeforeFullscreen) {
   ASSERT_NO_FATAL_FAILURE(StartFullscreenLockPage());
   ASSERT_TRUE(DisablePreventDefaultOnTestPage());
 
