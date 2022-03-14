@@ -120,6 +120,16 @@ class PolicyLoaderLacrosTest : public PolicyTestBase {
     CheckSystemWidePolicies(policy_map);
   }
 
+  void SwitchAndCheckLocalDeviceAccountUser(
+      crosapi::mojom::SessionType session_type) {
+    auto init_params = crosapi::mojom::BrowserInitParams::New();
+    init_params->session_type = session_type;
+    chromeos::LacrosService::Get()->SetInitParamsForTests(
+        std::move(init_params));
+    EXPECT_TRUE(PolicyLoaderLacros::IsDeviceLocalAccountUser());
+    EXPECT_TRUE(PolicyLoaderLacros::IsMainUserAffiliated());
+  }
+
   SchemaRegistry schema_registry_;
   PolicyPerProfileFilter per_profile_ = PolicyPerProfileFilter::kFalse;
   chromeos::ScopedLacrosServiceTestHelper test_helper_;
@@ -227,6 +237,15 @@ TEST_F(PolicyLoaderLacrosTest, TwoLoaders) {
             static_cast<unsigned int>(0));
   system_wide_provider.Shutdown();
   per_profile_provider.Shutdown();
+}
+
+TEST_F(PolicyLoaderLacrosTest, DeviceLocalAccountUsers) {
+  SwitchAndCheckLocalDeviceAccountUser(
+      crosapi::mojom::SessionType::kPublicSession);
+  SwitchAndCheckLocalDeviceAccountUser(
+      crosapi::mojom::SessionType::kWebKioskSession);
+  SwitchAndCheckLocalDeviceAccountUser(
+      crosapi::mojom::SessionType::kAppKioskSession);
 }
 
 }  // namespace policy

@@ -146,6 +146,19 @@ enterprise_management::PolicyData* PolicyLoaderLacros::GetPolicyData() {
 }
 
 // static
+bool PolicyLoaderLacros::IsDeviceLocalAccountUser() {
+  const crosapi::mojom::BrowserInitParams* init_params =
+      chromeos::LacrosService::Get()->init_params();
+  if (!init_params) {
+    return false;
+  }
+  crosapi::mojom::SessionType session_type = init_params->session_type;
+  return session_type == crosapi::mojom::SessionType::kPublicSession ||
+         session_type == crosapi::mojom::SessionType::kWebKioskSession ||
+         session_type == crosapi::mojom::SessionType::kAppKioskSession;
+}
+
+// static
 bool PolicyLoaderLacros::IsMainUserManaged() {
   return g_is_main_user_managed_;
 }
@@ -156,6 +169,13 @@ bool PolicyLoaderLacros::IsMainUserAffiliated() {
       policy::PolicyLoaderLacros::main_user_policy_data();
   const crosapi::mojom::BrowserInitParams* init_params =
       chromeos::LacrosService::Get()->init_params();
+
+  // To align with `DeviceLocalAccountUserBase::IsAffiliated()`, a device local
+  // account user is always treated as affiliated.
+  if (IsDeviceLocalAccountUser()) {
+    return true;
+  }
+
   if (policy && !policy->user_affiliation_ids().empty() && init_params &&
       init_params->device_properties &&
       init_params->device_properties->device_affiliation_ids.has_value()) {

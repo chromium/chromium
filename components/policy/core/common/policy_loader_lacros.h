@@ -56,6 +56,9 @@ class POLICY_EXPORT PolicyLoaderLacros
   void OnPolicyUpdated(
       const std::vector<uint8_t>& policy_fetch_response) override;
 
+  // Return if the main user is a device local account (i.e. Kiosk, MGS) user.
+  static bool IsDeviceLocalAccountUser();
+
   // Returns if the main user is managed or not.
   // TODO(crbug/1245077): Remove once Lacros handles all profiles the same way.
   static bool IsMainUserManaged();
