@@ -5,6 +5,7 @@
         grpc::*;
         grpc_*;
         tsi_*;
+        typeinfo*grpc::*;
         vtable*grpc::*;
     };
   local:
