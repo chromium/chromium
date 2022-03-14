@@ -10,22 +10,27 @@
 
 #include <utility>
 
+#include "android_webview/browser/metrics/aw_metrics_service_client.h"
+#include "android_webview/common/aw_features.h"
 #include "android_webview/common/metrics/app_package_name_logging_rule.h"
 #include "base/containers/flat_map.h"
 #include "base/cxx17_backports.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_file.h"
+#include "base/metrics/user_metrics.h"
 #include "base/run_loop.h"
 #include "base/sequence_checker.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "base/values.h"
 #include "base/version.h"
 #include "components/component_updater/android/component_loader_policy.h"
 #include "components/optimization_guide/core/bloom_filter.h"
+#include "components/prefs/testing_pref_service.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace android_webview {
@@ -323,6 +328,108 @@ TEST_F(AwAppsPackageNamesAllowlistComponentLoaderPolicyTest,
                                       AllowlistPraseStatus::kExpiredAllowlist,
                                       1);
   histogram_tester_.ExpectTotalCount(kAllowlistPraseStatusHistogramName, 1);
+}
+
+// Helper functions for throttling tests, defining them near tests body for
+// better readability.
+namespace {
+class AwMetricsServiceClientTestDelegate
+    : public AwMetricsServiceClient::Delegate {
+  void RegisterAdditionalMetricsProviders(
+      metrics::MetricsService* service) override {}
+  void AddWebViewAppStateObserver(WebViewAppStateObserver* observer) override {}
+  bool HasAwContentsEverCreated() const override { return false; }
+};
+
+void TestThrottling(base::Time time,
+                    AwMetricsServiceClient* client,
+                    bool expect_throttling) {
+  if (!time.is_null()) {
+    client->SetAppPackageNameLoggingRuleLastUpdateTime(time);
+  }
+
+  component_updater::ComponentLoaderPolicyVector policies;
+  LoadPackageNamesAllowlistComponent(policies, client);
+  EXPECT_EQ(policies.size(), expect_throttling ? 0 : 1u);
+}
+
+void TestThrottlingAllowlist(absl::optional<AppPackageNameLoggingRule> rule,
+                             bool expect_throttling) {
+  base::test::ScopedFeatureList scoped_list;
+  scoped_list.InitAndEnableFeature(
+      android_webview::features::kWebViewAppsPackageNamesAllowlist);
+
+  TestingPrefServiceSimple prefs;
+  AwMetricsServiceClient::RegisterMetricsPrefs(prefs.registry());
+  AwMetricsServiceClient client(
+      std::make_unique<AwMetricsServiceClientTestDelegate>());
+  client.Initialize(&prefs);
+  client.SetAppPackageNameLoggingRule(rule);
+
+  // No previous last_update record: should never throttle.
+  TestThrottling(base::Time(), &client, /*expect_throttling=*/false);
+
+  // last_update record > max_throttle_time : should never throttle.
+  TestThrottling(base::Time::Now() -
+                     features::kWebViewAppsMaxAllowlistThrottleTimeDelta.Get() -
+                     base::Days(1),
+                 &client,
+                 /*expect_throttling=*/false);
+
+  // min_throttle_time < last_update record < max_throttle_time : maybe
+  // throttle.
+  TestThrottling(base::Time::Now() -
+                     features::kWebViewAppsMaxAllowlistThrottleTimeDelta.Get() +
+                     features::kWebViewAppsMinAllowlistThrottleTimeDelta.Get(),
+                 &client,
+                 /*expect_throttling=*/expect_throttling);
+
+  // last_update record < min_throttle_time : should always throttle.
+  TestThrottling(base::Time::Now() -
+                     features::kWebViewAppsMinAllowlistThrottleTimeDelta.Get() +
+                     base::Minutes(30),
+                 &client,
+                 /*expect_throttling=*/true);
+}
+
+}  // namespace
+
+TEST_F(AwAppsPackageNamesAllowlistComponentLoaderPolicyTest,
+       TestThrottlingAllowlist_AbsentCache) {
+  base::SetRecordActionTaskRunner(env_.GetMainThreadTaskRunner());
+
+  TestThrottlingAllowlist(absl::optional<AppPackageNameLoggingRule>(),
+                          /*expect_throttling=*/false);
+}
+
+TEST_F(AwAppsPackageNamesAllowlistComponentLoaderPolicyTest,
+       TestThrottlingAllowlist_ValidCacheAllowedApp) {
+  base::SetRecordActionTaskRunner(env_.GetMainThreadTaskRunner());
+
+  TestThrottlingAllowlist(
+      AppPackageNameLoggingRule(base::Version(kTestAllowlistVersion),
+                                base::Time::Now() + base::Days(1)),
+      /*expect_throttling=*/true);
+}
+
+TEST_F(AwAppsPackageNamesAllowlistComponentLoaderPolicyTest,
+       TestThrottlingAllowlist_ValidCacheNotAllowedApp) {
+  base::SetRecordActionTaskRunner(env_.GetMainThreadTaskRunner());
+
+  TestThrottlingAllowlist(
+      AppPackageNameLoggingRule(base::Version(kTestAllowlistVersion),
+                                base::Time::Min()),
+      /*expect_throttling=*/true);
+}
+
+TEST_F(AwAppsPackageNamesAllowlistComponentLoaderPolicyTest,
+       TestThrottlingAllowlist_ExpiredAllowedCache) {
+  base::SetRecordActionTaskRunner(env_.GetMainThreadTaskRunner());
+
+  TestThrottlingAllowlist(
+      AppPackageNameLoggingRule(base::Version(kTestAllowlistVersion),
+                                base::Time::Now() - base::Days(1)),
+      /*expect_throttling=*/false);
 }
 
 }  // namespace android_webview

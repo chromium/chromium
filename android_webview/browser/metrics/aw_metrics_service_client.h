@@ -24,6 +24,7 @@ namespace android_webview {
 
 namespace prefs {
 extern const char kMetricsAppPackageNameLoggingRule[];
+extern const char kAppPackageNameLoggingRuleLastUpdateTime[];
 }  // namespace prefs
 
 // These values are persisted to logs. Entries should not be renumbered and
@@ -195,6 +196,11 @@ class AwMetricsServiceClient : public ::metrics::AndroidMetricsServiceClient,
   // `SetAppPackageNameLoggingRule` if any.
   absl::optional<AppPackageNameLoggingRule>
   GetCachedAppPackageNameLoggingRule();
+
+  // The last time the apps package name allowlist was queried from the
+  // component update service, regardless if it was successful or not.
+  base::Time GetAppPackageNameLoggingRuleLastUpdateTime() const;
+  void SetAppPackageNameLoggingRuleLastUpdateTime(base::Time update_time);
 
  protected:
   // Restrict usage of the inherited AndroidMetricsServiceClient::RegisterPrefs,

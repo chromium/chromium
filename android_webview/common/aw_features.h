@@ -16,6 +16,10 @@ namespace features {
 
 // Alphabetical:
 extern const base::Feature kWebViewAppsPackageNamesAllowlist;
+extern const base::FeatureParam<base::TimeDelta>
+    kWebViewAppsMinAllowlistThrottleTimeDelta;
+extern const base::FeatureParam<base::TimeDelta>
+    kWebViewAppsMaxAllowlistThrottleTimeDelta;
 extern const base::Feature kWebViewBrotliSupport;
 extern const base::Feature kWebViewConnectionlessSafeBrowsing;
 extern const base::Feature kWebViewDarkModeMatchTheme;

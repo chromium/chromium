@@ -64,6 +64,11 @@ const char kWebViewEnableModernCookieSameSite[] =
 const char kWebViewDisableAppsPackageNamesAllowlistComponent[] =
     "webview-disable-apps-package-names-allowlist-component";
 
+// Disables throttling querying apps package names allowlist components in
+// WebView clients.
+const char kWebViewDisablePackageAllowlistThrottling[] =
+    "webview-disable-package-allowlist-throttling";
+
 // Enables use selective image inversion to automatically darken page, it will
 // be used when WebView is in dark mode, but website doesn't provide dark style.
 const char kWebViewSelectiveImageInversionDarkening[] =

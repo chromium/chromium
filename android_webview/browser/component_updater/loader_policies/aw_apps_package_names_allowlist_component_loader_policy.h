@@ -26,6 +26,8 @@ class Version;
 
 namespace android_webview {
 
+class AwMetricsServiceClient;
+
 // All these constants have to be kept in sync with the allowlist generation
 // server, see http://go/aw-package-names-allowlist-bloomfilter.
 constexpr char kAllowlistBloomFilterFileName[] = "allowlistbloomfilter";
@@ -91,7 +93,8 @@ class AwAppsPackageNamesAllowlistComponentLoaderPolicy
 };
 
 void LoadPackageNamesAllowlistComponent(
-    component_updater::ComponentLoaderPolicyVector& policies);
+    component_updater::ComponentLoaderPolicyVector& policies,
+    AwMetricsServiceClient* metrics_service_client);
 
 }  // namespace android_webview
 
