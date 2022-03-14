@@ -208,7 +208,8 @@
       "is_component_build": false,
       "is_debug": false,
       "proprietary_codecs": true,
-      "use_goma": true
+      "use_rbe": true,
+      "use_remoteexec": true
     }
   },
   "linux-bionic-rel": {
@@ -218,7 +219,8 @@
       "is_component_build": false,
       "is_debug": false,
       "proprietary_codecs": true,
-      "use_goma": true
+      "use_rbe": true,
+      "use_remoteexec": true
     }
   },
   "linux-extended-tracing-rel": {
@@ -227,7 +229,8 @@
       "extended_tracing_enabled": true,
       "is_component_build": false,
       "is_debug": false,
-      "use_goma": true
+      "use_rbe": true,
+      "use_remoteexec": true
     }
   },
   "linux-gcc-rel": {
@@ -249,7 +252,8 @@
       "is_component_build": false,
       "is_debug": false,
       "proprietary_codecs": true,
-      "use_goma": true
+      "use_rbe": true,
+      "use_remoteexec": true
     }
   },
   "linux-xenial-rel": {
@@ -259,7 +263,8 @@
       "is_component_build": false,
       "is_debug": false,
       "proprietary_codecs": true,
-      "use_goma": true
+      "use_rbe": true,
+      "use_remoteexec": true
     }
   }
 }
