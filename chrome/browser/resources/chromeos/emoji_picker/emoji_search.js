@@ -36,7 +36,7 @@ export class EmojiSearch extends PolymerElement {
       /** @private {!Array<!EmojiVariants>} */
       emojiList: {
         type: Array,
-        computed: 'computeEmojiList(emojiData)',
+        computed: 'computeEmojiList(emojiData,emojiData.length)',
         observer: 'onEmojiListChanged'
       },
       /** @private {!Array<!EmojiVariants>} */
@@ -189,9 +189,11 @@ export class EmojiSearch extends PolymerElement {
    * 1) Remove duplicates.
    * 2) Remove groupings.
    * @param {!EmojiGroupData} emojiData
+   * @param {number} emojiDataLength Used to trick polymer into calling this
+   *     when the emojidata is updated via push
    * @return {!Array<!EmojiVariants>}
    */
-  computeEmojiList(emojiData) {
+  computeEmojiList(emojiData, emojiDataLength) {
     return Array.from(
         new Map(emojiData.map(group => group.emoji).flat(1).map(emoji => {
           // The Fuse search library in ChromeOS doesn't support prefix
