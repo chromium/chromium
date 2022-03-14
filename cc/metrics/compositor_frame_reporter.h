@@ -33,11 +33,13 @@ struct FrameTimingDetails;
 namespace cc {
 class FrameSequenceTrackerCollection;
 class DroppedFrameCounter;
+class LatencyJankTracker;
 class LatencyUkmReporter;
 
 struct GlobalMetricsTrackers {
   DroppedFrameCounter* dropped_frame_counter = nullptr;
   LatencyUkmReporter* latency_ukm_reporter = nullptr;
+  LatencyJankTracker* latency_jank_tracker = nullptr;
   FrameSequenceTrackerCollection* frame_sequence_trackers = nullptr;
 };
 
@@ -217,6 +219,7 @@ class CC_EXPORT CompositorFrameReporter {
         bool skip_swap_start_to_swap_end_if_breakdown_available) const;
 
     base::TimeTicks swap_start() const { return swap_start_; }
+    base::TimeTicks swap_end() const { return swap_end_; }
 
    private:
     absl::optional<std::pair<base::TimeTicks, base::TimeTicks>>
@@ -224,6 +227,7 @@ class CC_EXPORT CompositorFrameReporter {
 
     bool buffer_ready_available_ = false;
     base::TimeTicks swap_start_;
+    base::TimeTicks swap_end_;
   };
 
   CompositorFrameReporter(const ActiveTrackers& active_trackers,
@@ -269,6 +273,7 @@ class CC_EXPORT CompositorFrameReporter {
   void SetVizBreakdown(const viz::FrameTimingDetails& viz_breakdown);
 
   void AddEventsMetrics(EventMetrics::List events_metrics);
+  void ChronoSortEventMetrics();
   EventMetrics::List TakeEventsMetrics();
 
   size_t stage_history_size_for_testing() const {
@@ -369,6 +374,7 @@ class CC_EXPORT CompositorFrameReporter {
   void ReportEventLatencyHistograms() const;
   void ReportCompositorLatencyTraceEvents(const FrameInfo& info) const;
   void ReportEventLatencyTraceEvents() const;
+  void ReportEventLatenciesToJankTracker();
 
   void EnableReportType(FrameReportType report_type) {
     report_types_.set(static_cast<size_t>(report_type));
