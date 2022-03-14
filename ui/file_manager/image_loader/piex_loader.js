@@ -755,7 +755,7 @@ PiexLoader.load = function(source, onPiexModuleFailed) {
           setTimeout(onPiexModuleFailed, 0);
           return Promise.reject('piex wasm module failed');
         }
-        console.error('[PiexLoader] ' + error);
+        console.warn('[PiexLoader] ' + error);
         return Promise.reject(error);
       })
       .finally(() => {

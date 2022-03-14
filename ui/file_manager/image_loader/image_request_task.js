@@ -347,14 +347,14 @@ ImageRequestTask.prototype.downloadThumbnail_ = function(onSuccess, onFailure) {
 
   const resolveLocalFileSystemUrl = (url, onResolveSuccess) => {
     window.webkitResolveLocalFileSystemURL(url, onResolveSuccess, error => {
-      console.error(error);
+      console.warn(error);
       onFailure();
     });
   };
 
   const onExternalThumbnail = (dataUrl) => {
     if (chrome.runtime.lastError) {
-      console.error(chrome.runtime.lastError.message);
+      console.warn(chrome.runtime.lastError.message);
       onFailure();
     } else if (dataUrl) {
       this.image_.src = dataUrl;
@@ -413,7 +413,7 @@ ImageRequestTask.prototype.downloadThumbnail_ = function(onSuccess, onFailure) {
               this.image_.src = URL.createObjectURL(blob);
             }.bind(this),
             function() {
-              // PiexLoader calls console.error on errors.
+              // PiexLoader calls console.warn on errors.
               onFailure();
             });
     return;
@@ -426,7 +426,7 @@ ImageRequestTask.prototype.downloadThumbnail_ = function(onSuccess, onFailure) {
           this.image_.src = url;
         }.bind(this))
         .catch(function(error) {
-          console.error('Video thumbnail error: ', error);
+          console.warn('Video thumbnail error: ', error);
           onFailure();
         });
     return;

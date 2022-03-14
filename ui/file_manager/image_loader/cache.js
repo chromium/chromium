@@ -123,7 +123,7 @@ ImageCache.prototype.fetchCacheSize_ = function(
   };
 
   sizeRequest.onerror = function() {
-    console.error('Failed to fetch size from the database.');
+    console.warn('Failed to fetch size from the database.');
     onFailure();
   };
 };
@@ -324,13 +324,13 @@ ImageCache.prototype.loadImage = function(
   };
 
   metadataRequest.onerror = function() {
-    console.error('Failed to fetch metadata from the database.');
+    console.warn('Failed to fetch metadata from the database.');
     metadataReceived = true;
     onPartialSuccess();
   };
 
   dataRequest.onerror = function() {
-    console.error('Failed to fetch image data from the database.');
+    console.warn('Failed to fetch image data from the database.');
     dataReceived = true;
     onPartialSuccess();
   };
@@ -410,7 +410,7 @@ ImageCache.prototype.removeImage = function(
   };
 
   metadataRequest.onerror = function() {
-    console.error('Failed to remove an image.');
+    console.warn('Failed to remove an image.');
     metadataReceived = true;
     onPartialSuccess();
   };
