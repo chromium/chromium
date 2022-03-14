@@ -59,5 +59,5 @@ bool CertDbInitializerFactory::ServiceIsNULLWhileTesting() const {
 
 content::BrowserContext* CertDbInitializerFactory::GetBrowserContextToUse(
     content::BrowserContext* context) const {
-  return chrome::GetBrowserContextOwnInstanceInIncognito(context);
+  return chrome::GetBrowserContextRedirectedInIncognito(context);
 }

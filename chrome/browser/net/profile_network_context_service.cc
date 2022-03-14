@@ -109,6 +109,7 @@
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
 #include "chrome/browser/lacros/cert/cert_db_initializer_factory.h"
 #include "chrome/browser/lacros/cert/client_cert_store_lacros.h"
+#include "chrome/browser/profiles/incognito_helpers.h"
 #include "chromeos/lacros/lacros_service.h"
 #endif
 
@@ -615,9 +616,14 @@ ProfileNetworkContextService::CreateClientCertStore() {
           base::BindRepeating(&CreateCryptoModuleBlockingPasswordDelegate,
                               kCryptoModulePasswordClientAuth));
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
-  if (!profile_->IsMainProfile()) {
-    // TODO(crbug.com/1148298): return some cert store for secondary profiles in
-    // Lacros-Chrome.
+
+  if (!Profile::FromBrowserContext(
+           chrome::GetBrowserContextRedirectedInIncognito(profile_))
+           ->IsMainProfile()) {
+    // TODO(crbug.com/1148298): At the moment client certs are only enabled for
+    // the main profile and its incognito profile (similarly to how it worked in
+    // Ash-Chrome). Return some cert store for secondary profiles in
+    // Lacros-Chrome when certs are supported there.
     return nullptr;
   }
 
