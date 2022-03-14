@@ -1268,43 +1268,42 @@ std::unique_ptr<base::Value> SyncServiceImpl::GetTypeStatusMapForDebugging() {
   const ModelTypeSet& throttled_types(detailed_status.throttled_types);
   const ModelTypeSet& backed_off_types(detailed_status.backed_off_types);
 
-  std::unique_ptr<base::DictionaryValue> type_status_header(
-      new base::DictionaryValue());
-  type_status_header->SetStringKey("status", "header");
-  type_status_header->SetStringKey("name", "Model Type");
-  type_status_header->SetStringKey("num_entries", "Total Entries");
-  type_status_header->SetStringKey("num_live", "Live Entries");
-  type_status_header->SetStringKey("message", "Message");
-  type_status_header->SetStringKey("state", "State");
-  result->Append(std::move(type_status_header));
+  base::Value::Dict type_status_header;
+  type_status_header.Set("status", "header");
+  type_status_header.Set("name", "Model Type");
+  type_status_header.Set("num_entries", "Total Entries");
+  type_status_header.Set("num_live", "Live Entries");
+  type_status_header.Set("message", "Message");
+  type_status_header.Set("state", "State");
+  result->Append(base::Value(std::move(type_status_header)));
 
   for (const auto& [type, controller] : data_type_controllers_) {
-    auto type_status = std::make_unique<base::DictionaryValue>();
-    type_status->SetStringKey("name", ModelTypeToDebugString(type));
+    base::Value::Dict type_status;
+    type_status.Set("name", ModelTypeToDebugString(type));
 
     if (data_type_error_map_.find(type) != data_type_error_map_.end()) {
       const SyncError& error = data_type_error_map_.find(type)->second;
       DCHECK(error.IsSet());
       switch (error.GetSeverity()) {
         case SyncError::SYNC_ERROR_SEVERITY_ERROR:
-          type_status->SetStringKey("status", "severity_error");
-          type_status->SetStringKey(
-              "message", "Error: " + error.location().ToString() + ", " +
-                             error.GetMessagePrefix() + error.message());
+          type_status.Set("status", "severity_error");
+          type_status.Set("message", "Error: " + error.location().ToString() +
+                                         ", " + error.GetMessagePrefix() +
+                                         error.message());
           break;
         case SyncError::SYNC_ERROR_SEVERITY_INFO:
-          type_status->SetStringKey("status", "severity_info");
-          type_status->SetStringKey("message", error.message());
+          type_status.Set("status", "severity_info");
+          type_status.Set("message", error.message());
           break;
       }
     } else if (throttled_types.Has(type)) {
-      type_status->SetStringKey("status", "severity_warning");
-      type_status->SetStringKey("message", " Throttled");
+      type_status.Set("status", "severity_warning");
+      type_status.Set("message", " Throttled");
     } else if (backed_off_types.Has(type)) {
-      type_status->SetStringKey("status", "severity_warning");
-      type_status->SetStringKey("message", "Backed off");
+      type_status.Set("status", "severity_warning");
+      type_status.Set("message", "Backed off");
     } else {
-      type_status->SetStringKey("message", "");
+      type_status.Set("message", "");
 
       // Determine the row color based on the controller's state.
       switch (controller->state()) {
@@ -1313,29 +1312,29 @@ std::unique_ptr<base::Value> SyncServiceImpl::GetTypeStatusMapForDebugging() {
           // which is not very different to certain SYNC_ERROR_SEVERITY_INFO
           // cases like preconditions not having been met due to user
           // configuration.
-          type_status->SetStringKey("status", "severity_info");
+          type_status.Set("status", "severity_info");
           break;
         case DataTypeController::MODEL_STARTING:
         case DataTypeController::MODEL_LOADED:
         case DataTypeController::STOPPING:
           // These are all transitional states that should be rare to observe.
-          type_status->SetStringKey("status", "transitioning");
+          type_status.Set("status", "transitioning");
           break;
         case DataTypeController::RUNNING:
-          type_status->SetStringKey("status", "ok");
+          type_status.Set("status", "ok");
           break;
         case DataTypeController::FAILED:
           // Note that most of the errors (possibly all) should have been
           // handled earlier via |data_type_error_map_|.
-          type_status->SetStringKey("status", "severity_error");
+          type_status.Set("status", "severity_error");
           break;
       }
     }
 
-    type_status->SetStringKey(
-        "state", DataTypeController::StateToString(controller->state()));
+    type_status.Set("state",
+                    DataTypeController::StateToString(controller->state()));
 
-    result->Append(std::move(type_status));
+    result->Append(base::Value(std::move(type_status)));
   }
   return result;
 }

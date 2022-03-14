@@ -1130,24 +1130,23 @@ void ClientTagBasedModelTypeProcessor::MergeDataWithMetadataForDebugging(
     if (entity != nullptr) {
       node->Set("metadata", EntityMetadataToValue(entity->metadata()));
     }
-    all_nodes->Append(std::move(node));
+    all_nodes->Append(base::Value::FromUniquePtrValue(std::move(node)));
   }
 
   // Create a permanent folder for this data type. Since sync server no longer
   // creates root folders, and USS won't migrate root folders from the
   // Directory, we create root folders for each data type here.
-  std::unique_ptr<base::DictionaryValue> rootnode =
-      std::make_unique<base::DictionaryValue>();
+  base::Value::Dict rootnode;
   // Function isTypeRootNode in sync_node_browser.js use PARENT_ID and
   // UNIQUE_SERVER_TAG to check if the node is root node. isChildOf in
   // sync_node_browser.js uses modelType to check if root node is parent of real
   // data node. NON_UNIQUE_NAME will be the name of node to display.
-  rootnode->SetStringKey("PARENT_ID", "r");
-  rootnode->SetStringKey("UNIQUE_SERVER_TAG", type_string);
-  rootnode->SetBoolKey("IS_DIR", true);
-  rootnode->SetStringKey("modelType", type_string);
-  rootnode->SetStringKey("NON_UNIQUE_NAME", type_string);
-  all_nodes->Append(std::move(rootnode));
+  rootnode.Set("PARENT_ID", "r");
+  rootnode.Set("UNIQUE_SERVER_TAG", type_string);
+  rootnode.Set("IS_DIR", true);
+  rootnode.Set("modelType", type_string);
+  rootnode.Set("NON_UNIQUE_NAME", type_string);
+  all_nodes->Append(base::Value(std::move(rootnode)));
 
   std::move(callback).Run(type_, std::move(all_nodes));
 }
