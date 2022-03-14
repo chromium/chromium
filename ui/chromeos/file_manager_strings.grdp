@@ -1279,6 +1279,15 @@
   <message name="IDS_FILE_BROWSER_RAR_ARCHIVE_FILE_TYPE" desc="RAR archive file type">
     RAR archive
   </message>
+  <message name="IDS_FILE_BROWSER_ISO_ARCHIVE_FILE_TYPE" desc="ISO archive file type">
+    ISO image
+  </message>
+  <message name="IDS_FILE_BROWSER_7Z_ARCHIVE_FILE_TYPE" desc="7z archive file type">
+    7z archive
+  </message>
+  <message name="IDS_FILE_BROWSER_CRX_ARCHIVE_FILE_TYPE" desc="CRX archive file type">
+    Chrome extension
+  </message>
   <message name="IDS_FILE_BROWSER_TAR_ARCHIVE_FILE_TYPE" desc="Tar archive file type">
     Tar archive
   </message>

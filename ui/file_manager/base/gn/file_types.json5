@@ -309,6 +309,27 @@
   },
   {
     "type": "archive",
+    "translationKey": "ISO_ARCHIVE_FILE_TYPE",
+    "subtype": "ISO",
+    "extensions": [".iso"],
+    "mime": "application/x-iso9660-image"
+  },
+  {
+    "type": "archive",
+    "translationKey": "7Z_ARCHIVE_FILE_TYPE",
+    "subtype": "7Z",
+    "extensions": [".7z"],
+    "mime": "application/x-7z-compressed"
+  },
+  {
+    "type": "archive",
+    "translationKey": "CRX_ARCHIVE_FILE_TYPE",
+    "subtype": "CRX",
+    "extensions": [".crx"],
+    "mime": "application/x-chrome-extension"
+  },
+  {
+    "type": "archive",
     "translationKey": "TAR_ARCHIVE_FILE_TYPE",
     "subtype": "TAR",
     "extensions": [".tar"],

@@ -195,6 +195,9 @@ IconType GetIconTypeForPath(const base::FilePath& filepath) {
           // Archive
           {".ZIP", IconType::kArchive},
           {".RAR", IconType::kArchive},
+          {".ISO", IconType::kArchive},
+          {".7Z", IconType::kArchive},
+          {".CRX", IconType::kArchive},
           {".TAR", IconType::kArchive},
           {".TAR.BZ2", IconType::kArchive},
           {".TBZ2", IconType::kArchive},
