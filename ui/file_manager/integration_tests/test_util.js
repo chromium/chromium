@@ -826,6 +826,8 @@ export const ENTRIES = {
     nameText: 'text.docx',
     sizeText: '8.7 KB',
     typeText: 'Office document',
+    alternateUrl: 'https://drive.google.com/open?id=smalldocxid&\
+usp=drive_fs',
   }),
 
   smallDocxHosted: new TestEntryInfo({

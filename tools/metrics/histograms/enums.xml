@@ -94532,6 +94532,18 @@ others/histograms.xml -->
   <int value="3" label="Transferred WebContents"/>
 </enum>
 
+<enum name="WebDriveOfficeTaskResult">
+  <int value="0" label="Available"/>
+  <int value="1" label="Flag disabled"/>
+  <int value="2" label="Offline"/>
+  <int value="3" label="Not on Drive"/>
+  <int value="4" label="DriveFs interface error"/>
+  <int value="5" label="File metadata error"/>
+  <int value="6" label="Not uploaded - Empty or invalid alternate URL"/>
+  <int value="7" label="Not available for Web Drive editing"/>
+  <int value="8" label="Unexpected alternate URL"/>
+</enum>
+
 <enum name="WebFeedPageInformationRequestReason">
   <int value="0" label="User Requested Follow">
     The user requested to Follow the current web page.

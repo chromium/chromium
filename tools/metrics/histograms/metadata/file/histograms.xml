@@ -550,6 +550,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="FileBrowser.OfficeFiles.WebDriveOffice"
+    enum="WebDriveOfficeTaskResult" expires_after="M110">
+  <owner>simmonsjosh@google.com</owner>
+  <owner>src/ui/file_manager/OWNERS</owner>
+  <summary>
+    Chrome OS File Browser: When a user selects MS Office files, records the
+    results of trying to enable the Web Drive Office task.
+  </summary>
+</histogram>
+
 <histogram name="FileBrowser.OpenFiles.RootType" enum="FileManagerRootType"
     expires_after="2022-04-03">
   <owner>simmonsjosh@google.com</owner>

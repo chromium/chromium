@@ -264,11 +264,20 @@ class WebDriveOfficeValidationHelper {
     web_drive_office_action_id_ =
         parseFilesAppActionId(web_drive_office_task->task_descriptor.action_id);
 
-    // Remove Web Drive Office action if Web Drive Office is disabled or if
-    // Drive is Offline.
-    if (!base::FeatureList::IsEnabled(ash::features::kFilesWebDriveOffice) ||
-        drive::util::GetDriveConnectionStatus(profile) !=
-            drive::util::DRIVE_CONNECTED) {
+    // Remove Web Drive Office action if Web Drive Office is disabled.
+    if (!base::FeatureList::IsEnabled(ash::features::kFilesWebDriveOffice)) {
+      UMA_HISTOGRAM_ENUMERATION(kWebDriveOfficeMetricName,
+                                WebDriveOfficeTaskResult::FLAG_DISABLED);
+      disabled_actions_.emplace(web_drive_office_action_id_);
+      EndAdjustTasks();
+      return;
+    }
+
+    // Remove Web Drive Office action if Drive is Offline.
+    if (drive::util::GetDriveConnectionStatus(profile) !=
+        drive::util::DRIVE_CONNECTED) {
+      UMA_HISTOGRAM_ENUMERATION(kWebDriveOfficeMetricName,
+                                WebDriveOfficeTaskResult::OFFLINE);
       disabled_actions_.emplace(web_drive_office_action_id_);
       EndAdjustTasks();
       return;
@@ -282,12 +291,17 @@ class WebDriveOfficeValidationHelper {
   void ProcessNextEntryForWebDriveOffice(size_t entry_index) {
     // Web Drive Office is available for all the selected entries.
     if (entry_index == entries.size()) {
+      UMA_HISTOGRAM_ENUMERATION(kWebDriveOfficeMetricName,
+                                WebDriveOfficeTaskResult::AVAILABLE);
       EndAdjustTasks();
       return;
     }
+
     // Check whether the entry is on Drive.
     if (!::file_manager::util::IsDriveLocalPath(profile,
                                                 entries[entry_index].path)) {
+      UMA_HISTOGRAM_ENUMERATION(kWebDriveOfficeMetricName,
+                                WebDriveOfficeTaskResult::NOT_ON_DRIVE);
       disabled_actions_.emplace(web_drive_office_action_id_);
       EndAdjustTasks();
       return;
@@ -301,6 +315,8 @@ class WebDriveOfficeValidationHelper {
           integration_service->GetDriveFsInterface() &&
           integration_service->GetRelativeDrivePath(entries[entry_index].path,
                                                     &relative_drive_path))) {
+      UMA_HISTOGRAM_ENUMERATION(kWebDriveOfficeMetricName,
+                                WebDriveOfficeTaskResult::DRIVE_ERROR);
       disabled_actions_.emplace(web_drive_office_action_id_);
       EndAdjustTasks();
       return;
@@ -321,6 +337,8 @@ class WebDriveOfficeValidationHelper {
       drive::FileError error,
       drivefs::mojom::FileMetadataPtr metadata) {
     if (error != drive::FILE_ERROR_OK) {
+      UMA_HISTOGRAM_ENUMERATION(kWebDriveOfficeMetricName,
+                                WebDriveOfficeTaskResult::DRIVE_METADATA_ERROR);
       disabled_actions_.emplace(web_drive_office_action_id_);
       EndAdjustTasks();
       return;
@@ -328,8 +346,24 @@ class WebDriveOfficeValidationHelper {
 
     GURL hosted_url(metadata->alternate_url);
     // URLs for editing Office files in Web Drive all have a "docs.google.com"
-    // host.
-    if (!hosted_url.is_valid() || hosted_url.host() != "docs.google.com") {
+    // host: Disable the task if the entry doesn't have such alternate URL.
+    if (!hosted_url.is_valid()) {
+      UMA_HISTOGRAM_ENUMERATION(
+          kWebDriveOfficeMetricName,
+          WebDriveOfficeTaskResult::INVALID_ALTERNATE_URL);
+      disabled_actions_.emplace(web_drive_office_action_id_);
+      EndAdjustTasks();
+      return;
+    } else if (hosted_url.host() == "drive.google.com") {
+      UMA_HISTOGRAM_ENUMERATION(kWebDriveOfficeMetricName,
+                                WebDriveOfficeTaskResult::DRIVE_ALTERNATE_URL);
+      disabled_actions_.emplace(web_drive_office_action_id_);
+      EndAdjustTasks();
+      return;
+    } else if (hosted_url.host() != "docs.google.com") {
+      UMA_HISTOGRAM_ENUMERATION(
+          kWebDriveOfficeMetricName,
+          WebDriveOfficeTaskResult::UNEXPECTED_ALTERNATE_URL);
       disabled_actions_.emplace(web_drive_office_action_id_);
       EndAdjustTasks();
       return;

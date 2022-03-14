@@ -144,6 +144,27 @@ enum TaskType {
 TaskType StringToTaskType(const std::string& str);
 std::string TaskTypeToString(TaskType task_type);
 
+// UMA metric name that tracks the result of trying to enable the Web Drive
+// Office task.
+constexpr char kWebDriveOfficeMetricName[] =
+    "FileBrowser.OfficeFiles.WebDriveOffice";
+
+// List of UMA enum value for Web Drive Office task results. The enum values
+// must be kept in sync with WebDriveOfficeTaskResult in
+// tools/metrics/histograms/enums.xml.
+enum class WebDriveOfficeTaskResult {
+  AVAILABLE = 0,
+  FLAG_DISABLED = 1,
+  OFFLINE = 2,
+  NOT_ON_DRIVE = 3,
+  DRIVE_ERROR = 4,
+  DRIVE_METADATA_ERROR = 5,
+  INVALID_ALTERNATE_URL = 6,
+  DRIVE_ALTERNATE_URL = 7,
+  UNEXPECTED_ALTERNATE_URL = 8,
+  kMaxValue = UNEXPECTED_ALTERNATE_URL,
+};
+
 // Describes a task.
 // See the comment above for <app-id>, <task-type>, and <action-id>.
 struct TaskDescriptor {
