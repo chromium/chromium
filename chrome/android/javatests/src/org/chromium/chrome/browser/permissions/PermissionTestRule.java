@@ -225,7 +225,7 @@ public class PermissionTestRule extends ChromeTabbedActivityTestRule {
         }
     }
 
-    private void runJavaScriptCodeInCurrentTabWithGesture(String javascript)
+    public void runJavaScriptCodeInCurrentTabWithGesture(String javascript)
             throws java.util.concurrent.TimeoutException {
         runJavaScriptCodeInCurrentTab("functionToRun = '" + javascript + "'");
         TouchCommon.singleClickView(getActivity().getActivityTab().getView());

@@ -4,7 +4,6 @@
 
 package org.chromium.chrome.browser.permissions;
 
-import android.os.Build.VERSION_CODES;
 import android.support.test.InstrumentationRegistry;
 
 import androidx.test.filters.LargeTest;
@@ -15,9 +14,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.test.util.CommandLineFlags;
-import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.Feature;
-import org.chromium.base.test.util.FlakyTest;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.permissions.PermissionTestRule.PermissionUpdateWaiter;
 import org.chromium.chrome.browser.tab.Tab;
@@ -54,7 +51,7 @@ public class AutomaticEmbargoTest {
     }
 
     private void runTest(final String testFile, final String javascript, final String updaterPrefix,
-            final int nUpdates) throws Exception {
+            final boolean withGesture) throws Exception {
         Tab tab = mPermissionRule.getActivity().getActivityTab();
         PermissionUpdateWaiter updateWaiter =
                 new PermissionUpdateWaiter(updaterPrefix, mPermissionRule.getActivity());
@@ -62,7 +59,11 @@ public class AutomaticEmbargoTest {
 
         for (int i = 0; i < NUMBER_OF_DISMISSALS; ++i) {
             mPermissionRule.setUpUrl(testFile);
-            mPermissionRule.runJavaScriptCodeInCurrentTab(javascript);
+            if (withGesture) {
+                mPermissionRule.runJavaScriptCodeInCurrentTabWithGesture(javascript);
+            } else {
+                mPermissionRule.runJavaScriptCodeInCurrentTab(javascript);
+            }
             PermissionTestRule.waitForDialog(mPermissionRule.getActivity());
             TestThreadUtils.runOnUiThreadBlocking(() -> {
                 mPermissionRule.getActivity()
@@ -73,69 +74,57 @@ public class AutomaticEmbargoTest {
             InstrumentationRegistry.getInstrumentation().waitForIdleSync();
         }
 
-        mPermissionRule.runNoPromptTest(updateWaiter, testFile, javascript, nUpdates, false, true);
+        mPermissionRule.runNoPromptTest(updateWaiter, testFile, javascript, 0 /* nUpdates */,
+                withGesture, true /* isDialog */);
         TestThreadUtils.runOnUiThreadBlocking(() -> tab.removeObserver(updateWaiter));
     }
 
     @Test
     @LargeTest
     @Feature({"Location"})
-    @DisableIf.
-    Build(message = "Test is failing on Nexus 5X (64-bit) + Android M, see crbug.com/1111001.",
-            sdk_is_greater_than = VERSION_CODES.LOLLIPOP_MR1, sdk_is_less_than = VERSION_CODES.N,
-            supported_abis_includes = "arm64-v8a")
     public void testGeolocationEmbargo() throws Exception {
         LocationSettingsTestUtil.setSystemLocationSettingEnabled(true);
         LocationProviderOverrider.setLocationProviderImpl(new MockLocationProvider());
 
-        runTest(GEOLOCATION_TEST_FILE, "", "Denied", 0);
+        runTest(GEOLOCATION_TEST_FILE, "", "Denied", true /* withGesture */);
     }
 
     @Test
     @LargeTest
     @Feature({"Notifications"})
     public void testNotificationsEmbargo() throws Exception {
-        runTest(NOTIFICATIONS_TEST_FILE, "requestPermission()", "request-callback-denied", 0);
+        runTest(NOTIFICATIONS_TEST_FILE, "requestPermission()", "request-callback-denied",
+                false /* withGesture */);
     }
 
     @Test
     @LargeTest
     @Feature({"MIDI"})
-    @FlakyTest(message = "crbug.com/1232946")
     public void testMIDIEmbargo() throws Exception {
-        runTest(MIDI_TEST_FILE, "", "fail", 0);
-    }
-
-    @Test
-    @LargeTest
-    @Feature({"MediaPermissions"})
-    @DisableIf.Build(message = "Failing on Android P, see crbug.com/1251332.",
-            sdk_is_greater_than = VERSION_CODES.O_MR1)
-    @CommandLineFlags.Add({ContentSwitches.USE_FAKE_DEVICE_FOR_MEDIA_STREAM})
-    public void
-    testCameraEmbargo() throws Exception {
-        runTest(MEDIA_TEST_FILE, "initiate_getMicrophone()", "deny", 0);
+        runTest(MIDI_TEST_FILE, "", "fail", true /* withGesture */);
     }
 
     @Test
     @LargeTest
     @Feature({"MediaPermissions"})
     @CommandLineFlags.Add({ContentSwitches.USE_FAKE_DEVICE_FOR_MEDIA_STREAM})
-    @DisableIf.Build(message = "Failing on Android P, see crbug.com/1251332.",
-            sdk_is_greater_than = VERSION_CODES.O_MR1)
-    public void
-    testMicrophoneEmbargo() throws Exception {
-        runTest(MEDIA_TEST_FILE, "initiate_getCamera()", "deny", 0);
+    public void testCameraEmbargo() throws Exception {
+        runTest(MEDIA_TEST_FILE, "initiate_getMicrophone()", "deny", true /* withGesture */);
     }
 
     @Test
     @LargeTest
     @Feature({"MediaPermissions"})
-    @DisableIf.Build(message = "Failing on Android P, see crbug.com/1251332.",
-            sdk_is_greater_than = VERSION_CODES.O_MR1)
     @CommandLineFlags.Add({ContentSwitches.USE_FAKE_DEVICE_FOR_MEDIA_STREAM})
-    public void
-    testMicrophoneAndCameraEmbargo() throws Exception {
-        runTest(MEDIA_TEST_FILE, "initiate_getCombined()", "deny", 0);
+    public void testMicrophoneEmbargo() throws Exception {
+        runTest(MEDIA_TEST_FILE, "initiate_getCamera()", "deny", true /* withGesture */);
+    }
+
+    @Test
+    @LargeTest
+    @Feature({"MediaPermissions"})
+    @CommandLineFlags.Add({ContentSwitches.USE_FAKE_DEVICE_FOR_MEDIA_STREAM})
+    public void testMicrophoneAndCameraEmbargo() throws Exception {
+        runTest(MEDIA_TEST_FILE, "initiate_getCombined()", "deny", true /* withGesture */);
     }
 }
