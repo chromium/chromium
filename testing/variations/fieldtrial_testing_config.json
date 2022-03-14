@@ -3237,6 +3237,24 @@
             ]
         }
     ],
+    "GridTabSwitcherTablet": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "params": {
+                        "enable_launch_polish": "false"
+                    },
+                    "enable_features": [
+                        "GridTabSwitcherForTablets"
+                    ]
+                }
+            ]
+        }
+    ],
     "GroupAutoCreationAndroid": [
         {
             "platforms": [
