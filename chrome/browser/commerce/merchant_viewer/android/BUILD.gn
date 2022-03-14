@@ -102,7 +102,6 @@ java_library("junit") {
     "//base:base_java_test_support",
     "//base:base_junit_test_support",
     "//chrome/android:base_module_java",
-    "//chrome/android:chrome_java",
     "//chrome/android/features/tab_ui:java_resources",
     "//chrome/android/features/tab_ui:java_strings_grd",
     "//chrome/browser/android/lifecycle:java",
@@ -155,13 +154,11 @@ android_library("javatests") {
     "javatests/src/org/chromium/chrome/browser/merchant_viewer/MerchantTrustMessageViewTest.java",
     "javatests/src/org/chromium/chrome/browser/merchant_viewer/MerchantTrustSignalsEventLoadCallbackHelper.java",
     "javatests/src/org/chromium/chrome/browser/merchant_viewer/MerchantTrustSignalsEventStorageTest.java",
-    "javatests/src/org/chromium/chrome/browser/merchant_viewer/PageInfoStoreInfoViewTest.java",
   ]
 
   deps = [
     "//base:base_java",
     "//base:base_java_test_support",
-    "//chrome/android:chrome_java",
     "//chrome/browser/commerce/merchant_viewer:optimization_guide_protos_java",
     "//chrome/browser/commerce/merchant_viewer/android:java",
     "//chrome/browser/flags:java",

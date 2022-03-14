@@ -13,6 +13,8 @@ import(
     "//chrome/android/features/start_surface/internal/junit/start_surface_junit_java_sources.gni")
 import("//chrome/android/features/tab_ui/tab_management_java_sources.gni")
 import("//chrome/android/feed/feed_java_sources.gni")
+import(
+    "//chrome/browser/commerce/merchant_viewer/android/test_java_sources.gni")
 import("//chrome/browser/commerce/price_tracking/android/test_java_sources.gni")
 import(
     "//chrome/browser/commerce/subscriptions/test/android/test_java_sources.gni")
@@ -51,6 +53,7 @@ chrome_junit_test_java_deps += feed_test_deps
 chrome_junit_test_java_sources += commerce_subscriptions_junit_test_sources
 chrome_junit_test_java_deps += commerce_subscriptions_junit_test_deps
 chrome_test_java_sources += commerce_subscriptions_java_test_sources
+chrome_test_java_sources += commerce_merchant_viewer_java_test_sources
 
 if (enable_arcore) {
   chrome_java_sources += [

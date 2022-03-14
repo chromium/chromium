@@ -28,7 +28,6 @@ import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabHidingType;
-import org.chromium.chrome.browser.tab.TabImpl;
 import org.chromium.chrome.browser.tab.TabObserver;
 import org.chromium.chrome.test.util.browser.Features;
 import org.chromium.content_public.browser.NavigationHandle;
@@ -48,7 +47,7 @@ public class MerchantTrustSignalsMediatorTest {
     private MerchantTrustSignalsMediator.MerchantTrustSignalsCallback mMockDelegate;
 
     @Mock
-    private TabImpl mMockTab;
+    private Tab mMockTab;
 
     @Mock
     private ObservableSupplier<Tab> mMockTabProvider;
