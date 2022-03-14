@@ -240,6 +240,10 @@ class GEOMETRY_EXPORT RectF {
 
   std::string ToString() const;
 
+  bool ApproximatelyEqual(const RectF& rect,
+                          float tolerance_x,
+                          float tolerance_y) const;
+
  private:
   PointF origin_;
   SizeF size_;

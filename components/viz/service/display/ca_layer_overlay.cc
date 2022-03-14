@@ -48,16 +48,6 @@ void RecordCALayerHistogram(gfx::CALayerResult result) {
   UMA_HISTOGRAM_ENUMERATION("Compositing.Renderer.CALayerResult", result);
 }
 
-bool ApproximatelyEqual(const gfx::RectF& rect_a,
-                        const gfx::RectF& rect_b,
-                        float tolerance_x,
-                        float tolerance_y) {
-  return std::abs(rect_a.x() - rect_b.x()) <= tolerance_x &&
-         std::abs(rect_a.y() - rect_b.y()) <= tolerance_y &&
-         std::abs(rect_a.right() - rect_b.right()) <= tolerance_x &&
-         std::abs(rect_a.bottom() - rect_b.bottom()) <= tolerance_y;
-}
-
 bool FilterOperationSupported(const cc::FilterOperation& operation) {
   switch (operation.type()) {
     case cc::FilterOperation::GRAYSCALE:
@@ -210,8 +200,8 @@ gfx::CALayerResult FromYUVVideoQuad(DisplayResourceProvider* resource_provider,
   // be identical.
   float tolerance_x = 1.5f / quad->uv_tex_size.width();
   float tolerance_y = 1.5f / quad->uv_tex_size.height();
-  if (!ApproximatelyEqual(ya_contents_rect, uv_contents_rect, tolerance_x,
-                          tolerance_y)) {
+  if (!ya_contents_rect.ApproximatelyEqual(uv_contents_rect, tolerance_x,
+                                           tolerance_y)) {
     return gfx::kCALayerFailedYUVTexcoordMismatch;
   }
 

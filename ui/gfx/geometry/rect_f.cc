@@ -349,4 +349,13 @@ std::string RectF::ToString() const {
                             size().ToString().c_str());
 }
 
+bool RectF::ApproximatelyEqual(const RectF& rect,
+                               float tolerance_x,
+                               float tolerance_y) const {
+  return std::abs(x() - rect.x()) <= tolerance_x &&
+         std::abs(y() - rect.y()) <= tolerance_y &&
+         std::abs(right() - rect.right()) <= tolerance_x &&
+         std::abs(bottom() - rect.bottom()) <= tolerance_y;
+}
+
 }  // namespace gfx
