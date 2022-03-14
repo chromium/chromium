@@ -21,7 +21,6 @@
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
-#include "cc/animation/animation.h"
 #include "cc/animation/animation_host.h"
 #include "cc/animation/animation_id_provider.h"
 #include "cc/base/features.h"
@@ -3270,13 +3269,8 @@ TEST_F(CommitToPendingTreeLayerTreeHostImplTest,
   CopyProperties(root, child);
   CreateTransformNode(child);
 
-  scoped_refptr<Animation> animation =
-      Animation::Create(AnimationIdProvider::NextAnimationId());
-  timeline()->AttachAnimation(animation);
-  animation->AttachElement(child->element_id());
-  AddAnimatedTransformToAnimation(animation.get(), 10.0, 3, 0);
-  animation->GetKeyframeModel(TargetProperty::TRANSFORM)
-      ->set_affects_active_elements(false);
+  AddAnimatedTransformToElementWithAnimation(child->element_id(), timeline(),
+                                             10.0, 3, 0);
   UpdateDrawProperties(host_impl_->pending_tree());
 
   EXPECT_FALSE(did_request_next_frame_);
@@ -3424,12 +3418,8 @@ TEST_P(ScrollUnifiedLayerTreeHostImplTest,
   start.AppendTranslate(6, 7, 0);
   gfx::TransformOperations end;
   end.AppendTranslate(8, 9, 0);
-  scoped_refptr<Animation> animation =
-      Animation::Create(AnimationIdProvider::NextAnimationId());
-  timeline()->AttachAnimation(animation);
-  animation->AttachElement(child->element_id());
-  int keyframe_model_id =
-      AddAnimatedTransformToAnimation(animation.get(), 4.0, start, end);
+  AddAnimatedTransformToElementWithAnimation(child->element_id(), timeline(),
+                                             4.0, start, end);
   UpdateDrawProperties(host_impl_->active_tree());
 
   base::TimeTicks now = base::TimeTicks::Now();
@@ -3451,24 +3441,24 @@ TEST_P(ScrollUnifiedLayerTreeHostImplTest,
   EXPECT_TRUE(did_request_next_frame_);
   did_request_next_frame_ = false;
 
-  // In the real code, animations are removed at the same time as their property
-  // tree nodes are.
-  animation->RemoveKeyframeModel(keyframe_model_id);
-  host_impl_->ActivateAnimations();
-  EXPECT_FALSE(did_request_next_frame_);
-
   // In the real code, you cannot remove a child on LayerImpl, but a child
   // removed on Layer will force a full tree sync which will rebuild property
   // trees without that child's property tree nodes. Clear active_tree (which
   // also clears property trees) to simulate the rebuild that would happen
   // before/during the commit.
   host_impl_->active_tree()->property_trees()->clear();
+  host_impl_->UpdateElements(ElementListType::ACTIVE);
 
-  // Updating state requires no animation update.
+  // On updating state, we will send an animation event and request one last
+  // frame.
   host_impl_->UpdateAnimationState(true);
+  EXPECT_TRUE(did_request_next_frame_);
+  did_request_next_frame_ = false;
+
+  // Doing Animate() doesn't request another frame after the current one.
+  host_impl_->Animate();
   EXPECT_FALSE(did_request_next_frame_);
 
-  // Doing Animate() doesn't request any frames after the animation is removed.
   host_impl_->Animate();
   EXPECT_FALSE(did_request_next_frame_);
 }
