@@ -151,6 +151,26 @@ public class PriceMessageServiceUnitTest {
                 PriceTrackingUtilities.getPriceWelcomeMessageCardShowCount());
     }
 
+    // Preparing PriceWelcomeMessage shouldn't decrease the show count of PriceAlertsMessage if it's
+    // currently disabled.
+    @Test
+    public void testPrepareMessage_PriceWelcome_PriceAlertsMessageDisabled() {
+        PriceTrackingUtilities.SHARED_PREFERENCES_MANAGER.writeBoolean(
+                PriceTrackingUtilities.PRICE_ALERTS_MESSAGE_CARD, false);
+
+        InOrder inOrder = Mockito.inOrder(mMessageObserver);
+        mMessageService.preparePriceMessage(PriceMessageType.PRICE_WELCOME, mPriceTabData);
+        inOrder.verify(mMessageObserver, times(1)).messageInvalidate(eq(MessageType.PRICE_MESSAGE));
+        assertEquals(mPriceTabData, mMessageService.getPriceTabDataForTesting());
+        inOrder.verify(mMessageObserver, times(1))
+                .messageReady(eq(MessageService.MessageType.PRICE_MESSAGE),
+                        any(PriceMessageService.PriceMessageData.class));
+        assertEquals(
+                INITIAL_SHOW_COUNT, PriceTrackingUtilities.getPriceAlertsMessageCardShowCount());
+        assertEquals(INITIAL_SHOW_COUNT + 1,
+                PriceTrackingUtilities.getPriceWelcomeMessageCardShowCount());
+    }
+
     @Test
     public void testReview_PriceWelcome() {
         mMessageService.preparePriceMessage(PriceMessageType.PRICE_WELCOME, mPriceTabData);
