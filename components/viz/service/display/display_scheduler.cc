@@ -174,7 +174,8 @@ void DisplayScheduler::MaybeCreateHintSession(
   if (!hint_session_factory_)
     return;
 
-  if (!hint_session_ || current_thread_ids_ != thread_ids) {
+  if ((!create_session_for_current_thread_ids_failed_ && !hint_session_) ||
+      current_thread_ids_ != thread_ids) {
     hint_session_.reset();
     int target_ms = features::kAdpfTargetDurationMs.Get();
     if (target_ms <= 0 || target_ms > 1000)
@@ -182,6 +183,7 @@ void DisplayScheduler::MaybeCreateHintSession(
     current_thread_ids_ = std::move(thread_ids);
     hint_session_ = hint_session_factory_->CreateSession(
         current_thread_ids_, base::Milliseconds(target_ms));
+    create_session_for_current_thread_ids_failed_ = !hint_session_;
   }
 }
 
