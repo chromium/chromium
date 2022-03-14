@@ -227,7 +227,8 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="History.ClearBrowsingData.InstalledAppExcluded"
-    units="Boolean" expires_after="2022-04-17">
+    units="Boolean" expires_after="2023-03-09">
+  <owner>ayui@chromium.org</owner>
   <owner>jarrydg@chromium.org</owner>
   <owner>chrome-owp-storage@google.com</owner>
   <summary>
@@ -262,7 +263,8 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="History.ClearBrowsingData.InstalledDeselectedNum"
-    units="units" expires_after="2022-04-17">
+    units="units" expires_after="2023-03-09">
+  <owner>ayui@chromium.org</owner>
   <owner>jarrydg@chromium.org</owner>
   <owner>chrome-owp-storage@google.com</owner>
   <summary>
@@ -274,7 +276,8 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="History.ClearBrowsingData.InstalledDeselectedPercent"
-    units="%" expires_after="2022-04-17">
+    units="%" expires_after="2023-03-09">
+  <owner>ayui@chromium.org</owner>
   <owner>jarrydg@chromium.org</owner>
   <owner>chrome-owp-storage@google.com</owner>
   <summary>
