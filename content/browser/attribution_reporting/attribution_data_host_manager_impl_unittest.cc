@@ -453,8 +453,6 @@ TEST_F(AttributionDataHostManagerImplTest, TriggerDataHost_TriggerRegistered) {
 
   trigger_data->aggregatable_trigger =
       blink::mojom::AttributionAggregatableTrigger::New();
-  trigger_data->aggregatable_values =
-      blink::mojom::AttributionAggregatableValues::New();
 
   data_host_remote->TriggerDataAvailable(std::move(trigger_data));
   data_host_remote.FlushForTesting();
@@ -504,8 +502,6 @@ TEST_F(AttributionDataHostManagerImplTest,
     trigger_data->filters = blink::mojom::AttributionFilterData::New();
     trigger_data->aggregatable_trigger =
         blink::mojom::AttributionAggregatableTrigger::New();
-    trigger_data->aggregatable_values =
-        blink::mojom::AttributionAggregatableValues::New();
 
     data_host_remote->TriggerDataAvailable(std::move(trigger_data));
     data_host_remote.FlushForTesting();
@@ -534,8 +530,6 @@ TEST_F(AttributionDataHostManagerImplTest,
 
     trigger_data->aggregatable_trigger =
         blink::mojom::AttributionAggregatableTrigger::New();
-    trigger_data->aggregatable_values =
-        blink::mojom::AttributionAggregatableValues::New();
 
     data_host_remote->TriggerDataAvailable(std::move(trigger_data));
     data_host_remote.FlushForTesting();
@@ -563,8 +557,6 @@ TEST_F(AttributionDataHostManagerImplTest,
 
     trigger_data->aggregatable_trigger =
         blink::mojom::AttributionAggregatableTrigger::New();
-    trigger_data->aggregatable_values =
-        blink::mojom::AttributionAggregatableValues::New();
 
     trigger_data->event_triggers.push_back(blink::mojom::EventTriggerData::New(
         /*data=*/0,
@@ -599,8 +591,6 @@ TEST_F(AttributionDataHostManagerImplTest,
 
     trigger_data->aggregatable_trigger =
         blink::mojom::AttributionAggregatableTrigger::New();
-    trigger_data->aggregatable_values =
-        blink::mojom::AttributionAggregatableValues::New();
 
     trigger_data->event_triggers.push_back(blink::mojom::EventTriggerData::New(
         /*data=*/0,
@@ -644,8 +634,6 @@ TEST_F(AttributionDataHostManagerImplTest,
   trigger_data->filters = blink::mojom::AttributionFilterData::New();
   trigger_data->aggregatable_trigger =
       blink::mojom::AttributionAggregatableTrigger::New();
-  trigger_data->aggregatable_values =
-      blink::mojom::AttributionAggregatableValues::New();
 
   data_host_remote->TriggerDataAvailable(std::move(trigger_data));
   data_host_remote.FlushForTesting();
@@ -689,8 +677,6 @@ TEST_F(AttributionDataHostManagerImplTest,
     trigger_data->filters = blink::mojom::AttributionFilterData::New();
     trigger_data->aggregatable_trigger =
         blink::mojom::AttributionAggregatableTrigger::New();
-    trigger_data->aggregatable_values =
-        blink::mojom::AttributionAggregatableValues::New();
 
     data_host_remote->TriggerDataAvailable(std::move(trigger_data));
     data_host_remote.FlushForTesting();
@@ -727,8 +713,6 @@ TEST_F(AttributionDataHostManagerImplTest,
   trigger_data->filters = blink::mojom::AttributionFilterData::New();
   trigger_data->aggregatable_trigger =
       blink::mojom::AttributionAggregatableTrigger::New();
-  trigger_data->aggregatable_values =
-      blink::mojom::AttributionAggregatableValues::New();
 
   data_host_remote->TriggerDataAvailable(trigger_data.Clone());
   data_host_remote.FlushForTesting();
@@ -802,8 +786,6 @@ TEST_F(AttributionDataHostManagerImplTest,
   trigger_data->filters = blink::mojom::AttributionFilterData::New();
   trigger_data->aggregatable_trigger =
       blink::mojom::AttributionAggregatableTrigger::New();
-  trigger_data->aggregatable_values =
-      blink::mojom::AttributionAggregatableValues::New();
 
   data_host_remote->TriggerDataAvailable(std::move(trigger_data));
   data_host_remote.FlushForTesting();

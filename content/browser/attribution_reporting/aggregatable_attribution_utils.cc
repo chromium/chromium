@@ -13,7 +13,6 @@
 #include "content/browser/attribution_reporting/aggregatable_histogram_contribution.h"
 #include "content/browser/attribution_reporting/attribution_aggregatable_sources.h"
 #include "content/browser/attribution_reporting/attribution_aggregatable_trigger.h"
-#include "content/browser/attribution_reporting/attribution_aggregatable_values.h"
 #include "content/browser/attribution_reporting/attribution_filter_data.h"
 #include "content/browser/attribution_reporting/attribution_utils.h"
 #include "third_party/abseil-cpp/absl/numeric/int128.h"
@@ -24,8 +23,7 @@ namespace content {
 std::vector<AggregatableHistogramContribution> CreateAggregatableHistogram(
     const AttributionFilterData& source_filter_data,
     const AttributionAggregatableSources& sources,
-    const AttributionAggregatableTrigger& trigger,
-    const AttributionAggregatableValues& values) {
+    const AttributionAggregatableTrigger& trigger) {
   // TODO(linnan): Log metrics for early returns.
 
   // Pairs of key id and bucket key.
@@ -59,8 +57,8 @@ std::vector<AggregatableHistogramContribution> CreateAggregatableHistogram(
 
   std::vector<AggregatableHistogramContribution> contributions;
   for (const auto& [key_id, key] : buckets_map) {
-    auto value = values.values().find(key_id);
-    if (value == values.values().end())
+    auto value = trigger.values().find(key_id);
+    if (value == trigger.values().end())
       continue;
 
     contributions.emplace_back(key, value->second);

@@ -5,32 +5,18 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_FRAME_ATTRIBUTION_RESPONSE_PARSING_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_FRAME_ATTRIBUTION_RESPONSE_PARSING_H_
 
+#include <stdint.h>
+
 #include <utility>
 #include <vector>
 
 #include "third_party/blink/public/mojom/conversions/attribution_data_host.mojom-blink-forward.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/platform/wtf/forward.h"
+#include "third_party/blink/renderer/platform/wtf/hash_map.h"
+#include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
 namespace blink::attribution_response_parsing {
-
-// TODO(crbug.com/1285319): Add metrics for response parsing.
-enum class ResponseParseStatus {
-  kSuccess = 0,
-  kNotFound = 1,
-  kParseError = 2,
-  kInvalidFormat = 3,
-};
-
-template <class T>
-struct ResponseParseResult {
-  explicit ResponseParseResult(ResponseParseStatus status,
-                               mojo::StructPtr<T> value = T::New())
-      : status(status), value(std::move(value)) {}
-
-  ResponseParseStatus status;
-  mojo::StructPtr<T> value;
-};
 
 // Helper functions to parse response headers. See details in the explainer.
 // https://github.com/WICG/conversion-measurement-api/blob/main/EVENT.md
@@ -45,8 +31,11 @@ struct ResponseParseResult {
 //   "id": "geoValue",
 //   "key_piece": "0x5"
 // }]
-CORE_EXPORT ResponseParseResult<mojom::blink::AttributionAggregatableSources>
-ParseAttributionAggregatableSources(const AtomicString& json_string);
+//
+// Returns whether parsing was successful.
+CORE_EXPORT bool ParseAttributionAggregatableSources(
+    const AtomicString& json_string,
+    mojom::blink::AttributionAggregatableSources& sources);
 
 // Parses a debug key, which is a 64-bit unsigned integer encoded as a base-10
 // string. Returns `nullptr` on failure.
@@ -90,17 +79,23 @@ CORE_EXPORT bool ParseFilters(const AtomicString& json_string,
 //   "key_piece": "0xA80",
 //   "source_keys": ["geoValue"]
 // }]
-
-CORE_EXPORT ResponseParseResult<mojom::blink::AttributionAggregatableTrigger>
-ParseAttributionAggregatableTrigger(const AtomicString& json_string);
+//
+// Returns whether parsing was successful.
+CORE_EXPORT bool ParseAttributionAggregatableTriggerData(
+    const AtomicString& json_string,
+    WTF::Vector<mojom::blink::AttributionAggregatableTriggerDataPtr>&
+        trigger_data);
 
 // Example JSON schema:
 // {
 //  "campaignCounts": 32768,
 //  "geoValue": 1664
 // }
-CORE_EXPORT ResponseParseResult<mojom::blink::AttributionAggregatableValues>
-ParseAttributionAggregatableValues(const AtomicString& json_string);
+//
+// Returns whether parsing was successful.
+CORE_EXPORT bool ParseAttributionAggregatableValues(
+    const AtomicString& json_string,
+    WTF::HashMap<String, uint32_t>& values);
 
 }  // namespace blink::attribution_response_parsing
 
