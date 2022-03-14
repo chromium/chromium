@@ -482,6 +482,7 @@ try_.builder(
 try_.gpu.optional_tests_builder(
     name = "android_optional_gpu_tests_rel",
     branch_selector = branches.STANDARD_MILESTONE,
+    check_for_flakiness = True,
     goma_jobs = goma.jobs.J150,
     main_list_view = "try",
     tryjob = try_.job(
