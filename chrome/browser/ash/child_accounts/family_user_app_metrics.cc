@@ -57,8 +57,11 @@ constexpr char kBorealisAppsCountHistogramName[] =
     "FamilyUser.BorealisAppsCount2";
 constexpr char kSystemWebAppsCountHistogramName[] =
     "FamilyUser.SystemWebAppsCount2";
-constexpr char kStandaloneBrowserExtensionCountHistogramName[] =
+constexpr char kStandaloneBrowserChromeAppCountHistogramName[] =
     "FamilyUser.LacrosChromeAppsCount2";
+
+// TODO(agawronska): Add metrics for extensions, possibly differentiating Ash
+// from Lacros (AKA StandaloneBrowser).
 
 const char* GetAppsCountHistogramName(apps::AppType app_type) {
   switch (app_type) {
@@ -66,6 +69,7 @@ const char* GetAppsCountHistogramName(apps::AppType app_type) {
     // Extensions are recorded separately, and AppService only has some
     // extensions with file browser handlers.
     case apps::AppType::kExtension:
+    case apps::AppType::kStandaloneBrowserExtension:
       return kUnknownAppsCountHistogramName;
     case apps::AppType::kArc:
       return kArcAppsCountHistogramName;
@@ -90,7 +94,7 @@ const char* GetAppsCountHistogramName(apps::AppType app_type) {
     case apps::AppType::kSystemWeb:
       return kSystemWebAppsCountHistogramName;
     case apps::AppType::kStandaloneBrowserChromeApp:
-      return kStandaloneBrowserExtensionCountHistogramName;
+      return kStandaloneBrowserChromeAppCountHistogramName;
   }
 }
 

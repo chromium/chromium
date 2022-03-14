@@ -590,6 +590,7 @@ bool AppServiceShelfContextMenu::ShouldAddPinMenu() {
     case apps::AppType::kMacOs:
     case apps::AppType::kRemote:
     case apps::AppType::kExtension:
+    case apps::AppType::kStandaloneBrowserExtension:
       NOTREACHED() << "Type " << (int)app_type_
                    << " should not appear in shelf.";
       return false;

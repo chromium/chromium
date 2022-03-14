@@ -47,6 +47,7 @@ apps::AppTypeName GetHistogrameAppType(apps::AppType app_type) {
     case apps::AppType::kRemote:
     case apps::AppType::kBorealis:
     case apps::AppType::kExtension:
+    case apps::AppType::kStandaloneBrowserExtension:
       return apps::AppTypeName::kUnknown;
     case apps::AppType::kSystemWeb:
       return apps::AppTypeName::kSystemWeb;
@@ -200,6 +201,7 @@ void AppLaunchHandler::LaunchApp(apps::AppType app_type,
     case apps::AppType::kRemote:
     case apps::AppType::kBorealis:
     case apps::AppType::kExtension:
+    case apps::AppType::kStandaloneBrowserExtension:
       NOTREACHED();
       break;
   }

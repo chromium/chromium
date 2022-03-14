@@ -95,6 +95,7 @@ bool AppTypeUsesWebContents(apps::AppType app_type) {
     case apps::AppType::kRemote:
     case apps::AppType::kBorealis:
     case apps::AppType::kStandaloneBrowserChromeApp:
+    case apps::AppType::kStandaloneBrowserExtension:
       return false;
   }
   NOTREACHED();

@@ -274,6 +274,8 @@ EnumTraits<crosapi::mojom::AppType, apps::AppType>::ToMojom(
       return crosapi::mojom::AppType::kSystemWeb;
     case apps::AppType::kStandaloneBrowserChromeApp:
       return crosapi::mojom::AppType::kStandaloneBrowserChromeApp;
+    case apps::AppType::kStandaloneBrowserExtension:
+      return crosapi::mojom::AppType::kStandaloneBrowserExtension;
     case apps::AppType::kBuiltIn:
     case apps::AppType::kCrostini:
     case apps::AppType::kChromeApp:
@@ -306,6 +308,9 @@ bool EnumTraits<crosapi::mojom::AppType, apps::AppType>::FromMojom(
       return true;
     case crosapi::mojom::AppType::kStandaloneBrowserChromeApp:
       *output = apps::AppType::kStandaloneBrowserChromeApp;
+      return true;
+    case crosapi::mojom::AppType::kStandaloneBrowserExtension:
+      *output = apps::AppType::kStandaloneBrowserExtension;
       return true;
   }
 

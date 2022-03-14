@@ -142,6 +142,7 @@ ash::SearchResultType AppServiceAppResult::GetSearchResultType() const {
     case apps::AppType::kBorealis:
       return ash::BOREALIS_APP;
     case apps::AppType::kExtension:
+    case apps::AppType::kStandaloneBrowserExtension:
     case apps::AppType::kMacOs:
     case apps::AppType::kUnknown:
       NOTREACHED();

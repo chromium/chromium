@@ -53,6 +53,8 @@ constexpr auto kAppTypeNameMap =
         {apps::kStandaloneBrowserChromeAppHistogramName,
          apps::AppTypeName::kStandaloneBrowserChromeApp},
         {apps::kExtensionHistogramName, apps::AppTypeName::kExtension},
+        {apps::kStandaloneBrowserExtensionHistogramName,
+         apps::AppTypeName::kStandaloneBrowserExtension},
     });
 
 // Determines what app type a Chrome App should be logged as based on its launch
@@ -236,6 +238,8 @@ AppTypeName GetAppTypeNameForWindow(Profile* profile,
       return apps::AppTypeName::kStandaloneBrowserChromeApp;
     case AppType::kExtension:
       return apps::AppTypeName::kExtension;
+    case AppType::kStandaloneBrowserExtension:
+      return apps::AppTypeName::kStandaloneBrowserExtension;
   }
 }
 
@@ -271,6 +275,8 @@ std::string GetAppTypeHistogramName(apps::AppTypeName app_type_name) {
       return kStandaloneBrowserChromeAppHistogramName;
     case apps::AppTypeName::kExtension:
       return kExtensionHistogramName;
+    case apps::AppTypeName::kStandaloneBrowserExtension:
+      return kStandaloneBrowserExtensionHistogramName;
   }
 }
 
@@ -309,6 +315,7 @@ bool ShouldRecordUkmForAppTypeName(AppType app_type) {
     case AppType::kStandaloneBrowser:
     case AppType::kStandaloneBrowserChromeApp:
     case AppType::kRemote:
+    case AppType::kStandaloneBrowserExtension:
       return false;
   }
 }
@@ -366,6 +373,8 @@ AppTypeName GetAppTypeName(Profile* profile,
       return apps::AppTypeName::kStandaloneBrowserChromeApp;
     case AppType::kExtension:
       return apps::AppTypeName::kExtension;
+    case AppType::kStandaloneBrowserExtension:
+      return apps::AppTypeName::kStandaloneBrowserExtension;
   }
 }
 

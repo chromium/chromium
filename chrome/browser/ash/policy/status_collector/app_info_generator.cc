@@ -72,6 +72,7 @@ em::AppInfo::AppType ExtractAppType(const apps::AppType app_type) {
     case apps::AppType::kMacOs:
     case apps::AppType::kStandaloneBrowser:
     case apps::AppType::kExtension:
+    case apps::AppType::kStandaloneBrowserExtension:
     case apps::AppType::kRemote:
     case apps::AppType::kUnknown:
       return em::AppInfo::AppType::AppInfo_AppType_TYPE_UNKNOWN;

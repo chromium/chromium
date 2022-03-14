@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 //
-// Next MinVersion: 17
+// Next MinVersion: 18
 
 module crosapi.mojom;
 
@@ -100,6 +100,8 @@ enum AppType {
   kSystemWeb,     // System web app.
   [MinVersion=1]
   kStandaloneBrowserChromeApp,     // Chrome app.
+  [MinVersion=17]
+  kStandaloneBrowserExtension,     // Chrome extension.
 };
 
 // Whether an app is ready to launch, i.e. installed.

@@ -22,6 +22,7 @@ enum AppType {
   kSystemWeb,             // System web app.
   kStandaloneBrowserChromeApp,  // Chrome app hosted in Lacros.
   kExtension,             // Browser extension.
+  kStandaloneBrowserExtension,  // Extension hosted in Lacros.
 };
 
 // Augments a bool to include an 'unknown' value.

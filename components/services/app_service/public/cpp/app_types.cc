@@ -20,7 +20,8 @@ APP_ENUM_TO_STRING(AppType,
                    kBorealis,
                    kSystemWeb,
                    kStandaloneBrowserChromeApp,
-                   kExtension)
+                   kExtension,
+                   kStandaloneBrowserExtension)
 APP_ENUM_TO_STRING(Readiness,
                    kUnknown,
                    kReady,
@@ -129,6 +130,8 @@ AppType ConvertMojomAppTypToAppType(apps::mojom::AppType mojom_app_type) {
       return AppType::kStandaloneBrowserChromeApp;
     case apps::mojom::AppType::kExtension:
       return AppType::kExtension;
+    case apps::mojom::AppType::kStandaloneBrowserExtension:
+      return AppType::kStandaloneBrowserExtension;
   }
 }
 
@@ -162,6 +165,8 @@ mojom::AppType ConvertAppTypeToMojomAppType(AppType app_type) {
       return apps::mojom::AppType::kStandaloneBrowserChromeApp;
     case AppType::kExtension:
       return apps::mojom::AppType::kExtension;
+    case AppType::kStandaloneBrowserExtension:
+      return apps::mojom::AppType::kStandaloneBrowserExtension;
   }
 }
 

@@ -72,6 +72,7 @@ std::set<apps::AppTypeName>& GetAppTypeNameSet() {
     app_type_name_map->insert(apps::AppTypeName::kChromeBrowser);
     app_type_name_map->insert(apps::AppTypeName::kStandaloneBrowserChromeApp);
     app_type_name_map->insert(apps::AppTypeName::kExtension);
+    app_type_name_map->insert(apps::AppTypeName::kStandaloneBrowserExtension);
   }
   return *app_type_name_map;
 }
@@ -141,6 +142,8 @@ apps::AppTypeNameV2 GetAppTypeNameV2(Profile* profile,
       return apps::AppTypeNameV2::kStandaloneBrowserChromeApp;
     case apps::AppType::kExtension:
       return apps::AppTypeNameV2::kExtension;
+    case apps::AppType::kStandaloneBrowserExtension:
+      return apps::AppTypeNameV2::kStandaloneBrowserExtension;
   }
 }
 
@@ -189,6 +192,8 @@ apps::AppTypeNameV2 GetAppTypeNameV2(Profile* profile,
       return apps::AppTypeNameV2::kStandaloneBrowserChromeApp;
     case apps::AppType::kExtension:
       return apps::AppTypeNameV2::kExtension;
+    case apps::AppType::kStandaloneBrowserExtension:
+      return apps::AppTypeNameV2::kStandaloneBrowserExtension;
   }
 }
 
@@ -279,6 +284,8 @@ std::string GetAppTypeHistogramNameV2(apps::AppTypeNameV2 app_type_name) {
       return kStandaloneBrowserChromeAppHistogramName;
     case apps::AppTypeNameV2::kExtension:
       return kExtensionHistogramName;
+    case apps::AppTypeNameV2::kStandaloneBrowserExtension:
+      return kStandaloneBrowserExtensionHistogramName;
   }
 }
 
@@ -431,6 +438,7 @@ ukm::SourceId AppPlatformMetrics::GetSourceId(Profile* profile,
     case AppType::kStandaloneBrowser:
     case AppType::kStandaloneBrowserChromeApp:
     case AppType::kRemote:
+    case AppType::kStandaloneBrowserExtension:
       return ukm::kInvalidSourceId;
   }
   return source_id;
