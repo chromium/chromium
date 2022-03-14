@@ -3,6 +3,7 @@
 <link rel="help" href="https://drafts.csswg.org/css-contain-3/#size-container">
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
+<script src="support/cq-testcommon.js"></script>
 <style>
   svg {
     display: block;
@@ -21,7 +22,9 @@
   </foreignObject>
 </svg>
 <script>
-  let green = "rgb(0, 128, 0)";
+  setup(() => assert_implements_container_queries());
+
+  const green = "rgb(0, 128, 0)";
 
   test(() => {
     assert_equals(getComputedStyle(text).color, green);

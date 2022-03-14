@@ -3,16 +3,18 @@
 <link rel="help" href="https://drafts.csswg.org/css-contain-3/#size-container">
 <link rel="match" href="/css/reference/ref-filled-green-100px-square-only.html">
 <style>
-  canvas:focus-within {
-    border: 50px solid green;
-  }
-  canvas {
-    display: block;
-    position: absolute;
-    width: 100px;
-    height: 100px;
-    box-sizing: border-box;
-    container-type: size;
+  @supports (container-type: size) {
+    canvas:focus-within {
+      border: 50px solid green;
+    }
+    canvas {
+      display: block;
+      position: absolute;
+      width: 100px;
+      height: 100px;
+      box-sizing: border-box;
+      container-type: size;
+    }
   }
 </style>
 <p>Test passes if there is a filled green square.</p>

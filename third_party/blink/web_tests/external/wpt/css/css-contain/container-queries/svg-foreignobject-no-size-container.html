@@ -9,6 +9,9 @@
     height: 100px;
     container-type: size;
   }
+  @supports not (container-type: size) {
+    div { color: red; }
+  }
   @container (width = 100px) {
     div { color: red; }
   }

@@ -38,6 +38,8 @@
   </div>
 </div>
 <script>
+  setup(() => assert_implements_container_queries());
+
   test(() => {
     const green = "rgb(0, 128, 0)";
     assert_equals(getComputedStyle(document.querySelector("#first-child")).color, green);

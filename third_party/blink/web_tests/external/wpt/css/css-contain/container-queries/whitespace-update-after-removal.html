@@ -16,9 +16,11 @@
 <p>You should see the word PASS below.</p>
 <div id="container"><span id="fail">FAIL</span> <span>PASS</span></div>
 <script>
-  container.offsetTop;
-  container.style.width = "200px";
-  // The space text node between the two spans no longer takes up space when the
-  // first span is removed.
-  fail.remove();
+  if (CSS.supports("container-type:size")) {
+    container.offsetTop;
+    container.style.width = "200px";
+    // The space text node between the two spans no longer takes up space when the
+    // first span is removed.
+    fail.remove();
+  }
 </script>

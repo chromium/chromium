@@ -3,6 +3,7 @@
 <link rel="help" href="https://drafts.csswg.org/css-contain-3/#size-container">
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
+<script src="support/cq-testcommon.js"></script>
 <style>
   canvas {
     display: block;
@@ -21,6 +22,8 @@
   <div id="target" tabIndex="1"></div>
 </canvas>
 <script>
+  setup(() => assert_implements_container_queries());
+
   test(() => {
     target.focus();
     assert_not_equals(document.activeElement, target);
