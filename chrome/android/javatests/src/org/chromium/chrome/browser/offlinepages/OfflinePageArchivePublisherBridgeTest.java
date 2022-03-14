@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.offlinepages;
 
+import android.os.Build;
 import android.support.test.InstrumentationRegistry;
 
 import androidx.test.filters.SmallTest;
@@ -20,8 +21,8 @@ import org.chromium.base.ContentUriUtils;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
-import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.DisabledTest;
+import org.chromium.base.test.util.MaxAndroidSdkLevel;
 import org.chromium.base.test.util.MinAndroidSdkLevel;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.offlinepages.OfflinePageBridge.OfflinePageModelObserver;
@@ -108,11 +109,13 @@ public class OfflinePageArchivePublisherBridgeTest {
         mTestServer.stopAndDestroyServer();
     }
 
-    // TODO(iwells): Change "29" to "Build.VERSION_CODES.Q" when it's available.
     @Test
     @SmallTest
-    @DisableIf.Build(sdk_is_greater_than = 28)
-    public void testAddCompletedDownload() throws InterruptedException, TimeoutException {
+    @MaxAndroidSdkLevel(value = Build.VERSION_CODES.P,
+            reason = "On Android Q+, publish offline pages to the downloads collection "
+                    + "rather than DownloadManager.")
+    public void
+    testAddCompletedDownload() throws InterruptedException, TimeoutException {
         Assert.assertTrue(OfflinePageArchivePublisherBridge.isAndroidDownloadManagerInstalled());
 
         sActivityTestRule.loadUrl(mTestPage);
@@ -127,8 +130,11 @@ public class OfflinePageArchivePublisherBridgeTest {
 
     @Test
     @SmallTest
-    @DisableIf.Build(sdk_is_greater_than = 28)
-    public void testRemove() throws InterruptedException, TimeoutException {
+    @MaxAndroidSdkLevel(value = Build.VERSION_CODES.P,
+            reason = "On Android Q+, publish offline pages to the downloads collection "
+                    + "rather than DownloadManager.")
+    public void
+    testRemove() throws InterruptedException, TimeoutException {
         Assert.assertTrue(OfflinePageArchivePublisherBridge.isAndroidDownloadManagerInstalled());
 
         sActivityTestRule.loadUrl(mTestPage);

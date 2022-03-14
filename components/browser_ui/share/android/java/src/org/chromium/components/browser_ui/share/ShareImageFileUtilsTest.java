@@ -14,6 +14,7 @@ import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.net.Uri;
 import android.os.Build;
+import android.os.Build.VERSION_CODES;
 import android.os.Environment;
 import android.os.Looper;
 import android.provider.MediaStore;
@@ -34,8 +35,9 @@ import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
-import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.DisabledTest;
+import org.chromium.base.test.util.MaxAndroidSdkLevel;
+import org.chromium.base.test.util.MinAndroidSdkLevel;
 import org.chromium.chrome.browser.FileProviderHelper;
 import org.chromium.ui.base.Clipboard;
 import org.chromium.ui.test.util.BlankUiTestActivityTestCase;
@@ -269,7 +271,7 @@ public class ShareImageFileUtilsTest extends BlankUiTestActivityTestCase {
 
     @Test
     @SmallTest
-    @DisableIf.Build(sdk_is_less_than = 29)
+    @MinAndroidSdkLevel(value = VERSION_CODES.Q, reason = "Added to completed downloads on P-")
     public void testSaveBitmapAndMediaStore() throws IOException, TimeoutException {
         String fileName = TEST_IMAGE_FILE_NAME + "_mediastore";
         ShareImageFileUtils.OnImageSaveListener listener =
@@ -323,7 +325,7 @@ public class ShareImageFileUtilsTest extends BlankUiTestActivityTestCase {
 
     @Test
     @SmallTest
-    @DisableIf.Build(sdk_is_greater_than = 28)
+    @MaxAndroidSdkLevel(value = VERSION_CODES.P, reason = "Added to MediaStore.Downloads on Q+")
     public void testAddCompletedDownload() throws IOException {
         String filename =
                 TEST_IMAGE_FILE_NAME + "_add_completed_download" + TEST_JPG_IMAGE_FILE_EXTENSION;

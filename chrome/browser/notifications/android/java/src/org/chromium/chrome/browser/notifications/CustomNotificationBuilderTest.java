@@ -33,6 +33,7 @@ import org.junit.runner.RunWith;
 import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.Feature;
+import org.chromium.base.test.util.MaxAndroidSdkLevel;
 import org.chromium.chrome.browser.notifications.channels.ChromeChannelDefinitions;
 import org.chromium.components.browser_ui.notifications.NotificationMetadata;
 import org.chromium.components.browser_ui.notifications.PendingIntentProvider;
@@ -59,8 +60,10 @@ public class CustomNotificationBuilderTest {
     @SmallTest
     @Feature({"Browser", "Notifications"})
     @SuppressLint("NewApi")
-    @DisableIf.Build(sdk_is_greater_than = 23, message = "crbug.com/779228")
-    public void testSetAll() {
+    @MaxAndroidSdkLevel(value = 23,
+            reason = "StandardNotificationBuilder is used instead on N+, see crbug.com/779228")
+    public void
+    testSetAll() {
         Context context = InstrumentationRegistry.getTargetContext();
 
         PendingIntentProvider contentIntent = createIntent(context, "Content");
@@ -135,8 +138,10 @@ public class CustomNotificationBuilderTest {
     @Test
     @SmallTest
     @Feature({"Browser", "Notifications"})
-    @DisableIf.Build(sdk_is_greater_than = 23, message = "crbug.com/779228")
-    public void testZeroActionButtons() {
+    @MaxAndroidSdkLevel(value = 23,
+            reason = "StandardNotificationBuilder is used instead on N+, see crbug.com/779228")
+    public void
+    testZeroActionButtons() {
         Context context = InstrumentationRegistry.getTargetContext();
         NotificationBuilderBase builder = new CustomNotificationBuilder(context).setChannelId(
                 ChromeChannelDefinitions.ChannelId.SITES);
@@ -154,8 +159,10 @@ public class CustomNotificationBuilderTest {
     @Test
     @SmallTest
     @Feature({"Browser", "Notifications"})
-    @DisableIf.Build(sdk_is_greater_than = 23, message = "crbug.com/779228")
-    public void testMaxActionButtons() {
+    @MaxAndroidSdkLevel(value = 23,
+            reason = "StandardNotificationBuilder is used instead on N+, see crbug.com/779228")
+    public void
+    testMaxActionButtons() {
         Context context = InstrumentationRegistry.getTargetContext();
         NotificationBuilderBase builder =
                 new CustomNotificationBuilder(context)
@@ -184,8 +191,10 @@ public class CustomNotificationBuilderTest {
     @Test
     @SmallTest
     @Feature({"Browser", "Notifications"})
-    @DisableIf.Build(sdk_is_greater_than = 23, message = "crbug.com/779228")
-    public void largeIconShouldBePaintedWithoutChange() {
+    @MaxAndroidSdkLevel(value = 23,
+            reason = "StandardNotificationBuilder is used instead on N+, see crbug.com/779228")
+    public void
+    largeIconShouldBePaintedWithoutChange() {
         Context context = InstrumentationRegistry.getTargetContext();
 
         Bitmap largeIcon = createIcon(Color.RED);
@@ -259,8 +268,10 @@ public class CustomNotificationBuilderTest {
     @Test
     @SmallTest
     @Feature({"Browser", "Notifications"})
-    @DisableIf.Build(sdk_is_greater_than = 23, message = "crbug.com/779228")
-    public void testCharSequenceLimits() {
+    @MaxAndroidSdkLevel(value = 23,
+            reason = "StandardNotificationBuilder is used instead on N+, see crbug.com/779228")
+    public void
+    testCharSequenceLimits() {
         Context context = InstrumentationRegistry.getTargetContext();
         int maxLength = CustomNotificationBuilder.MAX_CHARSEQUENCE_LENGTH;
         NotificationBuilderBase builder =
@@ -292,8 +303,10 @@ public class CustomNotificationBuilderTest {
     @Test
     @SmallTest
     @Feature({"Browser", "Notifications"})
-    @DisableIf.Build(sdk_is_greater_than = 23, message = "crbug.com/779228")
-    public void testCalculateMaxBodyLines() {
+    @MaxAndroidSdkLevel(value = 23,
+            reason = "StandardNotificationBuilder is used instead on N+, see crbug.com/779228")
+    public void
+    testCalculateMaxBodyLines() {
         Assert.assertEquals(7, CustomNotificationBuilder.calculateMaxBodyLines(-1000.0f));
         Assert.assertEquals(7, CustomNotificationBuilder.calculateMaxBodyLines(0.5f));
         Assert.assertEquals(7, CustomNotificationBuilder.calculateMaxBodyLines(1.0f));
@@ -304,8 +317,10 @@ public class CustomNotificationBuilderTest {
     @Test
     @SmallTest
     @Feature({"Browser", "Notifications"})
-    @DisableIf.Build(sdk_is_greater_than = 23, message = "crbug.com/779228")
-    public void testCalculateScaledPadding() {
+    @MaxAndroidSdkLevel(value = 23,
+            reason = "StandardNotificationBuilder is used instead on N+, see crbug.com/779228")
+    public void
+    testCalculateScaledPadding() {
         DisplayMetrics metrics = new DisplayMetrics();
         metrics.density = 10.0f;
         Assert.assertEquals(
@@ -321,8 +336,10 @@ public class CustomNotificationBuilderTest {
     @Test
     @SmallTest
     @Feature({"Browser", "Notifications"})
-    @DisableIf.Build(sdk_is_greater_than = 23, message = "crbug.com/779228")
-    public void testGeneratesLargeIconFromOriginWhenNoLargeIconProvided() {
+    @MaxAndroidSdkLevel(value = 23,
+            reason = "StandardNotificationBuilder is used instead on N+, see crbug.com/779228")
+    public void
+    testGeneratesLargeIconFromOriginWhenNoLargeIconProvided() {
         Context context = InstrumentationRegistry.getTargetContext();
         NotificationBuilderBase notificationBuilder =
                 new CustomNotificationBuilder(context)
@@ -340,8 +357,10 @@ public class CustomNotificationBuilderTest {
     @Test
     @SmallTest
     @Feature({"Browser", "Notifications"})
-    @DisableIf.Build(sdk_is_greater_than = 23, message = "crbug.com/779228")
-    public void testGeneratesLargeIconFromOriginWhenLargeIconProvidedIsNull() {
+    @MaxAndroidSdkLevel(value = 23,
+            reason = "StandardNotificationBuilder is used instead on N+, see crbug.com/779228")
+    public void
+    testGeneratesLargeIconFromOriginWhenLargeIconProvidedIsNull() {
         Context context = InstrumentationRegistry.getTargetContext();
         NotificationBuilderBase notificationBuilder =
                 new CustomNotificationBuilder(context)
@@ -366,8 +385,10 @@ public class CustomNotificationBuilderTest {
     @Test
     @SmallTest
     @Feature({"Browser", "Notifications"})
-    @DisableIf.Build(sdk_is_greater_than = 23, message = "crbug.com/779228")
-    public void testAddTextActionSetsRemoteInput() {
+    @MaxAndroidSdkLevel(value = 23,
+            reason = "StandardNotificationBuilder is used instead on N+, see crbug.com/779228")
+    public void
+    testAddTextActionSetsRemoteInput() {
         Context context = InstrumentationRegistry.getTargetContext();
         NotificationBuilderBase notificationBuilder =
                 new CustomNotificationBuilder(context)

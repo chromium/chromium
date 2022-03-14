@@ -22,7 +22,7 @@ import org.chromium.base.task.PostTask;
 import org.chromium.base.test.BaseActivityTestRule;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CriteriaHelper;
-import org.chromium.base.test.util.DisableIf;
+import org.chromium.base.test.util.MaxAndroidSdkLevel;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager.SnackbarController;
 import org.chromium.chrome.browser.util.ChromeAccessibilityUtil;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
@@ -182,8 +182,10 @@ public class SnackbarTest {
 
     @Test
     @SmallTest
-    @DisableIf.Build(sdk_is_greater_than = Build.VERSION_CODES.P)
-    public void testSnackbarDuration() {
+    @MaxAndroidSdkLevel(value = Build.VERSION_CODES.P,
+            reason = "AccessibilityManager#getRecommendedTimeoutMillis() is only available in Q+")
+    public void
+    testSnackbarDuration() {
         final Snackbar snackbar = Snackbar.make(
                 "persistent", mDismissController, Snackbar.TYPE_ACTION, Snackbar.UMA_TEST_SNACKBAR);
         PostTask.runOrPostTask(UiThreadTaskTraits.DEFAULT, () -> {
