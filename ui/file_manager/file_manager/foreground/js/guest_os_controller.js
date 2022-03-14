@@ -20,7 +20,7 @@ export class GuestOsController {
    */
   constructor(directoryModel, directoryTree) {
     if (!util.isGuestOsEnabled()) {
-      console.error('Created a guest os controller when it\'s not enabled');
+      console.warn('Created a guest os controller when it\'s not enabled');
     }
     /** @private @const */
     this.directoryModel_ = directoryModel;

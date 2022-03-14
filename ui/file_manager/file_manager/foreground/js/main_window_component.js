@@ -280,7 +280,7 @@ export class MainWindowComponent {
           })
           .catch(error => {
             if (error) {
-              console.error(error.stack || error);
+              console.warn(error.stack || error);
             }
           });
       return true;
@@ -485,7 +485,7 @@ export class MainWindowComponent {
           const label = util.getEntryLabel(locationInfo, event.newDirEntry);
           document.title = `${str('FILEMANAGER_APP_NAME')} - ${label}`;
         } else {
-          console.error(
+          console.warn(
               'Could not find location info for entry: ' +
               event.newDirEntry.fullPath);
         }

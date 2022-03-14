@@ -648,7 +648,7 @@ export class FileManager extends EventTarget {
         this.guestMode_ = guest;
       }
     } catch (error) {
-      console.error(error);
+      console.warn(error);
       // Leave this.guestMode_ as its initial value.
     }
   }
@@ -1511,7 +1511,7 @@ export class FileManager extends EventTarget {
             try {
               nextCurrentDirEntry = await volumeInfo.resolveDisplayRoot();
             } catch (error) {
-              console.error(error.stack || error);
+              console.warn(error.stack || error);
               nextCurrentDirEntry = null;
             }
           }

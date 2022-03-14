@@ -50,7 +50,7 @@ export class ContentMetadataProvider extends MetadataProvider {
     this.dispatcher_ = this.createSharedWorker_(opt_messagePort);
     this.dispatcher_.onmessage = this.onMessage_.bind(this);
     this.dispatcher_.onmessageerror = (error) => {
-      console.error('ContentMetadataProvider worker msg error:', error);
+      console.warn('ContentMetadataProvider worker msg error:', error);
     };
     this.dispatcher_.postMessage({verb: 'init'});
     this.dispatcher_.start();
@@ -77,7 +77,7 @@ export class ContentMetadataProvider extends MetadataProvider {
 
     const worker = new SharedWorker(script, options);
     worker.onerror = () => {
-      console.error(
+      console.warn(
           'Error to initialize the ContentMetadataProvider ' +
           'SharedWorker: ' + script);
     };

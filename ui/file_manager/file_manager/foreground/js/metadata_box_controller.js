@@ -302,7 +302,7 @@ export class MetadataBoxController {
       }
 
       if (chrome.runtime.lastError) {
-        console.error(chrome.runtime.lastError);
+        console.warn(chrome.runtime.lastError);
         size = undefined;
       }
 

@@ -917,7 +917,7 @@ CommandHandler.COMMANDS_['new-folder'] = new class extends FilesCommand {
                       .catch(error => {
                         listContainer.endBatchUpdates();
                         this.busy_ = false;
-                        console.error(error);
+                        console.warn(error);
                       });
                 }
               },
@@ -1737,7 +1737,7 @@ CommandHandler.COMMANDS_['open-with'] = new class extends FilesCommand {
         })
         .catch(error => {
           if (error) {
-            console.error(error.stack || error);
+            console.warn(error.stack || error);
           }
         });
   }
@@ -1759,7 +1759,7 @@ CommandHandler.COMMANDS_['invoke-sharesheet'] = new class extends FilesCommand {
     const launchSource = CommandUtil.getSharesheetLaunchSource(event);
     chrome.fileManagerPrivate.invokeSharesheet(entries, launchSource, () => {
       if (chrome.runtime.lastError) {
-        console.error(chrome.runtime.lastError.message);
+        console.warn(chrome.runtime.lastError.message);
         return;
       }
     });
@@ -1788,7 +1788,7 @@ CommandHandler.COMMANDS_['invoke-sharesheet'] = new class extends FilesCommand {
 
     chrome.fileManagerPrivate.sharesheetHasTargets(entries, hasTargets => {
       if (chrome.runtime.lastError) {
-        console.error(chrome.runtime.lastError.message);
+        console.warn(chrome.runtime.lastError.message);
         return;
       }
       event.command.setHidden(!hasTargets);
@@ -2334,7 +2334,7 @@ CommandHandler.COMMANDS_['share-with-linux'] = new class extends FilesCommand {
       chrome.fileManagerPrivate.sharePathsWithCrostini(
           constants.DEFAULT_CROSTINI_VM, [dir], true /* persist */, () => {
             if (chrome.runtime.lastError) {
-              console.error(
+              console.warn(
                   'Error sharing with linux: ' +
                   chrome.runtime.lastError.message);
             }
@@ -2410,7 +2410,7 @@ CommandHandler.COMMANDS_['share-with-plugin-vm'] =
       chrome.fileManagerPrivate.sharePathsWithCrostini(
           constants.PLUGIN_VM, [dir], true /* persist */, () => {
             if (chrome.runtime.lastError) {
-              console.error(
+              console.warn(
                   'Error sharing with Plugin VM: ' +
                   chrome.runtime.lastError.message);
             }

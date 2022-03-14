@@ -467,7 +467,7 @@ export class FileTransferController {
           await getDisallowedTransfers(sourceEntries, destinationDir);
     } catch (error) {
       disallowedTransfers = [];
-      console.error(error);
+      console.warn(error);
     }
 
     if (disallowedTransfers && disallowedTransfers.length != 0) {
@@ -558,7 +558,7 @@ export class FileTransferController {
     const destinationLocationInfo =
         this.volumeManager_.getLocationInfo(destinationEntry);
     if (!destinationLocationInfo) {
-      console.error(
+      console.warn(
           'Failed to get destination location for ' + destinationEntry.toURL() +
           ' while attempting to paste files.');
     }
@@ -676,7 +676,7 @@ export class FileTransferController {
               })
         .catch(error => {
           if (error !== 'ABORT') {
-            console.error(error.stack ? error.stack : error);
+            console.warn(error.stack ? error.stack : error);
           }
         })
         .finally(() => {

@@ -467,7 +467,7 @@ export class FileTasks {
         isMyFiles ? 'CONFIRM_MOVE_BUTTON_LABEL' : 'CONFIRM_COPY_BUTTON_LABEL'));
     dialog.show(isMyFiles ? moveMessage : copyMessage, async () => {
       if (!fileTransferController) {
-        console.error('FileTransferController not set');
+        console.warn('FileTransferController not set');
         return;
       }
 
@@ -624,7 +624,7 @@ export class FileTasks {
   executeInternal_(task) {
     const onFileManagerPrivateExecuteTask = result => {
       if (chrome.runtime.lastError) {
-        console.error(
+        console.warn(
             'Unable to execute task: ' + chrome.runtime.lastError.message);
         return;
       }
@@ -903,7 +903,7 @@ export class FileTasks {
 
         this.directoryModel_.changeDirectoryEntry(displayRoot);
       } catch (error) {
-        console.error(`Cannot resolve display root after mounting: ${
+        console.warn(`Cannot resolve display root after mounting: ${
             error.stack || error}`);
       }
     } catch (error) {
@@ -923,7 +923,7 @@ export class FileTasks {
       item.state = ProgressItemState.ERROR;
       this.progressCenter_.updateItem(item);
 
-      console.error(`Cannot mount '${url}': ${error.stack || error}`);
+      console.warn(`Cannot mount '${url}': ${error.stack || error}`);
     }
   }
 
