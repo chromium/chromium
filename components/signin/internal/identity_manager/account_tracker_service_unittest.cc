@@ -1644,6 +1644,22 @@ TEST_F(AccountTrackerServiceTest, RemoveAccountBeforeImageFetchDone) {
   }));
 }
 
+TEST_F(AccountTrackerServiceTest, RemoveAccountBeforeCapabilitiesFetched) {
+  SimulateTokenAvailable(kAccountKeyAlpha);
+
+  ReturnAccountInfoFetchSuccess(kAccountKeyAlpha);
+  SimulateTokenRevoked(kAccountKeyAlpha);
+  EXPECT_TRUE(account_fetcher()->AreAllAccountCapabilitiesFetched());
+
+  // Re-add the same account and verify that capabilities can be fetched
+  // successfully.
+  SimulateTokenAvailable(kAccountKeyAlpha);
+
+  ReturnAccountInfoFetchSuccess(kAccountKeyAlpha);
+  ReturnAccountCapabilitiesFetchSuccess(kAccountKeyAlpha);
+  EXPECT_TRUE(account_fetcher()->AreAllAccountCapabilitiesFetched());
+}
+
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_ASH) && !BUILDFLAG(IS_IOS)
 TEST_F(AccountTrackerServiceTest, AdvancedProtectionAccountBasic) {
   SimulateTokenAvailable(kAccountKeyAdvancedProtection);

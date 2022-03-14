@@ -4,15 +4,20 @@
 
 #include "components/signin/internal/identity_manager/fake_account_capabilities_fetcher.h"
 
+#include "base/callback.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 FakeAccountCapabilitiesFetcher::FakeAccountCapabilitiesFetcher(
     const CoreAccountInfo& account_info,
-    OnCompleteCallback on_complete_callback)
-    : AccountCapabilitiesFetcher(account_info,
-                                 std::move(on_complete_callback)) {}
-FakeAccountCapabilitiesFetcher::~FakeAccountCapabilitiesFetcher() = default;
+    OnCompleteCallback on_complete_callback,
+    base::OnceClosure on_destroy_callback)
+    : AccountCapabilitiesFetcher(account_info, std::move(on_complete_callback)),
+      on_destroy_callback_(std::move(on_destroy_callback)) {}
+
+FakeAccountCapabilitiesFetcher::~FakeAccountCapabilitiesFetcher() {
+  std::move(on_destroy_callback_).Run();
+}
 
 void FakeAccountCapabilitiesFetcher::StartImpl() {}
 

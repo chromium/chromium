@@ -39,10 +39,7 @@ class FakeAccountCapabilitiesFetcherFactory
       const absl::optional<AccountCapabilities> account_capabilities);
 
  private:
-  void OnFetchComplete(
-      AccountCapabilitiesFetcher::OnCompleteCallback callback,
-      const CoreAccountId& account_id,
-      const absl::optional<AccountCapabilities>& account_capabilities);
+  void OnFetcherDestroyed(const CoreAccountId& account_id);
 
   std::map<CoreAccountId, FakeAccountCapabilitiesFetcher*> fetchers_;
 };
