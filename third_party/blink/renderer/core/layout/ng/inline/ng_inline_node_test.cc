@@ -1238,8 +1238,13 @@ TEST_F(NGInlineNodeTest, ClearFirstInlineFragmentOnSplitFlow) {
   inner_span_cb_cursor.MoveToFirstLine();
   inner_span_cb_cursor.MoveToFirstChild();
   EXPECT_TRUE(inner_span_cb_cursor);
-  EXPECT_EQ(inner_span_cb_cursor.Current().GetLayoutObject(),
-            text->GetLayoutObject());
+  if (RuntimeEnabledFeatures::LayoutNGBlockInInlineEnabled()) {
+    EXPECT_EQ(inner_span_cb_cursor.Current().GetLayoutObject(),
+              outer_span->GetLayoutObject());
+  } else {
+    EXPECT_EQ(inner_span_cb_cursor.Current().GetLayoutObject(),
+              text->GetLayoutObject());
+  }
 }
 
 TEST_F(NGInlineNodeTest, AddChildToSVGRoot) {

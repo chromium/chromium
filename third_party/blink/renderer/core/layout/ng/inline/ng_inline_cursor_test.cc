@@ -260,7 +260,7 @@ TEST_P(NGInlineCursorTest, CulledInlineBlockChild) {
   cursor.MoveToIncludingCulledInline(*GetLayoutObjectByElementId("culled"));
   if (RuntimeEnabledFeatures::LayoutNGBlockInInlineEnabled()) {
     EXPECT_THAT(LayoutObjectToDebugStringList(cursor),
-                ElementsAre("LayoutNGBlockFlow (anonymous)", "abc", "xyz"));
+                ElementsAre("#culled", "#culled", "#culled"));
   } else {
     EXPECT_THAT(LayoutObjectToDebugStringList(cursor), ElementsAre("#culled"));
   }

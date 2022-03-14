@@ -1045,6 +1045,15 @@ void NGInlineItemsBuilderTemplate<OffsetMappingBuilder>::AppendBlockInInline(
   // After a block-in-inline is like after a forced break. See
   // |AppendForcedBreak|.
   item.SetEndCollapseType(NGInlineItem::kCollapsible, false);
+
+  if (ShouldUpdateLayoutObject()) {
+    // Prevent the inline box from culling to avoid the need of the special
+    // logic when traversing.
+    DCHECK(!layout_object->Parent() ||
+           IsA<LayoutInline>(layout_object->Parent()));
+    if (auto* parent = To<LayoutInline>(layout_object->Parent()))
+      parent->SetShouldCreateBoxFragment();
+  }
 }
 
 template <typename OffsetMappingBuilder>
@@ -1388,6 +1397,12 @@ void NGInlineItemsBuilderTemplate<OffsetMappingBuilder>::SetIsSymbolMarker() {
   items_->back().SetIsSymbolMarker();
 }
 
+template <typename OffsetMappingBuilder>
+bool NGInlineItemsBuilderTemplate<
+    OffsetMappingBuilder>::ShouldUpdateLayoutObject() const {
+  return true;
+}
+
 // Ensure this LayoutObject IsInLayoutNGInlineFormattingContext and does not
 // have associated NGPaintFragment.
 template <typename OffsetMappingBuilder>
@@ -1416,6 +1431,13 @@ template <typename OffsetMappingBuilder>
 void NGInlineItemsBuilderTemplate<
     OffsetMappingBuilder>::UpdateShouldCreateBoxFragment(LayoutInline* object) {
   object->UpdateShouldCreateBoxFragment();
+}
+
+// |NGOffsetMappingBuilder| doesn't change states of |LayoutObject|
+template <>
+bool NGInlineItemsBuilderTemplate<
+    NGOffsetMappingBuilder>::ShouldUpdateLayoutObject() const {
+  return false;
 }
 
 // |NGOffsetMappingBuilder| doesn't change states of |LayoutObject|

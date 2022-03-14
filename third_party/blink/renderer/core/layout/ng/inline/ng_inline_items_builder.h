@@ -144,6 +144,7 @@ class NGInlineItemsBuilderTemplate {
   bool ShouldAbort() const { return false; }
 
   // Functions change |LayoutObject| states.
+  bool ShouldUpdateLayoutObject() const;
   void ClearInlineFragment(LayoutObject*);
   void ClearNeedsLayout(LayoutObject*);
   void UpdateShouldCreateBoxFragment(LayoutInline*);
@@ -254,6 +255,10 @@ CORE_EXPORT bool
 NGInlineItemsBuilderTemplate<NGOffsetMappingBuilder>::AppendTextReusing(
     const NGInlineNodeData&,
     LayoutText*);
+
+template <>
+CORE_EXPORT bool NGInlineItemsBuilderTemplate<
+    NGOffsetMappingBuilder>::ShouldUpdateLayoutObject() const;
 
 template <>
 CORE_EXPORT void

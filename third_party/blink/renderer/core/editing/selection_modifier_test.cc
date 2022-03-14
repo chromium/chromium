@@ -78,6 +78,11 @@ TEST_F(SelectionModifierTest, MoveByLineBlockInInline) {
 }
 
 TEST_F(SelectionModifierTest, MoveByLineBlockInInlineCulled) {
+  // |LayoutNGBlockInInline| prevents the inline box from culling. This test is
+  // exactly the same as |MoveByLineBlockInInline| above.
+  if (RuntimeEnabledFeatures::LayoutNGBlockInInlineEnabled())
+    return;
+
   LoadAhem();
   InsertStyleElement(
       "div {"
