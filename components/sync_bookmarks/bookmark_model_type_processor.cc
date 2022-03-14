@@ -475,18 +475,18 @@ void BookmarkModelTypeProcessor::GetAllNodesForDebugging(
   auto all_nodes = std::make_unique<base::ListValue>();
   // Create a permanent folder since sync server no longer create root folders,
   // and USS won't migrate root folders from directory, we create root folders.
-  auto root_node = std::make_unique<base::DictionaryValue>();
+  base::Value::Dict root_node;
   // Function isTypeRootNode in sync_node_browser.js use PARENT_ID and
   // UNIQUE_SERVER_TAG to check if the node is root node. isChildOf in
   // sync_node_browser.js uses modelType to check if root node is parent of real
   // data node. NON_UNIQUE_NAME will be the name of node to display.
-  root_node->SetString("ID", "BOOKMARKS_ROOT");
-  root_node->SetString("PARENT_ID", "r");
-  root_node->SetString("UNIQUE_SERVER_TAG", "Bookmarks");
-  root_node->SetBoolean("IS_DIR", true);
-  root_node->SetString("modelType", "Bookmarks");
-  root_node->SetString("NON_UNIQUE_NAME", "Bookmarks");
-  all_nodes->Append(std::move(root_node));
+  root_node.Set("ID", "BOOKMARKS_ROOT");
+  root_node.Set("PARENT_ID", "r");
+  root_node.Set("UNIQUE_SERVER_TAG", "Bookmarks");
+  root_node.Set("IS_DIR", true);
+  root_node.Set("modelType", "Bookmarks");
+  root_node.Set("NON_UNIQUE_NAME", "Bookmarks");
+  all_nodes->Append(base::Value(std::move(root_node)));
 
   const bookmarks::BookmarkNode* model_root_node = bookmark_model_->root_node();
   int i = 0;
@@ -558,7 +558,8 @@ void BookmarkModelTypeProcessor::AppendNodeAndChildrenForDebugging(
                               syncer::EntityMetadataToValue(*metadata)));
   data_dictionary->SetString("modelType", "Bookmarks");
   data_dictionary->SetBoolean("IS_DIR", node->is_folder());
-  all_nodes->Append(std::move(data_dictionary));
+  all_nodes->Append(
+      base::Value::FromUniquePtrValue(std::move(data_dictionary)));
 
   int i = 0;
   for (const auto& child : node->children())
