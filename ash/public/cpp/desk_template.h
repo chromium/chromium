@@ -93,6 +93,9 @@ class ASH_PUBLIC_EXPORT DeskTemplate {
   // Indicates whether this template can be modified by user.
   bool IsModifiable() const { return source_ == DeskTemplateSource::kUser; }
 
+  // Sets `desk_index` as the desk to launch on for all windows in the template.
+  void SetDeskIndex(int desk_index);
+
   // Returns `this` in string format. Used for debugging and in feedback logs.
   std::string ToString() const;
 

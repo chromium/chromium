@@ -56,6 +56,14 @@ void OnNewDeskCreatedForTemplate(std::unique_ptr<DeskTemplate> desk_template,
   if (!on_create_activate_success)
     return;
 
+  // Get the index of the newly created desk. We'll then make sure to set this
+  // desk index for all apps to launch. This ensures that apps appear on the
+  // right desk even if the user switches to another.
+  auto* desks_controller = DesksController::Get();
+  const int desk_index =
+      desks_controller->GetDeskIndex(desks_controller->active_desk());
+  desk_template->SetDeskIndex(desk_index);
+
   Shell::Get()->desks_templates_delegate()->LaunchAppsFromTemplate(
       std::move(desk_template), time_launch_started, delay);
 

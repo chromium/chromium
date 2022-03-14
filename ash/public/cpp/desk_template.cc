@@ -65,6 +65,11 @@ std::unique_ptr<DeskTemplate> DeskTemplate::Clone() const {
   return desk_template;
 }
 
+void DeskTemplate::SetDeskIndex(int desk_index) {
+  DCHECK(desk_restore_data_);
+  desk_restore_data_->SetDeskIndex(desk_index);
+}
+
 std::string DeskTemplate::ToString() const {
   std::string result =
       "Template name: " + base::UTF16ToUTF8(template_name_) + "\n";

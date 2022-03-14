@@ -940,8 +940,8 @@ void DesksController::CaptureActiveDeskAsTemplate(
 
     std::unique_ptr<app_restore::WindowInfo> window_info = BuildWindowInfo(
         window, /*activation_index=*/absl::nullopt, mru_windows);
-    // Clear WindowInfo's |desk_id| as a window in template will always launch
-    // to a newly created desk.
+    // Clear WindowInfo's `desk_id` in the template. It will later be set to the
+    // id of a newly created desk when launching.
     window_info->desk_id.reset();
     restore_data->ModifyWindowInfo(app_id, window_id, *window_info);
   }
