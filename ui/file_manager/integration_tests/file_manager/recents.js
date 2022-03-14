@@ -414,8 +414,7 @@ testcase.recentsFilterResetToAll = async () => {
   await remoteCall.waitAndClickElement(
       appId, ['[file-type-filter="audio"].active']);
   // Verifies the "All" button is focus and all recent files are shown.
-  await remoteCall.waitForElement(
-      appId, ['button[file-type-filter="all"].active']);
+  await remoteCall.waitForElement(appId, ['[file-type-filter="all"].active']);
   const focusedElement =
       await remoteCall.callRemoteTestUtil('getActiveElement', appId, []);
   chrome.test.assertEq('all', focusedElement.attributes['file-type-filter']);

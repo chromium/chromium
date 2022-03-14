@@ -2521,69 +2521,49 @@ files-toast {
   z-index: 520;
 }
 
-/* File type filter buttons in Recents view.
-   TODO(fukino): The style is temporary. Revisit it before the feature is
-   shipped. */
+/* File type filter buttons in Recents view. */
 #file-type-filter-container {
   display: flex;
   font-size: 13px;
-  height: 30x;
-  margin-top: 5px;
+  padding: 12px 0 16px 12px;
 }
 
-/* TODO(crbug.com/1287914): Update these colors to semantic equivalents. */
 .file-type-filter-button {
-  align-items: center;
-  /* don't use browser's default <button> background-color. */
-  background-color: unset;
-  border: 1px solid rgba(0, 0, 0, 10%);
+  --border-color: var(--cros-button-stroke-color-secondary);
+  --cr-button-height: 28px;
+  --hover-bg-color: var(--cros-ripple-color);
+  --hover-border-color: var(--cros-button-stroke-color-secondary);
+  --ink-color: var(--cros-ripple-color);
+  --ripple-opacity: 100%;
+  --text-color: var(--cros-text-color-secondary);
   border-radius: 20px;
-  box-sizing: border-box;
-  color: var(--google-grey-700);
-  cursor: pointer;
-  display: flex;
-  font-weight: 500;
-  height: 32px;
-  margin-inline-end: 3px;
-  margin-inline-start: 3px;
+  margin-inline: 4px;
   outline: none;
-  padding: 0 10px;
+}
+
+/* Prevent unexpected ripple when ".active" gets removed (e.g. clicking an
+   ".active" filter button make it inactive.) */
+.file-type-filter-button:not(:active) {
+  --ink-color: transparent;
 }
 
 .file-type-filter-button.active {
-  background-color: rgba(var(--google-blue-600-rgb), 6%);
-  border: 1px solid transparent;
-  color: var(--google-blue-600);
+  /* Intentionally no hover color and ripple effect for active state. */
+  --hover-bg-color: none;
+  --ink-color: transparent;
+  --text-color: var(--cros-text-color-selection);
+  background-color: var(--cros-highlight-color);
+  border-color: transparent;
 }
 
-.file-type-filter-button:not(:active):hover {
-  background-color: rgba(0, 0, 0, 4%);
-}
-
-.file-type-filter-button.active:not(:active):hover {
-  background-color: rgba(var(--google-blue-600-rgb), 10%);
-}
-
-html.pointer-active .file-type-filter-button:not(:active):hover {
-  background-color: unset;
-  cursor: default;
-}
-
-html.pointer-active .file-type-filter-button.active:not(:active):hover {
-  background-color: rgba(var(--google-blue-600-rgb), 6%);
+html.pointer-active .file-type-filter-button:not(:active) {
+  --hover-bg-color: none;
   cursor: default;
 }
 
 html.focus-outline-visible .file-type-filter-button:focus {
-  border: 1px solid var(--google-blue-600);
-}
-
-.file-type-filter-button:active {
-  background-color: rgba(0, 0, 0, 12%);
-}
-
-.file-type-filter-button.active:active {
-  background-color: rgba(var(--google-blue-600-rgb), 16%);
+  outline: 2px solid var(--cros-focus-ring-color);
+  outline-offset: 2px;
 }
 
 /*

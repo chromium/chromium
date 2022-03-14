@@ -107,8 +107,8 @@ export class FileTypeFiltersController {
    * @private
    */
   createFilterButton_(label, fileType) {
-    const button =
-        util.createChild(this.container_, 'file-type-filter-button', 'button');
+    const button = util.createChild(
+        this.container_, 'file-type-filter-button', 'cr-button');
     button.textContent = label;
     // Store the "RecentFileType" on the button element so we know the mapping
     // between the DOM element and its corresponding "RecentFileType", which
