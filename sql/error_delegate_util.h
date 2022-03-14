@@ -8,13 +8,26 @@
 #include <string>
 
 #include "base/component_export.h"
-#include "base/files/file_path.h"
+
+namespace base {
+class FilePath;
+}  // namespace base
 
 namespace sql {
 
-// Returns true if it is highly unlikely that the database can recover from
-// |error|.
-COMPONENT_EXPORT(SQL) bool IsErrorCatastrophic(int error);
+// Returns true if `sqlite_error_code` is caused by database corruption.
+//
+// This method returns true for SQLite error codes that can only be explained by
+// some form of corruption in the database's on-disk state. Retrying the failed
+// operation will result in the same error, until the on-disk state changes.
+// Callers should react to a true return value by deleting the database and
+// starting over, or by attempting to recover the data.
+//
+// Corruption is most often associated with storage media decay (aged disks),
+// but it can also be caused by bugs in the storage stack we're using (Chrome,
+// SQLite, the filesystem, the OS disk driver or disk firmware), or by some
+// other software that modifies the user's Chrome profile.
+COMPONENT_EXPORT(SQL) bool IsErrorCatastrophic(int sqlite_error_code);
 
 // Gets diagnostic info of the given |corrupted_file_path| that can be appended
 // to a corrupt database diagnostics info. The file info are not localized as
