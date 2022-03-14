@@ -64,11 +64,6 @@
         "port_name": "win-win7",
         "specifiers": ["Win7", "Debug"]
     },
-    "Win11 Tests x64": {
-        "master": "chromium.win",
-        "port_name": "win-win11",
-        "specifiers": ["Win11", "Release"]
-    },
     "fuchsia_x64": {
         "master": "tryserver.chromium.linux",
         "port_name": "fuchsia",
