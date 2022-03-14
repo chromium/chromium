@@ -556,7 +556,7 @@ class COMPONENT_EXPORT(SQL) Database {
   // |error_callback| should use IsExpectedSqliteError() to check for unexpected
   // errors; if one is detected, DLOG(DCHECK) is generally appropriate (see
   // OnSqliteError implementation).
-  static bool IsExpectedSqliteError(int error);
+  static bool IsExpectedSqliteError(int sqlite_error_code);
 
   // Computes the path of a database's rollback journal.
   //
@@ -759,11 +759,14 @@ class COMPONENT_EXPORT(SQL) Database {
                      Statement* statement,
                      const char* sql_statement);
 
-  // Like Execute(), but returns the error code given by SQLite.
+  // Like Execute(), but returns a SQLite result code.
   //
-  // This is only exposed to the Database implementation. Code that uses
-  // sql::Database should not be concerned with SQLite error codes.
-  [[nodiscard]] int ExecuteAndReturnErrorCode(const char* sql);
+  // This method returns SQLITE_OK or a SQLite error code. In other words, it
+  // never returns SQLITE_DONE or SQLITE_ROW.
+  //
+  // This method is only exposed to the Database implementation. Code that uses
+  // sql::Database should not be concerned with SQLite result codes.
+  [[nodiscard]] int ExecuteAndReturnResultCode(const char* sql);
 
   // Like |Execute()|, but retries if the database is locked.
   [[nodiscard]] bool ExecuteWithTimeout(const char* sql,
@@ -786,7 +789,7 @@ class COMPONENT_EXPORT(SQL) Database {
   std::string CollectCorruptionInfo();
 
   // Helper to collect diagnostic info for errors.
-  std::string CollectErrorInfo(int error, Statement* stmt) const;
+  std::string CollectErrorInfo(int sqlite_error_code, Statement* stmt) const;
 
   // The size of the memory mapping that SQLite should use for this database.
   //

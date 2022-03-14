@@ -174,10 +174,17 @@ namespace sql {
 Database::ScopedErrorExpecterCallback* Database::current_expecter_cb_ = nullptr;
 
 // static
-bool Database::IsExpectedSqliteError(int error) {
+bool Database::IsExpectedSqliteError(int sqlite_error_code) {
+  DCHECK_NE(sqlite_error_code, SQLITE_OK)
+      << __func__ << " received non-error result code";
+  DCHECK_NE(sqlite_error_code, SQLITE_DONE)
+      << __func__ << " received non-error result code";
+  DCHECK_NE(sqlite_error_code, SQLITE_ROW)
+      << __func__ << " received non-error result code";
+
   if (!current_expecter_cb_)
     return false;
-  return current_expecter_cb_->Run(error);
+  return current_expecter_cb_->Run(sqlite_error_code);
 }
 
 // static
@@ -480,8 +487,17 @@ base::FilePath Database::DbPath() const {
 #endif
 }
 
-std::string Database::CollectErrorInfo(int error, Statement* stmt) const {
+std::string Database::CollectErrorInfo(int sqlite_error_code,
+                                       Statement* stmt) const {
   TRACE_EVENT0("sql", "Database::CollectErrorInfo");
+
+  DCHECK_NE(sqlite_error_code, SQLITE_OK)
+      << __func__ << " received non-error result code";
+  DCHECK_NE(sqlite_error_code, SQLITE_DONE)
+      << __func__ << " received non-error result code";
+  DCHECK_NE(sqlite_error_code, SQLITE_ROW)
+      << __func__ << " received non-error result code";
+
   // Buffer for accumulating debugging info about the error.  Place
   // more-relevant information earlier, in case things overflow the
   // fixed-size reporting buffer.
@@ -494,8 +510,8 @@ std::string Database::CollectErrorInfo(int error, Statement* stmt) const {
   // TODO(shess): |error| and |GetErrorCode()| should always be the same, but
   // reading code does not entirely convince me.  Remove if they turn out to be
   // the same.
-  if (error != GetErrorCode())
-    base::StringAppendF(&debug_info, "reported error: %d\n", error);
+  if (sqlite_error_code != GetErrorCode())
+    base::StringAppendF(&debug_info, "reported error: %d\n", sqlite_error_code);
 
 // System error information.  Interpretation of Windows errors is different
 // from posix.
@@ -516,7 +532,7 @@ std::string Database::CollectErrorInfo(int error, Statement* stmt) const {
 
   // SQLITE_ERROR often indicates some sort of mismatch between the statement
   // and the schema, possibly due to a failed schema migration.
-  if (error == SQLITE_ERROR) {
+  if (sqlite_error_code == SQLITE_ERROR) {
     static constexpr char kVersionSql[] =
         "SELECT value FROM meta WHERE key='version'";
     sqlite3_stmt* sqlite_statement;
@@ -1179,7 +1195,7 @@ bool Database::DetachDatabase(base::StringPiece attachment_point,
 // TODO(shess): Consider changing this to execute exactly one statement.  If a
 // caller wishes to execute multiple statements, that should be explicit, and
 // perhaps tucked into an explicit transaction with rollback in case of error.
-int Database::ExecuteAndReturnErrorCode(const char* sql) {
+int Database::ExecuteAndReturnResultCode(const char* sql) {
   TRACE_EVENT0("sql", "Database::ExecuteAndReturnErrorCode");
 
   DCHECK(sql);
@@ -1192,15 +1208,37 @@ int Database::ExecuteAndReturnErrorCode(const char* sql) {
   absl::optional<base::ScopedBlockingCall> scoped_blocking_call;
   InitScopedBlockingCall(FROM_HERE, &scoped_blocking_call);
 
-  int rc = SQLITE_OK;
-  while ((rc == SQLITE_OK) && *sql) {
+  int sqlite_result_code = SQLITE_OK;
+  while ((sqlite_result_code == SQLITE_OK) && *sql) {
     sqlite3_stmt* sqlite_statement;
     const char* leftover_sql;
-    rc = sqlite3_prepare_v3(db_, sql, /* nByte= */ -1, SqlitePrepareFlags(),
-                            &sqlite_statement, &leftover_sql);
-    // Stop if an error is encountered.
-    if (rc != SQLITE_OK)
+    sqlite_result_code =
+        sqlite3_prepare_v3(db_, sql, /* nByte= */ -1, SqlitePrepareFlags(),
+                           &sqlite_statement, &leftover_sql);
+
+#if DCHECK_IS_ON()
+    // Report SQL compilation errors. On developer machines, the errors are most
+    // likely caused by invalid SQL in an under-development feature. In
+    // production, SQL compilation errors are caused by database schema
+    // corruption.
+    //
+    // DCHECK would not be appropriate here, because on-disk data is always
+    // subject to corruption, so Chrome cannot assume that the database schema
+    // will remain intact.
+    if (sqlite_result_code == SQLITE_ERROR) {
+      DLOG(ERROR) << "SQL compilation error: " << GetErrorMessage()
+                  << ". Statement: " << sql;
+    }
+#endif  // DCHECK_IS_ON()
+
+    // Stop if compiling the SQL statement fails.
+    if (sqlite_result_code != SQLITE_OK) {
+      DCHECK_NE(sqlite_result_code, SQLITE_DONE)
+          << "sqlite3_prepare_v3() returned unexpected non-error result code";
+      DCHECK_NE(sqlite_result_code, SQLITE_ROW)
+          << "sqlite3_prepare_v3() returned unexpected non-error result code";
       break;
+    }
 
     sql = leftover_sql;
 
@@ -1211,7 +1249,11 @@ int Database::ExecuteAndReturnErrorCode(const char* sql) {
     if (!sqlite_statement)
       continue;
 
-    while ((rc = sqlite3_step(sqlite_statement)) == SQLITE_ROW) {
+    while (true) {
+      sqlite_result_code = sqlite3_step(sqlite_statement);
+      if (sqlite_result_code != SQLITE_ROW)
+        break;
+
       // TODO(shess): Audit to see if this can become a DCHECK.  I think PRAGMA
       // is the only legitimate case for this. Previously recorded histograms
       // show significant use of this code path.
@@ -1219,7 +1261,11 @@ int Database::ExecuteAndReturnErrorCode(const char* sql) {
 
     // sqlite3_finalize() returns SQLITE_OK if the most recent sqlite3_step()
     // returned SQLITE_DONE or SQLITE_ROW, otherwise the error code.
-    rc = sqlite3_finalize(sqlite_statement);
+    sqlite_result_code = sqlite3_finalize(sqlite_statement);
+    DCHECK_NE(sqlite_result_code, SQLITE_DONE)
+        << "sqlite3_finalize() returned unexpected non-error result code";
+    DCHECK_NE(sqlite_result_code, SQLITE_ROW)
+        << "sqlite3_finalize() returned unexpected non-error result code";
 
     // sqlite3_exec() does this, presumably to avoid spinning the parser for
     // trailing whitespace.
@@ -1234,7 +1280,11 @@ int Database::ExecuteAndReturnErrorCode(const char* sql) {
   // but sometimes don't.
   ReleaseCacheMemoryIfNeeded(true);
 
-  return rc;
+  DCHECK_NE(sqlite_result_code, SQLITE_DONE)
+      << __func__ << " about to return unexpected non-error result code";
+  DCHECK_NE(sqlite_result_code, SQLITE_ROW)
+      << __func__ << " about to return unexpected non-error result code";
+  return sqlite_result_code;
 }
 
 bool Database::Execute(const char* sql) {
@@ -1245,25 +1295,11 @@ bool Database::Execute(const char* sql) {
     return false;
   }
 
-  int error = ExecuteAndReturnErrorCode(sql);
-  if (error != SQLITE_OK)
-    OnSqliteError(error, nullptr, sql);
+  int sqlite_result_code = ExecuteAndReturnResultCode(sql);
+  if (sqlite_result_code != SQLITE_OK)
+    OnSqliteError(sqlite_result_code, nullptr, sql);
 
-#if DCHECK_IS_ON()
-  // Report SQL compilation errors. On developer machines, the errors are most
-  // likely caused by invalid SQL in an under-development feature. In
-  // production, SQL compilation errors are caused by database schema
-  // corruption.
-  //
-  // DCHECK would not be appropriate here, because on-disk data is always
-  // subject to corruption, so Chrome cannot assume that the database schema
-  // will remain intact.
-  if (error == SQLITE_ERROR) {
-    DLOG(ERROR) << "SQL compilation error: " << GetErrorMessage()
-                << ". Statement: " << sql;
-  }
-#endif  // DCHECK_IS_ON()
-  return error == SQLITE_OK;
+  return sqlite_result_code == SQLITE_OK;
 }
 
 bool Database::ExecuteWithTimeout(const char* sql, base::TimeDelta timeout) {
@@ -1369,26 +1405,31 @@ scoped_refptr<Database::StatementRef> Database::GetStatementImpl(
   // TODO(pwnall): Cached statements (but not unique statements) should be
   //               prepared with prepFlags set to SQLITE_PREPARE_PERSISTENT.
   sqlite3_stmt* sqlite_statement;
-  int rc = sqlite3_prepare_v3(db_, sql, /* nByte= */ -1, SqlitePrepareFlags(),
-                              &sqlite_statement, unused_sql_ptr);
-  if (rc != SQLITE_OK) {
-    OnSqliteError(rc, nullptr, sql);
+  int sqlite_result_code =
+      sqlite3_prepare_v3(db_, sql, /* nByte= */ -1, SqlitePrepareFlags(),
+                         &sqlite_statement, unused_sql_ptr);
 
 #if DCHECK_IS_ON()
-    // Report SQL compilation errors. On developer machines, the errors are most
-    // likely caused by invalid SQL in an under-development feature. In
-    // production, SQL compilation errors are caused by database schema
-    // corruption.
-    //
-    // DCHECK would not be appropriate here, because on-disk data is always
-    // subject to corruption, so Chrome cannot assume that the database schema
-    // will remain intact.
-    if (rc == SQLITE_ERROR) {
-      DLOG(ERROR) << "SQL compilation error: " << GetErrorMessage()
-                  << ". Statement: " << sql;
-    }
+  // Report SQL compilation errors. On developer machines, the errors are most
+  // likely caused by invalid SQL in an under-development feature. In
+  // production, SQL compilation errors are caused by database schema
+  // corruption.
+  //
+  // DCHECK would not be appropriate here, because on-disk data is always
+  // subject to corruption, so Chrome cannot assume that the database schema
+  // will remain intact.
+  if (sqlite_result_code == SQLITE_ERROR) {
+    DLOG(ERROR) << "SQL compilation error: " << GetErrorMessage()
+                << ". Statement: " << sql;
+  }
 #endif  // DCHECK_IS_ON()
 
+  if (sqlite_result_code != SQLITE_OK) {
+    DCHECK_NE(sqlite_result_code, SQLITE_DONE)
+        << "sqlite3_prepare_v3() returned unexpected non-error result code";
+    DCHECK_NE(sqlite_result_code, SQLITE_ROW)
+        << "sqlite3_prepare_v3() returned unexpected non-error result code";
+    OnSqliteError(sqlite_result_code, nullptr, sql);
     return base::MakeRefCounted<StatementRef>(nullptr, nullptr, false);
   }
 
@@ -1853,8 +1894,14 @@ void Database::OnSqliteError(int sqlite_error_code,
                              const char* sql_statement) {
   TRACE_EVENT0("sql", "Database::OnSqliteError");
 
+  DCHECK_NE(sqlite_error_code, SQLITE_OK)
+      << __func__ << " received non-error result code";
+  DCHECK_NE(sqlite_error_code, SQLITE_DONE)
+      << __func__ << " received non-error result code";
+  DCHECK_NE(sqlite_error_code, SQLITE_ROW)
+      << __func__ << " received non-error result code";
   DCHECK_NE(statement != nullptr, sql_statement != nullptr)
-      << "OnSqliteError() should either get a Statement or a raw SQL string";
+      << __func__ << " should either get a Statement or a raw SQL string";
 
   bool is_expected_error = IsExpectedSqliteError(sqlite_error_code);
   if (!is_expected_error) {
@@ -1886,19 +1933,27 @@ void Database::OnSqliteError(int sqlite_error_code,
     DLOG(DCHECK) << GetErrorMessage();
 }
 
-std::string Database::GetDiagnosticInfo(int extended_error,
+std::string Database::GetDiagnosticInfo(int sqlite_error_code,
                                         Statement* statement) {
+  DCHECK_NE(sqlite_error_code, SQLITE_OK)
+      << __func__ << " received non-error result code";
+  DCHECK_NE(sqlite_error_code, SQLITE_DONE)
+      << __func__ << " received non-error result code";
+  DCHECK_NE(sqlite_error_code, SQLITE_ROW)
+      << __func__ << " received non-error result code";
+
   // Prevent reentrant calls to the error callback.
   ErrorCallback original_callback = std::move(error_callback_);
   error_callback_.Reset();
 
   // Trim extended error codes.
-  const int error = (extended_error & 0xFF);
+  const int primary_error_code = sqlite_error_code & 0xff;
+
   // CollectCorruptionInfo() is implemented in terms of sql::Database,
   // TODO(shess): Rewrite IntegrityCheckHelper() in terms of raw SQLite.
-  std::string result = (error == SQLITE_CORRUPT)
+  std::string result = (primary_error_code == SQLITE_CORRUPT)
                            ? CollectCorruptionInfo()
-                           : CollectErrorInfo(extended_error, statement);
+                           : CollectErrorInfo(sqlite_error_code, statement);
 
   // The following queries must be executed after CollectErrorInfo() above, so
   // if they result in their own errors, they don't interfere with
