@@ -25,7 +25,7 @@ void FakeBaseTabStripController::AddTab(int index, bool is_active) {
   num_tabs_++;
   tab_groups_.insert(tab_groups_.begin() + index, absl::nullopt);
 
-  tab_strip_->AddTabAt(index, TabRendererData(), is_active);
+  tab_strip_->AddTabAt(index, TabRendererData());
   if (is_active) {
     SelectTab(index,
               ui::MouseEvent(ui::ET_MOUSE_PRESSED, gfx::PointF(), gfx::PointF(),
@@ -39,7 +39,7 @@ void FakeBaseTabStripController::AddPinnedTab(int index, bool is_active) {
 
   TabRendererData data;
   data.pinned = true;
-  tab_strip_->AddTabAt(index, std::move(data), is_active);
+  tab_strip_->AddTabAt(index, std::move(data));
   if (is_active)
     active_index_ = index;
 }

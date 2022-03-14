@@ -769,8 +769,7 @@ void BrowserTabStripController::AddTab(WebContents* contents,
   // Cancel any pending tab transition.
   hover_tab_selector_.CancelTabTransition();
 
-  tabstrip_->AddTabAt(index, TabRendererData::FromTabInModel(model_, index),
-                      is_active);
+  tabstrip_->AddTabAt(index, TabRendererData::FromTabInModel(model_, index));
   // Try to show tab groups IPH if needed.
   if (tabstrip_->GetTabCount() >= 6) {
     browser_view_->NotifyFeatureEngagementEvent(

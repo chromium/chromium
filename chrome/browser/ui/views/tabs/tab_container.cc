@@ -324,6 +324,17 @@ Tab* TabContainer::AddTab(std::unique_ptr<Tab> tab,
       std::move(tab), GetViewInsertionIndex(group, absl::nullopt, model_index));
   tabs_view_model_.Add(tab_ptr, model_index);
   layout_helper_->InsertTabAt(model_index, tab_ptr, pinned);
+
+  // Don't animate the first tab, it looks weird, and don't animate anything
+  // if the containing window isn't visible yet.
+  if (GetTabCount() > 1 && GetWidget() && GetWidget()->IsVisible()) {
+    StartInsertTabAnimation(model_index);
+  } else {
+    CompleteAnimationAndLayout();
+  }
+
+  UpdateAccessibleTabIndices();
+
   return tab_ptr;
 }
 
@@ -924,6 +935,38 @@ views::View* TabContainer::TargetForRect(views::View* root,
     return tab;
 
   return this;
+}
+
+void TabContainer::StartInsertTabAnimation(int model_index) {
+  PrepareForAnimation();
+
+  ExitTabClosingMode();
+
+  gfx::Rect bounds = GetTabAtModelIndex(model_index)->bounds();
+  bounds.set_height(GetLayoutConstant(TAB_HEIGHT));
+
+  // Adjust the starting bounds of the new tab.
+  const int tab_overlap = TabStyle::GetTabOverlap();
+  if (model_index > 0) {
+    // If we have a tab to our left, start at its right edge.
+    bounds.set_x(GetTabAtModelIndex(model_index - 1)->bounds().right() -
+                 tab_overlap);
+  } else if (model_index + 1 < GetTabCount()) {
+    // Otherwise, if we have a tab to our right, start at its left edge.
+    bounds.set_x(GetTabAtModelIndex(model_index + 1)->bounds().x());
+  } else {
+    NOTREACHED() << "First tab inserted into the tabstrip should not animate.";
+  }
+
+  // Start at the width of the overlap in order to animate at the same speed
+  // the surrounding tabs are moving, since at this width the subsequent tab
+  // is naturally positioned at the same X coordinate.
+  bounds.set_width(tab_overlap);
+  GetTabAtModelIndex(model_index)->SetBoundsRect(bounds);
+
+  // Animate in to the full width.
+  UpdateIdealBounds();
+  AnimateToIdealBounds();
 }
 
 void TabContainer::OnTabCloseAnimationCompleted(Tab* tab) {

@@ -132,7 +132,7 @@ class TabStrip : public views::View,
   void UpdateLoadingAnimations(const base::TimeDelta& elapsed_time);
 
   // Adds a tab at the specified index.
-  void AddTabAt(int model_index, TabRendererData data, bool is_active);
+  void AddTabAt(int model_index, TabRendererData data);
 
   // Moves a tab.
   void MoveTab(int from_model_index, int to_model_index, TabRendererData data);
@@ -404,9 +404,6 @@ class TabStrip : public views::View,
   void Init();
 
   std::map<tab_groups::TabGroupId, TabGroupHeader*> GetGroupHeaders();
-
-  // Invoked from |AddTabAt| after the newly created tab has been inserted.
-  void StartInsertTabAnimation(int model_index);
 
   // Animates the removal of the tab at |model_index|. Defers to the old
   // animation style when appropriate.

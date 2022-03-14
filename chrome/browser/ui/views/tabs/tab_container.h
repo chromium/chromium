@@ -162,6 +162,9 @@ class TabContainer : public views::View, public views::ViewTargeterDelegate {
  private:
   class RemoveTabDelegate;
 
+  // Invoked from |AddTab| after the newly created tab has been inserted.
+  void StartInsertTabAnimation(int model_index);
+
   void OnTabCloseAnimationCompleted(Tab* tab);
 
   // Returns the corresponding view index of a |tab| to be inserted at

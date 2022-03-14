@@ -855,11 +855,12 @@ void TabStrip::UpdateLoadingAnimations(const base::TimeDelta& elapsed_time) {
     tab_at(i)->StepLoadingAnimation(elapsed_time);
 }
 
-void TabStrip::AddTabAt(int model_index, TabRendererData data, bool is_active) {
+void TabStrip::AddTabAt(int model_index, TabRendererData data) {
   const bool pinned = data.pinned;
   Tab* tab = tab_container_->AddTab(
       std::make_unique<Tab>(this), model_index,
       pinned ? TabPinned::kPinned : TabPinned::kUnpinned);
+
   tab->set_context_menu_controller(&context_menu_controller_);
   tab->AddObserver(this);
   selected_tabs_.IncrementFrom(model_index);
@@ -868,16 +869,6 @@ void TabStrip::AddTabAt(int model_index, TabRendererData data, bool is_active) {
   // above for the tab. Accessibility, in particular, reacts to data changed
   // callbacks.
   tab->SetData(std::move(data));
-
-  // Don't animate the first tab, it looks weird, and don't animate anything
-  // if the containing window isn't visible yet.
-  if (GetTabCount() > 1 && GetWidget() && GetWidget()->IsVisible()) {
-    StartInsertTabAnimation(model_index);
-  } else {
-    tab_container_->CompleteAnimationAndLayout();
-  }
-
-  tab_container_->UpdateAccessibleTabIndices();
 
   for (TabStripObserver& observer : observers_)
     observer.OnTabAdded(model_index);
@@ -1869,37 +1860,6 @@ void TabStrip::NewTabButtonPressed(const ui::Event& event) {
   controller_->CreateNewTab();
   if (event.type() == ui::ET_GESTURE_TAP)
     TouchUMA::RecordGestureAction(TouchUMA::kGestureNewTabTap);
-}
-
-void TabStrip::StartInsertTabAnimation(int model_index) {
-  tab_container_->PrepareForAnimation();
-
-  tab_container_->ExitTabClosingMode();
-
-  gfx::Rect bounds = tab_at(model_index)->bounds();
-  bounds.set_height(GetLayoutConstant(TAB_HEIGHT));
-
-  // Adjust the starting bounds of the new tab.
-  const int tab_overlap = TabStyle::GetTabOverlap();
-  if (model_index > 0) {
-    // If we have a tab to our left, start at its right edge.
-    bounds.set_x(tab_at(model_index - 1)->bounds().right() - tab_overlap);
-  } else if (model_index + 1 < GetTabCount()) {
-    // Otherwise, if we have a tab to our right, start at its left edge.
-    bounds.set_x(tab_at(model_index + 1)->bounds().x());
-  } else {
-    NOTREACHED() << "First tab inserted into the tabstrip should not animate.";
-  }
-
-  // Start at the width of the overlap in order to animate at the same speed
-  // the surrounding tabs are moving, since at this width the subsequent tab
-  // is naturally positioned at the same X coordinate.
-  bounds.set_width(tab_overlap);
-  tab_at(model_index)->SetBoundsRect(bounds);
-
-  // Animate in to the full width.
-  tab_container_->UpdateIdealBounds();
-  tab_container_->AnimateToIdealBounds();
 }
 
 void TabStrip::StartRemoveTabAnimation(int model_index, bool was_active) {
