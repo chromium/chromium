@@ -38,6 +38,9 @@
   /* Window caption colors. */ \
   E(kColorCaptionButtonBackground, \
     ThemeProperties::COLOR_CONTROL_BUTTON_BACKGROUND) \
+  /* Desktop media tab list colors. */ \
+  E_CPONLY(kColorDesktopMediaTabListBorder) \
+  E_CPONLY(kColorDesktopMediaTabListPreviewBackground) \
   /* Download shelf colors. */ \
   E(kColorDownloadShelfBackground, ThemeProperties::COLOR_DOWNLOAD_SHELF) \
   E(kColorDownloadShelfButtonBackground, \

@@ -42,6 +42,7 @@ class DesktopMediaTabList : public DesktopMediaListController::ListView {
   // views::View:
   gfx::Size CalculatePreferredSize() const override;
   int GetHeightForWidth(int width) const override;
+  void OnThemeChanged() override;
 
   // DesktopMediaListController::ListView:
   absl::optional<content::DesktopMediaID> GetSelection() override;
@@ -68,8 +69,9 @@ class DesktopMediaTabList : public DesktopMediaListController::ListView {
   // These members are owned in the tree of views under this ListView's children
   // so it's safe to store raw pointers to them.
   raw_ptr<views::TableView> list_;
+  raw_ptr<views::View> preview_wrapper_;
   raw_ptr<views::ImageView> preview_;
-  raw_ptr<views::View> empty_preview_;
+  raw_ptr<views::Label> empty_preview_label_;
   raw_ptr<views::Label> preview_label_;
 
   // Counts the number of times preview_ has been set to an image.

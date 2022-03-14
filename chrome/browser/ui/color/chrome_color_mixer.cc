@@ -215,6 +215,8 @@ void AddChromeColorMixer(ui::ColorProvider* provider,
           : ui::ColorTransform(ui::kColorIcon);
   mixer[kColorBookmarkBarSeparator] = {kColorToolbarSeparator};
   mixer[kColorCaptionButtonBackground] = {SK_ColorTRANSPARENT};
+  mixer[kColorDesktopMediaTabListBorder] = {ui::kColorMidground};
+  mixer[kColorDesktopMediaTabListPreviewBackground] = {ui::kColorMidground};
   mixer[kColorDownloadShelfBackground] = {kColorToolbar};
   mixer[kColorDownloadShelfButtonBackground] = {kColorDownloadShelfBackground};
   mixer[kColorDownloadShelfButtonText] =

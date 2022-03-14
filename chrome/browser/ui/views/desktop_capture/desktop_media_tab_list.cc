@@ -7,6 +7,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/numerics/safe_conversions.h"
 #include "chrome/browser/media/webrtc/desktop_media_list_layout_config.h"
+#include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/grit/generated_resources.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
@@ -15,6 +16,7 @@
 #include "content/public/browser/web_contents.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/color/color_provider.h"
 #include "ui/gfx/favicon_size.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/background.h"
@@ -206,7 +208,6 @@ DesktopMediaTabList::DesktopMediaTabList(DesktopMediaListController* controller,
       true);
   list->set_observer(view_observer_.get());
   list->GetViewAccessibility().OverrideName(accessible_name);
-  list->SetBorder(views::CreateSolidBorder(1, SK_ColorBLACK));
   list_ = list.get();
 
   AddChildView(BuildUI(std::move(list)));
@@ -217,8 +218,6 @@ std::unique_ptr<views::View> DesktopMediaTabList::BuildUI(
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   auto preview_wrapper = std::make_unique<views::View>();
   preview_wrapper->SetPreferredSize(desktopcapture::kPreviewSize);
-  preview_wrapper->SetBackground(
-      views::CreateSolidBackground(gfx::kGoogleGrey300));
 
   auto preview = std::make_unique<views::ImageView>();
   preview->SetVisible(false);
@@ -231,14 +230,9 @@ std::unique_ptr<views::View> DesktopMediaTabList::BuildUI(
   empty_preview_label->SetText(
       l10n_util::GetStringUTF16(IDS_DESKTOP_MEDIA_PICKER_EMPTY_PREVIEW));
   empty_preview_label->SetMultiLine(true);
-  empty_preview_label->SetBackground(
-      views::CreateSolidBackground(gfx::kGoogleGrey300));
   empty_preview_label->SetPreferredSize(desktopcapture::kPreviewSize);
   empty_preview_label->SetSize(desktopcapture::kPreviewSize);
-  // Tell the label the background colour it's over. This just forces the text
-  // colour to one that's readable, notably in dark mode.
-  empty_preview_label->SetBackgroundColor(gfx::kGoogleGrey300);
-  empty_preview_ =
+  empty_preview_label_ =
       preview_wrapper->AddChildView(std::move(empty_preview_label));
 
   auto preview_label = std::make_unique<views::Label>();
@@ -248,7 +242,7 @@ std::unique_ptr<views::View> DesktopMediaTabList::BuildUI(
   preview_label->SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_LEFT);
 
   auto preview_sidebar = std::make_unique<views::View>();
-  preview_sidebar->AddChildView(std::move(preview_wrapper));
+  preview_wrapper_ = preview_sidebar->AddChildView(std::move(preview_wrapper));
   preview_label_ = preview_sidebar->AddChildView(std::move(preview_label));
 
   preview_sidebar->SetLayoutManager(std::make_unique<views::BoxLayout>(
@@ -293,6 +287,22 @@ int DesktopMediaTabList::GetHeightForWidth(int width) const {
   return CalculatePreferredSize().height();
 }
 
+void DesktopMediaTabList::OnThemeChanged() {
+  DesktopMediaListController::ListView::OnThemeChanged();
+
+  const ui::ColorProvider* const color_provider = GetColorProvider();
+  list_->SetBorder(views::CreateSolidBorder(
+      /*thickness=*/1,
+      color_provider->GetColor(kColorDesktopMediaTabListBorder)));
+  const SkColor background_color =
+      color_provider->GetColor(kColorDesktopMediaTabListPreviewBackground);
+  preview_wrapper_->SetBackground(
+      views::CreateSolidBackground(background_color));
+  empty_preview_label_->SetBackground(
+      views::CreateSolidBackground(background_color));
+  empty_preview_label_->SetBackgroundColor(background_color);
+}
+
 absl::optional<content::DesktopMediaID> DesktopMediaTabList::GetSelection() {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   int row = list_->GetFirstSelectedRow();
@@ -312,7 +322,7 @@ void DesktopMediaTabList::ClearPreview() {
   preview_label_->SetText(u"");
   preview_->SetImage(nullptr);
   preview_->SetVisible(false);
-  empty_preview_->SetVisible(true);
+  empty_preview_label_->SetVisible(true);
 }
 
 void DesktopMediaTabList::OnSelectionChanged() {
@@ -338,7 +348,7 @@ void DesktopMediaTabList::OnSelectionChanged() {
   controller_->SetPreviewedSource(source.id);
 
   preview_->SetVisible(true);
-  empty_preview_->SetVisible(false);
+  empty_preview_label_->SetVisible(false);
 }
 
 void DesktopMediaTabList::ClearPreviewImageIfUnchanged(
