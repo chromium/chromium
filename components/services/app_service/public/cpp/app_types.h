@@ -241,8 +241,8 @@ absl::optional<bool> GetOptionalBool(
     const apps::mojom::OptionalBool& mojom_optional_bool);
 
 COMPONENT_EXPORT(APP_TYPES)
-absl::optional<bool> GetMojomOptionalBool(
-    const apps::mojom::OptionalBool& mojom_optional_bool);
+apps::mojom::OptionalBool GetMojomOptionalBool(
+    const absl::optional<bool>& mojom_optional_bool);
 
 COMPONENT_EXPORT(APP_TYPES)
 AppPtr ConvertMojomAppToApp(const apps::mojom::AppPtr& mojom_app);

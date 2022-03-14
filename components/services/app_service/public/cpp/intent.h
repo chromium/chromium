@@ -11,6 +11,7 @@
 
 #include "base/containers/flat_map.h"
 #include "base/files/safe_base_name.h"
+#include "components/services/app_service/public/mojom/types.mojom.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
@@ -83,6 +84,21 @@ struct Intent {
   // Optional string extras.
   base::flat_map<std::string, std::string> extras;
 };
+
+using IntentPtr = std::unique_ptr<Intent>;
+
+// TODO(crbug.com/1253250): Remove these functions after migrating to non-mojo
+// AppService.
+IntentFilePtr ConvertMojomIntentFileToIntentFile(
+    const apps::mojom::IntentFilePtr& mojom_intent_file);
+
+apps::mojom::IntentFilePtr ConvertIntentFileToMojomIntentFile(
+    const IntentFilePtr& intent_file);
+
+IntentPtr ConvertMojomIntentToIntent(
+    const apps::mojom::IntentPtr& mojom_intent);
+
+apps::mojom::IntentPtr ConvertIntentToMojomIntent(const IntentPtr& intent);
 
 }  // namespace apps
 

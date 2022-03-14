@@ -5,6 +5,7 @@
 #include "components/services/app_service/public/cpp/intent_util.h"
 
 #include "base/values.h"
+#include "components/services/app_service/public/cpp/intent.h"
 #include "components/services/app_service/public/cpp/intent_filter_util.h"
 #include "components/services/app_service/public/cpp/intent_test_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -869,4 +870,57 @@ TEST_F(IntentUtilTest, IsGenericFileHandler) {
   IntentFilterPtr filter12 =
       apps_util::CreateFileFilterForView("inode/directory", "", kLabel);
   EXPECT_FALSE(apps_util::IsGenericFileHandler(intent3, filter12));
+}
+
+// TODO(crbug.com/1253250): Remove after migrating to non-mojo AppService.
+TEST_F(IntentUtilTest, MojomConvert) {
+  const std::string action = apps_util::kIntentActionSend;
+  GURL test_url1 = GURL("https://www.google.com/");
+  GURL test_url2 = GURL("https://www.abc.com/");
+  GURL test_url3 = GURL("https://www.foo.com/");
+  const std::string mime_type = "image/jpeg";
+  const std::string activity_name = "test";
+  const std::string share_text = "share text";
+  const std::string share_title = "share title";
+  const std::string start_type = "start type";
+  const std::string category1 = "category1";
+  const std::string data = "data";
+  const apps::mojom::OptionalBool ui_bypassed =
+      apps::mojom::OptionalBool::kTrue;
+  base::flat_map<std::string, std::string> extras = {
+      {"key1", "value1"}, {"key2", "value2"}, {"key3", "value3"}};
+
+  auto file1 = apps::mojom::IntentFile::New();
+  file1->url = test_url1;
+  auto file2 = apps::mojom::IntentFile::New();
+  file2->url = test_url2;
+  auto files = std::vector<apps::mojom::IntentFilePtr>();
+  files.push_back(std::move(file1));
+  files.push_back(std::move(file2));
+
+  auto src_intent =
+      CreateIntent(action, test_url1, mime_type, std::move(files),
+                   activity_name, test_url3, share_text, share_title,
+                   start_type, {category1}, data, ui_bypassed, extras);
+  auto dst_intent = apps::ConvertIntentToMojomIntent(
+      apps::ConvertMojomIntentToIntent(src_intent));
+
+  EXPECT_EQ(action, dst_intent->action);
+  EXPECT_EQ(test_url1, dst_intent->url.value());
+  EXPECT_EQ(mime_type, dst_intent->mime_type.value());
+  EXPECT_EQ(2u, dst_intent->files->size());
+  EXPECT_EQ(test_url1, dst_intent->files.value()[0]->url);
+  EXPECT_EQ(test_url2, dst_intent->files.value()[1]->url);
+  EXPECT_EQ(activity_name, dst_intent->activity_name.value());
+  EXPECT_EQ(test_url3, dst_intent->drive_share_url.value());
+  EXPECT_EQ(share_text, dst_intent->share_text.value());
+  EXPECT_EQ(share_title, dst_intent->share_title.value());
+  EXPECT_EQ(start_type, dst_intent->start_type.value());
+  EXPECT_EQ(1u, dst_intent->categories->size());
+  EXPECT_EQ(category1, dst_intent->categories.value()[0]);
+  EXPECT_EQ(data, dst_intent->data.value());
+  EXPECT_EQ(ui_bypassed, dst_intent->ui_bypassed);
+  EXPECT_TRUE(dst_intent->extras.has_value());
+  EXPECT_EQ(3u, dst_intent->extras->size());
+  EXPECT_EQ(extras, dst_intent->extras.value());
 }
