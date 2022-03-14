@@ -23,9 +23,9 @@ class LayoutInstabilityTest : public MetricIntegrationTest {
   void RunWPT(const std::string& test_file, bool trace_only = false);
 
  private:
-  double CheckTraceData(Value& expectations, TraceAnalyzer&);
-  void CheckSources(Value::ConstListView expected_sources,
-                    Value::ConstListView trace_sources);
+  double CheckTraceData(Value::List& expectations, TraceAnalyzer&);
+  void CheckSources(const Value::List& expected_sources,
+                    const Value::List& trace_sources);
 };
 
 void LayoutInstabilityTest::RunWPT(const std::string& test_file,
@@ -39,7 +39,8 @@ void LayoutInstabilityTest::RunWPT(const std::string& test_file,
       EvalJs(web_contents(), "cls_run_tests").ExtractList();
 
   // Check trace data.
-  double final_score = CheckTraceData(expectations, *StopTracingAndAnalyze());
+  double final_score =
+      CheckTraceData(expectations.GetList(), *StopTracingAndAnalyze());
   if (trace_only)
     return;
 
@@ -58,7 +59,7 @@ void LayoutInstabilityTest::RunWPT(const std::string& test_file,
             Bucket(page_load_metrics::LayoutShiftUmaValue(final_score), 1));
 }
 
-double LayoutInstabilityTest::CheckTraceData(Value& expectations,
+double LayoutInstabilityTest::CheckTraceData(Value::List& expectations,
                                              TraceAnalyzer& analyzer) {
   double final_score = 0.0;
 
@@ -66,24 +67,24 @@ double LayoutInstabilityTest::CheckTraceData(Value& expectations,
   analyzer.FindEvents(Query::EventNameIs("LayoutShift"), &events);
 
   size_t i = 0;
-  for (const Value& expectation : expectations.GetListDeprecated()) {
-    optional<double> score = expectation.FindDoubleKey("score");
+  for (const Value& expectation_value : expectations) {
+    const Value::Dict& expectation = expectation_value.GetDict();
+
+    optional<double> score = expectation.FindDouble("score");
     if (score && *score == 0.0) {
       // {score:0} expects no layout shift.
       continue;
     }
 
-    Value data;
-    events[i++]->GetArgAsValue("data", &data);
+    Value::Dict data = events[i++]->GetKnownArgAsDict("data");
 
     if (score) {
-      EXPECT_EQ(*score, *data.FindDoubleKey("score"));
+      EXPECT_EQ(*score, data.FindDouble("score"));
       final_score = *score;
     }
-    const Value* sources = expectation.FindListKey("sources");
+    const Value::List* sources = expectation.FindList("sources");
     if (sources) {
-      CheckSources(sources->GetListDeprecated(),
-                   data.FindListKey("impacted_nodes")->GetListDeprecated());
+      CheckSources(*sources, *data.FindList("impacted_nodes"));
     }
   }
 
@@ -91,24 +92,25 @@ double LayoutInstabilityTest::CheckTraceData(Value& expectations,
   return final_score;
 }
 
-void LayoutInstabilityTest::CheckSources(Value::ConstListView expected_sources,
-                                         Value::ConstListView trace_sources) {
+void LayoutInstabilityTest::CheckSources(const Value::List& expected_sources,
+                                         const Value::List& trace_sources) {
   EXPECT_EQ(expected_sources.size(), trace_sources.size());
   size_t i = 0;
   for (const Value& expected_source : expected_sources) {
-    const Value& trace_source = trace_sources[i++];
-    int node_id = *trace_source.FindIntKey("node_id");
-    if (expected_source.FindKey("node")->type() == Value::Type::NONE) {
+    const Value::Dict& expected_source_dict = expected_source.GetDict();
+    const Value::Dict& trace_source_dict = trace_sources[i++].GetDict();
+    int node_id = *trace_source_dict.FindInt("node_id");
+    if (expected_source_dict.Find("node")->type() == Value::Type::NONE) {
       EXPECT_EQ(node_id, 0);
     } else {
       EXPECT_NE(node_id, 0);
-      EXPECT_EQ(*expected_source.FindStringKey("debugName"),
-                *trace_source.FindStringKey("debug_name"));
+      EXPECT_EQ(*expected_source_dict.FindString("debugName"),
+                *trace_source_dict.FindString("debug_name"));
     }
-    EXPECT_EQ(*expected_source.FindListKey("previousRect"),
-              *trace_source.FindListKey("old_rect"));
-    EXPECT_EQ(*expected_source.FindListKey("currentRect"),
-              *trace_source.FindListKey("new_rect"));
+    EXPECT_EQ(*expected_source_dict.FindList("previousRect"),
+              *trace_source_dict.FindList("old_rect"));
+    EXPECT_EQ(*expected_source_dict.FindList("currentRect"),
+              *trace_source_dict.FindList("new_rect"));
   }
 }
 

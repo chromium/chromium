@@ -688,15 +688,13 @@ TEST_F(UkmPageLoadMetricsObserverTest, LargestContentfulPaint_Trace) {
   analyzer->FindEvents(q, &events);
   EXPECT_EQ(1u, events.size());
   EXPECT_EQ("loading", events[0]->category);
-  EXPECT_TRUE(events[0]->HasArg("data"));
-  base::Value arg;
-  EXPECT_TRUE(events[0]->GetArgAsValue("data", &arg));
-  ASSERT_TRUE(arg.is_dict());
-  int time = arg.FindIntKey("durationInMilliseconds").value_or(0);
+  ASSERT_TRUE(events[0]->HasDictArg("data"));
+  base::Value::Dict arg = events[0]->GetKnownArgAsDict("data");
+  int time = arg.FindInt("durationInMilliseconds").value_or(0);
   EXPECT_EQ(600, time);
-  int size = arg.FindIntKey("size").value_or(0);
+  int size = arg.FindInt("size").value_or(0);
   EXPECT_EQ(1000, size);
-  const std::string* type = arg.FindStringKey("type");
+  const std::string* type = arg.FindString("type");
   ASSERT_TRUE(type);
   EXPECT_EQ("text", *type);
 }

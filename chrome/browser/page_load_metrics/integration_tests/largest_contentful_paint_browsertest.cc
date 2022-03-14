@@ -32,22 +32,22 @@ using ukm::builders::PageLoad;
 namespace {
 
 void ValidateCandidate(int expected_size, const TraceEvent& event) {
-  base::Value data;
-  ASSERT_TRUE(event.GetArgAsValue("data", &data));
+  ASSERT_TRUE(event.HasDictArg("data"));
+  base::Value::Dict data = event.GetKnownArgAsDict("data");
 
-  const absl::optional<int> traced_size = data.FindIntKey("size");
+  const absl::optional<int> traced_size = data.FindInt("size");
   ASSERT_TRUE(traced_size.has_value());
   EXPECT_EQ(traced_size.value(), expected_size);
 
   const absl::optional<bool> traced_main_frame_flag =
-      data.FindBoolKey("isMainFrame");
+      data.FindBool("isMainFrame");
   ASSERT_TRUE(traced_main_frame_flag.has_value());
   EXPECT_TRUE(traced_main_frame_flag.value());
 }
 
 int GetCandidateIndex(const TraceEvent& event) {
-  base::Value data = event.GetKnownArgAsValue("data");
-  absl::optional<int> candidate_idx = data.FindIntKey("candidateIndex");
+  base::Value::Dict data = event.GetKnownArgAsDict("data");
+  absl::optional<int> candidate_idx = data.FindInt("candidateIndex");
   DCHECK(candidate_idx.has_value()) << "couldn't find 'candidateIndex'";
 
   return candidate_idx.value();
