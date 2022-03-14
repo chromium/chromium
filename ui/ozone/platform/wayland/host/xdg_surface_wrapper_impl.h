@@ -9,7 +9,6 @@
 
 #include <cstdint>
 
-#include "base/memory/weak_ptr.h"
 #include "ui/ozone/platform/wayland/common/wayland_object.h"
 
 namespace gfx {
@@ -44,8 +43,6 @@ class XDGSurfaceWrapperImpl : public ShellSurfaceWrapper {
                         struct xdg_surface* xdg_surface,
                         uint32_t serial);
 
-  void OnConfigure(uint32_t serial);
-
   // Non-owing WaylandWindow that uses this surface wrapper.
   WaylandWindow* const wayland_window_;
   WaylandConnection* const connection_;
@@ -53,8 +50,6 @@ class XDGSurfaceWrapperImpl : public ShellSurfaceWrapper {
   bool is_configured_ = false;
 
   wl::Object<struct xdg_surface> xdg_surface_;
-
-  base::WeakPtrFactory<XDGSurfaceWrapperImpl> weak_ptr_factory_{this};
 };
 
 }  // namespace ui
