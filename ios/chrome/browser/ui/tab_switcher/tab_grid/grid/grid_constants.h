@@ -65,6 +65,7 @@ extern const CGFloat kReorderingActiveCellScale;
 // GridHeader styling.
 // The GridHeader height.
 extern const CGFloat kGridHeaderHeight;
+extern const CGFloat kGridHeaderAccessibilityHeight;
 // The GridHeader title label Color.
 extern const int kGridHeaderTitleColor;
 // The GridHeader value label Color.
