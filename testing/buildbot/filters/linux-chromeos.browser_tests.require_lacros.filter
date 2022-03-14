@@ -11,10 +11,9 @@ Dictation*
 SelectToSpeak*
 SwitchAccess*
 # TODO(crbug.com/1245416) Enable more accessibility tests.
--ChromeVoxBackgroundTest.SwipeLeftRight4ByContainers
--ChromeVoxBackgroundTest.TabSwitchAndRefreshRecovery
--ChromeVoxBackgroundTest.TextSelectionAndLiveRegion
--ChromeVoxBackgroundTest.TouchEditingState
+-ChromeVoxBackgroundTest.*
+-ChromeVoxEditingTest.*
+-ChromeVoxOutputE2ETest.*
 -ChromeVoxDesktopAutomationHandlerTest.TaskManagerTableView
 -ChromeVoxISearchTest.Simple
 -ChromeVoxPanelTest.FormControlsMenu
