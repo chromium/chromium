@@ -800,7 +800,7 @@ void DCLayerOverlayProcessor::Process(
   current_frame_overlay_rects_.clear();
   previous_display_rect_ = display_rect;
 
-  if (!dc_layer_overlays->empty()) {
+  if (processed_yuv_overlay_count_ > 0) {
     base::UmaHistogramExactLinear(
         "GPU.DirectComposition.DCLayer.YUVOverlayCount",
         /*sample=*/processed_yuv_overlay_count_,
