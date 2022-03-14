@@ -786,6 +786,7 @@ js_unittest("file_transfer_controller_unittest.m") {
     "//ui/file_manager/file_manager/externs/background:import_history",
     "//ui/file_manager/file_manager/externs/background:progress_center",
     "//ui/file_manager/file_manager/foreground/elements:files_toast",
+    "//ui/webui/resources/cr_elements/cr_input:cr_input.m",
     "//ui/webui/resources/js:util.m",
     "//ui/webui/resources/js/cr:ui.m",
     "//ui/webui/resources/js/cr/ui:command.m",

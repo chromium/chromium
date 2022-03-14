@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import 'chrome://resources/cr_elements/cr_input/cr_input.m.js';
+
 import {decorate} from 'chrome://resources/js/cr/ui.m.js';
 import {Command} from 'chrome://resources/js/cr/ui/command.m.js';
 import {ListSelectionModel} from 'chrome://resources/js/cr/ui/list_selection_model.m.js';
@@ -82,7 +84,7 @@ export function setUp() {
     '  </div>',
     '  <div id="test-elements">',
     '    <input type="text" id="free-text">',
-    '    <cr-input id="test-input" tabindex="0"></cr-input>',
+    '    <cr-input id="test-input"></cr-input>',
     '    <input type="button" id="button">',
     '</div>',
   ].join('');
@@ -201,7 +203,8 @@ export function setUp() {
  */
 export function testIsDocumentWideEvent() {
   const input = document.querySelector('#free-text');
-  const crInput = document.querySelector('#test-input');
+  const crInput =
+      /** @type {!CrInputElement} */ (document.querySelector('#test-input'));
   const button = document.querySelector('#button');
 
   // Should return true when body is focused.
@@ -232,6 +235,7 @@ export function testIsDocumentWideEvent() {
   // Should return true when document is focused.
   crInput.focus();
   assertEquals(crInput, document.activeElement);
+  assertEquals(crInput.inputElement, crInput.shadowRoot.activeElement);
   assertFalse(fileTransferController.isDocumentWideEvent_());
 }
 

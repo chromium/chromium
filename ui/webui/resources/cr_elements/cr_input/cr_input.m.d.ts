@@ -10,6 +10,7 @@ interface CrInputElement extends LegacyElementMixin, HTMLElement {
   autoValidate: boolean|null|undefined;
   disabled: boolean;
   errorMessage: string|null|undefined;
+  inputTabindex: number|null;
   invalid: boolean;
   max: number|null|undefined;
   min: number|null|undefined;
@@ -21,7 +22,6 @@ interface CrInputElement extends LegacyElementMixin, HTMLElement {
   placeholder: string|null;
   readonly: boolean|undefined;
   required: boolean|undefined;
-  tabindex: number|null;
   type: string|null|undefined;
   value: string;
   hostAttributes: object|null;

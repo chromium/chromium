@@ -48,7 +48,7 @@
                     max-length="255" spellcheck="false"
                     on-input="onCurrentPINInput_"
                     invalid="[[isNonEmpty_(currentPINError_)]]"
-                    label="$i18n{securityKeysCurrentPIN}" tabindex="0"
+                    label="$i18n{securityKeysCurrentPIN}"
                     type$="[[inputType_(pinsVisible_)]]"
                     error-message="[[currentPINError_]]">
                   <cr-icon-button slot="suffix" id="showPINsButton"
@@ -68,7 +68,7 @@
                   min-length="[[newMinPinLength_]]"
                   max-length="255" spellcheck="false" on-input="onNewPINInput_"
                   label="$i18n{securityKeysPIN}"
-                  tabindex="0" type$="[[inputType_(pinsVisible_)]]"
+                  type$="[[inputType_(pinsVisible_)]]"
                   invalid="[[isNonEmpty_(newPINError_)]]"
                   error-message="[[newPINError_]]">
                 <!-- If a show/hide icon is included in this row, this div is
@@ -82,7 +82,7 @@
                   min-length="[[newMinPinLength_]]"
                   max-length="255" spellcheck="false"
                   on-input="onConfirmPINInput_"
-                  label="$i18n{securityKeysConfirmPIN}" tabindex="0"
+                  label="$i18n{securityKeysConfirmPIN}"
                   invalid="[[isNonEmpty_(confirmPINError_)]]"
                   type$="[[inputType_(pinsVisible_)]]"
                   error-message="[[confirmPINError_]]">

@@ -30,7 +30,7 @@ const SUPPORTED_INPUT_TYPES = new Set([
  *   placeholder
  *   readonly
  *   required
- *   tabindex
+ *   tabindex (set through input-tabindex)
  *   type (see |SUPPORTED_INPUT_TYPES| above)
  *   value
  *
@@ -74,7 +74,6 @@ Polymer({
       type: Boolean,
       value: false,
       reflectToAttribute: true,
-      observer: 'disabledChanged_',
     },
 
     errorMessage: {
@@ -158,10 +157,10 @@ Polymer({
     },
 
     /** @type {?number} */
-    tabindex: {
+    inputTabindex: {
       type: Number,
       value: 0,
-      reflectToAttribute: true,
+      observer: 'onInputTabindexChanged_',
     },
 
     type: {
@@ -178,25 +177,17 @@ Polymer({
     },
   },
 
-  hostAttributes: {
-    'aria-disabled': 'false',
+  ready() {
+    // Use inputTabindex instead.
+    assert(!this.hasAttribute('tabindex'));
   },
 
-  listeners: {
-    'focus': 'onFocus_',
-    'pointerdown': 'onPointerDown_',
-  },
-
-  /** @private {?number} */
-  originalTabIndex_: null,
-
-  /** @override */
-  attached() {
-    // Run this for the first time in attached instead of in disabledChanged_
-    // since this.tabindex might not be set yet then.
-    if (this.disabled) {
-      this.reconcileTabindex_();
-    }
+  /** @private */
+  onInputTabindexChanged_() {
+    // CrInput only supports 0 or -1 values for the input's tabindex to allow
+    // having the input in tab order or not. Values greater than 0 will not work
+    // as the shadow root encapsulates tabindices.
+    assert(this.inputTabindex === 0 || this.inputTabindex === -1);
   },
 
   /** @private */
@@ -229,19 +220,6 @@ Polymer({
   },
 
   /** @private */
-  disabledChanged_(current, previous) {
-    this.setAttribute('aria-disabled', this.disabled ? 'true' : 'false');
-    // In case input was focused when disabled changes.
-    this.focused_ = false;
-
-    // Don't change tabindex until after finished attaching, since this.tabindex
-    // might not be intialized yet.
-    if (previous !== undefined) {
-      this.reconcileTabindex_();
-    }
-  },
-
-  /** @private */
   onInvalidOrErrorMessageChanged_() {
     this.displayErrorMessage_ = this.invalid ? this.errorMessage : '';
 
@@ -260,21 +238,6 @@ Polymer({
   },
 
   /**
-   * This helper function manipulates the tabindex based on disabled state. If
-   * this element is disabled, this function will remember the tabindex and
-   * unset it. If the element is enabled again, it will restore the tabindex
-   * to it's previous value.
-   * @private
-   */
-  reconcileTabindex_() {
-    if (this.disabled) {
-      this.recordAndUnsetTabIndex_();
-    } else {
-      this.restoreTabIndex_();
-    }
-  },
-
-  /**
    * This is necessary instead of doing <input placeholder="[[placeholder]]">
    * because if this.placeholder is set to a truthy value then removed, it
    * would show "null" as placeholder.
@@ -288,15 +251,8 @@ Polymer({
     }
   },
 
-  /** @private */
-  onFocus_() {
-    if (!this.focusInput()) {
-      return;
-    }
-    // Always select the <input> element on focus. TODO(stevenjb/scottchen):
-    // Native <input> elements only do this for keyboard focus, not when
-    // focus() is called directly. Fix this? https://crbug.com/882612.
-    this.inputElement.select();
+  focus() {
+    this.focusInput();
   },
 
   /**
@@ -311,61 +267,6 @@ Polymer({
     }
     this.inputElement.focus();
     return true;
-  },
-
-  /** @private */
-  recordAndUnsetTabIndex_() {
-    // Don't change originalTabIndex_ if it just got changed.
-    if (this.originalTabIndex_ === null) {
-      this.originalTabIndex_ = this.tabindex;
-    }
-
-    this.tabindex = null;
-  },
-
-  /** @private */
-  restoreTabIndex_() {
-    this.tabindex = this.originalTabIndex_;
-    this.originalTabIndex_ = null;
-  },
-
-  /**
-   * Prevents clicking random spaces within cr-input but outside of <input>
-   * from triggering focus.
-   * @param {!Event} e
-   * @private
-   */
-  onPointerDown_(e) {
-    // Don't need to manipulate tabindex if cr-input is already disabled.
-    if (this.disabled) {
-      return;
-    }
-
-    // Should not mess with tabindex when <input> is clicked, otherwise <input>
-    // will lose and regain focus, and replay the focus animation.
-    if (e.path[0].tagName !== 'INPUT') {
-      this.recordAndUnsetTabIndex_();
-      setTimeout(() => {
-        // Restore tabindex, unless disabled in the same cycle as pointerdown.
-        if (!this.disabled) {
-          this.restoreTabIndex_();
-        }
-      }, 0);
-    }
-  },
-
-  /**
-   * When shift-tab is pressed, first bring the focus to the host element.
-   * This accomplishes 2 things:
-   * 1) Host doesn't get focused when the browser moves the focus backward.
-   * 2) focus now escaped the shadow-dom of this element, so that it'll
-   *    correctly obey non-zero tabindex ordering of the containing document.
-   * @private
-   */
-  onInputKeydown_(e) {
-    if (e.shiftKey && e.key === 'Tab') {
-      this.focus();
-    }
   },
 
   /**
@@ -413,7 +314,7 @@ Polymer({
    * @param {number=} end
    */
   select(start, end) {
-    this.focusInput();
+    this.inputElement.focus();
     if (start !== undefined && end !== undefined) {
       this.inputElement.setSelectionRange(start, end);
     } else {

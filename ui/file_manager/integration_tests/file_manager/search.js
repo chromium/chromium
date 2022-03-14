@@ -153,8 +153,8 @@ testcase.searchHidingTextEntryField = async () => {
 
   // Verify the toolbar search text entry box is enabled.
   let textInputElement =
-      await remoteCall.waitForElement(appId, ['#search-box cr-input']);
-  chrome.test.assertEq('false', textInputElement.attributes['aria-disabled']);
+      await remoteCall.waitForElement(appId, ['#search-box cr-input', 'input']);
+  chrome.test.assertEq(undefined, textInputElement.attributes['disabled']);
 
   // Send a 'mousedown' to the toolbar 'delete' button.
   chrome.test.assertTrue(await remoteCall.callRemoteTestUtil(
@@ -162,8 +162,8 @@ testcase.searchHidingTextEntryField = async () => {
 
   // Verify the toolbar search text entry is still enabled.
   textInputElement =
-      await remoteCall.waitForElement(appId, ['#search-box cr-input']);
-  chrome.test.assertEq('false', textInputElement.attributes['aria-disabled']);
+      await remoteCall.waitForElement(appId, ['#search-box cr-input', 'input']);
+  chrome.test.assertEq(undefined, textInputElement.attributes['disabled']);
 
   // Send a 'mouseup' to the toolbar 'delete' button.
   chrome.test.assertTrue(await remoteCall.callRemoteTestUtil(
@@ -171,8 +171,8 @@ testcase.searchHidingTextEntryField = async () => {
 
   // Verify the toolbar search text entry is still enabled.
   textInputElement =
-      await remoteCall.waitForElement(appId, ['#search-box cr-input']);
-  chrome.test.assertEq('false', textInputElement.attributes['aria-disabled']);
+      await remoteCall.waitForElement(appId, ['#search-box cr-input', 'input']);
+  chrome.test.assertEq(undefined, textInputElement.attributes['disabled']);
 };
 
 /**

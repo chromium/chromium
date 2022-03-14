@@ -132,10 +132,10 @@
         <div id="inner-input-container">
           <slot name="inline-prefix"></slot>
           <!-- Only attributes that are named inconsistently between html and js
-              need to use attr$="", such as |tabindex| vs .tabIndex and
-              |readonly| vs .readOnly. -->
+              need to use attr$="", such as |readonly| vs .readOnly. -->
           <input id="input" disabled="[[disabled]]" autofocus="[[autofocus]]"
-              value="{{value::input}}" tabindex$="[[tabindex]]" type="[[type]]"
+              value="{{value::input}}" tabindex$="[[inputTabindex]]"
+              type="[[type]]"
               readonly$="[[readonly]]" maxlength$="[[maxlength]]"
               pattern$="[[pattern]]" required="[[required]]"
               minlength$="[[minlength]]" inputmode$="[[inputmode]]"
@@ -144,7 +144,7 @@
               aria-invalid$="[[getAriaInvalid_(invalid)]]"
               max="[[max]]" min="[[min]]" on-focus="onInputFocus_"
               on-blur="onInputBlur_" on-change="onInputChange_"
-              on-keydown="onInputKeydown_" part="input"
+              part="input"
               autocomplete="off">
           <slot name="inline-suffix"></slot>
         </div>

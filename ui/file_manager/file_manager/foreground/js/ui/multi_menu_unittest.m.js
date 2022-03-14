@@ -78,7 +78,7 @@ export function setUp() {
     '</cr-menu>',
     '<div id="focus-div" tabindex="1"/>',
     '<button id="focus-button" tabindex="2"/>',
-    '<cr-input id="focus-input" tabindex="3">',
+    '<cr-input id="focus-input" input-tabindex="3">',
     '</cr-input>',
   ].join('');
 
