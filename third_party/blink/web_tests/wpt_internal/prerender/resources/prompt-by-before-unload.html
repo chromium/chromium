@@ -1,11 +1,15 @@
 <!DOCTYPE html>
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
+<script src="/speculation-rules/prerender/resources/utils.js"></script>
 <div id="target"></div>
 <iframe id="i" srcdoc="<html><body>Hello</body></html>"></iframe>
 <script>
 
 assert_true(document.prerendering);
+
+const params = new URLSearchParams(location.search);
+const uid = params.get('uid');
 
 i.contentWindow.onbeforeunload = function(e) {
   // Call preventDefault() or set `returnValue` to trigger the prompt
@@ -17,7 +21,7 @@ i.contentWindow.onbeforeunload = function(e) {
 }
 
 async function navigateWindowLocation() {
-  const bc = new BroadcastChannel('inner-channel');
+  const bc = new PrerenderChannel('inner-channel', uid);
   const promise = new Promise(resolve => {
     bc.addEventListener('message', e => {
       resolve(e.data);
@@ -26,12 +30,12 @@ async function navigateWindowLocation() {
       once: true
     });
   });
-  i.contentWindow.location.href = 'prompt-by-before-unload-inner-frame.html';
+  i.contentWindow.location.href = `prompt-by-before-unload-inner-frame.html?uid=${uid}`;
   return promise;
 }
 
 async function asyncPromptOnBeforeUnload() {
-  const bc = new BroadcastChannel('prerender-channel');
+  const bc = new PrerenderChannel('prerender-channel', uid);
   try {
     const result = await navigateWindowLocation();
     if (result == 'a new page is loaded')

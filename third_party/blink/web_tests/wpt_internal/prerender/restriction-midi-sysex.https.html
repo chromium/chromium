@@ -10,12 +10,14 @@ This file cannot be upstreamed to WPT until:
 <script src="/resources/testharnessreport.js"></script>
 <script src="/resources/testdriver.js"></script>
 <script src="/resources/testdriver-vendor.js"></script>
-<script src="resources/utils.js"></script>
+<script src="/common/utils.js"></script>
+<script src="/speculation-rules/prerender/resources/utils.js"></script>
 <body>
 <script>
 
 promise_test(async t => {
-  const bc = new BroadcastChannel('test-channel');
+  const uid = token();
+  const bc = new PrerenderChannel('test-channel', uid);
   t.add_cleanup(_ => bc.close());
 
   // Grant the permission here to make a more discerning test because
@@ -32,7 +34,7 @@ promise_test(async t => {
       once: true
     });
   });
-  const url = `resources/midi.https.html?sysex=true`;
+  const url = `resources/midi.https.html?sysex=true&uid=${uid}`;
   window.open(url, '_blank', 'noopener');
 
   const result = await gotMessage;
@@ -56,6 +58,9 @@ promise_test(async t => {
     assert_equals(result[i].prerendering, expected[i].prerendering,
       `prerendering${i}`);
   }
+
+  // Send a close signal to PrerenderEventCollector on the prerendered page.
+  new PrerenderChannel('close', uid).postMessage('');
 }, `the access to the Midi API should be deferred until the prerendered page is
   activated`);
 
