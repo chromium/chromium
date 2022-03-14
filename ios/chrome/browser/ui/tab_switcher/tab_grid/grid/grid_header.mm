@@ -29,7 +29,7 @@
   self = [super initWithFrame:frame];
   if (self) {
     self.backgroundColor = [UIColor colorNamed:kGridBackgroundColor];
-
+    self.accessibilityIdentifier = kGridSectionHeaderIdentifier;
     UILabel* titleLabel = [[UILabel alloc] init];
     titleLabel.translatesAutoresizingMaskIntoConstraints = NO;
     titleLabel.font =
