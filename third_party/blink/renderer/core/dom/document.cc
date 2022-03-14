@@ -97,6 +97,7 @@
 #include "third_party/blink/renderer/core/css/cssom/computed_style_property_map.h"
 #include "third_party/blink/renderer/core/css/font_face_set_document.h"
 #include "third_party/blink/renderer/core/css/invalidation/style_invalidator.h"
+#include "third_party/blink/renderer/core/css/layout_upgrade.h"
 #include "third_party/blink/renderer/core/css/media_query_list.h"
 #include "third_party/blink/renderer/core/css/media_query_matcher.h"
 #include "third_party/blink/renderer/core/css/media_values.h"
@@ -2008,6 +2009,11 @@ void Document::AssertLayoutTreeUpdatedAfterLayout() {
 #endif
 
 void Document::UpdateStyleAndLayoutTree() {
+  DocumentLayoutUpgrade upgrade(*this);
+  UpdateStyleAndLayoutTree(upgrade);
+}
+
+void Document::UpdateStyleAndLayoutTree(LayoutUpgrade& upgrade) {
   DCHECK(IsMainThread());
   DCHECK(ThreadState::Current()->IsAllocationAllowed());
   if (!IsActive() || !View() || View()->ShouldThrottleRendering() ||
@@ -2019,25 +2025,18 @@ void Document::UpdateStyleAndLayoutTree() {
   ScriptForbiddenScope forbid_script;
 
   if (HTMLFrameOwnerElement* owner = LocalOwner()) {
-    if (GetStyleEngine().HasViewportDependentMediaQueries()) {
-      owner->GetDocument()
-          .GetDisplayLockDocumentState()
-          .EnsureMinimumForcedPhase(DisplayLockContext::ForcedPhase::kLayout);
-
-      // TODO(andruud): Provide a better reason.
-      owner->GetDocument().UpdateStyleAndLayout(DocumentUpdateReason::kUnknown);
-    } else {
-      owner->GetDocument().UpdateStyleAndLayoutTree();
-    }
+    ParentLayoutUpgrade parent_upgrade(*this);
+    owner->GetDocument().UpdateStyleAndLayoutTree(parent_upgrade);
   }
 
   CSSAnimationUpdateScope animation_update_scope(*this);
 
   // This call has to happen even if UpdateStyleAndLayout below will be called.
-  // In fact, it may set the `UsesContainerQueries()` flag.
+  // This is because the subsequent call to ShouldUpgrade may depend on the
+  // results produced by UpdateStyleAndLayoutTreeForThisDocument.
   UpdateStyleAndLayoutTreeForThisDocument();
 
-  if (GetStyleEngine().UsesContainerQueries()) {
+  if (upgrade.ShouldUpgrade()) {
     GetDisplayLockDocumentState().EnsureMinimumForcedPhase(
         DisplayLockContext::ForcedPhase::kLayout);
 
@@ -2143,8 +2142,21 @@ void Document::UpdateStyleAndLayoutTreeForThisDocument() {
     View()->MarkOrthogonalWritingModeRootsForLayout();
   }
 
-  if (focused_element_ && !focused_element_->IsFocusable())
-    ClearFocusedElementSoon();
+  // TODO(crbug.com/1298921): If style is layout-dependent, we have to
+  // delay this until after layout.
+  if (focused_element_) {
+    bool focusable = false;
+    if (RuntimeEnabledFeatures::CSSContainerQueriesEnabled() &&
+        GetStyleEngine().StyleMayRequireLayout()) {
+      const ComputedStyle* style = focused_element_->GetComputedStyle();
+      focusable = style && style->IsFocusable();
+    } else {
+      focusable = focused_element_->IsFocusable();
+    }
+    if (!focusable)
+      ClearFocusedElementSoon();
+  }
+
   GetLayoutView()->ClearHitTestCache();
 
   DCHECK(!document_animations_->NeedsAnimationTimingUpdate());
@@ -2232,12 +2244,31 @@ bool Document::NeedsLayoutTreeUpdateForNodeIncludingDisplayLocked(
   const StyleAndLayoutTreeUpdate update = CalculateStyleAndLayoutTreeUpdate();
   if (update == StyleAndLayoutTreeUpdate::kFull)
     return true;
-  if (update == StyleAndLayoutTreeUpdate::kNone) {
-    if (DisplayLockUtilities::IsUnlockedQuickCheck(node))
-      return false;
-    // If DisplayLockUtilities::IsUnlockedQuickCheck returned 'false', then
-    // we may or may not be unlocked: we have to traverse the ancestor chain
-    // to know for sure.
+  bool analyze = update == StyleAndLayoutTreeUpdate::kAnalyzed;
+
+  // If DisplayLockUtilities::IsUnlockedQuickCheck returns 'false', then
+  // we may or may not be unlocked: we have to traverse the ancestor chain
+  // to know for sure.
+  if (!analyze)
+    analyze = !DisplayLockUtilities::IsUnlockedQuickCheck(node);
+
+  // If style may depend on layout (which is the case for container queries),
+  // then we need to analyze the (inclusive) ancestor chain in order to figure
+  // out if the call to UpdateStyleAndLayoutTree needs an upgrade [1].
+  //
+  // Note that NeedsLayout may be marked without any style-dirtiness, and
+  // also note that style-dirtiness on elements unrelated to this ancestor
+  // chain may *cause* NeedsLayout.
+  //
+  // [1] See blink::LayoutUpgrade
+  bool maybe_needs_layout =
+      (update != StyleAndLayoutTreeUpdate::kNone) || View()->NeedsLayout();
+  if (!analyze)
+    analyze = GetStyleEngine().StyleMayRequireLayout() && maybe_needs_layout;
+
+  if (!analyze) {
+    DCHECK_EQ(StyleAndLayoutTreeUpdate::kNone, update);
+    return false;
   }
 
   bool is_dirty = false;
@@ -2245,6 +2276,27 @@ bool Document::NeedsLayoutTreeUpdateForNodeIncludingDisplayLocked(
     if (auto* style = node.GetComputedStyle())
       return !style->IsEnsuredOutsideFlatTree();
     is_dirty = true;
+  }
+
+  // NodeLayoutUpgrade::GetReasons returns a set of possible upgrade
+  // reasons [1] for the provided node, but not all of those possible reasons
+  // should actually be treated as dirtying in all situations. (Keep reading).
+  //
+  // [1] See blink::NodeLayoutUpgrade::Reasons
+  NodeLayoutUpgrade::Reasons upgrade_mask =
+      maybe_needs_layout ? NodeLayoutUpgrade::kDependsOnContainerQueries : 0;
+
+  if (NodeLayoutUpgrade::GetReasons(node) & upgrade_mask)
+    is_dirty = true;
+
+  // If `node` does not have a style, we're typically in display:none. In this
+  // case, we can not be sure that we *don't* require a layout upgrade, since
+  // this information would be stored on `ComputedStyle`. Hence we treat any
+  // style-less node as requiring an upgrade if the node could possibly be
+  // affected by layout (which is only the case inside an interleaving root).
+  if (ComputedStyle::IsNullOrEnsured(node.GetComputedStyle()) &&
+      maybe_needs_layout) {
+    upgrade_mask |= NodeLayoutUpgrade::kInterleavingRoot;
   }
 
   for (const ContainerNode* ancestor = LayoutTreeBuilderTraversal::Parent(node);
@@ -2263,6 +2315,9 @@ bool Document::NeedsLayoutTreeUpdateForNodeIncludingDisplayLocked(
       if (auto* style = ancestor->GetComputedStyle())
         return !style->IsEnsuredOutsideFlatTree();
     }
+    if (NodeLayoutUpgrade::GetReasons(*ancestor) & upgrade_mask)
+      is_dirty = true;
+
     auto* element = DynamicTo<Element>(ancestor);
     if (!element)
       continue;
@@ -2291,7 +2346,8 @@ void Document::UpdateStyleAndLayoutTreeForNode(const Node* node) {
 
   DisplayLockUtilities::ScopedForcedUpdate scoped_update_forced(
       node, DisplayLockContext::ForcedPhase::kStyleAndLayoutTree);
-  UpdateStyleAndLayoutTree();
+  NodeLayoutUpgrade upgrade(*node);
+  UpdateStyleAndLayoutTree(upgrade);
 }
 
 void Document::UpdateStyleAndLayoutTreeForSubtree(const Node* node) {

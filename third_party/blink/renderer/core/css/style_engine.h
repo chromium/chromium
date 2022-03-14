@@ -270,6 +270,12 @@ class CORE_EXPORT StyleEngine final : public GarbageCollected<StyleEngine>,
     uses_container_relative_units_ = true;
   }
 
+  void SetStyleAffectedByLayout() { style_affected_by_layout_ = true; }
+
+  bool StyleMayRequireLayout() const {
+    return style_affected_by_layout_ || skipped_container_recalc_;
+  }
+
   bool UsesRemUnits() const { return uses_rem_units_; }
   void SetUsesRemUnit(bool uses_rem_units) { uses_rem_units_ = uses_rem_units; }
   bool UpdateRemUnits(const ComputedStyle* old_root_style,
@@ -754,6 +760,9 @@ class CORE_EXPORT StyleEngine final : public GarbageCollected<StyleEngine>,
 
   bool uses_rem_units_{false};
   bool uses_container_relative_units_{false};
+  // True if we have performed style recalc for at least one element that
+  // depends on container queries.
+  bool style_affected_by_layout_{false};
   // True if the previous UpdateStyleAndLayoutTree skipped style recalc for a
   // subtree for a container to have the follow layout update the size of the
   // container before continuing with interleaved style and layout with the

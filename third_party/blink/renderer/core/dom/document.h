@@ -173,6 +173,7 @@ class HttpRefreshScheduler;
 class IdleRequestOptions;
 class IdleTask;
 class IntersectionObserverController;
+class LayoutUpgrade;
 class LayoutView;
 class LazyLoadImageObserver;
 class LiveNodeListBase;
@@ -572,7 +573,7 @@ class CORE_EXPORT Document : public ContainerNode,
   // This is a DOM function.
   StyleSheetList& StyleSheets();
 
-  StyleEngine& GetStyleEngine() {
+  StyleEngine& GetStyleEngine() const {
     DCHECK(style_engine_.Get());
     return *style_engine_.Get();
   }
@@ -644,12 +645,22 @@ class CORE_EXPORT Document : public ContainerNode,
       const Node&,
       bool ignore_adjacent_style = false) const;
 
-  // Update ComputedStyles and attach LayoutObjects if necessary, but don't
-  // lay out. This recursively invokes itself for all ancestor LocalFrames,
-  // because style in an ancestor frame can affect style in a child frame.
-  // This method is appropriate for cases where we need to ensure that the
-  // style for a single Document is up-to-date.
+  // Update ComputedStyles and attach LayoutObjects if necessary. This
+  // recursively invokes itself for all ancestor LocalFrames, because style in
+  // an ancestor frame can affect style in a child frame. This method is
+  // appropriate for cases where we need to ensure that the style for a single
+  // Document is up-to-date.
+  //
+  // A call to UpdateStyleAndLayoutTree may be upgraded [1] to also perform
+  // layout. This is because updating the style and layout-tree may depend
+  // on layout when container queries are used.
+  //
+  // Whether or not an upgrade should take place is decide by the
+  // provided LayoutUpgrade object.
+  //
+  // [1] See blink::LayoutUpgrade
   void UpdateStyleAndLayoutTree();
+  void UpdateStyleAndLayoutTree(LayoutUpgrade&);
 
   // Same as UpdateStyleAndLayoutTree, but does not recursively update style in
   // ancestor frames. This method is intended to be used in cases where we can

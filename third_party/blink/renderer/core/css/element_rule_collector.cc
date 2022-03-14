@@ -309,6 +309,8 @@ void ElementRuleCollector::CollectMatchingRulesForList(
       continue;
     }
     if (auto* container_query = rule_data->GetContainerQuery()) {
+      result_.SetDependsOnContainerQueries();
+
       // If we are matching pseudo elements like a ::before rule when computing
       // the styles of the originating element, we don't know whether the
       // container will be the originating element or not. There is not enough
@@ -318,8 +320,6 @@ void ElementRuleCollector::CollectMatchingRulesForList(
       // elements when they depend on the originating element.
       if (pseudo_style_request_.pseudo_id != kPseudoIdNone ||
           result.dynamic_pseudo == kPseudoIdNone) {
-        result_.SetDependsOnContainerQueries();
-
         if (!EvaluateAndAddContainerQueries(*container_query,
                                             style_recalc_context_, result_)) {
           rejected++;

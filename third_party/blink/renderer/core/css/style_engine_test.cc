@@ -4010,8 +4010,8 @@ TEST_F(StyleEngineContainerQueryTest, PseudoElementContainerQueryRecalc) {
   GetStyleEngine().UpdateStyleAndLayoutTreeForContainer(
       *container, LogicalSize(200, 100), LogicalAxes(kLogicalAxisBoth));
 
-  // The two ::before elements.
-  EXPECT_EQ(2u, GetStyleEngine().StyleForElementCount() - start_count);
+  // The two ::before elements + #span.
+  EXPECT_EQ(3u, GetStyleEngine().StyleForElementCount() - start_count);
 }
 
 TEST_F(StyleEngineContainerQueryTest, MarkStyleDirtyFromContainerRecalc) {

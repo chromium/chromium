@@ -318,6 +318,20 @@ class ComputedStyle : public ComputedStyleBase,
   // Shallow copy into a new instance sharing DataPtrs.
   CORE_EXPORT static scoped_refptr<ComputedStyle> Clone(const ComputedStyle&);
 
+  static const ComputedStyle* NullifyEnsured(const ComputedStyle* style) {
+    if (!style)
+      return nullptr;
+    if (style->IsEnsuredOutsideFlatTree())
+      return nullptr;
+    if (style->IsEnsuredInDisplayNone())
+      return nullptr;
+    return style;
+  }
+
+  static bool IsNullOrEnsured(const ComputedStyle* style) {
+    return !NullifyEnsured(style);
+  }
+
   // Find out how two ComputedStyles differ. Used for figuring out if style
   // recalc needs to propagate style changes down the tree. The constants are
   // listed in increasing severity. E.g. kInherited also means we need to update
@@ -2096,6 +2110,10 @@ class ComputedStyle : public ComputedStyleBase,
   bool IsContentVisibilityVisible() const {
     return ContentVisibility() == EContentVisibility::kVisible;
   }
+
+  // Interleaving roots are elements that may require layout to fully update
+  // the style of their descendants.
+  static bool IsInterleavingRoot(const ComputedStyle*);
 
   // Display utility functions.
   bool IsDisplayReplacedType() const {

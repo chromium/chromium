@@ -2918,6 +2918,9 @@ scoped_refptr<ComputedStyle> Element::StyleForLayoutObject(
     }
   }
 
+  if (style->DependsOnContainerQueries())
+    GetDocument().GetStyleEngine().SetStyleAffectedByLayout();
+
   return style;
 }
 

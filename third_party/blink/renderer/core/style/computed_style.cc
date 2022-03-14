@@ -2657,6 +2657,11 @@ bool ComputedStyle::CanMatchSizeContainerQueries(const Element& element) const {
           To<SVGElement>(element).IsOutermostSVGSVGElement());
 }
 
+bool ComputedStyle::IsInterleavingRoot(const ComputedStyle* style) {
+  const ComputedStyle* unensured = ComputedStyle::NullifyEnsured(style);
+  return unensured && unensured->IsContainerForSizeContainerQueries();
+}
+
 STATIC_ASSERT_ENUM(cc::OverscrollBehavior::Type::kAuto,
                    EOverscrollBehavior::kAuto);
 STATIC_ASSERT_ENUM(cc::OverscrollBehavior::Type::kContain,

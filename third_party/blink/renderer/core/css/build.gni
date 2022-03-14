@@ -406,6 +406,8 @@ blink_core_sources_css = [
   "invalidation/style_invalidator.h",
   "keyframe_style_rule_css_style_declaration.cc",
   "keyframe_style_rule_css_style_declaration.h",
+  "layout_upgrade.cc",
+  "layout_upgrade.h",
   "layout_tree_rebuild_root.cc",
   "layout_tree_rebuild_root.h",
   "local_font_face_source.cc",
