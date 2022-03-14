@@ -354,10 +354,19 @@ bool ChromeVirtualKeyboardDelegate::SetWindowBoundsInScreen(
 void ChromeVirtualKeyboardDelegate::GetClipboardHistory(
     const std::set<std::string>& item_ids_filter,
     OnGetClipboardHistoryCallback get_history_callback) {
+  // Do not leak clipboard history items if the screen is locked.
+  if (ash::ScreenLocker::default_screen_locker() &&
+      ash::ScreenLocker::default_screen_locker()->locked()) {
+    std::move(get_history_callback).Run(base::Value(base::Value::Type::LIST));
+    return;
+  }
+
   ash::ClipboardHistoryController* clipboard_history_controller =
       ash::ClipboardHistoryController::Get();
-  if (!clipboard_history_controller)
+  if (!clipboard_history_controller) {
+    std::move(get_history_callback).Run(base::Value(base::Value::Type::LIST));
     return;
+  }
 
   // Begin renderng all items in the clipboard history. Current items will
   // render even if Deactivate() is called on the ClipboardImageModelFactory.
