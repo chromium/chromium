@@ -693,18 +693,6 @@ TEST_F(AutofillExternalDelegateUnitTest, ExternalDelegateClearForm) {
       std::u16string(), POPUP_ITEM_ID_CLEAR_FORM, std::string(), 0);
 }
 
-// Test that the client is directed to hide the autofill popup after being
-// notified that the user clicked "Hide suggestions" menu item.
-TEST_F(AutofillExternalDelegateUnitTest, ExternalDelegateHideSuggestions) {
-  EXPECT_CALL(*browser_autofill_manager_, OnUserHideSuggestions(_, _));
-  EXPECT_CALL(autofill_client_,
-              HideAutofillPopup(PopupHidingReason::kAcceptSuggestion));
-
-  external_delegate_->DidAcceptSuggestion(
-      std::u16string(), POPUP_ITEM_ID_HIDE_AUTOFILL_SUGGESTIONS, std::string(),
-      0);
-}
-
 // Test that autofill client will scan a credit card after use accepted the
 // suggestion to scan a credit card.
 TEST_F(AutofillExternalDelegateUnitTest, ScanCreditCardMenuItem) {

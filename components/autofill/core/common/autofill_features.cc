@@ -167,10 +167,6 @@ const base::Feature kAutofillEnableDependentLocalityParsing{
     "AutofillEnableDependentLocalityParsing",
     base::FEATURE_DISABLED_BY_DEFAULT};
 
-// Controls whether we show "Hide suggestions" item in the suggestions menu.
-const base::Feature kAutofillEnableHideSuggestionsUI{
-    "AutofillEnableHideSuggestionsUI", base::FEATURE_DISABLED_BY_DEFAULT};
-
 // Controls whether to save the first number in a form with multiple phone
 // numbers instead of aborting the import.
 // TODO(crbug.com/1167484) Remove once launched

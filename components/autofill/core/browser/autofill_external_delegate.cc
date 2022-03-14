@@ -127,28 +127,6 @@ void AutofillExternalDelegate::OnSuggestionsReturned(
   if (has_autofill_suggestions_)
     ApplyAutofillOptions(&suggestions, is_all_server_suggestions);
 
-    // Append the "Hide Suggestions" menu item for only Autofill Address and
-    // Autocomplete popups.
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_APPLE) || \
-    BUILDFLAG(IS_CHROMEOS)
-  if (base::FeatureList::IsEnabled(
-          features::kAutofillEnableHideSuggestionsUI)) {
-    // If the user has selected a suggestion, it indicates the suggestions are
-    // useful to the user and no need  hide them. In this case,
-    // ApplyAutofillOptions() should have added a "Clear form" option instead.
-    if (!query_field_.is_autofilled) {
-      if (!suggestions.empty() &&
-          (GetPopupType() == PopupType::kAddresses ||
-           GetPopupType() == PopupType::kUnspecified) &&
-          suggestions[0].frontend_id != POPUP_ITEM_ID_MIXED_FORM_MESSAGE) {
-        suggestions.emplace_back(
-            l10n_util::GetStringUTF16(IDS_AUTOFILL_HIDE_SUGGESTIONS));
-        suggestions.back().frontend_id =
-            POPUP_ITEM_ID_HIDE_AUTOFILL_SUGGESTIONS;
-      }
-    }
-  }
-#endif
   // Append the credit card signin promo, if appropriate (there are no other
   // suggestions).
   if (suggestions.empty() && should_show_cc_signin_promo_) {
@@ -282,9 +260,6 @@ void AutofillExternalDelegate::DidAcceptSuggestion(
     manager_->client()->ExecuteCommand(frontend_id);
   } else if (frontend_id == POPUP_ITEM_ID_SHOW_ACCOUNT_CARDS) {
     manager_->OnUserAcceptedCardsFromAccountOption();
-  } else if (frontend_id == POPUP_ITEM_ID_HIDE_AUTOFILL_SUGGESTIONS) {
-    // No-op as the popup will be closed in the end of the method.
-    manager_->OnUserHideSuggestions(query_form_, query_field_);
   } else if (frontend_id == POPUP_ITEM_ID_USE_VIRTUAL_CARD) {
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
     manager_->FetchVirtualCardCandidates();

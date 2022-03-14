@@ -1473,7 +1473,6 @@ void AutofillPopupViewNativeViews::CreateChildViews() {
       case PopupItemId::POPUP_ITEM_ID_SCAN_CREDIT_CARD:
       case PopupItemId::POPUP_ITEM_ID_CREDIT_CARD_SIGNIN_PROMO:
       case PopupItemId::POPUP_ITEM_ID_PASSWORD_ACCOUNT_STORAGE_EMPTY:
-      case PopupItemId::POPUP_ITEM_ID_HIDE_AUTOFILL_SUGGESTIONS:
       case PopupItemId::POPUP_ITEM_ID_PASSWORD_ACCOUNT_STORAGE_OPT_IN:
       case PopupItemId::POPUP_ITEM_ID_PASSWORD_ACCOUNT_STORAGE_RE_SIGNIN:
       case PopupItemId::
