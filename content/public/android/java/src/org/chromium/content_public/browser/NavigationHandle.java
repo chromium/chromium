@@ -41,7 +41,7 @@ public class NavigationHandle {
     private final Impression mImpression;
     private final boolean mIsPost;
     private final boolean mHasUserGesture;
-    private final boolean mIsRedirect;
+    private boolean mIsRedirect;
     private final boolean mIsExternalProtocol;
     private final long mNavigationId;
     private final boolean mIsPageActivation;
@@ -78,6 +78,7 @@ public class NavigationHandle {
     @CalledByNative
     private void didRedirect(GURL url) {
         mUrl = url;
+        mIsRedirect = true;
     }
 
     /**

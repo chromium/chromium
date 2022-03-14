@@ -11446,7 +11446,7 @@
       },
       {
         "args": [
-          "--gtest_filter=-org.chromium.chrome.browser.contextualsearch.ContextualSearchManagerTest.test*ExternalNavigationWithUserGesture*:org.chromium.chrome.browser.externalnav.UrlOverridingTest.test*UserGesture*:org.chromium.chrome.browser.externalnav.UrlOverridingTest.testNavigationFromXHRCallback:org.chromium.chrome.browser.externalnav.UrlOverridingTest.testNavigationFromXHRCallbackAndShortTimeout:org.chromium.chrome.browser.externalnav.UrlOverridingTest.testNavigationFromXHRCallbackInSubFrame:org.chromium.chrome.browser.externalnav.UrlOverridingTest.testRedirectionFromIntent*",
+          "--gtest_filter=-org.chromium.chrome.browser.contextualsearch.ContextualSearchManagerTest.test*ExternalNavigationWithUserGesture*",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices",
           "--avd-config=../../tools/android/avd/proto/generic_android30.textpb",
@@ -11524,7 +11524,7 @@
       },
       {
         "args": [
-          "--gtest_filter=org.chromium.chrome.browser.contextualsearch.ContextualSearchManagerTest.test*ExternalNavigationWithUserGesture*:org.chromium.chrome.browser.externalnav.UrlOverridingTest.test*UserGesture*:org.chromium.chrome.browser.externalnav.UrlOverridingTest.testNavigationFromXHRCallback:org.chromium.chrome.browser.externalnav.UrlOverridingTest.testNavigationFromXHRCallbackAndShortTimeout:org.chromium.chrome.browser.externalnav.UrlOverridingTest.testNavigationFromXHRCallbackInSubFrame:org.chromium.chrome.browser.externalnav.UrlOverridingTest.testRedirectionFromIntent*",
+          "--gtest_filter=org.chromium.chrome.browser.contextualsearch.ContextualSearchManagerTest.test*ExternalNavigationWithUserGesture*",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices",
           "--avd-config=../../tools/android/avd/proto/generic_android30.textpb",
@@ -15985,7 +15985,7 @@
       },
       {
         "args": [
-          "--gtest_filter=-org.chromium.chrome.browser.contextualsearch.ContextualSearchManagerTest.test*ExternalNavigationWithUserGesture*:org.chromium.chrome.browser.externalnav.UrlOverridingTest.test*UserGesture*:org.chromium.chrome.browser.externalnav.UrlOverridingTest.testNavigationFromXHRCallback:org.chromium.chrome.browser.externalnav.UrlOverridingTest.testNavigationFromXHRCallbackAndShortTimeout:org.chromium.chrome.browser.externalnav.UrlOverridingTest.testNavigationFromXHRCallbackInSubFrame:org.chromium.chrome.browser.externalnav.UrlOverridingTest.testRedirectionFromIntent*",
+          "--gtest_filter=-org.chromium.chrome.browser.contextualsearch.ContextualSearchManagerTest.test*ExternalNavigationWithUserGesture*",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices",
           "--avd-config=../../tools/android/avd/proto/generic_android31.textpb",
@@ -16063,7 +16063,7 @@
       },
       {
         "args": [
-          "--gtest_filter=org.chromium.chrome.browser.contextualsearch.ContextualSearchManagerTest.test*ExternalNavigationWithUserGesture*:org.chromium.chrome.browser.externalnav.UrlOverridingTest.test*UserGesture*:org.chromium.chrome.browser.externalnav.UrlOverridingTest.testNavigationFromXHRCallback:org.chromium.chrome.browser.externalnav.UrlOverridingTest.testNavigationFromXHRCallbackAndShortTimeout:org.chromium.chrome.browser.externalnav.UrlOverridingTest.testNavigationFromXHRCallbackInSubFrame:org.chromium.chrome.browser.externalnav.UrlOverridingTest.testRedirectionFromIntent*",
+          "--gtest_filter=org.chromium.chrome.browser.contextualsearch.ContextualSearchManagerTest.test*ExternalNavigationWithUserGesture*",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices",
           "--avd-config=../../tools/android/avd/proto/generic_android31.textpb",
@@ -31220,7 +31220,7 @@
       },
       {
         "args": [
-          "--gtest_filter=-org.chromium.chrome.browser.contextualsearch.ContextualSearchManagerTest.test*ExternalNavigationWithUserGesture*:org.chromium.chrome.browser.externalnav.UrlOverridingTest.test*UserGesture*:org.chromium.chrome.browser.externalnav.UrlOverridingTest.testNavigationFromXHRCallback:org.chromium.chrome.browser.externalnav.UrlOverridingTest.testNavigationFromXHRCallbackAndShortTimeout:org.chromium.chrome.browser.externalnav.UrlOverridingTest.testNavigationFromXHRCallbackInSubFrame:org.chromium.chrome.browser.externalnav.UrlOverridingTest.testRedirectionFromIntent*",
+          "--gtest_filter=-org.chromium.chrome.browser.contextualsearch.ContextualSearchManagerTest.test*ExternalNavigationWithUserGesture*",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices",
           "--avd-config=../../tools/android/avd/proto/generic_android23.textpb",
@@ -41083,7 +41083,7 @@
       },
       {
         "args": [
-          "--gtest_filter=-org.chromium.chrome.browser.contextualsearch.ContextualSearchManagerTest.test*ExternalNavigationWithUserGesture*:org.chromium.chrome.browser.externalnav.UrlOverridingTest.test*UserGesture*:org.chromium.chrome.browser.externalnav.UrlOverridingTest.testNavigationFromXHRCallback:org.chromium.chrome.browser.externalnav.UrlOverridingTest.testNavigationFromXHRCallbackAndShortTimeout:org.chromium.chrome.browser.externalnav.UrlOverridingTest.testNavigationFromXHRCallbackInSubFrame:org.chromium.chrome.browser.externalnav.UrlOverridingTest.testRedirectionFromIntent*",
+          "--gtest_filter=-org.chromium.chrome.browser.contextualsearch.ContextualSearchManagerTest.test*ExternalNavigationWithUserGesture*",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices",
           "--avd-config=../../tools/android/avd/proto/generic_android28.textpb",
@@ -41158,7 +41158,7 @@
       },
       {
         "args": [
-          "--gtest_filter=org.chromium.chrome.browser.contextualsearch.ContextualSearchManagerTest.test*ExternalNavigationWithUserGesture*:org.chromium.chrome.browser.externalnav.UrlOverridingTest.test*UserGesture*:org.chromium.chrome.browser.externalnav.UrlOverridingTest.testNavigationFromXHRCallback:org.chromium.chrome.browser.externalnav.UrlOverridingTest.testNavigationFromXHRCallbackAndShortTimeout:org.chromium.chrome.browser.externalnav.UrlOverridingTest.testNavigationFromXHRCallbackInSubFrame:org.chromium.chrome.browser.externalnav.UrlOverridingTest.testRedirectionFromIntent*",
+          "--gtest_filter=org.chromium.chrome.browser.contextualsearch.ContextualSearchManagerTest.test*ExternalNavigationWithUserGesture*",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices",
           "--avd-config=../../tools/android/avd/proto/generic_android28.textpb",
