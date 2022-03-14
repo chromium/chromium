@@ -56,8 +56,7 @@ std::vector<GURL> GetDefaultProcessingUrls(
     case AggregationServicePayloadContents::AggregationMode::
         kExperimentalPoplar:
       // TODO(crbug.com/1295705): Update default processing urls.
-      return {GURL("https://server1.example.com"),
-              GURL("https://server2.example.com")};
+      return {GURL("https://server1.example"), GURL("https://server2.example")};
   }
 }
 

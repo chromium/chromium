@@ -13,6 +13,6 @@ const base::Feature kPrivacySandboxAggregationService = {
 const base::FeatureParam<std::string>
     kPrivacySandboxAggregationServiceTrustedServerUrlParam{
         &kPrivacySandboxAggregationService, "trusted_server_url",
-        "https://server.example.com/.well-known/aggregation-service/keys.json"};
+        "https://server.example/.well-known/aggregation-service/keys.json"};
 
 }  // namespace content
