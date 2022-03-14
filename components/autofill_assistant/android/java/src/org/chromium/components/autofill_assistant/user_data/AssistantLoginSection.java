@@ -13,7 +13,6 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import androidx.annotation.DrawableRes;
-import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import org.chromium.components.autofill_assistant.R;
@@ -34,7 +33,7 @@ public class AssistantLoginSection extends AssistantCollectUserDataSection<Login
     }
 
     @Override
-    protected void createOrEditItem(@NonNull LoginChoiceModel oldItem) {
+    protected void createOrEditItem(@Nullable LoginChoiceModel oldItem) {
         assert oldItem != null;
         assert oldItem.mOption.getInfoPopup() != null;
 

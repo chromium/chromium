@@ -13,8 +13,7 @@ import android.widget.TextView;
 import androidx.annotation.DrawableRes;
 import androidx.annotation.Nullable;
 
-import org.chromium.base.Callback;
-import org.chromium.components.autofill_assistant.AssistantEditor.AssistantAddressEditor;
+import org.chromium.components.autofill_assistant.AssistantEditor;
 import org.chromium.components.autofill_assistant.AssistantOptionModel.AddressModel;
 import org.chromium.components.autofill_assistant.R;
 
@@ -25,8 +24,7 @@ import java.util.List;
  */
 public class AssistantShippingAddressSection extends AssistantCollectUserDataSection<AddressModel> {
     @Nullable
-    private AssistantAddressEditor mEditor;
-    private boolean mIgnoreProfileChangeNotifications;
+    private AssistantEditor<AddressModel> mEditor;
 
     AssistantShippingAddressSection(Context context, ViewGroup parent) {
         super(context, parent, R.layout.autofill_assistant_address_summary,
@@ -37,26 +35,14 @@ public class AssistantShippingAddressSection extends AssistantCollectUserDataSec
                 context.getString(R.string.payments_add_address));
     }
 
-    public void setEditor(@Nullable AssistantAddressEditor editor) {
-        mEditor = editor;
+    @Override
+    @Nullable
+    protected AssistantEditor<AddressModel> getEditor() {
+        return mEditor;
     }
 
-    @Override
-    protected void createOrEditItem(@Nullable AddressModel oldItem) {
-        if (mEditor == null) {
-            return;
-        }
-
-        Callback<AddressModel> doneCallback = editedItem -> {
-            mIgnoreProfileChangeNotifications = true;
-            addOrUpdateItem(editedItem,
-                    /* select= */ true, /* notify= */ true);
-            mIgnoreProfileChangeNotifications = false;
-        };
-
-        Callback<AddressModel> cancelCallback = ignoredItem -> {};
-
-        mEditor.createOrEditItem(oldItem, doneCallback, cancelCallback);
+    public void setEditor(AssistantEditor<AddressModel> editor) {
+        mEditor = editor;
     }
 
     @Override
@@ -127,7 +113,7 @@ public class AssistantShippingAddressSection extends AssistantCollectUserDataSec
      * set of addresses derived from the profiles, while keeping the selected item if possible.
      */
     void onAddressesChanged(List<AddressModel> addresses) {
-        if (mIgnoreProfileChangeNotifications) {
+        if (shouldIgnoreItemChangeNotification()) {
             return;
         }
 

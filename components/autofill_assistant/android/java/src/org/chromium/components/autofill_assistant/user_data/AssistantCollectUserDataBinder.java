@@ -590,8 +590,8 @@ class AssistantCollectUserDataBinder
 
         if (shouldShowContactDetails(model)) {
             updateContactEditor(model, view, webContents);
-            updatePhoneNumberEditor(model, view);
         }
+        updatePhoneNumberEditor(model, view);
         updateAddressEditor(model, view, webContents);
         updatePaymentEditor(model, view, webContents);
 
@@ -637,6 +637,7 @@ class AssistantCollectUserDataBinder
             AssistantCollectUserDataModel model, ViewHolder view, WebContents webContents) {
         AssistantAddressEditor editor = null;
         if (model.get(AssistantCollectUserDataModel.USE_GMS_CORE_EDIT_DIALOGS)) {
+            view.mShippingAddressSection.setRequestReloadOnChange(true);
             byte[] initializeAddressCollectionParams =
                     model.get(AssistantCollectUserDataModel.INITIALIZE_ADDRESS_COLLECTION_PARAMS);
             if (initializeAddressCollectionParams != null
@@ -646,6 +647,7 @@ class AssistantCollectUserDataBinder
                         initializeAddressCollectionParams);
             }
         } else {
+            view.mShippingAddressSection.setRequestReloadOnChange(false);
             editor = view.mEditorFactory.createAddressEditor(webContents, view.mActivity,
                     model.get(AssistantCollectUserDataModel.SHOULD_STORE_USER_DATA_CHANGES));
         }
@@ -657,6 +659,7 @@ class AssistantCollectUserDataBinder
             AssistantCollectUserDataModel model, ViewHolder view, WebContents webContents) {
         AssistantPaymentInstrumentEditor editor = null;
         if (model.get(AssistantCollectUserDataModel.USE_GMS_CORE_EDIT_DIALOGS)) {
+            view.mPaymentMethodSection.setRequestReloadOnChange(true);
             byte[] addInstrumentActionToken =
                     model.get(AssistantCollectUserDataModel.ADD_PAYMENT_INSTRUMENT_ACTION_TOKEN);
             if (addInstrumentActionToken != null && addInstrumentActionToken.length > 0) {
@@ -665,6 +668,7 @@ class AssistantCollectUserDataBinder
                         addInstrumentActionToken);
             }
         } else {
+            view.mPaymentMethodSection.setRequestReloadOnChange(false);
             editor = view.mEditorFactory.createPaymentInstrumentEditor(webContents, view.mActivity,
                     model.get(AssistantCollectUserDataModel.SUPPORTED_BASIC_CARD_NETWORKS),
                     model.get(AssistantCollectUserDataModel.SHOULD_STORE_USER_DATA_CHANGES));

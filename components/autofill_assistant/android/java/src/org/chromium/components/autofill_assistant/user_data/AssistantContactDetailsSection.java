@@ -13,8 +13,8 @@ import android.widget.TextView;
 import androidx.annotation.DrawableRes;
 import androidx.annotation.Nullable;
 
-import org.chromium.base.Callback;
 import org.chromium.components.autofill_assistant.AssistantAutofillProfile;
+import org.chromium.components.autofill_assistant.AssistantEditor;
 import org.chromium.components.autofill_assistant.AssistantEditor.AssistantContactEditor;
 import org.chromium.components.autofill_assistant.AssistantOptionModel.ContactModel;
 import org.chromium.components.autofill_assistant.R;
@@ -28,7 +28,6 @@ import java.util.List;
 public class AssistantContactDetailsSection extends AssistantCollectUserDataSection<ContactModel> {
     @Nullable
     private AssistantContactEditor mEditor;
-    private boolean mIgnoreProfileChangeNotifications;
     private AssistantCollectUserDataModel.ContactDescriptionOptions mSummaryOptions;
     private AssistantCollectUserDataModel.ContactDescriptionOptions mFullOptions;
 
@@ -41,6 +40,12 @@ public class AssistantContactDetailsSection extends AssistantCollectUserDataSect
                 context.getString(R.string.payments_add_contact));
     }
 
+    @Override
+    @Nullable
+    protected AssistantEditor<ContactModel> getEditor() {
+        return mEditor;
+    }
+
     public void setEditor(@Nullable AssistantContactEditor editor) {
         mEditor = editor;
         if (mEditor == null) {
@@ -50,31 +55,6 @@ public class AssistantContactDetailsSection extends AssistantCollectUserDataSect
         for (ContactModel item : getItems()) {
             mEditor.addContactInformationForAutocomplete(item.mOption);
         }
-    }
-
-    @Override
-    protected void createOrEditItem(@Nullable ContactModel oldItem) {
-        if (mEditor == null) {
-            return;
-        }
-
-        Callback<ContactModel> doneCallback = editedItem -> {
-            if (shouldReloadOnChange()) {
-                notifyDataChanged(editedItem,
-                        oldItem == null ? AssistantUserDataEventType.ENTRY_CREATED
-                                        : AssistantUserDataEventType.ENTRY_EDITED);
-                return;
-            }
-
-            mIgnoreProfileChangeNotifications = true;
-            addOrUpdateItem(editedItem,
-                    /* select= */ true, /* notify= */ true);
-            mIgnoreProfileChangeNotifications = false;
-        };
-
-        Callback<ContactModel> cancelCallback = ignoredItem -> {};
-
-        mEditor.createOrEditItem(oldItem, doneCallback, cancelCallback);
     }
 
     @Override
@@ -141,7 +121,7 @@ public class AssistantContactDetailsSection extends AssistantCollectUserDataSect
      * set of contacts derived from the profiles, while keeping the selected item if possible.
      */
     void onContactsChanged(List<ContactModel> contacts) {
-        if (mIgnoreProfileChangeNotifications) {
+        if (shouldIgnoreItemChangeNotification()) {
             return;
         }
 

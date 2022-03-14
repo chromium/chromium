@@ -15,6 +15,8 @@ import androidx.annotation.DrawableRes;
 import androidx.annotation.Nullable;
 
 import org.chromium.base.ApiCompatibilityUtils;
+import org.chromium.base.Callback;
+import org.chromium.components.autofill_assistant.AssistantEditor;
 import org.chromium.components.autofill_assistant.AssistantOptionModel;
 import org.chromium.components.autofill_assistant.AssistantTagsForTesting;
 import org.chromium.components.autofill_assistant.AssistantTextUtils;
@@ -57,7 +59,8 @@ public abstract class AssistantCollectUserDataSection<T extends AssistantOptionM
     protected T mSelectedOption;
 
     private boolean mIgnoreItemSelectedNotifications;
-    private Delegate<T> mDelegate;
+    private boolean mIgnoreItemChangeNotification;
+    private @Nullable Delegate<T> mDelegate;
     private int mTopPadding;
     private int mBottomPadding;
 
@@ -136,13 +139,6 @@ public abstract class AssistantCollectUserDataSection<T extends AssistantOptionM
 
     void setDelegate(@Nullable Delegate<T> delegate) {
         mDelegate = delegate;
-    }
-
-    void notifyDataChanged(@Nullable T item, @AssistantUserDataEventType int eventType) {
-        if (mDelegate == null) {
-            return;
-        }
-        mDelegate.onUserDataChanged(item, eventType);
     }
 
     void setTitle(String title) {
@@ -249,10 +245,6 @@ public abstract class AssistantCollectUserDataSection<T extends AssistantOptionM
         mRequestReloadOnChange = requestReloadOnChange;
     }
 
-    boolean shouldReloadOnChange() {
-        return mRequestReloadOnChange;
-    }
-
     private AssistantChoiceList createChoiceList(@Nullable String addButtonText) {
         AssistantChoiceList list = new AssistantChoiceList(mContext, /* attrs= */ null,
                 addButtonText, /* rowSpacingInPixels= */ 0,
@@ -354,13 +346,6 @@ public abstract class AssistantCollectUserDataSection<T extends AssistantOptionM
     }
 
     /**
-     * Asks the subclass to edit an item or create a new one (if {@code oldItem} is null).
-     * Subclasses should call {@code addOrUpdateItem} when they are done.
-     * @param oldItem The item to be edited (null if a new item should be created).
-     */
-    protected abstract void createOrEditItem(@Nullable T oldItem);
-
-    /**
      * Asks the subclass to update the contents of {@code fullView}, which was previously created by
      * {@code createFullView}.
      */
@@ -380,6 +365,59 @@ public abstract class AssistantCollectUserDataSection<T extends AssistantOptionM
 
     /** Ask the subclass if two {@code option} instances should be considered equal. */
     protected abstract boolean areEqual(@Nullable T optionA, @Nullable T optionB);
+
+    protected boolean shouldIgnoreItemChangeNotification() {
+        return mIgnoreItemChangeNotification;
+    }
+
+    /**
+     * Get the current editor. Defaults to null. Subclasses may override this method to provide
+     * their owned editor.
+     * @return The current editor.
+     */
+    @Nullable
+    protected AssistantEditor<T> getEditor() {
+        return null;
+    }
+
+    /**
+     * Asks the subclass for an editor to edit an item or create a new one (if {@code oldItem} is
+     * null). Calls {@code addOrUpdateItem} after a successful edit or sends a reload notification
+     * if requested.
+     * Subclasses may override this if they want to specify their own behaviour.
+     * @param oldItem The item to be edited ({@code null} if a new item should be created).
+     */
+    protected void createOrEditItem(@Nullable T oldItem) {
+        AssistantEditor<T> editor = getEditor();
+        if (editor == null) {
+            return;
+        }
+
+        Callback<T> doneCallback = editedItem -> {
+            if (mRequestReloadOnChange) {
+                int eventType = oldItem == null ? AssistantUserDataEventType.ENTRY_CREATED
+                                                : AssistantUserDataEventType.ENTRY_EDITED;
+                notifyDataChanged(editedItem, eventType);
+                return;
+            }
+
+            mIgnoreItemChangeNotification = true;
+            addOrUpdateItem(editedItem,
+                    /* select= */ true, /* notify= */ true);
+            mIgnoreItemChangeNotification = false;
+        };
+
+        Callback<T> cancelCallback = ignoredItem -> {};
+
+        editor.createOrEditItem(oldItem, doneCallback, cancelCallback);
+    }
+
+    private void notifyDataChanged(@Nullable T item, @AssistantUserDataEventType int eventType) {
+        if (mDelegate == null) {
+            return;
+        }
+        mDelegate.onUserDataChanged(item, eventType);
+    }
 
     /**
      * For convenience. Hides {@code view} if it is empty.

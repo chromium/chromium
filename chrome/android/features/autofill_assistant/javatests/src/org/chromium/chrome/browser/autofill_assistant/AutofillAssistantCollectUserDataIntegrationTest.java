@@ -1246,4 +1246,80 @@ public class AutofillAssistantCollectUserDataIntegrationTest {
         assertThat(getElementValue(getWebContents(), "email"), is("johndoe@google.com"));
         assertThat(getElementValue(getWebContents(), "tel"), is("+41234567890"));
     }
+
+    /**
+     * Load and enter an address from backend.
+     */
+    @Test
+    @MediumTest
+    public void testEnterBackendAddress() throws Exception {
+        GetUserDataResponseProto userData =
+                GetUserDataResponseProto.newBuilder()
+                        .setLocale("en-US")
+                        .addAvailableAddresses(ProfileProto.newBuilder()
+                                                       .putValues(35,
+                                                               AutofillEntryProto.newBuilder()
+                                                                       .setValue("80302")
+                                                                       .build())
+                                                       .putValues(36,
+                                                               AutofillEntryProto.newBuilder()
+                                                                       .setValue("US")
+                                                                       .build())
+                                                       .putValues(33,
+                                                               AutofillEntryProto.newBuilder()
+                                                                       .setValue("Boulder")
+                                                                       .build())
+                                                       .putValues(30,
+                                                               AutofillEntryProto.newBuilder()
+                                                                       .setValue("123 Broadway St")
+                                                                       .build())
+                                                       .putValues(34,
+                                                               AutofillEntryProto.newBuilder()
+                                                                       .setValue("CO")
+                                                                       .build())
+                                                       .putValues(7,
+                                                               AutofillEntryProto.newBuilder()
+                                                                       .setValue("John Doe")
+                                                                       .build()))
+                        .build();
+
+        ArrayList<ActionProto> list = new ArrayList<>();
+        list.add(ActionProto.newBuilder()
+                         .setCollectUserData(CollectUserDataProto.newBuilder()
+                                                     .setDataSource(DataSource.newBuilder())
+                                                     .setShippingAddressName("shipping_address")
+                                                     .setRequestTermsAndConditions(false))
+                         .build());
+        list.add(
+                ActionProto.newBuilder()
+                        .setUseAddress(UseAddressProto.newBuilder()
+                                               .setName("shipping_address")
+                                               .setFormFieldElement(toCssSelector("#profile_name")))
+                        .build());
+        list.add(ActionProto.newBuilder()
+                         .setPrompt(PromptProto.newBuilder().setMessage("Prompt").addChoices(
+                                 PromptProto.Choice.newBuilder()))
+                         .build());
+        AutofillAssistantTestScript script = new AutofillAssistantTestScript(
+                SupportedScriptProto.newBuilder()
+                        .setPath("form_target_website.html")
+                        .setPresentation(PresentationProto.newBuilder().setAutostart(true))
+                        .build(),
+                list);
+
+        AutofillAssistantTestService testService =
+                new AutofillAssistantTestService(Collections.singletonList(script));
+        testService.setUserData(userData);
+        startAutofillAssistant(mTestRule.getActivity(), testService);
+
+        waitUntilViewMatchesCondition(
+                withContentDescription("Continue"), allOf(isDisplayed(), isEnabled()));
+        onView(withText("Shipping address")).perform(click());
+        waitUntilViewMatchesCondition(
+                allOf(withParent(withId(R.id.address_full)), withId(R.id.full_name)),
+                allOf(withText("John Doe"), isCompletelyDisplayed()));
+        onView(withContentDescription("Continue")).perform(click());
+        waitUntilViewMatchesCondition(withText("Prompt"), isCompletelyDisplayed());
+        assertThat(getElementValue(getWebContents(), "profile_name"), is("John Doe"));
+    }
 }

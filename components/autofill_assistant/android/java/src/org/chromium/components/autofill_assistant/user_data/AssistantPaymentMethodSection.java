@@ -16,9 +16,9 @@ import androidx.annotation.DrawableRes;
 import androidx.annotation.Nullable;
 import androidx.appcompat.content.res.AppCompatResources;
 
-import org.chromium.base.Callback;
 import org.chromium.components.autofill_assistant.AssistantAutofillCreditCard;
 import org.chromium.components.autofill_assistant.AssistantAutofillProfile;
+import org.chromium.components.autofill_assistant.AssistantEditor;
 import org.chromium.components.autofill_assistant.AssistantEditor.AssistantPaymentInstrumentEditor;
 import org.chromium.components.autofill_assistant.AssistantOptionModel.PaymentInstrumentModel;
 import org.chromium.components.autofill_assistant.AssistantPaymentInstrument;
@@ -33,7 +33,6 @@ public class AssistantPaymentMethodSection
         extends AssistantCollectUserDataSection<PaymentInstrumentModel> {
     @Nullable
     private AssistantPaymentInstrumentEditor mEditor;
-    private boolean mIgnorePaymentMethodsChangeNotifications;
 
     AssistantPaymentMethodSection(Context context, ViewGroup parent) {
         super(context, parent, R.layout.autofill_assistant_payment_method_summary,
@@ -43,6 +42,12 @@ public class AssistantPaymentMethodSection
                 context.getString(R.string.payments_add_card),
                 context.getString(R.string.payments_add_card));
         setTitle(context.getString(R.string.payments_method_of_payment_label));
+    }
+
+    @Override
+    @Nullable
+    public AssistantEditor<PaymentInstrumentModel> getEditor() {
+        return mEditor;
     }
 
     public void setEditor(@Nullable AssistantPaymentInstrumentEditor editor) {
@@ -57,25 +62,6 @@ public class AssistantPaymentMethodSection
                 addAutocompleteInformationToEditor(profile);
             }
         }
-    }
-
-    @Override
-    protected void createOrEditItem(@Nullable PaymentInstrumentModel oldItem) {
-        if (mEditor == null) {
-            return;
-        }
-
-        Callback<PaymentInstrumentModel> doneCallback = editedItem -> {
-            mIgnorePaymentMethodsChangeNotifications = true;
-            addOrUpdateItem(editedItem,
-                    /* select= */ true,
-                    /* notify= */ true);
-            mIgnorePaymentMethodsChangeNotifications = false;
-        };
-
-        Callback<PaymentInstrumentModel> cancelCallback = ignoredItem -> {};
-
-        mEditor.createOrEditItem(oldItem, doneCallback, cancelCallback);
     }
 
     @Override
@@ -187,7 +173,7 @@ public class AssistantPaymentMethodSection
      * the new/changed set of payment methods, while keeping the selected item if possible.
      */
     void onAvailablePaymentMethodsChanged(List<PaymentInstrumentModel> paymentMethods) {
-        if (mIgnorePaymentMethodsChangeNotifications) {
+        if (shouldIgnoreItemChangeNotification()) {
             return;
         }
 
