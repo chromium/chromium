@@ -64,7 +64,7 @@ void PredictorsHandler::RequestAutocompleteActionPredictorDb(
       entry->SetDoubleKey(
           "confidence",
           autocomplete_action_predictor_->CalculateConfidenceForDbEntry(it));
-      db->Append(std::move(entry));
+      db->Append(base::Value::FromUniquePtrValue(std::move(entry)));
     }
     dict.Set("db", std::move(db));
   }
@@ -120,9 +120,9 @@ void PredictorsHandler::AddOriginDataMapToListValue(
       origin->SetBoolKey("accessed_network", o.accessed_network());
       origin->SetDoubleKey(
           "score", ResourcePrefetchPredictorTables::ComputeOriginScore(o));
-      origins->Append(std::move(origin));
+      origins->Append(base::Value::FromUniquePtrValue(std::move(origin)));
     }
     main->Set("origins", std::move(origins));
-    db->Append(std::move(main));
+    db->Append(base::Value::FromUniquePtrValue(std::move(main)));
   }
 }
