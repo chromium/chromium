@@ -26,9 +26,6 @@ struct BookmarkItem {
 base::ListValue BookmarkItemsToListValue(const BookmarkItem items[],
                                          size_t count);
 
-base::ListValue BookmarkItemsToListValue(
-    const std::vector<BookmarkItem>& items);
-
 }  // namespace welcome
 
 #endif  // CHROME_BROWSER_UI_WEBUI_WELCOME_BOOKMARK_ITEM_H_

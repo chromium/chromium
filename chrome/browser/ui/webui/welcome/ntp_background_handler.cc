@@ -62,59 +62,63 @@ void NtpBackgroundHandler::HandleGetBackgrounds(const base::ListValue* args) {
   CHECK_EQ(1U, args->GetListDeprecated().size());
   const base::Value& callback_id = args->GetListDeprecated()[0];
 
-  base::ListValue list_value;
+  base::Value::List list_value;
   std::array<GURL, kNtpBackgroundsCount> NtpBackgrounds = GetNtpBackgrounds();
   const std::string kUrlPrefix = "preview-background.jpg?";
 
-  auto element = std::make_unique<base::DictionaryValue>();
-  int id = static_cast<int>(NtpBackgrounds::kEarth);
-  element->SetIntKey("id", id);
-  element->SetStringKey("title", l10n_util::GetStringUTF8(
-                                     IDS_WELCOME_NTP_BACKGROUND_EARTH_TITLE));
-  element->SetStringKey("imageUrl", kUrlPrefix + base::NumberToString(id));
-  element->SetStringKey("thumbnailClass", "earth");
-  list_value.Append(std::move(element));
+  {
+    base::Value::Dict element;
+    int id = static_cast<int>(NtpBackgrounds::kEarth);
+    element.Set("id", id);
+    element.Set("title", l10n_util::GetStringUTF8(
+                             IDS_WELCOME_NTP_BACKGROUND_EARTH_TITLE));
+    element.Set("imageUrl", kUrlPrefix + base::NumberToString(id));
+    element.Set("thumbnailClass", "earth");
+    list_value.Append(std::move(element));
+  }
+  {
+    base::Value::Dict element;
+    int id = static_cast<int>(NtpBackgrounds::kCityscape);
+    element.Set("id", id);
+    element.Set("title", l10n_util::GetStringUTF8(
+                             IDS_WELCOME_NTP_BACKGROUND_CITYSCAPE_TITLE));
+    element.Set("imageUrl", kUrlPrefix + base::NumberToString(id));
+    element.Set("thumbnailClass", "cityscape");
+    list_value.Append(std::move(element));
+  }
+  {
+    base::Value::Dict element;
+    int id = static_cast<int>(NtpBackgrounds::kLandscape);
+    element.Set("id", id);
+    element.Set("title", l10n_util::GetStringUTF8(
+                             IDS_WELCOME_NTP_BACKGROUND_LANDSCAPE_TITLE));
+    element.Set("imageUrl", kUrlPrefix + base::NumberToString(id));
+    element.Set("thumbnailClass", "landscape");
+    list_value.Append(std::move(element));
+  }
+  {
+    base::Value::Dict element;
+    int id = static_cast<int>(NtpBackgrounds::kArt);
+    element.Set("id", id);
+    element.Set("title",
+                l10n_util::GetStringUTF8(IDS_WELCOME_NTP_BACKGROUND_ART_TITLE));
+    element.Set("imageUrl", kUrlPrefix + base::NumberToString(id));
+    element.Set("thumbnailClass", "art");
+    list_value.Append(std::move(element));
+  }
+  {
+    base::Value::Dict element;
+    int id = static_cast<int>(NtpBackgrounds::kGeometricShapes);
+    element.Set("id", id);
+    element.Set("title",
+                l10n_util::GetStringUTF8(
+                    IDS_WELCOME_NTP_BACKGROUND_GEOMETRIC_SHAPES_TITLE));
+    element.Set("imageUrl", kUrlPrefix + base::NumberToString(id));
+    element.Set("thumbnailClass", "geometric-shapes");
+    list_value.Append(std::move(element));
+  }
 
-  element = std::make_unique<base::DictionaryValue>();
-  id = static_cast<int>(NtpBackgrounds::kCityscape);
-  element->SetIntKey("id", id);
-  element->SetStringKey(
-      "title",
-      l10n_util::GetStringUTF8(IDS_WELCOME_NTP_BACKGROUND_CITYSCAPE_TITLE));
-  element->SetStringKey("imageUrl", kUrlPrefix + base::NumberToString(id));
-  element->SetStringKey("thumbnailClass", "cityscape");
-  list_value.Append(std::move(element));
-
-  element = std::make_unique<base::DictionaryValue>();
-  id = static_cast<int>(NtpBackgrounds::kLandscape);
-  element->SetIntKey("id", id);
-  element->SetStringKey(
-      "title",
-      l10n_util::GetStringUTF8(IDS_WELCOME_NTP_BACKGROUND_LANDSCAPE_TITLE));
-  element->SetStringKey("imageUrl", kUrlPrefix + base::NumberToString(id));
-  element->SetStringKey("thumbnailClass", "landscape");
-  list_value.Append(std::move(element));
-
-  element = std::make_unique<base::DictionaryValue>();
-  id = static_cast<int>(NtpBackgrounds::kArt);
-  element->SetIntKey("id", id);
-  element->SetStringKey(
-      "title", l10n_util::GetStringUTF8(IDS_WELCOME_NTP_BACKGROUND_ART_TITLE));
-  element->SetStringKey("imageUrl", kUrlPrefix + base::NumberToString(id));
-  element->SetStringKey("thumbnailClass", "art");
-  list_value.Append(std::move(element));
-
-  element = std::make_unique<base::DictionaryValue>();
-  id = static_cast<int>(NtpBackgrounds::kGeometricShapes);
-  element->SetIntKey("id", id);
-  element->SetStringKey("title",
-                        l10n_util::GetStringUTF8(
-                            IDS_WELCOME_NTP_BACKGROUND_GEOMETRIC_SHAPES_TITLE));
-  element->SetStringKey("imageUrl", kUrlPrefix + base::NumberToString(id));
-  element->SetStringKey("thumbnailClass", "geometric-shapes");
-  list_value.Append(std::move(element));
-
-  ResolveJavascriptCallback(callback_id, list_value);
+  ResolveJavascriptCallback(callback_id, base::Value(std::move(list_value)));
 }
 
 void NtpBackgroundHandler::HandleSetBackground(const base::ListValue* args) {
