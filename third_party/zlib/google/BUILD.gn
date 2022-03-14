@@ -7,6 +7,7 @@ import("//build_overrides/build.gni")
 if (build_with_chromium) {
   static_library("zip") {
     sources = [
+      "redact.h",
       "zip.cc",
       "zip.h",
       "zip_internal.cc",

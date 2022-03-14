@@ -19,6 +19,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "build/build_config.h"
+#include "third_party/zlib/google/redact.h"
 #include "third_party/zlib/google/zip_internal.h"
 
 #if defined(USE_SYSTEM_MINIZIP)
@@ -55,15 +56,6 @@ std::ostream& operator<<(std::ostream& out, UnzipError error) {
       return out << "UNZ" << static_cast<int>(error);
   }
 #undef SWITCH_ERR
-}
-
-struct Redact {
-  explicit Redact(const base::FilePath& path) : path(path) {}
-  const base::FilePath& path;
-};
-
-std::ostream& operator<<(std::ostream& out, Redact r) {
-  return LOG_IS_ON(INFO) ? out << "'" << r.path << "'" : out << "(redacted)";
 }
 
 // A writer delegate that writes to a given string.
