@@ -6,6 +6,7 @@ import {addEntries, ENTRIES, getCaller, pending, repeatUntil, RootPath, sendTest
 import {testcase} from '../testcase.js';
 
 import {remoteCall, setupAndWaitUntilReady} from './background.js';
+import {BASIC_ZIP_ENTRY_SET} from './test_data.js';
 
 /**
  * Returns the expected file list row entries after opening (mounting) the
@@ -306,9 +307,6 @@ testcase.zipExtractShowPanel = async () => {
   // Check: the context menu should appear.
   await remoteCall.waitForElement(appId, '#file-context-menu:not([hidden])');
 
-  // Check: the Zip selection meun item should be hidden.
-  await remoteCall.waitForElement(appId, '[command="#zip-selection"][hidden]');
-
   // Tell the background page to never finish the file extraction.
   await remoteCall.callRemoteTestUtil(
       'progressCenterNeverNotifyCompleted', appId, []);
@@ -336,4 +334,60 @@ testcase.zipExtractShowPanel = async () => {
         caller,
         `Expected feedback panel msg: "${expectedMsg}", got "${actualMsg}"`);
   });
+};
+
+/**
+ * Tests that various selections enable/hide the correct menu items.
+ */
+testcase.zipExtractSelectionMenus = async () => {
+  const entries = BASIC_ZIP_ENTRY_SET;
+
+  // Open files app.
+  const appId = await setupAndWaitUntilReady(RootPath.DOWNLOADS, entries, []);
+
+  // Select the first file (ENTRIES.hello).
+  chrome.test.assertTrue(await remoteCall.callRemoteTestUtil(
+      'selectFile', appId, [entries[0].nameText]));
+
+  // Right-click the selected file.
+  chrome.test.assertTrue(
+      !!await remoteCall.callRemoteTestUtil(
+          'fakeMouseRightClick', appId, ['.table-row[selected]']),
+      'fakeMouseRightClick failed');
+
+  // Check: the context menu should appear.
+  await remoteCall.waitForElement(appId, '#file-context-menu:not([hidden])');
+
+  // Check: the Zip selection menu item should be visible.
+  await remoteCall.waitForElement(
+      appId, '[command="#zip-selection"]:not([hidden])');
+
+  // Check: the Extract all menu item should be hidden.
+  await remoteCall.waitForElement(appId, '[command="#extract-all"][hidden]');
+
+  // Click the main dialog area to hide the context menu.
+  chrome.test.assertTrue(
+      !!await remoteCall.callRemoteTestUtil(
+          'fakeMouseClick', appId, ['.dialog-main']),
+      'fakeMouseClick failed');
+
+  // Select the third file (ENTRIES.zipArchive).
+  chrome.test.assertTrue(await remoteCall.callRemoteTestUtil(
+      'selectFile', appId, [entries[2].nameText]));
+
+  // Right-click the selected file.
+  chrome.test.assertTrue(
+      !!await remoteCall.callRemoteTestUtil(
+          'fakeMouseRightClick', appId, ['.table-row[selected]']),
+      'fakeMouseRightClick failed');
+
+  // Check: the context menu should appear.
+  await remoteCall.waitForElement(appId, '#file-context-menu:not([hidden])');
+
+  // Check: the Extract all menu item should be visible.
+  await remoteCall.waitForElement(
+      appId, '[command="#extract-all"]:not([hidden])');
+
+  // Check: the Zip selection menu item should be hidden.
+  await remoteCall.waitForElement(appId, '[command="#zip-selection"][hidden]');
 };

@@ -105,6 +105,17 @@ export const BASIC_CROSTINI_ENTRY_SET = [
 ];
 
 /**
+ * Basic entry set for the local volume with a ZIP archive.
+ * @type {!Array<!TestEntryInfo>}
+ * @const
+ */
+export const BASIC_ZIP_ENTRY_SET = [
+  ENTRIES.hello,
+  ENTRIES.world,
+  ENTRIES.zipArchive,
+];
+
+/**
  * More complex entry set for Drive that includes entries with varying
  * permissions (such as read-only entries).
  *

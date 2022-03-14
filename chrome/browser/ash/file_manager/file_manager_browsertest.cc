@@ -483,7 +483,8 @@ WRAPPED_INSTANTIATE_TEST_SUITE_P(
         TestCase("zipCreateFileDrive").FilesSwa(),
         TestCase("zipCreateFileUsb"),
         TestCase("zipCreateFileUsb").FilesSwa(),
-        TestCase("zipExtractShowPanel").ExtractArchive().FilesSwa()));
+        TestCase("zipExtractShowPanel").ExtractArchive().FilesSwa(),
+        TestCase("zipExtractSelectionMenus").ExtractArchive().FilesSwa()));
 
 WRAPPED_INSTANTIATE_TEST_SUITE_P(
     CreateNewFolder, /* create_new_folder.js */
