@@ -12,7 +12,6 @@
 #include "base/mac/foundation_util.h"
 #include "base/memory/ptr_util.h"
 #include "base/strings/utf_string_conversions.h"
-#include "base/task/current_thread.h"
 #include "base/task/thread_pool/thread_pool_instance.h"
 #import "base/test/ios/wait_util.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -49,6 +48,7 @@
 #import "ios/web/public/navigation/navigation_item.h"
 #import "ios/web/public/navigation/navigation_manager.h"
 #import "ios/web/public/test/scoped_testing_web_client.h"
+#import "ios/web/public/test/task_observer_util.h"
 #import "ios/web/public/test/web_state_test_util.h"
 #import "ios/web/public/test/web_task_environment.h"
 #import "ios/web/public/web_state.h"
@@ -190,7 +190,7 @@ class TestConsumer : public WebDataServiceConsumer {
 };
 
 // Text fixture to test autofill.
-class AutofillControllerTest : public PlatformTest, base::TaskObserver {
+class AutofillControllerTest : public PlatformTest {
  public:
   AutofillControllerTest() : web_client_(std::make_unique<ChromeWebClient>()) {
     TestChromeBrowserState::Builder builder;
@@ -247,12 +247,6 @@ class AutofillControllerTest : public PlatformTest, base::TaskObserver {
   TestSuggestionController* suggestion_controller() {
     return suggestion_controller_;
   }
-
-  // base::TaskObserver overide
-  void WillProcessTask(const base::PendingTask&, bool) override;
-  void DidProcessTask(const base::PendingTask&) override;
-
-  void WaitForBackgroundTasks();
 
   void WaitForCondition(ConditionBlock condition);
 
@@ -333,7 +327,7 @@ void AutofillControllerTest::SetUp() {
 void AutofillControllerTest::TearDown() {
   [suggestion_controller_ detachFromWebState];
 
-  WaitForBackgroundTasks();
+  web::test::WaitForBackgroundTasks();
   web_state_.reset();
 }
 
@@ -381,39 +375,6 @@ void AutofillControllerTest::ExpectMetric(const std::string& histogram_name,
 void AutofillControllerTest::ExpectHappinessMetric(
     AutofillMetrics::UserHappinessMetric metric) {
   histogram_tester_->ExpectBucketCount("Autofill.UserHappiness", metric, 1);
-}
-
-void AutofillControllerTest::WillProcessTask(const base::PendingTask&, bool) {
-  // Nothing to do.
-}
-void AutofillControllerTest::DidProcessTask(const base::PendingTask&) {
-  processed_a_task_ = true;
-}
-
-void AutofillControllerTest::WaitForBackgroundTasks() {
-  // Because tasks can add new tasks to either queue, the loop continues until
-  // the first pass where no activity is seen from either queue.
-  bool activity_seen = false;
-  base::CurrentThread message_loop = base::CurrentThread::Get();
-  message_loop->AddTaskObserver(this);
-  do {
-    activity_seen = false;
-
-    // Yield to the iOS message queue, e.g. [NSObject performSelector:]
-    // events.
-    if (CFRunLoopRunInMode(kCFRunLoopDefaultMode, 0, true) ==
-        kCFRunLoopRunHandledSource)
-      activity_seen = true;
-
-    // Yield to the Chromium message queue, e.g. WebThread::PostTask()
-    // events.
-    processed_a_task_ = false;
-    base::RunLoop().RunUntilIdle();
-    if (processed_a_task_)  // Set in TaskObserver method.
-      activity_seen = true;
-
-  } while (activity_seen);
-  message_loop->RemoveTaskObserver(this);
 }
 
 void AutofillControllerTest::WaitForCondition(ConditionBlock condition) {
@@ -512,7 +473,7 @@ void AutofillControllerTest::SetUpForSuggestions(
   EXPECT_EQ(1U, personal_data_manager->GetProfiles().size());
 
   ASSERT_TRUE(LoadHtmlAndWaitForFormFetched(data, expected_number_of_forms));
-  WaitForBackgroundTasks();
+  web::test::WaitForBackgroundTasks();
 }
 
 // Checks that focusing on a text element of a profile-type form will result in
@@ -616,7 +577,7 @@ TEST_F(AutofillControllerTest, KeyValueImport) {
   web_data_service->GetFormValuesForElementName(u"greeting", std::u16string(),
                                                 limit, &consumer);
   base::ThreadPoolInstance::Get()->FlushForTesting();
-  WaitForBackgroundTasks();
+  web::test::WaitForBackgroundTasks();
   // No value should be returned before anything is loaded via form submission.
   ASSERT_EQ(0U, consumer.result_.size());
   web::test::ExecuteJavaScript(@"submit.click()", web_state());
@@ -630,7 +591,7 @@ TEST_F(AutofillControllerTest, KeyValueImport) {
     return consumer_ptr->result_.size();
   });
   base::ThreadPoolInstance::Get()->FlushForTesting();
-  WaitForBackgroundTasks();
+  web::test::WaitForBackgroundTasks();
   // One result should be returned, matching the filled value.
   ASSERT_EQ(1U, consumer.result_.size());
   EXPECT_EQ(u"Hello", consumer.result_[0].key().value());
@@ -650,7 +611,7 @@ void AutofillControllerTest::SetUpKeyValueData() {
 
   // Load test page.
   ASSERT_TRUE(LoadHtmlAndWaitForFormFetched(kKeyValueFormHtml, 1));
-  WaitForBackgroundTasks();
+  web::test::WaitForBackgroundTasks();
 }
 
 // Checks that focusing on an element of a key/value type form then typing the
