@@ -74,6 +74,11 @@ struct TestCase {
     return *this;
   }
 
+  TestCase& ExtractArchive() {
+    options.extract_archive = true;
+    return *this;
+  }
+
   TestCase& Offline() {
     options.offline = true;
     return *this;
@@ -477,7 +482,8 @@ WRAPPED_INSTANTIATE_TEST_SUITE_P(
         TestCase("zipCreateFileDrive"),
         TestCase("zipCreateFileDrive").FilesSwa(),
         TestCase("zipCreateFileUsb"),
-        TestCase("zipCreateFileUsb").FilesSwa()));
+        TestCase("zipCreateFileUsb").FilesSwa(),
+        TestCase("zipExtractShowPanel").ExtractArchive().FilesSwa()));
 
 WRAPPED_INSTANTIATE_TEST_SUITE_P(
     CreateNewFolder, /* create_new_folder.js */

@@ -283,3 +283,54 @@ testcase.zipCreateFileUsb = async () => {
   const files = getZipSelectionFileListRowEntries();
   await remoteCall.waitForFiles(appId, files, {ignoreLastModifiedTime: true});
 };
+
+/**
+ * Tests that extraction of a ZIP archive produces a feedback panel.
+ */
+testcase.zipExtractShowPanel = async () => {
+  const entry = ENTRIES.zipArchive;
+
+  // Open files app.
+  const appId = await setupAndWaitUntilReady(RootPath.DOWNLOADS, [entry], []);
+
+  // Select the file.
+  chrome.test.assertTrue(await remoteCall.callRemoteTestUtil(
+      'selectFile', appId, [entry.nameText]));
+
+  // Right-click the selected file.
+  chrome.test.assertTrue(
+      !!await remoteCall.callRemoteTestUtil(
+          'fakeMouseRightClick', appId, ['.table-row[selected]']),
+      'fakeMouseRightClick failed');
+
+  // Check: the context menu should appear.
+  await remoteCall.waitForElement(appId, '#file-context-menu:not([hidden])');
+
+  // Tell the background page to never finish the file extraction.
+  await remoteCall.callRemoteTestUtil(
+      'progressCenterNeverNotifyCompleted', appId, []);
+
+  // Click the 'Extract all' menu command.
+  const extract = '[command="#extract-all"]';
+  chrome.test.assertTrue(
+      !!await remoteCall.callRemoteTestUtil('fakeMouseClick', appId, [extract]),
+      'fakeMouseClick failed');
+
+  // Check that the error appears in the feedback panel.
+  let element = {};
+  const caller = getCaller();
+  await repeatUntil(async () => {
+    element = await remoteCall.waitForElement(
+        appId, ['#progress-panel', 'xf-panel-item']);
+    const expectedMsg = `Extracting ${entry.nameText}…`;
+    const actualMsg = element.attributes['primary-text'];
+
+    if (actualMsg === expectedMsg) {
+      return;
+    }
+
+    return pending(
+        caller,
+        `Expected feedback panel msg: "${expectedMsg}", got "${actualMsg}"`);
+  });
+};
