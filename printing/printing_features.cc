@@ -32,6 +32,10 @@ const base::Feature kPrintWithPostScriptType42Fonts{
 const base::Feature kPrintWithReducedRasterization{
     "PrintWithReducedRasterization", base::FEATURE_DISABLED_BY_DEFAULT};
 
+// Read printer capabilities with XPS when use XPS for printing.
+const base::Feature kReadPrinterCapabilitiesWithXps{
+    "ReadPrinterCapabilitiesWithXps", base::FEATURE_DISABLED_BY_DEFAULT};
+
 // Use XPS for printing instead of GDI.
 const base::Feature kUseXpsForPrinting{"UseXpsForPrinting",
                                        base::FEATURE_DISABLED_BY_DEFAULT};

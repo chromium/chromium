@@ -28,6 +28,8 @@ extern const base::Feature kPrintWithPostScriptType42Fonts;
 COMPONENT_EXPORT(PRINTING_BASE)
 extern const base::Feature kPrintWithReducedRasterization;
 COMPONENT_EXPORT(PRINTING_BASE)
+extern const base::Feature kReadPrinterCapabilitiesWithXps;
+COMPONENT_EXPORT(PRINTING_BASE)
 extern const base::Feature kUseXpsForPrinting;
 COMPONENT_EXPORT(PRINTING_BASE)
 extern const base::Feature kUseXpsForPrintingFromPdf;

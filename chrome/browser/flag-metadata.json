@@ -5117,6 +5117,11 @@
     "expiry_milestone": 102
   },
   {
+    "name": "read-printer-capabilities-with-xps",
+    "owners": [ "awscreen", "//printing/OWNERS" ],
+    "expiry_milestone": 106
+  },
+  {
     "name": "reader-mode-heuristics",
     "owners": [ "mdjones", "wychen" ],
     // This flag is a utility for testing Reader Mode heuristics or force

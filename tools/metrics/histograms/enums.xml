@@ -55700,6 +55700,7 @@ from previous Chrome versions.
   <int value="730024226" label="enable-out-of-process-pdf"/>
   <int value="730750097" label="PermissionsBlacklist:disabled"/>
   <int value="731318054" label="WebAssemblySimd:enabled"/>
+  <int value="731593144" label="ReadPrinterCapabilitiesWithXps:enabled"/>
   <int value="731757746" label="ArcEnableDocumentsProviderInFilesApp:disabled"/>
   <int value="731775657" label="DownloadsAutoResumptionNative:disabled"/>
   <int value="731779469" label="BlinkHeapUnifiedGarbageCollection:enabled"/>
@@ -55966,6 +55967,7 @@ from previous Chrome versions.
   <int value="921536672" label="OfflinePagesDescriptiveFailStatus:enabled"/>
   <int value="921561616" label="WebAssemblyTiering:disabled"/>
   <int value="923923308" label="WifiSyncAllowDeletes:enabled"/>
+  <int value="923947923" label="ReadPrinterCapabilitiesWithXps:disabled"/>
   <int value="924769517" label="AppServiceAdaptiveIcon:disabled"/>
   <int value="925712999" label="V8Orinoco:enabled"/>
   <int value="926844887" label="QuickDim:disabled"/>

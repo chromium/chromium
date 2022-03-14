@@ -4009,6 +4009,11 @@ const char kPrintWithReducedRasterizationName[] =
 const char kPrintWithReducedRasterizationDescription[] =
     "When using GDI printing, avoid rasterization if possible.";
 
+const char kReadPrinterCapabilitiesWithXpsName[] =
+    "Read printer capabilities with XPS";
+extern const char kReadPrinterCapabilitiesWithXpsDescription[] =
+    "When enabled, utilize XPS interface to read printer capabilities.";
+
 const char kUseXpsForPrintingName[] = "Use XPS for printing";
 const char kUseXpsForPrintingDescription[] =
     "When enabled, use XPS printing API instead of the GDI print API.";

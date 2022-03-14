@@ -2291,6 +2291,9 @@ extern const char kPrintWithPostScriptType42FontsDescription[];
 extern const char kPrintWithReducedRasterizationName[];
 extern const char kPrintWithReducedRasterizationDescription[];
 
+extern const char kReadPrinterCapabilitiesWithXpsName[];
+extern const char kReadPrinterCapabilitiesWithXpsDescription[];
+
 extern const char kUseXpsForPrintingName[];
 extern const char kUseXpsForPrintingDescription[];
 
