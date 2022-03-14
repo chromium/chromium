@@ -5,7 +5,6 @@
 import {assert, assertNotReached} from 'chrome://resources/js/assert.m.js';
 
 import {App} from './app_management.mojom-webui.js';
-import {BrowserProxy} from './browser_proxy.js';
 import {AppManagementUserAction, AppType, OptionalBool} from './constants.js';
 import {PermissionType, PermissionTypeIndex} from './permission_constants.js';
 import {isPermissionEnabled} from './permission_util.js';
@@ -121,6 +120,6 @@ export function recordAppManagementUserAction(
     appType: AppType, userAction: AppManagementUserAction) {
   const histogram = getUserActionHistogramNameForAppType_(appType);
   const enumLength = Object.keys(AppManagementUserAction).length;
-  BrowserProxy.getInstance().recordEnumerationValue(
+  chrome.metricsPrivate.recordEnumerationValue(
       histogram, userAction, enumLength);
 }
