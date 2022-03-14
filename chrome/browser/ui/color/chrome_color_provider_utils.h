@@ -28,4 +28,7 @@ color_utils::HSL GetThemeTint(int id, const ui::ColorProviderManager::Key& key);
 // the foreground tab is the most important).
 SkColor GetToolbarTopSeparatorColor(SkColor toolbar_color, SkColor frame_color);
 
+// Returns true if we should apply chrome high contrast colors for the `key`.
+bool ShouldApplyHighContrastColors(const ui::ColorProviderManager::Key& key);
+
 #endif  // CHROME_BROWSER_UI_COLOR_CHROME_COLOR_PROVIDER_UTILS_H_

@@ -441,4 +441,20 @@ void AddChromeColorMixer(ui::ColorProvider* provider,
   mixer[kColorWindowControlButtonBackgroundActive] = {ui::kColorFrameActive};
   mixer[kColorWindowControlButtonBackgroundInactive] = {
       ui::kColorFrameInactive};
+
+  // Apply high contrast recipes if necessary.
+  if (!ShouldApplyHighContrastColors(key))
+    return;
+  mixer[kColorDownloadShelfContentAreaSeparator] = {
+      kColorToolbarContentAreaSeparator};
+  mixer[kColorInfoBarContentAreaSeparator] = {
+      kColorToolbarContentAreaSeparator};
+  mixer[kColorLocationBarBorder] = {kColorToolbarText};
+  mixer[kColorToolbar] = {dark_mode ? SK_ColorBLACK : SK_ColorWHITE};
+  mixer[kColorToolbarContentAreaSeparator] = {kColorToolbarText};
+  mixer[kColorToolbarText] = {dark_mode ? SK_ColorWHITE : SK_ColorBLACK};
+  mixer[kColorToolbarTopSeparatorFrameActive] = {dark_mode ? SK_ColorDKGRAY
+                                                           : SK_ColorLTGRAY};
+  mixer[ui::kColorFrameActive] = {SK_ColorDKGRAY};
+  mixer[ui::kColorFrameInactive] = {SK_ColorGRAY};
 }

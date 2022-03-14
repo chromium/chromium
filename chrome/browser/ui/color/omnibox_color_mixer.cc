@@ -4,11 +4,8 @@
 
 #include "chrome/browser/ui/color/omnibox_color_mixer.h"
 
-#include "build/build_config.h"
-#include "build/buildflag.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
-#include "ui/base/buildflags.h"
+#include "chrome/browser/ui/color/chrome_color_provider_utils.h"
 #include "ui/color/color_id.h"
 #include "ui/color/color_mixer.h"
 #include "ui/color/color_provider.h"
@@ -28,15 +25,7 @@ void AddOmniboxColorMixer(ui::ColorProvider* provider,
                           const ui::ColorProviderManager::Key& key) {
   ui::ColorMixer& mixer = provider->AddMixer();
 
-// Only apply custom high contrast handling on platforms where we are not using
-// the system theme for high contrast.
-#if BUILDFLAG(USE_GTK) || BUILDFLAG(IS_CHROMEOS_LACROS) || BUILDFLAG(IS_WIN)
-  const bool high_contrast_custom_handling = false;
-#else
-  const bool high_contrast_custom_handling =
-      key.contrast_mode == ui::ColorProviderManager::ContrastMode::kHigh;
-#endif
-
+  const bool high_contrast_custom_handling = ShouldApplyHighContrastColors(key);
   const float contrast_ratio = high_contrast_custom_handling
                                    ? kOmniboxHighContrastRatio
                                    : color_utils::kMinimumReadableContrastRatio;

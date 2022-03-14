@@ -8,8 +8,12 @@
 
 #include "base/containers/fixed_flat_map.h"
 #include "base/notreached.h"
+#include "build/build_config.h"
+#include "build/buildflag.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/themes/theme_properties.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
+#include "ui/base/buildflags.h"
 
 #include "ui/color/color_id_map_macros.inc"
 
@@ -82,4 +86,14 @@ SkColor GetToolbarTopSeparatorColor(SkColor toolbar_color,
   // color is translucent. To prevent this, always use an opaque stroke color.
   return color_utils::GetResultingPaintColor(generate_separator_color(),
                                              frame_color);
+}
+
+bool ShouldApplyHighContrastColors(const ui::ColorProviderManager::Key& key) {
+  // Only apply custom high contrast handling on platforms where we are not
+  // using the system theme for high contrast.
+#if BUILDFLAG(USE_GTK) || BUILDFLAG(IS_CHROMEOS_LACROS) || BUILDFLAG(IS_WIN)
+  return false;
+#else
+  return key.contrast_mode == ui::ColorProviderManager::ContrastMode::kHigh;
+#endif
 }
