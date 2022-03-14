@@ -105,6 +105,31 @@
       }
     }
   },
+  "Comparison Windows (8 cores) (reclient)": {
+    "goma": {
+      "gn_args": {
+        "dcheck_always_on": false,
+        "ffmpeg_branding": "Chrome",
+        "is_component_build": false,
+        "is_debug": false,
+        "proprietary_codecs": true,
+        "symbol_level": 1,
+        "use_goma": true
+      }
+    },
+    "reclient": {
+      "gn_args": {
+        "dcheck_always_on": false,
+        "ffmpeg_branding": "Chrome",
+        "is_component_build": false,
+        "is_debug": false,
+        "proprietary_codecs": true,
+        "symbol_level": 1,
+        "use_rbe": true,
+        "use_remoteexec": true
+      }
+    }
+  },
   "Comparison Windows (reclient)": {
     "goma": {
       "gn_args": {

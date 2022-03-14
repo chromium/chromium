@@ -721,6 +721,23 @@ ci.builder(
 )
 
 ci.builder(
+    name = "Comparison Windows (8 cores) (reclient)",
+    builderless = True,
+    console_view_entry = consoles.console_view_entry(
+        category = "win",
+        short_name = "re",
+    ),
+    cores = 8,
+    goma_jobs = 80,
+    executable = "recipe:reclient_goma_comparison",
+    execution_timeout = 6 * time.hour,
+    reclient_cache_silo = "Comparison Windows 8 cores - cache siloed",
+    reclient_instance = rbe_instance.DEFAULT,
+    reclient_jobs = 80,
+    os = os.WINDOWS_DEFAULT,
+)
+
+ci.builder(
     name = "Comparison Windows (reclient)",
     builderless = True,
     console_view_entry = consoles.console_view_entry(

@@ -2598,6 +2598,14 @@
         'browser_config': 'cros-chrome',
         'os_type': 'chromeos',
       },
+      'Comparison Windows (8 cores) (reclient)': {
+        'mixins': [
+          'isolate_profile_data',
+        ],
+        'additional_compile_targets': [
+          'all'
+        ],
+      },
       'Comparison Windows (reclient)': {
         'mixins': [
           'isolate_profile_data',

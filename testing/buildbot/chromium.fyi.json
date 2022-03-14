@@ -16,6 +16,11 @@
       "chromiumos_preflight"
     ]
   },
+  "Comparison Windows (8 cores) (reclient)": {
+    "additional_compile_targets": [
+      "all"
+    ]
+  },
   "Comparison Windows (reclient)": {
     "additional_compile_targets": [
       "all"
