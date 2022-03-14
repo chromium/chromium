@@ -138,16 +138,11 @@ void ResolveHostAndOpenSocket::OnComplete(
   }
 
   if (result == net::OK && resolved_addresses) {
-    if (resolved_addresses->size() > 1) {
-      OpenSocket(net::ERR_NOT_IMPLEMENTED, {});
-      return;
-    }
-    if (const auto& resolved_address = resolved_addresses->front();
-        resolved_address.port() == GetHttpsPort()) {
+    if (options_->remote_port == GetHttpsPort()) {
       // Delegates to OpenSocket(...) after the check.
       // We cannot use the resolved address here since it causes problems
       // with SSL :(
-      PerformCORSCheck(*options_->remote_hostname, resolved_address);
+      PerformCORSCheck(*options_->remote_hostname, *resolved_addresses);
       return;
     }
   }
@@ -157,7 +152,7 @@ void ResolveHostAndOpenSocket::OnComplete(
 
 void ResolveHostAndOpenSocket::PerformCORSCheck(
     const std::string& address,
-    const net::IPEndPoint& resolved_address) {
+    net::AddressList resolved_addresses) {
   if (!service_) {
     OpenSocket(net::ERR_UNEXPECTED, {});
     return;
@@ -199,12 +194,12 @@ void ResolveHostAndOpenSocket::PerformCORSCheck(
       factory.get(),
       base::BindOnce(&ResolveHostAndOpenSocket::OnCORSCheckComplete,
                      base::Unretained(this), std::move(loader),
-                     resolved_address));
+                     std::move(resolved_addresses)));
 }
 
 void ResolveHostAndOpenSocket::OnCORSCheckComplete(
     std::unique_ptr<network::SimpleURLLoader> loader,
-    net::IPEndPoint resolved_address,
+    net::AddressList resolved_addresses,
     scoped_refptr<net::HttpResponseHeaders>) {
   if (const auto& completion_status = loader->CompletionStatus()) {
     if (auto status = completion_status->cors_error_status) {
@@ -219,7 +214,6 @@ void ResolveHostAndOpenSocket::OnCORSCheckComplete(
       OpenSocket(completion_status->error_code, {});
       return;
     }
-    auto resolved_addresses = net::AddressList(std::move(resolved_address));
     OpenSocket(net::OK, std::move(resolved_addresses));
     return;
   }

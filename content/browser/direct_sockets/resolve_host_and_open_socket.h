@@ -42,10 +42,10 @@ class CONTENT_EXPORT ResolveHostAndOpenSocket
       const absl::optional<net::AddressList>& resolved_addresses) override;
 
   void PerformCORSCheck(const std::string& address,
-                        const net::IPEndPoint& resolved_address);
+                        net::AddressList resolved_addresses);
 
   void OnCORSCheckComplete(std::unique_ptr<network::SimpleURLLoader> loader,
-                           net::IPEndPoint resolved_address,
+                           net::AddressList resolved_addresses,
                            scoped_refptr<net::HttpResponseHeaders>);
 
   virtual void OpenSocket(
