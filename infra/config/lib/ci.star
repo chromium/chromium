@@ -221,8 +221,8 @@ def _gpu_mac_builder(*, name, **kwargs):
     This sets mac-specific defaults that are common to GPU-related builder
     groups.
     """
+    kwargs.setdefault("builderless", True)
     kwargs.setdefault("os", os.MAC_ANY)
-    kwargs.setdefault("pool", ci.DEFAULT_POOL)
     return ci.builder(name = name, **kwargs)
 
 def _gpu_windows_builder(*, name, **kwargs):
