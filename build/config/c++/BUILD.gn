@@ -6,10 +6,7 @@ import("//buildtools/deps_revisions.gni")
 
 assert(use_custom_libcxx, "should only be used if use_custom_libcxx is set")
 
-declare_args() {
-  # TODO(thakis): Make this just a variable, not an arg.
-  libcxx_abi_unstable = true
-}
+libcxx_abi_unstable = true
 
 # TODO(xiaohuic): https://crbug/917533 Crashes on internal ChromeOS build.
 # Do unconditionally once the underlying problem is fixed.
