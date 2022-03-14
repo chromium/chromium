@@ -306,6 +306,9 @@ testcase.zipExtractShowPanel = async () => {
   // Check: the context menu should appear.
   await remoteCall.waitForElement(appId, '#file-context-menu:not([hidden])');
 
+  // Check: the Zip selection meun item should be hidden.
+  await remoteCall.waitForElement(appId, '[command="#zip-selection"][hidden]');
+
   // Tell the background page to never finish the file extraction.
   await remoteCall.callRemoteTestUtil(
       'progressCenterNeverNotifyCompleted', appId, []);
