@@ -11,17 +11,6 @@
 
 namespace ash {
 
-enum class DeviceType {
-  kChromebase,
-  kChromebit,
-  kChromebook,
-  kChromebox,
-  kUnknown,  // Unknown fallback device.
-};
-
-// Returns the current device type, e.g,, Chromebook, Chromebox.
-COMPONENT_EXPORT(ASH_CONSTANTS) DeviceType GetDeviceType();
-
 // Returns the name of current device for Bluetooth. |bluetooth_address| is
 // so it can be used (after hashing) to create a more identifiable device name,
 // e.g., "Chromebook_1A2B", "Chromebox_F9E8'.
@@ -36,8 +25,6 @@ COMPONENT_EXPORT(ASH_CONSTANTS) bool IsGoogleBrandedDevice();
 // TODO(https://crbug.com/1164001): remove after the Chrome OS source code
 // directory migration is finished.
 namespace chromeos {
-using ::ash::DeviceType;
-using ::ash::GetDeviceType;
 using ::ash::IsGoogleBrandedDevice;
 }  // namespace chromeos
 

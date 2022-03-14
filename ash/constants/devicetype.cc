@@ -11,35 +11,9 @@
 #include "base/strings/string_split.h"
 #include "base/strings/stringprintf.h"
 #include "base/system/sys_info.h"
+#include "chromeos/constants/devicetype.h"
 
 namespace ash {
-
-namespace {
-const char kDeviceTypeKey[] = "DEVICETYPE";
-}
-
-DeviceType GetDeviceType() {
-  std::string value;
-  base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
-  if (command_line->HasSwitch(switches::kFormFactor)) {
-    value = command_line->GetSwitchValueASCII(switches::kFormFactor);
-  } else if (!base::SysInfo::GetLsbReleaseValue(kDeviceTypeKey, &value)) {
-    return DeviceType::kUnknown;
-  }
-  if (value == "CHROMEBASE")
-    return DeviceType::kChromebase;
-  if (value == "CHROMEBIT")
-    return DeviceType::kChromebit;
-  // Most devices are Chromebooks, so we will also consider reference boards
-  // as chromebooks.
-  if (value == "CHROMEBOOK" || value == "REFERENCE")
-    return DeviceType::kChromebook;
-  if (value == "CHROMEBOX")
-    return DeviceType::kChromebox;
-
-  LOG(ERROR) << "Unknown device type \"" << value << "\"";
-  return DeviceType::kUnknown;
-}
 
 std::string GetDeviceBluetoothName(const std::string& bluetooth_address) {
   const char* name = "Chromebook";

@@ -8,7 +8,6 @@
 #include <utility>
 
 #include "ash/constants/ash_switches.h"
-#include "ash/constants/devicetype.h"
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/command_line.h"
@@ -22,6 +21,7 @@
 #include "chrome/browser/ash/login/wizard_controller.h"
 #include "chrome/browser/ui/webui/chromeos/login/hid_detection_screen_handler.h"
 #include "chrome/grit/generated_resources.h"
+#include "chromeos/constants/devicetype.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/device_service.h"
 #include "device/bluetooth/bluetooth_adapter_factory.h"
@@ -92,10 +92,10 @@ bool HIDDetectionScreen::CanShowScreen() {
     return false;
   }
 
-  switch (ash::GetDeviceType()) {
-    case DeviceType::kChromebase:
-    case DeviceType::kChromebit:
-    case DeviceType::kChromebox:
+  switch (chromeos::GetDeviceType()) {
+    case chromeos::DeviceType::kChromebase:
+    case chromeos::DeviceType::kChromebit:
+    case chromeos::DeviceType::kChromebox:
       return true;
     default:
       return false;

@@ -9,7 +9,6 @@
 #include "ash/constants/app_types.h"
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
-#include "ash/constants/devicetype.h"
 #include "ash/shell.h"
 #include "ash/wm/mru_window_tracker.h"
 #include "base/bind.h"
@@ -26,6 +25,7 @@
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "chromeos/constants/devicetype.h"
 #include "chromeos/dbus/dbus_thread_manager.h"
 #include "chromeos/dbus/power_manager/power_supply_properties.pb.h"
 #include "components/ukm/content/source_url_recorder.h"
@@ -162,7 +162,7 @@ UserActivityManager::UserActivityManager(
   DCHECK(session_manager);
   session_manager_observation_.Observe(session_manager);
 
-  if (GetDeviceType() == DeviceType::kChromebook) {
+  if (chromeos::GetDeviceType() == chromeos::DeviceType::kChromebook) {
     device_type_ = UserActivityEvent::Features::CHROMEBOOK;
   } else {
     device_type_ = UserActivityEvent::Features::UNKNOWN_DEVICE;

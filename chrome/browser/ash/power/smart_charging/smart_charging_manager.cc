@@ -6,7 +6,6 @@
 
 #include <memory>
 
-#include "ash/constants/devicetype.h"
 #include "base/bind.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
@@ -21,6 +20,7 @@
 #include "chrome/browser/ash/power/ml/recent_events_counter.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
+#include "chromeos/constants/devicetype.h"
 #include "chromeos/dbus/power_manager/backlight.pb.h"
 #include "components/session_manager/core/session_manager.h"
 #include "components/session_manager/core/session_manager_observer.h"
@@ -203,7 +203,7 @@ std::unique_ptr<SmartChargingManager> SmartChargingManager::CreateInstance() {
   // TODO(crbug.com/1028853): we are collecting data from Chromebook only. Since
   // this action is discouraged, we will modify the condition latter using dbus
   // calls.
-  if (GetDeviceType() != DeviceType::kChromebook)
+  if (chromeos::GetDeviceType() != chromeos::DeviceType::kChromebook)
     return nullptr;
 
   ui::UserActivityDetector* const detector = ui::UserActivityDetector::Get();

@@ -11,7 +11,7 @@
 #include "build/chromeos_buildflags.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "ash/constants/devicetype.h"
+#include "chromeos/constants/devicetype.h"  // nogncheck
 #endif
 
 namespace syncer {

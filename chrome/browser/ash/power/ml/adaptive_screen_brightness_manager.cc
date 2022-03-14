@@ -8,7 +8,6 @@
 #include <utility>
 
 #include "ash/constants/ash_pref_names.h"
-#include "ash/constants/devicetype.h"
 #include "base/bind.h"
 #include "base/process/launch.h"
 #include "base/task/post_task.h"
@@ -25,6 +24,7 @@
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "chromeos/constants/devicetype.h"
 #include "chromeos/dbus/dbus_thread_manager.h"
 #include "chromeos/dbus/power_manager/backlight.pb.h"
 #include "components/prefs/pref_service.h"
@@ -149,7 +149,7 @@ AdaptiveScreenBrightnessManager::~AdaptiveScreenBrightnessManager() = default;
 
 std::unique_ptr<AdaptiveScreenBrightnessManager>
 AdaptiveScreenBrightnessManager::CreateInstance() {
-  if (GetDeviceType() != DeviceType::kChromebook)
+  if (chromeos::GetDeviceType() != chromeos::DeviceType::kChromebook)
     return nullptr;
 
   chromeos::PowerManagerClient* const power_manager_client =

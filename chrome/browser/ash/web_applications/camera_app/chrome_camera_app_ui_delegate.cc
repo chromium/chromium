@@ -7,7 +7,6 @@
 #include <vector>
 
 #include "ash/constants/ash_features.h"
-#include "ash/constants/devicetype.h"
 #include "ash/public/cpp/tablet_mode.h"
 #include "ash/webui/camera_app_ui/url_constants.h"
 #include "base/feature_list.h"
@@ -37,6 +36,7 @@
 #include "chrome/browser/web_applications/web_app_launch_queue.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_tab_helper.h"
+#include "chromeos/constants/devicetype.h"
 #include "chromeos/ui/base/window_properties.h"
 #include "components/services/app_service/public/mojom/types.mojom.h"
 #include "content/public/browser/render_frame_host.h"
