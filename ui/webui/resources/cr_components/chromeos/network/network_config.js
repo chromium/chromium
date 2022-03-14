@@ -2137,6 +2137,7 @@ Polymer({
     assert(vpn.ipSec);
     assert(vpn.l2tp);
 
+    vpn.ipSec.authenticationType = this.ipsecAuthType_;
     if (vpn.ipSec.authenticationType === IpsecAuthType.CERT) {
       vpn.ipSec.clientCertType = 'PKCS11Id';
       vpn.ipSec.clientCertPkcs11Id = this.getUserCertPkcs11Id_();
@@ -2145,6 +2146,11 @@ Polymer({
     vpn.ipSec.ikeVersion = 1;
     vpn.ipSec.saveCredentials = this.vpnSaveCredentials_;
     vpn.l2tp.saveCredentials = this.vpnSaveCredentials_;
+
+    // Clear IPsec fields which are only for IKEv2.
+    delete vpn.ipSec.eap;
+    delete vpn.ipSec.localIdentity;
+    delete vpn.ipSec.remoteIdentity;
   },
 
   /**

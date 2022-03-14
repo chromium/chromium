@@ -29,6 +29,7 @@ suite('network-config', function() {
   const kTestVpnHost = 'test-vpn-host';
   const kTestUsername = 'test-username';
   const kTestPassword = 'test-password';
+  const kTestPsk = 'test-psk';
 
   suiteSetup(function() {
     mojoApi_ = new FakeNetworkConfig();
@@ -306,7 +307,7 @@ suite('network-config', function() {
       setMandatoryFields();
       const configProperties = networkConfig.get('configProperties_');
       assertFalse(networkConfig.vpnIsConfigured_());
-      configProperties.typeConfig.vpn.ipSec.psk = 'test-psk';
+      configProperties.typeConfig.vpn.ipSec.psk = kTestPsk;
       assertTrue(networkConfig.vpnIsConfigured_());
 
       let props = networkConfig.getPropertiesToSet_();
@@ -317,7 +318,7 @@ suite('network-config', function() {
       assertEquals('PSK', props.typeConfig.vpn.ipSec.authenticationType);
       assertEquals(2, props.typeConfig.vpn.ipSec.ikeVersion);
       assertFalse(props.typeConfig.vpn.ipSec.saveCredentials);
-      assertEquals('test-psk', props.typeConfig.vpn.ipSec.psk);
+      assertEquals(kTestPsk, props.typeConfig.vpn.ipSec.psk);
       assertEquals('', props.typeConfig.vpn.ipSec.localIdentity);
       assertEquals('', props.typeConfig.vpn.ipSec.remoteIdentity);
 
@@ -557,6 +558,7 @@ suite('network-config', function() {
       configProperties.name = kTestVpnName;
       configProperties.typeConfig.vpn.host = kTestVpnHost;
       configProperties.typeConfig.vpn.l2tp.username = kTestUsername;
+      configProperties.typeConfig.vpn.l2tp.password = kTestPassword;
     }
 
     test('Switch Authentication Type', function() {
@@ -652,7 +654,82 @@ suite('network-config', function() {
       });
     });
 
-    test('Certs', function() {
+    // Checks if the values of vpnIsConfigured_() and getPropertiesToSet_() are
+    // correct when the authentication type is PSK.
+    test('PSK', function() {
+      initNetworkConfig();
+      networkConfig.set('vpnType_', 'L2TP_IPsec');
+      Polymer.dom.flush();
+
+      setMandatoryFields();
+      const configProperties = networkConfig.get('configProperties_');
+      assertFalse(networkConfig.vpnIsConfigured_());
+      configProperties.typeConfig.vpn.ipSec.psk = kTestPsk;
+      assertTrue(networkConfig.vpnIsConfigured_());
+
+      let props = networkConfig.getPropertiesToSet_();
+      const mojom = chromeos.networkConfig.mojom;
+      assertEquals(kTestVpnName, props.name);
+      assertEquals(kTestVpnHost, props.typeConfig.vpn.host);
+      assertEquals(mojom.VpnType.kL2TPIPsec, props.typeConfig.vpn.type.value);
+      assertEquals('PSK', props.typeConfig.vpn.ipSec.authenticationType);
+      assertEquals(1, props.typeConfig.vpn.ipSec.ikeVersion);
+      assertFalse(props.typeConfig.vpn.ipSec.saveCredentials);
+      assertEquals(kTestPsk, props.typeConfig.vpn.ipSec.psk);
+      assertEquals(kTestUsername, props.typeConfig.vpn.l2tp.username);
+      assertEquals(kTestPassword, props.typeConfig.vpn.l2tp.password);
+
+      networkConfig.set('vpnSaveCredentials_', true);
+      props = networkConfig.getPropertiesToSet_();
+      assertTrue(props.typeConfig.vpn.ipSec.saveCredentials);
+      assertTrue(props.typeConfig.vpn.l2tp.saveCredentials);
+    });
+
+    // Checks if values are read correctly for an existing service of PSK
+    // authentication.
+    test('Existing PSK', function() {
+      const mojom = chromeos.networkConfig.mojom;
+      const l2tp = OncMojo.getDefaultManagedProperties(
+          mojom.NetworkType.kVPN, 'someguid', kTestVpnName);
+      l2tp.typeProperties.vpn.type = mojom.VpnType.kL2TPIPsec;
+      l2tp.typeProperties.vpn.host = {activeValue: kTestVpnHost};
+      l2tp.typeProperties.vpn.ipSec = {
+        authenticationType: {activeValue: 'PSK'},
+        ikeVersion: {activeValue: 1},
+        saveCredentials: {activeValue: true},
+      };
+      l2tp.typeProperties.vpn.l2tp = {
+        username: {activeValue: kTestUsername},
+        saveCredentials: {activeValue: true},
+      };
+      setNetworkConfig(l2tp);
+      initNetworkConfig();
+
+      return flushAsync().then(() => {
+        assertEquals('L2TP_IPsec', networkConfig.get('vpnType_'));
+        assertEquals('PSK', networkConfig.get('ipsecAuthType_'));
+
+        // Populate the properties again. The values should be the same to what
+        // are set above.
+        const props = networkConfig.getPropertiesToSet_();
+        assertEquals('someguid', props.guid);
+        assertEquals(kTestVpnName, props.name);
+        assertEquals(kTestVpnHost, props.typeConfig.vpn.host);
+        assertEquals(mojom.VpnType.kL2TPIPsec, props.typeConfig.vpn.type.value);
+        assertEquals('PSK', props.typeConfig.vpn.ipSec.authenticationType);
+        assertEquals(1, props.typeConfig.vpn.ipSec.ikeVersion);
+        assertEquals(undefined, props.typeConfig.vpn.ipSec.eap);
+        assertEquals(undefined, props.typeConfig.vpn.ipSec.localIdentity);
+        assertEquals(undefined, props.typeConfig.vpn.ipSec.remoteIdentity);
+        assertEquals(kTestUsername, props.typeConfig.vpn.l2tp.username);
+        assertTrue(props.typeConfig.vpn.ipSec.saveCredentials);
+        assertTrue(props.typeConfig.vpn.l2tp.saveCredentials);
+      });
+    });
+
+    // Checks if the values of vpnIsConfigured_() and getPropertiesToSet_() are
+    // correct when the authentication type is user certificate.
+    test('Cert', function() {
       initNetworkConfigWithCerts(
           /* hasServerCa= */ true, /* hasUserCert= */ true);
       networkConfig.set('vpnType_', 'L2TP_IPsec');
@@ -666,7 +743,77 @@ suite('network-config', function() {
           // Set all other mandatory fields. vpnIsConfigured_() should be true.
           setMandatoryFields();
           assertTrue(networkConfig.vpnIsConfigured_());
+
+          const props = networkConfig.getPropertiesToSet_();
+          const mojom = chromeos.networkConfig.mojom;
+          assertEquals(kTestVpnName, props.name);
+          assertEquals(kTestVpnHost, props.typeConfig.vpn.host);
+          assertEquals(
+              mojom.VpnType.kL2TPIPsec, props.typeConfig.vpn.type.value);
+          assertEquals('Cert', props.typeConfig.vpn.ipSec.authenticationType);
+          assertEquals(1, props.typeConfig.vpn.ipSec.ikeVersion);
+          assertEquals(1, props.typeConfig.vpn.ipSec.serverCaPems.length);
+          assertEquals(kCaPem, props.typeConfig.vpn.ipSec.serverCaPems[0]);
+          assertEquals('PKCS11Id', props.typeConfig.vpn.ipSec.clientCertType);
+          assertEquals(
+              kUserCertId, props.typeConfig.vpn.ipSec.clientCertPkcs11Id);
+          assertEquals(kTestUsername, props.typeConfig.vpn.l2tp.username);
+          assertEquals(kTestPassword, props.typeConfig.vpn.l2tp.password);
+          assertFalse(props.typeConfig.vpn.ipSec.saveCredentials);
+          assertFalse(props.typeConfig.vpn.l2tp.saveCredentials);
         });
+      });
+    });
+
+    // Checks if values are read correctly for an existing service of
+    // certificate authentication.
+    test('Existing Cert', function() {
+      const mojom = chromeos.networkConfig.mojom;
+      const l2tp = OncMojo.getDefaultManagedProperties(
+          mojom.NetworkType.kVPN, 'someguid', kTestVpnName);
+      l2tp.typeProperties.vpn.type = mojom.VpnType.kL2TPIPsec;
+      l2tp.typeProperties.vpn.host = {activeValue: kTestVpnHost};
+      l2tp.typeProperties.vpn.ipSec = {
+        authenticationType: {activeValue: 'Cert'},
+        clientCertType: {activeValue: 'PKCS11Id'},
+        clientCertPkcs11Id: {activeValue: kUserCertId},
+        ikeVersion: {activeValue: 1},
+        saveCredentials: {activeValue: true},
+        serverCaPems: {activeValue: [kCaPem]},
+      };
+      l2tp.typeProperties.vpn.l2tp = {
+        username: {activeValue: kTestUsername},
+        saveCredentials: {activeValue: true},
+      };
+      setNetworkConfig(l2tp);
+      initNetworkConfigWithCerts(
+          /* hasServerCa= */ true, /* hasUserCert= */ true);
+      return mojoApi_.whenCalled('getNetworkCertificates').then(() => {
+        assertEquals('L2TP_IPsec', networkConfig.get('vpnType_'));
+        assertEquals('Cert', networkConfig.get('ipsecAuthType_'));
+        assertEquals(kCaHash, networkConfig.selectedServerCaHash_);
+        assertEquals(kUserHash1, networkConfig.selectedUserCertHash_);
+
+        // Populate the properties again. The values should be the same to what
+        // are set above.
+        const props = networkConfig.getPropertiesToSet_();
+        assertEquals('someguid', props.guid);
+        assertEquals(kTestVpnName, props.name);
+        assertEquals(kTestVpnHost, props.typeConfig.vpn.host);
+        assertEquals(mojom.VpnType.kL2TPIPsec, props.typeConfig.vpn.type.value);
+        assertEquals('Cert', props.typeConfig.vpn.ipSec.authenticationType);
+        assertEquals(1, props.typeConfig.vpn.ipSec.ikeVersion);
+        assertEquals(1, props.typeConfig.vpn.ipSec.serverCaPems.length);
+        assertEquals(kCaPem, props.typeConfig.vpn.ipSec.serverCaPems[0]);
+        assertEquals('PKCS11Id', props.typeConfig.vpn.ipSec.clientCertType);
+        assertEquals(
+            kUserCertId, props.typeConfig.vpn.ipSec.clientCertPkcs11Id);
+        assertEquals(undefined, props.typeConfig.vpn.ipSec.eap);
+        assertEquals(undefined, props.typeConfig.vpn.ipSec.localIdentity);
+        assertEquals(undefined, props.typeConfig.vpn.ipSec.remoteIdentity);
+        assertEquals(kTestUsername, props.typeConfig.vpn.l2tp.username);
+        assertTrue(props.typeConfig.vpn.ipSec.saveCredentials);
+        assertTrue(props.typeConfig.vpn.l2tp.saveCredentials);
       });
     });
   });
