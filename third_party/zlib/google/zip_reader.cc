@@ -309,17 +309,19 @@ bool ZipReader::ExtractCurrentEntry(WriterDelegate* delegate,
     remaining_capacity -= num_bytes_to_write;
   }
 
+  if (const int err = unzCloseCurrentFile(zip_file_); err != UNZ_OK) {
+    LOG(ERROR) << "Cannot extract file " << Redact(entry_.path)
+               << " from ZIP: " << UnzipError(err);
+    entire_file_extracted = false;
+  }
+
   if (entire_file_extracted) {
     delegate->SetPosixFilePermissions(entry_.posix_mode);
     if (entry_.last_modified != base::Time::UnixEpoch()) {
       delegate->SetTimeModified(entry_.last_modified);
     }
-  }
-
-  if (const int err = unzCloseCurrentFile(zip_file_); err != UNZ_OK) {
-    LOG(ERROR) << "Cannot extract file " << Redact(entry_.path)
-               << " from ZIP: " << UnzipError(err);
-    return false;
+  } else {
+    delegate->OnError();
   }
 
   return entire_file_extracted;
@@ -525,6 +527,11 @@ void FileWriterDelegate::SetPosixFilePermissions(int mode) {
 #endif
 }
 
+void FileWriterDelegate::OnError() {
+  file_length_ = 0;
+  file_->SetLength(0);
+}
+
 // FilePathWriterDelegate ------------------------------------------------------
 
 FilePathWriterDelegate::FilePathWriterDelegate(base::FilePath output_file_path)
@@ -542,6 +549,16 @@ bool FilePathWriterDelegate::PrepareOutput() {
   owned_file_.Initialize(output_file_path_, base::File::FLAG_CREATE_ALWAYS |
                                                 base::File::FLAG_WRITE);
   return FileWriterDelegate::PrepareOutput();
+}
+
+void FilePathWriterDelegate::OnError() {
+  FileWriterDelegate::OnError();
+  owned_file_.Close();
+
+  if (!base::DeleteFile(output_file_path_)) {
+    LOG(ERROR) << "Cannot delete partially extracted file "
+               << Redact(output_file_path_);
+  }
 }
 
 }  // namespace zip

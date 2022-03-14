@@ -461,11 +461,9 @@ TEST_F(ZipTest, UnzipEncryptedWithWrongPassword) {
                                      &contents));
   EXPECT_EQ("This is not encrypted.\n", contents);
 
-  // This extracted file contains rubbish data.
-  ASSERT_TRUE(base::ReadFileToString(
-      test_dir_.AppendASCII("Encrypted ZipCrypto.txt"), &contents));
-  EXPECT_NE("", contents);
-  EXPECT_NE("This is encrypted with ZipCrypto.\n", contents);
+  // No rubbish file should be left behind.
+  EXPECT_FALSE(
+      base::PathExists(test_dir_.AppendASCII("Encrypted ZipCrypto.txt")));
 }
 
 TEST_F(ZipTest, UnzipEncryptedWithNoPassword) {
@@ -483,11 +481,17 @@ TEST_F(ZipTest, UnzipEncryptedWithNoPassword) {
                                      &contents));
   EXPECT_EQ("This is not encrypted.\n", contents);
 
-  // This extracted file contains rubbish data.
-  ASSERT_TRUE(base::ReadFileToString(
-      test_dir_.AppendASCII("Encrypted ZipCrypto.txt"), &contents));
-  EXPECT_NE("", contents);
-  EXPECT_NE("This is encrypted with ZipCrypto.\n", contents);
+  // No rubbish file should be left behind.
+  EXPECT_FALSE(
+      base::PathExists(test_dir_.AppendASCII("Encrypted ZipCrypto.txt")));
+}
+
+TEST_F(ZipTest, UnzipWrongCrc) {
+  ASSERT_FALSE(
+      zip::Unzip(GetDataDirectory().AppendASCII("Wrong CRC.zip"), test_dir_));
+
+  // No rubbish file should be left behind.
+  EXPECT_FALSE(base::PathExists(test_dir_.AppendASCII("Corrupted.txt")));
 }
 
 TEST_F(ZipTest, UnzipWithDelegates) {

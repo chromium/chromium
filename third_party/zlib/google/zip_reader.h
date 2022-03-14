@@ -48,6 +48,10 @@ class WriterDelegate {
   // may apply some of the permissions (for example, the executable bit) to the
   // output file.
   virtual void SetPosixFilePermissions(int mode) {}
+
+  // Called if an error occurred while extracting the file. The WriterDelegate
+  // can then remove and clean up the partially extracted data.
+  virtual void OnError() {}
 };
 
 // This class is used for reading ZIP archives. A typical use case of this class
@@ -291,8 +295,6 @@ class FileWriterDelegate : public WriterDelegate {
 
   ~FileWriterDelegate() override;
 
-  // WriterDelegate methods:
-
   // Returns true if the file handle passed to the constructor is valid.
   bool PrepareOutput() override;
 
@@ -306,6 +308,9 @@ class FileWriterDelegate : public WriterDelegate {
   // On POSIX systems, sets the file to be executable if the source file was
   // executable.
   void SetPosixFilePermissions(int mode) override;
+
+  // Empties the file to avoid leaving garbage data in it.
+  void OnError() override;
 
   // Gets the number of bytes written into the file.
   int64_t file_length() { return file_length_; }
@@ -331,10 +336,11 @@ class FilePathWriterDelegate : public FileWriterDelegate {
 
   ~FilePathWriterDelegate() override;
 
-  // WriterDelegate methods:
-
   // Creates the output file and any necessary intermediate directories.
   bool PrepareOutput() override;
+
+  // Deletes the file.
+  void OnError() override;
 
  private:
   const base::FilePath output_file_path_;
