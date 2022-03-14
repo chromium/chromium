@@ -1184,7 +1184,8 @@ policy::CloudPolicyStore* BrowserManager::GetDeviceAccountPolicyStore() {
   DCHECK(user);
 
   switch (user->GetType()) {
-    case user_manager::USER_TYPE_REGULAR: {
+    case user_manager::USER_TYPE_REGULAR:
+    case user_manager::USER_TYPE_CHILD: {
       Profile* profile = ash::ProfileHelper::Get()->GetProfileByUser(user);
       DCHECK(profile);
       policy::CloudPolicyManager* user_cloud_policy_manager =
