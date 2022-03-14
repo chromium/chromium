@@ -14,6 +14,7 @@
 #include "content/browser/attribution_reporting/attribution_filter_data.h"
 #include "content/browser/attribution_reporting/attribution_host_utils.h"
 #include "content/browser/attribution_reporting/attribution_manager.h"
+#include "content/browser/attribution_reporting/attribution_metrics.h"
 #include "content/browser/attribution_reporting/attribution_reporting.pb.h"
 #include "content/browser/attribution_reporting/attribution_trigger.h"
 #include "content/browser/attribution_reporting/common_source_info.h"
@@ -96,6 +97,7 @@ void AttributionDataHostManagerImpl::SourceDataAvailable(
           ContentBrowserClient::ConversionMeasurementOperation::kImpression,
           &context.context_origin, /*conversion_origin=*/nullptr,
           &reporting_origin);
+  RecordRegisterImpressionAllowed(allowed);
   if (!allowed)
     return;
 
@@ -152,6 +154,7 @@ void AttributionDataHostManagerImpl::TriggerDataAvailable(
           ContentBrowserClient::ConversionMeasurementOperation::kConversion,
           /*impression_origin=*/nullptr,
           /*conversion_origin=*/&context.context_origin, &reporting_origin);
+  RecordRegisterConversionAllowed(allowed);
   if (!allowed)
     return;
 

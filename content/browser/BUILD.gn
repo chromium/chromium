@@ -418,6 +418,8 @@ source_set("browser") {
     "attribution_reporting/attribution_manager_impl.h",
     "attribution_reporting/attribution_manager_provider.cc",
     "attribution_reporting/attribution_manager_provider.h",
+    "attribution_reporting/attribution_metrics.cc",
+    "attribution_reporting/attribution_metrics.h",
     "attribution_reporting/attribution_observer.h",
     "attribution_reporting/attribution_observer_types.cc",
     "attribution_reporting/attribution_observer_types.h",

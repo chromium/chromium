@@ -13,6 +13,7 @@
 
 #include "base/containers/flat_map.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "content/browser/attribution_reporting/attribution_aggregatable_sources.h"
 #include "content/browser/attribution_reporting/attribution_manager.h"
 #include "content/browser/attribution_reporting/attribution_source_type.h"
@@ -67,6 +68,8 @@ class AttributionDataHostManagerImplTest : public testing::Test {
 };
 
 TEST_F(AttributionDataHostManagerImplTest, SourceDataHost_SourceRegistered) {
+  base::HistogramTester histograms;
+
   auto page_origin = url::Origin::Create(GURL("https://page.example"));
   auto destination_origin =
       url::Origin::Create(GURL("https://trigger.example"));
@@ -104,6 +107,9 @@ TEST_F(AttributionDataHostManagerImplTest, SourceDataHost_SourceRegistered) {
           .Build();
   data_host_remote->SourceDataAvailable(std::move(source_data));
   data_host_remote.FlushForTesting();
+
+  histograms.ExpectUniqueSample("Conversions.RegisterImpressionAllowed", true,
+                                1);
 }
 
 TEST_F(AttributionDataHostManagerImplTest,
@@ -238,6 +244,8 @@ TEST_F(AttributionDataHostManagerImplTest,
 
 TEST_F(AttributionDataHostManagerImplTest,
        SourceDataHostEmbedderDisallow_SourceDropped) {
+  base::HistogramTester histograms;
+
   EXPECT_CALL(mock_manager_, HandleSource).Times(0);
 
   auto page_origin = url::Origin::Create(GURL("https://page.example"));
@@ -266,6 +274,9 @@ TEST_F(AttributionDataHostManagerImplTest,
       blink::mojom::AttributionAggregatableSources::New();
   data_host_remote->SourceDataAvailable(std::move(source_data));
   data_host_remote.FlushForTesting();
+
+  histograms.ExpectUniqueSample("Conversions.RegisterImpressionAllowed", false,
+                                1);
 }
 
 TEST_F(AttributionDataHostManagerImplTest,
@@ -376,6 +387,8 @@ TEST_F(AttributionDataHostManagerImplTest,
 }
 
 TEST_F(AttributionDataHostManagerImplTest, TriggerDataHost_TriggerRegistered) {
+  base::HistogramTester histograms;
+
   auto destination_origin =
       url::Origin::Create(GURL("https://trigger.example"));
   auto reporting_origin = url::Origin::Create(GURL("https://reporter.example"));
@@ -445,6 +458,9 @@ TEST_F(AttributionDataHostManagerImplTest, TriggerDataHost_TriggerRegistered) {
 
   data_host_remote->TriggerDataAvailable(std::move(trigger_data));
   data_host_remote.FlushForTesting();
+
+  histograms.ExpectUniqueSample("Conversions.RegisterConversionAllowed", true,
+                                1);
 }
 
 TEST_F(AttributionDataHostManagerImplTest,
@@ -603,6 +619,8 @@ TEST_F(AttributionDataHostManagerImplTest,
 
 TEST_F(AttributionDataHostManagerImplTest,
        TriggerDataHostEmbedderDisallow_TriggerDropped) {
+  base::HistogramTester histograms;
+
   EXPECT_CALL(mock_manager_, HandleTrigger).Times(0);
 
   auto destination_origin =
@@ -631,6 +649,9 @@ TEST_F(AttributionDataHostManagerImplTest,
 
   data_host_remote->TriggerDataAvailable(std::move(trigger_data));
   data_host_remote.FlushForTesting();
+
+  histograms.ExpectUniqueSample("Conversions.RegisterConversionAllowed", false,
+                                1);
 }
 
 TEST_F(AttributionDataHostManagerImplTest,

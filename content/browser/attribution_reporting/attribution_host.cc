@@ -8,7 +8,6 @@
 
 #include "base/check.h"
 #include "base/memory/raw_ptr.h"
-#include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
@@ -16,6 +15,7 @@
 #include "content/browser/attribution_reporting/attribution_host_utils.h"
 #include "content/browser/attribution_reporting/attribution_manager.h"
 #include "content/browser/attribution_reporting/attribution_manager_provider.h"
+#include "content/browser/attribution_reporting/attribution_metrics.h"
 #include "content/browser/attribution_reporting/attribution_page_metrics.h"
 #include "content/browser/attribution_reporting/attribution_source_type.h"
 #include "content/browser/attribution_reporting/attribution_trigger.h"
@@ -63,14 +63,6 @@ class ScopedMapDeleter {
   raw_ptr<Map> map_;
   typename Map::iterator it_;
 };
-
-void RecordRegisterConversionAllowed(bool allowed) {
-  base::UmaHistogramBoolean("Conversions.RegisterConversionAllowed", allowed);
-}
-
-void RecordRegisterImpressionAllowed(bool allowed) {
-  base::UmaHistogramBoolean("Conversions.RegisterImpressionAllowed", allowed);
-}
 
 }  // namespace
 
