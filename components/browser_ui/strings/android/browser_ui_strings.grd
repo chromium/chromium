@@ -590,13 +590,13 @@
         URL truncated
       </message>
       <message name="IDS_PAGE_INFO_AD_PERSONALIZATION_TITLE" desc="The title of the 'Ad personalization' section in Page Info.">
-          Ad personalization
+        Ad personalization
       </message>
       <message name="IDS_PAGE_AD_PERSONALIZATION_DESCRIPTION" desc="Description of a section in PageInfo that shows information on how the current site is using ad personalization APIs from the Privacy Sandbox.">
         This site gets your interests from Chrome to show you more relevant ads
       </message>
       <message name="IDS_PAGE_INFO_AD_MANAGE_INTERESTS" desc="The button label of the 'Manage interests' button in Page Info. The button opens a settings page to manage interests for the site.">
-          Manage interests
+        Manage interests
       </message>
 
       <message name="IDS_COOKIES_TITLE" desc="Title for the Cookies settings screen [CHAR_LIMIT=32]">
