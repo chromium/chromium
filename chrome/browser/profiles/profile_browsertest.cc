@@ -459,7 +459,8 @@ IN_PROC_BROWSER_TEST_F(ProfileBrowserTest, MAYBE_CreateNewProfileAsynchronous) {
 }
 
 // TODO(crbug.com/1282123): Flaky on ChromeOS-Ash.
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+// TODO(crbug.com/1218591): Flaky on Mac.
+#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_MAC)
 #define MAYBE_CreateOldProfileAsynchronous DISABLED_CreateOldProfileAsynchronous
 #else
 #define MAYBE_CreateOldProfileAsynchronous CreateOldProfileAsynchronous
@@ -814,12 +815,13 @@ class ProfileBrowserTestWithoutDestroyProfile : public ProfileBrowserTest {
 // TODO(crbug.com/1225252): Flakily fails on ASAN/LSAN builds
 // TODO(crbug.com/1304167): Failing on Mac.
 #if defined(ADDRESS_SANITIZER) || BUILDFLAG(IS_MAC)
-#define Maybe_DestroyRegularProfileBeforeOTRs DISABLE_DestroyRegularProfileBeforeOTRs
+#define MAYBE_DestroyRegularProfileBeforeOTRs \
+  DISABLED_DestroyRegularProfileBeforeOTRs
 #else
-#define Maybe_DestroyRegularProfileBeforeOTRs DestroyRegularProfileBeforeOTRs
+#define MAYBE_DestroyRegularProfileBeforeOTRs DestroyRegularProfileBeforeOTRs
 #endif
 IN_PROC_BROWSER_TEST_F(ProfileBrowserTestWithoutDestroyProfile,
-                       Maybe_DestroyRegularProfileBeforeOTRs) {
+                       MAYBE_DestroyRegularProfileBeforeOTRs) {
   auto otr_profile_id1 = Profile::OTRProfileID::CreateUniqueForTesting();
   auto otr_profile_id2 = Profile::OTRProfileID::CreateUniqueForTesting();
 
