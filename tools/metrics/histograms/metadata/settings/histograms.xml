@@ -275,6 +275,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Settings.PrivacySandbox.StartupState"
+    enum="SettingsPrivacySandboxStartupStates" expires_after="M104">
+  <owner>sauski@google.com</owner>
+  <owner>harrisonsean@chromium.org</owner>
+  <owner>msramek@chromium.org</owner>
+  <owner>chrome-friendly-settings@google.com</owner>
+  <summary>
+    Records the startup state of user prefs controlling Privacy Sandbox.
+  </summary>
+</histogram>
+
 <histogram name="Settings.SafetyCheck.ChromeCleanerResult"
     enum="SafetyCheckChromeCleanerStatus" expires_after="2022-08-28">
   <owner>rainhard@chromium.org</owner>

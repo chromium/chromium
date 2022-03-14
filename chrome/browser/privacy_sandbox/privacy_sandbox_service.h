@@ -274,6 +274,31 @@ class PrivacySandboxService : public KeyedService,
   FRIEND_TEST_ALL_PREFIXES(PrivacySandboxServiceDialogTest, ManagedNoDialog);
   FRIEND_TEST_ALL_PREFIXES(PrivacySandboxServiceDeathTest,
                            GetRequiredDialogType);
+  FRIEND_TEST_ALL_PREFIXES(PrivacySandboxServiceTest,
+                           PrivacySandboxDialogNoticeWaiting);
+  FRIEND_TEST_ALL_PREFIXES(PrivacySandboxServiceTest,
+                           PrivacySandboxDialogConsentWaiting);
+  FRIEND_TEST_ALL_PREFIXES(PrivacySandboxServiceTest,
+                           PrivacySandboxV1OffEnabled);
+  FRIEND_TEST_ALL_PREFIXES(PrivacySandboxServiceTest,
+                           PrivacySandboxV1OffDisabled);
+  FRIEND_TEST_ALL_PREFIXES(PrivacySandboxServiceTest,
+                           PrivacySandboxConsentEnabled);
+  FRIEND_TEST_ALL_PREFIXES(PrivacySandboxServiceTest,
+                           PrivacySandboxConsentDisabled);
+  FRIEND_TEST_ALL_PREFIXES(PrivacySandboxServiceTest,
+                           PrivacySandboxNoticeEnabled);
+  FRIEND_TEST_ALL_PREFIXES(PrivacySandboxServiceTest,
+                           PrivacySandboxNoticeDisabled);
+  FRIEND_TEST_ALL_PREFIXES(PrivacySandboxServiceTest,
+                           PrivacySandbox3PCOffEnabled);
+  FRIEND_TEST_ALL_PREFIXES(PrivacySandboxServiceTest,
+                           PrivacySandbox3PCOffDisabled);
+  FRIEND_TEST_ALL_PREFIXES(PrivacySandboxServiceTest,
+                           PrivacySandboxManagedEnabled);
+  FRIEND_TEST_ALL_PREFIXES(PrivacySandboxServiceTest,
+                           PrivacySandboxManagedDisabled);
+  FRIEND_TEST_ALL_PREFIXES(PrivacySandboxServiceTest, PrivacySandboxRestricted);
 
   // Should be used only for tests when mocking the service.
   PrivacySandboxService();
@@ -300,6 +325,28 @@ class PrivacySandboxService : public KeyedService,
     kMaxValue = kPSEnabledFlocDisabledBlockAll,
   };
 
+  // Contains the possible states of a users Privacy Sandbox overall settings.
+  // Must be kept in sync with SettingsPrivacySandboxStartupStates in
+  // histograms/enums.xml
+  enum class PSStartupStates {
+    kDialogWaiting = 0,
+    kDialogOffV1OffEnabled = 1,
+    kDialogOffV1OffDisabled = 2,
+    kConsentShownEnabled = 3,
+    kConsentShownDisabled = 4,
+    kNoticeShownEnabled = 5,
+    kNoticeShownDisabled = 6,
+    kDialogOff3PCOffEnabled = 7,
+    kDialogOff3PCOffDisabled = 8,
+    kDialogOffManagedEnabled = 9,
+    kDialogOffManagedDisabled = 10,
+    kDialogOffRestricted = 11,
+
+    // Add values above this line with a corresponding label in
+    // tools/metrics/histograms/enums.xml
+    kMaxValue = kDialogOffRestricted,
+  };
+
   // Inspects the current sync state and settings to determine if the Privacy
   // Sandbox prefs should be reconciled. Calls ReconcilePrivacySandbox()
   // immediately if appropriate, or may register sync and identity observers to
@@ -322,6 +369,10 @@ class PrivacySandboxService : public KeyedService,
   // Logs the state of the privacy sandbox and cookie settings. Called once per
   // profile startup.
   void LogPrivacySandboxState();
+
+  // Logs the state of privacy sandbox 3 in regards to dialogs. Called once per
+  // profile startup.
+  void RecordPrivacySandbox3StartupMetrics();
 
   // Converts the provided list of |top_frames| into eTLD+1s for display, and
   // provides those to |callback|.
