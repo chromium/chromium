@@ -437,10 +437,15 @@ public abstract class AssistantCollectUserDataSection<T extends AssistantOptionM
         view.setLayoutParams(lp);
     }
 
-    private void updateVisibility() {
+    /**
+     * Update the visibility if something changed.
+     */
+    protected void updateVisibility() {
+        boolean hasEditor = getEditor() != null;
         if (mTitleAddButton != null) {
-            mTitleAddButton.setVisibility(isEmpty() ? View.VISIBLE : View.GONE);
+            mTitleAddButton.setVisibility(isEmpty() && hasEditor ? View.VISIBLE : View.GONE);
         }
+        mItemsView.setAddButtonVisible(/* visible= */ hasEditor);
         mSectionExpander.setFixed(isEmpty());
         mSectionExpander.setCollapsedVisible(!isEmpty());
         mSectionExpander.setExpandedVisible(!isEmpty());

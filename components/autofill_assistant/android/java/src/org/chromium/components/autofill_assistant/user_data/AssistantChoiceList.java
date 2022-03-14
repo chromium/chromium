@@ -340,6 +340,15 @@ public class AssistantChoiceList extends GridLayout {
         mAddButtonListener = listener;
     }
 
+    public void setAddButtonVisible(boolean visible) {
+        if (mAddButton != null) {
+            mAddButton.setVisibility(visible ? View.VISIBLE : View.GONE);
+        }
+        if (mAddButtonLabel != null) {
+            mAddButtonLabel.setVisibility(visible ? View.VISIBLE : View.GONE);
+        }
+    }
+
     /**
      * Adds a view to the underlying gridlayout.
      *

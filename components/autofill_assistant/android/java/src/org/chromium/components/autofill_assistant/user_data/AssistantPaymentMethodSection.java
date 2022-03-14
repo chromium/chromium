@@ -52,6 +52,7 @@ public class AssistantPaymentMethodSection
 
     public void setEditor(@Nullable AssistantPaymentInstrumentEditor editor) {
         mEditor = editor;
+        updateVisibility();
         if (mEditor == null) {
             return;
         }

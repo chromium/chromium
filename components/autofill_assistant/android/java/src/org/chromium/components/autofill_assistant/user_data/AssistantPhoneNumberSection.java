@@ -43,6 +43,7 @@ public class AssistantPhoneNumberSection extends AssistantCollectUserDataSection
 
     public void setEditor(@Nullable AssistantEditor<ContactModel> editor) {
         mEditor = editor;
+        updateVisibility();
     }
 
     @Override

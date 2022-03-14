@@ -995,6 +995,9 @@ public class AutofillAssistantCollectUserDataIntegrationTest {
                 isDisplayed());
         onView(withTagValue(is(AssistantTagsForTesting.CHOICE_LIST_EDIT_ICON)))
                 .check(doesNotExist());
+        onView(allOf(withText(R.string.payments_add_contact),
+                       not(withParent(withId(R.id.section_title_add_button)))))
+                .check(matches(isDisplayed()));
         onView(withText("Continue")).perform(click());
         waitUntilViewMatchesCondition(withText("Prompt"), isCompletelyDisplayed());
         assertThat(getElementValue(getWebContents(), "profile_name"), is("John Doe"));
@@ -1077,6 +1080,9 @@ public class AutofillAssistantCollectUserDataIntegrationTest {
         waitUntilViewMatchesCondition(allOf(withId(R.id.credit_card_number),
                                               isDescendantOfA(withId(R.id.payment_method_summary))),
                 allOf(withText(containsString("1111")), isDisplayed()));
+        onView(allOf(withText(R.string.payments_add_card),
+                       not(withParent(withId(R.id.section_title_add_button)))))
+                .check(matches(not(isDisplayed())));
         waitUntilViewMatchesCondition(withContentDescription("Continue"), isEnabled());
     }
 
@@ -1147,6 +1153,9 @@ public class AutofillAssistantCollectUserDataIntegrationTest {
                 isDisplayed());
         onView(withTagValue(is(AssistantTagsForTesting.CHOICE_LIST_EDIT_ICON)))
                 .check(doesNotExist());
+        onView(allOf(withText(R.string.payments_add_phone_number),
+                       not(withParent(withId(R.id.section_title_add_button)))))
+                .check(matches(isDisplayed()));
         onView(allOf(withId(R.id.incomplete_error), withText("Requires phone number")))
                 .check(doesNotExist());
         onView(withText("Continue")).perform(click());
@@ -1318,6 +1327,9 @@ public class AutofillAssistantCollectUserDataIntegrationTest {
         waitUntilViewMatchesCondition(
                 allOf(withParent(withId(R.id.address_full)), withId(R.id.full_name)),
                 allOf(withText("John Doe"), isCompletelyDisplayed()));
+        onView(allOf(withText(R.string.payments_add_address),
+                       not(withParent(withId(R.id.section_title_add_button)))))
+                .check(matches(not(isDisplayed())));
         onView(withContentDescription("Continue")).perform(click());
         waitUntilViewMatchesCondition(withText("Prompt"), isCompletelyDisplayed());
         assertThat(getElementValue(getWebContents(), "profile_name"), is("John Doe"));

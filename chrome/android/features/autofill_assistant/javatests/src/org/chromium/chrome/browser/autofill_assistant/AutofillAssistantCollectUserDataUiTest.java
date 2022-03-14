@@ -292,7 +292,7 @@ public class AutofillAssistantCollectUserDataUiTest {
                 .ViewHolder viewHolder = TestThreadUtils.runOnUiThreadBlocking(
                 () -> new AutofillAssistantCollectUserDataTestHelper.ViewHolder(coordinator));
 
-        /* Request all PR sections. */
+        // Request all PR sections.
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             model.set(AssistantCollectUserDataModel.DELEGATE, delegate);
             model.set(AssistantCollectUserDataModel.REQUEST_NAME, true);
@@ -302,6 +302,25 @@ public class AutofillAssistantCollectUserDataUiTest {
             model.set(AssistantCollectUserDataModel.REQUEST_SHIPPING_ADDRESS, true);
             model.set(AssistantCollectUserDataModel.REQUEST_LOGIN_CHOICE, true);
             model.set(AssistantCollectUserDataModel.VISIBLE, true);
+        });
+
+        // Without WebContents, there are no editors and the 'add' buttons should be removed.
+        onView(allOf(withId(R.id.section_title_add_button),
+                       isDescendantOfA(is(viewHolder.mContactSection))))
+                .check(matches(not(isDisplayed())));
+        onView(allOf(withId(R.id.section_title_add_button),
+                       isDescendantOfA(is(viewHolder.mPaymentSection))))
+                .check(matches(not(isDisplayed())));
+        onView(allOf(withId(R.id.section_title_add_button),
+                       isDescendantOfA(is(viewHolder.mShippingSection))))
+                .check(matches(not(isDisplayed())));
+        onView(allOf(withId(R.id.section_title_add_button),
+                       isDescendantOfA(is(viewHolder.mLoginsSection))))
+                .check(matches(not(isDisplayed())));
+
+        // Add WebContents to set editors.
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            model.set(AssistantCollectUserDataModel.WEB_CONTENTS, mTestRule.getWebContents());
         });
 
         // Empty sections should display the 'add' button in their title.
@@ -320,7 +339,7 @@ public class AutofillAssistantCollectUserDataUiTest {
                        isDescendantOfA(is(viewHolder.mLoginsSection))))
                 .check(matches(not(isDisplayed())));
 
-        /* Empty sections should be 'fixed', i.e., they can not be expanded. */
+        // Empty sections should be 'fixed', i.e., they can not be expanded.
         onView(allOf(withTagValue(is(VERTICAL_EXPANDER_CHEVRON)),
                        isDescendantOfA(is(viewHolder.mContactSection))))
                 .check(matches(not(isDisplayed())));
@@ -331,7 +350,7 @@ public class AutofillAssistantCollectUserDataUiTest {
                        isDescendantOfA(is(viewHolder.mShippingSection))))
                 .check(matches(not(isDisplayed())));
 
-        /* Empty sections are collapsed. */
+        // Empty sections are collapsed.
         onView(allOf(withTagValue(is(COLLECT_USER_DATA_CHOICE_LIST)),
                        isDescendantOfA(is(viewHolder.mContactSection))))
                 .check(matches(not(isDisplayed())));
@@ -342,7 +361,7 @@ public class AutofillAssistantCollectUserDataUiTest {
                        isDescendantOfA(is(viewHolder.mShippingSection))))
                 .check(matches(not(isDisplayed())));
 
-        /* Empty sections should be empty. */
+        // Empty sections should be empty.
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             assertThat(viewHolder.mContactList.getItemCount(), is(0));
             assertThat(viewHolder.mPaymentMethodList.getItemCount(), is(0));
@@ -350,7 +369,7 @@ public class AutofillAssistantCollectUserDataUiTest {
             assertThat(viewHolder.mLoginList.getItemCount(), is(0));
         });
 
-        /* Test delegate status. */
+        // Test delegate status.
         assertThat(delegate.mPaymentInstrument, nullValue());
         assertThat(delegate.mContact, nullValue());
         assertThat(delegate.mShippingAddress, nullValue());

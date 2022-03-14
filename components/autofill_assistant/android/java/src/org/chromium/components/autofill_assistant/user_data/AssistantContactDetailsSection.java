@@ -48,6 +48,7 @@ public class AssistantContactDetailsSection extends AssistantCollectUserDataSect
 
     public void setEditor(@Nullable AssistantContactEditor editor) {
         mEditor = editor;
+        updateVisibility();
         if (mEditor == null) {
             return;
         }
