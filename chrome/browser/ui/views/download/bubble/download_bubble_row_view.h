@@ -10,6 +10,7 @@
 #include "chrome/browser/download/download_ui_model.h"
 #include "chrome/browser/ui/views/download/bubble/download_bubble_row_list_view.h"
 #include "ui/base/metadata/metadata_header_macros.h"
+#include "ui/views/context_menu_controller.h"
 #include "ui/views/view.h"
 
 namespace views {
@@ -19,7 +20,10 @@ class MdTextButton;
 class ProgressBar;
 }  // namespace views
 
+class DownloadShelfContextMenuView;
+
 class DownloadBubbleRowView : public views::View,
+                              public views::ContextMenuController,
                               public DownloadUIModel::Observer {
  public:
   METADATA_HEADER(DownloadBubbleRowView);
@@ -36,6 +40,11 @@ class DownloadBubbleRowView : public views::View,
   void OnDownloadUpdated() override;
   void OnDownloadOpened() override;
   void OnDownloadDestroyed() override;
+
+  // Overrides views::ContextMenuController:
+  void ShowContextMenuForViewImpl(View* source,
+                                  const gfx::Point& point,
+                                  ui::MenuSourceType source_type) override;
 
  protected:
   // Overrides ui::LayerDelegate:
@@ -76,6 +85,9 @@ class DownloadBubbleRowView : public views::View,
 
   // The model controlling this object's state.
   const DownloadUIModel::DownloadUIModelPtr model_;
+
+  // Reuse the download shelf context menu in the bubble.
+  std::unique_ptr<DownloadShelfContextMenuView> context_menu_;
 
   // Parent row list view.
   raw_ptr<DownloadBubbleRowListView> row_list_view_ = nullptr;

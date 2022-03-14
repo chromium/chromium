@@ -11,6 +11,7 @@
 #include "chrome/browser/ui/layout_constants.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/download/bubble/download_bubble_row_list_view.h"
+#include "chrome/browser/ui/views/download/download_shelf_context_menu_view.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/download/public/common/download_item.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -29,6 +30,7 @@
 #include "ui/views/layout/layout_types.h"
 #include "ui/views/style/typography.h"
 #include "ui/views/view_class_properties.h"
+#include "ui/views/widget/root_view.h"
 #include "ui/views/widget/widget.h"
 
 namespace {
@@ -99,8 +101,12 @@ DownloadBubbleRowView::~DownloadBubbleRowView() {
 DownloadBubbleRowView::DownloadBubbleRowView(
     DownloadUIModel::DownloadUIModelPtr model,
     DownloadBubbleRowListView* row_list_view)
-    : model_(std::move(model)), row_list_view_(row_list_view) {
+    : model_(std::move(model)),
+      context_menu_(
+          std::make_unique<DownloadShelfContextMenuView>(model_->GetWeakPtr())),
+      row_list_view_(row_list_view) {
   model_->AddObserver(this);
+  set_context_menu_controller(this);
 
   SetLayoutManager(std::make_unique<views::FlexLayout>())
       ->SetOrientation(views::LayoutOrientation::kVertical)
@@ -187,6 +193,26 @@ void DownloadBubbleRowView::OnDownloadUpdated() {
 void DownloadBubbleRowView::OnDownloadOpened() {}
 
 void DownloadBubbleRowView::OnDownloadDestroyed() {}
+
+void DownloadBubbleRowView::ShowContextMenuForViewImpl(
+    View* source,
+    const gfx::Point& point,
+    ui::MenuSourceType source_type) {
+  // Similar hack as in MenuButtonController and DownloadItemView.
+  // We're about to show the menu from a mouse press. By showing from the
+  // mouse press event we block RootView in mouse dispatching. This also
+  // appears to cause RootView to get a mouse pressed BEFORE the mouse
+  // release is seen, which means RootView sends us another mouse press no
+  // matter where the user pressed. To force RootView to recalculate the
+  // mouse target during the mouse press we explicitly set the mouse handler
+  // to null.
+  static_cast<views::internal::RootView*>(GetWidget()->GetRootView())
+      ->SetMouseAndGestureHandler(nullptr);
+
+  context_menu_->Run(GetWidget()->GetTopLevelWidget(),
+                     gfx::Rect(point, gfx::Size()), source_type,
+                     base::RepeatingClosure());
+}
 
 BEGIN_METADATA(DownloadBubbleRowView, views::View)
 END_METADATA
