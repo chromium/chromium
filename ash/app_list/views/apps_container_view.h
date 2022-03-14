@@ -305,10 +305,6 @@ class ASH_EXPORT AppsContainerView
   // `aborted` indicates whether the fade in animation is aborted.
   void OnAppsGridViewFadeInAnimationEnded(bool aborted);
 
-  // Called when the animation to fade in children views such as the undo toast
-  // is completed. `aborted` is true if the animation is aborted.
-  void OnFadeInChildrenAnimationEnded(bool aborted);
-
   // While true, the gradient mask will not be removed as a mask layer until
   // cardified state ends.
   bool keep_gradient_mask_for_cardified_state_ = false;
@@ -363,10 +359,6 @@ class ASH_EXPORT AppsContainerView
   // A closure to update item positions. It should run at the end of the fade
   // out animation when items are reordered.
   base::OnceClosure update_position_closure_;
-
-  // The handle to abort the toast/continue section fade in animation triggered
-  // by app list reorder.
-  std::unique_ptr<views::AnimationAbortHandle> fade_in_abort_handle_;
 
   base::WeakPtrFactory<AppsContainerView> weak_ptr_factory_{this};
 };

@@ -1938,7 +1938,7 @@ void AppsGridView::FadeOutVisibleItemsForReorder(
     std::move(fade_out_start_closure_for_test_).Run();
 }
 
-void AppsGridView::FadeInVisibleItemsForReorder(
+views::AnimationBuilder AppsGridView::FadeInVisibleItemsForReorder(
     ReorderAnimationCallback done_callback) {
   DCHECK_EQ(AppListReorderAnimationStatus::kIntermediaryState,
             reorder_animation_status_);
@@ -2006,6 +2006,8 @@ void AppsGridView::FadeInVisibleItemsForReorder(
         /*time_delta=*/absl::nullopt, gfx::Tween::LINEAR,
         &animation_builder.GetCurrentSequence());
   }
+
+  return animation_builder;
 }
 
 bool AppsGridView::IsAnimationRunningForTest() {

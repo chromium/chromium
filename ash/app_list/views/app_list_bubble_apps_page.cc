@@ -95,10 +95,6 @@ constexpr base::TimeDelta kShowPageAnimationTransformDuration =
 constexpr base::TimeDelta kShowPageAnimationOpacityDuration =
     base::Milliseconds(100);
 
-// The time duration of the undo toast fade in animation.
-constexpr base::TimeDelta kToastFadeInAnimationDuration =
-    base::Milliseconds(400);
-
 }  // namespace
 
 AppListBubbleAppsPage::AppListBubbleAppsPage(
@@ -619,9 +615,11 @@ void AppListBubbleAppsPage::OnAppsGridViewFadeOutAnimationEneded(
   // the bubble apps page's layout is ready.
   const bool scroll_performed = MaybeScrollToShowToast();
 
-  scrollable_apps_grid_view_->FadeInVisibleItemsForReorder(base::BindRepeating(
-      &AppListBubbleAppsPage::OnAppsGridViewFadeInAnimationEnded,
-      weak_factory_.GetWeakPtr()));
+  views::AnimationBuilder animation_builder =
+      scrollable_apps_grid_view_->FadeInVisibleItemsForReorder(
+          base::BindRepeating(
+              &AppListBubbleAppsPage::OnAppsGridViewFadeInAnimationEnded,
+              weak_factory_.GetWeakPtr()));
 
   // Fade in the undo toast when:
   // (1) The toast's visibility becomes true from false, or
@@ -641,34 +639,12 @@ void AppListBubbleAppsPage::OnAppsGridViewFadeOutAnimationEneded(
   // Hide the undo toast instantly before starting the toast fade in animation.
   toast_container_->layer()->SetOpacity(0.f);
 
-  views::AnimationBuilder animation_builder;
-  toast_fade_in_abort_handle_ = animation_builder.GetAbortHandle();
-  animation_builder
-      .OnEnded(base::BindOnce(
-          &AppListBubbleAppsPage::OnReorderUndoToastFadeInAnimationEnded,
-          weak_factory_.GetWeakPtr(),
-          /*aborted=*/false))
-      .OnAborted(base::BindOnce(
-          &AppListBubbleAppsPage::OnReorderUndoToastFadeInAnimationEnded,
-          weak_factory_.GetWeakPtr(),
-          /*aborted=*/true))
-      .Once()
-      .SetDuration(kToastFadeInAnimationDuration)
-      .SetOpacity(toast_container_->layer(), 1.f);
+  animation_builder.GetCurrentSequence().SetOpacity(toast_container_->layer(),
+                                                    1.f);
 }
 
 void AppListBubbleAppsPage::OnAppsGridViewFadeInAnimationEnded(bool aborted) {
-  if (!aborted)
-    return;
-
-  // Abort the toast fade in animation if the apps grid fade in animation is
-  // aborted.
-  toast_fade_in_abort_handle_.reset();
-}
-
-void AppListBubbleAppsPage::OnReorderUndoToastFadeInAnimationEnded(
-    bool aborted) {
-  toast_fade_in_abort_handle_.reset();
+  // Destroy the layer created for the layer animation.
   toast_container_->DestroyLayer();
 }
 

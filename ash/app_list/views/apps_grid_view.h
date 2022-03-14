@@ -281,8 +281,10 @@ class ASH_EXPORT AppsGridView : public views::View,
   using ReorderAnimationCallback = base::RepeatingCallback<void(bool)>;
   void FadeOutVisibleItemsForReorder(ReorderAnimationCallback done_callback);
 
-  // Fades in items for reordering.
-  void FadeInVisibleItemsForReorder(ReorderAnimationCallback done_callback);
+  // Fades in items for reordering. Returns an animation builder and it can be
+  // used to tie other layer animations with scheduled item animaions.
+  views::AnimationBuilder FadeInVisibleItemsForReorder(
+      ReorderAnimationCallback done_callback);
 
   // Whether the provided view is hidden to facilitate drag operation (for
   // example, the drag view for which a drag icon proxy has been created).
