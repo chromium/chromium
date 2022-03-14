@@ -534,7 +534,7 @@ void CertificatesHandler::HandleExportPersonalPasswordSelected(
   // Currently, we don't support exporting more than one at a time.  If we do,
   // this would need to either change this to use UnlockSlotsIfNecessary or
   // change UnlockCertSlotIfNecessary to take a CertificateList.
-  DCHECK_EQ(selected_cert_list_.size(), 1U);
+  CHECK_EQ(selected_cert_list_.size(), 1U);
 
   // TODO(mattm): do something smarter about non-extractable keys
   chrome::UnlockCertSlotIfNecessary(
