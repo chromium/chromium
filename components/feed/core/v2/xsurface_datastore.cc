@@ -42,11 +42,13 @@ std::map<std::string, std::string> XsurfaceDatastoreSlice::GetAllEntries()
   return entries_;
 }
 
-void XsurfaceDatastoreSlice::AddObserver(Observer* o) {
+void XsurfaceDatastoreSlice::AddObserver(
+    XsurfaceDatastoreDataReader::Observer* o) {
   observers_.AddObserver(o);
 }
 
-void XsurfaceDatastoreSlice::RemoveObserver(Observer* o) {
+void XsurfaceDatastoreSlice::RemoveObserver(
+    XsurfaceDatastoreDataReader::Observer* o) {
   observers_.RemoveObserver(o);
 }
 
@@ -63,11 +65,13 @@ XsurfaceDatastoreAggregate::~XsurfaceDatastoreAggregate() {
     s->RemoveObserver(this);
   }
 }
-void XsurfaceDatastoreAggregate::AddObserver(Observer* o) {
+void XsurfaceDatastoreAggregate::AddObserver(
+    XsurfaceDatastoreDataReader::Observer* o) {
   observers_.AddObserver(o);
 }
 
-void XsurfaceDatastoreAggregate::RemoveObserver(Observer* o) {
+void XsurfaceDatastoreAggregate::RemoveObserver(
+    XsurfaceDatastoreDataReader::Observer* o) {
   observers_.RemoveObserver(o);
 }
 
@@ -86,7 +90,7 @@ const std::string* XsurfaceDatastoreAggregate::FindEntry(
 void XsurfaceDatastoreAggregate::DatastoreEntryUpdated(
     XsurfaceDatastoreDataReader* source,
     const std::string& key) {
-  for (Observer& o : observers_) {
+  for (XsurfaceDatastoreDataReader::Observer& o : observers_) {
     o.DatastoreEntryUpdated(this, key);
   }
 }
@@ -94,7 +98,7 @@ void XsurfaceDatastoreAggregate::DatastoreEntryUpdated(
 void XsurfaceDatastoreAggregate::DatastoreEntryRemoved(
     XsurfaceDatastoreDataReader* source,
     const std::string& key) {
-  for (Observer& o : observers_) {
+  for (XsurfaceDatastoreDataReader::Observer& o : observers_) {
     o.DatastoreEntryRemoved(this, key);
   }
 }

@@ -41,8 +41,8 @@ class XsurfaceDatastoreDataReader {
 
   // Begin observing. Data already present before `AddObserver()` is called can
   // be read using `GetAllEntries()`.
-  virtual void AddObserver(Observer* o) = 0;
-  virtual void RemoveObserver(Observer* o) = 0;
+  virtual void AddObserver(XsurfaceDatastoreDataReader::Observer* o) = 0;
+  virtual void RemoveObserver(XsurfaceDatastoreDataReader::Observer* o) = 0;
   // Find an entry with the given key. Returns nullptr if the entry does not
   // exist.
   virtual const std::string* FindEntry(const std::string& key) const = 0;
@@ -91,8 +91,8 @@ class XsurfaceDatastoreAggregate
       delete;
 
   // XsurfaceDatastoreDataReader.
-  void AddObserver(Observer* o) override;
-  void RemoveObserver(Observer* o) override;
+  void AddObserver(XsurfaceDatastoreDataReader::Observer* o) override;
+  void RemoveObserver(XsurfaceDatastoreDataReader::Observer* o) override;
   const std::string* FindEntry(const std::string& key) const override;
   std::map<std::string, std::string> GetAllEntries() const override;
 
@@ -103,7 +103,7 @@ class XsurfaceDatastoreAggregate
                              const std::string& key) override;
 
  private:
-  base::ObserverList<Observer> observers_;
+  base::ObserverList<XsurfaceDatastoreDataReader::Observer> observers_;
   std::vector<raw_ptr<XsurfaceDatastoreDataReader>> sources_;
 };
 
