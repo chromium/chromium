@@ -2470,17 +2470,6 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
-<histogram name="Ash.NumberOfVisibleWindowsInPrimaryDisplay" units="Windows"
-    expires_after="2022-04-24">
-  <owner>jamescook@chromium.org</owner>
-  <summary>
-    An upper bound on the number of windows visible to the user on the primary
-    display. Determined by processing the windows in increasing z-order and
-    counting all non-minimized windows until a maximized or fullscreen window is
-    processed. This metric is logged periodically every 30 minutes.
-  </summary>
-</histogram>
-
 <histogram base="true" name="Ash.Overview.AnimationSmoothness.Close" units="%"
     expires_after="2023-04-10">
 <!-- Name completed by histogram_suffixes

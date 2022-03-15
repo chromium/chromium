@@ -17,17 +17,14 @@
 #include "ash/public/cpp/accessibility_controller_enums.h"
 #include "ash/public/cpp/shelf_item.h"
 #include "ash/public/cpp/shelf_model.h"
-#include "ash/public/cpp/shell_window_ids.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shelf/shelf.h"
 #include "ash/shelf/shelf_view.h"
 #include "ash/shell.h"
-#include "ash/wm/desks/desks_util.h"
 #include "ash/wm/window_state.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/metrics/user_metrics.h"
 #include "components/prefs/pref_service.h"
-#include "ui/aura/window.h"
 
 namespace ash {
 
@@ -98,62 +95,6 @@ bool IsKioskModeActive() {
 bool IsUserActive() {
   SessionControllerImpl* session = Shell::Get()->session_controller();
   return session->IsActiveUserSessionStarted() && !session->IsScreenLocked();
-}
-
-// Returns a list of window container ids that contain visible windows to be
-// counted for UMA statistics. Note the containers are ordered from top most
-// visible container to the lowest to allow the |GetNumVisibleWindows| method to
-// short circuit when processing a maximized or fullscreen window.
-std::vector<int> GetVisibleWindowContainerIds() {
-  std::vector<int> ids{kShellWindowId_PipContainer,
-                       kShellWindowId_AlwaysOnTopContainer};
-  // TODO(afakhry): Add metrics for the inactive desks.
-  ids.emplace_back(desks_util::GetActiveDeskContainerId());
-  return ids;
-}
-
-// Returns an approximate count of how many windows are currently visible in the
-// primary root window.
-int GetNumVisibleWindowsInPrimaryDisplay() {
-  int visible_window_count = 0;
-  bool maximized_or_fullscreen_window_present = false;
-
-  for (const int& current_container_id : GetVisibleWindowContainerIds()) {
-    if (maximized_or_fullscreen_window_present)
-      break;
-
-    const aura::Window::Windows& children =
-        Shell::GetContainer(Shell::Get()->GetPrimaryRootWindow(),
-                            current_container_id)
-            ->children();
-    // Reverse iterate over the child windows so that they are processed in
-    // visible stacking order.
-    for (aura::Window::Windows::const_reverse_iterator it = children.rbegin(),
-                                                       rend = children.rend();
-         it != rend; ++it) {
-      const aura::Window* child_window = *it;
-      const WindowState* child_window_state = WindowState::Get(child_window);
-
-      if (!child_window->IsVisible() || child_window_state->IsMinimized())
-        continue;
-
-      // Only count activatable windows for 1 reason:
-      //  - Ensures that a browser window and its transient, modal child will
-      //    only count as 1 visible window.
-      if (child_window_state->CanActivate())
-        ++visible_window_count;
-
-      // Stop counting windows that will be hidden by maximized or fullscreen
-      // windows. Only windows in the active desk container and
-      // kShellWindowId_AlwaysOnTopContainer can be maximized or fullscreened
-      // and completely obscure windows beneath them.
-      if (child_window_state->IsMaximizedOrFullscreenOrPinned()) {
-        maximized_or_fullscreen_window_present = true;
-        break;
-      }
-    }
-  }
-  return visible_window_count;
 }
 
 // Records the number of items in the shelf as an UMA statistic.
@@ -490,8 +431,6 @@ void UserMetricsRecorder::RecordPeriodicMetrics() {
   if (IsUserInActiveDesktopEnvironment()) {
     RecordShelfItemCounts();
     RecordPeriodicAppListMetrics();
-    UMA_HISTOGRAM_COUNTS_100("Ash.NumberOfVisibleWindowsInPrimaryDisplay",
-                             GetNumVisibleWindowsInPrimaryDisplay());
 
     base::UmaHistogramBoolean(
         "Ash.AppNotificationBadgingPref",
