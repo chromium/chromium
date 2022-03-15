@@ -93,7 +93,6 @@ template("generate_installer") {
     ]
 
     deps = invoker.archive_deps
-    deps += [ "//third_party/icu:icudata" ]
 
     if (is_component_build) {
       args += [ "--component_build=1" ]

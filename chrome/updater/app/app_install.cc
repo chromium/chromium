@@ -91,9 +91,7 @@ AppInstall::AppInstall(SplashScreen::Maker splash_screen_maker,
 
 AppInstall::~AppInstall() = default;
 
-void AppInstall::Initialize() {
-  base::i18n::InitializeICU();
-}
+void AppInstall::Initialize() {}
 
 void AppInstall::Uninitialize() {
   if (update_service_) {
