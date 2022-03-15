@@ -717,7 +717,7 @@ void PopulateChromeFrameBinders(
 #if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || \
     BUILDFLAG(IS_WIN)
   if (base::FeatureList::IsEnabled(blink::features::kDesktopPWAsSubApps) &&
-      !render_frame_host->GetParentOrOuterDocument()) {
+      render_frame_host->IsInPrimaryMainFrame()) {
     map->Add<blink::mojom::SubAppsService>(
         base::BindRepeating(&web_app::SubAppsServiceImpl::CreateIfAllowed));
   }

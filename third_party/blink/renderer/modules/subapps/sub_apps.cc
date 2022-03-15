@@ -16,6 +16,7 @@
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/navigator.h"
+#include "third_party/blink/renderer/core/page/page.h"
 #include "third_party/blink/renderer/platform/bindings/exception_code.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/heap/persistent.h"
@@ -167,6 +168,7 @@ bool SubApps::CheckPreconditionsMaybeThrow(ExceptionState& exception_state) {
   }
 
   if (!navigator->DomWindow()->GetFrame()->IsMainFrame() ||
+      navigator->DomWindow()->GetFrame()->GetPage()->IsPrerendering() ||
       navigator->DomWindow()->GetFrame()->IsInFencedFrameTree()) {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kInvalidStateError,
