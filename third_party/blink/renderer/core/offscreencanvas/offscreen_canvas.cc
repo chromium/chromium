@@ -297,6 +297,10 @@ CanvasRenderingContext* OffscreenCanvas::GetCanvasRenderingContext(
     const String& id,
     const CanvasContextCreationAttributesCore& attributes) {
   DCHECK_EQ(execution_context, GetTopExecutionContext());
+
+  if (execution_context->IsContextDestroyed())
+    return nullptr;
+
   CanvasRenderingContext::CanvasRenderingAPI rendering_api =
       CanvasRenderingContext::RenderingAPIFromId(id, execution_context);
 
