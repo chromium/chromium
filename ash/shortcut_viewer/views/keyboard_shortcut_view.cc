@@ -27,7 +27,6 @@
 #include "ash/shortcut_viewer/views/ksv_search_box_view.h"
 #include "base/bind.h"
 #include "base/i18n/string_search.h"
-#include "base/metrics/histogram_macros.h"
 #include "base/metrics/user_metrics.h"
 #include "base/metrics/user_metrics_action.h"
 #include "base/strings/string_number_conversions.h"
@@ -41,11 +40,9 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/chromeos/events/keyboard_layout_util.h"
-#include "ui/compositor/compositor.h"
 #include "ui/events/event_constants.h"
 #include "ui/events/types/event_type.h"
 #include "ui/gfx/paint_vector_icon.h"
-#include "ui/gfx/presentation_feedback.h"
 #include "ui/views/accessibility/accessibility_paint_checks.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/background.h"
@@ -175,7 +172,6 @@ views::Widget* KeyboardShortcutView::Toggle(aura::Window* context) {
     else
       g_ksv_view->GetWidget()->Activate();
   } else {
-    const base::TimeTicks start_time = base::TimeTicks::Now();
     TRACE_EVENT0("shortcut_viewer", "CreateWidget");
     base::RecordAction(
         base::UserMetricsAction("KeyboardShortcutViewer.CreateWindow"));
@@ -229,14 +225,6 @@ views::Widget* KeyboardShortcutView::Toggle(aura::Window* context) {
     g_ksv_view->did_first_paint_ = false;
     g_ksv_view->GetWidget()->Show();
     g_ksv_view->search_box_view_->search_box()->RequestFocus();
-
-    widget->GetCompositor()->RequestPresentationTimeForNextFrame(base::BindOnce(
-        [](base::TimeTicks start_time,
-           const gfx::PresentationFeedback& feedback) {
-          UMA_HISTOGRAM_TIMES("Keyboard.ShortcutViewer.StartupTime",
-                              feedback.timestamp - start_time);
-        },
-        start_time));
   }
   return g_ksv_view->GetWidget();
 }

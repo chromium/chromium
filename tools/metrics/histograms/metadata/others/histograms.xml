@@ -6303,18 +6303,6 @@ chromium-metrics-reviews@google.com.
   <summary>The scheme of the URL showing a JavaScript dialog.</summary>
 </histogram>
 
-<histogram name="Keyboard.ShortcutViewer.StartupTime" units="ms"
-    expires_after="2022-04-24">
-  <owner>jamescook@chromium.org</owner>
-  <owner>msw@chromium.org</owner>
-  <owner>wutao@chromium.org</owner>
-  <summary>
-    Time delay between the user gesture that triggered the keyboard shortcut
-    viewer dialog (e.g. pressing Ctrl-Alt-/) and the dialog widget being shown,
-    including layout time for the views::Views.
-  </summary>
-</histogram>
-
 <histogram name="Kiosk.Extensions.InstallDuration" units="ms"
     expires_after="2022-09-01">
   <owner>yixie@chromium.org</owner>
