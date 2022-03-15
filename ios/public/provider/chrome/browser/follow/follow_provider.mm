@@ -16,4 +16,8 @@ NSArray<FollowSiteInfo*>* FollowProvider::GetFollowedChannels() {
   return nil;
 }
 
+NSArray<FollowedWebChannel*>* FollowProvider::GetFollowedWebChannels() {
+  return nil;
+}
+
 void FollowProvider::UpdateFollowStatus(FollowSiteInfo* site, bool state) {}
