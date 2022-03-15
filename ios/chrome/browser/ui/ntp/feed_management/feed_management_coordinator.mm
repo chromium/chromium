@@ -4,6 +4,8 @@
 
 #import "ios/chrome/browser/ui/ntp/feed_management/feed_management_coordinator.h"
 
+#import "ios/chrome/browser/browser_state/chrome_browser_state.h"
+#import "ios/chrome/browser/main/browser.h"
 #import "ios/chrome/browser/ui/ntp/feed_management/feed_management_follow_delegate.h"
 #import "ios/chrome/browser/ui/ntp/feed_management/feed_management_view_controller.h"
 #import "ios/chrome/browser/ui/ntp/feed_management/follow_management_mediator.h"
@@ -65,7 +67,8 @@
   FollowManagementViewController* followManagementViewController =
       [[FollowManagementViewController alloc]
           initWithStyle:UITableViewStyleInsetGrouped];
-  FollowManagementMediator* mediator = [[FollowManagementMediator alloc] init];
+  FollowManagementMediator* mediator = [[FollowManagementMediator alloc]
+      initWithBrowserState:self.browser->GetBrowserState()];
   followManagementViewController.followedWebChannelsDataSource = mediator;
   followManagementViewController.faviconDataSource = mediator;
   self.followManagementMediator = mediator;

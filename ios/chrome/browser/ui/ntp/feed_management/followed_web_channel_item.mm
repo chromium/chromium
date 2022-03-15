@@ -13,35 +13,32 @@
 #error "This file requires ARC support."
 #endif
 
-@interface FollowedWebChannelItem ()
-
-// This property contains a value if the WebChannel is unavailable.
-@property(nonatomic, copy) NSAttributedString* detailAttributedString;
-
-@end
-
 @implementation FollowedWebChannelItem
 
-- (void)setFollowedWebChannel:(FollowedWebChannel*)followedWebChannel {
-  _followedWebChannel = followedWebChannel;
-  self.title = followedWebChannel.title;
-  if (!_followedWebChannel.unavailable) {
-    self.detailText = _followedWebChannel.hostname;
-    return;
+- (instancetype)initWithType:(NSInteger)type {
+  self = [super initWithType:type];
+  if (self) {
+    self.cellClass = [FollowedWebChannelCell class];
   }
+  return self;
+}
 
-  // This approach repurposes an existing cell by simply adding a newline with
-  // additional text instead of creating a new cell with an additional label.
-  NSString* unavailableText =
-      l10n_util::GetNSString(IDS_IOS_FOLLOW_MANAGEMENT_CHANNEL_UNAVAILABLE);
-  NSAttributedString* unavailableString = [[NSAttributedString alloc]
-      initWithString:[NSString stringWithFormat:@"\n%@", unavailableText]
-          attributes:@{NSForegroundColorAttributeName : UIColor.redColor}];
-  NSMutableAttributedString* concatenatedString =
-      [[NSMutableAttributedString alloc]
-          initWithString:_followedWebChannel.hostname];
-  [concatenatedString appendAttributedString:unavailableString];
-  _detailAttributedString = concatenatedString;
+#pragma mark - Properties
+
+- (NSString*)title {
+  return _followedWebChannel.title;
+}
+
+- (CrURL*)URL {
+  return _followedWebChannel.channelURL;
+}
+
+- (NSString*)supplementalURLText {
+  if (_followedWebChannel.unavailable) {
+    return l10n_util::GetNSString(
+        IDS_IOS_FOLLOW_MANAGEMENT_CHANNEL_UNAVAILABLE);
+  }
+  return nil;
 }
 
 - (void)configureCell:(TableViewCell*)tableCell
@@ -50,9 +47,6 @@
   FollowedWebChannelCell* cell =
       base::mac::ObjCCastStrict<FollowedWebChannelCell>(tableCell);
   cell.followedWebChannel = self.followedWebChannel;
-
-  // TODO(crbug.com/1296745): Modify TableViewURLCell to have spinner and third
-  // row text.
 }
 
 @end

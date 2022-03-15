@@ -17,11 +17,8 @@
 // Title of the web channel.
 @property(nonatomic, copy) NSString* title;
 
-// The host name for the web channel.
-@property(nonatomic, copy) NSString* hostname;
-
-// CrURL from which to retrieve a favicon.
-@property(nonatomic, strong) CrURL* faviconURL;
+// URL of the web channel.
+@property(nonatomic, strong) CrURL* channelURL;
 
 // YES if the web channel is unavailable.
 @property(nonatomic, assign) BOOL unavailable;
