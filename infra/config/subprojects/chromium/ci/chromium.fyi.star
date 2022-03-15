@@ -1394,6 +1394,7 @@ fyi_coverage_builder(
     os = os.LINUX_BIONIC_SWITCH_TO_DEFAULT,
     use_clang_coverage = True,
     coverage_test_types = ["overall", "unit"],
+    export_coverage_to_zoss = True,
     triggered_by = [],
 )
 

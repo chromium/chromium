@@ -244,7 +244,8 @@ def _code_coverage_property(
         use_java_coverage,
         use_javascript_coverage,
         coverage_exclude_sources,
-        coverage_test_types):
+        coverage_test_types,
+        export_coverage_to_zoss):
     code_coverage = {}
 
     use_clang_coverage = defaults.get_value(
@@ -275,6 +276,13 @@ def _code_coverage_property(
     )
     if coverage_test_types:
         code_coverage["coverage_test_types"] = coverage_test_types
+
+    export_coverage_to_zoss = defaults.get_value(
+        "export_coverage_to_zoss",
+        export_coverage_to_zoss,
+    )
+    if export_coverage_to_zoss:
+        code_coverage["export_coverage_to_zoss"] = export_coverage_to_zoss
 
     return code_coverage or None
 
@@ -341,6 +349,7 @@ defaults = args.defaults(
     use_javascript_coverage = False,
     coverage_exclude_sources = None,
     coverage_test_types = None,
+    export_coverage_to_zoss = False,
     resultdb_bigquery_exports = [],
     resultdb_index_by_timestamp = False,
     reclient_instance = None,
@@ -397,6 +406,7 @@ def builder(
         use_javascript_coverage = args.DEFAULT,
         coverage_exclude_sources = args.DEFAULT,
         coverage_test_types = args.DEFAULT,
+        export_coverage_to_zoss = args.DEFAULT,
         resultdb_bigquery_exports = args.DEFAULT,
         resultdb_index_by_timestamp = args.DEFAULT,
         reclient_instance = args.DEFAULT,
@@ -543,6 +553,10 @@ def builder(
         coverage_test_types: a list of string as test types to process data for
             in code_coverage recipe module. Will be copied to
             '$build/code_coverage' property. By default, considered None.
+        export_coverage_to_zoss: a boolean indicating if the raw coverage data
+            be exported zoss(and eventually in code search) in code_coverage
+            recipe module. Will be copied to '$build/code_coverage' property
+            if set. Be default, considered False.
         resultdb_bigquery_exports: a list of resultdb.export_test_results(...)
             specifying parameters for exporting test results to BigQuery. By
             default, do not export.
@@ -699,6 +713,7 @@ def builder(
         use_javascript_coverage = use_javascript_coverage,
         coverage_exclude_sources = coverage_exclude_sources,
         coverage_test_types = coverage_test_types,
+        export_coverage_to_zoss = export_coverage_to_zoss,
     )
     if code_coverage != None:
         properties["$build/code_coverage"] = code_coverage
