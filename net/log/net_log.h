@@ -334,9 +334,6 @@ class NET_EXPORT NetLog {
   // timestamps are desired, but is suitable for e.g. expiration times.
   static std::string TimeToString(const base::Time& time);
 
-  // Returns a C-String symbolic name for |event_type|.
-  static const char* EventTypeToString(NetLogEventType event_type);
-
   // Returns a dictionary that maps event type symbolic names to their enum
   // values.
   static base::Value GetEventTypesAsValue();

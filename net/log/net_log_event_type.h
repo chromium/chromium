@@ -5,6 +5,10 @@
 #ifndef NET_LOG_NET_LOG_EVENT_TYPE_H_
 #define NET_LOG_NET_LOG_EVENT_TYPE_H_
 
+#include <ostream>
+
+#include "net/base/net_export.h"
+
 namespace net {
 
 enum class NetLogEventType {
@@ -13,6 +17,12 @@ enum class NetLogEventType {
 #undef EVENT_TYPE
   COUNT
 };
+
+// Returns a C-String symbolic name for |type|.
+NET_EXPORT const char* NetLogEventTypeToString(NetLogEventType type);
+
+// For convenience in tests.
+NET_EXPORT std::ostream& operator<<(std::ostream& os, NetLogEventType type);
 
 // The 'phase' of an event trace (whether it marks the beginning or end
 // of an event.).

@@ -181,24 +181,10 @@ std::string NetLog::TimeToString(const base::Time& time) {
 }
 
 // static
-const char* NetLog::EventTypeToString(NetLogEventType event) {
-  switch (event) {
-#define EVENT_TYPE(label)      \
-  case NetLogEventType::label: \
-    return #label;
-#include "net/log/net_log_event_type_list.h"
-#undef EVENT_TYPE
-    default:
-      NOTREACHED();
-      return nullptr;
-  }
-}
-
-// static
 base::Value NetLog::GetEventTypesAsValue() {
   base::Value dict(base::Value::Type::DICTIONARY);
   for (int i = 0; i < static_cast<int>(NetLogEventType::COUNT); ++i) {
-    dict.SetIntKey(EventTypeToString(static_cast<NetLogEventType>(i)), i);
+    dict.SetIntKey(NetLogEventTypeToString(static_cast<NetLogEventType>(i)), i);
   }
   return dict;
 }

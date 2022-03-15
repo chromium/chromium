@@ -261,7 +261,7 @@ TEST_F(TraceNetLogObserverTest, TraceEventCaptured) {
   EXPECT_EQ(base::StringPrintf("0x%x", entries[0].source.id), actual_item1.id);
   EXPECT_EQ(std::string(1, TRACE_EVENT_PHASE_NESTABLE_ASYNC_INSTANT),
             actual_item1.phase);
-  EXPECT_EQ(NetLog::EventTypeToString(NetLogEventType::CANCELLED),
+  EXPECT_EQ(NetLogEventTypeToString(NetLogEventType::CANCELLED),
             actual_item1.name);
   EXPECT_EQ(NetLog::SourceTypeToString(entries[0].source.type),
             actual_item1.source_type);
@@ -270,7 +270,7 @@ TEST_F(TraceNetLogObserverTest, TraceEventCaptured) {
   EXPECT_EQ(base::StringPrintf("0x%x", entries[1].source.id), actual_item2.id);
   EXPECT_EQ(std::string(1, TRACE_EVENT_PHASE_NESTABLE_ASYNC_BEGIN),
             actual_item2.phase);
-  EXPECT_EQ(NetLog::EventTypeToString(NetLogEventType::URL_REQUEST_START_JOB),
+  EXPECT_EQ(NetLogEventTypeToString(NetLogEventType::URL_REQUEST_START_JOB),
             actual_item2.name);
   EXPECT_EQ(NetLog::SourceTypeToString(entries[1].source.type),
             actual_item2.source_type);
@@ -279,7 +279,7 @@ TEST_F(TraceNetLogObserverTest, TraceEventCaptured) {
   EXPECT_EQ(base::StringPrintf("0x%x", entries[2].source.id), actual_item3.id);
   EXPECT_EQ(std::string(1, TRACE_EVENT_PHASE_NESTABLE_ASYNC_END),
             actual_item3.phase);
-  EXPECT_EQ(NetLog::EventTypeToString(NetLogEventType::REQUEST_ALIVE),
+  EXPECT_EQ(NetLogEventTypeToString(NetLogEventType::REQUEST_ALIVE),
             actual_item3.name);
   EXPECT_EQ(NetLog::SourceTypeToString(entries[2].source.type),
             actual_item3.source_type);
@@ -311,7 +311,7 @@ TEST_F(TraceNetLogObserverTest, EnableAndDisableTracing) {
   EXPECT_EQ(base::StringPrintf("0x%x", entries[0].source.id), actual_item1.id);
   EXPECT_EQ(std::string(1, TRACE_EVENT_PHASE_NESTABLE_ASYNC_INSTANT),
             actual_item1.phase);
-  EXPECT_EQ(NetLog::EventTypeToString(NetLogEventType::CANCELLED),
+  EXPECT_EQ(NetLogEventTypeToString(NetLogEventType::CANCELLED),
             actual_item1.name);
   EXPECT_EQ(NetLog::SourceTypeToString(entries[0].source.type),
             actual_item1.source_type);
@@ -320,7 +320,7 @@ TEST_F(TraceNetLogObserverTest, EnableAndDisableTracing) {
   EXPECT_EQ(base::StringPrintf("0x%x", entries[2].source.id), actual_item2.id);
   EXPECT_EQ(std::string(1, TRACE_EVENT_PHASE_NESTABLE_ASYNC_INSTANT),
             actual_item2.phase);
-  EXPECT_EQ(NetLog::EventTypeToString(NetLogEventType::URL_REQUEST_START_JOB),
+  EXPECT_EQ(NetLogEventTypeToString(NetLogEventType::URL_REQUEST_START_JOB),
             actual_item2.name);
   EXPECT_EQ(NetLog::SourceTypeToString(entries[2].source.type),
             actual_item2.source_type);
@@ -348,7 +348,7 @@ TEST_F(TraceNetLogObserverTest, DestroyObserverWhileTracing) {
   EXPECT_EQ(base::StringPrintf("0x%x", entries[0].source.id), actual_item1.id);
   EXPECT_EQ(std::string(1, TRACE_EVENT_PHASE_NESTABLE_ASYNC_INSTANT),
             actual_item1.phase);
-  EXPECT_EQ(NetLog::EventTypeToString(NetLogEventType::CANCELLED),
+  EXPECT_EQ(NetLogEventTypeToString(NetLogEventType::CANCELLED),
             actual_item1.name);
   EXPECT_EQ(NetLog::SourceTypeToString(entries[0].source.type),
             actual_item1.source_type);
@@ -432,7 +432,7 @@ TEST_F(TraceNetLogObserverTest, EventsWithAndWithoutParameters) {
   EXPECT_EQ(base::StringPrintf("0x%x", entries[0].source.id), actual_item1.id);
   EXPECT_EQ(std::string(1, TRACE_EVENT_PHASE_NESTABLE_ASYNC_INSTANT),
             actual_item1.phase);
-  EXPECT_EQ(NetLog::EventTypeToString(NetLogEventType::CANCELLED),
+  EXPECT_EQ(NetLogEventTypeToString(NetLogEventType::CANCELLED),
             actual_item1.name);
   EXPECT_EQ(NetLog::SourceTypeToString(entries[0].source.type),
             actual_item1.source_type);
@@ -441,7 +441,7 @@ TEST_F(TraceNetLogObserverTest, EventsWithAndWithoutParameters) {
   EXPECT_EQ(base::StringPrintf("0x%x", entries[1].source.id), actual_item2.id);
   EXPECT_EQ(std::string(1, TRACE_EVENT_PHASE_NESTABLE_ASYNC_INSTANT),
             actual_item2.phase);
-  EXPECT_EQ(NetLog::EventTypeToString(NetLogEventType::REQUEST_ALIVE),
+  EXPECT_EQ(NetLogEventTypeToString(NetLogEventType::REQUEST_ALIVE),
             actual_item2.name);
   EXPECT_EQ(NetLog::SourceTypeToString(entries[1].source.type),
             actual_item2.source_type);

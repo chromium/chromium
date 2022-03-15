@@ -5377,7 +5377,7 @@ TEST_F(URLRequestTestHTTP, NetworkDelegateInfo) {
       NetLogEventType::NETWORK_DELEGATE_HEADERS_RECEIVED,
   };
   for (NetLogEventType event : kExpectedEvents) {
-    SCOPED_TRACE(NetLog::EventTypeToString(event));
+    SCOPED_TRACE(NetLogEventTypeToString(event));
     log_position = ExpectLogContainsSomewhereAfter(
         entries, log_position + 1, event, NetLogEventPhase::BEGIN);
 
@@ -5430,7 +5430,7 @@ TEST_F(URLRequestTestHTTP, NetworkDelegateInfoRedirect) {
       NetLogEventType::NETWORK_DELEGATE_HEADERS_RECEIVED,
   };
   for (NetLogEventType event : kExpectedEvents) {
-    SCOPED_TRACE(NetLog::EventTypeToString(event));
+    SCOPED_TRACE(NetLogEventTypeToString(event));
     log_position = ExpectLogContainsSomewhereAfter(
         entries, log_position + 1, event, NetLogEventPhase::BEGIN);
 
@@ -5450,7 +5450,7 @@ TEST_F(URLRequestTestHTTP, NetworkDelegateInfoRedirect) {
 
   // The NetworkDelegate logged information in the same three events as before.
   for (NetLogEventType event : kExpectedEvents) {
-    SCOPED_TRACE(NetLog::EventTypeToString(event));
+    SCOPED_TRACE(NetLogEventTypeToString(event));
     log_position = ExpectLogContainsSomewhereAfter(
         entries, log_position + 1, event, NetLogEventPhase::BEGIN);
 
@@ -5552,7 +5552,7 @@ TEST_F(URLRequestTestHTTP, URLRequestDelegateInfoOnRedirect) {
       NetLogEventType::URL_REQUEST_DELEGATE_RESPONSE_STARTED,
   };
   for (NetLogEventType event : kExpectedEvents) {
-    SCOPED_TRACE(NetLog::EventTypeToString(event));
+    SCOPED_TRACE(NetLogEventTypeToString(event));
     log_position = ExpectLogContainsSomewhereAfter(entries, log_position, event,
                                                    NetLogEventPhase::BEGIN);
 
@@ -5612,7 +5612,7 @@ TEST_F(URLRequestTestHTTP, URLRequestDelegateOnRedirectCancelled) {
         NetLogEventType::URL_REQUEST_DELEGATE_RESPONSE_STARTED,
     };
     for (NetLogEventType event : kExpectedEvents) {
-      SCOPED_TRACE(NetLog::EventTypeToString(event));
+      SCOPED_TRACE(NetLogEventTypeToString(event));
       log_position = ExpectLogContainsSomewhereAfter(
           entries, log_position, event, NetLogEventPhase::BEGIN);
 

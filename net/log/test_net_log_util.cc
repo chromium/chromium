@@ -6,7 +6,7 @@
 
 #include <cstddef>
 
-#include "net/log/net_log.h"
+#include "net/log/net_log_entry.h"
 
 namespace net {
 
@@ -40,8 +40,8 @@ size_t GetIndex(const std::vector<NetLogEntry>& entries, int offset) {
   const NetLogEntry& entry = entries[index];
   if (expected_event != entry.type) {
     return ::testing::AssertionFailure()
-           << "Actual event: " << NetLog::EventTypeToString(entry.type)
-           << ". Expected event: " << NetLog::EventTypeToString(expected_event)
+           << "Actual event: " << NetLogEventTypeToString(entry.type)
+           << ". Expected event: " << NetLogEventTypeToString(expected_event)
            << ".";
   }
   if (expected_phase != entry.phase) {
