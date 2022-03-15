@@ -773,6 +773,48 @@ TEST_F(MultiWordSuggesterTest, RecordsTimeToDismissMetric) {
       "InputMethod.Assistive.TimeToDismiss.MultiWord", 1);
 }
 
+TEST_F(MultiWordSuggesterTest, RecordsSuggestionLengthMetric) {
+  std::vector<TextSuggestion> suggestions = {
+      TextSuggestion{.mode = TextSuggestionMode::kPrediction,
+                     .type = TextSuggestionType::kMultiWord,
+                     .text = "how are you"},
+  };
+
+  base::HistogramTester histogram_tester;
+  histogram_tester.ExpectTotalCount(
+      "InputMethod.Assistive.MultiWord.SuggestionLength", 0);
+
+  suggester_->OnFocus(kFocusedContextId);
+  suggester_->OnSurroundingTextChanged(u"how", 3, 3);
+  suggester_->OnExternalSuggestionsUpdated(suggestions);
+
+  histogram_tester.ExpectTotalCount(
+      "InputMethod.Assistive.MultiWord.SuggestionLength", 1);
+  // "how are you" = 11 chars
+  histogram_tester.ExpectUniqueSample(
+      "InputMethod.Assistive.MultiWord.SuggestionLength", /*sample=*/11,
+      /*expected_bucket_count=*/1);
+}
+
+TEST_F(MultiWordSuggesterTest, DoesntRecordIfSuggestionLengthIsBig) {
+  std::vector<TextSuggestion> suggestions = {
+      TextSuggestion{.mode = TextSuggestionMode::kPrediction,
+                     .type = TextSuggestionType::kMultiWord,
+                     .text = std::string(101, 'h')},
+  };
+
+  base::HistogramTester histogram_tester;
+  histogram_tester.ExpectTotalCount(
+      "InputMethod.Assistive.MultiWord.SuggestionLength", 0);
+
+  suggester_->OnFocus(kFocusedContextId);
+  suggester_->OnSurroundingTextChanged(u"how", 3, 3);
+  suggester_->OnExternalSuggestionsUpdated(suggestions);
+
+  histogram_tester.ExpectTotalCount(
+      "InputMethod.Assistive.MultiWord.SuggestionLength", 0);
+}
+
 TEST_F(MultiWordSuggesterTest,
        SurroundingTextChangesDoNotTriggerAnnouncements) {
   suggester_->OnFocus(kFocusedContextId);

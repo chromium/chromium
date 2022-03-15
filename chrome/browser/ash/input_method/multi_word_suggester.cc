@@ -26,6 +26,8 @@ using ime::TextSuggestion;
 using ime::TextSuggestionMode;
 using ime::TextSuggestionType;
 
+// Used for UmaHistogramExactLinear, should remain <= 101.
+constexpr size_t kMaxSuggestionLength = 101;
 constexpr char kMultiWordFirstAcceptTimeDays[] = "multi_word_first_accept";
 constexpr char16_t kSuggestionShownMessage[] =
     u"predictive writing candidate shown, press down to select or "
@@ -72,6 +74,12 @@ void RecordTimeToAccept(base::TimeDelta delta) {
 void RecordTimeToDismiss(base::TimeDelta delta) {
   base::UmaHistogramTimes("InputMethod.Assistive.TimeToDismiss.MultiWord",
                           delta);
+}
+
+void RecordSuggestionLength(size_t suggestion_length) {
+  base::UmaHistogramExactLinear(
+      "InputMethod.Assistive.MultiWord.SuggestionLength", suggestion_length,
+      kMaxSuggestionLength);
 }
 
 absl::optional<int> GetTimeFirstAcceptedSuggestion(Profile* profile) {
@@ -151,6 +159,11 @@ void MultiWordSuggester::OnExternalSuggestionsUpdated(
   if (!multi_word_suggestion) {
     state_.UpdateState(SuggestionState::State::kNoSuggestionShown);
     return;
+  }
+
+  if (auto suggestion_length = multi_word_suggestion->text.size();
+      suggestion_length < kMaxSuggestionLength) {
+    RecordSuggestionLength(suggestion_length);
   }
 
   auto suggestion = SuggestionState::Suggestion{
