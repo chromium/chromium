@@ -739,11 +739,13 @@ void StyleEngine::MarkViewportStyleDirty() {
 
 CSSStyleSheet* StyleEngine::CreateSheet(Element& element,
                                         const String& text,
-                                        TextPosition start_position) {
+                                        TextPosition start_position,
+                                        PendingSheetType type) {
   DCHECK(element.GetDocument() == GetDocument());
   CSSStyleSheet* style_sheet = nullptr;
 
-  AddPendingSheet(element);
+  if (type == PendingSheetType::kBlocking)
+    AddPendingSheet(element);
 
   AtomicString text_content(text);
 

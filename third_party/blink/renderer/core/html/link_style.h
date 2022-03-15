@@ -5,6 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_HTML_LINK_STYLE_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_HTML_LINK_STYLE_H_
 
+#include "third_party/blink/renderer/core/css/pending_sheet_type.h"
 #include "third_party/blink/renderer/core/css/style_engine.h"
 #include "third_party/blink/renderer/core/dom/node.h"
 #include "third_party/blink/renderer/core/html/link_resource.h"
@@ -64,8 +65,6 @@ class LinkStyle final : public LinkResource, ResourceClient {
                                          const WTF::TextEncoding&);
 
   enum DisabledState { kUnset, kEnabledViaScript, kDisabled };
-
-  enum PendingSheetType { kNone, kNonBlocking, kBlocking };
 
   void ClearSheet();
   void AddPendingSheet(PendingSheetType);

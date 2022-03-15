@@ -44,7 +44,7 @@ class CORE_EXPORT HTMLStyleElement final : public HTMLElement,
   bool disabled() const;
   void setDisabled(bool);
 
-  BlockingAttribute& blocking() const { return *blocking_attribute_; }
+  BlockingAttribute* blocking() const override { return blocking_attribute_; }
 
   void Trace(Visitor*) const override;
 

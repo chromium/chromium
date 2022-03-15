@@ -31,6 +31,7 @@
 #include "third_party/blink/renderer/core/dom/shadow_root.h"
 #include "third_party/blink/renderer/core/frame/csp/content_security_policy.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
+#include "third_party/blink/renderer/core/html/blocking_attribute.h"
 #include "third_party/blink/renderer/core/html/html_style_element.h"
 #include "third_party/blink/renderer/core/probe/core_probes.h"
 #include "third_party/blink/renderer/core/svg/svg_style_element.h"
@@ -49,7 +50,8 @@ StyleElement::StyleElement(Document* document, bool created_by_parser)
     : created_by_parser_(created_by_parser),
       loading_(false),
       registered_as_candidate_(false),
-      start_position_(TextPosition::BelowRangePosition()) {
+      start_position_(TextPosition::BelowRangePosition()),
+      pending_sheet_type_(PendingSheetType::kNone) {
   if (created_by_parser && document &&
       document->GetScriptableDocumentParser() &&
       !document->IsInDocumentWrite()) {
@@ -115,8 +117,11 @@ void StyleElement::ClearSheet(Element& owner_element) {
 
   if (sheet_->IsLoading()) {
     DCHECK(IsSameObject(owner_element));
-    owner_element.GetDocument().GetStyleEngine().RemovePendingSheet(
-        owner_element);
+    if (pending_sheet_type_ == PendingSheetType::kBlocking) {
+      owner_element.GetDocument().GetStyleEngine().RemovePendingSheet(
+          owner_element);
+    }
+    pending_sheet_type_ = PendingSheetType::kNone;
   }
 
   sheet_.Release()->ClearOwnerNode();
@@ -155,17 +160,27 @@ StyleElement::ProcessingResult StyleElement::CreateSheet(Element& element,
   if (IsCSS(element, type) && passes_content_security_policy_checks) {
     scoped_refptr<MediaQuerySet> media_queries;
     const AtomicString& media_string = media();
+    bool media_query_matches = true;
     if (!media_string.IsEmpty()) {
       media_queries =
           MediaQuerySet::Create(media_string, element.GetExecutionContext());
+      if (LocalFrame* frame = document.GetFrame()) {
+        MediaQueryEvaluator evaluator(frame);
+        media_query_matches = evaluator.Eval(*media_queries);
+      }
     }
+    // TODO(crbug.com/1271296): Should be blocking only when created by parser
+    // or has `blocking="render"`, but created_by_parser_ flag is flipped to
+    // false in FinishParsingChildren(), which causes test failures.
+    pending_sheet_type_ = media_query_matches ? PendingSheetType::kBlocking
+                                              : PendingSheetType::kNonBlocking;
     loading_ = true;
     TextPosition start_position =
         start_position_ == TextPosition::BelowRangePosition()
             ? TextPosition::MinimumPosition()
             : start_position_;
-    new_sheet =
-        document.GetStyleEngine().CreateSheet(element, text, start_position);
+    new_sheet = document.GetStyleEngine().CreateSheet(
+        element, text, start_position, pending_sheet_type_);
     new_sheet->SetMediaQueries(media_queries);
     loading_ = false;
   }
@@ -192,12 +207,16 @@ bool StyleElement::SheetLoaded(Document& document) {
     return false;
 
   DCHECK(IsSameObject(*sheet_->ownerNode()));
-  document.GetStyleEngine().RemovePendingSheet(*sheet_->ownerNode());
+  if (pending_sheet_type_ == PendingSheetType::kBlocking)
+    document.GetStyleEngine().RemovePendingSheet(*sheet_->ownerNode());
+  pending_sheet_type_ = PendingSheetType::kNone;
   return true;
 }
 
 void StyleElement::SetToPendingState(Document& document, Element& element) {
   DCHECK(IsSameObject(element));
+  DCHECK_LT(pending_sheet_type_, PendingSheetType::kBlocking);
+  pending_sheet_type_ = PendingSheetType::kBlocking;
   document.GetStyleEngine().AddPendingSheet(element);
 }
 

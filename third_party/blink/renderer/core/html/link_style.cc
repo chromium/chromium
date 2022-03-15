@@ -37,7 +37,7 @@ static bool StyleSheetTypeIsSupported(const String& type) {
 LinkStyle::LinkStyle(HTMLLinkElement* owner)
     : LinkResource(owner),
       disabled_state_(kUnset),
-      pending_sheet_type_(kNone),
+      pending_sheet_type_(PendingSheetType::kNone),
       render_blocking_behavior_(RenderBlockingBehavior::kUnset),
       loading_(false),
       fired_load_(false),
@@ -151,8 +151,8 @@ void LinkStyle::NotifyLoadedSheetAndAllCriticalSubresources(
 }
 
 void LinkStyle::SetToPendingState() {
-  DCHECK_LT(pending_sheet_type_, kBlocking);
-  AddPendingSheet(kBlocking);
+  DCHECK_LT(pending_sheet_type_, PendingSheetType::kBlocking);
+  AddPendingSheet(PendingSheetType::kBlocking);
 }
 
 void LinkStyle::ClearSheet() {
@@ -174,7 +174,7 @@ void LinkStyle::AddPendingSheet(PendingSheetType type) {
     return;
   pending_sheet_type_ = type;
 
-  if (pending_sheet_type_ == kNonBlocking)
+  if (pending_sheet_type_ == PendingSheetType::kNonBlocking)
     return;
   GetDocument().GetStyleEngine().AddPendingSheet(*owner_);
 }
@@ -182,11 +182,11 @@ void LinkStyle::AddPendingSheet(PendingSheetType type) {
 void LinkStyle::RemovePendingSheet() {
   DCHECK(owner_);
   PendingSheetType type = pending_sheet_type_;
-  pending_sheet_type_ = kNone;
+  pending_sheet_type_ = PendingSheetType::kNone;
 
-  if (type == kNone)
+  if (type == PendingSheetType::kNone)
     return;
-  if (type == kNonBlocking) {
+  if (type == PendingSheetType::kNonBlocking) {
     // Tell StyleEngine to re-compute styleSheets of this owner_'s treescope.
     GetDocument().GetStyleEngine().ModifiedStyleSheetCandidateNode(*owner_);
     return;
@@ -215,7 +215,7 @@ void LinkStyle::SetDisabledState(bool disabled) {
     // Check #2: An alternate sheet becomes enabled while it is still loading.
     if (owner_->RelAttribute().IsAlternate() &&
         disabled_state_ == kEnabledViaScript)
-      AddPendingSheet(kBlocking);
+      AddPendingSheet(PendingSheetType::kBlocking);
 
     // Check #3: A main sheet becomes enabled while it was still loading and
     // after it was disabled via script. It takes really terrible code to make
@@ -224,7 +224,7 @@ void LinkStyle::SetDisabledState(bool disabled) {
     // only 3 sheets. :)
     if (!owner_->RelAttribute().IsAlternate() &&
         disabled_state_ == kEnabledViaScript && old_disabled_state == kDisabled)
-      AddPendingSheet(kBlocking);
+      AddPendingSheet(PendingSheetType::kBlocking);
 
     // If the sheet is already loading just bail.
     return;
@@ -285,7 +285,8 @@ LinkStyle::LoadReturnValue LinkStyle::LoadStylesheetIfNeeded(
                          (RuntimeEnabledFeatures::BlockingAttributeEnabled() &&
                           owner_->blocking().IsRenderBlocking()));
 
-  AddPendingSheet(render_blocking ? kBlocking : kNonBlocking);
+  AddPendingSheet(render_blocking ? PendingSheetType::kBlocking
+                                  : PendingSheetType::kNonBlocking);
 
   // Load stylesheets that are not needed for the layout immediately with low
   // priority.  When the link element is created by scripts, load the
