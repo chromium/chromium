@@ -142,7 +142,9 @@ DlpPolicyEvent CreateDlpPolicyEvent(const std::string& src_pattern,
 
   event.set_restriction(
       DlpRulesManagerRestriction2DlpEventRestriction(restriction));
-  event.set_timestamp_micro(base::Time::Now().ToTimeT());
+  int64_t timestamp_micro =
+      (base::Time::Now() - base::Time::UnixEpoch()).InMicroseconds();
+  event.set_timestamp_micro(timestamp_micro);
   event.set_user_type(GetCurrentUserType());
   event.set_mode(DlpRulesManagerLevel2DlpEventMode(level));
 
