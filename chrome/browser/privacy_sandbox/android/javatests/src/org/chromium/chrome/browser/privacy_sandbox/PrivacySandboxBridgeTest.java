@@ -28,7 +28,8 @@ import org.chromium.content_public.browser.test.util.TestThreadUtils;
  * Tests for PrivacySandboxBridge.
  */
 @RunWith(ChromeJUnit4ClassRunner.class)
-@CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
+@CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE,
+        "enable-features=PrivacySandboxSettings3:show-sample-data/true"})
 @Batch(Batch.PER_CLASS)
 public class PrivacySandboxBridgeTest {
     @ClassRule

@@ -8,6 +8,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.VisibleForTesting;
 
 import java.util.List;
 
@@ -16,6 +17,7 @@ import java.util.List;
  */
 public class PageInfoAdPersonalizationController extends PageInfoPreferenceSubpageController {
     public static final int ROW_ID = View.generateViewId();
+    private static List<String> sTopicsForTesting;
 
     private final PageInfoMainController mMainController;
     private final PageInfoRowView mRowView;
@@ -32,6 +34,9 @@ public class PageInfoAdPersonalizationController extends PageInfoPreferenceSubpa
 
     public void setTopicsDisplay(List<String> topics) {
         mInfo = topics;
+        if (mInfo.isEmpty() && sTopicsForTesting != null) {
+            mInfo = sTopicsForTesting;
+        }
         PageInfoRowView.ViewParams rowParams = new PageInfoRowView.ViewParams();
         rowParams.visible = !mInfo.isEmpty();
         rowParams.title = getSubpageTitle();
@@ -82,5 +87,10 @@ public class PageInfoAdPersonalizationController extends PageInfoPreferenceSubpa
     public void onSubpageRemoved() {
         removeSubpageFragment();
         mSubPage = null;
+    }
+
+    @VisibleForTesting
+    public static void setTopicsForTesting(List<String> topics) {
+        sTopicsForTesting = topics;
     }
 }

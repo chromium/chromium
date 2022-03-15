@@ -24,6 +24,8 @@ extern const base::FeatureParam<bool>
     kPrivacySandboxSettings3ForceShowConsentForTesting;
 extern const base::FeatureParam<bool>
     kPrivacySandboxSettings3ForceShowNoticeForTesting;
+extern const base::FeatureParam<bool>
+    kPrivacySandboxSettings3ShowSampleDataForTesting;
 
 }  // namespace privacy_sandbox
 

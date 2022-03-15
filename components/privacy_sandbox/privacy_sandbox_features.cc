@@ -18,5 +18,7 @@ const base::FeatureParam<bool>
 const base::FeatureParam<bool>
     kPrivacySandboxSettings3ForceShowNoticeForTesting{
         &kPrivacySandboxSettings3, "force-show-notice-for-testing", false};
+const base::FeatureParam<bool> kPrivacySandboxSettings3ShowSampleDataForTesting{
+    &kPrivacySandboxSettings3, "show-sample-data", false};
 
 }  // namespace privacy_sandbox

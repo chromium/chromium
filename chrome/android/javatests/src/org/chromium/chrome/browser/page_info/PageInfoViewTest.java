@@ -96,6 +96,7 @@ import org.chromium.url.GURL;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 import java.util.Random;
@@ -312,6 +313,8 @@ public class PageInfoViewTest {
         // Choose a fixed, "random" port to create stable screenshots.
         mTestServerRule.setServerPort(424242);
         mTestServerRule.setServerUsesHttps(true);
+
+        PageInfoAdPersonalizationController.setTopicsForTesting(Arrays.asList("Testing topic"));
     }
 
     @After
@@ -330,6 +333,7 @@ public class PageInfoViewTest {
         clearPermissions();
         HistoryContentManager.setProviderForTests(null);
         PageInfoHistoryController.setProviderForTests(null);
+        PageInfoAdPersonalizationController.setTopicsForTesting(null);
     }
 
     /**
