@@ -349,8 +349,7 @@ void BrowserAppInstanceRegistry::LacrosWindowInstanceUpdated(
     aura::Window* window) {
   DCHECK(window);
   auto* instance = GetInstance(lacros_window_instances_, update.id);
-  DCHECK(instance);
-  if (instance->MaybeUpdate(update.is_active)) {
+  if (instance && instance->MaybeUpdate(update.is_active)) {
     for (auto& observer : observers_) {
       observer.OnBrowserWindowUpdated(*instance);
     }
@@ -362,9 +361,10 @@ void BrowserAppInstanceRegistry::LacrosWindowInstanceRemoved(
     aura::Window* window) {
   DCHECK(window);
   auto instance = PopInstanceIfExists(lacros_window_instances_, update.id);
-  DCHECK(instance);
-  for (auto& observer : observers_) {
-    observer.OnBrowserWindowRemoved(*instance);
+  if (instance) {
+    for (auto& observer : observers_) {
+      observer.OnBrowserWindowRemoved(*instance);
+    }
   }
 }
 
@@ -386,11 +386,10 @@ void BrowserAppInstanceRegistry::LacrosAppInstanceUpdated(
     aura::Window* window) {
   DCHECK(window);
   BrowserAppInstance* instance = GetInstance(lacros_app_instances_, update.id);
-  DCHECK(instance);
-  if (instance->MaybeUpdate(window, update.title, update.is_browser_active,
-                            update.is_web_contents_active,
-                            update.browser_session_id,
-                            update.restored_browser_session_id)) {
+  if (instance && instance->MaybeUpdate(
+                      window, update.title, update.is_browser_active,
+                      update.is_web_contents_active, update.browser_session_id,
+                      update.restored_browser_session_id)) {
     for (auto& observer : observers_) {
       observer.OnBrowserAppUpdated(*instance);
     }
@@ -402,9 +401,10 @@ void BrowserAppInstanceRegistry::LacrosAppInstanceRemoved(
     aura::Window* window) {
   DCHECK(window);
   auto instance = PopInstanceIfExists(lacros_app_instances_, update.id);
-  DCHECK(instance);
-  for (auto& observer : observers_) {
-    observer.OnBrowserAppRemoved(*instance);
+  if (instance) {
+    for (auto& observer : observers_) {
+      observer.OnBrowserAppRemoved(*instance);
+    }
   }
 }
 
