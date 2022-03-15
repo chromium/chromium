@@ -143,7 +143,7 @@ class WebControllerBrowserTest : public autofill_assistant::BaseBrowserTest,
         /* opt_guide= */ nullptr, /* background_task_runner= */ nullptr);
     web_controller_ = WebController::CreateForWebContents(
         shell()->web_contents(), &user_data_, &log_info_,
-        annotate_dom_model_service_.get());
+        annotate_dom_model_service_.get(), /*enable_full_stack_traces= */ true);
 
     Observe(shell()->web_contents());
   }
@@ -3313,6 +3313,40 @@ IN_PROC_BROWSER_TEST_F(WebControllerBrowserTest, ExecuteJSWithPromise) {
                      &reject_status));
   reject_run_loop.Run();
   EXPECT_EQ(UNEXPECTED_JS_ERROR, reject_status.proto_status());
+}
+
+IN_PROC_BROWSER_TEST_F(WebControllerBrowserTest, ExecuteJSWithException) {
+  ClientStatus element_status;
+  ElementFinder::Result element;
+  FindElement(Selector({"#input1"}), &element_status, &element);
+  ASSERT_EQ(ACTION_APPLIED, element_status.proto_status());
+
+  ClientStatus result_status;
+  base::RunLoop run_loop;
+  web_controller_->ExecuteJS(
+      R"( // <-- this is line 0.
+          function inner() {
+            throw new Error('Test');
+          }
+          function outer() {
+            inner();
+          }
+          outer();
+          )",
+      element,
+      base::BindOnce(&WebControllerBrowserTest::OnClientStatus,
+                     base::Unretained(this), run_loop.QuitClosure(),
+                     &result_status));
+  run_loop.Run();
+  EXPECT_EQ(UNEXPECTED_JS_ERROR, result_status.proto_status());
+  EXPECT_THAT(result_status.details()
+                  .unexpected_error_info()
+                  .js_exception_line_numbers(),
+              testing::ElementsAre(2, 5, 7));
+  EXPECT_THAT(result_status.details()
+                  .unexpected_error_info()
+                  .js_exception_column_numbers(),
+              testing::ElementsAre(18, 12, 10));
 }
 
 IN_PROC_BROWSER_TEST_F(WebControllerBrowserTest, RunWithDomAnnotation) {

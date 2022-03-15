@@ -62,7 +62,8 @@ class BatchElementCheckerBrowserTest
     BaseBrowserTest::SetUpOnMainThread();
     web_controller_ = WebController::CreateForWebContents(
         shell()->web_contents(), &user_data_, &log_info_,
-        /* annotate_dom_model_service= */ nullptr);
+        /* annotate_dom_model_service= */ nullptr,
+        /* enable_full_stack_traces= */ false);
     Observe(shell()->web_contents());
   }
 

@@ -44,8 +44,15 @@ ClientStatus JavaScriptErrorStatus(
       info->set_js_exception_classname(
           exception->GetException()->GetClassName());
     }
-    info->set_js_exception_line_number(exception->GetLineNumber());
-    info->set_js_exception_column_number(exception->GetColumnNumber());
+    if (exception->HasStackTrace()) {
+      for (const auto& frame : *exception->GetStackTrace()->GetCallFrames()) {
+        info->add_js_exception_line_numbers(frame->GetLineNumber());
+        info->add_js_exception_column_numbers(frame->GetColumnNumber());
+      }
+    } else {
+      info->add_js_exception_line_numbers(exception->GetLineNumber());
+      info->add_js_exception_column_numbers(exception->GetColumnNumber());
+    }
   }
   return status;
 }

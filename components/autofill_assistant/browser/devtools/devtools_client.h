@@ -33,7 +33,8 @@ namespace autofill_assistant {
 class DevtoolsClient : public MessageDispatcher,
                        public content::DevToolsAgentHostClient {
  public:
-  explicit DevtoolsClient(scoped_refptr<content::DevToolsAgentHost> agent_host);
+  explicit DevtoolsClient(scoped_refptr<content::DevToolsAgentHost> agent_host,
+                          bool enable_full_stack_traces);
 
   DevtoolsClient(const DevtoolsClient&) = delete;
   DevtoolsClient& operator=(const DevtoolsClient&) = delete;

@@ -418,11 +418,13 @@ std::unique_ptr<WebController> WebController::CreateForWebContents(
     content::WebContents* web_contents,
     const UserData* user_data,
     ProcessedActionStatusDetailsProto* log_info,
-    AnnotateDomModelService* annotate_dom_model_service) {
+    AnnotateDomModelService* annotate_dom_model_service,
+    bool enable_full_stack_traces) {
   return std::make_unique<WebController>(
       web_contents,
       std::make_unique<DevtoolsClient>(
-          content::DevToolsAgentHost::GetOrCreateFor(web_contents)),
+          content::DevToolsAgentHost::GetOrCreateFor(web_contents),
+          enable_full_stack_traces),
       user_data, log_info, annotate_dom_model_service);
 }
 

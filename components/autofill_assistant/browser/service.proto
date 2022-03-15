@@ -1159,10 +1159,9 @@ message NavigationInfoProto {
 
 // Extra debugging information included in case of unexpected errors.
 //
-// Presence of this element is usually the sign of a bug in the client code and
-// is always the sign that the client code needs to be updated: such issues
-// should be either fixed or reported as proper, expected error with a useful
-// status code.
+// Presence of this element either points to a problem in the executed
+// javascript (in which case, the relevant js_exception_xxx fields should be
+// set) or a bug in the client code.
 message UnexpectedErrorInfoProto {
   // Source file, within the client code, where an unexpected error was detected
   // and reported.
@@ -1180,13 +1179,15 @@ message UnexpectedErrorInfoProto {
   // JavaScript exception class name, if reporting a JavaScript error.
   optional string js_exception_classname = 3;
 
-  // JavaScript exception line number, within the js snippet that was sent to
-  // devtools runtime by the client, if reporting a JavaScript error.
-  optional int32 js_exception_line_number = 4;
+  // JavaScript exception line numbers, within the js snippet that was sent to
+  // devtools runtime by the client, if reporting a JavaScript error. Together
+  // with |js_exception_column_numbers| this forms a stack trace.
+  repeated int32 js_exception_line_numbers = 4;
 
   // JavaScript exception column number, within the js snippet that was sent to
-  // devtools runtime by the client, if reporting a JavaScript error.
-  optional int32 js_exception_column_number = 5;
+  // devtools runtime by the client, if reporting a JavaScript error. Together
+  // with |js_exception_line_numbers| this forms a stack trace.
+  repeated int32 js_exception_column_numbers = 5;
 
   // Error code returned by devtools, if any. 0 is considered a success.
   optional int32 devtools_error_code = 6;

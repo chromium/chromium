@@ -4,9 +4,11 @@
 
 #include "components/autofill_assistant/browser/js_flow_executor_impl.h"
 #include "base/base64.h"
+#include "base/feature_list.h"
 #include "base/json/json_writer.h"
 #include "base/logging.h"
 #include "base/strings/strcat.h"
+#include "components/autofill_assistant/browser/features.h"
 #include "components/autofill_assistant/browser/parse_jspb.h"
 #include "components/autofill_assistant/browser/web/web_controller_util.h"
 
@@ -68,7 +70,10 @@ JsFlowExecutorImpl::JsFlowExecutorImpl(content::WebContents* web_contents,
                                        Delegate* delegate)
     : delegate_(delegate),
       devtools_client_(std::make_unique<DevtoolsClient>(
-          content::DevToolsAgentHost::GetOrCreateFor(web_contents))) {}
+          content::DevToolsAgentHost::GetOrCreateFor(web_contents),
+          base::FeatureList::IsEnabled(
+              autofill_assistant::features::
+                  kAutofillAssistantFullJsFlowStackTraces))) {}
 
 JsFlowExecutorImpl::~JsFlowExecutorImpl() = default;
 

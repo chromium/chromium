@@ -41,9 +41,12 @@ std::ostream& operator<<(std::ostream& out, const ClientStatus& status) {
     out << " " << error_info.source_file() << ":"
         << error_info.source_line_number();
     if (!error_info.js_exception_classname().empty()) {
-      out << " JS error " << error_info.js_exception_classname() << " at "
-          << error_info.js_exception_line_number() << ":"
-          << error_info.js_exception_column_number();
+      out << " JS error " << error_info.js_exception_classname();
+      if (!error_info.js_exception_line_numbers().empty() &&
+          !error_info.js_exception_column_numbers().empty()) {
+        out << " at " << error_info.js_exception_line_numbers(0) << ":"
+            << error_info.js_exception_column_numbers(0);
+      }
     }
   }
 #endif

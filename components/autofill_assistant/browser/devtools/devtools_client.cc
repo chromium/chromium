@@ -22,7 +22,8 @@ namespace autofill_assistant {
 constexpr long kSessionIdLookupFailedError = -10;
 
 DevtoolsClient::DevtoolsClient(
-    scoped_refptr<content::DevToolsAgentHost> agent_host)
+    scoped_refptr<content::DevToolsAgentHost> agent_host,
+    bool enable_full_stack_traces)
     : agent_host_(agent_host),
       input_domain_(this),
       dom_domain_(this),
@@ -34,6 +35,15 @@ DevtoolsClient::DevtoolsClient(
   browser_main_thread_ = content::GetUIThreadTaskRunner({});
   agent_host_->AttachClientWithoutWakeLock(this);
   frame_tracker_.Start();
+
+  if (enable_full_stack_traces) {
+    // This is necessary in order to get full stack traces in the case of
+    // exceptions. Without this, only the top-most stack frame is available.
+    // For now, this is only done for the main frame, since that's good enough
+    // for JS flows. Enabling this for JS snippets will require calling this on
+    // every frame instead.
+    GetRuntime()->Enable(/* optional_node_frame_id = */ std::string());
+  }
 }
 
 DevtoolsClient::~DevtoolsClient() {
@@ -254,8 +264,8 @@ bool DevtoolsClient::DispatchEvent(std::unique_ptr<base::Value> owning_message,
       return false;
     }
     if (browser_main_thread_) {
-      // DevTools assumes event handling is async so we must post a task here or
-      // we risk breaking things.
+      // DevTools assumes event handling is async so we must post a task here
+      // or we risk breaking things.
       browser_main_thread_->PostTask(
           FROM_HERE,
           base::BindOnce(&DevtoolsClient::DispatchEventTask,
@@ -330,8 +340,9 @@ void DevtoolsClient::FrameTracker::Start() {
 
   started_ = true;
 
-  // Start auto attaching so that we can keep track of what session got started
-  // for what target. We use flatten = true to cover the entire frame tree.
+  // Start auto attaching so that we can keep track of what session got
+  // started for what target. We use flatten = true to cover the entire frame
+  // tree.
   client_->GetTarget()->SetAutoAttach(
       target::SetAutoAttachParams::Builder()
           .SetAutoAttach(true)

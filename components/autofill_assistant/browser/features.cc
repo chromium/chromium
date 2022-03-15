@@ -54,6 +54,23 @@ const base::Feature kAutofillAssistantDisableProactiveHelpTiedToMSBB{
     "AutofillAssistantDisableProactiveHelpTiedToMSBB",
     base::FEATURE_ENABLED_BY_DEFAULT};
 
+// Emergency off-switch for full JS flow stack traces. Collecting full stack
+// traces may be computationally expensive, though exceptions are not expected
+// to happen frequently in our flows, and when they do, having full stack traces
+// would be preferred, so this is enabled by default for now.
+const base::Feature kAutofillAssistantFullJsFlowStackTraces{
+    "AutofillAssistantFullJsFlowStackTraces", base::FEATURE_ENABLED_BY_DEFAULT};
+
+// Same as AutofillAssistantFullJsFlowStackTraces, but for JS snippets instead
+// of JS flows. Since snippets are used quite extensively already, this is
+// disabled by default. This feature will let us ramp this safely in the future.
+//
+// TODO: this requires some more work, since we will likely need this not just
+// in the main frame, but in all nested frames as well.
+const base::Feature kAutofillAssistantFullJsSnippetStackTraces{
+    "AutofillAssistantFullJsSnippetStackTraces",
+    base::FEATURE_DISABLED_BY_DEFAULT};
+
 // Get a payments client token from GMS. This is an emergency off-switch in
 // case calling this by default has a negative impact.
 const base::Feature kAutofillAssistantGetPaymentsClientToken{

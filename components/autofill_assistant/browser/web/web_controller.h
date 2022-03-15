@@ -66,12 +66,15 @@ class WebController {
  public:
   // Create web controller for a given |web_contents|. |user_data|, |log_info|
   // and |annotate_dom_model_service| (if not nullptr) must be valid
-  // for the lifetime of the controller.
+  // for the lifetime of the controller. |enable_full_stack_traces| should only
+  // be enabled if the thrown exceptions will be caught and handled, otherwise
+  // this will unnecessarily decrease performance.
   static std::unique_ptr<WebController> CreateForWebContents(
       content::WebContents* web_contents,
       const UserData* user_data,
       ProcessedActionStatusDetailsProto* log_info,
-      AnnotateDomModelService* annotate_dom_model_service);
+      AnnotateDomModelService* annotate_dom_model_service,
+      bool enable_full_stack_traces);
 
   // |web_contents|, |user_data|, |log_info| and |annotate_dom_model_service|
   // (if not nullptr) must outlive this web controller.
