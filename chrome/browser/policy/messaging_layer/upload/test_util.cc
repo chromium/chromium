@@ -4,9 +4,62 @@
 
 #include "chrome/browser/policy/messaging_layer/upload/test_util.h"
 
+#include <string>
 #include "base/json/json_reader.h"
 
 namespace reporting {
+
+DataUploadRequestValidityMatcher::Settings&
+DataUploadRequestValidityMatcher::Settings::SetCheckEncryptedRecord(bool flag) {
+  check_encrypted_record_ = flag;
+  return *this;
+}
+
+DataUploadRequestValidityMatcher::DataUploadRequestValidityMatcher(
+    const Settings& settings)
+    : settings_(settings) {}
+
+bool DataUploadRequestValidityMatcher::MatchAndExplain(
+    const base::Value::Dict& arg,
+    MatchResultListener* listener) const {
+  if (settings_.check_encrypted_record_ &&
+      arg.FindList("encryptedRecord") == nullptr) {
+    *listener
+        << "No key named \"encryptedRecord\" in the argument or the value is "
+           "not a list.";
+    return false;
+  }
+  // TODO: Check the validity of each record based on whether they have required
+  // fields and types.
+
+  const auto* request_id = arg.FindString("requestId");
+  if (request_id == nullptr) {
+    *listener
+        << "No key named \"requestId\" in the argument or the value is not a "
+           "string.";
+    return false;
+  }
+  if (request_id->empty()) {
+    *listener << "Request ID is empty.";
+    return false;
+  }
+  if (request_id->find_first_not_of("0123456789abcdefABCDEF") !=
+      std::string::npos) {
+    *listener << "Request ID is not a hexadecimal number.";
+    return false;
+  }
+
+  return true;
+}
+
+void DataUploadRequestValidityMatcher::DescribeTo(std::ostream* os) const {
+  *os << "is valid.";
+}
+
+void DataUploadRequestValidityMatcher::DescribeNegationTo(
+    std::ostream* os) const {
+  *os << "is invalid.";
+}
 
 bool RequestContainingRecordMatcher::IsSubDict(const base::Value::Dict& sub,
                                                const base::Value::Dict& super) {
@@ -28,7 +81,8 @@ bool RequestContainingRecordMatcher::MatchAndExplain(
     std::ostream* os) const {
   const auto* record_list = arg.FindList("encryptedRecord");
   if (record_list == nullptr) {
-    *os << "No key named \"encryptedRecord\" in the argument.";
+    *os << "No key named \"encryptedRecord\" in the argument or the value is "
+           "not a list.";
     return false;
   }
 

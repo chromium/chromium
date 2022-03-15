@@ -16,6 +16,36 @@
 namespace reporting {
 
 using ::testing::Matcher;
+using ::testing::MatchResultListener;
+
+class DataUploadRequestValidityMatcher {
+ public:
+  using is_gtest_matcher = void;
+
+  class Settings {
+   public:
+    Settings() = default;
+    Settings(const Settings& other) = default;
+    Settings(Settings&& other) = default;
+    // Enable or disable checking the existence of key "encryptedRecord" and
+    // that the value is a list.
+    Settings& SetCheckEncryptedRecord(bool flag);
+
+   private:
+    friend DataUploadRequestValidityMatcher;
+    bool check_encrypted_record_ = true;
+  };
+
+  DataUploadRequestValidityMatcher() = default;
+  explicit DataUploadRequestValidityMatcher(const Settings& settings);
+  bool MatchAndExplain(const base::Value::Dict& arg,
+                       MatchResultListener* listener) const;
+  void DescribeTo(std::ostream* os) const;
+  void DescribeNegationTo(std::ostream* os) const;
+
+ private:
+  const Settings settings_{};
+};
 
 class RequestContainingRecordMatcher {
  public:
@@ -38,16 +68,32 @@ class RequestContainingRecordMatcher {
                         const base::Value::Dict& super);
 };
 
-// Match a request Dict object that contains the given record
-// |matched_record_json|. The match will be successful as long as any record in
-// the request contains |matched_record_json| as a sub-dictionary -- they are
-// not required to equal. In this way, you can specify only part of the record
-// of interest (e.g., omit "encryptedWrappedRecord").
+// The following matcher functions templated because we expect the tested
+// request comes in different forms, including their referenceness (gtest need
+// the matcher type to also match references to some extent). As long as the
+// type can be cast to a |base::Value::Dict| object, this matcher should work.
+
+// Match a data upload request that is valid. This matcher is intended to be
+// called for most tested data upload requests to verify whether the request is
+// valid on some basic fronts, such as containing an "encryptedRecord" key, etc.
 //
-// This is templated because we expect the tested request comes in different
-// forms, including their referenceness (gtest need the matcher type to also
-// match references to some extent). As long as the type can be cast to a
-// |base::Value::Dict| object, this matcher should work.
+// You can use settings to enable or skip some part of the validity checks if
+// your test case intentionally creates a malformed request.
+template <class T = base::Value::Dict>
+Matcher<T> IsDataUploadRequestValid(
+    const DataUploadRequestValidityMatcher::Settings& settings) {
+  return DataUploadRequestValidityMatcher(settings);
+}
+template <class T = base::Value::Dict>
+Matcher<T> IsDataUploadRequestValid() {
+  return DataUploadRequestValidityMatcher();
+}
+
+// Match a request that contains the given record |matched_record_json|. The
+// match will be successful as long as any record in the request contains
+// |matched_record_json| as a sub-dictionary -- they are not required to equal.
+// In this way, you can specify only part of the record of interest (e.g., omit
+// "encryptedWrappedRecord").
 template <class T = base::Value::Dict>
 Matcher<T> DoesRequestContainRecord(base::StringPiece matched_record_json) {
   return RequestContainingRecordMatcher(matched_record_json);

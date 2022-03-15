@@ -21,6 +21,7 @@
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
+#include "chrome/browser/policy/messaging_layer/upload/test_util.h"
 #include "chrome/browser/policy/messaging_layer/util/dm_token_retriever_provider.h"
 #include "components/policy/core/common/cloud/mock_cloud_policy_client.h"
 #include "components/reporting/client/dm_token_retriever.h"
@@ -406,7 +407,8 @@ TEST_P(ReportClientTest, EnqueueMessageAndUpload) {
 
   if (StorageSelector::is_uploader_required() &&
       !StorageSelector::is_use_missive()) {
-    EXPECT_CALL(*client_, UploadEncryptedReport(_, _, _))
+    EXPECT_CALL(*client_,
+                UploadEncryptedReport(IsDataUploadRequestValid(), _, _))
         .WillOnce(WithArgs<0, 2>(Invoke(GetVerifyDataInvocation())));
   }
 
@@ -439,13 +441,16 @@ TEST_P(ReportClientTest, SpeculativelyEnqueueMessageAndUpload) {
   if (StorageSelector::is_uploader_required() &&
       !StorageSelector::is_use_missive()) {
     // Note: there does not seem to be another way to define the expectations
-    // A+B for encrypted case and just B for non-encrypted.g
+    // A+B for encrypted case and just B for non-encrypted.
     if (is_encryption_enabled()) {
       EXPECT_CALL(*client_, UploadEncryptedReport(_, _, _))
-          .WillOnce(WithArgs<0, 2>(Invoke(GetEncryptionKeyInvocation())))
+          .WillOnce(WithArgs<0, 2>(Invoke(GetEncryptionKeyInvocation())));
+      EXPECT_CALL(*client_,
+                  UploadEncryptedReport(IsDataUploadRequestValid(), _, _))
           .WillOnce(WithArgs<0, 2>(Invoke(GetVerifyDataInvocation())));
     } else {
-      EXPECT_CALL(*client_, UploadEncryptedReport(_, _, _))
+      EXPECT_CALL(*client_,
+                  UploadEncryptedReport(IsDataUploadRequestValid(), _, _))
           .WillOnce(WithArgs<0, 2>(Invoke(GetVerifyDataInvocation())));
     }
   }

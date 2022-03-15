@@ -18,6 +18,7 @@
 #include "base/values.h"
 #include "chrome/browser/policy/messaging_layer/upload/dm_server_upload_service.h"
 #include "chrome/browser/policy/messaging_layer/upload/record_upload_request_builder.h"
+#include "chrome/browser/policy/messaging_layer/upload/test_util.h"
 #include "components/policy/core/common/cloud/cloud_policy_client.h"
 #include "components/policy/core/common/cloud/dm_token.h"
 #include "components/policy/core/common/cloud/mock_cloud_policy_client.h"
@@ -258,7 +259,7 @@ TEST_P(RecordHandlerImplTest, ForwardsRecordsToCloudPolicyClient) {
       .sequence_information = test_records->back().sequence_information(),
       .force_confirm = force_confirm()};
 
-  EXPECT_CALL(*client_, UploadEncryptedReport(_, _, _))
+  EXPECT_CALL(*client_, UploadEncryptedReport(IsDataUploadRequestValid(), _, _))
       .WillOnce(WithArgs<0, 2>(
           Invoke([&force_confirm_by_server](
                      base::Value::Dict request,
@@ -294,7 +295,7 @@ TEST_P(RecordHandlerImplTest, MissingPriorityField) {
   auto test_records = BuildTestRecordsVector(kNumTestRecords, kGenerationId);
   const auto force_confirm_by_server = force_confirm();
 
-  EXPECT_CALL(*client_, UploadEncryptedReport(_, _, _))
+  EXPECT_CALL(*client_, UploadEncryptedReport(IsDataUploadRequestValid(), _, _))
       .WillOnce(WithArgs<0, 2>(
           Invoke([&force_confirm_by_server](
                      base::Value::Dict request,
@@ -323,7 +324,7 @@ TEST_P(RecordHandlerImplTest, InvalidPriorityField) {
   auto test_records = BuildTestRecordsVector(kNumTestRecords, kGenerationId);
   const auto force_confirm_by_server = force_confirm();
 
-  EXPECT_CALL(*client_, UploadEncryptedReport(_, _, _))
+  EXPECT_CALL(*client_, UploadEncryptedReport(IsDataUploadRequestValid(), _, _))
       .WillOnce(WithArgs<0, 2>(
           Invoke([&force_confirm_by_server](
                      base::Value::Dict request,
@@ -351,7 +352,7 @@ TEST_P(RecordHandlerImplTest, ReportsUploadFailure) {
   static constexpr int64_t kGenerationId = 1234;
   auto test_records = BuildTestRecordsVector(kNumTestRecords, kGenerationId);
 
-  EXPECT_CALL(*client_, UploadEncryptedReport(_, _, _))
+  EXPECT_CALL(*client_, UploadEncryptedReport(IsDataUploadRequestValid(), _, _))
       .WillOnce(WithArgs<2>(Invoke(
           [](base::OnceCallback<void(absl::optional<base::Value::Dict>)>
                  callback) { std::move(callback).Run(absl::nullopt); })));
@@ -389,7 +390,8 @@ TEST_P(RecordHandlerImplTest, UploadsGapRecordOnServerFailure) {
   // Once for failure, and once for gap.
   {
     ::testing::InSequence seq;
-    EXPECT_CALL(*client_, UploadEncryptedReport(_, _, _))
+    EXPECT_CALL(*client_,
+                UploadEncryptedReport(IsDataUploadRequestValid(), _, _))
         .WillOnce(WithArgs<0, 2>(
             Invoke([](base::Value::Dict request,
                       policy::CloudPolicyClient::ResponseCallback callback) {
@@ -397,7 +399,8 @@ TEST_P(RecordHandlerImplTest, UploadsGapRecordOnServerFailure) {
               FailedResponseFromRequest(request, response);
               std::move(callback).Run(std::move(response));
             })));
-    EXPECT_CALL(*client_, UploadEncryptedReport(_, _, _))
+    EXPECT_CALL(*client_,
+                UploadEncryptedReport(IsDataUploadRequestValid(), _, _))
         .WillOnce(WithArgs<0, 2>(
             Invoke([&force_confirm_by_server](
                        base::Value::Dict request,
@@ -439,7 +442,7 @@ TEST_P(RecordHandlerImplTest, HandleUnknownResponseFromServer) {
   static constexpr int64_t kGenerationId = 1234;
   auto test_records = BuildTestRecordsVector(kNumTestRecords, kGenerationId);
 
-  EXPECT_CALL(*client_, UploadEncryptedReport(_, _, _))
+  EXPECT_CALL(*client_, UploadEncryptedReport(IsDataUploadRequestValid(), _, _))
       .WillOnce(WithArgs<2>(
           Invoke([](policy::CloudPolicyClient::ResponseCallback callback) {
             std::move(callback).Run(base::Value::Dict());
@@ -474,7 +477,7 @@ TEST_P(RecordHandlerImplTest, AssignsRequestIdForRecordUploads) {
       .sequence_information = test_records->back().sequence_information(),
       .force_confirm = force_confirm()};
 
-  EXPECT_CALL(*client_, UploadEncryptedReport(_, _, _))
+  EXPECT_CALL(*client_, UploadEncryptedReport(IsDataUploadRequestValid(), _, _))
       .WillOnce(WithArgs<0, 2>(
           Invoke([&force_confirm_by_server](
                      base::Value::Dict request,
