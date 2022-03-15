@@ -18,6 +18,7 @@ namespace segmentation_platform {
 class FeatureListQueryProcessor;
 class HistogramSignalHandler;
 class SegmentInfoDatabase;
+class SignalStorageConfig;
 
 // Collect training data and report as Ukm message. Live on main thread.
 // TODO(xingliu): Make a new class that owns the training data collector and
@@ -28,6 +29,7 @@ class TrainingDataCollector : public HistogramSignalHandler::Observer {
       SegmentInfoDatabase* segment_info_database,
       FeatureListQueryProcessor* processor,
       HistogramSignalHandler* histogram_signal_handler,
+      SignalStorageConfig* signal_storage_config,
       base::Clock* clock);
 
   // Called when model metadata is updated. May result in training data

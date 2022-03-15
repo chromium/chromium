@@ -17,6 +17,7 @@
 #include "components/segmentation_platform/internal/data_collection/dummy_training_data_collector.h"
 #include "components/segmentation_platform/internal/database/metadata_utils.h"
 #include "components/segmentation_platform/internal/database/segment_info_database.h"
+#include "components/segmentation_platform/internal/database/signal_storage_config.h"
 #include "components/segmentation_platform/internal/execution/feature_list_query_processor.h"
 #include "components/segmentation_platform/internal/proto/model_metadata.pb.h"
 #include "components/segmentation_platform/internal/proto/model_prediction.pb.h"
@@ -54,10 +55,12 @@ class TrainingDataCollectorImpl : public TrainingDataCollector {
   TrainingDataCollectorImpl(SegmentInfoDatabase* segment_info_database,
                             FeatureListQueryProcessor* processor,
                             HistogramSignalHandler* histogram_signal_handler,
+                            SignalStorageConfig* signal_storage_config,
                             base::Clock* clock)
       : segment_info_database_(segment_info_database),
         feature_list_query_processor_(processor),
         histogram_signal_handler_(histogram_signal_handler),
+        signal_storage_config_(signal_storage_config),
         clock_(clock) {}
 
   ~TrainingDataCollectorImpl() override {
@@ -140,7 +143,7 @@ class TrainingDataCollectorImpl : public TrainingDataCollector {
       if (hash_index_map.find(output_metric_hash) == hash_index_map.end())
         continue;
 
-      if (!segment_info.has_model_version())
+      if (!CanReportImmediateTrainingData(segment.second))
         continue;
 
       // Generate training data input.
@@ -156,6 +159,31 @@ class TrainingDataCollectorImpl : public TrainingDataCollector {
                          segment_info.segment_id(),
                          segment_info.model_version()));
     }
+  }
+
+  bool CanReportImmediateTrainingData(const proto::SegmentInfo& segment_info) {
+    if (!segment_info.has_model_version() ||
+        !segment_info.has_model_update_time_s() ||
+        segment_info.model_update_time_s() == 0) {
+      return false;
+    }
+
+    base::TimeDelta min_signal_collection_length =
+        segment_info.model_metadata().min_signal_collection_length() *
+        metadata_utils::GetTimeUnit(segment_info.model_metadata());
+    base::Time model_update_time = base::Time::FromDeltaSinceWindowsEpoch(
+        base::Seconds(segment_info.model_update_time_s()));
+
+    // Data must be collected for enough time after a new model is downloaded.
+    // It's recommended to get the A/B testing experiment fully ramped up before
+    // deploying a new model. Or the data collected might be partially based on
+    // old behavior of Chrome.
+    if (model_update_time + min_signal_collection_length >= clock_->Now())
+      return false;
+
+    // Each input must be collected for enough time.
+    return signal_storage_config_->MeetsSignalCollectionRequirement(
+        segment_info.model_metadata());
   }
 
   void OnGetInputTensor(float output_value,
@@ -178,6 +206,7 @@ class TrainingDataCollectorImpl : public TrainingDataCollector {
   raw_ptr<SegmentInfoDatabase> segment_info_database_;
   raw_ptr<FeatureListQueryProcessor> feature_list_query_processor_;
   raw_ptr<HistogramSignalHandler> histogram_signal_handler_;
+  raw_ptr<SignalStorageConfig> signal_storage_config_;
   raw_ptr<base::Clock> clock_;
 
   // Hash of histograms for immediate training data collection. When any
@@ -195,11 +224,13 @@ std::unique_ptr<TrainingDataCollector> TrainingDataCollector::Create(
     SegmentInfoDatabase* segment_info_database,
     FeatureListQueryProcessor* processor,
     HistogramSignalHandler* histogram_signal_handler,
+    SignalStorageConfig* signal_storage_config,
     base::Clock* clock) {
   if (base::FeatureList::IsEnabled(
           features::kSegmentationStructuredMetricsFeature)) {
     return std::make_unique<TrainingDataCollectorImpl>(
-        segment_info_database, processor, histogram_signal_handler, clock);
+        segment_info_database, processor, histogram_signal_handler,
+        signal_storage_config, clock);
   }
 
   return std::make_unique<DummyTrainingDataCollector>();

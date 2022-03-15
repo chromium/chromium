@@ -11,6 +11,8 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/simple_test_clock.h"
 #include "base/test/task_environment.h"
+#include "components/segmentation_platform/internal/database/metadata_utils.h"
+#include "components/segmentation_platform/internal/database/mock_signal_storage_config.h"
 #include "components/segmentation_platform/internal/database/test_segment_info_database.h"
 #include "components/segmentation_platform/internal/execution/mock_feature_list_query_processor.h"
 #include "components/segmentation_platform/internal/proto/model_metadata.pb.h"
@@ -26,6 +28,7 @@
 using ::base::test::RunOnceCallback;
 using ::testing::_;
 using ::testing::NiceMock;
+using ::testing::Return;
 using Segmentation_ModelExecution =
     ::ukm::builders::Segmentation_ModelExecution;
 
@@ -59,11 +62,13 @@ class TrainingDataCollectorTest : public ::testing::Test {
     std::vector<float> inputs({1.f});
     ON_CALL(feature_list_processor_, ProcessFeatureList(_, _, _, _))
         .WillByDefault(RunOnceCallback<3>(true, inputs));
+    ON_CALL(signal_storage_config_, MeetsSignalCollectionRequirement(_))
+        .WillByDefault(Return(true));
 
     test_segment_info_db_ = std::make_unique<test::TestSegmentInfoDatabase>();
     collector_ = TrainingDataCollector::Create(
         test_segment_info_db_.get(), &feature_list_processor_,
-        &histogram_signal_handler_, &clock_);
+        &histogram_signal_handler_, &signal_storage_config_, &clock_);
   }
 
  protected:
@@ -72,8 +77,12 @@ class TrainingDataCollectorTest : public ::testing::Test {
     return test_segment_info_db_.get();
   }
   base::test::TaskEnvironment* task_environment() { return &task_environment_; }
+  base::SimpleTestClock* clock() { return &clock_; }
+  MockSignalStorageConfig* signal_storage_config() {
+    return &signal_storage_config_;
+  }
 
-  void CreateSegmentInfo() {
+  proto::SegmentInfo* CreateSegmentInfo() {
     test_segment_db()->AddUserActionFeature(kTestOptimizationTarget0, "action",
                                             1, 1, proto::Aggregation::COUNT);
     // Segment 0 contains 1 immediate collection uma output for for
@@ -83,6 +92,7 @@ class TrainingDataCollectorTest : public ::testing::Test {
     AddOutput(segment_info, kHistogramName0);
     proto::TrainingOutput* output1 = AddOutput(segment_info, kHistogramName1);
     output1->mutable_uma_output()->set_duration(1u);
+    return segment_info;
   }
 
   proto::SegmentInfo* CreateSegment(OptimizationTarget optimization_target) {
@@ -90,6 +100,9 @@ class TrainingDataCollectorTest : public ::testing::Test {
         test_segment_db()->FindOrCreateSegment(optimization_target);
     segment_info->mutable_model_metadata()->set_time_unit(proto::TimeUnit::DAY);
     segment_info->set_model_version(kModelVersion);
+    auto model_update_time = clock()->Now() - base::Days(365);
+    segment_info->set_model_update_time_s(
+        model_update_time.ToDeltaSinceWindowsEpoch().InSeconds());
     return segment_info;
   }
 
@@ -144,6 +157,7 @@ class TrainingDataCollectorTest : public ::testing::Test {
   ukm::TestAutoSetUkmRecorder test_recorder_;
   NiceMock<MockFeatureListQueryProcessor> feature_list_processor_;
   NiceMock<MockHistogramSignalHandler> histogram_signal_handler_;
+  NiceMock<MockSignalStorageConfig> signal_storage_config_;
   std::unique_ptr<test::TestSegmentInfoDatabase> test_segment_info_db_;
   std::unique_ptr<TrainingDataCollector> collector_;
 };
@@ -156,7 +170,7 @@ TEST_F(TrainingDataCollectorTest, NoSegment) {
   ExpectUkmCount(0u);
 }
 
-// No segment info in database. Do nothing.
+// Histogram not in the output list will not trigger a training data report..
 TEST_F(TrainingDataCollectorTest, IrrelevantHistogramNotReported) {
   CreateSegmentInfo();
   Init();
@@ -170,6 +184,8 @@ TEST_F(TrainingDataCollectorTest, IrrelevantHistogramNotReported) {
   ExpectUkmCount(0u);
 }
 
+// Immediate training data collection for a certain histogram will be reported
+// as a UKM.
 TEST_F(TrainingDataCollectorTest, HistogramImmediatelyReported) {
   CreateSegmentInfo();
   Init();
@@ -181,6 +197,7 @@ TEST_F(TrainingDataCollectorTest, HistogramImmediatelyReported) {
              SegmentationUkmHelper::FloatToInt64(kSample)});
 }
 
+// A histogram interested by multiple model will trigger multiple UKM reports.
 TEST_F(TrainingDataCollectorTest, HistogramImmediatelyReported_MultipleModel) {
   CreateSegmentInfo();
   // Segment 1 contains 1 immediate collection uma output for for
@@ -190,6 +207,37 @@ TEST_F(TrainingDataCollectorTest, HistogramImmediatelyReported_MultipleModel) {
   Init();
   WaitForHistogramSignalUpdated(kHistogramName0, kSample);
   ExpectUkmCount(2u);
+}
+
+// No UKM report due to minimum data collection time not met.
+TEST_F(TrainingDataCollectorTest, SignalCollectionRequirementNotMet) {
+  EXPECT_CALL(*signal_storage_config(), MeetsSignalCollectionRequirement(_))
+      .WillOnce(Return(false));
+
+  CreateSegmentInfo();
+  Init();
+  collector()->OnHistogramSignalUpdated(kHistogramName0, kSample);
+  task_environment()->RunUntilIdle();
+  ExpectUkmCount(0u);
+}
+
+// No UKM report due to model updated recently.
+TEST_F(TrainingDataCollectorTest, ModelUpdatedRecently) {
+  auto* segment_info = CreateSegmentInfo();
+  base::TimeDelta min_signal_collection_length =
+      segment_info->model_metadata().min_signal_collection_length() *
+      metadata_utils::GetTimeUnit(segment_info->model_metadata());
+
+  // Set the model update timestamp to be closer to Now().
+  segment_info->set_model_update_time_s(
+      (clock()->Now() - min_signal_collection_length + base::Seconds(30))
+          .ToDeltaSinceWindowsEpoch()
+          .InSeconds());
+
+  Init();
+  collector()->OnHistogramSignalUpdated(kHistogramName0, kSample);
+  task_environment()->RunUntilIdle();
+  ExpectUkmCount(0u);
 }
 
 }  // namespace

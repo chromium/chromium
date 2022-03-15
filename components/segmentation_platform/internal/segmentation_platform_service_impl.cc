@@ -246,7 +246,7 @@ void SegmentationPlatformServiceImpl::MaybeRunPostInitializationRoutines() {
 
   training_data_collector_ = TrainingDataCollector::Create(
       segment_info_database_.get(), feature_list_query_processor_.get(),
-      histogram_signal_handler_.get(), clock_);
+      histogram_signal_handler_.get(), signal_storage_config_.get(), clock_);
   training_data_collector_->OnServiceInitialized();
 
   model_execution_manager_ = CreateModelExecutionManager(
