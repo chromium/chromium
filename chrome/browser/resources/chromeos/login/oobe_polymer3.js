@@ -102,4 +102,7 @@ function prepareGlobalValues(globalValue) {
           initializeDebugger();
       }
     }
+
+    // Make the WebUI visible.
+    chrome.send('loginVisible', ['oobe']);
 })(window);

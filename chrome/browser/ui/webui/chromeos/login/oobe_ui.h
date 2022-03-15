@@ -52,7 +52,7 @@ class OobeUI : public ui::MojoWebUIController {
 
   class Observer {
    public:
-    Observer() = default;
+    Observer() {}
 
     Observer(const Observer&) = delete;
 
@@ -62,7 +62,7 @@ class OobeUI : public ui::MojoWebUIController {
     virtual void OnDestroyingOobeUI() = 0;
 
    protected:
-    virtual ~Observer() = default;
+    virtual ~Observer() {}
   };
 
   OobeUI(content::WebUI* web_ui, const GURL& url);

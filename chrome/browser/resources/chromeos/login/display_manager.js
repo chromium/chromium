@@ -349,6 +349,7 @@ cr.define('cr.ui.login', function() {
           innerContainer.classList.remove('down');
           innerContainer.addEventListener('transitionend', function f(e) {
             innerContainer.removeEventListener('transitionend', f);
+            chrome.send('loginVisible', ['oobe']);
             // Refresh defaultControl. It could have changed.
             let defaultControl = newStep.defaultControl;
             if (defaultControl)
@@ -359,6 +360,7 @@ cr.define('cr.ui.login', function() {
         } else {
           if (defaultControl)
             defaultControl.focus();
+          chrome.send('loginVisible', ['oobe']);
         }
       }
       this.currentStep_ = nextStepIndex;
