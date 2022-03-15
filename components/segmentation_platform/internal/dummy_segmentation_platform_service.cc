@@ -20,6 +20,7 @@ void DummySegmentationPlatformService::GetSelectedSegment(
     const std::string& segmentation_key,
     SegmentSelectionCallback callback) {
   stats::RecordSegmentSelectionFailure(
+      segmentation_key,
       stats::SegmentationSelectionFailureReason::kPlatformDisabled);
   base::SequencedTaskRunnerHandle::Get()->PostTask(
       FROM_HERE, base::BindOnce(std::move(callback), SegmentSelectionResult()));

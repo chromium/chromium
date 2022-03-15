@@ -80660,6 +80660,11 @@ https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_2.7.1.pdf
   <int value="0" label="Success"/>
   <int value="1" label="ExecutionError"/>
   <int value="2" label="InvalidMetadata"/>
+  <int value="3" label="SkippedModelNotReady"/>
+  <int value="4" label="SkippedHasFreshResults"/>
+  <int value="5" label="SkippedNotEnoughSignals"/>
+  <int value="6" label="SkippedResultNotExpired"/>
+  <int value="7" label="FailedToSaveResultAfterSuccess"/>
 </enum>
 
 <enum name="SegmentationPlatformSegmentationModel">
@@ -80696,9 +80701,12 @@ https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_2.7.1.pdf
   <int value="3"
       label="At least one segment's signal collection is not complete"/>
   <int value="4" label="Segment selection TTL has not expired"/>
-  <int value="5" label="At least one model failed to execute"/>
-  <int value="6" label="At least one model needs more signals"/>
-  <int value="7" label="At least one model has invalid metadata"/>
+  <int value="5"
+      label="Deprecated since M101. At least one model failed to execute"/>
+  <int value="6"
+      label="Deprecated since M101. At least one model needs more signals"/>
+  <int value="7"
+      label="Deprecated since M101. At least one model has invalid metadata"/>
   <int value="8" label="Failed to write model result to DB"/>
   <int value="9" label="Invalid selection result found in prefs"/>
   <int value="10" label="Database initialization failed"/>

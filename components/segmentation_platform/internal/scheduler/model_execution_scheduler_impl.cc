@@ -87,10 +87,6 @@ void ModelExecutionSchedulerImpl::OnModelExecutionCompleted(
     segment_result.set_timestamp_us(
         clock_->Now().ToDeltaSinceWindowsEpoch().InMicroseconds());
     stats::RecordModelScore(segment_id, result.first);
-  } else {
-    stats::RecordSegmentSelectionFailure(
-        stats::SegmentationSelectionFailureReason::
-            kAtLeastOneModelFailedExecution);
   }
 
   segment_database_->SaveSegmentResult(
@@ -128,6 +124,9 @@ bool ModelExecutionSchedulerImpl::ShouldExecuteSegment(
   // Filter out the segments computed recently.
   if (metadata_utils::HasFreshResults(segment_info, clock_->Now())) {
     VLOG(1) << "Segmentation model not executed since it has fresh results.";
+    stats::RecordModelExecutionStatus(
+        segment_info.segment_id(),
+        ModelExecutionStatus::kSkippedHasFreshResults);
     return false;
   }
 
@@ -135,15 +134,18 @@ bool ModelExecutionSchedulerImpl::ShouldExecuteSegment(
   if (expired_only && !metadata_utils::HasExpiredOrUnavailableResult(
                           segment_info, clock_->Now())) {
     VLOG(1) << "Segmentation model not executed since results are not expired.";
+    stats::RecordModelExecutionStatus(
+        segment_info.segment_id(),
+        ModelExecutionStatus::kSkippedResultNotExpired);
     return false;
   }
 
   // Filter out segments that don't match signal collection min length.
   if (!signal_storage_config_->MeetsSignalCollectionRequirement(
           segment_info.model_metadata())) {
-    stats::RecordSegmentSelectionFailure(
-        stats::SegmentationSelectionFailureReason::
-            kAtLeastOneModelNeedsMoreSignals);
+    stats::RecordModelExecutionStatus(
+        segment_info.segment_id(),
+        ModelExecutionStatus::kSkippedNotEnoughSignals);
     VLOG(1) << "Segmentation model not executed since metadata requirements "
                "not met.";
     return false;
@@ -165,8 +167,10 @@ void ModelExecutionSchedulerImpl::OnResultSaved(OptimizationTarget segment_id,
                                                 bool success) {
   stats::RecordModelExecutionSaveResult(segment_id, success);
   if (!success) {
-    stats::RecordSegmentSelectionFailure(
-        stats::SegmentationSelectionFailureReason::kFailedToSaveModelResult);
+    // TODO(ssid): Consider removing this enum, this is the only case where the
+    // execution status is recorded twice for the same execution request.
+    stats::RecordModelExecutionStatus(
+        segment_id, ModelExecutionStatus::kFailedToSaveResultAfterSuccess);
     return;
   }
 

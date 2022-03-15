@@ -42,13 +42,13 @@ TEST_F(DummySegmentationPlatformServiceTest, GetSelectedSegment) {
   SegmentSelectionResult expected;
   base::RunLoop loop;
   segmentation_platform_service_->GetSelectedSegment(
-      "some_key",
+      "test_key",
       base::BindOnce(
           &DummySegmentationPlatformServiceTest::OnGetSelectedSegment,
           base::Unretained(this), loop.QuitClosure(), expected));
   loop.Run();
   ASSERT_EQ(expected,
-            segmentation_platform_service_->GetCachedSegmentResult("some_key"));
+            segmentation_platform_service_->GetCachedSegmentResult("test_key"));
 }
 
 }  // namespace segmentation_platform

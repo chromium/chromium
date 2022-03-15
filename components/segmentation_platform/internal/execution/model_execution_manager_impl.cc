@@ -128,22 +128,30 @@ void ModelExecutionManagerImpl::ExecuteModel(
   auto model_handler_it = model_handlers_.find(segment_id);
   DCHECK(model_handler_it != model_handlers_.end());
 
+  SegmentationModelHandler& handler = *model_handler_it->second;
+
   // Create an ExecutionState that will stay with this request until it has been
   // fully processed.
   auto state = std::make_unique<ExecutionState>();
   state->segment_id = segment_id;
-  state->model_handler = (*model_handler_it).second.get();
+  state->model_handler = &handler;
   state->callback = std::move(callback);
   state->total_execution_start_time = clock_->Now();
 
   ModelExecutionTraceEvent trace_event(
       "ModelExecutionManagerImpl::ExecuteModel", *state);
 
+  if (!handler.ModelAvailable()) {
+    RunModelExecutionCallback(std::move(state), 0,
+                              ModelExecutionStatus::kSkippedModelNotReady);
+    return;
+  }
+
   // It is required to have a valid and well formed segment info.
   if (metadata_utils::ValidateSegmentInfo(segment_info) !=
       metadata_utils::ValidationResult::kValidationSuccess) {
     RunModelExecutionCallback(std::move(state), 0,
-                              ModelExecutionStatus::kInvalidMetadata);
+                              ModelExecutionStatus::kSkippedInvalidMetadata);
     return;
   }
 
@@ -161,7 +169,7 @@ void ModelExecutionManagerImpl::OnProcessingFeatureListComplete(
   if (error) {
     // Validation error occurred on model's metadata.
     RunModelExecutionCallback(std::move(state), 0,
-                              ModelExecutionStatus::kInvalidMetadata);
+                              ModelExecutionStatus::kSkippedInvalidMetadata);
     return;
   }
   state->input_tensor.insert(state->input_tensor.end(), input_tensor.begin(),

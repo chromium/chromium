@@ -96,6 +96,7 @@ std::vector<std::unique_ptr<Config>> CreateTestConfigs() {
   {
     // Empty config.
     std::unique_ptr<Config> config = std::make_unique<Config>();
+    config->segmentation_key = "test_key";
     configs.push_back(std::move(config));
   }
 

@@ -14,8 +14,7 @@
 
 using optimization_guide::proto::OptimizationTarget;
 
-namespace segmentation_platform {
-namespace stats {
+namespace segmentation_platform::stats {
 
 // Keep in sync with AdaptiveToolbarSegmentSwitch in enums.xml.
 // Visible for testing.
@@ -164,7 +163,8 @@ enum class SegmentationSelectionFailureReason {
 };
 
 // Records the reason for failure or success to compute a segment selection.
-void RecordSegmentSelectionFailure(SegmentationSelectionFailureReason reason);
+void RecordSegmentSelectionFailure(const std::string& segmentation_key,
+                                   SegmentationSelectionFailureReason reason);
 
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused. Please keep in sync with
@@ -183,7 +183,6 @@ void RecordModelAvailability(OptimizationTarget segment_id,
 // structured metrics.
 void RecordTooManyInputTensors(int tensor_size);
 
-}  // namespace stats
-}  // namespace segmentation_platform
+}  // namespace segmentation_platform::stats
 
 #endif  // COMPONENTS_SEGMENTATION_PLATFORM_INTERNAL_STATS_H_

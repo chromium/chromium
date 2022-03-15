@@ -28,6 +28,9 @@ using testing::Invoke;
 namespace segmentation_platform {
 
 namespace {
+
+constexpr char kTestSegmentationKey[] = "test_key";
+
 // Adds a segment info into a map, and return a copy of it.
 proto::SegmentInfo AddSegmentInfo(
     std::map<std::string, proto::SegmentInfo>* db_entries,
@@ -85,7 +88,7 @@ class ServiceProxyImplTest : public testing::Test,
 
   void SetUp() override {
     auto config = std::make_unique<Config>();
-    config->segmentation_key = "test";
+    config->segmentation_key = kTestSegmentationKey;
     configs_.emplace_back(std::move(config));
     pref_service_.registry()->RegisterDictionaryPref(kSegmentationResultPref);
   }
@@ -100,8 +103,9 @@ class ServiceProxyImplTest : public testing::Test,
     segment_db_ = std::make_unique<SegmentInfoDatabase>(std::move(db));
 
     result_prefs_ = std::make_unique<SegmentationResultPrefs>(&pref_service_);
-    segment_selectors_["test"] = std::make_unique<FakeSegmentSelectorImpl>(
-        result_prefs_.get(), configs_.at(0).get());
+    segment_selectors_[kTestSegmentationKey] =
+        std::make_unique<FakeSegmentSelectorImpl>(result_prefs_.get(),
+                                                  configs_.at(0).get());
     service_proxy_impl_ = std::make_unique<ServiceProxyImpl>(
         segment_db_.get(), nullptr, &configs_, &segment_selectors_);
     service_proxy_impl_->AddObserver(this);
@@ -170,7 +174,7 @@ TEST_F(ServiceProxyImplTest, GetSegmentationInfoFromDB) {
   service_proxy_impl_->OnServiceStatusChanged(true, 7);
   db_->LoadCallback(true);
   ASSERT_EQ(client_info_.size(), 1u);
-  ASSERT_EQ(client_info_.at(0).segmentation_key, "test");
+  ASSERT_EQ(client_info_.at(0).segmentation_key, kTestSegmentationKey);
   ASSERT_EQ(client_info_.at(0).segment_status.size(), 1u);
   ServiceProxy::SegmentStatus status = client_info_.at(0).segment_status.at(0);
   ASSERT_EQ(status.segment_id,
@@ -265,10 +269,11 @@ TEST_F(ServiceProxyImplTest, SetSelectSegment) {
   db_->LoadCallback(true);
 
   service_proxy_impl_->SetSelectedSegment(
-      "test", OptimizationTarget::OPTIMIZATION_TARGET_SEGMENTATION_NEW_TAB);
-  ASSERT_EQ(
-      OptimizationTarget::OPTIMIZATION_TARGET_SEGMENTATION_NEW_TAB,
-      static_cast<FakeSegmentSelectorImpl*>(segment_selectors_["test"].get())
-          ->new_selection());
+      kTestSegmentationKey,
+      OptimizationTarget::OPTIMIZATION_TARGET_SEGMENTATION_NEW_TAB);
+  ASSERT_EQ(OptimizationTarget::OPTIMIZATION_TARGET_SEGMENTATION_NEW_TAB,
+            static_cast<FakeSegmentSelectorImpl*>(
+                segment_selectors_[kTestSegmentationKey].get())
+                ->new_selection());
 }
 }  // namespace segmentation_platform

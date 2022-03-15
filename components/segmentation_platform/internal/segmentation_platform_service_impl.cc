@@ -233,8 +233,11 @@ void SegmentationPlatformServiceImpl::MaybeRunPostInitializationRoutines() {
 
   OnServiceStatusChanged();
   if (!init_success) {
-    stats::RecordSegmentSelectionFailure(
-        stats::SegmentationSelectionFailureReason::kDBInitFailure);
+    for (const auto& config : configs_) {
+      stats::RecordSegmentSelectionFailure(
+          config->segmentation_key,
+          stats::SegmentationSelectionFailureReason::kDBInitFailure);
+    }
     return;
   }
 

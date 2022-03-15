@@ -13,8 +13,13 @@ namespace segmentation_platform {
 enum class ModelExecutionStatus {
   kSuccess = 0,
   kExecutionError = 1,
-  kInvalidMetadata = 2,
-  kMaxValue = kInvalidMetadata,
+  kSkippedInvalidMetadata = 2,
+  kSkippedModelNotReady = 3,
+  kSkippedHasFreshResults = 4,
+  kSkippedNotEnoughSignals = 5,
+  kSkippedResultNotExpired = 6,
+  kFailedToSaveResultAfterSuccess = 7,
+  kMaxValue = kFailedToSaveResultAfterSuccess,
 };
 
 }  // namespace segmentation_platform

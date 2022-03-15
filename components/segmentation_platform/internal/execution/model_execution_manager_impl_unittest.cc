@@ -220,11 +220,29 @@ TEST_F(ModelExecutionManagerTest, MetadataTests) {
   auto segment_id =
       OptimizationTarget::OPTIMIZATION_TARGET_SEGMENTATION_NEW_TAB;
   CreateModelExecutionManager({segment_id}, base::DoNothing());
-  ExecuteModel(std::make_pair(0, ModelExecutionStatus::kInvalidMetadata));
+  EXPECT_CALL(FindHandler(segment_id), ModelAvailable())
+      .WillRepeatedly(Return(true));
+  ExecuteModel(
+      std::make_pair(0, ModelExecutionStatus::kSkippedInvalidMetadata));
 
   segment_database_->SetBucketDuration(segment_id, 14,
                                        proto::TimeUnit::UNKNOWN_TIME_UNIT);
-  ExecuteModel(std::make_pair(0, ModelExecutionStatus::kInvalidMetadata));
+  ExecuteModel(
+      std::make_pair(0, ModelExecutionStatus::kSkippedInvalidMetadata));
+}
+
+TEST_F(ModelExecutionManagerTest, ModelNotReady) {
+  auto segment_id =
+      OptimizationTarget::OPTIMIZATION_TARGET_SEGMENTATION_NEW_TAB;
+  CreateModelExecutionManager({segment_id}, base::DoNothing());
+
+  segment_database_->SetBucketDuration(segment_id, 3, proto::TimeUnit::HOUR);
+
+  // When the model is unavailable, the execution should fail.
+  EXPECT_CALL(FindHandler(segment_id), ModelAvailable())
+      .WillRepeatedly(Return(false));
+
+  ExecuteModel(std::make_pair(0, ModelExecutionStatus::kSkippedModelNotReady));
 }
 
 TEST_F(ModelExecutionManagerTest, OnSegmentationModelUpdatedInvalidMetadata) {
@@ -414,12 +432,14 @@ TEST_F(ModelExecutionManagerTest, FailedFeatureProcessing) {
       .WillRepeatedly(Return(true));
   EXPECT_CALL(FindHandler(segment_id), ExecuteModelWithInput(_, _)).Times(0);
 
-  ExecuteModel(std::make_pair(0, ModelExecutionStatus::kInvalidMetadata));
+  ExecuteModel(
+      std::make_pair(0, ModelExecutionStatus::kSkippedInvalidMetadata));
 
   EXPECT_CALL(*feature_list_query_processor_,
               ProcessFeatureList(_, segment_id, clock_.Now(), _))
       .WillOnce(RunOnceCallback<3>(/*error=*/true, std::vector<float>{}));
-  ExecuteModel(std::make_pair(0, ModelExecutionStatus::kInvalidMetadata));
+  ExecuteModel(
+      std::make_pair(0, ModelExecutionStatus::kSkippedInvalidMetadata));
 }
 
 TEST_F(ModelExecutionManagerTest, ExecuteModelWithMultipleFeatures) {
