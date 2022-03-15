@@ -108,6 +108,7 @@
 #include "ui/views/test/widget_test.h"
 #include "ui/views/touchui/touch_selection_controller_impl.h"
 #include "ui/views/touchui/touch_selection_menu_runner_views.h"
+#include "ui/views/view_class_properties.h"
 #include "ui/wm/core/window_util.h"
 
 namespace ash {
@@ -639,6 +640,19 @@ class ProductivityLauncherTest : public AppListBubbleAndTabletTestBase,
   ProductivityLauncherTest(const ProductivityLauncherTest&) = delete;
   ProductivityLauncherTest& operator=(const ProductivityLauncherTest&) = delete;
   ~ProductivityLauncherTest() override = default;
+};
+
+// Tests only productivity launcher tablet mode.
+class ProductivityLauncherTabletTest : public AppListBubbleAndTabletTestBase {
+ public:
+  ProductivityLauncherTabletTest()
+      : AppListBubbleAndTabletTestBase(/*productivity_launcher=*/true,
+                                       /*tablet_mode=*/true) {}
+  ProductivityLauncherTabletTest(const ProductivityLauncherTabletTest&) =
+      delete;
+  ProductivityLauncherTabletTest& operator=(
+      const ProductivityLauncherTabletTest&) = delete;
+  ~ProductivityLauncherTabletTest() override = default;
 };
 
 // Instantiate the values in the parameterized tests. The boolean
@@ -1716,7 +1730,7 @@ TEST_P(AppListBubbleAndTabletTest,
 
 // Tests that apps container/page has a separator between apps grid
 // and recent apps/continue section if recent apps are shown.
-TEST_P(AppListBubbleAndTabletTest, SepratorShownWithRecentApps) {
+TEST_P(AppListBubbleAndTabletTest, SeparatorShownWithRecentApps) {
   GetAppListTestHelper()->AddAppItems(5);
   GetAppListTestHelper()->AddRecentApps(4);
   EnableTabletMode(tablet_mode_param());
@@ -1740,7 +1754,7 @@ TEST_P(AppListBubbleAndTabletTest, SepratorShownWithRecentApps) {
 
 // Tests that apps container/page has a separator between apps grid
 // and recent apps/continue section if continue section is shown.
-TEST_P(AppListBubbleAndTabletTest, SepratorShownWithContinueSection) {
+TEST_P(AppListBubbleAndTabletTest, SeparatorShownWithContinueSection) {
   GetAppListTestHelper()->AddAppItems(5);
   GetAppListTestHelper()->AddContinueSuggestionResults(4);
   EnableTabletMode(tablet_mode_param());
@@ -1766,7 +1780,7 @@ TEST_P(AppListBubbleAndTabletTest, SepratorShownWithContinueSection) {
 // and recent apps/continue section if recent apps and continue section are
 // shown.
 TEST_P(AppListBubbleAndTabletTest,
-       SepratorShownWithContinueSectionAndRecentApps) {
+       SeparatorShownWithContinueSectionAndRecentApps) {
   GetAppListTestHelper()->AddAppItems(5);
   GetAppListTestHelper()->AddContinueSuggestionResults(4);
   GetAppListTestHelper()->AddRecentApps(4);
@@ -1787,6 +1801,43 @@ TEST_P(AppListBubbleAndTabletTest,
     EXPECT_TRUE(recent_apps->GetVisible());
     EXPECT_TRUE(continue_section->GetVisible());
   }
+}
+
+// Test that the separator is centered between recent apps and the first row
+// of the apps grid, when recent apps are shown.
+TEST_F(ProductivityLauncherTabletTest,
+       SeparatorCenteredBetweenRecentAppsAndAppsGrid) {
+  GetAppListTestHelper()->AddAppItems(5);
+  GetAppListTestHelper()->AddContinueSuggestionResults(3);
+  EnableTabletMode(true);
+
+  views::View* separator = GetAppsSeparator();
+  AppsContainerView* apps_container =
+      GetAppListTestHelper()->GetAppsContainerView();
+
+  // Separator is not centered and should be positioned below the continue
+  // section, because recent apps are not shown.
+  EXPECT_EQ(separator->GetBoundsInScreen().y(),
+            GetContinueSectionView()->GetBoundsInScreen().bottom() +
+                separator->GetProperty(views::kMarginsKey)->height() / 2);
+
+  // Add recent apps and layout to update the separator's bounds.
+  GetAppListTestHelper()->AddRecentApps(4);
+  apps_container->ResetForShowApps();
+  GetAppsGridView()->GetWidget()->LayoutRootViewIfNecessary();
+  views::View* recent_apps = GetRecentAppsView();
+
+  SetupGridTestApi();
+  const AppListItemView* first_row_item =
+      grid_test_api_->GetViewAtIndex(GridIndex(0, 0));
+
+  // Separator should be centered between the bottom of recent apps and the
+  // top of the first row of the apps grid.
+  const int centered_y = recent_apps->GetBoundsInScreen().bottom() +
+                         (first_row_item->GetBoundsInScreen().y() -
+                          recent_apps->GetBoundsInScreen().bottom()) /
+                             2;
+  EXPECT_EQ(centered_y, separator->GetBoundsInScreen().y());
 }
 
 // Verifies that context menu click should not activate the search box

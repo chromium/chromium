@@ -116,6 +116,7 @@ class ASH_EXPORT AppsContainerView
   const char* GetClassName() const override;
   void OnGestureEvent(ui::GestureEvent* event) override;
   void OnBoundsChanged(const gfx::Rect& old_bounds) override;
+  void OnThemeChanged() override;
 
   // AppListPage overrides:
   void OnShown() override;
@@ -194,7 +195,7 @@ class ASH_EXPORT AppsContainerView
 
   ContinueSectionView* GetContinueSection();
   RecentAppsView* GetRecentApps();
-  views::View* GetSeparatorView();
+  views::Separator* separator() { return separator_; }
   PagedAppsGridView* apps_grid_view() { return apps_grid_view_; }
   FolderBackgroundView* folder_background_view() {
     return folder_background_view_;
@@ -224,6 +225,9 @@ class ASH_EXPORT AppsContainerView
   // Temporarily disables blur on suggestion chips view background. The blur
   // will remained disabled until the returned closure runner goes out of scope.
   base::ScopedClosureRunner DisableSuggestionChipsBlur();
+
+  // Gets the height of the `separator_` including its vertical margin.
+  int GetSeparatorHeight();
 
  private:
   enum ShowState {
@@ -334,6 +338,7 @@ class ASH_EXPORT AppsContainerView
   // The views below are owned by views hierarchy.
   SuggestionChipContainerView* suggestion_chip_container_view_ = nullptr;
   ContinueContainer* continue_container_ = nullptr;
+  views::Separator* separator_ = nullptr;
   AppListToastContainerView* toast_container_ = nullptr;
   PagedAppsGridView* apps_grid_view_ = nullptr;
   AppListFolderView* app_list_folder_view_ = nullptr;

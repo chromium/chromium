@@ -213,7 +213,7 @@ PagedAppsGridView* AppListTestHelper::GetRootPagedAppsGridView() {
 }
 
 views::View* AppListTestHelper::GetFullscreenLauncherAppsSeparatorView() {
-  return GetAppsContainerView()->GetSeparatorView();
+  return GetAppsContainerView()->separator();
 }
 
 SearchResultPageView* AppListTestHelper::GetFullscreenSearchResultPageView() {

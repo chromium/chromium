@@ -197,6 +197,12 @@ class ASH_EXPORT PagedAppsGridView : public AppsGridView,
     margin_for_gradient_mask_ = margin;
   }
 
+  // Gets the first page vertical tile padding, ignoring scaling for cardified
+  // state.
+  int GetUnscaledFirstPageTilePadding() {
+    return unscaled_first_page_vertical_tile_padding_;
+  }
+
  private:
   friend class test::AppsGridViewTest;
 
@@ -338,6 +344,10 @@ class ASH_EXPORT PagedAppsGridView : public AppsGridView,
 
   // Vertical tile spacing between the tile views on the first page.
   int first_page_vertical_tile_padding_ = 0;
+
+  // Vertical tile spacing between the tile views on the first page, without
+  // scaling applied from cardified state.
+  int unscaled_first_page_vertical_tile_padding_ = 0;
 
   // Cardified animation observers.
   std::vector<std::unique_ptr<ui::ImplicitAnimationObserver>>

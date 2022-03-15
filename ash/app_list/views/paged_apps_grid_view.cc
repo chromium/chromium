@@ -1442,6 +1442,12 @@ void PagedAppsGridView::UpdateTilePadding() {
         calculate_tile_padding(content_size.height(), max_rows_on_first_page_,
                                tile_size.height(), first_page_offset_);
   }
+
+  if (!cardified_state_ && unscaled_first_page_vertical_tile_padding_ !=
+                               first_page_vertical_tile_padding_) {
+    unscaled_first_page_vertical_tile_padding_ =
+        first_page_vertical_tile_padding_;
+  }
 }
 
 bool PagedAppsGridView::ConfigureFirstPagePadding(
