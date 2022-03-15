@@ -234,10 +234,21 @@ ResourceLoadPriority AdjustPriorityWithPriorityHint(
   return new_priority;
 }
 
-std::unique_ptr<TracedValue> ResourcePrioritySetData(
+std::unique_ptr<TracedValue> CreateTracedValueWithPriority(
     blink::ResourceLoadPriority priority) {
   auto value = std::make_unique<TracedValue>();
   value->SetInteger("priority", static_cast<int>(priority));
+  return value;
+}
+
+std::unique_ptr<TracedValue> CreateTracedValueForUnusedPreload(
+    const KURL& url,
+    Resource::MatchStatus status,
+    String request_id) {
+  auto value = std::make_unique<TracedValue>();
+  value->SetString("url", String(url.ElidedString().Utf8()));
+  value->SetInteger("status", static_cast<int>(status));
+  value->SetString("requestId", request_id);
   return value;
 }
 
@@ -1409,9 +1420,12 @@ void ResourceFetcher::PrintPreloadMismatch(Resource* resource,
   console_logger_->AddConsoleMessage(mojom::ConsoleMessageSource::kOther,
                                      mojom::ConsoleMessageLevel::kWarning,
                                      builder.ToString());
-  TRACE_EVENT2("blink,blink.resource", "ResourceFetcher::PrintPreloadMismatch",
-               "url", resource->Url().ElidedString().Utf8(), "MatchStatus",
-               status);
+
+  TRACE_EVENT1(
+      "blink,blink.resource", "ResourceFetcher::PrintPreloadMismatch", "data",
+      CreateTracedValueForUnusedPreload(
+          resource->Url(), status,
+          resource->GetResourceRequest().GetDevToolsId().value_or(String())));
 }
 
 void ResourceFetcher::InsertAsPreloadIfNecessary(Resource* resource,
@@ -1835,8 +1849,11 @@ void ResourceFetcher::WarnUnusedPreloads() {
     console_logger_->AddConsoleMessage(
         mojom::blink::ConsoleMessageSource::kJavaScript,
         mojom::blink::ConsoleMessageLevel::kWarning, message);
-    TRACE_EVENT1("blink,blink.resource", "ResourceFetcher::WarnUnusedPreloads",
-                 "url", resource->Url().ElidedString().Utf8());
+    TRACE_EVENT1(
+        "blink,blink.resource", "ResourceFetcher::WarnUnusedPreloads", "data",
+        CreateTracedValueForUnusedPreload(
+            resource->Url(), Resource::MatchStatus::kOk,
+            resource->GetResourceRequest().GetDevToolsId().value_or(String())));
   }
 }
 
@@ -2110,7 +2127,7 @@ void ResourceFetcher::UpdateAllImageResourcePriorities() {
         TRACE_DISABLED_BY_DEFAULT("network"), "ResourcePrioritySet",
         TRACE_ID_WITH_SCOPE("BlinkResourceID",
                             TRACE_ID_LOCAL(resource->InspectorId())),
-        "data", ResourcePrioritySetData(computed_load_priority));
+        "data", CreateTracedValueWithPriority(computed_load_priority));
     DCHECK(!IsDetached());
     resource_load_observer_->DidChangePriority(
         resource->InspectorId(), computed_load_priority,
