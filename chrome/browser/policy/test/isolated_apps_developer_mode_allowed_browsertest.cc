@@ -30,22 +30,22 @@
 #include "content/public/test/browser_test_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-constexpr char kDirectSocketsAppHost[] = "direct-sockets.com";
+constexpr char kIsolatedAppHost[] = "isolated-app.com";
 
 using PolicyVerdictPair = std::tuple<policy::PolicyTest::BooleanPolicy, bool>;
 using BooleanPolicy = policy::PolicyTest::BooleanPolicy;
 
-class EnableDirectSocketsPolicyTest
+class IsolatedAppsDeveloperModeAllowedPolicyTest
     : public web_app::IsolatedAppBrowserTestHarness,
       public testing::WithParamInterface<PolicyVerdictPair> {
  public:
-  ~EnableDirectSocketsPolicyTest() override = default;
+  ~IsolatedAppsDeveloperModeAllowedPolicyTest() override = default;
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
     IsolatedAppBrowserTestHarness::SetUpCommandLine(command_line);
 
     const std::string isolated_app_origins =
-        std::string("https://") + kDirectSocketsAppHost;
+        std::string("https://") + kIsolatedAppHost;
     command_line->AppendSwitchASCII(switches::kRestrictedApiOrigins,
                                     isolated_app_origins);
   }
@@ -55,17 +55,18 @@ class EnableDirectSocketsPolicyTest
         true /* is_initialization_complete_return */,
         true /* is_first_policy_load_complete_return */);
     policy::BrowserPolicyConnector::SetPolicyProviderForTesting(&provider_);
-    provider_.UpdateChromePolicy(GenerateEnableDirectSocketsPolicy());
+    provider_.UpdateChromePolicy(
+        GenerateIsolatedAppsDeveloperModeAllowedPolicy());
   }
 
  private:
-  policy::PolicyMap GenerateEnableDirectSocketsPolicy() {
+  policy::PolicyMap GenerateIsolatedAppsDeveloperModeAllowedPolicy() {
     policy::PolicyMap policies;
 
     const BooleanPolicy policy = std::get<0>(GetParam());
     if (policy != BooleanPolicy::kNotConfigured) {
       const bool policy_bool = (policy == BooleanPolicy::kTrue);
-      policies.Set(policy::key::kEnableDirectSockets,
+      policies.Set(policy::key::kIsolatedAppsDeveloperModeAllowed,
                    policy::POLICY_LEVEL_MANDATORY, policy::POLICY_SCOPE_USER,
                    policy::POLICY_SOURCE_ENTERPRISE_DEFAULT,
                    base::Value(policy_bool), nullptr);
@@ -74,35 +75,32 @@ class EnableDirectSocketsPolicyTest
     return policies;
   }
 
-  base::test::ScopedFeatureList feature_list_;
   testing::NiceMock<policy::MockConfigurationPolicyProvider> provider_;
 };
 
-IN_PROC_BROWSER_TEST_P(EnableDirectSocketsPolicyTest, MockTcp) {
-  auto app_id = InstallIsolatedApp(kDirectSocketsAppHost);
+IN_PROC_BROWSER_TEST_P(IsolatedAppsDeveloperModeAllowedPolicyTest, MockTcp) {
+  auto app_id = InstallIsolatedApp(kIsolatedAppHost);
 
   content::RenderFrameHost* app_frame = OpenApp(app_id);
   content::WebContents* app_contents =
       content::WebContents::FromRenderFrameHost(app_frame);
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
       chrome::FindBrowserWithWebContents(app_contents),
-      https_server()->GetURL(kDirectSocketsAppHost,
-                             "/policy/direct_sockets.html")));
+      https_server()->GetURL(kIsolatedAppHost, "/policy/direct_sockets.html")));
 
   const bool enabled = std::get<1>(GetParam());
   ASSERT_EQ(enabled, EvalJs(app_contents->GetMainFrame(), "mockTcp()"));
 }
 
-IN_PROC_BROWSER_TEST_P(EnableDirectSocketsPolicyTest, MockUdp) {
-  auto app_id = InstallIsolatedApp(kDirectSocketsAppHost);
+IN_PROC_BROWSER_TEST_P(IsolatedAppsDeveloperModeAllowedPolicyTest, MockUdp) {
+  auto app_id = InstallIsolatedApp(kIsolatedAppHost);
 
   content::RenderFrameHost* app_frame = OpenApp(app_id);
   content::WebContents* app_contents =
       content::WebContents::FromRenderFrameHost(app_frame);
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
       chrome::FindBrowserWithWebContents(app_contents),
-      https_server()->GetURL(kDirectSocketsAppHost,
-                             "/policy/direct_sockets.html")));
+      https_server()->GetURL(kIsolatedAppHost, "/policy/direct_sockets.html")));
 
   const bool enabled = std::get<1>(GetParam());
   ASSERT_EQ(enabled, EvalJs(app_contents->GetMainFrame(), "mockUdp()"));
@@ -110,7 +108,7 @@ IN_PROC_BROWSER_TEST_P(EnableDirectSocketsPolicyTest, MockUdp) {
 
 INSTANTIATE_TEST_SUITE_P(
     /*empty*/,
-    EnableDirectSocketsPolicyTest,
+    IsolatedAppsDeveloperModeAllowedPolicyTest,
     ::testing::Values(
         PolicyVerdictPair{policy::PolicyTest::BooleanPolicy::kNotConfigured,
                           true},

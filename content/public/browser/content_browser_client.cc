@@ -319,7 +319,7 @@ bool ContentBrowserClient::ShouldUrlUseApplicationIsolationLevel(
   return false;
 }
 
-bool ContentBrowserClient::AreDirectSocketsAllowedByPolicy(
+bool ContentBrowserClient::IsIsolatedAppsDeveloperModeAllowed(
     BrowserContext* context) {
   return true;
 }

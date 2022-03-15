@@ -30195,7 +30195,7 @@ When this policy is set, <ph name="PRODUCT_OS_NAME">$2<ex>Google Chrome OS</ex><
       'arc_support': 'This policy has no effect on the logging done by Android.',
     },
     {
-      'name': 'EnableDirectSockets',
+      'name': 'IsolatedAppsDeveloperModeAllowed',
       'owners': ['file://content/browser/direct_sockets/OWNERS', 'greengrape@google.com'],
       'type': 'main',
       'schema': { 'type': 'boolean' },
@@ -30206,23 +30206,23 @@ When this policy is set, <ph name="PRODUCT_OS_NAME">$2<ex>Google Chrome OS</ex><
       'items': [
         {
           'value': True,
-          'caption': 'Enable Direct Sockets API.',
+          'caption': 'Enable Isolated Apps Developer Mode',
         },
         {
           'value': False,
-          'caption': 'Disable Direct Sockets API.',
+          'caption': 'Disable Isolated Apps Developer Mode',
         }
       ],
-      'future_on': ['chrome_os'],
+      'future_on': ['chrome_os', 'chrome.*'],
       'default': True,
       'example_value': False,
       'default_for_enterprise_users': False,
       'tags': [],
       'id': 958,
-      'caption': '''Enable Direct Sockets API.''',
-      'desc': '''Setting the policy to Enabled lets users use the Direct Sockets API (provided that all other necessary conditions are fulfilled).
-      Setting the policy to Disabled means users will not be able to access the API.
-      If this policy is left not set, the default is not allowed for enterprise-managed users and allowed for non-managed users.'''
+      'caption': '''Allow Developer Mode for Isolated Apps.''',
+      'desc': '''Setting the policy to Enabled lets users access Developer Mode for Isolated Apps.
+      Setting the policy to Disabled means users will not be able to access these capabilities.
+      If this policy is left not set, the default is not allowed for enterprise-managed users on Chrome OS and allowed for all other users and OSes.'''
     },
     {
       'name': 'FloatingWorkspaceEnabled',

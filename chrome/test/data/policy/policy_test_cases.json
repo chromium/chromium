@@ -18168,29 +18168,21 @@
   "DeviceEncryptedReportingPipelineEnabled": {
     "reason_for_missing_test": "Maps into CrosSettings"
   },
-  "EnableDirectSockets": {
-    "os": ["chromeos_ash", "chromeos_lacros"],
+  "IsolatedAppsDeveloperModeAllowed": {
+    "os": ["win", "linux", "mac", "chromeos_ash", "chromeos_lacros"],
     "policy_pref_mapping_tests": [
       {
-        "policies": {},
+        "policies": { "IsolatedAppsDeveloperModeAllowed": false },
         "prefs": {
-          "policy.enable_direct_sockets": {
+          "policy.isolated_apps_developer_mode_allowed": {
             "value": false
           }
         }
       },
       {
-        "policies": { "EnableDirectSockets": false },
+        "policies": { "IsolatedAppsDeveloperModeAllowed": true },
         "prefs": {
-          "policy.enable_direct_sockets": {
-            "value": false
-          }
-        }
-      },
-      {
-        "policies": { "EnableDirectSockets": true },
-        "prefs": {
-          "policy.enable_direct_sockets": {
+          "policy.isolated_apps_developer_mode_allowed": {
             "value": true
           }
         }

@@ -89,10 +89,9 @@ const char kBackForwardCacheEnabled[] = "policy.back_forward_cache_enabled";
 const char kUserAgentClientHintsGREASEUpdateEnabled[] =
     "policy.user_agent_client_hints_grease_update_enabled";
 
-// Boolean policy to enable/disable Direct Sockets API.
-// If true, the default API behavior is observed (secure context / cli flags
-// required). If false, the API gets blocked unconditionally.
-const char kEnableDirectSockets[] = "policy.enable_direct_sockets";
+// Boolean policy to allow isolated apps developer mode.
+const char kIsolatedAppsDeveloperModeAllowed[] =
+    "policy.isolated_apps_developer_mode_allowed";
 
 // Boolean policy to force WebSQL to be enabled.
 const char kWebSQLAccess[] = "policy.web_sql_access";

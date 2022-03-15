@@ -1356,8 +1356,8 @@ void ChromeContentBrowserClient::RegisterProfilePrefs(
   registry->RegisterIntegerPref(
       prefs::kForceMajorVersionToMinorPositionInUserAgent,
       embedder_support::ForceMajorVersionToMinorPosition::kDefault);
-  registry->RegisterBooleanPref(policy::policy_prefs::kEnableDirectSockets,
-                                true);
+  registry->RegisterBooleanPref(
+      policy::policy_prefs::kIsolatedAppsDeveloperModeAllowed, true);
 }
 
 // static
@@ -2111,24 +2111,12 @@ bool ChromeContentBrowserClient::ShouldUrlUseApplicationIsolationLevel(
   return false;
 }
 
-bool ChromeContentBrowserClient::AreDirectSocketsAllowedByPolicy(
+bool ChromeContentBrowserClient::IsIsolatedAppsDeveloperModeAllowed(
     content::BrowserContext* context) {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  // For ChromeOS we check the policy value.
-  // TODO(crbug/1297224): check for device too.
   Profile* profile = Profile::FromBrowserContext(context);
-  return profile && profile->GetPrefs()->GetBoolean(
-                        policy::policy_prefs::kEnableDirectSockets);
-#elif BUILDFLAG(IS_LINUX)
-  // There are currently no reliable way to determine managed status on Linux.
-  return false;
-#elif BUILDFLAG(IS_MAC)
-  // TODO(crbug/1297224): merge with the block below.
-  return false;
-#else
-  // For other platforms we disable access to the API on managed devices.
-  return !policy::ManagementServiceFactory::GetForPlatform()->IsManaged();
-#endif
+  return profile &&
+         profile->GetPrefs()->GetBoolean(
+             policy::policy_prefs::kIsolatedAppsDeveloperModeAllowed);
 }
 
 bool ChromeContentBrowserClient::IsFileAccessAllowed(

@@ -319,7 +319,6 @@ source_set("browser_tests") {
       "test/arc_policy_browsertest.cc",
       "test/assistant_policy_browsertest.cc",
       "test/audio_output_allowed_browsertest.cc",
-      "test/enable_direct_sockets_policy_browsertest.cc",
       "test/note_taking_on_lock_screen_policy_browsertest.cc",
       "test/screenshot_policy_browsertest.cc",
       "test/session_length_limit_policy_browsertest.cc",
@@ -364,6 +363,7 @@ source_set("browser_tests") {
   if (!is_android) {
     sources += [
       "cloud/component_cloud_policy_browsertest.cc",
+      "test/isolated_apps_developer_mode_allowed_browsertest.cc",
       "test/promotional_tabs_enabled_policy_browsertest.cc",
     ]
 
