@@ -53,48 +53,48 @@ const CGFloat kBadgeCornerRadius = 5.0;
     self.cellClass = [BadgePopupMenuCell class];
     _badgeType = badgeType;
     switch (badgeType) {
-      case BadgeType::kBadgeTypePasswordSave:
+      case kBadgeTypePasswordSave:
         _actionIdentifier = PopupMenuActionShowSavePasswordOptions;
         _title = l10n_util::GetNSString(
             IDS_IOS_PASSWORD_MANAGER_SAVE_PASSWORD_TITLE);
         break;
-      case BadgeType::kBadgeTypePasswordUpdate:
+      case kBadgeTypePasswordUpdate:
         _actionIdentifier = PopupMenuActionShowUpdatePasswordOptions;
         _title = l10n_util::GetNSString(
             IDS_IOS_PASSWORD_MANAGER_UPDATE_PASSWORD_TITLE);
         break;
-      case BadgeType::kBadgeTypeSaveAddressProfile:
+      case kBadgeTypeSaveAddressProfile:
         _actionIdentifier = PopupMenuActionShowSaveAddressProfileOptions;
         _title =
             l10n_util::GetNSString(IDS_IOS_AUTOFILL_SAVE_ADDRESS_PROMPT_TITLE);
         break;
-      case BadgeType::kBadgeTypeSaveCard:
+      case kBadgeTypeSaveCard:
         _actionIdentifier = PopupMenuActionShowSaveCardOptions;
         _title = l10n_util::GetNSString(IDS_IOS_AUTOFILL_SAVE_CARD);
         break;
-      case BadgeType::kBadgeTypeTranslate:
+      case kBadgeTypeTranslate:
         _actionIdentifier = PopupMenuActionShowTranslateOptions;
         _title = l10n_util::GetNSString(IDS_IOS_TRANSLATE_INFOBAR_MODAL_TITLE);
         break;
-      case BadgeType::kBadgeTypeAddToReadingList:
+      case kBadgeTypeAddToReadingList:
         _actionIdentifier = PopupMenuActionAddToReadingListOptions;
         _title =
             l10n_util::GetNSString(IDS_IOS_READING_LIST_MESSAGES_MODAL_TITLE);
         break;
-      case BadgeType::kBadgeTypePermissionsCamera:
+      case kBadgeTypePermissionsCamera:
         // Falls through.
-      case BadgeType::kBadgeTypePermissionsMicrophone:
+      case kBadgeTypePermissionsMicrophone:
         _actionIdentifier = PopupMenuActionShowPermissionsOptions;
         _title = l10n_util::GetNSString(
             IDS_IOS_PERMISSIONS_INFOBAR_OVERFLOW_POPUP_TITLE);
         break;
-      case BadgeType::kBadgeTypeIncognito:
+      case kBadgeTypeIncognito:
         NOTREACHED() << "A BadgePopupMenuItem should not be an Incognito badge";
         break;
-      case BadgeType::kBadgeTypeOverflow:
+      case kBadgeTypeOverflow:
         NOTREACHED() << "A BadgePopupMenuItem should not be an overflow badge";
         break;
-      case BadgeType::kBadgeTypeNone:
+      case kBadgeTypeNone:
         NOTREACHED() << "A badge should not have kBadgeTypeNone";
         break;
     }

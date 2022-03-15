@@ -21,8 +21,7 @@ InfobarOverlayRequestConfig::InfobarOverlayRequestConfig(
     bool is_high_priority)
     : infobar_(infobar->GetWeakPtr()),
       infobar_type_(infobar->infobar_type()),
-      has_badge_(BadgeTypeForInfobarType(infobar_type_) !=
-                 BadgeType::kBadgeTypeNone),
+      has_badge_(BadgeTypeForInfobarType(infobar_type_) != kBadgeTypeNone),
       is_high_priority_(is_high_priority),
       overlay_type_(overlay_type) {}
 

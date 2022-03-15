@@ -79,30 +79,30 @@
 
   self.title = @"Badges";
   AddNamedGuidesToView(@[ kBadgeOverflowMenuGuide ], self.view);
-  BadgeStaticItem* incognitoItem = [[BadgeStaticItem alloc]
-      initWithBadgeType:BadgeType::kBadgeTypeIncognito];
-  BadgeTappableItem* passwordBadgeItem = [[BadgeTappableItem alloc]
-      initWithBadgeType:BadgeType::kBadgeTypePasswordSave];
+  BadgeStaticItem* incognitoItem =
+      [[BadgeStaticItem alloc] initWithBadgeType:kBadgeTypeIncognito];
+  BadgeTappableItem* passwordBadgeItem =
+      [[BadgeTappableItem alloc] initWithBadgeType:kBadgeTypePasswordSave];
   passwordBadgeItem.badgeState = BadgeStateRead;
   [self.consumer setupWithDisplayedBadge:passwordBadgeItem
                          fullScreenBadge:incognitoItem];
 }
 
 - (void)showAcceptedDisplayedBadge {
-  BadgeStaticItem* incognitoItem = [[BadgeStaticItem alloc]
-      initWithBadgeType:BadgeType::kBadgeTypeIncognito];
-  BadgeTappableItem* passwordBadgeItem = [[BadgeTappableItem alloc]
-      initWithBadgeType:BadgeType::kBadgeTypePasswordSave];
+  BadgeStaticItem* incognitoItem =
+      [[BadgeStaticItem alloc] initWithBadgeType:kBadgeTypeIncognito];
+  BadgeTappableItem* passwordBadgeItem =
+      [[BadgeTappableItem alloc] initWithBadgeType:kBadgeTypePasswordSave];
   passwordBadgeItem.badgeState = BadgeStateRead | BadgeStateAccepted;
   [self.consumer setupWithDisplayedBadge:passwordBadgeItem
                          fullScreenBadge:incognitoItem];
 }
 
 - (void)addSecondBadge:(id)sender {
-  BadgeStaticItem* incognitoItem = [[BadgeStaticItem alloc]
-      initWithBadgeType:BadgeType::kBadgeTypeIncognito];
-  BadgeTappableItem* displayedBadge = [[BadgeTappableItem alloc]
-      initWithBadgeType:BadgeType::kBadgeTypeOverflow];
+  BadgeStaticItem* incognitoItem =
+      [[BadgeStaticItem alloc] initWithBadgeType:kBadgeTypeIncognito];
+  BadgeTappableItem* displayedBadge =
+      [[BadgeTappableItem alloc] initWithBadgeType:kBadgeTypeOverflow];
   [self.consumer setupWithDisplayedBadge:displayedBadge
                          fullScreenBadge:incognitoItem];
   [self.consumer markDisplayedBadgeAsRead:NO];
@@ -158,8 +158,8 @@
   self.badgePopupMenuCoordinator = [[BadgePopupMenuCoordinator alloc]
       initWithBaseViewController:self.containerViewController
                          browser:nil];
-  NSArray* badgeItems = @[ [[BadgeTappableItem alloc]
-      initWithBadgeType:BadgeType::kBadgeTypePasswordSave] ];
+  NSArray* badgeItems =
+      @[ [[BadgeTappableItem alloc] initWithBadgeType:kBadgeTypePasswordSave] ];
   [self.badgePopupMenuCoordinator setBadgeItemsToShow:badgeItems];
   [self.badgePopupMenuCoordinator start];
   [self.consumer markDisplayedBadgeAsRead:YES];

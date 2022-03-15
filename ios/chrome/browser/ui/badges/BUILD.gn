@@ -18,8 +18,8 @@ source_set("public") {
 source_set("util") {
   configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
-    "badge_type_util.cc",
     "badge_type_util.h",
+    "badge_type_util.mm",
   ]
   deps = [
     ":public",

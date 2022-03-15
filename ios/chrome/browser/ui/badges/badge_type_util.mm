@@ -5,49 +5,53 @@
 #include "ios/chrome/browser/ui/badges/badge_type_util.h"
 
 #include <ostream>
-
 #include "base/notreached.h"
+
+#if !defined(__has_feature) || !__has_feature(objc_arc)
+#error "This file requires ARC support."
+#endif
 
 BadgeType BadgeTypeForInfobarType(InfobarType infobar_type) {
   switch (infobar_type) {
     case InfobarType::kInfobarTypePasswordSave:
-      return BadgeType::kBadgeTypePasswordSave;
+      return kBadgeTypePasswordSave;
     case InfobarType::kInfobarTypePasswordUpdate:
-      return BadgeType::kBadgeTypePasswordUpdate;
+      return kBadgeTypePasswordUpdate;
     case InfobarType::kInfobarTypeSaveAutofillAddressProfile:
-      return BadgeType::kBadgeTypeSaveAddressProfile;
+      return kBadgeTypeSaveAddressProfile;
     case InfobarType::kInfobarTypeSaveCard:
-      return BadgeType::kBadgeTypeSaveCard;
+      return kBadgeTypeSaveCard;
     case InfobarType::kInfobarTypeTranslate:
-      return BadgeType::kBadgeTypeTranslate;
+      return kBadgeTypeTranslate;
     case InfobarType::kInfobarTypeAddToReadingList:
-      return BadgeType::kBadgeTypeAddToReadingList;
+      return kBadgeTypeAddToReadingList;
     case InfobarType::kInfobarTypePermissions:
       // Default value; actual value would depend on the value of
       // GetStatesForAllPermissions() of the currently active WebState, and be
       // overridden when used.
-      return BadgeType::kBadgeTypePermissionsCamera;
+      return kBadgeTypePermissionsCamera;
     default:
-      return BadgeType::kBadgeTypeNone;
+      return kBadgeTypeNone;
   }
 }
 
 InfobarType InfobarTypeForBadgeType(BadgeType badge_type) {
   switch (badge_type) {
-    case BadgeType::kBadgeTypePasswordSave:
+    case kBadgeTypePasswordSave:
       return InfobarType::kInfobarTypePasswordSave;
-    case BadgeType::kBadgeTypePasswordUpdate:
+    case kBadgeTypePasswordUpdate:
       return InfobarType::kInfobarTypePasswordUpdate;
-    case BadgeType::kBadgeTypeSaveAddressProfile:
+    case kBadgeTypeSaveAddressProfile:
       return InfobarType::kInfobarTypeSaveAutofillAddressProfile;
-    case BadgeType::kBadgeTypeSaveCard:
+    case kBadgeTypeSaveCard:
       return InfobarType::kInfobarTypeSaveCard;
-    case BadgeType::kBadgeTypeTranslate:
+    case kBadgeTypeTranslate:
       return InfobarType::kInfobarTypeTranslate;
-    case BadgeType::kBadgeTypeAddToReadingList:
+    case kBadgeTypeAddToReadingList:
       return InfobarType::kInfobarTypeAddToReadingList;
-    case BadgeType::kBadgeTypePermissionsCamera:
-    case BadgeType::kBadgeTypePermissionsMicrophone:
+    case kBadgeTypePermissionsCamera:
+      // Falls through.
+    case kBadgeTypePermissionsMicrophone:
       return InfobarType::kInfobarTypePermissions;
     default:
       NOTREACHED() << "Unsupported badge type.";

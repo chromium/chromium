@@ -31,7 +31,7 @@
     _badgeType = badgeType;
     _tappable = NO;
     _badgeState = BadgeStateNone;
-    _fullScreen = badgeType == BadgeType::kBadgeTypeIncognito;
+    _fullScreen = badgeType == kBadgeTypeIncognito;
   }
   return self;
 }

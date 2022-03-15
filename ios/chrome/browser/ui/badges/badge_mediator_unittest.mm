@@ -62,14 +62,14 @@ enum class TestParam {
                 fullScreenBadge:(id<BadgeItem>)fullscreenBadgeItem {
   self.hasFullscreenOffTheRecordBadge =
       fullscreenBadgeItem != nil &&
-      fullscreenBadgeItem.badgeType == BadgeType::kBadgeTypeIncognito;
+      fullscreenBadgeItem.badgeType == kBadgeTypeIncognito;
   self.displayedBadge = displayedBadgeItem;
 }
 - (void)updateDisplayedBadge:(id<BadgeItem>)displayedBadgeItem
              fullScreenBadge:(id<BadgeItem>)fullscreenBadgeItem {
   self.hasFullscreenOffTheRecordBadge =
       fullscreenBadgeItem != nil &&
-      fullscreenBadgeItem.badgeType == BadgeType::kBadgeTypeIncognito;
+      fullscreenBadgeItem.badgeType == kBadgeTypeIncognito;
   self.displayedBadge = displayedBadgeItem;
 }
 - (void)markDisplayedBadgeAsRead:(BOOL)read {
@@ -171,8 +171,7 @@ TEST_P(BadgeMediatorTest, BadgeMediatorTestAddInfobar) {
   InsertActivatedWebState(/*index=*/0);
   AddInfobar(kFirstInfobarType, kFirstInfobarMessageText);
   ASSERT_TRUE(badge_consumer_.displayedBadge);
-  EXPECT_EQ(badge_consumer_.displayedBadge.badgeType,
-            BadgeType::kBadgeTypePasswordSave);
+  EXPECT_EQ(badge_consumer_.displayedBadge.badgeType, kBadgeTypePasswordSave);
 }
 
 // Test that the BadgeMediator handled the removal of the correct badge when two
@@ -182,12 +181,10 @@ TEST_P(BadgeMediatorTest, BadgeMediatorTestRemoveInfobar) {
   AddInfobar(kFirstInfobarType, kFirstInfobarMessageText);
   InfoBarIOS* second_infobar =
       AddInfobar(kSecondInfobarType, kSecondInfobarMessageText);
-  EXPECT_EQ(badge_consumer_.displayedBadge.badgeType,
-            BadgeType::kBadgeTypeOverflow);
+  EXPECT_EQ(badge_consumer_.displayedBadge.badgeType, kBadgeTypeOverflow);
   RemoveInfobar(second_infobar);
   ASSERT_TRUE(badge_consumer_.displayedBadge);
-  EXPECT_EQ(badge_consumer_.displayedBadge.badgeType,
-            BadgeType::kBadgeTypePasswordSave);
+  EXPECT_EQ(badge_consumer_.displayedBadge.badgeType, kBadgeTypePasswordSave);
 }
 
 TEST_P(BadgeMediatorTest, BadgeMediatorTestMarkAsRead) {
@@ -196,8 +193,7 @@ TEST_P(BadgeMediatorTest, BadgeMediatorTestMarkAsRead) {
   // Since there is only one badge, it should be marked as read.
   EXPECT_FALSE(badge_consumer_.hasUnreadBadge);
   AddInfobar(kSecondInfobarType, kSecondInfobarMessageText);
-  ASSERT_EQ(BadgeType::kBadgeTypeOverflow,
-            badge_consumer_.displayedBadge.badgeType);
+  ASSERT_EQ(kBadgeTypeOverflow, badge_consumer_.displayedBadge.badgeType);
   // Second badge should be unread since the overflow badge is being shown as
   // the displayed badge.
   EXPECT_TRUE(badge_consumer_.hasUnreadBadge);
@@ -212,8 +208,7 @@ TEST_P(BadgeMediatorTest, BadgeMediatorTestSwitchWebState) {
   InsertActivatedWebState(/*index=*/0);
   AddInfobar(kFirstInfobarType, kFirstInfobarMessageText);
   ASSERT_TRUE(badge_consumer_.displayedBadge);
-  EXPECT_EQ(badge_consumer_.displayedBadge.badgeType,
-            BadgeType::kBadgeTypePasswordSave);
+  EXPECT_EQ(badge_consumer_.displayedBadge.badgeType, kBadgeTypePasswordSave);
   InsertActivatedWebState(/*index=*/1);
   EXPECT_FALSE(badge_consumer_.displayedBadge);
 }
@@ -225,8 +220,7 @@ TEST_P(BadgeMediatorTest,
   InsertActivatedWebState(/*index=*/0);
   AddInfobar(kFirstInfobarType, kFirstInfobarMessageText);
   ASSERT_TRUE(badge_consumer_.displayedBadge);
-  EXPECT_EQ(badge_consumer_.displayedBadge.badgeType,
-            BadgeType::kBadgeTypePasswordSave);
+  EXPECT_EQ(badge_consumer_.displayedBadge.badgeType, kBadgeTypePasswordSave);
   InsertActivatedWebState(/*index=*/1);
   std::unique_ptr<InfoBarIOS> added_infobar = std::make_unique<FakeInfobarIOS>(
       kSecondInfobarType, kSecondInfobarMessageText);
@@ -276,8 +270,7 @@ TEST_P(BadgeMediatorTest, BadgeMediatorTestRestartWithInfobar) {
   badge_mediator_ = [[BadgeMediator alloc] initWithBrowser:browser()];
   badge_mediator_.consumer = badge_consumer_;
   ASSERT_TRUE(badge_consumer_.displayedBadge);
-  EXPECT_EQ(badge_consumer_.displayedBadge.badgeType,
-            BadgeType::kBadgeTypePasswordSave);
+  EXPECT_EQ(badge_consumer_.displayedBadge.badgeType, kBadgeTypePasswordSave);
 }
 
 // Test that the BadgeMediator clears its badges when the last WebState is
@@ -287,8 +280,7 @@ TEST_P(BadgeMediatorTest, BadgeMediatorTestCloseLastTab) {
   InsertActivatedWebState(/*index=*/0);
   AddInfobar(kFirstInfobarType, kFirstInfobarMessageText);
   ASSERT_TRUE(badge_consumer_.displayedBadge);
-  EXPECT_EQ(badge_consumer_.displayedBadge.badgeType,
-            BadgeType::kBadgeTypePasswordSave);
+  EXPECT_EQ(badge_consumer_.displayedBadge.badgeType, kBadgeTypePasswordSave);
   web_state_list()->DetachWebStateAt(0);
   InsertActivatedWebState(/*index=*/0);
   ASSERT_FALSE(badge_consumer_.displayedBadge);

@@ -5,8 +5,10 @@
 #ifndef IOS_CHROME_BROWSER_UI_BADGES_BADGE_TYPE_H_
 #define IOS_CHROME_BROWSER_UI_BADGES_BADGE_TYPE_H_
 
+#import <Foundation/Foundation.h>
+
 // Badge types.
-enum class BadgeType {
+typedef NS_ENUM(NSUInteger, BadgeType) {
   // Badge type for no badge. This is to allow other features to distinguish
   // when a badge is necessary or not. Setting a BadgeModel type to
   // kBadgeTypeNone might result in a crash.
