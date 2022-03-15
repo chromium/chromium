@@ -5672,6 +5672,27 @@
             ]
         }
     ],
+    "RemoveCanceledTasksInTaskQueue2": [
+        {
+            "platforms": [
+                "android",
+                "chromeos",
+                "chromeos_lacros",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "RemoveCanceledTasksInTaskQueue2",
+                    "enable_features": [
+                        "AlwaysAbandonScheduledTask",
+                        "RemoveCanceledTasksInTaskQueue2"
+                    ]
+                }
+            ]
+        }
+    ],
     "ReportCertificateErrors": [
         {
             "platforms": [
