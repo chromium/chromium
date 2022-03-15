@@ -40,10 +40,7 @@ class TabContainer : public views::View, public views::ViewTargeterDelegate {
 
   Tab* AddTab(std::unique_ptr<Tab> tab, int model_index, TabPinned pinned);
   void MoveTab(Tab* tab, int from_model_index, int to_model_index);
-
-  // Remove the tab from |tabs_view_model_|, but *not* from the View hierarchy,
-  // so it can be animated closed.
-  void RemoveTabFromViewModel(int index);
+  void RemoveTab(int index, bool was_active);
 
   void ScrollTabToVisible(int model_index);
 
@@ -136,8 +133,6 @@ class TabContainer : public views::View, public views::ViewTargeterDelegate {
     return override_available_width_for_tabs_;
   }
 
-  void OnTabWillBeRemovedAt(int model_index, bool was_active);
-
   // TODO (1295774): Move callers down into TabContainer so this
   // encapsulation-breaking getter can be removed.
   TabStripLayoutHelper* layout_helper() const { return layout_helper_.get(); }
@@ -165,7 +160,15 @@ class TabContainer : public views::View, public views::ViewTargeterDelegate {
   // Invoked from |AddTab| after the newly created tab has been inserted.
   void StartInsertTabAnimation(int model_index);
 
+  // Remove the tab from |tabs_view_model_|, but *not* from the View hierarchy,
+  // so it can be animated closed.
+  void RemoveTabFromViewModel(int index);
+
   void OnTabCloseAnimationCompleted(Tab* tab);
+
+  // Updates |override_available_width_for_tabs_|, if necessary, to account for
+  // the removal of the tab at |model_index|.
+  void UpdateClosingModeOnRemovedTab(int model_index, bool was_active);
 
   // Returns the corresponding view index of a |tab| to be inserted at
   // |to_model_index|. Used to reorder the child views of the tab container

@@ -405,14 +405,6 @@ class TabStrip : public views::View,
 
   std::map<tab_groups::TabGroupId, TabGroupHeader*> GetGroupHeaders();
 
-  // Animates the removal of the tab at |model_index|. Defers to the old
-  // animation style when appropriate.
-  void StartRemoveTabAnimation(int model_index, bool was_active);
-
-  // Animates the removal of the tab at |model_index| using the old animation
-  // style.
-  void StartFallbackRemoveTabAnimation(int model_index, bool was_active);
-
   // Invoked from |MoveTab| after |tab_data_| has been updated to animate the
   // move.
   void StartMoveTabAnimation();
@@ -436,13 +428,6 @@ class TabStrip : public views::View,
 
   // Closes the tab at |model_index|.
   void CloseTabInternal(int model_index, CloseTabSource source);
-
-  // Removes the tab at |index| from |tabs_|.
-  void RemoveTabFromViewModel(int index);
-
-  // Cleans up the Tab from the TabStrip. This is called from the tab animation
-  // code and is not a general-purpose method.
-  void OnTabCloseAnimationCompleted(Tab* tab);
 
   // Invoked from StoppedDraggingTabs to cleanup |view|. If |view| is known
   // |is_first_view| is set to true.

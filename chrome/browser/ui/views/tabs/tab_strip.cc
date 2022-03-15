@@ -929,11 +929,11 @@ void TabStrip::MoveTab(int from_model_index,
 void TabStrip::RemoveTabAt(content::WebContents* contents,
                            int model_index,
                            bool was_active) {
-  StartRemoveTabAnimation(model_index, was_active);
-
-  tab_container_->UpdateAccessibleTabIndices();
+  tab_container_->RemoveTab(model_index, was_active);
 
   UpdateHoverCard(nullptr, HoverCardUpdateType::kTabRemoved);
+
+  selected_tabs_.DecrementFrom(model_index);
 
   for (TabStripObserver& observer : observers_)
     observer.OnTabRemoved(model_index);
@@ -1862,23 +1862,6 @@ void TabStrip::NewTabButtonPressed(const ui::Event& event) {
     TouchUMA::RecordGestureAction(TouchUMA::kGestureNewTabTap);
 }
 
-void TabStrip::StartRemoveTabAnimation(int model_index, bool was_active) {
-  tab_container_->OnTabWillBeRemovedAt(model_index, was_active);
-
-  tab_container_->PrepareForAnimation();
-
-  Tab* tab = tab_at(model_index);
-  tab->SetClosing(true);
-
-  RemoveTabFromViewModel(model_index);
-
-  tab_container_->UpdateIdealBounds();
-  tab_container_->AnimateToIdealBounds();
-
-  // Animate the tab closed.
-  tab_container_->AnimateTabClosed(tab, model_index);
-}
-
 void TabStrip::StartMoveTabAnimation() {
   tab_container_->PrepareForAnimation();
   tab_container_->UpdateIdealBounds();
@@ -1955,19 +1938,6 @@ void TabStrip::CloseTabInternal(int model_index, CloseTabSource source) {
   if (tab_at(model_index)->group().has_value())
     base::RecordAction(base::UserMetricsAction("CloseGroupedTab"));
   controller_->CloseTab(model_index);
-}
-
-void TabStrip::RemoveTabFromViewModel(int index) {
-  Tab* closing_tab = tab_at(index);
-  bool closing_tab_was_active = closing_tab->IsActive();
-
-  // We still need to keep the tab alive until the remove tab animation
-  // completes. Defer destroying it until then.
-  tab_container_->RemoveTabFromViewModel(index);
-  selected_tabs_.DecrementFrom(index);
-
-  if (closing_tab_was_active)
-    closing_tab->ActiveStateChanged();
 }
 
 void TabStrip::StoppedDraggingView(TabSlotView* view, bool* is_first_view) {

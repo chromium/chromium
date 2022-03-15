@@ -345,12 +345,23 @@ void TabContainer::MoveTab(Tab* tab, int from_model_index, int to_model_index) {
   layout_helper_->MoveTab(tab->group(), from_model_index, to_model_index);
 }
 
-void TabContainer::RemoveTabFromViewModel(int index) {
-  UpdateHoverCard(nullptr, TabController::HoverCardUpdateType::kTabRemoved);
+void TabContainer::RemoveTab(int model_index, bool was_active) {
+  UpdateClosingModeOnRemovedTab(model_index, was_active);
 
-  Tab* tab = GetTabAtModelIndex(index);
-  tabs_view_model_.Remove(index);
-  layout_helper_->RemoveTabAt(index, tab);
+  PrepareForAnimation();
+
+  Tab* tab = GetTabAtModelIndex(model_index);
+  tab->SetClosing(true);
+
+  RemoveTabFromViewModel(model_index);
+
+  UpdateIdealBounds();
+  AnimateToIdealBounds();
+
+  // Animate the tab closed.
+  AnimateTabClosed(tab, model_index);
+
+  UpdateAccessibleTabIndices();
 }
 
 void TabContainer::ScrollTabToVisible(int model_index) {
@@ -764,44 +775,6 @@ void TabContainer::SetTabSlotVisibility() {
   }
 }
 
-void TabContainer::OnTabWillBeRemovedAt(int model_index, bool was_active) {
-  // The tab at |model_index| has already been removed from the model, but is
-  // still in |tabs_view_model_|.  Index math with care!
-  const int model_count = GetTabCount() - 1;
-  const int tab_overlap = TabStyle::GetTabOverlap();
-  if (in_tab_close() && model_count > 0 && model_index != model_count) {
-    // The user closed a tab other than the last tab. Set
-    // override_available_width_for_tabs_ so that as the user closes tabs with
-    // the mouse a tab continues to fall under the mouse.
-    int next_active_index = controller_->GetActiveIndex();
-    DCHECK(IsValidModelIndex(next_active_index));
-    if (model_index <= next_active_index) {
-      // At this point, model's internal state has already been updated.
-      // |contents| has been detached from model and the active index has been
-      // updated. But the tab for |contents| isn't removed yet. Thus, we need to
-      // fix up next_active_index based on it.
-      next_active_index++;
-    }
-    Tab* next_active_tab = GetTabAtModelIndex(next_active_index);
-    Tab* tab_being_removed = GetTabAtModelIndex(model_index);
-
-    int size_delta = tab_being_removed->width();
-    if (!tab_being_removed->data().pinned && was_active &&
-        layout_helper_->active_tab_width() >
-            layout_helper_->inactive_tab_width()) {
-      // When removing an active, non-pinned tab, an inactive tab will be made
-      // active and thus given the active width. Thus the width being removed
-      // from the container is really the current width of whichever inactive
-      // tab will be made active.
-      size_delta = next_active_tab->width();
-    }
-
-    override_available_width_for_tabs_ =
-        tabs_view_model_.ideal_bounds(model_count).right() - size_delta +
-        tab_overlap;
-  }
-}
-
 void TabContainer::Layout() {
   if (base::FeatureList::IsEnabled(features::kScrollableTabStrip)) {
     // With tab scrolling, the tab container is solely responsible for its own
@@ -969,11 +942,63 @@ void TabContainer::StartInsertTabAnimation(int model_index) {
   AnimateToIdealBounds();
 }
 
+void TabContainer::RemoveTabFromViewModel(int index) {
+  Tab* tab = GetTabAtModelIndex(index);
+  bool tab_was_active = tab->IsActive();
+
+  UpdateHoverCard(nullptr, TabController::HoverCardUpdateType::kTabRemoved);
+
+  tabs_view_model_.Remove(index);
+  layout_helper_->RemoveTabAt(index, tab);
+
+  if (tab_was_active)
+    tab->ActiveStateChanged();
+}
+
 void TabContainer::OnTabCloseAnimationCompleted(Tab* tab) {
   DCHECK(tab->closing());
 
   std::unique_ptr<Tab> deleter(tab);
   layout_helper_->OnTabDestroyed(tab);
+}
+
+void TabContainer::UpdateClosingModeOnRemovedTab(int model_index,
+                                                 bool was_active) {
+  // The tab at |model_index| has already been removed from the model, but is
+  // still in |tabs_view_model_|.  Index math with care!
+  const int model_count = GetTabCount() - 1;
+  const int tab_overlap = TabStyle::GetTabOverlap();
+  if (in_tab_close() && model_count > 0 && model_index != model_count) {
+    // The user closed a tab other than the last tab. Set
+    // override_available_width_for_tabs_ so that as the user closes tabs with
+    // the mouse a tab continues to fall under the mouse.
+    int next_active_index = controller_->GetActiveIndex();
+    DCHECK(IsValidModelIndex(next_active_index));
+    if (model_index <= next_active_index) {
+      // At this point, model's internal state has already been updated.
+      // |contents| has been detached from model and the active index has been
+      // updated. But the tab for |contents| isn't removed yet. Thus, we need to
+      // fix up next_active_index based on it.
+      next_active_index++;
+    }
+    Tab* next_active_tab = GetTabAtModelIndex(next_active_index);
+    Tab* tab_being_removed = GetTabAtModelIndex(model_index);
+
+    int size_delta = tab_being_removed->width();
+    if (!tab_being_removed->data().pinned && was_active &&
+        layout_helper_->active_tab_width() >
+            layout_helper_->inactive_tab_width()) {
+      // When removing an active, non-pinned tab, an inactive tab will be made
+      // active and thus given the active width. Thus the width being removed
+      // from the container is really the current width of whichever inactive
+      // tab will be made active.
+      size_delta = next_active_tab->width();
+    }
+
+    override_available_width_for_tabs_ =
+        tabs_view_model_.ideal_bounds(model_count).right() - size_delta +
+        tab_overlap;
+  }
 }
 
 int TabContainer::GetViewInsertionIndex(
