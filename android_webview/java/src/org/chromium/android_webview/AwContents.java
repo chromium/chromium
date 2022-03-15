@@ -917,9 +917,8 @@ public class AwContents implements SmartClipProvider {
         /**
          * Notifies this object that a recalculation of the window coverage is necessary.
          *
-         * This should be called every time any of the tracked AwContents changes its size or
-         * whether it is displaying open web contents (the result of a call to
-         * {@link AwContentsJni#isDisplayingOpenWebContent}).
+         * This should be called every time any of the tracked AwContents changes its size,
+         * visibility, or scheme.
          *
          * Recalculation won't happen immediately, and will be rate limited.
          */
@@ -943,32 +942,53 @@ public class AwContents implements SmartClipProvider {
             }, mRecalculationTime - time);
         }
 
-        private void recalculate() {
-            if (TRACE) Log.i(TAG, "%s onVisibilityRectUpdated", this);
-
-            List<Rect> openWebContentRects = new ArrayList<Rect>();
-            for (AwContents content : mAwContentsList) {
-                // A workaround for a deeper problem: https://crbug.com/1232765#c19
-                if (content.isDestroyed(NO_WARN)) continue;
-                if (AwContentsJni.get().isDisplayingOpenWebContent(
-                            content.mNativeAwContents, content)) {
-                    // The result of getGlobalVisibleRect can change underneath us, so take a
-                    // protective copy.
-                    openWebContentRects.add(RectUtils.copyRect(content.getGlobalVisibleRect()));
-                }
+        private static int[] toIntArray(List<Integer> list) {
+            int[] array = new int[list.size()];
+            for (int i = 0; i < list.size(); i++) {
+                array[i] = list.get(i);
             }
+            return array;
+        }
+
+        private void recalculate() {
+            if (TRACE) Log.i(TAG, "%s recalculate", this);
+
+            List<Rect> contentRects = new ArrayList<>();
 
             Rect rootVisibleRect = new Rect((int) mRootView.getX(), (int) mRootView.getY(),
                     (int) mRootView.getX() + mRootView.getWidth(),
                     (int) mRootView.getY() + mRootView.getHeight());
-            int openWebPixelCoverage =
-                    RectUtils.calculatePixelsOfCoverage(rootVisibleRect, openWebContentRects);
+            int rootArea = RectUtils.getRectArea(rootVisibleRect);
 
-            float openWebVisiblePercentage =
-                    (float) openWebPixelCoverage / RectUtils.getRectArea(rootVisibleRect);
+            // Note that a scheme could occur more than once at a time.
+            List<String> schemes = new ArrayList<>();
+            List<Integer> schemePercentages = new ArrayList<>();
 
-            AwContentsJni.get().updateOpenWebScreenArea(
-                    openWebPixelCoverage, (int) (openWebVisiblePercentage * 100));
+            for (AwContents content : mAwContentsList) {
+                // A workaround for a deeper problem: https://crbug.com/1232765#c19
+                if (content.isDestroyed(NO_WARN)) continue;
+                if (content.mIsAttachedToWindow && content.mIsViewVisible
+                        && content.mIsWindowVisible) {
+                    // The result of getGlobalVisibleRect can change underneath us, so take a
+                    // protective copy.
+                    Rect contentRect = new Rect(content.getGlobalVisibleRect());
+
+                    // If the intersect method returns true then it has modified contentRect.
+                    if (contentRect.intersect(rootVisibleRect)) {
+                        contentRects.add(contentRect);
+                        schemes.add(
+                                AwContentsJni.get().getScheme(content.mNativeAwContents, content));
+                        schemePercentages.add(RectUtils.getRectArea(contentRect) * 100 / rootArea);
+                    }
+                }
+            }
+
+            int globalPercentage =
+                    RectUtils.calculatePixelsOfCoverage(rootVisibleRect, contentRects) * 100
+                    / rootArea;
+
+            AwContentsJni.get().updateScreenCoverage(globalPercentage,
+                    schemes.toArray(new String[schemes.size()]), toIntArray(schemePercentages));
         }
     }
 
@@ -3916,7 +3936,8 @@ public class AwContents implements SmartClipProvider {
 
         // Variables that track the state as of the previous onDraw call.
         private Rect mPreviousGlobalVisibleRect = new Rect();
-        private boolean mPreviouslyDisplayingWebContent;
+        private boolean mPreviouslyVisible;
+        private String mPreviousScheme = "";
 
         @SuppressLint("DrawAllocation") // For new AwFunctor.
         @Override
@@ -3952,13 +3973,14 @@ public class AwContents implements SmartClipProvider {
             Rect globalVisibleRect = getGlobalVisibleRect();
 
             if (mAwWindowCoverageTracker != null) {
-                boolean displayingWebContent = AwContentsJni.get().isDisplayingOpenWebContent(
-                        mNativeAwContents, AwContents.this);
+                boolean visible = mIsAttachedToWindow && mIsViewVisible && mIsWindowVisible;
+                String scheme = AwContentsJni.get().getScheme(mNativeAwContents, AwContents.this);
 
                 if (!globalVisibleRect.equals(mPreviousGlobalVisibleRect)
-                        || mPreviouslyDisplayingWebContent != displayingWebContent) {
+                        || mPreviouslyVisible != visible || !mPreviousScheme.equals(scheme)) {
                     mPreviousGlobalVisibleRect.set(globalVisibleRect);
-                    mPreviouslyDisplayingWebContent = displayingWebContent;
+                    mPreviouslyVisible = visible;
+                    mPreviousScheme = scheme;
 
                     mAwWindowCoverageTracker.onInputsUpdated();
                 }
@@ -4383,8 +4405,8 @@ public class AwContents implements SmartClipProvider {
         boolean isDisplayingInterstitialForTesting(long nativeAwContents, AwContents caller);
         void setDipScale(long nativeAwContents, AwContents caller, float dipScale);
 
-        boolean isDisplayingOpenWebContent(long nativeAwContents, AwContents caller);
-        void updateOpenWebScreenArea(int pixels, int percentage);
+        String getScheme(long nativeAwContents, AwContents caller);
+        void updateScreenCoverage(int globalPercentage, String[] schemes, int[] schemePercentages);
 
         void onInputEvent(long nativeAwContents, AwContents caller);
         // Returns null if save state fails.

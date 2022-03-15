@@ -556,7 +556,7 @@ public class AwMetricsIntegrationTest {
             // MetricsProvider::ProvideCurrentSessionData().
             mPlatformServiceBridge.waitForNextMetricsLog();
 
-            final String histogramName = "Android.WebView.WebViewOpenWebVisible.ScreenPortion2";
+            final String histogramName = "Android.WebView.VisibleScreenCoverage.Global";
 
             // The histogram records whole seconds that the WebView has been on screen, we need to
             // leave enough time for something to be recorded.
@@ -567,10 +567,8 @@ public class AwMetricsIntegrationTest {
 
             int totalSamples = RecordHistogram.getHistogramTotalCountForTesting(histogramName);
 
-            // Based on VisibilityMetricsLogger::WebViewOpenWebScreenPortion.
-            final int histogramZeroBucket = 11;
-            int zeroBucketSamples = RecordHistogram.getHistogramValueCountForTesting(
-                    histogramName, histogramZeroBucket);
+            int zeroBucketSamples =
+                    RecordHistogram.getHistogramValueCountForTesting(histogramName, 0);
             Assert.assertNotEquals("There should be at least one sample in a non-zero bucket",
                     zeroBucketSamples, totalSamples);
         } finally {

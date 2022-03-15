@@ -15,6 +15,11 @@
 
 namespace android_webview {
 
+namespace {
+
+typedef VisibilityMetricsLogger::Scheme Scheme;
+typedef VisibilityMetricsLogger::Visibility Visibility;
+
 static const base::TickClock* g_clock;
 
 class TestClient : public VisibilityMetricsLogger::Client {
@@ -85,7 +90,7 @@ class VisibilityMetricsLoggerTest : public testing::Test {
 };
 
 TEST_F(VisibilityMetricsLoggerTest, TestFractionalSecondAccumulation) {
-  base::HistogramTester histogram_tester;
+  base::HistogramTester histograms;
 
   std::unique_ptr<TestClient> client = std::make_unique<TestClient>(logger());
   client->SetViewVisible(true);
@@ -95,22 +100,20 @@ TEST_F(VisibilityMetricsLoggerTest, TestFractionalSecondAccumulation) {
   task_environment().FastForwardBy(base::Milliseconds(500));
 
   logger()->RecordMetrics();
-  histogram_tester.ExpectBucketCount(
-      "Android.WebView.Visibility.Global",
-      VisibilityMetricsLogger::Visibility::kVisible, 0);
+  histograms.ExpectBucketCount("Android.WebView.Visibility.Global",
+                               Visibility::kVisible, 0);
 
   task_environment().FastForwardBy(base::Milliseconds(500));
 
   logger()->RecordMetrics();
-  histogram_tester.ExpectBucketCount(
-      "Android.WebView.Visibility.Global",
-      VisibilityMetricsLogger::Visibility::kVisible, 1);
+  histograms.ExpectBucketCount("Android.WebView.Visibility.Global",
+                               Visibility::kVisible, 1);
 
   client.reset();
 }
 
 TEST_F(VisibilityMetricsLoggerTest, TestSingleVisibleClient) {
-  base::HistogramTester histogram_tester;
+  base::HistogramTester histograms;
 
   task_environment().FastForwardBy(base::Seconds(10));
   std::unique_ptr<TestClient> client = std::make_unique<TestClient>(logger());
@@ -119,49 +122,42 @@ TEST_F(VisibilityMetricsLoggerTest, TestSingleVisibleClient) {
   client->SetViewVisible(true);
   client->SetViewAttached(true);
   client->SetWindowVisible(true);
-  client->SetScheme(VisibilityMetricsLogger::Scheme::kHttp);
+  client->SetScheme(Scheme::kHttp);
 
   task_environment().FastForwardBy(base::Seconds(10));
   client->SetWindowVisible(false);
 
   logger()->RecordMetrics();
-  histogram_tester.ExpectBucketCount(
-      "Android.WebView.Visibility.Global",
-      VisibilityMetricsLogger::Visibility::kVisible, 10);
-  histogram_tester.ExpectBucketCount(
-      "Android.WebView.Visibility.Global",
-      VisibilityMetricsLogger::Visibility::kNotVisible, 40);
-  histogram_tester.ExpectBucketCount("Android.WebView.VisibleScheme.Global",
-                                     VisibilityMetricsLogger::Scheme::kHttp,
-                                     10);
-  histogram_tester.ExpectBucketCount("Android.WebView.VisibleScheme.Global",
-                                     VisibilityMetricsLogger::Scheme::kData, 0);
+  histograms.ExpectBucketCount("Android.WebView.Visibility.Global",
+                               Visibility::kVisible, 10);
+  histograms.ExpectBucketCount("Android.WebView.Visibility.Global",
+                               Visibility::kNotVisible, 40);
+  histograms.ExpectBucketCount("Android.WebView.VisibleScheme.Global",
+                               Scheme::kHttp, 10);
+  histograms.ExpectBucketCount("Android.WebView.VisibleScheme.Global",
+                               Scheme::kData, 0);
 
   client->SetViewVisible(true);
   client->SetViewAttached(true);
   client->SetWindowVisible(true);
-  client->SetScheme(VisibilityMetricsLogger::Scheme::kData);
+  client->SetScheme(Scheme::kData);
   task_environment().FastForwardBy(base::Seconds(90));
 
   logger()->RecordMetrics();
-  histogram_tester.ExpectBucketCount(
-      "Android.WebView.Visibility.Global",
-      VisibilityMetricsLogger::Visibility::kVisible, 100);
-  histogram_tester.ExpectBucketCount(
-      "Android.WebView.Visibility.Global",
-      VisibilityMetricsLogger::Visibility::kNotVisible, 40);
-  histogram_tester.ExpectBucketCount("Android.WebView.VisibleScheme.Global",
-                                     VisibilityMetricsLogger::Scheme::kHttp,
-                                     10);
-  histogram_tester.ExpectBucketCount("Android.WebView.VisibleScheme.Global",
-                                     VisibilityMetricsLogger::Scheme::kData,
-                                     90);
+  histograms.ExpectBucketCount("Android.WebView.Visibility.Global",
+                               Visibility::kVisible, 100);
+  histograms.ExpectBucketCount("Android.WebView.Visibility.Global",
+                               Visibility::kNotVisible, 40);
+  histograms.ExpectBucketCount("Android.WebView.VisibleScheme.Global",
+                               Scheme::kHttp, 10);
+  histograms.ExpectBucketCount("Android.WebView.VisibleScheme.Global",
+                               Scheme::kData, 90);
 
   client.reset();
 }
 
 TEST_F(VisibilityMetricsLoggerTest, TestLongDurationVisibleClient) {
-  base::HistogramTester histogram_tester;
+  base::HistogramTester histograms;
   std::unique_ptr<TestClient> client1 = std::make_unique<TestClient>(logger());
   std::unique_ptr<TestClient> client2 = std::make_unique<TestClient>(logger());
 
@@ -182,18 +178,14 @@ TEST_F(VisibilityMetricsLoggerTest, TestLongDurationVisibleClient) {
   client1.reset();
 
   logger()->RecordMetrics();
-  histogram_tester.ExpectBucketCount(
-      "Android.WebView.Visibility.Global",
-      VisibilityMetricsLogger::Visibility::kVisible, 150);
-  histogram_tester.ExpectBucketCount(
-      "Android.WebView.Visibility.Global",
-      VisibilityMetricsLogger::Visibility::kNotVisible, 300);
-  histogram_tester.ExpectBucketCount(
-      "Android.WebView.Visibility.PerWebView",
-      VisibilityMetricsLogger::Visibility::kVisible, 200);
-  histogram_tester.ExpectBucketCount(
-      "Android.WebView.Visibility.PerWebView",
-      VisibilityMetricsLogger::Visibility::kNotVisible, 650);
+  histograms.ExpectBucketCount("Android.WebView.Visibility.Global",
+                               Visibility::kVisible, 150);
+  histograms.ExpectBucketCount("Android.WebView.Visibility.Global",
+                               Visibility::kNotVisible, 300);
+  histograms.ExpectBucketCount("Android.WebView.Visibility.PerWebView",
+                               Visibility::kVisible, 200);
+  histograms.ExpectBucketCount("Android.WebView.Visibility.PerWebView",
+                               Visibility::kNotVisible, 650);
 }
 
 TEST_F(VisibilityMetricsLoggerTest, TestTwoVisibleClients) {
@@ -209,7 +201,7 @@ TEST_F(VisibilityMetricsLoggerTest, TestTwoVisibleClients) {
   // Time with no visible client: 100 - 30 = 70
   // Time x visible clients: (50-40) * 1 + (60-50) * 2 + (70-60) * 1 = 40
   // Time x hidden clients: 100 + 90 - 40 = 150
-  base::HistogramTester histogram_tester;
+  base::HistogramTester histograms;
   std::unique_ptr<TestClient> client1 = std::make_unique<TestClient>(logger());
 
   task_environment().FastForwardBy(base::Seconds(10));
@@ -242,18 +234,14 @@ TEST_F(VisibilityMetricsLoggerTest, TestTwoVisibleClients) {
   client2.reset();
 
   logger()->RecordMetrics();
-  histogram_tester.ExpectBucketCount(
-      "Android.WebView.Visibility.Global",
-      VisibilityMetricsLogger::Visibility::kVisible, 30);
-  histogram_tester.ExpectBucketCount(
-      "Android.WebView.Visibility.Global",
-      VisibilityMetricsLogger::Visibility::kNotVisible, 70);
-  histogram_tester.ExpectBucketCount(
-      "Android.WebView.Visibility.PerWebView",
-      VisibilityMetricsLogger::Visibility::kVisible, 40);
-  histogram_tester.ExpectBucketCount(
-      "Android.WebView.Visibility.PerWebView",
-      VisibilityMetricsLogger::Visibility::kNotVisible, 150);
+  histograms.ExpectBucketCount("Android.WebView.Visibility.Global",
+                               Visibility::kVisible, 30);
+  histograms.ExpectBucketCount("Android.WebView.Visibility.Global",
+                               Visibility::kNotVisible, 70);
+  histograms.ExpectBucketCount("Android.WebView.Visibility.PerWebView",
+                               Visibility::kVisible, 40);
+  histograms.ExpectBucketCount("Android.WebView.Visibility.PerWebView",
+                               Visibility::kNotVisible, 150);
 }
 
 TEST_F(VisibilityMetricsLoggerTest, TestTwoVisibleWebContentClients) {
@@ -276,7 +264,7 @@ TEST_F(VisibilityMetricsLoggerTest, TestTwoVisibleWebContentClients) {
   // Per client visible with empty scheme: 10
   // Per client visible with http scheme: 30 (client1) + 10 (client2) = 40
 
-  base::HistogramTester histogram_tester;
+  base::HistogramTester histograms;
   std::unique_ptr<TestClient> client1 = std::make_unique<TestClient>(logger());
 
   task_environment().FastForwardBy(base::Seconds(10));
@@ -288,13 +276,13 @@ TEST_F(VisibilityMetricsLoggerTest, TestTwoVisibleWebContentClients) {
   client1->SetWindowVisible(true);
 
   task_environment().FastForwardBy(base::Seconds(10));
-  client1->SetScheme(VisibilityMetricsLogger::Scheme::kHttp);
+  client1->SetScheme(Scheme::kHttp);
 
   task_environment().FastForwardBy(base::Seconds(10));
   client2->SetViewVisible(true);
   client2->SetViewAttached(true);
   client2->SetWindowVisible(true);
-  client2->SetScheme(VisibilityMetricsLogger::Scheme::kHttp);
+  client2->SetScheme(Scheme::kHttp);
 
   task_environment().FastForwardBy(base::Seconds(10));
   client1->SetWindowVisible(false);
@@ -307,53 +295,47 @@ TEST_F(VisibilityMetricsLoggerTest, TestTwoVisibleWebContentClients) {
   client2.reset();
 
   logger()->RecordMetrics();
-  histogram_tester.ExpectBucketCount(
-      "Android.WebView.Visibility.Global",
-      VisibilityMetricsLogger::Visibility::kVisible, 40);
-  histogram_tester.ExpectBucketCount(
-      "Android.WebView.Visibility.Global",
-      VisibilityMetricsLogger::Visibility::kNotVisible, 60);
-  histogram_tester.ExpectBucketCount(
-      "Android.WebView.Visibility.PerWebView",
-      VisibilityMetricsLogger::Visibility::kVisible, 50);
-  histogram_tester.ExpectBucketCount(
-      "Android.WebView.Visibility.PerWebView",
-      VisibilityMetricsLogger::Visibility::kNotVisible, 140);
+  histograms.ExpectBucketCount("Android.WebView.Visibility.Global",
+                               Visibility::kVisible, 40);
+  histograms.ExpectBucketCount("Android.WebView.Visibility.Global",
+                               Visibility::kNotVisible, 60);
+  histograms.ExpectBucketCount("Android.WebView.Visibility.PerWebView",
+                               Visibility::kVisible, 50);
+  histograms.ExpectBucketCount("Android.WebView.Visibility.PerWebView",
+                               Visibility::kNotVisible, 140);
 
-  histogram_tester.ExpectBucketCount("Android.WebView.VisibleScheme.Global",
-                                     VisibilityMetricsLogger::Scheme::kEmpty,
-                                     10);
-  histogram_tester.ExpectBucketCount("Android.WebView.VisibleScheme.Global",
-                                     VisibilityMetricsLogger::Scheme::kHttp,
-                                     30);
-  histogram_tester.ExpectBucketCount("Android.WebView.VisibleScheme.PerWebView",
-                                     VisibilityMetricsLogger::Scheme::kEmpty,
-                                     10);
-  histogram_tester.ExpectBucketCount("Android.WebView.VisibleScheme.PerWebView",
-                                     VisibilityMetricsLogger::Scheme::kHttp,
-                                     40);
+  histograms.ExpectBucketCount("Android.WebView.VisibleScheme.Global",
+                               Scheme::kEmpty, 10);
+  histograms.ExpectBucketCount("Android.WebView.VisibleScheme.Global",
+                               Scheme::kHttp, 30);
+  histograms.ExpectBucketCount("Android.WebView.VisibleScheme.PerWebView",
+                               Scheme::kEmpty, 10);
+  histograms.ExpectBucketCount("Android.WebView.VisibleScheme.PerWebView",
+                               Scheme::kHttp, 40);
 }
 
-TEST_F(VisibilityMetricsLoggerTest, TestScreenPortion) {
+TEST_F(VisibilityMetricsLoggerTest, TestScreenCoverage) {
   // t=0: client created
-  // t=10: client visible, navigates to web content, screen percentage 0%
+  // t=10: client visible, navigates to http scheme, screen percentage 0%
   // t=30: 7% screen percentage
   // t=35: 42% screen percentage
   // t=45: 100% screen percentage
   // t=60: client invisible
   // t=70: client visible
-  // t=95: client navigates away from web content
+  // t=95: client navigates to data scheme
   // t=100: client deleted
 
   // Time with no visible client: 10 + 10 = 20
   // Time with client visible: 20 + 5 + 10 + 15 + 25 + 5 = 80
-  // Time with client displaying web content: 20 + 5 + 10 + 15 + 25 = 75
-  // Time displaying web content with portion kExactlyZeroPercent: 20
-  // Time displaying web content with portion kZeroPercent: 5
-  // Time displaying web content with portion kFortyPercent: 10
-  // Time displaying web content with portion kOneHundredPercent: 15 + 25 = 40
+  // Time displaying http scheme: 20 + 5 + 10 + 15 + 25 = 75
+  // Time displaying with 0% coverage: 20
+  // Time displaying with 7% coverage: 5
+  // Time displaying with 42% coverage: 10
+  // Time displaying with 100% coverage: 15 + 25 + 5 = 45
+  // Time displaying http scheme with 100% coverage: 40
+  // Time displaying data scheme with 100% coverage: 5
 
-  base::HistogramTester histogram_tester;
+  base::HistogramTester histograms;
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndEnableFeature(
       android_webview::features::kWebViewMeasureScreenCoverage);
@@ -363,56 +345,305 @@ TEST_F(VisibilityMetricsLoggerTest, TestScreenPortion) {
   client->SetViewVisible(true);
   client->SetViewAttached(true);
   client->SetWindowVisible(true);
-  client->SetScheme(VisibilityMetricsLogger::Scheme::kHttp);
-  // If pixels is 0 then time spent is logged under kExactlyZeroPercent,
-  // otherwise the screen portion is calculated as percentage / 10.
-  logger()->UpdateOpenWebScreenArea(/*pixels=*/0, /*percentage=*/0);
+  client->SetScheme(Scheme::kHttp);
+  logger()->UpdateScreenCoverage(/*global_percentage=*/0, {Scheme::kHttp},
+                                 /*scheme_percentages=*/{0});
 
   task_environment().FastForwardBy(base::Seconds(20));
-  logger()->UpdateOpenWebScreenArea(/*pixels=*/14, /*percentage=*/7);
+  logger()->UpdateScreenCoverage(/*global_percentage=*/7, {Scheme::kHttp},
+                                 /*scheme_percentages=*/{7});
 
   task_environment().FastForwardBy(base::Seconds(5));
-  logger()->UpdateOpenWebScreenArea(/*pixels=*/84, /*percentage=*/42);
+  logger()->UpdateScreenCoverage(/*global_percentage=*/42, {Scheme::kHttp},
+                                 /*scheme_percentages=*/{42});
 
   task_environment().FastForwardBy(base::Seconds(10));
-  logger()->UpdateOpenWebScreenArea(/*pixels=*/200, /*percentage=*/100);
+  logger()->UpdateScreenCoverage(
+      /*global_percentage=*/100, {Scheme::kHttp},
+      /*scheme_percentages=*/{100});
 
   task_environment().FastForwardBy(base::Seconds(15));
   client->SetViewVisible(false);
+  logger()->UpdateScreenCoverage(/*global_percentage=*/0, {Scheme::kHttp},
+                                 /*scheme_percentages=*/{0});
 
   task_environment().FastForwardBy(base::Seconds(10));
   client->SetViewVisible(true);
+  logger()->UpdateScreenCoverage(
+      /*global_percentage=*/100, {Scheme::kHttp},
+      /*scheme_percentages=*/{100});
 
   task_environment().FastForwardBy(base::Seconds(25));
-  client->SetScheme(VisibilityMetricsLogger::Scheme::kData);
+  client->SetScheme(Scheme::kData);
+  logger()->UpdateScreenCoverage(
+      /*global_percentage=*/100, {Scheme::kData},
+      /*scheme_percentages=*/{100});
 
   task_environment().FastForwardBy(base::Seconds(5));
   logger()->RecordMetrics();
   client.reset();
 
-  histogram_tester.ExpectBucketCount(
-      "Android.WebView.Visibility.Global",
-      VisibilityMetricsLogger::Visibility::kNotVisible, 20);
-  histogram_tester.ExpectBucketCount(
-      "Android.WebView.Visibility.Global",
-      VisibilityMetricsLogger::Visibility::kVisible, 80);
-  histogram_tester.ExpectBucketCount("Android.WebView.VisibleScheme.Global",
-                                     VisibilityMetricsLogger::Scheme::kHttp,
-                                     75);
-  histogram_tester.ExpectBucketCount(
-      "Android.WebView.WebViewOpenWebVisible.ScreenPortion2",
-      VisibilityMetricsLogger::WebViewOpenWebScreenPortion::kExactlyZeroPercent,
-      20);
-  histogram_tester.ExpectBucketCount(
-      "Android.WebView.WebViewOpenWebVisible.ScreenPortion2",
-      VisibilityMetricsLogger::WebViewOpenWebScreenPortion::kZeroPercent, 5);
-  histogram_tester.ExpectBucketCount(
-      "Android.WebView.WebViewOpenWebVisible.ScreenPortion2",
-      VisibilityMetricsLogger::WebViewOpenWebScreenPortion::kFortyPercent, 10);
-  histogram_tester.ExpectBucketCount(
-      "Android.WebView.WebViewOpenWebVisible.ScreenPortion2",
-      VisibilityMetricsLogger::WebViewOpenWebScreenPortion::kOneHundredPercent,
-      40);
+  histograms.ExpectBucketCount("Android.WebView.Visibility.Global",
+                               Visibility::kNotVisible, 20);
+  histograms.ExpectBucketCount("Android.WebView.Visibility.Global",
+                               Visibility::kVisible, 80);
+  histograms.ExpectBucketCount("Android.WebView.VisibleScheme.Global",
+                               Scheme::kHttp, 75);
+  histograms.ExpectBucketCount("Android.WebView.VisibleScreenCoverage.Global",
+                               /*percentage=*/0, 20);
+  histograms.ExpectBucketCount("Android.WebView.VisibleScreenCoverage.Global",
+                               /*percentage=*/7, 5);
+  histograms.ExpectBucketCount("Android.WebView.VisibleScreenCoverage.Global",
+                               /*percentage=*/42, 10);
+  histograms.ExpectBucketCount("Android.WebView.VisibleScreenCoverage.Global",
+                               /*percentage=*/100, 45);
+  histograms.ExpectBucketCount(
+      "Android.WebView.VisibleScreenCoverage.PerWebView.http",
+      /*percentage=*/100, 40);
+  histograms.ExpectBucketCount(
+      "Android.WebView.VisibleScreenCoverage.PerWebView.data",
+      /*percentage=*/100, 5);
 }
+
+TEST_F(VisibilityMetricsLoggerTest, TestScreenCoverageByScheme) {
+  base::HistogramTester histograms;
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      android_webview::features::kWebViewMeasureScreenCoverage);
+  std::unique_ptr<TestClient> client = std::make_unique<TestClient>(logger());
+
+  client->SetViewVisible(true);
+  client->SetViewAttached(true);
+  client->SetWindowVisible(true);
+
+  client->SetScheme(Scheme::kEmpty);
+  logger()->UpdateScreenCoverage(/*global_percentage=*/42, {Scheme::kEmpty},
+                                 /*scheme_percentages=*/{42});
+  task_environment().FastForwardBy(base::Seconds(100));
+
+  client->SetScheme(Scheme::kUnknown);
+  logger()->UpdateScreenCoverage(/*global_percentage=*/42, {Scheme::kUnknown},
+                                 /*scheme_percentages=*/{42});
+  task_environment().FastForwardBy(base::Seconds(101));
+
+  client->SetScheme(Scheme::kHttp);
+  logger()->UpdateScreenCoverage(/*global_percentage=*/42, {Scheme::kHttp},
+                                 /*scheme_percentages=*/{42});
+  task_environment().FastForwardBy(base::Seconds(102));
+
+  client->SetScheme(Scheme::kHttps);
+  logger()->UpdateScreenCoverage(/*global_percentage=*/42, {Scheme::kHttps},
+                                 /*scheme_percentages=*/{42});
+  task_environment().FastForwardBy(base::Seconds(103));
+
+  client->SetScheme(Scheme::kFile);
+  logger()->UpdateScreenCoverage(/*global_percentage=*/42, {Scheme::kFile},
+                                 /*scheme_percentages=*/{42});
+  task_environment().FastForwardBy(base::Seconds(104));
+
+  client->SetScheme(Scheme::kFtp);
+  logger()->UpdateScreenCoverage(/*global_percentage=*/42, {Scheme::kFtp},
+                                 /*scheme_percentages=*/{42});
+  task_environment().FastForwardBy(base::Seconds(105));
+
+  client->SetScheme(Scheme::kData);
+  logger()->UpdateScreenCoverage(/*global_percentage=*/42, {Scheme::kData},
+                                 /*scheme_percentages=*/{42});
+  task_environment().FastForwardBy(base::Seconds(106));
+
+  client->SetScheme(Scheme::kJavaScript);
+  logger()->UpdateScreenCoverage(/*global_percentage=*/42,
+                                 {Scheme::kJavaScript},
+                                 /*scheme_percentages=*/{42});
+  task_environment().FastForwardBy(base::Seconds(107));
+
+  client->SetScheme(Scheme::kAbout);
+  logger()->UpdateScreenCoverage(/*global_percentage=*/42, {Scheme::kAbout},
+                                 /*scheme_percentages=*/{42});
+  task_environment().FastForwardBy(base::Seconds(108));
+
+  client->SetScheme(Scheme::kChrome);
+  logger()->UpdateScreenCoverage(/*global_percentage=*/42, {Scheme::kChrome},
+                                 /*scheme_percentages=*/{42});
+  task_environment().FastForwardBy(base::Seconds(109));
+
+  client->SetScheme(Scheme::kBlob);
+  logger()->UpdateScreenCoverage(/*global_percentage=*/42, {Scheme::kBlob},
+                                 /*scheme_percentages=*/{42});
+  task_environment().FastForwardBy(base::Seconds(110));
+
+  client->SetScheme(Scheme::kContent);
+  logger()->UpdateScreenCoverage(/*global_percentage=*/42, {Scheme::kContent},
+                                 /*scheme_percentages=*/{42});
+  task_environment().FastForwardBy(base::Seconds(111));
+
+  client->SetScheme(Scheme::kIntent);
+  logger()->UpdateScreenCoverage(/*global_percentage=*/42, {Scheme::kIntent},
+                                 /*scheme_percentages=*/{42});
+  task_environment().FastForwardBy(base::Seconds(112));
+
+  logger()->RecordMetrics();
+  client.reset();
+
+  histograms.ExpectBucketCount("Android.WebView.Visibility.Global",
+                               Visibility::kVisible, 1378);
+  histograms.ExpectBucketCount("Android.WebView.VisibleScreenCoverage.Global",
+                               /*percentage=*/42, 1378);
+  histograms.ExpectBucketCount(
+      "Android.WebView.VisibleScreenCoverage.PerWebView",
+      /*percentage=*/42, 1378);
+  histograms.ExpectBucketCount(
+      "Android.WebView.VisibleScreenCoverage.PerWebView.empty",
+      /*percentage=*/42, 100);
+  histograms.ExpectBucketCount(
+      "Android.WebView.VisibleScreenCoverage.PerWebView.unknown",
+      /*percentage=*/42, 101);
+  histograms.ExpectBucketCount(
+      "Android.WebView.VisibleScreenCoverage.PerWebView.http",
+      /*percentage=*/42, 102);
+  histograms.ExpectBucketCount(
+      "Android.WebView.VisibleScreenCoverage.PerWebView.https",
+      /*percentage=*/42, 103);
+  histograms.ExpectBucketCount(
+      "Android.WebView.VisibleScreenCoverage.PerWebView.file",
+      /*percentage=*/42, 104);
+  histograms.ExpectBucketCount(
+      "Android.WebView.VisibleScreenCoverage.PerWebView.ftp",
+      /*percentage=*/42, 105);
+  histograms.ExpectBucketCount(
+      "Android.WebView.VisibleScreenCoverage.PerWebView.data",
+      /*percentage=*/42, 106);
+  histograms.ExpectBucketCount(
+      "Android.WebView.VisibleScreenCoverage.PerWebView.javascript",
+      /*percentage=*/42, 107);
+  histograms.ExpectBucketCount(
+      "Android.WebView.VisibleScreenCoverage.PerWebView.about",
+      /*percentage=*/42, 108);
+  histograms.ExpectBucketCount(
+      "Android.WebView.VisibleScreenCoverage.PerWebView.chrome",
+      /*percentage=*/42, 109);
+  histograms.ExpectBucketCount(
+      "Android.WebView.VisibleScreenCoverage.PerWebView.blob",
+      /*percentage=*/42, 110);
+  histograms.ExpectBucketCount(
+      "Android.WebView.VisibleScreenCoverage.PerWebView.content",
+      /*percentage=*/42, 111);
+  histograms.ExpectBucketCount(
+      "Android.WebView.VisibleScreenCoverage.PerWebView.intent",
+      /*percentage=*/42, 112);
+}
+
+TEST_F(VisibilityMetricsLoggerTest, TestScreenCoverageTwoClientsOverlapping) {
+  base::HistogramTester histograms;
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      android_webview::features::kWebViewMeasureScreenCoverage);
+
+  // The first client's coverage is 10 percent.
+  std::unique_ptr<TestClient> client1 = std::make_unique<TestClient>(logger());
+  client1->SetViewVisible(true);
+  client1->SetViewAttached(true);
+  client1->SetWindowVisible(true);
+  client1->SetScheme(Scheme::kHttp);
+  logger()->UpdateScreenCoverage(/*global_percentage=*/10, {Scheme::kHttp},
+                                 /*scheme_percentages=*/{10});
+  task_environment().FastForwardBy(base::Seconds(1));
+
+  // The second client overlaps exactly with the first but has a data scheme.
+  std::unique_ptr<TestClient> client2 = std::make_unique<TestClient>(logger());
+  client2->SetViewVisible(true);
+  client2->SetViewAttached(true);
+  client2->SetWindowVisible(true);
+  client2->SetScheme(Scheme::kData);
+  logger()->UpdateScreenCoverage(/*global_percentage=*/10,
+                                 {Scheme::kHttp, Scheme::kData},
+                                 /*scheme_percentages=*/{10, 10});
+  task_environment().FastForwardBy(base::Seconds(3));
+
+  client1.reset();
+  client2.reset();
+  logger()->RecordMetrics();
+
+  histograms.ExpectBucketCount("Android.WebView.Visibility.Global",
+                               Visibility::kVisible, 4);
+  histograms.ExpectBucketCount("Android.WebView.Visibility.PerWebView",
+                               Visibility::kVisible, 7);
+
+  histograms.ExpectBucketCount("Android.WebView.VisibleScheme.Global",
+                               Scheme::kHttp, 4);
+  histograms.ExpectBucketCount("Android.WebView.VisibleScheme.Global",
+                               Scheme::kData, 3);
+  histograms.ExpectBucketCount("Android.WebView.VisibleScheme.PerWebView",
+                               Scheme::kHttp, 4);
+  histograms.ExpectBucketCount("Android.WebView.VisibleScheme.PerWebView",
+                               Scheme::kData, 3);
+
+  histograms.ExpectBucketCount(
+      "Android.WebView.VisibleScreenCoverage.PerWebView.http",
+      /*percentage=*/10, 4);
+  histograms.ExpectBucketCount(
+      "Android.WebView.VisibleScreenCoverage.PerWebView.data",
+      /*percentage=*/10, 3);
+  histograms.ExpectBucketCount("Android.WebView.VisibleScreenCoverage.Global",
+                               /*percentage=*/10, 4);
+  histograms.ExpectBucketCount(
+      "Android.WebView.VisibleScreenCoverage.PerWebView",
+      /*percentage=*/10, 7);
+}
+
+TEST_F(VisibilityMetricsLoggerTest, TestScreenCoverageTwoClientsNoOverlap) {
+  base::HistogramTester histograms;
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      android_webview::features::kWebViewMeasureScreenCoverage);
+
+  // The first client's coverage is 10 percent.
+  std::unique_ptr<TestClient> client1 = std::make_unique<TestClient>(logger());
+  client1->SetViewVisible(true);
+  client1->SetViewAttached(true);
+  client1->SetWindowVisible(true);
+  client1->SetScheme(Scheme::kHttp);
+  logger()->UpdateScreenCoverage(/*global_percentage=*/10, {Scheme::kHttp},
+                                 /*scheme_percentages=*/{10});
+  task_environment().FastForwardBy(base::Seconds(1));
+
+  // The second client is the same size and scheme but does not overlap.
+  std::unique_ptr<TestClient> client2 = std::make_unique<TestClient>(logger());
+  client2->SetViewVisible(true);
+  client2->SetViewAttached(true);
+  client2->SetWindowVisible(true);
+  client2->SetScheme(Scheme::kHttp);
+  logger()->UpdateScreenCoverage(/*global_percentage=*/20,
+                                 {Scheme::kHttp, Scheme::kHttp},
+                                 /*scheme_percentages=*/{10, 10});
+  task_environment().FastForwardBy(base::Seconds(3));
+
+  client1.reset();
+  client2.reset();
+  logger()->RecordMetrics();
+
+  histograms.ExpectBucketCount("Android.WebView.Visibility.Global",
+                               Visibility::kVisible, 4);
+  histograms.ExpectBucketCount("Android.WebView.Visibility.PerWebView",
+                               Visibility::kVisible, 7);
+
+  histograms.ExpectBucketCount("Android.WebView.VisibleScheme.Global",
+                               Scheme::kHttp, 4);
+  histograms.ExpectBucketCount("Android.WebView.VisibleScheme.PerWebView",
+                               Scheme::kHttp, 7);
+
+  histograms.ExpectBucketCount(
+      "Android.WebView.VisibleScreenCoverage.PerWebView.http",
+      /*percentage=*/10, 7);
+  histograms.ExpectBucketCount("Android.WebView.VisibleScreenCoverage.Global",
+                               /*percentage=*/10, 1);
+  histograms.ExpectBucketCount("Android.WebView.VisibleScreenCoverage.Global",
+                               /*percentage=*/20, 3);
+  histograms.ExpectBucketCount(
+      "Android.WebView.VisibleScreenCoverage.PerWebView",
+      /*percentage=*/10, 7);
+}
+
+}  // namespace
 
 }  // namespace android_webview

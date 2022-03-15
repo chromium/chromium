@@ -358,7 +358,7 @@ class AwContents : public FindHelper::Listener,
   void SetDipScale(JNIEnv* env,
                    const base::android::JavaParamRef<jobject>& obj,
                    jfloat dip_scale);
-  jboolean IsDisplayingOpenWebContent(
+  base::android::ScopedJavaLocalRef<jstring> GetScheme(
       JNIEnv* env,
       const base::android::JavaParamRef<jobject>& obj);
   void OnInputEvent(JNIEnv* env,

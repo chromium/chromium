@@ -96140,6 +96140,9 @@ Called by update_scheduler_enums.py.-->
 </enum>
 
 <enum name="WebViewOpenWebScreenPortion">
+  <obsolete>
+    Deprecated in March 2022.
+  </obsolete>
   <int value="0" label="0-10%"/>
   <int value="1" label="10-20%"/>
   <int value="2" label="20-30%"/>

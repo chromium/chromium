@@ -7,6 +7,7 @@
 
 #include <map>
 #include <string>
+#include <vector>
 
 #include "base/callback.h"
 #include "base/time/time.h"
@@ -44,7 +45,6 @@ class VisibilityMetricsLogger {
     Scheme scheme = Scheme::kEmpty;
 
     bool IsVisible() const;
-    bool IsDisplayingOpenWebContent() const;
   };
 
   // These values are persisted to logs. Entries should not be renumbered and
@@ -53,24 +53,6 @@ class VisibilityMetricsLogger {
     kVisible = 0,
     kNotVisible = 1,
     kMaxValue = kNotVisible
-  };
-
-  // These values are persisted to logs. Entries should not be renumbered and
-  // numeric values should never be reused.
-  enum class WebViewOpenWebScreenPortion {
-    kZeroPercent = 0,
-    kTenPercent = 1,
-    kTwentyPercent = 2,
-    kThirtyPercent = 3,
-    kFortyPercent = 4,
-    kFiftyPercent = 5,
-    kSixtyPercent = 6,
-    kSeventyPercent = 7,
-    kEightyPercent = 8,
-    kNinetyPercent = 9,
-    kOneHundredPercent = 10,
-    kExactlyZeroPercent = 11,
-    kMaxValue = kExactlyZeroPercent,
   };
 
   class Client {
@@ -87,7 +69,9 @@ class VisibilityMetricsLogger {
   void AddClient(Client* client);
   void RemoveClient(Client* client);
   void ClientVisibilityChanged(Client* client);
-  void UpdateOpenWebScreenArea(int pixels, int percentage);
+  void UpdateScreenCoverage(int global_percentage,
+                            const std::vector<Scheme>& schemes,
+                            const std::vector<int>& scheme_percentages);
 
   void RecordMetrics();
 
@@ -103,7 +87,7 @@ class VisibilityMetricsLogger {
   void ProcessClientUpdate(Client* client, const VisibilityInfo& info);
   void RecordVisibilityMetrics();
   void RecordVisibleSchemeMetrics();
-  void RecordScreenPortionMetrics();
+  void RecordScreenCoverageMetrics();
 
   // Counts the number of visible clients.
   size_t all_clients_visible_count_ = 0;
@@ -130,10 +114,20 @@ class VisibilityMetricsLogger {
   base::TimeTicks last_update_time_;
   std::map<Client*, VisibilityInfo> client_visibility_;
 
-  WebViewOpenWebScreenPortion current_open_web_screen_portion_ =
-      WebViewOpenWebScreenPortion::kZeroPercent;
-  base::TimeDelta open_web_screen_portion_tracked_duration_
-      [static_cast<size_t>(WebViewOpenWebScreenPortion::kMaxValue) + 1] = {};
+  // The screen coverage percentage for all visible AwContents merged together.
+  int global_coverage_percentage_ = 0;
+
+  // The durations by screen coverage percentage for all visible AwContents
+  // merged together.
+  base::TimeDelta global_coverage_percentage_durations_[101] = {};
+
+  // The currently visible schemes and their screen coverage percentages. A
+  // scheme can occur more than once at a time so this uses a multimap.
+  std::multimap<Scheme, int> schemes_to_coverage_percentages_;
+
+  // The durations by screen coverage percentage and visible scheme.
+  std::map<Scheme, std::map<int, base::TimeDelta>>
+      schemes_to_percentages_to_durations_;
 
   OnVisibilityChangedCallback on_visibility_changed_callback_;
 };

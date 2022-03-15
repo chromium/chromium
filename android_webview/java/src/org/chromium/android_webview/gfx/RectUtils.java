@@ -23,11 +23,6 @@ public final class RectUtils {
         return rect.width() * rect.height();
     }
 
-    /** Creates a new {@link Rect} with the same bounds as the given {@link Rect}. */
-    public static Rect copyRect(Rect rect) {
-        return new Rect(rect.left, rect.top, rect.right, rect.bottom);
-    }
-
     /**
      * Segment Type Constants
      */
