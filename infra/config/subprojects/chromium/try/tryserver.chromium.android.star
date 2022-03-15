@@ -121,6 +121,19 @@ try_.builder(
 
 try_.builder(
     name = "android-cronet-arm-dbg",
+    branch_selector = branches.STANDARD_MILESTONE,
+    main_list_view = "try",
+    tryjob = try_.job(
+        location_regexp = [
+            ".+/[+]/components/cronet/.+",
+            ".+/[+]/components/grpc_support/.+",
+            ".+/[+]/build/android/.+",
+            ".+/[+]/build/config/android/.+",
+        ],
+        location_regexp_exclude = [
+            ".+/[+]/components/cronet/ios/.+",
+        ],
+    ),
 )
 
 try_.builder(

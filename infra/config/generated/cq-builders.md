@@ -91,6 +91,17 @@ builder.
   Path regular expressions:
   * [`//.+/3pp/.+`](https://cs.chromium.org/search?q=+file:.+/3pp/)
 
+* [android-cronet-arm-dbg](https://ci.chromium.org/p/chromium/builders/try/android-cronet-arm-dbg) ([definition](https://cs.chromium.org/search?q=+file:/try.star$+""android-cronet-arm-dbg"")) ([matching builders](https://cs.chromium.org/search?q=+file:trybots.py+""android-cronet-arm-dbg""))
+
+  Path regular expressions:
+  * [`//components/cronet/.+`](https://cs.chromium.org/chromium/src/components/cronet/)
+  * [`//components/grpc_support/.+`](https://cs.chromium.org/chromium/src/components/grpc_support/)
+  * [`//build/android/.+`](https://cs.chromium.org/chromium/src/build/android/)
+  * [`//build/config/android/.+`](https://cs.chromium.org/chromium/src/build/config/android/)
+
+  Path exclude regular expressions:
+  * [`//components/cronet/ios/.+`](https://cs.chromium.org/chromium/src/components/cronet/ios/)
+
 * [android-cronet-x86-dbg-10-tests](https://ci.chromium.org/p/chromium/builders/try/android-cronet-x86-dbg-10-tests) ([definition](https://cs.chromium.org/search?q=+file:/try.star$+""android-cronet-x86-dbg-10-tests"")) ([matching builders](https://cs.chromium.org/search?q=+file:trybots.py+""android-cronet-x86-dbg-10-tests""))
 
   Path regular expressions:
