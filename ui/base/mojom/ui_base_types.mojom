@@ -43,3 +43,15 @@ enum MenuSourceType {
   ADJUST_SELECTION,
   ADJUST_SELECTION_RESET
 };
+
+// Mapped to ui::WindowShowState. Any new type here needs to be synced with
+// ui::MenuSourceType in ui_base_types.h.
+[Stable]
+enum WindowShowState {
+  SHOW_STATE_DEFAULT = 0,
+  SHOW_STATE_NORMAL = 1,
+  SHOW_STATE_MINIMIZED = 2,
+  SHOW_STATE_MAXIMIZED = 3,
+  SHOW_STATE_INACTIVE = 4,
+  SHOW_STATE_FULLSCREEN = 5
+};

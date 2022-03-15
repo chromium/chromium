@@ -4,8 +4,11 @@
 
 #include "chrome/browser/lacros/desk_template_client_lacros.h"
 
+#include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_list.h"
+#include "chrome/browser/ui/browser_tabstrip.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chromeos/lacros/lacros_service.h"
 #include "ui/platform_window/platform_window.h"
@@ -20,6 +23,30 @@ DeskTemplateClientLacros::DeskTemplateClientLacros() {
 }
 
 DeskTemplateClientLacros::~DeskTemplateClientLacros() = default;
+
+void DeskTemplateClientLacros::CreateBrowserWithRestoredData(
+    const gfx::Rect& current_bounds,
+    const ui::mojom::WindowShowState window_show_state,
+    crosapi::mojom::DeskTemplateStatePtr tabstrip_state) {
+  Profile* profile = ProfileManager::GetLastUsedProfileAllowedByPolicy();
+  DCHECK(profile) << "No last used profile is found.";
+  Browser::CreateParams create_params = Browser::CreateParams(
+      Browser::TYPE_NORMAL, profile, /*user_gesture=*/false);
+  create_params.initial_show_state =
+      static_cast<ui::WindowShowState>(window_show_state);
+  create_params.initial_bounds = current_bounds;
+  Browser* browser = Browser::Create(create_params);
+  for (size_t i = 0; i < tabstrip_state->urls.size(); i++) {
+    chrome::AddTabAt(browser, tabstrip_state->urls.at(i), /*index=*/-1,
+                     /*foreground=*/
+                     (i == static_cast<size_t>(tabstrip_state->active_index)));
+  }
+  if (window_show_state == ui::mojom::WindowShowState::SHOW_STATE_MINIMIZED) {
+    browser->window()->Minimize();
+  } else {
+    browser->window()->ShowInactive();
+  }
+}
 
 void DeskTemplateClientLacros::GetTabStripModelUrls(
     uint32_t serial,

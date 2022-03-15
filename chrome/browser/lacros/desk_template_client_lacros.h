@@ -19,6 +19,10 @@ class DeskTemplateClientLacros : public crosapi::mojom::DeskTemplateClient {
 
  private:
   // DeskTemplateClient:
+  void CreateBrowserWithRestoredData(
+      const gfx::Rect& current_bounds,
+      const ui::mojom::WindowShowState window_show_state,
+      crosapi::mojom::DeskTemplateStatePtr tabstrip_state) override;
   void GetTabStripModelUrls(uint32_t serial,
                             const std::string& window_unique_id,
                             GetTabStripModelUrlsCallback callback) override;

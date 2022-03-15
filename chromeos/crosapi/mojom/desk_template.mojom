@@ -4,6 +4,8 @@
 
 module crosapi.mojom;
 
+import "ui/base/mojom/ui_base_types.mojom";
+import "ui/gfx/geometry/mojom/geometry.mojom";
 import "url/mojom/url.mojom";
 
 // State of the tab strip in the single Lacros window for saving in the desk
@@ -18,10 +20,16 @@ struct DeskTemplateState {
 };
 
 // Interface for desk template clients.  Implemented by lacros-chrome.
-// Next version: 1
-// Next method id: 1
+// Next version: 2
+// Next method id: 2
 [Stable]
 interface DeskTemplateClient {
+  // Creates a browser from the desk template data.
+  [MinVersion=1]
+  CreateBrowserWithRestoredData@1(gfx.mojom.Rect bounds,
+                                  ui.mojom.WindowShowState initial_show_state,
+                                  DeskTemplateState state);
+
   // Returns state of the tab strip model in the browser window identified by
   // |window_unique_id|.
   GetTabStripModelUrls@0(uint32 serial, string window_unique_id) => (
