@@ -4425,6 +4425,7 @@ if (is_chromeos_lacros) {
       "../browser/ui/browser_navigator_browsertest_chromeos.cc",
       "../browser/ui/views/location_bar/intent_chip_button_browsertest.cc",
       "../browser/ui/views/profiles/profile_picker_view_browsertest.cc",
+      "../browser/web_applications/app_service/lacros_web_apps_controller_lacros_browsertest.cc",
     ]
 
     deps = [
