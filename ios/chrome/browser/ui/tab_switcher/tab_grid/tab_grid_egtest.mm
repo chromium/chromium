@@ -240,7 +240,8 @@ id<GREYMatcher> SearchSuggestedActionsSectionWithHistoryMatchesCount(
       @selector(testOpenTabsHeaderVisibleInSearchModeWhenSearchBarIsNotEmpty),
       @selector(testSuggestedActionsVisibleInSearchModeWhenSearchBarIsNotEmpty),
       @selector(testSearchSuggestedActionsDisplaysCorrectHistoryMatchesCount),
-      @selector(testSearchSuggestedActionsSectionContentInRegularGrid)};
+      @selector(testSearchSuggestedActionsSectionContentInRegularGrid),
+      @selector(testSuggestedActionsNotAvailableInIncognitoPageSearchMode)};
   for (SEL test : searchTests) {
     if ([self isRunningTest:test]) {
       config.features_enabled.push_back(kTabsSearch);
@@ -1598,6 +1599,33 @@ id<GREYMatcher> SearchSuggestedActionsSectionWithHistoryMatchesCount(
       assertWithMatcher:grey_nil()];
 }
 
+// Tests that suggested actions section does not appear in search mode for
+// incognito page.
+- (void)testSuggestedActionsNotAvailableInIncognitoPageSearchMode {
+  [self loadTestURLsInNewIncognitoTabs];
+  [ChromeEarlGrey showTabSwitcher];
+
+  // Enter search mode.
+  [[EarlGrey selectElementWithMatcher:TabGridSearchTabsButton()]
+      performAction:grey_tap()];
+
+  // Upon entry, the search bar is empty. Verify that the suggested actions
+  // section doesn't exist.
+  [[EarlGrey selectElementWithMatcher:SearchSuggestedActionsSectionHeader()]
+      assertWithMatcher:grey_nil()];
+  [[EarlGrey selectElementWithMatcher:SearchSuggestedActionsSection()]
+      assertWithMatcher:grey_nil()];
+
+  // Searching with a query should not show suggested actions section.
+  [[EarlGrey selectElementWithMatcher:TabGridSearchBar()]
+      performAction:grey_typeText(@"page 2\n")];
+  [[EarlGrey selectElementWithMatcher:SearchSuggestedActionsSectionHeader()]
+      assertWithMatcher:grey_nil()];
+  [[self scrollDownViewMatcher:chrome_test_util::IncognitoTabGrid()
+               toSelectMatcher:SearchSuggestedActionsSection()]
+      assertWithMatcher:grey_nil()];
+}
+
 // Tests that the search suggested actions section has the right rows in the
 // regular grid.
 - (void)testSearchSuggestedActionsSectionContentInRegularGrid {
@@ -1697,7 +1725,6 @@ id<GREYMatcher> SearchSuggestedActionsSectionWithHistoryMatchesCount(
 // Tests that selecting an open tab search result in incognito mode will
 // correctly open the expected tab.
 - (void)testSearchIncognitoOpenTabsSelectResult {
-  [ChromeEarlGrey openNewIncognitoTab];
   [self loadTestURLsInNewIncognitoTabs];
   [ChromeEarlGrey showTabSwitcher];
 
@@ -1840,6 +1867,7 @@ id<GREYMatcher> SearchSuggestedActionsSectionWithHistoryMatchesCount(
 }
 
 - (void)loadTestURLsInNewIncognitoTabs {
+  [ChromeEarlGrey openNewIncognitoTab];
   [ChromeEarlGrey loadURL:_URL1];
   [ChromeEarlGrey waitForWebStateContainingText:kResponse1];
 
