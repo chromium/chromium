@@ -52,6 +52,7 @@
 #include "content/public/test/test_navigation_throttle_inserter.h"
 #include "content/public/test/test_utils.h"
 #include "content/public/test/text_input_test_utils.h"
+#include "content/public/test/url_loader_interceptor.h"
 #include "content/shell/browser/shell.h"
 #include "content/shell/browser/shell_javascript_dialog_manager.h"
 #include "content/test/content_browser_test_utils_internal.h"
@@ -669,6 +670,23 @@ void BackForwardCacheBrowserTest::ExpectBrowsingInstanceNotSwappedReasons(
               UnorderedElementsAreArray(
                   expected_browsing_instance_not_swapped_reasons_))
       << location.ToString();
+}
+
+void BackForwardCacheBrowserTest::NavigateAndBlock(GURL url,
+                                                   int history_offset) {
+  // Block the navigation with an error.
+  std::unique_ptr<URLLoaderInterceptor> url_interceptor =
+      URLLoaderInterceptor::SetupRequestFailForURL(url,
+                                                   net::ERR_BLOCKED_BY_CLIENT);
+  TestNavigationManager manager(web_contents(), url);
+  if (history_offset) {
+    shell()->GoBackOrForward(history_offset);
+  } else {
+    shell()->LoadURL(url);
+  }
+  manager.WaitForNavigationFinished();
+  ASSERT_EQ(current_frame_host()->GetLastCommittedURL(), url);
+  ASSERT_TRUE(current_frame_host()->IsErrorDocument());
 }
 
 std::initializer_list<RenderFrameHostImpl*> Elements(

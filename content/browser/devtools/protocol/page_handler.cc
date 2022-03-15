@@ -1413,6 +1413,8 @@ Page::BackForwardCacheNotRestoredReason NotRestoredReasonToProtocol(
           CacheControlNoStoreHTTPOnlyCookieModified;
     case Reason::kNoResponseHead:
       return Page::BackForwardCacheNotRestoredReasonEnum::NoResponseHead;
+    case Reason::kErrorDocument:
+      return Page::BackForwardCacheNotRestoredReasonEnum::ErrorDocument;
     case Reason::kBlocklistedFeatures:
       // Blocklisted features should be handled separately and be broken down
       // into sub reasons.
@@ -1691,6 +1693,7 @@ Page::BackForwardCacheNotRestoredReasonType MapNotRestoredReasonToType(
     case Reason::kCacheControlNoStoreCookieModified:
     case Reason::kCacheControlNoStoreHTTPOnlyCookieModified:
     case Reason::kNoResponseHead:
+    case Reason::kErrorDocument:
       return Page::BackForwardCacheNotRestoredReasonTypeEnum::Circumstantial;
     case Reason::kOptInUnloadHeaderNotPresent:
     case Reason::kUnloadHandlerExistsInMainFrame:

@@ -181,6 +181,8 @@ ProtoEnum::BackForwardCacheNotRestoredReason NotRestoredReasonToTraceEnum(
       return ProtoEnum::CACHE_CONTROL_NO_STORE_HTTP_ONLY_COOKIE_MODIFIED;
     case Reason::kNoResponseHead:
       return ProtoEnum::NO_RESPONSE_HEAD;
+    case Reason::kErrorDocument:
+      return ProtoEnum::ERROR_DOCUMENT;
     case Reason::kBlocklistedFeatures:
       return ProtoEnum::BLOCKLISTED_FEATURES;
     case Reason::kUnknown:
@@ -389,6 +391,8 @@ std::string BackForwardCacheCanStoreDocumentResult::NotRestoredReasonToString(
     case Reason::kNoResponseHead:
       return "main RenderFrameHost doesn't have response headers set, probably "
              "due not having successfully committed a navigation.";
+    case Reason::kErrorDocument:
+      return "Error documents cannot be stored in bfcache";
   }
 }
 
