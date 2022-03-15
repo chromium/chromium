@@ -10,8 +10,8 @@ namespace rust_gtest_interop {
 
 namespace {
 
-// The C++ test fixture used for all Rust unit tests. It provides nothing except
-// the test body which calls thr Rust function.
+// The default C++ test fixture used for Rust unit tests. It provides nothing
+// except the test body which calls the Rust function.
 class RustTest : public testing::Test {
  public:
   explicit RustTest(void (&test_fn)()) : test_fn_(test_fn) {}
@@ -23,12 +23,17 @@ class RustTest : public testing::Test {
 
 }  // namespace
 
-void rust_gtest_add_test(void (*test_fn)(),
+GtestFactory rust_gtest_default_factory() {
+  return [](void (*f)()) -> testing::Test* { return new RustTest(*f); };
+}
+
+void rust_gtest_add_test(GtestFactory gtest_factory,
+                         void (*test_function)(),
                          const char* test_suite_name,
                          const char* test_name,
                          const char* file,
                          int32_t line) {
-  auto factory = [=]() -> testing::Test* { return new RustTest(*test_fn); };
+  auto factory = [=]() { return gtest_factory(test_function); };
   testing::RegisterTest(test_suite_name, test_name, nullptr, nullptr, file,
                         line, factory);
 }

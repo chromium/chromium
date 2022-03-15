@@ -81,38 +81,86 @@ pub mod __private {
         }
     }
 
-    extern "C" {
-        /// The C++ mangled name for rust_gtest_interop::rust_gtest_add_test(). This comes from
-        /// `objdump -t` on the C++ object file.
-        ///
-        /// TODO(danakj): We do this by hand because cxx doesn't support passing raw function
-        /// pointers nor passing `*const c_char`: https://github.com/dtolnay/cxx/issues/1011 and
-        /// https://github.com/dtolnay/cxx/issues/1015.
-        fn _ZN18rust_gtest_interop19rust_gtest_add_testEPFvvEPKcS3_S3_i(
-            func: extern "C" fn(),
-            test_suite_name: *const std::os::raw::c_char,
-            test_name: *const std::os::raw::c_char,
-            file: *const std::os::raw::c_char,
-            line: i32,
-        );
+    /// Used in the function pointer return type of rust_gtest_default_factory() in order to keep
+    /// some type safety while erasing the C++ rust_gtest_interop::GtestFactory's type.
+    #[non_exhaustive]
+    #[repr(C)]
+    struct GTestFactoryPtr(usize);
+
+    /// Wrapper that calls C++ rust_gtest_default_factory().
+    ///
+    /// The function returns a function pointer to a C++ type that Rust doesn't know about, since
+    /// we're not using generated C++ bindings. So we just represent the function pointer as a
+    ///  `GTestFactoryPtr (*)()`. The function pointer only exists to be passed to
+    /// rust_gtest_add_test(), and Rust code must not call it since the actual signature is lost.
+    ///
+    /// # Safety
+    ///
+    /// Rust must not call the returned function pointer, the only thing Rust can do with it is pass
+    /// it to rust_gtest_add_test().
+    ///
+    /// TODO(danakj): We do this by hand because cxx doesn't support function pointers
+    /// (https://github.com/dtolnay/cxx/issues/1011). We could wrap the function pointer in a
+    /// struct, but then we have to pass it in UniquePtr a function pointer with 'static lifetime.
+    /// We do this instead of introducing multiple levels of extra abstractions (a struct,
+    /// unique_ptr) and leaking heap memory.
+    unsafe fn rust_gtest_default_factory() -> extern "C" fn() -> GTestFactoryPtr {
+        extern "C" {
+            /// The C++ mangled name for rust_gtest_interop::rust_gtest_default_factory(). This
+            /// comes from `objdump -t` on the C++ object file.
+            fn _ZN18rust_gtest_interop26rust_gtest_default_factoryEv()
+            -> extern "C" fn() -> GTestFactoryPtr;
+        }
+
+        _ZN18rust_gtest_interop26rust_gtest_default_factoryEv()
     }
+
     /// Wrapper that calls C++ rust_gtest_add_test().
-    fn rust_add_test(
+    ///
+    /// Note that the `factory` parameter is actually a C++ function pointer, of type
+    /// rust_gtest_interop::GtestFactory. However the function pointer includes C++ types Rust
+    /// doesn't know about and we are not using a C++ bindings generator to know about them. So we
+    /// cheat and just call it a `GTestFactoryPtr (*)()`.
+    ///
+    /// # Safety
+    ///
+    /// The `factory` function pointer can only be a pointer returned from
+    /// rust_gtest_default_factory(), or some other similar function that returns a C++
+    /// `rust_gtest_interop::GtestFactory`. It is not actually a `GTestFactoryPtr (*)()`, so
+    /// other function pointers would be invalid.
+    ///
+    /// TODO(danakj): We do this by hand because cxx doesn't support passing raw function pointers
+    /// nor passing `*const c_char`: https://github.com/dtolnay/cxx/issues/1011 and
+    /// https://github.com/dtolnay/cxx/issues/1015.
+    unsafe fn rust_gtest_add_test(
+        factory: extern "C" fn() -> GTestFactoryPtr,
         func: extern "C" fn(),
         test_suite_name: *const std::os::raw::c_char,
         test_name: *const std::os::raw::c_char,
         file: *const std::os::raw::c_char,
         line: i32,
     ) {
-        unsafe {
-            _ZN18rust_gtest_interop19rust_gtest_add_testEPFvvEPKcS3_S3_i(
-                func,
-                test_suite_name,
-                test_name,
-                file,
-                line,
-            )
+        extern "C" {
+            /// The C++ mangled name for rust_gtest_interop::rust_gtest_add_test(). This comes from
+            /// `objdump -t` on the C++ object file.
+            fn _ZN18rust_gtest_interop19rust_gtest_add_testEPFPN7testing4TestEPFvvEES4_PKcS8_S8_i(
+                factory: extern "C" fn() -> GTestFactoryPtr,
+                func: extern "C" fn(),
+                test_suite_name: *const std::os::raw::c_char,
+                test_name: *const std::os::raw::c_char,
+                file: *const std::os::raw::c_char,
+                line: i32,
+            );
         }
+
+        _ZN18rust_gtest_interop19rust_gtest_add_testEPFPN7testing4TestEPFvvEES4_PKcS8_S8_i(
+            factory,
+            func,
+            test_suite_name,
+            test_name,
+            file,
+            line,
+        )
     }
 
     /// Information used to register a function pointer as a test with the C++ Gtest framework.
@@ -131,13 +179,19 @@ pub mod __private {
     /// thread, before main() is run. It may not panic, or call anything that may panic.
     pub fn register_test(r: TestRegistration) {
         let line = r.line.try_into().unwrap_or(-1);
-        rust_add_test(
-            r.func,
-            r.test_suite_name.as_ptr(),
-            r.test_name.as_ptr(),
-            r.file.as_ptr(),
-            line,
-        );
+        // SAFETY: The `factory` parameter to rust_gtest_add_test() must be a type-erased C++
+        // GtestFactory, which is what rust_gtest_default_factory() returns.
+        unsafe {
+            let factory = rust_gtest_default_factory();
+            rust_gtest_add_test(
+                factory,
+                r.func,
+                r.test_suite_name.as_ptr(),
+                r.test_name.as_ptr(),
+                r.file.as_ptr(),
+                line,
+            )
+        };
     }
 }
 

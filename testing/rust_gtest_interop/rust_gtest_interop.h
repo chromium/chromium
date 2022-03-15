@@ -9,7 +9,20 @@
 
 #include "third_party/rust/cxx/v1/crate/include/cxx.h"
 
+namespace testing {
+class Test;
+}
+
 namespace rust_gtest_interop {
+
+// The factory function which will construct a testing::Test subclass that runs
+// the given function pointer as the test body. The factory function exists to
+// allow choosing different subclasses of testing::Test.
+using GtestFactory = testing::Test* (*)(void (*)());
+
+// Returns a factory that will run the test function. Used for any Rust tests
+// that don't need a specific C++ testing::Test subclass.
+GtestFactory rust_gtest_default_factory();
 
 // Register a test to be run via GTest. This must be called before main(), as
 // there's no calls from C++ into Rust to collect tests. Any function given to
@@ -22,7 +35,8 @@ namespace rust_gtest_interop {
 //
 // SAFETY: This function makes copies of the strings so the pointers do not need
 // to outlive the function call.
-void rust_gtest_add_test(void (*test_fn)(),
+void rust_gtest_add_test(GtestFactory gtest_factory,
+                         void (*test_function)(),
                          const char* test_suite_name,
                          const char* test_name,
                          const char* file,
