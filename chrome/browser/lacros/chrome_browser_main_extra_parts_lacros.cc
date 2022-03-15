@@ -23,6 +23,7 @@
 #include "chrome/browser/lacros/standalone_browser_test_controller.h"
 #include "chrome/browser/lacros/sync/sync_explicit_passphrase_client_lacros.h"
 #include "chrome/browser/lacros/task_manager_lacros.h"
+#include "chrome/browser/lacros/web_app_provider_bridge_lacros.h"
 #include "chrome/browser/lacros/web_page_info_lacros.h"
 #include "chrome/browser/metrics/structured/chrome_structured_metrics_recorder.h"
 #include "chrome/browser/sync/sync_service_factory.h"
@@ -98,6 +99,11 @@ void ChromeBrowserMainExtraPartsLacros::PostBrowserStart() {
         std::make_unique<LacrosExtensionAppsController>();
     extension_apps_controller_->Initialize(
         extension_apps_publisher_->publisher());
+  }
+
+  if (chromeos::LacrosService::Get()->init_params()->web_apps_enabled) {
+    web_app_provider_bridge_ =
+        std::make_unique<crosapi::WebAppProviderBridgeLacros>();
   }
 
 #if !BUILDFLAG(IS_CHROMEOS_DEVICE)

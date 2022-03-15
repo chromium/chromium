@@ -66,6 +66,7 @@
 #include "chromeos/crosapi/mojom/timezone.mojom.h"
 #include "chromeos/crosapi/mojom/tts.mojom.h"
 #include "chromeos/crosapi/mojom/url_handler.mojom.h"
+#include "chromeos/crosapi/mojom/web_app_service.mojom.h"
 #include "chromeos/crosapi/mojom/web_page_info.mojom.h"
 #include "chromeos/lacros/lacros_service_never_blocking_state.h"
 #include "chromeos/lacros/native_theme_cache.h"
@@ -372,6 +373,9 @@ LacrosService::LacrosService()
                   Crosapi::MethodMinVersions::kBindUrlHandlerMinVersion>();
   ConstructRemote<crosapi::mojom::AppPublisher, &Crosapi::BindWebAppPublisher,
                   Crosapi::MethodMinVersions::kBindWebAppPublisherMinVersion>();
+  ConstructRemote<crosapi::mojom::WebAppService,
+                  &crosapi::mojom::Crosapi::BindWebAppService,
+                  Crosapi::MethodMinVersions::kBindWebAppServiceMinVersion>();
   ConstructRemote<
       crosapi::mojom::WebPageInfoFactory,
       &crosapi::mojom::Crosapi::BindWebPageInfoFactory,

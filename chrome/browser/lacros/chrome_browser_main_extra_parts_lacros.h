@@ -31,6 +31,7 @@ class ArcIconCacheDelegateProvider;
 namespace crosapi {
 class SearchControllerLacros;
 class TaskManagerLacros;
+class WebAppProviderBridgeLacros;
 class WebPageInfoProviderLacros;
 }  // namespace crosapi
 
@@ -89,6 +90,9 @@ class ChromeBrowserMainExtraPartsLacros : public ChromeBrowserMainExtraParts {
 
   // Handles tab property requests from ash.
   std::unique_ptr<crosapi::WebPageInfoProviderLacros> web_page_info_provider_;
+
+  // Receives web app control commands from ash.
+  std::unique_ptr<crosapi::WebAppProviderBridgeLacros> web_app_provider_bridge_;
 
   // Receives extension app events from ash.
   std::unique_ptr<LacrosExtensionAppsController> extension_apps_controller_;
