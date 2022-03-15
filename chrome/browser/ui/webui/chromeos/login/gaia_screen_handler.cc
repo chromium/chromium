@@ -295,6 +295,13 @@ base::Value MakeSecurityTokenPinDialogParameters(
 }
 
 bool ShouldPrepareForRecovery(const AccountId& account_id) {
+  // Always return `true` if the testing switch is set. It will allow to test
+  // the recovery without triggering the real recovery conditions which may be
+  // difficult as of now.
+  if (base::CommandLine::ForCurrentProcess()->HasSwitch(
+          ash::switches::kForceCryptohomeRecoveryForTesting))
+    return true;
+
   if (!account_id.is_valid())
     return false;
   // Cryptohome recovery is probably needed when password is entered incorrectly

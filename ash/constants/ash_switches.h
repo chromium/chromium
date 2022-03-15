@@ -175,6 +175,8 @@ COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const char kFakeDriveFsLauncherSocketPath[];
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kFingerprintSensorLocation[];
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kFirstExecAfterBoot[];
+COMPONENT_EXPORT(ASH_CONSTANTS)
+extern const char kForceCryptohomeRecoveryForTesting[];
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kForceDevToolsAvailable[];
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kForceFirstRunUI[];
 COMPONENT_EXPORT(ASH_CONSTANTS)

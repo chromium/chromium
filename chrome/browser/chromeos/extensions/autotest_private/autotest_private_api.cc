@@ -14,9 +14,11 @@
 
 #include "ash/components/arc/arc_prefs.h"
 #include "ash/components/arc/metrics/arc_metrics_constants.h"
+#include "ash/components/login/auth/user_context.h"
 #include "ash/components/settings/cros_settings_names.h"
 #include "ash/constants/app_types.h"
 #include "ash/constants/ash_pref_names.h"
+#include "ash/constants/ash_switches.h"
 #include "ash/public/cpp/accelerators.h"
 #include "ash/public/cpp/accessibility_controller.h"
 #include "ash/public/cpp/ambient/ambient_ui_model.h"
@@ -53,6 +55,7 @@
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
+#include "base/system/sys_info.h"
 #include "base/task/post_task.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "base/threading/thread_task_runner_handle.h"
@@ -85,6 +88,7 @@
 #include "chrome/browser/ash/guest_os/guest_os_registry_service.h"
 #include "chrome/browser/ash/guest_os/guest_os_registry_service_factory.h"
 #include "chrome/browser/ash/login/lock/screen_locker.h"
+#include "chrome/browser/ash/login/ui/login_display_host.h"
 #include "chrome/browser/ash/plugin_vm/plugin_vm_installer.h"
 #include "chrome/browser/ash/plugin_vm/plugin_vm_installer_factory.h"
 #include "chrome/browser/ash/plugin_vm/plugin_vm_pref_names.h"
@@ -1989,6 +1993,50 @@ ExtensionFunction::ResponseAction AutotestPrivateGetArcPackageFunction::Run() {
   }
   return RespondNow(
       OneArgument(base::Value::FromUniquePtrValue(std::move(package_value))));
+}
+
+///////////////////////////////////////////////////////////////////////////////
+// AutotestPrivateGetCryptohomeRecoveryDataFunction
+///////////////////////////////////////////////////////////////////////////////
+
+AutotestPrivateGetCryptohomeRecoveryDataFunction::
+    ~AutotestPrivateGetCryptohomeRecoveryDataFunction() = default;
+
+ExtensionFunction::ResponseAction
+AutotestPrivateGetCryptohomeRecoveryDataFunction::Run() {
+  // The API is available only on test images.
+  base::SysInfo::CrashIfChromeOSNonTestImage();
+
+  if (!base::CommandLine::ForCurrentProcess()->HasSwitch(
+          ash::switches::kForceCryptohomeRecoveryForTesting)) {
+    return RespondNow(
+        Error("force-cryptohome-recovery-for-testing switch is not set"));
+  }
+
+  auto* host = ash::LoginDisplayHost::default_host();
+  if (!host)
+    return RespondNow(Error("LoginDisplayHost is not available"));
+  auto* context = host->GetWizardContext();
+  if (!context)
+    return RespondNow(Error("WizardContext is not available"));
+
+  chromeos::UserContext* user_context =
+      context->extra_factors_auth_session.get();
+  if (!user_context)
+    return RespondNow(Error("UserContext is not available"));
+
+  std::string reauth_proof_token = user_context->GetReauthProofToken();
+  std::string refresh_token = user_context->GetRefreshToken();
+  if (reauth_proof_token.empty() || refresh_token.empty()) {
+    return RespondNow(Error("Tokens are empty"));
+  }
+
+  api::autotest_private::CryptohomeRecoveryDataDict result;
+  result.reauth_proof_token = reauth_proof_token;
+  result.refresh_token = refresh_token;
+
+  return RespondNow(
+      OneArgument(base::Value::FromUniquePtrValue(result.ToValue())));
 }
 
 ///////////////////////////////////////////////////////////////////////////////

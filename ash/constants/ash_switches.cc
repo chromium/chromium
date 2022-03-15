@@ -524,6 +524,10 @@ const char kFingerprintSensorLocation[] = "fingerprint-sensor-location";
 // Not passed on restart after sign out.
 const char kFirstExecAfterBoot[] = "first-exec-after-boot";
 
+// Forces fetching tokens for Cryptohome Recovery.
+const char kForceCryptohomeRecoveryForTesting[] =
+    "force-cryptohome-recovery-for-testing";
+
 // Forces developer tools availability, no matter what values the enterprise
 // policies DeveloperToolsDisabled and DeveloperToolsAvailability are set to.
 const char kForceDevToolsAvailable[] = "force-devtools-available";

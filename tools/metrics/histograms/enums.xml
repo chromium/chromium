@@ -31907,6 +31907,7 @@ Called by update_extension_histograms.py.-->
   <int value="1636" label="AUTOTESTPRIVATE_LOADSMARTDIMCOMPONENT"/>
   <int value="1637" label="TERMINALPRIVATE_GETPREFS"/>
   <int value="1638" label="TERMINALPRIVATE_SETPREFS"/>
+  <int value="1639" label="AUTOTESTPRIVATE_GETCRYPTOHOMERECOVERYDATA"/>
 </enum>
 
 <enum name="ExtensionIconState">
