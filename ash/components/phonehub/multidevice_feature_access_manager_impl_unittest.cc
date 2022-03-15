@@ -18,6 +18,10 @@ namespace ash {
 namespace phonehub {
 namespace {
 
+using AccessStatus = MultideviceFeatureAccessManager::AccessStatus;
+using AccessProhibitedReason =
+    MultideviceFeatureAccessManager::AccessProhibitedReason;
+
 class FakeObserver : public MultideviceFeatureAccessManager::Observer {
  public:
   FakeObserver() = default;
@@ -78,11 +82,9 @@ class MultideviceFeatureAccessManagerImplTest : public testing::Test {
   void TearDown() override { manager_->RemoveObserver(&fake_observer_); }
 
   void InitializeAccessStatus(
-      MultideviceFeatureAccessManager::AccessStatus
-          notification_expected_status,
-      MultideviceFeatureAccessManager::AccessStatus camera_roll_expected_status,
-      MultideviceFeatureAccessManager::AccessProhibitedReason reason =
-          MultideviceFeatureAccessManager::AccessProhibitedReason::kUnknown) {
+      AccessStatus notification_expected_status,
+      AccessStatus camera_roll_expected_status,
+      AccessProhibitedReason reason = AccessProhibitedReason::kUnknown) {
     pref_service_.SetInteger(prefs::kNotificationAccessStatus,
                              static_cast<int>(notification_expected_status));
     pref_service_.SetInteger(prefs::kCameraRollAccessStatus,
@@ -101,10 +103,14 @@ class MultideviceFeatureAccessManagerImplTest : public testing::Test {
     return fake_delegate_.status();
   }
 
+  void VerifyNotificationAccessGrantedState(AccessStatus expected_status) {
+    VerifyNotificationAccessGrantedState(expected_status,
+                                         AccessProhibitedReason::kUnknown);
+  }
+
   void VerifyNotificationAccessGrantedState(
-      MultideviceFeatureAccessManager::AccessStatus expected_status,
-      MultideviceFeatureAccessManager::AccessProhibitedReason expected_reason =
-          MultideviceFeatureAccessManager::AccessProhibitedReason::kUnknown) {
+      AccessStatus expected_status,
+      AccessProhibitedReason expected_reason) {
     EXPECT_EQ(static_cast<int>(expected_status),
               pref_service_.GetInteger(prefs::kNotificationAccessStatus));
     EXPECT_EQ(expected_status, manager_->GetNotificationAccessStatus());
@@ -115,8 +121,7 @@ class MultideviceFeatureAccessManagerImplTest : public testing::Test {
               manager_->GetNotificationAccessProhibitedReason());
   }
 
-  void VerifyCameraRollAccessGrantedState(
-      MultideviceFeatureAccessManager::AccessStatus expected_status) {
+  void VerifyCameraRollAccessGrantedState(AccessStatus expected_status) {
     EXPECT_EQ(static_cast<int>(expected_status),
               pref_service_.GetInteger(prefs::kCameraRollAccessStatus));
     EXPECT_EQ(expected_status, manager_->GetCameraRollAccessStatus());
@@ -136,15 +141,12 @@ class MultideviceFeatureAccessManagerImplTest : public testing::Test {
     return manager_->IsSetupOperationInProgress();
   }
 
-  void SetNotificationAccessStatusInternal(
-      MultideviceFeatureAccessManager::AccessStatus status,
-      MultideviceFeatureAccessManager::AccessProhibitedReason reason =
-          MultideviceFeatureAccessManager::AccessProhibitedReason::kUnknown) {
+  void SetNotificationAccessStatusInternal(AccessStatus status,
+                                           AccessProhibitedReason reason) {
     manager_->SetNotificationAccessStatusInternal(status, reason);
   }
 
-  void SetCameraRollAccessStatusInternal(
-      MultideviceFeatureAccessManager::AccessStatus status) {
+  void SetCameraRollAccessStatusInternal(AccessStatus status) {
     manager_->SetCameraRollAccessStatusInternal(status);
   }
 
@@ -185,16 +187,14 @@ class MultideviceFeatureAccessManagerImplTest : public testing::Test {
 TEST_F(MultideviceFeatureAccessManagerImplTest, ShouldShowSetupRequiredUi) {
   // Notification setup is not dismissed initially even when access has been
   // granted.
-  InitializeAccessStatus(
-      MultideviceFeatureAccessManager::AccessStatus::kAccessGranted,
-      MultideviceFeatureAccessManager::AccessStatus::kAccessGranted);
+  InitializeAccessStatus(AccessStatus::kAccessGranted,
+                         AccessStatus::kAccessGranted);
   EXPECT_FALSE(HasMultideviceFeatureSetupUiBeenDismissed());
 
   // Notification setup is not dismissed initially when access has not been
   // granted.
-  InitializeAccessStatus(
-      MultideviceFeatureAccessManager::AccessStatus::kAvailableButNotGranted,
-      MultideviceFeatureAccessManager::AccessStatus::kAccessGranted);
+  InitializeAccessStatus(AccessStatus::kAvailableButNotGranted,
+                         AccessStatus::kAccessGranted);
   EXPECT_FALSE(HasMultideviceFeatureSetupUiBeenDismissed());
 
   // Simlulate dismissal of UI.
@@ -202,26 +202,21 @@ TEST_F(MultideviceFeatureAccessManagerImplTest, ShouldShowSetupRequiredUi) {
   EXPECT_TRUE(HasMultideviceFeatureSetupUiBeenDismissed());
 
   // Dismissal value is persisted on initialization with access not granted.
-  InitializeAccessStatus(
-      MultideviceFeatureAccessManager::AccessStatus::kAvailableButNotGranted,
-      MultideviceFeatureAccessManager::AccessStatus::kAccessGranted);
+  InitializeAccessStatus(AccessStatus::kAvailableButNotGranted,
+                         AccessStatus::kAccessGranted);
   EXPECT_TRUE(HasMultideviceFeatureSetupUiBeenDismissed());
 
   // Dismissal value is persisted on initialization with access granted.
-  InitializeAccessStatus(
-      MultideviceFeatureAccessManager::AccessStatus::kAccessGranted,
-      MultideviceFeatureAccessManager::AccessStatus::kAccessGranted);
+  InitializeAccessStatus(AccessStatus::kAccessGranted,
+                         AccessStatus::kAccessGranted);
   EXPECT_TRUE(HasMultideviceFeatureSetupUiBeenDismissed());
 }
 
 TEST_F(MultideviceFeatureAccessManagerImplTest, AllAccessInitiallyGranted) {
-  InitializeAccessStatus(
-      MultideviceFeatureAccessManager::AccessStatus::kAccessGranted,
-      MultideviceFeatureAccessManager::AccessStatus::kAccessGranted);
-  VerifyNotificationAccessGrantedState(
-      MultideviceFeatureAccessManager::AccessStatus::kAccessGranted);
-  VerifyCameraRollAccessGrantedState(
-      MultideviceFeatureAccessManager::AccessStatus::kAccessGranted);
+  InitializeAccessStatus(AccessStatus::kAccessGranted,
+                         AccessStatus::kAccessGranted);
+  VerifyNotificationAccessGrantedState(AccessStatus::kAccessGranted);
+  VerifyCameraRollAccessGrantedState(AccessStatus::kAccessGranted);
 
   // Cannot start the notification access setup flow if notification and camera
   // roll access have already been granted.
@@ -230,13 +225,10 @@ TEST_F(MultideviceFeatureAccessManagerImplTest, AllAccessInitiallyGranted) {
 }
 
 TEST_F(MultideviceFeatureAccessManagerImplTest, OnFeatureStatusChanged) {
-  InitializeAccessStatus(
-      MultideviceFeatureAccessManager::AccessStatus::kAvailableButNotGranted,
-      MultideviceFeatureAccessManager::AccessStatus::kAvailableButNotGranted);
-  VerifyNotificationAccessGrantedState(
-      MultideviceFeatureAccessManager::AccessStatus::kAvailableButNotGranted);
-  VerifyCameraRollAccessGrantedState(
-      MultideviceFeatureAccessManager::AccessStatus::kAvailableButNotGranted);
+  InitializeAccessStatus(AccessStatus::kAvailableButNotGranted,
+                         AccessStatus::kAvailableButNotGranted);
+  VerifyNotificationAccessGrantedState(AccessStatus::kAvailableButNotGranted);
+  VerifyCameraRollAccessGrantedState(AccessStatus::kAvailableButNotGranted);
 
   // Set initial state to disconnected.
   SetFeatureStatus(FeatureStatus::kEnabledButDisconnected);
@@ -269,13 +261,10 @@ TEST_F(MultideviceFeatureAccessManagerImplTest, StartDisconnectedAndNoAccess) {
   // Set initial state to disconnected.
   SetFeatureStatus(FeatureStatus::kEnabledButDisconnected);
 
-  InitializeAccessStatus(
-      MultideviceFeatureAccessManager::AccessStatus::kAvailableButNotGranted,
-      MultideviceFeatureAccessManager::AccessStatus::kAccessGranted);
-  VerifyNotificationAccessGrantedState(
-      MultideviceFeatureAccessManager::AccessStatus::kAvailableButNotGranted);
-  VerifyCameraRollAccessGrantedState(
-      MultideviceFeatureAccessManager::AccessStatus::kAccessGranted);
+  InitializeAccessStatus(AccessStatus::kAvailableButNotGranted,
+                         AccessStatus::kAccessGranted);
+  VerifyNotificationAccessGrantedState(AccessStatus::kAvailableButNotGranted);
+  VerifyCameraRollAccessGrantedState(AccessStatus::kAccessGranted);
 
   // Start a setup operation with enabled but disconnected status and access
   // not granted.
@@ -295,10 +284,9 @@ TEST_F(MultideviceFeatureAccessManagerImplTest, StartDisconnectedAndNoAccess) {
             GetNotificationAccessSetupOperationStatus());
 
   // Simulate getting a response back from the phone.
-  SetNotificationAccessStatusInternal(
-      MultideviceFeatureAccessManager::AccessStatus::kAccessGranted);
-  VerifyNotificationAccessGrantedState(
-      MultideviceFeatureAccessManager::AccessStatus::kAccessGranted);
+  SetNotificationAccessStatusInternal(AccessStatus::kAccessGranted,
+                                      AccessProhibitedReason::kUnknown);
+  VerifyNotificationAccessGrantedState(AccessStatus::kAccessGranted);
   EXPECT_EQ(NotificationAccessSetupOperation::Status::kCompletedSuccessfully,
             GetNotificationAccessSetupOperationStatus());
 }
@@ -308,13 +296,10 @@ TEST_F(MultideviceFeatureAccessManagerImplTest,
   // Set initial state to disconnected.
   SetFeatureStatus(FeatureStatus::kEnabledButDisconnected);
 
-  InitializeAccessStatus(
-      MultideviceFeatureAccessManager::AccessStatus::kAvailableButNotGranted,
-      MultideviceFeatureAccessManager::AccessStatus::kAvailableButNotGranted);
-  VerifyNotificationAccessGrantedState(
-      MultideviceFeatureAccessManager::AccessStatus::kAvailableButNotGranted);
-  VerifyCameraRollAccessGrantedState(
-      MultideviceFeatureAccessManager::AccessStatus::kAvailableButNotGranted);
+  InitializeAccessStatus(AccessStatus::kAvailableButNotGranted,
+                         AccessStatus::kAvailableButNotGranted);
+  VerifyNotificationAccessGrantedState(AccessStatus::kAvailableButNotGranted);
+  VerifyCameraRollAccessGrantedState(AccessStatus::kAvailableButNotGranted);
 
   // Start a setup operation with enabled but disconnected status and access
   // not granted.
@@ -335,9 +320,11 @@ TEST_F(MultideviceFeatureAccessManagerImplTest,
 
   // Simulate getting a response back from the phone.
   SetNotificationAccessStatusInternal(
-      MultideviceFeatureAccessManager::AccessStatus::kProhibited);
+      AccessStatus::kProhibited,
+      AccessProhibitedReason::kDisabledByPhonePolicy);
   VerifyNotificationAccessGrantedState(
-      MultideviceFeatureAccessManager::AccessStatus::kProhibited);
+      AccessStatus::kProhibited,
+      AccessProhibitedReason::kDisabledByPhonePolicy);
   EXPECT_EQ(
       NotificationAccessSetupOperation::Status::kProhibitedFromProvidingAccess,
       GetNotificationAccessSetupOperationStatus());
@@ -347,13 +334,10 @@ TEST_F(MultideviceFeatureAccessManagerImplTest, StartConnectingAndNoAccess) {
   // Set initial state to connecting.
   SetFeatureStatus(FeatureStatus::kEnabledAndConnecting);
 
-  InitializeAccessStatus(
-      MultideviceFeatureAccessManager::AccessStatus::kAvailableButNotGranted,
-      MultideviceFeatureAccessManager::AccessStatus::kAvailableButNotGranted);
-  VerifyNotificationAccessGrantedState(
-      MultideviceFeatureAccessManager::AccessStatus::kAvailableButNotGranted);
-  VerifyCameraRollAccessGrantedState(
-      MultideviceFeatureAccessManager::AccessStatus::kAvailableButNotGranted);
+  InitializeAccessStatus(AccessStatus::kAvailableButNotGranted,
+                         AccessStatus::kAvailableButNotGranted);
+  VerifyNotificationAccessGrantedState(AccessStatus::kAvailableButNotGranted);
+  VerifyCameraRollAccessGrantedState(AccessStatus::kAvailableButNotGranted);
 
   // Start a setup operation with enabled and connecting status and access
   // not granted.
@@ -371,10 +355,9 @@ TEST_F(MultideviceFeatureAccessManagerImplTest, StartConnectingAndNoAccess) {
             GetNotificationAccessSetupOperationStatus());
 
   // Simulate getting a response back from the phone.
-  SetNotificationAccessStatusInternal(
-      MultideviceFeatureAccessManager::AccessStatus::kAccessGranted);
-  VerifyNotificationAccessGrantedState(
-      MultideviceFeatureAccessManager::AccessStatus::kAccessGranted);
+  SetNotificationAccessStatusInternal(AccessStatus::kAccessGranted,
+                                      AccessProhibitedReason::kUnknown);
+  VerifyNotificationAccessGrantedState(AccessStatus::kAccessGranted);
   EXPECT_EQ(NotificationAccessSetupOperation::Status::kCompletedSuccessfully,
             GetNotificationAccessSetupOperationStatus());
 }
@@ -383,13 +366,10 @@ TEST_F(MultideviceFeatureAccessManagerImplTest, StartConnectedAndNoAccess) {
   // Set initial state to connected.
   SetFeatureStatus(FeatureStatus::kEnabledAndConnected);
 
-  InitializeAccessStatus(
-      MultideviceFeatureAccessManager::AccessStatus::kAvailableButNotGranted,
-      MultideviceFeatureAccessManager::AccessStatus::kAvailableButNotGranted);
-  VerifyNotificationAccessGrantedState(
-      MultideviceFeatureAccessManager::AccessStatus::kAvailableButNotGranted);
-  VerifyCameraRollAccessGrantedState(
-      MultideviceFeatureAccessManager::AccessStatus::kAvailableButNotGranted);
+  InitializeAccessStatus(AccessStatus::kAvailableButNotGranted,
+                         AccessStatus::kAvailableButNotGranted);
+  VerifyNotificationAccessGrantedState(AccessStatus::kAvailableButNotGranted);
+  VerifyCameraRollAccessGrantedState(AccessStatus::kAvailableButNotGranted);
 
   // Start a setup operation with enabled and connected status and access
   // not granted.
@@ -404,10 +384,9 @@ TEST_F(MultideviceFeatureAccessManagerImplTest, StartConnectedAndNoAccess) {
             GetNotificationAccessSetupOperationStatus());
 
   // Simulate getting a response back from the phone.
-  SetNotificationAccessStatusInternal(
-      MultideviceFeatureAccessManager::AccessStatus::kAccessGranted);
-  VerifyNotificationAccessGrantedState(
-      MultideviceFeatureAccessManager::AccessStatus::kAccessGranted);
+  SetNotificationAccessStatusInternal(AccessStatus::kAccessGranted,
+                                      AccessProhibitedReason::kUnknown);
+  VerifyNotificationAccessGrantedState(AccessStatus::kAccessGranted);
   EXPECT_EQ(NotificationAccessSetupOperation::Status::kCompletedSuccessfully,
             GetNotificationAccessSetupOperationStatus());
 }
@@ -417,13 +396,10 @@ TEST_F(MultideviceFeatureAccessManagerImplTest,
   // Set initial state to connecting.
   SetFeatureStatus(FeatureStatus::kEnabledAndConnecting);
 
-  InitializeAccessStatus(
-      MultideviceFeatureAccessManager::AccessStatus::kAvailableButNotGranted,
-      MultideviceFeatureAccessManager::AccessStatus::kAvailableButNotGranted);
-  VerifyNotificationAccessGrantedState(
-      MultideviceFeatureAccessManager::AccessStatus::kAvailableButNotGranted);
-  VerifyCameraRollAccessGrantedState(
-      MultideviceFeatureAccessManager::AccessStatus::kAvailableButNotGranted);
+  InitializeAccessStatus(AccessStatus::kAvailableButNotGranted,
+                         AccessStatus::kAvailableButNotGranted);
+  VerifyNotificationAccessGrantedState(AccessStatus::kAvailableButNotGranted);
+  VerifyCameraRollAccessGrantedState(AccessStatus::kAvailableButNotGranted);
 
   auto operation = StartSetupOperation();
   EXPECT_TRUE(operation);
@@ -439,13 +415,10 @@ TEST_F(MultideviceFeatureAccessManagerImplTest,
   // Simulate connected state.
   SetFeatureStatus(FeatureStatus::kEnabledAndConnected);
 
-  InitializeAccessStatus(
-      MultideviceFeatureAccessManager::AccessStatus::kAvailableButNotGranted,
-      MultideviceFeatureAccessManager::AccessStatus::kAvailableButNotGranted);
-  VerifyNotificationAccessGrantedState(
-      MultideviceFeatureAccessManager::AccessStatus::kAvailableButNotGranted);
-  VerifyCameraRollAccessGrantedState(
-      MultideviceFeatureAccessManager::AccessStatus::kAvailableButNotGranted);
+  InitializeAccessStatus(AccessStatus::kAvailableButNotGranted,
+                         AccessStatus::kAvailableButNotGranted);
+  VerifyNotificationAccessGrantedState(AccessStatus::kAvailableButNotGranted);
+  VerifyCameraRollAccessGrantedState(AccessStatus::kAvailableButNotGranted);
 
   auto operation = StartSetupOperation();
   EXPECT_TRUE(operation);
@@ -462,13 +435,10 @@ TEST_F(MultideviceFeatureAccessManagerImplTest, SimulateConnectedToDisabled) {
   // Simulate connected state.
   SetFeatureStatus(FeatureStatus::kEnabledAndConnected);
 
-  InitializeAccessStatus(
-      MultideviceFeatureAccessManager::AccessStatus::kAvailableButNotGranted,
-      MultideviceFeatureAccessManager::AccessStatus::kAvailableButNotGranted);
-  VerifyNotificationAccessGrantedState(
-      MultideviceFeatureAccessManager::AccessStatus::kAvailableButNotGranted);
-  VerifyCameraRollAccessGrantedState(
-      MultideviceFeatureAccessManager::AccessStatus::kAvailableButNotGranted);
+  InitializeAccessStatus(AccessStatus::kAvailableButNotGranted,
+                         AccessStatus::kAvailableButNotGranted);
+  VerifyNotificationAccessGrantedState(AccessStatus::kAvailableButNotGranted);
+  VerifyCameraRollAccessGrantedState(AccessStatus::kAvailableButNotGranted);
 
   auto operation = StartSetupOperation();
   EXPECT_TRUE(operation);
@@ -483,176 +453,147 @@ TEST_F(MultideviceFeatureAccessManagerImplTest, SimulateConnectedToDisabled) {
 
 TEST_F(MultideviceFeatureAccessManagerImplTest,
        FlipNotificationAccessGrantedToNotGranted) {
-  InitializeAccessStatus(
-      MultideviceFeatureAccessManager::AccessStatus::kAccessGranted,
-      MultideviceFeatureAccessManager::AccessStatus::kAccessGranted);
-  VerifyNotificationAccessGrantedState(
-      MultideviceFeatureAccessManager::AccessStatus::kAccessGranted);
-  VerifyCameraRollAccessGrantedState(
-      MultideviceFeatureAccessManager::AccessStatus::kAccessGranted);
+  InitializeAccessStatus(AccessStatus::kAccessGranted,
+                         AccessStatus::kAccessGranted);
+  VerifyNotificationAccessGrantedState(AccessStatus::kAccessGranted);
+  VerifyCameraRollAccessGrantedState(AccessStatus::kAccessGranted);
 
   // Simulate flipping notification access state to no granted.
-  SetNotificationAccessStatusInternal(
-      MultideviceFeatureAccessManager::AccessStatus::kAvailableButNotGranted);
-  VerifyNotificationAccessGrantedState(
-      MultideviceFeatureAccessManager::AccessStatus::kAvailableButNotGranted);
+  SetNotificationAccessStatusInternal(AccessStatus::kAvailableButNotGranted,
+                                      AccessProhibitedReason::kUnknown);
+  VerifyNotificationAccessGrantedState(AccessStatus::kAvailableButNotGranted);
   EXPECT_EQ(1u, GetNumObserverCalls());
 }
 
 TEST_F(MultideviceFeatureAccessManagerImplTest,
        FlipNotificationAccessGrantedToProhibited) {
-  InitializeAccessStatus(
-      MultideviceFeatureAccessManager::AccessStatus::kAccessGranted,
-      MultideviceFeatureAccessManager::AccessStatus::kAccessGranted);
-  VerifyNotificationAccessGrantedState(
-      MultideviceFeatureAccessManager::AccessStatus::kAccessGranted);
-  VerifyCameraRollAccessGrantedState(
-      MultideviceFeatureAccessManager::AccessStatus::kAccessGranted);
+  InitializeAccessStatus(AccessStatus::kAccessGranted,
+                         AccessStatus::kAccessGranted);
+  VerifyNotificationAccessGrantedState(AccessStatus::kAccessGranted);
+  VerifyCameraRollAccessGrantedState(AccessStatus::kAccessGranted);
 
   // Simulate flipping notification access state to prohibited.
   SetNotificationAccessStatusInternal(
-      MultideviceFeatureAccessManager::AccessStatus::kProhibited);
+      AccessStatus::kProhibited,
+      AccessProhibitedReason::kDisabledByPhonePolicy);
   VerifyNotificationAccessGrantedState(
-      MultideviceFeatureAccessManager::AccessStatus::kProhibited);
+      AccessStatus::kProhibited,
+      AccessProhibitedReason::kDisabledByPhonePolicy);
   EXPECT_EQ(1u, GetNumObserverCalls());
 }
 
 TEST_F(MultideviceFeatureAccessManagerImplTest,
        FlipCameraRollAccessGrantedToNotGranted) {
-  InitializeAccessStatus(
-      MultideviceFeatureAccessManager::AccessStatus::kAccessGranted,
-      MultideviceFeatureAccessManager::AccessStatus::kAccessGranted);
-  VerifyNotificationAccessGrantedState(
-      MultideviceFeatureAccessManager::AccessStatus::kAccessGranted);
-  VerifyCameraRollAccessGrantedState(
-      MultideviceFeatureAccessManager::AccessStatus::kAccessGranted);
+  InitializeAccessStatus(AccessStatus::kAccessGranted,
+                         AccessStatus::kAccessGranted);
+  VerifyNotificationAccessGrantedState(AccessStatus::kAccessGranted);
+  VerifyCameraRollAccessGrantedState(AccessStatus::kAccessGranted);
 
   // Simulate flipping camera roll access state to no granted.
-  SetCameraRollAccessStatusInternal(
-      MultideviceFeatureAccessManager::AccessStatus::kAvailableButNotGranted);
-  VerifyCameraRollAccessGrantedState(
-      MultideviceFeatureAccessManager::AccessStatus::kAvailableButNotGranted);
+  SetCameraRollAccessStatusInternal(AccessStatus::kAvailableButNotGranted);
+  VerifyCameraRollAccessGrantedState(AccessStatus::kAvailableButNotGranted);
   EXPECT_EQ(1u, GetNumObserverCalls());
 }
 
 TEST_F(MultideviceFeatureAccessManagerImplTest, AccessNotChanged) {
-  InitializeAccessStatus(
-      MultideviceFeatureAccessManager::AccessStatus::kAccessGranted,
-      MultideviceFeatureAccessManager::AccessStatus::kAccessGranted);
-  VerifyNotificationAccessGrantedState(
-      MultideviceFeatureAccessManager::AccessStatus::kAccessGranted);
-  VerifyCameraRollAccessGrantedState(
-      MultideviceFeatureAccessManager::AccessStatus::kAccessGranted);
+  InitializeAccessStatus(AccessStatus::kAccessGranted,
+                         AccessStatus::kAccessGranted);
+  VerifyNotificationAccessGrantedState(AccessStatus::kAccessGranted);
+  VerifyCameraRollAccessGrantedState(AccessStatus::kAccessGranted);
 
   // If the access state is unchanged, we do not expect any notifications.
-  SetNotificationAccessStatusInternal(
-      MultideviceFeatureAccessManager::AccessStatus::kAccessGranted);
-  VerifyNotificationAccessGrantedState(
-      MultideviceFeatureAccessManager::AccessStatus::kAccessGranted);
+  SetNotificationAccessStatusInternal(AccessStatus::kAccessGranted,
+                                      AccessProhibitedReason::kUnknown);
+  VerifyNotificationAccessGrantedState(AccessStatus::kAccessGranted);
   EXPECT_EQ(0u, GetNumObserverCalls());
 }
 
 TEST_F(MultideviceFeatureAccessManagerImplTest,
        NeedsOneTimeNotificationAccessUpdate_AccessGranted) {
-  InitializeAccessStatus(
-      MultideviceFeatureAccessManager::AccessStatus::kAccessGranted,
-      MultideviceFeatureAccessManager::AccessStatus::kAccessGranted);
-  VerifyNotificationAccessGrantedState(
-      MultideviceFeatureAccessManager::AccessStatus::kAccessGranted);
-  VerifyCameraRollAccessGrantedState(
-      MultideviceFeatureAccessManager::AccessStatus::kAccessGranted);
+  InitializeAccessStatus(AccessStatus::kAccessGranted,
+                         AccessStatus::kAccessGranted);
+  VerifyNotificationAccessGrantedState(AccessStatus::kAccessGranted);
+  VerifyCameraRollAccessGrantedState(AccessStatus::kAccessGranted);
 
   // Send a one-time signal to observers if access is granted. See
   // http://crbug.com/1215559.
   SetNeedsOneTimeNotificationAccessUpdate(/*needs_update=*/true);
-  SetNotificationAccessStatusInternal(
-      MultideviceFeatureAccessManager::AccessStatus::kAccessGranted);
-  VerifyNotificationAccessGrantedState(
-      MultideviceFeatureAccessManager::AccessStatus::kAccessGranted);
+  SetNotificationAccessStatusInternal(AccessStatus::kAccessGranted,
+                                      AccessProhibitedReason::kUnknown);
+  VerifyNotificationAccessGrantedState(AccessStatus::kAccessGranted);
   EXPECT_EQ(1u, GetNumObserverCalls());
 
   // Observers should be notified only once ever.
-  SetNotificationAccessStatusInternal(
-      MultideviceFeatureAccessManager::AccessStatus::kAccessGranted);
-  VerifyNotificationAccessGrantedState(
-      MultideviceFeatureAccessManager::AccessStatus::kAccessGranted);
+  SetNotificationAccessStatusInternal(AccessStatus::kAccessGranted,
+                                      AccessProhibitedReason::kUnknown);
+  VerifyNotificationAccessGrantedState(AccessStatus::kAccessGranted);
   EXPECT_EQ(1u, GetNumObserverCalls());
 }
 
 TEST_F(MultideviceFeatureAccessManagerImplTest,
        NeedsOneTimeNotificationAccessUpdate_Prohibited) {
-  InitializeAccessStatus(
-      MultideviceFeatureAccessManager::AccessStatus::kProhibited,
-      MultideviceFeatureAccessManager::AccessStatus::kAccessGranted);
+  InitializeAccessStatus(AccessStatus::kProhibited,
+                         AccessStatus::kAccessGranted,
+                         AccessProhibitedReason::kDisabledByPhonePolicy);
   VerifyNotificationAccessGrantedState(
-      MultideviceFeatureAccessManager::AccessStatus::kProhibited);
-  VerifyCameraRollAccessGrantedState(
-      MultideviceFeatureAccessManager::AccessStatus::kAccessGranted);
+      AccessStatus::kProhibited,
+      AccessProhibitedReason::kDisabledByPhonePolicy);
+  VerifyCameraRollAccessGrantedState(AccessStatus::kAccessGranted);
 
   // Only send the one-time signal to observers if access is granted. See
   // http://crbug.com/1215559.
   SetNeedsOneTimeNotificationAccessUpdate(/*needs_update=*/true);
   SetNotificationAccessStatusInternal(
-      MultideviceFeatureAccessManager::AccessStatus::kProhibited);
+      AccessStatus::kProhibited,
+      AccessProhibitedReason::kDisabledByPhonePolicy);
   VerifyNotificationAccessGrantedState(
-      MultideviceFeatureAccessManager::AccessStatus::kProhibited);
+      AccessStatus::kProhibited,
+      AccessProhibitedReason::kDisabledByPhonePolicy);
   EXPECT_EQ(0u, GetNumObserverCalls());
 }
 
 TEST_F(MultideviceFeatureAccessManagerImplTest,
        NotificationAccessProhibitedReason_FromProhibited) {
-  InitializeAccessStatus(
-      MultideviceFeatureAccessManager::AccessStatus::kProhibited,
-      MultideviceFeatureAccessManager::AccessStatus::kAccessGranted);
-  VerifyNotificationAccessGrantedState(
-      MultideviceFeatureAccessManager::AccessStatus::kProhibited);
+  InitializeAccessStatus(AccessStatus::kProhibited,
+                         AccessStatus::kAccessGranted);
+  VerifyNotificationAccessGrantedState(AccessStatus::kProhibited);
 
   // Simulates an initial update after the pref is first added
-  SetNotificationAccessStatusInternal(
-      MultideviceFeatureAccessManager::AccessStatus::kProhibited,
-      MultideviceFeatureAccessManager::AccessProhibitedReason::kWorkProfile);
-  VerifyNotificationAccessGrantedState(
-      MultideviceFeatureAccessManager::AccessStatus::kProhibited,
-      MultideviceFeatureAccessManager::AccessProhibitedReason::kWorkProfile);
+  SetNotificationAccessStatusInternal(AccessStatus::kProhibited,
+                                      AccessProhibitedReason::kWorkProfile);
+  VerifyNotificationAccessGrantedState(AccessStatus::kProhibited,
+                                       AccessProhibitedReason::kWorkProfile);
   EXPECT_EQ(1u, GetNumObserverCalls());
 
   // No update or observer notification should occur with no change
-  SetNotificationAccessStatusInternal(
-      MultideviceFeatureAccessManager::AccessStatus::kProhibited,
-      MultideviceFeatureAccessManager::AccessProhibitedReason::kWorkProfile);
-  VerifyNotificationAccessGrantedState(
-      MultideviceFeatureAccessManager::AccessStatus::kProhibited,
-      MultideviceFeatureAccessManager::AccessProhibitedReason::kWorkProfile);
+  SetNotificationAccessStatusInternal(AccessStatus::kProhibited,
+                                      AccessProhibitedReason::kWorkProfile);
+  VerifyNotificationAccessGrantedState(AccessStatus::kProhibited,
+                                       AccessProhibitedReason::kWorkProfile);
   EXPECT_EQ(1u, GetNumObserverCalls());
 
   // This can happen if a user updates from Android <N to >=N
   SetNotificationAccessStatusInternal(
-      MultideviceFeatureAccessManager::AccessStatus::kProhibited,
-      MultideviceFeatureAccessManager::AccessProhibitedReason::
-          kDisabledByPhonePolicy);
+      AccessStatus::kProhibited,
+      AccessProhibitedReason::kDisabledByPhonePolicy);
   VerifyNotificationAccessGrantedState(
-      MultideviceFeatureAccessManager::AccessStatus::kProhibited,
-      MultideviceFeatureAccessManager::AccessProhibitedReason::
-          kDisabledByPhonePolicy);
+      AccessStatus::kProhibited,
+      AccessProhibitedReason::kDisabledByPhonePolicy);
   EXPECT_EQ(2u, GetNumObserverCalls());
 }
 
 TEST_F(MultideviceFeatureAccessManagerImplTest,
        NotificationAccessProhibitedReason_FromGranted) {
-  InitializeAccessStatus(
-      MultideviceFeatureAccessManager::AccessStatus::kAccessGranted,
-      MultideviceFeatureAccessManager::AccessStatus::kAccessGranted);
-  VerifyNotificationAccessGrantedState(
-      MultideviceFeatureAccessManager::AccessStatus::kAccessGranted);
+  InitializeAccessStatus(AccessStatus::kAccessGranted,
+                         AccessStatus::kAccessGranted);
+  VerifyNotificationAccessGrantedState(AccessStatus::kAccessGranted);
 
   SetNotificationAccessStatusInternal(
-      MultideviceFeatureAccessManager::AccessStatus::kProhibited,
-      MultideviceFeatureAccessManager::AccessProhibitedReason::
-          kDisabledByPhonePolicy);
+      AccessStatus::kProhibited,
+      AccessProhibitedReason::kDisabledByPhonePolicy);
   VerifyNotificationAccessGrantedState(
-      MultideviceFeatureAccessManager::AccessStatus::kProhibited,
-      MultideviceFeatureAccessManager::AccessProhibitedReason::
-          kDisabledByPhonePolicy);
+      AccessStatus::kProhibited,
+      AccessProhibitedReason::kDisabledByPhonePolicy);
   EXPECT_EQ(1u, GetNumObserverCalls());
 }
 

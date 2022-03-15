@@ -26,8 +26,7 @@ class FakeMultideviceFeatureAccessManager
 
   void SetNotificationAccessStatusInternal(
       AccessStatus notification_access_status,
-      AccessProhibitedReason reason =
-          AccessProhibitedReason::kUnknown) override;
+      AccessProhibitedReason reason) override;
   AccessStatus GetNotificationAccessStatus() const override;
   void SetNotificationSetupOperationStatus(
       NotificationAccessSetupOperation::Status new_status);

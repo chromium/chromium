@@ -53,7 +53,8 @@ class MultideviceSetupStateUpdaterTest : public testing::Test {
             enabled
                 ? MultideviceFeatureAccessManager::AccessStatus::kAccessGranted
                 : MultideviceFeatureAccessManager::AccessStatus::
-                      kAvailableButNotGranted);
+                      kAvailableButNotGranted,
+            MultideviceFeatureAccessManager::AccessProhibitedReason::kUnknown);
   }
 
   void SetCameraRollAccess(bool enabled) {

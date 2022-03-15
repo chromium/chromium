@@ -29,6 +29,10 @@ namespace ash {
 
 namespace {
 
+using AccessStatus = phonehub::MultideviceFeatureAccessManager::AccessStatus;
+using AccessProhibitedReason =
+    phonehub::MultideviceFeatureAccessManager::AccessProhibitedReason;
+
 constexpr base::TimeDelta kConnectingViewGracePeriod = base::Seconds(40);
 
 // A mock implementation of |NewWindowDelegate| for use in tests.
@@ -224,10 +228,9 @@ TEST_F(PhoneHubTrayTest, FocusBubbleWhenOpenedByKeyboard) {
 
 TEST_F(PhoneHubTrayTest, ShowOptInViewWhenNotificationAccessNotGranted) {
   GetMultideviceFeatureAccessManager()->SetNotificationAccessStatusInternal(
-      phonehub::MultideviceFeatureAccessManager::AccessStatus::
-          kAvailableButNotGranted);
+      AccessStatus::kAvailableButNotGranted, AccessProhibitedReason::kUnknown);
   GetMultideviceFeatureAccessManager()->SetCameraRollAccessStatusInternal(
-      phonehub::MultideviceFeatureAccessManager::AccessStatus::kAccessGranted);
+      AccessStatus::kAccessGranted);
 
   ClickTrayButton();
 
@@ -246,10 +249,9 @@ TEST_F(PhoneHubTrayTest, ShowOptInViewWhenNotificationAccessNotGranted) {
 
 TEST_F(PhoneHubTrayTest, ShowOptInViewWhenCameraRollAccessNotGranted) {
   GetMultideviceFeatureAccessManager()->SetNotificationAccessStatusInternal(
-      phonehub::MultideviceFeatureAccessManager::AccessStatus::kAccessGranted);
+      AccessStatus::kAccessGranted, AccessProhibitedReason::kUnknown);
   GetMultideviceFeatureAccessManager()->SetCameraRollAccessStatusInternal(
-      phonehub::MultideviceFeatureAccessManager::AccessStatus::
-          kAvailableButNotGranted);
+      AccessStatus::kAvailableButNotGranted);
 
   ClickTrayButton();
 
@@ -268,9 +270,9 @@ TEST_F(PhoneHubTrayTest, ShowOptInViewWhenCameraRollAccessNotGranted) {
 
 TEST_F(PhoneHubTrayTest, HideOptInViewWhenAllFeatureAccessHasBeenGranted) {
   GetMultideviceFeatureAccessManager()->SetNotificationAccessStatusInternal(
-      phonehub::MultideviceFeatureAccessManager::AccessStatus::kAccessGranted);
+      AccessStatus::kAccessGranted, AccessProhibitedReason::kUnknown);
   GetMultideviceFeatureAccessManager()->SetCameraRollAccessStatusInternal(
-      phonehub::MultideviceFeatureAccessManager::AccessStatus::kAccessGranted);
+      AccessStatus::kAccessGranted);
 
   ClickTrayButton();
 
@@ -282,9 +284,10 @@ TEST_F(
     PhoneHubTrayTest,
     HideOptInViewWhenNotificationAccessIsProhibitedAndCameraRollAccessIsGranted) {
   GetMultideviceFeatureAccessManager()->SetNotificationAccessStatusInternal(
-      phonehub::MultideviceFeatureAccessManager::AccessStatus::kProhibited);
+      AccessStatus::kProhibited,
+      AccessProhibitedReason::kDisabledByPhonePolicy);
   GetMultideviceFeatureAccessManager()->SetCameraRollAccessStatusInternal(
-      phonehub::MultideviceFeatureAccessManager::AccessStatus::kAccessGranted);
+      AccessStatus::kAccessGranted);
 
   ClickTrayButton();
 
@@ -294,11 +297,9 @@ TEST_F(
 
 TEST_F(PhoneHubTrayTest, StartMultideviceFeatureSetUpFlow) {
   GetMultideviceFeatureAccessManager()->SetNotificationAccessStatusInternal(
-      phonehub::MultideviceFeatureAccessManager::AccessStatus::
-          kAvailableButNotGranted);
+      AccessStatus::kAvailableButNotGranted, AccessProhibitedReason::kUnknown);
   GetMultideviceFeatureAccessManager()->SetCameraRollAccessStatusInternal(
-      phonehub::MultideviceFeatureAccessManager::AccessStatus::
-          kAvailableButNotGranted);
+      AccessStatus::kAvailableButNotGranted);
 
   ClickTrayButton();
   EXPECT_TRUE(multidevice_feature_opt_in_view());
@@ -315,18 +316,17 @@ TEST_F(PhoneHubTrayTest, StartMultideviceFeatureSetUpFlow) {
 
   // Simulate that notification access has been granted.
   GetMultideviceFeatureAccessManager()->SetNotificationAccessStatusInternal(
-      phonehub::MultideviceFeatureAccessManager::AccessStatus::kAccessGranted);
+      AccessStatus::kAccessGranted, AccessProhibitedReason::kUnknown);
   // Simulate that camera roll access has been granted.
   GetMultideviceFeatureAccessManager()->SetCameraRollAccessStatusInternal(
-      phonehub::MultideviceFeatureAccessManager::AccessStatus::kAccessGranted);
+      AccessStatus::kAccessGranted);
 
   // This view should be dismissed.
   EXPECT_FALSE(multidevice_feature_opt_in_view()->GetVisible());
 
   // Simulate that notification access has been revoked by the phone.
   GetMultideviceFeatureAccessManager()->SetNotificationAccessStatusInternal(
-      phonehub::MultideviceFeatureAccessManager::AccessStatus::
-          kAvailableButNotGranted);
+      AccessStatus::kAvailableButNotGranted, AccessProhibitedReason::kUnknown);
 
   // This view should show up again.
   EXPECT_TRUE(multidevice_feature_opt_in_view()->GetVisible());
@@ -342,14 +342,11 @@ TEST_F(PhoneHubTrayTest, StartAllPermissionSetUpFlow) {
                                 kEchePhoneHubPermissionsOnboarding},
       /*disabled_features=*/{});
   GetMultideviceFeatureAccessManager()->SetNotificationAccessStatusInternal(
-      phonehub::MultideviceFeatureAccessManager::AccessStatus::
-          kAvailableButNotGranted);
+      AccessStatus::kAvailableButNotGranted, AccessProhibitedReason::kUnknown);
   GetMultideviceFeatureAccessManager()->SetCameraRollAccessStatusInternal(
-      phonehub::MultideviceFeatureAccessManager::AccessStatus::
-          kAvailableButNotGranted);
+      AccessStatus::kAvailableButNotGranted);
   GetMultideviceFeatureAccessManager()->SetAppsAccessStatusInternal(
-      phonehub::MultideviceFeatureAccessManager::AccessStatus::
-          kAvailableButNotGranted);
+      AccessStatus::kAvailableButNotGranted);
 
   ClickTrayButton();
   EXPECT_TRUE(multidevice_feature_opt_in_view());
@@ -374,13 +371,11 @@ TEST_F(PhoneHubTrayTest, StartNotificationAndAppSetUpFlow) {
                                 kEchePhoneHubPermissionsOnboarding},
       /*disabled_features=*/{});
   GetMultideviceFeatureAccessManager()->SetNotificationAccessStatusInternal(
-      phonehub::MultideviceFeatureAccessManager::AccessStatus::
-          kAvailableButNotGranted);
+      AccessStatus::kAvailableButNotGranted, AccessProhibitedReason::kUnknown);
   GetMultideviceFeatureAccessManager()->SetAppsAccessStatusInternal(
-      phonehub::MultideviceFeatureAccessManager::AccessStatus::
-          kAvailableButNotGranted);
+      AccessStatus::kAvailableButNotGranted);
   GetMultideviceFeatureAccessManager()->SetCameraRollAccessStatusInternal(
-      phonehub::MultideviceFeatureAccessManager::AccessStatus::kAccessGranted);
+      AccessStatus::kAccessGranted);
 
   ClickTrayButton();
   EXPECT_TRUE(multidevice_feature_opt_in_view());
@@ -405,12 +400,11 @@ TEST_F(PhoneHubTrayTest, StartNotificationAccessOnlySetUpFlow) {
                                 kEchePhoneHubPermissionsOnboarding},
       /*disabled_features=*/{});
   GetMultideviceFeatureAccessManager()->SetNotificationAccessStatusInternal(
-      phonehub::MultideviceFeatureAccessManager::AccessStatus::
-          kAvailableButNotGranted);
+      AccessStatus::kAvailableButNotGranted, AccessProhibitedReason::kUnknown);
   GetMultideviceFeatureAccessManager()->SetAppsAccessStatusInternal(
-      phonehub::MultideviceFeatureAccessManager::AccessStatus::kAccessGranted);
+      AccessStatus::kAccessGranted);
   GetMultideviceFeatureAccessManager()->SetCameraRollAccessStatusInternal(
-      phonehub::MultideviceFeatureAccessManager::AccessStatus::kAccessGranted);
+      AccessStatus::kAccessGranted);
 
   ClickTrayButton();
   EXPECT_TRUE(multidevice_feature_opt_in_view());
@@ -435,12 +429,11 @@ TEST_F(PhoneHubTrayTest, StartAppsAccessOnlySetUpFlow) {
                                 kEchePhoneHubPermissionsOnboarding},
       /*disabled_features=*/{});
   GetMultideviceFeatureAccessManager()->SetNotificationAccessStatusInternal(
-      phonehub::MultideviceFeatureAccessManager::AccessStatus::kAccessGranted);
+      AccessStatus::kAccessGranted, AccessProhibitedReason::kUnknown);
   GetMultideviceFeatureAccessManager()->SetCameraRollAccessStatusInternal(
-      phonehub::MultideviceFeatureAccessManager::AccessStatus::kAccessGranted);
+      AccessStatus::kAccessGranted);
   GetMultideviceFeatureAccessManager()->SetAppsAccessStatusInternal(
-      phonehub::MultideviceFeatureAccessManager::AccessStatus::
-          kAvailableButNotGranted);
+      AccessStatus::kAvailableButNotGranted);
 
   ClickTrayButton();
   EXPECT_TRUE(multidevice_feature_opt_in_view());
@@ -465,12 +458,11 @@ TEST_F(PhoneHubTrayTest, StartCameraRollOnlySetUpFlow) {
                                 kEchePhoneHubPermissionsOnboarding},
       /*disabled_features=*/{});
   GetMultideviceFeatureAccessManager()->SetNotificationAccessStatusInternal(
-      phonehub::MultideviceFeatureAccessManager::AccessStatus::kAccessGranted);
+      AccessStatus::kAccessGranted, AccessProhibitedReason::kUnknown);
   GetMultideviceFeatureAccessManager()->SetCameraRollAccessStatusInternal(
-      phonehub::MultideviceFeatureAccessManager::AccessStatus::
-          kAvailableButNotGranted);
+      AccessStatus::kAvailableButNotGranted);
   GetMultideviceFeatureAccessManager()->SetAppsAccessStatusInternal(
-      phonehub::MultideviceFeatureAccessManager::AccessStatus::kAccessGranted);
+      AccessStatus::kAccessGranted);
 
   ClickTrayButton();
   EXPECT_TRUE(multidevice_feature_opt_in_view());

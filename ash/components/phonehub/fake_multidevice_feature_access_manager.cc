@@ -86,11 +86,14 @@ void FakeMultideviceFeatureAccessManager::SetNotificationSetupOperationStatus(
     NotificationAccessSetupOperation::Status new_status) {
   switch (new_status) {
     case NotificationAccessSetupOperation::Status::kCompletedSuccessfully:
-      SetNotificationAccessStatusInternal(AccessStatus::kAccessGranted);
+      SetNotificationAccessStatusInternal(AccessStatus::kAccessGranted,
+                                          AccessProhibitedReason::kUnknown);
       break;
     case NotificationAccessSetupOperation::Status::
         kProhibitedFromProvidingAccess:
-      SetNotificationAccessStatusInternal(AccessStatus::kProhibited);
+      SetNotificationAccessStatusInternal(
+          AccessStatus::kProhibited,
+          AccessProhibitedReason::kDisabledByPhonePolicy);
       break;
     default:
       // Do not update access status based on other operation status values.

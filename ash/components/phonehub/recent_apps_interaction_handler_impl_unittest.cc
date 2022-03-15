@@ -148,7 +148,8 @@ class RecentAppsInteractionHandlerTest : public testing::Test {
             enabled
                 ? MultideviceFeatureAccessManager::AccessStatus::kAccessGranted
                 : MultideviceFeatureAccessManager::AccessStatus::
-                      kAvailableButNotGranted);
+                      kAvailableButNotGranted,
+            MultideviceFeatureAccessManager::AccessProhibitedReason::kUnknown);
   }
 
   std::vector<RecentAppsInteractionHandler::UserState> GetDefaultUserStates() {

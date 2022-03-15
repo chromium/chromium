@@ -322,7 +322,9 @@ class MultideviceHandlerTest : public testing::Test {
                 ? phonehub::MultideviceFeatureAccessManager::AccessStatus::
                       kAccessGranted
                 : phonehub::MultideviceFeatureAccessManager::AccessStatus::
-                      kAvailableButNotGranted);
+                      kAvailableButNotGranted,
+            phonehub::MultideviceFeatureAccessManager::AccessProhibitedReason::
+                kUnknown);
     base::ListValue empty_args;
     test_web_ui()->HandleReceivedMessage("attemptNotificationSetup",
                                          &empty_args);
