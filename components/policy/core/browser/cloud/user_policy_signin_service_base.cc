@@ -1,8 +1,8 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2022 The Chromium Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/policy/cloud/user_policy_signin_service_base.h"
+#include "components/policy/core/browser/cloud/user_policy_signin_service_base.h"
 
 #include <utility>
 
@@ -12,47 +12,27 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "build/build_config.h"
-#include "chrome/browser/browser_process.h"
-#include "chrome/browser/chrome_notification_types.h"
-#include "chrome/browser/enterprise/util/managed_browser_utils.h"
-#include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/profiles/profile_attributes_entry.h"
-#include "chrome/browser/profiles/profile_attributes_storage.h"
-#include "chrome/browser/profiles/profile_manager.h"
-#include "chrome/browser/signin/account_id_from_account_info.h"
-#include "chrome/common/chrome_content_client.h"
-#include "chrome/common/pref_names.h"
 #include "components/policy/core/browser/browser_policy_connector.h"
 #include "components/policy/core/common/cloud/device_management_service.h"
 #include "components/policy/core/common/cloud/user_cloud_policy_manager.h"
 #include "components/prefs/pref_service.h"
 #include "components/signin/public/identity_manager/account_info.h"
-#include "content/public/browser/notification_source.h"
-#include "content/public/browser/storage_partition.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 
 namespace policy {
 
 UserPolicySigninServiceBase::UserPolicySigninServiceBase(
-    Profile* profile,
     PrefService* local_state,
     DeviceManagementService* device_management_service,
     UserCloudPolicyManager* policy_manager,
     signin::IdentityManager* identity_manager,
     scoped_refptr<network::SharedURLLoaderFactory> system_url_loader_factory)
-    : profile_(profile),
-      policy_manager_(policy_manager),
+    : policy_manager_(policy_manager),
       identity_manager_(identity_manager),
       local_state_(local_state),
       device_management_service_(device_management_service),
       system_url_loader_factory_(system_url_loader_factory),
-      consent_level_(signin::ConsentLevel::kSignin) {
-  // Register a listener to be called back once the current profile has finished
-  // initializing, so we can startup/shutdown the UserCloudPolicyManager.
-  registrar_.Add(this,
-                 chrome::NOTIFICATION_PROFILE_ADDED,
-                 content::Source<Profile>(profile));
-}
+      consent_level_(signin::ConsentLevel::kSignin) {}
 
 UserPolicySigninServiceBase::~UserPolicySigninServiceBase() {}
 
@@ -82,43 +62,6 @@ void UserPolicySigninServiceBase::FetchPolicyForSignedInUser(
 
   // Now initiate a policy fetch.
   manager->core()->service()->RefreshPolicy(std::move(callback));
-}
-
-void UserPolicySigninServiceBase::OnPrimaryAccountChanged(
-    const signin::PrimaryAccountChangeEvent& event) {
-  if (event.GetEventTypeFor(signin::ConsentLevel::kSignin) ==
-      signin::PrimaryAccountChangeEvent::Type::kCleared) {
-    ProfileManager* profile_manager = g_browser_process->profile_manager();
-    // Some tests do not have a profile manager.
-    if (profile_manager) {
-      ProfileAttributesEntry* entry =
-          profile_manager->GetProfileAttributesStorage()
-              .GetProfileAttributesWithPath(profile_->GetPath());
-      if (entry)
-        entry->SetUserAcceptedAccountManagement(false);
-      ShutdownUserCloudPolicyManager();
-    } else if (event.GetEventTypeFor(signin::ConsentLevel::kSync) ==
-               signin::PrimaryAccountChangeEvent::Type::kCleared) {
-      ShutdownUserCloudPolicyManager();
-    }
-  }
-}
-
-void UserPolicySigninServiceBase::Observe(
-    int type,
-    const content::NotificationSource& source,
-    const content::NotificationDetails& details) {
-  DCHECK_EQ(chrome::NOTIFICATION_PROFILE_ADDED, type);
-
-  // A new profile has been loaded - if it's signed in, then initialize the
-  // UCPM, otherwise shut down the UCPM (which deletes any cached policy
-  // data). This must be done here instead of at constructor time because
-  // the Profile is not fully initialized when this object is constructed
-  // (DoFinalInit() has not yet been called, so ProfileIOData and
-  // SSLConfigServiceManager have not been created yet).
-  // TODO(atwilson): Switch to using a timer instead, to avoid contention
-  // with other services at startup (http://crbug.com/165468).
-  InitializeOnProfileReady(content::Source<Profile>(source).ptr());
 }
 
 void UserPolicySigninServiceBase::
@@ -157,8 +100,6 @@ void UserPolicySigninServiceBase::OnClientError(CloudPolicyClient* client) {
 }
 
 void UserPolicySigninServiceBase::Shutdown() {
-  if (identity_manager())
-    identity_manager()->RemoveObserver(this);
   PrepareForUserCloudPolicyManagerShutdown();
 }
 
@@ -197,32 +138,6 @@ bool UserPolicySigninServiceBase::ShouldLoadPolicyForUser(
     return false;  // Not signed in.
 
   return !BrowserPolicyConnector::IsNonEnterpriseUser(username);
-}
-
-void UserPolicySigninServiceBase::InitializeOnProfileReady(Profile* profile) {
-  DCHECK_EQ(profile, profile_);
-  // If using a TestingProfile with no IdentityManager or
-  // UserCloudPolicyManager, skip initialization.
-  if (!policy_manager() || !identity_manager()) {
-    DVLOG(1) << "Skipping initialization for tests due to missing components.";
-    return;
-  }
-
-  // Shutdown the UserCloudPolicyManager when the user signs out. We start
-  // observing the IdentityManager here because we don't want to get signout
-  // notifications until after the profile has started initializing
-  // (http://crbug.com/316229).
-  identity_manager()->AddObserver(this);
-
-  AccountId account_id = AccountIdFromAccountInfo(
-      identity_manager()->GetPrimaryAccountInfo(consent_level()));
-  if (!CanApplyPoliciesForSignedInUser(/*check_for_refresh_token=*/false)) {
-    ShutdownUserCloudPolicyManager();
-  } else {
-    InitializeForSignedInUser(account_id,
-                              profile->GetDefaultStoragePartition()
-                                  ->GetURLLoaderFactoryForBrowserProcess());
-  }
 }
 
 void UserPolicySigninServiceBase::InitializeForSignedInUser(
@@ -278,17 +193,6 @@ void UserPolicySigninServiceBase::ShutdownUserCloudPolicyManager() {
   UserCloudPolicyManager* manager = policy_manager();
   if (manager)
     manager->DisconnectAndRemovePolicy();
-}
-
-bool UserPolicySigninServiceBase::CanApplyPoliciesForSignedInUser(
-    bool check_for_refresh_token) {
-  return (check_for_refresh_token
-              ? identity_manager()->HasPrimaryAccountWithRefreshToken(
-                    signin::ConsentLevel::kSignin)
-              : identity_manager()->HasPrimaryAccount(
-                    signin::ConsentLevel::kSignin)) &&
-         (profile_can_be_managed_for_testing_ ||
-          chrome::enterprise_util::ProfileCanBeManaged(profile()));
 }
 
 }  // namespace policy

@@ -10,8 +10,9 @@
 
 #include "base/memory/ref_counted.h"
 #include "base/scoped_observation.h"
-#include "chrome/browser/policy/cloud/user_policy_signin_service_base.h"
 #include "chrome/browser/profiles/profile_attributes_storage.h"
+#include "chrome/browser/profiles/profile_manager_observer.h"
+#include "components/policy/core/browser/cloud/user_policy_signin_service_base.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 
@@ -26,10 +27,31 @@ namespace policy {
 
 class CloudPolicyClientRegistrationHelper;
 
+class UserPolicySigninService;
+
+// Observer bridge for UserPolicySigninService to observe profile manager
+// events.
+class ProfileManagerObserverBridge : public ProfileManagerObserver {
+ public:
+  explicit ProfileManagerObserverBridge(
+      UserPolicySigninService* user_policy_signin_service);
+  ProfileManagerObserverBridge(const ProfileManagerObserverBridge&) = delete;
+  ProfileManagerObserverBridge& operator=(const ProfileManagerObserverBridge&) =
+      delete;
+  ~ProfileManagerObserverBridge() override;
+
+  // ProfileManagerObserver implementation:
+  void OnProfileAdded(Profile* profile) override;
+
+ private:
+  UserPolicySigninService* user_policy_signin_service_;
+};
+
 // A specialization of the UserPolicySigninServiceBase for the desktop
 // platforms (Windows, Mac and Linux).
 class UserPolicySigninService : public UserPolicySigninServiceBase,
-                                public ProfileAttributesStorage::Observer {
+                                public ProfileAttributesStorage::Observer,
+                                public signin::IdentityManager::Observer {
  public:
   // Creates a UserPolicySigninService associated with the passed
   // |policy_manager| and |identity_manager|.
@@ -54,7 +76,6 @@ class UserPolicySigninService : public UserPolicySigninServiceBase,
       PolicyRegistrationCallback callback);
 
   // signin::IdentityManager::Observer implementation:
-  // UserPolicySigninServiceBase is already an observer of IdentityManager.
   void OnPrimaryAccountChanged(
       const signin::PrimaryAccountChangeEvent& event_details) override;
   void OnRefreshTokenUpdatedForAccount(
@@ -71,6 +92,13 @@ class UserPolicySigninService : public UserPolicySigninServiceBase,
   void OnProfileUserManagementAcceptanceChanged(
       const base::FilePath& profile_path) override;
 
+  // Handler for when the profile is ready.
+  void OnProfileReady(Profile* profile);
+
+  void set_profile_can_be_managed_for_testing(bool can_be_managed) {
+    profile_can_be_managed_for_testing_ = can_be_managed;
+  }
+
  protected:
   // UserPolicySigninServiceBase implementation:
   void InitializeUserCloudPolicyManager(
@@ -80,6 +108,9 @@ class UserPolicySigninService : public UserPolicySigninServiceBase,
   void PrepareForUserCloudPolicyManagerShutdown() override;
 
  private:
+  // KeyedService implementation:
+  void Shutdown() override;
+
   // Fetches an OAuth token to allow the cloud policy service to register with
   // the cloud policy server. |oauth_login_token| should contain an OAuth login
   // refresh token that can be downscoped to get an access token for the
@@ -102,7 +133,29 @@ class UserPolicySigninService : public UserPolicySigninServiceBase,
   void CallPolicyRegistrationCallback(std::unique_ptr<CloudPolicyClient> client,
                                       PolicyRegistrationCallback callback);
 
+  // Initializes the UserPolicySigninService once its owning Profile becomes
+  // ready. If the Profile has a signed-in account associated with it at startup
+  // then this initializes the cloud policy manager by calling
+  // InitializeForSignedInUser(); otherwise it clears any stored policies.
+  void InitializeOnProfileReady(Profile* profile);
+
+  // Returns true when policies can be applied for the profile. The profile has
+  // to be at least tied to an account.
+  bool CanApplyPolicies(bool check_for_refresh_token);
+
+  // True when the profile can be managed for testing purpose. Has to be set
+  // from the test fixture. This is used to bypass the check on the profile
+  // attributes entry.
+  bool profile_can_be_managed_for_testing_ = false;
+
   std::unique_ptr<CloudPolicyClientRegistrationHelper> registration_helper_;
+
+  // Parent profile for this service.
+  raw_ptr<Profile> profile_;
+
+  // Observer bridge for profile added events.
+  ProfileManagerObserverBridge profile_manager_observer_bridge_{this};
+
   base::ScopedObservation<ProfileAttributesStorage,
                           ProfileAttributesStorage::Observer>
       observed_profile_{this};

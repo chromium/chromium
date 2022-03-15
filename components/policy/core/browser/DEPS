@@ -1,5 +1,6 @@
 include_rules = [
   "+components/google/core",
+  "+components/keyed_service",
   "+components/pref_registry",
   "+components/reporting",
   "+components/signin",

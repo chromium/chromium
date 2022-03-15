@@ -195,10 +195,13 @@ class UserPolicySigninServiceTest : public testing::Test {
     EXPECT_CALL(*mock_store_, Clear());
 
     // Let the SigninService know that the profile has been created.
-    content::NotificationService::current()->Notify(
-        chrome::NOTIFICATION_PROFILE_ADDED,
-        content::Source<Profile>(profile_.get()),
-        content::NotificationService::NoDetails());
+#if BUILDFLAG(IS_ANDROID)
+    UserPolicySigninServiceFactory::GetForProfile(profile_.get())
+        ->OnProfileAdded(profile_.get());
+#else
+    UserPolicySigninServiceFactory::GetForProfile(profile_.get())
+        ->OnProfileReady(profile_.get());
+#endif  // BUILDFLAG(IS_ANDROID)
   }
 
   bool IsRequestActive() {
@@ -322,10 +325,13 @@ class UserPolicySigninServiceSignedInTest : public UserPolicySigninServiceTest {
                                            signin::ConsentLevel::kSync);
 
     // Let the SigninService know that the profile has been created.
-    content::NotificationService::current()->Notify(
-        chrome::NOTIFICATION_PROFILE_ADDED,
-        content::Source<Profile>(profile_.get()),
-        content::NotificationService::NoDetails());
+#if BUILDFLAG(IS_ANDROID)
+    UserPolicySigninServiceFactory::GetForProfile(profile_.get())
+        ->OnProfileAdded(profile_.get());
+#else
+    UserPolicySigninServiceFactory::GetForProfile(profile_.get())
+        ->OnProfileReady(profile_.get());
+#endif  // BUILDFLAG(IS_ANDROID)
   }
 };
 

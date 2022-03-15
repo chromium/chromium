@@ -52,6 +52,15 @@ source_set("internal") {
     "webui/policy_status_provider.h",
   ]
 
+  if (!is_chromeos_ash) {
+    sources += [
+      "cloud/user_policy_signin_service_base.cc",
+      "cloud/user_policy_signin_service_base.h",
+      "cloud/user_policy_signin_service_util.cc",
+      "cloud/user_policy_signin_service_util.h",
+    ]
+  }
+
   configs += [ "//components/policy:component_implementation" ]
 
   public_deps = [ "//base" ]

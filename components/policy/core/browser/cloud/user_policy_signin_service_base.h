@@ -1,9 +1,9 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2022 The Chromium Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_POLICY_CLOUD_USER_POLICY_SIGNIN_SERVICE_BASE_H_
-#define CHROME_BROWSER_POLICY_CLOUD_USER_POLICY_SIGNIN_SERVICE_BASE_H_
+#ifndef COMPONENTS_POLICY_CORE_BROWSER_CLOUD_USER_POLICY_SIGNIN_SERVICE_BASE_H_
+#define COMPONENTS_POLICY_CORE_BROWSER_CLOUD_USER_POLICY_SIGNIN_SERVICE_BASE_H_
 
 #include <memory>
 #include <string>
@@ -16,12 +16,9 @@
 #include "components/policy/core/common/cloud/cloud_policy_client.h"
 #include "components/policy/core/common/cloud/cloud_policy_service.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
-#include "content/public/browser/notification_observer.h"
-#include "content/public/browser/notification_registrar.h"
 
 class AccountId;
 class PrefService;
-class Profile;
 
 namespace network {
 class SharedURLLoaderFactory;
@@ -44,11 +41,10 @@ class UserCloudPolicyManager;
 //
 // Finally, if the user signs out, this class is responsible for shutting down
 // the policy infrastructure to ensure that any cached policy is cleared.
-class UserPolicySigninServiceBase : public KeyedService,
-                                    public CloudPolicyClient::Observer,
-                                    public CloudPolicyService::Observer,
-                                    public content::NotificationObserver,
-                                    public signin::IdentityManager::Observer {
+class POLICY_EXPORT UserPolicySigninServiceBase
+    : public KeyedService,
+      public CloudPolicyClient::Observer,
+      public CloudPolicyService::Observer {
  public:
   // The callback invoked once policy registration is complete. Passed
   // |dm_token| and |client_id| parameters are empty if policy registration
@@ -63,7 +59,6 @@ class UserPolicySigninServiceBase : public KeyedService,
 
   // Creates a UserPolicySigninServiceBase associated with the passed |profile|.
   UserPolicySigninServiceBase(
-      Profile* profile,
       PrefService* local_state,
       DeviceManagementService* device_management_service,
       UserCloudPolicyManager* policy_manager,
@@ -85,19 +80,6 @@ class UserPolicySigninServiceBase : public KeyedService,
       const std::string& client_id,
       scoped_refptr<network::SharedURLLoaderFactory> profile_url_loader_factory,
       PolicyFetchCallback callback);
-
-  void set_profile_can_be_managed_for_testing(bool can_be_managed) {
-    profile_can_be_managed_for_testing_ = can_be_managed;
-  }
-
-  // signin::IdentityManager::Observer implementation:
-  void OnPrimaryAccountChanged(
-      const signin::PrimaryAccountChangeEvent& event_details) override;
-
-  // content::NotificationObserver implementation:
-  void Observe(int type,
-               const content::NotificationSource& source,
-               const content::NotificationDetails& details) override;
 
   // CloudPolicyService::Observer implementation:
   void OnCloudPolicyServiceInitializationCompleted() override;
@@ -121,21 +103,14 @@ class UserPolicySigninServiceBase : public KeyedService,
   // BrowserPolicyConnector::IsNonEnterpriseUser()).
   bool ShouldLoadPolicyForUser(const std::string& email_address);
 
-  // Invoked to initialize the UserPolicySigninService once its owning Profile
-  // becomes ready. If the Profile has a signed-in account associated with it
-  // at startup then this initializes the cloud policy manager by calling
-  // InitializeForSignedInUser(); otherwise it clears any stored policies.
-  void InitializeOnProfileReady(Profile* profile);
-
   // Invoked to initialize the cloud policy service for |account_id|, which is
   // the account associated with the Profile that owns this service. This is
   // invoked from InitializeOnProfileReady() if the Profile already has a
   // signed-in account at startup, or (on the desktop platforms) as soon as the
   // user signs-in and an OAuth2 login refresh token becomes available.
-  void InitializeForSignedInUser(
-      const AccountId& account_id,
-      scoped_refptr<network::SharedURLLoaderFactory>
-          profile_url_loader_factory);
+  void InitializeForSignedInUser(const AccountId& account_id,
+                                 scoped_refptr<network::SharedURLLoaderFactory>
+                                     profile_url_loader_factory);
 
   // Initializes the cloud policy manager with the passed |client|. This is
   // called from InitializeForSignedInUser() when the Profile already has a
@@ -153,36 +128,27 @@ class UserPolicySigninServiceBase : public KeyedService,
   // out) and deletes any cached policy.
   virtual void ShutdownUserCloudPolicyManager();
 
-  bool CanApplyPoliciesForSignedInUser(bool check_for_refresh_token);
-
-  Profile* profile() { return profile_; }
   // Convenience helpers to get the associated UserCloudPolicyManager and
   // IdentityManager.
   UserCloudPolicyManager* policy_manager() { return policy_manager_; }
   signin::IdentityManager* identity_manager() { return identity_manager_; }
 
-  content::NotificationRegistrar* registrar() { return &registrar_; }
   signin::ConsentLevel consent_level() const { return consent_level_; }
 
  private:
-  // Parent profile for this service.
-  raw_ptr<Profile> profile_;
   // Weak pointer to the UserCloudPolicyManager and IdentityManager this service
   // is associated with.
   raw_ptr<UserCloudPolicyManager> policy_manager_;
   raw_ptr<signin::IdentityManager> identity_manager_;
-
-  content::NotificationRegistrar registrar_;
 
   raw_ptr<PrefService> local_state_;
   raw_ptr<DeviceManagementService> device_management_service_;
   scoped_refptr<network::SharedURLLoaderFactory> system_url_loader_factory_;
 
   signin::ConsentLevel consent_level_;
-  bool profile_can_be_managed_for_testing_ = false;
   base::WeakPtrFactory<UserPolicySigninServiceBase> weak_factory_{this};
 };
 
 }  // namespace policy
 
-#endif  // CHROME_BROWSER_POLICY_CLOUD_USER_POLICY_SIGNIN_SERVICE_BASE_H_
+#endif  // COMPONENTS_POLICY_CORE_BROWSER_CLOUD_USER_POLICY_SIGNIN_SERVICE_BASE_H_
