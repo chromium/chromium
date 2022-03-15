@@ -377,6 +377,7 @@ const char kOsUIScanningAppURL[] = "os://scanning";
 const char kOsUISettingsURL[] = "os://settings";
 const char kOsUISignInInternalsURL[] = "os://signin-internals";
 const char kOsUISyncInternalsURL[] = "os://sync-internals";
+const char kOsUISysInternalsUrl[] = "os://sys-internals";
 const char kOsUISystemURL[] = "os://system";
 const char kOsUITermsURL[] = "os://terms";
 

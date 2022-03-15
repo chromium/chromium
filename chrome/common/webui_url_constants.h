@@ -354,6 +354,7 @@ extern const char kOsUIScanningAppURL[];
 extern const char kOsUISettingsURL[];
 extern const char kOsUISignInInternalsURL[];
 extern const char kOsUISyncInternalsURL[];
+extern const char kOsUISysInternalsUrl[];
 extern const char kOsUISystemURL[];
 extern const char kOsUITermsURL[];
 

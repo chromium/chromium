@@ -1559,10 +1559,10 @@ std::vector<GURL> ChromeWebUIControllerFactory::GetListOfAcceptableURLs() {
       GURL(chrome::kChromeUIOSSettingsURL), GURL(chrome::kChromeUISettingsURL),
       GURL(chrome::kOsUISettingsURL), GURL(chrome::kOsUISignInInternalsURL),
       GURL(chrome::kChromeUISlowURL), GURL(chrome::kChromeUISmbShareURL),
-      GURL(chrome::kOsUISyncInternalsURL),
-      GURL(chrome::kChromeUISysInternalsUrl), GURL(chrome::kOsUITermsURL),
-      GURL(chrome::kChromeUIUserImageURL), GURL(chrome::kOsUIVersionURL),
-      GURL(chrome::kChromeUIVmUrl), GURL(chrome::kOsUISystemURL),
+      GURL(chrome::kOsUISyncInternalsURL), GURL(chrome::kOsUISysInternalsUrl),
+      GURL(chrome::kOsUITermsURL), GURL(chrome::kChromeUIUserImageURL),
+      GURL(chrome::kOsUIVersionURL), GURL(chrome::kChromeUIVmUrl),
+      GURL(chrome::kOsUISystemURL),
       // The CL to land this didn't land yet. Once landed they need to be moved
       // to Lacros. However  - as the refactor might precede this, there is no
       // TODO for it.
