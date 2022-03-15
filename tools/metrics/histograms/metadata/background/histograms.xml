@@ -280,7 +280,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="BackgroundSync.Event.OneShotResultPattern"
-    enum="BackgroundSyncResultPattern" expires_after="2022-07-11">
+    enum="BackgroundSyncResultPattern" expires_after="2022-09-11">
   <owner>nator@chromium.org</owner>
   <owner>rayankans@chromium.org</owner>
   <summary>
