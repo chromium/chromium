@@ -48,7 +48,6 @@ chromium-metrics-reviews@google.com.
 <!-- expires-never: Needed for tracking missing histogram data. -->
 
   <owner>asvitkine@chromium.org</owner>
-  <owner>bcwhite@chromium.org</owner>
   <owner>src/base/metrics/OWNERS</owner>
   <summary>
     The hash codes of histograms that were found to have bad construction
@@ -60,7 +59,6 @@ chromium-metrics-reviews@google.com.
 <histogram name="Histogram.MismatchedConstructionArguments"
     enum="HistogramNameHash" expires_after="2022-08-01">
   <owner>asvitkine@chromium.org</owner>
-  <owner>bcwhite@chromium.org</owner>
   <owner>src/base/metrics/OWNERS</owner>
   <summary>
     The hash codes of histograms that were found to have construction arguments
@@ -73,7 +71,6 @@ chromium-metrics-reviews@google.com.
 <histogram name="Histogram.TooManyBuckets.1000" enum="HistogramNameHash"
     expires_after="2022-08-01">
   <owner>asvitkine@chromium.org</owner>
-  <owner>bcwhite@chromium.org</owner>
   <owner>src/base/metrics/OWNERS</owner>
   <summary>
     The hash codes of histograms that were found to request more than 1000
@@ -270,7 +267,6 @@ chromium-metrics-reviews@google.com.
 <histogram name="UMA.FileMetricsProvider.AccessResult"
     enum="FileMetricsProviderAccessResult" expires_after="2022-08-01">
   <owner>asvitkine@chromium.org</owner>
-  <owner>bcwhite@chromium.org</owner>
   <owner>src/base/metrics/OWNERS</owner>
   <summary>
     Records attempts to access a file for the purpose of extracting metrics.
@@ -280,7 +276,6 @@ chromium-metrics-reviews@google.com.
 <histogram name="UMA.FileMetricsProvider.InitialAccessResult"
     enum="FileMetricsProviderAccessResult" expires_after="2022-08-01">
   <owner>asvitkine@chromium.org</owner>
-  <owner>bcwhite@chromium.org</owner>
   <owner>src/base/metrics/OWNERS</owner>
   <summary>
     Records attempts to access a file for the purpose of extracting initial
@@ -364,7 +359,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="UMA.LocalPersistentMemoryAllocator.Failures.Posix"
     enum="PopularOSErrno" expires_after="M85">
-  <owner>bcwhite@chromium.org</owner>
+  <owner>asvitkine@chromium.org</owner>
   <owner>src/base/metrics/OWNERS</owner>
   <summary>
     Failures, as reported in errno, encountered while allocating local
@@ -374,7 +369,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="UMA.LocalPersistentMemoryAllocator.Failures.Win"
     enum="WinGetLastError" expires_after="M85">
-  <owner>bcwhite@chromium.org</owner>
+  <owner>asvitkine@chromium.org</owner>
   <owner>src/base/metrics/OWNERS</owner>
   <summary>
     Failures, as reported by GetLastError(), encountered while allocating local
@@ -505,7 +500,6 @@ chromium-metrics-reviews@google.com.
 <histogram name="UMA.NegativeSamples.Histogram" enum="HistogramNameHash"
     expires_after="2022-08-01">
   <owner>asvitkine@chromium.org</owner>
-  <owner>bcwhite@chromium.org</owner>
   <owner>src/base/metrics/OWNERS</owner>
   <summary>
     The lower 32 bits of the ID of the histogram that went negative.
@@ -515,7 +509,6 @@ chromium-metrics-reviews@google.com.
 <histogram name="UMA.NegativeSamples.Increment" units="increment"
     expires_after="2022-08-01">
   <owner>asvitkine@chromium.org</owner>
-  <owner>bcwhite@chromium.org</owner>
   <owner>src/base/metrics/OWNERS</owner>
   <summary>
     The amount of increment that caused a sample count to become negative.
@@ -525,7 +518,6 @@ chromium-metrics-reviews@google.com.
 <histogram name="UMA.NegativeSamples.Reason" enum="NegativeSampleReason"
     expires_after="2022-08-01">
   <owner>asvitkine@chromium.org</owner>
-  <owner>bcwhite@chromium.org</owner>
   <owner>src/base/metrics/OWNERS</owner>
   <summary>
     Reasons why a negative sample count would have been created. Currently, only
@@ -535,7 +527,6 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="UMA.PersistentAllocator.{PersistentAllocatorType}.Errors"
     enum="PersistentAllocatorErrors" expires_after="M85">
-  <owner>bcwhite@chromium.org</owner>
   <owner>asvitkine@chromium.org</owner>
   <owner>src/base/metrics/OWNERS</owner>
   <summary>
@@ -547,7 +538,6 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="UMA.PersistentAllocator.{PersistentAllocatorType}.UsedPct"
     units="%" expires_after="M87">
-  <owner>bcwhite@chromium.org</owner>
   <owner>asvitkine@chromium.org</owner>
   <owner>src/base/metrics/OWNERS</owner>
   <summary>
@@ -559,7 +549,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="UMA.PersistentHistograms.InitResult"
     enum="PersistentHistogramsInitResult" expires_after="2022-08-01">
-  <owner>bcwhite@chromium.org</owner>
+  <owner>asvitkine@chromium.org</owner>
   <owner>src/base/metrics/OWNERS</owner>
   <summary>
     A count of successes and failures for the creation of various forms of

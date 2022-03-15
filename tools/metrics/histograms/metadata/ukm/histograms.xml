@@ -46,7 +46,6 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="UKM.ConsentObserver.AllowedForAllProfiles" enum="Boolean"
     expires_after="2020-08-30">
-  <owner>bcwhite@chromium.org</owner>
   <owner>rkaplow@chromium.org</owner>
   <owner>ukm-team@google.com</owner>
   <summary>
@@ -60,7 +59,6 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="UKM.ConsentObserver.Purge" enum="Boolean"
     expires_after="2022-09-11">
-  <owner>bcwhite@chromium.org</owner>
   <owner>rkaplow@chromium.org</owner>
   <owner>ukm-team@google.com</owner>
   <summary>

@@ -11521,7 +11521,7 @@ should be kept until we remove incident reporting. -->
 <!-- expires-never: Fundamental metric used to gague overall failure rates. -->
 
   <owner>grt@chromium.org</owner>
-  <owner>bcwhite@chromium.org</owner>
+  <owner>ydago@chromium.org</owner>
   <summary>
     The final exit-result of the entire run of setup.exe on Windows.
   </summary>
