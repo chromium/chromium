@@ -8472,11 +8472,12 @@ bool ShouldSkipConditionalFeatureEntry(const flags_ui::FlagsStorage* storage,
     return !ash::features::IsWallpaperWebUIEnabled();
 
   // Only show Google Photos wallpaper integration flag if:
-  // * channel is one of Dev/Canary/Unknown, and
+  // * channel is one of Beta/Dev/Canary/Unknown, and
   // * wallpaper Web UI flag is enabled.
   if (!strcmp(kWallpaperGooglePhotosIntegrationInternalName,
               entry.internal_name)) {
-    return (channel != version_info::Channel::DEV &&
+    return (channel != version_info::Channel::BETA &&
+            channel != version_info::Channel::DEV &&
             channel != version_info::Channel::CANARY &&
             channel != version_info::Channel::UNKNOWN) ||
            !ash::features::IsWallpaperWebUIEnabled();
