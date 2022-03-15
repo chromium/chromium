@@ -27,12 +27,33 @@ constexpr int kDialogWidth = 512;
 constexpr int kDefaultConsentDialogHeight = 569;
 constexpr int kDefaultNoticeDialogHeight = 494;
 
+class PrivacySandboxDialogDelegate : public views::DialogDelegate {
+ public:
+  explicit PrivacySandboxDialogDelegate(
+      PrivacySandboxService::DialogType dialog_type)
+      : dialog_type_(dialog_type) {}
+
+  bool OnCloseRequested(views::Widget::ClosedReason close_reason) override {
+    // Any close reason is sufficient to close the notice.
+    if (dialog_type_ == PrivacySandboxService::DialogType::kNotice)
+      return true;
+
+    // Only an unspecified close reason, which only occurs when the user has
+    // actually made a choice and not for things like pressing escape, is
+    // sufficient to close the consent.
+    return close_reason == views::Widget::ClosedReason::kUnspecified;
+  }
+
+ private:
+  PrivacySandboxService::DialogType dialog_type_;
+};
+
 }  // namespace
 
 // static
 void ShowPrivacySandboxDialog(Browser* browser,
                               PrivacySandboxService::DialogType dialog_type) {
-  auto delegate = std::make_unique<views::DialogDelegate>();
+  auto delegate = std::make_unique<PrivacySandboxDialogDelegate>(dialog_type);
   delegate->SetButtons(ui::DIALOG_BUTTON_NONE);
   delegate->SetModalType(ui::MODAL_TYPE_WINDOW);
   delegate->SetShowCloseButton(false);
