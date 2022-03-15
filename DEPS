@@ -1347,7 +1347,7 @@ deps = {
 
   # Userspace interface to kernel DRM services.
   'src/third_party/libdrm/src': {
-      'url': Var('chromium_git') + '/chromiumos/third_party/libdrm.git' + '@' + '0190f49a139e7069d7cad6a6890832831da1aa8b',
+      'url': Var('chromium_git') + '/chromiumos/third_party/libdrm.git' + '@' + '56f81e6776c1c100c3f627b2c1feb9dcae2aad3c',
       'condition': 'checkout_linux',
   },
 

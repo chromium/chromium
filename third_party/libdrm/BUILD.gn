@@ -3,6 +3,20 @@
 # found in the LICENSE file.
 assert(is_linux || is_chromeos)
 
+generated_static_table_fourcc_file =
+    "$target_gen_dir/src/generated_static_table_fourcc.h"
+fourcc_file = "src/include/drm/drm_fourcc.h"
+
+action("make_generated_static_table_fourcc") {
+  script = "src/gen_table_fourcc.py"
+  args = [
+    rebase_path(fourcc_file, root_build_dir),
+    rebase_path(generated_static_table_fourcc_file),
+  ]
+  outputs = [ generated_static_table_fourcc_file ]
+  inputs = [ fourcc_file ]
+}
+
 config("libdrm_config") {
   # TODO(thomasanderson): Remove this hack once
   # https://patchwork.kernel.org/patch/10545295/ lands.
@@ -29,6 +43,9 @@ config("libdrm_config") {
 
       # TODO(crbug.com/932060) fix unused result from asprintf in modetest.c.
       "-Wno-unused-result",
+
+      # modetest.c has an improper conversion in a printf statement.
+      "-Wno-format",
     ]
   }
 }
@@ -41,7 +58,10 @@ static_library("libdrm") {
     "src/xf86drmRandom.c",
   ]
 
+  deps = [ ":make_generated_static_table_fourcc" ]
+
   include_dirs = [
+    get_path_info(generated_static_table_fourcc_file, "dir"),
     "src",
     "src/include",
   ]
@@ -80,5 +100,7 @@ executable("modetest") {
 
   configs -= [ "//build/config/compiler:chromium_code" ]
   configs += [ "//build/config/compiler:no_chromium_code" ]
+  configs += [ ":libdrm_config" ]
+
   deps = [ ":libdrm" ]
 }

@@ -202,9 +202,13 @@ source_set("gbm_unittests") {
   deps = [
     ":gbm",
     "//base/test:test_support",
-    "//build/config/linux/libdrm",
     "//skia",
     "//testing/gtest",
+
+    # We're using this instead of the config to ensure that our tests built for
+    # linux have a controllable dependency instead of relying on whatever is on
+    # the system.
+    "//third_party/libdrm",
     "//ui/base/ime",
     "//ui/gfx",
     "//ui/gfx/linux:drm",

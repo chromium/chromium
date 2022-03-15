@@ -4,6 +4,7 @@
 
 #include "ui/ozone/platform/drm/gpu/mock_drm_device.h"
 
+#include <stdint.h>
 #include <xf86drm.h>
 #include <memory>
 #include <utility>
@@ -24,6 +25,7 @@ struct drmModeAtomicReqItem {
   uint32_t object_id;
   uint32_t property_id;
   uint64_t value;
+  uint32_t cursor;
 };
 
 typedef drmModeAtomicReqItem* drmModeAtomicReqItemPtr;
