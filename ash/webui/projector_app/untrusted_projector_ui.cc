@@ -53,7 +53,8 @@ content::WebUIDataSource* CreateProjectorHTMLSource(
   source->OverrideContentSecurityPolicy(
       network::mojom::CSPDirectiveName::MediaSrc,
       // Allows streaming video.
-      "media-src 'self' https://*.drive.google.com;");
+      "media-src 'self' https://*.drive.google.com "
+      "https://projector.apps.chrome;");
   // Allow images to also handle data urls.
   source->OverrideContentSecurityPolicy(
       network::mojom::CSPDirectiveName::ImgSrc,
