@@ -1554,7 +1554,7 @@
       'type': 'main',
       'schema': { 'type': 'boolean' },
       'supported_on': [
-        'chrome.win:84-',
+        'chrome.win:84-100',
       ],
       'features': {
         'can_be_recommended': False,
@@ -3534,7 +3534,7 @@
         'type': 'array',
         'items': { 'type': 'string' },
       },
-      'supported_on': ['chrome_os:81-'],
+      'supported_on': ['chrome_os:81-100'],
       'features': {
         'dynamic_refresh': True,
         'per_profile': True
@@ -9780,10 +9780,10 @@
         'items': { 'type': 'string' },
       },
       'supported_on': [
-        'chrome.*:15-',
-        'chrome_os:15-',
-        'android:30-',
-        'webview_android:47-',
+        'chrome.*:15-100',
+        'chrome_os:15-100',
+        'android:30-100',
+        'webview_android:47-100',
       ],
       'deprecated': True,
       'features': {
@@ -9812,10 +9812,10 @@
         'items': { 'type': 'string' },
       },
       'supported_on': [
-        'chrome.*:15-',
-        'chrome_os:15-',
-        'android:30-',
-        'webview_android:47-',
+        'chrome.*:15-100',
+        'chrome_os:15-100',
+        'android:30-100',
+        'webview_android:47-100',
       ],
       'deprecated': True,
       'features': {
@@ -15798,7 +15798,7 @@
         'type': 'array',
         'items': { 'type': 'string' },
       },
-      'supported_on': ['chrome_os:28-'],
+      'supported_on': ['chrome_os:28-100'],
       'deprecated': True,
       'features': {
         'dynamic_refresh': True,
@@ -17956,7 +17956,7 @@
           }
         }
       },
-      'supported_on': [ 'chrome_os:57-' ],
+      'supported_on': [ 'chrome_os:57-100' ],
       'features': {
         'dynamic_refresh': True,
         'per_profile': True,
@@ -18088,7 +18088,7 @@
           'hash': { 'type': 'string' }
         },
       },
-      'supported_on': ['chrome_os:65-'],
+      'supported_on': ['chrome_os:65-100'],
       'features': {
         'dynamic_refresh': True,
         'per_profile': True,
@@ -18143,7 +18143,7 @@
       'name': 'NativePrintersBulkAccessMode',
       'owners': ['file://chromeos/printing/OWNERS', 'zentaro@chromium.org', 'skau@chromium.org'],
       'id': 383,
-      'supported_on': ['chrome_os:65-'],
+      'supported_on': ['chrome_os:65-100'],
       'type': 'int-enum',
       'schema': {
         'type': 'integer',
@@ -18235,7 +18235,7 @@
     {
       'name': 'NativePrintersBulkBlacklist',
       'owners': ['file://chromeos/printing/OWNERS', 'thestig@chromium.org', 'skau@chromium.org'],
-      'supported_on': ['chrome_os:65-'],
+      'supported_on': ['chrome_os:65-100'],
       'id': 384,
       'type': 'list',
       'schema': {
@@ -18276,7 +18276,7 @@
     {
       'name': 'NativePrintersBulkWhitelist',
       'owners': ['file://chromeos/printing/OWNERS', 'thestig@chromium.org', 'skau@chromium.org'],
-      'supported_on': ['chrome_os:65-'],
+      'supported_on': ['chrome_os:65-100'],
       'id': 385,
       'type': 'list',
       'schema': {
@@ -18805,7 +18805,7 @@
         },
         'id': 'QuickUnlockModeWhitelist',
       },
-      'supported_on': ['chrome_os:56-'],
+      'supported_on': ['chrome_os:56-100'],
       'features': {
         'dynamic_refresh': True,
         'per_profile': True,
@@ -21197,7 +21197,7 @@
         'type': 'array',
         'items': { 'type': 'string' },
       },
-      'supported_on': ['chrome.*:66-', 'chrome_os:66-'],
+      'supported_on': ['chrome.*:66-100', 'chrome_os:66-100'],
       'features': {
         'dynamic_refresh': True,
         'per_profile': True,
@@ -21260,7 +21260,7 @@
       'owners': ['valleau@chromium.org', 'skau@chromium.org'],
       'type': 'main',
       'schema': { 'type': 'boolean' },
-      'supported_on': ['chrome_os:67-'],
+      'supported_on': ['chrome_os:67-100'],
       'features': {
         'dynamic_refresh': True,
         'per_profile': True,
@@ -26790,7 +26790,7 @@ If this policy is left unset, privacy screen is disabled initially but can be co
       'owners': ['file://chrome/browser/notifications/OWNERS', 'knollr@chromium.org'],
       'type': 'main',
       'schema': { 'type': 'boolean' },
-      'supported_on': ['chrome.linux:83-'],
+      'supported_on': ['chrome.linux:83-100'],
       'features': {
         'dynamic_refresh': True,
         'per_profile': True,

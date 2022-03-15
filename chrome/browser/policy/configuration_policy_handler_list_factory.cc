@@ -1760,15 +1760,10 @@ std::unique_ptr<ConfigurationPolicyHandlerList> BuildHandlerList(
   handlers->AddHandler(std::make_unique<RestoreOnStartupPolicyHandler>());
   handlers->AddHandler(
       std::make_unique<safe_browsing::SafeBrowsingPolicyHandler>());
-  handlers->AddHandler(std::make_unique<SimpleDeprecatingPolicyHandler>(
-      std::make_unique<SimplePolicyHandler>(
-          key::kNativeWindowOcclusionEnabled,
-          policy::policy_prefs::kNativeWindowOcclusionEnabled,
-          base::Value::Type::BOOLEAN),
-      std::make_unique<SimplePolicyHandler>(
-          key::kWindowOcclusionEnabled,
-          policy::policy_prefs::kNativeWindowOcclusionEnabled,
-          base::Value::Type::BOOLEAN)));
+  handlers->AddHandler(std::make_unique<SimplePolicyHandler>(
+      key::kWindowOcclusionEnabled,
+      policy::policy_prefs::kNativeWindowOcclusionEnabled,
+      base::Value::Type::BOOLEAN));
   handlers->AddHandler(std::make_unique<SimplePolicyHandler>(
       key::kSafeBrowsingAllowlistDomains, prefs::kSafeBrowsingAllowlistDomains,
       base::Value::Type::LIST));
@@ -2028,24 +2023,15 @@ std::unique_ptr<ConfigurationPolicyHandlerList> BuildHandlerList(
   handlers->AddHandler(
       std::make_unique<LoginScreenPowerManagementPolicyHandler>(chrome_schema));
   // Handler for another policy with JSON strings, lenient but shows warnings.
-  handlers->AddHandler(std::make_unique<policy::SimpleDeprecatingPolicyHandler>(
-      std::make_unique<SimpleJsonStringSchemaValidatingPolicyHandler>(
-          key::kNativePrinters, prefs::kRecommendedPrinters,
-          chrome_schema.GetValidationSchema(),
-          SimpleSchemaValidatingPolicyHandler::RECOMMENDED_ALLOWED,
-          SimpleSchemaValidatingPolicyHandler::MANDATORY_ALLOWED),
+  handlers->AddHandler(
       std::make_unique<SimpleJsonStringSchemaValidatingPolicyHandler>(
           key::kPrinters, prefs::kRecommendedPrinters,
           chrome_schema.GetValidationSchema(),
           SimpleSchemaValidatingPolicyHandler::RECOMMENDED_ALLOWED,
-          SimpleSchemaValidatingPolicyHandler::MANDATORY_ALLOWED)));
-  handlers->AddHandler(std::make_unique<SimpleDeprecatingPolicyHandler>(
-      std::make_unique<SimplePolicyHandler>(key::kUserNativePrintersAllowed,
-                                            prefs::kUserPrintersAllowed,
-                                            base::Value::Type::BOOLEAN),
-      std::make_unique<SimplePolicyHandler>(key::kUserPrintersAllowed,
-                                            prefs::kUserPrintersAllowed,
-                                            base::Value::Type::BOOLEAN)));
+          SimpleSchemaValidatingPolicyHandler::MANDATORY_ALLOWED));
+  handlers->AddHandler(std::make_unique<SimplePolicyHandler>(
+      key::kUserPrintersAllowed, prefs::kUserPrintersAllowed,
+      base::Value::Type::BOOLEAN));
   handlers->AddHandler(std::make_unique<SimplePolicyHandler>(
       key::kSecondaryGoogleAccountUsage,
       ::account_manager::prefs::kSecondaryGoogleAccountUsage,
@@ -2094,13 +2080,9 @@ std::unique_ptr<ConfigurationPolicyHandlerList> BuildHandlerList(
       std::make_unique<ExternalDataPolicyHandler>(key::kWallpaperImage));
   handlers->AddHandler(std::make_unique<ExternalDataPolicyHandler>(
       key::kPrintersBulkConfiguration));
-  handlers->AddHandler(std::make_unique<SimpleDeprecatingPolicyHandler>(
-      std::make_unique<SimplePolicyHandler>(
-          key::kNativePrintersBulkAccessMode,
-          prefs::kRecommendedPrintersAccessMode, base::Value::Type::INTEGER),
-      std::make_unique<SimplePolicyHandler>(
-          key::kPrintersBulkAccessMode, prefs::kRecommendedPrintersAccessMode,
-          base::Value::Type::INTEGER)));
+  handlers->AddHandler(std::make_unique<SimplePolicyHandler>(
+      key::kPrintersBulkAccessMode, prefs::kRecommendedPrintersAccessMode,
+      base::Value::Type::INTEGER));
   handlers->AddHandler(std::make_unique<SimplePolicyHandler>(
       key::kPrintersBulkBlocklist, prefs::kRecommendedPrintersBlocklist,
       base::Value::Type::LIST));
@@ -2305,13 +2287,9 @@ std::unique_ptr<ConfigurationPolicyHandlerList> BuildHandlerList(
 #endif  // BUILDFLAG(ENABLE_SPELLCHECK)
 
 #if BUILDFLAG(IS_LINUX)
-  handlers->AddHandler(std::make_unique<SimpleDeprecatingPolicyHandler>(
-      std::make_unique<SimplePolicyHandler>(key::kAllowNativeNotifications,
-                                            prefs::kAllowNativeNotifications,
-                                            base::Value::Type::BOOLEAN),
-      std::make_unique<SimplePolicyHandler>(key::kAllowSystemNotifications,
-                                            prefs::kAllowSystemNotifications,
-                                            base::Value::Type::BOOLEAN)));
+  handlers->AddHandler(std::make_unique<SimplePolicyHandler>(
+      key::kAllowSystemNotifications, prefs::kAllowSystemNotifications,
+      base::Value::Type::BOOLEAN));
 #endif  // BUILDFLAG(IS_LINUX)
 
 #if !BUILDFLAG(IS_ANDROID)

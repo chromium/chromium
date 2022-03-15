@@ -123,7 +123,7 @@ AppLaunchConfiguration GenerateAppLaunchConfiguration(std::string policy_data,
 // set.
 - (void)testPolicyNotSet {
   std::unique_ptr<base::Value> blocklistValue =
-      GetPlatformPolicy(policy::key::kURLBlacklist);
+      GetPlatformPolicy(policy::key::kURLBlocklist);
   GREYAssertTrue(blocklistValue && blocklistValue->is_none(),
                  @"blocklistValue was unexpectedly present");
 }

@@ -44,62 +44,6 @@ namespace policy {
 
 namespace {
 
-// Maps the separate renamed policies into a single Dictionary policy. This
-// allows to keep the logic of merging policies from different sources simple,
-// as all separate renamed policies should be considered as a single whole
-// during merging.
-void RemapRenamedPolicies(PolicyMap* policies) {
-  // For all renamed policies we need to explicitly merge the value of the
-  // old policy with the new one or else merging will not be carried over
-  // if desired.
-  base::Value* merge_list = policies->GetMutableValue(
-      key::kPolicyListMultipleSourceMergeList, base::Value::Type::LIST);
-  base::flat_set<std::string> policy_lists_to_merge =
-      policy::ValueToStringSet(merge_list);
-  const std::vector<std::pair<const char*, const char*>> renamed_policies = {{
-      {policy::key::kURLBlacklist, policy::key::kURLBlocklist},
-      {policy::key::kURLWhitelist, policy::key::kURLAllowlist},
-#if !BUILDFLAG(IS_ANDROID)
-      {policy::key::kAutoplayWhitelist, policy::key::kAutoplayAllowlist},
-#endif  // !BUILDFLAG(OS_ANDROID)
-#if BUILDFLAG(IS_CHROMEOS)
-      {policy::key::kAttestationExtensionWhitelist,
-       policy::key::kAttestationExtensionAllowlist},
-#endif  // BUILDFLAG(IS_CHROMEOS)
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-      {policy::key::kNativePrintersBulkBlacklist,
-       policy::key::kPrintersBulkBlocklist},
-      {policy::key::kNativePrintersBulkWhitelist,
-       policy::key::kPrintersBulkAllowlist},
-      {policy::key::kQuickUnlockModeWhitelist,
-       policy::key::kQuickUnlockModeAllowlist},
-#if defined(USE_CUPS)
-      {policy::key::kPrintingAPIExtensionsWhitelist,
-       policy::key::kPrintingAPIExtensionsAllowlist},
-#endif  // defined(USE_CUPS)
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-  }};
-  for (const auto& policy_pair : renamed_policies) {
-    PolicyMap::Entry* old_policy = policies->GetMutable(policy_pair.first);
-    const PolicyMap::Entry* new_policy = policies->Get(policy_pair.second);
-    if (old_policy && (!new_policy || policies->EntryHasHigherPriority(
-                                          *old_policy, *new_policy))) {
-      PolicyMap::Entry policy_entry = old_policy->DeepCopy();
-      policy_entry.AddMessage(PolicyMap::MessageType::kWarning,
-                              IDS_POLICY_MIGRATED_NEW_POLICY,
-                              {base::UTF8ToUTF16(policy_pair.first)});
-      old_policy->AddMessage(PolicyMap::MessageType::kError,
-                             IDS_POLICY_MIGRATED_OLD_POLICY,
-                             {base::UTF8ToUTF16(policy_pair.second)});
-      policies->Set(policy_pair.second, std::move(policy_entry));
-    }
-    if (policy_lists_to_merge.contains(policy_pair.first) &&
-        !policy_lists_to_merge.contains(policy_pair.second)) {
-      merge_list->Append(base::Value(policy_pair.second));
-    }
-  }
-}
-
 // Precedence policies cannot be set at the user cloud level regardless of
 // affiliation status. This is done to prevent cloud users from potentially
 // giving themselves increased priority, causing a security issue.
@@ -340,7 +284,6 @@ void PolicyServiceImpl::MergeAndTriggerUpdates() {
   for (auto* provider : providers_) {
     PolicyBundle provided_bundle;
     provided_bundle.CopyFrom(provider->policies());
-    RemapRenamedPolicies(&provided_bundle.Get(chrome_namespace));
     IgnoreUserCloudPrecedencePolicies(&provided_bundle.Get(chrome_namespace));
     DowngradeMetricsReportingToRecommendedPolicy(
         &provided_bundle.Get(chrome_namespace));
