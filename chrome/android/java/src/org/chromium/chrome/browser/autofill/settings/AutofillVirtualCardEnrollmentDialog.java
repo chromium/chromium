@@ -12,9 +12,12 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import org.chromium.base.Callback;
+import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ChromeStringConstants;
 import org.chromium.chrome.browser.autofill.AutofillUiUtils;
+import org.chromium.chrome.browser.autofill.AutofillUiUtils.VirtualCardDialogLink;
+import org.chromium.chrome.browser.customtabs.CustomTabActivity;
 import org.chromium.ui.modaldialog.DialogDismissalCause;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modaldialog.ModalDialogProperties;
@@ -23,6 +26,9 @@ import org.chromium.ui.modelutil.PropertyModel;
 
 /** Dialog shown to the user to enroll a credit card into the virtual card feature. */
 public class AutofillVirtualCardEnrollmentDialog {
+    private static final String LINK_CLICK_HISTOGRAM =
+            "Autofill.VirtualCard.SettingsPageEnrollment.LinkClicked";
+
     private final Context mContext;
     private final ModalDialogManager mModalDialogManager;
     private final VirtualCardEnrollmentFields mVirtualCardEnrollmentFields;
@@ -52,6 +58,9 @@ public class AutofillVirtualCardEnrollmentDialog {
                                 mContext.getString(R.string.no_thanks));
         dialogModel.with(ModalDialogProperties.CONTROLLER,
                 new SimpleModalDialogController(mModalDialogManager, (action) -> {
+                    RecordHistogram.recordBooleanHistogram(
+                            "Autofill.VirtualCard.SettingsPageEnrollment",
+                            action == DialogDismissalCause.POSITIVE_BUTTON_CLICKED);
                     mResultHandler.onResult(action == DialogDismissalCause.POSITIVE_BUTTON_CLICKED);
                 }));
         mModalDialogManager.showDialog(dialogModel.build(), ModalDialogManager.ModalDialogType.APP);
@@ -71,19 +80,34 @@ public class AutofillVirtualCardEnrollmentDialog {
         virtualCardEducationTextView.setText(
                 AutofillUiUtils.getSpannableStringWithClickableSpansToOpenLinksInCustomTabs(
                         mContext, R.string.autofill_virtual_card_enrollment_dialog_education_text,
-                        ChromeStringConstants.AUTOFILL_VIRTUAL_CARD_ENROLLMENT_SUPPORT_URL));
+                        ChromeStringConstants.AUTOFILL_VIRTUAL_CARD_ENROLLMENT_SUPPORT_URL, url -> {
+                            RecordHistogram.recordEnumeratedHistogram(LINK_CLICK_HISTOGRAM,
+                                    VirtualCardDialogLink.EDUCATION_TEXT,
+                                    VirtualCardDialogLink.NUM_ENTRIES);
+                            CustomTabActivity.showInfoPage(mContext, url);
+                        }));
         virtualCardEducationTextView.setMovementMethod(LinkMovementMethod.getInstance());
 
         TextView googleLegalMessageTextView =
                 (TextView) customView.findViewById(R.id.google_legal_message);
         googleLegalMessageTextView.setText(AutofillUiUtils.getSpannableStringForLegalMessageLines(
-                mContext, mVirtualCardEnrollmentFields.getGoogleLegalMessages()));
+                mContext, mVirtualCardEnrollmentFields.getGoogleLegalMessages(), url -> {
+                    RecordHistogram.recordEnumeratedHistogram(LINK_CLICK_HISTOGRAM,
+                            VirtualCardDialogLink.GOOGLE_LEGAL_MESSAGE,
+                            VirtualCardDialogLink.NUM_ENTRIES);
+                    CustomTabActivity.showInfoPage(mContext, url);
+                }));
         googleLegalMessageTextView.setMovementMethod(LinkMovementMethod.getInstance());
 
         TextView issuerLegalMessageTextView =
                 (TextView) customView.findViewById(R.id.issuer_legal_message);
         issuerLegalMessageTextView.setText(AutofillUiUtils.getSpannableStringForLegalMessageLines(
-                mContext, mVirtualCardEnrollmentFields.getIssuerLegalMessages()));
+                mContext, mVirtualCardEnrollmentFields.getIssuerLegalMessages(), url -> {
+                    RecordHistogram.recordEnumeratedHistogram(LINK_CLICK_HISTOGRAM,
+                            VirtualCardDialogLink.ISSUER_LEGAL_MESSAGE,
+                            VirtualCardDialogLink.NUM_ENTRIES);
+                    CustomTabActivity.showInfoPage(mContext, url);
+                }));
         issuerLegalMessageTextView.setMovementMethod(LinkMovementMethod.getInstance());
 
         ((TextView) customView.findViewById(R.id.credit_card_identifier))
