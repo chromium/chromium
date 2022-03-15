@@ -3620,10 +3620,23 @@
           'scripts': 'test_traffic_annotation_auditor_script',
         },
       },
+      'win-archive-dbg (goma cache silo)': {
+        'additional_compile_targets': [
+          'all',
+        ],
+      },
       'win-archive-dbg (reclient shadow)': {
         'additional_compile_targets': [
           'all',
         ],
+      },
+      'win-archive-rel (goma cache silo)': {
+        'additional_compile_targets': [
+          'all',
+        ],
+        'test_suites': {
+          'scripts': 'public_build_scripts',
+        },
       },
       'win-archive-rel (reclient shadow)': {
         'additional_compile_targets': [

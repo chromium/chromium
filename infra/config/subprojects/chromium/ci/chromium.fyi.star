@@ -830,6 +830,31 @@ ci.builder(
 )
 
 ci.builder(
+    name = "Win x64 Builder (dbg) (goma cache silo)",
+    builder_spec = builder_config.builder_spec(
+        gclient_config = builder_config.gclient_config(
+            config = "chromium",
+        ),
+        chromium_config = builder_config.chromium_config(
+            config = "chromium",
+            apply_configs = [
+                "goma_enable_cache_silo",
+                "mb",
+            ],
+            build_config = builder_config.build_config.DEBUG,
+            target_bits = 64,
+        ),
+    ),
+    builderless = True,
+    console_view_entry = consoles.console_view_entry(
+        category = "debug|builder",
+        short_name = "64",
+    ),
+    cores = 32,
+    os = os.WINDOWS_ANY,
+)
+
+ci.builder(
     name = "Win x64 Builder (dbg) (reclient shadow)",
     builderless = True,
     console_view_entry = consoles.console_view_entry(
@@ -844,6 +869,32 @@ ci.builder(
 )
 
 ci.builder(
+    name = "win-archive-dbg (goma cache silo)",
+    builder_spec = builder_config.builder_spec(
+        gclient_config = builder_config.gclient_config(
+            config = "chromium",
+        ),
+        chromium_config = builder_config.chromium_config(
+            config = "chromium",
+            apply_configs = [
+                "clobber",
+                "goma_enable_cache_silo",
+                "mb",
+            ],
+            build_config = builder_config.build_config.DEBUG,
+            target_bits = 64,
+        ),
+    ),
+    builderless = True,
+    console_view_entry = consoles.console_view_entry(
+        category = "win|dbg",
+        short_name = "64",
+    ),
+    cores = 32,
+    os = os.WINDOWS_DEFAULT,
+)
+
+ci.builder(
     name = "win-archive-dbg (reclient shadow)",
     builderless = True,
     console_view_entry = consoles.console_view_entry(
@@ -855,6 +906,32 @@ ci.builder(
     goma_backend = None,
     reclient_jobs = rbe_jobs.DEFAULT,
     reclient_instance = rbe_instance.DEFAULT,
+)
+
+ci.builder(
+    name = "win-archive-rel (goma cache silo)",
+    builder_spec = builder_config.builder_spec(
+        gclient_config = builder_config.gclient_config(
+            config = "chromium",
+        ),
+        chromium_config = builder_config.chromium_config(
+            config = "chromium",
+            apply_configs = [
+                "clobber",
+                "goma_enable_cache_silo",
+                "mb",
+            ],
+            build_config = builder_config.build_config.RELEASE,
+            target_bits = 64,
+        ),
+    ),
+    builderless = True,
+    console_view_entry = consoles.console_view_entry(
+        category = "win|rel",
+        short_name = "64",
+    ),
+    cores = 32,
+    os = os.WINDOWS_DEFAULT,
 )
 
 ci.builder(
