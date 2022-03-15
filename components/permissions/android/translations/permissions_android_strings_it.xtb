@@ -26,6 +26,6 @@
 <translation id="7624880197989616768"><ph name="BEGIN_LINK1" />Richiedi assistenza<ph name="END_LINK1" /> o <ph name="BEGIN_LINK2" />ripeti la ricerca<ph name="END_LINK2" /></translation>
 <translation id="7884346424584885269">Chrome ha bisogno dell'autorizzazione per cercare dispositivi nelle vicinanze. <ph name="BEGIN_LINK" />Aggiorna autorizzazioni<ph name="END_LINK" />.</translation>
 <translation id="8368027906805972958">Dispositivo sconosciuto o non supportato (<ph name="DEVICE_ID" />)</translation>
-<translation id="8687353297350450808">{N_BARS,plural, =1{Intensità del segnale: # barra}one{Signal Strength Level: # bars}other{Intensità del segnale: # barre}}</translation>
+<translation id="8687353297350450808">{N_BARS,plural, =1{Intensità del segnale: # barra}other{Intensità del segnale: # barre}}</translation>
 <translation id="9133703968756164531"><ph name="ITEM_NAME" /> (<ph name="ITEM_ID" />)</translation>
 </translationbundle>
