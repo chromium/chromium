@@ -134,24 +134,29 @@ ElementFinder::~ElementFinder() = default;
 void ElementFinder::Start(const Result& start_element, Callback callback) {
   callback_ = std::move(callback);
 
-  if (selector_.empty()) {
+  if (selector_.empty() && !selector_.proto.has_semantic_information()) {
     SendResult(ClientStatus(INVALID_SELECTOR), Result::EmptyResult());
     return;
   }
-
   selector_proto_ = selector_.proto;
+
+  // TODO(b/224747076): Coordinate the dom_model_service experiment in the
+  // backend. So that we don't get moonracer seletors if the client doesn't
+  // support the model.
+  if (selector_.proto.has_semantic_information()) {
+    if (annotate_dom_model_service_) {
+      RunAnnotateDomModel();
+    } else {
+      SendResult(ClientStatus(PRECONDITION_FAILED), Result::EmptyResult());
+    }
+    return;
+  }
+
   ClientStatus resolve_status =
       user_data::ResolveSelectorUserData(&selector_proto_, user_data_);
   if (!resolve_status.ok()) {
     SendResult(resolve_status, Result::EmptyResult());
     return;
-  }
-
-  if (annotate_dom_model_service_ &&
-      selector_.proto.has_semantic_information()) {
-    RunAnnotateDomModel();
-  } else {
-    semantic_result_done_ = true;
   }
 
   if (start_element.container_frame_host == nullptr) {
@@ -193,13 +198,6 @@ void ElementFinder::UpdateLogInfo(const Result& result,
       info->mutable_semantic_inference_result()->add_status_per_frame(
           NodeDataStatusToSemanticInferenceStatus(node_data_status));
     }
-    auto* inference_result = info->mutable_semantic_inference_result();
-    for (const auto& node_id : semantic_node_results_) {
-      auto* predicted_element = inference_result->add_predicted_elements();
-      predicted_element->set_matches_css_element(
-          GlobalBackendNodeId(result.container_frame_host,
-                              result_backend_node_id_.value_or(-1)) == node_id);
-    }
   }
 }
 
@@ -218,9 +216,6 @@ void ElementFinder::SendCollectedResultIfAny() {
   if (!callback_) {
     return;
   }
-  if (!css_result_done_ || !semantic_result_done_) {
-    return;
-  }
   SendResult(result_status_, result_);
 }
 
@@ -230,7 +225,6 @@ void ElementFinder::GiveUpElementResolutionWithError(
   if (!callback_)
     return;
 
-  css_result_done_ = true;
   result_status_ = status;
   SendCollectedResultIfAny();
 }
@@ -245,13 +239,6 @@ void ElementFinder::ResultFound(const std::string& object_id) {
   result_ = BuildResult(object_id);
   result_.dom_object.frame_stack = frame_stack_;
 
-  if (annotate_dom_model_service_ &&
-      selector_.proto.has_semantic_information()) {
-    DescribeNodeForAnnotateDom();
-    return;
-  }
-
-  css_result_done_ = true;
   SendCollectedResultIfAny();
 }
 
@@ -261,26 +248,6 @@ ElementFinder::Result ElementFinder::BuildResult(const std::string& object_id) {
   result.dom_object.object_data.object_id = object_id;
   result.dom_object.object_data.node_frame_id = current_frame_id_;
   return result;
-}
-
-void ElementFinder::DescribeNodeForAnnotateDom() {
-  devtools_client_->GetDOM()->DescribeNode(
-      dom::DescribeNodeParams::Builder()
-          .SetObjectId(result_.object_id())
-          .Build(),
-      result_.node_frame_id(),
-      base::BindOnce(&ElementFinder::OnDescribeNodeForAnnotateDom,
-                     weak_ptr_factory_.GetWeakPtr()));
-}
-
-void ElementFinder::OnDescribeNodeForAnnotateDom(
-    const DevtoolsClient::ReplyStatus& reply_status,
-    std::unique_ptr<dom::DescribeNodeResult> node_result) {
-  if (node_result && node_result->GetNode()) {
-    result_backend_node_id_ = node_result->GetNode()->GetBackendNodeId();
-  }
-  css_result_done_ = true;
-  SendCollectedResultIfAny();
 }
 
 void ElementFinder::RunAnnotateDomModel() {
@@ -344,7 +311,41 @@ void ElementFinder::OnRunAnnotateDomModel(
     semantic_node_results_.insert(semantic_node_results_.end(),
                                   node_ids.begin(), node_ids.end());
   }
-  semantic_result_done_ = true;
+
+  // For now we only support finding a single element.
+  // TODO(b/224746702): Emit multiple ResolveNode calls for the case where the
+  // result type is not ResultType::kExactlyOneMatch.
+  if (semantic_node_results_.size() > 1) {
+    VLOG(1) << __func__ << " Got " << semantic_node_results_.size()
+            << " matches for " << selector_ << ", when only 1 was expected.";
+    GiveUpElementResolutionWithError(ClientStatus(TOO_MANY_ELEMENTS));
+    return;
+  }
+  if (semantic_node_results_.empty()) {
+    GiveUpElementResolutionWithError(ClientStatus(ELEMENT_RESOLUTION_FAILED));
+    return;
+  }
+
+  // We need to set the empty string for the frame id. The expectation is that
+  // backend node ids are global and devtools is able to resolve the node
+  // without an explicit frame id.
+  devtools_client_->GetDOM()->ResolveNode(
+      dom::ResolveNodeParams::Builder()
+          .SetBackendNodeId(semantic_node_results_[0].backend_node_id())
+          .Build(),
+      /* current_frame_id= */ std::string(),
+      base::BindOnce(&ElementFinder::OnResolveNodeForAnnotateDom,
+                     weak_ptr_factory_.GetWeakPtr()));
+}
+
+void ElementFinder::OnResolveNodeForAnnotateDom(
+    const DevtoolsClient::ReplyStatus& reply_status,
+    std::unique_ptr<dom::ResolveNodeResult> result) {
+  if (result && result->GetObject() && result->GetObject()->HasObjectId()) {
+    ResultFound(result->GetObject()->GetObjectId());
+    return;
+  }
+  result_status_ = ClientStatus(ELEMENT_RESOLUTION_FAILED);
   SendCollectedResultIfAny();
 }
 

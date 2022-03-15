@@ -117,9 +117,14 @@ void AutofillAssistantAgent::OnGetModelFile(base::Time start_time,
   DVLOG(3) << "AutofillAssistant, executor initialization: "
            << (on_executor_initialized - on_node_signals).InMilliseconds()
            << "ms";
+  DVLOG(3) << "Expected role: " << role << " and objective: " << objective;
 
   for (const auto& node_signal : node_signals) {
     auto result = model_executor.ExecuteModelWithInput(node_signal);
+    DVLOG(3) << "Annotated node with result: role: " << result->first
+             << " and objective: " << result->second;
+    // TODO(mcarlen): Use the objective wildcard here to ignore the second part
+    // of the condition.
     if (result && result->first == role && result->second == objective) {
       NodeData node_data;
       node_data.backend_node_id = node_signal.backend_node_id;

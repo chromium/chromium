@@ -980,6 +980,39 @@ document.getElementById("overlay_in_frame").style.visibility='hidden';
     return ClientStatus(captured_processed_actions[0].status());
   }
 
+  int GetBackendNodeId(Selector selector, ClientStatus* status_out) {
+    std::unique_ptr<ElementFinder::Result> element_result;
+    int backend_node_id = -1;
+
+    base::RunLoop run_loop_1;
+    web_controller_->FindElement(
+        selector, true,
+        base::BindLambdaForTesting(
+            [&](const ClientStatus& status,
+                std::unique_ptr<ElementFinder::Result> result) {
+              element_result = std::move(result);
+              *status_out = status;
+              run_loop_1.Quit();
+            }));
+    run_loop_1.Run();
+    if (!status_out->ok()) {
+      return backend_node_id;
+    }
+
+    // Second part in sequence, lookup backend node id.
+    base::RunLoop run_loop_2;
+    web_controller_->GetBackendNodeId(
+        *element_result,
+        base::BindLambdaForTesting([&](const ClientStatus& status, int id) {
+          *status_out = status;
+          backend_node_id = id;
+          run_loop_2.Quit();
+        }));
+    run_loop_2.Run();
+
+    return backend_node_id;
+  }
+
  protected:
   std::unique_ptr<WebController> web_controller_;
   UserData user_data_;
@@ -3349,42 +3382,98 @@ IN_PROC_BROWSER_TEST_F(WebControllerBrowserTest, ExecuteJSWithException) {
               testing::ElementsAre(18, 12, 10));
 }
 
-IN_PROC_BROWSER_TEST_F(WebControllerBrowserTest, RunWithDomAnnotation) {
-  Selector selector({"#input1"});
-  auto* semantic_information = selector.proto.mutable_semantic_information();
+IN_PROC_BROWSER_TEST_F(WebControllerBrowserTest,
+                       ElementExistenceCheckWithSemanticModel) {
+  SelectorProto proto;
+  auto* semantic_information = proto.mutable_semantic_information();
   semantic_information->set_semantic_role(1);
   semantic_information->set_objective(2);
 
-  NodeData node_frame_1;
-  node_frame_1.backend_node_id = 100;
-  NodeData node_frame_2;
-  node_frame_2.backend_node_id = 200;
+  ClientStatus status;
+  int backend_node_id = GetBackendNodeId(Selector({"#button"}), &status);
+  EXPECT_TRUE(status.ok());
+
+  NodeData node_data;
+  node_data.backend_node_id = backend_node_id;
   EXPECT_CALL(autofill_assistant_agent_,
               GetSemanticNodes(1, 2, base::Milliseconds(5000), _))
       .WillOnce(RunOnceCallback<3>(mojom::NodeDataStatus::kSuccess,
-                                   std::vector<NodeData>{node_frame_1}))
-      .WillOnce(RunOnceCallback<3>(mojom::NodeDataStatus::kSuccess,
-                                   std::vector<NodeData>{node_frame_2}))
+                                   std::vector<NodeData>{node_data}))
       // Capture any other frames.
       .WillRepeatedly(RunOnceCallback<3>(
           mojom::NodeDataStatus::kUnexpectedError, std::vector<NodeData>()));
 
-  ClientStatus status;
-  ElementFinder::Result result;
-  FindElement(selector, &status, &result);
+  // We pretend that the button is the correct element.
+  RunStrictElementCheck(Selector(proto), true);
+}
 
-  ASSERT_EQ(log_info_.element_finder_info().size(), 1);
-  EXPECT_EQ(log_info_.element_finder_info(0).status(), ACTION_APPLIED);
-  ASSERT_EQ(log_info_.element_finder_info(0)
-                .semantic_inference_result()
-                .predicted_elements()
-                .size(),
-            2);
-  ASSERT_GE(log_info_.element_finder_info(0)
-                .semantic_inference_result()
-                .status_per_frame()
-                .size(),
-            2);
+IN_PROC_BROWSER_TEST_F(WebControllerBrowserTest,
+                       ElementExistenceCheckWithSemanticModelOOPIF) {
+  SelectorProto proto;
+  auto* semantic_information = proto.mutable_semantic_information();
+  semantic_information->set_semantic_role(1);
+  semantic_information->set_objective(2);
+
+  ClientStatus status;
+  int backend_node_id =
+      GetBackendNodeId(Selector({"#iframeExternal", "#button"}), &status);
+  EXPECT_TRUE(status.ok());
+
+  NodeData node_data;
+  node_data.backend_node_id = backend_node_id;
+  EXPECT_CALL(autofill_assistant_agent_,
+              GetSemanticNodes(1, 2, base::Milliseconds(5000), _))
+      .WillOnce(RunOnceCallback<3>(mojom::NodeDataStatus::kSuccess,
+                                   std::vector<NodeData>{node_data}))
+      // Capture any other frames.
+      .WillRepeatedly(RunOnceCallback<3>(
+          mojom::NodeDataStatus::kUnexpectedError, std::vector<NodeData>()));
+
+  // We pretend that the button is the correct element.
+  RunStrictElementCheck(Selector(proto), true);
+}
+
+IN_PROC_BROWSER_TEST_F(WebControllerBrowserTest,
+                       ElementExistenceCheckWithSemanticModelNotFound) {
+  SelectorProto proto;
+  auto* semantic_information = proto.mutable_semantic_information();
+  semantic_information->set_semantic_role(1);
+  semantic_information->set_objective(2);
+
+  // All frames return an empty list as a result.
+  EXPECT_CALL(autofill_assistant_agent_,
+              GetSemanticNodes(1, 2, base::Milliseconds(5000), _))
+      .WillRepeatedly(RunOnceCallback<3>(mojom::NodeDataStatus::kSuccess,
+                                         std::vector<NodeData>{}));
+
+  FindElementExpectEmptyResult(Selector(proto));
+}
+
+IN_PROC_BROWSER_TEST_F(WebControllerBrowserTest,
+                       ElementExistenceCheckWithSemanticMultipleFound) {
+  SelectorProto proto;
+  auto* semantic_information = proto.mutable_semantic_information();
+  semantic_information->set_semantic_role(1);
+  semantic_information->set_objective(2);
+
+  NodeData node_data;
+  node_data.backend_node_id = 5;
+  NodeData node_data_other;
+  node_data_other.backend_node_id = 13;
+  EXPECT_CALL(autofill_assistant_agent_,
+              GetSemanticNodes(1, 2, base::Milliseconds(5000), _))
+      .WillOnce(RunOnceCallback<3>(mojom::NodeDataStatus::kSuccess,
+                                   std::vector<NodeData>{node_data}))
+      .WillOnce(RunOnceCallback<3>(mojom::NodeDataStatus::kSuccess,
+                                   std::vector<NodeData>{node_data_other}))
+      // Capture any other frames.
+      .WillRepeatedly(RunOnceCallback<3>(
+          mojom::NodeDataStatus::kUnexpectedError, std::vector<NodeData>()));
+
+  // Two elements are found in different frames.
+  ClientStatus status;
+  FindElement(Selector(proto), &status, nullptr);
+  EXPECT_EQ(TOO_MANY_ELEMENTS, status.proto_status());
 }
 
 }  // namespace autofill_assistant
