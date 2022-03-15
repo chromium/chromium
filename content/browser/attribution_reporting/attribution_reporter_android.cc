@@ -52,7 +52,7 @@ void ReportAppImpression(AttributionManager& attribution_manager,
       OriginFromAndroidPackageName(source_package_name);
 
   attribution_host_utils::VerifyAndStoreImpression(
-      AttributionSourceType::kEvent, impression_origin, *impression, context,
+      AttributionSourceType::kEvent, impression_origin, *impression,
       attribution_manager, impression_time);
 }
 

@@ -17,7 +17,6 @@
 namespace content {
 
 class AttributionManager;
-class BrowserContext;
 
 // Manages a receiver set of all ongoing `AttributionDataHost`s and forwards
 // events to the AttributionManager which owns `this`. Because attributionsrc
@@ -28,8 +27,8 @@ class CONTENT_EXPORT AttributionDataHostManagerImpl
     : public AttributionDataHostManager,
       public blink::mojom::AttributionDataHost {
  public:
-  AttributionDataHostManagerImpl(BrowserContext* storage_partition,
-                                 AttributionManager* attribution_manager);
+  explicit AttributionDataHostManagerImpl(
+      AttributionManager* attribution_manager);
   AttributionDataHostManagerImpl(const AttributionDataHostManager& other) =
       delete;
   AttributionDataHostManagerImpl& operator=(
@@ -67,10 +66,6 @@ class CONTENT_EXPORT AttributionDataHostManagerImpl
       blink::mojom::AttributionTriggerDataPtr data) override;
 
   void OnDataHostDisconnected();
-
-  // Safe because the owning `AttributionManager` is guaranteed to outlive the
-  // browser context.
-  raw_ptr<BrowserContext> browser_context_;
 
   // Owns `this`.
   raw_ptr<AttributionManager> attribution_manager_;

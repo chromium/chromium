@@ -41,6 +41,7 @@
 #include "content/browser/attribution_reporting/sql_utils.h"
 #include "content/browser/attribution_reporting/storable_source.h"
 #include "content/browser/attribution_reporting/stored_source.h"
+#include "net/base/schemeful_site.h"
 #include "sql/database.h"
 #include "sql/recovery.h"
 #include "sql/statement.h"
@@ -727,8 +728,7 @@ CreateReportResult AttributionStorageSql::MaybeCreateAndStoreReport(
 
   DCHECK(report.has_value());
 
-  switch (
-      CapacityForStoringReport(trigger.conversion_destination().Serialize())) {
+  switch (CapacityForStoringReport(trigger)) {
     case ConversionCapacityStatus::kHasCapacity:
       break;
     case ConversionCapacityStatus::kNoCapacity:
@@ -849,9 +849,8 @@ bool AttributionStorageSql::FindMatchingSourceForTrigger(
     const AttributionTrigger& trigger,
     absl::optional<StoredSource::Id>& source_id_to_attribute,
     std::vector<StoredSource::Id>& source_ids_to_delete) {
-  const net::SchemefulSite& conversion_destination =
-      trigger.conversion_destination();
-  DCHECK(!conversion_destination.opaque());
+  const url::Origin& destination_origin = trigger.destination_origin();
+  DCHECK(!destination_origin.opaque());
 
   const url::Origin& reporting_origin = trigger.reporting_origin();
   DCHECK(!reporting_origin.opaque());
@@ -871,7 +870,7 @@ bool AttributionStorageSql::FindMatchingSourceForTrigger(
 
   sql::Statement statement(
       db_->GetCachedStatement(SQL_FROM_HERE, kGetMatchingSourcesSql));
-  statement.BindString(0, conversion_destination.Serialize());
+  statement.BindString(0, net::SchemefulSite(destination_origin).Serialize());
   statement.BindString(1, SerializeOrigin(reporting_origin));
   statement.BindTime(2, base::Time::Now());
 
@@ -1676,7 +1675,7 @@ AttributionStorageSql::ReportAlreadyStored(StoredSource::Id source_id,
 
 AttributionStorageSql::ConversionCapacityStatus
 AttributionStorageSql::CapacityForStoringReport(
-    const std::string& serialized_origin) {
+    const AttributionTrigger& trigger) {
   // This query should be reasonably optimized via
   // `kConversionDestinationIndexSql`. The conversion origin is the second
   // column in a multi-column index where the first column is just a boolean.
@@ -1695,7 +1694,8 @@ AttributionStorageSql::CapacityForStoringReport(
       "(aggregatable_active BETWEEN 0 AND 1)";
   sql::Statement statement(
       db_->GetCachedStatement(SQL_FROM_HERE, kCountReportsSql));
-  statement.BindString(0, serialized_origin);
+  statement.BindString(
+      0, net::SchemefulSite(trigger.destination_origin()).Serialize());
   if (!statement.Step())
     return ConversionCapacityStatus::kError;
   int64_t count = statement.ColumnInt64(0);

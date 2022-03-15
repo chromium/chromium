@@ -13,15 +13,11 @@
 
 #include "base/containers/flat_map.h"
 #include "base/strings/string_number_conversions.h"
-#include "base/test/metrics/histogram_tester.h"
 #include "content/browser/attribution_reporting/attribution_aggregatable_source.h"
 #include "content/browser/attribution_reporting/attribution_manager.h"
 #include "content/browser/attribution_reporting/attribution_source_type.h"
 #include "content/browser/attribution_reporting/attribution_test_utils.h"
-#include "content/public/browser/browser_context.h"
-#include "content/public/common/content_client.h"
 #include "content/public/test/browser_task_environment.h"
-#include "content/public/test/test_browser_context.h"
 #include "content/public/test/test_utils.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -35,19 +31,13 @@ namespace content {
 
 namespace {
 
-using ConversionMeasurementOperation =
-    ::content::ContentBrowserClient::ConversionMeasurementOperation;
-
 using ::testing::_;
 using ::testing::AllOf;
 using ::testing::ElementsAre;
 using ::testing::Eq;
 using ::testing::InSequence;
-using ::testing::IsNull;
 using ::testing::Mock;
 using ::testing::Optional;
-using ::testing::Pointee;
-using ::testing::Return;
 
 using Checkpoint = ::testing::MockFunction<void(int step)>;
 
@@ -57,19 +47,15 @@ class AttributionDataHostManagerImplTest : public testing::Test {
  public:
   AttributionDataHostManagerImplTest()
       : task_environment_(base::test::TaskEnvironment::TimeSource::MOCK_TIME),
-        browser_context_(std::make_unique<TestBrowserContext>()),
-        data_host_manager_(browser_context_.get(), &mock_manager_) {}
+        data_host_manager_(&mock_manager_) {}
 
  protected:
   BrowserTaskEnvironment task_environment_;
-  std::unique_ptr<TestBrowserContext> browser_context_;
   MockAttributionManager mock_manager_;
   AttributionDataHostManagerImpl data_host_manager_;
 };
 
 TEST_F(AttributionDataHostManagerImplTest, SourceDataHost_SourceRegistered) {
-  base::HistogramTester histograms;
-
   auto page_origin = url::Origin::Create(GURL("https://page.example"));
   auto destination_origin =
       url::Origin::Create(GURL("https://trigger.example"));
@@ -107,9 +93,6 @@ TEST_F(AttributionDataHostManagerImplTest, SourceDataHost_SourceRegistered) {
           .Build();
   data_host_remote->SourceDataAvailable(std::move(source_data));
   data_host_remote.FlushForTesting();
-
-  histograms.ExpectUniqueSample("Conversions.RegisterImpressionAllowed", true,
-                                1);
 }
 
 TEST_F(AttributionDataHostManagerImplTest,
@@ -243,43 +226,6 @@ TEST_F(AttributionDataHostManagerImplTest,
 }
 
 TEST_F(AttributionDataHostManagerImplTest,
-       SourceDataHostEmbedderDisallow_SourceDropped) {
-  base::HistogramTester histograms;
-
-  EXPECT_CALL(mock_manager_, HandleSource).Times(0);
-
-  auto page_origin = url::Origin::Create(GURL("https://page.example"));
-  auto destination_origin =
-      url::Origin::Create(GURL("https://trigger.example"));
-  auto reporting_origin = url::Origin::Create(GURL("https://reporter.example"));
-
-  MockAttributionReportingContentBrowserClient browser_client;
-  EXPECT_CALL(browser_client,
-              IsConversionMeasurementOperationAllowed(
-                  _, ConversionMeasurementOperation::kImpression,
-                  Pointee(page_origin), IsNull(), Pointee(reporting_origin)))
-      .Times(1)
-      .WillRepeatedly(Return(false));
-  ScopedContentBrowserClientSetting setting(&browser_client);
-  mojo::Remote<blink::mojom::AttributionDataHost> data_host_remote;
-  data_host_manager_.RegisterDataHost(
-      data_host_remote.BindNewPipeAndPassReceiver(), page_origin);
-
-  auto source_data = blink::mojom::AttributionSourceData::New();
-  source_data->source_event_id = 10;
-  source_data->destination = destination_origin;
-  source_data->reporting_origin = reporting_origin;
-  source_data->filter_data = blink::mojom::AttributionFilterData::New();
-  source_data->aggregatable_source =
-      blink::mojom::AttributionAggregatableSource::New();
-  data_host_remote->SourceDataAvailable(std::move(source_data));
-  data_host_remote.FlushForTesting();
-
-  histograms.ExpectUniqueSample("Conversions.RegisterImpressionAllowed", false,
-                                1);
-}
-
-TEST_F(AttributionDataHostManagerImplTest,
        SourceDataHost_ReceiverDestinationCheckPerformed) {
   Checkpoint checkpoint;
   {
@@ -387,15 +333,13 @@ TEST_F(AttributionDataHostManagerImplTest,
 }
 
 TEST_F(AttributionDataHostManagerImplTest, TriggerDataHost_TriggerRegistered) {
-  base::HistogramTester histograms;
-
   auto destination_origin =
       url::Origin::Create(GURL("https://trigger.example"));
   auto reporting_origin = url::Origin::Create(GURL("https://reporter.example"));
   EXPECT_CALL(
       mock_manager_,
       HandleTrigger(AttributionTriggerMatches({
-          .conversion_destination = net::SchemefulSite(destination_origin),
+          .destination_origin = destination_origin,
           .reporting_origin = reporting_origin,
           .filters = *AttributionFilterData::FromTriggerFilterValues({
               {"a", {"b"}},
@@ -456,9 +400,6 @@ TEST_F(AttributionDataHostManagerImplTest, TriggerDataHost_TriggerRegistered) {
 
   data_host_remote->TriggerDataAvailable(std::move(trigger_data));
   data_host_remote.FlushForTesting();
-
-  histograms.ExpectUniqueSample("Conversions.RegisterConversionAllowed", true,
-                                1);
 }
 
 TEST_F(AttributionDataHostManagerImplTest,
@@ -605,41 +546,6 @@ TEST_F(AttributionDataHostManagerImplTest,
 
     Mock::VerifyAndClear(&mock_manager_);
   }
-}
-
-TEST_F(AttributionDataHostManagerImplTest,
-       TriggerDataHostEmbedderDisallow_TriggerDropped) {
-  base::HistogramTester histograms;
-
-  EXPECT_CALL(mock_manager_, HandleTrigger).Times(0);
-
-  auto destination_origin =
-      url::Origin::Create(GURL("https://trigger.example"));
-  auto reporting_origin = url::Origin::Create(GURL("https://reporter.example"));
-
-  MockAttributionReportingContentBrowserClient browser_client;
-  EXPECT_CALL(browser_client,
-              IsConversionMeasurementOperationAllowed(
-                  _, ConversionMeasurementOperation::kConversion, IsNull(),
-                  Pointee(destination_origin), Pointee(reporting_origin)))
-      .WillRepeatedly(Return(false));
-  ScopedContentBrowserClientSetting setting(&browser_client);
-  mojo::Remote<blink::mojom::AttributionDataHost> data_host_remote;
-  data_host_manager_.RegisterDataHost(
-      data_host_remote.BindNewPipeAndPassReceiver(), destination_origin);
-
-  auto trigger_data = blink::mojom::AttributionTriggerData::New();
-  trigger_data->reporting_origin = reporting_origin;
-
-  trigger_data->filters = blink::mojom::AttributionFilterData::New();
-  trigger_data->aggregatable_trigger =
-      blink::mojom::AttributionAggregatableTrigger::New();
-
-  data_host_remote->TriggerDataAvailable(std::move(trigger_data));
-  data_host_remote.FlushForTesting();
-
-  histograms.ExpectUniqueSample("Conversions.RegisterConversionAllowed", false,
-                                1);
 }
 
 TEST_F(AttributionDataHostManagerImplTest,

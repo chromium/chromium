@@ -599,13 +599,12 @@ TEST_F(AttributionStorageSqlTest,
                              .Build());
 
   task_environment_.FastForwardBy(base::Days(1));
-  EXPECT_EQ(
-      AttributionTrigger::EventLevelResult::kSuccess,
-      MaybeCreateAndStoreEventLevelReport(
-          TriggerBuilder()
-              .SetConversionDestination(net::SchemefulSite(conversion_origin))
-              .SetReportingOrigin(reporting_origin)
-              .Build()));
+  EXPECT_EQ(AttributionTrigger::EventLevelResult::kSuccess,
+            MaybeCreateAndStoreEventLevelReport(
+                TriggerBuilder()
+                    .SetDestinationOrigin(conversion_origin)
+                    .SetReportingOrigin(reporting_origin)
+                    .Build()));
   EXPECT_THAT(storage()->GetActiveSources(), SizeIs(1));
 
   task_environment_.FastForwardBy(base::Days(1));
@@ -645,13 +644,12 @@ TEST_F(AttributionStorageSqlTest,
                              .Build());
 
   task_environment_.FastForwardBy(base::Days(1));
-  EXPECT_EQ(
-      AttributionTrigger::EventLevelResult::kSuccess,
-      MaybeCreateAndStoreEventLevelReport(
-          TriggerBuilder()
-              .SetConversionDestination(net::SchemefulSite(conversion_origin))
-              .SetReportingOrigin(reporting_origin)
-              .Build()));
+  EXPECT_EQ(AttributionTrigger::EventLevelResult::kSuccess,
+            MaybeCreateAndStoreEventLevelReport(
+                TriggerBuilder()
+                    .SetDestinationOrigin(conversion_origin)
+                    .SetReportingOrigin(reporting_origin)
+                    .Build()));
   EXPECT_THAT(storage()->GetActiveSources(), SizeIs(1));
 
   task_environment_.FastForwardBy(base::Days(1));
@@ -734,8 +732,8 @@ TEST_F(AttributionStorageSqlTest, MaxUint64StorageSucceeds) {
       MaybeCreateAndStoreEventLevelReport(
           TriggerBuilder()
               .SetTriggerData(kMaxUint64)
-              .SetConversionDestination(
-                  impression.common_info().ConversionDestination())
+              .SetDestinationOrigin(
+                  impression.common_info().conversion_origin())
               .SetReportingOrigin(impression.common_info().reporting_origin())
               .Build()));
 

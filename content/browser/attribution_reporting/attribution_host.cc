@@ -214,22 +214,9 @@ void AttributionHost::DidFinishNavigation(NavigationHandle* navigation_handle) {
     return;
   }
 
-  VerifyAndStoreImpression(AttributionSourceType::kNavigation,
-                           impression_origin, impression, *attribution_manager);
-}
-
-bool AttributionHost::VerifyAndStoreImpression(
-    AttributionSourceType source_type,
-    const url::Origin& impression_origin,
-    const blink::Impression& impression,
-    AttributionManager& attribution_manager) {
-  attribution_host_utils::VerifyResult result =
-      attribution_host_utils::VerifyAndStoreImpression(
-          source_type, impression_origin, impression,
-          web_contents()->GetBrowserContext(), attribution_manager,
-          base::Time::Now());
-  RecordRegisterImpressionAllowed(result.allowed);
-  return result.stored;
+  attribution_host_utils::VerifyAndStoreImpression(
+      AttributionSourceType::kNavigation, impression_origin, impression,
+      *attribution_manager, base::Time::Now());
 }
 
 void AttributionHost::RegisterConversion(
@@ -274,20 +261,8 @@ void AttributionHost::RegisterConversion(
     return;
   }
 
-  const bool allowed =
-      GetContentClient()->browser()->IsConversionMeasurementOperationAllowed(
-          web_contents()->GetBrowserContext(),
-          ContentBrowserClient::ConversionMeasurementOperation::kConversion,
-          /*impression_origin=*/nullptr, &main_frame_origin,
-          &conversion->reporting_origin);
-  RecordRegisterConversionAllowed(allowed);
-  if (!allowed)
-    return;
-
-  net::SchemefulSite conversion_destination(main_frame_origin);
-
   AttributionTrigger storable_conversion(
-      conversion->conversion_data, std::move(conversion_destination),
+      conversion->conversion_data, /*destination_origin=*/main_frame_origin,
       conversion->reporting_origin, conversion->event_source_trigger_data,
       conversion->priority,
       conversion->dedup_key.is_null()
@@ -380,8 +355,9 @@ void AttributionHost::ReportAttributionForCurrentNavigation(
 
   // No navigation in progress and we've already committed the destination for
   // the conversion, so just store the impression.
-  VerifyAndStoreImpression(AttributionSourceType::kNavigation,
-                           impression_origin, impression, *attribution_manager);
+  attribution_host_utils::VerifyAndStoreImpression(
+      AttributionSourceType::kNavigation, impression_origin, impression,
+      *attribution_manager, base::Time::Now());
 }
 
 // static

@@ -21,11 +21,7 @@ namespace content {
 
 namespace {
 
-using testing::_;
 using testing::AllOf;
-using testing::IsNull;
-using testing::Pointee;
-using testing::Return;
 
 const char kPackageName[] = "org.chromium.chrome.test";
 const char kConversionUrl[] = "https://b.com";
@@ -73,23 +69,6 @@ TEST_F(AttributionReporterTest, ValidImpression_Allowed_NoOptionals) {
   attribution_reporter_android::ReportAppImpression(
       mock_manager_, nullptr, kPackageName, kEventId, kConversionUrl, "", 0,
       base::Time::Now());
-}
-
-TEST_F(AttributionReporterTest, ValidImpression_Disallowed) {
-  MockAttributionReportingContentBrowserClient browser_client;
-  EXPECT_CALL(
-      browser_client,
-      IsConversionMeasurementOperationAllowed(
-          _, ContentBrowserClient::ConversionMeasurementOperation::kImpression,
-          Pointee(_), IsNull(), Pointee(_)))
-      .WillOnce(Return(false));
-  ScopedContentBrowserClientSetting setting(&browser_client);
-
-  EXPECT_CALL(mock_manager_, HandleSource).Times(0);
-
-  attribution_reporter_android::ReportAppImpression(
-      mock_manager_, nullptr, kPackageName, kEventId, kConversionUrl,
-      kReportToUrl, 56789, base::Time::Now());
 }
 
 TEST_F(AttributionReporterTest, InvalidImpression) {

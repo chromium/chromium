@@ -14,16 +14,10 @@
 #include "content/browser/attribution_reporting/attribution_filter_data.h"
 #include "content/browser/attribution_reporting/attribution_host_utils.h"
 #include "content/browser/attribution_reporting/attribution_manager.h"
-#include "content/browser/attribution_reporting/attribution_metrics.h"
 #include "content/browser/attribution_reporting/attribution_reporting.pb.h"
 #include "content/browser/attribution_reporting/attribution_trigger.h"
 #include "content/browser/attribution_reporting/common_source_info.h"
 #include "content/browser/attribution_reporting/storable_source.h"
-#include "content/browser/storage_partition_impl.h"
-#include "content/public/browser/browser_context.h"
-#include "content/public/browser/content_browser_client.h"
-#include "content/public/common/content_client.h"
-#include "net/base/schemeful_site.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/attribution_reporting/constants.h"
 #include "url/origin.h"
@@ -51,11 +45,8 @@ proto::AttributionAggregatableSource ConvertToProto(
 }  // namespace
 
 AttributionDataHostManagerImpl::AttributionDataHostManagerImpl(
-    BrowserContext* browser_context,
     AttributionManager* attribution_manager)
-    : browser_context_(browser_context),
-      attribution_manager_(attribution_manager) {
-  DCHECK(browser_context_);
+    : attribution_manager_(attribution_manager) {
   DCHECK(attribution_manager_);
 
   // It's safe to use `base::Unretained()` as `receivers_` is owned by `this`
@@ -90,16 +81,6 @@ void AttributionDataHostManagerImpl::SourceDataAvailable(
   const FrozenContext& context = receivers_.current_context();
   base::Time source_time = base::Time::Now();
   const url::Origin& reporting_origin = data->reporting_origin;
-
-  const bool allowed =
-      GetContentClient()->browser()->IsConversionMeasurementOperationAllowed(
-          browser_context_,
-          ContentBrowserClient::ConversionMeasurementOperation::kImpression,
-          &context.context_origin, /*conversion_origin=*/nullptr,
-          &reporting_origin);
-  RecordRegisterImpressionAllowed(allowed);
-  if (!allowed)
-    return;
 
   // The API is only allowed in secure contexts.
   if (!attribution_host_utils::IsOriginTrustworthyForAttributions(
@@ -148,16 +129,6 @@ void AttributionDataHostManagerImpl::TriggerDataAvailable(
   const FrozenContext& context = receivers_.current_context();
   const url::Origin& reporting_origin = data->reporting_origin;
 
-  const bool allowed =
-      GetContentClient()->browser()->IsConversionMeasurementOperationAllowed(
-          browser_context_,
-          ContentBrowserClient::ConversionMeasurementOperation::kConversion,
-          /*impression_origin=*/nullptr,
-          /*conversion_origin=*/&context.context_origin, &reporting_origin);
-  RecordRegisterConversionAllowed(allowed);
-  if (!allowed)
-    return;
-
   // The API is only allowed in secure contexts.
   if (!attribution_host_utils::IsOriginTrustworthyForAttributions(
           context.context_origin) ||
@@ -200,8 +171,8 @@ void AttributionDataHostManagerImpl::TriggerDataAvailable(
   }
 
   AttributionTrigger trigger(
-      /*conversion_destination=*/net::SchemefulSite(context.context_origin),
-      reporting_origin, std::move(*filters),
+      /*destination_origin=*/context.context_origin, reporting_origin,
+      std::move(*filters),
       data->debug_key ? absl::make_optional(data->debug_key->value)
                       : absl::nullopt,
       std::move(event_triggers));

@@ -10,7 +10,6 @@
 #include <memory>
 
 #include "base/containers/flat_map.h"
-#include "content/browser/attribution_reporting/attribution_source_type.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/render_frame_host_receiver_set.h"
 #include "content/public/browser/web_contents_observer.h"
@@ -20,7 +19,6 @@
 
 namespace content {
 
-class AttributionManager;
 class AttributionManagerProvider;
 class AttributionPageMetrics;
 class WebContents;
@@ -90,15 +88,6 @@ class CONTENT_EXPORT AttributionHost
   // Notifies an impression.
   void NotifyImpressionInitiatedByPage(const url::Origin& impression_origin,
                                        const blink::Impression& impression);
-
-  // Stores the impression if conversion measurement is allowed for the
-  // impression origin and reporting origin and the impressionorigin, reporting
-  // origin, and conversion destination are potentially trustworthy. Returns
-  // whether the impression was stored.
-  bool VerifyAndStoreImpression(AttributionSourceType source_type,
-                                const url::Origin& impression_origin,
-                                const blink::Impression& impression,
-                                AttributionManager& attribution_manager);
 
   // Map which stores the top-frame origin an impression occurred on for all
   // navigations with an associated impression, keyed by navigation ID.

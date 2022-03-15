@@ -28,32 +28,21 @@ class Origin;
 namespace content {
 
 class AttributionManager;
-class BrowserContext;
 
 namespace attribution_host_utils {
-
-// Contains result for `VerifyAndStoreImpression()`.
-struct VerifyResult {
-  // Indicates whether the measurement operation is allowed by the
-  // ContentClient.
-  bool allowed;
-  // Indicates whether the impression is stored.
-  bool stored;
-};
 
 // Checks if the origin is trustworthy or an android app origin.
 CONTENT_EXPORT bool IsOriginTrustworthyForAttributions(
     const url::Origin& origin);
 
 // Performs required checks on an incoming impression's data (trustworthy
-// origins, etc), and if verified, generates a StorableImpression and persists
+// origins, etc), and if verified, generates a `StorableSource` and persists
 // it.
-VerifyResult VerifyAndStoreImpression(AttributionSourceType source_type,
-                                      const url::Origin& impression_origin,
-                                      const blink::Impression& impression,
-                                      BrowserContext* browser_context,
-                                      AttributionManager& attribution_manager,
-                                      base::Time impression_time);
+void VerifyAndStoreImpression(AttributionSourceType source_type,
+                              const url::Origin& impression_origin,
+                              const blink::Impression& impression,
+                              AttributionManager& attribution_manager,
+                              base::Time impression_time);
 
 CONTENT_EXPORT absl::optional<blink::Impression> ParseImpressionFromApp(
     const std::string& attribution_source_event_id,

@@ -46,7 +46,6 @@
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_browser_context.h"
 #include "content/public/test/test_utils.h"
-#include "net/base/schemeful_site.h"
 #include "services/network/test/test_network_connection_tracker.h"
 #include "storage/browser/test/mock_special_storage_policy.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -61,12 +60,14 @@ namespace {
 
 using ::testing::_;
 using ::testing::AllOf;
+using ::testing::AnyOf;
 using ::testing::ElementsAre;
 using ::testing::Expectation;
 using ::testing::Field;
 using ::testing::Ge;
 using ::testing::InSequence;
 using ::testing::IsEmpty;
+using ::testing::IsNull;
 using ::testing::Le;
 using ::testing::Pointee;
 using ::testing::Return;
@@ -406,6 +407,8 @@ TEST_F(AttributionManagerImplTest, ImpressionConverted_ReportReturnedToWebUI) {
 }
 
 TEST_F(AttributionManagerImplTest, ImpressionConverted_ReportSent) {
+  base::HistogramTester histograms;
+
   attribution_manager_->HandleSource(
       SourceBuilder().SetExpiry(kImpressionExpiry).Build());
   attribution_manager_->HandleTrigger(DefaultTrigger());
@@ -417,6 +420,11 @@ TEST_F(AttributionManagerImplTest, ImpressionConverted_ReportSent) {
 
   task_environment_.FastForwardBy(base::Microseconds(1));
   EXPECT_THAT(report_sender_->calls(), SizeIs(1));
+
+  histograms.ExpectUniqueSample("Conversions.RegisterImpressionAllowed", true,
+                                1);
+  histograms.ExpectUniqueSample("Conversions.RegisterConversionAllowed", true,
+                                1);
 }
 
 TEST_F(AttributionManagerImplTest,
@@ -1189,8 +1197,72 @@ TEST_F(AttributionManagerImplTest, ClearData_NotifiesObservers) {
   run_loop.Run();
 }
 
+TEST_F(AttributionManagerImplTest,
+       EmbedderDisallowsImpressions_SourceNotStored) {
+  base::HistogramTester histograms;
+
+  MockAttributionReportingContentBrowserClient browser_client;
+  EXPECT_CALL(
+      browser_client,
+      IsConversionMeasurementOperationAllowed(
+          _, ContentBrowserClient::ConversionMeasurementOperation::kImpression,
+          Pointee(url::Origin::Create(GURL("https://impression.test/"))),
+          IsNull(), Pointee(url::Origin::Create(GURL("https://report.test/")))))
+      .WillOnce(Return(false));
+  ScopedContentBrowserClientSetting setting(&browser_client);
+
+  attribution_manager_->HandleSource(
+      SourceBuilder().SetExpiry(kImpressionExpiry).Build());
+  EXPECT_THAT(StoredSources(), IsEmpty());
+
+  histograms.ExpectUniqueSample("Conversions.RegisterImpressionAllowed", false,
+                                1);
+}
+
+TEST_F(AttributionManagerImplTest,
+       EmbedderDisallowsConversions_ReportNotStored) {
+  base::HistogramTester histograms;
+
+  MockAttributionReportingContentBrowserClient browser_client;
+  EXPECT_CALL(
+      browser_client,
+      IsConversionMeasurementOperationAllowed(
+          _, ContentBrowserClient::ConversionMeasurementOperation::kImpression,
+          _, _, _))
+      .WillRepeatedly(Return(true));
+  EXPECT_CALL(
+      browser_client,
+      IsConversionMeasurementOperationAllowed(
+          _, ContentBrowserClient::ConversionMeasurementOperation::kConversion,
+          IsNull(),
+          Pointee(url::Origin::Create(GURL("https://sub.conversion.test/"))),
+          Pointee(url::Origin::Create(GURL("https://report.test/")))))
+      .WillOnce(Return(false));
+  ScopedContentBrowserClientSetting setting(&browser_client);
+
+  attribution_manager_->HandleSource(
+      SourceBuilder().SetExpiry(kImpressionExpiry).Build());
+  EXPECT_THAT(StoredSources(), SizeIs(1));
+
+  attribution_manager_->HandleTrigger(DefaultTrigger());
+  EXPECT_THAT(StoredReports(), IsEmpty());
+
+  histograms.ExpectUniqueSample("Conversions.RegisterConversionAllowed", false,
+                                1);
+}
+
 TEST_F(AttributionManagerImplTest, EmbedderDisallowsReporting_ReportNotSent) {
   MockAttributionReportingContentBrowserClient browser_client;
+  EXPECT_CALL(
+      browser_client,
+      IsConversionMeasurementOperationAllowed(
+          _,
+          AnyOf(
+              ContentBrowserClient::ConversionMeasurementOperation::kImpression,
+              ContentBrowserClient::ConversionMeasurementOperation::
+                  kConversion),
+          _, _, _))
+      .WillRepeatedly(Return(true));
   EXPECT_CALL(
       browser_client,
       IsConversionMeasurementOperationAllowed(
@@ -1237,6 +1309,16 @@ TEST_F(AttributionManagerImplTest,
   EXPECT_CALL(
       browser_client,
       IsConversionMeasurementOperationAllowed(
+          _,
+          AnyOf(
+              ContentBrowserClient::ConversionMeasurementOperation::kImpression,
+              ContentBrowserClient::ConversionMeasurementOperation::
+                  kConversion),
+          _, _, _))
+      .WillRepeatedly(Return(true));
+  EXPECT_CALL(
+      browser_client,
+      IsConversionMeasurementOperationAllowed(
           _, ContentBrowserClient::ConversionMeasurementOperation::kReport,
           Pointee(source_origin), Pointee(destination_origin),
           Pointee(reporting_origin)))
@@ -1254,7 +1336,7 @@ TEST_F(AttributionManagerImplTest,
 
   attribution_manager_->HandleTrigger(
       TriggerBuilder()
-          .SetConversionDestination(net::SchemefulSite(destination_origin))
+          .SetDestinationOrigin(destination_origin)
           .SetReportingOrigin(reporting_origin)
           .SetDebugKey(456)
           .Build());

@@ -167,8 +167,7 @@ class CONTENT_EXPORT AttributionStorageSql : public AttributionStorage {
     kError,
   };
 
-  ConversionCapacityStatus CapacityForStoringReport(
-      const std::string& serialized_origin)
+  ConversionCapacityStatus CapacityForStoringReport(const AttributionTrigger&)
       VALID_CONTEXT_REQUIRED(sequence_checker_);
 
   enum class MaybeReplaceLowerPriorityEventLevelReportResult {

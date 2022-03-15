@@ -16,7 +16,6 @@
 #include "content/browser/attribution_reporting/attribution_test_utils.h"
 #include "content/browser/attribution_reporting/common_source_info.h"
 #include "content/browser/attribution_reporting/storable_source.h"
-#include "net/base/schemeful_site.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
@@ -253,8 +252,8 @@ TEST(AttributionSimulatorInputParserTest, ValidTriggerParses) {
           Pair(
               AttributionTriggerAndTime{
                   .trigger = AttributionTrigger(
-                      /*conversion_destination=*/net::SchemefulSite(
-                          url::Origin::Create(GURL("https://a.d1.test"))),
+                      /*destination_origin=*/
+                      url::Origin::Create(GURL("https://a.d1.test")),
                       /*reporting_origin=*/
                       url::Origin::Create(GURL("https://a.r.test")),
                       *AttributionFilterData::FromTriggerFilterValues({
@@ -288,8 +287,8 @@ TEST(AttributionSimulatorInputParserTest, ValidTriggerParses) {
           Pair(
               AttributionTriggerAndTime{
                   .trigger = AttributionTrigger(
-                      /*conversion_destination=*/net::SchemefulSite(
-                          url::Origin::Create(GURL("https://a.d2.test"))),
+                      /*destination_origin=*/
+                      url::Origin::Create(GURL("https://a.d2.test")),
                       /*reporting_origin=*/
                       url::Origin::Create(GURL("https://b.r.test")),
                       AttributionFilterData(),

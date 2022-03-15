@@ -11,7 +11,6 @@
 
 #include "content/browser/attribution_reporting/attribution_filter_data.h"
 #include "content/common/content_export.h"
-#include "net/base/schemeful_site.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/origin.h"
 
@@ -77,7 +76,7 @@ class CONTENT_EXPORT AttributionTrigger {
   // Should only be created with values that the browser process has already
   // validated. |conversion_destination| should be filled by a navigation origin
   // known by the browser process.
-  AttributionTrigger(net::SchemefulSite conversion_destination,
+  AttributionTrigger(url::Origin destination_origin,
                      url::Origin reporting_origin,
                      AttributionFilterData filters,
                      absl::optional<uint64_t> debug_key,
@@ -92,7 +91,7 @@ class CONTENT_EXPORT AttributionTrigger {
   // TODO(apaseltiner): Remove this constructor once the old
   // trigger-registration API surface is removed.
   AttributionTrigger(uint64_t trigger_data,
-                     net::SchemefulSite conversion_destination,
+                     url::Origin destination_origin,
                      url::Origin reporting_origin,
                      uint64_t event_source_trigger_data,
                      int64_t priority,
@@ -105,9 +104,7 @@ class CONTENT_EXPORT AttributionTrigger {
   AttributionTrigger& operator=(AttributionTrigger&& other);
   ~AttributionTrigger();
 
-  const net::SchemefulSite& conversion_destination() const {
-    return conversion_destination_;
-  }
+  const url::Origin& destination_origin() const { return destination_origin_; }
 
   const url::Origin& reporting_origin() const { return reporting_origin_; }
 
@@ -122,8 +119,8 @@ class CONTENT_EXPORT AttributionTrigger {
   }
 
  private:
-  // Schemeful site that this conversion event occurred on.
-  net::SchemefulSite conversion_destination_;
+  // Origin that this conversion event occurred on.
+  url::Origin destination_origin_;
 
   // Origin of the conversion redirect url, and the origin that will receive any
   // reports.

@@ -15,9 +15,6 @@
 #include "content/browser/attribution_reporting/common_source_info.h"
 #include "content/browser/attribution_reporting/storable_source.h"
 #include "content/common/url_utils.h"
-#include "content/public/browser/browser_context.h"
-#include "content/public/browser/content_browser_client.h"
-#include "content/public/common/content_client.h"
 #include "services/network/public/cpp/is_potentially_trustworthy.h"
 #include "third_party/blink/public/common/navigation/impression.h"
 #include "url/gurl.h"
@@ -32,12 +29,11 @@ bool IsOriginTrustworthyForAttributions(const url::Origin& origin) {
          network::IsOriginPotentiallyTrustworthy(origin);
 }
 
-VerifyResult VerifyAndStoreImpression(AttributionSourceType source_type,
-                                      const url::Origin& impression_origin,
-                                      const blink::Impression& impression,
-                                      BrowserContext* browser_context,
-                                      AttributionManager& attribution_manager,
-                                      base::Time impression_time) {
+void VerifyAndStoreImpression(AttributionSourceType source_type,
+                              const url::Origin& impression_origin,
+                              const blink::Impression& impression,
+                              AttributionManager& attribution_manager,
+                              base::Time impression_time) {
   // Convert |impression| into a StorableImpression that can be forwarded to
   // storage. If a reporting origin was not provided, default to the conversion
   // destination for reporting.
@@ -45,19 +41,11 @@ VerifyResult VerifyAndStoreImpression(AttributionSourceType source_type,
                                             ? impression_origin
                                             : *impression.reporting_origin;
 
-  const bool allowed =
-      GetContentClient()->browser()->IsConversionMeasurementOperationAllowed(
-          browser_context,
-          ContentBrowserClient::ConversionMeasurementOperation::kImpression,
-          &impression_origin, /*conversion_origin=*/nullptr, &reporting_origin);
-  if (!allowed)
-    return VerifyResult{.allowed = false, .stored = false};
-
   // Conversion measurement is only allowed in secure contexts.
   if (!IsOriginTrustworthyForAttributions(impression_origin) ||
       !IsOriginTrustworthyForAttributions(reporting_origin) ||
       !IsOriginTrustworthyForAttributions(impression.conversion_destination)) {
-    return VerifyResult{.allowed = true, .stored = false};
+    return;
   }
 
   StorableSource storable_impression(
@@ -74,7 +62,6 @@ VerifyResult VerifyAndStoreImpression(AttributionSourceType source_type,
   // DevTools in the event that a debug key is present but the corresponding
   // cookie is not.
   attribution_manager.HandleSource(std::move(storable_impression));
-  return VerifyResult{.allowed = true, .stored = true};
 }
 
 absl::optional<blink::Impression> ParseImpressionFromApp(

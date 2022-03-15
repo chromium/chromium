@@ -63,7 +63,6 @@
 #include "content/public/test/test_utils.h"
 #include "content/services/auction_worklet/public/mojom/bidder_worklet.mojom.h"
 #include "net/base/network_isolation_key.h"
-#include "net/base/schemeful_site.h"
 #include "net/base/test_completion_callback.h"
 #include "net/cookies/canonical_cookie.h"
 #include "net/cookies/cookie_access_result.h"
@@ -2063,11 +2062,10 @@ TEST_F(StoragePartitionImplTest, ConversionsClearDataForFilter) {
                                           .SetConversionOrigin(conv)
                                           .SetExpiry(base::Days(2))
                                           .Build());
-    attribution_manager->HandleTrigger(
-        TriggerBuilder()
-            .SetConversionDestination(net::SchemefulSite(conv))
-            .SetReportingOrigin(reporter)
-            .Build());
+    attribution_manager->HandleTrigger(TriggerBuilder()
+                                           .SetDestinationOrigin(conv)
+                                           .SetReportingOrigin(reporter)
+                                           .Build());
   }
 
   EXPECT_EQ(5u, GetAttributionReportsForTesting(attribution_manager,

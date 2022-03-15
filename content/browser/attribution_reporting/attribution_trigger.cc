@@ -24,30 +24,29 @@ AttributionTrigger::EventTriggerData::EventTriggerData(
       not_filters(std::move(not_filters)) {}
 
 AttributionTrigger::AttributionTrigger(
-    net::SchemefulSite conversion_destination,
+    url::Origin destination_origin,
     url::Origin reporting_origin,
     AttributionFilterData filters,
     absl::optional<uint64_t> debug_key,
     std::vector<EventTriggerData> event_triggers)
-    : conversion_destination_(std::move(conversion_destination)),
+    : destination_origin_(std::move(destination_origin)),
       reporting_origin_(std::move(reporting_origin)),
       filters_(std::move(filters)),
       debug_key_(debug_key),
       event_triggers_(std::move(event_triggers)) {
   DCHECK(!reporting_origin_.opaque());
-  DCHECK(!conversion_destination_.opaque());
+  DCHECK(!destination_origin_.opaque());
 }
 
-AttributionTrigger::AttributionTrigger(
-    uint64_t trigger_data,
-    net::SchemefulSite conversion_destination,
-    url::Origin reporting_origin,
-    uint64_t event_source_trigger_data,
-    int64_t priority,
-    absl::optional<uint64_t> dedup_key,
-    absl::optional<uint64_t> debug_key)
+AttributionTrigger::AttributionTrigger(uint64_t trigger_data,
+                                       url::Origin destination_origin,
+                                       url::Origin reporting_origin,
+                                       uint64_t event_source_trigger_data,
+                                       int64_t priority,
+                                       absl::optional<uint64_t> dedup_key,
+                                       absl::optional<uint64_t> debug_key)
     : AttributionTrigger(
-          std::move(conversion_destination),
+          std::move(destination_origin),
           std::move(reporting_origin),
           /*filters=*/AttributionFilterData(),
           debug_key,

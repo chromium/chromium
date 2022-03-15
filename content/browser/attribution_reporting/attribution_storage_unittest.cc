@@ -222,8 +222,7 @@ TEST_F(AttributionStorageTest,
       AttributionTrigger::EventLevelResult::kSuccess,
       MaybeCreateAndStoreEventLevelReport(
           TriggerBuilder()
-              .SetConversionDestination(
-                  net::SchemefulSite(GURL("https://a.test")))
+              .SetDestinationOrigin(url::Origin::Create(GURL("https://a.test")))
               .SetReportingOrigin(impression.common_info().reporting_origin())
               .Build()));
 }
@@ -659,23 +658,23 @@ TEST_F(AttributionStorageTest, ClearDataNullFilter) {
   for (int i = 0; i < 5; i++) {
     auto origin =
         url::Origin::Create(GURL(base::StringPrintf("https://%d.com/", i)));
-    EXPECT_EQ(AttributionTrigger::EventLevelResult::kSuccess,
-              MaybeCreateAndStoreEventLevelReport(
-                  TriggerBuilder()
-                      .SetConversionDestination(net::SchemefulSite(origin))
-                      .SetReportingOrigin(origin)
-                      .Build()));
+    EXPECT_EQ(
+        AttributionTrigger::EventLevelResult::kSuccess,
+        MaybeCreateAndStoreEventLevelReport(TriggerBuilder()
+                                                .SetDestinationOrigin(origin)
+                                                .SetReportingOrigin(origin)
+                                                .Build()));
   }
   task_environment_.FastForwardBy(base::Days(1));
   for (int i = 5; i < 10; i++) {
     auto origin =
         url::Origin::Create(GURL(base::StringPrintf("https://%d.com/", i)));
-    EXPECT_EQ(AttributionTrigger::EventLevelResult::kSuccess,
-              MaybeCreateAndStoreEventLevelReport(
-                  TriggerBuilder()
-                      .SetConversionDestination(net::SchemefulSite(origin))
-                      .SetReportingOrigin(origin)
-                      .Build()));
+    EXPECT_EQ(
+        AttributionTrigger::EventLevelResult::kSuccess,
+        MaybeCreateAndStoreEventLevelReport(TriggerBuilder()
+                                                .SetDestinationOrigin(origin)
+                                                .SetReportingOrigin(origin)
+                                                .Build()));
   }
 
   auto null_filter = base::RepeatingCallback<bool(const url::Origin&)>();
@@ -1312,8 +1311,8 @@ TEST_F(AttributionStorageTest, DedupKey_Dedups) {
   EXPECT_EQ(AttributionTrigger::EventLevelResult::kSuccess,
             MaybeCreateAndStoreEventLevelReport(
                 TriggerBuilder()
-                    .SetConversionDestination(net::SchemefulSite(
-                        url::Origin::Create(GURL("https://a.example"))))
+                    .SetDestinationOrigin(
+                        url::Origin::Create(GURL("https://a.example")))
                     .SetDedupKey(11)
                     .SetTriggerData(71)
                     .Build()));
@@ -1323,8 +1322,8 @@ TEST_F(AttributionStorageTest, DedupKey_Dedups) {
   EXPECT_EQ(AttributionTrigger::EventLevelResult::kSuccess,
             MaybeCreateAndStoreEventLevelReport(
                 TriggerBuilder()
-                    .SetConversionDestination(net::SchemefulSite(
-                        url::Origin::Create(GURL("https://a.example"))))
+                    .SetDestinationOrigin(
+                        url::Origin::Create(GURL("https://a.example")))
                     .SetDedupKey(12)
                     .SetTriggerData(72)
                     .Build()));
@@ -1334,8 +1333,8 @@ TEST_F(AttributionStorageTest, DedupKey_Dedups) {
   EXPECT_EQ(AttributionTrigger::EventLevelResult::kSuccess,
             MaybeCreateAndStoreEventLevelReport(
                 TriggerBuilder()
-                    .SetConversionDestination(net::SchemefulSite(
-                        url::Origin::Create(GURL("https://b.example"))))
+                    .SetDestinationOrigin(
+                        url::Origin::Create(GURL("https://b.example")))
                     .SetDedupKey(12)
                     .SetTriggerData(73)
                     .Build()));
@@ -1343,8 +1342,7 @@ TEST_F(AttributionStorageTest, DedupKey_Dedups) {
   // Shouldn't be stored because conversion destination and dedup key match.
   auto result = storage()->MaybeCreateAndStoreReport(
       TriggerBuilder()
-          .SetConversionDestination(net::SchemefulSite(
-              url::Origin::Create(GURL("https://a.example"))))
+          .SetDestinationOrigin(url::Origin::Create(GURL("https://a.example")))
           .SetDedupKey(11)
           .SetTriggerData(74)
           .Build());
@@ -1357,8 +1355,8 @@ TEST_F(AttributionStorageTest, DedupKey_Dedups) {
   EXPECT_EQ(AttributionTrigger::EventLevelResult::kDeduplicated,
             MaybeCreateAndStoreEventLevelReport(
                 TriggerBuilder()
-                    .SetConversionDestination(net::SchemefulSite(
-                        url::Origin::Create(GURL("https://b.example"))))
+                    .SetDestinationOrigin(
+                        url::Origin::Create(GURL("https://b.example")))
                     .SetDedupKey(12)
                     .SetTriggerData(75)
                     .Build()));
@@ -1387,8 +1385,8 @@ TEST_F(AttributionStorageTest, DedupKey_DedupsAfterConversionDeletion) {
   EXPECT_EQ(AttributionTrigger::EventLevelResult::kSuccess,
             MaybeCreateAndStoreEventLevelReport(
                 TriggerBuilder()
-                    .SetConversionDestination(net::SchemefulSite(
-                        url::Origin::Create(GURL("https://a.example"))))
+                    .SetDestinationOrigin(
+                        url::Origin::Create(GURL("https://a.example")))
                     .SetDedupKey(2)
                     .SetTriggerData(3)
                     .Build()));
@@ -1409,8 +1407,8 @@ TEST_F(AttributionStorageTest, DedupKey_DedupsAfterConversionDeletion) {
   EXPECT_EQ(AttributionTrigger::EventLevelResult::kDeduplicated,
             MaybeCreateAndStoreEventLevelReport(
                 TriggerBuilder()
-                    .SetConversionDestination(net::SchemefulSite(
-                        url::Origin::Create(GURL("https://a.example"))))
+                    .SetDestinationOrigin(
+                        url::Origin::Create(GURL("https://a.example")))
                     .SetDedupKey(2)
                     .SetTriggerData(5)
                     .Build()));
@@ -2197,7 +2195,7 @@ TEST_F(AttributionStorageTest, NoMatchingTriggerData_UsesDefaultData) {
 
   EXPECT_EQ(AttributionTrigger::EventLevelResult::kSuccess,
             MaybeCreateAndStoreEventLevelReport(AttributionTrigger(
-                net::SchemefulSite(origin), origin,
+                origin, origin,
                 /*filters=*/AttributionFilterData(),
                 /*debug_key=*/absl::nullopt,
                 {AttributionTrigger::EventTriggerData(
@@ -2287,7 +2285,7 @@ TEST_F(AttributionStorageTest, MatchingTriggerData_UsesCorrectData) {
 
   EXPECT_EQ(AttributionTrigger::EventLevelResult::kSuccess,
             MaybeCreateAndStoreEventLevelReport(AttributionTrigger(
-                net::SchemefulSite(origin), origin,
+                origin, origin,
                 /*filters=*/AttributionFilterData(),
                 /*debug_key=*/absl::nullopt, event_triggers)));
 
@@ -2310,7 +2308,7 @@ TEST_F(AttributionStorageTest, TopLevelTriggerFiltering) {
               {{"abc", {"123"}}}))
           .Build());
 
-  AttributionTrigger trigger1(net::SchemefulSite(origin), origin,
+  AttributionTrigger trigger1(origin, origin,
                               /*filters=*/
                               *AttributionFilterData::FromTriggerFilterValues({
                                   {"abc", {"456"}},
@@ -2318,7 +2316,7 @@ TEST_F(AttributionStorageTest, TopLevelTriggerFiltering) {
                               /*debug_key=*/absl::nullopt,
                               /*event_triggers=*/{});
 
-  AttributionTrigger trigger2(net::SchemefulSite(origin), origin,
+  AttributionTrigger trigger2(origin, origin,
                               /*filters=*/
                               *AttributionFilterData::FromTriggerFilterValues({
                                   {"abc", {"123"}},

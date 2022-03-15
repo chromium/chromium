@@ -41,7 +41,6 @@
 #include "content/browser/attribution_reporting/stored_source.h"
 #include "content/public/browser/attribution_reporting.h"
 #include "content/test/test_content_browser_client.h"
-#include "net/base/schemeful_site.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/attribution_reporting/constants.h"
@@ -408,8 +407,7 @@ class TriggerBuilder {
 
   TriggerBuilder& SetEventSourceTriggerData(uint64_t event_source_trigger_data);
 
-  TriggerBuilder& SetConversionDestination(
-      net::SchemefulSite conversion_destination);
+  TriggerBuilder& SetDestinationOrigin(url::Origin destination_origin);
 
   TriggerBuilder& SetReportingOrigin(url::Origin reporting_origin);
 
@@ -424,7 +422,7 @@ class TriggerBuilder {
  private:
   uint64_t trigger_data_ = 111;
   uint64_t event_source_trigger_data_ = 0;
-  net::SchemefulSite conversion_destination_;
+  url::Origin destination_origin_;
   url::Origin reporting_origin_;
   int64_t priority_ = 0;
   absl::optional<uint64_t> dedup_key_;
@@ -707,9 +705,8 @@ MATCHER_P(SourceActiveStateIs, matcher, "") {
 
 // Trigger matchers.
 
-MATCHER_P(TriggerConversionDestinationIs, matcher, "") {
-  return ExplainMatchResult(matcher, arg.conversion_destination(),
-                            result_listener);
+MATCHER_P(TriggerDestinationOriginIs, matcher, "") {
+  return ExplainMatchResult(matcher, arg.destination_origin(), result_listener);
 }
 
 // Report matchers
@@ -790,8 +787,7 @@ struct EventTriggerDataMatcherConfig {
 EventTriggerDataMatches(const EventTriggerDataMatcherConfig&);
 
 struct AttributionTriggerMatcherConfig {
-  ::testing::Matcher<const net::SchemefulSite&> conversion_destination =
-      ::testing::_;
+  ::testing::Matcher<const url::Origin&> destination_origin = ::testing::_;
   ::testing::Matcher<const url::Origin&> reporting_origin = ::testing::_;
   ::testing::Matcher<const AttributionFilterData&> filters = ::testing::_;
   ::testing::Matcher<absl::optional<uint64_t>> debug_key = ::testing::_;
