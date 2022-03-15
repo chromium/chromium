@@ -41,9 +41,20 @@
   }
 
   :host([plugged-in_]) #batteryCutButton {
-    opacity: 0.5;
+    opacity: 0.38;
   }
 
+  :host([plugged-in_]) #batteryCutButton .button-label {
+    color: var(--cros-text-color-disabled);
+  }
+
+  :host([plugged-in_]) #batteryCutButton .button-description {
+    color: var(--cros-text-color-disabled);
+  }
+
+  :host([plugged-in_]) #batteryCutoffInfoIcon {
+    color: var(--cros-icon-color-secondary);
+  }
 
   .button-label {
     color: var(--shimless-button-label-text-color);
@@ -128,8 +139,9 @@
             on-click="onBatteryCutButtonClick_"
             disabled$="[[disableBatteryCutButton_(pluggedIn_,
             allButtonsDisabled)]]">
-          <iron-icon id="battery-cutoff-icon" icon="shimless-icon:battery-cutoff"
-              class="button-icon" hidden="[[!checked]]">
+          <iron-icon id="batteryCutoffIcon"
+              icon="shimless-icon:battery-cutoff-disabled" class="button-icon"
+              hidden="[[!checked]]">
           </iron-icon>
           <div class="button-text">
             <div class="button-label">

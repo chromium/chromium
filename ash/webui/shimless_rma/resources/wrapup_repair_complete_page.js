@@ -152,6 +152,13 @@ export class WrapupRepairCompletePage extends WrapupRepairCompletePageBase {
    */
   onPowerCableStateChanged(pluggedIn) {
     this.pluggedIn_ = pluggedIn;
+
+    const icon = /** @type {!HTMLElement}*/ (
+        this.shadowRoot.querySelector('#batteryCutoffIcon'));
+    icon.setAttribute(
+        'icon',
+        this.pluggedIn_ ? 'shimless-icon:battery-cutoff-disabled' :
+                          'shimless-icon:battery-cutoff');
   }
 
   /**
