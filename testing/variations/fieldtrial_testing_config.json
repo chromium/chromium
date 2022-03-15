@@ -4125,6 +4125,21 @@
             ]
         }
     ],
+    "MacAllowBackgroundingProcesses": [
+        {
+            "platforms": [
+                "mac"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled_20220218",
+                    "enable_features": [
+                        "MacAllowBackgroundingProcesses"
+                    ]
+                }
+            ]
+        }
+    ],
     "MacCAOverlayQuads": [
         {
             "platforms": [
