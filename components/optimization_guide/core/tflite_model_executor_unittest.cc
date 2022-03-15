@@ -4,6 +4,7 @@
 
 #include "base/path_service.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "components/optimization_guide/core/test_model_info_builder.h"
 #include "components/optimization_guide/core/test_optimization_guide_model_provider.h"
@@ -28,6 +29,35 @@ class NoUnloadingTestTFLiteModelHandler : public TestTFLiteModelHandler {
   }
 };
 
+class EnsureCancelledTestTFLiteModelExecutor : public TestTFLiteModelExecutor {
+ protected:
+  absl::optional<std::vector<float>> Execute(
+      ModelExecutionTask* execution_task,
+      ExecutionStatus* out_status,
+      const std::vector<float>& input) override {
+    while (true) {
+      // Timing is tricky, so give a few invocations for the cancel flag in
+      // TFLite Support to be noticed.
+      absl::optional<std::vector<float>> out =
+          TestTFLiteModelExecutor::Execute(execution_task, out_status, input);
+      if (!out) {
+        return out;
+      }
+    }
+  }
+};
+
+class EnsureCancelledTestTFLiteModelHandler : public TestTFLiteModelHandler {
+ public:
+  EnsureCancelledTestTFLiteModelHandler(
+      OptimizationGuideModelProvider* model_provider,
+      scoped_refptr<base::SequencedTaskRunner> background_task_runner)
+      : TestTFLiteModelHandler(
+            model_provider,
+            background_task_runner,
+            std::make_unique<EnsureCancelledTestTFLiteModelExecutor>()) {}
+};
+
 class TFLiteModelExecutorTest : public testing::Test {
  public:
   TFLiteModelExecutorTest() = default;
@@ -48,7 +78,7 @@ class TFLiteModelExecutorTest : public testing::Test {
 
   void TearDown() override { ResetModelHandler(); }
 
-  void CreateModelHandler() {
+  virtual void CreateModelHandler() {
     if (model_handler_)
       model_handler_.reset();
 
@@ -86,13 +116,13 @@ class TFLiteModelExecutorTest : public testing::Test {
 
   void RunUntilIdle() { task_environment_.RunUntilIdle(); }
 
+ protected:
+  std::unique_ptr<TestTFLiteModelHandler> model_handler_;
+
  private:
   base::test::TaskEnvironment task_environment_;
-
   base::FilePath model_file_path_;
   std::unique_ptr<TestOptimizationGuideModelProvider> test_model_provider_;
-
-  std::unique_ptr<TestTFLiteModelHandler> model_handler_;
 };
 
 TEST_F(TFLiteModelExecutorTest, ExecuteReturnsImmediatelyIfNoModelLoaded) {
@@ -379,6 +409,62 @@ TEST_F(TFLiteModelExecutorTest, DoNotUnloadAfterExecution) {
           optimization_guide::GetStringNameForOptimizationTarget(
               proto::OptimizationTarget::OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD),
       true, 1);
+}
+
+class CancelledTFLiteModelExecutorTest : public TFLiteModelExecutorTest {
+ public:
+  CancelledTFLiteModelExecutorTest() {
+    scoped_feature_list_.InitAndEnableFeatureWithParameters(
+        features::kPreventLongRunningPredictionModels,
+        {{"model_execution_timeout_ms", "10"}});
+  }
+  ~CancelledTFLiteModelExecutorTest() override = default;
+
+  void SetUp() override { TFLiteModelExecutorTest::SetUp(); }
+
+  void CreateModelHandler() override {
+    model_handler_ = std::make_unique<EnsureCancelledTestTFLiteModelHandler>(
+        test_model_provider(), task_environment()->GetMainThreadTaskRunner());
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+TEST_F(CancelledTFLiteModelExecutorTest, RunsTooLong) {
+  base::HistogramTester histogram_tester;
+  CreateModelHandler();
+
+  PushModelFileToModelExecutor(
+      proto::OptimizationTarget::OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD,
+      /*model_metadata=*/absl::nullopt);
+  EXPECT_TRUE(model_handler()->ModelAvailable());
+
+  std::vector<float> input;
+  size_t expected_dims = 1 * 32 * 32 * 3;
+  input.reserve(expected_dims);
+  for (size_t i = 0; i < expected_dims; i++) {
+    input.emplace_back(1);
+  }
+
+  base::RunLoop run_loop;
+  model_handler()->ExecuteModelWithInput(
+      base::BindOnce(
+          [](base::RunLoop* run_loop,
+             const absl::optional<std::vector<float>>& output) {
+            EXPECT_FALSE(output.has_value());
+            run_loop->Quit();
+          },
+          &run_loop),
+      input);
+  run_loop.Run();
+
+  histogram_tester.ExpectUniqueSample(
+      "OptimizationGuide.ModelExecutor.ExecutionStatus.PainfulPageLoad",
+      ExecutionStatus::kErrorCancelled, 1);
+
+  histogram_tester.ExpectUniqueSample(
+      "OptimizationGuide.ModelExecutor.DidTimeout.PainfulPageLoad", true, 1);
 }
 
 }  // namespace

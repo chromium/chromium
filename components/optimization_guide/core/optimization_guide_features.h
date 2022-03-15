@@ -41,6 +41,7 @@ extern const base::Feature kPageTopicsBatchAnnotations;
 extern const base::Feature kPageVisibilityBatchAnnotations;
 extern const base::Feature kUseLocalPageEntitiesMetadataProvider;
 extern const base::Feature kBatchAnnotationsValidation;
+extern const base::Feature kPreventLongRunningPredictionModels;
 
 // The grace period duration for how long to give outstanding page text dump
 // requests to respond after DidFinishLoad.
@@ -191,6 +192,9 @@ base::TimeDelta PredictionModelFetchStartupDelay();
 // Returns the time to wait after a successful fetch of prediction models to
 // refresh models.
 base::TimeDelta PredictionModelFetchInterval();
+
+// The timeout for executing models, if enabled.
+absl::optional<base::TimeDelta> ModelExecutionTimeout();
 
 // Returns a set of field trial name hashes that can be sent in the request to
 // the remote Optimization Guide Service if the client is in one of the

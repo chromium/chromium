@@ -144,6 +144,9 @@ const base::Feature kUseLocalPageEntitiesMetadataProvider{
 const base::Feature kBatchAnnotationsValidation{
     "BatchAnnotationsValidation", base::FEATURE_DISABLED_BY_DEFAULT};
 
+const base::Feature kPreventLongRunningPredictionModels{
+    "PreventLongRunningPredictionModels", base::FEATURE_DISABLED_BY_DEFAULT};
+
 // The default value here is a bit of a guess.
 // TODO(crbug/1163244): This should be tuned once metrics are available.
 base::TimeDelta PageTextExtractionOutstandingRequestsGracePeriod() {
@@ -393,6 +396,14 @@ base::TimeDelta PredictionModelFetchStartupDelay() {
 base::TimeDelta PredictionModelFetchInterval() {
   return base::Hours(GetFieldTrialParamByFeatureAsInt(
       kOptimizationTargetPrediction, "fetch_interval_hours", 24));
+}
+
+absl::optional<base::TimeDelta> ModelExecutionTimeout() {
+  if (!base::FeatureList::IsEnabled(kPreventLongRunningPredictionModels)) {
+    return absl::nullopt;
+  }
+  return base::Milliseconds(GetFieldTrialParamByFeatureAsInt(
+      kPreventLongRunningPredictionModels, "model_execution_timeout_ms", 2000));
 }
 
 base::flat_set<uint32_t> FieldTrialNameHashesAllowedForFetch() {

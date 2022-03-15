@@ -19,8 +19,10 @@
 #include "base/trace_event/trace_event.h"
 #include "components/optimization_guide/core/execution_status.h"
 #include "components/optimization_guide/core/model_enums.h"
+#include "components/optimization_guide/core/model_execution_timeout_watchdog.h"
 #include "components/optimization_guide/core/model_executor.h"
 #include "components/optimization_guide/core/model_util.h"
+#include "components/optimization_guide/core/optimization_guide_features.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/tflite/src/tensorflow/lite/c/common.h"
 #include "third_party/tflite_support/src/tensorflow_lite_support/cc/task/core/base_task_api.h"
@@ -76,6 +78,16 @@ class TFLiteModelExecutor : public ModelExecutor<OutputType, InputTypes...> {
   TFLiteModelExecutor() = default;
   ~TFLiteModelExecutor() override {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+    // |watchdog_| uses a thread internally so we need to allow sync primitives
+    // when destroying (joining) it.
+    //
+    // Note that this dtor is already being called on a background task runner
+    // via DeleteSoon.
+    if (watchdog_) {
+      base::ScopedAllowBaseSyncPrimitives allow_sync_primitives;
+      watchdog_.reset();
+    }
   }
 
   // Should be called on the same sequence as the ctor, but once called |this|
@@ -93,6 +105,11 @@ class TFLiteModelExecutor : public ModelExecutor<OutputType, InputTypes...> {
     optimization_target_ = optimization_target;
     execution_task_runner_ = execution_task_runner;
     reply_task_runner_ = reply_task_runner;
+    if (features::ModelExecutionTimeout()) {
+      watchdog_ = std::make_unique<
+          ModelExecutionTimeoutWatchdog<OutputType, InputTypes...>>(
+          optimization_target_, *features::ModelExecutionTimeout());
+    }
   }
 
   // Called when a model file is available to load. Depending on feature flags,
@@ -186,6 +203,12 @@ class TFLiteModelExecutor : public ModelExecutor<OutputType, InputTypes...> {
 
     DCHECK(loaded_model_);
     absl::optional<OutputType> output;
+
+    // IMPORTANT: Once the arm method is called, disarm must be called when the
+    // model execution finishes. Do NOT early-return in this next block.
+    if (watchdog_) {
+      watchdog_->ArmWithTask(loaded_model_.get());
+    }
     {
       TRACE_EVENT1("browser", "OptGuideModelExecutor::Execute",
                    "OptimizationTarget",
@@ -207,6 +230,9 @@ class TFLiteModelExecutor : public ModelExecutor<OutputType, InputTypes...> {
           "OptimizationGuide.ModelExecutor.ExecutionThreadTime." +
               GetStringNameForOptimizationTarget(optimization_target_),
           execution_timer.Elapsed());
+    }
+    if (watchdog_) {
+      watchdog_->DisarmOnExecutionComplete();
     }
 
     DCHECK(callback_on_complete);
@@ -301,6 +327,9 @@ class TFLiteModelExecutor : public ModelExecutor<OutputType, InputTypes...> {
       proto::OptimizationTarget::OPTIMIZATION_TARGET_UNKNOWN;
 
   bool should_unload_model_on_complete_ = true;
+
+  std::unique_ptr<ModelExecutionTimeoutWatchdog<OutputType, InputTypes...>>
+      watchdog_;
 
   scoped_refptr<base::SequencedTaskRunner> execution_task_runner_;
 
