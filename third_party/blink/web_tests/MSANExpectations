@@ -175,3 +175,9 @@ crbug.com/1214884 [ Linux ] external/wpt/html/webappapis/scripting/events/event-
 crbug.com/1215390 [ Linux ] external/wpt/pointerevents/pointerevent_pointerId_scope.html [ Pass Failure Timeout ]
 crbug.com/1215632 [ Linux ] external/wpt/html/webappapis/scripting/events/event-handler-attributes-frameset-window.html [ Pass Timeout ]
 crbug.com/1215632 [ Linux ] external/wpt/html/webappapis/scripting/events/event-handler-attributes-windowless-body.html [ Pass Timeout ]
+
+# Flaking on WebKit Linux MSAN
+crbug.com/1126305 [ Linux ] virtual/prerender/external/wpt/speculation-rules/prerender/fetch-blob.html [ Skip ]
+crbug.com/1126305 [ Linux ] virtual/prerender/external/wpt/speculation-rules/prerender/cache-storage.https.html [ Skip ]
+crbug.com/1126305 [ Linux ] virtual/prerender/external/wpt/speculation-rules/prerender/indexeddb.html [ Skip ]
+crbug.com/1126305 [ Linux ] virtual/prerender/external/wpt/speculation-rules/prerender/restriction-focus.html [ Skip ]
