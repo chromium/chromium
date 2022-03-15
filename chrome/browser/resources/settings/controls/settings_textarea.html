@@ -8,8 +8,25 @@
     background-color: var(--cr-input-background-color);
   }
 
-  #underline {
-    position: static;
+  :host([invalid]) #underline {
+    border-color: var(--cr-input-error-color);
+  }
+
+  #footerContainer {
+    border-top: 0;
+    display: flex;
+    font-size: var(--cr-form-field-label-font-size);
+    height: var(--cr-form-field-label-height);
+    justify-content: space-between;
+    line-height: var(--cr-form-field-label-line-height);
+    margin: 8px 0;
+    min-height: 0;
+    padding: 0;
+    white-space: var(--cr-input-error-white-space);
+  }
+
+  :host([invalid]) #footerContainer {
+    color: var(--cr-input-error-color);
   }
 
   #mirror {
@@ -58,4 +75,13 @@
       on-change="onInputChange_" disabled="[[disabled]]"
       maxlength$="[[maxlength]]" readonly$="[[readonly]]"></textarea>
   <div id="underline"></div>
+</div>
+<div id="footerContainer"
+    class$="cr-row" hidden$="[[!shouldShowFooter_(firstFooter, secondFooter)]]">
+  <div id="firstFooter" aria-live="[[getFooterAria_(invalid)]]">
+    [[firstFooter]]
+  </div>
+  <div id="secondFooter" aria-live="[[getFooterAria_(invalid)]]">
+    [[secondFooter]]
+  </div>
 </div>

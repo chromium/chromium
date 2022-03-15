@@ -113,3 +113,15 @@ var CrSettingsMenuInteractiveTest = class extends CrSettingsInteractiveUITest {
 TEST_F('CrSettingsMenuInteractiveTest', 'All', function() {
   mocha.run();
 });
+
+var CrSettingsTextareaInteractiveTest =
+    class extends CrSettingsInteractiveUITest {
+  /** @override */
+  get browsePreload() {
+    return `chrome://settings/test_loader.html?module=settings/settings_textarea_tests.js&host=webui-test`;
+  }
+};
+
+TEST_F('CrSettingsTextareaInteractiveTest', 'All', function() {
+  mocha.run();
+});

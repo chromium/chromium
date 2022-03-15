@@ -15,9 +15,13 @@ import {getTemplate} from './settings_textarea.html.js';
 
 export interface SettingsTextareaElement {
   $: {
+    firstFooter: HTMLElement,
+    footerContainer: HTMLElement,
     input: HTMLTextAreaElement,
     label: HTMLElement,
     mirror: HTMLElement,
+    secondFooter: HTMLElement,
+    underline: HTMLElement,
   };
 }
 
@@ -88,13 +92,36 @@ export class SettingsTextareaElement extends PolymerElement {
         notify: true,
       },
 
-      /**
-       * Whether the textarea can auto-grow vertically or not.
-       */
+      /** Whether the textarea can auto-grow vertically or not. */
       autogrow: {
         type: Boolean,
         value: false,
         reflectToAttribute: true,
+      },
+
+      /** Whether the textarea is invalid or not. */
+      invalid: {
+        type: Boolean,
+        value: false,
+        reflectToAttribute: true,
+      },
+
+      /**
+       * First footer text below the text area. Can be used to warn user about
+       * character limits.
+       */
+      firstFooter: {
+        type: String,
+        value: '',
+      },
+
+      /**
+       * Second footer text below the text area. Can be used to show current
+       * character count.
+       */
+      secondFooter: {
+        type: String,
+        value: '',
       },
     };
   }
@@ -105,6 +132,9 @@ export class SettingsTextareaElement extends PolymerElement {
   label: string;
   value: string;
   autogrow: boolean;
+  invalid: boolean;
+  firstFooter: String;
+  secondFooter: String;
 
   /**
    * 'change' event fires when <input> value changes and user presses 'Enter'.
@@ -142,6 +172,14 @@ export class SettingsTextareaElement extends PolymerElement {
 
   private onDisabledChanged_() {
     this.setAttribute('aria-disabled', this.disabled ? 'true' : 'false');
+  }
+
+  private shouldShowFooter_(): boolean {
+    return !!(this.firstFooter || this.secondFooter);
+  }
+
+  private getFooterAria_(): string {
+    return this.invalid ? 'assertive' : 'polite';
   }
 }
 
