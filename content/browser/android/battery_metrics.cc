@@ -4,6 +4,7 @@
 
 #include "content/browser/android/battery_metrics.h"
 
+#include "base/android/application_status_listener.h"
 #include "base/android/radio_utils.h"
 #include "base/bind.h"
 #include "base/feature_list.h"
@@ -13,8 +14,10 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/no_destructor.h"
 #include "base/power_monitor/power_monitor.h"
+#include "base/trace_event/application_state_proto_android.h"
 #include "base/trace_event/trace_event.h"
 #include "base/trace_event/typed_macros.h"
+#include "base/tracing/protos/chrome_track_event.pbzero.h"
 #include "content/browser/web_contents/web_contents_impl.h"
 #include "net/android/network_library.h"
 #include "net/android/traffic_stats.h"
@@ -26,6 +29,22 @@ const base::Feature kForegroundRadioStateCountWakeups{
 
 namespace content {
 namespace {
+
+perfetto::protos::pbzero::DeviceThermalState ToTraceEnum(
+    base::PowerThermalObserver::DeviceThermalState state) {
+  switch (state) {
+    case base::PowerThermalObserver::DeviceThermalState::kUnknown:
+      return perfetto::protos::pbzero::DEVICE_THERMAL_STATE_UNKNOWN;
+    case base::PowerThermalObserver::DeviceThermalState::kNominal:
+      return perfetto::protos::pbzero::DEVICE_THERMAL_STATE_NOMINAL;
+    case base::PowerThermalObserver::DeviceThermalState::kFair:
+      return perfetto::protos::pbzero::DEVICE_THERMAL_STATE_FAIR;
+    case base::PowerThermalObserver::DeviceThermalState::kSerious:
+      return perfetto::protos::pbzero::DEVICE_THERMAL_STATE_SERIOUS;
+    case base::PowerThermalObserver::DeviceThermalState::kCritical:
+      return perfetto::protos::pbzero::DEVICE_THERMAL_STATE_CRITICAL;
+  }
+}
 
 void Report30SecondRadioUsage(int64_t tx_bytes, int64_t rx_bytes, int wakeups) {
   if (!base::android::RadioUtils::IsSupported())
@@ -224,9 +243,16 @@ void AndroidBatteryMetrics::OnPowerStateChange(bool on_battery_power) {
 }
 
 void AndroidBatteryMetrics::OnThermalStateChange(DeviceThermalState new_state) {
-  TRACE_EVENT_INSTANT("power", "OnThermalStateChange",
-                      perfetto::Track::Global(0), "new_state", new_state,
-                      "app_visible", app_visible_);
+  TRACE_EVENT_INSTANT(
+      "power", "OnThermalStateChange", perfetto::Track::Global(0),
+      [&](perfetto::EventContext ctx) {
+        auto* event = ctx.event<perfetto::protos::pbzero::ChromeTrackEvent>();
+        event->set_chrome_application_state_info()->set_application_state(
+            base::trace_event::ApplicationStateToTraceEnum(
+                base::android::ApplicationStatusListener::GetState()));
+        event->set_device_thermal_state(ToTraceEnum(new_state));
+      });
+
   if (!app_visible_)
     return;
 

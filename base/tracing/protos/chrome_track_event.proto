@@ -711,9 +711,17 @@ message ProcessSingleton {
   optional RemoteHungProcessTerminateReason remote_process_terminate_reason = 2;
 }
 
+enum DeviceThermalState {
+  DEVICE_THERMAL_STATE_UNKNOWN = 0;
+  DEVICE_THERMAL_STATE_NOMINAL = 1;
+  DEVICE_THERMAL_STATE_FAIR = 2;
+  DEVICE_THERMAL_STATE_SERIOUS = 3;
+  DEVICE_THERMAL_STATE_CRITICAL = 4;
+}
+
 message ChromeTrackEvent {
   // Extension range for Chrome: 1000-1999
-  // Next ID: 1036
+  // Next ID: 1037
   extend TrackEvent {
     optional ChromeAppState chrome_app_state = 1000;
 
@@ -791,5 +799,7 @@ message ChromeTrackEvent {
     optional SiteInstanceGroup site_instance_group = 1034;
 
     optional BrowsingContextState browsing_context_state = 1035;
+
+    optional DeviceThermalState device_thermal_state = 1036;
   }
 }
