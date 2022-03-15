@@ -41,7 +41,7 @@ wpt_internal/webgpu/cts.https.html?q=webgpu:web_platform,copyToTexture,canvas:co
 [ Win ] wpt_internal/webgpu/cts.https.html?q=webgpu:web_platform,copyToTexture,ImageBitmap:from_ImageData:* [ Slow ]
 [ Win ] wpt_internal/webgpu/cts.https.html?q=webgpu:api,operation,rendering,draw:arguments:* [ Slow ]
 [ Win ] wpt_internal/webgpu/cts.https.html?q=webgpu:api,operation,render_pass,storeOp:render_pass_store_op,color_attachment_only:* [ Slow ]
-# [ Mac ] wpt_internal/webgpu/cts.https.html?q=webgpu:api,operation,command_buffer,image_copy:rowsPerImage_and_bytesPerRow_depth_stencil:* [ Slow ]
+[ Mac ] wpt_internal/webgpu/cts.https.html?q=webgpu:api,operation,command_buffer,image_copy:rowsPerImage_and_bytesPerRow_depth_stencil:* [ Slow ]
 # Intel only. Really slow and killed by the GPU watchdog?
 crbug.com/dawn/1046 [ Mac ] wpt_internal/webgpu/cts.https.html?q=webgpu:shader,execution,robust_access_vertex:vertex_buffer_access:indexed=false;indirect=true;drawCallTestParameter="firstVertex";type="float32x4";* [ Slow Crash ]
 crbug.com/dawn/1046 [ Mac ] wpt_internal/webgpu/cts.https.html?q=webgpu:shader,execution,robust_access_vertex:vertex_buffer_access:indexed=false;indirect=true;drawCallTestParameter="instanceCount";type="float32x4";* [ Slow Crash ]
@@ -162,13 +162,6 @@ crbug.com/dawn/1025 wpt_internal/webgpu/cts.https.html?q=webgpu:api,validation,r
 
 # Replace depth-clamp feature with depth-clip
 crbug.com/dawn/1178 wpt_internal/webgpu/cts.https.html?q=webgpu:api,operation,rendering,depth_clip_clamp:* [ Failure ]
-
-# crbug.com/dawn/1281
-# Temporary. Failing a loadOp/storeOp validation error in Dawn.
-# https://dawn-review.googlesource.com/c/dawn/+/82540
-wpt_internal/webgpu/cts.https.html?q=webgpu:api,validation,attachment_compatibility:render_pass_and_bundle,depth_format:* [ Failure ]
-wpt_internal/webgpu/cts.https.html?q=webgpu:api,operation,command_buffer,image_copy:rowsPerImage_and_bytesPerRow_depth_stencil:* [ Skip ] # Skipped because it conflicted with a Slow expectation.
-wpt_internal/webgpu/cts.https.html?q=webgpu:api,operation,command_buffer,image_copy:offsets_and_sizes_copy_depth_stencil:* [ Failure ]
 
 # Our automated build does not support mp4 currently (fails on Linux, Mac, and Win Intel)
 wpt_internal/webgpu/cts.https.html?q=webgpu:web_platform,external_texture,video:importExternalTexture,sample:videoSource="red-green.mp4" [ Failure ]
