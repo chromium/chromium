@@ -443,7 +443,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Blink.Canvas.WebGPUMaxRecycledResourcesCount"
-    units="Recyclable resources" expires_after="2022-04-24">
+    units="Recyclable resources" expires_after="2023-04-24">
   <owner>magchen@chromium.org</owner>
   <owner>enga@chromium.org</owner>
   <summary>
@@ -453,7 +453,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Blink.Canvas.WebGPUMaxRecycledResourcesInKB" units="KB"
-    expires_after="2022-04-24">
+    expires_after="2023-04-24">
   <owner>magchen@chromium.org</owner>
   <owner>enga@chromium.org</owner>
   <summary>
