@@ -540,6 +540,10 @@ void ConfigurePartitions(
   auto* current_aligned_root = g_aligned_root.Get();
 
   if (!split_main_partition) {
+    if (!use_alternate_bucket_distribution) {
+      current_root->SwitchToDenserBucketDistribution();
+      current_aligned_root->SwitchToDenserBucketDistribution();
+    }
     PA_DCHECK(!enable_brp);
     PA_DCHECK(!use_dedicated_aligned_partition);
     PA_DCHECK(!current_root->with_thread_cache);
