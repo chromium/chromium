@@ -1406,7 +1406,7 @@ IN_PROC_BROWSER_TEST_F(DeviceLocalAccountTest, ExternalData) {
       PolicyNamespace(POLICY_DOMAIN_CHROME, std::string()));
   policy_entry = policies.Get(key::kUserAvatarImage);
   ASSERT_TRUE(policy_entry);
-  EXPECT_EQ(*metadata, *policy_entry->value());
+  EXPECT_EQ(*metadata, *policy_entry->value(base::Value::Type::DICT));
   ASSERT_TRUE(policy_entry->external_data_fetcher);
 
   // Retrieve the external data via the ProfilePolicyConnector. The retrieval
@@ -2172,8 +2172,8 @@ IN_PROC_BROWSER_TEST_F(DeviceLocalAccountTest, PolicyForExtensions) {
 
   // Verify that the app policy was set.
   base::Value expected_value("policy test value one");
-  EXPECT_EQ(expected_value,
-            *policy_service->GetPolicies(ns).GetValue("string"));
+  EXPECT_EQ(expected_value, *policy_service->GetPolicies(ns).GetValue(
+                                "string", base::Value::Type::STRING));
 
   // Now update the policy at the server.
   policy_test_server_mixin_.UpdateExternalPolicy(
@@ -2197,8 +2197,8 @@ IN_PROC_BROWSER_TEST_F(DeviceLocalAccountTest, PolicyForExtensions) {
 
   // Verify that the app policy was updated.
   base::Value expected_new_value("policy test value two");
-  EXPECT_EQ(expected_new_value,
-            *policy_service->GetPolicies(ns).GetValue("string"));
+  EXPECT_EQ(expected_new_value, *policy_service->GetPolicies(ns).GetValue(
+                                    "string", base::Value::Type::STRING));
 }
 
 IN_PROC_BROWSER_TEST_F(DeviceLocalAccountTest, LoginWarningShown) {

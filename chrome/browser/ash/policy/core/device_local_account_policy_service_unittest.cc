@@ -933,7 +933,7 @@ TEST_F(DeviceLocalAccountPolicyProviderTest, Policy) {
   auto* policy_value =
       provider_->policies()
           .Get(PolicyNamespace(POLICY_DOMAIN_CHROME, std::string()))
-          .GetValue(key::kAllowDinosaurEasterEgg);
+          .GetValue(key::kAllowDinosaurEasterEgg, base::Value::Type::BOOLEAN);
   ASSERT_TRUE(policy_value);
   EXPECT_FALSE(policy_value->GetBool());
 
@@ -943,15 +943,16 @@ TEST_F(DeviceLocalAccountPolicyProviderTest, Policy) {
       provider_->policies()
           .Get(PolicyNamespace(POLICY_DOMAIN_CHROME, std::string()))
           .Get(key::kShelfAutoHideBehavior);
-  ASSERT_TRUE(policy_entry->value());
-  EXPECT_EQ("Never", policy_entry->value()->GetString());
+  ASSERT_TRUE(policy_entry->value(base::Value::Type::STRING));
+  EXPECT_EQ("Never",
+            policy_entry->value(base::Value::Type::STRING)->GetString());
   EXPECT_EQ(POLICY_SOURCE_ENTERPRISE_DEFAULT, policy_entry->source);
 
   policy_entry = provider_->policies()
                      .Get(PolicyNamespace(POLICY_DOMAIN_CHROME, std::string()))
                      .Get(key::kShowLogoutButtonInTray);
-  ASSERT_TRUE(policy_entry->value());
-  EXPECT_TRUE(policy_entry->value()->GetBool());
+  ASSERT_TRUE(policy_entry->value(base::Value::Type::BOOLEAN));
+  EXPECT_TRUE(policy_entry->value(base::Value::Type::BOOLEAN)->GetBool());
   EXPECT_EQ(POLICY_SOURCE_ENTERPRISE_DEFAULT, policy_entry->source);
 
   // Policy change should be reported.

@@ -139,7 +139,7 @@ class KeyRotationDeviceCloudPolicyTest : public DevicePolicyCrosBrowserTest {
         policy_service
             ->GetPolicies(PolicyNamespace(POLICY_DOMAIN_CHROME,
                                           std::string() /* component_id */))
-            .GetValue(kPolicyKey);
+            .GetValue(kPolicyKey, base::Value::Type::INTEGER);
     EXPECT_TRUE(policy_value);
     EXPECT_EQ(policy_value->type(), base::Value::Type::INTEGER);
     return policy_value->GetIfInt().value_or(-1);

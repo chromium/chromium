@@ -456,11 +456,12 @@ void CloudExternalDataManagerBase::OnPolicyStoreLoaded() {
     }
     if (it.first != key::kWebAppInstallForceList) {
       AddMetadataFromValue(metadata.get(), it.first, std::string(),
-                           it.second.value());
+                           it.second.value_unsafe());
       continue;
     }
-    if (it.second.value() && it.second.value()->is_list()) {
-      for (const auto& app : it.second.value()->GetListDeprecated()) {
+    if (it.second.value(base::Value::Type::LIST)) {
+      for (const auto& app :
+           it.second.value(base::Value::Type::LIST)->GetListDeprecated()) {
         const base::DictionaryValue* dict = nullptr;
         if (app.GetAsDictionary(&dict)) {
           const base::Value* const icon = dict->FindKey(kCustomIconKey);

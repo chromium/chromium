@@ -146,7 +146,7 @@ bool ExternalDataPolicyHandler::CheckPolicySettings(const PolicyMap& policies,
     return false;
 
   const std::string policy = policy_name();
-  const base::Value* value = policies.GetValue(policy);
+  const base::Value* value = policies.GetValueUnsafe(policy);
   if (!value)
     return true;
   if (!value->is_dict()) {
@@ -258,7 +258,8 @@ bool NetworkConfigurationPolicyHandler::CheckPolicySettings(
 void NetworkConfigurationPolicyHandler::ApplyPolicySettings(
     const PolicyMap& policies,
     PrefValueMap* prefs) {
-  const base::Value* value = policies.GetValue(policy_name());
+  const base::Value* value =
+      policies.GetValue(policy_name(), base::Value::Type::STRING);
   if (!value)
     return;
 
@@ -282,7 +283,7 @@ void NetworkConfigurationPolicyHandler::PrepareForDisplaying(
   if (!entry)
     return;
   absl::optional<base::Value> sanitized_config =
-      SanitizeNetworkConfig(entry->value());
+      SanitizeNetworkConfig(entry->value(base::Value::Type::STRING));
 
   if (!sanitized_config.has_value())
     sanitized_config = base::Value();
@@ -303,7 +304,7 @@ NetworkConfigurationPolicyHandler::NetworkConfigurationPolicyHandler(
 absl::optional<base::Value>
 NetworkConfigurationPolicyHandler::SanitizeNetworkConfig(
     const base::Value* config) {
-  if (!config->is_string())
+  if (!config)
     return absl::nullopt;
 
   base::Value toplevel_dict =
@@ -363,7 +364,7 @@ ScreenMagnifierPolicyHandler::~ScreenMagnifierPolicyHandler() {}
 void ScreenMagnifierPolicyHandler::ApplyPolicySettings(
     const PolicyMap& policies,
     PrefValueMap* prefs) {
-  const base::Value* value = policies.GetValue(policy_name());
+  const base::Value* value = policies.GetValueUnsafe(policy_name());
   int value_in_range;
   if (value && EnsureInRange(value, &value_in_range, nullptr)) {
     prefs->SetBoolean(ash::prefs::kAccessibilityScreenMagnifierEnabled,
@@ -399,7 +400,7 @@ DeprecatedIdleActionHandler::~DeprecatedIdleActionHandler() {}
 
 void DeprecatedIdleActionHandler::ApplyPolicySettings(const PolicyMap& policies,
                                                       PrefValueMap* prefs) {
-  const base::Value* value = policies.GetValue(policy_name());
+  const base::Value* value = policies.GetValueUnsafe(policy_name());
   if (value && EnsureInRange(value, nullptr, nullptr)) {
     if (!prefs->GetValue(ash::prefs::kPowerAcIdleAction, nullptr))
       prefs->SetValue(ash::prefs::kPowerAcIdleAction, value->Clone());
@@ -524,7 +525,8 @@ ArcServicePolicyHandler::ArcServicePolicyHandler(const char* policy,
 
 void ArcServicePolicyHandler::ApplyPolicySettings(const PolicyMap& policies,
                                                   PrefValueMap* prefs) {
-  const base::Value* const value = policies.GetValue(policy_name());
+  const base::Value* const value =
+      policies.GetValue(policy_name(), base::Value::Type::INTEGER);
   if (!value) {
     return;
   }

@@ -245,12 +245,9 @@ class EnterprisePrintersProviderImpl : public EnterprisePrintersProvider,
         policy::PolicyNamespace(policy::PolicyDomain::POLICY_DOMAIN_CHROME, "");
     const policy::PolicyMap& policy_map =
         policy_connector->policy_service()->GetPolicies(policy_namespace);
-    const base::Value* value = policy_map.GetValue(policy_name);
-    if (value && value->is_dict()) {
-      // policy is set and its value is a dictionary
-      return true;
-    }
-    return false;
+    const base::Value* value =
+        policy_map.GetValue(policy_name, base::Value::Type::DICT);
+    return value != nullptr;
   }
 
   // current partial results

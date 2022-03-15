@@ -1308,8 +1308,9 @@ void ExistingUserController::LoginAsPublicSessionWithPolicyStoreReady(
             ->policy_map()
             .Get(policy::key::kSessionLocales);
     if (entry && entry->level == policy::POLICY_LEVEL_RECOMMENDED &&
-        entry->value() && entry->value()->is_list()) {
-      base::Value::ConstListView list = entry->value()->GetListDeprecated();
+        entry->value(base::Value::Type::LIST)) {
+      base::Value::ConstListView list =
+          entry->value(base::Value::Type::LIST)->GetListDeprecated();
       if (!list.empty() && list[0].is_string()) {
         locale = list[0].GetString();
         new_user_context.SetPublicSessionLocale(locale);

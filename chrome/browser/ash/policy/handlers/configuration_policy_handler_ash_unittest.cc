@@ -296,8 +296,8 @@ TEST(NetworkConfigurationPolicyHandlerTest, Sanitization) {
       NetworkConfigurationPolicyHandler::CreateForUserPolicy());
   PolicyErrorMap errors;
   handler->PrepareForDisplaying(&policy_map);
-  const base::Value* sanitized =
-      policy_map.GetValue(key::kOpenNetworkConfiguration);
+  const base::Value* sanitized = policy_map.GetValue(
+      key::kOpenNetworkConfiguration, base::Value::Type::STRING);
   ASSERT_TRUE(sanitized);
   ASSERT_TRUE(sanitized->is_string());
   const std::string& sanitized_onc = sanitized->GetString();

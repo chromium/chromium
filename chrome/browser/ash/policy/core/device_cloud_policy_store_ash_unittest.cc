@@ -107,7 +107,8 @@ class DeviceCloudPolicyStoreAshTest : public ash::DeviceSettingsTestBase {
     EXPECT_TRUE(store_->policy());
     base::Value expected(false);
     EXPECT_EQ(expected, *store_->policy_map().GetValue(
-                            key::kDeviceMetricsReportingEnabled));
+                            key::kDeviceMetricsReportingEnabled,
+                            base::Value::Type::BOOLEAN));
     EXPECT_FALSE(store_->policy_signature_public_key().empty());
   }
 

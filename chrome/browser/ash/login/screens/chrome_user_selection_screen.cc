@@ -122,8 +122,9 @@ void ChromeUserSelectionScreen::CheckForPublicSessionLocalePolicyChange(
   // Parse the list of recommended locales set by policy.
   std::vector<std::string> new_recommended_locales;
   if (entry && entry->level == policy::POLICY_LEVEL_RECOMMENDED &&
-      entry->value() && entry->value()->is_list()) {
-    for (const auto& entry : entry->value()->GetListDeprecated()) {
+      entry->value(base::Value::Type::LIST)) {
+    for (const auto& entry :
+         entry->value(base::Value::Type::LIST)->GetListDeprecated()) {
       if (!entry.is_string()) {
         NOTREACHED();
         new_recommended_locales.clear();

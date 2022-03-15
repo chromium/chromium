@@ -105,7 +105,7 @@ void DevicePolicyDecoderTest::DecodeDevicePolicyTestHelper(
 
   DecodeDevicePolicy(device_policy, external_data_manager, &policies);
 
-  const base::Value* actual_value = policies.GetValue(policy_path);
+  const base::Value* actual_value = policies.GetValueUnsafe(policy_path);
   ASSERT_NE(actual_value, nullptr);
   EXPECT_EQ(*actual_value, expected_value);
 }
@@ -120,7 +120,7 @@ void DevicePolicyDecoderTest::DecodeUnsetDevicePolicyTestHelper(
 
   DecodeDevicePolicy(device_policy, external_data_manager, &policies);
 
-  const base::Value* actual_value = policies.GetValue(policy_path);
+  const base::Value* actual_value = policies.GetValueUnsafe(policy_path);
   EXPECT_EQ(actual_value, nullptr);
 }
 
@@ -195,12 +195,14 @@ TEST_F(DevicePolicyDecoderTest, UserWhitelistWarning) {  // nocheck
 
   DecodeDevicePolicy(device_policy, external_data_manager, &policies);
 
-  EXPECT_TRUE(policies.GetValue(key::kDeviceUserWhitelist));  // nocheck
+  EXPECT_TRUE(policies.GetValue(key::kDeviceUserWhitelist,  // nocheck
+                                base::Value::Type::LIST));
 
   std::vector<base::Value> list;
   list.emplace_back(base::Value(kUserAllowlist));
   EXPECT_EQ(base::ListValue(list),
-            *policies.GetValue(key::kDeviceUserWhitelist));  // nocheck
+            *policies.GetValue(key::kDeviceUserWhitelist,  // nocheck
+                               base::Value::Type::LIST));
 
   base::RepeatingCallback<std::u16string(int)> l10nlookup =
       base::BindRepeating(&l10n_util::GetStringUTF16);

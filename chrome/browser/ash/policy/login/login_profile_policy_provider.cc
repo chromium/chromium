@@ -124,7 +124,7 @@ void ApplyDevicePolicyAsRecommendedPolicy(const std::string& device_policy,
                                           const std::string& user_policy,
                                           const PolicyMap& device_policy_map,
                                           PolicyMap* user_policy_map) {
-  const base::Value* value = device_policy_map.GetValue(device_policy);
+  const base::Value* value = device_policy_map.GetValueUnsafe(device_policy);
   ApplyValueAsRecommendedPolicy(value, user_policy, user_policy_map);
 }
 
@@ -144,7 +144,8 @@ void ApplyDevicePolicyWithPolicyOptions(const std::string& device_policy,
   const PolicyMap::Entry* entry = device_policy_map.Get(device_policy);
   if (entry) {
     user_policy_map->Set(user_policy, entry->level, POLICY_SCOPE_USER,
-                         POLICY_SOURCE_CLOUD, entry->value()->Clone(), nullptr);
+                         POLICY_SOURCE_CLOUD, entry->value_unsafe()->Clone(),
+                         nullptr);
   }
 }
 }  // namespace
@@ -222,9 +223,9 @@ void LoginProfilePolicyProvider::UpdateFromDevicePolicy() {
                                        device_policy_map, &user_policy_map);
   }
 
-  const base::Value* value =
-      device_policy_map.GetValue(key::kDeviceLoginScreenPowerManagement);
-  if (value && value->is_dict()) {
+  const base::Value* value = device_policy_map.GetValue(
+      key::kDeviceLoginScreenPowerManagement, base::Value::Type::DICT);
+  if (value) {
     base::Value policy_value = value->Clone();
     const std::string* lid_close_action =
         policy_value.FindStringKey(kLidCloseAction);

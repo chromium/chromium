@@ -202,17 +202,17 @@ void DeviceLocalAccountPolicyBroker::ConnectIfPossible(
 
 void DeviceLocalAccountPolicyBroker::UpdateRefreshDelay() {
   if (core_.refresh_scheduler()) {
-    const base::Value* policy_value =
-        store_->policy_map().GetValue(key::kPolicyRefreshRate);
-    if (policy_value && policy_value->is_int())
+    const base::Value* policy_value = store_->policy_map().GetValue(
+        key::kPolicyRefreshRate, base::Value::Type::INTEGER);
+    if (policy_value)
       core_.refresh_scheduler()->SetDesiredRefreshDelay(policy_value->GetInt());
   }
 }
 
 std::string DeviceLocalAccountPolicyBroker::GetDisplayName() const {
-  const base::Value* display_name_value =
-      store_->policy_map().GetValue(policy::key::kUserDisplayName);
-  if (display_name_value && display_name_value->is_string())
+  const base::Value* display_name_value = store_->policy_map().GetValue(
+      policy::key::kUserDisplayName, base::Value::Type::STRING);
+  if (display_name_value)
     return display_name_value->GetString();
   return std::string();
 }

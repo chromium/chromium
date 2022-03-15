@@ -219,7 +219,8 @@ bool IsManagedSessionEnabled(policy::DeviceLocalAccountPolicyBroker* broker) {
           policy::key::kDeviceLocalAccountManagedSessionEnabled);
   if (!entry)
     return kManagedSessionEnabledByDefault;
-  return entry->value() && entry->value()->GetBool();
+  return entry->value(base::Value::Type::BOOLEAN) &&
+         entry->value(base::Value::Type::BOOLEAN)->GetBool();
 }
 
 bool AreRiskyPoliciesUsed(policy::DeviceLocalAccountPolicyBroker* broker) {

@@ -61,7 +61,8 @@ void MapBoolToBool(const std::string& arc_policy_name,
                    const policy::PolicyMap& policy_map,
                    bool invert_bool_value,
                    base::Value* filtered_policies) {
-  const base::Value* const policy_value = policy_map.GetValue(policy_name);
+  const base::Value* const policy_value =
+      policy_map.GetValueUnsafe(policy_name);
   if (!policy_value)
     return;
   if (!policy_value->is_bool()) {
@@ -79,7 +80,8 @@ void MapIntToBool(const std::string& arc_policy_name,
                   const policy::PolicyMap& policy_map,
                   int int_true,
                   base::Value* filtered_policies) {
-  const base::Value* const policy_value = policy_map.GetValue(policy_name);
+  const base::Value* const policy_value =
+      policy_map.GetValueUnsafe(policy_name);
   if (!policy_value)
     return;
   if (!policy_value->is_int()) {
@@ -112,7 +114,8 @@ void MapObjectToPresenceBool(const std::string& arc_policy_name,
                              const policy::PolicyMap& policy_map,
                              base::Value* filtered_policies,
                              const std::vector<std::string>& fields) {
-  const base::Value* const policy_value = policy_map.GetValue(policy_name);
+  const base::Value* const policy_value =
+      policy_map.GetValueUnsafe(policy_name);
   if (!policy_value)
     return;
   if (!policy_value->is_dict()) {
@@ -128,11 +131,11 @@ void MapObjectToPresenceBool(const std::string& arc_policy_name,
 
 void AddOncCaCertsToPolicies(const policy::PolicyMap& policy_map,
                              base::Value* filtered_policies) {
-  const base::Value* const policy_value =
-      policy_map.GetValue(policy::key::kArcCertificatesSyncMode);
+  const base::Value* const policy_value = policy_map.GetValue(
+      policy::key::kArcCertificatesSyncMode, base::Value::Type::INTEGER);
   // Old certs should be uninstalled if the sync is disabled or policy is not
   // set.
-  if (!policy_value || !policy_value->is_int() ||
+  if (!policy_value ||
       policy_value->GetInt() != ArcCertsSyncMode::COPY_CA_CERTS) {
     return;
   }
@@ -140,7 +143,7 @@ void AddOncCaCertsToPolicies(const policy::PolicyMap& policy_map,
   // Importing CA certificates from device policy is not allowed.
   // Import only from user policy.
   const base::Value* onc_policy_value =
-      policy_map.GetValue(policy::key::kOpenNetworkConfiguration);
+      policy_map.GetValueUnsafe(policy::key::kOpenNetworkConfiguration);
   if (!onc_policy_value) {
     VLOG(1) << "onc policy is not set.";
     return;
@@ -290,7 +293,7 @@ std::string GetFilteredJSONPolicies(policy::PolicyService* const policy_service,
   // Parse ArcPolicy as JSON string before adding other policies to the
   // dictionary.
   const base::Value* const app_policy_value =
-      policy_map.GetValue(policy::key::kArcPolicy);
+      policy_map.GetValueUnsafe(policy::key::kArcPolicy);
   if (app_policy_value) {
     absl::optional<base::Value> app_policy_dict;
     if (app_policy_value->is_string()) {

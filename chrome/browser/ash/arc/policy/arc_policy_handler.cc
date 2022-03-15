@@ -91,8 +91,9 @@ ArcPolicyHandler::ArcPolicyHandler()
                                         base::Value::Type::STRING) {}
 
 void ArcPolicyHandler::PrepareForDisplaying(policy::PolicyMap* policies) const {
-  const base::Value* value = policies->GetValue(policy_name());
-  if (!value || value->type() != base::Value::Type::STRING)
+  const base::Value* value =
+      policies->GetValue(policy_name(), base::Value::Type::STRING);
+  if (!value)
     return;
 
   absl::optional<base::Value> json = base::JSONReader::Read(

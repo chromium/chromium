@@ -40,15 +40,15 @@ constexpr int kNonComplianceReasonAppNotInstalled = 5;
 
 std::set<std::string> GetRequestedPackagesFromPolicy(
     const policy::PolicyMap& policy) {
-  const base::Value* const arc_enabled = policy.GetValue(key::kArcEnabled);
-  if (!arc_enabled || !arc_enabled->is_bool() || !arc_enabled->GetBool()) {
+  const base::Value* const arc_enabled =
+      policy.GetValue(key::kArcEnabled, base::Value::Type::BOOLEAN);
+  if (!arc_enabled || !arc_enabled->GetBool())
     return {};
-  }
 
-  const base::Value* const arc_policy = policy.GetValue(key::kArcPolicy);
-  if (!arc_policy || !arc_policy->is_string()) {
+  const base::Value* const arc_policy =
+      policy.GetValue(key::kArcPolicy, base::Value::Type::STRING);
+  if (!arc_policy)
     return {};
-  }
 
   return arc::policy_util::GetRequestedPackagesFromArcPolicy(
       arc_policy->GetString());

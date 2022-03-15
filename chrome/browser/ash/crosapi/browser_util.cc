@@ -697,7 +697,8 @@ void CacheLacrosAvailability(const policy::PolicyMap& map) {
     return;
   }
 
-  const base::Value* value = map.GetValue(policy::key::kLacrosAvailability);
+  const base::Value* value =
+      map.GetValue(policy::key::kLacrosAvailability, base::Value::Type::STRING);
   g_lacros_availability_cache = DetermineLacrosAvailabilityFromPolicyValue(
       value ? value->GetString() : base::StringPiece());
 }
