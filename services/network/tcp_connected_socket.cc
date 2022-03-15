@@ -32,7 +32,7 @@ int ClampTCPBufferSize(int requested_buffer_size) {
 // (TCPSocket::SetDefaultOptionsForClient()).
 int ConfigureSocket(
     net::TransportClientSocket* socket,
-    const mojom::TCPConnectedSocketOptionsPtr tcp_connected_socket_options) {
+    const mojom::TCPConnectedSocketOptions* tcp_connected_socket_options) {
   int send_buffer_size =
       ClampTCPBufferSize(tcp_connected_socket_options->send_buffer_size);
   if (send_buffer_size > 0) {
@@ -154,9 +154,9 @@ void TCPConnectedSocket::ConnectWithSocket(
   connect_callback_ = std::move(callback);
 
   if (tcp_connected_socket_options) {
-    socket_->SetBeforeConnectCallback(
-        base::BindRepeating(&ConfigureSocket, socket_.get(),
-                            base::Passed(&tcp_connected_socket_options)));
+    socket_options_ = std::move(tcp_connected_socket_options);
+    socket_->SetBeforeConnectCallback(base::BindRepeating(
+        &ConfigureSocket, socket_.get(), socket_options_.get()));
   }
   int result = socket_->Connect(base::BindOnce(
       &TCPConnectedSocket::OnConnectCompleted, base::Unretained(this)));
