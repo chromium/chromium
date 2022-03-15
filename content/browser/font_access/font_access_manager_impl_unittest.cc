@@ -92,7 +92,7 @@ class FontAccessManagerImplTest : public RenderViewHostImplTestHarness {
             /* locale_override= */ absl::nullopt);
     manager_impl_ = FontAccessManagerImpl::CreateForTesting(
         std::move(font_enumeration_cache));
-    manager_impl_->BindReceiver(kTestOrigin, main_frame_id,
+    manager_impl_->BindReceiver(main_frame_id,
                                 manager_.BindNewPipeAndPassReceiver());
     manager_sync_ = std::make_unique<FontAccessManagerSync>(manager_.get());
 

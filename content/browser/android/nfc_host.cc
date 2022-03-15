@@ -54,9 +54,8 @@ void NFCHost::GetNFC(RenderFrameHost* render_frame_host,
     return;
   }
 
-  GURL origin_url = render_frame_host->GetLastCommittedOrigin().GetURL();
-  if (permission_controller_->GetPermissionStatusForFrame(
-          PermissionType::NFC, render_frame_host, origin_url) !=
+  if (permission_controller_->GetPermissionStatusForCurrentDocument(
+          PermissionType::NFC, render_frame_host) !=
       blink::mojom::PermissionStatus::GRANTED) {
     return;
   }
@@ -64,8 +63,11 @@ void NFCHost::GetNFC(RenderFrameHost* render_frame_host,
   if (!subscription_id_) {
     // base::Unretained() is safe here because the subscription is canceled when
     // this object is destroyed.
+    // TODO(crbug.com/1271543) : Move `SubscribePermissionStatusChange` to
+    // `PermissionController`.
     subscription_id_ = permission_controller_->SubscribePermissionStatusChange(
-        PermissionType::NFC, render_frame_host, origin_url,
+        PermissionType::NFC, render_frame_host,
+        render_frame_host->GetMainFrame()->GetLastCommittedOrigin().GetURL(),
         base::BindRepeating(&NFCHost::OnPermissionStatusChange,
                             base::Unretained(this)));
   }

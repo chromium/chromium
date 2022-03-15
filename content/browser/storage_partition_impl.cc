@@ -2018,10 +2018,9 @@ void StoragePartitionImpl::OnCanSendReportingReports(
 
   std::vector<url::Origin> origins_out;
   for (auto& origin : origins) {
-    GURL origin_url = origin.GetURL();
-    bool allowed = permission_controller->GetPermissionStatus(
-                       PermissionType::BACKGROUND_SYNC, origin_url,
-                       origin_url) == blink::mojom::PermissionStatus::GRANTED;
+    bool allowed = permission_controller->GetPermissionStatusForServiceWorker(
+                       PermissionType::BACKGROUND_SYNC, origin) ==
+                   blink::mojom::PermissionStatus::GRANTED;
     if (allowed)
       origins_out.push_back(origin);
   }
@@ -2036,8 +2035,9 @@ void StoragePartitionImpl::OnCanSendDomainReliabilityUpload(
   PermissionController* permission_controller =
       browser_context_->GetPermissionController();
   std::move(callback).Run(
-      permission_controller->GetPermissionStatus(
-          content::PermissionType::BACKGROUND_SYNC, origin, origin) ==
+      permission_controller->GetPermissionStatusForServiceWorker(
+          content::PermissionType::BACKGROUND_SYNC,
+          url::Origin::Create(origin)) ==
       blink::mojom::PermissionStatus::GRANTED);
 }
 

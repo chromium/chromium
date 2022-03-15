@@ -460,16 +460,13 @@ base::flat_set<WebContentsImpl*>* FullscreenContentsSet(
 
 // Returns true if |host| has the Window Placement permission granted.
 bool IsWindowPlacementGranted(RenderFrameHost* host) {
-  auto* controller =
-      PermissionControllerImpl::FromBrowserContext(host->GetBrowserContext());
+  content::PermissionController* permission_controller =
+      host->GetBrowserContext()->GetPermissionController();
+  DCHECK(permission_controller);
 
-  // TODO(crbug.com/698985): Resolve GetLastCommitted[URL|Origin]() usage.
-  return controller &&
-         controller->GetPermissionStatusForFrame(
-             PermissionType::WINDOW_PLACEMENT, host,
-             PermissionUtil::GetLastCommittedOriginAsURL(
-                 content::WebContents::FromRenderFrameHost(host))) ==
-             blink::mojom::PermissionStatus::GRANTED;
+  return permission_controller->GetPermissionStatusForCurrentDocument(
+             PermissionType::WINDOW_PLACEMENT, host) ==
+         blink::mojom::PermissionStatus::GRANTED;
 }
 
 // Adjust the requested |bounds| for opening or placing a window and return the

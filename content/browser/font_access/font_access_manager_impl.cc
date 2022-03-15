@@ -57,14 +57,12 @@ FontAccessManagerImpl::~FontAccessManagerImpl() {
 }
 
 void FontAccessManagerImpl::BindReceiver(
-    url::Origin origin,
     GlobalRenderFrameHostId frame_id,
     mojo::PendingReceiver<blink::mojom::FontAccessManager> receiver) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   receivers_.Add(this, std::move(receiver),
                  {
-                     .origin = std::move(origin),
                      .frame_id = frame_id,
                  });
 }
@@ -103,8 +101,8 @@ void FontAccessManagerImpl::EnumerateLocalFonts(
       PermissionControllerImpl::FromBrowserContext(rfh->GetBrowserContext());
   DCHECK(permission_controller);
 
-  auto status = permission_controller->GetPermissionStatusForFrame(
-      PermissionType::FONT_ACCESS, rfh, context.origin.GetURL());
+  auto status = permission_controller->GetPermissionStatusForCurrentDocument(
+      PermissionType::FONT_ACCESS, rfh);
 
   if (status != blink::mojom::PermissionStatus::ASK) {
     // Permission has been requested before.
@@ -125,7 +123,8 @@ void FontAccessManagerImpl::EnumerateLocalFonts(
       blink::mojom::UserActivationNotificationType::kNone);
 
   permission_controller->RequestPermission(
-      PermissionType::FONT_ACCESS, rfh, context.origin.GetURL(),
+      PermissionType::FONT_ACCESS, rfh,
+      rfh->GetMainFrame()->GetLastCommittedOrigin().GetURL(),
       /*user_gesture=*/true,
       base::BindOnce(&FontAccessManagerImpl::DidRequestPermission,
                      weak_ptr_factory_.GetWeakPtr(), std::move(callback)));

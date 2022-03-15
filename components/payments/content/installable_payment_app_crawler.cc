@@ -185,10 +185,9 @@ void InstallablePaymentAppCrawler::OnPaymentMethodManifestParsed(
       continue;
     }
 
-    if (permission_controller->GetPermissionStatus(
+    if (permission_controller->GetPermissionStatusForOriginWithoutContext(
             content::PermissionType::PAYMENT_HANDLER,
-            web_app_manifest_url.DeprecatedGetOriginAsURL(),
-            web_app_manifest_url.DeprecatedGetOriginAsURL()) !=
+            url::Origin::Create(web_app_manifest_url)) !=
         blink::mojom::PermissionStatus::GRANTED) {
       // Do not download the web app manifest if it is blocked.
       continue;
@@ -212,7 +211,6 @@ void InstallablePaymentAppCrawler::OnPaymentMethodManifestParsed(
             weak_ptr_factory_.GetWeakPtr(), method_manifest_url,
             web_app_manifest_url));
   }
-
   FinishCrawlingPaymentAppsIfReady();
 }
 

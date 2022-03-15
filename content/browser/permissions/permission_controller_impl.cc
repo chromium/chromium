@@ -117,7 +117,8 @@ PermissionControllerImpl::PermissionControllerImpl(
     BrowserContext* browser_context)
     : browser_context_(browser_context) {}
 
-// static
+// TODO(https://crbug.com/1271543): Remove this method and use
+// `PermissionController` instead. static
 PermissionControllerImpl* PermissionControllerImpl::FromBrowserContext(
     BrowserContext* browser_context) {
   return static_cast<PermissionControllerImpl*>(
@@ -151,9 +152,9 @@ PermissionControllerImpl::GetSubscriptionCurrentValue(
     return GetPermissionStatusForFrame(subscription.permission, rfh,
                                        subscription.requesting_origin);
   }
-  return GetPermissionStatus(subscription.permission,
-                             subscription.requesting_origin,
-                             subscription.embedding_origin);
+  return DeprecatedGetPermissionStatus(subscription.permission,
+                                       subscription.requesting_origin,
+                                       subscription.embedding_origin);
 }
 
 PermissionControllerImpl::SubscriptionsStatusMap
@@ -329,7 +330,8 @@ void PermissionControllerImpl::RequestPermissions(
                                std::move(wrapper));
 }
 
-blink::mojom::PermissionStatus PermissionControllerImpl::GetPermissionStatus(
+blink::mojom::PermissionStatus
+PermissionControllerImpl::DeprecatedGetPermissionStatus(
     PermissionType permission,
     const GURL& requesting_origin,
     const GURL& embedding_origin) {
@@ -345,6 +347,32 @@ blink::mojom::PermissionStatus PermissionControllerImpl::GetPermissionStatus(
     return blink::mojom::PermissionStatus::DENIED;
   return delegate->GetPermissionStatus(permission, requesting_origin,
                                        embedding_origin);
+}
+
+blink::mojom::PermissionStatus
+PermissionControllerImpl::GetPermissionStatusForServiceWorker(
+    PermissionType permission,
+    const url::Origin& service_worker_origin) {
+  return DeprecatedGetPermissionStatus(permission,
+                                       service_worker_origin.GetURL(),
+                                       service_worker_origin.GetURL());
+}
+
+blink::mojom::PermissionStatus
+PermissionControllerImpl::GetPermissionStatusForCurrentDocument(
+    PermissionType permission,
+    RenderFrameHost* render_frame_host) {
+  return GetPermissionStatusForFrame(
+      permission, render_frame_host,
+      render_frame_host->GetLastCommittedOrigin().GetURL());
+}
+
+blink::mojom::PermissionStatus
+PermissionControllerImpl::GetPermissionStatusForOriginWithoutContext(
+    PermissionType permission,
+    const url::Origin& origin) {
+  return DeprecatedGetPermissionStatus(permission, origin.GetURL(),
+                                       origin.GetURL());
 }
 
 blink::mojom::PermissionStatus

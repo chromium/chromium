@@ -9374,12 +9374,14 @@ void RenderFrameHostImpl::UpdatePermissionsForNavigation(
 bool RenderFrameHostImpl::WindowPlacementAllowsFullscreen() {
   if (!delegate_->IsTransientAllowFullscreenActive())
     return false;
-  auto* controller =
-      PermissionControllerImpl::FromBrowserContext(GetBrowserContext());
-  return controller &&
-         controller->GetPermissionStatusForFrame(
-             PermissionType::WINDOW_PLACEMENT, this, GetLastCommittedURL()) ==
-             blink::mojom::PermissionStatus::GRANTED;
+
+  content::PermissionController* permission_controller =
+      GetBrowserContext()->GetPermissionController();
+  DCHECK(permission_controller);
+
+  return permission_controller->GetPermissionStatusForCurrentDocument(
+             PermissionType::WINDOW_PLACEMENT, this) ==
+         blink::mojom::PermissionStatus::GRANTED;
 }
 
 mojo::AssociatedRemote<mojom::NavigationClient>
@@ -10186,7 +10188,7 @@ void RenderFrameHostImpl::GetManagedConfigurationService(
 void RenderFrameHostImpl::GetFontAccessManager(
     mojo::PendingReceiver<blink::mojom::FontAccessManager> receiver) {
   GetStoragePartition()->GetFontAccessManager()->BindReceiver(
-      GetLastCommittedOrigin(), GetGlobalId(), std::move(receiver));
+      GetGlobalId(), std::move(receiver));
 }
 
 void RenderFrameHostImpl::BindComputePressureHost(

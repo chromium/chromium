@@ -12,8 +12,6 @@
 #include "content/public/browser/permission_controller.h"
 #include "content/public/browser/permission_type.h"
 #include "content/public/browser/render_frame_host.h"
-#include "url/gurl.h"
-#include "url/origin.h"
 
 namespace content {
 
@@ -98,11 +96,9 @@ bool IdleManagerImpl::HasPermission() {
   PermissionController* permission_controller =
       render_frame_host_->GetBrowserContext()->GetPermissionController();
   DCHECK(permission_controller);
-  PermissionStatus status = permission_controller->GetPermissionStatusForFrame(
-      PermissionType::IDLE_DETECTION, render_frame_host_,
-      render_frame_host_->GetMainFrame()
-          ->GetLastCommittedURL()
-          .DeprecatedGetOriginAsURL());
+  PermissionStatus status =
+      permission_controller->GetPermissionStatusForCurrentDocument(
+          PermissionType::IDLE_DETECTION, render_frame_host_);
   return status == PermissionStatus::GRANTED;
 }
 

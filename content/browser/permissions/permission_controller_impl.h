@@ -48,15 +48,22 @@ class CONTENT_EXPORT PermissionControllerImpl : public PermissionController {
   void ResetOverridesForDevTools();
 
   // PermissionController implementation.
-  blink::mojom::PermissionStatus GetPermissionStatus(
+  blink::mojom::PermissionStatus DeprecatedGetPermissionStatus(
       PermissionType permission,
       const GURL& requesting_origin,
       const GURL& embedding_origin) override;
 
-  blink::mojom::PermissionStatus GetPermissionStatusForFrame(
+  blink::mojom::PermissionStatus GetPermissionStatusForServiceWorker(
       PermissionType permission,
-      RenderFrameHost* render_frame_host,
-      const GURL& requesting_origin) override;
+      const url::Origin& service_worker_origin) override;
+
+  blink::mojom::PermissionStatus GetPermissionStatusForCurrentDocument(
+      PermissionType permission,
+      RenderFrameHost* render_frame_host) override;
+
+  blink::mojom::PermissionStatus GetPermissionStatusForOriginWithoutContext(
+      PermissionType permission,
+      const url::Origin& origin) override;
 
   void RequestPermission(
       PermissionType permission,
@@ -87,6 +94,11 @@ class CONTENT_EXPORT PermissionControllerImpl : public PermissionController {
   void UnsubscribePermissionStatusChange(SubscriptionId subscription_id);
 
  private:
+  blink::mojom::PermissionStatus GetPermissionStatusForFrame(
+      PermissionType permission,
+      RenderFrameHost* render_frame_host,
+      const GURL& requesting_origin);
+
   struct Subscription;
   using SubscriptionsMap =
       base::IDMap<std::unique_ptr<Subscription>, SubscriptionId>;

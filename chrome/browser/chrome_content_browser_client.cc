@@ -6046,7 +6046,6 @@ bool ChromeContentBrowserClient::IsClipboardPasteAllowed(
     content::RenderFrameHost* render_frame_host) {
   DCHECK(render_frame_host);
 
-  const GURL& url = render_frame_host->GetLastCommittedOrigin().GetURL();
   content::BrowserContext* browser_context =
       render_frame_host->GetBrowserContext();
   Profile* profile = Profile::FromBrowserContext(browser_context);
@@ -6055,9 +6054,8 @@ bool ChromeContentBrowserClient::IsClipboardPasteAllowed(
   content::PermissionController* permission_controller =
       browser_context->GetPermissionController();
   blink::mojom::PermissionStatus status =
-      permission_controller->GetPermissionStatusForFrame(
-          content::PermissionType::CLIPBOARD_READ_WRITE, render_frame_host,
-          url);
+      permission_controller->GetPermissionStatusForCurrentDocument(
+          content::PermissionType::CLIPBOARD_READ_WRITE, render_frame_host);
 
   // True if this paste is executed from an extension URL with read permission.
   bool is_extension_paste_allowed = false;
@@ -6070,6 +6068,8 @@ bool ChromeContentBrowserClient::IsClipboardPasteAllowed(
   // Until this is implemented, platforms supporting extensions (all  platforms
   // except Android) will essentially no-op here and return true.
   is_content_script_paste_allowed = true;
+  const GURL& url =
+      render_frame_host->GetMainFrame()->GetLastCommittedOrigin().GetURL();
   if (url.SchemeIs(extensions::kExtensionScheme)) {
     auto* process_map = extensions::ProcessMap::Get(profile);
     auto* registry = extensions::ExtensionRegistry::Get(profile);

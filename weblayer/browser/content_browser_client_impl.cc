@@ -1209,7 +1209,6 @@ bool ContentBrowserClientImpl::IsClipboardPasteAllowed(
     content::RenderFrameHost* render_frame_host) {
   DCHECK(render_frame_host);
 
-  const GURL& url = render_frame_host->GetLastCommittedOrigin().GetURL();
   content::BrowserContext* browser_context =
       render_frame_host->GetBrowserContext();
   DCHECK(browser_context);
@@ -1217,9 +1216,8 @@ bool ContentBrowserClientImpl::IsClipboardPasteAllowed(
   content::PermissionController* permission_controller =
       browser_context->GetPermissionController();
   blink::mojom::PermissionStatus status =
-      permission_controller->GetPermissionStatusForFrame(
-          content::PermissionType::CLIPBOARD_READ_WRITE, render_frame_host,
-          url);
+      permission_controller->GetPermissionStatusForCurrentDocument(
+          content::PermissionType::CLIPBOARD_READ_WRITE, render_frame_host);
 
   if (!render_frame_host->HasTransientUserActivation() &&
       status != blink::mojom::PermissionStatus::GRANTED) {

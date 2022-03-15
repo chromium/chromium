@@ -20,7 +20,6 @@
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
 #include "third_party/blink/public/mojom/font_access/font_access.mojom.h"
-#include "url/origin.h"
 
 namespace content {
 
@@ -71,7 +70,6 @@ class CONTENT_EXPORT FontAccessManagerImpl
   ~FontAccessManagerImpl() override;
 
   void BindReceiver(
-      url::Origin origin,
       GlobalRenderFrameHostId frame_id,
       mojo::PendingReceiver<blink::mojom::FontAccessManager> receiver);
 
@@ -85,7 +83,6 @@ class CONTENT_EXPORT FontAccessManagerImpl
 
  private:
   struct BindingContext {
-    url::Origin origin;
     GlobalRenderFrameHostId frame_id;
   };
 

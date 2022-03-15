@@ -269,8 +269,8 @@ TEST_F(PermissionControllerImplTest,
 
   // Setup.
   blink::mojom::PermissionStatus sync_status =
-      permission_controller()->GetPermissionStatus(
-          PermissionType::BACKGROUND_SYNC, kUrl, kUrl);
+      permission_controller()->GetPermissionStatusForServiceWorker(
+          PermissionType::BACKGROUND_SYNC, kTestOrigin);
   permission_controller()->SetOverrideForDevTools(
       kTestOrigin, PermissionType::GEOLOCATION,
       blink::mojom::PermissionStatus::DENIED);
@@ -317,9 +317,8 @@ TEST_F(PermissionControllerImplTest,
                 blink::mojom::PermissionStatus::ASK));
 
   blink::mojom::PermissionStatus status =
-      permission_controller()->GetPermissionStatus(PermissionType::GEOLOCATION,
-                                                   kTestOrigin.GetURL(),
-                                                   kTestOrigin.GetURL());
+      permission_controller()->GetPermissionStatusForServiceWorker(
+          PermissionType::GEOLOCATION, kTestOrigin);
   EXPECT_EQ(blink::mojom::PermissionStatus::DENIED, status);
 }
 
@@ -351,14 +350,14 @@ TEST_F(PermissionControllerImplTest,
 
   // Keep original settings as before.
   EXPECT_EQ(blink::mojom::PermissionStatus::DENIED,
-            permission_controller()->GetPermissionStatus(
-                PermissionType::GEOLOCATION, kUrl, kUrl));
+            permission_controller()->GetPermissionStatusForServiceWorker(
+                PermissionType::GEOLOCATION, kTestOrigin));
   EXPECT_EQ(blink::mojom::PermissionStatus::ASK,
-            permission_controller()->GetPermissionStatus(PermissionType::MIDI,
-                                                         kUrl, kUrl));
+            permission_controller()->GetPermissionStatusForServiceWorker(
+                PermissionType::MIDI, kTestOrigin));
   EXPECT_EQ(blink::mojom::PermissionStatus::ASK,
-            permission_controller()->GetPermissionStatus(
-                PermissionType::BACKGROUND_SYNC, kUrl, kUrl));
+            permission_controller()->GetPermissionStatusForServiceWorker(
+                PermissionType::BACKGROUND_SYNC, kTestOrigin));
 
   EXPECT_CALL(*mock_manager(), IsPermissionOverridableByDevTools(
                                    PermissionType::GEOLOCATION, testing::_))
@@ -375,14 +374,14 @@ TEST_F(PermissionControllerImplTest,
                     PermissionType::BACKGROUND_SYNC});
   EXPECT_EQ(OverrideStatus::kOverrideSet, result);
   EXPECT_EQ(blink::mojom::PermissionStatus::GRANTED,
-            permission_controller()->GetPermissionStatus(
-                PermissionType::GEOLOCATION, kUrl, kUrl));
+            permission_controller()->GetPermissionStatusForServiceWorker(
+                PermissionType::GEOLOCATION, kTestOrigin));
   EXPECT_EQ(blink::mojom::PermissionStatus::GRANTED,
-            permission_controller()->GetPermissionStatus(PermissionType::MIDI,
-                                                         kUrl, kUrl));
+            permission_controller()->GetPermissionStatusForServiceWorker(
+                PermissionType::MIDI, kTestOrigin));
   EXPECT_EQ(blink::mojom::PermissionStatus::GRANTED,
-            permission_controller()->GetPermissionStatus(
-                PermissionType::BACKGROUND_SYNC, kUrl, kUrl));
+            permission_controller()->GetPermissionStatusForServiceWorker(
+                PermissionType::BACKGROUND_SYNC, kTestOrigin));
 }
 
 }  // namespace

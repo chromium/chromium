@@ -84,9 +84,8 @@ void BackgroundFetchDelegateProxy::GetPermissionForOrigin(
 
   if (auto* controller = GetPermissionController()) {
     blink::mojom::PermissionStatus permission_status =
-        controller->GetPermissionStatus(PermissionType::BACKGROUND_FETCH,
-                                        /*requesting_origin=*/origin.GetURL(),
-                                        /*embedding_origin=*/origin.GetURL());
+        controller->GetPermissionStatusForServiceWorker(
+            PermissionType::BACKGROUND_FETCH, origin);
     switch (permission_status) {
       case blink::mojom::PermissionStatus::GRANTED:
         result = BackgroundFetchPermission::ALLOWED;

@@ -133,14 +133,15 @@ SyncAndNotificationPermissions GetBackgroundSyncPermission(
   DCHECK(permission_controller);
 
   // The requesting origin always matches the embedding origin.
-  GURL origin_url = origin.GetURL();
-  auto sync_permission = permission_controller->GetPermissionStatus(
-      sync_type == BackgroundSyncType::ONE_SHOT
-          ? PermissionType::BACKGROUND_SYNC
-          : PermissionType::PERIODIC_BACKGROUND_SYNC,
-      origin_url, origin_url);
-  auto notification_permission = permission_controller->GetPermissionStatus(
-      PermissionType::NOTIFICATIONS, origin_url, origin_url);
+  auto sync_permission =
+      permission_controller->GetPermissionStatusForServiceWorker(
+          sync_type == BackgroundSyncType::ONE_SHOT
+              ? PermissionType::BACKGROUND_SYNC
+              : PermissionType::PERIODIC_BACKGROUND_SYNC,
+          origin);
+  auto notification_permission =
+      permission_controller->GetPermissionStatusForServiceWorker(
+          PermissionType::NOTIFICATIONS, origin);
   return {sync_permission, notification_permission};
 }
 

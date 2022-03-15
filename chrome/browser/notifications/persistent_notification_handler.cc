@@ -24,6 +24,7 @@
 #include "content/public/browser/permission_type.h"
 #include "content/public/common/persistent_notification_status.h"
 #include "url/gurl.h"
+#include "url/origin.h"
 
 #if BUILDFLAG(ENABLE_BACKGROUND_MODE)
 #include "chrome/browser/profiles/keep_alive/scoped_profile_keep_alive.h"
@@ -105,8 +106,8 @@ void PersistentNotificationHandler::OnClick(
 #endif  // BUILDFLAG(ENABLE_BACKGROUND_MODE)
 
   blink::mojom::PermissionStatus permission_status =
-      profile->GetPermissionController()->GetPermissionStatus(
-          content::PermissionType::NOTIFICATIONS, origin, origin);
+      profile->GetPermissionController()->GetPermissionStatusForServiceWorker(
+          content::PermissionType::NOTIFICATIONS, url::Origin::Create(origin));
 
   // Don't process click events when the |origin| doesn't have permission. This
   // can't be a DCHECK because of potential races with native notifications.

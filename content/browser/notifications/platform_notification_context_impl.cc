@@ -363,8 +363,8 @@ void PlatformNotificationContextImpl::CheckPermissionsAndDeleteBlocked(
 
   // Erase all valid origins so we're left with invalid ones.
   base::EraseIf(origins, [controller](const GURL& origin) {
-    auto permission = controller->GetPermissionStatus(
-        PermissionType::NOTIFICATIONS, origin, origin);
+    auto permission = controller->GetPermissionStatusForServiceWorker(
+        PermissionType::NOTIFICATIONS, url::Origin::Create(origin));
     return permission == blink::mojom::PermissionStatus::GRANTED;
   });
 

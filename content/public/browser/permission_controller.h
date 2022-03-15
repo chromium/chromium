@@ -13,6 +13,10 @@
 
 class GURL;
 
+namespace url {
+class Origin;
+}
+
 namespace content {
 class RenderFrameHost;
 
@@ -30,22 +34,34 @@ class CONTENT_EXPORT PermissionController
 
   // Returns the permission status of a given requesting_origin/embedding_origin
   // tuple. This is not taking a RenderFrameHost because the call might happen
-  // outside of a frame context. Prefer GetPermissionStatusForFrame (below)
-  // whenever possible.
-  virtual blink::mojom::PermissionStatus GetPermissionStatus(
+  // outside of a frame context. Prefer GetPermissionStatusForCurrentDocument
+  // (below) whenever possible.
+  virtual blink::mojom::PermissionStatus DeprecatedGetPermissionStatus(
       PermissionType permission,
       const GURL& requesting_origin,
       const GURL& embedding_origin) = 0;
 
-  // Returns the permission status for a given frame. Use this over
-  // GetPermissionStatus whenever possible.
-  // TODO(raymes): Currently we still pass the |requesting_origin| as a separate
-  // parameter because we can't yet guarantee that it matches the last committed
-  // origin of the RenderFrameHost. See https://crbug.com/698985.
-  virtual blink::mojom::PermissionStatus GetPermissionStatusForFrame(
+  // Returns the permission status for a given origin. ServiceWorker isn't
+  // associated with any WebContents, hence a document's lifecycle state isn't
+  // considered.
+  virtual blink::mojom::PermissionStatus GetPermissionStatusForServiceWorker(
       PermissionType permission,
-      RenderFrameHost* render_frame_host,
-      const GURL& requesting_origin) = 0;
+      const url::Origin& service_worker_origin) = 0;
+
+  // Returns the permission status for the current document in the given
+  // RenderFrameHost. Use this over `DeprecatedGetPermissionStatus` whenever
+  // possible as this API takes into account the lifecycle state of a given
+  // document (i.e. whether it's in back-forward cache or being prerendered) in
+  // addition to its origin.
+  virtual blink::mojom::PermissionStatus GetPermissionStatusForCurrentDocument(
+      PermissionType permission,
+      RenderFrameHost* render_frame_host) = 0;
+
+  // Returns the permission status for a given origin. Use this API only if
+  // there is no document and it is not a ServiceWorker.
+  virtual blink::mojom::PermissionStatus
+  GetPermissionStatusForOriginWithoutContext(PermissionType permission,
+                                             const url::Origin& origin) = 0;
 };
 
 }  // namespace content
