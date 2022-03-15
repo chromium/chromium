@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.compositor.overlays.strip;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -114,6 +115,21 @@ public class StripLayoutHelperTest {
         assertTabStripAndOrder(getExpectedAccessibilityDescriptions(0));
     }
 
+    @Test
+    public void testAllTabsClosed() {
+        initializeTest(false, false, 0);
+        assertTrue(mStripLayoutHelper.getStripLayoutTabs().length == TEST_TAB_TITLES.length);
+
+        // Close all tabs
+        mModel.closeAllTabs();
+
+        // Notify strip of tab closure
+        mStripLayoutHelper.allTabsClosed();
+
+        // Verify strip has no tabs.
+        assertTrue(mStripLayoutHelper.getStripLayoutTabs().length == 0);
+    }
+
     private void initializeTest(boolean rtl, boolean incognito, int tabIndex) {
         mStripLayoutHelper = createStripLayoutHelper(rtl, incognito);
         mIncognito = incognito;
@@ -204,6 +220,13 @@ public class StripLayoutHelperTest {
         @Override
         public int index() {
             return mIndex;
+        }
+
+        @Override
+        public void closeAllTabs() {
+            mMockTabs.clear();
+            mMaxId = -1;
+            mIndex = 0;
         }
 
         public void setIndex(int index) {

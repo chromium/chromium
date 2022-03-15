@@ -542,6 +542,14 @@ public class StripLayoutHelper implements StripLayoutTab.StripLayoutTabDelegate 
     }
 
     /**
+     * Called when all tabs are closed at once.
+     */
+    public void allTabsClosed() {
+        computeAndUpdateTabOrders(true);
+        mUpdateHost.requestUpdate();
+    }
+
+    /**
      * Called when a tab close has been undone and the tab has been restored.
      * @param time The current time of the app in ms.
      * @param id   The id of the Tab.
