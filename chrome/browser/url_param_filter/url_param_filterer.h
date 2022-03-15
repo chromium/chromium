@@ -8,6 +8,9 @@
 #include "chrome/browser/url_param_filter/url_param_classifications_loader.h"
 #include "url/gurl.h"
 
+// Used to filter URL parameters based on backend classification rules. Note
+// that all functions, unless otherwise specified, do not normalize the query
+// string.
 namespace url_param_filter {
 
 // Represents the result of filtering; includes the resulting URL (which may be

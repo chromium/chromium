@@ -81,6 +81,11 @@ void NavigateParams::FillNavigateParamsFromOpenURLParams(
   this->blob_url_loader_factory = params.blob_url_loader_factory;
   this->href_translate = params.href_translate;
   this->impression = params.impression;
+  // `disposition` is eventually coerced out of OFF_THE_RECORD, so we maintain
+  // this field separately.
+  if (params.disposition == WindowOpenDisposition::OFF_THE_RECORD) {
+    this->privacy_sensitivity = PrivacySensitivity::CROSS_OTR;
+  }
 
   // Implementation notes:
   //   The following NavigateParams don't have an equivalent in OpenURLParams:

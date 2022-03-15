@@ -606,9 +606,11 @@ Also used in tools/metrics/histograms/metadata/page/histograms.xml.
   <owner>mreichhoff@chromium.org</owner>
   <owner>bcl@chromium.org</owner>
   <summary>
-    Http response code seen when opening links from non-OTR to OTR browsing.
+    Http response codes seen when opening links from non-OTR to OTR browsing.
     Logged when using the &quot;Open Link in Incognito Window&quot; menu item.
-    This metric is currently experimental and will likely be replaced.
+    Note that, in the case of redirects, multiple entries will be written for a
+    single navigation. This metric is currently experimental and will likely be
+    replaced.
   </summary>
 </histogram>
 

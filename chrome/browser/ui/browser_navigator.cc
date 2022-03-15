@@ -39,6 +39,7 @@
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
 #include "chrome/browser/ui/web_applications/system_web_app_ui_utils.h"
+#include "chrome/browser/url_param_filter/cross_otr_observer.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
 #include "chrome/common/url_constants.h"
 #include "components/captive_portal/core/buildflags.h"
@@ -512,6 +513,8 @@ std::unique_ptr<content::WebContents> CreateTargetContents(
         ->set_is_captive_portal_window();
   }
 #endif
+  url_param_filter::CrossOtrObserver::MaybeCreateForWebContents(
+      target_contents.get(), params);
 
   return target_contents;
 }

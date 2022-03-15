@@ -94,7 +94,11 @@ FilterResult FilterUrl(const GURL& source_url,
           }
         }
       }
-      query_parts.push_back(base::StrCat({key, "=", value}));
+      if (value != "") {
+        query_parts.push_back(base::StrCat({key, "=", value}));
+      } else {
+        query_parts.push_back(key);
+      }
     } else {
       filtered_params_count++;
     }

@@ -66,6 +66,23 @@ TEST_F(UrlParamFiltererTest, FilterUrlSourceBlocked) {
   ASSERT_EQ(result.filtered_param_count, 1);
 }
 
+TEST_F(UrlParamFiltererTest, FilterUrlSourceBlockedNoValue) {
+  GURL source = GURL{"https://source.xyz"};
+  GURL destination = GURL{"https://destination.xyz?plzblock&nochange"};
+  ClassificationMap source_classification_map =
+      CreateClassificationMapForTesting(
+          {{"source.xyz", {"plzblock"}}},
+          FilterClassification_SiteRole::FilterClassification_SiteRole_SOURCE);
+
+  // Navigations from source.xyz with a param called plzblock should have that
+  // param removed, regardless of missing a value.
+  GURL expected = GURL{"https://destination.xyz?nochange"};
+  FilterResult result = FilterUrl(
+      source, destination, source_classification_map, ClassificationMap());
+  ASSERT_EQ(result.filtered_url, expected);
+  ASSERT_EQ(result.filtered_param_count, 1);
+}
+
 TEST_F(UrlParamFiltererTest, FilterUrlMultipleSourceBlocked) {
   GURL source = GURL{"https://source.xyz"};
   GURL destination =

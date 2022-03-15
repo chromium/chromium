@@ -143,7 +143,6 @@
 #include "chrome/browser/ui/webui/chrome_web_ui_controller_factory.h"
 #include "chrome/browser/ui/webui/log_web_ui_url.h"
 #include "chrome/browser/universal_web_contents_observers.h"
-#include "chrome/browser/url_param_filter/cross_otr_metric_throttle.h"
 #include "chrome/browser/usb/frame_usb_services.h"
 #include "chrome/browser/vr/vr_tab_helper.h"
 #include "chrome/browser/web_applications/policy/web_app_policy_manager.h"
@@ -4161,12 +4160,6 @@ ChromeContentBrowserClient::CreateThrottlesForNavigation(
   if (handle->IsInMainFrame()) {
     throttles.push_back(
         page_load_metrics::MetricsNavigationThrottle::Create(handle));
-  }
-
-  if (handle->IsInMainFrame()) {
-    MaybeAddThrottle(url_param_filter::CrossOtrMetricNavigationThrottle::
-                         MaybeCreateThrottleFor(handle),
-                     &throttles);
   }
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
