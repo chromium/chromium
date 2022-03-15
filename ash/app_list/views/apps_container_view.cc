@@ -467,7 +467,7 @@ void AppsContainerView::ShowApps(AppListItemView* folder_item_view,
 void AppsContainerView::ResetForShowApps() {
   DVLOG(1) << __FUNCTION__;
   UpdateSuggestionChips();
-  UpdateRecentApps();
+  UpdateRecentApps(/*needs_layout=*/false);
   SetShowState(SHOW_APPS, false);
   DisableFocusForShowingActiveFolder(false);
 }
@@ -503,30 +503,45 @@ void AppsContainerView::ReparentDragEnded() {
 void AppsContainerView::OnAppListVisibilityWillChange(bool visible) {
   // Start zero state search to refresh contents of the continue section and
   // recent apps (which are only shown for productivity launcher).
+  // NOTE: Request another layout after recent apps get updated to handle the
+  // case when recent apps get updated during app list state change animation.
+  // The apps container layout may get dropped by the app list  contents view,
+  // so invalidating recent apps layout when recent apps visibiltiy changes
+  // will not work well).
+  // TODO(https://crbug.com/1306613): Remove explicit layout once the linked
+  // issue is fixed.
   if (visible && features::IsProductivityLauncherEnabled()) {
     contents_view_->GetAppListMainView()->view_delegate()->StartZeroStateSearch(
         base::BindOnce(&AppsContainerView::UpdateRecentApps,
-                       weak_ptr_factory_.GetWeakPtr()),
+                       weak_ptr_factory_.GetWeakPtr(),
+                       /*needs_layout=*/true),
         kZeroStateSearchTimeout);
   }
 }
 
 void AppsContainerView::OnAppListVisibilityChanged(bool shown) {
-  if (!toast_container_)
-    return;
+  if (toast_container_) {
+    // Updates the visibility state in toast container.
+    AppListToastContainerView::VisibilityState state =
+        shown ? (is_active_page_
+                     ? AppListToastContainerView::VisibilityState::kShown
+                     : AppListToastContainerView::VisibilityState::
+                           kShownInBackground)
+              : AppListToastContainerView::VisibilityState::kHidden;
+    toast_container_->UpdateVisibilityState(state);
 
-  // Updates the visibility state in toast container.
-  AppListToastContainerView::VisibilityState state =
-      shown ? (is_active_page_
-                   ? AppListToastContainerView::VisibilityState::kShown
-                   : AppListToastContainerView::VisibilityState::
-                         kShownInBackground)
-            : AppListToastContainerView::VisibilityState::kHidden;
-  toast_container_->UpdateVisibilityState(state);
+    // Check if the reorder nudge view needs update if the app list is showing.
+    if (shown)
+      toast_container_->MaybeUpdateReorderNudgeView();
+  }
 
-  // Check if the reorder nudge view needs update if the app list is showing.
-  if (shown)
-    toast_container_->MaybeUpdateReorderNudgeView();
+  // Layout requests may get ignored by apps container's view hierarchy while
+  // app list animation is in progress - relayout the container if it needs
+  // layout at this point.
+  // TODO(https://crbug.com/1306613): Remove explicit layout once the linked
+  // issue gets fixed.
+  if (shown && needs_layout())
+    Layout();
 }
 
 // PaginationModelObserver:
@@ -1264,13 +1279,15 @@ const gfx::Insets& AppsContainerView::CalculateMarginsForAvailableBounds(
   return cached_container_margins_.margins;
 }
 
-void AppsContainerView::UpdateRecentApps() {
+void AppsContainerView::UpdateRecentApps(bool needs_layout) {
   if (!GetRecentApps() || !app_list_config_)
     return;
 
   AppListModelProvider* const model_provider = AppListModelProvider::Get();
   GetRecentApps()->ShowResults(model_provider->search_model(),
                                model_provider->model());
+  if (needs_layout)
+    Layout();
 }
 
 void AppsContainerView::UpdateSuggestionChips() {
@@ -1462,7 +1479,7 @@ void AppsContainerView::UpdateForActiveAppListModel() {
   AppListModel* const model = AppListModelProvider::Get()->model();
   apps_grid_view_->SetModel(model);
   apps_grid_view_->SetItemList(model->top_level_item_list());
-  UpdateRecentApps();
+  UpdateRecentApps(/*needs_layout=*/false);
   UpdateSuggestionChips();
 
   // If model changes, close the folder view if it's open, as the associated

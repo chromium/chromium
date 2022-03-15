@@ -217,8 +217,10 @@ class ASH_EXPORT AppsContainerView
     return app_list_nudge_controller_.get();
   }
 
-  // Updates recent apps from app list model.
-  void UpdateRecentApps();
+  // Updates recent apps from app list model. `needs_layout` indicates whether
+  // the apps container relaid out when the recent apps results are updated.
+  void UpdateRecentApps(bool needs_layout);
+
   // Updates suggestion chips from app list model.
   void UpdateSuggestionChips();
 
