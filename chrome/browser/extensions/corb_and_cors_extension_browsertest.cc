@@ -46,6 +46,7 @@
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/service_worker_context.h"
 #include "content/public/browser/service_worker_context_observer.h"
+#include "content/public/browser/shared_cors_origin_access_list.h"
 #include "content/public/browser/storage_partition.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/content_client.h"
@@ -65,11 +66,13 @@
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "net/test/embedded_test_server/http_request.h"
 #include "services/network/public/cpp/corb/corb_impl.h"
+#include "services/network/public/cpp/cors/origin_access_list.h"
 #include "services/network/public/cpp/features.h"
 #include "services/network/public/mojom/network_context.mojom-shared.h"
 #include "services/network/public/mojom/trust_tokens.mojom-shared.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
@@ -1380,6 +1383,35 @@ IN_PROC_BROWSER_TEST_F(CorbAndCorsExtensionBrowserTest,
     EXPECT_EQ("nosniff.xml - body\n", fetch_result);
     VerifyCorbWasDisabled(histograms);
   }
+}
+
+IN_PROC_BROWSER_TEST_F(CorbAndCorsExtensionBrowserTest,
+                       FromBackgroundPage_NoSniffXml_OriginAccessList) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+  ASSERT_TRUE(InstallExtension());
+  content::WebContents* background_web_contents =
+      ProcessManager::Get(browser()->profile())
+          ->GetBackgroundHostForExtension(extension()->id())
+          ->host_contents();
+
+  // The extension manifest has */cross-site.com in it's permissions array.
+  GURL cross_site_resource(
+      embedded_test_server()->GetURL("cross-site.com", "/nosniff.xml"));
+  ASSERT_EQ(background_web_contents->GetBrowserContext()
+                ->GetSharedCorsOriginAccessList()
+                ->GetOriginAccessList()
+                .CheckAccessState(GetExtensionOrigin(), cross_site_resource),
+            network::cors::OriginAccessList::AccessState::kAllowed);
+
+  // This url is intentionally left out of the `permissions` array in the
+  // extensions manifest.
+  GURL cross_site_without_permission_resource("other-without-permission.com");
+  ASSERT_NE(background_web_contents->GetBrowserContext()
+                ->GetSharedCorsOriginAccessList()
+                ->GetOriginAccessList()
+                .CheckAccessState(GetExtensionOrigin(),
+                                  cross_site_without_permission_resource),
+            network::cors::OriginAccessList::AccessState::kAllowed);
 }
 
 // Test that requests from an extension background page use relaxed CORB
