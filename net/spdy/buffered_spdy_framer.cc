@@ -232,10 +232,6 @@ void BufferedSpdyFramer::UpdateHeaderDecoderTableSize(uint32_t value) {
   deframer_.GetHpackDecoder()->ApplyHeaderTableSizeSetting(value);
 }
 
-void BufferedSpdyFramer::Reset() {
-  deframer_.Reset();
-}
-
 http2::Http2DecoderAdapter::SpdyFramerError
 BufferedSpdyFramer::spdy_framer_error() const {
   return deframer_.spdy_framer_error();

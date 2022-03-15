@@ -2,23 +2,23 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef NET_THIRD_PARTY_QUICHE_OVERRIDES_QUICHE_PLATFORM_IMPL_QUIC_MUTEX_IMPL_H_
-#define NET_THIRD_PARTY_QUICHE_OVERRIDES_QUICHE_PLATFORM_IMPL_QUIC_MUTEX_IMPL_H_
+#ifndef NET_THIRD_PARTY_QUICHE_OVERRIDES_QUICHE_PLATFORM_IMPL_QUICHE_MUTEX_IMPL_H_
+#define NET_THIRD_PARTY_QUICHE_OVERRIDES_QUICHE_PLATFORM_IMPL_QUICHE_MUTEX_IMPL_H_
 
 #include "base/synchronization/lock.h"
 #include "base/synchronization/waitable_event.h"
-#include "net/third_party/quiche/src/quic/platform/api/quic_export.h"
+#include "net/third_party/quiche/src/common/platform/api/quiche_export.h"
 
-#define QUIC_EXCLUSIVE_LOCKS_REQUIRED_IMPL EXCLUSIVE_LOCKS_REQUIRED
-#define QUIC_GUARDED_BY_IMPL GUARDED_BY
-#define QUIC_LOCKABLE_IMPL LOCKABLE
-#define QUIC_LOCKS_EXCLUDED_IMPL LOCKS_EXCLUDED
-#define QUIC_SHARED_LOCKS_REQUIRED_IMPL SHARED_LOCKS_REQUIRED
-#define QUIC_EXCLUSIVE_LOCK_FUNCTION_IMPL EXCLUSIVE_LOCK_FUNCTION
-#define QUIC_UNLOCK_FUNCTION_IMPL UNLOCK_FUNCTION
-#define QUIC_SHARED_LOCK_FUNCTION_IMPL SHARED_LOCK_FUNCTION
-#define QUIC_SCOPED_LOCKABLE_IMPL SCOPED_LOCKABLE
-#define QUIC_ASSERT_SHARED_LOCK_IMPL ASSERT_SHARED_LOCK
+#define QUICHE_EXCLUSIVE_LOCKS_REQUIRED_IMPL EXCLUSIVE_LOCKS_REQUIRED
+#define QUICHE_GUARDED_BY_IMPL GUARDED_BY
+#define QUICHE_LOCKABLE_IMPL LOCKABLE
+#define QUICHE_LOCKS_EXCLUDED_IMPL LOCKS_EXCLUDED
+#define QUICHE_SHARED_LOCKS_REQUIRED_IMPL SHARED_LOCKS_REQUIRED
+#define QUICHE_EXCLUSIVE_LOCK_FUNCTION_IMPL EXCLUSIVE_LOCK_FUNCTION
+#define QUICHE_UNLOCK_FUNCTION_IMPL UNLOCK_FUNCTION
+#define QUICHE_SHARED_LOCK_FUNCTION_IMPL SHARED_LOCK_FUNCTION
+#define QUICHE_SCOPED_LOCKABLE_IMPL SCOPED_LOCKABLE
+#define QUICHE_ASSERT_SHARED_LOCK_IMPL ASSERT_SHARED_LOCK
 
 #ifndef EXCLUSIVE_LOCK_FUNCTION
 #define EXCLUSIVE_LOCK_FUNCTION(...)
@@ -56,15 +56,15 @@
 #define EXCLUSIVE_LOCKS_REQUIRED(...)
 #endif
 
-namespace quic {
+namespace quiche {
 
 // A class wrapping a non-reentrant mutex.
-class QUIC_LOCKABLE_IMPL QUIC_EXPORT_PRIVATE QuicLockImpl {
+class QUICHE_LOCKABLE_IMPL QUICHE_EXPORT_PRIVATE QuicheLockImpl {
  public:
-  QuicLockImpl() = default;
+  QuicheLockImpl() = default;
 
-  QuicLockImpl(const QuicLockImpl&) = delete;
-  QuicLockImpl& operator=(const QuicLockImpl&) = delete;
+  QuicheLockImpl(const QuicheLockImpl&) = delete;
+  QuicheLockImpl& operator=(const QuicheLockImpl&) = delete;
 
   // Block until lock_ is free, then acquire it exclusively.
   void WriterLock() EXCLUSIVE_LOCK_FUNCTION();
@@ -87,13 +87,13 @@ class QUIC_LOCKABLE_IMPL QUIC_EXPORT_PRIVATE QuicLockImpl {
 
 // A Notification allows threads to receive notification of a single occurrence
 // of a single event.
-class QUIC_EXPORT_PRIVATE QuicNotificationImpl {
+class QUICHE_EXPORT_PRIVATE QuicheNotificationImpl {
  public:
-  QuicNotificationImpl()
+  QuicheNotificationImpl()
       : event_(base::WaitableEvent::ResetPolicy::MANUAL,
                base::WaitableEvent::InitialState::NOT_SIGNALED) {}
-  QuicNotificationImpl(const QuicNotificationImpl&) = delete;
-  QuicNotificationImpl& operator=(const QuicNotificationImpl&) = delete;
+  QuicheNotificationImpl(const QuicheNotificationImpl&) = delete;
+  QuicheNotificationImpl& operator=(const QuicheNotificationImpl&) = delete;
 
   bool HasBeenNotified() { return event_.IsSignaled(); }
 
@@ -105,6 +105,6 @@ class QUIC_EXPORT_PRIVATE QuicNotificationImpl {
   base::WaitableEvent event_;
 };
 
-}  // namespace quic
+}  // namespace quiche
 
-#endif  // NET_THIRD_PARTY_QUICHE_OVERRIDES_QUICHE_PLATFORM_IMPL_QUIC_MUTEX_IMPL_H_
+#endif  // NET_THIRD_PARTY_QUICHE_OVERRIDES_QUICHE_PLATFORM_IMPL_QUICHE_MUTEX_IMPL_H_

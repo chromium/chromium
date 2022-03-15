@@ -206,7 +206,6 @@ class NET_EXPORT_PRIVATE BufferedSpdyFramer
   // spdy::SpdyFramer methods.
   size_t ProcessInput(const char* data, size_t len);
   void UpdateHeaderDecoderTableSize(uint32_t value);
-  void Reset();
   http2::Http2DecoderAdapter::SpdyFramerError spdy_framer_error() const;
   http2::Http2DecoderAdapter::SpdyState state() const;
   bool MessageFullyRead();
