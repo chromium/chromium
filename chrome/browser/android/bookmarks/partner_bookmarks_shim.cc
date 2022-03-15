@@ -289,11 +289,11 @@ void PartnerBookmarksShim::SaveNodeMapping() {
   for (NodeRenamingMap::const_iterator i = node_rename_remove_map_.begin();
        i != node_rename_remove_map_.end();
        ++i) {
-    auto dict = std::make_unique<base::DictionaryValue>();
-    dict->SetStringKey(kMappingUrl, i->first.url().spec());
-    dict->SetStringKey(kMappingProviderTitle, i->first.provider_title());
-    dict->SetStringKey(kMappingTitle, i->second);
-    list.Append(std::move(dict));
+    base::Value::Dict dict;
+    dict.Set(kMappingUrl, i->first.url().spec());
+    dict.Set(kMappingProviderTitle, i->first.provider_title());
+    dict.Set(kMappingTitle, i->second);
+    list.Append(base::Value(std::move(dict)));
   }
   prefs_->Set(prefs::kPartnerBookmarkMappings, list);
 }
