@@ -96,7 +96,7 @@ void OAuthHttpFetcher::OnAccessTokenFetched(
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory =
       QuickPairBrowserDelegate::Get()->GetURLLoaderFactory();
   if (!url_loader_factory) {
-    QP_LOG(WARNING) << __func__ << ": No SharedURLLoaderFactory is available.";
+    QP_LOG(WARNING) << __func__ << ": URLLoaderFactory is not available.";
     std::move(callback_).Run(nullptr, nullptr);
     return;
   }
