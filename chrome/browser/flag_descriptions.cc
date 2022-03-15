@@ -5770,6 +5770,10 @@ const char kSideSearchClearCacheWhenClosedName[] =
     "Side search clear cache when closed";
 const char kSideSearchClearCacheWhenClosedDescription[] =
     "Clears the side search cache when the side panel is closed.";
+
+const char kSideSearchDSESupportName[] = "Side search DSE support";
+const char kSideSearchDSESupportDescription[] =
+    "Side search with support for participating chrome search engines.";
 #endif  // BUILDFLAG(ENABLE_SIDE_SEARCH)
 
 #if BUILDFLAG(ENABLE_WEBUI_TAB_STRIP)

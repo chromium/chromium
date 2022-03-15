@@ -7985,6 +7985,10 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kSideSearchClearCacheWhenClosedName,
      flag_descriptions::kSideSearchClearCacheWhenClosedDescription, kOsDesktop,
      FEATURE_VALUE_TYPE(features::kSideSearchClearCacheWhenClosed)},
+
+    {"side-search-dse-support", flag_descriptions::kSideSearchDSESupportName,
+     flag_descriptions::kSideSearchDSESupportDescription, kOsDesktop,
+     FEATURE_VALUE_TYPE(features::kSideSearchDSESupport)},
 #endif  // BUILDFLAG(ENABLE_SIDE_SEARCH)
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)

@@ -52787,6 +52787,7 @@ from previous Chrome versions.
   <int value="-1310737697" label="MaterialDesignSettings:enabled"/>
   <int value="-1309828996"
       label="AutofillSaveCreditCardUsesImprovedMessaging:enabled"/>
+  <int value="-1309205592" label="SideSearchDSESupport:disabled"/>
   <int value="-1309066678" label="ServiceWorkerOnUI:enabled"/>
   <int value="-1308600417" label="NewNetErrorPageUI:disabled"/>
   <int value="-1308389775" label="PermissionChipGestureSensitive:enabled"/>
@@ -54653,6 +54654,7 @@ from previous Chrome versions.
   <int value="-11260186" label="enable-offline-pages-as-saved-pages"/>
   <int value="-10709540"
       label="OmniboxUIExperimentHideSuggestionUrlScheme:enabled"/>
+  <int value="-9836751" label="SideSearchDSESupport:enabled"/>
   <int value="-9701088" label="ScanAppMediaLink:disabled"/>
   <int value="-9599490" label="KernelnextVMs:disabled"/>
   <int value="-9322265" label="ShowBluetoothDebugLogToggle:enabled"/>

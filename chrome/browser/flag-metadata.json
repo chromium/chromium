@@ -5544,7 +5544,7 @@
     "expiry_milestone" : 104
   },
   {
-    "name" : "side-search-state-per-tab",
+    "name" : "side-search-dse-support",
     "owners": [ "chrome-cros@google.com", "tluk" ],
     "expiry_milestone" : 104
   },
