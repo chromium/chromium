@@ -3,6 +3,7 @@
 # found in the LICENSE file.
 """Definitions of builders in the chromium.mac builder group."""
 
+load("//lib/args.star", "args")
 load("//lib/branches.star", "branches")
 load("//lib/builders.star", "cpu", "goma", "os", "sheriff_rotations", "xcode")
 load("//lib/ci.star", "ci")
@@ -178,6 +179,7 @@ ci.thin_tester(
         short_name = "11",
     ),
     cq_mirrors_console_view = "mirrors",
+    sheriff_rotations = args.ignore_default(None),
     triggered_by = ["ci/Mac Builder (dbg)"],
 )
 
