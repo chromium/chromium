@@ -269,9 +269,10 @@ absl::optional<StoredSourceData> ReadSourceFromStatement(
   absl::optional<AttributionAggregatableSource> aggregatable_source =
       ParseAggregatableSource(statement.ColumnString(col++));
 
-  if (!source_type.has_value() || !attribution_logic.has_value() ||
-      num_conversions < 0 || aggregatable_budget_consumed < 0 ||
-      !aggregatable_source.has_value()) {
+  if (impression_origin.opaque() || conversion_origin.opaque() ||
+      reporting_origin.opaque() || !source_type.has_value() ||
+      !attribution_logic.has_value() || num_conversions < 0 ||
+      aggregatable_budget_consumed < 0 || !aggregatable_source.has_value()) {
     return absl::nullopt;
   }
 
