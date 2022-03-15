@@ -14,15 +14,18 @@ import androidx.test.filters.LargeTest;
 
 import org.hamcrest.Matchers;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.RuleChain;
+import org.junit.rules.TestRule;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
-import org.chromium.base.test.util.DisabledTest;
 import org.chromium.chrome.R;
 import org.chromium.chrome.test.pagecontroller.rules.ChromeUiApplicationTestRule;
+import org.chromium.chrome.test.pagecontroller.rules.ChromeUiAutomatorTestRule;
 import org.chromium.chrome.test.pagecontroller.utils.IUi2Locator;
 import org.chromium.chrome.test.pagecontroller.utils.Ui2Locators;
 import org.chromium.chrome.test.pagecontroller.utils.UiAutomatorUtils;
@@ -43,6 +46,10 @@ public class ChromeSmokeTest {
     public static final long TIMEOUT_MS = 20000L;
     public static final long UI_CHECK_INTERVAL = 1000L;
     private String mPackageName;
+    public ChromeUiAutomatorTestRule mRule = new ChromeUiAutomatorTestRule();
+    public ChromeUiApplicationTestRule mChromeUiRule = new ChromeUiApplicationTestRule();
+    @Rule
+    public final TestRule mChain = RuleChain.outerRule(mChromeUiRule).around(mRule);
 
     private static Runnable toNotSatisfiedRunnable(
             Callable<Boolean> criteria, String failureReason) {
@@ -86,9 +93,8 @@ public class ChromeSmokeTest {
         IUi2Locator signinSkipButton = Ui2Locators.withAnyResEntry(R.id.signin_fre_dismiss_button);
         IUi2Locator signinContinueButton =
                 Ui2Locators.withAnyResEntry(R.id.signin_fre_continue_button);
-
-        // Used in DataReductionProxyFirstRunFragment FRE page.
-        IUi2Locator dataSaverPromoNextButton = Ui2Locators.withAnyResEntry(R.id.next_button);
+        IUi2Locator signinProgressSpinner =
+                Ui2Locators.withAnyResEntry(R.id.signin_fre_progress_spinner);
 
         // Used in DefaultSearchEngineFirstRunFragment FRE page.
         IUi2Locator defaultSearchEngineNextButton =
@@ -110,8 +116,8 @@ public class ChromeSmokeTest {
                 termsAcceptButton,
                 signinSkipButton,
                 signinContinueButton,
+                signinProgressSpinner,
                 noAddAccountButton,
-                dataSaverPromoNextButton,
                 defaultSearchEngineNextButton,
                 urlBar,
         };
@@ -138,9 +144,8 @@ public class ChromeSmokeTest {
                 // Sometimes there is only the continue button (eg: when signin is
                 // disabled.)
                 UiAutomatorUtils.getInstance().click(signinContinueButton);
-            } else if (uiLocatorHelper.isOnScreen(dataSaverPromoNextButton)) {
-                // Just press next on Data saver promo.
-                UiAutomatorUtils.getInstance().click(dataSaverPromoNextButton);
+            } else if (uiLocatorHelper.isOnScreen(signinProgressSpinner)) {
+                // Do nothing and wait.
             } else if (uiLocatorHelper.isOnScreen(defaultSearchEngineNextButton)) {
                 // Just press next on choosing the default SE.
                 UiAutomatorUtils.getInstance().click(defaultSearchEngineNextButton);
@@ -160,7 +165,6 @@ public class ChromeSmokeTest {
     }
 
     @Test
-    @DisabledTest(message = "https://crbug.com/1289733")
     public void testHello() {
         Context context = InstrumentationRegistry.getContext();
         final Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(DATA_URL));

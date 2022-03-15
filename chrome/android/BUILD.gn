@@ -3231,6 +3231,14 @@ android_test_apk("chrome_smoke_test_apk") {
   ]
 }
 
+_common_smoke_test_args = [
+  "--enable-breakpad-dump",
+  "--use-apk-under-test-flags-file",
+
+  # FRE is too flakey on some old devices https://crbug.com/1289733
+  "--disable-fre",
+]
+
 instrumentation_test_runner("chrome_public_smoke_test") {
   apk_under_test = ":chrome_public_apk"
   android_test_apk = ":chrome_smoke_test_apk"
@@ -3238,10 +3246,8 @@ instrumentation_test_runner("chrome_public_smoke_test") {
   if (!is_java_debug) {
     proguard_mapping_path = "$root_build_dir/apks/ChromePublic.apk.mapping"
   }
-  extra_args = [
-    "--enable-breakpad-dump",
-    "--use-apk-under-test-flags-file",
-  ]
+
+  extra_args = _common_smoke_test_args
 }
 
 # Public webview targets don't work with non-public sdks.
@@ -3263,10 +3269,7 @@ instrumentation_test_runner("monochrome_public_smoke_test") {
   android_test_apk = ":chrome_smoke_test_apk"
   android_test_apk_name = "ChromeSmokeTest"
   never_incremental = true
-  extra_args = [
-    "--enable-breakpad-dump",
-    "--use-apk-under-test-flags-file",
-  ]
+  extra_args = _common_smoke_test_args
 }
 
 android_test_apk("chrome_bundle_smoke_test_apk") {
