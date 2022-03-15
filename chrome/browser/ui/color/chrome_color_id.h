@@ -166,6 +166,9 @@
   E(kColorOmniboxTextDimmed, ThemeProperties::COLOR_OMNIBOX_TEXT_DIMMED) \
   /* Payments colors. */ \
   E_CPONLY(kColorPaymentRequestRowBackgroundHighlighted) \
+  /* QR code colors. */ \
+  E_CPONLY(kColorQrCodeBackground) \
+  E_CPONLY(kColorQrCodeBorder) \
   /* Read Later button colors. */ \
   E(kColorReadLaterButtonHighlight, \
     ThemeProperties::COLOR_READ_LATER_BUTTON_HIGHLIGHT) \

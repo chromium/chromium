@@ -55,6 +55,7 @@ class QRCodeGeneratorBubble : public QRCodeGeneratorBubbleView,
 
   // QRCodeGeneratorBubbleView:
   void Hide() override;
+  void OnThemeChanged() override;
 
   // Returns a suggested download filename for a given URL.
   // e.g.: www.foo.com may suggest qrcode_foo.png.

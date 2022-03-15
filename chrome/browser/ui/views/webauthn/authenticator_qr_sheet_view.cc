@@ -6,10 +6,12 @@
 
 #include "base/bind.h"
 #include "base/callback.h"
+#include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/services/qrcode_generator/public/cpp/qrcode_generator_service.h"
 #include "chrome/services/qrcode_generator/public/mojom/qrcode_generator.mojom.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/color/color_provider.h"
 #include "ui/gfx/image/image_skia.h"
 #include "ui/views/background.h"
 #include "ui/views/controls/image_view.h"
@@ -35,20 +37,13 @@ class AuthenticatorQRViewCentered : public views::View {
         views::BoxLayout::MainAxisAlignment::kCenter);
     layout->set_cross_axis_alignment(
         views::BoxLayout::CrossAxisAlignment::kCenter);
-    const int border_radius =
-        views::LayoutProvider::Get()->GetCornerRadiusMetric(
-            views::Emphasis::kHigh);
     qr_code_image_ = AddChildViewAt(std::make_unique<views::ImageView>(), 0);
-    qr_code_image_->SetBorder(views::CreateRoundedRectBorder(
-        /*thickness=*/2, border_radius, gfx::kGoogleGrey200));
     qr_code_image_->SetHorizontalAlignment(
         views::ImageView::Alignment::kCenter);
     qr_code_image_->SetVerticalAlignment(views::ImageView::Alignment::kCenter);
     qr_code_image_->SetImageSize(qrCodeImageSize());
     qr_code_image_->SetPreferredSize(qrCodeImageSize() +
                                      gfx::Size(kQrCodeMargin, kQrCodeMargin));
-    qr_code_image_->SetBackground(
-        views::CreateRoundedRectBackground(SK_ColorWHITE, border_radius, 2));
 
     qrcode_generator::mojom::GenerateQRCodeRequestPtr request =
         qrcode_generator::mojom::GenerateQRCodeRequest::New();
@@ -73,6 +68,20 @@ class AuthenticatorQRViewCentered : public views::View {
   AuthenticatorQRViewCentered(const AuthenticatorQRViewCentered&) = delete;
   AuthenticatorQRViewCentered& operator=(const AuthenticatorQRViewCentered&) =
       delete;
+
+  void OnThemeChanged() override {
+    views::View::OnThemeChanged();
+
+    const int border_radius =
+        views::LayoutProvider::Get()->GetCornerRadiusMetric(
+            views::Emphasis::kHigh);
+    const auto* color_provider = GetColorProvider();
+    qr_code_image_->SetBorder(views::CreateRoundedRectBorder(
+        /*thickness=*/2, border_radius,
+        color_provider->GetColor(kColorQrCodeBorder)));
+    qr_code_image_->SetBackground(views::CreateRoundedRectBackground(
+        color_provider->GetColor(kColorQrCodeBackground), border_radius, 2));
+  }
 
  private:
   qrcode_generator::mojom::QRCodeGeneratorService* qr_code_service() {

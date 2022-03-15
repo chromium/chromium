@@ -13,6 +13,7 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_dialogs.h"
 #include "chrome/browser/ui/browser_finder.h"
+#include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/qrcode_generator/qrcode_generator_bubble_controller.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
@@ -55,26 +56,16 @@
 
 namespace {
 
-// Rendered QR Code size, pixels.
-constexpr int kQRImageSizePx = 240;
 constexpr int kPaddingTooltipDownloadButtonPx = 10;
 
 // Calculates the height of the QR Code with padding.
 constexpr gfx::Size GetQRCodeImageSize() {
+  constexpr int kQRImageSizePx = 240;
   return gfx::Size(kQRImageSizePx, kQRImageSizePx);
 }
 
 constexpr bool IsSquare(gfx::Size size) {
   return size.width() == size.height();
-}
-
-// Renders a solid square of color {r, g, b} at 100% alpha.
-gfx::ImageSkia GetPlaceholderImageSkia(const SkColor color) {
-  SkBitmap bitmap;
-  bitmap.allocN32Pixels(kQRImageSizePx, kQRImageSizePx);
-  bitmap.eraseARGB(0xFF, 0xFF, 0xFF, 0xFF);
-  bitmap.eraseColor(color);
-  return gfx::ImageSkia::CreateFromBitmap(bitmap, 1.0f);
 }
 
 gfx::ImageSkia CreateBackgroundImageSkia(const gfx::Size& size) {
@@ -123,6 +114,19 @@ void QRCodeGeneratorBubble::Hide() {
   CloseBubble();
 }
 
+void QRCodeGeneratorBubble::OnThemeChanged() {
+  LocationBarBubbleDelegateView::OnThemeChanged();
+
+  const int border_radius = views::LayoutProvider::Get()->GetCornerRadiusMetric(
+      views::Emphasis::kHigh);
+  const auto* color_provider = GetColorProvider();
+  qr_code_image_->SetBorder(views::CreateRoundedRectBorder(
+      /*thickness=*/2, border_radius,
+      color_provider->GetColor(kColorQrCodeBorder)));
+  qr_code_image_->SetBackground(views::CreateRoundedRectBackground(
+      color_provider->GetColor(kColorQrCodeBackground), border_radius, 2));
+}
+
 void QRCodeGeneratorBubble::UpdateQRContent() {
   if (textfield_url_->GetText().empty()) {
     DisplayPlaceholderImage();
@@ -169,7 +173,7 @@ void QRCodeGeneratorBubble::UpdateQRImage(gfx::ImageSkia qr_image) {
 }
 
 void QRCodeGeneratorBubble::DisplayPlaceholderImage() {
-  UpdateQRImage(GetPlaceholderImageSkia(gfx::kGoogleGrey100));
+  UpdateQRImage(CreateBackgroundImageSkia(GetQRCodeImageSize()));
 }
 
 void QRCodeGeneratorBubble::DisplayError(mojom::QRCodeGeneratorError error) {
@@ -218,17 +222,13 @@ void QRCodeGeneratorBubble::Init() {
   // QR Code image, with padding and border.
   using Alignment = views::ImageView::Alignment;
   auto qr_code_image = std::make_unique<views::ImageView>();
-  const int border_radius = views::LayoutProvider::Get()->GetCornerRadiusMetric(
-      views::Emphasis::kHigh);
-  qr_code_image->SetBorder(views::CreateRoundedRectBorder(
-      /*thickness=*/2, border_radius, gfx::kGoogleGrey200));
   qr_code_image->SetHorizontalAlignment(Alignment::kCenter);
   qr_code_image->SetVerticalAlignment(Alignment::kCenter);
   qr_code_image->SetImageSize(GetQRCodeImageSize());
+  const int border_radius = views::LayoutProvider::Get()->GetCornerRadiusMetric(
+      views::Emphasis::kHigh);
   qr_code_image->SetPreferredSize(GetQRCodeImageSize() +
                                   gfx::Size(border_radius, border_radius));
-  qr_code_image->SetBackground(
-      views::CreateRoundedRectBackground(SK_ColorWHITE, border_radius, 2));
   qr_code_image->SetProperty(views::kCrossAxisAlignmentKey,
                              views::LayoutAlignment::kCenter);
 

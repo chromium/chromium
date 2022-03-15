@@ -297,6 +297,8 @@ void AddChromeColorMixer(ui::ColorProvider* provider,
       ui::GetColorWithMaxContrast(kColorOmniboxBackground);
   mixer[kColorPaymentRequestRowBackgroundHighlighted] = {
       SkColorSetA(SK_ColorBLACK, 0x0D)};
+  mixer[kColorQrCodeBackground] = {SK_ColorWHITE};
+  mixer[kColorQrCodeBorder] = {ui::kColorMidground};
   mixer[kColorReadLaterButtonHighlight] = {kColorAvatarButtonHighlightNormal};
   mixer[kColorScreenshotCapturedImageBackground] = {ui::kColorBubbleBackground};
   mixer[kColorScreenshotCapturedImageBorder] = {ui::kColorMidground};
