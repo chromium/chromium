@@ -55,6 +55,7 @@ import org.chromium.components.browser_ui.settings.ChromeSwitchPreference;
 import org.chromium.components.sync.ModelType;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 
+import java.io.IOException;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
@@ -605,8 +606,7 @@ public class ManageSyncSettingsTest {
     public void testAdvancedSyncFlowTopView() throws Exception {
         mSyncTestRule.setUpAccountAndEnableSyncForTesting();
         final ManageSyncSettings fragment = startManageSyncPreferences();
-        InstrumentationRegistry.getInstrumentation().waitForIdleSync();
-        mRenderTestRule.render(fragment.getView(), "advanced_sync_flow_top_view");
+        render(fragment, "advanced_sync_flow_top_view");
     }
 
     @Test
@@ -622,8 +622,7 @@ public class ManageSyncSettingsTest {
             recyclerView.setVerticalScrollBarEnabled(false);
             recyclerView.scrollToPosition(recyclerView.getAdapter().getItemCount() - 1);
         });
-        InstrumentationRegistry.getInstrumentation().waitForIdleSync();
-        mRenderTestRule.render(fragment.getView(), "advanced_sync_flow_bottom_view");
+        render(fragment, "advanced_sync_flow_bottom_view");
     }
 
     @Test
@@ -632,8 +631,7 @@ public class ManageSyncSettingsTest {
     public void testAdvancedSyncFlowFromSyncConsentTopView() throws Exception {
         mSyncTestRule.setUpAccountAndEnableSyncForTesting();
         final ManageSyncSettings fragment = startManageSyncPreferencesFromSyncConsentFlow();
-        InstrumentationRegistry.getInstrumentation().waitForIdleSync();
-        mRenderTestRule.render(fragment.getView(), "advanced_sync_flow_top_view_from_sync_consent");
+        render(fragment, "advanced_sync_flow_top_view_from_sync_consent");
     }
 
     @Test
@@ -649,9 +647,7 @@ public class ManageSyncSettingsTest {
             recyclerView.setVerticalScrollBarEnabled(false);
             recyclerView.scrollToPosition(recyclerView.getAdapter().getItemCount() - 1);
         });
-        InstrumentationRegistry.getInstrumentation().waitForIdleSync();
-        mRenderTestRule.render(
-                fragment.getView(), "advanced_sync_flow_bottom_view_from_sync_consent");
+        render(fragment, "advanced_sync_flow_bottom_view_from_sync_consent");
     }
 
     @Test
@@ -661,8 +657,7 @@ public class ManageSyncSettingsTest {
     public void testAdvancedSyncFlowTopViewForChildUser() throws Exception {
         mSyncTestRule.setUpChildAccountAndEnableSyncForTesting();
         final ManageSyncSettings fragment = startManageSyncPreferences();
-        InstrumentationRegistry.getInstrumentation().waitForIdleSync();
-        mRenderTestRule.render(fragment.getView(), "advanced_sync_flow_top_view_child");
+        render(fragment, "advanced_sync_flow_top_view_child");
     }
 
     @Test
@@ -679,8 +674,7 @@ public class ManageSyncSettingsTest {
             recyclerView.setVerticalScrollBarEnabled(false);
             recyclerView.scrollToPosition(recyclerView.getAdapter().getItemCount() - 1);
         });
-        InstrumentationRegistry.getInstrumentation().waitForIdleSync();
-        mRenderTestRule.render(fragment.getView(), "advanced_sync_flow_bottom_view_child");
+        render(fragment, "advanced_sync_flow_bottom_view_child");
     }
 
     @Test
@@ -690,9 +684,7 @@ public class ManageSyncSettingsTest {
     public void testAdvancedSyncFlowFromSyncConsentTopViewForChildUser() throws Exception {
         mSyncTestRule.setUpChildAccountAndEnableSyncForTesting();
         final ManageSyncSettings fragment = startManageSyncPreferencesFromSyncConsentFlow();
-        InstrumentationRegistry.getInstrumentation().waitForIdleSync();
-        mRenderTestRule.render(
-                fragment.getView(), "advanced_sync_flow_top_view_from_sync_consent_child");
+        render(fragment, "advanced_sync_flow_top_view_from_sync_consent_child");
     }
 
     @Test
@@ -709,9 +701,7 @@ public class ManageSyncSettingsTest {
             recyclerView.setVerticalScrollBarEnabled(false);
             recyclerView.scrollToPosition(recyclerView.getAdapter().getItemCount() - 1);
         });
-        InstrumentationRegistry.getInstrumentation().waitForIdleSync();
-        mRenderTestRule.render(
-                fragment.getView(), "advanced_sync_flow_bottom_view_from_sync_consent_child");
+        render(fragment, "advanced_sync_flow_bottom_view_from_sync_consent_child");
     }
 
     private ManageSyncSettings startManageSyncPreferences() {
@@ -828,5 +818,13 @@ public class ManageSyncSettingsTest {
     private void clearError(final TextView textView) {
         TestThreadUtils.runOnUiThreadBlocking(() -> textView.setError(null));
         InstrumentationRegistry.getInstrumentation().waitForIdleSync();
+    }
+
+    private void render(ManageSyncSettings fragment, String skiaGoldId) throws IOException {
+        InstrumentationRegistry.getInstrumentation().waitForIdleSync();
+        // Sanitize the view, in particular to ensure the presence of scroll bars do not cause
+        // image diffs.
+        ChromeRenderTestRule.sanitize(fragment.getView());
+        mRenderTestRule.render(fragment.getView(), skiaGoldId);
     }
 }
