@@ -32,6 +32,7 @@
 #include "base/memory/page_size.h"
 #include "base/posix/eintr_wrapper.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/strings/string_split.h"
 #include "base/strings/stringprintf.h"
 #include "base/thread_annotations.h"
 #include "base/time/time.h"
@@ -103,6 +104,29 @@ std::map<base::PlatformThreadId, std::string> ThreadNames(pid_t pid) {
     char name[256];
     char state;
     sscanf(buffer, "%d %s %c %d %d", &process_id, name, &state, &ppid, &pgrp);
+
+    auto status_path = path.Append("status");
+    base::File status_file{status_path,
+                           base::File::FLAG_OPEN | base::File::FLAG_READ};
+    if (!status_file.IsValid()) {
+      LOG(WARNING) << "Invalid file: " << status_path.value();
+      continue;
+    }
+    bytes_read = status_file.ReadAtCurrentPos(buffer, 4096);
+    if (bytes_read <= 0)
+      continue;
+    buffer[bytes_read] = '\0';
+    auto lines = SplitString(buffer, "\n", base::TRIM_WHITESPACE,
+                             base::SPLIT_WANT_NONEMPTY);
+    for (base::StringPiece sp : lines) {
+      if (sp.rfind("NSpid:\t", 0) == 0) {
+        auto line_parts = SplitString(sp, "\t", base::TRIM_WHITESPACE,
+                                      base::SPLIT_WANT_NONEMPTY);
+        std::string inner_pid = line_parts.back();
+        sscanf(inner_pid.c_str(), "%d", &process_id);
+      }
+    }
+
     result[base::PlatformThreadId(process_id)] = std::string(name);
   }
 
