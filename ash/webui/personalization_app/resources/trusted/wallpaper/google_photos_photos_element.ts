@@ -7,12 +7,14 @@
  */
 
 import 'chrome://resources/polymer/v3_0/iron-list/iron-list.js';
+import 'chrome://resources/polymer/v3_0/iron-scroll-threshold/iron-scroll-threshold.js';
 import './styles.js';
 import '../../common/styles.js';
 
 import {assert} from 'chrome://resources/js/assert.m.js';
 import {FilePath} from 'chrome://resources/mojo/mojo/public/mojom/base/file_path.mojom-webui.js';
 import {IronListElement} from 'chrome://resources/polymer/v3_0/iron-list/iron-list.js';
+import {IronScrollThresholdElement} from 'chrome://resources/polymer/v3_0/iron-scroll-threshold/iron-scroll-threshold.js';
 import {afterNextRender, html} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getNumberOfGridItemsPerRow, isNonEmptyArray, isSelectionEvent, normalizeKeyForRTL} from '../../common/utils.js';
@@ -20,7 +22,7 @@ import {CurrentWallpaper, GooglePhotosPhoto, WallpaperImage, WallpaperProviderIn
 import {WithPersonalizationStore} from '../personalization_store.js';
 import {isGooglePhotosPhoto} from '../utils.js';
 
-import {selectWallpaper} from './wallpaper_controller.js';
+import {fetchGooglePhotosPhotos, selectWallpaper} from './wallpaper_controller.js';
 import {getWallpaperProvider} from './wallpaper_interface_provider.js';
 
 /** A list of |GooglePhotosPhoto|'s to be rendered in a row. */
@@ -33,7 +35,7 @@ export type GooglePhotosPhotosSection = {
 };
 
 export interface GooglePhotosPhotos {
-  $: {grid: IronListElement;};
+  $: {grid: IronListElement; gridScrollThreshold: IronScrollThresholdElement};
 }
 
 export class GooglePhotosPhotos extends WithPersonalizationStore {
@@ -63,16 +65,12 @@ export class GooglePhotosPhotos extends WithPersonalizationStore {
 
       pendingSelected_: Object,
       photos_: Array,
-
-      photosByRow_: {
-        type: Array,
-        computed: 'computePhotosByRow_(photosBySection_)',
-      },
+      photosByRow_: Array,
 
       photosBySection_: {
         type: Array,
-        computed:
-            'computePhotosBySection_(photos_, photosLoading_, photosPerRow_)',
+        computed: 'computePhotosBySection_(photos_, photosPerRow_)',
+        observer: 'onPhotosBySectionChanged_',
       },
 
       photosLoading_: Boolean,
@@ -82,6 +80,11 @@ export class GooglePhotosPhotos extends WithPersonalizationStore {
         value: function() {
           return getNumberOfGridItemsPerRow();
         },
+      },
+
+      photosResumeToken_: {
+        type: String,
+        observer: 'onPhotosResumeTokenChanged_',
       },
     };
   }
@@ -119,6 +122,9 @@ export class GooglePhotosPhotos extends WithPersonalizationStore {
   /** The number of photos to render per row in a grid. */
   private photosPerRow_: number;
 
+  /** The resume token needed to fetch the next page of photos. */
+  private photosResumeToken_: string|null;
+
   /** The singleton wallpaper provider interface. */
   private wallpaperProvider_: WallpaperProviderInterface =
       getWallpaperProvider();
@@ -136,20 +142,29 @@ export class GooglePhotosPhotos extends WithPersonalizationStore {
         'photos_', state => state.wallpaper.googlePhotos.photos);
     this.watch<GooglePhotosPhotos['photosLoading_']>(
         'photosLoading_', state => state.wallpaper.loading.googlePhotos.photos);
+    this.watch<GooglePhotosPhotos['photosResumeToken_']>(
+        'photosResumeToken_',
+        state => state.wallpaper.googlePhotos.resumeTokens.photos);
 
     this.updateFromStore();
   }
 
-  /** Invoked on changes to this element's |hidden| state. */
-  private onHiddenChanged_(hidden: GooglePhotosPhotos['hidden']) {
-    if (hidden) {
+  /** Invoked on grid scroll threshold reached. */
+  private onGridScrollThresholdReached_() {
+    // Ignore this event if fired during initialization.
+    if (!this.$.gridScrollThreshold.scrollHeight) {
+      this.$.gridScrollThreshold.clearTriggers();
       return;
     }
 
-    // When iron-list items change while their parent element is hidden, the
-    // iron-list will render incorrectly. Force relayout by invalidating the
-    // iron-list when this element becomes visible.
-    afterNextRender(this, () => this.$.grid.fire('iron-resize'));
+    // Ignore this event if photos are already being loading or if there is no
+    // resume token (indicating there are no additional photos to load).
+    if (this.photosLoading_ === true || this.photosResumeToken_ === null) {
+      return;
+    }
+
+    // Fetch the next page of photos.
+    fetchGooglePhotosPhotos(this.wallpaperProvider_, this.getStore());
   }
 
   /** Invoked on focus of a grid row. */
@@ -202,6 +217,18 @@ export class GooglePhotosPhotos extends WithPersonalizationStore {
     }
   }
 
+  /** Invoked on changes to this element's |hidden| state. */
+  private onHiddenChanged_(hidden: GooglePhotosPhotos['hidden']) {
+    if (hidden) {
+      return;
+    }
+
+    // When iron-list items change while their parent element is hidden, the
+    // iron-list will render incorrectly. Force relayout by invalidating the
+    // iron-list when this element becomes visible.
+    afterNextRender(this, () => this.$.grid.fire('iron-resize'));
+  }
+
   /** Invoked on selection of a photo. */
   private onPhotoSelected_(e: Event&{model: {photo: GooglePhotosPhoto}}) {
     assert(e.model.photo);
@@ -210,31 +237,55 @@ export class GooglePhotosPhotos extends WithPersonalizationStore {
     }
   }
 
+  /** Invoked on changes to |photosBySection_|. */
+  private onPhotosBySectionChanged_(
+      photosBySection: GooglePhotosPhotos['photosBySection_']) {
+    if (!isNonEmptyArray(photosBySection)) {
+      this.photosByRow_ = null;
+      return;
+    }
+
+    const photosByRow = photosBySection.flatMap(section => section.rows);
+
+    // Case: First batch of photos.
+    if (this.photosByRow_ === null) {
+      this.photosByRow_ = photosByRow;
+      return;
+    }
+
+    // Case: Subsequent batches of photos.
+    photosByRow.forEach((row, i) => {
+      if (i < this.photosByRow_!.length) {
+        this.set(`photosByRow_.${i}`, row);
+      } else {
+        this.push('photosByRow_', row);
+      }
+    });
+
+    while (this.photosByRow_.length > photosByRow.length) {
+      this.pop('photosByRow_');
+    }
+  }
+
+  /** Invoked on changes to |photosResumeToken_|. */
+  private onPhotosResumeTokenChanged_(
+      photosResumeToken: GooglePhotosPhotos['photosResumeToken_']) {
+    if (photosResumeToken?.length) {
+      this.$.gridScrollThreshold.clearTriggers();
+    }
+  }
+
   /** Invoked on resize of this element. */
   private onResized_() {
     this.photosPerRow_ = getNumberOfGridItemsPerRow();
   }
 
-  /** Invoked to compute |photosByRow_|. */
-  private computePhotosByRow_(photosBySection:
-                                  GooglePhotosPhotos['photosBySection_']):
-      GooglePhotosPhotosRow[]|null {
-    if (!isNonEmptyArray(photosBySection)) {
-      return null;
-    }
-    return photosBySection.flatMap(section => section.rows);
-  }
-
   /** Invoked to compute |photosBySection_|. */
   private computePhotosBySection_(
       photos: GooglePhotosPhotos['photos_'],
-      photosLoading: GooglePhotosPhotos['photosLoading_'],
       photosPerRow: GooglePhotosPhotos['photosPerRow_']):
       GooglePhotosPhotosSection[]|null {
-    if (photosLoading || !photosPerRow) {
-      return null;
-    }
-    if (!isNonEmptyArray(photos)) {
+    if (!isNonEmptyArray(photos) || !photosPerRow) {
       return null;
     }
 

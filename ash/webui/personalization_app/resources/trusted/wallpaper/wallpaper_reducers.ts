@@ -192,7 +192,7 @@ function loadingReducer(
           photos: true,
         },
       };
-    case WallpaperActionName.SET_GOOGLE_PHOTOS_PHOTOS:
+    case WallpaperActionName.APPEND_GOOGLE_PHOTOS_PHOTOS:
       assert(state.googlePhotos.photos === true);
       return {
         ...state,
@@ -363,14 +363,40 @@ function googlePhotosReducer(
         count: action.count,
       };
     case WallpaperActionName.BEGIN_LOAD_GOOGLE_PHOTOS_PHOTOS:
-      // The list of photos should be loaded only once.
-      assert(state.photos === undefined);
+      // The list of photos should be loaded only while additional photos exist.
+      assert(state.photos === undefined || state.resumeTokens.photos);
       return state;
-    case WallpaperActionName.SET_GOOGLE_PHOTOS_PHOTOS:
+    case WallpaperActionName.APPEND_GOOGLE_PHOTOS_PHOTOS:
       assert(action.photos !== undefined);
+      // Case: First batch of photos.
+      if (!Array.isArray(state.photos)) {
+        return {
+          ...state,
+          photos: action.photos,
+          resumeTokens: {
+            ...state.resumeTokens,
+            photos: action.resumeToken,
+          },
+        };
+      }
+      // Case: Subsequent batches of photos.
+      if (Array.isArray(action.photos)) {
+        return {
+          ...state,
+          photos: [...state.photos, ...action.photos],
+          resumeTokens: {
+            ...state.resumeTokens,
+            photos: action.resumeToken,
+          },
+        };
+      }
+      // Case: Error.
       return {
         ...state,
-        photos: action.photos,
+        resumeTokens: {
+          ...state.resumeTokens,
+          photos: action.resumeToken,
+        },
       };
     default:
       return state;

@@ -140,28 +140,26 @@ async function fetchGooglePhotosCount(
 }
 
 /** Fetches the list of Google Photos photos and saves it to the store. */
-async function fetchGooglePhotosPhotos(
+export async function fetchGooglePhotosPhotos(
     provider: WallpaperProviderInterface,
     store: PersonalizationStore): Promise<void> {
   store.dispatch(action.beginLoadGooglePhotosPhotosAction());
 
   let photos: Array<GooglePhotosPhoto>|null = [];
-  let resumeToken: string|null|undefined = null;
+  let resumeToken = store.data.wallpaper.googlePhotos.resumeTokens.photos;
 
-  // TODO(b/216882690): Support incremental load of photos as the user scrolls
-  // through their library as opposed to loading them all at once.
-  do {
-    const {response} = await provider.fetchGooglePhotosPhotos(
-                           /*itemId=*/ null, /*albumId=*/ null, resumeToken) as
-        {response: FetchGooglePhotosPhotosResponse};
-    if (!Array.isArray(response.photos)) {
-      console.warn('Failed to fetch Google Photos photos');
-      photos = null;
-      break;
-    }
+  const {response} = await provider.fetchGooglePhotosPhotos(
+                         /*itemId=*/ null, /*albumId=*/ null, resumeToken) as
+      {response: FetchGooglePhotosPhotosResponse};
+  if (Array.isArray(response.photos)) {
     photos.push(...response.photos);
-    resumeToken = response.resumeToken;
-  } while (resumeToken);
+    resumeToken = response.resumeToken ?? null;
+  } else {
+    console.warn('Failed to fetch Google Photos photos');
+    photos = null;
+    // NOTE: `resumeToken` is intentionally *not* modified so that the request
+    // which failed can be reattempted.
+  }
 
   // Impose max resolution.
   if (photos !== null) {
@@ -169,7 +167,7 @@ async function fetchGooglePhotosPhotos(
         photo => ({...photo, url: appendMaxResolutionSuffix(photo.url)}));
   }
 
-  store.dispatch(action.setGooglePhotosPhotosAction(photos));
+  store.dispatch(action.appendGooglePhotosPhotosAction(photos, resumeToken));
 }
 
 /** Get list of local images from disk and save it to the store. */
@@ -360,7 +358,7 @@ export async function initializeGooglePhotosData(
     store.dispatch(action.beginLoadGooglePhotosAlbumsAction());
     store.dispatch(action.beginLoadGooglePhotosPhotosAction());
     store.dispatch(action.setGooglePhotosAlbumsAction(result));
-    store.dispatch(action.setGooglePhotosPhotosAction(result));
+    store.dispatch(action.appendGooglePhotosPhotosAction(result, null));
     store.endBatchUpdate();
     return;
   }
