@@ -109,8 +109,6 @@ void AppUpdate::Merge(apps::mojom::App* state, const apps::mojom::App* delta) {
     state->install_time = delta->install_time;
   }
   if (!delta->permissions.empty()) {
-    DCHECK(state->permissions.empty() ||
-           (delta->permissions.size() == state->permissions.size()));
     state->permissions.clear();
     ::CloneMojomPermissions(delta->permissions, &state->permissions);
   }
@@ -211,8 +209,6 @@ void AppUpdate::Merge(App* state, const App* delta) {
   SET_OPTIONAL_VALUE(install_time);
 
   if (!delta->permissions.empty()) {
-    DCHECK(state->permissions.empty() ||
-           (delta->permissions.size() == state->permissions.size()));
     state->permissions.clear();
     state->permissions = ClonePermissions(delta->permissions);
   }
