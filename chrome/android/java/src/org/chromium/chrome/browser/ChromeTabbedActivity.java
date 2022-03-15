@@ -623,6 +623,8 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
                             MultiWindowUtils.getInstance().areMultipleChromeInstancesRunning(
                                     ChromeTabbedActivity.this)
                             && MultiWindowUtils.getVisibleTabbedTaskCount() > 1;
+                    boolean useAccessibilityListSwitcher =
+                            DeviceClassManager.enableAccessibilityLayout(ChromeTabbedActivity.this);
 
                     // TODO(crbug.com/1046541) : Remove this when the associated bug is fixed. This
                     //  is a band-aid fix for TabGrid and closing tabs with TabGroupUi.
@@ -641,7 +643,8 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
                     //  when TabGroupsAndroid is enabled, and tab switcher is shown:
                     //   1. If the very last tab is closed.
                     //   2. If normal tab model is selected and no normal tabs.
-                    if (gridTabSwitcherEnabled && overviewVisible && !hasNextTab && isTablet()) {
+                    if (gridTabSwitcherEnabled && overviewVisible && !hasNextTab && isTablet()
+                            && !useAccessibilityListSwitcher) {
                         mLayoutManager.showLayout(LayoutType.BROWSING, true);
                     }
                 }
