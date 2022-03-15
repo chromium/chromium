@@ -17,7 +17,6 @@
 
 namespace content {
 
-class PermissionControllerImpl;
 class RenderFrameHost;
 
 // This proxy acts as a gatekeeper to the real sensor provider so that this
@@ -25,8 +24,7 @@ class RenderFrameHost;
 // the permission statuses retrieved from a permission controller.
 class SensorProviderProxyImpl final : public device::mojom::SensorProvider {
  public:
-  SensorProviderProxyImpl(PermissionControllerImpl* permission_controller,
-                          RenderFrameHost* render_frame_host);
+  explicit SensorProviderProxyImpl(RenderFrameHost* render_frame_host);
 
   SensorProviderProxyImpl(const SensorProviderProxyImpl&) = delete;
   SensorProviderProxyImpl& operator=(const SensorProviderProxyImpl&) = delete;
@@ -58,8 +56,8 @@ class SensorProviderProxyImpl final : public device::mojom::SensorProvider {
   // invalidated before being discarded.
   mojo::Remote<device::mojom::SensorProvider> sensor_provider_;
   mojo::ReceiverSet<device::mojom::SensorProvider> receiver_set_;
-  raw_ptr<PermissionControllerImpl> permission_controller_;
-  raw_ptr<RenderFrameHost> render_frame_host_;
+  // Note: |render_frame_host_| owns |this| instance.
+  const raw_ptr<RenderFrameHost> render_frame_host_;
 
   base::WeakPtrFactory<SensorProviderProxyImpl> weak_factory_{this};
 };

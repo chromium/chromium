@@ -65,12 +65,12 @@ class CONTENT_EXPORT PermissionControllerImpl : public PermissionController {
       PermissionType permission,
       const url::Origin& origin) override;
 
-  void RequestPermission(
+  void RequestPermissionFromCurrentDocument(
       PermissionType permission,
       RenderFrameHost* render_frame_host,
-      const GURL& requesting_origin,
       bool user_gesture,
-      base::OnceCallback<void(blink::mojom::PermissionStatus)> callback);
+      base::OnceCallback<void(blink::mojom::PermissionStatus)> callback)
+      override;
 
   void RequestPermissions(
       const std::vector<PermissionType>& permission,
@@ -98,6 +98,14 @@ class CONTENT_EXPORT PermissionControllerImpl : public PermissionController {
       PermissionType permission,
       RenderFrameHost* render_frame_host,
       const GURL& requesting_origin);
+
+  void RequestPermission(
+      PermissionType permission,
+      RenderFrameHost* render_frame_host,
+      const GURL& requesting_origin,
+      bool user_gesture,
+      base::OnceCallback<void(blink::mojom::PermissionStatus)> callback)
+      override;
 
   struct Subscription;
   using SubscriptionsMap =

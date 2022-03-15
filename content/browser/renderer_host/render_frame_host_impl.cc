@@ -10054,10 +10054,7 @@ void RenderFrameHostImpl::GetSpeechSynthesis(
 void RenderFrameHostImpl::GetSensorProvider(
     mojo::PendingReceiver<device::mojom::SensorProvider> receiver) {
   if (!sensor_provider_proxy_) {
-    sensor_provider_proxy_ = std::make_unique<SensorProviderProxyImpl>(
-        PermissionControllerImpl::FromBrowserContext(
-            GetProcess()->GetBrowserContext()),
-        this);
+    sensor_provider_proxy_ = std::make_unique<SensorProviderProxyImpl>(this);
   }
   sensor_provider_proxy_->Bind(std::move(receiver));
 }

@@ -17,12 +17,12 @@
 #include "base/types/pass_key.h"
 #include "content/browser/font_access/font_enumeration_cache.h"
 #include "content/browser/font_access/font_enumeration_data_source.h"
-#include "content/browser/permissions/permission_controller_impl.h"
 #include "content/browser/renderer_host/frame_tree_node.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/global_routing_id.h"
+#include "content/public/browser/permission_controller.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/common/content_client.h"
 #include "third_party/blink/public/common/features.h"
@@ -97,8 +97,8 @@ void FontAccessManagerImpl::EnumerateLocalFonts(
     return;
   }
 
-  PermissionControllerImpl* permission_controller =
-      PermissionControllerImpl::FromBrowserContext(rfh->GetBrowserContext());
+  content::PermissionController* permission_controller =
+      rfh->GetBrowserContext()->GetPermissionController();
   DCHECK(permission_controller);
 
   auto status = permission_controller->GetPermissionStatusForCurrentDocument(
@@ -122,9 +122,8 @@ void FontAccessManagerImpl::EnumerateLocalFonts(
       blink::mojom::UserActivationUpdateType::kConsumeTransientActivation,
       blink::mojom::UserActivationNotificationType::kNone);
 
-  permission_controller->RequestPermission(
+  permission_controller->RequestPermissionFromCurrentDocument(
       PermissionType::FONT_ACCESS, rfh,
-      rfh->GetMainFrame()->GetLastCommittedOrigin().GetURL(),
       /*user_gesture=*/true,
       base::BindOnce(&FontAccessManagerImpl::DidRequestPermission,
                      weak_ptr_factory_.GetWeakPtr(), std::move(callback)));

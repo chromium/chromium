@@ -62,6 +62,26 @@ class CONTENT_EXPORT PermissionController
   virtual blink::mojom::PermissionStatus
   GetPermissionStatusForOriginWithoutContext(PermissionType permission,
                                              const url::Origin& origin) = 0;
+
+  // Requests the permission for a given requesting_origin. Prefer
+  // `RequestPermissionFromCurrentDocument` whenever possible.
+  virtual void RequestPermission(
+      PermissionType permission,
+      RenderFrameHost* render_frame_host,
+      const GURL& requesting_origin,
+      bool user_gesture,
+      base::OnceCallback<void(blink::mojom::PermissionStatus)> callback) = 0;
+
+  // Requests the permission for the current document in the given
+  // RenderFrameHost. Use this over `RequestPermission` whenever
+  // possible as this API takes into account the lifecycle state of a given
+  // document (i.e. whether it's in back-forward cache or being prerendered) in
+  // addition to its origin.
+  virtual void RequestPermissionFromCurrentDocument(
+      PermissionType permission,
+      RenderFrameHost* render_frame_host,
+      bool user_gesture,
+      base::OnceCallback<void(blink::mojom::PermissionStatus)> callback) = 0;
 };
 
 }  // namespace content

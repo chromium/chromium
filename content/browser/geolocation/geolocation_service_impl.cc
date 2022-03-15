@@ -7,7 +7,8 @@
 #include <utility>
 
 #include "base/bind.h"
-#include "content/browser/permissions/permission_controller_impl.h"
+#include "content/public/browser/browser_context.h"
+#include "content/public/browser/permission_controller.h"
 #include "content/public/browser/permission_type.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
@@ -16,12 +17,9 @@
 
 namespace content {
 
-GeolocationServiceImplContext::GeolocationServiceImplContext(
-    PermissionControllerImpl* permission_controller)
-    : permission_controller_(permission_controller) {}
+GeolocationServiceImplContext::GeolocationServiceImplContext() = default;
 
-GeolocationServiceImplContext::~GeolocationServiceImplContext() {
-}
+GeolocationServiceImplContext::~GeolocationServiceImplContext() = default;
 
 void GeolocationServiceImplContext::RequestPermission(
     RenderFrameHost* render_frame_host,
@@ -35,11 +33,13 @@ void GeolocationServiceImplContext::RequestPermission(
   }
 
   has_pending_permission_request_ = true;
-  permission_controller_->RequestPermission(
-      PermissionType::GEOLOCATION, render_frame_host,
-      render_frame_host->GetLastCommittedOrigin().GetURL(), user_gesture,
-      base::BindOnce(&GeolocationServiceImplContext::HandlePermissionStatus,
-                     weak_factory_.GetWeakPtr(), std::move(callback)));
+
+  render_frame_host->GetBrowserContext()
+      ->GetPermissionController()
+      ->RequestPermissionFromCurrentDocument(
+          PermissionType::GEOLOCATION, render_frame_host, user_gesture,
+          base::BindOnce(&GeolocationServiceImplContext::HandlePermissionStatus,
+                         weak_factory_.GetWeakPtr(), std::move(callback)));
 }
 
 void GeolocationServiceImplContext::HandlePermissionStatus(
@@ -56,18 +56,14 @@ GeolocationServiceImpl::GeolocationServiceImpl(
       render_frame_host_(render_frame_host) {
   DCHECK(geolocation_context);
   DCHECK(render_frame_host);
-
-  permission_controller_ = PermissionControllerImpl::FromBrowserContext(
-      render_frame_host_->GetProcess()->GetBrowserContext());
 }
 
 GeolocationServiceImpl::~GeolocationServiceImpl() {}
 
 void GeolocationServiceImpl::Bind(
     mojo::PendingReceiver<blink::mojom::GeolocationService> receiver) {
-  receiver_set_.Add(
-      this, std::move(receiver),
-      std::make_unique<GeolocationServiceImplContext>(permission_controller_));
+  receiver_set_.Add(this, std::move(receiver),
+                    std::make_unique<GeolocationServiceImplContext>());
 }
 
 void GeolocationServiceImpl::CreateGeolocation(

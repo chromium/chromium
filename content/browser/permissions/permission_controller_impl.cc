@@ -330,6 +330,18 @@ void PermissionControllerImpl::RequestPermissions(
                                std::move(wrapper));
 }
 
+void PermissionControllerImpl::RequestPermissionFromCurrentDocument(
+    PermissionType permission,
+    RenderFrameHost* render_frame_host,
+    bool user_gesture,
+    base::OnceCallback<void(blink::mojom::PermissionStatus)> callback) {
+  // TODO(https://crbug.com/1271543): `RequestPermissionFromCurrentDocument`
+  // into `PermissionControllerDelegate` and use it here.
+  RequestPermission(permission, render_frame_host,
+                    render_frame_host->GetLastCommittedOrigin().GetURL(),
+                    user_gesture, std::move(callback));
+}
+
 blink::mojom::PermissionStatus
 PermissionControllerImpl::DeprecatedGetPermissionStatus(
     PermissionType permission,
