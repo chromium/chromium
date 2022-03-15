@@ -858,6 +858,7 @@ crbug.com/591099 fast/selectors/input-with-selection-pseudo-element.html [ Failu
 crbug.com/591099 fast/writing-mode/flipped-blocks-inline-map-local-to-container.html [ Failure ]
 
 ### external/wpt/html/rendering
+crbug.com/591099 external/wpt/html/rendering/non-replaced-elements/the-fieldset-and-legend-elements/fieldset-baseline.html [ Failure ]
 crbug.com/591099 external/wpt/html/rendering/non-replaced-elements/the-fieldset-and-legend-elements/fieldset-block-size.html [ Failure ]
 crbug.com/880062 external/wpt/html/rendering/non-replaced-elements/the-fieldset-and-legend-elements/fieldset-content-before-legend.html [ Failure ]
 crbug.com/880062 external/wpt/html/rendering/non-replaced-elements/the-fieldset-and-legend-elements/fieldset-generated-content.html [ Failure ]
@@ -1383,6 +1384,7 @@ crbug.com/591099 external/wpt/appmanifest/start_url-member/start_url-member-fail
 crbug.com/591099 external/wpt/appmanifest/start_url-member/start_url-member-pass-manual.html [ Failure ]
 
 ### external/wpt/css/css-flexbox/
+crbug.com/591099 external/wpt/css/css-flexbox/fieldset-baseline-alignment.html [ Failure ]
 crbug.com/591099 external/wpt/css/css-flexbox/percentage-size-quirks-002.html [ Failure ]
 crbug.com/591099 external/wpt/css/css-flexbox/abspos/position-absolute-014.html [ Failure ]
 crbug.com/591099 external/wpt/css/css-flexbox/abspos/position-absolute-015.html [ Failure ]

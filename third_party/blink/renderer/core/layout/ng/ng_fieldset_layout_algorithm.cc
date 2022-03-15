@@ -417,8 +417,16 @@ NGBreakStatus NGFieldsetLayoutAlgorithm::LayoutFieldsetContent(
     DCHECK_EQ(result->Status(), NGLayoutResult::kSuccess);
     LogicalOffset offset(borders_.inline_start, intrinsic_block_size_);
     container_builder_.AddResult(*result, offset);
+
+    const auto& fragment =
+        To<NGPhysicalBoxFragment>(result->PhysicalFragment());
+    if (auto baseline = fragment.Baseline())
+      container_builder_.SetBaseline(offset.block_offset + *baseline);
+    if (auto last_baseline = fragment.LastBaseline())
+      container_builder_.SetLastBaseline(offset.block_offset + *last_baseline);
+
     intrinsic_block_size_ +=
-        NGFragment(writing_direction_, result->PhysicalFragment()).BlockSize();
+        NGFragment(writing_direction_, fragment).BlockSize();
     container_builder_.SetHasSeenAllChildren();
   } else if (break_status == NGBreakStatus::kBrokeBefore) {
     ConsumeRemainingFragmentainerSpace();
@@ -533,6 +541,7 @@ NGFieldsetLayoutAlgorithm::CreateConstraintSpaceForFieldsetContent(
   builder.SetPercentageResolutionSize(
       ConstraintSpace().PercentageResolutionSize());
   builder.SetIsFixedBlockSize(padding_box_size.block_size != kIndefiniteSize);
+  builder.SetBaselineAlgorithmType(ConstraintSpace().BaselineAlgorithmType());
 
   if (ConstraintSpace().HasBlockFragmentation()) {
     SetupSpaceBuilderForFragmentation(
