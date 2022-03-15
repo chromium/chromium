@@ -457,7 +457,7 @@ as required builders.
   * Experiment percentage: 10.0
 
 * [android-12-x64-rel](https://ci.chromium.org/p/chromium/builders/try/android-12-x64-rel) ([definition](https://cs.chromium.org/search?q=+file:/try.star$+""android-12-x64-rel"")) ([matching builders](https://cs.chromium.org/search?q=+file:trybots.py+""android-12-x64-rel""))
-  * Experiment percentage: 5.0
+  * Experiment percentage: 20.0
 
 * [android-pie-arm64-coverage-experimental-rel](https://ci.chromium.org/p/chromium/builders/try/android-pie-arm64-coverage-experimental-rel) ([definition](https://cs.chromium.org/search?q=+file:/try.star$+""android-pie-arm64-coverage-experimental-rel"")) ([matching builders](https://cs.chromium.org/search?q=+file:trybots.py+""android-pie-arm64-coverage-experimental-rel""))
   * Experiment percentage: 3.0
