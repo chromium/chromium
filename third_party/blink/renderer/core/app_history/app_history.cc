@@ -772,8 +772,7 @@ AppHistory::DispatchResult AppHistory::DispatchNavigateEvent(
     GetSupplementable()->document()->Loader()->RunURLAndHistoryUpdateSteps(
         url, destination_item,
         mojom::blink::SameDocumentNavigationType::kAppHistoryTransitionWhile,
-        state_object, type, mojom::blink::ScrollRestorationType::kAuto,
-        is_browser_initiated, is_synchronously_committed);
+        state_object, type, is_browser_initiated, is_synchronously_committed);
   }
 
   if (!promise_list.IsEmpty() ||

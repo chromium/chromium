@@ -22,8 +22,7 @@ void FragmentDirectiveUtils::RemoveSelectorsFromUrl(LocalFrame* frame) {
   // This is equivalent to history.replaceState in javascript.
   frame->DomWindow()->document()->Loader()->RunURLAndHistoryUpdateSteps(
       url, nullptr, mojom::blink::SameDocumentNavigationType::kFragment,
-      /*data=*/nullptr, WebFrameLoadType::kReplaceCurrentItem,
-      mojom::blink::ScrollRestorationType::kAuto);
+      /*data=*/nullptr, WebFrameLoadType::kReplaceCurrentItem);
 }
 
 }  // namespace blink

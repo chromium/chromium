@@ -246,8 +246,8 @@ void History::pushState(v8::Isolate* isolate,
   if (exception_state.HadException())
     return;
 
-  StateObjectAdded(std::move(serialized_data), title, url,
-                   ScrollRestorationInternal(), load_type, exception_state);
+  StateObjectAdded(std::move(serialized_data), title, url, load_type,
+                   exception_state);
 }
 
 void History::replaceState(v8::Isolate* isolate,
@@ -264,7 +264,6 @@ void History::replaceState(v8::Isolate* isolate,
     return;
 
   StateObjectAdded(std::move(serialized_data), title, url,
-                   ScrollRestorationInternal(),
                    WebFrameLoadType::kReplaceCurrentItem, exception_state);
 }
 
@@ -277,13 +276,11 @@ KURL History::UrlForState(const String& url_string) {
   return KURL(DomWindow()->BaseURL(), url_string);
 }
 
-void History::StateObjectAdded(
-    scoped_refptr<SerializedScriptValue> data,
-    const String& /* title */,
-    const String& url_string,
-    mojom::blink::ScrollRestorationType restoration_type,
-    WebFrameLoadType type,
-    ExceptionState& exception_state) {
+void History::StateObjectAdded(scoped_refptr<SerializedScriptValue> data,
+                               const String& /* title */,
+                               const String& url_string,
+                               WebFrameLoadType type,
+                               ExceptionState& exception_state) {
   if (!DomWindow()) {
     exception_state.ThrowSecurityError(
         "May not use a History object associated with a Document that is not "
@@ -327,7 +324,7 @@ void History::StateObjectAdded(
 
   DomWindow()->document()->Loader()->RunURLAndHistoryUpdateSteps(
       full_url, nullptr, mojom::blink::SameDocumentNavigationType::kHistoryApi,
-      std::move(data), type, restoration_type);
+      std::move(data), type);
 }
 
 }  // namespace blink

@@ -13415,7 +13415,6 @@ TEST_F(WebFrameTest, RecordSameDocumentNavigationToHistogram) {
   document_loader.UpdateForSameDocumentNavigation(
       ToKURL("about:blank"), nullptr,
       mojom::blink::SameDocumentNavigationType::kHistoryApi, message,
-      mojom::blink::ScrollRestorationType::kAuto,
       WebFrameLoadType::kReplaceCurrentItem,
       frame->DomWindow()->GetSecurityOrigin(), false /* is_browser_initiated */,
       true /* is_synchronously_committed */);
@@ -13426,7 +13425,6 @@ TEST_F(WebFrameTest, RecordSameDocumentNavigationToHistogram) {
   document_loader.UpdateForSameDocumentNavigation(
       ToKURL("about:blank"), MakeGarbageCollected<HistoryItem>(),
       mojom::blink::SameDocumentNavigationType::kFragment, message,
-      mojom::blink::ScrollRestorationType::kManual,
       WebFrameLoadType::kBackForward, frame->DomWindow()->GetSecurityOrigin(),
       false /* is_browser_initiated */, true /* is_synchronously_committed */);
   tester.ExpectBucketCount(histogramName,
@@ -13434,7 +13432,6 @@ TEST_F(WebFrameTest, RecordSameDocumentNavigationToHistogram) {
   document_loader.UpdateForSameDocumentNavigation(
       ToKURL("about:blank"), nullptr,
       mojom::blink::SameDocumentNavigationType::kFragment, message,
-      mojom::blink::ScrollRestorationType::kManual,
       WebFrameLoadType::kReplaceCurrentItem,
       frame->DomWindow()->GetSecurityOrigin(), false /* is_browser_initiated */,
       true /* is_synchronously_committed */);
