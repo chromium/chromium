@@ -20,6 +20,7 @@ import androidx.annotation.LayoutRes;
 import androidx.annotation.Nullable;
 
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.ui.modaldialog.DialogDismissalCause;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modaldialog.ModalDialogProperties;
@@ -75,6 +76,15 @@ public abstract class AutofillSaveCardPromptBase implements ModalDialogPropertie
             ViewStub stub = mDialogView.findViewById(R.id.autofill_save_card_content_stub);
             stub.setLayoutResource(contentLayoutId);
             stub.inflate();
+        }
+
+        if (ChromeFeatureList.isEnabled(ChromeFeatureList.MESSAGES_FOR_ANDROID_SAVE_CARD)
+                && ChromeFeatureList.getFieldTrialParamByFeatureAsBoolean(
+                        ChromeFeatureList.MESSAGES_FOR_ANDROID_SAVE_CARD,
+                        "save_card_dialog_explanation", false)) {
+            TextView description = mDialogView.findViewById(R.id.description);
+            description.setVisibility(View.VISIBLE);
+            description.setText(R.string.autofill_save_card_prompt_upload_explanation_v3);
         }
 
         PropertyModel.Builder builder =

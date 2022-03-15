@@ -128,6 +128,13 @@ class SaveCardMessageControllerAndroid : public SaveCardMessageConfirmDelegate {
   // Whether we should re-show the dialog to users when users return to the tab.
   bool reprompt_required_ = false;
 
+  // True if user clicked links.
+  bool is_link_clicked_ = false;
+
+  // True if dialog is shown. The dialog is triggered when primary action button
+  // of message is clicked and the card should be uploaded.
+  bool is_dialog_shown_ = false;
+
   bool is_name_confirmed_for_testing_ = false;
   bool is_date_confirmed_for_testing_ = false;
   bool is_save_card_confirmed_for_testing_ = false;

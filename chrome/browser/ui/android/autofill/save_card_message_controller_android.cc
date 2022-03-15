@@ -11,6 +11,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/android/autofill/save_card_controller_metrics_android.h"
 #include "components/autofill/core/browser/data_model/credit_card.h"
+#include "components/autofill/core/browser/metrics/autofill_metrics.h"
 #include "components/autofill/core/browser/payments/autofill_save_card_ui_utils_mobile.h"
 #include "components/autofill/core/common/autofill_prefs.h"
 #include "components/grit/components_scaled_resources.h"
@@ -162,10 +163,13 @@ void SaveCardMessageControllerAndroid::MaybeShowDialog() {
   if (is_upload_ && !request_more_info_) {
     // If we already know all the info, confirm save card to show other info
     // such as legal terms, and then run callback after user confirms.
+    is_dialog_shown_ = true;
     ConfirmSaveCard();
   } else if (options_.should_request_name_from_user) {
+    is_dialog_shown_ = true;
     FixName(inferred_name_);
   } else if (options_.should_request_expiration_date_from_user) {
+    is_dialog_shown_ = true;
     FixDate();
   } else {
     OnPromptCompleted(AutofillClient::SaveCardOfferUserDecision::kAccepted, {});
@@ -232,6 +236,7 @@ void SaveCardMessageControllerAndroid::OnLegalMessageLinkClicked(
     JNIEnv* env,
     const base::android::JavaParamRef<jstring>& url) {
   reprompt_required_ = true;
+  is_link_clicked_ = true;
   // Temporarily dismiss the dialog and then re-prompt when user returns to
   // the page.
   save_card_message_confirm_controller_->DismissDialog();
@@ -253,19 +258,27 @@ void SaveCardMessageControllerAndroid::OnPromptCompleted(
     AutofillClient::SaveCardOfferUserDecision user_decision,
     AutofillClient::UserProvidedCardDetails user_provided_details) {
   MessageMetrics message_state;
+  MessageDialogPromptMetrics dialog_state;
   switch (user_decision) {
     case AutofillClient::SaveCardOfferUserDecision::kAccepted:
       message_state = MessageMetrics::kAccepted;
+      dialog_state = MessageDialogPromptMetrics::kAccepted;
       break;
     case AutofillClient::SaveCardOfferUserDecision::kDeclined:
       message_state = MessageMetrics::kDenied;
+      dialog_state = MessageDialogPromptMetrics::kDenied;
       break;
     case AutofillClient::SaveCardOfferUserDecision::kIgnored:
       message_state = MessageMetrics::kIgnored;
+      dialog_state = MessageDialogPromptMetrics::kIgnored;
       break;
   }
   LogAutofillCreditCardMessageMetrics(message_state, is_upload_, options_);
   if (is_upload_) {
+    if (is_dialog_shown_) {
+      LogAutofillCreditCardMessageDialogPromptMetrics(dialog_state, options_,
+                                                      is_link_clicked_);
+    }
     std::move(upload_save_card_prompt_callback_)
         .Run(user_decision, user_provided_details);
   } else {
