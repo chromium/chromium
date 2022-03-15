@@ -94,6 +94,9 @@ class ANIMATION_EXPORT Tween {
 
     ACCEL_0_100_DECEL_80,  // Variant of ACCEL_0_80_DECEL_80 which drops in
                            // value even faster.
+
+    ACCEL_5_70_DECEL_90,  // Start at peak velocity and very soft
+                          // deceleration.
   };
 
   Tween(const Tween&) = delete;

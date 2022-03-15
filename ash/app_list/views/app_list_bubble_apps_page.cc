@@ -639,8 +639,8 @@ void AppListBubbleAppsPage::OnAppsGridViewFadeOutAnimationEneded(
   // Hide the undo toast instantly before starting the toast fade in animation.
   toast_container_->layer()->SetOpacity(0.f);
 
-  animation_builder.GetCurrentSequence().SetOpacity(toast_container_->layer(),
-                                                    1.f);
+  animation_builder.GetCurrentSequence().SetOpacity(
+      toast_container_->layer(), 1.f, gfx::Tween::ACCEL_5_70_DECEL_90);
 }
 
 void AppListBubbleAppsPage::OnAppsGridViewFadeInAnimationEnded(bool aborted) {

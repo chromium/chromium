@@ -1528,14 +1528,14 @@ void AppsContainerView::OnAppsGridViewFadeOutAnimationEneded(
   // Hide the toast to prepare for the fade in animation,
   toast_container_->layer()->SetOpacity(0.f);
 
-  animation_builder.GetCurrentSequence().SetOpacity(toast_container_->layer(),
-                                                    1.f);
+  animation_builder.GetCurrentSequence().SetOpacity(
+      toast_container_->layer(), 1.f, gfx::Tween::ACCEL_5_70_DECEL_90);
 
   // Continue section should be faded in only when the page changes.
   if (page_change) {
     continue_container_->layer()->SetOpacity(0.f);
     animation_builder.GetCurrentSequence().SetOpacity(
-        continue_container_->layer(), 1.f);
+        continue_container_->layer(), 1.f, gfx::Tween::ACCEL_5_70_DECEL_90);
   }
 }
 

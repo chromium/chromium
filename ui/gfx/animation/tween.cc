@@ -118,6 +118,9 @@ double Tween::CalculateValue(Tween::Type type, double state) {
 
     case ACCEL_0_100_DECEL_80:
       return gfx::CubicBezier(0, 1, 0.2, 1).Solve(state);
+
+    case ACCEL_5_70_DECEL_90:
+      return gfx::CubicBezier(0.05, 0.7, 0.1, 1).Solve(state);
   }
 
   NOTREACHED();
@@ -164,8 +167,8 @@ SkColor Tween::ColorValueBetween(double value, SkColor start, SkColor target) {
       BlendColorComponents(SkColorGetB(start), SkColorGetB(target), start_a,
                            target_a, blended_a, value);
 
-  return SkColorSetARGB(
-      FloatToColorByte(blended_a), blended_r, blended_g, blended_b);
+  return SkColorSetARGB(FloatToColorByte(blended_a), blended_r, blended_g,
+                        blended_b);
 }
 
 // static

@@ -2095,22 +2095,6 @@ void AppsGridView::FadeOutVisibleItemsForReorder(
   reorder_animation_tracker_->Start(metrics_util::ForSmoothness(
       base::BindRepeating(&ReportReorderAnimationSmoothness, IsTabletMode())));
 
-  const absl::optional<VisibleItemIndexRange> range =
-      GetVisibleItemIndexRange();
-
-  // TODO(https://crbug.com/1289411): handle the case that `range` is null.
-  DCHECK(range);
-
-  // Assume all the items matched by the indices in `range` are placed on the
-  // same page.
-  const int page_index =
-      view_structure_.GetIndexFromModelIndex(range->first_index).page;
-  const int offset =
-      kFadeAnimationOffsetRatio * GetTotalTileSize(page_index).height();
-
-  gfx::Transform translate_offset;
-  translate_offset.Translate(0, offset);
-
   {
     views::AnimationBuilder animation_builder;
     reorder_animation_abort_handle_ = animation_builder.GetAbortHandle();
@@ -2123,9 +2107,7 @@ void AppsGridView::FadeOutVisibleItemsForReorder(
                                   /*abort=*/true))
         .Once()
         .SetDuration(kFadeOutAnimationDuration)
-        .SetOpacity(layer(), 0.f, gfx::Tween::LINEAR)
-        .SetTransform(layer(), translate_offset,
-                      gfx::Tween::LINEAR_OUT_SLOW_IN);
+        .SetOpacity(layer(), 0.f, gfx::Tween::LINEAR);
   }
 
   if (fade_out_start_closure_for_test_)
@@ -2170,7 +2152,7 @@ views::AnimationBuilder AppsGridView::FadeInVisibleItemsForReorder(
                                 /*abort=*/true))
       .Once()
       .SetDuration(kFadeInAnimationDuration)
-      .SetOpacity(layer(), 1.f, gfx::Tween::LINEAR);
+      .SetOpacity(layer(), 1.f, gfx::Tween::ACCEL_5_70_DECEL_90);
 
   // Assume all the items matched by the indices in `range` are
   // placed on the same page.
@@ -2197,7 +2179,7 @@ views::AnimationBuilder AppsGridView::FadeInVisibleItemsForReorder(
     // existing time duration.
     SlideViewIntoPositionWithSequenceBlock(
         animated_view, offset,
-        /*time_delta=*/absl::nullopt, gfx::Tween::LINEAR,
+        /*time_delta=*/absl::nullopt, gfx::Tween::ACCEL_5_70_DECEL_90,
         &animation_builder.GetCurrentSequence());
   }
 
