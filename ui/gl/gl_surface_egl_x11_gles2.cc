@@ -93,24 +93,44 @@ EGLConfig NativeViewGLSurfaceEGLX11GLES2::GetConfig() {
     config_attribs[kBufferSizeOffset] = geometry->depth;
 
     EGLDisplay display = GetHardwareDisplay();
+    x11::VisualId visual_id;
+    ui::XVisualManager::GetInstance()->ChooseVisualForWindow(
+        true, &visual_id, nullptr, nullptr, nullptr);
     EGLint num_configs;
-    if (!eglChooseConfig(display, config_attribs, &config_, 1, &num_configs)) {
+    if (!eglChooseConfig(display, config_attribs, nullptr, 0, &num_configs)) {
       LOG(ERROR) << "eglChooseConfig failed with error "
                  << GetLastEGLErrorString();
       return nullptr;
     }
+    std::vector<EGLConfig> configs(num_configs);
 
     if (num_configs) {
-      EGLint config_depth;
-      if (!eglGetConfigAttrib(display, config_, EGL_BUFFER_SIZE,
-                              &config_depth)) {
-        LOG(ERROR) << "eglGetConfigAttrib failed with error "
+      if (!eglChooseConfig(display, config_attribs, &configs.front(),
+                           num_configs, &num_configs)) {
+        LOG(ERROR) << "eglChooseConfig failed with error "
                    << GetLastEGLErrorString();
         return nullptr;
       }
-
-      if (config_depth == geometry->depth) {
-        return config_;
+      for (EGLConfig config : configs) {
+        EGLint config_depth;
+        if (!eglGetConfigAttrib(display, config, EGL_BUFFER_SIZE,
+                                &config_depth)) {
+          LOG(ERROR) << "eglGetConfigAttrib failed with error "
+                     << GetLastEGLErrorString();
+          return nullptr;
+        }
+        EGLint config_visual_id;
+        if (!eglGetConfigAttrib(display, config, EGL_NATIVE_VISUAL_ID,
+                                &config_visual_id)) {
+          LOG(ERROR) << "eglGetConfigAttrib failed with error "
+                     << GetLastEGLErrorString();
+          return nullptr;
+        }
+        if (config_depth == geometry->depth &&
+            config_visual_id == static_cast<EGLint>(visual_id)) {
+          config_ = config;
+          return config_;
+        }
       }
     }
 
