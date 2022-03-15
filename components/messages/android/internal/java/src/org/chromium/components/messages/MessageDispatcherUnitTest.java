@@ -53,8 +53,7 @@ public class MessageDispatcherUnitTest {
                 .with(MessageBannerProperties.TITLE, "test")
                 .with(MessageBannerProperties.DESCRIPTION, "Description")
                 .with(MessageBannerProperties.ICON, null)
-                .with(MessageBannerProperties.ON_PRIMARY_ACTION,
-                        () -> PrimaryActionClickBehavior.DISMISS_IMMEDIATELY)
+                .with(MessageBannerProperties.ON_PRIMARY_ACTION, () -> {})
                 .with(MessageBannerProperties.ON_DISMISSED, (dismissReason) -> {})
                 .build();
     }

@@ -25,7 +25,6 @@ import org.chromium.components.messages.MessageDispatcher;
 import org.chromium.components.messages.MessageDispatcherProvider;
 import org.chromium.components.messages.MessageIdentifier;
 import org.chromium.components.messages.MessageScopeType;
-import org.chromium.components.messages.PrimaryActionClickBehavior;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -224,7 +223,6 @@ public class VrCoreInstallUtils {
                                             new Intent(Intent.ACTION_VIEW,
                                                     Uri.parse(VR_CORE_MARKET_URI)),
                                             VR_SERVICES_UPDATE_RESULT);
-                                    return PrimaryActionClickBehavior.DISMISS_IMMEDIATELY;
                                 })
                         .with(MessageBannerProperties.ON_DISMISSED, this::onMessageDismissed)
                         .build();

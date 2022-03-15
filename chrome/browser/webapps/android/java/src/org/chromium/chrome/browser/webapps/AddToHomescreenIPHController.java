@@ -32,7 +32,6 @@ import org.chromium.components.messages.MessageBannerProperties;
 import org.chromium.components.messages.MessageDispatcher;
 import org.chromium.components.messages.MessageIdentifier;
 import org.chromium.components.messages.MessageScopeType;
-import org.chromium.components.messages.PrimaryActionClickBehavior;
 import org.chromium.components.webapk.lib.client.WebApkValidator;
 import org.chromium.components.webapps.AddToHomescreenCoordinator;
 import org.chromium.components.webapps.AppBannerManager;
@@ -187,10 +186,7 @@ public class AddToHomescreenIPHController {
                                         R.string.iph_message_add_to_home_screen_action))
                         .with(MessageBannerProperties.ON_DISMISSED, this::onMessageDismissed)
                         .with(MessageBannerProperties.ON_PRIMARY_ACTION,
-                                () -> {
-                                    onMessageAddButtonClicked(tab);
-                                    return PrimaryActionClickBehavior.DISMISS_IMMEDIATELY;
-                                })
+                                () -> onMessageAddButtonClicked(tab))
                         .build();
         mMessageDispatcher.enqueueMessage(
                 model, tab.getWebContents(), MessageScopeType.NAVIGATION, false);

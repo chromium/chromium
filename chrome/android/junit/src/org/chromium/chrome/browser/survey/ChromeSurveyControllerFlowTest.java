@@ -68,7 +68,6 @@ import org.chromium.components.messages.DismissReason;
 import org.chromium.components.messages.MessageBannerProperties;
 import org.chromium.components.messages.MessageDispatcher;
 import org.chromium.components.messages.MessageIdentifier;
-import org.chromium.components.messages.PrimaryActionClickBehavior;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.modelutil.PropertyModel;
 
@@ -574,9 +573,7 @@ public class ChromeSurveyControllerFlowTest {
         Assert.assertNotNull("Message dismissal action is null.",
                 messageModel.get(MessageBannerProperties.ON_DISMISSED));
 
-        Assert.assertEquals("Message ON_PRIMARY_ACTION should return DISMISS_IMMEDIATELY.",
-                PrimaryActionClickBehavior.DISMISS_IMMEDIATELY,
-                messageModel.get(MessageBannerProperties.ON_PRIMARY_ACTION).get().intValue());
+        messageModel.get(MessageBannerProperties.ON_PRIMARY_ACTION).run();
         Assert.assertEquals("showSurvey should be called.", 1,
                 mTestSurveyController.showSurveyIfAvailableCallback.getCallCount());
     }

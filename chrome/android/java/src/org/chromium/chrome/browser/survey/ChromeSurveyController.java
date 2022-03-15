@@ -50,7 +50,6 @@ import org.chromium.components.messages.DismissReason;
 import org.chromium.components.messages.MessageBannerProperties;
 import org.chromium.components.messages.MessageDispatcher;
 import org.chromium.components.messages.MessageIdentifier;
-import org.chromium.components.messages.PrimaryActionClickBehavior;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.url.GURL;
 
@@ -280,10 +279,7 @@ public class ChromeSurveyController implements InfoBarAnimationListener {
                             .with(MessageBannerProperties.PRIMARY_BUTTON_TEXT,
                                     resources.getString(R.string.chrome_survey_message_button))
                             .with(MessageBannerProperties.ON_PRIMARY_ACTION,
-                                    () -> {
-                                        showSurvey(siteId);
-                                        return PrimaryActionClickBehavior.DISMISS_IMMEDIATELY;
-                                    })
+                                    () -> showSurvey(siteId))
                             .with(MessageBannerProperties.ON_DISMISSED,
                                     this::recordSurveyPromptMetrics)
                             .build();

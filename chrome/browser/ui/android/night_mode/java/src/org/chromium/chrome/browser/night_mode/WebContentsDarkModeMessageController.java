@@ -30,7 +30,6 @@ import org.chromium.components.messages.DismissReason;
 import org.chromium.components.messages.MessageBannerProperties;
 import org.chromium.components.messages.MessageDispatcher;
 import org.chromium.components.messages.MessageIdentifier;
-import org.chromium.components.messages.PrimaryActionClickBehavior;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.modaldialog.DialogDismissalCause;
 import org.chromium.ui.modaldialog.ModalDialogManager;
@@ -135,10 +134,7 @@ public class WebContentsDarkModeMessageController {
                         .with(MessageBannerProperties.PRIMARY_BUTTON_TEXT,
                                 resources.getString(R.string.auto_dark_message_button))
                         .with(MessageBannerProperties.ON_PRIMARY_ACTION,
-                                () -> {
-                                    onOptOutPrimaryAction(activity, settingsLauncher);
-                                    return PrimaryActionClickBehavior.DISMISS_IMMEDIATELY;
-                                })
+                                () -> { onOptOutPrimaryAction(activity, settingsLauncher); })
                         .with(MessageBannerProperties.ON_DISMISSED,
                                 (dismissReason) -> {
                                     onOptOutMessageDismissed(profile, dismissReason);
@@ -166,10 +162,7 @@ public class WebContentsDarkModeMessageController {
                         .with(MessageBannerProperties.PRIMARY_BUTTON_TEXT,
                                 resources.getString(R.string.auto_dark_message_opt_in_button))
                         .with(MessageBannerProperties.ON_PRIMARY_ACTION,
-                                () -> {
-                                    onOptInPrimaryAction(profile, webContents);
-                                    return PrimaryActionClickBehavior.DISMISS_IMMEDIATELY;
-                                })
+                                () -> { onOptInPrimaryAction(profile, webContents); })
                         .with(MessageBannerProperties.ON_DISMISSED,
                                 (dismissReason) -> {
                                     onOptInMessageDismissed(activity, profile, webContents,
