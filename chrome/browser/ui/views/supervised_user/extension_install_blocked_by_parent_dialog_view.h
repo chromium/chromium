@@ -43,6 +43,8 @@ class ExtensionInstallBlockedByParentDialogView
       const ExtensionInstallBlockedByParentDialogView&) = delete;
   ~ExtensionInstallBlockedByParentDialogView() override;
 
+  void OnThemeChanged() override;
+
  private:
   void ConfigureTitle();
   void CreateContents();
@@ -50,7 +52,6 @@ class ExtensionInstallBlockedByParentDialogView
 
   const extensions::Extension* extension_ = nullptr;
   chrome::ExtensionInstalledBlockedByParentDialogAction action_;
-  gfx::ImageSkia icon_;
   base::OnceClosure done_callback_;
 };
 
