@@ -84,7 +84,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Printing.CUPS.AddressResolutionResult" enum="BooleanSuccess"
     expires_after="2022-08-07">
-  <owner>skau@chromium.org</owner>
+  <owner>bmgordon@chromium.org</owner>
   <owner>cros-printing-dev@chromium.org</owner>
   <summary>
     Records whether resolution of a .local address via mDNS was successful. The
@@ -106,7 +106,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Printing.CUPS.IppAttributesSuccess" enum="BooleanSuccess"
     expires_after="2022-08-07">
-  <owner>skau@chromium.org</owner>
+  <owner>bmgordon@chromium.org</owner>
   <owner>cros-printing-dev@chromium.org</owner>
   <summary>
     Record if the request for IPP attributes was successful during printer
@@ -118,8 +118,8 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Printing.CUPS.IppDeviceReachable" enum="BooleanSuccess"
-    expires_after="2022-04-17">
-  <owner>skau@chromium.org</owner>
+    expires_after="2022-10-17">
+  <owner>bmgordon@chromium.org</owner>
   <owner>cros-printing-dev@chromium.org</owner>
   <summary>
     Record if the request for IPP attributes was successful in reaching the
@@ -128,7 +128,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Printing.CUPS.JobDuration.JobCancelled" units="ms"
-    expires_after="2022-04-24">
+    expires_after="2022-10-24">
   <owner>bmgordon@chromium.org</owner>
   <owner>project-bolton@google.com</owner>
   <summary>
@@ -151,7 +151,7 @@ chromium-metrics-reviews@google.com.
     expires_after="never">
 <!-- expires-never: Monitors printing health for Chrome OS. -->
 
-  <owner>skau@chromium.org</owner>
+  <owner>bmgordon@chromium.org</owner>
   <owner>cros-printing-dev@chromium.org</owner>
   <summary>
     The final status of every print job that was succesfully queued. Only used
@@ -173,8 +173,8 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Printing.CUPS.NearbyNetworkPrintersCount" units="printers"
-    expires_after="2022-04-17">
-  <owner>skau@chromium.org</owner>
+    expires_after="2022-10-17">
+  <owner>bmgordon@chromium.org</owner>
   <owner>project-bolton@google.com</owner>
   <summary>
     The number of detected network printers that have not been saved. Recorded
@@ -184,7 +184,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Printing.CUPS.PrintDocumentSize" units="KB"
-    expires_after="2022-04-17">
+    expires_after="2022-10-17">
   <owner>bmgordon@chromium.org</owner>
   <owner>project-bolton@google.com</owner>
   <summary>
@@ -194,8 +194,8 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Printing.CUPS.PrinterAdded" enum="PrinterProtocol"
-    expires_after="2022-04-17">
-  <owner>skau@chromium.org</owner>
+    expires_after="2022-10-17">
+  <owner>bmgordon@chromium.org</owner>
   <owner>src/chromeos/printing/OWNERS</owner>
   <summary>
     The protocol for a printer that was added. Used to track printer churn by
@@ -204,8 +204,8 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Printing.CUPS.PrinterRemoved" enum="PrinterProtocol"
-    expires_after="2022-04-17">
-  <owner>skau@chromium.org</owner>
+    expires_after="2022-10-17">
+  <owner>bmgordon@chromium.org</owner>
   <owner>src/chromeos/printing/OWNERS</owner>
   <summary>
     The protocol for a printer that was removed. Used to track printer churn by
@@ -215,7 +215,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Printing.CUPS.PrintersDiscovered" units="printers"
     expires_after="2022-08-28">
-  <owner>skau@chromium.org</owner>
+  <owner>bmgordon@chromium.org</owner>
   <owner>src/chromeos/printing/OWNERS</owner>
   <summary>
     The number of printers shown in the discovered printers dialog during
@@ -227,7 +227,7 @@ chromium-metrics-reviews@google.com.
     expires_after="never">
 <!-- expires-never: Monitors printer setup health for Chrome OS. -->
 
-  <owner>skau@chromium.org</owner>
+  <owner>bmgordon@chromium.org</owner>
   <owner>src/chromeos/printing/OWNERS</owner>
   <summary>
     The success or error code for the setup of a CUPS printer. Recorded when
@@ -282,8 +282,8 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Printing.CUPS.ProtocolUsed" enum="PrinterProtocol"
-    expires_after="2022-04-17">
-  <owner>skau@chromium.org</owner>
+    expires_after="2022-10-17">
+  <owner>bmgordon@chromium.org</owner>
   <owner>cros-printing-dev@chromium.org</owner>
   <summary>
     Records the protocol for a selected printer in Chrome OS. Used to track
@@ -295,7 +295,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Printing.CUPS.TotalNetworkPrintersCount" units="printers"
     expires_after="2022-08-28">
-  <owner>skau@chromium.org</owner>
+  <owner>bmgordon@chromium.org</owner>
   <owner>project-bolton@google.com</owner>
   <summary>
     The total number of detected network printers. Recorded when the user
@@ -369,7 +369,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="Printing.PrintServers.ServersToQuery" units="servers"
     expires_after="2022-12-31">
   <owner>pawliczek@chromium.org</owner>
-  <owner>skau@chromium.org</owner>
+  <owner>bmgordon@chromium.org</owner>
   <summary>
     Records the number of print servers that must be queried according to
     policies. Only non-zero values are recorded. The histogram is emitted when
