@@ -46,13 +46,9 @@ CreateContentBrowserURLLoaderThrottles(
 
   ClientHintsControllerDelegate* client_hint_delegate =
       browser_context->GetClientHintsControllerDelegate();
-  if ((base::FeatureList::IsEnabled(features::kCriticalClientHint) ||
-       base::FeatureList::IsEnabled(network::features::kAcceptCHFrame)) &&
-      request.is_main_frame && net::HttpUtil::IsMethodSafe(request.method) &&
-      client_hint_delegate &&
-      ShouldAddClientHints(url::Origin::Create(request.url),
-                           FrameTreeNode::GloballyFindByID(frame_tree_node_id),
-                           client_hint_delegate)) {
+  if (base::FeatureList::IsEnabled(features::kCriticalClientHint) &&
+      net::HttpUtil::IsMethodSafe(request.method) && request.is_main_frame &&
+      client_hint_delegate) {
     throttles.push_back(std::make_unique<CriticalClientHintsThrottle>(
         browser_context, client_hint_delegate, frame_tree_node_id));
   }

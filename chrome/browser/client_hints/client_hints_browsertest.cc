@@ -3162,6 +3162,25 @@ IN_PROC_BROWSER_TEST_F(CriticalClientHintsBrowserTest,
   EXPECT_EQ(4, handler.request_count());
 }
 
+IN_PROC_BROWSER_TEST_F(CriticalClientHintsBrowserTest,
+                       CriticalClientHintInsecureRedirect) {
+  net::test_server::EmbeddedTestServer http_server;
+  http_server.AddDefaultHandlers();
+  ASSERT_TRUE(http_server.Start());
+
+  // After the redirect, the second response will have the Critical-CH and will
+  // restart. The final request wil contain the correct headers.
+  GURL url = http_server.GetURL("/server-redirect?" +
+                                critical_ch_ua_full_version_list_url().spec());
+
+  blink::UserAgentMetadata ua = embedder_support::GetUserAgentMetadata();
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
+  const std::string expected_ch_ua_full_version_list =
+      ua.SerializeBrandFullVersionList();
+  EXPECT_THAT(observed_ch_ua_full_version_list(),
+              Optional(Eq(expected_ch_ua_full_version_list)));
+}
+
 class ClientHintsBrowserTestWithEmulatedMedia
     : public DevToolsProtocolTestBase {
  public:

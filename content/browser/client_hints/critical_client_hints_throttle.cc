@@ -66,6 +66,12 @@ void CriticalClientHintsThrottle::BeforeWillProcessResponse(
   if (restarted_origins_.contains(response_origin))
     return;
 
+  if (!ShouldAddClientHints(
+          response_origin, FrameTreeNode::GloballyFindByID(frame_tree_node_id_),
+          client_hint_delegate_)) {
+    return;
+  }
+
   // Ensure that only hints in the accept-ch header are examined
   blink::EnabledClientHints hints;
   for (const WebClientHintsType hint :
