@@ -338,12 +338,27 @@ class AccountSelectionViewBinder {
         if (key == HeaderProperties.FORMATTED_RP_ETLD_PLUS_ONE
                 || key == HeaderProperties.FORMATTED_IDP_ETLD_PLUS_ONE
                 || key == HeaderProperties.TYPE) {
+            Resources resources = view.getResources();
             TextView headerTitleText = view.findViewById(R.id.header_title);
             HeaderProperties.HeaderType headerType = model.get(HeaderProperties.TYPE);
-            String title = computeHeaderTitle(view.getResources(), headerType,
+            String title = computeHeaderTitle(resources, headerType,
                     model.get(HeaderProperties.FORMATTED_RP_ETLD_PLUS_ONE),
                     model.get(HeaderProperties.FORMATTED_IDP_ETLD_PLUS_ONE));
             headerTitleText.setText(title);
+
+            // Make instructions for closing the bottom sheet part of the header's content
+            // description. This is needed because the bottom sheet's content description (which
+            // includes instructions to close the bottom sheet) is not announced when the FedCM
+            // bottom sheet is shown. Don't include instructions for closing the bottom sheet as
+            // part of the "Verifying..." header content description because the bottom sheet
+            // closes itself automatically at the "Verifying..." stage.
+            if (headerType != HeaderProperties.HeaderType.VERIFY) {
+                headerTitleText.setContentDescription(title + ". "
+                        + resources.getString(R.string.bottom_sheet_accessibility_description));
+            } else {
+                // Update the content description in case the view is recycled.
+                headerTitleText.setContentDescription(title);
+            }
 
             if (key == HeaderProperties.TYPE) {
                 boolean progressBarVisible = (headerType == HeaderProperties.HeaderType.VERIFY);

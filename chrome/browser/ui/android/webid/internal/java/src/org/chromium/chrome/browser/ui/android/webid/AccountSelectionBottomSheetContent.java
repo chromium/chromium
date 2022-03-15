@@ -87,7 +87,7 @@ public class AccountSelectionBottomSheetContent implements BottomSheetContent {
 
     @Override
     public boolean swipeToDismissEnabled() {
-        return false;
+        return true;
     }
 
     @Override
