@@ -28,12 +28,17 @@ class DataUploadRequestValidityMatcher {
     Settings(const Settings& other) = default;
     Settings(Settings&& other) = default;
     // Enable or disable checking the existence of key "encryptedRecord" and
-    // that the value is a list.
+    // that the value is a list. If disabled, implies the effect of
+    // SetCheckRecordDetails(false).
     Settings& SetCheckEncryptedRecord(bool flag);
+    // Enable or disable checking the details of each record. Useful to disable
+    // if the test case includes intentionally malformed records.
+    Settings& SetCheckRecordDetails(bool flag);
 
    private:
     friend DataUploadRequestValidityMatcher;
     bool check_encrypted_record_ = true;
+    bool check_record_details_ = true;
   };
 
   DataUploadRequestValidityMatcher() = default;
@@ -45,6 +50,10 @@ class DataUploadRequestValidityMatcher {
 
  private:
   const Settings settings_{};
+  // Check the validity of the specified record. Return true if the record is
+  // valid.
+  bool CheckRecord(const base::Value& record,
+                   MatchResultListener* listener) const;
 };
 
 class RequestContainingRecordMatcher {

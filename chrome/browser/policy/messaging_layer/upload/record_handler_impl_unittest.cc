@@ -324,7 +324,12 @@ TEST_P(RecordHandlerImplTest, InvalidPriorityField) {
   auto test_records = BuildTestRecordsVector(kNumTestRecords, kGenerationId);
   const auto force_confirm_by_server = force_confirm();
 
-  EXPECT_CALL(*client_, UploadEncryptedReport(IsDataUploadRequestValid(), _, _))
+  EXPECT_CALL(
+      *client_,
+      UploadEncryptedReport(
+          IsDataUploadRequestValid(DataUploadRequestValidityMatcher::Settings()
+                                       .SetCheckRecordDetails(false)),
+          _, _))
       .WillOnce(WithArgs<0, 2>(
           Invoke([&force_confirm_by_server](
                      base::Value::Dict request,
@@ -399,8 +404,8 @@ TEST_P(RecordHandlerImplTest, UploadsGapRecordOnServerFailure) {
               FailedResponseFromRequest(request, response);
               std::move(callback).Run(std::move(response));
             })));
-    EXPECT_CALL(*client_,
-                UploadEncryptedReport(IsDataUploadRequestValid(), _, _))
+    // TODO(b/214040998: Add a matcher for the gap upload)
+    EXPECT_CALL(*client_, UploadEncryptedReport(_, _, _))
         .WillOnce(WithArgs<0, 2>(
             Invoke([&force_confirm_by_server](
                        base::Value::Dict request,
