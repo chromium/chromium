@@ -1,6 +1,6 @@
 {
-  "version": "6.10",
-  "log_list_timestamp": "2022-03-14T01:34:10Z",
+  "version": "7.1",
+  "log_list_timestamp": "2022-03-15T01:34:41Z",
   "operators": [
     {
       "name": "Google",
@@ -311,6 +311,22 @@
             "retired": {
               "timestamp": "2019-02-16T00:00:00Z"
             }
+          }
+        },
+        {
+          "description": "DigiCert Yeti2022-2 Log",
+          "log_id": "BZwB0yDgB4QTlYBJjRF8kDJmr69yULWvO0akPhGEDUo=",
+          "key": "MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAEHWlePwrycXfNnV3DNEkA7mB34XJ2dKh8XH0J8jIdBX4u/lsx1Tr9czRuSRROUFiWWsTH9L4FZKT31+WxbTMMww==",
+          "url": "https://yeti2022-2.ct.digicert.com/log/",
+          "mmd": 86400,
+          "state": {
+            "qualified": {
+              "timestamp": "2022-03-11T00:00:00Z"
+            }
+          },
+          "temporal_interval": {
+            "start_inclusive": "2022-01-01T00:00:00Z",
+            "end_exclusive": "2023-01-01T00:00:00Z"
           }
         }
       ]
