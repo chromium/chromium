@@ -549,6 +549,11 @@ id<GREYMatcher> CancelUsingOtherPasswordButton() {
 
 // Tests password generation on manual fallback.
 - (void)testPasswordGenerationOnManualFallback {
+  // Disable the test on iOS 15.3 due to build failure.
+  // TODO(crbug.com/1306530): enable the test with fix.
+  if (@available(iOS 15.3, *)) {
+    EARL_GREY_TEST_DISABLED(@"Test disabled on iOS 15.3.");
+  }
   [SigninEarlGreyUI signinWithFakeIdentity:[FakeChromeIdentity fakeIdentity1]];
   [ChromeEarlGrey waitForSyncInitialized:YES syncTimeout:10.0];
 
