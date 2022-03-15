@@ -73,7 +73,7 @@ class MODULES_EXPORT FederatedCredential final : public Credential {
 
   ScriptPromise logout(ScriptState* script_state);
 
-  ScriptPromise revoke(ScriptState*, ExceptionState&);
+  ScriptPromise revoke(ScriptState*, const String& hint, ExceptionState&);
 
   static ScriptPromise logoutRps(
       ScriptState*,

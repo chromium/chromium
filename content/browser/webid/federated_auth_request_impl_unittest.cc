@@ -1187,7 +1187,7 @@ TEST_F(BasicFederatedAuthRequestImplTest, AutoSignInWithScreenReader) {
 }
 
 TEST_F(FederatedAuthRequestImplTest, Revoke) {
-  constexpr char kAccountId[] = "foo@bar.com";
+  constexpr char kHint[] = "foo@bar.com";
 
   auto& auth_request = CreateAuthRequest(GURL(kProviderUrl));
   auth_request.SetRequestPermissionDelegateForTests(
@@ -1213,11 +1213,11 @@ TEST_F(FederatedAuthRequestImplTest, Revoke) {
           }));
   EXPECT_CALL(*mock_request_manager_, SendRevokeRequest(_, _, _, _))
       .WillOnce(Invoke([&](const GURL& revoke_url, const std::string& client_id,
-                           const std::string& account_id,
+                           const std::string& hint,
                            IdpNetworkRequestManager::RevokeCallback callback) {
         EXPECT_EQ(kRevocationEndpoint, revoke_url.spec());
         EXPECT_EQ(kClientId, client_id);
-        EXPECT_EQ(kAccountId, account_id);
+        EXPECT_EQ(kHint, hint);
         std::move(callback).Run(RevokeResponse::kSuccess);
       }));
 
@@ -1225,7 +1225,7 @@ TEST_F(FederatedAuthRequestImplTest, Revoke) {
   ukm_recorder()->SetOnAddEntryCallback(Entry::kEntryName,
                                         ukm_loop.QuitClosure());
 
-  auto status = PerformRevokeRequest(kAccountId);
+  auto status = PerformRevokeRequest(kHint);
   EXPECT_EQ(RevokeStatus::kSuccess, status);
 
   ukm_loop.Run();
@@ -1237,7 +1237,7 @@ TEST_F(FederatedAuthRequestImplTest, Revoke) {
 }
 
 TEST_F(FederatedAuthRequestImplTest, RevokeNoPermission) {
-  constexpr char kAccountId[] = "foo@bar.com";
+  constexpr char kHint[] = "foo@bar.com";
 
   auto& auth_request = CreateAuthRequest(GURL(kProviderUrl));
   auth_request.SetRequestPermissionDelegateForTests(
@@ -1253,7 +1253,7 @@ TEST_F(FederatedAuthRequestImplTest, RevokeNoPermission) {
   ukm_recorder()->SetOnAddEntryCallback(Entry::kEntryName,
                                         ukm_loop.QuitClosure());
 
-  auto status = PerformRevokeRequest(kAccountId);
+  auto status = PerformRevokeRequest(kHint);
   EXPECT_EQ(RevokeStatus::kError, status);
 
   ukm_loop.Run();

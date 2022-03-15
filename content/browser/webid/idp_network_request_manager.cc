@@ -525,7 +525,7 @@ std::string CreateRevokeRequestBody(const std::string& client_id,
 
 void IdpNetworkRequestManager::SendRevokeRequest(const GURL& revoke_url,
                                                  const std::string& client_id,
-                                                 const std::string& account_id,
+                                                 const std::string& hint,
                                                  RevokeCallback callback) {
   DCHECK(!url_loader_);
   DCHECK(!token_request_callback_);
@@ -536,16 +536,13 @@ void IdpNetworkRequestManager::SendRevokeRequest(const GURL& revoke_url,
   if (!client_id.empty())
     revoke_request_body += "client_id=" + client_id;
 
-  if (!account_id.empty()) {
-    if (!revoke_request_body.empty())
-      revoke_request_body += "&";
-    revoke_request_body += "account_id=" + account_id;
-  }
-
-  if (revoke_request_body.empty()) {
+  if (hint.empty()) {
     std::move(revoke_callback_).Run(RevokeResponse::kError);
     return;
   }
+  if (!revoke_request_body.empty())
+    revoke_request_body += "&";
+  revoke_request_body += "hint=" + hint;
 
   url_loader_ = CreateCredentialedUrlLoader(
       revoke_url, /* send_referrer= */ true, revoke_request_body);

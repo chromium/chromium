@@ -337,6 +337,7 @@ ScriptPromise FederatedCredential::logoutRps(
 }
 
 ScriptPromise FederatedCredential::revoke(ScriptState* script_state,
+                                          const String& hint,
                                           ExceptionState& exception_state) {
   ExecutionContext* context = ExecutionContext::From(script_state);
   auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
@@ -353,10 +354,9 @@ ScriptPromise FederatedCredential::revoke(ScriptState* script_state,
     return promise;
   }
 
-  if (id().IsEmpty()) {
+  if (hint.IsEmpty()) {
     resolver->Reject(MakeGarbageCollected<DOMException>(
-        DOMExceptionCode::kInvalidStateError,
-        "No account hint was provided to navigator.credentials.get"));
+        DOMExceptionCode::kInvalidStateError, "hint cannot be empty"));
     return promise;
   }
 
@@ -371,7 +371,7 @@ ScriptPromise FederatedCredential::revoke(ScriptState* script_state,
   if (!MaybeRejectDueToCSP(policy, resolver, provider_url_))
     return promise;
 
-  auth_request->Revoke(provider_url_, client_id_, id(),
+  auth_request->Revoke(provider_url_, client_id_, hint,
                        WTF::Bind(&OnRevoke, WrapPersistent(resolver)));
   return promise;
 }

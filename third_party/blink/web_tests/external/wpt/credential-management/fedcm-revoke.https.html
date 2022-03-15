@@ -13,7 +13,6 @@
     const provider = {
       url: provider_url || "https://idp.example/",
       clientId: "1234",
-      hint: "foo@bar.com",
     };
     return await navigator.credentials.get({
       federated:  {
@@ -24,17 +23,23 @@
 
   fedcm_test(async (t, mock) => {
     mock.revokeReturn("kSuccess");
-    await (await getCredential()).revoke();
+    await (await getCredential()).revoke("foo@bar.com");
   }, "Successfully revoking a token should resolve the promise.");
 
   fedcm_test(async (t, mock) => {
     mock.revokeReturn("kError");
-    const result = (await getCredential()).revoke();
+    const result = (await getCredential()).revoke("foo@bar.com");
     return promise_rejects_dom(t, "NetworkError", result);
   }, "Error should reject the promise.");
 
   fedcm_test(async (t, mock) => {
-    const result = getCredential("https://other-idp.example/").then((c) => c.revoke());
+    mock.revokeReturn("kError");
+    const result = (await getCredential()).revoke("");
+    return promise_rejects_dom(t, "InvalidStateError", result);
+  }, "Empty hint should reject the promise.");
+
+  fedcm_test(async (t, mock) => {
+    const result = getCredential("https://other-idp.example/").then((c) => c.revoke("foo@bar.com"));
     return promise_rejects_dom(t, "NetworkError", result);
   }, "Provider URL should honor Content-Security-Policy.");
 </script>

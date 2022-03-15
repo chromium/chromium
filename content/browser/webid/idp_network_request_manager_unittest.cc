@@ -154,7 +154,7 @@ class IdpNetworkRequestManagerTest : public ::testing::Test {
 
   RevokeResponse SendRevokeRequestAndWaitForResponse(
       const char* client_id,
-      const char* account_id,
+      const char* hint,
       net::HttpStatusCode http_status = net::HTTP_NO_CONTENT) {
     GURL revocation_endpoint(kTestRevocationEndpoint);
     test_url_loader_factory().AddResponse(revocation_endpoint.spec(), "",
@@ -167,7 +167,7 @@ class IdpNetworkRequestManagerTest : public ::testing::Test {
           status = revoke_status;
           run_loop.Quit();
         });
-    manager().SendRevokeRequest(revocation_endpoint, client_id, account_id,
+    manager().SendRevokeRequest(revocation_endpoint, client_id, hint,
                                 std::move(callback));
     run_loop.Run();
     return status;
@@ -684,7 +684,7 @@ TEST_F(IdpNetworkRequestManagerTest, Revoke) {
         ASSERT_EQ(network::DataElement::Tag::kBytes, elem.type());
         const network::DataElementBytes& byte_elem =
             elem.As<network::DataElementBytes>();
-        EXPECT_EQ("client_id=xxx&account_id=yyy", byte_elem.AsStringPiece());
+        EXPECT_EQ("client_id=xxx&hint=yyy", byte_elem.AsStringPiece());
       });
   test_url_loader_factory().SetInterceptor(interceptor);
   RevokeResponse status = SendRevokeRequestAndWaitForResponse("xxx", "yyy");

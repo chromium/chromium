@@ -318,7 +318,7 @@ void FederatedAuthRequestImpl::CancelTokenRequest() {
 void FederatedAuthRequestImpl::Revoke(
     const GURL& provider,
     const std::string& client_id,
-    const std::string& account_id,
+    const std::string& hint,
     blink::mojom::FederatedAuthRequest::RevokeCallback callback) {
   if (HasPendingRequest()) {
     RecordRevokeStatus(RevokeStatusForMetrics::kTooManyRequests,
@@ -329,7 +329,7 @@ void FederatedAuthRequestImpl::Revoke(
 
   provider_ = provider;
   client_id_ = client_id;
-  account_id_ = account_id;
+  hint_ = hint;
   delay_timer_.Reset();
   revoke_callback_ = std::move(callback);
 
@@ -591,7 +591,7 @@ void FederatedAuthRequestImpl::OnManifestFetchedForRevoke(
     return;
   }
   network_manager_->SendRevokeRequest(
-      revocation_url, client_id_, account_id_,
+      revocation_url, client_id_, hint_,
       base::BindOnce(&FederatedAuthRequestImpl::OnRevokeResponse,
                      weak_ptr_factory_.GetWeakPtr()));
 }
@@ -611,11 +611,11 @@ void FederatedAuthRequestImpl::OnRevokeResponse(
     }
     if (GetSharingPermissionContext()) {
       GetSharingPermissionContext()->RevokeSharingPermissionForAccount(
-          idp_origin, origin_, account_id_);
+          idp_origin, origin_, hint_);
     }
     if (GetActiveSessionPermissionContext()) {
       GetActiveSessionPermissionContext()->RevokeActiveSession(
-          origin_, idp_origin, account_id_);
+          origin_, idp_origin, hint_);
     }
     RecordRevokeStatus(RevokeStatusForMetrics::kSuccess,
                        render_frame_host_->GetPageUkmSourceId());
@@ -637,7 +637,7 @@ void FederatedAuthRequestImpl::CompleteRevokeRequest(
                              network_manager_->IsMockIdpNetworkRequestManager();
   network_manager_.reset();
   provider_ = GURL();
-  account_id_ = std::string();
+  hint_ = std::string();
   client_id_ = std::string();
 
   if (should_run_callback)
