@@ -135,7 +135,7 @@
 </style>
 <div class="item" aria-selected$="[[selected]]">
   <template is="dom-if" if="[[isImageVisible_(imageSrc)]]">
-    <img is="cr-auto-img" auto-src="[[imageSrc]]" with-cookies></img>
+    <img is="cr-auto-img" auto-src="[[imageSrc]]" clear-src with-cookies></img>
   </template>
   <template is="dom-if" if="[[isTextVisible_(primaryText, secondaryText)]]">
     <div class="text">
