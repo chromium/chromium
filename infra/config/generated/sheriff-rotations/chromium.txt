@@ -7,7 +7,6 @@ ci/Deterministic Linux
 ci/Deterministic Linux (dbg)
 ci/Fuchsia ARM64
 ci/Fuchsia x64
-ci/Leak Detection Linux
 ci/Linux ASan LSan Builder
 ci/Linux ASan LSan Tests (1)
 ci/Linux ASan Tests (sandboxed)
@@ -50,15 +49,12 @@ ci/Win Builder (dbg)
 ci/Win x64 Builder
 ci/Win x64 Builder (dbg)
 ci/Win10 Tests x64
-ci/Win10 Tests x64 (dbg)
 ci/Win7 (32) Tests
 ci/Win7 Tests (1)
 ci/Win7 Tests (dbg)(1)
 ci/Windows deterministic
 ci/android-archive-dbg
 ci/android-archive-rel
-ci/android-asan
-ci/android-official
 ci/chromeos-amd64-generic-asan-rel
 ci/chromeos-amd64-generic-cfi-thin-lto-rel
 ci/chromeos-amd64-generic-dbg
@@ -69,7 +65,6 @@ ci/chromeos-arm-generic-rel
 ci/chromeos-arm64-generic-rel
 ci/chromeos-kevin-rel
 ci/fuchsia-arm64-cast
-ci/fuchsia-official
 ci/fuchsia-x64-cast
 ci/fuchsia-x64-dbg
 ci/ios-catalyst
@@ -82,9 +77,7 @@ ci/lacros-amd64-generic-rel
 ci/lacros-arm-generic-rel
 ci/linux-archive-dbg
 ci/linux-archive-rel
-ci/linux-archive-tagged
 ci/linux-bfcache-rel
-ci/linux-bionic-rel
 ci/linux-cfm-rel
 ci/linux-chromeos-dbg
 ci/linux-chromeos-rel
@@ -93,27 +86,20 @@ ci/linux-gcc-rel
 ci/linux-lacros-builder-rel
 ci/linux-lacros-dbg
 ci/linux-lacros-tester-rel
-ci/linux-official
 ci/linux-trusty-rel
 ci/linux-ubsan-vptr
 ci/linux-xenial-rel
 ci/mac-archive-dbg
 ci/mac-archive-rel
-ci/mac-archive-tagged
 ci/mac-arm64-archive-dbg
 ci/mac-arm64-archive-rel
-ci/mac-arm64-archive-tagged
 ci/mac-arm64-on-arm64-rel
 ci/mac-arm64-rel
 ci/mac-official
 ci/mac11-arm64-rel-tests
 ci/metadata-exporter
-ci/win-archive-dbg
 ci/win-archive-rel
-ci/win-archive-tagged
 ci/win-asan
 ci/win-official
-ci/win32-archive-dbg
 ci/win32-archive-rel
-ci/win32-archive-tagged
 ci/win32-official

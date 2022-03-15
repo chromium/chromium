@@ -3,6 +3,7 @@
 # found in the LICENSE file.
 """Definitions of builders in the chromium.win builder group."""
 
+load("//lib/args.star", "args")
 load("//lib/branches.star", "branches")
 load("//lib/builders.star", "goma", "os", "sheriff_rotations")
 load("//lib/ci.star", "ci")
@@ -70,6 +71,7 @@ ci.builder(
     ),
     triggered_by = ["Win x64 Builder (dbg)"],
     # Too flaky. See crbug.com/876224 for more details.
+    sheriff_rotations = args.ignore_default(None),
     tree_closing = False,
 )
 

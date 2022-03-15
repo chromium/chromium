@@ -23,14 +23,10 @@ ci/GPU FYI Win x64 DX12 Vulkan Builder
 ci/GPU FYI Win x64 DX12 Vulkan Builder (dbg)
 ci/GPU FYI XR Win x64 Builder
 ci/GPU Linux Builder
-ci/GPU Linux Builder (dbg)
 ci/GPU Mac Builder
-ci/GPU Mac Builder (dbg)
 ci/GPU Win x64 Builder
-ci/GPU Win x64 Builder (dbg)
 ci/Lacros FYI x64 Release (AMD)
 ci/Lacros FYI x64 Release (Intel)
-ci/Linux Debug (NVIDIA)
 ci/Linux FYI Debug (NVIDIA)
 ci/Linux FYI Experimental Release (Intel HD 630)
 ci/Linux FYI Experimental Release (NVIDIA)
@@ -40,7 +36,6 @@ ci/Linux FYI Release (Intel HD 630)
 ci/Linux FYI Release (Intel UHD 630)
 ci/Linux FYI Release (NVIDIA)
 ci/Linux Release (NVIDIA)
-ci/Mac Debug (Intel)
 ci/Mac FYI ASAN (Intel)
 ci/Mac FYI Debug (Intel)
 ci/Mac FYI Experimental Release (Intel)

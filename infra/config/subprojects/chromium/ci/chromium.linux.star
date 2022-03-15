@@ -188,6 +188,7 @@ ci.builder(
     goma_backend = None,
     reclient_jobs = rbe_jobs.DEFAULT,
     reclient_instance = rbe_instance.DEFAULT,
+    sheriff_rotations = args.ignore_default(None),
 )
 
 ci.builder(
@@ -435,6 +436,7 @@ ci.builder(
     goma_backend = None,
     reclient_jobs = rbe_jobs.DEFAULT,
     reclient_instance = rbe_instance.DEFAULT,
+    sheriff_rotations = args.ignore_default(None),
 )
 
 ci.builder(

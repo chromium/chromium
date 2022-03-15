@@ -13,13 +13,11 @@ ci/Deterministic Android (dbg)
 ci/Marshmallow 64 bit Tester
 ci/Marshmallow Tablet Tester
 ci/Nougat Phone Tester
-ci/Oreo Phone Tester
 ci/android-10-arm64-rel
 ci/android-11-x86-rel
 ci/android-12-x64-rel
 ci/android-androidx-packager
 ci/android-arm64-proguard-rel
-ci/android-asan
 ci/android-bfcache-rel
 ci/android-binary-size-generator
 ci/android-cronet-arm-dbg
@@ -38,7 +36,6 @@ ci/android-cronet-x86-rel
 ci/android-marshmallow-arm64-rel
 ci/android-marshmallow-x86-rel
 ci/android-marshmallow-x86-rel-non-cq
-ci/android-pie-arm64-coverage-experimental-rel
 ci/android-pie-arm64-dbg
 ci/android-pie-arm64-rel
 ci/android-pie-x86-rel

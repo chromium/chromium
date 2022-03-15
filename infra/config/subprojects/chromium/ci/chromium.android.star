@@ -3,6 +3,7 @@
 # found in the LICENSE file.
 """Definitions of builders in the chromium.android builder group."""
 
+load("//lib/args.star", "args")
 load("//lib/builders.star", "goma", "os", "sheriff_rotations")
 load("//lib/branches.star", "branches")
 load("//lib/ci.star", "ci", "rbe_instance", "rbe_jobs")
@@ -237,6 +238,7 @@ ci.builder(
         short_name = "O",
     ),
     cq_mirrors_console_view = "mirrors",
+    sheriff_rotations = args.ignore_default(None),
     triggered_by = ["ci/Android arm64 Builder (dbg)"],
 )
 
@@ -510,6 +512,7 @@ ci.builder(
     goma_backend = None,
     reclient_instance = rbe_instance.DEFAULT,
     reclient_jobs = rbe_jobs.HIGH_JOBS_FOR_CI,
+    sheriff_rotations = args.ignore_default(None),
 )
 
 ci.builder(
