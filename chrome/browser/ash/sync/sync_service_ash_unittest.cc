@@ -4,7 +4,9 @@
 
 #include "chrome/browser/ash/sync/sync_service_ash.h"
 
+#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
+#include "components/sync/base/features.h"
 #include "components/sync/driver/mock_sync_service.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -16,21 +18,26 @@ namespace {
 
 class SyncServiceAshTest : public testing::Test {
  public:
-  SyncServiceAshTest() : sync_service_ash_(&sync_service_) {}
+  SyncServiceAshTest() {
+    override_features_.InitAndEnableFeature(
+        syncer::kSyncChromeOSExplicitPassphraseSharing);
+    sync_service_ash_ = std::make_unique<SyncServiceAsh>(&sync_service_);
+  }
 
   SyncServiceAshTest(const SyncServiceAshTest&) = delete;
   SyncServiceAshTest& operator=(const SyncServiceAshTest&) = delete;
   ~SyncServiceAshTest() override = default;
 
-  SyncServiceAsh* sync_service_ash() { return &sync_service_ash_; }
+  SyncServiceAsh* sync_service_ash() { return sync_service_ash_.get(); }
 
   void RunAllPendingTasks() { task_environment_.RunUntilIdle(); }
 
  private:
   base::test::SingleThreadTaskEnvironment task_environment_;
+  base::test::ScopedFeatureList override_features_;
 
   testing::NiceMock<syncer::MockSyncService> sync_service_;
-  SyncServiceAsh sync_service_ash_;
+  std::unique_ptr<SyncServiceAsh> sync_service_ash_;
 };
 
 TEST_F(SyncServiceAshTest, ShouldSupportMultipleRemotes) {

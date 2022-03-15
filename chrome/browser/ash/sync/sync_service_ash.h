@@ -47,6 +47,8 @@ class SyncServiceAsh : public KeyedService, public crosapi::mojom::SyncService {
 
  private:
   // Members below destroyed after Shutdown().
+  // |explicit_passphrase_client_| is null if
+  // kSyncChromeOSExplicitPassphraseSharing is disabled.
   std::unique_ptr<SyncExplicitPassphraseClientAsh> explicit_passphrase_client_;
   mojo::ReceiverSet<crosapi::mojom::SyncService> receivers_;
 };

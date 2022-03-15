@@ -4,11 +4,18 @@
 
 #include "chrome/browser/ash/sync/sync_service_ash.h"
 
+#include "base/feature_list.h"
+#include "components/sync/base/features.h"
+
 namespace ash {
 
-SyncServiceAsh::SyncServiceAsh(syncer::SyncService* sync_service)
-    : explicit_passphrase_client_(
-          std::make_unique<SyncExplicitPassphraseClientAsh>(sync_service)) {}
+SyncServiceAsh::SyncServiceAsh(syncer::SyncService* sync_service) {
+  if (base::FeatureList::IsEnabled(
+          syncer::kSyncChromeOSExplicitPassphraseSharing)) {
+    explicit_passphrase_client_ =
+        std::make_unique<SyncExplicitPassphraseClientAsh>(sync_service);
+  }
+}
 
 SyncServiceAsh::~SyncServiceAsh() = default;
 
@@ -25,9 +32,10 @@ void SyncServiceAsh::Shutdown() {
 void SyncServiceAsh::BindExplicitPassphraseClient(
     mojo::PendingReceiver<crosapi::mojom::SyncExplicitPassphraseClient>
         receiver) {
-  // This method must not be called after shutdown.
-  DCHECK(explicit_passphrase_client_);
-  explicit_passphrase_client_->BindReceiver(std::move(receiver));
+  // Null if feature is disabled.
+  if (explicit_passphrase_client_) {
+    explicit_passphrase_client_->BindReceiver(std::move(receiver));
+  }
 }
 
 }  // namespace ash
