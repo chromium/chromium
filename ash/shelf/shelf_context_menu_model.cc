@@ -87,7 +87,6 @@ void ShelfContextMenuModel::ExecuteCommand(int command_id, int event_flags) {
   if (!prefs)  // Null during startup.
     return;
 
-  UserMetricsRecorder* metrics = shell->metrics();
   // Clamshell mode only options should not activate in tablet mode.
   const bool is_tablet_mode = shell->tablet_mode_controller()->InTabletMode();
   switch (command_id) {
@@ -101,17 +100,17 @@ void ShelfContextMenuModel::ExecuteCommand(int command_id, int event_flags) {
       break;
     case MENU_ALIGNMENT_LEFT:
       DCHECK(!is_tablet_mode);
-      metrics->RecordUserMetricsAction(UMA_SHELF_ALIGNMENT_SET_LEFT);
+      base::RecordAction(base::UserMetricsAction("Shelf_AlignmentSetLeft"));
       SetShelfAlignmentPref(prefs, display_id_, ShelfAlignment::kLeft);
       break;
     case MENU_ALIGNMENT_RIGHT:
       DCHECK(!is_tablet_mode);
-      metrics->RecordUserMetricsAction(UMA_SHELF_ALIGNMENT_SET_RIGHT);
+      base::RecordAction(base::UserMetricsAction("Shelf_AlignmentSetRight"));
       SetShelfAlignmentPref(prefs, display_id_, ShelfAlignment::kRight);
       break;
     case MENU_ALIGNMENT_BOTTOM:
       DCHECK(!is_tablet_mode);
-      metrics->RecordUserMetricsAction(UMA_SHELF_ALIGNMENT_SET_BOTTOM);
+      base::RecordAction(base::UserMetricsAction("Shelf_AlignmentSetBottom"));
       SetShelfAlignmentPref(prefs, display_id_, ShelfAlignment::kBottom);
       break;
     case MENU_CHANGE_WALLPAPER:

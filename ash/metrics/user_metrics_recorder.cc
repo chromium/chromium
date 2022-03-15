@@ -163,18 +163,6 @@ void UserMetricsRecorder::RecordUserMetricsAction(UserMetricsAction action) {
       RecordAction(UserMetricsAction("Desktop_SwitchTask"));
       task_switch_metrics_recorder_.OnTaskSwitch(TaskSwitchSource::DESKTOP);
       break;
-    case UMA_LAUNCHER_BUTTON_PRESSED_WITH_MOUSE:
-      RecordAction(UserMetricsAction("Launcher_ButtonPressed_Mouse"));
-      break;
-    case UMA_LAUNCHER_BUTTON_PRESSED_WITH_TOUCH:
-      RecordAction(UserMetricsAction("Launcher_ButtonPressed_Touch"));
-      break;
-    case UMA_LAUNCHER_CLICK_ON_APP:
-      RecordAction(UserMetricsAction("Launcher_ClickOnApp"));
-      break;
-    case UMA_LAUNCHER_CLICK_ON_APPLIST_BUTTON:
-      RecordAction(UserMetricsAction("Launcher_ClickOnApplistButton"));
-      break;
     case UMA_LAUNCHER_LAUNCH_TASK:
       RecordAction(UserMetricsAction("Launcher_LaunchTask"));
       task_switch_metrics_recorder_.OnTaskSwitch(TaskSwitchSource::SHELF);
@@ -185,21 +173,6 @@ void UserMetricsRecorder::RecordUserMetricsAction(UserMetricsAction action) {
     case UMA_LAUNCHER_SWITCH_TASK:
       RecordAction(UserMetricsAction("Launcher_SwitchTask"));
       task_switch_metrics_recorder_.OnTaskSwitch(TaskSwitchSource::SHELF);
-      break;
-    case UMA_SHELF_ALIGNMENT_SET_BOTTOM:
-      RecordAction(UserMetricsAction("Shelf_AlignmentSetBottom"));
-      break;
-    case UMA_SHELF_ALIGNMENT_SET_LEFT:
-      RecordAction(UserMetricsAction("Shelf_AlignmentSetLeft"));
-      break;
-    case UMA_SHELF_ALIGNMENT_SET_RIGHT:
-      RecordAction(UserMetricsAction("Shelf_AlignmentSetRight"));
-      break;
-    case UMA_SHELF_ITEM_PINNED:
-      RecordAction(UserMetricsAction("Shelf_ItemPinned"));
-      break;
-    case UMA_SHELF_ITEM_UNPINNED:
-      RecordAction(UserMetricsAction("Shelf_ItemUnpinned"));
       break;
     case UMA_STATUS_AREA_AUDIO_CURRENT_INPUT_DEVICE:
       RecordAction(UserMetricsAction("StatusArea_Audio_CurrentInputDevice"));

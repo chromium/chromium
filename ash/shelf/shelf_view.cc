@@ -14,7 +14,6 @@
 #include "ash/constants/ash_features.h"
 #include "ash/keyboard/keyboard_util.h"
 #include "ash/keyboard/ui/keyboard_ui_controller.h"
-#include "ash/metrics/user_metrics_recorder.h"
 #include "ash/public/cpp/metrics_util.h"
 #include "ash/public/cpp/shelf_model.h"
 #include "ash/public/cpp/shelf_types.h"
@@ -51,6 +50,7 @@
 #include "base/cxx17_backports.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/metrics/user_metrics.h"
 #include "base/scoped_observation.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/timer/timer.h"
@@ -257,8 +257,11 @@ bool IsStandaloneBrowser(const std::string& app_id) {
 // Records the user metric action for whenever a shelf item is pinned or
 // unpinned.
 void RecordPinUnpinUserAction(bool pinned) {
-  Shell::Get()->metrics()->RecordUserMetricsAction(
-      pinned ? UMA_SHELF_ITEM_PINNED : UMA_SHELF_ITEM_UNPINNED);
+  if (pinned) {
+    base::RecordAction(base::UserMetricsAction("Shelf_ItemPinned"));
+  } else {
+    base::RecordAction(base::UserMetricsAction("Shelf_ItemUnpinned"));
+  }
 }
 
 }  // namespace
@@ -793,8 +796,7 @@ void ShelfView::ButtonPressed(views::Button* sender,
     case TYPE_BROWSER_SHORTCUT:
     case TYPE_APP:
     case TYPE_UNPINNED_BROWSER_SHORTCUT:
-      Shell::Get()->metrics()->RecordUserMetricsAction(
-          UMA_LAUNCHER_CLICK_ON_APP);
+      base::RecordAction(base::UserMetricsAction("Launcher_ClickOnApp"));
       break;
 
     case TYPE_DIALOG:
