@@ -437,9 +437,14 @@ public class WebContentsAccessibilityImpl extends AccessibilityNodeProviderCompa
 
         // Define an initial set of relevant events if OnDemand feature is enabled.
         if (ContentFeatureList.isEnabled(ContentFeatureList.ON_DEMAND_ACCESSIBILITY_EVENTS)) {
-            int serviceEventMask = BrowserAccessibilityState.getAccessibilityServiceEventTypeMask();
-            mEventDispatcher.updateRelevantEventTypes(convertMaskToEventTypes(serviceEventMask));
-            mEventDispatcher.setOnDemandEnabled(true);
+            Runnable serviceMaskRunnable = () -> {
+                int serviceEventMask =
+                        BrowserAccessibilityState.getAccessibilityServiceEventTypeMask();
+                mEventDispatcher.updateRelevantEventTypes(
+                        convertMaskToEventTypes(serviceEventMask));
+                mEventDispatcher.setOnDemandEnabled(true);
+            };
+            mView.post(serviceMaskRunnable);
         }
 
         // Set whether image descriptions should be enabled for this instance. We do not want

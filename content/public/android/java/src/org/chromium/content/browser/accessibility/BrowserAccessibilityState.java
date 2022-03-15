@@ -127,7 +127,7 @@ public class BrowserAccessibilityState {
             // the set of running accessibility services doesn't always reflect that
             // immediately, but updateAccessibilityServices checks for this and keeps
             // polling until they agree.
-            updateAccessibilityServices();
+            getHandler().post(() -> { updateAccessibilityServices(); });
         }
     }
 
