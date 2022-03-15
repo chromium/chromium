@@ -151,6 +151,7 @@ using base::SysUTF8ToNSString;
 }
 
 - (void)checkForUpdateWithAppID:(NSString* _Nonnull)appID
+               installDataIndex:(NSString* _Nullable)installDataIndex
                        priority:(CRUPriorityWrapper* _Nonnull)priority
         policySameVersionUpdate:
             (CRUPolicySameVersionUpdateWrapper* _Nonnull)policySameVersionUpdate
@@ -165,6 +166,7 @@ using base::SysUTF8ToNSString;
 
   [[_updateCheckXPCConnection remoteObjectProxyWithErrorHandler:errorHandler]
       checkForUpdateWithAppID:appID
+             installDataIndex:installDataIndex
                      priority:priority
       policySameVersionUpdate:policySameVersionUpdate
                   updateState:updateState
@@ -276,6 +278,7 @@ void UpdateServiceProxy::UpdateAll(StateChangeCallback state_update,
 
 void UpdateServiceProxy::Update(
     const std::string& app_id,
+    const std::string& install_data_index,
     UpdateService::Priority priority,
     PolicySameVersionUpdate policy_same_version_update,
     StateChangeCallback state_update,
@@ -301,6 +304,7 @@ void UpdateServiceProxy::Update(
                      callbackRunner:callback_runner_]);
 
   [client_ checkForUpdateWithAppID:SysUTF8ToNSString(app_id)
+                  installDataIndex:SysUTF8ToNSString(install_data_index)
                           priority:priorityWrapper.get()
            policySameVersionUpdate:policySameVersionUpdateWrapper.get()
                        updateState:stateObserver.get()

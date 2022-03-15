@@ -40,6 +40,7 @@ namespace updater {
 class Installer final : public update_client::CrxInstaller {
  public:
   Installer(const std::string& app_id,
+            const std::string& install_data_index,
             const std::string& target_channel,
             const std::string& target_version_prefix,
             bool rollback_allowed,
@@ -110,6 +111,7 @@ class Installer final : public update_client::CrxInstaller {
   UpdaterScope updater_scope_;
 
   const std::string app_id_;
+  const std::string install_data_index_;
   const bool rollback_allowed_;
   const std::string target_channel_;
   const std::string target_version_prefix_;

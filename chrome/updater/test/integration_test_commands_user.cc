@@ -67,10 +67,12 @@ class IntegrationTestCommandsUser : public IntegrationTestCommands {
 
   void ExpectUpdateSequence(ScopedServer* test_server,
                             const std::string& app_id,
+                            const std::string& install_data_index,
                             const base::Version& from_version,
                             const base::Version& to_version) const override {
     updater::test::ExpectUpdateSequence(updater_scope_, test_server, app_id,
-                                        from_version, to_version);
+                                        install_data_index, from_version,
+                                        to_version);
   }
 
   void ExpectVersionActive(const std::string& version) const override {
@@ -139,8 +141,9 @@ class IntegrationTestCommandsUser : public IntegrationTestCommands {
     updater::test::RunWakeActive(updater_scope_, exit_code);
   }
 
-  void Update(const std::string& app_id) const override {
-    updater::test::Update(updater_scope_, app_id);
+  void Update(const std::string& app_id,
+              const std::string& install_data_index) const override {
+    updater::test::Update(updater_scope_, app_id, install_data_index);
   }
 
   void UpdateAll() const override { updater::test::UpdateAll(updater_scope_); }
@@ -193,10 +196,11 @@ class IntegrationTestCommandsUser : public IntegrationTestCommands {
   }
 
   void CallServiceUpdate(const std::string& app_id,
+                         const std::string& install_data_index,
                          UpdateService::PolicySameVersionUpdate
                              policy_same_version_update) const override {
     updater::test::CallServiceUpdate(
-        updater_scope_, app_id,
+        updater_scope_, app_id, install_data_index,
         policy_same_version_update ==
             UpdateService::PolicySameVersionUpdate::kAllowed);
   }

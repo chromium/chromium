@@ -500,7 +500,8 @@ void AppInstallControllerImpl::DoInstallApp() {
             DCHECK(response.status_code == kRegistrationSuccess ||
                    response.status_code == kRegistrationAlreadyRegistered);
             self->update_service_->Update(
-                self->app_id_, UpdateService::Priority::kForeground,
+                self->app_id_, GetInstallDataIndexFromAppArgs(self->app_id_),
+                UpdateService::Priority::kForeground,
                 UpdateService::PolicySameVersionUpdate::kAllowed,
                 base::BindRepeating(&AppInstallControllerImpl::StateChange,
                                     self),

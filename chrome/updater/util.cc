@@ -213,6 +213,11 @@ std::string GetAPFromAppArgs(const std::string& app_id) {
   return app_args ? app_args->ap : std::string();
 }
 
+std::string GetInstallDataIndexFromAppArgs(const std::string& app_id) {
+  const absl::optional<tagging::AppArgs> app_args = GetAppArgs(app_id);
+  return app_args ? app_args->install_data_index : std::string();
+}
+
 base::CommandLine MakeElevated(base::CommandLine command_line) {
 #if BUILDFLAG(IS_MAC)
   command_line.PrependWrapper("/usr/bin/sudo");

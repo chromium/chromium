@@ -73,12 +73,13 @@ class UpdateServiceInternalQualifyingImpl : public UpdateServiceInternal {
     // an `Update` task for `kQualificationAppId`.
     DVLOG(2) << "RegistrationResponse: " << response.status_code;
     base::MakeRefCounted<CheckForUpdatesTask>(
-        config_, base::BindOnce(
-                     &UpdateServiceImpl::Update,
-                     base::MakeRefCounted<UpdateServiceImpl>(config_),
-                     kQualificationAppId, UpdateService::Priority::kBackground,
-                     UpdateService::PolicySameVersionUpdate::kNotAllowed,
-                     base::DoNothing()))
+        config_,
+        base::BindOnce(&UpdateServiceImpl::Update,
+                       base::MakeRefCounted<UpdateServiceImpl>(config_),
+                       kQualificationAppId, "",
+                       UpdateService::Priority::kBackground,
+                       UpdateService::PolicySameVersionUpdate::kNotAllowed,
+                       base::DoNothing()))
         ->Run(base::BindOnce(
             &UpdateServiceInternalQualifyingImpl::QualificationDone, this,
             std::move(callback)));

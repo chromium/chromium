@@ -414,6 +414,7 @@ void UpdateServiceProxy::UpdateAll(StateChangeCallback state_update,
 
 void UpdateServiceProxy::Update(
     const std::string& app_id,
+    const std::string& install_data_index,
     UpdateService::Priority /*priority*/,
     PolicySameVersionUpdate policy_same_version_update,
     StateChangeCallback state_update,
@@ -427,7 +428,7 @@ void UpdateServiceProxy::Update(
       base::BindOnce(&UpdateServiceProxy::InitializeSTA, this)
           .Then(base::BindOnce(
               &UpdateServiceProxy::UpdateOnSTA, this, app_id,
-              policy_same_version_update,
+              install_data_index, policy_same_version_update,
               base::BindPostTask(main_task_runner_, state_update),
               base::BindPostTask(main_task_runner_, std::move(callback)))));
 }
@@ -606,6 +607,7 @@ void UpdateServiceProxy::UpdateAllOnSTA(StateChangeCallback state_update,
 
 void UpdateServiceProxy::UpdateOnSTA(
     const std::string& app_id,
+    const std::string& install_data_index,
     PolicySameVersionUpdate policy_same_version_update,
     StateChangeCallback state_update,
     Callback callback,
@@ -625,6 +627,7 @@ void UpdateServiceProxy::UpdateOnSTA(
                                                         std::move(callback));
   HRESULT hr =
       updater->Update(base::UTF8ToWide(app_id).c_str(),
+                      base::UTF8ToWide(install_data_index).c_str(),
                       policy_same_version_update ==
                           UpdateService::PolicySameVersionUpdate::kAllowed,
                       observer.Get());

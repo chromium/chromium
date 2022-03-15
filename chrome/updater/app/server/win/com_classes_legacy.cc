@@ -161,7 +161,7 @@ STDMETHODIMP LegacyOnDemandImpl::checkForUpdate() {
           [](scoped_refptr<UpdateService> update_service,
              LegacyOnDemandImplPtr obj) {
             update_service->Update(
-                obj->app_id(), UpdateService::Priority::kForeground,
+                obj->app_id(), "", UpdateService::Priority::kForeground,
                 UpdateService::PolicySameVersionUpdate::kNotAllowed,
                 base::BindRepeating(
                     [](LegacyOnDemandImplPtr obj,

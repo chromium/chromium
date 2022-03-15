@@ -279,6 +279,7 @@ class StateChangeCallbackFilter {
 // calls must be done through a task runner, bound to the closures provided
 // as parameters for the UpdateService::Update call.
 HRESULT UpdaterImpl::Update(const wchar_t* app_id,
+                            const wchar_t* install_data_index,
                             BOOL same_version_update_allowed,
                             IUpdaterObserver* observer) {
   // This task runner is responsible for sequencing the callbacks posted
@@ -296,10 +297,11 @@ HRESULT UpdaterImpl::Update(const wchar_t* app_id,
       base::BindOnce(
           [](scoped_refptr<UpdateService> update_service,
              scoped_refptr<base::SequencedTaskRunner> task_runner,
-             const std::string& app_id, bool same_version_update_allowed,
-             IUpdaterObserverPtr observer) {
+             const std::string& app_id, const std::string& install_data_index,
+             bool same_version_update_allowed, IUpdaterObserverPtr observer) {
             update_service->Update(
-                app_id, UpdateService::Priority::kForeground,
+                app_id, install_data_index,
+                UpdateService::Priority::kForeground,
                 same_version_update_allowed
                     ? UpdateService::PolicySameVersionUpdate::kAllowed
                     : UpdateService::PolicySameVersionUpdate::kNotAllowed,
@@ -324,7 +326,8 @@ HRESULT UpdaterImpl::Update(const wchar_t* app_id,
                     task_runner, observer));
           },
           com_server->update_service(), task_runner, base::WideToUTF8(app_id),
-          same_version_update_allowed, observer_local));
+          base::WideToUTF8(install_data_index), same_version_update_allowed,
+          observer_local));
 
   // Always return S_OK from this function. Errors must be reported using the
   // observer interface.

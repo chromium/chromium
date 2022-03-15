@@ -238,6 +238,7 @@ class UpdateService : public base::RefCountedThreadSafe<UpdateService> {
   // |callback| arg:
   //    Result: the final result from the update engine.
   virtual void Update(const std::string& app_id,
+                      const std::string& install_data_index,
                       Priority priority,
                       PolicySameVersionUpdate policy_same_version_update,
                       StateChangeCallback state_update,

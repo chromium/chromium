@@ -54,6 +54,7 @@ class UpdateServiceProxy : public UpdateService {
   void RunPeriodicTasks(base::OnceClosure callback) override;
   void UpdateAll(StateChangeCallback state_update, Callback callback) override;
   void Update(const std::string& app_id,
+              const std::string& install_data_index,
               Priority priority,
               PolicySameVersionUpdate policy_same_version_update,
               StateChangeCallback state_update,
@@ -79,6 +80,7 @@ class UpdateServiceProxy : public UpdateService {
                       Callback callback,
                       HRESULT prev_hr);
   void UpdateOnSTA(const std::string& app_id,
+                   const std::string& install_data_index,
                    PolicySameVersionUpdate policy_same_version_update,
                    StateChangeCallback state_update,
                    Callback callback,

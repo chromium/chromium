@@ -682,6 +682,7 @@ EXTERN_C const IID IID_IUpdater;
         
         virtual HRESULT STDMETHODCALLTYPE Update( 
             /* [string][in] */ const WCHAR *app_id,
+            /* [string][in] */ const WCHAR *install_data_index,
             /* [in] */ BOOL same_version_update_allowed,
             /* [in] */ IUpdaterObserver *observer) = 0;
         
@@ -733,6 +734,7 @@ EXTERN_C const IID IID_IUpdater;
         HRESULT ( STDMETHODCALLTYPE *Update )( 
             IUpdater * This,
             /* [string][in] */ const WCHAR *app_id,
+            /* [string][in] */ const WCHAR *install_data_index,
             /* [in] */ BOOL same_version_update_allowed,
             /* [in] */ IUpdaterObserver *observer);
         
@@ -775,8 +777,8 @@ EXTERN_C const IID IID_IUpdater;
 #define IUpdater_RunPeriodicTasks(This,callback)	\
     ( (This)->lpVtbl -> RunPeriodicTasks(This,callback) ) 
 
-#define IUpdater_Update(This,app_id,same_version_update_allowed,observer)	\
-    ( (This)->lpVtbl -> Update(This,app_id,same_version_update_allowed,observer) ) 
+#define IUpdater_Update(This,app_id,install_data_index,same_version_update_allowed,observer)	\
+    ( (This)->lpVtbl -> Update(This,app_id,install_data_index,same_version_update_allowed,observer) ) 
 
 #define IUpdater_UpdateAll(This,observer)	\
     ( (This)->lpVtbl -> UpdateAll(This,observer) ) 

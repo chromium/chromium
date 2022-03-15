@@ -144,6 +144,7 @@
 }
 
 - (void)checkForUpdateWithAppID:(NSString* _Nonnull)appID
+               installDataIndex:(NSString* _Nullable)installDataIndex
                        priority:(CRUPriorityWrapper* _Nonnull)priority
         policySameVersionUpdate:
             (CRUPolicySameVersionUpdateWrapper* _Nonnull)policySameVersionUpdate
@@ -189,7 +190,9 @@
   _callbackRunner->PostTask(
       FROM_HERE,
       base::BindOnce(&updater::UpdateService::Update, _service,
-                     base::SysNSStringToUTF8(appID), [priority priority],
+                     base::SysNSStringToUTF8(appID),
+                     base::SysNSStringToUTF8(installDataIndex),
+                     [priority priority],
                      [policySameVersionUpdate policySameVersionUpdate],
                      std::move(sccb), std::move(cb)));
 }
@@ -300,6 +303,7 @@
 }
 
 - (void)checkForUpdateWithAppID:(NSString* _Nonnull)appID
+               installDataIndex:(NSString* _Nullable)installDataIndex
                        priority:(CRUPriorityWrapper* _Nonnull)priority
         policySameVersionUpdate:
             (CRUPolicySameVersionUpdateWrapper* _Nonnull)policySameVersionUpdate
@@ -307,6 +311,7 @@
                           reply:(void (^_Nonnull)(int rc))reply {
   // This function may be called by any user.
   [_service checkForUpdateWithAppID:appID
+                   installDataIndex:installDataIndex
                            priority:priority
             policySameVersionUpdate:policySameVersionUpdate
                         updateState:updateState

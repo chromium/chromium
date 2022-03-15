@@ -92,6 +92,7 @@ interface IUpdater : IUnknown {
                       [in] IUpdaterRegisterAppCallback* callback);
   HRESULT RunPeriodicTasks([in] IUpdaterCallback* callback);
   HRESULT Update([in, string] const WCHAR* app_id,
+                 [in, string] const WCHAR* install_data_index,
                  [in] BOOL same_version_update_allowed,
                  [in] IUpdaterObserver* observer);
   HRESULT UpdateAll([in] IUpdaterObserver * observer);

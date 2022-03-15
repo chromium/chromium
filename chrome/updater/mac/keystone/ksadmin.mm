@@ -396,7 +396,7 @@ void KSAdminApp::DoCheckForUpdates(UpdaterScope scope) {
   }
 
   ServiceProxy(scope)->Update(
-      app_id,
+      app_id, GetInstallDataIndexFromAppArgs(app_id),
       HasSwitch(kCommandUserInitiated) ? UpdateService::Priority::kForeground
                                        : UpdateService::Priority::kBackground,
       UpdateService::PolicySameVersionUpdate::kNotAllowed,

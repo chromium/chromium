@@ -90,6 +90,7 @@ std::string GetHashHex(const base::FilePath& file) {
 }
 
 std::string GetUpdateResponse(const std::string& app_id,
+                              const std::string& install_data_index,
                               const std::string& codebase,
                               const base::Version& version,
                               const base::FilePath& update_file,
@@ -103,6 +104,7 @@ std::string GetUpdateResponse(const std::string& app_id,
       R"(    {)"
       R"(      "appid":"%s",)"
       R"(      "status":"ok",)"
+      R"(%s)"
       R"(      "updatecheck":{)"
       R"(        "status":"ok",)"
       R"(        "urls":{"url":[{"codebase":"%s"}]},)"
@@ -120,9 +122,16 @@ std::string GetUpdateResponse(const std::string& app_id,
       R"(    })"
       R"(  ])"
       R"(}})",
-      app_id.c_str(), codebase.c_str(), version.GetString().c_str(),
-      run_action.c_str(), arguments.c_str(),
-      update_file.BaseName().AsUTF8Unsafe().c_str(),
+      app_id.c_str(),
+      !install_data_index.empty()
+          ? base::StringPrintf(
+                R"(     "data":[{ "status":"ok", "name":"install", )"
+                R"("index":"%s", "#text":"%s_text" }],)",
+                install_data_index.c_str(), install_data_index.c_str())
+                .c_str()
+          : "",
+      codebase.c_str(), version.GetString().c_str(), run_action.c_str(),
+      arguments.c_str(), update_file.BaseName().AsUTF8Unsafe().c_str(),
       GetHashHex(update_file).c_str());
 }
 
@@ -285,11 +294,13 @@ void RunWakeActive(UpdaterScope scope, int expected_exit_code) {
   EXPECT_EQ(exit_code, expected_exit_code);
 }
 
-void Update(UpdaterScope scope, const std::string& app_id) {
+void Update(UpdaterScope scope,
+            const std::string& app_id,
+            const std::string& install_data_index) {
   scoped_refptr<UpdateService> update_service = CreateUpdateServiceProxy(scope);
   base::RunLoop loop;
   update_service->Update(
-      app_id, UpdateService::Priority::kForeground,
+      app_id, install_data_index, UpdateService::Priority::kForeground,
       UpdateService::PolicySameVersionUpdate::kNotAllowed, base::DoNothing(),
       base::BindOnce(base::BindLambdaForTesting(
           [&loop](UpdateService::Result result_unused) { loop.Quit(); })));
@@ -440,7 +451,7 @@ void ExpectSelfUpdateSequence(UpdaterScope scope, ScopedServer* test_server) {
            base::StringPrintf(R"(.*"appid":"%s".*)", kUpdaterAppId)),
        GetScopePredicate(scope)},
       GetUpdateResponse(
-          kUpdaterAppId, test_server->base_url().spec(),
+          kUpdaterAppId, "", test_server->base_url().spec(),
           base::Version(kUpdaterVersion), crx_path, kSelfUpdateCRXRun,
           base::StrCat(
               {"--update", scope == UpdaterScope::kSystem ? " --system" : "",
@@ -467,6 +478,7 @@ void ExpectSelfUpdateSequence(UpdaterScope scope, ScopedServer* test_server) {
 void ExpectUpdateSequence(UpdaterScope scope,
                           ScopedServer* test_server,
                           const std::string& app_id,
+                          const std::string& install_data_index,
                           const base::Version& from_version,
                           const base::Version& to_version) {
   base::FilePath test_data_path;
@@ -480,9 +492,20 @@ void ExpectUpdateSequence(UpdaterScope scope,
       {base::BindRepeating(
            RequestMatcherRegex,
            base::StringPrintf(R"(.*"appid":"%s".*)", app_id.c_str())),
+       base::BindRepeating(
+           RequestMatcherRegex,
+           base::StringPrintf(
+               R"(.*%s)",
+               !install_data_index.empty()
+                   ? base::StringPrintf(
+                         R"("data":\[{"index":"%s","name":"install"}],.*)",
+                         install_data_index.c_str())
+                         .c_str()
+                   : "")),
        GetScopePredicate(scope)},
-      GetUpdateResponse(app_id, test_server->base_url().spec(), to_version,
-                        crx_path, kDoNothingCRXRun, {}));
+      GetUpdateResponse(app_id, install_data_index,
+                        test_server->base_url().spec(), to_version, crx_path,
+                        kDoNothingCRXRun, {}));
 
   // Second request: update download.
   std::string crx_bytes;
@@ -572,6 +595,7 @@ void StressUpdateService(UpdaterScope scope) {
 
 void CallServiceUpdate(UpdaterScope updater_scope,
                        const std::string& app_id,
+                       const std::string& install_data_index,
                        bool same_version_update_allowed) {
   UpdateService::PolicySameVersionUpdate policy_same_version_update =
       same_version_update_allowed
@@ -583,7 +607,8 @@ void CallServiceUpdate(UpdaterScope updater_scope,
 
   base::RunLoop loop;
   service_proxy->Update(
-      app_id, UpdateService::Priority::kForeground, policy_same_version_update,
+      app_id, install_data_index, UpdateService::Priority::kForeground,
+      policy_same_version_update,
       base::BindLambdaForTesting([](const UpdateService::UpdateState&) {}),
       base::BindLambdaForTesting([&](UpdateService::Result result) {
         EXPECT_EQ(result, UpdateService::Result::kSuccess);

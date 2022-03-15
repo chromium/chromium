@@ -4,6 +4,8 @@
 
 #include "chrome/updater/update_service_impl.h"
 
+#include <algorithm>
+#include <iterator>
 #include <string>
 #include <utility>
 #include <vector>
@@ -13,6 +15,7 @@
 #include "base/callback.h"
 #include "base/callback_helpers.h"
 #include "base/containers/contains.h"
+#include "base/containers/flat_map.h"
 #include "base/containers/queue.h"
 #include "base/logging.h"
 #include "base/run_loop.h"
@@ -148,6 +151,7 @@ MakeUpdateClientCrxStateChangeCallback(
 std::vector<absl::optional<update_client::CrxComponent>> GetComponents(
     scoped_refptr<Configurator> config,
     scoped_refptr<PersistedData> persisted_data,
+    const AppInstallDataIndex& app_install_data_index,
     bool foreground,
     bool update_blocked,
     UpdateService::PolicySameVersionUpdate policy_same_version_update,
@@ -160,6 +164,10 @@ std::vector<absl::optional<update_client::CrxComponent>> GetComponents(
     components.push_back(
         base::MakeRefCounted<Installer>(
             id,
+            [&app_install_data_index, &id]() {
+              auto it = app_install_data_index.find(id);
+              return it != app_install_data_index.end() ? it->second : "";
+            }(),
             [&config, &id]() {
               std::string component_channel;
               return config->GetPolicyService()->GetTargetChannel(
@@ -357,12 +365,15 @@ void UpdateServiceImpl::UpdateAll(StateChangeCallback state_update,
                 std::move(callback).Run(result);
               },
               std::move(callback), persisted_data_),
-          app_ids, priority,
-          UpdateService::PolicySameVersionUpdate::kNotAllowed));
+          base::MakeFlatMap<std::string, std::string>(
+              app_ids, {},
+              [](const auto& app_id) { return std::make_pair(app_id, ""); }),
+          priority, UpdateService::PolicySameVersionUpdate::kNotAllowed));
 }
 
 void UpdateServiceImpl::Update(
     const std::string& app_id,
+    const std::string& install_data_index,
     Priority priority,
     PolicySameVersionUpdate policy_same_version_update,
     StateChangeCallback state_update,
@@ -378,12 +389,13 @@ void UpdateServiceImpl::Update(
     return;
   }
 
-  std::vector<std::string> ids = {app_id};
   ShouldBlockUpdateForMeteredNetwork(
       priority,
-      base::BindOnce(&UpdateServiceImpl::OnShouldBlockUpdateForMeteredNetwork,
-                     this, state_update, std::move(callback), ids, priority,
-                     policy_same_version_update));
+      base::BindOnce(
+          &UpdateServiceImpl::OnShouldBlockUpdateForMeteredNetwork, this,
+          state_update, std::move(callback),
+          AppInstallDataIndex({std::make_pair(app_id, install_data_index)}),
+          priority, policy_same_version_update));
 }
 
 bool UpdateServiceImpl::IsUpdateDisabledByPolicy(
@@ -441,7 +453,7 @@ void UpdateServiceImpl::HandleUpdateDisabledByPolicy(
 void UpdateServiceImpl::OnShouldBlockUpdateForMeteredNetwork(
     StateChangeCallback state_update,
     Callback callback,
-    const std::vector<std::string>& ids,
+    const AppInstallDataIndex& app_install_data_index,
     Priority priority,
     PolicySameVersionUpdate policy_same_version_update,
     bool update_blocked) {
@@ -450,9 +462,19 @@ void UpdateServiceImpl::OnShouldBlockUpdateForMeteredNetwork(
   main_task_runner_->PostTask(
       FROM_HERE,
       base::BindOnce(
-          &update_client::UpdateClient::Update, update_client_, ids,
-          base::BindOnce(&GetComponents, config_, persisted_data_, false,
-                         update_blocked, policy_same_version_update),
+          &update_client::UpdateClient::Update, update_client_,
+          [&app_install_data_index]() {
+            std::vector<std::string> app_ids;
+            app_ids.reserve(app_install_data_index.size());
+            std::transform(app_install_data_index.begin(),
+                           app_install_data_index.end(),
+                           std::back_inserter(app_ids),
+                           [](const auto& param) { return param.first; });
+            return app_ids;
+          }(),
+          base::BindOnce(&GetComponents, config_, persisted_data_,
+                         app_install_data_index, false, update_blocked,
+                         policy_same_version_update),
           MakeUpdateClientCrxStateChangeCallback(config_, state_update),
           priority == Priority::kForeground,
           MakeUpdateClientCallback(std::move(callback))));

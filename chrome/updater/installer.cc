@@ -52,6 +52,7 @@ absl::optional<base::FilePath> GetAppInstallDir(UpdaterScope scope,
 
 Installer::Installer(
     const std::string& app_id,
+    const std::string& install_data_index,
     const std::string& target_channel,
     const std::string& target_version_prefix,
     bool rollback_allowed,
@@ -61,6 +62,7 @@ Installer::Installer(
     crx_file::VerifierFormat crx_verifier_format)
     : updater_scope_(GetUpdaterScope()),
       app_id_(app_id),
+      install_data_index_(install_data_index),
       rollback_allowed_(rollback_allowed),
       target_channel_(target_channel),
       target_version_prefix_(target_version_prefix),
@@ -96,6 +98,7 @@ update_client::CrxComponent Installer::MakeCrxComponent() {
   component.requires_network_encryption = false;
   component.crx_format_requirement = crx_verifier_format_;
   component.app_id = app_id_;
+  component.install_data_index = install_data_index_;
   component.ap = ap_;
   component.brand = persisted_data_->GetBrandCode(app_id_);
   component.name = app_id_;

@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "base/callback_forward.h"
+#include "base/containers/flat_map.h"
 #include "base/containers/queue.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/sequence_checker.h"
@@ -29,6 +30,8 @@ class PersistedData;
 struct RegistrationRequest;
 struct RegistrationResponse;
 
+using AppInstallDataIndex = base::flat_map<std::string, std::string>;
+
 // All functions and callbacks must be called on the same sequence.
 class UpdateServiceImpl : public UpdateService {
  public:
@@ -45,6 +48,7 @@ class UpdateServiceImpl : public UpdateService {
   void RunPeriodicTasks(base::OnceClosure callback) override;
   void UpdateAll(StateChangeCallback state_update, Callback callback) override;
   void Update(const std::string& app_id,
+              const std::string& install_data_index,
               Priority priority,
               PolicySameVersionUpdate policy_same_version_update,
               StateChangeCallback state_update,
@@ -76,7 +80,7 @@ class UpdateServiceImpl : public UpdateService {
   void OnShouldBlockUpdateForMeteredNetwork(
       StateChangeCallback state_update,
       Callback callback,
-      const std::vector<std::string>& ids,
+      const AppInstallDataIndex& app_install_data_index,
       Priority priority,
       PolicySameVersionUpdate policy_same_version_update,
       bool update_blocked);

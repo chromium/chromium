@@ -74,10 +74,12 @@ class IntegrationTestCommandsSystem : public IntegrationTestCommands {
 
   void ExpectUpdateSequence(ScopedServer* test_server,
                             const std::string& app_id,
+                            const std::string& install_data_index,
                             const base::Version& from_version,
                             const base::Version& to_version) const override {
     updater::test::ExpectUpdateSequence(updater_scope_, test_server, app_id,
-                                        from_version, to_version);
+                                        install_data_index, from_version,
+                                        to_version);
   }
 
   void ExpectVersionActive(const std::string& version) const override {
@@ -151,8 +153,10 @@ class IntegrationTestCommandsSystem : public IntegrationTestCommands {
                {Param("exit_code", base::NumberToString(expected_exit_code))});
   }
 
-  void Update(const std::string& app_id) const override {
-    RunCommand("update", {Param("app_id", app_id)});
+  void Update(const std::string& app_id,
+              const std::string& install_data_index) const override {
+    RunCommand("update", {Param("app_id", app_id),
+                          Param("install_data_index", install_data_index)});
   }
 
   void UpdateAll() const override { RunCommand("update_all", {}); }
@@ -213,10 +217,12 @@ class IntegrationTestCommandsSystem : public IntegrationTestCommands {
   }
 
   void CallServiceUpdate(const std::string& app_id,
+                         const std::string& install_data_index,
                          UpdateService::PolicySameVersionUpdate
                              policy_same_version_update) const override {
     RunCommand("call_service_update",
                {Param("app_id", app_id),
+                Param("install_data_index", install_data_index),
                 Param("same_version_update_allowed",
                       policy_same_version_update ==
                               UpdateService::PolicySameVersionUpdate::kAllowed

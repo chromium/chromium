@@ -221,7 +221,10 @@ class IntegrationTest : public ::testing::Test {
     test_commands_->RunWakeActive(exit_code);
   }
 
-  void Update(const std::string& app_id) { test_commands_->Update(app_id); }
+  void Update(const std::string& app_id,
+              const std::string& install_data_index) {
+    test_commands_->Update(app_id, install_data_index);
+  }
 
   void UpdateAll() { test_commands_->UpdateAll(); }
 
@@ -245,10 +248,11 @@ class IntegrationTest : public ::testing::Test {
 
   void ExpectUpdateSequence(ScopedServer* test_server,
                             const std::string& app_id,
+                            const std::string& install_data_index,
                             const base::Version& from_version,
                             const base::Version& to_version) {
-    test_commands_->ExpectUpdateSequence(test_server, app_id, from_version,
-                                         to_version);
+    test_commands_->ExpectUpdateSequence(
+        test_server, app_id, install_data_index, from_version, to_version);
   }
 
   void ExpectSelfUpdateSequence(ScopedServer* test_server) {
@@ -269,8 +273,10 @@ class IntegrationTest : public ::testing::Test {
 
   void CallServiceUpdate(
       const std::string& app_id,
+      const std::string& install_data_index,
       UpdateService::PolicySameVersionUpdate policy_same_version_update) {
-    test_commands_->CallServiceUpdate(app_id, policy_same_version_update);
+    test_commands_->CallServiceUpdate(app_id, install_data_index,
+                                      policy_same_version_update);
   }
 
   void SetupFakeLegacyUpdaterData() {
@@ -346,8 +352,8 @@ TEST_F(IntegrationTest, QualifyUpdater) {
   ExpectVersionNotActive(kUpdaterVersion);
 
   ExpectRegistrationEvent(&test_server, kQualificationAppId);
-  ExpectUpdateSequence(&test_server, kQualificationAppId, base::Version("0.1"),
-                       base::Version("0.2"));
+  ExpectUpdateSequence(&test_server, kQualificationAppId, "",
+                       base::Version("0.1"), base::Version("0.2"));
 
   RunWake(0);
   WaitForUpdaterExit();
@@ -372,7 +378,7 @@ TEST_F(IntegrationTest, SelfUpdate) {
   Install();
 
   base::Version next_version(base::StringPrintf("%s1", kUpdaterVersion));
-  ExpectUpdateSequence(&test_server, kUpdaterAppId,
+  ExpectUpdateSequence(&test_server, kUpdaterAppId, "",
                        base::Version(kUpdaterVersion), next_version);
 
   RunWake(0);
@@ -433,12 +439,13 @@ TEST_F(IntegrationTest, UpdateApp) {
   ExpectRegistrationEvent(&test_server, kAppId);
   InstallApp(kAppId);
   base::Version v1("1");
-  ExpectUpdateSequence(&test_server, kAppId, base::Version("0.1"), v1);
+  ExpectUpdateSequence(&test_server, kAppId, "", base::Version("0.1"), v1);
   RunWake(0);
 
   base::Version v2("2");
-  ExpectUpdateSequence(&test_server, kAppId, v1, v2);
-  Update(kAppId);
+  const std::string kInstallDataIndex("test_install_data_index");
+  ExpectUpdateSequence(&test_server, kAppId, kInstallDataIndex, v1, v2);
+  Update(kAppId, kInstallDataIndex);
   WaitForUpdaterExit();
   ExpectAppVersion(kAppId, v2);
   ExpectLastChecked();
@@ -489,7 +496,7 @@ TEST_F(IntegrationTest, LegacyUpdate3Web) {
   ExpectNoUpdateSequence(&test_server, kAppId);
   ExpectLegacyUpdate3WebSucceeds(kAppId, STATE_NO_UPDATE, S_OK);
 
-  ExpectUpdateSequence(&test_server, kAppId, base::Version("0.1"),
+  ExpectUpdateSequence(&test_server, kAppId, "", base::Version("0.1"),
                        base::Version("0.2"));
   ExpectLegacyUpdate3WebSucceeds(kAppId, STATE_INSTALL_COMPLETE, S_OK);
 
@@ -637,8 +644,8 @@ TEST_F(IntegrationTest, SelfUpdateFromOldReal) {
 
   // Qualify the new instance.
   ExpectRegistrationEvent(&test_server, kQualificationAppId);
-  ExpectUpdateSequence(&test_server, kQualificationAppId, base::Version("0.1"),
-                       base::Version("0.2"));
+  ExpectUpdateSequence(&test_server, kQualificationAppId, "",
+                       base::Version("0.1"), base::Version("0.2"));
   RunWake(0);
   WaitForUpdaterExit();
 
@@ -689,14 +696,57 @@ TEST_F(IntegrationTest, SameVersionUpdate) {
           RequestMatcherRegex,
           R"(.*"updatecheck":{"sameversionupdate":true},"version":"0.1"}.*)")},
       response);
-  CallServiceUpdate(app_id, UpdateService::PolicySameVersionUpdate::kAllowed);
+  CallServiceUpdate(app_id, "",
+                    UpdateService::PolicySameVersionUpdate::kAllowed);
 
   test_server.ExpectOnce(
       {base::BindRepeating(RequestMatcherRegex,
                            R"(.*"updatecheck":{},"version":"0.1"}.*)")},
       response);
-  CallServiceUpdate(app_id,
+  CallServiceUpdate(app_id, "",
                     UpdateService::PolicySameVersionUpdate::kNotAllowed);
+  Uninstall();
+}
+
+TEST_F(IntegrationTest, InstallDataIndex) {
+  ScopedServer test_server(test_commands_);
+  ExpectRegistrationEvent(&test_server, kUpdaterAppId);
+  Install();
+  ExpectInstalled();
+
+  const std::string app_id = "test-appid";
+  const std::string install_data_index = "test-install-data-index";
+
+  ExpectRegistrationEvent(&test_server, app_id);
+  InstallApp(app_id);
+
+  const std::string response = base::StringPrintf(
+      ")]}'\n"
+      R"({"response":{)"
+      R"(  "protocol":"3.1",)"
+      R"(  "app":[)"
+      R"(    {)"
+      R"(      "appid":"%s",)"
+      R"(      "status":"ok",)"
+      R"(      "updatecheck":{)"
+      R"(        "status":"noupdate")"
+      R"(      })"
+      R"(    })"
+      R"(  ])"
+      R"(}})",
+      app_id.c_str());
+
+  test_server.ExpectOnce(
+      {base::BindRepeating(
+          RequestMatcherRegex,
+          base::StringPrintf(
+              R"(.*"data":\[{"index":"%s","name":"install"}],.*)",
+              install_data_index.c_str()))},
+      response);
+
+  CallServiceUpdate(app_id, install_data_index,
+                    UpdateService::PolicySameVersionUpdate::kAllowed);
+
   Uninstall();
 }
 
