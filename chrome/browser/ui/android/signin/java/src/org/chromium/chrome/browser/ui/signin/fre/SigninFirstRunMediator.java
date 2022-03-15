@@ -81,6 +81,10 @@ class SigninFirstRunMediator implements AccountsChangeObserver, ProfileDataCache
         mAccountManagerFacade.removeObserver(this);
     }
 
+    void reset() {
+        mModel.set(SigninFirstRunProperties.IS_CONTINUE_OR_DISMISS_CLICKED, false);
+    }
+
     void onNativeAndPolicyLoaded(boolean hasPolicies) {
         mModel.set(SigninFirstRunProperties.ARE_NATIVE_AND_POLICY_LOADED, true);
         mModel.set(SigninFirstRunProperties.FRE_POLICY, hasPolicies ? new FrePolicy() : null);
@@ -137,6 +141,7 @@ class SigninFirstRunMediator implements AccountsChangeObserver, ProfileDataCache
      * Callback for the PropertyKey {@link SigninFirstRunProperties#ON_SELECTED_ACCOUNT_CLICKED}.
      */
     private void onSelectedAccountClicked() {
+        if (isContinueOrDismissClicked()) return;
         mDialogCoordinator =
                 new AccountPickerDialogCoordinator(mContext, this, mModalDialogManager);
     }
@@ -145,6 +150,7 @@ class SigninFirstRunMediator implements AccountsChangeObserver, ProfileDataCache
      * Callback for the PropertyKey {@link SigninFirstRunProperties#ON_CONTINUE_AS_CLICKED}.
      */
     private void onContinueAsClicked() {
+        if (isContinueOrDismissClicked()) return;
         if (!mModel.get(SigninFirstRunProperties.IS_SIGNIN_SUPPORTED)) {
             mDelegate.acceptTermsOfService();
             mDelegate.advanceToNextPage();
@@ -180,6 +186,7 @@ class SigninFirstRunMediator implements AccountsChangeObserver, ProfileDataCache
             mDelegate.advanceToNextPage();
             return;
         }
+        mModel.set(SigninFirstRunProperties.IS_CONTINUE_OR_DISMISS_CLICKED, true);
         final SigninManager signinManager = IdentityServicesProvider.get().getSigninManager(
                 Profile.getLastUsedRegularProfile());
         signinManager.onFirstRunCheckDone();
@@ -202,6 +209,7 @@ class SigninFirstRunMediator implements AccountsChangeObserver, ProfileDataCache
      * Callback for the PropertyKey {@link SigninFirstRunProperties#ON_DISMISS_CLICKED}.
      */
     private void onDismissClicked() {
+        if (isContinueOrDismissClicked()) return;
         assert mModel.get(SigninFirstRunProperties.ARE_NATIVE_AND_POLICY_LOADED)
             : "The dismiss button shouldn't be visible before the native is not initialized!";
         mDelegate.recordFreProgressHistogram(MobileFreProgress.WELCOME_DISMISS);
@@ -209,13 +217,25 @@ class SigninFirstRunMediator implements AccountsChangeObserver, ProfileDataCache
         if (IdentityServicesProvider.get()
                         .getIdentityManager(Profile.getLastUsedRegularProfile())
                         .hasPrimaryAccount(ConsentLevel.SIGNIN)) {
+            mModel.set(SigninFirstRunProperties.IS_CONTINUE_OR_DISMISS_CLICKED, true);
             IdentityServicesProvider.get()
                     .getSigninManager(Profile.getLastUsedRegularProfile())
-                    .signOut(SignoutReason.ABORT_SIGNIN, mDelegate::advanceToNextPage,
+                    .signOut(SignoutReason.ABORT_SIGNIN,
+                            ()
+                                    -> { mDelegate.advanceToNextPage(); },
                             /* forceWipeUserData= */ false);
         } else {
             mDelegate.advanceToNextPage();
         }
+    }
+
+    /**
+     * Returns whether the user has already clicked either 'Continue' or 'Dismiss'.
+     * If the user has pressed either of the two buttons consecutive taps are ignored.
+     * See crbug.com/1294994 for details.
+     */
+    private boolean isContinueOrDismissClicked() {
+        return mModel.get(SigninFirstRunProperties.IS_CONTINUE_OR_DISMISS_CLICKED);
     }
 
     private void setSelectedAccountName(String accountName) {

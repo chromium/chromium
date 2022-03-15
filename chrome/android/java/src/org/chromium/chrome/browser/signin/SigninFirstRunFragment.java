@@ -137,6 +137,14 @@ public class SigninFirstRunFragment extends Fragment implements FirstRunFragment
         notifyCoordinatorWhenNativeAndPolicyAreLoaded();
     }
 
+    /** Implements {@link FirstRunFragment}. */
+    @Override
+    public void reset() {
+        if (mSigninFirstRunCoordinator != null) {
+            mSigninFirstRunCoordinator.reset();
+        }
+    }
+
     /** Implements {@link SigninFirstRunCoordinator.Delegate}. */
     @Override
     public void addAccount() {

@@ -27,6 +27,9 @@ class SigninFirstRunViewBinder {
         } else if (propertyKey == SigninFirstRunProperties.ON_DISMISS_CLICKED) {
             view.getDismissButtonView().setOnClickListener(
                     model.get(SigninFirstRunProperties.ON_DISMISS_CLICKED));
+        } else if (propertyKey == SigninFirstRunProperties.IS_CONTINUE_OR_DISMISS_CLICKED) {
+            // TODO(https://crbug.com/1294994): Add a spinner while waiting for sign(in/out)
+            //  to finish.
         } else if (propertyKey == SigninFirstRunProperties.ON_SELECTED_ACCOUNT_CLICKED) {
             view.getSelectedAccountView().setOnClickListener(
                     model.get(SigninFirstRunProperties.ON_SELECTED_ACCOUNT_CLICKED));

@@ -79,6 +79,15 @@ public class SigninFirstRunCoordinator {
     }
 
     /**
+     * Resets model properties in {@link SigninFirstRunMediator}.
+     * This method is called when the user advances to the sync consent page and then presses back
+     * and returns to the FRE again.
+     */
+    public void reset() {
+        mMediator.reset();
+    }
+
+    /**
      * Notifies that native is loaded, and if policies are available, that they are also available.
      * @param hasPolicies whether policies are found on device.
      */
