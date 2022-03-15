@@ -41,6 +41,7 @@ void AsyncTaskContext::Schedule(ExecutionContext* context,
 void AsyncTaskContext::Cancel() {
   if (ThreadDebugger* debugger = ThreadDebugger::From(isolate_))
     debugger->AsyncTaskCanceled(Id());
+  isolate_ = nullptr;  // No need to cancel the task a second time.
 }
 
 void* AsyncTaskContext::Id() const {
