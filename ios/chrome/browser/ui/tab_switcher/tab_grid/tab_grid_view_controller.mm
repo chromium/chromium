@@ -1032,6 +1032,9 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
   CGFloat pageWidth = self.scrollView.frame.size.width;
   NSUInteger pageIndex = GetPageIndexFromPage(targetPage);
   CGPoint targetOffset = CGPointMake(pageIndex * pageWidth, 0);
+  BOOL changed = self.currentPage != targetPage;
+  BOOL scrolled =
+      !CGPointEqualToPoint(self.scrollView.contentOffset, targetOffset);
 
   // If the view is visible and |animated| is YES, animate the change.
   // Otherwise don't.
@@ -1047,12 +1050,11 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
     // Only set |scrollViewAnimatingContentOffset| to YES if there's an actual
     // change in the contentOffset, as |-scrollViewDidEndScrollingAnimation:| is
     // never called if the animation does not occur.
-    if (!CGPointEqualToPoint(self.scrollView.contentOffset, targetOffset)) {
+    if (scrolled) {
       self.scrollViewAnimatingContentOffset = YES;
       [self.scrollView setContentOffset:targetOffset animated:YES];
       // |self.currentPage| is set in scrollViewDidEndScrollingAnimation:
     } else {
-      BOOL changed = self.currentPage != targetPage;
       self.currentPage = targetPage;
       if (changed) {
         // When there is no scrolling and the page changed, it can be due to
@@ -1069,7 +1071,7 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
   // does not notify observers when entries are removed. When close all tabs
   // removes entries, the remote tabs page in the tab grid are not updated. This
   // ensures that the table is updated whenever scrolling to it.
-  if (targetPage == TabGridPageRemoteTabs) {
+  if (targetPage == TabGridPageRemoteTabs && (changed || scrolled)) {
     [self.remoteTabsViewController loadModel];
     [self.remoteTabsViewController.tableView reloadData];
   }
