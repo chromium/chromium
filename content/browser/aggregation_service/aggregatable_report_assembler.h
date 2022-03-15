@@ -124,10 +124,9 @@ class CONTENT_EXPORT AggregatableReportAssembler {
 
   // Called when a result is returned from the key fetcher. Handles throwing
   // errors on a failed fetch, waiting for both results to return and calling
-  // into `OnBothPublicKeysFetched()` when appropriate.
-  // `processing_url_index` is an index into the corresponding
-  // AggregatableReportRequest's `processing_urls` vector, indicating which
-  // url this fetch is for.
+  // into `OnAllPublicKeysFetched()` when appropriate. `processing_url_index` is
+  // an index into the corresponding AggregatableReportRequest's
+  // `processing_urls` vector, indicating which URL this fetch is for.
   void OnPublicKeyFetched(
       int64_t report_id,
       size_t processing_url_index,
