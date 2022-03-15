@@ -2,6 +2,23 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import '//resources/cr_elements/cr_icon_button/cr_icon_button.m.js';
+import '//resources/cr_elements/shared_vars_css.m.js';
+import '//resources/polymer/v3_0/iron-icon/iron-icon.js';
+import '../../settings_shared_css.js';
+import '//resources/cr_components/localized_link/localized_link.js';
+import './multidevice_feature_toggle.js';
+
+import {assert} from '//resources/js/assert.m.js';
+import {html, Polymer} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+
+import {Route, Router} from '../../router.js';
+import {routes} from '../os_route.m.js';
+import {RouteOriginBehavior} from '../route_origin_behavior.m.js';
+
+import {MultiDeviceFeature} from './multidevice_constants.js';
+import {MultiDeviceFeatureBehavior} from './multidevice_feature_behavior.js';
+
 /**
  * @fileoverview
  * Item for an individual multidevice feature. These features appear in the
@@ -11,19 +28,20 @@
  * feature's autonomous page if there is one.
  */
 Polymer({
+  _template: html`{__html_template__}`,
   is: 'settings-multidevice-feature-item',
 
-  behaviors: [MultiDeviceFeatureBehavior, settings.RouteOriginBehavior],
+  behaviors: [MultiDeviceFeatureBehavior, RouteOriginBehavior],
 
   properties: {
-    /** @type {!settings.MultiDeviceFeature} */
+    /** @type {!MultiDeviceFeature} */
     feature: Number,
 
     /**
      * If it is truthy, the item should be actionable and clicking on it should
      * navigate to the provided route. Otherwise, the item is simply not
      * actionable.
-     * @type {!settings.Route|undefined}
+     * @type {!Route|undefined}
      */
     subpageRoute: Object,
 
@@ -62,8 +80,8 @@ Polymer({
     }
   },
 
-  /** settings.RouteOriginBehavior override */
-  route_: settings.routes.MULTIDEVICE_FEATURES,
+  /** RouteOriginBehavior override */
+  route_: routes.MULTIDEVICE_FEATURES,
 
   ready() {
     this.addFocusConfig(this.subpageRoute, '#subpageButton');
@@ -128,8 +146,8 @@ Polymer({
     // Remove the search term when navigating to avoid potentially having any
     // visible search term reappear at a later time. See
     // https://crbug.com/989119.
-    settings.Router.getInstance().navigateTo(
-        /** @type {!settings.Route} */ (this.subpageRoute),
+    Router.getInstance().navigateTo(
+        /** @type {!Route} */ (this.subpageRoute),
         this.subpageRouteUrlSearchParams, true /* opt_removeSearch */);
   },
 

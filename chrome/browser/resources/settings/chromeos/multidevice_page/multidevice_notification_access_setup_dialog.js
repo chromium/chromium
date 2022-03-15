@@ -2,6 +2,21 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import '//resources/cr_elements/cr_button/cr_button.m.js';
+import '//resources/cr_elements/cr_dialog/cr_dialog.m.js';
+import '//resources/cr_elements/shared_style_css.m.js';
+import '//resources/polymer/v3_0/iron-icon/iron-icon.js';
+import '//resources/cr_components/localized_link/localized_link.js';
+import '../os_icons.js';
+import '../../settings_shared_css.js';
+
+import {I18nBehavior} from '//resources/js/i18n_behavior.m.js';
+import {WebUIListenerBehavior} from '//resources/js/web_ui_listener_behavior.m.js';
+import {html, Polymer} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+
+import {MultiDeviceBrowserProxy, MultiDeviceBrowserProxyImpl} from './multidevice_browser_proxy.js';
+import {MultiDeviceFeature} from './multidevice_constants.js';
+
 /**
  * @fileoverview
  * This element provides the Phone Hub notification access setup flow that, when
@@ -15,7 +30,7 @@
  * CONNECTION_REQUESTED.
  * @enum{number}
  */
-/* #export */ const NotificationAccessSetupOperationStatus = {
+export const NotificationAccessSetupOperationStatus = {
   CONNECTION_REQUESTED: 0,
   CONNECTING: 1,
   TIMED_OUT_CONNECTING: 2,
@@ -26,6 +41,7 @@
 };
 
 Polymer({
+  _template: html`{__html_template__}`,
   is: 'settings-multidevice-notification-access-setup-dialog',
 
   behaviors: [
@@ -98,12 +114,12 @@ Polymer({
     },
   },
 
-  /** @private {?settings.MultiDeviceBrowserProxy} */
+  /** @private {?MultiDeviceBrowserProxy} */
   browserProxy_: null,
 
   /** @override */
   ready() {
-    this.browserProxy_ = settings.MultiDeviceBrowserProxyImpl.getInstance();
+    this.browserProxy_ = MultiDeviceBrowserProxyImpl.getInstance();
   },
 
   /** @override */
@@ -123,7 +139,7 @@ Polymer({
     if (this.setupState_ ===
         NotificationAccessSetupOperationStatus.COMPLETED_SUCCESSFULLY) {
       this.browserProxy_.setFeatureEnabledState(
-          settings.MultiDeviceFeature.PHONE_HUB_NOTIFICATIONS, true);
+          MultiDeviceFeature.PHONE_HUB_NOTIFICATIONS, true);
     }
   },
 

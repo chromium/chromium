@@ -2,6 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import '//resources/cr_elements/cr_toggle/cr_toggle.m.js';
+
+import {html, Polymer} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+
+import {MultiDeviceFeature, MultiDeviceFeatureState} from './multidevice_constants.js';
+import {MultiDeviceFeatureBehavior} from './multidevice_feature_behavior.js';
+
 /**
  * @fileoverview
  * A toggle button specially suited for the MultiDevice Settings UI use-case.
@@ -11,12 +18,13 @@
  * reflects them in the toggle status.
  */
 Polymer({
+  _template: html`{__html_template__}`,
   is: 'settings-multidevice-feature-toggle',
 
   behaviors: [MultiDeviceFeatureBehavior],
 
   properties: {
-    /** @type {!settings.MultiDeviceFeature} */
+    /** @type {!MultiDeviceFeature} */
     feature: Number,
 
     toggleAriaLabel: String,
@@ -63,14 +71,14 @@ Polymer({
    */
   resetChecked_() {
     // If Phone Hub notification access is prohibited, the toggle is always off.
-    if (this.feature === settings.MultiDeviceFeature.PHONE_HUB_NOTIFICATIONS &&
+    if (this.feature === MultiDeviceFeature.PHONE_HUB_NOTIFICATIONS &&
         this.isPhoneHubNotificationAccessProhibited()) {
       this.checked_ = false;
       return;
     }
 
     this.checked_ = this.getFeatureState(this.feature) ===
-        settings.MultiDeviceFeatureState.ENABLED_BY_USER;
+        MultiDeviceFeatureState.ENABLED_BY_USER;
   },
 
   /**

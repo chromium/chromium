@@ -2,13 +2,46 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import '//resources/cr_elements/cr_button/cr_button.m.js';
+import '//resources/cr_elements/cr_icon_button/cr_icon_button.m.js';
+import '//resources/cr_elements/cr_toggle/cr_toggle.m.js';
+import '//resources/polymer/v3_0/iron-icon/iron-icon.js';
+import '../../controls/password_prompt_dialog.js';
+import '../../settings_page/settings_animated_pages.js';
+import '../../settings_page/settings_subpage.js';
+import '../../settings_shared_css.js';
+import '../nearby_share_page/nearby_share_subpage.js';
+import '//resources/cr_components/localized_link/localized_link.js';
+import './multidevice_feature_toggle.js';
+import './multidevice_notification_access_setup_dialog.js';
+import './multidevice_permissions_setup_dialog.js';
+import './multidevice_smartlock_subpage.js';
+import './multidevice_subpage.js';
+
+import {assert, assertNotReached} from '//resources/js/assert.m.js';
+import {WebUIListenerBehavior} from '//resources/js/web_ui_listener_behavior.m.js';
+import {beforeNextRender, html, Polymer} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+
+import {loadTimeData} from '../../i18n_setup.js';
+import {Route, Router} from '../../router.js';
+import {NearbyShareSettingsBehavior} from '../../shared/nearby_share_settings_behavior.m.js';
+import {DeepLinkingBehavior} from '../deep_linking_behavior.js';
+import {recordSettingChange} from '../metrics_recorder.m.js';
+import {routes} from '../os_route.m.js';
+import {PrefsBehavior} from '../prefs_behavior.js';
+import {RouteObserverBehavior} from '../route_observer_behavior.js';
+
+import {MultiDeviceBrowserProxy, MultiDeviceBrowserProxyImpl} from './multidevice_browser_proxy.js';
+import {MultiDeviceFeature, MultiDeviceFeatureState, MultiDevicePageContentData, MultiDeviceSettingsMode, PhoneHubFeatureAccessStatus} from './multidevice_constants.js';
+import {MultiDeviceFeatureBehavior} from './multidevice_feature_behavior.js';
+
 Polymer({
+  _template: html`{__html_template__}`,
   is: 'settings-multidevice-page',
 
   behaviors: [
-    DeepLinkingBehavior, settings.RouteObserverBehavior,
-    MultiDeviceFeatureBehavior, WebUIListenerBehavior, PrefsBehavior,
-    nearby_share.NearbyShareSettingsBehavior
+    DeepLinkingBehavior, RouteObserverBehavior, MultiDeviceFeatureBehavior,
+    WebUIListenerBehavior, PrefsBehavior, NearbyShareSettingsBehavior
   ],
 
   properties: {
@@ -17,7 +50,7 @@ Polymer({
 
     /**
      * A Map specifying which element should be focused when exiting a subpage.
-     * The key of the map holds a settings.Route path, and the value holds a
+     * The key of the map holds a Route path, and the value holds a
      * query selector that identifies the desired element.
      * @private {!Map<string, string>}
      */
@@ -25,9 +58,9 @@ Polymer({
       type: Object,
       value() {
         const map = new Map();
-        if (settings.routes.MULTIDEVICE_FEATURES) {
+        if (routes.MULTIDEVICE_FEATURES) {
           map.set(
-              settings.routes.MULTIDEVICE_FEATURES.path,
+              routes.MULTIDEVICE_FEATURES.path,
               '#multidevice-item .subpage-arrow');
         }
         return map;
@@ -48,7 +81,7 @@ Polymer({
      * required. This value is initialized to null, is set when the password
      * dialog is opened, and is reset to null again once the password dialog is
      * closed.
-     * @private {?settings.MultiDeviceFeature}
+     * @private {?MultiDeviceFeature}
      */
     featureToBeEnabledOnceAuthenticated_: {
       type: Number,
@@ -123,12 +156,12 @@ Polymer({
     'permission-setup-requested': 'onPermissionSetupRequested_',
   },
 
-  /** @private {?settings.MultiDeviceBrowserProxy} */
+  /** @private {?MultiDeviceBrowserProxy} */
   browserProxy_: null,
 
   /** @override */
   ready() {
-    this.browserProxy_ = settings.MultiDeviceBrowserProxyImpl.getInstance();
+    this.browserProxy_ = MultiDeviceBrowserProxyImpl.getInstance();
 
     this.addWebUIListener(
         'settings.updateMultidevicePageContentData',
@@ -139,23 +172,23 @@ Polymer({
   },
 
   /**
-   * Overridden from nearby_share.NearbyShareSettingsBehavior.
+   * Overridden from NearbyShareSettingsBehavior.
    */
   onSettingsRetrieved() {
     this.isSettingsRetreived = true;
   },
 
   /**
-   * Overridden from settings.RouteObserverBehavior.
-   * @param {!settings.Route} route
-   * @param {!settings.Route} oldRoute
+   * Overridden from RouteObserverBehavior.
+   * @param {!Route} route
+   * @param {!Route} oldRoute
    * @protected
    */
   currentRouteChanged(route, oldRoute) {
     this.leaveNestedPageIfNoHostIsSet_();
 
     // Does not apply to this page.
-    if (route !== settings.routes.MULTIDEVICE) {
+    if (route !== routes.MULTIDEVICE) {
       return;
     }
 
@@ -180,13 +213,13 @@ Polymer({
       return this.i18nAdvanced('multideviceSetupSummary');
     }
     switch (this.pageContentData.mode) {
-      case settings.MultiDeviceSettingsMode.NO_ELIGIBLE_HOSTS:
+      case MultiDeviceSettingsMode.NO_ELIGIBLE_HOSTS:
         return this.i18nAdvanced('multideviceNoHostText');
-      case settings.MultiDeviceSettingsMode.NO_HOST_SET:
+      case MultiDeviceSettingsMode.NO_HOST_SET:
         return this.i18nAdvanced('multideviceSetupSummary');
-      case settings.MultiDeviceSettingsMode.HOST_SET_WAITING_FOR_SERVER:
+      case MultiDeviceSettingsMode.HOST_SET_WAITING_FOR_SERVER:
       // Intentional fall-through.
-      case settings.MultiDeviceSettingsMode.HOST_SET_WAITING_FOR_VERIFICATION:
+      case MultiDeviceSettingsMode.HOST_SET_WAITING_FOR_VERIFICATION:
         return this.i18nAdvanced('multideviceVerificationText');
       default:
         return this.isSuiteOn() ? this.i18n('multideviceEnabled') :
@@ -200,11 +233,11 @@ Polymer({
    */
   getButtonText_() {
     switch (this.pageContentData.mode) {
-      case settings.MultiDeviceSettingsMode.NO_HOST_SET:
+      case MultiDeviceSettingsMode.NO_HOST_SET:
         return this.i18n('multideviceSetupButton');
-      case settings.MultiDeviceSettingsMode.HOST_SET_WAITING_FOR_SERVER:
+      case MultiDeviceSettingsMode.HOST_SET_WAITING_FOR_SERVER:
       // Intentional fall-through.
-      case settings.MultiDeviceSettingsMode.HOST_SET_WAITING_FOR_VERIFICATION:
+      case MultiDeviceSettingsMode.HOST_SET_WAITING_FOR_VERIFICATION:
         return this.i18n('multideviceVerifyButton');
       default:
         return '';
@@ -223,7 +256,7 @@ Polymer({
     // so the text is still available to assistive tools.
     return String(
         this.pageContentData.mode ===
-        settings.MultiDeviceSettingsMode.HOST_SET_VERIFIED);
+        MultiDeviceSettingsMode.HOST_SET_VERIFIED);
   },
 
   /**
@@ -232,9 +265,9 @@ Polymer({
    */
   shouldShowButton_() {
     return [
-      settings.MultiDeviceSettingsMode.NO_HOST_SET,
-      settings.MultiDeviceSettingsMode.HOST_SET_WAITING_FOR_SERVER,
-      settings.MultiDeviceSettingsMode.HOST_SET_WAITING_FOR_VERIFICATION,
+      MultiDeviceSettingsMode.NO_HOST_SET,
+      MultiDeviceSettingsMode.HOST_SET_WAITING_FOR_SERVER,
+      MultiDeviceSettingsMode.HOST_SET_WAITING_FOR_VERIFICATION,
     ].includes(this.pageContentData.mode);
   },
 
@@ -244,7 +277,7 @@ Polymer({
    */
   shouldShowToggle_() {
     return this.pageContentData.mode ===
-        settings.MultiDeviceSettingsMode.HOST_SET_VERIFIED;
+        MultiDeviceSettingsMode.HOST_SET_VERIFIED;
   },
 
   /**
@@ -255,7 +288,7 @@ Polymer({
    */
   shouldShowSeparatorAndSubpageArrow_() {
     return this.pageContentData.mode !==
-        settings.MultiDeviceSettingsMode.NO_ELIGIBLE_HOSTS;
+        MultiDeviceSettingsMode.NO_ELIGIBLE_HOSTS;
   },
 
   /**
@@ -278,20 +311,19 @@ Polymer({
       return;
     }
 
-    settings.Router.getInstance().navigateTo(
-        settings.routes.MULTIDEVICE_FEATURES);
+    Router.getInstance().navigateTo(routes.MULTIDEVICE_FEATURES);
   },
 
   /** @private */
   handleButtonClick_(event) {
     event.stopPropagation();
     switch (this.pageContentData.mode) {
-      case settings.MultiDeviceSettingsMode.NO_HOST_SET:
+      case MultiDeviceSettingsMode.NO_HOST_SET:
         this.browserProxy_.showMultiDeviceSetupDialog();
         return;
-      case settings.MultiDeviceSettingsMode.HOST_SET_WAITING_FOR_SERVER:
+      case MultiDeviceSettingsMode.HOST_SET_WAITING_FOR_SERVER:
       // Intentional fall-through.
-      case settings.MultiDeviceSettingsMode.HOST_SET_WAITING_FOR_VERIFICATION:
+      case MultiDeviceSettingsMode.HOST_SET_WAITING_FOR_VERIFICATION:
         // If this device is waiting for action on the server or the host
         // device, clicking the button should trigger this action.
         this.browserProxy_.retryPendingHostSetup();
@@ -324,7 +356,7 @@ Polymer({
       this.browserProxy_.setFeatureEnabledState(
           this.featureToBeEnabledOnceAuthenticated_, true /* enabled */,
           this.authToken_.token);
-      settings.recordSettingChange();
+      recordSettingChange();
 
       // Reset |this.authToken_| now that it has been used. This ensures that
       // users cannot keep an old auth token and reuse it on an subsequent
@@ -347,7 +379,7 @@ Polymer({
    * authentication process.
    *
    * @param {!CustomEvent<!{
-   *     feature: !settings.MultiDeviceFeature,
+   *     feature: !MultiDeviceFeature,
    *     enabled: boolean
    * }>} event
    * @private
@@ -367,13 +399,12 @@ Polymer({
 
     // If the feature to enable is Phone Hub Notifications, notification access
     // must have been granted before the feature can be enabled.
-    if (feature === settings.MultiDeviceFeature.PHONE_HUB_NOTIFICATIONS &&
-        enabled) {
+    if (feature === MultiDeviceFeature.PHONE_HUB_NOTIFICATIONS && enabled) {
       switch (this.pageContentData.notificationAccessStatus) {
-        case settings.PhoneHubFeatureAccessStatus.PROHIBITED:
+        case PhoneHubFeatureAccessStatus.PROHIBITED:
           assertNotReached('Cannot enable notification access; prohibited');
           return;
-        case settings.PhoneHubFeatureAccessStatus.AVAILABLE_BUT_NOT_GRANTED:
+        case PhoneHubFeatureAccessStatus.AVAILABLE_BUT_NOT_GRANTED:
           this.showPhonePermissionSetupDialog_ = true;
           return;
         default:
@@ -385,28 +416,27 @@ Polymer({
     // Disabling any feature does not require authentication, and enable some
     // features does not require authentication.
     this.browserProxy_.setFeatureEnabledState(feature, enabled);
-    settings.recordSettingChange();
+    recordSettingChange();
   },
 
   /**
-   * @param {!settings.MultiDeviceFeature} feature The feature to enable.
+   * @param {!MultiDeviceFeature} feature The feature to enable.
    * @return {boolean} Whether authentication is required to enable the feature.
    * @private
    */
   isAuthenticationRequiredToEnable_(feature) {
     // Enabling SmartLock always requires authentication.
-    if (feature === settings.MultiDeviceFeature.SMART_LOCK) {
+    if (feature === MultiDeviceFeature.SMART_LOCK) {
       return true;
     }
 
     // Enabling any feature besides SmartLock and the Better Together suite does
     // not require authentication.
-    if (feature !== settings.MultiDeviceFeature.BETTER_TOGETHER_SUITE) {
+    if (feature !== MultiDeviceFeature.BETTER_TOGETHER_SUITE) {
       return false;
     }
 
-    const smartLockState =
-        this.getFeatureState(settings.MultiDeviceFeature.SMART_LOCK);
+    const smartLockState = this.getFeatureState(MultiDeviceFeature.SMART_LOCK);
 
     // If the user is enabling the Better Together suite and this change would
     // result in SmartLock being implicitly enabled, authentication is required.
@@ -414,16 +444,16 @@ Polymer({
     // to the suite being disabled or due to the SmartLock host device not
     // having a lock screen set.
     return smartLockState ===
-        settings.MultiDeviceFeatureState.UNAVAILABLE_SUITE_DISABLED ||
+        MultiDeviceFeatureState.UNAVAILABLE_SUITE_DISABLED ||
         smartLockState ===
-        settings.MultiDeviceFeatureState.UNAVAILABLE_INSUFFICIENT_SECURITY;
+        MultiDeviceFeatureState.UNAVAILABLE_INSUFFICIENT_SECURITY;
   },
 
   /** @private */
   onForgetDeviceRequested_() {
     this.browserProxy_.removeHostDevice();
-    settings.recordSettingChange();
-    settings.Router.getInstance().navigateTo(settings.routes.MULTIDEVICE);
+    recordSettingChange();
+    Router.getInstance().navigateTo(routes.MULTIDEVICE);
   },
 
   /** @private */
@@ -444,28 +474,25 @@ Polymer({
 
     // Host status doesn't matter if we are navigating to Nearby Share
     // settings.
-    if (settings.routes.NEARBY_SHARE ===
-        settings.Router.getInstance().getCurrentRoute()) {
+    if (routes.NEARBY_SHARE === Router.getInstance().getCurrentRoute()) {
       return;
     }
 
     // If the user gets to the a nested page without a host (e.g. by clicking a
     // stale 'existing user' notifications after forgetting their host) we
     // direct them back to the main settings page.
-    if (settings.routes.MULTIDEVICE !==
-            settings.Router.getInstance().getCurrentRoute() &&
-        settings.routes.MULTIDEVICE.contains(
-            settings.Router.getInstance().getCurrentRoute()) &&
+    if (routes.MULTIDEVICE !== Router.getInstance().getCurrentRoute() &&
+        routes.MULTIDEVICE.contains(Router.getInstance().getCurrentRoute()) &&
         !this.isHostSet()) {
       // Render MULTIDEVICE page before the MULTIDEVICE_FEATURES has a chance.
-      Polymer.RenderStatus.beforeNextRender(this, () => {
-        settings.Router.getInstance().navigateTo(settings.routes.MULTIDEVICE);
+      beforeNextRender(this, () => {
+        Router.getInstance().navigateTo(routes.MULTIDEVICE);
       });
     }
   },
 
   /**
-   * @param {!settings.MultiDevicePageContentData} newData
+   * @param {!MultiDevicePageContentData} newData
    * @private
    */
   onInitialPageContentDataFetched_(newData) {
@@ -474,14 +501,14 @@ Polymer({
     // Show the notification access dialog if the url contains the correct
     // param.
     // Show combined access dialog with URL having param and features.
-    const urlParams = settings.Router.getInstance().getQueryParameters();
+    const urlParams = Router.getInstance().getQueryParameters();
     if (urlParams.get('showPhonePermissionSetupDialog') !== null) {
       this.showPhonePermissionSetupDialog_ = true;
     }
   },
 
   /**
-   * @param {!settings.MultiDevicePageContentData} newData
+   * @param {!MultiDevicePageContentData} newData
    * @private
    */
   onPageContentDataChanged_(newData) {
@@ -573,7 +600,7 @@ Polymer({
     // whether Nearby Share is on or off so that users can enable/disable the
     // "Nearby device is trying to share" notification.
     if (this.shouldEnableNearbyShareBackgroundScanningRevamp_) {
-      settings.Router.getInstance().navigateTo(settings.routes.NEARBY_SHARE);
+      Router.getInstance().navigateTo(routes.NEARBY_SHARE);
       return;
     }
 
@@ -594,8 +621,7 @@ Polymer({
       params.set('entrypoint', 'settings');
       params.set('onboarding', '');
     }
-    settings.Router.getInstance().navigateTo(
-        settings.routes.NEARBY_SHARE, params);
+    Router.getInstance().navigateTo(routes.NEARBY_SHARE, params);
   },
 
 
@@ -636,8 +662,7 @@ Polymer({
     params.set('onboarding', '');
     // Set by metrics to determine entrypoint for onboarding
     params.set('entrypoint', 'settings');
-    settings.Router.getInstance().navigateTo(
-        settings.routes.NEARBY_SHARE, params);
+    Router.getInstance().navigateTo(routes.NEARBY_SHARE, params);
   },
 
   /**

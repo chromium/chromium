@@ -2,6 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import '../../settings_shared_css.js';
+
+import {loadTimeData} from '//resources/js/load_time_data.m.js';
+import {html, Polymer} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+
+import {Router} from '../../router.js';
+import {routes} from '../os_route.m.js';
+
+import {MultiDeviceFeatureBehavior} from './multidevice_feature_behavior.js';
+
 /**
  * @fileoverview 'settings-multidevice-wifi-sync-disabled-link' creates a
  * localized string with accessibility labels for the Wifi Sync feature when
@@ -12,6 +22,7 @@
  * and the other to a Learn More page for Wifi Sync.
  */
 Polymer({
+  _template: html`{__html_template__}`,
   is: 'settings-multidevice-wifi-sync-disabled-link',
 
   behaviors: [
@@ -65,9 +76,9 @@ Polymer({
     if (loadTimeData.getBoolean('syncSettingsCategorizationEnabled')) {
       // If syncSettingsCategorization is enabled, then WiFi sync is controlled
       // by the OS sync settings, not the browser sync settings.
-      settings.Router.getInstance().navigateTo(settings.routes.OS_SYNC);
+      Router.getInstance().navigateTo(routes.OS_SYNC);
     } else {
-      settings.Router.getInstance().navigateTo(settings.routes.SYNC_ADVANCED);
+      Router.getInstance().navigateTo(routes.SYNC_ADVANCED);
     }
   },
 });

@@ -2,6 +2,22 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import '//resources/cr_components/chromeos/network/network_icon.m.js';
+import '../../settings_shared_css.js';
+import '../../settings_vars_css.js';
+import './multidevice_feature_item.js';
+
+import {MojoInterfaceProviderImpl} from '//resources/cr_components/chromeos/network/mojo_interface_provider.m.js';
+import {NetworkListenerBehavior} from '//resources/cr_components/chromeos/network/network_listener_behavior.m.js';
+import {OncMojo} from '//resources/cr_components/chromeos/network/onc_mojo.m.js';
+import {html, Polymer} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+
+import {loadTimeData} from '../../i18n_setup.js';
+import {routes} from '../os_route.m.js';
+import {OsSettingsRoutes} from '../os_settings_routes.m.js';
+
+import {MultiDeviceFeatureBehavior} from './multidevice_feature_behavior.js';
+
 /**
  * @fileoverview
  * This element provides a layer between the settings-multidevice-subpage
@@ -10,8 +26,8 @@
  * networkConfig mojo API as well as updating the data in real time. It
  * serves a role comparable to the internet_page's network-summary element.
  */
-
 Polymer({
+  _template: html`{__html_template__}`,
   is: 'settings-multidevice-tether-item',
 
   behaviors: [
@@ -35,12 +51,12 @@ Polymer({
     activeNetworkState_: Object,
 
     /**
-     * Alias for allowing Polymer bindings to settings.routes.
+     * Alias for allowing Polymer bindings to routes.
      * @type {?OsSettingsRoutes}
      */
     routes: {
       type: Object,
-      value: settings.routes,
+      value: routes,
     },
 
     /**
@@ -61,8 +77,8 @@ Polymer({
 
   /** @override */
   created() {
-    this.networkConfig_ = network_config.MojoInterfaceProviderImpl.getInstance()
-                              .getMojoServiceRemote();
+    this.networkConfig_ =
+        MojoInterfaceProviderImpl.getInstance().getMojoServiceRemote();
   },
 
   /** @override */

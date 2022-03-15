@@ -1,141 +1,123 @@
-<link rel="import" href="chrome://resources/html/polymer.html">
+<style include="cr-shared-style settings-shared">
 
-<link rel="import" href="chrome://resources/cr_components/chromeos/quick_unlock/lock_screen_constants.html">
-<link rel="import" href="chrome://resources/cr_elements/shared_vars_css.html">
-<link rel="import" href="chrome://resources/html/assert.html">
-<link rel="import" href="chrome://resources/html/cr/ui/focus_without_ink.html">
-<link rel="import" href="chrome://resources/html/i18n_behavior.html">
-<link rel="import" href="chrome://resources/html/load_time_data.html">
-<link rel="import" href="../os_people_page/lock_screen_password_prompt_dialog.html">
-<link rel="import" href="../os_people_page/lock_state_behavior.html">
-<link rel="import" href="../os_people_page/setup_pin_dialog.html">
-<link rel="import" href="../os_people_page/pin_autosubmit_dialog.html">
+  #screen-lock-description {
+    align-items: center;
+    display: flex;
+    flex-direction: row;
+    height: auto;
+    justify-content: center;
+  }
 
-<dom-module id="settings-multidevice-screen-lock-subpage">
-  <template>
-    <style include="cr-shared-style settings-shared">
+  #half-container {
+    flex: 1;
+    height: 216px;
+  }
 
-      #screen-lock-description {
-        align-items: center;
-        display: flex;
-        flex-direction: row;
-        height: auto;
-        justify-content: center;
-      }
+  #illustration {
+    background-image:
+        url(chrome://os-settings/images/notification_access_connecting.svg);
+    background-position: center center;
+    background-repeat: no-repeat;
+    background-size: contain;
+    height: 200px;
+    margin-bottom: 8px;
+    margin-top: 8px;
+    width: 100%;
+  }
 
-      #half-container {
-        flex: 1;
-        height: 216px;
-      }
+  @media(prefers-color-scheme: dark) {
+    #illustration {
+      background-image: url(
+        chrome://os-settings/images/notification_access_connecting_dark.svg);
+    }
+  }
 
-      #illustration {
-        background-image:
-            url(chrome://os-settings/images/notification_access_connecting.svg);
-        background-position: center center;
-        background-repeat: no-repeat;
-        background-size: contain;
-        height: 200px;
-        margin-bottom: 8px;
-        margin-top: 8px;
-        width: 100%;
-      }
+  #radio-button-container {
+    padding-top: 20px;
+  }
 
-      @media(prefers-color-scheme: dark) {
-        #illustration {
-          background-image: url(
-            chrome://os-settings/images/notification_access_connecting_dark.svg);
-        }
-      }
+  #passwordRadioButton {
+    --cr-radio-button-label-spacing: 20px;
+    --cr-radio-button-size: 20px;
+    color: var(--cr-primary-text-color);
+    font-family: 'Roboto';
+    font-size: 13px;
+    font-weight: medium;
+    line-height: 20px;
+    min-height: 20px;
+    padding-inline-start: 8px;
+    padding-top: 24px;
+  }
 
-      #radio-button-container {
-        padding-top: 20px;
-      }
+  #pinRadioButton {
+    --cr-radio-button-label-spacing: 20px;
+    --cr-radio-button-size: 20px;
+    color: var(--cr-primary-text-color);
+    font-family: 'Roboto';
+    font-size: 13px;
+    font-weight: medium;
+    line-height: 20px;
+    min-height: 20px;
+    padding-inline-start: 8px;
+    padding-top: 44px;
+  }
 
-      #passwordRadioButton {
-        --cr-radio-button-label-spacing: 20px;
-        --cr-radio-button-size: 20px;
-        color: var(--cr-primary-text-color);
-        font-family: 'Roboto';
-        font-size: 13px;
-        font-weight: medium;
-        line-height: 20px;
-        min-height: 20px;
-        padding-inline-start: 8px;
-        padding-top: 24px;
-      }
-
-      #pinRadioButton {
-        --cr-radio-button-label-spacing: 20px;
-        --cr-radio-button-size: 20px;
-        color: var(--cr-primary-text-color);
-        font-family: 'Roboto';
-        font-size: 13px;
-        font-weight: medium;
-        line-height: 20px;
-        min-height: 20px;
-        padding-inline-start: 8px;
-        padding-top: 44px;
-      }
-
-      #subtext {
-        color: var(--cr-secondary-text-color);
-        font-family: 'Roboto';
-        font-size: 13px;
-        font-weight: medium;
-        line-height: 20px;
-        padding-inline-start: 48px;
-      }
-    </style>
-    <div id="screen-lock-description">
-      <div id="half-container">
-        <div id="illustration"></div>
-      </div>
-      <div id="half-container">
-        <template is="dom-if" if="[[authToken_]]">
-          <cr-radio-group id=radio-button-container
-              disabled$="[[quickUnlockDisabledByPolicy_]]"
-              selected="{{selectedUnlockType}}"
-              deep-link-focus-id$="[[Setting.kChangeAuthPinV2]]">
-            <cr-radio-button id="passwordRadioButton" name="password"
-                label=$i18n{lockScreenPasswordOnly}>
-            </cr-radio-button>
-            <cr-radio-button id="pinRadioButton" name="pin+password"
-                label=$i18n{lockScreenPinOrPassword}>
-            </cr-radio-button>
-            <div id="subtext">
-              $i18n{multideviceNotificationAccessSetupScreenLockInstruction}
+  #subtext {
+    color: var(--cr-secondary-text-color);
+    font-family: 'Roboto';
+    font-size: 13px;
+    font-weight: medium;
+    line-height: 20px;
+    padding-inline-start: 48px;
+  }
+</style>
+<div id="screen-lock-description">
+  <div id="half-container">
+    <div id="illustration"></div>
+  </div>
+  <div id="half-container">
+    <template is="dom-if" if="[[authToken_]]">
+      <cr-radio-group id=radio-button-container
+          disabled$="[[quickUnlockDisabledByPolicy_]]"
+          selected="{{selectedUnlockType}}"
+          deep-link-focus-id$="[[Setting.kChangeAuthPinV2]]">
+        <cr-radio-button id="passwordRadioButton" name="password"
+            label=$i18n{lockScreenPasswordOnly}>
+        </cr-radio-button>
+        <cr-radio-button id="pinRadioButton" name="pin+password"
+            label=$i18n{lockScreenPinOrPassword}>
+        </cr-radio-button>
+        <div id="subtext">
+          $i18n{multideviceNotificationAccessSetupScreenLockInstruction}
+        </div>
+        <template is="dom-if"
+            if="[[showConfigurePinButton_(selectedUnlockType)]]">
+          <div class="list-item-end">
+            <div id="pinPasswordSecondaryActionDiv"
+                class="secondary-action">
+              <!-- Use stop-keyboard-event-propagation to prevent
+                    triggering this when focused after closing the
+                    dialog. -->
+              <cr-button id="setupPinButton" on-click="onConfigurePin_"
+                  stop-keyboard-event-propagation>
+                [[getSetupPinText_(hasPin)]]
+              </cr-button>
             </div>
-            <template is="dom-if"
-                if="[[showConfigurePinButton_(selectedUnlockType)]]">
-              <div class="list-item-end">
-                <div id="pinPasswordSecondaryActionDiv"
-                    class="secondary-action">
-                  <!-- Use stop-keyboard-event-propagation to prevent
-                       triggering this when focused after closing the
-                       dialog. -->
-                  <cr-button id="setupPinButton" on-click="onConfigurePin_"
-                      stop-keyboard-event-propagation>
-                    [[getSetupPinText_(hasPin)]]
-                  </cr-button>
-                </div>
-              </div>
-            </template>
-          </cr-radio-group>
+          </div>
         </template>
-      </div>
-    </div>
-    <template is="dom-if" if="[[shouldPromptPasswordDialog_]]" restamp>
-      <settings-lock-screen-password-prompt-dialog id="passwordDialog"
-          on-close="onPasswordPromptDialogClose_"
-          on-auth-token-obtained="onAuthTokenObtained_">
-      </settings-lock-screen-password-prompt-dialog>
+      </cr-radio-group>
     </template>
-    <template is="dom-if" if="[[showSetupPinDialog_]]" restamp>
-      <settings-setup-pin-dialog id="setupPin"
-          set-modes="[[setModes_]]"
-          on-close="onSetupPinDialogClose_">
-      </settings-setup-pin-dialog>
-    </template>
-  </template>
-  <script src="multidevice_screen-lock_subpage.js"></script>
-</dom-module>
+  </div>
+</div>
+<template is="dom-if" if="[[shouldPromptPasswordDialog_]]" restamp>
+  <settings-lock-screen-password-prompt-dialog id="passwordDialog"
+      on-close="onPasswordPromptDialogClose_"
+      on-auth-token-obtained="onAuthTokenObtained_">
+  </settings-lock-screen-password-prompt-dialog>
+</template>
+<template is="dom-if" if="[[showSetupPinDialog_]]" restamp>
+  <settings-setup-pin-dialog id="setupPin"
+      set-modes="[[setModes_]]"
+      on-close="onSetupPinDialogClose_">
+  </settings-setup-pin-dialog>
+</template>

@@ -2,13 +2,34 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import '//resources/cr_elements/cr_radio_button/cr_radio_button.m.js';
+import '//resources/cr_elements/cr_radio_group/cr_radio_group.m.js';
+import './multidevice_feature_toggle.js';
+import './multidevice_radio_button.js';
+import '../../settings_shared_css.js';
+
+import {WebUIListenerBehavior} from '//resources/js/web_ui_listener_behavior.m.js';
+import {html, Polymer} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+
+import {Route} from '../../router.js';
+import {DeepLinkingBehavior} from '../deep_linking_behavior.js';
+import {recordSettingChange} from '../metrics_recorder.m.js';
+import {routes} from '../os_route.m.js';
+import {OsSettingsRoutes} from '../os_settings_routes.m.js';
+import {RouteObserverBehavior} from '../route_observer_behavior.js';
+
+import {MultiDeviceBrowserProxy, MultiDeviceBrowserProxyImpl} from './multidevice_browser_proxy.js';
+import {MultiDeviceFeature, MultiDeviceFeatureState, SmartLockSignInEnabledState} from './multidevice_constants.js';
+import {MultiDeviceFeatureBehavior} from './multidevice_feature_behavior.js';
+
 Polymer({
+  _template: html`{__html_template__}`,
   is: 'settings-multidevice-smartlock-subpage',
 
   behaviors: [
     DeepLinkingBehavior,
     MultiDeviceFeatureBehavior,
-    settings.RouteObserverBehavior,
+    RouteObserverBehavior,
     WebUIListenerBehavior,
   ],
 
@@ -16,7 +37,7 @@ Polymer({
     /** @type {?OsSettingsRoutes} */
     routes: {
       type: Object,
-      value: settings.routes,
+      value: routes,
     },
 
     /**
@@ -31,11 +52,11 @@ Polymer({
     /**
      * Whether Smart Lock may be used to sign-in the user (as opposed to only
      * being able to unlock the user's screen).
-     * @private {!settings.SmartLockSignInEnabledState}
+     * @private {!SmartLockSignInEnabledState}
      */
     smartLockSignInEnabled_: {
       type: Object,
-      value: settings.SmartLockSignInEnabledState.DISABLED,
+      value: SmartLockSignInEnabledState.DISABLED,
     },
 
     /**
@@ -74,12 +95,12 @@ Polymer({
     },
   },
 
-  /** @private {?settings.MultiDeviceBrowserProxy} */
+  /** @private {?MultiDeviceBrowserProxy} */
   browserProxy_: null,
 
   /** @override */
   ready() {
-    this.browserProxy_ = settings.MultiDeviceBrowserProxyImpl.getInstance();
+    this.browserProxy_ = MultiDeviceBrowserProxyImpl.getInstance();
 
     this.addWebUIListener(
         'smart-lock-signin-enabled-changed',
@@ -99,12 +120,12 @@ Polymer({
   },
 
   /**
-   * @param {!settings.Route} route
-   * @param {!settings.Route} oldRoute
+   * @param {!Route} route
+   * @param {!Route} oldRoute
    */
   currentRouteChanged(route, oldRoute) {
     // Does not apply to this page.
-    if (route !== settings.routes.SMART_LOCK) {
+    if (route !== routes.SMART_LOCK) {
       return;
     }
 
@@ -118,8 +139,8 @@ Polymer({
    */
   computeIsSmartLockEnabled_() {
     return !!this.pageContentData &&
-        this.getFeatureState(settings.MultiDeviceFeature.SMART_LOCK) ===
-        settings.MultiDeviceFeatureState.ENABLED_BY_USER;
+        this.getFeatureState(MultiDeviceFeature.SMART_LOCK) ===
+        MultiDeviceFeatureState.ENABLED_BY_USER;
   },
 
   /**
@@ -127,9 +148,9 @@ Polymer({
    * @private
    */
   updateSmartLockSignInEnabled_(enabled) {
-    this.smartLockSignInEnabled_ =
-        enabled ? settings.SmartLockSignInEnabledState.ENABLED :
-        settings.SmartLockSignInEnabledState.DISABLED;
+    this.smartLockSignInEnabled_ = enabled ?
+        SmartLockSignInEnabledState.ENABLED :
+        SmartLockSignInEnabledState.DISABLED;
   },
 
   /**
@@ -153,19 +174,18 @@ Polymer({
    */
   onSmartLockSignInEnabledChanged_() {
     const radioGroup = this.$$('cr-radio-group');
-    const enabled =
-        radioGroup.selected === settings.SmartLockSignInEnabledState.ENABLED;
+    const enabled = radioGroup.selected === SmartLockSignInEnabledState.ENABLED;
 
     if (!enabled) {
       // No authentication check is required to disable.
       this.browserProxy_.setSmartLockSignInEnabled(false /* enabled */);
-      settings.recordSettingChange();
+      recordSettingChange();
       return;
     }
 
     // Toggle the enabled state back to disabled, as authentication may not
     // succeed. The toggle state updates automatically by the pref listener.
-    radioGroup.selected = settings.SmartLockSignInEnabledState.DISABLED;
+    radioGroup.selected = SmartLockSignInEnabledState.DISABLED;
     this.openPasswordPromptDialog_();
   },
 
@@ -183,7 +203,7 @@ Polymer({
     if (this.authToken_) {
       this.browserProxy_.setSmartLockSignInEnabled(
           true /* enabled */, this.authToken_.token);
-      settings.recordSettingChange();
+      recordSettingChange();
     }
 
     // Always require password entry if re-enabling SignIn with Smart Lock.

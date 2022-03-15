@@ -2,182 +2,172 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// clang-format off
-// #import {addSingletonGetter, sendWithPromise} from 'chrome://resources/js/cr.m.js';
-// #import {MultiDevicePageContentData, MultiDeviceFeature} from './multidevice_constants.m.js';
-// clang-format on
+import {addSingletonGetter, sendWithPromise} from 'chrome://resources/js/cr.m.js';
 
-cr.define('settings', function() {
-  /**
-   * An object containing messages for web permissisions origin
-   * and the messages multidevice feature state.
-   *
-   * @typedef {{origin: string,
-   *            enabled: boolean}}
-   */
-  /* #export */ let AndroidSmsInfo;
+import {MultiDeviceFeature, MultiDevicePageContentData} from './multidevice_constants.js';
 
-  /** @interface */
-  /* #export */ class MultiDeviceBrowserProxy {
-    showMultiDeviceSetupDialog() {}
+/**
+ * An object containing messages for web permissisions origin
+ * and the messages multidevice feature state.
+ *
+ * @typedef {{origin: string,
+ *            enabled: boolean}}
+ */
+export let AndroidSmsInfo;
 
-    /** @return {!Promise<!settings.MultiDevicePageContentData>} */
-    getPageContentData() {}
+/** @interface */
+export class MultiDeviceBrowserProxy {
+  showMultiDeviceSetupDialog() {}
 
-    /**
-     * @param {!settings.MultiDeviceFeature} feature The feature whose state
-     *     should be set.
-     * @param {boolean} enabled Whether the feature should be turned off or on.
-     * @param {string=} opt_authToken Proof that the user is authenticated.
-     *     Needed to enable Smart Lock, and Better Together Suite if the Smart
-     *     Lock user pref is enabled.
-     * @return {!Promise<boolean>} Whether the operation was successful.
-     */
-    setFeatureEnabledState(feature, enabled, opt_authToken) {}
-
-    removeHostDevice() {}
-
-    retryPendingHostSetup() {}
-
-    /**
-     * Called when the "Set Up" button is clicked to open the Android Messages
-     * PWA.
-     */
-    setUpAndroidSms() {}
-
-    /**
-     * Returns the value of the preference controlling whether Smart Lock may be
-     * used to sign-in the user (as opposed to unlocking the screen).
-     * @return {!Promise<boolean>}
-     */
-    getSmartLockSignInEnabled() {}
-
-    /**
-     * Sets the value of the preference controlling whether Smart Lock may be
-     * used to sign-in the user (as opposed to unlocking the screen).
-     * @param {boolean} enabled
-     * @param {string=} opt_authToken Authentication token used to restrict
-     *    edit access to the Smart Lock sign-in pref.
-     */
-    setSmartLockSignInEnabled(enabled, opt_authToken) {}
-
-    /**
-     * Returns the value of the preference controlling whether Smart Lock
-     * sign-in is allowed.
-     * @return {!Promise<boolean>}
-     */
-    getSmartLockSignInAllowed() {}
-
-    /**
-     * Returns android messages info with messages feature state
-     * and messages for web permissions origin.
-     * @return {!Promise<!settings.AndroidSmsInfo>} Android SMS Info
-     */
-    getAndroidSmsInfo() {}
-
-    /**
-     * Attempts the phone hub notification access setup flow.
-     */
-    attemptNotificationSetup() {}
-
-    /**
-     * Cancels the phone hub notification access setup flow.
-     */
-    cancelNotificationSetup() {}
-
-    /**
-     * Attempts the phone hub apps access setup flow.
-     */
-    attemptAppsSetup() {}
-
-    /**
-     * Cancels the phone hub apps access setup flow.
-     */
-    cancelAppsSetup() {}
-  }
+  /** @return {!Promise<!MultiDevicePageContentData>} */
+  getPageContentData() {}
 
   /**
-   * @implements {settings.MultiDeviceBrowserProxy}
+   * @param {!MultiDeviceFeature} feature The feature whose state
+   *     should be set.
+   * @param {boolean} enabled Whether the feature should be turned off or on.
+   * @param {string=} opt_authToken Proof that the user is authenticated.
+   *     Needed to enable Smart Lock, and Better Together Suite if the Smart
+   *     Lock user pref is enabled.
+   * @return {!Promise<boolean>} Whether the operation was successful.
    */
-  /* #export */ class MultiDeviceBrowserProxyImpl {
-    /** @override */
-    showMultiDeviceSetupDialog() {
-      chrome.send('showMultiDeviceSetupDialog');
-    }
+  setFeatureEnabledState(feature, enabled, opt_authToken) {}
 
-    /** @override */
-    getPageContentData() {
-      return cr.sendWithPromise('getPageContentData');
-    }
+  removeHostDevice() {}
 
-    /** @override */
-    setFeatureEnabledState(feature, enabled, opt_authToken) {
-      return cr.sendWithPromise(
-          'setFeatureEnabledState', feature, enabled, opt_authToken);
-    }
+  retryPendingHostSetup() {}
 
-    /** @override */
-    removeHostDevice() {
-      chrome.send('removeHostDevice');
-    }
+  /**
+   * Called when the "Set Up" button is clicked to open the Android Messages
+   * PWA.
+   */
+  setUpAndroidSms() {}
 
-    /** @override */
-    retryPendingHostSetup() {
-      chrome.send('retryPendingHostSetup');
-    }
+  /**
+   * Returns the value of the preference controlling whether Smart Lock may be
+   * used to sign-in the user (as opposed to unlocking the screen).
+   * @return {!Promise<boolean>}
+   */
+  getSmartLockSignInEnabled() {}
 
-    /** @override */
-    setUpAndroidSms() {
-      chrome.send('setUpAndroidSms');
-    }
+  /**
+   * Sets the value of the preference controlling whether Smart Lock may be
+   * used to sign-in the user (as opposed to unlocking the screen).
+   * @param {boolean} enabled
+   * @param {string=} opt_authToken Authentication token used to restrict
+   *    edit access to the Smart Lock sign-in pref.
+   */
+  setSmartLockSignInEnabled(enabled, opt_authToken) {}
 
-    /** @override */
-    getSmartLockSignInEnabled() {
-      return cr.sendWithPromise('getSmartLockSignInEnabled');
-    }
+  /**
+   * Returns the value of the preference controlling whether Smart Lock
+   * sign-in is allowed.
+   * @return {!Promise<boolean>}
+   */
+  getSmartLockSignInAllowed() {}
 
-    /** @override */
-    setSmartLockSignInEnabled(enabled, opt_authToken) {
-      chrome.send('setSmartLockSignInEnabled', [enabled, opt_authToken]);
-    }
+  /**
+   * Returns android messages info with messages feature state
+   * and messages for web permissions origin.
+   * @return {!Promise<!AndroidSmsInfo>} Android SMS Info
+   */
+  getAndroidSmsInfo() {}
 
-    /** @override */
-    getSmartLockSignInAllowed() {
-      return cr.sendWithPromise('getSmartLockSignInAllowed');
-    }
+  /**
+   * Attempts the phone hub notification access setup flow.
+   */
+  attemptNotificationSetup() {}
 
-    /** @override */
-    getAndroidSmsInfo() {
-      return cr.sendWithPromise('getAndroidSmsInfo');
-    }
+  /**
+   * Cancels the phone hub notification access setup flow.
+   */
+  cancelNotificationSetup() {}
 
-    /** @override */
-    attemptNotificationSetup() {
-      chrome.send('attemptNotificationSetup');
-    }
+  /**
+   * Attempts the phone hub apps access setup flow.
+   */
+  attemptAppsSetup() {}
 
-    /** @override */
-    cancelNotificationSetup() {
-      chrome.send('cancelNotificationSetup');
-    }
+  /**
+   * Cancels the phone hub apps access setup flow.
+   */
+  cancelAppsSetup() {}
+}
 
-    /** @override */
-    attemptAppsSetup() {
-      chrome.send('attemptAppsSetup');
-    }
-
-    /** @override */
-    cancelAppsSetup() {
-      chrome.send('cancelAppsSetup');
-    }
+/**
+ * @implements {MultiDeviceBrowserProxy}
+ */
+export class MultiDeviceBrowserProxyImpl {
+  /** @override */
+  showMultiDeviceSetupDialog() {
+    chrome.send('showMultiDeviceSetupDialog');
   }
 
-  cr.addSingletonGetter(MultiDeviceBrowserProxyImpl);
+  /** @override */
+  getPageContentData() {
+    return sendWithPromise('getPageContentData');
+  }
 
-  // #cr_define_end
-  return {
-    AndroidSmsInfo,
-    MultiDeviceBrowserProxy,
-    MultiDeviceBrowserProxyImpl,
-  };
-});
+  /** @override */
+  setFeatureEnabledState(feature, enabled, opt_authToken) {
+    return sendWithPromise(
+        'setFeatureEnabledState', feature, enabled, opt_authToken);
+  }
+
+  /** @override */
+  removeHostDevice() {
+    chrome.send('removeHostDevice');
+  }
+
+  /** @override */
+  retryPendingHostSetup() {
+    chrome.send('retryPendingHostSetup');
+  }
+
+  /** @override */
+  setUpAndroidSms() {
+    chrome.send('setUpAndroidSms');
+  }
+
+  /** @override */
+  getSmartLockSignInEnabled() {
+    return sendWithPromise('getSmartLockSignInEnabled');
+  }
+
+  /** @override */
+  setSmartLockSignInEnabled(enabled, opt_authToken) {
+    chrome.send('setSmartLockSignInEnabled', [enabled, opt_authToken]);
+  }
+
+  /** @override */
+  getSmartLockSignInAllowed() {
+    return sendWithPromise('getSmartLockSignInAllowed');
+  }
+
+  /** @override */
+  getAndroidSmsInfo() {
+    return sendWithPromise('getAndroidSmsInfo');
+  }
+
+  /** @override */
+  attemptNotificationSetup() {
+    chrome.send('attemptNotificationSetup');
+  }
+
+  /** @override */
+  cancelNotificationSetup() {
+    chrome.send('cancelNotificationSetup');
+  }
+
+  /** @override */
+  attemptAppsSetup() {
+    chrome.send('attemptAppsSetup');
+  }
+
+  /** @override */
+  cancelAppsSetup() {
+    chrome.send('cancelAppsSetup');
+  }
+}
+
+addSingletonGetter(MultiDeviceBrowserProxyImpl);

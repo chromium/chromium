@@ -2,11 +2,20 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import '//resources/cr_components/localized_link/localized_link.js';
+import '//resources/cr_elements/cr_button/cr_button.m.js';
+import './multidevice_feature_item.js';
+
+import {html, Polymer} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+
+import {MultiDeviceFeatureBehavior} from './multidevice_feature_behavior.js';
+
 /**
  * @fileoverview 'settings-multidevice-combined-setup-item' encapsulates
  * special logic for setting up multiple features from one click.
  */
 Polymer({
+  _template: html`{__html_template__}`,
   is: 'settings-multidevice-combined-setup-item',
 
   behaviors: [MultiDeviceFeatureBehavior],

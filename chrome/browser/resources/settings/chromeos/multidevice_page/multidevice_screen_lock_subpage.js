@@ -2,12 +2,27 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import '//resources/cr_elements/shared_vars_css.m.js';
+import '../os_people_page/lock_screen_password_prompt_dialog.js';
+import '../os_people_page/setup_pin_dialog.js';
+import '../os_people_page/pin_autosubmit_dialog.js';
+
+import {LockScreenProgress, recordLockScreenProgress} from '//resources/cr_components/chromeos/quick_unlock/lock_screen_constants.m.js';
+import {assert} from '//resources/js/assert.m.js';
+import {focusWithoutInk} from '//resources/js/cr/ui/focus_without_ink.m.js';
+import {I18nBehavior} from '//resources/js/i18n_behavior.m.js';
+import {loadTimeData} from '//resources/js/load_time_data.m.js';
+import {html, Polymer} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+
+import {LockScreenUnlockType, LockStateBehavior} from '../os_people_page/lock_state_behavior.m.js';
+
 /**
  * @fileoverview
  * Subpage of settings-multidevice-notification-access-setup-dialog for setting
  * up screen lock.
  */
 Polymer({
+  _template: html`{__html_template__}`,
   is: 'settings-multidevice-screen-lock-subpage',
 
   behaviors: [
@@ -47,7 +62,7 @@ Polymer({
     writeUma_: {
       type: Object,
       value() {
-        return settings.recordLockScreenProgress;
+        return recordLockScreenProgress;
       },
     },
 
@@ -190,14 +205,14 @@ Polymer({
    */
   onConfigurePin_(e) {
     e.preventDefault();
-    this.writeUma_(settings.LockScreenProgress.CHOOSE_PIN_OR_PASSWORD);
+    this.writeUma_(LockScreenProgress.CHOOSE_PIN_OR_PASSWORD);
     this.showSetupPinDialog_ = true;
   },
 
   /** @private */
   onSetupPinDialogClose_() {
     this.showSetupPinDialog_ = false;
-    cr.ui.focusWithoutInk(assert(this.$$('#setupPinButton')));
+    focusWithoutInk(assert(this.$$('#setupPinButton')));
   },
 
   /**

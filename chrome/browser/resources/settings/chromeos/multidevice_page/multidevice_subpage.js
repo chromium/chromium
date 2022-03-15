@@ -2,28 +2,53 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import '//resources/cr_elements/cr_button/cr_button.m.js';
+import '//resources/cr_elements/cr_link_row/cr_link_row.js';
+import '//resources/cr_elements/shared_vars_css.m.js';
+import '../../settings_shared_css.js';
+import '../../settings_vars_css.js';
+import './multidevice_combined_setup_item.js';
+import './multidevice_feature_item.js';
+import './multidevice_feature_toggle.js';
+import './multidevice_task_continuation_item.js';
+import './multidevice_tether_item.js';
+import './multidevice_wifi_sync_item.js';
+
+import {html, Polymer} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+
+import {Route} from '../../router.js';
+import {DeepLinkingBehavior} from '../deep_linking_behavior.js';
+import {routes} from '../os_route.m.js';
+import {OsSettingsRoutes} from '../os_settings_routes.m.js';
+import {RouteObserverBehavior} from '../route_observer_behavior.js';
+
+import {MultiDeviceBrowserProxy, MultiDeviceBrowserProxyImpl} from './multidevice_browser_proxy.js';
+import {MultiDeviceFeature, MultiDeviceFeatureState, MultiDeviceSettingsMode, PhoneHubFeatureAccessProhibitedReason} from './multidevice_constants.js';
+import {MultiDeviceFeatureBehavior} from './multidevice_feature_behavior.js';
+
 /**
  * @fileoverview
  * Subpage of settings-multidevice-page for managing multidevice features
  * individually and for forgetting a host.
  */
 Polymer({
+  _template: html`{__html_template__}`,
   is: 'settings-multidevice-subpage',
 
   behaviors: [
     DeepLinkingBehavior,
     MultiDeviceFeatureBehavior,
-    settings.RouteObserverBehavior,
+    RouteObserverBehavior,
   ],
 
   properties: {
     /**
-     * Alias for allowing Polymer bindings to settings.routes.
+     * Alias for allowing Polymer bindings to routes.
      * @type {?OsSettingsRoutes}
      */
     routes: {
       type: Object,
-      value: settings.routes,
+      value: routes,
     },
 
     /**
@@ -49,21 +74,21 @@ Polymer({
     },
   },
 
-  /** @private {?settings.MultiDeviceBrowserProxy} */
+  /** @private {?MultiDeviceBrowserProxy} */
   browserProxy_: null,
 
   /** @override */
   created() {
-    this.browserProxy_ = settings.MultiDeviceBrowserProxyImpl.getInstance();
+    this.browserProxy_ = MultiDeviceBrowserProxyImpl.getInstance();
   },
 
   /**
-   * @param {!settings.Route} route
-   * @param {!settings.Route} oldRoute
+   * @param {!Route} route
+   * @param {!Route} oldRoute
    */
   currentRouteChanged(route, oldRoute) {
     // Does not apply to this page.
-    if (route !== settings.routes.MULTIDEVICE_FEATURES) {
+    if (route !== routes.MULTIDEVICE_FEATURES) {
       return;
     }
 
@@ -86,7 +111,7 @@ Polymer({
    */
   shouldShowIndividualFeatures_() {
     return this.pageContentData.mode ===
-        settings.MultiDeviceSettingsMode.HOST_SET_VERIFIED;
+        MultiDeviceSettingsMode.HOST_SET_VERIFIED;
   },
 
   /**
@@ -95,8 +120,8 @@ Polymer({
    */
   shouldShowVerifyButton_() {
     return [
-      settings.MultiDeviceSettingsMode.HOST_SET_WAITING_FOR_SERVER,
-      settings.MultiDeviceSettingsMode.HOST_SET_WAITING_FOR_VERIFICATION,
+      MultiDeviceSettingsMode.HOST_SET_WAITING_FOR_SERVER,
+      MultiDeviceSettingsMode.HOST_SET_WAITING_FOR_VERIFICATION,
     ].includes(this.pageContentData.mode);
   },
 
@@ -106,7 +131,7 @@ Polymer({
    */
   shouldShowSuiteToggle_() {
     return this.pageContentData.mode ===
-        settings.MultiDeviceSettingsMode.HOST_SET_VERIFIED;
+        MultiDeviceSettingsMode.HOST_SET_VERIFIED;
   },
 
   /** @private */
@@ -131,8 +156,8 @@ Polymer({
    */
   getStatusInnerHtml_() {
     if ([
-          settings.MultiDeviceSettingsMode.HOST_SET_WAITING_FOR_SERVER,
-          settings.MultiDeviceSettingsMode.HOST_SET_WAITING_FOR_VERIFICATION,
+          MultiDeviceSettingsMode.HOST_SET_WAITING_FOR_SERVER,
+          MultiDeviceSettingsMode.HOST_SET_WAITING_FOR_VERIFICATION,
         ].includes(this.pageContentData.mode)) {
       return this.i18nAdvanced('multideviceVerificationText');
     }
@@ -145,8 +170,8 @@ Polymer({
    * @private
    */
   doesAndroidMessagesRequireSetUp_() {
-    return this.getFeatureState(settings.MultiDeviceFeature.MESSAGES) ===
-        settings.MultiDeviceFeatureState.FURTHER_SETUP_REQUIRED;
+    return this.getFeatureState(MultiDeviceFeature.MESSAGES) ===
+        MultiDeviceFeatureState.FURTHER_SETUP_REQUIRED;
   },
 
   /**
@@ -155,10 +180,9 @@ Polymer({
    */
   isAndroidMessagesSetupButtonDisabled_() {
     const messagesFeatureState =
-        this.getFeatureState(settings.MultiDeviceFeature.MESSAGES);
+        this.getFeatureState(MultiDeviceFeature.MESSAGES);
     return !this.isSuiteOn() ||
-        messagesFeatureState ===
-        settings.MultiDeviceFeatureState.PROHIBITED_BY_POLICY;
+        messagesFeatureState === MultiDeviceFeatureState.PROHIBITED_BY_POLICY;
   },
 
   getPhoneHubNotificationsTooltip_() {
@@ -167,12 +191,11 @@ Polymer({
     }
 
     switch (this.pageContentData.notificationAccessProhibitedReason) {
-      case settings.PhoneHubFeatureAccessProhibitedReason.UNKNOWN:
+      case PhoneHubFeatureAccessProhibitedReason.UNKNOWN:
         return this.i18n('multideviceNotificationAccessProhibitedTooltip');
-      case settings.PhoneHubFeatureAccessProhibitedReason.WORK_PROFILE:
+      case PhoneHubFeatureAccessProhibitedReason.WORK_PROFILE:
         return this.i18n('multideviceNotificationAccessProhibitedTooltip');
-      case settings.PhoneHubFeatureAccessProhibitedReason
-          .DISABLED_BY_PHONE_POLICY:
+      case PhoneHubFeatureAccessProhibitedReason.DISABLED_BY_PHONE_POLICY:
         return this.i18n(
             'multideviceNotificationAccessProhibitedDisabledByAdminTooltip');
       default:
@@ -185,8 +208,7 @@ Polymer({
    * @private
    */
   shouldShowPhoneHubCameraRollItem_() {
-    return this.isFeatureSupported(
-               settings.MultiDeviceFeature.PHONE_HUB_CAMERA_ROLL) &&
+    return this.isFeatureSupported(MultiDeviceFeature.PHONE_HUB_CAMERA_ROLL) &&
         (!this.isPhoneHubCameraRollSetupRequired() ||
          !this.shouldShowPhoneHubCombinedSetupItem_());
   },
@@ -197,7 +219,7 @@ Polymer({
    */
   shouldShowPhoneHubNotificationsItem_() {
     return this.isFeatureSupported(
-               settings.MultiDeviceFeature.PHONE_HUB_NOTIFICATIONS) &&
+               MultiDeviceFeature.PHONE_HUB_NOTIFICATIONS) &&
         (!this.isPhoneHubNotificationsSetupRequired() ||
          !this.shouldShowPhoneHubCombinedSetupItem_());
   },
@@ -207,7 +229,7 @@ Polymer({
    * @private
    */
   shouldShowPhoneHubAppsItem_() {
-    return this.isFeatureSupported(settings.MultiDeviceFeature.ECHE) &&
+    return this.isFeatureSupported(MultiDeviceFeature.ECHE) &&
         (!this.isPhoneHubAppsSetupRequired() ||
          !this.shouldShowPhoneHubCombinedSetupItem_());
   },

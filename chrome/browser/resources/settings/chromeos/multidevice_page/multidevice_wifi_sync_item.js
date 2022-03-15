@@ -2,6 +2,20 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import './multidevice_feature_item.js';
+import './multidevice_wifi_sync_disabled_link.js';
+import '//resources/cr_elements/cr_toggle/cr_toggle.m.js';
+import '../../settings_shared_css.js';
+
+import {loadTimeData} from '//resources/js/load_time_data.m.js';
+import {WebUIListenerBehavior} from '//resources/js/web_ui_listener_behavior.m.js';
+import {html, Polymer} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+
+import {SyncBrowserProxyImpl} from '../../people_page/sync_browser_proxy.js';
+import {OsSyncBrowserProxy, OsSyncBrowserProxyImpl, OsSyncPrefs} from '../os_people_page/os_sync_browser_proxy.m.js';
+
+import {MultiDeviceFeatureBehavior} from './multidevice_feature_behavior.js';
+
 /**
  * @fileoverview 'settings-multidevice-wifi-sync-item' encapsulates special
  * logic for the wifi sync item used in the multidevice subpage.
@@ -15,6 +29,7 @@
  * special case containing two links.
  */
 Polymer({
+  _template: html`{__html_template__}`,
   is: 'settings-multidevice-wifi-sync-item',
 
   behaviors: [
@@ -27,10 +42,10 @@ Polymer({
     isWifiSyncV1Enabled_: Boolean,
   },
 
-  /** @private {?settings.OsSyncBrowserProxy} */
+  /** @private {?OsSyncBrowserProxy} */
   osSyncBrowserProxy_: null,
 
-  /** @private {?settings.SyncBrowserProxy} */
+  /** @private {?SyncBrowserProxy} */
   syncBrowserProxy_: null,
 
   /** @override */
@@ -49,15 +64,15 @@ Polymer({
   /** @override */
   created() {
     if (loadTimeData.getBoolean('syncSettingsCategorizationEnabled')) {
-      this.osSyncBrowserProxy_ = settings.OsSyncBrowserProxyImpl.getInstance();
+      this.osSyncBrowserProxy_ = OsSyncBrowserProxyImpl.getInstance();
     } else {
-      this.syncBrowserProxy_ = settings.SyncBrowserProxyImpl.getInstance();
+      this.syncBrowserProxy_ = SyncBrowserProxyImpl.getInstance();
     }
   },
 
   /**
    * Handler for when the sync preferences are updated.
-   * @param {!settings.SyncPrefs} syncPrefs
+   * @param {!SyncPrefs} syncPrefs
    * @private
    */
   handleSyncPrefsChanged_(syncPrefs) {
@@ -67,7 +82,7 @@ Polymer({
 
   /**
    * Handler for when os sync preferences are updated.
-   * @param {!settings.OsSyncPrefs} osSyncPrefs
+   * @param {!OsSyncPrefs} osSyncPrefs
    * @private
    */
   handleOsSyncPrefsChanged_(osSyncPrefs) {

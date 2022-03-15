@@ -1,28 +1,10 @@
-<link rel="import" href="chrome://resources/html/polymer.html">
-
-<link rel="import" href="chrome://resources/html/web_ui_listener_behavior.html">
-<link rel="import" href="../metrics_recorder.html">
-<link rel="import" href="../os_route.html">
-<link rel="import" href="../os_settings_routes.html">
-<link rel="import" href="../../i18n_setup.html">
-<link rel="import" href="../../router.html">
-<link rel="import" href="multidevice_constants.html">
-<link rel="import" href="multidevice_browser_proxy.html">
-<link rel="import" href="multidevice_feature_behavior.html">
-<link rel="import" href="multidevice_feature_item.html">
-
-<dom-module id="settings-multidevice-smartlock-item">
-  <template>
-    <template is="dom-if"
-        if="[[shouldShowFeature_(pageContentData)]]"
-        restamp>
-      <settings-multidevice-feature-item id="smartLockItem"
-          feature="[[MultiDeviceFeature.SMART_LOCK]]"
-          page-content-data="[[pageContentData]]"
-          subpage-route="[[routes.SMART_LOCK]]"
-          is-feature-icon-hidden>
-      </settings-multidevice-feature-item>
-    </template>
-  </template>
-  <script src="multidevice_smartlock_item.js"></script>
-</dom-module>
+<template is="dom-if"
+    if="[[shouldShowFeature_(pageContentData)]]"
+    restamp>
+  <settings-multidevice-feature-item id="smartLockItem"
+      feature="[[MultiDeviceFeature.SMART_LOCK]]"
+      page-content-data="[[pageContentData]]"
+      subpage-route="[[routes.SMART_LOCK]]"
+      is-feature-icon-hidden>
+  </settings-multidevice-feature-item>
+</template>

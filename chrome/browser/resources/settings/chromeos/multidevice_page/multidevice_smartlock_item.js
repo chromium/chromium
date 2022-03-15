@@ -2,6 +2,19 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import './multidevice_feature_item.js';
+
+import {WebUIListenerBehavior} from '//resources/js/web_ui_listener_behavior.m.js';
+import {html, Polymer} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+
+import {recordSettingChange} from '../metrics_recorder.m.js';
+import {routes} from '../os_route.m.js';
+import {OsSettingsRoutes} from '../os_settings_routes.m.js';
+
+import {MultiDeviceBrowserProxy, MultiDeviceBrowserProxyImpl} from './multidevice_browser_proxy.js';
+import {MultiDeviceFeature, MultiDevicePageContentData, MultiDeviceSettingsMode} from './multidevice_constants.js';
+import {MultiDeviceFeatureBehavior} from './multidevice_feature_behavior.js';
+
 /**
  * @fileoverview
  * Wrapper for multidevice-feature-item that allows displaying the Smart Lock
@@ -10,6 +23,7 @@
  * in an auth token.
  */
 Polymer({
+  _template: html`{__html_template__}`,
   is: 'settings-multidevice-smartlock-item',
 
   behaviors: [
@@ -19,12 +33,12 @@ Polymer({
 
   properties: {
     /**
-     * Alias for allowing Polymer bindings to settings.routes.
+     * Alias for allowing Polymer bindings to routes.
      * @type {?OsSettingsRoutes}
      */
     routes: {
       type: Object,
-      value: settings.routes,
+      value: routes,
     },
 
     /**
@@ -40,12 +54,12 @@ Polymer({
     'feature-toggle-clicked': 'onFeatureToggleClicked_',
   },
 
-  /** @private {?settings.MultiDeviceBrowserProxy} */
+  /** @private {?MultiDeviceBrowserProxy} */
   browserProxy_: null,
 
   /** @override */
   ready() {
-    this.browserProxy_ = settings.MultiDeviceBrowserProxyImpl.getInstance();
+    this.browserProxy_ = MultiDeviceBrowserProxyImpl.getInstance();
 
     this.addWebUIListener(
         'settings.updateMultidevicePageContentData',
@@ -61,7 +75,7 @@ Polymer({
   },
 
   /**
-   * @param {!settings.MultiDevicePageContentData} newData
+   * @param {!MultiDevicePageContentData} newData
    * @private
    */
   onPageContentDataChanged_(newData) {
@@ -75,10 +89,10 @@ Polymer({
   shouldShowFeature_() {
     // We only show the feature when it is editable, because a disabled toggle
     // is confusing for the user without greater context.
-    return this.isFeatureSupported(settings.MultiDeviceFeature.SMART_LOCK) &&
+    return this.isFeatureSupported(MultiDeviceFeature.SMART_LOCK) &&
         this.pageContentData.mode ===
-        settings.MultiDeviceSettingsMode.HOST_SET_VERIFIED &&
-        this.isFeatureStateEditable(settings.MultiDeviceFeature.SMART_LOCK);
+        MultiDeviceSettingsMode.HOST_SET_VERIFIED &&
+        this.isFeatureStateEditable(MultiDeviceFeature.SMART_LOCK);
   },
 
   /**
@@ -88,7 +102,7 @@ Polymer({
    * multidevice page
    *
    * @param {!CustomEvent<!{
-   *     feature: !settings.MultiDeviceFeature,
+   *     feature: !MultiDeviceFeature,
    *     enabled: boolean
    * }>} event
    * @private
@@ -99,6 +113,6 @@ Polymer({
 
     this.browserProxy_.setFeatureEnabledState(
         feature, enabled, this.authToken.token);
-    settings.recordSettingChange();
+    recordSettingChange();
   },
 });

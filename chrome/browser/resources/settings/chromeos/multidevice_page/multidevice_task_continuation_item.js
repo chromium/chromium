@@ -2,6 +2,18 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import './multidevice_feature_item.js';
+import './multidevice_task_continuation_disabled_link.js';
+import '//resources/cr_elements/cr_toggle/cr_toggle.m.js';
+import '../../settings_shared_css.js';
+
+import {WebUIListenerBehavior} from '//resources/js/web_ui_listener_behavior.m.js';
+import {html, Polymer} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+
+import {SyncBrowserProxyImpl} from '../../people_page/sync_browser_proxy.js';
+
+import {MultiDeviceFeatureBehavior} from './multidevice_feature_behavior.js';
+
 /**
  * @fileoverview 'settings-multidevice-task-continuation-item' encapsulates
  * special logic for the phonehub task continuation item used in the multidevice
@@ -17,6 +29,7 @@
  * is a special case containing two links.
  */
 Polymer({
+  _template: html`{__html_template__}`,
   is: 'settings-multidevice-task-continuation-item',
 
   behaviors: [
@@ -32,12 +45,12 @@ Polymer({
     },
   },
 
-  /** @private {?settings.SyncBrowserProxy} */
+  /** @private {?SyncBrowserProxy} */
   syncBrowserProxy_: null,
 
   /** @override */
   created() {
-    this.syncBrowserProxy_ = settings.SyncBrowserProxyImpl.getInstance();
+    this.syncBrowserProxy_ = SyncBrowserProxyImpl.getInstance();
   },
 
   /** @override */
@@ -61,7 +74,7 @@ Polymer({
 
   /**
    * Handler for when the sync preferences are updated.
-   * @param {!settings.SyncPrefs} syncPrefs
+   * @param {!SyncPrefs} syncPrefs
    * @private
    */
   handleSyncPrefsChanged_(syncPrefs) {

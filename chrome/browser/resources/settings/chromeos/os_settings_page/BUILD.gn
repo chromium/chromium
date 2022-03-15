@@ -28,7 +28,7 @@ js_library("os_settings_page") {
     "../crostini_page:crostini_page",
     "../device_page:device_page",
     "../kerberos_page:kerberos_page",
-    "../multidevice_page:multidevice_page.m",
+    "../multidevice_page:multidevice_page",
     "../os_a11y_page:os_a11y_page",
     "../os_apps_page:android_apps_browser_proxy",
     "../os_apps_page:os_apps_page",

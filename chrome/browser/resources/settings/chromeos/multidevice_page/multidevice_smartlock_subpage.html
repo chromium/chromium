@@ -1,74 +1,50 @@
-<link rel="import" href="chrome://resources/html/polymer.html">
-
-<link rel="import" href="chrome://resources/cr_elements/cr_radio_button/cr_radio_button.html">
-<link rel="import" href="chrome://resources/cr_elements/cr_radio_group/cr_radio_group.html">
-<link rel="import" href="chrome://resources/html/web_ui_listener_behavior.html">
-<link rel="import" href="multidevice_browser_proxy.html">
-<link rel="import" href="multidevice_constants.html">
-<link rel="import" href="multidevice_feature_behavior.html">
-<link rel="import" href="multidevice_feature_toggle.html">
-<link rel="import" href="multidevice_radio_button.html">
-<link rel="import" href="../deep_linking_behavior.html">
-<link rel="import" href="../os_route.html">
-<link rel="import" href="../os_settings_routes.html">
-<link rel="import" href="../../router.html">
-<link rel="import" href="../route_observer_behavior.html">
-<link rel="import" href="../../i18n_setup.html">
-<link rel="import" href="../../settings_shared_css.html">
-<link rel="import" href="../metrics_recorder.html">
-
-<dom-module id="settings-multidevice-smartlock-subpage">
-  <template>
-    <style include="settings-shared"></style>
-    <div class="settings-box first">
-      <!-- TODO(jhawkins): Remove this status text and move the toggle into
-           the subpage header section. -->
-      <div class="start">
-        <template is="dom-if" if="[[smartLockEnabled_]]" restamp>
-          $i18n{multideviceEnabled}
-        </template>
-        <template is="dom-if" if="[[!smartLockEnabled_]]" restamp>
-          $i18n{multideviceDisabled}
-        </template>
-      </div>
-      <settings-multidevice-feature-toggle
-          feature="[[MultiDeviceFeature.SMART_LOCK]]"
-          page-content-data="[[pageContentData]]"
-          deep-link-focus-id$="[[Setting.kSmartLockOnOff]]">
-      </settings-multidevice-feature-toggle>
-    </div>
-    <iron-collapse opened="[[smartLockEnabled_]]">
-      <div class="settings-box first line-only">
-          <h2 class="start first">
-            $i18n{multideviceSmartLockOptions}
-          </h2>
-      </div>
-      <div class="list-frame">
-        <cr-radio-group
-            selected="[[smartLockSignInEnabled_]]"
-            selectable-elements="multidevice-radio-button"
-            disabled="[[!smartLockSignInAllowed_]]"
-            on-selected-changed="onSmartLockSignInEnabledChanged_"
-            deep-link-focus-id$="[[Setting.kSmartLockUnlockOrSignIn]]">
-          <multidevice-radio-button
-              name="disabled"
-              class="list-item underbar"
-              label="$i18n{easyUnlockUnlockDeviceOnly}">
-          </multidevice-radio-button>
-          <multidevice-radio-button
-              name="enabled"
-              class="list-item"
-              label="$i18n{easyUnlockUnlockDeviceAndAllowSignin}">
-          </multidevice-radio-button>
-        </cr-radio-group>
-      </div>
-    </iron-collapse>
-    <template is="dom-if" if="[[showPasswordPromptDialog_]]" restamp>
-      <settings-password-prompt-dialog id="smartLockSignInPasswordPrompt"
-          on-close="onEnableSignInDialogClose_"
-          on-token-obtained="onTokenObtained_">
-      </settings-password-prompt-dialog>
+<style include="settings-shared"></style>
+<div class="settings-box first">
+  <!-- TODO(jhawkins): Remove this status text and move the toggle into
+        the subpage header section. -->
+  <div class="start">
+    <template is="dom-if" if="[[smartLockEnabled_]]" restamp>
+      $i18n{multideviceEnabled}
     </template>
-  </template>
-  <script src="multidevice_smartlock_subpage.js"></script>
-</dom-module>
+    <template is="dom-if" if="[[!smartLockEnabled_]]" restamp>
+      $i18n{multideviceDisabled}
+    </template>
+  </div>
+  <settings-multidevice-feature-toggle
+      feature="[[MultiDeviceFeature.SMART_LOCK]]"
+      page-content-data="[[pageContentData]]"
+      deep-link-focus-id$="[[Setting.kSmartLockOnOff]]">
+  </settings-multidevice-feature-toggle>
+</div>
+<iron-collapse opened="[[smartLockEnabled_]]">
+  <div class="settings-box first line-only">
+      <h2 class="start first">
+        $i18n{multideviceSmartLockOptions}
+      </h2>
+  </div>
+  <div class="list-frame">
+    <cr-radio-group
+        selected="[[smartLockSignInEnabled_]]"
+        selectable-elements="multidevice-radio-button"
+        disabled="[[!smartLockSignInAllowed_]]"
+        on-selected-changed="onSmartLockSignInEnabledChanged_"
+        deep-link-focus-id$="[[Setting.kSmartLockUnlockOrSignIn]]">
+      <multidevice-radio-button
+          name="disabled"
+          class="list-item underbar"
+          label="$i18n{easyUnlockUnlockDeviceOnly}">
+      </multidevice-radio-button>
+      <multidevice-radio-button
+          name="enabled"
+          class="list-item"
+          label="$i18n{easyUnlockUnlockDeviceAndAllowSignin}">
+      </multidevice-radio-button>
+    </cr-radio-group>
+  </div>
+</iron-collapse>
+<template is="dom-if" if="[[showPasswordPromptDialog_]]" restamp>
+  <settings-password-prompt-dialog id="smartLockSignInPasswordPrompt"
+      on-close="onEnableSignInDialogClose_"
+      on-token-obtained="onTokenObtained_">
+  </settings-password-prompt-dialog>
+</template>
