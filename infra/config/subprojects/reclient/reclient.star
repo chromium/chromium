@@ -90,16 +90,18 @@ fyi_reclient_test_builder(
 
 fyi_reclient_staging_builder(
     name = "Win x64 Builder reclient staging",
+    builderless = True,
     console_view_category = "win",
     cores = 32,
-    builderless = True,
+    execution_timeout = 5 * time.hour,
     os = os.WINDOWS_ANY,
 )
 
 fyi_reclient_test_builder(
     name = "Win x64 Builder reclient test",
+    builderless = True,
     console_view_category = "win",
     cores = 32,
-    builderless = True,
+    execution_timeout = 5 * time.hour,
     os = os.WINDOWS_ANY,
 )
