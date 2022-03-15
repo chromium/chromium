@@ -38,7 +38,6 @@ SideSearchIconView::SideSearchIconView(
     template_url_service_observation_.Observe(template_url_service);
   }
   SetVisible(false);
-  SetLabel(l10n_util::GetStringUTF16(IDS_TOOLTIP_SIDE_SEARCH_TOOLBAR_BUTTON));
 }
 
 SideSearchIconView::~SideSearchIconView() = default;
@@ -121,7 +120,8 @@ ui::ImageModel SideSearchIconView::GetSizedIconImage(int size) const {
 }
 
 std::u16string SideSearchIconView::GetTextForTooltipAndAccessibleName() const {
-  return l10n_util::GetStringUTF16(IDS_TOOLTIP_SIDE_SEARCH_TOOLBAR_BUTTON);
+  return l10n_util::GetStringUTF16(
+      IDS_TOOLTIP_SIDE_SEARCH_TOOLBAR_BUTTON_NOT_ACTIVATED);
 }
 
 void SideSearchIconView::OnIconFetched(const gfx::Image& icon) {
