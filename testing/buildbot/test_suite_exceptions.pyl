@@ -2185,24 +2185,6 @@
       },
     },
   },
-  'monochrome_public_bundle_fake_modules_smoke_test' : {
-    'remove_from': [
-      'android-pie-arm64-coverage-experimental-rel', # TODO(crbug.com/1190999):
-                                                     # GLIBC_2.28 Not found.
-    ],
-  },
-  'monochrome_public_bundle_smoke_test' : {
-    'remove_from': [
-      'android-pie-arm64-coverage-experimental-rel', # TODO(crbug.com/1190999):
-                                                     # GLIBC_2.28 Not found.
-    ],
-  },
-  'monochrome_public_smoke_test' : {
-    'remove_from': [
-      'android-pie-arm64-coverage-experimental-rel', # TODO(crbug.com/1190999):
-                                                     # GLIBC_2.28 Not found.
-    ],
-  },
   'monochrome_public_test_ar_apk': {
     'modifications': {
       'Nougat Phone Tester': {
@@ -3617,8 +3599,6 @@
   'webview_cts_tests': {
     'remove_from': [
       'android-11-x86-rel', # crbug.com/1165280
-      'android-pie-arm64-coverage-experimental-rel', # TODO(crbug.com/1190999):
-                                                     # GLIBC_2.28 Not found.
     ],
     'modifications': {
       'android-pie-arm64-rel': {

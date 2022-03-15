@@ -35214,7 +35214,9 @@
   },
   "android-pie-arm64-coverage-experimental-rel": {
     "additional_compile_targets": [
-      "validate_expectations"
+      "monochrome_static_initializers",
+      "validate_expectations",
+      "weblayer_shell"
     ],
     "gtest_tests": [
       {
