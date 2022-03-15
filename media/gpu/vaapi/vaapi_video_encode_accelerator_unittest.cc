@@ -12,6 +12,7 @@
 #include "base/run_loop.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/task_environment.h"
+#include "media/base/media_util.h"
 #include "media/gpu/gpu_video_encode_accelerator_helpers.h"
 #include "media/gpu/vaapi/vaapi_utils.h"
 #include "media/gpu/vaapi/vaapi_wrapper.h"
@@ -299,7 +300,8 @@ class VaapiVideoEncodeAcceleratorTest
     vaapi_encoder->supported_profiles_for_testing_.push_back(profile);
     if (config.input_visible_size.IsEmpty())
       return false;
-    return encoder_->Initialize(config, &client_);
+    return encoder_->Initialize(config, &client_,
+                                std::make_unique<media::NullMediaLog>());
   }
 
   void InitializeSequenceForVP9(const VideoEncodeAccelerator::Config& config)

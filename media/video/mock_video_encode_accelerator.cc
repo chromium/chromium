@@ -4,6 +4,8 @@
 
 #include "media/video/mock_video_encode_accelerator.h"
 
+#include "media/base/media_log.h"
+
 namespace media {
 
 using ::testing::Invoke;

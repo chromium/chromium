@@ -13,7 +13,6 @@
 #include "gpu/config/gpu_preferences.h"
 #include "media/base/media_log.h"
 #include "media/base/media_switches.h"
-#include "media/base/media_util.h"
 #include "media/gpu/buildflags.h"
 #include "media/gpu/gpu_video_accelerator_util.h"
 #include "media/gpu/macros.h"
@@ -151,10 +150,6 @@ GpuVideoEncodeAcceleratorFactory::CreateVEA(
     const gpu::GpuPreferences& gpu_preferences,
     const gpu::GpuDriverBugWorkarounds& gpu_workarounds,
     std::unique_ptr<MediaLog> media_log) {
-  // NullMediaLog silently and safely does nothing.
-  if (!media_log)
-    media_log = std::make_unique<media::NullMediaLog>();
-
   for (const auto& create_vea :
        GetVEAFactoryFunctions(gpu_preferences, gpu_workarounds)) {
     std::unique_ptr<VideoEncodeAccelerator> vea = create_vea.Run();

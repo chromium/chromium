@@ -22,6 +22,7 @@
 #include "media/base/bind_to_current_loop.h"
 #include "media/base/bitrate.h"
 #include "media/base/media_switches.h"
+#include "media/base/media_util.h"
 #include "media/base/video_frame.h"
 #include "media/base/video_types.h"
 #include "media/base/video_util.h"
@@ -140,7 +141,8 @@ class ExternalVideoEncoder::VEAClientImpl final
         base::saturated_cast<uint32_t>(start_bit_rate));
     const media::VideoEncodeAccelerator::Config config(
         media::PIXEL_FORMAT_I420, frame_size, codec_profile, bitrate);
-    encoder_active_ = video_encode_accelerator_->Initialize(config, this);
+    encoder_active_ = video_encode_accelerator_->Initialize(
+        config, this, std::make_unique<media::NullMediaLog>());
     next_frame_id_ = first_frame_id;
     codec_profile_ = codec_profile;
 
