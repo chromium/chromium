@@ -55,7 +55,7 @@ export class SigninReauthAppElement extends SigninReauthAppElementBase {
   private signinReauthBrowserProxy_: SigninReauthBrowserProxy =
       SigninReauthBrowserProxyImpl.getInstance();
 
-  connectedCallback() {
+  override connectedCallback() {
     super.connectedCallback();
 
     this.addWebUIListener(

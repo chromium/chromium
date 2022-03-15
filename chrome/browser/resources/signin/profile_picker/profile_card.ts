@@ -57,7 +57,7 @@ export class ProfileCardElement extends ProfileCardElementBase {
   private manageProfilesBrowserProxy_: ManageProfilesBrowserProxy =
       ManageProfilesBrowserProxyImpl.getInstance();
 
-  connectedCallback() {
+  override connectedCallback() {
     super.connectedCallback();
     this.addNameInputTooltipListeners_();
     this.addGaiaNameTooltipListeners_();

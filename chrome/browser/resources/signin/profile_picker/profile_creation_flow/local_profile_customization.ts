@@ -170,7 +170,7 @@ export class LocalProfileCustomizationElement extends
       ManageProfilesBrowserProxyImpl.getInstance();
   private resizeObserver_: ResizeObserver|null = null;
 
-  ready() {
+  override ready() {
     super.ready();
     this.sanityCheck_();
     this.addWebUIListener(
@@ -181,12 +181,12 @@ export class LocalProfileCustomizationElement extends
     this.addEventListener('view-enter-start', this.onViewEnterStart_);
   }
 
-  connectedCallback() {
+  override connectedCallback() {
     super.connectedCallback();
     this.addResizeObserver_();
   }
 
-  disconnectedCallback() {
+  override disconnectedCallback() {
     super.disconnectedCallback();
     this.resizeObserver_!.disconnect();
   }

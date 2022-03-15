@@ -86,7 +86,7 @@ export class ProfilePickerMainViewElement extends
       ManageProfilesBrowserProxyImpl.getInstance();
   private resizeObserver_: ResizeObserver|null = null;
 
-  ready() {
+  override ready() {
     super.ready();
     if (!isGuestModeEnabled()) {
       this.$.browseAsGuestButton.style.display = 'none';
@@ -97,7 +97,7 @@ export class ProfilePickerMainViewElement extends
     }
   }
 
-  connectedCallback() {
+  override connectedCallback() {
     super.connectedCallback();
     this.addResizeObserver_();
     this.addWebUIListener(
@@ -107,7 +107,7 @@ export class ProfilePickerMainViewElement extends
     this.manageProfilesBrowserProxy_.initializeMainView();
   }
 
-  disconnectedCallback() {
+  override disconnectedCallback() {
     super.disconnectedCallback();
     this.resizeObserver_!.disconnect();
   }

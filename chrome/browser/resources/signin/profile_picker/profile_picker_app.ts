@@ -54,12 +54,12 @@ export class ProfilePickerAppElement extends ProfilePickerAppElementBase {
   private manageProfilesBrowserProxy_: ManageProfilesBrowserProxy =
       ManageProfilesBrowserProxyImpl.getInstance();
 
-  connectedCallback() {
+  override connectedCallback() {
     super.connectedCallback();
     this.setMinimumSize_();
   }
 
-  onRouteChange(route: Routes, step: string) {
+  override onRouteChange(route: Routes, step: string) {
     if (!isProfileCreationAllowed() && route === Routes.NEW_PROFILE) {
       navigateTo(Routes.MAIN);
       return;

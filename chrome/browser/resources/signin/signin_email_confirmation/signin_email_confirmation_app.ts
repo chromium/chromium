@@ -29,7 +29,7 @@ class SigninEmailConfirmationAppElement extends PolymerElement {
     return html`{__html_template__}`;
   }
 
-  ready() {
+  override ready() {
     super.ready();
 
     const args = JSON.parse(chrome.getVariableValue('dialogArguments'));

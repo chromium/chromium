@@ -47,7 +47,7 @@ export class ProfileSwitchElement extends PolymerElement {
   private manageProfilesBrowserProxy_: ManageProfilesBrowserProxy =
       ManageProfilesBrowserProxyImpl.getInstance();
 
-  ready() {
+  override ready() {
     super.ready();
     this.manageProfilesBrowserProxy_.getSwitchProfile().then(profileState => {
       this.profileState_ = profileState;

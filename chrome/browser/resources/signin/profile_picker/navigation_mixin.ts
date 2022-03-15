@@ -208,7 +208,7 @@ export const NavigationMixin = dedupingMixin(
     <T extends Constructor<PolymerElement>>(superClass: T): T&
     Constructor<NavigationMixinInterface> => {
       class NavigationMixin extends superClass {
-        connectedCallback() {
+        override connectedCallback() {
           super.connectedCallback();
 
           assert(!routeObservers.has(this));
@@ -219,7 +219,7 @@ export const NavigationMixin = dedupingMixin(
           this.onRouteChange(history.state.route, history.state.step);
         }
 
-        disconnectedCallback() {
+        override disconnectedCallback() {
           super.disconnectedCallback();
 
           assert(routeObservers.delete(this));

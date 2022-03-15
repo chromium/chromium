@@ -71,7 +71,7 @@ class SigninErrorAppElement extends SigninErrorAppElementBase {
   private hideNormalError_: boolean;
   private hideProfileBlockingErrors_: boolean[];
 
-  connectedCallback() {
+  override connectedCallback() {
     super.connectedCallback();
 
     this.addWebUIListener('switch-button-unavailable', () => {

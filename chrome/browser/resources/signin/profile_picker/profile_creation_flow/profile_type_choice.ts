@@ -100,7 +100,7 @@ export class ProfileTypeChoiceElement extends ProfileTypeChoiceElementBase {
   // <if expr="lacros">
   private hasAvailableAccounts_: boolean;
 
-  connectedCallback() {
+  override connectedCallback() {
     super.connectedCallback();
     this.addWebUIListener(
         'available-accounts-changed',
@@ -110,7 +110,7 @@ export class ProfileTypeChoiceElement extends ProfileTypeChoiceElementBase {
   }
   // </if>
 
-  ready() {
+  override ready() {
     super.ready();
     this.addWebUIListener(
         'load-signin-finished',

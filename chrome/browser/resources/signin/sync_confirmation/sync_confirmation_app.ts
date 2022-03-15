@@ -111,7 +111,7 @@ export class SyncConfirmationAppElement extends SyncConfirmationAppElementBase {
   private syncConfirmationBrowserProxy_: SyncConfirmationBrowserProxy =
       SyncConfirmationBrowserProxyImpl.getInstance();
 
-  connectedCallback() {
+  override connectedCallback() {
     super.connectedCallback();
 
     this.addWebUIListener(

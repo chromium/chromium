@@ -141,7 +141,7 @@ export class ProfileCardMenuElement extends ProfileCardMenuElementBase {
   private manageProfilesBrowserProxy_: ManageProfilesBrowserProxy =
       ManageProfilesBrowserProxyImpl.getInstance();
 
-  connectedCallback() {
+  override connectedCallback() {
     super.connectedCallback();
     this.addWebUIListener(
         'profiles-list-changed', () => this.handleProfilesUpdated_());
@@ -152,7 +152,7 @@ export class ProfileCardMenuElement extends ProfileCardMenuElementBase {
         this.handleProfileStatsReceived_.bind(this));
   }
 
-  ready() {
+  override ready() {
     super.ready();
     // <if expr="lacros">
     afterNextRender(this, () => {

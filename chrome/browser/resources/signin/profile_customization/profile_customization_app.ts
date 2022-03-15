@@ -70,7 +70,7 @@ export class ProfileCustomizationAppElement extends
   private profileCustomizationBrowserProxy_: ProfileCustomizationBrowserProxy =
       ProfileCustomizationBrowserProxyImpl.getInstance();
 
-  ready() {
+  override ready() {
     super.ready();
 
     // profileName_ is only set now, because it triggers a validation of the

@@ -97,7 +97,7 @@ export class EnterpriseProfileWelcomeAppElement extends
       EnterpriseProfileWelcomeBrowserProxy =
           EnterpriseProfileWelcomeBrowserProxyImpl.getInstance();
 
-  ready() {
+  override ready() {
     super.ready();
 
     this.addWebUIListener(

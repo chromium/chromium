@@ -29,7 +29,7 @@ class SyncDisabledConfirmationAppElement extends PolymerElement {
   private syncConfirmationBrowserProxy_: SyncConfirmationBrowserProxy =
       SyncConfirmationBrowserProxyImpl.getInstance();
 
-  connectedCallback() {
+  override connectedCallback() {
     super.connectedCallback();
 
     document.addEventListener(
