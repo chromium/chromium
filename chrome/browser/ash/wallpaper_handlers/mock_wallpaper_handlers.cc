@@ -55,6 +55,25 @@ MockGooglePhotosCountFetcher::MockGooglePhotosCountFetcher(Profile* profile)
 
 MockGooglePhotosCountFetcher::~MockGooglePhotosCountFetcher() = default;
 
+MockGooglePhotosEnabledFetcher::MockGooglePhotosEnabledFetcher(Profile* profile)
+    : GooglePhotosEnabledFetcher(profile) {
+  ON_CALL(*this, AddRequestAndStartIfNecessary)
+      .WillByDefault(
+          [](base::OnceCallback<void(GooglePhotosEnablementState)> callback) {
+            base::SequencedTaskRunnerHandle::Get()->PostTask(
+                FROM_HERE,
+                base::BindOnce(std::move(callback),
+                               GooglePhotosEnablementState::kEnabled));
+          });
+
+  ON_CALL(*this, ParseResponse)
+      .WillByDefault([this](const base::Value::Dict* response) {
+        return GooglePhotosEnabledFetcher::ParseResponse(response);
+      });
+}
+
+MockGooglePhotosEnabledFetcher::~MockGooglePhotosEnabledFetcher() = default;
+
 MockGooglePhotosPhotosFetcher::MockGooglePhotosPhotosFetcher(Profile* profile)
     : GooglePhotosPhotosFetcher(profile) {
   using ash::personalization_app::mojom::FetchGooglePhotosPhotosResponse;

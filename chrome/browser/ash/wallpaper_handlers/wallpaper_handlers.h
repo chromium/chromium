@@ -253,6 +253,28 @@ class GooglePhotosCountFetcher : public GooglePhotosFetcher<int> {
   int ParseResponse(const base::Value::Dict* response) override;
 };
 
+using ash::personalization_app::mojom::GooglePhotosEnablementState;
+// Downloads whether the user is allowed to access Google Photos data.
+class GooglePhotosEnabledFetcher
+    : public GooglePhotosFetcher<GooglePhotosEnablementState> {
+ public:
+  explicit GooglePhotosEnabledFetcher(Profile* profile);
+
+  GooglePhotosEnabledFetcher(const GooglePhotosEnabledFetcher&) = delete;
+  GooglePhotosEnabledFetcher& operator=(const GooglePhotosEnabledFetcher&) =
+      delete;
+
+  ~GooglePhotosEnabledFetcher() override;
+
+  virtual void AddRequestAndStartIfNecessary(
+      base::OnceCallback<void(GooglePhotosEnablementState)> callback);
+
+ protected:
+  // GooglePhotosFetcher:
+  GooglePhotosEnablementState ParseResponse(
+      const base::Value::Dict* response) override;
+};
+
 using GooglePhotosPhotosCbkArgs =
     ash::personalization_app::mojom::FetchGooglePhotosPhotosResponsePtr;
 // Downloads visible photos from a user's Google Photos library.

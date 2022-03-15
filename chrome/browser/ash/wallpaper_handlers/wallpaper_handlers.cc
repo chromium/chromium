@@ -125,6 +125,32 @@ constexpr net::NetworkTrafficAnnotationTag kGooglePhotosCountTrafficAnnotation =
           "Not implemented, considered not necessary."
       })");
 
+// The URL to download whether the user is allowed to access Google Photos data.
+constexpr char kGooglePhotosEnabledUrl[] =
+    "https://photosfirstparty-pa.googleapis.com/v1/chromeos/userenabled:read";
+
+constexpr net::NetworkTrafficAnnotationTag
+    kGooglePhotosEnabledTrafficAnnotation =
+        net::DefineNetworkTrafficAnnotation("wallpaper_google_photos_enabled",
+                                            R"(
+      semantics {
+        sender: "ChromeOS Wallpaper Picker"
+        description:
+          "The ChromeOS Wallpaper Picker displays a tile to view and pick from "
+          "a user's Google Photos library. This tile should not display any "
+          "user data if there is an enterprise setting preventing the user "
+          "from accessing Google Photos."
+        trigger: "When the user opens the ChromeOS Wallpaper Picker app."
+        data: "OAuth credentials for the user's Google Photos account."
+        destination: GOOGLE_OWNED_SERVICE
+      }
+      policy {
+        cookies_allowed: NO
+        setting: "N/A"
+        policy_exception_justification:
+          "Not implemented, considered not necessary."
+      })");
+
 // The URL to download a photo from a user's Google Photos library.
 constexpr char kGooglePhotosPhotoUrl[] =
     "https://photosfirstparty-pa.googleapis.com/v1/chromeos/itemById:read";
@@ -716,6 +742,36 @@ int GooglePhotosCountFetcher::ParseResponse(const base::Value::Dict* response) {
     return -1;
 
   return base::saturated_cast<int>(count);
+}
+
+GooglePhotosEnabledFetcher::GooglePhotosEnabledFetcher(Profile* profile)
+    : GooglePhotosFetcher(profile, kGooglePhotosEnabledTrafficAnnotation) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+}
+
+GooglePhotosEnabledFetcher::~GooglePhotosEnabledFetcher() = default;
+
+void GooglePhotosEnabledFetcher::AddRequestAndStartIfNecessary(
+    base::OnceCallback<void(GooglePhotosEnablementState)> callback) {
+  GooglePhotosFetcher::AddRequestAndStartIfNecessary(
+      GURL(kGooglePhotosEnabledUrl), std::move(callback));
+}
+
+GooglePhotosEnablementState GooglePhotosEnabledFetcher::ParseResponse(
+    const base::Value::Dict* response) {
+  if (!response)
+    return GooglePhotosEnablementState::kError;
+
+  const auto* state = response->FindStringByDottedPath("status.userState");
+
+  if (!state)
+    return GooglePhotosEnablementState::kError;
+
+  return *state == "USER_PERMITTED"
+             ? GooglePhotosEnablementState::kEnabled
+             : *state == "USER_DASHER_DISABLED"
+                   ? GooglePhotosEnablementState::kDisabled
+                   : GooglePhotosEnablementState::kError;
 }
 
 GooglePhotosPhotosFetcher::GooglePhotosPhotosFetcher(Profile* profile)

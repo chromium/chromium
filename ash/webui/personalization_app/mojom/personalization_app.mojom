@@ -52,6 +52,19 @@ enum OnlineImageType {
   kDark = 2,
 };
 
+// Values for the user-level setting indicating access to Google Photos data.
+enum GooglePhotosEnablementState {
+  // Setting could not be retrieved due to a network or server error, or the
+  // server returned an unknown setting state.
+  kError = 0,
+
+  // An enterprise setting prevents this user from accessing Google Photos data.
+  kDisabled = 1,
+
+  // This user can access Google Photos data.
+  kEnabled = 2,
+};
+
 // WallpaperCollection contains a list of |WallpaperImage| objects.
 struct WallpaperCollection {
     // This ID is used as the argument to |FetchImagesForCollection|.
@@ -196,6 +209,9 @@ interface WallpaperProvider {
     // Fetch the number of photos the user has stored in Google Photos. |count|
     // will be -1 on failure.
     FetchGooglePhotosCount() => (int32 count);
+
+    // Fetch whether the user is allowed to access Google Photos data.
+    FetchGooglePhotosEnabled() => (GooglePhotosEnablementState state);
 
     // Fetch photo(s) the user has stored in Google Photos. If provided,
     // |item_id| specifies one photo to fetch. If provided, |album_id| specifies

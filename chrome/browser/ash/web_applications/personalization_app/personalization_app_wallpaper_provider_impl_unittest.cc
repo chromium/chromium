@@ -490,6 +490,32 @@ TEST_P(PersonalizationAppWallpaperProviderImplGooglePhotosTest, FetchCount) {
   wallpaper_provider_remote()->FlushForTesting();
 }
 
+TEST_P(PersonalizationAppWallpaperProviderImplGooglePhotosTest, FetchEnabled) {
+  using ash::personalization_app::mojom::GooglePhotosEnablementState;
+
+  // Mock a fetcher for the enablement state query.
+  auto* const google_photos_enabled_fetcher = static_cast<
+      ::testing::NiceMock<wallpaper_handlers::MockGooglePhotosEnabledFetcher>*>(
+      delegate()->SetGooglePhotosEnabledFetcherForTest(
+          std::make_unique<::testing::NiceMock<
+              wallpaper_handlers::MockGooglePhotosEnabledFetcher>>(profile())));
+
+  // Simulate the client making multiple requests for the same information to
+  // test that all callbacks for that query are called.
+  EXPECT_CALL(*google_photos_enabled_fetcher, AddRequestAndStartIfNecessary)
+      .Times(GooglePhotosEnabled() ? kNumFetches : 0);
+
+  for (size_t i = 0; i < kNumFetches; ++i) {
+    wallpaper_provider_remote()->get()->FetchGooglePhotosEnabled(
+        base::BindLambdaForTesting([this](GooglePhotosEnablementState state) {
+          EXPECT_EQ(state, GooglePhotosEnabled()
+                               ? GooglePhotosEnablementState::kEnabled
+                               : GooglePhotosEnablementState::kError);
+        }));
+  }
+  wallpaper_provider_remote()->FlushForTesting();
+}
+
 TEST_P(PersonalizationAppWallpaperProviderImplGooglePhotosTest, FetchPhotos) {
   // Mock a fetcher for the photos query.
   auto* const google_photos_photos_fetcher = static_cast<
@@ -648,6 +674,41 @@ TEST_P(PersonalizationAppWallpaperProviderImplGooglePhotosTest, ParseCount) {
   // Parse a valid response.
   response.SetByDottedPath("user.numPhotos", "1");
   EXPECT_EQ(1, google_photos_count_fetcher->ParseResponse(&response));
+}
+
+TEST_P(PersonalizationAppWallpaperProviderImplGooglePhotosTest, ParseEnabled) {
+  using ash::personalization_app::mojom::GooglePhotosEnablementState;
+
+  // Mock a fetcher to parse constructed responses.
+  auto* const google_photos_enabled_fetcher = static_cast<
+      ::testing::NiceMock<wallpaper_handlers::MockGooglePhotosEnabledFetcher>*>(
+      delegate()->SetGooglePhotosEnabledFetcherForTest(
+          std::make_unique<::testing::NiceMock<
+              wallpaper_handlers::MockGooglePhotosEnabledFetcher>>(profile())));
+
+  // Parse an absent response (simulating a fetching error).
+  EXPECT_EQ(GooglePhotosEnablementState::kError,
+            google_photos_enabled_fetcher->ParseResponse(nullptr));
+
+  // Parse a response without an enabled state.
+  base::Value::Dict response;
+  EXPECT_EQ(GooglePhotosEnablementState::kError,
+            google_photos_enabled_fetcher->ParseResponse(&response));
+
+  // Parse a response with an unknown enabled state.
+  response.SetByDottedPath("status.userState", "UNKNOWN_STATUS_STATE");
+  EXPECT_EQ(GooglePhotosEnablementState::kError,
+            google_photos_enabled_fetcher->ParseResponse(&response));
+
+  // Parse a response indicating that the user cannot access Google Photos data.
+  response.SetByDottedPath("status.userState", "USER_DASHER_DISABLED");
+  EXPECT_EQ(GooglePhotosEnablementState::kDisabled,
+            google_photos_enabled_fetcher->ParseResponse(&response));
+
+  // Parse a response indicating that the user can access Google Photos data.
+  response.SetByDottedPath("status.userState", "USER_PERMITTED");
+  EXPECT_EQ(GooglePhotosEnablementState::kEnabled,
+            google_photos_enabled_fetcher->ParseResponse(&response));
 }
 
 TEST_P(PersonalizationAppWallpaperProviderImplGooglePhotosTest,
