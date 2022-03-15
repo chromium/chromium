@@ -588,7 +588,9 @@ QuotaError QuotaDatabase::DeleteBucketInfo(BucketId bucket_id) {
   if (!statement.Run())
     return QuotaError::kDatabaseError;
 
-  ScheduleCommit();
+  // Commit so deletion is reflected immediately.
+  Commit();
+
   return QuotaError::kNone;
 }
 
@@ -1062,10 +1064,12 @@ QuotaErrorOr<BucketInfo> QuotaDatabase::CreateBucketInternal(
   if (!statement.Run())
     return QuotaError::kDatabaseError;
 
-  ScheduleCommit();
-
   int64_t bucket_id = db_->GetLastInsertRowId();
   DCHECK_GT(bucket_id, 0);
+
+  // Commit so bucket data is persisted immediately.
+  Commit();
+
   return BucketInfo(BucketId(bucket_id), storage_key, type, bucket_name,
                     base::Time::Max(), 0);
 }
