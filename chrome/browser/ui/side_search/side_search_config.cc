@@ -102,14 +102,17 @@ void ApplyGoogleSearchConfiguration(SideSearchConfig& config) {
 SideSearchConfig::SideSearchConfig(Profile* profile) : profile_(profile) {
   // Only allow ChromeOS to toggle between DSE and non-DSE configurations.
 #if BUILDFLAG(IS_CHROMEOS)
-  if (side_search::IsDSESupportEnabled(profile_)) {
-    ApplyDSEConfiguration(profile_, *this);
-  } else {
+  if (!side_search::IsDSESupportEnabled(profile_)) {
     ApplyGoogleSearchConfiguration(*this);
+    return;
   }
-#else
-  ApplyDSEConfiguration(profile_, *this);
 #endif  // BUILDFLAG(IS_CHROMEOS)
+  // `template_url_service` may be null in tests.
+  if (auto* template_url_service =
+          TemplateURLServiceFactory::GetForProfile(profile_)) {
+    template_url_service_observation_.Observe(template_url_service);
+  }
+  ApplyDSEConfiguration(profile_, *this);
 }
 
 SideSearchConfig::~SideSearchConfig() = default;
@@ -125,6 +128,23 @@ SideSearchConfig* SideSearchConfig::Get(content::BrowserContext* context) {
     context->SetUserData(kSideSearchConfigKey, std::move(new_data));
   }
   return data;
+}
+
+void SideSearchConfig::OnTemplateURLServiceChanged() {
+  const auto* default_template_url =
+      TemplateURLServiceFactory::GetForProfile(profile_)
+          ->GetDefaultSearchProvider();
+
+  // Propagate an update only if the current default search provider has
+  // changed.
+  if (default_template_url->id() == default_template_url_id_)
+    return;
+  default_template_url_id_ = default_template_url->id();
+  ResetStateAndNotifyConfigChanged();
+}
+
+void SideSearchConfig::OnTemplateURLServiceShuttingDown() {
+  template_url_service_observation_.Reset();
 }
 
 bool SideSearchConfig::ShouldNavigateInSidePanel(const GURL& url) {

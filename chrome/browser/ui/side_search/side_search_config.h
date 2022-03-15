@@ -9,7 +9,10 @@
 #include "base/memory/raw_ptr.h"
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"
+#include "base/scoped_observation.h"
 #include "base/supports_user_data.h"
+#include "components/search_engines/template_url_service.h"
+#include "components/search_engines/template_url_service_observer.h"
 
 namespace content {
 class BrowserContext;
@@ -19,7 +22,8 @@ class GURL;
 class Profile;
 
 // Stores per-profile configuration data for side search.
-class SideSearchConfig : public base::SupportsUserData::Data {
+class SideSearchConfig : public base::SupportsUserData::Data,
+                         public TemplateURLServiceObserver {
  public:
   using URLTestConditionCallback = base::RepeatingCallback<bool(const GURL&)>;
   using GenerateURLCallback = base::RepeatingCallback<GURL(const GURL&)>;
@@ -36,6 +40,10 @@ class SideSearchConfig : public base::SupportsUserData::Data {
   SideSearchConfig(const SideSearchConfig&) = delete;
   SideSearchConfig& operator=(const SideSearchConfig&) = delete;
   ~SideSearchConfig() override;
+
+  // TemplateURLServiceObserver:
+  void OnTemplateURLServiceChanged() override;
+  void OnTemplateURLServiceShuttingDown() override;
 
   // Gets the instance of the config for `context`.
   static SideSearchConfig* Get(content::BrowserContext* context);
@@ -86,6 +94,13 @@ class SideSearchConfig : public base::SupportsUserData::Data {
   URLTestConditionCallback should_navigate_in_side_panel_callback_;
   URLTestConditionCallback can_show_side_panel_for_url_callback_;
   GenerateURLCallback generate_side_search_url_callack_;
+
+  // The ID of the current default TemplateURL instance. Keep track of this so
+  // we update the page action's favicon only when the default instance changes.
+  TemplateURLID default_template_url_id_ = kInvalidTemplateURLID;
+
+  base::ScopedObservation<TemplateURLService, TemplateURLServiceObserver>
+      template_url_service_observation_{this};
 };
 
 #endif  // CHROME_BROWSER_UI_SIDE_SEARCH_SIDE_SEARCH_CONFIG_H_
