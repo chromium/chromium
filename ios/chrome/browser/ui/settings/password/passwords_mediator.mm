@@ -369,14 +369,14 @@ constexpr base::TimeDelta kJustCheckedTimeThresholdInMinutes = base::Minutes(1);
       });
 }
 
-#pragma mark - IdentityManagerObserverBrdigeDelegate
+#pragma mark - IdentityManagerObserverBridgeDelegate
 
 - (void)onPrimaryAccountChanged:
     (const signin::PrimaryAccountChangeEvent&)event {
   [self.consumer updateOnDeviceEncryptionSessionAndUpdateTableView];
 }
 
-#pragma mark - SyncObserverBridge
+#pragma mark - SyncObserverModelBridge
 
 - (void)onSyncStateChanged {
   [self.consumer updateOnDeviceEncryptionSessionAndUpdateTableView];

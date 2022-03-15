@@ -155,6 +155,7 @@ source_set("unit_tests") {
     "//components/password_manager/core/common",
     "//components/password_manager/core/common:features",
     "//components/prefs:test_support",
+    "//components/signin/public/identity_manager/objc",
     "//components/strings",
     "//ios/chrome/app/strings",
     "//ios/chrome/app/strings",
