@@ -344,11 +344,11 @@ class CORE_EXPORT LocalFrameView final
 
   bool IsUpdatingLifecycle() const;
 
-  // Run all needed lifecycle stages. After calling this method, all frames will
-  // be in the lifecycle state PaintClean.  If lifecycle throttling is allowed
-  // (see AllowThrottlingScope), some frames may skip the lifecycle update
-  // (e.g., based on visibility) and will not end up being PaintClean. Set
-  // |reason| to indicate the reason for this update, for metrics purposes.
+  // Run all needed lifecycle stages. After calling this method, all
+  // non-throttled frames will be in the lifecycle state PaintClean.
+  // AllowThrottlingScope is used to allow frame throttling. Throttled frames
+  // will skip the lifecycle update and will not end up being PaintClean.
+  // Set |reason| to indicate the reason for this update, for metrics purposes.
   // Returns whether the lifecycle was successfully updated to PaintClean.
   bool UpdateAllLifecyclePhases(DocumentUpdateReason reason);
 
@@ -357,9 +357,11 @@ class CORE_EXPORT LocalFrameView final
   bool UpdateAllLifecyclePhasesForTest();
 
   // Computes the style, layout, compositing and pre-paint lifecycle stages
-  // if needed.
+  // if needed. Frame throttling is not enabled by default.
   // After calling this method, all frames will be in a lifecycle
-  // state >= PrePaintClean, unless the frame was throttled or inactive.
+  // state >= PrePaintClean, unless the frame was throttled (if frame
+  // throttling, which is not allowed by default, is allowed by the caller) or
+  // inactive.
   // Returns whether the lifecycle was successfully updated to the
   // desired state.
   bool UpdateAllLifecyclePhasesExceptPaint(DocumentUpdateReason reason);
@@ -367,6 +369,8 @@ class CORE_EXPORT LocalFrameView final
   // Printing needs everything up-to-date except paint (which will be done
   // specially). We may also print a detached frame or a descendant of a
   // detached frame and need special handling of the frame.
+  // Frame throttling is not allowed by default. Normally we don't want to
+  // throttle frames for printing.
   void UpdateLifecyclePhasesForPrinting();
 
   // TODO(pdr): Remove this in favor of |UpdateAllLifecyclePhasesExceptPaint|.
@@ -374,14 +378,17 @@ class CORE_EXPORT LocalFrameView final
 
   // Computes the style, layout, and compositing inputs lifecycle stages if
   // needed. After calling this method, all frames will be in a lifecycle state
-  // >= CompositingInputsClean, unless the frame was throttled or inactive.
+  // >= CompositingInputsClean, unless the frame was throttled (if frame
+  // throttling, which is not allowed by default, is allowed by the caller) or
+  // inactive.
   // Returns whether the lifecycle was successfully updated to the
   // desired state.
   bool UpdateLifecycleToCompositingInputsClean(DocumentUpdateReason reason);
 
   // Computes only the style and layout lifecycle stages.
   // After calling this method, all frames will be in a lifecycle
-  // state >= LayoutClean, unless the frame was throttled or inactive.
+  // state >= LayoutClean, unless the frame was throttled (if frame throttling,
+  // which is not allowed by default, is allowed by the caller) or inactive.
   // Returns whether the lifecycle was successfully updated to the
   // desired state.
   bool UpdateLifecycleToLayoutClean(DocumentUpdateReason reason);
@@ -566,6 +573,16 @@ class CORE_EXPORT LocalFrameView final
   // PaintController other than the default one(s). The following functions are
   // provided for these cases. This frame view must be in PrePaintClean or
   // PaintClean state when these functions are called.
+  // AllowThrottlingScope is used to allow frame throttling.
+  void PaintOutsideOfLifecycleWithThrottlingAllowed(
+      GraphicsContext&,
+      PaintFlags,
+      const CullRect& cull_rect = CullRect::Infinite());
+
+  // Same as the above, but frame throttling is not allowed by default. If this
+  // function is called without frame throttling allowed, the caller must have
+  // just updated the document lifecycle to PrePaintClean or PaintClean without
+  // frame throttling allowed.
   void PaintOutsideOfLifecycle(
       GraphicsContext&,
       PaintFlags,

@@ -7,10 +7,13 @@
 #include "base/test/scoped_feature_list.h"
 #include "cc/base/features.h"
 #include "cc/layers/picture_layer.h"
+#include "cc/paint/paint_record.h"
+#include "cc/paint/paint_recorder.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/test/test_web_frame_content_dumper.h"
 #include "third_party/blink/public/web/web_hit_test_result.h"
+#include "third_party/blink/public/web/web_print_params.h"
 #include "third_party/blink/public/web/web_settings.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_intersection_observer_init.h"
 #include "third_party/blink/renderer/core/dom/document.h"
@@ -42,6 +45,8 @@
 #include "third_party/blink/renderer/platform/testing/paint_test_configurations.h"
 #include "third_party/blink/renderer/platform/testing/unit_test_helpers.h"
 #include "third_party/blink/renderer/platform/testing/url_test_helpers.h"
+
+#include "third_party/blink/renderer/platform/graphics/logging_canvas.h"
 
 using testing::_;
 
@@ -1935,6 +1940,34 @@ TEST_P(FrameThrottlingTest, ClearPaintArtifactOnThrottlingLocalRoot) {
   // results.
   EXPECT_TRUE(
       view->GetPaintControllerForTesting().GetPaintArtifact().IsEmpty());
+}
+
+TEST_P(FrameThrottlingTest, PrintThrottledFrame) {
+  SimRequest main_resource("https://example.com/", "text/html");
+  SimRequest frame_resource("https://example.com/iframe.html", "text/html");
+
+  LoadURL("https://example.com/");
+  // The frame is initially throttled.
+  main_resource.Complete(R"HTML(
+    <div style="height: 2000px"></div>
+    <iframe id="frame" sandbox src="iframe.html"></iframe>
+  )HTML");
+  frame_resource.Complete("ABC");
+  CompositeFrame();
+
+  auto* frame_element =
+      To<HTMLIFrameElement>(GetDocument().getElementById("frame"));
+  auto* sub_frame = To<LocalFrame>(frame_element->ContentFrame());
+  EXPECT_TRUE(sub_frame->View()->ShouldThrottleRenderingForTest());
+  auto* web_frame = WebLocalFrameImpl::FromFrame(sub_frame);
+  WebPrintParams print_params(gfx::Size(500, 500));
+  web_frame->PrintBegin(print_params, blink::WebNode());
+  cc::PaintRecorder recorder;
+  web_frame->PrintPage(0, recorder.beginRecording(500, 500));
+  auto record = recorder.finishRecordingAsPicture();
+  String record_string = RecordAsDebugString(*record);
+  EXPECT_TRUE(record_string.Contains("drawTextBlob")) << record_string.Utf8();
+  web_frame->PrintEnd();
 }
 
 }  // namespace blink
