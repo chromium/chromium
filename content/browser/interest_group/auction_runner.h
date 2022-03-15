@@ -40,10 +40,10 @@ class CONTENT_EXPORT AuctionRunner {
   // appropriate.
   struct InterestGroupKey {
     InterestGroupKey(url::Origin o, std::string n) : owner(o), name(n) {}
-    constexpr bool operator<(const InterestGroupKey& other) const {
+    inline bool operator<(const InterestGroupKey& other) const {
       return owner != other.owner ? owner < other.owner : name < other.name;
     }
-    constexpr bool operator==(const InterestGroupKey& other) const {
+    inline bool operator==(const InterestGroupKey& other) const {
       return owner == other.owner && name == other.name;
     }
     url::Origin owner;
