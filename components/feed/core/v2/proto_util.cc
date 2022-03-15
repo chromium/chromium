@@ -33,6 +33,8 @@
 
 namespace feed {
 namespace {
+using feedwire::Capability;
+
 feedwire::Version::Architecture GetBuildArchitecture() {
 #if defined(ARCH_CPU_X86_64)
   return feedwire::Version::X86_64;
@@ -126,44 +128,42 @@ feedwire::Request CreateFeedQueryRequest(
   request.set_request_version(feedwire::Request::FEED_QUERY);
 
   feedwire::FeedRequest& feed_request = *request.mutable_feed_request();
-  feed_request.add_client_capability(feedwire::Capability::CARD_MENU);
-  feed_request.add_client_capability(feedwire::Capability::LOTTIE_ANIMATIONS);
-  feed_request.add_client_capability(
-      feedwire::Capability::LONG_PRESS_CARD_MENU);
-  feed_request.add_client_capability(feedwire::Capability::SHARE);
 
-  feed_request.add_client_capability(feedwire::Capability::OPEN_IN_TAB);
-  feed_request.add_client_capability(feedwire::Capability::OPEN_IN_INCOGNITO);
+  for (Capability capability :
+       {Capability::CARD_MENU, Capability::LOTTIE_ANIMATIONS,
+        Capability::LONG_PRESS_CARD_MENU, Capability::SHARE,
+        Capability::OPEN_IN_TAB, Capability::OPEN_IN_INCOGNITO,
+        Capability::DISMISS_COMMAND, Capability::INFINITE_FEED,
+        Capability::PREFETCH_METADATA, Capability::REQUEST_SCHEDULE,
+        Capability::UI_THEME_V2, Capability::UNDO_FOR_DISMISS_COMMAND}) {
+    feed_request.add_client_capability(capability);
+  }
 
   for (auto capability : GetFeedConfig().experimental_capabilities)
     feed_request.add_client_capability(capability);
+
   if (base::FeatureList::IsEnabled(kInterestFeedV2Hearts)) {
-    feed_request.add_client_capability(feedwire::Capability::HEART);
+    feed_request.add_client_capability(Capability::HEART);
   }
   if (request_metadata.autoplay_enabled) {
-    feed_request.add_client_capability(
-        feedwire::Capability::INLINE_VIDEO_AUTOPLAY);
-    feed_request.add_client_capability(
-        feedwire::Capability::OPEN_VIDEO_COMMAND);
+    feed_request.add_client_capability(Capability::INLINE_VIDEO_AUTOPLAY);
+    feed_request.add_client_capability(Capability::OPEN_VIDEO_COMMAND);
   }
 
   if (base::FeatureList::IsEnabled(kFeedStamp)) {
-    feed_request.add_client_capability(
-        feedwire::Capability::SILK_AMP_OPEN_COMMAND);
-    feed_request.add_client_capability(feedwire::Capability::AMP_STORY_PLAYER);
-    feed_request.add_client_capability(
-        feedwire::Capability::AMP_GROUP_DATASTORE);
+    feed_request.add_client_capability(Capability::SILK_AMP_OPEN_COMMAND);
+    feed_request.add_client_capability(Capability::AMP_STORY_PLAYER);
+    feed_request.add_client_capability(Capability::AMP_GROUP_DATASTORE);
   }
 
   if (base::FeatureList::IsEnabled(reading_list::switches::kReadLater)) {
-    feed_request.add_client_capability(feedwire::Capability::READ_LATER);
+    feed_request.add_client_capability(Capability::READ_LATER);
   } else {
-    feed_request.add_client_capability(feedwire::Capability::DOWNLOAD_LINK);
+    feed_request.add_client_capability(Capability::DOWNLOAD_LINK);
   }
 
   if (base::FeatureList::IsEnabled(kPersonalizeFeedUnsignedUsers)) {
-    feed_request.add_client_capability(
-        feedwire::Capability::ON_DEVICE_USER_PROFILE);
+    feed_request.add_client_capability(Capability::ON_DEVICE_USER_PROFILE);
   }
 
   *feed_request.mutable_client_info() = CreateClientInfo(request_metadata);

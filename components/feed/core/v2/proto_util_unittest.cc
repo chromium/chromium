@@ -106,7 +106,7 @@ TEST(ProtoUtilTest, DisableCapabilitiesWithFinch) {
   // Try to disable _INFINITE_FEED.
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndEnableFeatureWithParameters(
-      kInterestFeedV2, {{"enable_INFINITE_FEED", "false"}});
+      kInterestFeedV2, {{"enable_MATERIAL_NEXT_BASELINE", "false"}});
   OverrideConfigWithFinchForTesting();
 
   feedwire::FeedRequest request =
@@ -117,19 +117,11 @@ TEST(ProtoUtilTest, DisableCapabilitiesWithFinch) {
           .feed_request();
 
   // Additional features may be present based on the current testing config.
-  ASSERT_THAT(
-      request.client_capability(),
-      testing::IsSupersetOf(
-          {feedwire::Capability::REQUEST_SCHEDULE,
-           feedwire::Capability::LOTTIE_ANIMATIONS,
-           feedwire::Capability::LONG_PRESS_CARD_MENU,
-           feedwire::Capability::OPEN_IN_TAB, feedwire::Capability::CARD_MENU,
-           feedwire::Capability::DISMISS_COMMAND, feedwire::Capability::SHARE,
-           feedwire::Capability::MATERIAL_NEXT_BASELINE,
-           feedwire::Capability::UI_THEME_V2,
-           feedwire::Capability::UNDO_FOR_DISMISS_COMMAND,
-           feedwire::Capability::PREFETCH_METADATA,
-           feedwire::Capability::CONTENT_LIFETIME}));
+  ASSERT_THAT(request.client_capability(),
+              Not(Contains(feedwire::Capability::MATERIAL_NEXT_BASELINE)));
+
+  ASSERT_THAT(request.client_capability(),
+              Contains(feedwire::Capability::CONTENT_LIFETIME));
 }
 
 TEST(ProtoUtilTest, PrivacyNoticeCardAcknowledged) {
