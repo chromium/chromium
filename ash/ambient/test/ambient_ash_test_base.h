@@ -18,6 +18,7 @@
 #include "ash/public/cpp/test/test_image_downloader.h"
 #include "ash/test/ash_test_base.h"
 #include "base/callback.h"
+#include "base/time/time.h"
 #include "services/media_session/public/mojom/media_session.mojom.h"
 #include "ui/views/view.h"
 #include "ui/views/widget/widget.h"
@@ -188,6 +189,8 @@ class AmbientAshTestBase : public AshTestBase {
   void ClearBackupDownloadPhotoData();
 
   void SetDecodePhotoImage(const gfx::ImageSkia& image);
+
+  void SetPhotoDownloadDelay(base::TimeDelta delay);
 
  private:
   void SpinWaitForAmbientViewAvailable(

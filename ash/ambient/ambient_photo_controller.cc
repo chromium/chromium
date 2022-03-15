@@ -150,7 +150,7 @@ AmbientPhotoController::AmbientPhotoController(
 AmbientPhotoController::~AmbientPhotoController() = default;
 
 void AmbientPhotoController::Init() {
-  state_ = State::kPreparingInitialTopicSets;
+  state_ = State::kPreparingNextTopicSet;
   topic_index_ = 0;
   retries_to_read_from_cache_ = kMaxNumberOfCachedImages;
   backup_retries_to_read_from_cache_ = GetBackupPhotoUrls().size();
@@ -202,26 +202,24 @@ void AmbientPhotoController::OnMarkerHit(AmbientPhotoConfig::Marker marker) {
   }
 
   DVLOG(3) << "UI event " << marker << " triggering topic refresh";
-  switch (state_) {
-    case State::kInactive:
-    case State::kPreparingInitialTopicSets:
-      // In these states, the UI shouldn't be active, so it it's unexpected for
-      // the controller to receive a UI event.
-      LOG(ERROR) << "Received unexpected UI marker " << marker << " in state "
-                 << state_;
-      break;
-    case State::kWaitingForNextMarker:
-      state_ = State::kPreparingNextTopicSet;
-      num_topics_prepared_ = 0;
-      StartPreparingNextTopic();
-      break;
-    case State::kPreparingNextTopicSet:
-      // The controller is still in the middle of preparing a topic from the
-      // previous set (i.e. waiting on a callback or timer to fire). Resetting
-      // |num_topics_prepared_| to 0 is enough, and the topic currently being
-      // prepared will count towards the next set.
-      num_topics_prepared_ = 0;
-      break;
+  if (state_ == State::kInactive) {
+    LOG(DFATAL) << "Received unexpected UI marker " << marker
+                << " while inactive";
+    return;
+  }
+
+  bool is_still_preparing_topics = state_ != State::kWaitingForNextMarker;
+  state_ = State::kPreparingNextTopicSet;
+  num_topics_prepared_ = 0;
+  if (is_still_preparing_topics) {
+    // The controller is still in the middle of preparing a topic from the
+    // previous set (i.e. waiting on a callback or timer to fire). Resetting
+    // |num_topics_prepared_| to 0 above is enough, and the topic currently
+    // being prepared will count towards the next set.
+    DVLOG(4) << "Did not finished preparing current topic set in time. "
+                "Starting new set...";
+  } else {
+    StartPreparingNextTopic();
   }
 }
 
@@ -231,10 +229,10 @@ void AmbientPhotoController::OnTopicsChanged() {
     ScheduleFetchTopics(/*backoff=*/false);
 
   // Only call FetchPhotoRawData() for on-demand fetches. If a scheduled topic
-  // fetch happens to occur during the PREPARING_INITIAL_TOPIC_SETS or
-  // PREPARING_NEXT_TOPIC_SET state and FetchPhotoRawData() is called, not only
-  // is that unnecessary but it could also result in the controller decoding
-  // multiple topics simultaneously, which is currently not supported.
+  // fetch happens to occur during the |kPreparingNextTopicSet| state and
+  // FetchPhotoRawData() is called, not only is that unnecessary but it could
+  // also result in the controller decoding multiple topics simultaneously,
+  // which is currently not supported.
   if (latest_fetch_topic_request_type_ == FetchTopicRequestType::kOnDemand) {
     FetchPhotoRawData();
   }
@@ -575,43 +573,28 @@ void AmbientPhotoController::OnAllPhotoDecoded(bool from_downloading,
 
   ResetImageData();
 
+  if (state_ != State::kPreparingNextTopicSet) {
+    LOG(ERROR) << "Topic prepared when controller should be idle in state "
+               << state_;
+    return;
+  }
+
   // AddNextImage() can call out to observers, who can synchronously interact
   // with the controller within their observer notification methods. So the
   // internal |state_| should be updated before calling AddNextImage() so that
   // it is consistent with the model.
-  State previous_state = state_;
-  size_t target_num_topics_to_prepare = 0;
-  switch (state_) {
-    case State::kInactive:
-    case State::kWaitingForNextMarker:
-      LOG(ERROR) << "Topic prepared when controller should be idle in state "
-                 << state_;
-      return;
-    case State::kPreparingInitialTopicSets:
-      target_num_topics_to_prepare =
-          ambient_backend_model_.photo_config().GetNumDecodedTopicsToBuffer();
-      break;
-    case State::kPreparingNextTopicSet:
-      target_num_topics_to_prepare =
-          ambient_backend_model_.photo_config().topic_set_size;
-      break;
-  }
-
+  size_t target_num_topics_to_prepare =
+      ambient_backend_model_.ImagesReady()
+          ? ambient_backend_model_.photo_config().topic_set_size
+          : ambient_backend_model_.photo_config().GetNumDecodedTopicsToBuffer();
   ++num_topics_prepared_;
-  if (num_topics_prepared_ == target_num_topics_to_prepare)
+  if (num_topics_prepared_ >= target_num_topics_to_prepare)
     state_ = State::kWaitingForNextMarker;
 
   ambient_backend_model_.AddNextImage(std::move(detailed_photo));
 
-  if (previous_state == State::kPreparingInitialTopicSets &&
-      state_ == State::kWaitingForNextMarker) {
-    DCHECK(ambient_backend_model_.ImagesReady());
-  }
-
-  if (state_ == State::kPreparingInitialTopicSets ||
-      state_ == State::kPreparingNextTopicSet) {
+  if (state_ == State::kPreparingNextTopicSet)
     StartPreparingNextTopic();
-  }
 }
 
 void AmbientPhotoController::StartDownloadingWeatherConditionIcon(
@@ -677,8 +660,7 @@ bool AmbientPhotoController::HasExhaustedAllTopicsInModel() const {
 }
 
 void AmbientPhotoController::StartPreparingNextTopic() {
-  DCHECK(state_ == State::kPreparingInitialTopicSets ||
-         state_ == State::kPreparingNextTopicSet);
+  DCHECK_EQ(state_, State::kPreparingNextTopicSet);
   if (HasExhaustedAllTopicsInModel() && !HasModelReachedMaxTopicCapacity()) {
     FetchTopics(FetchTopicRequestType::kOnDemand);
   } else {
@@ -691,8 +673,6 @@ std::ostream& operator<<(std::ostream& os,
   switch (state) {
     case AmbientPhotoController::State::kInactive:
       return os << "INACTIVE";
-    case AmbientPhotoController::State::kPreparingInitialTopicSets:
-      return os << "PREPARING_INITIAL_TOPIC_SETS";
     case AmbientPhotoController::State::kWaitingForNextMarker:
       return os << "WAITING_FOR_NEXT_MARKER";
     case AmbientPhotoController::State::kPreparingNextTopicSet:

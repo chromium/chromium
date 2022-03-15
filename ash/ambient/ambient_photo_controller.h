@@ -68,47 +68,44 @@ class AmbientAccessTokenController;
 //
 // The controller's state machine:
 //
-//        INACTIVE
+//        kInactive
 //           |
 //           |
 //           v
-// PREPARING_INITIAL_TOPIC_SETS
-//           |
-//           |
-//           v
-// WAITING_FOR_NEXT_MARKER <-----
-//           |                  |
-//           |                  |
-//           v                  |
-// PREPARING_NEXT_TOPIC_SET -----
+// kPreparingNextTopicSet <-----
+//           |                   |
+//           |                   |
+//           v                   |
+// kWaitingForNextMarker -------
 //
-// INACTIVE:
+// kInactive:
 // The controller is idle, and the model has no decoded topics in it. This is
 // the initial state when the controller is constructed. Although not
 // illustrated above, the controller can transition to this state from any of
 // the other states via a call to StopScreenUpdate().
 //
-// PREPARING_INITIAL_TOPIC_SETS:
-// At this point, the UI has not started rendering yet, and the controller is
-// preparing initial sets of topics. The AmbientPhotoConfig dictates how many
-// sets to prepare initially. This state is triggered by a call to
-// StartScreenUpdate(). It is complete when the desired number of initial topic
-// sets have been prepared.
 //
-// WAITING_FOR_NEXT_MARKER:
+// kPreparingNextTopicSet (a.k.a. "refreshing" the model's topics):
+// The very first time this state is reached, the UI has not started rendering
+// yet, and the controller is preparing initial sets of topics. The
+// AmbientPhotoConfig dictates how many sets to prepare initially. This state is
+// initially triggered by a call to StartScreenUpdate(), and it ends when
+// AmbientBackendModel::ImagesReady() is true.
+//
+// kWaitingForNextMarker:
 // The UI is rendering the decoded topics currently in the model, and the
 // controller is idle. It's waiting for the right marker(s) to be hit in the UI
 // before it becomes active and starts preparing the next set of topics.
 //
-// PREPARING_NEXT_TOPIC_SET (a.k.a. "refreshing" the model's topics):
+// kPreparingNextTopicSet (again):
 // A target marker has been hit, and the controller immediately starts preparing
-// the next set of topics. Unlike the PREPARING_INITIAL_TOPIC_SETS state, there
-// is only ever 1 topic set prepared in this state, and the UI is rendering
-// while the topics are being prepared. After the topic set is completely
-// prepared, the controller goes back to WAITING_FOR_NEXT_MARKER. If another
-// target marker is received while the controller is still preparing a topic
-// set, the controller will simply reset its internal "counter" to 0 and start
-// preparing a brand new set.
+// the next set of topics. Unlike the first time this state was hit, there
+// is only ever 1 topic set prepared, and the UI is rendering while the topics
+// are being prepared. After the topic set is completely prepared, the
+// controller goes back to WAITING_FOR_NEXT_MARKER. If another target marker is
+// received while the controller is still preparing a topic set, the controller
+// will simply reset its internal "counter" to 0 and start preparing a brand new
+// set.
 class ASH_EXPORT AmbientPhotoController : public AmbientBackendModelObserver,
                                           public AmbientViewEventHandler {
  public:
@@ -146,27 +143,21 @@ class ASH_EXPORT AmbientPhotoController : public AmbientBackendModelObserver,
   void ClearCache();
 
  private:
-  enum class State {
-    kInactive,
-    kPreparingInitialTopicSets,
-    kWaitingForNextMarker,
-    kPreparingNextTopicSet
-  };
+  enum class State { kInactive, kWaitingForNextMarker, kPreparingNextTopicSet };
 
   // Describes the 2 cases for when new topics are fetched from the IMAX sever.
   enum class FetchTopicRequestType {
-    // The controller is in the PREPARING_INITIAL_TOPIC_SETS or
-    // PREPARING_NEXT_TOPIC_SET state and hence, there is an immediate demand to
-    // prepare more topics. If it has exhausted all of the existing topics in
-    // the model and the model has capacity to store more topics, the controller
-    // will fetch a new set of topics and will immediately download/save/decode
-    // topics from the new set afterwards.
+    // The controller is in the |kPreparingNextTopicSet| state and hence, there
+    // is an immediate demand to prepare more topics. If it has exhausted all of
+    // the existing topics in the model and the model has capacity to store more
+    // topics, the controller will fetch a new set of topics and will
+    // immediately download/save/decode topics from the new set afterwards.
     kOnDemand,
-    // The controller can be in any state other than INACTIVE. It will fetch a
-    // new set of topics if the |kTopicFetchInterval| has elapsed since the last
-    // topic fetch completed, regardless of that fetch's request type. This is
-    // done to guarantee that a sufficient amount of topics are available in the
-    // model before the access token required to fetch new topics from the
+    // The controller can be in any state other than |kInactive|. It will fetch
+    // a new set of topics if the |kTopicFetchInterval| has elapsed since the
+    // last topic fetch completed, regardless of that fetch's request type. This
+    // is done to guarantee that a sufficient amount of topics are available in
+    // the model before the access token required to fetch new topics from the
     // server expires. In other words, a topic fetch is guaranteed to occur at
     // least every |kTopicFetchInterval| seconds until
     // |kMaxNumberOfCachedImages| topics are available in the model.
@@ -339,8 +330,7 @@ class ASH_EXPORT AmbientPhotoController : public AmbientBackendModelObserver,
   gfx::ImageSkia related_image_;
 
   // Tracks the number of topics that have been prepared since the controller
-  // last transitioned to either the PREPARING_INITIAL_TOPIC_SETS or
-  // PREPARING_NEXT_TOPIC_SET state.
+  // last transitioned to the |kPreparingNextTopicSet| state.
   size_t num_topics_prepared_ = 0;
 
   // Transient variable. Type of the most recent successful topic fetch.

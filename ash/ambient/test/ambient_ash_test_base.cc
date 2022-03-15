@@ -69,7 +69,7 @@ class TestAmbientPhotoCacheImpl : public AmbientPhotoCache {
     // Pretend to respond asynchronously.
     base::SequencedTaskRunnerHandle::Get()->PostDelayedTask(
         FROM_HERE, base::BindOnce(std::move(callback), std::move(data)),
-        base::Milliseconds(1));
+        photo_download_delay_);
   }
 
   void DownloadPhotoToFile(const std::string& url,
@@ -146,6 +146,10 @@ class TestAmbientPhotoCacheImpl : public AmbientPhotoCache {
 
   void SetDecodedPhoto(const gfx::ImageSkia& image) { decoded_image_ = image; }
 
+  void SetPhotoDownloadDelay(base::TimeDelta delay) {
+    photo_download_delay_ = delay;
+  }
+
   const std::map<int, ::ambient::PhotoCacheEntry>& get_files() {
     return files_;
   }
@@ -162,6 +166,8 @@ class TestAmbientPhotoCacheImpl : public AmbientPhotoCache {
   absl::optional<gfx::ImageSkia> decoded_image_;
 
   std::map<int, ::ambient::PhotoCacheEntry> files_;
+
+  base::TimeDelta photo_download_delay_ = base::Milliseconds(1);
 };
 
 AmbientAshTestBase::AmbientAshTestBase()
@@ -575,6 +581,13 @@ void AmbientAshTestBase::SetDecodePhotoImage(const gfx::ImageSkia& image) {
       photo_controller()->get_photo_cache_for_testing());
 
   photo_cache->SetDecodedPhoto(image);
+}
+
+void AmbientAshTestBase::SetPhotoDownloadDelay(base::TimeDelta delay) {
+  auto* photo_cache = static_cast<TestAmbientPhotoCacheImpl*>(
+      photo_controller()->get_photo_cache_for_testing());
+
+  photo_cache->SetPhotoDownloadDelay(delay);
 }
 
 }  // namespace ash
