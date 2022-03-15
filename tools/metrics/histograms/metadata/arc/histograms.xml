@@ -102,9 +102,9 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Arc.AndroidBootTime" units="ms" expires_after="2022-04-24">
-  <owner>elijahtaylor@google.com</owner>
-  <owner>shihuis@google.com</owner>
+<histogram name="Arc.AndroidBootTime" units="ms" expires_after="2022-12-24">
+  <owner>yusukes@google.com</owner>
+  <owner>khmel@google.com</owner>
   <summary>The time elapsed for booting up the ARC instance.</summary>
 </histogram>
 
