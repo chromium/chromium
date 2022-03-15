@@ -289,6 +289,8 @@ ParentPermissionDialogView::ParentPermissionDialogView(
 
   SetModalType(ui::MODAL_TYPE_WINDOW);
   SetShowCloseButton(true);
+  SetCloseCallback(base::BindOnce(&ParentPermissionDialogView::OnDialogClose,
+                                  base::Unretained(this)));
   set_fixed_width(views::LayoutProvider::Get()->GetDistanceMetric(
       views::DISTANCE_MODAL_DIALOG_PREFERRED_WIDTH));
 
@@ -384,12 +386,24 @@ void ParentPermissionDialogView::AddedToWidget() {
   GetBubbleFrameView()->SetTitleView(std::move(message_container).Build());
 }
 
+void ParentPermissionDialogView::OnDialogClose() {
+  // If the dialog is closed without the user clicking "approve" consider this
+  // as ParentPermissionCanceled to avoid showing an error message. If the
+  // user clicked "accept", then that async process will send the result, or if
+  // that doesn't complete, eventually the destructor will send a failure
+  // result.
+  if (!is_approve_clicked_) {
+    SendResultOnce(ParentPermissionDialog::Result::kParentPermissionCanceled);
+  }
+}
+
 bool ParentPermissionDialogView::Cancel() {
-  SendResult(ParentPermissionDialog::Result::kParentPermissionCanceled);
+  SendResultOnce(ParentPermissionDialog::Result::kParentPermissionCanceled);
   return true;
 }
 
 bool ParentPermissionDialogView::Accept() {
+  is_approve_clicked_ = true;
   // Disable the dialog temporarily while we validate the parent's credentials,
   // which can take some time because it involves a series of async network
   // requests.
@@ -601,7 +615,7 @@ void ParentPermissionDialogView::LoadParentEmailAddresses() {
     supervised_user_metrics_recorder_.RecordParentPermissionDialogUmaMetrics(
         SupervisedUserExtensionsMetricsRecorder::ParentPermissionDialogState::
             kNoParentError);
-    SendResult(ParentPermissionDialog::Result::kParentPermissionFailed);
+    SendResultOnce(ParentPermissionDialog::Result::kParentPermissionFailed);
   }
 }
 
@@ -692,7 +706,7 @@ void ParentPermissionDialogView::OnAccessTokenFetchComplete(
     signin::AccessTokenInfo access_token_info) {
   oauth2_access_token_fetcher_.reset();
   if (error.state() != GoogleServiceAuthError::NONE) {
-    SendResult(ParentPermissionDialog::Result::kParentPermissionFailed);
+    SendResultOnce(ParentPermissionDialog::Result::kParentPermissionFailed);
     CloseWithReason(views::Widget::ClosedReason::kUnspecified);
     return;
   }
@@ -714,7 +728,7 @@ void ParentPermissionDialogView::StartParentReauthProofTokenFetch(
       child_access_token, parent_obfuscated_gaia_id, credential);
 }
 
-void ParentPermissionDialogView::SendResult(
+void ParentPermissionDialogView::SendResultOnce(
     ParentPermissionDialog::Result result) {
   if (!params_->done_callback)
     return;
@@ -741,7 +755,7 @@ void ParentPermissionDialogView::SendResult(
 
 void ParentPermissionDialogView::OnReAuthProofTokenSuccess(
     const std::string& reauth_proof_token) {
-  SendResult(ParentPermissionDialog::Result::kParentPermissionReceived);
+  SendResultOnce(ParentPermissionDialog::Result::kParentPermissionReceived);
   CloseWithReason(views::Widget::ClosedReason::kAcceptButtonClicked);
 }
 
@@ -764,7 +778,7 @@ void ParentPermissionDialogView::OnReAuthProofTokenFailure(
       return;
     }
   }
-  SendResult(ParentPermissionDialog::Result::kParentPermissionFailed);
+  SendResultOnce(ParentPermissionDialog::Result::kParentPermissionFailed);
   CloseWithReason(views::Widget::ClosedReason::kUnspecified);
 }
 

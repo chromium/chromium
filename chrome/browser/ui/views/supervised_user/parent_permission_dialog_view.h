@@ -108,6 +108,7 @@ class ParentPermissionDialogView : public views::DialogDelegateView,
   void OnExtensionIconLoaded(const gfx::Image& image);
   void LoadExtensionIcon();
   void CloseWithReason(views::Widget::ClosedReason reason);
+  void OnDialogClose();
 
   // Given an email address of the child's parent, return the parents'
   // obfuscated gaia id.
@@ -136,7 +137,9 @@ class ParentPermissionDialogView : public views::DialogDelegateView,
   void OnReAuthProofTokenFailure(
       const GaiaAuthConsumer::ReAuthProofTokenStatus error) override;
 
-  void SendResult(ParentPermissionDialog::Result result);
+  // The first time it is called, logs the result to UMA and passes it to the
+  // callback. No effect if called subsequent times.
+  void SendResultOnce(ParentPermissionDialog::Result result);
 
   // Sets the |extension| to be optionally displayed in the dialog.  This
   // causes the view to show several extension properties including the
@@ -172,6 +175,10 @@ class ParentPermissionDialogView : public views::DialogDelegateView,
 
   // Used to ensure we don't try to show same dialog twice.
   bool is_showing_ = false;
+
+  // Used to set close reason if the dialog is closed without clicking
+  // "approve."
+  bool is_approve_clicked_ = false;
 
   // Used to fetch the Reauth token.
   std::unique_ptr<GaiaAuthFetcher> reauth_token_fetcher_;
