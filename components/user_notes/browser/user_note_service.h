@@ -20,10 +20,6 @@ namespace user_notes {
 
 class UserNotesManager;
 
-typedef std::pair<std::unique_ptr<UserNote>,
-                  std::unordered_set<UserNotesManager*>>
-    ModelMapEntry;
-
 // Keyed service coordinating the different parts (Renderer, UI layer, storage
 // layer) of the User Notes feature for the current user profile.
 class UserNoteService : public KeyedService, public UserNotesUIDelegate {
@@ -53,6 +49,16 @@ class UserNoteService : public KeyedService, public UserNotesUIDelegate {
   void OnNoteCreationCancelled(const std::string& guid) override;
 
  private:
+  struct ModelMapEntry {
+    explicit ModelMapEntry(std::unique_ptr<UserNote> m);
+    ~ModelMapEntry();
+    ModelMapEntry(const ModelMapEntry&) = delete;
+    ModelMapEntry& operator=(const ModelMapEntry&) = delete;
+
+    std::unique_ptr<UserNote> model;
+    std::unordered_set<UserNotesManager*> managers;
+  };
+
   // Source of truth for the in-memory note models. Any note currently being
   // displayed in a tab is stored in this data structure. Each entry also
   // contains a set of pointers to all |UserNotesManager| objects holding an

@@ -7,8 +7,11 @@
 
 #include <memory>
 #include <string>
+#include <unordered_map>
 #include <vector>
 
+#include "base/memory/weak_ptr.h"
+#include "components/user_notes/browser/user_note_service.h"
 #include "content/public/browser/page_user_data.h"
 
 namespace content {
@@ -45,9 +48,18 @@ class UserNotesManager : public content::PageUserData<UserNotesManager> {
  private:
   friend class content::PageUserData<UserNotesManager>;
 
-  explicit UserNotesManager(content::Page& page);
+  UserNotesManager(content::Page& page, base::WeakPtr<UserNoteService> service);
 
   PAGE_USER_DATA_KEY_DECL();
+
+  // A weak pointer to the note service. The service is generally expected to
+  // outlive this class, but due to destruction order on browser shut down,
+  // using a weak pointer here is safer.
+  base::WeakPtr<UserNoteService> service_;
+
+  // The list of note instances displayed in this page, mapped by their note ID.
+  std::unordered_map<std::string, std::unique_ptr<UserNoteInstance>>
+      instance_map_;
 };
 
 }  // namespace user_notes

@@ -17,26 +17,27 @@ UserNoteService::~UserNoteService() = default;
 void UserNoteService::OnNoteInstanceAddedToPage(const std::string& guid,
                                                 UserNotesManager* manager) {
   DCHECK(IsUserNotesEnabled());
-  DCHECK(model_map_.find(guid) != model_map_.end())
+  const auto& entry_it = model_map_.find(guid);
+  DCHECK(entry_it != model_map_.end())
       << "A note instance without backing model was added to a page";
 
-  model_map_.at(guid).second.insert(manager);
+  entry_it->second.managers.insert(manager);
 }
 
 void UserNoteService::OnNoteInstanceRemovedFromPage(const std::string& guid,
                                                     UserNotesManager* manager) {
   DCHECK(IsUserNotesEnabled());
 
-  auto model = model_map_.find(guid);
-  DCHECK(model != model_map_.end())
+  const auto& entry_it = model_map_.find(guid);
+  DCHECK(entry_it != model_map_.end())
       << "A note model was destroyed before all its instances";
 
-  auto deleteCount = (*model).second.second.erase(manager);
+  auto deleteCount = entry_it->second.managers.erase(manager);
   DCHECK(deleteCount > 0) << "Attempted to remove a ref to a note manager that "
                              "wasn't in the model map";
 
   // If there are no longer any pages displaying this model, destroy it.
-  if ((*model).second.second.empty()) {
+  if (entry_it->second.managers.empty()) {
     model_map_.erase(guid);
   }
 }
@@ -56,5 +57,10 @@ void UserNoteService::OnNoteCreationCancelled(const std::string& guid) {
   DCHECK(IsUserNotesEnabled());
   NOTIMPLEMENTED();
 }
+
+UserNoteService::ModelMapEntry::ModelMapEntry(std::unique_ptr<UserNote> m)
+    : model(std::move(m)) {}
+
+UserNoteService::ModelMapEntry::~ModelMapEntry() = default;
 
 }  // namespace user_notes
